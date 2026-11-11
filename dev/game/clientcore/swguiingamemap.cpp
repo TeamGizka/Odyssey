@@ -43,7 +43,7 @@ void CSWGuiInGameMap::OnDownArrowPressed(CSWGuiControl* pControl)
 {
     HandleInputEvent(GUIEVENT_DOWN, 1);
 }
-// PC 0x006927D0
+// PC 0x006927D0  Xbox 0x000DF320
 void CSWGuiInGameGalaxyMap::OnPanelRemoved()
 {
 #ifdef _XBOX

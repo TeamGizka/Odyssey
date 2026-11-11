@@ -67,14 +67,14 @@ void CSWGuiMainCharGen::SetVisiblePanel(int nPanel)
         }
     }
 }
-// PC 0x006EA810
-void CSWGuiMainCharGen::OnPanelAdded()
+#ifndef _XBOX
+void CSWGuiMainCharGen::OnPanelAdded()  // PC 0x006EA810  Xbox 0x00125200
 {
     m_pManager->AddPanel(m_pQuickOrCustom, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     CSWGuiPanel::OnPanelAdded();
 }
-// PC 0x006EA830  Xbox 0x00124620
-void CSWGuiMainCharGen::RemoveSubPanels()
+#endif
+void CSWGuiMainCharGen::RemoveSubPanels()  // PC 0x006EA830  Xbox 0x00124620
 {
     m_pManager->PopModalPanel();
 #ifndef _XBOX
@@ -383,3 +383,23 @@ CSWGuiMainCharGen::CSWGuiMainCharGen(CSWGuiManager* pManager,
         }
     }
 }
+
+#ifdef _XBOX
+// Xbox 0x00125220
+void CSWGuiMainCharGen::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState && (nEvent == GUIEVENT_CANCEL || nEvent == GUIEVENT_CANCEL_ALTERNATE))
+    {
+        m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+        m_pManager->PopModalPanel();
+        m_bDeferredRemoval = 0;
+        m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
+    }
+    CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
+// PC 0x006EA810  Xbox 0x00125200
+void CSWGuiMainCharGen::OnPanelAdded()
+{
+    m_pManager->AddPanel(m_pQuickOrCustom, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+}
+#endif

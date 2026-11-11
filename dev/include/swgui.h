@@ -188,7 +188,7 @@ public:
 #endif
     void AddControl(CSWGuiControl* pControl);
     CSWGuiControl* GetControl(int nIndex);
-    void SetModal(int bModal)  // PC 0x00624A00
+    void SetModal(int bModal)  // PC 0x00624A00  Xbox 0x0004CE80
     {
         m_bDeferredRemoval = bModal;
         if (m_nExitState != EXITSTATE_DELETE)
@@ -471,11 +471,11 @@ public:
     void AddMessageLabel();
     void FixMessageLabel();
 #ifndef _XBOX
-    void OnOkButtonPressed(CSWGuiControl* pControl);
-    void OnCancelButtonPressed(CSWGuiControl* pControl);
+    void OnOkButtonPressed(CSWGuiControl* pControl); void OnCancelButtonPressed(CSWGuiControl* pControl);
+#else
+    void ShowLoadError(unsigned long nStrRef); void OnRestart(CSWGuiControl* pControl);
 #endif
-    void OnDeath(CSWGuiControl* pControl);
-    void DisplayDeathMessage();
+    void OnDeath(CSWGuiControl* pControl); void DisplayDeathMessage();
 
     unsigned long m_bAccepted : 1;
     unsigned long m_bAllowCancel : 1;

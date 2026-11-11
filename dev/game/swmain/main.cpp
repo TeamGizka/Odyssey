@@ -183,7 +183,7 @@ const int XBOX_LEVEL_MEMORY_CAP = 0xd00000;
 #ifndef _XBOX
 #include "keeperfill_main.inc"
 #endif
-// Xbox 0x00011770
+#ifndef _XBOX
 const char* Buffers(char* sBuffer)
 {
     sprintf(sBuffer, "VB[%d][%d] IB[%d][%d]",
@@ -204,13 +204,13 @@ const char* S_Stats(char* sBuffer)
     sprintf(sBuffer, "tot[%07.2f]", g_ServerUpdateTime);
     return sBuffer;
 }
-// Xbox 0x00011820
+
 const char* AI_Stats(char* sBuffer)
 {
     sprintf(sBuffer, "Mod[%05.2f] Obj[%05.2f]", g_AIModuleTime, g_AIObjectTime);
     return sBuffer;
 }
-// Xbox 0x00011880
+
 const char* TexMem(char* sBuffer)
 {
     int nUncompressed = usedtexturememory - usedcomptexmemory - usedlightmapmemory -
@@ -222,7 +222,7 @@ const char* TexMem(char* sBuffer)
             usedbumpmapmemory / BYTES_PER_KB);
     return sBuffer;
 }
-// Xbox 0x00011910
+
 const char* GfxMemOld(char* sBuffer)
 {
     sprintf(sBuffer, "(kB) Textures %d Verts %d Anims %d",
@@ -230,7 +230,7 @@ const char* GfxMemOld(char* sBuffer)
             animationfootprint / BYTES_PER_KB);
     return sBuffer;
 }
-// Xbox 0x00011960
+
 const char* XbxMem(char* sBuffer)
 {
     int nTotalMem = XBOX_TOTAL_MEMORY;
@@ -257,14 +257,14 @@ const char* XbxMem(char* sBuffer)
             nTotalMem / BYTES_PER_KB, nLevelMem / BYTES_PER_KB);
     return sBuffer;
 }
-// Xbox 0x00011A30
+
 const char* GuiMem(char* sBuffer)
 {
     sprintf(sBuffer, "Tex %d Part %d", RyanStartTextureSize / BYTES_PER_KB,
             RyanStartParts);
     return sBuffer;
 }
-// Xbox 0x00011A60
+
 const char* LevMem(char* sBuffer)
 {
     sprintf(sBuffer, "Tot %d Tex %d Part %d Vert %d-%d",
@@ -273,7 +273,7 @@ const char* LevMem(char* sBuffer)
             RyanLevelVertices, RyanLevelVertSize / BYTES_PER_KB);
     return sBuffer;
 }
-// Xbox 0x00011AD0
+
 const char* DynMem(char* sBuffer)
 {
     int nTextures = usedtexturememory - RyanEndTextureSize;
@@ -285,7 +285,7 @@ const char* DynMem(char* sBuffer)
             nVertSize / BYTES_PER_KB);
     return sBuffer;
 }
-// Xbox 0x00011B60
+
 const char* GfxMem(char* sBuffer)
 {
     int nResources;
@@ -304,7 +304,7 @@ const char* GfxMem(char* sBuffer)
             nTextureSize / BYTES_PER_KB);
     return sBuffer;
 }
-// Xbox 0x00011C10
+
 const char* ResMem(char* sBuffer)
 {
     int nResources;
@@ -322,7 +322,7 @@ const char* ResMem(char* sBuffer)
             nImageSize / BYTES_PER_KB);
     return sBuffer;
 }
-// Xbox 0x00011D30
+
 const char* ClearLogCounters(char* sBuffer)
 {
     return "NOT ENABLED";
@@ -357,7 +357,7 @@ void LogLevelStats()
     fprintf(pFile, "\n");
     fclose(pFile);
 }
-// Xbox 0x00011D40
+
 const char* tc(char* sBuffer)
 {
     int nLevelVertices = RyanTotalLevelVertices;
@@ -387,15 +387,15 @@ const char* tc(char* sBuffer)
             anims, texts, parts);
     return sBuffer;
 }
-
+#endif
 #ifdef _XBOX
-
+// Xbox 0x00011E20
 void ExoXboxRestart()
 {
     XLaunchNewImage("d:\\default.xbe", NULL);
 }
 #endif
-
+// Xbox 0x000126C0
 void SaveCreature(char* sName)
 {
     g_pAppManager->m_pClientExoApp->GetPlayerCreature()->SaveCharGenCreature();
@@ -435,10 +435,11 @@ LRESULT CALLBACK CinematicBackdropWndProc(HWND hWnd, UINT nMsg, WPARAM wParam,
 {
     return 0;
 }
-// PC 0x004015A0  Xbox 0x002D0730
-void HandleLoadError(unsigned long nError)
+#ifndef _XBOX
+void HandleLoadError(unsigned long nError)  // PC 0x004015A0  Xbox 0x00012730
 {
 }
+#endif
 
 void ReportFatalError(const char* szError)
 {
@@ -753,7 +754,7 @@ void SetupOpenGL()
 
 #ifdef _XBOX
 extern void AurSetFrameBufferMode(int nMode);
-
+// Xbox 0x000127A0
 void messagepump(int nUnused)
 {
     UINT nResult;
@@ -1010,13 +1011,13 @@ void DoConsole(char cChar)
         if (lstCompletions.m_nCount > 1)
         {
             float fDuration = 4.0f;
+#ifdef _XBOX
+            fDuration = (lstCompletions.m_nCount > 15) ? 4.0f : 1.0f; if (lstCompletions.m_nCount < 15) nOffset = 0;
+#else
+            if (lstCompletions.m_nCount <= 15) { fDuration = 1.0f;
+                if (lstCompletions.m_nCount < 15) nOffset = 0; }
+#endif
 
-            if (lstCompletions.m_nCount <= 15)
-            {
-                fDuration = 1.0f;
-                if (lstCompletions.m_nCount < 15)
-                    nOffset = 0;
-            }
             for (int i = 0; i < lstCompletions.m_nCount; i++)
             {
                 if (i >= 15)
@@ -2398,13 +2399,254 @@ int HandleWMCharMessage(unsigned short nChar)
 
 #ifdef _XBOX
 
-int g_nDesiredFrameBufferMode = 0;
-int g_nOldFrameBufferMode = 0;
+extern float g_fSoundRenderTime;
+extern float g_fSoundStreamingTime;
+extern float g_fSoundPlayingTime;
+extern float g_fSoundNonPlayingTime;
+extern float g_ServerAIUpdateTime;
+extern int animationfootprint;
+extern int RyanTotalLevelVertSize;
+extern int RyanTotalLevelVertices;
+
+int g_mdxMem;
+int g_txbMem;
+// Xbox 0x00011720
+char* Sound(char* sBuffer)
+{
+    static char sResult[128];
+    sprintf(sResult, " Tot[%4.2f] Strm[%4.2f] Play[%4.2f] NonPlayg[%4.2f]",
+            g_fSoundRenderTime, g_fSoundStreamingTime, g_fSoundPlayingTime,
+            g_fSoundNonPlayingTime);
+    return sResult;
+}
+ConsoleFunc ConFSound("Sound", Sound);
+// Xbox 0x00011770
+char* Buffers(char* sBuffer)
+{
+    static char sResult[128];
+    sprintf(sResult, "VB[%d][%d] IB[%d][%d]",
+            totalvertexpool / BYTES_PER_KB, totalvertexpool4k / BYTES_PER_KB,
+            totalindexpool / BYTES_PER_KB, totalindexpool4 / BYTES_PER_KB);
+    return sResult;
+}
+ConsoleFunc ConFBuffers("Buffers", Buffers);
+// Xbox 0x000117D0
+char* C_Stats(char* sBuffer)
+{
+    static char sResult[128];
+    sprintf(sResult, "tot[%04.1f] snd[%04.1f] AI:[%04.1f] gui:[%04.1f]",
+            g_ClientUpdateTime, g_SndUpdateTime, g_AIUpdateTime, g_GuiUpdateTime);
+    return sResult;
+}
+ConsoleFunc ConFC_Stats("C_Stats", C_Stats);
+// Xbox 0x00011820
+char* S_Stats(char* sBuffer)
+{
+    static char sResult[128];
+    sprintf(sResult, "tot[%05.2f] AI[%05.2f]", g_ServerUpdateTime,
+            g_ServerAIUpdateTime);
+    return sResult;
+}
+ConsoleFunc ConFS_Stats("S_Stats", S_Stats);
+// Xbox 0x00011850
+char* AI_Stats(char* sBuffer)
+{
+    static char sResult[128];
+    sprintf(sResult, "Mod[%05.2f] Obj[%05.2f]", g_AIModuleTime, g_AIObjectTime);
+    return sResult;
+}
+ConsoleFunc ConFAI_Stats("AI_Stats", AI_Stats);
+// Xbox 0x00011880
+char* TexMem(char* sBuffer)
+{
+    static char sResult[128];
+    int nUncompressed = usedtexturememory - usedlightmapmemory - usedcomptexmemory -
+                        usedcubemapmemory - usedbumpmapmemory;
+
+    sprintf(sResult, "(kB) Uncmp %d Cmp %d LM %d CM %d BM %d",
+            nUncompressed / BYTES_PER_KB, usedcomptexmemory / BYTES_PER_KB,
+            usedlightmapmemory / BYTES_PER_KB, usedcubemapmemory / BYTES_PER_KB,
+            usedbumpmapmemory / BYTES_PER_KB);
+    return sResult;
+}
+ConsoleFunc ConFTexMem("TexMem", TexMem);
+// Xbox 0x00011910
+char* GfxMemOld(char* sBuffer)
+{
+    static char sResult[128];
+    sprintf(sResult, "(kB) Textures %d Verts %d Anims %d",
+            usedtexturememory / BYTES_PER_KB, totalvertexpool / BYTES_PER_KB,
+            animationfootprint / BYTES_PER_KB);
+    return sResult;
+}
+ConsoleFunc ConFGfxMemOld("GfxMemOld", GfxMemOld);
+// Xbox 0x00011960
+char* XbxMem(char* sBuffer)
+{
+    static char sResult[128];
+    int nTotalMem;
+    if (usedcomptexmemory == 0)
+    {
+        int nTextures = usedtexturememory - usedlightmapmemory - usedcubemapmemory -
+                        usedbumpmapmemory;
+        nTotalMem = XBOX_TOTAL_MEMORY - (int)(nTextures * XBOX_TEXTURE_COMPRESSION) -
+                    totalvertexpool - animationfootprint - usedbumpmapmemory -
+                    usedcubemapmemory - usedlightmapmemory;
+    }
+    else
+    {
+        nTotalMem = XBOX_TOTAL_MEMORY - totalvertexpool - animationfootprint -
+                    usedtexturememory;
+    }
+
+    int nLevelMem = XBOX_LEVEL_MEMORY - totalvertexpool - usedtexturememory;
+    if (nLevelMem > XBOX_LEVEL_MEMORY_CAP)
+    {
+        nLevelMem = XBOX_LEVEL_MEMORY_CAP;
+    }
+
+    sprintf(sResult, "Parts %d Total Mem %d Level Mem %d", countpart,
+            nTotalMem / BYTES_PER_KB, nLevelMem / BYTES_PER_KB);
+    return sResult;
+}
+ConsoleFunc ConFXbxMem("XbxMem", XbxMem);
+// Xbox 0x00011A30
+char* GuiMem(char* sBuffer)
+{
+    static char sResult[128];
+    sprintf(sResult, "Tex %d Part %d", RyanStartTextureSize / BYTES_PER_KB,
+            RyanStartParts);
+    return sResult;
+}
+ConsoleFunc ConFGuiMem("GuiMem", GuiMem);
+// Xbox 0x00011A60
+char* LevMem(char* sBuffer)
+{
+    static char sResult[128];
+    sprintf(sResult, "Tot %d Tex %d Part %d Vert %d-%d",
+            (RyanLevelTextureSize + RyanLevelVertSize) / BYTES_PER_KB,
+            RyanLevelTextureSize / BYTES_PER_KB, RyanLevelTotalParts,
+            RyanLevelVertices, RyanLevelVertSize / BYTES_PER_KB);
+    return sResult;
+}
+ConsoleFunc ConFLevMem("LevMem", LevMem);
+// Xbox 0x00011AD0
+char* DynMem(char* sBuffer)
+{
+    static char sResult[128];
+    sprintf(sResult, "Tot %d Tex %d Part %d Vert %d-%d",
+            (usedtexturememory - RyanEndTextureSize - RyanLevelVertSize +
+             RyanTotalLevelVertSize) / BYTES_PER_KB,
+            (usedtexturememory - RyanEndTextureSize) / BYTES_PER_KB,
+            countpart - RyanEndParts, RyanTotalLevelVertices - RyanLevelVertices,
+            (RyanTotalLevelVertSize - RyanLevelVertSize) / BYTES_PER_KB);
+    return sResult;
+}
+ConsoleFunc ConFDynMem("DynMem", DynMem);
+// Xbox 0x00011B60
+char* GfxMem(char* sBuffer)
+{
+    static char sResult[128];
+    int nResources;
+    int nKeys;
+    int nServicedSize;
+    int nImageSize;
+
+    g_pExoResMan->GetResourcesInMemory(&nResources, &nKeys, &nServicedSize,
+                                       &nImageSize, &g_mdlMem, &g_mdxMem,
+                                       &g_txbMem, &g_wavMem);
+    sprintf(sResult, "tot: %d md:%d mx:%d tx:%d",
+            (g_mdlMem + g_mdxMem + g_txbMem) / BYTES_PER_KB,
+            g_mdlMem / BYTES_PER_KB, g_mdxMem / BYTES_PER_KB,
+            g_txbMem / BYTES_PER_KB);
+    return sResult;
+}
+ConsoleFunc ConFGfxMem("GfxMem", GfxMem);
+// Xbox 0x00011C10
+char* ResMem(char* sBuffer)
+{
+    static char sResult[128];
+    int nResources;
+    int nKeys;
+    int nServicedSize;
+    int nImageSize;
+
+    int nTotal = g_pExoResMan->GetResourcesInMemory(
+        &nResources, &nKeys, &nServicedSize, &nImageSize, &g_mdlMem,
+        &g_mdxMem, &g_txbMem, &g_wavMem);
+    sprintf(sResult, "%d %d %d/%d %d", nTotal / BYTES_PER_KB,
+            nServicedSize / BYTES_PER_KB, nResources, nKeys,
+            nImageSize / BYTES_PER_KB);
+    return sResult;
+}
+ConsoleFunc ConFResMem("ResMem", ResMem);
+// Xbox 0x00011CA0
+char* ResMem2(char* sBuffer)
+{
+    static char sResult[128];
+    sprintf(sResult, "tot: %d md:%d mx:%d tx:%d wv:%d",
+            (g_mdlMem + g_mdxMem + g_txbMem + g_wavMem) / BYTES_PER_KB,
+            g_mdlMem / BYTES_PER_KB, g_mdxMem / BYTES_PER_KB,
+            g_txbMem / BYTES_PER_KB, g_wavMem / BYTES_PER_KB);
+    return sResult;
+}
+ConsoleFunc ConFResMem2("ResMem2", ResMem2);
+// Xbox 0x00011D30
+char* ClearLogCounters(char* sBuffer)
+{
+    return "NOT ENABLED";
+}
+ConsoleFunc ConFClearLogCounters("ClearLogCounters", ClearLogCounters);
+
+char* DumpLogCounters(char* sBuffer)
+{
+    return "NOT ENABLED";
+}
+ConsoleFunc ConFDumpLogCounters("DumpLogCounters", DumpLogCounters);
+
+ConsoleFunc ConVverts("verts", &verts);
+ConsoleFunc ConVanims("anims", &anims);
+ConsoleFunc ConVtexts("texts", &texts);
+ConsoleFunc ConVparts("parts", &parts);
+ConsoleFunc ConVverts2("verts2", &verts2);
+// Xbox 0x00011D40
+char* tc(char* sBuffer)
+{
+    static char sResult[128];
+    int nLevelVertices = RyanTotalLevelVertices;
+    int nVertices = totalvertexpool;
+    int nTextures = usedtexturememory;
+    int nAnimations = animationfootprint;
+    int nParts = countpart;
+
+    spawn(sBuffer);
+    AurTextureMakeCurrent();
+
+    verts = (totalvertexpool - nVertices) / BYTES_PER_KB;
+    anims = (animationfootprint - nAnimations) / BYTES_PER_KB;
+    texts = (usedtexturememory - nTextures) / BYTES_PER_KB;
+    parts = countpart - nParts;
+    verts2 = RyanTotalLevelVertices - nLevelVertices;
+
+    sprintf(sResult, "Verts %d-%d Anims %d Text %d Parts %d", verts2, verts,
+            anims, texts, parts);
+    return sResult;
+}
+ConsoleFunc ConFtc("tc", tc);
+
+ConsoleFunc ConVg_bDo3DGUIs("g_bDo3DGUIs", &g_bDo3DGUIs);
+ConsoleFunc ConVg_nSleeptime("g_nSleeptime", (int*)&g_nSleeptime);
+ConsoleFunc ConVg_nPriorityClass("g_nPriorityClass", &g_nPriorityClass);
+ConsoleFunc ConVg_nResetPriority("g_nResetPriority", &g_nResetPriority);
+
+int antialiasmode = 0;
+ConsoleFunc ConVantialiasmode("antialiasmode", &antialiasmode);
+int g_nOldFrameBufferMode = antialiasmode;
 
 int g_bLowDiskMode = 0;
 unsigned char g_nBootFlags = 0;
 // Xbox 0x00011E10
-void ExoXboxLaunch(KOTOR_LAUNCH_DATA* pParams)
+void ExoXboxLaunch(KOTOR_LAUNCH_DATA* pParams, const char* pszModuleName)
 {
     XLaunchNewImage("d:\\default.xbe", (PLAUNCH_DATA)pParams);
 }
@@ -2429,7 +2671,7 @@ void ReInitAurora(unsigned long nWidth, unsigned long nHeight,
         fClearColor[2] = (float)((unsigned char*)&g_nClearColor)[2] * (1.0f / 255.0f);
         fClearColor[3] = (float)((unsigned char*)&g_nClearColor)[3] * (1.0f / 255.0f);
 
-        g_pAurora->ShutDown(0, 0);
+        g_pAurora->ShutDown(0);
         g_pAurora->Initialize(g_hWnd, g_hWnd, nWidth, nHeight, nBitsPerPixel,
                               g_nDesiredFullScreenRefreshRate, 0,
                               nBitsPerPixel, nBitsPerPixel);
@@ -2661,10 +2903,10 @@ int main()
         if (maxmemoryused < memoryused)
             maxmemoryused = memoryused;
 
-        if (g_nOldFrameBufferMode != g_nDesiredFrameBufferMode)
+        if (g_nOldFrameBufferMode != antialiasmode)
         {
-            g_nOldFrameBufferMode = g_nDesiredFrameBufferMode;
-            AurSetFrameBufferMode(g_nDesiredFrameBufferMode);
+            g_nOldFrameBufferMode = antialiasmode;
+            AurSetFrameBufferMode(antialiasmode);
         }
 
         if (g_nReInitializing != 0)
@@ -2755,5 +2997,19 @@ int main()
     delete g_pExoBase;
     g_pExoBase = NULL;
     return 0;
+}
+#endif
+
+#ifdef _XBOX
+#include "swguiingame.h"
+// PC 0x004015A0  Xbox 0x00012730
+void HandleLoadError(unsigned long nError)
+{
+    CSWGuiMessageBox* pBox = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+    pBox->ShowLoadError(nError);
+    g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(pBox, 1, 1);
+    g_pExoInput->SetActive(1);
+    g_pAppManager->m_pClientExoApp->EnableInput();
+    g_pAppManager->m_pClientExoApp->SetInputClass(2);
 }
 #endif

@@ -746,8 +746,8 @@ int CSWSMessage::HandlePlayerToServerCheatMessage(CSWSPlayer* pPlayer,
     }
     return 0;
 }
-// PC 0x00522810  Xbox 0x0024A850
-int CSWSMessage::HandlePlayerToServerDialogMessage(CSWSPlayer* pPlayer,
+#ifndef _XBOX
+int CSWSMessage::HandlePlayerToServerDialogMessage(CSWSPlayer* pPlayer,  // PC 0x00522810  Xbox 0x0024A850
                                                    unsigned char nMinor)
 {
     unsigned long oidObject;
@@ -779,8 +779,8 @@ int CSWSMessage::HandlePlayerToServerDialogMessage(CSWSPlayer* pPlayer,
     }
     return 0;
 }
-// PC 0x005228D0  Xbox 0x0024A920
-int CSWSMessage::HandlePlayerToServerGameObjectUpdate(CSWSPlayer* pPlayer,
+#endif
+int CSWSMessage::HandlePlayerToServerGameObjectUpdate(CSWSPlayer* pPlayer,  // PC 0x005228D0  Xbox 0x0024A920
                                                       unsigned char nMinor)
 {
     if (MessageReadOverflow(1))
@@ -1707,13 +1707,13 @@ int CSWSMessage::HandlePlayerToServerCharListMessage(CSWSPlayer* pPlayer,
     return 0;
 }
 // PC 0x00524800  Xbox 0x0024C9A0
-int CSWSMessage::HandlePlayerToServerModuleMessage(CSWSPlayer* pPlayer,
-                                                   unsigned char nMinor)
+int CSWSMessage::HandlePlayerToServerModuleMessage(CSWSPlayer* pPlayer, unsigned char nMinor)
 {
     CExoString sName;
     CExoString sModule;
+#ifndef _XBOX
     CExoString sSaveGameName;
-
+#endif
     if (MessageReadOverflow(1))
     {
         return 0;
@@ -1727,8 +1727,7 @@ int CSWSMessage::HandlePlayerToServerModuleMessage(CSWSPlayer* pPlayer,
             pPlayer->m_n7C = 1;
             g_pAppManager->m_pServerExoApp->InitiateModuleForPlayer(pPlayer);
             bResult = SendServerToPlayerPlayerList_Add(
-                          CNetLayer::PLAYERID_ALL_PLAYERS, pPlayer) &
-                      1;
+                          CNetLayer::PLAYERID_ALL_PLAYERS, pPlayer) & 1;
             bResult &= SendServerToPlayerPlayerList_All(pPlayer);
         }
         return bResult;
@@ -1737,8 +1736,9 @@ int CSWSMessage::HandlePlayerToServerModuleMessage(CSWSPlayer* pPlayer,
     {
         unsigned long nSlot = ReadDWORD(32);
         sName = ReadCExoString(32);
-        sSaveGameName = ReadCExoString(32);
-        g_pAppManager->GetServerExoApp()->SetSaveGameName(sSaveGameName);
+#ifndef _XBOX
+        sSaveGameName = ReadCExoString(32); g_pAppManager->GetServerExoApp()->SetSaveGameName(sSaveGameName);
+#endif
         if (MessageReadUnderflow(1) == 0 && pPlayer->GetIsAllowedToSave() != 0)
         {
             CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -3349,3 +3349,39 @@ int CSWSMessage::HandlePlayerToServerMessage(unsigned long nPlayerId,
 static inline void NwshandleplayermessageTrace1()
 {
 }
+
+#ifdef _XBOX
+// PC 0x00522810  Xbox 0x0024A850
+int CSWSMessage::HandlePlayerToServerDialogMessage(CSWSPlayer* pPlayer,
+                                                   unsigned char nMinor)
+{
+    unsigned long oidObject;
+    unsigned long nReplyIndex;
+    int bEscape;
+    CServerExoApp* pServerExoApp;
+    CGameObject* pObject;
+    unsigned long nEntryId;
+    unsigned char nResult;
+
+    if (MessageReadOverflow(1) || nMinor != 3) return 0;
+    {
+        oidObject = ReadOBJECTIDServer();
+        nReplyIndex = ReadDWORD(32);
+        bEscape = (unsigned char)ReadBYTE(8) != 0;
+        nEntryId = ReadDWORD(32);
+        if (MessageReadOverflow(1) || MessageReadUnderflow(1)) return 0;
+        {
+            pServerExoApp = g_pAppManager->m_pServerExoApp;
+            nResult = pServerExoApp->GetObjectArray()->GetGameObject(
+                oidObject, &pObject);
+            if (nResult != CGameObjectArray::SUCCESS) return 0;
+            {
+                return ((CSWSObject*)pObject)
+                    ->ReplyDialog(pPlayer->GetPlayerId(), nReplyIndex, bEscape,
+                                  nEntryId, 0);
+            }
+        }
+    }
+    return 0;
+}
+#endif

@@ -202,8 +202,8 @@ CScriptLocation CSWSScriptVarTable::GetLocation(const CExoString& sName)
 
     return lLocation;
 }
-// PC 0x0059A6F0  Xbox 0x00243920
-void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int nFlag)
+#ifndef _XBOX
+void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int nFlag)  // PC 0x0059A6F0  Xbox 0x00243920
 {
     MatchIndex(sName, SCRIPTVAR_TYPE_INT, 1)->m_nValue = nValue;
 
@@ -242,8 +242,8 @@ void CSWSScriptVarTable::SetFloat(const CExoString& sName, float fValue)
 {
     MatchIndex(sName, SCRIPTVAR_TYPE_FLOAT, 1)->m_fValue = fValue;
 }
-// PC 0x0059A8E0  Xbox 0x00243B30
-void CSWSScriptVarTable::SetString(const CExoString& sName, CExoString& sValue)
+#endif
+void CSWSScriptVarTable::SetString(const CExoString& sName, CExoString& sValue)  // PC 0x0059A8E0  Xbox 0x00243B30
 {
     CSWSScriptVar* pVar = MatchIndex(sName, SCRIPTVAR_TYPE_STRING, 1);
     *pVar->m_psValue = sValue;
@@ -365,4 +365,46 @@ void CSWSScriptVarTable::LoadVarTable(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 }
-
+
+#ifdef _XBOX
+// PC 0x0059A6F0  Xbox 0x00243920
+void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int nFlag)
+{
+    MatchIndex(sName, SCRIPTVAR_TYPE_INT, 1)->m_nValue = nValue;
+
+    if (m_pCreature != NULL)
+    {
+        if (sName.GetLength() > 10)
+        {
+            if (m_pCreature->GetJournal() != NULL && sName.Left(10) == "NW_JOURNAL")
+            {
+                if (sName[11] == 'E')
+                {
+                    m_pCreature->GetJournal()->SetState(
+                        sName.SubString(16, 128), nValue, nFlag);
+                }
+                else if (sName[11] == 'D')
+                {
+                    m_pCreature->GetJournal()->SetDate(sName.SubString(15, 128),
+                                                       nValue, nFlag);
+                }
+                else if (sName[11] == 'T')
+                {
+                    m_pCreature->GetJournal()->SetTime(sName.SubString(15, 128),
+                                                       nValue, nFlag);
+                }
+                else if (sName[11] == 'P')
+                {
+                    m_pCreature->GetJournal()->SetPicture(
+                        sName.SubString(18, 128), nValue, nFlag);
+                }
+            }
+        }
+    }
+}
+// PC 0x0059A8C0  Xbox 0x00243B10
+void CSWSScriptVarTable::SetFloat(const CExoString& sName, float fValue)
+{
+    MatchIndex(sName, SCRIPTVAR_TYPE_FLOAT, 1)->m_nValue = *(int*)&fValue;
+}
+#endif

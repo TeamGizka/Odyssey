@@ -719,14 +719,16 @@ void addlevel()
         }
     }
 }
-// PC 0x0060B270
-void dancedancemalak()
+
+#ifndef _XBOX
+void dancedancemalak()  // PC 0x0060B270
 {
     if (GetCheatsTurnedOn() != 0)
     {
         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_bDanceDanceMalak = 1;
     }
 }
+#endif
 // PC 0x0060B2A0  Xbox 0x0003AC00
 int lockcamera(char* szValue)
 {
@@ -814,8 +816,187 @@ ConsoleFunc ConFwarp("warp", warp);
 ConsoleFunc ConFinfiniteuses("infiniteuses", infiniteuses);
 ConsoleFunc ConFwhereami("whereami", whereami);
 ConsoleFunc ConFaddlevel("addlevel", addlevel);
+#ifndef _XBOX
 ConsoleFunc ConFdancedancemalak("dancedancemalak", dancedancemalak);
+#endif
 #ifdef _XBOX
 ConsoleFunc ConFToggleMovieNotification("ToggleMovieNotification", ToggleMovieNotification);
 ConsoleFunc ConFToggleLiveContentIgnore("ToggleLiveContentIgnore", ToggleLiveContentIgnore);
+#endif
+
+#ifdef _XBOX
+
+#include "worldtimer.h"
+#include "exoinput.h"
+#include "twodimarray.h"
+
+extern int g_bEnableScreenCapture;
+// Xbox 0x0003A8A0
+char* fps(char* szArgs)
+{
+    static float fWindow = 2.0f;
+    static char szFPS[64];
+    static float fLastLow;
+    static float fAverageFrameTime;
+    static float fFrames;
+    static float fTotalFrameTime;
+    static float fLow;
+
+    g_fFPS = 1000000.0f / (int)g_pAppManager->m_pClientExoApp->GetWorldTimer()->GetSnapshotTimeDifference();
+    float fFrameTime = 1.0f / g_fFPS;
+    fWindow += fFrameTime;
+    if (fWindow > 2.0f)
+    {
+        fWindow -= 2.0f;
+        fAverageFrameTime = fTotalFrameTime / fFrames;
+        fLastLow = fLow;
+        fLow = g_fFPS;
+        fTotalFrameTime = 0.0f;
+        fFrames = 0.0f;
+    }
+    if (fWindow < -2.0f)
+    {
+        fWindow = -2.0f;
+    }
+    if (g_fFPS <= fLow)
+    {
+        fLow = g_fFPS;
+    }
+    fTotalFrameTime += fFrameTime;
+    fFrames += 1.0f;
+    sprintf(szFPS, "%04.1f (%04.1f) [%04.1f] %01.5f", g_fFPS, fLastLow > fLow ? fLow : fLastLow,
+            1.0f / fAverageFrameTime, fFrameTime);
+    return szFPS;
+}
+// Xbox 0x0003AA00
+char* MacroRecord(char* szArgs)
+{
+    if (*szArgs == 0)
+    {
+        szArgs = "inputmacro.default";
+    }
+    if (!g_pAppManager->m_pClientExoApp->GetCaptureEvents())
+    {
+        g_pAppManager->GetClientExoApp()->SetCaptureEvents(szArgs);
+        return "Macro is recording...";
+    }
+    g_pAppManager->GetClientExoApp()->SetCaptureEvents("");
+    return "Finished Macro recording";
+}
+// Xbox 0x0003AAE0
+char* MacroStop(char* szArgs)
+{
+    g_pAppManager->GetClientExoApp()->SetCaptureEvents("");
+    return "Finished Macro recording";
+}
+// Xbox 0x0003AB50
+char* MacroPlay(char* szArgs)
+{
+    if (g_pAppManager->m_pClientExoApp->GetCaptureEvents())
+    {
+        return "Ignoring that one...";
+    }
+    g_pAppManager->GetClientExoApp()->SetCaptureEventPlayBack(*szArgs ? szArgs : "inputmacro.default");
+    g_pAppManager->m_pClientExoApp->SetCaptureEventPlayBack(5);
+    g_bEnableScreenCapture = 0;
+    return "Playing Macro...";
+}
+// Xbox 0x0003AC80
+int keyboardmode(char* szArgs)
+{
+    if (szArgs != NULL)
+    {
+        switch (*szArgs)
+        {
+        case '0':
+            g_pExoInput->KeyboardModeOff();
+            break;
+        case '1':
+            g_pExoInput->KeyboardModeOn();
+            break;
+        }
+    }
+    return g_pExoInput->GetKeyboardMode() != 0;
+}
+// Xbox 0x0003ACD0
+char* PlayMovie(char* szArgs)
+{
+    if (*szArgs == 0)
+    {
+        return "usage: PlayMovie sMovieName";
+    }
+    g_pExoInput->ClearEvents();
+    g_pAppManager->m_pClientExoApp->ResetDriveAcceleration();
+    g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL);
+    int nResult;
+    g_pAppManager->GetClientExoApp()->PlayMovie(szArgs, nResult, 0, 0);
+    g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
+    return "Playing movie...";
+}
+// Xbox 0x0003ADE0
+char* Binarize2DA(char* szArgs)
+{
+    static char szResult[256];
+    CExoStringList* pList;
+    char szFile[256];
+
+    if (szArgs != NULL && *szArgs != 0)
+    {
+        CExoString* pName = new CExoString(szArgs);
+        pList = new CExoStringList;
+        pList->Add(pName);
+    }
+    else
+    {
+        pList = g_pExoResMan->GetResOfType(RESTYPE_2DA, 0);
+    }
+
+    int nBinarized = 0;
+    int nSkipped = 0;
+    for (int i = 0; i < pList->GetCount(); i++)
+    {
+        C2DA c2DA((*pList)[i]->CStr(), 0);
+        if (c2DA.Load2DArray())
+        {
+            if (c2DA.m_bPacked)
+            {
+                nSkipped++;
+            }
+            else
+            {
+                sprintf(szFile, "logs\%s.2da", (*pList)[i]->CStr());
+                if (c2DA.SaveBinary2da(szFile))
+                {
+                    nBinarized++;
+                }
+            }
+        }
+    }
+
+    int nFailed = pList->GetCount() - nSkipped - nBinarized;
+    if (nFailed == 0)
+    {
+        sprintf(szResult, "Binarized %d files to logs\; %d skipped", nBinarized, nSkipped);
+    }
+    else
+    {
+        sprintf(szResult, "**** %d files failed!  Binarized %d files to logs\; %d skipped", nFailed,
+                nBinarized, nSkipped);
+    }
+    if (pList != NULL)
+    {
+        delete pList;
+    }
+    return szResult;
+}
+
+ConsoleFunc ConFfps("fps", fps);
+ConsoleFunc ConFMacroRecord("MacroRecord", MacroRecord);
+ConsoleFunc ConFMacroStop("MacroStop", MacroStop);
+ConsoleFunc ConFMacroPlay("MacroPlay", MacroPlay);
+ConsoleFunc ConFlockcamera("lockcamera", lockcamera);
+ConsoleFunc ConFkeyboardmode("keyboardmode", keyboardmode);
+ConsoleFunc ConFPlayMovie("PlayMovie", PlayMovie);
+ConsoleFunc ConFAurSnapshot("AurSnapshot", AurSnapshot);
+ConsoleFunc ConFBinarize2DA("Binarize2DA", Binarize2DA);
 #endif

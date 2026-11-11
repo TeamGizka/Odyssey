@@ -167,7 +167,7 @@ CSWGuiInGameCredits::CSWGuiInGameCredits(CSWGuiManager* pManager,  // PC 0x0068F
 CSWGuiInGameCredits::~CSWGuiInGameCredits()  // PC 0x0068F0E0  Xbox 0x001002F0
 {
     if (m_pText != NULL) { delete[] m_pText; }
-
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bCreditSequenceInProgress = 0;
     g_pAppManager->GetClientExoApp()->SetInputClass(m_nPreviousInputClass);
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SetGlobalUnpauseableState(0);
     g_pAppManager->GetClientExoApp()->SetInputActive(0, 0);
@@ -207,13 +207,14 @@ CSWGuiInGameCredits::~CSWGuiInGameCredits()  // PC 0x0068F0E0  Xbox 0x001002F0
     g_pAppManager->GetClientExoApp()->ShowMouse(128);
 }
 #endif
-// PC 0x0068F260
+// PC 0x0068F260  Xbox 0x00100110
 void CSWGuiInGameCredits::OnPanelAdded()
 {
     SwguiingamecreditsTrace1();
+#ifndef _XBOX
     g_pAppManager->m_pClientExoApp->HideMouse(CLIENT_MOUSE_HIDE_EVIL_ENDING);
-    g_pAppManager->m_pClientExoApp->GetInGameGui()
-        ->SetGlobalUnpauseableState(1);
+#endif
+    g_pAppManager->m_pClientExoApp->GetInGameGui()->SetGlobalUnpauseableState(1);
     m_nPreviousInputClass = g_pAppManager->m_pClientExoApp->GetInputClass();
 #ifndef _XBOX
     CSWGuiPanel::OnPanelAdded();
@@ -223,7 +224,6 @@ void CSWGuiInGameCredits::OnPanelAdded()
 #else
     g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GUI, 1);
 #endif
-
 #ifndef _XBOX
     m_pMusic = new CExoStreamingSoundSource;
     if (m_pMusic != NULL)
@@ -234,7 +234,7 @@ void CSWGuiInGameCredits::OnPanelAdded()
     }
 #endif
 }
-// PC 0x0068F350
+// PC 0x0068F350  Xbox 0x00100150
 void CSWGuiInGameCredits::HandleInputEvent(int nEvent, int nState)
 {
     SwguiingamecreditsTrace1();
@@ -274,24 +274,24 @@ void CSWGuiInGameCredits::SetNextText()
     }
     ++m_nCurrentText;
 }
-// PC 0x0068F3A0
+// PC 0x0068F3A0  Xbox 0x001001A0
 void CSWGuiInGameCredits::SetText(unsigned long nStrRef, int bLastText)
 {
     SwguiingamecreditsTrace1();
     CSWGuiExtent cExtent;
+#ifndef _XBOX
     if (m_bFading)
+#endif
     {
         m_lblCredit.m_cText.m_cParams.SetStrRef(nStrRef);
     }
+#ifndef _XBOX
     else
     {
-        STR_RES strRes;
-        CExoString sText;
-        CExoString sPadding;
+        STR_RES strRes; CExoString sText; CExoString sPadding;
         g_pTlkTable->Fetch(nStrRef, strRes, CTlkTable::GENDER_MALE);
         int nPaddingLines = (int)((float)m_lblCredit.m_cExtent.m_nHeight /
-            ((float)m_lblCredit.m_cText.GetFontHeight() *
-             m_cExtent.m_nHeight / 480.0f)) + 1;
+            ((float)m_lblCredit.m_cText.GetFontHeight() * m_cExtent.m_nHeight / 480.0f)) + 1;
         sPadding = "";
         for (int i = 0; i < nPaddingLines; ++i)
         {
@@ -300,6 +300,7 @@ void CSWGuiInGameCredits::SetText(unsigned long nStrRef, int bLastText)
         sText = sPadding + strRes.m_sString + sPadding;
         m_lblCredit.m_cText.m_cParams.SetText(sText);
     }
+#endif
     m_lbxCredits.ClearItems();
     if (bLastText)
     {
@@ -315,7 +316,7 @@ void CSWGuiInGameCredits::SetText(unsigned long nStrRef, int bLastText)
 }
 
 #ifdef _XBOX
-void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // PC 0x0068F630
+void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // PC 0x0068F630  Xbox 0x00100270
 {
     m_fScrollTime += fElapsed;
     while (m_fScrollTime >= m_fScrollInterval)
@@ -332,7 +333,7 @@ void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // PC 0x0068F630
     }
 }
 #else
-void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // PC 0x0068F630
+void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // PC 0x0068F630  Xbox 0x00100270
 {
     SwguiingamecreditsTrace1();
     if (m_lbxCredits.m_cScrollBar.m_nCurValue ==

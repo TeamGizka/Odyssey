@@ -1149,7 +1149,9 @@ int CSWCArea::LoadArea(CAurCamera* pCamera, CGuiAreaLoadscreen* pLoadScreen,
                             9999.0f, false);
                     else
                         pBehavior->PlaySoundA();
+#ifndef _XBOX
                     m_lstRoomSounds.AddHead(pBehavior);
+#endif
                 }
             }
         }
@@ -1432,6 +1434,7 @@ void CSWCArea::UnloadArea()
         delete m_pScene;
         m_pScene = NULL;
     }
+#ifndef _XBOX
     while (m_lstRoomSounds.GetHeadPos() != NULL)
     {
         CSWBehaviorAttachSound* pBehavior = m_lstRoomSounds.RemoveHead();
@@ -1440,6 +1443,7 @@ void CSWCArea::UnloadArea()
             delete pBehavior;
         }
     }
+#endif
     EmptyCAurObjectToHitCheckIgnoreList();
     for (int j = m_lstPlaceableLights.num - 1; j >= 0; j--)
     {
@@ -2167,4 +2171,83 @@ char* setweatherdensity(char* sArguments)
     return "Success";
 }
 ConsoleFunc ConFsetweatherdensity("setweatherdensity", setweatherdensity);
+#endif
+
+#ifdef _XBOX
+
+// Xbox 0x00035520
+void CSWCArea::SetGeometryFadeMode(unsigned char nMode)
+{
+    if (m_pScene)
+    {
+        int nFade;
+        switch (nMode)
+        {
+        case 0: nFade = CAurScene::ENABLE_FADE; break;
+        case 1: nFade = CAurScene::DISABLE_FADE; break;
+        case 2: nFade = CAurScene::ALWAYS_FADE; break;
+        }
+        m_pScene->SetGeomFadeProperties(nFade);
+    }
+}
+#endif
+
+#ifdef _XBOX
+
+
+#include "aurconsole.h"
+
+// Xbox 0x00034BE0
+char* sethighlightamplitude(char* szArgs)
+{
+    return "Success";
+}
+char* sethighlightfrequency(char* szArgs)
+{
+    return "Success";
+}
+char* sethighlightsize(char* szArgs)
+{
+    return "Success";
+}
+char* sethighlightintensity(char* szArgs)
+{
+    return "Success";
+}
+ConsoleFunc ConFsethighlightamplitude("sethighlightamplitude", sethighlightamplitude);
+ConsoleFunc ConFsethighlightfrequency("sethighlightfrequency", sethighlightfrequency);
+ConsoleFunc ConFsethighlightsize("sethighlightsize", sethighlightsize);
+ConsoleFunc ConFsethighlightintensity("sethighlightintensity", sethighlightintensity);
+
+// Xbox 0x000379E0
+char* daytonight(char* szArgs)
+{
+    if (g_pAppManager == NULL || g_pAppManager->m_pClientExoApp == NULL ||
+        g_pAppManager->m_pClientExoApp->GetModule() == NULL ||
+        g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo == NULL)
+    {
+        return "Failure";
+    }
+    g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo->SetAsDusk();
+    g_pAppManager->GetClientExoApp()->GetModule()->m_fTimeOfDayHours = (float)atof(szArgs);
+    g_pAppManager->m_pClientExoApp->GetModule()->m_fTimeOfDay = 0.0f;
+    return "Success";
+}
+ConsoleFunc ConFdaytonight("daytonight", daytonight);
+
+// Xbox 0x00037A80
+char* nighttoday(char* szArgs)
+{
+    if (g_pAppManager == NULL || g_pAppManager->m_pClientExoApp == NULL ||
+        g_pAppManager->m_pClientExoApp->GetModule() == NULL ||
+        g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo == NULL)
+    {
+        return "Failure";
+    }
+    g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo->SetAsDawn();
+    g_pAppManager->GetClientExoApp()->GetModule()->m_fTimeOfDayHours = (float)atof(szArgs);
+    g_pAppManager->m_pClientExoApp->GetModule()->m_fTimeOfDay = 0.0f;
+    return "Success";
+}
+ConsoleFunc ConFnighttoday("nighttoday", nighttoday);
 #endif

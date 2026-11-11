@@ -97,11 +97,20 @@ public:
     ~CERFFile();
 
     void SetVersion(char* sVersion);
+#ifdef _XBOX
+    int Read(const CExoString& sFileName, void* pSignature = NULL);
+#else
     int Read(const CExoString& sFileName);
+#endif
     int Create(CExoString& sFileName);
     int WriteHeader();
     int Finish();
+#ifdef _XBOX
+    int ReadHeaderVariance(const CExoString& sFileName,
+                           void* pSignature = NULL);
+#else
     int ReadHeaderVariance(const CExoString& sFileName);
+#endif
     int WriteStringTable();
     void ExportFilesFromERF(const CExoString& sFileName,
                            const CExoString& sDirectory, void* pUnused,

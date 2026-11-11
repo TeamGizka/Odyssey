@@ -899,7 +899,7 @@ CAurObject* CSWCCreatureAppearance::GetCameraFollowPart()
 
     return pModel;
 }
-// PC 0x006974A0
+// PC 0x006974A0  Xbox 0x000C2D40
 int CSWCCreatureAppearance::GetFollowingBody()
 {
     Gob* pModel = m_pCreature->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);

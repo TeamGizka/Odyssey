@@ -23,7 +23,7 @@ public:
     virtual void HideHeadItem()  // PC 0x004015A0
     {
     }
-    virtual void ShowHeadItem()  // PC 0x004015A0  Xbox 0x000C65B0
+    virtual void ShowHeadItem()  // PC 0x004015A0
     {
     }
     virtual void SetWieldLimited(int bLimited);

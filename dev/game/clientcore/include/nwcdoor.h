@@ -97,6 +97,10 @@ public:
     CExoString m_sModel;
     int m_bStatic;
     CExoString m_sTransitionDestination;
+#ifdef _XBOX
+
+    void GetUseItems(CSWCCreature* pCreature, CExoArrayList<CSWGuiInterfaceAction>& lstActions);
+#endif
 };
 
 #endif

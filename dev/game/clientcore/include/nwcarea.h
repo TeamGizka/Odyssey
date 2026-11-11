@@ -150,6 +150,8 @@ public:
     CSWCAmbientSound* m_pAmbientSound;
 #ifdef _XBOX
     CSWCAmbientSound* GetAmbientSound() { return m_pAmbientSound; }
+
+    void SetGeometryFadeMode(unsigned char nMode);
 #endif
     float m_fLightningTimer;
 
@@ -190,7 +192,9 @@ public:
     unsigned char m_nCorpseWriteIndex;
     unsigned char m_aUnknown27A[0x2];
     CSWSArea* m_pServerArea;
+#ifndef _XBOX
     CExoLinkedList<CSWBehaviorAttachSound> m_lstRoomSounds;
+#endif
 };
 
 #endif

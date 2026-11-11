@@ -93,8 +93,8 @@ void CSWGuiFade::Draw(float fElapsed)
     }
     CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x006246A0  Xbox 0x000D6730
-CSWGuiControl* CSWGuiFade::HitCheckMouse(int nX, int nY)
+#ifndef _XBOX
+CSWGuiControl* CSWGuiFade::HitCheckMouse(int nX, int nY)  // PC 0x006246A0
 {
     if (m_fAlpha > 0.001f)
     {
@@ -102,8 +102,8 @@ CSWGuiControl* CSWGuiFade::HitCheckMouse(int nX, int nY)
     }
     return 0;
 }
-// PC 0x006246C0  Xbox 0x000D6750
-void CSWGuiFade::SetMsg(unsigned long nStrRef)
+#endif
+void CSWGuiFade::SetMsg(unsigned long nStrRef)  // PC 0x006246C0  Xbox 0x000D6750
 {
     CExoString sText;
     if (nStrRef != 0)
@@ -156,3 +156,11 @@ CSWGuiFade::CSWGuiFade(CSWGuiManager* pManager)
     m_cExtent.m_nHeight = m_pManager->m_nHeight;
     ResetFade();
 }
+
+#ifdef _XBOX
+// Xbox 0x000D6730
+int CSWGuiFade::IsObscuring()
+{
+    return m_fAlpha > 0.001f;
+}
+#endif

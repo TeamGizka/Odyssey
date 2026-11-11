@@ -6,11 +6,11 @@
 const int CSWDoorSurfaceMesh::DOOR_STATE_CLOSED = 0;
 const int CSWDoorSurfaceMesh::DOOR_STATE_OPEN1 = 1;
 const int CSWDoorSurfaceMesh::DOOR_STATE_OPEN2 = 2;
-// PC 0x005CE070
+// PC 0x005CE070  Xbox 0x00228D90
 void CSWDoorSurfaceMesh::SetOpenPosition(unsigned char nIndex,
                                          Vector vPosition)
 {
-    m_avUsePoints[nIndex] = WorldToLocal(vPosition);
+    EXOXBOXASSERT(nIndex <= 1); m_avUsePoints[nIndex] = WorldToLocal(vPosition);
 }
 // PC 0x005CE0B0  Xbox 0x00228DE0
 CSWDoorSurfaceMesh::CSWDoorSurfaceMesh()

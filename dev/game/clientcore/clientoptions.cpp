@@ -599,8 +599,8 @@ void CClientOptions::SetDefaultOptions()
     m_nCheatFlags = 0;
     m_nDebugFlags = 0;
 }
-// PC 0x0061DB60
-CClientOptions::CClientOptions()
+#ifndef _XBOX
+CClientOptions::CClientOptions()  // PC 0x0061DB60  Xbox 0x00060270
 {
     m_nCameraMode = CClientOptions::CAMERA_MODE_ON_A_STICK;
     m_nCameraStyle = 1;
@@ -631,8 +631,8 @@ CClientOptions::CClientOptions()
     m_bMouseTeleporting = 1;
     SetDefaultOptions();
 }
-// PC 0x0061DBE0
-int CClientOptions::LoadOptions()
+#endif
+int CClientOptions::LoadOptions()  // PC 0x0061DBE0
 {
     SetDefaultOptions();
     CExoIni cIni;
@@ -1145,4 +1145,227 @@ void CClientOptions::SetMovieShown(const CResRef& sMovie, int bShown)
         }
     }
 }
+#endif
+
+#ifdef _XBOX
+#include "nwcmodule.h"
+#include "nwcarea.h"
+#include "aurrendergl.h"
+// Xbox 0x0005EFB0
+void CClientOptions::SetGeometryFadeMode(unsigned char nMode)
+{
+    if (m_nGeometryFadeMode != nMode)
+    {
+        if (g_pAppManager->m_pClientExoApp->GetModule() != NULL &&
+            g_pAppManager->m_pClientExoApp->GetModule()->GetArea() != NULL)
+        {
+            g_pAppManager->m_pClientExoApp->GetModule()->GetArea()->SetGeometryFadeMode(nMode);
+        }
+        m_nGeometryFadeMode = nMode;
+    }
+}
+// Xbox 0x0005F060
+void CClientOptions::SetNumShadowCastingLights(unsigned char nLights)
+{
+    if (m_nCombatSpeed != nLights)
+    {
+        m_nCombatSpeed = nLights;
+        CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
+        if (pModule != NULL && pModule->GetArea() != NULL)
+        {
+            pModule->GetArea()->m_nUnknown230 = 1;
+        }
+    }
+}
+// Xbox 0x0005F0A0
+void CClientOptions::SetVSyncEnabled(int bEnabled)
+{
+    m_bVSync = (bEnabled != 0);
+}
+// Xbox 0x0005F0C0
+void CClientOptions::SetAnisotropicFiltering(int bEnabled)
+{
+    m_bAnisotropicFiltering = (bEnabled != 0);
+}
+// Xbox 0x0005F0E0
+void CClientOptions::SetShinyWater(int bEnabled)
+{
+    m_bShinyWater = bEnabled;
+}
+// Xbox 0x0005F100
+void CClientOptions::SetTruform(int bEnabled)
+{
+    m_bTruform = bEnabled;
+}
+// Xbox 0x0005F120
+void CClientOptions::SetAntiAliasingMode(unsigned char nMode)
+{
+    switch (nMode)
+    {
+    case 0: m_nXboxUnmapped11 = 0; break;
+    case 1: m_nXboxUnmapped11 = 1; break;
+    case 2: m_nXboxUnmapped11 = 2; break;
+    case 3: m_nXboxUnmapped11 = 3; break;
+    case 4: m_nXboxUnmapped11 = 4; break;
+    default: m_nXboxUnmapped11 = 0; break;
+    }
+}
+// Xbox 0x0005F170
+void CClientOptions::SetGrassEnabled(int bEnabled)
+{
+    enablegrass = (bEnabled != 0);
+    m_bGrass = bEnabled;
+}
+// Xbox 0x0005F1A0
+void CClientOptions::SetFastGrass(int bEnabled)
+{
+    m_bFastGrass = (bEnabled != 0);
+}
+
+int CClientOptions::GetShinyWaterSupported()
+{
+    return 0;
+}
+// Xbox 0x0005F980
+void CClientOptions::SetWindMode(unsigned char nMode)
+{
+    enum { XBOX_CLIENT_OBJECT_TYPE_CREATURE = 5 };
+    if (m_nWindMode != nMode)
+    {
+        CSWCObject* pObject;
+        CSWCCreature* pPlayer = g_pAppManager->m_pClientExoApp->GetPlayerCreature();
+        unsigned long oidPlayer;
+        if (pPlayer != NULL)
+        {
+            oidPlayer = pPlayer->m_nId;
+        }
+        else
+        {
+            oidPlayer = CGameObjectArray::INVALIDOBJID;
+        }
+        if (g_pAppManager->m_pClientExoApp->GetModule() != NULL)
+        {
+            CSWCArea* pArea = g_pAppManager->m_pClientExoApp->GetModule()->GetArea();
+            if (pArea != NULL)
+            {
+                for (int i = 0; i < pArea->m_lstObjectIds.num; i++)
+                {
+                    CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+                    CGameObject* pGameObject = pClientExoApp->GetGameObject(pArea->m_lstObjectIds.element[i]);
+                    if (pGameObject != NULL)
+                    {
+                        pObject = pGameObject->AsSWCObject();
+                        if (pObject != NULL && pObject->m_nObjectType == XBOX_CLIENT_OBJECT_TYPE_CREATURE &&
+                            pObject->m_nFadeState == CSWCObject::FADE_STATE_VISIBLE &&
+                            oidPlayer != pObject->m_nId)
+                        {
+                            switch (nMode)
+                            {
+                            case 0:
+                            case WIND_PLAYER:
+                                pObject->SetWind(0, 0.0f);
+                                break;
+                            case WIND_ALL:
+                                pObject->SetWind(1, creaturewindintensity);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (pPlayer != NULL && pPlayer->m_nFadeState == CSWCObject::FADE_STATE_VISIBLE)
+        {
+            switch (nMode)
+            {
+            case 0:
+                pObject->SetWind(0, 0.0f);
+                break;
+            case WIND_PLAYER:
+            case WIND_ALL:
+                pObject->SetWind(1, creaturewindintensity);
+                break;
+            }
+        }
+        m_nWindMode = nMode;
+    }
+}
+#endif
+
+#ifdef _XBOX
+// PC 0x0061DB60  Xbox 0x00060270
+CClientOptions::CClientOptions()
+{
+    m_nCameraStyle = 1;
+    m_nCameraMode = CClientOptions::CAMERA_MODE_ON_A_STICK;
+    m_nAmbientSoundOptions = DEFAULT_AMBIENT_SOUND_OPTIONS;
+    m_nGeometryFadeMode = 0;
+    m_nGoreLevel = 2;
+    m_nXboxUnmappedBit0 = 1;
+    m_nXboxUnmappedBit1 = 0;
+    m_bAutoDetectVideo = 1;
+    m_bVideoOption = 1;
+    m_bFullScreen = 0;
+    m_bPlayMovies = 1;
+    m_bWindowed = 1;
+    m_bPlaySounds = 1;
+    m_nObjectShadowMode = OBJECT_SHADOWS_ALL;
+    m_fCameraDistance = 3.0f;
+    m_fCameraHeight = 1.0f;
+    m_nCombatSpeed = 3;
+    m_nGameSpeed = 2;
+    m_nWindMode = WIND_ALL;
+    SetDefaults();
+}
+#endif
+#ifdef _XBOX
+
+#include "aurconsole.h"
+#include <stdlib.h>
+// Xbox 0x0005F730
+void UnlockMovie(char* szArgs)
+{
+    g_sUnlockedMovie = szArgs;
+}
+ConsoleFunc ConFUnlockMovie("UnlockMovie", UnlockMovie);
+// Xbox 0x0005F910
+int setnumshadowlights(char* szArgs)
+{
+    if (g_pAppManager != NULL && g_pAppManager->m_pClientExoApp != NULL &&
+        g_pAppManager->m_pClientExoApp->GetClientOptions() != NULL)
+    {
+        if (strlen(szArgs) > 0)
+        {
+            g_pAppManager->GetClientExoApp()->GetClientOptions()->SetNumShadowCastingLights(
+                (unsigned char)atoi(szArgs));
+        }
+    }
+    return g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nCombatSpeed;
+}
+ConsoleFunc ConFsetnumshadowlights("setnumshadowlights", setnumshadowlights);
+// Xbox 0x000601D0
+char* showallmovies(char* szArgs)
+{
+    CClientOptions* pOptions = g_pAppManager->m_pClientExoApp->GetClientOptions();
+    for (int i = 0; i < 11; i++)
+    {
+        pOptions->m_aMoviesShown[i] = 0xff;
+    }
+    return "Success";
+}
+ConsoleFunc ConFshowallmovies("showallmovies", showallmovies);
+// Xbox 0x00060200
+int setcreaturewindmode(char* szArgs)
+{
+    if (g_pAppManager != NULL && g_pAppManager->m_pClientExoApp != NULL &&
+        g_pAppManager->m_pClientExoApp->GetClientOptions() != NULL)
+    {
+        if (strlen(szArgs) > 0)
+        {
+            g_pAppManager->GetClientExoApp()->GetClientOptions()->SetWindMode((unsigned char)atoi(szArgs));
+        }
+    }
+    return g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nWindMode;
+}
+ConsoleFunc ConFsetcreaturewindmode("setcreaturewindmode", setcreaturewindmode);
 #endif

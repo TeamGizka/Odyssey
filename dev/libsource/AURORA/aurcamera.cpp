@@ -651,3 +651,26 @@ static inline void AurcameraTrace2()
 static inline void AurcameraTrace1()
 {
 }
+
+#ifdef _XBOX
+Gob* FindGob(char* sName);
+// Xbox 0x002BC7B0
+char* beginviewangleanim(char* sArguments)
+{
+    float fAngle;
+    float fLength;
+    int nInterpType;
+    if (sscanf(sArguments, "%f%f%d", &fAngle, &fLength, &nInterpType) != 3)
+        return "beginviewangleanim [angle] [length] [interpType]";
+    Camera* pCamera = (Camera*)FindGob("camera");
+    pCamera->BeginViewAngleAnimation(fAngle, fLength, nInterpType);
+    return "success";
+}
+// Xbox 0x002BC820
+char* endviewangleanim(char* sArguments)
+{
+    Camera* pCamera = (Camera*)FindGob("camera");
+    pCamera->EndViewAngleAnimation(true);
+    return "success";
+}
+#endif

@@ -616,7 +616,11 @@ int CSWSModule::SaveModuleFAC()
     CServerExoAppInternal* pInternal = pExoApp->m_pcExoAppInternal;
     CFactionManager* pFactionManager = pInternal->m_pFactionManager;
     CResGFF* pGFF = new CResGFF;
+#ifdef _XBOX
+    CResStruct* pStruct = new CResStruct();
+#else
     CResStruct* pStruct = new CResStruct;
+#endif
     CResList cList;
     int bSuccess = pGFF->CreateGFFFile(pStruct, "FAC ", "V2.0");
 
@@ -670,7 +674,11 @@ void CSWSModule::SavePrimaryPlayerInfo(CSWSCreature* pCreature,
     CSWSPlayer* pPlayer = g_pAppManager->m_pServerExoApp->
         GetClientObjectByObjectId(pCreature->m_nId);
     CResGFF* pGFF = new CResGFF;
+#ifdef _XBOX
+    CResStruct* pStruct = new CResStruct();
+#else
     CResStruct* pStruct = new CResStruct;
+#endif
     int bSuccess = pGFF->CreateGFFFile(pStruct, "BIC ", "V2.0");
 
     if (bSuccess)
@@ -1166,7 +1174,11 @@ void CSWSModule::SaveModuleStart(CExoString& sPath, CExoString& sName)
     m_nResourceCount = 3;
     m_pERFFile->SetNumEntries(3);
     m_pModuleGFF = new CResGFF;
+#ifdef _XBOX
+    m_pERFStruct = new CResStruct();
+#else
     m_pERFStruct = new CResStruct;
+#endif
     if (m_pModuleGFF->CreateGFFFile(m_pERFStruct, "IFO ", "V2.0"))
     {
         SaveModuleIFOStart(m_pModuleGFF, m_pERFStruct);
@@ -2172,7 +2184,9 @@ int CSWSModule::LoadModuleStart(const CExoString& sModule, int bLoadModuleTime)
     unsigned short nMinute, nSecond, nMillisecond;
     unsigned long nPauseTime, nPauseDay;
 
+#ifndef _XBOX
     g_pExoResMan->FreeChunk();
+#endif
     CGameObjectArray* pObjectArray =
         g_pAppManager->GetServerExoApp()->GetObjectArray();
     sModuleName = CExoString("CURRENTGAME:") + sModule;
@@ -2201,7 +2215,12 @@ int CSWSModule::LoadModuleStart(const CExoString& sModule, int bLoadModuleTime)
         "Mod_Creator_ID", bSuccess, 0);
     m_pModuleInfo->m_nVersion = m_pRes->ReadFieldDWORD(&cModuleStruct,
         "Mod_Version", bSuccess, 0);
+#ifdef _XBOX
+
+    g_pAppManager->GetServerExoApp()->GetServerInfo()->m_sModuleList = sModule;
+#else
     g_pAppManager->GetServerExoApp()->GetServerInfo()->SetModuleName(sModule);
+#endif
     m_lsName = m_pRes->ReadFieldCExoLocString(&cModuleStruct,
         "Mod_Name", bSuccess, CExoLocString());
     m_sDescription = m_pRes->ReadFieldCExoLocString(&cModuleStruct,
@@ -2708,6 +2727,40 @@ void CSWSModule::RemoveModuleResources(const CExoString& sModuleName)
     }
     g_pExoResMan->RemoveResourceDirectory("MODULES:");
 
+#ifdef _XBOX
+
+    if (g_pExoResMan->Exists(sResourceName + CExoString("_a"),
+                            RESTYPE_RIM, (unsigned long*)NULL))
+    {
+        if (nDownloadedPackage == 0)
+        {
+            g_pExoResMan->RemoveResourceImageFile(
+                CExoString("RIMSXBOX:") + sResourceName + CExoString("_a"));
+        }
+        else
+        {
+            CExoString sDirectory;
+            sDirectory.Format("LIVE%d:MODULES\\", nDownloadedPackage);
+            g_pExoResMan->RemoveResourceImageFile(sDirectory + sResourceName);
+        }
+    }
+    if (g_pExoResMan->Exists(sResourceName + CExoString("_adx"),
+                            RESTYPE_RIM, (unsigned long*)NULL))
+    {
+        if (nDownloadedPackage == 0)
+        {
+            g_pExoResMan->RemoveResourceImageFile(
+                CExoString("RIMSXBOX:") + sResourceName + CExoString("_adx"));
+        }
+        else
+        {
+            CExoString sDirectory;
+            sDirectory.Format("LIVE%d:MODULES\\", nDownloadedPackage);
+            g_pExoResMan->RemoveResourceImageFile(sDirectory + sResourceName);
+        }
+    }
+
+#else
     CExoString sLipsName;
     sLipsName.Format("LIPS:%s_loc", sResourceName.CStr());
     g_pExoResMan->RemoveEncapsulatedResourceFile(sLipsName);
@@ -2727,6 +2780,7 @@ void CSWSModule::RemoveModuleResources(const CExoString& sModuleName)
     }
 
     g_pExoResMan->RemoveEncapsulatedResourceFile("HD0:players");
+#endif
     g_pAppManager->m_pClientExoApp->ResetModuleResourcesLoaded();
 }
 // PC 0x004C4B80  Xbox 0x00197C80
@@ -2759,3 +2813,16 @@ static inline void NwsmoduleTrace2()
 static inline void NwsmoduleTrace1()
 {
 }
+
+#ifdef _XBOX
+// Xbox 0x00197180
+void CSWSModule::TestPathPoints(char* szArgs)
+{
+    float fPersonalSpace = (float)atof(szArgs);
+    CSWSArea* pArea = GetArea();
+    if (pArea != NULL)
+    {
+        pArea->TestPathPoint(fPersonalSpace, 1);
+    }
+}
+#endif

@@ -117,9 +117,8 @@ void CSWPlayerControlCamRelative::Init()
         pTable->GetFLOATEntry(nRow, sColumn, &m_fMinTurnRate);
     }
     m_vFacing = Vector();
-    m_integrator.m_fMaximumVelocity =
-        g_pAppManager->m_pClientExoApp->GetClientOptions()
-            ->GetCameraKeyboardDPS();
+#ifndef _XBOX
+    m_integrator.m_fMaximumVelocity = g_pAppManager->m_pClientExoApp->GetClientOptions()->GetCameraKeyboardDPS();
     m_integrator.m_fMaximumAcceleration =
         g_pAppManager->m_pClientExoApp->GetClientOptions()
             ->GetCameraKeyboardAcceleration();
@@ -127,6 +126,7 @@ void CSWPlayerControlCamRelative::Init()
         g_pAppManager->m_pClientExoApp->GetClientOptions()
             ->GetCameraKeyboardDeceleration();
     m_integrator.m_fMaximumDeceleration = fDeceleration;
+#endif
 }
 // PC 0x00679510  Xbox 0x00093AA0
 float CSWPlayerControlCamRelative::GetMaxSpeed()

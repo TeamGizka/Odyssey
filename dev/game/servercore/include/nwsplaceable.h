@@ -86,7 +86,7 @@ public:
     int GetIsCorpse() { return m_bIsCorpse; }
     void SetLocked(int bLocked) { m_bLocked = bLocked; }
     virtual ~CSWSPlaceable();
-    virtual CSWSPlaceable* AsSWSPlaceable()  // PC 0x00641DB0  Xbox 0x00207EF0
+    virtual CSWSPlaceable* AsSWSPlaceable()  // PC 0x00641DB0
     {
         return this;
     }
@@ -99,7 +99,7 @@ public:
     {
         return m_cConversation;
     }
-    virtual CExoLocString* GetFirstName()  // PC 0x0058ED60
+    virtual CExoLocString* GetFirstName()  // PC 0x0058ED60  Xbox 0x00207EF0
     {
         return &m_lsLocName;
     }

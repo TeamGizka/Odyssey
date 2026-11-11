@@ -654,8 +654,7 @@ BOOL CServerAIEventNode::SaveNode(CResGFF* pRes, CResStruct* pStruct)
         if (m_pEventData != NULL)
         {
             pRes->AddStructToStruct(&sEventData, pStruct, "EventData", 0x9999);
-            pRes->WriteFieldBYTE(&sEventData, (unsigned char)m_pEventData,
-                                 "Value");
+            pRes->WriteFieldBYTE(&sEventData, (unsigned char)m_pEventData, "Value");
         }
         return TRUE;
     case CServerAIMaster::EVENT_BROADCAST_AOO:
@@ -691,16 +690,14 @@ BOOL CServerAIEventNode::SaveNode(CResGFF* pRes, CResStruct* pStruct)
         if (m_pEventData != NULL)
         {
             pRes->AddStructToStruct(&sEventData, pStruct, "EventData", 0x8888);
-            ((CSWSForcedAction*)m_pEventData)
-                ->SaveForcedAction(pRes, &sEventData);
+            ((CSWSForcedAction*)m_pEventData)->SaveForcedAction(pRes, &sEventData);
         }
         return TRUE;
     case CServerAIMaster::EVENT_SPAWN_BODY_BAG:
         if (m_pEventData != NULL)
         {
             pRes->AddStructToStruct(&sEventData, pStruct, "EventData", 0x5555);
-            ((CServerAIBodyBagInfo*)m_pEventData)
-                ->SaveBodyBag(pRes, &sEventData);
+            ((CServerAIBodyBagInfo*)m_pEventData)->SaveBodyBag(pRes, &sEventData);
         }
         return TRUE;
     case CServerAIMaster::EVENT_SPELL_IMPACT:
@@ -734,8 +731,11 @@ BOOL CServerAIEventNode::SaveNode(CResGFF* pRes, CResStruct* pStruct)
         pRes->AddStructToStruct(&sEventData, pStruct, "EventData", 0xFFFF);
         pRes->WriteFieldINT(&sEventData, (int)m_pEventData, "Value");
         break;
+#ifdef _XBOX
+    case CServerAIMaster::EVENT_ENTERED_TRIGGER: case CServerAIMaster::EVENT_LEFT_TRIGGER: case CServerAIMaster::EVENT_CLOSE_OBJECT: case CServerAIMaster::EVENT_OPEN_OBJECT:
+    case CServerAIMaster::EVENT_DESTROY_OBJECT: case CServerAIMaster::EVENT_UNLOCK_OBJECT: case CServerAIMaster::EVENT_LOCK_OBJECT: case CServerAIMaster::EVENT_DECREMENT_STACKSIZE: return TRUE;
+#endif
     }
-
     return TRUE;
 }
 // PC 0x004B0A00  Xbox 0x00162240
@@ -917,8 +917,8 @@ BOOL CServerAIEventNode::LoadNode(CResGFF* pRes, CResStruct* pStruct)
 
     return TRUE;
 }
-// PC 0x004B0AB0  Xbox 0x00161B40
-void CServerAIMaster::DeleteEventData(unsigned long nEventId, void* pEventData)
+#ifndef _XBOX
+void CServerAIMaster::DeleteEventData(unsigned long nEventId, void* pEventData)  // PC 0x004B0AB0  Xbox 0x00161B40
 {
     if (pEventData != NULL)
     {
@@ -945,7 +945,7 @@ void CServerAIMaster::DeleteEventData(unsigned long nEventId, void* pEventData)
         }
     }
 }
-
+#endif
 
 
 
@@ -1347,3 +1347,55 @@ static inline void ServeraimasterTrace2()
 static inline void ServeraimasterTrace1()
 {
 }
+
+#ifdef _XBOX
+
+// PC 0x004B0AB0  Xbox 0x00161B40
+void CServerAIMaster::DeleteEventData(unsigned long nEventId, void* pEventData)
+{
+    if (pEventData != NULL)
+    {
+        switch (nEventId)
+        {
+        case EVENT_BROADCAST_SAFE_PROJECTILE:
+            delete (CSWSCombatAttackData*)pEventData;
+            return;
+        case EVENT_FEEDBACK_MESSAGE:
+            delete (CSWCCMessageData*)pEventData;
+            return;
+        case EVENT_SPELL_IMPACT:
+        case EVENT_ITEM_ON_HIT_SPELL_IMPACT:
+            delete (CSWSSpellScriptData*)pEventData;
+            return;
+        case EVENT_TIMED_EVENT:
+            g_pVirtualMachine->DeleteScriptSituation(pEventData);
+            return;
+        case EVENT_SIGNAL_EVENT:
+        case EVENT_SUMMON_CREATURE:
+        case EVENT_AREA_TRANSITION:
+            delete (CScriptEvent*)pEventData;
+            return;
+        case EVENT_ENTERED_TRIGGER:
+        case EVENT_LEFT_TRIGGER:
+        case EVENT_REMOVE_FROM_AREA:
+        case EVENT_APPLY_EFFECT:
+        case EVENT_CLOSE_OBJECT:
+        case EVENT_OPEN_OBJECT:
+        case EVENT_PLAY_ANIMATION:
+        case EVENT_DESTROY_OBJECT:
+        case EVENT_UNLOCK_OBJECT:
+        case EVENT_LOCK_OBJECT:
+        case EVENT_REMOVE_EFFECT:
+        case EVENT_ON_MELEE_ATTACKED:
+        case EVENT_DECREMENT_STACKSIZE:
+        case EVENT_SPAWN_BODY_BAG:
+        case EVENT_FORCED_ACTION:
+        case EVENT_BROADCAST_AOO:
+        case EVENT_ABILITY_EFFECT_APPLIED:
+        case EVENT_ACQUIRE_ITEM:
+        case EVENT_CONTROLLER_RUMBLE:
+            return;
+        }
+    }
+}
+#endif

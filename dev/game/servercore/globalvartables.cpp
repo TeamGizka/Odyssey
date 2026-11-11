@@ -856,7 +856,7 @@ void CSWGlobalVariableTable::ReadCatalogue(const CResRef& cResRef)
         }
     }
 }
-
+// Xbox 0x00164490
 void CSWGlobalVariableTable::ClearIdentifiers()
 {
     memset(m_aIdentifiers, 0, sizeof(m_aIdentifiers));

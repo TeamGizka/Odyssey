@@ -110,7 +110,7 @@ CSWGuiLevelUpCharGen::CSWGuiLevelUpCharGen(CSWGuiManager* pManager,
     }
     m_nInputClass = g_pAppManager->m_pClientExoApp->GetInputClass();
 }
-// PC 0x006E7B70
+// PC 0x006E7B70  Xbox 0x00122380
 CSWGuiLevelUpCharGen::~CSWGuiLevelUpCharGen()
 {
     delete m_pCreature;

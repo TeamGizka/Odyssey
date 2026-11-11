@@ -47,13 +47,13 @@ CSWSRoom* CSWSArea::GetRoom(const Vector& vPosition, int* pnFace)
     CSWRoomSurfaceMeshHitInfo hitInfo(0xFFFFFFFF);
     CSWSRoom* pRoom = NULL;
 
-    if (pnFace != NULL)
-    {
-        *pnFace = -1;
-    }
+    if (pnFace != NULL) { *pnFace = -1; }
 
     for (int nRoom = 0; nRoom < m_nRoomCount; nRoom++)
     {
+#ifdef _XBOX
+        if (DumpRoomBBox) { g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory); g_pExoBase->m_pExoDebug->FlushScriptLogFile(); }
+#endif
         if (m_pRooms[nRoom].CheckAABBWalkable(vTop, vBottom, hitInfo))
         {
             pRoom = &m_pRooms[nRoom];
@@ -116,8 +116,8 @@ float CSWSArea::ComputePathDistance(int nPoints, float* pfPoints)
 
     return fDistance;
 }
-// PC 0x004BB8B0  Xbox 0x0018D8F0
-int CSWSArea::CountVisibleToPlayers(const Vector& vPosition, int nMaxCount)
+#ifndef _XBOX
+int CSWSArea::CountVisibleToPlayers(const Vector& vPosition, int nMaxCount)  // PC 0x004BB8B0  Xbox 0x0018D8F0
 {
     unsigned long oidObject;
     int nCount = 0;
@@ -164,8 +164,8 @@ int CSWSArea::CountVisibleToPlayers(const Vector& vPosition, int nMaxCount)
     }
     return nCount;
 }
-// PC 0x004BBA40  Xbox 0x0018DAA0
-int CSWSArea::EvaluateOverlappingTargets(CPathfindInformation* pPathfind,
+#endif
+int CSWSArea::EvaluateOverlappingTargets(CPathfindInformation* pPathfind,  // PC 0x004BBA40  Xbox 0x0018DAA0
                                         const Vector& vPosition,
                                         unsigned long oidTarget,
                                         const Vector& vTargetPosition,
@@ -553,13 +553,17 @@ int CSWSArea::TestDirectLine(const Vector& vStart, const Vector& vEnd,
     Vector vFrom = vStart;
     Vector vClippedStart;
     Vector vClippedEnd;
+#ifdef _XBOX
+    if (DumpRoomBBox) { g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory); g_pExoBase->m_pExoDebug->FlushScriptLogFile(); }
+#endif
     CSWSRoom* pRoom = GetRoom(vFrom, NULL);
-
     if (DumpRoomBBox)
     {
+#ifdef _XBOX
+        g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory); g_pExoBase->m_pExoDebug->FlushScriptLogFile();
+#endif
         DumpRoomBBox = 0;
     }
-
     float fMinHeight = 0.0f;
     float fMaxHeight = 0.0f;
     int nEdge;
@@ -585,20 +589,12 @@ int CSWSArea::TestDirectLine(const Vector& vStart, const Vector& vEnd,
             unsigned long oidObject = m_pPathfindInformation->m_nField_BC;
             float fObjectMinHeight = fMinHeight - AREA_DIRECT_LINE_OBJECT_HEIGHT_RANGE;
             float fObjectMaxHeight = fMaxHeight + AREA_DIRECT_LINE_OBJECT_HEIGHT_RANGE;
-            if (!NoNonWalkPolysDetailed(
-                    vClippedStart, vClippedEnd,
-                    fObjectMinHeight, fObjectMaxHeight, fRadius,
-                    oidObject, oidHit,
-                    0, NULL, 0, pWalkHitInfo, 0))
+            if (!NoNonWalkPolysDetailed(vClippedStart, vClippedEnd, fObjectMinHeight, fObjectMaxHeight, fRadius, oidObject, oidHit, 0, NULL, 0, pWalkHitInfo, 0))
             {
                 nResult = DIRECT_LINE_BLOCKED_OBJECT;
                 break;
             }
-            if (m_pPathfindInformation == NULL ||
-                (!m_pPathfindInformation->m_nField_210 &&
-                 (!(fRadius > 0.0f) || !NoCreaturesOnLine(
-                     vClippedStart, vClippedEnd, m_pPathfindInformation,
-                     1, 0, NULL, 1, pWalkHitInfo))))
+            if (m_pPathfindInformation == NULL || (!m_pPathfindInformation->m_nField_210 && (!(fRadius > 0.0f) || !NoCreaturesOnLine(vClippedStart, vClippedEnd, m_pPathfindInformation, 1, 0, NULL, 1, pWalkHitInfo))))
             {
                 nResult = DIRECT_LINE_BLOCKED_CREATURE;
                 break;
@@ -620,6 +616,10 @@ int CSWSArea::TestDirectLine(const Vector& vStart, const Vector& vEnd,
                 else
                 {
                     equal(vClippedStart, vClippedEnd);
+#ifdef _XBOX
+                    CSWSRoom* pNextRoom = &m_pRooms[nRoom]; CResRef cNextRoom = pNextRoom->m_cResRef; CResRef cRoom = pRoom->m_cResRef;
+                    if (cRoom != cNextRoom) {}
+#endif
                     pRoom = &m_pRooms[nRoom];
                     vFrom = vClippedEnd;
                 }
@@ -3086,3 +3086,55 @@ int CSWSArea::NoCreaturesOnLine(const Vector& vStart, const Vector& vEnd,
     }
     return 1;
 }
+
+#ifdef _XBOX
+// PC 0x004BB8B0  Xbox 0x0018D8F0
+int CSWSArea::CountVisibleToPlayers(const Vector& vPosition, int nMaxCount)
+{
+    unsigned long oidObject;
+    int nCount = 0;
+    int nLimit = nMaxCount;
+
+    if (GetFirstObjectInArea(oidObject) == 1)
+    {
+        Vector vStart = vPosition;
+        do
+        {
+            if (nCount >= nLimit)
+            {
+                break;
+            }
+            CGameObject* pObject;
+            CServerExoApp* pExoApp = g_pAppManager->m_pServerExoApp;
+            if (pExoApp->GetObjectArray()->GetGameObject(oidObject, &pObject) ==
+                    CGameObjectArray::SUCCESS &&
+                pObject->AsSWSCreature() != NULL)
+            {
+                unsigned long oidOwner = m_nId;
+                CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+                if (pServer->GetClientObjectByObjectId(oidOwner) != NULL)
+                {
+                    Vector vEnd = pObject->AsSWSCreature()->m_vPosition;
+                    float fX = vStart.m_fX - vEnd.m_fX;
+                    float fY = vStart.m_fY - vEnd.m_fY;
+                    float fZ = vStart.m_fZ - vEnd.m_fZ;
+                    if (fX * fX + fY * fY + fZ * fZ <= 900.0f)
+                    {
+                        Vector vHit;
+                        vStart.m_fZ += 1.5f;
+                        vEnd.m_fZ += 1.5f;
+                        unsigned long oidHit;
+                        if (ClearLineOfSight(vStart, vEnd, &vHit, &oidHit,
+                                             OBJECT_INVALID, OBJECT_INVALID, 0, 0) == 1)
+                        {
+                            nCount++;
+                        }
+                    }
+                }
+            }
+        } while (GetNextObjectInArea(oidObject) == 1);
+        return nCount;
+    }
+    return nCount;
+}
+#endif

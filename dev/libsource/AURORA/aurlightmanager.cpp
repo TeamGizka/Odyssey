@@ -87,14 +87,6 @@ int lightcmp(const void* pFirst, const void* pSecond)
         return 1;
     return pLight2 < pLight1 ? 1 : -1;
 }
-
-#ifdef _XBOX
-
-static inline Vector AurLightScale(const Vector& vector, float fScale)
-{
-    return Vector(vector.m_fX * fScale, vector.m_fY * fScale, vector.m_fZ * fScale);
-}
-#endif
 // PC 0x004A2A00  Xbox 0x002F3B50
 void SetLightGL(int nLight, const Vector& vPosition, const Vector& vColor,
                 const float& fRadius, const int& bAmbientOnly)
@@ -193,7 +185,7 @@ void LightManager::EnableHighestPriorityLights(int nMaxLights)
             GLRender_EnableLight(i + 1);
 #ifdef _XBOX
             PartLight*& pLight = m_lstEnabledLights[i];
-            Vector vColor = AurLightScale(pLight->m_vColor, pLight->m_fColorMultiplier);
+            Vector vColor = pLight->m_vColor * pLight->m_fColorMultiplier;
             SetLightGL(i, pLight->m_vWorldPosition, vColor,
                        pLight->m_fRadius,
                        pLight->m_bAmbientOnly);
@@ -1087,7 +1079,12 @@ int LightManager::DisableThisLight(PartLight* pLight)
         lstLights = m_lstEnabledLights;
     if (!lstLights.Contains(pLight))
         return 0;
+#ifdef _XBOX
+    int nLight = lstLights.IndexOf(pLight);
+    GLRender_DisableLight(nLight + 1);
+#else
     GLRender_DisableLight(lstLights.IndexOf(pLight) + 1);
+#endif
     return 1;
 }
 // PC 0x004A4FF0  Xbox 0x002F4F60
@@ -1168,9 +1165,9 @@ void LightManager::SetUpVertexProgramLightShaderConstants(int nLights,
             float fMultiplier = bWorldSpace ? 1.0f : lstLights[i]->m_fMultiplier;
 #ifdef _XBOX
             if (lstLights[i]->m_bAmbientOnly)
-                vAmbient = AurLightScale(lstLights[i]->m_vColor, fMultiplier);
+                vAmbient = lstLights[i]->m_vColor * fMultiplier;
             else
-                vDiffuse = AurLightScale(lstLights[i]->m_vColor, fMultiplier);
+                vDiffuse = lstLights[i]->m_vColor * fMultiplier;
 #else
             if (lstLights[i]->m_bAmbientOnly)
                 vAmbient = fMultiplier * lstLights[i]->m_vColor;
@@ -1339,3 +1336,71 @@ void LightManager::DebugPrintLightInfo(int nMaxLights, Vector vPosition)
 }
 #endif
 
+#ifdef _XBOX
+// Xbox 0x002F2900
+void AurSetHeadLightProperties(Vector vDiffuse, Vector vAmbient)
+{
+    headlightdiffuse = vDiffuse;
+    headlightambient = vAmbient;
+}
+// Xbox 0x002F2940
+char* enableheadlight(char* sArguments)
+{
+    AurEnableHeadLight();
+    return "Success";
+}
+// Xbox 0x002F2950
+char* disableheadlight(char* sArguments)
+{
+    AurDisableHeadLight();
+    return "Success";
+}
+// Xbox 0x002F2960
+char* setheadlightproperties(char* sArguments)
+{
+    Vector vDiffuse(0.0f, 0.0f, 0.0f);
+    Vector vAmbient(0.0f, 0.0f, 0.0f);
+
+    if (sscanf(sArguments, "%f %f %f %f %f %f", &vDiffuse.m_fX, &vDiffuse.m_fY, &vDiffuse.m_fZ, &vAmbient.m_fX,
+               &vAmbient.m_fY, &vAmbient.m_fZ) != 6)
+    {
+        return "Usage: setheadlightproperties <diffuse rgb> <ambient rgb>";
+    }
+    AurSetHeadLightProperties(vDiffuse, vAmbient);
+    return "Success";
+}
+// Xbox 0x002F3770
+void LightManager::SetMaxLights(int nMaxLights)
+{
+    m_nMaxLights = nMaxLights;
+}
+// Xbox 0x002F3780
+void LightManager::SetMaxShadowLights(int nMaxShadowLights)
+{
+    m_nMaxShadowLights = nMaxShadowLights;
+}
+// Xbox 0x002F3790
+char* numbershadowlights(char* sArguments)
+{
+    int nLights;
+
+    if (sscanf(sArguments, "%d", &nLights) != 1)
+    {
+        return "usage: numbershadowlights x";
+    }
+    LightManager::SetMaxShadowLights(nLights);
+    return "Success.";
+}
+// Xbox 0x002F37D0
+char* setmaxlights(char* sArguments)
+{
+    int nLights;
+
+    if (sscanf(sArguments, "%d", &nLights) != 1)
+    {
+        return "Usage: setmaxlights <maxlights>";
+    }
+    LightManager::SetMaxLights(nLights);
+    return "Success";
+}
+#endif

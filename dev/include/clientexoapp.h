@@ -302,9 +302,11 @@ public:
     void SetEventDescriptions();
     int Initialize();
     int Uninitialize();
+#ifndef _XBOX
     int StartServices(int nServices, const CExoString& sArg2,
                       const CExoString& sArg3, const CExoString& sArg4,
                       unsigned long nArg5);
+#endif
     void StopServices();
     void SetLoadStep(int nStep, unsigned char cValue);
     void SetLoadBarProgress(int nProgress, int bUpdateHint);
@@ -312,6 +314,7 @@ public:
     void DisplayMainMenu(int bUnknown);
 #ifdef _XBOX
 
+    void StartServices(int nServices, const CExoString& sArg2, const CExoString& sArg3, const CExoString& sArg4, unsigned long nArg5);
     void DisplayStartScreen();
     void ShutDownLegalScreen();
 #endif
@@ -448,6 +451,9 @@ public:
     int GetTargetChanging();
     int GetTogglePauseAtEndOfFrame();
     void BusyWaitMuteSound();
+#ifdef _XBOX
+    void SetMissingFilePending(int bPending);
+#endif
     int GetPazaakIsRunning();
     void SetCharacterChangeInProgress(int bInProgress);
     void FadeAndStopStreamingSoundSource(CExoStreamingSoundSource* pSource,

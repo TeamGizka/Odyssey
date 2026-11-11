@@ -53,7 +53,7 @@ extern D3DBaseTexture* g_pCurrentTexture;
 extern DWORD g_hGrassVertexShader;
 extern int g_bConvolutionSetUp;
 extern DWORD g_hConvolutionVertexShader;
-extern float g_fConvolutionAlpha;
+extern float multiplier;
 extern float g_afConvolutionWeights[25];
 
 extern int totalvertexpool;
@@ -690,7 +690,7 @@ extern int g_nColorMaterialMode;
 extern unsigned short g_nClientState;
 extern int g_bCustomVertexShader;
 extern float g_fBrightness;
-extern float g_fContrast;
+extern float aquadraticterm;
 extern D3DTexture* g_pFrameTexture;
 extern bool g_bFrameTextureReleased;
 extern int g_bFrameBufferModeChanged;

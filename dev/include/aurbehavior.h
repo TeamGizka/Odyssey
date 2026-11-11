@@ -130,9 +130,12 @@ class CAurBehaviorNavigate : public CAurBehavior
 {
 public:
     CAurBehaviorNavigate(CAurObject* pObject);
+#ifdef _XBOX
+    virtual ~CAurBehaviorNavigate();
+#endif
     virtual int Control(float fTimeStep);
     virtual void Message(char* sMessage);
-    virtual int GetType()
+    virtual int GetType()  // Xbox 0x002C0200
     {
         return 1004;
     }

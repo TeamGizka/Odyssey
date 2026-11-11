@@ -7,7 +7,7 @@ CResMDX::CResMDX()
     m_pMDXData = 0;
     m_bAllocPrefix = 1;
 }
-// PC 0x00710E40
+// PC 0x00710E40  Xbox 0x002FB090
 CResMDX::~CResMDX()
 {
 }

@@ -16,18 +16,18 @@ static inline void SwguiingameareatransitionTrace1();
 CSWGuiInGameAreaTransition::CSWGuiInGameAreaTransition(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-    {
-        CResRef cLayout("areatransition");
-        StartLoadFromLayout(cLayout);
-    }
+#ifndef _XBOX
+    { CResRef cLayout("areatransition"); StartLoadFromLayout(cLayout); }
+#else
+    StartLoadFromLayout("areatransition");
+#endif
     InitControl(m_lblTextBackground, "LBL_TEXTBG", 1);
     InitControl(m_lblIcon, "LBL_ICON", 1);
     InitControl(m_lblDescription, "LBL_DESCRIPTION", 1);
     StopLoadFromLayout();
 
     m_oidTransitionObject = OBJECT_INVALID;
-    m_bCenterHorizontal = 1;
-    m_bCenterVertical = 0;
+    m_bCenterHorizontal = 1; m_bCenterVertical = 0;
     m_nDefaultTop = m_cExtent.m_nTop;
 }
 // PC 0x006C7EC0  Xbox 0x000F47B0

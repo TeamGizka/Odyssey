@@ -491,9 +491,13 @@ public:
     enum { CAMERA_TURN_INPUT = 0x11C, CAMERA_SCROLL_PIXELS = 40,
            CAMERA_EDGE_MIN_PIXELS = 2, CAPTURE_EVENTS_RECORD = 1 };
     void AddDownloadedResources();
+#ifndef _XBOX
     int StartServices(int nServices, const CExoString& sArg2,
                       const CExoString& sArg3, const CExoString& sArg4,
                       unsigned long nArg5);
+#else
+    void StartServices(int nServices, const CExoString& sArg2, const CExoString& sArg3, const CExoString& sArg4, unsigned long nArg5);
+#endif
     void SetEventDescriptions();
     void StopServices();
 
@@ -535,7 +539,6 @@ public:
     int GetLoadBarState();
     void EndLoadBar();
     void RestartMoviesIfNecessary();
-
     void StartMenuMusic(int bCultTheme, int nVolume, int nPriorityGroup);
 
     enum { MENU_MUSIC_VOLUME = 127, MENU_MUSIC_PRIORITY_GROUP = 2 };
@@ -614,6 +617,11 @@ public:
     int GetClientMeleeAnimation(unsigned long nA, unsigned long nB,
                                 unsigned short nC, int nD, int nE, int nF);
     void SetLoadScreenByModuleName(const CExoString& sModule);
+#ifdef _XBOX
+
+    void MountDownloadedContent(int bRemove, int bShowProgress);
+    void AddCorruptContentMessage();
+#endif
 #ifdef _XBOX
     void SetLoadMusic(const CExoString& sMusic) { m_sLoadMusic = sMusic; }
 #else
@@ -1041,25 +1049,12 @@ public:
 
     int m_nXboxUnmapped468;
     unsigned char m_aXboxUnmapped46C[4];
-    int m_bCharacterChangeInProgress;
-    int m_bEvilEndingHackInProgress;
-    unsigned long m_oidLastClickedOnTarget;
-    int m_bMineSighted;
-    int m_bTogglePause;
-    SAutoPauseFlags m_AutoPauseFlags;
-    unsigned char m_nDelayedAutoPauseType;
-    float m_fMineSightedTime;
+
     int m_nMouseX;
     int m_nMouseY;
-    int m_nUnknown3D0;
-    int m_nUnknown3D4;
     int m_nMouseHidden;
     float m_fMouseHideTime;
-    unsigned long m_oidMouseOverTarget;
-    Vector m_vMouseOverPosition;
-    int m_bCreditSequenceInProgress;
-    int m_bAllowHighMonitorFrequency;
-    int m_nSoundPausedByCombat;
+
 #endif
 };
 

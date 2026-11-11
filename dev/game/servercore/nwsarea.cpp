@@ -2100,7 +2100,11 @@ void CSWSArea::SaveGIT(CERFFile* pERFFile, const CExoString& sName,
     CGameObject* pGameObject;
 
     CResGFF* pRes = new CResGFF;
+#ifdef _XBOX
+    CResStruct* pStruct = new CResStruct();
+#else
     CResStruct* pStruct = new CResStruct;
+#endif
     pRes->CreateGFFFile(pStruct, "GIT ", "V2.0");
 
     while (i < m_lstObjectIds.num)
@@ -2264,7 +2268,8 @@ int CSWSArea::PositionWalkable(Vector vPosition)
     }
     return 0;
 }
-
+#ifndef _XBOX
+// Xbox 0x001CB550
 int CSWSArea::TestPathPoint(float fPersonalSpace, int bVerbose)
 {
     int bFailed = FALSE;
@@ -2302,8 +2307,8 @@ int CSWSArea::TestPathPoint(float fPersonalSpace, int bVerbose)
     }
     return bFailed;
 }
-// PC 0x005064D0  Xbox 0x001CB390
-int CSWSArea::GetDoorCrossed(const Vector& vStart, const Vector& vEnd)
+#endif
+int CSWSArea::GetDoorCrossed(const Vector& vStart, const Vector& vEnd)  // PC 0x005064D0  Xbox 0x001CB390
 {
     Vector vRaisedStart = vStart;
     Vector vRaisedEnd = vEnd;
@@ -3620,3 +3625,72 @@ static inline void NwsareaSync2()
 static inline void NwsareaSync1()
 {
 }
+
+#ifdef _XBOX
+// Xbox 0x001CB550
+int CSWSArea::TestPathPoint(float fPersonalSpace, int bVerbose)
+{
+    int bFailed = FALSE;
+
+    for (unsigned long nPoint = 0; nPoint < (unsigned long)m_nPathPointCount; nPoint++)
+    {
+        Vector vPoint(m_pPathPoints[nPoint].m_fX, m_pPathPoints[nPoint].m_fY, 0.0f);
+        ComputeHeight(vPoint, 1, NULL);
+        if (m_pPathPoints[nPoint].m_nFirstConnection + m_pPathPoints[nPoint].m_nConnectionCount == 0)
+            bFailed = TRUE;
+
+        for (unsigned long nConnection = m_pPathPoints[nPoint].m_nFirstConnection;
+             nConnection < (unsigned long)(m_pPathPoints[nPoint].m_nFirstConnection + m_pPathPoints[nPoint].m_nConnectionCount);
+             nConnection++)
+        {
+            Vector vStart(m_pPathPoints[nPoint].m_fX, m_pPathPoints[nPoint].m_fY, 0.0f);
+            Vector vEnd(m_pPathPoints[m_pPathConnections[nConnection]].m_fX,
+                        m_pPathPoints[m_pPathConnections[nConnection]].m_fY, 0.0f);
+            vStart.m_fZ = ComputeHeight(vStart, 1, NULL);
+            vEnd.m_fZ = ComputeHeight(vEnd, 1, NULL);
+            if (nPoint > (unsigned long)m_pPathConnections[nConnection])
+            {
+                vStart.m_fZ += AREA_PATH_POINT_TEST_HEIGHT;
+                vEnd.m_fZ += AREA_PATH_POINT_TEST_HEIGHT;
+            }
+
+            int nResult = TestDirectLine(vStart, vEnd, fPersonalSpace, 0.0f, 1, NULL);
+            Vector vPerpendicular = normalize(cross(Vector(0.0f, 0.0f, 1.0f), vEnd - vStart));
+            Vector vDirection = normalize(vEnd - vStart);
+            if (nResult != DIRECT_LINE_CLEAR && nResult != DIRECT_LINE_BLOCKED_CREATURE)
+            {
+                g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory);
+                g_pExoBase->m_pExoDebug->FlushScriptLogFile();
+                AurPostString("Invalid Path Point conections found, details in error log.", 0, 13, 100.0f);
+                bFailed = TRUE;
+            }
+        }
+    }
+    return bFailed;
+}
+
+#include "aurconsole.h"
+void AurRemoveAllDrawableSquares();
+// Xbox 0x001CB810
+static char* TestPathPoints(char* szArgs)
+{
+    int nLength = strlen(szArgs);
+    if (nLength == 0)
+    {
+        return "USAGE: <Personal Space>";
+    }
+    g_pAppManager->m_pServerExoApp->GetModule()->TestPathPoints(szArgs);
+    return "SUSSESS";
+}
+// Xbox 0x001CB860
+static char* ClearPathPoints(char* szArgs)
+{
+    AurRemoveAllDrawableSquares();
+    return "SUSSESS";
+}
+
+ConsoleFunc ConVg_nBSPWidth("g_nBSPWidth", &g_nBSPWidth);
+ConsoleFunc ConVg_nBSPHeight("g_nBSPHeight", &g_nBSPHeight);
+ConsoleFunc ConFTestPathPoints("TestPathPoints", TestPathPoints);
+ConsoleFunc ConFClearPathPoints("ClearPathPoints", ClearPathPoints);
+#endif

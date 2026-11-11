@@ -382,6 +382,9 @@ public:
     {
         return m_nMinutesPerHour;
     }
+#ifdef _XBOX
+    void TestPathPoints(char* szArgs);
+#endif
 };
 
 #endif

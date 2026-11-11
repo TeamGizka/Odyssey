@@ -92,9 +92,34 @@ void CSWGuiOptionsSound::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006DDC80
+// PC 0x006DDC80  Xbox 0x00118320
 void CSWGuiOptionsSound::SetDescription(unsigned long nStrRef)
 {
+#ifdef _XBOX
+    CSWGuiTextParams* pParams = &m_lblDescription.m_cText.m_cParams;
+    pParams->SetStrRef(nStrRef);
+    CExoString sText(pParams->m_sText);
+    CSWGuiListBox* pListBox = &m_lbDescription;
+    pListBox->ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sText.GetLength() > 0)
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    m_lblDescription.SetExtent(cExtent);
+    CSWGuiControl* pControl = &m_lblDescription;
+    pListBox->AddControls(&pControl, 1, 0, 0, 0);
+    pListBox->SetSelectedControl(&m_lblDescription, 0);
+    int bShowScrollIcon = pListBox->m_nContentHeight + pListBox->m_nPadding >
+                              pListBox->m_cItemExtent.m_nHeight &&
+                          pListBox->m_lItems.num > 0 &&
+                          pListBox->m_bHideScrollIcon == 0;
+    m_lblRAnalog.m_bEnabled = bShowScrollIcon;
+#else
     m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
     CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
     m_lbDescription.ClearItems();
@@ -111,6 +136,7 @@ void CSWGuiOptionsSound::SetDescription(unsigned long nStrRef)
     CSWGuiControl* pControl = &m_lblDescription;
     m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
+#endif
 }
 // PC 0x006DDD70
 void CSWGuiOptionsSoundAdvanced::SetEAXText()
@@ -157,7 +183,7 @@ void CSWGuiOptionsSoundAdvanced::SetEAXText()
         pRight->m_bEnabled = 0;
     }
 }
-// PC 0x006DDE50  Xbox 0x00118320
+// PC 0x006DDE50
 void CSWGuiOptionsSoundAdvanced::SetDescription(unsigned long nStrRef)
 {
     m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
@@ -317,9 +343,34 @@ void CSWGuiOptionsMain::ClosePanel()
 {
     g_pAppManager->m_pClientExoApp->SaveOptions();
 }
-// PC 0x006DE340
+// PC 0x006DE340  Xbox 0x00117B70
 void CSWGuiOptionsMain::SetDescription(unsigned long nStrRef)
 {
+#ifdef _XBOX
+    CSWGuiTextParams* pParams = &m_lblDescription.m_cText.m_cParams;
+    pParams->SetStrRef(nStrRef);
+    CExoString sText(pParams->m_sText);
+    CSWGuiListBox* pListBox = &m_lbDescription;
+    pListBox->ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sText.GetLength() > 0)
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    m_lblDescription.SetExtent(cExtent);
+    CSWGuiControl* pControl = &m_lblDescription;
+    pListBox->AddControls(&pControl, 1, 0, 0, 0);
+    pListBox->SetSelectedControl(&m_lblDescription, 0);
+    int bShowScrollIcon = pListBox->m_nContentHeight + pListBox->m_nPadding >
+                              pListBox->m_cItemExtent.m_nHeight &&
+                          pListBox->m_lItems.num > 0 &&
+                          pListBox->m_bHideScrollIcon == 0;
+    m_lblRAnalog.m_bEnabled = bShowScrollIcon;
+#else
     m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
     CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
     m_lbDescription.ClearItems();
@@ -336,6 +387,7 @@ void CSWGuiOptionsMain::SetDescription(unsigned long nStrRef)
     CSWGuiControl* pControl = &m_lblDescription;
     m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
+#endif
 }
 // PC 0x006DE430
 void CSWGuiOptionsFeedback::HandleInputEvent(int nEvent, int nState)
@@ -362,17 +414,19 @@ void CSWGuiOptionsFeedback::HandleInputEvent(int nEvent, int nState)
                     !pToggle->m_bToggled);
             }
             break;
+#ifndef _XBOX
         case 57:
             m_lbDescription.HandleInputEvent(GUIEVENT_UP, 1);
             break;
         case 58:
             m_lbDescription.HandleInputEvent(GUIEVENT_DOWN, 1);
             break;
+#endif
         }
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006DE550
+// PC 0x006DE550  Xbox 0x00117CB0
 void CSWGuiOptionsFeedback::OnHide(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -384,7 +438,7 @@ void CSWGuiOptionsFeedback::OnHide(CSWGuiControl* pControl)
         pOptions->m_bHideUnequippable = bHide;
     }
 }
-// PC 0x006DE5A0
+// PC 0x006DE5A0  Xbox 0x00117D00
 void CSWGuiOptionsFeedback::OnTutorial(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -396,7 +450,7 @@ void CSWGuiOptionsFeedback::OnTutorial(CSWGuiControl* pControl)
         pOptions->m_bTutorialPopups = bTutorial;
     }
 }
-// PC 0x006DE5F0
+// PC 0x006DE5F0  Xbox 0x00117D50
 void CSWGuiOptionsFeedback::OnSubtitles(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -409,7 +463,7 @@ void CSWGuiOptionsFeedback::OnSubtitles(CSWGuiControl* pControl)
         pOptions->m_bSubtitles = bSubtitles;
     }
 }
-// PC 0x006DE640
+// PC 0x006DE640  Xbox 0x00117DA0
 void CSWGuiOptionsFeedback::OnMiniMap(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -423,19 +477,27 @@ void CSWGuiOptionsFeedback::OnMiniMap(CSWGuiControl* pControl)
         g_pAppManager->m_pClientExoApp->GetInGameGui()->InitializeMap();
     }
 }
-// PC 0x006DE6A0
+// PC 0x006DE6A0  Xbox 0x00117E50
 void CSWGuiOptionsFeedback::OnFloaty(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
     {
+#ifdef _XBOX
+        int bFloaty = (g_pAppManager->m_pClientExoApp->GetClientOptions()
+                           ->m_nXboxUnmappedBit26 == 0);
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->m_nXboxUnmappedBit26 = bFloaty;
+#else
         int bFloaty = (g_pAppManager->m_pClientExoApp->GetClientOptions()
                            ->m_bFloatingNumbers == 0);
         CClientOptions* pOptions =
             g_pAppManager->m_pClientExoApp->GetClientOptions();
         pOptions->m_bFloatingNumbers = bFloaty;
+#endif
     }
 }
-// PC 0x006DE6F0
+// PC 0x006DE6F0  Xbox 0x00117EA0
 void CSWGuiOptionsFeedback::OnSummary(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -480,6 +542,29 @@ void CSWGuiOptionsFeedback::SetUpOptions()
         g_pAppManager->m_pClientExoApp->GetClientOptions();
     if (pOptions != 0)
     {
+#ifdef _XBOX
+        unsigned int bHide = pOptions->m_bHideUnequippable;
+        CSWGuiButtonToggle* pToggle0 = m_aCheckboxes[0].AsButtonToggle();
+        pToggle0->m_bToggled = bHide;
+        unsigned int bTutorial = pOptions->m_bTutorialPopups;
+        CSWGuiButtonToggle* pToggle1 = m_aCheckboxes[1].AsButtonToggle();
+        pToggle1->m_bToggled = bTutorial;
+        unsigned int bSubtitles = pOptions->m_bSubtitles;
+        CSWGuiButtonToggle* pToggle2 = m_aCheckboxes[2].AsButtonToggle();
+        pToggle2->m_bToggled = bSubtitles;
+        unsigned int bMiniMap = pOptions->m_bMiniMap;
+        CSWGuiButtonToggle* pToggle3 = m_aCheckboxes[3].AsButtonToggle();
+        pToggle3->m_bToggled = bMiniMap;
+        unsigned int bFloaty = pOptions->m_nXboxUnmappedBit26;
+        CSWGuiButtonToggle* pToggle5 = m_aCheckboxes[5].AsButtonToggle();
+        pToggle5->m_bToggled = bFloaty;
+        unsigned int bRumble = pOptions->m_bFloatingNumbers;
+        CSWGuiButtonToggle* pToggle4 = m_aCheckboxes[4].AsButtonToggle();
+        pToggle4->m_bToggled = bRumble;
+        unsigned int bSummary = pOptions->m_bStatusSummary;
+        CSWGuiButtonToggle* pToggle6 = m_aCheckboxes[6].AsButtonToggle();
+        pToggle6->m_bToggled = bSummary;
+#else
         CSWGuiControl* pControl;
         CSWGuiButtonToggle* pToggle;
         int bValue;
@@ -519,11 +604,37 @@ void CSWGuiOptionsFeedback::SetUpOptions()
         bValue = (pOptions->m_bEnableTooltips != 0);
         pToggle = pControl->AsButtonToggle();
         pToggle->m_bToggled = bValue;
+#endif
     }
 }
-// PC 0x006DE9B0
+// PC 0x006DE9B0  Xbox 0x00117EF0
 void CSWGuiOptionsFeedback::SetDescription(unsigned long nStrRef)
 {
+#ifdef _XBOX
+    CSWGuiTextParams* pParams = &m_lblDescription.m_cText.m_cParams;
+    pParams->SetStrRef(nStrRef);
+    CExoString sText(pParams->m_sText);
+    CSWGuiListBox* pListBox = &m_lbDescription;
+    pListBox->ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sText.GetLength() > 0)
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    m_lblDescription.SetExtent(cExtent);
+    CSWGuiControl* pControl = &m_lblDescription;
+    pListBox->AddControls(&pControl, 1, 0, 0, 0);
+    pListBox->SetSelectedControl(&m_lblDescription, 0);
+    int bShowScrollIcon = pListBox->m_nContentHeight + pListBox->m_nPadding >
+                              pListBox->m_cItemExtent.m_nHeight &&
+                          pListBox->m_lItems.num > 0 &&
+                          pListBox->m_bHideScrollIcon == 0;
+    m_lblRAnalog.m_bEnabled = bShowScrollIcon;
+#else
     m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
     CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
     m_lbDescription.ClearItems();
@@ -540,6 +651,7 @@ void CSWGuiOptionsFeedback::SetDescription(unsigned long nStrRef)
     CSWGuiControl* pControl = &m_lblDescription;
     m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
+#endif
 }
 // PC 0x006DEAA0
 void CSWGuiOptionsFeedback::OnEnableToolTips(CSWGuiControl* pControl)
@@ -624,7 +736,7 @@ void CSWGuiOptionsMouse::OnPanelAdded()
 {
     CSWGuiPanel::OnPanelAdded();
 }
-// PC 0x006DED90
+// PC 0x006DED90  Xbox 0x001181E0
 void CSWGuiOptionsSound::OnExitSlider(CSWGuiControl* pControl)
 {
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
@@ -1134,7 +1246,11 @@ void CSWGuiOptionsSound::OnMoveVolumeSlider(CSWGuiControl* pControl)
 {
     int nMax = pControl->AsSlider()->m_nMaxValue;
     int nValue = pControl->AsSlider()->m_nCurValue;
+#ifdef _XBOX
+    float fVolume = (float)nValue / (float)nMax;
+#else
     float fVolume = (double)nValue / (double)nMax;
+#endif
     if (pControl == &m_sldMusic)
     {
         g_pExoSound->SetMusicVolume(fVolume, 0);
@@ -1159,22 +1275,89 @@ void CSWGuiOptionsSound::OnMoveVolumeSlider(CSWGuiControl* pControl)
             nValue;
     }
 }
-// PC 0x006DFAA0
+// PC 0x006DFAA0  Xbox 0x00118800
 void CSWGuiOptionsSound::OnEnterSlider(CSWGuiControl* pControl)
 {
+#ifdef _XBOX
+    int bSlider = 0;
+    if (pControl == &m_sldGamma)
+    {
+        SetDescription(42310);
+        bSlider = 1;
+    }
+    else if (pControl == &m_sldMusic)
+    {
+        SetDescription(42311);
+        bSlider = 1;
+    }
+    else if (pControl == &m_sldVoice)
+    {
+        SetDescription(42312);
+        bSlider = 1;
+    }
+    else if (pControl == &m_sldEffects)
+    {
+        SetDescription(42313);
+        bSlider = 1;
+    }
+    else if (pControl == &m_sldMovie)
+    {
+        SetDescription(47921);
+        bSlider = 1;
+    }
+    m_lblY.SetEnabledFlag(bSlider);
+    m_lblDefault.SetEnabledFlag(bSlider);
+#else
     SetDescription(pControl->m_nIndex);
+#endif
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
     pParams->m_bPulsing = 1;
 }
-// PC 0x006E0F50
+// PC 0x006E0F50  Xbox 0x00118200
 void CSWGuiOptionsSound::OnDefault(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
     {
+#ifdef _XBOX
+        m_pManager->PlayGuiSound(pControl->m_nClickSound);
+        CSWGuiControl* pSlider = &m_sldGamma;
+        if (pControl == pSlider)
+        {
+            g_pAppManager->GetClientExoApp()->GetClientOptions()->SetDefaultVideoOptions();
+            pSlider->AsSlider()->SetCurValue(
+                g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nBrightness);
+            g_pAurora->ResetGammaRamp(
+                g_pAppManager->GetClientExoApp()->GetClientOptions()->GetGammaSetting(), 0);
+            return;
+        }
+        if (pControl == (pSlider = &m_sldMusic))
+        {
+            g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nMusicVolume = 85;
+        }
+        else if (pControl == (pSlider = &m_sldVoice))
+        {
+            g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nVoiceVolume = 85;
+        }
+        else if (pControl == (pSlider = &m_sldEffects))
+        {
+            g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nSoundEffectsVolume = 85;
+        }
+        else if (pControl == (pSlider = &m_sldMovie))
+        {
+            g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nMovieVolume = 85;
+        }
+        else
+        {
+            return;
+        }
+        pSlider->AsSlider()->SetCurValue(85);
+        OnMoveVolumeSlider(pSlider);
+#else
         CClientOptions* pOptions =
             g_pAppManager->m_pClientExoApp->GetClientOptions();
         pOptions->SetDefaultSoundOptions();
         SetUpOptions();
+#endif
     }
 }
 // PC 0x006DFAD0
@@ -1389,10 +1572,92 @@ void CSWGuiOptionsMouse::OnDefault(CSWGuiControl* pControl)
         SetUpOptions();
     }
 }
-// PC 0x006E2A70
+// PC 0x006E2A70  Xbox 0x00119380
 CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
+#ifdef _XBOX
+    StartLoadFromLayout("optfeedback");
+    InitControl(m_aCheckboxes[0], "CB_HIDE", 1);
+    InitControl(m_aCheckboxes[1], "CB_TUTORIAL", 1);
+    InitControl(m_aCheckboxes[2], "CB_SUBTITLES", 1);
+    InitControl(m_aCheckboxes[3], "CB_MINIMAP", 1);
+    InitControl(m_aCheckboxes[4], "CB_RUMBLE", 1);
+    InitControl(m_aCheckboxes[5], "CB_FLOATY", 1);
+    InitControl(m_aCheckboxes[6], "CB_SUMMARY", 1);
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblSelect, "LBL_SELECT", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblBack, "LBL_BACK", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    StopLoadFromLayout();
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    m_aCheckboxes[0].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnHide);
+    m_aCheckboxes[1].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnTutorial);
+    m_aCheckboxes[2].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSubtitles);
+    m_aCheckboxes[3].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnMiniMap);
+    m_aCheckboxes[4].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnRumble);
+    m_aCheckboxes[5].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnFloaty);
+    m_aCheckboxes[6].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSummary);
+    m_aCheckboxes[0].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnHide);
+    m_aCheckboxes[1].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnTutorial);
+    m_aCheckboxes[2].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSubtitles);
+    m_aCheckboxes[3].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnMiniMap);
+    m_aCheckboxes[4].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnRumble);
+    m_aCheckboxes[5].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnFloaty);
+    m_aCheckboxes[6].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSummary);
+    for (int i = 0; i < 7; i++)
+    {
+        m_aCheckboxes[i].AddEvent(
+            0, this, (CSWGuiHandler)&CSWGuiOptionsFeedback::OnEnterSlot);
+    }
+    CSWGuiPanel* pPanel = this;
+    pPanel->SetActiveControl(&m_aCheckboxes[0], 0);
+    CClientOptions* pOptions =
+        g_pAppManager->m_pClientExoApp->GetClientOptions();
+    if (pOptions != 0)
+    {
+        unsigned int bHide = pOptions->m_bHideUnequippable;
+        CSWGuiButtonToggle* pToggle0 = m_aCheckboxes[0].AsButtonToggle();
+        pToggle0->m_bToggled = bHide;
+        unsigned int bTutorial = pOptions->m_bTutorialPopups;
+        CSWGuiButtonToggle* pToggle1 = m_aCheckboxes[1].AsButtonToggle();
+        pToggle1->m_bToggled = bTutorial;
+        unsigned int bSubtitles = pOptions->m_bSubtitles;
+        CSWGuiButtonToggle* pToggle2 = m_aCheckboxes[2].AsButtonToggle();
+        pToggle2->m_bToggled = bSubtitles;
+        unsigned int bMiniMap = pOptions->m_bMiniMap;
+        CSWGuiButtonToggle* pToggle3 = m_aCheckboxes[3].AsButtonToggle();
+        pToggle3->m_bToggled = bMiniMap;
+        unsigned int bFloaty = pOptions->m_nXboxUnmappedBit26;
+        CSWGuiButtonToggle* pToggle5 = m_aCheckboxes[5].AsButtonToggle();
+        pToggle5->m_bToggled = bFloaty;
+        unsigned int bRumble = pOptions->m_bFloatingNumbers;
+        CSWGuiButtonToggle* pToggle4 = m_aCheckboxes[4].AsButtonToggle();
+        pToggle4->m_bToggled = bRumble;
+        unsigned int bSummary = pOptions->m_bStatusSummary;
+        CSWGuiButtonToggle* pToggle6 = m_aCheckboxes[6].AsButtonToggle();
+        pToggle6->m_bToggled = bSummary;
+    }
+#else
     StartLoadFromLayout("optfeedback");
     InitControl(m_lbOptions, "LB_OPTIONS", 1);
     InitControl(m_lblTitle, "LBL_TITLE", 1);
@@ -1416,6 +1681,7 @@ CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
     SetActiveControl(&m_lbOptions, 0);
     SetActiveButton(OPTION_HIDE_UNEQUIPPABLE);
     SetUpOptions();
+#endif
 }
 
 #ifndef _XBOX
@@ -1430,7 +1696,7 @@ void CSWGuiOptionsGraphics::OnAdvanced(CSWGuiControl* pControl)  // PC 0x006E2CF
     }
 }
 #endif
-// PC 0x006E2D70  Xbox 0x00119B40
+// PC 0x006E2D70
 void CSWGuiOptionsSound::OnAdvanced(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -1497,17 +1763,57 @@ void CSWGuiOptionsMain::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006E0010
+// PC 0x006E0010  Xbox 0x001186A0
 void CSWGuiOptionsMain::OnEnterSlot(CSWGuiControl* pControl)
 {
+#ifdef _XBOX
+    int nSlot = -1;
+    int i = 0;
+    CSWGuiButton* pButton = m_btnOptions;
+    do
+    {
+        if (nSlot != -1)
+        {
+            break;
+        }
+        if (pControl == pButton)
+        {
+            nSlot = i;
+        }
+        i++;
+        pButton++;
+    } while (i < 5);
+    switch (nSlot)
+    {
+    case 0:
+        SetDescription(42273);
+        break;
+    case 1:
+        SetDescription(42274);
+        break;
+    case 2:
+        SetDescription(42275);
+        break;
+    case 3:
+        SetDescription(42276);
+        break;
+    case 4:
+        SetDescription(42277);
+        break;
+    }
+#else
     SetDescription(pControl->m_nIndex);
+#endif
 }
-// PC 0x006E0020
-CSWGuiOptionsFeedback::~CSWGuiOptionsFeedback()
+
+#ifndef _XBOX
+CSWGuiOptionsFeedback::~CSWGuiOptionsFeedback()  // PC 0x006E0020  Xbox 0x00119A60
 {
 }
-// PC 0x006E1300
-void CSWGuiOptionsFeedback::PopulateOptionsListbox()
+#endif
+
+#ifndef _XBOX
+void CSWGuiOptionsFeedback::PopulateOptionsListbox()  // PC 0x006E1300
 {
     CSWGuiControl* pProto = m_lbOptions.m_pProtoItem;
     CExoArrayList<CSWGuiControl*> lstControls;
@@ -1611,6 +1917,7 @@ void CSWGuiOptionsFeedback::PopulateOptionsListbox()
     pList->AddControls(lstControls, 1, 1, 0);
     pList->m_bLooping = 0;
 }
+#endif
 
 #ifndef _XBOX
 void CSWGuiOptionsGraphics::OnResolution(CSWGuiControl* pControl)  // PC 0x006E1660
@@ -1738,7 +2045,7 @@ CSWGuiOptionsGraphicsAdvanced::CSWGuiOptionsGraphicsAdvanced(
     m_pGraphics = pGraphics;
 }
 #endif
-// PC 0x006E20A0  Xbox 0x00119380
+// PC 0x006E20A0
 CSWGuiOptionsSoundAdvanced::CSWGuiOptionsSoundAdvanced(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -1852,10 +2159,53 @@ void CSWGuiOptionsFeedback::OnDefault(CSWGuiControl* pControl)
         SetUpOptions();
     }
 }
-// PC 0x006E0130
+// PC 0x006E0130  Xbox 0x00118740
 void CSWGuiOptionsFeedback::OnEnterSlot(CSWGuiControl* pControl)
 {
+#ifdef _XBOX
+    int nSlot = -1;
+    int i = 0;
+    CSWGuiOptionsCheckbox* pButton = m_aCheckboxes;
+    do
+    {
+        if (nSlot != -1)
+        {
+            break;
+        }
+        if (pControl == pButton)
+        {
+            nSlot = i;
+        }
+        i++;
+        pButton++;
+    } while (i < 7);
+    switch (nSlot)
+    {
+    case 0:
+        SetDescription(42286);
+        break;
+    case 1:
+        SetDescription(42287);
+        break;
+    case 2:
+        SetDescription(42288);
+        break;
+    case 3:
+        SetDescription(42289);
+        break;
+    case 4:
+        SetDescription(42290);
+        break;
+    case 5:
+        SetDescription(42291);
+        break;
+    case 6:
+        SetDescription(42451);
+        break;
+    }
+#else
     SetDescription(pControl->m_nIndex);
+#endif
 }
 
 #ifndef _XBOX
@@ -2116,7 +2466,7 @@ void CSWGuiOptionsGraphicsAdvanced::OnAnisotropyRight(CSWGuiControl* pControl)
     }
 }
 #endif
-// PC 0x006E2DF0
+// PC 0x006E2DF0  Xbox 0x00119B40
 void CSWGuiOptionsMain::OnFeedbackOpt(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -2127,6 +2477,7 @@ void CSWGuiOptionsMain::OnFeedbackOpt(CSWGuiControl* pControl)
     }
 }
 
+#ifndef _XBOX
 void CSWGuiOptionsFeedback::SetActiveButton(int nOption)
 {
     if (nOption >= 0 && nOption < OPTION_COUNT)
@@ -2134,6 +2485,7 @@ void CSWGuiOptionsFeedback::SetActiveButton(int nOption)
         m_lbOptions.SetActiveControl(m_lbOptions.GetControl(nOption), 0);
     }
 }
+#endif
 
 #ifndef _XBOX
 CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager)  // PC 0x006E2E70
@@ -2213,6 +2565,121 @@ CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager)  // PC 0x0
 CSWGuiOptionsSound::CSWGuiOptionsSound(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
+#ifdef _XBOX
+    StartLoadFromLayout("optgraphics");
+    InitControl(m_sldGamma, "SLI_GAMMA", 1);
+    InitControl(m_sldMusic, "SLI_MUSIC", 1);
+    InitControl(m_sldVoice, "SLI_VO", 1);
+    InitControl(m_sldEffects, "SLI_FX", 1);
+    InitControl(m_sldMovie, "SLI_MOVIE", 1);
+    InitControl(m_lblGamma, "LBL_GAMMA", 1);
+    InitControl(m_lblMusic, "LBL_MUSIC", 1);
+    InitControl(m_lblVoice, "LBL_VO", 1);
+    InitControl(m_lblEffects, "LBL_FX", 1);
+    InitControl(m_lblMovie, "LBL_MOVIE", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblBack, "LBL_BACK", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lblY, "LBL_Y", 1);
+    InitControl(m_lblDefault, "LBL_DEFAULT", 1);
+    InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    StopLoadFromLayout();
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    m_sldGamma.SetCurValue(50);
+    m_sldMusic.SetCurValue(50);
+    m_sldVoice.SetCurValue(50);
+    m_sldEffects.SetCurValue(50);
+    m_sldMovie.SetCurValue(50);
+    m_sldGamma.AddEvent(0, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnEnterSlider);
+    m_sldMusic.AddEvent(0, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnEnterSlider);
+    m_sldVoice.AddEvent(0, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnEnterSlider);
+    m_sldEffects.AddEvent(0, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnEnterSlider);
+    m_sldMovie.AddEvent(0, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnEnterSlider);
+    m_sldGamma.AddEvent(1, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnExitSlider);
+    m_sldMusic.AddEvent(1, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnExitSlider);
+    m_sldVoice.AddEvent(1, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnExitSlider);
+    m_sldEffects.AddEvent(1, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnExitSlider);
+    m_sldMovie.AddEvent(1, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnExitSlider);
+    m_sldGamma.AddEvent(47, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveGammaSlider);
+    m_sldMusic.AddEvent(47, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldVoice.AddEvent(47, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldEffects.AddEvent(47, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldMovie.AddEvent(47, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldGamma.AddEvent(48, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveGammaSlider);
+    m_sldMusic.AddEvent(48, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldVoice.AddEvent(48, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldEffects.AddEvent(48, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldMovie.AddEvent(48, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldGamma.AddEvent(63, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveGammaSlider);
+    m_sldMusic.AddEvent(63, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldVoice.AddEvent(63, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldEffects.AddEvent(63, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldMovie.AddEvent(63, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldGamma.AddEvent(64, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveGammaSlider);
+    m_sldMusic.AddEvent(64, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldVoice.AddEvent(64, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldEffects.AddEvent(64, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldMovie.AddEvent(64, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldGamma.AddEvent(42, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnDefault);
+    m_sldMusic.AddEvent(42, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnDefault);
+    m_sldVoice.AddEvent(42, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnDefault);
+    m_sldEffects.AddEvent(42, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnDefault);
+    m_sldMovie.AddEvent(42, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnDefault);
+    m_sldGamma.SetCurValue(
+        g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nBrightness);
+    m_sldMusic.SetCurValue(
+        g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nMusicVolume);
+    m_sldVoice.SetCurValue(
+        g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nVoiceVolume);
+    m_sldEffects.SetCurValue(
+        g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nSoundEffectsVolume);
+    m_sldMovie.SetCurValue(
+        g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nMovieVolume);
+    OnMoveGammaSlider(&m_sldGamma);
+    OnMoveVolumeSlider(&m_sldMusic);
+    OnMoveVolumeSlider(&m_sldVoice);
+    OnMoveVolumeSlider(&m_sldEffects);
+    OnMoveVolumeSlider(&m_sldMovie);
+    SetActiveControl(&m_sldGamma, 0);
+#else
     StartLoadFromLayout("optsound");
     InitControl(m_sldMusic, "SLI_MUSIC", 1);
     InitControl(m_sldVoice, "SLI_VO", 1);
@@ -2314,6 +2781,7 @@ CSWGuiOptionsSound::CSWGuiOptionsSound(CSWGuiManager* pManager)
     pDefault->m_bFocusable = 0;
     pDefault->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiOptionsSound::OnDefault);
     SetActiveControl(&m_sldMusic, 0);
+#endif
 }
 
 #ifndef _XBOX
@@ -2327,7 +2795,7 @@ void CSWGuiOptionsMain::OnGraphicsOpt(CSWGuiControl* pControl)  // PC 0x006E3D80
     }
 }
 #endif
-// PC 0x006E3E00
+// PC 0x006E3E00  Xbox 0x001192B0
 void CSWGuiOptionsMain::OnSoundOpt(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -2346,7 +2814,7 @@ void CSWGuiOptionsMain::OnDownload(CSWGuiControl* pControl)
 
     g_pAppManager->m_pClientExoApp->BusyWaitMenuMusic();
     memset(&cLaunchData, 0, sizeof(cLaunchData));
-    XLaunchNewImage("d:\downloader.xbe", &cLaunchData);
+    XLaunchNewImage("d:\\downloader.xbe", &cLaunchData);
 }
 // PC 0x006E3E80  Xbox 0x00119BC0
 CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)
@@ -2393,10 +2861,11 @@ CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)
     {
         m_btnOptions[i].AddEvent(
             0, this, (CSWGuiHandler)&CSWGuiOptionsMain::OnEnterSlot);
-
+        m_btnOptions[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+        m_btnOptions[i].m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
         m_btnOptions[i].m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
     }
-    SetActiveControl(&m_btnOptions[0], 0);
+    CSWGuiPanel* pPanel = this; pPanel->SetActiveControl(&m_btnOptions[0], 0);
 }
 #else
 CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)  // PC 0x006E3E80  Xbox 0x00119BC0
@@ -2545,3 +3014,26 @@ void CSWGuiOptionsMouse::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
+
+#ifdef _XBOX
+// Xbox 0x00117E00
+void CSWGuiOptionsFeedback::OnRumble(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        int bRumble = (g_pAppManager->m_pClientExoApp->GetClientOptions()
+                           ->m_bFloatingNumbers == 0);
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->m_bFloatingNumbers = bRumble;
+    }
+}
+// Xbox 0x001180A0
+void CSWGuiOptionsSound::OnMoveGammaSlider(CSWGuiControl* pControl)
+{
+    int nValue = pControl->AsSlider()->m_nCurValue;
+    g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nBrightness = nValue;
+    g_pAurora->ResetGammaRamp(
+        g_pAppManager->GetClientExoApp()->GetClientOptions()->GetGammaSetting(), 0);
+}
+#endif

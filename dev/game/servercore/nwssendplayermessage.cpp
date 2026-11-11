@@ -4830,8 +4830,9 @@ int CSWSMessage::SendServerToPlayerMessage(unsigned long nPlayerId,
     }
     return nResult;
 }
-// PC 0x00567EF0  Xbox 0x0022B0E0
-int CSWSMessage::SendServerToPlayerModule_Info(unsigned long nPlayerId)
+
+#ifndef _XBOX
+int CSWSMessage::SendServerToPlayerModule_Info(unsigned long nPlayerId)  // PC 0x00567EF0  Xbox 0x0022B0E0
 {
     CSWSModule* pModule;
     unsigned long nMessageSize;
@@ -4852,8 +4853,8 @@ int CSWSMessage::SendServerToPlayerModule_Info(unsigned long nPlayerId)
     }
     return 0;
 }
-// PC 0x00567F90  Xbox 0x0022B190
-int CSWSMessage::SendServerToPlayerParty_List(unsigned long nPlayerId,
+#endif
+int CSWSMessage::SendServerToPlayerParty_List(unsigned long nPlayerId,  // PC 0x00567F90  Xbox 0x0022B190
                                               int nCount,
                                               unsigned long* pMembers,
                                               unsigned char nMinor,
@@ -6844,14 +6845,13 @@ void CSWSMessage::WriteGameObjUpdate_MajorGUIPanels(CSWSPlayer* pPlayer)
             }
             else
             {
+#ifndef _XBOX
                 int bNPCInventory = 0;
                 unsigned long oidPlayerObject = pPlayer->m_oidNWSObject;
                 CSWSObject* pPlayerObject = pObject;
-                if (g_pAppManager->m_pServerExoApp->GetServerInfo()->m_bPartyPicking &&
-                    g_pAppManager->m_pClientExoApp->GetInGameGui()->GetPartyAccessPanelUp(1))
+                if (g_pAppManager->m_pServerExoApp->GetServerInfo()->m_bPartyPicking && g_pAppManager->m_pClientExoApp->GetInGameGui()->GetPartyAccessPanelUp(1))
                 {
-                    int nNPC = g_pAppManager->m_pClientExoApp->GetInGameGui()->GetCurrentEquipScreenNPC();
-                    unsigned long oidNPC = g_pAppManager->m_pServerExoApp->GetPartyTable()->GetNPCObject(nNPC, 0, 1);
+                    int nNPC = g_pAppManager->m_pClientExoApp->GetInGameGui()->GetCurrentEquipScreenNPC(); unsigned long oidNPC = g_pAppManager->m_pServerExoApp->GetPartyTable()->GetNPCObject(nNPC, 0, 1);
                     pObject = g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(oidNPC);
                     if (pObject != NULL)
                     {
@@ -6863,6 +6863,7 @@ void CSWSMessage::WriteGameObjUpdate_MajorGUIPanels(CSWSPlayer* pPlayer)
                         pObject = pPlayerObject;
                     }
                 }
+#endif
                 for (int nSlot = 0; nSlot < CSWInventory::TOTAL_SLOT_COUNT; nSlot++)
                 {
                     if (ComputeInventoryUpdateRequired(pPlayer, nSlot) == 1)
@@ -6895,11 +6896,11 @@ void CSWSMessage::WriteGameObjUpdate_MajorGUIPanels(CSWSPlayer* pPlayer)
                     AddItemAppearanceToMessage(pItem);
                     AddActiveItemPropertiesToMessage(pItem, pObject->AsSWSCreature());
                 }
+#ifndef _XBOX
                 if (bNPCInventory)
-                {
-                    pPlayer->m_oidNWSObject = oidPlayerObject;
-                    pObject = pPlayerObject;
-                }
+                {   pPlayer->m_oidNWSObject = oidPlayerObject;
+                    pObject = pPlayerObject; }
+#endif
             }
             CItemRepository* pRepository = pObject->AsSWSCreature()->GetItemRepository(1);
             CSWSPlayerLUOInventory* pLastUpdate = pPlayer->GetInventoryGUIInfo()->m_pLastUpdateObject;
@@ -7418,7 +7419,7 @@ void CSWSMessage::WriteGameObjUpdate_UpdateObject(CSWSPlayer* pPlayer,
                     WriteBOOL(pCreature->m_bUpdateMovingOrientation);
                     if (pCreature->m_bUpdateMovingOrientation)
                     {
-                    float fPathTime = (float)(pCreature->m_fClientPathTime * 1.0);
+                    float fPathTime = (float)(pCreature->m_fClientPathTime * 1.0f);
                     WriteFLOAT(fPathTime, 1.0f, 32);
                 }
                 }
@@ -8287,3 +8288,29 @@ int CSWSMessage::SendServerToPlayerGameObjUpdate(CSWSPlayer* pPlayer)
 static inline void NwssendplayermessageTrace1()
 {
 }
+
+#ifdef _XBOX
+// PC 0x00567EF0  Xbox 0x0022B0E0
+int CSWSMessage::SendServerToPlayerModule_Info(unsigned long nPlayerId)
+{
+    CSWSModule* pModule;
+    unsigned long nMessageSize;
+    unsigned char* pMessage;
+
+    pModule = g_pAppManager->m_pServerExoApp->GetModule();
+    if ((g_pAppManager->m_pServerExoApp->GetServerMode() == 1 ||
+         g_pAppManager->m_pServerExoApp->GetServerMode() == 2) &&
+        pModule != NULL)
+    {
+        CreateWriteMessage(128, RECIPIENT_UNSPECIFIED, 1);
+        pModule->PackModuleIntoMessage(nPlayerId);
+        if (GetWriteMessage(&pMessage, &nMessageSize) == 0)
+        {
+            return 0;
+        }
+        return SendServerToPlayerMessage(nPlayerId, 3, 1, pMessage,
+                                         nMessageSize);
+    }
+    return 0;
+}
+#endif

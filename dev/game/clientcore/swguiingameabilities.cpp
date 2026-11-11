@@ -315,7 +315,7 @@ void CSWGuiInGameAbilities::CreatePowerList()
 }
 
 #ifdef _XBOX
-// PC 0x0041A290
+// PC 0x0041A290  Xbox 0x0004CEC0
 inline int CSWGuiListBox::IsOversized()
 {
     return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
@@ -844,32 +844,32 @@ void CSWGuiInGameSkillEntry::Initialize(CSWGuiText& cText,
     pParams->SetPulsingAlpha(1, 1, 0);
     pParams = &m_cNormal.m_cParams;
     {
-        CResRef cFill("lbl_hex_3");
-        CResRef cEdge("");
-        CResRef cCorner("");
-
-        *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f,
-                                      Vector(1.0f, 1.0f, 1.0f), 0);
+#ifndef _XBOX
+        CResRef cFill("lbl_hex_3"); CResRef cEdge(""); CResRef cCorner("");
+        *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+#else
+        *pParams = CSWGuiBorderParams("", "", "lbl_hex_3", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+#endif
         pParams->m_vColor = CGuiInGame::COLOR_BLUE;
     }
     pParams = &m_cHilite.m_cParams;
     {
-        CResRef cFill("lbl_hex_3");
-        CResRef cEdge("");
-        CResRef cCorner("");
-
-        *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f,
-                                      Vector(1.0f, 1.0f, 1.0f), 0);
+#ifndef _XBOX
+        CResRef cFill("lbl_hex_3"); CResRef cEdge(""); CResRef cCorner("");
+        *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+#else
+        *pParams = CSWGuiBorderParams("", "", "lbl_hex_3", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+#endif
         pParams->m_vColor = CGuiInGame::COLOR_YELLOW;
         pParams->SetPulsingAlpha(1, 0, 1);
     }
-
     {
-        CSWGuiExtent cExtent;
-        cExtent.m_nLeft = 0;
-        cExtent.m_nTop = 0;
-        cExtent.m_nWidth = nWidth;
+        CSWGuiExtent cExtent; cExtent.m_nLeft = 0; cExtent.m_nTop = 0; cExtent.m_nWidth = nWidth;
+#ifndef _XBOX
         cExtent.m_nHeight = 42;
+#else
+        cExtent.m_nHeight = 56;
+#endif
         SetExtent(cExtent);
     }
 }

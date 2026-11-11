@@ -44,8 +44,8 @@ void CSWGuiTitleMovies::HandleInputEvent(int nEvent, int nState)
 
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006DCF10
-void CSWGuiTitleMovies::OnMoviePicked(CSWGuiControl* pControl)
+#ifndef _XBOX
+void CSWGuiTitleMovies::OnMoviePicked(CSWGuiControl* pControl)  // PC 0x006DCF10  Xbox 0x00116DF0
 {
     if (pControl->m_bSelected != 0)
     {
@@ -65,8 +65,8 @@ void CSWGuiTitleMovies::OnMoviePicked(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006DD910  Xbox 0x00117780
-CSWGuiTitleMovies::CSWGuiTitleMovies(CSWGuiManager* pManager)
+#endif
+CSWGuiTitleMovies::CSWGuiTitleMovies(CSWGuiManager* pManager)  // PC 0x006DD910  Xbox 0x00117780
     : CSWGuiPanel(pManager)
 {
     StartLoadFromLayout("titlemovie");
@@ -99,7 +99,7 @@ CSWGuiTitleMovies::CSWGuiTitleMovies(CSWGuiManager* pManager)
     PopulateMovies();
     SetActiveControl(&m_lbxMovies, 0);
 }
-// PC 0x006DCFE0
+// PC 0x006DCFE0  Xbox 0x00116E30
 CSWGuiTitleMovies::~CSWGuiTitleMovies()
 {
     for (int nMovie = 0; nMovie < m_lbxMovies.m_lItems.num; ++nMovie)
@@ -244,3 +244,20 @@ void CSWGuiTitleMovies::PopulateMovies()
     }
     m_lbxMovies.AddControls(lControls, 1, 0, 0);
 }
+
+#ifdef _XBOX
+// PC 0x006DCF10  Xbox 0x00116DF0
+void CSWGuiTitleMovies::OnMoviePicked(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        CExoString* psMovie = (CExoString*)pControl->AsButton()->m_nIndex;
+        if (psMovie != NULL)
+        {
+            int nMovieResult = 0;
+            g_pAppManager->m_pClientExoApp->PlayMovie(*psMovie, nMovieResult,
+                                                      0, 1);
+        }
+    }
+}
+#endif

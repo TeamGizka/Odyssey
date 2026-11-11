@@ -68,14 +68,17 @@ void AurTextureFreeAll();
 
 int AurTextureResetAll();
 void AurTextureSetDynamicMemoryRatio(float fRatio);
+#ifdef _XBOX
+int AurTextureSetMem(int nMemory);
+#else
 bool AurTextureSetMem(int nMemory);
+#endif
 List<int>* AurTextureGetOrdering();
 
 int AurTextureGetMaxTexID();
 bool AurTextureEnvMapDisabled();
 void AurTextureRefreshAll();
-int AurTextureReplaceTileReferences(CAurScene* pScene, const Vector& vPos,
-                                    char* sOldName, char* sNewName);
+int AurTextureReplaceTileReferences(CAurScene* pScene, const Vector& vPos, char* sOldName, char* sNewName);
 
 struct CAurFontInfo
 {
@@ -286,15 +289,16 @@ public:
 extern List<CAurTextureBasic*> RefreshTextures;
 CAurTextureBasic* AurTextureGetNormalizationCubeMap();
 TextureController* AurTextureGetController(CAurTexture* pTexture);
-
 #include "exobase.h"
 #include <aurpointer.h>
-
 struct CAurFontInfo;
 class CAurTexture;
-
 struct CStringColor
 {
+#ifdef _XBOX
+    CStringColor() { m_fRed = 1.0f; m_fGreen = 1.0f; m_fBlue = 1.0f; m_fAlpha = 1.0f; }
+    CStringColor(float fRed, float fGreen, float fBlue, float fAlpha) { m_fRed = fRed; m_fGreen = fGreen; m_fBlue = fBlue; m_fAlpha = fAlpha; }
+#else
     CStringColor() {}
     CStringColor(float fRed, float fGreen, float fBlue, float fAlpha)
     {
@@ -303,7 +307,7 @@ struct CStringColor
         m_fBlue = fBlue;
         m_fAlpha = fAlpha;
     }
-
+#endif
     float m_fRed;
     float m_fGreen;
     float m_fBlue;
@@ -346,6 +350,8 @@ inline int AurTextureCompressionAvailable()
 {
     return 1;
 }
+
+void AurSaveGameSnapshot(char* sFileName, int nSize, bool bSquare);
 #endif
 
 #endif

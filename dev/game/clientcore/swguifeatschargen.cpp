@@ -59,7 +59,6 @@ CSWGuiFeatsCharGen::CSWGuiFeatsCharGen(CSWGuiManager* pManager,
     InitControl(m_btnSelect, "BTN_SELECT", 1);
 #endif
     StopLoadFromLayout();
-
     CExoString sFeat = g_pTlkTable->GetSimpleString(STRREF_FEAT);
     m_sFeatUnavailableText = g_pTlkTable->GetSimpleString(STRREF_ADD) +
                              " " + sFeat;
@@ -73,15 +72,16 @@ CSWGuiFeatsCharGen::CSWGuiFeatsCharGen(CSWGuiManager* pManager,
     {
         m_lblSubTitle.m_cText.m_cParams.SetStrRef(STRREF_BONUS_FEATS);
     }
-    m_lblDescription.Initialize(m_lbDesc.m_pProtoItem->m_cExtent,
-                                (CSWGuiLabel*)m_lbDesc.m_pProtoItem, 1.0f);
+#ifndef _XBOX
+    m_lblDescription.Initialize(m_lbDesc.m_pProtoItem->m_cExtent, (CSWGuiLabel*)m_lbDesc.m_pProtoItem, 1.0f);
+#else
+    m_lblDescription.Initialize(m_lbDesc.m_pProtoItem->m_cExtent, (CSWGuiLabel*)m_lbDesc.m_pProtoItem);
+#endif
     InitiateFeats();
 #ifndef _XBOX
-    m_lbFeats.AddEvent(CSWGuiListBox::EVENT_SELECTION_CHANGED, this,
-                      (CSWGuiHandler)&CSWGuiFeatsCharGen::OnFeatSelectionChanged);
+    m_lbFeats.AddEvent(CSWGuiListBox::EVENT_SELECTION_CHANGED, this, (CSWGuiHandler)&CSWGuiFeatsCharGen::OnFeatSelectionChanged);
 #ifndef _XBOX
-    m_lbFeats.AddEvent(CSWGuiListBox::EVENT_DOUBLE_CLICK, this,
-                      (CSWGuiHandler)&CSWGuiFeatsCharGen::OnDoubleClick);
+    m_lbFeats.AddEvent(CSWGuiListBox::EVENT_DOUBLE_CLICK, this, (CSWGuiHandler)&CSWGuiFeatsCharGen::OnDoubleClick);
 #endif
     m_lbFeats.SetSelectOnLeftClick(1);
     m_btnAccept.SetFocusable(0);
@@ -99,7 +99,7 @@ CSWGuiFeatsCharGen::CSWGuiFeatsCharGen(CSWGuiManager* pManager,
 #endif
     SetActiveControl(&m_lbFeats, 0);
 }
-// PC 0x006F2A50
+// PC 0x006F2A50  Xbox 0x0012AE00
 CSWGuiFeatsCharGen::~CSWGuiFeatsCharGen()
 {
     m_lbDesc.ClearItems();
@@ -345,7 +345,7 @@ void CSWGuiFeatsCharGen::BuildAvailableList()
 }
 
 #ifndef _XBOX
-void CSWGuiFeatsCharGen::OnFeatSelectionChanged(CSWGuiControl* pControl)  // PC 0x006F3420  Xbox 0x0012B4C0
+void CSWGuiFeatsCharGen::OnFeatSelectionChanged(CSWGuiControl* pControl)  // PC 0x006F3420
 {
     CSWGuiSkillFlow* pFlow =
         static_cast<CSWGuiSkillFlow*>(m_lbFeats.GetSelectedControl());
@@ -717,7 +717,7 @@ void CSWGuiFeatsCharGen::DetermineFeat(unsigned short nFeat,
 }
 
 #ifdef _XBOX
-// PC 0x0041A290
+// PC 0x0041A290  Xbox 0x0004CEC0
 inline int CSWGuiListBox::IsOversized()
 {
     return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&

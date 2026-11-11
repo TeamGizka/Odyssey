@@ -8,7 +8,7 @@
 #include "clientexoapp.h"
 #include "clientoptions.h"
 #include "nwrules.h"
-// PC 0x004015A0  Xbox 0x00093040
+// PC 0x004015A0
 CSWPortrait::~CSWPortrait()
 {
 }

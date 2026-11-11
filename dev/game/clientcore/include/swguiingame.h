@@ -21,6 +21,12 @@ class CSWGuiControllerLossBox : public CSWGuiMessageBox
 public:
     CSWGuiControllerLossBox(CSWGuiManager* pManager);
     void OnAccept(CSWGuiControl* pControl);
+#ifdef _XBOX
+
+#define STRREF_CONTROLLER_LOST 42130
+#else
+#define STRREF_CONTROLLER_LOST 48398
+#endif
     virtual void OnPanelAdded();
 };
 
@@ -35,14 +41,14 @@ public:
     CSWGuiLabelHilight m_LblhJou;
     CSWGuiLabelHilight m_LblhOpt;
     CSWGuiLabelHilight m_LblhMsg;
-    CSWGuiButton m_btnEqu;
-    CSWGuiButton m_btnInv;
-    CSWGuiButton m_btnChar;
-    CSWGuiButton m_btnMap;
-    CSWGuiButton m_btnAbi;
-    CSWGuiButton m_btnJou;
-    CSWGuiButton m_btnOpt;
-    CSWGuiButton m_btnMsg;
+#ifndef _XBOX
+    CSWGuiButton m_btnEqu; CSWGuiButton m_btnInv; CSWGuiButton m_btnChar;
+    CSWGuiButton m_btnMap; CSWGuiButton m_btnAbi; CSWGuiButton m_btnJou;
+    CSWGuiButton m_btnOpt; CSWGuiButton m_btnMsg;
+#else
+    CSWGuiLabel m_lblLeftArrow;
+    CSWGuiLabel m_lblRightArrow;
+#endif
     virtual void HandleInputEvent(int, int);
     void SetActiveControlID(int nControl, int bActive);
     void OnShoulderLeft(CSWGuiControl* pControl);
@@ -67,16 +73,13 @@ public:
     CSWGuiListBox m_lbDialog;
     CSWGuiLabel m_lblTitle;
 #ifdef _XBOX
-    CSWGuiLabel m_lblStart;
-    CSWGuiLabel m_lblExit;
-    CSWGuiLabel m_lblX;
-    CSWGuiLabel m_lblXDesc;
+    CSWGuiLabel m_lblStart; CSWGuiLabel m_lblExit;
+    CSWGuiLabel m_lblX; CSWGuiLabel m_lblXDesc;
 #endif
     CSWGuiLabelHilight* m_pMessageLabels;
     CSWGuiLabelHilight* m_pDialogLabels;
 #ifndef _XBOX
-    CSWGuiButton m_btnSwitch;
-    CSWGuiButton m_btnBack;
+    CSWGuiButton m_btnSwitch; CSWGuiButton m_btnBack;
 #endif
     void ToggleMessages();
     void ShowDialogMessages();
@@ -112,8 +115,7 @@ public:
     unsigned int m_bWasPaused : 1;
     unsigned int m_nStatusFlagsUnused : 31;
 #ifdef _XBOX
-    CSWGuiLabel m_lblA;
-    CSWGuiLabel m_lblOk;
+    CSWGuiLabel m_lblA; CSWGuiLabel m_lblOk;
 #else
 
     CSWGuiLabel m_lblUnbound1;
@@ -269,6 +271,7 @@ class CSWCCreature;
 class CSWSCreature;
 class CSWSItem;
 
+#ifndef _XBOX
 class CSWGuiInGameInventory : public CSWGuiPanel
 {
 public:
@@ -333,6 +336,7 @@ public:
     unsigned long m_bUpdateUseItem : 1;
     unsigned long m_nInventoryFlagsUnused : 29;
 };
+#endif
 
 class CSWGuiControl;
 class CSWGuiManager;
@@ -498,5 +502,81 @@ public:
     float m_fScrollInterval;
     unsigned char m_aUnmapped5F4[4];
 };
+
+#ifdef _XBOX
+
+#include "swguiingameequip.h"
+
+class CSWGuiInGameInventory : public CSWGuiPanel
+{
+public:
+
+    enum { STRREF_ITEM_USED_THIS_ROUND = 42409 };
+
+    enum { NUM_ITEM_ROWS = 5 };
+
+    struct ItemListEntry
+    {
+        unsigned long m_oidItem;
+        CSWGuiHandler m_pfnSelect;
+        unsigned long m_bUsable : 1;
+        unsigned long m_bEquipped : 1;
+        unsigned long m_bNewItem : 1;
+    };
+
+    CSWGuiInGameInventory(CSWGuiManager* pManager);
+    virtual ~CSWGuiInGameInventory();
+    virtual void Draw(float fElapsed);
+    virtual void HandleInputEvent(int nEvent, int nState);
+    virtual void OnPanelAdded();
+    virtual void OnPanelRemoved();
+
+    int CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature, int nSlot);
+    void PopulateItemListBox();
+    void SetNextFilter();
+    void UpdatePlayerStats();
+    void OnControlSelected(CSWGuiControl* pControl);
+    void OnControlEntered(CSWGuiControl* pControl);
+    void CreateItemEntry(CSWCCreature* pCreature, CSWSItem* pItem, ItemListEntry* pEntry,
+                        int bSquadItem, int bEquipped);
+    void CantEquip(CSWGuiControl* pControl);
+    void NotUseable(CSWGuiControl* pControl);
+    void FullHealth(CSWGuiControl* pControl);
+
+    void SetItemRows(int nTopItem, int nSelectedItem);
+    void SelectNextItem();
+    void SelectPreviousItem();
+
+    static const int m_nFilterName[6];
+
+    CSWGuiLabel m_lblUnknown64;
+    CSWGuiLabel m_lblA;
+    CSWGuiLabel m_lblX;
+    CSWGuiLabel m_lblStart;
+    CSWGuiLabel m_lblExit;
+    CSWGuiLabel m_lblBlack;
+    CSWGuiLabel m_lblUseItem;
+    CSWGuiLabel m_lblFilter;
+    CSWGuiLabel m_lblInv;
+    CSWGuiLabel m_lblCredits;
+    CSWGuiLabel m_lblCreditsValue;
+    CSWGuiLabel m_lblRanalog;
+    CSWGuiListBox m_lbxDescription;
+    CSWGuiLabel m_lblBgPort;
+    CSWGuiLabel m_lblBgStats;
+    CSWGuiLabel m_lblPort;
+    CSWGuiLabel m_lblVit;
+    CSWGuiLabel m_lblDef;
+    CSWGuiLabel m_lblDownarrow;
+    CSWGuiLabel m_lblUparrow;
+    CSWGuiInGameItemEntry m_aItemRows[NUM_ITEM_ROWS];
+    CExoArrayList<unsigned long> m_aNewItems;
+    CExoArrayList<ItemListEntry> m_lItems;
+    unsigned long m_oidSelectedItem;
+    short m_nTopItem;
+    short m_nSelectedItem;
+    unsigned long m_bUpdateItems : 1;
+};
+#endif
 
 #endif

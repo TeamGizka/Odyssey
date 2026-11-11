@@ -48,7 +48,7 @@ public:
           m_fZ(fZ)
     {
     }
-    // PC 0x0046A620
+    // PC 0x0046A620  Xbox 0x0006C240
     int IsZero() const
     {
         return m_fX == 0.0f && m_fY == 0.0f && m_fZ == 0.0f;

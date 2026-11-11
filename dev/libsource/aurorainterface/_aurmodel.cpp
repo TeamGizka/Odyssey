@@ -33,7 +33,7 @@ int CAuroraModel::Load()
     pTrailer->nType = RESTYPE_MDL;
     return 1;
 }
-// PC 0x0070FAF0
+// PC 0x0070FAF0  Xbox 0x002FA330
 unsigned char* CAuroraModel::GetPtrToResHelperInfo()
 {
     unsigned char* nMDLDataPtr;
@@ -55,7 +55,7 @@ CAuroraModel::CAuroraModel(CResRef cResRef, int bRequest)
 CAuroraModel::~CAuroraModel()
 {
 }
-// PC 0x00710100  Xbox 0x002FA330
+// PC 0x00710100
 void CAuroraModel::Unload()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)

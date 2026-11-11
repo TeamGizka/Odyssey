@@ -141,7 +141,7 @@ void CServerInfo::SetModuleName(const CExoString& sModuleName)
                     m_sModuleName == "tar_m02af" ||
                     m_sModuleName == "ebo_m40ad";
 }
-// PC 0x0054EB10
+// PC 0x0054EB10  Xbox 0x000B6910
 CServerInfo::CServerInfo()
     : m_bSuppressBaseServerVault(0)
 {

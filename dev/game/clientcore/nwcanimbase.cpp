@@ -15,7 +15,7 @@
 #include <string.h>
 
 float g_fMaxLean = 5.0f;
-// PC 0x0060E760  Xbox 0x000C8B70
+// PC 0x0060E760
 void CSWCAnimBase::SetWieldLimited(int bLimited)
 {
 }

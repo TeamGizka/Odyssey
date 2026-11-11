@@ -65,7 +65,7 @@ void CSWCAmbientSound::SetMusicDelay(int nDelay)
         m_MusicDelay = nDelay;
     }
 }
-
+// Xbox 0x000B4760
 void CSWCAmbientSound::SetMusicVolume(unsigned char nVolume)
 {
     if (nVolume >= CExoSound::CMAX_VOLUME)
@@ -777,3 +777,30 @@ void CSWCAmbientSound::StopSounds(int bMusicOnly)
         PlayAmbientSound(0);
     }
 }
+
+#ifdef _XBOX
+
+#include "aurconsole.h"
+#include "nwcarea.h"
+char* SetMusicVolume(char* szArgs)  // Xbox 0x000B51D0
+{
+    if (g_pAppManager->m_pClientExoApp != NULL &&
+        g_pAppManager->m_pClientExoApp->GetModule() != NULL &&
+        g_pAppManager->m_pClientExoApp->GetModule()->GetArea() != NULL)
+    {
+        CSWCAmbientSound* pAmbientSound =
+            g_pAppManager->m_pClientExoApp->GetModule()->GetArea()->GetAmbientSound();
+        if (pAmbientSound != NULL)
+        {
+            int nVolume = atoi(szArgs);
+            if (nVolume >= 0 && nVolume <= CExoSound::CMAX_VOLUME)
+            {
+                pAmbientSound->SetMusicVolume((unsigned char)nVolume);
+                return "Success";
+            }
+        }
+    }
+    return "Failed";
+}
+ConsoleFunc ConFSetMusicVolume("SetMusicVolume", SetMusicVolume);
+#endif

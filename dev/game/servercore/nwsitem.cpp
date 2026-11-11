@@ -3127,12 +3127,11 @@ int CSWSItem::GetCost()
         return 0;
     }
 
-    if ((unsigned int)(GetBaseItem()->m_fCostMultiplier *
-                       (double)m_nAddCost) > 1)
-    {
-        return (int)(GetBaseItem()->m_fCostMultiplier *
-                     (double)m_nAddCost);
-    }
+#ifdef _XBOX
+    if ((unsigned int)(m_nAddCost * GetBaseItem()->m_fCostMultiplier) > 1) return (unsigned int)(m_nAddCost * GetBaseItem()->m_fCostMultiplier);
+#else
+    if ((unsigned int)(GetBaseItem()->m_fCostMultiplier * (double)m_nAddCost) > 1) { return (int)(GetBaseItem()->m_fCostMultiplier * (double)m_nAddCost); }
+#endif
 
     return 1;
 }
@@ -3952,7 +3951,7 @@ void CSWSItem::LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct)
         m_bIdentified = 1;
     m_nBaseAC = ComputeArmorClass();
     g_pAppManager->GetServerExoApp()->GetModule()->AddObjectToLookupTable(m_sTag, GetId());
-    float fWeight = (float)(GetBaseItem()->m_nTenthLBS * 1.0);
+    float fWeight = (float)(GetBaseItem()->m_nTenthLBS * 1.0f);
     m_nWeight = (int)fWeight;
 }
 // PC 0x0055F050  Xbox 0x001DF0B0

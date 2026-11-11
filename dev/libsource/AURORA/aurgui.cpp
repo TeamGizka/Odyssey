@@ -601,19 +601,19 @@ void CAurGUIStringInternal::SetSizeBoundingRect(float fWidth, float fHeight)
 CAurGUIImage::CAurGUIImage()
 {
 }
-// PC 0x00459140  Xbox 0x002C8700
-CAurGUIImage::~CAurGUIImage()
+// PC 0x00459140  Xbox 0x002C8750
+inline CAurGUIImage::~CAurGUIImage()
 {
 }
-// PC 0x00459140  Xbox 0x002C8710
-CAurGUIString::~CAurGUIString()
+// PC 0x00459140  Xbox 0x002C8720
+inline CAurGUIString::~CAurGUIString()
 {
 }
 #else
-inline CAurGUIImage::~CAurGUIImage()  // PC 0x00459140  Xbox 0x002C8700
+inline CAurGUIImage::~CAurGUIImage()  // PC 0x00459140  Xbox 0x002C8750
 {
 }
-// PC 0x00459140  Xbox 0x002C8710
+// PC 0x00459140  Xbox 0x002C8720
 inline CAurGUIString::~CAurGUIString()
 {
 }
@@ -1562,6 +1562,10 @@ CAurGUIStringInternal::~CAurGUIStringInternal()
 
     delete[] m_sString;
     m_sString = 0;
+#ifdef _XBOX
+    m_lstLineLength.SetSize(0);
+    m_lstLineWidth.SetSize(0);
+#else
     List<int>& lstLength = m_lstLineLength;
     if (lstLength.m_pList != 0)
     {
@@ -1578,6 +1582,7 @@ CAurGUIStringInternal::~CAurGUIStringInternal()
     }
     lstWidth.m_nAllocated = 0;
     lstWidth.m_nCount = 0;
+#endif
     m_nPositionX = 0;
     m_nPositionY = 0;
     m_nWidth = 0;
@@ -1628,3 +1633,13 @@ static inline void AurguiTrace2()
 static inline void AurguiTrace1()
 {
 }
+
+#ifdef _XBOX
+CAurGUIDraw::~CAurGUIDraw()  // Xbox 0x002C8710
+{
+}
+// Xbox 0x002C8700
+CAurGUIDraw::CAurGUIDraw()
+{
+}
+#endif

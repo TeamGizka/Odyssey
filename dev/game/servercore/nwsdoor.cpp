@@ -242,7 +242,9 @@ void CSWSDoor::DoDamage(int nDamage)
         CSWSObject::DoDamage(nDamage);
     }
 }
-// PC 0x005891B0
+#ifdef _XBOX  // PC 0x005891B0
+__forceinline
+#endif
 Vector CSWSDoor::GetActionPoint(int nAnimation, unsigned char nPoint)
 {
     const float fInvalidActionPoint = -9999999.0f;
@@ -263,8 +265,7 @@ Vector CSWSDoor::GetActionPoint(int nAnimation, unsigned char nPoint)
                               ->m_avUsePoints[nPoint]);
     default:
         EXOXBOXASSERT(0);
-        return Vector(fInvalidActionPoint, fInvalidActionPoint,
-                      fInvalidActionPoint);
+        return Vector(fInvalidActionPoint, fInvalidActionPoint, fInvalidActionPoint);
     }
 }
 // PC 0x00589240  Xbox 0x0020BAB0
@@ -342,8 +343,9 @@ CSWSObject* CSWSDoor::GetLinkedObject()
     }
     return pLinkedObject;
 }
-// PC 0x00589C70  Xbox 0x0020C530
-int CSWSDoor::OpenDoor(unsigned long oidOpener)
+
+#ifndef _XBOX
+int CSWSDoor::OpenDoor(unsigned long oidOpener)  // PC 0x00589C70  Xbox 0x0020C530
 {
     CGameObject* pGameObject;
     CSWSObject* pOpener;
@@ -369,6 +371,7 @@ int CSWSDoor::OpenDoor(unsigned long oidOpener)
     }
     return g_pVirtualMachine->RunScript(&m_asScripts[0], m_nId, 1);
 }
+#endif
 // PC 0x0058A1F0  Xbox 0x0020CBB0
 int CSWSDoor::LoadDoor(CResGFF* pRes, CResStruct* pStruct, int bLoadTemplate)
 {
@@ -870,8 +873,9 @@ void CSWSDoor::SetOrientation(Quaternion qOrientation)
 }
 
 int nRenderDoorBBox = 0;
-// PC 0x005897D0  Xbox 0x0020C0E0
-int CSWSDoor::InDoor(Vector vPoint)
+
+#ifndef _XBOX
+int CSWSDoor::InDoor(Vector vPoint)  // PC 0x005897D0  Xbox 0x0020C0E0
 {
     int nCrossings;
     int nVertex;
@@ -940,8 +944,8 @@ int CSWSDoor::InDoor(Vector vPoint)
     }
     return nCrossings % 2 == 1;
 }
-// PC 0x00589980  Xbox 0x0020C240
-int CSWSDoor::GetMeshBoundingBox(Vector vPosition, Vector vUnused,
+#endif
+int CSWSDoor::GetMeshBoundingBox(Vector vPosition, Vector vUnused,  // PC 0x00589980  Xbox 0x0020C240
                                  Vector& vMinimum, Vector& vMaximum)
 {
     int nMesh;
@@ -1543,3 +1547,101 @@ static inline void NwsdoorTrace2()
 static inline void NwsdoorTrace1()
 {
 }
+
+#ifdef _XBOX
+// PC 0x00589C70  Xbox 0x0020C530
+int CSWSDoor::OpenDoor(unsigned long oidOpener)
+{
+    CGameObject* pGameObject;
+    CSWSObject* pOpener;
+    CSWSObject* pLinkedObject;
+    int nState;
+
+    nState = 2;
+    pGameObject = g_pAppManager->m_pServerExoApp->GetGameObject(oidOpener);
+    if (pGameObject != 0)
+    {
+        pOpener = pGameObject->AsSWSObject();
+        Vector vDelta;
+        vDelta = pOpener->m_vPosition - m_vPosition;
+        if (vDelta * m_vOrientation > 0.0f)
+        {
+            nState = 1;
+        }
+    }
+    m_oidLastOpener = oidOpener;
+    SetOpenState(nState, 1);
+    pLinkedObject = GetLinkedObject();
+    if (pLinkedObject != 0 && pLinkedObject->AsSWSDoor() != 0)
+    {
+        pLinkedObject->AsSWSDoor()->SetOpenState(nState, 1);
+    }
+    return g_pVirtualMachine->RunScript(&m_asScripts[0], m_nId, 1);
+}
+// PC 0x005897D0  Xbox 0x0020C0E0
+int CSWSDoor::InDoor(Vector vPoint)
+{
+    int nCrossings;
+    int nVertex;
+    int nNext;
+    float fIntersectY;
+
+    nCrossings = 0;
+    for (nVertex = 0; nVertex < m_nOutlineVertices; nVertex++)
+    {
+        nNext = nVertex != m_nOutlineVertices - 1 ? nVertex + 1 : 0;
+        if (m_avOutline[nNext].m_fX != m_avOutline[nVertex].m_fX)
+        {
+            fIntersectY = m_avOutline[nVertex].m_fY;
+            fIntersectY = fIntersectY - (m_avOutline[nVertex].m_fX - vPoint.m_fX) *
+                ((m_avOutline[nNext].m_fY - fIntersectY) /
+                 (m_avOutline[nNext].m_fX - m_avOutline[nVertex].m_fX));
+            if (fIntersectY > vPoint.m_fY)
+            {
+                if (fabs(m_avOutline[nNext].m_fY - m_avOutline[nVertex].m_fY) >
+                    fabs(m_avOutline[nNext].m_fX - m_avOutline[nVertex].m_fX))
+                {
+                    if (m_avOutline[nNext].m_fY > m_avOutline[nVertex].m_fY)
+                    {
+                        if (fIntersectY >= m_avOutline[nVertex].m_fY &&
+                            fIntersectY < m_avOutline[nNext].m_fY)
+                        {
+                            nCrossings++;
+                        }
+                    }
+                    else if (m_avOutline[nVertex].m_fY > m_avOutline[nNext].m_fY &&
+                             fIntersectY > m_avOutline[nNext].m_fY &&
+                             fIntersectY <= m_avOutline[nVertex].m_fY)
+                    {
+                        nCrossings++;
+                    }
+                }
+                else
+                {
+                    if (m_avOutline[nNext].m_fX > m_avOutline[nVertex].m_fX)
+                    {
+                        if (vPoint.m_fX >= m_avOutline[nVertex].m_fX &&
+                            vPoint.m_fX < m_avOutline[nNext].m_fX)
+                        {
+                            nCrossings++;
+                        }
+                    }
+                    else if (m_avOutline[nVertex].m_fX > m_avOutline[nNext].m_fX &&
+                             vPoint.m_fX > m_avOutline[nNext].m_fX &&
+                             vPoint.m_fX <= m_avOutline[nVertex].m_fX)
+                    {
+                        nCrossings++;
+                    }
+                }
+            }
+        }
+        if (m_avOutline[nNext].m_fX == vPoint.m_fX &&
+            (m_avOutline[nNext].m_fY > vPoint.m_fY ||
+             m_avOutline[nVertex].m_fY >= vPoint.m_fY))
+        {
+            nCrossings++;
+        }
+    }
+    return nCrossings % 2 == 1;
+}
+#endif

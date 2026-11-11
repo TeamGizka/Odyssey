@@ -201,7 +201,11 @@ public:
 
     float m_fOrientationInterpAmount;
     int m_nReservedA4;
+#ifdef _XBOX
+    int m_bTargetTowardCamera;
+#else
     char m_aReservedA8[4];
+#endif
     int m_nReservedAC;
 #ifndef _XBOX
     int m_bMouseCameraRotateToggle;
@@ -226,10 +230,6 @@ public:
     float m_fTilt;
     float m_fDesiredPitch;
 
-    float m_fTurnAcceleration;
-    int m_bPreserveLastYaw;
-    int m_bMouseCameraRotateToggle;
-    CSWRK4SplitAcceleration m_integrator;
 #endif
 };
 
@@ -252,7 +252,9 @@ public:
     char m_aReserved1C[4];
 
     float m_fPitch;
+#ifndef _XBOX
     float m_fTiltAcceleration;
+#endif
     float m_fRotateSpeed;
     float m_fTiltSpeed;
     float m_fLookUp;
@@ -265,7 +267,9 @@ public:
     float m_fYawOffset;
     float m_fPitchOffset;
     int m_nMode;
+#ifndef _XBOX
     CSWRK4Acceleration m_integrator;
+#endif
 };
 
 class CSWCameraDeath : public CSWBehaviorCamera

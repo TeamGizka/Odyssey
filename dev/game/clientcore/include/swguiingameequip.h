@@ -26,19 +26,9 @@ public:
 
     enum { CONTAINER_TAKE_ALL = 1 };
 
-    enum
-    {
-        STRREF_ITEMS_TO_GIVE = 392,
-        STRREF_GET_ITEMS = 38542,
-        STRREF_GIVE_ITEM = 38543,
-        STRREF_GIVE_BUTTON_PREFIX = 47884
-    };
+    enum { STRREF_ITEMS_TO_GIVE = 392, STRREF_GET_ITEMS = 38542, STRREF_GIVE_ITEM = 38543, STRREF_GIVE_BUTTON_PREFIX = 47884 };
 
-    enum
-    {
-        STRREF_CONTAINER_INVENTORY = 393,
-        STRREF_CONTAINER_EMPTY = 394
-    };
+    enum { STRREF_CONTAINER_INVENTORY = 393, STRREF_CONTAINER_EMPTY = 394 };
 
     unsigned long m_oidContainer;
     unsigned char m_nContainerType;
@@ -50,20 +40,31 @@ public:
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblCancel;
     CSWGuiLabel m_lblX;
+#ifdef _XBOX
+    CSWGuiLabel m_lblGiveitems;
+#endif
     CSWGuiListBox m_lbItems;
+#ifndef _XBOX
     CSWGuiButton m_btnOk;
     CSWGuiButton m_btnCancel;
     CSWGuiButton m_btnGiveitems;
+#endif
     virtual void OnPanelAdded();
     virtual void OnPanelRemoved();
     CSWGuiContainer(CSWGuiManager*);
     void GiveItem(CSWGuiControl*);
+#ifdef _XBOX
+    void SetupGiveMode();
+#else
     void SetupGiveMode(int);
+#endif
     void SetContainer(unsigned long, int);
+#ifndef _XBOX
     virtual void Update(float);
+#endif
     virtual void HandleInputEvent(int, int);
 };
-
+#ifndef _XBOX
 class CSWGuiInGameEquip : public CSWGuiPanel
 {
 public:
@@ -181,6 +182,7 @@ public:
     };
     static const SlotInfo SLOT_INFO[NUM_EQUIPMENT_SLOTS];
 };
+#endif
 
 enum SWGuiItemEntryLayout
 {
@@ -232,19 +234,19 @@ public:
     bool IsEquipped() { return m_bEquipped != 0; }
     unsigned char GetCanUse() { return m_nCanUse; }
     void SetCanUse(unsigned char);
-
     enum { STRREF_EQUIPPED = 32346 };
-
     void SetItem(unsigned long, int, int);
     CSWGuiInGameItemEntry();
+#ifdef _XBOX
+    void RefreshItem();
+#endif
 };
-
 class CSWGuiStoreItemEntry : public CSWGuiButton
 {
 public:
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
-    virtual void Initialize(const CSWGuiExtent&, CSWGuiButton*)  // PC 0x005B5E90  Xbox 0x000EB380
+    virtual void Initialize(const CSWGuiExtent&, CSWGuiButton*)  // PC 0x005B5E90
     {
     }
     virtual void Initialize(const CSWGuiExtent&,  // PC 0x0063CFC0
@@ -263,5 +265,113 @@ public:
     CSWGuiStoreItemEntry();
     void SetItem(unsigned long, int);
 };
+
+#ifdef _XBOX
+
+class CSWGuiInGameEquip : public CSWGuiPanel
+{
+public:
+    enum
+    {
+        STRREF_ENVIRO_SUIT_RESTRICTION = 42346,
+        STRREF_ARMOUR_COMBAT_RESTRICTION = 1506,
+        STRREF_TWO_HANDED_RESTRICTION = 42344,
+        STRREF_NO_EQUIPPABLE_ITEMS = 42345,
+        STRREF_SELECT_ITEM_TO_EQUIP = 38154,
+        STRREF_NO_DESCRIPTION = 32172,
+        STRREF_ITEM_PREREQUISITES = 38450,
+        STRREF_INCOMPATIBLE_WEAPON = 42271
+    };
+    enum { NUM_EQUIPMENT_SLOTS = 9 };
+    enum { INVALID_SLOT_ITEM_INDEX = 10 };
+    enum { RIGHTHAND_ITEM_INDEX = 1 };
+    enum { LEFTHAND_ITEM_INDEX = 0 };
+    enum { ARMOUR_ITEM_INDEX = 5 };
+
+    enum { NUM_ITEM_ROWS = 5, NUM_DESC_BORDERS = 4 };
+    enum { CHARACTER_UNSET = -2, CHARACTER_PLAYER = -1 };
+
+    struct ItemListEntry
+    {
+        unsigned long m_oidItem;
+        unsigned char m_nCanUse;
+        unsigned long m_bEquipped : 1;
+    };
+    CSWCCreature* m_pCreature;
+    CSWGuiButton m_aSlotButtons[NUM_EQUIPMENT_SLOTS];
+    CSWGuiLabel m_aSlotLabels[NUM_EQUIPMENT_SLOTS];
+    CSWGuiLabel m_lblDownarrow;
+    CSWGuiLabel m_lblUparrow;
+    CExoArrayList<ItemListEntry> m_lItems;
+    CSWGuiInGameItemEntry m_aItemRows[NUM_ITEM_ROWS];
+    CSWGuiLabel m_lblAtkl;
+    CSWGuiLabel m_lblTohitl;
+    CSWGuiLabel m_lblAtkr;
+    CSWGuiLabel m_lblTohitr;
+    CSWGuiLabel m_lblDef;
+    CSWGuiLabel m_lblVitality;
+    CSWGuiLabel m_cDescriptionText;
+    CSWGuiLabel m_lblPortrait;
+    CSWGuiLabel m_lblAttackInfo;
+    CSWGuiLabel m_lblDefInfo;
+    CSWGuiLabel m_lblTxtbar;
+    CSWGuiLabel m_lblPortBord;
+    CSWGuiLabel m_lblEquip;
+    CSWGuiLabel m_lblTohit;
+    CSWGuiLabel m_lblDamage;
+    CSWGuiLabel m_lblSlotname;
+    CSWGuiLabel m_lblA;
+    CSWGuiLabel m_lblB;
+    CSWGuiLabel m_lblStart;
+    CSWGuiLabel m_lblBack;
+    CSWGuiLabel m_lblTitle;
+    CSWGuiLabel m_lblSelecttitle;
+    CSWGuiLabel m_lblBlack;
+    CSWGuiLabel m_aDescBorders[NUM_DESC_BORDERS];
+    CSWGuiLabel m_lblRanalog;
+    CSWGuiListBox m_lbDesc;
+    unsigned int m_bDescriptionShown : 1;
+
+    unsigned int m_bResetItems : 1;
+    unsigned int : 30;
+    int m_nSelectedSlot;
+
+    short m_nTopItem;
+    short m_nSelectedItem;
+    unsigned long m_aoidEquippedItems[NUM_EQUIPMENT_SLOTS];
+    CSWGuiControl* m_pDescribedControl;
+    CSWGuiInGameEquip(CSWGuiManager*);
+    ~CSWGuiInGameEquip();
+    virtual void Draw(float);
+    virtual void HandleInputEvent(int, int);
+    virtual void OnPanelAdded();
+    virtual void OnPanelRemoved();
+    CExoString GetIcon(int);
+    void SetDescription(CExoString const&);
+    void SetCharacter(CSWCCreature*);
+    void ShowDescription(int bShow);
+    void OnItemSelected(CSWGuiControl*);
+    void OnOKPressed(CSWGuiControl*);
+    void CloseDescription();
+    void OnSelectSlot(CSWGuiControl*);
+    void OnEnterSlot(CSWGuiControl*);
+    void UpdateInventory();
+
+    void SetItemRows(int nTopItem, int nSelectedItem);
+    void SelectNextItem();
+    void SelectPreviousItem();
+    void ScrollItemsDown();
+    void ScrollItemsUp();
+    struct SlotInfo
+    {
+        int nSlot;
+        const char* sButton;
+        const char* sLabel;
+        unsigned long nNameStrRef;
+        unsigned long nDescriptionStrRef;
+    };
+    static const SlotInfo SLOT_INFO[NUM_EQUIPMENT_SLOTS];
+};
+#endif
 
 #endif

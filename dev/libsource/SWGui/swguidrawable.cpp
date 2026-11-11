@@ -192,8 +192,8 @@ void CSWGuiText::WrapString()
         m_pString->WrapStrings(-1);
     }
 }
-// PC 0x00414EB0  Xbox 0x00300EF0
-int CSWGuiText::GetIdealHeight()
+#ifndef _XBOX
+int CSWGuiText::GetIdealHeight()  // PC 0x00414EB0  Xbox 0x00300EF0
 {
     int nHeight;
 
@@ -224,8 +224,8 @@ int CSWGuiText::GetFontHeight()
     }
     return 0;
 }
-// PC 0x00414F10
-CSWGuiExtent CSWGuiText::GetIdealWidthAndHeight()
+#endif
+CSWGuiExtent CSWGuiText::GetIdealWidthAndHeight()  // PC 0x00414F10
 {
     CSWGuiExtent cExtent;
     int nHeight;
@@ -309,16 +309,16 @@ CSWGuiScene::~CSWGuiScene()
         delete m_pScene;
         m_pScene = NULL;
     }
-    if (g_pExoResMan->m_bMainMenuImageLoaded)
-    {
+#ifndef _XBOX
+    if (g_pExoResMan->m_bMainMenuImageLoaded) {
         g_pExoResMan->RemoveResourceImageFile("RIMS:MAINMENU");
         g_pExoResMan->m_bMainMenuImageLoaded = 0;
     }
-    if (g_pExoResMan->m_bCharGenImageLoaded)
-    {
+    if (g_pExoResMan->m_bCharGenImageLoaded) {
         g_pExoResMan->RemoveResourceImageFile("RIMS:CHARGEN");
         g_pExoResMan->m_bCharGenImageLoaded = 0;
     }
+#endif
 }
 // PC 0x00416710  Xbox 0x00302450
 int CSWGuiScene::RemoveModel(int nModel, int bDestroy)
@@ -1105,8 +1105,8 @@ void CSWGuiImage::Draw(float fElapsed)
                              m_cParams.m_vColor, fAlpha);
     }
 }
-// PC 0x00415D00  Xbox 0x00301DE0
-void CSWGuiTextParams::SetFont(const CResRef& cFont)
+#ifndef _XBOX
+void CSWGuiTextParams::SetFont(const CResRef& cFont)  // PC 0x00415D00  Xbox 0x00301DE0
 {
     m_cFont = cFont;
     if (m_pText != NULL && m_pText->m_pString != NULL && m_cFont.IsValid())
@@ -1118,6 +1118,7 @@ void CSWGuiTextParams::SetFont(const CResRef& cFont)
         m_pText->WrapString();
     }
 }
+#endif
 // PC 0x00415D60
 void CSWGuiTextParams::SetFontRename()
 {
@@ -1135,8 +1136,8 @@ void CSWGuiTextParams::SetFontRename()
     }
 #endif
 }
-// PC 0x00417050  Xbox 0x00301D20
-CSWGuiTextParams::CSWGuiTextParams()
+#ifndef _XBOX
+CSWGuiTextParams::CSWGuiTextParams()  // PC 0x00417050  Xbox 0x00301D20
 {
 #ifndef _XBOX
     m_vColor = m_vOriginalColor = Vector(1.0f, 1.0f, 1.0f);
@@ -1150,6 +1151,7 @@ CSWGuiTextParams::CSWGuiTextParams()
     m_bHilightText = 0;
     SetBaseFont("dialogfont16x16");
 }
+#endif
 // PC 0x00417120  Xbox 0x00302D40
 CSWGuiTextParams::CSWGuiTextParams(const CExoString& sText,
                                    const CResRef& cFont,
@@ -1162,11 +1164,11 @@ CSWGuiTextParams::CSWGuiTextParams(const CExoString& sText,
     m_vOriginalColor = vColor;
 #endif
     SetBaseFont(cFont);
-    m_nStrRef = -1;
 #ifndef _XBOX
+    m_nStrRef = -1;
     m_vColor = m_vOriginalColor;
 #else
-    m_vColor = vColor;
+    m_vColor = vColor; m_nStrRef = -1;
 #endif
     m_fAlpha = fAlpha;
     m_nAlignment = nAlignment;
@@ -1225,6 +1227,7 @@ void CSWGuiTextParams::SetAlignment(int nAlignment)
         m_pText->WrapString();
     }
 }
+#ifndef _XBOX
 // PC 0x004171E0  Xbox 0x00302EA0
 CSWGuiTextParams& CSWGuiTextParams::operator=(const CSWGuiTextParams& cParams)
 {
@@ -1270,8 +1273,8 @@ void CSWGuiTextParams::SetTextObject(CSWGuiText* pText)
         m_nStrRef = nStrRef;
     }
 }
-// PC 0x00417280  Xbox 0x00302050
-CSWGuiText::CSWGuiText()
+#endif
+CSWGuiText::CSWGuiText()  // PC 0x00417280  Xbox 0x00302050
 {
     m_pString = NULL;
     m_cParams.SetTextObject(this);
@@ -1295,18 +1298,18 @@ void CSWGuiText::Load(CResGFF* pGFF, CResStruct& cStruct,
     if (pGFF->GetStructFromStruct(&cText, &cStruct, (char*)sName.CStr()))
     {
         int bSuccess;
-        m_cParams.SetBaseFont(pGFF->ReadFieldCResRef(&cText, "FONT", bSuccess,
-                                                   "dialogfont16x16"));
+#ifndef _XBOX
+        m_cParams.SetBaseFont(pGFF->ReadFieldCResRef(&cText, "FONT", bSuccess, "dialogfont16x16"));
+#else
+        m_cParams.SetBaseFont(pGFF->ReadFieldCResRef(&cText, "FONT", bSuccess, CSWGuiTextParams::s_cDefaultFont));
+#endif
         CSWGuiTextParams& cParams = m_cParams;
-        cParams.SetDefaultColor(pGFF->ReadFieldVector(&cText, "COLOR", bSuccess,
-                                                       Vector(1.0f, 1.0f, 1.0f)));
+        cParams.SetDefaultColor(pGFF->ReadFieldVector(&cText, "COLOR", bSuccess, Vector(1.0f, 1.0f, 1.0f)));
         cParams.SetText(pGFF->ReadFieldCExoString(&cText, "TEXT", bSuccess, ""));
         cParams.SetStrRef(pGFF->ReadFieldDWORD(&cText, "STRREF", bSuccess, -1));
-        cParams.SetAlignment(pGFF->ReadFieldINT(&cText, "ALIGNMENT", bSuccess,
-                                                 SWGUI_TEXT_ALIGNMENT_DEFAULT));
+        cParams.SetAlignment(pGFF->ReadFieldINT(&cText, "ALIGNMENT", bSuccess, SWGUI_TEXT_ALIGNMENT_DEFAULT));
         int bPulsing = pGFF->ReadFieldBYTE(&cText, "PULSING", bSuccess, 0);
         cParams.m_bHilightText = bPulsing;
-
         if (m_pString != NULL)
         {
             delete m_pString;
@@ -1460,3 +1463,105 @@ CSWGuiEditText::CSWGuiEditText()
     m_nMaxLength = -1;
     m_sText = "";
 }
+
+#ifdef _XBOX
+int CSWGuiText::GetIdealHeight()  // PC 0x00414EB0  Xbox 0x00300EF0
+{
+    if (m_pString != NULL)
+    {
+        return m_pString->GetIdealPixelHeight(-1);
+    }
+    return 0;
+}
+// PC 0x00414EE0  Xbox 0x00300F10
+int CSWGuiText::GetFontHeight()
+{
+    if (m_pString != NULL)
+    {
+        return m_pString->GetFontPixelHeight();
+    }
+    return 0;
+}
+#endif
+
+#ifdef _XBOX
+
+CResRef CSWGuiTextParams::s_cDefaultFont("dialogfont16x16");
+CResRef CSWGuiTextParams::s_cConsoleFont("fnt_console");
+// PC 0x00415D00  Xbox 0x00301DE0
+void CSWGuiTextParams::SetFont(const CResRef& cFont)
+{
+    if (cFont == s_cConsoleFont)
+    {
+        m_cFont = s_cDefaultFont;
+    }
+    else
+    {
+        m_cFont = cFont;
+    }
+    if (m_pText != NULL && m_pText->m_pString != NULL && m_cFont.IsValid())
+    {
+        char szFont[17];
+
+        m_cFont.CopyToString(szFont);
+        m_pText->m_pString->SetFontTexture(szFont);
+        m_pText->WrapString();
+    }
+}
+// PC 0x00417050  Xbox 0x00301D20
+CSWGuiTextParams::CSWGuiTextParams()
+{
+    m_cFont = s_cDefaultFont;
+    m_vColor = Vector(1.0f, 1.0f, 1.0f);
+    m_nAlignment = SWGUI_TEXT_ALIGNMENT_DEFAULT;
+    m_bHilightText = 0;
+    m_pText = NULL;
+    m_nStrRef = -1;
+    m_fAlpha = 1.0f;
+}
+// PC 0x004171E0  Xbox 0x00302EA0
+CSWGuiTextParams& CSWGuiTextParams::operator=(const CSWGuiTextParams& cParams)
+{
+    m_sText = cParams.m_sText;
+    m_nStrRef = cParams.m_nStrRef;
+    m_cFont = cParams.m_cFont;
+    m_vColor = cParams.m_vColor;
+    m_nAlignment = cParams.m_nAlignment;
+    m_fAlpha = cParams.m_fAlpha;
+    m_bHilightText = cParams.m_bHilightText;
+    SetTextObject(m_pText);
+    return *this;
+}
+// PC 0x00415F70  Xbox 0x00301FD0
+void CSWGuiTextParams::SetTextObject(CSWGuiText* pText)
+{
+    m_pText = pText;
+    if (pText != NULL)
+    {
+        if (pText->m_pString == NULL)
+        {
+            char szFont[20];
+            m_cFont.CopyToString(szFont);
+            m_pText->m_pString = NewCAurGUIString((char*)m_sText.CStr(), szFont, m_vColor);
+        }
+        int nStrRef = m_nStrRef;
+        SetFont(m_cFont);
+        SetText(m_sText);
+        SetAlignment(m_nAlignment);
+        SetColor(m_vColor);
+        m_nStrRef = nStrRef;
+    }
+}
+// Xbox 0x00302DF0
+CSWGuiTextParams::CSWGuiTextParams(unsigned long nStrRef, const CResRef& cFont, const Vector& vColor,
+                                   int nAlignment, float fAlpha)
+{
+    m_pText = NULL;
+    SetStrRef(nStrRef);
+    SetFont(cFont);
+    m_vColor = vColor;
+    m_nAlignment = nAlignment;
+    m_bHilightText = 0;
+    m_fAlpha = fAlpha;
+}
+#endif

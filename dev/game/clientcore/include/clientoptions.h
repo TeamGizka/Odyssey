@@ -91,6 +91,23 @@ public:
     void GetOptionsData(struct KOTOR_LAUNCH_OPTIONS_DATA* pData);
 
     void SetDefaultVideoOptions();
+
+    void SetGeometryFadeMode(unsigned char nMode);
+    void SetNumShadowCastingLights(unsigned char nLights);
+    void SetVSyncEnabled(int bEnabled);
+    void SetAnisotropicFiltering(int bEnabled);
+    void SetShinyWater(int bEnabled);
+    void SetTruform(int bEnabled);
+    void SetAntiAliasingMode(unsigned char nMode);
+    void SetGrassEnabled(int bEnabled);
+    void SetFastGrass(int bEnabled);
+    void SetWindMode(unsigned char nMode);
+    void SetGoreLevel(unsigned char nLevel) { m_nGoreLevel = nLevel; }
+    void SetZoomSpeed(float fSpeed) { m_fCameraDistance = fSpeed; }
+    void SetCameraTurnSpeed(float fSpeed) { m_fCameraHeight = fSpeed; }
+    void SetVisualEffectsHigh(int bEnabled) { m_bHighQualityPersistentVFX = bEnabled; }
+    void SetScreenEdgeCameraTurn(int bEnabled) { m_bPlaySounds = bEnabled; }
+    int GetShinyWaterSupported();
 #endif
 
 #ifdef _XBOX
@@ -104,7 +121,13 @@ public:
     unsigned int m_bPlayMovies : 1;
     unsigned int m_bWindowed : 1;
     unsigned int m_bPlaySounds : 1;
-    unsigned int m_nXboxUnmappedBits9 : 6;
+
+    unsigned int m_bVSync : 1;
+    unsigned int m_bTruform : 1;
+    unsigned int m_bAnisotropicFiltering : 1;
+    unsigned int m_bShinyWater : 1;
+    unsigned int m_bGrass : 1;
+    unsigned int m_bFastGrass : 1;
     unsigned int m_bHighQualityPersistentVFX : 1;
     unsigned int m_bAutoLevelUpNPCs : 1;
     unsigned int m_bMouseLook : 1;

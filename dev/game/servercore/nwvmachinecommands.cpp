@@ -65,15 +65,15 @@
 
 static inline void NwvmachinecommandsTrace1();
 #define NWVMACHINECOMMANDS_TRACE() NwvmachinecommandsTrace1()
-
 int g_nRunScriptVar = 0;
-
+#ifdef _XBOX
+int bDisableScriptLogging = 1;
+#else
 int bDisableScriptLogging = 0;
-
+#endif
 int LogCommandExecution = 0;
 int bShipBuild = 0;
-// PC 0x00409EB0
-int CSWVirtualMachineCommands::ExecuteCommandExploreAreaForPlayer(int, int)
+int CSWVirtualMachineCommands::ExecuteCommandExploreAreaForPlayer(int, int)  // PC 0x00409EB0
 {
     return 0;
 }
@@ -5764,11 +5764,11 @@ int CSWVirtualMachineCommands::ExecuteCommandFloatToInt(int nCommand, int nArgs)
         return -2001;
     }
 
-    if (g_pVirtualMachine->StackPushInteger((int)fValue) == 0)
-    {
-        return -2000;
-    }
-
+#ifdef _XBOX
+    int nValue = (int)fValue; if (g_pVirtualMachine->StackPushInteger(nValue) == 0) return -2000;
+#else
+    if (g_pVirtualMachine->StackPushInteger((int)fValue) == 0) { return -2000; }
+#endif
     return 0;
 }
 // PC 0x00536000  Xbox 0x0025B0A0
@@ -14475,11 +14475,11 @@ int CSWVirtualMachineCommands::ExecuteCommandSetCameraLocation(int nCommand,
     {
         return ERROR_STACK_POP;
     }
-    nCameraMode = 1;
-    fPitch = 0.0f;
-    fFacing = fFacing * RAD_TO_DEG;
-    fDistance = 0.0f;
-    bTransition = 0;
+#ifdef _XBOX
+    fFacing = fFacing * RAD_TO_DEG; nCameraMode = 1; fPitch = 0.0f; fDistance = 0.0f; bTransition = 0;
+#else
+    nCameraMode = 1; fPitch = 0.0f; fFacing = fFacing * RAD_TO_DEG; fDistance = 0.0f; bTransition = 0;
+#endif
     if (m_nCommandContext == COMMAND_CONTEXT_SERVER)
     {
         CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -17959,9 +17959,9 @@ int CSWVirtualMachineCommands::ExecuteCommandShowTutorialWindow(int nCommand,
     case 1:
         nTutorial = 40;
         break;
-    case 2:
-        nTutorial = 42;
-        break;
+#ifndef _XBOX
+    case 2: nTutorial = 42; break;
+#endif
     default:
         return 0;
     }
@@ -17970,8 +17970,8 @@ int CSWVirtualMachineCommands::ExecuteCommandShowTutorialWindow(int nCommand,
                                                        OBJECT_INVALID, 0);
     return 0;
 }
-// PC 0x005473B0  Xbox 0x0026C400
-int CSWVirtualMachineCommands::ExecuteCommandIsCreditSequenceInProgress(
+#ifndef _XBOX
+int CSWVirtualMachineCommands::ExecuteCommandIsCreditSequenceInProgress(  // PC 0x005473B0  Xbox 0x0026C400
     int nCommand, int nArgs)
 {
     int bInProgress;
@@ -18012,8 +18012,8 @@ int CSWVirtualMachineCommands::ExecuteCommandStartCreditSequence(
     }
     return 0;
 }
-// PC 0x005474F0  Xbox 0x0026C540
-int CSWVirtualMachineCommands::ExecuteCommandGetDifficultyMultiplier(
+#endif
+int CSWVirtualMachineCommands::ExecuteCommandGetDifficultyMultiplier(  // PC 0x005474F0  Xbox 0x0026C540
     int nCommand, int nArgs)
 {
     float fMultiplier = 1.0f;
@@ -18203,11 +18203,11 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsLiveContentAvailable(
     }
     else
     {
-        if (nPackage == LIVE_CONTENT_PKG1)
-        {
-            bAvailable = TRUE;
-        }
-        else if (nPackage >= LIVE_CONTENT_PKG2 && nPackage <= LIVE_CONTENT_PKG6)
+#ifndef _XBOX
+        if (nPackage == LIVE_CONTENT_PKG1) { bAvailable = TRUE; } else if (nPackage >= LIVE_CONTENT_PKG2 && nPackage <= LIVE_CONTENT_PKG6)
+#else
+        if (nPackage < LIVE_CONTENT_PKG1 || nPackage > LIVE_CONTENT_PKG6) bAvailable = FALSE; else
+#endif
         {
             sAlias.Format("LIVE%d", nPackage);
             bAvailable = g_pExoBase->m_pExoAliasList->GetAliasPath(sAlias, 0)
@@ -21034,3 +21034,60 @@ void CSWVirtualMachineCommands::InitializeCommands()
 static inline void NwvmachinecommandsTrace1()
 {
 }
+
+#ifdef _XBOX
+// PC 0x005473B0  Xbox 0x0026C400
+int CSWVirtualMachineCommands::ExecuteCommandIsCreditSequenceInProgress(
+    int nCommand, int nArgs)
+{
+    int bInProgress;
+
+    bInProgress = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_bCreditSequenceInProgress;
+    return g_pVirtualMachine->StackPushInteger(bInProgress) != 0 ? 0 : -2000;
+}
+// PC 0x005473E0  Xbox 0x0026C430
+int CSWVirtualMachineCommands::ExecuteCommandStartCreditSequence(
+    int nCommand, int nArgs)
+{
+    int bTransparentBackground;
+
+    CExoString sMusic;
+
+    if (g_pVirtualMachine->StackPopInteger(&bTransparentBackground) == 0)
+    {
+        return ERROR_STACK_POP;
+    }
+    if (g_pVirtualMachine->StackPopString(&sMusic) == 0)
+    {
+        return ERROR_STACK_POP;
+    }
+    if (bTransparentBackground)
+    {
+        Vector vColor(-1.0f, -1.0f, -1.0f);
+        CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+        pClientExoApp->GetInGameGui()->StartCreditSequence(vColor, sMusic);
+    }
+    else
+    {
+        Vector vColor(0.0f, 0.0f, 0.0f);
+        CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+        pClientExoApp->GetInGameGui()->StartCreditSequence(vColor, sMusic);
+    }
+    return 0;
+}
+#include <stdio.h>
+#include "aurconsole.h"
+// Xbox 0x00262100
+static void runscript(char* szArgs)
+{
+    CExoString sScript;
+    char szScript[20];
+    sscanf(szArgs, "%s %d", szScript, &g_nRunScriptVar);
+    sScript = szScript;
+    g_pVirtualMachine->RunScript(&sScript, 0, 0);
+}
+
+ConsoleFunc ConVbDisableScriptLogging("bDisableScriptLogging", &bDisableScriptLogging);
+ConsoleFunc ConFrunscript("runscript", runscript);
+ConsoleFunc ConVbShipBuild("bShipBuild", &bShipBuild);
+#endif

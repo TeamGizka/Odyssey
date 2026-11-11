@@ -10,7 +10,9 @@ class CSWGuiInGamePause : public CSWGuiPanel
 public:
     CSWGuiLabel m_lblPauseReason;
     CSWGuiLabel m_lblPress;
+#ifndef _XBOX
     CSWGuiButton m_btnUnpause;
+#endif
     int m_nOriginalTop;
     int m_nOriginalLeft;
 

@@ -152,11 +152,11 @@ public:
     int GetRoomIndex(const CResRef& cAreaResRef, const Vector& vPosition,
                      int nFlags);
     int CreatureAcquireItem(unsigned long oidObject, const CResRef& cResRef);
-    int TestSafeLocation(unsigned long oidObject, const Vector& vPosition);
-    int ComputeSafeLocation(const Vector& vPosition, float fRadius,
-                            unsigned long oidObject, int nFlags,
-                            Vector* pvSafe);
-    Vector GetNormalOfPoint(const Vector& vPosition);
+#ifdef _XBOX
+    int TestSafeLocation(unsigned long oidObject, Vector vPosition); int ComputeSafeLocation(Vector vPosition, float fRadius, unsigned long oidObject, int nFlags, Vector* pvSafe); Vector GetNormalOfPoint(Vector vPosition); int DebugValidatePath(unsigned long oidCreature, int bTempWayPoints); void SetHintTimers(unsigned long nHintTimer1, unsigned long nHintTimer2);
+#else
+    int TestSafeLocation(unsigned long oidObject, const Vector& vPosition); int ComputeSafeLocation(const Vector& vPosition, float fRadius, unsigned long oidObject, int nFlags, Vector* pvSafe); Vector GetNormalOfPoint(const Vector& vPosition);
+#endif
     int GetSurfaceMaterial(const CResRef& cAreaResRef, Vector vPosition,
                            int nRoomIndex);
     void ClearLastModuleFound();

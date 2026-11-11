@@ -59,7 +59,6 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
     InitControl(m_btnRecommended, "BTN_RECOMMENDED", 1);
     InitControl(m_btnBack, "BTN_BACK", 1);
 #endif
-
 #ifdef _XBOX
     InitControl(m_lblSkill[0], "COMPUTER_USE_LBL", 1);
     InitControl(m_lblMinus[0], "COMPUTER_USE_MINUS_LBL", 1);
@@ -165,14 +164,15 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
     InitControl(m_btnPlus[7], "TRE_PLUS_BTN", 1);
 #endif
     StopLoadFromLayout();
-    m_lblDescription.Initialize(m_lbDescription.m_pProtoItem->m_cExtent,
-                               static_cast<CSWGuiLabel*>(m_lbDescription.m_pProtoItem),
-                               1.0f);
+#ifndef _XBOX
+    m_lblDescription.Initialize(m_lbDescription.m_pProtoItem->m_cExtent, static_cast<CSWGuiLabel*>(m_lbDescription.m_pProtoItem), 1.0f);
+#else
+    m_lblDescription.Initialize(m_lbDescription.m_pProtoItem->m_cExtent, static_cast<CSWGuiLabel*>(m_lbDescription.m_pProtoItem));
+#endif
     m_nSelected = 0;
     for (int i = 0; i < 8; i++)
     {
-        m_btnPoints[i].AddEvent(CSWGuiControl::EVENT_ENTER, this,
-            (CSWGuiHandler)&CSWGuiSkillsCharGen::OnEnterPointsButton);
+        m_btnPoints[i].AddEvent(CSWGuiControl::EVENT_ENTER, this, (CSWGuiHandler)&CSWGuiSkillsCharGen::OnEnterPointsButton);
         m_btnPoints[i].AddEvent(CSWGuiControl::EVENT_EXIT, this,
             (CSWGuiHandler)&CSWGuiSkillsCharGen::OnExitPointsButton);
         m_btnPoints[i].m_nIndex = i;
@@ -254,7 +254,7 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
     m_lblRemainingSelections.m_cText.m_cParams.SetText(m_nPointsRemaining);
     SetActiveControl(&m_btnPoints[m_nSelected], 0);
 }
-// PC 0x006F47E0
+// PC 0x006F47E0  Xbox 0x0012CBB0
 CSWGuiSkillsCharGen::~CSWGuiSkillsCharGen()
 {
     m_lbDescription.ClearItems();
@@ -694,7 +694,7 @@ void CSWGuiSkillsCharGen::OnRecommendButton()
 }
 
 #ifdef _XBOX
-// PC 0x0041A290
+// PC 0x0041A290  Xbox 0x0004CEC0
 inline int CSWGuiListBox::IsOversized()
 {
     return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&

@@ -86,7 +86,11 @@ static inline void GuiInGameTrace();
 
 CSWGuiPanel* g_pDynamicGUI = 0;
 int trapbadstrref = 0;
+#ifdef _XBOX
+int g_bCreateAllGUIs = 0;
+#else
 int g_bCreateAllGUIs = 1;
+#endif
 int g_bModifiedSound = 1;
 int bDisableLetterbox = 0;
 
@@ -106,7 +110,7 @@ Vector CGuiInGame::DISABLED_TEXT(0.0f, 0.33f, 0.49f);
 Vector CGuiInGame::COLOR_BLACK;
 
 extern int bDisableLetterbox;
-
+// Xbox 0x00055E10
 const char* HideGUI(char* sCommand)
 {
     if (g_pDynamicGUI != NULL)
@@ -126,8 +130,8 @@ const char* HideGUI(char* sCommand)
     }
     return "";
 }
-
-const char* ShowGUI(char* sCommand)
+#ifndef _XBOX
+const char* ShowGUI(char* sCommand)  // Xbox 0x00055E60
 {
     if (*sCommand == 0)
     {
@@ -159,6 +163,7 @@ const char* ShowGUI(char* sCommand)
 #endif
     return "";
 }
+#endif
 // PC 0x0062FED0  Xbox 0x0005B3D0
 CGuiInGame::CGuiInGame()
 {
@@ -256,30 +261,51 @@ CGuiInGame::CGuiInGame()
     m_nGlobalDialogState = 0;
     m_nC0 = 0;
     m_nDialogCameraType = 0;
+#ifdef _XBOX
+    m_bInitialized = 1;
+    CExoIni cIni;
+    CExoString sCompass;
+    if (cIni.ReadIniEntry(sCompass, "d:\\swkotor.ini", "Display Options", "Compass"))
+        m_bInitialized = sCompass.AsINT() != 0;
+#endif
     m_nPlaceableCameras = 0;
     m_bComputerCameraShot = 0;
     m_fComputerCameraMicRange = 0.0f;
     m_pDialogSound = 0;
     m_bDialogSoundQueried = 0;
     m_nDialogReply = 0;
+#ifndef _XBOX
     m_bInitialized = 1;
+#endif
     m_nDialogReplyCount = 0;
     m_bDialogReplySelected = 0;
     m_nDialogReplySelection = 0;
     m_bPaused = 0;
+#ifndef _XBOX
     m_nPauseState = 0;
+#endif
     m_nDialogSpanningTextRemaining = 0;
     m_nDialogSpanningTextCount = 0;
     m_bHoldWorldFadeInForDialog = 0;
     m_oidPostDialogCharacterSwitch = OBJECT_INVALID;
+#ifdef _XBOX
+    m_nXboxUnmappedB98 = 0;
+    m_nDialogReplyRow = 16;
+#endif
     for (int nTutorialByte = 0; nTutorialByte < sizeof(m_aTutorialWindowsShown); nTutorialByte++)
         m_aTutorialWindowsShown[nTutorialByte] = 0;
     m_nGlobalUnpauseableState = 1;
     m_bControllerPauseActive = 0;
     m_bPausedByCombatBeforeControllerPause = 0;
+#ifdef _XBOX
+    m_bCreditSequenceInProgress = 0;
+#endif
     m_nDialogScrollWait = 0;
     m_bDialogScrollFinished = 0;
     m_pDialogAmbientTrack = 0;
+#ifdef _XBOX
+    m_pCreditsMusic = 0;
+#endif
     m_fDialogCameraPullBackRange = 0.0f;
     m_nNoClickDay = 0;
     m_nNoClickTime = 0;
@@ -293,11 +319,16 @@ CGuiInGame::CGuiInGame()
     m_bDeferredFOVCall = 0;
     m_fDeferredFieldOfView = 0.0f;
     m_bTransitionScriptRunning = 0;
+#ifdef _XBOX
+    m_nXboxUnmappedC0C = 1;
+#endif
     m_bInputActiveBeforeControllerPause = 0;
+#ifndef _XBOX
     m_vAreaTransition = Vector(0.0f, 0.0f, 0.0f);
     m_oidAreaTransition = OBJECT_INVALID;
     m_bCameraRelativeAreaTransition = 1;
     m_bDanceDanceMalak = 0;
+#endif
 }
 // PC 0x006303B0  Xbox 0x0005B980
 CGuiInGame::~CGuiInGame()
@@ -2358,7 +2389,7 @@ void CGuiInGame::UpdateMessageGUI()
         ->AddDialogMessages((CGuiInGameDialogMessage*)m_pDialogBuffer,
                             m_nDialogBufferSize);
 }
-
+// Xbox 0x00055630
 void CGuiInGame::StopBarkBubble(int bFade)
 {
     if (m_pBarkBubble != 0)
@@ -2443,7 +2474,7 @@ CExoString CGuiInGame::DialogNodeSpanningTextParse(const CExoString& sText)
     }
     return sText;
 }
-// PC 0x0062B000
+// PC 0x0062B000  Xbox 0x000558C0
 void CGuiInGame::SetMainInterfaceTarget(unsigned long oidTarget, int bFlag)
 {
     if (m_pMainInterface != 0)
@@ -2451,13 +2482,15 @@ void CGuiInGame::SetMainInterfaceTarget(unsigned long oidTarget, int bFlag)
         m_pMainInterface->SetTarget(oidTarget, bFlag);
     }
 }
-// PC 0x0062B020
-void CGuiInGame::SetAreaTransition(unsigned long oidArea,
+
+#ifndef _XBOX
+void CGuiInGame::SetAreaTransition(unsigned long oidArea,  // PC 0x0062B020
                                    const Vector& vPosition)
 {
     m_vAreaTransition = vPosition;
     m_oidAreaTransition = oidArea;
 }
+#endif
 // PC 0x0062B050  Xbox 0x000558E0
 void CGuiInGame::RePopulateMainInterface()
 {
@@ -2615,7 +2648,7 @@ void CGuiInGame::UpdateCreatedInGameGUI(int nOldScreen, int nNewScreen)
 }
 
 #ifdef _XBOX
-int CGuiInGame::SetGlobalUnpauseableState(int bUnpauseable)  // PC 0x0062B410  Xbox 0x00055CA0
+void CGuiInGame::SetGlobalUnpauseableState(int bUnpauseable)  // Xbox 0x00055CA0
 {
     if (bUnpauseable == 1)
     {
@@ -2626,10 +2659,10 @@ int CGuiInGame::SetGlobalUnpauseableState(int bUnpauseable)  // PC 0x0062B410  X
         --m_nGlobalUnpauseableState;
     }
     EXOXBOXASSERT(m_nGlobalUnpauseableState != -1);
-    return m_nGlobalUnpauseableState;
+
 }
 #else
-int CGuiInGame::SetGlobalUnpauseableState(int bUnpauseable)  // PC 0x0062B410  Xbox 0x00055CA0
+int CGuiInGame::SetGlobalUnpauseableState(int bUnpauseable)  // PC 0x0062B410
 {
     if (bUnpauseable == 1)
     {
@@ -2682,7 +2715,7 @@ int CGuiInGame::GetPartyAccessPanelUp(int bAny)
     }
     return bAny == 0 && m_pGuiManager->PanelExists(m_apScreenPanels[1]) != 0;
 }
-// PC 0x0062B580
+// PC 0x0062B580  Xbox 0x00055DA0
 void CSWGuiStatusSummary::AddExperience(int nExperience)
 {
     GUIINGAME_TRACE();
@@ -2692,7 +2725,7 @@ void CSWGuiStatusSummary::AddExperience(int nExperience)
         m_cStatusSummary.m_bDisplaySPending = 1;
     }
 }
-// PC 0x0062B5A0
+// PC 0x0062B5A0  Xbox 0x00055DC0
 void CSWGuiStatusSummary::AddStealthExperience(int nExperience)
 {
     GUIINGAME_TRACE();
@@ -3521,8 +3554,9 @@ int CGuiInGame::HandleDialogEntry(
     }
     return 1;
 }
-// PC 0x00632180  Xbox 0x0005DD30
-void CGuiInGame::UpdateAreaTransitionGUI()
+
+#ifndef _XBOX
+void CGuiInGame::UpdateAreaTransitionGUI()  // PC 0x00632180
 {
     if (m_bItemCreateMenuAvailable != 0 && m_pGuiManager != 0 &&
         m_pAreaTransition != 0)
@@ -3562,6 +3596,7 @@ void CGuiInGame::UpdateAreaTransitionGUI()
             HideAreaTransition();
     }
 }
+#endif
 // PC 0x0062B730  Xbox 0x0005BBE0
 void CGuiInGame::ShowDialogEntry(const CExoString& sMessage,
                                  unsigned long oidOwner, unsigned long nFlags)
@@ -3842,8 +3877,8 @@ int CGuiInGame::InitializeShotCamera()
     }
     return m_bShotCameraInitialized;
 }
-// PC 0x0062BF70  Xbox 0x00057380
-int CGuiInGame::SetAnimatedCamera(unsigned short nAnimation, float fFieldOfView)
+#ifndef _XBOX
+int CGuiInGame::SetAnimatedCamera(unsigned short nAnimation, float fFieldOfView)  // PC 0x0062BF70  Xbox 0x00057380
 {
     GUIINGAME_TRACE();
     if (m_bAnimatedCameraLoaded == 0 ||
@@ -3874,6 +3909,7 @@ int CGuiInGame::SetAnimatedCamera(unsigned short nAnimation, float fFieldOfView)
         nAnimation, fFieldOfView, oidTarget);
     return 1;
 }
+#endif
 // PC 0x0062C030  Xbox 0x00057450
 void CGuiInGame::SetComputerCameraShot(int nCamera, unsigned long oidTarget,
                                      int nVideoEffect)
@@ -4114,7 +4150,9 @@ void CGuiInGame::ShutDown()
         ClearDialogAnimationData();
         ClearLastDialogAnimationData();
         m_bPaused = 0;
+#ifndef _XBOX
         m_nPauseState = 0;
+#endif
         m_bItemCreateMenuAvailable = 0;
     }
 }
@@ -5050,13 +5088,13 @@ void CGuiInGame::ShowPartySelection(const CExoString& sExitScript, int bAllowCan
         }
     }
 }
-// PC 0x0062DED0
-int CGuiInGame::IsGlobalFadeObscuring()
+#ifndef _XBOX
+int CGuiInGame::IsGlobalFadeObscuring()  // PC 0x0062DED0  Xbox 0x000554E0
 {
     GUIINGAME_TRACE();
     return m_pGlobalFade->m_fAlpha > 0.001f;
 }
-
+#endif
 #ifdef _XBOX
 void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)  // PC 0x0062DEF0  Xbox 0x00059510
 {
@@ -5206,6 +5244,7 @@ int CGuiInGame::HandleDialogReplyChosen(unsigned long oidSpeaker,
     }
     return 1;
 }
+#ifndef _XBOX
 // PC 0x0062E1D0  Xbox 0x0005DB70
 int CGuiInGame::HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSound)
 {
@@ -5236,8 +5275,8 @@ int CGuiInGame::HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSoun
     m_oidDialogSoundObject = pClientObject->m_nId;
     return 1;
 }
-// PC 0x0062E310  Xbox 0x000597A0
-void CGuiInGame::ShowStoreGui(unsigned long oidStore, unsigned long oidCreature)
+#endif
+void CGuiInGame::ShowStoreGui(unsigned long oidStore, unsigned long oidCreature)  // PC 0x0062E310  Xbox 0x000597A0
 {
     GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0 && m_pPartySelection == 0 &&
@@ -6253,8 +6292,8 @@ int CGuiInGame::CopyQuickSaveGameToFutureGame(unsigned long nSaveGame,
     delete pERF;
     return 1;
 }
-// PC 0x0062FEA0
-int CGuiInGame::GetCurrentEquipScreenNPC()
+#ifndef _XBOX
+int CGuiInGame::GetCurrentEquipScreenNPC()  // PC 0x0062FEA0
 {
     GUIINGAME_TRACE();
     int nNPC = -1;
@@ -6265,6 +6304,7 @@ int CGuiInGame::GetCurrentEquipScreenNPC()
     }
     return nNPC;
 }
+#endif
 
 #include "swguiingame.inl"
 // PC 0x00632720  Xbox 0x00055F40
@@ -6791,5 +6831,232 @@ void CGuiInGame::ClearDialogReplyText()
 void CGuiInGame::ChangeCharacter()
 {
     m_pMainInterface->StartRotation();
+}
+#endif
+
+#ifdef _XBOX
+// Xbox 0x0005DD30
+void CGuiInGame::UpdateAreaTransitionGUI(unsigned long oidArea,
+                                         const Vector& vPosition)
+{
+    CSWCModule* pModule;
+    CSWSArea* pServerArea;
+    if (g_pAppManager->m_pClientExoApp->GetModule() != 0 &&
+        (pModule = g_pAppManager->m_pClientExoApp->GetModule())->m_pInfo != 0 &&
+        (pServerArea = pModule->m_pInfo->GetServerArea()) != 0 &&
+        oidArea != OBJECT_INVALID &&
+        m_bShowPauseGui == GUISTATE_MAIN_INTERFACE)
+    {
+        if (pServerArea->m_bTransitionPending != 0)
+        {
+            if (m_pGuiManager->PanelExists(m_pAreaTransition))
+                m_pGuiManager->SendPanelToBack(m_pAreaTransition);
+        }
+        else if (m_bItemCreateMenuAvailable != 0 && m_pGuiManager != 0 &&
+                 m_pAreaTransition != 0)
+        {
+            m_pAreaTransition->SetTransitionObject(oidArea, vPosition);
+            if (!m_pGuiManager->PanelExists(m_pAreaTransition))
+            {
+                m_pGuiManager->AddPanel(m_pAreaTransition,
+                    SWGUI_PANEL_MODE_OVERLAY, 1);
+                m_pGuiManager->SendPanelToBack(m_pAreaTransition);
+            }
+        }
+    }
+    else
+        HideAreaTransition();
+}
+// Xbox 0x0005A120
+unsigned long CGuiInGame::GetAreaTransitionObject()
+{
+    if (m_pAreaTransition == NULL)
+    {
+        return OBJECT_INVALID;
+    }
+    return m_pAreaTransition->m_oidTransitionObject;
+}
+#endif
+
+#ifdef _XBOX
+// PC 0x0062DED0  Xbox 0x000554E0
+int CGuiInGame::IsGlobalFadeObscuring()
+{
+    GUIINGAME_TRACE();
+    return m_pGlobalFade->IsObscuring();
+}
+#endif
+
+#ifdef _XBOX
+#include "nwcambientsound.h"
+// Xbox 0x0005ADD0
+void CGuiInGame::StartCreditSequence(const Vector& vColor, const CExoString& sMusic)
+{
+    if (!m_bCreditSequenceInProgress)
+    {
+        CSWGuiInGameCredits* pCredits = new CSWGuiInGameCredits(m_pGuiManager);
+        if (pCredits != NULL)
+        {
+            if (!m_pGuiManager->PanelExists(pCredits))
+            {
+                m_pGuiManager->AddPanel(pCredits, CSWGuiManager::PANEL_MODE_MODAL, 1);
+            }
+            pCredits->m_vColor = vColor;
+            g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo->GetAmbientSound()->StopSounds(0);
+            if (m_pCreditsMusic != 0)
+            {
+                delete m_pCreditsMusic;
+                m_pCreditsMusic = 0;
+            }
+            m_pCreditsMusic = new CExoStreamingSoundSource;
+            if (m_pCreditsMusic != 0)
+            {
+                m_pCreditsMusic->SetPriorityGroup(CExoStreamingSoundSource::PRIORITY_GROUP_DIALOG_AMBIENT);
+                if (m_nXboxUnmappedC0C == 1)
+                {
+                    m_pCreditsMusic->Play(sMusic.CStr(), 11, 0, 1, 0);
+                }
+            }
+            m_bCreditSequenceInProgress = 1;
+        }
+    }
+}
+// Xbox 0x0005AB10
+void CGuiInGame::PostDialogConversationText(const CExoString& sConversation)
+{
+    if (m_nXboxUnmappedB98)
+    {
+        CExoString sText;
+        sText.Format("Conv: %s", sConversation.CStr());
+        AurPostString(sText.CStr(), 5, 15, 10000.0f);
+    }
+}
+// Xbox 0x0005ABA0
+void CGuiInGame::PostDialogSoundText(const CExoString& sSound)
+{
+    if (m_nXboxUnmappedB98)
+    {
+        int nRow = m_nDialogReplyRow++;
+        if (m_nDialogReplyRow - 16 >= 5)
+        {
+            m_nDialogReplyRow = 16;
+        }
+        int nClearRow = nRow + 1;
+        if (nClearRow >= 21)
+        {
+            nClearRow = 16;
+        }
+        CExoString sText;
+        sText.Format(" ");
+        AurPostString(sText.CStr(), 5, nClearRow, 5.0f);
+        if (nRow == 16)
+        {
+            sText.Format("Audio/Lip: - %s", sSound.CStr());
+        }
+        else
+        {
+            sText.Format("           - %s", sSound.CStr());
+        }
+        AurPostString(sText.CStr(), 5, nRow, 10000.0f);
+    }
+}
+// PC 0x0062E1D0  Xbox 0x0005DB70
+int CGuiInGame::HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSound)
+{
+    GUIINGAME_TRACE();
+    CExoString sSound;
+    cSound.CopyToString(sSound);
+    PostDialogSoundText(sSound);
+    CSWCObject* pObject = g_pAppManager->m_pClientExoApp->GetGameObject(
+        m_oidDialogObject1);
+    if (pObject == 0 || pObject->AsSWCObject() == 0)
+        return 0;
+    CSWCObject* pClientObject = pObject->AsSWCObject();
+    if (cSound.IsValid() && pClientObject != 0)
+    {
+        if (m_pDialogSound != 0)
+        {
+            m_pDialogSound->Stop();
+            delete m_pDialogSound;
+        }
+        m_pDialogSound = new CExoStreamingSoundSource;
+        m_pDialogSound->SetPriorityGroup(
+            CExoStreamingSoundSource::PRIORITY_GROUP_DIALOG_VOICE);
+        if (m_pDialogSound->Play(cSound, 11, 1, 0, 0) == 0 &&
+            m_pDialogSound->Play(cSound, RESTYPE_WAV, 1, 0, 0) == 0)
+        {
+            return 0;
+        }
+        int nDebugOption = g_pExoInput->GetDebugOption();
+        if (nDebugOption == 3)
+        {
+            m_pDialogSound->SetFixedVariance(1.5f);
+        }
+        else if (nDebugOption == 1)
+        {
+            m_pDialogSound->SetFixedVariance(0.75f);
+        }
+        SetDialogSound(oidSpeaker, cSound);
+    }
+    m_oidDialogSoundObject = pClientObject->m_nId;
+    return 1;
+}
+// Xbox 0x00055E60
+const char* ShowGUI(char* sCommand)
+{
+    if (*sCommand == 0)
+    {
+        return "need to specify the GUI to create";
+    }
+    HideGUI("");
+    g_pDynamicGUI = new CSWGuiDynamic(
+        g_pAppManager->m_pClientExoApp->GetSWGuiManager(), sCommand);
+    g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(
+        g_pDynamicGUI, 0, 1);
+    g_pAppManager->m_pClientExoApp->SetInputClass(2);
+    return "";
+}
+// Xbox 0x00055DE0
+const char* creditsinprogress(char* sCommand)
+{
+    return g_pAppManager->m_pClientExoApp->GetInGameGui()->m_bCreditSequenceInProgress ? "True" : "False";
+}
+// Xbox 0x0005B320
+const char* showcredits(char* sCommand)
+{
+    Vector vColor(0.0f, 0.0f, 0.0f);
+    sscanf(sCommand, "%f %f %f", &vColor.m_fX, &vColor.m_fY, &vColor.m_fZ);
+    CExoString sMusic("");
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->StartCreditSequence(vColor, sMusic);
+    return "Success";
+}
+// PC 0x0062BF70  Xbox 0x00057380
+int CGuiInGame::SetAnimatedCamera(unsigned short nAnimation, float fFieldOfView)
+{
+    GUIINGAME_TRACE();
+    if (m_bAnimatedCameraLoaded != 0 &&
+        nAnimation >= CUTSCENE_ANIMATION_FIRST &&
+        nAnimation <= CUTSCENE_ANIMATION_WL_LAST)
+    {
+        CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
+        if (pModule != 0)
+        {
+            unsigned long oidCamera = m_oidCameraAnimationObject;
+            m_bAnimatedCameraActive = 1;
+            m_bShotCameraInitialized = 0;
+            m_nDialogCameraAnimation = nAnimation;
+            CGameObject* pObject = g_pAppManager->m_pServerExoApp->GetGameObject(oidCamera);
+            if (pObject != 0 && pObject->AsSWSObject() != 0)
+            {
+                pObject->AsSWSObject()->TimeStampCameraAnimation();
+            }
+            unsigned long oidTarget = m_oidDialogObject1;
+            m_fAnimatedCameraTime = pModule->SetAnimatedCamera(
+                nAnimation, fFieldOfView, oidTarget);
+            return 1;
+        }
+        EXOXBOXASSERT(0);
+    }
+    return 0;
 }
 #endif

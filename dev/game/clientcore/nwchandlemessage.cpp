@@ -71,7 +71,7 @@ void CSWCProjectile::SetDesiredPosition(const Vector& vPosition)
 {
     m_vDesiredPosition = vPosition;
 }
-// PC 0x0064B4F0
+// PC 0x0064B4F0  Xbox 0x0016E480
 void CSWCProjectile::SetSourcePosition(const Vector& vPosition)
 {
     m_vSourcePosition = vPosition;
@@ -3900,7 +3900,9 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_ControlObject(
     unsigned long oidObject)
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
+#ifndef _XBOX
     pApp->SetCharacterChangeInProgress(0);
+#endif
     CSWCCreature* pOldCreature = pApp->GetPlayerCreature();
     pApp->SetPlayerCreature(oidObject);
     if (pOldCreature != NULL)
@@ -3908,9 +3910,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_ControlObject(
         unsigned long oidOldCreature = pOldCreature->m_nId;
         CSWCPlayer* pPlayer = pApp->GetPlayerByGameObjectID(oidOldCreature);
         if (pPlayer != NULL)
-        {
             pPlayer->m_oidControlledObject = oidObject;
-        }
     }
     CSWCCreature* pCreature = pApp->GetCreatureByGameObjectID(oidObject);
     if (pCreature == NULL)
@@ -7209,8 +7209,8 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiQuickbarItemUseCount()
     }
     return 1;
 }
-// PC 0x0064FC10  Xbox 0x000753B0
-int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()
+#ifndef _XBOX
+int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()  // PC 0x0064FC10  Xbox 0x000753B0
 {
 
     unsigned char nMode = ReadCHAR(8);
@@ -7280,8 +7280,8 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()
         g_pAppManager->m_pClientExoApp->DontUseThisSetPlayerCreature(oidPlayer);
     return 0;
 }
-// PC 0x0064FDF0  Xbox 0x00075480
-int CSWCMessage::HandleServerToPlayerUpdate_GuiRepository(int bBank)
+#endif
+int CSWCMessage::HandleServerToPlayerUpdate_GuiRepository(int bBank)  // PC 0x0064FDF0  Xbox 0x00075480
 {
     unsigned char nMode = ReadCHAR(8);
     unsigned long oidItem;
@@ -10711,3 +10711,50 @@ static inline void NwchandlemessageTrace3()
 {
     NwchandlemessageTrace2();
 }
+
+#ifdef _XBOX
+// PC 0x0064FC10  Xbox 0x000753B0
+int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()
+{
+    unsigned char nMode = ReadBYTE(8);
+    if (MessageReadOverflow(1))
+    {
+        return 0;
+    }
+
+    if (nMode == GUI_INVENTORY_RECORD_ADD)
+    {
+        unsigned long nSlot = ReadDWORD(32);
+        if (MessageReadOverflow(1))
+        {
+            return 0;
+        }
+        CSWCItem* pItem;
+        if (!HandleServerToPlayerItemUpdate_Add(1, &pItem))
+        {
+            return 0;
+        }
+        pItem->m_nEquipSlot = nSlot;
+        pItem->m_nInventorySlot = INVENTORY_SLOT_INVALID;
+        CSWCCreature* pCreature =
+            g_pAppManager->m_pClientExoApp->GetPlayerCreature();
+        if (pCreature != NULL)
+        {
+            if (pCreature->GetEquippedItemID(nSlot) != pItem->GetId())
+                pCreature->EquipToInventorySlot(nSlot, pItem);
+        }
+        return 1;
+    }
+    else if (nMode == GUI_INVENTORY_RECORD_DELETE)
+    {
+        ReadDWORD(32);
+        if (MessageReadOverflow(1))
+        {
+            return 0;
+        }
+        return 1;
+    }
+    return 0;
+}
+#endif
+

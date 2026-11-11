@@ -165,12 +165,13 @@ char* testsetpausecolor(char* sArguments)
 {
 #ifdef _XBOX
 
-    double fRed = atof(GetToken(&sArguments));
-    double fGreen = atof(GetToken(&sArguments));
-    double fBlue = atof(GetToken(&sArguments));
-    double fAlpha = atof(GetToken(&sArguments));
-    g_rgbaPauseOverlayColor = ((((int)(fAlpha * 255.0) << 8 | (int)(fRed * 255.0)) << 8 |
-                                (int)(fGreen * 255.0)) << 8) | (int)(fBlue * 255.0);
+    double afColor[4];
+    afColor[0] = atof(GetToken(&sArguments));
+    afColor[1] = atof(GetToken(&sArguments));
+    afColor[2] = atof(GetToken(&sArguments));
+    afColor[3] = atof(GetToken(&sArguments));
+    g_rgbaPauseOverlayColor = ((((int)(afColor[3] * 255.0) << 8 | (int)(afColor[0] * 255.0)) << 8 |
+                                (int)(afColor[1] * 255.0)) << 8) | (int)(afColor[2] * 255.0);
 #else
     float fRed = (float)atof(GetToken(&sArguments));
     float fGreen = (float)atof(GetToken(&sArguments));
@@ -499,7 +500,7 @@ char* setaliasing(char* sArguments)
     return "SUCCESS";
 }
 #else
-
+// Xbox 0x002A28C0
 void AurPersistDisplay()
 {
     g_pD3DDevice->PersistDisplay();

@@ -1551,9 +1551,8 @@ void AurPostProcessArrayListDefiners()
 
 #ifdef _XBOX
 
-#ifdef AURORA_XBOX_ANIMATION_PRUNE
 MdlNode* findnode(MdlNode* pNode, char* sName);
-
+// Xbox 0x00290F80
 void Animation::PruneNodes(MdlNode* pNode)
 {
     countanimnodes++;
@@ -1569,7 +1568,7 @@ void Animation::PruneNodes(MdlNode* pNode)
         countprunedanimnodes++;
     }
 }
-
+// Xbox 0x00291000
 void Animation::PruneToAnimRoot()
 {
     if (strcmp(m_sAnimRoot, "") != 0 && stricmp(m_sAnimRoot, "NULL") != 0)
@@ -1579,19 +1578,19 @@ void Animation::PruneToAnimRoot()
         {
             while (pNode->m_pParentNode != 0)
             {
-                MdlNode* pKeep = pNode;
-                pNode = pNode->m_pParentNode;
-                pNode->m_lstControllers.SetSize(0);
-                for (int i = pNode->m_lChildren.m_nCount; i != 0; )
+                MdlNode* pParent = pNode->m_pParentNode;
+                pParent->m_lstControllers.SetSize(0);
+                for (int i = pParent->m_lChildren.m_nCount; i != 0; )
                 {
                     i--;
-                    MdlNode* pChild = pNode->m_lChildren[i];
-                    if (pChild != pKeep)
+                    MdlNode* pChild = pParent->m_lChildren[i];
+                    if (pChild != pNode)
                     {
-                        pNode->m_lChildren.DelIndex(i);
+                        pParent->m_lChildren.DelIndex(i);
                         delete pChild;
                     }
                 }
+                pNode = pParent;
             }
             if (pruneanimations)
                 PruneNodes(m_pRootNode);
@@ -1601,4 +1600,26 @@ void Animation::PruneToAnimRoot()
     }
 }
 #endif
+
+#ifdef _XBOX
+
+int __cdecl CompareTransparencyHint(const void* pFirst, const void* pSecond);
+// Xbox 0x0028FD10
+void MdlNode::SortChildrenByTransparency()
+{
+    int i;
+
+    for (i = 0; i < m_lChildren.m_nCount; i++)
+    {
+        if (m_lChildren[i]->AsMdlNodeTriMesh() && m_lChildren[i]->AsMdlNodeTriMesh()->m_nTransparencyHint > 0)
+        {
+            qsort(m_lChildren.m_pList, m_lChildren.m_nCount, sizeof(MdlNode*), CompareTransparencyHint);
+            break;
+        }
+    }
+    for (i = 0; i < m_lChildren.m_nCount; i++)
+    {
+        m_lChildren[i]->SortChildrenByTransparency();
+    }
+}
 #endif

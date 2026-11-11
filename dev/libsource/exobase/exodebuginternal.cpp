@@ -73,7 +73,6 @@ void CExoDebugInternal::InitializeWarningFile()
 void CExoDebugInternal::Warning(int line, char* file, const char* message)
 {
     CExoString sWarning;
-
     if (message == NULL)
     {
         sWarning.Format("A warning has occured:\n\n File: %s\n\n"
@@ -91,19 +90,14 @@ void CExoDebugInternal::Warning(int line, char* file, const char* message)
                         "or Ignore to continue",
                         file, line, message);
     }
-
     FILE* pFile = fopen("Logs\\swcWarnings.txt", "at");
-
     if (pFile)
     {
         fprintf(pFile, sWarning.CStr());
     }
-
     CExoString sLine;
     CExoString sComment;
-
     char* szFileName = strrchr(file, '\\');
-
     if (szFileName == NULL)
     {
         szFileName = file;
@@ -112,16 +106,18 @@ void CExoDebugInternal::Warning(int line, char* file, const char* message)
     {
         szFileName = szFileName + 1;
     }
-
     sLine.Format("WARNING: %s(%d) Comment:", szFileName, line);
+#ifdef _XBOX
+    void AurPostString(char* szString, int nColumn, int nRow, float fDuration);
+    AurPostString(sLine.CStr(), 7, 10, 5.0f);
+    int nRow = 11;
+#else
     sLine.CStr();
-
+#endif
     if (message)
     {
         sComment = message;
-
         int nLength = sComment.GetLength();
-
         while (nLength != 0)
         {
             if (nLength <= 50)
@@ -132,7 +128,6 @@ void CExoDebugInternal::Warning(int line, char* file, const char* message)
             else
             {
                 sLine = sComment.Left(50);
-
                 int nBreak = 50;
                 const char* szBreak;
 
@@ -156,7 +151,12 @@ void CExoDebugInternal::Warning(int line, char* file, const char* message)
                 sComment = sComment.Right(nLength - nBreak);
             }
 
+#ifdef _XBOX
+            AurPostString(sLine.CStr(), 7, nRow, 15.0f);
+            nRow++;
+#else
             sLine.CStr();
+#endif
             nLength = sComment.GetLength();
         }
     }

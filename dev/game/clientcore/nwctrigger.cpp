@@ -527,6 +527,9 @@ void CSWCTrigger::UpdateAreaTransitionDisplay()
 
     Vector vHit;
     Vector vDirection;
+#ifdef _XBOX
+    vDirection = pPlayer->m_vOrientation;
+#else
     if (pGuiInGame->m_bCameraRelativeAreaTransition != 0)
     {
         CAurCamera* pCamera = g_pAppManager->GetClientExoApp()->GetModuleCamera();
@@ -538,6 +541,7 @@ void CSWCTrigger::UpdateAreaTransitionDisplay()
     {
         vDirection = pPlayer->m_vOrientation;
     }
+#endif
 
     Vector vStart = pPlayer->m_vPosition;
     Vector vEnd = pPlayer->m_vPosition + vDirection * 8.0f;
@@ -583,11 +587,19 @@ void CSWCTrigger::UpdateAreaTransitionDisplay()
     Vector vToTransition =
         pGuiInGame->GetAreaTranstionPosition() - pPlayer->m_vPosition;
     Vector vToHit = vHit - vStart;
+#ifdef _XBOX
+    if (pGuiInGame->GetAreaTransitionObject() == OBJECT_INVALID ||
+        vToHit * vToHit < vToTransition * vToTransition)
+    {
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateAreaTransitionGUI(m_nId, vHit);
+    }
+#else
     if (pGuiInGame->m_oidAreaTransition == OBJECT_INVALID ||
         vToHit * vToHit < vToTransition * vToTransition)
     {
         pGuiInGame->SetAreaTransition(m_nId, vHit);
     }
+#endif
 }
 // PC 0x00692410  Xbox 0x000BA710
 void CSWCTrigger::AIUpdate()

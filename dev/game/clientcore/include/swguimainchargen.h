@@ -68,6 +68,7 @@ public:
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblBack;
     CSWGuiLabel m_lblAccept;
+    virtual void HandleInputEvent(int nEvent, int nState);
 #endif
     CSWGui3DSceneView m_viewModel;
     int m_nVisiblePanel;

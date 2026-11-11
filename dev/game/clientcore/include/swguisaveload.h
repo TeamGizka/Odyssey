@@ -52,10 +52,11 @@ public:
 #endif
 #ifdef _XBOX
     void UpdateFreeBlocks();
-
     void ShowSaveError(unsigned long nStrRef);
-
     void OnSaveErrorDone(CSWGuiControl* pControl);
+    void OnCorruptGameSelected(CSWGuiControl* pControl);
+    int LoadPCAutoSave();
+    void SaveGameToSlot(CSWGuiControl* pControl);
 #endif
 
     void WriteGame(const CExoString& sSaveName);
@@ -138,8 +139,9 @@ public:
     unsigned long m_bBadSave : 1;
     unsigned long m_bNewSlot : 1;
     unsigned long m_bRebootAutoSave : 1;
+#ifndef _XBOX
     unsigned long m_bPCAutoSave : 1;
-
+#endif
     unsigned long m_bMissingLiveContent : 1;
     unsigned long m_bEmptySlot : 1;
     unsigned long m_bCheatUsed : 1;

@@ -240,7 +240,7 @@ public:
     CSWGuiBorder m_CSWGuiBorder_2C0;
     CSWGuiText m_CSWGuiText_334;
     virtual void Initialize(CSWGuiText&, CSWGuiBorder&, CSWGuiBorder&, int);
-    virtual void Initialize(const CSWGuiExtent&, CSWGuiButton*)  // PC 0x005B5E90  Xbox 0x000FBD20
+    virtual void Initialize(const CSWGuiExtent&, CSWGuiButton*)  // PC 0x005B5E90
     {
     }
     virtual void Initialize(const CSWGuiExtent&, const CSWGuiTextParams&,  // PC 0x0063CFC0

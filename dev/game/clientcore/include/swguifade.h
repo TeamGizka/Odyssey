@@ -17,7 +17,11 @@ public:
     int IsFadeDone();
     void SetFade(int, float, float, Vector const&);
     virtual void Draw(float);
+#ifndef _XBOX
     virtual CSWGuiControl* HitCheckMouse(int, int);
+#else
+    int IsObscuring();
+#endif
     void SetMsg(unsigned long);
     void ResetFade();
     CSWGuiFade(CSWGuiManager*);

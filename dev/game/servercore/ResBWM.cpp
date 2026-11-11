@@ -20,7 +20,7 @@ unsigned long CResBWM::GetBWMSize()
 {
     return m_nBWMSize;
 }
-// PC 0x005CEAE0
+// PC 0x005CEAE0  Xbox 0x00228CC0
 int CResBWM::OnResourceServiced()
 {
     int nResult = (int)m_pResource;

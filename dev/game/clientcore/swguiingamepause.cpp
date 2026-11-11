@@ -5,19 +5,40 @@
 #include "clientexoapp.h"
 #include "guiingame.h"
 #include "swguiingamepause.h"
-// PC 0x006C00B0
-void CSWGuiInGamePause::Draw(float fElapsed)
+#ifndef _XBOX
+void CSWGuiInGamePause::Draw(float fElapsed)  // PC 0x006C00B0  Xbox 0x000F51B0
 {
     return CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x006C00C0  Xbox 0x000F4FD0
-void CSWGuiInGamePause::SetPauseReason(unsigned char nReason)
+#endif
+void CSWGuiInGamePause::SetPauseReason(unsigned char nReason)  // PC 0x006C00C0  Xbox 0x000F4FD0
 {
     int bShowPress = 1;
     unsigned long nStrRef;
 
     switch (nReason)
     {
+#ifdef _XBOX
+    case 1:
+        nStrRef = 41895;
+        bShowPress = 0;
+        break;
+    case 5:
+        nStrRef = 42432;
+        break;
+    case 7:
+        nStrRef = 42482;
+        break;
+    case 8:
+        nStrRef = 42481;
+        break;
+    case 9:
+        nStrRef = 42397;
+        break;
+    case 10:
+        nStrRef = 42579;
+        break;
+#else
     case 1:
         nStrRef = 48212;
         bShowPress = 0;
@@ -41,6 +62,7 @@ void CSWGuiInGamePause::SetPauseReason(unsigned char nReason)
         nStrRef = 49118;
         bShowPress = 0;
         break;
+#endif
     default:
         nStrRef = 1508;
         break;
@@ -51,7 +73,9 @@ void CSWGuiInGamePause::SetPauseReason(unsigned char nReason)
     m_lblPauseReason.m_cText.m_cParams.SetText(sReason);
 
     CSWGuiExtent cExtent;
+#ifndef _XBOX
     CSWGuiExtent cUnpauseExtent;
+#endif
 
     int nHeight = m_lblPauseReason.m_cText.GetIdealHeight();
     cExtent = m_lblPauseReason.m_cExtent;
@@ -59,7 +83,9 @@ void CSWGuiInGamePause::SetPauseReason(unsigned char nReason)
     m_lblPauseReason.SetExtent(cExtent);
 
     int nTop = nHeight + cExtent.m_nTop + 2;
+#ifndef _XBOX
     cUnpauseExtent = cExtent;
+#endif
 
     if (bShowPress)
     {
@@ -79,8 +105,10 @@ void CSWGuiInGamePause::SetPauseReason(unsigned char nReason)
     cPanelExtent.m_nHeight = cExtent.m_nTop + cExtent.m_nHeight + 5;
     SetExtent(cPanelExtent);
 
+#ifndef _XBOX
     cUnpauseExtent.m_nHeight = cPanelExtent.m_nHeight;
     m_btnUnpause.SetExtent(cUnpauseExtent);
+#endif
 }
 #ifndef _XBOX
 void CSWGuiInGamePause::OnPanelAdded()  // PC 0x006C02F0  Xbox 0x000F5230
@@ -116,13 +144,19 @@ void CSWGuiInGamePause::OnUnpauseButtonPressed(CSWGuiControl* pControl)  // PC 0
 CSWGuiInGamePause::CSWGuiInGamePause(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
+#ifdef _XBOX
+    StartLoadFromLayout("pause");
+#else
     {
         CResRef cLayout("pause");
         StartLoadFromLayout(cLayout);
     }
+#endif
     InitControl(m_lblPauseReason, "LBL_PAUSEREASON", 1);
     InitControl(m_lblPress, "LBL_PRESS", 1);
+#ifndef _XBOX
     InitControl(m_btnUnpause, "BTN_UNPAUSE", 1);
+#endif
 #ifndef _XBOX
     m_bPositioned = 1;
 #endif
@@ -137,11 +171,13 @@ CSWGuiInGamePause::CSWGuiInGamePause(CSWGuiManager* pManager)
     pPressParams->SetText(sPress);
     m_lblPauseReason.m_cText.m_cParams.m_bHilightText = 1;
     pPressParams->m_bHilightText = 1;
+#ifndef _XBOX
     m_btnUnpause.SetFocusable(0);
     m_btnUnpause.AddEvent(39, this,
         (PFNGUIEVENT)&CSWGuiPanel::OnAButtonPressed);
     m_btnUnpause.AddEvent(
         39, this, (CSWGuiHandler)&CSWGuiInGamePause::OnUnpauseButtonPressed);
+#endif
 }
 
 #ifdef _XBOX
@@ -157,6 +193,19 @@ void CSWGuiInGamePause::OnPanelAdded()
     {
         m_cExtent.m_nLeft = m_nOriginalLeft;
         m_cExtent.m_nTop = m_nOriginalTop;
+    }
+}
+// PC 0x006C00B0  Xbox 0x000F51B0
+void CSWGuiInGamePause::Draw(float fElapsed)
+{
+    if (g_pAppManager->m_pClientExoApp->GetCombatMode())
+    {
+        m_cExtent.m_nTop += g_pAppManager->m_pClientExoApp->GetInGameGui()->GetInterfaceOffset();
+    }
+    CSWGuiPanel::Draw(fElapsed);
+    if (g_pAppManager->m_pClientExoApp->GetCombatMode())
+    {
+        m_cExtent.m_nTop -= g_pAppManager->m_pClientExoApp->GetInGameGui()->GetInterfaceOffset();
     }
 }
 #endif

@@ -745,7 +745,7 @@ void Input::InputBinary::ResetLightsaberLite(MdlNodeLightsaber* pNode,
 }
 
 }
-
+// Xbox 0x002F1770
 IODispatcher::IODispatcher() : m_lDispatchEntries(0)
 {
 }
@@ -775,7 +775,8 @@ MaxTree* IODispatcher::ReadSync(FILE* pModelFile, FILE* pVertexFile)
 
 static const int WRITE_PATH_LENGTH = 256;
 
-bool IODispatcher::WriteSync(MaxTree* pTree, char* sFileName)
+#ifndef _XBOX
+bool IODispatcher::WriteSync(MaxTree* pTree, char* sFileName)  // Xbox 0x002F17E0
 {
     char sPath[WRITE_PATH_LENGTH];
 
@@ -784,6 +785,7 @@ bool IODispatcher::WriteSync(MaxTree* pTree, char* sFileName)
     fclose(fopen(sPath, "wb"));
     return false;
 }
+#endif
 
 namespace
 {
@@ -1508,3 +1510,56 @@ void Input::InputBinary::ResetTriMeshLite(MdlNodeTriMesh* pNode, unsigned char* 
 #endif
 
 }
+
+#ifdef _XBOX
+
+namespace
+{
+class Output
+{
+public:
+    Output() : m_lstAllocations(0)
+    {
+        m_nUnknown0c = 0;
+        m_nUnknown10 = 0;
+    }
+    ~Output();
+    bool Write(MaxTree* pTree, char* sFileName);
+
+    List<char*> m_lstAllocations;
+    int m_nUnknown0c;
+    int m_nUnknown10;
+};
+
+char sOutputPath[WRITE_PATH_LENGTH];
+
+bool Output::Write(MaxTree* pTree, char* sFileName)
+{
+    if (sFileName)
+    {
+        sprintf(sOutputPath, "d:\override\%s", sFileName);
+    }
+    else
+    {
+        sprintf(sOutputPath, "d:\override\%s.mdl", pTree->m_sName);
+    }
+    fclose(fopen(sOutputPath, "wb"));
+    return false;
+}
+
+Output::~Output()
+{
+    for (int i = 0; i < m_lstAllocations.m_nCount; ++i)
+    {
+        delete m_lstAllocations[i];
+    }
+}
+}
+// Xbox 0x002F17E0
+bool IODispatcher::WriteSync(MaxTree* pTree, char* sFileName)
+{
+    Output output;
+
+    return output.Write(pTree, sFileName);
+}
+#endif

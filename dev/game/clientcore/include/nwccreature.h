@@ -779,6 +779,17 @@ public:
 #ifndef _XBOX
     float m_fFreeLookTurn;
 #endif
+#ifdef _XBOX
+
+    int IsLeaderUsableItem(CSWSItem* pItem, int nSlot);
+
+    void CreateUsableItemEntry(CExoArrayList<CSWGuiInterfaceAction>& lstActions,
+                               CSWSItem* pItem, int bEquipped);
+    void GetUsableItems(CExoArrayList<CSWGuiInterfaceAction>& lstActions);
+    void GetNonCombatFeatsSkills(CExoArrayList<CSWGuiInterfaceAction>& lstActions);
+    void GetMines(CExoArrayList<CSWGuiInterfaceAction>& lstActions);
+    void ActionMenuSetMine(unsigned long oidItem, CSWCCreature* pTarget);
+#endif
 };
 
 #endif

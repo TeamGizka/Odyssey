@@ -1458,8 +1458,9 @@ int CSWSObject::DoDamageResistance(CSWSCreature* pAttacker, int nDamage,
     }
     return nDamage - nResistance > 0 ? nDamage - nResistance : 0;
 }
-// PC 0x004D13A0  Xbox 0x001C8CA0
-int CSWSObject::DoSpellLevelAbsorption(CSWSObject* pCaster)
+
+#ifndef _XBOX
+int CSWSObject::DoSpellLevelAbsorption(CSWSObject* pCaster)  // PC 0x004D13A0  Xbox 0x001C8CA0
 {
     if (pCaster != NULL && pCaster->AsSWSCreature() != NULL &&
         m_lstEffects.num > 0)
@@ -1509,8 +1510,8 @@ int CSWSObject::DoSpellLevelAbsorption(CSWSObject* pCaster)
     }
     return SPELL_RESISTANCE_UNRESOLVED;
 }
-// PC 0x004D14F0  Xbox 0x001C8E00
-void CSWSObject::ApplyEffect(CGameEffect* pEffect, int bLoadingGame,
+#endif
+void CSWSObject::ApplyEffect(CGameEffect* pEffect, int bLoadingGame,  // PC 0x004D14F0  Xbox 0x001C8E00
                            int bLoadingModule)
 {
     unsigned long nCurrentDay, nCurrentTime;
@@ -1880,8 +1881,8 @@ unsigned char CSWSObject::LoadObjectState(CResGFF* pRes, CResStruct* pStruct)
     m_bCommandable = bCommandable;
     return bCommandable;
 }
-// PC 0x004CC530  Xbox 0x001C3DC0
-unsigned short CSWSObject::GetActionByGroupId(unsigned short nGroupId,
+#ifndef _XBOX
+unsigned short CSWSObject::GetActionByGroupId(unsigned short nGroupId,  // PC 0x004CC530  Xbox 0x001C3DC0
                                               CSWSObjectActionNode** ppNode)
 {
     *ppNode = NULL;
@@ -1955,18 +1956,18 @@ CExoLinkedListNode* CSWSObject::GetPositionByGroupIndex(int nIndex)
     }
     return pPos;
 }
-// PC 0x004CC630  Xbox 0x001C3EE0
-CSWSObjectActionNode* CSWSObject::GetNodeById(unsigned short nNodeId)
+#endif
+CSWSObjectActionNode* CSWSObject::GetNodeById(unsigned short nNodeId)  // PC 0x004CC630  Xbox 0x001C3EE0
 {
+#ifdef _XBOX
+    if (m_lstActions.GetHeadPos() == NULL) return NULL;
+    CExoLinkedListNode* pPos = m_lstActions.GetHeadPos(); CSWSObjectActionNode* pAction = m_lstActions.GetAtPos(pPos);
+#else
     CExoLinkedListNode* pNode = m_lstActions.GetHeadPos();
-
-    if (pNode == NULL)
-    {
-        return NULL;
-    }
-
+    if (pNode == NULL) { return NULL; }
     CExoLinkedListNode* pPos = pNode;
     CSWSObjectActionNode* pAction = m_lstActions.GetAtPos(pNode);
+#endif
 
     while (pPos != NULL)
     {
@@ -1981,15 +1982,15 @@ CSWSObjectActionNode* CSWSObject::GetNodeById(unsigned short nNodeId)
 // PC 0x004CC690  Xbox 0x001C3F40
 int CSWSObject::GetNumActionGroups()
 {
+#ifdef _XBOX
+    if (m_lstActions.GetHeadPos() == NULL) return 0;
+    CExoLinkedListNode* pPos = m_lstActions.GetHeadPos(); CSWSObjectActionNode* pAction = m_lstActions.GetAtPos(pPos);
+#else
     CExoLinkedListNode* pNode = m_lstActions.GetHeadPos();
-
-    if (pNode == NULL)
-    {
-        return 0;
-    }
-
+    if (pNode == NULL) { return 0; }
     CExoLinkedListNode* pPos = pNode;
     CSWSObjectActionNode* pAction = m_lstActions.GetAtPos(pNode);
+#endif
     int nGroups = pAction != NULL;
     unsigned short nGroupId = pAction->m_nGroupId;
 
@@ -2004,8 +2005,8 @@ int CSWSObject::GetNumActionGroups()
     }
     return nGroups;
 }
-// PC 0x004CC6F0  Xbox 0x001C3FB0
-void CSWSObject::RemoveGroup(unsigned short nGroupId)
+#ifndef _XBOX
+void CSWSObject::RemoveGroup(unsigned short nGroupId)  // PC 0x004CC6F0  Xbox 0x001C3FB0
 {
     CExoLinkedListNode* pNode = m_lstActions.GetHeadPos();
 
@@ -2034,8 +2035,8 @@ void CSWSObject::RemoveGroup(unsigned short nGroupId)
         }
     }
 }
-// PC 0x004CC790  Xbox 0x001C4040
-void CSWSObject::SetGroupInterruptable(unsigned short nGroupId,
+#endif
+void CSWSObject::SetGroupInterruptable(unsigned short nGroupId,  // PC 0x004CC790  Xbox 0x001C4040
                                        int bInterruptable)
 {
     CExoLinkedListNode* pPos = m_lstActions.GetHeadPos();
@@ -3949,3 +3950,163 @@ int NwsobjectRemoveFromDialog(CSWSObject* pObject, unsigned long oidObject)
 {
     return pObject->RemoveObjectFromDialog(oidObject);
 }
+
+#ifdef _XBOX
+// PC 0x004CC530  Xbox 0x001C3DC0
+unsigned short CSWSObject::GetActionByGroupId(unsigned short nGroupId,
+                                              CSWSObjectActionNode** ppNode)
+{
+    *ppNode = NULL;
+    unsigned short nActionType = 0xffff;
+
+    if (m_lstActions.GetHeadPos() == NULL)
+    {
+        return 0xffff;
+    }
+
+    CExoLinkedListNode* pPos = m_lstActions.GetHeadPos();
+    CSWSObjectActionNode* pAction = m_lstActions.GetAtPos(pPos);
+    int bFound = 0;
+
+    while (pAction != NULL)
+    {
+        if (pAction->m_nGroupId == nGroupId)
+        {
+            bFound = 1;
+            if (GetAcceptableAction(pAction->m_nActionType) == 1)
+            {
+                nActionType = pAction->m_nActionType;
+                *ppNode = pAction;
+            }
+        }
+        else if (bFound == 1)
+        {
+            break;
+        }
+        pAction = m_lstActions.GetNext(pPos);
+    }
+    return nActionType;
+}
+// PC 0x004CC5C0  Xbox 0x001C3E60
+CExoLinkedListNode* CSWSObject::GetPositionByGroupIndex(int nIndex)
+{
+    int nGroup = 0;
+
+    if (m_lstActions.GetHeadPos() == NULL)
+    {
+        return NULL;
+    }
+
+    CExoLinkedListNode* pPos = m_lstActions.GetHeadPos();
+    CSWSObjectActionNode* pAction = m_lstActions.GetAtPos(pPos);
+    unsigned short nGroupId = pAction->m_nGroupId;
+
+    if (nIndex == 0)
+    {
+        return pPos;
+    }
+
+    while (1)
+    {
+        if (pAction->m_nGroupId != nGroupId)
+        {
+            nGroupId = pAction->m_nGroupId;
+            nGroup++;
+        }
+        if (nGroup == nIndex)
+        {
+            break;
+        }
+        pAction = m_lstActions.GetNext(pPos);
+        if (pAction == NULL)
+        {
+            return NULL;
+        }
+    }
+    return pPos;
+}
+// PC 0x004CC6F0  Xbox 0x001C3FB0
+void CSWSObject::RemoveGroup(unsigned short nGroupId)
+{
+    CExoLinkedListNode* pNode;
+
+    if (m_lstActions.GetHeadPos() != NULL)
+    {
+        CExoLinkedListNode* pPos = m_lstActions.GetHeadPos();
+        CSWSObjectActionNode* pAction = m_lstActions.GetAtPos(pPos);
+
+        while (pPos != NULL)
+        {
+            pNode = pPos;
+            if (pAction->m_nGroupId == nGroupId)
+            {
+                CSWSObjectActionNode* pRemove = pAction;
+                pAction = m_lstActions.GetNext(pPos);
+                m_lstActions.Remove(pNode);
+                if (pRemove != NULL)
+                {
+                    delete pRemove;
+                }
+            }
+            else
+            {
+                pAction = m_lstActions.GetNext(pPos);
+            }
+        }
+    }
+}
+// PC 0x004D13A0  Xbox 0x001C8CA0
+int CSWSObject::DoSpellLevelAbsorption(CSWSObject* pCaster)
+{
+    if (pCaster == NULL || pCaster->AsSWSCreature() == NULL ||
+        m_lstEffects.num <= 0)
+    {
+        return SPELL_RESISTANCE_UNRESOLVED;
+    }
+    {
+        int nSpellId = pCaster->m_nLastSpellId;
+        CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpellId);
+        if (pSpell != NULL)
+        {
+            int bFromItem = pCaster->AsSWSCreature()->m_bCasterLevelOverride;
+            int nClass = CSWClass::CCLASS_INVALID;
+            if (bFromItem != 1)
+            {
+                unsigned char nMultiClass = pCaster->m_c1D4;
+                CSWSCreatureStats* pStats = pCaster->AsSWSCreature()->m_pStats;
+                nClass = pStats->GetClass(nMultiClass);
+            }
+            if (bFromItem != 1 && nClass != CSWClass::CCLASS_INVALID)
+                pSpell->GetSpellLevel(nClass);
+            if (pSpell->m_nUserType != CSWSpell::USER_TYPE_FORCE_POWER)
+                return SPELL_RESISTANCE_UNRESOLVED;
+
+            int nAbsorbIndex = -1;
+            CSWSCreature* pCreature = AsSWSCreature();
+            CSWSCreatureStats* pStats = pCreature->m_pStats;
+            int i = pStats->m_nSpellLevelAbsorptionEffectIndex;
+            while (i < m_lstEffects.num)
+            {
+                if (m_lstEffects[i]->GetEffectType() >
+                    CSWSEffectListHandler::EFFECT_SPELL_LEVEL_ABSORPTION)
+                    break;
+                ++i;
+            }
+            if (nAbsorbIndex != -1 && pStats != NULL)
+                RemoveEffectById(m_lstEffects[nAbsorbIndex]->m_nID);
+            pStats = AsSWSCreature()->m_pStats;
+            i = pStats->m_nSpellLevelAbsorptionEffectIndex;
+            while (i < m_lstEffects.num)
+            {
+                if (m_lstEffects[i]->GetEffectType() >
+                    CSWSEffectListHandler::EFFECT_SPELL_LEVEL_ABSORPTION)
+                    break;
+                ++i;
+            }
+            if (AsSWSCreature() != NULL)
+                pCaster->AsSWSCreature();
+        }
+    }
+    return SPELL_RESISTANCE_UNRESOLVED;
+}
+#endif

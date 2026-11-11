@@ -858,8 +858,8 @@ int CSWSPlaceable::AIActionCastSpell(CSWSObjectActionNode* pNode)
             CGameObjectArray::INVALIDOBJID, 0, 0, nProjectilePathType, 0);
     return ACTION_COMPLETE;
 }
-// PC 0x00585080  Xbox 0x00207910
-void CSWSPlaceable::SetLightIsOn(int bLightIsOn)
+#ifndef _XBOX
+void CSWSPlaceable::SetLightIsOn(int bLightIsOn)  // PC 0x00585080  Xbox 0x00207910
 {
     if (m_bLightIsOn != bLightIsOn)
     {
@@ -879,8 +879,8 @@ void CSWSPlaceable::SetLightIsOn(int bLightIsOn)
         }
     }
 }
-// PC 0x00585130  Xbox 0x002079E0
-int CSWSPlaceable::GetLightIsOn()
+#endif
+int CSWSPlaceable::GetLightIsOn()  // PC 0x00585130  Xbox 0x002079E0
 {
     int nLightColor;
     bool bFailed;
@@ -1520,7 +1520,7 @@ int CSWSPlaceable::AcquireItemsFromObject(unsigned long oidSource,
     }
     return nCount;
 }
-// PC 0x00589190
+// PC 0x00589190  Xbox 0x00207440
 void CSWSPlaceable::DoDamage(int nDamage)
 {
     if (m_bPlotObject == 0)
@@ -1537,3 +1537,18 @@ static inline CServerExoApp* GetServerExoApp()
 static inline void NwsplaceableTrace1()
 {
 }
+
+#ifdef _XBOX
+// PC 0x00585080  Xbox 0x00207910
+void CSWSPlaceable::SetLightIsOn(int bLightIsOn)
+{
+    int nLightColor;
+    if (m_bLightIsOn == bLightIsOn ||
+        !g_pRules->m_p2DArrays->m_pPlaceables->GetINTEntry(m_nAppearance, CExoString("LightColor"), &nLightColor))
+    {
+        return;
+    }
+    m_n390 = 1;
+    m_bLightIsOn = bLightIsOn;
+}
+#endif

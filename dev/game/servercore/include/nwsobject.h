@@ -2652,7 +2652,7 @@ public:
     void BroadcastDamageDataToParty(CSWCCMessageData* pMessageData, int bHealing);
 
     enum DamageBroadcastRangeLimit { DAMAGE_BROADCAST_RANGE_SQUARED = 900 };
-    unsigned long GetLockOrientationToObject()  // PC 0x004F8280
+    unsigned long GetLockOrientationToObject()  // PC 0x004F8280  Xbox 0x0017C060
     {
         return m_oidLockOrientationToObject;
     }
@@ -2974,6 +2974,12 @@ public:
     {
         m_nBodyBag = nBodyBag;
     }
+#ifdef _XBOX
+
+
+
+    void AddPrerequisiteSpells(unsigned long nSpell);
+#endif
 };
 
 #endif

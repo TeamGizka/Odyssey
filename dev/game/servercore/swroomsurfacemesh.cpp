@@ -21,12 +21,14 @@ int g_bRenderClipWalkable = 0;
 
 float checkaabbtime;
 // PC 0x00580920  Xbox 0x001E1760
-int CSWRoomSurfaceMesh::CheckAABBNode(int nNode, const Vector& vStart,
-                                     Vector& vEnd,
+int CSWRoomSurfaceMesh::CheckAABBNode(int nNode, const Vector& vStart, Vector& vEnd,
                                      CSWRoomSurfaceMeshHitInfo& hitInfo)
 {
     const Vector& vMinimum = m_lstAABBNodes[nNode].m_vMin;
     const Vector& vMaximum = m_lstAABBNodes[nNode].m_vMax;
+#ifdef _XBOX
+    extern int DumpRoomBBox; if (DumpRoomBBox) { g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory); g_pExoBase->m_pExoDebug->FlushScriptLogFile(); }
+#endif
     if (!BoxIntersect(vStart, vEnd, vMinimum, vMaximum))
     {
         return 0;
@@ -61,13 +63,11 @@ int CSWRoomSurfaceMesh::CheckAABBNode(int nNode, const Vector& vStart,
     {
         if (m_lstAABBNodes[nNode].m_nTraversalMask & hitInfo.m_nField04)
         {
-            return CheckAABBNode(m_lstAABBNodes[nNode].m_nLeftChild, vStart, vEnd, hitInfo)
-                 + CheckAABBNode(m_lstAABBNodes[nNode].m_nRightChild, vStart, vEnd, hitInfo);
+            return CheckAABBNode(m_lstAABBNodes[nNode].m_nLeftChild, vStart, vEnd, hitInfo) + CheckAABBNode(m_lstAABBNodes[nNode].m_nRightChild, vStart, vEnd, hitInfo);
         }
         else
         {
-            return CheckAABBNode(m_lstAABBNodes[nNode].m_nRightChild, vStart, vEnd, hitInfo)
-                 + CheckAABBNode(m_lstAABBNodes[nNode].m_nLeftChild, vStart, vEnd, hitInfo);
+            return CheckAABBNode(m_lstAABBNodes[nNode].m_nRightChild, vStart, vEnd, hitInfo) + CheckAABBNode(m_lstAABBNodes[nNode].m_nLeftChild, vStart, vEnd, hitInfo);
         }
     }
 }
@@ -614,12 +614,12 @@ int CSWRoomSurfaceMesh::LoadMeshText(unsigned char* pData,
                 }
                 sscanf(pLine, "%f %f %f", &m_pVertices[nVertex].m_fX,
                        &m_pVertices[nVertex].m_fY, &m_pVertices[nVertex].m_fZ);
-                unsigned long nGridX =
-                    (unsigned long)(m_pVertices[nVertex].m_fX * SWROOMSURFACEMESH_VERTEX_GRID + 0.5f);
+                int nGridX =
+                    (int)(m_pVertices[nVertex].m_fX * SWROOMSURFACEMESH_VERTEX_GRID + 0.5f);
                 if ((int)nGridX % SWROOMSURFACEMESH_VERTEX_GRID == 0)
                     m_pVertices[nVertex].m_fX = (float)((int)nGridX >> 9);
-                unsigned long nGridY =
-                    (unsigned long)(m_pVertices[nVertex].m_fY * SWROOMSURFACEMESH_VERTEX_GRID + 0.5f);
+                int nGridY =
+                    (int)(m_pVertices[nVertex].m_fY * SWROOMSURFACEMESH_VERTEX_GRID + 0.5f);
                 if ((int)nGridY % SWROOMSURFACEMESH_VERTEX_GRID == 0)
                     m_pVertices[nVertex].m_fY = (float)((int)nGridY >> 9);
             }
@@ -808,7 +808,7 @@ int CSWRoomSurfaceMesh::LoadMeshText(unsigned char* pData,
                                     pParent->m_nTraversalMask = vDifference.m_fX > 0.0f ?
                                         CSWRoomSurfaceMeshAABBNode::TRAVERSAL_POSITIVE_X :
                                         CSWRoomSurfaceMeshAABBNode::TRAVERSAL_NEGATIVE_X;
-                                else if (fabs(vDifference.m_fZ) < fabs(vDifference.m_fY))
+                                else if (fabs(vDifference.m_fY) > fabs(vDifference.m_fZ))
                                     pParent->m_nTraversalMask = vDifference.m_fY > 0.0f ?
                                         CSWRoomSurfaceMeshAABBNode::TRAVERSAL_POSITIVE_Y :
                                         CSWRoomSurfaceMeshAABBNode::TRAVERSAL_NEGATIVE_Y;
@@ -1480,11 +1480,11 @@ int CSWRoomSurfaceMesh::ClippedLineSegmentWalkable(
         }
         if (nTriangles >= SWROOMSURFACEMESH_MAX_WALK_TRIANGLES)
         {
-            CExoString sResRef;
-            m_cResRef.CopyToString(sResRef);
-
-            EXOLOG("ERROR!\n This tile is crapped out.  %s\n ERROR!\n", sResRef.CStr());
-            EXOLOG("ERROR!\n This tile is crapped out.  %s\n ERROR!\n", sResRef.CStr());
+            CExoString sResRef; m_cResRef.CopyToString(sResRef);
+            EXOLOG("ERROR!\n This tile is crapped out.  %s\n ERROR!\n", sResRef.CStr()); EXOLOG("ERROR!\n This tile is crapped out.  %s\n ERROR!\n", sResRef.CStr());
+#ifdef _XBOX
+            g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory); g_pExoBase->m_pExoDebug->FlushScriptLogFile();
+#endif
             return 0;
         }
     }
@@ -1519,3 +1519,9 @@ void CSWRoomSurfaceMesh::AddCrossing(const Vector& vStart,
 static inline void RoomSurfaceMeshTrace1()
 {
 }
+
+#ifdef _XBOX
+#include "aurconsole.h"
+
+ConsoleFunc ConVcheckaabbtime("checkaabbtime", &checkaabbtime);
+#endif

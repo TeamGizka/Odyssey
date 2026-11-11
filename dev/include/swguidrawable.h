@@ -85,12 +85,9 @@ public:
     CSWGuiTextParams(const CExoString& sText, const CResRef& cFont,
                      const Vector& vColor, int nAlignment, float fAlpha);
     CSWGuiTextParams& operator=(const CSWGuiTextParams& cParams);
-    void SetText(const CExoString& sText);
-    void SetStrRef(unsigned long nStrRef);
-    void RestoreDefaultColor();
-    void ReSetFont();
-    void SetAlignment(int nAlignment);
-    void SetColor(const Vector& vColor);
+    void SetText(const CExoString& sText); void SetStrRef(unsigned long nStrRef);
+    void RestoreDefaultColor(); void ReSetFont();
+    void SetAlignment(int nAlignment); void SetColor(const Vector& vColor);
     void SetDefaultColor(const Vector& vColor);
     const Vector& GetColor();
     void SetBaseFont(const CResRef& cFont);
@@ -116,6 +113,9 @@ public:
 
     void SetColor(const Vector* pColor);
     CSWGuiTextParams();
+#ifdef _XBOX
+    static CResRef s_cDefaultFont; static CResRef s_cConsoleFont; CSWGuiTextParams(unsigned long nStrRef, const CResRef& cFont, const Vector& vColor, int nAlignment, float fAlpha);
+#endif
 };
 
 #define SWGUI_IMAGE_DRAW_STYLE_NORMAL 0

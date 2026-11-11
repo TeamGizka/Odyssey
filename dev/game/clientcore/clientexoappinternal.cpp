@@ -74,7 +74,7 @@
 #include "nwfeat.h"
 #include "nwskill.h"
 #ifdef _XBOX
-unsigned char GetCodeWord();
+
 #define VIDEO_DEFAULT_DYNAMIC_LIGHTS 8
 #define OPTIONS_SIGNATURE_SIZE 20
 #include "swguistartscreen.h"
@@ -275,7 +275,7 @@ void CSWCPlayer::SetPrimaryPCPortraitId(unsigned short nPortraitId)
         }
         sBaseResRef = sPrefix + sBaseResRef;
 #ifdef _XBOX
-        m_cPrimaryPCPortrait.CResRef::operator=(CResRef((char*)sBaseResRef.CStr()));
+        SetPrimaryPCPortrait(sBaseResRef.CStr());
 #else
         {
             CResRef cPortrait((char*)sBaseResRef.CStr());
@@ -840,6 +840,7 @@ void CClientExoAppInternal::LoadItemDropSoundList()
     }
     delete pInventorySounds;
 }
+#ifndef _XBOX
 // PC 0x005F5370  Xbox 0x00023C00
 void CClientExoAppInternal::UpdateSoundEngine()
 {
@@ -905,6 +906,7 @@ RenderSound:
 
     g_pExoSound->Render();
 }
+#endif
 // PC 0x005F0C60
 int CClientExoAppInternal::IsValidResolution(unsigned long nWidth,
                                           unsigned long nHeight)
@@ -920,6 +922,7 @@ int CClientExoAppInternal::IsValidResolution(unsigned long nWidth,
         return 1;
     return 0;
 }
+#ifndef _XBOX
 // PC 0x005F0CE0
 int CClientExoAppInternal::ReadVideoModeSettings(unsigned long* pnWidth,
                                                unsigned long* pnHeight,
@@ -964,8 +967,8 @@ int CClientExoAppInternal::ReadVideoModeSettings(unsigned long* pnWidth,
 
     return bReadSettings;
 }
-// PC 0x004015A0
-void CClientExoAppInternal::StopMovie()
+#endif
+void CClientExoAppInternal::StopMovie()  // PC 0x004015A0
 {
 }
 // PC 0x004015A0
@@ -1161,8 +1164,8 @@ void CClientExoAppInternal::ReadAndSetVideoMode(int bStartup, int bFullScreen)  
     }
 }
 #endif
-// PC 0x00604130  Xbox 0x00034000
-void CClientExoAppInternal::StopServices()
+#ifndef _XBOX
+void CClientExoAppInternal::StopServices()  // PC 0x00604130  Xbox 0x00034000
 {
 #ifndef _XBOX
     ShutDownMoviePlayer();
@@ -1365,8 +1368,8 @@ CSWCPlayer* CClientExoAppInternal::GetPlayerByPlayerID(unsigned long nPlayerId) 
 
     return NULL;
 }
-// PC 0x005F5CB0  Xbox 0x00024860
-CSWCPlayer* CClientExoAppInternal::GetPlayerByGameObjectID(unsigned long oidObject)
+#endif
+CSWCPlayer* CClientExoAppInternal::GetPlayerByGameObjectID(unsigned long oidObject)  // PC 0x005F5CB0  Xbox 0x00024860
 {
     CExoLinkedListNode* pNode = m_lstPlayerList.GetHeadPos();
     void* pData = m_lstPlayerList.GetHead();
@@ -1418,6 +1421,7 @@ void CClientExoAppInternal::AttachPlayerGameObjectToArea()
         }
     }
 }
+#ifndef _XBOX
 // PC 0x005F5E10  Xbox 0x000249C0
 void CClientExoAppInternal::UpdateCamera(float fDeltaTime)
 {
@@ -1519,8 +1523,8 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)
     m_fCameraTurn = 0.0f;
     m_pModule->m_nReserved80 = 0;
 }
-// PC 0x005F6340  Xbox 0x00024D20
-void CClientExoAppInternal::AddObjectToHitcheckIgnoreList(
+#endif
+void CClientExoAppInternal::AddObjectToHitcheckIgnoreList(  // PC 0x005F6340  Xbox 0x00024D20
     unsigned long oidObject)
 {
     CExoLinkedListNode* pNode = m_lstHitcheckIgnore.GetHeadPos();
@@ -1815,7 +1819,7 @@ void CClientExoAppInternal::EmptyHitcheckIgnoreList()
 }
 
 #ifndef _XBOX
-int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x005F8550  Xbox 0x000315C0
+int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x005F8550
                                         const CExoString& sModule,
                                         const CExoString& sLoadMusic,
                                         const CExoString& sLoadScreen,
@@ -2868,11 +2872,16 @@ void CClientExoAppInternal::DoPassiveSelection(float fDeltaTime)
                                     bMineVisible = 1;
                                 else
                                     bEnemyVisible = 1;
+#ifdef _XBOX
+                                if (!GetPausedByCombat())
+#else
                                 if (!GetPausedByCombat() && m_nDelayedAutoPauseType == AUTO_PAUSE_TYPE_UNSET)
+#endif
                                 {
                                     if (pObject->AsSWCTrigger() != NULL && pObject->AsSWCTrigger()->m_bTrap)
                                     {
                                         bNoMine = 1;
+#ifndef _XBOX
                                         if (!m_bMineSighted)
                                         {
                                             CClientOptions* pOptions = m_pClientOptions;
@@ -2883,6 +2892,7 @@ void CClientExoAppInternal::DoPassiveSelection(float fDeltaTime)
                                             bNewTarget = 1;
                                             break;
                                         }
+#endif
                                     }
                                     else
                                     {
@@ -2916,6 +2926,7 @@ void CClientExoAppInternal::DoPassiveSelection(float fDeltaTime)
                     m_bEnemySighted = 0;
                 else
                     m_fCombatAutoPauseTimer -= fDeltaTime;
+#ifndef _XBOX
                 if (!m_bMineSighted || bMineVisible)
                 {
                     m_bMineSighted = bMineVisible;
@@ -2925,6 +2936,7 @@ void CClientExoAppInternal::DoPassiveSelection(float fDeltaTime)
                     m_bMineSighted = 0;
                 else
                     m_fMineSightedTime -= fDeltaTime;
+#endif
 
                 if (bLastTargetFound)
                 {
@@ -3532,7 +3544,7 @@ template <> inline CExoArrayList<CSWGuiInterfaceAction>::~CExoArrayList()
     delete[] element;
     element = NULL;
 }
-// PC 0x005FBFE0
+// PC 0x005FBFE0  Xbox 0x00026100
 CClientExoAppInternal::CClientExoAppInternal()
 {
     m_bStartMenuMusicOnMovieEnd = 1;
@@ -3766,8 +3778,8 @@ CClientExoAppInternal::~CClientExoAppInternal()
         m_pEvilEndingHackSound = NULL;
     }
 }
-// PC 0x005FCA30  Xbox 0x0002ABE0
-void CClientExoAppInternal::DisplayMainMenu(int bUnknown)
+#ifndef _XBOX
+void CClientExoAppInternal::DisplayMainMenu(int bUnknown)  // PC 0x005FCA30  Xbox 0x0002ABE0
 {
     if (m_pMainMenu != NULL && m_pSWGuiManager->PanelExists(m_pMainMenu))
     {
@@ -3800,7 +3812,7 @@ void CClientExoAppInternal::DisplayMainMenu(int bUnknown)
     }
     m_pGuiInGame->SetGlobalUnpauseableState(0);
 }
-
+#endif
 #ifdef _XBOX
 // Xbox 0x0002AEF0
 void CClientExoAppInternal::DisplayStartScreen()
@@ -6067,8 +6079,8 @@ int CClientExoAppInternal::StopRumblePattern(int nPattern)
 
     return 0;
 }
-// PC 0x005F7500  Xbox 0x00025970
-void CClientExoAppInternal::UpdateRumble(float fDeltaTime)
+#ifndef _XBOX
+void CClientExoAppInternal::UpdateRumble(float fDeltaTime)  // PC 0x005F7500  Xbox 0x00025970
 {
     float fLeftMagnitude = 0.0f;
     float fRightMagnitude = 0.0f;
@@ -6099,8 +6111,8 @@ void CClientExoAppInternal::UpdateRumble(float fDeltaTime)
     g_pExoInput->SetRumble(0, fLeftMagnitude, fRightMagnitude,
                           CLIENT_RUMBLE_DURATION);
 }
-// PC 0x005F7640  Xbox 0x00025AD0
-void CClientExoAppInternal::UpdateHostileHilite(float fElapsedTime)
+#endif
+void CClientExoAppInternal::UpdateHostileHilite(float fElapsedTime)  // PC 0x005F7640  Xbox 0x00025AD0
 {
     for (int i = m_aHostileHilites.num - 1; i >= 0; i--)
     {
@@ -6502,6 +6514,8 @@ void CClientExoAppInternal::HandleExitGameButton(CSWGuiControl* pControl)  // PC
     }
 }
 #endif
+
+#ifndef _XBOX
 // PC 0x005F1C20  Xbox 0x0001E600
 void CClientExoAppInternal::InitializeClientOptions()
 {
@@ -6538,6 +6552,7 @@ void CClientExoAppInternal::InitializeClientOptions()
                            "EnableHardwareMouse");
     }
 }
+#endif
 
 #ifndef _XBOX
 void CClientExoAppInternal::InitializeSoundOptions()  // PC 0x005F1F70  Xbox 0x000203B0
@@ -6616,8 +6631,8 @@ void CClientExoAppInternal::InitializeSoundOptions()  // PC 0x005F1F70  Xbox 0x0
     cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "Sound Init");
 }
 #endif
-// PC 0x005F2980  Xbox 0x00020BF0
-void CClientExoAppInternal::TurnOffKeyboardModal()
+#ifndef _XBOX
+void CClientExoAppInternal::TurnOffKeyboardModal()  // PC 0x005F2980  Xbox 0x00020BF0
 {
     for (unsigned int i = 0; i < 7; i++)
     {
@@ -6637,8 +6652,8 @@ void CClientExoAppInternal::TurnOffKeyboardModal()
         m_pModule->m_pInfo->HiliteAreaObjects(0);
     }
 }
-// PC 0x005F29F0  Xbox 0x00020C70
-void CClientExoAppInternal::ShutDownLoadGameLoadBar()
+#endif
+void CClientExoAppInternal::ShutDownLoadGameLoadBar()  // PC 0x005F29F0  Xbox 0x00020C70
 {
     if (m_nLoadBarState != 0)
     {
@@ -7179,6 +7194,7 @@ void CClientExoAppInternal::SetLoadScreenByModuleName(const CExoString& sModule)
         m_bShowLoadScreen = 1;
     }
 }
+#ifndef _XBOX
 // PC 0x005F3650  Xbox 0x00021970
 CExoString CClientExoAppInternal::GetLoadMusicByModuleName(const CExoString& sModule)
 {
@@ -7214,8 +7230,8 @@ CExoString CClientExoAppInternal::GetLoadMusicByModuleName(const CExoString& sMo
     }
     return sMusicResRef;
 }
-// PC 0x005F37F0  Xbox 0x00021A50
-void CClientExoAppInternal::SetLoadScreenHint(unsigned long nHint)
+#endif
+void CClientExoAppInternal::SetLoadScreenHint(unsigned long nHint)  // PC 0x005F37F0  Xbox 0x00021A50
 {
     if (m_pGuiLoadScreen != NULL)
     {
@@ -8125,8 +8141,8 @@ void CClientExoAppInternal::HideMovieFadePanel()
 #endif
     }
 }
-// PC 0x005F4C60
-void CClientExoAppInternal::StartCreditSequence(const Vector& vColor,
+#ifndef _XBOX
+void CClientExoAppInternal::StartCreditSequence(const Vector& vColor,  // PC 0x005F4C60
                                               const CExoString& sMusic)
 {
     if (!m_bCreditSequenceInProgress)
@@ -8164,8 +8180,8 @@ void CClientExoAppInternal::StopCreditSequence()
 {
     m_bCreditSequenceInProgress = 0;
 }
-// PC 0x005F4D60
-void CClientExoAppInternal::PlayCharacterSelectSound(CSWCCreature* pCreature)
+#endif
+void CClientExoAppInternal::PlayCharacterSelectSound(CSWCCreature* pCreature)  // PC 0x005F4D60
 {
     int nRoll = rand() % 3;
 
@@ -8207,8 +8223,8 @@ CExoString CClientExoAppInternal::GetDisplayCharacterForKey(int nKey)
 #endif
     return g_pTlkTable->GetSimpleString(0xBC10);
 }
-// PC 0x005F4E50
-void CClientExoAppInternal::SetEvilEndingHackInProgress(int bInProgress)
+#ifndef _XBOX
+void CClientExoAppInternal::SetEvilEndingHackInProgress(int bInProgress)  // PC 0x005F4E50
 {
     m_bEvilEndingHackInProgress = bInProgress;
 
@@ -8219,8 +8235,8 @@ void CClientExoAppInternal::SetEvilEndingHackInProgress(int bInProgress)
         m_pEvilEndingHackSound = NULL;
     }
 }
-// PC 0x005F4EA0
-void CClientExoAppInternal::RestoreMousePositionTo(int nX, int nY)
+#endif
+void CClientExoAppInternal::RestoreMousePositionTo(int nX, int nY)  // PC 0x005F4EA0
 {
     m_nMouseX = nX;
     m_nMouseY = nY;
@@ -8294,8 +8310,8 @@ inline CClientOptions* CClientExoAppInternal::GetClientOptions()
 {
     return m_pClientOptions;
 }
-// PC 0x00602EB0  Xbox 0x00032DB0
-int CClientExoAppInternal::MainLoop()
+#ifndef _XBOX
+int CClientExoAppInternal::MainLoop()  // PC 0x00602EB0  Xbox 0x00032DB0
 {
     int bAreaReady = 0;
     static int a;
@@ -8695,8 +8711,12 @@ int CClientExoAppInternal::MainLoop()
         m_fEnemyAutoPauseTimer -= DeltaT;
         if (m_fEnemyAutoPauseTimer <= 0.0f && !m_nCombatMode)
         {
+#ifdef _XBOX
+            SetAutoPaused(1, CClientExoApp::AUTOPAUSE_ENEMY_SIGHTED);
+#else
             SetAutoPaused(1, m_nDelayedAutoPauseType);
             m_nDelayedAutoPauseType = AUTO_PAUSE_TYPE_UNSET;
+#endif
         }
     }
     else if (m_fEnemyAutoPauseDelay > 0.0f)
@@ -8705,6 +8725,10 @@ int CClientExoAppInternal::MainLoop()
         m_fEnemyAutoPauseCooldown -= DeltaT;
     if (m_PauseFlags.m_Bits.m_bTogglePauseAtEndOfFrame)
     {
+#ifdef _XBOX
+        m_pSWCMessage->SendPlayerToServerInput_TogglePauseRequest();
+        m_pGuiInGame->SetPaused(GetPausedByCombat(), m_nTogglePauseType);
+#else
         CSWSArea* pServerArea;
         if (m_pModule == NULL || m_pModule->m_pInfo == NULL ||
             (pServerArea = m_pModule->m_pInfo->GetServerArea()) == NULL ||
@@ -8714,6 +8738,7 @@ int CClientExoAppInternal::MainLoop()
                 m_pSWCMessage->SendPlayerToServerInput_TogglePauseRequest();
             m_pGuiInGame->SetPaused(GetPausedByCombat(), m_nTogglePauseType);
         }
+#endif
         m_PauseFlags.m_Bits.m_bTogglePauseAtEndOfFrame = 0;
     }
     if (m_nTutorialReason != TUTORIAL_REASON_UNSET)
@@ -8721,6 +8746,7 @@ int CClientExoAppInternal::MainLoop()
         m_pGuiInGame->ShowTutorialWindow(m_nTutorialReason, m_nTutorialX, m_nTutorialY, m_nTutorialZ);
         m_nTutorialReason = TUTORIAL_REASON_UNSET;
     }
+#ifndef _XBOX
     if (!g_sErrorString.IsEmpty())
     {
         CExoFile cErrorFile("HD0:FILEERROR", 14, "a");
@@ -8740,9 +8766,10 @@ int CClientExoAppInternal::MainLoop()
         else
             g_sErrorString.Format("%sERROR - Failed to open error file\n");
     }
+#endif
     return m_bExitGame && m_bExitGamePending;
 }
-
+#endif
 void CClientExoAppInternal::DestroyQuestJournal()
 {
     if (m_pQuestJournal != NULL)
@@ -8908,8 +8935,8 @@ inline void XboxSetGuiManagerSize(CSWGuiManager* pManager, int nWidth, int nHeig
     pManager->m_nWidth = nWidth;
     pManager->m_nHeight = nHeight;
 }
-// PC 0x005F8550  Xbox 0x000315C0
-int CClientExoAppInternal::StartServices(int bPlayLoadMusic,
+// Xbox 0x000315C0
+void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
                                         const CExoString& sModule,
                                         const CExoString& sLoadMusic,
                                         const CExoString& sLoadScreen,
@@ -8959,6 +8986,8 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,
     g_pExoResMan->AddResourceDirectory("ERRORTEX:");
     g_pSWTlkTable = new CSWTlkTable;
     g_pTlkTable = g_pSWTlkTable;
+    if (bPlayLoadMusic)
+        MountDownloadedContent(0, 0);
     g_pExoResMan->CacheResource("HD0:DATAXBOX\\items", RESTYPE_BIF);
     g_pExoResMan->CacheResource("HD0:DATAXBOX\\scripts", RESTYPE_BIF);
     g_pExoResMan->CacheResource("HD0:DATAXBOX\\gui", RESTYPE_BIF);
@@ -9117,7 +9146,7 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,
             m_bSkipIntro = sValue.AsINT();
         else
             m_bSkipIntro = 0;
-        m_nXboxUnmapped264 = GetCodeWord();
+        m_nXboxUnmapped264 = g_pAppManager->GetCodeWord();
         if (sLoadScreen == "" && sModule != "")
         {
             SetLoadBarProgress(70, 1);
@@ -9168,7 +9197,7 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,
             }
         }
     }
-    return 0;
+
 }
 // PC 0x005EEB10  Xbox 0x0001CCD0
 void CClientExoAppInternal::SetEventDescriptions()
@@ -9390,6 +9419,582 @@ int CClientExoAppInternal::AddPatchFiles(int bRemoveFirst)
     }
     return bResult;
 }
+// PC 0x005F1C20  Xbox 0x0001E600
+void CClientExoAppInternal::InitializeClientOptions()
+{
+    CExoIni cIni;
+    CExoString sValue;
+
+    if (cIni.ReadIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "Memory Level") == 1)
+    {
+        if (sValue.AsINT() != 0)
+        {
+          if (cIni.ReadIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "Memory Access") == 1)
+          {
+            switch (sValue.AsINT())
+            {
+            case 0:
+                m_pClientOptions->SetGoreLevel(0);
+                break;
+            case 1:
+                m_pClientOptions->SetGoreLevel(1);
+                break;
+            case 2:
+                m_pClientOptions->SetGoreLevel(2);
+                break;
+            default:
+                m_pClientOptions->SetGoreLevel(0);
+                sValue.Format("%d", 0);
+                cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "Memory Access");
+                break;
+            }
+          }
+          else
+          {
+            m_pClientOptions->SetGoreLevel(0);
+          }
+        }
+        else
+        {
+            m_pClientOptions->SetGoreLevel(0);
+        }
+    }
+    else
+    {
+        if (g_pTlkTable != NULL)
+        {
+            if (g_pTlkTable->GetLanguageVersion() == 0)
+            {
+                sValue.Format("%d", 1);
+                cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "Memory Level");
+                sValue.Format("%d", 1);
+                cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "Memory Access");
+                m_pClientOptions->SetGoreLevel(1);
+            }
+            else
+            {
+                sValue.Format("%d", 0);
+                cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "Memory Level");
+                sValue.Format("%d", 0);
+                cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "Memory Access");
+                m_pClientOptions->SetGoreLevel(0);
+            }
+        }
+        else
+        {
+            sValue.Format("%d", 0);
+            cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "Memory Level");
+            sValue.Format("%d", 0);
+            cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "Memory Access");
+            m_pClientOptions->SetGoreLevel(0);
+        }
+    }
+
+    if (cIni.ReadIniEntry(sValue, "d:\\swplayer.ini", "Control Options", "Zoom Speed"))
+    {
+        float fValue = sValue.AsFLOAT();
+        if (fValue >= 1.0f && fValue <= 10.0f)
+        {
+            m_pClientOptions->SetZoomSpeed(fValue);
+        }
+        else
+        {
+            m_pClientOptions->SetZoomSpeed(3.0f);
+        }
+    }
+    else
+    {
+        sValue.Format("%f", 3.0);
+        cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Control Options", "Zoom Speed");
+    }
+
+    if (cIni.ReadIniEntry(sValue, "d:\\swplayer.ini", "Control Options", "CameraTurnSpeed"))
+    {
+        float fValue = sValue.AsFLOAT();
+        if (fValue >= 1.0f && fValue <= 10.0f)
+        {
+            m_pClientOptions->SetCameraTurnSpeed(fValue);
+        }
+        else
+        {
+            m_pClientOptions->SetCameraTurnSpeed(1.0f);
+        }
+    }
+    else
+    {
+        sValue.Format("%f", 1.0);
+        cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Control Options", "CameraTurnSpeed");
+    }
+
+    if (cIni.ReadIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "TooltipDelay uSec"))
+    {
+        if (sValue.AsINT() <= 0)
+        {
+            sValue.Format("1");
+            cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "TooltipDelay uSec");
+        }
+    }
+    else
+    {
+        cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "TooltipDelay uSec");
+    }
+
+    if (cIni.ReadIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "Hide SecondStoryTiles"))
+    {
+        int nValue = sValue.AsINT();
+        if (nValue >= 0 && nValue <= 2)
+        {
+            m_pClientOptions->SetGeometryFadeMode(nValue);
+        }
+        else
+        {
+            m_pClientOptions->SetGeometryFadeMode(0);
+            sValue.Format("%d", 0);
+            cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "Hide SecondStoryTiles");
+        }
+    }
+    else
+    {
+        m_pClientOptions->SetGeometryFadeMode(0);
+        sValue.Format("%d", 0);
+        cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "Hide SecondStoryTiles");
+    }
+
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "AntiAliasing Mode"))
+    {
+        int nValue = sValue.AsINT();
+        if (nValue >= 0 && nValue <= 4)
+        {
+            m_pClientOptions->SetAntiAliasingMode(nValue);
+        }
+        else
+        {
+            m_pClientOptions->SetAntiAliasingMode(0);
+            sValue.Format("%d", 0);
+            cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "AntiAliasing Mode");
+        }
+    }
+    else
+    {
+        m_pClientOptions->SetAntiAliasingMode(0);
+        sValue.Format("%d", 0);
+        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "AntiAliasing Mode");
+    }
+
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "Enable VSync"))
+    {
+        CClientOptions* pClientOptions = m_pClientOptions;
+        pClientOptions->SetVSyncEnabled(sValue.AsINT() != 0);
+    }
+    else
+    {
+        m_pClientOptions->SetVSyncEnabled(0);
+        sValue.Format("%d", 0);
+        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "Enable VSync");
+    }
+
+    if (m_pClientOptions->GetShinyWaterSupported())
+    {
+        if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "ShinyWater"))
+        {
+            CClientOptions* pClientOptions = m_pClientOptions;
+            pClientOptions->SetShinyWater(sValue.AsINT() != 0);
+        }
+        else
+        {
+            m_pClientOptions->SetShinyWater(0);
+            sValue.Format("%d", 0);
+            cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "ShinyWater");
+        }
+    }
+    else
+    {
+        m_pClientOptions->SetShinyWater(0);
+        sValue.Format("%d", 0);
+        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "ShinyWater");
+    }
+
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "NumShadowCastingLights"))
+    {
+        int nValue = sValue.AsINT();
+        if (nValue >= 1 && nValue <= 3)
+        {
+            m_pClientOptions->SetNumShadowCastingLights(nValue);
+        }
+        else
+        {
+            m_pClientOptions->SetNumShadowCastingLights(3);
+            sValue.Format("%d", 3);
+            cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "NumShadowCastingLights");
+        }
+    }
+    else
+    {
+        m_pClientOptions->SetNumShadowCastingLights(3);
+        sValue.Format("%d", 3);
+        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "NumShadowCastingLights");
+    }
+
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "EnableVisualEffectsHigh"))
+    {
+        CClientOptions* pClientOptions = m_pClientOptions;
+        pClientOptions->SetVisualEffectsHigh((sValue.AsINT() != 0));
+    }
+    else
+    {
+        m_pClientOptions->SetVisualEffectsHigh(1);
+        sValue.Format("%d", 1);
+        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "EnableVisualEffectsHigh");
+    }
+
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "Enable Truform"))
+    {
+        CClientOptions* pClientOptions = m_pClientOptions;
+        pClientOptions->SetTruform(sValue.AsINT() != 0);
+    }
+    else
+    {
+        m_pClientOptions->SetTruform(0);
+        sValue.Format("%d", 0);
+        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "Enable Truform");
+    }
+
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "Enable AnisotropicFiltering"))
+    {
+        CClientOptions* pClientOptions = m_pClientOptions;
+        pClientOptions->SetAnisotropicFiltering(sValue.AsINT() != 0);
+    }
+    else
+    {
+        m_pClientOptions->SetAnisotropicFiltering(0);
+        sValue.Format("%d", 0);
+        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "Enable AnisotropicFiltering");
+    }
+
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "CreatureWindSetting"))
+    {
+        int nWind = sValue.AsINT();
+        switch (nWind)
+        {
+        case 0:
+            break;
+        case CClientOptions::WIND_PLAYER:
+            break;
+        case CClientOptions::WIND_ALL:
+            break;
+        default:
+            nWind = CClientOptions::WIND_PLAYER;
+            sValue.Format("%d", CClientOptions::WIND_PLAYER);
+            cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "CreatureWindSetting");
+            break;
+        }
+        m_pClientOptions->SetWindMode(nWind);
+    }
+    else
+    {
+        m_pClientOptions->SetWindMode(CClientOptions::WIND_PLAYER);
+        sValue.Format("%d", CClientOptions::WIND_PLAYER);
+        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "CreatureWindSetting");
+    }
+
+    if (!cIni.ReadIniEntry(sValue, "d:\\swplayer.ini", "Profile", "ShowMessageOfTheDay"))
+    {
+        sValue.Format("%d", 1);
+        cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Profile", "ShowMessageOfTheDay");
+    }
+
+    if (cIni.ReadIniEntry(sValue, "d:\\swplayer.ini", "Control Options", "Enable ScreenEdgeCameraTurn"))
+    {
+        CClientOptions* pClientOptions = m_pClientOptions;
+        pClientOptions->SetScreenEdgeCameraTurn((sValue.AsINT() != 0));
+    }
+    else
+    {
+        sValue.Format("%d", 1);
+        cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Control Options", "Enable ScreenEdgeCameraTurn");
+    }
+
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "EnableGrass"))
+    {
+        CClientOptions* pClientOptions = m_pClientOptions;
+        pClientOptions->SetGrassEnabled(sValue.AsINT() != 0);
+    }
+    else
+    {
+        m_pClientOptions->SetGrassEnabled(1);
+        sValue.Format("%d", 1);
+        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "EnableGrass");
+    }
+
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "EnableFastGrass"))
+    {
+        CClientOptions* pClientOptions = m_pClientOptions;
+        pClientOptions->SetFastGrass(sValue.AsINT() != 0);
+    }
+    else
+    {
+        m_pClientOptions->SetFastGrass(1);
+        sValue.Format("%d", 1);
+        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "EnableFastGrass");
+    }
+}
+
+#include "aurconsole.h"
+#include "LaunchData.h"
+#define KOTOR_XBOX_TITLE_ID 0x4c410003
+#define CONTENT_SIGNATURE_SIZE 20
+#define STRREF_CHECKING_CONTENT 47939
+int g_bAcceptCorruptDownloads = 0;
+ConsoleFunc ConVg_bAcceptCorruptDownloads("g_bAcceptCorruptDownloads", &g_bAcceptCorruptDownloads);
+void CClientExoAppInternal::MountDownloadedContent(int bRemove, int bShowProgress)  // Xbox 0x00029210
+{
+    HRESULT hr = S_OK;
+    CExoString sValue;
+    CExoIni cIni;
+    int nProgress = 0;
+    HANDLE hFind;
+    char szPath[128];
+    char szName[128];
+    WIN32_FIND_DATA cFindData;
+    XCONTENT_FIND_DATA cContentData;
+    BYTE aSignature[2000];
+
+    int bLocal = cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Game Options", "UseLocalContent");
+    if (bLocal && sValue.AsINT())
+    {
+        hFind = FindFirstFile("d:\\live*", &cFindData);
+        if (hFind != INVALID_HANDLE_VALUE)
+        {
+            do
+            {
+                CExoString sAlias("DOWNLOADS:");
+                g_pExoBase->m_pExoAliasList->ChangePath("DOWNLOADS", "d:\\");
+                CExoString sDirectory = sAlias + cFindData.cFileName;
+                sprintf(szPath, "D:\\%s", cFindData.cFileName);
+                if (bRemove == 1)
+                {
+                    g_pExoResMan->RemoveResourceDirectory(sDirectory);
+                }
+                else
+                {
+                    g_pExoResMan->AddResourceDirectory(sDirectory);
+                    CExoArrayList<CExoString> lstDirectories;
+                    g_pExoBase->GetDirectoryList(&lstDirectories, sDirectory, 0xffff, 1, 0);
+                    for (int nDirectory = 0; nDirectory < lstDirectories.num; nDirectory++)
+                    {
+                        if (!lstDirectories.element[nDirectory].CompareNoCase("modules"))
+                        {
+                            g_pExoResMan->AddResourceDirectory(sDirectory + "\\" +
+                                                               lstDirectories.element[nDirectory]);
+                        }
+                    }
+                    CExoString sLive = CExoString("Live") + sDirectory.Right(1);
+                    g_pExoBase->m_pExoAliasList->Add(sLive, szPath);
+                    int nPackage = atoi(sDirectory.Right(1).CStr());
+                    m_aLiveContentNames[nPackage].m_bCorrupt = 0;
+                    m_aLiveContentNames[nPackage].m_bExists = 1;
+                    m_aLiveContentNames[nPackage].m_sName = sLive;
+                }
+            } while (FindNextFile(hFind, &cFindData));
+            FindClose(hFind);
+        }
+    }
+    else
+    {
+        hFind = XFindFirstContent("T:\\", 0xFFFFFFFF, &cContentData);
+        if (hFind == INVALID_HANDLE_VALUE)
+        {
+            hr = HRESULT_FROM_WIN32(GetLastError());
+        }
+        else
+        {
+            if (bShowProgress)
+            {
+                SetLoadBarProgress(0, 0);
+                SetLoadScreenByModuleName("default");
+                if (m_pGuiLoadScreen != NULL)
+                {
+                    m_pGuiLoadScreen->SetHint(STRREF_CHECKING_CONTENT);
+                }
+                ShowLoadScreen(1, 0, 0);
+            }
+            do
+            {
+                int nPackage = (int)(cContentData.qwOfferingId & 0xf);
+                if (bShowProgress)
+                {
+                    nProgress = 0;
+                    SetLoadBarProgress(0, 0);
+                    UpdateScreen(1.0f / 30.0f, 0, 0);
+                }
+                int bCorrupt = 1;
+                int nVerified = 0;
+                int nFailed = 0;
+                if (!XGetContentInstallLocationFromIDs(KOTOR_XBOX_TITLE_ID, cContentData.qwOfferingId, szPath))
+                {
+                    hr = HRESULT_FROM_WIN32(GetLastError());
+                }
+                if (SUCCEEDED(hr))
+                {
+                    HANDLE hSignatures = XLoadContentSignatures(szPath);
+                    if (hSignatures == NULL)
+                    {
+                        hr = HRESULT_FROM_WIN32(GetLastError());
+                    }
+                    else
+                    {
+                        CExoString sAlias("DOWNLOADS:");
+                        CExoString sRoot("T:\\");
+                        if (_strnicmp(szPath, sRoot.CStr(), sRoot.GetLength()) == 0)
+                        {
+                            CExoString sDirectory = sAlias + (szPath + 3);
+                            if (bRemove == 1)
+                            {
+                                g_pExoResMan->RemoveResourceDirectory(sDirectory);
+                            }
+                            else
+                            {
+                                g_pExoResMan->AddResourceDirectory(sDirectory);
+                                CExoArrayList<CExoString> lstFiles;
+                                g_pExoBase->GetDirectoryList(&lstFiles, sDirectory, 0xffff, 0, 0);
+                                CExoArrayList<CExoString> lstDirectories;
+                                g_pExoBase->GetDirectoryList(&lstDirectories, sDirectory, 0xffff, 1, 0);
+                                int nDirectory;
+                                for (nDirectory = 0; nDirectory < lstDirectories.num; nDirectory++)
+                                {
+                                    CExoArrayList<CExoString> lstSubFiles;
+                                    if (bShowProgress)
+                                    {
+                                        nProgress += 30 / lstDirectories.num;
+                                        SetLoadBarProgress(nProgress, 0);
+                                        UpdateScreen(1.0f / 30.0f, 0, 0);
+                                    }
+                                    if (g_pExoBase->GetDirectoryList(
+                                            &lstSubFiles,
+                                            sDirectory + "\\" + lstDirectories.element[nDirectory], 0xffff,
+                                            0, 0))
+                                    {
+                                        for (int nSubFile = 0; nSubFile < lstSubFiles.num; nSubFile++)
+                                        {
+                                            lstFiles.Add(lstDirectories.element[nDirectory] + "\\" +
+                                                         lstSubFiles.element[nSubFile]);
+                                        }
+                                    }
+                                }
+                                if (g_nBootFlags & (1 << nPackage))
+                                {
+                                    nFailed = 1;
+                                }
+                                if (bShowProgress)
+                                {
+                                    for (int nFile = 0; nFile < lstFiles.num; nFile++)
+                                    {
+                                        if (!lstFiles.element[nFile].CompareNoCase("contentmeta.xbx"))
+                                        {
+                                            nProgress += 70 / lstFiles.num;
+                                            SetLoadBarProgress(nProgress, 0);
+                                            UpdateScreen(1.0f / 30.0f, 0, 0);
+                                            CExoFile cFile(sDirectory + "\\" + lstFiles.element[nFile], 0xffff,
+                                                           "rb");
+                                            int nSize = cFile.GetSize();
+                                            LPBYTE pFileSignature = NULL;
+                                            DWORD nFileSignatureSize = CONTENT_SIGNATURE_SIZE;
+                                            if (nSize < 0 ||
+                                                !XLocateSignatureByName(hSignatures,
+                                                                        lstFiles.element[nFile].CStr(), 0, 0,
+                                                                        &pFileSignature, &nFileSignatureSize))
+                                            {
+                                                GetLastError();
+                                                nFailed++;
+                                                break;
+                                            }
+                                            LPBYTE pData = new BYTE[nSize];
+                                            cFile.Read(pData, nSize, 1);
+                                            DWORD nSignatureSize = CONTENT_SIGNATURE_SIZE;
+                                            BOOL bCalculated =
+                                                XCalculateContentSignature(pData, nSize, aSignature, &nSignatureSize);
+                                            if (!bCalculated || nSignatureSize != CONTENT_SIGNATURE_SIZE)
+                                            {
+                                                GetLastError();
+                                            }
+                                            delete[] pData;
+                                            if (!bCalculated || nSignatureSize != nFileSignatureSize ||
+                                                memcmp(aSignature, pFileSignature, nSignatureSize) != 0)
+                                            {
+                                                nFailed++;
+                                                break;
+                                            }
+                                            nVerified++;
+                                        }
+                                    }
+                                    if (!nFailed)
+                                    {
+
+                                        LPBYTE pExtraSignature = NULL;
+                                        DWORD nExtraSignatureSize = CONTENT_SIGNATURE_SIZE;
+                                        nFailed = XLocateSignatureByIndex(hSignatures, nVerified, &pExtraSignature,
+                                                                          &nExtraSignatureSize);
+                                    }
+                                }
+                                if (nFailed && !g_bAcceptCorruptDownloads)
+                                {
+                                    g_pExoResMan->RemoveResourceDirectory(sDirectory);
+                                }
+                                else
+                                {
+                                    bCorrupt = 0;
+                                    for (nDirectory = 0; nDirectory < lstDirectories.num; nDirectory++)
+                                    {
+                                        if (!lstDirectories.element[nDirectory].CompareNoCase("modules"))
+                                        {
+                                            g_pExoResMan->AddResourceDirectory(
+                                                sDirectory + "\\" + lstDirectories.element[nDirectory]);
+                                        }
+                                    }
+                                    CExoString sLive = CExoString("Live") + sDirectory.Right(1);
+                                    g_pExoBase->m_pExoAliasList->Add(sLive, szPath);
+                                }
+                            }
+                        }
+                        XCloseContentSignatures(hSignatures);
+                    }
+                }
+                if (bRemove != 1)
+                {
+                    int nLength = wcslen(cContentData.szDisplayName);
+                    unsigned int nOut = 0;
+                    for (int nChar = 0; nChar < nLength && nOut < sizeof(szName) - 1; nChar++)
+                    {
+                        int nBytes = wctomb(&szName[nOut], cContentData.szDisplayName[nChar]);
+                        if (nBytes >= 0)
+                        {
+                            nOut += nBytes;
+                        }
+                        else
+                        {
+                            szName[nOut++] = 1;
+                        }
+                    }
+                    m_aLiveContentNames[nPackage].m_bCorrupt = bCorrupt;
+                    m_aLiveContentNames[nPackage].m_bExists = 1;
+                    szName[nOut] = 0;
+                    m_aLiveContentNames[nPackage].m_sName.Format("%s", szName);
+                }
+                g_nBootFlags |= (unsigned char)bCorrupt << nPackage;
+                if (bShowProgress)
+                {
+                    SetLoadBarProgress(100, 0);
+                    UpdateScreen(1.0f / 30.0f, 0, 0);
+                }
+            } while (XFindNextContent(hFind, &cContentData));
+            CloseHandle(hFind);
+            if (bShowProgress)
+            {
+                HideLoadScreen(1);
+            }
+        }
+    }
+}
 
 #define XBOX_DEFAULT_SOUND_VOICES 64
 void CClientExoAppInternal::InitializeSoundOptions()  // PC 0x005F1F70  Xbox 0x000203B0
@@ -9480,7 +10085,7 @@ void CClientExoAppInternal::AddDownloadedResources()
 
 #include "LaunchData.h"
 void AurPersistDisplay();
-void ExoXboxLaunch(KOTOR_LAUNCH_DATA* pParams);
+void ExoXboxLaunch(KOTOR_LAUNCH_DATA* pParams, const char* pszModuleName);
 
 #define XBOX_DEATH_SEQUENCE_SPEED_RANGE 0.8f
 void CClientExoAppInternal::UpdateDeathSequence()  // PC 0x005F7330  Xbox 0x00030F10
@@ -9535,8 +10140,980 @@ void CClientExoAppInternal::UpdateDeathSequence()  // PC 0x005F7330  Xbox 0x0003
             cParams.SetLoadScreen("load_default");
             cParams.m_nLoadScreenHint = 0;
             AurPersistDisplay();
-            ExoXboxLaunch(&cParams);
+            ExoXboxLaunch(&cParams, g_pAppManager->m_pServerExoApp->GetModuleName().CStr());
         }
     }
 }
+#endif
+#ifdef _XBOX
+
+enum
+{
+    STRREF_XBOX_MAIN_MENU_MESSAGE = 0xBAF4,
+    STRREF_XBOX_CORRUPT_CONTENT = 0xBB02
+};
+// Xbox 0x00022FC0
+void CClientExoAppInternal::AddCorruptContentMessage()
+{
+    EXOXBOXASSERT(m_pMainMenu != NULL);
+    CSWGuiMainMenu::CErrorMessageData cMessage;
+    cMessage.m_sMessage = g_pTlkTable->GetSimpleString(STRREF_XBOX_MAIN_MENU_MESSAGE);
+    m_pMainMenu->AddErrorMessage(cMessage);
+}
+// PC 0x005FCA30  Xbox 0x0002ABE0
+void CClientExoAppInternal::DisplayMainMenu(int bScanContent)
+{
+    if (m_pMainMenu != NULL && m_pSWGuiManager->PanelExists(m_pMainMenu))
+    {
+        EXOXBOXASSERT(m_pMainMenu->m_nExitState != CSWGuiPanel::EXITSTATE_DELETE);
+        return;
+    }
+
+    if (m_pStartupPanel != NULL)
+    {
+        if (m_pSWGuiManager->PanelExists(m_pStartupPanel))
+        {
+            CSWGuiPanel* pPanel = m_pStartupPanel;
+            pPanel->m_bDeferredRemoval = 0;
+            pPanel->m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
+        }
+        else
+        {
+            delete m_pStartupPanel;
+        }
+        m_pStartupPanel = NULL;
+    }
+
+    m_pMainMenu = new CSWGuiMainMenu(m_pSWGuiManager);
+    SetInputClass(INPUT_CLASS_GUI);
+    m_pSWGuiManager->AddPanel(m_pMainMenu,
+                             CSWGuiManager::PANEL_MODE_FOREGROUND, 1);
+    if (bScanContent)
+    {
+        MountDownloadedContent(0, bScanContent);
+        unsigned char nCorrupt = 0;
+        CExoString sCorruptContent;
+        for (int nPackage = 1; nPackage < CTlkTable::NUM_CONTENT_PKGS; ++nPackage)
+        {
+            if (g_pAppManager->m_pClientExoApp->GetLiveContentExists(nPackage) &&
+                g_pAppManager->m_pClientExoApp->GetLiveContentCorrupt(nPackage))
+            {
+                if (nCorrupt)
+                {
+                    sCorruptContent = sCorruptContent + ", ";
+                }
+                sCorruptContent = sCorruptContent + g_pAppManager->m_pClientExoApp->GetLiveContentName(nPackage);
+                nCorrupt++;
+            }
+        }
+        if (nCorrupt > 0)
+        {
+            CSWGuiMainMenu::CErrorMessageData cMessage;
+            g_pTlkTable->SetCustomToken(0, sCorruptContent);
+            cMessage.m_sMessage = g_pTlkTable->GetSimpleString(STRREF_XBOX_CORRUPT_CONTENT);
+            g_pTlkTable->ParseStr(cMessage.m_sMessage);
+            m_pMainMenu->AddErrorMessage(cMessage);
+        }
+    }
+    StartMenuMusic(1, MENU_MUSIC_VOLUME, MENU_MUSIC_PRIORITY_GROUP);
+    if (m_bMainMenuTransition == 1)
+    {
+        AddCorruptContentMessage();
+        m_bMainMenuTransition = 0;
+    }
+    m_pGuiInGame->SetGlobalUnpauseableState(0);
+}
+#endif
+#ifdef _XBOX
+// PC 0x005F2980  Xbox 0x00020BF0
+void CClientExoAppInternal::TurnOffKeyboardModal()
+{
+    for (unsigned int i = 0; i < 7; i++)
+    {
+        if (m_anKeyboardModal[i] != 0)
+        {
+            for (unsigned int j = 0; j < 7; j++)
+                m_anKeyboardModal[j] = 0;
+            m_nUnknownFC = 1;
+            m_nUnknownF4 = 0;
+            m_nUnknownF8 = 0;
+            m_pSWCMessage->SendPlayerToServerInput_AbortDriveControl();
+            break;
+        }
+    }
+
+    if (m_pModule != NULL && m_pModule->m_pInfo != NULL)
+    {
+        m_pModule->m_pInfo->HiliteAreaObjects(0);
+    }
+}
+#endif
+#ifdef _XBOX
+// PC 0x005F3650  Xbox 0x00021970
+CExoString CClientExoAppInternal::GetLoadMusicByModuleName(const CExoString& sModule)
+{
+    CExoString sMusicResRef;
+    {
+        CExoString sColumn("MusicResRef");
+        CExoString sDefault("DEFAULT");
+        CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+        C2DA* pLoadscreens = p2DArrays->m_pAreaTransition;
+        pLoadscreens->GetCExoStringEntry(sDefault, sColumn, &sMusicResRef);
+    }
+    return sMusicResRef;
+}
+#endif
+#ifdef _XBOX
+
+#define XBOX_END_GAME_INPUT_LOCK_MS 500
+int CClientExoAppInternal::MainLoop()  // PC 0x00602EB0  Xbox 0x00032DB0
+{
+    int bAreaReady = 0;
+    static int a;
+
+    if (m_pGuiInGame != NULL)
+        m_pGuiInGame->HideAreaTransition();
+
+    if (GetAreaNotReadyToDisplay() != 0 && m_pModule != NULL && GetPlayerCreature() != NULL)
+    {
+        if (!m_pModule->GetMiniGame() && m_oidFutureLeader != OBJECT_INVALID)
+            CrownFutureLeader();
+        else
+        {
+            if (m_pModule->GetMiniGame())
+                SetInputClass(INPUT_CLASS_MINIGAME, 1);
+            else
+            {
+                SetInputClass(INPUT_CLASS_GAME, 1);
+                if (m_pPlayerControl != NULL)
+                    m_pPlayerControl->SetEnabled(1);
+                if (m_pGuiInGame != NULL)
+                    m_pGuiInGame->SetSWGuiStatus(CGuiInGame::GUISTATUS_SHOW_MAIN_INTERFACE, 1);
+                m_pGuiInGame->InitializeMap();
+            }
+            EnableInput();
+            m_pModule->GetModuleTitle();
+            WaitForMovie();
+            HideLoadScreen(1);
+            m_pCombatTimer->PauseWorldTimer();
+            m_pPauseTimer->PauseWorldTimer();
+            m_pAnimationTimer->PauseWorldTimer();
+            m_pCombatTimer->ResetTimer(GetWorldTimer());
+            m_pPauseTimer->ResetTimer(GetWorldTimer());
+            m_pAnimationTimer->ResetTimer(GetWorldTimer());
+            m_pWorldTimer->SetSnapshotTime();
+            m_pCombatTimer->SetSnapshotTime();
+            m_pPauseTimer->SetSnapshotTime();
+            m_pAnimationTimer->SetSnapshotTime();
+            CWorldTimer* pTimer = m_pPauseTimer;
+            pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
+            pTimer = m_pAnimationTimer;
+            pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
+            pTimer = m_pCombatTimer;
+            pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
+            pTimer = m_pWorldTimer;
+            pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
+            m_pWorldTimer->UnpauseWorldTimer();
+            m_pCombatTimer->UnpauseWorldTimer();
+            m_pPauseTimer->UnpauseWorldTimer();
+            m_pAnimationTimer->UnpauseWorldTimer();
+            g_pAppManager->GetServerExoApp()->GetWorldTimer()->SetSnapshotTime();
+            g_pAppManager->GetServerExoApp()->GetWorldTimer()->UnpauseWorldTimer();
+            if (!g_pAppManager->GetServerExoApp()->GetAutoSavePending())
+            {
+                m_pModule->m_pInfo->StartSounds();
+                if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nGlobalDialogState ||
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bHoldWorldFadeInForDialog)
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bHoldWorldFadeInForDialog = 1;
+                else
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->StartGlobalFade(
+                        1, 0.5f, 1.0f, Vector(0.0f, 0.0f, 0.0f));
+                SetCanSendDialog(1);
+                g_pExoInput->EndAttemptedBind();
+                m_pGuiInGame->SetGlobalUnpauseableState(0);
+                g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
+            }
+            bAreaReady = 1;
+            DumpLogCounters(NULL);
+        }
+    }
+
+    if (GetActivePauseState() == 0)
+        m_pWorldTimer->SetSnapshotTime();
+    if (GetActivePauseState() != PAUSE_STATE_COMBAT)
+        m_pCombatTimer->SetSnapshotTime();
+    m_pPauseTimer->SetSnapshotTime();
+    CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
+    if (pStats->m_bOperationActive == 1)
+    {
+        if (!g_pAppManager->GetClientExoApp()->GetCaptureEventPlayBack())
+        {
+            m_pUnknown10->ProcessReceivedFrames(1);
+            m_pUnknown10->UpdateStatusLoop(CNetLayer::APPLICATION_CLIENT);
+        }
+        StallServerCode();
+        pStats = g_pAppManager->m_pReentrantServerStats;
+        if (pStats->m_bOperationActive &&
+            (pStats->m_nOperation == CSWReentrantServerStats::OPERATION_LOAD_MODULE ||
+             pStats->m_nOperation == CSWReentrantServerStats::OPERATION_LOAD_GAME))
+        {
+            m_nAreaNotReadyToDisplay = 1;
+            if (g_pAppManager->m_pReentrantServerStats->m_nUnknown56 == 4)
+            {
+                DeltaT = (int)m_pWorldTimer->GetSnapshotTimeDifference() / 1000000.0f;
+                ProcessInput(DeltaT);
+            }
+            return m_bExitGame && m_bExitGamePending;
+        }
+    }
+    DeltaT = (int)m_pWorldTimer->GetSnapshotTimeDifference() / 1000000.0f;
+    g_pExoResMan->Update(0);
+    if (m_pSWParty != NULL && m_pModule != NULL && m_pModule->m_pInfo != NULL)
+        m_pSWParty->Update(DeltaT);
+    AurMakeCurrent();
+    ProcessInput(DeltaT);
+    UpdateDeathSequence();
+    int bEndGameReady = 1;
+    if (m_bEndGamePending && m_fEndGamePendingDelay <= 0.0f)
+    {
+        if (!m_nUnknown49C)
+        {
+            m_nUnknown49C = 1;
+            g_pExoInput->SetActive(0);
+            bEndGameReady = 0;
+            g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_MUTE);
+            m_nUnknown4A0 = (unsigned long)(g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
+        }
+        else
+        {
+            bEndGameReady = (unsigned long)(g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000) -
+                            m_nUnknown4A0 > XBOX_END_GAME_INPUT_LOCK_MS;
+            g_pExoInput->UpdateJoysticks();
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateControllerPauseState();
+        }
+    }
+    if (m_bEndGamePending && bEndGameReady == 1 &&
+        !g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bControllerPauseActive)
+    {
+        if (m_fEndGamePendingDelay > 0.0f)
+        {
+            if (m_pSWGuiManager->PanelExists(m_pGuiInGame->m_pMessageBox) ||
+                !m_nEndGamePendingUnknown)
+                m_fEndGamePendingDelay -= DeltaT;
+            else
+            {
+                CGuiInGame* pGui = m_pGuiInGame;
+                pGui->m_pMessageBox->DisplayDeathMessage();
+            }
+        }
+        else
+        {
+            KOTOR_LAUNCH_DATA cParams;
+            cParams.m_nModuleTrans = KOTOR_LAUNCH_DATA::MODULETRANS_NONE;
+            cParams.m_nAutoCalInfo = g_pExoInput->GetAutoCalInfo();
+            cParams.m_nPortBinding = g_pExoInput->GetPortBinding();
+            cParams.m_bRenderQA = RenderQA;
+
+            KOTOR_LAUNCH_OPTIONS_DATA cOptionsData;
+            g_pAppManager->m_pClientExoApp->GetClientOptions()->GetOptionsData(&cOptionsData);
+            cParams.SetOptionsData(cOptionsData);
+
+            SetLoadScreenByModuleName("default");
+            SetLoadMusic("");
+            SetLoadBarProgress(0, 1);
+            if (m_pGuiLoadScreen != NULL)
+            {
+                m_pGuiLoadScreen->SetHint(0);
+            }
+            ShowLoadScreen(1, 1, 0);
+            UpdateScreen(1.0f / 30.0f, 0, 0);
+
+            cParams.SetLoadScreen("load_default");
+            cParams.m_nLoadScreenHint = 0;
+            AurPersistDisplay();
+            ExoXboxLaunch(&cParams, g_pAppManager->m_pServerExoApp->GetModuleName().CStr());
+        }
+    }
+    int bSlowMotion = m_nUnknown1B0;
+    if (bSlowMotion || SlowGame)
+        SetGameSpeed(0.25f);
+    else
+        SetGameSpeed(1.0f);
+    if (!g_pAppManager->GetClientExoApp()->GetCaptureEventPlayBack())
+    {
+        m_pUnknown10->ProcessReceivedFrames(1);
+        m_pUnknown10->UpdateStatusLoop(CNetLayer::APPLICATION_CLIENT);
+    }
+    if (m_bRunScript)
+    {
+        g_pVirtualMachine->RunScript(&m_sRunScript, 0, 0);
+        m_bRunScript = 0;
+    }
+    if (GetPlayerCreature() != NULL &&
+        GetPlayerCreature()->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1) != NULL)
+    {
+        if (m_fPlayerAnimationTime <= DeltaT)
+        {
+            m_fPlayerAnimationTime = 0.0f;
+            if (m_lstPlayerAnimations.GetHeadPos() == NULL)
+                a = 0;
+            else
+            {
+                CExoString sAnimation;
+                CQueuedAnim* pAnimation = m_lstPlayerAnimations.RemoveHead();
+                float fTime;
+                float fLength;
+                if (pAnimation != NULL)
+                {
+                    if (pAnimation->sAnimation.GetLength() > 0)
+                        GetPlayerCreature()->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1)->GetAnimation(
+                            pAnimation->sAnimation.CStr(), &fTime, &fLength);
+                    else
+                    {
+                        sAnimation = GetPlayerCreature()->GetAnimationBase()->GetAnimationName(pAnimation->nAnimation);
+                        GetPlayerCreature()->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1)->GetAnimation(
+                            sAnimation.CStr(), &fTime, &fLength);
+                    }
+                    while (m_lstPlayerAnimations.GetHeadPos() != NULL &&
+                           fLength == Gob::ANIMATION_LENGTH_NOT_FOUND)
+                    {
+                        pAnimation = m_lstPlayerAnimations.RemoveHead();
+                        if (pAnimation != NULL)
+                            GetPlayerCreature()->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1)->GetAnimation(
+                                pAnimation->sAnimation.CStr(), &fTime, &fLength);
+                    }
+                    if (pAnimation != NULL)
+                    {
+                        if (printanimqueue)
+                        {
+                            CExoString sMessage;
+                            if (pAnimation->sAnimation.GetLength() > 0)
+                                sMessage.Format("Playing next anim in queue: %s", pAnimation->sAnimation.CStr());
+                            else
+                                sMessage.Format("Playing next anim in queue: %s", sAnimation.CStr());
+                            AurPostString(sMessage.CStr(), 0, a++ % 5 + g_nAnimQueueSize, g_fAnimQueueTime);
+                        }
+                        if (pAnimation->sAnimation.GetLength() > 0)
+                        {
+                            if (fLength > 0.0f)
+                            {
+                                if (pAnimation->bLooping)
+                                {
+                                    GetPlayerCreature()->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1)->PlayAnimation(
+                                        pAnimation->sAnimation.CStr(), 1.0f, 0, 0.0f);
+                                    m_fPlayerAnimationTime = pAnimation->fDuration;
+                                }
+                                else
+                                {
+                                    GetPlayerCreature()->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1)->PlayAnimation(
+                                        pAnimation->sAnimation.CStr(), 1.0f, Gob::ANIMATION_FLAG_NO_LOOP, 0.0f);
+                                    m_fPlayerAnimationTime = fLength;
+                                }
+                            }
+                        }
+                        else if (GetPlayerCreature()->AnimationLooping(pAnimation->nAnimation))
+                        {
+                            GetPlayerCreature()->SetAnimation(pAnimation->nAnimation, 0, 0);
+                            m_fPlayerAnimationTime = pAnimation->fDuration;
+                        }
+                        else
+                        {
+                            GetPlayerCreature()->AddFireForgetAnimation(pAnimation->nAnimation, NULL);
+                            m_fPlayerAnimationTime = GetPlayerCreature()->GetAnimationBase()->GetAnimationLength(
+                                pAnimation->nAnimation) * 0.001f;
+                        }
+                    }
+                }
+            }
+        }
+        else
+            m_fPlayerAnimationTime -= DeltaT;
+    }
+
+    CSWCCreature* pCharacter = m_pSWParty->GetCharacter(0);
+    CSWCModule* pModule = m_pModule;
+    unsigned long nDay;
+    unsigned long nTime;
+    g_pAppManager->GetClientExoApp()->GetWorldTimer()->GetWorldTime(&nDay, &nTime);
+    if (pModule != NULL && pModule->m_pInfo != NULL)
+    {
+        CSWCArea* pArea = pModule->m_pInfo;
+        if (!m_nUnknown26C && m_nUnknown188)
+            m_nUnknown26C = 1;
+        else if (m_nUnknown26C && !m_nUnknown188)
+        {
+            pArea->StartSounds();
+            m_nUnknown26C = 0;
+        }
+        CAurScene* pScene = pArea->m_pScene;
+        if (pScene != NULL && pCharacter != NULL)
+        {
+            if (!m_pGuiInGame->m_nGlobalDialogState)
+                pScene->SetSceneFocus(pCharacter->m_vPosition);
+            else
+                pScene->SetSceneFocus(m_pGuiInGame->GetDialogCameraPosition(1));
+        }
+        if (!g_pAppManager->GetClientExoApp()->GetCaptureEventPlayBack() &&
+            m_nInputClass != INPUT_CLASS_MINIGAME &&
+            !m_pSWGuiManager->PanelExists(m_pGuiInGame->m_pTutorialBox))
+            UpdateCamera(DeltaT);
+        g_starttime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
+        m_pClientAIMaster->UpdateState();
+        g_endtime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
+        g_AIUpdateTime = (int)(g_endtime - g_starttime) * 0.001f;
+        if (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nCameraMode == CClientOptions::CAMERA_MODE_NAVIGATE &&
+            g_pAppManager->GetClientExoApp()->GetModule() != NULL &&
+            g_pAppManager->GetClientExoApp()->GetModule()->GetCamera() != NULL)
+            UpdateRoom(g_pAppManager->GetClientExoApp()->GetModule()->GetCamera()->GetPosition());
+        else if (pCharacter != NULL)
+        {
+            if (!m_pGuiInGame->m_nGlobalDialogState)
+                UpdateRoom(pCharacter->m_vDesiredPosition);
+            else
+                UpdateRoom(m_pGuiInGame->GetDialogCameraPosition(0));
+        }
+    }
+    if (m_pGuiInGame != NULL && m_pGuiInGame->m_oidCameraAnimationObject != OBJECT_INVALID)
+    {
+        unsigned long oidServerObject =
+            g_pAppManager->GetServerExoApp()->ClientToServerObjectId(m_pGuiInGame->m_oidCameraAnimationObject);
+        CGameObject* pObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidServerObject);
+        if (pObject != NULL && pObject->AsSWSObject() != NULL)
+        {
+            pObject->AsSWSObject()->UpdateDialog();
+            if (pObject->AsSWSObject()->m_bDialogEnded)
+                pObject->AsSWSObject()->DeleteDialog();
+        }
+    }
+    if (m_pGuiInGame != NULL)
+        m_pGuiInGame->UpdateDialog();
+    if ((m_nInputClass == INPUT_CLASS_GAME || m_nInputClass == 4) &&
+        !m_nAreaNotReadyToDisplay && !m_pGuiInGame->IsGlobalFading() &&
+        !m_pGuiInGame->IsGlobalFadeObscuring())
+    {
+        DoPassiveSelection(DeltaT);
+        UpdateCombatMode();
+    }
+    UpdateHostileHilite((__int64)g_pAppManager->GetClientExoApp()->GetExoAppInternal()->m_pPauseTimer->GetSnapshotTimeDifference() / 1000000.0f);
+    g_starttime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
+    if (m_pGuiInGame->GetPendingStatusSummary() && m_nInputClass == INPUT_CLASS_GAME &&
+        !m_nAreaNotReadyToDisplay && !m_pGuiInGame->m_bHoldWorldFadeInForDialog &&
+        !m_pGuiInGame->m_nGlobalDialogState && !m_pGuiInGame->IsGlobalFading() &&
+        !m_pGuiInGame->IsGlobalFadeObscuring())
+    {
+        if (m_fStatusSummaryDelay == 0.0f)
+            m_fStatusSummaryDelay = 0.25f;
+        else
+        {
+            if (DeltaT < 0.25f)
+                m_fStatusSummaryDelay -= DeltaT;
+            if (m_fStatusSummaryDelay <= 0.0f)
+            {
+                m_fStatusSummaryDelay = 0.0f;
+                m_pGuiInGame->ShowStatusSummary();
+            }
+        }
+    }
+    else if (m_fStatusSummaryDelay != 0.0f)
+        m_fStatusSummaryDelay = 0.0f;
+    m_pSWGuiManager->Update(DeltaT);
+    m_pSWGuiManager->SetGuiScale(DeltaT);
+    DeltaT = (__int64)g_pAppManager->GetClientExoApp()->GetExoAppInternal()->m_pPauseTimer->GetSnapshotTimeDifference() / 1000000.0f;
+    m_pSWGuiManager->Draw(DeltaT);
+    DeltaT = m_pSWGuiManager->m_fGuiScale;
+    g_endtime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
+    g_GuiUpdateTime = (int)(g_endtime - g_starttime) * 0.001f;
+    g_starttime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
+    UpdateRumble(DeltaT);
+    m_pGuiInGame->UpdateControllerPauseState();
+    if (m_nAttackMashTutorialTimer > 0)
+    {
+        unsigned long nElapsed = (unsigned long)(DeltaT * 1000.0f);
+        if ((unsigned long)m_nAttackMashTutorialTimer <= nElapsed)
+            m_nAttackMashTutorialTimer = 0;
+        else
+            m_nAttackMashTutorialTimer -= nElapsed;
+    }
+    if (g_pExoSound != NULL)
+        UpdateSoundEngine();
+    g_endtime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
+    g_SndUpdateTime = (int)(g_endtime - g_starttime) * 0.001f;
+    if (m_bScreenShot && g_bEnableScreenCapture)
+    {
+
+        AurSnapshot(m_szScreenShot);
+        m_bScreenShot = 0;
+    }
+    if (bAreaReady)
+        m_nAreaNotReadyToDisplay = 0;
+    if (m_fEnemyAutoPauseTimer > 0.0f)
+    {
+        m_fEnemyAutoPauseTimer -= DeltaT;
+        if (m_fEnemyAutoPauseTimer <= 0.0f && !m_nCombatMode)
+            SetAutoPaused(1, CClientExoApp::AUTOPAUSE_ENEMY_SIGHTED);
+    }
+    else if (m_fEnemyAutoPauseDelay > 0.0f)
+        m_fEnemyAutoPauseDelay -= DeltaT;
+    if (m_fEnemyAutoPauseCooldown > 0.0f)
+        m_fEnemyAutoPauseCooldown -= DeltaT;
+    if (m_PauseFlags.m_Bits.m_bTogglePauseAtEndOfFrame)
+    {
+        m_pSWCMessage->SendPlayerToServerInput_TogglePauseRequest();
+        m_pGuiInGame->SetPaused(GetPausedByCombat(), m_nTogglePauseType);
+        m_PauseFlags.m_Bits.m_bTogglePauseAtEndOfFrame = 0;
+    }
+    if (m_nTutorialReason != TUTORIAL_REASON_UNSET)
+    {
+        m_pGuiInGame->ShowTutorialWindow(m_nTutorialReason, m_nTutorialX, m_nTutorialY, m_nTutorialZ);
+        m_nTutorialReason = TUTORIAL_REASON_UNSET;
+    }
+    return m_bExitGame && m_bExitGamePending;
+}
+#endif
+#ifdef _XBOX
+
+enum
+{
+    XBOX_CAMERA_TILT_INPUT = 12,
+    XBOX_CAMERA_TURN_INPUT = 13
+};
+void CClientExoAppInternal::UpdateCamera(float fDeltaTime)  // PC 0x005F5E10  Xbox 0x000249C0
+{
+    if (m_pModule == NULL)
+        return;
+
+    float fTimeStep = (float)(__int64)g_pAppManager->GetClientExoApp()
+                         ->GetPauseTimer()->GetSnapshotTimeDifference() /
+                     1000000.0f;
+    bool bKeepHistory = g_bKeepHistory;
+    g_bKeepHistory = false;
+    CAurCamera* pCamera = m_pModule->GetCamera();
+    float fTilt = g_pExoInput->PollInput(XBOX_CAMERA_TILT_INPUT, m_nInputClass);
+    m_pModule->TiltCamera((CameraVertAxisFlip ? 1 : -1) * fTilt);
+    float fTurn = -g_pExoInput->PollInput(XBOX_CAMERA_TURN_INPUT, m_nInputClass);
+    m_pModule->TurnCamera((CameraHorzAxisFlip ? 1 : -1) * fTurn, fDeltaTime);
+
+    if (m_fCameraZoom != 0.0f)
+    {
+        CSWCModule* pModule = m_pModule;
+        pModule->m_nReserved104 = 1;
+    }
+    if (pCamera != NULL)
+    {
+        float fExpansion = pCamera->GetDist() * 2.0f / 150.0f;
+        g_HitCheckBoxExpansion.m_fX = fExpansion;
+        g_HitCheckBoxExpansion.m_fY = fExpansion;
+        g_HitCheckBoxExpansion.m_fZ = fExpansion;
+    }
+    Vector vPosition = pCamera->GetPosition();
+    Vector vScroll;
+    if (m_nCameraScrollX != 0)
+        vScroll.m_fX = m_nCameraScrollX * pCamera->MouseDir(CAMERA_SCROLL_PIXELS, 0).m_fX;
+    if (m_nCameraScrollY != 0)
+        vScroll.m_fY = m_nCameraScrollY * pCamera->MouseDir(0, CAMERA_SCROLL_PIXELS).m_fY;
+    m_pModule->ScrollCamera(vScroll);
+    g_bKeepHistory = bKeepHistory;
+
+    GetPlayerCreature();
+    m_pModule->UpdateCameraBumpAndShake(fTimeStep);
+    if (m_nCombatMode == 0)
+        m_pModule->UpdateCameraFollow(fTimeStep);
+    m_fCameraZoom = m_pModule->UpdateCameraCollision(fTimeStep, m_fCameraZoom);
+    if (fabs(m_fCameraZoom) > CLIENT_CAMERA_ZOOM_THRESHOLD)
+        m_pModule->ZoomCamera(m_fCameraZoom);
+
+    if (g_pAppManager->GetClientExoApp()->GetCaptureEvents() == CAPTURE_EVENTS_RECORD &&
+        m_pModule->m_nReserved80 == 1)
+    {
+        float fDistance = pCamera->GetDist();
+        float fPitch = pCamera->GetPitch();
+        float fYaw = pCamera->GetYaw();
+        CExoString sEvent;
+        sEvent.Format("%d %c %f %f %f\n",
+            (unsigned int)(g_pAppManager->GetClientExoApp()->GetWorldTimer()
+                               ->GetSnapshotTime() / 1000),
+            CPlayBackEventNode::CAMERA, fDistance, fPitch, fYaw);
+        g_pAppManager->GetClientExoApp()->GetCaptureEventFile()->Write(sEvent);
+        CSWCModule* pModule = m_pModule;
+        pModule->m_nReserved80 = 0;
+    }
+    m_fCameraZoom = 0.0f;
+    m_fCameraTilt = 0.0f;
+    m_fCameraTurn = 0.0f;
+    m_pModule->m_nReserved80 = 0;
+}
+#endif
+#ifdef _XBOX
+// PC 0x005F7500  Xbox 0x00025970
+void CClientExoAppInternal::UpdateRumble(float fDeltaTime)
+{
+    float fLeftMagnitude = 0.0f;
+    float fRightMagnitude = 0.0f;
+    CClientOptions* pOptions = g_pAppManager->GetClientExoApp()->GetClientOptions();
+    if (fDeltaTime > 0.0f && pOptions != NULL && pOptions->m_bFloatingNumbers &&
+        !m_nAreaNotReadyToDisplay &&
+        !m_pGuiInGame->IsGlobalFadeObscuring() &&
+        !m_pGuiInGame->IsGlobalFading() && !GetLoadScreenVisible())
+    {
+        for (int i = m_aRumbleInstances.num - 1; i >= 0; i--)
+        {
+            CSWRumbleInstance& cInstance = m_aRumbleInstances.element[i];
+            if (cInstance.m_bFirstUpdate)
+                cInstance.m_bFirstUpdate = 0;
+            else
+                cInstance.m_fTime += fDeltaTime;
+
+            float fLeft;
+            float fRight;
+            if (!m_aRumblePatterns.element[cInstance.m_nPattern].GetMagnitudes(
+                    cInstance.m_fTime, fLeft, fRight))
+                m_aRumbleInstances.DelIndex(i);
+            else
+            {
+                fLeftMagnitude = fLeftMagnitude > fLeft ? fLeftMagnitude : fLeft;
+                fRightMagnitude = fRightMagnitude > fRight ? fRightMagnitude : fRight;
+            }
+        }
+    }
+    g_pExoInput->SetRumble(0, fLeftMagnitude, fRightMagnitude,
+                          CLIENT_RUMBLE_DURATION);
+}
+#endif
+#ifdef _XBOX
+// PC 0x00604130  Xbox 0x00034000
+void CClientExoAppInternal::StopServices()
+{
+#ifndef _XBOX
+    ShutDownMoviePlayer();
+#endif
+    if (m_pSWGuiManager->PanelExists(m_pMainMenu))
+        delete m_pMainMenu;
+    m_pMainMenu = NULL;
+    if (m_pStartupPanel != NULL)
+    {
+        delete m_pStartupPanel;
+        m_pStartupPanel = NULL;
+    }
+    if (m_pSoundSetList != NULL)
+    {
+        delete m_pSoundSetList;
+        m_pSoundSetList = NULL;
+    }
+    if (m_pItemDropSounds != NULL)
+    {
+        delete m_pItemDropSounds;
+        m_pItemDropSounds = NULL;
+    }
+    if (m_pModule != NULL)
+    {
+        delete m_pModule;
+        m_pModule = NULL;
+    }
+    if (m_pGameObjectArray != NULL)
+    {
+        delete m_pGameObjectArray;
+        m_pGameObjectArray = NULL;
+    }
+    DestroyWorldJournal();
+    if (m_pImeUI != NULL)
+    {
+
+        m_pImeUI = NULL;
+    }
+    if (m_pGuiInGame != NULL)
+    {
+        m_pGuiInGame->ShutDown();
+        delete m_pGuiInGame;
+        m_pGuiInGame = NULL;
+    }
+    if (m_pSWGuiManager != NULL)
+    {
+        delete m_pSWGuiManager;
+        m_pSWGuiManager = NULL;
+    }
+    if (m_pClientAIMaster != NULL)
+    {
+        delete m_pClientAIMaster;
+        m_pClientAIMaster = NULL;
+    }
+    while (m_lstPlayerList.m_pInternal->m_pHead != NULL)
+    {
+        CSWCPlayer* pPlayer = m_lstPlayerList.RemoveHead();
+        if (pPlayer != NULL)
+            delete pPlayer;
+    }
+    if (m_pServerInfo != NULL)
+    {
+        delete m_pServerInfo;
+        m_pServerInfo = NULL;
+    }
+    if (m_pUnknown10 != NULL)
+    {
+        m_pUnknown10->ShutDown();
+        delete m_pUnknown10;
+        m_pUnknown10 = NULL;
+    }
+    if (g_pExoInput != NULL)
+    {
+        delete g_pExoInput;
+        g_pExoInput = NULL;
+    }
+    if (m_pMenuMusic != NULL)
+    {
+        delete m_pMenuMusic;
+        m_pMenuMusic = NULL;
+    }
+    if (m_pLoadMusic != NULL)
+    {
+        delete m_pLoadMusic;
+        m_pLoadMusic = NULL;
+    }
+    if (g_pExoSound != NULL)
+    {
+        delete g_pExoSound;
+        g_pExoSound = NULL;
+    }
+    if (m_pSWCMessage != NULL)
+    {
+        delete m_pSWCMessage;
+        m_pSWCMessage = NULL;
+    }
+    if (g_pTlkTable != NULL)
+    {
+        delete g_pTlkTable;
+        g_pTlkTable = NULL;
+    }
+    if (m_pSoundSetList != NULL)
+    {
+        delete m_pSoundSetList;
+        m_pSoundSetList = NULL;
+    }
+    if (g_pAuroraInterface != NULL)
+    {
+        delete g_pAuroraInterface;
+        g_pAuroraInterface = NULL;
+    }
+    if (g_pAurora != NULL)
+    {
+        DestroyCAurora();
+        g_pAurora = NULL;
+    }
+    if (g_pExoResMan != NULL)
+    {
+        g_pExoResMan->RemoveResourceDirectory("PORTRAITS:");
+        g_pExoResMan->RemoveResourceDirectory("SERVERVAULT:");
+        g_pExoResMan->RemoveFixedKeyTableFile("HD0:CHITIN");
+        MountDownloadedContent(1, 0);
+        g_pExoResMan->RemoveResourceDirectory("OVERRIDE:");
+        g_pExoResMan->RemoveResourceDirectory("HD0:MOVIES");
+        g_pExoResMan->RemoveResourceDirectory("HD0:STREAMMUSIC");
+        g_pExoResMan->RemoveResourceDirectory("HD0:STREAMWAVES");
+        g_pExoResMan->RemoveResourceDirectory("TEMPCLIENT:");
+        if (g_pExoResMan->Exists("GLOBAL", RESTYPE_RIM, (unsigned long*)NULL))
+            g_pExoResMan->RemoveResourceImageFile("RIMSXBOX:GLOBAL");
+        if (g_pExoResMan->Exists("GLOBALDX", RESTYPE_RIM, (unsigned long*)NULL))
+            g_pExoResMan->RemoveResourceImageFile("RIMSXBOX:GLOBALDX");
+        if (g_pExoResMan->Exists("SUBGLOBAL", RESTYPE_RIM, (unsigned long*)NULL))
+            g_pExoResMan->RemoveResourceImageFile("RIMSXBOX:SUBGLOBAL");
+        if (g_pExoResMan->Exists("SUBGLOBAL", RESTYPE_RIM, (unsigned long*)NULL))
+            g_pExoResMan->RemoveResourceImageFile("RIMSXBOX:SUBGLOBALDX");
+        g_pExoResMan->RemoveResourceDirectory("RIMSXBOX:");
+        if (g_pExoResMan != NULL)
+        {
+            delete g_pExoResMan;
+            g_pExoResMan = NULL;
+        }
+    }
+    if (m_pWorldTimer != NULL)
+    {
+        delete m_pWorldTimer;
+        m_pWorldTimer = NULL;
+    }
+    if (m_pCombatTimer != NULL)
+    {
+        delete m_pCombatTimer;
+        m_pCombatTimer = NULL;
+    }
+    if (m_pPauseTimer != NULL)
+    {
+        delete m_pPauseTimer;
+        m_pPauseTimer = NULL;
+    }
+    if (m_pAnimationTimer != NULL)
+    {
+        delete m_pAnimationTimer;
+        m_pAnimationTimer = NULL;
+    }
+    if (m_pClientOptions != NULL)
+    {
+        delete m_pClientOptions;
+        m_pClientOptions = NULL;
+    }
+    if (m_pUnknown1C0 != NULL)
+    {
+        delete m_pUnknown1C0;
+        m_pUnknown1C0 = NULL;
+    }
+    if (m_pPlayerControl != NULL)
+        delete m_pPlayerControl;
+#ifdef _XBOX
+    if (m_pMoviePlayer != NULL)
+    {
+        delete m_pMoviePlayer;
+        m_pMoviePlayer = NULL;
+    }
+#endif
+    DestroyQuestJournal();
+    if (m_pCharacterFile != NULL)
+    {
+        delete[] m_pCharacterFile;
+        m_pCharacterFile = NULL;
+    }
+    m_nCharacterFileSize = 0;
+    m_nCharacterFileId = 0;
+}
+CSWCPlayer* CClientExoAppInternal::GetPlayerByPlayerID(unsigned long nPlayerId)  // PC 0x005F5C70  Xbox 0x00024820
+{
+    CExoLinkedListNode* pNode = m_lstPlayerList.GetHeadPos();
+    void* pData = m_lstPlayerList.GetHead();
+    CSWCPlayer* pPlayer = (CSWCPlayer*)pData;
+
+    while (pPlayer != NULL)
+    {
+        if (pPlayer->m_nPlayerId == nPlayerId)
+        {
+            return pPlayer;
+        }
+
+        pPlayer = (CSWCPlayer*)m_lstPlayerList.GetNext(pNode);
+    }
+
+    return NULL;
+}
+#endif
+#ifdef _XBOX
+// PC 0x005F5370  Xbox 0x00023C00
+void CClientExoAppInternal::UpdateSoundEngine()
+{
+    if (m_pModule != NULL)
+    {
+        CAurCamera* pCamera = m_pModule->GetCamera();
+        CSWCCreature* pCreature = GetPlayerCreature();
+        if (pCamera != NULL)
+        {
+            CSWMiniGame* pMiniGame = m_pModule->GetMiniGame();
+            if (pMiniGame != NULL && pMiniGame->GetPlayer() != NULL)
+            {
+                Vector vPlayerPosition = pMiniGame->GetPlayer()->GetPosition();
+            }
+            else if (pCreature == NULL)
+                goto RenderSound;
+
+            Vector vPosition;
+            Vector vDirection;
+            Quaternion qOrientation;
+            vPosition = pCamera->GetPosition();
+            qOrientation = pCamera->GetOrientation();
+
+            if (g_fMicPosFromCam < 0.0f)
+                g_fMicPosFromCam = 0.0f;
+            else if (g_fMicPosFromCam > 1.0f)
+                g_fMicPosFromCam = 1.0f;
+
+            if (pCamera != NULL)
+            {
+                CSWCameraOnAStick* pCameraOnAStick =
+                    (CSWCameraOnAStick*)pCamera->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK);
+                if (pCameraOnAStick != NULL)
+                {
+                    Vector vTarget;
+                    vTarget = pCameraOnAStick->GetTargetHeadPosition();
+                    vPosition += g_fMicPosFromCam * (vTarget - vPosition);
+                }
+                else if (pCamera->GetBehavior(AUR_BEHAVIOR_CAMERA_COMBAT) != NULL)
+                {
+                    CSWCCreature* pCharacter = m_pSWParty->GetCharacter(0);
+                    Vector vTarget = pCharacter->m_vPosition;
+                    vTarget.m_fZ += pCharacter->GetHeadHeightOffset();
+                    vPosition += (vTarget - vPosition) * g_fMicPosFromCam;
+                }
+                else if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nGlobalDialogState &&
+                         g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bComputerCameraShot)
+                {
+                    float fMicRange =
+                        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_fComputerCameraMicRange;
+                    vPosition -= qOrientation.zdir() * fMicRange;
+                }
+            }
+
+            g_pExoSound->SetListenerPosition(vPosition);
+            vDirection = qOrientation.zdir();
+            vDirection.m_fX *= -1.0f;
+            vDirection.m_fY *= -1.0f;
+            vDirection.m_fZ *= -1.0f;
+            g_pExoSound->SetListenerOrientation(vDirection, qOrientation.ydir());
+        }
+    }
+RenderSound:
+
+    g_pExoSound->Render();
+}
+#endif
+
+#ifdef _XBOX
+
+#include "aurconsole.h"
+// Xbox 0x0001C560
+void soundrolloff(char* szArgs)
+{
+    float fFactor = (float)atof(szArgs);
+    g_pExoSound->SetRollOffFactor(fFactor);
+}
+ConsoleFunc ConFsoundrolloff("soundrolloff", soundrolloff);
+ConsoleFunc ConFSetFramesPerSecond("SetFramesPerSecond", SetFramesPerSecond);
+// Xbox 0x0001C6B0
+char* SetMovieFrameRate(char* szArgs)
+{
+    int nFrameRate = atoi(szArgs);
+    if (nFrameRate != 0)
+    {
+        g_nSetMovieFrameRate = nFrameRate;
+        return "Frame rate will be set after the next module load.";
+    }
+    g_nSetMovieFrameRate = 0;
+    return "Frame rate returned to normal.";
+}
+ConsoleFunc ConFSetMovieFrameRate("SetMovieFrameRate", SetMovieFrameRate);
+// Xbox 0x0001C6E0
+char* MarkLog(char* szArgs)
+{
+    g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory);
+    g_pExoBase->m_pExoDebug->FlushScriptLogFile();
+    return "Log has been duly noted!";
+}
+ConsoleFunc ConFMarkLog("MarkLog", MarkLog);
+
+#include "nwsmodule.h"
+#include "nwsarea.h"
+// Xbox 0x000232D0
+char* SpawnChar(char* szArgs)
+{
+    CSWSCreature* pPlayer = g_pAppManager->m_pServerExoApp->GetPlayerCreature();
+    if (pPlayer != NULL)
+    {
+        Vector vPosition = pPlayer->m_vPosition + pPlayer->m_vOrientation * 5.0f;
+        CSWSCreature* pCreature = new CSWSCreature(0x7f000000, 0);
+        if (pCreature->LoadFromTemplate(szArgs, 0) == 1)
+        {
+            g_pAppManager->GetServerExoApp()->GetModule()->GetArea()->ComputeSafeLocation(
+                vPosition, 10.0f, pCreature->GetPathfindInformation(), 1, &vPosition);
+            pCreature->AddToArea(g_pAppManager->GetServerExoApp()->GetModule()->GetArea(),
+                                 vPosition.m_fX, vPosition.m_fY, vPosition.m_fZ, 1, 1);
+            return "SUCCESS!";
+        }
+        return "ERROR: Failed to load template.";
+    }
+    return "ERROR: No player creature present.";
+}
+ConsoleFunc ConFSpawnChar("SpawnChar", SpawnChar);
 #endif

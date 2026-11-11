@@ -53,7 +53,9 @@ template <class T> void Parse(char* sText, List<T>& lstValues)
             nCount++;
             sLine = AurResGetNextLine();
         }
+#ifndef AURPARSE_XBOX_NO_ENDLIST_SKIP
         skipspace(skipspace(sLine) + 7);
+#endif
     }
 }
 

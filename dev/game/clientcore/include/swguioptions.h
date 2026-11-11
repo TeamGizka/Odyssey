@@ -94,8 +94,11 @@ public:
         STRREF_ENABLE_TOOLTIPS_DESCRIPTION = 49114
     };
 
+#ifndef _XBOX
+    CSWGuiOptionsFeedback(CSWGuiManager* pManager); virtual ~CSWGuiOptionsFeedback();
+#else
     CSWGuiOptionsFeedback(CSWGuiManager* pManager);
-    virtual ~CSWGuiOptionsFeedback();
+#endif
 
     virtual void HandleInputEvent(int nEvent, int nState);
 
@@ -109,18 +112,15 @@ public:
     void OnTutorial(CSWGuiControl* pControl);
     void OnSubtitles(CSWGuiControl* pControl);
     void OnMiniMap(CSWGuiControl* pControl);
-    void OnFloaty(CSWGuiControl* pControl);
-    void OnSummary(CSWGuiControl* pControl);
-    void OnHideInGameGUI(CSWGuiControl* pControl);
-    void OnUseSmallFont(CSWGuiControl* pControl);
-    void OnEnableToolTips(CSWGuiControl* pControl);
+    void OnFloaty(CSWGuiControl* pControl); void OnSummary(CSWGuiControl* pControl);
+    void OnHideInGameGUI(CSWGuiControl* pControl); void OnUseSmallFont(CSWGuiControl* pControl); void OnEnableToolTips(CSWGuiControl* pControl);
 
-    CSWGuiListBox m_lbOptions;
-    CSWGuiLabel m_lblDescription;
-    CSWGuiLabel m_lblTitle;
-    CSWGuiListBox m_lbDescription;
-    CSWGuiButton m_btnBack;
-    CSWGuiButton m_btnDefault;
+#ifdef _XBOX
+    CSWGuiOptionsCheckbox m_aCheckboxes[7]; CSWGuiLabel m_lblA; CSWGuiLabel m_lblB; CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblSelect;
+    CSWGuiLabel m_lblBack; CSWGuiLabel m_lblTitle; CSWGuiLabel m_lblRAnalog; CSWGuiListBox m_lbDescription; void OnRumble(CSWGuiControl* pControl);
+#else
+    CSWGuiListBox m_lbOptions; CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblTitle; CSWGuiListBox m_lbDescription; CSWGuiButton m_btnBack; CSWGuiButton m_btnDefault;
+#endif
 };
 
 class CSWGuiOptionsSound : public CSWGuiPanel
@@ -138,20 +138,20 @@ public:
     void OnDefault(CSWGuiControl* pControl);
     void OnAdvanced(CSWGuiControl* pControl);
 
-    CSWGuiSlider m_sldMusic;
-    CSWGuiSlider m_sldVoice;
-    CSWGuiSlider m_sldEffects;
-    CSWGuiSlider m_sldMovie;
-    CSWGuiLabel m_lblMusic;
-    CSWGuiLabel m_lblEffects;
-    CSWGuiLabel m_lblVoice;
-    CSWGuiLabel m_lblMovie;
-    CSWGuiLabel m_lblDescription;
-    CSWGuiLabel m_lblTitle;
+#ifdef _XBOX
+    CSWGuiSlider m_sldGamma; CSWGuiSlider m_sldMusic; CSWGuiSlider m_sldVoice; CSWGuiSlider m_sldEffects; CSWGuiSlider m_sldMovie;
+    CSWGuiLabel m_lblGamma; CSWGuiLabel m_lblMusic; CSWGuiLabel m_lblEffects; CSWGuiLabel m_lblVoice; CSWGuiLabel m_lblMovie;
+    CSWGuiLabel m_lblB; CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblBack; CSWGuiLabel m_lblTitle; CSWGuiLabel m_lblRAnalog;
+    CSWGuiListBox m_lbDescription; CSWGuiLabel m_lblY; CSWGuiLabel m_lblDefault;
+    void OnMoveGammaSlider(CSWGuiControl* pControl);
+#else
+    CSWGuiSlider m_sldMusic; CSWGuiSlider m_sldVoice;
+    CSWGuiSlider m_sldEffects; CSWGuiSlider m_sldMovie;
+    CSWGuiLabel m_lblMusic; CSWGuiLabel m_lblEffects; CSWGuiLabel m_lblVoice; CSWGuiLabel m_lblMovie;
+    CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblTitle;
     CSWGuiListBox m_lbDescription;
-    CSWGuiButton m_btnBack;
-    CSWGuiButton m_btnDefault;
-    CSWGuiButton m_btnAdvanced;
+    CSWGuiButton m_btnBack; CSWGuiButton m_btnDefault; CSWGuiButton m_btnAdvanced;
+#endif
 };
 
 class CSWGuiOptionsSoundAdvanced : public CSWGuiPanel

@@ -144,14 +144,14 @@ public:
                                 unsigned char nIndex);
     void ClearSkills();
     char GetSkillRank(unsigned short nSkill);
-    void SetSkillRank(unsigned short nSkill, char nRank)  // PC 0x00647560
+    void SetSkillRank(unsigned short nSkill, char nRank)  // PC 0x00647560  Xbox 0x000709F0
     {
         if (nSkill < g_pRules->m_nNumSkills)
         {
             m_pSkillRanksTotal[nSkill] = nRank;
         }
     }
-    void SetSkillRankBase(unsigned short nSkill, char nRank)  // PC 0x00647590
+    void SetSkillRankBase(unsigned short nSkill, char nRank)  // PC 0x00647590  Xbox 0x00070A20
     {
         if (nSkill < g_pRules->m_nNumSkills)
         {

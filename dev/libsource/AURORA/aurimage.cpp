@@ -494,7 +494,11 @@ unsigned char* ImageReadPLT(char* sFileName, int* pnWidth, int* pnHeight,
     FILE* pFile;
     unsigned char* pImage;
 
+#ifdef _XBOX
+    sprintf(sPath, "d:\\override\\%s.plt", sFileName);
+#else
     sprintf(sPath, "%s.plt", sFileName);
+#endif
     pFile = fopen(sPath, "rb");
     if (pFile == NULL)
     {

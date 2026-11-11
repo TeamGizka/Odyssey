@@ -39,9 +39,8 @@ public:
     void SetInternational(int bInternational);
     void OnEnterBackspace(CSWGuiControl* pControl);
     void OnExitBackspace(CSWGuiControl* pControl);
-#else
-    virtual void OnPanelAdded();
 #endif
+    virtual void OnPanelAdded();
 
     CSWCCreature* m_pCreature;
     CSWGuiPanel* m_pParent;

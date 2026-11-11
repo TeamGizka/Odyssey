@@ -58,7 +58,7 @@ void FreeAppObjectTables(CAppManager* pManager)
 CSWReentrantServerStats::~CSWReentrantServerStats()
 {
 }
-// Xbox 0x00138930
+
 void CAppManager::FreeLargeTempBuffer()
 {
     if (m_pLargeTempBuffer)
@@ -83,8 +83,8 @@ CObjectTableManager* CAppManager::GetObjectTableManager(unsigned long nTable)
     EXOXBOXASSERT(0);
     return NULL;
 }
-// PC 0x00401080  Xbox 0x00011090
-void CAppManager::DoSaveGameScreenShot(const CExoString& sName)
+#ifndef _XBOX
+void CAppManager::DoSaveGameScreenShot(const CExoString& sName)  // PC 0x00401080  Xbox 0x00011090
 {
     AurSaveGameSnapshot((char*)sName.CStr(), 256, true, true);
 }
@@ -93,8 +93,8 @@ void CAppManager::TakeScreenShot(const CExoString& sName)
 {
     AurSaveGameSnapshot((char*)sName.CStr(), (short)m_pClientExoApp->m_pcExoAppInternal->m_nScreenShot, false, true);
 }
-// PC 0x004010A0  Xbox 0x00011250
-void CAppManager::AllocLargeTempBuffer()
+#endif
+void CAppManager::AllocLargeTempBuffer()  // PC 0x004010A0  Xbox 0x00011250
 {
     if (m_pLargeTempBuffer == NULL)
     {
@@ -338,7 +338,7 @@ const char* SetResolution(char* sBuffer)  // Xbox 0x000115E0
 
 #ifdef _XBOX
 // Xbox 0x000110B0
-unsigned char GetCodeWord()
+unsigned char CAppManager::GetCodeWord()
 {
     CExoIni cIni;
     CExoString sValue;
@@ -371,5 +371,18 @@ unsigned char GetCodeWord()
             nCodeWord = sValue.CompareNoCase("hacktastic") ? 7 : 0;
     }
     return nCodeWord;
+}
+#endif
+
+#ifdef _XBOX
+// PC 0x00401080  Xbox 0x00011090
+void CAppManager::DoSaveGameScreenShot(const CExoString& sName)
+{
+    AurSaveGameSnapshot((char*)sName.CStr(), 256, false);
+}
+
+void CAppManager::TakeScreenShot(const CExoString& sName)
+{
+    AurSaveGameSnapshot((char*)sName.CStr(), (short)m_pClientExoApp->m_pcExoAppInternal->m_nScreenShot, false);
 }
 #endif

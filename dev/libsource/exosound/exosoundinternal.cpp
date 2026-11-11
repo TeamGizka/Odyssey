@@ -218,8 +218,8 @@ CExoSoundInternal::CExoSoundInternal()  // PC 0x005D86E0  Xbox 0x00150C60
     m_p3DOneShotStream = NULL;
 }
 #endif
-// PC 0x005D88F0  Xbox 0x00151220
-void CExoSoundInternal::OcclusionRender(unsigned long nFrameTime)
+#ifndef _XBOX
+void CExoSoundInternal::OcclusionRender(unsigned long nFrameTime)  // PC 0x005D88F0  Xbox 0x00151220
 {
     CExoLinkedListNode* pStartPosition = m_pOcclusionPosition;
     int bFirstPass = 1;
@@ -406,8 +406,8 @@ Exit:
         m_nMaxOcclusionIdleFrames = m_nOcclusionIdleFrames;
     }
 }
-// PC 0x005D66C0
-int CExoSoundInternal::GetDesiredEnvironment()
+#endif
+int CExoSoundInternal::GetDesiredEnvironment()  // PC 0x005D66C0
 {
     return m_nDesiredEnvironment;
 }
@@ -1420,7 +1420,7 @@ void CExoSoundInternal::LoadPriorityGroups()
     C2DA* pTable = new C2DA("PriorityGroups", 0);
     if (!pTable->Load2DArray())
     {
-        delete pTable;
+        delete pTable; EXOXBOXASSERT(0);
         return;
     }
     m_nPriorityGroups = (unsigned char)pTable->GetNumRows();
@@ -3861,7 +3861,7 @@ void CExoSoundInternal::Render()
     }
     m_pDirectSound->CommitDeferredSettings();
     OcclusionRender(nRenderDeltaMS);
-    g_fSoundRenderTime = (float)(unsigned long)
+    g_fSoundRenderTime = (float)(int)
         (g_pExoBase->m_pExoTimers->GetHighResolutionTimer() - nStartTime) * 0.001f;
 }
 #endif
@@ -4058,4 +4058,240 @@ void CExoSoundInternal::DeleteStoppedStreams()
     }
 }
 
+#endif
+
+#ifdef _XBOX
+
+
+float g_fSoundStreamingTime;
+float g_fSoundPlayingTime;
+float g_fSoundNonPlayingTime;
+#endif
+
+#ifdef _XBOX
+void AurPostString(char* szString, int nColumn, int nRow, float fDuration);
+
+
+
+
+// PC 0x005D88F0  Xbox 0x00151220
+void CExoSoundInternal::OcclusionRender(unsigned long nFrameTime)
+{
+    CExoLinkedListNode* pStartPosition = m_pOcclusionPosition;
+    int bFirstPass = 1;
+    unsigned long nLastTime =
+        g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000;
+    CExoLinkedListNode* pPosition;
+    ++m_nOcclusionIdleFrames;
+    if (m_pOcclusionPosition == NULL)
+    {
+        m_pOcclusionPosition = m_lstPlaying.GetHeadPos();
+        m_nOcclusionList = OCCLUSION_LIST_PLAYING;
+    }
+    if (m_pOcclusionPosition == NULL)
+    {
+        m_nOcclusionIdleFrames = 0;
+    }
+    if (m_nOcclusionTime > m_nMaxOcclusionTime)
+    {
+        m_nMaxOcclusionTime = m_nOcclusionTime;
+    }
+    if (m_nOcclusionState)
+    {
+        CExoString sStats;
+        sStats.Format("Time Play (Frame/Max): %d/%d ms", m_nOcclusionTime, m_nMaxOcclusionTime);
+        AurPostString(sStats.CStr(), 5, 27, 5.0f);
+        sStats.Format("Unique Locations (Current/Max): %d/%d", m_nObstructionQueries, m_nMaxObstructionQueries);
+        AurPostString(sStats.CStr(), 5, 28, 5.0f);
+    }
+    unsigned long nObstructionTotal = 0;
+    unsigned long nSources = 0;
+    if (m_nOcclusionTime < m_nOcclusionTimeBudget)
+    {
+    do
+    {
+        if (m_nOcclusionList == OCCLUSION_LIST_PLAYING)
+        {
+            pPosition = m_pOcclusionPosition;
+            while (pPosition != NULL)
+            {
+                if (m_nOcclusionTime >= m_nOcclusionTimeBudget)
+                {
+                    break;
+                }
+                m_nOcclusionIdleFrames = 0;
+                CExoSoundSourceInternal* pSource = m_lstPlaying.GetAtPos(pPosition);
+                if (pSource != NULL && pSource->IsPlaying() &&
+                    pSource->m_b3D && !pSource->m_bPlayWhenFree)
+                {
+                    ++nSources;
+                    Vector vSourcePosition = pSource->m_vPosition;
+                    Vector vListenerPosition = m_vListenerPosition;
+                    unsigned long nObstructionTime =
+                        g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000;
+                    float fObstruction = 0.0f;
+                    if (GetClosestRecentSound(vSourcePosition, vListenerPosition,
+                                              nObstructionTime, fObstruction))
+                    {
+                        if (nFrameTime > m_nMaxCachedObstructionFrameTime)
+                        {
+                            m_nMaxCachedObstructionFrameTime = nFrameTime;
+                        }
+                        pSource->m_vObstructionListenerPosition = vListenerPosition;
+                        pSource->m_nObstructionTime = nObstructionTime;
+                        pSource->m_fObstruction = fObstruction;
+                    }
+                    else
+                    {
+                        pSource->m_fObstruction =
+                            GetObstructionFactor(vSourcePosition, vListenerPosition);
+                        pSource->m_vObstructionListenerPosition = vListenerPosition;
+                        pSource->m_nObstructionTime = nObstructionTime;
+                        ++m_nObstructionQueries;
+                        if (m_nObstructionQueries > m_nMaxObstructionQueries)
+                        {
+                            m_nMaxObstructionQueries = m_nObstructionQueries;
+                        }
+                    }
+                    nObstructionTotal +=
+                        g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000 - nObstructionTime;
+                    pSource->DoObstructionWork();
+                }
+                m_lstPlaying.GetNext(pPosition);
+                unsigned long nTime =
+                    g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000;
+                m_nOcclusionTime += nTime - nLastTime;
+                nLastTime = nTime;
+                if (pStartPosition == pPosition)
+                {
+                    m_pOcclusionPosition = pPosition;
+                    m_nObstructionQueries = 0;
+                    goto Exit;
+                }
+            }
+            if (pPosition != NULL)
+            {
+                m_pOcclusionPosition = pPosition;
+            }
+            else
+            {
+                m_nOcclusionList = OCCLUSION_LIST_STREAMING;
+                m_pOcclusionPosition = m_lstStreaming.GetHeadPos();
+            }
+            unsigned long nTime =
+                g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000;
+            m_nOcclusionTime += nTime - nLastTime;
+            nLastTime = nTime;
+        }
+        if (!bFirstPass && pStartPosition == m_pOcclusionPosition)
+        {
+            m_nObstructionQueries = 0;
+            break;
+        }
+        if (m_nOcclusionList == OCCLUSION_LIST_STREAMING)
+        {
+            pPosition = m_pOcclusionPosition;
+            while (pPosition != NULL)
+            {
+                if (m_nOcclusionTime >= m_nOcclusionTimeBudget)
+                {
+                    break;
+                }
+                m_nOcclusionIdleFrames = 0;
+                CExoStreamingSoundSourceInternal* pSource =
+                    m_lstStreaming.GetAtPos(pPosition);
+                if (pSource != NULL && pSource->IsPlaying() && pSource->m_b3D)
+                {
+                    ++nSources;
+                    Vector vSourcePosition = pSource->m_vPosition;
+                    Vector vListenerPosition = m_vListenerPosition;
+                    unsigned long nObstructionTime =
+                        g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000;
+                    float fObstruction = 0.0f;
+                    if (GetClosestRecentSound(vSourcePosition, vListenerPosition,
+                                              nObstructionTime, fObstruction))
+                    {
+                        if (nFrameTime > m_nMaxCachedObstructionFrameTime)
+                        {
+                            m_nMaxCachedObstructionFrameTime = nFrameTime;
+                        }
+                        pSource->m_vObstructionListenerPosition = vListenerPosition;
+                        pSource->m_nObstructionTime = nObstructionTime;
+                        pSource->m_fOcclusion = fObstruction;
+                    }
+                    else
+                    {
+                        pSource->m_fOcclusion =
+                            GetObstructionFactor(vSourcePosition, vListenerPosition);
+                        pSource->m_vObstructionListenerPosition = vListenerPosition;
+                        pSource->m_nObstructionTime = nObstructionTime;
+                        ++m_nObstructionQueries;
+                        if (m_nObstructionQueries > m_nMaxObstructionQueries)
+                        {
+                            m_nMaxObstructionQueries = m_nObstructionQueries;
+                        }
+                    }
+                    nObstructionTotal +=
+                        g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000 - nObstructionTime;
+                    pSource->DoObstructionWork();
+                }
+                m_lstStreaming.GetNext(pPosition);
+                unsigned long nTime =
+                    g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000;
+                m_nOcclusionTime += nTime - nLastTime;
+                nLastTime = nTime;
+                if (pStartPosition == pPosition)
+                {
+                    m_pOcclusionPosition = pPosition;
+                    m_nObstructionQueries = 0;
+                    goto Exit;
+                }
+            }
+            if (pPosition == NULL)
+            {
+                m_nOcclusionList = OCCLUSION_LIST_PLAYING;
+                m_pOcclusionPosition = m_lstPlaying.GetHeadPos();
+            }
+            else
+            {
+                m_pOcclusionPosition = pPosition;
+            }
+            unsigned long nTime =
+                g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000;
+            m_nOcclusionTime += nTime - nLastTime;
+            nLastTime = nTime;
+        }
+        m_nObstructionQueries = 0;
+        if (pStartPosition == m_pOcclusionPosition)
+        {
+            break;
+        }
+        bFirstPass = 0;
+    } while (m_nOcclusionTime < m_nOcclusionTimeBudget);
+    }
+Exit:
+    m_nOcclusionTime = 0;
+    if (m_nOcclusionIdleFrames > m_nMaxOcclusionIdleFrames)
+    {
+        m_nMaxOcclusionIdleFrames = m_nOcclusionIdleFrames;
+    }
+    if (m_nOcclusionIdleFrames >= 15)
+    {
+        AurPostString("OCCLUSION RENDER STARVING! NOTIFY PROGRAMMER", 5, 24, 10.0f);
+    }
+    if (nSources == 0)
+    {
+        nSources = 1;
+    }
+    if (m_nOcclusionState)
+    {
+        CExoString sStats;
+        sStats.Format("Missed Occlusion Checks (Current/Max): %d/%d", m_nOcclusionIdleFrames,
+                      m_nMaxOcclusionIdleFrames);
+        AurPostString(sStats.CStr(), 5, 25, 5.0f);
+        sStats.Format("Update Time (Frame Avg/Max): %d/%d", nObstructionTotal / nSources,
+                      m_nMaxCachedObstructionFrameTime);
+        AurPostString(sStats.CStr(), 5, 26, 5.0f);
+    }
+}
 #endif

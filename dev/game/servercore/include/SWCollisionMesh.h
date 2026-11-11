@@ -28,7 +28,7 @@ public:
         m_nUnknown44 = 0;
         m_oidBlocker = OBJECT_INVALID;
     }
-    // PC 0x004BB570
+    // PC 0x004BB570  Xbox 0x00168BA0
     void SetHitInfo(int nFailureReason, const Vector& vHitPosition,
                     const Vector& vNormal, const Vector& vVertex1,
                     const Vector& vVertex2, int nIntersectionType,

@@ -43,6 +43,9 @@ public:
     CSWReentrantServerStats* m_pReentrantServerStats;
     unsigned long m_nAppId;
     int m_bServerWasPaused;
+#ifdef _XBOX
+    unsigned char GetCodeWord();
+#endif
 };
 
 extern "C" CAppManager* g_pAppManager;

@@ -95,7 +95,7 @@ CSWGuiPowersLevelUp::CSWGuiPowersLevelUp(CSWGuiManager* pManager,
 #endif
     SetActiveControl(&m_lbPowers, 0);
 }
-// PC 0x006F0EE0
+// PC 0x006F0EE0  Xbox 0x00129380
 CSWGuiPowersLevelUp::~CSWGuiPowersLevelUp()
 {
     m_lbDescription.ClearItems();
@@ -355,7 +355,7 @@ void CSWGuiPowersLevelUp::BuildAvailableList()
 }
 
 #ifndef _XBOX
-void CSWGuiPowersLevelUp::OnPowerSelectionChanged(CSWGuiControl* pControl)  // PC 0x006F1940  Xbox 0x00129A20
+void CSWGuiPowersLevelUp::OnPowerSelectionChanged(CSWGuiControl* pControl)  // PC 0x006F1940
 {
     CSWGuiSkillFlow* pFlow =
         static_cast<CSWGuiSkillFlow*>(m_lbPowers.GetSelectedControl());
@@ -657,7 +657,7 @@ void CSWGuiPowersLevelUp::DeterminePower(unsigned long nPower,
 }
 
 #ifdef _XBOX
-// PC 0x0041A290
+// PC 0x0041A290  Xbox 0x0004CEC0
 inline int CSWGuiListBox::IsOversized()
 {
     return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&

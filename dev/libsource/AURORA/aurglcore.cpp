@@ -5227,7 +5227,7 @@ void GLRender::InitExtensions()
         InitializeSystemPoolManager();
     manRef->RestorePoolManager();
 }
-// PC 0x00437520  Xbox 0x00289190
+// PC 0x00437520  Xbox 0x0028F0B0
 void GLRender::FrameBufferModifications(unsigned long nFlags)
 {
     static bool c_bPreviousFrameWasSpeed = false;
@@ -5514,7 +5514,7 @@ void GLRender::FrameBufferModificationsATI2(unsigned long nFlags)
         glPopMatrix();
     }
 }
-// PC 0x004361F0  Xbox 0x0028F0B0
+// PC 0x004361F0  Xbox 0x00289190
 void GLRender::FrameBufferModifications2(unsigned long nFlags)
 {
     if (doframebuffer && cm_bPBuffersAllocated && cm_bSetUpFrameBuffer)

@@ -569,6 +569,9 @@ public:
 
     void Post();
     PostedString(char* szString, int nColumn, int nRow, float fDuration);
+#ifdef _XBOX
+    ~PostedString();
+#endif
 };
 
 void AurPrintString(char* szString, int nColumn, int nRow);
@@ -622,7 +625,13 @@ extern "C" int (*AurGetRasterHeader)(char*, int*, int*, int*);
 extern "C" int (*AurGetS3TCHeader)(char*, int*, int*, int*, int*, float*);
 extern "C" int (*AurGet16BitRasterHeader)(char*, int*, int*, float*, int*);
 extern "C" int (*AurGetProcessedRasterHeader)(char*, int*, int*, char*, int*, int*, float*, char*);
+#ifdef _XBOX
+int AurTextureSetMem(int);
+
+void AurSnapshot(char* sFileName);
+#else
 bool AurTextureSetMem(int);
+#endif
 void AurClearPalette();
 
 #endif

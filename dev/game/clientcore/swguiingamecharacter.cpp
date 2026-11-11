@@ -17,7 +17,7 @@
 #include "swgui.h"
 #include "swguilevelupchargen.h"
 #include "nwccreature.h"
-// PC 0x006AE980
+// PC 0x006AE980  Xbox 0x000E5290
 void CSWGuiInGameCharacter::OnPanelRemoved()
 {
     m_pShownCreature = 0;

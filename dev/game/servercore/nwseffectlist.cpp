@@ -892,7 +892,7 @@ int CSWSEffectListHandler::OnApplyDamageDecrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004D92A0
+// PC 0x004D92A0  Xbox 0x001F6AA0
 int CSWSEffectListHandler::OnRemoveSavingThrowIncrease(CSWSObject* pObject,
                                                        CGameEffect* pEffect)
 {
@@ -2434,8 +2434,7 @@ int CSWSEffectListHandler::OnApplyDamage(CSWSObject* pObject,
 }
 // PC 0x004DB320  Xbox 0x001F8D00
 int CSWSEffectListHandler::OnApplyPoison(CSWSObject* pObject,
-                                         CGameEffect* pEffect,
-                                         int bLoadingModule)
+                                         CGameEffect* pEffect, int bLoadingModule)
 {
     unsigned long nCalendarDay;
     unsigned long nTimeOfDay;
@@ -2447,12 +2446,9 @@ int CSWSEffectListHandler::OnApplyPoison(CSWSObject* pObject,
     {
         if (pCreature->m_bPlotObject != 0)
         {
-            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                0, 0, pEffect->GetCreator(), pCreature->GetId(),
-                CServerAIMaster::EVENT_REMOVE_EFFECT, pEffect);
+            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime( 0, 0, pEffect->GetCreator(), pCreature->GetId(), CServerAIMaster::EVENT_REMOVE_EFFECT, pEffect);
         }
-        else if (pCreature->GetDead() != 0 || pCreature->GetDeadTemp() != 0 ||
-                 pCreature->GetPoisoned() == 1)
+        else if (pCreature->GetDead() != 0 || pCreature->GetDeadTemp() != 0 || pCreature->GetPoisoned() == 1)
         {
             g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                 0, 0, pEffect->GetCreator(), pCreature->GetId(),
@@ -2493,7 +2489,11 @@ int CSWSEffectListHandler::OnApplyPoison(CSWSObject* pObject,
                         &nCalendarDay, &nTimeOfDay);
                     pEffect->SetInteger(1, nCalendarDay);
                     pEffect->SetInteger(2, nTimeOfDay);
+#ifdef _XBOX
+                    C2DA* pPoison = g_pRules->Get2DArrays()->GetPoison();
+#else
                     C2DA* pPoison = g_pRules->Get2DArrays()->m_pPoison;
+#endif
                     if (pPoison == NULL)
                     {
                         g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
@@ -3837,7 +3837,7 @@ int CSWSEffectListHandler::OnApplyForceDrain(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DDF20  Xbox 0x001FB980
+// PC 0x004DDF20  Xbox 0x001FC0B0
 int CSWSEffectListHandler::OnRemoveDroidStun(CSWSObject* pObject,
                                                   CGameEffect* pEffect)
 {
@@ -4058,7 +4058,7 @@ int CSWSEffectListHandler::OnRemoveBodyFuel(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DE5F0
+// PC 0x004DE5F0  Xbox 0x001FB980
 int CSWSEffectListHandler::OnApplyEffectImmunity(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -4660,7 +4660,7 @@ int CSWSEffectListHandler::OnRemoveDarkness(CSWSObject* pObject,
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x004DF410  Xbox 0x001F5C90
 int CSWSEffectListHandler::OnRemoveDisarm(CSWSObject* pObject,
                                          CGameEffect* pEffect)
 {
@@ -7220,7 +7220,7 @@ int CSWSEffectListHandler::OnApplyEffectIcon(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004E4A10
+// PC 0x004E4A10  Xbox 0x00202240
 void CSWSEffectListHandler::InitializeEffects()
 {
     m_pEffectApplied = new EffectAppliedHandler[MAX_EFFECTS];
@@ -7424,10 +7424,10 @@ void CSWSEffectListHandler::InitializeEffects()
     m_pEffectApplied[EFFECT_FORCEFIZZLE] = &CSWSEffectListHandler::OnApplyForceFizzle;
     m_pEffectApplied[EFFECT_FORCESHIELD] = &CSWSEffectListHandler::OnApplyForceShield;
     m_pEffectRemoved[EFFECT_FORCESHIELD] = &CSWSEffectListHandler::OnRemoveForceShield;
-    m_pEffectApplied[EFFECT_PUREGOODPOWERS] = &CSWSEffectListHandler::OnApplyPureGoodPowers;
-    m_pEffectRemoved[EFFECT_PUREGOODPOWERS] = &CSWSEffectListHandler::OnRemovePureGoodPowers;
-    m_pEffectApplied[EFFECT_PUREEVILPOWERS] = &CSWSEffectListHandler::OnApplyPureEvilPowers;
-    m_pEffectRemoved[EFFECT_PUREEVILPOWERS] = &CSWSEffectListHandler::OnRemovePureEvilPowers;
+#ifndef _XBOX
+    m_pEffectApplied[EFFECT_PUREGOODPOWERS] = &CSWSEffectListHandler::OnApplyPureGoodPowers; m_pEffectRemoved[EFFECT_PUREGOODPOWERS] = &CSWSEffectListHandler::OnRemovePureGoodPowers;
+    m_pEffectApplied[EFFECT_PUREEVILPOWERS] = &CSWSEffectListHandler::OnApplyPureEvilPowers; m_pEffectRemoved[EFFECT_PUREEVILPOWERS] = &CSWSEffectListHandler::OnRemovePureEvilPowers;
+#endif
 }
 // PC 0x004DDF20
 int CSWSEffectListHandler::OnRemoveWhirlWind(CSWSObject* pObject,

@@ -59,7 +59,11 @@ public:
     virtual int SetFog(int bFog) = 0;
     virtual void SetFogColor(const Vector& vColor) = 0;
     virtual int GetObjectA(char* sName) = 0;
+#ifdef _XBOX
+    virtual bool SetObjectScale(CAurObject* pObject, float fScale) = 0;
+#else
     virtual void SetObjectScale(CAurObject* pObject, float fScale) = 0;
+#endif
     virtual float GetObjectScale(CAurObject* pObject) = 0;
 
     virtual void Render() = 0;
@@ -69,14 +73,10 @@ public:
     virtual int Animate(float fTimeStep) = 0;
 #endif
     virtual void InitBSP(int, int, int, bool, float) = 0;
-    virtual CAurObject* SpawnTile(char* sName, const Vector& vPosition, int nRotation,
-                                int bMeshesOnly) = 0;
-    virtual void SetTileLights(const Vector& vPosition, const Vector& vMainLight,
-                               const Vector& vSourceLight) = 0;
-    virtual void SetTileFlames(const Vector& vPosition, CAurObject* pFlame1,
-                              CAurObject* pFlame2) = 0;
-    virtual int ReplaceTileTexture(const Vector& vPosition, char* sOld,
-                                   char* sNew) = 0;
+    virtual CAurObject* SpawnTile(char* sName, const Vector& vPosition, int nRotation, int bMeshesOnly) = 0;
+    virtual void SetTileLights(const Vector& vPosition, const Vector& vMainLight, const Vector& vSourceLight) = 0;
+    virtual void SetTileFlames(const Vector& vPosition, CAurObject* pFlame1, CAurObject* pFlame2) = 0;
+    virtual int ReplaceTileTexture(const Vector& vPosition, char* sOld, char* sNew) = 0;
     virtual void DeleteTile(const Vector& vPosition) = 0;
     virtual int HitCheck(Vector vStart, Vector vEnd, Vector* pHit,
                          CHitInfo* pHitInfo) = 0;
@@ -131,7 +131,11 @@ public:
         m_vFogColor = vColor;
     }
     virtual int GetObjectA(char* sName);
+#ifdef _XBOX
+    virtual bool SetObjectScale(CAurObject* pObject, float fScale);
+#else
     virtual void SetObjectScale(CAurObject* pObject, float fScale);
+#endif
     virtual float GetObjectScale(CAurObject* pObject);
 
     virtual void Render();
@@ -142,14 +146,10 @@ public:
 #endif
 
     virtual void InitBSP(int, int, int, bool, float);
-    virtual CAurObject* SpawnTile(char* sName, const Vector& vPosition, int nRotation,
-                                int bMeshesOnly);
-    virtual void SetTileLights(const Vector& vPosition, const Vector& vMainLight,
-                               const Vector& vSourceLight);
-    virtual void SetTileFlames(const Vector& vPosition, CAurObject* pFlame1,
-                              CAurObject* pFlame2);
-    virtual int ReplaceTileTexture(const Vector& vPosition, char* sOld,
-                                   char* sNew);
+    virtual CAurObject* SpawnTile(char* sName, const Vector& vPosition, int nRotation, int bMeshesOnly);
+    virtual void SetTileLights(const Vector& vPosition, const Vector& vMainLight, const Vector& vSourceLight);
+    virtual void SetTileFlames(const Vector& vPosition, CAurObject* pFlame1, CAurObject* pFlame2);
+    virtual int ReplaceTileTexture(const Vector& vPosition, char* sOld, char* sNew);
     virtual void DeleteTile(const Vector& vPosition);
     virtual int HitCheck(Vector vStart, Vector vEnd, Vector* pHit,
                          CHitInfo* pHitInfo);

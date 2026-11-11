@@ -28,7 +28,7 @@ template CExoLinkedList<unsigned long>::CExoLinkedList();
 #include "serverexoappinternal.h"
 #ifdef _XBOX
 #include "LaunchData.h"
-void ExoXboxLaunch(KOTOR_LAUNCH_DATA* pParams);
+void ExoXboxLaunch(KOTOR_LAUNCH_DATA* pParams, const char* pszModuleName);
 void AurPersistDisplay();
 void AurReleaseFrameTexture();
 #endif
@@ -57,7 +57,7 @@ inline int CStatusSummary::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
 
 #include "serverexoapp.h"
 #include "swguisaveload.h"
-// PC 0x004B28E0  Xbox 0x00216330
+// PC 0x004B28E0
 inline int KOTOR_AUTOSAVE_PARAMS::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
 {
     CResStruct stStatusSummary;
@@ -538,8 +538,8 @@ int UpdateLoadScreen(int nCurrent, int nTotal, int nBase, int nRange)
     UpdateScreen(0.033333335f, 0, 0);
     return 0;
 }
-// PC 0x004B3110  Xbox 0x00216FB0
-void CServerExoAppInternal::StallEventSaveGame()
+#ifndef _XBOX
+void CServerExoAppInternal::StallEventSaveGame()  // PC 0x004B3110  Xbox 0x00216FB0
 {
 
     CExoString sModuleName;
@@ -702,13 +702,12 @@ void CServerExoAppInternal::StallEventSaveGame()
             ->SendServerToPlayerLoadBar_EndStallEvent(CSWSMessage::LOADBAR_STALL_EVENT_SAVE_GAME, 0);
     }
 }
-// PC 0x004B3A90  Xbox 0x00218020
-void CServerExoAppInternal::InitiateModuleForPlayer(void* pData)
+#endif
+void CServerExoAppInternal::InitiateModuleForPlayer(void* pData)  // PC 0x004B3A90  Xbox 0x00218020
 {
     CSWSPlayer* pPlayer = (CSWSPlayer*)pData;
     CSWSCreature* pCreature;
     CSWSArea* pArea;
-
     if (pPlayer->GetGameObject() == NULL)
     {
         pCreature = new CSWSCreature(OBJECT_INVALID, 1);
@@ -720,13 +719,11 @@ void CServerExoAppInternal::InitiateModuleForPlayer(void* pData)
     {
         pCreature = pPlayer->GetGameObject()->AsSWSCreature();
     }
-
     int bModuleCharacterLoaded = pPlayer->m_bModuleCharacterLoaded;
     int bPlayerIsNewToModule = (bModuleCharacterLoaded == 0);
     if (bPlayerIsNewToModule)
     {
         Vector vOrientation;
-
         pArea = GetModule()->GetArea();
         pCreature->m_oidDisappearTarget = pArea->GetId();
         pCreature->m_vDisappearPosition =
@@ -750,8 +747,13 @@ void CServerExoAppInternal::InitiateModuleForPlayer(void* pData)
         }
         else
         {
+#ifdef _XBOX
+            unsigned long oidArea = pCreature->m_oidDisappearTarget;
+            pArea = g_pAppManager->m_pServerExoApp->GetAreaByGameObjectID(oidArea);
+#else
             pArea = g_pAppManager->m_pServerExoApp->GetAreaByGameObjectID(
                 pCreature->m_oidDisappearTarget);
+#endif
         }
     }
 
@@ -1332,8 +1334,8 @@ int CServerExoAppInternal::IsActionsPending(unsigned long oidObject)
     }
     return 0;
 }
-// PC 0x004B4D70  Xbox 0x00219B40
-int CServerExoAppInternal::TestSafeLocation(
+#ifndef _XBOX
+int CServerExoAppInternal::TestSafeLocation(  // PC 0x004B4D70
     unsigned long oidObject, const Vector& vPosition)
 {
     CGameObjectArray* pObjectArray = m_pObjectArray;
@@ -1363,7 +1365,7 @@ int CServerExoAppInternal::TestSafeLocation(
     return GetAreaByGameObjectID(oidArea)
         ->TestSafeLocationPoint(vPosition, pPathfind);
 }
-// PC 0x004B4DF0  Xbox 0x00219BC0
+// PC 0x004B4DF0
 int CServerExoAppInternal::ComputeSafeLocation(
     const Vector& vPosition, float fRadius, unsigned long oidObject,
     int nFlags, Vector* pvSafe)
@@ -1387,8 +1389,8 @@ int CServerExoAppInternal::ComputeSafeLocation(
     return GetAreaByGameObjectID(pCreature->m_oidArea)->ComputeSafeLocation(
         vPosition, fRadius, pPathfind, nFlags, pvSafe);
 }
-// PC 0x004B4E80  Xbox 0x00219C50
-void CServerExoAppInternal::UpdateMapData()
+#endif
+void CServerExoAppInternal::UpdateMapData()  // PC 0x004B4E80  Xbox 0x00219C50
 {
     CSWParty* pParty;
     CSWSModule* pModule;
@@ -1453,8 +1455,8 @@ void CServerExoAppInternal::ForceRunAreaOnExitScripts()
         m_pPlayerList->GetNext(pNode);
     }
 }
-// PC 0x004B4FF0  Xbox 0x00219DC0
-Vector CServerExoAppInternal::GetNormalOfPoint(const Vector& vPosition)
+#ifndef _XBOX
+Vector CServerExoAppInternal::GetNormalOfPoint(const Vector& vPosition)  // PC 0x004B4FF0
 {
     CSWSModule* pModule;
     CSWSRoom* pRoom;
@@ -1468,8 +1470,8 @@ Vector CServerExoAppInternal::GetNormalOfPoint(const Vector& vPosition)
     }
     return Vector(0.0f, 0.0f, 1.0f);
 }
-// PC 0x004B5050  Xbox 0x00219E30
-int CServerExoAppInternal::AutoSaveOnEnteringModule(const CExoString& sModule,
+#endif
+int CServerExoAppInternal::AutoSaveOnEnteringModule(const CExoString& sModule,  // PC 0x004B5050  Xbox 0x00219E30
                                                    C2DA* p2DA)
 {
     CExoString sAutoSaveOnEnter;
@@ -1659,8 +1661,8 @@ void CServerExoAppInternal::SendStartStallEvent(unsigned long nEvent)
     CSWSMessage* pMessage = GetServerExoApp()->GetSWSMessage();
     pMessage->SendServerToPlayerLoadBar_StartStallEvent(nEvent);
 }
-// PC 0x004B58A0  Xbox 0x0021BC40
-int CServerExoAppInternal::SaveGame(unsigned long nSlot,
+#ifndef _XBOX
+int CServerExoAppInternal::SaveGame(unsigned long nSlot,  // PC 0x004B58A0  Xbox 0x0021BC40
                                     const CExoString& sName,
                                     CSWSPlayer* pPlayer, int bAutoSave)
 {
@@ -1814,8 +1816,8 @@ int CServerExoAppInternal::LoadCharacterFinish(CSWSPlayer* pPlayer, int bSuccess
     }
     return 1;
 }
-// PC 0x004B5F50  Xbox 0x0021C360
-int CServerExoAppInternal::LoadPrimaryPlayer(CSWSPlayer* pPlayer)
+#endif
+int CServerExoAppInternal::LoadPrimaryPlayer(CSWSPlayer* pPlayer)  // PC 0x004B5F50  Xbox 0x0021C360
 {
     CSWSModule* pModule;
     int nPrimaryPlayerIndex;
@@ -2838,8 +2840,12 @@ void CServerExoAppInternal::ReprocessExclusionListActions(unsigned char nPauseTy
     }
 }
 // PC 0x004B95B0  Xbox 0x0021EB30
+#ifdef _XBOX
+int CServerExoAppInternal::LoadModule(CExoString sModule, CSWSPlayer* pPlayer)
+#else
 int CServerExoAppInternal::LoadModule(const CExoString& sModule,
                                      CSWSPlayer* pPlayer)
+#endif
 {
     unsigned __int64 nFreeBytes;
     int nDiskResult;
@@ -2856,7 +2862,11 @@ int CServerExoAppInternal::LoadModule(const CExoString& sModule,
 
         g_pExoBase->m_pExoDebug->GetCurrentTimestamp(sTimestamp);
 
+#ifdef _XBOX
+        EXOLOG("[%s] Loading Module: %s\n", sTimestamp.CStr(), sModule.CStr());
+#else
         EXOLOG("Loading Module: %s [%s]\n", sModule.CStr(), sTimestamp.CStr());
+#endif
 
         if (m_bLoadingModule != 1)
         {
@@ -3173,12 +3183,21 @@ int CServerExoAppInternal::LoadGame(unsigned long nSlot,
     CExoString sUnused1;
     CExoString sUnused2;
 
+#ifdef _XBOX
+    g_pAppManager->m_pClientExoApp->SetLoadBarProgress(50, 1);
+    g_pAppManager->m_pClientExoApp->SetLoadStep(0, 50);
+    g_pAppManager->m_pClientExoApp->SetLoadStep(1, 10);
+    g_pAppManager->m_pClientExoApp->SetLoadStep(2, 13);
+    g_pAppManager->m_pClientExoApp->SetLoadStep(3, 13);
+    g_pAppManager->m_pClientExoApp->SetLoadStep(4, 13);
+#else
     g_pAppManager->m_pClientExoApp->SetLoadBarProgress(10, 1);
     g_pAppManager->m_pClientExoApp->SetLoadStep(0, 10);
     g_pAppManager->m_pClientExoApp->SetLoadStep(1, 20);
     g_pAppManager->m_pClientExoApp->SetLoadStep(2, 23);
     g_pAppManager->m_pClientExoApp->SetLoadStep(3, 23);
     g_pAppManager->m_pClientExoApp->SetLoadStep(4, 23);
+#endif
 
     if (nSlot != -1)
     {
@@ -3326,7 +3345,6 @@ int CServerExoAppInternal::MainLoop()
             m_bForceUpdate = 0;
         }
 #ifdef _XBOX
-
         int bTransitionReady = 1;
         if (m_bMoveToModulePending == 1)
         {
@@ -3352,7 +3370,12 @@ int CServerExoAppInternal::MainLoop()
                 ->m_bControllerPauseActive == 0)
         {
             ForceRunAreaOnExitScripts();
-            if (!StorePlayerCharacters() || !StoreCurrentModule())
+            if (!StorePlayerCharacters())
+            {
+                m_bDoingStartNewModule = 0;
+                return 0;
+            }
+            if (!StoreCurrentModule())
             {
                 m_bDoingStartNewModule = 0;
                 return 0;
@@ -3364,7 +3387,6 @@ int CServerExoAppInternal::MainLoop()
             CExoString sModule(m_sMoveToModule);
             m_partyTable.Save("REBOOTDATA:", 0);
             m_globalVariableTable.Save("REBOOTDATA:");
-
             KOTOR_LAUNCH_DATA cParams;
             cParams.m_nModuleTrans = KOTOR_LAUNCH_DATA::MODULETRANS_MODULE;
             CExoString sStartWaypoint(m_sMoveToModuleStartWaypoint);
@@ -3383,8 +3405,8 @@ int CServerExoAppInternal::MainLoop()
                     sModule, "BMPResRef", &sLoadScreen) == 0)
             {
                 sLoadScreen.Format("load_%s", sModule);
-                if (!g_pExoResMan->Exists(CResRef(sLoadScreen), RESTYPE_TGA, (unsigned long*)NULL) &&
-                    !g_pExoResMan->Exists(CResRef(sLoadScreen), RESTYPE_TPC, (unsigned long*)NULL))
+                if (!g_pExoResMan->Exists(sLoadScreen, RESTYPE_TGA, (unsigned long*)NULL) &&
+                    !g_pExoResMan->Exists(sLoadScreen, RESTYPE_TPC, (unsigned long*)NULL))
                 {
                     g_pRules->m_p2DArrays->m_pAreaTransition->GetCExoStringEntry(
                         "DEFAULT", "BMPResRef", &sLoadScreen);
@@ -3425,7 +3447,6 @@ int CServerExoAppInternal::MainLoop()
             cParams.SetMovie5(sMovie5);
             cParams.SetMovie6(sMovie6);
             cParams.m_bMinGlobalRim = bMinGlobalRim;
-
             unsigned long nCalendarDay, nTimeOfDay;
             unsigned long nHour, nMinute, nSecond, nMillisecond;
             unsigned long nYear, nMonth, nDay, nModuleTime;
@@ -3440,14 +3461,12 @@ int CServerExoAppInternal::MainLoop()
             cParams.SetTime(nYear, nMonth, nDay, nHour, nMinute, nSecond, nMillisecond);
             cParams.m_nTimePauseTime = nTimeOfDay;
             cParams.m_nTimePauseDay = nCalendarDay;
-
             KOTOR_LAUNCH_OPTIONS_DATA cOptionsData;
             g_pAppManager->GetClientExoApp()->GetClientOptions()->GetOptionsData(&cOptionsData);
             cParams.SetOptionsData(cOptionsData);
             CStatusSummary cStatusSummary;
             g_pAppManager->GetClientExoApp()->GetInGameGui()->GetStatusSummary(cStatusSummary);
             cParams.SetStatusSummary(cStatusSummary);
-
             C2DA* pModuleSave = new C2DA(CResRef("modulesave"), 0);
             if (pModuleSave != NULL && !pModuleSave->Load2DArray())
             {
@@ -3481,8 +3500,7 @@ int CServerExoAppInternal::MainLoop()
                 delete pModuleSave;
             }
             AurPersistDisplay();
-
-            ExoXboxLaunch(&cParams);
+            ExoXboxLaunch(&cParams, g_pAppManager->GetServerExoApp()->GetModuleName().CStr());
         }
 #else
         if (m_bMoveToModulePending == 1 &&
@@ -3974,7 +3992,7 @@ void CServerExoAppInternal::UpDatePlayerPosition(
         }
     }
 }
-// PC 0x004B1D20
+// PC 0x004B1D20  Xbox 0x00219100
 int CServerExoAppInternal::IsInjured(unsigned long oidObject)
 {
     CSWSCreature* pCreature = GetCreatureByGameObjectID(oidObject);
@@ -4144,12 +4162,11 @@ int CServerExoAppInternal::ShrinkLineByCreatures(const Vector& vStart,
     EXOXBOXASSERT(GetModule()->GetArea());
     return GetModule()->GetArea()->ShrinkLineByCreatures(vStart, vEnd, vResult);
 }
-// PC 0x004B8300  Xbox 0x0021A130
-#ifdef _XBOX
-void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, KOTOR_LAUNCH_DATA& cLaunchData, C2DA* p2DA)
-#else
+
+#ifndef _XBOX
+// PC 0x004B8300
 void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, C2DA* p2DA)
-#endif
+
 {
     g_pAppManager->GetClientExoApp()->SetLoadScreenByModuleName(sModule);
     g_pAppManager->GetClientExoApp()->SetLoadScreenHint(
@@ -4328,8 +4345,8 @@ void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, C2DA* p2DA)
     g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
     UpdateScreen(1.0f / 30.0f, 0, 0);
 }
-// PC 0x004B22D0  Xbox 0x00215D30
-void CServerExoAppInternal::SetMoveToWorldTime(
+#endif
+void CServerExoAppInternal::SetMoveToWorldTime(  // PC 0x004B22D0  Xbox 0x00215D30
     unsigned long nCalendarDay, unsigned char nHour, unsigned char nMinute,
     unsigned char nSecond, unsigned short nMillisecond, unsigned short nYear,
     unsigned short nMonth)
@@ -4411,7 +4428,8 @@ void CServerExoAppInternal::InitializeNetLayer()
 {
     m_pNetLayer->Initialize(g_pAppManager->GetServerExoApp());
 }
-
+#ifndef _XBOX
+// Xbox 0x0021CF90
 int CServerExoAppInternal::DebugValidatePath(unsigned long oidCreature,
                                              int bTempWayPoints)
 {
@@ -4526,6 +4544,7 @@ int CServerExoAppInternal::DebugValidatePath_Segment(
     }
     return bValid;
 }
+#endif
 
 void CServerExoAppInternal::RunDeathSequence()
 {
@@ -4562,6 +4581,91 @@ static inline void ServerExoAppTrace(CServerExoApp*)
 }
 
 #ifdef _XBOX
+// Xbox 0x00216060
+void KOTOR_LAUNCH_OPTIONS_DATA::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
+{
+    CResList lstMoviesShown;
+    CResStruct stMovieShown;
+
+    pRes->WriteFieldBYTE(&stStruct, m_bAutoLevelNPCs, "AUTOLEVELNPCS");
+    pRes->WriteFieldBYTE(&stStruct, m_bAutoCentre, "AUTOCENTRE");
+    pRes->WriteFieldBYTE(&stStruct, m_bAutoSave, "AUTOSAVE");
+    pRes->WriteFieldBYTE(&stStruct, m_bReverse, "REVERSE");
+    pRes->WriteFieldBYTE(&stStruct, m_bCombatMove, "COMBATMOVE");
+    pRes->WriteFieldBYTE(&stStruct, m_bHideUnequippable, "HIDEUNEQUIPPABLE");
+    pRes->WriteFieldBYTE(&stStruct, m_bShowTutorial, "SHOWTUTORIAL");
+    pRes->WriteFieldBYTE(&stStruct, m_bShowSubtitles, "SHOWSUBTITLES");
+    pRes->WriteFieldBYTE(&stStruct, m_bShowMiniMap, "SHOWMINIMAP");
+    pRes->WriteFieldBYTE(&stStruct, m_bRumble, "RUMBLE");
+    pRes->WriteFieldBYTE(&stStruct, m_bShowFloaty, "SHOWFLOATY");
+    pRes->WriteFieldBYTE(&stStruct, m_bEndRound, "ENDROUND");
+    pRes->WriteFieldBYTE(&stStruct, m_bEnemySighted, "ENEMYSIGHTED");
+    pRes->WriteFieldBYTE(&stStruct, m_bPartyKilled, "PARTYKILLED");
+    pRes->WriteFieldBYTE(&stStruct, m_bUseHorzMenu, "USEHORZMENU");
+    pRes->WriteFieldBYTE(&stStruct, m_bUseVertMenu, "USEVERTMENU");
+    pRes->WriteFieldBYTE(&stStruct, m_bTrigger, "TRIGGER");
+    pRes->WriteFieldBYTE(&stStruct, m_bShowSummary, "SHOWSUMMARY");
+    pRes->WriteFieldBYTE(&stStruct, m_nDifficultyOption, "DIFFICULTYOPTION");
+    pRes->WriteFieldBYTE(&stStruct, m_nGamma, "GAMMA");
+    pRes->WriteFieldFLOAT(&stStruct, m_fGammaMin, "GAMMAMIN");
+    pRes->WriteFieldFLOAT(&stStruct, m_fGammaMax, "GAMMAMAX");
+    pRes->WriteFieldBYTE(&stStruct, m_nVolumeMusic, "VOLUMEMUSIC");
+    pRes->WriteFieldBYTE(&stStruct, m_nVolumeVO, "VOLUMEVO");
+    pRes->WriteFieldBYTE(&stStruct, m_nVolumeFX, "VOLUMEFX");
+    pRes->WriteFieldBYTE(&stStruct, m_nVolumeMovie, "VOLUMEMOVIE");
+    pRes->WriteFieldBYTE(&stStruct, m_nNumMovies, "NUMMOVIES");
+    if (pRes->AddList(&lstMoviesShown, &stStruct, "MOVIESSHOWN"))
+    {
+        for (int nMovie = 0; nMovie < 11; nMovie++)
+        {
+            if (pRes->AddListElement(&stMovieShown, &lstMoviesShown, 0))
+            {
+                pRes->WriteFieldBYTE(&stMovieShown, m_aMoviesShown[nMovie], "MOVIESHOWN");
+            }
+        }
+    }
+}
+// Xbox 0x00216330
+int KOTOR_LAUNCH_DATA::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
+{
+    CResStruct stSub;
+
+    pRes->WriteFieldDWORD(&stStruct, GetModuleTrans(), "MODULETRANS");
+    pRes->WriteFieldBYTE(&stStruct, GetRenderQA(), "RENDERQA");
+    pRes->WriteFieldBYTE(&stStruct, m_bLowDiskMode, "LOWDISKMODE");
+    pRes->WriteFieldDWORD(&stStruct, GetAutoCalInfo(), "AUTOCALINFO");
+    pRes->WriteFieldDWORD(&stStruct, GetPortBinding(), "PORTBINDING");
+    pRes->WriteFieldINT(&stStruct, GetSaveSlot(), "SAVESLOT");
+    pRes->WriteFieldCExoString(&stStruct, GetXboxSavePath(), "XBOXSAVEPATH");
+    pRes->WriteFieldCExoString(&stStruct, GetModuleName(), "MODULENAME");
+    pRes->WriteFieldCExoString(&stStruct, GetLoadScreen(), "LOADSCREEN");
+    pRes->WriteFieldCExoString(&stStruct, GetLoadMusic(), "LOADMUSIC");
+    pRes->WriteFieldCExoString(&stStruct, GetStartWaypoint(), "STARTWAYPOINT");
+    pRes->WriteFieldCExoString(&stStruct, GetMovie1(), "MOVIE1");
+    pRes->WriteFieldCExoString(&stStruct, GetMovie2(), "MOVIE2");
+    pRes->WriteFieldCExoString(&stStruct, GetMovie3(), "MOVIE3");
+    pRes->WriteFieldCExoString(&stStruct, GetMovie4(), "MOVIE4");
+    pRes->WriteFieldCExoString(&stStruct, GetMovie5(), "MOVIE5");
+    pRes->WriteFieldCExoString(&stStruct, GetMovie6(), "MOVIE6");
+    pRes->WriteFieldBYTE(&stStruct, m_bMinGlobalRim, "MINGLOBALRIM");
+    pRes->WriteFieldBYTE(&stStruct, m_bLoadingSave, "LOADINGSAVE");
+    pRes->WriteFieldBYTE(&stStruct, m_bLoadingSave, "LOAD_AUTOSAVE");
+    pRes->WriteFieldDWORD(&stStruct, m_nTimeYear, "TIME_YEAR");
+    pRes->WriteFieldBYTE(&stStruct, m_nTimeMonth, "TIME_MONTH");
+    pRes->WriteFieldBYTE(&stStruct, m_nTimeDay, "TIME_DAY");
+    pRes->WriteFieldBYTE(&stStruct, m_nTimeHour, "TIME_HOUR");
+    pRes->WriteFieldWORD(&stStruct, m_nTimeMinute, "TIME_MINUTE");
+    pRes->WriteFieldWORD(&stStruct, m_nTimeSecond, "TIME_SECOND");
+    pRes->WriteFieldWORD(&stStruct, m_nTimeMillisecond, "TIME_MILLISECOND");
+    pRes->WriteFieldDWORD(&stStruct, m_nTimePauseDay, "TIME_PAUSEDAY");
+    pRes->WriteFieldDWORD(&stStruct, m_nTimePauseTime, "TIME_PAUSETIME");
+    pRes->AddStructToStruct(&stSub, &stStruct, "OPTIONSDATA", 0);
+    m_cOptionsData.SaveToGFF(pRes, stSub);
+    pRes->AddStructToStruct(&stSub, &stStruct, "STATUSSUMMARY", 0);
+    m_cStatusSummary.SaveToGFF(pRes, stSub);
+    pRes->WriteFieldBYTE(&stStruct, m_nGamePlayHint, "GAMEPLAYHINT");
+    return pRes->WriteFieldBYTE(&stStruct, m_nStoryHint, "STORYHINT");
+}
 // Xbox 0x00216E20
 int CServerExoAppInternal::IsMoveToModuleMinGlobalRim()
 {
@@ -4584,5 +4688,816 @@ int CServerExoAppInternal::IsMoveToModuleMinGlobalRim()
         }
     }
     return 0;
+}
+// Xbox 0x0021A130
+void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, KOTOR_LAUNCH_DATA& cLaunchData, C2DA* p2DA)
+{
+    AurReleaseFrameTexture();
+    g_pAppManager->GetClientExoApp()->SetLoadScreenByModuleName(sModule);
+    g_pAppManager->GetClientExoApp()->SetLoadScreenHint(41926);
+    g_pAppManager->GetClientExoApp()->ShowLoadScreen(0, 1, 1);
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(0, 0);
+    CClientExoAppInternal* pClient =
+        g_pAppManager->GetClientExoApp()->m_pcExoAppInternal;
+    pClient->UpdateRumble(0.0f);
+    g_pExoInput->PauseRumble();
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    unsigned long nStartTime = g_pExoBase->m_pExoTimers->GetLowResolutionTimer();
+
+    CExoString sSaveRoot("U:\\");
+    WCHAR wszSaveName[256];
+    char szSavePath[256];
+    mbstowcs(wszSaveName, g_pTlkTable->GetSimpleString(1593).CStr(), 255);
+    XCreateSaveGame(sSaveRoot.CStr(), wszSaveName, OPEN_ALWAYS, 1, szSavePath, 254);
+    {
+        CExoString sAlias("SAVES");
+        g_pExoBase->m_pExoAliasList->ChangePath(sAlias, szSavePath);
+    }
+    CExoString sDirectory;
+    sDirectory.Format("SAVES:%06d - %s", CSWGuiSaveLoadEntry::SAVE_SLOT_QUICK, "AUTOSAVE");
+    if (g_pExoResMan->CreateDirectory2(sDirectory) == 0)
+    {
+        g_pExoResMan->CleanDirectory(sDirectory, 0, 0);
+    }
+    sDirectory = sDirectory + "\\";
+    g_pExoResMan->FileCopy("HD0:AutoSaveImage", "SAVES:SaveImage", 3011, RESTYPE_INVALID);
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(5, 0);
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+
+    CExoString sSaveInfo = sDirectory + "savenfo";
+    CResGFF* pGFF = new CResGFF;
+    CResStruct cRoot;
+    pGFF->CreateGFFFile(&cRoot, "NFO ", "V2.0");
+    CExoString sAreaName;
+    int nAreaName;
+    if (p2DA->GetINTEntry(sModule, "AreaName", &nAreaName))
+    {
+        sAreaName = g_pTlkTable->GetSimpleString(nAreaName);
+    }
+    CExoString sBMPResRef;
+    bool bMissingImage;
+    {
+        CExoString sColumn("BMPResRef");
+        CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+        C2DA* pLoadscreens = p2DArrays->m_pAreaTransition;
+        bMissingImage = pLoadscreens->GetCExoStringEntry(
+            sModule, sColumn, &sBMPResRef) == 0;
+    }
+    if (bMissingImage)
+    {
+        sBMPResRef.Format("load_%s", sModule);
+        int nResourceExists;
+        {
+            CResRef cImage(sBMPResRef);
+            nResourceExists = g_pExoResMan->Exists(cImage, RESTYPE_TGA, (unsigned long*)NULL);
+        }
+        if (!nResourceExists)
+        {
+            CResRef cImage(sBMPResRef);
+            nResourceExists = g_pExoResMan->Exists(cImage, RESTYPE_TPC, (unsigned long*)NULL);
+        }
+        if (!nResourceExists)
+        {
+            CExoString sColumn("BMPResRef");
+            CExoString sDefault("DEFAULT");
+            CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+            C2DA* pLoadscreens = p2DArrays->m_pAreaTransition;
+            pLoadscreens->GetCExoStringEntry(sDefault, sColumn, &sBMPResRef);
+        }
+    }
+    pGFF->WriteFieldCExoString(&cRoot, sAreaName, "AREANAME");
+    pGFF->WriteFieldCExoString(&cRoot, sModule, "LASTMODULE");
+    pGFF->WriteFieldDWORD(&cRoot, m_partyTable.GetTotalPlayedSeconds(), "TIMEPLAYED");
+    pGFF->WriteFieldBYTE(&cRoot, 1, "REBOOTAUTOSAVE");
+    pGFF->WriteFieldCExoString(&cRoot, sBMPResRef, "SCREENSHOT");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetGamePlayHint(),
+                         "GAMEPLAYHINT");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(),
+                         "STORYHINT");
+    unsigned char nLiveContent = 0;
+    CExoString sAlias;
+    for (int nContent = 1; nContent < CTlkTable::NUM_CONTENT_PKGS; nContent++)
+    {
+        sAlias.Format("LIVE%d", nContent);
+        pGFF->WriteFieldCExoString(&cRoot, g_pAppManager->GetClientExoApp()->GetLiveContentName(nContent),
+                                   sAlias.CStr());
+        if (g_pExoBase->m_pExoAliasList->GetAliasPath(sAlias, 0).GetLength() > 0)
+        {
+            nLiveContent |= 1 << (nContent - 1);
+        }
+    }
+    pGFF->WriteFieldBYTE(&cRoot, nLiveContent, "LIVECONTENT");
+    CResStruct cLaunchParams;
+    if (pGFF->AddStructToStruct(&cLaunchParams, &cRoot, "LAUNCHPARAMS", 0))
+    {
+        cLaunchData.SaveToGFF(pGFF, cLaunchParams);
+    }
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(10, 0);
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+
+    CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
+    CExoString sPortrait;
+    for (int nCharacter = 0; nCharacter < pParty->GetNumCharacters(); ++nCharacter)
+    {
+        CSWSCreature* pCreature = pParty->GetCharacter(nCharacter)->GetServerCreature();
+        if (pCreature != NULL)
+        {
+            sPortrait.Format("%s%d", "PORTRAIT", nCharacter);
+            CSWCCreature* pClientCreature = pCreature->GetClientCreature();
+            if (pClientCreature != NULL)
+            {
+                pGFF->WriteFieldCResRef(&cRoot, pClientCreature->GetPortrait(1),
+                                       sPortrait.CStr());
+            }
+            else
+            {
+                pGFF->WriteFieldCResRef(&cRoot, pCreature->GetPortrait(),
+                                       sPortrait.CStr());
+            }
+        }
+    }
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(15, 0);
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    pGFF->WriteGFFFile(sSaveInfo, 0);
+    delete pGFF;
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(20, 0);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    unsigned char aInfoSignature[XCALCSIG_SIGNATURE_SIZE];
+    g_pExoResMan->CreateSignatureFile(sSaveInfo, 0, 0, aInfoSignature, 0);
+    g_pExoResMan->WriteSignatureFile(sDirectory + "SAVE_INFO", aInfoSignature);
+
+    XCALCSIG_SIGNATURE cDataSignature;
+    unsigned char aHeaderSignature[XCALCSIG_SIGNATURE_SIZE];
+    unsigned char aHeaderVarSignature[XCALCSIG_SIGNATURE_SIZE];
+    HANDLE hSignature;
+    CERFFile* pERF = new CERFFile;
+    CExoString sERFName = sDirectory + "SAVEGAME";
+    pERF->Create(sERFName);
+    pERF->SetVersion("MOD V1.0");
+    pERF->WriteHeader();
+    pERF->WriteStringTable();
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(25, 0);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    hSignature = XCalculateSignatureBegin(0);
+    pERF->ImportFiles("GAMEINPROGRESS:", hSignature, UpdateLoadScreen, 25, 30);
+    if (XCalculateSignatureEnd(hSignature, &cDataSignature) == ERROR_SUCCESS)
+    {
+        g_pExoResMan->WriteSignatureFile(sDirectory + "SAVE_DATA", (unsigned char*)&cDataSignature);
+    }
+    pERF->Finish();
+    pERF->Read(sERFName, aHeaderSignature);
+    pERF->ReadHeaderVariance(sERFName, aHeaderVarSignature);
+    g_pExoResMan->WriteSignatureFile(sDirectory + "SAVE_HEADER", aHeaderSignature);
+    g_pExoResMan->WriteSignatureFile(sDirectory + "SAVE_HEADERVAR", aHeaderVarSignature);
+    delete pERF;
+
+    pERF = new CERFFile;
+    sERFName = sDirectory + "REBOOT";
+    pERF->Create(sERFName);
+    pERF->SetVersion("MOD V1.0");
+    pERF->WriteHeader();
+    pERF->WriteStringTable();
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(60, 0);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    hSignature = XCalculateSignatureBegin(0);
+    pERF->ImportFiles("REBOOTDATA:", hSignature, UpdateLoadScreen, 60, 20);
+    if (XCalculateSignatureEnd(hSignature, &cDataSignature) == ERROR_SUCCESS)
+    {
+        g_pExoResMan->WriteSignatureFile(sDirectory + "REBOOT_DATA", (unsigned char*)&cDataSignature);
+    }
+    pERF->Finish();
+    pERF->Read(sERFName, aHeaderSignature);
+    pERF->ReadHeaderVariance(sERFName, aHeaderVarSignature);
+    g_pExoResMan->WriteSignatureFile(sDirectory + "REBOOT_HEADER", aHeaderSignature);
+    g_pExoResMan->WriteSignatureFile(sDirectory + "REBOOT_HEADERVAR", aHeaderVarSignature);
+    delete pERF;
+
+    CExoString sPlayerInfo = sDirectory + "pifo";
+    g_pExoResMan->FileCopy("TEMP:pifo", sPlayerInfo, RESTYPE_IFO, RESTYPE_INVALID);
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(85, 0);
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    unsigned char aPlayerSignature[XCALCSIG_SIGNATURE_SIZE];
+    g_pExoResMan->CreateSignatureFile(sPlayerInfo, RESTYPE_IFO, 0, aPlayerSignature, 0);
+    g_pExoResMan->WriteSignatureFile(sDirectory + "PLAYER_INFO", aPlayerSignature);
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(90, 0);
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+
+    unsigned long nEndTime = g_pExoBase->m_pExoTimers->GetLowResolutionTimer();
+    CExoString sSavePath = g_pExoBase->m_pExoAliasList->GetAliasPath("SAVES", 0);
+    {
+        int nFillerSize = (1600 - XGetDisplayBlocks(sSavePath.CStr())) << 14;
+        CExoFile cFiller(sDirectory + "Filler", 2057, "wb+");
+        cFiller.Seek(nFillerSize - 1, 0);
+        char cZero = 0;
+        cFiller.Write(&cZero, 1, 1);
+        cFiller.Flush();
+    }
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(100, 0);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    if (nEndTime - nStartTime < 3000)
+    {
+        Sleep(3000 - (nEndTime - nStartTime));
+    }
+}
+// PC 0x004B3110  Xbox 0x00216FB0
+void CServerExoAppInternal::StallEventSaveGame()
+{
+    CExoString sSaveDirectory;
+    CExoString sModuleName;
+    CExoString sAreaName;
+    CExoString sSaveInfoFile;
+    CExoString sPortraitLabel;
+    CSWParty* pParty;
+
+    sModuleName = GetModule()->GetModuleName();
+    int nAliasSeparator = sModuleName.Find(':', 0);
+    if (nAliasSeparator != -1)
+    {
+        sModuleName = sModuleName.Right(sModuleName.GetLength() - nAliasSeparator - 1);
+    }
+
+    g_pAppManager->GetClientExoApp()->SetLoadScreenByModuleName(sModuleName);
+    g_pAppManager->GetClientExoApp()->SetLoadScreenHint(41926);
+    g_pAppManager->GetClientExoApp()->ShowLoadScreen(0, 1, 1);
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(0, 0);
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    unsigned long nStartTime = g_pExoBase->m_pExoTimers->GetLowResolutionTimer();
+
+    CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
+    CExoString sDirectory;
+    CExoString sSaveFile;
+    sDirectory = pStats->m_sUnknown24;
+    sSaveFile = pStats->m_sUnknown32;
+    sSaveDirectory = sDirectory + "\\";
+
+    g_pAppManager->GetServerExoApp()->GetSWSMessage()
+        ->SendServerToPlayerModule_SaveGameStatus(CSWSMessage::SAVEGAME_STATUS_STARTED);
+    StoreCurrentModule();
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(5, 0);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    m_partyTable.Save(sDirectory, 1);
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(10, 0);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    unsigned char aPartySignature[XCALCSIG_SIGNATURE_SIZE];
+    g_pExoResMan->CreateSignatureFile(sDirectory + "\\" + "PARTYTABLE", 0, 0, aPartySignature, 0);
+    g_pExoResMan->WriteSignatureFile(sDirectory + "\\" + "SAVE_PARTY", aPartySignature);
+    m_globalVariableTable.Save(sDirectory);
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(15, 0);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    unsigned char aVarsSignature[XCALCSIG_SIGNATURE_SIZE];
+    g_pExoResMan->CreateSignatureFile(sDirectory + "\\" + "GLOBALVARS", 0, 0, aVarsSignature, 0);
+    g_pExoResMan->WriteSignatureFile(sDirectory + "\\" + "SAVE_VARS", aVarsSignature);
+
+    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetPlayerCreature();
+    CSWSPlayer* pPlayer = GetClientObjectByObjectId(pCreature->GetId());
+    if (g_bSavePlayerBIC)
+    {
+        GetModule()->SavePrimaryPlayerInfo(pCreature, sDirectory);
+    }
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(20, 0);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+
+    sSaveInfoFile = sDirectory + "\\" + "savenfo";
+    CResGFF* pGFF = new CResGFF;
+    CResStruct stSaveInfo;
+    pGFF->CreateGFFFile(&stSaveInfo, "NFO ", "V2.0");
+    int nLanguage = pPlayer->m_nLanguage;
+    CSWSArea* pArea = pCreature->GetArea();
+    pArea->m_lsName.GetString(nLanguage, &sAreaName, 0);
+    pGFF->WriteFieldCExoString(&stSaveInfo, sAreaName, "AREANAME");
+    pGFF->WriteFieldCExoString(&stSaveInfo, sModuleName, "LASTMODULE");
+    pGFF->WriteFieldDWORD(&stSaveInfo, m_partyTable.GetTotalPlayedSeconds(), "TIMEPLAYED");
+    pGFF->WriteFieldBYTE(&stSaveInfo,
+        g_pAppManager->GetClientExoApp()->GetGamePlayHint(), "GAMEPLAYHINT");
+    pGFF->WriteFieldBYTE(&stSaveInfo,
+        g_pAppManager->GetClientExoApp()->GetStoryHint(), "STORYHINT");
+
+    pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
+    unsigned char nLiveContent = 0;
+    CExoString sLiveContentLabel;
+    for (int nContent = 1; nContent < CTlkTable::NUM_CONTENT_PKGS; ++nContent)
+    {
+        sLiveContentLabel.Format("LIVE%d", nContent);
+        pGFF->WriteFieldCExoString(&stSaveInfo,
+            g_pAppManager->GetClientExoApp()->GetLiveContentName(nContent),
+            sLiveContentLabel.CStr());
+        if (g_pExoBase->m_pExoAliasList->GetAliasPath(sLiveContentLabel, 0).GetLength() > 0)
+        {
+            nLiveContent |= 1 << (nContent - 1);
+        }
+    }
+    pGFF->WriteFieldBYTE(&stSaveInfo, nLiveContent, "LIVECONTENT");
+    for (int nMember = 0; nMember < pParty->m_nCharacters; ++nMember)
+    {
+        CSWSCreature* pServerCreature = pParty->GetCharacter(nMember)->GetServerCreature();
+        if (pServerCreature != NULL)
+        {
+            sPortraitLabel.Format("%s%d", "PORTRAIT", nMember);
+            CSWCCreature* pClientCreature = pServerCreature->GetClientCreature();
+            if (pClientCreature != NULL)
+            {
+                pGFF->WriteFieldCResRef(&stSaveInfo, pClientCreature->GetPortrait(1),
+                    sPortraitLabel.CStr());
+            }
+            else
+            {
+                pGFF->WriteFieldCResRef(&stSaveInfo, pServerCreature->GetPortrait(),
+                    sPortraitLabel.CStr());
+            }
+        }
+    }
+    pGFF->WriteGFFFile(sSaveInfoFile.CStr(), 0);
+    delete pGFF;
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(25, 0);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    unsigned char aInfoSignature[XCALCSIG_SIGNATURE_SIZE];
+    g_pExoResMan->CreateSignatureFile(sSaveInfoFile, 0, 0, aInfoSignature, 0);
+    g_pExoResMan->WriteSignatureFile(sSaveDirectory + "SAVE_INFO", aInfoSignature);
+
+    CERFFile* pERF = new CERFFile;
+    pERF->Create(sSaveFile);
+    pERF->SetVersion("MOD V1.0");
+    pERF->WriteHeader();
+    pERF->WriteStringTable();
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(30, 0);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    HANDLE hSignature = XCalculateSignatureBegin(0);
+    pERF->ImportFiles("GAMEINPROGRESS:", hSignature, UpdateLoadScreen, 30, 60);
+    XCALCSIG_SIGNATURE cDataSignature;
+    if (XCalculateSignatureEnd(hSignature, &cDataSignature) == ERROR_SUCCESS)
+    {
+        g_pExoResMan->WriteSignatureFile(sSaveDirectory + "SAVE_DATA", (unsigned char*)&cDataSignature);
+    }
+    pERF->Finish();
+    unsigned char aHeaderSignature[XCALCSIG_SIGNATURE_SIZE];
+    unsigned char aHeaderVarSignature[XCALCSIG_SIGNATURE_SIZE];
+    pERF->Read(sSaveFile, aHeaderSignature);
+    pERF->ReadHeaderVariance(sSaveFile, aHeaderVarSignature);
+    g_pExoResMan->WriteSignatureFile(sSaveDirectory + "SAVE_HEADER", aHeaderSignature);
+    g_pExoResMan->WriteSignatureFile(sSaveDirectory + "SAVE_HEADERVAR", aHeaderVarSignature);
+    delete pERF;
+    unsigned long nEndTime = g_pExoBase->m_pExoTimers->GetLowResolutionTimer();
+    CExoString sSavePath = g_pExoBase->m_pExoAliasList->GetAliasPath("SAVES", 0);
+    {
+        int nFillerSize = (1600 - XGetDisplayBlocks(sSavePath.CStr())) << 14;
+        CExoFile cFiller(sDirectory + "\\" + "Filler", 2057, "wb+");
+        cFiller.Seek(nFillerSize - 1, 0);
+        char cZero = 0;
+        cFiller.Write(&cZero, 1, 1);
+        cFiller.Flush();
+    }
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(100, 0);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    if (nEndTime - nStartTime < 3000)
+    {
+        Sleep(3000 - (nEndTime - nStartTime));
+    }
+    g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
+    g_pAppManager->GetClientExoApp()->HideLoadScreen(0);
+    if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pPartySelection == 0)
+    {
+        if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nGlobalDialogState != 0)
+        {
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bHoldWorldFadeInForDialog = 1;
+        }
+        else
+        {
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->StartGlobalFade(
+                1, 0.5f, 1.0f, Vector(0.0f, 0.0f, 0.0f));
+        }
+    }
+    g_pAppManager->GetClientExoApp()->SetCanSendDialog(1);
+    g_pExoInput->EndAttemptedBind();
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->SetGlobalUnpauseableState(0);
+    g_pAppManager->GetClientExoApp()->GetModule()->m_pInfo->StartSounds();
+    if (pStats->m_bOperationEndPending != 1)
+    {
+        pStats->m_bOperationEndPending = 1;
+        if (g_nClientServerMode == CLIENT_SERVER_MODE_SERVER)
+        {
+            pStats->m_bOperationEndPending = 0;
+            pStats->m_bOperationActive = 0;
+            pStats->m_nOperation = 0;
+        }
+        g_pAppManager->GetServerExoApp()->GetSWSMessage()
+            ->SendServerToPlayerModule_SaveGameStatus(CSWSMessage::SAVEGAME_STATUS_COMPLETE);
+        g_pAppManager->GetServerExoApp()->GetSWSMessage()
+            ->SendServerToPlayerLoadBar_EndStallEvent(CSWSMessage::LOADBAR_STALL_EVENT_SAVE_GAME, 0);
+    }
+}
+// PC 0x004B58A0  Xbox 0x0021BC40
+int CServerExoAppInternal::SaveGame(unsigned long nSlot,
+                                    const CExoString& sName,
+                                    CSWSPlayer* pPlayer, int bAutoSave)
+{
+    CExoString sDirectory;
+    CExoString sSaveFile;
+    unsigned __int64 nFreeBytes;
+
+    g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL);
+    g_pExoResMan->CreateDirectory2("SAVES:");
+    sDirectory.Format("SAVES:%06d - %s", nSlot, sName.CStr());
+    if (g_pExoResMan->CreateDirectory2(sDirectory) == 0 &&
+        g_pExoResMan->CleanDirectory(sDirectory, 0, 0) == 0)
+    {
+        return 0;
+    }
+
+    int nResult = g_pExoResMan->GetFreeDiskSpace(sDirectory, &nFreeBytes);
+    if (nResult == 1)
+    {
+        if (m_nEstimatedSaveSize > nFreeBytes)
+        {
+            CSWSMessage* pMessage = m_pSWSMessage;
+            pMessage->SendServerToPlayerSaveLoad_Status(
+                pPlayer, CSWSMessage::SAVELOAD_STATUS_SAVE_FAILED,
+                CSWSMessage::SAVELOAD_FAILURE_DISK_SPACE);
+            return 0;
+        }
+    }
+
+    sSaveFile = sDirectory + "\\" + "SAVEGAME";
+
+    g_pAppManager->m_pReentrantServerStats->StartStallEvent(
+        CSWReentrantServerStats::OPERATION_SAVE_GAME);
+    CSWReentrantServerStats* pDirectoryStats = g_pAppManager->m_pReentrantServerStats;
+    pDirectoryStats->m_sUnknown24 = sDirectory;
+    CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
+    pStats->m_sUnknown32 = sSaveFile;
+    CSWReentrantServerStats* pCompletedStats = g_pAppManager->m_pReentrantServerStats;
+    pCompletedStats->m_nProgress = 0;
+    CSWReentrantServerStats* pProgressStats = g_pAppManager->m_pReentrantServerStats;
+    pProgressStats->m_nProgressTotal = 0;
+    SendStartStallEvent(CSWSMessage::LOADBAR_STALL_EVENT_SAVE_GAME);
+
+    sDirectory = g_pExoBase->m_pExoAliasList->GetAliasPath("SAVES", 0);
+    if (sDirectory != "")
+    {
+        CAurCamera* pModuleCamera =
+            g_pAppManager->GetClientExoApp()->GetModule()->GetCamera();
+        CSWCameraOnAStick* pCamera = (CSWCameraOnAStick*)
+            pModuleCamera->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK);
+        if (pCamera != NULL)
+        {
+            pCamera->SetCameraForScreenShot();
+        }
+        sSaveFile.Format("%s%06d - %s%sScreen", sDirectory.CStr(),
+                         nSlot, sName.CStr(), "\\");
+        g_pAppManager->DoSaveGameScreenShot(sSaveFile);
+        sSaveFile.Format("SAVES:%06d - %s%sScreen", nSlot, sName.CStr(), "\\");
+        unsigned char aSignature[XCALCSIG_SIGNATURE_SIZE];
+        g_pExoResMan->CreateSignatureFile(sSaveFile, RESTYPE_TGA, 0, aSignature, 0);
+        g_pExoResMan->WriteSignatureFile(sSaveFile, aSignature);
+    }
+
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
+    UpdateScreen(1.0f / 30.0f, 0, 0);
+    m_nAutoSaveElapsedTime = 0;
+    m_bAutoSaveTimerExpired = 0;
+    return 1;
+}
+
+#include "nwsparty.h"
+// PC 0x004B5C50  Xbox 0x0021C010
+int CServerExoAppInternal::LoadCharacterFinish(CSWSPlayer* pPlayer, int bSuccess)
+{
+    CSWSModule* pModule = g_pAppManager->m_pServerExoApp->GetModule();
+    CScriptEvent* pEnterEvent = new CScriptEvent;
+    CScriptEvent* pDeathEvent = NULL;
+    int nHead;
+
+    char nAreaLoadState = pPlayer->m_nAreaLoadState;
+    if (nAreaLoadState != 1)
+    {
+        pPlayer->m_nAreaLoadState = CSWSPlayer::AREA_LOAD_PENDING;
+        m_pSWSMessage->SendServerToPlayerLogin_Confirm(pPlayer->GetPlayerId());
+        m_pSWSMessage->SendServerToPlayerModule_Info(pPlayer->GetPlayerId());
+    }
+    if (bSuccess != 0 && pPlayer->m_nModulePlayerIndex != -1)
+    {
+        if (g_pAppManager->GetServerExoApp()->GetServerInfo()->m_nXboxUnmapped0D0 == 1 &&
+            pPlayer->GetGameObject() != NULL)
+        {
+            CSWSCreature* pOldCreature = pPlayer->GetGameObject()->AsSWSCreature();
+            if (pOldCreature != NULL && pOldCreature->GetFaction() != NULL)
+            {
+                pOldCreature->GetFaction()->RemoveMember(pOldCreature->GetId());
+            }
+        }
+        CSWSObject* pObject = pPlayer->GetGameObject();
+        if (pObject != NULL)
+            delete pObject;
+        pPlayer->LoadCharacterFromIFO(pPlayer->m_nModulePlayerIndex, 1, 1);
+    }
+
+    pEnterEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_CLIENT_ENTER;
+    if (pPlayer->GetGameObject() != NULL)
+    {
+        if (pPlayer->GetGameObject()->AsSWSCreature()->GetDead() == 1 ||
+            pPlayer->GetGameObject()->AsSWSCreature()->GetDeadTemp() == 1)
+        {
+            pDeathEvent = new CScriptEvent;
+            pDeathEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_DEATH;
+        }
+        pEnterEvent->SetObjectID(0, pPlayer->GetGameObject()->GetId());
+
+        CSWSMessage* pMessage =
+            g_pAppManager->m_pServerExoApp->GetSWSMessage();
+        CExoLinkedList<CSWSClient>* pPlayers =
+            g_pAppManager->m_pServerExoApp->GetPlayerList();
+        CSWSCreature* pCreature =
+            pPlayer->GetGameObject()->AsSWSCreature();
+        CExoLinkedListNode* pNode = pPlayers->GetHeadPos();
+        while (pNode != NULL)
+        {
+            CSWSPlayer* pOtherPlayer = (CSWSPlayer*)pPlayers->GetAtPos(pNode);
+            if (pOtherPlayer != NULL &&
+                pOtherPlayer->m_nPlayModuleCharacterListState != 0 &&
+                pMessage != NULL)
+                pMessage->SendServerToPlayerPlayModuleCharacterListResponse(
+                    pOtherPlayer->GetPlayerId(), pCreature->GetId(), 1);
+            pPlayers->GetNext(pNode);
+        }
+    }
+    else
+    {
+        pEnterEvent->SetObjectID(0, OBJECT_INVALID);
+    }
+
+    if (pModule != NULL)
+    {
+        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+            0, 0, pPlayer->GetPlayerId(), pModule->GetId(),
+            CServerAIMaster::EVENT_SIGNAL_EVENT, pEnterEvent);
+        if (pDeathEvent != NULL)
+            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                0, 0, pPlayer->GetGameObject()->GetId(), pModule->GetId(),
+                CServerAIMaster::EVENT_SIGNAL_EVENT, pDeathEvent);
+
+        unsigned long oidPC = pPlayer->m_oidPCObject;
+        CSWSCreature* pCreature =
+            g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(oidPC);
+        if (pCreature != NULL)
+        {
+            if (&pCreature->m_cAppearanceInfo != NULL)
+            {
+                g_pRules->Get2DArrays()->GetAppearance()->GetINTEntry(
+                    pCreature->m_cAppearanceInfo.m_nAppearance, "NORMALHEAD", &nHead);
+                pModule->GetArea()->EnforceNoPCHeadCloning(nHead);
+            }
+        }
+    }
+    return 1;
+}
+
+#include <stdlib.h>
+#include "aurconsole.h"
+
+extern float g_fInjuredLevel;
+ConsoleFunc ConVg_bSavePlayerBIC("g_bSavePlayerBIC", &g_bSavePlayerBIC);
+ConsoleFunc ConVg_fInjuredLevel("g_fInjuredLevel", &g_fInjuredLevel);
+ConsoleFunc ConVRenderValidatePath("RenderValidatePath", &RenderValidatePath);
+ConsoleFunc ConVOverrideRenderValidatePath("OverrideRenderValidatePath", &OverrideRenderValidatePath);
+ConsoleFunc ConVfFloorHeight("fFloorHeight", &fFloorHeight);
+ConsoleFunc ConVfRoofHeight("fRoofHeight", &fRoofHeight);
+ConsoleFunc ConVEnablePathValidation("EnablePathValidation", &EnablePathValidation);
+// Xbox 0x00219FA0
+static char* warpforward(char* szValue)
+{
+    float fDistance = (float)atof(szValue);
+    if (fDistance <= 0.0f)
+    {
+        fDistance = 5.0f;
+    }
+    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+    if (pServer != NULL)
+    {
+        CSWSPlayer* pPlayer = pServer->GetClientObjectByObjectId(pServer->GetPlayerCreatureId());
+        if (pPlayer != NULL)
+        {
+            CSWSObject* pObject = pPlayer->GetGameObject();
+            if (pObject != NULL && pObject->GetArea() != NULL)
+            {
+                Vector vPosition = pObject->m_vPosition;
+                Vector vOrientation = pObject->m_vOrientation;
+                vPosition += vOrientation * fDistance;
+                unsigned long oidArea = pObject->GetArea()->GetId();
+                int bRun = 1;
+                float fZero = 0.0f;
+                pObject->AddActionToFront(CSWSObject::ACTION_JUMP_TO_POINT,
+                    CSWSObject::ACTION_GROUP_NEW,
+                    CSWSObject::ACTION_PARAM_FLOAT, &vPosition.m_fX,
+                    CSWSObject::ACTION_PARAM_FLOAT, &vPosition.m_fY,
+                    CSWSObject::ACTION_PARAM_FLOAT, &vPosition.m_fZ,
+                    CSWSObject::ACTION_PARAM_OBJECT, &oidArea,
+                    CSWSObject::ACTION_PARAM_INTEGER, &bRun,
+                    CSWSObject::ACTION_PARAM_FLOAT, &fZero,
+                    CSWSObject::ACTION_PARAM_FLOAT, &vOrientation.m_fX,
+                    CSWSObject::ACTION_PARAM_FLOAT, &vOrientation.m_fY,
+                    0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL);
+                return "Success!";
+            }
+        }
+    }
+    return "Failure!";
+}
+ConsoleFunc ConFwarpforward("warpforward", warpforward);
+// Xbox 0x00219B40
+int CServerExoAppInternal::TestSafeLocation(
+    unsigned long oidObject, Vector vPosition)
+{
+    CGameObjectArray* pObjectArray = m_pObjectArray;
+    CGameObject* pObject = NULL;
+    CSWSCreature* pCreature;
+
+    if (pObjectArray->GetGameObject(oidObject, &pObject) !=
+        CGameObjectArray::SUCCESS)
+    {
+        return 0;
+    }
+    if (pObject == NULL)
+    {
+        return 0;
+    }
+    if (pObject->m_nObjectType != CGameObject::OBJECT_TYPE_CREATURE)
+    {
+        return 0;
+    }
+    pCreature = pObject->AsSWSCreature();
+    if (pCreature == NULL)
+    {
+        return 0;
+    }
+    CPathfindInformation* pPathfind = pCreature->m_pPathfindInformation;
+    unsigned long oidArea = pCreature->m_oidArea;
+    return GetAreaByGameObjectID(oidArea)
+        ->TestSafeLocationPoint(vPosition, pPathfind);
+}
+// Xbox 0x00219BC0
+int CServerExoAppInternal::ComputeSafeLocation(
+    Vector vPosition, float fRadius, unsigned long oidObject,
+    int nFlags, Vector* pvSafe)
+{
+    CGameObjectArray* pObjectArray = m_pObjectArray;
+    CGameObject* pObject = NULL;
+    CSWSCreature* pCreature = NULL;
+
+    if (pObjectArray->GetGameObject(oidObject, &pObject) ==
+            CGameObjectArray::SUCCESS &&
+        pObject != NULL &&
+        pObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
+    {
+        pCreature = ((CSWSObject*)pObject)->AsSWSCreature();
+    }
+    if (pCreature == NULL)
+    {
+        return 0;
+    }
+    CPathfindInformation* pPathfind = pCreature->m_pPathfindInformation;
+    return GetAreaByGameObjectID(pCreature->m_oidArea)->ComputeSafeLocation(
+        vPosition, fRadius, pPathfind, nFlags, pvSafe);
+}
+// Xbox 0x00219DC0
+Vector CServerExoAppInternal::GetNormalOfPoint(Vector vPosition)
+{
+    CSWSModule* pModule;
+    CSWSRoom* pRoom;
+    int nFace;
+
+    pModule = GetServerExoApp()->GetModule();
+    pRoom = pModule->GetArea()->GetRoom(vPosition, &nFace);
+    if (pRoom != NULL)
+    {
+        return pRoom->GetNormalOfPoint(nFace);
+    }
+    return Vector(0.0f, 0.0f, 1.0f);
+}
+// Xbox 0x0021CF90
+int CServerExoAppInternal::DebugValidatePath(unsigned long oidCreature,
+                                             int bTempWayPoints)
+{
+    int bValid = 1;
+
+    if (EnablePathValidation != 0)
+    {
+        CSWSCreature* pCreature =
+            GetServerExoApp()->GetCreatureByGameObjectID(oidCreature);
+        if (pCreature == NULL)
+        {
+            return 0;
+        }
+        CSWSArea* pArea = pCreature->GetArea();
+        if (pArea == NULL)
+        {
+            return 0;
+        }
+        CPathfindInformation* pPathfind = pCreature->m_pPathfindInformation;
+        if (pPathfind == NULL)
+        {
+            return 0;
+        }
+
+        int nCount;
+        float* pfPoints;
+        if (bTempWayPoints != 0)
+        {
+            nCount = pPathfind->m_nField_94;
+            pfPoints = pPathfind->m_pWayPointsTemp;
+        }
+        else
+        {
+            nCount = pPathfind->m_nWayPointCount;
+            pfPoints = pPathfind->m_pWayPoints;
+        }
+        if (nCount == 0 || pfPoints == NULL)
+        {
+            return 1;
+        }
+
+        Vector vPoint(pfPoints[0], pfPoints[1], 0.0f);
+        vPoint.m_fZ = pArea->ComputeHeight(vPoint, 1, NULL);
+        pArea->m_pPathfindInformation = pPathfind;
+        bValid &= DebugValidatePath_Point(pArea, vPoint);
+        Vector vLast = vPoint;
+
+        for (int nPoint = 2; nPoint < nCount; nPoint += 2)
+        {
+            vPoint = Vector(pfPoints[nPoint], pfPoints[nPoint + 1], 0.0f);
+            vPoint.m_fZ = pArea->ComputeHeight(vPoint, 1, NULL);
+            bValid &= DebugValidatePath_Point(pArea, vPoint);
+            bValid &= DebugValidatePath_Segment(pArea, pPathfind, vLast, vPoint);
+            vLast = vPoint;
+        }
+        pArea->m_pPathfindInformation = pPathfind;
+    }
+    return bValid;
+}
+// Xbox 0x00215B70
+int CServerExoAppInternal::DebugValidatePath_Point(CSWSArea* pArea,
+                                                   Vector vPoint)
+{
+    int bValid = 1;
+
+    if (pArea->GetRoom(vPoint, NULL) == NULL)
+    {
+        bValid = 0;
+    }
+    if (pArea->PositionWalkable(vPoint) == 0)
+    {
+        bValid = 0;
+    }
+    return bValid;
+}
+// Xbox 0x002197D0
+int CServerExoAppInternal::DebugValidatePath_Segment(
+    CSWSArea* pArea, CPathfindInformation* pPathfind, Vector vStart,
+    Vector vEnd)
+{
+    int bValid = 0;
+    CWalkHitInfo cHitInfo;
+    float fStepScale = pPathfind->m_fStepScale;
+    float fHalfStep = pPathfind->m_fHalfStep;
+    int nResult = pArea->TestDirectLine(vStart, vEnd, fStepScale,
+                                        fHalfStep, 1, &cHitInfo);
+    if (nResult > 0 || nResult == CSWSArea::DIRECT_LINE_BLOCKED_CREATURE)
+    {
+        return 1;
+    }
+    if (nResult != CSWSArea::DIRECT_LINE_BLOCKED_OBJECT)
+    {
+        return 0;
+    }
+
+    CGameObject* pObject = GetGameObject(cHitInfo.m_oidBlocker);
+    if (pObject == NULL)
+    {
+        return 1;
+    }
+    if (pObject->AsSWSDoor() != NULL)
+    {
+        if (pObject->AsSWSDoor()->m_bStatic == 0)
+        {
+            nResult = CSWSArea::DIRECT_LINE_CLEAR;
+            bValid = 1;
+        }
+    }
+    if (pObject->AsSWSPlaceable() != NULL &&
+        pObject->AsSWSPlaceable()->m_nId ==
+            pPathfind->m_oidPathfindTargetCreature)
+    {
+        return 1;
+    }
+    if (nResult == CSWSArea::DIRECT_LINE_BLOCKED_OBJECT)
+    {
+        bValid = 1;
+    }
+    return bValid;
 }
 #endif

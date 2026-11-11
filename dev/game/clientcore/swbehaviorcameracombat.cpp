@@ -24,8 +24,10 @@ CSWBehaviorCameraCombat::CSWBehaviorCameraCombat(CAurObject* pObject)
 {
     m_fPitchOffset = 0;
     m_fYawOffset = 0;
+#ifndef _XBOX
     m_fTurn = 0;
     m_fTurnAcceleration = 0;
+#endif
 
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
     EXOXBOXASSERT(p2DArrays->m_pCameraStyle);
@@ -64,6 +66,7 @@ CSWBehaviorCameraCombat::CSWBehaviorCameraCombat(CAurObject* pObject)
 
     static_cast<Gob*>(m_pObject)->AsCAurCamera()->SetViewAngle(fViewAngle);
 
+#ifndef _XBOX
     m_Acceleration.m_fMaximumVelocity =
         g_pAppManager->m_pClientExoApp->GetClientOptions()
             ->GetCameraKeyboardDPS();
@@ -75,9 +78,11 @@ CSWBehaviorCameraCombat::CSWBehaviorCameraCombat(CAurObject* pObject)
             ->GetCameraKeyboardDeceleration();
     m_Acceleration.m_fMaximumDeceleration = fDeceleration;
     m_bMouseCameraRotateToggle = g_bMouseCameraRotateToggle;
+#endif
 }
-// PC 0x006D14E0  Xbox 0x001009E0
-Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(
+
+#ifndef _XBOX
+Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(  // PC 0x006D14E0  Xbox 0x001009E0
     CSWCCreature* pCreature, CSWCObject* pTarget, float fTimeStep,
     float& fYaw)
 {
@@ -137,6 +142,7 @@ float CSWBehaviorCameraCombat::GetNextYaw(const Vector& vDirection, float fYaw,
     fTurn = 0.0f;
     return fYaw;
 }
+#endif
 // PC 0x006D1760  Xbox 0x00100DF0
 Vector CSWBehaviorCameraCombat::GetNextPosition(const Vector& vTarget,
                                                 float fTimeStep, float fSpeed)
@@ -261,6 +267,7 @@ int CSWBehaviorCameraCombat::Control(float fTimeStep)
         return nResult;
     }
 
+#ifndef _XBOX
     m_Acceleration.m_fMaximumVelocity =
         g_pAppManager->m_pClientExoApp->GetClientOptions()
             ->GetCameraKeyboardDPS();
@@ -270,11 +277,13 @@ int CSWBehaviorCameraCombat::Control(float fTimeStep)
     m_Acceleration.m_fMaximumDeceleration =
         g_pAppManager->m_pClientExoApp->GetClientOptions()
             ->GetCameraKeyboardDeceleration();
+#endif
     CSWParty* pSWParty = g_pAppManager->m_pClientExoApp->GetSWParty();
     CSWCCreature* pPlayerCharacter = pSWParty->GetPlayerCharacter();
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
     unsigned long nLastTarget = pApp->GetLastTarget();
     CSWCObject* pGameObject = pApp->GetGameObject(nLastTarget);
+#ifndef _XBOX
     if (RenderQA != 0)
     {
         if (m_pObject != 0 && pPlayerCharacter != 0)
@@ -316,6 +325,7 @@ int CSWBehaviorCameraCombat::Control(float fTimeStep)
         m_bMouseCameraRotateToggle = 0;
         g_pAppManager->m_pClientExoApp->ShowMouse(MOUSE_HIDE_CAMERA_ROTATE);
     }
+#endif
 
     if (pGameObject == 0)
     {
@@ -373,3 +383,122 @@ void CSWBehaviorCameraCombat::PutAtDesiredLocation()
         }
     }
 }
+
+#ifdef _XBOX
+// PC 0x006D14E0  Xbox 0x001009E0
+Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(
+    CSWCCreature* pCreature, CSWCObject* pTarget, float fTimeStep,
+    float& fYaw)
+{
+    CAurCamera* pCamera = g_pAppManager->m_pClientExoApp->GetModuleCamera();
+    Vector vResult;
+    Vector vDirection;
+    Vector vPosition = pCreature->m_vPosition;
+
+    float fTurn = m_fRotation * m_fTurn * fTimeStep;
+    Quaternion qOrientation =
+        YawPitchRoll(fTurn, 0.0f, 0.0f) * pCamera->GetOrientation();
+    float fCameraYaw = Yaw(qOrientation);
+    float fTargetYaw = Yaw(pTarget->m_vPosition - pCamera->GetPosition());
+
+    float fDelta = fCameraYaw - fTargetYaw;
+    float fAngle = (float)fabs(fDelta);
+    while (fAngle < 0.0f)
+        fAngle += 360.0f;
+    while (fAngle >= 360.0f)
+        fAngle -= 360.0f;
+    if (fAngle > 180.0f)
+        fAngle = 360.0f - fAngle;
+    if (fAngle > 25.0f)
+    {
+        float fOffset = 25.0f;
+        if (fCameraYaw > fTargetYaw)
+        {
+            if (fDelta > 180.0f)
+                fOffset = -25.0f;
+        }
+        else if (fTargetYaw - fCameraYaw < 180.0f)
+        {
+            fOffset = -25.0f;
+        }
+        fYaw = fTargetYaw + fOffset;
+        qOrientation = YawPitchRoll(fYaw, 0.0f, 0.0f);
+    }
+    else
+    {
+        fYaw = fCameraYaw;
+    }
+
+    vDirection = Vector(2.0f * (qOrientation.m_fX * qOrientation.m_fY -
+                                qOrientation.m_fW * qOrientation.m_fZ),
+                        1.0f - 2.0f * (qOrientation.m_fX * qOrientation.m_fX +
+                                       qOrientation.m_fZ * qOrientation.m_fZ),
+                        2.0f * (qOrientation.m_fW * qOrientation.m_fX +
+                                qOrientation.m_fY * qOrientation.m_fZ));
+    vDirection.m_fZ = 0.0f;
+    vDirection.Normalize();
+
+    vPosition.m_fZ = 0.0f;
+    vResult = vPosition + -m_fDistance * vDirection;
+    vResult.m_fZ = pCreature->m_pAppearance->GetHeadHeightOffset() +
+                   pCreature->m_vPosition.m_fZ + m_fHeight;
+    return vResult;
+}
+// PC 0x006D16F0  Xbox 0x00100CE0
+float CSWBehaviorCameraCombat::GetNextYaw(const Vector& vDirection, float fYaw,
+                                          float fTimeStep, float& fTurn)
+{
+    Quaternion qOrientation = ((Gob*)m_pObject)->GetOrientation();
+    float fCurrent = Yaw(qOrientation);
+    float fResult = fYaw;
+    float fRemaining = 0.0f;
+    if (fCurrent != fYaw)
+    {
+        float fStep = m_fRotation * fTimeStep;
+        int bForward;
+        if (fCurrent > fYaw)
+        {
+            fRemaining = fCurrent - fYaw;
+            if (fRemaining > 180.0f)
+            {
+                fRemaining = 360.0f - fRemaining;
+                bForward = 1;
+            }
+            else
+            {
+                bForward = 0;
+            }
+        }
+        else
+        {
+            fRemaining = fYaw - fCurrent;
+            if (fRemaining > 180.0f)
+            {
+                fRemaining = 360.0f - fRemaining;
+                bForward = 0;
+            }
+            else
+            {
+                bForward = 1;
+            }
+        }
+        if (fRemaining > fStep)
+        {
+            if (bForward)
+                fStep *= -1.0f;
+            fResult = fCurrent - fStep;
+            if (fResult >= 360.0f)
+                fResult -= 360.0f;
+            else if (fResult < 0.0f)
+                fResult += 360.0f;
+        }
+    }
+    fTurn = fRemaining / m_fRotation;
+    if (fTimeStep > fTurn)
+    {
+        fTurn = 0.0f;
+        fResult = fYaw;
+    }
+    return fResult;
+}
+#endif

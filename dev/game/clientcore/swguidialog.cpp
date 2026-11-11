@@ -42,7 +42,7 @@ int CSWGuiDialogLetterbox::IsFadeDone()
     }
     return m_fFadeDelay + m_fFadeLength < m_fFadeTime;
 }
-// PC 0x006A6DE0
+// PC 0x006A6DE0  Xbox 0x000D4520
 void CSWGuiDialogComputer::OnPanelAdded()
 {
     m_pSound->Play();
@@ -50,7 +50,7 @@ void CSWGuiDialogComputer::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
-// PC 0x006A6E00
+// PC 0x006A6E00  Xbox 0x000D4530
 void CSWGuiDialogComputer::OnPanelRemoved()
 {
     m_pSound->Stop();
@@ -819,7 +819,7 @@ CSWGuiDialogComputer::CSWGuiDialogComputer(CSWGuiManager* pManager)
     m_lblMessage.Initialize(pProto->m_cExtent, pProto, 1.0f);
     m_lblMessage.m_cText.m_cParams.SetColor(m_vReplyColor);
 }
-// PC 0x006A8110
+// PC 0x006A8110  Xbox 0x000D4E20
 CSWGuiDialogComputer::~CSWGuiDialogComputer()
 {
     if (m_pSound)
