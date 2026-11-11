@@ -1,0 +1,2447 @@
+#include "appmanager.h"
+#include "clientexoapp.h"
+#include "clientexoappinternal.h"
+#include "math3d.h"
+#include "swparty.h"
+#include "nwccreature.h"
+#include "nwsobject.h"
+#include "nwsitem.h"
+#include "serverexoapp.h"
+#include "gameobjectarray.h"
+#include "nwmessage.h"
+#include "nwrace.h"
+#include "guiingame.h"
+#include "swguiingameequip.h"
+#include "nwcitem.h"
+#include "nwscombatround.h"
+#include "nwitem.h"
+#include "clientoptions.h"
+#include "gameobjectarray.h"
+#include "partytables.h"
+#include "serverinfo.h"
+#include "swguiingamecharacter.h"
+#include "nwitem.h"
+
+#include "nwcarea.h"
+#include "nwsarea.h"
+#include "nwsarea.h"
+#include "nwsplaceable.h"
+
+static inline void SwguiingameequipTrace2();
+static inline void SwguiingameequipTrace1();
+#define SWGUIINGAMEEQUIP_TRACE() SwguiingameequipTrace1()
+
+static inline CServerExoApp* GetServerExoApp();
+
+const CSWGuiInGameEquip::SlotInfo CSWGuiInGameEquip::SLOT_INFO[NUM_EQUIPMENT_SLOTS] =
+{
+    {INVENTORY_SLOT_LEFTHAND, "INV_WEAP_L", "weap_l", 31378, 31378},
+    {INVENTORY_SLOT_RIGHTHAND, "INV_WEAP_R", "weap_r", 31379, 31379},
+    {INVENTORY_SLOT_HEAD, "INV_HEAD", "head", 31375, 41810},
+    {INVENTORY_SLOT_RIGHTRING, "INV_ARM_L", "forearm_l", 31376, 41814},
+    {INVENTORY_SLOT_NECK, "INV_ARM_R", "forearm_r", 31377, 41814},
+    {INVENTORY_SLOT_ARMOUR, "INV_BODY", "armor", 31380, 41813},
+    {INVENTORY_SLOT_CLOAK, "INV_HANDS", "hands", 31383, 41811},
+    {INVENTORY_SLOT_BELT, "INV_IMPLANT", "implant", 31388, 41811},
+    {INVENTORY_SLOT_ARMS, "INV_BELT", "belt", 31382, 41812}
+};
+// PC 0x006B4C90
+int CSWGuiInGameEquip::GetSlotItemIdIndex(int nSlot)
+{
+    switch (nSlot)
+    {
+    case INVENTORY_SLOT_LEFTHAND: return 0;
+    case INVENTORY_SLOT_RIGHTHAND: return 1;
+    case INVENTORY_SLOT_HEAD: return 2;
+    case INVENTORY_SLOT_RIGHTRING: return 3;
+    case INVENTORY_SLOT_NECK: return 4;
+    case INVENTORY_SLOT_ARMOUR: return 5;
+    case INVENTORY_SLOT_HANDS: return 6;
+    case INVENTORY_SLOT_BELT: return 7;
+    case INVENTORY_SLOT_ARMS: return 8;
+    default: return INVALID_SLOT_ITEM_INDEX;
+    }
+}
+// PC 0x006B60F0
+void CSWGuiInGameEquip::OnSwitchRight(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        char nFirst = m_btnChange1.m_nIndex;
+        int bFound = 0;
+        if (nFirst != CHARACTER_UNSET)
+        {
+            m_btnChange2.m_cBorder.m_cParams.SetFillImage(
+                m_btnChange1.m_cBorder.m_cParams.m_cFillImage, 0);
+            m_btnChange2.m_cHilite.m_cParams.SetFillImage(
+                m_btnChange1.m_cHilite.m_cParams.m_cFillImage, 0);
+            m_btnChange2.m_nIndex = m_btnChange1.m_nIndex;
+            int nNPC = nFirst - 1;
+            while (nNPC >= 0 && bFound == 0)
+            {
+                if (nNPC != m_nCharacter)
+                {
+                    if (GetServerExoApp()->GetPartyTable()
+                            ->GetIsNPCAvailable(nNPC) != 0)
+                    {
+                        CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
+                        unsigned long oidNPC =
+                            g_pAppManager->m_pServerExoApp->GetPartyTable()
+                                ->GetNPCObject(nNPC, 0, 1);
+                        CSWCCreature* pCreature =
+                            pClient->GetCreatureByGameObjectID(
+                                pClient->ServerToClientObjectId(oidNPC));
+                        if (pCreature != 0)
+                        {
+                            {
+                                CResRef* pPortrait = &pCreature->GetPortrait(1);
+                                m_btnChange1.m_cBorder.m_cParams.SetFillImage(
+                                    *pPortrait, 0);
+                            }
+                            {
+                                CResRef* pPortrait = &pCreature->GetPortrait(1);
+                                m_btnChange1.m_cHilite.m_cParams.SetFillImage(
+                                    *pPortrait, 0);
+                            }
+                            m_btnChange1.m_nIndex = nNPC;
+                            bFound = 1;
+                        }
+                    }
+                }
+                --nNPC;
+            }
+            if (bFound == 0)
+            {
+                if (m_nCharacter == CHARACTER_PLAYER ||
+                    (char)m_btnChange2.m_nIndex == CHARACTER_PLAYER)
+                {
+                    for (int nHigh = CSWPartyTable::MAX_NPCS - 1; nHigh > nFirst && bFound == 0; --nHigh)
+                    {
+                        if (nHigh != m_nCharacter)
+                        {
+                            if (GetServerExoApp()->GetPartyTable()
+                                    ->GetIsNPCAvailable(nHigh) != 0)
+                            {
+                                CClientExoApp* pClient =
+                                    g_pAppManager->m_pClientExoApp;
+                                unsigned long oidNPC =
+                                    g_pAppManager->m_pServerExoApp
+                                        ->GetPartyTable()
+                                        ->GetNPCObject(nHigh, 0, 1);
+                                CSWCCreature* pCreature =
+                                    pClient->GetCreatureByGameObjectID(
+                                        pClient->ServerToClientObjectId(
+                                            oidNPC));
+                                if (pCreature != 0)
+                                {
+                                    {
+                                        CResRef* pPortrait = &pCreature->GetPortrait(1);
+                                        m_btnChange1.m_cBorder.m_cParams.SetFillImage(
+                                            *pPortrait, 0);
+                                    }
+                                    {
+                                        CResRef* pPortrait = &pCreature->GetPortrait(1);
+                                        m_btnChange1.m_cHilite.m_cParams.SetFillImage(
+                                            *pPortrait, 0);
+                                    }
+                                    m_btnChange1.m_nIndex = nHigh;
+                                    bFound = 1;
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    {
+                        CResRef* pPortrait = &g_pAppManager->m_pClientExoApp->GetPlayerCreature()->GetPortrait(1);
+                        m_btnChange1.m_cBorder.m_cParams.SetFillImage(
+                            *pPortrait, 0);
+                    }
+                    {
+                        CResRef* pPortrait = &g_pAppManager->m_pClientExoApp->GetPlayerCreature()->GetPortrait(1);
+                        m_btnChange1.m_cHilite.m_cParams.SetFillImage(
+                            *pPortrait, 0);
+                    }
+                    m_btnChange1.m_nIndex = CHARACTER_PLAYER;
+                }
+            }
+        }
+    }
+}
+// PC 0x006B6370
+void CSWGuiInGameEquip::OnSwitchLeft(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        char nSecond = m_btnChange2.m_nIndex;
+        int bFound = 0;
+        if (nSecond != CHARACTER_UNSET)
+        {
+            m_btnChange1.m_cBorder.m_cParams.SetFillImage(
+                m_btnChange2.m_cBorder.m_cParams.m_cFillImage, 0);
+            m_btnChange1.m_cHilite.m_cParams.SetFillImage(
+                m_btnChange2.m_cHilite.m_cParams.m_cFillImage, 0);
+            m_btnChange1.m_nIndex = m_btnChange2.m_nIndex;
+            int nNPC = nSecond + 1;
+            while (nNPC < CSWPartyTable::MAX_NPCS && bFound == 0)
+            {
+                if (nNPC != m_nCharacter)
+                {
+                    if (GetServerExoApp()->GetPartyTable()
+                            ->GetIsNPCAvailable(nNPC) != 0)
+                    {
+                        CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
+                        unsigned long oidNPC =
+                            g_pAppManager->m_pServerExoApp->GetPartyTable()
+                                ->GetNPCObject(nNPC, 0, 1);
+                        CSWCCreature* pCreature =
+                            pClient->GetCreatureByGameObjectID(
+                                pClient->ServerToClientObjectId(oidNPC));
+                        if (pCreature != 0)
+                        {
+                            {
+                                CResRef* pPortrait = &pCreature->GetPortrait(1);
+                                m_btnChange2.m_cBorder.m_cParams.SetFillImage(
+                                    *pPortrait, 0);
+                            }
+                            {
+                                CResRef* pPortrait = &pCreature->GetPortrait(1);
+                                m_btnChange2.m_cHilite.m_cParams.SetFillImage(
+                                    *pPortrait, 0);
+                            }
+                            m_btnChange2.m_nIndex = nNPC;
+                            bFound = 1;
+                        }
+                    }
+                }
+                ++nNPC;
+            }
+            if (bFound == 0)
+            {
+                if (m_nCharacter != CHARACTER_PLAYER)
+                {
+                    {
+                        CResRef* pPortrait = &g_pAppManager->m_pClientExoApp->GetPlayerCreature() ->GetPortrait(1);
+                        m_btnChange2.m_cBorder.m_cParams.SetFillImage(
+                            *pPortrait, 0);
+                    }
+                    {
+                        CResRef* pPortrait = &g_pAppManager->m_pClientExoApp->GetPlayerCreature() ->GetPortrait(1);
+                        m_btnChange2.m_cHilite.m_cParams.SetFillImage(
+                            *pPortrait, 0);
+                    }
+                    m_btnChange2.m_nIndex = CHARACTER_PLAYER;
+                }
+                else
+                {
+                    for (int nLow = 0; nLow < nSecond && bFound == 0; ++nLow)
+                    {
+                        if (nLow != m_nCharacter)
+                        {
+                            if (GetServerExoApp()->GetPartyTable()
+                                    ->GetIsNPCAvailable(nLow) != 0)
+                            {
+                                CClientExoApp* pClient =
+                                    g_pAppManager->m_pClientExoApp;
+                                unsigned long oidNPC =
+                                    g_pAppManager->m_pServerExoApp
+                                        ->GetPartyTable()
+                                        ->GetNPCObject(nLow, 0, 1);
+                                CSWCCreature* pCreature =
+                                    pClient->GetCreatureByGameObjectID(
+                                        pClient->ServerToClientObjectId(
+                                            oidNPC));
+                                if (pCreature != 0)
+                                {
+                                    {
+                                        CResRef* pPortrait = &pCreature->GetPortrait(1);
+                                        m_btnChange2.m_cBorder.m_cParams.SetFillImage(
+                                            *pPortrait, 0);
+                                    }
+                                    {
+                                        CResRef* pPortrait = &pCreature->GetPortrait(1);
+                                        m_btnChange2.m_cHilite.m_cParams.SetFillImage(
+                                            *pPortrait, 0);
+                                    }
+                                    m_btnChange2.m_nIndex = nLow;
+                                    bFound = 1;
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+}
+// PC 0x006B65E0
+CSWSItem* CSWGuiInGameEquip::CopyItem(unsigned long oidItem)
+{
+    CSWSItem* pCopy = 0;
+    CGameObject* pObject = 0;
+    CServerExoApp* pServer = GetServerExoApp();
+    unsigned long oidServer =
+        pServer->ClientToServerObjectId(oidItem);
+
+    pServer = GetServerExoApp();
+    if (pServer->GetObjectArray()->GetGameObject(
+            oidServer, &pObject) == CGameObjectArray::SUCCESS &&
+        pObject->AsSWSItem() != 0)
+    {
+        pCopy = new CSWSItem(OBJECT_INVALID);
+        pCopy->CopyItem(pObject->AsSWSItem());
+    }
+    return pCopy;
+}
+// PC 0x006B66A0
+int CSWGuiInGameEquip::ItemExists(unsigned long oidItem)
+{
+    CServerExoApp* pServer = GetServerExoApp();
+    unsigned long oidServer = pServer->ClientToServerObjectId(oidItem);
+    CGameObject* pObject;
+
+    pServer = GetServerExoApp();
+    if (pServer->GetObjectArray()->GetGameObject(oidServer, &pObject) ==
+        CGameObjectArray::SUCCESS)
+    {
+        return pObject->AsSWSItem() != 0;
+    }
+
+    return 0;
+}
+// PC 0x006B4D40  Xbox 0x000EA020
+void CSWGuiInGameItemEntry::Draw(float fElapsed)
+{
+    if (m_bActive)
+    {
+        CSWGuiButton::m_cHilite.Draw(fElapsed);
+        m_cIconHilite.Draw(fElapsed);
+    }
+    else
+    {
+        CSWGuiButton::m_cBorder.Draw(fElapsed);
+        m_cIconBorder.Draw(fElapsed);
+    }
+    m_cCountBorder.Draw(fElapsed);
+    m_cText.Draw(fElapsed);
+    m_cCountText.Draw(fElapsed);
+}
+// PC 0x006B4D40
+void CSWGuiStoreItemEntry::Draw(float fElapsed)
+{
+    if (m_bActive)
+    {
+        CSWGuiButton::m_cHilite.Draw(fElapsed);
+        m_cIconHilite.Draw(fElapsed);
+    }
+    else
+    {
+        CSWGuiButton::m_cBorder.Draw(fElapsed);
+        m_cIconBorder.Draw(fElapsed);
+    }
+    m_cCountBorder.Draw(fElapsed);
+    m_cText.Draw(fElapsed);
+    m_cCountText.Draw(fElapsed);
+}
+// PC 0x006B4DB0  Xbox 0x000EA6C0
+void CSWGuiInGameItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
+                                       CSWGuiBorder& cHilite, int nWidth,
+                                       int bPulsing)
+{
+    m_cText.m_cParams = cText.m_cParams;
+    CSWGuiBorderParams* pParams = &CSWGuiButton::m_cBorder.m_cParams;
+    *pParams = cBorder.m_cParams;
+    pParams->m_vColor = CGuiInGame::COLOR_BLUE;
+    pParams = &CSWGuiButton::m_cHilite.m_cParams;
+    *pParams = cHilite.m_cParams;
+    pParams->m_vColor = CGuiInGame::COLOR_YELLOW;
+    pParams->SetPulsingAlpha(bPulsing, 1, 0);
+    pParams = &m_cIconBorder.m_cParams;
+    {
+        CResRef cFill("lbl_hex_3");
+        CResRef cEdge("");
+        CResRef cCorner("");
+
+        *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f,
+                                      Vector(1.0f, 1.0f, 1.0f), 0);
+        pParams->m_vColor = CGuiInGame::COLOR_BLUE;
+    }
+    pParams = &m_cIconHilite.m_cParams;
+    {
+        CResRef cFill("lbl_hex_3");
+        CResRef cEdge("");
+        CResRef cCorner("");
+
+        *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f,
+                                      Vector(1.0f, 1.0f, 1.0f), 0);
+        pParams->m_vColor = CGuiInGame::COLOR_YELLOW;
+        pParams->SetPulsingAlpha(bPulsing, 0, 1);
+    }
+
+    {
+        CSWGuiExtent cExtent;
+        cExtent.m_nLeft = 0;
+        cExtent.m_nTop = 0;
+        cExtent.m_nWidth = nWidth;
+        cExtent.m_nHeight = 56;
+        SetExtent(cExtent);
+    }
+    m_bPulsing = bPulsing;
+}
+// PC 0x006B7EE0  Xbox 0x000ED010
+CSWGuiInGameItemEntry::CSWGuiInGameItemEntry()
+{
+    SwguiingameequipTrace2();
+    m_bPulsing = 0;
+    m_bEquipped = 0;
+    m_bUnavailable = 0;
+    m_oidItem = OBJECT_INVALID;
+    m_nCanUse = 0;
+}
+// PC 0x006B6710  Xbox 0x000EA8F0
+void CSWGuiInGameItemEntry::SetItem(unsigned long oidItem, int bEquipped,
+                                   int bUnavailable)
+{
+
+    CResRef cIcon;
+    m_oidItem = oidItem;
+    m_bEquipped = bEquipped;
+    m_bUnavailable = bUnavailable;
+    if (oidItem != OBJECT_INVALID)
+    {
+        CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
+        CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
+        CSWSItem* pItem = pServer->GetItemByGameObjectID(
+            pServer->ClientToServerObjectId(oidItem));
+        if (pItem != NULL)
+        {
+            CExoString sName;
+            pItem->m_sLocalizedName.GetString(pClient->GetClientLanguage(), &sName, 0);
+            if (bEquipped)
+                sName = sName + " (" +
+                    g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_EQUIPPED) + ")";
+            if (bUnavailable)
+            {
+                m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_PURPLE;
+                m_cIconBorder.m_cParams.m_vColor = CGuiInGame::COLOR_PURPLE;
+                m_cBorder.m_cParams.m_fHilightAlpha = 0.5f;
+                m_cIconBorder.m_cParams.m_fHilightAlpha = 0.5f;
+                m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_PURPLE;
+                m_cIconHilite.m_cParams.m_vColor = CGuiInGame::COLOR_PURPLE;
+            }
+            else
+            {
+                m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+                m_cIconBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+                m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+                m_cIconHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+            }
+            m_cText.m_cParams.SetText(sName);
+            CExoString sCount;
+            int nCount = pItem->m_nStackSize;
+            if (nCount > 1)
+            {
+                if (nCount >= 100)
+                {
+                    m_cIconBorder.m_cParams.SetFillImage("lbl_hex_7", 0);
+                    m_cIconHilite.m_cParams.SetFillImage("lbl_hex_7", 0);
+                    sCount.Format("%d", nCount);
+                }
+                else
+                {
+                    m_cIconBorder.m_cParams.SetFillImage("lbl_hex_6", 0);
+                    m_cIconHilite.m_cParams.SetFillImage("lbl_hex_6", 0);
+                    sCount.Format("%d", nCount);
+                }
+            }
+            else
+            {
+                m_cIconBorder.m_cParams.SetFillImage("lbl_hex_3", 0);
+                m_cIconHilite.m_cParams.SetFillImage("lbl_hex_3", 0);
+            }
+            m_cCountText.m_cParams = CSWGuiTextParams(
+                sCount, "fnt_d16x16", CGuiInGame::COLOR_BLUE,
+                CSWGuiTextParams::ALIGNMENT_ITEM_COUNT, 1.0f);
+            cIcon = pItem->GetIcon();
+        }
+        else
+        {
+            m_cIconBorder.m_cParams.SetFillImage("lbl_hex_3", 0);
+            m_cIconHilite.m_cParams.SetFillImage("lbl_hex_3", 0);
+            m_cText.m_cParams.SetText(g_pAppManager->GetClientExoApp()->GetGUIString(
+                CClientExoApp::GUI_STRREF_NONE));
+            m_cCountText.m_cParams = CSWGuiTextParams(
+                CExoString(), "fnt_d16x16", CGuiInGame::COLOR_BLUE,
+                CSWGuiTextParams::ALIGNMENT_ITEM_COUNT, 1.0f);
+            cIcon = "inone";
+        }
+    }
+    else
+    {
+        m_cIconBorder.m_cParams.SetFillImage("lbl_hex_3", 0);
+        m_cIconHilite.m_cParams.SetFillImage("lbl_hex_3", 0);
+        m_cText.m_cParams.SetText(g_pAppManager->GetClientExoApp()->GetGUIString(
+            CClientExoApp::GUI_STRREF_NONE));
+        m_cCountText.m_cParams = CSWGuiTextParams(
+            CExoString(), "fnt_d16x16", CGuiInGame::COLOR_BLUE,
+            CSWGuiTextParams::ALIGNMENT_ITEM_COUNT, 1.0f);
+        cIcon = "inone";
+    }
+    CSWGuiBorderParams* pParams = &m_cCountBorder.m_cParams;
+    pParams->m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
+    pParams->SetFillImage(cIcon, 0);
+}
+// PC 0x006B6DC0  Xbox 0x000EBC80
+CSWGuiContainer::CSWGuiContainer(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+    StartLoadFromLayout("container");
+    InitControl(m_lblMessage, "LBL_MESSAGE", 1);
+    InitControl(m_lblButton, "LBL_BUTTON", 1);
+    InitControl(m_lblOk, "LBL_OK", 1);
+    InitControl(m_lbItems, "LB_ITEMS", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblX, "LBL_X", 1);
+    InitControl(m_lblCancel, "LBL_CANCEL", 1);
+    InitControl(m_btnOk, "BTN_OK", 1);
+    InitControl(m_btnGiveitems, "BTN_GIVEITEMS", 1);
+    InitControl(m_btnCancel, "BTN_CANCEL", 1);
+    StopLoadFromLayout();
+
+    m_nGiveModeFlags = (m_nGiveModeFlags & ~(GIVE_MODE_SETUP | GIVE_MODE_CLEAR)) |
+                       GIVE_MODE_ACTIVE;
+    m_lbItems.SetScrollOnly(1);
+    m_lbItems.SetEnabled(0);
+    m_lbItems.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+
+    m_btnOk.SetFocusable(0);
+    m_btnOk.AddEvent(GUIEVENT_ACTIVATE, this,
+                    (CSWGuiHandler)&CSWGuiPanel::OnAButtonPressed);
+    m_btnGiveitems.SetFocusable(0);
+    m_btnGiveitems.AddEvent(GUIEVENT_ACTIVATE, this,
+                           (CSWGuiHandler)&CSWGuiPanel::OnXButtonPressed);
+    m_btnCancel.SetFocusable(0);
+    m_btnCancel.AddEvent(GUIEVENT_ACTIVATE, this,
+                        (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
+    CenterPanel();
+}
+// PC 0x006B7170  Xbox 0x000EB180
+void CSWGuiContainer::GiveItem(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        if (pControl->m_nEvent != 0)
+        {
+            m_pManager->PlayGuiSound((char)pControl->m_nClickSound);
+        }
+
+        int nItems = 1;
+        if (g_bShiftActionState != 0)
+        {
+            nItems =
+                static_cast<CSWGuiInGameItemEntry*>(pControl)->GetNumItems();
+        }
+
+        unsigned long oidContainer = m_oidContainer;
+        unsigned long oidItem =
+            static_cast<CSWGuiInGameItemEntry*>(pControl)->m_oidItem;
+        CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
+        pClient->GetSWParty()->GetPlayerCharacter()->PerformGiveItem(
+            oidItem, oidContainer, nItems);
+        m_nGiveModeFlags |= GIVE_MODE_SETUP | GIVE_MODE_CLEAR;
+    }
+}
+// PC 0x006B4FE0
+int CSWGuiInGameItemEntry::GetNumItems()
+{
+    int nItems = 1;
+    CExoString sNumItems(m_cText.m_cParams.m_sText);
+
+    if (!sNumItems.IsEmpty())
+    {
+        nItems = sNumItems.AsINT();
+    }
+
+    return nItems;
+}
+// PC 0x006B5060  Xbox 0x000EB020
+void CSWGuiInGameItemEntry::SetCanUse(unsigned char nCanUse)
+{
+    switch (nCanUse)
+    {
+    case CAN_USE:
+    case CAN_USE_EQUIPPED:
+        m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+        m_cIconBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+        m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+        m_cIconHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+        break;
+    case CANNOT_USE:
+    case CANNOT_USE_WITH_OTHER_HAND:
+        m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_RED;
+        m_cIconBorder.m_cParams.m_vColor = CGuiInGame::COLOR_RED;
+        m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_RED;
+        m_cIconHilite.m_cParams.m_vColor = CGuiInGame::COLOR_RED;
+        break;
+    }
+
+    m_cHilite.m_cParams.SetPulsingAlpha(m_bPulsing, 1, 0);
+    m_cIconHilite.m_cParams.SetPulsingAlpha(m_bPulsing, 0, 1);
+    m_nCanUse = nCanUse;
+}
+// PC 0x006B51D0
+void CSWGuiContainer::OnPanelAdded()
+{
+    CSWGuiExtent cPanel = m_cExtent;
+    CSWGuiExtent cButton = m_btnOk.m_cExtent;
+
+#ifndef _XBOX
+    g_pGuiMan->StoreCurrentMousePosition();
+    g_pGuiMan->MoveMouseToPosition(
+        cButton.m_nLeft + cPanel.m_nLeft + cButton.m_nWidth / 2,
+        cPanel.m_nTop + cButton.m_nTop + cButton.m_nHeight / 2);
+#endif
+#ifndef _XBOX
+    CSWGuiPanel::OnPanelAdded();
+#endif
+}
+// PC 0x006B5250
+void CSWGuiContainer::OnPanelRemoved()
+{
+#ifndef _XBOX
+    g_pGuiMan->RestoreOldMousePosition();
+#endif
+#ifndef _XBOX
+    CSWGuiPanel::OnPanelRemoved();
+#endif
+}
+// PC 0x006B5270
+void CSWGuiStoreItemEntry::SetExtent(const CSWGuiExtent& cExtent)
+{
+    if (cExtent.m_nWidth > SWGUI_ITEM_ICON_SIZE)
+    {
+        m_cExtent = cExtent;
+        CSWGuiExtent cItemExtent(m_cExtent.m_nLeft, m_cExtent.m_nTop,
+                                SWGUI_ITEM_ICON_SIZE, SWGUI_ITEM_ICON_SIZE);
+        m_cIconBorder.SetExtent(cItemExtent);
+        m_cIconHilite.SetExtent(cItemExtent);
+        m_cCountBorder.SetExtent(cItemExtent);
+
+        CSWGuiExtent cQuantityExtent(cItemExtent);
+        cQuantityExtent.m_nWidth =
+            m_cCountText.m_cParams.m_sText.GetLength() > SWGUI_ITEM_COUNT_SHORT_DIGITS ? SWGUI_ITEM_COUNT_LONG_WIDTH : SWGUI_ITEM_COUNT_SHORT_WIDTH;
+        cQuantityExtent.m_nHeight = SWGUI_ITEM_COUNT_HEIGHT;
+        cQuantityExtent.m_nLeft += SWGUI_ITEM_ICON_SIZE - cQuantityExtent.m_nWidth;
+        cQuantityExtent.m_nTop += SWGUI_ITEM_ICON_SIZE - SWGUI_ITEM_COUNT_HEIGHT;
+        m_cCountText.SetExtent(cQuantityExtent);
+
+        cItemExtent.m_nLeft += SWGUI_ITEM_ICON_SIZE;
+        cItemExtent.m_nWidth = m_cExtent.m_nWidth - SWGUI_ITEM_ICON_SIZE;
+        m_cBorder.SetExtent(cItemExtent);
+        m_cHilite.SetExtent(cItemExtent);
+        m_cText.SetExtent(CSWGuiExtent::Intersection(
+            m_cBorder.GetInnerExtent(), m_cHilite.GetInnerExtent()));
+    }
+}
+// PC 0x006B5270  Xbox 0x000EB200
+void CSWGuiInGameItemEntry::SetExtent(const CSWGuiExtent& cExtent)
+{
+    if (cExtent.m_nWidth > SWGUI_ITEM_ICON_SIZE)
+    {
+        m_cExtent = cExtent;
+        CSWGuiExtent cItemExtent(m_cExtent.m_nLeft, m_cExtent.m_nTop,
+                                SWGUI_ITEM_ICON_SIZE, SWGUI_ITEM_ICON_SIZE);
+        m_cIconBorder.SetExtent(cItemExtent);
+        m_cIconHilite.SetExtent(cItemExtent);
+        m_cCountBorder.SetExtent(cItemExtent);
+
+        CSWGuiExtent cQuantityExtent(cItemExtent);
+        cQuantityExtent.m_nWidth =
+            m_cCountText.m_cParams.m_sText.GetLength() > SWGUI_ITEM_COUNT_SHORT_DIGITS ? SWGUI_ITEM_COUNT_LONG_WIDTH : SWGUI_ITEM_COUNT_SHORT_WIDTH;
+        cQuantityExtent.m_nHeight = SWGUI_ITEM_COUNT_HEIGHT;
+        cQuantityExtent.m_nLeft += SWGUI_ITEM_ICON_SIZE - cQuantityExtent.m_nWidth;
+        cQuantityExtent.m_nTop += SWGUI_ITEM_ICON_SIZE - SWGUI_ITEM_COUNT_HEIGHT;
+        m_cCountText.SetExtent(cQuantityExtent);
+
+        cItemExtent.m_nLeft += SWGUI_ITEM_ICON_SIZE;
+        cItemExtent.m_nWidth = m_cExtent.m_nWidth - SWGUI_ITEM_ICON_SIZE;
+        m_cBorder.SetExtent(cItemExtent);
+        m_cHilite.SetExtent(cItemExtent);
+        m_cText.SetExtent(CSWGuiExtent::Intersection(
+            m_cBorder.GetInnerExtent(), m_cHilite.GetInnerExtent()));
+    }
+}
+// PC 0x006B53F0
+void CSWGuiStoreItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
+                                    CSWGuiBorder& cHilite, int nWidth)
+{
+    m_cText.m_cParams = cText.m_cParams;
+    CSWGuiBorderParams* pParams = &CSWGuiButton::m_cBorder.m_cParams;
+    *pParams = cBorder.m_cParams;
+    pParams->m_vColor = CGuiInGame::COLOR_BLUE;
+    pParams = &CSWGuiButton::m_cHilite.m_cParams;
+    *pParams = cHilite.m_cParams;
+    pParams->m_vColor = CGuiInGame::COLOR_YELLOW;
+    pParams->SetPulsingAlpha(1, 1, 0);
+    pParams = &m_cIconBorder.m_cParams;
+    {
+        CResRef cFill("lbl_hex_3");
+        CResRef cEdge("");
+        CResRef cCorner("");
+        *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f,
+                                     Vector(1.0f, 1.0f, 1.0f), 0);
+        pParams->m_vColor = CGuiInGame::COLOR_BLUE;
+    }
+    pParams = &m_cIconHilite.m_cParams;
+    {
+        CResRef cFill("lbl_hex_3");
+        CResRef cEdge("");
+        CResRef cCorner("");
+        *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f,
+                                     Vector(1.0f, 1.0f, 1.0f), 0);
+        pParams->m_vColor = CGuiInGame::COLOR_YELLOW;
+        pParams->SetPulsingAlpha(1, 0, 1);
+    }
+    {
+        CSWGuiExtent cExtent;
+        cExtent.m_nLeft = 0;
+        cExtent.m_nTop = 0;
+        cExtent.m_nWidth = nWidth;
+        cExtent.m_nHeight = 56;
+        SetExtent(cExtent);
+    }
+}
+// PC 0x006B8130  Xbox 0x000ED1B0
+void CSWGuiContainer::SetContainer(unsigned long oidContainer, int nType)
+{
+    m_oidContainer = oidContainer;
+    m_nContainerType = nType;
+
+    CExoArrayList<CSWGuiInGameItemEntry*> lItems;
+    CSWGuiLabelHilight* pProto = (CSWGuiLabelHilight*)m_lbItems.m_pProtoItem;
+    CSWGuiText* pText = &pProto->m_cText;
+    CSWGuiBorder* pBorder = &pProto->m_cBorder;
+    CSWGuiBorder* pHilite = &pProto->m_cHilite;
+    CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
+    CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
+    CItemRepository* pRepository = pServer->GetPlaceableByGameObjectID(
+        pServer->ClientToServerObjectId(oidContainer))->m_pcItemRepository;
+    lItems.SetSize(pRepository->GetNumItems());
+    int nWidth = m_lbItems.GetItemWidth();
+
+    for (unsigned long nItem = 0; nItem < pRepository->GetNumItems(); ++nItem)
+    {
+        unsigned long oidItem = pClient->ServerToClientObjectId(
+            pRepository->ItemListGetItemObjectID(nItem));
+        lItems[nItem] = new CSWGuiInGameItemEntry;
+        lItems[nItem]->Initialize(*pText, *pBorder, *pHilite, nWidth, 0);
+        lItems[nItem]->SetItem(oidItem, 0, 0);
+    }
+    m_lbItems.AddControls(*(CExoArrayList<CSWGuiControl*>*)&lItems, 1, 0, 0);
+
+    unsigned long nStrRef = m_nContainerType ?
+        STRREF_CONTAINER_INVENTORY : STRREF_CONTAINER_EMPTY;
+    CExoString sGive = g_pAppManager->GetClientExoApp()->GetGUIString(
+        STRREF_GIVE_BUTTON_PREFIX) + " " +
+        g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_GIVE_ITEM);
+    m_lblMessage.m_cText.m_cParams.SetStrRef(nStrRef);
+    m_lblOk.m_cText.m_cParams.SetStrRef(STRREF_GET_ITEMS);
+    m_btnOk.m_cText.m_cParams.SetStrRef(STRREF_GET_ITEMS);
+    m_btnGiveitems.m_cText.m_cParams.SetText(sGive);
+    m_nGiveModeFlags |= GIVE_MODE_ACTIVE;
+    m_lbItems.SetScrollOnly(1);
+    m_lbItems.SetEnabled(0);
+    SetActiveControl(0, 0);
+    SetActiveControl(&m_lbItems, 0);
+}
+// PC 0x006B8410  Xbox 0x000ED4D0
+void CSWGuiContainer::SetupGiveMode(int bRestoreSelection)
+{
+    CExoArrayList<CSWGuiInGameItemEntry*> lItems;
+    CSWGuiLabelHilight* pProto = (CSWGuiLabelHilight*)m_lbItems.m_pProtoItem;
+    CSWGuiText* pText = &pProto->m_cText;
+    CSWGuiBorder* pBorder = &pProto->m_cBorder;
+    CSWGuiBorder* pHilite = &pProto->m_cHilite;
+    CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
+    CItemRepository* pRepository =
+        g_pAppManager->GetServerExoApp()->GetPartyTable()->GetPartyItems();
+    int nWidth = m_lbItems.GetItemWidth();
+    int nEntry = 0;
+
+    for (unsigned long nItem = 0; nItem < pRepository->GetNumItems(); ++nItem)
+    {
+        unsigned long oidItem = pClient->ServerToClientObjectId(
+            pRepository->ItemListGetItemObjectID(nItem));
+        CSWSItem* pItem = pRepository->ItemListGetItem(nItem);
+        if (pItem != NULL && pItem->m_bPlotObject == 0)
+        {
+            lItems.Add(new CSWGuiInGameItemEntry);
+            lItems[nEntry]->Initialize(*pText, *pBorder, *pHilite, nWidth, 1);
+            lItems[nEntry]->SetItem(oidItem, 0, 0);
+            lItems[nEntry]->AddEvent(GUIEVENT_ACTIVATE, this,
+                                    (CSWGuiHandler)&CSWGuiContainer::GiveItem);
+            lItems[nEntry]->AddEvent(GUIEVENT_ACCEPT, this,
+                                    (CSWGuiHandler)&CSWGuiContainer::GiveItem);
+            ++nEntry;
+        }
+    }
+
+    CExoString sGive = g_pAppManager->GetClientExoApp()->GetGUIString(
+        STRREF_GIVE_BUTTON_PREFIX) + " " +
+        g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_GET_ITEMS);
+    m_lblMessage.m_cText.m_cParams.SetStrRef(STRREF_ITEMS_TO_GIVE);
+    m_lblOk.m_cText.m_cParams.SetStrRef(STRREF_GIVE_ITEM);
+    m_btnOk.m_cText.m_cParams.SetStrRef(STRREF_GIVE_ITEM);
+    m_btnGiveitems.m_cText.m_cParams.SetText(sGive);
+    m_nGiveModeFlags &= ~GIVE_MODE_ACTIVE;
+    m_lbItems.SetScrollOnly(0);
+    m_lbItems.SetEnabled(1);
+
+    int nSelected = 0;
+    if (bRestoreSelection && lItems.num > 0)
+    {
+        nSelected = min(m_lbItems.m_nSelectedItem, lItems.num - 1);
+    }
+    m_lbItems.AddControls(*(CExoArrayList<CSWGuiControl*>*)&lItems, 1, 0, 0);
+    SetActiveControl(0, 0);
+    SetActiveControl(&m_lbItems, 0);
+    if (lItems.num > 0)
+    {
+        m_lbItems.SetSelectedControl(nSelected, 0);
+    }
+}
+// PC 0x006B8770
+void CSWGuiContainer::Update(float fElapsed)
+{
+    int nResult = m_nGiveModeFlags;
+
+    if ((nResult & GIVE_MODE_CLEAR) != 0)
+    {
+        nResult &= ~GIVE_MODE_CLEAR;
+        m_nGiveModeFlags = nResult;
+    }
+    else if ((nResult & GIVE_MODE_SETUP) != 0 &&
+             (nResult & GIVE_MODE_ACTIVE) == 0)
+    {
+        SetupGiveMode(1);
+        m_nGiveModeFlags &= ~GIVE_MODE_SETUP;
+    }
+}
+// PC 0x006B71E0  Xbox 0x000ED830
+CSWGuiStoreItemEntry::CSWGuiStoreItemEntry()
+{
+    m_oidItem = OBJECT_INVALID;
+}
+// PC 0x006BA980  Xbox 0x000EE230
+CSWGuiInGameEquip::CSWGuiInGameEquip(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+    m_pCreature = NULL;
+    m_bDescriptionShown = 0;
+    m_nCharacter = -1;
+    StartLoadFromLayout("equip");
+    CExoString sButtonPrefix("BTN_");
+    CExoString sLabelPrefix("LBL_");
+    for (int nSlot = 0; nSlot < NUM_EQUIPMENT_SLOTS; ++nSlot)
+    {
+        InitControl(m_aSlotButtons[nSlot],
+                    sButtonPrefix + SLOT_INFO[nSlot].sButton, 1);
+        InitControl(m_aSlotLabels[nSlot],
+                    sLabelPrefix + SLOT_INFO[nSlot].sButton, 1);
+        m_aSlotButtons[nSlot].AddEvent(GUIEVENT_ACTIVATE, this,
+            (CSWGuiHandler)&CSWGuiInGameEquip::OnSelectSlot);
+        m_aSlotButtons[nSlot].AddEvent(GUIEVENT_MOUSE_ENTER, this,
+            (CSWGuiHandler)&CSWGuiInGameEquip::OnEnterSlot);
+        m_aSlotButtons[nSlot].m_nIndex = nSlot;
+        m_aSlotButtons[nSlot].m_cHilite.m_cParams.SetPulsingAlpha(1, 0, 1);
+        m_aoidEquippedItems[nSlot] = OBJECT_INVALID;
+    }
+    InitControl(m_lblAtkl, "LBL_ATKL", 1);
+    InitControl(m_lblTohitl, "LBL_TOHITL", 1);
+    InitControl(m_lblAtkr, "LBL_ATKR", 1);
+    InitControl(m_lblTohitr, "LBL_TOHITR", 1);
+    InitControl(m_lblDef, "LBL_DEF", 1);
+    InitControl(m_lblVitality, "LBL_VITALITY", 1);
+    InitControl(m_lbItems, "LB_ITEMS", 1);
+    InitControl(m_lbDesc, "LB_DESC", 1);
+    InitControl(m_lblPortrait, "LBL_PORTRAIT", 1);
+    InitControl(m_lblAttackInfo, "LBL_ATTACK_INFO", 1);
+    InitControl(m_lblDefInfo, "LBL_DEF_INFO", 1);
+    InitControl(m_lblTxtbar, "LBL_TXTBAR", 1);
+    InitControl(m_lblPortBord, "LBL_PORT_BORD", 1);
+    InitControl(m_lblTohit, "LBL_TOHIT", 1);
+    InitControl(m_lblDamage, "LBL_DAMAGE", 1);
+    InitControl(m_lblSlotname, "LBL_SLOTNAME", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lblSelecttitle, "LBL_SELECTTITLE", 1);
+    InitControl(m_btnEquip, "BTN_EQUIP", 1);
+    InitControl(m_btnBack, "BTN_BACK", 1);
+    InitControl(m_btnChange1, "BTN_CHANGE1", 1);
+    InitControl(m_btnChange2, "BTN_CHANGE2", 1);
+    InitControl(m_btnCharleft, "BTN_CHARLEFT", 1);
+    InitControl(m_btnCharright, "BTN_CHARRIGHT", 1);
+    InitControl(m_lblCantequip, "LBL_CANTEQUIP", 1);
+    StopLoadFromLayout();
+    m_lblAtkl.m_cText.m_cParams.SetText("");
+    m_lblAtkr.m_cText.m_cParams.SetText("");
+    m_lblTohitl.m_cText.m_cParams.SetText("");
+    m_lblTohitr.m_cText.m_cParams.SetText("");
+    m_lblDef.m_cText.m_cParams.SetText("");
+    m_cDescriptionText.Initialize(m_lbDesc.m_pProtoItem->m_cExtent,
+                                  (CSWGuiLabel*)m_lbDesc.m_pProtoItem, 1.0f);
+    ShowDescription(0);
+    m_btnEquip.SetFocusable(0);
+    m_btnEquip.AddEvent(GUIEVENT_ACTIVATE, this,
+                       (CSWGuiHandler)&CSWGuiInGameEquip::OnOKPressed);
+    m_btnBack.SetFocusable(0);
+    m_btnBack.AddEvent(GUIEVENT_ACTIVATE, this,
+                      (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
+    m_btnChange1.SetFocusable(0);
+    m_btnChange1.AddEvent(GUIEVENT_ACTIVATE, this,
+                        (CSWGuiHandler)&CSWGuiInGameEquip::OnChangeCharacter);
+    m_btnChange2.SetFocusable(0);
+    m_btnChange2.AddEvent(GUIEVENT_ACTIVATE, this,
+                        (CSWGuiHandler)&CSWGuiInGameEquip::OnChangeCharacter);
+    m_btnEquip.SetShown(0);
+    m_btnChange1.SetToolTip(CSWGuiInGameCharacter::STRREF_CHANGE_CHARACTER,
+                          GUIEVENT_NEXT_CHARACTER);
+#ifndef _XBOX
+    m_btnChange2.m_nToolTipStrRef = CSWGuiInGameCharacter::STRREF_CHANGE_CHARACTER;
+#endif
+    m_btnCharleft.SetFocusable(0);
+    m_btnCharleft.AddEvent(GUIEVENT_ACTIVATE, this,
+                          (CSWGuiHandler)&CSWGuiInGameEquip::OnSwitchRight);
+    m_btnCharright.SetFocusable(0);
+    m_btnCharright.AddEvent(GUIEVENT_ACTIVATE, this,
+                           (CSWGuiHandler)&CSWGuiInGameEquip::OnSwitchLeft);
+    m_btnCharright.m_cBorder.m_cParams.m_fRotation = 180.0f;
+    m_btnCharright.m_cHilite.m_cParams.m_fRotation = 180.0f;
+    m_lbItems.SetEnabled(0);
+    m_lblCantequip.SetShown(0);
+    CSWGuiPanel* pPanel = this;
+    pPanel->SetActiveControl(&m_aSlotButtons[ARMOUR_ITEM_INDEX], 0);
+    m_nPendingSlot = 0;
+    m_oidPendingItem = OBJECT_INVALID;
+    m_oidDescribed = 0;
+    m_pDescribedCopy = NULL;
+    m_oidCompared = 0;
+    m_pComparedCopy = NULL;
+}
+// PC 0x006B8840  Xbox 0x000EBF30
+CSWGuiInGameEquip::~CSWGuiInGameEquip()
+{
+    m_lbDesc.ClearItems();
+    m_lbItems.ClearItems();
+    for (int i = 0; i < m_lItemEntries.num; i++)
+    {
+        if (m_lItemEntries[i] != 0)
+        {
+            delete m_lItemEntries[i];
+        }
+        m_lItemEntries[i] = 0;
+    }
+    m_lItemEntries.RemoveAll();
+    if (m_pDescribedCopy != 0)
+    {
+        delete m_pDescribedCopy;
+        m_pDescribedCopy = 0;
+    }
+    if (m_pComparedCopy != 0)
+    {
+        delete m_pComparedCopy;
+        m_pComparedCopy = 0;
+    }
+}
+// PC 0x006BB510
+void CSWGuiInGameEquip::Draw(float fElapsed)
+{
+    UpdateInventory();
+    return CSWGuiPanel::Draw(fElapsed);
+}
+// PC 0x006BB530  Xbox 0x000ED920
+void CSWGuiInGameEquip::OnPanelAdded()
+{
+    CSWParty* pParty;
+    CSWCCreature* pCreature;
+
+    m_nCharacter = -1;
+    m_btnChange1.m_nIndex = -2;
+    m_btnChange2.m_nIndex = -2;
+    pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
+    pCreature = pParty->GetPlayerCharacter();
+    SetCharacter(pCreature);
+    UpdatePortraits(1);
+    OnEnterSlot(m_pActiveControl);
+#ifndef _XBOX
+    CSWGuiPanel::OnPanelAdded();
+#endif
+}
+// PC 0x006B7270  Xbox 0x000EB590
+void CSWGuiStoreItemEntry::SetItem(unsigned long oidItem, int bUpdate)
+{
+    CResRef cIcon;
+    CExoString sName;
+    CExoString sCount;
+
+    CExoString sCost;
+    CExoString sPrice;
+    CServerExoApp* pServer = GetServerExoApp();
+    CSWSItem* pItem = pServer->GetItemByGameObjectID(oidItem);
+    m_oidItem = oidItem;
+    if (oidItem != OBJECT_INVALID)
+    {
+        pItem = pServer->GetItemByGameObjectID(oidItem);
+        if (pItem != NULL)
+        {
+            cIcon = pItem->GetIcon();
+            CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
+            pItem->m_sLocalizedName.GetString(pClient->GetClientLanguage(), &sName, 0);
+            m_cText.m_cParams.SetText(sName);
+            int nCount = pItem->m_nStackSize;
+            if (nCount > 1)
+            {
+                if (nCount >= 100)
+                {
+                    m_cIconBorder.m_cParams.SetFillImage("lbl_hex_7", 0);
+                    m_cIconHilite.m_cParams.SetFillImage("lbl_hex_7", 0);
+                }
+                else
+                {
+                    m_cIconBorder.m_cParams.SetFillImage("lbl_hex_6", 0);
+                    m_cIconHilite.m_cParams.SetFillImage("lbl_hex_6", 0);
+                }
+                sCount.Format("%d", nCount);
+            }
+            else
+            {
+                m_cIconBorder.m_cParams.SetFillImage("lbl_hex_3", 0);
+                m_cIconHilite.m_cParams.SetFillImage("lbl_hex_3", 0);
+            }
+            m_cCountText.m_cParams = CSWGuiTextParams(
+                sCount, "fnt_d16x16", CGuiInGame::COLOR_BLUE,
+                CSWGuiTextParams::ALIGNMENT_ITEM_COUNT, 1.0f);
+        }
+        else
+        {
+            CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
+            m_cText.m_cParams.SetText(pClient->GetGUIString(
+                CClientExoApp::GUI_STRREF_NONE));
+            cIcon = "inone";
+        }
+    }
+    else
+    {
+        CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
+        m_cText.m_cParams.SetText(pClient->GetGUIString(
+            CClientExoApp::GUI_STRREF_NONE));
+        cIcon = "inone";
+    }
+    CSWGuiBorderParams* pParams = &m_cCountBorder.m_cParams;
+    pParams->m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
+    pParams->SetFillImage(cIcon, 0);
+}
+// PC 0x006B7590  Xbox 0x000EB920
+void CSWGuiInGameEquip::SetCharacter(CSWCCreature* pCreature)
+{
+    if (pCreature != m_pCreature)
+    {
+        m_pCreature = pCreature;
+        if (pCreature)
+        {
+            for (int nSlot = 0; nSlot < NUM_EQUIPMENT_SLOTS; ++nSlot)
+            {
+                m_aSlotLabels[nSlot].m_cBorder.m_cParams.SetFillImage(
+                    GetIcon(nSlot), 0);
+            }
+        }
+        else
+        {
+            CResRef cPortrait("");
+            m_lblPortrait.m_cBorder.m_cParams.SetFillImage(cPortrait, 0);
+        }
+    }
+
+    if (m_pCreature)
+    {
+        CResRef* pPortrait = &m_pCreature->GetPortrait(1);
+        m_lblPortrait.m_cBorder.m_cParams.SetFillImage(
+            *pPortrait, 0);
+    }
+}
+
+#include "nwccreaturestats.h"
+// PC 0x006B5600  Xbox 0x000EA090
+CExoString CSWGuiInGameEquip::GetIcon(int nSlot)
+{
+    CExoString sIcon;
+    unsigned short nRace = m_pCreature->GetStats()->m_nRace;
+    sIcon.Format("i%s%s", nRace == CSWRace::CRACE_DROID ? "d" : "",
+                 SLOT_INFO[nSlot].sLabel);
+    return sIcon;
+}
+// PC 0x006B56B0  Xbox 0x000EA140
+void CSWGuiInGameEquip::SetDescription(const CExoString& sDescription)
+{
+    m_cDescriptionText.m_cText.m_cParams.SetText(sDescription);
+    m_lbDesc.ClearItems();
+
+    CSWGuiExtent cExtent = m_cDescriptionText.m_cExtent;
+    if (sDescription.GetLength() > 0)
+    {
+        cExtent.m_nHeight = m_cDescriptionText.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_cDescriptionText.m_cText.GetFontHeight();
+    }
+
+    m_cDescriptionText.SetExtent(cExtent);
+
+    CSWGuiControl* pControl = &m_cDescriptionText;
+    m_lbDesc.AddControls(&pControl, 1, 0, 0, 0);
+    m_lbDesc.SetSelectedControl(&m_cDescriptionText, 0);
+}
+// PC 0x006B5760
+int CSWGuiInGameEquip::EquipItem(unsigned long oidItem, int nSlot,
+                                 int bClearActions)
+{
+    CGameObject* pObject = 0;
+    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+    unsigned long oidServer =
+        pServer->ClientToServerObjectId(oidItem);
+    pServer = g_pAppManager->m_pServerExoApp;
+    if (pServer->GetObjectArray()->GetGameObject(
+            oidServer, &pObject) == CGameObjectArray::SUCCESS &&
+        pObject->AsSWSItem() != 0)
+    {
+        CSWSCreature* pCreature = m_pCreature->GetServerCreature();
+        if (pCreature != 0 &&
+            (g_pRules->m_pBaseItems
+                 ->GetBaseItem(pObject->AsSWSItem()->GetBaseItemType())
+                 ->GetEquipableSlots() &
+             nSlot) != 0)
+        {
+            if (bClearActions != 0)
+            {
+                pCreature->ClearAllActions(1);
+                pCreature->m_pcCombatRound->RemoveAllActions();
+            }
+
+            pCreature->AddEquipItemActions(pObject->AsSWSItem(), nSlot, 0, 1,
+                                           1, 0, bClearActions == 0);
+            if (pCreature->m_bCombatState != 0)
+            {
+                unsigned long oidTarget =
+                    pCreature->m_pcCombatRound->m_oidUnknown9CC;
+                if (oidTarget != OBJECT_INVALID)
+                {
+                    pCreature->AddAttackActions(oidTarget, 0, 0, 0, 0, 0, 0, 1,
+                                                10009, 1500, 1, 0, 0, 4, 0);
+                }
+            }
+            return 1;
+        }
+    }
+
+    return 0;
+}
+// PC 0x006B5890
+int CSWGuiInGameEquip::EquipItem(CSWSItem* pItem, int bFlag1, int bFlag2)
+{
+    CSWSCreature* pCreature = m_pCreature->GetServerCreature();
+    if (pCreature != 0)
+    {
+        CItemRepository* pRepository = pCreature->GetItemRepository(1);
+        for (unsigned int i = 0; i < pRepository->m_lstItems.num; i++)
+        {
+            CSWSItem* pOther = pRepository->ItemListGetItem(i);
+            if (pItem->CompareItem(pOther) != 0)
+            {
+                unsigned long oidItem = pOther->m_nId;
+                return EquipItem(oidItem, bFlag1, bFlag2);
+            }
+        }
+    }
+
+    return 0;
+}
+// PC 0x006B5910
+void CSWGuiInGameEquip::UnequipItem(unsigned long oidItem, int bClearActions)
+{
+    CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(
+        g_pAppManager->m_pServerExoApp->ClientToServerObjectId(oidItem));
+    if (pItem != 0)
+    {
+        CSWSCreature* pCreature = m_pCreature->GetServerCreature();
+        if (pCreature != 0)
+        {
+            if (bClearActions != 0)
+            {
+                pCreature->ClearAllActions(1);
+                pCreature->m_pcCombatRound->RemoveAllActions();
+            }
+
+            pCreature->AddUnequipActions(pItem, OBJECT_INVALID, 0, 1, 1);
+            CSWCItem* pClientItem =
+                g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(oidItem);
+            if (pClientItem != 0)
+            {
+                pClientItem->PowerItem(0, 0, 0, 0);
+            }
+            if (pCreature->m_bCombatState != 0)
+            {
+                unsigned long oidTarget =
+                    pCreature->m_pcCombatRound->m_oidUnknown9CC;
+                if (oidTarget != OBJECT_INVALID)
+                {
+                    pCreature->AddAttackActions(oidTarget, 0, 0, 0, 0, 0, 0, 1,
+                                                10009, 1500, 1, 0, 0, 4, 0);
+                }
+            }
+        }
+    }
+}
+// PC 0x006B59F0
+void CSWGuiInGameEquip::ShowCantEquipMessage(int bShow, unsigned long nStrRef)
+{
+    int bEnabled = bShow == 0;
+    m_lblAtkl.SetShown(bEnabled);
+    m_lblAtkr.SetShown(bEnabled);
+    m_lblDef.SetShown(bEnabled);
+    m_lblTohitl.SetShown(bEnabled);
+    m_lblTohitr.SetShown(bEnabled);
+    m_lblVitality.SetShown(bEnabled);
+    m_lblAttackInfo.SetShown(bEnabled);
+    m_lblDefInfo.SetShown(bEnabled);
+    m_lblTohit.SetShown(bEnabled);
+    m_lblDamage.SetShown(bEnabled);
+    if (bShow != 0)
+    {
+        CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
+        m_lblCantequip.m_cText.m_cParams.SetText(pClient->GetGUIString(nStrRef));
+    }
+    m_lblCantequip.m_bEnabled = bShow;
+    m_btnEquip.SetEnabled(bEnabled);
+    m_btnEquip.m_cText.m_cParams.SetColor(
+        bShow ? CGuiInGame::DISABLED_TEXT : CGuiInGame::COLOR_BLUE);
+}
+// PC 0x006B8E10  Xbox 0x000ED980
+void CSWGuiInGameEquip::OnPanelRemoved()
+{
+    int i;
+
+    if (m_bDescriptionShown)
+    {
+        CloseDescription();
+    }
+    m_lbItems.ClearItems();
+    for (i = 0; i < m_lItemEntries.num; i++)
+    {
+        if (m_lItemEntries[i] != 0)
+        {
+            delete m_lItemEntries[i];
+        }
+        m_lItemEntries[i] = 0;
+    }
+    m_lItemEntries.RemoveAll();
+    m_nPendingSlot = 0;
+    m_oidPendingItem = OBJECT_INVALID;
+#ifndef _XBOX
+    CSWGuiPanel::OnPanelRemoved();
+#endif
+}
+// PC 0x006B8EB0  Xbox 0x000ED9D0
+void CSWGuiInGameEquip::OnSelectSlot(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected)
+    {
+        if (m_pCreature->m_pArea->GetServerArea()->GetPlayerRestrictMode())
+        {
+            CSWGuiMessageBox* pMessage = g_pAppManager->GetClientExoApp()
+                ->GetInGameGui()->m_pMessageBox;
+            pMessage->SetAllowCancel(0);
+            pMessage->SetCallback(0, 0, 0);
+            pMessage->SetMessage(STRREF_ENVIRO_SUIT_RESTRICTION);
+            m_pManager->AddPanel(pMessage, SWGUI_PANEL_FLAG_PUSH_MODAL, 1);
+            return;
+        }
+        if (m_nSelectedSlot == INVENTORY_SLOT_ARMOUR &&
+            m_pCreature->GetServerCreature()->GetCombatState() == 1 &&
+            m_pCreature->GetServerCreature()->GetItemUseState() == 1)
+        {
+            CSWGuiMessageBox* pMessage = g_pAppManager->GetClientExoApp()
+                ->GetInGameGui()->m_pMessageBox;
+            pMessage->SetAllowCancel(0);
+            pMessage->SetCallback(0, 0, 0);
+            int nStrRef = STRREF_ARMOUR_COMBAT_RESTRICTION;
+            pMessage->SetMessage(nStrRef);
+            CSWGuiManager* pManager = m_pManager;
+            if (nStrRef == 0 && pManager == NULL)
+                return;
+            pManager->AddPanel(pMessage, SWGUI_PANEL_FLAG_PUSH_MODAL, 1);
+            return;
+        }
+        if (m_nSelectedSlot == INVENTORY_SLOT_LEFTHAND &&
+            m_aoidEquippedItems[RIGHTHAND_ITEM_INDEX] != OBJECT_INVALID)
+        {
+            CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
+            CSWSItem* pItem = pServer->GetItemByGameObjectID(
+                pServer->ClientToServerObjectId(
+                    m_aoidEquippedItems[RIGHTHAND_ITEM_INDEX]));
+            if (pItem && pItem->GetBaseItem()->m_nWeaponSize ==
+                             CSWBaseItem::WEAPON_SIZE_TWO_HANDED)
+            {
+                CSWGuiMessageBox* pMessage = g_pAppManager->GetClientExoApp()
+                    ->GetInGameGui()->m_pMessageBox;
+                pMessage->SetAllowCancel(0);
+                pMessage->SetCallback(0, 0, 0);
+                pMessage->SetMessage(STRREF_TWO_HANDED_RESTRICTION);
+                m_pManager->AddPanel(pMessage, SWGUI_PANEL_FLAG_PUSH_MODAL, 1);
+                return;
+            }
+        }
+        if (m_lbItems.m_lItems.num == 1)
+        {
+            CSWGuiMessageBox* pMessage = g_pAppManager->GetClientExoApp()
+                ->GetInGameGui()->m_pMessageBox;
+            pMessage->SetAllowCancel(0);
+            pMessage->SetCallback(0, 0, 0);
+            pMessage->SetMessage(STRREF_NO_EQUIPPABLE_ITEMS);
+            m_pManager->AddPanel(pMessage, SWGUI_PANEL_FLAG_PUSH_MODAL, 1);
+            return;
+        }
+        m_pDescribedControl = pControl;
+        ShowDescription(1);
+        SetActiveControl(&m_lbItems, 0);
+        if (m_aoidEquippedItems[(int)pControl->GetUserData()] != OBJECT_INVALID)
+        {
+            m_lbItems.SetSelectedControl(1, 0);
+        }
+        m_bDescriptionShown = 1;
+        m_lblSelecttitle.m_cText.m_cParams.SetText(
+            g_pAppManager->GetClientExoApp()->GetGUIString(
+                STRREF_SELECT_ITEM_TO_EQUIP));
+        g_pAppManager->GetClientExoApp()->ShowTutorialWindow(
+            11, OBJECT_INVALID, OBJECT_INVALID, 0);
+        m_lbItems.SetEnabled(1);
+    }
+}
+// PC 0x006B7680
+void CSWGuiInGameEquip::ShowDescription(int bShow)
+{
+    ShowCantEquipMessage(0, -1);
+    UpdatePortraits(!bShow);
+    if (bShow)
+    {
+        m_lbDesc.SetShown(1);
+        m_btnBack.m_cText.m_cParams.SetText(
+            g_pAppManager->GetClientExoApp()->GetGUIString(1581));
+        for (int i = 0; i < NUM_EQUIPMENT_SLOTS; i++)
+        {
+            m_aSlotButtons[i].SetShown(0);
+            m_aSlotLabels[i].SetShown(0);
+        }
+        m_lblTxtbar.SetShown(0);
+        m_lblPortBord.SetShown(0);
+        m_lblPortrait.SetShown(0);
+        m_lblSlotname.SetShown(0);
+        m_btnEquip.SetShown(1);
+        for (int i = 0; i < m_lbItems.m_lItems.num; i++)
+        {
+            m_lbItems.GetControl(i)->AsButton()->m_cBorder.m_cParams.m_fHilightAlpha = 1.0f;
+        }
+    }
+    else
+    {
+        m_lbDesc.SetShown(0);
+        m_btnBack.m_cText.m_cParams.SetText(
+            g_pAppManager->GetClientExoApp()->GetGUIString(1582));
+        for (int i = 0; i < NUM_EQUIPMENT_SLOTS; i++)
+        {
+            m_aSlotButtons[i].SetShown(1);
+            m_aSlotLabels[i].SetShown(1);
+        }
+        m_lblTxtbar.SetShown(1);
+        m_lblPortBord.SetShown(1);
+        m_lblPortrait.SetShown(1);
+        m_lblSlotname.SetShown(1);
+        m_btnEquip.SetShown(0);
+        for (int i = 0; i < m_lbItems.m_lItems.num; i++)
+        {
+            m_lbItems.GetControl(i)->AsButton()->m_cBorder.m_cParams.m_fHilightAlpha = 0.0f;
+        }
+    }
+}
+// PC 0x006B5B60
+void CSWGuiInGameEquip::UpdatePortraits(int bShow)
+{
+    if (!bShow)
+    {
+        m_btnChange1.SetShown(0);
+        m_btnChange2.SetShown(0);
+        m_btnCharleft.SetShown(0);
+        m_btnCharright.SetShown(0);
+        return;
+    }
+
+    if (g_pAppManager->GetServerExoApp()->GetServerInfo()->m_bPartyPicking)
+    {
+        int bFound1 = 0;
+        int bFound2 = 0;
+        char nStart = (char)((char)(int)m_btnChange1.GetUserData() == CHARACTER_UNSET
+            ? m_nCharacter + 1 : (int)m_btnChange1.GetUserData());
+        int nCharacter;
+        for (nCharacter = nStart;
+             nCharacter < CSWPartyTable::MAX_NPCS && !bFound2;
+             ++nCharacter)
+        {
+            if (nCharacter != m_nCharacter &&
+                g_pAppManager->GetServerExoApp()->GetPartyTable()
+                    ->GetIsNPCAvailable(nCharacter))
+            {
+                CSWCCreature* pCreature =
+                    g_pAppManager->GetClientExoApp()->GetCreatureByGameObjectID(
+                        g_pAppManager->GetClientExoApp()->ServerToClientObjectId(
+                            g_pAppManager->GetServerExoApp()->GetPartyTable()
+                                ->GetNPCObject(nCharacter, 0, 1)));
+                if (pCreature)
+                {
+                    if (bFound1)
+                    {
+                        CResRef* pPortrait = &pCreature->GetPortrait(1);
+                        m_btnChange2.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
+                        pPortrait = &pCreature->GetPortrait(1);
+                        m_btnChange2.m_cHilite.m_cParams.SetFillImage(*pPortrait, 0);
+                        m_btnChange2.m_nIndex = nCharacter;
+                        bFound2 = 1;
+                    }
+                    else
+                    {
+                        CResRef* pPortrait = &pCreature->GetPortrait(1);
+                        m_btnChange1.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
+                        pPortrait = &pCreature->GetPortrait(1);
+                        m_btnChange1.m_cHilite.m_cParams.SetFillImage(*pPortrait, 0);
+                        m_btnChange1.m_nIndex = nCharacter;
+                        bFound1 = 1;
+                    }
+                }
+            }
+        }
+        if (m_nCharacter != CHARACTER_PLAYER && !bFound2)
+        {
+            if (!bFound1)
+            {
+                CResRef* pPortrait = &g_pAppManager->GetClientExoApp()->GetPlayerCreature()->GetPortrait(1);
+                m_btnChange1.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
+                pPortrait = &g_pAppManager->GetClientExoApp()->GetPlayerCreature()->GetPortrait(1);
+                m_btnChange1.m_cHilite.m_cParams.SetFillImage(*pPortrait, 0);
+                m_btnChange1.m_nIndex = CHARACTER_PLAYER;
+                bFound1 = 1;
+            }
+            else
+            {
+                CResRef* pPortrait = &g_pAppManager->GetClientExoApp()->GetPlayerCreature()->GetPortrait(1);
+                m_btnChange2.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
+                pPortrait = &g_pAppManager->GetClientExoApp()->GetPlayerCreature()->GetPortrait(1);
+                m_btnChange2.m_cHilite.m_cParams.SetFillImage(*pPortrait, 0);
+                m_btnChange2.m_nIndex = CHARACTER_PLAYER;
+                bFound2 = 1;
+            }
+        }
+        if (!bFound2)
+        {
+            for (nCharacter = 0; nCharacter < nStart && !bFound2; ++nCharacter)
+            {
+                if (nCharacter != m_nCharacter &&
+                    g_pAppManager->GetServerExoApp()->GetPartyTable()
+                        ->GetIsNPCAvailable(nCharacter))
+                {
+                    CSWCCreature* pCreature =
+                        g_pAppManager->GetClientExoApp()->GetCreatureByGameObjectID(
+                            g_pAppManager->GetClientExoApp()->ServerToClientObjectId(
+                                g_pAppManager->GetServerExoApp()->GetPartyTable()
+                                    ->GetNPCObject(nCharacter, 0, 1)));
+                    if (pCreature)
+                    {
+                        if (bFound1)
+                        {
+                            CResRef* pPortrait = &pCreature->GetPortrait(1);
+                            m_btnChange2.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
+                            pPortrait = &pCreature->GetPortrait(1);
+                            m_btnChange2.m_cHilite.m_cParams.SetFillImage(*pPortrait, 0);
+                            m_btnChange2.m_nIndex = nCharacter;
+                            bFound2 = 1;
+                        }
+                        else
+                        {
+                            CResRef* pPortrait = &pCreature->GetPortrait(1);
+                            m_btnChange1.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
+                            pPortrait = &pCreature->GetPortrait(1);
+                            m_btnChange1.m_cHilite.m_cParams.SetFillImage(*pPortrait, 0);
+                            m_btnChange1.m_nIndex = nCharacter;
+                            bFound1 = 1;
+                        }
+                    }
+                }
+            }
+        }
+        m_btnChange1.SetShown(bFound1);
+        m_btnChange2.SetShown(bFound2);
+        m_btnCharleft.SetShown(g_pAppManager->GetServerExoApp()->GetPartyTable()->GetNumNPCAvailable() > 2);
+        m_btnCharright.SetShown(g_pAppManager->GetServerExoApp()->GetPartyTable()->GetNumNPCAvailable() > 2);
+    }
+    else
+    {
+        CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
+        if (pParty->GetNumCharacters() > 1)
+        {
+            m_btnChange1.SetShown(1);
+            CResRef* pPortrait = &pParty->GetCharacter(1)->GetPortrait(1);
+            m_btnChange1.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
+            pPortrait = &pParty->GetCharacter(1)->GetPortrait(1);
+            m_btnChange1.m_cHilite.m_cParams.SetFillImage(*pPortrait, 0);
+        }
+        else
+        {
+            m_btnChange1.SetShown(0);
+        }
+        if (pParty->GetNumCharacters() > 2)
+        {
+            m_btnChange2.SetShown(1);
+            CResRef* pPortrait = &pParty->GetCharacter(2)->GetPortrait(1);
+            m_btnChange2.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
+            pPortrait = &pParty->GetCharacter(2)->GetPortrait(1);
+            m_btnChange2.m_cHilite.m_cParams.SetFillImage(*pPortrait, 0);
+        }
+        else
+        {
+            m_btnChange2.SetShown(0);
+        }
+    }
+}
+// PC 0x006B7920
+void CSWGuiInGameEquip::OnItemSelected(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected)
+    {
+        if (!m_lbDesc.m_bEnabled)
+        {
+            pControl->SetActive(0);
+            return;
+        }
+
+        CSWGuiInGameItemEntry* pEntry = (CSWGuiInGameItemEntry*)pControl;
+        unsigned long oidItem = pEntry->m_oidItem;
+        unsigned long oidEquipped = m_pCreature->GetEquippedItemID(m_nSelectedSlot);
+        if (oidItem != OBJECT_INVALID)
+        {
+            unsigned long oidServer = g_pAppManager->GetServerExoApp()
+                ->ClientToServerObjectId(oidItem);
+            CSWSItem* pItem = g_pAppManager->GetServerExoApp()
+                ->GetItemByGameObjectID(oidServer);
+            if (pItem != 0)
+            {
+                CExoString sDescription;
+                sDescription = pItem->GetPropertyDescription();
+                if (sDescription != "")
+                {
+                    SetDescription(sDescription);
+                }
+                else
+                {
+                    SetDescription(g_pAppManager->GetClientExoApp()->GetGUIString(
+                        STRREF_NO_DESCRIPTION));
+                }
+            }
+            else if (oidItem == m_oidDescribed && m_pDescribedCopy != 0 &&
+                     m_pDescribedCopy->GetPropertyDescription() != "")
+            {
+                SetDescription(m_pDescribedCopy->GetPropertyDescription());
+            }
+            else
+            {
+                SetDescription(g_pAppManager->GetClientExoApp()->GetGUIString(
+                    STRREF_NO_DESCRIPTION));
+            }
+        }
+        else
+        {
+            SetDescription("");
+        }
+
+#ifndef _XBOX
+        if (m_lbItems.m_bHilightOnOver && m_pCreature->GetServerCreature() != 0)
+        {
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            switch (pEntry->m_nCanUse)
+            {
+            case CSWGuiInGameItemEntry::CAN_USE:
+            case CSWGuiInGameItemEntry::CAN_USE_EQUIPPED:
+                ShowCantEquipMessage(0, -1);
+                if (oidItem != oidEquipped)
+                {
+                    if (m_oidDescribed == 0)
+                    {
+                        m_oidDescribed = m_aoidEquippedItems[GetSlotItemIdIndex(m_nSelectedSlot)];
+                        if (m_pDescribedCopy != 0)
+                        {
+                            delete m_pDescribedCopy;
+                        }
+                        m_pDescribedCopy = CopyItem(m_oidDescribed);
+                    }
+                    if (oidItem != OBJECT_INVALID)
+                    {
+                        CSWSItem* pItem;
+                        if (m_nSelectedSlot == INVENTORY_SLOT_RIGHTHAND)
+                        {
+                            CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
+                            pItem = pServer->GetItemByGameObjectID(
+                                pServer->ClientToServerObjectId(oidItem));
+                            if (pItem != 0 &&
+                                pItem->GetBaseItem()->m_nWeaponSize == CSWBaseItem::WEAPON_SIZE_TWO_HANDED &&
+                                m_aoidEquippedItems[LEFTHAND_ITEM_INDEX] != OBJECT_INVALID)
+                            {
+                                m_oidCompared = m_aoidEquippedItems[LEFTHAND_ITEM_INDEX];
+                                if (m_pComparedCopy != 0)
+                                {
+                                    delete m_pComparedCopy;
+                                }
+                                m_pComparedCopy = CopyItem(m_oidCompared);
+                            }
+                        }
+                        m_pManager->PlayGuiSound(SWGUI_SOUND_EQUIP_ITEM);
+                        CSWCItem* pClientItem = g_pAppManager->GetClientExoApp()
+                            ->GetItemByGameObjectID(oidEquipped);
+                        if (pClientItem != 0)
+                        {
+                            pClientItem->PowerItem(0, 0, 0, 0);
+                        }
+                        if (ItemExists(oidItem))
+                        {
+                            EquipItem(oidItem, m_nSelectedSlot, 1);
+                        }
+                        else if (oidItem == m_oidDescribed && m_pDescribedCopy != 0)
+                        {
+                            EquipItem(m_pDescribedCopy, m_nSelectedSlot, 1);
+                        }
+                        if (m_nSelectedSlot == INVENTORY_SLOT_RIGHTHAND && pItem != 0 &&
+                            pItem->GetBaseItem()->m_nWeaponSize < CSWBaseItem::WEAPON_SIZE_TWO_HANDED &&
+                            m_oidCompared != 0)
+                        {
+                            if (ItemExists(m_oidCompared))
+                            {
+                                EquipItem(m_oidCompared, INVENTORY_SLOT_LEFTHAND, 0);
+                            }
+                            else if (m_pComparedCopy != 0)
+                            {
+                                EquipItem(m_pComparedCopy, INVENTORY_SLOT_LEFTHAND, 0);
+                            }
+                            m_oidCompared = 0;
+                            if (m_pComparedCopy != 0)
+                            {
+                                delete m_pComparedCopy;
+                                m_pComparedCopy = 0;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        int bUnequip = 1;
+                        m_pManager->PlayGuiSound(SWGUI_SOUND_UNEQUIP_ITEM);
+                        if (m_nSelectedSlot == INVENTORY_SLOT_RIGHTHAND &&
+                            m_aoidEquippedItems[LEFTHAND_ITEM_INDEX] != OBJECT_INVALID)
+                        {
+                            m_oidCompared = m_aoidEquippedItems[LEFTHAND_ITEM_INDEX];
+                            if (m_pComparedCopy != 0)
+                            {
+                                delete m_pComparedCopy;
+                            }
+                            m_pComparedCopy = CopyItem(m_oidCompared);
+                            UnequipItem(m_aoidEquippedItems[LEFTHAND_ITEM_INDEX], 1);
+                            bUnequip = 0;
+                        }
+                        UnequipItem(oidEquipped, bUnequip);
+                    }
+                    m_nPendingSlot = m_nSelectedSlot;
+                    m_oidPendingItem = oidItem;
+                }
+                break;
+
+            case CSWGuiInGameItemEntry::CANNOT_USE:
+            case CSWGuiInGameItemEntry::CANNOT_USE_WITH_OTHER_HAND:
+                ShowCantEquipMessage(1, pEntry->m_nCanUse == CSWGuiInGameItemEntry::CANNOT_USE
+                    ? STRREF_ITEM_PREREQUISITES : STRREF_INCOMPATIBLE_WEAPON);
+                break;
+            }
+        }
+#endif
+    }
+}
+// PC 0x006B9160
+void CSWGuiInGameEquip::OnOKPressed(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0 && m_bDescriptionShown)
+    {
+        m_oidDescribed = 0;
+        m_oidCompared = 0;
+        if (m_pDescribedCopy != 0)
+        {
+            delete m_pDescribedCopy;
+            m_pDescribedCopy = 0;
+        }
+        if (m_pComparedCopy != 0)
+        {
+            delete m_pComparedCopy;
+            m_pComparedCopy = 0;
+        }
+        CloseDescription();
+    }
+}
+// PC 0x006B7E30  Xbox 0x000ECF70
+void CSWGuiInGameEquip::CloseDescription()
+{
+    ShowDescription(0);
+    m_bDescriptionShown = 0;
+    SetActiveControl(m_pDescribedControl, 0);
+    OnEnterSlot(m_pActiveControl);
+
+    m_lblSelecttitle.m_cText.m_cParams.SetText("");
+    m_lbItems.SetEnabled(0);
+}
+// PC 0x006B9470  Xbox 0x000EC1F0
+void CSWGuiInGameEquip::OnEnterSlot(CSWGuiControl* pControl)
+{
+
+    if (m_pCreature != NULL)
+    {
+        int nSlotIndex = pControl->m_nIndex;
+        int bChanged = 0;
+        m_nSelectedSlot = SLOT_INFO[nSlotIndex].nSlot;
+        if (m_nSelectedSlot != -1)
+        {
+            CSWSCreature* pCreature = m_pCreature->GetServerCreature();
+            CItemRepository* pRepository = pCreature->GetItemRepository(1);
+            CExoArrayList<CSWGuiControl*> lItems;
+            CSWGuiInGameItemEntry* pEntry = AddItemEntryToList(0);
+            pEntry->SetItem(OBJECT_INVALID, 0, 0);
+            pEntry->SetCanUse(CSWGuiInGameItemEntry::CAN_USE);
+            pEntry->m_nClickSound = CSWGuiControl::GUISOUND_NONE;
+            lItems.Add(pEntry);
+            int nEntry = 1;
+            if (m_aoidEquippedItems[nSlotIndex] != OBJECT_INVALID)
+            {
+                pEntry = AddItemEntryToList(nEntry);
+                if (pEntry->GetItem() != m_aoidEquippedItems[nSlotIndex] || !pEntry->IsEquipped() ||
+                    pEntry->GetCanUse() != CSWGuiInGameItemEntry::CAN_USE_EQUIPPED)
+                {
+                    bChanged = 1;
+                }
+                pEntry->SetItem(m_aoidEquippedItems[nSlotIndex], 1, 0);
+                pEntry->SetCanUse(CSWGuiInGameItemEntry::CAN_USE_EQUIPPED);
+                pEntry->m_nClickSound = CSWGuiControl::GUISOUND_NONE;
+                lItems.Add(pEntry);
+                ++nEntry;
+            }
+            int bShowItems = 1;
+            if (m_nSelectedSlot == INVENTORY_SLOT_LEFTHAND &&
+                m_aoidEquippedItems[RIGHTHAND_ITEM_INDEX] != OBJECT_INVALID)
+            {
+                CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
+                CSWSItem* pItem = pServer->GetItemByGameObjectID(
+                    pServer->ClientToServerObjectId(m_aoidEquippedItems[RIGHTHAND_ITEM_INDEX]));
+                if (pItem != NULL)
+                {
+                    bShowItems = pItem->GetBaseItem()->GetWeaponSize() !=
+                                 CSWBaseItem::WEAPON_SIZE_TWO_HANDED;
+                }
+            }
+            if (bShowItems)
+            {
+                for (unsigned long nItem = 0;
+                     nItem < (unsigned long)pRepository->GetNumItems(); ++nItem)
+                {
+                    CSWSItem* pItem = pRepository->ItemListGetItem(nItem);
+                    if (pItem == NULL)
+                        continue;
+                    int nSelectedSlot = m_nSelectedSlot;
+                    if (!(nSelectedSlot & pItem->GetBaseItem()->GetEquipableSlots()))
+                        continue;
+                    unsigned char nDroidOrHuman = pItem->GetBaseItem()->m_nDroidOrHuman;
+                    if (nDroidOrHuman != CSWBaseItem::DROID_OR_HUMAN_ANY)
+                    switch (nDroidOrHuman)
+                    {
+                    case CSWBaseItem::DROID_OR_HUMAN_HUMAN:
+                    {
+                        unsigned short nRace = pCreature->GetStats()->m_nRace;
+                        if (nRace != CSWRace::CRACE_HUMAN)
+                            continue;
+                        break;
+                    }
+                    case CSWBaseItem::DROID_OR_HUMAN_DROID:
+                    {
+                        unsigned short nRace = pCreature->GetStats()->m_nRace;
+                        if (nRace == CSWRace::CRACE_DROID)
+                            break;
+                        continue;
+                    }
+                    }
+                    unsigned char nCanUse = CSWGuiInGameItemEntry::CAN_USE;
+                    unsigned long nSlot = m_nSelectedSlot;
+                    if (!pCreature->CanEquipItem(pItem, &nSlot, 0, 0, 0))
+                    {
+                        nCanUse = CSWGuiInGameItemEntry::CANNOT_USE;
+                    }
+                    int bProficient = 1;
+                    CClientOptions* pOptions =
+                        g_pAppManager->GetClientExoApp()->GetClientOptions();
+                    if (pOptions != NULL && pOptions->m_bHideUnequippable)
+                    {
+                        if (!pCreature->CheckProficiencies(pItem, m_nSelectedSlot))
+                            bProficient = 0;
+                        nSlot = m_nSelectedSlot;
+                        if (!pCreature->CanEquipItem(pItem, &nSlot, 0, 0, 0) ||
+                            !bProficient)
+                            continue;
+                    }
+                    CSWCItem* pClientItem = pItem->GetClientItem();
+                    if (pClientItem == NULL)
+                        continue;
+                    int nHandSlot = this > NULL ? m_nSelectedSlot : m_nSelectedSlot;
+                    if (nHandSlot == INVENTORY_SLOT_RIGHTHAND ||
+                        nHandSlot == INVENTORY_SLOT_LEFTHAND)
+                    {
+                        CSWCItem* pRight;
+                        CSWCItem* pLeft;
+                        if (nHandSlot == INVENTORY_SLOT_RIGHTHAND)
+                        {
+                            pRight = pClientItem;
+                            pLeft = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+                                m_pCreature->GetEquippedItemID(INVENTORY_SLOT_LEFTHAND));
+                        }
+                        else
+                        {
+                            pRight = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+                                m_pCreature->GetEquippedItemID(INVENTORY_SLOT_RIGHTHAND));
+                            pLeft = pClientItem;
+                        }
+                        if (pRight != NULL && pLeft != NULL &&
+                            (pRight != pClientItem || pItem->GetBaseItem()->m_nWeaponSize !=
+                                                       CSWBaseItem::WEAPON_SIZE_TWO_HANDED))
+                        {
+                            CSWBaseItem* pRightBase = pRight->GetBaseItem();
+                            int nWield = (unsigned char)pRightBase->m_nWeaponWield;
+                            int nLeftW = (unsigned char)pLeft->GetBaseItem()->m_nWeaponWield;
+                            if (nWield != nLeftW ||
+                                (nWield != CSWBaseItem::WEAPON_WIELD_ONE_HANDED_2 &&
+                                 nWield != CSWBaseItem::WEAPON_WIELD_ONE_HANDED_4))
+                            {
+                                nCanUse = CSWGuiInGameItemEntry::CANNOT_USE_WITH_OTHER_HAND;
+                            }
+                        }
+                    }
+                    pEntry = AddItemEntryToList(nEntry);
+                    if (pEntry->GetItem() != pClientItem->GetId() || pEntry->IsEquipped() ||
+                        pEntry->GetCanUse() != nCanUse)
+                    {
+                        bChanged = 1;
+                    }
+                    pEntry->SetItem(pClientItem->GetId(), 0, 0);
+                    pEntry->SetCanUse(nCanUse);
+                    pEntry->m_nClickSound = CSWGuiControl::GUISOUND_NONE;
+                    lItems.Add(pEntry);
+                    ++nEntry;
+                }
+            }
+            if (bChanged || lItems.num != m_lbItems.m_lItems.num)
+            {
+                m_lbItems.AddControls(lItems, 0, 1, 0);
+                m_lbItems.m_cScrollBar.SetCurValue(0);
+            }
+            unsigned long nStrRef;
+            if (m_pCreature->GetStats()->m_nRace == CSWRace::CRACE_DROID)
+                nStrRef = SLOT_INFO[nSlotIndex].nDescriptionStrRef;
+            else
+                nStrRef = SLOT_INFO[nSlotIndex].nNameStrRef;
+            m_lblSlotname.m_cText.m_cParams.SetText(
+                g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef));
+        }
+        else
+        {
+            m_lbItems.ClearItems();
+            CExoString sEmpty("");
+            m_lblSlotname.m_cText.m_cParams.SetText(sEmpty);
+        }
+    }
+}
+// PC 0x006B91C0  Xbox 0x000EDEA0
+CSWGuiInGameItemEntry* CSWGuiInGameEquip::AddItemEntryToList(int nItem)
+{
+    CSWGuiInGameItemEntry* pItemEntry;
+    if (nItem == m_lItemEntries.num)
+    {
+        pItemEntry = new CSWGuiInGameItemEntry;
+        m_lItemEntries.Add(pItemEntry);
+        CSWGuiButton* pProto = (CSWGuiButton*)m_lbItems.m_pProtoItem;
+        pItemEntry->Initialize(pProto->m_cText, pProto->m_cBorder,
+                               pProto->m_cHilite,
+                               m_lbItems.m_cItemExtent.m_nWidth -
+                                   2 * m_lbItems.m_nPadding,
+                               1);
+        pItemEntry->AddEvent(0, this,
+                            (CSWGuiHandler)&CSWGuiInGameEquip::OnItemSelected);
+        pItemEntry->AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                            (CSWGuiHandler)&CSWGuiInGameEquip::OnOKPressed);
+        pItemEntry->m_cBorder.m_cParams.m_fHilightAlpha = 0.0f;
+        return pItemEntry;
+    }
+
+    pItemEntry = m_lItemEntries[nItem];
+    pItemEntry->m_cBorder.m_cParams.m_fHilightAlpha = 0.0f;
+    return pItemEntry;
+}
+// PC 0x006B92F0  Xbox 0x000EE040
+void CSWGuiContainer::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case GUIEVENT_ACCEPT:
+            if ((m_nGiveModeFlags & GIVE_MODE_ACTIVE) == 0)
+            {
+                m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            }
+
+        case GUIEVENT_ACTIVATE:
+            if ((m_nGiveModeFlags & GIVE_MODE_ACTIVE) != 0)
+            {
+                int bTakeAll = 0;
+                if (m_nContainerType == CONTAINER_TAKE_ALL)
+                {
+                    bTakeAll = 1;
+                }
+                m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+                g_pAppManager->GetClientExoApp()->GetSWCMessage()->
+                    SendPlayerToServerGuiContainer_Close(m_oidContainer, bTakeAll);
+                g_pAppManager->m_pClientExoApp->GetInGameGui()->HideContainerGui();
+            }
+            break;
+        case GUIEVENT_CANCEL:
+        case GUIEVENT_CANCEL_ALTERNATE:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            g_pAppManager->GetClientExoApp()->GetSWCMessage()->
+                SendPlayerToServerGuiContainer_Close(m_oidContainer, 0);
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->HideContainerGui();
+            break;
+        case GUIEVENT_TOGGLE_MODE:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            if ((m_nGiveModeFlags & GIVE_MODE_ACTIVE) != 0)
+            {
+                SetupGiveMode(0);
+            }
+            else
+            {
+                SetContainer(m_oidContainer, m_nContainerType);
+            }
+            break;
+        }
+    }
+    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
+// PC 0x006B9970  Xbox 0x000EC730
+void CSWGuiInGameEquip::UpdateInventory()
+{
+
+    CSWSItem* pItem = NULL;
+    CSWCItem* pClientItem = NULL;
+    CResRef resIcon;
+    int bDoubleWeapon = 0;
+    int bUnarmed = 0;
+    unsigned long oidItem;
+
+    m_aSlotLabels[LEFTHAND_ITEM_INDEX].m_cBorder.m_cParams.SetFillImage(
+        GetIcon(LEFTHAND_ITEM_INDEX), 0);
+    m_aSlotLabels[LEFTHAND_ITEM_INDEX].m_cBorder.m_cParams.m_fHilightAlpha = 1.0f;
+
+    for (int nSlot = 0; nSlot < NUM_EQUIPMENT_SLOTS; ++nSlot)
+    {
+        int bChanged = 0;
+        if (m_pCreature != NULL)
+        {
+            oidItem = m_pCreature->GetEquippedItemID(SLOT_INFO[nSlot].nSlot);
+            pClientItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(oidItem);
+            if (pClientItem != NULL)
+                pItem = pClientItem->GetServerItem();
+        }
+
+        if (pClientItem != NULL && pItem != NULL)
+        {
+            m_aoidEquippedItems[nSlot] = oidItem;
+            resIcon = pItem->GetIcon();
+            int bDouble = 0;
+            if (pItem->GetBaseItem()->m_nWeaponWield == CSWBaseItem::WIELD_DOUBLE_WEAPON)
+                bDouble = 1;
+            CSWGuiLabel* pDamage = NULL;
+            CSWGuiLabel* pToHit = NULL;
+            int bOffHand = 0;
+            switch (nSlot)
+            {
+            case LEFTHAND_ITEM_INDEX:
+                pDamage = &m_lblAtkl;
+                pToHit = &m_lblTohitl;
+                bOffHand = 1;
+            case RIGHTHAND_ITEM_INDEX:
+                if (bDouble && !bDoubleWeapon)
+                {
+                    pDamage = &m_lblAtkl;
+                    pToHit = &m_lblTohitl;
+                    bOffHand = 1;
+                    --nSlot;
+                    bDoubleWeapon = 1;
+                }
+                if (pDamage == NULL)
+                {
+                    pDamage = &m_lblAtkr;
+                    pToHit = &m_lblTohitr;
+                    bOffHand = 0;
+                }
+                {
+                    CSWSCreature* pCreature = m_pCreature->GetServerCreature();
+                    CExoString sDamage;
+                    CExoString sToHit;
+                    int nMinimum = 0;
+                    int nMaximum = 0;
+                    int bDamageBonus = 0;
+                    pCreature->GetStats()->GetTotalDamageRange(
+                        pCreature, pItem, nMinimum, nMaximum, bOffHand, 1);
+                    if (nMinimum)
+                        sDamage.Format("%d-%d", nMinimum, nMaximum);
+                    int nBaseMinimum = 0;
+                    int nBaseMaximum = 0;
+                    pCreature->GetStats()->GetTotalDamageRange(
+                        pCreature, pItem, nBaseMinimum, nBaseMaximum, bOffHand, 0);
+                    if (nMinimum > nBaseMinimum || nMaximum > nBaseMaximum)
+                        bDamageBonus = 1;
+                    if (nSlot == RIGHTHAND_ITEM_INDEX &&
+                        (pItem->GetBaseItem()->m_nWeaponSize == CSWBaseItem::WEAPON_SIZE_TWO_HANDED ||
+                         pItem->GetBaseItem()->m_nWeaponWield == CSWBaseItem::WIELD_DOUBLE_WEAPON))
+                    {
+                        m_aSlotLabels[LEFTHAND_ITEM_INDEX].m_cBorder.m_cParams.SetFillImage(resIcon, 0);
+                        m_aSlotLabels[LEFTHAND_ITEM_INDEX].m_cBorder.m_cParams.m_fHilightAlpha = 0.25f;
+                    }
+                    pDamage->m_cText.m_cParams.SetText(sDamage);
+                    if (bDamageBonus)
+                        pDamage->m_cText.m_cParams.SetColor(CGuiInGame::COLOR_GREEN);
+                    else
+                        pDamage->m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+                    int nAttackBonus;
+                    if (pItem->GetBaseItem()->m_nRangedWeapon > 0)
+                        nAttackBonus = pCreature->GetStats()->GetRangedAttackBonus(bOffHand, 1, 0);
+                    else
+                        nAttackBonus = pCreature->GetStats()->GetMeleeAttackBonus(bOffHand, 1, 0, bDouble);
+                    if (nAttackBonus > 0)
+                        sToHit.Format("+%d", nAttackBonus);
+                    else
+                        sToHit.Format("%d", nAttackBonus);
+                    pToHit->m_cText.m_cParams.SetText(sToHit);
+                    if (nAttackBonus > pCreature->GetStats()->GetBaseAttackBonus())
+                        pToHit->m_cText.m_cParams.SetColor(CGuiInGame::COLOR_GREEN);
+                    else
+                        pToHit->m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+                }
+                break;
+            }
+            if (!bDouble || nSlot == RIGHTHAND_ITEM_INDEX)
+                m_aSlotLabels[nSlot].m_cBorder.m_cParams.SetFillImage(resIcon, 0);
+            bChanged = 1;
+        }
+        else
+        {
+            switch (nSlot)
+            {
+            case RIGHTHAND_ITEM_INDEX:
+            {
+                bChanged = 1;
+                bUnarmed = 1;
+                CSWSCreature* pCreature = m_pCreature->GetServerCreature();
+                if (pCreature != NULL)
+                {
+                    int nMinimum = 0;
+                    int nMaximum = 0;
+                    CExoString sDamage;
+                    pCreature->GetStats()->GetTotalDamageRange(
+                        pCreature, NULL, nMinimum, nMaximum, 0, 1);
+                    if (nMinimum)
+                        sDamage.Format("%d-%d", nMinimum, nMaximum);
+                    m_lblAtkr.m_cText.m_cParams.SetText(sDamage);
+                    CExoString sToHit;
+                    int nAttackBonus = pCreature->GetStats()->GetMeleeAttackBonus(0, 1, 0, 0);
+                    if (nAttackBonus > 0)
+                        sToHit.Format("+%d", nAttackBonus);
+                    else
+                        sToHit.Format("%d", nAttackBonus);
+                    m_lblTohitr.m_cText.m_cParams.SetText(sToHit);
+                }
+                break;
+            }
+            }
+            if (m_aoidEquippedItems[nSlot] != OBJECT_INVALID || (!bDoubleWeapon && !bUnarmed))
+            {
+                m_aoidEquippedItems[nSlot] = OBJECT_INVALID;
+                switch (nSlot)
+                {
+                case LEFTHAND_ITEM_INDEX:
+                    m_lblAtkl.m_cText.m_cParams.SetText("");
+                    m_lblAtkl.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+                    m_lblTohitl.m_cText.m_cParams.SetText("");
+                    m_lblTohitl.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+                    break;
+                case RIGHTHAND_ITEM_INDEX:
+                    m_lblAtkr.m_cText.m_cParams.SetText("");
+                    m_lblAtkr.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+                    m_lblTohitr.m_cText.m_cParams.SetText("");
+                    m_lblTohitr.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+                    break;
+                }
+                m_aSlotLabels[nSlot].m_cBorder.m_cParams.SetFillImage(GetIcon(nSlot), 0);
+                bChanged = 1;
+            }
+        }
+        if (bChanged && m_pActiveControl == &m_aSlotButtons[nSlot])
+            OnEnterSlot(m_pActiveControl);
+    }
+
+    CExoString sDefense(m_pCreature->GetServerCreature()->GetArmorClass());
+    m_lblDef.m_cText.m_cParams.SetText(sDefense);
+    CExoString sVitality;
+    sVitality.Format("%d/%d", m_pCreature->GetServerCreature()->GetCurrentHitPoints(0),
+                     m_pCreature->GetServerCreature()->GetMaxHitPoints(1));
+    m_lblVitality.m_cText.m_cParams.SetText(sVitality);
+    if (m_lblVitality.m_cText.GetIdealHeight() > m_lblVitality.m_cText.GetFontHeight())
+    {
+        sVitality.Format("%d/ %d", m_pCreature->GetStats()->GetCurrentHitPoints(),
+                         m_pCreature->GetStats()->GetMaxHitPoints());
+        m_lblVitality.m_cText.m_cParams.SetText(sVitality);
+    }
+
+    if (m_nPendingSlot)
+    {
+        unsigned long oidPending = m_oidPendingItem;
+        int bPending = oidPending != m_pCreature->GetEquippedItemID(m_nPendingSlot);
+        if (bPending)
+        {
+            CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
+            CSWSItem* pPending = pServer->GetItemByGameObjectID(pServer->ClientToServerObjectId(oidPending));
+            pServer = g_pAppManager->GetServerExoApp();
+            CSWSItem* pEquipped = pServer->GetItemByGameObjectID(pServer->ClientToServerObjectId(
+                m_pCreature->GetEquippedItemID(m_nPendingSlot)));
+            if (pEquipped != NULL)
+            {
+                if (pPending != NULL)
+                    bPending = !pEquipped->CompareItem(pPending);
+                else
+                    bPending = 0;
+            }
+            else if (pPending == NULL)
+                bPending = 0;
+        }
+        if (bPending)
+        {
+            CExoString sPending("--");
+            switch (m_nPendingSlot)
+            {
+            case INVENTORY_SLOT_RIGHTHAND:
+                m_lblAtkr.m_cText.m_cParams.SetText(sPending);
+                m_lblTohitr.m_cText.m_cParams.SetText(sPending);
+                if (m_lblAtkl.m_cText.m_cParams.m_sText != "")
+                {
+                    m_lblAtkl.m_cText.m_cParams.SetText(sPending);
+                    m_lblTohitl.m_cText.m_cParams.SetText(sPending);
+                }
+                break;
+            case INVENTORY_SLOT_ARMOUR:
+                m_lblDef.m_cText.m_cParams.SetText(sPending);
+                break;
+            case INVENTORY_SLOT_LEFTHAND:
+                m_lblTohitr.m_cText.m_cParams.SetText(sPending);
+                m_lblAtkl.m_cText.m_cParams.SetText(sPending);
+                m_lblTohitl.m_cText.m_cParams.SetText(sPending);
+                break;
+            case INVENTORY_SLOT_HEAD:
+            case INVENTORY_SLOT_HANDS:
+            case INVENTORY_SLOT_RIGHTRING:
+            case INVENTORY_SLOT_NECK:
+            case INVENTORY_SLOT_BELT:
+            case INVENTORY_SLOT_ARMS:
+                m_lblAtkr.m_cText.m_cParams.SetText(sPending);
+                m_lblTohitr.m_cText.m_cParams.SetText(sPending);
+                if (m_lblAtkl.m_cText.m_cParams.m_sText != "")
+                {
+                    m_lblAtkl.m_cText.m_cParams.SetText(sPending);
+                    m_lblTohitl.m_cText.m_cParams.SetText(sPending);
+                }
+                m_lblDef.m_cText.m_cParams.SetText(sPending);
+                m_lblVitality.m_cText.m_cParams.SetText(sPending);
+                break;
+            }
+        }
+        else
+            m_nPendingSlot = 0;
+    }
+}
+// PC 0x006BA3F0
+void CSWGuiInGameEquip::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case GUIEVENT_CANCEL:
+        case GUIEVENT_CANCEL_ALTERNATE:
+        case GUIEVENT_EXIT:
+            if (m_bDescriptionShown)
+            {
+                m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+                if (m_oidDescribed != 0)
+                {
+                    unsigned long oidEquipped =
+                        m_aoidEquippedItems[GetSlotItemIdIndex(m_nSelectedSlot)];
+                    if (m_oidDescribed != oidEquipped)
+                    {
+                        if (m_oidDescribed != OBJECT_INVALID)
+                        {
+                            if (ItemExists(m_oidDescribed))
+                            {
+                                EquipItem(m_oidDescribed, m_nSelectedSlot, 1);
+                            }
+                            else if (m_pDescribedCopy != 0)
+                            {
+                                EquipItem(m_pDescribedCopy, m_nSelectedSlot, 1);
+                            }
+                        }
+                        else
+                        {
+                            UnequipItem(oidEquipped, 1);
+                        }
+                        if (m_nSelectedSlot == INVENTORY_SLOT_RIGHTHAND &&
+                            m_oidCompared != 0)
+                        {
+                            if (ItemExists(m_oidCompared))
+                            {
+                                EquipItem(m_oidCompared, INVENTORY_SLOT_LEFTHAND, 0);
+                            }
+                            else if (m_pComparedCopy != 0)
+                            {
+                                EquipItem(m_pComparedCopy, INVENTORY_SLOT_LEFTHAND, 0);
+                            }
+                        }
+                    }
+                }
+                m_oidDescribed = 0;
+                if (m_pDescribedCopy != 0)
+                {
+                    delete m_pDescribedCopy;
+                    m_pDescribedCopy = 0;
+                }
+                m_oidCompared = 0;
+                if (m_pComparedCopy != 0)
+                {
+                    delete m_pComparedCopy;
+                    m_pComparedCopy = 0;
+                }
+                CloseDescription();
+            }
+            else
+            {
+#ifdef _XBOX
+                if (g_pAppManager->m_pClientExoApp->GetInGameGui()->HideSWInGameGui())
+#else
+                if (g_pAppManager->m_pClientExoApp->GetInGameGui()->HideSWInGameGui(0))
+#endif
+                {
+#ifdef _XBOX
+                    g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GAME);
+#else
+                    g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GAME, 1);
+#endif
+                }
+            }
+            break;
+
+        case GUIEVENT_ACCEPT:
+            if (!m_bDescriptionShown)
+            {
+#ifdef _XBOX
+                if (g_pAppManager->m_pClientExoApp->GetInGameGui()->HideSWInGameGui())
+#else
+                if (g_pAppManager->m_pClientExoApp->GetInGameGui()->HideSWInGameGui(0))
+#endif
+                {
+#ifdef _XBOX
+                    g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GAME);
+#else
+                    g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GAME, 1);
+#endif
+                }
+            }
+            break;
+
+        case GUIEVENT_NEXT_CHARACTER:
+            if (!m_bDescriptionShown)
+            {
+                m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
+                CSWServerInfo* pInfo =
+                    (CSWServerInfo*)g_pAppManager->m_pServerExoApp->GetServerInfo();
+                if (pInfo->m_bPartyPicking)
+                {
+                    int bFound = 0;
+                    for (int nCharacter = m_nCharacter + 1;
+                         nCharacter < CSWPartyTable::MAX_NPCS && !bFound;
+                         ++nCharacter)
+                    {
+                        if (g_pAppManager->m_pServerExoApp->GetPartyTable()
+                                ->GetIsNPCAvailable(nCharacter))
+                        {
+                            CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
+                            unsigned long oidNPC =
+                                g_pAppManager->m_pServerExoApp->GetPartyTable()
+                                    ->GetNPCObject(nCharacter, 0, 1);
+                            CSWCCreature* pCreature = pClient->GetCreatureByGameObjectID(
+                                pClient->ServerToClientObjectId(oidNPC));
+                            if (pCreature != 0)
+                            {
+                                SetCharacter(pCreature);
+                                m_nCharacter = nCharacter;
+                                bFound = 1;
+                            }
+                        }
+                    }
+                    if (!bFound)
+                    {
+                        m_nCharacter = -1;
+                        SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()
+                                         ->GetPlayerCharacter());
+                    }
+                }
+                else
+                {
+                    g_pAppManager->m_pClientExoApp
+                        ->ChangeCharacterToNextLivingPartyMember(0, 0, 1);
+                    SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()
+                                     ->GetPlayerCharacter());
+                }
+                for (int nSlot = 0; nSlot < NUM_EQUIPMENT_SLOTS; ++nSlot)
+                {
+                    if (SLOT_INFO[nSlot].nSlot == m_nSelectedSlot)
+                    {
+                        SetActiveControl(&m_aSlotButtons[nSlot], 0);
+                        break;
+                    }
+                }
+                OnEnterSlot(m_pActiveControl);
+                UpdatePortraits(1);
+            }
+
+        case GUIEVENT_SCROLL_DOWN:
+            if (m_bDescriptionShown)
+            {
+                m_lbDesc.HandleInputEvent(GUIEVENT_DOWN, 1);
+            }
+            break;
+
+        case GUIEVENT_SCROLL_UP:
+            if (m_bDescriptionShown)
+            {
+                m_lbDesc.HandleInputEvent(GUIEVENT_UP, 1);
+            }
+            break;
+        }
+    }
+    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
+// PC 0x006BA820
+void CSWGuiInGameEquip::OnChangeCharacter(CSWGuiControl* pControl)
+{
+    int nChange = 1;
+    if (pControl->m_bSelected != 0)
+    {
+        CSWServerInfo* pInfo =
+            (CSWServerInfo*)g_pAppManager->m_pServerExoApp->GetServerInfo();
+        if (pInfo->m_bPartyPicking)
+        {
+            char nCharacter = pControl->m_nIndex;
+            CSWCCreature* pCreature;
+            if (nCharacter == -1)
+            {
+                pCreature = g_pAppManager->m_pClientExoApp->GetPlayerCreature();
+            }
+            else
+            {
+                CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
+                unsigned long oidNPC =
+                    g_pAppManager->m_pServerExoApp->GetPartyTable()
+                        ->GetNPCObject(nCharacter, 0, 1);
+                pCreature = pClient->GetCreatureByGameObjectID(
+                    pClient->ServerToClientObjectId(oidNPC));
+            }
+            if (pCreature)
+            {
+                if (m_btnCharright.m_bEnabled)
+                {
+                    if (pControl == &m_btnChange1)
+                    {
+                        m_btnChange1.m_nIndex = m_btnChange2.m_nIndex;
+                    }
+                }
+                else
+                {
+                    m_btnChange1.m_nIndex = -2;
+                }
+                m_nCharacter = nCharacter;
+                SetCharacter(pCreature);
+            }
+        }
+        else
+        {
+            if (pControl == &m_btnChange2)
+            {
+                nChange = 2;
+            }
+            if (!g_pAppManager->m_pClientExoApp
+                    ->ChangeCharacterToNextLivingPartyMember(0, 0, nChange))
+            {
+                return;
+            }
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
+            CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
+            CSWCCreature* pCreature = pParty->GetPlayerCharacter();
+            SetCharacter(pCreature);
+        }
+        for (int nSlot = 0; nSlot < NUM_EQUIPMENT_SLOTS; ++nSlot)
+        {
+            if (SLOT_INFO[nSlot].nSlot == m_nSelectedSlot)
+            {
+                SetActiveControl(&m_aSlotButtons[nSlot], 0);
+                break;
+            }
+        }
+        OnEnterSlot(m_pActiveControl);
+        UpdatePortraits(1);
+    }
+}
+
+static inline CServerExoApp* GetServerExoApp()
+{
+    return g_pAppManager->m_pServerExoApp;
+}
+
+static inline void SwguiingameequipTrace2()
+{
+    SwguiingameequipTrace1();
+}
+
+static inline void SwguiingameequipTrace1()
+{
+}

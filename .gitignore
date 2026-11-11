@@ -1,0 +1,12 @@
+build/
+
+# Third-party SDKs are not distributed: stage them locally (see each README.md / MANIFEST.txt)
+3rdparty/**
+!3rdparty/**/
+!3rdparty/**/README.md
+!3rdparty/**/MANIFEST.txt
+!3rdparty/NvTriStrip/CMakeLists.txt
+!3rdparty/NvTriStrip/xbox/windows.h
+
+# Icons and cursors extracted from the original executable
+dev/game/swmain/res/

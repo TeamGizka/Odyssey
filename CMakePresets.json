@@ -1,0 +1,61 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "vc70",
+      "displayName": "PC, Visual C++ 7.0",
+      "generator": "NMake Makefiles",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "toolchainFile": "${sourceDir}/cmake/toolchain-vc70.cmake",
+      "environment": {
+        "VS2002_PF": "$penv{VS2002_ROOT}/Program Files/Microsoft Visual Studio .NET",
+        "PATH": "$env{VS2002_PF}/Vc7/bin;$env{VS2002_PF}/Common7/IDE;$penv{VS2002_ROOT}/Win/System;$penv{PATH}",
+        "INCLUDE": "$env{VS2002_PF}/Vc7/include;$env{VS2002_PF}/Vc7/PlatformSDK/common/Include/prerelease;$env{VS2002_PF}/Vc7/PlatformSDK/common/Include",
+        "LIB": "$env{VS2002_PF}/Vc7/lib;$env{VS2002_PF}/Vc7/PlatformSDK/common/lib/prerelease;$env{VS2002_PF}/Vc7/PlatformSDK/common/lib"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "tier-b",
+      "inherits": "vc70",
+      "displayName": "PC, byte-identical swkotor.exe (filler block on)",
+      "cacheVariables": {
+        "KOTOR_KEEPER_FILL": "ON"
+      }
+    },
+    {
+      "name": "tier-a",
+      "inherits": "vc70",
+      "displayName": "PC, source tree only (filler block off)",
+      "cacheVariables": {
+        "KOTOR_KEEPER_FILL": "OFF"
+      }
+    },
+    {
+      "name": "xbox",
+      "displayName": "Xbox, XDK Visual C++ 7.1",
+      "generator": "NMake Makefiles",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "toolchainFile": "${sourceDir}/cmake/toolchain-xdk.cmake",
+      "environment": {
+        "VS2002_PF": "$penv{VS2002_ROOT}/Program Files/Microsoft Visual Studio .NET",
+        "PATH": "$penv{XDK_ROOT}/xbox/bin/vc71;$penv{XDK_ROOT}/xbox/bin;$env{VS2002_PF}/Vc7/bin;$env{VS2002_PF}/Common7/IDE;$penv{PATH}",
+        "INCLUDE": "",
+        "LIB": "$penv{XDK_ROOT}/xbox/lib"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    { "name": "vc70", "configurePreset": "vc70" },
+    { "name": "tier-b", "configurePreset": "tier-b" },
+    { "name": "tier-a", "configurePreset": "tier-a" },
+    { "name": "xbox", "configurePreset": "xbox" }
+  ]
+}

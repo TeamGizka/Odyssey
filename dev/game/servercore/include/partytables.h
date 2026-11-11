@@ -1,0 +1,120 @@
+#ifndef __PARTYTABLES_H__
+#define __PARTYTABLES_H__
+
+#include "exobase.h"
+#include "math3d.h"
+
+class CItemRepository;
+class CSWSJournal;
+class CSWSCreature;
+class CResGFF;
+class CResStruct;
+
+class CSWPartyTable
+{
+public:
+
+    static const int MAX_NPCS = 9;
+
+    enum { GALAXY_MAP_NUM_POINTS = 16, GALAXY_MAP_SELECTABLE_SHIFT = 16 };
+
+    static const int PARTY_XP_ROW = 9;
+
+    CSWPartyTable();
+    ~CSWPartyTable();
+
+    void ClearTable();
+    CItemRepository* GetPartyItems();
+    CSWSJournal* GetPartyJournal();
+    void ClearInventory();
+    int GetIsNPCAvailable(int nNPC);
+    int GetActiveNPC();
+    unsigned char GetNumNPCAvailable();
+    int SetNPCObject(int nNPC, unsigned long oidNPC);
+    int GetIsMember(int nNPC);
+    int GetIsMember(unsigned long oidObject);
+    int GetIsAvailable(unsigned long oidObject);
+    unsigned char GetNPCSelectability(int nNPC);
+    int SetNPCSelectability(int nNPC, unsigned char nSelectability);
+    int GetNPCID(unsigned long oidObject);
+    int AddGameInProgress();
+    void RemoveGameInProgress();
+    int ClearMembers();
+    int ClearMember(int nNPC);
+    int GetIsLeader(unsigned long oidObject);
+    void SetLeader(unsigned long oidObject);
+    void SetPartyFollowState(int nFollowState);
+    int SetReturnStrref(int nReturnFlag, unsigned long nStrref,
+                        unsigned long nTitleStrref);
+    int SetPlanetSelectable(unsigned long nPlanet, int bSelectable);
+    int GetPlanetSelectable(unsigned long nPlanet);
+    int SetPlanetAvailable(unsigned long nPlanet, int bAvailable);
+    int GetPlanetAvailable(unsigned long nPlanet);
+    int SetSelectedPlanet(int nPlanet);
+    void AutoLevelUpNPCs();
+    int KillNPCObject(int nNPC, int bFade);
+    int RemoveMember(int nNPC);
+    int AddMember(int nNPC, unsigned long oidMember);
+    void TransferInventory(CSWSCreature* pCreature);
+    int AddNPC(int nNPC, CSWSCreature* pCreature);
+    int AddNPC(int nNPC, const CExoString& sTemplate);
+    unsigned long GetNPCObject(int nNPC, int bLoad, int bResurrect);
+    void DistributeExperience(int nExperience, int bFeedback);
+    int SpawnNPC(int nNPC, int bUseSpawnPoint, const Vector& vPosition,
+                 const Vector& vOrientation, int bFlag);
+    void CreateParty();
+    void PositionParty();
+    int LoadTableInfo();
+    void GivePlotXP(const CExoString& sPlotID, int nPercent);
+    void GivePlotXP(unsigned long nPlotIndex, int nPercent);
+    int SwitchPlayerCharacter(int nNPC);
+    int GetTotalPlayedSeconds();
+    void UnstealthParty(int nFlag);
+    static int ResetCurrentSessionStartTime();
+    int RemoveNPC(int nNPC);
+    void SetSoloMode(int bSoloMode, int bUnstealth);
+    void UpdateMembers(int bClearActions);
+    void SaveMember(int nNPC, int bClearActions);
+    void UpdateInventory(int bClearItems);
+    void SaveTableInfo(const CExoString& sAlias);
+    void Save(const CExoString& sAlias, int bSaveMembers);
+    CExoString GetFilename(int nNPC);
+    void SaveJournal(CResGFF* pRes, CResStruct* pStruct);
+    void LoadJournal(CResGFF* pRes, CResStruct* pStruct);
+
+    int m_nNumMembers;
+    int m_anMembers[2];
+    unsigned long m_aoidNPC[MAX_NPCS];
+    int m_abNPCAvailable[MAX_NPCS];
+    unsigned char m_anNPCSelectability[MAX_NPCS];
+    int m_abPlanetAvailable[GALAXY_MAP_NUM_POINTS];
+    int m_abPlanetSelectable[GALAXY_MAP_NUM_POINTS];
+    int m_nSelectedPlanet;
+    int m_nAIState;
+    int m_nFollowState;
+    int m_nLeader;
+    int m_nControlledNPC;
+    int m_nGameInProgress;
+    int m_nXPPool;
+    unsigned long m_nGold;
+    int m_nReturnFlag;
+    unsigned long m_nReturnStrref;
+    unsigned long m_nReturnTitleStrref;
+    int m_bSkipPartyPositioning;
+    int m_bInventoryDirty;
+    unsigned long m_nPlayedSeconds;
+    CItemRepository* m_pPartyItems;
+    CSWSJournal* m_pPartyJournal;
+
+    enum { PAZAAK_CARD_COUNT = 18 };
+    int m_anPazaakCards[PAZAAK_CARD_COUNT];
+
+    enum { PAZAAK_SIDE_DECK_SIZE = 10 };
+    int m_anPazaakSideDeck[PAZAAK_SIDE_DECK_SIZE];
+    int m_bSoloMode;
+#ifndef _XBOX
+    int m_bCheatUsed;
+#endif
+};
+
+#endif

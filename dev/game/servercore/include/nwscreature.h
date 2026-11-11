@@ -1,0 +1,167 @@
+#ifndef __NWSCREATURE_H__
+#define __NWSCREATURE_H__
+
+extern int RenderDEV;
+extern int ShowPath;
+extern int RenderQATriggers;
+extern int HurtPlayers;
+extern int ZeroForce;
+extern int RenderHP;
+extern int g_bEnableSavingThrowDebugging;
+extern int g_bEnableMovementSpeedDebugging;
+
+#define NWSCREATURE_REGEN_PERCENT_SCALE 0.01
+#define NWSCREATURE_REGEN_MINIMUM 0.0001f
+#define NWSCREATURE_SECONDS_PER_MILLISECOND 0.001f
+#define NWSCREATURE_PARTY_SAFE_LOCATION_RADIUS 5.0f
+enum CreatureAIUpdateTiming
+{
+    CREATURE_ATTACK_MOVEMENT_INTERVAL = 3000,
+    CREATURE_INJURED_ANIMATION_INTERVAL = 1500,
+    CREATURE_PAUSED_QUEUE_INTERVAL = 300,
+    CREATURE_MOVEMENT_DEBUG_INTERVAL = 8000,
+    CREATURE_SKILL_COOLDOWN_COUNT = 8
+};
+
+enum CreaturePerceptionTiming
+{
+    CREATURE_SCRIPT_HEARTBEAT = 0,
+    CREATURE_HEARTBEAT_BASE_INTERVAL = 3000, CREATURE_HEARTBEAT_RANDOM_INTERVAL = 1200,
+    CREATURE_VISIBILITY_BASE_INTERVAL = 300, CREATURE_VISIBILITY_RANDOM_INTERVAL = 400,
+    CREATURE_IDLE_PERCEPTION_INTERVAL = 4000, CREATURE_ACTIVE_PERCEPTION_INTERVAL = 200,
+    CREATURE_PERCEPTION_UPDATE_LIMIT = 150, CREATURE_PERCEPTION_RANDOM_COUNT = 50,
+    CREATURE_HEARTBEAT_COUNT_SHIFT = 6,
+    CREATURE_STATE_SCRIPT_CONFUSION = 3, CREATURE_STATE_SCRIPT_FEAR = 2,
+    CREATURE_STATE_SCRIPT_OTHER = 1, CREATURE_STATE_SCRIPT_STATE_11 = 11,
+    CREATURE_MINE_CHECK_FAST_INTERVAL = 100, CREATURE_MINE_CHECK_SLOW_INTERVAL = 3000,
+    CREATURE_MINE_DETECT_DIE = 10, CREATURE_MINE_DETECT_BONUS = 10,
+    CREATURE_LAST_EVENT_MINE_CHECK = 4
+};
+#define NWSCREATURE_MINE_CHECK_NEAR_DISTANCE_SQUARED 9.0f
+#define NWSCREATURE_MINE_CHECK_FAR_DISTANCE_SQUARED 400.0f
+
+class CResGFF;
+class CResStruct;
+#include "exobase.h"
+#include "math3d.h"
+#include <math.h>
+
+inline int Log_Base2(int nValue)
+{
+    static int nRetVal;
+    roundToInt(nRetVal, (float)log10((double)nValue) * 3.321928f);
+    return nRetVal;
+}
+
+enum CreatureInteractionTiming
+{
+
+    CREATURE_ANIMATION_ACTIVATE_ITEM = 11001,
+    CREATURE_ANIMATION_ACTIVATE_ITEM_END = 11002,
+    ANIMATION_STATE_MOVING = 0, ANIMATION_STATE_MOVE_COMPLETE = 1,
+    ANIMATION_STATE_MOVE_UNINITIALIZED = -1,
+    MOVE_RUN_MASK = 1, MOVE_TIMEOUT_SHIFT = 2,
+    ACTIVITY_ACTION_MOVEMENT = 8,
+    SKILL_CHECK_DIE_SIDES = 20,
+    DISARM_MINIMUM_DC = 1, DISARM_MAXIMUM_DC = 35,
+    DISARM_CRITICAL_FAILURE_MARGIN = 10,
+    DISARM_TIMING_DURATION = 4500, DISARM_TIMING_TYPE = 3,
+    DISARM_FADE_OUT_TIME = 2, DISARM_FAILED_SOUND = 24,
+    EXAMINE_MINE_DURATION = 4500, TIMING_BAR_EXAMINE_MINE = 4,
+    EXAMINE_MINE_DC_ADJUSTMENT = 7,
+    FLAG_MINE_DURATION = 4500, FLAG_MINE_DC_REDUCTION = 5,
+    ITEM_CAST_AI_DELAY = 3000, ITEM_CAST_USE_TIME = 750,
+    ITEM_CAST_ROUND_TIME = 1500, ITEM_CAST_EQUIPPED_USE_TIME = 600,
+    ITEM_CAST_EQUIPPED_ROUND_TIME = 1000,
+    ITEM_CAST_GRENADE_THROW_TIME = 800, ITEM_CAST_GRENADE_TOSS_TIME = 700,
+    ITEM_CAST_ANIMATION_MARGIN = 50, ITEM_CAST_EQUIPPED_FALLBACK_TIME = 300,
+    MINE_RECOVERY_GUI_TYPE = 2, MINE_RECOVERY_TIME = 4500,
+    MINE_RECOVERY_FADE_TIME = 2, MINE_RECOVERY_DC_INCREASE = 10,
+    MINE_TRIGGER_FAILURE_MARGIN = 5, MINE_RECOVERY_FEEDBACK_FAILURE_MARGIN = 10,
+    SET_MINE_TIMING_DURATION = 2000, GUI_TIMING_SET_MINE = 5,
+    SET_MINE_SYNERGY_RANK = 5, SET_MINE_SYNERGY_BONUS = 2,
+    SET_MINE_CRITICAL_FAILURE_MARGIN = 10,
+    VOICE_SET_MINE_SUCCESS = 19, VOICE_SET_MINE_FAILURE = 24
+};
+
+#define NWSCREATURE_DROP_ITEM_DISTANCE_SQUARED 1.21f
+#define NWSCREATURE_DROP_ITEM_RUN_DISTANCE_SQUARED 4.0f
+#define NWSCREATURE_MOVE_POINT_TOLERANCE_SQUARED 0.01f
+
+#define NWSCREATURE_MOVE_DISAPPEAR_TOLERANCE_SQUARED 4.0f
+
+#define NWSCREATURE_DRIVE_RADIANS_PER_DEGREE 0.017453292519943295
+#define NWSCREATURE_MOVE_FORMATION_TOLERANCE_SQUARED 0.001f
+#define NWSCREATURE_MOVE_USE_POINT_TOLERANCE 0.001f
+#define NWSCREATURE_MOVE_TRIGGER_OFFSET 0.5f
+#define NWSCREATURE_MOVE_TARGET_DISTANCE_DIVISOR 2.5f
+#define NWSCREATURE_MOVE_TARGET_MIN_DISTANCE 2.0f
+#define NWSCREATURE_MOVE_SAFE_LOCATION_RADIUS 20.0f
+#define NWSCREATURE_MOVE_ATTACK_TARGET_RANGE_SQUARED 25.0f
+#define NWSCREATURE_MINE_USE_RANGE_MARGIN 0.25f
+#define NWSCREATURE_MINE_ACTION_DURATION 4.5f
+#define NWSCREATURE_FOLLOW_OFFSET_LOOKAHEAD 5.0f
+#define NWSCREATURE_FOLLOW_OFFSET_DELAY 3000
+
+enum CreatureDriveFlags
+{
+    DRIVE_FORWARD = 1, DRIVE_BACKWARD = 2, DRIVE_RUN = 3,
+    DRIVE_STRAFE_LEFT = 4, DRIVE_STRAFE_RIGHT = 8,
+    DRIVE_TURN_LEFT = 16, DRIVE_TURN_RIGHT = 32
+};
+
+class CSWActionNode
+{
+public:
+    CSWActionNode()  // PC 0x004EADD0  Xbox 0x0016E4D0
+    {
+        m_nActionId = 0xFFFF;
+        m_nGroupActionId = 0xFFFF;
+        m_nActionType = 0xFFFF;
+        m_vLocation = Vector();
+        m_oidTarget = OBJECT_INVALID;
+        m_nParameter = -1;
+    }
+    // PC 0x004015A0
+    ~CSWActionNode()
+    {
+    }
+
+    void Clear();
+
+    unsigned short m_nActionId;
+    unsigned short m_nGroupActionId;
+    unsigned short m_nActionType;
+    int m_nParameter;
+    Vector m_vLocation;
+    unsigned long m_oidTarget;
+};
+
+class CSWSCreaturePartyFollowInfo
+{
+public:
+    unsigned long m_oidFollowObject;
+    Vector m_vFollowLocation;
+    Vector m_vLastLeaderPosition;
+    Vector m_vLastFollowerPosition;
+    float m_fMaxSpeed;
+    int m_bStickToPosition;
+    unsigned long m_nResult;
+    unsigned long m_nTimeElapsed;
+
+    int m_bInSafetyRange;
+    unsigned long GetFollowObject() { return m_oidFollowObject; }
+    float GetMaxSpeed() { return m_fMaxSpeed; }
+    int GetStickToPosition() { return m_bStickToPosition; }
+    unsigned long GetResult() { return m_nResult; }
+    unsigned long GetTimeElapsed() { return m_nTimeElapsed; }
+    int GetInSafetyRange() { return m_bInSafetyRange; }
+    int Save(CResGFF*, CResStruct*);
+    int Load(CResGFF*, CResStruct*);
+    CSWSCreaturePartyFollowInfo() throw();
+    void Clear();
+};
+
+extern int g_bEnableCombatDebugging;
+
+#endif

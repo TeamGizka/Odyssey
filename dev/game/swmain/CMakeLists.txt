@@ -1,0 +1,381 @@
+# swmain: the game executable, swkotor.exe (default.exe on Xbox).
+set(sources
+  appmanager.cpp
+  main.cpp)
+if(KOTOR_PLATFORM STREQUAL "xbox")
+  # Not built for Xbox yet
+  list(REMOVE_ITEM sources
+    main.cpp)
+endif()
+kotor_executable(swmain ${sources})
+
+target_compile_options(swmain PRIVATE /YX)
+
+kotor_automatic_pch_order(swmain)
+kotor_keeper_fill(swmain appmanager.cpp main.cpp)
+
+if(KOTOR_PLATFORM STREQUAL "xbox")
+  set_target_properties(swmain PROPERTIES OUTPUT_NAME default)
+  target_link_options(swmain PRIVATE /NODEFAULTLIB)
+  target_link_libraries(swmain PRIVATE
+    exomovieplayer exoresman SWGui AURORA math3d worldtimer servercore pathfindinfo nwscript netlayer exosound
+    exoinput exobase clientcore aurorainterface namegen NvTriStrip xapilib.lib d3d8.lib d3dx8.lib xboxkrnl.lib
+    libcmt.lib libcpmt.lib xmv.lib xgraphics.lib dsound.lib)
+  return()
+endif()
+
+set_target_properties(swmain PROPERTIES OUTPUT_NAME swkotor)
+target_link_options(swmain PRIVATE "/MAP:${CMAKE_CURRENT_BINARY_DIR}/swkotor.map")
+enable_language(RC)
+target_sources(swmain PRIVATE swmain.rc)
+
+# The static libraries of the link, in link order. Each lists its objects in the order they are stored.
+kotor_archive(exomovieplayer
+  OBJECTS
+    exomovieplayer/exomovieplayerinternal.cpp
+    exomovieplayer/exomovieplayer.cpp
+  IMPORT_LIBRARIES "${BINK_DIR}/lib/binkw32.lib")
+kotor_archive(exoresman
+  OBJECTS
+    exoresman/exoresman.cpp
+    SWGui/swgui.cpp
+    exoresman/exoresfile.cpp
+    exoresman/exoresgffread.cpp
+    exoresman/resgff.cpp
+    exoresman/twodimarray.cpp
+    SWGui/swguidrawable.cpp
+    SWGui/swguicontrol.cpp
+    exoresman/exoresfileinfo.cpp
+    SWGui/swguidynamic.cpp
+    exoresman/res2da.cpp
+    exoresman/exotlktable.cpp
+    exoresman/lip.cpp
+    exoresman/reslip.cpp)
+kotor_archive(aurorainterface
+  OBJECTS
+    aurorainterface/aurorainterface.cpp
+    aurorainterface/aurlayeredtexture.cpp
+    aurorainterface/aurorainterfaceinternal.cpp
+    aurorainterface/aurtexture.cpp
+    aurorainterface/aurvisibility.cpp
+    aurorainterface/aurprocessedtexture.cpp
+    aurorainterface/aurtxi.cpp
+    aurorainterface/aurmodelx.cpp
+    aurorainterface/_aurmodel.cpp
+    aurorainterface/aurcompressedtexture.cpp
+    aurorainterface/aur16bittexture.cpp
+    aurorainterface/resplt.cpp
+    aurorainterface/aurfonttexture.cpp
+    aurorainterface/resvis.cpp
+    aurorainterface/restxi.cpp
+    aurorainterface/resmdx.cpp
+    aurorainterface/resdds.cpp
+    aurorainterface/res4pc.cpp
+    aurorainterface/resfnt.cpp)
+kotor_archive(namegen
+  OBJECTS
+    namegen/nwnamegen.cpp
+    namegen/resltr.cpp)
+kotor_archive(AURORA
+  OBJECTS
+    AURORA/aurtexman.cpp
+    AURORA/aurglcore.cpp
+    AURORA/aurpostprocess.cpp
+    AURORA/aurmodel.cpp
+    AURORA/aurconsole.cpp
+    AURORA/aurfont.cpp
+    AURORA/aurinternal.cpp
+    AURORA/aurora.cpp
+    AURORA/aurscene.cpp
+    AURORA/aurgui.cpp
+    AURORA/aurcamera.cpp
+    AURORA/aurimage.cpp
+    AURORA/aurglext.cpp
+    AURORA/aurtexcontrol.cpp
+    AURORA/aurlite.cpp
+    AURORA/aurmodelparse.cpp
+    AURORA/aurscenemanager.cpp
+    AURORA/aurrenderinterfacecore.cpp
+    AURORA/aurmodelrender.cpp
+    AURORA/aurprimitive.cpp
+    AURORA/auraticore.cpp
+    AURORA/aurmaterial.cpp
+    AURORA/aurtristripper.cpp
+    AURORA/auranim.cpp
+    AURORA/aurskin.cpp
+    AURORA/auremitter.cpp
+    AURORA/aurtrigger.cpp
+    AURORA/aurbehavior.cpp
+    AURORA/aurio.cpp
+    AURORA/aurStringFont.cpp
+    AURORA/aurString.cpp
+    AURORA/aurvertexprog.cpp
+    AURORA/aurlightmanager.cpp
+    AURORA/aurwindmanager.cpp
+    AURORA/aurgrass.cpp
+    AURORA/aurvertexcache.cpp)
+kotor_archive(math3d
+  OBJECTS
+    math3d/math3d.cpp
+    math3d/bsp.cpp)
+kotor_archive(worldtimer
+  OBJECTS
+    worldtimer/worldtimer.cpp)
+kotor_archive(servercore
+  OBJECTS
+    clientcore/ObjectLookupTable.cpp
+    servercore/serverexoapp.cpp
+    servercore/serveraimaster.cpp
+    servercore/serverexoappinternal.cpp
+    servercore/nwsareapathfind.cpp
+    servercore/nwsmodule.cpp
+    servercore/nwsobject.cpp
+    servercore/nwscombatround.cpp
+    clientcore/nwmessage.cpp
+    servercore/nwsscriptevent.cpp
+    clientcore/gameobjectarray.cpp
+    servercore/nwseffectlist.cpp
+    servercore/nwsitemproperty.cpp
+    servercore/nwscreature.cpp
+    servercore/nwsforcedaction.cpp
+    servercore/nwseffect.cpp
+    servercore/nwsarea.cpp
+    servercore/nwscreatureai.cpp
+    servercore/nwshandleplayermessage.cpp
+    servercore/nwshandleserveradminmessage.cpp
+    servercore/globalvartables.cpp
+    servercore/factionmanager.cpp
+    servercore/nwvmachinecommands.cpp
+    clientcore/serveroptiontable.cpp
+    clientcore/nwrules.cpp
+    servercore/nwsitem.cpp
+    servercore/nwsplayer.cpp
+    servercore/partytables.cpp
+    servercore/nwssendplayermessage.cpp
+    servercore/nwsmessage.cpp
+    servercore/swsareamap.cpp
+    servercore/swsroom.cpp
+    servercore/nwssendserveradminmessage.cpp
+    servercore/nwsrules.cpp
+    servercore/nwsobjectai.cpp
+    servercore/nwssysadmin.cpp
+    servercore/swroomsurfacemesh.cpp
+    servercore/nwsplaceable.cpp
+    servercore/nwsdoor.cpp
+    servercore/nwstrigger.cpp
+    clientcore/nwarea.cpp
+    servercore/nwsencounter.cpp
+    servercore/nwsspellimpact.cpp
+    servercore/swcollisionmesh.cpp
+    servercore/nwsvartable.cpp
+    servercore/swvartable.cpp
+    clientcore/nwspell.cpp
+    servercore/nwsexpression.cpp
+    servercore/nwsdialog.cpp
+    servercore/nwinventory.cpp
+    servercore/nwscreaturestats.cpp
+    clientcore/nwitem.cpp
+    servercore/nwscreatureaicombat.cpp
+    clientcore/nwclass.cpp
+    servercore/nwsparty.cpp
+    clientcore/twodimarrays.cpp
+    servercore/nwsjournal.cpp
+    servercore/nwsstore.cpp
+    clientcore/nwrace.cpp
+    clientcore/swroom.cpp
+    servercore/nwswaypoint.cpp
+    servercore/nwssoundobject.cpp
+    servercore/nwsambientsound.cpp
+    servercore/nwsplayerluo.cpp
+    servercore/nwupdatestats.cpp
+    clientcore/nwcreaturelevelstats.cpp
+    servercore/swmgvmachinecommands.cpp
+    clientcore/nwfeat.cpp
+    clientcore/nwskill.cpp
+    servercore/nwsclient.cpp
+    clientcore/nwplaceablesurfacemesh.cpp
+    clientcore/nwdoorsurfacemesh.cpp
+    servercore/resmdl.cpp
+    servercore/ResBWM.cpp)
+kotor_archive(pathfindinfo
+  OBJECTS
+    pathfindinfo/pathfindinfo.cpp)
+kotor_archive(nwscript
+  OBJECTS
+    nwscript/nwscript.cpp
+    nwscript/nwscriptinternal.cpp
+    nwscript/nwvmachineinternal.cpp
+    nwscript/parsetree.cpp
+    nwscript/resnss.cpp
+    nwscript/finalcode.cpp
+    nwscript/identspec.cpp
+    servercore/resncs.cpp
+    nwscript/lexical.cpp)
+kotor_archive(netlayer
+  OBJECTS
+    netlayer/netlayer.cpp)
+kotor_archive(exosound
+  OBJECTS
+    exosound/exosound.cpp
+    exosound/exosoundinternal.cpp
+    exosound/exosoundsourceinternal.cpp
+    exosound/exostreamingsoundsourceinternal.cpp
+  IMPORT_LIBRARIES "${MILES_DIR}/lib/mss32.lib")
+kotor_archive(exoresfmt
+  OBJECTS
+    exoresman/nwerffile.cpp
+    exoresman/lyt.cpp
+    exoresman/reswave.cpp
+    exoresman/reslyt.cpp
+    exoresman/restga.cpp
+    exoresman/restpc.cpp)
+kotor_archive(exoinput
+  OBJECTS
+    exoinput/exoinput.cpp
+    exoinput/exoimeui.cpp
+    exoinput/exoinputinternal.cpp
+    exoinput/exorawinputwin32.cpp
+  IMPORT_LIBRARIES dinput8.lib)
+kotor_archive(exobase
+  OBJECTS
+    exobase/exostring.cpp
+    exobase/exobase.cpp
+    exobase/exoini.cpp
+    exobase/exofile.cpp
+    exobase/exobaseinternal.cpp
+    exobase/exotimers.cpp
+    exobase/exocritsect.cpp
+    exobase/exodebug.cpp
+    exobase/exostringlist.cpp
+    exobase/exolinkedlistinternal.cpp
+    exobase/exolocstring.cpp
+    exobase/exorand.cpp
+    exobase/exoiniinternal.cpp
+    exobase/exofileinternal.cpp
+    exobase/exotimersinternal.cpp
+    exobase/exocritsectinternal.cpp
+    exobase/exodebuginternal.cpp
+    exobase/exolocstringinternal.cpp
+    exobase/exorandinternal.cpp)
+kotor_archive(clientcore
+  OBJECTS
+    clientcore/clientexoapp.cpp
+    clientcore/clientexoappinternal.cpp
+    clientcore/clientaimaster.cpp
+    clientcore/nwcarea.cpp
+    clientcore/console.cpp
+    clientcore/nwccreature.cpp
+    clientcore/clientoptions.cpp
+    clientcore/clientinput.cpp
+    clientcore/swguifade.cpp
+    clientcore/swguiingame.cpp
+    clientcore/guiingame.cpp
+    clientcore/swparty.cpp
+    clientcore/swbehaviorcamera.cpp
+    clientcore/nwcobject.cpp
+    clientcore/nwcmodule.cpp
+    clientcore/swguiingamejournal.cpp
+    clientcore/swcroom.cpp
+    clientcore/nwcitem.cpp
+    clientcore/nwccreaturestats.cpp
+    clientcore/nwchandlemessage.cpp
+    clientcore/nwcsoundobject.cpp
+    clientcore/swmgobject.cpp
+    clientcore/swmgtrackfollower.cpp
+    clientcore/swminigame.cpp
+    clientcore/swmgguns.cpp
+    clientcore/resdwk.cpp
+    clientcore/nwtlktable.cpp
+    clientcore/clientmsgsysadmin.cpp
+    clientcore/nwcjournal.cpp
+    clientcore/nwcsendmessage.cpp
+    clientcore/soundset.cpp
+    clientcore/nwportrait.cpp
+    clientcore/swplayercontrol.cpp
+    clientcore/swguiloadscreen.cpp
+    clientcore/swguimainmenu.cpp
+    clientcore/swguipazaak.cpp
+    clientcore/nwcplaceable.cpp
+    clientcore/nwcdoor.cpp
+    clientcore/swguimaininterfacepc2.cpp
+    clientcore/nwcambientsound.cpp
+    clientcore/swguiingamecredits.cpp
+    clientcore/swguilegalscreen.cpp
+    clientcore/swpattern.cpp
+    clientcore/nwcvisualeffect.cpp
+    clientcore/swbehaviorattachsound.cpp
+    clientcore/nwctrigger.cpp
+    clientcore/nwcmappin.cpp
+    clientcore/nwcmessage.cpp
+    clientcore/swguiingamemap.cpp
+    clientcore/nwcspellvisual.cpp
+    clientcore/nwccreatureappearance.cpp
+    clientcore/nwanimbase.cpp
+    clientcore/nwcanimbaseheadwield.cpp
+    clientcore/nwcanimbasewield.cpp
+    clientcore/nwcanimbasehead.cpp
+    clientcore/nwcanimbasetw.cpp
+    clientcore/nwcanimbase.cpp
+    clientcore/nwcvisualeffectonobject.cpp
+    clientcore/swguidialog.cpp
+    clientcore/swguibarkbubble.cpp
+    clientcore/swguiingametutorialbox.cpp
+    clientcore/swguiingameoptions.cpp
+    clientcore/swguiingameabilities.cpp
+    clientcore/swguiingamecharacter.cpp
+    clientcore/swguiingameinventory.cpp
+    clientcore/swguiingameequip.cpp
+    clientcore/swbehaviorcameradialog.cpp
+    clientcore/swguiSubCreateItem.cpp
+    clientcore/swguipartyselection.cpp
+    clientcore/swguiingamepause.cpp
+    clientcore/swguistore.cpp
+    clientcore/swguiingamesolomodequery.cpp
+    clientcore/swguiupgrade.cpp
+    clientcore/swguiingameareatransition.cpp
+    clientcore/swguisaveload.cpp
+    clientcore/swguiskillflowchart.cpp
+    clientcore/swguiexamine.cpp
+    clientcore/swguiPowersFeatsSkillsDebugMenu.cpp
+    clientcore/swguiDebugLoadModule.cpp
+    clientcore/swguiCreateItem.cpp
+    clientcore/SWAccelerationControlers.cpp
+    clientcore/swbehaviorcameracombat.cpp
+    clientcore/SWGuiQuestItem.cpp
+    clientcore/nwcprojectile.cpp
+    clientcore/nwcareaofeffectobject.cpp
+    clientcore/swmgbehavior.cpp
+    clientcore/resssf.cpp)
+kotor_archive(clientcore2
+  OBJECTS
+    clientcore/swguiclassselection.cpp
+    clientcore/swguimovie.cpp
+    clientcore/swguioptions.cpp
+    clientcore/swpazaak.cpp
+    clientcore/nwcanimbaseplaceable.cpp
+    clientcore/nwcanimbasedoor.cpp
+    clientcore/nwcanimbasevisualeffect.cpp
+    clientcore/nwcanimbasetrigger.cpp
+    clientcore/swguiingamegameplay.cpp
+    clientcore/swguiingameautopause.cpp
+    clientcore/swguilevelupchargen.cpp
+    clientcore/SWGuiScriptSelect.cpp
+    clientcore/nwcanimbaseprojectile.cpp
+    clientcore/swguimainchargen.cpp
+    clientcore/swguiinOPTKeyMapping.cpp
+    clientcore/swguileveluppanel.cpp
+    clientcore/swguicustompanel.cpp
+    clientcore/swguiquickpanel.cpp
+    clientcore/swguiquickorcustompanel.cpp
+    clientcore/swguipowerslvlup.cpp
+    clientcore/swguifeatschargen.cpp
+    clientcore/swguiskillschargen.cpp
+    clientcore/swguiabilitieschargen.cpp
+    clientcore/swguiportraitchargen.cpp
+    clientcore/swguinamechargen.cpp)
+
+target_link_libraries(swmain PRIVATE
+  opengl32.lib glu32.lib version.lib imm32.lib kernel32.lib user32.lib gdi32.lib ole32.lib lib_exomovieplayer
+  lib_exoresman lib_aurorainterface lib_namegen lib_AURORA lib_math3d lib_worldtimer lib_servercore lib_pathfindinfo
+  lib_nwscript lib_netlayer lib_exosound lib_exoresfmt lib_exoinput "${MILES_61C_DIR}/lib/mss32.lib" lib_exobase
+  lib_clientcore NvTriStrip winmm.lib lib_clientcore2)

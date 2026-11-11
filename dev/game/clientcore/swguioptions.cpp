@@ -1,0 +1,2547 @@
+#include <windows.h>
+#include "exobase.h"
+#include "aurora.h"
+#include "aurinternal.h"
+#include "twodimarray.h"
+#include "exosoundinternal.h"
+#include "nwsarea.h"
+#include "appmanager.h"
+#include "clientexoapp.h"
+#include "clientexoappinternal.h"
+#include "clientoptions.h"
+#include "exobase.h"
+#include "guiingame.h"
+#include "swguioptions.h"
+#include "swguiingame.h"
+
+#include "swguiingamegameplay.h"
+#include "swguiingameautopause.h"
+
+#ifndef _XBOX
+void CSWGuiOptionsGraphics::OnExitSlider(CSWGuiControl* pControl)
+{
+    CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
+    pParams->m_bPulsing = 0;
+}
+#endif
+
+void CSWGuiOptionsMouse::OnExitSlider(CSWGuiControl* pControl)
+{
+    CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
+    pParams->m_bPulsing = 0;
+}
+
+#ifndef _XBOX
+int CSWGuiOptionsGraphicsAdvanced::OnFrameBuffer(CSWGuiControl* pControl)  // PC 0x006DDB10  Xbox 0x00014BBB
+{
+    int bFrameBuffer = (m_bFrameBuffer == 0);
+    m_bChanged = 1;
+    m_bFrameBuffer = bFrameBuffer;
+    return bFrameBuffer;
+}
+// PC 0x006DDB30
+void CSWGuiOptionsGraphicsAdvanced::OnSoftShadows(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        int bSoftShadows = m_bSoftShadows;
+        m_bChanged = 1;
+        m_bSoftShadows = (bSoftShadows == 0);
+    }
+}
+// PC 0x006DDB60
+int CSWGuiOptionsGraphicsAdvanced::OnVSync(CSWGuiControl* pControl)
+{
+    int bVSync = (m_bVSync == 0);
+    m_bVSync = bVSync;
+    return bVSync;
+}
+// PC 0x006DDB80
+void CSWGuiOptionsGraphicsAdvanced::OnDiscardChanges(CSWGuiControl* pControl)
+{
+    m_bDiscard = 1;
+    OnBButtonPressed(pControl);
+}
+#endif
+// PC 0x006DDB90  Xbox 0x00118030
+void CSWGuiOptionsSound::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case 45:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            break;
+        case 40:
+        case 46:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            m_pManager->PopModalPanel();
+            m_bDeferredRemoval = 0;
+            m_nExitState = EXITSTATE_DELETE;
+            break;
+#ifndef _XBOX
+        case 57:
+            m_lbDescription.HandleInputEvent(GUIEVENT_UP, 1);
+            break;
+        case 58:
+            m_lbDescription.HandleInputEvent(GUIEVENT_DOWN, 1);
+            break;
+#endif
+        }
+    }
+    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
+// PC 0x006DDC80
+void CSWGuiOptionsSound::SetDescription(unsigned long nStrRef)
+{
+    m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
+    CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
+    m_lbDescription.ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sText.GetLength() > 0)
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    m_lblDescription.SetExtent(cExtent);
+    CSWGuiControl* pControl = &m_lblDescription;
+    m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
+    m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
+}
+// PC 0x006DDD70
+void CSWGuiOptionsSoundAdvanced::SetEAXText()
+{
+    CExoString sText;
+    switch (m_nEAXMode)
+    {
+    case 0:
+        m_btnEAX.m_cText.m_cParams.SetStrRef(48573);
+        break;
+    case 2:
+        m_btnEAX.m_cText.m_cParams.SetStrRef(48575);
+        break;
+    case 3:
+        m_btnEAX.m_cText.m_cParams.SetStrRef(48576);
+        break;
+    default:
+        m_btnEAX.m_cText.m_cParams.SetStrRef(48574);
+        break;
+    }
+    CSWGuiButton* pLeft = &m_btnEAXLeft;
+    pLeft->m_bEnabled = 1;
+    CSWGuiButton* pRight = &m_btnEAXRight;
+    pRight->m_bEnabled = 1;
+    int nBest;
+#ifdef _XBOX
+    nBest = 3;
+#else
+    if (g_pExoSound->GetBestEAXAvailable() > 3)
+    {
+        nBest = 3;
+    }
+    else
+    {
+        nBest = g_pExoSound->GetBestEAXAvailable();
+    }
+#endif
+    if (m_nEAXMode == 0)
+    {
+        pLeft->m_bEnabled = 0;
+    }
+    else if (m_nEAXMode == nBest)
+    {
+        pRight->m_bEnabled = 0;
+    }
+}
+// PC 0x006DDE50  Xbox 0x00118320
+void CSWGuiOptionsSoundAdvanced::SetDescription(unsigned long nStrRef)
+{
+    m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
+    CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
+    m_lbDescription.ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sText.GetLength() > 0)
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    m_lblDescription.SetExtent(cExtent);
+    CSWGuiControl* pControl = &m_lblDescription;
+    m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
+    m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
+}
+// PC 0x006DDF40
+void CSWGuiOptionsSoundAdvanced::EnableEAXControls(int bEnable)
+{
+    m_btnEAX.SetEnabled(bEnable);
+    Vector* pColor = &CGuiInGame::COLOR_BLUE;
+    if (bEnable == 0)
+    {
+        pColor = &CGuiInGame::DISABLED_TEXT;
+    }
+    m_btnEAX.m_cText.m_cParams.SetColor(*pColor);
+    m_btnEAXRight.SetEnabled(bEnable);
+    m_btnEAXLeft.SetEnabled(bEnable);
+}
+// PC 0x006DDFA0
+void CSWGuiOptionsSoundAdvanced::OnEnterOption(CSWGuiControl* pControl)
+{
+    if (pControl == &m_cbForceSoftware)
+    {
+        SetDescription(48577);
+        return;
+    }
+    if (pControl == &m_btnEAX || pControl == &m_btnEAXRight ||
+        pControl == &m_btnEAXLeft)
+    {
+        SetDescription(48578);
+    }
+}
+// PC 0x006DDFF0
+void CSWGuiOptionsSoundAdvanced::OnDiscardChanges(CSWGuiControl* pControl)
+{
+    m_bDiscard = 1;
+    OnBButtonPressed(pControl);
+}
+// PC 0x006DE000  Xbox 0x00118460
+void CSWGuiOptionsCheckbox::SetExtent(const CSWGuiExtent& cExtent)
+{
+    CSWGuiExtent cBox;
+    cBox.m_nLeft = cExtent.m_nLeft;
+    cBox.m_nTop = cExtent.m_nTop;
+    cBox.m_nWidth = 25;
+    cBox.m_nHeight = 25;
+    cBox.m_nTop += (cExtent.m_nHeight - cBox.m_nHeight) / 2 + 2;
+    m_cBorder.SetExtent(cBox);
+    m_cHilite.SetExtent(cBox);
+    m_cToggleHilite.SetExtent(cBox);
+    m_cToggleBorder.SetExtent(cBox);
+    CSWGuiExtent cText = cExtent;
+    cText.m_nLeft += 30;
+    cText.m_nWidth -= 30;
+    m_cText.SetExtent(cText);
+    m_cExtent = cExtent;
+}
+// PC 0x006DE0E0  Xbox 0x00118540
+void CSWGuiOptionsCheckbox::Draw(float fElapsed)
+{
+    CSWGuiTextParams* pParams;
+    if (m_bActive)
+    {
+        pParams = &m_cText.m_cParams;
+        pParams->SetColor(CGuiInGame::COLOR_YELLOW);
+        pParams->m_bHilightText = 1;
+    }
+#ifndef _XBOX
+    else if (!m_bHilightOnOver)
+    {
+        m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
+    }
+#endif
+    else
+    {
+        pParams = &m_cText.m_cParams;
+        pParams->SetColor(CGuiInGame::COLOR_BLUE);
+        pParams->m_bHilightText = 0;
+    }
+    CSWGuiButtonToggle::Draw(fElapsed);
+}
+// PC 0x006DE160  Xbox 0x00118590
+void CSWGuiOptionsCheckbox::Load(CResGFF* pGFF, CResStruct& cStruct)
+{
+    CSWGuiButtonToggle::Load(pGFF, cStruct);
+    m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+    m_cToggleBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+    m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+    m_cToggleHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+}
+// PC 0x006DF390
+void CSWGuiOptionsMouse::SetDescription(unsigned long nStrRef)
+{
+    m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
+    CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
+    m_lbDescription.ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sText.GetLength() > 0)
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    m_lblDescription.SetExtent(cExtent);
+    CSWGuiControl* pControl = &m_lblDescription;
+    m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
+    m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
+}
+// PC 0x006DE200
+void CSWGuiOptionsMouse::OnEnterSlider(CSWGuiControl* pControl)
+{
+    if (pControl == &m_sldMouseSen)
+    {
+        SetDescription(48013);
+    }
+    CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
+    pParams->m_bPulsing = 1;
+}
+// PC 0x006DE240
+void CSWGuiOptionsMain::OnGameplayOpt(CSWGuiControl* pControl)
+{
+    int bSelected = pControl->m_bSelected;
+    if (bSelected != 0)
+    {
+        CSWGuiInGameGameplay* pPanel = new CSWGuiInGameGameplay(GetManager());
+        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
+    }
+}
+// PC 0x006DE2C0
+void CSWGuiOptionsMain::OnAutopauseOpt(CSWGuiControl* pControl)
+{
+    int bSelected = pControl->m_bSelected;
+    if (bSelected != 0)
+    {
+        CSWGuiInGameAutoPause* pPanel = new CSWGuiInGameAutoPause(GetManager());
+        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
+    }
+}
+
+void CSWGuiOptionsMain::ClosePanel()
+{
+    g_pAppManager->m_pClientExoApp->SaveOptions();
+}
+// PC 0x006DE340
+void CSWGuiOptionsMain::SetDescription(unsigned long nStrRef)
+{
+    m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
+    CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
+    m_lbDescription.ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sText.GetLength() > 0)
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    m_lblDescription.SetExtent(cExtent);
+    CSWGuiControl* pControl = &m_lblDescription;
+    m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
+    m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
+}
+// PC 0x006DE430
+void CSWGuiOptionsFeedback::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case 40:
+        case 46:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            m_pManager->PopModalPanel();
+            m_bDeferredRemoval = 0;
+            m_nExitState = EXITSTATE_DELETE;
+            break;
+        case 45:
+            if (m_pActiveControl != 0 &&
+                m_pActiveControl->AsButtonToggle() != 0)
+            {
+                m_pManager->PlayGuiSound(3);
+                CSWGuiButtonToggle* pToggle =
+                    m_pActiveControl->AsButtonToggle();
+                m_pActiveControl->AsButtonToggle()->SetToggled(
+                    !pToggle->m_bToggled);
+            }
+            break;
+        case 57:
+            m_lbDescription.HandleInputEvent(GUIEVENT_UP, 1);
+            break;
+        case 58:
+            m_lbDescription.HandleInputEvent(GUIEVENT_DOWN, 1);
+            break;
+        }
+    }
+    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
+// PC 0x006DE550
+void CSWGuiOptionsFeedback::OnHide(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        int bHide = (g_pAppManager->m_pClientExoApp->GetClientOptions()
+                         ->m_bHideUnequippable == 0);
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->m_bHideUnequippable = bHide;
+    }
+}
+// PC 0x006DE5A0
+void CSWGuiOptionsFeedback::OnTutorial(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        int bTutorial = (g_pAppManager->m_pClientExoApp->GetClientOptions()
+                             ->m_bTutorialPopups == 0);
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->m_bTutorialPopups = bTutorial;
+    }
+}
+// PC 0x006DE5F0
+void CSWGuiOptionsFeedback::OnSubtitles(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        int bSubtitles =
+            (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_bSubtitles ==
+             0);
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->m_bSubtitles = bSubtitles;
+    }
+}
+// PC 0x006DE640
+void CSWGuiOptionsFeedback::OnMiniMap(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        int bMiniMap =
+            (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_bMiniMap ==
+             0);
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->m_bMiniMap = bMiniMap;
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->InitializeMap();
+    }
+}
+// PC 0x006DE6A0
+void CSWGuiOptionsFeedback::OnFloaty(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        int bFloaty = (g_pAppManager->m_pClientExoApp->GetClientOptions()
+                           ->m_bFloatingNumbers == 0);
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->m_bFloatingNumbers = bFloaty;
+    }
+}
+// PC 0x006DE6F0
+void CSWGuiOptionsFeedback::OnSummary(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        int bSummary = (g_pAppManager->m_pClientExoApp->GetClientOptions()
+                            ->m_bStatusSummary == 0);
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->m_bStatusSummary = bSummary;
+    }
+}
+// PC 0x006DE740
+void CSWGuiOptionsFeedback::OnHideInGameGUI(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        if (pOptions != 0)
+        {
+            pOptions->m_bHideInGameGUI = ~pOptions->m_bHideInGameGUI;
+        }
+    }
+}
+// PC 0x006DE780
+void CSWGuiOptionsFeedback::OnUseSmallFont(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        if (pOptions != 0)
+        {
+            pOptions->SetUseSmallFonts(pOptions->m_bUseSmallFonts == 0);
+        }
+    }
+}
+// PC 0x006DE7C0
+void CSWGuiOptionsFeedback::SetUpOptions()
+{
+    CClientOptions* pOptions =
+        g_pAppManager->m_pClientExoApp->GetClientOptions();
+    if (pOptions != 0)
+    {
+        CSWGuiControl* pControl;
+        CSWGuiButtonToggle* pToggle;
+        int bValue;
+        pControl = m_lbOptions.GetControl(0);
+        bValue = pOptions->m_bHideUnequippable;
+        pToggle = pControl->AsButtonToggle();
+        pToggle->m_bToggled = bValue;
+        pControl = m_lbOptions.GetControl(1);
+        bValue = (pOptions->m_bTutorialPopups != 0);
+        pToggle = pControl->AsButtonToggle();
+        pToggle->m_bToggled = bValue;
+        pControl = m_lbOptions.GetControl(2);
+        bValue = (pOptions->m_bSubtitles != 0);
+        pToggle = pControl->AsButtonToggle();
+        pToggle->m_bToggled = bValue;
+        pControl = m_lbOptions.GetControl(3);
+        bValue = (pOptions->m_bMiniMap != 0);
+        pToggle = pControl->AsButtonToggle();
+        pToggle->m_bToggled = bValue;
+        pControl = m_lbOptions.GetControl(4);
+        bValue = (pOptions->m_bFloatingNumbers != 0);
+        pToggle = pControl->AsButtonToggle();
+        pToggle->m_bToggled = bValue;
+        pControl = m_lbOptions.GetControl(5);
+        bValue = (pOptions->m_bStatusSummary != 0);
+        pToggle = pControl->AsButtonToggle();
+        pToggle->m_bToggled = bValue;
+        pControl = m_lbOptions.GetControl(6);
+        bValue = (pOptions->m_bHideInGameGUI != 0);
+        pToggle = pControl->AsButtonToggle();
+        pToggle->m_bToggled = bValue;
+        pControl = m_lbOptions.GetControl(7);
+        bValue = (pOptions->m_bUseSmallFonts != 0);
+        pToggle = pControl->AsButtonToggle();
+        pToggle->m_bToggled = bValue;
+        pControl = m_lbOptions.GetControl(8);
+        bValue = (pOptions->m_bEnableTooltips != 0);
+        pToggle = pControl->AsButtonToggle();
+        pToggle->m_bToggled = bValue;
+    }
+}
+// PC 0x006DE9B0
+void CSWGuiOptionsFeedback::SetDescription(unsigned long nStrRef)
+{
+    m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
+    CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
+    m_lbDescription.ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sText.GetLength() > 0)
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    m_lblDescription.SetExtent(cExtent);
+    CSWGuiControl* pControl = &m_lblDescription;
+    m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
+    m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
+}
+// PC 0x006DEAA0
+void CSWGuiOptionsFeedback::OnEnableToolTips(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        if (pOptions != 0)
+        {
+            pOptions->m_bEnableTooltips = ~pOptions->m_bEnableTooltips;
+        }
+    }
+}
+
+#ifndef _XBOX
+void CSWGuiOptionsGraphics::HandleInputEvent(int nEvent, int nState)  // PC 0x006DEAE0
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case 40:
+        case 46:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            m_pManager->PopModalPanel();
+            m_bDeferredRemoval = 0;
+            m_nExitState = EXITSTATE_DELETE;
+            if (m_nUnknown18BC != 0)
+            {
+                CExoIni cIni;
+                CExoString sValue;
+                {
+                    int bRead = cIni.ReadIniEntry(
+                        sValue, ".\\swkotor.ini", "Graphics Options",
+                        "Disable Vertex Buffer Objects");
+                    if (bRead != 0 && sValue.AsINT() == 1)
+                    {
+                        AurDisableVertexBufferObjects();
+                    }
+                }
+                ReInitAurora(g_nScreenWidth, g_nScreenHeight, g_nBitsPerPixel,
+                             g_pAurora->FullScreen(), 1);
+                {
+                    int bRead = cIni.ReadIniEntry(sValue, ".\\swkotor.ini",
+                                                  "Graphics Options",
+                                                  "Disable Write-Only VBO");
+                    if (bRead != 0)
+                    {
+                        if (sValue.AsINT() == 1)
+                        {
+                            AurDisableVertexBufferObjectsWriteOnly();
+                        }
+                        else
+                        {
+                            AurEnableVertexBufferObjectsWriteOnly();
+                        }
+                    }
+                }
+                m_nUnknown18BC = 0;
+            }
+            break;
+        case 45:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            break;
+        }
+    }
+    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
+// PC 0x006DED30
+void CSWGuiOptionsGraphics::OnMoveGammaSlider(CSWGuiControl* pControl)
+{
+    int nMax = pControl->AsSlider()->m_nMaxValue;
+    int nValue = pControl->AsSlider()->m_nCurValue;
+    float fGamma = 2.0f - (float)nValue / nMax * 1.77f;
+    g_pAurora->ResetGammaRamp(fGamma, 0);
+    g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nBrightness = nValue;
+}
+#endif
+// PC 0x006E6170
+void CSWGuiOptionsMouse::OnPanelAdded()
+{
+    CSWGuiPanel::OnPanelAdded();
+}
+// PC 0x006DED90
+void CSWGuiOptionsSound::OnExitSlider(CSWGuiControl* pControl)
+{
+    CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
+    pParams->m_bPulsing = 0;
+}
+
+#ifndef _XBOX
+void CSWGuiOptionsGraphics::OnShadows(CSWGuiControl* pControl)  // PC 0x006DEDB0
+{
+    if (pControl->m_bSelected != 0)
+    {
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        if (pOptions != 0)
+        {
+            pOptions->SetShadows(pOptions->m_nShadows == 0);
+            if (pOptions->m_nShadows == 0)
+            {
+                pOptions->SetSoftShadows(0);
+            }
+        }
+    }
+}
+// PC 0x006DEE00
+void CSWGuiOptionsGraphics::OnGrass(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
+        int bGrass = pOptions->m_nGrass;
+        pClient->GetClientOptions()->SetGrass(bGrass == 0);
+    }
+}
+// PC 0x006DEE40
+void CSWGuiOptionsGraphics::SetDescription(unsigned long nStrRef)
+{
+    m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
+    CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
+    m_lbDescription.ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sText.GetLength() > 0)
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    m_lblDescription.SetExtent(cExtent);
+    CSWGuiControl* pControl = &m_lblDescription;
+    m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
+    m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
+}
+// PC 0x006DEF30
+void CSWGuiOptionsGraphics::SetUpOptions()
+{
+    CClientOptions* pOptions =
+        g_pAppManager->m_pClientExoApp->GetClientOptions();
+    if (pOptions != 0)
+    {
+        unsigned char nBrightness = pOptions->m_nBrightness;
+        m_sldGamma.AsSlider()->SetCurValue(nBrightness);
+        OnMoveGammaSlider(&m_sldGamma);
+        if (pOptions->m_nSoftShadows != 0)
+        {
+            pOptions->SetShadows(1);
+        }
+        int nShadows = pOptions->m_nShadows;
+        CSWGuiButtonToggle* pToggle = m_cbShadows.AsButtonToggle();
+        pToggle->m_bToggled = nShadows;
+        int nGrass = pOptions->m_nGrass;
+        pToggle = m_cbGrass.AsButtonToggle();
+        pToggle->m_bToggled = nGrass;
+    }
+}
+// PC 0x006DEFE0
+void CSWGuiOptionsGraphicsAdvanced::SetNewOptions()
+{
+    CClientOptions* pOptions =
+        g_pAppManager->m_pClientExoApp->GetClientOptions();
+    if (pOptions != 0)
+    {
+        pOptions->SetAntiAlias(m_nAntiAlias);
+        pOptions->SetTexQual(m_nTexQual);
+        pOptions->SetFrameBuffer(m_bFrameBuffer);
+        pOptions->SetAnisotropy(m_nAnisotropy);
+        pOptions->SetVSync(m_bVSync);
+        pOptions->SetSoftShadows(m_bSoftShadows);
+        if (m_bSoftShadows != 0)
+        {
+            pOptions->SetShadows(1);
+        }
+    }
+}
+// PC 0x006DF070
+void CSWGuiOptionsGraphicsAdvanced::SetTexQualText()
+{
+    int nStrRef;
+    C2DA* p2DA = new C2DA("texpacks", 0);
+    if (p2DA != 0)
+    {
+        if (p2DA->Load2DArray() == 0)
+        {
+            delete p2DA;
+            return;
+        }
+        if (p2DA->m_nNumRows > 0)
+        {
+            int bSuccess =
+                p2DA->GetINTEntry(m_nTexQual, "StrrefName", &nStrRef);
+            if (bSuccess != 0)
+            {
+                m_btnTexQual.m_cText.m_cParams.SetStrRef(nStrRef);
+            }
+        }
+        CSWGuiButton* pLeft = &m_btnTexQualLeft;
+        pLeft->SetEnabledFlag(1);
+        m_btnTexQualRight.SetEnabledFlag(1);
+        if (m_nTexQual == 0)
+        {
+            pLeft->SetEnabledFlag(0);
+        }
+        else if (m_nTexQual == 2)
+        {
+            m_btnTexQualRight.SetEnabledFlag(0);
+        }
+        m_bChanged = 1;
+        p2DA->Unload2DArray();
+        delete p2DA;
+    }
+}
+// PC 0x006DF1C0
+void CSWGuiOptionsGraphicsAdvanced::SetAntiAliasText()
+{
+    switch (m_nAntiAlias)
+    {
+    case 0:
+        m_btnAntiAlias.m_cText.m_cParams.SetStrRef(47996);
+        break;
+    case 2:
+        m_btnAntiAlias.m_cText.m_cParams.SetStrRef(47997);
+        break;
+    case 4:
+        m_btnAntiAlias.m_cText.m_cParams.SetStrRef(47999);
+        break;
+    case 6:
+        m_btnAntiAlias.m_cText.m_cParams.SetStrRef(49124);
+        break;
+    case 8:
+        m_btnAntiAlias.m_cText.m_cParams.SetStrRef(49125);
+        break;
+    }
+    CSWGuiButton* pLeft = &m_btnAntiAliasLeft;
+    pLeft->m_bEnabled = 1;
+    CSWGuiButton* pRight = &m_btnAntiAliasRight;
+    pRight->m_bEnabled = 1;
+    if (m_nAntiAlias == 0)
+    {
+        pLeft->m_bEnabled = 0;
+    }
+    int nMax = 0;
+    if (AurQueryAntiAliasingMode(2) != 0)
+    {
+        nMax = 2;
+    }
+    if (AurQueryAntiAliasingMode(4) != 0)
+    {
+        nMax = 4;
+    }
+    if (AurQueryAntiAliasingMode(6) != 0)
+    {
+        nMax = 6;
+    }
+    if (AurQueryAntiAliasingMode(8) != 0)
+    {
+        nMax = 8;
+    }
+    if (m_nAntiAlias == 8 || m_nAntiAlias >= nMax)
+    {
+        pRight->m_bEnabled = 0;
+    }
+    m_bChanged = 1;
+}
+
+#ifndef _XBOX
+CSWGuiOptionsResolution::CSWGuiOptionsResolution(CSWGuiManager* pManager)  // PC 0x006E0710
+    : CSWGuiPanel(pManager)
+{
+    StartLoadFromLayout("optresolution");
+    InitControl(m_lblResolution, "LBL_RESOLUTION", 1);
+    InitControl(m_lbResolutions, "LB_RESOLUTIONS", 1);
+    InitControl(m_btnAccept, "BTN_OK", 1);
+    InitControl(m_btnBack, "BTN_CANCEL", 1);
+    StopLoadFromLayout();
+    CSWGuiButton* pOk = &m_btnAccept;
+    pOk->AddEvent(
+        GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiOptionsResolution::OnResolutionChosen);
+    pOk->m_bFocusable = 0;
+    CSWGuiButton* pCancel = &m_btnBack;
+    pCancel->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
+    pCancel->m_bFocusable = 0;
+    CSWGuiListBox* pList = &m_lbResolutions;
+    pList->SetSelectOnLeftClick(1);
+    SetActiveControl(pList, 0);
+    CSWGuiButton* pSelected = 0;
+    unsigned long nMode = 0;
+    CExoArrayList<CSWGuiControl*> lstControls;
+    CExoString sText;
+    DEVMODE cDevMode;
+    memset(&cDevMode, 0, sizeof(cDevMode));
+    cDevMode.dmSize = 156;
+    CSWGuiControl* pProtoItem = m_lbResolutions.m_pProtoItem;
+    if (pProtoItem != 0)
+    {
+        CSWGuiButton* pProto = pProtoItem->AsButton();
+        if (EnumDisplaySettings(0, 0, &cDevMode))
+        {
+            do
+            {
+                if (cDevMode.dmDisplayFrequency ==
+                        CAuroraInterface::VIDEO_REFRESH_DEFAULT ||
+                    cDevMode.dmDisplayFrequency ==
+                        CAuroraInterface::VIDEO_REFRESH_DEFAULT_ALTERNATE)
+                {
+                    if (cDevMode.dmBitsPerPel ==
+                            CClientExoAppInternal::VIDEO_BITS_PER_PIXEL &&
+                        g_pAppManager->GetClientExoApp()
+                                ->IsValidResolution(
+                                    cDevMode.dmPelsWidth,
+                                    cDevMode.dmPelsHeight) != 0)
+                    {
+                        CSWGuiButton* pButton = new CSWGuiButton;
+                        pButton->Initialize(pProto->m_cExtent, pProto);
+                        sText.Format("%d x %d", cDevMode.dmPelsWidth,
+                                     cDevMode.dmPelsHeight);
+                        pButton->m_cText.m_cParams.SetText(sText);
+                        pButton->m_nIndex = nMode;
+                        pButton->AddEvent(
+                            GUIEVENT_ACTIVATE, this,
+                            (CSWGuiHandler)&CSWGuiOptionsResolution::
+                                OnResolutionChosen);
+                        lstControls.Add(pButton);
+                        if (cDevMode.dmPelsWidth == g_nScreenWidth &&
+                            cDevMode.dmPelsHeight == g_nScreenHeight)
+                        {
+                            pSelected = pButton;
+                        }
+                    }
+                }
+                else
+                {
+                    if (cDevMode.dmBitsPerPel ==
+                            CClientExoAppInternal::VIDEO_BITS_PER_PIXEL &&
+                        cDevMode.dmDisplayFrequency >=
+                            CClientExoAppInternal::VIDEO_REFRESH_RATE &&
+                        g_pAppManager->GetClientExoApp()
+                                ->IsValidResolution(
+                                    cDevMode.dmPelsWidth,
+                                    cDevMode.dmPelsHeight) != 0 &&
+                        (g_pAppManager->GetClientExoApp()->GetAllowHighMonitorFrequency() !=
+                             0 ||
+                         (float)cDevMode.dmDisplayFrequency <=
+                             (float)CClientExoAppInternal::VIDEO_MAX_STANDARD_REFRESH_RATE))
+                    {
+                        CSWGuiButton* pButton = new CSWGuiButton;
+                        pButton->Initialize(pProto->m_cExtent, pProto);
+                        sText.Format("%d x %d @ %d Hz", cDevMode.dmPelsWidth,
+                                     cDevMode.dmPelsHeight,
+                                     cDevMode.dmDisplayFrequency);
+                        pButton->m_cText.m_cParams.SetText(sText);
+                        pButton->m_nIndex = nMode;
+                        pButton->AddEvent(
+                            GUIEVENT_ACTIVATE, this,
+                            (CSWGuiHandler)&CSWGuiOptionsResolution::
+                                OnResolutionChosen);
+                        lstControls.Add(pButton);
+                        if (cDevMode.dmDisplayFrequency ==
+                            g_nDesiredFullScreenRefreshRate)
+                        {
+                            if (cDevMode.dmPelsWidth == g_nScreenWidth &&
+                                cDevMode.dmPelsHeight == g_nScreenHeight)
+                            {
+                                pSelected = pButton;
+                            }
+                        }
+                    }
+                }
+                nMode++;
+            } while (EnumDisplaySettings(0, nMode, &cDevMode));
+        }
+        m_lbResolutions.AddControls(lstControls, 0, 1, 0);
+        if (pSelected != 0)
+        {
+            m_lbResolutions.SetSelectedControl(pSelected, 0);
+        }
+    }
+    m_nUnknown80C = 0;
+}
+#endif
+// PC 0x006DF2C0
+void CSWGuiOptionsGraphicsAdvanced::SetAnisotropyText()
+{
+    switch (m_nAnisotropy)
+    {
+    case 1:
+        m_btnAnisotropy.m_cText.m_cParams.SetStrRef(49079);
+        break;
+    case 2:
+        m_btnAnisotropy.m_cText.m_cParams.SetStrRef(49080);
+        break;
+    case 4:
+        m_btnAnisotropy.m_cText.m_cParams.SetStrRef(49081);
+        break;
+    case 8:
+        m_btnAnisotropy.m_cText.m_cParams.SetStrRef(49082);
+        break;
+    case 16:
+        m_btnAnisotropy.m_cText.m_cParams.SetStrRef(49083);
+        break;
+    }
+    m_btnAnisotropyLeft.SetEnabledFlag(1);
+    m_btnAnisotropyRight.SetEnabledFlag(1);
+    if (m_nAnisotropy <= 1)
+    {
+        m_btnAnisotropyLeft.SetEnabledFlag(0);
+    }
+    else if (m_nAnisotropy >= AurQueryMaximumAnisotropy() ||
+             m_nAnisotropy >= 16)
+    {
+        m_btnAnisotropyRight.SetEnabledFlag(0);
+    }
+    m_bChanged = 1;
+}
+// PC 0x006DF390
+void CSWGuiOptionsGraphicsAdvanced::SetDescription(unsigned long nStrRef)
+{
+    m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
+    CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
+    m_lbDescription.ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sText.GetLength() > 0)
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    m_lblDescription.SetExtent(cExtent);
+    CSWGuiControl* pControl = &m_lblDescription;
+    m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
+    m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
+}
+// PC 0x006DF480
+void CSWGuiOptionsGraphicsAdvanced::SetUpOptions()
+{
+    CClientOptions* pOptions =
+        g_pAppManager->m_pClientExoApp->GetClientOptions();
+    if (pOptions != 0)
+    {
+        if (AurCheckFrameBufferModificationsAvailable() != 0)
+        {
+            int nFrameBuffer = pOptions->m_nFrameBuffer;
+            m_bFrameBuffer = nFrameBuffer;
+            CSWGuiButtonToggle* pToggle = m_cbFrameBuffer.AsButtonToggle();
+            pToggle->m_bToggled = nFrameBuffer;
+        }
+        else
+        {
+            CSWGuiButtonToggle* pToggle = m_cbFrameBuffer.AsButtonToggle();
+            pToggle->m_bToggled = 0;
+            m_cbFrameBuffer.SetEnabled(0);
+            m_bFrameBuffer = 0;
+        }
+        int nAnisotropy = pOptions->m_nAnisotropy;
+        m_nAnisotropy = nAnisotropy;
+        if (AurCheckSoftShadowsAvailable() != 0)
+        {
+            int nSoftShadows = pOptions->m_nSoftShadows;
+            m_bSoftShadows = nSoftShadows;
+            CSWGuiButtonToggle* pToggle = m_cbSoftShadows.AsButtonToggle();
+            pToggle->m_bToggled = nSoftShadows;
+        }
+        else
+        {
+            CSWGuiButtonToggle* pToggle = m_cbSoftShadows.AsButtonToggle();
+            pToggle->m_bToggled = 0;
+            m_cbSoftShadows.SetEnabled(0);
+            m_bSoftShadows = 0;
+        }
+        int nVSync = pOptions->m_nVSync;
+        m_bVSync = nVSync;
+        CSWGuiButtonToggle* pToggle = m_cbVSync.AsButtonToggle();
+        pToggle->m_bToggled = nVSync;
+        m_nAntiAlias = pOptions->m_nAntiAlias;
+        m_nTexQual = pOptions->m_nTexQual;
+    }
+    SetAntiAliasText();
+    SetAnisotropyText();
+    C2DA* p2DA = new C2DA("texpacks", 0);
+    if (p2DA != 0)
+    {
+        if (p2DA->Load2DArray() == 0)
+        {
+            delete p2DA;
+            return;
+        }
+        m_nMaxTexQual = p2DA->m_nNumRows - 1;
+        p2DA->Unload2DArray();
+        delete p2DA;
+        SetTexQualText();
+    }
+}
+// PC 0x006E0CF0
+void CSWGuiOptionsResolution::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case 40:
+        case 46:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            m_pManager->PopModalPanel();
+            m_bDeferredRemoval = 0;
+            m_nExitState = EXITSTATE_DELETE;
+            if (m_nUnknown80C != 0)
+            {
+                CExoIni cIni;
+                CExoString sValue;
+                {
+                    int bRead = cIni.ReadIniEntry(
+                        sValue, ".\\swkotor.ini", "Graphics Options",
+                        "Disable Vertex Buffer Objects");
+                    if (bRead != 0 && sValue.AsINT() == 1)
+                    {
+                        AurDisableVertexBufferObjects();
+                    }
+                }
+                ReInitAurora(g_nScreenWidth, g_nScreenHeight, g_nBitsPerPixel,
+                             g_pAurora->FullScreen(), 1);
+                {
+                    int bRead = cIni.ReadIniEntry(sValue, ".\\swkotor.ini",
+                                                  "Graphics Options",
+                                                  "Disable Write-Only VBO");
+                    if (bRead != 0)
+                    {
+                        if (sValue.AsINT() == 1)
+                        {
+                            AurDisableVertexBufferObjectsWriteOnly();
+                        }
+                        else
+                        {
+                            AurEnableVertexBufferObjectsWriteOnly();
+                        }
+                    }
+                }
+                m_nUnknown80C = 0;
+            }
+            break;
+        case 39:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            OnResolutionChosen(0);
+            break;
+        }
+    }
+    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
+
+#ifndef _XBOX
+void CSWGuiOptionsResolution::OnResolutionChosen(CSWGuiControl* pControl)  // PC 0x006DF690
+{
+    if (pControl == 0 || pControl->m_bSelected != 0)
+    {
+        DWORD nMode = m_lbResolutions.GetSelectedControl()->m_nIndex;
+        DEVMODE cDevMode;
+        memset(&cDevMode, 0, sizeof(cDevMode));
+        cDevMode.dmSize = 156;
+        if (EnumDisplaySettings(0, nMode, &cDevMode))
+        {
+            g_nDesiredFullScreenRefreshRate = cDevMode.dmDisplayFrequency;
+        }
+        if (g_pAppManager->m_pClientExoApp->SetVideoMode(nMode) != 0)
+        {
+            CExoString sValue;
+            CExoIni cIni;
+            sValue.Format("%d", g_nScreenWidth);
+            cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "Width");
+            sValue.Format("%d", g_nScreenHeight);
+            cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "Height");
+            sValue.Format("%d", g_nDesiredFullScreenRefreshRate);
+            cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "RefreshRate");
+        }
+        m_pManager->PopModalPanel();
+        m_bDeferredRemoval = 0;
+        m_nExitState = EXITSTATE_DELETE;
+        m_nUnknown80C = 1;
+        g_pGuiMan->ReloadToolTipPanel();
+    }
+}
+#endif
+#endif  // PC 0x006DF9B0  Xbox 0x001180F0
+
+void CSWGuiOptionsSound::OnMoveVolumeSlider(CSWGuiControl* pControl)
+{
+    int nMax = pControl->AsSlider()->m_nMaxValue;
+    int nValue = pControl->AsSlider()->m_nCurValue;
+    float fVolume = (double)nValue / (double)nMax;
+    if (pControl == &m_sldMusic)
+    {
+        g_pExoSound->SetMusicVolume(fVolume, 0);
+        g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nMusicVolume =
+            nValue;
+    }
+    else if (pControl == &m_sldVoice)
+    {
+        g_pExoSound->SetDialogVolume(fVolume);
+        g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nVoiceVolume =
+            nValue;
+    }
+    else if (pControl == &m_sldEffects)
+    {
+        g_pExoSound->SetSoundEffectVolume(fVolume);
+        g_pAppManager->m_pClientExoApp->GetClientOptions()
+            ->m_nSoundEffectsVolume = nValue;
+    }
+    else if (pControl == &m_sldMovie)
+    {
+        g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nMovieVolume =
+            nValue;
+    }
+}
+// PC 0x006DFAA0
+void CSWGuiOptionsSound::OnEnterSlider(CSWGuiControl* pControl)
+{
+    SetDescription(pControl->m_nIndex);
+    CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
+    pParams->m_bPulsing = 1;
+}
+// PC 0x006E0F50
+void CSWGuiOptionsSound::OnDefault(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->SetDefaultSoundOptions();
+        SetUpOptions();
+    }
+}
+// PC 0x006DFAD0
+void CSWGuiOptionsSound::SetUpOptions()
+{
+    CClientOptions* pOptions =
+        g_pAppManager->m_pClientExoApp->GetClientOptions();
+    if (pOptions != 0)
+    {
+        m_sldMusic.SetCurValue(pOptions->m_nMusicVolume);
+        m_sldVoice.SetCurValue(pOptions->m_nVoiceVolume);
+        m_sldEffects.SetCurValue(pOptions->m_nSoundEffectsVolume);
+        m_sldMovie.SetCurValue(pOptions->m_nMovieVolume);
+        OnMoveVolumeSlider(&m_sldMusic);
+        OnMoveVolumeSlider(&m_sldVoice);
+        OnMoveVolumeSlider(&m_sldEffects);
+        OnMoveVolumeSlider(&m_sldMovie);
+    }
+}
+// PC 0x006E0F80
+void CSWGuiOptionsSoundAdvanced::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case GUIEVENT_PANEL_CLICK:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            break;
+        case GUIEVENT_CANCEL:
+        case GUIEVENT_CANCEL_ALTERNATE:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            if (m_bDiscard != 0)
+            {
+                m_bDiscard = 0;
+            }
+            else
+            {
+                SetNewOptions();
+                if (m_bChanged != 0)
+                {
+                    CClientOptions* pOptions =
+                        g_pAppManager->m_pClientExoApp->GetClientOptions();
+                    int nEAXFlags = pOptions->m_nEAXFlags;
+#ifndef _XBOX
+                    g_pExoSound->ReInitialize(m_nEAXMode,
+                                              nEAXFlags == 0);
+#endif
+                    CExoIni cIni;
+                    CExoString sValue;
+                    sValue.Format("%d", g_pExoSound->GetEAX());
+                    {
+                        cIni.WriteIniEntry(sValue, ".\\swkotor.ini",
+                                           "Sound Options", "EAX");
+                    }
+                    CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
+                    unsigned char nEAX = g_pExoSound->GetEAX();
+                    pApp->GetClientOptions()->m_nEAXMode = nEAX;
+                    CClientOptions* pOptions2 =
+                        g_pAppManager->m_pClientExoApp->GetClientOptions();
+                    int nSavedEAXFlags = pOptions2->m_nEAXFlags;
+                    sValue.Format("%d", nSavedEAXFlags);
+                    {
+                        cIni.WriteIniEntry(sValue, ".\\swkotor.ini",
+                                           "Sound Options", "Force Software");
+                    }
+                }
+            }
+            m_bChanged = 0;
+            m_pManager->PopModalPanel();
+            m_bDeferredRemoval = 0;
+            m_nExitState = EXITSTATE_DELETE;
+            break;
+        case GUIEVENT_SCROLL_UP:
+            m_lbDescription.HandleInputEvent(GUIEVENT_UP, 1);
+            break;
+        case GUIEVENT_SCROLL_DOWN:
+            m_lbDescription.HandleInputEvent(GUIEVENT_DOWN, 1);
+            break;
+        }
+    }
+    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
+// PC 0x006DFB60
+void CSWGuiOptionsSoundAdvanced::SetNewOptions()
+{
+    if (g_pAppManager->m_pClientExoApp->GetClientOptions() != 0)
+    {
+        unsigned char nMode = m_nEAXMode;
+        g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nEAXMode = nMode;
+        int nFlags = m_bForceSoftware;
+        g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nEAXFlags =
+            nFlags;
+    }
+}
+// PC 0x006DFBB0
+void CSWGuiOptionsSoundAdvanced::OnEAXLeft(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        if (m_nEAXMode > 0)
+        {
+            m_nEAXMode = m_nEAXMode - 1;
+            SetEAXText();
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
+            m_bChanged = 1;
+        }
+    }
+}
+// PC 0x006DFBF0
+void CSWGuiOptionsSoundAdvanced::OnEAXRight(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        int nBest;
+#ifdef _XBOX
+        nBest = 3;
+#else
+        if (g_pExoSound->GetBestEAXAvailable() > 3)
+        {
+            nBest = 3;
+        }
+        else
+        {
+            nBest = g_pExoSound->GetBestEAXAvailable();
+        }
+#endif
+        if (m_nEAXMode != nBest)
+        {
+            m_nEAXMode = m_nEAXMode + 1;
+            SetEAXText();
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
+            m_bChanged = 1;
+        }
+    }
+}
+// PC 0x006DFC50
+void CSWGuiOptionsSoundAdvanced::OnForceSoftware(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        int bForce = (m_bForceSoftware == 0);
+        m_bForceSoftware = bForce;
+        EnableEAXControls(bForce == 0);
+        m_bChanged = 1;
+    }
+}
+// PC 0x006E1270
+void CSWGuiOptionsSoundAdvanced::OnDefault(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->SetDefaultAdvancedSoundOptions();
+        SetUpOptions();
+        m_bChanged = 1;
+    }
+}
+// PC 0x006DFC90
+void CSWGuiOptionsSoundAdvanced::SetUpOptions()
+{
+    CClientOptions* pOptions =
+        g_pAppManager->m_pClientExoApp->GetClientOptions();
+    if (pOptions != 0)
+    {
+        m_nEAXMode = pOptions->m_nEAXMode;
+        SetEAXText();
+        int bForceSoftware = pOptions->m_nEAXFlags;
+        m_bForceSoftware = bForceSoftware;
+        CSWGuiButtonToggle* pToggle = m_cbForceSoftware.AsButtonToggle();
+        pToggle->m_bToggled = bForceSoftware;
+        EnableEAXControls(pOptions->m_nEAXFlags == 0);
+    }
+    m_bChanged = 0;
+}
+// PC 0x006DFD10
+void CSWGuiOptionsMouse::OnRevMouseButtons(CSWGuiControl* pControl)
+{
+    int bSelected = pControl->m_bSelected;
+    if (bSelected != 0)
+    {
+        CExoString sValue;
+        CExoIni cIni;
+        int bReverse = g_pAppManager->m_pClientExoApp->GetClientOptions()
+                           ->m_bReverseMouseButtons;
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->m_bReverseMouseButtons = (bReverse == 0);
+        int nReverse = g_pAppManager->m_pClientExoApp->GetClientOptions()
+                           ->m_bReverseMouseButtons;
+        sValue.Format("%d", nReverse);
+        CExoString sKey("Reverse Mouse Buttons");
+        CExoString sSection("Game Options");
+        CExoString sFile(".\\swkotor.ini");
+        cIni.WriteIniEntry(sValue, sFile, sSection, sKey);
+    }
+}
+// PC 0x006DFE60
+void CSWGuiOptionsMouse::OnEnterRevMouseButtons(CSWGuiControl* pControl)
+{
+    SetDescription(48450);
+}
+// PC 0x006E12B0
+void CSWGuiOptionsMouse::OnDefault(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->SetDefaultMouseOptions();
+        SetUpOptions();
+    }
+}
+// PC 0x006E2A70
+CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+    StartLoadFromLayout("optfeedback");
+    InitControl(m_lbOptions, "LB_OPTIONS", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    InitControl(m_btnBack, "BTN_BACK", 1);
+    InitControl(m_btnDefault, "BTN_DEFAULT", 1);
+    StopLoadFromLayout();
+    PopulateOptionsListbox();
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    CSWGuiButton* pDefault = &m_btnDefault;
+    pDefault->AddEvent(39, this,
+                       (CSWGuiHandler)&CSWGuiOptionsFeedback::OnDefault);
+    pDefault->m_bFocusable = 0;
+    pDefault->AddEvent(45, this,
+                       (CSWGuiHandler)&CSWGuiOptionsFeedback::OnDefault);
+    CSWGuiButton* pBack = &m_btnBack;
+    pBack->m_bFocusable = 0;
+    pBack->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
+    SetActiveControl(&m_lbOptions, 0);
+    SetActiveButton(OPTION_HIDE_UNEQUIPPABLE);
+    SetUpOptions();
+}
+
+#ifndef _XBOX
+void CSWGuiOptionsGraphics::OnAdvanced(CSWGuiControl* pControl)  // PC 0x006E2CF0
+{
+    int bSelected = pControl->m_bSelected;
+    if (bSelected != 0)
+    {
+        CSWGuiOptionsGraphicsAdvanced* pPanel =
+            new CSWGuiOptionsGraphicsAdvanced(GetManager(), this);
+        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
+    }
+}
+#endif
+// PC 0x006E2D70  Xbox 0x00119B40
+void CSWGuiOptionsSound::OnAdvanced(CSWGuiControl* pControl)
+{
+    int bSelected = pControl->m_bSelected;
+    if (bSelected != 0)
+    {
+        CSWGuiOptionsSoundAdvanced* pPanel =
+            new CSWGuiOptionsSoundAdvanced(GetManager());
+        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
+    }
+}
+// PC 0x006DFE70
+void CSWGuiOptionsMouse::SetUpOptions()
+{
+    CClientOptions* pOptions =
+        g_pAppManager->m_pClientExoApp->GetClientOptions();
+    if (pOptions != 0)
+    {
+        unsigned char nSensitivity = pOptions->m_nMouseSensitivity;
+        m_sldMouseSen.AsSlider()->SetCurValue(nSensitivity);
+        int bReverse = pOptions->m_bReverseMouseButtons;
+        CSWGuiButtonToggle* pToggle = m_cbRevButtons.AsButtonToggle();
+        pToggle->m_bToggled = bReverse;
+    }
+}
+// PC 0x006DFEE0
+void CSWGuiOptionsMouse::OnMoveMouseSenSlider(CSWGuiControl* pControl)
+{
+    pControl->AsSlider();
+    int nValue = pControl->AsSlider()->m_nCurValue;
+    g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nMouseSensitivity =
+        nValue;
+}
+// PC 0x006DFF10  Xbox 0x00118630
+void CSWGuiOptionsMain::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case 45:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            break;
+        case 40:
+        case 46:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            m_pManager->PopModalPanel();
+#ifdef _XBOX
+            m_pManager->RemovePanel(this);
+#else
+            m_bDeferredRemoval = 0;
+            m_nExitState = EXITSTATE_DELETE;
+#endif
+            ClosePanel();
+            break;
+#ifndef _XBOX
+        case 57:
+            m_lbDescription.HandleInputEvent(GUIEVENT_UP, 1);
+            break;
+        case 58:
+            m_lbDescription.HandleInputEvent(GUIEVENT_DOWN, 1);
+            break;
+#endif
+        }
+    }
+    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
+// PC 0x006E0010
+void CSWGuiOptionsMain::OnEnterSlot(CSWGuiControl* pControl)
+{
+    SetDescription(pControl->m_nIndex);
+}
+// PC 0x006E0020
+CSWGuiOptionsFeedback::~CSWGuiOptionsFeedback()
+{
+}
+// PC 0x006E1300
+void CSWGuiOptionsFeedback::PopulateOptionsListbox()
+{
+    CSWGuiControl* pProto = m_lbOptions.m_pProtoItem;
+    CExoArrayList<CSWGuiControl*> lstControls;
+    CClientOptions* pOptions =
+        g_pAppManager->GetClientExoApp()->GetClientOptions();
+    if (pOptions == 0)
+    {
+        return;
+    }
+    for (int i = 0; i < OPTION_COUNT; i++)
+    {
+        CSWGuiOptionsCheckbox* pCheckbox = new CSWGuiOptionsCheckbox;
+        pCheckbox->Initialize(pProto->m_cExtent, (CSWGuiButtonToggle*)pProto);
+        pCheckbox->AddEvent(GUIEVENT_MOUSE_ENTER, this,
+                            (CSWGuiHandler)&CSWGuiOptionsFeedback::OnEnterSlot);
+        switch (i)
+        {
+        case OPTION_HIDE_UNEQUIPPABLE:
+            pCheckbox->m_cText.m_cParams.SetStrRef(STRREF_HIDE_UNEQUIPPABLE_LABEL);
+            pCheckbox->m_nIndex = STRREF_HIDE_UNEQUIPPABLE_DESCRIPTION;
+            pCheckbox->AddEvent(GUIEVENT_ACTIVATE, this,
+                                (CSWGuiHandler)&CSWGuiOptionsFeedback::OnHide);
+            pCheckbox->AddEvent(GUIEVENT_ACCEPT, this,
+                                (CSWGuiHandler)&CSWGuiOptionsFeedback::OnHide);
+            break;
+        case OPTION_TUTORIAL_POPUPS:
+            pCheckbox->m_cText.m_cParams.SetStrRef(STRREF_TUTORIAL_POPUPS_LABEL);
+            pCheckbox->m_nIndex = STRREF_TUTORIAL_POPUPS_DESCRIPTION;
+            pCheckbox->AddEvent(
+                GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiOptionsFeedback::OnTutorial);
+            pCheckbox->AddEvent(
+                GUIEVENT_ACCEPT, this, (CSWGuiHandler)&CSWGuiOptionsFeedback::OnTutorial);
+            break;
+        case OPTION_SUBTITLES:
+            pCheckbox->m_cText.m_cParams.SetStrRef(STRREF_SUBTITLES_LABEL);
+            pCheckbox->m_nIndex = STRREF_SUBTITLES_DESCRIPTION;
+            pCheckbox->AddEvent(
+                GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSubtitles);
+            pCheckbox->AddEvent(
+                GUIEVENT_ACCEPT, this, (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSubtitles);
+            break;
+        case OPTION_MINI_MAP:
+            pCheckbox->m_cText.m_cParams.SetStrRef(STRREF_MINI_MAP_LABEL);
+            pCheckbox->m_nIndex = STRREF_MINI_MAP_DESCRIPTION;
+            pCheckbox->AddEvent(
+                GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiOptionsFeedback::OnMiniMap);
+            pCheckbox->AddEvent(
+                GUIEVENT_ACCEPT, this, (CSWGuiHandler)&CSWGuiOptionsFeedback::OnMiniMap);
+            break;
+        case OPTION_FLOATING_NUMBERS:
+            pCheckbox->m_cText.m_cParams.SetStrRef(STRREF_FLOATING_NUMBERS_LABEL);
+            pCheckbox->m_nIndex = STRREF_FLOATING_NUMBERS_DESCRIPTION;
+            pCheckbox->AddEvent(
+                GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiOptionsFeedback::OnFloaty);
+            pCheckbox->AddEvent(
+                GUIEVENT_ACCEPT, this, (CSWGuiHandler)&CSWGuiOptionsFeedback::OnFloaty);
+            break;
+        case OPTION_STATUS_SUMMARY:
+            pCheckbox->m_cText.m_cParams.SetStrRef(STRREF_STATUS_SUMMARY_LABEL);
+            pCheckbox->m_nIndex = STRREF_STATUS_SUMMARY_DESCRIPTION;
+            pCheckbox->AddEvent(
+                GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSummary);
+            pCheckbox->AddEvent(
+                GUIEVENT_ACCEPT, this, (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSummary);
+            break;
+        case OPTION_HIDE_IN_GAME_GUI:
+            pCheckbox->m_cText.m_cParams.SetStrRef(STRREF_HIDE_IN_GAME_GUI_LABEL);
+            pCheckbox->m_nIndex = STRREF_HIDE_IN_GAME_GUI_DESCRIPTION;
+            pCheckbox->AddEvent(
+                GUIEVENT_ACTIVATE, this,
+                (CSWGuiHandler)&CSWGuiOptionsFeedback::OnHideInGameGUI);
+            pCheckbox->AddEvent(
+                GUIEVENT_ACCEPT, this,
+                (CSWGuiHandler)&CSWGuiOptionsFeedback::OnHideInGameGUI);
+            break;
+        case OPTION_USE_SMALL_FONTS:
+            pCheckbox->m_cText.m_cParams.SetStrRef(STRREF_USE_SMALL_FONTS_LABEL);
+            pCheckbox->m_nIndex = STRREF_USE_SMALL_FONTS_DESCRIPTION;
+            pCheckbox->AddEvent(
+                GUIEVENT_ACTIVATE, this,
+                (CSWGuiHandler)&CSWGuiOptionsFeedback::OnUseSmallFont);
+            pCheckbox->AddEvent(
+                GUIEVENT_ACCEPT, this,
+                (CSWGuiHandler)&CSWGuiOptionsFeedback::OnUseSmallFont);
+            break;
+        case OPTION_ENABLE_TOOLTIPS:
+            pCheckbox->m_cText.m_cParams.SetStrRef(STRREF_ENABLE_TOOLTIPS_LABEL);
+            pCheckbox->m_nIndex = STRREF_ENABLE_TOOLTIPS_DESCRIPTION;
+            pCheckbox->AddEvent(
+                GUIEVENT_ACTIVATE, this,
+                (CSWGuiHandler)&CSWGuiOptionsFeedback::OnEnableToolTips);
+            pCheckbox->AddEvent(
+                GUIEVENT_ACCEPT, this,
+                (CSWGuiHandler)&CSWGuiOptionsFeedback::OnEnableToolTips);
+            break;
+        }
+        lstControls.Add(pCheckbox);
+    }
+    CSWGuiListBox* pList = &m_lbOptions;
+    pList->ClearItems();
+    pList->AddControls(lstControls, 1, 1, 0);
+    pList->m_bLooping = 0;
+}
+
+#ifndef _XBOX
+void CSWGuiOptionsGraphics::OnResolution(CSWGuiControl* pControl)  // PC 0x006E1660
+{
+    int bSelected = pControl->m_bSelected;
+    CSWGuiOptionsResolution* pPanel = 0;
+    if (bSelected != 0)
+    {
+        CSWGuiOptionsResolution* pNew = new CSWGuiOptionsResolution(GetManager());
+        pPanel = pNew;
+        pPanel->CenterPanel();
+        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+    }
+}
+// PC 0x006E16E0
+CSWGuiOptionsGraphicsAdvanced::CSWGuiOptionsGraphicsAdvanced(
+    CSWGuiManager* pManager, CSWGuiOptionsGraphics* pGraphics)
+    : CSWGuiPanel(pManager)
+{
+    StartLoadFromLayout("optgraphicsadv");
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    InitControl(m_btnAntiAlias, "BTN_ANTIALIAS", 1);
+    InitControl(m_btnAntiAliasLeft, "BTN_ANTIALIASLEFT", 1);
+    InitControl(m_btnAntiAliasRight, "BTN_ANTIALIASRIGHT", 1);
+    InitControl(m_btnTexQual, "BTN_TEXQUAL", 1);
+    InitControl(m_btnTexQualLeft, "BTN_TEXQUALLEFT", 1);
+    InitControl(m_btnTexQualRight, "BTN_TEXQUALRIGHT", 1);
+    InitControl(m_cbFrameBuffer, "CB_FRAMEBUFF", 1);
+    InitControl(m_btnAnisotropy, "BTN_ANISOTROPY", 1);
+    InitControl(m_btnAnisotropyLeft, "BTN_ANISOTROPYLEFT", 1);
+    InitControl(m_btnAnisotropyRight, "BTN_ANISOTROPYRIGHT", 1);
+    InitControl(m_cbSoftShadows, "CB_SOFTSHADOWS", 1);
+    InitControl(m_cbVSync, "CB_VSYNC", 1);
+    m_btnAntiAlias.m_nIndex = 47971;
+    m_btnAntiAliasLeft.m_nIndex = 47971;
+    m_btnAntiAliasRight.m_nIndex = 47971;
+    m_btnTexQual.m_nIndex = 47965;
+    m_btnTexQualLeft.m_nIndex = 47965;
+    m_btnTexQualRight.m_nIndex = 47965;
+    m_cbFrameBuffer.m_nIndex = 47957;
+    m_btnAnisotropy.m_nIndex = 47961;
+    m_btnAnisotropyLeft.m_nIndex = 47961;
+    m_btnAnisotropyRight.m_nIndex = 47961;
+    m_cbSoftShadows.m_nIndex = 47953;
+    m_cbVSync.m_nIndex = 47969;
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    InitControl(m_btnBack, "BTN_BACK", 1);
+    InitControl(m_btnDefault, "BTN_DEFAULT", 1);
+    InitControl(m_btnCancel, "BTN_CANCEL", 1);
+    StopLoadFromLayout();
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    m_btnAntiAlias.AddEvent(
+        0, this, (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnEnterSlot);
+    m_btnAntiAliasLeft.AddEvent(
+        0, this, (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnEnterSlot);
+    m_btnAntiAliasRight.AddEvent(
+        0, this, (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnEnterSlot);
+    m_btnTexQual.AddEvent(
+        0, this, (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnEnterSlot);
+    m_btnTexQualLeft.AddEvent(
+        0, this, (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnEnterSlot);
+    m_btnTexQualRight.AddEvent(
+        0, this, (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnEnterSlot);
+    m_cbFrameBuffer.AddEvent(
+        0, this, (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnEnterSlot);
+    m_btnAnisotropy.AddEvent(
+        0, this, (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnEnterSlot);
+    m_btnAnisotropyLeft.AddEvent(
+        0, this, (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnEnterSlot);
+    m_btnAnisotropyRight.AddEvent(
+        0, this, (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnEnterSlot);
+    m_cbSoftShadows.AddEvent(
+        0, this, (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnEnterSlot);
+    m_cbVSync.AddEvent(
+        0, this, (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnEnterSlot);
+    m_btnAntiAliasLeft.AddEvent(
+        39, this,
+        (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnAntiAliasLeft);
+    m_btnAntiAliasRight.AddEvent(
+        39, this,
+        (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnAntiAliasRight);
+    m_btnTexQualLeft.AddEvent(
+        39, this, (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnTexQualLeft);
+    m_btnTexQualRight.AddEvent(
+        39, this,
+        (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnTexQualRight);
+    m_btnAnisotropyLeft.AddEvent(
+        39, this,
+        (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnAnisotropyLeft);
+    m_btnAnisotropyRight.AddEvent(
+        39, this,
+        (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnAnisotropyRight);
+    m_cbFrameBuffer.AddEvent(
+        39, this, (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnFrameBuffer);
+    m_cbSoftShadows.AddEvent(
+        39, this, (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnSoftShadows);
+    m_cbVSync.AddEvent(39, this,
+                       (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnVSync);
+    SetUpOptions();
+    CSWGuiButton* pBack = &m_btnBack;
+    pBack->m_bFocusable = 0;
+    pBack->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
+    CSWGuiButton* pDefault = &m_btnDefault;
+    pDefault->m_bFocusable = 0;
+    pDefault->AddEvent(
+        39, this, (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnDefault);
+    CSWGuiButton* pCancel = &m_btnCancel;
+    pCancel->m_bFocusable = 0;
+    pCancel->AddEvent(
+        39, this,
+        (CSWGuiHandler)&CSWGuiOptionsGraphicsAdvanced::OnDiscardChanges);
+    SetActiveControl(&m_btnAntiAlias, 0);
+    if (AurQueryAntiAliasingMode(2) == 0 && AurQueryAntiAliasingMode(4) == 0 &&
+        AurQueryAntiAliasingMode(6) == 0 && AurQueryAntiAliasingMode(8) == 0)
+    {
+        m_btnAntiAlias.SetEnabled(0);
+        m_btnAntiAlias.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
+        m_btnAntiAliasLeft.SetEnabled(0);
+        m_btnAntiAliasRight.SetEnabled(0);
+    }
+    m_bDiscard = 0;
+    m_bChanged = 0;
+    m_pGraphics = pGraphics;
+}
+#endif
+// PC 0x006E20A0  Xbox 0x00119380
+CSWGuiOptionsSoundAdvanced::CSWGuiOptionsSoundAdvanced(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+    StartLoadFromLayout("optsoundadv");
+    InitControl(m_cbForceSoftware, "CB_FORCESOFTWARE", 1);
+    InitControl(m_btnEAX, "BTN_EAX", 1);
+    InitControl(m_btnEAXRight, "BTN_EAXRIGHT", 1);
+    InitControl(m_btnEAXLeft, "BTN_EAXLEFT", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    InitControl(m_btnBack, "BTN_BACK", 1);
+    InitControl(m_btnDefault, "BTN_DEFAULT", 1);
+    InitControl(m_btnCancel, "BTN_CANCEL", 1);
+    m_cbForceSoftware.m_nIndex = 48577;
+    m_btnEAX.m_nIndex = 48578;
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    StopLoadFromLayout();
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    m_cbForceSoftware.AddEvent(
+        39, this, (CSWGuiHandler)&CSWGuiOptionsSoundAdvanced::OnForceSoftware);
+    m_cbForceSoftware.AddEvent(
+        45, this, (CSWGuiHandler)&CSWGuiOptionsSoundAdvanced::OnForceSoftware);
+    m_cbForceSoftware.AddEvent(
+        0, this, (CSWGuiHandler)&CSWGuiOptionsSoundAdvanced::OnEnterOption);
+    m_btnEAXLeft.AddEvent(
+        39, this, (CSWGuiHandler)&CSWGuiOptionsSoundAdvanced::OnEAXLeft);
+    m_btnEAXLeft.AddEvent(
+        45, this, (CSWGuiHandler)&CSWGuiOptionsSoundAdvanced::OnEAXLeft);
+    m_btnEAXLeft.AddEvent(
+        0, this, (CSWGuiHandler)&CSWGuiOptionsSoundAdvanced::OnEnterOption);
+    m_btnEAXRight.AddEvent(
+        39, this, (CSWGuiHandler)&CSWGuiOptionsSoundAdvanced::OnEAXRight);
+    m_btnEAXRight.AddEvent(
+        45, this, (CSWGuiHandler)&CSWGuiOptionsSoundAdvanced::OnEAXRight);
+    m_btnEAXRight.AddEvent(
+        0, this, (CSWGuiHandler)&CSWGuiOptionsSoundAdvanced::OnEnterOption);
+    m_btnEAX.AddEvent(
+        0, this, (CSWGuiHandler)&CSWGuiOptionsSoundAdvanced::OnEnterOption);
+    SetUpOptions();
+    CSWGuiButton* pBack = &m_btnBack;
+    pBack->m_bFocusable = 0;
+    pBack->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
+    CSWGuiButton* pDefault = &m_btnDefault;
+    pDefault->m_bFocusable = 0;
+    pDefault->AddEvent(39, this,
+                       (CSWGuiHandler)&CSWGuiOptionsSoundAdvanced::OnDefault);
+    CSWGuiButton* pCancel = &m_btnCancel;
+    pCancel->m_bFocusable = 0;
+    pCancel->AddEvent(
+        39, this, (CSWGuiHandler)&CSWGuiOptionsSoundAdvanced::OnDiscardChanges);
+    SetActiveControl(&m_cbForceSoftware, 0);
+    m_bDiscard = 0;
+}
+// PC 0x006E2600
+CSWGuiOptionsMouse::CSWGuiOptionsMouse(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+    StartLoadFromLayout("optmouse");
+    InitControl(m_sldMouseSen, "SLI_MOUSESEN", 1);
+    InitControl(m_lblMouseSen, "LBL_MOUSESEN", 1);
+    InitControl(m_cbRevButtons, "CB_REVBUTTONS", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    InitControl(m_btnBack, "BTN_BACK", 1);
+    InitControl(m_btnDefault, "BTN_DEFAULT", 1);
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    StopLoadFromLayout();
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    m_cbRevButtons.AddEvent(
+        39, this, (CSWGuiHandler)&CSWGuiOptionsMouse::OnRevMouseButtons);
+    m_cbRevButtons.AddEvent(
+        45, this, (CSWGuiHandler)&CSWGuiOptionsMouse::OnRevMouseButtons);
+    m_cbRevButtons.AddEvent(
+        0, this, (CSWGuiHandler)&CSWGuiOptionsMouse::OnEnterRevMouseButtons);
+    m_sldMouseSen.AddEvent(
+        39, this, (CSWGuiHandler)&CSWGuiOptionsMouse::OnMoveMouseSenSlider);
+    m_sldMouseSen.AddEvent(0, this,
+                           (CSWGuiHandler)&CSWGuiOptionsMouse::OnEnterSlider);
+    m_sldMouseSen.AddEvent(1, this,
+                           (CSWGuiHandler)&CSWGuiOptionsSound::OnExitSlider);
+    m_sldMouseSen.AddEvent(
+        47, this, (CSWGuiHandler)&CSWGuiOptionsMouse::OnMoveMouseSenSlider);
+    m_sldMouseSen.AddEvent(
+        48, this, (CSWGuiHandler)&CSWGuiOptionsMouse::OnMoveMouseSenSlider);
+    m_sldMouseSen.AddEvent(
+        63, this, (CSWGuiHandler)&CSWGuiOptionsMouse::OnMoveMouseSenSlider);
+    m_sldMouseSen.AddEvent(
+        64, this, (CSWGuiHandler)&CSWGuiOptionsMouse::OnMoveMouseSenSlider);
+    m_sldMouseSen.m_nIndex = 48013;
+    m_lblMouseSen.m_nIndex = 48013;
+    m_cbRevButtons.m_nIndex = 48450;
+    CSWGuiButton* pBack = &m_btnBack;
+    pBack->m_bFocusable = 0;
+    pBack->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
+    CSWGuiButton* pDefault = &m_btnDefault;
+    pDefault->m_bFocusable = 0;
+    pDefault->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiOptionsMouse::OnDefault);
+    SetActiveControl(&m_sldMouseSen, 0);
+    SetUpOptions();
+}
+// PC 0x006E0100
+void CSWGuiOptionsFeedback::OnDefault(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->SetDefaultFeedbackOptions();
+        SetUpOptions();
+    }
+}
+// PC 0x006E0130
+void CSWGuiOptionsFeedback::OnEnterSlot(CSWGuiControl* pControl)
+{
+    SetDescription(pControl->m_nIndex);
+}
+
+#ifndef _XBOX
+void CSWGuiOptionsGraphics::OnEnterSlot(CSWGuiControl* pControl)  // PC 0x006E0140
+{
+    SetDescription(pControl->m_nIndex);
+}
+// PC 0x006E0150
+void CSWGuiOptionsGraphics::OnEnterSlider(CSWGuiControl* pControl)
+{
+    if (pControl == &m_sldGamma)
+    {
+        SetDescription(42310);
+    }
+    CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
+    pParams->m_bPulsing = 1;
+}
+// PC 0x006E0190
+void CSWGuiOptionsGraphics::OnDefault(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->SetDefaultGraphicsOptions();
+        SetUpOptions();
+    }
+}
+// PC 0x006E01C0
+void CSWGuiOptionsGraphicsAdvanced::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case 45:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            break;
+        case 40:
+        case 46:
+            if (m_bDiscard != 0)
+            {
+                m_bDiscard = 0;
+            }
+            else
+            {
+                SetNewOptions();
+                if (m_bChanged != 0)
+                {
+                    CExoIni cIni;
+                    CExoString sValue;
+                    {
+                        int bRead = cIni.ReadIniEntry(
+                            sValue, ".\\swkotor.ini", "Graphics Options",
+                            "Disable Vertex Buffer Objects");
+                        if (bRead != 0 && sValue.AsINT() == 1)
+                        {
+                            AurDisableVertexBufferObjects();
+                        }
+                    }
+                    CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
+                    pApp->GetClientOptions()->SetAntiAlias(m_nAntiAlias);
+                    ReInitAurora(g_nScreenWidth, g_nScreenHeight,
+                                 g_nBitsPerPixel, g_pAurora->FullScreen(), 1);
+                    {
+                        int bRead = cIni.ReadIniEntry(sValue, ".\\swkotor.ini",
+                                                      "Graphics Options",
+                                                      "Disable Write-Only VBO");
+                        if (bRead != 0)
+                        {
+                            if (sValue.AsINT() == 1)
+                            {
+                                AurDisableVertexBufferObjectsWriteOnly();
+                            }
+                            else
+                            {
+                                AurEnableVertexBufferObjectsWriteOnly();
+                            }
+                        }
+                    }
+                    m_bChanged = 0;
+                }
+            }
+            m_bChanged = 0;
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            m_pManager->PopModalPanel();
+            m_bDeferredRemoval = 0;
+            m_nExitState = EXITSTATE_DELETE;
+            m_pGraphics->SetUpOptions();
+            break;
+        }
+    }
+    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
+// PC 0x006E0460
+void CSWGuiOptionsGraphicsAdvanced::OnEnterSlot(CSWGuiControl* pControl)
+{
+    SetDescription(pControl->m_nIndex);
+}
+// PC 0x006E0470
+void CSWGuiOptionsGraphicsAdvanced::OnDefault(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->SetDefaultAdvancedGraphicsOptions();
+        SetUpOptions();
+    }
+}
+// PC 0x006E04A0
+void CSWGuiOptionsGraphicsAdvanced::OnTexQualLeft(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        if (m_nTexQual > 0)
+        {
+            m_nTexQual = m_nTexQual - 1;
+            SetTexQualText();
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
+        }
+    }
+}
+// PC 0x006E04E0
+void CSWGuiOptionsGraphicsAdvanced::OnTexQualRight(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        if (m_nTexQual <= m_nMaxTexQual)
+        {
+            m_nTexQual = m_nTexQual + 1;
+            SetTexQualText();
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
+        }
+    }
+}
+// PC 0x006E0520
+void CSWGuiOptionsGraphicsAdvanced::OnAntiAliasLeft(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        if (m_nAntiAlias > 0)
+        {
+            int bFound = 0;
+            if (m_nAntiAlias >= 8)
+            {
+                m_nAntiAlias = 6;
+                if (AurQueryAntiAliasingMode(6) != 0)
+                {
+                    bFound = 1;
+                }
+            }
+            if (m_nAntiAlias >= 6 && !bFound)
+            {
+                m_nAntiAlias = 4;
+                if (AurQueryAntiAliasingMode(4) != 0)
+                {
+                    bFound = 1;
+                }
+            }
+            if (m_nAntiAlias >= 4 && !bFound)
+            {
+                m_nAntiAlias = 2;
+                if (AurQueryAntiAliasingMode(2) != 0)
+                {
+                    bFound = 1;
+                }
+            }
+            if (!bFound)
+            {
+                m_nAntiAlias = 0;
+            }
+            SetAntiAliasText();
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
+        }
+    }
+}
+// PC 0x006E05E0
+void CSWGuiOptionsGraphicsAdvanced::OnAntiAliasRight(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        if (m_nAntiAlias != 8)
+        {
+            int nAntiAlias = m_nAntiAlias;
+            int bFound = 0;
+            if (nAntiAlias <= 0)
+            {
+                nAntiAlias = 2;
+                if (AurQueryAntiAliasingMode(nAntiAlias) != 0)
+                {
+                    bFound = 1;
+                }
+            }
+            if (nAntiAlias <= 2 && !bFound)
+            {
+                nAntiAlias = 4;
+                if (AurQueryAntiAliasingMode(nAntiAlias) != 0)
+                {
+                    bFound = 1;
+                }
+            }
+            if (nAntiAlias <= 4 && !bFound)
+            {
+                nAntiAlias = 6;
+                if (AurQueryAntiAliasingMode(nAntiAlias) != 0)
+                {
+                    bFound = 1;
+                }
+            }
+            if (nAntiAlias <= 6 && !bFound)
+            {
+                nAntiAlias = 8;
+                if (AurQueryAntiAliasingMode(nAntiAlias) != 0)
+                {
+                    bFound = 1;
+                }
+            }
+            if (bFound)
+            {
+                m_nAntiAlias = nAntiAlias;
+            }
+            SetAntiAliasText();
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
+        }
+    }
+}
+// PC 0x006E0680
+void CSWGuiOptionsGraphicsAdvanced::OnAnisotropyLeft(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        if (m_nAnisotropy > 0)
+        {
+            int nAnisotropy = m_nAnisotropy / 2;
+            m_nAnisotropy = nAnisotropy;
+            if (nAnisotropy <= 0)
+            {
+                m_nAnisotropy = 1;
+            }
+            SetAnisotropyText();
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
+        }
+    }
+}
+// PC 0x006E06D0
+void CSWGuiOptionsGraphicsAdvanced::OnAnisotropyRight(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        int nAnisotropy = m_nAnisotropy;
+        if (nAnisotropy < AurQueryMaximumAnisotropy())
+        {
+            m_nAnisotropy = 2 * nAnisotropy;
+            SetAnisotropyText();
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
+        }
+    }
+}
+#endif
+// PC 0x006E2DF0
+void CSWGuiOptionsMain::OnFeedbackOpt(CSWGuiControl* pControl)
+{
+    int bSelected = pControl->m_bSelected;
+    if (bSelected != 0)
+    {
+        CSWGuiOptionsFeedback* pPanel = new CSWGuiOptionsFeedback(GetManager());
+        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
+    }
+}
+
+void CSWGuiOptionsFeedback::SetActiveButton(int nOption)
+{
+    if (nOption >= 0 && nOption < OPTION_COUNT)
+    {
+        m_lbOptions.SetActiveControl(m_lbOptions.GetControl(nOption), 0);
+    }
+}
+
+#ifndef _XBOX
+CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager)  // PC 0x006E2E70
+    : CSWGuiPanel(pManager)
+{
+    StartLoadFromLayout("optgraphics");
+    InitControl(m_sldGamma, "SLI_GAMMA", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    InitControl(m_lblGamma, "LBL_GAMMA", 1);
+    InitControl(m_btnResolution, "BTN_RESOLUTION", 1);
+    InitControl(m_btnResolutionLeft, "BTN_RESOLUTIONLEFT", 1);
+    InitControl(m_btnResolutionRight, "BTN_RESOLUTIONRIGHT", 1);
+    InitControl(m_cbShadows, "CB_SHADOWS", 1);
+    InitControl(m_cbGrass, "CB_GRASS", 1);
+    InitControl(m_btnAdvanced, "BTN_ADVANCED", 1);
+    m_sldGamma.m_nIndex = 42310;
+    m_lblGamma.m_nIndex = 42310;
+    m_btnResolution.m_nIndex = 47967;
+    m_btnResolutionLeft.m_nIndex = 47967;
+    m_btnResolutionRight.m_nIndex = 47967;
+    m_cbShadows.m_nIndex = 47951;
+    m_cbGrass.m_nIndex = 47955;
+    m_btnAdvanced.m_nIndex = 49070;
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    InitControl(m_btnBack, "BTN_BACK", 1);
+    InitControl(m_btnDefault, "BTN_DEFAULT", 1);
+    StopLoadFromLayout();
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    m_sldGamma.SetCurValue(57);
+    m_sldGamma.AddEvent(0, this,
+                        (CSWGuiHandler)&CSWGuiOptionsGraphics::OnEnterSlider);
+    m_sldGamma.AddEvent(1, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnExitSlider);
+    m_sldGamma.AddEvent(
+        47, this, (CSWGuiHandler)&CSWGuiOptionsGraphics::OnMoveGammaSlider);
+    m_sldGamma.AddEvent(
+        48, this, (CSWGuiHandler)&CSWGuiOptionsGraphics::OnMoveGammaSlider);
+    m_sldGamma.AddEvent(
+        63, this, (CSWGuiHandler)&CSWGuiOptionsGraphics::OnMoveGammaSlider);
+    m_sldGamma.AddEvent(
+        64, this, (CSWGuiHandler)&CSWGuiOptionsGraphics::OnMoveGammaSlider);
+    m_sldGamma.AddEvent(42, this,
+                        (CSWGuiHandler)&CSWGuiOptionsGraphics::OnDefault);
+    m_sldGamma.AddEvent(
+        39, this, (CSWGuiHandler)&CSWGuiOptionsGraphics::OnMoveGammaSlider);
+    m_btnResolution.AddEvent(
+        0, this, (CSWGuiHandler)&CSWGuiOptionsGraphics::OnEnterSlot);
+    m_cbShadows.AddEvent(0, this,
+                         (CSWGuiHandler)&CSWGuiOptionsGraphics::OnEnterSlot);
+    m_cbGrass.AddEvent(0, this,
+                       (CSWGuiHandler)&CSWGuiOptionsGraphics::OnEnterSlot);
+    m_btnResolution.AddEvent(
+        39, this, (CSWGuiHandler)&CSWGuiOptionsGraphics::OnResolution);
+    m_cbShadows.AddEvent(39, this,
+                         (CSWGuiHandler)&CSWGuiOptionsGraphics::OnShadows);
+    m_cbGrass.AddEvent(39, this,
+                       (CSWGuiHandler)&CSWGuiOptionsGraphics::OnGrass);
+    SetUpOptions();
+    CSWGuiButton* pBack = &m_btnBack;
+    pBack->m_bFocusable = 0;
+    pBack->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
+    CSWGuiButton* pDefault = &m_btnDefault;
+    pDefault->m_bFocusable = 0;
+    pDefault->AddEvent(39, this,
+                       (CSWGuiHandler)&CSWGuiOptionsGraphics::OnDefault);
+    CSWGuiButton* pAdvanced = &m_btnAdvanced;
+    pAdvanced->m_bFocusable = 0;
+    pAdvanced->AddEvent(39, this,
+                        (CSWGuiHandler)&CSWGuiOptionsGraphics::OnAdvanced);
+    SetActiveControl(&m_sldGamma, 0);
+    m_nUnknown18BC = 0;
+}
+#endif
+// PC 0x006E3550  Xbox 0x001188B0
+CSWGuiOptionsSound::CSWGuiOptionsSound(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+    StartLoadFromLayout("optsound");
+    InitControl(m_sldMusic, "SLI_MUSIC", 1);
+    InitControl(m_sldVoice, "SLI_VO", 1);
+    InitControl(m_sldEffects, "SLI_FX", 1);
+    InitControl(m_sldMovie, "SLI_MOVIE", 1);
+    InitControl(m_lblMusic, "LBL_MUSIC", 1);
+    InitControl(m_lblVoice, "LBL_VO", 1);
+    InitControl(m_lblEffects, "LBL_FX", 1);
+    InitControl(m_lblMovie, "LBL_MOVIE", 1);
+    InitControl(m_btnAdvanced, "BTN_ADVANCED", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    m_sldMusic.m_nIndex = 42311;
+    m_sldVoice.m_nIndex = 42312;
+    m_sldEffects.m_nIndex = 42313;
+    m_sldMovie.m_nIndex = 47921;
+    m_btnAdvanced.m_nIndex = 49073;
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    InitControl(m_btnBack, "BTN_BACK", 1);
+    InitControl(m_btnDefault, "BTN_DEFAULT", 1);
+    StopLoadFromLayout();
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    m_sldMusic.SetCurValue(50);
+    m_sldVoice.SetCurValue(50);
+    m_sldEffects.SetCurValue(50);
+    m_sldMovie.SetCurValue(50);
+    m_sldMusic.AddEvent(0, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnEnterSlider);
+    m_sldVoice.AddEvent(0, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnEnterSlider);
+    m_sldEffects.AddEvent(0, this,
+                          (CSWGuiHandler)&CSWGuiOptionsSound::OnEnterSlider);
+    m_sldMovie.AddEvent(0, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnEnterSlider);
+    m_sldMusic.AddEvent(1, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnExitSlider);
+    m_sldVoice.AddEvent(1, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnExitSlider);
+    m_sldEffects.AddEvent(1, this,
+                          (CSWGuiHandler)&CSWGuiOptionsSound::OnExitSlider);
+    m_sldMovie.AddEvent(1, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnExitSlider);
+    m_sldMusic.AddEvent(47, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldVoice.AddEvent(47, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldEffects.AddEvent(
+        47, this, (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldMovie.AddEvent(47, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldMusic.AddEvent(48, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldVoice.AddEvent(48, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldEffects.AddEvent(
+        48, this, (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldMovie.AddEvent(48, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldMusic.AddEvent(63, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldVoice.AddEvent(63, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldEffects.AddEvent(
+        63, this, (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldMovie.AddEvent(63, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldMusic.AddEvent(64, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldVoice.AddEvent(64, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldEffects.AddEvent(
+        64, this, (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldMovie.AddEvent(64, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldMusic.AddEvent(42, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnDefault);
+    m_sldVoice.AddEvent(42, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnDefault);
+    m_sldEffects.AddEvent(42, this,
+                          (CSWGuiHandler)&CSWGuiOptionsSound::OnDefault);
+    m_sldMovie.AddEvent(42, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnDefault);
+    m_sldMusic.AddEvent(39, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldVoice.AddEvent(39, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldEffects.AddEvent(
+        39, this, (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_sldMovie.AddEvent(39, this,
+                        (CSWGuiHandler)&CSWGuiOptionsSound::OnMoveVolumeSlider);
+    m_btnAdvanced.AddEvent(39, this,
+                           (CSWGuiHandler)&CSWGuiOptionsSound::OnAdvanced);
+    SetUpOptions();
+    CSWGuiButton* pBack = &m_btnBack;
+    pBack->m_bFocusable = 0;
+    pBack->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
+    CSWGuiButton* pDefault = &m_btnDefault;
+    pDefault->m_bFocusable = 0;
+    pDefault->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiOptionsSound::OnDefault);
+    SetActiveControl(&m_sldMusic, 0);
+}
+
+#ifndef _XBOX
+void CSWGuiOptionsMain::OnGraphicsOpt(CSWGuiControl* pControl)  // PC 0x006E3D80
+{
+    int bSelected = pControl->m_bSelected;
+    if (bSelected != 0)
+    {
+        CSWGuiOptionsGraphics* pPanel = new CSWGuiOptionsGraphics(GetManager());
+        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
+    }
+}
+#endif
+// PC 0x006E3E00
+void CSWGuiOptionsMain::OnSoundOpt(CSWGuiControl* pControl)
+{
+    int bSelected = pControl->m_bSelected;
+    if (bSelected != 0)
+    {
+        CSWGuiOptionsSound* pPanel = new CSWGuiOptionsSound(GetManager());
+        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
+    }
+}
+
+#ifdef _XBOX
+// Xbox 0x00117B10
+void CSWGuiOptionsMain::OnDownload(CSWGuiControl* pControl)
+{
+    LAUNCH_DATA cLaunchData;
+
+    g_pAppManager->m_pClientExoApp->BusyWaitMenuMusic();
+    memset(&cLaunchData, 0, sizeof(cLaunchData));
+    XLaunchNewImage("d:\downloader.xbe", &cLaunchData);
+}
+// PC 0x006E3E80  Xbox 0x00119BC0
+CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+    StartLoadFromLayout("optionsmain");
+    InitControl(m_btnOptions[0], "BTN_GAMEPLAY", 1);
+    InitControl(m_btnOptions[1], "BTN_FEEDBACK", 1);
+    InitControl(m_btnOptions[2], "BTN_AUTOPAUSE", 1);
+    InitControl(m_btnOptions[3], "BTN_GRAPHICSSOUND", 1);
+    InitControl(m_btnOptions[4], "BTN_DOWNLOAD", 1);
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblSelect, "LBL_SELECT", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblBack, "LBL_BACK", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    StopLoadFromLayout();
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    m_btnOptions[0].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGameplayOpt);
+    m_btnOptions[1].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnFeedbackOpt);
+    m_btnOptions[2].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnAutopauseOpt);
+    m_btnOptions[3].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnSoundOpt);
+    m_btnOptions[4].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnDownload);
+    m_btnOptions[0].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGameplayOpt);
+    m_btnOptions[1].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnFeedbackOpt);
+    m_btnOptions[2].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnAutopauseOpt);
+    m_btnOptions[3].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnSoundOpt);
+    m_btnOptions[4].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnDownload);
+    for (int i = 0; i < NUM_OPTIONS; i++)
+    {
+        m_btnOptions[i].AddEvent(
+            0, this, (CSWGuiHandler)&CSWGuiOptionsMain::OnEnterSlot);
+
+        m_btnOptions[i].m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
+    }
+    SetActiveControl(&m_btnOptions[0], 0);
+}
+#else
+CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)  // PC 0x006E3E80  Xbox 0x00119BC0
+    : CSWGuiPanel(pManager)
+{
+#ifdef _XBOX
+    StartLoadFromLayout("optionsmain");
+    InitControl(m_btnOptions[0], "BTN_GAMEPLAY", 1);
+    InitControl(m_btnOptions[1], "BTN_FEEDBACK", 1);
+    InitControl(m_btnOptions[2], "BTN_AUTOPAUSE", 1);
+    InitControl(m_btnOptions[3], "BTN_GRAPHICSSOUND", 1);
+    InitControl(m_btnOptions[4], "BTN_DOWNLOAD", 1);
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblSelect, "LBL_SELECT", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblBack, "LBL_BACK", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    StopLoadFromLayout();
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    m_btnOptions[0].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGameplayOpt);
+    m_btnOptions[1].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnFeedbackOpt);
+    m_btnOptions[2].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnAutopauseOpt);
+    m_btnOptions[3].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnSoundOpt);
+    m_btnOptions[4].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnDownloadOpt);
+    m_btnOptions[0].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGameplayOpt);
+    m_btnOptions[1].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnFeedbackOpt);
+    m_btnOptions[2].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnAutopauseOpt);
+    m_btnOptions[3].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnSoundOpt);
+    m_btnOptions[4].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnDownloadOpt);
+    for (int i = 0; i < 5; i++)
+    {
+        m_btnOptions[i].AddEvent(
+            0, this, (CSWGuiHandler)&CSWGuiOptionsMain::OnEnterSlot);
+        m_btnOptions[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+        m_btnOptions[i].m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+        m_btnOptions[i].m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
+    }
+    CSWGuiPanel* pPanel = this;
+    pPanel->SetActiveControl(&m_btnOptions[0], 0);
+#else
+    StartLoadFromLayout("optionsmain");
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    InitControl(m_btnOptions[0], "BTN_GAMEPLAY", 1);
+    InitControl(m_btnOptions[1], "BTN_FEEDBACK", 1);
+    InitControl(m_btnOptions[2], "BTN_AUTOPAUSE", 1);
+    InitControl(m_btnOptions[3], "BTN_GRAPHICS", 1);
+    InitControl(m_btnOptions[4], "BTN_SOUND", 1);
+    m_btnOptions[0].m_nIndex = 48006;
+    m_btnOptions[1].m_nIndex = 48537;
+    m_btnOptions[2].m_nIndex = 48572;
+    m_btnOptions[3].m_nIndex = 48010;
+    m_btnOptions[4].m_nIndex = 48012;
+    InitControl(m_btnBack, "BTN_BACK", 1);
+    CSWGuiExtent cExtent;
+    for (int i = 0; i < 6; i++)
+    {
+        cExtent = m_btnOptions[i].m_cExtent;
+        cExtent.m_nTop += 20;
+        m_btnOptions[i].SetExtent(cExtent);
+    }
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    StopLoadFromLayout();
+    CSWGuiButton* pBack = &m_btnBack;
+    pBack->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
+    pBack->m_bFocusable = 0;
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    m_btnOptions[0].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGameplayOpt);
+    m_btnOptions[1].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnFeedbackOpt);
+    m_btnOptions[2].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnAutopauseOpt);
+    m_btnOptions[3].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGraphicsOpt);
+    m_btnOptions[4].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnSoundOpt);
+    m_btnOptions[0].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGameplayOpt);
+    m_btnOptions[1].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnFeedbackOpt);
+    m_btnOptions[2].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnAutopauseOpt);
+    m_btnOptions[3].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGraphicsOpt);
+    m_btnOptions[4].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnSoundOpt);
+    for (int i = 0; i < 6; i++)
+    {
+        m_btnOptions[i].AddEvent(
+            0, this, (CSWGuiHandler)&CSWGuiOptionsMain::OnEnterSlot);
+        m_btnOptions[i].m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
+    }
+    CSWGuiPanel* pPanel = this;
+    pPanel->SetActiveControl(&m_btnOptions[0], 0);
+#endif
+}
+#endif
+// PC 0x006E6180
+void CSWGuiOptionsMouse::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case 40:
+        case 46:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            m_pManager->PopModalPanel();
+            m_bDeferredRemoval = 0;
+            m_nExitState = EXITSTATE_DELETE;
+            break;
+        case 45:
+            if (m_pActiveControl != 0 &&
+                m_pActiveControl->AsButtonToggle() != 0)
+            {
+                m_pManager->PlayGuiSound(3);
+                CSWGuiButtonToggle* pToggle =
+                    m_pActiveControl->AsButtonToggle();
+                m_pActiveControl->AsButtonToggle()->SetToggled(
+                    !pToggle->m_bToggled);
+            }
+            break;
+        case 57:
+            m_lbDescription.HandleInputEvent(GUIEVENT_UP, 1);
+            break;
+        case 58:
+            m_lbDescription.HandleInputEvent(GUIEVENT_DOWN, 1);
+            break;
+        }
+    }
+    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
