@@ -20,12 +20,12 @@
 
 static inline void NwsencounterTrace1();
 #define NWSENCOUNTER_TRACE() NwsencounterTrace1()
-// PC 0x0058FFC0
+// PC 0x0056B6C0
 CEncounterSpawnPoint::CEncounterSpawnPoint()
     : m_fOrientation(0.0f)
 {
 }
-// PC 0x0058FFD0  Xbox 0x0023E7F0
+// PC 0x0056B6D0
 int CSWSEncounter::LineSegmentIntersectActivateArea(const Vector& vStart,
                                                    const Vector& vEnd)
 {
@@ -56,7 +56,7 @@ int CSWSEncounter::LineSegmentIntersectActivateArea(const Vector& vStart,
     return 0;
 }
 #ifndef _XBOX
-int CSWSEncounter::GetInActivateArea(const Vector& vPosition)  // PC 0x00590090  Xbox 0x0023E8B0
+int CSWSEncounter::GetInActivateArea(const Vector& vPosition)  // PC 0x0056B790
 {
     int nIntersections = 0;
     int nVertexCount = m_nActivateAreaVertexCount;
@@ -120,7 +120,7 @@ int CSWSEncounter::GetInActivateArea(const Vector& vPosition)  // PC 0x00590090 
     return nIntersections % 2 == 1;
 }
 #endif
-CEncounterListEntry& CEncounterListEntry::operator=(  // PC 0x00590250  Xbox 0x0023EA80
+CEncounterListEntry& CEncounterListEntry::operator=(
     const CEncounterListEntry& other)
 {
     m_cResRef = other.m_cResRef;
@@ -131,7 +131,7 @@ CEncounterListEntry& CEncounterListEntry::operator=(  // PC 0x00590250  Xbox 0x0
     m_bSingleSpawn = other.m_bSingleSpawn;
     return *this;
 }
-// PC 0x00590290  Xbox 0x0023EAC0
+// PC 0x0056B950
 int CSWSEncounter::GetInActivateAreaList(unsigned long oidObject)
 {
     int nIndex;
@@ -145,7 +145,7 @@ int CSWSEncounter::GetInActivateAreaList(unsigned long oidObject)
     }
     return 0;
 }
-// PC 0x005902D0  Xbox 0x0023EB00
+// PC 0x0056B990
 void CSWSEncounter::AddToActivateAreaList(unsigned long oidObject)
 {
     int nIndex;
@@ -178,7 +178,7 @@ void CSWSEncounter::AddToActivateAreaList(unsigned long oidObject)
         delete[] pOldList;
     }
 }
-// PC 0x005903B0  Xbox 0x0023EBE0
+// PC 0x0056BA70
 int CSWSEncounter::RemoveFromActivateAreaList(unsigned long oidObject)
 {
     int nRemoved;
@@ -200,7 +200,7 @@ int CSWSEncounter::RemoveFromActivateAreaList(unsigned long oidObject)
     m_nActivateAreaListSize -= nRemoved;
     return nIndex;
 }
-// PC 0x00590580  Xbox 0x0023EDB0
+// PC 0x0056BC40
 int CSWSEncounter::LoadEncounterGeometry(CResGFF* pRes, CResList& lstGeometry)
 {
     CResStruct cStruct;
@@ -275,7 +275,7 @@ int CSWSEncounter::LoadEncounterGeometry(CResGFF* pRes, CResList& lstGeometry)
     }
     return 1;
 }
-// PC 0x00590410  Xbox 0x0023EC40
+// PC 0x0056BAD0
 void CSWSEncounter::LoadEncounterSpawnPoints(CResGFF* pRes,
                                              CResList& lstSpawnPoints)
 {
@@ -307,7 +307,7 @@ void CSWSEncounter::LoadEncounterSpawnPoints(CResGFF* pRes,
         }
     }
 }
-// PC 0x00590820  Xbox 0x0023F040
+// PC 0x0056BEE0
 void CSWSEncounter::ReadEncounterScriptsFromGff(CResGFF* pRes,
                                                CResStruct* pStruct)
 {
@@ -350,7 +350,7 @@ void CSWSEncounter::ReadEncounterScriptsFromGff(CResGFF* pRes,
         m_asScripts[4] = sScript;
     }
 }
-// PC 0x00590A60  Xbox 0x0023F280
+// PC 0x0056C120
 void CSWSEncounter::SetDifficulty(int nDifficulty)
 {
     NWSENCOUNTER_TRACE();
@@ -378,7 +378,7 @@ void CSWSEncounter::SetDifficulty(int nDifficulty)
     }
     m_nDifficulty = (int)fDifficulty;
 }
-// PC 0x00590B10  Xbox 0x0023F360
+
 void CSWSEncounter::PadOutCreatureCount(CEncounterListEntry* pEntries,
                                         int& nCount)
 {
@@ -478,7 +478,7 @@ void CSWSEncounter::PadOutCreatureCount(CEncounterListEntry* pEntries,
     }
     return;
 }
-// PC 0x00590DA0  Xbox 0x0023F600
+// PC 0x0056C1D0
 void CSWSEncounter::UpdateActivateAreaList(unsigned long oidObject)
 {
     NWSENCOUNTER_TRACE();
@@ -549,7 +549,7 @@ void CSWSEncounter::UpdateActivateAreaList(unsigned long oidObject)
         }
     }
 }
-// PC 0x00590F80  Xbox 0x0023F7E0
+// PC 0x0056C3A0
 void CSWSEncounter::BuildInitialSpawnList(CEncounterListEntry* pEntries,
                                          int& nCount)
 {
@@ -650,7 +650,7 @@ void CSWSEncounter::BuildInitialSpawnList(CEncounterListEntry* pEntries,
         nIndex++;
     }
 }
-// PC 0x00591350  Xbox 0x0023FC00
+// PC 0x0056C810
 int CSWSEncounter::SaveEncounter(CResGFF* pRes, CResStruct* pStruct)
 {
     CResStruct* pTopStruct;
@@ -789,7 +789,7 @@ int CSWSEncounter::SaveEncounter(CResGFF* pRes, CResStruct* pStruct)
     }
     return 1;
 }
-// PC 0x00592280  Xbox 0x00240BA0
+
 void CSWSEncounter::AddCreaturesToSpawnList(CEncounterListEntry* pEntries,
                                           int& nCount, int nIndex,
                                           CEncounterListEntry cEntry)
@@ -844,7 +844,7 @@ void CSWSEncounter::AddCreaturesToSpawnList(CEncounterListEntry* pEntries,
         }
     }
 }
-// PC 0x00592430  Xbox 0x00240D70
+// PC 0x0056D640
 int CSWSEncounter::ReadEncounterFromGff(CResGFF* pRes, CResStruct* pStruct,
                                         int bLoadPosition, Vector* pvPosition)
 {
@@ -1075,7 +1075,7 @@ int CSWSEncounter::ReadEncounterFromGff(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x005931D0  Xbox 0x00241B40
+
 void CSWSEncounter::CalculateSpawnPool(float fChallengeRating)
 {
     if (fChallengeRating == -1.0f)
@@ -1093,7 +1093,7 @@ void CSWSEncounter::CalculateSpawnPool(float fChallengeRating)
         m_fSpawnPool += CalculatePointsFromCR((float)(m_nSpawnLevel - 1));
     }
 }
-// PC 0x00593270  Xbox 0x00241BE0
+// PC 0x0056E470
 void CSWSEncounter::LoadFractionalCRData()
 {
 #ifdef _XBOX
@@ -1116,7 +1116,7 @@ void CSWSEncounter::LoadFractionalCRData()
         }
     }
 }
-// PC 0x00593C70  Xbox 0x00242640
+// PC 0x0056E5D0
 CSWSEncounter::CSWSEncounter(unsigned long oidEncounter)
     : CSWSObject(SW_OBJECT_TYPE_ENCOUNTER, oidEncounter, 0)
 {
@@ -1174,7 +1174,7 @@ CSWSEncounter::CSWSEncounter(unsigned long oidEncounter)
     m_nRespawns = 0;
     m_bPlayerOnly = 0;
 }
-// PC 0x00593380  Xbox 0x00241D00
+// PC 0x0056E8F0
 CSWSEncounter::~CSWSEncounter()
 {
     RemoveFromArea();
@@ -1220,7 +1220,7 @@ CSWSEncounter::~CSWSEncounter()
         delete m_plstFractionalCR;
     }
 }
-// PC 0x00593520  Xbox 0x00241EB0
+// PC 0x0056EDD0
 void CSWSEncounter::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
                               int nFlags)
 {
@@ -1237,7 +1237,7 @@ void CSWSEncounter::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
         pCurrentArea->m_lstTriggerIds.Add(m_nId);
     }
 }
-// PC 0x005935D0  Xbox 0x00241F70
+// PC 0x0056D490
 void CSWSEncounter::BuildSpawnList()
 {
     CEncounterListEntry* pEntries = new CEncounterListEntry[m_nMaxCreatures];
@@ -1278,7 +1278,7 @@ void CSWSEncounter::BuildSpawnList()
         delete[] pEntries;
     }
 }
-// PC 0x00593830  Xbox 0x002421E0
+// PC 0x0056EFB0
 int CSWSEncounter::LoadEncounter(CResGFF* pRes, CResStruct* pStruct)
 {
     if (!ReadEncounterFromGff(pRes, pStruct, 0, NULL))
@@ -1344,7 +1344,7 @@ int CSWSEncounter::LoadEncounter(CResGFF* pRes, CResStruct* pStruct)
 
     return 1;
 }
-// PC 0x00593A90  Xbox 0x00242460
+// PC 0x0056F240
 int CSWSEncounter::LoadFromTemplate(const CResRef& cResRef, int bLoadPosition,
                                     Vector* pvPosition)
 {
@@ -1375,7 +1375,7 @@ int CSWSEncounter::LoadFromTemplate(const CResRef& cResRef, int bLoadPosition,
     delete pRes;
     return 1;
 }
-// PC 0x00593FB0  Xbox 0x002429A0
+// PC 0x0056EA80
 void CSWSEncounter::AIUpdate()
 {
     SpawnCreatureFromSpawnList();
@@ -1446,7 +1446,7 @@ void CSWSEncounter::AIUpdate()
         RunActions(nNowDay, nNowTime, nTimer);
     }
 }
-// PC 0x00594220  Xbox 0x00242C30
+// PC 0x0056ECE0
 void CSWSEncounter::EventHandler(unsigned long nEventId,
                                  unsigned long oidCaller, void* pEventData,
                                  unsigned long nCalendarDay,
@@ -1485,7 +1485,7 @@ void CSWSEncounter::EventHandler(unsigned long nEventId,
         delete pEvent;
     }
 }
-// PC 0x00593BE0  Xbox 0x002425B0
+// PC 0x0056E420
 void CSWSEncounter::SpawnIfAppropriate(unsigned long oidObject,
                                        float fChallengeRating)
 {
@@ -1504,7 +1504,7 @@ void CSWSEncounter::SpawnIfAppropriate(unsigned long oidObject,
         }
     }
 }
-// PC 0x00594310  Xbox 0x00242D20
+// PC 0x0056EE80
 void CSWSEncounter::RemoveFromActiveCreatureCount(float fChallengeRating,
                                                   int bAddToPool)
 {
@@ -1549,7 +1549,7 @@ void CSWSEncounter::RemoveFromActiveCreatureCount(float fChallengeRating,
         }
     }
 }
-// PC 0x005919E0  Xbox 0x00240290
+
 float CSWSEncounter::CalculatePointsFromCR(float fChallengeRating)
 {
     if (fChallengeRating > 0.0f && fChallengeRating < 1.0f)
@@ -1578,7 +1578,7 @@ float CSWSEncounter::CalculatePointsFromCR(float fChallengeRating)
     }
     return (float)pow(1.5f, fChallengeRating);
 }
-// PC 0x00591AF0  Xbox 0x002403D0
+
 void CSWSEncounter::TallyEnemyRadiusPoints()
 {
     CSWSArea* pArea = GetArea();
@@ -1636,7 +1636,7 @@ void CSWSEncounter::TallyEnemyRadiusPoints()
         }
     }
 }
-// PC 0x00591CA0  Xbox 0x00240570
+// PC 0x0056CEC0
 void CSWSEncounter::SpawnCreatureFromSpawnList()
 {
     if (m_lstSpawnList.num == 0)
@@ -1772,7 +1772,7 @@ void CSWSEncounter::SpawnCreatureFromSpawnList()
         sResRef.CStr();
     }
 }
-// PC 0x005921A0  Xbox 0x00240AC0
+// PC 0x0056D3B0
 void CSWSEncounter::ClearSpawnList()
 {
     int nIndex;
@@ -1791,7 +1791,7 @@ void CSWSEncounter::ClearSpawnList()
         }
     }
 }
-// PC 0x00592210  Xbox 0x00240B30
+// PC 0x0056D420
 void CSWSEncounter::RemoveFromArea()
 {
     if (GetArea() != NULL)
@@ -1812,7 +1812,7 @@ CExoArrayList<float> CSWSEncounter::m_sPowerLookup;
 static inline void NwsencounterTrace1()
 {
 }
-// PC 0x00593C50  Xbox 0x00242620
+// PC 0x0056E580
 void CSWSEncounter::SetActive(int bActive)
 {
     int nActive;
@@ -1827,7 +1827,7 @@ void CSWSEncounter::SetActive(int bActive)
 }
 
 #ifdef _XBOX
-// PC 0x00590090  Xbox 0x0023E8B0
+
 int CSWSEncounter::GetInActivateArea(const Vector& vPosition)
 {
     int nIntersections = 0;

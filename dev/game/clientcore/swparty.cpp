@@ -23,11 +23,11 @@ int g_nPartyUnused = 0;
 
 int FollowMode = -1;
 int g_bEnablePartySmoothing = 1;
-// PC 0x004015A0  Xbox 0x0006C380
+// PC 0x004015A0
 CSWParty::~CSWParty()
 {
 }
-// PC 0x006345E0  Xbox 0x0006C3B0
+// PC 0x00689E30
 void CSWPartyMemberData::SetCombatMessage(unsigned long nMessage)
 {
     m_nCombatMessage = nMessage;
@@ -38,7 +38,7 @@ void CSWPartyMemberData::SetCombatMessage(unsigned long nMessage)
             m_nCombatMessage);
     }
 }
-// PC 0x00634620  Xbox 0x0006C3F0
+// PC 0x00689E70
 int CSWParty::IsPartyMember(unsigned long oidCreature)
 {
     int nIndex;
@@ -53,7 +53,7 @@ int CSWParty::IsPartyMember(unsigned long oidCreature)
 
     return 0;
 }
-// PC 0x00634650  Xbox 0x0006C420
+// PC 0x00689EA0
 CSWCCreature* CSWParty::RemoveCharacter(int nIndex)
 {
     if (g_pAppManager == NULL)
@@ -75,7 +75,7 @@ CSWCCreature* CSWParty::RemoveCharacter(int nIndex)
     --m_nCharacters;
     return pCreature;
 }
-// PC 0x006346C0  Xbox 0x0006C490
+// PC 0x00689F30
 CSWCCreature* CSWParty::GetCharacter(int nIndex)
 {
     unsigned long oidCreature;
@@ -91,7 +91,7 @@ CSWCCreature* CSWParty::GetCharacter(int nIndex)
 
     return NULL;
 }
-// PC 0x006346F0  Xbox 0x0006C4C0
+// PC 0x00689F60
 void CSWParty::InvertFormation()
 {
     Vector vOffset;
@@ -104,7 +104,7 @@ void CSWParty::InvertFormation()
     m_aPartyMemberData[2].m_vFormationOffset = vOffset;
     m_bFormationInverted = !m_bFormationInverted;
 }
-// PC 0x00634760  Xbox 0x0006C540
+// PC 0x00689FD0
 void CSWParty::SetFormation(int nFormation)
 {
     int bChanged = FALSE;
@@ -153,7 +153,7 @@ void CSWParty::SetFormation(int nFormation)
         }
     }
 }
-// PC 0x006348C0  Xbox 0x0006C6A0
+// PC 0x0068A130
 Vector CSWParty::GetWorldFormationPosition(const Vector& vPosition,
                                           const Vector& vFacing, int nMember)
 {
@@ -172,7 +172,7 @@ Vector CSWParty::GetWorldFormationPosition(const Vector& vPosition,
 
     return vWorldPosition;
 }
-// PC 0x006349C0  Xbox 0x0006C7B0
+// PC 0x0068A340
 int CSWParty::GetIndex(unsigned long oidCreature)
 {
     int nIndex;
@@ -190,7 +190,7 @@ int CSWParty::GetIndex(unsigned long oidCreature)
 
     return -1;
 }
-// PC 0x006349F0  Xbox 0x0006C7E0
+// PC 0x0068A370
 int CSWParty::RemoveCharacter(unsigned long oidCreature)
 {
     int nIndex;
@@ -203,7 +203,7 @@ int CSWParty::RemoveCharacter(unsigned long oidCreature)
 
     return 0;
 }
-// PC 0x00634A40  Xbox 0x0006C830
+// PC 0x0068A3C0
 void CSWParty::ClearParty()
 {
     CSWPartyMemberData* pPartyMember;
@@ -223,7 +223,7 @@ void CSWParty::ClearParty()
 
     m_nCharacters = 0;
 }
-// PC 0x00634A70  Xbox 0x0006C860
+// PC 0x0068A3F0
 float CSWParty::GetFollowRange()
 {
     float fRange;
@@ -261,7 +261,7 @@ float CSWParty::GetFollowRange()
 
     return fRange;
 }
-// PC 0x00634B60  Xbox 0x0006C970
+// PC 0x0068A550
 int CSWPartyFollowDataArray::Reset(const Vector& vPosition, float fFacing)
 {
     int nIndex;
@@ -275,7 +275,7 @@ int CSWPartyFollowDataArray::Reset(const Vector& vPosition, float fFacing)
     m_nCurrentPathData = 0;
     return 0;
 }
-// PC 0x00634CC0  Xbox 0x0006CAD0
+// PC 0x0068A6B0
 CSWPartyFollowData* CSWPartyFollowDataArray::GetPathData(int nIndex)
 {
     if (nIndex < 0 || nIndex >= 100)
@@ -287,7 +287,7 @@ CSWPartyFollowData* CSWPartyFollowDataArray::GetPathData(int nIndex)
 
     return &m_aPathData[nIndex];
 }
-// PC 0x00634D40  Xbox 0x0006CB60
+// PC 0x0068A730
 int CSWPartyFollowDataArray::FindClosestPartyMemeber_Current()
 {
     int nFirstPathIndex = -1;
@@ -317,7 +317,7 @@ int CSWPartyFollowDataArray::FindClosestPartyMemeber_Current()
 
     return (nFirstPathIndex <= nSecondPathIndex) + 1;
 }
-// PC 0x00634DA0  Xbox 0x0006CBC0
+// PC 0x0068A790
 int CSWPartyFollowDataArray::FindFurthestPartyMemeber_Current()
 {
     int nFirstPathIndex = -1;
@@ -347,7 +347,7 @@ int CSWPartyFollowDataArray::FindFurthestPartyMemeber_Current()
 
     return (nFirstPathIndex >= nSecondPathIndex) + 1;
 }
-// PC 0x00634E00  Xbox 0x0006CC20
+// PC 0x0068A7F0
 float CSWPartyFollowDataArray::PointOnLineDistanceFromLeader(int nMember,
                                                              int bSquared)
 {
@@ -370,7 +370,7 @@ float CSWPartyFollowDataArray::PointOnLineDistanceFromLeader(int nMember,
 
     return (float)sqrt(fDistanceSquared);
 }
-// PC 0x00634E80  Xbox 0x0006CCD0
+// PC 0x0068A870
 float CSWPartyFollowDataArray::AdvancePointOnPath(float fDistance, int nPathIndex,
                                                 const Vector& vStart, int nStartIndex,
                                                 const Vector& vEnd, int nEndIndex,
@@ -422,7 +422,7 @@ float CSWPartyFollowDataArray::AdvancePointOnPath(float fDistance, int nPathInde
     nPositionIndex = nCurrentIndex;
     return fDistanceLeft;
 }
-// PC 0x00635480  Xbox 0x0006D3D0
+// PC 0x0068AEC0
 void CSWParty::SetLeader(int nIndex)
 {
     unsigned long oidOldLeader = m_aPartyMemberData[0].m_oidCreature;
@@ -606,7 +606,7 @@ void CSWParty::SetLeader(int nIndex)
         }
     }
 }
-// PC 0x006359C0  Xbox 0x0006D890
+// PC 0x0068B400
 void CSWParty::RecaulateFollowPoint()
 {
     Vector vPosition;
@@ -626,7 +626,7 @@ void CSWParty::RecaulateFollowPoint()
         m_aPartyMemberData[2].m_nFormationPathIndex = nPositionIndex;
     }
 }
-// PC 0x006350F0  Xbox 0x0006CF90
+// PC 0x0068AAE0
 int CSWPartyFollowDataArray::GetPointBackFromStart(float fDistance,
                                                  Vector& vPosition,
                                                  int& nPositionIndex,
@@ -697,7 +697,7 @@ int CSWPartyFollowDataArray::GetPointBackFromStart(float fDistance,
     vPosition = Vector(0.0f, 0.0f, 0.0f);
     return 0;
 }
-// PC 0x00635350  Xbox 0x0006D280
+// PC 0x0068AD40
 int CSWParty::IsPartyTogether()
 {
     CSWSCreature* pLeader;
@@ -741,19 +741,19 @@ int CSWParty::IsPartyTogether()
 
     return 1;
 }
-// PC 0x00635460  Xbox 0x0006D3B0
+// PC 0x0068AEA0
 CSWCCreature* CSWParty::GetPlayerCharacter()
 {
     return GetCharacter(0);
 }
-// PC 0x00635A90  Xbox 0x0006D950
+// PC 0x0068B4D0
 CSWPartyFollowDataArray::CSWPartyFollowDataArray()
 {
     Vector vPosition;
 
     Reset(vPosition, 0.0f);
 }
-// PC 0x00635AF0  Xbox 0x0006D9C0
+// PC 0x0068B530
 void CSWPartyFollowDataArray::SmoothFollowPath()
 {
     static int OFF = 0;
@@ -916,7 +916,7 @@ void CSWPartyFollowDataArray::SmoothFollowPath()
 
     m_pParty->RecaulateFollowPoint();
 }
-// PC 0x00636170  Xbox 0x0006E0A0
+// PC 0x0068BDB0
 CSWParty::CSWParty()
 {
     m_fFormationRange[0] = 1.5f;
@@ -953,7 +953,7 @@ CSWParty::CSWParty()
     m_cFollowPaths.m_pParty = this;
     m_aPartyMemberData[2].m_fFollowDistance = 3.0f;
 }
-// PC 0x006364C0  Xbox 0x0006E580
+// PC 0x0068C100
 int CSWParty::AddCharacter(unsigned long oidCreature)
 {
     int nAddedIndex = -1;
@@ -1080,7 +1080,7 @@ int CSWParty::AddCharacter(unsigned long oidCreature)
     m_bPartyChanged = 1;
     return nAddedIndex;
 }
-// PC 0x00636840  Xbox 0x0006E970
+// PC 0x0068C480
 int CSWParty::TestAndResetPath()
 {
     int nPathIndex = m_cFollowPaths.m_nCurrentPathData - 1;
@@ -1144,7 +1144,7 @@ int CSWParty::TestAndResetPath()
     }
     return 0;
 }
-// PC 0x006369D0  Xbox 0x0006EBB0
+// PC 0x0068C700
 void CSWParty::FollowStateChanged()
 {
     int nIndex;
@@ -1177,7 +1177,7 @@ void CSWParty::FollowStateChanged()
         }
     }
 }
-// PC 0x00636A30  Xbox 0x0006EC60
+// PC 0x0068C760
 void CSWPartyFollowDataArray::ProcessPoint(const Vector& vPosition, float fFacing,
                                            float fTime)
 {
@@ -1331,7 +1331,7 @@ void CSWPartyFollowDataArray::ProcessPoint(const Vector& vPosition, float fFacin
         }
     }
 }
-// PC 0x00637050  Xbox 0x0006F2B0
+// PC 0x0068CE70
 void CSWParty::Update(float fTime)
 {
     Vector vLeaderFollowPosition = m_vLeaderFollowPosition;
@@ -1442,7 +1442,7 @@ void CSWParty::Update(float fTime)
         m_fRetreatTimer = 0.0f;
     }
 }
-// PC 0x00637630  Xbox 0x0006F920
+// PC 0x0068D610
 void CSWParty::Reset(const Vector& vPosition, float fFacing, int bFlag)
 {
     m_cFollowPaths.Reset(vPosition, fFacing);
@@ -1489,7 +1489,7 @@ void CSWParty::Reset(const Vector& vPosition, float fFacing, int bFlag)
         m_cFollowPaths.ProcessPoint(vPosition, fFacing, 0.5f);
     }
 }
-// PC 0x00637890  Xbox 0x0006FBB0
+// PC 0x0068D990
 void CSWParty::ResetAllFollowData(const Vector& vPosition, float fFacing, int bFlag)
 {
     Reset(vPosition, fFacing, bFlag);

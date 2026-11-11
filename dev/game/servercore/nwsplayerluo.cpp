@@ -4,7 +4,7 @@
 #include "nwsobject.h"
 #include "gameobjectarray.h"
 #include "nwsplayerluo.h"
-// PC 0x005CA030  Xbox 0x00244720
+// PC 0x006151B0
 void CSWSPlayerLUOInventory::ClearSlots()
 {
     for (int i = 0; i < 18; i++)
@@ -13,7 +13,7 @@ void CSWSPlayerLUOInventory::ClearSlots()
         m_nSlotIndex[i] = -1;
     }
 }
-// PC 0x005CA060  Xbox 0x00244750
+// PC 0x006151E0
 void CSWSPlayerLastUpdateObject::ClearKnownSpellUsesLeft()
 {
     for (int i = 0; i < 2; i++)
@@ -21,7 +21,7 @@ void CSWSPlayerLastUpdateObject::ClearKnownSpellUsesLeft()
         m_nKnownSpellUsesLeft[i] = 0;
     }
 }
-// PC 0x005CA070  Xbox 0x00244760
+// PC 0x006151F0
 unsigned char CSWSPlayerLastUpdateObject::GetKnownSpellUsesLeft(
     unsigned char nClass, unsigned char nLevel)
 {
@@ -31,7 +31,7 @@ unsigned char CSWSPlayerLastUpdateObject::GetKnownSpellUsesLeft(
     }
     return m_nKnownSpellUsesLeft[nClass + nLevel];
 }
-// PC 0x005CA0A0  Xbox 0x00244790
+// PC 0x00615220
 void CSWSPlayerLastUpdateObject::SetKnownSpellUsesLeft(unsigned char nClass,
                                                        unsigned char nLevel,
                                                        unsigned char nUsesLeft)
@@ -51,7 +51,7 @@ inline void CSWActionNode::Clear()
     m_oidTarget = OBJECT_INVALID;
     m_nParameter = -1;
 }
-// PC 0x005CA0D0  Xbox 0x002447C0
+// PC 0x00615250
 void CSWSPlayerLastUpdateObject::ClearActionQueue()
 {
     for (int i = 0; i < 10; ++i)
@@ -59,7 +59,7 @@ void CSWSPlayerLastUpdateObject::ClearActionQueue()
         m_aActions[i].Clear();
     }
 }
-// PC 0x005CA470  Xbox 0x00244B30
+// PC 0x00615600
 void CSWSPlayerLUOInventory::ClearRepository()
 {
     while (!m_lstRepository.IsEmpty())
@@ -67,7 +67,7 @@ void CSWSPlayerLUOInventory::ClearRepository()
         delete m_lstRepository.RemoveHead();
     }
 }
-// PC 0x005CA4A0  Xbox 0x00244B60
+// PC 0x00615630
 void CSWSPlayerLUOInventory::ClearContainer()
 {
     while (!m_lstContainer.IsEmpty())
@@ -75,7 +75,7 @@ void CSWSPlayerLUOInventory::ClearContainer()
         delete m_lstContainer.RemoveHead();
     }
 }
-// PC 0x005CA4D0  Xbox 0x00244B90
+// PC 0x00615660
 CSWSPlayerLUOInventoryItem* CSWSPlayerLUOInventory::ItemListGetUpdateItem(
     CExoLinkedListNode* pNode, unsigned char nList)
 {
@@ -95,7 +95,7 @@ CSWSPlayerLUOInventoryItem* CSWSPlayerLUOInventory::ItemListGetUpdateItem(
     }
     return pItem;
 }
-// PC 0x005CA520  Xbox 0x00244BE0
+// PC 0x006156B0
 void CSWSPlayerLUOInventory::ItemListSetEnd(CExoLinkedListNode*& pNode,
                                             unsigned char nList)
 {
@@ -112,7 +112,7 @@ void CSWSPlayerLUOInventory::ItemListSetEnd(CExoLinkedListNode*& pNode,
         pNode = m_lstOverflow.GetTailPos();
     }
 }
-// PC 0x005CA570  Xbox 0x00244C30
+// PC 0x00615700
 void CSWSPlayerLUOInventory::ItemListGetPrev(CExoLinkedListNode*& pNode,
                                              unsigned char nList)
 {
@@ -129,7 +129,7 @@ void CSWSPlayerLUOInventory::ItemListGetPrev(CExoLinkedListNode*& pNode,
         m_lstOverflow.GetPrev(pNode);
     }
 }
-// PC 0x005CA5C0  Xbox 0x00244C80
+// PC 0x00615750
 void CSWSPlayerLUOInventory::ItemListRemove(CExoLinkedListNode* pNode,
                                             unsigned char nList)
 {
@@ -146,7 +146,7 @@ void CSWSPlayerLUOInventory::ItemListRemove(CExoLinkedListNode* pNode,
         delete m_lstOverflow.Remove(pNode);
     }
 }
-// PC 0x005CA630  Xbox 0x00244CF0
+// PC 0x006157C0
 void CSWSPlayerLUOInventory::ItemListAddHead(unsigned long oidItem,
                                              unsigned char nList,
                                              unsigned long nStackSize,
@@ -174,11 +174,11 @@ void CSWSPlayerLUOInventory::ItemListAddHead(unsigned long oidItem,
         delete pItem;
     }
 }
-// PC 0x005CA6A0  Xbox 0x00244D60
+// PC 0x00615830
 CLastUpdateObject::~CLastUpdateObject()
 {
 }
-// PC 0x005CA740  Xbox 0x00244E00
+// PC 0x006158E0
 unsigned long CSWSPlayerLastUpdateObject::GetKnownSpell(unsigned char nClass,
                                                         unsigned char nLevel,
                                                         unsigned char nIndex)
@@ -191,7 +191,7 @@ unsigned long CSWSPlayerLastUpdateObject::GetKnownSpell(unsigned char nClass,
     }
     return m_aKnownSpells[nList][nIndex];
 }
-// PC 0x005CA780  Xbox 0x00244E40
+// PC 0x00615920
 void CSWSPlayerLastUpdateObject::ClearVisibilityList()
 {
     if (m_lstVisibility.num > 0)
@@ -216,7 +216,7 @@ void CSWSPlayerLUOInventory::ClearStore()
         delete m_lstOverflow.RemoveHead();
     }
 }
-// PC 0x005CA7F0  Xbox 0x00244EB0
+// PC 0x00615990
 CSWSPlayerLUOInventory::CSWSPlayerLUOInventory()
 {
     ClearSlots();
@@ -225,7 +225,7 @@ CSWSPlayerLUOInventory::CSWSPlayerLUOInventory()
     ClearStore();
     m_oidRepository = CGameObjectArray::INVALIDOBJID;
 }
-// PC 0x005CA900  Xbox 0x00244FD0
+// PC 0x00615AA0
 CSWSPlayerLUOInventory::~CSWSPlayerLUOInventory()
 {
     ClearSlots();
@@ -234,7 +234,7 @@ CSWSPlayerLUOInventory::~CSWSPlayerLUOInventory()
     ClearStore();
     m_oidRepository = CGameObjectArray::INVALIDOBJID;
 }
-// PC 0x005CAA50  Xbox 0x00245120
+// PC 0x00615BF0
 CLastUpdateObject::CLastUpdateObject()
 {
     m_nUnknown2A = 0;
@@ -243,13 +243,13 @@ CLastUpdateObject::CLastUpdateObject()
     memset(m_nClass, UNSET_SHORT_CACHE, sizeof(m_nClass));
     memset(m_nClassLevel, UNSET_SHORT_CACHE, sizeof(m_nClassLevel));
 }
-// PC 0x005CAC80  Xbox 0x00245370
+// PC 0x00615E30
 CSWSPlayerLastUpdateObject::CSWSPlayerLastUpdateObject()
 {
     m_bCanLevelUp = 0;
     m_pExtraSpells = NULL;
 }
-// PC 0x005CAD70  Xbox 0x00245460
+// PC 0x00615F20
 CSWSPlayerLastUpdateObject::~CSWSPlayerLastUpdateObject()
 {
     ClearKnownSpells();
@@ -257,7 +257,7 @@ CSWSPlayerLastUpdateObject::~CSWSPlayerLastUpdateObject()
     delete m_pExtraSpells;
     m_pExtraSpells = NULL;
 }
-// PC 0x005CAB20  Xbox 0x00245210
+// PC 0x00615CD0
 void CSWSPlayerLastUpdateObject::ClearKnownSpells()
 {
     for (int i = 0; i < 2; i++)
@@ -265,7 +265,7 @@ void CSWSPlayerLastUpdateObject::ClearKnownSpells()
         m_aKnownSpells[i].SetSize(0);
     }
 }
-// PC 0x005CAB60  Xbox 0x00245250
+// PC 0x00615D10
 void CSWSPlayerLastUpdateObject::ClearFeats()
 {
     m_lstFeats.SetSize(0);
@@ -281,14 +281,14 @@ void CSWSPlayerLastUpdateObject::ClearFeats()
     }
     m_lstFeatUses.SetSize(0);
 }
-// PC 0x005CABE0  Xbox 0x002452D0
+// PC 0x00615D90
 void CSWSPlayerLastUpdateObject::AddKnownSpell(unsigned char nClass,
                                                unsigned char nLevel,
                                                unsigned long nSpell)
 {
     m_aKnownSpells[nClass + nLevel].Add(nSpell);
 }
-// PC 0x005CAC30  Xbox 0x00245320
+// PC 0x00615DE0
 void CSWSPlayerLastUpdateObject::ClearSpellAddDeleteLists()
 {
     for (int i = 0; i < 2; i++)

@@ -40,7 +40,7 @@ public:
     virtual void TurnOffShadows();
     virtual void EnableDistortion();
     virtual void DisableDistortion();
-    virtual void SetHeadItem(unsigned long nItemId)  // PC 0x00699AD0  Xbox 0x000C5670
+    virtual void SetHeadItem(unsigned long nItemId)  // PC 0x006F36B0
     {
         NwcanimbaseheadTrace2();
         m_nHeadItem = nItemId;

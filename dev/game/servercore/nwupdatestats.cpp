@@ -1,12 +1,12 @@
 #include "exobase.h"
 #include "nwupdatestats.h"
 #include <string.h>
-// PC 0x005CAEA0  Xbox 0x002444D0
+// PC 0x00617160
 void CSWCreatureStatsUpdate::SetCombatInformation(CCombatInformation* pInfo)
 {
     *m_pCombatInformation = *pInfo;
 }
-// PC 0x005CAF10  Xbox 0x00244540
+// PC 0x006171D0
 CSWCreatureStatsUpdate::CSWCreatureStatsUpdate()
 {
     m_nExperience = -20;
@@ -44,7 +44,7 @@ CSWCreatureStatsUpdate::CSWCreatureStatsUpdate()
         memset(m_pSkillRanks, 0xEC, g_pRules->m_nNumSkills);
     }
 }
-// PC 0x005CB040  Xbox 0x00244670
+// PC 0x00617300
 CSWCreatureStatsUpdate::~CSWCreatureStatsUpdate()
 {
     unsigned char* pBuffer = m_pSkillRanks;
@@ -61,7 +61,7 @@ CSWCreatureStatsUpdate::~CSWCreatureStatsUpdate()
     }
     ClearEffectIcons();
 }
-// PC 0x005CAEB0  Xbox 0x002444E0
+// PC 0x00617170
 void CSWCreatureStatsUpdate::ClearEffectIcons()
 {
     for (int i = m_lstEffectIcons.num - 1; i >= 0; i--)

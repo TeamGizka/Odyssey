@@ -18,7 +18,7 @@
 
 static inline void SwguibarkbubbleTrace1();
 #define SWGUIBARKBUBBLE_TRACE() SwguibarkbubbleTrace1()
-// PC 0x006A9770  Xbox 0x000D6420
+// PC 0x00712BA0
 CSWGuiBarkBubble::CSWGuiBarkBubble(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -40,7 +40,7 @@ CSWGuiBarkBubble::CSWGuiBarkBubble(CSWGuiManager* pManager)
     m_bForceVisible = 0;
     m_nStartTime = 0;
 }
-// PC 0x006A9890  Xbox 0x000D6390
+// PC 0x00712CC0
 CSWGuiBarkBubble::~CSWGuiBarkBubble()
 {
     if (m_pSoundSource != NULL)
@@ -50,7 +50,7 @@ CSWGuiBarkBubble::~CSWGuiBarkBubble()
         m_pSoundSource = NULL;
     }
 }
-// PC 0x006A9920  Xbox 0x000D5C90
+// PC 0x00712D50
 void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
                                const CExoString& sBarkText,
                                const CResRef& cSound, int bForceVisible)
@@ -115,7 +115,7 @@ void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
     m_bSoundStarted = m_pSoundSource->Play(cSound, 8, 1, 0, 0);
 #endif
 }
-// PC 0x006A9BB0  Xbox 0x000D5F50
+// PC 0x00712710
 void CSWGuiBarkBubble::Pause()
 {
     SWGUIBARKBUBBLE_TRACE();
@@ -128,7 +128,7 @@ void CSWGuiBarkBubble::Pause()
         SetModal(0);
     }
 }
-// PC 0x006A9C10  Xbox 0x000D5FB0
+// PC 0x00712770
 void CSWGuiBarkBubble::Resume()
 {
     SWGUIBARKBUBBLE_TRACE();
@@ -145,7 +145,7 @@ void CSWGuiBarkBubble::Resume()
 #endif
     }
 }
-// PC 0x006A9C60  Xbox 0x000D6000
+// PC 0x007127C0
 void CSWGuiBarkBubble::StopBark(int bStopSound)
 {
     SWGUIBARKBUBBLE_TRACE();
@@ -161,7 +161,7 @@ void CSWGuiBarkBubble::StopBark(int bStopSound)
     m_fTimeLeft = 0.0f;
     SetModal(0);
 }
-// PC 0x006A9CE0  Xbox 0x000D6080
+// PC 0x00712840
 void CSWGuiBarkBubble::Draw(float fElapsed)
 {
     SWGUIBARKBUBBLE_TRACE();
@@ -258,7 +258,7 @@ void CSWGuiBarkBubble::Draw(float fElapsed)
             g_pAppManager->m_pClientExoApp->GetInGameGui()->GetInterfaceOffset();
     }
 }
-// PC 0x006A9F90  Xbox 0x000D6310
+// PC 0x00712B10
 void CSWGuiBarkBubble::OnPanelAdded()
 {
     SWGUIBARKBUBBLE_TRACE();
@@ -269,7 +269,7 @@ void CSWGuiBarkBubble::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
-// PC 0x006A9FD0  Xbox 0x000D6340
+// PC 0x00712B50
 void CSWGuiBarkBubble::SetExtent(const CSWGuiExtent& cExtent)
 {
     SWGUIBARKBUBBLE_TRACE();

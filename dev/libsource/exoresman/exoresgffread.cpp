@@ -1,7 +1,7 @@
 #include "resgff.h"
 
 unsigned long CResGFFFieldIDHash::m_nCRC32[256];
-// PC 0x00410520  Xbox 0x0014EC00
+// PC 0x00411690
 void CResGFFFieldIDHash::Initialize()
 {
     unsigned int i;
@@ -25,7 +25,7 @@ void CResGFFFieldIDHash::Initialize()
         m_nCRC32[i] = nCRC;
     }
 }
-// PC 0x00410560  Xbox 0x0014EC40
+// PC 0x004116D0
 unsigned long CResGFFFieldIDHash::Hash(const char *szLabel, unsigned long nLength)
 {
     unsigned long nCRC = 0;

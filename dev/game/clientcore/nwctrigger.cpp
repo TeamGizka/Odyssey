@@ -24,7 +24,7 @@
 #include "guiingame.h"
 #include "nwsarea.h"
 #include <float.h>
-// PC 0x006910D0  Xbox 0x000B92C0
+// PC 0x006EA790
 int CSWCTrigger::LoadModel(const CResRef& cModel, unsigned char nModel,
                            unsigned char nFlags)
 {
@@ -51,7 +51,7 @@ int CSWCTrigger::LoadModel(const CResRef& cModel, unsigned char nModel,
 
     return 1;
 }
-// PC 0x006825F0
+// PC 0x006DB7A0
 void CSWCTrigger::UnloadModel()
 {
     if (m_pAnimBase != NULL)
@@ -61,7 +61,7 @@ void CSWCTrigger::UnloadModel()
         m_pAnimBase = NULL;
     }
 }
-// PC 0x00646650
+// PC 0x0069CF50
 void CSWCTrigger::UnloadModel(unsigned char nModel)
 {
     if (m_pAnimBase != NULL)
@@ -69,14 +69,14 @@ void CSWCTrigger::UnloadModel(unsigned char nModel)
         m_pAnimBase->UnloadModel(nModel);
     }
 }
-// PC 0x006911B0  Xbox 0x000B93A0
+// PC 0x006EAEF0
 void CSWCTrigger::AddFireAndForgetAnimation(unsigned short nAnimation,
                                             void* pData, unsigned short nFlags)
 {
     unsigned long nLength = (unsigned long)GetAnimationLength(nAnimation);
     InsertFireForgetAnimation(nAnimation, nLength, 1.0f, pData, 0);
 }
-// PC 0x006911E0  Xbox 0x000B93D0
+// PC 0x006EA680
 CSWCTrigger::CSWCTrigger()
     : CSWCObject(CGameObject::OBJECT_TYPE_TRIGGER)
 {
@@ -96,7 +96,7 @@ CSWCTrigger::CSWCTrigger()
     m_pPartTrigger = NULL;
     m_cTriggerType = -1;
 }
-// PC 0x006912F0  Xbox 0x000B94E0
+// PC 0x006EB250
 CSWCTrigger::~CSWCTrigger()
 {
     if (m_pAnimBase != NULL)
@@ -118,7 +118,7 @@ CSWCTrigger::~CSWCTrigger()
         m_pPartTrigger = NULL;
     }
 }
-// PC 0x006913B0  Xbox 0x000B9590
+// PC 0x006EA870
 void CSWCTrigger::UpdateTriggerColor(int nMode)
 {
     if (m_bTrap != 0)
@@ -160,7 +160,7 @@ void CSWCTrigger::UpdateTriggerColor(int nMode)
     float fFade = m_fHighlightFade;
     AurPartTriggerSetHighlight(m_pPartTrigger, true, fFade, true);
 }
-// PC 0x00691470  Xbox 0x000B9670
+// PC 0x006EA930
 void CSWCTrigger::DisplayTrigger(int bDisplay)
 {
     if (bDisplay != m_bDisplayed)
@@ -185,7 +185,7 @@ void CSWCTrigger::DisplayTrigger(int bDisplay)
         UpdateTriggerColor(1);
     }
 }
-// PC 0x006914D0  Xbox 0x000B96D0
+// PC 0x006EA990
 void CSWCTrigger::SetCursor(unsigned char nTrigger)
 {
     int nCursor;
@@ -202,7 +202,7 @@ void CSWCTrigger::SetCursor(unsigned char nTrigger)
         m_nCursor = (short)nCursor;
     }
 }
-// PC 0x00691560  Xbox 0x000B9770
+// PC 0x006EAA20
 void CSWCTrigger::UpdatePosition()
 {
     Vector vMin = m_pvVertices[0];
@@ -242,7 +242,7 @@ void CSWCTrigger::UpdatePosition()
                    vHalf.m_fZ + vMin.m_fZ);
     m_vPosition = vCenter;
 }
-// PC 0x006916B0  Xbox 0x000B98C0
+// PC 0x006EAB70
 unsigned char CSWCTrigger::GetCenter(Vector& vCenter)
 {
     CAurCamera* pCamera = g_pAppManager->m_pClientExoApp->GetModuleCamera();
@@ -280,7 +280,7 @@ unsigned char CSWCTrigger::GetCenter(Vector& vCenter)
     }
     return nResult;
 }
-// PC 0x00691900  Xbox 0x000B9B70
+// PC 0x006EAE80
 void CSWCTrigger::ActionMenuDisableMine(unsigned long nAction,
                                         CSWCCreature* pCreature)
 {
@@ -291,13 +291,13 @@ void CSWCTrigger::ActionMenuDisableMine(unsigned long nAction,
         pMessage->SendPlayerToServerInput_UseSkill(CSWRules::SKILL_DEMOLITIONS, 0, m_nId, vTarget);
     }
 }
-// PC 0x00691950  Xbox 0x000B9BC0
+// PC 0x006EAED0
 void CSWCTrigger::ActionMenuRecoverMine(unsigned long nAction,
                                         CSWCCreature* pCreature)
 {
     pCreature->PerformSkill(1, 0x65, GetId());
 }
-// PC 0x00691970  Xbox 0x000B9BE0
+// PC 0x006EAF20
 void CSWCTrigger::AnimationUpdate()
 {
     unsigned short nAnimation;
@@ -332,7 +332,7 @@ void CSWCTrigger::AnimationUpdate()
         }
     }
 }
-// PC 0x00691A30  Xbox 0x000B9CA0
+// PC 0x006EAFE0
 int CSWCTrigger::LineSegmentIntersectTrigger(const Vector& vStart,
                                              const Vector& vEnd, Vector* pvHit)
 {
@@ -364,7 +364,7 @@ int CSWCTrigger::LineSegmentIntersectTrigger(const Vector& vStart,
 
     return 0;
 }
-// PC 0x00691B00  Xbox 0x000B9D80
+// PC 0x006EB0B0
 unsigned char CSWCTrigger::GetReticlePoint(Vector& vPoint)
 {
     int nResult;
@@ -403,7 +403,7 @@ unsigned char CSWCTrigger::GetReticlePoint(Vector& vPoint)
 done:
     return nResult;
 }
-// PC 0x00691CC0  Xbox 0x000B9FE0
+// PC 0x006EB330
 void CSWCTrigger::AddToRenderList(int nMode)
 {
     CSWCArea* pArea = g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo;
@@ -417,7 +417,7 @@ void CSWCTrigger::AddToRenderList(int nMode)
                                          m_nNumVertices, TRUE, afColor, this);
     UpdateTriggerColor(nMode);
 }
-// PC 0x00691D80  Xbox 0x000BA0A0
+// PC 0x006EB3F0
 void CSWCTrigger::RemoveFromRenderList()
 {
     CSWCArea* pArea = g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo;
@@ -430,7 +430,7 @@ void CSWCTrigger::RemoveFromRenderList()
         AurPartTriggerDelete(pModule->m_pInfo->m_pScene, m_pPartTrigger, false);
     }
 }
-// PC 0x00691E00  Xbox 0x000BA110
+// PC 0x006EB470
 void CSWCTrigger::SpecialDisplayTrigger(int bDisplay)
 {
     Vector vColor;
@@ -470,7 +470,7 @@ void CSWCTrigger::SpecialDisplayTrigger(int bDisplay)
     float fFade = m_fHighlightFade;
     AurPartTriggerSetHighlight(m_pPartTrigger, true, fFade, true);
 }
-// PC 0x00691F00  Xbox 0x000BA210
+// PC 0x006EB890
 void CSWCTrigger::GetTargetActions(CSWCCreature* pCreature, int nMenu,
                                    CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
@@ -515,7 +515,7 @@ void CSWCTrigger::GetTargetActions(CSWCCreature* pCreature, int nMenu,
         break;
     }
 }
-// PC 0x006920B0  Xbox 0x000BA3C0
+// PC 0x006EBB10
 void CSWCTrigger::UpdateAreaTransitionDisplay()
 {
     CGuiInGame* pGuiInGame = g_pAppManager->GetClientExoApp()->GetInGameGui();
@@ -601,7 +601,7 @@ void CSWCTrigger::UpdateAreaTransitionDisplay()
     }
 #endif
 }
-// PC 0x00692410  Xbox 0x000BA710
+// PC 0x006EBE70
 void CSWCTrigger::AIUpdate()
 {
     unsigned long nDay;

@@ -39,7 +39,7 @@ static inline void NwscreaturestatsTrace1();
 
 enum { DEFAULT_CRITICAL_HIT_ROLL = 20, INVALID_FACTION = -1,
        NO_DUPLICATING_HEAD = 255 };
-// PC 0x0063E7C0
+// PC 0x006955A0
 int CSWSCreatureStats::GetFavoredEnemyBonus(CSWSCreature* pCreature)
 {
 
@@ -48,14 +48,14 @@ int CSWSCreatureStats::GetFavoredEnemyBonus(CSWSCreature* pCreature)
     }
     return 0;
 }
-// PC 0x006475C0
+// PC 0x006FB590
 CSWSStats_SpellLikeAbility::CSWSStats_SpellLikeAbility()
 {
     m_nSpell = 0;
     m_nReady = 1;
     m_nLevel = 0;
 }
-// PC 0x00649660  Xbox 0x001A0290
+// PC 0x005F0720
 void CSWSCreatureStats_ClassInfo::AddKnownSpell(unsigned char nLevel,
                                                unsigned long nSpell)
 {
@@ -81,7 +81,7 @@ int CSWSCreatureStats::GetWeaponFocus(CSWSItem* pItem)
     }
     return nBonus;
 }
-// PC 0x005AC9F0  Xbox 0x001A5370
+// PC 0x005F7850
 CSWSCreatureStats_ClassInfo::CSWSCreatureStats_ClassInfo()
 {
     m_nClass = 0;
@@ -96,12 +96,12 @@ CSWSCreatureStats_ClassInfo::CSWSCreatureStats_ClassInfo()
     memset(m_nAdditionalSpellCounts, 0, sizeof(m_nAdditionalSpellCounts));
     memset(m_nSpellCounts, 0, sizeof(m_nSpellCounts));
 }
-// PC 0x005A76E0  Xbox 0x001A0200
+// PC 0x005F0690
 CSWSCreatureStats_ClassInfo::~CSWSCreatureStats_ClassInfo()
 {
     m_lstKnownSpells[0].SetSize(0);
 }
-// PC 0x005A7770  Xbox 0x001A0300
+// PC 0x005F0790
 int CSWSCreatureStats::GetMeleeAttackBonus(int bOffHand, int bIncludeBase,
                                          int bTouchAttack, int bForceOnHand)
 {
@@ -223,7 +223,7 @@ int CSWSCreatureStats::GetMeleeAttackBonus(int bOffHand, int bIncludeBase,
     }
     return nBonus + nDuelingBonus;
 }
-// PC 0x005A7A20  Xbox 0x001A05B0
+// PC 0x005F0AE0
 int CSWSCreatureStats::GetMeleeDamageBonus(int bOffHand)
 {
     CSWSItem* pItem;
@@ -291,7 +291,7 @@ int CSWSCreatureStats::GetMeleeDamageBonus(int bOffHand)
         nSpecializationBonus = WEAPON_SPECIALIZATION_DAMAGE_BONUS;
     return nDamageBonus + nSpecializationBonus;
 }
-// PC 0x005A7B60  Xbox 0x001A06F0
+// PC 0x005F0CA0
 int CSWSCreatureStats::GetRangedAttackBonus(int bOffHand, int bIncludeBase,
                                             int bTouchAttack)
 {
@@ -387,7 +387,7 @@ int CSWSCreatureStats::GetRangedAttackBonus(int bOffHand, int bIncludeBase,
     }
     return nBonus + nDuelingBonus;
 }
-// PC 0x005ACA80  Xbox 0x001A5400
+// PC 0x005F78E0
 CSWSCreatureStats::CSWSCreatureStats(CSWSCreature* pCreature)
 {
     m_lstLevelStats.Add(new CSWLevelStats);
@@ -512,7 +512,7 @@ CSWSCreatureStats::CSWSCreatureStats(CSWSCreature* pCreature)
     m_fHPAccumulator = 0.0f;
     m_fFPAccumulator = 0.0f;
 }
-// PC 0x005ACF40  Xbox 0x001A58E0
+// PC 0x005F7DC0
 CSWSCreatureStats::~CSWSCreatureStats()
 {
     if (m_pSkillRanks != NULL)
@@ -546,7 +546,7 @@ CSWSCreatureStats::~CSWSCreatureStats()
         m_pCombatInformation = NULL;
     }
 }
-// PC 0x005AD0E0  Xbox 0x001A5A80
+// PC 0x005F7F60
 short CSWSCreatureStats::GetArmorClassVersus(CSWSCreature* pTarget,
                                            int bTouchAttack)
 {
@@ -780,7 +780,7 @@ short CSWSCreatureStats::GetArmorClassVersus(CSWSCreature* pTarget,
     EXOLOG("CSWSCreatureStats::GetArmorClassVersus: effect natural bonus %p", &nNaturalBonus);
     return nAC;
 }
-// PC 0x005ADDC0  Xbox 0x001A6760
+// PC 0x005F8F90
 void CSWSCreatureStats::UpdateCombatInformation()
 {
     CExoArrayList<CGameEffect*> lstEffects;
@@ -919,7 +919,7 @@ void CSWSCreatureStats::UpdateCombatInformation()
     m_pCombatInformation->SetOffHandCriticalMultiplier(GetCriticalHitMultiplier(1));
     m_pCombatInformation->SetOffHandCriticalRange(21 - GetCriticalHitRoll(1));
 }
-// PC 0x005A7DB0  Xbox 0x001A0940
+// PC 0x005F1040
 int CSWSCreatureStats::GetRangedDamageBonus()
 {
     int nDamageBonus = 0;
@@ -961,7 +961,7 @@ int CSWSCreatureStats::GetRangedDamageBonus()
     }
     return nDamageBonus + nSpecializationBonus;
 }
-// PC 0x005A7EA0  Xbox 0x001A0A20
+// PC 0x005F11E0
 int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
 {
     int nCurrentAttack = GetCreature()->GetCombatRound()->m_nCurrentAttack;
@@ -1253,7 +1253,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
     }
     return nAttackBonus;
 }
-// PC 0x005A8BE0  Xbox 0x001A1740
+// PC 0x005F2B90
 char CSWSCreatureStats::GetDamageBonus(CSWSCreature* pTarget, int bOffHand, int bRecordDamage)
 {
     int nAttack = GetCreature()->GetCombatRound()->m_nCurrentAttack;
@@ -1374,7 +1374,7 @@ char CSWSCreatureStats::GetDamageBonus(CSWSCreature* pTarget, int bOffHand, int 
     }
     return nBonus;
 }
-// PC 0x005A9050  Xbox 0x001A1BB0
+// PC 0x005F3430
 int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
     int bCritical, int bSneakAttack, int bMaxDamage, int bRecordDamage)
 {
@@ -1673,7 +1673,7 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
     }
     return nDamage;
 }
-// PC 0x005A9E10  Xbox 0x001A29C0
+// PC 0x005F44E0
 void CSWSCreatureStats::GetTotalDamageRange(CSWSCreature* pCreature,
                                           CSWSItem* pItem,
                                           int& nMinimum, int& nMaximum,
@@ -1732,7 +1732,7 @@ void CSWSCreatureStats::GetTotalDamageRange(CSWSCreature* pCreature,
     if (nMaximum < 1)
         nMaximum = 1;
 }
-// PC 0x005A9F50  Xbox 0x001A2B30
+// PC 0x005F48F0
 char CSWSCreatureStats::GetTotalACFeatMod()
 {
     char nBonus = 0;
@@ -1764,19 +1764,19 @@ char CSWSCreatureStats::GetTotalACFeatMod()
     }
     return nBonus;
 }
-// PC 0x005A9FE0
+// PC 0x005F4980
 void CSWSCreatureStats::SetSTRBase(unsigned char nScore)
 {
     m_nStrengthBase = nScore;
     UpdateSTRModifier();
 }
-// PC 0x005AA020
+// PC 0x005F49C0
 void CSWSCreatureStats::SetDEXBase(unsigned char nScore)
 {
     m_nDexterityBase = nScore;
     UpdateDEXModifier();
 }
-// PC 0x005AA060
+// PC 0x005F4A00
 void CSWSCreatureStats::SetCONBase(unsigned char nValue, int bUpdate)
 {
     m_nConstitutionBase = nValue;
@@ -1797,21 +1797,21 @@ void CSWSCreatureStats::SetCONBase(unsigned char nValue, int bUpdate)
             pCreature->GetMaxHitPoints(1));
     }
 }
-// PC 0x005AA0F0
+// PC 0x005F4B10
 void CSWSCreatureStats::SetINTBase(unsigned char nScore)
 {
     m_nIntelligenceBase = nScore;
     UpdateINTModifier();
     AdjustSpellUsesPerDay();
 }
-// PC 0x005AA130
+// PC 0x005F4AD0
 void CSWSCreatureStats::SetWISBase(unsigned char nScore)
 {
     m_nWisdomBase = nScore;
     UpdateWISModifier();
     AdjustSpellUsesPerDay();
 }
-// PC 0x005AA170
+// PC 0x005F4A90
 void CSWSCreatureStats::SetCHABase(unsigned char nScore)
 {
     m_nCharismaBase = nScore;
@@ -1865,7 +1865,7 @@ void CSWSCreatureStats::SetStatById(int nStatId, float fValue)
         break;
     }
 }
-// PC 0x005A6190  Xbox 0x0019ECE0
+// PC 0x005EEA60
 unsigned char CSWSCreatureStats::GetSTRStat()
 {
     return (m_nStrengthBase + (char)GetTotalSTRBonus() +
@@ -1874,7 +1874,7 @@ unsigned char CSWSCreatureStats::GetSTRStat()
            (char)g_pRules->m_pRaces[m_nRace].m_nStrengthAdjust)
         : MINIMUM_ABILITY_SCORE;
 }
-// PC 0x005A6250  Xbox 0x0019EDA0
+// PC 0x005EEB20
 unsigned char CSWSCreatureStats::GetCONStat()
 {
     return (m_nConstitutionBase + (char)GetTotalCONBonus() +
@@ -1883,7 +1883,7 @@ unsigned char CSWSCreatureStats::GetCONStat()
             (char)g_pRules->m_pRaces[m_nRace].m_nConstitutionAdjust)
         : MINIMUM_ABILITY_SCORE;
 }
-// PC 0x005A6310  Xbox 0x0019EE60
+// PC 0x005EEBE0
 unsigned char CSWSCreatureStats::GetINTStat()
 {
     return (m_nIntelligenceBase + (char)GetTotalINTBonus() +
@@ -1892,7 +1892,7 @@ unsigned char CSWSCreatureStats::GetINTStat()
            (char)g_pRules->m_pRaces[m_nRace].m_nIntelligenceAdjust)
         : 3;
 }
-// PC 0x005A63D0  Xbox 0x0019EF20
+// PC 0x005EECA0
 unsigned char CSWSCreatureStats::GetWISStat()
 {
     return (m_nWisdomBase + (char)GetTotalWISBonus() +
@@ -1901,7 +1901,7 @@ unsigned char CSWSCreatureStats::GetWISStat()
            (char)g_pRules->m_pRaces[m_nRace].m_nWisdomAdjust)
         : MINIMUM_ABILITY_SCORE;
 }
-// PC 0x005A6490  Xbox 0x0019EFE0
+// PC 0x005EED60
 unsigned char CSWSCreatureStats::GetCHAStat()
 {
     return (m_nCharismaBase + (char)GetTotalCHABonus() +
@@ -1910,7 +1910,7 @@ unsigned char CSWSCreatureStats::GetCHAStat()
            (char)g_pRules->m_pRaces[m_nRace].m_nCharismaAdjust)
         : MINIMUM_ABILITY_SCORE;
 }
-// PC 0x005A6550  Xbox 0x0019F0A0
+// PC 0x005EEE20
 unsigned char CSWSCreatureStats::GetDEXStat()
 {
     return (m_nDexterityBase + (char)GetTotalDEXBonus() +
@@ -1919,12 +1919,12 @@ unsigned char CSWSCreatureStats::GetDEXStat()
            (char)g_pRules->m_pRaces[m_nRace].m_nDexterityAdjust)
         : MINIMUM_ABILITY_SCORE;
 }
-// PC 0x005A6610  Xbox 0x0019F160
+// PC 0x005EEEE0
 unsigned long CSWSCreatureStats::GetExpNeededForLevelUp()
 {
     return g_pRules->m_anExperience[GetLevel(0)];
 }
-// PC 0x005AA1B0  Xbox 0x001A2BC0
+// PC 0x005F4B50
 char CSWSCreatureStats::GetBaseFortSavingThrow()
 {
     char nBonus = 0;
@@ -1951,7 +1951,7 @@ char CSWSCreatureStats::GetBaseFortSavingThrow()
     }
     return nBonus;
 }
-// PC 0x005AA2F0  Xbox 0x001A2D00
+// PC 0x005F4D50
 unsigned char CSWSCreatureStats::GetBaseWillSavingThrow()
 {
     unsigned char nBonus = 0;
@@ -1978,7 +1978,7 @@ unsigned char CSWSCreatureStats::GetBaseWillSavingThrow()
     }
     return nBonus;
 }
-// PC 0x005AA430  Xbox 0x001A2E40
+// PC 0x005F4F50
 unsigned char CSWSCreatureStats::GetBaseReflexSavingThrow()
 {
     char nBonus = 0;
@@ -2005,7 +2005,7 @@ unsigned char CSWSCreatureStats::GetBaseReflexSavingThrow()
     }
     return nBonus;
 }
-// PC 0x005AE610  Xbox 0x001A6F20
+// PC 0x005F9750
 void CSWSCreatureStats::ModifyAlignment(short nAdjustment)
 {
     short nAlignment = max(0, min(100, m_nGoodEvilAlignment + nAdjustment));
@@ -2018,7 +2018,7 @@ void CSWSCreatureStats::ModifyAlignment(short nAdjustment)
     }
     UpdateCombatInformation();
 }
-// PC 0x005AE680  Xbox 0x001A6F90
+// PC 0x005F9960
 void CSWSCreatureStats::UpdateLastStatsObject(unsigned __int64 nUpdateMask,
                                             CSWCreatureStatsUpdate* pUpdate)
 {
@@ -2081,7 +2081,7 @@ void CSWSCreatureStats::UpdateLastStatsObject(unsigned __int64 nUpdateMask,
             pUpdate->m_lstBonusFeats.Add(GetBonusFeat(nBonusFeat));
     }
 }
-// PC 0x005AEB30  Xbox 0x001A7440
+// PC 0x005F9E20
 void CSWSCreatureStats::ReadSpellsFromGff(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList lClassList;
@@ -2121,7 +2121,7 @@ void CSWSCreatureStats::ReadSpellsFromGff(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 }
-// PC 0x005AEC90  Xbox 0x001A75A0
+// PC 0x005F9F80
 void CSWSCreatureStats::SaveClassInfo(CResGFF* pRes, CResStruct* pStruct)
 {
     CExoString sKnownList;
@@ -2263,7 +2263,7 @@ void CSWSCreatureStats::SaveClassInfo(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 }
-// PC 0x005AF480  Xbox 0x001A7D90
+// PC 0x005FA770
 void CSWSCreatureStats::SetExperience(unsigned long nExperience, int bUseThreshold)
 {
     CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(
@@ -2334,7 +2334,7 @@ void CSWSCreatureStats::SetExperience(unsigned long nExperience, int bUseThresho
         }
     }
 }
-// PC 0x005AF6A0  Xbox 0x001A8030
+// PC 0x005FAA80
 void CSWSCreatureStats::AddExperience(unsigned long nExperience)
 {
     unsigned char nClassCount = m_nClassCount;
@@ -2384,7 +2384,7 @@ void CSWSCreatureStats::AddExperience(unsigned long nExperience)
     }
     SetExperience(m_nExperience + nExperience, 1);
 }
-// PC 0x005AF880  Xbox 0x001A8210
+// PC 0x005FAC60
 int CSWSCreatureStats::GetCanUseSkill(unsigned char nSkill)
 {
     unsigned char nBaseSkill;
@@ -2448,7 +2448,7 @@ char CSWSCreatureStats::GetPrimaryMod(unsigned char nMultiClass)
     }
     return 0;
 }
-// PC 0x005AA570  Xbox 0x001A2F80
+// PC 0x005F5150
 char CSWSCreatureStats::GetSkillRank(unsigned char nSkill, CSWSObject* pTarget,
                                      int bBaseRank)
 {
@@ -2636,7 +2636,7 @@ char CSWSCreatureStats::GetSkillRank(unsigned char nSkill, CSWSObject* pTarget,
 
     return max(min(nRank, 127), -127);
 }
-// PC 0x005AA810  Xbox 0x001A3220
+// PC 0x005F5490
 void CSWSCreatureStats::AddFeat(unsigned short nFeat)
 {
     CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
@@ -2664,7 +2664,7 @@ void CSWSCreatureStats::AddFeat(unsigned short nFeat)
         }
     }
 }
-// PC 0x005AA8C0  Xbox 0x001A32D0
+// PC 0x005F5540
 void CSWSCreatureStats::ClearFeats()
 {
     m_lstFeats.SetSize(0);
@@ -2681,7 +2681,7 @@ void CSWSCreatureStats::ClearFeats()
         }
     }
 }
-// PC 0x005A6630  Xbox 0x0019F180
+// PC 0x005EEF60
 int CSWSCreatureStats::HasFeat(unsigned short nFeat)
 {
     int nResult = 0;
@@ -2691,7 +2691,7 @@ int CSWSCreatureStats::HasFeat(unsigned short nFeat)
     }
     return nResult;
 }
-// PC 0x005A6680  Xbox 0x0019F1D0
+// PC 0x005EEFB0
 unsigned char CSWSCreatureStats::GetFeatRemainingUses(unsigned short nFeat)
 {
     CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
@@ -2717,7 +2717,7 @@ unsigned char CSWSCreatureStats::GetFeatRemainingUses(unsigned short nFeat)
     }
     return 0;
 }
-// PC 0x005A6720  Xbox 0x0019F270
+// PC 0x005EF050
 void CSWSCreatureStats::DecrementFeatRemainingUses(unsigned short nFeat)
 {
     for (unsigned short i = 0; i < m_lstFeatUses.num; ++i)
@@ -2740,7 +2740,7 @@ inline int CSWSCreatureStats_ClassInfo::GetKnownSpell(unsigned char nLevel,
         nSpell = m_lstKnownSpells[nLevel][nIndex];
     return nSpell;
 }
-// PC 0x005A6750  Xbox 0x0019F2A0
+// PC 0x005EF080
 int CSWSCreatureStats::GetKnownSpell(unsigned char nClass,
                                      unsigned char nSpellLevel,
                                      unsigned char nSpellIndex)
@@ -2757,7 +2757,7 @@ int CSWSCreatureStats::GetKnownSpell(unsigned char nClass,
     }
     return pInfo->GetKnownSpell(nSpellLevel, nSpellIndex);
 }
-// PC 0x005AA940  Xbox 0x001A3350
+// PC 0x005F55C0
 void CSWSCreatureStats::RemoveFeat(unsigned short nFeat)
 {
     NwscreaturestatsTrace2();
@@ -2777,7 +2777,7 @@ void CSWSCreatureStats::RemoveFeat(unsigned short nFeat)
         }
     }
 }
-// PC 0x005AA9B0  Xbox 0x001A33C0
+// PC 0x005F5630
 void CSWSCreatureStats::AddKnownSpell(unsigned char nClass,
                                       unsigned long nSpell)
 {
@@ -2792,7 +2792,7 @@ void CSWSCreatureStats::AddKnownSpell(unsigned char nClass,
         }
     }
 }
-// PC 0x005AAA30  Xbox 0x001A3440
+// PC 0x005F56B0
 int CSWSCreatureStats::GetCreatureHasTalent(int nTalentType, int nTalent)
 {
     if (nTalentType == INVALID_TALENT || nTalent == INVALID_TALENT)
@@ -2859,7 +2859,7 @@ int CSWSCreatureStats::GetCreatureHasTalent(int nTalentType, int nTalent)
 
     return 0;
 }
-// PC 0x005AABF0  Xbox 0x001A3600
+// PC 0x005F5870
 void CSWSCreatureStats::LevelUp(CSWLevelStats* pLevelStats, int bStoreLevelStats)
 {
     int bNewClass = 1;
@@ -2933,7 +2933,7 @@ void CSWSCreatureStats::LevelUp(CSWLevelStats* pLevelStats, int bStoreLevelStats
     pCreature->SetCurrentHitPoints(pCreature->GetMaxHitPoints(1));
     m_nCurrentForcePoints += m_pCreature->GetMaxForcePoints() - nOldForcePoints;
 }
-// PC 0x005AB1E0  Xbox 0x001A3BF0
+// PC 0x005F5E60
 void CSWSCreatureStats::LevelDown(CSWLevelStats* pLevelStats)
 {
     unsigned long nSlotMask;
@@ -3032,7 +3032,7 @@ void CSWSCreatureStats::LevelDown(CSWLevelStats* pLevelStats)
     pCreature->SetCurrentHitPoints(nNewMaxHitPoints - nOldMaxHitPoints +
                                  pCreature->GetCurrentHitPoints(1));
 }
-// PC 0x005AB810  Xbox 0x001A4220
+// PC 0x005F6490
 char CSWSCreatureStats::GetFortSavingThrow(int bBaseOnly)
 {
     int nEffectBonus = 0;
@@ -3049,7 +3049,7 @@ char CSWSCreatureStats::GetFortSavingThrow(int bBaseOnly)
     unsigned char nSaveBonus = m_nFortSaveBonus;
     return GetBaseFortSavingThrow() + nEffectBonus + nConModifier + nSaveBonus;
 }
-// PC 0x005AB880  Xbox 0x001A4290
+// PC 0x005F6500
 char CSWSCreatureStats::GetWillSavingThrow(int bBaseOnly)
 {
     int nEffectBonus = 0;
@@ -3066,7 +3066,7 @@ char CSWSCreatureStats::GetWillSavingThrow(int bBaseOnly)
     unsigned char nSaveBonus = m_nWillSaveBonus;
     return GetBaseWillSavingThrow() + nEffectBonus + nWisModifier + nSaveBonus;
 }
-// PC 0x005AB8F0  Xbox 0x001A4300
+// PC 0x005F6570
 char CSWSCreatureStats::GetReflexSavingThrow(int bBaseOnly)
 {
     int nEffectBonus = 0;
@@ -3083,7 +3083,7 @@ char CSWSCreatureStats::GetReflexSavingThrow(int bBaseOnly)
     unsigned char nSaveBonus = m_nReflexSaveBonus;
     return GetBaseReflexSavingThrow() + nEffectBonus + nDexModifier + nSaveBonus;
 }
-// PC 0x005AB980  Xbox 0x001A4390
+// PC 0x005F6600
 int CSWSCreatureStats::CheckPowerSuitability(
     int nTalent, CSWSpell* pSpell, int nPowerSuitability, int nUnknown1,
     int nUnknown2, int nUnknown3, int nUnknown4, int nInvalidTalent)
@@ -3109,7 +3109,7 @@ int CSWSCreatureStats::CheckPowerSuitability(
 
     return 1;
 }
-// PC 0x005AB9E0  Xbox 0x001A43F0
+// PC 0x005F6660
 int CSWSCreatureStats::GetCreatureTalentRandomSpecialAbility(
     int nFilter, int nSelection, int& nTalentType, int& nTalent,
     unsigned char& nClass, unsigned char& nCasterLevel,
@@ -3178,7 +3178,7 @@ int CSWSCreatureStats::GetCreatureTalentRandomSpecialAbility(
 }
 
 inline int CSWSItem::GetActiveProperties() { return m_nActiveProperties; }
-// PC 0x005ABD00  Xbox 0x001A46C0
+// PC 0x005F6980
 int CSWSCreatureStats::GetCreatureTalentRandomPowerFromItem(
     int nFilter, int nSelection, int& nTalentType, int& nTalent,
     unsigned char& nClass, unsigned long& oidItem, int& nItemProperty,
@@ -3344,7 +3344,7 @@ int CSWSCreatureStats::GetCreatureTalentRandomPowerFromItem(
     delete pProperties;
     return bFound;
 }
-// PC 0x005AC370  Xbox 0x001A4D50
+// PC 0x005F6FF0
 int CSWSCreatureStats::GetCreatureTalentRandomFeat(
     int nFilter, int nSelection, int& nTalentType, int& nTalent,
     unsigned char& nClass, int nExclusion, int nExcludedFeat)
@@ -3402,7 +3402,7 @@ int CSWSCreatureStats::GetCreatureTalentRandomFeat(
     delete pTalents;
     return bFound;
 }
-// PC 0x005AF950  Xbox 0x001A82E0
+// PC 0x005FAD90
 int CSWSCreatureStats::ValidateLevelUp(CSWLevelStats* pLevelStats)
 {
     if (!CanLevelUp())
@@ -3433,7 +3433,7 @@ int CSWSCreatureStats::ValidateLevelUp(CSWLevelStats* pLevelStats)
     UpdateCombatInformation();
     return 1;
 }
-// PC 0x005AFA30  Xbox 0x001A83C0
+// PC 0x005FAE70
 int CSWSCreatureStats::GetCreatureTalentRandomPower(
     int nFilter, int nSelection, int& nTalentType, int& nTalent,
     unsigned char& nClass, int nUnknown, int nExcludedPower)
@@ -3455,7 +3455,7 @@ int CSWSCreatureStats::GetCreatureTalentRandomPower(
     }
     return bFound;
 }
-// PC 0x005AC5D0  Xbox 0x001A4F50
+// PC 0x005F7260
 int CSWSCreatureStats::GetCreatureTalentRandomKnownPower(
     int nFilter, int nSelection, int& nTalentType, int& nTalent,
     unsigned char& nClass, int nClassIndex, int nUnknown, int nExcludedPower)
@@ -3526,7 +3526,7 @@ inline int CSWSCreatureStats::GetNumBonusFeats()
 {
     return m_lstBonusFeats.num;
 }
-// PC 0x005AC8F0  Xbox 0x001A5270
+// PC 0x005F7770
 int CSWSCreatureStats::CanChooseSpell(unsigned long nSpell, unsigned char nMax,
                                    CExoArrayList<unsigned long>* pList)
 {
@@ -3568,19 +3568,19 @@ int CSWSCreatureStats::CanChooseSpell(unsigned long nSpell, unsigned char nMax,
         return nMax - pList->num > 0;
     }
 }
-// PC 0x005AFAC0  Xbox 0x001A8450
+// PC 0x005FAF00
 void CSWSCreatureStats::SetForceResistance(char nResistance)
 {
     m_nForceResistance = nResistance;
     UpdateCombatInformation();
 }
-// PC 0x005AFAE0  Xbox 0x001A8470
+// PC 0x005FAF20
 void CSWSCreatureStats::SetForceResistancePenalty(char nPenalty)
 {
     m_nForceResistancePenalty = nPenalty;
     UpdateCombatInformation();
 }
-int CSWSCreatureStats::FeatRequirementsMet(unsigned short nFeat,  // PC 0x005AFB00  Xbox 0x001A8490
+int CSWSCreatureStats::FeatRequirementsMet(unsigned short nFeat,  // PC 0x005FAF40
                                          CExoArrayList<unsigned short>* pList)
 {
     CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
@@ -3716,7 +3716,7 @@ inline unsigned char CSWSCreatureStats::GetTattoo2Color()
 {
     return m_nTattoo2Color;
 }
-// PC 0x005AFCE0  Xbox 0x001A8670
+// PC 0x005FB110
 int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
                                      CSWSCreatureAppearanceInfo* pAppearance)
 {
@@ -4248,7 +4248,7 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
     pCombatInformation->LoadData(pRes, pStruct);
     return 0;
 }
-// PC 0x005B1B90  Xbox 0x001AA560
+// PC 0x005FD2A0
 void CSWSCreatureStats::SaveStats(CResGFF* pRes, CResStruct* pStruct)
 {
     pRes->WriteFieldCExoLocString(pStruct, m_lsFirstName, "FirstName");
@@ -4384,7 +4384,7 @@ void CSWSCreatureStats::SaveStats(CResGFF* pRes, CResStruct* pStruct)
     }
     m_pCombatInformation->SaveData(pRes, pStruct);
 }
-// PC 0x005B23A0  Xbox 0x001AAD70
+// PC 0x005FDC20
 int CSWSCreatureStats::GetCreatureTalentRandom(
     int nFilter, int nSelection, int& nTalentType, int& nTalent,
     unsigned char& nClass, unsigned long& oidItem, int& nItemProperty,
@@ -4462,7 +4462,7 @@ int CSWSCreatureStats::GetCreatureTalentRandom(
     }
     return bFound;
 }
-// PC 0x005B2530  Xbox 0x001AAF00
+// PC 0x005FDDB0
 int CSWSCreatureStats::CanChooseFeat(unsigned short nFeat, unsigned char nNormal,
                                   unsigned char nBonus,
                                   CExoArrayList<unsigned short>* pList)
@@ -4577,7 +4577,7 @@ int CSWSCreatureStats::CanChooseFeat(unsigned short nFeat, unsigned char nNormal
     }
     return 1;
 }
-// PC 0x005B27E0  Xbox 0x001AB1C0
+// PC 0x005FE090
 void CSWSCreatureStats::AutoLevelup(int bFeedback)
 {
     CExoArrayList<unsigned short> lstFeats;
@@ -4722,7 +4722,7 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
                              CClientExoApp::FLOATY_TEXT_LEVEL, GetLevel(0));
     }
 }
-// PC 0x005A67A0  Xbox 0x0019F2F0
+// PC 0x005EF0D0
 unsigned short CSWSCreatureStats::GetNumberKnownSpells(
     unsigned char nClass, unsigned char nSpellLevel)
 {
@@ -4734,7 +4734,7 @@ unsigned short CSWSCreatureStats::GetNumberKnownSpells(
 
     return m_aClassInfo[nClass].GetNumberKnownSpells(nSpellLevel);
 }
-// PC 0x005A67D0  Xbox 0x0019F320
+// PC 0x005EF1B0
 int CSWSCreatureStats::GetWeaponSpecialization(CSWSItem* pItem)
 {
     if (pItem != NULL && pItem->GetBaseItem() != NULL)
@@ -4749,7 +4749,7 @@ int CSWSCreatureStats::GetWeaponSpecialization(CSWSItem* pItem)
 
     return 0;
 }
-// PC 0x005A6810  Xbox 0x0019F360
+// PC 0x005EF570
 int CSWSCreatureStats::CanLevelUp()
 {
     CServerExoApp* pApp = g_pAppManager->m_pServerExoApp;
@@ -4758,7 +4758,7 @@ int CSWSCreatureStats::CanLevelUp()
            m_nExperience >= g_pRules->m_anExperience[GetLevel(0)] &&
            !m_pCreature->GetDead() && !m_pCreature->GetDeadTemp();
 }
-// PC 0x005A6880  Xbox 0x0019F3D0
+// PC 0x005EF600
 void CSWSCreatureStats::SetSpellLikeAbilityReady(
     unsigned long nSpell, unsigned char bReady, unsigned char nClass)
 {
@@ -4773,7 +4773,7 @@ void CSWSCreatureStats::SetSpellLikeAbilityReady(
         }
     }
 }
-// PC 0x005A68E0  Xbox 0x0019F430
+// PC 0x005EF660
 int CSWSCreatureStats::GetIsInSpellLikeAbilityList(unsigned long nSpell)
 {
     CExoArrayList<CSWSStats_SpellLikeAbility>* pAbilities;
@@ -4795,7 +4795,7 @@ int CSWSCreatureStats::GetIsInSpellLikeAbilityList(unsigned long nSpell)
     }
     return 0;
 }
-// PC 0x005A6920  Xbox 0x0019F470
+// PC 0x005EF6A0
 unsigned short CSWSCreatureStats::GetFeat(unsigned short nIndex)
 {
     if (nIndex >= m_lstFeats.num)
@@ -4805,7 +4805,7 @@ unsigned short CSWSCreatureStats::GetFeat(unsigned short nIndex)
 
     return m_lstFeats[nIndex];
 }
-// PC 0x005A6940  Xbox 0x0019F490
+// PC 0x005EF740
 unsigned short CSWSCreatureStats::GetBonusFeat(unsigned short nIndex)
 {
     if (nIndex >= m_lstBonusFeats.num)
@@ -4815,7 +4815,7 @@ unsigned short CSWSCreatureStats::GetBonusFeat(unsigned short nIndex)
 
     return m_lstBonusFeats[nIndex];
 }
-// PC 0x005A6960  Xbox 0x0019F4B0
+// PC 0x005EF760
 int CSWSCreatureStats::GetEffectImmunity(unsigned char nImmunityType,
                                         CSWSCreature* pCreator)
 {
@@ -4854,7 +4854,7 @@ int CSWSCreatureStats::GetEffectImmunity(unsigned char nImmunityType,
     }
     return 0;
 }
-// PC 0x005A6A90  Xbox 0x0019F5E0
+// PC 0x005EF890
 int CSWSCreatureStats::GetEffectLinkImmunity(CGameEffect* pEffect)
 {
     int bImmune = 0;
@@ -4949,7 +4949,7 @@ int CSWSCreatureStats::GetEffectLinkImmunity(CGameEffect* pEffect)
         bImmune |= GetEffectLinkImmunity(pEffect->m_pLinkRight);
     return bImmune;
 }
-// PC 0x005A6D80  Xbox 0x0019F8E0
+// PC 0x005EFB90
 void CSWSCreatureStats::AdjustSpellUsesPerDay()
 {
     for (unsigned char nMultiClass = 0; nMultiClass < m_nClassCount; ++nMultiClass)
@@ -4974,7 +4974,7 @@ void CSWSCreatureStats::AdjustSpellUsesPerDay()
         }
     }
 }
-// PC 0x005A6E30  Xbox 0x0019F990
+// PC 0x005EFC40
 unsigned char CSWSCreatureStats::GetSpellLikeAbilityCasterLevel(
     unsigned long nSpell)
 {
@@ -4987,7 +4987,7 @@ unsigned char CSWSCreatureStats::GetSpellLikeAbilityCasterLevel(
     }
     return 0xFF;
 }
-// PC 0x005A4C60  Xbox 0x0019D6D0
+// PC 0x005ED210
 CExoString CSWSCreatureStats::GetFullName()
 {
     CExoString sName;
@@ -4996,12 +4996,12 @@ CExoString CSWSCreatureStats::GetFullName()
                                     sName, 0);
     return sName;
 }
-// PC 0x005A4CF0
+// PC 0x005ED350
 unsigned char CSWSCreatureStats::GetAttacksPerRound()
 {
     return 1;
 }
-// PC 0x005A4D00  Xbox 0x0019D760
+// PC 0x005ED360
 int CSWSCreatureStats::GetUseMonkAttackTables(int bForceUnarmed)
 {
     if (!m_pCreature->GetUseMonkAbilities())
@@ -5023,7 +5023,7 @@ int CSWSCreatureStats::GetUseMonkAttackTables(int bForceUnarmed)
     }
     return 0;
 }
-// PC 0x005A4D40  Xbox 0x0019D7A0
+// PC 0x005ED3A0
 unsigned char CSWSCreatureStats::GetUnarmedDamageDice()
 {
     int nCreatureSize = m_pCreature->m_nCreatureSize;
@@ -5049,7 +5049,7 @@ unsigned char CSWSCreatureStats::GetUnarmedDamageDice()
 
     return nDice;
 }
-// PC 0x005A4D60  Xbox 0x0019D7C0
+// PC 0x005ED3C0
 unsigned char CSWSCreatureStats::GetUnarmedDamageDie()
 {
     int nCreatureSize = m_pCreature->m_nCreatureSize;
@@ -5070,11 +5070,11 @@ unsigned char CSWSCreatureStats::GetUnarmedDamageDie()
     }
     return nDamageDie;
 }
-// PC 0x0060E760
+// PC 0x005EE1C0
 void CSWSCreatureStats::SetArcaneSpellFailure(unsigned char nFailure)
 {
 }
-// PC 0x005A4D90  Xbox 0x0019D7F0
+// PC 0x005ED3F0
 int CSWSCreatureStats::GetUnarmedDamageRoll(CSWSObject* pTarget)
 {
     int nDifficulty = 100;
@@ -5104,7 +5104,7 @@ int CSWSCreatureStats::GetUnarmedDamageRoll(CSWSObject* pTarget)
     return g_pRules->GetWeightedDamageAmount(nDamage, nDamageDie,
                                             bPCToNPC, bNPCToPC, nDifficulty);
 }
-// PC 0x005A6E70  Xbox 0x0019F9D0
+// PC 0x005EFC80
 int CSWSCreatureStats::HasSpell(unsigned char nSpellLevel,
                                unsigned long nSpell, int bCheckForcePoints)
 {
@@ -5146,7 +5146,7 @@ int CSWSCreatureStats::HasSpell(unsigned char nSpellLevel,
     }
     return bResult;
 }
-// PC 0x005A6F40  Xbox 0x0019FAB0
+// PC 0x005EFEA0
 void CSWSCreatureStats::CalcLevelUpNumberFeats(unsigned char nClass,
                                              unsigned char& nNormalFeats,
                                              unsigned char& nBonusFeats)
@@ -5160,7 +5160,7 @@ void CSWSCreatureStats::CalcLevelUpNumberFeats(unsigned char nClass,
     nBonusFeats = nLevel - 1 < CSWClass::MAX_FEAT_GAIN_LEVELS
         ? pClass->m_aBonusFeatGain[nLevel - 1] : 0;
 }
-// PC 0x005A6FE0  Xbox 0x0019FB60
+// PC 0x005EFF40
 void CSWSCreatureStats::SetNormalBonusFlags(unsigned short nFeat,
                                            int& bNormal, int& bBonus)
 {
@@ -5183,7 +5183,7 @@ void CSWSCreatureStats::SetNormalBonusFlags(unsigned short nFeat,
         }
     }
 }
-// PC 0x005A4E90  Xbox 0x0019D8F0
+// PC 0x004F4470
 unsigned char CSWSCreatureStats::GetClass(unsigned char nClass)
 {
     if (nClass >= m_nClassCount)
@@ -5192,7 +5192,7 @@ unsigned char CSWSCreatureStats::GetClass(unsigned char nClass)
     }
     return m_aClassInfo[nClass].m_nClass;
 }
-// PC 0x005A4EC0  Xbox 0x0019D920
+// PC 0x005ED5E0
 int CSWSCreatureStats::ResolveSpecialAttackAttackBonus(CSWSCreature* pTarget)
 {
     CSWSCombatRound* pCombatRound = m_pCreature->m_pcCombatRound;
@@ -5235,7 +5235,7 @@ int CSWSCreatureStats::ResolveSpecialAttackAttackBonus(CSWSCreature* pTarget)
 
     return nBonus;
 }
-// PC 0x005A4FB0  Xbox 0x0019DA10
+// PC 0x005ED780
 int CSWSCreatureStats::ResolveSpecialAttackDamageBonus(CSWSCreature* pTarget)
 {
     CSWSCombatRound* pCombatRound = m_pCreature->m_pcCombatRound;
@@ -5270,7 +5270,7 @@ int CSWSCreatureStats::ResolveSpecialAttackDamageBonus(CSWSCreature* pTarget)
 
     return nBonus;
 }
-// PC 0x005A5090  Xbox 0x0019DAF0
+// PC 0x005ED860
 unsigned char CSWSCreatureStats::GetClassLevel(unsigned char nClass,
                                                int bExcludeNegativeLevels)
 {
@@ -5294,7 +5294,7 @@ unsigned char CSWSCreatureStats::GetClassLevel(unsigned char nClass,
 
     return nLevel - nNegativeLevels;
 }
-// PC 0x005A50E0  Xbox 0x0019DB40
+// PC 0x005ED8B0
 unsigned char CSWSCreatureStats::GetClassNegativeLevels(unsigned char nClass)
 {
     if (nClass >= m_nClassCount)
@@ -5303,7 +5303,7 @@ unsigned char CSWSCreatureStats::GetClassNegativeLevels(unsigned char nClass)
     }
     return m_aClassInfo[nClass].m_nNegativeLevels;
 }
-// PC 0x005A5110  Xbox 0x0019DB70
+// PC 0x0050B730
 unsigned char CSWSCreatureStats::GetSimpleAlignmentGoodEvil()
 {
     if (m_nGoodEvilAlignment <= 40)
@@ -5314,7 +5314,7 @@ unsigned char CSWSCreatureStats::GetSimpleAlignmentGoodEvil()
     ++nAlignment;
     return nAlignment;
 }
-// PC 0x005A5130  Xbox 0x0019DB90
+// PC 0x005ED8E0
 int CSWSCreatureStats::GetCriticalHitRoll(int bOffHand)
 {
     int nCriticalRange = 0;
@@ -5381,7 +5381,7 @@ int CSWSCreatureStats::GetCriticalHitRoll(int bOffHand)
 
     return 21 - nCriticalRange;
 }
-// PC 0x005A52B0  Xbox 0x0019DD10
+// PC 0x005EDA60
 int CSWSCreatureStats::GetCriticalHitMultiplier(int bOffHand)
 {
     int nCriticalHitMultiplier = 2;
@@ -5413,7 +5413,7 @@ int CSWSCreatureStats::GetCriticalHitMultiplier(int bOffHand)
 
     return nCriticalHitMultiplier;
 }
-// PC 0x005A5330  Xbox 0x0019DD90
+// PC 0x005EDB70
 char CSWSCreatureStats::GetDEXMod(int bWithEffects)
 {
     int nDexBonus = 0;
@@ -5444,7 +5444,7 @@ char CSWSCreatureStats::GetDEXMod(int bWithEffects)
 
     return nDexModifier;
 }
-// PC 0x005A53B0  Xbox 0x0019DE10
+// PC 0x005EDC00
 CExoString CSWSCreatureStats::GetClassString(unsigned char nClass)
 {
     if (nClass >= m_nClassCount)
@@ -5458,7 +5458,7 @@ CExoString CSWSCreatureStats::GetClassString(unsigned char nClass)
     }
     return CExoString("");
 }
-// PC 0x005A5420  Xbox 0x0019DE80
+// PC 0x005EDC70
 void CSWSCreatureStats::SetClass(unsigned char nMultiClass,
                                  unsigned char nClass)
 {
@@ -5487,7 +5487,7 @@ inline void CSWSCreatureStats::RemoveKnownSpell(unsigned char nClass,
         m_aClassInfo[nClass].RemoveKnownSpell(0, nSpell);
     }
 }
-// PC 0x005A5440  Xbox 0x0019DEA0
+// PC 0x005EDC90
 void CSWSCreatureStats::SetClassNegativeLevels(unsigned char nClass,
                                                unsigned char nLevels)
 {
@@ -5496,7 +5496,7 @@ void CSWSCreatureStats::SetClassNegativeLevels(unsigned char nClass,
         m_aClassInfo[nClass].m_nNegativeLevels = nLevels;
     }
 }
-// PC 0x005A5460  Xbox 0x0019DEC0
+// PC 0x005EDCB0
 int CSWSCreatureStats::CalcStatModifier(unsigned char nScore)
 {
     int nModifier;
@@ -5512,7 +5512,7 @@ int CSWSCreatureStats::CalcStatModifier(unsigned char nScore)
 
     return nModifier / 2;
 }
-// PC 0x005A5490
+
 unsigned long CSWSCreatureStats::CalculateExpNeededForNextLevel()
 {
     for (int nLevel = 0; nLevel <= 20; ++nLevel)
@@ -5525,7 +5525,7 @@ unsigned long CSWSCreatureStats::CalculateExpNeededForNextLevel()
 
     return 0;
 }
-// PC 0x005A54C0  Xbox 0x0019DEF0
+// PC 0x005EDCE0
 void CSWSCreatureStats::SetSkillRank(unsigned char nSkill, char nRank)
 {
     if (nSkill < g_pRules->m_nNumSkills)
@@ -5533,7 +5533,7 @@ void CSWSCreatureStats::SetSkillRank(unsigned char nSkill, char nRank)
         m_pSkillRanks[nSkill] = nRank;
     }
 }
-// PC 0x005A54F0  Xbox 0x0019DF20
+// PC 0x005EF100
 int CSWSCreatureStats::GetWeaponFinesse(CSWSItem* pItem)
 {
     if (pItem != NULL && pItem->IsLightsaber() == 1)
@@ -5546,7 +5546,7 @@ int CSWSCreatureStats::GetWeaponFinesse(CSWSItem* pItem)
 
     return 0;
 }
-// PC 0x005A5550  Xbox 0x0019DF80
+// PC 0x005EF1F0
 bool CSWSCreatureStats::GetSpellUsesLeft(
     unsigned long nSpell, unsigned char nMultiClass,
     unsigned char nSpellLevel, unsigned char nSpellIndex)
@@ -5569,7 +5569,7 @@ bool CSWSCreatureStats::GetSpellUsesLeft(
     bool bUsesLeft = nForcePointsLeft >= nForcePoints;
     return bUsesLeft;
 }
-// PC 0x005A55C0  Xbox 0x0019DFF0
+// PC 0x005EF360
 int CSWSCreatureStats::UnReadySpell(unsigned long nSpell)
 {
     int bSuccess = 0;
@@ -5596,7 +5596,7 @@ int CSWSCreatureStats::UnReadySpell(unsigned long nSpell)
     }
     return bSuccess;
 }
-// PC 0x005A5650  Xbox 0x0019E080
+// PC 0x005EDD10
 unsigned char CSWSCreatureStats::GetSpellsPerDayLeft(unsigned char nMultiClass,
                                                      unsigned char nSpellLevel)
 {
@@ -5610,7 +5610,7 @@ unsigned char CSWSCreatureStats::GetSpellsPerDayLeft(unsigned char nMultiClass,
     }
     return m_aClassInfo[nMultiClass].m_nSpellsPerDayLeft[nSpellLevel];
 }
-// PC 0x005A5680  Xbox 0x0019E0B0
+// PC 0x005EDD40
 void CSWSCreatureStats::SetMovementRate(int nRate)
 {
     if (nRate == MOVEMENT_SPEED_DEFAULT)
@@ -5654,7 +5654,7 @@ void CSWSCreatureStats::SetMovementRate(int nRate)
         m_pCreature->m_nAIStateFlags = ~CSWSCreature::AI_STATE_CAN_MOVE;
     }
 }
-// PC 0x005A58B0  Xbox 0x0019E320
+// PC 0x005EDF70
 char CSWSCreatureStats::GetTotalSTRBonus()
 {
     CSWSCreature* pCreature = m_pCreature;
@@ -5664,7 +5664,7 @@ char CSWSCreatureStats::GetTotalSTRBonus()
                                             0);
     return nResult;
 }
-// PC 0x005A58E0  Xbox 0x0019E350
+// PC 0x005EDFA0
 char CSWSCreatureStats::GetTotalDEXBonus()
 {
     CSWSCreature* pCreature = m_pCreature;
@@ -5674,7 +5674,7 @@ char CSWSCreatureStats::GetTotalDEXBonus()
                                             0);
     return nResult;
 }
-// PC 0x005A5910  Xbox 0x0019E380
+// PC 0x005EDFD0
 char CSWSCreatureStats::GetTotalCONBonus()
 {
     CSWSCreature* pCreature = m_pCreature;
@@ -5684,7 +5684,7 @@ char CSWSCreatureStats::GetTotalCONBonus()
                                             0);
     return nResult;
 }
-// PC 0x005A5940  Xbox 0x0019E3B0
+// PC 0x005EE000
 char CSWSCreatureStats::GetTotalINTBonus()
 {
     CSWSCreature* pCreature = m_pCreature;
@@ -5694,7 +5694,7 @@ char CSWSCreatureStats::GetTotalINTBonus()
                                             0);
     return nResult;
 }
-// PC 0x005A5970  Xbox 0x0019E3E0
+// PC 0x005EE030
 char CSWSCreatureStats::GetTotalWISBonus()
 {
     CSWSCreature* pCreature = m_pCreature;
@@ -5704,7 +5704,7 @@ char CSWSCreatureStats::GetTotalWISBonus()
                                             0);
     return nResult;
 }
-// PC 0x005A59A0  Xbox 0x0019E410
+// PC 0x005EE060
 char CSWSCreatureStats::GetTotalCHABonus()
 {
     CSWSCreature* pCreature = m_pCreature;
@@ -5714,7 +5714,7 @@ char CSWSCreatureStats::GetTotalCHABonus()
                                             0);
     return nResult;
 }
-// PC 0x005A59D0  Xbox 0x0019E440
+// PC 0x005EE090
 unsigned char CSWSCreatureStats::ComputeNumberKnownSpellsLeft(unsigned char nClass)
 {
     CSWClass* pClass = &g_pRules->m_pClasses[GetClass(nClass)];
@@ -5742,7 +5742,7 @@ unsigned char CSWSCreatureStats::ComputeNumberKnownSpellsLeft(unsigned char nCla
         return nSpells;
     }
 }
-// PC 0x005A5A60  Xbox 0x0019E4E0
+// PC 0x005EE180
 int CSWSCreatureStats::GetForceResistance()
 {
     char nResistance = m_nForceResistance - m_nForceResistancePenalty;
@@ -5752,7 +5752,7 @@ int CSWSCreatureStats::GetForceResistance()
     }
     return nResistance;
 }
-// PC 0x005A5A80  Xbox 0x0019E500
+// PC 0x005EE1A0
 unsigned char CSWSCreatureStats::GetACNaturalBase()
 {
     if (GetCreature()->GetUseMonkAbilities() == 1)
@@ -5762,7 +5762,7 @@ unsigned char CSWSCreatureStats::GetACNaturalBase()
 
     return m_nACNaturalBase;
 }
-int CSWSCreatureStats::EffectId2Effect2DAId(int nEffectId, int nEffectInteger)  // PC 0x005A5AA0  Xbox 0x0019E520
+int CSWSCreatureStats::EffectId2Effect2DAId(int nEffectId, int nEffectInteger)  // PC 0x005EE1D0
 {
     switch (nEffectId)
     {
@@ -5843,7 +5843,7 @@ int CSWSCreatureStats::EffectId2Effect2DAId(int nEffectId, int nEffectInteger)  
 
     return 0;
 }
-// PC 0x005A5C70  Xbox 0x0019E6F0
+// PC 0x005EE3B0
 int CSWSCreatureStats::AdjustHPAccumulatorBy(float fAdjustment)
 {
     int nAdjustment;
@@ -5853,7 +5853,7 @@ int CSWSCreatureStats::AdjustHPAccumulatorBy(float fAdjustment)
     m_fHPAccumulator -= (short)nAdjustment;
     return nAdjustment;
 }
-// PC 0x005A5CC0  Xbox 0x0019E750
+// PC 0x005EE400
 int CSWSCreatureStats::AdjustFPAccumulatorBy(float fAdjustment)
 {
     int nAdjustment;
@@ -5863,7 +5863,7 @@ int CSWSCreatureStats::AdjustFPAccumulatorBy(float fAdjustment)
     m_fFPAccumulator -= (short)nAdjustment;
     return nAdjustment;
 }
-// PC 0x005A5D10  Xbox 0x0019E7B0
+// PC 0x005EE460
 void CSWSCreatureStats::AddClass(unsigned char nClass, unsigned char nLevel)
 {
     if (m_nClassCount < MAX_CLASSES)
@@ -5888,7 +5888,7 @@ void CSWSCreatureStats::AddClass(unsigned char nClass, unsigned char nLevel)
         m_pCreature->UpdatePureGoodEvilPowers();
     }
 }
-// PC 0x005A5D70  Xbox 0x0019E810
+// PC 0x005EE4C0
 int CSWSCreatureStats::CheckPowerSuitability(int nPowerSuitability, int nFilter)
 {
     int bSuitable = 1;
@@ -5923,7 +5923,7 @@ int CSWSCreatureStats::CheckPowerSuitability(int nPowerSuitability, int nFilter)
 
     return bSuitable;
 }
-// PC 0x005A5DF0  Xbox 0x0019E890
+// PC 0x005EE540
 int CSWSCreatureStats::CheckInclusionMatch(int nType, int nRow, int nExclusion)
 {
     int bMatch = 1;
@@ -5968,7 +5968,7 @@ int CSWSCreatureStats::CheckInclusionMatch(int nType, int nRow, int nExclusion)
     }
     return bMatch;
 }
-// PC 0x005A5EE0  Xbox 0x0019EA30
+// PC 0x005EE630
 unsigned char CSWSCreatureStats::GetSpellGainWithBonus(unsigned char nMultiClass,
                                                       unsigned char nSpellLevel)
 {
@@ -6000,7 +6000,7 @@ unsigned char CSWSCreatureStats::GetSpellGainWithBonus(unsigned char nMultiClass
 
     return 0;
 }
-// PC 0x005A5FD0  Xbox 0x0019EB20
+// PC 0x005EE720
 unsigned char CSWSCreatureStats::GetLevel(int bExcludeNegativeLevels)
 {
     int nLevel = 0;
@@ -6013,7 +6013,7 @@ unsigned char CSWSCreatureStats::GetLevel(int bExcludeNegativeLevels)
 
     return nLevel;
 }
-// PC 0x005A6060  Xbox 0x0019EBB0
+// PC 0x005ED2A0
 int CSWSCreatureStats::GetIsJedi()
 {
     for (int nClassIndex = 0; nClassIndex < m_nClassCount; nClassIndex++)
@@ -6029,7 +6029,7 @@ int CSWSCreatureStats::GetIsJedi()
 
     return 0;
 }
-// PC 0x005A60D0  Xbox 0x0019EC20
+// PC 0x005EE8E0
 int CSWSCreatureStats::GetBaseAttackBonus()
 {
     int nBonus = 0;
@@ -6084,7 +6084,7 @@ float CSWSCreatureStats::GetStatById(int nStatId)
     }
     return 0.0f;
 }
-// PC 0x005A6170  Xbox 0x0019ECC0
+// PC 0x005EEA40
 CSWLevelStats* CSWSCreatureStats::GetLevelStats(unsigned char nLevel)
 {
     if (!m_bIsPC)
@@ -6096,7 +6096,7 @@ CSWLevelStats* CSWSCreatureStats::GetLevelStats(unsigned char nLevel)
         return m_lstLevelStats.element[nLevel];
     }
 }
-// PC 0x005A7080  Xbox 0x0019FC00
+// PC 0x005EFFE0
 int CSWSCreatureStats::FeatAcquired(unsigned short nFeat,
                                   CExoArrayList<unsigned short>* pList)
 {
@@ -6120,7 +6120,7 @@ int CSWSCreatureStats::FeatAcquired(unsigned short nFeat,
     }
     return 0;
 }
-// PC 0x005A7110  Xbox 0x0019FC90
+// PC 0x005F0070
 int CSWSCreatureStats::HasSpellPrereq(CSWSpell* pSpell,
                                     CExoArrayList<unsigned long>* pList)
 {
@@ -6142,7 +6142,7 @@ int CSWSCreatureStats::HasSpellPrereq(CSWSpell* pSpell,
     }
     return GetLevel(0) >= pSpell->GetSpellLevel(GetClass(m_nClassCount - 1));
 }
-// PC 0x005A7230  Xbox 0x0019FDB0
+// PC 0x005F01E0
 int CSWSCreatureStats::HasFeatPrereq(CSWFeat* pFeat,
                                    CExoArrayList<unsigned short>* pList)
 {
@@ -6178,7 +6178,7 @@ int CSWSCreatureStats::HasFeatPrereq(CSWFeat* pFeat,
 }
 
 static int IsActivatePowerProperty(CSWSItem* pItem, int nProperty, int nPower, int bAllowCharges);
-// PC 0x005A72E0  Xbox 0x0019FE60
+// PC 0x005F0290
 int CSWSCreatureStats::GetHasPowerFromItem(int nPower)
 {
     if (m_pCreature->m_pInventory != NULL)
@@ -6223,7 +6223,7 @@ int CSWSCreatureStats::GetHasPowerFromItem(int nPower)
     }
     return 0;
 }
-// PC 0x005A74A0  Xbox 0x001A0020
+// PC 0x005F0450
 int CSWSCreatureStats::GetItemDetailsForPower(int nPower,
     unsigned long& oidItem, int& nItemProperty)
 {
@@ -6321,7 +6321,7 @@ static inline void NwscreaturestatsTrace1()
 }
 
 #ifdef _XBOX
-// Xbox 0x0019D6A0
+
 void CSWSCreatureStats::SetGoodEvilAlignment(short nAlignment)
 {
     int nValue;

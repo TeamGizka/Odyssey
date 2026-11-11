@@ -1,5 +1,5 @@
 #include "aurora.h"
-// PC 0x00710770  Xbox 0x002FA9D0
+// PC 0x00783FA0
 int CAurora16BitTexture::GetTextureAttrib(unsigned long* pnA,
                                           unsigned long* pnB, float* pfC,
                                           int* pnD)
@@ -10,7 +10,7 @@ int CAurora16BitTexture::GetTextureAttrib(unsigned long* pnA,
     }
     return 0;
 }
-// PC 0x007107B0
+// PC 0x00783FE0
 unsigned char* CAurora16BitTexture::GetTextureDataPtr()
 {
     if (m_pRes != 0 && m_pRes->GetDemands() >= 1)
@@ -19,7 +19,7 @@ unsigned char* CAurora16BitTexture::GetTextureDataPtr()
     }
     return 0;
 }
-// PC 0x007107E0  Xbox 0x002FAA10
+// PC 0x00784010
 int CAurora16BitTexture::Load()
 {
     S16BitTextureDataTrailer* pTrailer;
@@ -33,7 +33,7 @@ int CAurora16BitTexture::Load()
     pTrailer->nType = 2059;
     return 1;
 }
-// PC 0x00710100
+// PC 0x00783630
 void CAurora16BitTexture::Unload()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -41,7 +41,7 @@ void CAurora16BitTexture::Unload()
         m_pRes->Release();
     }
 }
-// PC 0x00710810  Xbox 0x002FAA40
+// PC 0x00784040
 int CAurora16BitTexture::ReadTextureHeader(int* pnA, int* pnB, float* pfC,
                                            int* pnD)
 {
@@ -61,7 +61,7 @@ int CAurora16BitTexture::ReadTextureHeader(int* pnA, int* pnB, float* pfC,
     *pnD = textureHeader.nFormat;
     return 1;
 }
-// PC 0x00710870  Xbox 0x002FAAA0
+// PC 0x007840A0
 unsigned char* CAurora16BitTexture::GetPtrToResHelperInfo()
 {
     if (m_pRes == 0 || m_pRes->GetDemands() < 1)
@@ -70,13 +70,13 @@ unsigned char* CAurora16BitTexture::GetPtrToResHelperInfo()
     }
     return GetTextureDataPtr() - 22;
 }
-// PC 0x00710A90  Xbox 0x002FACC0
+// PC 0x007842C0
 CAurora16BitTexture::CAurora16BitTexture(CResRef cResRef, int bRequest)
     : CResHelper<CRes4PC, RESTYPE_4PC>()
 {
     SetResRef(cResRef, bRequest);
 }
-// PC 0x00710B20  Xbox 0x002FAD50
+// PC 0x00784350
 CAurora16BitTexture::~CAurora16BitTexture()
 {
 }

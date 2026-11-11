@@ -16,7 +16,7 @@ const unsigned short CGameEffect::SUBTYPE_MAGICAL = 8;
 const unsigned short CGameEffect::SUBTYPE_SUPERNATURAL = 16;
 const unsigned short CGameEffect::SUBTYPE_EXTRAORDINARY = 24;
 unsigned __int64 CGameEffect::m_nNextID = 1;
-// PC 0x00503590  Xbox 0x001F4780
+// PC 0x00540BF0
 CGameEffect::~CGameEffect()
 {
     if (m_pLinkLeft != NULL)
@@ -37,7 +37,7 @@ CGameEffect::~CGameEffect()
         m_pIntegers = NULL;
     }
 }
-// PC 0x00503630  Xbox 0x001F4820
+// PC 0x00540C90
 void CGameEffect::SetNumIntegers(int nNumIntegers)
 {
     m_nNumIntegers = nNumIntegers;
@@ -51,66 +51,66 @@ void CGameEffect::SetNumIntegers(int nNumIntegers)
     m_pIntegers = new int[m_nNumIntegers];
     memset(m_pIntegers, 0, m_nNumIntegers * 4);
 }
-// PC 0x00503690  Xbox 0x001F4880
+// PC 0x00540CF0
 int CGameEffect::GetInteger(int nIndex)
 {
     return m_pIntegers[nIndex];
 }
-// PC 0x005036A0  Xbox 0x001F4890
+// PC 0x00540D00
 void CGameEffect::SetInteger(int nIndex, int nValue)
 {
     EXOXBOXASSERT(nIndex >= 0 && nIndex < m_nNumIntegers);
     m_pIntegers[nIndex] = nValue;
 }
-// PC 0x005036C0  Xbox 0x001F48D0
+// PC 0x00540D20
 float CGameEffect::GetFloat(int nIndex)
 {
     EXOXBOXASSERT(nIndex >= 0 && nIndex < 4);
     return m_fFloat[nIndex];
 }
-// PC 0x005036D0  Xbox 0x001F48F0
+// PC 0x00540D30
 void CGameEffect::SetFloat(int nIndex, float fValue)
 {
     EXOXBOXASSERT(nIndex >= 0 && nIndex < 4);
     m_fFloat[nIndex] = fValue;
 }
-// PC 0x005036E0  Xbox 0x001F4920
+// PC 0x00540D40
 unsigned long CGameEffect::GetObjectID(int nIndex)
 {
     EXOXBOXASSERT(nIndex >= 0 && nIndex < 4);
     return m_oidObject[nIndex];
 }
-// PC 0x005036F0  Xbox 0x001F4940
+// PC 0x00540D50
 void CGameEffect::SetObjectID(int nIndex, unsigned long oidValue)
 {
     EXOXBOXASSERT(nIndex >= 0 && nIndex < 4);
     m_oidObject[nIndex] = oidValue;
 }
-// PC 0x00503700  Xbox 0x001F4970
+// PC 0x00540D60
 CExoString CGameEffect::GetString(int nIndex)
 {
     EXOXBOXASSERT(nIndex >= 0 && nIndex < 6);
     return m_sString[nIndex];
 }
-// PC 0x00503730  Xbox 0x001F49B0
+// PC 0x00540D90
 void CGameEffect::SetString(int nIndex, const CExoString& sValue)
 {
     EXOXBOXASSERT(nIndex >= 0 && nIndex < 6);
     m_sString[nIndex] = sValue;
 }
-// PC 0x00503750  Xbox 0x001F49E0
+// PC 0x00540DB0
 void CGameEffect::SetExpiryTime(unsigned long nDay, unsigned long nTime)
 {
     m_nExpireDay = nDay;
     m_nExpireTime = nTime;
 }
-// PC 0x00503770  Xbox 0x001F4A00
+// PC 0x00540DD0
 void CGameEffect::GetExpiryTime(unsigned long* pnDay, unsigned long* pnTime)
 {
     *pnDay = m_nExpireDay;
     *pnTime = m_nExpireTime;
 }
-// PC 0x00503790  Xbox 0x001F4A20
+// PC 0x00540DF0
 int CGameEffect::SaveGameEffect(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList list;
@@ -187,7 +187,7 @@ int CGameEffect::SaveGameEffect(CResGFF* pRes, CResStruct* pStruct)
 
     return result;
 }
-// PC 0x00503A00  Xbox 0x001F4CB0
+// PC 0x00541060
 void CGameEffect::SetCreator(unsigned long oidCreator)
 {
     CGameObject* pObject =
@@ -209,7 +209,7 @@ void CGameEffect::SetCreator(unsigned long oidCreator)
         }
     }
 }
-// PC 0x00503A70  Xbox 0x001F4D20
+// PC 0x005410D0
 int CGameEffect::GetEffectTypeScriptConstant()
 {
     int nResult = 0;
@@ -474,7 +474,7 @@ int CGameEffect::GetEffectTypeScriptConstant()
 
     return nResult;
 }
-// PC 0x00503E40  Xbox 0x001F50F0
+// PC 0x005414E0
 CGameEffect::CGameEffect(int bDynamic)
 {
     if (bDynamic == 1)
@@ -515,7 +515,7 @@ CGameEffect::CGameEffect(int bDynamic)
         m_oidObject[nObject] = OBJECT_INVALID;
     }
 }
-// PC 0x00503F70  Xbox 0x001F5230
+// PC 0x00541610
 CGameEffect::CGameEffect(CGameEffect* pEffect)
 {
     m_nID = 0;
@@ -554,7 +554,7 @@ CGameEffect::CGameEffect(CGameEffect* pEffect)
     m_nSpellId = pEffect->m_nSpellId;
     m_bSkipOnLoad = 0;
 }
-// PC 0x00504090  Xbox 0x001F5350
+// PC 0x00541730
 void CGameEffect::CopyEffect(CGameEffect* pEffect, int bSkipIntegers)
 {
     if (pEffect != NULL)
@@ -611,7 +611,7 @@ void CGameEffect::CopyEffect(CGameEffect* pEffect, int bSkipIntegers)
         }
     }
 }
-// PC 0x00504240  Xbox 0x001F5500
+// PC 0x005418E0
 void CGameEffect::UpdateLinked()
 {
     if (m_pLinkLeft != NULL)
@@ -676,7 +676,7 @@ void CGameEffect::UpdateLinked()
         m_pLinkRight->m_nID = m_nID;
     }
 }
-// PC 0x005043A0  Xbox 0x001F5660
+// PC 0x00541A40
 void CGameEffect::LoadGameEffect(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList list;
@@ -829,7 +829,7 @@ void CGameEffect::LoadGameEffect(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 }
-// PC 0x00504810  Xbox 0x001F5B60
+// PC 0x00541E90
 void CGameEffect::SetLinked(CGameEffect* pLeft, CGameEffect* pRight)
 {
     m_pLinkLeft = pLeft;

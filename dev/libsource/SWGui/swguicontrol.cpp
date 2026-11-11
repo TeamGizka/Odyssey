@@ -26,7 +26,7 @@ float CSWGuiListBox::m_fArrowAlphaPulseTime = 0.75f;
 bool CSWGuiListBox::m_bArrowAlphaPulseUp;
 
 static inline void SwguicontrolTrace1();
-// PC 0x00417660  Xbox 0x002FCAA0
+// PC 0x00416E70
 void CSWGuiNavigable::SetMoveToControl(int nDirection, CSWGuiControl* pControl)
 {
     if (nDirection >= 0 && nDirection < 4)
@@ -34,7 +34,7 @@ void CSWGuiNavigable::SetMoveToControl(int nDirection, CSWGuiControl* pControl)
         m_apMoveToControl[nDirection] = pControl;
     }
 }
-// PC 0x00417680  Xbox 0x002FCAC0
+// PC 0x00416E90
 int CSWGuiNavigable::GetMoveToControl(int nDirection)
 {
     if (nDirection >= 0 && nDirection < 4)
@@ -47,14 +47,14 @@ int CSWGuiNavigable::GetMoveToControl(int nDirection)
 void CSWGuiControl::HandleLoseMouseFocus()
 {
 }
-// PC 0x004176A0
+// PC 0x00416EB0
 void CSWGuiControl::SetEnabled(int bEnabled)
 {
 #ifndef _XBOX
     m_bHilightOnOver = bEnabled;
 #endif
 }
-// PC 0x004176C0
+// PC 0x00416ED0
 void CSWGuiControl::HideToolTip()
 {
 #ifndef _XBOX
@@ -64,7 +64,7 @@ void CSWGuiControl::HideToolTip()
     m_bToolTipShown = 0;
 #endif
 }
-// PC 0x004176E0  Xbox 0x002FCB20
+// PC 0x00416EF0
 #ifdef _XBOX
 void CSWGuiLabel::Initialize(const CSWGuiExtent& cExtent,
                              const CSWGuiTextParams& cText,
@@ -84,13 +84,13 @@ void CSWGuiLabel::Initialize(const CSWGuiExtent& cExtent,
     m_cText.Initialize(cInner, cText, fScale);
 #endif
 }
-// PC 0x00417750  Xbox 0x002FCB80
+// PC 0x00416F60
 void CSWGuiLabel::Draw(float fElapsed)
 {
     m_cBorder.Draw(fElapsed);
     m_cText.Draw(fElapsed);
 }
-// PC 0x00417780  Xbox 0x002FCC70
+// PC 0x00416F90
 void CSWGuiLabel::SetExtent(const CSWGuiExtent& cExtent)
 {
     m_cExtent = cExtent;
@@ -98,7 +98,7 @@ void CSWGuiLabel::SetExtent(const CSWGuiExtent& cExtent)
     CSWGuiExtent cInner = m_cBorder.GetInnerExtent();
     m_cText.SetExtent(cInner);
 }
-// PC 0x004177E0  Xbox 0x002FCCD0
+// PC 0x00416FF0
 void CSWGuiLabelHilight::Initialize(const CSWGuiExtent& cExtent,
                                     const CSWGuiTextParams& cText,
                                     const CSWGuiBorderParams& cBorder,
@@ -111,7 +111,7 @@ void CSWGuiLabelHilight::Initialize(const CSWGuiExtent& cExtent,
         m_cBorder.GetInnerExtent(), m_cHilite.GetInnerExtent());
     m_cText.Initialize(cInner, cText, 1.0f);
 }
-// PC 0x00417880  Xbox 0x002FCD70
+// PC 0x00417090
 void CSWGuiLabelHilight::Draw(float fElapsed)
 {
     if (m_bActive)
@@ -124,7 +124,7 @@ void CSWGuiLabelHilight::Draw(float fElapsed)
     }
     m_cText.Draw(fElapsed);
 }
-// PC 0x004178E0  Xbox 0x002FCDD0
+// PC 0x004170F0
 void CSWGuiLabelHilight::SetExtent(const CSWGuiExtent& cExtent)
 {
     m_cExtent = cExtent;
@@ -134,7 +134,7 @@ void CSWGuiLabelHilight::SetExtent(const CSWGuiExtent& cExtent)
         m_cBorder.GetInnerExtent(), m_cHilite.GetInnerExtent());
     m_cText.SetExtent(cInner);
 }
-// PC 0x00417970  Xbox 0x002FCEE0
+// PC 0x00417180
 void CSWGuiButton::Initialize(const CSWGuiExtent& cExtent,
                               const CSWGuiTextParams& cText,
                               const CSWGuiBorderParams& cBorder,
@@ -149,7 +149,7 @@ void CSWGuiButton::Initialize(const CSWGuiExtent& cExtent,
         m_cBorder.GetInnerExtent(), m_cHilite.GetInnerExtent());
     m_cText.Initialize(cInner, cText, 1.0f);
 }
-// PC 0x00417A20  Xbox 0x002FCF90
+// PC 0x00417230
 void CSWGuiButton::SetExtent(const CSWGuiExtent& cExtent)
 {
     m_cExtent = cExtent;
@@ -158,7 +158,7 @@ void CSWGuiButton::SetExtent(const CSWGuiExtent& cExtent)
     m_cText.SetExtent(CSWGuiExtent::Intersection(m_cBorder.GetInnerExtent(),
                                                  m_cHilite.GetInnerExtent()));
 }
-// PC 0x00417AB0  Xbox 0x002FD020
+// PC 0x004172C0
 void CSWGuiButton::Draw(float fElapsed)
 {
     if (m_bActive)
@@ -171,7 +171,7 @@ void CSWGuiButton::Draw(float fElapsed)
     }
     m_cText.Draw(fElapsed);
 }
-// PC 0x00417B10  Xbox 0x002FD080
+// PC 0x00417320
 void CSWGuiButtonToggle::Draw(float fElapsed)
 {
     if (m_bToggled)
@@ -198,7 +198,7 @@ void CSWGuiButtonToggle::Draw(float fElapsed)
     }
     m_cText.Draw(fElapsed);
 }
-// PC 0x00417BA0  Xbox 0x002FD110
+// PC 0x004173B0
 void CSWGuiButtonToggle::SetExtent(const CSWGuiExtent& cExtent)
 {
     m_cExtent = cExtent;
@@ -215,7 +215,7 @@ void CSWGuiButtonToggle::SetExtent(const CSWGuiExtent& cExtent)
         CSWGuiExtent::Intersection(cToggleBorderInner, cToggleHiliteInner));
     m_cText.SetExtent(cExtent);
 }
-// PC 0x00417CA0  Xbox 0x002FD210
+// PC 0x004174B0
 void CSWGuiButtonToggle::Initialize(const CSWGuiExtent& cExtent,
                                     const CSWGuiTextParams& cText,
                                     const CSWGuiBorderParams& cBorder,
@@ -237,7 +237,7 @@ void CSWGuiButtonToggle::Initialize(const CSWGuiExtent& cExtent,
         CSWGuiExtent::Intersection(cToggleBorderInner, cToggleHiliteInner));
     m_cText.Initialize(cInner, cText, 1.0f);
 }
-// PC 0x00417DC0  Xbox 0x002FDCD0
+// PC 0x004175D0
 void CSWGuiSlider::Initialize(const CSWGuiExtent& cExtent,
                               const CSWGuiBorderParams& cTrack,
                               const CSWGuiBorderParams& cThumb,
@@ -251,7 +251,7 @@ void CSWGuiSlider::Initialize(const CSWGuiExtent& cExtent,
     m_cImage.Initialize(m_cExtent, cParams);
     SetExtent(m_cExtent);
 }
-// PC 0x00417E60  Xbox 0x002FD320
+// PC 0x00417680
 void CSWGuiSlider::Draw(float fElapsed)
 {
     if (m_bActive)
@@ -264,7 +264,7 @@ void CSWGuiSlider::Draw(float fElapsed)
     }
     m_cImage.Draw(fElapsed);
 }
-// PC 0x00417EC0  Xbox 0x002FD380
+// PC 0x004176E0
 void CSWGuiSlider::SetMaxValue(int nMaxValue)
 {
     if (m_nMaxValue != nMaxValue && nMaxValue >= 0)
@@ -273,12 +273,12 @@ void CSWGuiSlider::SetMaxValue(int nMaxValue)
         SetExtent(m_cExtent);
     }
 }
-// PC 0x0041C3A0  Xbox 0x00300380
+// PC 0x0041BD90
 void CSWGuiListBox::SetActiveControl(CSWGuiControl* pControl, int bNotify)
 {
     SetSelectedControl(pControl, bNotify);
 }
-// PC 0x0041C3B0  Xbox 0x00300390
+// PC 0x0041BDA0
 void CSWGuiListBox::SetActive(int bActive)
 {
     CSWGuiControl::SetActive(bActive);
@@ -296,7 +296,7 @@ void CSWGuiListBox::SetActive(int bActive)
 }
 
 #ifndef _XBOX
-void CSWGuiListBox::HandleMouseMove()  // PC 0x0041C400
+void CSWGuiListBox::HandleMouseMove()  // PC 0x0041BDF0
 {
     int nIndex;
 
@@ -334,7 +334,7 @@ void CSWGuiListBox::HandleMouseMove()  // PC 0x0041C400
     }
 }
 #endif
-// PC 0x0041C4A0
+// PC 0x0041BE90
 void CSWGuiListBox::HandleLMouseDown()
 {
     int nItem;
@@ -419,19 +419,19 @@ void CSWGuiListBox::HandleLMouseDown()
     }
 #endif
 }
-// PC 0x0041C6B0
+// PC 0x0041C0B0
 CSWGuiEditbox::CSWGuiEditbox()
 {
     m_bFocusable = 1;
 }
-// PC 0x0041C7D0
+// PC 0x0041C1D0
 void CSWGuiEditbox::Load(CResGFF* pGFF, CResStruct& cStruct)
 {
     m_cText.Load(pGFF, cStruct, "TEXT");
     m_cBorder.Load(pGFF, cStruct, "BORDER");
     CSWGuiControl::Load(pGFF, cStruct);
 }
-// PC 0x0041C890  Xbox 0x002FD770
+// PC 0x0041C290
 void CSWGuiNavigable::Load(CResGFF* pGFF, CResStruct& cStruct)
 {
     CResStruct cMoveTo;
@@ -450,7 +450,7 @@ void CSWGuiNavigable::Load(CResGFF* pGFF, CResStruct& cStruct)
     }
     CSWGuiControl::Load(pGFF, cStruct);
 }
-// PC 0x0041B8B0  Xbox 0x002FFDD0
+// PC 0x0041B2A0
 CSWGuiNavigable::CSWGuiNavigable()
 {
     for (int i = 0; i < 4; i++)
@@ -459,7 +459,7 @@ CSWGuiNavigable::CSWGuiNavigable()
     m_bFocusable = 1;
 #endif
 }
-// PC 0x0041B8E0  Xbox 0x002FCAE0
+// PC 0x0041B2D0
 void CSWGuiControl::Load(CResGFF* pGFF, CResStruct& cStruct)
 {
     int bSuccess;
@@ -482,27 +482,27 @@ void CSWGuiControl::Load(CResGFF* pGFF, CResStruct& cStruct)
         }
     }
 }
-// PC 0x0041B960  Xbox 0x002FCBB0
+// PC 0x0041B350
 void CSWGuiLabel::Load(CResGFF* pGFF, CResStruct& cStruct)
 {
     m_cText.Load(pGFF, cStruct, "TEXT");
     m_cBorder.Load(pGFF, cStruct, "BORDER");
     CSWGuiControl::Load(pGFF, cStruct);
 }
-// PC 0x0041BA20  Xbox 0x002FCE60
+// PC 0x0041B410
 void CSWGuiLabelHilight::Load(CResGFF* pGFF, CResStruct& cStruct)
 {
     m_cHilite.Load(pGFF, cStruct, "HILIGHT");
     CSWGuiLabel::Load(pGFF, cStruct);
 }
-// PC 0x0041BAA0  Xbox 0x002FFE10
+// PC 0x0041B490
 CSWGuiSlider::CSWGuiSlider()
 {
     m_nMaxValue = 0;
     m_nCurValue = 0;
     m_nSlideSound = 1;
 }
-// PC 0x0041BBC0  Xbox 0x002FE120
+// PC 0x0041B5B0
 void CSWGuiProgressBar::Load(CResGFF* pGFF, CResStruct& cStruct)
 {
     int bSuccess;
@@ -513,7 +513,7 @@ void CSWGuiProgressBar::Load(CResGFF* pGFF, CResStruct& cStruct)
     SetStartFromLeft(pGFF->ReadFieldBYTE(&cStruct, "STARTFROMLEFT", bSuccess, 1));
     CSWGuiControl::Load(pGFF, cStruct);
 }
-// PC 0x0041BCD0  Xbox 0x002FE770
+// PC 0x0041B6C0
 void CSWGuiScrollBar::Load(CResGFF* pGFF, CResStruct& cStruct)
 {
     int bSuccess;
@@ -527,7 +527,7 @@ void CSWGuiScrollBar::Load(CResGFF* pGFF, CResStruct& cStruct)
     m_bDrawMode = pGFF->ReadFieldBYTE(&cStruct, "DRAWMODE", bSuccess, 0);
     CSWGuiControl::Load(pGFF, cStruct);
 }
-// PC 0x0041C930  Xbox 0x002FDAA0
+// PC 0x0041C330
 void CSWGuiButton::Load(CResGFF* pGFF, CResStruct& cStruct)
 {
     m_cBorder.Load(pGFF, cStruct, "BORDER");
@@ -535,14 +535,14 @@ void CSWGuiButton::Load(CResGFF* pGFF, CResStruct& cStruct)
     m_cText.Load(pGFF, cStruct, "TEXT");
     CSWGuiNavigable::Load(pGFF, cStruct);
 }
-// PC 0x0041CA30  Xbox 0x003003E0
+// PC 0x0041C430
 CSWGuiButtonToggle::CSWGuiButtonToggle()
 {
     m_bToggled = 0;
     m_nToggleEvent = EVENT_SELECT;
     m_nClickSound = 3;
 }
-// PC 0x0041CB40  Xbox 0x002FDBA0
+// PC 0x0041C540
 void CSWGuiButtonToggle::Load(CResGFF* pGFF, CResStruct& cStruct)
 {
     int bSuccess;
@@ -552,7 +552,7 @@ void CSWGuiButtonToggle::Load(CResGFF* pGFF, CResStruct& cStruct)
     m_bToggled = pGFF->ReadFieldBYTE(&cStruct, "ISSELECTED", bSuccess, 0);
     CSWGuiButton::Load(pGFF, cStruct);
 }
-// PC 0x0041CC30  Xbox 0x002FDEE0
+// PC 0x0041C630
 void CSWGuiSlider::Load(CResGFF* pGFF, CResStruct& cStruct)
 {
     int bSuccess;
@@ -564,7 +564,7 @@ void CSWGuiSlider::Load(CResGFF* pGFF, CResStruct& cStruct)
     SetCurValue(pGFF->ReadFieldINT(&cStruct, "CURVALUE", bSuccess, 0));
     CSWGuiNavigable::Load(pGFF, cStruct);
 }
-// PC 0x0041CD60  Xbox 0x00300480
+// PC 0x0041C770
 void CSWGuiListBox::Initialize(const CSWGuiExtent& cExtent,
                              const CSWGuiBorderParams& cBorder, int nPadding)
 {
@@ -581,7 +581,7 @@ void CSWGuiListBox::Initialize(const CSWGuiExtent& cExtent,
     SetPadding(nPadding);
 }
 #ifndef _XBOX
-void CSWGuiListBox::HandleInputEvent(int nEvent, int nState)  // PC 0x0041CE20  Xbox 0x00300540
+void CSWGuiListBox::HandleInputEvent(int nEvent, int nState)  // PC 0x0041C830
 {
     if (nState)
     {
@@ -752,7 +752,7 @@ void CSWGuiListBox::HandleInputEvent(int nEvent, int nState)  // PC 0x0041CE20  
     CSWGuiControl::HandleInputEvent(nEvent, nState);
 }
 #endif
-void CSWGuiListBox::ClearItems()  // PC 0x00419A90  Xbox 0x002FE9E0
+void CSWGuiListBox::ClearItems()  // PC 0x00419410
 {
     int i;
 
@@ -792,7 +792,7 @@ void CSWGuiListBox::ClearItems()  // PC 0x00419A90  Xbox 0x002FE9E0
     m_nSelectedItem = -1;
     m_nScrollPosition = 1;
 }
-// PC 0x00419B80  Xbox 0x002FEAA0
+// PC 0x00419500
 void CSWGuiListBox::Initialize(const CSWGuiExtent& cExtent, CSWGuiListBox* pProto)
 {
     SwguicontrolTrace1();
@@ -801,7 +801,7 @@ void CSWGuiListBox::Initialize(const CSWGuiExtent& cExtent, CSWGuiListBox* pProt
     return m_cScrollBar.Initialize(pScrollBar->m_cExtent, pScrollBar);
 }
 #ifndef _XBOX
-void CSWGuiListBox::InitializeScrollBar(CSWGuiExtent& cExtent,  // PC 0x00419BD0  Xbox 0x002FEAF0
+void CSWGuiListBox::InitializeScrollBar(CSWGuiExtent& cExtent,  // PC 0x00419550
                                       const CSWGuiBorderParams& cBorder,
                                       const CResRef& sArrow,
                                       const CResRef& sThumb, int bLeft)
@@ -830,7 +830,7 @@ void CSWGuiListBox::InitializeScrollBar(CSWGuiExtent& cExtent,  // PC 0x00419BD0
     SetExtent(m_cExtent);
 }
 #endif
-CSWGuiListBox::CSWGuiListBox() : m_lItems(0), m_lItemExtents(0)  // PC 0x0041BE40  Xbox 0x002FFEB0
+CSWGuiListBox::CSWGuiListBox() : m_lItems(0), m_lItemExtents(0)  // PC 0x0041B830
 {
     m_nSelectedItem = -1;
     m_nSelectSound = (char)GUISOUND_NONE;
@@ -864,7 +864,7 @@ CSWGuiListBox::CSWGuiListBox() : m_lItems(0), m_lItemExtents(0)  // PC 0x0041BE4
     m_nScrollPosition = 1;
     m_fScrollStep = 1.0f;
 }
-// PC 0x0041BF80  Xbox 0x002FFFD0
+// PC 0x0041B970
 void CSWGuiListBox::SetExtent(const CSWGuiExtent& cExtent)
 {
     int nScrollBarWidth = m_cScrollBar.m_cExtent.m_nWidth;
@@ -882,7 +882,7 @@ void CSWGuiListBox::SetExtent(const CSWGuiExtent& cExtent)
     OrganizeControls();
 }
 #ifndef _XBOX
-void CSWGuiListBox::SetSelectedControl(int nIndex, int bPlaySound)  // PC 0x0041C040  Xbox 0x00300090
+void CSWGuiListBox::SetSelectedControl(int nIndex, int bPlaySound)  // PC 0x0041BA30
 {
     if (m_nSelectedItem != -1)
     {
@@ -908,12 +908,12 @@ void CSWGuiListBox::SetSelectedControl(int nIndex, int bPlaySound)  // PC 0x0041
     m_cScrollBar.SetCurValue(m_nTopVisibleItem);
 }
 #endif
-// PC 0x0041C160  Xbox 0x00300150
+// PC 0x0041BAE0
 void CSWGuiListBox::SetSelectedControl(CSWGuiControl* pControl, int bPlaySound)
 {
     SetSelectedControl(m_lItems.IndexOf(pControl), bPlaySound);
 }
-// PC 0x0041C190  Xbox 0x00300180
+// PC 0x0041BB10
 void CSWGuiListBox::SetPadding(int nPadding)
 {
     if (m_nPadding <= m_cItemExtent.m_nWidth / 2 &&
@@ -924,7 +924,7 @@ void CSWGuiListBox::SetPadding(int nPadding)
         OrganizeControls();
     }
 }
-// PC 0x0041C1D0  Xbox 0x003001C0
+// PC 0x0041BBC0
 void CSWGuiListBox::AddControls(CExoArrayList<CSWGuiControl*>& aControls,
                                int bOwnsItems, int bRestoreExtents,
                                int bHideScrollIcon)
@@ -950,7 +950,7 @@ void CSWGuiListBox::AddControls(CExoArrayList<CSWGuiControl*>& aControls,
     m_bOrganizePending = 1;
     OrganizeControls();
 }
-// PC 0x0041C2C0  Xbox 0x003002B0
+// PC 0x0041BCB0
 void CSWGuiListBox::AddControls(CSWGuiControl** pControls, int nCount,
                                int bOwnsItems, int bRestoreExtents,
                                int bHideScrollIcon)
@@ -976,7 +976,7 @@ void CSWGuiListBox::AddControls(CSWGuiControl** pControls, int nCount,
     OrganizeControls();
 }
 #ifndef _XBOX
-void CSWGuiListBox::OrganizeUnequal()  // PC 0x00419EE0  Xbox 0x002FEC50
+void CSWGuiListBox::OrganizeUnequal()  // PC 0x00419830
 {
     int nItems = m_lItems.num;
     CExoString sUnused;
@@ -1129,7 +1129,7 @@ void CSWGuiListBox::OrganizeUnequal()  // PC 0x00419EE0  Xbox 0x002FEC50
     m_cScrollBar.SetCurValue(m_nTopVisibleItem);
 }
 #endif
-// PC 0x0041A290  Xbox 0x0004CEC0
+// PC 0x00419D90
 inline int CSWGuiListBox::IsOversized()
 {
     SwguicontrolTrace1();
@@ -1137,7 +1137,7 @@ inline int CSWGuiListBox::IsOversized()
            m_lItems.num > 0 && !m_bHideScrollIcon;
 }
 #ifndef _XBOX
-void CSWGuiListBox::OrganizeOversized()  // PC 0x0041A2D0  Xbox 0x002FEFB0
+void CSWGuiListBox::OrganizeOversized()  // PC 0x00419BE0
 {
     int nRange;
     CSWGuiExtent cExtent;
@@ -1182,7 +1182,7 @@ void CSWGuiListBox::OrganizeOversized()  // PC 0x0041A2D0  Xbox 0x002FEFB0
     m_lItems[0]->SetExtent(cExtent);
 }
 #endif
-void CSWGuiListBox::Draw(float fElapsed)  // PC 0x0041A3E0  Xbox 0x002FF0D0
+void CSWGuiListBox::Draw(float fElapsed)  // PC 0x0041ADF0
 {
     int nCount = m_lItems.num;
     if (m_bShowScrollBar)
@@ -1233,7 +1233,7 @@ void CSWGuiListBox::Draw(float fElapsed)  // PC 0x0041A3E0  Xbox 0x002FF0D0
     }
 #endif
 }
-// PC 0x0041A5A0  Xbox 0x002FF200
+// PC 0x00419DD0
 CSWGuiControl* CSWGuiListBox::GetControl(int nIndex)
 {
     if (nIndex < 0 || nIndex >= m_lItems.num)
@@ -1242,14 +1242,14 @@ CSWGuiControl* CSWGuiListBox::GetControl(int nIndex)
     }
     return m_lItems[nIndex];
 }
-// PC 0x0041A5D0  Xbox 0x002FF230
+// PC 0x00419E00
 CSWGuiControl* CSWGuiListBox::GetSelectedControl()
 {
     return GetControl(m_nSelectedItem);
 }
 
 #ifndef _XBOX
-CSWGuiControl* CSWGuiListBox::HitCheckMouseLocal(int* pnIndex)  // PC 0x0041A5E0
+CSWGuiControl* CSWGuiListBox::HitCheckMouseLocal(int* pnIndex)  // PC 0x00419E10
 {
     int nX, nY;
 #ifndef _XBOX
@@ -1291,7 +1291,7 @@ CSWGuiControl* CSWGuiListBox::HitCheckMouseLocal(int* pnIndex)  // PC 0x0041A5E0
     return NULL;
 }
 #endif
-// PC 0x0041A6C0
+// PC 0x00419EF0
 int CSWGuiListBox::GetIsSelectable()
 {
     int bSelectable = 0;
@@ -1320,7 +1320,7 @@ int CSWGuiListBox::GetIsSelectable()
     }
     return bSelectable;
 }
-// PC 0x0041A700
+// PC 0x00419F30
 void CSWGuiListBox::HandleLMouseUp()
 {
     int nItem;
@@ -1358,7 +1358,7 @@ void CSWGuiListBox::HandleLMouseUp()
     m_nScrollBarPart = CSWGuiScrollBar::SCROLLBAR_NONE;
 #endif
 }
-// PC 0x0041A7B0
+// PC 0x00419FE0
 void CSWGuiListBox::ReSetFont()
 {
     for (int i = 0; i < m_lItems.num; i++)
@@ -1370,7 +1370,7 @@ void CSWGuiListBox::ReSetFont()
         m_pProtoItem->ReSetFont();
     }
 }
-// PC 0x0041A800
+// PC 0x0041A030
 int CSWGuiListBox::DisplayToolTip()
 {
 #ifndef _XBOX
@@ -1384,7 +1384,7 @@ int CSWGuiListBox::DisplayToolTip()
 #endif
     return 0;
 }
-// PC 0x0041A820
+// PC 0x0041A050
 void CSWGuiEditbox::HandleFocusChange(int bFocus)
 {
     if (bFocus)
@@ -1405,7 +1405,7 @@ void CSWGuiEditbox::HandleFocusChange(int bFocus)
     }
     CSWGuiControl::HandleFocusChange(bFocus);
 }
-// PC 0x0041A870  Xbox 0x002FF270
+// PC 0x0041A0A0
 template <> CExoArrayList<CSWGuiControlEvent>::CExoArrayList(int nSize)
 {
     num = 0;
@@ -1416,7 +1416,7 @@ template <> CExoArrayList<CSWGuiControlEvent>::CExoArrayList(int nSize)
         Allocate(nSize);
     }
 }
-// PC 0x0041A8A0
+// PC 0x0041A0D0
 template <> void CExoArrayList<CSWGuiControlEvent>::Add(CSWGuiControlEvent value)
 {
     if (num == array_size)
@@ -1425,7 +1425,7 @@ template <> void CExoArrayList<CSWGuiControlEvent>::Add(CSWGuiControlEvent value
     }
     element[num++] = value;
 }
-// PC 0x0041A8F0  Xbox 0x002FF2A0
+// PC 0x0041A120
 template <> inline void CExoArrayList<CSWGuiExtent>::Allocate(int nSize)
 {
     CSWGuiExtent* pOld = element;
@@ -1443,7 +1443,7 @@ template <> inline void CExoArrayList<CSWGuiExtent>::Allocate(int nSize)
         delete[] pOld;
     }
 }
-// PC 0x00417EE0  Xbox 0x002FD3A0
+// PC 0x00417700
 void CSWGuiSlider::SetCurValue(int nValue)
 {
     if (nValue < 0)
@@ -1457,7 +1457,7 @@ void CSWGuiSlider::SetCurValue(int nValue)
     m_nCurValue = nValue;
     SetExtent(m_cExtent);
 }
-// PC 0x00417F10  Xbox 0x002FD3D0
+// PC 0x00417730
 void CSWGuiProgressBar::Initialize(const CSWGuiExtent& cExtent,
                                    const CSWGuiBorderParams& cBorder,
                                    const CSWGuiBorderParams& cFill)
@@ -1467,13 +1467,13 @@ void CSWGuiProgressBar::Initialize(const CSWGuiExtent& cExtent,
     m_cFill.Initialize(m_cExtent, cFill);
     SetExtent(m_cExtent);
 }
-// PC 0x00417F60  Xbox 0x002FD420
+// PC 0x00417780
 void CSWGuiProgressBar::Draw(float fElapsed)
 {
     m_cBorder.Draw(fElapsed);
     m_cFill.Draw(fElapsed);
 }
-// PC 0x00417F90  Xbox 0x002FD450
+// PC 0x004177B0
 void CSWGuiProgressBar::SetMaxValue(int nMaxValue)
 {
     if (m_nMaxValue != nMaxValue && nMaxValue >= 0)
@@ -1482,7 +1482,7 @@ void CSWGuiProgressBar::SetMaxValue(int nMaxValue)
         SetExtent(m_cExtent);
     }
 }
-// PC 0x00417FB0  Xbox 0x002FD470
+// PC 0x004177D0
 void CSWGuiProgressBar::SetCurValue(int nValue)
 {
     if (nValue < 0)
@@ -1499,7 +1499,7 @@ void CSWGuiProgressBar::SetCurValue(int nValue)
         SetExtent(m_cExtent);
     }
 }
-// PC 0x00417FE0  Xbox 0x002FD4A0
+// PC 0x00417800
 void CSWGuiProgressBar::SetStartFromLeft(int bDrawMode)
 {
     if (m_bStartFromLeft != bDrawMode)
@@ -1508,7 +1508,7 @@ void CSWGuiProgressBar::SetStartFromLeft(int bDrawMode)
         SetExtent(m_cExtent);
     }
 }
-// PC 0x00418010  Xbox 0x002FD530
+// PC 0x00417890
 int CSWGuiScrollBar::GetTopArrowOn()
 {
     if (m_nVisibleValue < m_nMaxValue)
@@ -1524,7 +1524,7 @@ int CSWGuiScrollBar::GetTopArrowOn()
     }
     return 0;
 }
-// PC 0x00418030  Xbox 0x002FD550
+// PC 0x004178B0
 int CSWGuiScrollBar::GetBottomArrowOn()
 {
     int nLast = m_nMaxValue;
@@ -1555,7 +1555,7 @@ inline int CSWGuiScrollBar::GetVisibleValue()
 {
     return m_nVisibleValue;
 }
-// PC 0x00418070  Xbox 0x002FD590
+// PC 0x004178F0
 void CSWGuiScrollBar::SetMaxValue(int nMaxValue, bool bExtendedRange)
 {
     if (m_nMaxValue != nMaxValue && nMaxValue >= 0)
@@ -1565,7 +1565,7 @@ void CSWGuiScrollBar::SetMaxValue(int nMaxValue, bool bExtendedRange)
         SetExtent(m_cExtent);
     }
 }
-// PC 0x004180A0  Xbox 0x002FD5C0
+// PC 0x00417920
 void CSWGuiScrollBar::SetCurValue(int nValue)
 {
     int nCurValue = nValue;
@@ -1583,7 +1583,7 @@ void CSWGuiScrollBar::SetCurValue(int nValue)
     m_nCurValue = nCurValue;
     return SetExtent(m_cExtent);
 }
-// PC 0x004180D0  Xbox 0x002FD5F0
+// PC 0x00417950
 void CSWGuiScrollBar::SetVisibleValue(int nValue)
 {
     if (m_nVisibleValue != nValue)
@@ -1605,7 +1605,7 @@ void CSWGuiScrollBar::SetVisibleValue(int nValue)
     }
     SetExtent(m_cExtent);
 }
-// PC 0x00418100  Xbox 0x002FE8E0
+// PC 0x004190B0
 void CSWGuiScrollBar::Initialize(const CSWGuiExtent& cExtent,
                                  const CSWGuiBorderParams& cBorder,
                                  const CResRef& sArrow, const CResRef& sThumb)
@@ -1620,12 +1620,12 @@ void CSWGuiScrollBar::Initialize(const CSWGuiExtent& cExtent,
     m_cThumb.Initialize(m_cExtent, cParams);
     return SetExtent(m_cExtent);
 }
-// PC 0x004181D0  Xbox 0x0004DC60
+// PC 0x00417A40
 inline void CSWGuiControl::SetActive(int bActive)
 {
     m_bActive = bActive;
 }
-// PC 0x004181F0  Xbox 0x002FEB90
+// PC 0x00417980
 void CSWGuiListBox::SetScrollBarExtent(int nWidth, int bUpdate)
 {
     int nTotalWidth = m_cExtent.m_nWidth;
@@ -1654,7 +1654,7 @@ void CSWGuiListBox::SetScrollBarExtent(int nWidth, int bUpdate)
         }
     }
 }
-// PC 0x00418270  Xbox 0x002FEC10
+// PC 0x00417A00
 void CSWGuiListBox::SetScrollBarOnLeft(int bLeft)
 {
     if ((m_bScrollBarOnLeft != 0) == bLeft)
@@ -1664,7 +1664,7 @@ void CSWGuiListBox::SetScrollBarOnLeft(int bLeft)
     m_bScrollBarOnLeft = bLeft;
     SetScrollBarExtent(m_cScrollBar.m_cExtent.m_nWidth, 1);
 }
-// PC 0x004182B0  Xbox 0x002FD730
+// PC 0x00417A60
 int CSWGuiListBox::GetScrollRange()
 {
     int nRange;
@@ -1679,7 +1679,7 @@ int CSWGuiListBox::GetScrollRange()
     }
     return nRange;
 }
-// PC 0x00418300  Xbox 0x002FD630
+// PC 0x00417AB0
 void CSWGuiListBox::UpdateArrowPulsing(float fElapsed)
 {
     float fFrom;
@@ -1704,13 +1704,13 @@ void CSWGuiListBox::UpdateArrowPulsing(float fElapsed)
     float fProgress = (0.75f - m_fArrowAlphaPulseTime) * 1.3333334f;
     m_fArrowAlpha = (fTo - fFrom) * fProgress + fFrom;
 }
-// PC 0x00418380  Xbox 0x002FF240
+// PC 0x00417B30
 void CSWGui3DSceneView::SetExtent(const CSWGuiExtent& cExtent)
 {
     m_cScene.SetExtent(cExtent);
     m_cExtent = cExtent;
 }
-// PC 0x004183B0
+// PC 0x00417B60
 void CSWGuiEditbox::Initialize(const CSWGuiExtent& cExtent,
                                const CSWGuiTextParams& cText,
                                const CSWGuiBorderParams& cBorder)
@@ -1720,13 +1720,13 @@ void CSWGuiEditbox::Initialize(const CSWGuiExtent& cExtent,
     CSWGuiExtent cInner = m_cBorder.GetInnerExtent();
     m_cText.Initialize(cInner, cText, 1.0f);
 }
-// PC 0x00418420
+// PC 0x00417BD0
 void CSWGuiEditbox::Draw(float fElapsed)
 {
     m_cBorder.Draw(fElapsed);
     m_cText.Draw(fElapsed);
 }
-// PC 0x00418450
+// PC 0x00417C00
 void CSWGuiEditbox::SetExtent(const CSWGuiExtent& cExtent)
 {
     m_cExtent = cExtent;
@@ -1734,7 +1734,7 @@ void CSWGuiEditbox::SetExtent(const CSWGuiExtent& cExtent)
     CSWGuiExtent cInner = m_cBorder.GetInnerExtent();
     m_cText.SetExtent(cInner);
 }
-// PC 0x004184B0
+// PC 0x00417C60
 void CSWGuiEditbox::SetEnabled(int bEnabled)
 {
     CSWGuiControl::SetEnabled(bEnabled);
@@ -1747,7 +1747,7 @@ void CSWGuiEditbox::SetEnabled(int bEnabled)
         m_cText.m_cParams.SetColor(CSWGuiManager::DISABLED_TEXT);
     }
 }
-// PC 0x004184F0
+// PC 0x00417CA0
 void CSWGuiEditbox::HandleKeyPress(int nKey)
 {
     static char szTmp[2];
@@ -1801,12 +1801,12 @@ void CSWGuiEditbox::HandleKeyPress(int nKey)
         break;
     }
 }
-// PC 0x00418660
+// PC 0x00417E10
 void CSWGuiEditbox::SetFocus()
 {
     HandleFocusChange(1);
 }
-// PC 0x00418670
+// PC 0x00417E20
 int CSWGuiEditbox::GetIsSelectable()
 {
 #ifndef _XBOX
@@ -1817,7 +1817,7 @@ int CSWGuiEditbox::GetIsSelectable()
 #endif
     return 0;
 }
-// PC 0x00418680
+// PC 0x00417E30
 void CSWGuiEditbox::HandleLMouseDown()
 {
 #ifndef _XBOX
@@ -1829,7 +1829,7 @@ void CSWGuiEditbox::HandleLMouseDown()
     }
 #endif
 }
-// PC 0x00418680
+// PC 0x00417E30
 void CSWGuiRadioButton::HandleLMouseDown()
 {
 #ifndef _XBOX
@@ -1841,7 +1841,7 @@ void CSWGuiRadioButton::HandleLMouseDown()
     }
 #endif
 }
-// PC 0x004186B0
+// PC 0x00417E60
 void CSWGuiEditbox::HandleLMouseUp()
 {
 #ifndef _XBOX
@@ -1849,14 +1849,14 @@ void CSWGuiEditbox::HandleLMouseUp()
 #endif
     HandleLoseMouseFocus();
 }
-// PC 0x004186D0
+// PC 0x00417E80
 void CSWGuiEditbox::ReSetFont()
 {
     m_cText.m_cParams.ReSetFont();
 }
 
 #ifndef _XBOX
-template <> inline void CExoArrayList<CSWGuiControlEvent>::Allocate(int nSize)  // PC 0x004186E0  Xbox 0x002FD6C0
+template <> inline void CExoArrayList<CSWGuiControlEvent>::Allocate(int nSize)  // PC 0x00640950
 {
     CSWGuiControlEvent* pOld = element;
 
@@ -1874,7 +1874,7 @@ template <> inline void CExoArrayList<CSWGuiControlEvent>::Allocate(int nSize)  
     }
 }
 #endif
-// PC 0x0041A980
+// PC 0x0041A1B0
 void CSWGuiNavigable::HandleMouseOver(int bOver)
 {
     if (bOver)
@@ -1892,7 +1892,7 @@ void CSWGuiNavigable::HandleMouseOver(int bOver)
     CSWGuiControl::HandleMouseOver(bOver);
 }
 #ifndef _XBOX
-void CSWGuiNavigable::HandleInputEvent(int nEvent, int nState)  // PC 0x0041A9D0  Xbox 0x002FF330
+void CSWGuiNavigable::HandleInputEvent(int nEvent, int nState)  // PC 0x0041A200
 {
     if (nState)
     {
@@ -1945,7 +1945,7 @@ void CSWGuiNavigable::HandleInputEvent(int nEvent, int nState)  // PC 0x0041A9D0
     return CSWGuiControl::HandleInputEvent(nEvent, nState);
 }
 #endif
-CSWGuiControl::CSWGuiControl()  // PC 0x0041AA80  Xbox 0x002FF3C0
+CSWGuiControl::CSWGuiControl()  // PC 0x0041A2B0
 #ifndef _XBOX
     : m_lChildren(0), m_lEvents(0)
 #else
@@ -1977,7 +1977,7 @@ CSWGuiControl::CSWGuiControl()  // PC 0x0041AA80  Xbox 0x002FF3C0
     m_nID = -1;
     m_nFocusSound = 1;
 }
-// PC 0x0041AB20  Xbox 0x002FF460
+// PC 0x0041A350
 void CSWGuiControl::AddEvent(int nEvent, CSWGuiObject* pObject,
                              CSWGuiHandler pHandler)
 {
@@ -2010,7 +2010,7 @@ void CSWGuiControl::AddEvent(int nEvent, CSWGuiObject* pObject,
         m_lEvents.Add(cEvent);
     }
 }
-// PC 0x00418750  Xbox 0x002FD810
+// PC 0x00417F00
 void CSWGuiControl::HandleInputEvent(int nEvent, int nState)
 {
     if (nState)
@@ -2043,7 +2043,7 @@ void CSWGuiControl::HandleInputEvent(int nEvent, int nState)
     }
 }
 #ifndef _XBOX
-CSWGuiControl* CSWGuiControl::HitCheckMouse(int nX, int nY)  // PC 0x004187C0
+CSWGuiControl* CSWGuiControl::HitCheckMouse(int nX, int nY)  // PC 0x00417F70
 {
 #ifndef _XBOX
     if (!m_bEnabled || m_bIgnoreMouse ||
@@ -2058,7 +2058,7 @@ CSWGuiControl* CSWGuiControl::HitCheckMouse(int nX, int nY)  // PC 0x004187C0
     return this;
 }
 #endif
-void CSWGuiControl::Load(CSWGuiObject* pParent, CResGFF* pGFF,  // PC 0x00418800  Xbox 0x002FD8C0
+void CSWGuiControl::Load(CSWGuiObject* pParent, CResGFF* pGFF,  // PC 0x00417FB0
                          CResStruct& cStruct, const CExoString& sName)
 {
     CResStruct cChild;
@@ -2069,7 +2069,7 @@ void CSWGuiControl::Load(CSWGuiObject* pParent, CResGFF* pGFF,  // PC 0x00418800
         Load(pGFF, cChild);
     }
 }
-// PC 0x00418840  Xbox 0x002FD900
+// PC 0x00417FF0
 void CSWGuiControl::Load(CSWGuiObject* pParent, CResGFF* pGFF,
                          CResList& lControls, const CExoString& sName)
 {
@@ -2090,7 +2090,7 @@ void CSWGuiControl::Load(CSWGuiObject* pParent, CResGFF* pGFF,
         }
     }
 }
-// PC 0x0041AB90
+// PC 0x0041A3C0
 void CSWGuiControl::HandleLMouseDown()
 {
     if (GetIsSelectable())
@@ -2112,7 +2112,7 @@ void CSWGuiControl::HandleLMouseDown()
 #endif
     }
 }
-// PC 0x0041ABD0
+// PC 0x0041A400
 void CSWGuiControl::HandleLMouseUp()
 {
 #ifndef _XBOX
@@ -2141,7 +2141,7 @@ void CSWGuiControl::HandleLMouseUp()
 #endif
     HandleLoseMouseFocus();
 }
-// PC 0x0041AC30
+// PC 0x0041A460
 void CSWGuiControl::HandleRMouseDown()
 {
     if (GetIsSelectable())
@@ -2163,7 +2163,7 @@ void CSWGuiControl::HandleRMouseDown()
 #endif
     }
 }
-// PC 0x0041AC70
+// PC 0x0041A4A0
 void CSWGuiControl::HandleRMouseUp()
 {
 #ifndef _XBOX
@@ -2182,19 +2182,19 @@ void CSWGuiControl::HandleRMouseUp()
 #endif
     HandleLoseMouseFocus();
 }
-// PC 0x0041ACC0
+// PC 0x0041A4F0
 void CSWGuiControl::AddChildControl(CSWGuiControl* pChild)
 {
 #ifndef _XBOX
     m_lChildren.Add(pChild);
 #endif
 }
-// PC 0x0041ACD0  Xbox 0x0004DBF0
+// PC 0x0041A500
 CSWGuiLabel::CSWGuiLabel()
 {
     m_bFocusable = 0;
 }
-// PC 0x0041AD40  Xbox 0x002FF4D0
+// PC 0x0041A570
 void CSWGuiButton::HandleInputEvent(int nEvent, int nState)
 {
     if (nState && nEvent == EVENT_SELECT && m_pOwner != NULL)
@@ -2224,7 +2224,7 @@ void CSWGuiButton::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiNavigable::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0041ADB0  Xbox 0x002FF550
+// PC 0x0041A5E0
 void CSWGuiButtonToggle::HandleInputEvent(int nEvent, int nState)
 {
     if (nState && nEvent == m_nToggleEvent)
@@ -2233,7 +2233,7 @@ void CSWGuiButtonToggle::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiButton::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0041ADF0  Xbox 0x002FF590
+// PC 0x0041A620
 void CSWGuiSlider::HandleInputEvent(int nEvent, int nState)
 {
     if (nState)
@@ -2297,7 +2297,7 @@ void CSWGuiSlider::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiNavigable::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0041AED0  Xbox 0x002FF6C0
+// PC 0x0041A700
 CSWGuiProgressBar::CSWGuiProgressBar()
 {
     m_bStartFromLeft = 1;
@@ -2306,7 +2306,7 @@ CSWGuiProgressBar::CSWGuiProgressBar()
 #endif
     m_nMaxValue = 0; m_nCurValue = 0;
 }
-CSWGuiScrollBar::CSWGuiScrollBar()  // PC 0x0041AFE0  Xbox 0x002FF760
+CSWGuiScrollBar::CSWGuiScrollBar()  // PC 0x0041A810
 {
     m_nMaxValue = 0;
     m_nCurValue = 0;
@@ -2316,7 +2316,7 @@ CSWGuiScrollBar::CSWGuiScrollBar()  // PC 0x0041AFE0  Xbox 0x002FF760
 #endif
     m_bDrawMode = 0;
 }
-// PC 0x0041B060  Xbox 0x002FF800
+// PC 0x0041A890
 CSWGuiListBox::~CSWGuiListBox()
 {
     if (m_pProtoItem != NULL)
@@ -2327,7 +2327,7 @@ CSWGuiListBox::~CSWGuiListBox()
     ClearItems();
 }
 #ifndef _XBOX
-void CSWGuiListBox::OrganizeControls()  // PC 0x0041B140  Xbox 0x002FF8B0
+void CSWGuiListBox::OrganizeControls()  // PC 0x0041A970
 {
     int nItems = m_lItems.num;
     if (nItems == 0)
@@ -2441,7 +2441,7 @@ void CSWGuiListBox::OrganizeControls()  // PC 0x0041B140  Xbox 0x002FF8B0
     }
 }
 #endif
-void CSWGuiListBox::LoadProtoItem(CResGFF* pGFF, CResStruct& cStruct)  // PC 0x0041D3E0  Xbox 0x00300860
+void CSWGuiListBox::LoadProtoItem(CResGFF* pGFF, CResStruct& cStruct)  // PC 0x0041CDF0
 {
     CResStruct cProtoItem;
     int bSuccess;
@@ -2473,7 +2473,7 @@ void CSWGuiListBox::LoadProtoItem(CResGFF* pGFF, CResStruct& cStruct)  // PC 0x0
         }
     }
 }
-// PC 0x0041D5B0  Xbox 0x00300A40
+// PC 0x0041CFC0
 void CSWGuiListBox::Load(CResGFF* pGFF, CResStruct& cStruct)
 {
     int bSuccess;
@@ -2487,7 +2487,7 @@ void CSWGuiListBox::Load(CResGFF* pGFF, CResStruct& cStruct)
     CSWGuiNavigable::Load(pGFF, cStruct);
     LoadProtoItem(pGFF, cStruct);
 }
-// PC 0x0041B670
+// PC 0x0041B060
 int CSWGuiListBox::HandleMouseCapturedMovement(int nX, int nY)
 {
     int nMouseX;
@@ -2536,7 +2536,7 @@ int CSWGuiListBox::HandleMouseCapturedMovement(int nX, int nY)
 #endif
     return 1;
 }
-// PC 0x00418960
+// PC 0x00418110
 void CSWGuiControl::HandleFocusChange(int bFocus)
 {
     if (bFocus && m_pOwner != NULL)
@@ -2552,7 +2552,7 @@ void CSWGuiControl::HandleFocusChange(int bFocus)
         }
     }
 }
-// PC 0x004189A0
+// PC 0x00418150
 void CSWGuiControl::HandleMouseOver(int bOver)
 {
     if (bOver)
@@ -2569,7 +2569,7 @@ void CSWGuiControl::HandleMouseOver(int bOver)
     }
 #endif
 }
-// PC 0x004189D0
+// PC 0x00418180
 int CSWGuiControl::GetIsSelectable()
 {
     CSWGuiObject* pOwner = m_pOwner;
@@ -2595,7 +2595,7 @@ int CSWGuiControl::GetIsSelectable()
 }
 
 #ifndef _XBOX
-int CSWGuiControl::GetIsChild(CSWGuiControl* pControl)  // PC 0x00418A20
+int CSWGuiControl::GetIsChild(CSWGuiControl* pControl)  // PC 0x004181D0
 {
     for (int i = 0; i < m_lChildren.num; i++)
     {
@@ -2609,7 +2609,7 @@ int CSWGuiControl::GetIsChild(CSWGuiControl* pControl)  // PC 0x00418A20
 #endif
 
 #ifndef _XBOX
-CSWGuiControl* CSWGuiControl::GetSelectableParent()  // PC 0x00418A50
+CSWGuiControl* CSWGuiControl::GetSelectableParent()  // PC 0x00418200
 {
     CSWGuiControl** pp = &m_pParent;
     CSWGuiControl* pNext = *pp;
@@ -2626,13 +2626,13 @@ CSWGuiControl* CSWGuiControl::GetSelectableParent()  // PC 0x00418A50
     return NULL;
 }
 #else
-// PC 0x00418A50
+
 CSWGuiControl* CSWGuiControl::GetSelectableParent()
 {
     return NULL;
 }
 #endif
-// PC 0x00418A90
+// PC 0x00418240
 int CSWGuiControl::DisplayToolTip()
 {
     int nKeyNameStrRef;
@@ -2689,19 +2689,19 @@ int CSWGuiControl::DisplayToolTip()
 }
 
 #ifdef _XBOX
-void CSWGuiLabel::Initialize(const CSWGuiExtent& cExtent, CSWGuiLabel* pProto)  // Xbox 0x002FDA20
+void CSWGuiLabel::Initialize(const CSWGuiExtent& cExtent, CSWGuiLabel* pProto)
 {
     Initialize(cExtent, pProto->m_cText.m_cParams, pProto->m_cBorder.m_cParams);
 }
 #else
-void CSWGuiLabel::Initialize(const CSWGuiExtent& cExtent, CSWGuiLabel* pProto,  // PC 0x00418CD0
+void CSWGuiLabel::Initialize(const CSWGuiExtent& cExtent, CSWGuiLabel* pProto,  // PC 0x00418480
                              float fScale)
 {
     Initialize(cExtent, pProto->m_cText.m_cParams, pProto->m_cBorder.m_cParams,
                fScale);
 }
 #endif
-// PC 0x00418D00
+// PC 0x004184B0
 void CSWGuiLabel::SetEnabled(int bEnabled)
 {
     CSWGuiControl::SetEnabled(bEnabled);
@@ -2714,25 +2714,25 @@ void CSWGuiLabel::SetEnabled(int bEnabled)
         m_cText.m_cParams.SetColor(CSWGuiManager::DISABLED_TEXT);
     }
 }
-// PC 0x00418D40
+// PC 0x004184F0
 void CSWGuiLabel::ReSetFont()
 {
     m_cText.m_cParams.ReSetFont();
 }
-// PC 0x00418D50  Xbox 0x002FDA40
+// PC 0x00418500
 void CSWGuiLabelHilight::Initialize(const CSWGuiExtent& cExtent,
                                     CSWGuiLabelHilight* pProto)
 {
     Initialize(cExtent, pProto->m_cText.m_cParams, pProto->m_cBorder.m_cParams,
                pProto->m_cHilite.m_cParams);
 }
-// PC 0x00418D80  Xbox 0x002FDA70
+// PC 0x00418570
 void CSWGuiButton::Initialize(const CSWGuiExtent& cExtent, CSWGuiButton* pProto)
 {
     Initialize(cExtent, pProto->m_cText.m_cParams, pProto->m_cBorder.m_cParams,
                pProto->m_cHilite.m_cParams);
 }
-// PC 0x00418DB0
+// PC 0x004185A0
 void CSWGuiButton::SetEnabled(int bEnabled)
 {
     CSWGuiControl::SetEnabled(bEnabled);
@@ -2746,12 +2746,12 @@ void CSWGuiButton::SetEnabled(int bEnabled)
         SetActive(0);
     }
 }
-// PC 0x00418DF0
+// PC 0x004185E0
 void CSWGuiButton::ReSetFont()
 {
     m_cText.m_cParams.ReSetFont();
 }
-// PC 0x00418E00
+// PC 0x004185F0
 void CSWGuiButton::SetActive(int bActive)
 {
     CSWGuiControl::SetActive(bActive);
@@ -2767,7 +2767,7 @@ void CSWGuiButton::SetActive(int bActive)
         pText->RestoreDefaultColor();
     }
 }
-// PC 0x00418E40  Xbox 0x002FDC90
+// PC 0x00418630
 void CSWGuiButtonToggle::Initialize(const CSWGuiExtent& cExtent,
                                     CSWGuiButtonToggle* pProto)
 {
@@ -2775,12 +2775,12 @@ void CSWGuiButtonToggle::Initialize(const CSWGuiExtent& cExtent,
                pProto->m_cHilite.m_cParams, pProto->m_cToggleBorder.m_cParams,
                pProto->m_cToggleHilite.m_cParams);
 }
-// PC 0x00418E80
+// PC 0x00418670
 void CSWGuiRadioButton::HandleMouseOver(int bOver)
 {
     CSWGuiControl::HandleMouseOver(bOver);
 }
-// PC 0x00418E90
+// PC 0x00418680
 void CSWGuiRadioButton::HandleLMouseUp()
 {
 #ifndef _XBOX
@@ -2796,13 +2796,13 @@ void CSWGuiRadioButton::HandleLMouseUp()
 #endif
     HandleLoseMouseFocus();
 }
-// PC 0x00418EF0  Xbox 0x002FDD70
+// PC 0x004186E0
 void CSWGuiSlider::Initialize(const CSWGuiExtent& cExtent, CSWGuiSlider* pProto)
 {
     Initialize(cExtent, pProto->m_cTrack.m_cParams, pProto->m_cThumb.m_cParams,
                pProto->m_cImage.m_cParams.m_cImage);
 }
-// PC 0x00418F20  Xbox 0x002FDDA0
+// PC 0x00418710
 void CSWGuiSlider::SetExtent(const CSWGuiExtent& cExtent)
 {
     CSWGuiExtent cThumb;
@@ -2874,7 +2874,7 @@ void CSWGuiSlider::SetExtent(const CSWGuiExtent& cExtent)
     }
     m_cImage.SetExtent(cThumb);
 }
-// PC 0x00419060
+// PC 0x00418850
 int CSWGuiSlider::HitCheckSlider(int nX, int nY)
 {
     CSWGuiExtent cThumb = m_cImage.m_cExtent;
@@ -2930,7 +2930,7 @@ int CSWGuiSlider::HitCheckSlider(int nX, int nY)
         return SLIDER_NONE;
     }
 }
-// PC 0x004191D0
+// PC 0x004189C0
 void CSWGuiSlider::HandleLMouseDown()
 {
     int nMouseX;
@@ -2955,7 +2955,7 @@ void CSWGuiSlider::HandleLMouseDown()
     g_pGuiMan->CaptureMouse(this, CSWGuiManager::MOUSECAPTURE_LEFT);
 #endif
 }
-// PC 0x00419250
+// PC 0x00418A40
 int CSWGuiSlider::HandleMouseCapturedMovement(int nX, int nY)
 {
     int nMouseX;
@@ -3005,14 +3005,14 @@ int CSWGuiSlider::HandleMouseCapturedMovement(int nX, int nY)
 #endif
     return 1;
 }
-// PC 0x004192D0  Xbox 0x002FE010
+// PC 0x00418AC0
 void CSWGuiProgressBar::Initialize(const CSWGuiExtent& cExtent,
                                    CSWGuiProgressBar* pProto)
 {
     Initialize(cExtent, pProto->m_cBorder.m_cParams, pProto->m_cFill.m_cParams);
 }
 #ifndef _XBOX
-void CSWGuiProgressBar::SetExtent(const CSWGuiExtent& cExtent)  // PC 0x00419300  Xbox 0x002FE030
+void CSWGuiProgressBar::SetExtent(const CSWGuiExtent& cExtent)  // PC 0x00418AF0
 {
     CSWGuiExtent cFill;
 
@@ -3049,7 +3049,7 @@ void CSWGuiProgressBar::SetExtent(const CSWGuiExtent& cExtent)  // PC 0x00419300
     m_cFill.SetExtent(cFill);
 }
 #endif
-void CSWGuiScrollBar::SetExtent(const CSWGuiExtent& cExtent)  // PC 0x004193F0  Xbox 0x002FE3F0
+void CSWGuiScrollBar::SetExtent(const CSWGuiExtent& cExtent)  // PC 0x00418D10
 {
     m_cExtent = cExtent;
     AurMakeCurrent();
@@ -3152,7 +3152,7 @@ void CSWGuiScrollBar::SetExtent(const CSWGuiExtent& cExtent)  // PC 0x004193F0  
     }
     m_cThumb.SetExtent(cThumb);
 }
-// PC 0x00419660  Xbox 0x002FE640
+// PC 0x00418F80
 void CSWGuiScrollBar::Draw(float fElapsed)
 {
     int bTopArrowOn = 0;
@@ -3199,7 +3199,7 @@ void CSWGuiScrollBar::Draw(float fElapsed)
         m_cArrow.Draw(fElapsed);
     }
 }
-// PC 0x00419790  Xbox 0x002FE9B0
+// PC 0x00419180
 void CSWGuiScrollBar::Initialize(const CSWGuiExtent& cExtent,
                                  CSWGuiScrollBar* pProto)
 {
@@ -3207,7 +3207,7 @@ void CSWGuiScrollBar::Initialize(const CSWGuiExtent& cExtent,
                       pProto->m_cArrow.m_cParams.m_cImage,
                       pProto->m_cThumb.m_cParams.m_cImage);
 }
-// PC 0x004197C0
+// PC 0x004191B0
 int CSWGuiScrollBar::HitCheckScrollbar(int nX, int nY)
 {
     CSWGuiExtent cArrow = m_cArrow.m_cExtent;
@@ -3301,7 +3301,7 @@ static inline void SwguicontrolTrace1()
 }
 
 #ifdef _XBOX
-// PC 0x0041A9D0  Xbox 0x002FF330
+
 void CSWGuiNavigable::HandleInputEvent(int nEvent, int nState)
 {
     if (nState)
@@ -3333,7 +3333,7 @@ void CSWGuiNavigable::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiControl::HandleInputEvent(nEvent, nState);
 }
-void CSWGuiProgressBar::SetExtent(const CSWGuiExtent& cExtent)  // PC 0x00419300  Xbox 0x002FE030
+void CSWGuiProgressBar::SetExtent(const CSWGuiExtent& cExtent)
 {
     CSWGuiExtent cFill;
 
@@ -3367,7 +3367,7 @@ void CSWGuiProgressBar::SetExtent(const CSWGuiExtent& cExtent)  // PC 0x00419300
     }
     m_cFill.SetExtent(cFill);
 }
-// PC 0x0041C040  Xbox 0x00300090
+
 void CSWGuiListBox::SetSelectedControl(int nIndex, int bPlaySound)
 {
     if (m_nSelectedItem != -1)
@@ -3395,7 +3395,7 @@ void CSWGuiListBox::SetSelectedControl(int nIndex, int bPlaySound)
     }
     OrganizeControls();
 }
-// PC 0x00419EE0  Xbox 0x002FEC50
+
 void CSWGuiListBox::OrganizeUnequal()
 {
     int nItems = m_lItems.num;
@@ -3533,7 +3533,7 @@ void CSWGuiListBox::OrganizeUnequal()
     m_cScrollBar.m_nXboxUnmapped48 = m_nTopVisibleItem;
     m_cScrollBar.SetCurValue(m_nSelectedItem + 1);
 }
-// PC 0x0041B140  Xbox 0x002FF8B0
+
 void CSWGuiListBox::OrganizeControls()
 {
     int nItems = m_lItems.num;
@@ -3652,7 +3652,7 @@ void CSWGuiListBox::OrganizeControls()
         m_lItems.element[i]->SetExtent(cExtent);
     }
 }
-// PC 0x0041CE20  Xbox 0x00300540
+
 void CSWGuiListBox::HandleInputEvent(int nEvent, int nState)
 {
     if (nState)
@@ -3747,7 +3747,7 @@ void CSWGuiListBox::HandleInputEvent(int nEvent, int nState)
         m_lItems.element[m_nSelectedItem]->HandleInputEvent(nEvent, nState);
     CSWGuiControl::HandleInputEvent(nEvent, nState);
 }
-void CSWGuiListBox::OrganizeOversized()  // PC 0x0041A2D0  Xbox 0x002FEFB0
+void CSWGuiListBox::OrganizeOversized()
 {
     int nRange;
     CSWGuiExtent cExtent;
@@ -3794,7 +3794,7 @@ void CSWGuiListBox::OrganizeOversized()  // PC 0x0041A2D0  Xbox 0x002FEFB0
     }
     m_lItems[0]->SetExtent(cExtent);
 }
-void CSWGuiListBox::InitializeScrollBar(CSWGuiExtent& cExtent,  // PC 0x00419BD0  Xbox 0x002FEAF0
+void CSWGuiListBox::InitializeScrollBar(CSWGuiExtent& cExtent,
                                       const CSWGuiBorderParams& cBorder,
                                       const CResRef& sArrow,
                                       const CResRef& sThumb, int bLeft)
@@ -3818,7 +3818,7 @@ void CSWGuiListBox::InitializeScrollBar(CSWGuiExtent& cExtent,  // PC 0x00419BD0
     m_cScrollBar.SetMaxValue(m_lItems.num, 0);
     SetExtent(m_cExtent);
 }
-// Xbox 0x002FD880
+
 int CSWGuiControl::HitCheckMouse(int nX, int nY)
 {
     if (nX < m_cExtent.m_nLeft || nX > m_cExtent.GetRight() || nY < m_cExtent.m_nTop || nY > m_cExtent.GetBottom())

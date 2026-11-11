@@ -55,7 +55,7 @@ class CAurString
 {
 public:
     CAurString() {}
-    virtual ~CAurString() {}  // Xbox 0x002F0EF0
+    virtual ~CAurString() {}
     virtual CAurBehavior* AttachToObject(CAurObject* pObject, char* sPart, int nFlags) = 0;
     virtual CAurBehavior* AttachToPart(CAurObject* pObject, CAurPart* pPart, int nFlags) = 0;
     virtual CAurBehavior* AttachCornersToObjects(CAurObject* pObject, char* sPart1, char* sPart2) = 0;
@@ -113,7 +113,7 @@ class StringGob : public Gob, public CAurString
 public:
     StringGob(int nMaxLength);
     virtual ~StringGob();
-    // Xbox 0x002F0E90
+
     virtual CAurObject* HitCheck(Vector vStart, Vector vEnd, Vector* pHit, CHitInfo* pInfo) { return NULL; }
     virtual void GetMinimumBoundingBox(Vector& vMinimum, Vector& vMaximum) {}
     virtual void GetMinimumBoundingSphere(Vector& vPosition, float& fRadius) {}
@@ -126,54 +126,54 @@ public:
     virtual int SetPositionOffset(Vector vOffset) { return 0; }
     virtual Vector SetPosition(Vector vPosition) { return Vector(0.0f, 0.0f, 0.0f); }
     virtual void AttachModel(CAurObject* pModel, int nIndex) {}
-    virtual CAurObject* GetAttachedModel(int nIndex) { return NULL; }  // Xbox 0x002F0EC0
+    virtual CAurObject* GetAttachedModel(int nIndex) { return NULL; }
     virtual void* GetExternalData() { return m_pExternalData; }
     virtual void SetExternalData(void* pData) { m_pExternalData = pData; }
     virtual int SetFont(char* sFontName) { return 0; }
     virtual int SetFontPassword(char* sFontName, char cPassword) { return 0; }
-    virtual int GetCurrentFontIndex() { return m_pFont->m_nLoadedFontIndex; }  // Xbox 0x002F0FE0
-    virtual void SetAlignment(float fAlignment) { m_fAlignment = fAlignment; }  // Xbox 0x002F0FF0
-    virtual void SetAlignmentVertical(float fAlignment) { m_fAlignmentVertical = fAlignment; }  // Xbox 0x002F1000
+    virtual int GetCurrentFontIndex() { return m_pFont->m_nLoadedFontIndex; }
+    virtual void SetAlignment(float fAlignment) { m_fAlignment = fAlignment; }
+    virtual void SetAlignmentVertical(float fAlignment) { m_fAlignmentVertical = fAlignment; }
     virtual void SetColorDefault(float fRed, float fGreen, float fBlue, float fAlpha) {}
     virtual void SetIndexedColor(int nIndex, float fRed, float fGreen, float fBlue, float fAlpha) {}
     virtual int ScrollToLine(int nLine) { return 0; }
-    virtual int ScrollToPixel(int nPixel) { return -1; }  // Xbox 0x002F0EE0
-    virtual float GetLinePixelWidth(int nLine) { return 0.0f; }  // Xbox 0x002F0E80
+    virtual int ScrollToPixel(int nPixel) { return -1; }
+    virtual float GetLinePixelWidth(int nLine) { return 0.0f; }
     virtual float GetLinePixelHeight(int nLine) { return 0.0f; }
     virtual void SetLinePixelHeight(int nLine, float fHeight) {}
     virtual void RefreshDisplay() {}
-    virtual CStringDisplayInfo* GetDisplayInfo() { return &m_DisplayInfo; }  // Xbox 0x002F10B0
-    virtual void SetMaxWidth(float fWidth) { m_DisplayInfo.m_fMaxWidth = fWidth; }  // Xbox 0x002F1010
-    virtual void SetMaxHeight(float fHeight) { m_DisplayInfo.m_fMaxHeight = fHeight; }  // Xbox 0x002F1020
+    virtual CStringDisplayInfo* GetDisplayInfo() { return &m_DisplayInfo; }
+    virtual void SetMaxWidth(float fWidth) { m_DisplayInfo.m_fMaxWidth = fWidth; }
+    virtual void SetMaxHeight(float fHeight) { m_DisplayInfo.m_fMaxHeight = fHeight; }
     virtual int SetText(char* sText) { return 1; }
     virtual int AddText(char* sText) { return 1; }
     virtual char* GetTextLine(int nLine) { return NULL; }
     virtual int GetTextLineCount() { return m_lstStrings.m_nCount; }
-    virtual int GetLineState(int nLine) { return m_lstStrings[nLine]->m_nState; }  // Xbox 0x002F1030
-    virtual void SetLineState(int nLine, int nState) { m_lstStrings[nLine]->m_nState = nState; }  // Xbox 0x002F1050
-    virtual void SetTextWrapping(bool bWrap) { m_bTextWrapping = bWrap; }  // Xbox 0x002F10C0
-    virtual void SetLineColor(int nLine, int nColor) { m_lstStrings[nLine]->m_nColor = nColor; }  // Xbox 0x002F1070
-    virtual int GetLineColor(int nLine) { return m_lstStrings[nLine]->m_nColor; }  // Xbox 0x002F1090
+    virtual int GetLineState(int nLine) { return m_lstStrings[nLine]->m_nState; }
+    virtual void SetLineState(int nLine, int nState) { m_lstStrings[nLine]->m_nState = nState; }
+    virtual void SetTextWrapping(bool bWrap) { m_bTextWrapping = bWrap; }
+    virtual void SetLineColor(int nLine, int nColor) { m_lstStrings[nLine]->m_nColor = nColor; }
+    virtual int GetLineColor(int nLine) { return m_lstStrings[nLine]->m_nColor; }
     virtual int GetNumColors() { return m_lstColors.m_nCount; }
     virtual void AddLine(char* sLine) {}
     virtual void InsertLine(char* sLine, int nLine) {}
     virtual void DeleteLine(int nLine) {}
     virtual void SetLine(int nLine, char* sLine) {}
-    virtual bool InsertTextAtCaret(char* sText) { return false; }  // Xbox 0x002F0EA0
+    virtual bool InsertTextAtCaret(char* sText) { return false; }
     virtual bool DeleteTextAtCaret(int nCount) { return false; }
     virtual int GetCaretLinePos() { return m_nCaretLinePos; }
     virtual bool SetCaretLinePos(int nLine) { return false; }
-    virtual int GetCaretColumnPos() { return m_nCaretColumnPos; }  // Xbox 0x002F10D0
-    virtual bool SetCaretColumnPos(int nColumn) { return true; }  // Xbox 0x002F0EB0
+    virtual int GetCaretColumnPos() { return m_nCaretColumnPos; }
+    virtual bool SetCaretColumnPos(int nColumn) { return true; }
     virtual int MoveCaretTo(Vector vPosition) { return 0; }
-    virtual void SetCaretVisible(bool bVisible) { m_bCaretVisible = bVisible; }  // Xbox 0x002F10E0
+    virtual void SetCaretVisible(bool bVisible) { m_bCaretVisible = bVisible; }
     virtual int SuggestDeleteCurrentFont() { return 0; }
     virtual CStringItem** GetStringsArray() { return m_lstStrings.m_pList; }
-    virtual void SetColorSelected(float fRed, float fGreen, float fBlue, float fAlpha)  // Xbox 0x002F10F0
+    virtual void SetColorSelected(float fRed, float fGreen, float fBlue, float fAlpha)
     {
         SetIndexedColor(1, fRed, fGreen, fBlue, fAlpha);
     }
-    // Xbox 0x002F0E70
+
     virtual float GetAlignment() { return 0.0f; }
     virtual float GetAlignmentVertical() { return 0.0f; }
     virtual char* GetFontName() { return NULL; }

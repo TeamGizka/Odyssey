@@ -75,7 +75,7 @@ public:
     void OnToggled(CSWGuiControl* pControl);
     void OnDone(CSWGuiControl* pControl);
     void OnEnter(CSWGuiControl* pControl);
-    // PC 0x0060E760
+    // PC 0x005EE1C0
     void OnExit(CSWGuiControl*)
     {
     }

@@ -4,7 +4,7 @@
 #else
 #include "platform.h"
 #endif
-// PC 0x005EC160  Xbox 0x00138FD0
+// PC 0x00637900
 CExoTimersInternal::CExoTimersInternal()
 {
     LARGE_INTEGER nFrequency;
@@ -31,12 +31,12 @@ CExoTimersInternal::CExoTimersInternal()
 CExoTimersInternal::~CExoTimersInternal()
 {
 }
-// PC 0x005EC200
+// PC 0x006379A0
 unsigned long CExoTimersInternal::GetLowResolutionTimer()
 {
     return GetTickCount();
 }
-// PC 0x005EC210  Xbox 0x00139080
+// PC 0x006379B0
 unsigned __int64 CExoTimersInternal::GetHighResolutionTimer()
 {
     if (m_bHighResolution == 1)

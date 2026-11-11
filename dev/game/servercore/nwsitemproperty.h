@@ -13,7 +13,7 @@ public:
     CItemPropertyApplierRemover()
     {
     }
-    // PC 0x004AF300  Xbox 0x0015F1A0
+
     virtual ~CItemPropertyApplierRemover()
     {
     }

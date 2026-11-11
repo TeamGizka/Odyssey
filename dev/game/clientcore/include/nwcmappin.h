@@ -19,13 +19,13 @@ public:
     virtual void AIUpdate()
     {
     }
-    // PC 0x0066B360
+    // PC 0x0069E520
     virtual int LoadModel(const CResRef& cModel, unsigned char nModel,
                           unsigned char nFlags)
     {
         return 0;
     }
-    // PC 0x0060E760
+    // PC 0x005EE1C0
     virtual void UnloadModel(unsigned char nModel)
     {
     }

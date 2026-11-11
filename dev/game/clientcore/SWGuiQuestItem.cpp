@@ -9,12 +9,12 @@
 #include "nwccreature.h"
 #include "swguiingame.h"
 #include "swguiingameequip.h"
-// PC 0x006C00B0
+
 void CSWGuiQuestItem::Draw(float fElapsed)
 {
     CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x006D24D0  Xbox 0x00120EE0
+
 void CSWGuiQuestItem::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -38,7 +38,7 @@ void CSWGuiQuestItem::HandleInputEvent(int nEvent, int nState)
 
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006D2580  Xbox 0x00120F90
+
 void CSWGuiQuestItem::OnControlEntered(CSWGuiControl* pControl)
 {
     if (pControl != 0 && pControl->m_bSelected != 0)
@@ -73,7 +73,7 @@ void CSWGuiQuestItem::OnControlEntered(CSWGuiControl* pControl)
     m_lbxDescription.AddControls(&pLabel, 1, 0, 0, 0);
     m_lbxDescription.SetSelectedControl(&m_lblDescription, 0);
 }
-// PC 0x006D26C0  Xbox 0x00121450
+
 CSWGuiQuestItem::CSWGuiQuestItem(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -116,7 +116,7 @@ CSWGuiQuestItem::CSWGuiQuestItem(CSWGuiManager* pManager)
 
     SetActiveControl(pItems, 0);
 }
-// PC 0x006D28F0  Xbox 0x00121120
+
 CSWGuiQuestItem::~CSWGuiQuestItem()
 {
     m_lbxItems.ClearItems();
@@ -127,7 +127,7 @@ CSWGuiQuestItem::~CSWGuiQuestItem()
         delete m_lstItemEntries.RemoveHead();
     }
 }
-// PC 0x006D2C20  Xbox 0x00121710
+
 void CSWGuiQuestItem::OnPanelAdded()
 {
     PopulateItemListBox();
@@ -135,7 +135,7 @@ void CSWGuiQuestItem::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
-// PC 0x006D29F0  Xbox 0x00121240
+
 void CSWGuiQuestItem::PopulateItemListBox()
 {
     CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();

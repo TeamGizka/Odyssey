@@ -1,6 +1,6 @@
 #include "twodimarrays.h"
 #include "twodimarray.h"
-// PC 0x005BFB60  Xbox 0x0011A1A0
+// PC 0x0060EB50
 CTwoDimArrays::CTwoDimArrays()
 {
     m_pAppearance = 0;
@@ -83,7 +83,7 @@ CTwoDimArrays::CTwoDimArrays()
 #endif
     return;
 }
-// PC 0x005BFCC0  Xbox 0x0011A2F0
+
 CTwoDimArrays::~CTwoDimArrays()
 {
     if (m_pRemoveFXOnDeath != 0)
@@ -575,7 +575,7 @@ int CTwoDimArrays::COL2DA_PLACEABLESOUNDS_LOCKED = -1;
 int CTwoDimArrays::COL2DA_PLACEABLESOUNDS_OPENED = -1;
 int CTwoDimArrays::COL2DA_PLACEABLESOUNDS_CLOSED = -1;
 int CTwoDimArrays::COL2DA_PLACEABLESOUNDS_DESTROYED = -1;
-int CTwoDimArrays::Load2DArrays_Appearance()  // PC 0x005C0270
+int CTwoDimArrays::Load2DArrays_Appearance()  // PC 0x0060ED00
 {
     m_pAppearance = new C2DA("Appearance", 0);
     if (m_pAppearance == 0 || m_pAppearance->Load2DArray() == 0)
@@ -722,7 +722,7 @@ int CTwoDimArrays::Load2DArrays_Appearance()  // PC 0x005C0270
     }
     return 1;
 }
-// PC 0x005C08F0
+// PC 0x0060F380
 int CTwoDimArrays::Load2DArrays_AppearanceSounds()
 {
     m_pAppearanceSounds = new C2DA("AppearanceSndSet", 0);
@@ -760,7 +760,7 @@ int CTwoDimArrays::Load2DArrays_AppearanceSounds()
     }
     return 1;
 }
-// PC 0x005C0AE0
+// PC 0x0060F640
 int CTwoDimArrays::Load2DArrays_Gender()
 {
     m_pGender = new C2DA("GENDER", 0);
@@ -772,7 +772,7 @@ int CTwoDimArrays::Load2DArrays_Gender()
     COL2DA_GENDER_GENDER = m_pGender->GetColumnIndex("GENDER");
     return 1;
 }
-// PC 0x005C0BB0
+// PC 0x0060F570
 int CTwoDimArrays::Load2DArrays_SurfaceMaterial()
 {
     m_pSurfaceMaterial = new C2DA("SURFACEMAT", 0);
@@ -784,7 +784,7 @@ int CTwoDimArrays::Load2DArrays_SurfaceMaterial()
     COL2DA_SURFACEMATERIAL_NAME = m_pSurfaceMaterial->GetColumnIndex("Name");
     return 1;
 }
-// PC 0x005C0C80
+// PC 0x0060F710
 int CTwoDimArrays::Load2DArrays_VisualEffect()
 {
     m_pVisualEffect = new C2DA("visualeffects", 0);
@@ -857,7 +857,7 @@ int CTwoDimArrays::Load2DArrays_VisualEffect()
     }
     return 1;
 }
-// PC 0x005C1010
+// PC 0x0060FA70
 int CTwoDimArrays::Load2DArrays_PersistentVisualEffect()
 {
     m_pVisualEffectsPersistent = new C2DA("VFX_Persistent", 0);
@@ -982,7 +982,7 @@ int CTwoDimArrays::Load2DArrays_PersistentVisualEffect()
     }
     return 1;
 }
-// PC 0x005C1580
+// PC 0x0060FFE0
 int CTwoDimArrays::Load2DArrays_CreatureSpeed()
 {
     m_pCreatureSpeed = new C2DA("CreatureSpeed", 0);
@@ -999,7 +999,7 @@ int CTwoDimArrays::Load2DArrays_CreatureSpeed()
     }
     return 1;
 }
-// PC 0x005C1690
+// PC 0x006101C0
 int CTwoDimArrays::Load2DArrays_DoorTypes()
 {
     m_pDoorTypes = new C2DA("DoorTypes", 0);
@@ -1012,7 +1012,7 @@ int CTwoDimArrays::Load2DArrays_DoorTypes()
         m_pDoorTypes->GetColumnIndex("SoundAppType");
     return 1;
 }
-// PC 0x005C1760
+// PC 0x006100F0
 int CTwoDimArrays::Load2DArrays_GenericDoors()
 {
     m_pGenericDoors = new C2DA("GenericDoors", 0);
@@ -1025,7 +1025,7 @@ int CTwoDimArrays::Load2DArrays_GenericDoors()
         m_pGenericDoors->GetColumnIndex("SoundAppType");
     return 1;
 }
-// PC 0x005C1830
+// PC 0x00610290
 int CTwoDimArrays::Load2DArrays_Placeables()
 {
     m_pPlaceables = new C2DA("Placeables", 0);
@@ -1051,7 +1051,7 @@ int CTwoDimArrays::Load2DArrays_Placeables()
     }
     return 1;
 }
-// PC 0x005C1980
+// PC 0x006103E0
 int CTwoDimArrays::Load2DArrays_PlaceableSounds()
 {
     m_pPlaceableSounds = new C2DA("placeableobjsnds", 0);
@@ -1084,67 +1084,67 @@ int CTwoDimArrays::Load2DArrays_PlaceableSounds()
     }
     return 1;
 }
-// PC 0x005C1B40
+// PC 0x006106E0
 int CTwoDimArrays::Load2DArrays_AreaTransition()
 {
     m_pAreaTransition = new C2DA("Loadscreens", 0);
     return m_pAreaTransition != 0 && m_pAreaTransition->Load2DArray() != 0;
 }
-// PC 0x005C1BE0
+// PC 0x00610780
 int CTwoDimArrays::Load2DArrays_IPRPMelee()
 {
     m_pIPRPMelee = new C2DA("IPRP_MeleeCost", 0);
     return m_pIPRPMelee != 0 && m_pIPRPMelee->Load2DArray() != 0;
 }
-// PC 0x005C1C80
+// PC 0x006105A0
 int CTwoDimArrays::Load2DArrays_ItemPropDef()
 {
     m_pItemPropDef = new C2DA("ItemPropDef", 0);
     return m_pItemPropDef != 0 && m_pItemPropDef->Load2DArray() != 0;
 }
-// PC 0x005C1D20
+// PC 0x00610640
 int CTwoDimArrays::Load2DArrays_Portrait()
 {
     m_pPortrait = new C2DA("Portraits", 0);
     return m_pPortrait != 0 && m_pPortrait->Load2DArray() != 0;
 }
-// PC 0x005C1DC0
+// PC 0x00611860
 int CTwoDimArrays::Load2DArrays_IPRPDamage()
 {
     m_pIPRPDamage = new C2DA("IPRP_DAMAGECOST", 0);
     return m_pIPRPDamage != 0 && m_pIPRPDamage->Load2DArray() != 0;
 }
-// PC 0x005C1E60
+// PC 0x006112C0
 int CTwoDimArrays::Load2DArrays_Traps()
 {
     m_pTraps = new C2DA("Traps", 0);
     return m_pTraps != 0 && m_pTraps->Load2DArray() != 0;
 }
-// PC 0x005C1F00
+// PC 0x006108C0
 int CTwoDimArrays::Load2DArrays_LightColor()
 {
     m_pLightColor = new C2DA("LightColor", 0);
     return m_pLightColor != 0 && m_pLightColor->Load2DArray() != 0;
 }
-// PC 0x005C1FA0
+// PC 0x00610960
 int CTwoDimArrays::Load2DArrays_Cursor()
 {
     m_pCursor = new C2DA("cursors", 0);
     return m_pCursor != 0 && m_pCursor->Load2DArray() != 0;
 }
-// PC 0x005C2040
+// PC 0x00610A00
 int CTwoDimArrays::Load2DArrays_AmbientMusic()
 {
     m_pAmbientMusic = new C2DA("AmbientMusic", 0);
     return m_pAmbientMusic != 0 && m_pAmbientMusic->Load2DArray() != 0;
 }
-// PC 0x005C20E0
+// PC 0x00610AA0
 int CTwoDimArrays::Load2DArrays_AmbientSound()
 {
     m_pAmbientSound = new C2DA("AmbientSound", 0);
     return m_pAmbientSound != 0 && m_pAmbientSound->Load2DArray() != 0;
 }
-// PC 0x005C2180
+// PC 0x00610BE0
 int CTwoDimArrays::Load2DArrays_FootstepSounds()
 {
     m_pFootstepSounds = new C2DA("FootstepSounds", 0);
@@ -1162,7 +1162,7 @@ int CTwoDimArrays::Load2DArrays_FootstepSounds()
     }
     return 1;
 }
-// PC 0x005C2290
+// PC 0x00610CF0
 int CTwoDimArrays::Load2DArrays_WeaponSounds()
 {
     m_pWeaponSounds = new C2DA("WeaponSounds", 0);
@@ -1175,7 +1175,7 @@ int CTwoDimArrays::Load2DArrays_WeaponSounds()
         m_pWeaponSounds->GetColumnIndex("PitchOffset");
     return 1;
 }
-// PC 0x005C2360
+
 int CTwoDimArrays::Load2DArrays_AmmunitionTypes()
 {
     m_pAmmunitionTypes = new C2DA("AmmunitionTypes", 0);
@@ -1183,87 +1183,87 @@ int CTwoDimArrays::Load2DArrays_AmmunitionTypes()
 }
 
 #ifndef _XBOX
-int CTwoDimArrays::Load2DArrays_Keymap()  // PC 0x005C2400
+int CTwoDimArrays::Load2DArrays_Keymap()  // PC 0x00610DC0
 {
     m_pKeymap = new C2DA("keymap", 0);
     return m_pKeymap != 0 && m_pKeymap->Load2DArray() != 0;
 }
-// PC 0x005C24A0
+// PC 0x00610E60
 int CTwoDimArrays::Load2DArrays_BindableKey()
 {
     m_pBindableKey = new C2DA("BindableKeys", 0);
     return m_pBindableKey != 0 && m_pBindableKey->Load2DArray() != 0;
 }
 #endif
-// PC 0x005C2540
+// PC 0x00610F00
 int CTwoDimArrays::Load2DArrays_CameraStyle()
 {
     m_pCameraStyle = new C2DA("CameraStyle", 0);
     return m_pCameraStyle != 0 && m_pCameraStyle->Load2DArray() != 0;
 }
-// PC 0x005C25E0
+// PC 0x00612D30
 int CTwoDimArrays::Load2DArrays_Tutorial()
 {
     m_pTutorial = new C2DA("tutorial", 0);
     return m_pTutorial != 0 && m_pTutorial->Load2DArray() != 0;
 }
-// PC 0x005C2680
+// PC 0x00611040
 int CTwoDimArrays::Load2DArrays_DifficultyOptions()
 {
     m_pDifficultyOptions = new C2DA("difficultyopt", 0);
     return m_pDifficultyOptions != 0 &&
            m_pDifficultyOptions->Load2DArray() != 0;
 }
-// PC 0x005C2720
+// PC 0x006110E0
 int CTwoDimArrays::Load2DArrays_Gamma()
 {
     m_pGamma = new C2DA("gamma", 0);
     return m_pGamma != 0 && m_pGamma->Load2DArray() != 0;
 }
-// PC 0x005C27C0
+// PC 0x00611180
 int CTwoDimArrays::Load2DArrays_StateScripts()
 {
     m_pStateScripts = new C2DA("StateScripts", 0);
     return m_pStateScripts != 0 && m_pStateScripts->Load2DArray() != 0;
 }
-// PC 0x005C2860
+// PC 0x00611360
 int CTwoDimArrays::Load2DArrays_Poison()
 {
     m_pPoison = new C2DA("poison", 0);
     return m_pPoison != 0 && m_pPoison->Load2DArray() != 0;
 }
-// PC 0x005C2900
+// PC 0x00611400
 int CTwoDimArrays::Load2DArrays_Disease()
 {
     m_pDisease = new C2DA("disease", 0);
     return m_pDisease != 0 && m_pDisease->Load2DArray() != 0;
 }
-// PC 0x005C29A0
+// PC 0x006114A0
 int CTwoDimArrays::Load2DArrays_RepAdjustments()
 {
     m_pRepAdjustments = new C2DA("RepAdjust", 0);
     return m_pRepAdjustments != 0 && m_pRepAdjustments->Load2DArray() != 0;
 }
-// PC 0x005C2A40
+// PC 0x00611540
 int CTwoDimArrays::Load2DArrays_FractionalCR()
 {
     m_pFractionalCR = new C2DA("FractionalCR", 0);
     return m_pFractionalCR != 0 && m_pFractionalCR->Load2DArray() != 0;
 }
-// PC 0x005C2AE0
+// PC 0x00611720
 int CTwoDimArrays::Load2DArrays_EncounterDifficulty()
 {
     m_pEncounterDifficulty = new C2DA("EncDifficulty", 0);
     return m_pEncounterDifficulty != 0 &&
            m_pEncounterDifficulty->Load2DArray() != 0;
 }
-// PC 0x005C2B80
+// PC 0x006115E0
 int CTwoDimArrays::Load2DArrays_ExcitedDuration()
 {
     m_pExcitedDuration = new C2DA("ExcitedDuration", 0);
     return m_pExcitedDuration != 0 && m_pExcitedDuration->Load2DArray() != 0;
 }
-// PC 0x005C2C20
+// PC 0x00611680
 int CTwoDimArrays::Load2DArrays_Regeneration()
 {
     m_pRegeneration = new C2DA("Regeneration", 0);
@@ -1281,62 +1281,62 @@ int CTwoDimArrays::Load2DArrays_Regeneration()
     }
     return 1;
 }
-// PC 0x005C2D40
+// PC 0x00611AE0
 int CTwoDimArrays::Load2DArrays_XpBase()
 {
     m_pXpBase = new C2DA("XPTable", 0);
     return m_pXpBase != 0 && m_pXpBase->Load2DArray() != 0;
 }
-// PC 0x005C2DE0
+// PC 0x006117C0
 int CTwoDimArrays::Load2DArrays_IPRPMonsterDamage()
 {
     m_pIPRPMonsterDamage = new C2DA("IPRP_MONSTCOST", 0);
     return m_pIPRPMonsterDamage != 0 &&
            m_pIPRPMonsterDamage->Load2DArray() != 0;
 }
-// PC 0x005C2E80
+// PC 0x00611900
 int CTwoDimArrays::Load2DArrays_IPRPBonusCost()
 {
     m_pIPRPBonusCost = new C2DA("IPRP_BONUSCOST", 0);
     return m_pIPRPBonusCost != 0 && m_pIPRPBonusCost->Load2DArray() != 0;
 }
-// PC 0x005C2F20
+// PC 0x006119A0
 int CTwoDimArrays::Load2DArrays_IPRPSRCost()
 {
     m_pIPRPSRCost = new C2DA("IPRP_SRCOST", 0);
     return m_pIPRPSRCost != 0 && m_pIPRPSRCost->Load2DArray() != 0;
 }
-// PC 0x005C2FC0
+// PC 0x00611A40
 int CTwoDimArrays::Load2DArrays_IPRPNeg5Cost()
 {
     m_pIPRPNeg5Cost = new C2DA("IPRP_NEG5COST", 0);
     return m_pIPRPNeg5Cost != 0 && m_pIPRPNeg5Cost->Load2DArray() != 0;
 }
-// PC 0x005C3060
+// PC 0x00611B80
 int CTwoDimArrays::Load2DArrays_Ranges()
 {
     m_pRanges = new C2DA("Ranges", 0);
     return m_pRanges != 0 && m_pRanges->Load2DArray() != 0;
 }
-// PC 0x005C3100
+// PC 0x00611C20
 int CTwoDimArrays::Load2DArrays_OnHit()
 {
     m_pOnHit = new C2DA("IPRP_ONHIT", 0);
     return m_pOnHit != 0 && m_pOnHit->Load2DArray() != 0;
 }
-// PC 0x005C31A0
+// PC 0x00612240
 int CTwoDimArrays::Load2DArrays_OnHitDuration()
 {
     m_pOnHitDuration = new C2DA("IPRP_ONHITDUR", 0);
     return m_pOnHitDuration != 0 && m_pOnHitDuration->Load2DArray() != 0;
 }
-// PC 0x005C3240
+// PC 0x00612080
 int CTwoDimArrays::Load2DArrays_DamageHitVisual()
 {
     m_pDamageHitVisual = new C2DA("DamageHitVisual", 0);
     return m_pDamageHitVisual != 0 && m_pDamageHitVisual->Load2DArray() != 0;
 }
-// PC 0x005C32E0
+// PC 0x00611CC0
 int CTwoDimArrays::Load2DArrays_Animations()
 {
     m_pAnimations = new C2DA("Animations", 0);
@@ -1413,13 +1413,13 @@ int CTwoDimArrays::Load2DArrays_Animations()
     }
     return 1;
 }
-// PC 0x005C3670
+
 int CTwoDimArrays::Load2DArrays_BodyBag()
 {
     m_pBodyBag = new C2DA("bodybag", 0);
     return m_pBodyBag != 0 && m_pBodyBag->Load2DArray() != 0;
 }
-// PC 0x005C3710
+// PC 0x00612120
 int CTwoDimArrays::Load2DArrays_ForceAdjust()
 {
     m_pForcePointAdjust = new C2DA("ForceAdjust", 0);
@@ -1436,43 +1436,43 @@ int CTwoDimArrays::Load2DArrays_ForceAdjust()
     }
     return 1;
 }
-// PC 0x005C3830
+// PC 0x006122E0
 int CTwoDimArrays::Load2DArrays_GameEffects()
 {
     m_pGameEffects = new C2DA("GameEffects", 0);
     return m_pGameEffects != 0 && m_pGameEffects->Load2DArray() != 0;
 }
-// PC 0x005C38D0
+// PC 0x00612380
 int CTwoDimArrays::Load2DArrays_Repute()
 {
     m_pRepute = new C2DA("Repute", 0);
     return m_pRepute != 0 && m_pRepute->Load2DArray() != 0;
 }
-// PC 0x005C3970
+// PC 0x00612420
 int CTwoDimArrays::Load2DArrays_WeaponDischarge()
 {
     m_pWeaponDischarge = new C2DA("WeaponDischarge", 0);
     return m_pWeaponDischarge != 0 && m_pWeaponDischarge->Load2DArray() != 0;
 }
-// PC 0x005C3A10
+// PC 0x006124C0
 int CTwoDimArrays::Load2DArrays_DroidDischarge()
 {
     m_pDroidDischarge = new C2DA("DroidDischarge", 0);
     return m_pDroidDischarge != 0 && m_pDroidDischarge->Load2DArray() != 0;
 }
-// PC 0x005C3AB0
+// PC 0x00612560
 int CTwoDimArrays::Load2DArrays_PlotXP()
 {
     m_pPlotXP = new C2DA("Plot", 0);
     return m_pPlotXP != 0 && m_pPlotXP->Load2DArray() != 0;
 }
-// PC 0x005C3B50
+// PC 0x00610FA0
 int CTwoDimArrays::Load2DArrays_CombatAnimations()
 {
     m_pCombatAnimations = new C2DA("CombatAnimations", 0);
     return m_pCombatAnimations != 0 && m_pCombatAnimations->Load2DArray() != 0;
 }
-// PC 0x005C3BF0
+// PC 0x00612600
 int CTwoDimArrays::Load2DArrays_DialogAnimations()
 {
     m_pDialogAnimations = new C2DA("DialogAnimations", 0);
@@ -1500,79 +1500,79 @@ int CTwoDimArrays::Load2DArrays_DialogAnimations()
     }
     return 1;
 }
-// PC 0x005C3D70
+
 int CTwoDimArrays::Load2DArrays_NPC()
 {
     m_pNPC = new C2DA("NPC", 0);
     return m_pNPC != 0 && m_pNPC->Load2DArray() != 0;
 }
-// PC 0x005C3E10
+// PC 0x00612790
 int CTwoDimArrays::Load2DArrays_Spells()
 {
     m_pSpells = new C2DA("Spells", 0);
     return m_pSpells != 0 && m_pSpells->Load2DArray() != 0;
 }
-// PC 0x005C3EB0
+// PC 0x00612830
 int CTwoDimArrays::Load2DArrays_Feat()
 {
     m_pFeat = new C2DA("Feat", 0);
     return m_pFeat != 0 && m_pFeat->Load2DArray() != 0;
 }
-// PC 0x005C3F50
+// PC 0x006128D0
 int CTwoDimArrays::Load2DArrays_Formations()
 {
     m_pFormations = new C2DA("Formations", 0);
     return m_pFormations != 0 && m_pFormations->Load2DArray() != 0;
 }
-// PC 0x005C3FF0
+// PC 0x00612970
 int CTwoDimArrays::Load2DArrays_GrenadeSound()
 {
     m_pGrenadeSound = new C2DA("GrenadeSND", 0);
     return m_pGrenadeSound != 0 && m_pGrenadeSound->Load2DArray() != 0;
 }
-// PC 0x005C4090
+// PC 0x00612A10
 int CTwoDimArrays::Load2DArrays_Planetary()
 {
     m_pJournal = new C2DA("Planetary", 0);
     return m_pJournal != 0 && m_pJournal->Load2DArray() != 0;
 }
-// PC 0x005C4130
+// PC 0x00612AB0
 int CTwoDimArrays::Load2DArrays_FeedBackText()
 {
     m_pFeedBackText = new C2DA("FeedBackText", 0);
     return m_pFeedBackText != 0 && m_pFeedBackText->Load2DArray() != 0;
 }
-// PC 0x005C41D0
+// PC 0x00612B50
 int CTwoDimArrays::Load2DArrays_ForceShields()
 {
     m_pForceShields = new C2DA("ForceShields", 0);
     return m_pForceShields != 0 && m_pForceShields->Load2DArray() != 0;
 }
-// PC 0x005C4270
+// PC 0x00610820
 int CTwoDimArrays::Load2DArrays_Heads()
 {
     m_pHeads = new C2DA("Heads", 0);
     return m_pHeads != 0 && m_pHeads->Load2DArray() != 0;
 }
-// PC 0x005C4310
+// PC 0x00612C90
 int CTwoDimArrays::Load2DArrays_ItemValues()
 {
     m_pItemValues = new C2DA("ItemValue", 0);
     return m_pItemValues != 0 && m_pItemValues->Load2DArray() != 0;
 }
-// PC 0x005C43B0
+// PC 0x00612BF0
 int CTwoDimArrays::Load2DArrays_VideoEffects()
 {
     m_pVideoEffects = new C2DA("VideoEffects", 0);
     return m_pVideoEffects != 0 && m_pVideoEffects->Load2DArray() != 0;
 }
-// PC 0x005C4450
+// PC 0x00612DD0
 int CTwoDimArrays::Load2DArrays_Movies()
 {
     m_pMovies2DA = new C2DA("Movies", 0);
     return m_pMovies2DA != 0 && m_pMovies2DA->Load2DArray() != 0;
 }
-// PC 0x005C44F0
+// PC 0x00613090
 int CTwoDimArrays::Load2DArrays_EffectIcon()
 {
     m_pEffectIcon = new C2DA("EffectIcon", 0);
@@ -1588,7 +1588,7 @@ int CTwoDimArrays::Load2DArrays_EffectIcon()
     }
     return 1;
 }
-// PC 0x005C45B0
+// PC 0x00612F10
 int CTwoDimArrays::Load2DArrays_RemoveFXOnDeath()
 {
     m_pRemoveFXOnDeath = new C2DA("removefxondeath", 0);
@@ -1606,7 +1606,7 @@ int CTwoDimArrays::Load2DArrays_RemoveFXOnDeath()
 }
 
 #ifndef _XBOX
-int CTwoDimArrays::Load2DArrays_TexPacks()  // PC 0x005C4670
+int CTwoDimArrays::Load2DArrays_TexPacks()  // PC 0x00612FD0
 {
     m_pTexPacks = new C2DA("TexPacks", 0);
     if (m_pTexPacks == 0)
@@ -1622,7 +1622,7 @@ int CTwoDimArrays::Load2DArrays_TexPacks()  // PC 0x005C4670
     return 1;
 }
 #endif
-// PC 0x005C4730  Xbox 0x0011ACD0
+// PC 0x00613830
 int CTwoDimArrays::LoadIPRPCostTables()
 {
     int bClientLoad;
@@ -1666,7 +1666,7 @@ int CTwoDimArrays::LoadIPRPCostTables()
     }
     return 0;
 }
-// PC 0x005C4940  Xbox 0x0011A850
+// PC 0x00613A40
 int CTwoDimArrays::UnLoadIPRPCostTables()
 {
     if (m_ppIPRPCostTables != 0)
@@ -1685,7 +1685,7 @@ int CTwoDimArrays::UnLoadIPRPCostTables()
     }
     return 1;
 }
-// PC 0x005C49A0  Xbox 0x0011A8B0
+// PC 0x00613AA0
 C2DA* CTwoDimArrays::GetIPRPCostTable(unsigned char nTable)
 {
     C2DA* pResult = 0;
@@ -1700,7 +1700,7 @@ C2DA* CTwoDimArrays::GetIPRPCostTable(unsigned char nTable)
     }
     return pResult;
 }
-// PC 0x005C49C0  Xbox 0x0011AEE0
+// PC 0x00613AC0
 int CTwoDimArrays::LoadIPRPParamTables()
 {
     C2DA* pTable = new C2DA("IPRP_PARAMTABLE", 0);
@@ -1732,7 +1732,7 @@ int CTwoDimArrays::LoadIPRPParamTables()
     }
     return 0;
 }
-// PC 0x005C4B90  Xbox 0x0011A8E0
+// PC 0x00613C90
 int CTwoDimArrays::UnLoadIPRPParamTables()
 {
     if (m_ppIPRPParamTables != 0)
@@ -1751,7 +1751,7 @@ int CTwoDimArrays::UnLoadIPRPParamTables()
     }
     return 1;
 }
-// PC 0x005C4C00  Xbox 0x0011A950
+// PC 0x00613D00
 C2DA* CTwoDimArrays::GetIPRPParamTable(unsigned char nTable)
 {
     C2DA* pResult = 0;
@@ -1766,7 +1766,7 @@ C2DA* CTwoDimArrays::GetIPRPParamTable(unsigned char nTable)
     }
     return pResult;
 }
-// PC 0x005C4C20  Xbox 0x0011B0B0
+// PC 0x00613D20
 int CTwoDimArrays::Load2DArrays()
 {
     LoadIPRPCostTables();
@@ -1932,7 +1932,7 @@ int CTwoDimArrays::Load2DArrays()
 
     return 1;
 }
-// PC 0x005C5070  Xbox 0x0011A980
+// PC 0x00614210
 int CTwoDimArrays::UnLoad2DArrays()
 {
     UnLoadIPRPCostTables();

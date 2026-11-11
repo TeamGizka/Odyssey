@@ -171,7 +171,7 @@ void SetShadowStencilBuffer()
     GLRender_SetStencilMask(GLRender::STENCIL_WRITE_MASK);
     GLRender::Clear(4);
 }
-// PC 0x005C8650
+// PC 0x0056FB90
 void Scene::InitBSP(int, int, int, bool, float)
 {
 }
@@ -195,7 +195,7 @@ inline __int64 QueryTimerFrequency()
     QueryPerformanceFrequency(&nFrequency);
     return nFrequency.QuadPart;
 }
-// PC 0x0044F320
+
 static __int64 QueryTimer()
 {
     LARGE_INTEGER nPerformanceCount;
@@ -206,7 +206,7 @@ static __int64 QueryTimer()
 }
 
 #ifdef _XBOX
-// Xbox 0x002A4C30
+
 static void ClearStencilBuffer()
 {
     GLRender_ClearStencilValue(AurGetStencilClearValue());
@@ -214,17 +214,17 @@ static void ClearStencilBuffer()
     GLRender_Clear(4);
 }
 #endif
-// PC 0x0044F3A0  Xbox 0x002A29D0
+// PC 0x004634B0
 void Scene::EnableAnimations()
 {
     m_bAnimating = 1;
 }
-// PC 0x0044F3B0  Xbox 0x002A29E0
+// PC 0x004634C0
 void Scene::DisableAnimations()
 {
     m_bAnimating = 0;
 }
-// PC 0x0044F3C0  Xbox 0x002A29F0
+// PC 0x004634D0
 char Scene::IsAnimating()
 {
     return m_bAnimating;
@@ -243,7 +243,7 @@ char Scene::IsAnimating()
 #include <math.h>
 #include "aurtexman.h"
 #include "aurprimitive.h"
-// PC 0x0044F5A0  Xbox 0x002A2BA0
+// PC 0x004636B0
 int EmitterOrderCmp(const void* pFirst, const void* pSecond)
 {
     PartEmitter* pEmitter1 = *(PartEmitter**)pFirst;
@@ -281,14 +281,14 @@ int EmitterOrderCmp(const void* pFirst, const void* pSecond)
         return pEmitter1 > pEmitter2 ? -1 : 1;
     return fDistance1 > fDistance2 ? -1 : 1;
 }
-// PC 0x0044F760  Xbox 0x002A2DD0
+// PC 0x00463880
 void AurEnableInterleavedAnimations()
 {
     g_bEnableInterleavedAnimations = 1;
 }
 
 #include "aurlightmanager.h"
-// PC 0x0044F770  Xbox 0x002A2DE0
+// PC 0x00463890
 void AurDisableInterleavedAnimations()
 {
     g_bEnableInterleavedAnimations = 0;
@@ -298,7 +298,7 @@ int SceneGetNearestLights(Scene* pScene, Vector vPosition, float fRadius)
 {
     return pScene->m_pLightManager->GetNearestLights(pScene, vPosition, fRadius, 0);
 }
-// PC 0x0044F780  Xbox 0x002A2E50
+// PC 0x004638D0
 Vector Scene::GetWindVector(Vector vPosition, float fScale)
 {
     return m_pWindManager->GetGlobalWind(vPosition, fScale);
@@ -306,25 +306,25 @@ Vector Scene::GetWindVector(Vector vPosition, float fScale)
 
 char* firstword(char* sMessage);
 int Parse(char* sText, int& nValue);
-// PC 0x0044F7C0  Xbox 0x002A2E90
+// PC 0x00463910
 int Gob::AttachToScene(CAurScene* pScene)
 {
     SetScene((Scene*)pScene);
     return 1;
 }
-// PC 0x0044F7E0  Xbox 0x002A2F00
+// PC 0x00463930
 int Scene::EnableVisibilityGraph()
 {
     CAurRoom* pCurrentRoom = m_pCurrentRoom;
     m_bIgnoreVisibilityGraph = 0;
     return pCurrentRoom != 0;
 }
-// PC 0x0044F800  Xbox 0x002A2F20
+// PC 0x00463950
 void Scene::DisableVisibilityGraph()
 {
     m_bIgnoreVisibilityGraph = 1;
 }
-// PC 0x0044F810  Xbox 0x002A2F30
+// PC 0x00463960
 int Scene::GetIgnoreVisibilityGraph()
 {
     return m_bIgnoreVisibilityGraph;
@@ -332,7 +332,7 @@ int Scene::GetIgnoreVisibilityGraph()
 
 int AurTextureReplaceTileReferences(CAurScene* pScene, const Vector& vPosition,
                                     char* sOldTexture, char* sNewTexture);
-// PC 0x00452000  Xbox 0x002A6270
+// PC 0x00466110
 MdlNode* findnode(MdlNode* pNode, char* sName)
 {
     if (strcmp(pNode->TranslateNodeName(), sName) == 0)
@@ -347,7 +347,7 @@ MdlNode* findnode(MdlNode* pNode, char* sName)
     }
     return pFound;
 }
-// PC 0x00452500  Xbox 0x002A6330
+// PC 0x00466610
 void SetPartTextureRotate(Part* pPart, int nRotation)
 {
     PartTriMesh* pTriMesh = pPart->AsPartTriMesh();
@@ -359,7 +359,7 @@ void SetPartTextureRotate(Part* pPart, int nRotation)
     for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)
         SetPartTextureRotate(pPart->m_lstChildren[i], nRotation);
 }
-// PC 0x00455670  Xbox 0x002A9040
+// PC 0x00469EA0
 void Scene::ChildAdd(Gob* pGob)
 {
     if (pGob->m_pModel != 0)
@@ -375,7 +375,7 @@ void Scene::ChildAdd(Gob* pGob)
         m_lstAnimatedObjects.Add(pGob);
     }
 }
-// PC 0x004531A0  Xbox 0x002A78D0
+// PC 0x00467430
 void Scene::ListSpecialPartsR(Part* pPart)
 {
     if (pPart)
@@ -407,7 +407,7 @@ extern int rendertransparentcharacters;
 extern int showlightpriorityinfo;
 extern int dogobrender;
 extern int countvisibilityculls;
-// PC 0x00453550  Xbox 0x002A7950
+// PC 0x004677E0
 void Scene::UnlistSpecialParts(Part* pPart)
 {
     if (pPart != 0)
@@ -432,7 +432,7 @@ void Scene::UnlistSpecialParts(Part* pPart)
         }
     }
 }
-// PC 0x00453900  Xbox 0x002A79D0
+// PC 0x00467B90
 void Scene::ChildRemove(Gob* pGob)
 {
     if (pGob->m_pModel != 0)
@@ -447,7 +447,7 @@ void Scene::ChildRemove(Gob* pGob)
         m_lstAnimatedObjects.Remove(pGob);
     }
 }
-// PC 0x00453950  Xbox 0x002A7A20
+// PC 0x00467BF0
 void Scene::DoGobShadows()
 {
     List<PartLight*> lstShadowLights;
@@ -488,7 +488,7 @@ void Scene::DoGobShadows()
         }
     }
 }
-// PC 0x00453BB0  Xbox 0x002A7CA0
+// PC 0x00467E60
 void Scene::DoDynamicMeshProjections()
 {
     List<PartLight*> lstShadowLights;
@@ -531,21 +531,21 @@ inline void SetFogMode(int nFogMode)
 {
     GLRender_SetFogMode(nFogMode);
 }
-// PC 0x00453E00  Xbox 0x002A7F20
+// PC 0x00468240
 void Scene::RenderGobFirst(CAurObject* pObject)
 {
     Gob* pGob = (Gob*)pObject;
     m_lstObjects.Remove(pGob);
     m_lstObjects.Insert(pGob, 0);
 }
-// PC 0x00453E20  Xbox 0x002A7F40
+// PC 0x00468260
 void Scene::RenderGobLast(CAurObject* pObject)
 {
     Gob* pGob = (Gob*)pObject;
     m_lstObjects.Remove(pGob);
     m_lstObjects.Add(pGob);
 }
-// PC 0x00453E70  Xbox 0x002A7F60
+// PC 0x004682B0
 void Scene::RenderGobAfter(CAurObject* pObject, CAurObject* pAfter)
 {
     List<Gob*>& lstObjects = m_lstObjects;
@@ -555,7 +555,7 @@ void Scene::RenderGobAfter(CAurObject* pObject, CAurObject* pAfter)
     lstObjects.Remove(pGob);
     return lstObjects.Insert(pGob, nPosition + 1);
 }
-// PC 0x00453EC0  Xbox 0x002A7F90
+// PC 0x00468300
 void Scene::RenderGobBefore(CAurObject* pObject, CAurObject* pBefore)
 {
     List<Gob*>& lstObjects = m_lstObjects;
@@ -570,7 +570,7 @@ int AurGetStencilClearValue();
 
 static __int64 g_endtime;
 static __int64 g_starttime;
-// PC 0x00453F10  Xbox 0x002A7FC0
+// PC 0x00468350
 void CollapsePartTree(Gob* pGob, Part* pPart, List<Part*>& lstParts,
                       Vector vPosition, Quaternion qOrientation,
                       Scene* pScene, CAurRoom* pRoom)
@@ -657,23 +657,23 @@ inline void SetColor4fv(const float* pColor)
 }
 
 #ifndef _XBOX
-void SetMaterialParameter(int nFace, int nMaterial, GLfloat* pfParams)  // PC 0x0044F880
+void SetMaterialParameter(int nFace, int nMaterial, GLfloat* pfParams)  // PC 0x00463D30
 {
     GLRender_SetMaterialv(nFace, nMaterial, pfParams);
 }
 #endif
-// PC 0x0044F8B0  Xbox 0x002A2F40
+
 int Scene::GetNumRooms()
 {
     return m_lstRooms.m_nCount;
 }
-// PC 0x0044F8C0  Xbox 0x002A2F50
+// PC 0x00463970
 int Scene::SetCurrentRoom(CAurRoom* pRoom)
 {
     m_pCurrentRoom = pRoom;
     return (int)pRoom;
 }
-// PC 0x0044F8D0  Xbox 0x002A2F60
+// PC 0x00463980
 int Scene::SpawnRooms(char* sName)
 {
     void* pLayout = AurResGet(sName, ".lyt", 0, true);
@@ -735,7 +735,7 @@ int Scene::SpawnRooms(char* sName)
     LoadVisibility(sName);
     return m_lstRooms.m_nCount;
 }
-// PC 0x0044FAC0  Xbox 0x002A3150
+// PC 0x00463B70
 CallBack* ProcessStaticObject(Gob* pGob, Scene* pScene, TileData* pTile,
                         const Vector& vPosition, const Quaternion& qOrientation)
 {
@@ -748,7 +748,7 @@ CallBack* ProcessStaticObject(Gob* pGob, Scene* pScene, TileData* pTile,
         AnimateStaticLight,
         "AnimateStaticLight", 0, 9999.0f, 0);
 }
-// PC 0x0044FB40  Xbox 0x002A31C0
+// PC 0x00463C50
 void Scene::SetTileLights(const Vector& vPosition, const Vector& vMainLight,
                           const Vector& vSourceLight)
 {
@@ -776,7 +776,7 @@ void Scene::SetTileLights(const Vector& vPosition, const Vector& vMainLight,
         pTile->m_pSourceLight->m_nPriority = 5;
     }
 }
-// PC 0x0044FC20  Xbox 0x002A32B0
+// PC 0x00463D60
 void Scene::SetTileFlames(const Vector& vPosition, CAurObject* pFlame1,
                          CAurObject* pFlame2)
 {
@@ -794,19 +794,19 @@ void Scene::SetTileFlames(const Vector& vPosition, CAurObject* pFlame1,
     }
 
 }
-// PC 0x0044FC80  Xbox 0x002A3310
+// PC 0x00463DC0
 int Scene::ReplaceTileTexture(const Vector& vPosition, char* sOldTexture,
                               char* sNewTexture)
 {
     return AurTextureReplaceTileReferences(
         this, vPosition, sOldTexture, sNewTexture);
 }
-// PC 0x0044FCA0  Xbox 0x002A3330
+// PC 0x00463DE0
 void Scene::DeleteTile(const Vector& vPosition)
 {
     SceneBSPRemoveTiledata(this, vPosition);
 }
-// PC 0x0044FCC0  Xbox 0x002A6D30
+// PC 0x00463E00
 void CAurScene::ComputeStaticLighting()
 {
     if (this != 0)
@@ -814,19 +814,19 @@ void CAurScene::ComputeStaticLighting()
         ((Scene*)this)->PostProcessLS();
     }
 }
-// PC 0x0044FCD0  Xbox 0x002A3350
+// PC 0x00463E10
 void CAurScene::SetAmbient(Vector vAmbient)
 {
     ((Scene*)this)->m_vAmbient = vAmbient;
 }
 #ifndef _XBOX
-void Scene::SetObjectScale(CAurObject* pObject, float fScale)  // PC 0x0044FCF0
+void Scene::SetObjectScale(CAurObject* pObject, float fScale)  // PC 0x00463E30
 {
     ((Gob*)pObject)->SetObjectScale(fScale, 1);
 }
 #endif
 extern List<Scene*> Scenes;
-// PC 0x0044FD10  Xbox 0x002A3520
+// PC 0x00463E50
 unsigned char Scene::SetGeomFadeProperties(int nProperties)
 {
     if (nProperties != ENABLE_FADE && nProperties != DISABLE_FADE &&
@@ -838,14 +838,14 @@ unsigned char Scene::SetGeomFadeProperties(int nProperties)
     geomFadeEnabled = nProperties;
     return 1;
 }
-// PC 0x0044FD40  Xbox 0x002A35B0
+// PC 0x00463E80
 float Scene::GetObjectScale(CAurObject* pObject)
 {
     return ((Gob*)pObject)->m_fScale;
 }
 
 extern int numgobs;
-// PC 0x0044FD50  Xbox 0x002A3C00
+// PC 0x00463EF0
 int Scene::SetBlindLights(CAurObject* pObject)
 {
     LightManager::m_pOnlyGob = pObject;
@@ -855,7 +855,7 @@ int Scene::SetBlindLights(CAurObject* pObject)
 extern float grassalphatest;
 extern float alphatest;
 char AurGrassMaterialInUse(int nMaterial);
-// PC 0x00454470  Xbox 0x002A8460
+// PC 0x00468C70
 void ExpandReferenceParts(Part* pPart)
 {
     PartReference* pReference = pPart->AsPartReference();
@@ -874,7 +874,7 @@ void ExpandReferenceParts(Part* pPart)
         ExpandReferenceParts(pPart->m_lstChildren[i]);
     }
 }
-// PC 0x004548A0  Xbox 0x002A84F0
+// PC 0x004690A0
 CAurRoom::CAurRoom(char* sName)
     : BSPNode(Vector(), 0.0f),
       m_lstVisibleRooms(0),
@@ -883,13 +883,13 @@ CAurRoom::CAurRoom(char* sName)
     strcpy(m_sName, sName);
     m_pRoomObject = 0;
 }
-// PC 0x004578F0  Xbox 0x002AB510
+// PC 0x0046C210
 CHitInfo::CHitInfo(int nType, int nFlags, int nMask)
     : m_pOutputObject()
 {
     Reset(nType, nFlags, nMask);
 }
-// PC 0x00456AF0  Xbox 0x002AAA20
+// PC 0x0046B3F0
 void CHitInfo::Reset(int nType, int nFlags, int nMask)
 {
     m_nType = nType;
@@ -916,7 +916,7 @@ inline void SetDepthFunc(int nFunc)
 {
     GLRender_SetDepthFunc(nFunc);
 }
-// PC 0x00455710  Xbox 0x002A9090
+// PC 0x00469F50
 void Scene::DoMeshBuckets()
 {
     int i;
@@ -996,7 +996,7 @@ void Transform(const Vector& vPosition, const Quaternion& qOrientation,
                int nForce);
 
 extern int forcefogtest;
-// PC 0x00455A40  Xbox 0x002A9280
+// PC 0x0046A280
 void Scene::DoCapBucket()
 {
     List<int> lstOrdering(*AurTextureGetOrdering());
@@ -1032,7 +1032,7 @@ void Scene::DoCapBucket()
 }
 
 #define DEBUG_FADEBUCKETS 0
-// PC 0x00455B60  Xbox 0x002A93A0
+// PC 0x0046A3A0
 void Scene::DoFadeBuckets()
 {
     int i;
@@ -1169,7 +1169,7 @@ void Scene::DoFadeBuckets()
     GLRender_DisableColorMaterial();
     GLRender_Disable(ENABLE_BLEND);
 }
-// PC 0x00456250  Xbox 0x002A9DC0
+// PC 0x0046AA90
 void Scene::DoStaticMeshShadows()
 {
     PartLight* pShadowLight = m_pLightManager->m_pShadowLight;
@@ -1187,7 +1187,7 @@ void Scene::DoStaticMeshShadows()
         staticshadowbucket.m_pList[i]->Draw(false);
     }
 }
-// PC 0x00456300  Xbox 0x002A9E60
+// PC 0x0046AB40
 void Scene::DoHighlightTriggers(bool bHighlight)
 {
     List<PartTrigger*> lstTriggers;
@@ -1284,7 +1284,7 @@ void Scene::DoHighlightTriggers(bool bHighlight)
         GLRender_Enable(ENABLE_LIGHTING);
     }
 }
-// PC 0x004568D0  Xbox 0x002AA340
+// PC 0x0046B1D0
 int Scene::LoadVisibility(char* sName)
 {
     int i;
@@ -1336,7 +1336,7 @@ int Scene::LoadVisibility(char* sName)
     AurResFree(pVisibility, 0);
     return 1;
 }
-// PC 0x00454940  Xbox 0x002A85A0
+// PC 0x00469140
 void Scene::SetVisibility(CAurRoom* pRoom, CAurRoom* pVisibleRoom,
                           int bVisible)
 {
@@ -1357,7 +1357,7 @@ void Scene::SetVisibility(CAurRoom* pRoom, CAurRoom* pVisibleRoom,
         }
     }
 }
-// PC 0x00454A20  Xbox 0x002A86B0
+// PC 0x00469220
 Gob* SpawnPartsForTile(char* sName, const Vector& vPosition,
                        const Quaternion& qOrientation, int nRotation,
                        int bMeshesOnly, List<Part*>& lstParts)
@@ -1401,7 +1401,7 @@ void ComputePartBBox(PartTriMesh* pTriMesh);
 #ifdef _XBOX
 Vector Round(const Vector& vValue, float fRoundTo);
 #endif
-// PC 0x00454B80  Xbox 0x002A8810
+// PC 0x00469380
 void ProcessStaticParts(List<Part*>& lstParts, Scene* pScene,
                         TileData* pTile, char* sName, int bMeshesOnly)
 {
@@ -1447,7 +1447,7 @@ void ProcessStaticParts(List<Part*>& lstParts, Scene* pScene,
         }
     }
 }
-// PC 0x004528B0  Xbox 0x002A63A0
+// PC 0x004669C0
 bool ProcessTilePart(TileData* pTile, Part* pPart, char* sName)
 {
     char sPartName[64];
@@ -1481,7 +1481,7 @@ bool ProcessTilePart(TileData* pTile, Part* pPart, char* sName)
     }
     return false;
 }
-// PC 0x00452A60  Xbox 0x002A6550
+// PC 0x00466B70
 CAurRoom::~CAurRoom()
 {
     delete m_pRoomObject;
@@ -1491,7 +1491,7 @@ CAurRoom::~CAurRoom()
         delete m_lstAnimatedObjects[i];
     }
 }
-// PC 0x00452B10  Xbox 0x002A65F0
+// PC 0x00466C20
 CAurRoom* Scene::FindRoom(char* sName)
 {
     int i;
@@ -1506,7 +1506,7 @@ CAurRoom* Scene::FindRoom(char* sName)
 
     return 0;
 }
-// PC 0x00452B70  Xbox 0x002A66E0
+// PC 0x00466C80
 int Scene::SaveVisibility(char* sPath, char* sName)
 {
     char sFileName[256];
@@ -1537,7 +1537,7 @@ int Scene::SaveVisibility(char* sPath, char* sName)
     fclose(pFile);
     return 1;
 }
-// PC 0x00452C60  Xbox 0x002A67D0
+// PC 0x00466D70
 CAurRoom* Scene::GetRoom(int nRoom)
 {
     if (nRoom >= 0 && nRoom < m_lstRooms.m_nCount)
@@ -1547,7 +1547,7 @@ CAurRoom* Scene::GetRoom(int nRoom)
 
     return 0;
 }
-// PC 0x00452C90  Xbox 0x002A6860
+// PC 0x00466DF0
 int Scene::SetCurrentRoom(int nRoom)
 {
     int nResult = nRoom;
@@ -1564,7 +1564,7 @@ int Scene::SetCurrentRoom(int nRoom)
 
     return nResult;
 }
-// PC 0x00452CC0  Xbox 0x002A6920
+// PC 0x00466E20
 void Scene::AddFacesToBins(PartAABB* pAABB, const Vector& vMinimum,
                            List<List<CAurTriangleBin*> >& lstBins)
 {
@@ -1639,7 +1639,7 @@ void Scene::AddFacesToBins(PartAABB* pAABB, const Vector& vMinimum,
 }
 
 Scene* FindScene(char* sName);
-// PC 0x004530D0  Xbox 0x002A7630
+// PC 0x00467310
 char AurSetGlobalWind(Vector vWind)
 {
     Scene* pScene = FindScene("mainscene");
@@ -1657,7 +1657,7 @@ char AurSetGlobalWind(Vector vWind)
 
     return 0;
 }
-// PC 0x00454C80  Xbox 0x002A88F0
+// PC 0x00469480
 CAurObject* Scene::SpawnTile(char* sName, const Vector& vPosition,
                             int nRotation, int bMeshesOnly)
 {
@@ -1722,7 +1722,7 @@ CAurObject* Scene::SpawnTile(char* sName, const Vector& vPosition,
     }
     return pGob;
 }
-// PC 0x00453140  Xbox 0x002A76B0
+// PC 0x00467380
 bool AurSetGlobalWindVariation(float fMaximumDeviation, float fVariation)
 {
     Scene* pScene = FindScene("mainscene");
@@ -1742,7 +1742,7 @@ bool AurSetGlobalWindVariation(float fMaximumDeviation, float fVariation)
 
     return false;
 }
-// PC 0x0044FD60  Xbox 0x002A3C10
+// PC 0x00463F00
 Scene* FindScene(char* sName)
 {
     for (int i = 0; i < Scenes.m_nCount; i++)
@@ -1755,7 +1755,7 @@ Scene* FindScene(char* sName)
 
     return 0;
 }
-// PC 0x0044FDB0  Xbox 0x002A3C60
+// PC 0x00463F50
 int Scene::GetObjectA(char* sName)
 {
     for (int i = 0; i < m_lstObjects.m_nCount; i++)
@@ -1768,7 +1768,7 @@ int Scene::GetObjectA(char* sName)
 
     return 0;
 }
-// PC 0x0044FE00  Xbox 0x002A3CB0
+// PC 0x00463FA0
 CAurObject* Scene::HitCheckGob(Vector vStart, Vector vEnd, Vector* pHit,
                               CHitInfo* pHitInfo)
 {
@@ -1818,7 +1818,7 @@ CAurObject* Scene::HitCheckGob(Vector vStart, Vector vEnd, Vector* pHit,
         *pHit = vEnd;
     return pHitObject;
 }
-// PC 0x0044FF50  Xbox 0x002A3DE0
+// PC 0x004640F0
 void ProjectDynamicShadow(Gob* pGob, PartLight* pLight)
 {
     if (!systemmemoryshadows)
@@ -1848,7 +1848,7 @@ void ProjectDynamicShadow(Gob* pGob, PartLight* pLight)
         pGob->PartVolumeProject(pGob->m_pRootPart, vPosition, fRadius, Plane());
     }
 }
-// PC 0x00450150  Xbox 0x002A4010
+// PC 0x004642F0
 void Scene::DoBinBucket()
 {
     if (enablegrass == 0)
@@ -1890,7 +1890,7 @@ void Scene::DoBinBucket()
     PartTriMesh::m_bMaterialHasChanged = true;
     GLRender_Enable(ENABLE_CULL_FACE);
 }
-// PC 0x00450270  Xbox 0x002A4170
+// PC 0x00464460
 int __cdecl GobOrderCmp(const void* pGob1, const void* pGob2)
 {
     Gob* pGobA = *(Gob**)pGob1;
@@ -1953,7 +1953,7 @@ int __cdecl GobOrderCmp(const void* pGob1, const void* pGob2)
         return 1;
     return -1;
 }
-// PC 0x004503A0  Xbox 0x002A4470
+// PC 0x004645B0
 void Scene::DoDistortionBuckets()
 {
     GLRender_Enable(ENABLE_STENCIL_TEST);
@@ -1971,7 +1971,7 @@ void Scene::DoDistortionBuckets()
     GLRender_SetStencilMask(GLRender::STENCIL_WRITE_MASK);
     GLRender_Disable(ENABLE_STENCIL_TEST);
 }
-// PC 0x00450440  Xbox 0x002A4580
+// PC 0x00464650
 void Scene::DoLightSaberBucket()
 {
     GLRender_Enable(ENABLE_BLEND);
@@ -1994,7 +1994,7 @@ void Scene::DoLightSaberBucket()
         pGob->Render(false);
     }
 }
-// PC 0x004504D0  Xbox 0x002A4610
+// PC 0x004646E0
 void Scene::DoBlurBuckets()
 {
     numgobs = blurbucket.m_nCount;
@@ -2012,7 +2012,7 @@ void Scene::DoBlurBuckets()
         blurbucket.m_pList[i]->RenderBlur();
     }
 }
-// PC 0x00450550  Xbox 0x002A4690
+// PC 0x00464770
 void Scene::DoGobShadowsForThisLight(PartLight& light)
 {
     float fRadius = light.m_fRadius;
@@ -2069,7 +2069,7 @@ void Scene::DoGobShadowsForThisLight(PartLight& light)
             ProjectDynamicShadow(pGob, &light);
     }
 }
-// PC 0x00450730  Xbox 0x002A4890
+// PC 0x004649B0
 void Scene::RenderStencilShadowsForThisLight(PartLight& light, float fAlpha,
                                             int nStencilBits)
 {
@@ -2144,7 +2144,7 @@ void Scene::RenderStencilShadowsForThisLight(PartLight& light, float fAlpha,
 #endif
     GLRender_Enable(ENABLE_DEPTH_TEST);
 }
-// PC 0x00450970  Xbox 0x002A4AD0
+// PC 0x00464BF0
 void Scene::DoStaticMeshBeams()
 {
     if (enablebeams != 0)
@@ -2156,7 +2156,7 @@ void Scene::DoStaticMeshBeams()
         }
     }
 }
-// PC 0x004509B0  Xbox 0x002A4B10
+// PC 0x00464C30
 void Scene::DoEmitterBucket()
 {
     GLRender_ClearStencilValue(0);
@@ -2188,7 +2188,7 @@ void Scene::DoEmitterBucket()
         PartEmitter::StopEmitterLayer();
     }
 }
-// PC 0x00450AC0  Xbox 0x002A4C80
+// PC 0x00464D40
 void Scene::DoTriggerBucket()
 {
     if (enablerender != 0)
@@ -2211,7 +2211,7 @@ void Scene::DoTriggerBucket()
         GLRender_Enable(ENABLE_LIGHTING);
     }
 }
-// PC 0x00450B50  Xbox 0x002A4CF0
+// PC 0x00464DD0
 void Scene::RenderDynamicGeometry()
 {
     if (enableshadows)
@@ -2226,7 +2226,7 @@ void Scene::RenderDynamicGeometry()
     AurVertexProgramMakeCurrent();
     DoGobBuckets();
 }
-// PC 0x00450BB0  Xbox 0x002A4D90
+// PC 0x00464E30
 void Scene::RenderMotionBlur()
 {
     GLRender_EnableClientState(CLIENT_STATE_TEXTURE_COORD);
@@ -2241,7 +2241,7 @@ void Scene::RenderMotionBlur()
     DoBlurBuckets();
     GLRender_SetDepthMask(1);
 }
-// PC 0x00450C30  Xbox 0x002A4E10
+// PC 0x00464EB0
 void Scene::RenderStaticGeometry()
 {
     AurVertexProgramMakeCurrent();
@@ -2269,7 +2269,7 @@ void Scene::RenderStaticGeometry()
 #endif
 #endif
 }
-// PC 0x00450D60  Xbox 0x002A4EB0
+// PC 0x00464F70
 int Scene::RenderOnlyGobs()
 {
     int i;
@@ -2290,7 +2290,7 @@ int Scene::RenderOnlyGobs()
 
     return nResult;
 }
-// PC 0x00450DE0  Xbox 0x002A4F20
+// PC 0x00464FF0
 void Scene::DoFog()
 {
     if (!forcefogtest)
@@ -2345,7 +2345,7 @@ void Scene::DoFog()
         GLRender_SetFogModef(FOG_DENSITY, AUR_FOG_TEST_DENSITY);
     }
 }
-// PC 0x00450FA0  Xbox 0x002A50B0
+// PC 0x004651C0
 void RenderPersonalSpace(Scene* pScene)
 {
     GLRender_Disable(ENABLE_DEPTH_TEST);
@@ -2375,7 +2375,7 @@ void RenderPersonalSpace(Scene* pScene)
 }
 
 #define DEBUG_RENDERPATHS 0
-// PC 0x004510E0  Xbox 0x002A51F0
+// PC 0x00465310
 void RenderPaths(Scene* pScene)
 {
     if (renderpaths)
@@ -2447,7 +2447,7 @@ void RenderPaths(Scene* pScene)
         GLRender_Enable(ENABLE_DEPTH_TEST);
     }
 }
-// PC 0x004511F0  Xbox 0x002A52F0
+// PC 0x00465420
 void Scene::UpdateEmitters()
 {
     currentscene = this;
@@ -2481,7 +2481,7 @@ void Scene::UpdateEmitters()
 
 char g_bNoSceneRendered = 1;
 extern int g_nSpawnedGobs;
-// PC 0x004512D0  Xbox 0x002A53D0
+
 void Scene::Render()
 {
     char sDownSampled[32];
@@ -2605,7 +2605,7 @@ void Scene::Render()
         m_nAnimationFrame++;
 }
 #else
-void Scene::Render()  // PC 0x004512D0  Xbox 0x002A53D0
+void Scene::Render()  // PC 0x00465500
 {
 #ifndef _XBOX
     AurATIValidate();
@@ -2670,7 +2670,7 @@ void Scene::Render()  // PC 0x004512D0  Xbox 0x002A53D0
         m_nAnimationFrame++;
 }
 #endif
-// PC 0x004514F0  Xbox 0x002A5800
+// PC 0x004656F0
 void Scene::RenderSinglePass()
 
 {
@@ -2866,7 +2866,7 @@ static char cShadowVolumeVP[] =
     "add r4, r3, r3;\n"
     "sub r7, r4, r7;\n"
     "add oPos, r3, r7;\n";
-// PC 0x00451A50  Xbox 0x002A5B70
+
 void Scene::RenderShadows(int nReserved1, int nReserved2,
                           int bRenderGobs, int bClearStencil)
 {
@@ -2945,7 +2945,7 @@ void Scene::RenderShadows(int nReserved1, int nReserved2,
     GLRender_Disable(ENABLE_STENCIL_TEST);
 }
 #else
-// PC 0x00451A50  Xbox 0x002A5B70
+// PC 0x00465AF0
 void Scene::RenderShadows(int nReserved1, int nReserved2,
                           int bRenderGobs, int bClearStencil)
 {
@@ -3005,7 +3005,7 @@ void Scene::RenderShadows(int nReserved1, int nReserved2,
     }
 }
 #endif
-// PC 0x00451C80  Xbox 0x002A5F00
+// PC 0x00465D20
 #ifdef _XBOX
 void Scene::Animate(float fTimeStep)
 #else
@@ -3065,7 +3065,7 @@ int Scene::Animate(float fTimeStep)
 }
 
 #ifndef _XBOX
-void GLRender::DrawFromVerts(int nMode, List<Vector>& lstVertices)  // PC 0x00451D70  Xbox 0x0028B900
+void GLRender::DrawFromVerts(int nMode, List<Vector>& lstVertices)  // PC 0x00466DA0
 {
     glBegin(primTypeTranslationTable[nMode]);
     for (int i = 0; i < lstVertices.m_nCount; i++)
@@ -3075,7 +3075,7 @@ void GLRender::DrawFromVerts(int nMode, List<Vector>& lstVertices)  // PC 0x0045
     glEnd();
 }
 #endif
-// PC 0x00451DC0  Xbox 0x002A6060
+// PC 0x00465DE0
 void ComputePartBBox(PartTriMesh* pTriMesh)
 {
     MdlNodeTriMesh* pNode = pTriMesh->m_pVertexPrimitive->m_pNode;
@@ -3107,7 +3107,7 @@ void ComputePartBBox(PartTriMesh* pTriMesh)
     pTriMesh->m_vMinimum = vMin;
     pTriMesh->m_vMaximum = vMax;
 }
-// PC 0x00455370  Xbox 0x002A8D40
+// PC 0x00469B70
 void Scene::SetSingleTileFlame(CAurObject* pObject, Gob** ppGob, Part* pPart)
 {
     AURSCENE_TRACE();
@@ -3145,7 +3145,7 @@ void Scene::SetSingleTileFlame(CAurObject* pObject, Gob** ppGob, Part* pPart)
         *ppGob = pGob;
     }
 }
-// PC 0x004554B0  Xbox 0x002A8E70
+// PC 0x00469CB0
 void Scene::RemoveFromSceneManager(Part* pPart)
 {
     PartEmitter* pEmitter = pPart->AsPartEmitter();
@@ -3164,7 +3164,7 @@ void Scene::RemoveFromSceneManager(Part* pPart)
 
 Gob* FindGob(char* sName);
 int AurATIFragmentShaderAvailable();
-// PC 0x00455540  Xbox 0x002A8ED0
+
 void Scene::RemoveFromSceneManager(Gob* pGob)
 {
     if (gobbucket.Contains(pGob))
@@ -3172,7 +3172,7 @@ void Scene::RemoveFromSceneManager(Gob* pGob)
         gobbucket.Remove(pGob);
     }
 }
-// PC 0x00456B60  Xbox 0x002AAA60
+// PC 0x0046B460
 int Scene::HitCheck(Vector vStart, Vector vEnd, Vector* pHit, CHitInfo* pHitInfo)
 {
     if (!pHitInfo)
@@ -3230,7 +3230,7 @@ int Scene::HitCheck(Vector vStart, Vector vEnd, Vector* pHit, CHitInfo* pHitInfo
     pHitInfo->m_pOutputObject = pHitObject;
     return pHitInfo->m_nOutputFlags;
 }
-// PC 0x00456E00  Xbox 0x002AAC90
+// PC 0x0046B710
 void InitGrassBins(Vector vMin, Vector vMax,
                    List<List<CAurTriangleBin*> >& lstBins)
 {
@@ -3252,7 +3252,7 @@ void InitGrassBins(Vector vMin, Vector vMax,
         }
     }
 }
-// PC 0x00456F30  Xbox 0x002AAD80
+// PC 0x0046B840
 Gob* Scene::SpawnRoom(char* sName, const Vector& vPosition,
                       const Quaternion& qOrientation)
 {
@@ -3373,7 +3373,7 @@ Gob* Scene::SpawnRoom(char* sName, const Vector& vPosition,
     }
     return pGob;
 }
-// PC 0x00458790  Xbox 0x002AC020
+// PC 0x0046D820
 Scene::Scene(char* sName)
     : m_SceneRoot("c_FocusGob")
 {
@@ -3438,7 +3438,7 @@ Scene::Scene(char* sName)
     if (AurATIFragmentShaderAvailable())
         VertexProgramManager::ResetVertexPrograms();
 }
-// PC 0x00458BE0  Xbox 0x002AC8E0
+// PC 0x0046DD20
 Scene::~Scene()
 {
     while (m_lstObjects.m_nCount > 0)
@@ -3483,7 +3483,7 @@ Scene::~Scene()
     for (int i = 0; i < AUR_MESH_BUCKET_COUNT; i++)
         meshbuckets[i].m_nCount = 0;
 }
-// PC 0x00456A60  Xbox 0x002AA9A0
+// PC 0x0046B360
 void CHitInfo::ClearOutput()
 {
     Vector vZero;
@@ -3515,7 +3515,7 @@ extern int enablevisibilitytest;
 extern float visibilitycutoffratio;
 extern float visibilitycheckdelay;
 extern int countvisibilityculls;
-// PC 0x00457990  Xbox 0x002AB5B0
+// PC 0x0046C2B0
 inline CAurScene::~CAurScene()
 {
 }
@@ -3525,7 +3525,7 @@ inline CAurScene::CAurScene()
 }
 
 #ifndef _XBOX
-bool Gob::VisibilityCheck()  // PC 0x004579C0
+bool Gob::VisibilityCheck()  // PC 0x0046C2E0
 {
     if (enablevisibilitytest && !IsVisibilityCheckDisabled() && !IsAlwaysRendering())
     {
@@ -3558,7 +3558,7 @@ bool Gob::VisibilityCheck()  // PC 0x004579C0
     return true;
 }
 #endif
-// PC 0x00457B90  Xbox 0x002A9910
+// PC 0x0046CA00
 void Scene::DoGobBuckets()
 {
 #ifndef _XBOX
@@ -3680,7 +3680,7 @@ void Scene::DoGobBuckets()
         }
     }
 }
-// PC 0x00457EC0  Xbox 0x002AB5E0
+// PC 0x0046CCF0
 void Scene::RenderLensFlares()
 {
 #ifndef _XBOX
@@ -3835,7 +3835,7 @@ void Scene::RenderLensFlares()
         GLRender_PopCurrentMatrix();
     }
 }
-// PC 0x00458E70  Xbox 0x002ACB30
+// PC 0x0046E020
 CAurScene* NewCAurScene(char* sName)
 {
     return (CAurScene*)new Scene(sName);
@@ -3866,7 +3866,7 @@ static inline void AurSceneTrace1()
 }
 
 #ifdef _XBOX
-// Xbox 0x002A6650
+
 void AurDisableRoomFog(CAurRoom* pRoom)
 {
     nodedata* pData = pRoom->m_pData;
@@ -3875,7 +3875,7 @@ void AurDisableRoomFog(CAurRoom* pRoom)
         pData->m_lstTriMeshes.m_pList[i]->m_bFog = 0;
     }
 }
-// Xbox 0x002A6680
+
 char* disablefog(char* sArguments)
 {
     CAurRoom* pRoom = Scenes.m_pList[0]->FindRoom(sArguments);
@@ -3886,7 +3886,7 @@ char* disablefog(char* sArguments)
     AurDisableRoomFog(pRoom);
     return "Success.";
 }
-// Xbox 0x002A66B0
+
 void Scene::ClearVisibility()
 {
     for (int i = 0; i < m_lstRooms.m_nCount; i++)
@@ -3894,7 +3894,7 @@ void Scene::ClearVisibility()
         m_lstRooms.m_pList[i]->m_lstVisibleRooms.m_nCount = 0;
     }
 }
-// Xbox 0x002A2EB0
+
 Vector Round(const Vector& vValue, float fRoundTo)
 {
     return Vector(Round(vValue.m_fX, fRoundTo), Round(vValue.m_fY, fRoundTo), Round(vValue.m_fZ, fRoundTo));
@@ -3905,7 +3905,7 @@ Vector Round(const Vector& vValue, float fRoundTo)
 
 int g_bConsoleLineVisible;
 char g_sConsoleLine[512];
-// Xbox 0x002ACBC0
+
 void AurPostConsoleLine()
 {
     char sLine[1024];
@@ -3916,7 +3916,7 @@ void AurPostConsoleLine()
         AurPostString(sLine, 0, 0, -5.0f);
     }
 }
-// Xbox 0x002AD0A0
+
 void AurFlushPostedStrings()
 {
     g_nMatrixMode = 1;
@@ -3934,7 +3934,7 @@ void AurFlushPostedStrings()
 
 PartTrigger* g_pConsoleTrigger;
 extern List<Gob*> gobs;
-// Xbox 0x002A2D70
+
 char* enableforceanimatins(char* sArguments)
 {
     Gob* pGob = FindGob(sArguments);
@@ -3943,7 +3943,7 @@ char* enableforceanimatins(char* sArguments)
     pGob->EnableForceAnimations();
     return "Success.";
 }
-// Xbox 0x002A2DA0
+
 char* disableforceanimatins(char* sArguments)
 {
     Gob* pGob = FindGob(sArguments);
@@ -3952,19 +3952,19 @@ char* disableforceanimatins(char* sArguments)
     pGob->DisableForceAnimations();
     return "Success.";
 }
-// Xbox 0x002A2E30
+
 char* enablesaturation(char* sArguments)
 {
     AurEnableSaturation();
     return "SUCCESS";
 }
-// Xbox 0x002A2E40
+
 char* disablesaturation(char* sArguments)
 {
     AurDisableSaturation();
     return "SUCCESS";
 }
-// Xbox 0x002A3370
+
 char* highlighttrigger(char* sArguments)
 {
     if (!g_pConsoleTrigger)
@@ -3978,7 +3978,7 @@ char* highlighttrigger(char* sArguments)
     AurPartTriggerSetHighlight(g_pConsoleTrigger, bHighlight != 0, fHeight, bAffectDynamic != 0);
     return "Success.";
 }
-// Xbox 0x002A3410
+
 char* highlightparams(char* sArguments)
 {
     if (!g_pConsoleTrigger)
@@ -3993,7 +3993,7 @@ char* highlightparams(char* sArguments)
     AurPartTriggerSetHighlightParams(g_pConsoleTrigger, vColor, fAlpha, bPulse != 0, fFrequency, false);
     return "Success.";
 }
-// Xbox 0x002A34B0
+
 char* getgobpos(char* sArguments)
 {
     Gob* pGob = FindGob(sArguments);
@@ -4003,7 +4003,7 @@ char* getgobpos(char* sArguments)
     sprintf(sResult, "x %f y %f z %f", pGob->m_vPosition.m_fX, pGob->m_vPosition.m_fY, pGob->m_vPosition.m_fZ);
     return sResult;
 }
-// Xbox 0x002A42A0
+
 char* enabletransparentcharacters(char* sArguments)
 {
     float fAlpha = 0.5f;
@@ -4018,7 +4018,7 @@ char* enabletransparentcharacters(char* sArguments)
     rendertransparentcharacters = 1;
     return "Done.";
 }
-// Xbox 0x002A4360
+
 char* disabletransparentcharacters(char* sArguments)
 {
     for (int i = 0; i < gobs.m_nCount; i++)
@@ -4031,7 +4031,7 @@ char* disabletransparentcharacters(char* sArguments)
     rendertransparentcharacters = 0;
     return "Done.";
 }
-// Xbox 0x002A43F0
+
 char* disableanimations(char* sArguments)
 {
     Scene* pScene = FindScene("scene");
@@ -4044,7 +4044,7 @@ char* disableanimations(char* sArguments)
     pScene->DisableAnimations();
     return "Success.";
 }
-// Xbox 0x002A4430
+
 char* enableanimations(char* sArguments)
 {
     Scene* pScene = FindScene("scene");
@@ -4057,7 +4057,7 @@ char* enableanimations(char* sArguments)
     pScene->EnableAnimations();
     return "Success.";
 }
-// Xbox 0x002A6800
+
 char* setcurrentroom(char* sArguments)
 {
     int nRoom;
@@ -4068,7 +4068,7 @@ char* setcurrentroom(char* sArguments)
     pScene->SetCurrentRoom(pScene->GetRoom(nRoom));
     return "Done.";
 }
-// Xbox 0x002A6890
+
 char* visibilityload(char* sArguments)
 {
     char sName[16];
@@ -4077,7 +4077,7 @@ char* visibilityload(char* sArguments)
         return "ok";
     return "nope";
 }
-// Xbox 0x002A68D0
+
 char* visibilitysave(char* sArguments)
 {
     char sName[16];
@@ -4086,7 +4086,7 @@ char* visibilitysave(char* sArguments)
         return "ok";
     return "nope";
 }
-// Xbox 0x002A6D40
+
 char* replacetilereferences(char* sArguments)
 {
     char sNew[128];
@@ -4098,7 +4098,7 @@ char* replacetilereferences(char* sArguments)
         return "Failure";
     return "Success";
 }
-// Xbox 0x002A6F50
+
 char* finishscenegeometry(char* sArguments)
 {
     Scene* pScene = FindScene("mainscene");
@@ -4111,7 +4111,7 @@ char* finishscenegeometry(char* sArguments)
     pScene->FinishSceneGeometry();
     return "Success.";
 }
-// Xbox 0x002A7120
+
 char* spawnrooms(char* sArguments)
 {
     char sName[128];
@@ -4121,14 +4121,14 @@ char* spawnrooms(char* sArguments)
         return "Could not open layout file...";
     return "Success, attempted to spawn the rooms";
 }
-// Xbox 0x002A73F0
+
 void lightstaticmesh()
 {
     for (int i = 0; i < Scenes.m_nCount; i++)
         Scenes.m_pList[i]->ComputeStaticLighting();
     staticshadowbucket.m_nCount = 0;
 }
-// Xbox 0x002A7430
+
 char* modifytrigger(char* sArguments)
 {
     if (!g_pConsoleTrigger)
@@ -4139,7 +4139,7 @@ char* modifytrigger(char* sArguments)
     AurPartTriggerSetColor(g_pConsoleTrigger, pfColor);
     return "OK, set the trigger's color";
 }
-// Xbox 0x002A74A0
+
 char* deletetrigger(char* sArguments)
 {
     if (!g_pConsoleTrigger)
@@ -4148,7 +4148,7 @@ char* deletetrigger(char* sArguments)
     g_pConsoleTrigger = 0;
     return "OK, deleted the trigger from the scene";
 }
-// Xbox 0x002A7880
+
 char* setonlygob(char* sArguments)
 {
     Gob* pGob = FindGob(sArguments);
@@ -4165,7 +4165,7 @@ char* setonlygob(char* sArguments)
 
 void AuroraSetTileFoggedByWar(Vector& vPosition, bool bFogged);
 char* bload(char* sArguments);
-// Xbox 0x002A2960
+
 char* setfogofwar(char* sArguments)
 {
     float pfPosition[3];
@@ -4176,7 +4176,7 @@ char* setfogofwar(char* sArguments)
     AuroraSetTileFoggedByWar(*(Vector*)pfPosition, nFogged == 1);
     return "FOGGED";
 }
-// Xbox 0x002A5FC0
+
 void SetPartLightShadowing(Part* pPart, int bShadow)
 {
     PartLight* pLight = pPart->AsPartLight();
@@ -4189,7 +4189,7 @@ void SetPartLightShadowing(Part* pPart, int bShadow)
     for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)
         SetPartLightShadowing(pPart->m_lstChildren.m_pList[i], bShadow);
 }
-// Xbox 0x002A6020
+
 char* SetGobLightShadowing(char* sArguments, int bShadow)
 {
     Gob* pGob = FindGob(sArguments);
@@ -4200,17 +4200,17 @@ char* SetGobLightShadowing(char* sArguments, int bShadow)
     SetPartLightShadowing(pGob->m_pRootPart, bShadow);
     return "success";
 }
-// Xbox 0x002A6DE0
+
 char* enableshadowing(char* sArguments)
 {
     return SetGobLightShadowing(sArguments, 1);
 }
-// Xbox 0x002A6DF0
+
 char* disableshadowing(char* sArguments)
 {
     return SetGobLightShadowing(sArguments, 0);
 }
-// Xbox 0x002A6E00
+
 char* initscenebsp(char* sArguments)
 {
     int nWidth = 0;
@@ -4223,7 +4223,7 @@ char* initscenebsp(char* sArguments)
     Scenes.m_pList[0]->InitBSP(nWidth, nHeight, nBorderSize, bHasBins != 0, 10.0f);
     return "OK";
 }
-// Xbox 0x002A6E90
+
 char* spawntile(char* sArguments)
 {
     char sName[128];
@@ -4242,7 +4242,7 @@ char* spawntile(char* sArguments)
     pScene->SpawnTile(sName, vPosition, nRotation, bMeshesOnly);
     return "OK";
 }
-// Xbox 0x002A6F90
+
 char* spawnbinarytile(char* sArguments)
 {
     char sName[128];
@@ -4264,7 +4264,7 @@ char* spawnbinarytile(char* sArguments)
     pScene->SpawnTile(sName, vPosition, nRotation, bMeshesOnly);
     return "OK";
 }
-// Xbox 0x002A7080
+
 char* spawnbordertile(char* sArguments)
 {
     char sName[128];
@@ -4277,7 +4277,7 @@ char* spawnbordertile(char* sArguments)
     Scenes.m_pList[0]->SpawnTile(sName, vPosition, nRotation, 1);
     return "OK";
 }
-// Xbox 0x002A7180
+
 char* deletetile(char* sArguments)
 {
     Vector vPosition(0.0f, 0.0f, 0.0f);
@@ -4297,7 +4297,7 @@ char* deletetile(char* sArguments)
     pScene->DeleteTile(vPosition);
     return "OK, deleted any information at the given tile location";
 }
-// Xbox 0x002A7220
+
 char* settilelights(char* sArguments)
 {
     Vector vPosition(0.0f, 0.0f, 0.0f);
@@ -4321,7 +4321,7 @@ char* settilelights(char* sArguments)
     pScene->SetTileLights(vPosition, vMainLight, vSecondaryLight);
     return "OK, set tile lighting";
 }
-// Xbox 0x002A7300
+
 char* settileflames(char* sArguments)
 {
     Vector vPosition(0.0f, 0.0f, 0.0f);
@@ -4349,7 +4349,7 @@ char* settileflames(char* sArguments)
     pScene->SetTileFlames(vPosition, pFlame1, pFlame2);
     return "OK, set tile lighting";
 }
-// Xbox 0x002A74D0
+
 char* setglobalwind(char* sArguments)
 {
     float fX;
@@ -4368,7 +4368,7 @@ char* setglobalwind(char* sArguments)
     }
     return "eh? Couldn't find scene...";
 }
-// Xbox 0x002A7580
+
 char* setglobalwindvariation(char* sArguments)
 {
     float fMaximumDeviation = 0.0f;
@@ -4388,7 +4388,7 @@ char* setglobalwindvariation(char* sArguments)
     }
     return "eh? Need 1 or 2 floats as input...";
 }
-// Xbox 0x002A7710
+
 char* setpointwind(char* sArguments)
 {
     float fIntensity;
@@ -4409,7 +4409,7 @@ char* setpointwind(char* sArguments)
     }
     return "eh? Couldn't find scene...";
 }
-// Xbox 0x002A77D0
+
 char* setgeomfade(char* sArguments)
 {
     int nProperties = atoi(GetToken(&sArguments));
@@ -4423,7 +4423,7 @@ char* setgeomfade(char* sArguments)
         return "NULL";
     return "SUCCESS";
 }
-// Xbox 0x002A8600
+
 char* visibilityset(char* sArguments)
 {
     int bVisible = 1;
@@ -4441,7 +4441,7 @@ char* visibilityset(char* sArguments)
         return "ok set visibility";
     return "ok, cleared visibility";
 }
-// Xbox 0x002ABEE0
+
 char* hittrigger(char* sArguments)
 {
     static char sResult[128];
@@ -4459,7 +4459,7 @@ char* hittrigger(char* sArguments)
 #endif
 
 #ifdef _XBOX
-bool Scene::SetObjectScale(CAurObject* pObject, float fScale)  // Xbox 0x002A3500
+bool Scene::SetObjectScale(CAurObject* pObject, float fScale)
 {
     return ((Gob*)pObject)->SetObjectScale(fScale, 1);
 }
@@ -4472,7 +4472,7 @@ extern int maxgltime;
 extern int maxtexloadtime;
 extern int maxtextime;
 extern float maxdeltat;
-// Xbox 0x002A2DF0
+
 char* dogantest(char* sArguments)
 {
     maxappendtime = 0;
@@ -4486,7 +4486,7 @@ char* dogantest(char* sArguments)
     maxdeltat = 0;
     return "done.";
 }
-// Xbox 0x002A3550
+
 char* setscale(char* sArguments)
 {
     Gob* pGob = FindGob(GetToken(&sArguments));
@@ -4497,7 +4497,7 @@ char* setscale(char* sArguments)
         return "NULL";
     return "SUCCESS";
 }
-// Xbox 0x002AA440
+
 char* addtrigger(char* sArguments)
 {
     if (g_pConsoleTrigger)
@@ -4531,7 +4531,7 @@ extern float clipnear;
 extern float clipfar;
 extern int g_nScreenWidth;
 extern int g_nScreenHeight;
-// Xbox 0x002ACC40
+
 void AurReshape(int nWidth, int nHeight)
 {
     g_nScreenWidth = nWidth;
@@ -4549,7 +4549,7 @@ void AurReshape(int nWidth, int nHeight)
     g_nMatrixMode = 2;
     GLRender::LoadMatrixIdentity();
 }
-// Xbox 0x002ACCE0
+
 char* reshape(char* sArguments)
 {
     static char sResult[256];

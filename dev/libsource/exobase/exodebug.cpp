@@ -4,23 +4,23 @@
 #ifdef _DEBUG
 #include <stdarg.h>
 #endif
-// PC 0x005E9350  Xbox 0x00134D70
+
 void* ExoMalloc(unsigned long nSize)
 {
     return malloc(nSize);
 }
-// PC 0x005E9360  Xbox 0x00134D80
+
 void ExoFree(void* pMemory)
 {
     free(pMemory);
 }
-// PC 0x005E9370  Xbox 0x00134D90
+// PC 0x006356E0
 CExoDebug::CExoDebug()
 {
     m_pInternal = new CExoDebugInternal;
     m_bEnabled = 0;
 }
-// PC 0x005E93E0  Xbox 0x00134E00
+// PC 0x00635750
 void CExoDebug::FlushScriptLogFile()
 {
     if (m_pInternal)
@@ -28,7 +28,7 @@ void CExoDebug::FlushScriptLogFile()
         m_pInternal->FlushScriptLogFile();
     }
 }
-// PC 0x005E93F0  Xbox 0x00134E10
+// PC 0x00635760
 void CExoDebug::OpenLogFiles(const CExoString& path)
 {
     if (m_pInternal)
@@ -36,7 +36,7 @@ void CExoDebug::OpenLogFiles(const CExoString& path)
         m_pInternal->OpenLogFiles(path);
     }
 }
-// PC 0x005E9400  Xbox 0x00134E20
+// PC 0x00635770
 void CExoDebug::Warning(int line, char* file, const char* message)
 {
     if (m_pInternal)
@@ -68,7 +68,7 @@ void CExoDebug::Assert(int line, char* file, const char* message)
     printf("%s", sAssert.CStr());
     abort();
 }
-// PC 0x005E9410  Xbox 0x00134E30
+// PC 0x00635780
 void CExoDebug::GetCurrentTimestamp(CExoString& timestamp)
 {
     if (m_pInternal)
@@ -76,7 +76,7 @@ void CExoDebug::GetCurrentTimestamp(CExoString& timestamp)
         m_pInternal->GetCurrentTimestamp(timestamp);
     }
 }
-// PC 0x005E9420  Xbox 0x00134E40
+// PC 0x00635790
 void CExoDebug::WriteToScriptLogFile(const CExoString& text)
 {
     if (m_pInternal)
@@ -84,7 +84,7 @@ void CExoDebug::WriteToScriptLogFile(const CExoString& text)
         m_pInternal->WriteToScriptLogFile(text);
     }
 }
-// PC 0x005E9430  Xbox 0x00134E50
+// PC 0x006357A0
 CExoDebug::~CExoDebug()
 {
     if (m_pInternal != NULL)

@@ -20,7 +20,7 @@ int verticescount;
 int enablevar;
 int vertexsize;
 int usevertexprograms = 1;
-// Xbox 0x002D0A80
+
 VertexPrimitive::VertexPrimitive(Part* pPart)
 #ifdef _XBOX
     : m_nArrayPool(RequestPoolManager::INVALID_POOL), m_pPart(pPart), m_nArrayCount(0), m_bStatic(1),
@@ -30,7 +30,7 @@ VertexPrimitive::VertexPrimitive(Part* pPart)
 #endif
 {
 }
-// PC 0x00478650  Xbox 0x002D0710
+// PC 0x00495060
 NodeVertexAnim* NodeVertex::AsNodeVertexAnim()
 {
     return m_nType == NODEVERTEX_ANIM_ID ? (NodeVertexAnim*)this : 0;
@@ -52,14 +52,14 @@ static inline void SetupColorState(bool bColors)
         GLRender_EnableClientState(CLIENT_STATE_COLOR);
     }
 }
-// PC 0x00478660  Xbox 0x002D0720
+// PC 0x00495070
 NodeVertexDangly* NodeVertex::AsNodeVertexDangly()
 {
     return m_nType == NODEVERTEX_DANGLY_ID ? (NodeVertexDangly*)this : NULL;
 }
 
 enum { VERTEX_NORMAL };
-// PC 0x00478990  Xbox 0x002D0AE0
+// PC 0x004953A0
 VertexPrimitiveFlat::~VertexPrimitiveFlat()
 {
     if (m_nPool != RequestPoolManager::INVALID_POOL)
@@ -68,7 +68,7 @@ VertexPrimitiveFlat::~VertexPrimitiveFlat()
         m_nPool = RequestPoolManager::INVALID_POOL;
     }
 }
-// PC 0x00478670  Xbox 0x002D0AC0
+// PC 0x00495080
 VertexPrimitive::~VertexPrimitive()
 {
 #ifdef _XBOX
@@ -76,7 +76,7 @@ VertexPrimitive::~VertexPrimitive()
     m_nArrayPool = RequestPoolManager::INVALID_POOL;
 #endif
 }
-// PC 0x00478680  Xbox 0x002D0760
+// PC 0x00495090
 NodeVertex::NodeVertex(Vector* pPosition, Vector* pTexCoord0, Vector* pTexCoord1,
                        Vector* pTexCoord2, Vector* pTexCoord3,
                        Vector* pNormal, Vector* pColor)
@@ -115,7 +115,7 @@ NodeVertex::NodeVertex(Vector* pPosition, Vector* pTexCoord0, Vector* pTexCoord1
 
     vertexsize += 8;
 }
-// PC 0x004787E0  Xbox 0x002D08E0
+// PC 0x004951F0
 NodeVertexDangly::NodeVertexDangly(Vector* pPosition, Vector* pTexCoord0,
                                    Vector* pTexCoord1, Vector* pTexCoord2,
                                    Vector* pTexCoord3, Vector* pNormal,
@@ -126,7 +126,7 @@ NodeVertexDangly::NodeVertexDangly(Vector* pPosition, Vector* pTexCoord0,
     m_nType = NODEVERTEX_DANGLY_ID;
     m_fConstraint = fValue;
 }
-// PC 0x00478820  Xbox 0x002D0930
+// PC 0x00495230
 unsigned char NodeVertex::operator==(NodeVertex const& other)
 {
     return (equal(other.m_vPosition, m_vPosition) != 0) &&
@@ -137,7 +137,7 @@ unsigned char NodeVertex::operator==(NodeVertex const& other)
            (equal(other.m_vNormal, m_vNormal) != 0) &&
            (equal(other.m_vColor, m_vColor) != 0);
 }
-// PC 0x00478820
+// PC 0x00495230
 unsigned char NodeVertexAnim::operator==(NodeVertexAnim const& other)
 {
 
@@ -149,7 +149,7 @@ unsigned char NodeVertexAnim::operator==(NodeVertexAnim const& other)
            (equal(other.m_vNormal, m_vNormal) != 0) &&
            (equal(other.m_vColor, m_vColor) != 0);
 }
-// PC 0x004788C0  Xbox 0x002D09D0
+// PC 0x004952D0
 unsigned char NodeVertexDangly::operator==(NodeVertexDangly const& other)
 {
     return (equal(other.m_vPosition, m_vPosition) != 0) &&
@@ -161,17 +161,17 @@ unsigned char NodeVertexDangly::operator==(NodeVertexDangly const& other)
            (equal(other.m_vColor, m_vColor) != 0) &&
            (other.m_fConstraint == m_fConstraint);
 }
-// PC 0x00478A10  Xbox 0x002D0B70
+// PC 0x00495420
 VertexPrimitiveSkinned::~VertexPrimitiveSkinned()
 {
 }
-// PC 0x00478A40  Xbox 0x002D0BA0
+// PC 0x00495450
 VertexPrimitiveDangly::~VertexPrimitiveDangly()
 {
     AurprimitiveTrace2();
     delete[] m_pOffsets;
 }
-// PC 0x00478AC0  Xbox 0x002D0C20
+// PC 0x004954D0
 VertexPrimitiveAnim::~VertexPrimitiveAnim()
 {
     AurprimitiveTrace2();
@@ -181,7 +181,7 @@ VertexPrimitiveAnim::~VertexPrimitiveAnim()
     GLRender::DeletePool(m_nTexCoordPool);
     m_nTexCoordPool = RequestPoolManager::INVALID_POOL;
 }
-// PC 0x004015A0  Xbox 0x002D0730
+// PC 0x004015A0
 void VertexPrimitiveAnim::BuildVertexArrays()
 {
 }
@@ -193,19 +193,19 @@ void VertexPrimitiveDangly::BuildVertexArrays()
 void VertexPrimitiveSkinned::BuildVertexArrays()
 {
 }
-// PC 0x0060E760
+// PC 0x005EE1C0
 void VertexPrimitiveFlat::UpdateLightVectors(const Vector&)
 {
 }
-// PC 0x005B5E90
+// PC 0x006049D0
 void VertexPrimitiveFlat::UpdateHalfAngleVectors(const Vector&, const Vector&)
 {
 }
-// PC 0x005B5E90
+// PC 0x006049D0
 void VertexPrimitiveFlat::UpdateFogValues(const Vector&, float)
 {
 }
-// PC 0x004791E0  Xbox 0x002D0F40
+// PC 0x00495BF0
 NodeVertexAnim::NodeVertexAnim(Vector* pPosition, Vector* pTexCoord0,
                                Vector* pTexCoord1, Vector* pTexCoord2,
                                Vector* pTexCoord3, Vector* pNormal,
@@ -220,7 +220,7 @@ NodeVertexAnim::NodeVertexAnim(Vector* pPosition, Vector* pTexCoord0,
     m_lstNormals = lstNormals;
     m_lstTexCoords = lstTexCoords;
 }
-// PC 0x004792A0  Xbox 0x002D1020
+// PC 0x00495CB0
 VertexPrimitiveFlat::VertexPrimitiveFlat(PartTriMesh* pPart)
     : VertexPrimitive(pPart)
 {
@@ -261,7 +261,7 @@ VertexPrimitiveFlat::VertexPrimitiveFlat(PartTriMesh* pPart)
     }
     m_nPool = RequestPoolManager::INVALID_POOL;
 }
-// PC 0x00478B50  Xbox 0x002D0CB0
+// PC 0x00495560
 void VertexPrimitiveFlat::BuildVertexArrays()
 {
     AurprimitiveTrace2();
@@ -293,7 +293,7 @@ void VertexPrimitiveFlat::BuildVertexArrays()
         GLRender::UnlockPool(nPool);
     }
 }
-// PC 0x00478C20  Xbox 0x002D0740
+// PC 0x00495630
 unsigned char* VertexPrimitiveFlat::ReconnectArraysVAR(unsigned char* pData)
 {
     AurprimitiveTrace2();
@@ -401,7 +401,7 @@ unsigned char* VertexPrimitiveFlat::ReconnectArraysVAR(unsigned char* pData)
     return pData + nVertices * pNode->m_nVertexStride;
 #endif
 }
-// PC 0x00478F50  Xbox 0x002D0D80
+// PC 0x00495960
 unsigned char* VertexPrimitiveSkinned::ReconnectArraysVAR(unsigned char* pData)
 {
     AurprimitiveTrace2();
@@ -441,7 +441,7 @@ unsigned char* VertexPrimitiveSkinned::ReconnectArraysVAR(unsigned char* pData)
     return pNext + 4 * nVertices;
 #endif
 }
-// PC 0x00479020  Xbox 0x002D0DB0
+// PC 0x00495A30
 void VertexPrimitiveFlat::SetupArrays()
 {
     AurprimitiveTrace2();
@@ -471,7 +471,7 @@ void VertexPrimitiveFlat::SetupArrays()
                                   m_pNode->m_nVertexCount);
     }
 }
-// PC 0x004790E0  Xbox 0x002D0E80
+// PC 0x00495AF0
 void VertexPrimitive::SetupVertexArraysStandard()
 {
     AurprimitiveTrace2();
@@ -484,7 +484,7 @@ inline PartTriMesh* VertexPrimitive::GetPartTriMesh()
 {
     return m_pPart->AsPartTriMesh();
 }
-// PC 0x004793A0  Xbox 0x002D1100
+// PC 0x00495DB0
 VertexPrimitiveAnim::VertexPrimitiveAnim(PartTriMesh* pPart)
     : VertexPrimitiveFlat(pPart)
 {
@@ -494,7 +494,7 @@ VertexPrimitiveAnim::VertexPrimitiveAnim(PartTriMesh* pPart)
                           &m_nTexCoordPool);
     m_bStatic = 0;
 }
-// PC 0x00479430  Xbox 0x002D1190
+// PC 0x00495E40
 VertexPrimitiveDangly::VertexPrimitiveDangly(PartTriMesh* pPart)
     : VertexPrimitiveFlat(pPart)
 {
@@ -502,7 +502,7 @@ VertexPrimitiveDangly::VertexPrimitiveDangly(PartTriMesh* pPart)
     m_pOffsets = new Vector[nVertices];
     m_bStatic = 0;
 }
-// PC 0x004794C0  Xbox 0x002D1230
+// PC 0x00495ED0
 VertexPrimitiveSkinned::VertexPrimitiveSkinned(PartSkin* pPart)
     : VertexPrimitiveFlat(pPart)
 {
@@ -519,7 +519,7 @@ static inline void AurprimitiveTrace1()
 }
 
 #ifdef _XBOX
-// Xbox 0x002D0ED0
+
 void VertexPrimitive::DeleteArrayPool()
 {
     GLRender::DeletePool(m_nArrayPool);

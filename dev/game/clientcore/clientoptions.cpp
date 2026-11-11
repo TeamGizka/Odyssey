@@ -28,7 +28,7 @@ void AurSetVSyncState(bool bEnabled);
 CClientOptions::~CClientOptions()
 {
 }
-// PC 0x0061B6F0  Xbox 0x0005F010
+// PC 0x0066A6C0
 void CClientOptions::SetCameraMode(unsigned char nMode)
 {
     m_nCameraMode = nMode;
@@ -37,7 +37,7 @@ void CClientOptions::SetCameraMode(unsigned char nMode)
         m_nCameraStyle = nMode;
     }
 }
-// PC 0x0061B710  Xbox 0x0005F030
+// PC 0x0066A6E0
 void CClientOptions::SetFullScreenEnabled(int bEnabled)
 {
     if (bEnabled != m_bFullScreen)
@@ -46,7 +46,7 @@ void CClientOptions::SetFullScreenEnabled(int bEnabled)
         m_bFullScreen = bEnabled;
     }
 }
-// PC 0x0061B740  Xbox 0x0005F1C0
+// PC 0x0066A710
 void CClientOptions::SetAutoLevelUpNPCs(int bEnabled)
 {
     m_bAutoLevelUpNPCs = bEnabled;
@@ -59,7 +59,7 @@ void CClientOptions::SetAutoLevelUpNPCs(int bEnabled)
         }
     }
 }
-// PC 0x0061B780
+// PC 0x0066A750
 int CClientOptions::SaveOptions()
 {
     CExoIni cIni;
@@ -195,7 +195,7 @@ int CClientOptions::SaveOptions()
                        "Enable Tooltips");
     return 1;
 }
-// PC 0x0061D1C0  Xbox 0x0005F5E0
+// PC 0x0066CF00
 void CClientOptions::ApplySoundOptions()
 {
     if (g_pExoSound != 0)
@@ -207,7 +207,7 @@ void CClientOptions::ApplySoundOptions()
 }
 
 #ifndef _XBOX
-void CClientOptions::SetMovieShown(const CExoString& sMovie, int bShown)  // PC 0x0061D230
+void CClientOptions::SetMovieShown(const CExoString& sMovie, int bShown)  // PC 0x0066CF70
 {
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
     EXOXBOXASSERT(p2DArrays->m_pMovies2DA);
@@ -251,7 +251,7 @@ void CClientOptions::SetMovieShown(const CExoString& sMovie, int bShown)  // PC 
     g_pAppManager->m_pClientExoApp->SaveOptions();
 }
 #endif
-// PC 0x0061D3D0  Xbox 0x0005F740
+// PC 0x0066D130
 int CClientOptions::GetMovieShown(const CResRef& sMovie)
 {
     CExoString sName;
@@ -277,7 +277,7 @@ int CClientOptions::GetMovieShown(const CResRef& sMovie)
     unsigned char nBit = nRow - 8 * nByte;
     return (unsigned char)m_aMoviesShown[nByte] & (1 << nBit);
 }
-// PC 0x0061D4E0
+// PC 0x0066D240
 void CClientOptions::SetDefaultGameplayOptions()
 {
     m_nDifficulty = 1;
@@ -287,7 +287,7 @@ void CClientOptions::SetDefaultGameplayOptions()
     m_bReverseMinigameYAxis = 0;
     m_bCombatMovement = 1;
 }
-// PC 0x0061D500
+// PC 0x0066D270
 void CClientOptions::SetDefaultAutopauseOptions()
 {
     m_bAutopauseEndOfCombatRound = 0;
@@ -297,7 +297,7 @@ void CClientOptions::SetDefaultAutopauseOptions()
     m_bAutopauseActionMenu = 0;
     m_bAutopauseNewTargetSelected = 1;
 }
-// PC 0x0061D520
+// PC 0x0066D290
 void CClientOptions::SetDefaultAdvancedGraphicsOptions()
 {
     m_nFrameBuffer = 1;
@@ -308,7 +308,7 @@ void CClientOptions::SetDefaultAdvancedGraphicsOptions()
     m_nAntiAlias = 0;
     m_nSoftShadows = 1;
 }
-// PC 0x0061D540
+// PC 0x0066D2B0
 void CClientOptions::SetDefaultSoundOptions()
 {
     m_nMusicVolume = 85;
@@ -316,7 +316,7 @@ void CClientOptions::SetDefaultSoundOptions()
     m_nSoundEffectsVolume = 85;
     m_nMovieVolume = 100;
 }
-// PC 0x0061D550
+// PC 0x0066D2C0
 int CClientOptions::SetDefaultAdvancedSoundOptions()
 {
     int nEAXMode;
@@ -338,18 +338,18 @@ int CClientOptions::SetDefaultAdvancedSoundOptions()
     m_nEAXFlags = 0;
     return nEAXMode;
 }
-// PC 0x0061D590  Xbox 0x0005F8F0
+// PC 0x0066D300
 float CClientOptions::GetGammaSetting()
 {
     return m_fGammaMax - (m_fGammaMax - m_fGammaMin) * (m_nBrightness * 0.01f);
 }
-// PC 0x0061D5B0
+// PC 0x0066D330
 float CClientOptions::GetMouseSenSetting()
 {
     float fPercent = m_nMouseSensitivity * 0.01f;
     return fPercent * 45.0f + 10.0f;
 }
-// PC 0x0061D5E0
+// PC 0x0066D360
 float CClientOptions::GetCameraKeyboardDPS()
 {
     if (KeyboardCameraRotationSpeed != -1.0f)
@@ -358,7 +358,7 @@ float CClientOptions::GetCameraKeyboardDPS()
     }
     return m_fKeyboardCameraDPS;
 }
-// PC 0x0061D610
+// PC 0x0066D390
 float CClientOptions::GetCameraKeyboardAcceleration()
 {
     if (KeyboardCameraRotationAccl != -1.0f)
@@ -367,7 +367,7 @@ float CClientOptions::GetCameraKeyboardAcceleration()
     }
     return m_fKeyboardCameraAcceleration;
 }
-// PC 0x0061D640
+// PC 0x0066D3C0
 float CClientOptions::GetCameraKeyboardDeceleration()
 {
     if (KeyboardCameraRotationDecel != -1.0f)
@@ -376,7 +376,7 @@ float CClientOptions::GetCameraKeyboardDeceleration()
     }
     return m_fKeyboardCameraDeceleration;
 }
-// PC 0x0061D670
+// PC 0x0066D3F0
 void CClientOptions::SetEnableHardwareMouseCursor(int bEnabled)
 {
     if (g_pAppManager != 0)
@@ -396,7 +396,7 @@ void CClientOptions::SetEnableHardwareMouseCursor(int bEnabled)
         }
     }
 }
-// PC 0x0061D6B0
+// PC 0x0066D470
 void CClientOptions::SetShadows(unsigned long nShadows)
 {
     m_nShadows = nShadows;
@@ -407,7 +407,7 @@ void CClientOptions::SetShadows(unsigned long nShadows)
     }
     AurDisableShadows();
 }
-// PC 0x0061D6D0
+// PC 0x0066D450
 void CClientOptions::SetSoftShadows(unsigned long nSoftShadows)
 {
     m_nSoftShadows = nSoftShadows;
@@ -418,7 +418,7 @@ void CClientOptions::SetSoftShadows(unsigned long nSoftShadows)
     }
     AurDisableSoftShadows();
 }
-// PC 0x0061D6F0
+// PC 0x0066D430
 void CClientOptions::SetGrass(unsigned long nGrass)
 {
     m_nGrass = nGrass;
@@ -433,13 +433,13 @@ void CClientOptions::SetGrass(unsigned long nGrass)
 }
 
 #ifndef _XBOX
-void CClientOptions::SetAntiAlias(unsigned char nAntiAlias)  // PC 0x0061D710
+void CClientOptions::SetAntiAlias(unsigned char nAntiAlias)  // PC 0x0066D490
 {
     m_nAntiAlias = nAntiAlias;
     AurSetAntiAliasingMode(nAntiAlias);
 }
 #endif
-// PC 0x0061D730
+// PC 0x0066D4B0
 int CClientOptions::SetTexQual(unsigned char nTexQual)
 {
     m_nTexQual = nTexQual;
@@ -447,7 +447,7 @@ int CClientOptions::SetTexQual(unsigned char nTexQual)
 }
 
 #ifndef _XBOX
-void CClientOptions::SetFrameBuffer(unsigned long nFrameBuffer)  // PC 0x0061D750
+void CClientOptions::SetFrameBuffer(unsigned long nFrameBuffer)  // PC 0x0066D4D0
 {
     CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
     m_nFrameBuffer = nFrameBuffer;
@@ -494,13 +494,13 @@ void CClientOptions::SetFrameBuffer(unsigned long nFrameBuffer)  // PC 0x0061D75
         }
     }
 }
-// PC 0x0061D8C0
+// PC 0x0066D640
 void CClientOptions::SetAnisotropy(unsigned long nAnisotropy)
 {
     m_nAnisotropy = nAnisotropy;
     SetAnisotropicFilter(nAnisotropy);
 }
-// PC 0x0061D8E0
+// PC 0x0066D660
 void CClientOptions::SetVSync(unsigned long nVSync)
 {
     m_nVSync = nVSync;
@@ -514,7 +514,7 @@ void CClientOptions::SetVSync(unsigned long nVSync)
     }
 }
 #endif
-// PC 0x0061D910
+
 void CClientOptions::SetUseSmallFonts(int bSmallFonts)
 {
     m_bUseSmallFonts = bSmallFonts;
@@ -526,7 +526,7 @@ void CClientOptions::SetUseSmallFonts(int bSmallFonts)
 #endif
     }
 }
-// PC 0x0061D950
+// PC 0x0066D690
 void CClientOptions::SetDefaultFeedbackOptions()
 {
     m_bHideUnequippable = 0;
@@ -542,7 +542,7 @@ void CClientOptions::SetDefaultFeedbackOptions()
     m_bEnableTooltips = 1;
     SetUseSmallFonts(m_bUseSmallFonts);
 }
-// PC 0x0061D9A0
+// PC 0x0066D6E0
 int CClientOptions::SetDefaultGraphicsOptions()
 {
     m_nBrightness = 57;
@@ -553,13 +553,13 @@ int CClientOptions::SetDefaultGraphicsOptions()
     m_nTexturePack = 1;
     return 1;
 }
-// PC 0x0061D9D0
+// PC 0x0066D710
 void CClientOptions::SetDefaultMouseOptions()
 {
     m_bReverseMouseButtons = 0;
     m_nMouseSensitivity = 44;
 }
-// PC 0x0061D9E0
+// PC 0x0066D720
 void CClientOptions::SetDefaultKeyboardCamera()
 {
     if (KeyboardCameraRotationSpeed != -1.0f)
@@ -578,7 +578,7 @@ void CClientOptions::SetDefaultKeyboardCamera()
     }
     m_fKeyboardCameraDeceleration = 2000.0f;
 }
-// PC 0x0061DA60
+// PC 0x0066D7A0
 void CClientOptions::SetDefaultOptions()
 {
     SetDefaultGameplayOptions();
@@ -600,7 +600,7 @@ void CClientOptions::SetDefaultOptions()
     m_nDebugFlags = 0;
 }
 #ifndef _XBOX
-CClientOptions::CClientOptions()  // PC 0x0061DB60  Xbox 0x00060270
+CClientOptions::CClientOptions()  // PC 0x0066D8A0
 {
     m_nCameraMode = CClientOptions::CAMERA_MODE_ON_A_STICK;
     m_nCameraStyle = 1;
@@ -632,7 +632,7 @@ CClientOptions::CClientOptions()  // PC 0x0061DB60  Xbox 0x00060270
     SetDefaultOptions();
 }
 #endif
-int CClientOptions::LoadOptions()  // PC 0x0061DBE0
+int CClientOptions::LoadOptions()  // PC 0x0066D930
 {
     SetDefaultOptions();
     CExoIni cIni;
@@ -902,7 +902,7 @@ static SXboxGammaRange s_aXboxGammaRange[3] =
     { 0.1f, 2.0f, 1.0f },
     { 0.1f, 2.0f, 1.0f }
 };
-// Xbox 0x0005F860
+
 void CClientOptions::SetDefaultVideoOptions()
 {
     unsigned long nFlags = XGetVideoFlags();
@@ -926,7 +926,7 @@ void CClientOptions::SetDefaultVideoOptions()
     m_fGammaMin = fMin;
     m_fGammaMax = fMax;
 }
-// Xbox 0x00060180
+
 void CClientOptions::SetDefaults()
 {
     m_nXboxUnmappedBit32 = 0;
@@ -955,7 +955,7 @@ void CClientOptions::SetDefaults()
     SetDefaultVideoOptions();
     memset(m_aMoviesShown, 0, sizeof(m_aMoviesShown));
 }
-// Xbox 0x0005FAD0
+
 void CClientOptions::LoadFromGFF(CResGFF* pGFF, CResStruct* pStruct)
 {
     int bSuccess;
@@ -1024,7 +1024,7 @@ void CClientOptions::LoadFromGFF(CResGFF* pGFF, CResStruct* pStruct)
         memset(m_aMoviesShown, 0, sizeof(m_aMoviesShown));
     }
 }
-// Xbox 0x0005F200
+
 void CClientOptions::SaveToGFF(CResGFF* pGFF, CResStruct* pStruct)
 {
     pGFF->WriteFieldBYTE(pStruct, m_nDifficulty, "Difficulty");
@@ -1054,7 +1054,7 @@ void CClientOptions::SaveToGFF(CResGFF* pGFF, CResStruct* pStruct)
     pGFF->WriteFieldVOID(pStruct, m_aMoviesShown, sizeof(m_aMoviesShown),
                          "MoviesShown");
 }
-// Xbox 0x0005F460
+
 void CClientOptions::GetOptionsData(KOTOR_LAUNCH_OPTIONS_DATA* pData)
 {
     pData->m_nDifficultyOption = m_nDifficulty;
@@ -1083,7 +1083,7 @@ void CClientOptions::GetOptionsData(KOTOR_LAUNCH_OPTIONS_DATA* pData)
     pData->m_nVolumeMovie = m_nMovieVolume;
     memcpy(pData->m_aMoviesShown, m_aMoviesShown, sizeof(m_aMoviesShown));
 }
-// Xbox 0x0005FF90
+
 void CClientOptions::SetOptionsData(const KOTOR_LAUNCH_OPTIONS_DATA* pData)
 {
     m_nDifficulty = pData->m_nDifficultyOption;
@@ -1118,7 +1118,7 @@ void CClientOptions::SetOptionsData(const KOTOR_LAUNCH_OPTIONS_DATA* pData)
     }
     memcpy(m_aMoviesShown, pData->m_aMoviesShown, sizeof(m_aMoviesShown));
 }
-// Xbox 0x0005F650
+
 void CClientOptions::SetMovieShown(const CResRef& sMovie, int bShown)
 {
     CExoString sName;
@@ -1151,7 +1151,7 @@ void CClientOptions::SetMovieShown(const CResRef& sMovie, int bShown)
 #include "nwcmodule.h"
 #include "nwcarea.h"
 #include "aurrendergl.h"
-// Xbox 0x0005EFB0
+
 void CClientOptions::SetGeometryFadeMode(unsigned char nMode)
 {
     if (m_nGeometryFadeMode != nMode)
@@ -1164,7 +1164,7 @@ void CClientOptions::SetGeometryFadeMode(unsigned char nMode)
         m_nGeometryFadeMode = nMode;
     }
 }
-// Xbox 0x0005F060
+
 void CClientOptions::SetNumShadowCastingLights(unsigned char nLights)
 {
     if (m_nCombatSpeed != nLights)
@@ -1177,27 +1177,27 @@ void CClientOptions::SetNumShadowCastingLights(unsigned char nLights)
         }
     }
 }
-// Xbox 0x0005F0A0
+
 void CClientOptions::SetVSyncEnabled(int bEnabled)
 {
     m_bVSync = (bEnabled != 0);
 }
-// Xbox 0x0005F0C0
+
 void CClientOptions::SetAnisotropicFiltering(int bEnabled)
 {
     m_bAnisotropicFiltering = (bEnabled != 0);
 }
-// Xbox 0x0005F0E0
+
 void CClientOptions::SetShinyWater(int bEnabled)
 {
     m_bShinyWater = bEnabled;
 }
-// Xbox 0x0005F100
+
 void CClientOptions::SetTruform(int bEnabled)
 {
     m_bTruform = bEnabled;
 }
-// Xbox 0x0005F120
+
 void CClientOptions::SetAntiAliasingMode(unsigned char nMode)
 {
     switch (nMode)
@@ -1210,13 +1210,13 @@ void CClientOptions::SetAntiAliasingMode(unsigned char nMode)
     default: m_nXboxUnmapped11 = 0; break;
     }
 }
-// Xbox 0x0005F170
+
 void CClientOptions::SetGrassEnabled(int bEnabled)
 {
     enablegrass = (bEnabled != 0);
     m_bGrass = bEnabled;
 }
-// Xbox 0x0005F1A0
+
 void CClientOptions::SetFastGrass(int bEnabled)
 {
     m_bFastGrass = (bEnabled != 0);
@@ -1226,7 +1226,7 @@ int CClientOptions::GetShinyWaterSupported()
 {
     return 0;
 }
-// Xbox 0x0005F980
+
 void CClientOptions::SetWindMode(unsigned char nMode)
 {
     enum { XBOX_CLIENT_OBJECT_TYPE_CREATURE = 5 };
@@ -1293,7 +1293,7 @@ void CClientOptions::SetWindMode(unsigned char nMode)
 #endif
 
 #ifdef _XBOX
-// PC 0x0061DB60  Xbox 0x00060270
+
 CClientOptions::CClientOptions()
 {
     m_nCameraStyle = 1;
@@ -1322,13 +1322,13 @@ CClientOptions::CClientOptions()
 
 #include "aurconsole.h"
 #include <stdlib.h>
-// Xbox 0x0005F730
+
 void UnlockMovie(char* szArgs)
 {
     g_sUnlockedMovie = szArgs;
 }
 ConsoleFunc ConFUnlockMovie("UnlockMovie", UnlockMovie);
-// Xbox 0x0005F910
+
 int setnumshadowlights(char* szArgs)
 {
     if (g_pAppManager != NULL && g_pAppManager->m_pClientExoApp != NULL &&
@@ -1343,7 +1343,7 @@ int setnumshadowlights(char* szArgs)
     return g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nCombatSpeed;
 }
 ConsoleFunc ConFsetnumshadowlights("setnumshadowlights", setnumshadowlights);
-// Xbox 0x000601D0
+
 char* showallmovies(char* szArgs)
 {
     CClientOptions* pOptions = g_pAppManager->m_pClientExoApp->GetClientOptions();
@@ -1354,7 +1354,7 @@ char* showallmovies(char* szArgs)
     return "Success";
 }
 ConsoleFunc ConFshowallmovies("showallmovies", showallmovies);
-// Xbox 0x00060200
+
 int setcreaturewindmode(char* szArgs)
 {
     if (g_pAppManager != NULL && g_pAppManager->m_pClientExoApp != NULL &&

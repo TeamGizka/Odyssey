@@ -2,7 +2,7 @@
 #ifndef _XBOX
 #include "mss.h"
 #endif
-// PC 0x005DF1B0  Xbox 0x00303510
+// PC 0x0062B4B0
 CResWave::CResWave()
 {
     m_bServiced = 0;
@@ -13,13 +13,13 @@ CResWave::CResWave()
     m_nUnknown38 = 0;
 #endif
 }
-// PC 0x005DF1E0  Xbox 0x00303530
+// PC 0x0062B4E0
 CResWave::~CResWave()
 {
 }
 
 #ifdef _XBOX
-// PC 0x005DF1F0  Xbox 0x00303540
+
 int CResWave::OnResourceFreed()
 {
     m_bServiced = 0;
@@ -28,7 +28,7 @@ int CResWave::OnResourceFreed()
     m_nDataSize = 0;
     return 1;
 }
-// PC 0x005DF230  Xbox 0x00303560
+
 int CResWave::OnResourceServiced()
 {
     m_bServiced = 1;
@@ -40,7 +40,7 @@ void* CResWave::GetData()
     return m_pResource;
 }
 #else
-int CResWave::OnResourceFreed()  // PC 0x005DF1F0  Xbox 0x00303540
+int CResWave::OnResourceFreed()  // PC 0x0062B4F0
 {
     if (m_bDataOwned != 0)
     {
@@ -55,7 +55,7 @@ int CResWave::OnResourceFreed()  // PC 0x005DF1F0  Xbox 0x00303540
     m_nUnknown38 = 0;
     return 1;
 }
-// PC 0x005DF230  Xbox 0x00303560
+// PC 0x0062B530
 int CResWave::OnResourceServiced()
 {
     AILSOUNDINFO SoundInfo;
@@ -174,7 +174,7 @@ int CResWave::OnResourceServiced()
     m_bServiced = 1;
     return 1;
 }
-// PC 0x005DF360
+// PC 0x0062B660
 void* CResWave::GetData()
 {
     if (m_bDataOwned == 0 && m_bLegacyHeader == 1)

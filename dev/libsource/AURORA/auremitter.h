@@ -101,11 +101,11 @@ public:
     virtual char* Name();
     virtual void GetLocal(Vector& vPosition, Quaternion& qOrientation);
     virtual void GetWorld(Vector& vPosition, Quaternion& qOrientation);
-    virtual List<Part*>* GetChildren()  // PC 0x004401E0  Xbox 0x002962C0
+    virtual List<Part*>* GetChildren()  // PC 0x00453060
     {
         return &m_lstChildren;
     }
-    virtual Part* GetParent()  // PC 0x00712F90  Xbox 0x002962D0
+    virtual Part* GetParent()  // PC 0x00786830
     {
         return m_pParent;
     }
@@ -116,20 +116,20 @@ public:
                              Vector* pHit, CHitInfo* pHitInfo, float fRadius);
 
     enum HitGeomResult { HIT_GEOM_EXCLUDED = -1 };
-    virtual PartLight* AsPartLight() { return 0; }  // PC 0x0063E7F0
-    virtual PartCamera* AsPartCamera() { return 0; }  // PC 0x0063E7F0
-    virtual PartTriMesh* AsPartTriMesh() { return 0; }  // PC 0x0063E7F0
-    virtual PartAnimMesh* AsPartAnimMesh() { return 0; }  // PC 0x0063E7F0
-    virtual PartEmitter* AsPartEmitter() { return 0; }  // PC 0x0063E7F0
-    virtual PartReference* AsPartReference() { return 0; }  // PC 0x0063E7F0
-    virtual PartProjection* AsPartProjection() { return 0; }  // PC 0x0063E7F0
-    virtual PartShadow* AsPartShadow() { return 0; }  // PC 0x0063E7F0
-    virtual PartBeam* AsPartBeam() { return 0; }  // PC 0x0063E7F0
-    virtual PartAABB* AsPartAABB() { return 0; }  // PC 0x0063E7F0
-    virtual PartDanglyMesh* AsPartDanglyMesh() { return 0; }  // PC 0x0063E7F0
-    virtual PartSkin* AsPartSkin() { return 0; }  // PC 0x0063E7F0
-    virtual PartTrigger* AsPartTrigger() { return 0; }  // PC 0x0063E7F0
-    virtual Part* AsPartDummy() { return this; }  // PC 0x00641DB0
+    virtual PartLight* AsPartLight() { return 0; }  // PC 0x004065A0
+    virtual PartCamera* AsPartCamera() { return 0; }  // PC 0x004065A0
+    virtual PartTriMesh* AsPartTriMesh() { return 0; }  // PC 0x004065A0
+    virtual PartAnimMesh* AsPartAnimMesh() { return 0; }  // PC 0x004065A0
+    virtual PartEmitter* AsPartEmitter() { return 0; }  // PC 0x004065A0
+    virtual PartReference* AsPartReference() { return 0; }  // PC 0x004065A0
+    virtual PartProjection* AsPartProjection() { return 0; }  // PC 0x004065A0
+    virtual PartShadow* AsPartShadow() { return 0; }  // PC 0x004065A0
+    virtual PartBeam* AsPartBeam() { return 0; }  // PC 0x004065A0
+    virtual PartAABB* AsPartAABB() { return 0; }  // PC 0x004065A0
+    virtual PartDanglyMesh* AsPartDanglyMesh() { return 0; }  // PC 0x004065A0
+    virtual PartSkin* AsPartSkin() { return 0; }  // PC 0x004065A0
+    virtual PartTrigger* AsPartTrigger() { return 0; }  // PC 0x004065A0
+    virtual Part* AsPartDummy() { return this; }  // PC 0x00698BD0
     virtual void Project(const Vector& vPoint, float fDistance,
                          const Plane& cPlane, class CAurShadowData* pShadowData);
     virtual void Mat();
@@ -166,8 +166,8 @@ class PartCamera : public Part
 {
 public:
     PartCamera(MdlNode* pNode) : Part(pNode) {}
-    virtual PartCamera* AsPartCamera() { return this; }  // PC 0x00641DB0
-    virtual PartCamera* AsPartDummy() { return 0; }  // PC 0x0063E7F0
+    virtual PartCamera* AsPartCamera() { return this; }  // PC 0x00698BD0
+    virtual PartCamera* AsPartDummy() { return 0; }  // PC 0x004065A0
 };
 
 class PartProjection : public Part
@@ -261,7 +261,7 @@ public:
 #ifdef _XBOX
     MdlNodeTrigger* AsMdlNodeTrigger();
 #else
-    MdlNodeTrigger* AsMdlNodeTrigger()  // Xbox 0x00294AD0
+    MdlNodeTrigger* AsMdlNodeTrigger()
     {
         if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIGGER)) ==
             (MDL_NODE_HEADER | MDL_NODE_TRIGGER))
@@ -317,24 +317,24 @@ public:
 #ifdef _XBOX
     unsigned char IsInheriting();
 #else
-    unsigned char IsInheriting() { return (unsigned char)m_EmitterFlags.m_bInheriting; }  // Xbox 0x002E17D0
+    unsigned char IsInheriting() { return (unsigned char)m_EmitterFlags.m_bInheriting; }
 #endif
     unsigned char IsBouncing();
 #ifdef _XBOX
     unsigned char IsInheritingLocal();
 #else
-    unsigned char IsInheritingLocal() { return (unsigned char)m_EmitterFlags.m_bInheritingLocal; }  // Xbox 0x002E17F0
+    unsigned char IsInheritingLocal() { return (unsigned char)m_EmitterFlags.m_bInheritingLocal; }
 #endif
 #ifdef _XBOX
     unsigned char IsInheritingPart();
 #else
-    unsigned char IsInheritingPart() { return (unsigned char)m_EmitterFlags.m_bInheritingPart; }  // Xbox 0x002E1810
+    unsigned char IsInheritingPart() { return (unsigned char)m_EmitterFlags.m_bInheritingPart; }
 #endif
 
 #ifdef _XBOX
     unsigned char IsRandomOrder();
 #else
-    unsigned char IsRandomOrder() { return (unsigned char)m_EmitterFlags.m_bRandomOrder; }  // Xbox 0x002E17C0
+    unsigned char IsRandomOrder() { return (unsigned char)m_EmitterFlags.m_bRandomOrder; }
 #endif
 
     void EnablePointToPoint();
@@ -401,7 +401,7 @@ class Particle
 public:
     Particle(PartEmitter* pEmitter, float fTime);
     virtual ~Particle();
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual ChunkyParticle* AsChunkyParticle() { return 0; }
     virtual void initialize(float fTime, float fScale);
     void randomPosition(int nWidth, int nHeight);
@@ -431,7 +431,7 @@ class ChunkyParticle : public Particle
 public:
     ChunkyParticle(PartEmitter* pEmitter, float fTime);
     virtual ~ChunkyParticle();
-    virtual ChunkyParticle* AsChunkyParticle() { return this; }  // PC 0x00641DB0
+    virtual ChunkyParticle* AsChunkyParticle() { return this; }  // PC 0x00698BD0
     virtual void initialize(float fTime, float fScale);
 
     Gob* m_pGob;
@@ -447,9 +447,9 @@ public:
     virtual void Initialize();
 
     virtual void Update(float fTimeStep) = 0;
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual LightningEmitter* AsLightningEmitter() { return 0; }
-    virtual PartEmitter* AsPartEmitter() { return this; }  // PC 0x00641DB0
+    virtual PartEmitter* AsPartEmitter() { return this; }  // PC 0x00698BD0
     void AnimateParticles(float fTimeStep);
     void RenderFunc();
     void chkRandom(Particle* pParticle);
@@ -598,7 +598,7 @@ public:
 #ifdef _XBOX
     FountainEmitter(MdlNode* pNode);
 #else
-    FountainEmitter(MdlNode* pNode) : PartEmitter(pNode) {}  // Xbox 0x002F07E0
+    FountainEmitter(MdlNode* pNode) : PartEmitter(pNode) {}
 #endif
     virtual void Update(float);
 };
@@ -609,7 +609,7 @@ public:
 #ifdef _XBOX
     ExplosionEmitter(MdlNode* pNode);
 #else
-    ExplosionEmitter(MdlNode* pNode) : PartEmitter(pNode) {}  // Xbox 0x002F0800
+    ExplosionEmitter(MdlNode* pNode) : PartEmitter(pNode) {}
 #endif
     virtual void Update(float);
 };
@@ -636,7 +636,7 @@ public:
     int m_nBranches;
     char m_bBranch;
     char gap_28D[3];
-    virtual LightningEmitter* AsLightningEmitter() { return this; }  // PC 0x00641DB0
+    virtual LightningEmitter* AsLightningEmitter() { return this; }  // PC 0x00698BD0
     virtual void UpdateControlPoints();
 
     virtual void UpdateBranches();
@@ -653,7 +653,7 @@ public:
 #ifdef _XBOX
     SingleEmitter(MdlNode* pNode);
 #else
-    SingleEmitter(MdlNode* pNode) : PartEmitter(pNode) {}  // Xbox 0x002F0820
+    SingleEmitter(MdlNode* pNode) : PartEmitter(pNode) {}
 #endif
     virtual void Update(float);
 };

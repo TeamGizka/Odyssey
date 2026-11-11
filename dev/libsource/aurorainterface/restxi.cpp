@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x00710DB0  Xbox 0x002FAFE0
+// PC 0x00784600
 CResTXI::CResTXI()
 {
     m_bServiced = 0;
@@ -7,21 +7,21 @@ CResTXI::CResTXI()
     m_pTXIData = 0;
     m_bAllocPrefix = 1;
 }
-// PC 0x00710DE0  Xbox 0x002FB010
+// PC 0x00784630
 CResTXI::~CResTXI()
 {
 }
-// PC 0x00404DD0
+// PC 0x00404CF0
 void* CResTXI::GetTXIDataPtr()
 {
     return m_pTXIData;
 }
-// PC 0x00710E50
+// PC 0x007846A0
 unsigned long CResTXI::GetTXISize()
 {
     return m_nTXISize;
 }
-// PC 0x00710E60
+// PC 0x007845C0
 int CResTXI::OnResourceFreed()
 {
     m_bServiced = 0;
@@ -29,7 +29,7 @@ int CResTXI::OnResourceFreed()
     m_pTXIData = 0;
     return 1;
 }
-// PC 0x005D4C60
+// PC 0x0077FE60
 int CResTXI::OnResourceServiced()
 {
     if (m_pResource == 0)

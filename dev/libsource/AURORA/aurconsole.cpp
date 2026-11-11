@@ -18,23 +18,23 @@ bool g_bKeepHistory = false;
 void* (*AurGetResource)(char*, char*, int*) = 0;
 void (*AurReleaseResource)(void*, int) = 0;
 List<char*> g_listHistory;
-// Xbox 0x002A0040
+
 funcholderbase::~funcholderbase()
 {
 }
-// PC 0x0044BA20  Xbox 0x002A0070
+// PC 0x0045FF80
 template <> void funcholder<void (*)()>::Engage(char* sArguments)
 {
     m_pFunction();
     returnvalue[0] = 0;
 }
-// PC 0x0044BA30  Xbox 0x002A0080
+// PC 0x0045FF90
 template <> void funcholder<void (*)(char*)>::Engage(char* sArguments)
 {
     m_pFunction(sArguments);
     returnvalue[0] = 0;
 }
-// PC 0x0044BA50
+// PC 0x0045FFB0
 template <> void funcholder<void (*)(int)>::Engage(char* sArguments)
 {
     int nValue;
@@ -43,7 +43,7 @@ template <> void funcholder<void (*)(int)>::Engage(char* sArguments)
     m_pFunction(nValue);
     returnvalue[0] = 0;
 }
-// PC 0x0044BA80  Xbox 0x002A03E0
+// PC 0x0045FFE0
 void ConsoleFuncs_Add(ConsoleFunc* pFunc)
 {
     ConsoleFunc* pTemp;
@@ -60,7 +60,7 @@ void ConsoleFuncs_Add(ConsoleFunc* pFunc)
 
     ConsoleFuncs[ConsoleFuncs_num++] = pFunc;
 }
-// PC 0x0044BB10  Xbox 0x002A0470
+// PC 0x00460070
 void ConsoleFuncs_Remove(const char* sName)
 {
     int nCount = ConsoleFuncs_num;
@@ -81,7 +81,7 @@ void ConsoleFuncs_Remove(const char* sName)
 
     ConsoleFuncs_num--;
 }
-// PC 0x0044BB90  Xbox 0x002A04F0
+// PC 0x004600F0
 funcholderbase* FindConCallBack(char* sName)
 {
     static int i = -1;
@@ -102,7 +102,7 @@ funcholderbase* FindConCallBack(char* sName)
 
     return 0;
 }
-// PC 0x0044BC70  Xbox 0x002A05F0
+// PC 0x004601D0
 char* FuncPreInterp(char* sLine)
 {
     char sName[128];
@@ -132,7 +132,7 @@ char* FuncPreInterp(char* sLine)
 
     return returnvalue;
 }
-// PC 0x0044BCF0  Xbox 0x002A0670
+// PC 0x00460250
 ConsoleFunc::~ConsoleFunc()
 {
     ConsoleFuncs_Remove(m_sName);
@@ -141,7 +141,7 @@ ConsoleFunc::~ConsoleFunc()
 
 List<OpenResource*> Resources;
 #ifdef _XBOX
-// Xbox 0x002A0A80
+
 OpenResource::OpenResource(int nBufferSize)
 {
     m_pFile = 0;
@@ -152,7 +152,7 @@ OpenResource::OpenResource(int nBufferSize)
     m_nDataLeft = 0;
     m_pResource = 0;
 }
-// Xbox 0x002A0AB0
+
 OpenResource::~OpenResource()
 {
     if (m_pBuffer != 0)
@@ -162,7 +162,7 @@ OpenResource::~OpenResource()
     }
 }
 #endif
-// PC 0x0044BD10  Xbox 0x002A0AD0
+// PC 0x00460270
 char* AurResGetDataBytes(unsigned long nBytes, void* pResource)
 {
     OpenResource* pOpenResource = (OpenResource*)pResource;
@@ -179,7 +179,7 @@ char* AurResGetDataBytes(unsigned long nBytes, void* pResource)
     fread(pData, 1, nBytes, pOpenResource->m_pFile);
     return pData;
 }
-// PC 0x0044BD50  Xbox 0x002A0B10
+// PC 0x004602B0
 void AurResFreeDataBytes(void* pResource, unsigned char* pData)
 {
     OpenResource* pOpenResource = (OpenResource*)pResource;
@@ -189,7 +189,7 @@ void AurResFreeDataBytes(void* pResource, unsigned char* pData)
         delete[] pData;
     }
 }
-// PC 0x0044BD70  Xbox 0x002A0CF0
+// PC 0x004602D0
 OpenResource* GetResource(void* pResource)
 {
     int i;
@@ -211,7 +211,7 @@ OpenResource* GetResource(void* pResource)
 }
 
 #ifdef _XBOX
-void AurResRemove(void* pResource)  // Xbox 0x002A0D40
+void AurResRemove(void* pResource)
 {
     for (int nIndex = 0; nIndex < Resources.m_nCount; nIndex++)
     {
@@ -223,7 +223,7 @@ void AurResRemove(void* pResource)  // Xbox 0x002A0D40
     }
 }
 #else
-int AurResRemove(void* pResource)  // PC 0x0044BDC0
+int AurResRemove(void* pResource)  // PC 0x00460320
 {
     int nIndex = 0;
 
@@ -250,7 +250,7 @@ int AurResRemove(void* pResource)  // PC 0x0044BDC0
     return nIndex;
 }
 #endif
-// PC 0x0044BE20  Xbox 0x002A0D70
+// PC 0x00460380
 static char* getnextline_file(void* pResource)
 {
     OpenResource* pOpenResource = GetResource(pResource);
@@ -265,7 +265,7 @@ static char* getnextline_file(void* pResource)
 
     return fgets(pOpenResource->m_pBuffer, 4000, pOpenResource->m_pFile);
 }
-// PC 0x0044BE70  Xbox 0x002A0DC0
+// PC 0x004603D0
 static char* getnextline_res(void* pResource)
 {
     OpenResource* pOpenResource = GetResource(pResource);
@@ -302,7 +302,7 @@ static char* getnextline_res(void* pResource)
     pOpenResource->m_pBuffer[i] = 0;
     return pOpenResource->m_pBuffer;
 }
-// PC 0x0044BEE0  Xbox 0x002A0E30
+// PC 0x00460440
 char* GetDataFromFile(int nBytes)
 {
     OpenResource* pOpenResource = Resources.m_pList[Resources.m_nCount - 1];
@@ -316,7 +316,7 @@ char* GetDataFromFile(int nBytes)
     fread(pOpenResource->m_pBuffer, 1, nBytes, pOpenResource->m_pFile);
     return pOpenResource->m_pBuffer;
 }
-// PC 0x0044BF30  Xbox 0x002A0E80
+// PC 0x00460490
 static char* GetDataFromResource(int nBytes)
 {
     OpenResource* pOpenResource =
@@ -348,7 +348,7 @@ static char* GetDataFromResource(int nBytes)
     pOpenResource->m_pBuffer[i] = 0;
     return pOpenResource->m_pBuffer;
 }
-// PC 0x0044BFA0  Xbox 0x002A0EF0
+// PC 0x00460500
 char* AurResGetNextLine()
 {
     if (Resources.m_nCount == 0)
@@ -363,7 +363,7 @@ char* AurResGetNextLine()
 
     return getnextline_res(0);
 }
-// PC 0x0044BFD0  Xbox 0x002A0F50
+// PC 0x00460530
 void* AurResGetData(int nBytes)
 {
     if (Resources.m_nCount == 0)
@@ -378,7 +378,7 @@ void* AurResGetData(int nBytes)
 
     return GetDataFromResource(nBytes);
 }
-// PC 0x0044C040  Xbox 0x002A1140
+// PC 0x004605A0
 char* CommandCompletion(char* sLine, List<char*>& lstCompletions)
 {
     char* sPartial;
@@ -447,7 +447,7 @@ char* CommandCompletion(char* sLine, List<char*>& lstCompletions)
 
     return returnvalue;
 }
-// Xbox 0x002A0F20
+
 char* AurResGetNextLine(void* pResource)
 {
     OpenResource* pOpenResource = GetResource(pResource);
@@ -471,7 +471,7 @@ char* AurResGetNextLine(void* pResource)
     return getnextline_res(pResource);
 #endif
 }
-// PC 0x0044C1F0  Xbox 0x002A1290
+// PC 0x00460750
 char* FuncInterp(char* sLine)
 {
     char sName[128];
@@ -614,28 +614,28 @@ char* FuncInterp(char* sLine)
     pHolder->Engage(sArguments);
     return returnvalue;
 }
-// PC 0x0044C560  Xbox 0x002A15D0
+// PC 0x00460AC0
 ConsoleFunc::ConsoleFunc(const char* sName, void (*pFunction)())
 {
     strcpy(m_sName, sName);
     m_pHolder = new funcholder<void (*)()>(pFunction);
     ConsoleFuncs_Add(this);
 }
-// PC 0x0044C5C0  Xbox 0x002A1630
+// PC 0x00460B20
 ConsoleFunc::ConsoleFunc(const char* sName, void (*pFunction)(char*))
 {
     strcpy(m_sName, sName);
     m_pHolder = new funcholder<void (*)(char*)>(pFunction);
     ConsoleFuncs_Add(this);
 }
-// PC 0x0044C620
+// PC 0x00460B80
 ConsoleFunc::ConsoleFunc(const char* sName, void (*pFunction)(int))
 {
     strcpy(m_sName, sName);
     m_pHolder = new funcholder<void (*)(int)>(pFunction);
     ConsoleFuncs_Add(this);
 }
-// PC 0x0044C680  Xbox 0x002A1930
+// PC 0x00460BE0
 static OpenResource* GetOpenResource(char* sName, char* sExtension, int* pnSize)
 {
     int nSize;
@@ -679,7 +679,7 @@ static const int MAX_MISSING_FILES = 1024;
 static const int MISSING_FILE_NAME_LENGTH = 64;
 static char g_aMissingFiles[MAX_MISSING_FILES][MISSING_FILE_NAME_LENGTH];
 static int g_nMissingFiles;
-// PC 0x0044C740  Xbox 0x002A19A0
+
 void* AurResGet(char* sName, char* sExtension, int* pnSize, bool bRaw)
 {
     char sPath[MISSING_FILE_NAME_LENGTH];
@@ -748,7 +748,7 @@ void* AurResGet(char* sName, char* sExtension, int* pnSize, bool bRaw)
     return pOpenResource;
 }
 #else
-void* AurResGet(char* sName, char* sExtension, int* pnSize, bool bRaw)  // PC 0x0044C740  Xbox 0x002A19A0
+void* AurResGet(char* sName, char* sExtension, int* pnSize, bool bRaw)  // PC 0x00460CA0
 {
     char sPath[260];
 
@@ -807,7 +807,7 @@ void* AurResGet(char* sName, char* sExtension, int* pnSize, bool bRaw)  // PC 0x
     return pOpenResource;
 }
 #endif
-// PC 0x0044C870  Xbox 0x002A1AF0
+// PC 0x00460DD0
 void* AurResGet(FILE* pFile)
 {
     OpenResource* pOpenResource = new OpenResource(500000);
@@ -818,7 +818,7 @@ void* AurResGet(FILE* pFile)
     Resources.Add(pOpenResource);
     return pOpenResource;
 }
-// PC 0x0044C8F0  Xbox 0x002A1B30
+// PC 0x00460E50
 void AurResFree(void* pResource, int nSize)
 {
     OpenResource* pOpenResource = (OpenResource*)pResource;
@@ -858,7 +858,7 @@ void AurResFree(void* pResource, int nSize)
 Model* FindModel(char* sName);
 
 #ifndef _XBOX
-char* converttobinary(char* sArguments)  // Xbox 0x002A0B90
+char* converttobinary(char* sArguments)
 {
     char sPattern[MAX_PATH];
     char sDirectory[MAX_PATH];
@@ -896,7 +896,7 @@ char* converttobinary(char* sArguments)  // Xbox 0x002A0B90
     return "Finished";
 }
 #endif
-// PC 0x0044C980  Xbox 0x002A1BA0
+// PC 0x00460EE0
 char* dofile(char* sFileName)
 {
     static char returnbuf[256];
@@ -979,18 +979,18 @@ char* dofile(char* sFileName)
 }
 
 #ifdef _XBOX
-// Xbox 0x002A00A0
+
 template <> void funcholder<int (*)(char*)>::Engage(char* sArguments)
 {
     returnvalue[0] = 0;
     sprintf(returnvalue, "%d", m_pFunction(sArguments));
 }
-// Xbox 0x002A00D0
+
 template <> void funcholder<float (*)(char*)>::Engage(char* sArguments)
 {
     sprintf(returnvalue, "%f", m_pFunction(sArguments));
 }
-// Xbox 0x002A0100
+
 template <> void funcholder<char* (*)(char*)>::Engage(char* sArguments)
 {
     char* sResult = m_pFunction(sArguments);
@@ -1002,31 +1002,31 @@ template <> void funcholder<char* (*)(char*)>::Engage(char* sArguments)
 
     sprintf(returnvalue, "%s", sResult);
 }
-// Xbox 0x002A0130
+
 template <> void funcholder<int*>::Engage(char* sArguments)
 {
     returnvalue[0] = 0;
     sscanf(sArguments, "%d", m_pFunction);
     sprintf(returnvalue, "%d", *m_pFunction);
 }
-// Xbox 0x002A0170
+
 template <> void funcholder<int*>::PreEngage(char* sArguments)
 {
     sprintf(returnvalue, "%d", *m_pFunction);
 }
-// Xbox 0x002A0190
+
 template <> void funcholder<float*>::Engage(char* sArguments)
 {
     returnvalue[0] = 0;
     sscanf(sArguments, "%f", m_pFunction);
     sprintf(returnvalue, "%f", *m_pFunction);
 }
-// Xbox 0x002A01D0
+
 template <> void funcholder<float*>::PreEngage(char* sArguments)
 {
     sprintf(returnvalue, "%f", *m_pFunction);
 }
-// Xbox 0x002A01F0
+
 template <> void funcholder<Vector*>::Engage(char* sArguments)
 {
     returnvalue[0] = 0;
@@ -1035,13 +1035,13 @@ template <> void funcholder<Vector*>::Engage(char* sArguments)
     sprintf(returnvalue, "%f %f %f", m_pFunction->m_fX, m_pFunction->m_fY,
             m_pFunction->m_fZ);
 }
-// Xbox 0x002A0250
+
 template <> void funcholder<Vector*>::PreEngage(char* sArguments)
 {
     sprintf(returnvalue, "%f %f %f", m_pFunction->m_fX, m_pFunction->m_fY,
             m_pFunction->m_fZ);
 }
-// Xbox 0x002A0280
+
 template <> void funcholder<Quaternion*>::Engage(char* sArguments)
 {
     returnvalue[0] = 0;
@@ -1054,7 +1054,7 @@ template <> void funcholder<Quaternion*>::Engage(char* sArguments)
     *m_pFunction = YawPitchRoll(fYaw, fPitch, fRoll);
     sprintf(returnvalue, "%f %f %f", fYaw, fPitch, fRoll);
 }
-// Xbox 0x002A0360
+
 template <> void funcholder<Quaternion*>::PreEngage(char* sArguments)
 {
     returnvalue[0] = 0;
@@ -1064,17 +1064,17 @@ template <> void funcholder<Quaternion*>::PreEngage(char* sArguments)
 
     sprintf(returnvalue, "%f %f %f", fYaw, fPitch, Roll(*m_pFunction));
 }
-// Xbox 0x002A05D0
+
 void HistoryOn()
 {
     g_bKeepHistory = true;
 }
-// Xbox 0x002A05E0
+
 void HistoryOff()
 {
     g_bKeepHistory = false;
 }
-// Xbox 0x002A0690
+
 int DeleteFuncWithPrefix(char* sPrefix)
 {
     int nDeleted = 0;
@@ -1091,7 +1091,7 @@ int DeleteFuncWithPrefix(char* sPrefix)
 
     return nDeleted;
 }
-// Xbox 0x002A0700
+
 char* echo(char* sArguments)
 {
     return sArguments;
@@ -1099,7 +1099,7 @@ char* echo(char* sArguments)
 
 const int MAX_CONSOLE_OPERANDS = 6;
 const int MAX_CONSOLE_OPERAND_BUFFER = 10;
-// Xbox 0x002A0710
+
 char* add(char* sArguments)
 {
     static char returnbuf[256];
@@ -1130,7 +1130,7 @@ char* add(char* sArguments)
 
     return returnbuf;
 }
-// Xbox 0x002A07F0
+
 char* sub(char* sArguments)
 {
     static char returnbuf[256];
@@ -1161,7 +1161,7 @@ char* sub(char* sArguments)
 
     return returnbuf;
 }
-// Xbox 0x002A08D0
+
 char* mul(char* sArguments)
 {
     static char returnbuf[256];
@@ -1190,7 +1190,7 @@ char* mul(char* sArguments)
 
     return returnbuf;
 }
-// Xbox 0x002A09A0
+
 char* mulqv(char* sArguments)
 {
     static char returnbuf[256];
@@ -1213,7 +1213,7 @@ char* mulqv(char* sArguments)
             vVector.m_fZ);
     return returnbuf;
 }
-// Xbox 0x002A0B30
+
 char* outputmodel(char* sArguments)
 {
     Model* pModel = FindModel(GetToken(&sArguments));
@@ -1232,7 +1232,7 @@ char* outputmodel(char* sArguments)
 
     return "SUCCESS";
 }
-// Xbox 0x002A0B70
+
 char* bload(char* sArguments)
 {
     IODispatcher* pDispatcher = IODispatcher::GetRef();
@@ -1246,7 +1246,7 @@ char* bload(char* sArguments)
 }
 
 const char* spawn(char* sArguments);
-// Xbox 0x002A0B90
+
 char* converttobinary(char* sArguments)
 {
     char sModelName[MAX_PATH];
@@ -1297,7 +1297,7 @@ char* converttobinary(char* sArguments)
 }
 
 int logbase2(unsigned int nValue);
-// Xbox 0x002A0CC0
+
 char* testlogbase2(char* sArguments)
 {
     static char returnbuf[256];
@@ -1307,7 +1307,7 @@ char* testlogbase2(char* sArguments)
 }
 
 extern List<Gob*> gobs;
-// Xbox 0x002A0F80
+
 char* getgobfrommodel(char* sArguments)
 {
     char* sModel = GetToken(&sArguments);
@@ -1325,49 +1325,49 @@ char* getgobfrommodel(char* sArguments)
 
     return "NULL";
 }
-// Xbox 0x002A1690
+
 ConsoleFunc::ConsoleFunc(const char* sName, int (*pFunction)(char*))
 {
     strcpy(m_sName, sName);
     m_pHolder = new funcholder<int (*)(char*)>(pFunction);
     ConsoleFuncs_Add(this);
 }
-// Xbox 0x002A16F0
+
 ConsoleFunc::ConsoleFunc(const char* sName, float (*pFunction)(char*))
 {
     strcpy(m_sName, sName);
     m_pHolder = new funcholder<float (*)(char*)>(pFunction);
     ConsoleFuncs_Add(this);
 }
-// Xbox 0x002A1750
+
 ConsoleFunc::ConsoleFunc(const char* sName, char* (*pFunction)(char*))
 {
     strcpy(m_sName, sName);
     m_pHolder = new funcholder<char* (*)(char*)>(pFunction);
     ConsoleFuncs_Add(this);
 }
-// Xbox 0x002A17B0
+
 ConsoleFunc::ConsoleFunc(const char* sName, int* pVariable)
 {
     strcpy(m_sName, sName);
     m_pHolder = new funcholder<int*>(pVariable);
     ConsoleFuncs_Add(this);
 }
-// Xbox 0x002A1810
+
 ConsoleFunc::ConsoleFunc(const char* sName, float* pVariable)
 {
     strcpy(m_sName, sName);
     m_pHolder = new funcholder<float*>(pVariable);
     ConsoleFuncs_Add(this);
 }
-// Xbox 0x002A1870
+
 ConsoleFunc::ConsoleFunc(const char* sName, Vector* pVariable)
 {
     strcpy(m_sName, sName);
     m_pHolder = new funcholder<Vector*>(pVariable);
     ConsoleFuncs_Add(this);
 }
-// Xbox 0x002A18D0
+
 ConsoleFunc::ConsoleFunc(const char* sName, Quaternion* pVariable)
 {
     strcpy(m_sName, sName);

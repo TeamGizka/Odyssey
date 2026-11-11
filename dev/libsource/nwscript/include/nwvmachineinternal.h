@@ -115,7 +115,7 @@ class CVirtualMachineScript
 {
 public:
     CVirtualMachineScript();
-    ~CVirtualMachineScript()  // PC 0x005D4550  Xbox 0x0015B620
+    ~CVirtualMachineScript()  // PC 0x006201A0
     {
         CVirtualMachineStack* pStack;
         char* pCode;

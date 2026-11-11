@@ -144,14 +144,14 @@ public:
                                 unsigned char nIndex);
     void ClearSkills();
     char GetSkillRank(unsigned short nSkill);
-    void SetSkillRank(unsigned short nSkill, char nRank)  // PC 0x00647560  Xbox 0x000709F0
+    void SetSkillRank(unsigned short nSkill, char nRank)  // PC 0x0069FD50
     {
         if (nSkill < g_pRules->m_nNumSkills)
         {
             m_pSkillRanksTotal[nSkill] = nRank;
         }
     }
-    void SetSkillRankBase(unsigned short nSkill, char nRank)  // PC 0x00647590  Xbox 0x00070A20
+    void SetSkillRankBase(unsigned short nSkill, char nRank)  // PC 0x0069FD80
     {
         if (nSkill < g_pRules->m_nNumSkills)
         {
@@ -169,7 +169,7 @@ public:
     }
 
     int GetCanUseSkill(unsigned short nSkill);
-    // PC 0x0060B330  Xbox 0x0003B140
+    // PC 0x006575D0
     unsigned char GetSimpleAlignmentGoodEvil()
     {
         return m_nGoodEvilAlignment <= 40 ? 3 : (m_nGoodEvilAlignment >= 60) + 1;
@@ -371,7 +371,7 @@ public:
     unsigned char ComputeNumberKnownSpellsLeft();
 
     unsigned char& MainCharGenAbility(int nAbility);
-    // PC 0x0060B350  Xbox 0x0003B160
+    // PC 0x006575F0
     char GetSkillRank(unsigned short nSkill)
     {
         unsigned char nNumSkills = g_pRules->m_nNumSkills;

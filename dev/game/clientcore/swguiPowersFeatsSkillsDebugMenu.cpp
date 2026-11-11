@@ -15,7 +15,7 @@
 static inline void SwguipowersfeatsskillsdebugmenuTrace2();
 static inline void SwguipowersfeatsskillsdebugmenuTrace1();
 #define SWGUIPOWERSFEATSSKILLSDEBUGMENU_TRACE() SwguipowersfeatsskillsdebugmenuTrace1()
-// PC 0x006CEBA0  Xbox 0x000F5EE0
+// PC 0x0073D000
 void CSWGuiPowersFeatsSkillsDebugMenu::AddPrerequisiteSpells(
     unsigned long nSpell, CSWSCreature* pCreature)
 {
@@ -43,7 +43,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::AddPrerequisiteSpells(
         pCreature->m_pStats->AddKnownSpell(nClass, nSpell);
     }
 }
-// PC 0x006CEC40  Xbox 0x000F5F80
+// PC 0x0073D0A0
 void CSWGuiPowersFeatsSkillsDebugMenu::AddPrerequisiteFeats(
     unsigned short nFeat, CSWSCreature* pCreature)
 {
@@ -71,7 +71,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::HideMenu()
     CreateMainPowersFeatsSkillsMenu();
     g_pAppManager->m_pClientExoApp->GetInGameGui()->HidePowersFeatsSkillsDebugMenu();
 }
-// PC 0x006CECD0  Xbox 0x000F6010
+// PC 0x0073D130
 void CSWGuiPowersFeatsSkillsDebugMenu::OnSkillPicked(CSWGuiControl* pControl)
 {
     SwguipowersfeatsskillsdebugmenuTrace2();
@@ -92,7 +92,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::OnSkillPicked(CSWGuiControl* pControl)
         HideMenu();
     }
 }
-// PC 0x006CED60  Xbox 0x000F6650
+// PC 0x0073D730
 void CSWGuiPowersFeatsSkillsDebugMenu::CreateSkillsSubMenu()
 {
     int i = 0;
@@ -120,7 +120,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::CreateSkillsSubMenu()
     m_nMenu = MENU_SKILLS;
     m_lbOptions.SetActiveControl(m_lbOptions.GetControl(m_nSelected), 0);
 }
-// PC 0x006CEF00  Xbox 0x000F60A0
+// PC 0x0073D280
 void CSWGuiPowersFeatsSkillsDebugMenu::OnPowerPicked(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -136,7 +136,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::OnPowerPicked(CSWGuiControl* pControl)
         HideMenu();
     }
 }
-// PC 0x006CEF80  Xbox 0x000F6120
+// PC 0x0073D300
 void CSWGuiPowersFeatsSkillsDebugMenu::OnFeatPicked(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -156,7 +156,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::OnFeatPicked(CSWGuiControl* pControl)
         HideMenu();
     }
 }
-// PC 0x006CF020
+// PC 0x0073D8F0
 void CSWGuiPowersFeatsSkillsDebugMenu::OnAddSkillPicked(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -164,7 +164,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::OnAddSkillPicked(CSWGuiControl* pControl)
         CreateSkillsSubMenu();
     }
 }
-// PC 0x006CF040  Xbox 0x000F62C0
+// PC 0x0073D3A0
 void CSWGuiPowersFeatsSkillsDebugMenu::CreatePowersSubMenu()
 {
     int i = 0;
@@ -194,7 +194,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::CreatePowersSubMenu()
     m_nMenu = MENU_POWERS;
     m_lbOptions.SetActiveControl(m_lbOptions.GetControl(m_nSelected), 0);
 }
-// PC 0x006CF220  Xbox 0x000F64A0
+// PC 0x0073D580
 void CSWGuiPowersFeatsSkillsDebugMenu::CreateFeatsSubMenu()
 {
     int i = 0;
@@ -223,7 +223,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::CreateFeatsSubMenu()
     m_nMenu = MENU_FEATS;
     m_lbOptions.SetActiveControl(m_lbOptions.GetControl(m_nSelected), 0);
 }
-// PC 0x006CF3D0  Xbox 0x000F67F0
+// PC 0x0073D8D0
 void CSWGuiPowersFeatsSkillsDebugMenu::OnAddPowerPicked(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -231,7 +231,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::OnAddPowerPicked(CSWGuiControl* pControl)
         CreatePowersSubMenu();
     }
 }
-// PC 0x006CF3F0  Xbox 0x000F6830
+// PC 0x0073D910
 void CSWGuiPowersFeatsSkillsDebugMenu::OnAddFeatPicked(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -239,7 +239,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::OnAddFeatPicked(CSWGuiControl* pControl)
         CreateFeatsSubMenu();
     }
 }
-// PC 0x006CF410  Xbox 0x000F6850
+// PC 0x0073D930
 void CSWGuiPowersFeatsSkillsDebugMenu::CreateMainPowersFeatsSkillsMenu()
 {
     CSWGuiListBox* pList = &m_lbOptions;
@@ -270,7 +270,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::CreateMainPowersFeatsSkillsMenu()
     m_nMenu = MENU_MAIN;
     m_lbOptions.SetActiveControl(m_lbOptions.GetControl(m_nSelected), 0);
 }
-// PC 0x006CF5A0  Xbox 0x000F69E0
+// PC 0x0073DAC0
 CSWGuiPowersFeatsSkillsDebugMenu::CSWGuiPowersFeatsSkillsDebugMenu(
     CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -286,7 +286,7 @@ CSWGuiPowersFeatsSkillsDebugMenu::CSWGuiPowersFeatsSkillsDebugMenu(
     CreateMainPowersFeatsSkillsMenu();
     CenterPanel();
 }
-// PC 0x006CF770  Xbox 0x000F6BB0
+// PC 0x0073DCA0
 void CSWGuiPowersFeatsSkillsDebugMenu::Back()
 {
     if (m_nMenu == MENU_MAIN)
@@ -298,7 +298,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::Back()
     }
     CreateMainPowersFeatsSkillsMenu();
 }
-// PC 0x006CF7B0  Xbox 0x000F6BF0
+// PC 0x0073DCE0
 void CSWGuiPowersFeatsSkillsDebugMenu::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -343,7 +343,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006CEA90  Xbox 0x000F61C0
+// PC 0x0073D1C0
 CSWGuiControl* CSWGuiPowersFeatsSkillsDebugMenu::CreateOption(
     const CExoString& sText, PFNGUIEVENT pHandler, CSWGuiButton* pPrototype)
 {

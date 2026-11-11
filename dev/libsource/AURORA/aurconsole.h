@@ -13,7 +13,7 @@ public:
 #ifdef _XBOX
     OpenResource(int nBufferSize);
 #else
-    OpenResource(int nBufferSize)  // Xbox 0x002A0A80
+    OpenResource(int nBufferSize)
     {
         m_pFile = 0;
         m_nLines = -1;
@@ -45,11 +45,11 @@ class funcholderbase
 {
 public:
     virtual ~funcholderbase();
-    // PC 0x0060E760
+    // PC 0x005EE1C0
     virtual void Engage(char* sArguments)
     {
     }
-    // PC 0x0060E760
+    // PC 0x005EE1C0
     virtual void PreEngage(char* sArguments)
     {
     }
@@ -68,7 +68,7 @@ public:
 #endif
 
     virtual void Engage(char* sArguments);
-    // PC 0x0044C000  Xbox 0x002A1060
+    // PC 0x00460560
     virtual void PreEngage(char* sArguments)
     {
         returnvalue[0] = 0;

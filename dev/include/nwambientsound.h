@@ -18,7 +18,7 @@ public:
         m_nAmbientDayVolume = 0;
         m_nAmbientNightVolume = 0;
     }
-    // PC 0x00504860
+
     ~CSWAmbientSound() {}
 
     virtual void PlayMusic(int bPlay) = 0;

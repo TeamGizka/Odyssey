@@ -20,7 +20,7 @@
 #include "aurscene.h"
 #include "nwscript.h"
 #include "swmain.h"
-// PC 0x006C5510  Xbox 0x000FD4A0
+// PC 0x007292B0
 void CSWGuiUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
 {
     if (!pControl->m_bSelected)
@@ -130,7 +130,7 @@ void CSWGuiUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
 Exit:
     CloseItems();
 }
-// PC 0x006C58C0  Xbox 0x000FDC00
+// PC 0x007297E0
 CSWUpgradeItemEntry* CSWGuiUpgrade::CreateItemEntry(unsigned long oidItem, int nUpgradeIndex)
 {
     int nWidth = m_lbItems.m_cItemExtent.m_nWidth -
@@ -146,7 +146,7 @@ CSWUpgradeItemEntry* CSWGuiUpgrade::CreateItemEntry(unsigned long oidItem, int n
     pEntry->m_nUpgradeIndex = nUpgradeIndex;
     return pEntry;
 }
-// PC 0x006C59A0  Xbox 0x000FD860
+// PC 0x00729930
 void CSWGuiUpgrade::InsertUpgrade(CSWSItem* pItem, int nSlot)
 {
     if (pItem != 0)
@@ -194,7 +194,7 @@ const CSWGuiUpgrade::SlotInfo
     { { -1, "", 0 }, { 8, "i_armorrein", 32491 },
       { 9, "i_armorrein", 32492 }, { -1, "", 0 } }
 };
-// PC 0x006C25F0  Xbox 0x000FADE0
+// PC 0x00724610
 void CSWGuiUpgrade::OnPanelRemoved()
 {
     CSWSItem* pItem;
@@ -220,7 +220,7 @@ void CSWGuiUpgrade::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 #endif
 }
-// PC 0x006C2650  Xbox 0x000FBBB0
+// PC 0x007254C0
 void CSWUpgradeItemEntry::SetExtent(const CSWGuiExtent& cExtent)
 {
 
@@ -247,7 +247,7 @@ void CSWUpgradeItemEntry::SetExtent(const CSWGuiExtent& cExtent)
                                                    m_cHilite.GetInnerExtent()));
     }
 }
-// PC 0x006C27C0
+// PC 0x00725640
 void CSWUpgradeItemEntry::Draw(float fElapsed)
 {
     if (m_bActive)
@@ -264,7 +264,7 @@ void CSWUpgradeItemEntry::Draw(float fElapsed)
     m_cText.Draw(fElapsed);
     m_CSWGuiText_334.Draw(fElapsed);
 }
-// PC 0x006C2830  Xbox 0x000FBD20
+// PC 0x007256B0
 void CSWUpgradeItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
                                      CSWGuiBorder& cHilite, int nWidth)
 {
@@ -299,7 +299,7 @@ void CSWUpgradeItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
 }
 
 #ifndef _XBOX
-template <> int CExoArrayList<CSWSItem*>::IndexOf(CSWSItem* value) const  // PC 0x006C2A40
+template <> int CExoArrayList<CSWSItem*>::IndexOf(CSWSItem* value) const  // PC 0x004DD4A0
 {
     for (int i = 0; i < num; i++)
     {
@@ -311,7 +311,7 @@ template <> int CExoArrayList<CSWSItem*>::IndexOf(CSWSItem* value) const  // PC 
     return -1;
 }
 #endif
-// PC 0x006C2A70
+// PC 0x00723C90
 unsigned long CSWGuiUpgradeItemSelect::GetUpgradeItemId()
 {
     if (m_pUpgradeItem != 0)
@@ -320,7 +320,7 @@ unsigned long CSWGuiUpgradeItemSelect::GetUpgradeItemId()
     }
     return OBJECT_INVALID;
 }
-// PC 0x006C2A90
+// PC 0x00723CB0
 unsigned long CSWGuiUpgradeItemSelect::GetUpgradeItemProperty()
 {
     if (m_pUpgradeItem != 0)
@@ -329,14 +329,14 @@ unsigned long CSWGuiUpgradeItemSelect::GetUpgradeItemProperty()
     }
     return 0;
 }
-// PC 0x006C3E00  Xbox 0x000FD970
+// PC 0x00727F30
 CSWUpgradeItemEntry::CSWUpgradeItemEntry()
 {
     m_bShowItemSuffix = 0;
     m_oidItem = OBJECT_INVALID;
     m_nUpgradeIndex = -1;
 }
-// PC 0x006C78D0  Xbox 0x000FFC70
+// PC 0x00733EB0
 CSWGuiUpgradeSelection::CSWGuiUpgradeSelection(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -396,7 +396,7 @@ CSWGuiUpgradeSelection::CSWGuiUpgradeSelection(CSWGuiManager* pManager)
     m_pSelectedType = 0;
 #endif
 }
-// PC 0x006C7630  Xbox 0x000FF960
+// PC 0x00731CF0
 CSWGuiUpgradeItemSelect::CSWGuiUpgradeItemSelect(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -444,7 +444,7 @@ CSWGuiUpgradeItemSelect::CSWGuiUpgradeItemSelect(CSWGuiManager* pManager)
     SetActiveControl(&m_lbItems, 0);
 #endif
 }
-// PC 0x006C5B90  Xbox 0x000FDDF0
+// PC 0x0072C990
 void CSWGuiUpgradeItemSelect::BuildUpgradeList()
 {
 
@@ -493,7 +493,7 @@ void CSWGuiUpgradeItemSelect::BuildUpgradeList()
     delete pTable;
     pListBox->AddControls(aItems, 1, 0, 0);
 }
-// PC 0x006C5E90  Xbox 0x000FE0E0
+// PC 0x0072CC90
 void CSWGuiUpgradeItemSelect::FinishUpgrading()
 {
 
@@ -574,7 +574,7 @@ void CSWGuiUpgradeItemSelect::FinishUpgrading()
         m_lbItems.SetSelectedControl(m_pUpgradeItem, 0);
     }
 }
-// PC 0x006C3EA0  Xbox 0x000FBF30
+// PC 0x00725940
 void CSWUpgradeItemEntry::SetItem(unsigned long oidItem, int bShowItemSuffix,
                                   unsigned long nItemId, unsigned long nItemProperty)
 {
@@ -646,7 +646,7 @@ void CSWUpgradeItemEntry::SetItem(unsigned long oidItem, int bShowItemSuffix,
     pParams->m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
     pParams->SetFillImage(cIcon, 0);
 }
-// PC 0x006C4450  Xbox 0x000FC4F0
+// PC 0x00726EE0
 CSWGuiUpgradeSelection::~CSWGuiUpgradeSelection()
 {
     if (m_pItemSelect != 0)
@@ -655,7 +655,7 @@ CSWGuiUpgradeSelection::~CSWGuiUpgradeSelection()
         m_pItemSelect = 0;
     }
 }
-// PC 0x006C4520  Xbox 0x000FC5E0
+// PC 0x0072E0B0
 void CSWGuiUpgradeSelection::OnPanelAdded()
 {
 
@@ -739,7 +739,7 @@ Exit:
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
-// PC 0x006C2AB0  Xbox 0x000FA5A0
+
 void CSWGuiUpgradeSelection::GetUpgradableItems(CSWSCreature* pCreature,
                                                 int* pnUpgradable, C2DA* pTable)
 {
@@ -767,7 +767,7 @@ void CSWGuiUpgradeSelection::AutoUpgradeDone()
 {
     g_pAppManager->m_pClientExoApp->GetInGameGui()->HideUpgradeScreen();
 }
-// PC 0x006C2B10  Xbox 0x000FA600
+// PC 0x00723CF0
 void CSWGuiUpgradeSelection::HandleInputEvent(int nEvent, int nState)
 {
     CGuiInGame* pInGame;
@@ -780,7 +780,7 @@ void CSWGuiUpgradeSelection::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006C2B60  Xbox 0x000FA650
+// PC 0x00723D50
 void CSWGuiUpgradeSelection::OnTypeSelected(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -803,7 +803,7 @@ void CSWGuiUpgradeSelection::OnTypeSelected(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006C2BD0  Xbox 0x000FA6B0
+
 void CSWGuiUpgradeSelection::OnEnter(CSWGuiControl* pControl)
 {
     int nType = pControl->m_nIndex;
@@ -841,7 +841,7 @@ void CSWGuiUpgradeSelection::OnEnter(CSWGuiControl* pControl)
     }
 #endif
 }
-// PC 0x006C47A0  Xbox 0x000FC840
+// PC 0x00727130
 CSWGuiUpgradeItemSelect::~CSWGuiUpgradeItemSelect()
 {
     m_lbItems.ClearItems();
@@ -852,7 +852,7 @@ CSWGuiUpgradeItemSelect::~CSWGuiUpgradeItemSelect()
         m_pUpgradePanel = 0;
     }
 }
-// PC 0x006C4880  Xbox 0x000FC950
+// PC 0x00727210
 void CSWGuiUpgradeItemSelect::OnControlEntered(CSWGuiControl* pControl)
 {
     int nSelected = pControl->m_bSelected;
@@ -880,14 +880,14 @@ void CSWGuiUpgradeItemSelect::OnControlEntered(CSWGuiControl* pControl)
 }
 
 #ifdef _XBOX
-// PC 0x0041A290  Xbox 0x0004CEC0
+
 inline int CSWGuiListBox::IsOversized()
 {
     return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
            m_lItems.num > 0 && !m_bHideScrollIcon;
 }
 #endif
-// PC 0x006C2C80  Xbox 0x000FA6F0
+// PC 0x00723FD0
 void CSWGuiUpgradeItemSelect::SetDescription(const CExoString& sDescription)
 {
     CSWGuiListBox* pListBox;
@@ -915,7 +915,7 @@ void CSWGuiUpgradeItemSelect::SetDescription(const CExoString& sDescription)
     m_lblRanalog.SetEnabledFlag(pListBox->IsOversized());
 #endif
 }
-// PC 0x006C2D30  Xbox 0x000FA7F0
+// PC 0x00724090
 void CSWGuiUpgradeItemSelect::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -939,7 +939,7 @@ void CSWGuiUpgradeItemSelect::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006C2DF0  Xbox 0x000FA8B0
+// PC 0x00724150
 void CSWGuiUpgradeItemSelect::OnUpgradableSelected(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -1017,7 +1017,7 @@ void CSWGuiUpgradeItemSelect::OnUpgradableSelected(CSWGuiControl* pControl)
         m_pManager->AddPanel(m_pUpgradePanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x006C4960  Xbox 0x000FDA70
+// PC 0x00729120
 void CSWGuiUpgradeItemSelect::BuildItemList(CSWSCreature* pCreature,
                                            CExoArrayList<CSWGuiControl*>& aItems,
                                            C2DA* pTable)
@@ -1043,7 +1043,7 @@ void CSWGuiUpgradeItemSelect::BuildItemList(CSWSCreature* pCreature,
     }
 }
 #ifndef _XBOX
-void CSWGuiUpgrade::ShowItems(int bShow)  // PC 0x006C2F80  Xbox 0x000FAA20
+void CSWGuiUpgrade::ShowItems(int bShow)  // PC 0x007242E0
 {
 
     if (bShow)
@@ -1151,7 +1151,7 @@ void CSWGuiUpgrade::ShowItems(int bShow)  // PC 0x006C2F80  Xbox 0x000FAA20
     m_lbItems.SetShown(0);
 }
 #endif
-CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x006C6B60  Xbox 0x000FEC30
+CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x00730C60
     : CSWGuiPanel(pManager)
 {
 
@@ -1276,7 +1276,7 @@ CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x006C6B60  Xbox 0x
     m_btnBack.AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
 #endif
 }
-// PC 0x006C4AD0  Xbox 0x000FCA30
+// PC 0x007272F0
 CSWGuiUpgrade::~CSWGuiUpgrade()
 {
     m_lbItems.ClearItems();
@@ -1292,7 +1292,7 @@ CSWGuiUpgrade::~CSWGuiUpgrade()
         m_pCrystalTable = 0;
     }
 }
-// PC 0x006C4D30  Xbox 0x000FCD10
+// PC 0x00727560
 void CSWGuiUpgrade::CloseItems()
 {
     CSWGuiControl* pControl;
@@ -1304,7 +1304,7 @@ void CSWGuiUpgrade::CloseItems()
     UpdateItems();
     OnEnterSlot(m_pActiveControl);
 }
-// PC 0x006C4D70  Xbox 0x000FCD50
+// PC 0x007275A0
 void CSWGuiUpgrade::OnPanelAdded()
 {
     if (m_pSelectedItem == 0)
@@ -1453,7 +1453,7 @@ void CSWGuiUpgrade::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
-// PC 0x006C5370  Xbox 0x000FD370
+// PC 0x00727DA0
 void CSWGuiUpgrade::OnControlEntered(CSWGuiControl* pControl)
 {
     int nSelected = pControl->m_bSelected;
@@ -1489,7 +1489,7 @@ void CSWGuiUpgrade::OnControlEntered(CSWGuiControl* pControl)
             SetDescription("");
     }
 }
-// PC 0x006C6120
+// PC 0x0072D060
 void CSWGuiUpgrade::VerifyUpgrade(CSWGuiControl* pControl)
 {
     int nSlot = m_pActiveControl->m_nIndex;
@@ -1507,7 +1507,7 @@ void CSWGuiUpgrade::VerifyUpgrade(CSWGuiControl* pControl)
             ~(1 << m_anUpgradeProperties[nSlot]);
     }
 }
-// PC 0x006C6190  Xbox 0x000FE8D0
+// PC 0x0072D0D0
 void CSWGuiUpgrade::OnAssemble(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -1525,7 +1525,7 @@ void CSWGuiUpgrade::OnAssemble(CSWGuiControl* pControl)
         m_pManager->PopModalPanel();
     }
 }
-// PC 0x006C61F0  Xbox 0x000FE930
+// PC 0x0072D130
 void CSWGuiUpgrade::CancelPanel()
 {
 
@@ -1571,7 +1571,7 @@ void CSWGuiUpgrade::CancelPanel()
     }
     m_pManager->PopModalPanel();
 }
-// PC 0x006C6330  Xbox 0x000FEA70
+// PC 0x0072E230
 void CSWGuiUpgradeItemSelect::OnPanelAdded()
 {
     if (m_nUpgradeType > 0 && m_nUpgradeType <= CSWGuiUpgrade::ITEMLIST_ARMOR)
@@ -1618,7 +1618,7 @@ void CSWGuiUpgradeItemSelect::OnPanelAdded()
         SetModal(0);
     }
 }
-// PC 0x006C6500  Xbox 0x000FE360
+// PC 0x0072E550
 void CSWGuiUpgrade::OnSlotSelected(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -1740,7 +1740,7 @@ void CSWGuiUpgrade::OnSlotSelected(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006C6A80  Xbox 0x000FF880
+// PC 0x0072EE80
 void CSWGuiUpgrade::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -1783,7 +1783,7 @@ void CSWGuiUpgrade::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006C32E0  Xbox 0x000FAE40
+// PC 0x00724670
 void CSWGuiUpgrade::SetDescription(const CExoString& sDescription)
 {
     CSWGuiListBox* pListBox;
@@ -1821,7 +1821,7 @@ void CSWGuiUpgrade::SetDescription(const CExoString& sDescription)
     pRanalog->SetEnabledFlag(pListBox->IsOversized());
 #endif
 }
-// PC 0x006C33A0  Xbox 0x000FAF50
+// PC 0x00724730
 void CSWGuiUpgrade::Draw(float fElapsed)
 {
     if (g_bDo3DGUIs != 0)
@@ -1844,7 +1844,7 @@ void CSWGuiUpgrade::Draw(float fElapsed)
     }
     CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x006C3460  Xbox 0x000FB010
+// PC 0x00724870
 void CSWGuiUpgrade::GetArmorModelAndTextureResRef(
     int nAppearance, int nBodyVariation, int nTextureVar,
     CExoString& sModel, CExoString& sTexture)
@@ -1894,7 +1894,7 @@ void CSWGuiUpgrade::GetArmorModelAndTextureResRef(
         sTexture = "";
     }
 }
-// PC 0x006C3630  Xbox 0x000FB1F0
+// PC 0x00724A40
 void CSWGuiUpgrade::Update3DView()
 {
     if (g_bDo3DGUIs != 0)
@@ -1966,7 +1966,7 @@ void CSWGuiUpgrade::Update3DView()
         }
     }
 }
-// PC 0x006C3AA0  Xbox 0x000FB660
+// PC 0x00724F20
 void CSWGuiUpgrade::UpdateItems()
 {
     CResRef cIcon;
@@ -2016,7 +2016,7 @@ void CSWGuiUpgrade::UpdateItems()
     }
     SetDescription(m_pSelectedItem->GetPropertyDescription());
 }
-// PC 0x006C3C30  Xbox 0x000FB800
+// PC 0x00725160
 void CSWGuiUpgrade::OnEnterSlot(CSWGuiControl* pControl)
 {
     int nSelected = pControl->m_bSelected;
@@ -2076,7 +2076,7 @@ void CSWGuiUpgrade::OnEnterSlot(CSWGuiControl* pControl)
 }
 
 #ifdef _XBOX
-void CSWGuiUpgrade::OnEnterAssemble(CSWGuiControl* pControl)  // Xbox 0x000FBA50
+void CSWGuiUpgrade::OnEnterAssemble(CSWGuiControl* pControl)
 {
     m_lblAAction.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
     m_lblAAction.m_cText.m_cParams.SetStrRef(42021);
@@ -2086,7 +2086,7 @@ void CSWGuiUpgrade::OnEnterAssemble(CSWGuiControl* pControl)  // Xbox 0x000FBA50
     m_cProperty.m_cText.m_cParams.SetText("");
     m_cUpgrades.m_cText.m_cParams.SetText("");
 }
-// PC 0x006C2F80  Xbox 0x000FAA20
+
 void CSWGuiUpgrade::ShowItems(int bShow)
 {
     if (bShow)

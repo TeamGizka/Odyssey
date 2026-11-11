@@ -6,12 +6,12 @@
 #include "guiingame.h"
 #include "swguiingamepause.h"
 #ifndef _XBOX
-void CSWGuiInGamePause::Draw(float fElapsed)  // PC 0x006C00B0  Xbox 0x000F51B0
+void CSWGuiInGamePause::Draw(float fElapsed)
 {
     return CSWGuiPanel::Draw(fElapsed);
 }
 #endif
-void CSWGuiInGamePause::SetPauseReason(unsigned char nReason)  // PC 0x006C00C0  Xbox 0x000F4FD0
+void CSWGuiInGamePause::SetPauseReason(unsigned char nReason)  // PC 0x007206F0
 {
     int bShowPress = 1;
     unsigned long nStrRef;
@@ -111,7 +111,7 @@ void CSWGuiInGamePause::SetPauseReason(unsigned char nReason)  // PC 0x006C00C0 
 #endif
 }
 #ifndef _XBOX
-void CSWGuiInGamePause::OnPanelAdded()  // PC 0x006C02F0  Xbox 0x000F5230
+void CSWGuiInGamePause::OnPanelAdded()  // PC 0x00720970
 {
     if (g_pAppManager->m_pClientExoApp->GetMiniGame() != 0)
     {
@@ -126,7 +126,7 @@ void CSWGuiInGamePause::OnPanelAdded()  // PC 0x006C02F0  Xbox 0x000F5230
     CSWGuiPanel::OnPanelAdded();
 }
 #endif
-void CSWGuiInGamePause::OnUnpauseButtonPressed(CSWGuiControl* pControl)  // PC 0x006C0350
+void CSWGuiInGamePause::OnUnpauseButtonPressed(CSWGuiControl* pControl)  // PC 0x00720AE0
 {
     if (pControl->m_bSelected != 0)
     {
@@ -140,7 +140,7 @@ void CSWGuiInGamePause::OnUnpauseButtonPressed(CSWGuiControl* pControl)  // PC 0
         }
     }
 }
-// PC 0x006C03B0  Xbox 0x000F5280
+// PC 0x00720C20
 CSWGuiInGamePause::CSWGuiInGamePause(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -181,7 +181,7 @@ CSWGuiInGamePause::CSWGuiInGamePause(CSWGuiManager* pManager)
 }
 
 #ifdef _XBOX
-// PC 0x006C02F0  Xbox 0x000F5230
+
 void CSWGuiInGamePause::OnPanelAdded()
 {
     if (g_pAppManager->m_pClientExoApp->GetMiniGame() != 0)
@@ -195,7 +195,7 @@ void CSWGuiInGamePause::OnPanelAdded()
         m_cExtent.m_nTop = m_nOriginalTop;
     }
 }
-// PC 0x006C00B0  Xbox 0x000F51B0
+
 void CSWGuiInGamePause::Draw(float fElapsed)
 {
     if (g_pAppManager->m_pClientExoApp->GetCombatMode())

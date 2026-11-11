@@ -17,7 +17,7 @@ static const int RULES_MAX_LEVEL = 20;
 
 #define RULES_RANGES_TABLE "Ranges"
 #define RULES_EXPERIENCE_TABLE "EXPTABLE"
-// PC 0x0054F260  Xbox 0x000A2160
+// PC 0x005D6300
 CCombatInformationNode::CCombatInformationNode()
 {
     m_nModifier = 0;
@@ -26,7 +26,7 @@ CCombatInformationNode::CCombatInformationNode()
     m_nVersusGoodEvil = 0;
     m_nVersusRace = g_pRules->m_nNumRaces;
 }
-// PC 0x00550E00  Xbox 0x000A4EC0
+// PC 0x005D7E20
 CCombatInformation::~CCombatInformation()
 {
     m_nUnarmedDamageDie = 3;
@@ -65,7 +65,7 @@ CCombatInformation::~CCombatInformation()
         }
     }
 }
-// PC 0x00550F30  Xbox 0x000A2180
+// PC 0x005D7F50
 int CCombatInformation::SaveData(CResGFF* pGFF, CResStruct* pStruct)
 {
     CResGFF* pCombatGFF = pGFF;
@@ -156,7 +156,7 @@ int CCombatInformation::SaveData(CResGFF* pGFF, CResStruct* pStruct)
 
     return 1;
 }
-// PC 0x005512D0  Xbox 0x000A2540
+// PC 0x005D82F0
 int CCombatInformation::operator!=(CCombatInformation& cInfo)
 {
     if (m_nNumAttacks != cInfo.m_nNumAttacks ||
@@ -204,7 +204,7 @@ int CCombatInformation::operator!=(CCombatInformation& cInfo)
 
     return 0;
 }
-// PC 0x00552C50  Xbox 0x000A5900
+// PC 0x005D9F00
 CSWRules::CSWRules()
 {
     m_pSpellArray = 0;
@@ -288,7 +288,7 @@ CSWRules::CSWRules()
     LoadRaceInfo();
     LoadDifficultyInfo();
 }
-// PC 0x0054F280  Xbox 0x000A1EB0
+// PC 0x005D6320
 int CCombatInformationNode::operator!=(CCombatInformationNode& cNode)
 {
     return m_nModifier != cNode.m_nModifier ||
@@ -297,7 +297,7 @@ int CCombatInformationNode::operator!=(CCombatInformationNode& cNode)
            m_nVersusGoodEvil != cNode.m_nVersusGoodEvil ||
            m_nVersusRace != cNode.m_nVersusRace;
 }
-// PC 0x0054F2C0  Xbox 0x000A3500
+// PC 0x005D6360
 void CSWRules::LoadClassInfo()
 {
     C2DA* p2DA = new C2DA("CLASSES", 0);
@@ -449,7 +449,7 @@ void CSWRules::LoadClassInfo()
 
     delete p2DA;
 }
-// PC 0x0054FEC0  Xbox 0x000A4100
+// PC 0x005D6EE0
 void CSWRules::LoadRaceInfo()
 {
     C2DA* p2DA = new C2DA("RacialTypes", 0);
@@ -521,7 +521,7 @@ void CSWRules::LoadRaceInfo()
 
     delete p2DA;
 }
-// PC 0x00551440  Xbox 0x000A26B0
+// PC 0x005D8460
 CSWRules::~CSWRules()
 {
     if (m_p2DArrays != 0)
@@ -581,7 +581,7 @@ CSWRules::~CSWRules()
         m_pMasterFeatIcons = 0;
     }
 }
-// PC 0x00550590  Xbox 0x000A47E0
+// PC 0x005D75B0
 void CSWRules::LoadSkillInfo()
 {
     C2DA* p2DA = new C2DA("Skills", 0);
@@ -648,7 +648,7 @@ void CSWRules::LoadSkillInfo()
 
     delete p2DA;
 }
-// PC 0x00550B60  Xbox 0x000A1EF0
+// PC 0x005D7B80
 unsigned short CSWRules::RollDice(unsigned char nDice, unsigned char nDie)
 {
     int nRolls = nDice;
@@ -665,7 +665,7 @@ unsigned short CSWRules::RollDice(unsigned char nDice, unsigned char nDie)
 
     return nResult;
 }
-// PC 0x00550B90  Xbox 0x000A1F20
+// PC 0x005D7BB0
 unsigned char CSWRules::GetMetaMagicLevelCost(unsigned char nMetaMagic)
 {
     switch (nMetaMagic)
@@ -684,7 +684,7 @@ unsigned char CSWRules::GetMetaMagicLevelCost(unsigned char nMetaMagic)
         return 0;
     }
 }
-// PC 0x00550C00  Xbox 0x000A4DC0
+// PC 0x005D7C20
 CSWFeat* CSWRules::GetFeat(unsigned short nFeat)
 {
     if (nFeat < m_nNumFeats)
@@ -697,12 +697,12 @@ CSWFeat* CSWRules::GetFeat(unsigned short nFeat)
     }
     return 0;
 }
-// PC 0x00550C30  Xbox 0x000A1F90
+// PC 0x005D7C50
 int CSWRules::GetDifficultyOption(int nOption, int nDifficulty)
 {
     return m_aDifficultyOptions[nDifficulty * 6 + nOption];
 }
-// PC 0x00550C50  Xbox 0x000A1FB0
+// PC 0x005D7C70
 void CSWRules::LoadDifficultyInfo()
 {
     C2DA* p2DA = new C2DA("DiffSettings", 0);
@@ -723,7 +723,7 @@ void CSWRules::LoadDifficultyInfo()
     } while (nDifficulty <= 5);
     delete p2DA;
 }
-// PC 0x005515E0  Xbox 0x000A2850
+// PC 0x005D8600
 void CSWRules::LoadFeatInfo()
 {
     C2DA* p2DA = new C2DA("Feat", 0);
@@ -879,7 +879,7 @@ void CSWRules::LoadFeatInfo()
 
     delete p2DA;
 }
-// PC 0x00550D10  Xbox 0x000A2070
+// PC 0x005D7D30
 int CSWRules::GetWeightedDamageAmount(int nMinimum, int nMaximum, int nCritical,
                                       int nMultiplier, int nChance)
 {
@@ -918,7 +918,7 @@ int CSWRules::GetWeightedDamageAmount(int nMinimum, int nMaximum, int nCritical,
     }
     return nMinimum + nMaximum * (rand() % (nChance - 100)) / 100;
 }
-// PC 0x00552280  Xbox 0x000A4DF0
+// PC 0x005D9530
 CCombatInformation::CCombatInformation()
 {
     m_nNumAttacks = 0;
@@ -943,7 +943,7 @@ CCombatInformation::CCombatInformation()
     m_nDamageDice = 0;
     m_nDamageDie = 0;
 }
-// PC 0x00552350  Xbox 0x000A4FF0
+// PC 0x005D9600
 int CCombatInformation::LoadData(CResGFF* pGFF, CResStruct* pStruct)
 {
     CResStruct cCombatStruct;
@@ -1043,7 +1043,7 @@ int CCombatInformation::LoadData(CResGFF* pGFF, CResStruct* pStruct)
 
     return 1;
 }
-// PC 0x00552A00  Xbox 0x000A56B0
+// PC 0x005D9CB0
 CCombatInformation& CCombatInformation::operator=(CCombatInformation& cInfo)
 {
     if (this == &cInfo)

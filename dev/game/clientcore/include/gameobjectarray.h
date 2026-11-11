@@ -67,141 +67,141 @@ public:
 
 
     unsigned long GetId() { return m_nId; }
-    // PC 0x004C3030  Xbox 0x00034B30
+
     virtual ~CGameObject()
     {
     }
-    // PC 0x0060E760
+    // PC 0x005EE1C0
     virtual void SetId(unsigned long nId)
     {
     }
-    // PC 0x005B5E90
+    // PC 0x006049D0
     virtual void ResetUpdateTimes(unsigned long nDay, unsigned long nTime)
     {
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWCObject* AsSWCObject()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWSObject* AsSWSObject()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWCDoor* AsSWCDoor()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWSDoor* AsSWSDoor()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWCModule* AsSWCModule()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWSModule* AsSWSModule()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWCArea* AsSWCArea()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWSArea* AsSWSArea()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWCCreature* AsSWCCreature()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWSCreature* AsSWSCreature()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWCItem* AsSWCItem()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWSItem* AsSWSItem()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWCTrigger* AsSWCTrigger()
     {
         return NULL;
     }
 
 
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWSTrigger* AsSWSTrigger()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWCProjectile* AsSWCProjectile()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWSPlaceable* AsSWSPlaceable()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWCPlaceable* AsSWCPlaceable()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWSAreaOfEffectObject* AsSWSAreaOfEffectObject()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWCAreaOfEffectObject* AsSWCAreaOfEffectObject()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWSWaypoint* AsSWSWaypoint()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWSEncounter* AsSWSEncounter()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWCStore* AsSWCStore()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWSStore* AsSWSStore()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWSSoundObject* AsSWSSoundObject()
     {
         return NULL;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWCSoundObject* AsSWCSoundObject()
     {
         return NULL;

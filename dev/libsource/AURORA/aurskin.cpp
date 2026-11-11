@@ -11,7 +11,7 @@
 #include "aurcamera.h"
 #include "aurlightmanager.h"
 #include "swmain.h"
-// PC 0x00471430  Xbox 0x002AD8A0
+// PC 0x00489860
 inline Vector Material::GetBumpMapSpecularColor()
 {
     CAurTexture* pBumpMap = (CAurTexture*)m_pBumpMap.m_pObject;
@@ -42,7 +42,7 @@ extern float diffuseintensity;
 extern float specularintensity;
 int AurBumpyShinyAvailable();
 unsigned char AurBumpMapCardValidate();
-// PC 0x00487310  Xbox 0x002DC530
+
 VertexProgram* GetSkinVP()
 {
     static VertexProgram* pSkinVP = new VertexProgram(
@@ -54,7 +54,7 @@ VertexProgram* GetSkinVP()
 
     return pSkinVP;
 }
-// PC 0x004873C0  Xbox 0x002DC5E0
+// PC 0x004A0790
 VertexProgram* GetSkinSphereMapVP()
 {
     static VertexProgram* pSkinVP = new VertexProgram(
@@ -63,7 +63,7 @@ VertexProgram* GetSkinSphereMapVP()
 
     return pSkinVP;
 }
-// PC 0x00487460  Xbox 0x002DC680
+
 VertexProgram* GetSkinCubeMapVP()
 {
 #ifdef _XBOX
@@ -81,7 +81,7 @@ VertexProgram* GetSkinCubeMapVP()
 }
 
 bool AurNV2xLevelShadersAvailable();
-// PC 0x00487510  Xbox 0x002DC780
+// PC 0x004A08A0
 Part* MdlNodeSkin::InternalCreateInstance(Gob*)
 {
     return new PartSkin(this);
@@ -97,7 +97,7 @@ static inline unsigned long RequestSkinPool(unsigned long nSize, unsigned long* 
 inline MdlNodeTriMesh* VertexPrimitive::GetNode() { return m_pNode; }
 
 #define DEBUG_SKINPOOLS 0
-// PC 0x00487570  Xbox 0x002DC7E0
+// PC 0x004A0900
 #ifdef _XBOX
 void ExecuteSkinTransforms(MdlNodeSkin* pNode, List<Vector>& tbones,
                            List<Matrix>& rbones,
@@ -387,7 +387,7 @@ void ExecuteSkinTransforms(MdlNodeSkin* pNode, List<Vector>& tbones,
     }
 #endif
 }
-// PC 0x004881F0  Xbox 0x002DD360
+// PC 0x004A1590
 void MakeInlinePartList(Part* pPart, List<Part*>& lstParts)
 {
     lstParts.Add(pPart);
@@ -397,7 +397,7 @@ void MakeInlinePartList(Part* pPart, List<Part*>& lstParts)
         MakeInlinePartList(pPart->m_lstChildren[i], lstParts);
     }
 }
-// PC 0x004884D0  Xbox 0x002DD3A0
+// PC 0x004A1870
 int FindPartIndexDFS(Part* pPart, char* sPartName)
 {
     List<Part*> lstParts;
@@ -420,7 +420,7 @@ int FindPartIndexDFS(Part* pPart, char* sPartName)
 
     return -1;
 }
-// PC 0x004885E0  Xbox 0x002DD490
+// PC 0x004A1980
 void MdlNodeSkin::InternalGenVertices()
 {
     List<SkinVertexWeight> lstSkinWeights;
@@ -469,7 +469,7 @@ void MdlNodeSkin::InternalGenVertices()
 
     m_lstSkinWeights = lstSkinWeights;
 }
-// PC 0x00488930  Xbox 0x002DD7B0
+// PC 0x004A1CD0
 void GatherBones(Part* pPart, List<Vector>& tbones, List<Quaternion>& qbones,
                  Vector vTranslation, Quaternion qRotation)
 {
@@ -484,7 +484,7 @@ void GatherBones(Part* pPart, List<Vector>& tbones, List<Quaternion>& qbones,
                     vTranslation, qRotation);
     }
 }
-// PC 0x00489340  Xbox 0x002DD8E0
+// PC 0x004A31D0
 void PartSkin::PostProcess(Part* pRoot)
 {
     MdlNodeSkin* pNode = (MdlNodeSkin*)m_pNode;
@@ -852,7 +852,7 @@ void PartSkin::PostProcess(Part* pRoot)
 
     pNode->m_pfnRemoveTemporaryArrays(pNode);
 }
-// PC 0x0048A0D0  Xbox 0x002DE550
+// PC 0x004A4680
 #ifdef _XBOX
 void RenderSkinned(VertexPrimitiveSkinned* pPrimitive)
 #else
@@ -896,7 +896,7 @@ void RenderSkinned(VertexPrimitiveSkinned* pPrimitive, bool bBumpedOut)
     return ExecuteSkinTransforms(pNode, tbones, rbones, pPrimitive, bBumpedOut);
 #endif
 }
-// PC 0x0048A520  Xbox 0x002DE980
+// PC 0x004A50A0
 void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
 {
     PartSkin* pSkin = pPrimitive->m_pPart->AsPartSkin();
@@ -1714,7 +1714,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
 #endif
     }
 }
-// PC 0x0048C650  Xbox 0x002E03C0
+// PC 0x004A8DE0
 void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
 {
     PartSkin* pSkin = pPrimitive->m_pPart->AsPartSkin();
@@ -1832,7 +1832,7 @@ void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
 }
 
 #ifndef _XBOX
-void PartSkin::DrawBumpedOutShellVP()  // PC 0x0048D040
+void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490
 {
     GLRender::SetActiveTexture(0);
     ((CAurTexture*)m_pMaterial->m_pTexture3.m_pObject)->Bind();
@@ -1930,7 +1930,7 @@ void PartSkin::DrawBumpedOutShellVP()  // PC 0x0048D040
 #endif
 
 #ifndef _XBOX
-void PartSkin::DrawBumpedOutShell()  // PC 0x0048D690
+void PartSkin::DrawBumpedOutShell()  // PC 0x004AB160
 {
     if (AurNV2xLevelShadersAvailable())
     {
@@ -1943,7 +1943,7 @@ void PartSkin::DrawBumpedOutShell()  // PC 0x0048D690
         true);
 }
 #endif
-// PC 0x0048D6C0  Xbox 0x002E0F80
+// PC 0x004AB190
 void PartSkin::Draw(bool bRenderLast)
 {
 #ifdef _XBOX
@@ -2103,21 +2103,21 @@ void PartSkin::Draw(bool bRenderLast)
 }
 
 #ifdef _XBOX
-// Xbox 0x002DC720
+
 char* usebumpdiffuseonly(char* sArguments)
 {
     usebumpdiffuse = 1;
     usebumpspecular = 0;
     return "Displaying only diffuse highlights on bumpmapped objects.";
 }
-// Xbox 0x002DC740
+
 char* usebumpspecularonly(char* sArguments)
 {
     usebumpdiffuse = 0;
     usebumpspecular = 1;
     return "Displaying only specular highlights on bumpmapped objects.";
 }
-// Xbox 0x002DC760
+
 char* usebumpspecularanddiffuse(char* sArguments)
 {
     usebumpdiffuse = 1;

@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x00712EA0  Xbox 0x00303A80
+// PC 0x00786740
 CResTPC::CResTPC()
 {
     m_bCompressed = 0;
@@ -12,11 +12,11 @@ CResTPC::CResTPC()
     m_pEnd = 0;
     m_bAllocSuffix = 1;
 }
-// PC 0x00712EE0  Xbox 0x00303AC0
+// PC 0x00786780
 CResTPC::~CResTPC()
 {
 }
-// PC 0x00712EF0  Xbox 0x00303AD0
+// PC 0x00786790
 int CResTPC::GetTPCAttrib(int* pnWidth, int* pnHeight, char* pnFormat,
                            int* pnCompressedSize, int* pnUncompressedSize,
                            int* pnRemainingSize, float* pfUnknown,
@@ -59,17 +59,17 @@ int CResTPC::GetTPCAttrib(int* pnWidth, int* pnHeight, char* pnFormat,
         }
     }
 }
-// PC 0x00712F90
+// PC 0x00786830
 unsigned char* CResTPC::GetTPCDataPtr()
 {
     return m_pData;
 }
-// PC 0x00712FA0
+// PC 0x00786840
 unsigned char* CResTPC::GetTPCTXIPtr()
 {
     return m_pEnd;
 }
-// PC 0x00712FB0  Xbox 0x00303B70
+// PC 0x00786850
 int CResTPC::GetTPCSize()
 {
     if (m_bCompressed != 0)
@@ -81,12 +81,12 @@ int CResTPC::GetTPCSize()
         return m_nUncompressedSize;
     }
 }
-// PC 0x00712FC0
+// PC 0x00786860
 int CResTPC::GetTPCTXISize()
 {
     return m_nRemainingSize;
 }
-// PC 0x00712FD0  Xbox 0x00303B80
+// PC 0x00786870
 int CResTPC::OnResourceFreed()
 {
     m_bCompressed = 0;
@@ -99,7 +99,7 @@ int CResTPC::OnResourceFreed()
     m_pEnd = 0;
     return 1;
 }
-// PC 0x00712FF0  Xbox 0x00303BA0
+// PC 0x00786890
 int CResTPC::OnResourceServiced()
 {
     TPCHeader* pTPC;

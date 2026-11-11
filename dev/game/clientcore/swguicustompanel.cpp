@@ -16,17 +16,17 @@ enum SWGuiCustomPanelState
     CUSTOM_PANEL_STATE_NAME,
     CUSTOM_PANEL_STATE_PLAY
 };
-// PC 0x006EEF60
+// PC 0x00760240
 void CSWGuiCustomPanel::SetParentPanel(CSWGuiPanel* pPanel)
 {
     m_pParentPanel = pPanel;
 }
-// PC 0x006EEF70  Xbox 0x00124990
+// PC 0x0075FF90
 void CSWGuiMainCharGen::NameChanged()
 {
     SetNameString(m_pCreature->GetName());
 }
-// PC 0x006EEFD0  Xbox 0x00127690
+// PC 0x0075FFF0
 void CSWGuiCustomPanel::SetState(int nState)
 {
     m_nState = nState;
@@ -90,7 +90,7 @@ void CSWGuiCustomPanel::SetState(int nState)
     }
     SetActiveControl(&m_aSteps[m_nState], 0);
 }
-// PC 0x006EF120  Xbox 0x00127770
+// PC 0x00760250
 void CSWGuiCustomPanel::OnSelectPortraitButton(CSWGuiControl* pControl)
 {
 #ifndef _XBOX
@@ -118,7 +118,7 @@ void CSWGuiCustomPanel::OnSelectPortraitButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006EF220
+// PC 0x007606C0
 void CSWGuiCustomPanel::OnSelectPlayButton(CSWGuiControl* pControl)
 {
     if (m_nState >= 5)
@@ -129,7 +129,7 @@ void CSWGuiCustomPanel::OnSelectPlayButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006EF240  Xbox 0x00127860
+// PC 0x00760350
 void CSWGuiCustomPanel::OnSelectNameButton(CSWGuiControl* pControl)
 {
     CSWGuiNameChargen* pPanel;
@@ -150,7 +150,7 @@ void CSWGuiCustomPanel::OnSelectNameButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006EF2D0  Xbox 0x001278F0
+// PC 0x007603E0
 void CSWGuiCustomPanel::OnSelectFeatsButton(CSWGuiControl* pControl)
 {
     CSWGuiFeatsCharGen* pNew;
@@ -168,7 +168,7 @@ void CSWGuiCustomPanel::OnSelectFeatsButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006EF360  Xbox 0x00127980
+// PC 0x00760470
 void CSWGuiCustomPanel::OnSelectSkillsButton(CSWGuiControl* pControl)
 {
     CSWGuiSkillsCharGen* pNew;
@@ -186,7 +186,7 @@ void CSWGuiCustomPanel::OnSelectSkillsButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006EF3F0  Xbox 0x00127A00
+// PC 0x00760500
 void CSWGuiCustomPanel::OnSelectAbilitiesButton(CSWGuiControl* pControl)
 {
     CSWGuiAbilitiesCharGen* pNew;
@@ -204,7 +204,7 @@ void CSWGuiCustomPanel::OnSelectAbilitiesButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006EF480
+// PC 0x00760590
 void CSWGuiCustomPanel::CancelledByChild()
 {
     m_aSteps[m_nState].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
@@ -212,35 +212,35 @@ void CSWGuiCustomPanel::CancelledByChild()
     CSWGuiTextParams* pParams = &pButton->m_cText.m_cParams;
     pParams->m_bHilightText = 1;
 }
-// PC 0x006EF4C0  Xbox 0x00127A80
+// PC 0x007605D0
 void CSWGuiCustomPanel::PortraitCreationCompleted()
 {
     ((CSWGuiMainCharGen*)m_pParentPanel)->PortraitChanged();
     SetState(1);
 }
-// PC 0x006EF4E0  Xbox 0x00127AA0
+// PC 0x007605F0
 void CSWGuiCustomPanel::NameCreationCompleted()
 {
     ((CSWGuiMainCharGen*)m_pParentPanel)->NameChanged();
     SetState(5);
 }
-// PC 0x006EF500  Xbox 0x00127AC0
+// PC 0x00760610
 void CSWGuiCustomPanel::AbilityCreationCompleted()
 {
     ((CSWGuiMainCharGen*)m_pParentPanel)->AbilitiesChanged();
     SetState(2);
 }
-// PC 0x006EF520  Xbox 0x00127AE0
+// PC 0x00760630
 void CSWGuiCustomPanel::SkillCreationCompleted()
 {
     SetState(3);
 }
-// PC 0x006EF530  Xbox 0x00127AF0
+// PC 0x00760640
 void CSWGuiCustomPanel::FeatCreationCompleted()
 {
     SetState(4);
 }
-// PC 0x006EF540
+// PC 0x00760650
 void CSWGuiCustomPanel::ClearAbilities()
 {
 #ifdef _XBOX
@@ -254,7 +254,7 @@ void CSWGuiCustomPanel::ClearAbilities()
 #endif
     m_pCreature->m_pStats->m_nCreationStage = 30;
 }
-// PC 0x006EF570  Xbox 0x00127B00
+// PC 0x00760680
 void CSWGuiCustomPanel::CancelPanel()
 {
 #ifdef _XBOX
@@ -281,7 +281,7 @@ void CSWGuiCustomPanel::CancelPanel()
     SetState(0);
 #endif
 }
-// PC 0x006EF5B0
+// PC 0x007606E0
 void CSWGuiCustomPanel::ConfirmCancel(CSWGuiControl* pControl)
 {
     CGuiInGame* pInGame = g_pAppManager->m_pClientExoApp->GetInGameGui();
@@ -290,7 +290,7 @@ void CSWGuiCustomPanel::ConfirmCancel(CSWGuiControl* pControl)
         CancelPanel();
     }
 }
-// PC 0x006EF610  Xbox 0x00127B50
+// PC 0x00760740
 void CSWGuiCustomPanel::HandleInputEvent(int nEvent, int nState)
 {
     int nCurrent;
@@ -326,7 +326,7 @@ void CSWGuiCustomPanel::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006EF6A0
+// PC 0x00760800
 void CSWGuiCustomPanel::OnCancelPressed(CSWGuiControl* pControl)
 {
     if (m_nState != 0)
@@ -344,7 +344,7 @@ void CSWGuiCustomPanel::OnCancelPressed(CSWGuiControl* pControl)
         CancelPanel();
     }
 }
-// PC 0x006EF730  Xbox 0x00127BB0
+// PC 0x00760890
 CSWGuiCustomPanel::CSWGuiCustomPanel(CSWGuiManager* pManager,
                                      CSWCCreature* pCreature)
     : CSWGuiPanel(pManager)

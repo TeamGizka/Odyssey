@@ -1,5 +1,5 @@
 #include "aurora.h"
-// PC 0x007100A0
+// PC 0x007838F0
 int CAuroraModel::GetModelDataSize()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -8,7 +8,7 @@ int CAuroraModel::GetModelDataSize()
     }
     return 0;
 }
-// PC 0x007107B0
+// PC 0x00783FE0
 unsigned char* CAuroraModel::GetModelDataPtr()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -17,7 +17,7 @@ unsigned char* CAuroraModel::GetModelDataPtr()
     }
     return 0;
 }
-// PC 0x007100D0  Xbox 0x002FA300
+// PC 0x00783920
 int CAuroraModel::Load()
 {
     unsigned char* pMDLData;
@@ -33,7 +33,7 @@ int CAuroraModel::Load()
     pTrailer->nType = RESTYPE_MDL;
     return 1;
 }
-// PC 0x0070FAF0  Xbox 0x002FA330
+// PC 0x00783320
 unsigned char* CAuroraModel::GetPtrToResHelperInfo()
 {
     unsigned char* nMDLDataPtr;
@@ -45,17 +45,17 @@ unsigned char* CAuroraModel::GetPtrToResHelperInfo()
     nMDLDataPtr = GetModelDataPtr();
     return nMDLDataPtr - sizeof(SMDLDataTrailer);
 }
-// PC 0x00710300  Xbox 0x002FA550
+// PC 0x00783B30
 CAuroraModel::CAuroraModel(CResRef cResRef, int bRequest)
     : CResHelper<CResMDL, RESTYPE_MDL>()
 {
     SetResRef(cResRef, bRequest);
 }
-// PC 0x00710390  Xbox 0x002FA5E0
+// PC 0x00783BC0
 CAuroraModel::~CAuroraModel()
 {
 }
-// PC 0x00710100
+// PC 0x00783630
 void CAuroraModel::Unload()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)

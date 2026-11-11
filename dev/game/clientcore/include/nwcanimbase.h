@@ -151,7 +151,7 @@ public:
     {
         return 0;
     }
-    virtual void HideWieldedItems(const CResRef&, const CResRef&)  // PC 0x005B5E90
+    virtual void HideWieldedItems(const CResRef&, const CResRef&)  // PC 0x006049D0
     {
     }
     virtual void ShowWieldedItems()  // PC 0x004015A0
@@ -177,14 +177,14 @@ public:
     virtual void TurnOnShadows();
     virtual void TurnOffShadows();
     virtual Quaternion GetOrientation();
-    virtual void UpdateSound(int)  // PC 0x0060E760
+    virtual void UpdateSound(int)  // PC 0x005EE1C0
     {
     }
-    virtual int AddAnimationFlag(int nFlag)  // PC 0x0069A3A0  Xbox 0x000C5C30
+    virtual int AddAnimationFlag(int nFlag)  // PC 0x006F46C0
     {
         return AddAnimationFlagInternal(m_pModel, nFlag);
     }
-    virtual int RemoveAnimationFlag(int nFlag)  // PC 0x0069A3C0  Xbox 0x000C5C50
+    virtual int RemoveAnimationFlag(int nFlag)  // PC 0x006F46E0
     {
         return RemoveAnimationFlagInternal(m_pModel, nFlag);
     }
@@ -202,7 +202,7 @@ public:
     virtual unsigned short ServerToClientAnimation(unsigned short nAnimation);
     virtual void EnableDistortion();
     virtual void DisableDistortion();
-    virtual void SetHeadItem(unsigned long)  // PC 0x0060E760
+    virtual void SetHeadItem(unsigned long)  // PC 0x005EE1C0
     {
     }
     virtual int SetAnimationInternal(CAurObject* pObject,

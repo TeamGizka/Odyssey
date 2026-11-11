@@ -12,7 +12,7 @@ char g_szNextStringName[256] = "string0";
 class StringGob : public Gob, public CAurString
 {
 public:
-    // Xbox 0x002F1260
+
     StringGob(int nMaxLength) : Gob(g_szNextStringName), CAurString(NULL)
     {
 
@@ -76,12 +76,12 @@ void CAurString::DieWithoutParent()
 #endif
 
 #ifdef _XBOX
-// Xbox 0x002F1260
+
 StringGob::StringGob(int nMaxLength)
     : Gob(g_szNextStringName), m_sCaret("["), m_nCaretLinePos(0), m_nCaretColumnPos(0), m_fCaretTime(0.0f)
 {
 }
-// Xbox 0x002F0F20
+
 StringGob::~StringGob()
 {
 }

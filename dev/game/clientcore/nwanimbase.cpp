@@ -1,15 +1,15 @@
 #include "nwcanimbase.h"
-// PC 0x00698E00  Xbox 0x000C4900
+// PC 0x006F35F0
 CSWAnimBase::CSWAnimBase()
 {
     m_afValues[0] = 0.0f;
     m_afValues[1] = 0.0f;
 }
-// PC 0x00698E20  Xbox 0x000C4920
+// PC 0x006F3610
 CSWAnimBase::~CSWAnimBase()
 {
 }
-// PC 0x00698E30  Xbox 0x000C4930
+// PC 0x006F3620
 int CSWAnimBase::Set(int nValue, float fValue)
 {
     switch (nValue)

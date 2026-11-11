@@ -1,5 +1,5 @@
 #include "aurvertexcache.h"
-// PC 0x004A9680  Xbox 0x002F6C90
+// PC 0x004D6910
 VertexCache::VertexCache(int nNumEntries)
 {
     m_nNumEntries = nNumEntries;
@@ -9,7 +9,7 @@ VertexCache::VertexCache(int nNumEntries)
         m_pEntries[i] = -1;
     }
 }
-// PC 0x004A96C0  Xbox 0x002F6CD0
+// PC 0x004D6950
 VertexCache::~VertexCache()
 {
     delete[] m_pEntries;

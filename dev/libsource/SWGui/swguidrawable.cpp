@@ -10,7 +10,7 @@ Vector CSWGuiDrawable::NO_COLOURING(-1.0f, -1.0f, -1.0f);
 float CSWGuiDrawable::m_fAlphaPulseTimer = 0.75f;
 float CSWGuiDrawable::m_fPulsingAlpha = 1.0f;
 int CSWGuiDrawable::m_bAlphaPulsingUp;
-// PC 0x00414A50  Xbox 0x00300BB0
+// PC 0x00414270
 void CSWGuiDrawable::UpdatePulsing(float fElapsed)
 {
     float fStartAlpha;
@@ -37,7 +37,7 @@ void CSWGuiDrawable::UpdatePulsing(float fElapsed)
 }
 
 #include "aurgui.h"
-// PC 0x00414AE0  Xbox 0x00300C40
+// PC 0x00414300
 void CSWGuiBorderParams::SetCornerImage(const CResRef& cImage, int bForceReload)
 {
     if (cImage != m_cCornerImage || bForceReload != 0)
@@ -60,7 +60,7 @@ void CSWGuiBorderParams::SetCornerImage(const CResRef& cImage, int bForceReload)
         }
     }
 }
-// PC 0x00414B70  Xbox 0x00300CD0
+// PC 0x00414390
 void CSWGuiBorderParams::SetEdgeImage(const CResRef& cImage, int bForceReload)
 {
     if (cImage != m_cEdgeImage || bForceReload != 0)
@@ -83,7 +83,7 @@ void CSWGuiBorderParams::SetEdgeImage(const CResRef& cImage, int bForceReload)
         }
     }
 }
-// PC 0x00414C00  Xbox 0x00300D60
+// PC 0x00414420
 void CSWGuiBorderParams::SetFillImage(const CResRef& cImage, int bForceReload)
 {
     if (cImage != m_cFillImage || bForceReload != 0)
@@ -106,7 +106,7 @@ void CSWGuiBorderParams::SetFillImage(const CResRef& cImage, int bForceReload)
         }
     }
 }
-// PC 0x00414C90  Xbox 0x00300DF0
+// PC 0x004144B0
 void CSWGuiBorderParams::SetBorder(CSWGuiBorder* pBorder)
 {
     m_pBorder = pBorder;
@@ -117,7 +117,7 @@ void CSWGuiBorderParams::SetBorder(CSWGuiBorder* pBorder)
         SetFillImage(m_cFillImage, 1);
     }
 }
-// PC 0x00414CD0  Xbox 0x00300E30
+// PC 0x004144F0
 int CSWGuiBorderParams::GetBorderDim() const
 {
     int nBorderDim = 0;
@@ -133,7 +133,7 @@ int CSWGuiBorderParams::GetBorderDim() const
     }
     return nBorderDim;
 }
-// PC 0x00414D00  Xbox 0x00300E60
+// PC 0x00414520
 void CSWGuiBorderParams::SetPulsingAlpha(int bPulsing, int bLowAlpha,
                                          int bHighAlpha)
 {
@@ -141,7 +141,7 @@ void CSWGuiBorderParams::SetPulsingAlpha(int bPulsing, int bLowAlpha,
     m_bLowAlpha = bLowAlpha;
     m_bHighAlpha = bHighAlpha;
 }
-// PC 0x00414D30  Xbox 0x00301860
+// PC 0x00414550
 CSWGuiImageParams::CSWGuiImageParams(const CResRef& cImage, int bTiled,
                                    int nDrawStyle, float fRotation,
                                    int nAlignment, float fAlpha,
@@ -159,7 +159,7 @@ CSWGuiImageParams::CSWGuiImageParams(const CResRef& cImage, int bTiled,
 }
 
 #include "clientexoappinternal.h"
-// PC 0x00414E10  Xbox 0x00300E90
+// PC 0x00414630
 void CSWGuiTextParams::SetColor(const Vector& vColor)
 {
     m_vColor = vColor;
@@ -168,7 +168,7 @@ void CSWGuiTextParams::SetColor(const Vector& vColor)
         m_pText->m_pString->SetColor(m_vColor);
     }
 }
-// PC 0x00414E50
+// PC 0x00414670
 void CSWGuiTextParams::SetDefaultColor(const Vector& vColor)
 {
 #ifndef _XBOX
@@ -176,14 +176,14 @@ void CSWGuiTextParams::SetDefaultColor(const Vector& vColor)
 #endif
     SetColor(vColor);
 }
-// PC 0x00414E80
+// PC 0x004146A0
 void CSWGuiTextParams::RestoreDefaultColor()
 {
 #ifndef _XBOX
     SetColor(m_vOriginalColor);
 #endif
 }
-// PC 0x00414E90  Xbox 0x00300ED0
+// PC 0x004146B0
 void CSWGuiText::WrapString()
 {
     if (m_pString != NULL && m_cExtent.m_nHeight != 0 &&
@@ -193,7 +193,7 @@ void CSWGuiText::WrapString()
     }
 }
 #ifndef _XBOX
-int CSWGuiText::GetIdealHeight()  // PC 0x00414EB0  Xbox 0x00300EF0
+int CSWGuiText::GetIdealHeight()  // PC 0x004146D0
 {
     int nHeight;
 
@@ -208,7 +208,7 @@ int CSWGuiText::GetIdealHeight()  // PC 0x00414EB0  Xbox 0x00300EF0
     }
     return 0;
 }
-// PC 0x00414EE0  Xbox 0x00300F10
+// PC 0x00414700
 int CSWGuiText::GetFontHeight()
 {
     int nHeight;
@@ -225,7 +225,7 @@ int CSWGuiText::GetFontHeight()
     return 0;
 }
 #endif
-CSWGuiExtent CSWGuiText::GetIdealWidthAndHeight()  // PC 0x00414F10
+CSWGuiExtent CSWGuiText::GetIdealWidthAndHeight()  // PC 0x00414730
 {
     CSWGuiExtent cExtent;
     int nHeight;
@@ -260,11 +260,11 @@ CSWGuiExtent CSWGuiText::GetIdealWidthAndHeight()  // PC 0x00414F10
     cExtent.m_nHeight = nHeight;
     return cExtent;
 }
-// PC 0x00414F80  Xbox 0x00300F80
+// PC 0x004147A0
 inline CSWGuiDrawable::~CSWGuiDrawable()
 {
 }
-// PC 0x004174B0  Xbox 0x00303000
+// PC 0x00416CC0
 CSWGuiScene::CSWGuiScene() : m_lModels(0)
 {
     m_pScene = NewCAurScene("scene");
@@ -279,7 +279,7 @@ CSWGuiScene::CSWGuiScene() : m_lModels(0)
         m_vColor = CSWGuiDrawable::NO_COLOURING;
     }
 }
-// PC 0x00414FB0  Xbox 0x00300F30
+// PC 0x004147D0
 void CSWGuiScene::Draw(float fElapsed)
 {
     m_pScene->Animate(fElapsed);
@@ -291,7 +291,7 @@ void CSWGuiScene::Draw(float fElapsed)
         AurGUICloseViewport();
     }
 }
-// PC 0x004165E0  Xbox 0x003023B0
+// PC 0x00415E70
 CSWGuiScene::~CSWGuiScene()
 {
     for (int nModel = 0; nModel < m_lModels.num; ++nModel)
@@ -320,7 +320,7 @@ CSWGuiScene::~CSWGuiScene()
     }
 #endif
 }
-// PC 0x00416710  Xbox 0x00302450
+// PC 0x00415FA0
 int CSWGuiScene::RemoveModel(int nModel, int bDestroy)
 {
     CAurObject* pModel;
@@ -337,7 +337,7 @@ int CSWGuiScene::RemoveModel(int nModel, int bDestroy)
     }
     return 1;
 }
-// PC 0x00416750  Xbox 0x00302490
+// PC 0x00415FE0
 CAurObject* CSWGuiScene::GetModel(int nModel)
 {
     if (nModel >= 0 && nModel < m_lModels.num)
@@ -346,7 +346,7 @@ CAurObject* CSWGuiScene::GetModel(int nModel)
     }
     return NULL;
 }
-// PC 0x004175C0  Xbox 0x00303110
+// PC 0x00416DD0
 int CSWGuiScene::AddModel(CAurObject* pModel, int nModel, int bAttach)
 {
     if (pModel == NULL)
@@ -370,7 +370,7 @@ int CSWGuiScene::AddModel(CAurObject* pModel, int nModel, int bAttach)
 
     return 1;
 }
-// PC 0x00417620  Xbox 0x00303170
+// PC 0x00416E30
 CAurObject* CSWGuiScene::AddModel(const CExoString& sModel, int nFlags)
 {
     CAurObject* pModel;
@@ -382,7 +382,7 @@ CAurObject* CSWGuiScene::AddModel(const CExoString& sModel, int nFlags)
     }
     return NULL;
 }
-// PC 0x004167F0  Xbox 0x003024B0
+// PC 0x00416000
 CSWGuiBorder::CSWGuiBorder()
     : m_cParams(CResRef(), CResRef(), CResRef(), 0, 0, 1.0f,
                 Vector(1.0f, 1.0f, 1.0f), 0)
@@ -392,7 +392,7 @@ CSWGuiBorder::CSWGuiBorder()
     m_pFillImage = NULL;
     m_cParams.SetBorder(this);
 }
-// PC 0x00415000  Xbox 0x00300FB0
+// PC 0x00414820
 CSWGuiBorderParams::CSWGuiBorderParams(const CResRef& cCorner,
                                        const CResRef& cEdge,
                                        const CResRef& cFill, int nFillMode,
@@ -428,7 +428,7 @@ inline void CSWGuiBorderParams::SetFillImage(const CResRef& cImage)
 {
     SetFillImage(cImage, 0);
 }
-// PC 0x004150C0  Xbox 0x00301080
+// PC 0x004148F0
 CSWGuiBorderParams& CSWGuiBorderParams::operator=(const CSWGuiBorderParams& cParams)
 {
     m_cCornerImage = cParams.m_cCornerImage;
@@ -448,14 +448,14 @@ CSWGuiBorderParams& CSWGuiBorderParams::operator=(const CSWGuiBorderParams& cPar
     SetBorder(m_pBorder);
     return *this;
 }
-// PC 0x00415190  Xbox 0x00301150
+// PC 0x004149D0
 void CSWGuiBorder::Initialize(const CSWGuiExtent& cExtent,
                               const CSWGuiBorderParams& cParams)
 {
     m_cExtent = cExtent;
     m_cParams = cParams;
 }
-// PC 0x004151C0  Xbox 0x00301180
+// PC 0x00414A00
 CSWGuiBorder::~CSWGuiBorder()
 {
     if (m_pCornerImage != NULL)
@@ -474,7 +474,7 @@ CSWGuiBorder::~CSWGuiBorder()
         m_pFillImage = NULL;
     }
 }
-// PC 0x00415240  Xbox 0x00301200
+// PC 0x00414A80
 CSWGuiExtent CSWGuiBorder::GetInnerExtent()
 {
     int nCornerHeight;
@@ -542,7 +542,7 @@ inline void CSWGuiImageParams::SetImage(const CResRef& cImage)
 {
     SetImage(cImage, 0);
 }
-// PC 0x004153E0  Xbox 0x00301340
+// PC 0x00414C20
 void CSWGuiBorder::Load(CResGFF* pGFF, CResStruct& cStruct,
                        const CExoString& sName)
 {
@@ -573,7 +573,7 @@ void CSWGuiBorder::Load(CResGFF* pGFF, CResStruct& cStruct,
                                   (nPulsing >> 1) & 1);
     }
 }
-// PC 0x004155B0  Xbox 0x00301510
+// PC 0x00414E00
 void CSWGuiBorder::FillTile(int nHeight, int nWidth, int nX, int nY,
                             float fAlpha, const Vector& vColor)
 {
@@ -658,7 +658,7 @@ void CSWGuiBorder::FillTile(int nHeight, int nWidth, int nX, int nY,
         }
     }
 }
-// PC 0x004168C0  Xbox 0x00302580
+// PC 0x004160D0
 void CSWGuiBorder::Draw(float fElapsed)
 {
     if (m_cExtent.m_nWidth == 0 || m_cExtent.m_nHeight == 0)
@@ -840,7 +840,7 @@ void CSWGuiBorder::Draw(float fElapsed)
     }
     CAurGUIImage::FlushBuffer(CAurGUIImage::cm_fAlpha);
 }
-// PC 0x004157F0  Xbox 0x00301750
+// PC 0x00415040
 void CSWGuiBorder::FillCenter(int nHeight, int nWidth, int nX, int nY,
                               float fAlpha, const Vector& vColor)
 {
@@ -871,7 +871,7 @@ void CSWGuiBorder::FillCenter(int nHeight, int nWidth, int nX, int nY,
                           0, fRotation, vColor, fAlpha);
     }
 }
-// PC 0x00415900  Xbox 0x00301900
+// PC 0x00415150
 void CSWGuiImageParams::SetImage(const CResRef& cImage, int bForceReload)
 {
     if (cImage != m_cImage || bForceReload != 0)
@@ -898,7 +898,7 @@ void CSWGuiImageParams::SetImage(const CResRef& cImage, int bForceReload)
         }
     }
 }
-// PC 0x00415990  Xbox 0x003019A0
+// PC 0x004151E0
 void CSWGuiImageParams::SetAlignment(int nAlignment)
 {
     m_nAlignment = nAlignment;
@@ -907,7 +907,7 @@ void CSWGuiImageParams::SetAlignment(int nAlignment)
         m_pImage->SetExtent(m_pImage->m_cExtent);
     }
 }
-// PC 0x00416DE0  Xbox 0x00302AB0
+// PC 0x004165F0
 CSWGuiImageParams& CSWGuiImageParams::operator=(const CSWGuiImageParams& cParams)
 {
     m_cImage = cParams.m_cImage;
@@ -923,7 +923,7 @@ CSWGuiImageParams& CSWGuiImageParams::operator=(const CSWGuiImageParams& cParams
     SetImageObject(m_pImage);
     return *this;
 }
-// PC 0x004159C0  Xbox 0x003019D0
+// PC 0x00415210
 void CSWGuiImageParams::SetDrawStyle(int nDrawStyle)
 {
     m_bTiled = nDrawStyle;
@@ -932,7 +932,7 @@ void CSWGuiImageParams::SetDrawStyle(int nDrawStyle)
         m_pImage->SetExtent(m_pImage->m_cExtent);
     }
 }
-// PC 0x004159F0  Xbox 0x00301A00
+// PC 0x00415240
 void CSWGuiImageParams::SetImageObject(CSWGuiImage* pImage)
 {
     m_pImage = pImage;
@@ -943,7 +943,7 @@ void CSWGuiImageParams::SetImageObject(CSWGuiImage* pImage)
         SetDrawStyle(m_bTiled);
     }
 }
-// PC 0x00415A30  Xbox 0x00301A40
+// PC 0x00415280
 CSWGuiImage::CSWGuiImage()
     : m_cParams(CResRef(), 0, 0, 0.0f,
                 CSWGuiImageParams::ALIGNMENT_DEFAULT, 1.0f,
@@ -952,14 +952,14 @@ CSWGuiImage::CSWGuiImage()
     m_pImageObject = NULL;
     m_cParams.SetImageObject(this);
 }
-// PC 0x00416E90  Xbox 0x00302B70
+// PC 0x004166A0
 void CSWGuiImage::Initialize(const CSWGuiExtent& cExtent,
                             const CSWGuiImageParams& cParams)
 {
     m_cExtent = cExtent;
     m_cParams = cParams;
 }
-// PC 0x00416EC0  Xbox 0x00302BA0
+// PC 0x004166D0
 void CSWGuiImage::Load(CResGFF* pGFF, CResStruct& cStruct,
                       const CExoString& sName)
 {
@@ -1001,7 +1001,7 @@ void CSWGuiImage::Load(CResGFF* pGFF, CResStruct& cStruct,
         m_cParams.m_fRotation = fRotation;
     }
 }
-// PC 0x00415AD0  Xbox 0x00301AF0
+// PC 0x00415320
 CSWGuiImage::~CSWGuiImage()
 {
     if (m_pImageObject != NULL)
@@ -1010,7 +1010,7 @@ CSWGuiImage::~CSWGuiImage()
         m_pImageObject = NULL;
     }
 }
-// PC 0x00415B30  Xbox 0x00301B50
+// PC 0x00415380
 CSWGuiExtent CSWGuiImage::GetImageExtent()
 {
     CSWGuiExtent cExtent;
@@ -1023,7 +1023,7 @@ CSWGuiExtent CSWGuiImage::GetImageExtent()
 
     return cExtent;
 }
-// PC 0x00415B70  Xbox 0x00301B90
+// PC 0x004153C0
 void CSWGuiImage::SetExtent(const CSWGuiExtent& cExtent)
 {
     m_cExtent = cExtent;
@@ -1085,7 +1085,7 @@ void CSWGuiImage::SetExtent(const CSWGuiExtent& cExtent)
         }
     }
 }
-// PC 0x00415C90  Xbox 0x00301CB0
+// PC 0x004154E0
 void CSWGuiImage::Draw(float fElapsed)
 {
     float fAlpha;
@@ -1106,7 +1106,7 @@ void CSWGuiImage::Draw(float fElapsed)
     }
 }
 #ifndef _XBOX
-void CSWGuiTextParams::SetFont(const CResRef& cFont)  // PC 0x00415D00  Xbox 0x00301DE0
+void CSWGuiTextParams::SetFont(const CResRef& cFont)  // PC 0x00415550
 {
     m_cFont = cFont;
     if (m_pText != NULL && m_pText->m_pString != NULL && m_cFont.IsValid())
@@ -1119,7 +1119,7 @@ void CSWGuiTextParams::SetFont(const CResRef& cFont)  // PC 0x00415D00  Xbox 0x0
     }
 }
 #endif
-// PC 0x00415D60
+// PC 0x004155B0
 void CSWGuiTextParams::SetFontRename()
 {
     char szFont[20];
@@ -1137,7 +1137,7 @@ void CSWGuiTextParams::SetFontRename()
 #endif
 }
 #ifndef _XBOX
-CSWGuiTextParams::CSWGuiTextParams()  // PC 0x00417050  Xbox 0x00301D20
+CSWGuiTextParams::CSWGuiTextParams()  // PC 0x00416860
 {
 #ifndef _XBOX
     m_vColor = m_vOriginalColor = Vector(1.0f, 1.0f, 1.0f);
@@ -1152,7 +1152,7 @@ CSWGuiTextParams::CSWGuiTextParams()  // PC 0x00417050  Xbox 0x00301D20
     SetBaseFont("dialogfont16x16");
 }
 #endif
-// PC 0x00417120  Xbox 0x00302D40
+// PC 0x00416930
 CSWGuiTextParams::CSWGuiTextParams(const CExoString& sText,
                                    const CResRef& cFont,
                                    const Vector& vColor, int nAlignment,
@@ -1174,7 +1174,7 @@ CSWGuiTextParams::CSWGuiTextParams(const CExoString& sText,
     m_nAlignment = nAlignment;
     m_bHilightText = 0;
 }
-// PC 0x00415DD0
+// PC 0x00415620
 void CSWGuiTextParams::SetBaseFont(const CResRef& cFont)
 {
 #ifndef _XBOX
@@ -1184,12 +1184,12 @@ void CSWGuiTextParams::SetBaseFont(const CResRef& cFont)
     SetFont(cFont);
 #endif
 }
-// PC 0x00415DF0
+// PC 0x00415640
 void CSWGuiTextParams::ReSetFont()
 {
     SetFontRename();
 }
-// PC 0x00415E00  Xbox 0x00301E60
+// PC 0x00415650
 void CSWGuiTextParams::SetText(const CExoString& sText)
 {
     m_sText = sText;
@@ -1200,7 +1200,7 @@ void CSWGuiTextParams::SetText(const CExoString& sText)
         m_pText->WrapString();
     }
 }
-// PC 0x00415E50  Xbox 0x00301EB0
+// PC 0x004156A0
 void CSWGuiTextParams::SetStrRef(unsigned long nStrRef)
 {
     m_nStrRef = nStrRef;
@@ -1217,7 +1217,7 @@ void CSWGuiTextParams::SetStrRef(unsigned long nStrRef)
         }
     }
 }
-// PC 0x00415F20  Xbox 0x00301F80
+// PC 0x00415770
 void CSWGuiTextParams::SetAlignment(int nAlignment)
 {
     m_nAlignment = nAlignment;
@@ -1228,7 +1228,7 @@ void CSWGuiTextParams::SetAlignment(int nAlignment)
     }
 }
 #ifndef _XBOX
-// PC 0x004171E0  Xbox 0x00302EA0
+// PC 0x004169F0
 CSWGuiTextParams& CSWGuiTextParams::operator=(const CSWGuiTextParams& cParams)
 {
     m_sText = cParams.m_sText;
@@ -1247,7 +1247,7 @@ CSWGuiTextParams& CSWGuiTextParams::operator=(const CSWGuiTextParams& cParams)
     SetTextObject(m_pText);
     return *this;
 }
-// PC 0x00415F70  Xbox 0x00301FD0
+// PC 0x004157C0
 void CSWGuiTextParams::SetTextObject(CSWGuiText* pText)
 {
     m_pText = pText;
@@ -1274,7 +1274,7 @@ void CSWGuiTextParams::SetTextObject(CSWGuiText* pText)
     }
 }
 #endif
-CSWGuiText::CSWGuiText()  // PC 0x00417280  Xbox 0x00302050
+CSWGuiText::CSWGuiText()  // PC 0x00416A90
 {
     m_pString = NULL;
     m_cParams.SetTextObject(this);
@@ -1282,7 +1282,7 @@ CSWGuiText::CSWGuiText()  // PC 0x00417280  Xbox 0x00302050
     m_nWrapWidth = 400;
 #endif
 }
-// PC 0x00415FF0  Xbox 0x003020C0
+// PC 0x00415840
 CSWGuiText::~CSWGuiText()
 {
     if (m_pString != NULL)
@@ -1290,7 +1290,7 @@ CSWGuiText::~CSWGuiText()
         delete m_pString;
     }
 }
-// PC 0x00416050  Xbox 0x00302130
+// PC 0x004158B0
 void CSWGuiText::Load(CResGFF* pGFF, CResStruct& cStruct,
                      const CExoString& sName)
 {
@@ -1327,7 +1327,7 @@ void CSWGuiText::Load(CResGFF* pGFF, CResStruct& cStruct,
         cParams.SetTextObject(this);
     }
 }
-// PC 0x00416240  Xbox 0x00302310
+// PC 0x00415AA0
 void CSWGuiText::Draw(float fElapsed)
 {
     float fAlpha;
@@ -1342,7 +1342,7 @@ void CSWGuiText::Draw(float fElapsed)
         m_pString->Draw(fAlpha);
     }
 }
-// PC 0x00416280  Xbox 0x00302350
+// PC 0x00415AE0
 void CSWGuiText::SetExtent(const CSWGuiExtent& cExtent)
 {
     m_cExtent = cExtent;
@@ -1353,7 +1353,7 @@ void CSWGuiText::SetExtent(const CSWGuiExtent& cExtent)
         WrapString();
     }
 }
-// PC 0x004162E0
+// PC 0x00415B40
 void CSWGuiEditText::RemoveLastChar()
 {
     CExoString sDisplayText;
@@ -1372,7 +1372,7 @@ void CSWGuiEditText::RemoveLastChar()
         }
     }
 }
-// PC 0x004163A0
+// PC 0x00415C20
 void CSWGuiEditText::AddNewChar(char* szChar)
 {
     CExoString sDisplayText;
@@ -1391,7 +1391,7 @@ void CSWGuiEditText::AddNewChar(char* szChar)
         }
     }
 }
-// PC 0x00416490
+// PC 0x00415D20
 void CSWGuiEditText::SetText(const CExoString& sText)
 {
     CExoString sDisplayText;
@@ -1407,7 +1407,7 @@ void CSWGuiEditText::SetText(const CExoString& sText)
         m_cParams.SetText(m_sText);
     }
 }
-// PC 0x00416530
+// PC 0x00415DC0
 void CSWGuiEditText::SetCaretVisible(int bVisible)
 {
     m_bCaretVisible = bVisible;
@@ -1423,7 +1423,7 @@ void CSWGuiEditText::SetCaretVisible(int bVisible)
         m_cParams.SetText(m_sText);
     }
 }
-// PC 0x00417310  Xbox 0x00302F40
+// PC 0x00416B20
 #ifdef _XBOX
 void CSWGuiText::Initialize(const CSWGuiExtent& cExtent,
                             const CSWGuiTextParams& cParams)
@@ -1456,7 +1456,7 @@ void CSWGuiText::Initialize(const CSWGuiExtent& cExtent,
         WrapString();
     }
 }
-// PC 0x004173D0
+// PC 0x00416BE0
 CSWGuiEditText::CSWGuiEditText()
 {
     m_bCaretVisible = 0;
@@ -1465,7 +1465,7 @@ CSWGuiEditText::CSWGuiEditText()
 }
 
 #ifdef _XBOX
-int CSWGuiText::GetIdealHeight()  // PC 0x00414EB0  Xbox 0x00300EF0
+int CSWGuiText::GetIdealHeight()
 {
     if (m_pString != NULL)
     {
@@ -1473,7 +1473,7 @@ int CSWGuiText::GetIdealHeight()  // PC 0x00414EB0  Xbox 0x00300EF0
     }
     return 0;
 }
-// PC 0x00414EE0  Xbox 0x00300F10
+
 int CSWGuiText::GetFontHeight()
 {
     if (m_pString != NULL)
@@ -1488,7 +1488,7 @@ int CSWGuiText::GetFontHeight()
 
 CResRef CSWGuiTextParams::s_cDefaultFont("dialogfont16x16");
 CResRef CSWGuiTextParams::s_cConsoleFont("fnt_console");
-// PC 0x00415D00  Xbox 0x00301DE0
+
 void CSWGuiTextParams::SetFont(const CResRef& cFont)
 {
     if (cFont == s_cConsoleFont)
@@ -1508,7 +1508,7 @@ void CSWGuiTextParams::SetFont(const CResRef& cFont)
         m_pText->WrapString();
     }
 }
-// PC 0x00417050  Xbox 0x00301D20
+
 CSWGuiTextParams::CSWGuiTextParams()
 {
     m_cFont = s_cDefaultFont;
@@ -1519,7 +1519,7 @@ CSWGuiTextParams::CSWGuiTextParams()
     m_nStrRef = -1;
     m_fAlpha = 1.0f;
 }
-// PC 0x004171E0  Xbox 0x00302EA0
+
 CSWGuiTextParams& CSWGuiTextParams::operator=(const CSWGuiTextParams& cParams)
 {
     m_sText = cParams.m_sText;
@@ -1532,7 +1532,7 @@ CSWGuiTextParams& CSWGuiTextParams::operator=(const CSWGuiTextParams& cParams)
     SetTextObject(m_pText);
     return *this;
 }
-// PC 0x00415F70  Xbox 0x00301FD0
+
 void CSWGuiTextParams::SetTextObject(CSWGuiText* pText)
 {
     m_pText = pText;
@@ -1552,7 +1552,7 @@ void CSWGuiTextParams::SetTextObject(CSWGuiText* pText)
         m_nStrRef = nStrRef;
     }
 }
-// Xbox 0x00302DF0
+
 CSWGuiTextParams::CSWGuiTextParams(unsigned long nStrRef, const CResRef& cFont, const Vector& vColor,
                                    int nAlignment, float fAlpha)
 {

@@ -8,26 +8,26 @@ unsigned int topMask[5] = {0xffff0000, 0xff00ff00, 0xf0f0f0f0, 0xcccccccc,
 Vector xaxis(1.0f, 0.0f, 0.0f);
 Vector yaxis(0.0f, 1.0f, 0.0f);
 Vector zaxis(0.0f, 0.0f, 1.0f);
-// PC 0x004A96D0  Xbox 0x002774D0
+// PC 0x004D6960
 float DegToRad(float fDegrees)
 {
     return fDegrees * DEG_TO_RAD;
 }
 
 #include <math.h>
-// PC 0x004A96E0  Xbox 0x00278E80
+// PC 0x004D6970
 double Round(float fValue, float fRoundTo)
 {
     return floor(fValue / fRoundTo + 0.5f) * fRoundTo;
 }
-// PC 0x004A9710  Xbox 0x002774E0
+// PC 0x004D69A0
 float SphereAbovePlane(const Vector& vCenter, float fRadius, const Plane& plane)
 {
     return vCenter.m_fX * plane.m_vNormal.m_fX +
            vCenter.m_fY * plane.m_vNormal.m_fY +
            vCenter.m_fZ * plane.m_vNormal.m_fZ + plane.m_fDistance - fRadius;
 }
-// PC 0x004A9740  Xbox 0x00277510
+
 Vector& Vector::operator+=(const Vector& other)
 {
     m_fX += other.m_fX;
@@ -40,7 +40,7 @@ static inline float interpolateLinear(float fStart, float fEnd, float fPosition)
 {
     return fStart * (1.0f - fPosition) + fEnd * fPosition;
 }
-// PC 0x004A9770  Xbox 0x00277550
+
 Vector& Vector::operator-=(const Vector& other)
 {
     m_fX -= other.m_fX;
@@ -48,7 +48,7 @@ Vector& Vector::operator-=(const Vector& other)
     m_fZ -= other.m_fZ;
     return *this;
 }
-// PC 0x004A97A0  Xbox 0x00277590
+
 Vector& Vector::operator*=(float fScale)
 {
     m_fX *= fScale;
@@ -56,7 +56,7 @@ Vector& Vector::operator*=(float fScale)
     m_fZ *= fScale;
     return *this;
 }
-// PC 0x004A97D0  Xbox 0x002775D0
+
 Vector& Vector::operator/=(float fScale)
 {
     if (fScale != 0.0f)
@@ -68,7 +68,7 @@ Vector& Vector::operator/=(float fScale)
     }
     return *this;
 }
-// PC 0x004A9810  Xbox 0x00277620
+// PC 0x004D69D0
 float PlaneHeightAtPoint(const Vector& vNormal, float fDistance,
                          const Vector& vPoint)
 {
@@ -80,7 +80,7 @@ float PlaneHeightAtPoint(const Vector& vNormal, float fDistance,
              fDistance) /
            vNormal.m_fZ;
 }
-// PC 0x004A9850  Xbox 0x00279700
+
 Vector planeproject(const Vector& vNormal, float fDistance,
                     const Vector& vPoint)
 {
@@ -88,7 +88,7 @@ Vector planeproject(const Vector& vNormal, float fDistance,
            vNormal * (vPoint.m_fX * vNormal.m_fX + vPoint.m_fY * vNormal.m_fY +
                       vPoint.m_fZ * vNormal.m_fZ + fDistance);
 }
-// PC 0x004A98B0  Xbox 0x00279780
+// PC 0x004D83C0
 Vector lineproject(const Vector& vStart, const Vector& vEnd,
                    const Vector& vPoint)
 {
@@ -108,7 +108,7 @@ Vector lineproject(const Vector& vStart, const Vector& vEnd,
     }
     return vStart + w * fProjection;
 }
-// PC 0x004A99B0  Xbox 0x00279A60
+// PC 0x004D8620
 Matrix Transpose(const Matrix& matrix)
 {
     return Matrix(Vector(matrix.m_vFirst.m_fX, matrix.m_vSecond.m_fX,
@@ -118,7 +118,7 @@ Matrix Transpose(const Matrix& matrix)
                   Vector(matrix.m_vFirst.m_fZ, matrix.m_vSecond.m_fZ,
                          matrix.m_vThird.m_fZ));
 }
-// PC 0x004A9A60  Xbox 0x00277740
+// PC 0x004D6A10
 Vector operator*(const Matrix& matrix, const Vector& vector)
 {
     return Vector(matrix.m_vFirst.m_fX * vector.m_fX +
@@ -131,7 +131,7 @@ Vector operator*(const Matrix& matrix, const Vector& vector)
                       matrix.m_vSecond.m_fZ * vector.m_fY +
                       matrix.m_vThird.m_fZ * vector.m_fZ);
 }
-// PC 0x004A9AC0  Xbox 0x002777D0
+
 Quaternion operator*(const Quaternion& left, const Quaternion& right)
 {
     return Quaternion(left.m_fW * right.m_fW - left.m_fX * right.m_fX -
@@ -143,19 +143,19 @@ Quaternion operator*(const Quaternion& left, const Quaternion& right)
                       left.m_fW * right.m_fZ + left.m_fX * right.m_fY -
                           left.m_fY * right.m_fX + left.m_fZ * right.m_fW);
 }
-// PC 0x004A9B50  Xbox 0x002778C0
+
 Quaternion operator-(const Quaternion& quaternion)
 {
     return Quaternion(quaternion.m_fW * -1.0f, quaternion.m_fX, quaternion.m_fY,
                       quaternion.m_fZ);
 }
-// PC 0x004A9B80  Xbox 0x00277900
+
 Quaternion operator*(const Quaternion& quaternion, float fScale)
 {
     return Quaternion(quaternion.m_fW * fScale, quaternion.m_fX * fScale,
                       quaternion.m_fY * fScale, quaternion.m_fZ * fScale);
 }
-// PC 0x004AB360  Xbox 0x002798D0
+// PC 0x004D84C0
 Vector segmentproject(const Vector& vStart, const Vector& vEnd,
                       const Vector& vPoint)
 {
@@ -187,7 +187,7 @@ Vector segmentproject(const Vector& vStart, const Vector& vEnd,
     }
     return vStart + w * fProjection;
 }
-// PC 0x004AB4C0  Xbox 0x00279B40
+// PC 0x004D86D0
 void Plane::Transform(const Vector& vPosition, const Quaternion& qOrientation)
 {
     static Vector newnormal;
@@ -198,7 +198,7 @@ void Plane::Transform(const Vector& vPosition, const Quaternion& qOrientation)
     m_vNormal = newnormal;
     m_fDistance = -(origin * newnormal);
 }
-// PC 0x004A9BB0  Xbox 0x00277950
+
 Vector operator*(const Quaternion& quaternion, const Vector& vector)
 {
     if (quaternionidentityoptimization &&
@@ -231,19 +231,19 @@ Vector operator*(const Quaternion& quaternion, const Vector& vector)
                   fM11 * vector.m_fY + fM10 * vector.m_fX + fM12 * vector.m_fZ,
                   fM22 * vector.m_fZ + fM20 * vector.m_fX + fM21 * vector.m_fY);
 }
-// PC 0x004A9D00  Xbox 0x00277B10
+
 Quaternion operator+(const Quaternion& left, const Quaternion& right)
 {
     return Quaternion(left.m_fW + right.m_fW, left.m_fX + right.m_fX,
                       left.m_fY + right.m_fY, left.m_fZ + right.m_fZ);
 }
-// PC 0x004A9D30  Xbox 0x00277B60
+
 float quaternionDot(const Quaternion& left, const Quaternion& right)
 {
     return left.m_fW * right.m_fW + left.m_fX * right.m_fX +
            left.m_fY * right.m_fY + left.m_fZ * right.m_fZ;
 }
-// PC 0x004A9D60  Xbox 0x00277B90
+// PC 0x004D8A90
 Quaternion normalize(Quaternion quaternion)
 {
     float fMagnitude = (float)sqrt(
@@ -259,7 +259,7 @@ Quaternion normalize(Quaternion quaternion)
     }
     return quaternion * (1.0f / fMagnitude);
 }
-// PC 0x004A9E00  Xbox 0x00277C30
+// PC 0x004D8B40
 Quaternion slerp(Quaternion first, const Quaternion& second, float fPosition)
 {
     float fDot = quaternionDot(first, second);
@@ -289,7 +289,7 @@ Quaternion slerp(Quaternion first, const Quaternion& second, float fPosition)
         second * (float)(sin(fAngle * fPosition) / fSine);
     return result;
 }
-// PC 0x004A9F40  Xbox 0x00277D90
+// PC 0x004D6A70
 float Yaw(const Quaternion& quaternion)
 {
     static Vector v(0.0f, 0.0f, 0.0f);
@@ -305,7 +305,7 @@ float Yaw(const Quaternion& quaternion)
     }
     return (float)atan2(-v.m_fX, v.m_fY) * RAD_TO_DEG;
 }
-// PC 0x004AA020  Xbox 0x00277EC0
+// PC 0x004D8CA0
 float Pitch(const Quaternion& quaternion)
 {
     static Vector v(0.0f, 0.0f, 0.0f);
@@ -320,7 +320,7 @@ float Pitch(const Quaternion& quaternion)
     float fZ = v.m_fZ;
     return (float)atan2(fZ, (float)sqrt(fX * fX + fY * fY)) * RAD_TO_DEG;
 }
-// PC 0x004AA0F0  Xbox 0x00277FD0
+// PC 0x004D6B50
 float Yaw(const Vector& vector)
 {
     if (vector.m_fY == 0.0 && vector.m_fX == 0.0)
@@ -329,7 +329,7 @@ float Yaw(const Vector& vector)
     }
     return (float)atan2(-vector.m_fX, vector.m_fY) * RAD_TO_DEG;
 }
-// PC 0x004AA130  Xbox 0x00278020
+// PC 0x004D8D70
 float Pitch(const Vector& vector)
 {
     float fX = vector.m_fX;
@@ -337,7 +337,7 @@ float Pitch(const Vector& vector)
     float fZ = vector.m_fZ;
     return (float)atan2(fZ, (float)sqrt(fX * fX + fY * fY)) * RAD_TO_DEG;
 }
-// PC 0x004AA160
+// PC 0x004D6E10
 void BoxOutCode(const Vector& vPoint, const Vector& vMinimum,
                 const Vector& vMaximum, unsigned char& nOutCode)
 {
@@ -355,7 +355,7 @@ void BoxOutCode(const Vector& vPoint, const Vector& vMinimum,
     else if (vPoint.m_fZ > vMaximum.m_fZ)
         nOutCode |= 0x01;
 }
-// PC 0x004AA1F0  Xbox 0x00278050
+// PC 0x004D6EA0
 int BoxIntersect(Vector const& vStart, Vector const& vEnd,
                  Vector const& vMinimum, Vector const& vMaximum, Vector* vHit)
 {
@@ -458,7 +458,7 @@ int BoxIntersect(Vector const& vStart, Vector const& vEnd,
 
     return 0;
 }
-// PC 0x004AA610  Xbox 0x002784A0
+// PC 0x004D72C0
 int BoxIntersect(Vector const& vStart, Vector const& vEnd,
                  Vector const& vMinimum, Vector const& vMaximum)
 {
@@ -543,13 +543,13 @@ int BoxIntersect(Vector const& vStart, Vector const& vEnd,
 
     return 0;
 }
-// PC 0x004AA980  Xbox 0x00278850
+// PC 0x004D7630
 int equal(const Vector& vFirst, const Vector& vSecond)
 {
     return vFirst.m_fX == vSecond.m_fX && vFirst.m_fY == vSecond.m_fY &&
            vFirst.m_fZ == vSecond.m_fZ;
 }
-// PC 0x004AA9C0  Xbox 0x00278890
+// PC 0x004D7A90
 void MakeMatrix4x4(float* pMatrix, const Vector& vTranslation,
                    const Quaternion& quaternion)
 {
@@ -580,7 +580,7 @@ void MakeMatrix4x4(float* pMatrix, const Vector& vTranslation,
     pMatrix[14] = vTranslation.m_fZ;
     pMatrix[15] = 1.0f;
 }
-// PC 0x004AAAB0  Xbox 0x00278A00
+// PC 0x004D7B80
 float* Homogenize(const Vector& vector, const float& fW)
 {
     static float a[4];
@@ -590,7 +590,7 @@ float* Homogenize(const Vector& vector, const float& fW)
     a[3] = fW;
     return a;
 }
-// PC 0x004AAAE0  Xbox 0x00278A40
+// PC 0x004D7BB0
 float InterpolateBezier(float fStart, float fEnd, float fControl1,
                         float fControl2, float fPosition)
 {
@@ -607,7 +607,7 @@ float InterpolateBezier(float fStart, float fEnd, float fControl1,
     float fResult = fInverse * afPoints[0] + fPosition * afPoints[1];
     return fResult;
 }
-// PC 0x004AAB50  Xbox 0x00278B30
+// PC 0x004D7C20
 int IntersectCircle2d(const Vector& vCenter, float fRadius,
                       const Vector& vStart, const Vector& vEnd, Vector& vHit1,
                       Vector& vHit2, bool bSegment)
@@ -661,7 +661,7 @@ int IntersectCircle2d(const Vector& vCenter, float fRadius,
     }
     return 0;
 }
-// PC 0x004AADF0  Xbox 0x00278E00
+// PC 0x004D7EC0
 float cosineLUT(float fAngle)
 {
     static const float lookUpTable[32] = {
@@ -677,7 +677,7 @@ float cosineLUT(float fAngle)
     roundToInt(nIndex, fAngle * 5.092958f);
     return lookUpTable[nIndex & 31];
 }
-// PC 0x004AAE30  Xbox 0x00278E40
+// PC 0x004D7F00
 float sineLUT(float fAngle)
 {
     static const float lookUpTable[32] = {
@@ -693,21 +693,21 @@ float sineLUT(float fAngle)
     roundToInt(nIndex, fAngle * 5.092958f);
     return lookUpTable[nIndex & 31];
 }
-// PC 0x004AAE70  Xbox 0x00278EB0
+// PC 0x004D7F40
 Vector VectorMin(Vector vFirst, Vector vSecond)
 {
     return Vector(vFirst.m_fX < vSecond.m_fX ? vFirst.m_fX : vSecond.m_fX,
                   vFirst.m_fY < vSecond.m_fY ? vFirst.m_fY : vSecond.m_fY,
                   vFirst.m_fZ < vSecond.m_fZ ? vFirst.m_fZ : vSecond.m_fZ);
 }
-// PC 0x004AAEE0  Xbox 0x00278F10
+// PC 0x004D7FB0
 Vector VectorMax(Vector vFirst, Vector vSecond)
 {
     return Vector(vFirst.m_fX > vSecond.m_fX ? vFirst.m_fX : vSecond.m_fX,
                   vFirst.m_fY > vSecond.m_fY ? vFirst.m_fY : vSecond.m_fY,
                   vFirst.m_fZ > vSecond.m_fZ ? vFirst.m_fZ : vSecond.m_fZ);
 }
-// PC 0x004AAF50  Xbox 0x00278F70
+// PC 0x004D8020
 float BoxAbovePlane(const Vector& vMinimum, const Vector& vMaximum,
                     const Plane& plane)
 {
@@ -717,7 +717,7 @@ float BoxAbovePlane(const Vector& vMinimum, const Vector& vMaximum,
     return fY * plane.m_vNormal.m_fY + fX * plane.m_vNormal.m_fX +
            fZ * plane.m_vNormal.m_fZ + plane.m_fDistance;
 }
-// PC 0x004AAFC0  Xbox 0x00278FF0
+// PC 0x004D8090
 Vector VectorMax(List<Vector>& vectors)
 {
     Vector vResult = vectors.m_pList[0];
@@ -738,7 +738,7 @@ Vector VectorMax(List<Vector>& vectors)
     }
     return vResult;
 }
-// PC 0x004AB060  Xbox 0x00279180
+// PC 0x004D8130
 Vector VectorMin(List<Vector>& vectors)
 {
     Vector vResult = vectors.m_pList[0];
@@ -759,7 +759,7 @@ Vector VectorMin(List<Vector>& vectors)
     }
     return vResult;
 }
-// PC 0x004AB630  Xbox 0x00279CC0
+// PC 0x004D8DA0
 Quaternion RotationArc(Vector vFirst, Vector vSecond)
 {
     static Quaternion q;
@@ -779,7 +779,7 @@ Quaternion RotationArc(Vector vFirst, Vector vSecond)
     q.m_fW = fScale * 0.5f;
     return q;
 }
-// PC 0x004AB750  Xbox 0x00279E10
+// PC 0x004D6B90
 int polyhit(const Vector* pVertices, int nVertices, const Vector& vNormal,
             const float& fDistance, const Vector& vStart, const Vector& vEnd,
             Vector* pHit)
@@ -809,7 +809,7 @@ int polyhit(const Vector* pVertices, int nVertices, const Vector& vNormal,
     }
     return nHit;
 }
-// PC 0x004AB9D0  Xbox 0x0027A0D0
+// PC 0x004D8EF0
 int polyhit(const Vector* pVertices, int nVertices, const Vector& vStart,
             const Vector& vEnd, Vector* pHit, Vector* pNormal)
 {
@@ -861,7 +861,7 @@ int polyhit(const Vector* pVertices, int nVertices, const Vector& vStart,
     }
     return nHit;
 }
-// PC 0x004ABDD0  Xbox 0x0027A570
+// PC 0x004D92C0
 int SphereIntersect(const Vector& vStart, const Vector& vEnd,
                     const Vector& vCenter, float fRadius)
 {
@@ -892,13 +892,13 @@ int SphereIntersect(const Vector& vStart, const Vector& vEnd,
     }
     return 0;
 }
-// PC 0x004AB100  Xbox 0x00279330
+// PC 0x004D81D0
 float magnitude(const Vector& vector)
 {
     return (float)sqrt(vector.m_fX * vector.m_fX + vector.m_fY * vector.m_fY +
                        vector.m_fZ * vector.m_fZ);
 }
-// PC 0x004AB130  Xbox 0x00279360
+// PC 0x004D8200
 void Vector::Normalize()
 {
     float fMagnitude = magnitude(*this);
@@ -915,7 +915,7 @@ void Vector::Normalize()
     m_fY *= fReciprocal;
     m_fZ *= fReciprocal;
 }
-// PC 0x004ABF00  Xbox 0x0027A690
+// PC 0x004D93F0
 float DistanceBetweenLines(const Vector& vFirstPoint, const Vector& vFirstDirection,
                            const Vector& vSecondPoint, const Vector& vSecondDirection,
                            Vector* pvFirstClosest, Vector* pvSecondClosest)
@@ -943,7 +943,7 @@ float DistanceBetweenLines(const Vector& vFirstPoint, const Vector& vFirstDirect
     }
     return fDistance;
 }
-// PC 0x004AC110  Xbox 0x0027AC70
+// PC 0x004D9690
 Vector InterpolateBezier(const Vector& vStart, const Vector& vEnd,
                          const Vector& vControl1, const Vector& vControl2,
                          float fPosition)
@@ -961,7 +961,7 @@ Vector InterpolateBezier(const Vector& vStart, const Vector& vEnd,
     Vector vResult = fInverse * avPoints[0] + fPosition * avPoints[1];
     return vResult;
 }
-// PC 0x004AC340  Xbox 0x0027AF30
+// PC 0x004D98C0
 int IntersectLineSegments2d(const Vector& vStart1, const Vector& vEnd1,
                             const Vector& vStart2, const Vector& vEnd2,
                             Vector& vHit)
@@ -1073,7 +1073,7 @@ int IntersectLineSegments2d(const Vector& vStart1, const Vector& vEnd1,
     }
     return bHit != false;
 }
-// PC 0x004AC960  Xbox 0x0027B580
+// PC 0x004D9EE0
 Quaternion::Quaternion(Vector vAxis, float fAngle)
 {
     if (fAngle == 0.0f)
@@ -1091,7 +1091,7 @@ Quaternion::Quaternion(Vector vAxis, float fAngle)
     m_fY = vAxis.m_fY;
     m_fZ = vAxis.m_fZ;
 }
-// PC 0x004AB180  Xbox 0x002793D0
+// PC 0x004D8250
 Vector normalize(const Vector& vector)
 {
     float fMagnitude = magnitude(vector);
@@ -1104,13 +1104,13 @@ Vector normalize(const Vector& vector)
     return Vector(vector.m_fX * fReciprocal, vector.m_fY * fReciprocal,
                   vector.m_fZ * fReciprocal);
 }
-// PC 0x004AB1E0  Xbox 0x00279520
+
 Vector cmul(const Vector& left, const Vector& right)
 {
     return Vector(left.m_fX * right.m_fX, left.m_fY * right.m_fY,
                   left.m_fZ * right.m_fZ);
 }
-// PC 0x004ACA00  Xbox 0x0027B650
+// PC 0x004D9F80
 Vector NormalOf(const Vector& vFirst, const Vector& vSecond,
                 const Vector& vThird)
 {
@@ -1124,14 +1124,14 @@ Vector NormalOf(const Vector& vFirst, const Vector& vSecond,
     return Vector(vNormal.m_fX * fReciprocal, vNormal.m_fY * fReciprocal,
                   vNormal.m_fZ * fReciprocal);
 }
-// PC 0x004AB210  Xbox 0x00279560
+
 Vector cross(const Vector& vFirst, const Vector& vSecond)
 {
     return Vector(vFirst.m_fY * vSecond.m_fZ - vFirst.m_fZ * vSecond.m_fY,
                   vFirst.m_fZ * vSecond.m_fX - vFirst.m_fX * vSecond.m_fZ,
                   vFirst.m_fX * vSecond.m_fY - vFirst.m_fY * vSecond.m_fX);
 }
-// PC 0x004AB250  Xbox 0x002795C0
+// PC 0x004D82B0
 Vector planelineintersection(const Vector& vNormal, float fDistance,
                              const Vector& vStart, const Vector& vEnd)
 {
@@ -1151,7 +1151,7 @@ Vector planelineintersection(const Vector& vNormal, float fDistance,
     }
     return vStart + dif * fProjection;
 }
-// PC 0x004ACAC0  Xbox 0x0027B750
+// PC 0x004DA050
 Quaternion YawPitchRoll(float fYaw, float fPitch, float fRoll)
 {
     fYaw *= DEG_TO_RAD;
@@ -1161,7 +1161,7 @@ Quaternion YawPitchRoll(float fYaw, float fPitch, float fRoll)
            Quaternion(xaxis, fPitch) *
            Quaternion(yaxis, fRoll);
 }
-// PC 0x004ACB90  Xbox 0x0027B830
+// PC 0x004DA210
 float Roll(Quaternion quaternion)
 {
     quaternion =
@@ -1171,7 +1171,7 @@ float Roll(Quaternion quaternion)
     return (float)atan2(-quaternion.xdir().m_fZ, quaternion.xdir().m_fX) *
            RAD_TO_DEG;
 }
-// PC 0x004ACCA0  Xbox 0x0027B940
+// PC 0x004DA410
 Quaternion pointto(const Vector& vector)
 {
     static Vector v(0.0f, 0.0f, 0.0f);
@@ -1208,7 +1208,7 @@ Quaternion pointto(const Vector& vector)
 }
 
 #ifdef _XBOX
-int logbase2(unsigned int nValue)  // Xbox 0x00278AE0
+int logbase2(unsigned int nValue)
 {
     int nLog = 0;
     for (int i = 0; i < 5; i++)

@@ -4,7 +4,7 @@
 
 #include <ctype.h>
 #include <stdlib.h>
-// PC 0x00711090  Xbox 0x0027BB40
+// PC 0x007848C0
 void CSWNameGen::UnloadNameTable()
 {
     if (m_bNameTableLoaded != 0)
@@ -13,7 +13,7 @@ void CSWNameGen::UnloadNameTable()
         m_pRes->Release();
     }
 }
-// PC 0x00711290  Xbox 0x0027BD40
+// PC 0x00784AC0
 CSWNameGen::CSWNameGen()
     : CResHelper<CResLTR, RESTYPE_LTR>()
 {
@@ -21,12 +21,12 @@ CSWNameGen::CSWNameGen()
     m_nRace = 0;
     m_nGender = 1;
 }
-// PC 0x007112E0  Xbox 0x0027BD90
+// PC 0x00784B10
 CSWNameGen::~CSWNameGen()
 {
     UnloadNameTable();
 }
-// PC 0x00711340  Xbox 0x0027BDF0
+// PC 0x00784B70
 int CSWNameGen::LoadNameTable(const CExoString& sNameTable)
 {
     CResRef cResRef(sNameTable);
@@ -40,7 +40,7 @@ int CSWNameGen::LoadNameTable(const CExoString& sNameTable)
     m_bNameTableLoaded = 1;
     return 1;
 }
-// PC 0x00711390  Xbox 0x0027BE40
+// PC 0x00784BC0
 CExoString CSWNameGen::GetRandomName(unsigned char nLength)
 {
     CExoString sFilterName;
@@ -237,7 +237,7 @@ CExoString CSWNameGen::GetRandomName(unsigned char nLength)
     }
     return sFilterName;
 }
-// PC 0x007118C0  Xbox 0x0027C330
+// PC 0x007850F0
 CExoString CSWNameGen::GetRandomName(unsigned short nRace,
                                      unsigned char nNameType,
                                      unsigned char nLength)

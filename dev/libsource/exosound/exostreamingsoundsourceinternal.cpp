@@ -11,16 +11,16 @@
 #include "mss.h"
 
 static inline void ExostreamingsoundsourceinternalTrace1();
-// PC 0x004015A0  Xbox 0x001567B0
+// PC 0x004015A0
 void CExoStreamingSoundSourceInternal::DoObstructionWork()
 {
 }
-// PC 0x0063E7F0  Xbox 0x00155D80
+// PC 0x004065A0
 int CExoStreamingSoundSourceInternal::GetPlayFailed()
 {
     return 0;
 }
-// PC 0x005DBB90
+// PC 0x00627BC0
 int CExoStreamingSoundSourceInternal::SetReverbEnabled(int bEnabled)
 {
     int nResult;
@@ -33,12 +33,12 @@ int CExoStreamingSoundSourceInternal::SetReverbEnabled(int bEnabled)
     }
     return nResult;
 }
-// PC 0x005DBBB0
+// PC 0x00627BE0
 inline Vector CExoSoundInternal::GetListenerOrientation()
 {
     return m_vListenerOrientation;
 }
-// PC 0x005DBBE0  Xbox 0x00155DA0
+// PC 0x00627C10
 CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(
     CExoSoundInternal* pSoundInternal)
 {
@@ -69,7 +69,7 @@ CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(
     m_nObstructionTime = 0;
     m_fOcclusion = 0.0f;
 }
-// PC 0x005DBCA0  Xbox 0x00155E90
+// PC 0x00627D20
 CExoStreamingSoundSourceInternal::~CExoStreamingSoundSourceInternal()
 {
     ExostreamingsoundsourceinternalTrace1();
@@ -96,7 +96,7 @@ CExoStreamingSoundSourceInternal::~CExoStreamingSoundSourceInternal()
         m_hStream = NULL;
     }
 }
-// PC 0x005DBD30
+// PC 0x00627DD0
 void CExoStreamingSoundSourceInternal::InitializeSource()
 {
     ExostreamingsoundsourceinternalTrace1();
@@ -250,7 +250,7 @@ void CExoStreamingSoundSourceInternal::InitializeSource()
     }
     }
 }
-// PC 0x005DC300  Xbox 0x00155D70
+// PC 0x00628550
 int CExoStreamingSoundSourceInternal::IsPlaying()
 {
     ExostreamingsoundsourceinternalTrace1();
@@ -260,7 +260,7 @@ int CExoStreamingSoundSourceInternal::IsPlaying()
     }
     return 0;
 }
-// PC 0x005DC330  Xbox 0x00155FA0
+// PC 0x00628580
 void CExoStreamingSoundSourceInternal::SetLooping(int bLooping)
 {
     int nLoopCount;
@@ -284,7 +284,7 @@ int CExoStreamingSoundSourceInternal::IsScalable()
 {
     return m_nPriorityGroup == 4 || m_nPriorityGroup == 21;
 }
-// PC 0x005DC380  Xbox 0x001562E0
+// PC 0x006285B0
 void CExoStreamingSoundSourceInternal::Stop()
 {
     ExostreamingsoundsourceinternalTrace1();
@@ -307,7 +307,7 @@ void CExoStreamingSoundSourceInternal::Stop()
         pSound->RemoveFromNonPlayingStreamingLoopingList(this);
     }
 }
-// PC 0x005DC3C0  Xbox 0x001564D0
+// PC 0x00628620
 void CExoStreamingSoundSourceInternal::Pause()
 {
     CExoSoundInternal* pSound;
@@ -332,7 +332,7 @@ void CExoStreamingSoundSourceInternal::Pause()
         }
     }
 }
-// PC 0x005DC480  Xbox 0x001563D0
+// PC 0x006286D0
 void CExoStreamingSoundSourceInternal::FadeAndStop(unsigned long nDuration)
 {
     if (m_pSoundInternal->m_bInitialized != 0 && IsPlaying())
@@ -341,7 +341,7 @@ void CExoStreamingSoundSourceInternal::FadeAndStop(unsigned long nDuration)
         m_nFadeDuration = nDuration;
     }
 }
-// PC 0x005DC4D0  Xbox 0x001569E0
+// PC 0x00628700
 int CExoStreamingSoundSourceInternal::GetWithinRangeOfListener()
 {
     if (m_b3D == 0)
@@ -353,7 +353,7 @@ int CExoStreamingSoundSourceInternal::GetWithinRangeOfListener()
     Vector vListenerPosition = *pListenerPosition;
     return magnitude(vListenerPosition - vPosition) <= m_fMaxDistance;
 }
-// PC 0x005DC560
+// PC 0x00628790
 void CExoStreamingSoundSourceInternal::Update3DStream()
 {
     float fDistance;
@@ -426,7 +426,7 @@ void CExoStreamingSoundSourceInternal::Update3DStream()
         m_bReverbChanged = 0;
     }
 }
-// PC 0x005DC930  Xbox 0x001561B0
+// PC 0x00628B60
 void CExoStreamingSoundSourceInternal::SetVolume(unsigned char nVolume,
                                                 int bUnknown, float fScale)
 {
@@ -469,7 +469,7 @@ void CExoStreamingSoundSourceInternal::SetVolume(unsigned char nVolume,
         Update3DStream();
     }
 }
-// PC 0x005DCA30  Xbox 0x00156C60
+// PC 0x00628C60
 int CExoStreamingSoundSourceInternal::Play(const CResRef& resRef,
                                            unsigned short nResourceType,
                                            int bVoice, int bMusic, int bUnused)
@@ -578,7 +578,7 @@ int CExoStreamingSoundSourceInternal::Play(const CResRef& resRef,
     }
     return 0;
 }
-// PC 0x005DCD50  Xbox 0x00156890
+// PC 0x00629060
 void CExoStreamingSoundSourceInternal::SetPriorityGroup(unsigned char nGroup)
 {
     float fMaxDistance;
@@ -602,7 +602,7 @@ void CExoStreamingSoundSourceInternal::SetPriorityGroup(unsigned char nGroup)
     m_fMinDistance = fMaxDistance;
     m_fMaxDistance = fMinDistance;
 }
-// PC 0x005DCDB0  Xbox 0x001565B0
+// PC 0x006290C0
 void CExoStreamingSoundSourceInternal::Resume()
 {
     int bPlaying;

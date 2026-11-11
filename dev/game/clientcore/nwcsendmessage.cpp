@@ -19,7 +19,7 @@ int g_bShowCheatResult = 1;
 CExoString g_returnCode;
 
 #ifndef _XBOX
-char* dm_setrace(char* szArgs)  // Xbox 0x00050A00
+char* dm_setrace(char* szArgs)
 {
     unsigned short nRace;
     if (stricmp(szArgs, "human") == 0)
@@ -100,7 +100,7 @@ char* setvideomode(char* szArgs)
 #endif
 
 int equal(const Vector& vA, const Vector& vB);
-// PC 0x00677410  Xbox 0x00050490
+// PC 0x006CCAE0
 int CSWCMessage::SendPlayerToServerMessage(unsigned char nMajor,
                                            unsigned char nMinor,
                                            unsigned char* pData,
@@ -138,12 +138,12 @@ int CSWCMessage::SendPlayerToServerMessage(unsigned char nMajor,
     }
     return nResult;
 }
-// PC 0x00677490  Xbox 0x00050510
+// PC 0x006CCB60
 int CSWCMessage::SendPlayerToServerModule_ModuleLoaded()
 {
     return SendPlayerToServerMessage(3, 2, NULL, 0);
 }
-// PC 0x006774E0  Xbox 0x00050560
+// PC 0x006CCBB0
 #ifdef _XBOX
 int CSWCMessage::SendPlayerToServerModule_SaveGame(unsigned long nSlot,
                                                    const CExoString& sName)
@@ -168,7 +168,7 @@ int CSWCMessage::SendPlayerToServerModule_SaveGame(unsigned long nSlot,
     }
     return SendPlayerToServerMessage(3, 4, pBuffer, nSize);
 }
-// PC 0x00677560  Xbox 0x000505D0
+// PC 0x006CCC30
 int CSWCMessage::SendPlayerToServerModule_LoadGame(unsigned long nSlot,
                                                    const CExoString& sName,
                                                    const CExoString& sPath)
@@ -186,12 +186,12 @@ int CSWCMessage::SendPlayerToServerModule_LoadGame(unsigned long nSlot,
     }
     return SendPlayerToServerMessage(3, 5, pBuffer, nSize);
 }
-// PC 0x006775E0  Xbox 0x00050650
+// PC 0x006CCCB0
 int CSWCMessage::SendPlayerToServerStatus_RequestStatus()
 {
     return SendPlayerToServerMessage(1, 0, NULL, 0);
 }
-// PC 0x00677630  Xbox 0x00050710
+// PC 0x006CCD00
 int CSWCMessage::SendPlayerToServerGuiContainer_Close(
     unsigned long oidContainer, int bTakeAll)
 {
@@ -207,7 +207,7 @@ int CSWCMessage::SendPlayerToServerGuiContainer_Close(
     }
     return SendPlayerToServerMessage(0x19, 2, pBuffer, nSize);
 }
-// PC 0x006776A0  Xbox 0x00050780
+// PC 0x006CCD70
 int CSWCMessage::SendPlayerToServerInput_CastSpell(
     unsigned long nSpell, unsigned char nMultiClass, unsigned char nDomainLevel,
     unsigned char nMetaMagic, int bCheat, const Vector& vTarget,
@@ -254,7 +254,7 @@ int CSWCMessage::SendPlayerToServerInput_CastSpell(
     }
     return SendPlayerToServerMessage(6, 0x12, pBuffer, nSize);
 }
-// PC 0x00677800  Xbox 0x000508F0
+// PC 0x006CCED0
 int CSWCMessage::SendPlayerToServerInput_TogglePauseRequest()
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -265,7 +265,7 @@ int CSWCMessage::SendPlayerToServerInput_TogglePauseRequest()
     }
     return 1;
 }
-// PC 0x00677820  Xbox 0x00050910
+// PC 0x006CCEF0
 int CSWCMessage::SendPlayerToServerJournalMessage_QuestScreenOpen()
 {
     unsigned char* pMessage = new unsigned char[3];
@@ -282,7 +282,7 @@ int CSWCMessage::SendPlayerToServerJournalMessage_QuestScreenOpen()
     delete[] pMessage;
     return nResult;
 }
-// PC 0x00677870  Xbox 0x00050960
+// PC 0x006CCF40
 int CSWCMessage::SendPlayerToServerInput_GiveItem(unsigned long oidItem,
                                                   unsigned long oidTarget,
                                                   unsigned long oidOwner,
@@ -302,13 +302,13 @@ int CSWCMessage::SendPlayerToServerInput_GiveItem(unsigned long oidItem,
     }
     return SendPlayerToServerMessage(6, 0x24, pBuffer, nSize);
 }
-// PC 0x006778F0  Xbox 0x00051230
+// PC 0x006CCFC0
 int CSWCMessage::SendPlayerToServerArea_AreaLoaded()
 {
     return SendPlayerToServerMessage(4, 3, NULL, 0);
 }
 #ifndef _XBOX
-int CSWCMessage::SendPlayerToServerCheat_Resurrect()  // PC 0x00677940  Xbox 0x000512D0
+int CSWCMessage::SendPlayerToServerCheat_Resurrect()  // PC 0x006CD010
 {
     CResRef cSound("HEAL_PLAYER");
 
@@ -316,11 +316,11 @@ int CSWCMessage::SendPlayerToServerCheat_Resurrect()  // PC 0x00677940  Xbox 0x0
     return SendPlayerToServerMessage(15, 2, NULL, 0);
 }
 #endif
-int CSWCMessage::SendPlayerToServerCheat_Invulnerability()  // PC 0x006779D0
+int CSWCMessage::SendPlayerToServerCheat_Invulnerability()  // PC 0x006CD0A0
 {
     return SendPlayerToServerMessage(15, 4, NULL, 0);
 }
-// PC 0x00677A20  Xbox 0x00051450
+// PC 0x006CD0F0
 int CSWCMessage::SendPlayerToServerGuiInventory_Status(int nStatus)
 {
     unsigned char* pBuffer;
@@ -334,7 +334,7 @@ int CSWCMessage::SendPlayerToServerGuiInventory_Status(int nStatus)
     }
     return SendPlayerToServerMessage(13, 1, pBuffer, nSize);
 }
-// PC 0x00677A90  Xbox 0x000514C0
+// PC 0x006CD160
 int CSWCMessage::SendPlayerToServerInput_Attack(unsigned long oidTarget,
                                                 unsigned short nAction)
 {
@@ -350,7 +350,7 @@ int CSWCMessage::SendPlayerToServerInput_Attack(unsigned long oidTarget,
     }
     return SendPlayerToServerMessage(6, 2, pBuffer, nSize);
 }
-// PC 0x00677B10  Xbox 0x00051540
+// PC 0x006CD1E0
 int CSWCMessage::SendPlayerToServerInput_UseSkill(unsigned char nSkill,
                                                   unsigned char nUseType,
                                                   unsigned long oidTarget,
@@ -372,7 +372,7 @@ int CSWCMessage::SendPlayerToServerInput_UseSkill(unsigned char nSkill,
     }
     return SendPlayerToServerMessage(6, 7, pBuffer, nSize);
 }
-// PC 0x00677BD0  Xbox 0x00051600
+// PC 0x006CD2A0
 int CSWCMessage::SendPlayerToServerInput_UseItem(unsigned long oidItem,
                                                  unsigned char nPropertyIndex,
                                                  unsigned char nSubIndex,
@@ -421,7 +421,7 @@ int CSWCMessage::SendPlayerToServerInput_UseItem(unsigned long oidItem,
     }
     return SendPlayerToServerMessage(6, 9, pBuffer, nSize);
 }
-// PC 0x00677D10  Xbox 0x00051730
+// PC 0x006CD450
 int CSWCMessage::SendPlayerToServerInput_UseObject(unsigned long oidObject)
 {
     unsigned char* pBuffer;
@@ -469,7 +469,7 @@ int CSWCMessage::SendPlayerToServerParty_Action(unsigned long oidTarget,
     }
     return 0;
 }
-// PC 0x00677D70  Xbox 0x00051790
+// PC 0x006CD4B0
 int CSWCMessage::SendPlayerToServerInput_ChangeDoorState(unsigned long oidDoor,
                                                          unsigned short nState)
 {
@@ -485,7 +485,7 @@ int CSWCMessage::SendPlayerToServerInput_ChangeDoorState(unsigned long oidDoor,
     }
     return SendPlayerToServerMessage(6, 3, pBuffer, nSize);
 }
-// PC 0x00677DE0  Xbox 0x00051800
+// PC 0x006CD520
 int CSWCMessage::SendPlayerToServerInput_UnlockObject(unsigned long oidObject,
                                                       unsigned long oidKey)
 {
@@ -501,7 +501,7 @@ int CSWCMessage::SendPlayerToServerInput_UnlockObject(unsigned long oidObject,
     }
     return SendPlayerToServerMessage(6, 12, pBuffer, nSize);
 }
-// PC 0x00677E50  Xbox 0x00051870
+// PC 0x006CD5F0
 int CSWCMessage::SendPlayerToServerInput_AbortDriveControl()
 {
     unsigned char* pMessage = new unsigned char[3];
@@ -518,7 +518,7 @@ int CSWCMessage::SendPlayerToServerInput_AbortDriveControl()
     delete[] pMessage;
     return nResult;
 }
-// PC 0x00677EA0  Xbox 0x000518C0
+// PC 0x006CD640
 int CSWCMessage::SendPlayerToServerInput_Dialog(unsigned long oidObject)
 {
     unsigned char* pBuffer;
@@ -538,7 +538,7 @@ int CSWCMessage::SendPlayerToServerInput_Dialog(unsigned long oidObject)
     }
     return 1;
 }
-// PC 0x00677F30  Xbox 0x00051950
+// PC 0x006CD6D0
 int CSWCMessage::SendPlayerToServerInventory_Equip(unsigned long oidItem,
                                                    unsigned long nSlot)
 {
@@ -554,7 +554,7 @@ int CSWCMessage::SendPlayerToServerInventory_Equip(unsigned long oidItem,
     }
     return SendPlayerToServerMessage(12, 1, pBuffer, nSize);
 }
-// PC 0x00677FA0  Xbox 0x00051BE0
+// PC 0x006CD740
 int CSWCMessage::SendPlayerToServerLogin_LoginLocalCharacter(
     unsigned char* pData, unsigned long nSize, int bNewCharacter)
 {
@@ -577,12 +577,12 @@ int CSWCMessage::SendPlayerToServerLogin_LoginLocalCharacter(
     }
     return SendPlayerToServerMessage(2, 0x13, pBuffer, nSize);
 }
-// PC 0x00678030  Xbox 0x00051C70
+// PC 0x006CD7D0
 int CSWCMessage::SendPlayerToServerLogin_LoginIFOCharacter()
 {
     return SendPlayerToServerMessage(2, 15, NULL, 0);
 }
-// PC 0x00678080  Xbox 0x00052760
+// PC 0x006CD820
 int CSWCMessage::SendPlayerToServerLogin_LoginLocalCharacter(
     const CResRef& cResRef, int bNewCharacter)
 {
@@ -623,7 +623,7 @@ static inline unsigned char LevelUpAbilityScore(CSWCLevelUpStats* pStats, int nA
 {
     return pStats->m_aAbilities[nAbility];
 }
-// PC 0x00678280  Xbox 0x00052960
+// PC 0x006CDA30
 int CSWCMessage::SendPlayerToServer_LevelUp(CSWCLevelUpStats* pOldStats,
                                             CSWCLevelUpStats* pNewStats)
 {
@@ -771,7 +771,7 @@ int CSWCMessage::SendPlayerToServer_LevelUp(CSWCLevelUpStats* pOldStats,
 }
 
 #ifdef _XBOX
-// Xbox 0x000519C0
+
 int CSWCMessage::SendPlayerToServerInventory_Unequip(unsigned long oidItem, unsigned long oidRepository)
 {
     unsigned char* pBuffer;
@@ -792,7 +792,7 @@ int CSWCMessage::SendPlayerToServerInventory_Unequip(unsigned long oidItem, unsi
 
 #include "aurconsole.h"
 #include "nwrules.h"
-// Xbox 0x000509D0
+
 char* NetProfile(char* szArgs)
 {
     if (g_pAppManager->m_pClientExoApp->GetSWCMessage() == NULL)
@@ -812,7 +812,7 @@ ConsoleFunc ConFNetProfile("NetProfile", NetProfile);
         return cheatreturnvalue;                                                 \
     }                                                                            \
     ConsoleFunc ConFd##nSides("d" #nSides, d##nSides);
-XBOX_DICE_COMMAND(2)  // Xbox 0x00051280
+XBOX_DICE_COMMAND(2)
 XBOX_DICE_COMMAND(3)
 XBOX_DICE_COMMAND(4)
 XBOX_DICE_COMMAND(6)
@@ -826,7 +826,7 @@ int CSWCMessage::SendPlayerToServerCheat_ComputeSafeLocation()
 {
     return SendPlayerToServerMessage(15, 32, NULL, 0);
 }
-// Xbox 0x00051360
+
 int CSWCMessage::SendPlayerToServerCheat_PlayVisualEffect(unsigned long oidTarget,
                                                           unsigned short nVisualEffect,
                                                           float fDuration,
@@ -848,7 +848,7 @@ int CSWCMessage::SendPlayerToServerCheat_PlayVisualEffect(unsigned long oidTarge
     }
     return SendPlayerToServerMessage(15, 10, pBuffer, nSize);
 }
-// Xbox 0x000513F0
+
 int CSWCMessage::SendPlayerToServerCheat_DebugMode(int bDebugMode)
 {
     unsigned char* pBuffer;
@@ -862,7 +862,7 @@ int CSWCMessage::SendPlayerToServerCheat_DebugMode(int bDebugMode)
     }
     return SendPlayerToServerMessage(15, 21, pBuffer, nSize);
 }
-// Xbox 0x000522F0
+
 char* dm_heal(char* szArgs)
 {
     CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
@@ -876,7 +876,7 @@ char* dm_heal(char* szArgs)
     return cheatreturnvalue;
 }
 ConsoleFunc ConFdm_heal("dm_heal", dm_heal);
-// Xbox 0x00052340
+
 char* makesafe(char* szArgs)
 {
     CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
@@ -890,7 +890,7 @@ char* makesafe(char* szArgs)
     return cheatreturnvalue;
 }
 ConsoleFunc ConFmakesafe("makesafe", makesafe);
-// Xbox 0x00052390
+
 char* DebugMode(char* szArgs)
 {
     int bDebugMode = atoi(szArgs);
@@ -900,7 +900,7 @@ char* DebugMode(char* szArgs)
     return cheatreturnvalue;
 }
 ConsoleFunc ConFDebugMode("DebugMode", DebugMode);
-// Xbox 0x00052120
+
 char* visualeffect(char* szArgs)
 {
     CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
@@ -943,13 +943,13 @@ ConsoleFunc ConFvisualeffect("visualeffect", visualeffect);
 #include "nwsobject.h"
 #include "nwscreaturestats.h"
 #include "exotlktable.h"
-// PC 0x00677940  Xbox 0x000512D0
+
 int CSWCMessage::SendPlayerToServerCheat_Resurrect()
 {
     g_pExoSound->PlayOneShotSound("HEAL_PLAYER", CExoSound::PRIORITY_GROUP_POWERED_ITEM, 0, 0, 0.0f, 0.0f);
     return SendPlayerToServerMessage(15, 2, NULL, 0);
 }
-// Xbox 0x000506A0
+
 int CSWCMessage::SendPlayerToServerUpdate_AppearanceRace(unsigned long oidCreature, unsigned short nRace)
 {
     unsigned char* pBuffer;
@@ -965,7 +965,7 @@ int CSWCMessage::SendPlayerToServerUpdate_AppearanceRace(unsigned long oidCreatu
     }
     return SendPlayerToServerMessage(5, 1, pBuffer, nSize);
 }
-// Xbox 0x00051A30
+
 int CSWCMessage::SendPlayerToServerItem_Add(unsigned long oidArea, const Vector& vPosition,
                                             const CResRef& cResRef, unsigned char nA,
                                             unsigned char nB, unsigned char nC)
@@ -989,7 +989,7 @@ int CSWCMessage::SendPlayerToServerItem_Add(unsigned long oidArea, const Vector&
     }
     return SendPlayerToServerMessage(5, 1, pBuffer, nSize);
 }
-// Xbox 0x00051B20
+
 int CSWCMessage::SendPlayerToServerParty_Add(unsigned long oidArea, const Vector& vPosition,
                                              const CExoString& sTemplate)
 {
@@ -1009,7 +1009,7 @@ int CSWCMessage::SendPlayerToServerParty_Add(unsigned long oidArea, const Vector
     }
     return SendPlayerToServerMessage(5, 1, pBuffer, nSize);
 }
-// Xbox 0x00050A00
+
 char* dm_setrace(char* szArgs)
 {
     unsigned short nRace;
@@ -1060,7 +1060,7 @@ char* dm_setrace(char* szArgs)
     }
     return "Success";
 }
-// Xbox 0x00050BC0
+
 char* dm_gettime(char* szArgs)
 {
     char szLine[128];
@@ -1107,7 +1107,7 @@ char* dm_gettime(char* szArgs)
     }
     return "Failure";
 }
-// Xbox 0x000510A0
+
 char* giveforcepowers(char* szArgs)
 {
     CExoIni cIni;
@@ -1142,7 +1142,7 @@ char* giveforcepowers(char* szArgs)
     }
     return cheatreturnvalue;
 }
-// Xbox 0x00051CC0
+
 char* spawnitem(char* szArgs)
 {
     char szResRef[256];
@@ -1209,7 +1209,7 @@ char* spawnitem(char* szArgs)
     sprintf(cheatreturnvalue, "Success");
     return cheatreturnvalue;
 }
-// Xbox 0x00051F00
+
 char* spawnweapon(char* szArgs)
 {
     char szResRef[256];
@@ -1267,7 +1267,7 @@ char* spawnweapon(char* szArgs)
     }
     return cheatreturnvalue;
 }
-// Xbox 0x000523D0
+
 char* displaystrref(char* szArgs)
 {
     unsigned long nFirst = 0;
@@ -1294,7 +1294,7 @@ char* displaystrref(char* szArgs)
     g_pExoSound->PlayOneShotSound(strRes.m_resSound, 0, 0, 0, 0.0f, 0.0f);
     return g_returnCode.CStr();
 }
-// Xbox 0x00052530
+
 char* addpartymember(char* szArgs)
 {
     CSWCCreature* pPlayer = g_pAppManager->m_pClientExoApp->GetPlayerCreature();

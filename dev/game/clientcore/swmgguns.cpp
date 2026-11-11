@@ -5,7 +5,7 @@
 #include "aurscene.h"
 
 #include "swminigame.h"
-// PC 0x00673840  Xbox 0x0011CC60
+// PC 0x006C8D50
 float CSWMGGunBank::SetBulletSpeed(float fSpeed)
 {
     if (fSpeed >= 0.0)
@@ -14,7 +14,7 @@ float CSWMGGunBank::SetBulletSpeed(float fSpeed)
     }
     return m_bullet.m_fSpeed;
 }
-// PC 0x00673860  Xbox 0x0011CC90
+// PC 0x006C8D70
 float CSWMGGunBank::SetBulletLifeSpan(float fLifeSpan)
 {
     if (fLifeSpan > 0.0)
@@ -23,7 +23,7 @@ float CSWMGGunBank::SetBulletLifeSpan(float fLifeSpan)
     }
     return m_bullet.m_fLifeSpan;
 }
-// PC 0x00673880  Xbox 0x0011CCC0
+// PC 0x006C8D90
 int CSWMGGunBank::SetBulletTargetType(int nTargetType)
 {
     if ((nTargetType & 0x11111110) != 0)
@@ -38,7 +38,7 @@ int CSWMGGunBank::SetBulletTargetType(int nTargetType)
     }
     return m_bullet.m_nTargetType;
 }
-// PC 0x006738D0  Xbox 0x0011CD20
+// PC 0x006C8DE0
 void CSWMGGunBank::OnFire()
 {
     CResRef resScript = m_pFollower->GetScriptName(7);
@@ -52,7 +52,7 @@ void CSWMGGunBank::OnFire()
         g_pVirtualMachine->RunScript(&sScript, nObjectId, 1);
     }
 }
-// PC 0x00673970  Xbox 0x0011CDD0
+// PC 0x006C8E80
 float CSWMGTargettingGunBank::SetSensingRadius(float fRadius)
 {
     if (fRadius >= 0.0)
@@ -61,7 +61,7 @@ float CSWMGTargettingGunBank::SetSensingRadius(float fRadius)
     }
     return m_params.m_fSensingRadius;
 }
-// PC 0x00673990  Xbox 0x0011CE00
+// PC 0x006C8EA0
 float CSWMGTargettingGunBank::SetVerticalSpread(float fSpread)
 {
     if (fSpread >= 0.0 || fSpread == -1.0)
@@ -70,7 +70,7 @@ float CSWMGTargettingGunBank::SetVerticalSpread(float fSpread)
     }
     return m_params.m_fVerticalSpread;
 }
-// PC 0x006739C0  Xbox 0x0011CE40
+// PC 0x006C8ED0
 float CSWMGTargettingGunBank::SetHorizontalSpread(float fSpread)
 {
     if (fSpread >= 0.0 || fSpread == -1.0)
@@ -79,7 +79,7 @@ float CSWMGTargettingGunBank::SetHorizontalSpread(float fSpread)
     }
     return m_params.m_fHorizontalSpread;
 }
-// PC 0x006739F0  Xbox 0x0011CE80
+// PC 0x006C8F00
 float CSWMGTargettingGunBank::SetInaccuracy(float fInaccuracy)
 {
     if (fInaccuracy >= 0.0)
@@ -88,7 +88,7 @@ float CSWMGTargettingGunBank::SetInaccuracy(float fInaccuracy)
     }
     return m_params.m_fInaccuracy;
 }
-// PC 0x00673A10  Xbox 0x0011CEB0
+// PC 0x006C8F20
 CSWMGBullet::CSWMGBullet()
 {
     m_nDamage = 0;
@@ -97,7 +97,7 @@ CSWMGBullet::CSWMGBullet()
     m_fRateOfFire = 0;
     m_fLifeSpan = 0;
 }
-// PC 0x00673A30  Xbox 0x0011CEE0
+// PC 0x006C8F40
 CSWMGTargettingParameters::CSWMGTargettingParameters()
 {
     m_fHorizontalSpread = 0;
@@ -105,7 +105,7 @@ CSWMGTargettingParameters::CSWMGTargettingParameters()
     m_fSensingRadius = 0;
     m_fInaccuracy = 0;
 }
-// PC 0x00673A40  Xbox 0x0011CF00
+// PC 0x006C8F50
 void FireGunCallback(CAurObject* pObject, char* sEvent, void* pData)
 {
     CSWMGGunBank* pBank = static_cast<CSWMGGunBank*>(pData);
@@ -183,7 +183,7 @@ void FireGunCallback(CAurObject* pObject, char* sEvent, void* pData)
         }
     }
 }
-// PC 0x00673F50  Xbox 0x0011D4A0
+// PC 0x006C9890
 float CSWMGGunBank::SetRateOfFire(float fRateOfFire)
 {
     if (fRateOfFire >= 0.0)
@@ -210,7 +210,7 @@ float CSWMGGunBank::SetRateOfFire(float fRateOfFire)
     }
     return m_bullet.m_fRateOfFire;
 }
-// PC 0x00673FD0  Xbox 0x0011D530
+// PC 0x006C9910
 void CSWMGGunBank::Hit()
 {
     int nGuns = m_lstGuns.num;
@@ -221,7 +221,7 @@ void CSWMGGunBank::Hit()
         pGun->PlayAnimation("ready", 1.0f, 32, 0);
     }
 }
-// PC 0x00674020  Xbox 0x0011D580
+// PC 0x006C9960
 CAurObject* CSWMGGunBank::RemoveGun(CAurObject* pGun)
 {
     int nIndex = -1;
@@ -247,7 +247,7 @@ CAurObject* CSWMGGunBank::RemoveGun(CAurObject* pGun)
     }
     return pGun;
 }
-// PC 0x00674090  Xbox 0x0011D5F0
+// PC 0x006C99D0
 void CSWMGGunBank::Fire()
 {
     int nGuns = m_lstGuns.num;
@@ -262,7 +262,7 @@ void CSWMGGunBank::Fire()
         }
     }
 }
-// PC 0x006740D0  Xbox 0x0011D630
+// PC 0x006C9A10
 void CSWMGGunBank::SetGunModel(const CResRef& sGun)
 {
     m_resGun = sGun;
@@ -335,7 +335,7 @@ void CSWMGGunBank::SetGunModel(const CResRef& sGun)
         m_lstGuns.Add(pNewGun);
     }
 }
-// PC 0x006743B0  Xbox 0x0011D910
+// PC 0x006C9CF0
 CAurObject* CSWMGGunBank::AddGun(CAurObject* pObject, CAurPart* pPart)
 {
     if (!m_resGun.IsValid() || pObject == 0 || pPart == 0)
@@ -358,7 +358,7 @@ CAurObject* CSWMGGunBank::AddGun(CAurObject* pObject, CAurPart* pPart)
     m_lstGuns.Add(pGun);
     return pGun;
 }
-// PC 0x006744D0  Xbox 0x0011DA40
+// PC 0x006C9E10
 int CSWMGGunBank::ClearGuns()
 {
     int nGuns = m_lstGuns.num;
@@ -371,7 +371,7 @@ int CSWMGGunBank::ClearGuns()
     m_lstGuns.SetSize(0);
     return nGuns;
 }
-// PC 0x00674530  Xbox 0x0011DAA0
+// PC 0x006C9E70
 CAurObject* CSWMGTargettingGunBank::AddGun(CAurObject* pObject, CAurPart* pPart)
 {
     if (!m_resGun.IsValid() || pObject == 0 || pPart == 0)
@@ -402,7 +402,7 @@ CAurObject* CSWMGTargettingGunBank::AddGun(CAurObject* pObject, CAurPart* pPart)
     m_lstGuns.Add(pGun);
     return pGun;
 }
-// PC 0x006746D0  Xbox 0x0011DC40
+// PC 0x006CA010
 CSWMGGunBank::CSWMGGunBank(CSWTrackFollower* pFollower, const CResRef& sBank,
                            const CResRef& sGun, const CSWMGBullet& bullet)
 {
@@ -416,12 +416,12 @@ CSWMGGunBank::CSWMGGunBank(CSWTrackFollower* pFollower, const CResRef& sBank,
     m_bullet.m_resCollisionSound = bullet.m_resCollisionSound;
     m_pFollower = pFollower;
 }
-// PC 0x00674800  Xbox 0x0011DD60
+// PC 0x006CA140
 CSWMGGunBank::~CSWMGGunBank()
 {
     ClearGuns();
 }
-// PC 0x00674860  Xbox 0x0011DDC0
+// PC 0x006CA1A0
 CSWMGTargettingGunBank::CSWMGTargettingGunBank(
     CSWTrackFollower* pFollower, const CResRef& sBank, const CResRef& sGun,
     const CSWMGBullet& bullet, const CSWMGTargettingParameters& params,
@@ -434,7 +434,7 @@ CSWMGTargettingGunBank::CSWMGTargettingGunBank(
     SetInaccuracy(params.m_fInaccuracy);
     m_pTarget = pTarget;
 }
-// PC 0x00674930  Xbox 0x0011DED0
+// PC 0x006CA270
 void GunDie(CAurObject* pObject, char* sEvent, void* pData)
 {
     CSWMGGunBank* pBank = static_cast<CSWMGGunBank*>(pData);
@@ -456,7 +456,7 @@ void GunDie(CAurObject* pObject, char* sEvent, void* pData)
         }
     }
 }
-// PC 0x00674990  Xbox 0x0011DF30
+// PC 0x006CA2D0
 void CSWMGGunBank::Die()
 {
     for (int i = m_lstGuns.num - 1; i >= 0; i--)
@@ -474,7 +474,7 @@ void CSWMGGunBank::Die()
         }
     }
 }
-// PC 0x00674A10  Xbox 0x0011DFB0
+// PC 0x006CA350
 void CSWMGTargettingGunBank::Die()
 {
     int nGuns = m_lstGuns.num;

@@ -33,17 +33,17 @@ static inline void SwguiingamemapTrace1();
 
 int g_bEnableFogOfWar = 1;
 int g_bShowFogOfWar = 1;
-// PC 0x006927B0
+// PC 0x006EC5A0
 void CSWGuiInGameMap::OnUpArrowPressed(CSWGuiControl* pControl)
 {
     HandleInputEvent(GUIEVENT_UP, 1);
 }
-// PC 0x006927C0
+// PC 0x006EC5B0
 void CSWGuiInGameMap::OnDownArrowPressed(CSWGuiControl* pControl)
 {
     HandleInputEvent(GUIEVENT_DOWN, 1);
 }
-// PC 0x006927D0  Xbox 0x000DF320
+// PC 0x006EC670
 void CSWGuiInGameGalaxyMap::OnPanelRemoved()
 {
 #ifdef _XBOX
@@ -61,7 +61,7 @@ void CSWGuiInGameGalaxyMap::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 #endif
 }
-// PC 0x00692810  Xbox 0x000DE4E0
+// PC 0x006EC250
 void CSWGuiInGameMap::Draw(float fElapsed)
 {
 #ifndef _XBOX
@@ -96,7 +96,7 @@ void CSWGuiInGameMap::Draw(float fElapsed)
 }
 
 #ifndef _XBOX
-CSWGuiControl* CSWGuiInGameMap::HitCheckMouse(int nX, int nY)  // PC 0x00692930
+CSWGuiControl* CSWGuiInGameMap::HitCheckMouse(int nX, int nY)  // PC 0x006EC310
 {
     CSWGuiControl* pControl = CSWGuiPanel::HitCheckMouse(nX, nY);
     if (pControl == 0)
@@ -116,7 +116,7 @@ CSWGuiControl* CSWGuiInGameMap::HitCheckMouse(int nX, int nY)  // PC 0x00692930
     return pControl;
 }
 #endif
-// PC 0x006929B0  Xbox 0x000DE570
+// PC 0x006EC390
 void CSWGuiInGameMap::SetMapNote(const CExoString& sNote)
 {
     CExoString sText;
@@ -131,7 +131,7 @@ void CSWGuiInGameMap::SetMapNote(const CExoString& sNote)
         m_lblTitle.m_cText.m_cParams.SetText(sText);
     }
 }
-// PC 0x00692B00  Xbox 0x000DE6C0
+// PC 0x006EC4E0
 void CSWGuiInGameMap::ReturnToEbonHawk(CSWGuiControl* pControl)
 {
     CSWGuiMessageBox* pMessageBox =
@@ -149,7 +149,7 @@ void CSWGuiInGameMap::ReturnToEbonHawk(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00692BC0  Xbox 0x000DE780
+// PC 0x006EC5C0
 void CSWGuiInGameMap::OnXButton(CSWGuiControl* pControl)
 {
     CSWGuiMessageBox* pMessageBox;
@@ -179,7 +179,7 @@ void CSWGuiInGameMap::OnXButton(CSWGuiControl* pControl)
     }
     m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
-// PC 0x00693650  Xbox 0x000DF550
+// PC 0x006ED0B0
 void CSWGuiInGameMap::OnPanelAdded()
 {
     CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
@@ -333,7 +333,7 @@ void CSWGuiInGameMap::OnPanelAdded()
     g_pAppManager->GetClientExoApp()->ShowTutorialWindow(
         CClientExoApp::TUTORIAL_MAP, OBJECT_INVALID, OBJECT_INVALID, 0);
 }
-// PC 0x00692C70  Xbox 0x000DED50
+// PC 0x006EC6F0
 CExoString CSWGuiMapHider::InitializeMapNotes(int nMapMode)
 {
     m_nMapMode = nMapMode;
@@ -373,7 +373,7 @@ CExoString CSWGuiMapHider::InitializeMapNotes(int nMapMode)
     }
     return sMapNote;
 }
-// PC 0x00693BA0  Xbox 0x000DFA60
+// PC 0x006ED670
 void CSWGuiInGameMap::OnPanelRemoved()
 {
     m_cMapHider.ClearMapNotes();
@@ -381,7 +381,7 @@ void CSWGuiInGameMap::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 #endif
 }
-// PC 0x00692E30  Xbox 0x000DEF00
+// PC 0x006EC8B0
 void CSWGuiMapHider::ClearMapNotes()
 {
     while (m_lstMapNotes.m_pInternal->m_pHead != 0)
@@ -391,7 +391,7 @@ void CSWGuiMapHider::ClearMapNotes()
     }
     m_pCurrentNote = 0;
 }
-// PC 0x00692E80  Xbox 0x000DEF40
+// PC 0x006EC900
 CExoString CSWGuiMapHider::GetNextMapNote()
 {
     CExoString sNote("");
@@ -449,7 +449,7 @@ CExoString CSWGuiMapHider::GetNextMapNote()
     }
     return sNote;
 }
-// PC 0x00693BC0  Xbox 0x000DFA70
+// PC 0x006ED690
 void CSWGuiInGameMap::HandleInputEvent(int nEvent, int nState)
 {
     if (nState)
@@ -516,7 +516,7 @@ void CSWGuiInGameMap::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x00693090  Xbox 0x000DF130
+// PC 0x006ECB20
 CExoString CSWGuiMapHider::GetPrevMapNote()
 {
     CExoString sNote("");
@@ -575,7 +575,7 @@ CExoString CSWGuiMapHider::GetPrevMapNote()
 }
 
 #ifndef _XBOX
-void CSWGuiInGameMap::OnMapNoteClicked(CSWGuiControl* pControl)  // PC 0x00693E70
+void CSWGuiInGameMap::OnMapNoteClicked(CSWGuiControl* pControl)  // PC 0x006ED900
 {
     if (pControl->m_bSelected)
     {
@@ -596,7 +596,7 @@ void CSWGuiInGameMap::OnMapNoteClicked(CSWGuiControl* pControl)  // PC 0x00693E7
     }
 }
 #endif
-// PC 0x006932A0
+// PC 0x006ECD40
 void CSWGuiMapHider::SetMapNote(unsigned long oidNote)
 {
     CExoLinkedListNode* pPos = m_lstMapNotes.m_pInternal->m_pHead;
@@ -614,7 +614,7 @@ void CSWGuiMapHider::SetMapNote(unsigned long oidNote)
 }
 
 #ifndef _XBOX
-CSWGuiControl* CSWGuiMapHider::HitCheckMouse(int nX, int nY)  // PC 0x00693300
+CSWGuiControl* CSWGuiMapHider::HitCheckMouse(int nX, int nY)  // PC 0x006ECDA0
 {
     if (nX < m_cExtent.m_nLeft ||
         nX > m_cExtent.GetRight() ||
@@ -640,7 +640,7 @@ CSWGuiControl* CSWGuiMapHider::HitCheckMouse(int nX, int nY)  // PC 0x00693300
     return 0;
 }
 #endif
-// PC 0x00693F60  Xbox 0x000DFC80
+// PC 0x006ED9F0
 CSWGuiMapHider::CSWGuiMapHider()
 {
     ClearMapNotes();
@@ -700,7 +700,7 @@ CSWGuiMapHider::CSWGuiMapHider()
     m_btnHider.m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
 #endif
 }
-// PC 0x006942D0  Xbox 0x000DFFC0
+// PC 0x006EDD60
 CSWGuiMapHider::~CSWGuiMapHider()
 {
     ClearMapNotes();
@@ -737,7 +737,7 @@ CSWGuiMapHider::~CSWGuiMapHider()
     }
 #endif
 }
-// PC 0x006943D0  Xbox 0x000DE830
+// PC 0x006EDE60
 void CSWGuiMapHider::Draw(float fElapsed)
 {
     if (m_nMapMode == 0)
@@ -941,7 +941,7 @@ void CSWGuiMapHider::Draw(float fElapsed)
     }
     AurGUICloseViewport();
 }
-// PC 0x00695180  Xbox 0x000E0700
+// PC 0x006EE720
 CSWGuiInGameGalaxyMap::CSWGuiInGameGalaxyMap(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -1056,7 +1056,7 @@ CSWGuiInGameGalaxyMap::CSWGuiInGameGalaxyMap(CSWGuiManager* pManager)
     m_nBackground = 3;
 #endif
 }
-// PC 0x00694B40  Xbox 0x000E0090
+// PC 0x006EF000
 void CSWGuiInGameGalaxyMap::OnPanelAdded()
 {
     CSWPartyTable* pPartyTable =
@@ -1089,7 +1089,7 @@ void CSWGuiInGameGalaxyMap::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
-// PC 0x00694BF0  Xbox 0x000E0140
+// PC 0x006EF0C0
 void CSWGuiInGameGalaxyMap::NextPlanet()
 {
     CSWPartyTable* pPartyTable =
@@ -1118,7 +1118,7 @@ void CSWGuiInGameGalaxyMap::NextPlanet()
     m_aPlanetButtons[pPartyTable->m_nSelectedPlanet].SetActive(1);
     DisplayPlanet(pPartyTable->m_nSelectedPlanet, 1);
 }
-// PC 0x00695980  Xbox 0x000E1010
+// PC 0x006EF780
 void CSWGuiInGameGalaxyMap::HandleInputEvent(int nEvent, int nState)
 {
     CSWGuiPanel::HandleInputEvent(nEvent, nState);
@@ -1165,7 +1165,7 @@ void CSWGuiInGameGalaxyMap::HandleInputEvent(int nEvent, int nState)
         }
     }
 }
-// PC 0x00694CA0  Xbox 0x000E01F0
+// PC 0x006EF160
 void CSWGuiInGameGalaxyMap::PrevPlanet()
 {
     CSWPartyTable* pPartyTable =
@@ -1194,7 +1194,7 @@ void CSWGuiInGameGalaxyMap::PrevPlanet()
     m_aPlanetButtons[pPartyTable->m_nSelectedPlanet].SetActive(1);
     DisplayPlanet(pPartyTable->m_nSelectedPlanet, 1);
 }
-// PC 0x00694D50  Xbox 0x000E02A0
+// PC 0x006EF200
 CSWGuiInGameMap::CSWGuiInGameMap(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -1255,7 +1255,7 @@ CSWGuiInGameMap::CSWGuiInGameMap(CSWGuiManager* pManager)
                            (CSWGuiHandler)&CSWGuiInGameMap::OnDownArrowPressed);
 #endif
 }
-// PC 0x006933A0  Xbox 0x000DF350
+// PC 0x006ECE40
 void CSWGuiInGameGalaxyMap::DisplayPlanet(int nPlanet, int bZoom)
 {
     CExoString sName;
@@ -1299,7 +1299,7 @@ void CSWGuiInGameGalaxyMap::DisplayPlanet(int nPlanet, int bZoom)
 }
 
 #ifndef _XBOX
-void CSWGuiInGameGalaxyMap::OnPlanetClicked(CSWGuiControl* pControl)  // PC 0x006935A0
+void CSWGuiInGameGalaxyMap::OnPlanetClicked(CSWGuiControl* pControl)  // PC 0x006ED040
 {
     CSWPartyTable* pPartyTable;
     if (pControl->m_bSelected)
@@ -1321,7 +1321,7 @@ void CSWGuiInGameGalaxyMap::OnPlanetClicked(CSWGuiControl* pControl)  // PC 0x00
     }
 }
 #endif
-// PC 0x00693610
+// PC 0x006EC6B0
 void CSWGuiInGameGalaxyMap::Draw(float fElapsed)
 {
     int nSelected =

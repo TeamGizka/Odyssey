@@ -125,7 +125,7 @@ int g_nConnectType = CNetLayer::CONNECTTYPE_PLAYER;
 static unsigned __int64 g_starttime;
 static unsigned __int64 g_endtime;
 extern CExoString g_sErrorString;
-// PC 0x005F51C0  Xbox 0x00023A50
+// PC 0x00640B60
 int CClientExoAppInternal::Initialize()
 {
 #ifndef _XBOX
@@ -169,7 +169,7 @@ int CClientExoAppInternal::Initialize()
     m_bClientInitialized = 1;
     return 1;
 }
-// PC 0x005F7DC0  Xbox 0x000267B0
+// PC 0x00643930
 CWorldTimer* CClientExoAppInternal::GetActiveTimer(unsigned long oidObject)
 {
     if (oidObject != OBJECT_INVALID && GetActivePauseState() > 0)
@@ -189,17 +189,17 @@ CWorldTimer* CClientExoAppInternal::GetActiveTimer(unsigned long oidObject)
     }
     return m_pWorldTimer;
 }
-// PC 0x0066B360
+// PC 0x0069E520
 CGuiAreaLoadscreen* CClientExoAppInternal::StartLoadBar(int, char*, int)
 {
     return 0;
 }
-// PC 0x00644760
+// PC 0x00406600
 CSWCModule* CClientExoAppInternal::GetModule()
 {
     return m_pModule;
 }
-// PC 0x005EE390  Xbox 0x0001C440
+// PC 0x0057F240
 CExoString CSWTlkTable::Fetch(unsigned long nStrRef, CGameObject* pObject,
                               int nGender, int nFlags)
 {
@@ -209,12 +209,12 @@ CExoString CSWTlkTable::Fetch(unsigned long nStrRef, CGameObject* pObject,
 
     return g_pAppManager->m_pClientExoApp->GetGUIString(nStrRef);
 }
-// PC 0x005EE3E0  Xbox 0x0001C490
+// PC 0x006396D0
 CExoString CSWCModule::GetModuleTitle()
 {
     return m_sModuleTitle;
 }
-// PC 0x005EE400
+// PC 0x006396F0
 inline CExoImeUI::CExoImeUI()
     : m_sResult(),
       m_sComposition(),
@@ -223,12 +223,12 @@ inline CExoImeUI::CExoImeUI()
     m_nCompositionActive = 0;
     m_nUnknown104 = 0;
 }
-// PC 0x005EE480  Xbox 0x0001C4B0
+// PC 0x00639770
 void CSWCPlayer::SetPrimaryPCPortrait(CResRef cPortrait)
 {
     m_cPrimaryPCPortrait.CResRef::operator=(cPortrait);
 }
-// PC 0x005EE4A0  Xbox 0x0001C590
+// PC 0x00639790
 char* SetFramesPerSecond(char* szFrameRate)
 {
     int nFrameRate = atoi(szFrameRate);
@@ -258,7 +258,7 @@ char* SetFramesPerSecond(char* szFrameRate)
 
     return "Fixed frame rate off.";
 }
-// PC 0x005EE5C0  Xbox 0x0001C710
+// PC 0x006398B0
 void CSWCPlayer::SetPrimaryPCPortraitId(unsigned short nPortraitId)
 {
     CExoString sPrefix;
@@ -286,7 +286,7 @@ void CSWCPlayer::SetPrimaryPCPortraitId(unsigned short nPortraitId)
 
     m_nPrimaryPCPortraitId = nPortraitId;
 }
-// PC 0x005EE6F0  Xbox 0x0001C8B0
+// PC 0x006399E0
 CAurCamera* CClientExoAppInternal::GetModuleCamera()
 {
     if (m_pModule != NULL)
@@ -298,7 +298,7 @@ CAurCamera* CClientExoAppInternal::GetModuleCamera()
 }
 
 #ifdef _XBOX
-// Xbox 0x0001C840
+
 void CClientExoAppInternal::ShutDownLegalScreen()
 {
     if (m_pUnknown27C != NULL)
@@ -313,7 +313,7 @@ void CClientExoAppInternal::ShutDownLegalScreen()
     }
 }
 #endif
-// PC 0x005EE700  Xbox 0x0001C8C0
+// PC 0x006399F0
 int CClientExoAppInternal::HandleMessage(unsigned long nPlayerId,
                                          unsigned char* pMessage,
                                          unsigned long nSize, int bGuaranteed)
@@ -349,7 +349,7 @@ int CClientExoAppInternal::HandleMessage(unsigned long nPlayerId,
     }
     return 1;
 }
-// PC 0x005EE860  Xbox 0x0001CA20
+// PC 0x00639B50
 void CClientExoAppInternal::UpdateRoom(const Vector& vPosition)
 {
     if (m_pModule != NULL)
@@ -386,12 +386,12 @@ void CClientExoAppInternal::UpdateRoom(const Vector& vPosition)
         }
     }
 }
-// PC 0x005EE8F0  Xbox 0x0001CAC0
+// PC 0x00639BE0
 int CClientExoAppInternal::GetPauseState(unsigned char nPauseType)
 {
     return nPauseType & m_PauseState.m_nPauseState;
 }
-// PC 0x005EE910  Xbox 0x0001CAE0
+// PC 0x00639C00
 unsigned char CClientExoAppInternal::GetActivePauseState()
 {
     if (GetPauseState(PAUSE_TYPE_COMBAT_MASK))
@@ -400,12 +400,12 @@ unsigned char CClientExoAppInternal::GetActivePauseState()
         return PAUSE_STATE_PAUSED;
     return 0;
 }
-// PC 0x0063E7A0
+// PC 0x0065D0F0
 int CClientExoAppInternal::ContinueMessageProcessing()
 {
     return 1;
 }
-// PC 0x005EE920  Xbox 0x0001CAF0
+// PC 0x00639C10
 void CClientExoAppInternal::CreateQuestJournal()
 {
     if (m_pQuestJournal == NULL)
@@ -413,7 +413,7 @@ void CClientExoAppInternal::CreateQuestJournal()
         m_pQuestJournal = new CSWCJournal;
     }
 }
-// PC 0x005EE990  Xbox 0x0001CB60
+// PC 0x00639C80
 void CClientExoAppInternal::CreateWorldJournal()
 {
     if (m_pWorldJournal == NULL)
@@ -430,7 +430,7 @@ void CClientExoAppInternal::DestroyWorldJournal()
         m_pWorldJournal = NULL;
     }
 }
-// PC 0x005EEA00  Xbox 0x0001CBD0
+// PC 0x00639CF0
 void CClientExoAppInternal::JournalUpdated(int nType, int nIndex,
                                            const CExoString& sName)
 {
@@ -441,19 +441,19 @@ void CClientExoAppInternal::JournalUpdated(int nType, int nIndex,
 }
 
 #ifndef _XBOX
-void CClientExoAppInternal::ExitProgram()  // PC 0x005EEA10
+void CClientExoAppInternal::ExitProgram()  // PC 0x00639D00
 {
     PostQuitMessage(0);
 }
 #endif
-// PC 0x005EEA20  Xbox 0x0001CBE0
+// PC 0x00639D10
 CSWCModule* CClientExoAppInternal::CreateModule()
 {
     return m_pModule = new CSWCModule;
 }
 
 #ifdef _XBOX
-int CClientExoAppInternal::SendSaveGameRequest(unsigned long nPlayerId,  // Xbox 0x0001CC50
+int CClientExoAppInternal::SendSaveGameRequest(unsigned long nPlayerId,
                                                const CExoString& sSaveName)
 {
     if (m_pSWCMessage != NULL)
@@ -465,7 +465,7 @@ int CClientExoAppInternal::SendSaveGameRequest(unsigned long nPlayerId,  // Xbox
     return 0;
 }
 #else
-int CClientExoAppInternal::SendSaveGameRequest(unsigned long nPlayerId,  // PC 0x005EEA90
+int CClientExoAppInternal::SendSaveGameRequest(unsigned long nPlayerId,  // PC 0x00639D80
                                                const CExoString& sSaveName,
                                                const CExoString& sSaveDir)
 {
@@ -478,7 +478,7 @@ int CClientExoAppInternal::SendSaveGameRequest(unsigned long nPlayerId,  // PC 0
     return 0;
 }
 #endif
-// PC 0x005EEAB0  Xbox 0x0001CC70
+// PC 0x00639DA0
 int CClientExoAppInternal::SendLoadGameRequest(unsigned long nPlayerId,
                                                const CExoString& sSaveName,
                                                const CExoString& sSaveDir)
@@ -491,12 +491,12 @@ int CClientExoAppInternal::SendLoadGameRequest(unsigned long nPlayerId,
 
     return 0;
 }
-// PC 0x005EEAD0  Xbox 0x0001CC90
+// PC 0x00639DC0
 void CClientExoAppInternal::ServerModeChange(unsigned char nServerMode)
 {
     m_nServerMode = nServerMode;
 }
-// PC 0x005EEAE0  Xbox 0x0001CCA0
+// PC 0x00639DD0
 void CClientExoAppInternal::SetCaptureEventPlayBackRate(int nRate)
 {
     m_nCaptureEventPlayBackRate = nRate;
@@ -505,7 +505,7 @@ void CClientExoAppInternal::SetCaptureEventPlayBackRate(int nRate)
     pClientExoApp->GetWorldTimer()->SetFixedSnapshotRate(1, nRate);
 }
 #ifndef _XBOX
-// PC 0x005EEB10  Xbox 0x0001CCD0
+// PC 0x00639E00
 void CClientExoAppInternal::SetEventDescriptions()
 {
     g_pExoInput->ClearAllInputEventDescriptions();
@@ -816,7 +816,7 @@ static CResRef* AllocateResRefArray(int nCount)
 {
     return new CResRef[nCount];
 }
-// PC 0x005F0AD0  Xbox 0x0001DA50
+// PC 0x0063BE40
 void CClientExoAppInternal::LoadItemDropSoundList()
 {
     if (m_pItemDropSounds != NULL)
@@ -841,7 +841,7 @@ void CClientExoAppInternal::LoadItemDropSoundList()
     delete pInventorySounds;
 }
 #ifndef _XBOX
-// PC 0x005F5370  Xbox 0x00023C00
+// PC 0x00640D20
 void CClientExoAppInternal::UpdateSoundEngine()
 {
     if (m_pModule != NULL)
@@ -907,7 +907,7 @@ RenderSound:
     g_pExoSound->Render();
 }
 #endif
-// PC 0x005F0C60
+
 int CClientExoAppInternal::IsValidResolution(unsigned long nWidth,
                                           unsigned long nHeight)
 {
@@ -923,7 +923,7 @@ int CClientExoAppInternal::IsValidResolution(unsigned long nWidth,
     return 0;
 }
 #ifndef _XBOX
-// PC 0x005F0CE0
+// PC 0x0063BFD0
 int CClientExoAppInternal::ReadVideoModeSettings(unsigned long* pnWidth,
                                                unsigned long* pnHeight,
                                                unsigned char* pnBitsPerPixel,
@@ -975,7 +975,7 @@ void CClientExoAppInternal::StopMovie()  // PC 0x004015A0
 void CClientExoAppInternal::EndLoadBar()
 {
 }
-// PC 0x005F56B0  Xbox 0x00024030
+// PC 0x00641090
 int CClientExoAppInternal::IsOnExclusionList(unsigned long oidObject)
 {
     if (m_pPauseExclusionList == NULL)
@@ -997,7 +997,7 @@ int CClientExoAppInternal::IsOnExclusionList(unsigned long oidObject)
 
     return 0;
 }
-// PC 0x005F5720  Xbox 0x000240A0
+// PC 0x00641100
 void CClientExoAppInternal::SetCaptureEvents(const CExoString& sFileName)
 {
     m_nCaptureEvents = 1;
@@ -1036,7 +1036,7 @@ void CClientExoAppInternal::SetCaptureEvents(const CExoString& sFileName)
         }
     }
 }
-// PC 0x005F5910  Xbox 0x00024290
+// PC 0x006412F0
 void CClientExoAppInternal::SetCaptureEventPlayBack(const CExoString& sFileName)
 {
     m_nCaptureEventPlayBack = 1;
@@ -1101,7 +1101,7 @@ unsigned long CClientExoAppInternal::GetNearestVideoMode(unsigned long nWidth, u
 #endif
 
 #ifdef _XBOX
-// PC 0x005F5AB0  Xbox 0x00024430
+
 void CClientExoAppInternal::ReadAndSetVideoMode(int bStartup, int bFullScreen)
 {
     CExoString sValue;
@@ -1126,7 +1126,7 @@ void CClientExoAppInternal::ReadAndSetVideoMode(int bStartup, int bFullScreen)
     CAuroraInterface::GetExactVideoMode(nWidth, nHeight, nBitsPerPixel, nRefreshRate);
 }
 #else
-void CClientExoAppInternal::ReadAndSetVideoMode(int bStartup, int bFullScreen)  // PC 0x005F5AB0  Xbox 0x00024430
+void CClientExoAppInternal::ReadAndSetVideoMode(int bStartup, int bFullScreen)  // PC 0x00641490
 {
     unsigned long nWidth = 0;
     unsigned long nHeight = 0;
@@ -1165,7 +1165,7 @@ void CClientExoAppInternal::ReadAndSetVideoMode(int bStartup, int bFullScreen)  
 }
 #endif
 #ifndef _XBOX
-void CClientExoAppInternal::StopServices()  // PC 0x00604130  Xbox 0x00034000
+void CClientExoAppInternal::StopServices()  // PC 0x00650110
 {
 #ifndef _XBOX
     ShutDownMoviePlayer();
@@ -1350,7 +1350,7 @@ void CClientExoAppInternal::StopServices()  // PC 0x00604130  Xbox 0x00034000
     m_nCharacterFileSize = 0;
     m_nCharacterFileId = 0;
 }
-CSWCPlayer* CClientExoAppInternal::GetPlayerByPlayerID(unsigned long nPlayerId)  // PC 0x005F5C70  Xbox 0x00024820
+CSWCPlayer* CClientExoAppInternal::GetPlayerByPlayerID(unsigned long nPlayerId)  // PC 0x00641650
 {
     CExoLinkedListNode* pNode = m_lstPlayerList.GetHeadPos();
     void* pData = m_lstPlayerList.GetHead();
@@ -1369,7 +1369,7 @@ CSWCPlayer* CClientExoAppInternal::GetPlayerByPlayerID(unsigned long nPlayerId) 
     return NULL;
 }
 #endif
-CSWCPlayer* CClientExoAppInternal::GetPlayerByGameObjectID(unsigned long oidObject)  // PC 0x005F5CB0  Xbox 0x00024860
+CSWCPlayer* CClientExoAppInternal::GetPlayerByGameObjectID(unsigned long oidObject)  // PC 0x00641690
 {
     CExoLinkedListNode* pNode = m_lstPlayerList.GetHeadPos();
     void* pData = m_lstPlayerList.GetHead();
@@ -1387,7 +1387,7 @@ CSWCPlayer* CClientExoAppInternal::GetPlayerByGameObjectID(unsigned long oidObje
 
     return NULL;
 }
-// PC 0x005F5CF0  Xbox 0x000248A0
+// PC 0x006416D0
 void CClientExoAppInternal::AttachPlayerGameObjectToArea()
 {
     CSWCCreature* pCreature = GetPlayerCreature();
@@ -1422,7 +1422,7 @@ void CClientExoAppInternal::AttachPlayerGameObjectToArea()
     }
 }
 #ifndef _XBOX
-// PC 0x005F5E10  Xbox 0x000249C0
+// PC 0x006417F0
 void CClientExoAppInternal::UpdateCamera(float fDeltaTime)
 {
     if (m_pModule == NULL)
@@ -1524,7 +1524,7 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)
     m_pModule->m_nReserved80 = 0;
 }
 #endif
-void CClientExoAppInternal::AddObjectToHitcheckIgnoreList(  // PC 0x005F6340  Xbox 0x00024D20
+void CClientExoAppInternal::AddObjectToHitcheckIgnoreList(  // PC 0x00641E20
     unsigned long oidObject)
 {
     CExoLinkedListNode* pNode = m_lstHitcheckIgnore.GetHeadPos();
@@ -1544,7 +1544,7 @@ void CClientExoAppInternal::AddObjectToHitcheckIgnoreList(  // PC 0x005F6340  Xb
     *pNew = oidObject;
     m_lstHitcheckIgnore.AddTail(pNew);
 }
-// PC 0x005F63A0  Xbox 0x00024D80
+// PC 0x00641E80
 void CClientExoAppInternal::RemoveObjectFromHitcheckIgnoreList(
     unsigned long oidObject)
 {
@@ -1563,7 +1563,7 @@ void CClientExoAppInternal::RemoveObjectFromHitcheckIgnoreList(
         pOid = m_lstHitcheckIgnore.GetNext(pNode);
     }
 }
-// PC 0x005F7E20  Xbox 0x00026810
+// PC 0x00643990
 void CClientExoAppInternal::ClearPauseExclusionList()
 {
     while (m_pPauseExclusionList->GetHead() != NULL)
@@ -1582,7 +1582,7 @@ void CClientExoAppInternal::ClearPauseExclusionList()
         }
     }
 }
-// PC 0x005F7F10  Xbox 0x00026900
+// PC 0x00643A80
 void CClientExoAppInternal::AddToPauseExclusionList(unsigned long oidObject)
 {
     CGameObject* pObject;
@@ -1611,7 +1611,7 @@ inline void ClientExoAppInternalReserveActions(CExoArrayList<CSWGuiInterfaceActi
 {
     pActions->Allocate(nSize);
 }
-// PC 0x005F7FA0  Xbox 0x00026990
+// PC 0x00643B10
 void CClientExoAppInternal::SetPauseState(unsigned char nPauseState, int bPause,
                                         CExoLinkedList<unsigned long>* pExclusionList)
 {
@@ -1722,7 +1722,7 @@ void CClientExoAppInternal::CleanUpModuleServices()
     if (m_pPlayerControl != NULL)
         m_pPlayerControl->Initialize();
 }
-// PC 0x005F8290  Xbox 0x00026C80
+// PC 0x00643E00
 void CClientExoAppInternal::UnloadModule()
 {
     SetClearColor("0 0 0");
@@ -1756,7 +1756,7 @@ void CClientExoAppInternal::UnloadModule()
 #endif
     }
 }
-// PC 0x005F8470  Xbox 0x00026E10
+// PC 0x00643FE0
 int CClientExoAppInternal::Uninitialize()
 {
     CSWCVisualEffect::UnloadCachedVFX();
@@ -1802,7 +1802,7 @@ int CClientExoAppInternal::Uninitialize()
 
     return SetTexturePack(0xFF, 1);
 }
-// PC 0x005F6410
+// PC 0x00641EF0
 void CClientExoAppInternal::EmptyHitcheckIgnoreList()
 {
     unsigned long* pOid;
@@ -1819,7 +1819,7 @@ void CClientExoAppInternal::EmptyHitcheckIgnoreList()
 }
 
 #ifndef _XBOX
-int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x005F8550
+int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x006440C0
                                         const CExoString& sModule,
                                         const CExoString& sLoadMusic,
                                         const CExoString& sLoadScreen,
@@ -1966,7 +1966,7 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x005F8550
     return 0;
 }
 #endif
-// PC 0x005F94D0
+// PC 0x00645160
 void CClientExoAppInternal::SetHitcheckIgnoreList(List<CAurObject*>* pIgnoreList)
 {
     CExoLinkedListNode* pNode = m_lstHitcheckIgnore.GetHeadPos();
@@ -2050,7 +2050,7 @@ void CClientExoAppInternal::SetHitcheckIgnoreList(List<CAurObject*>* pIgnoreList
 }
 
 #ifndef _XBOX
-void CClientExoAppInternal::RestartMoviesIfNecessary()  // PC 0x005F9780
+void CClientExoAppInternal::RestartMoviesIfNecessary()  // PC 0x00645490
 {
     if (m_pMoviePlayer != NULL &&
         (unsigned long)m_pMoviePlayer->GetNumberOfMoviesToPlay() > 0)
@@ -2066,7 +2066,7 @@ void CClientExoAppInternal::RestartMoviesIfNecessary()  // PC 0x005F9780
     }
 }
 #endif
-// PC 0x005F97E0  Xbox 0x00026EF0
+// PC 0x006454F0
 void CClientExoAppInternal::AddCreatureModelDirectlyToIgnoreList(
     unsigned long oidCreature, List<CAurObject*>* pIgnoreList)
 {
@@ -2131,7 +2131,7 @@ void CClientExoAppInternal::AddCreatureModelDirectlyToIgnoreList(
         }
     }
 }
-// PC 0x005F99F0  Xbox 0x00027100
+// PC 0x00645700
 void CClientExoAppInternal::AddItemModelDirectlyToIgnoreList(
     unsigned long oidItem, List<CAurObject*>* pIgnoreList)
 {
@@ -2151,7 +2151,7 @@ void CClientExoAppInternal::AddItemModelDirectlyToIgnoreList(
         }
     }
 }
-// PC 0x005F9AA0  Xbox 0x000271B0
+// PC 0x006457B0
 void CClientExoAppInternal::AddSimpleObjectModelDirectlyToIgnoreList(
     unsigned long oidObject, List<CAurObject*>* pIgnoreList)
 {
@@ -2173,7 +2173,7 @@ void CClientExoAppInternal::AddSimpleObjectModelDirectlyToIgnoreList(
         }
     }
 }
-// PC 0x005F9AF0  Xbox 0x00024DF0
+// PC 0x00645800
 void CClientExoAppInternal::StartMenuMusic(int bCultTheme, int nVolume,
                                         int nPriorityGroup)
 {
@@ -2219,7 +2219,7 @@ void CClientExoAppInternal::StartMenuMusic(int bCultTheme, int nVolume,
 #endif
     }
 }
-// PC 0x005F6440  Xbox 0x0001E110
+// PC 0x00641F20
 void CClientExoAppInternal::StopMenuMusic()
 {
     if (m_pMenuMusic != NULL)
@@ -2244,7 +2244,7 @@ void CClientExoAppInternal::StopMenuMusic()
         m_pMenuMusic = NULL;
     }
 }
-// PC 0x005F6480  Xbox 0x0001E1B0
+// PC 0x00641F60
 void CClientExoAppInternal::StartLoadMusic()
 {
 #ifdef _XBOX
@@ -2289,7 +2289,7 @@ void CClientExoAppInternal::StartLoadMusic()
         }
     }
 }
-// PC 0x005F6640  Xbox 0x00024FB0
+// PC 0x006420C0
 int CClientExoAppInternal::GetObjectName(unsigned long oidObject, CExoString& sName)
 {
     CExoLinkedListNode* pNode;
@@ -2362,7 +2362,7 @@ int CClientExoAppInternal::GetObjectName(unsigned long oidObject, CExoString& sN
     }
     return 1;
 }
-// PC 0x005F10F0  Xbox 0x0001DC40
+
 CGameObject* CClientExoAppInternal::GetGameObject(unsigned long oidObject)
 {
     CGameObjectArray* pArray = m_pGameObjectArray;
@@ -2376,7 +2376,7 @@ CGameObject* CClientExoAppInternal::GetGameObject(unsigned long oidObject)
 
     return NULL;
 }
-// PC 0x005F1130  Xbox 0x0001DC80
+// PC 0x0063C370
 CSWCItem* CClientExoAppInternal::GetItemByGameObjectID(unsigned long nId)
 {
     CGameObject* pObject = NULL;
@@ -2393,7 +2393,7 @@ CSWCItem* CClientExoAppInternal::GetItemByGameObjectID(unsigned long nId)
 }
 
 #ifndef _XBOX
-void CClientExoAppInternal::QueryExitProgram()  // PC 0x005F6960
+void CClientExoAppInternal::QueryExitProgram()  // PC 0x006423C0
 {
     if (g_pAppManager->GetClientExoApp() == NULL
         || g_pAppManager->GetClientExoApp()->GetInGameGui() == NULL
@@ -2469,7 +2469,7 @@ void CClientExoAppInternal::QueryExitProgram()  // PC 0x005F6960
     g_pAppManager->GetClientExoApp()->SetInputClass(INPUT_CLASS_GUI, 1);
 }
 #endif
-// PC 0x005F6B10  Xbox 0x000252D0
+// PC 0x00642580
 void CClientExoAppInternal::SetInputActive(int nA, int nB)
 {
     if (g_pExoInput != NULL)
@@ -2494,7 +2494,7 @@ void CClientExoAppInternal::SetInputActive(int nA, int nB)
     }
 #endif
 }
-// PC 0x005F6B60  Xbox 0x00020CA0
+// PC 0x006425D0
 void CClientExoAppInternal::ChangeCharacter(int nCharacter, int bPlaySound)
 {
     CSWCCreature* pCharacter = m_pSWParty->GetPlayerCharacter();
@@ -2549,7 +2549,7 @@ static inline int ClientexoappinternalHiliteCount(CExoArrayList<CHostileHilite>*
 {
     return pList->num;
 }
-// PC 0x005F9C60  Xbox 0x00027910
+// PC 0x00645960
 void CClientExoAppInternal::ShowObject(CSWCObject* pObject, int bLookAt,
                                       int bMoveCamera, int bUnused)
 {
@@ -2775,7 +2775,7 @@ void CClientExoAppInternal::ShowObject(CSWCObject* pObject, int bLookAt,
         }
     }
 }
-// PC 0x005FA5A0  Xbox 0x000282C0
+// PC 0x006462B0
 void CClientExoAppInternal::DoPassiveSelection(float fDeltaTime)
 {
     CSWCCreature* pPlayer = m_pSWParty->GetPlayerCharacter();
@@ -3058,7 +3058,7 @@ void CClientExoAppInternal::DoPassiveSelection(float fDeltaTime)
         m_pSWParty->m_aPartyMemberData[0].m_oidCombatTarget = m_nLastTarget;
     m_PauseFlags.m_Bits.m_bLastTargetChanged = 0;
 }
-// PC 0x005FB050  Xbox 0x00028B80
+// PC 0x00646D20
 CSWCObject* CClientExoAppInternal::SelectNearestObject(int bReverse,
                                                        unsigned char nFilter)
 {
@@ -3218,7 +3218,7 @@ CSWCObject* CClientExoAppInternal::SelectNearestObject(int bReverse,
 
     return pObject;
 }
-// PC 0x005FB3F0  Xbox 0x00028F00
+// PC 0x00647090
 void CClientExoAppInternal::SetLoadBarProgress(int nProgress, int bUpdateHint)
 {
     g_pExoInput->UpdateJoysticks();
@@ -3238,7 +3238,7 @@ void CClientExoAppInternal::SetLoadBarProgress(int nProgress, int bUpdateHint)
 #endif
     }
 }
-// PC 0x005FB490  Xbox 0x00028FB0
+// PC 0x00647130
 int CClientExoAppInternal::PlayRumblePattern(int nPattern)
 {
     if (nPattern < 0 || nPattern >= m_aRumblePatterns.num)
@@ -3264,7 +3264,7 @@ int CClientExoAppInternal::PlayRumblePattern(int nPattern)
     m_aRumbleInstances.element[nInstance].m_bFirstUpdate = 1;
     return 1;
 }
-// PC 0x005FB540  Xbox 0x00029070
+// PC 0x006471E0
 CExoString CClientExoAppInternal::GetGUIString(unsigned long nStrRef)
 {
     int nLow = 0;
@@ -3314,7 +3314,7 @@ CExoString CClientExoAppInternal::GetGUIString(unsigned long nStrRef)
 
     return sString;
 }
-// PC 0x005FB6E0  Xbox 0x0002A360
+// PC 0x00647380
 int CClientExoAppInternal::CrownFutureLeader()
 {
     if (m_oidFutureLeader != OBJECT_INVALID)
@@ -3369,7 +3369,7 @@ int CClientExoAppInternal::CrownFutureLeader()
     }
     return 0;
 }
-// PC 0x005FB960  Xbox 0x0002A5E0
+// PC 0x00647600
 void CClientExoAppInternal::LookUpAndPerformRumbleWithCutOff(
     int nEntry, unsigned char nTable, const Vector& vPosition)
 {
@@ -3467,7 +3467,7 @@ void CClientExoAppInternal::LookUpAndPerformRumbleWithCutOff(
 }
 
 #ifndef _XBOX
-// PC 0x005FBBF0
+// PC 0x00647890
 int CClientExoAppInternal::AddMovieToExoArrayList(
     const CExoString& sMovie, CExoArrayList<CExoString>& lstMovies)
 {
@@ -3529,7 +3529,7 @@ int CClientExoAppInternal::AddMovieToExoArrayList(
     }
     return 0;
 }
-// PC 0x005FBF50
+// PC 0x00647C00
 int CClientExoAppInternal::AddMovieToMovieQueue(const CExoString& sMovie,
                                                 int nFlags)
 {
@@ -3538,13 +3538,13 @@ int CClientExoAppInternal::AddMovieToMovieQueue(const CExoString& sMovie,
     return AddMovieToExoArrayList(sMovie, m_aMovieQueue);
 }
 #endif
-// PC 0x005FBFB0  Xbox 0x00048660
+// PC 0x00647C90
 template <> inline CExoArrayList<CSWGuiInterfaceAction>::~CExoArrayList()
 {
     delete[] element;
     element = NULL;
 }
-// PC 0x005FBFE0  Xbox 0x00026100
+// PC 0x00647CC0
 CClientExoAppInternal::CClientExoAppInternal()
 {
     m_bStartMenuMusicOnMovieEnd = 1;
@@ -3755,7 +3755,7 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_nSoundPausedByCombat = 0;
 #endif
 }
-// PC 0x005FC6F0  Xbox 0x0002A920
+// PC 0x006483D0
 CClientExoAppInternal::~CClientExoAppInternal()
 {
     if (m_pSWParty != NULL)
@@ -3779,7 +3779,7 @@ CClientExoAppInternal::~CClientExoAppInternal()
     }
 }
 #ifndef _XBOX
-void CClientExoAppInternal::DisplayMainMenu(int bUnknown)  // PC 0x005FCA30  Xbox 0x0002ABE0
+void CClientExoAppInternal::DisplayMainMenu(int bUnknown)  // PC 0x00648720
 {
     if (m_pMainMenu != NULL && m_pSWGuiManager->PanelExists(m_pMainMenu))
     {
@@ -3814,7 +3814,7 @@ void CClientExoAppInternal::DisplayMainMenu(int bUnknown)  // PC 0x005FCA30  Xbo
 }
 #endif
 #ifdef _XBOX
-// Xbox 0x0002AEF0
+
 void CClientExoAppInternal::DisplayStartScreen()
 {
     int bSkipped = 0;
@@ -3851,11 +3851,11 @@ void CClientExoAppInternal::DisplayStartScreen()
     }
 }
 #endif
-// PC 0x00602C10  Xbox 0x00031540
+// PC 0x0064EC30
 inline CSWCJournal::~CSWCJournal()
 {
 }
-// PC 0x00602C90  Xbox 0x00032D50
+// PC 0x0064ECB0
 void CClientExoAppInternal::StallServerCode()
 {
     CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
@@ -3879,7 +3879,7 @@ void CClientExoAppInternal::StallServerCode()
         m_bShutDownToMainMenuPending = 0;
     }
 }
-// PC 0x005FCBD0  Xbox 0x0002B130
+// PC 0x00648910
 void CClientExoAppInternal::ShutDownToMainMenu()
 {
     CGameObject* pObject = NULL;
@@ -3921,7 +3921,7 @@ void CClientExoAppInternal::ShutDownToMainMenu()
         }
     }
 }
-// PC 0x005FCC90  Xbox 0x0002B1F0
+// PC 0x006489E0
 void CClientExoAppInternal::AddObjectModelDirectlyToIgnoreList(
     unsigned long oidObject, List<CAurObject*>* pIgnoreList)
 {
@@ -3943,7 +3943,7 @@ void CClientExoAppInternal::AddObjectModelDirectlyToIgnoreList(
         }
     }
 }
-// PC 0x005FCD10  Xbox 0x0002B270
+// PC 0x00648A50
 void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                                                CSWCCMessageData* pMessageData,
                                                const CExoString& sMessage)
@@ -5473,7 +5473,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
 FeedbackDone:
     delete pMessageData;
 }
-// PC 0x00602650  Xbox 0x00030D80
+// PC 0x0064E670
 int CClientExoAppInternal::PlayLoadModuleMovies()
 {
 #ifdef _XBOX
@@ -5523,7 +5523,7 @@ int CClientExoAppInternal::PlayLoadModuleMovies()
 
     return 0;
 }
-// PC 0x005F6C60  Xbox 0x00025310
+// PC 0x006426F0
 void CClientExoAppInternal::ShowLoadScreen(int bFade, int bPlayMusic, int bSaving)
 {
     if (g_pExoSound != NULL)
@@ -5571,7 +5571,7 @@ void CClientExoAppInternal::ShowLoadScreen(int bFade, int bPlayMusic, int bSavin
 void CClientExoAppInternal::HideLoadScreen(int bFade)
 {
 #else
-void CClientExoAppInternal::HideLoadScreen(int bFade, int bUpdateScreen)  // PC 0x005F6E20  Xbox 0x000254D0
+void CClientExoAppInternal::HideLoadScreen(int bFade, int bUpdateScreen)  // PC 0x006428D0
 {
     ShowMouse(CLIENT_MOUSE_HIDE_LOAD_SCREEN);
 #endif
@@ -5611,7 +5611,7 @@ void CClientExoAppInternal::HideLoadScreen(int bFade, int bUpdateScreen)  // PC 
 }
 
 #ifdef _XBOX
-// PC 0x006027A0  Xbox 0x00027200
+
 int CClientExoAppInternal::AddMoveToModuleMovie(const CExoString& sMovie)
 {
     if (sMovie != "")
@@ -5673,12 +5673,12 @@ int CClientExoAppInternal::AddMoveToModuleMovie(const CExoString& sMovie)
     return 0;
 }
 #else
-int CClientExoAppInternal::AddMoveToModuleMovie(const CExoString& sMovie)  // PC 0x006027A0  Xbox 0x00027200
+int CClientExoAppInternal::AddMoveToModuleMovie(const CExoString& sMovie)  // PC 0x0064E7C0
 {
     return AddMovieToExoArrayList(sMovie, m_aMoveToModuleMovies);
 }
 #endif
-// PC 0x006027C0  Xbox 0x00031210
+// PC 0x0064E7E0
 void CClientExoAppInternal::AddFloatyText(unsigned long oidObject,
                                         unsigned char nType, int nValue)
 {
@@ -5733,7 +5733,7 @@ void CClientExoAppInternal::AddFloatyText(unsigned long oidObject,
 }
 
 #ifdef _XBOX
-// PC 0x00602CF0  Xbox 0x00027580
+
 int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nResult,
                                      int bAnyButtonSkips, int bNoMusic)
 {
@@ -5816,7 +5816,7 @@ int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nResult,
 }
 
 #else
-int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nA, int nB,  // PC 0x00602CF0  Xbox 0x00027580
+int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nA, int nB,  // PC 0x0064ED10
                                      int nC)
 {
     if (m_bMovieDisabled != 0)
@@ -5833,7 +5833,7 @@ int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nA, int nB, 
 }
 
 #ifndef _XBOX
-int CClientExoAppInternal::PlayMovieQueue(int nFlags)  // PC 0x00602D40
+int CClientExoAppInternal::PlayMovieQueue(int nFlags)  // PC 0x0064ED60
 {
     if (m_aMovieQueue.Contains(".\\movies\\55.bik") != 0)
     {
@@ -5851,7 +5851,7 @@ int CClientExoAppInternal::PlayMovieQueue(int nFlags)  // PC 0x00602D40
     return nResult;
 }
 #endif
-// PC 0x00602AF0
+// PC 0x0064EB10
 int CClientExoAppInternal::PlayMoviesInExoArrayList(
     CExoArrayList<CExoString>& lstMovies, int& nResult, int nWait, int nMode,
     CExoArrayList<int>* lstSkippable)
@@ -5908,7 +5908,7 @@ int CClientExoAppInternal::PlayMoviesInExoArrayList(
 
     return 1;
 }
-// PC 0x005F6F20
+// PC 0x00642A00
 int CClientExoAppInternal::WaitForMovie(int nFlags)
 {
     int nPumpCount = 0;
@@ -5980,7 +5980,7 @@ int CClientExoAppInternal::WaitForMovie(int nFlags)
     ShowMouse(8);
     return 0;
 }
-// PC 0x005F7190
+// PC 0x00642C80
 void CClientExoAppInternal::ShutDownMoviePlayer()
 {
     if (m_pMoviePlayer != NULL)
@@ -5996,7 +5996,7 @@ void CClientExoAppInternal::ShutDownMoviePlayer()
     }
 }
 #endif
-// PC 0x005F7200  Xbox 0x000257F0
+// PC 0x00642CF0
 void CClientExoAppInternal::RunDeathSequence()
 {
     m_nGameOver = 1;
@@ -6021,7 +6021,7 @@ void CClientExoAppInternal::RunDeathSequence()
 }
 
 #ifndef _XBOX
-void CClientExoAppInternal::UpdateDeathSequence()  // PC 0x005F7330  Xbox 0x00030F10
+void CClientExoAppInternal::UpdateDeathSequence()  // PC 0x0063E320
 {
     unsigned long nTime = (unsigned long)(
         g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
@@ -6065,7 +6065,7 @@ void CClientExoAppInternal::UpdateDeathSequence()  // PC 0x005F7330  Xbox 0x0003
     }
 }
 #endif
-// PC 0x005F74B0  Xbox 0x00025920
+// PC 0x00642E10
 int CClientExoAppInternal::StopRumblePattern(int nPattern)
 {
     for (int i = 0; i < m_aRumbleInstances.num; i++)
@@ -6080,7 +6080,7 @@ int CClientExoAppInternal::StopRumblePattern(int nPattern)
     return 0;
 }
 #ifndef _XBOX
-void CClientExoAppInternal::UpdateRumble(float fDeltaTime)  // PC 0x005F7500  Xbox 0x00025970
+void CClientExoAppInternal::UpdateRumble(float fDeltaTime)  // PC 0x00642E60
 {
     float fLeftMagnitude = 0.0f;
     float fRightMagnitude = 0.0f;
@@ -6112,7 +6112,7 @@ void CClientExoAppInternal::UpdateRumble(float fDeltaTime)  // PC 0x005F7500  Xb
                           CLIENT_RUMBLE_DURATION);
 }
 #endif
-void CClientExoAppInternal::UpdateHostileHilite(float fElapsedTime)  // PC 0x005F7640  Xbox 0x00025AD0
+void CClientExoAppInternal::UpdateHostileHilite(float fElapsedTime)  // PC 0x00642FA0
 {
     for (int i = m_aHostileHilites.num - 1; i >= 0; i--)
     {
@@ -6129,7 +6129,7 @@ void CClientExoAppInternal::UpdateHostileHilite(float fElapsedTime)  // PC 0x005
         }
     }
 }
-// PC 0x005F1180  Xbox 0x0001DCD0
+// PC 0x0063C3C0
 CSWCCreature* CClientExoAppInternal::GetCreatureByGameObjectID(
     unsigned long nId)
 {
@@ -6140,7 +6140,7 @@ CSWCCreature* CClientExoAppInternal::GetCreatureByGameObjectID(
         return pObject->AsSWCCreature();
     return NULL;
 }
-// PC 0x005F11D0  Xbox 0x0001DD20
+// PC 0x0063C410
 CSWCArea* CClientExoAppInternal::GetAreaByGameObjectID(unsigned long nId)
 {
     CGameObject* pObject = NULL;
@@ -6155,7 +6155,7 @@ CSWCArea* CClientExoAppInternal::GetAreaByGameObjectID(unsigned long nId)
 
     return NULL;
 }
-// PC 0x005F1220  Xbox 0x0001DD70
+// PC 0x0063C460
 CSWCTrigger* CClientExoAppInternal::GetTriggerByGameObjectID(
     unsigned long oidObject)
 {
@@ -6187,7 +6187,7 @@ inline int CClientExoAppInternal::GetPlayerMovementInput()
 
     return 0;
 }
-// PC 0x005F1270  Xbox 0x0001DDC0
+// PC 0x0063C4B0
 CSWCProjectile* CClientExoAppInternal::GetProjectileByGameObjectID(
     unsigned long oidObject)
 {
@@ -6197,7 +6197,7 @@ CSWCProjectile* CClientExoAppInternal::GetProjectileByGameObjectID(
         return pObject->AsSWCProjectile();
     return NULL;
 }
-// PC 0x005F12C0  Xbox 0x0001DE10
+// PC 0x0063C500
 CSWCPlaceable* CClientExoAppInternal::GetPlaceableByGameObjectID(
     unsigned long oidObject)
 {
@@ -6213,7 +6213,7 @@ CSWCPlaceable* CClientExoAppInternal::GetPlaceableByGameObjectID(
 
     return NULL;
 }
-// PC 0x005F1310  Xbox 0x0001DE60
+// PC 0x0063C550
 CSWCDoor* CClientExoAppInternal::GetDoorByGameObjectID(unsigned long oidObject)
 {
     CGameObject* pObject = NULL;
@@ -6228,7 +6228,7 @@ CSWCDoor* CClientExoAppInternal::GetDoorByGameObjectID(unsigned long oidObject)
 
     return NULL;
 }
-// PC 0x005F1360  Xbox 0x0001DEB0
+// PC 0x0063C5A0
 CSWCAreaOfEffectObject* CClientExoAppInternal::GetAreaOfEffectByGameObjectID(
     unsigned long oidObject)
 {
@@ -6244,7 +6244,7 @@ CSWCAreaOfEffectObject* CClientExoAppInternal::GetAreaOfEffectByGameObjectID(
 
     return NULL;
 }
-// PC 0x005F13B0  Xbox 0x0001DF00
+// PC 0x0063C5F0
 CSWCSoundObject* CClientExoAppInternal::GetSoundObjectByGameObjectID(
     unsigned long oidObject)
 {
@@ -6260,7 +6260,7 @@ CSWCSoundObject* CClientExoAppInternal::GetSoundObjectByGameObjectID(
 
     return NULL;
 }
-// PC 0x005F1400  Xbox 0x0001DF50
+// PC 0x0063C640
 void CClientExoAppInternal::ResetDriveAcceleration()
 {
     if (m_pPlayerControl != NULL)
@@ -6268,12 +6268,12 @@ void CClientExoAppInternal::ResetDriveAcceleration()
         m_pPlayerControl->ResetDriveAcceleration();
     }
 }
-// PC 0x005F1410  Xbox 0x0001DF70
+// PC 0x0063C650
 int CClientExoAppInternal::InitializeInGameGUI()
 {
     return m_pGuiInGame->Initialize();
 }
-// PC 0x005F1420  Xbox 0x0001DF80
+// PC 0x0063C660
 CSWCCreature* CClientExoAppInternal::GetPlayerCreature()
 {
     if (m_oidCachedCreature == m_nPlayerCreatureId)
@@ -6290,7 +6290,7 @@ CSWCCreature* CClientExoAppInternal::GetPlayerCreature()
 
     return pCreature;
 }
-// PC 0x005F1460
+// PC 0x0063C6A0
 int CClientExoAppInternal::ClearCachedCreatures(CSWCCreature* pCreature)
 {
     int nCachedCreature = (int)m_pCachedCreature;
@@ -6303,7 +6303,7 @@ int CClientExoAppInternal::ClearCachedCreatures(CSWCCreature* pCreature)
 
     return nCachedCreature;
 }
-// PC 0x005F1490
+// PC 0x0063C6D0
 int CClientExoAppInternal::SetDebugMode(int nDebugMode)
 {
     m_nDebugMode = nDebugMode;
@@ -6311,7 +6311,7 @@ int CClientExoAppInternal::SetDebugMode(int nDebugMode)
 }
 
 #ifndef _XBOX
-int CClientExoAppInternal::SetTexturePack(unsigned char nTexturePack, int nUnknown)  // PC 0x005F14A0  Xbox 0x0001E000
+int CClientExoAppInternal::SetTexturePack(unsigned char nTexturePack, int nUnknown)  // PC 0x0063C6E0
 {
     CExoString sTexture;
     CExoString sTexturePath;
@@ -6380,7 +6380,7 @@ int CClientExoAppInternal::SetTexturePack(unsigned char nTexturePack, int nUnkno
 #endif
 
 #ifndef _XBOX
-int CClientExoAppInternal::SetVideoMode(unsigned long nVideoMode,  // PC 0x005F1830
+int CClientExoAppInternal::SetVideoMode(unsigned long nVideoMode,  // PC 0x0063CA70
                                       unsigned char nModeSelection)
 {
     if (nVideoMode == m_nVideoMode)
@@ -6448,7 +6448,7 @@ int CClientExoAppInternal::SetVideoMode(unsigned long nVideoMode,  // PC 0x005F1
     return 1;
 }
 #endif
-// PC 0x005F1A90  Xbox 0x0001E080
+// PC 0x0063CCD0
 void CClientExoAppInternal::SetCharacterFile(unsigned long nDataSize,
                                              unsigned char* pCharacterData,
                                              int nCharacterFileId)
@@ -6469,7 +6469,7 @@ void CClientExoAppInternal::SetCharacterFile(unsigned long nDataSize,
     m_nCharacterFileSize = nDataSize;
     m_nCharacterFileId = nCharacterFileId;
 }
-// PC 0x005F1B20
+// PC 0x0063CD60
 void CClientExoAppInternal::FadeAndStopStreamingSoundSource(
     CExoStreamingSoundSource* pSource, unsigned long nFadeTime)
 {
@@ -6492,7 +6492,7 @@ void CClientExoAppInternal::FadeAndStopStreamingSoundSource(
         } while (nElapsed < nFadeTime);
     }
 }
-// PC 0x005F1B90  Xbox 0x0001E340
+// PC 0x0063CDD0
 void CClientExoAppInternal::StopLoadMusic()
 {
     if (m_pLoadMusic != NULL)
@@ -6504,7 +6504,7 @@ void CClientExoAppInternal::StopLoadMusic()
 }
 
 #ifndef _XBOX
-void CClientExoAppInternal::HandleExitGameButton(CSWGuiControl* pControl)  // PC 0x005F1BD0
+void CClientExoAppInternal::HandleExitGameButton(CSWGuiControl* pControl)  // PC 0x0063CED0
 {
     if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox->m_bAccepted)
     {
@@ -6516,7 +6516,7 @@ void CClientExoAppInternal::HandleExitGameButton(CSWGuiControl* pControl)  // PC
 #endif
 
 #ifndef _XBOX
-// PC 0x005F1C20  Xbox 0x0001E600
+// PC 0x0063CF20
 void CClientExoAppInternal::InitializeClientOptions()
 {
     CExoIni cIni;
@@ -6555,7 +6555,7 @@ void CClientExoAppInternal::InitializeClientOptions()
 #endif
 
 #ifndef _XBOX
-void CClientExoAppInternal::InitializeSoundOptions()  // PC 0x005F1F70  Xbox 0x000203B0
+void CClientExoAppInternal::InitializeSoundOptions()  // PC 0x0063D280
 {
     CExoIni cIni;
     CExoString sSound;
@@ -6632,7 +6632,7 @@ void CClientExoAppInternal::InitializeSoundOptions()  // PC 0x005F1F70  Xbox 0x0
 }
 #endif
 #ifndef _XBOX
-void CClientExoAppInternal::TurnOffKeyboardModal()  // PC 0x005F2980  Xbox 0x00020BF0
+void CClientExoAppInternal::TurnOffKeyboardModal()  // PC 0x0063DD00
 {
     for (unsigned int i = 0; i < 7; i++)
     {
@@ -6653,7 +6653,7 @@ void CClientExoAppInternal::TurnOffKeyboardModal()  // PC 0x005F2980  Xbox 0x000
     }
 }
 #endif
-void CClientExoAppInternal::ShutDownLoadGameLoadBar()  // PC 0x005F29F0  Xbox 0x00020C70
+void CClientExoAppInternal::ShutDownLoadGameLoadBar()  // PC 0x0063DD70
 {
     if (m_nLoadBarState != 0)
     {
@@ -6666,7 +6666,7 @@ void CClientExoAppInternal::ShutDownLoadGameLoadBar()  // PC 0x005F29F0  Xbox 0x
         m_nLoadBarState = 0;
     }
 }
-// PC 0x005F2A20  Xbox 0x00020DC0
+// PC 0x0063DDA0
 void CClientExoAppInternal::TogglePartyFollow()
 {
     CExoString sSoloModeScript("k_sup_solo");
@@ -6677,7 +6677,7 @@ void CClientExoAppInternal::TogglePartyFollow()
     pServer->GetPartyTable()->SetSoloMode(!bSoloMode, 1);
     g_pVirtualMachine->RunScript(&sSoloModeScript, OBJECT_INVALID, 0);
 }
-// PC 0x005F2AC0  Xbox 0x00020E60
+// PC 0x0063DE40
 int CClientExoAppInternal::ServerToClientObjectId(unsigned long oidServerObject)
 {
     if (oidServerObject != OBJECT_INVALID)
@@ -6687,7 +6687,7 @@ int CClientExoAppInternal::ServerToClientObjectId(unsigned long oidServerObject)
 
     return OBJECT_INVALID;
 }
-// PC 0x005F2AE0  Xbox 0x00020E80
+// PC 0x0063DE60
 int CClientExoAppInternal::GetLoadScreenVisible()
 {
     if (m_pGuiLoadScreen != NULL && m_pSWGuiManager != NULL)
@@ -6697,7 +6697,7 @@ int CClientExoAppInternal::GetLoadScreenVisible()
 
     return 0;
 }
-// PC 0x005F2B00  Xbox 0x00020EA0
+// PC 0x0063DE80
 CExoString& CClientExoAppInternal::SetPlayerCharacterName(
     const CExoString& sName)
 {
@@ -6706,14 +6706,14 @@ CExoString& CClientExoAppInternal::SetPlayerCharacterName(
 
     return sPlayerCharacterName;
 }
-// PC 0x005F2B30  Xbox 0x00020ED0
+// PC 0x0063DEB0
 CExoString& CClientExoAppInternal::GetPlayerCharacterName()
 {
     m_bPlayerCharacterNameSet = 0;
 
     return m_sPlayerCharacterName;
 }
-// PC 0x005F2B50  Xbox 0x00020EF0
+// PC 0x0063DED0
 int CClientExoAppInternal::IsPlayerCreature(CSWCCreature* pCreature)
 {
     if (pCreature == NULL)
@@ -6733,7 +6733,7 @@ int CClientExoAppInternal::IsPlayerCreature(CSWCCreature* pCreature)
     CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
     return pCreature->m_nId == pClientExoApp->ServerToClientObjectId(oidServer);
 }
-// PC 0x005F2BB0  Xbox 0x00020F50
+// PC 0x0063DF30
 int CClientExoAppInternal::SetPlayerCreature(unsigned long oidCreature)
 {
     m_nPlayerCreatureId = oidCreature;
@@ -6745,7 +6745,7 @@ int CClientExoAppInternal::SetPlayerCreature(unsigned long oidCreature)
 
     return oidCreature;
 }
-// PC 0x005F2BD0  Xbox 0x00020F70
+// PC 0x0063DF50
 int CClientExoAppInternal::IsMoviePlaying()
 {
     if (m_pMoviePlayer == NULL)
@@ -6755,7 +6755,7 @@ int CClientExoAppInternal::IsMoviePlaying()
 
     return m_pMoviePlayer->IsMoviePlaying();
 }
-// PC 0x005F2BF0  Xbox 0x00020F90
+// PC 0x0063DF70
 void CClientExoAppInternal::InitializeMoviePlayer()
 {
     m_pMoviePlayer = NULL;
@@ -6769,13 +6769,13 @@ void CClientExoAppInternal::InitializeMoviePlayer()
     m_pMoviePlayer->Initialize(NULL);
 #endif
 }
-// PC 0x005F2C60  Xbox 0x00021020
+// PC 0x0063CEA0
 void CClientExoAppInternal::IndicateObject(CSWCObject* pObject, int nFlags)
 {
     m_pGuiInGame->SetMainInterfaceTarget(
         pObject != NULL ? pObject->m_nId : OBJECT_INVALID, nFlags);
 }
-// PC 0x005F2C90  Xbox 0x00021060
+// PC 0x0063DFE0
 void CClientExoAppInternal::BarkString(unsigned long oidObject,
                                       const CExoString& sText,
                                       const CResRef& cSound, int nFlags)
@@ -6792,7 +6792,7 @@ void CClientExoAppInternal::BarkString(unsigned long oidObject,
 
     m_pGuiInGame->ShowBarkBubble(OBJECT_INVALID, sText, cSound, nFlags);
 }
-// PC 0x005F2D00  Xbox 0x000210D0
+// PC 0x0063E050
 int CClientExoAppInternal::IsSoundPlayingInDialog()
 {
     int bPlaying = 0;
@@ -6823,7 +6823,7 @@ int CClientExoAppInternal::IsSoundPlayingInDialog()
 
     return bPlaying;
 }
-// PC 0x005F2D80  Xbox 0x00021150
+// PC 0x0063E150
 void CClientExoAppInternal::StopSoundPlayingInDialog()
 {
     CGameObject* pGameObject =
@@ -6851,7 +6851,7 @@ void CClientExoAppInternal::StopSoundPlayingInDialog()
         m_pGuiInGame->m_pDialogSound->Stop();
     }
 }
-// PC 0x005F2DF0  Xbox 0x000211C0
+// PC 0x0063E1C0
 int CClientExoAppInternal::GetPausedByCombat()
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -6863,7 +6863,7 @@ int CClientExoAppInternal::GetPausedByCombat()
 
     return 0;
 }
-// PC 0x005F2E10  Xbox 0x000211E0
+// PC 0x0063E1E0
 void CClientExoAppInternal::SetPausedByCombat(int bPaused,
                                             unsigned char nPauseType,
                                             int bForce)
@@ -6899,7 +6899,7 @@ void CClientExoAppInternal::SetPausedByCombat(int bPaused,
         }
     }
 }
-// PC 0x005F2ED0  Xbox 0x00021290
+// PC 0x0063E2B0
 int CClientExoAppInternal::GetControlledCharacterDead()
 {
     CSWCCreature* pCharacter =
@@ -6914,7 +6914,7 @@ int CClientExoAppInternal::GetControlledCharacterDead()
 
     return 0;
 }
-// PC 0x005F2F00
+// PC 0x0063E300
 int CClientExoAppInternal::SetGameOver(int bGameOver)
 {
     m_nGameOver = bGameOver;
@@ -6922,14 +6922,14 @@ int CClientExoAppInternal::SetGameOver(int bGameOver)
 
     return bGameOver;
 }
-// PC 0x005F2F20  Xbox 0x000212C0
+// PC 0x0063E3C0
 void CClientExoAppInternal::HurryDeathSequence()
 {
     Vector vZero;
 
     m_pGuiInGame->StartGlobalFade(0, 0.0f, 0.5f, vZero);
 }
-// PC 0x005F2F60  Xbox 0x00021300
+// PC 0x0063E400
 void CClientExoAppInternal::SetGameSpeed(float fSpeed)
 {
     if (g_pAppManager != NULL)
@@ -6953,7 +6953,7 @@ void CClientExoAppInternal::SetGameSpeed(float fSpeed)
         }
     }
 }
-// PC 0x005F2FE0  Xbox 0x00021380
+// PC 0x0063E480
 void CClientExoAppInternal::SetLastPartyMemberTempKilled(
     unsigned long oidObject)
 {
@@ -6971,7 +6971,7 @@ void CClientExoAppInternal::SetLastPartyMemberTempKilled(
         }
     }
 }
-// PC 0x005F3030  Xbox 0x000213D0
+// PC 0x0063E4D0
 void CClientExoAppInternal::SetCanSendDialog(int bCanSend)
 {
     m_bCanSendDialog = bCanSend;
@@ -6980,7 +6980,7 @@ void CClientExoAppInternal::SetCanSendDialog(int bCanSend)
                   ->m_pPauseTimer->GetSnapshotTime() /
               1000);
 }
-// PC 0x005F3070  Xbox 0x00021410
+// PC 0x0063E510
 int CClientExoAppInternal::GetCanSendDialog(
     unsigned long oidSpeaker, unsigned long oidListener, CSWSDialog* pDialog)
 {
@@ -7067,7 +7067,7 @@ int CClientExoAppInternal::GetCanSendDialog(
     m_bDialogSent = 1;
     return 1;
 }
-// PC 0x005F32E0  Xbox 0x00021600
+// PC 0x0063E7B0
 int CClientExoAppInternal::GetClientMeleeAnimation(
     unsigned long oidAttacker, unsigned long oidTarget,
     unsigned short nAnimation, int nAttack, int bOverride,
@@ -7098,7 +7098,7 @@ int CClientExoAppInternal::GetClientMeleeAnimation(
     }
     return nResult;
 }
-// PC 0x005F33F0  Xbox 0x00021710
+// PC 0x0063E8C0
 int CClientExoAppInternal::GetClientRangedAnimation(unsigned long nA, int nB,
                                                     int nC, int nD)
 {
@@ -7144,7 +7144,7 @@ int CClientExoAppInternal::GetClientRangedAnimation(unsigned long nA, int nB,
     }
     return nResult;
 }
-// PC 0x005F3480  Xbox 0x000217A0
+// PC 0x0063E950
 void CClientExoAppInternal::SetLoadScreenByModuleName(const CExoString& sModule)
 {
     CExoString sBMPResRef;
@@ -7195,7 +7195,7 @@ void CClientExoAppInternal::SetLoadScreenByModuleName(const CExoString& sModule)
     }
 }
 #ifndef _XBOX
-// PC 0x005F3650  Xbox 0x00021970
+// PC 0x0063EB30
 CExoString CClientExoAppInternal::GetLoadMusicByModuleName(const CExoString& sModule)
 {
     CExoString sMusicResRef;
@@ -7231,7 +7231,7 @@ CExoString CClientExoAppInternal::GetLoadMusicByModuleName(const CExoString& sMo
     return sMusicResRef;
 }
 #endif
-void CClientExoAppInternal::SetLoadScreenHint(unsigned long nHint)  // PC 0x005F37F0  Xbox 0x00021A50
+void CClientExoAppInternal::SetLoadScreenHint(unsigned long nHint)  // PC 0x0063ECE0
 {
     if (m_pGuiLoadScreen != NULL)
     {
@@ -7247,7 +7247,7 @@ unsigned long CClientExoAppInternal::GetLoadScreenHint()
     }
     return 0;
 }
-// PC 0x005F3810  Xbox 0x00021A90
+// PC 0x0063ED00
 void CClientExoAppInternal::StartPazaakGame(int nSideDeck, const CExoString& sEndScript,
                                          int nWager, int bTutorial, unsigned long oidOpponent)
 {
@@ -7276,7 +7276,7 @@ void CClientExoAppInternal::StartPazaakGame(int nSideDeck, const CExoString& sEn
     m_pSWGuiManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     m_pSWGuiManager->PlayGuiSound(CSWGuiManager::GUISOUND_PAZAAK_START);
 }
-// PC 0x005F3950  Xbox 0x00021BC0
+// PC 0x0063EE40
 void CClientExoAppInternal::EndPazaakGame(int nResult, int nWager,
                                         int bPlayAgain, unsigned long oidOpponent)
 {
@@ -7318,7 +7318,7 @@ void CClientExoAppInternal::EndPazaakGame(int nResult, int nWager,
     m_pSWGuiManager->PlayGuiSound(CSWGuiManager::GUISOUND_PAZAAK_END);
     g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
 }
-// PC 0x005F3A80  Xbox 0x00021CF0
+// PC 0x0063EF70
 void CClientExoAppInternal::SetCombatMode(int nMode)
 {
     if (nMode == 0)
@@ -7344,7 +7344,7 @@ void CClientExoAppInternal::SetCombatMode(int nMode)
         }
     }
 }
-// PC 0x005F3AD0  Xbox 0x00021D40
+// PC 0x0063EFC0
 void CClientExoAppInternal::UpdateCombatMode()
 {
     CSWCObject* pTargetObject = NULL;
@@ -7461,7 +7461,7 @@ void CClientExoAppInternal::UpdateCombatMode()
         }
     }
 }
-// PC 0x005F3F10  Xbox 0x000220F0
+// PC 0x0063F410
 void CClientExoAppInternal::SetAutoPaused(int bAuto, unsigned char nPauseType)
 {
 #ifdef _XBOX
@@ -7525,7 +7525,7 @@ void CClientExoAppInternal::SetAutoPaused(int bAuto, unsigned char nPauseType)
         }
     }
 }
-// PC 0x005F7710  Xbox 0x00025BA0
+// PC 0x00643070
 void CClientExoAppInternal::EnableVideoEffect(int nEffect)
 {
     int bReadEntry;
@@ -7571,14 +7571,14 @@ void CClientExoAppInternal::EnableVideoEffect(int nEffect)
         }
     }
 }
-// PC 0x005F40E0  Xbox 0x00022290
+// PC 0x0063F600
 void CClientExoAppInternal::DisableVideoEffect()
 {
     m_nVideoEffect = -2;
     AurDisableSaturation();
     AurDisableScanNoise();
 }
-// PC 0x005F4100  Xbox 0x000222B0
+// PC 0x0063F630
 void CClientExoAppInternal::DelayNextEnemyAutoPause()
 {
     if (m_fEnemyAutoPauseTimer <= 0.0f)
@@ -7586,7 +7586,7 @@ void CClientExoAppInternal::DelayNextEnemyAutoPause()
         m_fEnemyAutoPauseDelay = 5.0f;
     }
 }
-// PC 0x005F4120  Xbox 0x000222D0
+// PC 0x0063F650
 int CClientExoAppInternal::ShowTutorialWindow(unsigned char nTutorial,
                                               unsigned long nX,
                                               unsigned long nY, unsigned long nActionParam)
@@ -7610,7 +7610,7 @@ int CClientExoAppInternal::ShowTutorialWindow(unsigned char nTutorial,
 }
 
 #ifndef _XBOX
-void CClientExoAppInternal::AddDownloadedResources()  // PC 0x005F4180  Xbox 0x00022330
+void CClientExoAppInternal::AddDownloadedResources()  // PC 0x0063F6B0
 {
     EXOXBOXASSERT(g_pExoResMan);
     CExoString sResourceName;
@@ -7658,7 +7658,7 @@ void CClientExoAppInternal::AddDownloadedResources()  // PC 0x005F4180  Xbox 0x0
     }
 }
 #endif
-// PC 0x005F4460  Xbox 0x00022620
+// PC 0x0063F9A0
 void CClientExoAppInternal::PlayerFlourishWeapons()
 {
     GetPlayerCreature()->ComputeWeaponOverlays(0, 1);
@@ -7723,7 +7723,7 @@ void CClientExoAppInternal::PlayerFlourishWeapons()
 }
 
 #ifdef _XBOX
-// PC 0x005F46F0  Xbox 0x000228C0
+
 int CClientExoAppInternal::SaveOptions()
 {
     unsigned char aSignature[OPTIONS_SIGNATURE_SIZE];
@@ -7750,7 +7750,7 @@ int CClientExoAppInternal::SaveOptions()
     g_pExoResMan->RemoveResourceDirectory("OPTIONS:");
     return 1;
 }
-// PC 0x005F4710  Xbox 0x00022B80
+
 int CClientExoAppInternal::LoadOptions()
 {
     unsigned char aSignature[OPTIONS_SIGNATURE_SIZE];
@@ -7790,14 +7790,14 @@ int CClientExoAppInternal::LoadOptions()
     return 1;
 }
 #else
-int CClientExoAppInternal::SaveOptions()  // PC 0x005F46F0  Xbox 0x000228C0
+int CClientExoAppInternal::SaveOptions()  // PC 0x0063FC00
 {
     CClientOptions* pClientOptions =
         g_pAppManager->m_pClientExoApp->GetClientOptions();
 
     return pClientOptions->SaveOptions();
 }
-// PC 0x005F4710  Xbox 0x00022B80
+// PC 0x0063FC20
 int CClientExoAppInternal::LoadOptions()
 {
     CClientExoApp* pClientExoApp;
@@ -7815,7 +7815,7 @@ int CClientExoAppInternal::LoadOptions()
     return 1;
 }
 #endif
-// PC 0x005F7960
+// PC 0x00643450
 int CClientExoAppInternal::ChangeCharacterToNextLivingPartyMember(
     int bCheckDead, int bPlaySound, unsigned char nPartyMembers)
 {
@@ -7904,7 +7904,7 @@ int CClientExoAppInternal::ChangeCharacterToNextLivingPartyMember(
     }
     return 0;
 }
-// PC 0x005F7B20  Xbox 0x00025E00
+// PC 0x00643630
 void CClientExoAppInternal::UpdateLoadingScreenHint()
 {
     if (g_pAppManager->GetServerExoApp() != NULL &&
@@ -7925,7 +7925,7 @@ void CClientExoAppInternal::UpdateLoadingScreenHint()
         }
     }
 }
-// PC 0x005F4760  Xbox 0x00023070
+// PC 0x0063FC80
 int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
     const CExoString& sModule, unsigned char nHintType)
 {
@@ -7994,7 +7994,7 @@ int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
     delete pHints;
     return nStrRef;
 }
-// PC 0x005F49B0
+// PC 0x00640190
 void CClientExoAppInternal::SetMouseMode(unsigned char nMode)
 {
     HideMouse(4);
@@ -8020,7 +8020,7 @@ void CClientExoAppInternal::SetMouseMode(unsigned char nMode)
 
     ShowMouse(4);
 }
-// PC 0x005F4A00
+// PC 0x006401E0
 void CClientExoAppInternal::CancelMovie()
 {
     if (m_pMoviePlayer != NULL)
@@ -8032,14 +8032,14 @@ void CClientExoAppInternal::CancelMovie()
 #endif
     }
 }
-// PC 0x005F4A20  Xbox 0x00023470
+// PC 0x00640200
 void CClientExoAppInternal::SetLastTarget(unsigned long oidObject, int bChanged)
 {
     m_PauseFlags.m_Bits.m_bLastTargetChanged =
         (m_nLastTarget == oidObject) ? 0 : bChanged;
     m_nLastTarget = oidObject;
 }
-// PC 0x005F4A60  Xbox 0x000234B0
+// PC 0x00640240
 void CClientExoAppInternal::BusyWaitMenuMusic()
 {
     unsigned long nStart =
@@ -8066,7 +8066,7 @@ void CClientExoAppInternal::BusyWaitMenuMusic()
         m_pMenuMusic->Stop();
     }
 }
-// PC 0x005F4AE0  Xbox 0x00023530
+// PC 0x006402C0
 void CClientExoAppInternal::BusyWaitMuteSound()
 {
     unsigned long nStart =
@@ -8085,7 +8085,7 @@ void CClientExoAppInternal::BusyWaitMuteSound()
             nStart;
     } while (nElapsed < 500);
 }
-// PC 0x005F4B50
+// PC 0x00640330
 void CClientExoAppInternal::DoQuickSave()
 {
     CExoString sSaveDir("QUICKSAVE");
@@ -8101,7 +8101,7 @@ void CClientExoAppInternal::DoQuickSave()
 }
 
 #ifndef _XBOX
-void CClientExoAppInternal::SetToolTipInstantMode(int bInstant)  // PC 0x005F4BE0
+void CClientExoAppInternal::SetToolTipInstantMode(int bInstant)  // PC 0x006403C0
 {
     if (m_pGuiInGame != NULL)
     {
@@ -8129,7 +8129,7 @@ void CClientExoAppInternal::SetToolTipInstantMode(int bInstant)  // PC 0x005F4BE
     }
 }
 #endif
-// PC 0x005F4C50
+// PC 0x00640430
 void CClientExoAppInternal::HideMovieFadePanel()
 {
     if (m_pMoviePlayer != NULL)
@@ -8142,7 +8142,7 @@ void CClientExoAppInternal::HideMovieFadePanel()
     }
 }
 #ifndef _XBOX
-void CClientExoAppInternal::StartCreditSequence(const Vector& vColor,  // PC 0x005F4C60
+void CClientExoAppInternal::StartCreditSequence(const Vector& vColor,  // PC 0x00640470
                                               const CExoString& sMusic)
 {
     if (!m_bCreditSequenceInProgress)
@@ -8175,13 +8175,13 @@ void CClientExoAppInternal::StartCreditSequence(const Vector& vColor,  // PC 0x0
         }
     }
 }
-// PC 0x005F4D50
+// PC 0x00640560
 void CClientExoAppInternal::StopCreditSequence()
 {
     m_bCreditSequenceInProgress = 0;
 }
 #endif
-void CClientExoAppInternal::PlayCharacterSelectSound(CSWCCreature* pCreature)  // PC 0x005F4D60
+void CClientExoAppInternal::PlayCharacterSelectSound(CSWCCreature* pCreature)  // PC 0x00640570
 {
     int nRoll = rand() % 3;
 
@@ -8199,7 +8199,7 @@ void CClientExoAppInternal::PlayCharacterSelectSound(CSWCCreature* pCreature)  /
 
     pCreature->PlaySoundSetSound(9, 1);
 }
-// PC 0x005F4DB0
+// PC 0x006405C0
 void CClientExoAppInternal::EnableMouseAtEndOfLoadModuleMovie()
 {
     if (m_pMoviePlayer == NULL || !m_pMoviePlayer->IsMoviePlaying())
@@ -8211,7 +8211,7 @@ void CClientExoAppInternal::EnableMouseAtEndOfLoadModuleMovie()
         }
     }
 }
-// PC 0x005F4DF0
+// PC 0x00640600
 CExoString CClientExoAppInternal::GetDisplayCharacterForKey(int nKey)
 {
 #ifndef _XBOX
@@ -8224,7 +8224,7 @@ CExoString CClientExoAppInternal::GetDisplayCharacterForKey(int nKey)
     return g_pTlkTable->GetSimpleString(0xBC10);
 }
 #ifndef _XBOX
-void CClientExoAppInternal::SetEvilEndingHackInProgress(int bInProgress)  // PC 0x005F4E50
+void CClientExoAppInternal::SetEvilEndingHackInProgress(int bInProgress)  // PC 0x00640660
 {
     m_bEvilEndingHackInProgress = bInProgress;
 
@@ -8236,12 +8236,12 @@ void CClientExoAppInternal::SetEvilEndingHackInProgress(int bInProgress)  // PC 
     }
 }
 #endif
-void CClientExoAppInternal::RestoreMousePositionTo(int nX, int nY)  // PC 0x005F4EA0
+void CClientExoAppInternal::RestoreMousePositionTo(int nX, int nY)  // PC 0x006406B0
 {
     m_nMouseX = nX;
     m_nMouseY = nY;
 }
-// PC 0x005F4EC0
+
 int CClientExoAppInternal::DontUseThisSetPlayerCreature(unsigned long oidObject)
 {
     unsigned long oidNormalized;
@@ -8268,7 +8268,7 @@ int CClientExoAppInternal::DontUseThisSetPlayerCreature(unsigned long oidObject)
 }
 
 #ifndef _XBOX
-void CClientExoAppInternal::BeginIntro()  // PC 0x00602DC0
+void CClientExoAppInternal::BeginIntro()  // PC 0x0064EDA0
 {
     if (!m_bSkipIntro)
     {
@@ -8311,7 +8311,7 @@ inline CClientOptions* CClientExoAppInternal::GetClientOptions()
     return m_pClientOptions;
 }
 #ifndef _XBOX
-int CClientExoAppInternal::MainLoop()  // PC 0x00602EB0  Xbox 0x00032DB0
+int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
 {
     int bAreaReady = 0;
     static int a;
@@ -8795,7 +8795,7 @@ const char* playcredits(char* sCommand)
 #endif
 
 #ifdef _XBOX
-// Xbox 0x00022E90
+
 int CClientExoAppInternal::ChangeCharacterToNextLivingPartyMember(
     int bCheckDead, int bPlaySound)
 {
@@ -8848,7 +8848,7 @@ int CClientExoAppInternal::ChangeCharacterToNextLivingPartyMember(
 #endif
 
 #ifdef _XBOX
-// Xbox 0x000255B0
+
 int CClientExoAppInternal::WaitForMovie()
 {
     int nPumpCount = 0;
@@ -8935,7 +8935,7 @@ inline void XboxSetGuiManagerSize(CSWGuiManager* pManager, int nWidth, int nHeig
     pManager->m_nWidth = nWidth;
     pManager->m_nHeight = nHeight;
 }
-// Xbox 0x000315C0
+
 void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
                                         const CExoString& sModule,
                                         const CExoString& sLoadMusic,
@@ -9199,7 +9199,7 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
     }
 
 }
-// PC 0x005EEB10  Xbox 0x0001CCD0
+
 void CClientExoAppInternal::SetEventDescriptions()
 {
     g_pExoInput->CreateNewEvent(7, CExoInput::EVENT_TYPE_RELATIVE, CExoInput::INPUTDEVICE_JOYSTICKSTART, CExoInput::JOYSTICK_YAXIS, CExoInput::INPUT_CONTROL_NONE);
@@ -9371,7 +9371,7 @@ void CClientExoAppInternal::SetEventDescriptions()
     g_pExoInput->AddEvent(5, INPUT_CONTEXT_FREE_LOOK);
     g_pExoInput->SetEventRepeatable(5, 500, 60);
 }
-// PC 0x005F14A0  Xbox 0x0001E000
+
 int CClientExoAppInternal::SetTexturePack(unsigned char nTexturePack, int nUnknown)
 {
     switch (nTexturePack)
@@ -9395,7 +9395,7 @@ int CClientExoAppInternal::SetTexturePack(unsigned char nTexturePack, int nUnkno
     m_nTexturePack = nTexturePack;
     return 1;
 }
-// Xbox 0x0001E380
+
 int CClientExoAppInternal::AddPatchFiles(int bRemoveFirst)
 {
     CExoIni cIni;
@@ -9419,7 +9419,7 @@ int CClientExoAppInternal::AddPatchFiles(int bRemoveFirst)
     }
     return bResult;
 }
-// PC 0x005F1C20  Xbox 0x0001E600
+
 void CClientExoAppInternal::InitializeClientOptions()
 {
     CExoIni cIni;
@@ -9746,7 +9746,7 @@ void CClientExoAppInternal::InitializeClientOptions()
 #define STRREF_CHECKING_CONTENT 47939
 int g_bAcceptCorruptDownloads = 0;
 ConsoleFunc ConVg_bAcceptCorruptDownloads("g_bAcceptCorruptDownloads", &g_bAcceptCorruptDownloads);
-void CClientExoAppInternal::MountDownloadedContent(int bRemove, int bShowProgress)  // Xbox 0x00029210
+void CClientExoAppInternal::MountDownloadedContent(int bRemove, int bShowProgress)
 {
     HRESULT hr = S_OK;
     CExoString sValue;
@@ -9997,7 +9997,7 @@ void CClientExoAppInternal::MountDownloadedContent(int bRemove, int bShowProgres
 }
 
 #define XBOX_DEFAULT_SOUND_VOICES 64
-void CClientExoAppInternal::InitializeSoundOptions()  // PC 0x005F1F70  Xbox 0x000203B0
+void CClientExoAppInternal::InitializeSoundOptions()
 {
     CExoIni cIni;
     CExoString sProvider;
@@ -10039,7 +10039,7 @@ void CClientExoAppInternal::InitializeSoundOptions()  // PC 0x005F1F70  Xbox 0x0
     if (cIni.ReadIniEntry(s2D3DBias, "d:\\swkotor.ini", "Sound Options", "2D3D Bias"))
         g_pExoSound->Set2D3DBias(s2D3DBias.AsFLOAT());
 }
-// PC 0x005F4180  Xbox 0x00022330
+
 void CClientExoAppInternal::AddDownloadedResources()
 {
     EXOXBOXASSERT(g_pExoResMan);
@@ -10088,7 +10088,7 @@ void AurPersistDisplay();
 void ExoXboxLaunch(KOTOR_LAUNCH_DATA* pParams, const char* pszModuleName);
 
 #define XBOX_DEATH_SEQUENCE_SPEED_RANGE 0.8f
-void CClientExoAppInternal::UpdateDeathSequence()  // PC 0x005F7330  Xbox 0x00030F10
+void CClientExoAppInternal::UpdateDeathSequence()
 {
     unsigned long nTime = (unsigned long)(
         g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
@@ -10152,7 +10152,7 @@ enum
     STRREF_XBOX_MAIN_MENU_MESSAGE = 0xBAF4,
     STRREF_XBOX_CORRUPT_CONTENT = 0xBB02
 };
-// Xbox 0x00022FC0
+
 void CClientExoAppInternal::AddCorruptContentMessage()
 {
     EXOXBOXASSERT(m_pMainMenu != NULL);
@@ -10160,7 +10160,7 @@ void CClientExoAppInternal::AddCorruptContentMessage()
     cMessage.m_sMessage = g_pTlkTable->GetSimpleString(STRREF_XBOX_MAIN_MENU_MESSAGE);
     m_pMainMenu->AddErrorMessage(cMessage);
 }
-// PC 0x005FCA30  Xbox 0x0002ABE0
+
 void CClientExoAppInternal::DisplayMainMenu(int bScanContent)
 {
     if (m_pMainMenu != NULL && m_pSWGuiManager->PanelExists(m_pMainMenu))
@@ -10225,7 +10225,7 @@ void CClientExoAppInternal::DisplayMainMenu(int bScanContent)
 }
 #endif
 #ifdef _XBOX
-// PC 0x005F2980  Xbox 0x00020BF0
+
 void CClientExoAppInternal::TurnOffKeyboardModal()
 {
     for (unsigned int i = 0; i < 7; i++)
@@ -10249,7 +10249,7 @@ void CClientExoAppInternal::TurnOffKeyboardModal()
 }
 #endif
 #ifdef _XBOX
-// PC 0x005F3650  Xbox 0x00021970
+
 CExoString CClientExoAppInternal::GetLoadMusicByModuleName(const CExoString& sModule)
 {
     CExoString sMusicResRef;
@@ -10266,7 +10266,7 @@ CExoString CClientExoAppInternal::GetLoadMusicByModuleName(const CExoString& sMo
 #ifdef _XBOX
 
 #define XBOX_END_GAME_INPUT_LOCK_MS 500
-int CClientExoAppInternal::MainLoop()  // PC 0x00602EB0  Xbox 0x00032DB0
+int CClientExoAppInternal::MainLoop()
 {
     int bAreaReady = 0;
     static int a;
@@ -10677,7 +10677,7 @@ enum
     XBOX_CAMERA_TILT_INPUT = 12,
     XBOX_CAMERA_TURN_INPUT = 13
 };
-void CClientExoAppInternal::UpdateCamera(float fDeltaTime)  // PC 0x005F5E10  Xbox 0x000249C0
+void CClientExoAppInternal::UpdateCamera(float fDeltaTime)
 {
     if (m_pModule == NULL)
         return;
@@ -10744,7 +10744,7 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)  // PC 0x005F5E10  Xb
 }
 #endif
 #ifdef _XBOX
-// PC 0x005F7500  Xbox 0x00025970
+
 void CClientExoAppInternal::UpdateRumble(float fDeltaTime)
 {
     float fLeftMagnitude = 0.0f;
@@ -10780,7 +10780,7 @@ void CClientExoAppInternal::UpdateRumble(float fDeltaTime)
 }
 #endif
 #ifdef _XBOX
-// PC 0x00604130  Xbox 0x00034000
+
 void CClientExoAppInternal::StopServices()
 {
 #ifndef _XBOX
@@ -10972,7 +10972,7 @@ void CClientExoAppInternal::StopServices()
     m_nCharacterFileSize = 0;
     m_nCharacterFileId = 0;
 }
-CSWCPlayer* CClientExoAppInternal::GetPlayerByPlayerID(unsigned long nPlayerId)  // PC 0x005F5C70  Xbox 0x00024820
+CSWCPlayer* CClientExoAppInternal::GetPlayerByPlayerID(unsigned long nPlayerId)
 {
     CExoLinkedListNode* pNode = m_lstPlayerList.GetHeadPos();
     void* pData = m_lstPlayerList.GetHead();
@@ -10992,7 +10992,7 @@ CSWCPlayer* CClientExoAppInternal::GetPlayerByPlayerID(unsigned long nPlayerId) 
 }
 #endif
 #ifdef _XBOX
-// PC 0x005F5370  Xbox 0x00023C00
+
 void CClientExoAppInternal::UpdateSoundEngine()
 {
     if (m_pModule != NULL)
@@ -11063,7 +11063,7 @@ RenderSound:
 #ifdef _XBOX
 
 #include "aurconsole.h"
-// Xbox 0x0001C560
+
 void soundrolloff(char* szArgs)
 {
     float fFactor = (float)atof(szArgs);
@@ -11071,7 +11071,7 @@ void soundrolloff(char* szArgs)
 }
 ConsoleFunc ConFsoundrolloff("soundrolloff", soundrolloff);
 ConsoleFunc ConFSetFramesPerSecond("SetFramesPerSecond", SetFramesPerSecond);
-// Xbox 0x0001C6B0
+
 char* SetMovieFrameRate(char* szArgs)
 {
     int nFrameRate = atoi(szArgs);
@@ -11084,7 +11084,7 @@ char* SetMovieFrameRate(char* szArgs)
     return "Frame rate returned to normal.";
 }
 ConsoleFunc ConFSetMovieFrameRate("SetMovieFrameRate", SetMovieFrameRate);
-// Xbox 0x0001C6E0
+
 char* MarkLog(char* szArgs)
 {
     g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory);
@@ -11095,7 +11095,7 @@ ConsoleFunc ConFMarkLog("MarkLog", MarkLog);
 
 #include "nwsmodule.h"
 #include "nwsarea.h"
-// Xbox 0x000232D0
+
 char* SpawnChar(char* szArgs)
 {
     CSWSCreature* pPlayer = g_pAppManager->m_pServerExoApp->GetPlayerCreature();

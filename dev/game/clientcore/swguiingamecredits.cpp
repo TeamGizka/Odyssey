@@ -33,7 +33,7 @@ void CSWGuiInGameCredits::Initialize()
 }
 
 #ifdef _XBOX
-CSWGuiInGameCredits::CSWGuiInGameCredits(CSWGuiManager* pManager)  // Xbox 0x001005C0
+CSWGuiInGameCredits::CSWGuiInGameCredits(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
     int nName;
@@ -68,7 +68,7 @@ CSWGuiInGameCredits::CSWGuiInGameCredits(CSWGuiManager* pManager)  // Xbox 0x001
     }
 }
 #else
-CSWGuiInGameCredits::CSWGuiInGameCredits(CSWGuiManager* pManager,  // PC 0x0068F8D0
+CSWGuiInGameCredits::CSWGuiInGameCredits(CSWGuiManager* pManager,  // PC 0x006E8DF0
                                        const CExoString& sMusic)
     : CSWGuiPanel(pManager)
 {
@@ -164,7 +164,7 @@ CSWGuiInGameCredits::CSWGuiInGameCredits(CSWGuiManager* pManager,  // PC 0x0068F
 #endif
 
 #ifdef _XBOX
-CSWGuiInGameCredits::~CSWGuiInGameCredits()  // PC 0x0068F0E0  Xbox 0x001002F0
+CSWGuiInGameCredits::~CSWGuiInGameCredits()
 {
     if (m_pText != NULL) { delete[] m_pText; }
     g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bCreditSequenceInProgress = 0;
@@ -173,7 +173,7 @@ CSWGuiInGameCredits::~CSWGuiInGameCredits()  // PC 0x0068F0E0  Xbox 0x001002F0
     g_pAppManager->GetClientExoApp()->SetInputActive(0, 0);
 }
 #else
-CSWGuiInGameCredits::~CSWGuiInGameCredits()  // PC 0x0068F0E0  Xbox 0x001002F0
+CSWGuiInGameCredits::~CSWGuiInGameCredits()  // PC 0x006E87E0
 {
     delete m_pMusic;
     if (m_pText != NULL) { delete[] m_pText; }
@@ -207,7 +207,7 @@ CSWGuiInGameCredits::~CSWGuiInGameCredits()  // PC 0x0068F0E0  Xbox 0x001002F0
     g_pAppManager->GetClientExoApp()->ShowMouse(128);
 }
 #endif
-// PC 0x0068F260  Xbox 0x00100110
+// PC 0x006E8600
 void CSWGuiInGameCredits::OnPanelAdded()
 {
     SwguiingamecreditsTrace1();
@@ -234,7 +234,7 @@ void CSWGuiInGameCredits::OnPanelAdded()
     }
 #endif
 }
-// PC 0x0068F350  Xbox 0x00100150
+// PC 0x006E86F0
 void CSWGuiInGameCredits::HandleInputEvent(int nEvent, int nState)
 {
     SwguiingamecreditsTrace1();
@@ -252,7 +252,7 @@ void CSWGuiInGameCredits::HandleInputEvent(int nEvent, int nState)
         }
     }
 }
-// PC 0x0068F6F0  Xbox 0x001003C0
+// PC 0x006E8C10
 void CSWGuiInGameCredits::SetNextText()
 {
     int bLastText = 0;
@@ -274,7 +274,7 @@ void CSWGuiInGameCredits::SetNextText()
     }
     ++m_nCurrentText;
 }
-// PC 0x0068F3A0  Xbox 0x001001A0
+// PC 0x006E8960
 void CSWGuiInGameCredits::SetText(unsigned long nStrRef, int bLastText)
 {
     SwguiingamecreditsTrace1();
@@ -316,7 +316,7 @@ void CSWGuiInGameCredits::SetText(unsigned long nStrRef, int bLastText)
 }
 
 #ifdef _XBOX
-void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // PC 0x0068F630  Xbox 0x00100270
+void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)
 {
     m_fScrollTime += fElapsed;
     while (m_fScrollTime >= m_fScrollInterval)
@@ -333,7 +333,7 @@ void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // PC 0x0068F630  Xbo
     }
 }
 #else
-void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // PC 0x0068F630  Xbox 0x00100270
+void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // PC 0x006E8740
 {
     SwguiingamecreditsTrace1();
     if (m_lbxCredits.m_cScrollBar.m_nCurValue ==
@@ -362,7 +362,7 @@ void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // PC 0x0068F630  Xbo
 #endif
 
 #ifdef _XBOX
-void CSWGuiInGameCredits::UpdateFading(float fElapsed)  // PC 0x0068F790  Xbox 0x00100470
+void CSWGuiInGameCredits::UpdateFading(float fElapsed)
 {
     const float fFadeInDuration = 3.0f;
     const float fFadeOutDuration = 2.0f;
@@ -409,7 +409,7 @@ void CSWGuiInGameCredits::UpdateFading(float fElapsed)  // PC 0x0068F790  Xbox 0
     }
 }
 #else
-void CSWGuiInGameCredits::UpdateFading(float fElapsed)  // PC 0x0068F790  Xbox 0x00100470
+void CSWGuiInGameCredits::UpdateFading(float fElapsed)  // PC 0x006E8CB0
 {
 
     const float fFadeInDuration = 3.0f;
@@ -454,7 +454,7 @@ void CSWGuiInGameCredits::UpdateFading(float fElapsed)  // PC 0x0068F790  Xbox 0
 #endif
 
 #ifdef _XBOX
-void CSWGuiInGameCredits::Draw(float fElapsed)  // PC 0x0068F880  Xbox 0x00100580
+void CSWGuiInGameCredits::Draw(float fElapsed)
 {
     if (m_bFading != 0)
     {
@@ -467,7 +467,7 @@ void CSWGuiInGameCredits::Draw(float fElapsed)  // PC 0x0068F880  Xbox 0x0010058
     return CSWGuiPanel::Draw(fElapsed);
 }
 #else
-void CSWGuiInGameCredits::Draw(float fElapsed)  // PC 0x0068F880  Xbox 0x00100580
+void CSWGuiInGameCredits::Draw(float fElapsed)  // PC 0x006E8DA0
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
 

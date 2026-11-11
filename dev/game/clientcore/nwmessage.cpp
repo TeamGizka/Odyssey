@@ -11,7 +11,7 @@ static inline void NwmessageTrace1();
 #define NWMESSAGE_TRACE() NwmessageTrace2()
 
 const int CSWMessage::DEFAULT_WRITE_BUFFER_SIZE = 128;
-// PC 0x004D7360  Xbox 0x00095100
+// PC 0x0053F200
 CExoString CSWCCMessageData::GetString(int nIndex)
 {
     if (nIndex < m_lstStrings.num)
@@ -21,12 +21,12 @@ CExoString CSWCCMessageData::GetString(int nIndex)
 
     return "";
 }
-// PC 0x00405040
+// PC 0x00404E60
 int CSWMessage::PeekAtWriteMessageSize()
 {
     return (int)this->m_nWriteIndex;
 }
-// PC 0x004D76B0
+// PC 0x005404B0
 void CSWCCMessageData::SetInteger(int nIndex, int nValue)
 {
     if (nIndex >= m_lstIntegers.num)
@@ -36,7 +36,7 @@ void CSWCCMessageData::SetInteger(int nIndex, int nValue)
 
     m_lstIntegers.element[nIndex] = nValue;
 }
-// PC 0x004D7720
+// PC 0x0053F8D0
 void CSWCCMessageData::SetFloat(int nIndex, float fValue)
 {
     if (nIndex >= m_lstFloats.num)
@@ -46,7 +46,7 @@ void CSWCCMessageData::SetFloat(int nIndex, float fValue)
 
     m_lstFloats.element[nIndex] = fValue;
 }
-// PC 0x004D7780
+// PC 0x00540520
 void CSWCCMessageData::SetObjectID(int nIndex, unsigned long oidValue)
 {
     if (nIndex >= m_lstObjectIDs.num)
@@ -223,7 +223,7 @@ __int64 CSWMessage::ReadSigned(int nBits)
 
     return nValue;
 }
-// PC 0x004D60F0  Xbox 0x00094D40
+// PC 0x0053EEF0
 CSWMessage::CSWMessage()
 {
     m_pWriteBuffer = new unsigned char[DEFAULT_WRITE_BUFFER_SIZE];
@@ -235,7 +235,7 @@ CSWMessage::CSWMessage()
     m_pUnknown10 = NULL;
     m_nWriteBufferSize = DEFAULT_WRITE_BUFFER_SIZE;
 }
-// PC 0x004D6130  Xbox 0x00094D80
+// PC 0x0053EF30
 CSWMessage::~CSWMessage()
 {
     if (m_pWriteBuffer != NULL)
@@ -250,12 +250,12 @@ CSWMessage::~CSWMessage()
         m_pUnknown10 = NULL;
     }
 }
-// PC 0x004D6170  Xbox 0x00094DC0
+// PC 0x0053EF70
 void CSWMessage::ClearReadMessage()
 {
     m_nReadIndex = m_nReadBufferSize;
 }
-// PC 0x004D6180  Xbox 0x00094E00
+// PC 0x0053EF80
 CResRef CSWMessage::ReadCResRef(int nLength)
 {
     unsigned char szResRef[16];
@@ -276,7 +276,7 @@ CResRef CSWMessage::ReadCResRef(int nLength)
     m_nReadIndex += nCount;
     return CResRef(szResRef);
 }
-// PC 0x004D6200  Xbox 0x00094E90
+// PC 0x0053F000
 void* CSWMessage::ReadVOIDPtr(int nBytes)
 {
     void* pValue;
@@ -294,32 +294,32 @@ void* CSWMessage::ReadVOIDPtr(int nBytes)
 
     return pValue;
 }
-// PC 0x004D6230  Xbox 0x00094EC0
+// PC 0x0053F030
 int CSWMessage::MessageReadOverflow(int nBytes)
 {
     return m_nReadIndex > m_nReadBufferSize;
 }
-// PC 0x004D6240  Xbox 0x00094ED0
+// PC 0x0053F040
 int CSWMessage::MessageReadUnderflow(int nBytes)
 {
     return m_nReadIndex < m_nReadBufferSize;
 }
-// PC 0x004D6250  Xbox 0x00094EE0
+// PC 0x0053F050
 int CSWMessage::MessageMoreDataToRead()
 {
     return m_nReadIndex < m_nReadBufferSize;
 }
-// PC 0x004D69F0  Xbox 0x000956E0
+// PC 0x0053F7E0
 CSWCCMessageData::CSWCCMessageData() :
     m_lstIntegers(0), m_lstFloats(0), m_lstStrings(0), m_lstObjectIDs(0)
 {
     m_nType = 0;
 }
-// PC 0x004D6A40  Xbox 0x00095730
+// PC 0x0053F830
 CSWCCMessageData::~CSWCCMessageData()
 {
 }
-// PC 0x004D6AE0  Xbox 0x000957D0
+// PC 0x00540590
 void CSWCCMessageData::SetString(int nIndex, const CExoString& sValue)
 {
     if (nIndex >= m_lstStrings.num)
@@ -329,7 +329,7 @@ void CSWCCMessageData::SetString(int nIndex, const CExoString& sValue)
 
     m_lstStrings.element[nIndex] = sValue;
 }
-// PC 0x004D6B10  Xbox 0x00095800
+// PC 0x0053F930
 int CSWCCMessageData::LoadData(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList lstList;
@@ -381,7 +381,7 @@ int CSWCCMessageData::LoadData(CResGFF* pRes, CResStruct* pStruct)
 
     return 1;
 }
-// PC 0x004D6EE0  Xbox 0x00095BD0
+// PC 0x0053FD00
 void CSWCCMessageData::CopyTo(CSWCCMessageData* pData)
 {
     int i;
@@ -417,7 +417,7 @@ void CSWCCMessageData::CopyTo(CSWCCMessageData* pData)
         pData->m_nType = m_nType;
     }
 }
-// PC 0x004D7120  Xbox 0x00095E20
+// PC 0x0053FF40
 Vector CSWMessage::ReadVector()
 {
     NWMESSAGE_TRACE();
@@ -429,14 +429,14 @@ Vector CSWMessage::ReadVector()
 
     return vValue;
 }
-// PC 0x004D71B0  Xbox 0x00095EB0
+// PC 0x0053FFD0
 void CSWMessage::WriteVector(const Vector& vValue)
 {
     WriteFLOAT(vValue.m_fX, 0.0f, 32);
     WriteFLOAT(vValue.m_fY, 0.0f, 32);
     WriteFLOAT(vValue.m_fZ, 0.0f, 32);
 }
-// PC 0x004D6920  Xbox 0x00095610
+// PC 0x0053F700
 void CSWMessage::WriteFLOAT(float fValue, float fDefault, int nBits)
 {
     if (m_nWriteIndex + 4 > m_nWriteBufferSize)
@@ -448,7 +448,7 @@ void CSWMessage::WriteFLOAT(float fValue, float fDefault, int nBits)
     m_nWriteIndex += 4;
     m_nTotalBytesWritten += 4;
 }
-// PC 0x004D6960  Xbox 0x00095650
+// PC 0x0053F740
 void CSWMessage::WriteCExoString(const CExoString& sValue, int nBits)
 {
     unsigned long nLength = sValue.GetLength();
@@ -464,7 +464,7 @@ void CSWMessage::WriteCExoString(const CExoString& sValue, int nBits)
     m_nWriteIndex += nLength;
     m_nTotalBytesWritten += nLength;
 }
-// PC 0x004D6260  Xbox 0x00094EF0
+// PC 0x0053F060
 void CSWMessage::ExtendWriteBuffer(unsigned long nExtraBytes)
 {
     unsigned long nNewSize = m_nWriteBufferSize + nExtraBytes + 128;
@@ -481,7 +481,7 @@ void CSWMessage::ExtendWriteBuffer(unsigned long nExtraBytes)
     m_nWriteBufferSize = nNewSize;
     m_pWriteBuffer = pNewBuffer;
 }
-// PC 0x004D62C0  Xbox 0x00095590
+// PC 0x0053F640
 void CSWMessage::WriteCHAR(char cValue, int nBits)
 {
     if (m_nWriteIndex + 1 > m_nWriteBufferSize)
@@ -493,7 +493,7 @@ void CSWMessage::WriteCHAR(char cValue, int nBits)
     m_nWriteIndex += 1;
     m_nTotalBytesWritten += 1;
 }
-// PC 0x004D6300  Xbox 0x000955D0
+// PC 0x0053F680
 void CSWMessage::WriteSHORT(short nValue, int nBits)
 {
     if (m_nWriteIndex + 2 > m_nWriteBufferSize)
@@ -505,7 +505,7 @@ void CSWMessage::WriteSHORT(short nValue, int nBits)
     m_nWriteIndex += 2;
     m_nTotalBytesWritten += 2;
 }
-// PC 0x004D6340
+// PC 0x0053F6C0
 void CSWMessage::WriteDWORD(unsigned long nValue, int nBits)
 {
     if (m_nWriteIndex + 4 > m_nWriteBufferSize)
@@ -517,7 +517,7 @@ void CSWMessage::WriteDWORD(unsigned long nValue, int nBits)
     m_nWriteIndex += 4;
     m_nTotalBytesWritten += 4;
 }
-// PC 0x004D62C0
+// PC 0x0053F640
 void CSWMessage::WriteBYTE(unsigned char cValue, int nBits)
 {
     if (m_nWriteIndex + 1 > m_nWriteBufferSize)
@@ -529,7 +529,7 @@ void CSWMessage::WriteBYTE(unsigned char cValue, int nBits)
     m_nWriteIndex += 1;
     m_nTotalBytesWritten += 1;
 }
-// PC 0x004D6300
+// PC 0x0053F680
 void CSWMessage::WriteWORD(unsigned short nValue, int nBits)
 {
     if (m_nWriteIndex + 2 > m_nWriteBufferSize)
@@ -601,7 +601,7 @@ void CSWMessage::WriteSigned(__int64 nValue, int nBits)
         WriteUnsigned(nValue, nBits - 1);
     }
 }
-// PC 0x004D6340  Xbox 0x00094F70
+// PC 0x0053F6C0
 void CSWMessage::WriteINT(int nValue, int nBits)
 {
     if (m_nWriteIndex + 4 > m_nWriteBufferSize)
@@ -613,7 +613,7 @@ void CSWMessage::WriteINT(int nValue, int nBits)
     m_nWriteIndex += 4;
     m_nTotalBytesWritten += 4;
 }
-// PC 0x004D6380  Xbox 0x00094FB0
+// PC 0x0053F0C0
 void CSWMessage::WriteCResRef(CResRef cResRef, int nLength)
 {
     if (m_nWriteIndex + nLength > m_nWriteBufferSize)
@@ -625,7 +625,7 @@ void CSWMessage::WriteCResRef(CResRef cResRef, int nLength)
     m_nWriteIndex += nLength;
     m_nTotalBytesWritten += nLength;
 }
-// PC 0x004D63E0  Xbox 0x00095010
+// PC 0x0053F120
 void CSWMessage::WriteVOIDPtr(void* pValue, int nBytes)
 {
     if (m_nWriteIndex + nBytes > m_nWriteBufferSize)
@@ -637,7 +637,7 @@ void CSWMessage::WriteVOIDPtr(void* pValue, int nBytes)
     m_nWriteIndex += nBytes;
     m_nTotalBytesWritten += nBytes;
 }
-// PC 0x004D6440  Xbox 0x00095090
+// PC 0x0053F180
 int CSWMessage::GetWriteMessage(unsigned char** ppBuffer, unsigned long* pnSize)
 {
     int bRet = 1;
@@ -653,7 +653,7 @@ int CSWMessage::GetWriteMessage(unsigned char** ppBuffer, unsigned long* pnSize)
         *ppBuffer = NULL;
     return bRet;
 }
-// PC 0x004D6480
+// PC 0x0053F1C0
 int CSWCCMessageData::GetInteger(int nIndex)
 {
     if (nIndex < m_lstIntegers.num)
@@ -663,7 +663,7 @@ int CSWCCMessageData::GetInteger(int nIndex)
 
     return 0;
 }
-// PC 0x004D64A0
+// PC 0x00540180
 float CSWCCMessageData::GetFloat(int nIndex)
 {
     if (nIndex < m_lstFloats.num)
@@ -673,7 +673,7 @@ float CSWCCMessageData::GetFloat(int nIndex)
 
     return 0.0f;
 }
-// PC 0x004D64C0  Xbox 0x000950E0
+// PC 0x0053F1E0
 unsigned long CSWCCMessageData::GetObjectID(int nIndex)
 {
     if (nIndex < m_lstObjectIDs.num)
@@ -683,7 +683,7 @@ unsigned long CSWCCMessageData::GetObjectID(int nIndex)
 
     return OBJECT_INVALID;
 }
-// PC 0x004D64E0  Xbox 0x00095140
+// PC 0x0053F240
 int CSWCCMessageData::SaveData(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList lstList;
@@ -729,7 +729,7 @@ int CSWCCMessageData::SaveData(CResGFF* pRes, CResStruct* pStruct)
 
     return 1;
 }
-// PC 0x004D66B0  Xbox 0x00095330
+// PC 0x0053F410
 void CSWMessage::SetReadMessage(unsigned char* pBuffer, unsigned long nSize,
                                 unsigned long nRecipient, int nMsgType)
 {
@@ -746,7 +746,7 @@ void CSWMessage::SetReadMessage(unsigned char* pBuffer, unsigned long nSize,
         m_bUnknown44 = m_bUnknown45;
     }
 }
-// PC 0x004D66F0  Xbox 0x00095370
+// PC 0x0053F450
 int CSWMessage::ReadBOOL()
 {
     unsigned char bValue;
@@ -761,7 +761,7 @@ int CSWMessage::ReadBOOL()
     m_nReadIndex += 4;
     return bValue;
 }
-// PC 0x004D6720
+// PC 0x0053F480
 char CSWMessage::ReadCHAR(int nBits)
 {
     if (m_nReadIndex + 1 > m_nReadBufferSize)
@@ -774,7 +774,7 @@ char CSWMessage::ReadCHAR(int nBits)
     m_nReadIndex += 1;
     return cValue;
 }
-// PC 0x004D6750  Xbox 0x00094DD0
+// PC 0x0053F4B0
 short CSWMessage::ReadSHORT(int nBits)
 {
     if (m_nReadIndex + 2 > m_nReadBufferSize)
@@ -787,7 +787,7 @@ short CSWMessage::ReadSHORT(int nBits)
     m_nReadIndex += 2;
     return nValue;
 }
-// PC 0x004D6780
+// PC 0x0053F4E0
 int CSWMessage::ReadINT(int nBits)
 {
     if (m_nReadIndex + 4 > m_nReadBufferSize)
@@ -799,7 +799,7 @@ int CSWMessage::ReadINT(int nBits)
     m_nReadIndex += 4;
     return nValue;
 }
-// PC 0x004D6720  Xbox 0x000953A0
+// PC 0x0053F480
 unsigned char CSWMessage::ReadBYTE(int nBits)
 {
     unsigned char cValue;
@@ -817,7 +817,7 @@ unsigned char CSWMessage::ReadBYTE(int nBits)
 
     return cValue;
 }
-// PC 0x004D6750
+// PC 0x0053F4B0
 unsigned short CSWMessage::ReadWORD(int nBits)
 {
     if (m_nReadIndex + 2 > m_nReadBufferSize)
@@ -832,7 +832,7 @@ unsigned short CSWMessage::ReadWORD(int nBits)
 
     return nValue;
 }
-// PC 0x004D6780  Xbox 0x000953D0
+// PC 0x0053F4E0
 unsigned long CSWMessage::ReadDWORD(int nBits)
 {
     unsigned long nValue;
@@ -850,7 +850,7 @@ unsigned long CSWMessage::ReadDWORD(int nBits)
 
     return nValue;
 }
-// PC 0x004D67B0  Xbox 0x00095400
+// PC 0x0053F510
 float CSWMessage::ReadFLOAT(float fDefault, int nBits)
 {
     float fValue;
@@ -868,7 +868,7 @@ float CSWMessage::ReadFLOAT(float fDefault, int nBits)
 
     return fValue;
 }
-// PC 0x004D67E0  Xbox 0x00095430
+// PC 0x0053F540
 CExoString CSWMessage::ReadCExoString(int nBits)
 {
     int nLength = ReadINT(nBits);
@@ -884,7 +884,7 @@ CExoString CSWMessage::ReadCExoString(int nBits)
     m_nReadIndex += nLength;
     return sValue;
 }
-// PC 0x004D68A0  Xbox 0x00095500
+// PC 0x0053F600
 void CSWMessage::CreateWriteMessage(unsigned long nMsgLen,
                                     unsigned long nRecipient, int nMsgType)
 {
@@ -900,7 +900,7 @@ void CSWMessage::CreateWriteMessage(unsigned long nMsgLen,
         ExtendWriteBuffer(nMsgLen - m_nWriteBufferSize);
     }
 }
-// PC 0x004D68E0  Xbox 0x00095550
+// PC 0x006EC0C0
 void CSWMessage::WriteBOOL(int bValue)
 {
     if (m_nWriteIndex + 4 > m_nWriteBufferSize)

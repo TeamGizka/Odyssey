@@ -105,7 +105,7 @@ public:
                m_lsLastName == other.m_lsLastName;
     }
     ~NWPlayerCharacterList_st();
-    NWPlayerCharacterList_st()  // PC 0x004C6830  Xbox 0x00199690
+    NWPlayerCharacterList_st()  // PC 0x005079C0
     {
         m_bCharacterExists = 0;
         m_nPortraitId = -1;
@@ -144,7 +144,7 @@ public:
     };
     CSWSModule(const CExoString& sModuleName, int bRequest, int bUnknown);
     virtual ~CSWSModule();
-    virtual CSWSModule* AsSWSModule() { return this; }  // PC 0x004C6BB0  Xbox 0x00199A10
+    virtual CSWSModule* AsSWSModule() { return this; }  // PC 0x00507D40
 
     enum ScriptType
     {
@@ -198,7 +198,7 @@ public:
     void DeleteWorldJournalAllEntries();
     void DeleteWorldJournalEntryStrref(unsigned long nStrRef);
     void DeleteWorldJournalEntry(int nIndex);
-    void SetTag(const CExoString& sTag)  // PC 0x004C3060  Xbox 0x00195FC0
+    void SetTag(const CExoString& sTag)  // PC 0x005040C0
     {
         m_sTag = sTag.LowerCase();
     }

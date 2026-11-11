@@ -9,7 +9,7 @@
 #include "swguileveluppanel.h"
 #include "swguipowerslvlup.h"
 #include "nwccreature.h"
-// PC 0x006F2180  Xbox 0x00129FE0
+// PC 0x00763590
 CSWGuiPowersLevelUp::CSWGuiPowersLevelUp(CSWGuiManager* pManager,
                                          unsigned long nCreature)
     : CSWGuiPanel(pManager)
@@ -95,13 +95,13 @@ CSWGuiPowersLevelUp::CSWGuiPowersLevelUp(CSWGuiManager* pManager,
 #endif
     SetActiveControl(&m_lbPowers, 0);
 }
-// PC 0x006F0EE0  Xbox 0x00129380
+// PC 0x007620D0
 CSWGuiPowersLevelUp::~CSWGuiPowersLevelUp()
 {
     m_lbDescription.ClearItems();
     m_lbPowers.ClearItems();
 }
-// PC 0x006F10C0  Xbox 0x00129020
+
 void CSWGuiPowersLevelUp::OnPanelAdded()
 {
 #ifndef _XBOX
@@ -110,7 +110,7 @@ void CSWGuiPowersLevelUp::OnPanelAdded()
     g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0x13, OBJECT_INVALID,
                                                        OBJECT_INVALID, 0);
 }
-// PC 0x006F10F0  Xbox 0x00129040
+// PC 0x00762020
 void CSWGuiPowersLevelUp::HandleCancelButton()
 {
     if (m_pParentPanel != NULL)
@@ -122,7 +122,7 @@ void CSWGuiPowersLevelUp::HandleCancelButton()
         m_pParentPanel->CancelledByChild();
     }
 }
-// PC 0x006F1130  Xbox 0x00129080
+// PC 0x00762350
 void CSWGuiPowersLevelUp::OnAcceptButton()
 {
     if (m_nPowersRemaining > 0 && m_lAvailable.num > 0)
@@ -155,7 +155,7 @@ void CSWGuiPowersLevelUp::OnAcceptButton()
 }
 
 #ifndef _XBOX
-void CSWGuiPowersLevelUp::Draw(float fElapsed)  // PC 0x006F1210
+void CSWGuiPowersLevelUp::Draw(float fElapsed)  // PC 0x00762060
 {
     switch (m_nPowerState)
     {
@@ -173,7 +173,7 @@ void CSWGuiPowersLevelUp::Draw(float fElapsed)  // PC 0x006F1210
     CSWGuiPanel::Draw(fElapsed);
 }
 #endif
-// PC 0x006F1460  Xbox 0x001295B0
+// PC 0x00762640
 void CSWGuiPowersLevelUp::OnEnterPower(unsigned long nPower)
 {
 #ifdef _XBOX
@@ -261,7 +261,7 @@ void CSWGuiPowersLevelUp::OnEnterPower(unsigned long nPower)
     m_lblPower.m_cText.m_cParams.SetStrRef(pSpell->m_nNameStrRef);
     SetDescription(pSpell->m_nDescriptionStrRef);
 }
-// PC 0x006F15A0  Xbox 0x00129680
+// PC 0x00762790
 void CSWGuiPowersLevelUp::BuildButtons()
 {
     int i;
@@ -304,7 +304,7 @@ void CSWGuiPowersLevelUp::BuildButtons()
     CExoString sRemaining(m_nPowersRemaining);
     m_lblRemainingSelections.m_cText.m_cParams.SetText(sRemaining);
 }
-// PC 0x006F1730  Xbox 0x00129810
+// PC 0x00762950
 void CSWGuiPowersLevelUp::BuildAvailableList()
 {
     CExoString sName;
@@ -355,7 +355,7 @@ void CSWGuiPowersLevelUp::BuildAvailableList()
 }
 
 #ifndef _XBOX
-void CSWGuiPowersLevelUp::OnPowerSelectionChanged(CSWGuiControl* pControl)  // PC 0x006F1940
+void CSWGuiPowersLevelUp::OnPowerSelectionChanged(CSWGuiControl* pControl)  // PC 0x00762B90
 {
     CSWGuiSkillFlow* pFlow =
         static_cast<CSWGuiSkillFlow*>(m_lbPowers.GetSelectedControl());
@@ -375,7 +375,7 @@ void CSWGuiPowersLevelUp::OnPowerSelectionChanged(CSWGuiControl* pControl)  // P
 #endif
 }
 #endif
-// PC 0x006F1990  Xbox 0x00129A40
+// PC 0x00762BE0
 void CSWGuiPowersLevelUp::InitiatePowers()
 {
     CExoString sName;
@@ -420,7 +420,7 @@ void CSWGuiPowersLevelUp::InitiatePowers()
     BuildAvailableList();
     BuildButtons();
 }
-// PC 0x006F1C90  Xbox 0x00129D40
+// PC 0x00763080
 void CSWGuiPowersLevelUp::AddChosenPower(unsigned long nPower)
 {
     int nIndex = m_lAvailable.IndexOf(nPower);
@@ -457,7 +457,7 @@ void CSWGuiPowersLevelUp::AddChosenPower(unsigned long nPower)
     }
     BuildAvailableList();
 }
-// PC 0x006F1E40  Xbox 0x00129EF0
+// PC 0x00763230
 void CSWGuiPowersLevelUp::RemoveChosenPower(unsigned long nPower)
 {
     int nIndex = m_lChosen.IndexOf(nPower);
@@ -487,7 +487,7 @@ void CSWGuiPowersLevelUp::RemoveChosenPower(unsigned long nPower)
         BuildAvailableList();
     }
 }
-// PC 0x006F1F30  Xbox 0x0012A7D0
+// PC 0x00763320
 void CSWGuiPowersLevelUp::OnRecommendButton()
 {
     CExoArrayList<unsigned long> lRecommended;
@@ -510,7 +510,7 @@ void CSWGuiPowersLevelUp::OnRecommendButton()
     m_pManager->AddPanel(pInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     BuildButtons();
 }
-// PC 0x006F28C0  Xbox 0x0012A9B0
+// PC 0x00763D40
 void CSWGuiPowersLevelUp::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -555,7 +555,7 @@ void CSWGuiPowersLevelUp::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006F2030  Xbox 0x0012A8D0
+// PC 0x00763430
 void CSWGuiPowersLevelUp::OnPowerPicked(unsigned long nPower)
 {
     unsigned char nState;
@@ -603,7 +603,7 @@ void CSWGuiPowersLevelUp::OnPowerPicked(unsigned long nPower)
     pMessageBox->SetMessage(nMessage);
     m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
-// PC 0x006ABA50  Xbox 0x000E2D90
+// PC 0x00736BE0
 inline int CSWGuiSkillFlowChart::GetSelected()
 {
     if (m_cFlows.num > 0)
@@ -616,7 +616,7 @@ inline int CSWGuiSkillFlowChart::GetSelected()
 }
 
 #ifndef _XBOX
-void CSWGuiPowersLevelUp::OnDoubleClick(CSWGuiControl* pControl)  // PC 0x006F2110
+void CSWGuiPowersLevelUp::OnDoubleClick(CSWGuiControl* pControl)  // PC 0x00763520
 {
     int nSelected = m_cChart.GetSelected();
     CSWGuiSkillFlow* pFlow =
@@ -634,7 +634,7 @@ void CSWGuiPowersLevelUp::OnDoubleClick(CSWGuiControl* pControl)  // PC 0x006F21
 #endif
 }
 #endif
-// PC 0x006F1280  Xbox 0x00129160
+// PC 0x00762430
 void CSWGuiPowersLevelUp::DeterminePower(unsigned long nPower,
                                          unsigned char& nState)
 {
@@ -657,14 +657,14 @@ void CSWGuiPowersLevelUp::DeterminePower(unsigned long nPower,
 }
 
 #ifdef _XBOX
-// PC 0x0041A290  Xbox 0x0004CEC0
+
 inline int CSWGuiListBox::IsOversized()
 {
     return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
            m_lItems.num > 0 && !m_bHideScrollIcon;
 }
 #endif
-// PC 0x006F1320  Xbox 0x00129200
+// PC 0x007624F0
 void CSWGuiPowersLevelUp::SetDescription(unsigned long nStrRef)
 {
     STR_RES strRes;

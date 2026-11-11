@@ -2,7 +2,7 @@
 #include "resgff.h"
 #include "nwsforcedaction.h"
 #include "gameobjectarray.h"
-// PC 0x005034D0  Xbox 0x00227730
+// PC 0x00540B30
 CSWSForcedAction::CSWSForcedAction()
 {
     m_nActionId = 0;
@@ -14,7 +14,7 @@ CSWSForcedAction::CSWSForcedAction()
 CSWSForcedAction::~CSWSForcedAction()
 {
 }
-// PC 0x005034F0  Xbox 0x00227760
+// PC 0x00540B50
 BOOL CSWSForcedAction::SaveForcedAction(CResGFF* pRes, CResStruct* pStruct)
 {
     pRes->WriteFieldDWORD(pStruct, m_nActionId, "ActionId");

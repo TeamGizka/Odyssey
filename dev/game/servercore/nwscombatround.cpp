@@ -31,12 +31,12 @@ CSWSCombatRoundAction::~CSWSCombatRoundAction()
 CSWSCombatSubAttack::~CSWSCombatSubAttack()
 {
 }
-// PC 0x004D57F0  Xbox 0x00213400
+// PC 0x0052AD20
 CSWSCombatAttackData::CSWSCombatAttackData()
 {
     ClearAttackData();
 }
-// PC 0x004D5A50  Xbox 0x00213690
+// PC 0x0052AF50
 void CSWSCombatAttackData::ResolveAttackToMeleeSubAttack(
     int nAttackNumber, unsigned long nAnimationTime)
 {
@@ -63,7 +63,7 @@ void CSWSCombatAttackData::ResolveAttackToMeleeSubAttack(
 
     m_lstSubAttacks.Add(subAttack);
 }
-// PC 0x004D5B60  Xbox 0x002137F0
+// PC 0x0052B060
 void CSWSCombatAttackData::ResolveAttackToRangedSubAttack(
     int nAttackNumber, unsigned long nAnimationTime, int nArg3, int nArg4,
     int nArg5)
@@ -96,7 +96,7 @@ void CSWSCombatAttackData::ResolveAttackToRangedSubAttack(
 
     m_lstSubAttacks.Add(subAttack);
 }
-// PC 0x004D5CB0  Xbox 0x00213990
+// PC 0x0052B1B0
 CSWSCombatRound::CSWSCombatRound(CSWSCreature* pCreature)
 {
     m_nUnknown0 = 0;
@@ -155,7 +155,7 @@ void CSWSCombatRound::InsertSpecialAttack(unsigned short nAttack, int nIndex)
     m_lstSpecialAttacks.Add(nAttack);
     m_lstSpecialAttackIds.Add(GetNewAttackID());
 }
-// PC 0x004D5E60  Xbox 0x00213B40
+// PC 0x0052B370
 CSWSCombatRound::~CSWSCombatRound()
 {
     if (m_pScheduledActions != NULL)
@@ -178,11 +178,11 @@ CSWSCombatRound::~CSWSCombatRound()
         m_pCurrentAction = NULL;
     }
 }
-// PC 0x004D4480  Xbox 0x00212170
+// PC 0x005299B0
 CSWSCombatAttackData::~CSWSCombatAttackData()
 {
 }
-// PC 0x004D5F70  Xbox 0x00213C50
+// PC 0x0052B480
 void CSWSCombatRound::StartCombatRound(unsigned long oidTarget, int bEngaged,
                                        int bMaster, unsigned short nFeat,
                                        int nArg5)
@@ -245,7 +245,7 @@ void CSWSCombatRound::StartCombatRound(unsigned long oidTarget, int bEngaged,
     m_pBaseCreature->SetLockOrientationToObject(oidTarget, 0);
     m_pBaseCreature->m_nCombatMode = 3;
 }
-// PC 0x004D4560  Xbox 0x00212250
+// PC 0x00529A90
 CSWSCombatSubAttack CSWSCombatAttackData::GetTopSubAttack()
 {
     CSWSCombatSubAttack subAttack;
@@ -257,12 +257,12 @@ CSWSCombatSubAttack CSWSCombatAttackData::GetTopSubAttack()
 
     return subAttack;
 }
-// PC 0x004D45B0  Xbox 0x002122A0
+// PC 0x00529AE0
 void CSWSCombatAttackData::ResolveTopSubAttackToAttack()
 {
     ResolveSubAttackToAttack(GetTopSubAttack());
 }
-// PC 0x004D45E0  Xbox 0x002122D0
+// PC 0x00529B10
 int CSWSCombatAttackData::IsSubAttackReady(int nTime)
 {
     int bReady = 0;
@@ -274,7 +274,7 @@ int CSWSCombatAttackData::IsSubAttackReady(int nTime)
     }
     return bReady;
 }
-// PC 0x004D4620  Xbox 0x00212310
+// PC 0x00529B50
 void CSWSCombatRound::EndCombatRound(int bNotify)
 {
     CSWSCreature* pCreature = m_pBaseCreature;
@@ -442,7 +442,7 @@ void CSWSCombatRound::EndCombatRound(int bNotify)
     m_nNumAOOs = 1;
     m_nNumCleaves = 1;
 }
-// PC 0x004D4C10  Xbox 0x002128E0
+// PC 0x0052A140
 void CSWSCombatRound::IncrementTimer(int nAmount)
 {
     m_nTimer += nAmount;
@@ -505,7 +505,7 @@ void CSWSCombatRound::IncrementTimer(int nAmount)
         m_oidMaster = OBJECT_INVALID;
     }
 }
-// PC 0x004D4E80  Xbox 0x00211110
+// PC 0x0052A3B0
 void CSWSCombatRound::DecrementPauseTimer(int nAmount)
 {
     CExoString sDebug;
@@ -530,7 +530,7 @@ void CSWSCombatRound::DecrementPauseTimer(int nAmount)
         }
     }
 }
-// PC 0x004D4F60  Xbox 0x00212B50
+// PC 0x0052A490
 void CSWSCombatRound::ClearAllSpecialAttacks()
 {
     for (int i = m_nCurrentAttack;
@@ -544,7 +544,7 @@ void CSWSCombatRound::ClearAllSpecialAttacks()
 
     m_lstSpecialAttacks.SetSize(0);
 }
-// PC 0x004D4FF0  Xbox 0x00212C00
+// PC 0x0052A520
 CSWSItem* CSWSCombatRound::GetCurrentAttackWeapon(int nAttackType)
 {
     int nType = nAttackType;
@@ -599,7 +599,7 @@ CSWSItem* CSWSCombatRound::GetCurrentAttackWeapon(int nAttackType)
 
     return NULL;
 }
-// PC 0x004D5120  Xbox 0x00212D20
+// PC 0x0052A650
 int CSWSCombatRound::LoadCombatRound(CResGFF* pRes, CResStruct* pStruct)
 {
     int bSuccess;
@@ -731,12 +731,12 @@ int CSWSCombatRound::LoadCombatRound(CResGFF* pRes, CResStruct* pStruct)
 
     return 1;
 }
-// PC 0x004D2FF0
+// PC 0x00528310
 CSWSCombatRoundAction::CSWSCombatRoundAction()
 {
     ClearData();
 }
-// PC 0x004D1D50  Xbox 0x0020FA40
+// PC 0x00527010
 void CSWSCombatRoundAction::ClearData()
 {
     m_nActionTimer = 0;
@@ -772,7 +772,7 @@ void CSWSCombatRoundAction::ClearData()
     m_nCutsceneArg3 = 0;
     m_nAttackFlags = 0;
 }
-// PC 0x004D1DD0  Xbox 0x0020FAC0
+// PC 0x00527090
 int CSWSCombatRoundAction::SaveData(CResGFF* pRes, CResStruct* pStruct)
 {
     pRes->WriteFieldINT(pStruct, m_nActionTimer, "ActionTimer");
@@ -786,7 +786,7 @@ int CSWSCombatRoundAction::SaveData(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldDWORD(pStruct, m_oidTargetRepository, "TargetRepository");
     return 1;
 }
-// PC 0x004D1E90  Xbox 0x0020FB80
+// PC 0x00527150
 int CSWSCombatRoundAction::LoadData(CResGFF* pRes, CResStruct* pStruct)
 {
     int bSuccess;
@@ -806,7 +806,7 @@ int CSWSCombatRoundAction::LoadData(CResGFF* pRes, CResStruct* pStruct)
         pRes->ReadFieldDWORD(pStruct, "TargetRepository", bSuccess, 0);
     return 1;
 }
-// PC 0x004D1F80  Xbox 0x0020FC70
+// PC 0x00527240
 int CSWSCombatAttackData::GetDamage(unsigned short nDamageFlags)
 {
     if (nDamageFlags & 0x10)
@@ -867,7 +867,7 @@ int CSWSCombatAttackData::GetDamage(unsigned short nDamageFlags)
     }
     return 0;
 }
-// PC 0x004D2030  Xbox 0x0020FD20
+// PC 0x005272F0
 void CSWSCombatAttackData::SetBaseDamage(int nDamage)
 {
     if (m_nDamage[BASE_DAMAGE_INDEX] > 0)
@@ -879,12 +879,12 @@ void CSWSCombatAttackData::SetBaseDamage(int nDamage)
         m_nDamage[BASE_DAMAGE_INDEX] = nDamage;
     }
 }
-// PC 0x004D2060  Xbox 0x0020FD50
+// PC 0x00527320
 int CSWSCombatAttackData::GetBaseDamage()
 {
     return m_nDamage[BASE_DAMAGE_INDEX];
 }
-// PC 0x004D2070  Xbox 0x0020FD60
+// PC 0x00527330
 void CSWSCombatAttackData::SetDamage(unsigned short nDamageFlags, int nDamage)
 {
     if (nDamage < 0)
@@ -895,7 +895,7 @@ void CSWSCombatAttackData::SetDamage(unsigned short nDamageFlags, int nDamage)
     int nDamageIndex = Log_Base2(nDamageFlags);
     m_nDamage[nDamageIndex] = nDamage;
 }
-// PC 0x004D20D0  Xbox 0x0020FDB0
+// PC 0x00527390
 void CSWSCombatAttackData::AddDamage(unsigned short nDamageFlags, int nDamage,
                                      int bAddToBase)
 {
@@ -921,7 +921,7 @@ void CSWSCombatAttackData::AddDamage(unsigned short nDamageFlags, int nDamage,
         SetBaseDamage(nDamage);
     }
 }
-// PC 0x004D2180  Xbox 0x0020FE60
+// PC 0x00527440
 int CSWSCombatAttackData::GetTotalDamage(int bIncludeBase)
 {
     int nTotal = 0;
@@ -936,7 +936,7 @@ int CSWSCombatAttackData::GetTotalDamage(int bIncludeBase)
 
     return nTotal;
 }
-// PC 0x004D3010  Xbox 0x00210C80
+// PC 0x00528330
 void CSWSCombatAttackData::ClearAttackData()
 {
     m_nAttackGroup = ATTACK_GROUP_INVALID;
@@ -1053,7 +1053,7 @@ void CSWSCombatAttackData::ClearAttackData()
     m_Extra5.m_nUnknown7 = 0;
     m_Extra5.m_nUnknown8 = 0;
 }
-// PC 0x004D32D0  Xbox 0x00210F80
+// PC 0x00528670
 void CSWSCombatAttackData::RemoveTopSubAttack()
 {
     if (m_lstSubAttacks.num > 0)
@@ -1061,12 +1061,12 @@ void CSWSCombatAttackData::RemoveTopSubAttack()
         m_lstSubAttacks.DelIndex(0);
     }
 }
-// PC 0x004D32F0  Xbox 0x00210FA0
+// PC 0x00528690
 CSWSCombatSubAttack::CSWSCombatSubAttack()
 {
     NwscombatroundTrace1();
 }
-// PC 0x004D3440  Xbox 0x00211150
+// PC 0x005287C0
 void CSWSCombatRound::DecrementRoundLength(int nAmount, int bClamp)
 {
     if (m_bRoundStarted != 0)
@@ -1125,7 +1125,7 @@ void CSWSCombatRound::DecrementRoundLength(int nAmount, int bClamp)
         m_nRoundLength -= nAmount;
     }
 }
-// PC 0x004D3580  Xbox 0x00211280
+// PC 0x00528900
 int CSWSCombatRound::GetActionPending()
 {
     return m_pScheduledActions != NULL &&
@@ -1134,7 +1134,7 @@ int CSWSCombatRound::GetActionPending()
                m_pScheduledActions->GetAtPos(m_pScheduledActions->GetHeadPos())
                    ->m_nActionTimer;
 }
-// PC 0x004D35C0  Xbox 0x002112C0
+// PC 0x00528940
 int CSWSCombatRound::GetSpellActionPending()
 {
     if (m_pScheduledActions == NULL)
@@ -1158,7 +1158,7 @@ int CSWSCombatRound::GetSpellActionPending()
     }
     return 0;
 }
-// PC 0x004D3630  Xbox 0x00211330
+// PC 0x005289B0
 CSWSCombatRoundAction* CSWSCombatRound::GetAction()
 {
     if (m_pScheduledActions == NULL)
@@ -1173,7 +1173,7 @@ CSWSCombatRoundAction* CSWSCombatRound::GetAction()
     }
     return pAction;
 }
-// PC 0x004D3660  Xbox 0x00211360
+// PC 0x005289E0
 void CSWSCombatRound::AddAction(CSWSCombatRoundAction* pAction, int nPosition)
 {
     CExoLinkedListNode* pPos;
@@ -1220,7 +1220,7 @@ void CSWSCombatRound::AddAction(CSWSCombatRoundAction* pAction, int nPosition)
         delete pAction;
     }
 }
-// PC 0x004D3770  Xbox 0x00211460
+// PC 0x00528AF0
 void CSWSCombatRound::RemoveAllActions()
 {
     if (m_pScheduledActions != NULL &&
@@ -1236,7 +1236,7 @@ void CSWSCombatRound::RemoveAllActions()
         } while (!m_pScheduledActions->IsEmpty());
     }
 }
-// PC 0x004D37B0  Xbox 0x002114A0
+// PC 0x00528B30
 int CSWSCombatRound::RemoveLastAction()
 {
     int bRemoved = 0;
@@ -1254,7 +1254,7 @@ int CSWSCombatRound::RemoveLastAction()
 
     return bRemoved;
 }
-// PC 0x004D37E0  Xbox 0x002114D0
+// PC 0x00528C00
 void CSWSCombatRound::ClearAllAttacks()
 {
     for (int i = 0; i < 5; i++)
@@ -1262,7 +1262,7 @@ void CSWSCombatRound::ClearAllAttacks()
         GetAttack(i)->ClearAttackData();
     }
 }
-// PC 0x004D3810  Xbox 0x00211510
+// PC 0x00528C30
 void CSWSCombatRound::AddCutsceneAttackAction(unsigned long oidTarget,
                                               int nArg1, int nArg2, int nArg3)
 {
@@ -1283,7 +1283,7 @@ void CSWSCombatRound::AddCutsceneAttackAction(unsigned long oidTarget,
         m_pBaseCreature->m_oidAttemptedAttackTarget = oidTarget;
     }
 }
-// PC 0x004D38B0  Xbox 0x002115B0
+// PC 0x00528CD0
 void CSWSCombatRound::AddAttackAction(unsigned long oidTarget,
                                       unsigned short nSpecialAttack,
                                       int nAttackFlags, int nArg4,
@@ -1330,7 +1330,7 @@ void CSWSCombatRound::AddAttackAction(unsigned long oidTarget,
         }
     }
 }
-// PC 0x004D39B0  Xbox 0x002116C0
+// PC 0x00528E90
 void CSWSCombatRound::AddSWSpellAction(unsigned long oidCreator, int nArg2,
                                        int nArg3, int nArg4, int nArg5,
                                        Vector vTarget, unsigned long oidItem,
@@ -1366,7 +1366,7 @@ void CSWSCombatRound::AddSWSpellAction(unsigned long oidCreator, int nArg2,
 
     AddAction(pAction, -1);
 }
-// PC 0x004D3A90  Xbox 0x002117A0
+// PC 0x00528FC0
 void CSWSCombatRound::AddSWItemSpellAction(unsigned long oidCreator, int nArg2,
                                            int nArg3, Vector vTarget,
                                            unsigned long oidItem, int nArg6,
@@ -1390,7 +1390,7 @@ void CSWSCombatRound::AddSWItemSpellAction(unsigned long oidCreator, int nArg2,
 
     AddAction(pAction, -1);
 }
-// PC 0x004D3B30  Xbox 0x00211850
+// PC 0x00529060
 void CSWSCombatRound::AddCutsceneMoveActions(unsigned long oidTarget,
                                              Vector vTarget, int nArg3)
 {
@@ -1403,7 +1403,7 @@ void CSWSCombatRound::AddCutsceneMoveActions(unsigned long oidTarget,
 
     AddAction(pAction, -1);
 }
-// PC 0x004D3BA0  Xbox 0x002118C0
+// PC 0x005290D0
 void CSWSCombatRound::RemoveSpellAction()
 {
     if (m_pScheduledActions != NULL)
@@ -1427,7 +1427,7 @@ void CSWSCombatRound::RemoveSpellAction()
         }
     }
 }
-// PC 0x004D3C30  Xbox 0x00211950
+// PC 0x00529160
 void CSWSCombatRound::AddEquipAction(unsigned long oidItem, unsigned long nSlot,
                                      int nArg3, int nArg4)
 {
@@ -1455,7 +1455,7 @@ void CSWSCombatRound::AddEquipAction(unsigned long oidItem, unsigned long nSlot,
         }
     }
 }
-// PC 0x004D3CE0  Xbox 0x00211A00
+// PC 0x00529210
 void CSWSCombatRound::AddUnequipAction(unsigned long oidItem,
                                        unsigned long nSlot, int nArg3)
 {
@@ -1484,7 +1484,7 @@ void CSWSCombatRound::AddUnequipAction(unsigned long oidItem,
         }
     }
 }
-// PC 0x004D3DA0  Xbox 0x00211AC0
+// PC 0x005292D0
 int CSWSCombatRound::GetWeaponAttackType()
 {
     int bCreatureWeapons = HasCreatureWeapons();
@@ -1522,7 +1522,7 @@ int CSWSCombatRound::GetWeaponAttackType()
 
     return m_pBaseCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_CREATUREWEAPON1) != NULL ? 3 : 0;
 }
-// PC 0x004D3E50  Xbox 0x00211B70
+// PC 0x00529380
 void CSWSCombatRound::UpdateAttackTargetForAllActions(unsigned long oidTarget)
 {
     if (m_pScheduledActions != NULL)
@@ -1540,7 +1540,7 @@ void CSWSCombatRound::UpdateAttackTargetForAllActions(unsigned long oidTarget)
         }
     }
 }
-// PC 0x004D3EC0  Xbox 0x00211BE0
+// PC 0x005293F0
 int CSWSCombatRound::SaveCombatRound(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList resList;
@@ -1617,7 +1617,7 @@ int CSWSCombatRound::SaveCombatRound(CResGFF* pRes, CResStruct* pStruct)
 
     return 1;
 }
-// PC 0x004D2210  Xbox 0x0020FEA0
+// PC 0x005274D0
 int CSWSCombatAttackData::SaveData(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList resList;
@@ -1658,7 +1658,7 @@ int CSWSCombatAttackData::SaveData(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldCExoString(pStruct, m_sDamageDebugText, "DamageDebugText");
     return 1;
 }
-// PC 0x004D2450  Xbox 0x002100E0
+// PC 0x00527710
 int CSWSCombatAttackData::LoadData(CResGFF* pRes, CResStruct* pStruct)
 {
     int bSuccess;
@@ -1724,7 +1724,7 @@ int CSWSCombatAttackData::LoadData(CResGFF* pRes, CResStruct* pStruct)
     }
     return 1;
 }
-// PC 0x004D27E0  Xbox 0x00210470
+// PC 0x00527AA0
 void CSWSCombatAttackData::ResolveSubAttackToAttack(
     const CSWSCombatSubAttack& subAttack)
 {
@@ -1746,7 +1746,7 @@ void CSWSCombatAttackData::ResolveSubAttackToAttack(
     m_DamageBreakdown = subAttack.m_DamageBreakdown;
     m_Extra4 = subAttack.m_Extra4;
 }
-// PC 0x004D28B0  Xbox 0x00210570
+// PC 0x00527B70
 void CSWSCombatRound::SetSpellCastRound(int nSpellId, int nRound)
 {
     m_nSpellCastRound = nRound;
@@ -1754,7 +1754,7 @@ void CSWSCombatRound::SetSpellCastRound(int nSpellId, int nRound)
     m_pBaseCreature->m_nCombatMode = 4;
     m_pBaseCreature->m_nCombatSpellId = nSpellId;
 }
-// PC 0x004D28F0  Xbox 0x002105B0
+// PC 0x00527BB0
 void CSWSCombatRound::SetRoundPaused(int bPaused, unsigned long oidPauser)
 {
     m_bRoundPaused = bPaused;
@@ -1765,7 +1765,7 @@ void CSWSCombatRound::SetRoundPaused(int bPaused, unsigned long oidPauser)
         m_bInfinitePause = 0;
     }
 }
-// PC 0x004D2920  Xbox 0x002105E0
+// PC 0x00527BE0
 void CSWSCombatRound::SetPauseTimer(int nTime, int bInfinite)
 {
     m_bInfinitePause = bInfinite;
@@ -1791,7 +1791,7 @@ void CSWSCombatRound::SetPauseTimer(int nTime, int bInfinite)
         }
     }
 }
-// PC 0x004D2970  Xbox 0x00210630
+// PC 0x00527C30
 int CSWSCombatRound::CheckActionLengthAtTime(unsigned long oidAction,
                                              int nLength, int nTime)
 {
@@ -1809,17 +1809,17 @@ int CSWSCombatRound::CheckActionLengthAtTime(unsigned long oidAction,
     return (m_nRoundLength - m_nOverlapAmount - m_nTimer - nTime + 1000) >=
            nLength;
 }
-// PC 0x004D29F0  Xbox 0x002106B0
+// PC 0x00527CB0
 void CSWSCombatRound::SetOffHandAttack(int bOffHand)
 {
     m_bOffHandAttack = bOffHand;
 }
-// PC 0x004D2A00  Xbox 0x002106C0
+// PC 0x00527CC0
 int CSWSCombatRound::GetOffHandAttack()
 {
     return m_bOffHandAttack;
 }
-// PC 0x004D2A10  Xbox 0x002106D0
+// PC 0x00528B60
 int CSWSCombatRound::CalculateOnHandAttacks(unsigned short nFeat)
 {
     m_nOnHandAttacks =
@@ -1852,7 +1852,7 @@ int CSWSCombatRound::CalculateOnHandAttacks(unsigned short nFeat)
 
     return m_nOnHandAttacks;
 }
-// PC 0x004D2A70  Xbox 0x00210730
+// PC 0x00527CD0
 int CSWSCombatRound::CalculateOffHandAttacks()
 {
     BOOL bOffHand = FALSE;
@@ -1885,17 +1885,17 @@ int CSWSCombatRound::CalculateOffHandAttacks()
     m_nOffHandAttacks = bOffHand;
     return bOffHand;
 }
-// PC 0x004D2B30  Xbox 0x002107F0
+// PC 0x00527D90
 unsigned char CSWSCombatRound::GetCurrentAction()
 {
     return m_nCurrentActionType;
 }
-// PC 0x004D2B40  Xbox 0x00210800
+// PC 0x00527DA0
 void CSWSCombatRound::SetCurrentAction(unsigned char nAction)
 {
     m_nCurrentActionType = nAction;
 }
-// PC 0x004D42E0  Xbox 0x00212000
+// PC 0x00529810
 void CSWSCombatRound::DEBUGDumpCombatRoundToScreen(int nArg1,
                                                    const CExoString& sMessage)
 {
@@ -1911,7 +1911,7 @@ void CSWSCombatRound::DEBUGDumpCombatRoundToScreen(int nArg1,
         }
     }
 }
-// PC 0x004D2B50  Xbox 0x00210810
+// PC 0x00527DB0
 CSWSCombatAttackData* CSWSCombatRound::GetAttack(int nAttack)
 {
     if (nAttack < 0)
@@ -1923,7 +1923,7 @@ CSWSCombatAttackData* CSWSCombatRound::GetAttack(int nAttack)
     EXOXBOXASSERT(nAttack <= 5);
     return &m_Attacks[nAttack];
 }
-// PC 0x004D2B70  Xbox 0x00210850
+// PC 0x00527DD0
 int CSWSCombatRound::ResolveChoreographedState(unsigned long oidTarget)
 {
     BOOL bResult = FALSE;
@@ -1957,7 +1957,7 @@ int CSWSCombatRound::ResolveChoreographedState(unsigned long oidTarget)
     }
     return bResult;
 }
-// PC 0x004D2C30  Xbox 0x00210910
+// PC 0x00527F20
 int CSWSCombatRound::ResolveEngagedState(unsigned long oidTarget)
 {
     BOOL bResult = FALSE;
@@ -2025,7 +2025,7 @@ int CSWSCombatRound::ResolveEngagedState(unsigned long oidTarget)
 
     return bResult;
 }
-// PC 0x004D2D60  Xbox 0x00210A40
+// PC 0x00528050
 int CSWSCombatRound::ResolveMasterState(unsigned long oidTarget, int& bMaster)
 {
     BOOL bResult = FALSE;
@@ -2067,7 +2067,7 @@ int CSWSCombatRound::ResolveMasterState(unsigned long oidTarget, int& bMaster)
 
     return bResult;
 }
-// PC 0x004D2E20  Xbox 0x00210B00
+// PC 0x00528110
 int CSWSCombatRound::HasCreatureWeapons()
 {
     return m_pBaseCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND) == NULL &&
@@ -2076,12 +2076,12 @@ int CSWSCombatRound::HasCreatureWeapons()
             m_pBaseCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_CREATUREWEAPON2) != NULL ||
             m_pBaseCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_CREATUREWEAPON3) != NULL);
 }
-// PC 0x004D2EB0  Xbox 0x00210B90
+// PC 0x005281A0
 int CSWSCombatRound::GetTotalAttacks()
 {
     return m_nOnHandAttacks + m_nOffHandAttacks;
 }
-// PC 0x004D2EC0  Xbox 0x00210BA0
+// PC 0x00528230
 void CSWSCombatSubAttackThreat::Clear()
 {
     m_nUnknown0 = 0;
@@ -2093,7 +2093,7 @@ void CSWSCombatSubAttackThreat::Clear()
 }
 
 #ifndef _XBOX
-template <> void CExoArrayList<CSWSCombatSubAttack>::DelIndex(int nIndex)  // PC 0x004D2EE0  Xbox 0x00210BC0
+template <> void CExoArrayList<CSWSCombatSubAttack>::DelIndex(int nIndex)  // PC 0x00528250
 {
     num--;
     for (; nIndex < num; nIndex++)

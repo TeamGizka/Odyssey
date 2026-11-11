@@ -2,7 +2,7 @@
 #include "swminigame.h"
 
 #include <string.h>
-// PC 0x0069BCB0  Xbox 0x000C79C0
+// PC 0x006F64A0
 Gob* CSWCAnimBaseTW::GetModel(unsigned char nSlot)
 {
     switch (nSlot)
@@ -15,7 +15,7 @@ Gob* CSWCAnimBaseTW::GetModel(unsigned char nSlot)
         return CSWCAnimBase::GetModel(nSlot);
     }
 }
-// PC 0x0069BCE0  Xbox 0x000C79F0
+// PC 0x006F64D0
 int CSWCAnimBaseTW::LoadModel(const CResRef& sResRef, unsigned char nType)
 {
     char szModel[20];
@@ -63,7 +63,7 @@ int CSWCAnimBaseTW::LoadModel(const CResRef& sResRef, unsigned char nType)
     }
     return 1;
 }
-// PC 0x0069BE20  Xbox 0x000C7B50
+// PC 0x006F6610
 int CSWCAnimBaseTW::ReplaceTexture(const CResRef& sOld, const CResRef& sNew,
                                    int bStore)
 {
@@ -98,7 +98,7 @@ int CSWCAnimBaseTW::ReplaceTexture(const CResRef& sOld, const CResRef& sNew,
     }
     return CSWCAnimBase::ReplaceTexture(sOld, sNew, bStore);
 }
-// PC 0x0069BF30  Xbox 0x000C7C70
+// PC 0x006F6720
 int CSWCAnimBaseTW::ReplaceTexture(unsigned char nModel, const CResRef& sOld,
                                    const CResRef& sNew, int bStore)
 {
@@ -144,7 +144,7 @@ int CSWCAnimBaseTW::ReplaceTexture(unsigned char nModel, const CResRef& sOld,
     }
     return CSWCAnimBase::ReplaceTexture(MODEL_SLOT_MAIN, sOld, sNew, bStore);
 }
-// PC 0x0069C090  Xbox 0x000C7E00
+// PC 0x006F6880
 int CSWCAnimBaseTW::ReplaceTexture(unsigned char nModel, const CResRef& sOld,
                                    const CResRef& sNew, unsigned long nColor,
                                    unsigned short* pnPalette, int bStore,
@@ -199,7 +199,7 @@ int CSWCAnimBaseTW::ReplaceTexture(unsigned char nModel, const CResRef& sOld,
     return CSWCAnimBase::ReplaceTexture(MODEL_SLOT_MAIN, sOld, sNew, nColor, pnPalette,
                                         bStore, nPaletteStart);
 }
-// PC 0x0069C260  Xbox 0x000C7FF0
+// PC 0x006F6A50
 int CSWCAnimBaseTW::ReplaceTexture(const CResRef& sOld, const CResRef& sNew,
                                    unsigned long nColor,
                                    unsigned short* pnPalette, int bStore,
@@ -257,7 +257,7 @@ int CSWCAnimBaseTW::ReplaceTexture(const CResRef& sOld, const CResRef& sNew,
                                         pnCurrentPalette, bStore,
                                         nPaletteStart);
 }
-// PC 0x0069C400  Xbox 0x000C81A0
+// PC 0x006F6BF0
 int CSWCAnimBaseTW::RestoreTexture()
 {
 
@@ -275,7 +275,7 @@ int CSWCAnimBaseTW::RestoreTexture()
     }
     return CSWCAnimBase::RestoreTexture();
 }
-// PC 0x0069C4C0  Xbox 0x000C8260
+// PC 0x006F6CB0
 int CSWCAnimBaseTW::RestoreTexture(unsigned char nModel)
 {
     Gob* pModel;
@@ -316,7 +316,7 @@ int CSWCAnimBaseTW::RestoreTexture(unsigned char nModel)
     }
     return CSWCAnimBase::RestoreTexture(nModel);
 }
-// PC 0x0069C5D0  Xbox 0x000C8380
+// PC 0x006F6DC0
 void CSWCAnimBaseTW::UnloadModel()
 {
     if (m_pTail != 0)
@@ -333,7 +333,7 @@ void CSWCAnimBaseTW::UnloadModel()
     }
     CSWCAnimBase::UnloadModel();
 }
-// PC 0x0069C640  Xbox 0x000C83F0
+// PC 0x006F6E30
 void CSWCAnimBaseTW::UnloadModel(unsigned char nModel)
 {
     if (nModel == MODEL_TAIL)
@@ -358,7 +358,7 @@ void CSWCAnimBaseTW::UnloadModel(unsigned char nModel)
     }
     CSWCAnimBase::UnloadModel(nModel);
 }
-// PC 0x0069C6D0  Xbox 0x000C8480
+// PC 0x006F6EC0
 int CSWCAnimBaseTW::SetEnvMap(int nType, int bStore, const CResRef& sMap)
 {
     char szEnvMap[20];
@@ -395,7 +395,7 @@ int CSWCAnimBaseTW::SetEnvMap(int nType, int bStore, const CResRef& sMap)
     }
     return CSWCAnimBase::SetEnvMap(nType, bStore, sMap);
 }
-// PC 0x0069C790  Xbox 0x000C8550
+// PC 0x006F6F80
 int CSWCAnimBaseTW::SetEnvMap(unsigned char nModel, int nType, int bStore,
                               const CResRef& sMap)
 {
@@ -449,7 +449,7 @@ int CSWCAnimBaseTW::SetEnvMap(unsigned char nModel, int nType, int bStore,
     }
     return CSWCAnimBase::SetEnvMap(nModel, nType, bStore, sMap);
 }
-// PC 0x0069C8A0  Xbox 0x000C8680
+// PC 0x006F7090
 int CSWCAnimBaseTW::RestoreEnvMap()
 {
     char szEnvMap[20];
@@ -478,7 +478,7 @@ int CSWCAnimBaseTW::RestoreEnvMap()
     }
     return CSWCAnimBase::RestoreEnvMap();
 }
-// PC 0x0069C940  Xbox 0x000C8720
+// PC 0x006F7130
 int CSWCAnimBaseTW::SetAnimationInternal(CAurObject* pObject,
                                          unsigned short nAnimation,
                                          float fSpeed, int nFlags, float fBlend)
@@ -510,7 +510,7 @@ int CSWCAnimBaseTW::SetAnimationInternal(CAurObject* pObject,
     return CSWCAnimBase::SetAnimationInternal(pObject, nAnimation, fSpeed,
                                               nFlags, fBlend);
 }
-// PC 0x0069CA70  Xbox 0x000C8860
+// PC 0x006F7260
 int CSWCAnimBaseTW::SetAnimationOnSubObjectInternal(CAurObject* pObject,
                                                     unsigned char nModel,
                                                     unsigned short nAnimation,
@@ -553,7 +553,7 @@ int CSWCAnimBaseTW::SetAnimationOnSubObjectInternal(CAurObject* pObject,
     }
     return 0;
 }
-// PC 0x0069CBD0  Xbox 0x000C89E0
+// PC 0x006F73C0
 CSWCAnimBaseTW::CSWCAnimBaseTW()
 {
     m_nAnimationType = ANIMATION_TYPE_TAIL_WINGS;
@@ -574,7 +574,7 @@ CSWCAnimBaseTW::CSWCAnimBaseTW()
     m_sWingsEnvMap = "";
     m_bWingsEnvMap = 0;
 }
-// PC 0x0069CD10  Xbox 0x000C8B20
+// PC 0x006F7500
 CSWCAnimBaseTW::~CSWCAnimBaseTW()
 {
     UnloadModel();

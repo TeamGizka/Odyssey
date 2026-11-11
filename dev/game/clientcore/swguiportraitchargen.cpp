@@ -13,17 +13,17 @@
 #include "nwscript.h"
 
 #ifndef _XBOX
-void CSWGuiPortraitCharGen::OnLeftArrowPressed(CSWGuiControl* pControl)  // PC 0x0067CB40
+void CSWGuiPortraitCharGen::OnLeftArrowPressed(CSWGuiControl* pControl)  // PC 0x006D2FC0
 {
     HandleInputEvent(GUIEVENT_LEFT, 1);
 }
-// PC 0x0067CB50
+// PC 0x006D2FD0
 void CSWGuiPortraitCharGen::OnRightArrowPressed(CSWGuiControl* pControl)
 {
     HandleInputEvent(GUIEVENT_RIGHT, 1);
 }
 #endif
-// PC 0x006F89D0  Xbox 0x001313D0
+// PC 0x0076AAC0
 void CSWGuiPortraitCharGen::OnPanelAdded()
 {
     int nRandom = rand();
@@ -32,14 +32,14 @@ void CSWGuiPortraitCharGen::OnPanelAdded()
     UpdatePortraitButton();
 #endif
 }
-// PC 0x006F8A00  Xbox 0x00130E70
+// PC 0x0076AAF0
 void CSWGuiPortraitCharGen::SetParentPanel(CSWGuiPanel* pParent,
                                            int nParentType)
 {
     m_pParent = pParent;
     m_nParentType = nParentType;
 }
-// PC 0x006F8A20  Xbox 0x00130E90
+// PC 0x0076AB10
 void CSWGuiPortraitCharGen::OnSelectDisplayButton()
 {
 #ifdef _XBOX
@@ -64,7 +64,7 @@ void CSWGuiPortraitCharGen::OnSelectDisplayButton()
         ((CSWGuiCustomPanel*)m_pParent)->PortraitCreationCompleted();
     }
 }
-// PC 0x006F8AD0  Xbox 0x00130F40
+// PC 0x0076ABC0
 void CSWGuiPortraitCharGen::UpdatePortraitButton()
 {
     int* pnPortrait = &m_lstPortraits[m_nPortraitIndex];
@@ -105,7 +105,7 @@ void CSWGuiPortraitCharGen::UpdatePortraitButton()
         }
     }
 }
-// PC 0x006F8C60  Xbox 0x001310F0
+// PC 0x0076AD50
 void CSWGuiPortraitCharGen::Draw(float fTimeStep)
 {
     int nCount = m_lstTimedControls.num;
@@ -170,7 +170,7 @@ void CSWGuiPortraitCharGen::Draw(float fTimeStep)
     }
     return CSWGuiPanel::Draw(fTimeStep);
 }
-// PC 0x006F8F40  Xbox 0x00131410
+// PC 0x0076B030
 void CSWGuiPortraitCharGen::HandleCancelButton()
 {
     if (m_pParent != 0)
@@ -191,7 +191,7 @@ void CSWGuiPortraitCharGen::HandleCancelButton()
         }
     }
 }
-// Xbox 0x00131530
+
 void CSWGuiPortraitCharGen::HandleLeftButton()
 {
     m_nPortraitIndex--;
@@ -204,7 +204,7 @@ void CSWGuiPortraitCharGen::HandleLeftButton()
     ShowTimedControl(&m_lblhArrL);
 #endif
 }
-// PC 0x006F8FC0  Xbox 0x00131560
+// PC 0x0076B0B0
 void CSWGuiPortraitCharGen::HandleRightButton()
 {
     int nCount = m_lstPortraits.num;
@@ -219,7 +219,7 @@ void CSWGuiPortraitCharGen::HandleRightButton()
     ShowTimedControl(&m_lblhArrR);
 #endif
 }
-// PC 0x006F8FF0  Xbox 0x001320B0
+// PC 0x0076B0E0
 void CSWGuiPortraitCharGen::HandleInputEvent(int nEvent, int bPressed)
 {
     if (bPressed != 0)
@@ -252,7 +252,7 @@ void CSWGuiPortraitCharGen::HandleInputEvent(int nEvent, int bPressed)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, bPressed);
 }
-// PC 0x006F90F0  Xbox 0x001315A0
+// PC 0x0076B1E0
 void CSWGuiPortraitCharGen::GetPortraitsList(int nGender)
 {
     C2DA* p2DA = new C2DA("PORTRAITS", 0);
@@ -309,7 +309,7 @@ void CSWGuiPortraitCharGen::GetPortraitsList(int nGender)
     }
     delete p2DA;
 }
-// PC 0x006F9430  Xbox 0x00131910
+// PC 0x0076B520
 CSWGuiPortraitCharGen::CSWGuiPortraitCharGen(CSWGuiManager* pManager,
                                              CSWCCreature* pCreature)
     : CSWGuiPanel(pManager)
@@ -390,7 +390,7 @@ CSWGuiPortraitCharGen::CSWGuiPortraitCharGen(CSWGuiManager* pManager,
 }
 
 #ifdef _XBOX
-void CSWGuiPortraitCharGen::ShowTimedControl(CSWGuiControl* pControl)  // Xbox 0x00131490
+void CSWGuiPortraitCharGen::ShowTimedControl(CSWGuiControl* pControl)
 {
     int nCount = m_lstTimedControls.num;
 

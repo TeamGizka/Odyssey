@@ -26,7 +26,7 @@ int g_bShowDrivingSpeed = 0;
 
 int turbo = 0;
 float turbospeed = 15.0f;
-// PC 0x006792D0  Xbox 0x000938A0
+// PC 0x006CEAA0
 int CSWPlayerControl::Initialize()
 {
     m_oidPlayer = OBJECT_INVALID;
@@ -34,7 +34,7 @@ int CSWPlayerControl::Initialize()
     m_bEnabled = 0;
     return 0;
 }
-// PC 0x006792E0  Xbox 0x000938B0
+// PC 0x006CEAB0
 void CSWPlayerControl::SetEnabled(int bEnabled)
 {
     m_bEnabled = bEnabled;
@@ -56,7 +56,7 @@ void CSWPlayerControl::SetEnabled(int bEnabled)
         }
     }
 }
-// PC 0x00679340  Xbox 0x00093910
+// PC 0x006CEB10
 void CSWPlayerControl::SetPlayer(unsigned long oidPlayer)
 {
     CClientExoApp* pClientExoApp;
@@ -82,7 +82,7 @@ void CSWPlayerControl::SetPlayer(unsigned long oidPlayer)
         }
     }
 }
-// PC 0x006793B0  Xbox 0x00093980
+// PC 0x006CEB80
 int CSWPlayerControl::SetCamera(CAurCamera* pCamera)
 {
     m_pCamera = pCamera;
@@ -99,7 +99,7 @@ float CSWPlayerControlCamRelative::GetAcceleration()
     }
     return SWPLAYERCONTROL_DEFAULT_ACCELERATION;
 }
-// PC 0x006793C0  Xbox 0x00093990
+// PC 0x006CEB90
 void CSWPlayerControlCamRelative::Init()
 {
     m_fReserved34 = 480.0f;
@@ -128,7 +128,7 @@ void CSWPlayerControlCamRelative::Init()
     m_integrator.m_fMaximumDeceleration = fDeceleration;
 #endif
 }
-// PC 0x00679510  Xbox 0x00093AA0
+// PC 0x006CECE0
 float CSWPlayerControlCamRelative::GetMaxSpeed()
 {
     if (turbo ||
@@ -151,7 +151,7 @@ float CSWPlayerControlCamRelative::GetMaxSpeed()
     }
     return 6.0f;
 }
-// PC 0x006795C0  Xbox 0x00093B30
+// PC 0x006CEDB0
 void CSWPlayerControlCamRelative::ResetDriveAcceleration()
 {
     m_stateB.m_vRate = Vector();
@@ -182,14 +182,14 @@ CSWPlayerControlCamRelative::CSWPlayerControlCamRelative()
 {
     Init();
 }
-// PC 0x00679780  Xbox 0x00093CB0
+// PC 0x006CEF70
 CSWPlayerControlCamRelative::CSWPlayerControlCamRelative(
     unsigned long oidPlayer, CAurCamera* pCamera)
     : CSWPlayerControl(oidPlayer, pCamera)
 {
     Init();
 }
-// PC 0x00679870  Xbox 0x00093E00
+// PC 0x006CF060
 inline Vector CSWPlayerControlCamRelative::GetAcceleration(
     CSWMGPhysicsState& state, const Vector& vTarget)
 {
@@ -211,7 +211,7 @@ inline Vector CSWPlayerControlCamRelative::GetAcceleration(
     float fDrag = fAcceleration / fMaxSpeed;
     return fAcceleration * vTarget - fDrag * state.m_vValue;
 }
-// PC 0x00679940  Xbox 0x00093EF0
+// PC 0x006CF130
 int CSWPlayerControlCamRelative::Control(float fTimeStep)
 {
     float fTime = 1.0f < fTimeStep ? 1.0f : fTimeStep;

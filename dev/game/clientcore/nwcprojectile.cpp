@@ -31,14 +31,14 @@ int g_nProjectileUnused = 0;
 
 const int CSWCProjectile::NUM_IMPACT_SOUNDS = 2;
 const int CSWCProjectile::NUM_SHOT_SOUNDS = 2;
-// PC 0x006D2C30  Xbox 0x001038A0
+// PC 0x007409E0
 int CSWCProjectile::SetDesiredPositionTimer(int nTime)
 {
     m_nDesiredPositionTime = nTime;
     m_nDesiredPositionTimer = nTime;
     return nTime;
 }
-// PC 0x006D2C50  Xbox 0x001038C0
+// PC 0x00740A00
 int CSWCProjectile::LoadModel(const CResRef& cModel, unsigned char nModel,
                               unsigned char nFlags)
 {
@@ -60,7 +60,7 @@ int CSWCProjectile::LoadModel(const CResRef& cModel, unsigned char nModel,
     m_pAnimBase->TurnOffShadows();
     return 1;
 }
-// PC 0x006D2D30  Xbox 0x001039A0
+// PC 0x00740AE0
 void CSWCProjectile::UnloadModel()
 {
     if (m_pReferenceObject != NULL)
@@ -79,7 +79,7 @@ void CSWCProjectile::UnloadModel()
         m_pAnimBase = NULL;
     }
 }
-// PC 0x006D2DB0  Xbox 0x00103A20
+// PC 0x00740B60
 void CSWCProjectile::UnloadModel(unsigned char nModel)
 {
     if (m_pReferenceObject != NULL)
@@ -94,7 +94,7 @@ void CSWCProjectile::UnloadModel(unsigned char nModel)
         m_pAnimBase->UnloadModel(nModel);
     }
 }
-// PC 0x006D2E00  Xbox 0x00103A70
+// PC 0x00740BB0
 void CSWCProjectile::MoveProjectileAccelerating()
 {
     Vector vDirection;
@@ -127,7 +127,7 @@ void CSWCProjectile::MoveProjectileAccelerating()
     }
     SetPosition(vPosition);
 }
-// PC 0x006D30C0  Xbox 0x00103DD0
+// PC 0x00740E70
 void CSWCProjectile::MoveProjectileSpiral()
 {
     Vector vDirection;
@@ -171,7 +171,7 @@ void CSWCProjectile::MoveProjectileSpiral()
     }
     SetPosition(vPosition);
 }
-// PC 0x006D33C0  Xbox 0x00104180
+// PC 0x00741170
 void CSWCProjectile::SetProjectileVelAndAccel(const Vector& vDirection)
 {
 
@@ -410,7 +410,7 @@ void CSWCProjectile::SetProjectileVelAndAccel(const Vector& vDirection)
         break;
     }
 }
-// PC 0x006D41B0  Xbox 0x001050B0
+// PC 0x00741F60
 void CSWCProjectile::SetProjectileSpellId(unsigned long nSpellId)
 {
     CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpellId);
@@ -430,7 +430,7 @@ void CSWCProjectile::SetProjectileSpellId(unsigned long nSpellId)
         }
     }
 }
-// PC 0x006D4250  Xbox 0x00105150
+// PC 0x00742000
 int CSWCProjectile::SetAnimation(unsigned short nAnimation)
 {
     int nResult = 0;
@@ -442,7 +442,7 @@ int CSWCProjectile::SetAnimation(unsigned short nAnimation)
     }
     return nResult;
 }
-// PC 0x006D42A0  Xbox 0x001051A0
+// PC 0x00742050
 void CSWCProjectile::SetSpawnCombatVisualOnImpact(unsigned char bSpawn,
                                                   int nSpellId, short nEffect)
 {
@@ -450,7 +450,7 @@ void CSWCProjectile::SetSpawnCombatVisualOnImpact(unsigned char bSpawn,
     m_nCombatVisualSpellId = nSpellId;
     m_nCombatVisualEffect = nEffect;
 }
-// PC 0x006D42D0  Xbox 0x001051D0
+// PC 0x00742080
 void CSWCProjectile::SetDesiredTargetObject(unsigned long nTargetId,
                                             const CExoString& sImpactHook)
 {
@@ -490,7 +490,7 @@ void CSWCProjectile::SetDesiredTargetObject(unsigned long nTargetId,
 
     m_nDesiredTargetId = nTargetId;
 }
-// PC 0x006D4440  Xbox 0x00105340
+// PC 0x007421F0
 void CSWCProjectile::CreateMuzzleFlash(const CExoString& sModel,
                                        CAurObject* pObject,
                                        const CExoString& sHook)
@@ -503,7 +503,7 @@ void CSWCProjectile::CreateMuzzleFlash(const CExoString& sModel,
         m_pMuzzleFlash->PlayAnimation("impact", 1.0f, 1, 0.0f);
     }
 }
-// PC 0x006D4520  Xbox 0x00105420
+// PC 0x007422D0
 void CSWCProjectile::ClearBehaviorList()
 {
     while (m_lstBehaviors.GetHeadPos() != NULL)
@@ -515,7 +515,7 @@ void CSWCProjectile::ClearBehaviorList()
         }
     }
 }
-// PC 0x006D4550  Xbox 0x00105450
+// PC 0x00742300
 void CSWCProjectile::SetBehaviorListHoming()
 {
     Vector vPosition;
@@ -544,7 +544,7 @@ void CSWCProjectile::SetBehaviorListHoming()
     pBehavior->m_fDistance = -1.0f;
     m_lstBehaviors.AddTail(pBehavior);
 }
-// PC 0x006D4640  Xbox 0x00105550
+// PC 0x007423F0
 void CSWCProjectile::SetBehaviorListBallistic()
 {
     Vector vPosition;
@@ -573,7 +573,7 @@ void CSWCProjectile::SetBehaviorListBallistic()
     pBehavior->m_fDistance = -1.0f;
     m_lstBehaviors.AddTail(pBehavior);
 }
-// PC 0x006D4730  Xbox 0x00105650
+// PC 0x007424E0
 void CSWCProjectile::SetBehaviorListHighBallistic()
 {
     Vector vPosition;
@@ -632,7 +632,7 @@ void CSWCProjectile::SetBehaviorListHighBallistic()
     pBehavior->m_fDistance = -1.0f;
     m_lstBehaviors.AddTail(pBehavior);
 }
-// PC 0x006D4930  Xbox 0x00105890
+// PC 0x007426E0
 void CSWCProjectile::SetBehaviorListBurstUp()
 {
     Vector vPosition;
@@ -661,7 +661,7 @@ void CSWCProjectile::SetBehaviorListBurstUp()
     pBehavior->m_fDistance = -1.0f;
     m_lstBehaviors.AddTail(pBehavior);
 }
-// PC 0x006D4A20  Xbox 0x00105990
+// PC 0x007427D0
 void CSWCProjectile::SetBehaviorListBurst()
 {
     Vector vPosition;
@@ -690,7 +690,7 @@ void CSWCProjectile::SetBehaviorListBurst()
     pBehavior->m_fDistance = -1.0f;
     m_lstBehaviors.AddTail(pBehavior);
 }
-// PC 0x006D4B10  Xbox 0x00105A90
+// PC 0x007428C0
 void CSWCProjectile::SetBehaviorListAccelerating()
 {
     Vector vPosition;
@@ -719,7 +719,7 @@ void CSWCProjectile::SetBehaviorListAccelerating()
     pBehavior->m_fDistance = -1.0f;
     m_lstBehaviors.AddTail(pBehavior);
 }
-// PC 0x006D4C00  Xbox 0x00105B90
+// PC 0x007429B0
 void CSWCProjectile::SetBehaviorListSpiral()
 {
     Vector vSpiral;
@@ -808,7 +808,7 @@ void CSWCProjectile::SetBehaviorListSpiral()
     pBehavior->m_fDistance = -1.0f;
     m_lstBehaviors.AddTail(pBehavior);
 }
-// PC 0x006D4FE0  Xbox 0x00106000
+// PC 0x00742D90
 void CSWCProjectile::SetBehaviorListLinked()
 {
     Vector vPosition;
@@ -837,7 +837,7 @@ void CSWCProjectile::SetBehaviorListLinked()
     pBehavior->m_fDistance = -1.0f;
     m_lstBehaviors.AddTail(pBehavior);
 }
-// PC 0x006D50F0  Xbox 0x00106120
+// PC 0x00742EA0
 void CSWCProjectile::SetBehaviorListParried()
 {
     Vector vPosition = Vector();
@@ -878,7 +878,7 @@ void CSWCProjectile::SetBehaviorListParried()
     pBehavior->m_fDistance = 0.0f;
     m_lstBehaviors.AddTail(pBehavior);
 }
-// PC 0x006D5250  Xbox 0x001062B0
+// PC 0x00743000
 void CSWCProjectile::SetBehaviorListDeflected()
 {
     Vector vPosition = Vector();
@@ -919,7 +919,7 @@ void CSWCProjectile::SetBehaviorListDeflected()
     pBehavior->m_fDistance = 0.0f;
     m_lstBehaviors.AddTail(pBehavior);
 }
-// PC 0x006D53A0  Xbox 0x00106430
+// PC 0x00743150
 void CSWCProjectile::SetBehaviorListReflected()
 {
     Vector vPosition = Vector();
@@ -960,7 +960,7 @@ void CSWCProjectile::SetBehaviorListReflected()
     pBehavior->m_fDistance = 0.0f;
     m_lstBehaviors.AddTail(pBehavior);
 }
-// PC 0x006D5500  Xbox 0x001065C0
+// PC 0x007432B0
 void CSWCProjectile::SetBehaviorListLinkedBurstUp()
 {
     Vector vPosition;
@@ -989,7 +989,7 @@ void CSWCProjectile::SetBehaviorListLinkedBurstUp()
     pBehavior->m_fDistance = -1.0f;
     m_lstBehaviors.AddTail(pBehavior);
 }
-// PC 0x006D55F0  Xbox 0x001066C0
+// PC 0x007433A0
 void CSWCProjectile::SetBehaviorListTest()
 {
     Vector vPosition;
@@ -1031,7 +1031,7 @@ void CSWCProjectile::SetBehaviorListTest()
     pBehavior->m_fDistance = -1.0f;
     m_lstBehaviors.AddTail(pBehavior);
 }
-// PC 0x006D57B0  Xbox 0x00106890
+// PC 0x00743560
 CSWCProjectile::CSWCProjectile()
     : CSWCObject(CGameObject::OBJECT_TYPE_PROJECTILE)
 {
@@ -1075,14 +1075,14 @@ CSWCProjectile::CSWCProjectile()
     m_nDesiredTargetId = OBJECT_INVALID;
     m_nSourceTargetId = OBJECT_INVALID;
 }
-// PC 0x006D5A40  Xbox 0x00106BA0
+// PC 0x007437F0
 CSWCProjectile::~CSWCProjectile()
 {
     g_pAppManager->m_pClientExoApp->GetGameObjectArray()->Delete(m_nId);
     ClearBehaviorList();
     UnloadModel();
 }
-// PC 0x006D5B10  Xbox 0x00106C70
+// PC 0x007438C0
 void CSWCProjectile::SetBehaviorListTripleBallistic(int bHit)
 {
     CSWCArea* pArea = g_pAppManager->GetClientExoApp()->GetModule()->m_pInfo;
@@ -1260,7 +1260,7 @@ void CSWCProjectile::SetBehaviorListTripleBallistic(int bHit)
         m_lstBehaviors.AddTail(pBehavior);
     }
 }
-// PC 0x006D64F0  Xbox 0x00107780
+// PC 0x007442A0
 void CSWCProjectile::SetBehaviorListBounce()
 {
     CHitInfo hitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
@@ -1366,7 +1366,7 @@ void CSWCProjectile::SetBehaviorListBounce()
         m_lstBehaviors.AddTail(pBehavior);
     }
 }
-// PC 0x006D6A90  Xbox 0x00107D80
+// PC 0x00744840
 void CSWCProjectile::SetBehaviorListDoubleBallistic()
 {
     Vector vPosition;
@@ -1456,7 +1456,7 @@ void CSWCProjectile::SetBehaviorListDoubleBallistic()
     pBehavior->m_fDistance = PROJECTILE_BEHAVIOR_DISTANCE_UNSET;
     m_lstBehaviors.AddTail(pBehavior);
 }
-// PC 0x006D6EE0  Xbox 0x00108280
+// PC 0x00744C90
 void CSWCProjectile::SetProjectileType(unsigned long nType)
 {
     m_nProjectileType = nType;
@@ -1537,7 +1537,7 @@ void CSWCProjectile::SetProjectileType(unsigned long nType)
     m_vDesiredPosition = m_pCurrentBehavior->m_vStartPosition;
     SetProjectileVelAndAccel(m_vOrientation);
 }
-// PC 0x006D70D0  Xbox 0x00108470
+// PC 0x00744E80
 int CSWCProjectile::UpdateCurrentBehavior()
 {
     if (m_pCurrentBehavior != NULL)
@@ -1649,7 +1649,7 @@ int CSWCProjectile::UpdateCurrentBehavior()
 
     return 1;
 }
-// PC 0x006D7590  Xbox 0x00108950
+// PC 0x00745340
 void CSWCProjectile::MoveProjectileToPosition()
 {
     Vector vTarget;
@@ -1798,7 +1798,7 @@ void CSWCProjectile::MoveProjectileToPosition()
         break;
     }
 }
-// PC 0x006D7BC0  Xbox 0x00109050
+// PC 0x00745980
 void CSWCProjectile::AIUpdate()
 {
     CExoString sSound;

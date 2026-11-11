@@ -6,14 +6,14 @@
 #include "clientexoapp.h"
 #include "swguiingame.h"
 #include "nwccreature.h"
-// PC 0x006EE0D0  Xbox 0x00126A40
+// PC 0x0075D050
 void CSWGuiLevelUpPanel::NewAbilityScores(int nStr, int nDex, int nCon,
                                           int nInt, int nWis, int nCha,
                                           int nPoints)
 {
     m_pParent->NewAbilityScores(nStr, nDex, nCon, nInt, nWis, nCha, nPoints);
 }
-// PC 0x006EE0E0  Xbox 0x00126A50
+// PC 0x0075D0E0
 void CSWGuiLevelUpPanel::ChangeState(int bBack)
 {
     int nStep;
@@ -171,7 +171,7 @@ void CSWGuiLevelUpPanel::ChangeState(int bBack)
     m_btnBack.m_cText.m_cParams.SetColor(*pColor);
 #endif
 }
-// PC 0x006EE350  Xbox 0x00126C60
+// PC 0x0075CE20
 void CSWGuiLevelUpPanel::OnSelectPowersButton(CSWGuiControl* pControl)
 {
     CSWGuiPowersLevelUp* pPanel;
@@ -185,7 +185,7 @@ void CSWGuiLevelUpPanel::OnSelectPowersButton(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x006EE3D0  Xbox 0x00126CE0
+// PC 0x0075CEA0
 void CSWGuiLevelUpPanel::OnSelectFeatsButton(CSWGuiControl* pControl)
 {
     CSWGuiFeatsCharGen* pPanel;
@@ -204,7 +204,7 @@ void CSWGuiLevelUpPanel::OnSelectFeatsButton(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x006EE480  Xbox 0x00126D90
+// PC 0x0075CF50
 void CSWGuiLevelUpPanel::OnSelectSkillsButton(CSWGuiControl* pControl)
 {
     CSWGuiSkillsCharGen* pPanel;
@@ -217,7 +217,7 @@ void CSWGuiLevelUpPanel::OnSelectSkillsButton(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x006EE500  Xbox 0x00126E10
+// PC 0x0075CFD0
 void CSWGuiLevelUpPanel::OnSelectAbilitiesButton(CSWGuiControl* pControl)
 {
     CSWGuiAbilitiesCharGen* pPanel;
@@ -230,33 +230,33 @@ void CSWGuiLevelUpPanel::OnSelectAbilitiesButton(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x006EE580  Xbox 0x00126E90
+// PC 0x0075D350
 void CSWGuiLevelUpPanel::CancelledByChild()
 {
     --m_nState;
     ChangeState(0);
     m_pParent->SetVisible(1);
 }
-// PC 0x006EE5B0  Xbox 0x00126EC0
+// PC 0x0075D380
 void CSWGuiLevelUpPanel::AbilitySelectionCompleted()
 {
     m_pParent->SetVisible(1);
     m_pParent->AbilitiesChanged();
     ChangeState(0);
 }
-// PC 0x006EE5D0
+// PC 0x0075D3A0
 void CSWGuiLevelUpPanel::FeatSelectionCompleted()
 {
     m_pParent->SetVisible(1);
     ChangeState(0);
 }
-// PC 0x006EE5D0
+// PC 0x0075D3A0
 void CSWGuiLevelUpPanel::SkillSelectionCompleted()
 {
     m_pParent->SetVisible(1);
     ChangeState(0);
 }
-// PC 0x006EE5D0  Xbox 0x00126EE0
+// PC 0x0075D3A0
 void CSWGuiLevelUpPanel::PowersSelectionCompleted()
 {
     m_pParent->SetVisible(1);
@@ -264,7 +264,7 @@ void CSWGuiLevelUpPanel::PowersSelectionCompleted()
 }
 
 #ifndef _XBOX
-void CSWGuiLevelUpPanel::OnCancelPressed(CSWGuiControl* pControl)  // PC 0x006EE5F0
+void CSWGuiLevelUpPanel::OnCancelPressed(CSWGuiControl* pControl)  // PC 0x0075D430
 {
     if (m_bCanCancel != 0)
     {
@@ -276,7 +276,7 @@ void CSWGuiLevelUpPanel::OnCancelPressed(CSWGuiControl* pControl)  // PC 0x006EE
         ChangeState(1);
     }
 }
-// PC 0x006EE640
+// PC 0x0075D060
 void CSWGuiLevelUpPanel::SetCanCancel(int bCanCancel)
 {
     m_bCanCancel = bCanCancel;
@@ -291,7 +291,7 @@ void CSWGuiLevelUpPanel::SetCanCancel(int bCanCancel)
     m_btnCancel.SetShown(m_bCanCancel);
 }
 #endif
-// PC 0x006EE6C0  Xbox 0x00126F00
+// PC 0x0075DD30
 void CSWGuiLevelUpPanel::OnPanelAdded()
 {
     m_nState = -1;
@@ -309,7 +309,7 @@ void CSWGuiLevelUpPanel::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
-// PC 0x006EE720  Xbox 0x00126F40
+// PC 0x0075D530
 void CSWGuiLevelUpPanel::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -338,7 +338,7 @@ void CSWGuiLevelUpPanel::PlayGame()
     }
     m_pParent->BeginPlayGame();
 }
-// PC 0x006EE780  Xbox 0x00126FA0
+
 void CSWGuiLevelUpPanel::OnSelectAcceptButton(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -346,7 +346,7 @@ void CSWGuiLevelUpPanel::OnSelectAcceptButton(CSWGuiControl* pControl)
         PlayGame();
     }
 }
-// PC 0x006EE7D0  Xbox 0x00126FF0
+// PC 0x0075D5B0
 CSWGuiLevelUpPanel::CSWGuiLevelUpPanel(CSWGuiManager* pManager,
                                        unsigned long nCreature)
     : CSWGuiPanel(pManager)

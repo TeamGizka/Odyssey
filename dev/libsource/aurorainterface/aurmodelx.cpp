@@ -1,5 +1,5 @@
 #include "aurora.h"
-// PC 0x007100A0
+// PC 0x007838F0
 int CAuroraModelX::GetModelDataSize()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -8,7 +8,7 @@ int CAuroraModelX::GetModelDataSize()
     }
     return 0;
 }
-// PC 0x007107B0
+// PC 0x00783FE0
 unsigned char* CAuroraModelX::GetModelDataPtr()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -17,7 +17,7 @@ unsigned char* CAuroraModelX::GetModelDataPtr()
     }
     return 0;
 }
-// PC 0x0070FDD0  Xbox 0x002FA030
+// PC 0x00783600
 int CAuroraModelX::Load()
 {
     SMDXResPrefix* pPrefix;
@@ -31,16 +31,16 @@ int CAuroraModelX::Load()
     pPrefix->pOwner = this;
     return 1;
 }
-// PC 0x0070FFE0  Xbox 0x002FA240
+// PC 0x00783830
 CAuroraModelX::CAuroraModelX(CResRef cResRef, int bRequest)
 {
     SetResRef(cResRef, bRequest);
 }
-// PC 0x00710070  Xbox 0x002FA2D0
+// PC 0x007838C0
 CAuroraModelX::~CAuroraModelX()
 {
 }
-// PC 0x00710100
+// PC 0x00783630
 void CAuroraModelX::Unload()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -48,7 +48,7 @@ void CAuroraModelX::Unload()
         m_pRes->Release();
     }
 }
-// PC 0x0070FAF0
+// PC 0x00783320
 unsigned char* CAuroraModelX::GetPtrToResHelperInfo()
 {
     unsigned char* nMDXDataPtr;

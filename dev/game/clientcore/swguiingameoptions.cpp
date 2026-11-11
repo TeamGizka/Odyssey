@@ -8,7 +8,7 @@
 #include "swguiingameautopause.h"
 #include "swguioptions.h"
 #include "swguicustompanel.h"
-// PC 0x006AAAD0
+// PC 0x00735B90
 void CSWGuiInGameOptions::OnPanelRemoved()
 {
     SetActiveControl(0, 0);
@@ -16,7 +16,7 @@ void CSWGuiInGameOptions::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 #endif
 }
-// PC 0x006AAAF0  Xbox 0x000DD870
+
 void CSWGuiInGameOptions::OnLoadGame(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -28,7 +28,7 @@ void CSWGuiInGameOptions::OnLoadGame(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x006AAB80  Xbox 0x000DD900
+
 void CSWGuiInGameOptions::OnSaveGame(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -40,7 +40,7 @@ void CSWGuiInGameOptions::OnSaveGame(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x006AAC10  Xbox 0x000DD990
+// PC 0x00735730
 void CSWGuiInGameOptions::OnGameplay(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -50,7 +50,7 @@ void CSWGuiInGameOptions::OnGameplay(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x006AAC90  Xbox 0x000DDA10
+// PC 0x007357B0
 void CSWGuiInGameOptions::OnFeedback(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -60,7 +60,7 @@ void CSWGuiInGameOptions::OnFeedback(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x006AAD10  Xbox 0x000DDA90
+// PC 0x00735830
 void CSWGuiInGameOptions::OnAutopause(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -72,7 +72,7 @@ void CSWGuiInGameOptions::OnAutopause(CSWGuiControl* pControl)
 }
 
 #ifndef _XBOX
-void CSWGuiInGameOptions::OnGraphics(CSWGuiControl* pControl)  // PC 0x006AAD90
+void CSWGuiInGameOptions::OnGraphics(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
     if (bSelected != 0)
@@ -82,7 +82,7 @@ void CSWGuiInGameOptions::OnGraphics(CSWGuiControl* pControl)  // PC 0x006AAD90
     }
 }
 #endif
-// PC 0x006AAE10  Xbox 0x000DDB10
+// PC 0x00735930
 void CSWGuiInGameOptions::OnSound(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -92,7 +92,7 @@ void CSWGuiInGameOptions::OnSound(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x006AAE90  Xbox 0x000DDB90
+// PC 0x007359B0
 void CSWGuiInGameOptions::ReallyQuit(CSWGuiControl* pControl)
 {
     CGuiInGame* pInGameGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
@@ -101,7 +101,7 @@ void CSWGuiInGameOptions::ReallyQuit(CSWGuiControl* pControl)
         g_pAppManager->m_pClientExoApp->SetEndGamePending(1, 0.0f, 1);
     }
 }
-// PC 0x006AAEC0  Xbox 0x000DDBC0
+// PC 0x007359E0
 void CSWGuiInGameOptions::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -137,7 +137,7 @@ void CSWGuiInGameOptions::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006AB000  Xbox 0x000DDC50
+// PC 0x00735C20
 void CSWGuiInGameOptions::SetDescription(unsigned long nStrRef)
 {
     CSWGuiTextParams* pParams = &m_lblDescription.m_cText.m_cParams;
@@ -164,7 +164,7 @@ void CSWGuiInGameOptions::SetDescription(unsigned long nStrRef)
                           pListBox->m_bHideScrollIcon == 0;
     m_lblScrollIcon.m_bEnabled = bShowScrollIcon;
 }
-// PC 0x006AB140
+// PC 0x00735B20
 void CSWGuiInGameOptions::OnPanelAdded()
 {
 #ifndef _XBOX
@@ -196,7 +196,7 @@ void CSWGuiInGameOptions::OnPanelAdded()
         SetActiveControl(&m_aOptions[0], 0);
     }
 }
-// PC 0x006AB1B0  Xbox 0x000DDD90
+// PC 0x00735BB0
 void CSWGuiInGameOptions::OnQuit(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -211,7 +211,7 @@ void CSWGuiInGameOptions::OnQuit(CSWGuiControl* pControl)
         m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
 }
-// PC 0x006AB220  Xbox 0x000DDE00
+// PC 0x00735D80
 void CSWGuiInGameOptions::OnEnterSlot(CSWGuiControl* pControl)
 {
     int nSlot = -1;
@@ -286,7 +286,7 @@ void CSWGuiInGameOptions::OnEnterSlot(CSWGuiControl* pControl)
     }
 #endif
 }
-// PC 0x006AB2F0  Xbox 0x000DDEC0
+// PC 0x00735E50
 CSWGuiInGameOptions::CSWGuiInGameOptions(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {

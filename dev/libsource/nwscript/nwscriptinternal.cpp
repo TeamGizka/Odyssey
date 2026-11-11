@@ -32,7 +32,7 @@ CScriptCompilerIdListEntry::CScriptCompilerIdListEntry()
     m_nBinaryDestinationStart = -1;
     m_nBinaryDestinationFinish = -1;
 }
-// PC 0x005D1260  Xbox 0x00157E80
+// PC 0x0061CEB0
 CScriptCompilerIdListEntry::~CScriptCompilerIdListEntry()
 {
     if (m_pchParameters != NULL)
@@ -438,7 +438,7 @@ int CSourceScript::LoadScript(const CExoString& sFileName, char** ppScript,
     *pnScriptLength = m_pRes->GetNSSSize();
     return 0;
 }
-// PC 0x005D13C0  Xbox 0x00157FE0
+// PC 0x0061D010
 void CScriptCompilerInternal::ShutDown()
 {
     if (m_pSRStack != NULL)
@@ -474,7 +474,7 @@ void CScriptCompilerInternal::ShutDown()
         m_pbEngineDefinedStructureValid = NULL;
     }
 }
-// PC 0x005D14D0  Xbox 0x001580F0
+// PC 0x0061D120
 CScriptCompilerInternal::~CScriptCompilerInternal()
 {
     ShutDown();

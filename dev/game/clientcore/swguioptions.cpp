@@ -32,14 +32,14 @@ void CSWGuiOptionsMouse::OnExitSlider(CSWGuiControl* pControl)
 }
 
 #ifndef _XBOX
-int CSWGuiOptionsGraphicsAdvanced::OnFrameBuffer(CSWGuiControl* pControl)  // PC 0x006DDB10  Xbox 0x00014BBB
+int CSWGuiOptionsGraphicsAdvanced::OnFrameBuffer(CSWGuiControl* pControl)  // PC 0x0074E750
 {
     int bFrameBuffer = (m_bFrameBuffer == 0);
     m_bChanged = 1;
     m_bFrameBuffer = bFrameBuffer;
     return bFrameBuffer;
 }
-// PC 0x006DDB30
+// PC 0x0074E840
 void CSWGuiOptionsGraphicsAdvanced::OnSoftShadows(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -49,21 +49,21 @@ void CSWGuiOptionsGraphicsAdvanced::OnSoftShadows(CSWGuiControl* pControl)
         m_bSoftShadows = (bSoftShadows == 0);
     }
 }
-// PC 0x006DDB60
+// PC 0x0074E870
 int CSWGuiOptionsGraphicsAdvanced::OnVSync(CSWGuiControl* pControl)
 {
     int bVSync = (m_bVSync == 0);
     m_bVSync = bVSync;
     return bVSync;
 }
-// PC 0x006DDB80
+// PC 0x0074EBA0
 void CSWGuiOptionsGraphicsAdvanced::OnDiscardChanges(CSWGuiControl* pControl)
 {
     m_bDiscard = 1;
     OnBButtonPressed(pControl);
 }
 #endif
-// PC 0x006DDB90  Xbox 0x00118030
+// PC 0x0074EEF0
 void CSWGuiOptionsSound::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -92,7 +92,7 @@ void CSWGuiOptionsSound::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006DDC80  Xbox 0x00118320
+// PC 0x0074F0D0
 void CSWGuiOptionsSound::SetDescription(unsigned long nStrRef)
 {
 #ifdef _XBOX
@@ -138,7 +138,7 @@ void CSWGuiOptionsSound::SetDescription(unsigned long nStrRef)
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
 #endif
 }
-// PC 0x006DDD70
+// PC 0x0074F2C0
 void CSWGuiOptionsSoundAdvanced::SetEAXText()
 {
     CExoString sText;
@@ -183,7 +183,7 @@ void CSWGuiOptionsSoundAdvanced::SetEAXText()
         pRight->m_bEnabled = 0;
     }
 }
-// PC 0x006DDE50
+// PC 0x0074F3A0
 void CSWGuiOptionsSoundAdvanced::SetDescription(unsigned long nStrRef)
 {
     m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
@@ -203,7 +203,7 @@ void CSWGuiOptionsSoundAdvanced::SetDescription(unsigned long nStrRef)
     m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
 }
-// PC 0x006DDF40
+// PC 0x0074F4B0
 void CSWGuiOptionsSoundAdvanced::EnableEAXControls(int bEnable)
 {
     m_btnEAX.SetEnabled(bEnable);
@@ -216,7 +216,7 @@ void CSWGuiOptionsSoundAdvanced::EnableEAXControls(int bEnable)
     m_btnEAXRight.SetEnabled(bEnable);
     m_btnEAXLeft.SetEnabled(bEnable);
 }
-// PC 0x006DDFA0
+// PC 0x0074F510
 void CSWGuiOptionsSoundAdvanced::OnEnterOption(CSWGuiControl* pControl)
 {
     if (pControl == &m_cbForceSoftware)
@@ -230,13 +230,13 @@ void CSWGuiOptionsSoundAdvanced::OnEnterOption(CSWGuiControl* pControl)
         SetDescription(48578);
     }
 }
-// PC 0x006DDFF0
+// PC 0x0074F560
 void CSWGuiOptionsSoundAdvanced::OnDiscardChanges(CSWGuiControl* pControl)
 {
     m_bDiscard = 1;
     OnBButtonPressed(pControl);
 }
-// PC 0x006DE000  Xbox 0x00118460
+// PC 0x0074F570
 void CSWGuiOptionsCheckbox::SetExtent(const CSWGuiExtent& cExtent)
 {
     CSWGuiExtent cBox;
@@ -255,7 +255,7 @@ void CSWGuiOptionsCheckbox::SetExtent(const CSWGuiExtent& cExtent)
     m_cText.SetExtent(cText);
     m_cExtent = cExtent;
 }
-// PC 0x006DE0E0  Xbox 0x00118540
+// PC 0x0074F650
 void CSWGuiOptionsCheckbox::Draw(float fElapsed)
 {
     CSWGuiTextParams* pParams;
@@ -279,7 +279,7 @@ void CSWGuiOptionsCheckbox::Draw(float fElapsed)
     }
     CSWGuiButtonToggle::Draw(fElapsed);
 }
-// PC 0x006DE160  Xbox 0x00118590
+// PC 0x0074F6D0
 void CSWGuiOptionsCheckbox::Load(CResGFF* pGFF, CResStruct& cStruct)
 {
     CSWGuiButtonToggle::Load(pGFF, cStruct);
@@ -288,7 +288,7 @@ void CSWGuiOptionsCheckbox::Load(CResGFF* pGFF, CResStruct& cStruct)
     m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
     m_cToggleHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
 }
-// PC 0x006DF390
+// PC 0x0074E890
 void CSWGuiOptionsMouse::SetDescription(unsigned long nStrRef)
 {
     m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
@@ -308,7 +308,7 @@ void CSWGuiOptionsMouse::SetDescription(unsigned long nStrRef)
     m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
 }
-// PC 0x006DE200
+// PC 0x0074F970
 void CSWGuiOptionsMouse::OnEnterSlider(CSWGuiControl* pControl)
 {
     if (pControl == &m_sldMouseSen)
@@ -318,7 +318,7 @@ void CSWGuiOptionsMouse::OnEnterSlider(CSWGuiControl* pControl)
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
     pParams->m_bPulsing = 1;
 }
-// PC 0x006DE240
+// PC 0x0074D6F0
 void CSWGuiOptionsMain::OnGameplayOpt(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -328,7 +328,7 @@ void CSWGuiOptionsMain::OnGameplayOpt(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x006DE2C0
+// PC 0x0074D770
 void CSWGuiOptionsMain::OnAutopauseOpt(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -343,7 +343,7 @@ void CSWGuiOptionsMain::ClosePanel()
 {
     g_pAppManager->m_pClientExoApp->SaveOptions();
 }
-// PC 0x006DE340  Xbox 0x00117B70
+// PC 0x0074D7F0
 void CSWGuiOptionsMain::SetDescription(unsigned long nStrRef)
 {
 #ifdef _XBOX
@@ -389,7 +389,7 @@ void CSWGuiOptionsMain::SetDescription(unsigned long nStrRef)
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
 #endif
 }
-// PC 0x006DE430
+// PC 0x0074D900
 void CSWGuiOptionsFeedback::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -426,7 +426,7 @@ void CSWGuiOptionsFeedback::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006DE550  Xbox 0x00117CB0
+// PC 0x0074DA20
 void CSWGuiOptionsFeedback::OnHide(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -438,7 +438,7 @@ void CSWGuiOptionsFeedback::OnHide(CSWGuiControl* pControl)
         pOptions->m_bHideUnequippable = bHide;
     }
 }
-// PC 0x006DE5A0  Xbox 0x00117D00
+// PC 0x0074DA70
 void CSWGuiOptionsFeedback::OnTutorial(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -450,7 +450,7 @@ void CSWGuiOptionsFeedback::OnTutorial(CSWGuiControl* pControl)
         pOptions->m_bTutorialPopups = bTutorial;
     }
 }
-// PC 0x006DE5F0  Xbox 0x00117D50
+// PC 0x0074DAC0
 void CSWGuiOptionsFeedback::OnSubtitles(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -463,7 +463,7 @@ void CSWGuiOptionsFeedback::OnSubtitles(CSWGuiControl* pControl)
         pOptions->m_bSubtitles = bSubtitles;
     }
 }
-// PC 0x006DE640  Xbox 0x00117DA0
+// PC 0x0074DB10
 void CSWGuiOptionsFeedback::OnMiniMap(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -477,7 +477,7 @@ void CSWGuiOptionsFeedback::OnMiniMap(CSWGuiControl* pControl)
         g_pAppManager->m_pClientExoApp->GetInGameGui()->InitializeMap();
     }
 }
-// PC 0x006DE6A0  Xbox 0x00117E50
+// PC 0x0074DB70
 void CSWGuiOptionsFeedback::OnFloaty(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -497,7 +497,7 @@ void CSWGuiOptionsFeedback::OnFloaty(CSWGuiControl* pControl)
 #endif
     }
 }
-// PC 0x006DE6F0  Xbox 0x00117EA0
+// PC 0x0074DBC0
 void CSWGuiOptionsFeedback::OnSummary(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -509,7 +509,7 @@ void CSWGuiOptionsFeedback::OnSummary(CSWGuiControl* pControl)
         pOptions->m_bStatusSummary = bSummary;
     }
 }
-// PC 0x006DE740
+// PC 0x0074DC10
 void CSWGuiOptionsFeedback::OnHideInGameGUI(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -522,7 +522,7 @@ void CSWGuiOptionsFeedback::OnHideInGameGUI(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006DE780
+
 void CSWGuiOptionsFeedback::OnUseSmallFont(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -535,7 +535,7 @@ void CSWGuiOptionsFeedback::OnUseSmallFont(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006DE7C0
+// PC 0x0074DC50
 void CSWGuiOptionsFeedback::SetUpOptions()
 {
     CClientOptions* pOptions =
@@ -607,7 +607,7 @@ void CSWGuiOptionsFeedback::SetUpOptions()
 #endif
     }
 }
-// PC 0x006DE9B0  Xbox 0x00117EF0
+// PC 0x0074DE00
 void CSWGuiOptionsFeedback::SetDescription(unsigned long nStrRef)
 {
 #ifdef _XBOX
@@ -653,7 +653,7 @@ void CSWGuiOptionsFeedback::SetDescription(unsigned long nStrRef)
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
 #endif
 }
-// PC 0x006DEAA0
+// PC 0x0074DF10
 void CSWGuiOptionsFeedback::OnEnableToolTips(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -668,7 +668,7 @@ void CSWGuiOptionsFeedback::OnEnableToolTips(CSWGuiControl* pControl)
 }
 
 #ifndef _XBOX
-void CSWGuiOptionsGraphics::HandleInputEvent(int nEvent, int nState)  // PC 0x006DEAE0
+void CSWGuiOptionsGraphics::HandleInputEvent(int nEvent, int nState)  // PC 0x0074DF50
 {
     if (nState != 0)
     {
@@ -721,7 +721,7 @@ void CSWGuiOptionsGraphics::HandleInputEvent(int nEvent, int nState)  // PC 0x00
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006DED30
+// PC 0x0074E1B0
 void CSWGuiOptionsGraphics::OnMoveGammaSlider(CSWGuiControl* pControl)
 {
     int nMax = pControl->AsSlider()->m_nMaxValue;
@@ -731,12 +731,12 @@ void CSWGuiOptionsGraphics::OnMoveGammaSlider(CSWGuiControl* pControl)
     g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nBrightness = nValue;
 }
 #endif
-// PC 0x006E6170
+// PC 0x0074F770
 void CSWGuiOptionsMouse::OnPanelAdded()
 {
     CSWGuiPanel::OnPanelAdded();
 }
-// PC 0x006DED90  Xbox 0x001181E0
+// PC 0x0074F9B0
 void CSWGuiOptionsSound::OnExitSlider(CSWGuiControl* pControl)
 {
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
@@ -744,7 +744,7 @@ void CSWGuiOptionsSound::OnExitSlider(CSWGuiControl* pControl)
 }
 
 #ifndef _XBOX
-void CSWGuiOptionsGraphics::OnShadows(CSWGuiControl* pControl)  // PC 0x006DEDB0
+void CSWGuiOptionsGraphics::OnShadows(CSWGuiControl* pControl)  // PC 0x0074E220
 {
     if (pControl->m_bSelected != 0)
     {
@@ -760,7 +760,7 @@ void CSWGuiOptionsGraphics::OnShadows(CSWGuiControl* pControl)  // PC 0x006DEDB0
         }
     }
 }
-// PC 0x006DEE00
+// PC 0x0074E270
 void CSWGuiOptionsGraphics::OnGrass(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -772,7 +772,7 @@ void CSWGuiOptionsGraphics::OnGrass(CSWGuiControl* pControl)
         pClient->GetClientOptions()->SetGrass(bGrass == 0);
     }
 }
-// PC 0x006DEE40
+// PC 0x0074E2B0
 void CSWGuiOptionsGraphics::SetDescription(unsigned long nStrRef)
 {
     m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
@@ -792,7 +792,7 @@ void CSWGuiOptionsGraphics::SetDescription(unsigned long nStrRef)
     m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
 }
-// PC 0x006DEF30
+// PC 0x0074E3C0
 void CSWGuiOptionsGraphics::SetUpOptions()
 {
     CClientOptions* pOptions =
@@ -814,7 +814,7 @@ void CSWGuiOptionsGraphics::SetUpOptions()
         pToggle->m_bToggled = nGrass;
     }
 }
-// PC 0x006DEFE0
+// PC 0x0074E470
 void CSWGuiOptionsGraphicsAdvanced::SetNewOptions()
 {
     CClientOptions* pOptions =
@@ -833,7 +833,7 @@ void CSWGuiOptionsGraphicsAdvanced::SetNewOptions()
         }
     }
 }
-// PC 0x006DF070
+// PC 0x0074E500
 void CSWGuiOptionsGraphicsAdvanced::SetTexQualText()
 {
     int nStrRef;
@@ -870,7 +870,7 @@ void CSWGuiOptionsGraphicsAdvanced::SetTexQualText()
         delete p2DA;
     }
 }
-// PC 0x006DF1C0
+// PC 0x0074E650
 void CSWGuiOptionsGraphicsAdvanced::SetAntiAliasText()
 {
     switch (m_nAntiAlias)
@@ -924,7 +924,7 @@ void CSWGuiOptionsGraphicsAdvanced::SetAntiAliasText()
 }
 
 #ifndef _XBOX
-CSWGuiOptionsResolution::CSWGuiOptionsResolution(CSWGuiManager* pManager)  // PC 0x006E0710
+CSWGuiOptionsResolution::CSWGuiOptionsResolution(CSWGuiManager* pManager)  // PC 0x007517D0
     : CSWGuiPanel(pManager)
 {
     StartLoadFromLayout("optresolution");
@@ -1038,7 +1038,7 @@ CSWGuiOptionsResolution::CSWGuiOptionsResolution(CSWGuiManager* pManager)  // PC
     m_nUnknown80C = 0;
 }
 #endif
-// PC 0x006DF2C0
+// PC 0x0074E770
 void CSWGuiOptionsGraphicsAdvanced::SetAnisotropyText()
 {
     switch (m_nAnisotropy)
@@ -1072,7 +1072,7 @@ void CSWGuiOptionsGraphicsAdvanced::SetAnisotropyText()
     }
     m_bChanged = 1;
 }
-// PC 0x006DF390
+// PC 0x0074E890
 void CSWGuiOptionsGraphicsAdvanced::SetDescription(unsigned long nStrRef)
 {
     m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
@@ -1092,7 +1092,7 @@ void CSWGuiOptionsGraphicsAdvanced::SetDescription(unsigned long nStrRef)
     m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
 }
-// PC 0x006DF480
+// PC 0x0074E990
 void CSWGuiOptionsGraphicsAdvanced::SetUpOptions()
 {
     CClientOptions* pOptions =
@@ -1152,7 +1152,7 @@ void CSWGuiOptionsGraphicsAdvanced::SetUpOptions()
         SetTexQualText();
     }
 }
-// PC 0x006E0CF0
+// PC 0x00750200
 void CSWGuiOptionsResolution::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -1209,7 +1209,7 @@ void CSWGuiOptionsResolution::HandleInputEvent(int nEvent, int nState)
 }
 
 #ifndef _XBOX
-void CSWGuiOptionsResolution::OnResolutionChosen(CSWGuiControl* pControl)  // PC 0x006DF690
+void CSWGuiOptionsResolution::OnResolutionChosen(CSWGuiControl* pControl)  // PC 0x0074EBB0
 {
     if (pControl == 0 || pControl->m_bSelected != 0)
     {
@@ -1240,7 +1240,7 @@ void CSWGuiOptionsResolution::OnResolutionChosen(CSWGuiControl* pControl)  // PC
     }
 }
 #endif
-#endif  // PC 0x006DF9B0  Xbox 0x001180F0
+#endif  // PC 0x0074EFE0
 
 void CSWGuiOptionsSound::OnMoveVolumeSlider(CSWGuiControl* pControl)
 {
@@ -1275,7 +1275,7 @@ void CSWGuiOptionsSound::OnMoveVolumeSlider(CSWGuiControl* pControl)
             nValue;
     }
 }
-// PC 0x006DFAA0  Xbox 0x00118800
+// PC 0x00750470
 void CSWGuiOptionsSound::OnEnterSlider(CSWGuiControl* pControl)
 {
 #ifdef _XBOX
@@ -1313,7 +1313,7 @@ void CSWGuiOptionsSound::OnEnterSlider(CSWGuiControl* pControl)
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
     pParams->m_bPulsing = 1;
 }
-// PC 0x006E0F50  Xbox 0x00118200
+// PC 0x007504A0
 void CSWGuiOptionsSound::OnDefault(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -1360,7 +1360,7 @@ void CSWGuiOptionsSound::OnDefault(CSWGuiControl* pControl)
 #endif
     }
 }
-// PC 0x006DFAD0
+// PC 0x0074F1E0
 void CSWGuiOptionsSound::SetUpOptions()
 {
     CClientOptions* pOptions =
@@ -1377,7 +1377,7 @@ void CSWGuiOptionsSound::SetUpOptions()
         OnMoveVolumeSlider(&m_sldMovie);
     }
 }
-// PC 0x006E0F80
+// PC 0x007504D0
 void CSWGuiOptionsSoundAdvanced::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -1441,7 +1441,7 @@ void CSWGuiOptionsSoundAdvanced::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006DFB60
+// PC 0x0074F270
 void CSWGuiOptionsSoundAdvanced::SetNewOptions()
 {
     if (g_pAppManager->m_pClientExoApp->GetClientOptions() != 0)
@@ -1453,7 +1453,7 @@ void CSWGuiOptionsSoundAdvanced::SetNewOptions()
             nFlags;
     }
 }
-// PC 0x006DFBB0
+// PC 0x007507C0
 void CSWGuiOptionsSoundAdvanced::OnEAXLeft(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -1467,7 +1467,7 @@ void CSWGuiOptionsSoundAdvanced::OnEAXLeft(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006DFBF0
+// PC 0x00750800
 void CSWGuiOptionsSoundAdvanced::OnEAXRight(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -1494,7 +1494,7 @@ void CSWGuiOptionsSoundAdvanced::OnEAXRight(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006DFC50
+// PC 0x00750860
 void CSWGuiOptionsSoundAdvanced::OnForceSoftware(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -1505,7 +1505,7 @@ void CSWGuiOptionsSoundAdvanced::OnForceSoftware(CSWGuiControl* pControl)
         m_bChanged = 1;
     }
 }
-// PC 0x006E1270
+// PC 0x00751E50
 void CSWGuiOptionsSoundAdvanced::OnDefault(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -1517,7 +1517,7 @@ void CSWGuiOptionsSoundAdvanced::OnDefault(CSWGuiControl* pControl)
         m_bChanged = 1;
     }
 }
-// PC 0x006DFC90
+// PC 0x007508C0
 void CSWGuiOptionsSoundAdvanced::SetUpOptions()
 {
     CClientOptions* pOptions =
@@ -1534,7 +1534,7 @@ void CSWGuiOptionsSoundAdvanced::SetUpOptions()
     }
     m_bChanged = 0;
 }
-// PC 0x006DFD10
+// PC 0x0074F780
 void CSWGuiOptionsMouse::OnRevMouseButtons(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -1556,12 +1556,12 @@ void CSWGuiOptionsMouse::OnRevMouseButtons(CSWGuiControl* pControl)
         cIni.WriteIniEntry(sValue, sFile, sSection, sKey);
     }
 }
-// PC 0x006DFE60
+// PC 0x00750940
 void CSWGuiOptionsMouse::OnEnterRevMouseButtons(CSWGuiControl* pControl)
 {
     SetDescription(48450);
 }
-// PC 0x006E12B0
+// PC 0x00750950
 void CSWGuiOptionsMouse::OnDefault(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -1572,7 +1572,7 @@ void CSWGuiOptionsMouse::OnDefault(CSWGuiControl* pControl)
         SetUpOptions();
     }
 }
-// PC 0x006E2A70  Xbox 0x00119380
+// PC 0x00752430
 CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -1685,7 +1685,7 @@ CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
 }
 
 #ifndef _XBOX
-void CSWGuiOptionsGraphics::OnAdvanced(CSWGuiControl* pControl)  // PC 0x006E2CF0
+void CSWGuiOptionsGraphics::OnAdvanced(CSWGuiControl* pControl)  // PC 0x00752780
 {
     int bSelected = pControl->m_bSelected;
     if (bSelected != 0)
@@ -1696,7 +1696,7 @@ void CSWGuiOptionsGraphics::OnAdvanced(CSWGuiControl* pControl)  // PC 0x006E2CF
     }
 }
 #endif
-// PC 0x006E2D70
+// PC 0x00752800
 void CSWGuiOptionsSound::OnAdvanced(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -1707,7 +1707,7 @@ void CSWGuiOptionsSound::OnAdvanced(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x006DFE70
+// PC 0x0074F8D0
 void CSWGuiOptionsMouse::SetUpOptions()
 {
     CClientOptions* pOptions =
@@ -1721,7 +1721,7 @@ void CSWGuiOptionsMouse::SetUpOptions()
         pToggle->m_bToggled = bReverse;
     }
 }
-// PC 0x006DFEE0
+// PC 0x0074F940
 void CSWGuiOptionsMouse::OnMoveMouseSenSlider(CSWGuiControl* pControl)
 {
     pControl->AsSlider();
@@ -1729,7 +1729,7 @@ void CSWGuiOptionsMouse::OnMoveMouseSenSlider(CSWGuiControl* pControl)
     g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nMouseSensitivity =
         nValue;
 }
-// PC 0x006DFF10  Xbox 0x00118630
+// PC 0x0074F9D0
 void CSWGuiOptionsMain::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -1763,7 +1763,7 @@ void CSWGuiOptionsMain::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006E0010  Xbox 0x001186A0
+// PC 0x0074FAE0
 void CSWGuiOptionsMain::OnEnterSlot(CSWGuiControl* pControl)
 {
 #ifdef _XBOX
@@ -1807,13 +1807,13 @@ void CSWGuiOptionsMain::OnEnterSlot(CSWGuiControl* pControl)
 }
 
 #ifndef _XBOX
-CSWGuiOptionsFeedback::~CSWGuiOptionsFeedback()  // PC 0x006E0020  Xbox 0x00119A60
+CSWGuiOptionsFeedback::~CSWGuiOptionsFeedback()  // PC 0x0074FAF0
 {
 }
 #endif
 
 #ifndef _XBOX
-void CSWGuiOptionsFeedback::PopulateOptionsListbox()  // PC 0x006E1300
+void CSWGuiOptionsFeedback::PopulateOptionsListbox()  // PC 0x007509A0
 {
     CSWGuiControl* pProto = m_lbOptions.m_pProtoItem;
     CExoArrayList<CSWGuiControl*> lstControls;
@@ -1920,7 +1920,7 @@ void CSWGuiOptionsFeedback::PopulateOptionsListbox()  // PC 0x006E1300
 #endif
 
 #ifndef _XBOX
-void CSWGuiOptionsGraphics::OnResolution(CSWGuiControl* pControl)  // PC 0x006E1660
+void CSWGuiOptionsGraphics::OnResolution(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
     CSWGuiOptionsResolution* pPanel = 0;
@@ -1932,7 +1932,7 @@ void CSWGuiOptionsGraphics::OnResolution(CSWGuiControl* pControl)  // PC 0x006E1
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
 }
-// PC 0x006E16E0
+// PC 0x00750CD0
 CSWGuiOptionsGraphicsAdvanced::CSWGuiOptionsGraphicsAdvanced(
     CSWGuiManager* pManager, CSWGuiOptionsGraphics* pGraphics)
     : CSWGuiPanel(pManager)
@@ -2045,7 +2045,7 @@ CSWGuiOptionsGraphicsAdvanced::CSWGuiOptionsGraphicsAdvanced(
     m_pGraphics = pGraphics;
 }
 #endif
-// PC 0x006E20A0
+// PC 0x007528D0
 CSWGuiOptionsSoundAdvanced::CSWGuiOptionsSoundAdvanced(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -2100,7 +2100,7 @@ CSWGuiOptionsSoundAdvanced::CSWGuiOptionsSoundAdvanced(CSWGuiManager* pManager)
     SetActiveControl(&m_cbForceSoftware, 0);
     m_bDiscard = 0;
 }
-// PC 0x006E2600
+// PC 0x00751E90
 CSWGuiOptionsMouse::CSWGuiOptionsMouse(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -2148,7 +2148,7 @@ CSWGuiOptionsMouse::CSWGuiOptionsMouse(CSWGuiManager* pManager)
     SetActiveControl(&m_sldMouseSen, 0);
     SetUpOptions();
 }
-// PC 0x006E0100
+// PC 0x0074FBE0
 void CSWGuiOptionsFeedback::OnDefault(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2159,7 +2159,7 @@ void CSWGuiOptionsFeedback::OnDefault(CSWGuiControl* pControl)
         SetUpOptions();
     }
 }
-// PC 0x006E0130  Xbox 0x00118740
+// PC 0x0074FC10
 void CSWGuiOptionsFeedback::OnEnterSlot(CSWGuiControl* pControl)
 {
 #ifdef _XBOX
@@ -2209,11 +2209,11 @@ void CSWGuiOptionsFeedback::OnEnterSlot(CSWGuiControl* pControl)
 }
 
 #ifndef _XBOX
-void CSWGuiOptionsGraphics::OnEnterSlot(CSWGuiControl* pControl)  // PC 0x006E0140
+void CSWGuiOptionsGraphics::OnEnterSlot(CSWGuiControl* pControl)  // PC 0x0074FC20
 {
     SetDescription(pControl->m_nIndex);
 }
-// PC 0x006E0150
+// PC 0x0074FC30
 void CSWGuiOptionsGraphics::OnEnterSlider(CSWGuiControl* pControl)
 {
     if (pControl == &m_sldGamma)
@@ -2223,7 +2223,7 @@ void CSWGuiOptionsGraphics::OnEnterSlider(CSWGuiControl* pControl)
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
     pParams->m_bPulsing = 1;
 }
-// PC 0x006E0190
+// PC 0x0074FC70
 void CSWGuiOptionsGraphics::OnDefault(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2234,7 +2234,7 @@ void CSWGuiOptionsGraphics::OnDefault(CSWGuiControl* pControl)
         SetUpOptions();
     }
 }
-// PC 0x006E01C0
+// PC 0x0074FCA0
 void CSWGuiOptionsGraphicsAdvanced::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -2300,12 +2300,12 @@ void CSWGuiOptionsGraphicsAdvanced::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006E0460
+// PC 0x0074FF50
 void CSWGuiOptionsGraphicsAdvanced::OnEnterSlot(CSWGuiControl* pControl)
 {
     SetDescription(pControl->m_nIndex);
 }
-// PC 0x006E0470
+// PC 0x0074FF60
 void CSWGuiOptionsGraphicsAdvanced::OnDefault(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2316,7 +2316,7 @@ void CSWGuiOptionsGraphicsAdvanced::OnDefault(CSWGuiControl* pControl)
         SetUpOptions();
     }
 }
-// PC 0x006E04A0
+// PC 0x0074FF90
 void CSWGuiOptionsGraphicsAdvanced::OnTexQualLeft(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2329,7 +2329,7 @@ void CSWGuiOptionsGraphicsAdvanced::OnTexQualLeft(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006E04E0
+// PC 0x0074FFD0
 void CSWGuiOptionsGraphicsAdvanced::OnTexQualRight(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2342,7 +2342,7 @@ void CSWGuiOptionsGraphicsAdvanced::OnTexQualRight(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006E0520
+// PC 0x00750010
 void CSWGuiOptionsGraphicsAdvanced::OnAntiAliasLeft(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2383,7 +2383,7 @@ void CSWGuiOptionsGraphicsAdvanced::OnAntiAliasLeft(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006E05E0
+// PC 0x007500D0
 void CSWGuiOptionsGraphicsAdvanced::OnAntiAliasRight(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2433,7 +2433,7 @@ void CSWGuiOptionsGraphicsAdvanced::OnAntiAliasRight(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006E0680
+// PC 0x00750170
 void CSWGuiOptionsGraphicsAdvanced::OnAnisotropyLeft(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2451,7 +2451,7 @@ void CSWGuiOptionsGraphicsAdvanced::OnAnisotropyLeft(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006E06D0
+// PC 0x007501C0
 void CSWGuiOptionsGraphicsAdvanced::OnAnisotropyRight(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2466,7 +2466,7 @@ void CSWGuiOptionsGraphicsAdvanced::OnAnisotropyRight(CSWGuiControl* pControl)
     }
 }
 #endif
-// PC 0x006E2DF0  Xbox 0x00119B40
+// PC 0x00752F60
 void CSWGuiOptionsMain::OnFeedbackOpt(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -2488,7 +2488,7 @@ void CSWGuiOptionsFeedback::SetActiveButton(int nOption)
 #endif
 
 #ifndef _XBOX
-CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager)  // PC 0x006E2E70
+CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager)  // PC 0x00752FE0
     : CSWGuiPanel(pManager)
 {
     StartLoadFromLayout("optgraphics");
@@ -2561,7 +2561,7 @@ CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager)  // PC 0x0
     m_nUnknown18BC = 0;
 }
 #endif
-// PC 0x006E3550  Xbox 0x001188B0
+// PC 0x00753970
 CSWGuiOptionsSound::CSWGuiOptionsSound(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -2785,7 +2785,7 @@ CSWGuiOptionsSound::CSWGuiOptionsSound(CSWGuiManager* pManager)
 }
 
 #ifndef _XBOX
-void CSWGuiOptionsMain::OnGraphicsOpt(CSWGuiControl* pControl)  // PC 0x006E3D80
+void CSWGuiOptionsMain::OnGraphicsOpt(CSWGuiControl* pControl)  // PC 0x007542E0
 {
     int bSelected = pControl->m_bSelected;
     if (bSelected != 0)
@@ -2795,7 +2795,7 @@ void CSWGuiOptionsMain::OnGraphicsOpt(CSWGuiControl* pControl)  // PC 0x006E3D80
     }
 }
 #endif
-// PC 0x006E3E00  Xbox 0x001192B0
+// PC 0x007538F0
 void CSWGuiOptionsMain::OnSoundOpt(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -2807,7 +2807,7 @@ void CSWGuiOptionsMain::OnSoundOpt(CSWGuiControl* pControl)
 }
 
 #ifdef _XBOX
-// Xbox 0x00117B10
+
 void CSWGuiOptionsMain::OnDownload(CSWGuiControl* pControl)
 {
     LAUNCH_DATA cLaunchData;
@@ -2816,7 +2816,7 @@ void CSWGuiOptionsMain::OnDownload(CSWGuiControl* pControl)
     memset(&cLaunchData, 0, sizeof(cLaunchData));
     XLaunchNewImage("d:\\downloader.xbe", &cLaunchData);
 }
-// PC 0x006E3E80  Xbox 0x00119BC0
+
 CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -2868,7 +2868,7 @@ CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)
     CSWGuiPanel* pPanel = this; pPanel->SetActiveControl(&m_btnOptions[0], 0);
 }
 #else
-CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)  // PC 0x006E3E80  Xbox 0x00119BC0
+CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)  // PC 0x00754360
     : CSWGuiPanel(pManager)
 {
 #ifdef _XBOX
@@ -2979,7 +2979,7 @@ CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)  // PC 0x006E3E80 
 #endif
 }
 #endif
-// PC 0x006E6180
+// PC 0x00759190
 void CSWGuiOptionsMouse::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -3016,7 +3016,7 @@ void CSWGuiOptionsMouse::HandleInputEvent(int nEvent, int nState)
 }
 
 #ifdef _XBOX
-// Xbox 0x00117E00
+
 void CSWGuiOptionsFeedback::OnRumble(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -3028,7 +3028,7 @@ void CSWGuiOptionsFeedback::OnRumble(CSWGuiControl* pControl)
         pOptions->m_bFloatingNumbers = bRumble;
     }
 }
-// Xbox 0x001180A0
+
 void CSWGuiOptionsSound::OnMoveGammaSlider(CSWGuiControl* pControl)
 {
     int nValue = pControl->AsSlider()->m_nCurValue;

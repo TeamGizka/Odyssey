@@ -10,7 +10,7 @@ const int CResGFF::LABEL_STARTSIZE = 98;
 const int CResGFF::DATAFIELD_STARTSIZE = 1836;
 const int CResGFF::DATALAYOUTFIELD_STARTSIZE = 4052;
 const int CResGFF::DATALAYOUTLIST_STARTSIZE = 4052;
-// PC 0x00412DB0  Xbox 0x00148820
+// PC 0x00413F20
 void CResGFF::Pack(unsigned char nFlag, unsigned long nSize)
 {
     if (m_nFieldIndicesLost == 0 && m_nListIndicesLost == 0)
@@ -117,7 +117,7 @@ void CResGFF::Pack(unsigned char nFlag, unsigned long nSize)
         m_nListIndicesLost = 0;
     }
 }
-// PC 0x004105A0  Xbox 0x00145F70
+// PC 0x00411710
 CResGFF::CResGFF()
 {
     m_pHeader = NULL;
@@ -147,7 +147,7 @@ CResGFF::CResGFF()
     m_nListIndicesAllocInc = DATALAYOUTLIST_STARTSIZE;
     memset(m_szFileType, 0, 4);
 }
-// PC 0x00410630  Xbox 0x00146000
+// PC 0x004117A0
 CResGFF::CResGFF(unsigned short nResType, char* szFileType,
                  const CResRef& cResRef)
 {
@@ -190,7 +190,7 @@ CResGFF::CResGFF(unsigned short nResType, char* szFileType,
         m_bDemanded = 1;
     }
 }
-// PC 0x00410740  Xbox 0x00146120
+// PC 0x004118B0
 int CResGFF::OnResourceServiced()
 {
     if (m_pResource == NULL)
@@ -264,7 +264,7 @@ int CResGFF::OnResourceServiced()
     m_bLoaded = 1;
     return 1;
 }
-// PC 0x00410880  Xbox 0x00146260
+// PC 0x004119F0
 int CResGFF::OnResourceFreed()
 {
     m_bLoaded = 0;
@@ -281,7 +281,7 @@ int CResGFF::OnResourceFreed()
     }
     return 1;
 }
-// PC 0x004108C0  Xbox 0x001462A0
+// PC 0x00411A30
 void CResGFF::ReleaseResource()
 {
     if (m_bInResource)
@@ -311,7 +311,7 @@ void CResGFF::ReleaseResource()
     m_nListIndicesAlloc = 0;
     m_nListIndicesLost = 0;
 }
-// PC 0x00410930  Xbox 0x00146310
+// PC 0x00411AA0
 inline CResGFFField* CResGFF::GetField(CResGFFStruct* pStruct, unsigned long nIndex)
 {
     if (pStruct != NULL)
@@ -357,7 +357,7 @@ CResGFFStruct* CResGFF::GetStruct(CResStruct* pStructure)
     }
     return NULL;
 }
-// PC 0x00410990  Xbox 0x00146370
+// PC 0x00411B00
 CResGFFField* CResGFF::GetField(CResStruct* pStructure, unsigned long nIndex)
 {
     CResGFFStruct* pStruct = GetStruct(pStructure);
@@ -394,7 +394,7 @@ CResGFFField* CResGFF::GetField(CResStruct* pStructure, unsigned long nIndex)
     }
     return NULL;
 }
-// PC 0x00410A20  Xbox 0x00146400
+// PC 0x00411B90
 unsigned char* CResGFF::GetDataField(CResGFFField* pField,
                                      unsigned long& nSize)
 {
@@ -416,7 +416,7 @@ unsigned char* CResGFF::GetDataField(CResGFFField* pField,
     }
     return NULL;
 }
-// PC 0x00410A60  Xbox 0x00146440
+// PC 0x00411BD0
 unsigned char* CResGFF::GetDataLayoutList(CResGFFField* pField,
                                           unsigned long& nSize)
 {
@@ -438,7 +438,7 @@ unsigned char* CResGFF::GetDataLayoutList(CResGFFField* pField,
     }
     return NULL;
 }
-// PC 0x00410AA0  Xbox 0x00146480
+// PC 0x00411C10
 int CResGFF::InitializeForWriting()
 {
     CResGFFHeader* pHeader = (CResGFFHeader*)new char[sizeof(CResGFFHeader)];
@@ -546,7 +546,7 @@ int CResGFF::InitializeForWriting()
     m_pStructs = pStructs;
     return (int)pStructs;
 }
-// PC 0x00410D60  Xbox 0x00146740
+// PC 0x00411ED0
 int CResGFF::AddStruct(unsigned long nStructType)
 {
     if (m_pHeader != NULL && m_pStructs != NULL)
@@ -571,7 +571,7 @@ int CResGFF::AddStruct(unsigned long nStructType)
     }
     return -1;
 }
-// PC 0x00410E20  Xbox 0x00146800
+// PC 0x00411F80
 int CResGFF::AddLabel(char* szLabel)
 {
     if (m_pHeader == NULL || m_pLabels == NULL)
@@ -610,7 +610,7 @@ int CResGFF::AddLabel(char* szLabel)
     m_pLabels[nCount] = label;
     return nCount;
 }
-// PC 0x00410F50  Xbox 0x00146930
+// PC 0x004120B0
 unsigned char* CResGFF::AddDataField(unsigned long nOldOffset,
                                      unsigned long nOldSize,
                                      unsigned long nSize)
@@ -644,7 +644,7 @@ unsigned char* CResGFF::AddDataField(unsigned long nOldOffset,
     }
     return NULL;
 }
-// PC 0x00411020  Xbox 0x00146A00
+// PC 0x00412180
 unsigned char* CResGFF::AddDataLayoutField(unsigned long nOldOffset,
                                            unsigned long nOldSize,
                                            unsigned long nSize)
@@ -679,7 +679,7 @@ unsigned char* CResGFF::AddDataLayoutField(unsigned long nOldOffset,
     }
     return NULL;
 }
-// PC 0x004110F0  Xbox 0x00146AD0
+// PC 0x00412250
 unsigned char* CResGFF::AddDataLayoutList(unsigned long nOldOffset,
                                           unsigned long nOldSize,
                                           unsigned long nSize)
@@ -714,7 +714,7 @@ unsigned char* CResGFF::AddDataLayoutList(unsigned long nOldOffset,
     }
     return NULL;
 }
-// PC 0x004111C0  Xbox 0x00146BA0
+// PC 0x00412320
 int CResGFF::GetElementType(CResStruct* pStructure)
 {
     CResGFFStruct* pStruct = GetStruct(pStructure);
@@ -724,7 +724,7 @@ int CResGFF::GetElementType(CResStruct* pStructure)
     }
     return pStruct->m_nType;
 }
-// PC 0x00411200  Xbox 0x00146BE0
+// PC 0x00412360
 int CResGFF::GetFieldCount(CResStruct* pStructure)
 {
     CResGFFStruct* pStruct = GetStruct(pStructure);
@@ -734,7 +734,7 @@ int CResGFF::GetFieldCount(CResStruct* pStructure)
     }
     return pStruct->m_nFieldCount;
 }
-// PC 0x00411240  Xbox 0x00146C20
+// PC 0x004123A0
 int CResGFF::GetTopLevelStruct(CResStruct* pStructure)
 {
     if (pStructure == NULL)
@@ -744,7 +744,7 @@ int CResGFF::GetTopLevelStruct(CResStruct* pStructure)
     pStructure->m_nStructIndex = 0;
     return 1;
 }
-// PC 0x00411260  Xbox 0x00146C40
+// PC 0x004123C0
 int CResGFF::CreateGFFFile(CResStruct* pStructure, const CExoString& sFileType,
                            const CExoString& sVersion)
 {
@@ -775,7 +775,7 @@ int CResGFF::CreateGFFFile(CResStruct* pStructure, const CExoString& sFileType,
     }
     return 0;
 }
-// PC 0x004113D0  Xbox 0x00146DB0
+// PC 0x00412550
 int CResGFF::WriteGFFData(CExoFile& file, unsigned long& nSize)
 {
     if (m_pHeader == NULL)
@@ -838,7 +838,7 @@ int CResGFF::WriteGFFData(CExoFile& file, unsigned long& nSize)
     return file.Write(m_pListIndices, nListIndicesBytes, 1) ==
            nListIndicesBytes;
 }
-// PC 0x00411540  Xbox 0x00146F20
+// PC 0x004126C0
 int CResGFF::GetTotalSize()
 {
     if (m_pHeader == NULL)
@@ -850,7 +850,7 @@ int CResGFF::GetTotalSize()
            12 * (m_pHeader->m_nStructCount + m_pHeader->m_nFieldCount) +
            m_pHeader->m_nFieldDataCount + sizeof(CResGFFHeader);
 }
-// PC 0x00411570  Xbox 0x00146F50
+// PC 0x004126F0
 CResGFF::~CResGFF()
 {
     if (!m_bInResource)
@@ -875,7 +875,7 @@ CResGFF::~CResGFF()
         ReleaseResource();
     }
 }
-// PC 0x00411630  Xbox 0x00147010
+// PC 0x004127B0
 unsigned long CResGFF::GetFieldByLabel(CResStruct* pStructure, char* szLabel)
 {
     if (szLabel != NULL && m_pLabels != NULL)
@@ -923,7 +923,7 @@ unsigned long CResGFF::GetFieldByLabel(CResStruct* pStructure, char* szLabel)
     }
     return -1;
 }
-// PC 0x00411730  Xbox 0x00147120
+// PC 0x004128B0
 CResGFFField* CResGFF::AddField(CResStruct* pStructure, char* szLabel,
                                 unsigned long nFieldType)
 {
@@ -988,7 +988,7 @@ CResGFFField* CResGFF::AddField(CResStruct* pStructure, char* szLabel,
     m_pFields[nField].m_nDataOrDataOffset = -1;
     return &m_pFields[nField];
 }
-// PC 0x00411880  Xbox 0x00147270
+// PC 0x004129F0
 int CResGFF::GetFieldType(CResStruct* pStructure, char* szLabel,
                           unsigned long nIndex)
 {
@@ -1065,7 +1065,7 @@ unsigned long CResGFF::GetFieldSize(CResStruct* pStructure, char* szLabel,
     }
     return 0;
 }
-// PC 0x004118C0  Xbox 0x001472B0
+// PC 0x00412A30
 int CResGFF::GetList(CResList* pList, CResStruct* pStructure, char* szLabel)
 {
     if (pList == NULL || pStructure == NULL || szLabel == NULL)
@@ -1085,7 +1085,7 @@ int CResGFF::GetList(CResList* pList, CResStruct* pStructure, char* szLabel)
     }
     return 0;
 }
-// PC 0x00411940  Xbox 0x00147330
+// PC 0x00412AB0
 unsigned long CResGFF::GetListCount(CResList* pList)
 {
     unsigned long nSize;
@@ -1106,7 +1106,7 @@ unsigned long CResGFF::GetListCount(CResList* pList)
     }
     return 0;
 }
-// PC 0x00411990  Xbox 0x00147380
+// PC 0x00412B00
 int CResGFF::GetListElement(CResStruct* pStructure, CResList* pList,
                             unsigned long nIndex)
 {
@@ -1146,7 +1146,7 @@ int CResGFF::GetListElement(CResStruct* pStructure, CResList* pList,
     }
     return 0;
 }
-// PC 0x00411A10  Xbox 0x00147400
+// PC 0x00412B80
 int CResGFF::GetStructFromStruct(CResStruct* pNewStruct, CResStruct* pParent,
                                  char* szLabel)
 {
@@ -1164,7 +1164,7 @@ int CResGFF::GetStructFromStruct(CResStruct* pNewStruct, CResStruct* pParent,
     }
     return 0;
 }
-// PC 0x00411A60  Xbox 0x00147450
+// PC 0x00412BD0
 unsigned char CResGFF::ReadFieldBYTE(CResStruct* pStructure, char* szLabel,
                                      int& bSuccess, unsigned char nDefault)
 {
@@ -1189,7 +1189,7 @@ unsigned char CResGFF::ReadFieldBYTE(CResStruct* pStructure, char* szLabel,
         return nDefault;
     }
 }
-// PC 0x00411AD0  Xbox 0x001474C0
+// PC 0x00412C40
 char CResGFF::ReadFieldCHAR(CResStruct* pStructure, char* szLabel,
                             int& bSuccess, char nDefault)
 {
@@ -1214,7 +1214,7 @@ char CResGFF::ReadFieldCHAR(CResStruct* pStructure, char* szLabel,
         return nDefault;
     }
 }
-// PC 0x00411B40  Xbox 0x00147530
+// PC 0x00412CB0
 unsigned short CResGFF::ReadFieldWORD(CResStruct* pStructure, char* szLabel,
                                       int& bSuccess, unsigned short nDefault)
 {
@@ -1239,7 +1239,7 @@ unsigned short CResGFF::ReadFieldWORD(CResStruct* pStructure, char* szLabel,
         return nDefault;
     }
 }
-// PC 0x00411BB0  Xbox 0x001475A0
+// PC 0x00412D20
 short CResGFF::ReadFieldSHORT(CResStruct* pStructure, char* szLabel,
                               int& bSuccess, short nDefault)
 {
@@ -1264,7 +1264,7 @@ short CResGFF::ReadFieldSHORT(CResStruct* pStructure, char* szLabel,
         return nDefault;
     }
 }
-// PC 0x00411C20  Xbox 0x00147610
+// PC 0x00412D90
 unsigned long CResGFF::ReadFieldDWORD(CResStruct* pStructure, char* szLabel,
                                       int& bSuccess, unsigned long nDefault)
 {
@@ -1289,7 +1289,7 @@ unsigned long CResGFF::ReadFieldDWORD(CResStruct* pStructure, char* szLabel,
         return nDefault;
     }
 }
-// PC 0x00411C90  Xbox 0x00147680
+// PC 0x00412E00
 int CResGFF::ReadFieldINT(CResStruct* pStructure, char* szLabel, int& bSuccess,
                           int nDefault)
 {
@@ -1314,7 +1314,7 @@ int CResGFF::ReadFieldINT(CResStruct* pStructure, char* szLabel, int& bSuccess,
         return nDefault;
     }
 }
-// PC 0x00411D00  Xbox 0x001476F0
+// PC 0x00412E70
 float CResGFF::ReadFieldFLOAT(CResStruct* pStructure, char* szLabel,
                               int& bSuccess, float fDefault)
 {
@@ -1345,7 +1345,7 @@ float CResGFF::ReadFieldFLOAT(CResStruct* pStructure, char* szLabel,
         return fDefault;
     }
 }
-// PC 0x00411D70  Xbox 0x00147760
+// PC 0x00412EE0
 unsigned __int64 CResGFF::ReadFieldDWORD64(CResStruct* pStructure,
                                            char* szLabel, int& bSuccess,
                                            unsigned __int64 nDefault)
@@ -1382,7 +1382,7 @@ unsigned __int64 CResGFF::ReadFieldDWORD64(CResStruct* pStructure,
         return nDefault;
     }
 }
-// PC 0x00411E10  Xbox 0x00147800
+// PC 0x00412F80
 CResRef CResGFF::ReadFieldCResRef(CResStruct* pStructure, char* szLabel,
                                   int& bSuccess, const CResRef& cDefault)
 {
@@ -1410,7 +1410,7 @@ CResRef CResGFF::ReadFieldCResRef(CResStruct* pStructure, char* szLabel,
     bSuccess = 0;
     return cDefault;
 }
-// PC 0x00411EC0  Xbox 0x001478B0
+// PC 0x00413030
 CExoString CResGFF::ReadFieldCExoString(CResStruct* pStructure, char* szLabel,
                                         int& bSuccess,
                                         const CExoString& sDefault)
@@ -1453,7 +1453,7 @@ CExoString CResGFF::ReadFieldCExoString(CResStruct* pStructure, char* szLabel,
         return sDefault;
     }
 }
-// PC 0x00411FD0  Xbox 0x001479C0
+// PC 0x00413140
 CExoLocString CResGFF::ReadFieldCExoLocString(CResStruct* pStructure,
                                               char* szLabel, int& bSuccess,
                                               const CExoLocString& lsDefault)
@@ -1516,7 +1516,7 @@ CExoLocString CResGFF::ReadFieldCExoLocString(CResStruct* pStructure,
     bSuccess = 1;
     return lsResult;
 }
-// PC 0x004121B0  Xbox 0x00147BD0
+// PC 0x00413320
 Quaternion CResGFF::ReadFieldQuaternion(CResStruct* pStructure, char* szLabel,
                                     int& bSuccess, const Quaternion& qDefault)
 {
@@ -1547,7 +1547,7 @@ Quaternion CResGFF::ReadFieldQuaternion(CResStruct* pStructure, char* szLabel,
         return qDefault;
     }
 }
-// PC 0x004122A0  Xbox 0x00147CC0
+// PC 0x00413410
 Vector CResGFF::ReadFieldVector(CResStruct* pStructure, char* szLabel,
                             int& bSuccess, const Vector& vDefault)
 {
@@ -1578,7 +1578,7 @@ Vector CResGFF::ReadFieldVector(CResStruct* pStructure, char* szLabel,
         return vDefault;
     }
 }
-// PC 0x00412380  Xbox 0x00147DA0
+// PC 0x004134F0
 void* CResGFF::ReadFieldVOID(CResStruct* pStructure, void* pBuffer,
                              unsigned long nSize, char* szLabel, int& bSuccess,
                              void* pDefault)
@@ -1620,7 +1620,7 @@ void* CResGFF::ReadFieldVOID(CResStruct* pStructure, void* pBuffer,
     bSuccess = 0;
     return pDefault;
 }
-// PC 0x00412450  Xbox 0x00147E70
+// PC 0x004135C0
 int CResGFF::AddList(CResList* pList, CResStruct* pStructure, char* szLabel)
 {
     if (pList == NULL || pStructure == NULL || szLabel == NULL)
@@ -1652,7 +1652,7 @@ int CResGFF::AddList(CResList* pList, CResStruct* pStructure, char* szLabel)
     }
     return 0;
 }
-// PC 0x004124E0  Xbox 0x00147F10
+// PC 0x00413650
 int CResGFF::AddListElement(CResStruct* pStructure, CResList* pList,
                             unsigned long nStructType)
 {
@@ -1715,7 +1715,7 @@ int CResGFF::AddListElement(CResStruct* pStructure, CResList* pList,
     }
     return 0;
 }
-// PC 0x004125B0  Xbox 0x00148000
+// PC 0x00413720
 int CResGFF::AddStructToStruct(CResStruct* pNewStruct, CResStruct* pParent,
                                char* szLabel, unsigned long nStructType)
 {
@@ -1744,7 +1744,7 @@ int CResGFF::AddStructToStruct(CResStruct* pNewStruct, CResStruct* pParent,
     }
     return 0;
 }
-// PC 0x00412620  Xbox 0x00148070
+// PC 0x00413790
 BOOL CResGFF::WriteFieldBYTE(CResStruct* pStructure, unsigned char nValue,
                              char* szLabel)
 {
@@ -1766,7 +1766,7 @@ BOOL CResGFF::WriteFieldBYTE(CResStruct* pStructure, unsigned char nValue,
     }
     return 0;
 }
-// PC 0x00412670  Xbox 0x001480C0
+// PC 0x004137E0
 BOOL CResGFF::WriteFieldCHAR(CResStruct* pStructure, char cValue, char* szLabel)
 {
     if (pStructure == NULL || szLabel == NULL)
@@ -1787,7 +1787,7 @@ BOOL CResGFF::WriteFieldCHAR(CResStruct* pStructure, char cValue, char* szLabel)
     }
     return 0;
 }
-// PC 0x004126C0  Xbox 0x00148110
+// PC 0x00413830
 BOOL CResGFF::WriteFieldWORD(CResStruct* pStructure, unsigned short wValue,
                              char* szLabel)
 {
@@ -1809,7 +1809,7 @@ BOOL CResGFF::WriteFieldWORD(CResStruct* pStructure, unsigned short wValue,
     }
     return 0;
 }
-// PC 0x00412710  Xbox 0x00148160
+// PC 0x00413880
 BOOL CResGFF::WriteFieldSHORT(CResStruct* pStructure, short nValue,
                               char* szLabel)
 {
@@ -1831,7 +1831,7 @@ BOOL CResGFF::WriteFieldSHORT(CResStruct* pStructure, short nValue,
     }
     return 0;
 }
-// PC 0x00412760  Xbox 0x001481B0
+// PC 0x004138D0
 BOOL CResGFF::WriteFieldDWORD(CResStruct* pStructure, unsigned long lValue,
                               char* szLabel)
 {
@@ -1853,7 +1853,7 @@ BOOL CResGFF::WriteFieldDWORD(CResStruct* pStructure, unsigned long lValue,
     }
     return 0;
 }
-// PC 0x004127B0  Xbox 0x00148200
+// PC 0x00413920
 BOOL CResGFF::WriteFieldINT(CResStruct* pStructure, int nValue, char* szLabel)
 {
     if (pStructure == NULL || szLabel == NULL)
@@ -1874,7 +1874,7 @@ BOOL CResGFF::WriteFieldINT(CResStruct* pStructure, int nValue, char* szLabel)
     }
     return 0;
 }
-// PC 0x00412800  Xbox 0x00148250
+// PC 0x00413970
 BOOL CResGFF::WriteFieldDWORD64(CResStruct* pStructure, unsigned __int64 nValue,
                                 char* szLabel)
 {
@@ -1904,7 +1904,7 @@ BOOL CResGFF::WriteFieldDWORD64(CResStruct* pStructure, unsigned __int64 nValue,
     *pData = nValue;
     return 1;
 }
-// PC 0x00412870  Xbox 0x001482C0
+// PC 0x004139E0
 BOOL CResGFF::WriteFieldFLOAT(CResStruct* pStructure, float fValue,
                               char* szLabel)
 {
@@ -1926,7 +1926,7 @@ BOOL CResGFF::WriteFieldFLOAT(CResStruct* pStructure, float fValue,
     }
     return 0;
 }
-// PC 0x004128C0  Xbox 0x00148310
+// PC 0x00413A30
 BOOL CResGFF::WriteFieldCResRef(CResStruct* pStructure, const CResRef& cValue,
                                 char* szLabel)
 {
@@ -1968,7 +1968,7 @@ BOOL CResGFF::WriteFieldCResRef(CResStruct* pStructure, const CResRef& cValue,
     }
     return 0;
 }
-// PC 0x00412970  Xbox 0x001483D0
+// PC 0x00413AE0
 BOOL CResGFF::WriteFieldCExoString(CResStruct* pStructure,
                                    const CExoString& sValue, char* szLabel)
 {
@@ -2000,7 +2000,7 @@ BOOL CResGFF::WriteFieldCExoString(CResStruct* pStructure,
     }
     return 0;
 }
-// PC 0x00412A10  Xbox 0x00148480
+// PC 0x00413BA0
 BOOL CResGFF::WriteFieldCExoLocString(CResStruct* pStructure,
                                       const CExoLocString& lsValue,
                                       char* szLabel)
@@ -2078,7 +2078,7 @@ BOOL CResGFF::WriteFieldCExoLocString(CResStruct* pStructure,
     }
     return bResult;
 }
-// PC 0x00412C10  Xbox 0x00148680
+// PC 0x00413D80
 BOOL CResGFF::WriteFieldVOID(CResStruct* pStructure, const void* pData,
                              unsigned long nSize, char* szLabel)
 {
@@ -2109,7 +2109,7 @@ BOOL CResGFF::WriteFieldVOID(CResStruct* pStructure, const void* pData,
     }
     return 0;
 }
-// PC 0x00412CA0  Xbox 0x00148710
+// PC 0x00413E10
 BOOL CResGFF::WriteFieldQuaternion(CResStruct* pStructure,
                                    const Quaternion& qValue, char* szLabel)
 {
@@ -2139,7 +2139,7 @@ BOOL CResGFF::WriteFieldQuaternion(CResStruct* pStructure,
     }
     return 0;
 }
-// PC 0x00412D30  Xbox 0x001487A0
+// PC 0x00413EA0
 BOOL CResGFF::WriteFieldVector(CResStruct* pStructure, const Vector& vValue,
                                char* szLabel)
 {
@@ -2169,7 +2169,7 @@ BOOL CResGFF::WriteFieldVector(CResStruct* pStructure, const Vector& vValue,
     }
     return 0;
 }
-// PC 0x00413030  Xbox 0x00148AA0
+// PC 0x004141A0
 int CResGFF::WriteGFFFile(const CExoString& sFileName, unsigned short nResType)
 {
     CExoFile file(sFileName, nResType, "wb");

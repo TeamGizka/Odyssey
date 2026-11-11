@@ -2,28 +2,28 @@
 #include "resgff.h"
 #include "nwsscriptevent.h"
 #include "gameobjectarray.h"
-// PC 0x004D6480  Xbox 0x00221360
+// PC 0x0053F1C0
 int CScriptEvent::GetInteger(int nIndex)
 {
     if (nIndex < m_lstIntegers.num)
         return m_lstIntegers[nIndex];
     return 0;
 }
-// PC 0x004D64C0
+// PC 0x0053F1E0
 unsigned long CScriptEvent::GetObjectID(int nIndex)
 {
     if (nIndex < m_lstObjectIDs.num)
         return m_lstObjectIDs[nIndex];
     return OBJECT_INVALID;
 }
-// PC 0x004D7360
+// PC 0x0053F200
 CExoString CScriptEvent::GetString(int nIndex)
 {
     if (nIndex < m_lstStrings.num)
         return m_lstStrings[nIndex];
     return "";
 }
-// PC 0x004D64A0  Xbox 0x00221380
+// PC 0x00540180
 float CScriptEvent::GetFloat(int nIndex)
 {
     if (nIndex < m_lstFloats.num)
@@ -35,7 +35,7 @@ float CScriptEvent::GetFloat(int nIndex)
         return 0.0;
     }
 }
-// PC 0x004D6AE0
+// PC 0x00540590
 void CScriptEvent::SetString(int nIndex, const CExoString& sValue)
 {
     if (nIndex >= m_lstStrings.num)
@@ -45,7 +45,7 @@ void CScriptEvent::SetString(int nIndex, const CExoString& sValue)
 
     m_lstStrings[nIndex] = sValue;
 }
-// PC 0x004D7270  Xbox 0x00221270
+// PC 0x00540090
 int CScriptEvent::operator==(const CScriptEvent& sev) const
 {
     int i;
@@ -104,7 +104,7 @@ int CScriptEvent::operator==(const CScriptEvent& sev) const
 
     return TRUE;
 }
-// PC 0x004D73A0  Xbox 0x002213A0
+// PC 0x005401A0
 int CScriptEvent::SaveEvent(CResGFF* pRes, CResStruct* pStruct)
 {
     CResStruct* pTopStruct;
@@ -157,12 +157,12 @@ int CScriptEvent::SaveEvent(CResGFF* pRes, CResStruct* pStruct)
 
     return TRUE;
 }
-// PC 0x004D7540  Xbox 0x00221540
+// PC 0x00540340
 CScriptEvent::CScriptEvent() :
     m_lstIntegers(0), m_lstFloats(0), m_lstStrings(0), m_lstObjectIDs(0)
 {
 }
-// PC 0x004D7590  Xbox 0x00221590
+// PC 0x00540390
 CScriptEvent::~CScriptEvent()
 {
     m_lstIntegers.SetSize(0);
@@ -170,7 +170,7 @@ CScriptEvent::~CScriptEvent()
     m_lstObjectIDs.SetSize(0);
     m_lstStrings.SetSize(0);
 }
-// PC 0x004D76B0  Xbox 0x002216B0
+// PC 0x005404B0
 void CScriptEvent::SetInteger(int nIndex, int nValue)
 {
     if (nIndex >= m_lstIntegers.num)
@@ -180,7 +180,7 @@ void CScriptEvent::SetInteger(int nIndex, int nValue)
 
     m_lstIntegers[nIndex] = nValue;
 }
-// PC 0x004D7720  Xbox 0x00221720
+// PC 0x0053F8D0
 void CScriptEvent::SetFloat(int nIndex, float fValue)
 {
     if (nIndex >= m_lstFloats.num)
@@ -190,7 +190,7 @@ void CScriptEvent::SetFloat(int nIndex, float fValue)
 
     m_lstFloats[nIndex] = fValue;
 }
-// PC 0x004D7780  Xbox 0x00221780
+// PC 0x00540520
 void CScriptEvent::SetObjectID(int nIndex, unsigned long oidObject)
 {
     if (nIndex >= m_lstObjectIDs.num)
@@ -200,7 +200,7 @@ void CScriptEvent::SetObjectID(int nIndex, unsigned long oidObject)
 
     m_lstObjectIDs[nIndex] = oidObject;
 }
-// PC 0x004D77F0  Xbox 0x002217F0
+// PC 0x005405C0
 void CScriptEvent::CopyScriptEvent(CScriptEvent* pEvent)
 {
     int i;
@@ -234,7 +234,7 @@ void CScriptEvent::CopyScriptEvent(CScriptEvent* pEvent)
         }
     }
 }
-// PC 0x004D79B0  Xbox 0x002219B0
+// PC 0x00540780
 int CScriptEvent::LoadEvent(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList cList;

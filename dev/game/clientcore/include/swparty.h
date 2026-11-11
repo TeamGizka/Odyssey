@@ -71,7 +71,7 @@ public:
     Vector m_vLeaderPosition;
     unsigned long m_oidCombatTarget;
     unsigned long m_nCombatMessage;
-    // PC 0x004EAE80  Xbox 0x0006C2A0
+    // PC 0x0050B7D0
     void Reset()
     {
         m_nCharacterIndex = -1;
@@ -190,7 +190,7 @@ public:
     void ClearParty();
 
     int GetNumCharacters() { return m_nCharacters; }
-    // Xbox 0x0001C3F0
+
     CSWPartyMemberData* GetMemberData(int nIndex)
     {
         EXOXBOXASSERT(nIndex >= 0 && nIndex < 3);

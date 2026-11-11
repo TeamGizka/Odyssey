@@ -110,7 +110,7 @@ Vector CGuiInGame::DISABLED_TEXT(0.0f, 0.33f, 0.49f);
 Vector CGuiInGame::COLOR_BLACK;
 
 extern int bDisableLetterbox;
-// Xbox 0x00055E10
+
 const char* HideGUI(char* sCommand)
 {
     if (g_pDynamicGUI != NULL)
@@ -131,7 +131,7 @@ const char* HideGUI(char* sCommand)
     return "";
 }
 #ifndef _XBOX
-const char* ShowGUI(char* sCommand)  // Xbox 0x00055E60
+const char* ShowGUI(char* sCommand)
 {
     if (*sCommand == 0)
     {
@@ -164,7 +164,7 @@ const char* ShowGUI(char* sCommand)  // Xbox 0x00055E60
     return "";
 }
 #endif
-// PC 0x0062FED0  Xbox 0x0005B3D0
+// PC 0x00685280
 CGuiInGame::CGuiInGame()
 {
     g_pAppManager->GetClientExoApp()->GetClientOptions()
@@ -330,7 +330,7 @@ CGuiInGame::CGuiInGame()
     m_bDanceDanceMalak = 0;
 #endif
 }
-// PC 0x006303B0  Xbox 0x0005B980
+// PC 0x006858F0
 CGuiInGame::~CGuiInGame()
 {
     ShutDown();
@@ -366,7 +366,7 @@ void CGuiInGame::ClearLastDialogAnimationData()
         m_pLastDialogAnimationFlags = 0;
     }
 }
-// PC 0x006332B0  Xbox 0x0005DED0
+// PC 0x006878E0
 int CGuiInGame::CloseDialog()
 {
     if (m_bItemCreateMenuAvailable != 0)
@@ -507,7 +507,7 @@ void CGuiInGame::LoadCameraModelForDialog(const CResRef& cCameraModel)
         }
     }
 }
-// PC 0x00628650  Xbox 0x00052FD0
+// PC 0x0067CCF0
 int CGuiInGame::SetLevelUpMode(int bMode)
 {
     if (m_LevelUpMode != bMode)
@@ -528,7 +528,7 @@ void CGuiInGame::ShowDebugMenu()
 void CGuiInGame::DestroyDeathMenuGUI()
 {
 }
-// PC 0x00628670  Xbox 0x00052FF0
+// PC 0x0067CD10
 void CGuiInGame::SetConversationType(unsigned long nType,
                                      unsigned char nComputerType)
 {
@@ -561,7 +561,7 @@ void CGuiInGame::ClearDialogAnimationData()
         m_pDialogAnimationFlags = 0;
     }
 }
-// PC 0x00628710  Xbox 0x00053090
+// PC 0x0067CEC0
 void CGuiInGame::SetDialogAnimationData(unsigned long nIndex, unsigned long nAnimation,
                                         unsigned short nFlags)
 {
@@ -574,7 +574,7 @@ void CGuiInGame::SetDialogAnimationData(unsigned long nIndex, unsigned long nAni
         }
     }
 }
-// PC 0x00628750  Xbox 0x000530D0
+// PC 0x0067CF00
 void CGuiInGame::SetReplyData(
     unsigned long nReply, const CExoString& sText, unsigned long nValue1,
     unsigned long nValue2, unsigned long nValue3, int nValue4, float fValue5,
@@ -618,7 +618,7 @@ void CGuiInGame::SetReplyData(
         }
     }
 }
-// PC 0x006288F0  Xbox 0x00053280
+// PC 0x0067D0A0
 CExoString CGuiInGame::GetCameraAnimationName(unsigned short nAnimation)
 {
     CExoString sName("none");
@@ -2168,7 +2168,7 @@ CExoString CGuiInGame::GetCameraAnimationName(unsigned short nAnimation)
 
     return sName;
 }
-// PC 0x0062A8B0  Xbox 0x00055240
+// PC 0x0067F0A0
 void CGuiInGame::LoadAmbientTrackForDialog(const CResRef& cAmbientTrack)
 {
     if (m_pDialogAmbientTrack != 0)
@@ -2192,7 +2192,7 @@ void CGuiInGame::LoadAmbientTrackForDialog(const CResRef& cAmbientTrack)
         }
     }
 }
-// PC 0x0062A970  Xbox 0x00055300
+// PC 0x0067F4F0
 void CGuiInGame::ShutDownGlobal()
 {
     if (m_pMessageBox != 0)
@@ -2217,17 +2217,17 @@ void CGuiInGame::ShutDownGlobal()
     }
     m_pGuiManager = 0;
 }
-// PC 0x0062A9E0  Xbox 0x00055370
+// PC 0x0067F580
 SFeedbackMessage* CGuiInGame::GetMessageBuffer()
 {
     return (SFeedbackMessage*)m_pMessageBuffer;
 }
-// PC 0x0062A9F0  Xbox 0x00055380
+// PC 0x0067F590
 int CGuiInGame::GetMessageBufferSize()
 {
     return m_MessageBufferSize;
 }
-// PC 0x0062AA00  Xbox 0x00057E00
+// PC 0x0067F930
 void CGuiInGame::SetSWGuiStatus(int nStatus, int bActive)
 {
     switch (nStatus)
@@ -2283,7 +2283,7 @@ void CGuiInGame::SetSWGuiStatus(int nStatus, int bActive)
         }
     }
 }
-// PC 0x0062AB30  Xbox 0x00055390
+// PC 0x0067FA60
 void CGuiInGame::ShowBarkBubble(unsigned long oidObject,
                                  const CExoString& sText,
                                  const CResRef& cSound, int nFlags)
@@ -2294,12 +2294,12 @@ void CGuiInGame::ShowBarkBubble(unsigned long oidObject,
         m_pGuiManager->AddPanel(m_pBarkBubble, SWGUI_PANEL_MODE_OVERLAY, 1);
     }
 }
-// PC 0x0062AB70  Xbox 0x000553D0
+// PC 0x0067FFF0
 int CGuiInGame::IsLoopingDialogStuntAnimation(unsigned short nAnimation)
 {
     return (nAnimation >= 0x578u) && (nAnimation <= 0x6BFu);
 }
-// PC 0x0062AB90  Xbox 0x000553F0
+// PC 0x00680220
 void CGuiInGame::DialogGuiDoneScroll()
 {
     if (m_pDialogLetterbox != 0)
@@ -2308,17 +2308,17 @@ void CGuiInGame::DialogGuiDoneScroll()
         m_pDialog->ShowDialogMessage();
     }
 }
-// PC 0x0062ABB0  Xbox 0x00055410
+// PC 0x00680240
 int CGuiInGame::IsFadingInDialog()
 {
     return m_pDialogFade != 0 && !m_pDialogFade->IsFadeDone();
 }
-// PC 0x0062ABD0  Xbox 0x00055430
+// PC 0x00680260
 int CGuiInGame::IsCameraDialog()
 {
     return m_pDialog != 0 && m_pDialog == m_pCameraDialog;
 }
-// PC 0x0062ABF0  Xbox 0x00055450
+// PC 0x00680570
 void CGuiInGame::StartGlobalFade(int nFade, float fA, float fB,
                                  const Vector& vColor)
 {
@@ -2329,7 +2329,7 @@ void CGuiInGame::StartGlobalFade(int nFade, float fA, float fB,
         m_pGlobalFade->SetFade(nFade, fA, fB, vColor);
     }
 }
-// PC 0x0062AC40  Xbox 0x000554A0
+// PC 0x006805E0
 void CGuiInGame::StopGlobalFade()
 {
     if (m_pGlobalFade != 0)
@@ -2338,12 +2338,12 @@ void CGuiInGame::StopGlobalFade()
         m_pGuiManager->RemovePanel(m_pGlobalFade);
     }
 }
-// PC 0x0062AC60  Xbox 0x000554C0
+// PC 0x00680610
 int CGuiInGame::IsGlobalFading()
 {
     return m_pGlobalFade != 0 && !m_pGlobalFade->IsFadeDone();
 }
-// PC 0x0062AC80  Xbox 0x000554F0
+// PC 0x00680650
 int CGuiInGame::InitializePlaceableCameras(int nCameras)
 {
     if (nCameras > MAX_PLACEABLE_CAMERAS)
@@ -2353,7 +2353,7 @@ int CGuiInGame::InitializePlaceableCameras(int nCameras)
     m_nPlaceableCameras = nCameras;
     return 1;
 }
-// PC 0x0062ACA0  Xbox 0x00055510
+// PC 0x00680670
 void CGuiInGame::SetPlaceableCamera(int nCamera, int nPlaceableID,
                                     const Vector& vPosition,
                                     const Quaternion& qOrientation,
@@ -2371,7 +2371,7 @@ void CGuiInGame::SetPlaceableCamera(int nCamera, int nPlaceableID,
         m_aPlaceableCameras[nCamera].m_fMicRange = fMicRange;
     }
 }
-// PC 0x0062AD30  Xbox 0x000555C0
+// PC 0x00680820
 CPlaceableCamera* CGuiInGame::GetPlaceableCamera(int nCamera)
 {
     if (nCamera > m_nPlaceableCameras)
@@ -2380,7 +2380,7 @@ CPlaceableCamera* CGuiInGame::GetPlaceableCamera(int nCamera)
     }
     return &m_aPlaceableCameras[nCamera];
 }
-// PC 0x0062AD60  Xbox 0x000555F0
+// PC 0x00680C40
 void CGuiInGame::UpdateMessageGUI()
 {
     ((CSWGuiInGameMessages*)m_apScreenPanels[4])
@@ -2389,7 +2389,7 @@ void CGuiInGame::UpdateMessageGUI()
         ->AddDialogMessages((CGuiInGameDialogMessage*)m_pDialogBuffer,
                             m_nDialogBufferSize);
 }
-// Xbox 0x00055630
+
 void CGuiInGame::StopBarkBubble(int bFade)
 {
     if (m_pBarkBubble != 0)
@@ -2397,7 +2397,7 @@ void CGuiInGame::StopBarkBubble(int bFade)
         m_pBarkBubble->StopBark(bFade);
     }
 }
-// PC 0x0062ADA0  Xbox 0x00055640
+// PC 0x00680C90
 int CGuiInGame::SetDialogSelection(int nReply, int nReplyCount, int bSelected)
 {
     m_nDialogReply = nReply;
@@ -2406,7 +2406,7 @@ int CGuiInGame::SetDialogSelection(int nReply, int nReplyCount, int bSelected)
     m_bDialogReplySelected = 1;
     return bSelected;
 }
-// PC 0x0062ADD0  Xbox 0x00055670
+// PC 0x00681420
 CExoString CGuiInGame::DialogNodeSpanningTextParse(const CExoString& sText)
 {
     char* pBuffer = 0;
@@ -2474,7 +2474,7 @@ CExoString CGuiInGame::DialogNodeSpanningTextParse(const CExoString& sText)
     }
     return sText;
 }
-// PC 0x0062B000  Xbox 0x000558C0
+// PC 0x006818A0
 void CGuiInGame::SetMainInterfaceTarget(unsigned long oidTarget, int bFlag)
 {
     if (m_pMainInterface != 0)
@@ -2484,14 +2484,14 @@ void CGuiInGame::SetMainInterfaceTarget(unsigned long oidTarget, int bFlag)
 }
 
 #ifndef _XBOX
-void CGuiInGame::SetAreaTransition(unsigned long oidArea,  // PC 0x0062B020
+void CGuiInGame::SetAreaTransition(unsigned long oidArea,  // PC 0x006818C0
                                    const Vector& vPosition)
 {
     m_vAreaTransition = vPosition;
     m_oidAreaTransition = oidArea;
 }
 #endif
-// PC 0x0062B050  Xbox 0x000558E0
+// PC 0x00681A40
 void CGuiInGame::RePopulateMainInterface()
 {
     if (m_pMainInterface != 0)
@@ -2499,7 +2499,7 @@ void CGuiInGame::RePopulateMainInterface()
         m_pMainInterface->PopulateMenus();
     }
 }
-// PC 0x0062B060  Xbox 0x000558F0
+// PC 0x00681BE0
 CSWGuiPanel* CGuiInGame::GetGuiInGameScreenPanel(unsigned char nScreen)
 {
     if (nScreen >= 8u)
@@ -2508,7 +2508,7 @@ CSWGuiPanel* CGuiInGame::GetGuiInGameScreenPanel(unsigned char nScreen)
     }
     return m_apScreenPanels[nScreen];
 }
-// PC 0x0062B080  Xbox 0x00055910
+// PC 0x00681C00
 void CGuiInGame::AddFloatyText(unsigned long oidObject,
                              const CExoString& sText,
                              const Vector& vColor, float fDuration)
@@ -2516,7 +2516,7 @@ void CGuiInGame::AddFloatyText(unsigned long oidObject,
     if (m_pMainInterface != NULL)
         m_pMainInterface->AddFloatyText(oidObject, sText, vColor, fDuration);
 }
-// PC 0x0062B0A0  Xbox 0x00055930
+// PC 0x00681C20
 void CGuiInGame::InitializeMap()
 {
     if (m_pMainInterface != 0)
@@ -2524,7 +2524,7 @@ void CGuiInGame::InitializeMap()
         m_pMainInterface->InitializeMap();
     }
 }
-// PC 0x0062B0B0  Xbox 0x00055940
+// PC 0x00681E70
 void CGuiInGame::ShowFlashingStatus(unsigned char nStatus)
 {
     if (m_pMainInterface != 0)
@@ -2532,7 +2532,7 @@ void CGuiInGame::ShowFlashingStatus(unsigned char nStatus)
         m_pMainInterface->ShowFlashingStatus(nStatus);
     }
 }
-// PC 0x0062B0D0  Xbox 0x00055960
+// PC 0x00681F10
 int CGuiInGame::SetTutorialReason(unsigned char nReason)
 {
     if (m_pTutorialBox == 0)
@@ -2542,23 +2542,23 @@ int CGuiInGame::SetTutorialReason(unsigned char nReason)
     return m_pTutorialBox->SetTutorialReason(nReason);
 }
 #ifndef _XBOX
-int CGuiInGame::ChangeCharacter()  // PC 0x0062B0F0
+int CGuiInGame::ChangeCharacter()  // PC 0x00682320
 {
     return m_pMainInterface->StartRotation();
 }
 #endif
-void CGuiInGame::SetupPauseGuiExtent(CSWGuiExtent* pExtent)  // PC 0x0062B100
+void CGuiInGame::SetupPauseGuiExtent(CSWGuiExtent* pExtent)  // PC 0x00682330
 {
 #ifndef _XBOX
     m_pMainInterface->SetupPauseGuiExtent(pExtent);
 #endif
 }
-// Xbox 0x00055A30
+
 int CGuiInGame::IsPauseGUIVisible()
 {
     return m_pGuiManager->PanelExists(m_pPausePanel);
 }
-// PC 0x0062B110  Xbox 0x00055A40
+// PC 0x00682360
 void CGuiInGame::SetCombatMessage(unsigned long nMessage)
 {
     if (m_pMainInterface != 0)
@@ -2566,7 +2566,7 @@ void CGuiInGame::SetCombatMessage(unsigned long nMessage)
         m_pMainInterface->SetCombatMessage(nMessage);
     }
 }
-// PC 0x0062B130  Xbox 0x00055A60
+// PC 0x00682380
 void CGuiInGame::ShowDialogMessage()
 {
     if (m_pDialog == m_pCameraDialog)
@@ -2574,7 +2574,7 @@ void CGuiInGame::ShowDialogMessage()
         m_pDialog->ShowDialogMessage();
     }
 }
-// PC 0x0062B150  Xbox 0x0005B060
+// PC 0x006823F0
 void CGuiInGame::RemoveGUIPopUps()
 {
     CSWGuiPanel* pPanel;
@@ -2597,7 +2597,7 @@ void CGuiInGame::RemoveGUIPopUps()
         m_pContainer->HandleInputEvent(GUIEVENT_CANCEL, 1);
     }
 }
-// PC 0x0062B1E0  Xbox 0x00055A70
+// PC 0x006824A0
 void CGuiInGame::UpdateCreatedInGameGUI(int nOldScreen, int nNewScreen)
 {
     if (g_bCreateAllGUIs == 0 && nOldScreen != nNewScreen)
@@ -2648,7 +2648,7 @@ void CGuiInGame::UpdateCreatedInGameGUI(int nOldScreen, int nNewScreen)
 }
 
 #ifdef _XBOX
-void CGuiInGame::SetGlobalUnpauseableState(int bUnpauseable)  // Xbox 0x00055CA0
+void CGuiInGame::SetGlobalUnpauseableState(int bUnpauseable)
 {
     if (bUnpauseable == 1)
     {
@@ -2662,7 +2662,7 @@ void CGuiInGame::SetGlobalUnpauseableState(int bUnpauseable)  // Xbox 0x00055CA0
 
 }
 #else
-int CGuiInGame::SetGlobalUnpauseableState(int bUnpauseable)  // PC 0x0062B410
+int CGuiInGame::SetGlobalUnpauseableState(int bUnpauseable)  // PC 0x006826D0
 {
     if (bUnpauseable == 1)
     {
@@ -2675,19 +2675,19 @@ int CGuiInGame::SetGlobalUnpauseableState(int bUnpauseable)  // PC 0x0062B410
     return m_nGlobalUnpauseableState;
 }
 #endif
-// PC 0x0062B440  Xbox 0x00055CE0
+// PC 0x006827D0
 void CGuiInGame::SetDialogSound(unsigned long nSoundId, const CResRef& cSound)
 {
     m_nDialogSoundId = nSoundId;
     m_cDialogSound = cSound;
 }
-// PC 0x0062B470  Xbox 0x00055D10
+// PC 0x006828A0
 void CGuiInGame::SetDeferredFOVCallForAnimatedCutscenes(float fFieldOfView)
 {
     m_bDeferredFOVCall = 1;
     m_fDeferredFieldOfView = fFieldOfView;
 }
-// PC 0x0062B490
+// PC 0x006829D0
 void CGuiInGame::ResetInterfaceFont()
 {
     if (m_pMainInterface != 0)
@@ -2702,7 +2702,7 @@ void CGuiInGame::ResetInterfaceFont()
         }
     }
 }
-// PC 0x0062B4D0
+// PC 0x00682DC0
 int CGuiInGame::GetPartyAccessPanelUp(int bAny)
 {
     if (m_pGuiManager == 0)
@@ -2715,7 +2715,7 @@ int CGuiInGame::GetPartyAccessPanelUp(int bAny)
     }
     return bAny == 0 && m_pGuiManager->PanelExists(m_apScreenPanels[1]) != 0;
 }
-// PC 0x0062B580  Xbox 0x00055DA0
+// PC 0x0067CAE0
 void CSWGuiStatusSummary::AddExperience(int nExperience)
 {
     GUIINGAME_TRACE();
@@ -2725,7 +2725,7 @@ void CSWGuiStatusSummary::AddExperience(int nExperience)
         m_cStatusSummary.m_bDisplaySPending = 1;
     }
 }
-// PC 0x0062B5A0  Xbox 0x00055DC0
+// PC 0x0067CB00
 void CSWGuiStatusSummary::AddStealthExperience(int nExperience)
 {
     GUIINGAME_TRACE();
@@ -2735,7 +2735,7 @@ void CSWGuiStatusSummary::AddStealthExperience(int nExperience)
         m_cStatusSummary.m_bDisplaySPending = 1;
     }
 }
-// PC 0x0062B5C0  Xbox 0x00056060
+// PC 0x00682E70
 void CGuiInGame::AppendToMsgBuffer(const CExoString& sMessage,
                                    unsigned long nType, unsigned char nColor)
 {
@@ -2755,7 +2755,7 @@ void CGuiInGame::AppendToMsgBuffer(const CExoString& sMessage,
         m_pMessageBuffer[m_MessageBufferSize++].m_nColor = nColor;
     }
 }
-// PC 0x00630560  Xbox 0x0005BB20
+// PC 0x00685C90
 void CGuiInGame::AppendToDialogBuffer(const CExoString& sMessage,
                                       unsigned long oidSpeaker)
 {
@@ -2771,7 +2771,7 @@ void CGuiInGame::AppendToDialogBuffer(const CExoString& sMessage,
         }
     }
 }
-// PC 0x0062B680  Xbox 0x00056120
+// PC 0x00682F30
 void CGuiInGame::AppendToDialogBuffer(const CExoString& sMessage,
                                       const CExoString& sSpeaker)
 {
@@ -2791,7 +2791,7 @@ void CGuiInGame::AppendToDialogBuffer(const CExoString& sMessage,
         m_nDialogBufferSize++;
     }
 }
-// PC 0x00630620  Xbox 0x0005BD90
+// PC 0x00686840
 int CGuiInGame::InitializeDialogAnimationData(unsigned long nAnimations)
 {
     int bResult = 0;
@@ -2816,7 +2816,7 @@ int CGuiInGame::InitializeDialogAnimationData(unsigned long nAnimations)
     }
     return bResult;
 }
-// PC 0x006306E0  Xbox 0x0005BE50
+// PC 0x00686900
 void CGuiInGame::UpdateShotCamera(unsigned long nShot, int nCamera,
                                  float fPitch, float fHeight,
                                  unsigned long oidTarget, int nVideoEffect)
@@ -3050,7 +3050,7 @@ void CGuiInGame::UpdateShotCamera(unsigned long nShot, int nCamera,
     m_oidComputerCameraTarget = oidTarget;
     m_bDialogSoundQueried = 0;
 }
-// PC 0x006313A0  Xbox 0x0005CBF0
+// PC 0x00687CB0
 void CGuiInGame::SetDialogAnimations()
 {
     int i;
@@ -3332,7 +3332,7 @@ void CGuiInGame::SetDialogAnimations()
             m_aDialogParticipants[i] = OBJECT_INVALID;
     }
 }
-// PC 0x00631B70  Xbox 0x0005D3E0
+// PC 0x00683AB0
 int CGuiInGame::ResetDialogAnimations()
 {
     int nAnimations = m_nLastDialogAnimations;
@@ -3377,7 +3377,7 @@ int CGuiInGame::ResetDialogAnimations()
     }
     return nAnimations;
 }
-// PC 0x00631C60  Xbox 0x0005D4E0
+// PC 0x00683BA0
 void CGuiInGame::ResetTalkAnimations()
 {
     CSWCObject* pObject;
@@ -3431,7 +3431,7 @@ inline unsigned long CGuiInGame::GetDialogCamera()
 {
     return m_oidDialogCamera;
 }
-// PC 0x00631D80  Xbox 0x0005D780
+// PC 0x006884E0
 int CGuiInGame::HandleDialogEntry(
     unsigned long nPlayerId, unsigned long oidTarget,
     unsigned long oidSpeaker, unsigned long oidListener,
@@ -3556,7 +3556,7 @@ int CGuiInGame::HandleDialogEntry(
 }
 
 #ifndef _XBOX
-void CGuiInGame::UpdateAreaTransitionGUI()  // PC 0x00632180
+void CGuiInGame::UpdateAreaTransitionGUI()  // PC 0x00684920
 {
     if (m_bItemCreateMenuAvailable != 0 && m_pGuiManager != 0 &&
         m_pAreaTransition != 0)
@@ -3597,7 +3597,7 @@ void CGuiInGame::UpdateAreaTransitionGUI()  // PC 0x00632180
     }
 }
 #endif
-// PC 0x0062B730  Xbox 0x0005BBE0
+// PC 0x00682FE0
 void CGuiInGame::ShowDialogEntry(const CExoString& sMessage,
                                  unsigned long oidOwner, unsigned long nFlags)
 {
@@ -3646,7 +3646,7 @@ void CGuiInGame::ShowDialogEntry(const CExoString& sMessage,
     }
     m_pDialog->SetDialogMessage(sMessage);
 }
-// PC 0x0062B850  Xbox 0x00056C50
+// PC 0x0067CDB0
 int CGuiInGame::InitializeStuntModelData(unsigned long nModels)
 {
     GUIINGAME_TRACE();
@@ -3682,7 +3682,7 @@ int CGuiInGame::InitializeStuntModelData(unsigned long nModels)
     }
     return nResult;
 }
-// PC 0x0062B960  Xbox 0x00056D70
+// PC 0x00683100
 int CGuiInGame::StoreLastDialogAnimationData()
 {
     GUIINGAME_TRACE();
@@ -3702,7 +3702,7 @@ int CGuiInGame::StoreLastDialogAnimationData()
     }
     return i;
 }
-// PC 0x0062BA30  Xbox 0x00056E40
+// PC 0x006831D0
 void CGuiInGame::ClearRepliesData()
 {
     GUIINGAME_TRACE();
@@ -3814,7 +3814,7 @@ void CGuiInGame::ClearRepliesData()
     }
     m_nReplies = 0;
 }
-// PC 0x0062BC70  Xbox 0x00057080
+// PC 0x00683410
 int CGuiInGame::InitializeRepliesData(unsigned long nReplies)
 {
     int nResult = 0;
@@ -3861,7 +3861,7 @@ int CGuiInGame::InitializeRepliesData(unsigned long nReplies)
     }
     return nResult;
 }
-// PC 0x0062BF30  Xbox 0x00057340
+// PC 0x0067F060
 int CGuiInGame::InitializeShotCamera()
 {
     GUIINGAME_TRACE();
@@ -3878,7 +3878,7 @@ int CGuiInGame::InitializeShotCamera()
     return m_bShotCameraInitialized;
 }
 #ifndef _XBOX
-int CGuiInGame::SetAnimatedCamera(unsigned short nAnimation, float fFieldOfView)  // PC 0x0062BF70  Xbox 0x00057380
+int CGuiInGame::SetAnimatedCamera(unsigned short nAnimation, float fFieldOfView)  // PC 0x006836D0
 {
     GUIINGAME_TRACE();
     if (m_bAnimatedCameraLoaded == 0 ||
@@ -3910,7 +3910,7 @@ int CGuiInGame::SetAnimatedCamera(unsigned short nAnimation, float fFieldOfView)
     return 1;
 }
 #endif
-// PC 0x0062C030  Xbox 0x00057450
+// PC 0x0067F160
 void CGuiInGame::SetComputerCameraShot(int nCamera, unsigned long oidTarget,
                                      int nVideoEffect)
 {
@@ -3963,7 +3963,7 @@ void CGuiInGame::SetComputerCameraShot(int nCamera, unsigned long oidTarget,
         m_oidComputerCameraTarget = oidTarget;
     }
 }
-// PC 0x0062C2A0  Xbox 0x000576D0
+// PC 0x0067F480
 void CGuiInGame::EndDialogCamera()
 {
     GUIINGAME_TRACE();
@@ -3981,7 +3981,7 @@ void CGuiInGame::EndDialogCamera()
     m_oidPreviousDialogObject1 = OBJECT_INVALID;
     m_oidPreviousDialogObject2 = OBJECT_INVALID;
 }
-// PC 0x0062C310  Xbox 0x00057740
+// PC 0x00683790
 void CGuiInGame::ShutDown()
 {
     if (m_bItemCreateMenuAvailable != 0)
@@ -4156,7 +4156,7 @@ void CGuiInGame::ShutDown()
         m_bItemCreateMenuAvailable = 0;
     }
 }
-// PC 0x0062C620  Xbox 0x00057A50
+// PC 0x0067F5A0
 int CGuiInGame::LoadStuntModelsForDialog()
 {
     GUIINGAME_TRACE();
@@ -4187,7 +4187,7 @@ int CGuiInGame::LoadStuntModelsForDialog()
     }
     return 1;
 }
-// PC 0x0062C6F0  Xbox 0x00057B40
+// PC 0x0067F670
 void CGuiInGame::UnloadStuntModelsForDialog()
 {
     GUIINGAME_TRACE();
@@ -4258,7 +4258,7 @@ void CGuiInGame::UnloadStuntModelsForDialog()
     }
     m_nStuntModels = 0;
 }
-// PC 0x0062C9B0  Xbox 0x00057EE0
+// PC 0x00683D10
 #ifdef _XBOX
 int CGuiInGame::ShowSWInGameGui()
 #else
@@ -4315,7 +4315,7 @@ int CGuiInGame::ShowSWInGameGui(int nMenu)
 }
 
 #ifdef _XBOX
-int CGuiInGame::HideSWInGameGui()  // Xbox 0x0005D600
+int CGuiInGame::HideSWInGameGui()
 {
     GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
@@ -4354,7 +4354,7 @@ int CGuiInGame::HideSWInGameGui()  // Xbox 0x0005D600
     return 0;
 }
 #else
-int CGuiInGame::HideSWInGameGui(int bHidePause)  // PC 0x0062CBA0
+int CGuiInGame::HideSWInGameGui(int bHidePause)  // PC 0x00683F10
 {
     GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
@@ -4399,7 +4399,7 @@ int CGuiInGame::HideSWInGameGui(int bHidePause)  // PC 0x0062CBA0
     return 0;
 }
 #endif
-// PC 0x0062CCD0  Xbox 0x00058140
+// PC 0x00684070
 void CGuiInGame::NextSWInGameGui()
 {
     GUIINGAME_TRACE();
@@ -4430,7 +4430,7 @@ void CGuiInGame::NextSWInGameGui()
         }
     }
 }
-// PC 0x0062CDF0  Xbox 0x00058260
+// PC 0x00684190
 void CGuiInGame::PrevSWInGameGui()
 {
     GUIINGAME_TRACE();
@@ -4461,7 +4461,7 @@ void CGuiInGame::PrevSWInGameGui()
         }
     }
 }
-// PC 0x0062CF10
+// PC 0x006842B0
 void CGuiInGame::SwitchToSWInGameGui(int nMenu)
 {
     GUIINGAME_TRACE();
@@ -4490,7 +4490,7 @@ void CGuiInGame::SwitchToSWInGameGui(int nMenu)
         }
     }
 }
-// PC 0x0062D040  Xbox 0x00058380
+// PC 0x0067FAA0
 void CGuiInGame::ShowGalaxyMapGui(int nPlanet)
 {
     GUIINGAME_TRACE();
@@ -4517,7 +4517,7 @@ void CGuiInGame::ShowGalaxyMapGui(int nPlanet)
         m_pGuiManager->PlayGuiSound(CSWGuiManager::GUISOUND_PAZAAK_START);
     }
 }
-// PC 0x0062D1D0  Xbox 0x00058510
+// PC 0x0067FC30
 void CGuiInGame::HideGalaxyMapGui()
 {
     GUIINGAME_TRACE();
@@ -4544,7 +4544,7 @@ void CGuiInGame::HideGalaxyMapGui()
         g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
     }
 }
-// PC 0x0062D280  Xbox 0x00058630
+// PC 0x0067FCE0
 void CGuiInGame::ShowItemCreateMenu()
 {
     GUIINGAME_TRACE();
@@ -4558,7 +4558,7 @@ void CGuiInGame::ShowItemCreateMenu()
 #endif
     }
 }
-// PC 0x0062D2B0  Xbox 0x00058660
+// PC 0x0067FD10
 void CGuiInGame::HideItemCreateMenu()
 {
     GUIINGAME_TRACE();
@@ -4587,7 +4587,7 @@ void CGuiInGame::HideItemCreateMenu()
         }
     }
 }
-// PC 0x0062D320  Xbox 0x000586D0
+// PC 0x0067FD80
 void CGuiInGame::ShowSubItemCreateMenu(unsigned long nSubType)
 {
     GUIINGAME_TRACE();
@@ -4602,7 +4602,7 @@ void CGuiInGame::ShowSubItemCreateMenu(unsigned long nSubType)
 #endif
     }
 }
-// PC 0x0062D360  Xbox 0x00058720
+// PC 0x0067FDC0
 void CGuiInGame::HideSubItemCreateMenu()
 {
     GUIINGAME_TRACE();
@@ -4632,7 +4632,7 @@ void CGuiInGame::HideSubItemCreateMenu()
         }
     }
 }
-// PC 0x0062D3E0  Xbox 0x000587A0
+
 void CGuiInGame::ShowExamineBox(unsigned long nStrRef, int nReturnInputClass)
 {
     GUIINGAME_TRACE();
@@ -4648,7 +4648,7 @@ void CGuiInGame::ShowExamineBox(unsigned long nStrRef, int nReturnInputClass)
 #endif
     }
 }
-// PC 0x0062D440  Xbox 0x000587F0
+// PC 0x0067FE40
 void CGuiInGame::HideExamineBox()
 {
     GUIINGAME_TRACE();
@@ -4675,7 +4675,7 @@ void CGuiInGame::HideExamineBox()
         }
     }
 }
-// PC 0x0062D4B0  Xbox 0x00058850
+// PC 0x0067FEB0
 void CGuiInGame::ShowContainerGui(unsigned long oidContainer, int nGuiType)
 {
     GUIINGAME_TRACE();
@@ -4691,7 +4691,7 @@ void CGuiInGame::ShowContainerGui(unsigned long oidContainer, int nGuiType)
         g_pAppManager->m_pClientExoApp->SetPausedByCombat(1, 3, 0);
     }
 }
-// PC 0x0062D510  Xbox 0x000588B0
+// PC 0x0067FF10
 void CGuiInGame::HideContainerGui()
 {
     GUIINGAME_TRACE();
@@ -4708,7 +4708,7 @@ void CGuiInGame::HideContainerGui()
         g_pAppManager->m_pClientExoApp->SetPausedByCombat(0, 0, 0);
     }
 }
-// PC 0x0062D570  Xbox 0x00058910
+// PC 0x0067FF70
 int CGuiInGame::IsAnimationPlayingInDialog()
 {
     GUIINGAME_TRACE();
@@ -4741,7 +4741,7 @@ int CGuiInGame::IsAnimationPlayingInDialog()
     }
     return bPlaying;
 }
-// PC 0x0062D5E0  Xbox 0x00058980
+// PC 0x006843E0
 int CGuiInGame::IsLoopingDialogAnimation(unsigned short nAnimation)
 {
     GUIINGAME_TRACE();
@@ -4790,7 +4790,7 @@ int CGuiInGame::IsLoopingDialogAnimation(unsigned short nAnimation)
         return 0;
     }
 }
-// PC 0x0062D700  Xbox 0x00058BB0
+// PC 0x00684510
 int CGuiInGame::IsFireForgetDialogAnimation(unsigned short nAnimation)
 {
     GUIINGAME_TRACE();
@@ -4846,7 +4846,7 @@ int CGuiInGame::IsFireForgetDialogAnimation(unsigned short nAnimation)
         return 0;
     }
 }
-// PC 0x0062D820  Xbox 0x00058DE0
+// PC 0x00680010
 int CGuiInGame::IsOverlayDialogAnimation(unsigned short nAnimation)
 {
     GUIINGAME_TRACE();
@@ -4887,7 +4887,7 @@ void CGuiInGame::ResetComputerCameraShot()
         g_pAppManager->m_pClientExoApp->DisableVideoEffect();
     }
 }
-// PC 0x0062D8C0  Xbox 0x00058F30
+// PC 0x00684640
 void CGuiInGame::CleanUpEntryNode()
 {
     GUIINGAME_TRACE();
@@ -4908,7 +4908,7 @@ void CGuiInGame::CleanUpEntryNode()
     g_pExoInput->CoolDownEvent(CClientExoAppInternal::INPUT_EVENT_GUI_ACCEPT, 0x2EE);
 #endif
 }
-// PC 0x0062D990  Xbox 0x00059000
+// PC 0x006846E0
 void CGuiInGame::CleanUpReplyNode()
 {
     m_vComputerCameraShot = Vector();
@@ -4929,7 +4929,7 @@ void CGuiInGame::CleanUpReplyNode()
     g_pExoInput->CoolDownEvent(CClientExoAppInternal::INPUT_EVENT_GUI_ACCEPT, 750);
 #endif
 }
-// PC 0x0062DA70  Xbox 0x000590D0
+// PC 0x006800C0
 void CGuiInGame::HideLoadModuleDebugMenu()
 {
     GUIINGAME_TRACE();
@@ -4958,7 +4958,7 @@ void CGuiInGame::HideLoadModuleDebugMenu()
         }
     }
 }
-// PC 0x0062DAE0  Xbox 0x00059140
+// PC 0x00680130
 void CGuiInGame::HidePowersFeatsSkillsDebugMenu()
 {
     GUIINGAME_TRACE();
@@ -4987,7 +4987,7 @@ void CGuiInGame::HidePowersFeatsSkillsDebugMenu()
         }
     }
 }
-// PC 0x0062DB50  Xbox 0x000591B0
+// PC 0x006801A0
 void CGuiInGame::UnlockDialogParticipantOrientations()
 {
     GUIINGAME_TRACE();
@@ -5001,13 +5001,13 @@ void CGuiInGame::UnlockDialogParticipantOrientations()
     if (pObject != 0 && pObject->AsSWCCreature() != 0)
         pObject->AsSWCCreature()->SetLockOrientationToObject(OBJECT_INVALID, 0);
 }
-// PC 0x0062DBD0  Xbox 0x00059230
+// PC 0x00680280
 int CGuiInGame::IsInDialog(unsigned long oidObject)
 {
     GUIINGAME_TRACE();
     return m_oidDialogObject1 == oidObject || m_oidDialogObject2 == oidObject;
 }
-// PC 0x0062DC00  Xbox 0x00059260
+// PC 0x006802B0
 int CGuiInGame::ShowLevelUpGUI(int bAutomatic)
 {
     GUIINGAME_TRACE();
@@ -5044,7 +5044,7 @@ int CGuiInGame::ShowLevelUpGUI(int bAutomatic)
     }
     return 0;
 }
-// PC 0x0062DD20  Xbox 0x00059360
+// PC 0x006803D0
 void CGuiInGame::ShowPartySelection(const CExoString& sExitScript, int bAllowCancel,
                                     int nForceNPC1, int nForceNPC2)
 {
@@ -5089,14 +5089,14 @@ void CGuiInGame::ShowPartySelection(const CExoString& sExitScript, int bAllowCan
     }
 }
 #ifndef _XBOX
-int CGuiInGame::IsGlobalFadeObscuring()  // PC 0x0062DED0  Xbox 0x000554E0
+int CGuiInGame::IsGlobalFadeObscuring()  // PC 0x00680630
 {
     GUIINGAME_TRACE();
     return m_pGlobalFade->m_fAlpha > 0.001f;
 }
 #endif
 #ifdef _XBOX
-void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)  // PC 0x0062DEF0  Xbox 0x00059510
+void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)
 {
     GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
@@ -5141,7 +5141,7 @@ void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)  // PC 0x0062DEF0
     }
 }
 #else
-void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)  // PC 0x0062DEF0  Xbox 0x00059510
+void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)  // PC 0x00680700
 {
     GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
@@ -5203,7 +5203,7 @@ void CGuiInGame::SetStuntModelData(unsigned long nModel, unsigned long oidObject
         m_pStuntModelResRefs[nModel] = cModel;
     }
 }
-// PC 0x0062E020  Xbox 0x000595F0
+// PC 0x00680850
 int CGuiInGame::HandleDialogModels(unsigned long oidPlayer,
                                   unsigned long nModels,
                                   unsigned long* pObjectIds, CResRef* pModels,
@@ -5221,7 +5221,7 @@ int CGuiInGame::HandleDialogModels(unsigned long oidPlayer,
     LoadAmbientTrackForDialog(cAmbientTrack);
     return 1;
 }
-// PC 0x0062E100  Xbox 0x000596D0
+// PC 0x00680930
 int CGuiInGame::HandleDialogReplyChosen(unsigned long oidSpeaker,
                                       unsigned long nReply,
                                       unsigned long nReplyCount,
@@ -5245,7 +5245,7 @@ int CGuiInGame::HandleDialogReplyChosen(unsigned long oidSpeaker,
     return 1;
 }
 #ifndef _XBOX
-// PC 0x0062E1D0  Xbox 0x0005DB70
+// PC 0x00684790
 int CGuiInGame::HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSound)
 {
     GUIINGAME_TRACE();
@@ -5276,7 +5276,7 @@ int CGuiInGame::HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSoun
     return 1;
 }
 #endif
-void CGuiInGame::ShowStoreGui(unsigned long oidStore, unsigned long oidCreature)  // PC 0x0062E310  Xbox 0x000597A0
+void CGuiInGame::ShowStoreGui(unsigned long oidStore, unsigned long oidCreature)  // PC 0x00680A00
 {
     GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0 && m_pPartySelection == 0 &&
@@ -5302,7 +5302,7 @@ void CGuiInGame::ShowStoreGui(unsigned long oidStore, unsigned long oidCreature)
         m_pGuiManager->PlayGuiSound(CSWGuiManager::GUISOUND_PAZAAK_START);
     }
 }
-// PC 0x0062E4A0  Xbox 0x00059930
+// PC 0x00680B90
 void CGuiInGame::HideStoreGui()
 {
     GUIINGAME_TRACE();
@@ -5342,7 +5342,7 @@ void CGuiInGame::HideStoreGui()
         g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
     }
 }
-// PC 0x0062E550  Xbox 0x00059A50
+// PC 0x00680CC0
 void CGuiInGame::ShowSoloModeQuery(int nQuery)
 {
     GUIINGAME_TRACE();
@@ -5389,7 +5389,7 @@ void CGuiInGame::ShowSoloModeQuery(int nQuery)
         }
     }
 }
-// PC 0x0062E6D0  Xbox 0x00059BD0
+// PC 0x00680E40
 void CGuiInGame::HideSoloMode()
 {
     GUIINGAME_TRACE();
@@ -5406,7 +5406,7 @@ void CGuiInGame::HideSoloMode()
 #endif
     }
 }
-// PC 0x0062E760  Xbox 0x00059C50
+// PC 0x00680ED0
 void CGuiInGame::ShowUpgradeScreen(unsigned long oidItem)
 {
     GUIINGAME_TRACE();
@@ -5438,7 +5438,7 @@ void CGuiInGame::ShowUpgradeScreen(unsigned long oidItem)
         }
     }
 }
-// PC 0x0062E870  Xbox 0x00059D60
+// PC 0x00681170
 void CGuiInGame::HideUpgradeScreen()
 {
     GUIINGAME_TRACE();
@@ -5467,7 +5467,7 @@ void CGuiInGame::HideUpgradeScreen()
         }
     }
 }
-// PC 0x0062E900  Xbox 0x00059DF0
+// PC 0x00681670
 void CGuiInGame::SetShotFromScript(int nCamera, int nVideoEffect)
 {
     if (m_nGlobalDialogState != 0)
@@ -5519,7 +5519,7 @@ void CGuiInGame::SetShotFromScript(int nCamera, int nVideoEffect)
         }
     }
 }
-// PC 0x0062EB10  Xbox 0x0005A010
+// PC 0x006818F0
 void CGuiInGame::HideAreaTransition()
 {
     GUIINGAME_TRACE();
@@ -5550,7 +5550,7 @@ void CGuiInGame::HideAreaTransition()
         }
     }
 }
-// PC 0x0062EBE0  Xbox 0x0005A0E0
+// PC 0x006819C0
 int CGuiInGame::GetBarkBubbleVisible(int& nTop)
 {
     GUIINGAME_TRACE();
@@ -5564,7 +5564,7 @@ int CGuiInGame::GetBarkBubbleVisible(int& nTop)
     nTop = pExtent->m_nTop + pExtent->m_nHeight;
     return 1;
 }
-// PC 0x0062EC20  Xbox 0x0005A140
+// PC 0x00681A00
 Vector CGuiInGame::GetAreaTranstionPosition()
 {
     GUIINGAME_TRACE();
@@ -5574,7 +5574,7 @@ Vector CGuiInGame::GetAreaTranstionPosition()
     }
     return m_pAreaTransition->m_vTransitionPosition;
 }
-// PC 0x0062EC60  Xbox 0x0005A190
+// PC 0x00684A90
 void CGuiInGame::SetGlobalDialogState(int nState)
 {
     GUIINGAME_TRACE();
@@ -5594,7 +5594,7 @@ void CGuiInGame::SetGlobalDialogState(int nState)
 #endif
     }
 }
-// PC 0x0062ED30  Xbox 0x0005A1F0
+// PC 0x00681A60
 Vector CGuiInGame::GetDialogCameraPosition(int bLookAhead)
 {
     GUIINGAME_TRACE();
@@ -5622,7 +5622,7 @@ Vector CGuiInGame::GetDialogCameraPosition(int bLookAhead)
     }
     return vResult;
 }
-// PC 0x0062EEB0  Xbox 0x0005A3E0
+// PC 0x00681C30
 void CGuiInGame::UpdateStatus(unsigned char nMessage, int nValue)
 {
     CSWGuiStatusSummary* pSummary = m_pStatusSummary;
@@ -5676,7 +5676,7 @@ void CGuiInGame::UpdateStatus(unsigned char nMessage, int nValue)
         }
     }
 }
-// PC 0x0062EF70  Xbox 0x0005A4A0
+// PC 0x00681DB0
 int CGuiInGame::GetPendingStatusSummary()
 {
     GUIINGAME_TRACE();
@@ -5684,7 +5684,7 @@ int CGuiInGame::GetPendingStatusSummary()
            (m_pStatusSummary->m_cStatusSummary.m_bDisplaySPending ||
             m_pStatusSummary->m_cStatusSummary.m_bSoundPending);
 }
-// PC 0x0062EF90  Xbox 0x0005A4C0
+// PC 0x00689310
 void CGuiInGame::ShowStatusSummary()
 {
     GUIINGAME_TRACE();
@@ -5711,7 +5711,7 @@ void CGuiInGame::ShowStatusSummary()
         }
     }
 }
-// PC 0x0062F040  Xbox 0x0005A570
+// PC 0x00681DD0
 void CGuiInGame::SetStatusSummary(const CStatusSummary& cSummary)
 {
     GUIINGAME_TRACE();
@@ -5728,7 +5728,7 @@ void CGuiInGame::SetStatusSummary(const CStatusSummary& cSummary)
         *m_pPendingStatusSummary = cSummary;
     }
 }
-// PC 0x0062F0A0  Xbox 0x0005A600
+// PC 0x00681E30
 void CGuiInGame::GetStatusSummary(CStatusSummary& cSummary)
 {
     GUIINGAME_TRACE();
@@ -5737,7 +5737,7 @@ void CGuiInGame::GetStatusSummary(CStatusSummary& cSummary)
         cSummary = m_pStatusSummary->m_cStatusSummary;
     }
 }
-// PC 0x0062F0C0  Xbox 0x0005A640
+// PC 0x00681E50
 void CGuiInGame::SuppressStatusSummary(int nNumEntries)
 {
     GUIINGAME_TRACE();
@@ -5746,7 +5746,7 @@ void CGuiInGame::SuppressStatusSummary(int nNumEntries)
         m_pStatusSummary->m_cStatusSummary.m_nSuppressed = nNumEntries;
     }
 }
-// PC 0x0062F0E0  Xbox 0x0005A660
+// PC 0x00681E90
 int CGuiInGame::CanPlayDialogAnimations(unsigned long oidObject)
 {
     GUIINGAME_TRACE();
@@ -5772,7 +5772,7 @@ int CGuiInGame::CanPlayDialogAnimations(unsigned long oidObject)
     }
     return 1;
 }
-// PC 0x0062F160  Xbox 0x0005A6E0
+// PC 0x00684B50
 void CGuiInGame::SetLockObjectOrientationInDialog(unsigned long oidObject, int bLock)
 {
     GUIINGAME_TRACE();
@@ -5819,7 +5819,7 @@ void CGuiInGame::SetLockObjectOrientationInDialog(unsigned long oidObject, int b
         }
     }
 }
-// PC 0x0062F250  Xbox 0x0005A7D0
+// PC 0x00684C40
 int CGuiInGame::GetCanOrientInDialog(unsigned long oidObject)
 {
     GUIINGAME_TRACE();
@@ -5843,7 +5843,7 @@ int CGuiInGame::GetCanOrientInDialog(unsigned long oidObject)
     }
     return 0;
 }
-// PC 0x0062F2B0  Xbox 0x0005A830
+// PC 0x00684CA0
 void CGuiInGame::SetLockHeadFollowInDialog(unsigned long oidObject, int bLock)
 {
     GUIINGAME_TRACE();
@@ -5895,7 +5895,7 @@ void CGuiInGame::SetLockHeadFollowInDialog(unsigned long oidObject, int bLock)
         }
     }
 }
-// PC 0x0062F3C0  Xbox 0x0005A940
+// PC 0x00684DB0
 int CGuiInGame::GetCanHeadFollowInDialog(unsigned long oidObject)
 {
     GUIINGAME_TRACE();
@@ -5919,7 +5919,7 @@ int CGuiInGame::GetCanHeadFollowInDialog(unsigned long oidObject)
     }
     return 0;
 }
-// PC 0x0062F420  Xbox 0x0005A9A0
+// PC 0x00684E10
 int CGuiInGame::TutorialReasonWillShowWindow(unsigned char nReason)
 {
     GUIINGAME_TRACE();
@@ -5946,7 +5946,7 @@ int CGuiInGame::TutorialReasonWillShowWindow(unsigned char nReason)
 }
 
 #include "swmain.h"
-// PC 0x0062F4A0  Xbox 0x0005AA20
+// PC 0x00681F70
 int CGuiInGame::ShowTutorialWindow(unsigned char nReason,
                                   unsigned long oidInstigator,
                                   unsigned long oidTarget,
@@ -5984,7 +5984,7 @@ int CGuiInGame::ShowTutorialWindow(unsigned char nReason,
     }
     return 1;
 }
-// PC 0x0062F590  Xbox 0x0005ACB0
+// PC 0x00682040
 void CGuiInGame::EnterControllerPauseState()
 {
     GUIINGAME_TRACE();
@@ -6007,7 +6007,7 @@ void CGuiInGame::EnterControllerPauseState()
         }
     }
 }
-// PC 0x0062F5F0
+// PC 0x006820A0
 void CGuiInGame::ResetInterfaceForSize()
 {
     GUIINGAME_TRACE();
@@ -6044,7 +6044,7 @@ void CGuiInGame::ResetInterfaceForSize()
     if (m_pTutorialBox != 0)
         m_pTutorialBox->CenterPanel();
 }
-// PC 0x0062F780  Xbox 0x0005AD10
+// PC 0x00682260
 void CGuiInGame::UpdateControllerPauseState()
 {
     if (g_pExoInput->GetMainDeviceLost() != 0 &&
@@ -6056,7 +6056,7 @@ void CGuiInGame::UpdateControllerPauseState()
         m_bControllerPauseActive = 1;
     }
 }
-// PC 0x0062F7E0  Xbox 0x0005AD70
+// PC 0x006822C0
 void CGuiInGame::EndControllerPauseState()
 {
     GUIINGAME_TRACE();
@@ -6078,7 +6078,7 @@ void CGuiInGame::EndControllerPauseState()
         g_pAppManager->m_pClientExoApp->SetPausedByCombat(0, 0, 1);
     }
 }
-// PC 0x0062F840  Xbox 0x0005AF40
+// PC 0x00684E90
 int CGuiInGame::IsOnDialogNonDependantList(const CExoString& sName)
 {
     GUIINGAME_TRACE();
@@ -6097,7 +6097,7 @@ int CGuiInGame::IsOnDialogNonDependantList(const CExoString& sName)
     }
     return 0;
 }
-// PC 0x0062F8B0  Xbox 0x0005AFB0
+// PC 0x00684F00
 void CGuiInGame::ClearDialogNonDependantList()
 {
     while (m_lDialogNonDependantList.GetHeadPos() != 0)
@@ -6110,7 +6110,7 @@ void CGuiInGame::ClearDialogNonDependantList()
         }
     }
 }
-// PC 0x0062F8F0  Xbox 0x0005AFF0
+// PC 0x00682340
 unsigned char CGuiInGame::GetInterfaceOffset()
 {
     GUIINGAME_TRACE();
@@ -6120,7 +6120,7 @@ unsigned char CGuiInGame::GetInterfaceOffset()
     }
     return 0;
 }
-// PC 0x0062F910  Xbox 0x0005B010
+// PC 0x006823A0
 int CGuiInGame::GetMiniMapVisible()
 {
     GUIINGAME_TRACE();
@@ -6138,7 +6138,7 @@ int CGuiInGame::GetMiniMapVisible()
     }
     return 1;
 }
-// PC 0x0062F960  Xbox 0x0005B0F0
+// PC 0x00682700
 void CGuiInGame::MarkNoClickEvent(unsigned long nMilliseconds)
 {
     GUIINGAME_TRACE();
@@ -6146,7 +6146,7 @@ void CGuiInGame::MarkNoClickEvent(unsigned long nMilliseconds)
     pApp->GetWorldTimer()->GetWorldTime(&m_nNoClickDay, &m_nNoClickTime);
     m_nNoClickDuration = nMilliseconds;
 }
-// PC 0x0062F9A0  Xbox 0x0005B130
+// PC 0x00682740
 int CGuiInGame::GetCanClick()
 {
     GUIINGAME_TRACE();
@@ -6166,7 +6166,7 @@ int CGuiInGame::GetCanClick()
     }
     return nElapsedTime >= m_nNoClickDuration;
 }
-// PC 0x0062FA30  Xbox 0x0005B1C0
+// PC 0x00682800
 void CGuiInGame::UpdateDialogLipSync()
 {
     GUIINGAME_TRACE();
@@ -6183,7 +6183,7 @@ void CGuiInGame::UpdateDialogLipSync()
         }
     }
 }
-// PC 0x0062FAD0  Xbox 0x0005B260
+// PC 0x006828C0
 int CGuiInGame::GetFadeOverridePanelVisible()
 {
     GUIINGAME_TRACE();
@@ -6197,7 +6197,7 @@ int CGuiInGame::GetFadeOverridePanelVisible()
     }
     return 0;
 }
-// PC 0x0062FB90
+// PC 0x00682980
 void CGuiInGame::FadeAndStopDialogAmbientTrack()
 {
     GUIINGAME_TRACE();
@@ -6209,7 +6209,7 @@ void CGuiInGame::FadeAndStopDialogAmbientTrack()
         m_pDialogAmbientTrack = 0;
     }
 }
-// PC 0x00632300  Xbox 0x0005DE30
+// PC 0x006888C0
 void CGuiInGame::AddToDialogNonDependantList(const CExoString& sName)
 {
     GUIINGAME_HOOK();
@@ -6221,7 +6221,7 @@ void CGuiInGame::AddToDialogNonDependantList(const CExoString& sName)
         m_lDialogNonDependantList.AddHead(pName);
     }
 }
-// PC 0x006323A0
+// PC 0x00688960
 int CGuiInGame::UnpackQuickSaveGame(unsigned long nSaveGame,
                                   const CExoString& sSaveName)
 {
@@ -6260,7 +6260,7 @@ int CGuiInGame::UnpackQuickSaveGame(unsigned long nSaveGame,
     cFile.Flush();
     return 0;
 }
-// PC 0x0062FBE0
+// PC 0x00684F40
 int CGuiInGame::CopyQuickSaveGameToFutureGame(unsigned long nSaveGame,
                                             const CExoString& sSaveName)
 {
@@ -6293,7 +6293,7 @@ int CGuiInGame::CopyQuickSaveGameToFutureGame(unsigned long nSaveGame,
     return 1;
 }
 #ifndef _XBOX
-int CGuiInGame::GetCurrentEquipScreenNPC()  // PC 0x0062FEA0
+int CGuiInGame::GetCurrentEquipScreenNPC()
 {
     GUIINGAME_TRACE();
     int nNPC = -1;
@@ -6307,7 +6307,7 @@ int CGuiInGame::GetCurrentEquipScreenNPC()  // PC 0x0062FEA0
 #endif
 
 #include "swguiingame.inl"
-// PC 0x00632720  Xbox 0x00055F40
+// PC 0x00685B20
 void CGuiInGame::InitializeGlobal()
 {
     if (m_pGuiManager == 0)
@@ -6319,7 +6319,7 @@ void CGuiInGame::InitializeGlobal()
     m_pTutorialBox = new CSWGuiTutorialBox(m_pGuiManager);
     m_pControllerLossBox = new CSWGuiControllerLossBox(m_pGuiManager);
 }
-// PC 0x00632860  Xbox 0x000561D0
+// PC 0x00685D50
 int CGuiInGame::Initialize()
 {
     if (m_bItemCreateMenuAvailable == 0)
@@ -6418,7 +6418,7 @@ int CGuiInGame::Initialize()
     }
     return m_bItemCreateMenuAvailable;
 }
-// PC 0x00633660  Xbox 0x0005E2E0
+// PC 0x00688CF0
 void CGuiInGame::HandleDialogSelection(int nReply, int bSelected)
 {
     m_bDialogReplySelected = 0;
@@ -6509,7 +6509,7 @@ void CGuiInGame::HandleDialogSelection(int nReply, int bSelected)
     else
         CloseDialog();
 }
-// PC 0x006339C0  Xbox 0x0005E640
+// PC 0x00689080
 void CGuiInGame::UpdateDialog()
 {
     if (m_nGlobalDialogState == 0)
@@ -6580,7 +6580,7 @@ void CGuiInGame::UpdateDialog()
     else
         HandleDialogSelection(m_nDialogReply, m_nDialogReplyCount);
 }
-// PC 0x00633C50
+// PC 0x006893F0
 void CGuiInGame::DoQuickLoad()
 {
     CExoArrayList<CExoString> lstSaves;
@@ -6655,7 +6655,7 @@ void CGuiInGame::DoQuickLoad()
     }
     g_pExoResMan->RemoveResourceDirectory("TEMP:");
 }
-// PC 0x006340E0  Xbox 0x0005E8C0
+// PC 0x00689860
 void CGuiInGame::ShowDialogReplies(unsigned long nStartIndex,
                                   unsigned long nReplyContext)
 {
@@ -6726,7 +6726,7 @@ void CGuiInGame::ShowDialogReplies(unsigned long nStartIndex,
         }
     }
 }
-// PC 0x00634340  Xbox 0x0005EAE0
+// PC 0x00689AC0
 int CGuiInGame::HandleDialogReplies(
     unsigned long oidPlayer, unsigned long oidSpeaker,
     unsigned char nComputerType, CExoString* psText,
@@ -6813,7 +6813,7 @@ static inline void GuiingameTrace1()
 }
 
 #ifdef _XBOX
-// Xbox 0x00055980
+
 void CGuiInGame::ClearDialogReplyText()
 {
     CExoString sBlank(" ");
@@ -6827,7 +6827,7 @@ void CGuiInGame::ClearDialogReplyText()
 #endif
 
 #ifdef _XBOX
-// Xbox 0x00055A20
+
 void CGuiInGame::ChangeCharacter()
 {
     m_pMainInterface->StartRotation();
@@ -6835,7 +6835,7 @@ void CGuiInGame::ChangeCharacter()
 #endif
 
 #ifdef _XBOX
-// Xbox 0x0005DD30
+
 void CGuiInGame::UpdateAreaTransitionGUI(unsigned long oidArea,
                                          const Vector& vPosition)
 {
@@ -6867,7 +6867,7 @@ void CGuiInGame::UpdateAreaTransitionGUI(unsigned long oidArea,
     else
         HideAreaTransition();
 }
-// Xbox 0x0005A120
+
 unsigned long CGuiInGame::GetAreaTransitionObject()
 {
     if (m_pAreaTransition == NULL)
@@ -6879,7 +6879,7 @@ unsigned long CGuiInGame::GetAreaTransitionObject()
 #endif
 
 #ifdef _XBOX
-// PC 0x0062DED0  Xbox 0x000554E0
+
 int CGuiInGame::IsGlobalFadeObscuring()
 {
     GUIINGAME_TRACE();
@@ -6889,7 +6889,7 @@ int CGuiInGame::IsGlobalFadeObscuring()
 
 #ifdef _XBOX
 #include "nwcambientsound.h"
-// Xbox 0x0005ADD0
+
 void CGuiInGame::StartCreditSequence(const Vector& vColor, const CExoString& sMusic)
 {
     if (!m_bCreditSequenceInProgress)
@@ -6921,7 +6921,7 @@ void CGuiInGame::StartCreditSequence(const Vector& vColor, const CExoString& sMu
         }
     }
 }
-// Xbox 0x0005AB10
+
 void CGuiInGame::PostDialogConversationText(const CExoString& sConversation)
 {
     if (m_nXboxUnmappedB98)
@@ -6931,7 +6931,7 @@ void CGuiInGame::PostDialogConversationText(const CExoString& sConversation)
         AurPostString(sText.CStr(), 5, 15, 10000.0f);
     }
 }
-// Xbox 0x0005ABA0
+
 void CGuiInGame::PostDialogSoundText(const CExoString& sSound)
 {
     if (m_nXboxUnmappedB98)
@@ -6960,7 +6960,7 @@ void CGuiInGame::PostDialogSoundText(const CExoString& sSound)
         AurPostString(sText.CStr(), 5, nRow, 10000.0f);
     }
 }
-// PC 0x0062E1D0  Xbox 0x0005DB70
+
 int CGuiInGame::HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSound)
 {
     GUIINGAME_TRACE();
@@ -7001,7 +7001,7 @@ int CGuiInGame::HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSoun
     m_oidDialogSoundObject = pClientObject->m_nId;
     return 1;
 }
-// Xbox 0x00055E60
+
 const char* ShowGUI(char* sCommand)
 {
     if (*sCommand == 0)
@@ -7016,12 +7016,12 @@ const char* ShowGUI(char* sCommand)
     g_pAppManager->m_pClientExoApp->SetInputClass(2);
     return "";
 }
-// Xbox 0x00055DE0
+
 const char* creditsinprogress(char* sCommand)
 {
     return g_pAppManager->m_pClientExoApp->GetInGameGui()->m_bCreditSequenceInProgress ? "True" : "False";
 }
-// Xbox 0x0005B320
+
 const char* showcredits(char* sCommand)
 {
     Vector vColor(0.0f, 0.0f, 0.0f);
@@ -7030,7 +7030,7 @@ const char* showcredits(char* sCommand)
     g_pAppManager->GetClientExoApp()->GetInGameGui()->StartCreditSequence(vColor, sMusic);
     return "Success";
 }
-// PC 0x0062BF70  Xbox 0x00057380
+
 int CGuiInGame::SetAnimatedCamera(unsigned short nAnimation, float fFieldOfView)
 {
     GUIINGAME_TRACE();

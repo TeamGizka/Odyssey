@@ -1,5 +1,5 @@
 #include "aurora.h"
-// PC 0x007100A0
+// PC 0x007838F0
 int CAuroraTXI::GetTXIDataSize()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -8,7 +8,7 @@ int CAuroraTXI::GetTXIDataSize()
     }
     return 0;
 }
-// PC 0x007107B0
+// PC 0x00783FE0
 unsigned char* CAuroraTXI::GetTXIDataPtr()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -17,7 +17,7 @@ unsigned char* CAuroraTXI::GetTXIDataPtr()
     }
     return 0;
 }
-// PC 0x0070FAC0  Xbox 0x002F9D60
+// PC 0x007832F0
 int CAuroraTXI::Load()
 {
     STXIResourcePrefix* pPrefix;
@@ -32,7 +32,7 @@ int CAuroraTXI::Load()
     pPrefix->nType = RESTYPE_TXI;
     return 1;
 }
-// PC 0x00710100
+// PC 0x00783630
 void CAuroraTXI::Unload()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -40,7 +40,7 @@ void CAuroraTXI::Unload()
         m_pRes->Release();
     }
 }
-// PC 0x0070FAF0
+// PC 0x00783320
 unsigned char* CAuroraTXI::GetPtrToResHelperInfo()
 {
     unsigned char* nTXIDataPtr;
@@ -52,13 +52,13 @@ unsigned char* CAuroraTXI::GetPtrToResHelperInfo()
     nTXIDataPtr = GetTXIDataPtr();
     return nTXIDataPtr - sizeof(STXIResourcePrefix);
 }
-// PC 0x0070FD10  Xbox 0x002F9F70
+// PC 0x00783540
 CAuroraTXI::CAuroraTXI(CResRef cResRef, int bRequest)
     : CResHelper<CResTXI, RESTYPE_TXI>()
 {
     SetResRef(cResRef, bRequest);
 }
-// PC 0x0070FDA0  Xbox 0x002FA000
+// PC 0x007835D0
 CAuroraTXI::~CAuroraTXI()
 {
 }

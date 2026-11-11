@@ -48,7 +48,7 @@ int CameraFreeStyleMode = CAMERA_FREE_STYLE_TRANSLATE;
 
 float fBorderScaleExponent = 2.0f;
 float fMaxTurnRate = 50.0f;
-// PC 0x00637A30  Xbox 0x000ADE20
+// PC 0x0068DB40
 void CSWCameraOnAStick::Message(char* sMessage)
 {
     if (stricmp("m_fDist", firstword(sMessage)) == 0)
@@ -72,7 +72,7 @@ void CSWCameraOnAStick::Message(char* sMessage)
         Parse(sMessage + 9, m_fHeight);
     }
 }
-// PC 0x00637AF0  Xbox 0x000ADEE0
+// PC 0x0068DC00
 Vector CSWCameraOnAStick::Control_ComputeDesiredPosition(Vector vPosition)
 {
     float fDistance = m_fDistance;
@@ -81,7 +81,7 @@ Vector CSWCameraOnAStick::Control_ComputeDesiredPosition(Vector vPosition)
     Vector vDesiredPosition = vPosition - vOffset;
     return vDesiredPosition;
 }
-// PC 0x00637B80  Xbox 0x000ADF90
+// PC 0x0068DD80
 float CSWCameraOnAStick::Control_AccelerateInterp(float fStart, float fMinimum,
                                                   float fMaximum,
                                                   Vector vCurrent,
@@ -112,7 +112,7 @@ float CSWCameraOnAStick::Control_AccelerateInterp(float fStart, float fMinimum,
     }
     return fResult;
 }
-// PC 0x00637C20  Xbox 0x000AE050
+// PC 0x0068DE20
 void CSWCameraOnAStick::ResetLastPosition(Vector vPosition,
                                           Quaternion qOrientation)
 {
@@ -122,7 +122,7 @@ void CSWCameraOnAStick::ResetLastPosition(Vector vPosition,
     static_cast<Gob*>(m_pObject)->SetPosition(vPosition);
     static_cast<Gob*>(m_pObject)->SetOrientation(qOrientation);
 }
-// PC 0x00637CC0  Xbox 0x000AE0F0
+// PC 0x0068DEC0
 int CSWCameraOnAStick::CameraFreeStyleControl(float fTimeStep)
 {
 
@@ -184,7 +184,7 @@ int CSWCameraOnAStick::CameraFreeStyleControl(float fTimeStep)
     m_fTilt = 0.0f;
     return 0;
 }
-// PC 0x00638070  Xbox 0x000AE500
+// PC 0x0068E270
 void CSWCameraOnAStick::SetCameraStyle(int nStyle)
 {
     if (m_nStyle != nStyle)
@@ -240,12 +240,12 @@ void CSWCameraOnAStick::UpdateCameraStyle()
     SetCameraStyle(g_pAppManager->m_pClientExoApp->GetModule()
                        ->m_pInfo->m_nTurnRateRow);
 }
-// PC 0x006383B0  Xbox 0x000AE820
+// PC 0x0068E5B0
 void CSWCameraOnAStick::ClearLookAtTarget()
 {
     m_oidLookAt = OBJECT_INVALID;
 }
-// PC 0x006383C0  Xbox 0x000AE830
+// PC 0x0068E5C0
 void CSWCameraFreeLook::UpdateCamraStyle()
 {
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
@@ -278,11 +278,11 @@ void CSWCameraFreeLook::UpdateCamraStyle()
     }
 #endif
 }
-// PC 0x0060E760
+// PC 0x005EE1C0
 void CSWCameraFreeLook::Message(char* sMessage)
 {
 }
-// PC 0x00638540  Xbox 0x000AE980
+// PC 0x0068E740
 void CSWCameraDeath::Message(char* sMessage)
 {
     if (stricmp("m_yaw", firstword(sMessage)) == 0)
@@ -314,7 +314,7 @@ void CSWCameraDeath::Message(char* sMessage)
         Parse(sMessage + 13, m_fLogDistance);
     }
 }
-// PC 0x00638670  Xbox 0x000AEAB0
+// PC 0x0068E870
 CSWCameraNavigate::CSWCameraNavigate(CAurObject* pObject)
     : CAurBehavior(pObject)
 {
@@ -326,7 +326,7 @@ CSWCameraNavigate::CSWCameraNavigate(CAurObject* pObject)
     m_fRoll = 0.0f;
     m_fLastRoll = 0.0f;
 }
-// PC 0x006386E0  Xbox 0x000AEB30
+// PC 0x0068E8E0
 void CSWCameraNavigate::Message(char* sMessage)
 {
     if (stricmp("turn", firstword(sMessage)) == 0)
@@ -354,7 +354,7 @@ void CSWCameraNavigate::Message(char* sMessage)
         Parse(sMessage + 4, m_fRoll);
     }
 }
-// PC 0x006387E0  Xbox 0x000AEC30
+// PC 0x0068E9E0
 int CSWCameraNavigate::Control(float fTimeStep)
 {
     int nResult = CAurBehavior::Control(fTimeStep);
@@ -435,7 +435,7 @@ int CSWCameraNavigate::Control(float fTimeStep)
         fYaw, fPitch, Roll(static_cast<Gob*>(m_pObject)->GetOrientation())));
     return 1;
 }
-// PC 0x00638E80  Xbox 0x000AF380
+// PC 0x0068F530
 void CSWCameraOnAStick::SetCameraForScreenShot()
 {
     Gob* pTarget = static_cast<Gob*>(m_pTarget.m_pObject);
@@ -450,7 +450,7 @@ void CSWCameraOnAStick::SetCameraForScreenShot()
             YawPitchRoll(Yaw(normalize(vDirection)), m_fPresetPitch, 0.0f));
     }
 }
-// PC 0x00638F60
+// PC 0x0068F610
 void CSWCameraOnAStick::Control_CheckAndUpdateCameraStyle()
 {
 #ifndef _XBOX
@@ -470,7 +470,7 @@ void CSWCameraOnAStick::Control_CheckAndUpdateCameraStyle()
         CameraStyle = -1;
     }
 }
-// PC 0x00638FE0  Xbox 0x000AF470
+// PC 0x0068F690
 void CSWCameraOnAStick::Control_SetCameraInintalState()
 {
     Quaternion qTarget =
@@ -489,7 +489,7 @@ void CSWCameraOnAStick::Control_SetCameraInintalState()
 }
 
 #ifndef _XBOX
-Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // PC 0x006391A0  Xbox 0x000AF690
+Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // PC 0x0068F850
     Quaternion qOrientation, float fTimeStep)
 {
     Vector vCameraPos;
@@ -629,7 +629,7 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // PC 0x0
     return qResult;
 }
 #endif
-// PC 0x00639760  Xbox 0x000AFDF0
+// PC 0x00690220
 Quaternion CSWCameraOnAStick::Control_SetCameraOrientation(float fTimeStep)
 {
     Gob* pTarget = static_cast<Gob*>(m_pTarget.m_pObject);
@@ -658,7 +658,7 @@ Quaternion CSWCameraOnAStick::Control_SetCameraOrientation(float fTimeStep)
     return YawPitchRoll(Yaw(normalize(vDirection)) + m_fShakeYaw,
                         m_fDesiredPitch - fDelta + m_fShakePitch, 0.0f);
 }
-// PC 0x006398F0  Xbox 0x000AFFA0
+// PC 0x00690480
 Vector CSWCameraOnAStick::Control_ComputeNewCameraPosition(
     Vector vDesiredPosition, Vector vPosition, Vector vTargetPosition,
     float fTimeStep)
@@ -748,7 +748,7 @@ Vector CSWCameraOnAStick::Control_ComputeNewCameraPosition(
     vDesiredPosition.m_fZ = vTargetPosition.m_fZ + m_fHeight;
     return vDesiredPosition;
 }
-// PC 0x00639C30  Xbox 0x000B02F0
+// PC 0x006908B0
 void CSWCameraOnAStick::SetLookAtTarget(CSWCObject* pTarget)
 {
     if (m_pTarget.m_pObject != NULL && pTarget != NULL)
@@ -763,7 +763,7 @@ void CSWCameraOnAStick::SetLookAtTarget(CSWCObject* pTarget)
         m_vLookAtOffset.m_fZ = m_fHeight + m_fPitch + m_vLookAtOffset.m_fZ;
     }
 }
-// PC 0x00639D00  Xbox 0x000B03F0
+// PC 0x00690990
 int CSWCameraFreeLook::Control(float fTimeStep)
 {
     if (CAurBehavior::Control(fTimeStep))
@@ -816,7 +816,7 @@ int CSWCameraFreeLook::Control(float fTimeStep)
     }
     return 1;
 }
-// PC 0x00639FC0  Xbox 0x000B0620
+// PC 0x00690C50
 CSWCameraOnAStick::CSWCameraOnAStick(CAurObject* pObject, CAurObject* pTarget)
     : CSWBehaviorCamera(pObject)
 {
@@ -865,16 +865,16 @@ CSWCameraOnAStick::CSWCameraOnAStick(CAurObject* pObject, CAurObject* pTarget)
     m_bMouseCameraRotateToggle = g_bMouseCameraRotateToggle;
 #endif
 }
-// PC 0x0063A320  Xbox 0x000B0A20
+// PC 0x00690FD0
 CSWCameraOnAStick::~CSWCameraOnAStick()
 {
 }
-// PC 0x0063A360  Xbox 0x000B0A60
+// PC 0x00691010
 void CSWCameraOnAStick::ClearCombatCamera()
 {
     m_pCombatTarget = NULL;
 }
-// PC 0x0063A380  Xbox 0x000B0A80
+// PC 0x00691030
 void CSWCameraOnAStick::ChangeTarget(CAurObject* pTarget, int bSnap)
 {
     m_fTurn = 0.0f;
@@ -904,7 +904,7 @@ void CSWCameraOnAStick::ChangeTarget(CAurObject* pTarget, int bSnap)
     vPosition.m_fZ = m_fHeight;
     m_vLastPosition = m_vInitialPosition = vPosition;
 }
-// PC 0x0063AD60  Xbox 0x000B15E0
+// PC 0x00691A20
 CSWCameraOnAStick::CSWCameraOnAStick(CCameraSettings& settings)
     : CSWBehaviorCamera(settings.m_pCamera)
 {
@@ -952,7 +952,7 @@ CSWCameraOnAStick::CSWCameraOnAStick(CCameraSettings& settings)
     m_bMouseCameraRotateToggle = g_bMouseCameraRotateToggle;
 #endif
 }
-// PC 0x0063B050  Xbox 0x000B1960
+// PC 0x00691D30
 Vector CSWCameraOnAStick::Control_HitCheckCamera(Vector vPosition)
 {
     SwbehaviorcameraTrace5();
@@ -1042,7 +1042,7 @@ Vector CSWCameraOnAStick::Control_HitCheckCamera(Vector vPosition)
     }
     return vSafe;
 }
-// PC 0x0063BA80  Xbox 0x000B2590
+// PC 0x00692770
 void CSWCameraOnAStick::SaveCameraSettings(CCameraSettings& settings)
 {
     settings.m_bValid = 1;
@@ -1054,7 +1054,7 @@ void CSWCameraOnAStick::SaveCameraSettings(CCameraSettings& settings)
     settings.m_fPitch = m_fPitch;
     settings.m_nReserved1C = -1;
 }
-// PC 0x0063A5D0  Xbox 0x000B0D10
+// PC 0x00691280
 CSWCameraFreeLook::CSWCameraFreeLook(CAurObject* pObject, CAurObject* pTarget,
                                      int nMode)
     : CSWBehaviorCamera(pObject)
@@ -1077,7 +1077,7 @@ CSWCameraFreeLook::CSWCameraFreeLook(CAurObject* pObject, CAurObject* pTarget,
     m_integrator.m_fMaximumAcceleration = 500.0f;
 #endif
 }
-// PC 0x0063BAF0  Xbox 0x000B2600
+// PC 0x006927E0
 CSWCameraFreeLook::CSWCameraFreeLook(CCameraSettings& settings)
     : CSWBehaviorCamera(settings.m_pCamera)
 {
@@ -1096,7 +1096,7 @@ CSWCameraFreeLook::CSWCameraFreeLook(CCameraSettings& settings)
     m_integrator.m_fMaximumAcceleration = 500.0f;
 #endif
 }
-// PC 0x0063BBD0  Xbox 0x000B26E0
+// PC 0x006928C0
 CSWCameraDeath::CSWCameraDeath(CAurObject* pObject, CAurObject* pTarget)
     : CSWBehaviorCamera(pObject)
 {
@@ -1113,16 +1113,16 @@ CSWCameraDeath::CSWCameraDeath(CAurObject* pObject, CAurObject* pTarget)
     m_pTarget = NULL;
     SetTarget(pTarget);
 }
-// PC 0x0063A6C0  Xbox 0x000B0E20
+// PC 0x00691370
 CSWCameraFreeLook::~CSWCameraFreeLook()
 {
     g_pAppManager->m_pClientExoApp->DisableVideoEffect();
 }
-// PC 0x0063A730  Xbox 0x000B0E90
+// PC 0x006913E0
 CSWCameraDeath::~CSWCameraDeath()
 {
 }
-// PC 0x0063A770  Xbox 0x000B0ED0
+// PC 0x00691420
 void CSWCameraDeath::SetTarget(CAurObject* pTarget)
 {
     if (m_pTarget != NULL)
@@ -1140,7 +1140,7 @@ void CSWCameraDeath::SetTarget(CAurObject* pTarget)
     }
     m_pTarget = pTarget;
 }
-// PC 0x0063A810  Xbox 0x000B0F80
+// PC 0x006914C0
 int CSWCameraDeath::Control(float fTimeStep)
 {
     SafePointer<CAurObject> pObject(m_pObject);
@@ -1216,7 +1216,7 @@ int CSWCameraDeath::Control(float fTimeStep)
 }
 
 #define SW_CAMERA_QA_REPORT
-// PC 0x0063BCB0  Xbox 0x000B28C0
+// PC 0x006929A0
 int CSWCameraOnAStick::Control(float fTimeStep)
 {
     if (m_bKeepFramingOnViewAngle)
@@ -1300,7 +1300,7 @@ static inline void SwbehaviorcameraTrace1()
 #ifdef _XBOX
 
 #include "swplayercontrol.h"
-Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // PC 0x006391A0  Xbox 0x000AF690
+Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(
     Quaternion qOrientation, float fTimeStep)
 {
     Vector vTargetMove =
@@ -1475,7 +1475,7 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // PC 0x0
 
 #include "aurconsole.h"
 #include "nwccreature.h"
-char* DeathCamera(char* szArgs)  // Xbox 0x000B27E0
+char* DeathCamera(char* szArgs)
 {
     if (g_pAppManager->m_pClientExoApp != NULL)
     {

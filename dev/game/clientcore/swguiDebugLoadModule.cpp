@@ -10,7 +10,7 @@
 static inline void SwguiDebugLoadModuleTrace2();
 static inline void SwguiDebugLoadModuleTrace1();
 #define SWGUIDEBUGLOADMODULE_TRACE() SwguiDebugLoadModuleTrace2()
-// PC 0x006CF890  Xbox 0x000F6E80
+// PC 0x0073DF70
 CSWGuiControl* CSWGuiLoadModuleDebugMenu::CreateOption(
     const CExoString& sText, PFNGUIEVENT pHandler, CSWGuiButton* pPrototype)
 {
@@ -45,7 +45,7 @@ CSWGuiControl* CSWGuiLoadModuleDebugMenu::CreateOption(
     pButton->AddEvent(GUIEVENT_ACTIVATE, this, pHandler);
     return pButton;
 }
-// PC 0x006CF9A0  Xbox 0x000F6CD0
+// PC 0x0073DDC0
 void CSWGuiLoadModuleDebugMenu::Back()
 {
     SwguiDebugLoadModuleTrace1();
@@ -54,7 +54,7 @@ void CSWGuiLoadModuleDebugMenu::Back()
     g_pAppManager->m_pClientExoApp->GetInGameGui()
         ->ShowDebugMenu();
 }
-// PC 0x006CF9D0  Xbox 0x000F6D00
+// PC 0x0073DDF0
 void CSWGuiLoadModuleDebugMenu::OnModulePicked(CSWGuiControl* pControl)
 {
     SwguiDebugLoadModuleTrace1();
@@ -69,7 +69,7 @@ void CSWGuiLoadModuleDebugMenu::OnModulePicked(CSWGuiControl* pControl)
         g_pAppManager->m_pServerExoApp->SetMoveToModulePending(1);
     }
 }
-// PC 0x006CFA70  Xbox 0x000F6F80
+// PC 0x0073E030
 CSWGuiLoadModuleDebugMenu::CSWGuiLoadModuleDebugMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -165,7 +165,7 @@ CSWGuiLoadModuleDebugMenu::CSWGuiLoadModuleDebugMenu(CSWGuiManager* pManager)
     SetActiveControl(pList, 0);
     CenterPanel();
 }
-// PC 0x006D02C0  Xbox 0x000F6DA0
+// PC 0x0073DE90
 void CSWGuiLoadModuleDebugMenu::HandleInputEvent(int nEvent, int nState)
 {
     SWGUIDEBUGLOADMODULE_TRACE();

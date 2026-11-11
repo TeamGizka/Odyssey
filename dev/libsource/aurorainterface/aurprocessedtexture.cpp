@@ -1,5 +1,5 @@
 #include "aurora.h"
-// PC 0x00710100
+// PC 0x00783630
 void CAuroraProcessedTexture::Unload()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -7,7 +7,7 @@ void CAuroraProcessedTexture::Unload()
         m_pRes->Release();
     }
 }
-// PC 0x0070F330  Xbox 0x002F9590
+// PC 0x00782B60
 int CAuroraProcessedTexture::GetProcessedTextureAttrib(
     int* pnWidth, int* pnHeight, char* pnEncoding, int* pnCompressedSize,
     int* pnDataSize, int* pnTXISize, float* pfAlphaBlending,
@@ -21,7 +21,7 @@ int CAuroraProcessedTexture::GetProcessedTextureAttrib(
     }
     return 0;
 }
-// PC 0x0070F380  Xbox 0x002F95E0
+// PC 0x00782BB0
 unsigned char* CAuroraProcessedTexture::GetProcessedTextureDataPtr()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -30,7 +30,7 @@ unsigned char* CAuroraProcessedTexture::GetProcessedTextureDataPtr()
     }
     return 0;
 }
-// PC 0x0070F3B0  Xbox 0x002F9610
+// PC 0x00782BE0
 int CAuroraProcessedTexture::GetProcessedTextureDataSize()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -39,7 +39,7 @@ int CAuroraProcessedTexture::GetProcessedTextureDataSize()
     }
     return 0;
 }
-// PC 0x0070F3E0  Xbox 0x002F9640
+// PC 0x00782C10
 unsigned char* CAuroraProcessedTexture::GetProcessedTextureTXIPtr()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -48,7 +48,7 @@ unsigned char* CAuroraProcessedTexture::GetProcessedTextureTXIPtr()
     }
     return 0;
 }
-// PC 0x0070F410  Xbox 0x002F9670
+// PC 0x00782C40
 int CAuroraProcessedTexture::GetProcessedTextureTXISize()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -57,7 +57,7 @@ int CAuroraProcessedTexture::GetProcessedTextureTXISize()
     }
     return 0;
 }
-// PC 0x0070F440  Xbox 0x002F96A0
+// PC 0x00782C70
 int CAuroraProcessedTexture::Load()
 {
     int nWidth;
@@ -130,7 +130,7 @@ int CAuroraProcessedTexture::Load()
     pTrailer->pOwner = this;
     return 1;
 }
-// PC 0x0070F590  Xbox 0x002F9810
+// PC 0x00782DC0
 int CAuroraProcessedTexture::ReadProcessedTextureHeader(
     int* pnWidth, int* pnHeight, char* pnEncoding, int* pnCompressedSize,
     int* pnDataSize, float* pfAlphaBlending, char* pnMipMapCount)
@@ -181,17 +181,17 @@ int CAuroraProcessedTexture::ReadProcessedTextureHeader(
     }
     return 1;
 }
-// PC 0x0070F980  Xbox 0x002F9C20
+// PC 0x007831B0
 CAuroraProcessedTexture::CAuroraProcessedTexture(CResRef cResRef, int bRequest)
     : CResHelper<CResTPC, RESTYPE_TPC>()
 {
     SetResRef(cResRef, bRequest);
 }
-// PC 0x0070FA10  Xbox 0x002F9CB0
+// PC 0x00783240
 CAuroraProcessedTexture::~CAuroraProcessedTexture()
 {
 }
-// PC 0x0070FA20  Xbox 0x002F9CC0
+// PC 0x00783250
 unsigned char* CAuroraProcessedTexture::GetPtrToResHelperInfo()
 {
     if (m_pRes == NULL || m_pRes->GetDemands() < 1)
@@ -201,7 +201,7 @@ unsigned char* CAuroraProcessedTexture::GetPtrToResHelperInfo()
     unsigned char* nData = GetProcessedTextureDataPtr();
     return GetProcessedTextureTXISize() + GetTextureSize() + nData + 4;
 }
-// PC 0x0070F690  Xbox 0x002F9920
+// PC 0x00782EC0
 int CAuroraProcessedTexture::GetTextureSize()
 {
     int nWidth;

@@ -6,7 +6,7 @@ template void CExoArrayList<CSWGuiControl*>::Allocate(int);
 static inline void SwguiingameTrace2();
 static inline void SwguiingameTrace1();
 #define SWGUIINGAME_TRACE() SwguiingameTrace1()
-// PC 0x00624970
+// PC 0x00675620
 void CSWGuiInGameMenu::HandleInputEvent(int nEvent, int nState)
 {
     switch (nEvent)
@@ -22,7 +22,7 @@ void CSWGuiInGameMenu::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006249D0  Xbox 0x0004CD70
+// PC 0x00675CD0
 void CSWGuiMessageBox::SetMessage(unsigned long nStrRef)
 {
     SetMessage(g_pTlkTable->GetSimpleString(nStrRef));
@@ -40,7 +40,7 @@ void CSWGuiMessageBox::SetMessage(unsigned long nStrRef)
 #include "clientexoappinternal.h"
 #include "nwccreature.h"
 #include "swguiingame.inl"
-// PC 0x00624A40  Xbox 0x0004CDA0
+// PC 0x00675E60
 void CSWGuiMessageBox::SetCallback(CSWGuiObject* pObject,
                                   CSWGuiHandler pHandler,
                                   CSWGuiControl* pControl)
@@ -49,14 +49,14 @@ void CSWGuiMessageBox::SetCallback(CSWGuiObject* pObject,
     m_pCallback = pHandler;
     m_pCallbackControl = pControl;
 }
-// PC 0x00624A60
+// PC 0x00676130
 void CSWGuiStatusSummary::OnPanelRemoved()
 {
 #ifndef _XBOX
     g_pGuiMan->RestoreOldMousePosition();
 #endif
 }
-// PC 0x00624A70  Xbox 0x0004CDC0
+
 void CSWGuiStatusSummary::AddAlignmentShift(char nShift)
 {
     if (nShift != 0)
@@ -68,7 +68,7 @@ void CSWGuiStatusSummary::AddAlignmentShift(char nShift)
         m_cStatusSummary.m_bDisplaySPending = 1;
     }
 }
-// PC 0x00624AB0  Xbox 0x0004CE00
+// PC 0x00676390
 void CSWGuiStatusSummary::AddCredits(int nCredits)
 {
     if (nCredits != 0)
@@ -82,14 +82,14 @@ void CSWGuiStatusSummary::AddCredits(int nCredits)
         m_cStatusSummary.m_bDisplaySPending = 1;
     }
 }
-// PC 0x00624AE0
+// PC 0x006765F0
 void CSWGuiToolTipPanel::SetToolTipText(const CExoString& sText)
 {
     m_lblToolTip.m_cText.m_cParams.SetText(sText);
 }
 
 #ifndef _XBOX
-void CSWGuiToolTipPanel::PositionToolTip()  // PC 0x00624AF0
+void CSWGuiToolTipPanel::PositionToolTip()  // PC 0x00676600
 {
     CSWGuiExtent cExtent;
     cExtent.m_nHeight = 0;
@@ -120,14 +120,14 @@ void CSWGuiToolTipPanel::PositionToolTip()  // PC 0x00624AF0
     }
 }
 #endif
-// PC 0x00624BD0  Xbox 0x0004CF50
+// PC 0x00676AD0
 void CSWGuiInGameMenu::SetActiveControlID(int nControl, int bActive)
 {
     SWGUIINGAME_TRACE();
     if (nControl >= 0 && nControl < m_lControls.num)
         SetActiveControl(m_lControls.element[nControl], bActive);
 }
-// PC 0x00624C00  Xbox 0x0004CF80
+// PC 0x00675430
 void CSWGuiInGameMenu::OnShoulderLeft(CSWGuiControl* pControl)
 {
     SWGUIINGAME_TRACE();
@@ -136,7 +136,7 @@ void CSWGuiInGameMenu::OnShoulderLeft(CSWGuiControl* pControl)
         g_pAppManager->m_pClientExoApp->GetInGameGui()->PrevSWInGameGui();
     }
 }
-// PC 0x00624C30  Xbox 0x0004CFB0
+// PC 0x00675460
 void CSWGuiInGameMenu::OnShoulderRight(CSWGuiControl* pControl)
 {
     SWGUIINGAME_TRACE();
@@ -145,7 +145,7 @@ void CSWGuiInGameMenu::OnShoulderRight(CSWGuiControl* pControl)
         g_pAppManager->m_pClientExoApp->GetInGameGui()->NextSWInGameGui();
     }
 }
-// PC 0x00624C60  Xbox 0x0004CFE0
+// PC 0x00675490
 void CSWGuiInGameMenu::Update(float fElapsed)
 {
     SWGUIINGAME_TRACE();
@@ -169,63 +169,63 @@ void CSWGuiInGameMenu::Update(float fElapsed)
         m_LblhJou.m_cBorder.m_cParams.SetPulsingAlpha(0, 0, 0);
     }
 }
-// PC 0x00624CF0
+// PC 0x00675520
 void CSWGuiInGameMenu::OnEquipButtonPressed(CSWGuiControl* pControl)
 {
     SWGUIINGAME_TRACE();
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_EQUIP);
 }
-// PC 0x00624D10
+// PC 0x00675540
 void CSWGuiInGameMenu::OnInvButtonPressed(CSWGuiControl* pControl)
 {
     SWGUIINGAME_TRACE();
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_INVENTORY);
 }
-// PC 0x00624D30
+// PC 0x00675560
 void CSWGuiInGameMenu::OnCharButtonPressed(CSWGuiControl* pControl)
 {
     SWGUIINGAME_TRACE();
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_CHARACTER);
 }
-// PC 0x00624D50
+// PC 0x00675580
 void CSWGuiInGameMenu::OnMapButtonPressed(CSWGuiControl* pControl)
 {
     SWGUIINGAME_TRACE();
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_MAP);
 }
-// PC 0x00624D70
+// PC 0x006755A0
 void CSWGuiInGameMenu::OnAbiButtonPressed(CSWGuiControl* pControl)
 {
     SWGUIINGAME_TRACE();
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_ABILITIES);
 }
-// PC 0x00624D90
+// PC 0x006755C0
 void CSWGuiInGameMenu::OnJouButtonPressed(CSWGuiControl* pControl)
 {
     SWGUIINGAME_TRACE();
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_JOURNAL);
 }
-// PC 0x00624DB0
+// PC 0x006755E0
 void CSWGuiInGameMenu::OnOptButtonPressed(CSWGuiControl* pControl)
 {
     SWGUIINGAME_TRACE();
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_OPTIONS);
 }
-// PC 0x00624DD0
+// PC 0x00675600
 void CSWGuiInGameMenu::OnMsgButtonPressed(CSWGuiControl* pControl)
 {
     SWGUIINGAME_TRACE();
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SwitchToSWInGameGui(
         CGuiInGame::SCREEN_MESSAGES);
 }
-// PC 0x00624DF0  Xbox 0x0004D070
+// PC 0x006758B0
 void CSWGuiInGameMessages::ShowDialogMessages()
 {
     SWGUIINGAME_TRACE();
@@ -248,7 +248,7 @@ void CSWGuiInGameMessages::ShowDialogMessages()
     m_lblTitle.m_cText.m_cParams.SetText(sTitle);
 #endif
 }
-// PC 0x006277C0
+// PC 0x006799B0
 CSWGuiToolTipPanel::CSWGuiToolTipPanel(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -292,7 +292,7 @@ CSWGuiToolTipPanel::CSWGuiToolTipPanel(CSWGuiManager* pManager)
     InitControl(m_lblToolTip, "tooltip", 1);
     StopLoadFromLayout();
 }
-// PC 0x00627980  Xbox 0x0004FF10
+// PC 0x0067B240
 CSWGuiInGameMenu::CSWGuiInGameMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -386,7 +386,7 @@ CSWGuiInGameMenu::CSWGuiInGameMenu(CSWGuiManager* pManager)
     m_btnOpt.SetToolTip(48222, GUIEVENT_MENU_OPTIONS); m_btnMsg.SetToolTip(48223, GUIEVENT_MENU_MESSAGES);
 #endif
 }
-// PC 0x00624F70  Xbox 0x0004D0D0
+// PC 0x00675960
 void CSWGuiInGameMessages::ShowFeedbackMessages()
 {
     SWGUIINGAME_TRACE();
@@ -411,7 +411,7 @@ void CSWGuiInGameMessages::ShowFeedbackMessages()
 }
 
 #ifdef _XBOX
-void CSWGuiMessageBox::HandleInputEvent(int nEvent, int nState)  // PC 0x006250F0  Xbox 0x0004D120
+void CSWGuiMessageBox::HandleInputEvent(int nEvent, int nState)
 {
     SWGUIINGAME_TRACE();
     if (nState != 0)
@@ -455,7 +455,7 @@ void CSWGuiMessageBox::HandleInputEvent(int nEvent, int nState)  // PC 0x006250F
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 #else
-void CSWGuiMessageBox::HandleInputEvent(int nEvent, int nState)  // PC 0x006250F0  Xbox 0x0004D120
+void CSWGuiMessageBox::HandleInputEvent(int nEvent, int nState)  // PC 0x00675AC0
 {
     SWGUIINGAME_TRACE();
     if (nState != 0)
@@ -495,7 +495,7 @@ void CSWGuiMessageBox::HandleInputEvent(int nEvent, int nState)  // PC 0x006250F
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 #endif
-// PC 0x00625200  Xbox 0x0004D240
+// PC 0x00675C70
 void CSWGuiMessageBox::UpdateControls()
 {
     SWGUIINGAME_TRACE();
@@ -517,7 +517,7 @@ void CSWGuiMessageBox::UpdateControls()
     CSWGuiLabel* pIcon = &m_lblIcon;
     pIcon->m_bEnabled = m_bHasIcon;
 }
-// PC 0x00625260  Xbox 0x0004D2E0
+// PC 0x00675D00
 void CSWGuiMessageBox::SetOkButtonMessage(unsigned long nStrRef)
 {
     SWGUIINGAME_TRACE();
@@ -527,7 +527,7 @@ void CSWGuiMessageBox::SetOkButtonMessage(unsigned long nStrRef)
     m_btnOk.m_cText.m_cParams.SetStrRef(nStrRef);
 #endif
 }
-// PC 0x00625270  Xbox 0x0004D2F0
+// PC 0x00675D10
 void CSWGuiMessageBox::SetCancelButtonMessage(unsigned long nStrRef)
 {
     SWGUIINGAME_TRACE();
@@ -537,7 +537,7 @@ void CSWGuiMessageBox::SetCancelButtonMessage(unsigned long nStrRef)
     m_btnCancel.m_cText.m_cParams.SetStrRef(nStrRef);
 #endif
 }
-// PC 0x00625280  Xbox 0x0004D300
+// PC 0x00675D20
 void CSWGuiMessageBox::HideButtons()
 {
     SWGUIINGAME_TRACE();
@@ -552,7 +552,7 @@ void CSWGuiMessageBox::HideButtons()
     m_btnCancel.SetEnabledFlag(0);
 #endif
 }
-// PC 0x006252A0  Xbox 0x0004D330
+// PC 0x00675D40
 void CSWGuiMessageBox::ResetButtonMessage()
 {
     SWGUIINGAME_TRACE();
@@ -574,7 +574,7 @@ void CSWGuiMessageBox::ResetButtonMessage()
     m_btnCancel.m_cText.m_cParams.SetStrRef(1581);
 #endif
 }
-// PC 0x006252F0  Xbox 0x0004D390
+// PC 0x00675D90
 void CSWGuiMessageBox::AddMessageLabel()
 {
     SWGUIINGAME_TRACE();
@@ -591,13 +591,13 @@ void CSWGuiMessageBox::AddMessageLabel()
     pList->AddControls(&pControl, 1, 0, 0, 0);
     pList->SetSelectedControl(&m_lblMessage, 0);
 }
-// PC 0x0041A290  Xbox 0x0004CEC0
+// PC 0x00419D90
 inline int CSWGuiListBox::IsOversized()
 {
     return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
            m_lItems.num > 0 && !m_bHideScrollIcon;
 }
-// PC 0x006253A0  Xbox 0x0004D440
+// PC 0x00677AA0
 void CSWGuiMessageBox::FixMessageLabel()
 {
     CSWGuiExtent cPanel = m_cPanelExtent;
@@ -797,7 +797,7 @@ void CSWGuiMessageBox::FixMessageLabel()
     CenterPanel();
 #endif
 }
-// PC 0x006258F0  Xbox 0x0004DA80
+// PC 0x00675E80
 void CSWGuiMessageBox::OnPanelAdded()
 {
     SWGUIINGAME_TRACE();
@@ -840,7 +840,7 @@ void CSWGuiMessageBox::OnPanelAdded()
 #endif
 #endif
 }
-// PC 0x00625A00  Xbox 0x0004DAC0
+// PC 0x00675FC0
 void CSWGuiMessageBox::OnPanelRemoved()
 {
     SWGUIINGAME_TRACE();
@@ -860,13 +860,13 @@ void CSWGuiMessageBox::OnPanelRemoved()
     m_bFocusOk = 0;
 #endif
 }
-// PC 0x00625A40  Xbox 0x0004DAE0
+// PC 0x006760D0
 void CSWGuiControllerLossBox::OnAccept(CSWGuiControl* pControl)
 {
     SWGUIINGAME_TRACE();
     g_pAppManager->m_pClientExoApp->GetInGameGui()->EndControllerPauseState();
 }
-// PC 0x00625A60  Xbox 0x0004DB00
+
 void CSWGuiMessageBox::OnDeath(CSWGuiControl* pControl)
 {
     SWGUIINGAME_TRACE();
@@ -874,19 +874,19 @@ void CSWGuiMessageBox::OnDeath(CSWGuiControl* pControl)
 }
 
 #ifndef _XBOX
-void CSWGuiMessageBox::OnOkButtonPressed(CSWGuiControl* pControl)  // PC 0x00625A80
+void CSWGuiMessageBox::OnOkButtonPressed(CSWGuiControl* pControl)  // PC 0x006760F0
 {
     SWGUIINGAME_TRACE();
     HandleInputEvent(502, m_btnOk.m_bSelected);
 }
-// PC 0x00625AA0
+// PC 0x00676110
 void CSWGuiMessageBox::OnCancelButtonPressed(CSWGuiControl* pControl)
 {
     SWGUIINGAME_TRACE();
     HandleInputEvent(503, m_btnCancel.m_bSelected);
 }
 #endif
-// PC 0x00625AC0  Xbox 0x0004DB20
+// PC 0x006768B0
 void CSWGuiStatusSummary::HandleInputEvent(int nEvent, int nState)
 {
     SWGUIINGAME_TRACE();
@@ -912,7 +912,7 @@ void CSWGuiStatusSummary::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x00625B50  Xbox 0x0004EEC0
+// PC 0x00678800
 void CSWGuiStatusSummary::DisplayStatus()
 {
     SWGUIINGAME_TRACE();
@@ -967,7 +967,7 @@ void CSWGuiStatusSummary::DisplayStatus()
     m_cStatusSummary.m_nExperience = 0;
     m_cStatusSummary.m_nStealthExperience = 0;
 }
-// PC 0x00625C60  Xbox 0x0004EFD0
+// PC 0x00678930
 void CSWGuiStatusSummary::OnPanelAdded()
 {
     SWGUIINGAME_TRACE();
@@ -1165,7 +1165,7 @@ void CSWGuiStatusSummary::OnPanelAdded()
     g_pGuiMan->MoveMouseToPosition(nMouseX, nMouseY);
 #endif
 }
-// PC 0x00626400  Xbox 0x0004F7F0
+// PC 0x0067C130
 CSWGuiInGameMessages::CSWGuiInGameMessages(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -1224,7 +1224,7 @@ CSWGuiInGameMessages::CSWGuiInGameMessages(CSWGuiManager* pManager)
 #endif
     SetActiveControl(pMessages, 0);
 }
-// PC 0x00626820  Xbox 0x0004DD00
+// PC 0x00677240
 CSWGuiInGameMessages::~CSWGuiInGameMessages()
 {
     m_lbDialog.ClearItems();
@@ -1232,7 +1232,7 @@ CSWGuiInGameMessages::~CSWGuiInGameMessages()
     delete[] m_pDialogLabels;
     delete[] m_pMessageLabels;
 }
-// PC 0x00626920  Xbox 0x0004DE20
+// PC 0x0067A630
 void CSWGuiInGameMessages::AddMessages(CGuiInGameMessage* pMessages, unsigned long nMessages)
 {
     CExoArrayList<CSWGuiControl*> aControls;
@@ -1275,7 +1275,7 @@ void CSWGuiInGameMessages::AddMessages(CGuiInGameMessage* pMessages, unsigned lo
         pList->SetSelectedControl(nMessages - 1, 0);
     }
 }
-// PC 0x00626B10  Xbox 0x0004E000
+// PC 0x0067A280
 void CSWGuiInGameMessages::AddDialogMessages(CGuiInGameDialogMessage* pMessages,
                                             unsigned long nMessages)
 {
@@ -1310,7 +1310,7 @@ void CSWGuiInGameMessages::AddDialogMessages(CGuiInGameDialogMessage* pMessages,
         pList->SetSelectedControl(nMessages - 1, 0);
     }
 }
-// PC 0x00626D90  Xbox 0x0004E270
+// PC 0x0067C060
 void CSWGuiInGameMessages::OnPanelAdded()
 {
 #ifndef _XBOX
@@ -1325,7 +1325,7 @@ void CSWGuiInGameMessages::OnPanelAdded()
     g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0xC, OBJECT_INVALID,
                                                        OBJECT_INVALID, 0);
 }
-// PC 0x00626DF0  Xbox 0x0004E2D0
+// PC 0x00677430
 CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -1379,14 +1379,14 @@ CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager)
 #endif
     m_nOpenSound = 15;
 }
-// PC 0x00627130  Xbox 0x0004E700
+// PC 0x00677A20
 void CSWGuiMessageBox::SetAllowCancel(int bAllowCancel)
 {
     m_bAllowCancel = bAllowCancel;
     m_nOpenSound = bAllowCancel != 0 ? 15 : 2;
     UpdateControls();
 }
-// PC 0x00627160  Xbox 0x0004E730
+// PC 0x00677A50
 void CSWGuiMessageBox::SetIcon(const CResRef& cIcon)
 {
     if (cIcon.IsValid())
@@ -1396,7 +1396,7 @@ void CSWGuiMessageBox::SetIcon(const CResRef& cIcon)
         UpdateControls();
     }
 }
-// PC 0x006271A0  Xbox 0x0004E770
+// PC 0x0067AD90
 void CSWGuiMessageBox::SetMessage(CExoString sMessage)
 {
     g_pTlkTable->ParseStr(sMessage);
@@ -1406,7 +1406,7 @@ void CSWGuiMessageBox::SetMessage(CExoString sMessage)
 #endif
     FixMessageLabel();
 }
-// PC 0x00627220  Xbox 0x0004E800
+// PC 0x006780A0
 void CSWGuiControllerLossBox::OnPanelAdded()
 {
     SetAllowCancel(0);
@@ -1416,7 +1416,7 @@ void CSWGuiControllerLossBox::OnPanelAdded()
     m_pCallbackControl = 0;
     CSWGuiMessageBox::OnPanelAdded();
 }
-// PC 0x00627260  Xbox 0x0004E960
+
 void CSWGuiMessageBox::DisplayDeathMessage()
 {
     SetAllowCancel(0);
@@ -1426,7 +1426,7 @@ void CSWGuiMessageBox::DisplayDeathMessage()
     m_pCallbackControl = 0;
     m_pManager->AddPanel(this, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
-// PC 0x00628260  Xbox 0x0004FC40
+// PC 0x00675680
 void CSWGuiInGameMessages::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -1488,7 +1488,7 @@ void CSWGuiInGameMessages::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006272A0  Xbox 0x0004E9A0
+// PC 0x006780E0
 CSWGuiStatusSummary::CSWGuiStatusSummary(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -1561,7 +1561,7 @@ static inline void SwguiingameTrace1()
 }
 
 #ifdef _XBOX
-// Xbox 0x0004E7E0
+
 CSWGuiControllerLossBox::CSWGuiControllerLossBox(CSWGuiManager* pManager)
     : CSWGuiMessageBox(pManager)
 {
@@ -1575,7 +1575,7 @@ CSWGuiControllerLossBox::CSWGuiControllerLossBox(CSWGuiManager* pManager)
 #include "exoinput.h"
 #include "clientexoappinternal.h"
 void ExoXboxLaunch(KOTOR_LAUNCH_DATA* pParams, const char* pszModuleName);
-// Xbox 0x0004E860
+
 void CSWGuiMessageBox::OnRestart(CSWGuiControl* pControl)
 {
     KOTOR_LAUNCH_DATA cParams;
@@ -1589,7 +1589,7 @@ void CSWGuiMessageBox::OnRestart(CSWGuiControl* pControl)
     cParams.SetOptionsData(cOptionsData);
     ExoXboxLaunch(&cParams, NULL);
 }
-// Xbox 0x0004E920
+
 void CSWGuiMessageBox::ShowLoadError(unsigned long nStrRef)
 {
     SetAllowCancel(0);

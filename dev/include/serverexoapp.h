@@ -56,7 +56,7 @@ public:
                                   int bGuaranteed);
     virtual int HandleMessage(unsigned long nPlayerId, unsigned char* pMessage,
                               unsigned long nSize, int bGuaranteed);
-    virtual float GetFPS()  // PC 0x004AEC60  Xbox 0x0015EB60
+    virtual float GetFPS()  // PC 0x004DC860
     {
         return 100.0f;
     }
@@ -68,7 +68,7 @@ public:
     virtual CConnectionLib* GetConnectionLib();
     virtual CExoLocString* GetModuleDescription();
     virtual int GetApplicationId();
-    virtual void SetApplicationIdsMatch(int bMatch)  // PC 0x0060E760
+    virtual void SetApplicationIdsMatch(int bMatch)  // PC 0x005EE1C0
     {
     }
 
@@ -223,7 +223,7 @@ public:
     void SetMoveToPausedTimeOfDay(unsigned long nTimeOfDay);
     unsigned long GetMoveToPausedTimeOfDay();
     void SetSaveGameName(const CExoString& sName);
-    // PC 0x004B2820  Xbox 0x0001C420
+    // PC 0x004EA0F0
     CSWSCreature* GetPlayerCreature()
     {
         ServerExoAppTrace(this);

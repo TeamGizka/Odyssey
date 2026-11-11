@@ -44,7 +44,7 @@ public:
 };
 
 #ifdef _XBOX
-// PC 0x005EBC60
+
 inline unsigned long CExoFileInternal::Write(const void* data,
                                              unsigned long size,
                                              unsigned long count)

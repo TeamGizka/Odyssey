@@ -386,13 +386,13 @@ const char* tc(char* sBuffer)
 }
 #endif
 #ifdef _XBOX
-// Xbox 0x00011E20
+
 void ExoXboxRestart()
 {
     XLaunchNewImage("d:\\default.xbe", NULL);
 }
 #endif
-// Xbox 0x000126C0
+
 void SaveCreature(char* sName)
 {
     g_pAppManager->m_pClientExoApp->GetPlayerCreature()->SaveCharGenCreature();
@@ -433,7 +433,7 @@ LRESULT CALLBACK CinematicBackdropWndProc(HWND hWnd, UINT nMsg, WPARAM wParam,
     return 0;
 }
 #ifndef _XBOX
-void HandleLoadError(unsigned long nError)  // PC 0x004015A0  Xbox 0x00012730
+void HandleLoadError(unsigned long nError)  // PC 0x004015A0
 {
 }
 #endif
@@ -518,7 +518,7 @@ void SetBlendMode(int nSource, int nDestination)
 {
     GLRender_SetBlendFunc(nSource, nDestination);
 }
-// PC 0x00401690  Xbox 0x00012650
+// PC 0x004016B0
 void SetClearColor(char* sColor)
 {
     GLclampf fRed = 0.0f;
@@ -529,7 +529,7 @@ void SetClearColor(char* sColor)
     sscanf(sColor, "%f %f %f %f", &fRed, &fGreen, &fBlue, &fAlpha);
     GLRender_SetClearColor(fRed, fGreen, fBlue, fAlpha);
 }
-// PC 0x00401700
+// PC 0x00401720
 void ProcessCommandLine(int argc, char** argv)
 {
 
@@ -571,7 +571,7 @@ void ProcessCommandLine(int argc, char** argv)
 }
 
 #ifndef _XBOX
-void DoConsoleHist(unsigned short nKey)  // PC 0x00401870
+void DoConsoleHist(unsigned short nKey)  // PC 0x00401890
 {
     if (nKey == VK_LEFT)
     {
@@ -674,7 +674,7 @@ void SetProcessorAffinity(unsigned int nProcessor)
 #endif
 
 #ifndef _XBOX
-DWORD WINAPI StartAddress(LPVOID pArg)  // PC 0x00401A30
+DWORD WINAPI StartAddress(LPVOID pArg)  // PC 0x00401A50
 {
     static int bClassRegistered;
 
@@ -736,7 +736,7 @@ DWORD WINAPI StartAddress(LPVOID pArg)  // PC 0x00401A30
     return 0;
 }
 #endif
-// PC 0x00401BB0  Xbox 0x000126E0
+// PC 0x00401BD0
 void SetupOpenGL()
 {
     GLRender_SetClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -751,7 +751,7 @@ void SetupOpenGL()
 
 #ifdef _XBOX
 extern void AurSetFrameBufferMode(int nMode);
-// Xbox 0x000127A0
+
 void messagepump(int nUnused)
 {
     UINT nResult;
@@ -773,7 +773,7 @@ void messagepump(int nUnused)
     g_pD3DDevice->Swap(0);
     g_nRenderStartTime = AurGetHighResolutionTime();
 }
-// PC 0x00401C10  Xbox 0x00012D90
+
 void UpdateScreen(float fElapsed, int bRunWorld, int bSkipRender)
 {
     AurMakeCurrent();
@@ -829,7 +829,7 @@ void UpdateScreen(float fElapsed, int bRunWorld, int bSkipRender)
     }
 }
 #else
-void UpdateScreen(float fElapsed, int bRunWorld, int bSkipRender)  // PC 0x00401C10  Xbox 0x00012D90
+void UpdateScreen(float fElapsed, int bRunWorld, int bSkipRender)  // PC 0x00401C30
 {
     AurMakeCurrent();
 
@@ -896,7 +896,7 @@ void UpdateScreen(float fElapsed, int bRunWorld, int bSkipRender)  // PC 0x00401
 #endif
 
 #ifndef _XBOX
-void DeactivateRenderWindow()  // PC 0x00401D90
+void DeactivateRenderWindow()  // PC 0x00401DB0
 {
     if (g_bRenderWindowActive != 0)
     {
@@ -913,7 +913,7 @@ void DeactivateRenderWindow()  // PC 0x00401D90
         g_bRenderWindowActive = 0;
     }
 }
-// PC 0x00401E00
+// PC 0x00401E30
 int ActivateRenderWindow()
 {
     if (g_bRenderWindowActive != 0)
@@ -932,7 +932,7 @@ int ActivateRenderWindow()
     return g_pAurora->ResetGammaRamp(
         pClientExoApp->GetClientOptions()->GetGammaSetting(), 0);
 }
-// PC 0x00401E90
+// PC 0x00401EC0
 void NotifyModeChangeActivate(int bActive, int bMinimized)
 {
     g_pAppManager->m_pClientExoApp->SetInputActive(1, 0);
@@ -956,7 +956,7 @@ void NotifyModeChangeActivate(int bActive, int bMinimized)
 #ifdef _XBOX
 #define VK_ESCAPE 0x1B
 #endif
-// PC 0x00401F00  Xbox 0x00012920
+// PC 0x00401F30
 void DoConsole(char cChar)
 {
     static int nOffset;
@@ -1045,7 +1045,7 @@ void DoConsole(char cChar)
     }
 }
 #ifndef _XBOX
-int HandleWMCharMessage(unsigned short nChar)  // PC 0x00402240  Xbox 0x00012F00
+int HandleWMCharMessage(unsigned short nChar)  // PC 0x00402270
 {
     unsigned short nCheatChar;
 
@@ -1127,7 +1127,7 @@ int HandleWMCharMessage(unsigned short nChar)  // PC 0x00402240  Xbox 0x00012F00
 }
 #endif
 #ifndef _XBOX
-int HandleWMKeyDownMessage(HWND hWnd, unsigned int nKey, long nKeyData)  // PC 0x004024F0
+int HandleWMKeyDownMessage(HWND hWnd, unsigned int nKey, long nKeyData)  // PC 0x00402530
 {
     if (g_pAppManager->m_pClientExoApp->GetCaptureEventPlayBack() != 0)
         return 0;
@@ -1199,7 +1199,7 @@ int HandleWMKeyDownMessage(HWND hWnd, unsigned int nKey, long nKeyData)  // PC 0
 #endif
 
 #ifndef _XBOX
-LRESULT CALLBACK WinMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,  // PC 0x00402800
+LRESULT CALLBACK WinMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,  // PC 0x00402840
                                    LPARAM lParam)
 {
     switch (nMsg)
@@ -1731,7 +1731,7 @@ LRESULT CALLBACK WinMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,  // PC 0
 void InitOpenGLWindow(HINSTANCE hInstance, int nCmdShow);
 
 #ifndef _XBOX
-HWND InitGameApp(HINSTANCE hInstance, int nCmdShow)  // PC 0x00403F20
+HWND InitGameApp(HINSTANCE hInstance, int nCmdShow)  // PC 0x00403F70
 {
 
     static char szClassName[] =
@@ -1787,7 +1787,7 @@ HWND InitGameApp(HINSTANCE hInstance, int nCmdShow)  // PC 0x00403F20
 #endif
 
 #ifndef _XBOX
-void InitOpenGLWindow(HINSTANCE hInstance, int nCmdShow)  // PC 0x004036F0
+void InitOpenGLWindow(HINSTANCE hInstance, int nCmdShow)  // PC 0x00403730
 {
     char szClassName[16];
     WNDCLASSA wc;
@@ -1819,7 +1819,7 @@ void InitOpenGLWindow(HINSTANCE hInstance, int nCmdShow)  // PC 0x004036F0
 #endif
 
 #ifndef _XBOX
-void ReInitAurora(unsigned long nWidth, unsigned long nHeight,  // PC 0x00403800
+void ReInitAurora(unsigned long nWidth, unsigned long nHeight,  // PC 0x00403840
                   unsigned char nBitsPerPixel, int nFlags, int bRestartMovies)
 {
     unsigned char nMouseMode = 0xFF;
@@ -1979,7 +1979,7 @@ void ReInitAurora(unsigned long nWidth, unsigned long nHeight,  // PC 0x00403800
 #endif
 
 #ifndef _XBOX
-void ChangeResolutionForMovie()  // PC 0x00403CF0
+void ChangeResolutionForMovie()  // PC 0x00403D40
 {
     g_nMovieResolutionDepth++;
     g_nLastResolutionWidth = g_nScreenWidth;
@@ -2015,7 +2015,7 @@ void ChangeResolutionForMovie()  // PC 0x00403CF0
 #endif
 
 #ifndef _XBOX
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,  // PC 0x004041F0
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,  // PC 0x00404250
                    LPSTR lpCmdLine, int nCmdShow)
 {
     SECURITY_ATTRIBUTES cMutexAttr;
@@ -2269,7 +2269,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,  // PC 0x004041
 #endif
 
 #ifndef _XBOX
-void RestoreResolutionFromMovie()  // PC 0x00403DE0
+void RestoreResolutionFromMovie()  // PC 0x00403E30
 {
     unsigned long nFlags;
     CClientExoAppInternal* pInternal =
@@ -2326,7 +2326,7 @@ void RestoreResolutionFromMovie()  // PC 0x00403DE0
 #endif
 
 #ifdef _XBOX
-// PC 0x00402240  Xbox 0x00012F00
+
 int HandleWMCharMessage(unsigned short nChar)
 {
     if (g_pAppManager->m_pClientExoApp->GetCaptureEvents() != 0 &&
@@ -2407,7 +2407,7 @@ extern int RyanTotalLevelVertices;
 
 int g_mdxMem;
 int g_txbMem;
-// Xbox 0x00011720
+
 char* Sound(char* sBuffer)
 {
     static char sResult[128];
@@ -2417,7 +2417,7 @@ char* Sound(char* sBuffer)
     return sResult;
 }
 ConsoleFunc ConFSound("Sound", Sound);
-// Xbox 0x00011770
+
 char* Buffers(char* sBuffer)
 {
     static char sResult[128];
@@ -2427,7 +2427,7 @@ char* Buffers(char* sBuffer)
     return sResult;
 }
 ConsoleFunc ConFBuffers("Buffers", Buffers);
-// Xbox 0x000117D0
+
 char* C_Stats(char* sBuffer)
 {
     static char sResult[128];
@@ -2436,7 +2436,7 @@ char* C_Stats(char* sBuffer)
     return sResult;
 }
 ConsoleFunc ConFC_Stats("C_Stats", C_Stats);
-// Xbox 0x00011820
+
 char* S_Stats(char* sBuffer)
 {
     static char sResult[128];
@@ -2445,7 +2445,7 @@ char* S_Stats(char* sBuffer)
     return sResult;
 }
 ConsoleFunc ConFS_Stats("S_Stats", S_Stats);
-// Xbox 0x00011850
+
 char* AI_Stats(char* sBuffer)
 {
     static char sResult[128];
@@ -2453,7 +2453,7 @@ char* AI_Stats(char* sBuffer)
     return sResult;
 }
 ConsoleFunc ConFAI_Stats("AI_Stats", AI_Stats);
-// Xbox 0x00011880
+
 char* TexMem(char* sBuffer)
 {
     static char sResult[128];
@@ -2467,7 +2467,7 @@ char* TexMem(char* sBuffer)
     return sResult;
 }
 ConsoleFunc ConFTexMem("TexMem", TexMem);
-// Xbox 0x00011910
+
 char* GfxMemOld(char* sBuffer)
 {
     static char sResult[128];
@@ -2477,7 +2477,7 @@ char* GfxMemOld(char* sBuffer)
     return sResult;
 }
 ConsoleFunc ConFGfxMemOld("GfxMemOld", GfxMemOld);
-// Xbox 0x00011960
+
 char* XbxMem(char* sBuffer)
 {
     static char sResult[128];
@@ -2507,7 +2507,7 @@ char* XbxMem(char* sBuffer)
     return sResult;
 }
 ConsoleFunc ConFXbxMem("XbxMem", XbxMem);
-// Xbox 0x00011A30
+
 char* GuiMem(char* sBuffer)
 {
     static char sResult[128];
@@ -2516,7 +2516,7 @@ char* GuiMem(char* sBuffer)
     return sResult;
 }
 ConsoleFunc ConFGuiMem("GuiMem", GuiMem);
-// Xbox 0x00011A60
+
 char* LevMem(char* sBuffer)
 {
     static char sResult[128];
@@ -2527,7 +2527,7 @@ char* LevMem(char* sBuffer)
     return sResult;
 }
 ConsoleFunc ConFLevMem("LevMem", LevMem);
-// Xbox 0x00011AD0
+
 char* DynMem(char* sBuffer)
 {
     static char sResult[128];
@@ -2540,7 +2540,7 @@ char* DynMem(char* sBuffer)
     return sResult;
 }
 ConsoleFunc ConFDynMem("DynMem", DynMem);
-// Xbox 0x00011B60
+
 char* GfxMem(char* sBuffer)
 {
     static char sResult[128];
@@ -2559,7 +2559,7 @@ char* GfxMem(char* sBuffer)
     return sResult;
 }
 ConsoleFunc ConFGfxMem("GfxMem", GfxMem);
-// Xbox 0x00011C10
+
 char* ResMem(char* sBuffer)
 {
     static char sResult[128];
@@ -2577,7 +2577,7 @@ char* ResMem(char* sBuffer)
     return sResult;
 }
 ConsoleFunc ConFResMem("ResMem", ResMem);
-// Xbox 0x00011CA0
+
 char* ResMem2(char* sBuffer)
 {
     static char sResult[128];
@@ -2588,7 +2588,7 @@ char* ResMem2(char* sBuffer)
     return sResult;
 }
 ConsoleFunc ConFResMem2("ResMem2", ResMem2);
-// Xbox 0x00011D30
+
 char* ClearLogCounters(char* sBuffer)
 {
     return "NOT ENABLED";
@@ -2606,7 +2606,7 @@ ConsoleFunc ConVanims("anims", &anims);
 ConsoleFunc ConVtexts("texts", &texts);
 ConsoleFunc ConVparts("parts", &parts);
 ConsoleFunc ConVverts2("verts2", &verts2);
-// Xbox 0x00011D40
+
 char* tc(char* sBuffer)
 {
     static char sResult[128];
@@ -2642,21 +2642,21 @@ int g_nOldFrameBufferMode = antialiasmode;
 
 int g_bLowDiskMode = 0;
 unsigned char g_nBootFlags = 0;
-// Xbox 0x00011E10
+
 void ExoXboxLaunch(KOTOR_LAUNCH_DATA* pParams, const char* pszModuleName)
 {
     XLaunchNewImage("d:\\default.xbe", (PLAUNCH_DATA)pParams);
 }
-// PC 0x00401440
+
 void SetWindowTitle()
 {
 }
-// PC 0x004024F0
+
 int HandleWMKeyDownMessage(HWND hWnd, unsigned int nKey, long nKeyData)
 {
     return 0;
 }
-// Xbox 0x00012CA0
+
 void ReInitAurora(unsigned long nWidth, unsigned long nHeight,
                   unsigned char nBitsPerPixel, int nFlags)
 {
@@ -2680,7 +2680,7 @@ void ReInitAurora(unsigned long nWidth, unsigned long nHeight,
                                 fClearColor[3]);
     }
 }
-// Xbox 0x000130F0
+
 int main()
 {
     KOTOR_LAUNCH_DATA cParams;
@@ -2999,7 +2999,7 @@ int main()
 
 #ifdef _XBOX
 #include "swguiingame.h"
-// PC 0x004015A0  Xbox 0x00012730
+
 void HandleLoadError(unsigned long nError)
 {
     CSWGuiMessageBox* pBox = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;

@@ -6,18 +6,18 @@
 const int CSWDoorSurfaceMesh::DOOR_STATE_CLOSED = 0;
 const int CSWDoorSurfaceMesh::DOOR_STATE_OPEN1 = 1;
 const int CSWDoorSurfaceMesh::DOOR_STATE_OPEN2 = 2;
-// PC 0x005CE070  Xbox 0x00228D90
+// PC 0x00616210
 void CSWDoorSurfaceMesh::SetOpenPosition(unsigned char nIndex,
                                          Vector vPosition)
 {
     EXOXBOXASSERT(nIndex <= 1); m_avUsePoints[nIndex] = WorldToLocal(vPosition);
 }
-// PC 0x005CE0B0  Xbox 0x00228DE0
+// PC 0x00616250
 CSWDoorSurfaceMesh::CSWDoorSurfaceMesh()
     : CSWCollisionMesh(RESTYPE_MDL, 0x804)
 {
 }
-// PC 0x005CE0D0  Xbox 0x00228E00
+// PC 0x00616270
 CSWDoorSurfaceMesh::~CSWDoorSurfaceMesh()
 {
 }
@@ -26,7 +26,7 @@ int LoadDoorWalkMesh(CSWDoorSurfaceMesh* pMesh, CResDWK* pRes)
 {
     return pMesh->LoadMeshText(pRes->GetDWKDataPtr(), pRes->GetDWKSize());
 }
-// PC 0x005CE0E0  Xbox 0x00228E10
+// PC 0x00616280
 void CSWDoorSurfaceMesh::SetDoorType(int nType)
 {
     m_nDoorType = nType;
@@ -46,7 +46,7 @@ void CSWDoorSurfaceMesh::SetDoorType(int nType)
         break;
     }
 }
-// PC 0x005CE160  Xbox 0x00228E90
+// PC 0x00616300
 int CSWDoorSurfaceMesh::LoadMeshText(unsigned char* pData, unsigned long nSize)
 {
     char* pLine = new char[256];
@@ -235,7 +235,7 @@ int CSWDoorSurfaceMesh::LoadMeshText(unsigned char* pData, unsigned long nSize)
     }
     return 1;
 }
-// PC 0x005CE770  Xbox 0x002294D0
+// PC 0x00616910
 int CSWDoorSurfaceMesh::LoadMeshBinary(CResBWM* pResBWM)
 {
     CSWCollisionMesh::LoadMeshBinary(pResBWM);
@@ -251,7 +251,7 @@ int CSWDoorSurfaceMesh::LoadMeshBinary(CResBWM* pResBWM)
 
     return 1;
 }
-// PC 0x005CE8B0  Xbox 0x00229620
+// PC 0x00616A50
 inline void CSWDoorSurfaceMesh::GetResourceForBinaryWalkMesh(CResRef& cResRef)
 {
     CExoString sResRef;
@@ -260,7 +260,7 @@ inline void CSWDoorSurfaceMesh::GetResourceForBinaryWalkMesh(CResRef& cResRef)
     sSuffix.Format("%s%d", sResRef.CStr(), m_nDoorType);
     cResRef = sSuffix;
 }
-// PC 0x005CE960  Xbox 0x002296D0
+// PC 0x00616B00
 int CSWDoorSurfaceMesh::SaveBinaryMesh(const CExoString& sFileName)
 {
     int nResult = CSWCollisionMesh::SaveBinaryMesh(sFileName);

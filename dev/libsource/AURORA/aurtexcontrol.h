@@ -84,7 +84,7 @@ public:
     virtual ~PerlinTextureController();
     virtual void Control();
     virtual void Init();
-    // PC 0x00463310
+    // PC 0x004794F0
     virtual void ParseField(char* sField)
     {
         TextureController::ParseField(sField);
@@ -115,7 +115,7 @@ public:
     virtual ~RingDistortTextureController();
     virtual void Control();
     virtual void Init();
-#ifdef _XBOX  // PC 0x005A4CF0  Xbox 0x0027E2B0
+#ifdef _XBOX  // PC 0x005ED350
     virtual bool IsLinear()
 #else
     virtual char IsLinear()
@@ -151,7 +151,7 @@ class WaterTextureController : public TextureController
 {
 public:
     WaterTextureController(CAurTexture* pTexture);
-    virtual ~WaterTextureController()  // PC 0x00463120  Xbox 0x002D0310
+    virtual ~WaterTextureController()  // PC 0x00479300
     {
         delete[] m_pfHeight;
         delete[] m_pfVelocity;
@@ -183,7 +183,7 @@ class WaveTextureController : public TextureController
 {
 public:
     WaveTextureController(CAurTexture* pTexture);
-    virtual ~WaveTextureController()  // PC 0x004632B0  Xbox 0x002D04A0
+    virtual ~WaveTextureController()  // PC 0x00479490
     {
         delete[] m_pfWaveImage;
         delete[] m_pfOffsetImage;
@@ -202,7 +202,7 @@ class ArturoTextureController : public TextureController
 {
 public:
     ArturoTextureController(CAurTexture* pTexture);
-    virtual ~ArturoTextureController()  // PC 0x00463380  Xbox 0x002D0570
+    virtual ~ArturoTextureController()  // PC 0x00479560
     {
         delete[] m_pfArturoCurrent;
         delete[] m_pfArturoPrevious;
@@ -240,12 +240,12 @@ class CycleTIDTextureController : public TextureController
 {
 public:
     CycleTIDTextureController(CAurTexture* pTexture);
-    virtual ~CycleTIDTextureController()  // PC 0x004634C0  Xbox 0x002D06C0
+    virtual ~CycleTIDTextureController()  // PC 0x004796A0
     {
     }
     virtual void Control();
     virtual void Init();
-#ifdef _XBOX  // PC 0x0041F250
+#ifdef _XBOX  // PC 0x00420990
     virtual bool IsLinear()
 #else
     virtual char IsLinear()

@@ -46,12 +46,12 @@ public:
         TRAP_ANIMATION_ACTIVE = 10143,
         TRAP_ANIMATION_INACTIVE = 10144
     };
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWSTrigger* AsSWSTrigger()
     {
         return this;
     }
-    virtual CExoLocString* GetFirstName()  // PC 0x0058ED60
+    virtual CExoLocString* GetFirstName()  // PC 0x00587F40
     {
         return &m_lsName;
     }

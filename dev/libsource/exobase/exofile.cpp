@@ -1,80 +1,80 @@
 #include <string.h>
 #include "exobase.h"
 #include "exofileinternal.h"
-// PC 0x005E6810  Xbox 0x00134990
+// PC 0x00632140
 CExoAliasList::CExoAliasList()
 {
     m_pInternal = new CExoAliasListInternal;
 }
-// PC 0x005E6880  Xbox 0x00134A00
+// PC 0x006321B0
 void CExoAliasList::Add(const CExoString& sAlias, const CExoString& sPath)
 {
     m_pInternal->Add(sAlias, sPath);
 }
 
 #ifdef _XBOX
-// Xbox 0x00134A10
+
 void CExoAliasList::ChangePath(const CExoString& sAlias, const CExoString& sPath)
 {
     m_pInternal->ChangePath(sAlias, sPath);
 }
 #endif
-// PC 0x005E6890  Xbox 0x00134A20
+// PC 0x006321C0
 const CExoString& CExoAliasList::GetAliasPath(const CExoString& sAlias,
                                               int nLength) const
 {
     return m_pInternal->GetAliasPath(sAlias, nLength);
 }
-// PC 0x005E68A0  Xbox 0x00134A30
+// PC 0x006321D0
 CExoString CExoAliasList::ResolveFileName(const CExoString& sAlias,
                                           unsigned short nResType) const
 {
     return m_pInternal->ResolveFileName(sAlias, nResType);
 }
-// PC 0x005E68D0  Xbox 0x00134A60
+// PC 0x00632200
 CExoFile::CExoFile(const CExoString& path, unsigned short resourceType,
                    const CExoString& mode)
 {
     m_pInternal = new CExoFileInternal(path, resourceType, mode);
 }
-// PC 0x005E6940  Xbox 0x00134AD0
+// PC 0x00632270
 unsigned long CExoFile::GetOffset()
 {
     return m_pInternal->GetOffset();
 }
-// PC 0x005E6950  Xbox 0x00134AE0
+// PC 0x00632280
 int CExoFile::GetSize()
 {
     return m_pInternal->GetSize();
 }
-// PC 0x005E6960  Xbox 0x00134AF0
+// PC 0x00632290
 unsigned long CExoFile::Read(void* data, unsigned long size,
                              unsigned long count)
 {
     return m_pInternal->Read(data, size, count);
 }
-// PC 0x005E6970  Xbox 0x00134B00
+// PC 0x006322A0
 unsigned long CExoFile::Read(CExoString& text, unsigned long count)
 {
     return m_pInternal->Read(&text, count);
 }
-// PC 0x005E6980  Xbox 0x00134B10
+// PC 0x006322B0
 void CExoFile::ReadAsync(void* data, unsigned long size, unsigned long count)
 {
     m_pInternal->ReadAsync(data, size, count);
 }
-// PC 0x005E6990  Xbox 0x00134B20
+// PC 0x006322C0
 int CExoFile::ReadAsyncComplete()
 {
     return m_pInternal->ReadAsyncComplete();
 }
-// PC 0x005E69A0  Xbox 0x00134BE0
+// PC 0x00632370
 unsigned long CExoFile::Write(const void* data, unsigned long size,
                               unsigned long count)
 {
     return m_pInternal->Write(data, size, count);
 }
-// PC 0x005E69B0  Xbox 0x00134B50
+// PC 0x006322E0
 CExoAliasList::~CExoAliasList()
 {
     if (m_pInternal != NULL)
@@ -83,7 +83,7 @@ CExoAliasList::~CExoAliasList()
         m_pInternal = NULL;
     }
 }
-// PC 0x005E69E0  Xbox 0x00134B80
+// PC 0x00632310
 CExoFile::~CExoFile()
 {
     if (m_pInternal)
@@ -92,44 +92,44 @@ CExoFile::~CExoFile()
         m_pInternal = 0;
     }
 }
-// PC 0x005E6A10  Xbox 0x00134BB0
+// PC 0x00632340
 int CExoFile::FileOpened()
 {
     return m_pInternal->FileOpened();
 }
-// PC 0x005E6A20  Xbox 0x00134BC0
+// PC 0x00632350
 int CExoFile::Flush()
 {
     return m_pInternal->Flush();
 }
-// PC 0x005E6A40  Xbox 0x00134B40
+
 unsigned long CExoFile::Write(const char* text)
 {
     return m_pInternal->Write(text);
 }
-// PC 0x005E6A70  Xbox 0x00134C10
+// PC 0x006323A0
 unsigned long CExoFile::Write(const CExoString& text)
 {
     return m_pInternal->Write(text);
 }
-// PC 0x005E6AA0  Xbox 0x00134C50
+// PC 0x006323F0
 int CExoFile::Seek(int offset, int origin)
 {
     return m_pInternal->Seek(offset, origin);
 }
-// PC 0x005E6AD0  Xbox 0x00134C80
+// PC 0x00632420
 int CExoFile::SeekBeginning()
 {
     return m_pInternal->SeekBeginning();
 }
-// PC 0x005E6AF0  Xbox 0x00134CA0
+// PC 0x00632440
 int CExoFile::SeekEnd()
 {
     return m_pInternal->SeekEnd();
 }
 
 #ifndef _XBOX
-inline unsigned long CExoFileInternal::Write(const char* text)  // Xbox 0x00138AB0
+inline unsigned long CExoFileInternal::Write(const char* text)
 {
     return Write(text, 1, strlen(text));
 }
@@ -174,7 +174,7 @@ inline int CExoFileInternal::SeekEnd()
 }
 
 #ifdef _XBOX
-// Xbox 0x00134B30
+
 unsigned long CExoFile::ReadAsyncBytesRead()
 {
     return m_pInternal->ReadAsyncBytesRead();

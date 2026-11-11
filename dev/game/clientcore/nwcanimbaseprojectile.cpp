@@ -4,7 +4,7 @@
 static inline void NwcanimbaseprojectileTrace2();
 static inline void NwcanimbaseprojectileTrace1();
 #define NWCANIMBASEPROJECTILE_TRACE() NwcanimbaseprojectileTrace2()
-// PC 0x006EA6A0  Xbox 0x001244A0
+// PC 0x0075B130
 int CSWCAnimBaseProjectile::SetOrientation(const Vector& vFacing)
 {
     NWCANIMBASEPROJECTILE_TRACE();
@@ -24,17 +24,17 @@ int CSWCAnimBaseProjectile::SetOrientation(const Vector& vFacing)
         YawPitchRoll(Yaw(vNormalized), Pitch(vNormalized), 0.0f));
     return 1;
 }
-// PC 0x006EA470  Xbox 0x00124250
+// PC 0x0075AF20
 CSWCAnimBaseProjectile::CSWCAnimBaseProjectile()
 {
     m_nAnimationType = 7;
 }
-// PC 0x006EA490  Xbox 0x00124270
+// PC 0x0075AF40
 CSWCAnimBaseProjectile::~CSWCAnimBaseProjectile()
 {
     UnloadModel();
 }
-// PC 0x006EA4E0  Xbox 0x001242C0
+// PC 0x0075AF90
 int CSWCAnimBaseProjectile::LoadModel(const CResRef& sResRef,
                                       unsigned char nType)
 {
@@ -51,7 +51,7 @@ int CSWCAnimBaseProjectile::LoadModel(const CResRef& sResRef,
     m_bPaletteReplaced = 0;
     return 1;
 }
-// PC 0x006EA550  Xbox 0x00124340
+// PC 0x0075B000
 int CSWCAnimBaseProjectile::SetAnimation(unsigned short nAnimation,
                                          float fSpeed, int nFlags, float fBlend)
 {

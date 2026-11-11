@@ -20,14 +20,14 @@
 static inline void SwguiingameabilitiesTrace2();
 static inline void SwguiingameabilitiesTrace1();
 #define SWGUIINGAMEABILITIES_TRACE() SwguiingameabilitiesTrace2()
-// PC 0x006AB8B0  Xbox 0x000E2D00
+// PC 0x00736580
 void CSWGuiInGameAbilities::OnPanelRemoved()
 {
     m_lbAbility.ClearItems();
     m_cPowerChart.ClearChart();
     m_cFeatChart.ClearChart();
 }
-// PC 0x006AB8E0  Xbox 0x000E3000
+// PC 0x00736790
 void CSWGuiInGameSkillEntry::SetExtent(const CSWGuiExtent& cExtent)
 {
     if (cExtent.m_nWidth > 42)
@@ -51,7 +51,7 @@ void CSWGuiInGameSkillEntry::SetExtent(const CSWGuiExtent& cExtent)
             CSWGuiLabelHilight::m_cHilite.GetInnerExtent()));
     }
 }
-// PC 0x006AB9F0  Xbox 0x000E2D30
+// PC 0x007368C0
 void CSWGuiInGameSkillEntry::Draw(float fElapsed)
 {
     if (m_bActive)
@@ -67,7 +67,7 @@ void CSWGuiInGameSkillEntry::Draw(float fElapsed)
     m_cSelection.Draw(fElapsed);
     m_cText.Draw(fElapsed);
 }
-// PC 0x006ABA50  Xbox 0x000E2D90
+// PC 0x00736BE0
 inline int CSWGuiSkillFlowChart::GetSelected()
 {
     if (m_cFlows.num > 0)
@@ -80,7 +80,7 @@ inline int CSWGuiSkillFlowChart::GetSelected()
 }
 
 #ifdef _XBOX
-CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)  // PC 0x006ADDA0  Xbox 0x000E4460
+CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
     CExoString sName;
@@ -131,7 +131,7 @@ CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)  // PC 0x0
     m_pCreature = NULL;
 }
 #else
-CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)  // PC 0x006ADDA0  Xbox 0x000E4460
+CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)  // PC 0x00737ED0
     : CSWGuiPanel(pManager)
 {
     CExoString sName;
@@ -224,13 +224,13 @@ CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)  // PC 0x0
     m_pCreature = NULL;
 }
 #endif
-// PC 0x006ABAF0  Xbox 0x000E3D00
+// PC 0x00736C80
 CSWGuiInGameAbilities::~CSWGuiInGameAbilities()
 {
     m_lbDescription.ClearItems();
     m_lbAbility.ClearItems();
 }
-// PC 0x006ACCE0  Xbox 0x000E3420
+// PC 0x00737300
 void CSWGuiInGameAbilities::OnEnterPower(unsigned long nPower)
 {
     int nAdjust = 0;
@@ -302,7 +302,7 @@ void CSWGuiInGameAbilities::OnEnterPower(unsigned long nPower)
     m_lblName.m_cText.m_cParams.SetStrRef(pSpell->GetNameStrRef());
     SetDescription(pSpell->GetDescriptionStrRef());
 }
-// PC 0x006ABCE0  Xbox 0x000E2DC0
+// PC 0x007365B0
 void CSWGuiInGameAbilities::CreatePowerList()
 {
     if (m_pCreature != NULL)
@@ -315,14 +315,14 @@ void CSWGuiInGameAbilities::CreatePowerList()
 }
 
 #ifdef _XBOX
-// PC 0x0041A290  Xbox 0x0004CEC0
+
 inline int CSWGuiListBox::IsOversized()
 {
     return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
            m_lItems.num > 0 && !m_bHideScrollIcon;
 }
 #endif
-// PC 0x006ABD20  Xbox 0x000E2E00
+// PC 0x007365F0
 void CSWGuiInGameAbilities::UpdateDescriptionListBox(int bShow)
 {
     m_lbDescription.ClearItems();
@@ -346,7 +346,7 @@ void CSWGuiInGameAbilities::UpdateDescriptionListBox(int bShow)
     m_lblRAnalog.SetEnabledFlag(m_lbDescription.IsOversized());
 #endif
 }
-// PC 0x006ABDC0  Xbox 0x000E2EF0
+// PC 0x007366A0
 void CSWGuiInGameAbilities::SetDescription(unsigned long nStrRef)
 {
     STR_RES strDescription;
@@ -355,7 +355,7 @@ void CSWGuiInGameAbilities::SetDescription(unsigned long nStrRef)
     m_lblDescription.m_cText.m_cParams.SetText(strDescription.m_sString);
     UpdateDescriptionListBox(strDescription.m_sString.GetLength() > 0);
 }
-// PC 0x006ABE70  Xbox 0x000E2FB0
+
 int CSWGuiInGameAbilities::DisplayPowers()
 {
     unsigned char nClass = m_pCreature->m_pStats->GetClass(
@@ -364,7 +364,7 @@ int CSWGuiInGameAbilities::DisplayPowers()
 }
 
 #ifndef _XBOX
-void CSWGuiInGameAbilities::UpdatePortraits()  // PC 0x006ABEC0
+void CSWGuiInGameAbilities::UpdatePortraits()
 {
     CSWServerInfo* pInfo =
         (CSWServerInfo*)g_pAppManager->m_pServerExoApp->GetServerInfo();
@@ -584,7 +584,7 @@ void CSWGuiInGameAbilities::UpdatePortraits()  // PC 0x006ABEC0
 #endif
 
 #ifndef _XBOX
-void CSWGuiInGameAbilities::OnSwitchLeft(CSWGuiControl* pControl)  // PC 0x006AC3E0
+void CSWGuiInGameAbilities::OnSwitchLeft(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
     {
@@ -699,7 +699,7 @@ void CSWGuiInGameAbilities::OnSwitchLeft(CSWGuiControl* pControl)  // PC 0x006AC
 #endif
 
 #ifndef _XBOX
-void CSWGuiInGameAbilities::OnSwitchRight(CSWGuiControl* pControl)  // PC 0x006AC660
+void CSWGuiInGameAbilities::OnSwitchRight(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
     {
@@ -813,7 +813,7 @@ void CSWGuiInGameAbilities::OnSwitchRight(CSWGuiControl* pControl)  // PC 0x006A
 #endif
 
 #ifndef _XBOX
-void CSWGuiInGameAbilities::SetButtonColor(CSWGuiControl* pControl)  // PC 0x006AC8D0
+void CSWGuiInGameAbilities::SetButtonColor(CSWGuiControl* pControl)  // PC 0x00736730
 {
     switch (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode)
     {
@@ -829,7 +829,7 @@ void CSWGuiInGameAbilities::SetButtonColor(CSWGuiControl* pControl)  // PC 0x006
     }
 }
 #endif
-// PC 0x006AC930  Xbox 0x000E3110
+// PC 0x00736920
 void CSWGuiInGameSkillEntry::Initialize(CSWGuiText& cText,
                                         CSWGuiBorder& cBorder,
                                         CSWGuiBorder& cHilite, int nWidth)
@@ -873,7 +873,7 @@ void CSWGuiInGameSkillEntry::Initialize(CSWGuiText& cText,
         SetExtent(cExtent);
     }
 }
-// PC 0x006ACB40  Xbox 0x000E3320
+// PC 0x00736AF0
 void CSWGuiInGameSkillEntry::SetSkill(unsigned long nSkill,
                                       unsigned char nState)
 {
@@ -919,7 +919,7 @@ void CSWGuiInGameSkillEntry::SetSkill(unsigned long nSkill,
     pParams->SetFillImage(cIcon, 0);
     m_cText.m_cParams.SetStrRef(nStrRef);
 }
-// PC 0x006AD180  Xbox 0x000E38D0
+// PC 0x00736E90
 void CSWGuiInGameAbilities::OnEnterSkill(CSWGuiControl* pControl)
 {
     m_nSelectedSkill = pControl->GetID();
@@ -954,7 +954,7 @@ void CSWGuiInGameAbilities::OnEnterSkill(CSWGuiControl* pControl)
     m_lblName.m_cText.m_cParams.SetStrRef(nNameStrRef);
     SetDescription(pSkill->GetDescriptionText());
 }
-// PC 0x006AD410  Xbox 0x000E3B60
+// PC 0x00737110
 void CSWGuiInGameAbilities::OnEnterFeat(unsigned short nFeat)
 {
     SWGUIINGAMEABILITIES_TRACE();
@@ -971,7 +971,7 @@ void CSWGuiInGameAbilities::SetDescription(const CExoString& sText)
 }
 
 #ifndef _XBOX
-void CSWGuiInGameAbilities::OnAbilitySelectionChanged(CSWGuiControl* pControl)  // PC 0x006AD4B0
+void CSWGuiInGameAbilities::OnAbilitySelectionChanged(CSWGuiControl* pControl)  // PC 0x007377A0
 {
     CSWGuiSkillFlow* pFlow =
         static_cast<CSWGuiSkillFlow*>(m_lbAbility.GetSelectedControl());
@@ -1013,7 +1013,7 @@ void CSWGuiInGameAbilities::OnAbilitySelectionChanged(CSWGuiControl* pControl)  
     }
 }
 #endif
-// PC 0x006AD560  Xbox 0x000E3F20
+// PC 0x00737850
 void CSWGuiInGameAbilities::UpdateView()
 {
     CExoArrayList<CSWGuiControl*> lstControls;
@@ -1152,7 +1152,7 @@ void CSWGuiInGameAbilities::UpdateView()
     SetActiveControl(NULL, 0);
     SetActiveControl(&m_lbAbility, 0);
 }
-// PC 0x006AD960  Xbox 0x000E4350
+// PC 0x00737D30
 void CSWGuiInGameAbilities::CreateSkillList()
 {
     int nNumSkills = g_pRules->m_nNumSkills;
@@ -1185,7 +1185,7 @@ void CSWGuiInGameAbilities::CreateSkillList()
 }
 
 #ifndef _XBOX
-void CSWGuiInGameAbilities::OnFeatsButtonPressed(CSWGuiControl* pControl)  // PC 0x006ADA70
+void CSWGuiInGameAbilities::OnFeatsButtonPressed(CSWGuiControl* pControl)
 {
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode = 2;
     UpdateView();
@@ -1193,7 +1193,7 @@ void CSWGuiInGameAbilities::OnFeatsButtonPressed(CSWGuiControl* pControl)  // PC
 #endif
 
 #ifndef _XBOX
-void CSWGuiInGameAbilities::OnPowersButtonPressed(CSWGuiControl* pControl)  // PC 0x006ADAA0
+void CSWGuiInGameAbilities::OnPowersButtonPressed(CSWGuiControl* pControl)
 {
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode = 1;
     UpdateView();
@@ -1201,7 +1201,7 @@ void CSWGuiInGameAbilities::OnPowersButtonPressed(CSWGuiControl* pControl)  // P
 #endif
 
 #ifndef _XBOX
-void CSWGuiInGameAbilities::OnSkillsButtonPressed(CSWGuiControl* pControl)  // PC 0x006ADAD0
+void CSWGuiInGameAbilities::OnSkillsButtonPressed(CSWGuiControl* pControl)  // PC 0x00737EA0
 {
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode = 0;
     UpdateView();
@@ -1220,7 +1220,7 @@ void CSWGuiInGameAbilities::CreateFeatList()
 }
 
 #ifdef _XBOX
-void CSWGuiInGameAbilities::HandleInputEvent(int nEvent, int nState)  // PC 0x006AE5F0  Xbox 0x000E4DA0
+void CSWGuiInGameAbilities::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
     {
@@ -1295,7 +1295,7 @@ void CSWGuiInGameAbilities::HandleInputEvent(int nEvent, int nState)  // PC 0x00
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 #else
-void CSWGuiInGameAbilities::HandleInputEvent(int nEvent, int nState)  // PC 0x006AE5F0  Xbox 0x000E4DA0
+void CSWGuiInGameAbilities::HandleInputEvent(int nEvent, int nState)  // PC 0x007388E0
 {
     if (nState != 0)
     {
@@ -1411,7 +1411,7 @@ void CSWGuiInGameAbilities::HandleInputEvent(int nEvent, int nState)  // PC 0x00
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 #endif
-// PC 0x006ADB00  Xbox 0x000E4C30
+// PC 0x00738780
 void CSWGuiInGameAbilities::SetCharacter(CSWCCreature* pCreature)
 {
     m_pCreature = pCreature;
@@ -1457,13 +1457,13 @@ void CSWGuiInGameAbilities::SetCharacter(CSWCCreature* pCreature)
 }
 
 #ifdef _XBOX
-void CSWGuiInGameAbilities::OnPanelAdded()  // PC 0x006ADC20  Xbox 0x000E4D50
+void CSWGuiInGameAbilities::OnPanelAdded()
 {
     SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0));
     m_lblBlack.SetEnabledFlag(g_pAppManager->m_pClientExoApp->GetSWParty()->GetNumCharacters() > 1);
 }
 #else
-void CSWGuiInGameAbilities::OnPanelAdded()  // PC 0x006ADC20  Xbox 0x000E4D50
+void CSWGuiInGameAbilities::OnPanelAdded()  // PC 0x00738870
 {
     m_nCharacterIndex = -1;
     m_btnChange1.m_nIndex = -2;
@@ -1476,7 +1476,7 @@ void CSWGuiInGameAbilities::OnPanelAdded()  // PC 0x006ADC20  Xbox 0x000E4D50
 #endif
 
 #ifndef _XBOX
-void CSWGuiInGameAbilities::OnChangeCharacter(CSWGuiControl* pControl)  // PC 0x006ADC80
+void CSWGuiInGameAbilities::OnChangeCharacter(CSWGuiControl* pControl)
 {
     int nPartyMember = 1;
     if (pControl->m_bSelected != 0)

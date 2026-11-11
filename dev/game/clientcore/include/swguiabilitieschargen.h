@@ -75,12 +75,12 @@ public:
 
     virtual void OnPanelAdded();
     virtual void HandleInputEvent(int nEvent, int nState);
-    // PC 0x0067CB40
+    // PC 0x006D2FC0
     void OnMinusButtonPushed(CSWGuiControl* pControl)
     {
         HandleInputEvent(GUIEVENT_LEFT, 1);
     }
-    // PC 0x0067CB50
+    // PC 0x006D2FD0
     void OnPlusButtonPushed(CSWGuiControl* pControl)
     {
         HandleInputEvent(GUIEVENT_RIGHT, 1);

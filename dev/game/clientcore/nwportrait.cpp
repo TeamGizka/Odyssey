@@ -12,12 +12,12 @@
 CSWPortrait::~CSWPortrait()
 {
 }
-// PC 0x00678EC0  Xbox 0x00093060
+// PC 0x006CE670
 CSWPortrait::CSWPortrait()
 {
     CResRef::operator=("");
 }
-// PC 0x00678EF0  Xbox 0x00093090
+// PC 0x006CE6A0
 CResRef CSWPortrait::GetPortrait(unsigned char nSize)
 {
     CResRef cPortrait = *this;
@@ -47,7 +47,7 @@ CResRef CSWPortrait::GetPortrait(unsigned char nSize)
     }
     return cPortrait;
 }
-// PC 0x006790D0  Xbox 0x000932A0
+// PC 0x006CE880
 int CSWPortrait::SetPortraitId(unsigned short nPortraitId)
 {
     CExoString sResRef;

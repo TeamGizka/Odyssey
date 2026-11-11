@@ -62,7 +62,7 @@ public:
     virtual ~PartTrigger();
     virtual int HitCheckGeom(const Vector& vStart, Vector& vEnd, Vector* pHit,
                              CHitInfo* pHitInfo, float fRadius);
-    virtual PartTrigger* AsPartTrigger() { return this; }  // PC 0x00641DB0
+    virtual PartTrigger* AsPartTrigger() { return this; }  // PC 0x00698BD0
     virtual void Draw(bool bRenderLast);
     virtual void DrawVolume();
 
@@ -80,7 +80,7 @@ void AurPartTriggerReleaseMemory(PartTrigger* pTrigger);
 #ifdef _XBOX
 
 void AurPartTriggerDelete(CAurScene* pScene, PartTrigger* pTrigger);
-inline void AurPartTriggerDelete(CAurScene* pScene, PartTrigger* pTrigger, bool bDelete)  // PC 0x0049D7D0
+inline void AurPartTriggerDelete(CAurScene* pScene, PartTrigger* pTrigger, bool bDelete)
 {
     AurPartTriggerDelete(pScene, pTrigger);
 }

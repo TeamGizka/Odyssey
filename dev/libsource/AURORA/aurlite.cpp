@@ -131,7 +131,7 @@ class TimeTrigger;
 
 List<Binding*> bindings;
 List<TimeTrigger*> timetriggers;
-// Xbox 0x002ACBB0
+
 char* keysdown()
 {
     static char sKeys[256];
@@ -167,7 +167,7 @@ public:
     float m_fTime;
     char m_sCommand[256];
 };
-// Xbox 0x002ACD40
+
 Binding* FindBinding(char cKey)
 {
     for (int i = 0; i < bindings.m_nCount; i++)
@@ -177,7 +177,7 @@ Binding* FindBinding(char cKey)
     }
     return 0;
 }
-// Xbox 0x002ACD70
+
 Binding::Binding()
 {
     m_cKey = 0;
@@ -186,12 +186,12 @@ Binding::Binding()
     m_bRepeat = 0;
     m_bDown = 0;
 }
-// Xbox 0x002ACDA0
+
 Binding::~Binding()
 {
     bindings.Remove(this);
 }
-// Xbox 0x002ACDB0
+
 TimeTrigger::TimeTrigger(float fTime, char* sCommand)
 {
     m_fTime = fTime;
@@ -204,7 +204,7 @@ TimeTrigger::TimeTrigger(float fTime, char* sCommand)
     }
     timetriggers.Insert(this, i);
 }
-// Xbox 0x002ACE20
+
 char* at(char* sArguments)
 {
     static char sResult[256];
@@ -251,7 +251,7 @@ char* at(char* sArguments)
     }
     return "only time triggers supported at this time";
 }
-// Xbox 0x002AD0F0
+
 char* bind(char* sArguments)
 {
     static char sResult[256];

@@ -3,7 +3,7 @@
 #include "nwitem.h"
 #include "gameobjectarray.h"
 #include "nwsitem.h"
-// PC 0x005A4930  Xbox 0x001F4430
+// PC 0x005ECEC0
 CSWInventory::CSWInventory()
 {
     for (int i = 0; i < TOTAL_SLOT_COUNT; ++i)
@@ -15,7 +15,7 @@ CSWInventory::CSWInventory()
 CSWInventory::~CSWInventory()
 {
 }
-// PC 0x005A4950  Xbox 0x001F4480
+// PC 0x005ECFD0
 int CSWInventory::GetItemInInventory(CSWSItem* pItem)
 {
     unsigned long oidItem = OBJECT_INVALID;
@@ -35,7 +35,7 @@ int CSWInventory::GetItemInInventory(CSWSItem* pItem)
 
     return 0;
 }
-// PC 0x005A4980  Xbox 0x001F44B0
+// PC 0x005ED000
 unsigned long CSWInventory::GetSlotFromItem(CSWSItem* pItem)
 {
     unsigned long oidItem = OBJECT_INVALID;
@@ -55,7 +55,7 @@ unsigned long CSWInventory::GetSlotFromItem(CSWSItem* pItem)
 
     return 0;
 }
-// PC 0x005A4C20  Xbox 0x001F4750
+// PC 0x005ED1D0
 CSWSItem* CSWInventory::GetItemInSlot(unsigned long nSlot)
 {
     unsigned long* pSlot = GetSlotPointer(nSlot);
@@ -68,7 +68,7 @@ CSWSItem* CSWInventory::GetItemInSlot(unsigned long nSlot)
 
     return NULL;
 }
-// PC 0x005A49C0  Xbox 0x001F44F0
+// PC 0x005ED040
 unsigned long* CSWInventory::GetSlotPointer(unsigned long nSlot)
 {
     switch (nSlot)
@@ -94,7 +94,7 @@ unsigned long* CSWInventory::GetSlotPointer(unsigned long nSlot)
     default: return NULL;
     }
 }
-// PC 0x005A4BA0  Xbox 0x001F46D0
+// PC 0x005ED150
 int CSWInventory::RemoveItem(CSWSItem* pItem)
 {
     unsigned long oidItem = OBJECT_INVALID;
@@ -115,7 +115,7 @@ int CSWInventory::RemoveItem(CSWSItem* pItem)
 
     return 0;
 }
-// PC 0x005A4BE0  Xbox 0x001F4710
+// PC 0x005ED190
 void CSWInventory::PutItemInSlot(unsigned long nSlot, CSWSItem* pItem)
 {
     unsigned long* pSlot = GetSlotPointer(nSlot);

@@ -3,7 +3,7 @@
 #if defined(_WIN32) && !defined(_XBOX)
 #include <imm.h>
 #include <stdio.h>
-// PC 0x005DF740
+// PC 0x0062BA50
 void CExoImeUI::GetCompositionString(HWND hWnd, long nFlags)
 {
     HIMC hContext = ImmGetContext(hWnd);
@@ -63,7 +63,7 @@ CExoString CExoImeUI::GetImeModeDescription(HWND hWnd)
     }
     return sMode;
 }
-// PC 0x005DF800
+// PC 0x0062BB10
 void CExoImeUI::GetResultString(HWND hWnd, int bReadClauses)
 {
     HIMC hContext = ImmGetContext(hWnd);
@@ -101,7 +101,7 @@ void CExoImeUI::GetResultString(HWND hWnd, int bReadClauses)
         ImmReleaseContext(hWnd, hContext);
     }
 }
-// PC 0x005DF980
+// PC 0x0062BC90
 void CExoImeUI::UpdateOpenStatus(HWND hWnd)
 {
     HIMC hContext = ImmGetContext(hWnd);
@@ -115,7 +115,7 @@ void CExoImeUI::UpdateOpenStatus(HWND hWnd)
         ImmReleaseContext(hWnd, hContext);
     }
 }
-// PC 0x005DF9D0
+// PC 0x0062BCE0
 CExoString CExoImeUI::FormatCandidateList(CANDIDATELIST* pList)
 {
     int nNumber = 1;
@@ -137,7 +137,7 @@ CExoString CExoImeUI::FormatCandidateList(CANDIDATELIST* pList)
     }
     return sCandidates;
 }
-// PC 0x005DFB00
+// PC 0x0062BE10
 void CExoImeUI::HandleImeKeyDown(HWND hWnd, unsigned int, long nParam)
 {
     if (nParam & GCS_RESULTSTR)
@@ -150,7 +150,7 @@ void CExoImeUI::HandleImeKeyDown(HWND hWnd, unsigned int, long nParam)
     else if (nParam & GCS_COMPSTR)
         GetCompositionString(hWnd, nParam);
 }
-// PC 0x005DFB40
+// PC 0x0062BE50
 void CExoImeUI::UpdateCandidateList(HWND hWnd, unsigned long nLists)
 {
     m_nFlags &= ~CANDIDATE_LIST_OPEN;
@@ -180,7 +180,7 @@ void CExoImeUI::UpdateCandidateList(HWND hWnd, unsigned long nLists)
     m_nFlags |= CANDIDATE_LIST_OPEN;
     ImmReleaseContext(hWnd, hContext);
 }
-// PC 0x005DFC40
+// PC 0x0062BF50
 int CExoImeUI::HandleImeNotify(HWND hWnd, unsigned int nMsg, long nParam)
 {
     switch (nMsg)

@@ -35,13 +35,13 @@ const unsigned char CGameObjectArray::INVALIDLIST = 3;
 const unsigned char CGameObjectArray::NULL_GAMEOBJECT = 4;
 const unsigned char CGameObjectArray::INTERNALOBJECT = 0;
 const unsigned char CGameObjectArray::EXTERNALOBJECT = 1;
-// PC 0x004D7D60  Xbox 0x00092420
+// PC 0x004E98D0
 CGameObject::CGameObject(unsigned char nObjectType, unsigned long oidSelf)
 {
     m_nId = oidSelf;
     m_nObjectType = nObjectType;
 }
-// PC 0x004D7D80  Xbox 0x00092440
+// PC 0x004E98F0
 CGameObjectArray::CGameObjectArray(int bExternal)
 {
     m_bExternal = bExternal;
@@ -69,7 +69,7 @@ CGameObjectArray::CGameObjectArray(int bExternal)
         m_nPrevObjectId[i] = MAXCHAROBJID;
     }
 }
-// PC 0x004D7E10  Xbox 0x000924D0
+// PC 0x004E9980
 CGameObjectArray::~CGameObjectArray()
 {
     int nSize = m_bExternal ? 0x2000 : 0x1000;
@@ -96,7 +96,7 @@ CGameObjectArray::~CGameObjectArray()
     delete m_pArray;
     m_pArray = NULL;
 }
-// PC 0x004D7E90  Xbox 0x00092550
+// PC 0x004E9A00
 unsigned char CGameObjectArray::AddObjectAtPos(unsigned long oidObject,
                                                CGameObject* pObject)
 {
@@ -203,7 +203,7 @@ unsigned char CGameObjectArray::AddObjectAtPos(unsigned long oidObject,
 
     return NULL_GAMEOBJECT;
 }
-// PC 0x004D7FF0  Xbox 0x000926B0
+// PC 0x004E9B60
 unsigned char CGameObjectArray::AddExternalObject(unsigned long& oidObject,
                                                   CGameObject* pObject,
                                                   int bAscending)
@@ -286,7 +286,7 @@ unsigned char CGameObjectArray::AddExternalObject(unsigned long& oidObject,
     oidObject |= LISTTYPE_MASK;
     return SUCCESS;
 }
-// PC 0x004D80E0  Xbox 0x000927A0
+// PC 0x004E9C50
 unsigned char CGameObjectArray::AddInternalObject(unsigned long& oidObject,
                                                   CGameObject* pObject,
                                                   int bDescending)
@@ -351,7 +351,7 @@ unsigned char CGameObjectArray::AddInternalObject(unsigned long& oidObject,
     }
     return SUCCESS;
 }
-// PC 0x004D81A0  Xbox 0x00092880
+// PC 0x004E9D10
 unsigned char CGameObjectArray::Delete(unsigned long oidObject,
                                        CGameObject** ppObject)
 {
@@ -392,7 +392,7 @@ unsigned char CGameObjectArray::Delete(unsigned long oidObject,
     delete pNode;
     return SUCCESS;
 }
-// PC 0x004D8230  Xbox 0x00092910
+// PC 0x004E9DA0
 unsigned char CGameObjectArray::GetGameObject(unsigned long oidObject,
                                               CGameObject** ppObject)
 {
@@ -414,7 +414,7 @@ unsigned char CGameObjectArray::GetGameObject(unsigned long oidObject,
     *ppObject = pNode->m_pObject;
     return SUCCESS;
 }
-// PC 0x004D8290  Xbox 0x00092970
+// PC 0x004E9E00
 unsigned char CGameObjectArray::Delete(unsigned long oidObject)
 {
     CGameObject* pObject;

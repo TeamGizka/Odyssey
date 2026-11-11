@@ -7,7 +7,7 @@
 List<CAurFont*> CAurFont::s_LoadedFontList;
 void AurTextureRelease(CAurTexture* pTexture);
 int rint(float fValue);
-// PC 0x004A1600
+
 int CAurFont::ProcessTextMarkup(char* sText, CAurFont** ppFont,
                                 CStringColor& cColor)
 {
@@ -68,7 +68,7 @@ static inline unsigned long RequestFontPool(unsigned long nSize, unsigned long* 
                                  RequestPoolManager::POOL_STATIC | RequestPoolManager::POOL_COLOR,
                                  RequestPoolManager::POOL_FORMAT_VTC, pnPool);
 }
-// PC 0x004A1770
+
 int CAurFont::TextOutA(char* sText, int nLength)
 {
 
@@ -212,7 +212,7 @@ int CAurFont::TextOutA(char* sText, int nLength)
 #endif
 
 CStringColor g_cSavedCol(1.0f, 1.0f, 1.0f, 1.0f);
-// PC 0x004A21D0  Xbox 0x002F0D90
+// PC 0x004CE9E0
 CAurFont::~CAurFont()
 {
     CAurTexture* pTexture = m_pTexture.m_pObject;
@@ -230,7 +230,7 @@ CAurFont::~CAurFont()
         s_LoadedFontList.DelIndex(m_nLoadedFontIndex);
     }
 }
-// PC 0x004A22E0  Xbox 0x002F0E30
+// PC 0x004CEAF0
 void AurDeleteAllFonts()
 {
     int i;

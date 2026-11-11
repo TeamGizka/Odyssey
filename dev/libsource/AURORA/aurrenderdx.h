@@ -25,7 +25,7 @@ extern int g_bVertexProgramBound;
 
 struct DXTextureState
 {
-    DXTextureState()  // Xbox 0x0027F890
+    DXTextureState()
     {
         m_nUnknown0 = 0;
         m_nType = 0;
@@ -448,7 +448,7 @@ public:
     static void RenderDrawableSquares();
 
     static void RenderBox(const Vector& vMinimum, const Vector& vMaximum, const Vector& vColor);
-    // PC 0x00425250
+
     static void ActivateTextureStage(unsigned long nStage)
     {
         GLRender::cm_uiCurrentStage = nStage;
@@ -594,7 +594,7 @@ public:
     static void SetStencilMask(unsigned int nMask);
     static void SetStencilFunc(int nFunc, int nReference, unsigned int nMask);
     static void SetColorMask(unsigned char bRed, unsigned char bGreen, unsigned char bBlue, unsigned char bAlpha);
-    // Xbox 0x002AD920
+
     static bool IsEnabled(Aurora::AuroraEnableEnums nCap)
     {
         if (enableTranslationTable[nCap] == 0x7fffffff)
@@ -778,7 +778,7 @@ extern bool g_bVertexProgramEnabled;
 extern int g_nTexturingDisabled;
 extern int g_nCurrentBlendSource;
 extern int g_nCurrentBlendDestination;
-// Xbox 0x00011EA0
+
 inline void GLRender::Enable(Aurora::AuroraEnableEnums nCap)
 {
     unsigned long nState = enableTranslationTable[nCap];
@@ -807,7 +807,7 @@ inline void GLRender::Enable(Aurora::AuroraEnableEnums nCap)
         g_pD3DDevice->SetRenderState((D3DRENDERSTATETYPE)nState, TRUE);
     }
 }
-// Xbox 0x0027F8C0
+
 inline void GLRender::Disable(Aurora::AuroraEnableEnums nCap)
 {
     unsigned long nState = enableTranslationTable[nCap];
@@ -833,7 +833,7 @@ inline void GLRender::Disable(Aurora::AuroraEnableEnums nCap)
         g_pD3DDevice->SetRenderState((D3DRENDERSTATETYPE)nState, FALSE);
     }
 }
-// Xbox 0x00012210
+
 inline void GLRender::SetBlendFunc(Aurora::AuroraBlendModes nSource, Aurora::AuroraBlendModes nDestination)
 {
     if (nSource != g_nCurrentBlendSource || nDestination != g_nCurrentBlendDestination)
@@ -846,7 +846,7 @@ inline void GLRender::SetBlendFunc(Aurora::AuroraBlendModes nSource, Aurora::Aur
 }
 
 extern int enablecolor;
-// Xbox 0x002A3BB0
+
 inline void GLRender::SetAlphaFunc(int nFunc, float fReference)
 {
     unsigned long nReference = (unsigned long)(fReference * 255.0f);
@@ -858,14 +858,14 @@ inline void GLRender::SetStencilMask(unsigned int nMask)
 {
     g_pD3DDevice->SetRenderState(D3DRS_STENCILWRITEMASK, nMask);
 }
-// Xbox 0x00284C40
+
 inline void GLRender::SetStencilFunc(int nFunc, int nReference, unsigned int nMask)
 {
     g_pD3DDevice->SetRenderState(D3DRS_STENCILFUNC, cmpTranslationTable[nFunc]);
     g_pD3DDevice->SetRenderState(D3DRS_STENCILREF, nReference);
     g_pD3DDevice->SetRenderState(D3DRS_STENCILMASK, nMask);
 }
-// PC 0x0044F820  Xbox 0x00284BF0
+
 inline void AurSetVertexProgramParameter4f(unsigned int nIndex, float x, float y, float z, float w)
 {
     float fParameter[4];
@@ -888,20 +888,20 @@ inline void GLRender::SetColorMask(unsigned char bRed, unsigned char bGreen, uns
                                      (bAlpha ? D3DCOLORWRITEENABLE_ALPHA : 0));
     }
 }
-// Xbox 0x002A35C0
+
 inline void GLRender::SetFogModef(Aurora::AuroraEnableEnums nMode, float fValue)
 {
     fValue = 0.0f - fValue;
     g_pD3DDevice->SetRenderState((D3DRENDERSTATETYPE)enableTranslationTable[nMode], *(unsigned long*)&fValue);
 }
-// Xbox 0x002A3880
+
 inline void GLRender::SetFogModev(Aurora::AuroraEnableEnums nMode, Vector& vValue)
 {
     g_pD3DDevice->SetRenderState((D3DRENDERSTATETYPE)enableTranslationTable[nMode],
                                  D3DCOLOR_ARGB(0, (int)(vValue.m_fX * 255.0f), (int)(vValue.m_fY * 255.0f),
                                                (int)(vValue.m_fZ * 255.0f)));
 }
-// Xbox 0x002A3B30
+
 inline void GLRender::SetLightModel(const float* pfColor)
 {
     g_pD3DDevice->SetRenderState(D3DRS_AMBIENT,
@@ -962,7 +962,7 @@ inline void GLRender::SetMaterialv(int nFace, int nMaterial, const float* pfPara
         break;
     }
 }
-// Xbox 0x002F3860
+
 inline void GLRender::SetLightProperties(unsigned long nLight, int nParameter, const float* pfParams)
 {
     D3DLIGHT8 light;
@@ -1033,37 +1033,37 @@ inline void GLRender::SetDepthFunc(int nFunc)
 {
     g_pD3DDevice->SetRenderState(D3DRS_ZFUNC, cmpTranslationTable[nFunc]);
 }
-// PC 0x0044F880
+
 inline void SetMaterialParameter(int nFace, int nMaterial, float* pfParams)
 {
     GLRender::SetMaterialv(nFace, nMaterial, pfParams);
 }
-// PC 0x0045FD00
+
 inline int AurGetAvailableStencilBits()
 {
     return 8;
 }
-// PC 0x0045FD20
+
 inline int AurGetStencilClearValue()
 {
     return (1 << (AurGetAvailableStencilBits() - 1)) - 1;
 }
-// PC 0x0045FBD0
+
 inline bool AurNV2xLevelShadersAvailable()
 {
     return true;
 }
-// PC 0x0045F7B0
+
 inline int AurSoftShadowsAvailable()
 {
     return 0;
 }
-// PC 0x0045F7E0
+
 inline int AurATISoftShadowsAvailable()
 {
     return 0;
 }
-// PC 0x0045FB10
+
 inline int AurBumpMapAvailable()
 {
     return 1;
@@ -1078,7 +1078,7 @@ inline int AurBumpyShinyAvailable()
 {
     return 1;
 }
-// PC 0x0045F560
+
 inline int AurATIFragmentShaderAvailable()
 {
     return 0;
@@ -1098,7 +1098,7 @@ extern int g_nScreenHeight;
 extern float g_fViewPortScaleX;
 extern float g_fViewPortScaleY;
 extern List<D3DVIEWPORT8> g_lstViewPorts;
-// PC 0x00459170  Xbox 0x002BDC10
+
 inline void GLRender::SetViewPort(int nX, int nY, int nWidth, int nHeight)
 {
     if (g_pD3DDevice)
@@ -1177,7 +1177,7 @@ inline void GLRender::GetViewPort(int* pViewport)
     pViewport[2] = viewport.Width;
     pViewport[3] = nHeight;
 }
-// Xbox 0x00012150
+
 inline void GLRender::LoadMatrixIdentity()
 {
     switch (g_nMatrixMode)
@@ -1202,7 +1202,7 @@ inline void GLRender::LoadMatrixIdentity()
         break;
     }
 }
-// Xbox 0x000128E0
+
 inline void GLRender::LoadViewIdentity()
 {
     g_nMatrixMode = 1;
@@ -1211,7 +1211,7 @@ inline void GLRender::LoadViewIdentity()
     g_pD3DDevice->SetTransform(D3DTS_VIEW, g_pViewMatrixStack->GetTop());
     g_nMatrixMode = 2;
 }
-// PC 0x0045F8B0
+
 inline int AurCubeMapAvailable()
 {
     return 1;
@@ -1220,7 +1220,7 @@ inline int AurCubeMapAvailable()
 extern int g_bHighResolutionTimer;
 extern int g_bTimerScaled;
 extern float g_fTimerScale;
-inline __int64 AurGetHighResolutionTime()  // Xbox 0x00012270
+inline __int64 AurGetHighResolutionTime()
 {
     if (g_bHighResolutionTimer == 1)
     {
@@ -1234,7 +1234,7 @@ inline __int64 AurGetHighResolutionTime()  // Xbox 0x00012270
     }
     return (unsigned __int64)GetTickCount() * 1000;
 }
-// Xbox 0x00011E30
+
 inline void GLRender::SetClearColor(float fRed, float fGreen, float fBlue, float fAlpha)
 {
     g_nClearColor = D3DCOLOR_ARGB((int)(fAlpha * 255.0f), (int)(fRed * 255.0f), (int)(fGreen * 255.0f),
@@ -1272,7 +1272,7 @@ inline void GLRender::ApplyMatrix(int nMode)
         break;
     }
 }
-// Xbox 0x002AD8C0
+
 inline void GLRender::BeginImmediatePrimitive(Aurora::AuroraPrimitiveTypes nType)
 {
     int nMode = g_nMatrixMode;
@@ -1304,38 +1304,38 @@ inline void GLRender::SetTextureCoordGenerationState(
         Enable(ENABLE_TEXTURE_GEN_T);
     }
 }
-// Xbox 0x002AD950
+
 inline void GLRender::SetPixelShaderAmbientColor(Vector& vColor, float fAlpha)
 {
     float fW = fAlpha;
     g_pD3DDevice->SetPixelShaderConstant(0, Homogenize(vColor, fW), 1);
 }
-// Xbox 0x002AD980
+
 inline void GLRender::SetBumpLightColor(Vector& vColor)
 {
     g_pD3DDevice->SetPixelShaderConstant(1, Homogenize(vColor, 1.0f), 1);
 }
-// PC 0x00425900
+
 inline void GLRender::SetVertexBuffer(unsigned long nStride, unsigned long nOffset, unsigned long nPool,
                                       int nUsage)
 {
     ValidatePool(nPool);
     g_pD3DDevice->SetStreamSource(0, (D3DVertexBuffer*)GetPool(nPool), nStride);
 }
-// PC 0x004259E0
+
 inline void GLRender::SetNormalBuffer(unsigned int nStride, unsigned int nOffset, unsigned int nPool, int nUsage)
 {
     ValidatePool(nPool);
     g_pD3DDevice->SetStreamSource(1, (D3DVertexBuffer*)GetPool(nPool), nStride);
 }
-// PC 0x00425970
+
 inline void GLRender::SetColorBuffer(unsigned long nStride, unsigned long nOffset, unsigned long nPool,
                                      int nUsage)
 {
     ValidatePool(nPool);
     g_pD3DDevice->SetStreamSource(2, (D3DVertexBuffer*)GetPool(nPool), nStride);
 }
-// PC 0x00425A40
+
 inline void GLRender::SetTexCoordBuffer(unsigned long nStride, unsigned long nOffset, unsigned long nPool,
                                         int nUsage)
 {

@@ -24,7 +24,7 @@ static inline void roundToInt(int& iResult, float fValue)
 }
 
 
-// PC 0x00423B70
+// PC 0x00425430
 inline float AbsoluteValue(float fValue)
 {
     return fValue < 0.0f ? -fValue : fValue;
@@ -35,20 +35,20 @@ class Matrix;
 class Vector
 {
 public:
-    Vector()  // PC 0x00409E70
+    Vector()  // PC 0x0040A290
     {
         m_fX = 0.0f;
         m_fY = 0.0f;
         m_fZ = 0.0f;
     }
-    // PC 0x00404AE0
+    // PC 0x00404B50
     Vector(float fX, float fY, float fZ)
         : m_fX(fX),
           m_fY(fY),
           m_fZ(fZ)
     {
     }
-    // PC 0x0046A620  Xbox 0x0006C240
+    // PC 0x00480900
     int IsZero() const
     {
         return m_fX == 0.0f && m_fY == 0.0f && m_fZ == 0.0f;
@@ -85,7 +85,7 @@ public:
     }
 
     Quaternion(Vector vAxis, float fAngle);
-    // PC 0x0044F3D0
+    // PC 0x004634E0
     Vector xdir() const
     {
         return Vector(1.0f - 2.0f * (m_fY * m_fY + m_fZ * m_fZ),
@@ -94,7 +94,7 @@ public:
     }
 
     Vector ydir() const;
-    Vector zdir() const  // PC 0x0043E250
+    Vector zdir() const  // PC 0x0044FEE0
     {
         return Vector(2.0f * (m_fX * m_fZ + m_fY * m_fW),
                       2.0f * (m_fZ * m_fY - m_fW * m_fX),
@@ -236,38 +236,38 @@ int operator!=(const Vector& vFirst, const Vector& vSecond);
 float* Homogenize(const Vector& vector, const float& fW);
 float cosineLUT(float fAngle);
 float sineLUT(float fAngle);
-// PC 0x0044F420
+// PC 0x00463530
 inline Vector Quaternion::ydir() const
 {
     return Vector(2.0f * (m_fX * m_fY - m_fW * m_fZ),
                   1.0f - 2.0f * (m_fX * m_fX + m_fZ * m_fZ),
                   2.0f * (m_fY * m_fZ + m_fX * m_fW));
 }
-// PC 0x00423B90
+// PC 0x00425450
 inline Vector operator+(const Vector& left, const Vector& right)
 {
     return Vector(left.m_fX + right.m_fX, left.m_fY + right.m_fY,
                   left.m_fZ + right.m_fZ);
 }
-// PC 0x00423BC0
+// PC 0x00425480
 inline Vector operator-(const Vector& left, const Vector& right)
 {
     return Vector(left.m_fX - right.m_fX, left.m_fY - right.m_fY,
                   left.m_fZ - right.m_fZ);
 }
-// PC 0x00423BF0
+// PC 0x004254B0
 inline Vector operator*(const Vector& vector, float fScale)
 {
     return Vector(fScale * vector.m_fX, fScale * vector.m_fY,
                   fScale * vector.m_fZ);
 }
-// PC 0x00437A60
+// PC 0x00448D40
 inline Vector operator*(float fScale, const Vector& vector)
 {
     return Vector(fScale * vector.m_fX, fScale * vector.m_fY,
                   fScale * vector.m_fZ);
 }
-// PC 0x00437A90  Xbox 0x000934A0
+// PC 0x00448D70
 inline Vector operator/(const Vector& vector, float fScale)
 {
     if (fScale != 0.0f)
@@ -278,13 +278,13 @@ inline Vector operator/(const Vector& vector, float fScale)
     }
     return vector;
 }
-// PC 0x00423C20  Xbox 0x0001C3B0
+// PC 0x004254E0
 inline float operator*(const Vector& left, const Vector& right)
 {
     return left.m_fX * right.m_fX + left.m_fY * right.m_fY +
            left.m_fZ * right.m_fZ;
 }
-// PC 0x0046EEA0
+// PC 0x00485EA0
 inline Vector Interpolate(const Vector& vFirst, const Vector& vSecond, float fPosition)
 {
     return vFirst * (1.0f - fPosition) + vSecond * fPosition;
@@ -293,13 +293,13 @@ inline Vector Interpolate(const Vector& vFirst, const Vector& vSecond, float fPo
 class Matrix
 {
 public:
-    Matrix()  // PC 0x00437AF0  Xbox 0x00277690
+    Matrix()  // PC 0x00448DD0
     {
         m_vFirst = Vector(1.0f, 0.0f, 0.0f);
         m_vSecond = Vector(0.0f, 1.0f, 0.0f);
         m_vThird = Vector(0.0f, 0.0f, 1.0f);
     }
-    // PC 0x00437BA0
+    // PC 0x00448E80
     Matrix(Vector vFirst, Vector vSecond, Vector vThird)
     {
         m_vFirst = vFirst;
@@ -311,7 +311,7 @@ public:
     Vector m_vSecond;
     Vector m_vThird;
 };
-// PC 0x0044F470  Xbox 0x002A2A00
+// PC 0x00463580
 inline Matrix Quaternion::getmatrix() const
 {
     return Matrix(xdir(), ydir(), zdir());

@@ -28,7 +28,7 @@ public:
     int m_nEdgeOffset;
     int m_nPerimeterCount;
     int m_nPerimeterOffset;
-    // PC 0x005808E0
+    // PC 0x00557570
     _CSWWalkMeshHeader()
     {
     }
@@ -48,7 +48,7 @@ public:
     virtual int OnResourceServiced();
     int IsBinary();
     unsigned long GetBWMSize();
-    // PC 0x005CE010
+    // PC 0x00616170
     Vector GetAbsoluteUsePoint(int nIndex)
     {
         return m_pBWMHeader ? m_pBWMHeader->m_avAbsoluteUsePoints[nIndex]

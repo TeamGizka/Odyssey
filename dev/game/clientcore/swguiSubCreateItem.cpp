@@ -9,7 +9,7 @@
 #include "swmain.h"
 
 static inline void SwguiSubCreateItemTrace1();
-// PC 0x006BD980  Xbox 0x000F5530
+// PC 0x00713230
 void CSWGuiCreateItemSubMenu::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -72,7 +72,7 @@ void CSWGuiCreateItemSubMenu::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006BDA90  Xbox 0x000F59B0
+// PC 0x00713340
 CSWGuiButton* CSWGuiCreateItemSubMenu::CreateOption(const CExoString& sText,
                                                     CSWGuiHandler pHandler,
                                                     CSWGuiButton* pPrototype)
@@ -106,7 +106,7 @@ CSWGuiButton* CSWGuiCreateItemSubMenu::CreateOption(const CExoString& sText,
     pButton->AddEvent(45, this, pHandler);
     return pButton;
 }
-// PC 0x006BDBA0  Xbox 0x000F5640
+// PC 0x00713170
 void CSWGuiCreateItemSubMenu::Back(CSWGuiControl* pControl)
 {
     SwguiSubCreateItemTrace1();
@@ -118,7 +118,7 @@ void CSWGuiCreateItemSubMenu::Back(CSWGuiControl* pControl)
             ->ShowItemCreateMenu();
     }
 }
-// PC 0x006BDBE0  Xbox 0x000F5680
+// PC 0x007131B0
 void CSWGuiCreateItemSubMenu::CreateItem(CSWGuiControl* pControl)
 {
     SwguiSubCreateItemTrace1();
@@ -139,7 +139,7 @@ void CSWGuiCreateItemSubMenu::CreateItem(CSWGuiControl* pControl)
         pGui->HideSubItemCreateMenu();
     }
 }
-// PC 0x006BDC60  Xbox 0x000F5770
+// PC 0x00713400
 CSWGuiCreateItemSubMenu::CSWGuiCreateItemSubMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -152,7 +152,7 @@ CSWGuiCreateItemSubMenu::CSWGuiCreateItemSubMenu(CSWGuiManager* pManager)
     m_lblBuild.m_cText.m_cParams.SetText(sBuild);
     CenterPanel();
 }
-// PC 0x006BDEA0  Xbox 0x000F5AB0
+// PC 0x00713650
 void CSWGuiCreateItemSubMenu::LoadItems(int nBaseItem)
 {
     CSWGuiControl* pPrototype = m_lstOptions.m_pProtoItem;
@@ -257,7 +257,7 @@ void CSWGuiCreateItemSubMenu::LoadItems(int nBaseItem)
     m_nSelection = 0;
     SetActiveControl(pListBox, 0);
 }
-// PC 0x006BE2B0
+// PC 0x00713C20
 void CSWGuiCreateItemSubMenu::ClearItems()
 {
     m_lstOptions.ClearItems();

@@ -51,64 +51,64 @@ public:
     };
 
     KOTOR_LAUNCH_DATA();
-    // Xbox 0x0001C4F0
+
     void SetLoadScreen(const CExoString& sLoadScreen)
     {
         EXOXBOXASSERT((unsigned int)sLoadScreen.GetLength() < sizeof(m_szLoadScreen));
         strcpy(m_szLoadScreen, sLoadScreen.CStr());
     }
-    // Xbox 0x0010F760
+
     void SetXboxSavePath(const CExoString& sXboxSavePath)
     {
         EXOXBOXASSERT((unsigned int)sXboxSavePath.GetLength() < sizeof(m_szXboxSavePath));
         strcpy(m_szXboxSavePath, sXboxSavePath.CStr());
     }
-    void SetModuleName(const CExoString& sModuleName)  // Xbox 0x0010F7A0
+    void SetModuleName(const CExoString& sModuleName)
     {
         EXOXBOXASSERT((unsigned int)sModuleName.GetLength() < sizeof(m_szModuleName));
         strcpy(m_szModuleName, sModuleName.CStr());
     }
-    void SetLoadMusic(const CExoString& sLoadMusic)  // Xbox 0x0010F7E0
+    void SetLoadMusic(const CExoString& sLoadMusic)
     {
         EXOXBOXASSERT((unsigned int)sLoadMusic.GetLength() < sizeof(m_szLoadMusic));
         strcpy(m_szLoadMusic, sLoadMusic.CStr());
     }
-    void SetStartWaypoint(const CExoString& sStartWaypoint)  // Xbox 0x0010F820
+    void SetStartWaypoint(const CExoString& sStartWaypoint)
     {
         EXOXBOXASSERT((unsigned int)sStartWaypoint.GetLength() < sizeof(m_szStartWaypoint));
         strcpy(m_szStartWaypoint, sStartWaypoint.CStr());
     }
-    void SetMovie1(const CExoString& sMovie)  // Xbox 0x0010F860
+    void SetMovie1(const CExoString& sMovie)
     {
         EXOXBOXASSERT((unsigned int)sMovie.GetLength() < sizeof(m_szMovie1));
         strcpy(m_szMovie1, sMovie.CStr());
     }
-    void SetMovie2(const CExoString& sMovie)  // Xbox 0x0010F8A0
+    void SetMovie2(const CExoString& sMovie)
     {
         EXOXBOXASSERT((unsigned int)sMovie.GetLength() < sizeof(m_szMovie2));
         strcpy(m_szMovie2, sMovie.CStr());
     }
-    void SetMovie3(const CExoString& sMovie)  // Xbox 0x0010F8E0
+    void SetMovie3(const CExoString& sMovie)
     {
         EXOXBOXASSERT((unsigned int)sMovie.GetLength() < sizeof(m_szMovie3));
         strcpy(m_szMovie3, sMovie.CStr());
     }
-    void SetMovie4(const CExoString& sMovie)  // Xbox 0x0010F920
+    void SetMovie4(const CExoString& sMovie)
     {
         EXOXBOXASSERT((unsigned int)sMovie.GetLength() < sizeof(m_szMovie4));
         strcpy(m_szMovie4, sMovie.CStr());
     }
-    void SetMovie5(const CExoString& sMovie)  // Xbox 0x0010F960
+    void SetMovie5(const CExoString& sMovie)
     {
         EXOXBOXASSERT((unsigned int)sMovie.GetLength() < sizeof(m_szMovie5));
         strcpy(m_szMovie5, sMovie.CStr());
     }
-    void SetMovie6(const CExoString& sMovie)  // Xbox 0x0010F9A0
+    void SetMovie6(const CExoString& sMovie)
     {
         EXOXBOXASSERT((unsigned int)sMovie.GetLength() < sizeof(m_szMovie6));
         strcpy(m_szMovie6, sMovie.CStr());
     }
-    void SetTime(unsigned long nYear, unsigned char nMonth, unsigned char nDay, unsigned char nHour,  // Xbox 0x0010F9E0
+    void SetTime(unsigned long nYear, unsigned char nMonth, unsigned char nDay, unsigned char nHour,
                  unsigned short nMinute, unsigned short nSecond, unsigned short nMillisecond)
     {
         m_nTimeYear = nYear;
@@ -119,11 +119,11 @@ public:
         m_nTimeSecond = nSecond;
         m_nTimeMillisecond = nMillisecond;
     }
-    void SetStatusSummary(const CStatusSummary& cStatusSummary)  // Xbox 0x00214C00
+    void SetStatusSummary(const CStatusSummary& cStatusSummary)
     {
         m_cStatusSummary = cStatusSummary;
     }
-    void SetOptionsData(const KOTOR_LAUNCH_OPTIONS_DATA& cOptionsData)  // Xbox 0x0001C530
+    void SetOptionsData(const KOTOR_LAUNCH_OPTIONS_DATA& cOptionsData)
     {
         m_cOptionsData = cOptionsData;
         m_bOptionsDataValid = 1;
@@ -133,17 +133,17 @@ public:
     unsigned long GetAutoCalInfo() { return m_nAutoCalInfo; }
     unsigned long GetPortBinding() { return m_nPortBinding; }
     int GetSaveSlot() { return m_nSaveSlot; }
-    CExoString GetXboxSavePath() { return CExoString(m_szXboxSavePath); }  // Xbox 0x000122D0
-    CExoString GetModuleName() { return CExoString(m_szModuleName); }  // Xbox 0x00012300
-    CExoString GetLoadScreen() { return CExoString(m_szLoadScreen); }  // Xbox 0x00012320
-    CExoString GetLoadMusic() { return CExoString(m_szLoadMusic); }  // Xbox 0x00012340
-    CExoString GetStartWaypoint() { return CExoString(m_szStartWaypoint); }  // Xbox 0x00012360
-    CExoString GetMovie1() { return CExoString(m_szMovie1); }  // Xbox 0x00012380
-    CExoString GetMovie2() { return CExoString(m_szMovie2); }  // Xbox 0x000123B0
-    CExoString GetMovie3() { return CExoString(m_szMovie3); }  // Xbox 0x000123E0
-    CExoString GetMovie4() { return CExoString(m_szMovie4); }  // Xbox 0x00012410
-    CExoString GetMovie5() { return CExoString(m_szMovie5); }  // Xbox 0x00012440
-    CExoString GetMovie6() { return CExoString(m_szMovie6); }  // Xbox 0x00012470
+    CExoString GetXboxSavePath() { return CExoString(m_szXboxSavePath); }
+    CExoString GetModuleName() { return CExoString(m_szModuleName); }
+    CExoString GetLoadScreen() { return CExoString(m_szLoadScreen); }
+    CExoString GetLoadMusic() { return CExoString(m_szLoadMusic); }
+    CExoString GetStartWaypoint() { return CExoString(m_szStartWaypoint); }
+    CExoString GetMovie1() { return CExoString(m_szMovie1); }
+    CExoString GetMovie2() { return CExoString(m_szMovie2); }
+    CExoString GetMovie3() { return CExoString(m_szMovie3); }
+    CExoString GetMovie4() { return CExoString(m_szMovie4); }
+    CExoString GetMovie5() { return CExoString(m_szMovie5); }
+    CExoString GetMovie6() { return CExoString(m_szMovie6); }
 #ifdef _XBOX
     unsigned long GetModuleTrans() { return m_nModuleTrans; }
 #endif
@@ -197,7 +197,7 @@ public:
 extern int g_bLowDiskMode;
 extern unsigned char g_nBootFlags;
 extern __int64 g_nCurrentSessionStartFILETIME;
-// Xbox 0x000124A0
+
 inline KOTOR_LAUNCH_DATA::KOTOR_LAUNCH_DATA()
 {
     m_nMagic = MAGIC;

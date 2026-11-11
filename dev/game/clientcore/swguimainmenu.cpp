@@ -27,7 +27,7 @@ static inline void SwguimainmenuTrace1();
 #define SWGUIMAINMENU_HOLD() SwguimainmenuTrace1()
 
 #ifndef _XBOX
-void CSWGuiMainMenu::Draw(float fElapsed)  // PC 0x0067AC10
+void CSWGuiMainMenu::Draw(float fElapsed)  // PC 0x006D0C10
 {
     CSWGuiPanel::Draw(fElapsed);
     int nDrawCount = m_nDrawCount;
@@ -41,7 +41,7 @@ void CSWGuiMainMenu::Draw(float fElapsed)  // PC 0x0067AC10
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainMenu::LoadFromLayout(CSWGuiManager* pManager)  // PC 0x0067ACE0
+void CSWGuiMainMenu::LoadFromLayout(CSWGuiManager* pManager)  // PC 0x006D08A0
 {
     SWGUIMAINMENU_HOLD();
     {
@@ -65,7 +65,7 @@ void CSWGuiMainMenu::LoadFromLayout(CSWGuiManager* pManager)  // PC 0x0067ACE0
     StopLoadFromLayout();
 }
 #endif
-// PC 0x0067AFB0  Xbox 0x000A05B0
+// PC 0x006D0D70
 void CSWGuiMainMenu::OnNewGamePicked(CSWGuiControl* pControl)
 {
     SWGUIMAINMENU_HOLD();
@@ -119,7 +119,7 @@ void CSWGuiMainMenu::OnNewGamePicked(CSWGuiControl* pControl)
     }
 #endif
 }
-// PC 0x0067B1A0  Xbox 0x000A0820
+// PC 0x006D0FF0
 void CSWGuiMainMenu::OnLoadSaveGame(CSWGuiControl* pControl)
 {
     SWGUIMAINMENU_HOLD();
@@ -149,7 +149,7 @@ void CSWGuiMainMenu::OnLoadSaveGame(CSWGuiControl* pControl)
     }
 #endif
 }
-// PC 0x0067B250  Xbox 0x000A08C0
+// PC 0x006D1110
 void CSWGuiMainMenu::OnMoviesPicked(CSWGuiControl* pControl)
 {
     SWGUIMAINMENU_HOLD();
@@ -190,7 +190,7 @@ void CSWGuiMainMenu::OnMoviesPicked(CSWGuiControl* pControl)
     }
 #endif
 }
-// PC 0x0067B2F0  Xbox 0x000A0950
+// PC 0x006D1250
 void CSWGuiMainMenu::OnOptionsPicked(CSWGuiControl* pControl)
 {
     SWGUIMAINMENU_HOLD();
@@ -231,7 +231,7 @@ void CSWGuiMainMenu::OnOptionsPicked(CSWGuiControl* pControl)
     }
 #endif
 }
-// PC 0x0067B380  Xbox 0x000A09D0
+// PC 0x006D12F0
 void CSWGuiMainMenu::HandleInputEvent(int nEvent, int nState)
 {
     SWGUIMAINMENU_HOLD();
@@ -269,14 +269,14 @@ void CSWGuiMainMenu::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0067B450  Xbox 0x000A0AA0
+// PC 0x006D13D0
 void CSWGuiMainMenu::OnEnterButton(CSWGuiControl* pControl)
 {
     SWGUIMAINMENU_HOLD();
     ((CSWGuiButton*)pControl)
         ->m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
 }
-// PC 0x0067B470  Xbox 0x000A0AC0
+
 void CSWGuiMainMenu::OnExitButton(CSWGuiControl* pControl)
 {
     SWGUIMAINMENU_HOLD();
@@ -288,7 +288,7 @@ void CSWGuiMainMenu::OnExitButton(CSWGuiControl* pControl)
 
 #define SAVE_GAME_DRIVE 'U'
 #define SAVE_GAME_BLOCKS_NEEDED 3202
-void CSWGuiMainMenu::LaunchDashboard(CSWGuiControl* pControl)  // PC 0x0067B490  Xbox 0x000A0AE0
+void CSWGuiMainMenu::LaunchDashboard(CSWGuiControl* pControl)
 {
     LD_LAUNCH_DASHBOARD cLaunchData;
 
@@ -302,12 +302,12 @@ void CSWGuiMainMenu::LaunchDashboard(CSWGuiControl* pControl)  // PC 0x0067B490 
     }
 }
 #else
-void CSWGuiMainMenu::LaunchDashboard(CSWGuiControl* pControl)  // PC 0x0067B490  Xbox 0x000A0AE0
+void CSWGuiMainMenu::LaunchDashboard(CSWGuiControl* pControl)  // PC 0x006D13F0
 {
     SWGUIMAINMENU_HOLD();
     g_pAppManager->m_pClientExoApp->ExitProgram();
 }
-// PC 0x0067B4A0
+// PC 0x006D1400
 void CSWGuiMainMenu::OnQuitButtonPressed(CSWGuiControl* pControl)
 {
     SWGUIMAINMENU_HOLD();
@@ -324,7 +324,7 @@ void CSWGuiMainMenu::OnQuitButtonPressed(CSWGuiControl* pControl)
     }
 }
 #endif
-// PC 0x0067B500  Xbox 0x000A0D70
+// PC 0x006D1740
 CSWGuiMainMenu::~CSWGuiMainMenu()
 {
     m_lbModules.ClearItems();
@@ -342,7 +342,7 @@ CSWGuiMainMenu::~CSWGuiMainMenu()
 #ifdef _XBOX
 
 static int s_bSaveSpaceChecked = 0;
-// PC 0x0067B6C0  Xbox 0x000A1880
+
 inline void CSWGuiMainMenu::OnPanelAdded()
 {
     unsigned __int64 nFreeBytes;
@@ -367,7 +367,7 @@ inline void CSWGuiMainMenu::OnPanelAdded()
     }
 }
 #else
-inline void CSWGuiMainMenu::OnPanelAdded()  // PC 0x0067B6C0  Xbox 0x000A1880
+inline void CSWGuiMainMenu::OnPanelAdded()  // PC 0x006D14C0
 {
     unsigned __int64 nFreeBytes;
     g_pExoResMan->GetFreeDiskSpace("SAVES:", &nFreeBytes);
@@ -407,7 +407,7 @@ inline void CSWGuiMainMenu::OnPanelAdded()  // PC 0x0067B6C0  Xbox 0x000A1880
     }
 }
 #endif
-// PC 0x0067B9D0
+// PC 0x006D1A00
 void CSWGuiMainMenu::OnModulePicked(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -447,7 +447,7 @@ void CSWGuiMainMenu::OnModulePicked(CSWGuiControl* pControl)
             ->SetGlobalUnpauseableState(1);
     }
 }
-// PC 0x0067B930
+// PC 0x006D1960
 void CSWGuiMainMenu::DeleteModuleList()
 {
     SWGUIMAINMENU_TRACE();
@@ -458,7 +458,7 @@ void CSWGuiMainMenu::DeleteModuleList()
     m_lstModules.SetSize(0);
     m_lstModules.num = 0;
 }
-// PC 0x0067BC40
+// PC 0x006D1D50
 void CSWGuiMainMenu::PopulateModules()
 {
     CExoString sModule;
@@ -556,7 +556,7 @@ void CSWGuiMainMenu::PopulateModules()
 
     m_lbModules.AddControls(lstControls, 1, 0, 0);
 }
-// PC 0x0067C3F0
+// PC 0x006D2500
 void CSWGuiMainMenu::OnLoadGamePicked()
 {
 #ifndef _XBOX
@@ -592,12 +592,12 @@ void CSWGuiMainMenu::OnLoadGamePicked()
     }
 #endif
 }
-// PC 0x0067C4B0
+// PC 0x006D2640
 void CSWGuiMainMenu::OnWarpButtonPressed(CSWGuiControl* pControl)
 {
     OnLoadGamePicked();
 }
-// PC 0x0067C4C0  Xbox 0x000A10A0
+// PC 0x006D2650
 CSWGuiMainMenu::CSWGuiMainMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -742,7 +742,7 @@ static inline void SwguimainmenuTrace1()
 }
 
 #ifdef _XBOX
-// Xbox 0x000A0F40
+
 void CSWGuiMainMenu::OnErrorMessageDone(CSWGuiControl* pControl)
 {
     if (m_lstErrorMessages[0].m_pfnCallback != NULL)
@@ -755,7 +755,7 @@ void CSWGuiMainMenu::OnErrorMessageDone(CSWGuiControl* pControl)
         ShowErrorMessage();
     }
 }
-// Xbox 0x000A0F80
+
 void CSWGuiMainMenu::ShowErrorMessage()
 {
     EXOXBOXASSERT(m_lstErrorMessages.num != 0);
@@ -772,7 +772,7 @@ void CSWGuiMainMenu::ShowErrorMessage()
         this, (CSWGuiHandler)&CSWGuiMainMenu::OnErrorMessageDone, 0);
     m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
-// Xbox 0x000A1820
+
 void CSWGuiMainMenu::AddErrorMessage(const CErrorMessageData& cMessage)
 {
     m_lstErrorMessages.Add(cMessage);

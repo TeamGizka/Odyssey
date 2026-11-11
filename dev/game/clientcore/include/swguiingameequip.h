@@ -216,11 +216,11 @@ public:
     char gap_399[3];
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float);
-    // PC 0x005B5E90
+    // PC 0x006049D0
     virtual void Initialize(const CSWGuiExtent&, CSWGuiButton*)
     {
     }
-    virtual void Initialize(const CSWGuiExtent&,  // PC 0x0063CFC0
+    virtual void Initialize(const CSWGuiExtent&,  // PC 0x00693D50
                                           const CSWGuiTextParams&,
                                           const CSWGuiBorderParams&,
                                           const CSWGuiBorderParams&)
@@ -246,10 +246,10 @@ class CSWGuiStoreItemEntry : public CSWGuiButton
 public:
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
-    virtual void Initialize(const CSWGuiExtent&, CSWGuiButton*)  // PC 0x005B5E90
+    virtual void Initialize(const CSWGuiExtent&, CSWGuiButton*)  // PC 0x006049D0
     {
     }
-    virtual void Initialize(const CSWGuiExtent&,  // PC 0x0063CFC0
+    virtual void Initialize(const CSWGuiExtent&,  // PC 0x00693D50
                                          const CSWGuiTextParams&,
                                          const CSWGuiBorderParams&,
                                          const CSWGuiBorderParams&)

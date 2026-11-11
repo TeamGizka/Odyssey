@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
-// PC 0x00413100  Xbox 0x00144340
+// PC 0x0041D140
 int C2DA::GetColumnIndex(const CExoString& sColumnLabel)
 {
     int i;
@@ -32,7 +32,7 @@ int C2DA::GetColumnIndex(const CExoString& sColumnLabel)
 
     return -1;
 }
-// PC 0x00413190  Xbox 0x001443D0
+// PC 0x0041DDE0
 int C2DA::GetCExoStringEntry(int nRow, int nColumn, CExoString* psEntry)
 {
     if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 ||
@@ -58,7 +58,7 @@ int C2DA::GetCExoStringEntry(int nRow, int nColumn, CExoString* psEntry)
     *psEntry = m_ppEntries[nRow][nColumn];
     return psEntry->GetLength() > 0;
 }
-// PC 0x00413270  Xbox 0x001444B0
+// PC 0x0041D1F0
 int C2DA::GetCExoStringEntry(int nRow, const CExoString& sColumn,
                              CExoString* psEntry)
 {
@@ -86,7 +86,7 @@ int C2DA::GetCExoStringEntry(int nRow, const CExoString& sColumn,
     *psEntry = m_ppEntries[nRow][nColumn];
     return psEntry->GetLength() > 0;
 }
-// PC 0x00413350  Xbox 0x00144590
+// PC 0x0041D2D0
 int C2DA::GetFLOATEntry(int nRow, int nColumn, float* pfEntry)
 {
     if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 ||
@@ -114,7 +114,7 @@ int C2DA::GetFLOATEntry(int nRow, int nColumn, float* pfEntry)
     *pfEntry = m_ppEntries[nRow][nColumn].AsFLOAT();
     return 1;
 }
-// PC 0x00413430  Xbox 0x00144670
+// PC 0x0041D3D0
 int C2DA::GetFLOATEntry(int nRow, const CExoString& sColumn, float* pfEntry)
 {
     int nColumn = GetColumnIndex(sColumn);
@@ -143,7 +143,7 @@ int C2DA::GetFLOATEntry(int nRow, const CExoString& sColumn, float* pfEntry)
     *pfEntry = m_ppEntries[nRow][nColumn].AsFLOAT();
     return 1;
 }
-// PC 0x00413510  Xbox 0x00144750
+// PC 0x0041D4D0
 int C2DA::GetINTEntry(int nRow, int nColumn, int* pnEntry)
 {
     if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 ||
@@ -180,7 +180,7 @@ int C2DA::GetINTEntry(int nRow, int nColumn, int* pnEntry)
     *pnEntry = m_ppEntries[nRow][nColumn].AsINT();
     return 1;
 }
-// PC 0x00413660  Xbox 0x001448A0
+// PC 0x0041D640
 int C2DA::GetINTEntry(int nRow, const CExoString& sColumn, int* pnEntry)
 {
     int nColumn = GetColumnIndex(sColumn);
@@ -218,7 +218,7 @@ int C2DA::GetINTEntry(int nRow, const CExoString& sColumn, int* pnEntry)
     *pnEntry = m_ppEntries[nRow][nColumn].AsINT();
     return 1;
 }
-// PC 0x004137B0  Xbox 0x001449F0
+// PC 0x0041D7B0
 unsigned long C2DA::GetNextLineLength(char* pData, unsigned long nSize)
 {
     unsigned long nLength;
@@ -235,7 +235,7 @@ unsigned long C2DA::GetNextLineLength(char* pData, unsigned long nSize)
 
     return nLength;
 }
-// PC 0x004137E0  Xbox 0x00144A20
+// PC 0x0041D7E0
 int C2DA::GetNextToken(char** ppData, unsigned long* pnSize, char* szToken,
                        unsigned long* pnSkipped)
 {
@@ -305,7 +305,7 @@ int C2DA::GetNextToken(char** ppData, unsigned long* pnSize, char* szToken,
 
     return nCount > 0;
 }
-// PC 0x00413CC0  Xbox 0x00145340
+// PC 0x0041DCC0
 C2DA::C2DA(CResRef cResRef, int bRequest)
 {
     m_ppEntries = NULL;
@@ -323,12 +323,12 @@ C2DA::C2DA(CResRef cResRef, int bRequest)
     m_pLabelData = NULL;
     SetResRef(cResRef, bRequest);
 }
-// PC 0x00413D80  Xbox 0x00145400
+// PC 0x0041DD80
 C2DA::~C2DA()
 {
     Unload2DArray();
 }
-// PC 0x00413DE0  Xbox 0x00145460
+// PC 0x0041DEC0
 int C2DA::GetCExoStringEntry(const CExoString& sRow, const CExoString& sColumn,
                              CExoString* psEntry)
 {
@@ -357,7 +357,7 @@ int C2DA::GetCExoStringEntry(const CExoString& sRow, const CExoString& sColumn,
     *psEntry = m_ppEntries[nRow][nColumn];
     return psEntry->GetLength() > 0;
 }
-// PC 0x00413EC0
+// PC 0x0041DFA0
 int C2DA::GetCExoStringEntry(const CExoString& sRow, int nColumn,
                              CExoString* psEntry)
 {
@@ -385,7 +385,7 @@ int C2DA::GetCExoStringEntry(const CExoString& sRow, int nColumn,
     *psEntry = m_ppEntries[nRow][nColumn];
     return psEntry->GetLength() > 0;
 }
-// PC 0x00413FA0  Xbox 0x00145540
+// PC 0x0041E080
 int C2DA::GetFLOATEntry(const CExoString& sRow, const CExoString& sColumn,
                         float* pfEntry)
 {
@@ -416,7 +416,7 @@ int C2DA::GetFLOATEntry(const CExoString& sRow, const CExoString& sColumn,
     *pfEntry = m_ppEntries[nRow][nColumn].AsFLOAT();
     return 1;
 }
-// PC 0x00414080
+// PC 0x0041E1A0
 int C2DA::GetFLOATEntry(const CExoString& sRow, int nColumn, float* pfEntry)
 {
     int nRow = GetRowIndex(sRow);
@@ -441,7 +441,7 @@ int C2DA::GetFLOATEntry(const CExoString& sRow, int nColumn, float* pfEntry)
 
     return 1;
 }
-// PC 0x00414110  Xbox 0x00145620
+// PC 0x0041E270
 int C2DA::GetINTEntry(const CExoString& sRow, const CExoString& sColumn,
                       int* pnEntry)
 {
@@ -481,7 +481,7 @@ int C2DA::GetINTEntry(const CExoString& sRow, const CExoString& sColumn,
     *pnEntry = m_ppEntries[nRow][nColumn].AsINT();
     return 1;
 }
-// PC 0x00414260  Xbox 0x00145770
+// PC 0x0041E400
 int C2DA::GetINTEntry(const CExoString& sRow, int nColumn, int* pnEntry)
 {
     int nRow = GetRowIndex(sRow);
@@ -519,7 +519,7 @@ int C2DA::GetINTEntry(const CExoString& sRow, int nColumn, int* pnEntry)
     *pnEntry = m_ppEntries[nRow][nColumn].AsINT();
     return 1;
 }
-// PC 0x004143B0  Xbox 0x001458C0
+// PC 0x0041E570
 int C2DA::Load2DArray()
 {
     unsigned long nSize;
@@ -767,7 +767,7 @@ int C2DA::Load2DArray()
     m_bLoaded = 1;
     return 1;
 }
-// PC 0x004138B0  Xbox 0x00144AF0
+// PC 0x0041D8B0
 int C2DA::GetRowIndex(const CExoString& sRowLabel)
 {
     int i;
@@ -796,7 +796,7 @@ int C2DA::GetRowIndex(const CExoString& sRowLabel)
 
     return -1;
 }
-// PC 0x00413940  Xbox 0x00144B80
+// PC 0x0041D940
 int C2DA::SkipNewLines(char** ppData, unsigned long* pnSize)
 {
     unsigned long nSize = *pnSize;
@@ -856,7 +856,7 @@ static unsigned long GetLineLength(char* pData, unsigned long nSize)
 
     return nLength;
 }
-// PC 0x004139E0  Xbox 0x00144C20
+// PC 0x0041D9E0
 void C2DA::Unload2DArray()
 {
     int i;
@@ -901,7 +901,7 @@ void C2DA::Unload2DArray()
         m_pLabelData = NULL;
     }
 }
-// Xbox 0x00144D20
+
 int C2DA::SaveBinary2da(char* sFileName)
 {
     int nRow;

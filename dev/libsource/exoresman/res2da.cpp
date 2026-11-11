@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x0041D730  Xbox 0x0014EC80
+// PC 0x0041FF20
 CRes2DA::CRes2DA()
 {
     m_bServiced = 0;
@@ -8,21 +8,21 @@ CRes2DA::CRes2DA()
     m_nUnknown34 = 0;
     m_bPacked = 0;
 }
-// PC 0x0041D760  Xbox 0x0014ECB0
+// PC 0x0041FF50
 CRes2DA::~CRes2DA()
 {
 }
-// PC 0x00404DD0
+// PC 0x00404CF0
 void* CRes2DA::Get2DADataPtr()
 {
     return m_p2DAData;
 }
-// PC 0x00710E50
+// PC 0x007846A0
 unsigned long CRes2DA::Get2DASize()
 {
     return m_n2DASize;
 }
-// PC 0x0041D770  Xbox 0x0014ECC0
+// PC 0x0041FF60
 int CRes2DA::OnResourceFreed()
 {
     m_bServiced = 0;
@@ -32,7 +32,7 @@ int CRes2DA::OnResourceFreed()
     m_bPacked = 0;
     return 1;
 }
-// PC 0x0041D790  Xbox 0x0014ECE0
+// PC 0x0041FF80
 int CRes2DA::OnResourceServiced()
 {
     unsigned long* pData = (unsigned long*)m_pResource;

@@ -8,17 +8,17 @@
 
 static inline void NwcanimbaseplaceableTrace1();
 #define NWCANIMBASEPLACEABLE_TRACE() NwcanimbaseplaceableTrace1()
-// PC 0x006E4E50  Xbox 0x0011E360
+// PC 0x00755B60
 CSWCAnimBasePlaceable::CSWCAnimBasePlaceable()
 {
     m_nAnimationType = 10;
 }
-// PC 0x006E4E70  Xbox 0x0011E380
+// PC 0x00755B80
 CSWCAnimBasePlaceable::~CSWCAnimBasePlaceable()
 {
     UnloadModel();
 }
-// PC 0x006E4EC0  Xbox 0x0011E3D0
+// PC 0x00755BD0
 int CSWCAnimBasePlaceable::LoadModel(const CResRef& sResRef,
                                      unsigned char nType)
 {
@@ -35,7 +35,7 @@ int CSWCAnimBasePlaceable::LoadModel(const CResRef& sResRef,
     m_bPaletteReplaced = 0;
     return 1;
 }
-// PC 0x006E4F30  Xbox 0x0011E450
+// PC 0x00755EA0
 int CSWCAnimBasePlaceable::SetAnimation(unsigned short nAnimation, float fSpeed,
                                         int nFlags, float fBlend)
 {
@@ -102,7 +102,7 @@ int CSWCAnimBasePlaceable::SetAnimation(unsigned short nAnimation, float fSpeed,
     }
     return 1;
 }
-// PC 0x006E51A0  Xbox 0x0011E6D0
+// PC 0x00755C40
 CExoString CSWCAnimBasePlaceable::GetAnimationName(unsigned short nAnimation)
 {
     NWCANIMBASEPLACEABLE_TRACE();
@@ -164,7 +164,7 @@ CExoString CSWCAnimBasePlaceable::GetAnimationName(unsigned short nAnimation)
 
     return sName;
 }
-// PC 0x006E53F0  Xbox 0x0011E950
+// PC 0x007560F0
 unsigned short CSWCAnimBasePlaceable::ServerToClientAnimation(unsigned short nAnimation)
 {
     NWCANIMBASEPLACEABLE_TRACE();

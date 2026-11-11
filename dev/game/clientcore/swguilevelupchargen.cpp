@@ -19,7 +19,7 @@ static inline void SwguilevelupchargenTrace3();
 static inline void SwguilevelupchargenTrace2();
 static inline void SwguilevelupchargenTrace1();
 #define SWGUILEVELUPCHARGEN_TRACE() SwguilevelupchargenTrace3()
-// PC 0x006E7B40
+// PC 0x00756EA0
 void CSWGuiLevelUpCharGen::OnPanelAdded()
 {
 #ifdef _XBOX
@@ -31,7 +31,7 @@ void CSWGuiLevelUpCharGen::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
-// PC 0x006E8EF0  Xbox 0x00122B40
+// PC 0x00758490
 CSWGuiLevelUpCharGen::CSWGuiLevelUpCharGen(CSWGuiManager* pManager,
                                          unsigned long nCreature,
                                          CSWCCreature* pCreature)
@@ -110,13 +110,13 @@ CSWGuiLevelUpCharGen::CSWGuiLevelUpCharGen(CSWGuiManager* pManager,
     }
     m_nInputClass = g_pAppManager->m_pClientExoApp->GetInputClass();
 }
-// PC 0x006E7B70  Xbox 0x00122380
+// PC 0x00757AF0
 CSWGuiLevelUpCharGen::~CSWGuiLevelUpCharGen()
 {
     delete m_pCreature;
     m_pCreature = 0;
 }
-// PC 0x006E7DD0  Xbox 0x00121750
+// PC 0x00756EE0
 void CSWGuiLevelUpCharGen::DetermineClass()
 {
     CSWCLevelUpStats* pStats = m_pCreature->m_pStats;
@@ -124,7 +124,7 @@ void CSWGuiLevelUpCharGen::DetermineClass()
     m_sClass = m_sClass.Right(m_sClass.GetLength() - 1 - m_sClass.Find(10, 0));
     m_sClass = m_sClass.Left(m_sClass.Find(40, 0));
 }
-// PC 0x006E7EC0  Xbox 0x00121840
+// PC 0x00756FE0
 void CSWGuiLevelUpCharGen::SetNameString(const CExoString& sName)
 {
     m_sName = sName;
@@ -133,7 +133,7 @@ void CSWGuiLevelUpCharGen::SetNameString(const CExoString& sName)
     m_lblClass.m_cText.m_cParams.SetText(m_sClass);
     m_lblLevelValue.m_cText.m_cParams.SetText(sLevel);
 }
-// PC 0x006E7F70  Xbox 0x001218F0
+// PC 0x007570E0
 void CSWGuiLevelUpCharGen::AbilitiesChanged()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -250,7 +250,7 @@ void CSWGuiLevelUpCharGen::AbilitiesChanged()
         }
     }
 }
-// PC 0x006E8500  Xbox 0x00121E80
+// PC 0x00757620
 void CSWGuiLevelUpCharGen::NewAbilityScores(int nStr, int nCha, int nInt,
                                             int nWis, int nCon, int nDex,
                                             int nPoints)
@@ -269,7 +269,7 @@ void CSWGuiLevelUpCharGen::NewAbilityScores(int nStr, int nCha, int nInt,
         pCreature->m_pStats->m_nCreationStage = nPoints;
     }
 }
-// PC 0x006E85A0  Xbox 0x00121F20
+// PC 0x007576C0
 void CSWGuiLevelUpCharGen::ClearAbilities()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -302,7 +302,7 @@ void CSWGuiLevelUpCharGen::ClearAbilities()
             m_pCreature->m_pStats->m_nForcePointBonus;
     }
 }
-// PC 0x006E8730  Xbox 0x001220B0
+// PC 0x00757850
 void CSWGuiLevelUpCharGen::ClearSkills()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -319,7 +319,7 @@ void CSWGuiLevelUpCharGen::ClearSkills()
         }
     }
 }
-// PC 0x006E87E0  Xbox 0x00122160
+// PC 0x00757900
 void CSWGuiLevelUpCharGen::ClearPowers()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -339,7 +339,7 @@ void CSWGuiLevelUpCharGen::ClearPowers()
         }
     }
 }
-// PC 0x006E88A0  Xbox 0x00122220
+// PC 0x007579C0
 void CSWGuiLevelUpCharGen::BeginPlayGame()
 {
     GetManager()->PopModalPanel();
@@ -373,7 +373,7 @@ void CSWGuiLevelUpCharGen::BeginPlayGame()
     }
     g_pAppManager->m_pClientExoApp->SetInputClass(m_nInputClass, 1);
 }
-// PC 0x006E89F0  Xbox 0x00122640
+// PC 0x00757E30
 int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
                                            CSWCCreature* pTo)
 {
@@ -440,7 +440,7 @@ int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
     pNewStats->m_nDefenseBase = pOldStats->GetArmorClass(0);
     return 1;
 }
-// PC 0x006E8DB0  Xbox 0x00122A00
+// PC 0x00758350
 void CSWGuiLevelUpCharGen::ClearFeats()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -458,7 +458,7 @@ void CSWGuiLevelUpCharGen::ClearFeats()
         }
     }
 }
-// PC 0x006E8E20  Xbox 0x00122A70
+// PC 0x007583C0
 void CSWGuiLevelUpCharGen::CancelLevelUp()
 {
     if (m_nInputClass != 0)
@@ -515,7 +515,7 @@ void CSWGuiLevelUpCharGen::HandleCancelButton()
     RemoveSubPanels();
     m_pInGameCharacter->AttachModel();
 }
-// PC 0x006E9A50  Xbox 0x001237D0
+// PC 0x00757DC0
 void CSWGuiLevelUpCharGen::HandleInputEvent(int nEvent, int nState)
 {
     SWGUILEVELUPCHARGEN_TRACE();
@@ -542,7 +542,7 @@ static inline void SwguilevelupchargenTrace1()
 }
 
 #ifdef _XBOX
-void CSWGuiLevelUpCharGen::SetBackPromptEnabled(int bEnabled)  // Xbox 0x00122350
+void CSWGuiLevelUpCharGen::SetBackPromptEnabled(int bEnabled)
 {
     m_lblBack.m_bEnabled = bEnabled;
     m_lblB.m_bEnabled = bEnabled;

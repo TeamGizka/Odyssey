@@ -25,7 +25,7 @@ int g_bEnableLiveContentIgnore = 0;
 
 int g_bProcessModuleMemUsage = 0;
 char* g_szProcessModuleMemName = 0;
-// PC 0x0060A300
+// PC 0x00656580
 int GetCheatsTurnedOn()
 {
     int nCheats = 0;
@@ -57,7 +57,7 @@ int GetCheatsTurnedOn()
     }
     return nCheats == 1;
 }
-// PC 0x0060A460
+// PC 0x006566F0
 void heal()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -66,7 +66,7 @@ void heal()
             ->SendPlayerToServerCheat_Resurrect();
     }
 }
-// PC 0x0060A480
+// PC 0x00656710
 void CheatSetSkill(int nSkill, char* szValue)
 {
     int nValue = 0;
@@ -94,47 +94,47 @@ void CheatSetSkill(int nSkill, char* szValue)
         }
     }
 }
-// PC 0x0060A510
+// PC 0x006567A0
 void setcomputeruse(char* szValue)
 {
     CheatSetSkill(0, szValue);
 }
-// PC 0x0060A520
+// PC 0x006567B0
 void setdemolitions(char* szValue)
 {
     CheatSetSkill(1, szValue);
 }
-// PC 0x0060A530
+// PC 0x006567C0
 void setstealth(char* szValue)
 {
     CheatSetSkill(2, szValue);
 }
-// PC 0x0060A540
+// PC 0x006567D0
 void setawareness(char* szValue)
 {
     CheatSetSkill(3, szValue);
 }
-// PC 0x0060A550
+// PC 0x006567E0
 void setpersuade(char* szValue)
 {
     CheatSetSkill(4, szValue);
 }
-// PC 0x0060A560
+// PC 0x006567F0
 void setrepair(char* szValue)
 {
     CheatSetSkill(5, szValue);
 }
-// PC 0x0060A570
+// PC 0x00656800
 void setsecurity(char* szValue)
 {
     CheatSetSkill(6, szValue);
 }
-// PC 0x0060A580
+// PC 0x00656810
 void settreatinjury(char* szValue)
 {
     CheatSetSkill(7, szValue);
 }
-// PC 0x0060A590
+// PC 0x00656820
 void CheatSetAbility(int nAbility, char* szValue)
 {
     int nValue = 0;
@@ -186,12 +186,12 @@ void CheatSetAbility(int nAbility, char* szValue)
         }
     }
 }
-// PC 0x0060A690
+// PC 0x00656920
 void setstrength(char* szValue)
 {
     CheatSetAbility(0, szValue);
 }
-// PC 0x0060A6A0
+// PC 0x00656930
 void setdexterity(char* szValue)
 {
     int nValue = 0;
@@ -223,7 +223,7 @@ void setdexterity(char* szValue)
         }
     }
 }
-// PC 0x0060A730
+// PC 0x006569C0
 void setconstitution(char* szValue)
 {
     int nValue = 0;
@@ -255,7 +255,7 @@ void setconstitution(char* szValue)
         }
     }
 }
-// PC 0x0060A7D0
+// PC 0x00656A60
 void setintelligence(char* szValue)
 {
     int nValue = 0;
@@ -287,7 +287,7 @@ void setintelligence(char* szValue)
         }
     }
 }
-// PC 0x0060A860
+// PC 0x00656AF0
 void setwisdom(char* szValue)
 {
     int nValue = 0;
@@ -319,7 +319,7 @@ void setwisdom(char* szValue)
         }
     }
 }
-// PC 0x0060A8F0
+// PC 0x00656B80
 void setcharisma(char* szValue)
 {
     int nValue = 0;
@@ -351,7 +351,7 @@ void setcharisma(char* szValue)
         }
     }
 }
-// PC 0x0060A980
+// PC 0x00656C10
 void addexp(char* szValue)
 {
     int nExperience = 0;
@@ -370,7 +370,7 @@ void addexp(char* szValue)
         }
     }
 }
-// PC 0x0060A9E0
+// PC 0x00656C70
 void turbo()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -382,7 +382,7 @@ void turbo()
             nFlags == 0;
     }
 }
-// PC 0x0060AA20
+// PC 0x00656CB0
 void invulnerability()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -391,7 +391,7 @@ void invulnerability()
             ->SendPlayerToServerCheat_Invulnerability();
     }
 }
-// PC 0x0060AA40
+// PC 0x00656CD0
 void restartminigame()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -404,7 +404,7 @@ void restartminigame()
         }
     }
 }
-// PC 0x0060AA80
+// PC 0x00656D10
 void bright()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -427,7 +427,7 @@ void bright()
         }
     }
 }
-// PC 0x0060AAC0
+// PC 0x00656D50
 void addlightside(int nAmount)
 {
     if (GetCheatsTurnedOn() != 0)
@@ -445,7 +445,7 @@ void addlightside(int nAmount)
         }
     }
 }
-// PC 0x0060AB30
+// PC 0x00656DC0
 void adddarkside(int nAmount)
 {
     if (GetCheatsTurnedOn() != 0)
@@ -463,7 +463,7 @@ void adddarkside(int nAmount)
         }
     }
 }
-// PC 0x0060ABB0
+// PC 0x00656E40
 void revealmap()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -471,7 +471,7 @@ void revealmap()
         g_bShowFogOfWar = g_bShowFogOfWar == 0;
     }
 }
-// PC 0x0060ABD0
+// PC 0x00656E60
 void givecredits(char* szValue)
 {
     int nCredits = 0;
@@ -496,7 +496,7 @@ void givecredits(char* szValue)
         }
     }
 }
-// PC 0x0060AC50
+// PC 0x00656EE0
 void giveitem(char* szValue)
 {
     if (GetCheatsTurnedOn() != 0)
@@ -519,7 +519,7 @@ void giveitem(char* szValue)
         pClient->CreatureAcquireItem(pClient->GetPlayerCreatureId(), cResRef);
     }
 }
-// PC 0x0060ACD0
+// PC 0x00656F60
 void givemed(char* szValue)
 {
     int nCount = 0;
@@ -541,7 +541,7 @@ void givemed(char* szValue)
         }
     }
 }
-// PC 0x0060AD60
+// PC 0x00656FF0
 void giverepair(char* szValue)
 {
     int nCount = 0;
@@ -563,7 +563,7 @@ void giverepair(char* szValue)
         }
     }
 }
-// PC 0x0060ADF0
+// PC 0x00657080
 void givecomspikes(char* szValue)
 {
     int nCount = 0;
@@ -585,7 +585,7 @@ void givecomspikes(char* szValue)
         }
     }
 }
-// PC 0x0060AE80
+// PC 0x00657110
 void givesecspikes(char* szValue)
 {
     int nCount = 0;
@@ -607,7 +607,7 @@ void givesecspikes(char* szValue)
         }
     }
 }
-// PC 0x0060AF10
+// PC 0x006571A0
 void givesitharmour()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -618,7 +618,7 @@ void givesitharmour()
         pClient->CreatureAcquireItem(pClient->GetPlayerCreatureId(), cResRef);
     }
 }
-// PC 0x0060AF50
+// PC 0x006571E0
 void warp(char* szValue)
 {
     if (GetCheatsTurnedOn() != 0)
@@ -644,7 +644,7 @@ void warp(char* szValue)
         g_pAppManager->m_pServerExoApp->SetMoveToModulePending(1);
     }
 }
-// PC 0x0060B020
+// PC 0x006572B0
 void infiniteuses()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -656,7 +656,7 @@ void infiniteuses()
             nFlags == 0;
     }
 }
-// PC 0x0060B060
+// PC 0x006572F0
 void whereami()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -681,7 +681,7 @@ void whereami()
         }
     }
 }
-// PC 0x0060B190
+// PC 0x00657420
 void addlevel()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -721,7 +721,7 @@ void addlevel()
 }
 
 #ifndef _XBOX
-void dancedancemalak()  // PC 0x0060B270
+void dancedancemalak()  // PC 0x00657510
 {
     if (GetCheatsTurnedOn() != 0)
     {
@@ -729,7 +729,7 @@ void dancedancemalak()  // PC 0x0060B270
     }
 }
 #endif
-// PC 0x0060B2A0  Xbox 0x0003AC00
+// PC 0x00657540
 int lockcamera(char* szValue)
 {
     static int bLockcamera = 1;
@@ -770,12 +770,12 @@ int lockcamera(char* szValue)
 
 int g_bMovieNotification;
 int g_bLiveContentIgnore;
-// Xbox 0x0003ADA0
+
 void ToggleMovieNotification()
 {
     g_bMovieNotification = !g_bMovieNotification;
 }
-// Xbox 0x0003ADC0
+
 void ToggleLiveContentIgnore()
 {
     g_bLiveContentIgnore = !g_bLiveContentIgnore;
@@ -831,7 +831,7 @@ ConsoleFunc ConFToggleLiveContentIgnore("ToggleLiveContentIgnore", ToggleLiveCon
 #include "twodimarray.h"
 
 extern int g_bEnableScreenCapture;
-// Xbox 0x0003A8A0
+
 char* fps(char* szArgs)
 {
     static float fWindow = 2.0f;
@@ -868,7 +868,7 @@ char* fps(char* szArgs)
             1.0f / fAverageFrameTime, fFrameTime);
     return szFPS;
 }
-// Xbox 0x0003AA00
+
 char* MacroRecord(char* szArgs)
 {
     if (*szArgs == 0)
@@ -883,13 +883,13 @@ char* MacroRecord(char* szArgs)
     g_pAppManager->GetClientExoApp()->SetCaptureEvents("");
     return "Finished Macro recording";
 }
-// Xbox 0x0003AAE0
+
 char* MacroStop(char* szArgs)
 {
     g_pAppManager->GetClientExoApp()->SetCaptureEvents("");
     return "Finished Macro recording";
 }
-// Xbox 0x0003AB50
+
 char* MacroPlay(char* szArgs)
 {
     if (g_pAppManager->m_pClientExoApp->GetCaptureEvents())
@@ -901,7 +901,7 @@ char* MacroPlay(char* szArgs)
     g_bEnableScreenCapture = 0;
     return "Playing Macro...";
 }
-// Xbox 0x0003AC80
+
 int keyboardmode(char* szArgs)
 {
     if (szArgs != NULL)
@@ -918,7 +918,7 @@ int keyboardmode(char* szArgs)
     }
     return g_pExoInput->GetKeyboardMode() != 0;
 }
-// Xbox 0x0003ACD0
+
 char* PlayMovie(char* szArgs)
 {
     if (*szArgs == 0)
@@ -933,7 +933,7 @@ char* PlayMovie(char* szArgs)
     g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
     return "Playing movie...";
 }
-// Xbox 0x0003ADE0
+
 char* Binarize2DA(char* szArgs)
 {
     static char szResult[256];

@@ -1,7 +1,7 @@
 #include "exobase.h"
 #include <windows.h>
 #include <string.h>
-// PC 0x005ECC80  Xbox 0x001396F0
+// PC 0x00637E70
 CExoRandInternal::~CExoRandInternal()
 {
     if (m_pBuffer != NULL)
@@ -10,7 +10,7 @@ CExoRandInternal::~CExoRandInternal()
         m_pBuffer = NULL;
     }
 }
-// PC 0x005ECCA0  Xbox 0x00139710
+// PC 0x00637E90
 unsigned long CExoRandInternal::Rand()
 {
 
@@ -32,7 +32,7 @@ unsigned long CExoRandInternal::Rand()
         ((nState3 & m_anMask[3]) << m_anFeedbackShift[3]);
     return m_anState[0] ^ m_anState[1] ^ m_anState[2] ^ m_anState[3];
 }
-// PC 0x005ECD40  Xbox 0x001397B0
+// PC 0x00637F30
 void CExoRandInternal::ReSeed(unsigned long nSeed0, unsigned long nSeed1,
                               unsigned long nSeed2, unsigned long nSeed3)
 {
@@ -58,7 +58,7 @@ void CExoRandInternal::ReSeed(unsigned long nSeed0, unsigned long nSeed1,
 
     Rand();
 }
-// PC 0x005ECE20  Xbox 0x00139890
+// PC 0x00638010
 void CExoRandInternal::Add(unsigned char* pData, int nLength)
 {
     if (m_nBufferLength + nLength < 128)
@@ -74,7 +74,7 @@ void CExoRandInternal::Add(unsigned char* pData, int nLength)
         m_nBufferLength = m_nBufferLength + nLength - 128;
     }
 }
-// PC 0x005ECEA0  Xbox 0x00139910
+// PC 0x00638090
 CExoString CExoRandInternal::GetString(unsigned short nLength)
 {
     unsigned short nBlocks = 128 / nLength;
@@ -149,7 +149,7 @@ CExoString CExoRandInternal::GetString(unsigned short nLength)
     delete pString;
     return sString;
 }
-// PC 0x005ED080
+// PC 0x00638270
 void CExoRandInternal::GenSeed()
 {
     unsigned char aStackData[128];
@@ -166,7 +166,7 @@ void CExoRandInternal::GenSeed()
     Add((unsigned char*)&sSystemInfo, sizeof(sSystemInfo));
 #endif
 }
-// PC 0x005ED0E0  Xbox 0x00139AF0
+// PC 0x006382D0
 CExoRandInternal::CExoRandInternal()
 {
     CExoString sSeed;

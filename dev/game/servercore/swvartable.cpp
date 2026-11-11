@@ -1,7 +1,7 @@
 #include "exobase.h"
 #include "resgff.h"
 #include "nwsvartable.h"
-// PC 0x0059AFE0  Xbox 0x001AB880
+// PC 0x005A11E0
 CSWVarTable::CSWVarTable()
 {
     for (int i = 0; i < 3; i++)
@@ -9,7 +9,7 @@ CSWVarTable::CSWVarTable()
     for (int j = 0; j < 8; j++)
         m_aLocalNumber[j] = 0;
 }
-// PC 0x0059B000  Xbox 0x001AB8A0
+// PC 0x005A1210
 int CSWVarTable::GetLocalBoolean(int nIndex)
 {
     if (nIndex < 0 || nIndex >= 96)
@@ -18,7 +18,7 @@ int CSWVarTable::GetLocalBoolean(int nIndex)
     }
     return m_nLocalBoolean[nIndex / 32] & (1 << (nIndex % 32));
 }
-// PC 0x0059B040  Xbox 0x001AB8E0
+// PC 0x005A1260
 void CSWVarTable::SetLocalBoolean(int nIndex, int bValue)
 {
     if (nIndex < 0 || nIndex >= 96)
@@ -35,7 +35,7 @@ void CSWVarTable::SetLocalBoolean(int nIndex, int bValue)
         m_nLocalBoolean[nIndex / 32] &= ~(1 << (nIndex % 32));
     }
 }
-// PC 0x0059B0B0  Xbox 0x001AB950
+// PC 0x005A12E0
 unsigned char CSWVarTable::GetLocalNumber(int nIndex)
 {
     if (nIndex < 0 || nIndex >= 8)
@@ -44,7 +44,7 @@ unsigned char CSWVarTable::GetLocalNumber(int nIndex)
     }
     return m_aLocalNumber[nIndex];
 }
-// PC 0x0059B0D0  Xbox 0x001AB970
+// PC 0x005A1300
 void CSWVarTable::SetLocalNumber(int nIndex, unsigned char nValue)
 {
     if (nIndex >= 0 && nIndex < 8)
@@ -52,7 +52,7 @@ void CSWVarTable::SetLocalNumber(int nIndex, unsigned char nValue)
         m_aLocalNumber[nIndex] = nValue;
     }
 }
-// PC 0x0059B0F0  Xbox 0x001AB990
+// PC 0x005A1320
 void CSWVarTable::LoadVarTable(CResGFF* pRes, CResStruct* pStruct)
 {
     CResStruct sVarTable;
@@ -109,7 +109,7 @@ void CSWVarTable::LoadVarTable(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 }
-// PC 0x0059B250  Xbox 0x001ABAF0
+// PC 0x005A1480
 void CSWVarTable::SaveVarTable(CResGFF* pRes, CResStruct* pStruct)
 {
     CResStruct sVarTable;

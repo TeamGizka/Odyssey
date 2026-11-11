@@ -8,13 +8,13 @@
 #include "nwccreature.h"
 #include "nwccreaturestats.h"
 #include "nwrace.h"
-// PC 0x006F9B80  Xbox 0x00132190
+// PC 0x0076BF00
 void CSWGuiNameChargen::SetParentPanel(CSWGuiPanel* pParent, int nParentType)
 {
     m_pParent = pParent;
     m_nParentType = nParentType;
 }
-// PC 0x006F9BA0  Xbox 0x001321C0
+// PC 0x0076BEB0
 void CSWGuiNameChargen::HandleCancelButton()
 {
     if (m_pParent != 0)
@@ -35,7 +35,7 @@ void CSWGuiNameChargen::HandleCancelButton()
 }
 
 #ifdef _XBOX
-CSWGuiNameChargen::CSWGuiNameChargen(CSWGuiManager* pManager, CSWCCreature* pCreature)  // PC 0x006F9E70  Xbox 0x00132940
+CSWGuiNameChargen::CSWGuiNameChargen(CSWGuiManager* pManager, CSWCCreature* pCreature)
     : CSWGuiPanel(pManager)
 {
     CExoString sName;
@@ -163,7 +163,7 @@ CSWGuiNameChargen::CSWGuiNameChargen(CSWGuiManager* pManager, CSWCCreature* pCre
     SetInternational(0);
 }
 #else
-CSWGuiNameChargen::CSWGuiNameChargen(CSWGuiManager* pManager, CSWCCreature* pCreature)  // PC 0x006F9E70  Xbox 0x00132940
+CSWGuiNameChargen::CSWGuiNameChargen(CSWGuiManager* pManager, CSWCCreature* pCreature)  // PC 0x0076C1A0
     : CSWGuiPanel(pManager)
 {
     CExoString sName;
@@ -188,7 +188,7 @@ CSWGuiNameChargen::CSWGuiNameChargen(CSWGuiManager* pManager, CSWCCreature* pCre
     m_editName.m_cText.m_nMaxLength = MAX_NAME_LENGTH;
     m_editName.AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiNameChargen::HandleDoneButton);
 }
-// PC 0x006FA140  Xbox 0x001321B0
+// PC 0x0076C490
 void CSWGuiNameChargen::OnPanelAdded()
 {
     CExoString sName;
@@ -212,7 +212,7 @@ void CSWGuiNameChargen::OnPanelAdded()
     }
 }
 #endif
-// PC 0x006FA220  Xbox 0x00132520
+// PC 0x0076C580
 void CSWGuiNameChargen::HandleInputEvent(int nEvent, int bPressed)
 {
     if (bPressed != 0)
@@ -244,7 +244,7 @@ void CSWGuiNameChargen::HandleInputEvent(int nEvent, int bPressed)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, bPressed);
 }
-// PC 0x006F9BF0  Xbox 0x00132210
+// PC 0x0076BF20
 void CSWGuiNameChargen::HandleRandomName()
 {
 #ifdef _XBOX
@@ -277,7 +277,7 @@ void CSWGuiNameChargen::HandleRandomName()
 }
 
 #ifdef _XBOX
-void CSWGuiNameChargen::HandleDoneButton(CSWGuiControl* pControl)  // PC 0x006F9CD0  Xbox 0x00132600
+void CSWGuiNameChargen::HandleDoneButton(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
     {
@@ -363,7 +363,7 @@ void CSWGuiNameChargen::HandleDoneButton(CSWGuiControl* pControl)  // PC 0x006F9
     }
 }
 #else
-void CSWGuiNameChargen::HandleDoneButton(CSWGuiControl* pControl)  // PC 0x006F9CD0  Xbox 0x00132600
+void CSWGuiNameChargen::HandleDoneButton(CSWGuiControl* pControl)  // PC 0x0076C000
 {
     CExoString sName;
     sName = m_editName.m_cText.m_sText;
@@ -402,7 +402,7 @@ void CSWGuiNameChargen::HandleDoneButton(CSWGuiControl* pControl)  // PC 0x006F9
 
 #ifdef _XBOX
 #include "exoinput.h"
-// Xbox 0x001322F0
+
 void CSWGuiNameChargen::OnEnterBackspace(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected)
@@ -411,7 +411,7 @@ void CSWGuiNameChargen::OnEnterBackspace(CSWGuiControl* pControl)
         g_pExoInput->SetEventRepeatable(45, 500, 20);
     }
 }
-// Xbox 0x00132330
+
 void CSWGuiNameChargen::OnExitBackspace(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected)
@@ -420,7 +420,7 @@ void CSWGuiNameChargen::OnExitBackspace(CSWGuiControl* pControl)
         g_pExoInput->SetEventNonRepeatable(45);
     }
 }
-// Xbox 0x00132360
+
 void CSWGuiNameChargen::SetInternational(int bInternational)
 {
     if (m_aIntButtons[0].m_bEnabled == bInternational)
@@ -461,7 +461,7 @@ void CSWGuiNameChargen::SetInternational(int bInternational)
         m_lblIntl.m_cText.m_cParams.SetStrRef(42282);
     }
 }
-// PC 0x006FA140  Xbox 0x001321B0
+
 void CSWGuiNameChargen::OnPanelAdded()
 {
     SetActiveControl(&m_btnDone, 0);

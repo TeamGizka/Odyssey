@@ -44,11 +44,11 @@ static const int nVolume = 1;
 
 const int CSWSMessage::GUI_PANEL_PLAYER_DEATH = 0;
 const int CSWSMessage::GUI_PANEL_PARTY_INVITATION_RECEIVED = 1;
-// PC 0x00520980  Xbox 0x002488D0
+// PC 0x005A1E10
 CSWSMessage::CSWSMessage()
 {
 }
-// PC 0x005209A0  Xbox 0x002488F0
+// PC 0x005A1E30
 CSWSMessage::~CSWSMessage()
 {
 }
@@ -59,7 +59,7 @@ void ResetPlayerInventoryLastUpdate(CSWSPlayer* pPlayer)
         pPlayer->m_pInventoryGUI->m_pLastUpdateObject;
     pLastUpdate->ClearSlots();
 }
-// PC 0x005209B0  Xbox 0x00248900
+// PC 0x005A1E40
 int CSWSMessage::HandlePlayerToServerQuickChatMessage(CSWSPlayer* pPlayer,
                                                       unsigned char nMinor)
 {
@@ -84,7 +84,7 @@ int CSWSMessage::HandlePlayerToServerQuickChatMessage(CSWSPlayer* pPlayer,
     }
     return 0;
 }
-// PC 0x00520A10  Xbox 0x00248960
+// PC 0x005A1EA0
 int CSWSMessage::HandlePlayerToServerChatMessage(CSWSPlayer* pPlayer,
                                                  unsigned char nMinor)
 {
@@ -148,7 +148,7 @@ int CSWSMessage::HandlePlayerToServerChatMessage(CSWSPlayer* pPlayer,
 }
 
 #include "nwccreature.h"
-// PC 0x00520BF0  Xbox 0x00248B40
+// PC 0x005A2080
 int CSWSMessage::HandlePlayerToServerCheatMessage(CSWSPlayer* pPlayer,
                                                   unsigned char nMinor)
 {
@@ -747,7 +747,7 @@ int CSWSMessage::HandlePlayerToServerCheatMessage(CSWSPlayer* pPlayer,
     return 0;
 }
 #ifndef _XBOX
-int CSWSMessage::HandlePlayerToServerDialogMessage(CSWSPlayer* pPlayer,  // PC 0x00522810  Xbox 0x0024A850
+int CSWSMessage::HandlePlayerToServerDialogMessage(CSWSPlayer* pPlayer,  // PC 0x005A3D50
                                                    unsigned char nMinor)
 {
     unsigned long oidObject;
@@ -780,7 +780,7 @@ int CSWSMessage::HandlePlayerToServerDialogMessage(CSWSPlayer* pPlayer,  // PC 0
     return 0;
 }
 #endif
-int CSWSMessage::HandlePlayerToServerGameObjectUpdate(CSWSPlayer* pPlayer,  // PC 0x005228D0  Xbox 0x0024A920
+int CSWSMessage::HandlePlayerToServerGameObjectUpdate(CSWSPlayer* pPlayer,  // PC 0x005A3E10
                                                       unsigned char nMinor)
 {
     if (MessageReadOverflow(1))
@@ -1012,7 +1012,7 @@ int CSWSMessage::HandlePlayerToServerGameObjectUpdate(CSWSPlayer* pPlayer,  // P
 ReadFailed:
     return 0;
 }
-// PC 0x00523240  Xbox 0x0024B2D0
+// PC 0x005A4780
 int CSWSMessage::HandlePlayerToServerGuiInventoryMessage(CSWSPlayer* pPlayer,
                                                          unsigned char nMinor)
 {
@@ -1027,7 +1027,7 @@ int CSWSMessage::HandlePlayerToServerGuiInventoryMessage(CSWSPlayer* pPlayer,
     }
     return 0;
 }
-// PC 0x005232A0  Xbox 0x0024B330
+// PC 0x005A47E0
 int CSWSMessage::HandlePlayerToServerGuiContainerMessage(CSWSPlayer* pPlayer,
                                                          unsigned char nMinor)
 {
@@ -1067,7 +1067,7 @@ int CSWSMessage::HandlePlayerToServerGuiContainerMessage(CSWSPlayer* pPlayer,
     }
     return 1;
 }
-// PC 0x00523380  Xbox 0x0024B410
+// PC 0x005A48C0
 int CSWSMessage::HandlePlayerToServerCharacterSheetMessage(CSWSPlayer* pPlayer,
                                                            unsigned char nMinor)
 {
@@ -1113,7 +1113,7 @@ int CSWSMessage::HandlePlayerToServerCharacterSheetMessage(CSWSPlayer* pPlayer,
     }
     return 1;
 }
-// PC 0x00523450  Xbox 0x0024B4E0
+// PC 0x005A4990
 int CSWSMessage::HandlePlayerToServerInputDriveControl(CSWSPlayer* pPlayer)
 {
     float fPositionX;
@@ -1159,7 +1159,7 @@ int CSWSMessage::HandlePlayerToServerInputDriveControl(CSWSPlayer* pPlayer)
     }
     return 1;
 }
-// PC 0x00523570  Xbox 0x0024B610
+// PC 0x005A4AB0
 int CSWSMessage::HandlePlayerToServerInputCancelGuiTimingEvent(
     CSWSPlayer* pPlayer)
 {
@@ -1175,7 +1175,7 @@ int CSWSMessage::HandlePlayerToServerInputCancelGuiTimingEvent(
     }
     return 1;
 }
-// PC 0x005235B0  Xbox 0x0024B650
+// PC 0x005A4AF0
 int CSWSMessage::HandlePlayerToServerInputWalkToWaypoint(CSWSPlayer* pPlayer)
 {
     unsigned long oidArea = ReadOBJECTIDServer();
@@ -1309,7 +1309,7 @@ int CSWSMessage::HandlePlayerToServerInputWalkToWaypoint(CSWSPlayer* pPlayer)
     }
     return 1;
 }
-// PC 0x00523B20  Xbox 0x0024BC40
+// PC 0x005A5000
 int CSWSMessage::HandlePlayerToServerGoldMessage(CSWSPlayer* pPlayer,
                                                  unsigned char nMinor)
 {
@@ -1352,7 +1352,7 @@ int CSWSMessage::HandlePlayerToServerGoldMessage(CSWSPlayer* pPlayer,
     }
     return 0;
 }
-// PC 0x00523C20  Xbox 0x0024BD40
+// PC 0x005A5100
 int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
                                                       unsigned char nMinor)
 {
@@ -1601,7 +1601,7 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
     }
     return 0;
 }
-// PC 0x005244E0  Xbox 0x0024C670
+// PC 0x005A5AC0
 int CSWSMessage::HandlePlayerToServerLoginMessage(CSWSPlayer* pPlayer,
                                                   unsigned char nMinor)
 {
@@ -1664,7 +1664,7 @@ int CSWSMessage::HandlePlayerToServerLoginMessage(CSWSPlayer* pPlayer,
     }
     return 0;
 }
-// PC 0x005246F0  Xbox 0x0024C890
+// PC 0x005A5CD0
 int CSWSMessage::HandlePlayerToServerCharListMessage(CSWSPlayer* pPlayer,
                                                      unsigned char nMinor)
 {
@@ -1706,7 +1706,7 @@ int CSWSMessage::HandlePlayerToServerCharListMessage(CSWSPlayer* pPlayer,
     }
     return 0;
 }
-// PC 0x00524800  Xbox 0x0024C9A0
+// PC 0x005A5DE0
 int CSWSMessage::HandlePlayerToServerModuleMessage(CSWSPlayer* pPlayer, unsigned char nMinor)
 {
     CExoString sName;
@@ -1768,7 +1768,7 @@ int CSWSMessage::HandlePlayerToServerModuleMessage(CSWSPlayer* pPlayer, unsigned
     }
     return 0;
 }
-// PC 0x00524B80  Xbox 0x0024CCA0
+// PC 0x005A6160
 int CSWSMessage::HandlePlayerToServerAreaMessage(CSWSPlayer* pPlayer,
                                                  unsigned char nMinor)
 {
@@ -1805,7 +1805,7 @@ int CSWSMessage::HandlePlayerToServerAreaMessage(CSWSPlayer* pPlayer,
     }
     return 0;
 }
-// PC 0x00524C40  Xbox 0x0024CD60
+// PC 0x005A6220
 int CSWSMessage::HandlePlayerToServerServerStatusMessage(CSWSPlayer* pPlayer,
                                                          unsigned char nMinor)
 {
@@ -1816,7 +1816,7 @@ int CSWSMessage::HandlePlayerToServerServerStatusMessage(CSWSPlayer* pPlayer,
     }
     return 0;
 }
-// PC 0x00524C70  Xbox 0x0024CD90
+// PC 0x005A6250
 int CSWSMessage::HandlePlayerToServerMapPinSetMapPinAt(CSWSPlayer* pPlayer)
 {
     Vector vPosition;
@@ -1870,7 +1870,7 @@ int CSWSMessage::HandlePlayerToServerMapPinSetMapPinAt(CSWSPlayer* pPlayer)
     SendServerToPlayerMapPinAdded(pPlayer, vPosition, sNote, nMapPin);
     return 1;
 }
-// PC 0x00524F10  Xbox 0x0024D030
+// PC 0x005A64F0
 int CSWSMessage::HandlePlayerToServerMapPinDestroyMapPin(CSWSPlayer* pPlayer)
 {
     CExoString sVariable;
@@ -1915,7 +1915,7 @@ int CSWSMessage::HandlePlayerToServerMapPinDestroyMapPin(CSWSPlayer* pPlayer)
     pVariables->DestroyObject(sVariable);
     return 1;
 }
-// PC 0x00525450  Xbox 0x0024D570
+// PC 0x005A6A30
 int CSWSMessage::HandlePlayerToServerInputAbortDriveControl(CSWSPlayer* pPlayer)
 {
     if (MessageReadOverflow(1))
@@ -1947,7 +1947,7 @@ int CSWSMessage::HandlePlayerToServerInputAbortDriveControl(CSWSPlayer* pPlayer)
     }
     return 0;
 }
-// PC 0x005254C0  Xbox 0x0024D5E0
+// PC 0x005A6AA0
 int CSWSMessage::HandlePlayerToServerInputMessage(CSWSPlayer* pPlayer,
                                                   unsigned char nMinor)
 {
@@ -2524,7 +2524,7 @@ int CSWSMessage::HandlePlayerToServerInputMessage(CSWSPlayer* pPlayer,
     }
     return 0;
 }
-// PC 0x00526910  Xbox 0x0024EB80
+// PC 0x005A81B0
 int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
                                            unsigned char nMinor)
 {
@@ -2831,7 +2831,7 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
     }
     return 1;
 }
-// PC 0x00527380  Xbox 0x0024F6A0
+// PC 0x005A8CD0
 int CSWSMessage::HandlePlayerToServerMapPinMessage(CSWSPlayer* pPlayer,
                                                    unsigned char nMinor)
 {
@@ -2856,7 +2856,7 @@ int CSWSMessage::HandlePlayerToServerMapPinMessage(CSWSPlayer* pPlayer,
     }
     return 1;
 }
-// PC 0x00525080  Xbox 0x0024D1A0
+// PC 0x005A6660
 int CSWSMessage::HandlePlayerToServerMapPinChangePin(CSWSPlayer* pPlayer)
 {
     Vector vPosition;
@@ -2907,7 +2907,7 @@ int CSWSMessage::HandlePlayerToServerMapPinChangePin(CSWSPlayer* pPlayer)
     pVariables->SetObject(sVariable, pCreature->GetArea()->GetId());
     return 1;
 }
-// PC 0x005252A0  Xbox 0x0024D3C0
+// PC 0x005A6880
 int CSWSMessage::HandlePlayerToServerPlayerDeath(CSWSPlayer* pPlayer,
                                                  unsigned char nMinor)
 {
@@ -2929,7 +2929,7 @@ int CSWSMessage::HandlePlayerToServerPlayerDeath(CSWSPlayer* pPlayer,
     }
     return 1;
 }
-// PC 0x00525350  Xbox 0x0024D470
+// PC 0x005A6930
 int CSWSMessage::HandlePlayerToServerCharacterDownload(CSWSPlayer* pPlayer,
                                                        unsigned char nMinor)
 {
@@ -2953,7 +2953,7 @@ int CSWSMessage::HandlePlayerToServerCharacterDownload(CSWSPlayer* pPlayer,
     }
     }
 }
-// PC 0x00525390  Xbox 0x0024D4B0
+// PC 0x005A6970
 int CSWSMessage::HandlePlayerToServerShutDownServer(CSWSPlayer* pPlayer,
                                                     unsigned char nMinor)
 {
@@ -2969,7 +2969,7 @@ int CSWSMessage::HandlePlayerToServerShutDownServer(CSWSPlayer* pPlayer,
     }
     return 0;
 }
-// PC 0x005253F0  Xbox 0x0024D510
+// PC 0x005A69D0
 int CSWSMessage::HandlePlayerToServerPlayModuleCharacterList_Stop(
     CSWSPlayer* pPlayer)
 {
@@ -2980,7 +2980,7 @@ int CSWSMessage::HandlePlayerToServerPlayModuleCharacterList_Stop(
     }
     return 0;
 }
-// PC 0x00527560  Xbox 0x0024F7B0
+// PC 0x005A8DE0
 int CSWSMessage::HandlePlayerToServerLevelUpMessage(CSWSPlayer* pPlayer,
                                                     unsigned char nMinor)
 {
@@ -3060,7 +3060,7 @@ int CSWSMessage::HandlePlayerToServerLevelUpMessage(CSWSPlayer* pPlayer,
     }
     return nResult;
 }
-// PC 0x00527890  Xbox 0x0024FAF0
+// PC 0x005A9160
 int CSWSMessage::HandlePlayerToServerPlayModuleCharacterList(
     CSWSPlayer* pPlayer, unsigned char nMinor)
 {
@@ -3084,7 +3084,7 @@ int CSWSMessage::HandlePlayerToServerPlayModuleCharacterList(
     }
     }
 }
-// PC 0x005273D0  Xbox 0x0024F6F0
+// PC 0x005A8D20
 int CSWSMessage::HandlePlayerToServerPlayModuleCharacterList_Start(
     CSWSPlayer* pPlayer)
 {
@@ -3123,7 +3123,7 @@ int CSWSMessage::HandlePlayerToServerPlayModuleCharacterList_Start(
     }
     return 0;
 }
-// PC 0x005278D0  Xbox 0x0024FB30
+// PC 0x005A91A0
 int CSWSMessage::HandlePlayerToServerJournalMessage(CSWSPlayer* pPlayer,
                                                     unsigned char nMinor)
 {
@@ -3192,7 +3192,7 @@ int CSWSMessage::HandlePlayerToServerJournalMessage(CSWSPlayer* pPlayer,
     }
     return 1;
 }
-// PC 0x00527B20  Xbox 0x0024FD80
+// PC 0x005A93F0
 int CSWSMessage::HandlePlayerToServerMessage(unsigned long nPlayerId,
                                              unsigned char* pMessage,
                                              unsigned long nSize)
@@ -3351,7 +3351,7 @@ static inline void NwshandleplayermessageTrace1()
 }
 
 #ifdef _XBOX
-// PC 0x00522810  Xbox 0x0024A850
+
 int CSWSMessage::HandlePlayerToServerDialogMessage(CSWSPlayer* pPlayer,
                                                    unsigned char nMinor)
 {

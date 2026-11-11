@@ -21,14 +21,14 @@ public:
     Vector m_vUnknown34;
     unsigned long m_oidBlocker;
     int m_nUnknown44;
-    // PC 0x004B14B0  Xbox 0x0003AFE0
+    // PC 0x004DF7E0
     CWalkHitInfo()
     {
         m_nUnknown00 = 0;
         m_nUnknown44 = 0;
         m_oidBlocker = OBJECT_INVALID;
     }
-    // PC 0x004BB570  Xbox 0x00168BA0
+    // PC 0x004FC0F0
     void SetHitInfo(int nFailureReason, const Vector& vHitPosition,
                     const Vector& vNormal, const Vector& vVertex1,
                     const Vector& vVertex2, int nIntersectionType,
@@ -65,7 +65,7 @@ public:
     CSWCollisionMesh(unsigned short nTextResType,
                      unsigned short nBinaryResType);
     ~CSWCollisionMesh();
-    // PC 0x0063E7A0
+    // PC 0x0065D0F0
     virtual int LoadDefaultMesh()
     {
         return 1;
@@ -73,30 +73,30 @@ public:
 
     virtual int SaveBinaryMesh(const CExoString& sFileName);
     virtual void TransformToWorld(const Vector& vPosition);
-    virtual void GetResourceForBinaryWalkMesh(CResRef& cResRef)  // PC 0x00582180  Xbox 0x00168C30
+    virtual void GetResourceForBinaryWalkMesh(CResRef& cResRef)  // PC 0x00557090
     {
         cResRef = m_cResRef;
     }
-    virtual void GetResourceForTextWalkMesh(CResRef& cResRef)  // PC 0x00582180
+    virtual void GetResourceForTextWalkMesh(CResRef& cResRef)  // PC 0x00557090
     {
         cResRef = m_cResRef;
     }
-    // PC 0x00406490
+    // PC 0x00406590
     virtual int GetWalkCheckMaterialMask()
     {
         return -1;
     }
-    // PC 0x00406490
+    // PC 0x00406590
     virtual int GetLOSMaterialMask()
     {
         return -1;
     }
-    // PC 0x00406490
+    // PC 0x00406590
     virtual int GetWalkableMaterialMask()
     {
         return -1;
     }
-    // PC 0x00406490
+    // PC 0x00406590
     virtual int GetAllMaterialsMask()
     {
         return -1;

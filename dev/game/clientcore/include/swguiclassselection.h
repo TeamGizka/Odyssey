@@ -30,7 +30,7 @@ class CSWGuiClassSelChar
 {
 public:
     CSWGuiClassSelChar();
-    ~CSWGuiClassSelChar()  // PC 0x006DB6D0  Xbox 0x0010DFE0
+    ~CSWGuiClassSelChar()  // PC 0x0074A600
     {
     }
 

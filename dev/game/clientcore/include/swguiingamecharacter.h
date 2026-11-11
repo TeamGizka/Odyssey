@@ -25,7 +25,7 @@ public:
     {
         SetRepeat(0.2f, 0.5f);
     }
-    // PC 0x0067E800
+    // PC 0x006D51E0
     SWGUI_PCVIRTUAL void HandleLMouseDown()
     {
         m_bIncrease = 1;
@@ -33,14 +33,14 @@ public:
         HandleInputEvent(90710, 1);
         m_fTimeToRepeat = m_fRepeatRate;
     }
-    SWGUI_PCVIRTUAL void HandleRMouseDown()  // PC 0x0067E830
+    SWGUI_PCVIRTUAL void HandleRMouseDown()  // PC 0x006D5210
     {
         m_bIncrease = 0;
         CSWGuiControl::HandleRMouseDown();
         HandleInputEvent(90711, 1);
         m_fTimeToRepeat = m_fRepeatRate;
     }
-    virtual void Draw(float fElapsed)  // PC 0x0067E860
+    virtual void Draw(float fElapsed)  // PC 0x006D5240
     {
         CSWGuiButton::Draw(fElapsed);
 #ifndef _XBOX

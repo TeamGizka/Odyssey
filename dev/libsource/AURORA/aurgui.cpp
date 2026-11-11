@@ -18,7 +18,7 @@ static inline void AurguiTrace1();
 #ifdef _XBOX
 
 #define SetVertexData4f GLRender::SetVertexData4f
-// PC 0x00459190
+
 inline void AurGUIColor(unsigned int nColor)
 {
     g_pD3DDevice->SetVertexDataColor(D3DVSDE_DIFFUSE, nColor);
@@ -62,7 +62,7 @@ short CAurGUIDraw::cm_nCurrentViewport;
 short CAurGUIDraw::cm_nViewportStack[10][5];
 
 float CAurGUIImage::cm_fGUIBuffer[2048];
-// PC 0x0045A2F0  Xbox 0x002C9B20
+// PC 0x0046F4A0
 void CAurGUIStringInternal::WrapStrings(int nWidth)
 {
     if (m_nPositionX != 0 || m_nWidth != 0)
@@ -204,7 +204,7 @@ void AurGUIDumpWrappedLines(CAurGUIStringInternal* pString)
 float GetViewportAlpha();
 
 void AurGUIColor(unsigned int nColor);
-// PC 0x0045A850  Xbox 0x002C9E20
+// PC 0x0046FA60
 void CAurGUIStringInternal::Draw(float fAlpha)
 {
     int nStringLength = strlen(m_sString);
@@ -423,7 +423,7 @@ void CAurGUIStringInternal::Draw(float fAlpha)
 }
 float GetViewportAlpha();
 void AurGUIColor(unsigned int nColor);
-// PC 0x0045B7A0  Xbox 0x002CAA50
+// PC 0x004709B0
 int CAurGUIStringInternal::GetIdealPixelHeight(int nWidth)
 {
     int nHeight;
@@ -471,7 +471,7 @@ int CAurGUIStringInternal::GetIdealPixelHeight(int nWidth)
 
     return nHeight;
 }
-// PC 0x0045A170  Xbox 0x002CA950
+// PC 0x0046F320
 void CAurGUIImage::FlushBuffer(float fAlpha)
 {
     if (cm_nGUIBufferSizeUsed > 0)
@@ -504,7 +504,7 @@ void CAurGUIImage::FlushBuffer(float fAlpha)
     }
     cm_nGUIBufferSizeUsed = 0;
 }
-// PC 0x0045A260  Xbox 0x002C9A90
+// PC 0x0046F410
 CAurGUIImageInternal* NewCAurGUIImage(char* sTexture)
 {
     if (sTexture == 0)
@@ -516,7 +516,7 @@ CAurGUIImageInternal* NewCAurGUIImage(char* sTexture)
         return new CAurGUIImageInternal(sTexture);
     }
 }
-// PC 0x00458EF0  Xbox 0x002C8450
+// PC 0x0046E0A0
 float GetViewportAlpha()
 {
     float fAlpha = 1.0f;
@@ -524,7 +524,7 @@ float GetViewportAlpha()
         fAlpha *= CAurGUIDraw::cm_fViewportAlpha[i];
     return fAlpha;
 }
-// PC 0x00458F10  Xbox 0x002C84D0
+// PC 0x0046E0C0
 void CAurGUIStringInternal::SetStringSize(short nSize)
 {
     if (nSize > (short)strlen(m_sString))
@@ -539,7 +539,7 @@ void CAurGUIStringInternal::SetStringSize(short nSize)
         m_sString[nSize] = 0;
     }
 }
-// PC 0x00458F70  Xbox 0x002C8530
+// PC 0x0046E120
 void CAurGUIStringInternal::SetString(char* sString)
 {
     int nLength = strlen(sString);
@@ -552,7 +552,7 @@ void CAurGUIStringInternal::SetString(char* sString)
 
     strcpy(m_sString, sString);
 }
-// PC 0x00458FE0  Xbox 0x002C85A0
+// PC 0x0046E190
 void CAurGUIStringInternal::GetPositionBoundingRect(float& fX, float& fY)
 {
     fX = (float)m_nPositionX /
@@ -562,7 +562,7 @@ void CAurGUIStringInternal::GetPositionBoundingRect(float& fX, float& fY)
          CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport]
                                        [VIEWPORT_HEIGHT];
 }
-// PC 0x00459030  Xbox 0x002C8600
+// PC 0x0046E1E0
 void CAurGUIStringInternal::SetPositionBoundingRect(float fX, float fY)
 {
     m_nPositionX =
@@ -574,7 +574,7 @@ void CAurGUIStringInternal::SetPositionBoundingRect(float fX, float fY)
                                             [VIEWPORT_HEIGHT] *
               fY);
 }
-// PC 0x00459090  Xbox 0x002C8650
+// PC 0x0046E240
 void CAurGUIStringInternal::GetSizeBoundingRect(float& fWidth, float& fHeight)
 {
     fWidth = (float)m_nWidth /
@@ -584,7 +584,7 @@ void CAurGUIStringInternal::GetSizeBoundingRect(float& fWidth, float& fHeight)
               CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport]
                                             [VIEWPORT_HEIGHT];
 }
-// PC 0x004590E0  Xbox 0x002C86B0
+// PC 0x0046E290
 void CAurGUIStringInternal::SetSizeBoundingRect(float fWidth, float fHeight)
 {
     m_nWidth =
@@ -601,26 +601,26 @@ void CAurGUIStringInternal::SetSizeBoundingRect(float fWidth, float fHeight)
 CAurGUIImage::CAurGUIImage()
 {
 }
-// PC 0x00459140  Xbox 0x002C8750
+
 inline CAurGUIImage::~CAurGUIImage()
 {
 }
-// PC 0x00459140  Xbox 0x002C8720
+
 inline CAurGUIString::~CAurGUIString()
 {
 }
 #else
-inline CAurGUIImage::~CAurGUIImage()  // PC 0x00459140  Xbox 0x002C8750
+inline CAurGUIImage::~CAurGUIImage()  // PC 0x0046E2F0
 {
 }
-// PC 0x00459140  Xbox 0x002C8720
+// PC 0x0046E2F0
 inline CAurGUIString::~CAurGUIString()
 {
 }
 #endif
 
 #ifdef _XBOX
-// PC 0x00459170  Xbox 0x002C8780
+
 void AurGUIViewport(int nX, int nY, int nWidth, int nHeight)
 {
     D3DVIEWPORT8 viewport;
@@ -635,23 +635,23 @@ void AurGUIViewport(int nX, int nY, int nWidth, int nHeight)
     GLRender::LoadMatrixIdentity();
 }
 #else
-inline void GLRender::Scale(float fX, float fY, float fZ)  // PC 0x00459150  Xbox 0x00284A90
+inline void GLRender::Scale(float fX, float fY, float fZ)  // PC 0x0046E300
 {
     glScalef(fX, fY, fZ);
 }
-// PC 0x00459170  Xbox 0x002C8780
+// PC 0x0046E320
 void AurGUIViewport(int nX, int nY, int nWidth, int nHeight)
 {
     glViewport(nX, nY, nWidth, nHeight);
 }
-// PC 0x00459190
+// PC 0x0046E340
 void AurGUIColor(unsigned int nColor)
 {
     unsigned int nGUIColor = nColor;
     glColor4ubv((GLubyte*)&nGUIColor);
 }
 #endif
-// PC 0x004591B0  Xbox 0x002C87E0
+// PC 0x0046E360
 void AurGUIStartLayer()
 {
     GLint aViewport[4];
@@ -675,7 +675,7 @@ void AurGUIStartLayer()
     GLRender_Enable(ENABLE_BLEND);
     GLRender_SetBlendFunc(Aurora::BLEND_SRC_ALPHA, Aurora::BLEND_ONE_MINUS_SRC_ALPHA);
 }
-// PC 0x004592B0  Xbox 0x002C88E0
+// PC 0x0046E460
 void AurGUIStopLayer()
 {
     CAurGUIDraw::cm_nCurrentViewport = -1;
@@ -685,7 +685,7 @@ void AurGUIStopLayer()
     GLRender_Enable(ENABLE_LIGHTING);
     GLRender_Enable(ENABLE_DEPTH_TEST);
 }
-// PC 0x004592F0  Xbox 0x002C8920
+// PC 0x0046E4A0
 int AurGUISetupViewport(int nX, int nY, int nWidth, int nHeight,
                         const Vector& vColor, bool bScissor, float fAlpha)
 {
@@ -774,7 +774,7 @@ int AurGUISetupViewport(int nX, int nY, int nWidth, int nHeight,
 
     return 1;
 }
-// PC 0x00459580  Xbox 0x002C8C10
+// PC 0x0046E730
 void AurGUICloseViewport()
 {
     if (noguirender == 0)
@@ -812,12 +812,12 @@ void AurGUICloseViewport()
         }
     }
 }
-// PC 0x00459610  Xbox 0x002C8CC0
+// PC 0x0046E7C0
 int CAurGUIStringInternal::GetFontPixelHeight()
 {
     return (int)(AsTexture(m_pFont)->GetFontInfo()->m_fHeight * 100.0f + 0.5f);
 }
-// PC 0x00459630  Xbox 0x002C8CF0
+// PC 0x0046E7E0
 void CAurGUIStringInternal::DrawBoundingRect(Vector vColor, float fAlpha)
 {
     if (noguirender == 0)
@@ -871,12 +871,12 @@ void CAurGUIStringInternal::DrawBoundingRect(Vector vColor, float fAlpha)
         GLRender_Enable(ENABLE_TEXTURE_2D);
     }
 }
-// PC 0x00459790  Xbox 0x002C8E50
+// PC 0x0046E940
 CAurGUIImageInternal::CAurGUIImageInternal()
 {
     m_pMaterial = new Material;
 }
-// PC 0x0045B200  Xbox 0x002CAC00
+// PC 0x00470410
 CAurGUIImageInternal::~CAurGUIImageInternal()
 {
     AurguiTrace2();
@@ -889,7 +889,7 @@ CAurGUIImageInternal::~CAurGUIImageInternal()
 
     delete m_pMaterial;
 }
-// PC 0x0045B290  Xbox 0x002CACA0
+// PC 0x004704A0
 void CAurGUIImageInternal::DrawBuffered(float fX, float fY, float fWidth,
                                         float fHeight, unsigned char nFlags,
                                         float fRotation, const Vector& vColor,
@@ -1120,7 +1120,7 @@ void CAurGUIImageInternal::DrawBuffered(float fX, float fY, float fWidth,
         cm_nGUIBufferSizeUsed = cm_nGUIBufferSizeUsed + 24;
     }
 }
-// PC 0x00459800  Xbox 0x002C8ED0
+// PC 0x0046E9B0
 void CAurGUIImageInternal::DrawBuffered(int nX, int nY, int nWidth, int nHeight,
                                         unsigned char nFlags, float fRotation,
                                         const Vector& vColor, float fAlpha)
@@ -1143,18 +1143,18 @@ void CAurGUIImageInternal::DrawBuffered(int nX, int nY, int nWidth, int nHeight,
             nFlags, fRotation, vColor, fAlpha);
     }
 }
-// PC 0x00459880  Xbox 0x002C8F60
+// PC 0x0046EA30
 inline void CAurGUIImageInternal::SetTexture(char* sTexture)
 {
     m_pMaterial->InitializeTextures(sTexture, 0, 0, 0);
 }
-// PC 0x004598A0  Xbox 0x002C9060
+// PC 0x0046EB30
 CAurGUIImageInternal::CAurGUIImageInternal(char* sTexture)
 {
     m_pMaterial = new Material;
     SetTexture(sTexture);
 }
-// PC 0x00459920  Xbox 0x002CA860
+// PC 0x0046EBB0
 void CAurGUIImageInternal::Draw(int nX, int nY, int nWidth, int nHeight,
                                 unsigned char nFlags, float fRotation,
                                 const Vector& vColor, float fAlpha)
@@ -1208,7 +1208,7 @@ static inline int TextureCellHeight(CAurTexture* pTexture)
     return nHeight / pTexture->GetNumY();
 }
 #endif
-// PC 0x004599B0  Xbox 0x002C90F0
+// PC 0x0046EC40
 void CAurGUIImageInternal::Draw(float fX, float fY, float fWidth,
                                 float fHeight, unsigned char nFlags,
                                 float fRotation, const Vector& vColor,
@@ -1457,31 +1457,31 @@ void CAurGUIImageInternal::Draw(float fX, float fY, float fWidth,
     GLRender_PopCurrentMatrix();
     GLRender_Enable(ENABLE_LIGHTING);
 }
-// PC 0x0045A090  Xbox 0x002C8F80
+// PC 0x0046EA50
 int CAurGUIImageInternal::GetImageHeight()
 {
     return AsTexture(m_pMaterial->m_pTexture0)->GetHeight();
 }
-// PC 0x0045A0A0  Xbox 0x002C8F90
+// PC 0x0046EA60
 int CAurGUIImageInternal::GetImageWidth()
 {
     return AsTexture(m_pMaterial->m_pTexture0)->GetWidth();
 }
-// PC 0x0045A0B0  Xbox 0x002C8FA0
+// PC 0x0046EA70
 void CAurGUIImageInternal::Draw()
 {
     Draw(0, 0, AsTexture(m_pMaterial->m_pTexture0)->GetWidth(),
          AsTexture(m_pMaterial->m_pTexture0)->GetHeight(), 0, 0.0f,
          Vector(-1.0f, -1.0f, -1.0f), 1.0f);
 }
-// PC 0x0045A110  Xbox 0x002C9000
+// PC 0x0046EAD0
 void CAurGUIImageInternal::Draw(float fAlpha)
 {
     Draw(0, 0, AsTexture(m_pMaterial->m_pTexture0)->GetWidth(),
          AsTexture(m_pMaterial->m_pTexture0)->GetHeight(), 0, 0.0f,
          Vector(-1.0f, -1.0f, -1.0f), fAlpha);
 }
-// PC 0x0045B990  Xbox 0x002CB240
+// PC 0x00470BA0
 #ifdef _XBOX
 CAurGUIStringInternal::CAurGUIStringInternal(char* sString, char* sFont,
                                              Vector vColor)
@@ -1513,31 +1513,31 @@ CAurGUIStringInternal::CAurGUIStringInternal(char* sString, char* sFont,
     m_fScale = fScale;
 #endif
 }
-// PC 0x0045BBE0  Xbox 0x002CB480
+// PC 0x00470E10
 inline void CAurGUIStringInternal::GetPositionBoundingRect(int& nX, int& nY)
 {
     nX = m_nPositionX;
     nY = m_nPositionY;
 }
-// PC 0x0045BC00  Xbox 0x002CB4A0
+// PC 0x00470E30
 inline void CAurGUIStringInternal::SetPositionBoundingRect(int nX, int nY)
 {
     m_nPositionX = nX;
     m_nPositionY = nY;
 }
-// PC 0x0045BC20  Xbox 0x002CB4C0
+// PC 0x00470E50
 inline void CAurGUIStringInternal::GetSizeBoundingRect(int& nWidth, int& nHeight)
 {
     nWidth = m_nWidth;
     nHeight = m_nHeight;
 }
-// PC 0x0045BC40  Xbox 0x002CB4E0
+// PC 0x00470E70
 inline void CAurGUIStringInternal::SetSizeBoundingRect(int nWidth, int nHeight)
 {
     m_nWidth = nWidth;
     m_nHeight = nHeight;
 }
-// PC 0x0045BC60  Xbox 0x002CB460
+// PC 0x00470DF0
 inline char* CAurGUIStringInternal::GetFontTexture()
 {
     CAurTexture* pFont = AsTexture(m_pFont);
@@ -1551,7 +1551,7 @@ inline char* CAurGUIStringInternal::GetFontTexture()
         return 0;
     }
 }
-// PC 0x0045BC70  Xbox 0x002CB500
+// PC 0x00470E90
 CAurGUIStringInternal::~CAurGUIStringInternal()
 {
     CAurTexture* pFont = AsTexture(m_pFont);
@@ -1588,7 +1588,7 @@ CAurGUIStringInternal::~CAurGUIStringInternal()
     m_nWidth = 0;
     m_nHeight = 0;
 }
-// PC 0x0045BD70  Xbox 0x002CB5D0
+// PC 0x00470F90
 void CAurGUIStringInternal::SetFontTexture(char* sFont)
 {
     CAurTexture* pOld = AsTexture(m_pFont);
@@ -1612,13 +1612,13 @@ void CAurGUIStringInternal::SetFontTexture(char* sFont)
 }
 
 #ifdef _XBOX
-CAurGUIStringInternal* NewCAurGUIString(char* sString, char* sFont,  // Xbox 0x002CB640
+CAurGUIStringInternal* NewCAurGUIString(char* sString, char* sFont,
                                         const Vector& vColor)
 {
     return new CAurGUIStringInternal(sString, sFont, vColor);
 }
 #else
-CAurGUIStringInternal* NewCAurGUIString(char* sString, char* sFont,  // PC 0x0045BDF0
+CAurGUIStringInternal* NewCAurGUIString(char* sString, char* sFont,  // PC 0x00471010
                                         const Vector& vColor, float fScale)
 {
     return new CAurGUIStringInternal(sString, sFont, vColor, fScale);
@@ -1635,10 +1635,10 @@ static inline void AurguiTrace1()
 }
 
 #ifdef _XBOX
-CAurGUIDraw::~CAurGUIDraw()  // Xbox 0x002C8710
+CAurGUIDraw::~CAurGUIDraw()
 {
 }
-// Xbox 0x002C8700
+
 CAurGUIDraw::CAurGUIDraw()
 {
 }

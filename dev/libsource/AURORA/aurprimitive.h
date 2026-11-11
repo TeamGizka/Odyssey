@@ -91,10 +91,10 @@ public:
     virtual ~VertexPrimitive();
 
     PartTriMesh* GetPartTriMesh();
-    virtual VertexPrimitiveFlat* AsVertexPrimitiveFlat() { return 0; }  // PC 0x0063E7F0
-    virtual VertexPrimitiveSkinned* AsVertexPrimitiveSkinned() { return 0; }  // PC 0x0063E7F0
-    virtual VertexPrimitiveAnim* AsVertexPrimitiveAnim() { return 0; }  // PC 0x0063E7F0
-    virtual VertexPrimitiveDangly* AsVertexPrimitiveDangly() { return 0; }  // PC 0x0063E7F0
+    virtual VertexPrimitiveFlat* AsVertexPrimitiveFlat() { return 0; }  // PC 0x004065A0
+    virtual VertexPrimitiveSkinned* AsVertexPrimitiveSkinned() { return 0; }  // PC 0x004065A0
+    virtual VertexPrimitiveAnim* AsVertexPrimitiveAnim() { return 0; }  // PC 0x004065A0
+    virtual VertexPrimitiveDangly* AsVertexPrimitiveDangly() { return 0; }  // PC 0x004065A0
     virtual void BuildVertexArrays() = 0;
     virtual void SetupVertexArraysStandard();
 
@@ -105,7 +105,7 @@ public:
 
     virtual void DeleteArrayPool();
 #endif
-    virtual void Rebuild() { m_bRebuild = 1; }  // PC 0x0043E880  Xbox 0x002D0AB0
+    virtual void Rebuild() { m_bRebuild = 1; }  // PC 0x00450BE0
 };
 
 class VertexPrimitiveFlat : public VertexPrimitive
@@ -113,10 +113,10 @@ class VertexPrimitiveFlat : public VertexPrimitive
 public:
     int m_nPool;
     virtual ~VertexPrimitiveFlat();
-    virtual VertexPrimitiveFlat* AsVertexPrimitiveFlat() { return this; }  // PC 0x00641DB0
+    virtual VertexPrimitiveFlat* AsVertexPrimitiveFlat() { return this; }  // PC 0x00698BD0
     virtual void BuildVertexArrays();
     virtual void SetupArrays();
-    virtual int SetupArraysVAR(unsigned char*) { return 0; }  // PC 0x0063E7C0
+    virtual int SetupArraysVAR(unsigned char*) { return 0; }  // PC 0x006955A0
     virtual unsigned char* ReconnectArraysVAR(unsigned char*);
 
     virtual void UpdateLightVectors(const Vector&);
@@ -132,7 +132,7 @@ public:
     unsigned long m_nVertexPool;
     unsigned long m_nTexCoordPool;
     ~VertexPrimitiveAnim();
-    virtual VertexPrimitiveAnim* AsVertexPrimitiveAnim() { return this; }  // PC 0x00641DB0
+    virtual VertexPrimitiveAnim* AsVertexPrimitiveAnim() { return this; }  // PC 0x00698BD0
     virtual void BuildVertexArrays();
     VertexPrimitiveAnim(PartTriMesh*);
 };
@@ -143,7 +143,7 @@ public:
 
     Vector* m_pOffsets;
     ~VertexPrimitiveDangly();
-    virtual VertexPrimitiveDangly* AsVertexPrimitiveDangly() { return this; }  // PC 0x00641DB0
+    virtual VertexPrimitiveDangly* AsVertexPrimitiveDangly() { return this; }  // PC 0x00698BD0
     virtual void BuildVertexArrays();
     VertexPrimitiveDangly(PartTriMesh*);
 };
@@ -152,7 +152,7 @@ class VertexPrimitiveSkinned : public VertexPrimitiveFlat
 {
 public:
     ~VertexPrimitiveSkinned();
-    virtual VertexPrimitiveSkinned* AsVertexPrimitiveSkinned() { return this; }  // PC 0x00641DB0
+    virtual VertexPrimitiveSkinned* AsVertexPrimitiveSkinned() { return this; }  // PC 0x00698BD0
     virtual void BuildVertexArrays();
     virtual unsigned char* ReconnectArraysVAR(unsigned char*);
     VertexPrimitiveSkinned(PartSkin*);

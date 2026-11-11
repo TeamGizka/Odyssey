@@ -17,11 +17,11 @@ static inline void SwbehaviorcameradialogTrace4();
 static inline void SwbehaviorcameradialogTrace3();
 static inline void SwbehaviorcameradialogTrace2();
 static inline void SwbehaviorcameradialogTrace1();
-// PC 0x0060E760
+// PC 0x005EE1C0
 void CSWBehaviorCameraDialog::Message(char* sMessage)
 {
 }
-// PC 0x006BB590  Xbox 0x000F7E80
+// PC 0x0070FE50
 void CSWBehaviorCameraDialog::SetShot(int nShot, Vector vPosition,
                                       Quaternion qOrientation, float fCameraYaw)
 {
@@ -38,7 +38,7 @@ void CSWBehaviorCameraDialog::SetShot(int nShot, Vector vPosition,
         m_qCameraOrientation = qOrientation;
     }
 }
-// PC 0x006BB610  Xbox 0x000F7F00
+// PC 0x0070FF30
 int CSWBehaviorCameraDialog::GetLineOfActionSide(unsigned long oidFirst,
                                                  unsigned long oidSecond)
 {
@@ -61,7 +61,7 @@ int CSWBehaviorCameraDialog::GetLineOfActionSide(unsigned long oidFirst,
     }
     return 0;
 }
-// PC 0x006BB670  Xbox 0x000F7F60
+// PC 0x0070FF90
 CSWBehaviorCameraDialog::CSWBehaviorCameraDialog(CAurObject* pObject,
                                                  int nDialogType)
     : CAurBehavior(pObject)
@@ -94,11 +94,11 @@ CSWBehaviorCameraDialog::CSWBehaviorCameraDialog(CAurObject* pObject,
 
     m_nCameraState = INITIAL_CAMERA_STATE;
 }
-// PC 0x006BB750  Xbox 0x000F8090
+// PC 0x00710070
 CSWBehaviorCameraDialog::~CSWBehaviorCameraDialog() throw()
 {
 }
-// PC 0x006BB7B0  Xbox 0x000F80F0
+// PC 0x007100D0
 void CSWBehaviorCameraDialog::GetCameraParameters(unsigned long nShot,
                                                 unsigned long nSide,
                                                 Vector vFirst, Vector vSecond,
@@ -278,7 +278,7 @@ void CSWBehaviorCameraDialog::GetCameraParameters(unsigned long nShot,
                                 Pitch(normalize(vLookAt - vPosition)) + 90.0f,
                                 0.0f);
 }
-// PC 0x006BC600  Xbox 0x000F9130
+// PC 0x00711390
 int CSWBehaviorCameraDialog::GetSideUnobstructed()
 {
     Vector vHookPosition;
@@ -393,7 +393,7 @@ int CSWBehaviorCameraDialog::GetSideUnobstructed()
         return 2;
     }
 }
-// PC 0x006BCEC0  Xbox 0x000F99F0
+// PC 0x00711C50
 int CSWBehaviorCameraDialog::AddCalculatedLineOfAction(unsigned long oidFirst,
                                                        unsigned long oidSecond)
 {
@@ -428,7 +428,7 @@ int CSWBehaviorCameraDialog::AddCalculatedLineOfAction(unsigned long oidFirst,
     m_aLineOfAction[i].m_oidSecond = oidFirst;
     return nSide;
 }
-// PC 0x006BCF50  Xbox 0x000F9A80
+// PC 0x00711CE0
 int CSWBehaviorCameraDialog::Control(float fTimeStep)
 {
     int nSide;
@@ -511,7 +511,7 @@ int CSWBehaviorCameraDialog::Control(float fTimeStep)
 
     return 1;
 }
-// PC 0x006BD260  Xbox 0x000F9D90
+// PC 0x00711FF0
 void CSWBehaviorCameraDialog::SetShot(unsigned long oidFirst,
                                      unsigned long oidSecond,
                                      int const& nShot,

@@ -102,19 +102,19 @@ public:
     int GetSurfaceMaterialWalkCheckOnly(Vector vPosition);
     void SetOrientation(const Quaternion& qOrientation);
     virtual void TransformToWorld(const Vector& vPosition);
-    virtual int GetWalkCheckMaterialMask()  // PC 0x005821A0  Xbox 0x001E3210
+    virtual int GetWalkCheckMaterialMask()  // PC 0x00576C10
     {
         return m_nWalkCheckMaterialMask;
     }
-    virtual int GetLOSMaterialMask()  // PC 0x005821B0  Xbox 0x001E3220
+    virtual int GetLOSMaterialMask()  // PC 0x00576C20
     {
         return m_nLOSMaterialMask;
     }
-    virtual int GetWalkableMaterialMask()  // PC 0x005821C0  Xbox 0x001E3230
+    virtual int GetWalkableMaterialMask()  // PC 0x00576C30
     {
         return m_nWalkableMaterialMask;
     }
-    virtual int GetAllMaterialsMask()  // PC 0x005821D0  Xbox 0x001E3240
+    virtual int GetAllMaterialsMask()  // PC 0x00576C40
     {
         return m_nAllMaterialsMask;
     }

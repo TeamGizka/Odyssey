@@ -39,7 +39,7 @@ static inline CServerExoApp* GetServerExoApp();
 
 int RenderQATriggers = 0;
 float CSWSTrigger::m_fTrapRadiusRange = 1.0f;
-// PC 0x0058D210  Xbox 0x002037A0
+// PC 0x005845C0
 void CSWSTrigger::CreateNewGeometry(float fRadius, const Vector& vPosition,
                                     CSWSArea* pArea)
 {
@@ -98,7 +98,7 @@ void CSWSTrigger::CreateNewGeometry(float fRadius, const Vector& vPosition,
         m_pPolygonPointOrder[3] = 3;
     }
 }
-// PC 0x0058D4A0  Xbox 0x00203A70
+// PC 0x00584860
 int CSWSTrigger::GetCanFireMineOnObject(unsigned long oidObject, int bForce)
 {
     int bCanFire = 1;
@@ -137,7 +137,7 @@ int CSWSTrigger::GetCanFireMineOnObject(unsigned long oidObject, int bForce)
     }
     return bCanFire;
 }
-// PC 0x0058D570  Xbox 0x00203B40
+// PC 0x00584990
 void CSWSTrigger::OnEnterMine(int bForce)
 {
     CSWSCreature* pCreature =
@@ -193,7 +193,7 @@ void CSWSTrigger::OnEnterMine(int bForce)
         }
     }
 }
-// PC 0x0058D700  Xbox 0x00203CD0
+// PC 0x00584B40
 void CSWSTrigger::SetCreator(unsigned long oidCreator)
 {
     m_oidCreator = oidCreator;
@@ -209,7 +209,7 @@ void CSWSTrigger::SetCreator(unsigned long oidCreator)
         m_bSetByPlayerParty = 0;
     }
 }
-// PC 0x0058C830  Xbox 0x00202BA0
+// PC 0x00583B40
 int CSWSTrigger::GetTargetArea()
 {
     if (m_nTriggerType != 0)
@@ -226,7 +226,7 @@ int CSWSTrigger::GetTargetArea()
     }
     return OBJECT_INVALID;
 }
-// PC 0x0058C8A0  Xbox 0x00202C10
+// PC 0x00583BB0
 int CSWSTrigger::CalculateNearestPoint(const Vector& vPoint,
                                      Vector* pvNearestPoint)
 {
@@ -305,7 +305,7 @@ int CSWSTrigger::CalculateNearestPoint(const Vector& vPoint,
     *pvNearestPoint = vNearest;
     return 1;
 }
-// PC 0x0058CC60  Xbox 0x00203140
+// PC 0x00583F70
 void CSWSTrigger::ComputeBoundingBox(float* pfMinimumX, float* pfMinimumY,
                                      float* pfMaximumX, float* pfMaximumY)
 {
@@ -348,7 +348,7 @@ void CSWSTrigger::ComputeBoundingBox(float* pfMinimumX, float* pfMinimumY,
     *pfMaximumX = m_fBoundingMaxX;
     *pfMaximumY = m_fBoundingMaxY;
 }
-// PC 0x0058CD80  Xbox 0x00203250
+// PC 0x00584130
 int CSWSTrigger::LineSegmentIntersectTrigger(const Vector& vStart,
                                              const Vector& vEnd)
 {
@@ -379,7 +379,7 @@ int CSWSTrigger::LineSegmentIntersectTrigger(const Vector& vStart,
     }
     return 0;
 }
-// PC 0x0058EAE0  Xbox 0x00205170
+// PC 0x005862D0
 CSWSTrigger::CSWSTrigger(unsigned long oidId)
     : CSWSObject(CGameObject::OBJECT_TYPE_TRIGGER, oidId, 0)
 {
@@ -442,7 +442,7 @@ CSWSTrigger::CSWSTrigger(unsigned long oidId)
     m_bSetByPlayerParty = 0;
     SetAnimation(TRAP_ANIMATION_ACTIVE);
 }
-// PC 0x0058ED70  Xbox 0x002053A0
+// PC 0x00586560
 int CSWSTrigger::LoadFromTemplate(const CResRef& cResRef)
 {
     CResGFF* pRes = new CResGFF(2032, "UTT ", cResRef);
@@ -460,7 +460,7 @@ int CSWSTrigger::LoadFromTemplate(const CResRef& cResRef)
     delete pRes;
     return bSuccess;
 }
-// PC 0x0058EEF0  Xbox 0x00205520
+// PC 0x005866E0
 CSWSTrigger::~CSWSTrigger()
 {
     delete[] m_pGeometry;
@@ -480,7 +480,7 @@ CSWSTrigger::~CSWSTrigger()
         pModule->RemoveObjectFromLookupTable(m_sTag, oidObject);
     }
 }
-// PC 0x0058F030  Xbox 0x00205660
+// PC 0x00586820
 void CSWSTrigger::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
                             int bLoadingGame)
 {
@@ -501,7 +501,7 @@ void CSWSTrigger::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
         ComputeBoundingBox(&fMinimumX, &fMinimumY, &fMaximumX, &fMaximumY);
     }
 }
-// PC 0x0058F140  Xbox 0x00205780
+// PC 0x00586930
 void CSWSTrigger::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                               void* pEventData, unsigned long nDay,
                               unsigned long nTime)
@@ -639,7 +639,7 @@ void CSWSTrigger::EventHandler(unsigned long nEventId, unsigned long oidCaller,
         delete pEvent;
     }
 }
-// PC 0x0058D760  Xbox 0x00203D30
+// PC 0x00584BA0
 void CSWSTrigger::AIUpdate()
 {
     unsigned __int64 nTimer;
@@ -691,7 +691,7 @@ void CSWSTrigger::AIUpdate()
     }
     RunActions(nNowDay, nNowTime, nTimer);
 }
-// PC 0x0058D8C0  Xbox 0x00203E90
+// PC 0x00584D00
 int CSWSTrigger::GetClosestPointWithinTrigger(const Vector& vPosition,
                                               Vector* pvClosestPoint)
 {
@@ -728,7 +728,7 @@ int CSWSTrigger::GetClosestPointWithinTrigger(const Vector& vPosition,
     }
     return 0;
 }
-// PC 0x0058DA80  Xbox 0x002040C0
+// PC 0x00584EC0
 int CSWSTrigger::LoadTrigger(CResGFF* pRes, CResStruct* pStruct)
 {
     int bSuccess;
@@ -976,7 +976,7 @@ int CSWSTrigger::LoadTrigger(CResGFF* pRes, CResStruct* pStruct)
         m_sTag, GetId());
     return 1;
 }
-// PC 0x0058E660  Xbox 0x00204CE0
+// PC 0x00585E40
 int CSWSTrigger::SaveTrigger(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList cList;
@@ -1076,7 +1076,7 @@ int CSWSTrigger::SaveTrigger(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldBYTE(pStruct, m_bSetByPlayerParty, "SetByPlayerParty");
     return 1;
 }
-// PC 0x0058EE30  Xbox 0x00205460
+// PC 0x00586620
 void CSWSTrigger::RemoveFromArea()
 {
     NwstriggerTrace2();
@@ -1103,7 +1103,7 @@ CExoString* CSWSTrigger::GetScriptName(int nScript)
     }
     return &m_asScripts[nScript];
 }
-// PC 0x0058CE40  Xbox 0x00203310
+// PC 0x005841F0
 int CSWSTrigger::InTrigger(const Vector& vPosition)
 {
     if (m_bMineTrigger != 0)
@@ -1177,7 +1177,7 @@ int CSWSTrigger::InTrigger(const Vector& vPosition)
     }
     return nIntersections % 2 == 1;
 }
-// PC 0x0058D060  Xbox 0x002035F0
+// PC 0x00584410
 void CSWSTrigger::LoadTriggerGeometry(CResGFF* pRes, CResList& list)
 {
     CResStruct stPoint;

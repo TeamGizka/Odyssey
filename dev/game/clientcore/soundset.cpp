@@ -4,7 +4,7 @@
 #include "clientexoappinternal.h"
 #include "twodimarray.h"
 #include "soundset.h"
-// PC 0x00678820  Xbox 0x00092990
+// PC 0x006CDFD0
 int CSoundSet::GetStrres(unsigned short nSound, STR_RES& strRes)
 {
     SSFFileHeader* pHeader;
@@ -28,7 +28,7 @@ int CSoundSet::GetStrres(unsigned short nSound, STR_RES& strRes)
     }
     return 0;
 }
-// PC 0x00678880  Xbox 0x000929F0
+// PC 0x006CE030
 CSoundSetList::~CSoundSetList()
 {
     if (m_pResRefs != NULL)
@@ -47,7 +47,7 @@ CSoundSetList::~CSoundSetList()
         m_pStrRefs = NULL;
     }
 }
-// PC 0x006788D0  Xbox 0x00092A40
+// PC 0x006CE080
 CResRef CSoundSetList::GetSoundSet(unsigned short nSoundSet)
 {
     if (nSoundSet >= m_nCount)
@@ -58,12 +58,12 @@ CResRef CSoundSetList::GetSoundSet(unsigned short nSoundSet)
 
     return m_pResRefs[nSoundSet];
 }
-// PC 0x00678B20  Xbox 0x00092CB0
+// PC 0x006CE2D0
 CSoundSet::CSoundSet(const CResRef& cResRef)
 {
     SetResRef(cResRef, 0);
 }
-// PC 0x00678BA0  Xbox 0x00092D30
+// PC 0x006CE350
 CSoundSet::~CSoundSet()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() != 0)
@@ -71,7 +71,7 @@ CSoundSet::~CSoundSet()
         m_pRes->Release();
     }
 }
-// PC 0x00678C10  Xbox 0x00092DA0
+// PC 0x006CE3C0
 CSoundSetList::CSoundSetList()
 {
     C2DA* pSoundSet;

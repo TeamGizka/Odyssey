@@ -52,7 +52,7 @@ unsigned long* cPhongFlatVPDeclaration = 0;
 unsigned long* cShadowTriMeshVariantVPDeclaration = 0;
 unsigned long* cSkinShadowVPDeclaration = 0;
 #endif
-void VertexProgram::FindNumberOfAllowedLights()  // PC 0x004A2320  Xbox 0x002F2620
+void VertexProgram::FindNumberOfAllowedLights()
 {
     int nInstructions;
     int nAllowedLights;
@@ -76,14 +76,14 @@ void VertexProgram::FindNumberOfAllowedLights()  // PC 0x004A2320  Xbox 0x002F26
 
     m_nAllowedLights = nAllowedLights;
 }
-// PC 0x004A23B0  Xbox 0x002F26A0
+// PC 0x004CEB30
 void AurVertexProgramMakeCurrent()
 {
     currentframe++;
 }
 
 #ifndef _XBOX
-void GLRender::DrawElementsInShadow(unsigned int nProgram,  // PC 0x004A23C0  Xbox 0x00286800
+void GLRender::DrawElementsInShadow(unsigned int nProgram,  // PC 0x004CEB40
                                     unsigned long nLength,
                                     const char* sProgram,
                                     unsigned long* pnProgram)
@@ -99,7 +99,7 @@ void GLRender::DrawElementsInShadow(unsigned int nProgram,  // PC 0x004A23C0  Xb
     }
 }
 #endif
-// PC 0x004A2400  Xbox 0x002F26B0
+// PC 0x004CEB80
 void TrackMatrices()
 {
 #ifdef _XBOX
@@ -129,7 +129,7 @@ void TrackMatrices()
 }
 
 #ifndef _XBOX
-int VertexProgramManager::ResetVertexPrograms()  // PC 0x004A2470
+int VertexProgramManager::ResetVertexPrograms()  // PC 0x004CEBF0
 {
     int i;
 
@@ -144,7 +144,7 @@ int VertexProgramManager::ResetVertexPrograms()  // PC 0x004A2470
     return cm_listExistentVertexPrograms.m_nCount;
 }
 #endif
-// PC 0x004A24D0  Xbox 0x002F2710
+// PC 0x004CEC50
 void VertexProgram::Enable(Part* pPart, bool bEnableLights)
 {
     static char* sLastProgram;
@@ -277,13 +277,13 @@ void VertexProgram::Enable(Part* pPart, bool bEnableLights)
 }
 
 #ifndef _XBOX
-// PC 0x004A2770
+// PC 0x004CEF00
 void VertexProgramManager::AddVertexProgram(VertexProgram* pProgram)
 {
     cm_listExistentVertexPrograms.Add(pProgram);
 }
 #endif
-// PC 0x004A27D0  Xbox 0x002F26C0
+// PC 0x004CEF60
 VertexProgram::VertexProgram(char* sProgram, unsigned long* pnProgram)
 {
     m_sProgram = sProgram;
@@ -302,7 +302,7 @@ VertexProgram::VertexProgram(char* sProgram, unsigned long* pnProgram)
 }
 
 #ifndef _XBOX
-VertexProgram::~VertexProgram()  // PC 0x004A2830
+VertexProgram::~VertexProgram()  // PC 0x004CEFB0
 {
     unsigned char bExists;
     unsigned int nProgram = m_nGLProgram;

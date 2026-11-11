@@ -24,7 +24,7 @@ public:
 private:
     unsigned char* m_pData;
 };
-// PC 0x00692630  Xbox 0x000C1300
+// PC 0x006EC090
 unsigned long CSWCMessage::ReadOBJECTIDClient()
 {
     unsigned long oidObject = (m_nReadIndex + sizeof(unsigned long) > m_nReadBufferSize)
@@ -34,7 +34,7 @@ unsigned long CSWCMessage::ReadOBJECTIDClient()
     m_nReadIndex += sizeof(unsigned long);
     return oidObject;
 }
-// PC 0x004D68E0
+// PC 0x006EC0C0
 void CSWCMessage::WriteOBJECTIDClient(unsigned long oidObject)
 {
     if (m_nWriteIndex + sizeof(oidObject) > m_nWriteBufferSize)
@@ -43,7 +43,7 @@ void CSWCMessage::WriteOBJECTIDClient(unsigned long oidObject)
     m_nWriteIndex += sizeof(oidObject);
     m_nTotalBytesWritten += sizeof(oidObject);
 }
-// PC 0x00692660  Xbox 0x000C1330
+// PC 0x006EC100
 CExoString CSWCMessage::ReadCExoLocStringClient(CResRef& cResRef,
                                              float* pfLength)
 {

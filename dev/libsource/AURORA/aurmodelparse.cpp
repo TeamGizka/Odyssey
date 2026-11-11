@@ -32,7 +32,7 @@ int Parse(char* sText, unsigned int* pValues);
 void Parse(char* sText, unsigned int& nValue);
 #define AURPARSE_XBOX_NO_ENDLIST_SKIP
 #else
-inline void Parse(char* sText, unsigned int& nValue)  // Xbox 0x002C0620
+inline void Parse(char* sText, unsigned int& nValue)
 {
     int nInteger;
     Parse(sText, nInteger);
@@ -47,7 +47,7 @@ template <class T> void Parse(char* sText, List<T>& lstValues);
 Model* BinarySearchModel(char* sName, int nFirst, int nLast);
 void BinaryInsertModel(Model* pModel, int nFirst, int nLast);
 extern float cullvalueforkeys;
-// PC 0x004639B0  Xbox 0x002C0A80
+// PC 0x00479BA0
 template <> inline void List<AurKey<char[32]> >::allocate(int nAllocated)
 {
     AurKey<char[32]>* pOldList = m_pList;
@@ -58,7 +58,7 @@ template <> inline void List<AurKey<char[32]> >::allocate(int nAllocated)
     if (pOldList != 0)
         delete[] pOldList;
 }
-// PC 0x00463A30  Xbox 0x002C0B00
+// PC 0x00479C20
 void Parse(char* sText, Quaternion& qOrientation)
 {
     float fAngle;
@@ -75,7 +75,7 @@ void Parse(char* sText, Quaternion& qOrientation)
         qOrientation = Quaternion(vAxis, fAngle);
     }
 }
-// PC 0x00463B30  Xbox 0x002C0C00
+// PC 0x00479D20
 void Parse(char* sText, AurGenericKey& key)
 {
     key.m_nValues = sscanf(sText, "%f %f %f %f %f %f %f %f %f %f",
@@ -96,7 +96,7 @@ void Parse(char* sText, AurGenericKey& key)
         key.m_afValues[3] = q.m_fW;
     }
 }
-// PC 0x00463510  Xbox 0x002C04E0
+// PC 0x004796F0
 char* skipspace(char* sText)
 {
     if (sText == 0)
@@ -111,7 +111,7 @@ char* skipspace(char* sText)
 
     return sText;
 }
-// PC 0x00463530  Xbox 0x002C0500
+// PC 0x00479710
 char* firstword(char* sLine)
 {
 
@@ -131,13 +131,13 @@ char* firstword(char* sLine)
 
     return buf;
 }
-// PC 0x00463570  Xbox 0x002C0540
+// PC 0x00479750
 int Parse(char* sText, Vector& vVector)
 {
     return sscanf(sText, "%f %f %f", &vVector.m_fX, &vVector.m_fY,
                   &vVector.m_fZ);
 }
-// PC 0x00463590  Xbox 0x002C0560
+// PC 0x00479770
 void Parse(char* sText, char* sValue)
 {
     if (sscanf(sText, "%s", sValue) == 0)
@@ -145,12 +145,12 @@ void Parse(char* sText, char* sValue)
         strcpy(sValue, (char*)0);
     }
 }
-// PC 0x004635C0  Xbox 0x002C0590
+// PC 0x004797A0
 int Parse(char* sText, float& fValue)
 {
     return sscanf(sText, "%f", &fValue);
 }
-// PC 0x004635E0  Xbox 0x002C05B0
+// PC 0x004797C0
 int Parse(char* sText, int& nValue)
 {
     char sValue[64];
@@ -174,7 +174,7 @@ int Parse(char* sText, int& nValue)
 
     return nResult;
 }
-// PC 0x00463650  Xbox 0x002C0640
+// PC 0x00479830
 void Parse(char* sText, short& nValue)
 {
     int nInteger;
@@ -182,7 +182,7 @@ void Parse(char* sText, short& nValue)
     sscanf(sText, "%d", &nInteger);
     nValue = (short)nInteger;
 }
-// PC 0x00463680  Xbox 0x002C0670
+// PC 0x00479860
 int Parse(char* sText, bool& bValue)
 {
     char sValue[8];
@@ -210,7 +210,7 @@ int Parse(char* sText, bool& bValue)
 
     return nResult;
 }
-// PC 0x00463710  Xbox 0x002C0700
+// PC 0x004798F0
 int Parse(char* sText, MaxFace_PostProcess& face)
 {
     if (face.m_pFaces != 0)
@@ -234,7 +234,7 @@ int Parse(char* sText, MaxFace_PostProcess& face)
                   &face.m_pFaceIndices[0], &face.m_pFaceIndices[1],
                   &face.m_pFaceIndices[2], &face.m_nFaceIndices);
 }
-// PC 0x004637A0  Xbox 0x002C0790
+// PC 0x00479980
 int Parse(char* sText, SkinVertexWeight& weight)
 {
     int nWeights;
@@ -260,7 +260,7 @@ int Parse(char* sText, SkinVertexWeight& weight)
     weight.m_nWeights = nWeights;
     return nWeights;
 }
-// Xbox 0x002C12A0
+
 void classification(char* sType)
 {
 #ifdef _XBOX
@@ -329,7 +329,7 @@ void classification(char* sType)
     }
 #endif
 }
-// Xbox 0x002C0920
+
 const char* setanimationscale(char* sCommand)
 {
     float fScale = 1.0f;
@@ -338,7 +338,7 @@ const char* setanimationscale(char* sCommand)
     currentmodel->m_fAnimationScale = fScale;
     return "done";
 }
-// PC 0x00463850  Xbox 0x002C0850
+// PC 0x00479A30
 int Parse(char* sText, unsigned int* pValues)
 {
     int nCount;
@@ -361,7 +361,7 @@ int Parse(char* sText, unsigned int* pValues)
 
     return nCount;
 }
-// PC 0x004638F0  Xbox 0x002C09A0
+// PC 0x00479AE0
 template <class T> void Parse(char* sText, AurKey<T>& key)
 {
     int nChars;
@@ -373,7 +373,7 @@ template <class T> void Parse(char* sText, AurKey<T>& key)
 int compressquaternions = 1;
 float cullvalueforkeys = 0.0001f;
 int cullunnecessary = 1;
-// PC 0x00463C20  Xbox 0x002C0D10
+// PC 0x00479E10
 void Parse(char* sText, AABB*& pAABB)
 {
     sText = skipspace(sText);
@@ -429,7 +429,7 @@ void Parse(char* sText, AABB*& pAABB)
             pAABB->m_nSplitMask = nSplitMask;
     }
 }
-// PC 0x00463F80  Xbox 0x002C10A0
+// PC 0x0047A170
 void CullUnnecessaryKeys(List<AurGenericKey>& keys)
 {
     for (int i = keys.m_nCount - 2; i > 1; i--)
@@ -447,7 +447,7 @@ void CullUnnecessaryKeys(List<AurGenericKey>& keys)
         }
     }
 }
-// PC 0x00464090  Xbox 0x002C1430
+// PC 0x0047A280
 Model* BinarySearchModel(char* sName, int nFirst, int nLast)
 {
     int nMiddle;
@@ -478,7 +478,7 @@ int countnewcontrollers = 0;
 
 int uselastsupermodelname = 0;
 char* lastsupermodelname = 0;
-// PC 0x00464880  Xbox 0x002C1E60
+// PC 0x0047AA70
 template <> void Parse<char*>(char* sText, List<char*>& lstValues)
 {
     int nCount = 0;
@@ -512,7 +512,7 @@ template <> void Parse<char*>(char* sText, List<char*>& lstValues)
 #endif
     }
 }
-// PC 0x00464A40  Xbox 0x002C1F70
+// PC 0x0047AC30
 template <> void Parse<unsigned int*>(char* sText, List<unsigned int*>& lstValues)
 {
     int nCount;
@@ -531,7 +531,7 @@ template <> void Parse<unsigned int*>(char* sText, List<unsigned int*>& lstValue
         Parse(sLine, lstValues[i]);
     }
 }
-// PC 0x004640F0  Xbox 0x002C1490
+// PC 0x0047A2E0
 Model* BinaryFindModel(char* sName)
 {
     int nLast;
@@ -540,7 +540,7 @@ Model* BinaryFindModel(char* sName)
     return BinarySearchModel(sName, 0, nLast);
 }
 #ifndef _XBOX
-// PC 0x00464110  Xbox 0x002C14B0
+// PC 0x0047A300
 Model* FindModel(char* sName)
 {
     Model* pModel;
@@ -577,7 +577,7 @@ Model* FindModel(char* sName)
     return 0;
 }
 #endif
-Model* LoadModel(FILE* pModelFile, FILE* pVertexFile)  // PC 0x00464200  Xbox 0x002C15A0
+Model* LoadModel(FILE* pModelFile, FILE* pVertexFile)  // PC 0x0047A3F0
 {
     if (pModelFile == 0)
         return 0;
@@ -605,7 +605,7 @@ Model* LoadModel(FILE* pModelFile, FILE* pVertexFile)  // PC 0x00464200  Xbox 0x
     }
     return pModel;
 }
-// PC 0x00464AF0  Xbox 0x002C1020
+// PC 0x0047ACE0
 MdlNode* FindMdlNode(MdlNode* pNode, char* sName)
 {
     int nChildren;
@@ -635,7 +635,7 @@ MdlNode* FindMdlNode(MdlNode* pNode, char* sName)
     return 0;
 }
 #ifdef _XBOX
-// Xbox 0x002C1080
+
 MdlNode* FindMdlNode(MaxTree* pTree, char* sName)
 {
     if (pTree == 0)
@@ -645,7 +645,7 @@ MdlNode* FindMdlNode(MaxTree* pTree, char* sName)
     return FindMdlNode(pTree->m_pRootNode, sName);
 }
 #endif
-// PC 0x00464B50  Xbox 0x002C2000
+// PC 0x0047AD40
 void CompressQuaternionKey(List<AurGenericKey>& keys)
 {
     List<AurGenericKey> compressed;
@@ -679,7 +679,7 @@ void CompressQuaternionKey(List<AurGenericKey>& keys)
     }
     keys = compressed;
 }
-// PC 0x00464E40  Xbox 0x002C2280
+// PC 0x0047B040
 void AddGenericControllerSingle(char* sName, char* sText,
                                 List<NewController>& controllers,
                                 List<float>& values, void* pOffset, void* pType)
@@ -736,7 +736,7 @@ void AddGenericControllerSingle(char* sName, char* sText,
     controllers.Add(controller);
     countnewcontrollers++;
 }
-// PC 0x00465090  Xbox 0x002C2440
+// PC 0x0047B290
 void AddGenericController(char* sName, char* sText,
                           List<NewController>& controllers,
                           List<float>& values, void* pOffset, void* pType)
@@ -786,7 +786,7 @@ void AddGenericController(char* sName, char* sText,
     countnewcontrollers += keys.m_nCount;
     controllers.Add(controller);
 }
-// PC 0x00465320  Xbox 0x002C2600
+// PC 0x0047B520
 void AddBezierController(char* sName, char* sText,
                          List<NewController>& controllers,
                          List<float>& values, void* pOffset, void* pType)
@@ -814,7 +814,7 @@ void AddBezierController(char* sName, char* sText,
     countnewcontrollers += keys.m_nCount;
     controllers.Add(controller);
 }
-void MdlNode::InternalParseField(char* sField)  // PC 0x00465560  Xbox 0x002C2760
+void MdlNode::InternalParseField(char* sField)  // PC 0x0047B760
 {
     if (disablepostprocessing == 0)
     {
@@ -898,7 +898,7 @@ void MdlNode::InternalParseField(char* sField)  // PC 0x00465560  Xbox 0x002C276
         }
     }
 }
-// PC 0x004658B0  Xbox 0x002C2A90
+// PC 0x0047BAB0
 void MdlNodeEmitter::InternalParseField(char* sField)
 {
     if (disablepostprocessing == 0)
@@ -1651,12 +1651,12 @@ void MdlNodeEmitter::InternalParseField(char* sField)
     }
     MdlNode::InternalParseField(sField);
 }
-// PC 0x00468060  Xbox 0x002C5220
+// PC 0x0047E260
 void MdlNodeCamera::InternalParseField(char* sField)
 {
     MdlNode::InternalParseField(sField);
 }
-// PC 0x00468070  Xbox 0x002C5230
+// PC 0x0047E270
 void MdlNodeReference::InternalParseField(char* sField)
 {
     if (disablepostprocessing == 0)
@@ -1673,7 +1673,7 @@ void MdlNodeReference::InternalParseField(char* sField)
 
     return MdlNode::InternalParseField(sField);
 }
-// PC 0x004680E0  Xbox 0x002C52A0
+// PC 0x0047E2E0
 MdlNode* ParseNode(char* sField, MaxTree* pTree)
 {
     char sType[64];
@@ -1801,7 +1801,7 @@ MdlNode* ParseNode(char* sField, MaxTree* pTree)
         pNode->PostProcessDispatch();
     return pNode;
 }
-// PC 0x00468870  Xbox 0x002C59D0
+// PC 0x0047EA70
 int MaxTree::InternalParseField(char* sField)
 {
     int nResult;
@@ -1814,7 +1814,7 @@ int MaxTree::InternalParseField(char* sField)
 
     return nResult;
 }
-// PC 0x004688A0  Xbox 0x002C5A00
+// PC 0x0047EAA0
 int Model::InternalParseField(char* sField)
 {
     if (stricmp("radius", firstword(sField)) == 0)
@@ -1844,7 +1844,7 @@ int Model::InternalParseField(char* sField)
 }
 
 #endif
-// PC 0x00469150  Xbox 0x002C6130
+// PC 0x0047F350
 void MdlNodeLight::InternalParseField(char* sField)
 {
     if (disablepostprocessing == 0)
@@ -1989,7 +1989,7 @@ void MdlNodeLight::InternalParseField(char* sField)
 
     return MdlNode::InternalParseField(sField);
 }
-// PC 0x00469700  Xbox 0x002C66E0
+// PC 0x0047F900
 void MdlNodeTriMesh::InternalParseField(char* sField)
 {
     if (stricmp("texture0", firstword(sField)) == 0)
@@ -2167,12 +2167,12 @@ void MdlNodeTriMesh::InternalParseField(char* sField)
     }
     return MdlNode::InternalParseField(sField);
 }
-// PC 0x0046A150  Xbox 0x002C70A0
+// PC 0x00480430
 void MdlNodeLightsaber::InternalParseField(char* sField)
 {
     return MdlNodeTriMesh::InternalParseField(sField);
 }
-// PC 0x0046A160  Xbox 0x002C70B0
+// PC 0x00480440
 void MdlNodeDanglyMesh::InternalParseField(char* sField)
 {
     if (disablepostprocessing == 0)
@@ -2209,7 +2209,7 @@ void MdlNodeDanglyMesh::InternalParseField(char* sField)
 
     return MdlNodeTriMesh::InternalParseField(sField);
 }
-// PC 0x0046A240  Xbox 0x002C7180
+// PC 0x00480520
 void MdlNodeAnimMesh::InternalParseField(char* sField)
 {
     if (disablepostprocessing == 0)
@@ -2234,7 +2234,7 @@ void MdlNodeAnimMesh::InternalParseField(char* sField)
 
     return MdlNodeTriMesh::InternalParseField(sField);
 }
-// PC 0x0046A2F0  Xbox 0x002C7230
+// PC 0x004805D0
 void MdlNodeSkin::InternalParseField(char* sField)
 {
     if (disablepostprocessing == 0)
@@ -2259,7 +2259,7 @@ void MdlNodeSkin::InternalParseField(char* sField)
 
     return MdlNodeTriMesh::InternalParseField(sField);
 }
-// PC 0x0046A3C0  Xbox 0x002C7300
+// PC 0x004806A0
 void MdlNodeAABB::InternalParseField(char* sField)
 {
     if (disablepostprocessing == 0)
@@ -2272,7 +2272,7 @@ void MdlNodeAABB::InternalParseField(char* sField)
 
     return MdlNodeTriMesh::InternalParseField(sField);
 }
-// PC 0x0046A410  Xbox 0x002C7350
+// PC 0x004806F0
 int Animation::InternalParseField(char* sField)
 {
     char sName[128];
@@ -2307,12 +2307,12 @@ int Animation::InternalParseField(char* sField)
     }
     return MaxTree::InternalParseField(sField);
 }
-// PC 0x0046A5F0  Xbox 0x002C7540
+// PC 0x004808D0
 void InsertModel(Model* pModel)
 {
     return BinaryInsertModel(pModel, 0, Models.m_nCount - 1);
 }
-// PC 0x0046A590  Xbox 0x002C74E0
+// PC 0x00480870
 void BinaryInsertModel(Model* pModel, int nFirst, int nLast)
 {
     AURMODELPARSE_TRACE();
@@ -2349,7 +2349,7 @@ static inline void AurModelParseTrace1()
 }
 
 #ifndef _XBOX
-template <> void List<AurKey<char[32]> >::Insert(AurKey<char[32]> item, int nIndex)  // PC 0x00468970  Xbox 0x002C5B50
+template <> void List<AurKey<char[32]> >::Insert(AurKey<char[32]> item, int nIndex)  // PC 0x0047EB70
 {
     int nLast = m_nCount;
     if (m_nCount == m_nAllocated)
@@ -2363,7 +2363,7 @@ template <> void List<AurKey<char[32]> >::Insert(AurKey<char[32]> item, int nInd
 #endif
 
 #ifdef _XBOX
-void Parse(char* sText, unsigned int& nValue)  // Xbox 0x002C0620
+void Parse(char* sText, unsigned int& nValue)
 {
     int nInteger;
     Parse(sText, nInteger);
@@ -2375,12 +2375,12 @@ void Parse(char* sText, unsigned int& nValue)  // Xbox 0x002C0620
 
 int bRecordSuperModel = 0;
 char* sSuperModelRecord = 0;
-// Xbox 0x002C08B0
+
 void newmodel(char* sName)
 {
     currentmodel = new Model(sName);
 }
-// Xbox 0x002C1190
+
 void ReadTreeFields(char* sCommand, MaxTree* pTree)
 {
     char sAnimRoot[64];
@@ -2408,7 +2408,7 @@ void ReadTreeFields(char* sCommand, MaxTree* pTree)
         }
     }
 }
-// Xbox 0x002C1260
+
 void beginmodelgeom(char* sCommand)
 {
     if (currentmodel->m_pParentModel)
@@ -2418,7 +2418,7 @@ void beginmodelgeom(char* sCommand)
     ReadTreeFields(sCommand, currentmodel);
     currentmodel->SynchronizeTree(currentmodel->m_pParentModel);
 }
-// Xbox 0x002C13E0
+
 void secondaryclassification(char* sType)
 {
     if (stricmp(sType, "sensitive") == 0)
@@ -2426,7 +2426,7 @@ void secondaryclassification(char* sType)
         currentmodel->m_Classification.m_bNoQuaternionCompression = 1;
     }
 }
-// Xbox 0x002C1400
+
 void ignorefog(char* sCommand)
 {
     int nIgnore;
@@ -2437,7 +2437,7 @@ void ignorefog(char* sCommand)
         currentmodel->m_bModelOptionEnabled = 0;
     }
 }
-// Xbox 0x002C1650
+
 const char* setsupermodel(char* sCommand)
 {
     char sSuperModel[64];
@@ -2469,7 +2469,7 @@ const char* setsupermodel(char* sCommand)
     }
     return "done";
 }
-// Xbox 0x002C5A90
+
 void newanim(char* sCommand)
 {
     char sName[64];
@@ -2487,7 +2487,7 @@ void newanim(char* sCommand)
 #endif
 
 #ifdef _XBOX
-// PC 0x00464110  Xbox 0x002C14B0
+
 Model* FindModel(char* sName)
 {
     Model* pModel;

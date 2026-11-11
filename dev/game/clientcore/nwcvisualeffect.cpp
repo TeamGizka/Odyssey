@@ -26,7 +26,7 @@
 
 float weirdanimspeed = 0.8f;
 CExoLinkedList<CAurObject> CSWCVisualEffect::m_lstCachedVFX;
-// PC 0x0068FE70  Xbox 0x000B3380
+// PC 0x006E93C0
 CSWCVisualEffect::CSWCVisualEffect(int bAddToGameObjectArray)
     : CSWCObject(SW_OBJECT_TYPE_AREA_OF_EFFECT)
 {
@@ -60,7 +60,7 @@ CSWCVisualEffect::CSWCVisualEffect(int bAddToGameObjectArray)
     m_bShadows = 0;
     m_nEffect = INVALID_EFFECT;
 }
-// PC 0x00690980  Xbox 0x000B4040
+// PC 0x006E9E50
 void CSWCVisualEffect::AIUpdate()
 {
     unsigned long nDay;
@@ -135,7 +135,7 @@ void CSWCVisualEffect::AIUpdate()
         }
     }
 }
-// PC 0x0068FF70  Xbox 0x000B3480
+// PC 0x006E9DB0
 CSWCVisualEffect::~CSWCVisualEffect()
 {
     g_pAppManager->m_pClientExoApp->GetGameObjectArray()->Delete(m_nId);
@@ -150,7 +150,7 @@ CSWCVisualEffect::~CSWCVisualEffect()
         m_pAnimBase = NULL;
     }
 }
-// PC 0x00690010  Xbox 0x000B3520
+// PC 0x006E94C0
 int CSWCVisualEffect::LoadEffect(unsigned long nEffect)
 {
     CExoString sModel;
@@ -308,7 +308,7 @@ int CSWCVisualEffect::LoadEffect(unsigned long nEffect)
     m_nEffect = nEffect;
     return 1;
 }
-// PC 0x006903D0  Xbox 0x000B3A80
+// PC 0x006E9860
 int CSWCVisualEffect::LoadModel(const CResRef& cModel, unsigned char nModel,
                                 unsigned char nFlags)
 {
@@ -348,7 +348,7 @@ int CSWCVisualEffect::LoadModel(const CResRef& cModel, unsigned char nModel,
     }
     return 1;
 }
-// PC 0x006825F0
+// PC 0x006DB7A0
 void CSWCVisualEffect::UnloadModel()
 {
     if (m_pAnimBase != NULL)
@@ -358,7 +358,7 @@ void CSWCVisualEffect::UnloadModel()
         m_pAnimBase = NULL;
     }
 }
-// PC 0x0063D820
+// PC 0x006945B0
 void CSWCVisualEffect::AttachToScene(CAurScene* pScene)
 {
     if (m_pAnimBase != NULL)
@@ -366,7 +366,7 @@ void CSWCVisualEffect::AttachToScene(CAurScene* pScene)
         m_pAnimBase->AttachToScene(pScene);
     }
 }
-// PC 0x00646650
+// PC 0x0069CF50
 void CSWCVisualEffect::UnloadModel(unsigned char nModel)
 {
     if (m_pAnimBase != NULL)
@@ -374,7 +374,7 @@ void CSWCVisualEffect::UnloadModel(unsigned char nModel)
         m_pAnimBase->UnloadModel(nModel);
     }
 }
-// PC 0x00690510  Xbox 0x000B3BE0
+// PC 0x006E99A0
 void CSWCVisualEffect::SetAnimation(unsigned short nAnimation)
 {
     float fSpeed;
@@ -496,7 +496,7 @@ void CSWCVisualEffect::SetAnimation(unsigned short nAnimation)
         }
     }
 }
-// PC 0x00690910  Xbox 0x000B3FD0
+// PC 0x006E9FD0
 void CSWCVisualEffect::UnloadCachedVFX()
 {
     CAurObject* pCachedObject;
@@ -507,13 +507,13 @@ void CSWCVisualEffect::UnloadCachedVFX()
         delete pCachedObject;
     }
 }
-// PC 0x00690940  Xbox 0x000B4000
+// PC 0x006E9D90
 void CSWCVisualEffect::DoVFXRumble()
 {
     g_pAppManager->m_pClientExoApp->LookUpAndPerformRumbleWithCutOff(
         m_nEffect, CClientExoApp::RUMBLE_TABLE_VISUALEFFECTS, m_vPosition);
 }
-// PC 0x00690B00  Xbox 0x000B41C0
+// PC 0x006EA020
 void CSWCVisualEffect::SetPosition(const Vector& vPosition)
 {
     if (m_pSoundSource != NULL)

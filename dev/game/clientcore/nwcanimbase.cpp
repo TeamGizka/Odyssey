@@ -15,11 +15,11 @@
 #include <string.h>
 
 float g_fMaxLean = 5.0f;
-// PC 0x0060E760
+// PC 0x005EE1C0
 void CSWCAnimBase::SetWieldLimited(int bLimited)
 {
 }
-// PC 0x0069CD80  Xbox 0x000C8B90
+// PC 0x006F7570
 void CSWCAnimBase::AttachToScene(CAurScene* pScene)
 {
     if (m_pModel != 0)
@@ -27,7 +27,7 @@ void CSWCAnimBase::AttachToScene(CAurScene* pScene)
         m_pModel->AttachToScene((Scene*)pScene);
     }
 }
-// PC 0x0069CDA0  Xbox 0x000C8BB0
+// PC 0x006F7590
 Gob* CSWCAnimBase::GetModel(unsigned char nSlot)
 {
     if (nSlot != 0xFF)
@@ -36,7 +36,7 @@ Gob* CSWCAnimBase::GetModel(unsigned char nSlot)
     }
     return m_pModel;
 }
-// PC 0x0069CDC0  Xbox 0x000C8BD0
+// PC 0x006F77E0
 int CSWCAnimBase::ReplaceTexture(const CResRef& sOld, const CResRef& sNew,
                                  int bRemember)
 {
@@ -59,7 +59,7 @@ int CSWCAnimBase::ReplaceTexture(const CResRef& sOld, const CResRef& sNew,
     }
     return 1;
 }
-// PC 0x0069CE50  Xbox 0x000C8C80
+// PC 0x006F7870
 int CSWCAnimBase::ReplaceTexture(unsigned char nModel, const CResRef& sOld,
                                  const CResRef& sNew, int bRemember)
 {
@@ -82,7 +82,7 @@ int CSWCAnimBase::ReplaceTexture(unsigned char nModel, const CResRef& sOld,
     }
     return 1;
 }
-// PC 0x0069CEF0  Xbox 0x000C8D40
+// PC 0x006F7910
 int CSWCAnimBase::ReplaceTexture(unsigned char nModel, const CResRef& sOld,
                                  const CResRef& sNew, unsigned long nColor,
                                  unsigned short* pnPalette, int nRemember,
@@ -110,7 +110,7 @@ int CSWCAnimBase::ReplaceTexture(unsigned char nModel, const CResRef& sOld,
     }
     return 1;
 }
-// PC 0x0069CFD0  Xbox 0x000C8E30
+// PC 0x006F79F0
 int CSWCAnimBase::ReplaceTexture(const CResRef& sOld, const CResRef& sNew,
                                  unsigned long nColor,
                                  unsigned short* pnPalette, int nRemember,
@@ -138,7 +138,7 @@ int CSWCAnimBase::ReplaceTexture(const CResRef& sOld, const CResRef& sNew,
     }
     return 1;
 }
-// PC 0x0069D0A0  Xbox 0x000C8F10
+// PC 0x006F7AC0
 int CSWCAnimBase::RestoreTexture()
 {
     if (m_pModel == 0)
@@ -153,7 +153,7 @@ int CSWCAnimBase::RestoreTexture()
     }
     return 1;
 }
-// PC 0x0069D100  Xbox 0x000C8F70
+// PC 0x006F7B20
 int CSWCAnimBase::RestoreTexture(unsigned char nModel)
 {
     if (m_pModel == 0 || nModel != MODEL_SLOT_MAIN)
@@ -170,7 +170,7 @@ int CSWCAnimBase::RestoreTexture(unsigned char nModel)
     m_pModel->RestoreTexture();
     return 1;
 }
-// PC 0x0069D180  Xbox 0x000C8FF0
+// PC 0x006F7DA0
 float CSWCAnimBase::GetAnimationTime(unsigned short nAnimation)
 {
     float fTime;
@@ -187,7 +187,7 @@ float CSWCAnimBase::GetAnimationTime(unsigned short nAnimation)
     }
     return 0.0f;
 }
-// PC 0x0069D250  Xbox 0x000C90C0
+// PC 0x006F7E70
 float CSWCAnimBase::GetAnimationLength(unsigned short nAnimation)
 {
     float fTime;
@@ -204,7 +204,7 @@ float CSWCAnimBase::GetAnimationLength(unsigned short nAnimation)
     }
     return 0.0f;
 }
-// PC 0x0069D320  Xbox 0x000C9190
+// PC 0x006F8210
 int CSWCAnimBase::GetOverlayAnimationPlaying(unsigned short nAnimation)
 {
     float fTime;
@@ -218,7 +218,7 @@ int CSWCAnimBase::GetOverlayAnimationPlaying(unsigned short nAnimation)
     m_pModel->GetAnimation((char*)sName.CStr(), &fTime, &fLength);
     return fTime > 0.0f;
 }
-// PC 0x0069D3E0  Xbox 0x000C9250
+// PC 0x006F82D0
 int CSWCAnimBase::GetOverlayAnimation(unsigned short nAnimation)
 {
     float fTime;
@@ -231,7 +231,7 @@ int CSWCAnimBase::GetOverlayAnimation(unsigned short nAnimation)
     CExoString sName = GetAnimationName(nAnimation);
     return m_pModel->GetAnimation((char*)sName.CStr(), &fTime, &fLength) != 0;
 }
-// PC 0x0069D490  Xbox 0x000C9300
+// PC 0x006F8380
 int CSWCAnimBase::AddAnimationFlagInternal(CAurObject* pObject, int nFlag)
 {
     if (pObject == 0)
@@ -241,7 +241,7 @@ int CSWCAnimBase::AddAnimationFlagInternal(CAurObject* pObject, int nFlag)
     pObject->AddAnimationFlag(nFlag);
     return 1;
 }
-// PC 0x0069D4C0  Xbox 0x000C9330
+// PC 0x006F83B0
 int CSWCAnimBase::RemoveAnimationFlagInternal(CAurObject* pObject, int nFlag)
 {
     if (pObject == 0)
@@ -251,13 +251,13 @@ int CSWCAnimBase::RemoveAnimationFlagInternal(CAurObject* pObject, int nFlag)
     pObject->RemoveAnimationFlag(nFlag);
     return 1;
 }
-// PC 0x0069D4F0  Xbox 0x000C9360
+// PC 0x006F83E0
 int CSWCAnimBase::SetAnimation(unsigned short nAnimation, float fSpeed,
                                int nFlags, float fBlend)
 {
     return SetAnimationInternal(m_pModel, nAnimation, fSpeed, nFlags, fBlend);
 }
-// PC 0x0069D520  Xbox 0x000C9390
+// PC 0x006F8410
 int CSWCAnimBase::SetAnimationOnSubObject(unsigned char nSubObject,
                                           unsigned short nAnimation,
                                           float fSpeed, int nFlags,
@@ -269,7 +269,7 @@ int CSWCAnimBase::SetAnimationOnSubObject(unsigned char nSubObject,
     }
     return SetAnimationInternal(m_pModel, nAnimation, fSpeed, nFlags, fBlend);
 }
-// PC 0x0069D540  Xbox 0x000C93B0
+// PC 0x006F8430
 int CSWCAnimBase::SetAnimationVisemes(float* pfWeights, float* pfTimes,
                                       int nCount, float fLength)
 {
@@ -288,7 +288,7 @@ int CSWCAnimBase::SetAnimationVisemes(float* pfWeights, float* pfTimes,
     }
     return 0;
 }
-// PC 0x0069D5A0  Xbox 0x000C9420
+// PC 0x006F86C0
 int CSWCAnimBase::SetAnimationOnSubObjectInternal(CAurObject* pObject,
                                                   unsigned char nSubObject,
                                                   unsigned short nAnimation,
@@ -301,7 +301,7 @@ int CSWCAnimBase::SetAnimationOnSubObjectInternal(CAurObject* pObject,
     }
     return SetAnimationInternal(pObject, nAnimation, fSpeed, nFlags, fBlend);
 }
-// PC 0x0069D5D0  Xbox 0x000C9450
+// PC 0x006F86F0
 int CSWCAnimBase::SetOrientation(const Vector& vFacing)
 {
     if (m_pModel == 0)
@@ -311,7 +311,7 @@ int CSWCAnimBase::SetOrientation(const Vector& vFacing)
     m_pModel->SetOrientation(YawPitchRoll(Yaw(vFacing), 0.0f, 0.0f));
     return 1;
 }
-// PC 0x0069D640  Xbox 0x000C94D0
+// PC 0x006F8760
 int CSWCAnimBase::SetOrientation(const Quaternion& qOrientation)
 {
     if (m_pModel == 0)
@@ -321,7 +321,7 @@ int CSWCAnimBase::SetOrientation(const Quaternion& qOrientation)
     m_pModel->SetOrientation(qOrientation);
     return 1;
 }
-// PC 0x0069D690  Xbox 0x000C9530
+// PC 0x006F87B0
 int CSWCAnimBase::SetPosition(const Vector& vPosition)
 {
     if (m_pModel == 0)
@@ -331,7 +331,7 @@ int CSWCAnimBase::SetPosition(const Vector& vPosition)
     m_pModel->SetPosition(vPosition);
     return 1;
 }
-// PC 0x0069D6E0  Xbox 0x000C9580
+// PC 0x006F8800
 void CSWCAnimBase::SetAlwaysRender(int bRender)
 {
     if (m_pModel != 0)
@@ -346,7 +346,7 @@ void CSWCAnimBase::SetAlwaysRender(int bRender)
         }
     }
 }
-// PC 0x0069D710  Xbox 0x000C95B0
+// PC 0x006F8830
 void CSWCAnimBase::SetInCutscene(int bCutscene)
 {
     if (m_pModel != 0)
@@ -361,7 +361,7 @@ void CSWCAnimBase::SetInCutscene(int bCutscene)
         }
     }
 }
-// PC 0x0069D740  Xbox 0x000C95E0
+// PC 0x006F8860
 void CSWCAnimBase::UnloadModel()
 {
     if (m_pModel != 0)
@@ -371,7 +371,7 @@ void CSWCAnimBase::UnloadModel()
         m_pModel = 0;
     }
 }
-// PC 0x0069D770  Xbox 0x000C9610
+// PC 0x006F8890
 void CSWCAnimBase::UnloadModel(unsigned char nModel)
 {
     if (nModel == 0xFF)
@@ -379,7 +379,7 @@ void CSWCAnimBase::UnloadModel(unsigned char nModel)
         CSWCAnimBase::UnloadModel();
     }
 }
-// PC 0x0069D7B0  Xbox 0x000C9650
+// PC 0x006F89B0
 int CSWCAnimBase::SetEnvMap(int nType, int bRemember, const CResRef& sMap)
 {
     char sName[20];
@@ -404,7 +404,7 @@ int CSWCAnimBase::SetEnvMap(int nType, int bRemember, const CResRef& sMap)
     }
     return 1;
 }
-// PC 0x0069D830  Xbox 0x000C96E0
+// PC 0x006F8A30
 int CSWCAnimBase::SetEnvMap(unsigned char nModel, int nType, int bRemember,
                             const CResRef& sMap)
 {
@@ -430,7 +430,7 @@ int CSWCAnimBase::SetEnvMap(unsigned char nModel, int nType, int bRemember,
     }
     return 1;
 }
-// PC 0x0069D8B0  Xbox 0x000C9780
+// PC 0x006F8AB0
 int CSWCAnimBase::RestoreEnvMap()
 {
     char sName[20];
@@ -450,7 +450,7 @@ int CSWCAnimBase::RestoreEnvMap()
     }
     return 1;
 }
-// PC 0x0069D910  Xbox 0x000C97F0
+// PC 0x006F8CD0
 int CSWCAnimBase::AnimationExists(unsigned short nAnimation)
 {
     float fTime;
@@ -465,7 +465,7 @@ int CSWCAnimBase::AnimationExists(unsigned short nAnimation)
     m_pModel->GetAnimation((char*)sName.CStr(), &fTime, &fLength);
     return fLength >= 0.0f;
 }
-// PC 0x0069DA00  Xbox 0x000C98E0
+// PC 0x006F8DC0
 int CSWCAnimBase::ApplyShadowBlob(const CExoString& sModel)
 {
     m_pShadowBlob = static_cast<Gob*>(
@@ -482,7 +482,7 @@ int CSWCAnimBase::ApplyShadowBlob(const CExoString& sModel)
     }
     return 1;
 }
-// PC 0x0069DA70  Xbox 0x000C9950
+// PC 0x006F8E30
 void CSWCAnimBase::RemoveShadowBlob()
 {
     if (m_pShadowBlob != 0)
@@ -494,7 +494,7 @@ void CSWCAnimBase::RemoveShadowBlob()
         m_bShadowBlobShown = 0;
     }
 }
-// PC 0x0069DAC0  Xbox 0x000C99A0
+// PC 0x006F8E80
 void CSWCAnimBase::ShowShadowBlob(int bShow)
 {
     if (m_pShadowBlob != 0)
@@ -506,7 +506,7 @@ void CSWCAnimBase::ShowShadowBlob(int bShow)
         }
     }
 }
-// PC 0x0069DB10  Xbox 0x000C99F0
+// PC 0x006F8ED0
 void CSWCAnimBase::HideShadowBlob()
 {
     if (m_pShadowBlob != 0)
@@ -519,7 +519,7 @@ void CSWCAnimBase::HideShadowBlob()
         }
     }
 }
-// PC 0x0069DB50  Xbox 0x000CACD0
+// PC 0x006F8F10
 void CSWCAnimBase::SetShadowBlobOrientation(const Quaternion& qOrientation)
 {
     Quaternion qCurrent;
@@ -531,7 +531,7 @@ void CSWCAnimBase::SetShadowBlobOrientation(const Quaternion& qOrientation)
         m_pShadowBlob->SetPartPosition("root", vPosition, qOrientation);
     }
 }
-// PC 0x0069DC10  Xbox 0x000C9A30
+// PC 0x006F8FD0
 void CSWCAnimBase::TurnOnShadows()
 {
     if (m_pModel != 0)
@@ -539,7 +539,7 @@ void CSWCAnimBase::TurnOnShadows()
         m_pModel->TurnOnShadows();
     }
 }
-// PC 0x0069DC30  Xbox 0x000C9A50
+// PC 0x006F8FF0
 void CSWCAnimBase::TurnOffShadows()
 {
     if (m_pModel != 0)
@@ -547,7 +547,7 @@ void CSWCAnimBase::TurnOffShadows()
         m_pModel->TurnOffShadows();
     }
 }
-// PC 0x0069DC50  Xbox 0x000CAD90
+// PC 0x006F9010
 Quaternion CSWCAnimBase::GetOrientation()
 {
     if (m_pModel == 0)
@@ -556,7 +556,7 @@ Quaternion CSWCAnimBase::GetOrientation()
     }
     return m_pModel->GetOrientation();
 }
-// PC 0x0069DC90  Xbox 0x000C9A70
+// PC 0x006F9050
 void CSWCAnimBase::Lean()
 {
     if (m_pModel != 0)
@@ -566,12 +566,12 @@ void CSWCAnimBase::Lean()
         m_pModel->SetOrientation(YawPitchRoll(fYaw, fPitch, m_fLean));
     }
 }
-// PC 0x0069DD30  Xbox 0x000C9B10
+// PC 0x006F90F0
 void CSWCAnimBase::SetLean(float fLean)
 {
     m_fLean = min(1.0f, max(-1.0f, fLean)) * g_fMaxLean;
 }
-// PC 0x0069DD90  Xbox 0x000C9B70
+// PC 0x006F9C60
 int CSWCAnimBase::EnableBumpedOutShell(const CResRef& sShell, float fScale)
 {
     char sName[20];
@@ -585,7 +585,7 @@ int CSWCAnimBase::EnableBumpedOutShell(const CResRef& sShell, float fScale)
     m_pModel->EnableRenderBumpedOut(sName, fScale);
     return 1;
 }
-// PC 0x0069DDF0  Xbox 0x000C9BF0
+// PC 0x006F9CC0
 int CSWCAnimBase::DisableBumpedOutShell()
 {
     if (m_pModel == 0)
@@ -595,7 +595,7 @@ int CSWCAnimBase::DisableBumpedOutShell()
     m_pModel->DisableRenderBumpedOut();
     return 1;
 }
-// PC 0x0069DE10  Xbox 0x000C9C20
+// PC 0x006F9CE0
 int CSWCAnimBase::SetMotionBlur(int bBlur)
 {
     if (m_pModel == 0)
@@ -605,12 +605,12 @@ int CSWCAnimBase::SetMotionBlur(int bBlur)
     m_pModel->SetMotionBlurred(bBlur != 0);
     return 1;
 }
-// PC 0x0069DE40  Xbox 0x000C9C50
+// PC 0x006F9D10
 int CSWCAnimBase::SetMaxMotionBlurLength(float fLength)
 {
     return m_pModel != 0;
 }
-// PC 0x0069DE50  Xbox 0x000C9C60
+// PC 0x006FAF90
 void CSWCAnimBase::EnableDistortion()
 {
     if (m_pModel != 0)
@@ -618,7 +618,7 @@ void CSWCAnimBase::EnableDistortion()
         m_pModel->EnableDistortion();
     }
 }
-// PC 0x0069DE70  Xbox 0x000C9C80
+// PC 0x006FAFB0
 void CSWCAnimBase::DisableDistortion()
 {
     if (m_pModel != 0)
@@ -626,7 +626,7 @@ void CSWCAnimBase::DisableDistortion()
         m_pModel->DisableDistortion();
     }
 }
-// PC 0x0069DE90  Xbox 0x000C9CA0
+// PC 0x006FAFD0
 void CSWCAnimBase::SetGroundTilt(const Vector& vGroundNormal,
                                 const Vector& vFacing)
 {
@@ -646,7 +646,7 @@ static Vector* AllocateVectorArray(int nCount)
 {
     return new Vector[nCount];
 }
-// PC 0x0069DFB0  Xbox 0x000C9DC0
+// PC 0x006FB1A0
 CSWCAnimBase::CSWCAnimBase()
 {
     m_pModel = 0;
@@ -676,7 +676,7 @@ CSWCAnimBase::CSWCAnimBase()
     m_nPoweredAnimations = 0;
     m_qGroundTilt = Quaternion(zaxis, 0.0f);
 }
-// PC 0x006A03C0  Xbox 0x000CC500
+// PC 0x006FB3F0
 int CSWCAnimBase::SetOverlayAnimation(unsigned short nAnimation, int bLoop)
 {
     if (m_pModel == 0)
@@ -685,7 +685,7 @@ int CSWCAnimBase::SetOverlayAnimation(unsigned short nAnimation, int bLoop)
     }
     return SetOverlayAnimation(m_pModel, nAnimation, bLoop);
 }
-// PC 0x006A03E0  Xbox 0x000CC520
+// PC 0x006FB410
 int CSWCAnimBase::Hilite(const Vector& vColor, unsigned char nModel, int bPulse)
 {
     if (m_pModel == 0)
@@ -702,7 +702,7 @@ int CSWCAnimBase::Hilite(const Vector& vColor, unsigned char nModel, int bPulse)
     RefreshHilite();
     return 1;
 }
-// PC 0x006A0440
+// PC 0x006FB470
 int CSWCAnimBase::UnHilite(unsigned char nModel)
 {
     if (m_pModel == 0)
@@ -717,13 +717,13 @@ int CSWCAnimBase::UnHilite(unsigned char nModel)
     RefreshHilite();
     return 1;
 }
-// PC 0x0069E140  Xbox 0x000C9FD0
+// PC 0x006FB340
 CSWCAnimBase::~CSWCAnimBase()
 {
     RemoveShadowBlob();
     UnloadModel();
 }
-// PC 0x0069E1F0  Xbox 0x000CA080
+// PC 0x006F75B0
 int CSWCAnimBase::LoadModel(const CResRef& sResRef, unsigned char nType)
 {
     Quaternion qOrientation;
@@ -771,7 +771,7 @@ int CSWCAnimBase::LoadModel(const CResRef& sResRef, unsigned char nType)
     ShowShadowBlob(0);
     return 1;
 }
-// PC 0x0069E420  Xbox 0x000CA2A0
+// PC 0x006F7BA0
 int CSWCAnimBase::SetOverlayAnimation(CAurObject* pObject,
                                       unsigned short nAnimation, int bLoop)
 {
@@ -838,7 +838,7 @@ int CSWCAnimBase::SetOverlayAnimation(CAurObject* pObject,
     return static_cast<Gob*>(pObject)->PlayAnimation((char*)sName.CStr(),
                                                      fSpeed, nFlags, 0.0f);
 }
-// PC 0x0069E620  Xbox 0x000CA4C0
+// PC 0x006F7F40
 CExoString CSWCAnimBase::GetAnimationName(unsigned short nAnimation)
 {
     unsigned short nClientAnimation = ServerToClientAnimation(nAnimation);
@@ -908,7 +908,7 @@ CExoString CSWCAnimBase::GetAnimationName(unsigned short nAnimation)
     }
     return sName;
 }
-// PC 0x0069E8D0  Xbox 0x000CA7F0
+// PC 0x006F8490
 int CSWCAnimBase::SetAnimationInternal(CAurObject* pObject,
                                        unsigned short nAnimation, float fSpeed,
                                        int nFlags, float fBlend)
@@ -968,7 +968,7 @@ int CSWCAnimBase::SetAnimationInternal(CAurObject* pObject,
     }
     return bResult;
 }
-// PC 0x0069EB20  Xbox 0x000CAA30
+// PC 0x006F88D0
 int CSWCAnimBase::SetAlpha(float fAlpha, unsigned char nModel)
 {
     if (m_pModel == 0 || nModel != 0xFF)
@@ -991,7 +991,7 @@ int CSWCAnimBase::SetAlpha(float fAlpha, unsigned char nModel)
     }
     return 1;
 }
-// PC 0x0069EC00  Xbox 0x000CAB10
+// PC 0x006F8B10
 void CSWCAnimBase::RefreshHilite()
 {
     if (m_pModel != 0)
@@ -1027,7 +1027,7 @@ void CSWCAnimBase::RefreshHilite()
         }
     }
 }
-// PC 0x0069EDC0  Xbox 0x000CADE0
+// PC 0x006F9150
 int CSWCAnimBase::GetBoundingRect(CAurObject* pObject, CSWGuiExtent& extent)
 {
     CAurCamera* pCamera = g_pAppManager->GetClientExoApp()->GetModuleCamera();
@@ -1081,7 +1081,7 @@ int CSWCAnimBase::GetBoundingRect(CAurObject* pObject, CSWGuiExtent& extent)
     }
     return 0;
 }
-// PC 0x0069F1E0  Xbox 0x000CB2E0
+// PC 0x006F96B0
 unsigned char CSWCAnimBase::GetCenterPoint(Vector& vCenter)
 {
     CAurCamera* pCamera = g_pAppManager->m_pClientExoApp->GetModuleCamera();
@@ -1132,12 +1132,12 @@ unsigned char CSWCAnimBase::GetCenterPoint(Vector& vCenter)
     }
     return nResult;
 }
-// PC 0x0069F630  Xbox 0x000CB820
+// PC 0x006F9C40
 int CSWCAnimBase::GetBoundingRect(CSWGuiExtent& extent)
 {
     return GetBoundingRect(m_pModel, extent);
 }
-// PC 0x0069F650  Xbox 0x000CB840
+// PC 0x006F9D20
 unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
 {
     unsigned short nClientAnimation = nAnimation;

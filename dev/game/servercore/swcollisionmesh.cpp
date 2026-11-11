@@ -7,7 +7,7 @@
 #include "ResBWM.h"
 #include "exoresman.h"
 #include "SWCollisionMesh.h"
-// PC 0x005965D0  Xbox 0x00168460
+// PC 0x00556FF0
 CSWCollisionMesh::~CSWCollisionMesh()
 {
     if (m_bBinary != 0)
@@ -41,7 +41,7 @@ CSWCollisionMesh::~CSWCollisionMesh()
         m_pFaceDistances = NULL;
     }
 }
-// PC 0x00596670  Xbox 0x001684F0
+// PC 0x005571B0
 int CSWCollisionMesh::LoadMesh(int nType)
 {
     int nResult = 1;
@@ -105,13 +105,13 @@ int CSWCollisionMesh::LoadMesh(int nType)
     }
     return nResult;
 }
-// PC 0x00596890  Xbox 0x00168710
+// PC 0x00557560
 int CSWCollisionMesh::LoadMeshText(unsigned char* pData, unsigned long nSize)
 {
     m_bBinary = 0;
     return 1;
 }
-// PC 0x005968A0  Xbox 0x00168720
+// PC 0x005575B0
 int CSWCollisionMesh::LoadMeshString(unsigned char** ppData,
                                      unsigned long* pnSize,
                                      unsigned char* pBuffer,
@@ -135,7 +135,7 @@ int CSWCollisionMesh::LoadMeshString(unsigned char** ppData,
     pBuffer[nIndex] = 0;
     return 1;
 }
-// PC 0x00596900  Xbox 0x00169060
+// PC 0x005576B0
 void CSWCollisionMesh::SetTriangleCount(int nCount)
 {
     m_nFaceCount = nCount;
@@ -147,13 +147,13 @@ void CSWCollisionMesh::SetTriangleCount(int nCount)
         m_pFaceNormals = new Vector[nCount];
     }
 }
-// PC 0x005969A0  Xbox 0x00169100
+// PC 0x00557750
 void CSWCollisionMesh::SetVertexCount(int nCount)
 {
     m_nVertexCount = nCount;
     m_pVertices = new Vector[nCount];
 }
-// PC 0x00596A00  Xbox 0x00169160
+// PC 0x005577B0
 Vector CSWCollisionMesh::WorldToLocal(const Vector& vPosition)
 {
     if (m_nType != 0)
@@ -162,7 +162,7 @@ Vector CSWCollisionMesh::WorldToLocal(const Vector& vPosition)
     }
     return -m_qOrientation * (vPosition - m_vWorldPosition) - m_vPosition;
 }
-// PC 0x00596AA0  Xbox 0x00169220
+// PC 0x00557980
 Vector CSWCollisionMesh::LocalToWorld(const Vector& vPosition)
 {
     if (m_nType != 0)
@@ -171,7 +171,7 @@ Vector CSWCollisionMesh::LocalToWorld(const Vector& vPosition)
     }
     return m_vWorldPosition + m_qOrientation * (m_vPosition + vPosition);
 }
-// PC 0x00596B30
+
 Vector CSWCollisionMesh::NormalLocalToWorld(const Vector& vLocal)
 {
     if (m_nType != 0)
@@ -180,7 +180,7 @@ Vector CSWCollisionMesh::NormalLocalToWorld(const Vector& vLocal)
     }
     return m_qOrientation * vLocal;
 }
-// PC 0x00596B80  Xbox 0x00168C60
+// PC 0x00557C90
 CSWCollisionMesh::CSWCollisionMesh(unsigned short nTextResType,
                                    unsigned short nBinaryResType)
 {
@@ -198,7 +198,7 @@ CSWCollisionMesh::CSWCollisionMesh(unsigned short nTextResType,
     m_pFaceNormals = NULL;
     m_pFaceDistances = NULL;
 }
-// PC 0x00596C10  Xbox 0x00168D10
+// PC 0x005570B0
 void CSWCollisionMesh::ComputeMeshNormals()
 {
     if (m_bBinary == 0)
@@ -214,7 +214,7 @@ void CSWCollisionMesh::ComputeMeshNormals()
         }
     }
 }
-// PC 0x00596D10  Xbox 0x001699F0
+// PC 0x00557D20
 int CSWCollisionMesh::GetMeshBoundingBox(Vector& vMin, Vector& vMax)
 {
     if (m_pVertices == NULL)
@@ -262,7 +262,7 @@ int CSWCollisionMesh::GetMeshBoundingBox(Vector& vMin, Vector& vMax)
     }
     return bFirst;
 }
-// PC 0x00596E40  Xbox 0x00169B80
+// PC 0x00557E50
 int CSWCollisionMesh::GetMeshOutline(Vector& vFirst, Vector& vSecond,
                                      Vector& vThird, Vector& vFourth)
 {
@@ -326,7 +326,7 @@ int CSWCollisionMesh::GetMeshOutline(Vector& vFirst, Vector& vSecond,
     vFourth = LocalToWorld(vFourth);
     return bFirst;
 }
-// PC 0x00597090  Xbox 0x0016A350
+// PC 0x005580A0
 void CSWCollisionMesh::GetVertex(int nVertex, float* pfX, float* pfY,
                                  float* pfZ)
 {
@@ -338,7 +338,7 @@ void CSWCollisionMesh::GetVertex(int nVertex, float* pfX, float* pfY,
         *pfZ = vVertex.m_fZ;
     }
 }
-// PC 0x005970E0  Xbox 0x0016A3B0
+// PC 0x005580F0
 void CSWCollisionMesh::GetVertex(int nVertex, Vector* pvVertex)
 {
     if (m_pVertices != NULL && nVertex < m_nVertexCount)
@@ -346,7 +346,7 @@ void CSWCollisionMesh::GetVertex(int nVertex, Vector* pvVertex)
         *pvVertex = LocalToWorld(m_pVertices[nVertex]);
     }
 }
-// PC 0x00597120  Xbox 0x00168E20
+// PC 0x005573D0
 int CSWCollisionMesh::LoadMeshBinary(CResBWM* pMesh)
 {
     m_bBinary = 1;
@@ -399,7 +399,7 @@ inline void CSWCollisionMesh::GetFaceVertex(int nIndex, int nCorner,
     if (pFaces[nIndex + nCorner] >= 0)
         vVertex = m_pVertices[pFaces[nIndex + nCorner]];
 }
-// PC 0x005972B0  Xbox 0x0016A640
+// PC 0x00558390
 int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
     const Vector& vEnd, float fMinHeight, float fMaxHeight,
     float fRadius, CWalkHitInfo* pHitInfo)
@@ -1024,7 +1024,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
         return 0;
     }
 }
-// PC 0x00599ED0  Xbox 0x00168FA0
+// PC 0x00557610
 void CSWCollisionMesh::TransformToWorld(const Vector& vPosition)
 {
     if (m_bBinary == 0)
@@ -1037,7 +1037,7 @@ void CSWCollisionMesh::TransformToWorld(const Vector& vPosition)
         }
     }
 }
-// PC 0x00599F70  Xbox 0x0016E330
+// PC 0x0055AF60
 int CSWCollisionMesh::RenderMesh(int nFlag, unsigned long nColor,
                                  unsigned long nMask)
 {
@@ -1083,7 +1083,7 @@ int CSWCollisionMesh::RenderMesh(int nFlag, unsigned long nColor,
     }
     return nFaceCount;
 }
-// PC 0x0059A040  Xbox 0x0016A3F0
+// PC 0x00558130
 int CSWCollisionMesh::SaveBinaryMesh(const CExoString& sFileName)
 {
     if (m_bBinary != 0)
@@ -1137,7 +1137,7 @@ int CSWCollisionMesh::SaveBinaryMesh(const CExoString& sFileName)
 #include "swsroom.h"
 #include "nwdoorsurfacemesh.h"
 #include "aurconsole.h"
-// Xbox 0x00168780
+
 int ConvertRoomWalkMeshes(const CResRef& cLayout, const CExoString& sDirectory)
 {
     CExoString sLayout;
@@ -1177,7 +1177,7 @@ int ConvertRoomWalkMeshes(const CResRef& cLayout, const CExoString& sDirectory)
     delete pLayout;
     return 0;
 }
-// Xbox 0x00168A60
+
 static char* ConvertRooms(char* szArgs)
 {
     CExoString sLayout;
@@ -1191,7 +1191,7 @@ static char* ConvertRooms(char* szArgs)
     }
     return "FAILURE";
 }
-// Xbox 0x001692D0
+
 int ConvertDoorWalkMeshes(const CResRef& cDoor, const CExoString& sDirectory)
 {
     CExoString sFile;
@@ -1225,7 +1225,7 @@ int ConvertDoorWalkMeshes(const CResRef& cDoor, const CExoString& sDirectory)
     }
     return bResult;
 }
-// Xbox 0x00169520
+
 static char* ConvertDoor(char* szArgs)
 {
     CExoString sDoor;
@@ -1239,7 +1239,7 @@ static char* ConvertDoor(char* szArgs)
     }
     return "FAILURE";
 }
-// Xbox 0x00169660
+
 int ConvertPlaceableWalkMesh(const CResRef& cPlaceable, const CExoString& sDirectory)
 {
     CExoString sFile;
@@ -1266,7 +1266,7 @@ int ConvertPlaceableWalkMesh(const CResRef& cPlaceable, const CExoString& sDirec
     delete pMesh;
     return 1;
 }
-// Xbox 0x001698B0
+
 static char* ConvertPlaceable(char* szArgs)
 {
     CExoString sPlaceable;

@@ -66,7 +66,7 @@ const float CSWSArea::MAX_OBJECT_CHATSHOUTSILENT_DISTANCE = 1000.0f;
 
 int g_nBSPWidth = 40;
 int g_nBSPHeight = 40;
-// PC 0x00506F20  Xbox 0x001CBE30
+// PC 0x004E2040
 int CSWSArea::GetFirstObjectIndiceByX(int* pnIndex, float fX)
 {
     CGameObjectArray* pObjectArray =
@@ -111,7 +111,7 @@ int CSWSArea::GetFirstObjectIndiceByX(int* pnIndex, float fX)
     *pnIndex = nMid;
     return 1;
 }
-// PC 0x00506FE0  Xbox 0x001CBEF0
+// PC 0x004E2100
 int CSWSArea::UpdatePositionInObjectsArray(CGameObject* pObject)
 {
     int nIndex = m_lstObjectIds.IndexOf(pObject->GetId());
@@ -163,7 +163,7 @@ int CSWSArea::UpdatePositionInObjectsArray(CGameObject* pObject)
     }
     return 1;
 }
-// PC 0x005071B0  Xbox 0x001CC0C0
+// PC 0x004E22D0
 int CSWSArea::GetFirstObjectInArea(unsigned long& oidObject)
 {
     int nObjectCount;
@@ -177,7 +177,7 @@ int CSWSArea::GetFirstObjectInArea(unsigned long& oidObject)
     oidObject = m_lstObjectIds[0];
     return 1;
 }
-// PC 0x005071E0  Xbox 0x001CC0F0
+// PC 0x004E2300
 int CSWSArea::GetNextObjectInArea(unsigned long& oidObject)
 {
     int nObjectCount;
@@ -193,7 +193,7 @@ int CSWSArea::GetNextObjectInArea(unsigned long& oidObject)
     }
     return 0;
 }
-// PC 0x00508A30  Xbox 0x001CD9F0
+// PC 0x004E3D00
 int CSWSArea::AIUpdate()
 {
     unsigned long nCurrentDay;
@@ -279,7 +279,7 @@ int CSWSArea::AIUpdate()
     }
     return 0;
 }
-// PC 0x00508C20  Xbox 0x001CDBE0
+// PC 0x004E3EF0
 void CSWSArea::IncrementPlayersInArea()
 {
     if (m_nPlayersInArea == 0)
@@ -288,7 +288,7 @@ void CSWSArea::IncrementPlayersInArea()
     }
     ++m_nPlayersInArea;
 }
-// PC 0x00507220  Xbox 0x001CC130
+// PC 0x004E2340
 void CSWSArea::IncreaseAILevelPriority()
 {
     CGameObjectArray* pObjectArray =
@@ -342,7 +342,7 @@ void CSWSArea::IncreaseAILevelPriority()
         }
     }
 }
-float __stdcall GetObstructionFactor(Vector vStart, Vector vEnd)  // PC 0x0050CCF0  Xbox 0x001D1D70
+float __stdcall GetObstructionFactor(Vector vStart, Vector vEnd)  // PC 0x004E8290
 {
     unsigned long nStartTime = (unsigned long)
         (g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
@@ -393,7 +393,7 @@ float __stdcall GetObstructionFactor(Vector vStart, Vector vEnd)  // PC 0x0050CC
     }
     return fObstruction;
 }
-// PC 0x0050CF80  Xbox 0x001D2000
+// PC 0x004E8520
 CSWSArea::CSWSArea(const CResRef& cResRef, int nAreaId, unsigned long oidArea)
     : CGameObject(CGameObject::OBJECT_TYPE_AREA, oidArea)
 {
@@ -457,7 +457,7 @@ CSWSArea::CSWSArea(const CResRef& cResRef, int nAreaId, unsigned long oidArea)
     m_nCurrentTransitionPendingId = 0;
     m_pClientArea = NULL;
 }
-// PC 0x0050D370  Xbox 0x001D23F0
+// PC 0x004E8920
 CSWSArea::~CSWSArea()
 {
     UnloadArea();
@@ -507,7 +507,7 @@ CSWSArea::~CSWSArea()
     g_pAppManager->GetServerExoApp()->GetModule()->ClearAreaCache();
     g_pAppManager->GetServerExoApp()->ClearAreaCache();
 }
-// PC 0x0050D6C0  Xbox 0x001D2740
+// PC 0x004E8CB0
 void CSWSArea::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                            void* pEventData, unsigned long nCalendarDay,
                            unsigned long nTimeOfDay)
@@ -645,7 +645,7 @@ void CSWSArea::EventHandler(unsigned long nEventId, unsigned long oidCaller,
         delete pEvent;
     }
 }
-// PC 0x0050DC40  Xbox 0x001D2CB0
+// PC 0x004E9230
 int CSWSArea::RemoveObjectFromArea(unsigned long oidObject)
 {
     if (m_lstObjectIds.Contains(oidObject))
@@ -681,7 +681,7 @@ int CSWSArea::RemoveObjectFromArea(unsigned long oidObject)
     }
     return 1;
 }
-// PC 0x00508C40  Xbox 0x001CDC00
+// PC 0x004E3F10
 void CSWSArea::DecrementPlayersInArea()
 {
     if (--m_nPlayersInArea == 0)
@@ -689,7 +689,7 @@ void CSWSArea::DecrementPlayersInArea()
         DecreaseAILevelPriority();
     }
 }
-// PC 0x00507340  Xbox 0x001CC250
+// PC 0x004E2460
 void CSWSArea::DecreaseAILevelPriority()
 {
     CGameObjectArray* pObjectArray =
@@ -711,7 +711,7 @@ void CSWSArea::DecreaseAILevelPriority()
         }
     }
 }
-// PC 0x00508C50  Xbox 0x001CDC10
+// PC 0x004E3F20
 int CSWSArea::LoadAreaHeader(CResStruct* pStruct)
 {
     int bFieldRead;
@@ -909,7 +909,7 @@ int CSWSArea::LoadAreaHeader(CResStruct* pStruct)
     m_nCurrentTransitionPendingId = m_pRes->ReadFieldBYTE(pStruct, "TransPendCurrID", bFieldRead, m_nCurrentTransitionPendingId);
     return 1;
 }
-// PC 0x005073D0  Xbox 0x001CC2E0
+// PC 0x004E24F0
 int CSWSArea::LoadRoomInfo(CResStruct* pStruct)
 {
     m_nWidth = g_nBSPWidth;
@@ -929,7 +929,7 @@ int CSWSArea::LoadRoomInfo(CResStruct* pStruct)
 
     return bSuccess;
 }
-// PC 0x00504870  Xbox 0x001C9630
+// PC 0x004DF890
 CSWSRoom* CSWSArea::LoadRooms(CLYT* pLayout)
 {
     int nRoomCount = pLayout->GetRoomCount();
@@ -973,7 +973,7 @@ CSWSRoom* CSWSArea::LoadRooms(CLYT* pLayout)
 
     return pRooms;
 }
-// PC 0x00504A70  Xbox 0x001C9830
+// PC 0x004DFA90
 int CSWSArea::LoadCreatures(CResGFF* pRes, CResStruct* pStruct,
                             int bLoadingGame, int bUseTemplates)
 {
@@ -1044,7 +1044,7 @@ int CSWSArea::LoadCreatures(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x00504DE0  Xbox 0x001C9BB0
+// PC 0x004DFE00
 int CSWSArea::LoadItems(CResGFF* pRes, CResStruct* pStruct,
                         int bLoadingGame, int bUseTemplates)
 {
@@ -1106,7 +1106,7 @@ int CSWSArea::LoadItems(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x00505060  Xbox 0x001C9E60
+// PC 0x004E0080
 int CSWSArea::LoadEncounters(CResGFF* pRes, CResStruct* pStruct,
                              int bLoadingGame, int bUseTemplates)
 {
@@ -1188,7 +1188,7 @@ int CSWSArea::LoadEncounters(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x00505360  Xbox 0x001CA190
+// PC 0x004E0380
 int CSWSArea::LoadWaypoints(CResGFF* pRes, CResStruct* pStruct,
                             int bLoadingGame, int bUseTemplates)
 {
@@ -1238,7 +1238,7 @@ int CSWSArea::LoadWaypoints(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x00505560  Xbox 0x001CA3C0
+// PC 0x004E0580
 int CSWSArea::LoadSounds(CResGFF* pRes, CResStruct* pStruct,
                          int bLoadingGame, int bUseTemplates)
 {
@@ -1291,7 +1291,7 @@ int CSWSArea::LoadSounds(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x005057A0  Xbox 0x001CA600
+// PC 0x004E07C0
 int CSWSArea::LoadStores(CResGFF* pRes, CResStruct* pStruct, int bLoadingGame,
                          int bUseTemplates)
 {
@@ -1367,7 +1367,7 @@ int CSWSArea::LoadStores(CResGFF* pRes, CResStruct* pStruct, int bLoadingGame,
     }
     return 1;
 }
-// PC 0x00505AF0  Xbox 0x001CA980
+// PC 0x004E0B10
 int CSWSArea::LoadAreaEffects(CResGFF* pRes, CResStruct* pStruct,
                               int bLoadingGame, int bUseTemplates)
 {
@@ -1434,7 +1434,7 @@ int CSWSArea::LoadAreaEffects(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x00505DA0  Xbox 0x001CAC60
+// PC 0x004E0DC0
 int CSWSArea::LoadMaps(CResGFF* pRes, CResStruct* pStruct)
 {
     CResStruct cStruct;
@@ -1469,7 +1469,7 @@ int CSWSArea::LoadMaps(CResGFF* pRes, CResStruct* pStruct)
         bSuccess = 0;
     return bSuccess;
 }
-// PC 0x00505EB0  Xbox 0x001CAD70
+// PC 0x004E0ED0
 int CSWSArea::LoadPlaceableCameras(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList cList;
@@ -1503,7 +1503,7 @@ int CSWSArea::LoadPlaceableCameras(CResGFF* pRes, CResStruct* pStruct)
     }
     return 1;
 }
-// PC 0x00506090  Xbox 0x001CAF50
+// PC 0x004E10B0
 int CSWSArea::SaveProperties(CResGFF* pRes, CResStruct* pStruct)
 {
     pRes->AddStructToStruct((CResStruct*)&pStruct, pStruct, "AreaProperties",
@@ -1529,7 +1529,7 @@ int CSWSArea::SaveProperties(CResGFF* pRes, CResStruct* pStruct)
     return pRes->WriteFieldDWORD((CResStruct*)&pStruct, m_nSunFogColor,
                                  "SunFogColor");
 }
-// PC 0x005061D0  Xbox 0x001CB090
+// PC 0x004E1200
 void CSWSArea::SaveMaps(CResGFF* pRes, CResStruct* pStruct)
 {
     CSWSModule* pModule = g_pAppManager->m_pServerExoApp->GetModule();
@@ -1556,7 +1556,7 @@ void CSWSArea::SaveMaps(CResGFF* pRes, CResStruct* pStruct)
         pRes->WriteFieldVOID(&cStruct, pData, nDataSize, "AreaMapData");
     }
 }
-// PC 0x0050A0E0  Xbox 0x001CF0D0
+// PC 0x004E55E0
 int CSWSArea::LoadDoors(CResGFF* pRes, CResStruct* pStruct, int bLoadingGame,
                         int bUseTemplates)
 {
@@ -1613,7 +1613,7 @@ int CSWSArea::LoadDoors(CResGFF* pRes, CResStruct* pStruct, int bLoadingGame,
     }
     return 1;
 }
-// PC 0x0050DD80  Xbox 0x001D2DF0
+// PC 0x004E9370
 int CSWSArea::LoadGIT(int bLoadingGame)
 {
     CResStruct cTopLevelStruct;
@@ -1665,7 +1665,7 @@ int CSWSArea::LoadGIT(int bLoadingGame)
     delete pRes;
     return 1;
 }
-// PC 0x0050A350  Xbox 0x001CF340
+// PC 0x004E5850
 int CSWSArea::LoadTriggers(CResGFF* pRes, CResStruct* pStruct,
                           int bLoadingGame, int bUseTemplates)
 {
@@ -1746,7 +1746,7 @@ int CSWSArea::LoadTriggers(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x0050A7B0  Xbox 0x001CF7C0
+// PC 0x004E5CB0
 int CSWSArea::LoadPlaceables(CResGFF* pRes, CResStruct* pStruct,
                              int bLoadingGame, int bUseTemplates)
 {
@@ -1809,7 +1809,7 @@ int CSWSArea::LoadPlaceables(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x0050AAA0  Xbox 0x001CFAB0
+// PC 0x004E5FF0
 int CSWSArea::PackAreaIntoMessage(int nPlayerId, int nAreaId, int nFlags,
                                  CSWSPlayer* pPlayer)
 {
@@ -2078,7 +2078,7 @@ int CSWSArea::PackAreaIntoMessage(int nPlayerId, int nAreaId, int nFlags,
     }
     return 1;
 }
-// PC 0x0050BA00  Xbox 0x001D0A40
+// PC 0x004E6F70
 void CSWSArea::SaveGIT(CERFFile* pERFFile, const CExoString& sName,
                        CExoArrayList<unsigned long>& lstPlayers)
 {
@@ -2171,7 +2171,7 @@ void CSWSArea::SaveGIT(CERFFile* pERFFile, const CExoString& sName,
     delete pRes;
     delete pStruct;
 }
-// PC 0x005062A0  Xbox 0x001CB160
+// PC 0x004E12D0
 void CSWSArea::SavePlaceableCameras(CResGFF* pRes, CResStruct* pStruct)
 {
     CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
@@ -2196,7 +2196,7 @@ void CSWSArea::SavePlaceableCameras(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 }
-// PC 0x0050C0E0  Xbox 0x001D1130
+// PC 0x004E7650
 void CSWSArea::UnloadArea()
 {
     delete[] m_p34;
@@ -2233,7 +2233,7 @@ void CSWSArea::UnloadArea()
     delete[] m_pRooms;
     m_pRooms = NULL;
 }
-// PC 0x005063C0  Xbox 0x001CB280
+// PC 0x004E13F0
 int CSWSArea::GetSurfaceMaterial(Vector vPosition)
 {
     CSWSRoom* pRoom = GetRoom(vPosition, NULL);
@@ -2246,7 +2246,7 @@ int CSWSArea::GetSurfaceMaterial(Vector vPosition)
     }
     return 0;
 }
-// PC 0x00506400  Xbox 0x001CB2C0
+// PC 0x004E1430
 int CSWSArea::PositionWalkable(Vector vPosition)
 {
     CSWSRoom* pRoom = GetRoom(vPosition, NULL);
@@ -2269,7 +2269,7 @@ int CSWSArea::PositionWalkable(Vector vPosition)
     return 0;
 }
 #ifndef _XBOX
-// Xbox 0x001CB550
+
 int CSWSArea::TestPathPoint(float fPersonalSpace, int bVerbose)
 {
     int bFailed = FALSE;
@@ -2308,7 +2308,7 @@ int CSWSArea::TestPathPoint(float fPersonalSpace, int bVerbose)
     return bFailed;
 }
 #endif
-int CSWSArea::GetDoorCrossed(const Vector& vStart, const Vector& vEnd)  // PC 0x005064D0  Xbox 0x001CB390
+int CSWSArea::GetDoorCrossed(const Vector& vStart, const Vector& vEnd)  // PC 0x004E1500
 {
     Vector vRaisedStart = vStart;
     Vector vRaisedEnd = vEnd;
@@ -2341,7 +2341,7 @@ int CSWSArea::GetDoorCrossed(const Vector& vStart, const Vector& vEnd)  // PC 0x
     }
     return OBJECT_INVALID;
 }
-// PC 0x00507490  Xbox 0x001CC3A0
+// PC 0x004E25B0
 int CSWSArea::LoadProperties(CResGFF* pRes, CResStruct* pStruct)
 {
     CResStruct cProperties;
@@ -2386,7 +2386,7 @@ int CSWSArea::LoadProperties(CResGFF* pRes, CResStruct* pStruct)
     }
     return 0;
 }
-// PC 0x00507680  Xbox 0x001CC590
+// PC 0x004E27A0
 void CSWSArea::SaveCreatures(CResGFF* pRes, CResStruct* pStruct,
                              CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2420,7 +2420,7 @@ void CSWSArea::SaveCreatures(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x00507750  Xbox 0x001CC670
+// PC 0x004E2880
 void CSWSArea::SaveItems(CResGFF* pRes, CResStruct* pStruct,
                          CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2448,7 +2448,7 @@ void CSWSArea::SaveItems(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x00507810  Xbox 0x001CC740
+// PC 0x004E2940
 void CSWSArea::SaveDoors(CResGFF* pRes, CResStruct* pStruct,
                          CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2476,7 +2476,7 @@ void CSWSArea::SaveDoors(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x005078D0  Xbox 0x001CC810
+// PC 0x004E2A00
 void CSWSArea::SaveTriggers(CResGFF* pRes, CResStruct* pStruct,
                             CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2504,7 +2504,7 @@ void CSWSArea::SaveTriggers(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x00507990  Xbox 0x001CC8E0
+// PC 0x004E2AC0
 void CSWSArea::SaveEncounters(CResGFF* pRes, CResStruct* pStruct,
                               CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2533,7 +2533,7 @@ void CSWSArea::SaveEncounters(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x00507A50  Xbox 0x001CC9B0
+// PC 0x004E2B80
 void CSWSArea::SaveWaypoints(CResGFF* pRes, CResStruct* pStruct,
                              CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2562,7 +2562,7 @@ void CSWSArea::SaveWaypoints(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x00507B10  Xbox 0x001CCA80
+// PC 0x004E2C40
 void CSWSArea::SaveSounds(CResGFF* pRes, CResStruct* pStruct,
                           CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2590,7 +2590,7 @@ void CSWSArea::SaveSounds(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x00507BD0  Xbox 0x001CCB50
+// PC 0x004E2D00
 void CSWSArea::SavePlaceables(CResGFF* pRes, CResStruct* pStruct,
                               CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2623,7 +2623,7 @@ void CSWSArea::SavePlaceables(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x00507CA0  Xbox 0x001CCC30
+// PC 0x004E2DD0
 void CSWSArea::SaveStores(CResGFF* pRes, CResStruct* pStruct,
                           CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2651,7 +2651,7 @@ void CSWSArea::SaveStores(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x00507D60  Xbox 0x001CCD00
+// PC 0x004E2E90
 void CSWSArea::SaveAreaEffects(CResGFF* pRes, CResStruct* pStruct,
                                CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2680,7 +2680,7 @@ void CSWSArea::SaveAreaEffects(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x00507E20  Xbox 0x001CCDD0
+// PC 0x004E2F50
 void CSWSArea::PlayVisualEffect(unsigned short nEffect, const Vector& vPosition)
 {
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
@@ -2729,7 +2729,7 @@ void CSWSArea::PlayVisualEffect(unsigned short nEffect, const Vector& vPosition)
         }
     }
 }
-// PC 0x00508010  Xbox 0x001CCFF0
+// PC 0x004E3140
 int CSWSArea::GetIsIDInExcludeList(unsigned long oidObject,
                                    CExoArrayList<CGameObject*>* pExcludeList)
 {
@@ -2745,7 +2745,7 @@ int CSWSArea::GetIsIDInExcludeList(unsigned long oidObject,
     }
     return 0;
 }
-// PC 0x00508050  Xbox 0x001CD030
+// PC 0x004E3180
 void CSWSArea::SetCurrentWeather(unsigned char nWeather, int bEnabled)
 {
     if (nWeather == WEATHER_AUTOMATIC)
@@ -2827,7 +2827,7 @@ void CSWSArea::SetCurrentWeather(unsigned char nWeather, int bEnabled)
         m_nActiveWeather = WEATHER_CLEAR;
     }
 }
-// PC 0x00508180  Xbox 0x001CD160
+// PC 0x004E32B0
 void CSWSArea::BudgeCreatures(const Vector& vCentre, const Vector& vMin,
                              const Vector& vMax, unsigned long oidObject,
                              int bUseActionPoint)
@@ -2889,7 +2889,7 @@ void CSWSArea::BudgeCreatures(const Vector& vCentre, const Vector& vMin,
         }
     }
 }
-// PC 0x00508400  Xbox 0x001CD3F0
+// PC 0x004E3530
 int CSWSArea::LoadPathPoints(CResStruct* pStruct)
 {
     NwsareaTrace1();
@@ -2959,7 +2959,7 @@ int CSWSArea::LoadPathPoints(CResStruct* pStruct)
     }
     return bSuccess;
 }
-// PC 0x005086D0  Xbox 0x001CD6E0
+// PC 0x004E3800
 int CSWSArea::NoNonWalkPolys(const Vector& vStart, const Vector& vEnd,
                              float fDistance, float fWidth, float fHeight,
                              unsigned long oidObject,
@@ -2969,7 +2969,7 @@ int CSWSArea::NoNonWalkPolys(const Vector& vStart, const Vector& vEnd,
                                   oidObject, (unsigned long&)bCheckDoors, 0, 0, 0, pWalkHitInfo,
                                   bCheckDoors);
 }
-// PC 0x00506650  Xbox 0x001CB870
+// PC 0x004E1680
 int CSWSArea::NoNonWalkPolysDetailed(
     const Vector& vStart, const Vector& vEnd, float fMinHeight, float fMaxHeight,
     float fRadius, unsigned long oidObject, unsigned long& oidHitObject,
@@ -3049,7 +3049,7 @@ int CSWSArea::NoNonWalkPolysDetailed(
     }
     return bClear;
 }
-// PC 0x00506910  Xbox 0x001CBB00
+// PC 0x004E1930
 void CSWSArea::InitializeRoomAudioParams(int nRoomCount)
 {
     if (m_psRoomAudio != NULL)
@@ -3077,7 +3077,7 @@ void CSWSArea::InitializeRoomAudioParams(int nRoomCount)
         m_pfRoomAudio = new float[nRoomCount];
     }
 }
-// PC 0x00506A10  Xbox 0x001CBC00
+// PC 0x004E1A90
 CSWCArea* CSWSArea::GetClientArea()
 {
     if (m_pClientArea == NULL)
@@ -3094,18 +3094,18 @@ CSWCArea* CSWSArea::GetClientArea()
     }
     return m_pClientArea;
 }
-// PC 0x00506A60  Xbox 0x001CBC50
+// PC 0x004E1AE0
 int CSWSArea::AttachmentFromClientArea(CSWCArea* pArea)
 {
     m_pClientArea = pArea;
     return (int)pArea;
 }
-// PC 0x00506A70  Xbox 0x001CBC60
+// PC 0x004E1AF0
 void CSWSArea::DetachFromClientArea()
 {
     m_pClientArea = 0;
 }
-// PC 0x00506A80  Xbox 0x001CBC70
+// PC 0x004E1B00
 int CSWSArea::SetMaxStealthXP(unsigned long nExperience)
 {
     if (m_nStealthXPCurrent > nExperience)
@@ -3113,7 +3113,7 @@ int CSWSArea::SetMaxStealthXP(unsigned long nExperience)
     m_nStealthXPMax = nExperience;
     return nExperience;
 }
-// PC 0x00506AA0  Xbox 0x001CBC90
+// PC 0x004E1B20
 int CSWSArea::SetCurrentStealthXP(unsigned long nExperience)
 {
     unsigned long nMaximum = m_nStealthXPMax;
@@ -3122,7 +3122,7 @@ int CSWSArea::SetCurrentStealthXP(unsigned long nExperience)
     m_nStealthXPCurrent = nExperience;
     return nMaximum;
 }
-// PC 0x00506AC0  Xbox 0x001CBCB0
+// PC 0x004E1B40
 unsigned char CSWSArea::GetNextTransitionPendingID()
 {
     if (++m_nNextTransitionPendingId == 0)
@@ -3136,14 +3136,14 @@ unsigned char CSWSArea::GetNextTransitionPendingID()
 
 #define RGB(r, g, b) ((DWORD)(((BYTE)(r) | ((WORD)((BYTE)(g)) << 8)) | (((DWORD)(BYTE)(b)) << 16)))
 #endif
-// PC 0x00506AE0  Xbox 0x001CBCD0
+// PC 0x004E1B60
 void CSWSArea::SetFogColor(const Vector& vColor)
 {
     m_nSunFogColor = RGB((unsigned char)(vColor.m_fX * 255.0f),
                          (unsigned char)(vColor.m_fY * 255.0f),
                          (unsigned char)(vColor.m_fZ * 255.0f));
 }
-// PC 0x00506B30  Xbox 0x001CBD20
+// PC 0x004E1BB0
 void CSWSArea::SetTransitionPending(int bPending, unsigned char nId)
 {
     m_bTransitionPending = bPending;
@@ -3159,7 +3159,7 @@ void CSWSArea::SetTransitionPending(int bPending, unsigned char nId)
         return;
     }
 }
-// PC 0x00506B90  Xbox 0x001CBD80
+// PC 0x004E1C10
 void CSWSArea::SetPlayerRestrictMode(int nRestrictMode)
 {
     if (nRestrictMode != 0 && m_nPlayerRestrictMode != nRestrictMode)
@@ -3168,7 +3168,7 @@ void CSWSArea::SetPlayerRestrictMode(int nRestrictMode)
     }
     m_nPlayerRestrictMode = nRestrictMode;
 }
-// PC 0x00508710  Xbox 0x001CD720
+// PC 0x004E3840
 void CSWSArea::ClearObjects()
 {
     CGameObjectArray* pObjectArray =
@@ -3185,7 +3185,7 @@ void CSWSArea::ClearObjects()
     }
     m_lstObjectIds.num = 0;
 }
-// PC 0x00508770  Xbox 0x001CD780
+// PC 0x004E38A0
 void CSWSArea::AwardStealthXP(unsigned long oidObject)
 {
     NWSAREA_TRACE();
@@ -3210,7 +3210,7 @@ void CSWSArea::AwardStealthXP(unsigned long oidObject)
         m_bStealthXPEnabled = 0;
     }
 }
-// PC 0x00508820  Xbox 0x001CD830
+// PC 0x004E3950
 int CSWSArea::EnforceNoPCHeadCloning(int nHead)
 {
     int nObjects;
@@ -3244,7 +3244,7 @@ int CSWSArea::EnforceNoPCHeadCloning(int nHead)
     }
     return nObjects;
 }
-// PC 0x00508960  Xbox 0x001CD970
+// PC 0x004E3A90
 unsigned char CSWSArea::GetNumMinesSetByPlayerParty()
 {
     unsigned char nMines = 0;
@@ -3263,12 +3263,12 @@ unsigned char CSWSArea::GetNumMinesSetByPlayerParty()
     }
     return nMines;
 }
-// PC 0x005089D0  Xbox 0x001CD9E0
+// PC 0x004E3B00
 int CSWSArea::GetPlayerCanSetMines()
 {
     return (unsigned char)GetNumMinesSetByPlayerParty() < 15;
 }
-// PC 0x0050C1E0  Xbox 0x001D1230
+// PC 0x004E7750
 int CSWSArea::HandleTransparentDoors(
     const Vector& vStart, const Vector& vEnd, float fDistance, float fWidth,
     float fHeight, unsigned long oidObject, unsigned long& oidHitObject,
@@ -3310,7 +3310,7 @@ int CSWSArea::HandleTransparentDoors(
     }
     return 0;
 }
-// PC 0x0050C330  Xbox 0x001D1390
+// PC 0x004E78A0
 int CSWSArea::ClearLineOfSight(
     const Vector& vStart, const Vector& vEnd, Vector* pvHit,
     unsigned long* poidHit, unsigned long oidObject, unsigned long oidTarget,
@@ -3379,7 +3379,7 @@ inline void CSWSObject::AddEffectTarget(unsigned long oidTarget)
 {
     m_lstEffectTargets.AddUnique(oidTarget);
 }
-// PC 0x0050C6B0  Xbox 0x001D1710
+// PC 0x004E7C20
 void CSWSArea::ApplyEffect(CGameEffect* pEffect, const Vector& vPosition,
                           const Vector& vOrientation)
 {
@@ -3442,7 +3442,7 @@ void CSWSArea::ApplyEffect(CGameEffect* pEffect, const Vector& vPosition,
     }
     delete pEffect;
 }
-// PC 0x0050CA10  Xbox 0x001D1A80
+// PC 0x004E7F80
 int CSWSArea::NoNonWalkPolysInDoors(
     const Vector& vStart, const Vector& vEnd, float fMinHeight, float fMaxHeight,
     float fRadius, unsigned long oidObject, unsigned long& oidHitObject,
@@ -3521,7 +3521,7 @@ int CSWSArea::NoNonWalkPolysInDoors(
     }
     return 1;
 }
-// PC 0x0050DFD0  Xbox 0x001D3040
+// PC 0x004E95C0
 int CSWSArea::AddObjectToArea(unsigned long oidObject, int bLoadingGame)
 {
     NwsareaSync4();
@@ -3574,7 +3574,7 @@ int CSWSArea::AddObjectToArea(unsigned long oidObject, int bLoadingGame)
     }
     return 1;
 }
-// PC 0x0050E190  Xbox 0x001D3200
+// PC 0x004E9780
 int CSWSArea::LoadArea(int bLoadingGame)
 {
     NwsareaSync4();
@@ -3627,7 +3627,7 @@ static inline void NwsareaSync1()
 }
 
 #ifdef _XBOX
-// Xbox 0x001CB550
+
 int CSWSArea::TestPathPoint(float fPersonalSpace, int bVerbose)
 {
     int bFailed = FALSE;
@@ -3671,7 +3671,7 @@ int CSWSArea::TestPathPoint(float fPersonalSpace, int bVerbose)
 
 #include "aurconsole.h"
 void AurRemoveAllDrawableSquares();
-// Xbox 0x001CB810
+
 static char* TestPathPoints(char* szArgs)
 {
     int nLength = strlen(szArgs);
@@ -3682,7 +3682,7 @@ static char* TestPathPoints(char* szArgs)
     g_pAppManager->m_pServerExoApp->GetModule()->TestPathPoints(szArgs);
     return "SUSSESS";
 }
-// Xbox 0x001CB860
+
 static char* ClearPathPoints(char* szArgs)
 {
     AurRemoveAllDrawableSquares();

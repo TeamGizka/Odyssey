@@ -22,7 +22,7 @@ const unsigned short CSWRace::CRACE_DROID_MASK = 0x0002;
 const unsigned short CSWRace::CRACE_PLACEABLE_MASK = 0x0004;
 const unsigned short CSWRace::CRACE_ALL_RACES_MASK = 0x0000;
 const unsigned short CSWRace::CRACE_INVALID_RACE_MASK = 0x0000;
-// PC 0x005C7890  Xbox 0x000CC5C0
+// PC 0x00614D40
 CSWRace::CSWRace()
 {
     m_nNameStrRef = -1;
@@ -40,7 +40,7 @@ CSWRace::CSWRace()
     m_nFavoredClass = -1;
     m_bPlayerRace = 0;
 }
-// PC 0x005C78D0  Xbox 0x000CC600
+// PC 0x00614D80
 CSWRace::~CSWRace()
 {
     if (m_pFirstLevelGrantedFeats != 0)
@@ -49,21 +49,21 @@ CSWRace::~CSWRace()
         m_pFirstLevelGrantedFeats = 0;
     }
 }
-// PC 0x005C78F0  Xbox 0x000CC620
+// PC 0x00614DA0
 CExoString CSWRace::GetNameText()
 {
     STR_RES strRes;
     g_pTlkTable->Fetch(m_nNameStrRef, strRes, CTlkTable::GENDER_MALE);
     return strRes.m_sString;
 }
-// PC 0x005C7990  Xbox 0x000CC6D0
+// PC 0x00614E40
 CExoString CSWRace::GetConverNameText()
 {
     STR_RES strRes;
     g_pTlkTable->Fetch(m_nConverNameStrRef, strRes, CTlkTable::GENDER_MALE);
     return strRes.m_sString;
 }
-// PC 0x005C7A30  Xbox 0x000CC780
+// PC 0x00614EE0
 CExoString CSWRace::GetConverNameLowerText()
 {
     STR_RES strRes;
@@ -71,7 +71,7 @@ CExoString CSWRace::GetConverNameLowerText()
                        CTlkTable::GENDER_MALE);
     return strRes.m_sString;
 }
-// PC 0x005C7AD0  Xbox 0x000CC870
+// PC 0x00614F80
 void CSWRace::LoadFeatsTable(const CExoString& sTable)
 {
     C2DA* p2DA = new C2DA(sTable, 0);
@@ -105,7 +105,7 @@ void CSWRace::LoadFeatsTable(const CExoString& sTable)
 
     delete p2DA;
 }
-// PC 0x005C7CC0  Xbox 0x000CC830
+// PC 0x00615170
 int CSWRace::IsFirstLevelGrantedFeat(unsigned short nFeat)
 {
     unsigned short* pFeats = m_pFirstLevelGrantedFeats;

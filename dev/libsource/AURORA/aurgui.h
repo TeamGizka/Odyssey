@@ -32,14 +32,14 @@ class CAurGUIDraw
 public:
     virtual void Draw() = 0;
 #ifndef _XBOX
-    CAurGUIDraw()  // Xbox 0x002C8700
+    CAurGUIDraw()
     {
     }
 #endif
 #ifdef _XBOX
     CAurGUIDraw(); ~CAurGUIDraw();
 #else
-    ~CAurGUIDraw()  // Xbox 0x002C8710
+    ~CAurGUIDraw()
     {
     }
 #endif
@@ -179,53 +179,53 @@ public:
                           float fScale);
 #endif
     virtual ~CAurGUIStringInternal();
-    virtual Vector GetColor()  // PC 0x0045BAE0  Xbox 0x002CB360
+    virtual Vector GetColor()  // PC 0x00470CF0
     {
         return m_vColor;
     }
-    virtual void SetColor(const Vector& vColor)  // PC 0x0045BB00  Xbox 0x002CB380
+    virtual void SetColor(const Vector& vColor)  // PC 0x00470D10
     {
         m_vColor = vColor;
     }
-    virtual int GetStringSize()  // PC 0x0045BB20  Xbox 0x002CB3A0
+    virtual int GetStringSize()  // PC 0x00470D30
     {
         return strlen(m_sString);
     }
     virtual void SetStringSize(short nSize);
     virtual void SetString(char* sString);
-    virtual void SetAlignment(unsigned char nAlignment)  // PC 0x0045BB30  Xbox 0x002CB3B0
+    virtual void SetAlignment(unsigned char nAlignment)  // PC 0x00470D40
     {
         m_nAlignmentBits = nAlignment;
     }
-    virtual unsigned char GetAlignment()  // PC 0x005D5FE0  Xbox 0x002CB3C0
+    virtual unsigned char GetAlignment()  // PC 0x00470D50
     {
         return m_nAlignmentBits;
     }
-    virtual void SetAlignmentVertical(unsigned char nAlignment)  // PC 0x0045BB40  Xbox 0x002CB3D0
+    virtual void SetAlignmentVertical(unsigned char nAlignment)  // PC 0x00470D60
     {
         m_nAlignmentBits = nAlignment | (m_nAlignmentBits & ALIGNMENT_HORIZONTAL);
     }
-    virtual int GetAlignmentVertical()  // PC 0x0045BB60  Xbox 0x002CB3F0
+    virtual int GetAlignmentVertical()  // PC 0x00470D80
     {
         return m_nAlignmentBits & ALIGNMENT_VERTICAL;
     }
-    virtual void SetAlignmentHorizontal(unsigned char nAlignment)  // PC 0x0045BB70  Xbox 0x002CB400
+    virtual void SetAlignmentHorizontal(unsigned char nAlignment)  // PC 0x00470D90
     {
         m_nAlignmentBits = nAlignment | (m_nAlignmentBits & ALIGNMENT_VERTICAL);
     }
-    virtual int GetAlignmentHorizontal()  // PC 0x0045BB90  Xbox 0x002CB420
+    virtual int GetAlignmentHorizontal()  // PC 0x00470DB0
     {
         return m_nAlignmentBits & ALIGNMENT_HORIZONTAL;
     }
-    virtual void SetCursorIndex(short nIndex)  // PC 0x0045BBA0  Xbox 0x002CB430
+    virtual void SetCursorIndex(short nIndex)  // PC 0x00470DC0
     {
         m_nCursorIndex = nIndex;
     }
-    virtual short GetCursorIndex()  // PC 0x0045BBB0  Xbox 0x002CB440
+    virtual short GetCursorIndex()  // PC 0x00470DD0
     {
         return m_nCursorIndex;
     }
-    virtual void DisableCursor()  // PC 0x0045BBC0  Xbox 0x002CB450
+    virtual void DisableCursor()  // PC 0x00470DE0
     {
         m_nCursorIndex = -1;
     }
@@ -234,7 +234,7 @@ public:
     virtual int GetFontPixelHeight();
     virtual void WrapStrings(int nWidth);
     virtual int GetIdealPixelHeight(int nWidth);
-    virtual int GetNumLines()  // PC 0x00712FC0
+    virtual int GetNumLines()  // PC 0x00786860
     {
         return m_lstLineLength.m_nCount;
     }
@@ -248,7 +248,7 @@ public:
     virtual void SetSizeBoundingRect(float fWidth, float fHeight);
     virtual void DrawBoundingRect(Vector vColor, float fAlpha);
     virtual void Draw(float fAlpha);
-    virtual void Draw()  // PC 0x0045BBD0  Xbox 0x002CB470
+    virtual void Draw()  // PC 0x00470E00
     {
         Draw(1.0f);
     }

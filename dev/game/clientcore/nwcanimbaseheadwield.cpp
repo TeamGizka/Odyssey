@@ -5,12 +5,12 @@
 
 static inline void NwcanimbaseheadwieldTrace1();
 #define NWCANIMBASEHEADWIELD_TRACE() NwcanimbaseheadwieldTrace1()
-// PC 0x00698EC0  Xbox 0x000C49D0
+// PC 0x006F36C0
 CSWCAnimBaseHeadWield::CSWCAnimBaseHeadWield()
 {
     m_nAnimationType = ANIMATION_TYPE_BTYPE;
 }
-// PC 0x00698F90  Xbox 0x000C4AA0
+// PC 0x006F3790
 Gob* CSWCAnimBaseHeadWield::GetModel(unsigned char nModel)
 {
     Gob* pModel;
@@ -36,7 +36,7 @@ Gob* CSWCAnimBaseHeadWield::GetModel(unsigned char nModel)
     }
     return pModel;
 }
-// PC 0x00699000  Xbox 0x000C4B10
+// PC 0x006F3800
 int CSWCAnimBaseHeadWield::LoadModel(const CResRef& sModel,
                                      unsigned char nModel)
 {
@@ -58,7 +58,7 @@ int CSWCAnimBaseHeadWield::LoadModel(const CResRef& sModel,
     }
     return 0;
 }
-// PC 0x00699080  Xbox 0x000C4B90
+// PC 0x006F3880
 int CSWCAnimBaseHeadWield::ReplaceTexture(unsigned char nModel,
                                           const CResRef& sOld,
                                           const CResRef& sNew, int nFlags)
@@ -72,14 +72,14 @@ int CSWCAnimBaseHeadWield::ReplaceTexture(unsigned char nModel,
     }
     return 0;
 }
-// PC 0x006990C0  Xbox 0x000C4BD0
+// PC 0x006F38C0
 int CSWCAnimBaseHeadWield::ReplaceTexture(const CResRef& sOld,
                                           const CResRef& sNew, int nFlags)
 {
     return CSWCAnimBaseTW::ReplaceTexture(sOld, sNew, nFlags) != 0 &&
            CSWCAnimBaseHead::ReplaceTexture(sOld, sNew, nFlags) != 0;
 }
-// PC 0x00699120  Xbox 0x000C4C30
+// PC 0x006F3920
 int CSWCAnimBaseHeadWield::ReplaceTexture(unsigned char nModel,
                                           const CResRef& sOld,
                                           const CResRef& sNew,
@@ -101,7 +101,7 @@ int CSWCAnimBaseHeadWield::ReplaceTexture(unsigned char nModel,
     }
     return 0;
 }
-// PC 0x00699180  Xbox 0x000C4C90
+// PC 0x006F3980
 int CSWCAnimBaseHeadWield::ReplaceTexture(const CResRef& sOld,
                                           const CResRef& sNew,
                                           unsigned long nColor,
@@ -114,23 +114,23 @@ int CSWCAnimBaseHeadWield::ReplaceTexture(const CResRef& sOld,
            CSWCAnimBaseHead::ReplaceTexture(sOld, sNew, nColor, pnPalette,
                                             nPaletteSize, nFlags) != 0;
 }
-// PC 0x00699200  Xbox 0x000C4D10
+// PC 0x006F3A00
 int CSWCAnimBaseHeadWield::RestoreTexture()
 {
     return CSWCAnimBaseHead::RestoreTexture();
 }
-// PC 0x00699210  Xbox 0x000C4D20
+// PC 0x006F3A10
 int CSWCAnimBaseHeadWield::RestoreTexture(unsigned char nModel)
 {
     return CSWCAnimBaseHead::RestoreTexture(nModel);
 }
-// PC 0x00699220  Xbox 0x000C4D30
+// PC 0x006F3A20
 void CSWCAnimBaseHeadWield::UnloadModel()
 {
     CSWCAnimBaseTW::UnloadModel();
     return CSWCAnimBaseHead::UnloadModel();
 }
-// PC 0x00699250  Xbox 0x000C4D60
+// PC 0x006F3A50
 void CSWCAnimBaseHeadWield::UnloadModel(unsigned char nModel)
 {
     if (nModel == 0xFF)
@@ -142,37 +142,37 @@ void CSWCAnimBaseHeadWield::UnloadModel(unsigned char nModel)
         CSWCAnimBaseHead::UnloadModel(nModel);
     }
 }
-// PC 0x00699290  Xbox 0x000C4DA0
+// PC 0x006F3A90
 int CSWCAnimBaseHeadWield::Wield(unsigned long nObject,
                                  const CExoString& sSlot,
                                  unsigned char nModel, float fScale)
 {
     return CSWCAnimBaseWield::Wield(nObject, sSlot, nModel, fScale);
 }
-// PC 0x006992A0  Xbox 0x000C4DB0
+// PC 0x006F3AA0
 void CSWCAnimBaseHeadWield::HideWieldedItems(const CResRef& sLeft,
                                             const CResRef& sRight)
 {
     return CSWCAnimBaseWield::HideWieldedItems(sLeft, sRight);
 }
-// PC 0x006992B0  Xbox 0x000C4DC0
+// PC 0x006F3AB0
 void CSWCAnimBaseHeadWield::ShowWieldedItems()
 {
     return CSWCAnimBaseWield::ShowWieldedItems();
 }
-// PC 0x006992C0  Xbox 0x000C4DD0
+// PC 0x006F3BF0
 void CSWCAnimBaseHeadWield::SetWieldLimited(int bLimited)
 {
     CSWCAnimBaseWield::SetWieldLimited(bLimited);
 }
-// PC 0x006992D0  Xbox 0x000C4DE0
+// PC 0x006F3C00
 int CSWCAnimBaseHeadWield::SetEnvMap(int nType, int nFlags,
                                      const CResRef& sMap)
 {
     return CSWCAnimBaseTW::SetEnvMap(nType, nFlags, sMap) != 0 &&
            CSWCAnimBaseHead::SetEnvMap(nType, nFlags, sMap) != 0;
 }
-// PC 0x00699330  Xbox 0x000C4E40
+// PC 0x006F3C60
 int CSWCAnimBaseHeadWield::SetEnvMap(unsigned char nModel, int nType,
                                      int nFlags, const CResRef& sMap)
 {
@@ -185,13 +185,13 @@ int CSWCAnimBaseHeadWield::SetEnvMap(unsigned char nModel, int nType,
         return CSWCAnimBaseTW::SetEnvMap(nModel, nType, nFlags, sMap);
     }
 }
-// PC 0x00699370  Xbox 0x000C4E80
+// PC 0x006F3CA0
 int CSWCAnimBaseHeadWield::RestoreEnvMap()
 {
     return CSWCAnimBaseTW::RestoreEnvMap() != 0 &&
            CSWCAnimBaseHead::RestoreEnvMap() != 0;
 }
-// PC 0x006993B0  Xbox 0x000C4EC0
+// PC 0x006F3CE0
 int CSWCAnimBaseHeadWield::SetAnimation(unsigned short nAnimation,
                                         float fSpeed, int nFlags, float fTime)
 {
@@ -201,7 +201,7 @@ int CSWCAnimBaseHeadWield::SetAnimation(unsigned short nAnimation,
            CSWCAnimBaseTW::SetAnimationInternal(m_pHeadModel, nAnimation,
                                                 fSpeed, nFlags, fTime) != 0;
 }
-// PC 0x00699420  Xbox 0x000C4F30
+// PC 0x006F3D50
 int CSWCAnimBaseHeadWield::SetOverlayAnimation(unsigned short nAnimation,
                                                int bLoop)
 {
@@ -214,7 +214,7 @@ int CSWCAnimBaseHeadWield::SetOverlayAnimation(unsigned short nAnimation,
            CSWCAnimBase::SetOverlayAnimation(m_pHeadModel, nAnimation,
                                              bLoop) != 0;
 }
-// PC 0x006994A0  Xbox 0x000C4FB0
+// PC 0x006F3DD0
 int CSWCAnimBaseHeadWield::SetAnimationVisemes(float* pfWeights,
                                                float* pfTimes, int nCount,
                                                float fLength)
@@ -245,7 +245,7 @@ int CSWCAnimBaseHeadWield::SetAnimationVisemes(float* pfWeights,
     }
     return 1;
 }
-// PC 0x00699560  Xbox 0x000C50A0
+// PC 0x006F3E90
 void CSWCAnimBaseHeadWield::SetAlwaysRender(int bAlwaysRender)
 {
     if (bAlwaysRender != 0)
@@ -271,7 +271,7 @@ void CSWCAnimBaseHeadWield::SetAlwaysRender(int bAlwaysRender)
         }
     }
 }
-// PC 0x006995D0  Xbox 0x000C5140
+// PC 0x006F3F00
 void CSWCAnimBaseHeadWield::SetInCutscene(int bInCutscene)
 {
     if (bInCutscene != 0)
@@ -297,7 +297,7 @@ void CSWCAnimBaseHeadWield::SetInCutscene(int bInCutscene)
         }
     }
 }
-// PC 0x00699640  Xbox 0x000C51E0
+// PC 0x006F3F70
 int CSWCAnimBaseHeadWield::SetAnimationOnSubObject(unsigned char nModel,
                                                    unsigned short nAnimation,
                                                    float fSpeed, int nFlags,
@@ -314,7 +314,7 @@ int CSWCAnimBaseHeadWield::SetAnimationOnSubObject(unsigned char nModel,
             m_pHeadModel, nModel, nAnimation, fSpeed, nFlags, fTime);
     }
 }
-// PC 0x006996B0  Xbox 0x000C5250
+// PC 0x006F3FE0
 int CSWCAnimBaseHeadWield::SetAnimationInternal(CAurObject* pObject,
                                                 unsigned short nAnimation,
                                                 float fSpeed, int nFlags,
@@ -323,7 +323,7 @@ int CSWCAnimBaseHeadWield::SetAnimationInternal(CAurObject* pObject,
     return CSWCAnimBase::SetAnimationInternal(pObject, nAnimation, fSpeed,
                                               nFlags, fTime);
 }
-// PC 0x006996C0  Xbox 0x000C5260
+// PC 0x006F3FF0
 int CSWCAnimBaseHeadWield::SetAnimationOnSubObjectInternal(
     CAurObject* pObject, unsigned char nModel, unsigned short nAnimation,
     float fSpeed, int nFlags, float fTime)
@@ -331,65 +331,65 @@ int CSWCAnimBaseHeadWield::SetAnimationOnSubObjectInternal(
     return CSWCAnimBase::SetAnimationOnSubObjectInternal(
         pObject, nModel, nAnimation, fSpeed, nFlags, fTime);
 }
-// PC 0x006996D0  Xbox 0x000C5270
+// PC 0x006F4000
 int CSWCAnimBaseHeadWield::AddAnimationFlag(int nFlag)
 {
     return CSWCAnimBase::AddAnimationFlagInternal(m_pModel, nFlag) != 0 &&
            CSWCAnimBase::AddAnimationFlagInternal(m_pHeadModel, nFlag) != 0;
 }
-// PC 0x00699730  Xbox 0x000C52D0
+// PC 0x006F4060
 int CSWCAnimBaseHeadWield::RemoveAnimationFlag(int nFlag)
 {
     return CSWCAnimBase::RemoveAnimationFlagInternal(m_pModel, nFlag) != 0 &&
            CSWCAnimBase::RemoveAnimationFlagInternal(m_pHeadModel, nFlag) !=
                0;
 }
-// PC 0x00699790  Xbox 0x000C5330
+// PC 0x006F40C0
 void CSWCAnimBaseHeadWield::TurnOnShadows()
 {
     CSWCAnimBaseHead::TurnOnShadows();
     return CSWCAnimBaseWield::TurnOnShadows();
 }
-// PC 0x006997C0  Xbox 0x000C5360
+// PC 0x006F40F0
 void CSWCAnimBaseHeadWield::TurnOffShadows()
 {
     CSWCAnimBaseHead::TurnOffShadows();
     return CSWCAnimBaseWield::TurnOffShadows();
 }
-// PC 0x006997F0  Xbox 0x000C5390
+// PC 0x006F4120
 void CSWCAnimBaseHeadWield::UpdateSound(int nEvent)
 {
     return CSWCAnimBaseWield::UpdateSound(nEvent);
 }
-// PC 0x00699800  Xbox 0x000C53A0
+// PC 0x006F4200
 int CSWCAnimBaseHeadWield::EnableBumpedOutShell(const CResRef& sShell,
                                                 float fScale)
 {
     return CSWCAnimBaseHead::EnableBumpedOutShell(sShell, fScale);
 }
-// PC 0x00699810  Xbox 0x000C53B0
+// PC 0x006F4210
 int CSWCAnimBaseHeadWield::DisableBumpedOutShell()
 {
     return CSWCAnimBaseHead::DisableBumpedOutShell();
 }
-// PC 0x00699820  Xbox 0x000C53C0
+// PC 0x006F4220
 int CSWCAnimBaseHeadWield::SetMotionBlur(int bBlur)
 {
     return CSWCAnimBaseHead::SetMotionBlur(bBlur);
 }
-// PC 0x00699830  Xbox 0x000C53D0
+// PC 0x006F4230
 void CSWCAnimBaseHeadWield::EnableDistortion()
 {
     CSWCAnimBaseHead::EnableDistortion();
     return CSWCAnimBaseWield::EnableDistortion();
 }
-// PC 0x00699860  Xbox 0x000C5400
+// PC 0x006F4260
 void CSWCAnimBaseHeadWield::DisableDistortion()
 {
     CSWCAnimBaseHead::DisableDistortion();
     return CSWCAnimBaseWield::DisableDistortion();
 }
-// PC 0x00699AE0  Xbox 0x000C5680
+// PC 0x006F3AC0
 void CSWCAnimBaseHeadWield::HideHeadItem()
 {
     NWCANIMBASEHEADWIELD_TRACE();
@@ -407,7 +407,7 @@ void CSWCAnimBaseHeadWield::HideHeadItem()
     }
     m_bHeadItemHidden = 1;
 }
-// PC 0x00699B90  Xbox 0x000C5730
+// PC 0x006F3B70
 void CSWCAnimBaseHeadWield::ShowHeadItem()
 {
     NWCANIMBASEHEADWIELD_TRACE();
@@ -427,7 +427,7 @@ void CSWCAnimBaseHeadWield::ShowHeadItem()
         m_bHeadItemHidden = 0;
     }
 }
-// PC 0x00699C10  Xbox 0x000C57B0
+// PC 0x006F4130
 int CSWCAnimBaseHeadWield::GetBoundingRect(CSWGuiExtent& extent)
 {
     NWCANIMBASEHEADWIELD_TRACE();
@@ -449,7 +449,7 @@ int CSWCAnimBaseHeadWield::GetBoundingRect(CSWGuiExtent& extent)
     }
     return CSWCAnimBase::GetBoundingRect(extent);
 }
-// PC 0x00699CE0  Xbox 0x000C5890
+// PC 0x006F4290
 void CSWCAnimBaseHeadWield::SetHeadItem(unsigned long nItem)
 {
     NWCANIMBASEHEADWIELD_TRACE();

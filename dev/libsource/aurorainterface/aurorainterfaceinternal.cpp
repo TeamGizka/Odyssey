@@ -3,7 +3,7 @@
 #include "exoresman.h"
 #include "aurfonttexture.h"
 #include "math3d.h"
-// PC 0x0070DE20  Xbox 0x002F8080
+// PC 0x00781650
 CAuroraModel* CAuroraInterface::GetModelResHelper(
     const CExoString& sName, int bRequest, int* pbNew,
     CExoLinkedListNode** ppPosition)
@@ -89,7 +89,7 @@ CAuroraModel* CAuroraInterface::GetModelResHelper(
     }
     return pModel;
 }
-// PC 0x0070E080  Xbox 0x002F82E0
+// PC 0x007818B0
 CAuroraModel* CAuroraInterface::GetModelInternal(
     const CExoString& sName, int bRequest, int* pbNew,
     CExoLinkedListNode** ppPosition)
@@ -114,7 +114,7 @@ CAuroraModel* CAuroraInterface::GetModelInternal(
     }
     return pModel;
 }
-// PC 0x0070E0E0  Xbox 0x002F8340
+// PC 0x00781910
 void CAuroraInterface::ReleaseModelInternal(CAuroraModel* pModel)
 {
     SMDLDataTrailer* pTrailer;
@@ -133,7 +133,7 @@ void CAuroraInterface::ReleaseModelInternal(CAuroraModel* pModel)
         }
     }
 }
-// PC 0x0070E130  Xbox 0x002F8390
+// PC 0x00781960
 CAuroraTexture* CAuroraInterface::GetTextureInternal(const CExoString& sName)
 {
     CAuroraTexture* pTexture;
@@ -169,7 +169,7 @@ CAuroraTexture* CAuroraInterface::GetTextureInternal(const CExoString& sName)
     }
     return pTexture;
 }
-// PC 0x0070E220  Xbox 0x002F8480
+// PC 0x00781A50
 CAurora16BitTexture* CAuroraInterface::Get16BitTextureInternal(
     const CExoString& sName)
 {
@@ -253,7 +253,7 @@ CAuroraFontTexture* CAuroraInterface::GetFontTextureInternal(
     }
     return pTexture;
 }
-// PC 0x0070E310  Xbox 0x002F8570
+// PC 0x00781B40
 CAuroraLayeredTexture* CAuroraInterface::GetLayeredTextureInternal(
     const CExoString& sName)
 {
@@ -295,7 +295,7 @@ CAuroraLayeredTexture* CAuroraInterface::GetLayeredTextureInternal(
     }
     return pTexture;
 }
-// PC 0x0070E400  Xbox 0x002F8660
+// PC 0x00781C30
 CAuroraCompressedTexture* CAuroraInterface::GetCompressedTextureInternal(
     const CExoString& sName)
 {
@@ -337,7 +337,7 @@ CAuroraCompressedTexture* CAuroraInterface::GetCompressedTextureInternal(
     }
     return pTexture;
 }
-// PC 0x0070E4F0  Xbox 0x002F8750
+// PC 0x00781D20
 CAuroraProcessedTexture* CAuroraInterface::GetProcessedTextureInternal(
     const CExoString& sName)
 {
@@ -383,7 +383,7 @@ CAuroraProcessedTexture* CAuroraInterface::GetProcessedTextureInternal(
     }
     return pTexture;
 }
-// PC 0x0070E5E0  Xbox 0x002F8840
+// PC 0x00781E10
 CAuroraTXI* CAuroraInterface::GetTXIInternal(const CExoString& sName)
 {
     CAuroraTXI* pTXI;
@@ -421,7 +421,7 @@ CAuroraTXI* CAuroraInterface::GetTXIInternal(const CExoString& sName)
     }
     return pTXI;
 }
-// PC 0x0070E6D0  Xbox 0x002F8930
+// PC 0x00781F00
 CAuroraVisibility* CAuroraInterface::GetVisibilityInternal(
     const CExoString& sName)
 {
@@ -462,7 +462,7 @@ CAuroraVisibility* CAuroraInterface::GetVisibilityInternal(
     }
     return pVisibility;
 }
-// PC 0x0070E7C0  Xbox 0x002F8A20
+// PC 0x00781FF0
 CAuroraModelX* CAuroraInterface::GetModelXInternal(const CExoString& sName)
 {
     CAuroraModelX* pModel;
@@ -500,12 +500,12 @@ CAuroraModelX* CAuroraInterface::GetModelXInternal(const CExoString& sName)
     }
     return pModel;
 }
-// PC 0x0070E8B0  Xbox 0x002F8B10
+// PC 0x007820E0
 CAuroraTexture* CAuroraInterface::GetTexture(const CExoString& sName)
 {
     return GetTextureInternal(sName);
 }
-// PC 0x0070E8C0  Xbox 0x002F8B20
+// PC 0x007820F0
 void CAuroraInterface::ReleaseTextureInternal(CAuroraTexture* pTexture)
 {
     STGATextureTrailer* pTrailer;
@@ -525,12 +525,12 @@ void CAuroraInterface::ReleaseTextureInternal(CAuroraTexture* pTexture)
         }
     }
 }
-// PC 0x0070E910  Xbox 0x002F8B70
+// PC 0x00782140
 CAurora16BitTexture* CAuroraInterface::Get16BitTexture(const CExoString& sName)
 {
     return Get16BitTextureInternal(sName);
 }
-// PC 0x0070E920  Xbox 0x002F8B80
+// PC 0x00782150
 void CAuroraInterface::Release16BitTextureInternal(
     CAurora16BitTexture* pTexture)
 {
@@ -572,12 +572,12 @@ void CAuroraInterface::ReleaseFontTextureInternal(
         }
     }
 }
-// PC 0x0070E970  Xbox 0x002F8BD0
+// PC 0x007821A0
 CAuroraLayeredTexture* CAuroraInterface::GetLayeredTexture(const CExoString& sName)
 {
     return GetLayeredTextureInternal(sName);
 }
-// PC 0x0070E980  Xbox 0x002F8BE0
+// PC 0x007821B0
 void CAuroraInterface::ReleaseLayeredTextureInternal(
     CAuroraLayeredTexture* pTexture)
 {
@@ -598,12 +598,12 @@ void CAuroraInterface::ReleaseLayeredTextureInternal(
         }
     }
 }
-// PC 0x0070E9D0  Xbox 0x002F8C30
+// PC 0x00782200
 CAuroraCompressedTexture* CAuroraInterface::GetCompressedTexture(const CExoString& sName)
 {
     return GetCompressedTextureInternal(sName);
 }
-// PC 0x0070E9E0  Xbox 0x002F8C40
+// PC 0x00782210
 void CAuroraInterface::ReleaseCompressedTextureInternal(
     CAuroraCompressedTexture* pTexture)
 {
@@ -624,12 +624,12 @@ void CAuroraInterface::ReleaseCompressedTextureInternal(
         }
     }
 }
-// PC 0x0070EA30  Xbox 0x002F8C90
+// PC 0x00782260
 CAuroraProcessedTexture* CAuroraInterface::GetProcessedTexture(const CExoString& sName)
 {
     return GetProcessedTextureInternal(sName);
 }
-// PC 0x0070EA40  Xbox 0x002F8CA0
+// PC 0x00782270
 void CAuroraInterface::ReleaseProcessedTextureInternal(
     CAuroraProcessedTexture* pTexture)
 {
@@ -654,12 +654,12 @@ void CAuroraInterface::ReleaseProcessedTextureInternal(
         }
     }
 }
-// PC 0x0070EA90  Xbox 0x002F8CF0
+// PC 0x007822C0
 CAuroraTXI* CAuroraInterface::GetTXI(const CExoString& sName)
 {
     return GetTXIInternal(sName);
 }
-// PC 0x0070EAA0  Xbox 0x002F8D00
+// PC 0x007822D0
 void CAuroraInterface::ReleaseTXIInternal(CAuroraTXI* pTXI)
 {
     STXIResourcePrefix* pTrailer;
@@ -678,12 +678,12 @@ void CAuroraInterface::ReleaseTXIInternal(CAuroraTXI* pTXI)
         }
     }
 }
-// PC 0x0070EAF0  Xbox 0x002F8D50
+// PC 0x00782320
 CAuroraVisibility* CAuroraInterface::GetVisibility(const CExoString& sName)
 {
     return GetVisibilityInternal(sName);
 }
-// PC 0x0070EB00  Xbox 0x002F8D60
+// PC 0x00782330
 void CAuroraInterface::ReleaseVisibilityInternal(CAuroraVisibility* pVisibility)
 {
     SVISDataTrailer* pTrailer;
@@ -702,12 +702,12 @@ void CAuroraInterface::ReleaseVisibilityInternal(CAuroraVisibility* pVisibility)
         }
     }
 }
-// PC 0x0070EB50  Xbox 0x002F8DB0
+// PC 0x00782380
 CAuroraModelX* CAuroraInterface::GetModelX(const CExoString& sName)
 {
     return GetModelXInternal(sName);
 }
-// PC 0x0070EB60  Xbox 0x002F8DC0
+// PC 0x00782390
 void CAuroraInterface::ReleaseModelXInternal(CAuroraModelX* pModel)
 {
     SMDXResPrefix* pTrailer;

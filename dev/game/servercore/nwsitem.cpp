@@ -59,7 +59,7 @@ void CSWSItem::SetNumPassiveProperties(int nNumProperties)
     else
         m_pPassiveProperties = NULL;
 }
-// PC 0x005530A0  Xbox 0x001D32E0
+// PC 0x0055B6F0
 CSWSItem::CSWSItem(unsigned long oidItem)
     : CSWSObject(CGameObject::OBJECT_TYPE_ITEM, oidItem, 0)
 {
@@ -96,7 +96,7 @@ CSWSItem::CSWSItem(unsigned long oidItem)
     m_nBodyVariation = 0;
     m_nTextureVar = 0;
 }
-// PC 0x00555720  Xbox 0x001D5990
+// PC 0x0055E950
 int CSWSItem::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
                         int bLoadingGame)
 {
@@ -114,7 +114,7 @@ int CSWSItem::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
 
     return result;
 }
-// PC 0x00555790  Xbox 0x001D5A10
+// PC 0x0055E9C0
 int CSWSItem::SaveItemProperties(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList list;
@@ -180,7 +180,7 @@ int CSWSItem::SaveItemProperties(CResGFF* pRes, CResStruct* pStruct)
 
     return 1;
 }
-// PC 0x00555A60  Xbox 0x001D5CE0
+// PC 0x0055ECC0
 unsigned short CSWSItem::GetUsedActivePropertyUsesLeft(unsigned char nPropertyIndex)
 {
     unsigned short nUsesLeft = 0;
@@ -238,7 +238,7 @@ unsigned short CSWSItem::GetUsedActivePropertyUsesLeft(unsigned char nPropertyIn
     }
     return nUsesLeft;
 }
-// PC 0x00555BF0  Xbox 0x001D5E60
+// PC 0x0055EE50
 int CSWSItem::RestoreUsedActiveProperties(int bRestoreAll)
 {
     int nActiveProperties;
@@ -277,7 +277,7 @@ int CSWSItem::RestoreUsedActiveProperties(int bRestoreAll)
 
     return nActiveProperties;
 }
-// PC 0x00555C90  Xbox 0x001D5F00
+// PC 0x0055EEF0
 int CSWSItem::GetPropertyByTypeExists(unsigned short nPropertyType,
                                       unsigned short nSubtype)
 {
@@ -318,11 +318,11 @@ int CSWSItem::GetPropertyByTypeExists(unsigned short nPropertyType,
 
     return 0;
 }
-// PC 0x00555DE0  Xbox 0x001D6050
+// PC 0x0055F040
 CItemRepository::~CItemRepository()
 {
 }
-// PC 0x00555E00  Xbox 0x001D6070
+// PC 0x0055F060
 int CItemRepository::FindItemWithBaseItemType(unsigned char nItemType, int nIndex)
 {
     int nItem;
@@ -366,7 +366,7 @@ int CItemRepository::FindItemWithBaseItemType(unsigned char nItemType, int nInde
 
     return OBJECT_INVALID;
 }
-// PC 0x00555ED0  Xbox 0x001D6140
+// PC 0x0055F130
 int CItemRepository::FindItemWithTag(const CExoString& sTag)
 {
     int nItem;
@@ -400,7 +400,7 @@ int CItemRepository::FindItemWithTag(const CExoString& sTag)
 
     return OBJECT_INVALID;
 }
-// PC 0x00555F40  Xbox 0x001D61B0
+// PC 0x0055F1A0
 int CItemRepository::GetItemInRepository(CSWSItem* pItem, int bFlag)
 {
     CServerExoApp* pServerExoApp;
@@ -436,7 +436,7 @@ int CItemRepository::GetItemInRepository(CSWSItem* pItem, int bFlag)
 
     return 0;
 }
-// PC 0x00555FD0  Xbox 0x001D6240
+// PC 0x0055F230
 int CItemRepository::RemoveItem(CSWSItem* pItem)
 {
     if (pItem != NULL)
@@ -459,7 +459,7 @@ int CItemRepository::RemoveItem(CSWSItem* pItem)
 
     return 0;
 }
-// PC 0x00556050  Xbox 0x001D62C0
+// PC 0x0055F2B0
 void CItemRepository::ClearNewItems(CExoArrayList<unsigned long>* pNewItems)
 {
     CServerExoApp* pServerExoApp;
@@ -477,7 +477,7 @@ void CItemRepository::ClearNewItems(CExoArrayList<unsigned long>* pNewItems)
         }
     }
 }
-// PC 0x005560B0  Xbox 0x001D6320
+// PC 0x0055F3B0
 CSWSItem* CItemRepository::ItemListGetItem(int nIndex)
 {
     CServerExoApp* pServerExoApp;
@@ -492,7 +492,7 @@ CSWSItem* CItemRepository::ItemListGetItem(int nIndex)
     pItem = pServerExoApp->GetItemByGameObjectID(m_lstItems[nIndex]);
     return pItem;
 }
-// PC 0x005560E0  Xbox 0x001D6350
+// PC 0x0055F3E0
 unsigned long CItemRepository::ItemListGetItemObjectID(int nIndex)
 {
     if (nIndex < 0 || nIndex >= m_lstItems.num)
@@ -502,7 +502,7 @@ unsigned long CItemRepository::ItemListGetItemObjectID(int nIndex)
 
     return m_lstItems[nIndex];
 }
-// PC 0x00556100  Xbox 0x001D6370
+// PC 0x0055F400
 int CItemRepository::CalculateContentsWeight()
 {
     int nItems = m_lstItems.num;
@@ -521,7 +521,7 @@ int CItemRepository::CalculateContentsWeight()
 
     return nWeight;
 }
-// PC 0x00556150  Xbox 0x001D63C0
+// PC 0x0055F450
 int CItemRepository::SetParentId(unsigned long oidParent)
 {
     int nItems;
@@ -545,7 +545,7 @@ int CItemRepository::SetParentId(unsigned long oidParent)
 
     return nItems;
 }
-// PC 0x00553210  Xbox 0x001D3450
+// PC 0x0055B890
 void CSWSItem::SetPossessor(unsigned long oidPossessor, int bRunScripts,
                           int bDisplayFeedback, unsigned long oidOldPossessor)
 {
@@ -718,7 +718,7 @@ void CSWSItem::SetPossessor(unsigned long oidPossessor, int bRunScripts,
     }
     m_oidPossessor = oidPossessor;
 }
-// PC 0x005538A0  Xbox 0x001D3AD0
+// PC 0x0055BF20
 void CSWSItem::RemoveFromArea()
 {
     if (GetArea() != NULL)
@@ -740,7 +740,7 @@ void CSWSItem::SetNumActiveProperties(int nNumProperties)
     else
         m_pActiveProperties = NULL;
 }
-// PC 0x00553900  Xbox 0x001D3B30
+// PC 0x0055BF80
 int CSWSItem::ActiveProperty(unsigned short nPropertyType)
 {
     switch ((unsigned short)nPropertyType)
@@ -754,7 +754,7 @@ int CSWSItem::ActiveProperty(unsigned short nPropertyType)
 
     return 0;
 }
-// PC 0x005561A0  Xbox 0x001D6410
+// PC 0x0055F4A0
 void CSWSItem::OpenInventory(unsigned long oidOpener)
 {
     NwsitemTrace1();
@@ -783,7 +783,7 @@ void CSWSItem::OpenInventory(unsigned long oidOpener)
         m_bInventoryOpen = 1;
     }
 }
-// PC 0x005562A0  Xbox 0x001D6510
+// PC 0x0055F5A0
 int CSWSItem::GetWeight()
 {
     CItemRepository* pRepository = m_pRepository;
@@ -804,7 +804,7 @@ int CSWSItem::GetWeight()
 
     return nWeight;
 }
-// PC 0x005562D0  Xbox 0x001D6540
+// PC 0x0055F5D0
 void CSWSItem::GetSortedPropertyStrings(CExoArrayList<CExoString>& aStrings,
                                         CExoString& sString)
 {
@@ -837,7 +837,7 @@ inline int CSWBaseItem::GetRequiredFeatCount()
 {
     return m_nRequiredFeatCount;
 }
-// PC 0x00556490  Xbox 0x001D6700
+// PC 0x0055F790
 void CSWSItem::AddFeatRequirements(CExoString& sString)
 {
     int bHeadingAdded = 0;
@@ -946,7 +946,7 @@ void CSWSItem::AddFeatRequirements(CExoString& sString)
 }
 
 inline int CSWSItem::GetPassiveProperties() { return m_nPassiveProperties; }
-// PC 0x00556DE0  Xbox 0x001D7070
+// PC 0x00561330
 void CSWSItem::AddDamageProperties(CExoString& sString)
 {
     CExoString sDamage;
@@ -1201,7 +1201,7 @@ NextDamageProperty:
         if (bHeadingAdded) sString = sString + "\n\n";
     }
 }
-// PC 0x0055D290  Xbox 0x001DD3C0
+// PC 0x00567B10
 CItemRepository::CItemRepository(unsigned long oidOwner, int bFlag)
     : m_lstItems(0)
 {
@@ -1209,7 +1209,7 @@ CItemRepository::CItemRepository(unsigned long oidOwner, int bFlag)
     m_nNewItems = 0;
     m_bUnknown08 = bFlag;
 }
-// PC 0x0055D2C0  Xbox 0x001DD3F0
+// PC 0x00567B40
 void CItemRepository::InsertItem(CSWSItem* pItem, int nIndex)
 {
     if (m_bUnknown08)
@@ -1226,7 +1226,7 @@ void CItemRepository::InsertItem(CSWSItem* pItem, int nIndex)
         m_lstItems.Insert(pItem->m_nId, nIndex);
     }
 }
-// PC 0x0055D330  Xbox 0x001DD460
+// PC 0x00567BB0
 int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
                              int bUpdatePossessor, int bNewItem)
 {
@@ -1429,7 +1429,7 @@ int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
     }
     return 1;
 }
-// PC 0x0055D800  Xbox 0x001DD930
+// PC 0x005680F0
 void CSWSItem::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
 {
     if (m_bInventoryOpen)
@@ -1457,7 +1457,7 @@ void CSWSItem::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
         m_bInventoryOpen = 0;
     }
 }
-// PC 0x0055D950  Xbox 0x001DDA80
+// PC 0x00568240
 int CSWSItem::CopyItem(CSWSItem* pItem)
 {
     if (pItem == NULL)
@@ -1520,7 +1520,7 @@ int CSWSItem::CopyItem(CSWSItem* pItem)
         m_sTag, GetId());
     return 1;
 }
-// PC 0x0055DC10  Xbox 0x001DDD50
+// PC 0x00568520
 void CSWSItem::CloseItemForAllPlayers()
 {
     CSWBaseItem* pBaseItem;
@@ -1552,7 +1552,7 @@ void CSWSItem::CloseItemForAllPlayers()
         }
     }
 }
-// PC 0x0055DCA0  Xbox 0x001DDDE0
+// PC 0x005685B0
 int CSWSItem::AcquireItem(CSWSItem** ppItem, unsigned long oidPossessor,
                           int bDisplayFeedback)
 {
@@ -1617,7 +1617,7 @@ int CSWSItem::AcquireItem(CSWSItem** ppItem, unsigned long oidPossessor,
     }
     return bResult;
 }
-// PC 0x0055DE20  Xbox 0x001DDF60
+// PC 0x00568730
 void CSWSItem::DecrementUses(int nPropertyIndex, unsigned long oidUser)
 {
 
@@ -1781,7 +1781,7 @@ void CSWSItem::DecrementUses(int nPropertyIndex, unsigned long oidUser)
         UpdateUsedActiveProperties();
     }
 }
-// PC 0x0055E180  Xbox 0x001DE290
+// PC 0x00568A90
 void CSWSItem::AddProperty(unsigned short nPropertyType, unsigned short nSubtype,
                           unsigned short nCostValue, unsigned char nParam1Value,
                           CExoArrayList<CExoString>& aStrings)
@@ -1890,7 +1890,7 @@ void CSWSItem::AddProperty(unsigned short nPropertyType, unsigned short nSubtype
     }
     aStrings.Add(sProperty);
 }
-// PC 0x0055E930  Xbox 0x001DE990
+// PC 0x00569240
 void CSWSItem::AddAttackModifierProperties(CExoString& sString)
 {
     int nAttackModifier = 0;
@@ -1954,7 +1954,7 @@ inline unsigned short CSWItemProperty::GetSubtype()
 {
     return m_nSubtype;
 }
-// PC 0x005584C0  Xbox 0x001D8740
+// PC 0x00562C80
 void CSWSItem::AddAttackBonusStrings(int nPropertyType, CExoString& sString)
 {
     int nAttackBonus = 0;
@@ -2017,7 +2017,7 @@ inline unsigned char CSWBaseItem::GetCritHitMult()
 {
     return m_nCritHitMult;
 }
-// PC 0x00558950  Xbox 0x001D8BD0
+// PC 0x00563110
 void CSWSItem::AddCriticalThreatProperties(CExoString& sString)
 {
     CExoString sRange;
@@ -2061,7 +2061,7 @@ void CSWSItem::AddCriticalThreatProperties(CExoString& sString)
         sRange.Format("%d-20,x%d\n", 21 - nThreat, nMultiplier);
     sString = sString + sRange + "\n";
 }
-// PC 0x00558C10  Xbox 0x001D8E90
+// PC 0x005633A0
 void CSWSItem::AddOnHitProperties(CExoString& sString)
 {
     if (GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ON_HIT_PROPERTIES, 0))
@@ -2168,7 +2168,7 @@ void CSWSItem::AddOnHitProperties(CExoString& sString)
         }
     }
 }
-// PC 0x005599D0  Xbox 0x001D9B20
+// PC 0x005643E0
 void CSWSItem::AddDefenceProperties(CExoString& sString)
 {
     CExoString sBonus;
@@ -2279,7 +2279,7 @@ void CSWSItem::AddDefenceProperties(CExoString& sString)
         }
     }
 }
-// PC 0x0055A510  Xbox 0x001DA660
+// PC 0x00564FC0
 void CSWSItem::AddMiscellaneousProperties(CExoString& sString)
 {
     CExoString sProperty;
@@ -2677,7 +2677,7 @@ void CSWSItem::AddMiscellaneousProperties(CExoString& sString)
         }
     }
 }
-// PC 0x0055CB60  Xbox 0x001DCC90
+// PC 0x00567340
 void CSWSItem::AIUpdate()
 {
     if (GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM, 0))
@@ -2729,7 +2729,7 @@ void CSWSItem::AIUpdate()
         }
     }
 }
-// PC 0x0055CCD0  Xbox 0x001DCE00
+// PC 0x005674B0
 int CSWSItem::SaveItem(CResGFF* pRes, CResStruct* pStruct)
 {
     pRes->WriteFieldINT(pStruct, GetBaseItemType(), "BaseItem");
@@ -2772,7 +2772,7 @@ int CSWSItem::SaveItem(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldBYTE(pStruct, m_bDeleting, "DELETING");
     return 1;
 }
-// PC 0x0055CFA0  Xbox 0x001DD0D0
+// PC 0x00567820
 int CSWSItem::SaveContainerItems(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList list;
@@ -2787,7 +2787,7 @@ int CSWSItem::SaveContainerItems(CResGFF* pRes, CResStruct* pStruct)
 
     return 1;
 }
-// PC 0x0055D040  Xbox 0x001DD170
+// PC 0x005678C0
 void CSWSItem::UpdateUsedActiveProperties()
 {
     unsigned char aUsesLeft[MAX_TRACKED_ACTIVE_PROPERTIES];
@@ -2869,7 +2869,7 @@ void CSWSItem::UpdateUsedActiveProperties()
                 nChangedMask, m_aActivePropertyUsesLeft);
     }
 }
-// PC 0x00553960  Xbox 0x001D3B90
+// PC 0x0055C040
 CSWItemProperty* CSWSItem::GetActiveProperty(int nIndex)
 {
     if (nIndex < 0 || nIndex >= m_nActiveProperties)
@@ -2879,7 +2879,7 @@ CSWItemProperty* CSWSItem::GetActiveProperty(int nIndex)
 
     return &m_pActiveProperties[nIndex];
 }
-// PC 0x00553990  Xbox 0x001D3BC0
+// PC 0x0055C070
 CSWItemProperty* CSWSItem::GetPassiveProperty(int nIndex)
 {
     if (nIndex < 0 || nIndex >= m_nPassiveProperties)
@@ -2889,7 +2889,7 @@ CSWItemProperty* CSWSItem::GetPassiveProperty(int nIndex)
 
     return &m_pPassiveProperties[nIndex];
 }
-// PC 0x005539C0  Xbox 0x001D3BF0
+// PC 0x0055C0A0
 int CSWSItem::GetPropertyByType(CSWItemProperty** ppProperty,
                                 unsigned short nPropertyType,
                                 unsigned short nSubtype)
@@ -2951,7 +2951,7 @@ int CSWSItem::GetPropertyByType(CSWItemProperty** ppProperty,
 
     return 0;
 }
-// PC 0x00553BB0  Xbox 0x001D3DE0
+// PC 0x0055C290
 void CSWSItem::ApplyItemProperties(CSWSCreature* pCreature,
                                    unsigned long nSlot, int bLoading)
 {
@@ -2979,7 +2979,7 @@ void CSWSItem::ApplyItemProperties(CSWSCreature* pCreature,
         }
     }
 }
-// PC 0x00553C30  Xbox 0x001D3E60
+// PC 0x0055C310
 void CSWSItem::RemoveItemProperties(CSWSCreature* pCreature,
                                     unsigned long nSlot)
 {
@@ -3008,7 +3008,7 @@ void CSWSItem::RemoveItemProperties(CSWSCreature* pCreature,
     }
     pCreature->RemoveEffectByCreator(m_nId);
 }
-// PC 0x00553CC0  Xbox 0x001D3EF0
+// PC 0x0055C3A0
 int CSWSItem::ComputeArmorClass()
 {
     if (GetBaseItem()->m_bUnknown18 != 1)
@@ -3018,7 +3018,7 @@ int CSWSItem::ComputeArmorClass()
 
     return GetBaseItem()->m_nBaseAC;
 }
-// PC 0x00553CF0  Xbox 0x001D3F20
+// PC 0x0055C3D0
 int CSWSItem::CompareItem(CSWSItem* pItem)
 {
     int nActiveProperty;
@@ -3098,7 +3098,7 @@ int CSWSItem::CompareItem(CSWSItem* pItem)
 
     return 1;
 }
-// PC 0x00553F90  Xbox 0x001D41C0
+// PC 0x0055C670
 int CSWSItem::MergeItem(CSWSItem* pItem)
 {
     if (CompareItem(pItem))
@@ -3119,7 +3119,7 @@ int CSWSItem::MergeItem(CSWSItem* pItem)
 
     return 0;
 }
-// PC 0x00554000  Xbox 0x001D4240
+// PC 0x0055C6E0
 int CSWSItem::GetCost()
 {
     if (m_bPlotObject == 1)
@@ -3135,7 +3135,7 @@ int CSWSItem::GetCost()
 
     return 1;
 }
-// PC 0x00554050  Xbox 0x001D4290
+// PC 0x0055C730
 unsigned long CSWSItem::GetDamageFlags()
 {
     unsigned long nDamageFlags;
@@ -3157,7 +3157,7 @@ unsigned long CSWSItem::GetDamageFlags()
 
     return nDamageFlags;
 }
-// PC 0x00554080  Xbox 0x001D42C0
+// PC 0x0055C760
 unsigned char CSWSItem::GetMinEquipLevel()
 {
     CTwoDimArrays* pTables = g_pRules->m_p2DArrays;
@@ -3180,12 +3180,12 @@ unsigned char CSWSItem::GetMinEquipLevel()
     nRequiredLevel++;
     return nRequiredLevel;
 }
-// PC 0x00554170  Xbox 0x001D43C0
+// PC 0x0055C850
 void CSWSItem::SetIdentified(int bIdentified)
 {
     m_bIdentified = bIdentified;
 }
-// PC 0x00554190  Xbox 0x001D43E0
+// PC 0x0055C870
 CSWCItem* CSWSItem::GetClientItem()
 {
     if (GetClientObject() != NULL)
@@ -3195,7 +3195,7 @@ CSWCItem* CSWSItem::GetClientItem()
 
     return NULL;
 }
-// PC 0x005541C0  Xbox 0x001D4410
+// PC 0x0055C8A0
 unsigned char CSWSItem::GetUpgradableType(C2DA* pTable)
 {
     unsigned char nType;
@@ -3273,7 +3273,7 @@ unsigned char CSWSItem::GetUpgradableType(C2DA* pTable)
 
     return nType;
 }
-// PC 0x005543B0  Xbox 0x001D4610
+// PC 0x0055CB30
 void CSWSItem::AddRangeProperties(CExoString& sString)
 {
     CExoString sRange;
@@ -3286,7 +3286,7 @@ void CSWSItem::AddRangeProperties(CExoString& sString)
         sString = sString + sRange + "\n";
     }
 }
-// PC 0x005544F0  Xbox 0x001D4750
+// PC 0x0055CC70
 void CSWSItem::AddWeaponSizeProperties(CExoString& sString)
 {
     char nWeaponSize = GetBaseItem()->m_nWeaponSize;
@@ -3298,7 +3298,7 @@ void CSWSItem::AddWeaponSizeProperties(CExoString& sString)
         sString = sString + pClientExoApp->GetGUIString(0xA4A1) + sNewLine;
     }
 }
-// PC 0x005545D0  Xbox 0x001D4830
+// PC 0x0055CD50
 void CSWSItem::GetDamageTypeString(unsigned long nDamageFlags,
                                    CExoString& sString)
 {
@@ -3433,7 +3433,7 @@ void CSWSItem::GetDamageTypeString(unsigned long nDamageFlags,
         sString = sString + pClientExoApp->GetGUIString(0xA3AF);
     }
 }
-// PC 0x00554E00  Xbox 0x001D5060
+// PC 0x0055D580
 void CSWSItem::GetPropertyStrings(unsigned short nPropertyType,
                                  unsigned short nSubtype,
                                  unsigned short nCostValue,
@@ -3533,7 +3533,7 @@ void CSWSItem::GetPropertyStrings(unsigned short nPropertyType,
         }
     }
 }
-// PC 0x00555380  Xbox 0x001D55E0
+// PC 0x0055DC70
 void CSWSItem::GetPropertyDamageRange(unsigned short nCostValue,
                                      int& nMinDamage, int& nMaxDamage)
 {
@@ -3574,7 +3574,7 @@ void CSWSItem::GetPropertyDamageRange(unsigned short nCostValue,
         nMaxDamage = nCostValue;
     }
 }
-void CSWSItem::GetPropertyChanceDurationDC(unsigned short nCostValue,  // PC 0x005554D0  Xbox 0x001D5730
+void CSWSItem::GetPropertyChanceDurationDC(unsigned short nCostValue,  // PC 0x0055DDC0
                                          unsigned char nParam1Value,
                                          int& nEffectChance,
                                          int& nDurationRounds, int& nDC)
@@ -3609,7 +3609,7 @@ void CSWSItem::GetPropertyChanceDurationDC(unsigned short nCostValue,  // PC 0x0
     }
     nDC = nValue;
 }
-// PC 0x00555610  Xbox 0x001D5880
+// PC 0x0055DF40
 int CSWSItem::GetExistsHigherValuedProperty(unsigned short nPropertyType,
                                             unsigned short nSubtype,
                                             unsigned short nCostValue)
@@ -3644,7 +3644,7 @@ void CSWSItem::PowerItem(int bPower, int bAnimate, int bSilent)
         pClientItem->PowerItem(bPower, FALSE, TRUE, FALSE);
     }
 }
-// PC 0x00555690  Xbox 0x001D5900
+// PC 0x0055DFC0
 int CSWSItem::IsLightsaber()
 {
     int nBaseItem;
@@ -3661,7 +3661,7 @@ int CSWSItem::IsLightsaber()
 
     return nResult;
 }
-// PC 0x005556B0  Xbox 0x001D5920
+// PC 0x0055DFE0
 CResRef CSWSItem::GetIcon()
 {
     CSWBaseItem* pBaseItem = GetBaseItem();
@@ -3678,7 +3678,7 @@ CResRef CSWSItem::GetIcon()
 
     return pBaseItem->GetIconResRef((unsigned char)m_nModelVariation, 'm');
 }
-// PC 0x0055EC70  Xbox 0x001DECD0
+// PC 0x00569620
 CSWSItem::~CSWSItem()
 {
     unsigned long oidClient =
@@ -3717,7 +3717,7 @@ CSWSItem::~CSWSItem()
         RemoveFromArea();
     g_pAppManager->GetServerExoApp()->GetServerAIMaster()->RemoveObject(this);
 }
-// PC 0x0055EE10  Xbox 0x001DEE70
+// PC 0x005697C0
 void CSWSItem::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                            void* pEventData, unsigned long nCalendarDay,
                            unsigned long nTimeOfDay)
@@ -3788,7 +3788,7 @@ void CSWSItem::EventHandler(unsigned long nEventId, unsigned long oidCaller,
         }
     }
 }
-// PC 0x0055FCD0  Xbox 0x001DFD50
+// PC 0x0056A6F0
 void CSWSItem::LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct)
 {
     int bSuccess;
@@ -3954,7 +3954,7 @@ void CSWSItem::LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct)
     float fWeight = (float)(GetBaseItem()->m_nTenthLBS * 1.0f);
     m_nWeight = (int)fWeight;
 }
-// PC 0x0055F050  Xbox 0x001DF0B0
+// PC 0x00569A00
 void CSWSItem::InitRepository(unsigned long oidOwner)
 {
     if (m_pRepository != NULL)
@@ -3968,7 +3968,7 @@ void CSWSItem::InitRepository(unsigned long oidOwner)
         m_pRepository = new CItemRepository(oidOwner, 0);
     }
 }
-// PC 0x0055F0F0  Xbox 0x001DF170
+// PC 0x00569AA0
 void CSWSItem::ReadContainerItemsFromGff(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList list;
@@ -4017,7 +4017,7 @@ void CSWSItem::ReadContainerItemsFromGff(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 }
-// PC 0x0055F280  Xbox 0x001DF300
+// PC 0x00569C30
 CSWSItem* CSWSItem::SplitItem(int nCount)
 {
     CSWSItem* pNewItem;
@@ -4037,14 +4037,14 @@ CSWSItem* CSWSItem::SplitItem(int nCount)
 
     return pNewItem;
 }
-// PC 0x0055F330  Xbox 0x001DF3B0
+// PC 0x00569CE0
 int CItemRepository::ClearItems()
 {
     m_lstItems.RemoveAll(0);
     m_nNewItems = 0;
     return 0;
 }
-// PC 0x0055F340  Xbox 0x001DF3C0
+// PC 0x00569CF0
 CExoString CSWSItem::GetPropertyDescription()
 {
     CExoArrayList<CExoString> aStrings;
@@ -4077,7 +4077,7 @@ CExoString CSWSItem::GetPropertyDescription()
     sDescription = sString + sDescription;
     return sDescription;
 }
-// PC 0x0055F510  Xbox 0x001DF590
+// PC 0x00569F30
 CExoString CSWSItem::GetKeyedPropertyString(unsigned char nUpgradeIndex)
 {
     CExoArrayList<CExoString> aStrings;
@@ -4154,7 +4154,7 @@ CExoString CSWSItem::GetKeyedPropertyString(unsigned char nUpgradeIndex)
     GetSortedPropertyStrings(aStrings, sString);
     return sString;
 }
-// PC 0x005608B0  Xbox 0x001E0930
+// PC 0x0056B400
 int CSWSItem::LoadFromTemplate(const CResRef& cResRef)
 {
     CResGFF* pGFF;
@@ -4172,7 +4172,7 @@ int CSWSItem::LoadFromTemplate(const CResRef& cResRef)
     delete pGFF;
     return 1;
 }
-// PC 0x00560970  Xbox 0x001E09F0
+// PC 0x0056B4C0
 int CSWSItem::LoadItem(CResGFF* pRes, CResStruct* pStruct)
 {
     int bSuccess = 0;

@@ -3,13 +3,13 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-// PC 0x004A57A0  Xbox 0x002F59F0
+// PC 0x004D1E90
 void WindManager::SetMaximumDeviation(float fMaximumDeviation, float fVariation)
 {
     m_fMaximumDeviation = fMaximumDeviation;
     m_fMaximumDeviationVariation = fVariation;
 }
-// PC 0x004A57C0  Xbox 0x002F5A10
+// PC 0x004D1EB0
 void WindManager::fillNoiseField(float fField[16][16])
 {
     memset(fField, 0, sizeof(float) * 16 * 16);
@@ -33,7 +33,7 @@ void WindManager::fillNoiseField(float fField[16][16])
         }
     }
 }
-// PC 0x004A58C0  Xbox 0x002F5C00
+// PC 0x004D1FB0
 PointSourceWind::PointSourceWind()
 {
     m_vPosition.m_fX = 0.0f;
@@ -54,7 +54,7 @@ PointSourceWind::PointSourceWind()
 PointSourceWind::~PointSourceWind()
 {
 }
-// PC 0x004A5900  Xbox 0x002F5CA0
+// PC 0x004D1FF0
 void WindManager::SetGlobalWind(Vector vWind)
 {
     m_vGlobalWind = vWind;
@@ -64,7 +64,7 @@ void WindManager::SetGlobalWind(Vector vWind)
         m_lstWindyEmitters[i]->CalculateRadius();
     }
 }
-// PC 0x004A5950  Xbox 0x002F5CF0
+// PC 0x004D2040
 Vector WindManager::GetGlobalWindNoPoint(const Vector& vPosition, float fScale)
 {
     Vector* pGlobalWind = &m_vGlobalWind;
@@ -136,7 +136,7 @@ Vector WindManager::GetGlobalWindNoPoint(const Vector& vPosition, float fScale)
                       (2.0f * (fZX - fYW)) * vWind.m_fX +
                       (2.0f * (fZY + fXW)) * vWind.m_fY);
 }
-// PC 0x004A6050  Xbox 0x002F64A0
+// PC 0x004D2750
 Vector WindManager::GetGlobalWind(Vector vPosition, float fScale)
 {
     if (m_vGlobalWind.IsZero() && pointSourceWindVector(vPosition).IsZero())
@@ -201,12 +201,12 @@ Vector WindManager::GetGlobalWind(Vector vPosition, float fScale)
                       (2.0f * (fZX - fYW)) * vTotalWind.m_fX +
                       (2.0f * (fZY + fXW)) * vTotalWind.m_fY);
 }
-// PC 0x004A6440  Xbox 0x002F6940
+// PC 0x004D2B40
 Vector WindManager::GetGlobalPointWind(const Vector& vPosition, float)
 {
     return pointSourceWindVector(vPosition);
 }
-// PC 0x004A5C80  Xbox 0x002F60A0
+// PC 0x004D2370
 Vector WindManager::pointSourceWindVector(Vector vPosition)
 {
     float fDistance;
@@ -257,7 +257,7 @@ Vector WindManager::pointSourceWindVector(Vector vPosition)
 
     return vResult;
 }
-// PC 0x004A5E30  Xbox 0x002F6270
+// PC 0x004D2530
 void WindManager::updateTimer(float fTime)
 {
     m_fNoiseTimer += fTime;
@@ -293,12 +293,12 @@ void WindManager::updateTimer(float fTime)
         }
     }
 }
-// PC 0x004A6470  Xbox 0x002F6970
+// PC 0x004D2B70
 void WindManager::RegisterWindyEmitter(PartEmitter* pEmitter)
 {
     m_lstWindyEmitters.AddUnique(pEmitter);
 }
-// PC 0x004A6480  Xbox 0x002F6980
+// PC 0x004D2B80
 void WindManager::DeregisterWindyEmitter(PartEmitter* pEmitter)
 {
     if (m_lstWindyEmitters.Contains(pEmitter))
@@ -306,7 +306,7 @@ void WindManager::DeregisterWindyEmitter(PartEmitter* pEmitter)
         m_lstWindyEmitters.Remove(pEmitter);
     }
 }
-// PC 0x004A6510  Xbox 0x002F6A40
+// PC 0x004D2C10
 void WindManager::AddPointSourceWind(Vector vPosition, float fParameter0,
                                     float fParameter1, float fParameter2)
 {
@@ -317,7 +317,7 @@ void WindManager::AddPointSourceWind(Vector vPosition, float fParameter0,
     m_lstPointSourceWinds.Add(wind);
 #endif
 }
-// PC 0x004A6640  Xbox 0x002F6B20
+// PC 0x004D2D40
 WindManager::WindManager() : m_lstWindyEmitters(0)
 {
     m_vGlobalWind = m_vWindVelocity = Vector();
@@ -332,13 +332,13 @@ WindManager::WindManager() : m_lstWindyEmitters(0)
     m_pCurrentNoiseField = m_fNoiseFields[0];
     m_pNextNoiseField = m_fNoiseFields[1];
 }
-// PC 0x004A6710  Xbox 0x002F6C30
+// PC 0x004D2E10
 WindManager::~WindManager()
 {
 }
 
 #ifdef _XBOX
-PointSourceWind::PointSourceWind(Vector vPosition, float fParameter0, float fParameter1,  // Xbox 0x002F5C50
+PointSourceWind::PointSourceWind(Vector vPosition, float fParameter0, float fParameter1,
                                  float fParameter2)
 {
     m_vPosition = vPosition;

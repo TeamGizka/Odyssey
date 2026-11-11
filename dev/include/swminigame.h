@@ -56,7 +56,7 @@ public:
                       CAurPart* pPart);
     virtual int Fire();
     virtual int Control(float fTimeStep);
-    virtual int GetType()  // PC 0x006DAE60  Xbox 0x00126150
+    virtual int GetType()  // PC 0x00748D30
     {
         return AUR_BEHAVIOR_FIRE;
     }
@@ -77,7 +77,7 @@ public:
     CSWMGBehaviorBullet(CAurObject* pObject, CSWTrackFollower* pFollower,
                         const CSWMGBullet& bullet);
     virtual int Control(float fTimeStep);
-    virtual int GetType()  // PC 0x006DB080  Xbox 0x00126390
+    virtual int GetType()  // PC 0x00748F50
     {
         return AUR_BEHAVIOR_BULLET;
     }
@@ -92,7 +92,7 @@ public:
     CSWMGBehaviorTrack(CAurObject* pObject, CAurObject* pParent,
                        CAurPart* pPart, CAurObject* pModel);
     virtual int Control(float fTimeStep);
-    virtual int GetType()  // PC 0x006DB580  Xbox 0x00126970
+    virtual int GetType()  // PC 0x00749890
     {
         return AUR_BEHAVIOR_TRACK;
     }
@@ -118,7 +118,7 @@ public:
 
     float GetRateOfFire() { return m_fRateOfFire; }
     virtual int Control(float fTimeStep);
-    virtual int GetType()  // PC 0x006DB600  Xbox 0x001269F0
+    virtual int GetType()  // PC 0x00749910
     {
         return AUR_BEHAVIOR_TRACKANDFIRE;
     }
@@ -157,20 +157,20 @@ public:
     CResRef m_cResRef;
     Vector m_vPosition;
 };
-// PC 0x006707A0  Xbox 0x00093570
+// PC 0x006C5360
 inline CSWMGPhysicsState operator+(const CSWMGPhysicsState& stateA,
                                    const CSWMGPhysicsState& stateB)
 {
     return CSWMGPhysicsState(stateA.m_vValue + stateB.m_vValue,
                              stateA.m_vRate + stateB.m_vRate);
 }
-// PC 0x00670830  Xbox 0x00093630
+// PC 0x006C53F0
 inline CSWMGPhysicsState operator*(const CSWMGPhysicsState& state, float fScale)
 {
     return CSWMGPhysicsState(fScale * state.m_vValue,
                              fScale * state.m_vRate);
 }
-// PC 0x006708C0  Xbox 0x000936F0
+// PC 0x006C5480
 inline CSWMGPhysicsState operator/(const CSWMGPhysicsState& state, float fScale)
 {
     if (fScale != 0.0f)
@@ -180,7 +180,7 @@ inline CSWMGPhysicsState operator/(const CSWMGPhysicsState& state, float fScale)
     }
     return CSWMGPhysicsState();
 }
-// PC 0x006709C0  Xbox 0x00093840
+// PC 0x006C5580
 inline CSWMGPhysicsState GetDerivative(const Vector& vVelocity,
                                        const Vector& vAcceleration)
 {
@@ -339,19 +339,19 @@ public:
                              CResStruct& structScripts);
     virtual CResRef GetScriptName(int nScript) = 0;
     virtual void SetScriptName(int nScript, const CResRef& resRef) = 0;
-    virtual CSWTrackFollower* AsFollower()  // PC 0x0063E7F0
+    virtual CSWTrackFollower* AsFollower()  // PC 0x004065A0
     {
         return 0;
     }
-    virtual CSWMiniPlayer* AsPlayer()  // PC 0x0063E7F0
+    virtual CSWMiniPlayer* AsPlayer()  // PC 0x004065A0
     {
         return 0;
     }
-    virtual CSWMiniEnemy* AsEnemy()  // PC 0x0063E7F0
+    virtual CSWMiniEnemy* AsEnemy()  // PC 0x004065A0
     {
         return 0;
     }
-    virtual CSWMGObstacle* AsObstacle()  // PC 0x0063E7F0
+    virtual CSWMGObstacle* AsObstacle()  // PC 0x004065A0
     {
         return 0;
     }
@@ -359,7 +359,7 @@ public:
 
     void* GetLastBulletHitShooter();
     void* GetLastFollowerHit();
-    // PC 0x00671460  Xbox 0x000BCF90
+    // PC 0x006C6060
     void SetBullet(const CSWMGBullet& bullet)
     {
         m_bullet = bullet;
@@ -506,7 +506,7 @@ public:
                              CResStruct& structScripts);
     virtual CResRef GetScriptName(int nScript);
     virtual void SetScriptName(int nScript, const CResRef& resRef);
-    virtual CSWTrackFollower* AsFollower()  // PC 0x00641DB0
+    virtual CSWTrackFollower* AsFollower()  // PC 0x00698BD0
     {
         return this;
     }
@@ -525,7 +525,7 @@ public:
     {
         return m_fSphereRadius;
     }
-    // PC 0x006737E0  Xbox 0x0011CBE0
+    // PC 0x006C8CF0
     void SetBullet(CSWMGBullet* pBullet)
     {
         m_lastBulletFired = *pBullet;
@@ -607,7 +607,7 @@ class CSWMGObstacle : public CSWMiniGameObject
 public:
     SafePointer<CAurObject> m_pModel;
     CResRef m_aScripts[5];
-    virtual void PlayAnimation(char* szAnimation, float fSpeed, int nFlags)  // PC 0x006706C0  Xbox 0x000A9DB0
+    virtual void PlayAnimation(char* szAnimation, float fSpeed, int nFlags)  // PC 0x006C4CF0
     {
         if (m_pModel != 0)
         {
@@ -619,7 +619,7 @@ public:
     virtual void LoadScripts(CResGFF*, CResStruct*, CResStruct&);
     virtual CResRef GetScriptName(int);
     virtual void SetScriptName(int, CResRef const&);
-    virtual CSWMGObstacle* AsObstacle()  // PC 0x00641DB0
+    virtual CSWMGObstacle* AsObstacle()  // PC 0x00698BD0
     {
         return this;
     }
@@ -635,7 +635,7 @@ public:
         : CSWTrackFollower(pMiniGame, SWMG_OBJECT_ENEMY)
     {
     }
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWMiniEnemy* AsEnemy()
     {
         return this;
@@ -700,11 +700,11 @@ public:
     void Fire();
     CSWMiniPlayer(CSWMiniGame*);
     ~CSWMiniPlayer();
-    virtual CSWMiniPlayer* AsPlayer()  // PC 0x00641DB0
+    virtual CSWMiniPlayer* AsPlayer()  // PC 0x00698BD0
     {
         return this;
     }
-    virtual int TargetType()  // PC 0x0063E7A0
+    virtual int TargetType()  // PC 0x0065D0F0
     {
         return TARGET_PLAYER;
     }
@@ -740,7 +740,7 @@ public:
 
     virtual CAurObject* AddGun(CAurObject* pObject, CAurPart* pPart);
     virtual void Die();
-    virtual int IsTargetting()  // PC 0x0063E7F0
+    virtual int IsTargetting()  // PC 0x004065A0
     {
         return 0;
     }
@@ -777,7 +777,7 @@ public:
 
     virtual CAurObject* AddGun(CAurObject* pObject, CAurPart* pPart);
     virtual void Die();
-    virtual int IsTargetting()  // PC 0x0063E7A0
+    virtual int IsTargetting()  // PC 0x0065D0F0
     {
         return 1;
     }

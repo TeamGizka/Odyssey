@@ -126,7 +126,7 @@ public:
 #endif
     int m_nDifficultyLevel;
     SServerOption m_aOptions[50];
-    ~CServerInfo()  // PC 0x004B1360  Xbox 0x00023970
+    ~CServerInfo()  // PC 0x004E9E50
     {
     }
     int FindOptionIndex(CExoString const&, CExoString const&);

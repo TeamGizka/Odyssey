@@ -274,7 +274,7 @@ public:
     short m_anAdjacentFaces[3];
     short m_anVertexIndices[3];
 };
-// PC 0x0046EE00  Xbox 0x002AD3D0
+// PC 0x00485E00
 int countreset()
 {
     countbinds = 0;
@@ -287,12 +287,12 @@ int countreset()
     countdisplaycreates = 0;
     return 0;
 }
-// PC 0x0046EE30  Xbox 0x002AD400
+// PC 0x00485E30
 void PartTriMesh::RotateTexture(float fAngle)
 {
     m_fTextureAngle = fAngle;
 }
-// PC 0x0046EE40
+// PC 0x00485E40
 #ifdef _XBOX
 inline
 #endif
@@ -311,7 +311,7 @@ int IsTriMeshRenderable(PartTriMesh* pPart)
 }
 
 #ifndef _XBOX
-inline void GLRender::Scale(float fX, float fY, float fZ)  // PC 0x00459150  Xbox 0x00284A90
+inline void GLRender::Scale(float fX, float fY, float fZ)  // PC 0x0046E300
 {
     glScalef(fX, fY, fZ);
 }
@@ -321,7 +321,7 @@ inline void GLRender::Scale(float fX, float fY, float fZ)  // PC 0x00459150  Xbo
 #include "aurscene.h"
 
 #ifdef _XBOX
-// PC 0x0046EF10  Xbox 0x002AD9B0
+
 void GLRender::DrawAxisAlignedFrame(const Vector& vMinimum,
                                     const Vector& vMaximum,
                                     const Vector& vColor)
@@ -329,7 +329,7 @@ void GLRender::DrawAxisAlignedFrame(const Vector& vMinimum,
     RenderBox(vMinimum, vMaximum, vColor);
 }
 #else
-inline void GLRender::DrawAxisAlignedFrame(const Vector& vMinimum,  // PC 0x0046EF10  Xbox 0x002AD9B0
+inline void GLRender::DrawAxisAlignedFrame(const Vector& vMinimum,  // PC 0x00485F10
                                     const Vector& vMaximum,
                                     const Vector& vColor)
 {
@@ -365,7 +365,7 @@ inline void GLRender::DrawAxisAlignedFrame(const Vector& vMinimum,  // PC 0x0046
     glEnable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
 }
-// PC 0x0046F060  Xbox 0x00285490
+// PC 0x00486060
 inline void GLRender::Transform(const Vector& vPosition,
                          const Quaternion& qOrientation, int nForce)
 {
@@ -397,7 +397,7 @@ inline void GLRender::Transform(const Vector& vPosition,
     }
 }
 #endif
-// PC 0x0046F1A0  Xbox 0x002AD460
+// PC 0x004861A0
 int PartTriMesh::WithinRange(Vector vPosition, float fRange)
 {
     Vector vDifference;
@@ -409,7 +409,7 @@ int PartTriMesh::WithinRange(Vector vPosition, float fRange)
     fRange += 2.0f;
     return fDistance < fRange;
 }
-// PC 0x0046F200  Xbox 0x002AED50
+// PC 0x00486200
 static RenderVertexC* GetWalkMeshColors()
 {
 #ifdef _XBOX
@@ -443,7 +443,7 @@ static RenderVertexC* GetWalkMeshColors()
     return (RenderVertexC*)colorarray;
 #endif
 }
-// PC 0x0046F300  Xbox 0x002AEE50
+// PC 0x00486300
 static RenderVertexC* GetInverseWalkMeshColors()
 {
 #ifdef _XBOX
@@ -477,7 +477,7 @@ static RenderVertexC* GetInverseWalkMeshColors()
     return (RenderVertexC*)colorarray;
 #endif
 }
-// PC 0x0046F410  Xbox 0x002AD5B0
+// PC 0x00486410
 bool StaticPartNeedsMat(PartTriMesh* pPart, MdlNodeTriMesh* pNode,
                         bool& bHasTileData, bool& bUnknown)
 {
@@ -505,7 +505,7 @@ bool StaticPartNeedsMat(PartTriMesh* pPart, MdlNodeTriMesh* pNode,
 
     return false;
 }
-// PC 0x00471500  Xbox 0x002AED00
+// PC 0x00489B10
 void PartAnimMesh::Draw(bool bRenderChildren)
 {
     VertexPrimitiveFlat* pPrimitive;
@@ -536,7 +536,7 @@ void PartAnimMesh::Draw(bool bRenderChildren)
 
 void Transform(const Vector& vPosition, const Quaternion& qOrientation,
                int nForce);
-// PC 0x00471560  Xbox 0x002AEF50
+// PC 0x00489B70
 void PartAABB::Draw(bool bRenderChildren)
 {
     if (renderaabb != 0)
@@ -612,7 +612,7 @@ static inline void SetVertexData4f(Aurora::AuroraStreamMode nStream, float fX, f
 static void SetVertexData4f(Aurora::AuroraStreamMode nStream,
                             float fX, float fY, float fZ, float fW);
 #endif
-void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00471860  Xbox 0x002AF210
+void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70
 {
     if (lightsaberrender != 0)
     {
@@ -945,7 +945,7 @@ static void SetVertexData4f(Aurora::AuroraStreamMode nStream,
     }
 #endif
 }
-// PC 0x004738C0  Xbox 0x002B1470
+// PC 0x0048E200
 void PartLight::Mat()
 {
     AURMODELRENDER_TRACE();
@@ -3165,7 +3165,7 @@ void RenderMotionBlurred(VertexPrimitiveFlat* pPrimitive)
 #endif
     GLRender_Disable(ENABLE_VERTEX_PROGRAM);
 }
-// PC 0x00476690  Xbox 0x002B4630
+// PC 0x00492190
 void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
 {
     if (currentscene == 0)
@@ -3414,7 +3414,7 @@ void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
 }
 
 #ifndef _XBOX
-void RenderNormalMapped(VertexPrimitiveFlat* pPrimitive)  // PC 0x00477050
+void RenderNormalMapped(VertexPrimitiveFlat* pPrimitive)  // PC 0x00492F00
 {
     MdlNodeTriMesh* pNode = 0;
     if (currentscene == 0)
@@ -3576,7 +3576,7 @@ void RenderNormalMapped(VertexPrimitiveFlat* pPrimitive)  // PC 0x00477050
 
 #ifdef _XBOX
 void RenderMotionBlurred(VertexPrimitiveFlat* pPrimitive);
-// PC 0x00477830  Xbox 0x002B50D0
+
 void PartTriMesh::Draw(bool bMotionBlurred)
 {
     if (rendertrimesh == 0 && AsPartDanglyMesh() == 0 && m_pAurObject != 0)
@@ -3679,7 +3679,7 @@ void PartTriMesh::Draw(bool bMotionBlurred)
     RestoreModelviewMatrix();
 }
 #else
-void PartTriMesh::Draw(bool bRenderChildren)  // PC 0x00477830  Xbox 0x002B50D0
+void PartTriMesh::Draw(bool bRenderChildren)  // PC 0x00493A30
 {
     if (rendertrimesh == 0 && AsPartDanglyMesh() == 0 && m_pAurObject != 0)
     {
@@ -3785,7 +3785,7 @@ void PartTriMesh::Draw(bool bRenderChildren)  // PC 0x00477830  Xbox 0x002B50D0
     RestoreModelviewMatrix();
 }
 #endif
-// PC 0x00477B60  Xbox 0x002B54D0
+// PC 0x00493F70
 void PartDanglyMesh::Draw(bool bRenderChildren)
 {
     if (renderdangly != 0)
@@ -3794,7 +3794,7 @@ void PartDanglyMesh::Draw(bool bRenderChildren)
         PartTriMesh::Draw(bRenderChildren);
     }
 }
-// PC 0x00477B90  Xbox 0x002B5500
+
 void PartSkin::Project(const Vector& vPosition, float fDistance,
                        const Plane& plane, CAurShadowData* pShadowData)
 {
@@ -3876,7 +3876,7 @@ void PartSkin::Project(const Vector& vPosition, float fDistance,
         STENCIL_KEEP);
     m_pVertexPrimitive->AsVertexPrimitiveSkinned();
 }
-// PC 0x00478260  Xbox 0x002B5D90
+// PC 0x00494C50
 void Gob::Render(bool bRenderLast)
 {
     if (!enablegobrender)
@@ -3959,7 +3959,7 @@ void Gob::Render(bool bRenderLast)
 void Part::Mat()
 {
 }
-// PC 0x0063CFC0
+// PC 0x00693D50
 void Part::Project(const Vector& vPoint, float fDistance, const Plane& cPlane,
                    CAurShadowData* pShadowData)
 {
@@ -3970,7 +3970,7 @@ static inline void AurmodelrenderTrace1()
 }
 
 #ifdef _XBOX
-// Xbox 0x002B26F0
+
 void Gob::RenderVisibilityBounds()
 {
     GLRender_Disable(ENABLE_CULL_FACE);
@@ -3994,7 +3994,7 @@ void Gob::RenderVisibilityBounds()
 
 #ifdef _XBOX
 Gob* FindGob(char* sName);
-// Xbox 0x002AD420
+
 char* setspecularexponent(char* sArguments)
 {
     int nExponent = atoi(sArguments);
@@ -4005,7 +4005,7 @@ char* setspecularexponent(char* sArguments)
     bmspecularexponent = nExponent;
     return "Okey dokey.";
 }
-// Xbox 0x002AD4D0
+
 char* turnoffshadows(char* sArguments)
 {
     static char sResult[256];
@@ -4025,7 +4025,7 @@ char* turnoffshadows(char* sArguments)
     pGob->TurnOffShadows();
     return "Success, shadowing turned off for specified gob.";
 }
-// Xbox 0x002AD540
+
 char* turnonshadows(char* sArguments)
 {
     static char sResult[256];
@@ -4045,7 +4045,7 @@ char* turnonshadows(char* sArguments)
     pGob->TurnOnShadows();
     return "Success, shadowing turned on for specified gob.";
 }
-// Xbox 0x002AD790
+
 char* setpersonalradius(char* sArguments)
 {
     char sName[64];
@@ -4060,7 +4060,7 @@ char* setpersonalradius(char* sArguments)
     pGob->m_fPersonalSpaceRadius = fRadius;
     return "done";
 }
-// Xbox 0x002AD7F0
+
 char* setcreatureradius(char* sArguments)
 {
     char sName[64];
@@ -4075,7 +4075,7 @@ char* setcreatureradius(char* sArguments)
     pGob->m_fPersonalSpaceRadius2 = fRadius;
     return "done";
 }
-// Xbox 0x002AD850
+
 char* setpath(char* sArguments)
 {
     char sName[64];
@@ -4090,7 +4090,7 @@ char* setpath(char* sArguments)
     pGob->m_PathInfo.m_pfCoordinates = testpath;
     return "done";
 }
-// Xbox 0x002B27A0
+
 static void SetPartAlpha(Part* pPart, float fAlpha)
 {
     if (pPart->AsPartTriMesh())
@@ -4102,7 +4102,7 @@ static void SetPartAlpha(Part* pPart, float fAlpha)
         SetPartAlpha(pPart->m_lstChildren[i], fAlpha);
     }
 }
-// Xbox 0x002B27F0
+
 char* setalpha(char* sArguments)
 {
     char sName[64];
@@ -4117,7 +4117,7 @@ char* setalpha(char* sArguments)
     SetPartAlpha(pGob->m_pRootPart, fAlpha);
     return "done";
 }
-// Xbox 0x002B5C80
+
 char* setenvironmentmap(char* sArguments)
 {
     static char sResult[256];

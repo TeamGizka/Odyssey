@@ -60,7 +60,7 @@ public:
 #ifdef _XBOX
     int IndexOf(T item);
 #else
-    int IndexOf(T item)  // Xbox 0x00295900
+    int IndexOf(T item)
     {
         for (int i = 0; i < m_nCount; i++)
         {
@@ -73,7 +73,7 @@ public:
         return -1;
     }
 #endif
-    // PC 0x00437C40
+    // PC 0x00448F20
     T& operator[](int nIndex)
     {
         return m_pList[nIndex];
@@ -82,7 +82,7 @@ public:
 #ifdef _XBOX
     int Contains(T item);
 #else
-    int Contains(T item)  // PC 0x004AF240  Xbox 0x002D7B50
+    int Contains(T item)  // PC 0x004DD480
     {
         int nFound = 0;
         for (int i = 0; i < m_nCount; i++)
@@ -113,7 +113,7 @@ template <class T> List<T>::List(List<T>& other)
         Add(other.m_pList[i]);
     }
 }
-// PC 0x004AF240  Xbox 0x002D7B50
+
 template <class T> int List<T>::Contains(T item)
 {
     int nFound = 0;
@@ -126,7 +126,7 @@ template <class T> int List<T>::Contains(T item)
     }
     return nFound;
 }
-// Xbox 0x00295900
+
 template <class T> int List<T>::IndexOf(T item)
 {
     for (int i = 0; i < m_nCount; i++)
@@ -158,7 +158,7 @@ template <class T> List<T>::~List()
         delete[] m_pList;
     }
 }
-// PC 0x00445080
+// PC 0x004673E0
 template <class T> void List<T>::Remove(T item)
 {
     int i;
@@ -219,7 +219,7 @@ template <class T> List<T>& List<T>::operator=(List<T>& other)
     }
     return *this;
 }
-// PC 0x0046BD10  Xbox 0x002BA4E0
+
 template <class T> void List<T>::AddUnique(T item)
 {
     if (!Contains(item))

@@ -16,7 +16,7 @@
 #include "exoinput.h"
 #include "exoinputinternal.h"
 #include "swguiinOPTKeyMapping.h"
-// PC 0x00674B40  Xbox 0x0006B920
+// PC 0x0069F0D0
 unsigned char CSWTlkTable::GetObjectGender()
 {
     if (m_pObject != 0 && m_pObject->AsSWCObject() != 0 &&
@@ -27,7 +27,7 @@ unsigned char CSWTlkTable::GetObjectGender()
     }
     return CTlkTable::GENDER_MALE;
 }
-// PC 0x00674B90  Xbox 0x0006B970
+// PC 0x0069F130
 void CSWTlkTable::GetTokenValue(const CTlkTableToken& token, CExoString& sValue)
 {
     STR_RES strRes;

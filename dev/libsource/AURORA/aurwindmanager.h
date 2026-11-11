@@ -18,7 +18,7 @@ public:
     PointSourceWind(Vector vPosition, float fParameter0, float fParameter1,
                     float fParameter2);
 #else
-    PointSourceWind(Vector vPosition, float fParameter0, float fParameter1,  // Xbox 0x002F5C50
+    PointSourceWind(Vector vPosition, float fParameter0, float fParameter1,
                     float fParameter2)
         : m_vPosition(vPosition),
           m_fParameter0(fParameter0),

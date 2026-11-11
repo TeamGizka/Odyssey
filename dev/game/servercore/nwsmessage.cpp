@@ -6,7 +6,7 @@
 #include "exotlktable.h"
 #include "gameobjectarray.h"
 #include "nwmessage.h"
-// PC 0x00578540  Xbox 0x00242EB0
+// PC 0x005A0AF0
 unsigned long CSWSMessage::ReadOBJECTIDServer()
 {
     unsigned long nOldIndex = m_nReadIndex;
@@ -25,7 +25,7 @@ unsigned long CSWSMessage::ReadOBJECTIDServer()
     m_nReadIndex = nNewIndex;
     return oidObject;
 }
-// PC 0x00578570  Xbox 0x00242EE0
+// PC 0x005A0B20
 void CSWSMessage::WriteOBJECTIDServer(unsigned long oidObject)
 {
     if (m_nWriteIndex + 4 > m_nWriteBufferSize)
@@ -41,7 +41,7 @@ void CSWSMessage::WriteOBJECTIDServer(unsigned long oidObject)
     m_nWriteIndex += 4;
     m_nTotalBytesWritten += 4;
 }
-// PC 0x005785C0  Xbox 0x00242F30
+// PC 0x005A0B70
 void CSWSMessage::WriteCExoLocStringServer(CExoLocString& lsString,
                                            unsigned char nGender)
 {
@@ -120,7 +120,7 @@ void CSWSMessage::WriteCExoLocStringServer(CExoLocString& lsString,
         WriteCExoString(sString, 32);
     }
 }
-// PC 0x00578870  Xbox 0x00243100
+// PC 0x005A0E70
 int CSWSMessage::GetLocStringServer(unsigned long nPlayerId,
                                     CExoLocString& lsFirst,
                                     CExoLocString& lsSecond,
@@ -150,7 +150,7 @@ int CSWSMessage::GetLocStringServer(unsigned long nPlayerId,
     }
     return 1;
 }
-// PC 0x00578A20  Xbox 0x002432B0
+// PC 0x005A1020
 int CSWSMessage::GetLocStringServerTime(unsigned long nPlayerId,
                                         CExoLocString& lsString,
                                         CExoString& sResult, float& fTime,

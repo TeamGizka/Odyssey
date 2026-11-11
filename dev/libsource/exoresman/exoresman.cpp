@@ -16,7 +16,7 @@ int g_nResRefUnused = 0;
 int CResRef::s_nCurBufferIndex = 0;
 
 static inline void ExoresmanTrace1();
-// PC 0x00405ED0  Xbox 0x0013DDD0
+// PC 0x00405F70
 CResRef::CResRef()
 {
     for (unsigned int i = 0; i < 16; ++i)
@@ -24,7 +24,7 @@ CResRef::CResRef()
         m_resRef[i] = 0;
     }
 }
-// PC 0x00405EF0  Xbox 0x0013DDF0
+// PC 0x00405F90
 CResRef::CResRef(unsigned char* pResRef, unsigned char nLength)
 {
     if (pResRef)
@@ -41,27 +41,27 @@ CResRef::CResRef(unsigned char* pResRef, unsigned char nLength)
         }
     }
 }
-// PC 0x00406D60  Xbox 0x0013F5E0
+// PC 0x00406EA0
 CResRef::CResRef(const CExoString& sString)
 {
     *this = sString;
 }
-// PC 0x00406D80  Xbox 0x0013F600
+// PC 0x00406EC0
 CResRef::CResRef(char* pString)
 {
     *this = pString;
 }
-// PC 0x00406DA0  Xbox 0x0013F620
+// PC 0x00406EE0
 CResRef::CResRef(unsigned char* pResRef)
 {
     *this = pResRef;
 }
-// PC 0x00406DC0  Xbox 0x0013F640
+// PC 0x00406F00
 int CResRef::operator!=(const CResRef& other) const
 {
     return !(*this == other);
 }
-// PC 0x00406DE0  Xbox 0x0013F660
+
 int CResRef::operator!=(const CExoString& sString) const
 {
     ExoresmanTrace1();
@@ -75,19 +75,19 @@ int CResRef::operator!=(const CExoString& sString) const
     }
     return memcmp(pString, m_resRef, nLength) != 0;
 }
-// PC 0x00641DB0
+// PC 0x00698BD0
 unsigned char* CResRef::GetResRef() const
 {
     return (unsigned char*)m_resRef;
 }
 
 #ifndef _XBOX
-int CExoResMan::FindModuleDownloadedPkg(const CExoString& sModuleName)  // PC 0x0063E7C0  Xbox 0x00142280
+int CExoResMan::FindModuleDownloadedPkg(const CExoString& sModuleName)  // PC 0x006955A0
 {
     return 0;
 }
 #endif
-// PC 0x00408670  Xbox 0x001413A0
+// PC 0x004088D0
 CExoResMan::~CExoResMan()
 {
     m_bExitAsyncThread = 1;
@@ -99,28 +99,28 @@ CExoResMan::~CExoResMan()
         CloseHandle(m_hAsyncThread);
     }
 }
-// PC 0x004087A0  Xbox 0x001414C0
+// PC 0x00408A00
 int CExoResMan::AddEncapsulatedResourceFile(const CExoString& sFileName,
                                             unsigned long nId)
 {
     return AddKeyTable(sFileName, TABLE_ENCAPSULATED, nId);
 }
-// PC 0x004087C0  Xbox 0x001414E0
+// PC 0x00408A20
 void CExoResMan::AddResourceImageFile(const CExoString& sFileName)
 {
     AddKeyTable(sFileName, TABLE_RESOURCE_IMAGE, 0);
 }
-// PC 0x004087E0  Xbox 0x00141500
+// PC 0x00408A40
 void CExoResMan::AddFixedKeyTableFile(const CExoString& sFileName)
 {
     AddKeyTable(sFileName, TABLE_KEY, 0);
 }
-// PC 0x00408800  Xbox 0x00141520
+// PC 0x00408A60
 void CExoResMan::AddResourceDirectory(const CExoString& sFileName)
 {
     AddKeyTable(sFileName, TABLE_DIRECTORY, 0);
 }
-// PC 0x00406E20  Xbox 0x0013F6A0
+// PC 0x00406F20
 int CExoResMan::AddKeyTable(const CExoString& sFileName, unsigned long nType,
                             unsigned long nId)
 {
@@ -234,32 +234,32 @@ int CExoResMan::AddKeyTable(const CExoString& sFileName, unsigned long nType,
 
     return bResult;
 }
-// PC 0x00408820  Xbox 0x00141540
+// PC 0x00408A80
 int CExoResMan::RemoveEncapsulatedResourceFile(const CExoString& sFileName)
 {
     return RemoveKeyTable(sFileName, TABLE_ENCAPSULATED);
 }
-// PC 0x00408830  Xbox 0x00141550
+// PC 0x00408A90
 int CExoResMan::RemoveResourceImageFile(const CExoString& sFileName)
 {
     return RemoveKeyTable(sFileName, TABLE_RESOURCE_IMAGE);
 }
-// PC 0x004088C0  Xbox 0x00141560
+// PC 0x00408B20
 int CExoResMan::RemoveFixedKeyTableFile(const CExoString& sFileName)
 {
     return RemoveKeyTable(sFileName, TABLE_KEY);
 }
-// PC 0x004088D0  Xbox 0x00141570
+// PC 0x00408B30
 int CExoResMan::RemoveResourceDirectory(const CExoString& sFileName)
 {
     return RemoveKeyTable(sFileName, TABLE_DIRECTORY);
 }
-// PC 0x004088E0  Xbox 0x00141580
+// PC 0x00408B40
 int CExoResMan::UpdateResourceDirectory(const CExoString& sFileName)
 {
     return UpdateKeyTable(sFileName, 2);
 }
-// PC 0x004088F0  Xbox 0x00141590
+// PC 0x00408B50
 int CExoResMan::CancelRequest(CRes* pRes)
 {
     if (pRes == NULL)
@@ -332,7 +332,7 @@ int CExoResMan::CancelRequest(CRes* pRes)
 
     return pRes->m_nRequestCount;
 }
-// PC 0x004089F0  Xbox 0x00142EA0
+// PC 0x00408C50
 void* CExoResMan::Demand(CRes* pRes)
 {
     CExoLinkedListNode* pPos;
@@ -430,7 +430,7 @@ void* CExoResMan::Demand(CRes* pRes)
 
     return NULL;
 }
-// PC 0x00408B90  Xbox 0x00141690
+// PC 0x00408DF0
 void CExoResMan::Dump(CRes* pRes, int bFlag)
 {
     if (pRes != NULL)
@@ -445,7 +445,7 @@ void CExoResMan::Dump(CRes* pRes, int bFlag)
         }
     }
 }
-// PC 0x00408BC0  Xbox 0x001416C0
+// PC 0x00408E20
 int CExoResMan::Exists(const CResRef& cResRef, unsigned short nType,
                        unsigned long* pnTableType)
 {
@@ -461,7 +461,7 @@ int CExoResMan::Exists(const CResRef& cResRef, unsigned short nType,
 
     return bExists;
 }
-// PC 0x00408C00  Xbox 0x00141700
+// PC 0x00408E60
 int CExoResMan::Exists(const CResRef& cResRef, unsigned short nType,
                        unsigned long nTableType)
 {
@@ -493,7 +493,7 @@ int CExoResMan::Exists(const CResRef& cResRef, unsigned short nType,
 
     return 0;
 }
-// PC 0x00408C60  Xbox 0x00141760
+// PC 0x00408EC0
 CExoStringList* CExoResMan::GetResOfType(unsigned short nType, CRes* pRes)
 {
     EXOXBOXASSERT(pRes);
@@ -507,7 +507,7 @@ CExoStringList* CExoResMan::GetResOfType(unsigned short nType, CRes* pRes)
 
     return pList;
 }
-// PC 0x00408C90  Xbox 0x001417A0
+// PC 0x00408EF0
 int CExoResMan::Release(CRes* pRes)
 {
     if (pRes == NULL)
@@ -556,7 +556,7 @@ int CExoResMan::Release(CRes* pRes)
 
     return 0;
 }
-// PC 0x00408D40  Xbox 0x00141B40
+// PC 0x00408FA0
 void CExoResMan::Update(unsigned long nTime)
 {
     int bStarted;
@@ -630,7 +630,7 @@ void CExoResMan::Update(unsigned long nTime)
         }
     }
 }
-// PC 0x00408E30  Xbox 0x00141C30
+// PC 0x00409090
 int CExoResMan::ReadRaw(CRes* pRes, int nSize, char* pBuffer)
 {
     int bResult;
@@ -653,7 +653,7 @@ int CExoResMan::ReadRaw(CRes* pRes, int nSize, char* pBuffer)
 
     return bResult;
 }
-// PC 0x00408E90  Xbox 0x00141C90
+// PC 0x004090F0
 int CExoResMan::WipeDirectory(const CExoString& sPath, int bDeleteFiles,
                               int bRemoveDirectory, int bRecurseClean,
                               int bRecurse)
@@ -742,20 +742,20 @@ int CExoResMan::WipeDirectory(const CExoString& sPath, int bDeleteFiles,
 
     return bResult;
 }
-// PC 0x00409460  Xbox 0x00142240
+// PC 0x004096A0
 int CExoResMan::CleanDirectory(const CExoString& sPath, int bRecurse,
                                int bRecurseClean)
 {
     return WipeDirectory(sPath, 1, 0, bRecurseClean, bRecurse);
 }
-// PC 0x00409480  Xbox 0x00142260
+// PC 0x004096C0
 int CExoResMan::NukeDirectory(const CExoString& sPath, int bDeleteFiles,
                               int bRecurse)
 {
     return WipeDirectory(sPath, bDeleteFiles, 1, 0, bRecurse);
 }
 #ifndef _XBOX
-void CExoResMan::AsyncLoad()  // PC 0x004094A0  Xbox 0x00142430
+void CExoResMan::AsyncLoad()  // PC 0x004096E0
 {
     CExoCriticalSection* pCriticalSection = &m_csAsync;
     pCriticalSection->EnterCriticalSection();
@@ -1000,32 +1000,32 @@ int CExoResMan::GetNewResRef(const CResRef& cResRef, unsigned short nType,
     }
     return bFound;
 }
-// PC 0x00409B00  Xbox 0x00142CC0
+// PC 0x00409E10
 void CRes::CancelRequest()
 {
     g_pExoResMan->CancelRequest(this);
 }
-// PC 0x00409B10  Xbox 0x00143080
+// PC 0x00409E20
 void* CRes::Demand()
 {
     return g_pExoResMan->Demand(this);
 }
-// PC 0x00409B20  Xbox 0x00142CD0
+// PC 0x00409E30
 int CRes::ReadRaw(int nSize, char* pBuffer)
 {
     return g_pExoResMan->ReadRaw(this, nSize, pBuffer);
 }
-// PC 0x00409B40  Xbox 0x00142CF0
+// PC 0x00409E50
 void CRes::Dump(int bFlag)
 {
     g_pExoResMan->Dump(this, bFlag);
 }
-// PC 0x00409B80  Xbox 0x00142D30
+// PC 0x00409E90
 int CRes::Release()
 {
     return g_pExoResMan->Release(this);
 }
-// PC 0x00409B90  Xbox 0x00142D40
+// PC 0x00409EA0
 void AsyncRimLoadThreadProc(void* pParameter)
 {
     while (g_pExoResMan != NULL)
@@ -1044,7 +1044,7 @@ void AsyncRimLoadThreadProc(void* pParameter)
 
     ExitThread(1);
 }
-// PC 0x00409BF0  Xbox 0x00142DA0
+// PC 0x00409F00
 CExoResMan::CExoResMan()
 {
     MEMORYSTATUS msStatus;
@@ -1084,7 +1084,7 @@ CExoResMan::CExoResMan()
         NULL, 0x10000, (LPTHREAD_START_ROUTINE)AsyncRimLoadThreadProc,
         &nParameter, CREATE_SUSPENDED, &m_nAsyncThreadId);
 }
-// PC 0x00409CF0  Xbox 0x00142FE0
+// PC 0x0040A000
 int CExoResMan::ReleaseResObject(CRes* pRes)
 {
     if (pRes != NULL)
@@ -1117,7 +1117,7 @@ int CExoResMan::ReleaseResObject(CRes* pRes)
 
     return 0;
 }
-// PC 0x00409D40  Xbox 0x00143030
+// PC 0x0040A050
 CRes::~CRes()
 {
     if (m_nDemandCount > 0)
@@ -1129,7 +1129,7 @@ CRes::~CRes()
         g_pExoResMan->Free(this);
     }
 }
-// PC 0x00407020  Xbox 0x0013F840
+// PC 0x00407120
 int CExoResMan::Free(CRes* pRes)
 {
     if (pRes == NULL || pRes->m_pResource == NULL)
@@ -1168,7 +1168,7 @@ int CExoResMan::Free(CRes* pRes)
 
     return 0;
 }
-// PC 0x004070A0  Xbox 0x0013F8C0
+// PC 0x004071A0
 int CExoResMan::FreeChunk()
 {
     unsigned long nFreed = 0;
@@ -1214,7 +1214,7 @@ int CExoResMan::FreeChunk()
 
     return nFreed > 0;
 }
-// PC 0x004071A0  Xbox 0x0013F970
+// PC 0x004072A0
 int CExoResMan::GetKeyEntryFromTable(CExoLinkedList<CExoKeyTable>& lstTables,
                                      const CResRef& cResRef,
                                      unsigned short nType,
@@ -1252,7 +1252,7 @@ int CExoResMan::GetKeyEntryFromTable(CExoLinkedList<CExoKeyTable>& lstTables,
 
     return 0;
 }
-// PC 0x00407230  Xbox 0x0013FA00
+// PC 0x00407330
 int CExoResMan::GetKeyEntry(const CResRef& cResRef, unsigned short nType,
                             CExoKeyTable** ppTable, CKeyTableEntry** ppEntry)
 {
@@ -1291,7 +1291,7 @@ int CExoResMan::GetKeyEntry(const CResRef& cResRef, unsigned short nType,
 
     return 0;
 }
-// PC 0x004072E0  Xbox 0x00140060
+// PC 0x004073E0
 CExoStringList* CExoResMan::GetResOfTypeFromTable(
     CExoLinkedList<CExoKeyTable>& lstTables, unsigned short nType)
 {
@@ -1329,7 +1329,7 @@ CExoStringList* CExoResMan::GetResOfTypeFromTable(
 
     return pList;
 }
-// PC 0x00407390  Xbox 0x00140110
+// PC 0x00407490
 CExoStringList* CExoResMan::GetResOfType(unsigned short nType,
                                          int bEncapsulatedOnly)
 {
@@ -1386,7 +1386,7 @@ CExoStringList* CExoResMan::GetResOfType(unsigned short nType,
 
     return GetResOfTypeFromTable(m_lstKeyTables, nType);
 }
-// PC 0x004074D0  Xbox 0x00140250
+// PC 0x004075D0
 CRes* CExoResMan::GetResObject(const CResRef& cResRef, unsigned short nType)
 {
     CExoKeyTable* pTable = NULL;
@@ -1456,7 +1456,7 @@ CRes* CExoResMan::GetResObject(const CResRef& cResRef, unsigned short nType)
 
     return NULL;
 }
-// PC 0x00407680  Xbox 0x00140400
+// PC 0x00407780
 void CExoResMan::SetResObject(const CResRef& cResRef, unsigned short nType,
                               CRes* pRes)
 {
@@ -1474,7 +1474,7 @@ void CExoResMan::SetResObject(const CResRef& cResRef, unsigned short nType,
         }
     }
 }
-// PC 0x004076E0  Xbox 0x00140460
+// PC 0x004077E0
 CExoKeyTable* CExoResMan::GetTable(CRes* pRes)
 {
     CExoLinkedList<CExoKeyTable>* pList;
@@ -1516,7 +1516,7 @@ CExoKeyTable* CExoResMan::GetTable(CRes* pRes)
 
     return NULL;
 }
-// PC 0x00407780  Xbox 0x00140500
+// PC 0x00407880
 int CExoResMan::GetTableCount(CRes* pRes, int bCountAll)
 {
     CExoKeyTable* pTable = GetTable(pRes);
@@ -1533,7 +1533,7 @@ int CExoResMan::GetTableCount(CRes* pRes, int bCountAll)
 
 int g_nContiguousResourceMemory;
 #endif
-// PC 0x004077B0  Xbox 0x00140530
+// PC 0x004078B0
 int CExoResMan::Malloc(CRes* pRes)
 {
     while ((int)pRes->m_nSize > m_nAvailableMemory && FreeChunk())
@@ -1591,7 +1591,7 @@ int CExoResMan::Malloc(CRes* pRes)
 
     return 1;
 }
-// PC 0x00407830  Xbox 0x00140620
+// PC 0x00407930
 int CExoResMan::RemoveKeyTable(const CExoString& sFileName, unsigned long nType)
 {
     CExoLinkedList<CExoKeyTable>* pList;
@@ -1638,7 +1638,7 @@ int CExoResMan::RemoveKeyTable(const CExoString& sFileName, unsigned long nType)
 
     return 0;
 }
-// PC 0x004078F0  Xbox 0x00141830
+// PC 0x004079F0
 int CExoResMan::ServiceFromDirectory(CRes* pRes, int bAsync)
 {
     CExoString sFullPath;
@@ -1742,7 +1742,7 @@ int CExoResMan::ServiceFromDirectory(CRes* pRes, int bAsync)
 
     return 0;
 }
-// PC 0x00407BD0  Xbox 0x001406F0
+// PC 0x00407DE0
 int CExoResMan::ServiceFromEncapsulated(CRes* pRes, int bAsync)
 {
     if (pRes == NULL)
@@ -1824,7 +1824,7 @@ int CExoResMan::ServiceFromEncapsulated(CRes* pRes, int bAsync)
 
     return 0;
 }
-// PC 0x00407D50  Xbox 0x00140860
+// PC 0x00407F60
 int CExoResMan::ServiceFromImage(CRes* pRes, int bAsync)
 {
     if (pRes == NULL)
@@ -1866,7 +1866,7 @@ int CExoResMan::ServiceFromImage(CRes* pRes, int bAsync)
 
     return 0;
 }
-// PC 0x00407E00  Xbox 0x00140910
+// PC 0x00408010
 int CExoResMan::ServiceFromResFile(CRes* pRes, int bAsync)
 {
     if (pRes == NULL)
@@ -1968,7 +1968,7 @@ int CExoResMan::ServiceFromResFile(CRes* pRes, int bAsync)
 
     return 0;
 }
-// PC 0x00407FE0  Xbox 0x00140AF0
+// PC 0x004081F0
 int CExoResMan::UpdateKeyTable(const CExoString& sFileName, unsigned long nType)
 {
     CExoLinkedList<CExoKeyTable>* pList;
@@ -2012,7 +2012,7 @@ int CExoResMan::UpdateKeyTable(const CExoString& sFileName, unsigned long nType)
 
     return 0;
 }
-// PC 0x00408080  Xbox 0x00140B90
+// PC 0x00408290
 int CExoResMan::ServiceFromDirectoryRaw(CRes* pRes, int nSize, char* pBuffer)
 {
     CExoString sFullPath;
@@ -2070,7 +2070,7 @@ int CExoResMan::ServiceFromDirectoryRaw(CRes* pRes, int nSize, char* pBuffer)
 
     return 0;
 }
-// PC 0x00405F70  Xbox 0x0013DE70
+// PC 0x00406010
 void CResRef::CopyToString(CExoString& sString) const
 {
     char szResRef[17];
@@ -2079,13 +2079,13 @@ void CResRef::CopyToString(CExoString& sString) const
     szResRef[16] = 0;
     sString = szResRef;
 }
-// PC 0x00405FB0  Xbox 0x0013DEB0
+// PC 0x00406050
 void CResRef::CopyToString(char* pString) const
 {
     memcpy(pString, m_resRef, 16);
     pString[16] = 0;
 }
-// PC 0x00405FE0  Xbox 0x0013DEE0
+// PC 0x00406080
 char* CResRef::GetResRefStr() const
 {
     s_nCurBufferIndex = (s_nCurBufferIndex + 1) % 4;
@@ -2093,12 +2093,12 @@ char* CResRef::GetResRefStr() const
     RETURN_BUFFERS[s_nCurBufferIndex][16] = 0;
     return RETURN_BUFFERS[s_nCurBufferIndex];
 }
-// PC 0x00406030  Xbox 0x0013DF30
+// PC 0x004060D0
 int CResRef::IsValid() const
 {
     return m_resRef[0] != 0;
 }
-// PC 0x00406040  Xbox 0x0013DF40
+// PC 0x004060E0
 unsigned char CResRef::GetLength() const
 {
     unsigned char nLength = 0;
@@ -2108,7 +2108,7 @@ unsigned char CResRef::GetLength() const
     }
     return nLength;
 }
-// PC 0x00406060  Xbox 0x0013DF60
+// PC 0x00406100
 int CResRef::operator!=(char* pString) const
 {
     for (unsigned int i = 0; i < 16; ++i)
@@ -2125,12 +2125,12 @@ int CResRef::operator!=(char* pString) const
     }
     return 0;
 }
-// PC 0x004060B0  Xbox 0x0013DFB0
+// PC 0x00406150
 int CResRef::operator==(const CResRef& other) const
 {
     return memcmp(other.m_resRef, m_resRef, 16) == 0;
 }
-// PC 0x004060D0  Xbox 0x0013DFD0
+// PC 0x00406170
 int CResRef::operator==(char* pString) const
 {
     for (unsigned int i = 0; i < 16; ++i)
@@ -2147,7 +2147,7 @@ int CResRef::operator==(char* pString) const
     }
     return 1;
 }
-// PC 0x00406120  Xbox 0x0013E020
+// PC 0x004061C0
 CResRef CResRef::operator=(const CResRef& other)
 {
     for (unsigned int i = 0; i < 16; ++i)
@@ -2156,7 +2156,7 @@ CResRef CResRef::operator=(const CResRef& other)
     }
     return *this;
 }
-// PC 0x00406170  Xbox 0x0013E070
+// PC 0x00406210
 CResRef CResRef::operator=(unsigned char* pResRef)
 {
     memcpy(m_resRef, pResRef, 16);
@@ -2171,7 +2171,7 @@ CResRef CResRef::operator=(unsigned char* pResRef)
     }
     return *this;
 }
-// PC 0x004061F0  Xbox 0x0013E0F0
+// PC 0x004062D0
 CResRef CResRef::operator=(const CExoString& sString)
 {
     unsigned int nLength = sString.GetLength();
@@ -2195,7 +2195,7 @@ CResRef CResRef::operator=(const CExoString& sString)
 
     return *this;
 }
-// PC 0x00406290  Xbox 0x0013E190
+// PC 0x00406380
 CResRef CResRef::operator=(char* pString)
 {
     for (unsigned int i = 0; i < 16; ++i)
@@ -2216,7 +2216,7 @@ CResRef CResRef::operator=(char* pString)
     }
     return *this;
 }
-// PC 0x00406300  Xbox 0x0013E210
+// PC 0x004063F0
 CResRef CResRef::operator+=(const CExoString& sString)
 {
     CExoString sTemp;
@@ -2240,7 +2240,7 @@ CResRef CResRef::operator+=(const CExoString& sString)
     }
     return *this;
 }
-// PC 0x00406460  Xbox 0x0013E370
+// PC 0x00406560
 CRes::CRes()
 {
     m_nDemandCount = 0;
@@ -2254,28 +2254,28 @@ CRes::CRes()
     m_bAllocSuffix = 0;
     m_nFlags = 0;
 }
-// PC 0x004064A0
+// PC 0x004065B0
 void* CRes::GetData()
 {
     return m_pResource;
 }
-// PC 0x00644760  Xbox 0x0001C8A0
+// PC 0x00406600
 unsigned long CRes::GetSize()
 {
     return m_nSize;
 }
-// PC 0x004064B0  Xbox 0x0013E3A0
+// PC 0x004065C0
 int CRes::GetDemands()
 {
     return m_nDemandCount;
 }
-// PC 0x004064C0  Xbox 0x0013E3B0
+// PC 0x004065D0
 void CRes::GetResRef(CResRef& cResRef, unsigned short& nType)
 {
     cResRef = m_pKeyEntry->m_resRef;
     nType = m_pKeyEntry->m_nType;
 }
-// PC 0x004064F0  Xbox 0x0013E3E0
+// PC 0x00406610
 void CExoResMan::AddResourceImageFilesAsync(const CExoString& sModuleName,
                                             int bIsModule, int bFromCurrentGame)
 {
@@ -2295,7 +2295,7 @@ void CExoResMan::AddResourceImageFilesAsync(const CExoString& sModuleName,
 
     m_csAsync.LeaveCriticalSection();
 }
-// PC 0x00406540  Xbox 0x0013E430
+// PC 0x00406660
 void CExoResMan::FreeResourceData(CRes* pRes)
 {
     if (pRes != NULL)
@@ -2347,7 +2347,7 @@ void CExoResMan::FreeResourceData(CRes* pRes)
         }
     }
 }
-// PC 0x004065A0  Xbox 0x0013E4E0
+// PC 0x004066C0
 void CExoResMan::GetResRefFromFile(CResRef& cResRef,
                                    const CExoString& sFileName)
 {
@@ -2367,7 +2367,7 @@ void CExoResMan::GetResRefFromFile(CResRef& cResRef,
         cResRef = sFileName.SubString(0, nDot);
     }
 }
-// PC 0x00406650  Xbox 0x0013E590
+// PC 0x00406770
 unsigned short CExoResMan::GetResTypeFromFile(const CExoString& sFileName)
 {
     CExoString sExtension;
@@ -2383,7 +2383,7 @@ unsigned short CExoResMan::GetResTypeFromFile(const CExoString& sFileName)
 
     return g_pExoBase->GetResTypeFromExtension(sExtension);
 }
-// PC 0x00406720  Xbox 0x0013E660
+// PC 0x00406840
 int CExoResMan::GetIsStaticType(unsigned short nType)
 {
     switch (nType)
@@ -2410,7 +2410,7 @@ int CExoResMan::GetIsStaticType(unsigned short nType)
 
     return 0;
 }
-// PC 0x004067B0  Xbox 0x0013E6F0
+// PC 0x004068D0
 int CExoResMan::GetFreeDiskSpace(const CExoString& sPath,
                                  unsigned __int64* pnFreeBytes)
 {
@@ -2453,7 +2453,7 @@ int CExoResMan::GetFreeDiskSpace(const CExoString& sPath,
 
     return bResult;
 }
-// PC 0x004068C0  Xbox 0x0013E7F0
+// PC 0x004069F0
 int CExoResMan::CreateDirectory2(const CExoString& sPath)
 {
     CExoString sFullPath;
@@ -2467,7 +2467,7 @@ int CExoResMan::CreateDirectory2(const CExoString& sPath)
 
     return CreateDirectoryA(sFullPath.CStr(), NULL);
 }
-// PC 0x00406990  Xbox 0x0013E8C0
+// PC 0x00406AD0
 int CExoResMan::FileCopy(const CExoString& sSource, const CExoString& sDest,
                          unsigned short nSourceType, unsigned short nDestType)
 {
@@ -2499,7 +2499,7 @@ int CExoResMan::FileCopy(const CExoString& sSource, const CExoString& sDest,
 
     return 0;
 }
-// PC 0x00406B20  Xbox 0x0013EA60
+// PC 0x00406C60
 int CExoResMan::RemoveFile(const CExoString& sFileName, unsigned short nType)
 {
     CExoString sFullPath;
@@ -2537,7 +2537,7 @@ int CExoResMan::RemoveFile(const CExoString& sFileName, unsigned short nType)
 #include "aurgui.h"
 
 void AurFlushPostedStrings();
-// Xbox 0x0013EB30
+
 void CExoResMan::ReportMissingFile(const CExoString& sFileName,
                                    unsigned short nType, int bFatal)
 {
@@ -2585,7 +2585,7 @@ void CExoResMan::ReportMissingFile(const CExoString& sFileName,
 #ifdef _XBOX
 
 #define SIGNATURE_BUFFER_SIZE 0x10000
-// Xbox 0x0013ED90
+
 int CExoResMan::CreateSignatureFile(const CExoString& sFileName,
                                     unsigned short nType, unsigned long nSize,
                                     unsigned char* pSignature,
@@ -2646,7 +2646,7 @@ int CExoResMan::CreateSignatureFile(const CExoString& sFileName,
     }
     return bResult;
 }
-// Xbox 0x0013EF30
+
 int CExoResMan::VerifySignatureFile(const CExoString& sFileName,
                                     const unsigned char* pSignature)
 {
@@ -2671,7 +2671,7 @@ int CExoResMan::VerifySignatureFile(const CExoString& sFileName,
     }
     return 0;
 }
-// Xbox 0x0013F080
+
 void CExoResMan::WriteSignatureFile(const CExoString& sFileName,
                                     const unsigned char* pSignature)
 {
@@ -2682,7 +2682,7 @@ void CExoResMan::WriteSignatureFile(const CExoString& sFileName,
         delete pFile;
     }
 }
-// PC 0x00406C70  Xbox 0x0013F140
+
 CExoString CExoResMan::CacheResource(const CExoString& sFileName,
                                      unsigned short nType, int& nResult)
 {
@@ -2775,14 +2775,14 @@ CExoString CExoResMan::CacheResource(const CExoString& sFileName,
 #endif
 
 #ifndef _XBOX
-int CExoResMan::CreateSignatureFile(const CExoString& sFileName,  // PC 0x00406C60  Xbox 0x00141220
+int CExoResMan::CreateSignatureFile(const CExoString& sFileName,  // PC 0x00406DA0
                                     unsigned short nType, unsigned long nArg3,
                                     unsigned long nArg4)
 {
     return 1;
 }
 #endif
-// Xbox 0x0013FAB0
+
 int CExoResMan::GetResourcesInMemory(int* pnResources, int* pnKeys,
                                      int* pnServicedSize, int* pnImageSize,
                                      int* pnModelSize, int* pnModelDataSize,
@@ -3057,7 +3057,7 @@ int CExoResMan::GetResourcesInMemory(int* pnResources, int* pnKeys,
 
     return nTotal;
 }
-// PC 0x004082D0  Xbox 0x00140DE0
+// PC 0x004084E0
 int CExoResMan::ServiceFromEncapsulatedRaw(CRes* pRes, int nSize, char* pBuffer)
 {
     if (pRes == NULL)
@@ -3099,7 +3099,7 @@ int CExoResMan::ServiceFromEncapsulatedRaw(CRes* pRes, int nSize, char* pBuffer)
 
     return 0;
 }
-// PC 0x00408390  Xbox 0x00140EA0
+// PC 0x004085A0
 int CExoResMan::ServiceFromImageRaw(CRes* pRes, int nSize, char* pBuffer)
 {
     if (pRes == NULL)
@@ -3143,7 +3143,7 @@ int CExoResMan::ServiceFromImageRaw(CRes* pRes, int nSize, char* pBuffer)
 
     return 0;
 }
-// PC 0x00408450  Xbox 0x00140F60
+// PC 0x00408660
 int CExoResMan::ServiceFromResFileRaw(CRes* pRes, int nSize, char* pBuffer)
 {
     if (pRes == NULL)
@@ -3195,7 +3195,7 @@ int CExoResMan::ServiceFromResFileRaw(CRes* pRes, int nSize, char* pBuffer)
 
     return 0;
 }
-// PC 0x00408530  Xbox 0x00141040
+// PC 0x00408740
 int CExoResMan::ServiceCurrentAsyncRes()
 {
     int bServiced = 0;
@@ -3240,7 +3240,7 @@ int CExoResMan::ServiceCurrentAsyncRes()
 
     return bServiced;
 }
-// PC 0x004085F0  Xbox 0x00141320
+// PC 0x00408800
 CExoString CExoResMan::CacheResource(const CExoString& sFileName,
                                      unsigned short nType)
 {
@@ -3250,7 +3250,7 @@ CExoString CExoResMan::CacheResource(const CExoString& sFileName,
 }
 
 #ifndef _XBOX
-CExoString CExoResMan::CacheResource(const CExoString& sFileName,  // PC 0x00406C70  Xbox 0x0013F140
+CExoString CExoResMan::CacheResource(const CExoString& sFileName,  // PC 0x00406DB0
                                      unsigned short nType, int& nResult)
 {
     CExoString sCached(sFileName);
@@ -3258,7 +3258,7 @@ CExoString CExoResMan::CacheResource(const CExoString& sFileName,  // PC 0x00406
     return sCached;
 }
 #endif
-// PC 0x00408620  Xbox 0x00141350
+// PC 0x00408880
 int CRes::Request()
 {
     return g_pExoResMan->Request(this);
@@ -3270,7 +3270,7 @@ static inline void ExoresmanTrace1()
 
 #ifdef _XBOX
 #include "exotlktable.h"
-// Xbox 0x00141100
+
 int CExoResMan::VerifySignatureFile(const CExoString& sFileName,
                                     unsigned short nType, unsigned long nSize,
                                     unsigned long nFlags)
@@ -3295,7 +3295,7 @@ int CExoResMan::VerifySignatureFile(const CExoString& sFileName,
     }
     return bResult;
 }
-// PC 0x00406C60  Xbox 0x00141220
+
 int CExoResMan::CreateSignatureFile(const CExoString& sFileName,
                                     unsigned short nType, unsigned long nSize,
                                     unsigned long nFlags)
@@ -3318,7 +3318,7 @@ int CExoResMan::CreateSignatureFile(const CExoString& sFileName,
     }
     return bResult;
 }
-// PC 0x0063E7C0  Xbox 0x00142280
+
 int CExoResMan::FindModuleDownloadedPkg(const CExoString& sModuleName)
 {
     CExoString sAlias;
@@ -3346,7 +3346,7 @@ int CExoResMan::FindModuleDownloadedPkg(const CExoString& sModuleName)
 #endif
 
 #ifdef _XBOX
-// PC 0x004094A0  Xbox 0x00142430
+
 void CExoResMan::AsyncLoad()
 {
     CExoCriticalSection* pCriticalSection = &m_csAsync;

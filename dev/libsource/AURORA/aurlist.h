@@ -62,7 +62,7 @@ public:
         return -1;
     }
 #endif
-    // PC 0x00437C40
+    // PC 0x00448F20
     T& operator[](int nIndex)
     {
         return m_pList[nIndex];
@@ -128,7 +128,7 @@ template <class T> int List<T>::IndexOf(T item)
     return -1;
 }
 #endif
-template <class T> List<T>::List(int nAllocated)  // PC 0x00421FC0
+template <class T> List<T>::List(int nAllocated)
 {
     m_nCount = 0;
     m_nAllocated = 0;
@@ -146,7 +146,7 @@ template <class T> List<T>::~List()
         delete[] m_pList;
     }
 }
-// PC 0x00445080
+// PC 0x004673E0
 template <class T> void List<T>::Remove(T item)
 {
     int i;
@@ -197,7 +197,7 @@ template <class T> void List<T>::Add(T item)
     }
     m_pList[m_nCount++] = item;
 }
-// Xbox 0x002903D0
+
 template <class T> List<T>& List<T>::operator=(List<T>& other)
 {
     m_nCount = 0;
@@ -238,7 +238,7 @@ template <class T> void List<T>::Insert(T item, int nIndex)
         m_pList[nLast] = m_pList[nLast - 1];
     m_pList[nIndex] = item;
 }
-// Xbox 0x0028F970
+
 template <class T> void List<T>::DelIndex(int nIndex)
 {
     m_nCount--;

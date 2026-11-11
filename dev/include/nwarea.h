@@ -48,7 +48,7 @@ public:
 
     CSWArea();
     virtual ~CSWArea();
-    virtual int GetIsIDInExcludeList(unsigned long oidObject,  // PC 0x00409EB0
+    virtual int GetIsIDInExcludeList(unsigned long oidObject,  // PC 0x0040A2D0
                                       CExoArrayList<CGameObject*>* pExcludeList)
     {
         return 0;
@@ -75,7 +75,7 @@ public:
                              const Vector& vMax);
     int RemoveStaticBoundingBox(unsigned long nId);
 
-    // PC 0x0063BFA0  Xbox 0x00095F80
+    // PC 0x00692C90
     CResRef GetDefaultEnvMap() { return m_cDefaultEnvMap; }
     int GetWidth() { return m_nWidth; }
     int GetHeight() { return m_nHeight; }

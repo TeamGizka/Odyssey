@@ -2,20 +2,20 @@
 #include "exobase.h"
 #include <stdio.h>
 #include <string.h>
-// PC 0x005EA540
+// PC 0x00635F30
 CExoIniInternal::CExoIniInternal()
 {
     m_sFile = "";
 }
-// PC 0x005EA5A0
+// PC 0x00635F90
 CFileSection::~CFileSection()
 {
 }
-// PC 0x005EA600
+// PC 0x00635FF0
 CFileSection::CFileSection()
 {
 }
-// PC 0x005EA650
+// PC 0x00636040
 void CExoIniInternal::Destroy()
 {
     while (m_lstSections.GetHeadPos())
@@ -35,7 +35,7 @@ void CExoIniInternal::Destroy()
 
     m_sFile = "";
 }
-// PC 0x005EA6C0
+// PC 0x006360B0
 int CExoIniInternal::ReadIniEntry(CExoString& sValue, const CExoString& sFile,
                                   const CExoString& sSection,
                                   const CExoString& sEntry)
@@ -155,7 +155,7 @@ int CExoIniInternal::ReadIniEntry(CExoString& sValue, const CExoString& sFile,
 
     return 0;
 }
-// PC 0x005EAB00
+// PC 0x006364F0
 int CExoIniInternal::WriteIniEntry(const CExoString& sValue,
                                    const CExoString& sFile,
                                    const CExoString& sSection,
@@ -367,7 +367,7 @@ int CExoIniInternal::WriteIniEntry(const CExoString& sValue,
 
     return 1;
 }
-// PC 0x005EB500
+// PC 0x00636EF0
 CExoIniInternal::~CExoIniInternal()
 {
     Destroy();

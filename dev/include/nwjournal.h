@@ -35,7 +35,7 @@ public:
     int m_nPlotIndex;
     int m_nPlanetID;
     int m_nXP;
-    // PC 0x005C53E0  Xbox 0x00070A50
+    // PC 0x00600790
     SJournalEntry()
         : m_nDate(-1),
           m_nTime(-1),
@@ -50,7 +50,7 @@ public:
         m_nPlotIndex = 0;
         m_nXP = 0;
     }
-    SJournalEntry* operator=(const SJournalEntry& entry)  // PC 0x005C5470  Xbox 0x00205CE0
+    SJournalEntry* operator=(const SJournalEntry& entry)  // PC 0x00600820
     {
         m_lsName = entry.m_lsName;
         m_lsText = entry.m_lsText;
@@ -68,10 +68,10 @@ public:
         m_nXP = entry.m_nXP;
         return this;
     }
-    ~SJournalEntry()  // PC 0x005C5500  Xbox 0x00023670
+    ~SJournalEntry()  // PC 0x006008B0
     {
     }
-    // PC 0x005C5560  Xbox 0x00077630
+    // PC 0x00600910
     SJournalEntry(const SJournalEntry& entry)
         : m_lsName(entry.m_lsName),
           m_lsText(entry.m_lsText),

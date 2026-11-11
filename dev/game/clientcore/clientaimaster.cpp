@@ -9,7 +9,7 @@ static unsigned __int64 g_starttime;
 static unsigned __int64 g_endtime;
 float g_AIModuleTime2 = 0;
 float g_AIObjectTime = 0;
-// PC 0x006047A0  Xbox 0x00034780
+// PC 0x00650780
 int CClientAIList::AddObject(CSWCObject* pObject)
 {
     CExoLinkedListNode* pPos = m_lstObjects.GetHeadPos();
@@ -32,7 +32,7 @@ int CClientAIList::AddObject(CSWCObject* pObject)
     }
     return 1;
 }
-// PC 0x00604810  Xbox 0x000347F0
+// PC 0x006507F0
 int CClientAIList::RemoveObject(CSWCObject* pObject)
 {
     CExoLinkedListNode* pPos = pObject->m_pAIListPos;
@@ -60,7 +60,7 @@ int CClientAIList::RemoveObject(CSWCObject* pObject)
     pObject->m_pAIListPos = NULL;
     return 0;
 }
-// PC 0x00604870  Xbox 0x00034850
+// PC 0x00650850
 CSWCObject* CClientAIList::GetNextObject()
 {
     if (m_lstObjects.GetHeadPos() == NULL)
@@ -82,7 +82,7 @@ CSWCObject* CClientAIList::GetNextObject()
         pGameObject != NULL ? pGameObject->AsSWCObject() : NULL;
     return pSWCObject;
 }
-// PC 0x006048C0  Xbox 0x000348A0
+// PC 0x006508C0
 int CClientAIMaster::UpdateState()
 {
     CSWCObject* pObject = m_aiList.GetNextObject();
@@ -115,17 +115,17 @@ int CClientAIMaster::UpdateState()
         (float)(int)(g_endtime - g_starttime) * 0.001f;
     return g_endtime - g_starttime;
 }
-// PC 0x00604A20  Xbox 0x00034A00
+// PC 0x00650A30
 int CClientAIMaster::AddObject(CSWCObject* pObject)
 {
     return m_aiList.AddObject(pObject);
 }
-// PC 0x00604A30  Xbox 0x00034A10
+// PC 0x00650A40
 int CClientAIMaster::RemoveObject(CSWCObject* pObject)
 {
     return m_aiList.RemoveObject(pObject);
 }
-// PC 0x00604A40  Xbox 0x00034A20
+// PC 0x00650A50
 CClientAIList::~CClientAIList()
 {
     while (m_lstObjects.GetHeadPos() != NULL)
@@ -137,15 +137,15 @@ CClientAIList::~CClientAIList()
         RemoveObject(pGameObject->AsSWCObject());
     }
 }
-// PC 0x00604B20  Xbox 0x00034B00
+// PC 0x00650B50
 CClientAIMaster::CClientAIMaster()
 {
 }
-// PC 0x00604B40  Xbox 0x00034B20
+// PC 0x00650B70
 CClientAIMaster::~CClientAIMaster()
 {
 }
-// PC 0x00604790
+// PC 0x00650770
 void CClientAIMaster::SetExoAppInternal(CClientExoAppInternal* pInternal)
 {
     m_pExoAppInternal = pInternal;

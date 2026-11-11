@@ -37,7 +37,7 @@ const float WATER_DAMPING = 0.025f;
 const float WATER_DIRECTION_OFFSET = 0.0f;
 const float WATER_WAVE_HEIGHT_MARGIN = 40.0f;
 const float WATER_SPEED = 1.0f;
-// PC 0x00462A70  Xbox 0x002CFC90
+// PC 0x00478C50
 TextureController::TextureController(CAurTexture* pTexture)
     : m_lstChannelScale(), m_lstChannelTranslate(0)
 {
@@ -49,7 +49,7 @@ TextureController::TextureController(CAurTexture* pTexture)
     m_fDistortAmplitude = 5.0f;
     m_fDistortSpeed = 1.0f;
 }
-// PC 0x00460CF0  Xbox 0x002CE560
+// PC 0x00476AB0
 TextureController::~TextureController()
 {
     if (m_pImage != NULL)
@@ -57,7 +57,7 @@ TextureController::~TextureController()
         delete[] m_pImage;
     }
 }
-// PC 0x00460D70  Xbox 0x002CE5D0
+// PC 0x00476B30
 unsigned char* TextureController::Distort(unsigned char* pHeight)
 {
     int nBPP = m_pTexture->GetBPP();
@@ -117,7 +117,7 @@ const float ARTURO_UPDATE_TIME = 0.03f;
 const float ARTURO_DAMPING = 0.0f;
 
 unsigned char TextureController::newimage[262144];
-// PC 0x0045FD70  Xbox 0x002CD330
+// PC 0x00475B20
 void TextureController::SetImage()
 {
     int nSize =
@@ -126,7 +126,7 @@ void TextureController::SetImage()
     m_pImage = new unsigned char[nSize];
     memcpy(m_pImage, m_pTexture->GetImage(), nSize);
 }
-// PC 0x0045FDD0  Xbox 0x002CD390
+// PC 0x00475B80
 void PerlinTextureController::Init()
 {
     int nSize;
@@ -143,7 +143,7 @@ void PerlinTextureController::Init()
     BuildPerlinImage(m_pPerlinImage, m_pTexture->GetWidth());
     BuildPerlinImage(m_pWorkImage, m_pTexture->GetWidth());
 }
-// PC 0x0045FE50  Xbox 0x002CD410
+// PC 0x00475C00
 void PerlinTextureController::BuildPerlinImage(unsigned char* pImage, int nSize)
 {
     int nImageSize = 4;
@@ -180,7 +180,7 @@ void PerlinTextureController::BuildPerlinImage(unsigned char* pImage, int nSize)
     }
     delete[] ppImages;
 }
-// PC 0x0045FF40  Xbox 0x002CD500
+// PC 0x00475CF0
 void WaterTextureController::Init()
 {
     int nWidth = m_nWaterWidth;
@@ -214,7 +214,7 @@ void WaterTextureController::Init()
     m_fForceAngle = 0.0f;
     m_fWaveAngle = 0.0f;
 }
-// PC 0x00460000  Xbox 0x002CD660
+// PC 0x00475DB0
 void WaveTextureController::Init()
 {
     int nWidth = m_pTexture->GetWidth();
@@ -250,7 +250,7 @@ void WaveTextureController::Init()
         }
     }
 }
-// PC 0x00460120  Xbox 0x002CD780
+// PC 0x00475ED0
 void LifeTextureController::Init()
 {
     unsigned char aPixel[4] = {0, 0, 0, 255};
@@ -279,7 +279,7 @@ void LifeTextureController::Init()
         }
     }
 }
-// PC 0x00460250  Xbox 0x002CD8B0
+// PC 0x00476000
 void LifeTextureController::Control()
 {
 
@@ -374,7 +374,7 @@ void LifeTextureController::Control()
         delete[] pOldState;
     }
 }
-// PC 0x00460560  Xbox 0x002CDB60
+// PC 0x004782E0
 void ArturoTextureController::Init()
 {
     int nImageWidth = m_pTexture->GetWidth();
@@ -411,7 +411,7 @@ void ArturoTextureController::Init()
     BuildArturoImage();
     BuildArturoImage();
 }
-// PC 0x00460690  Xbox 0x002CDC90
+// PC 0x00476310
 void ArturoTextureController::BuildArturoImage()
 {
     int nWidth = m_nArturoWidth;
@@ -454,7 +454,7 @@ void ArturoTextureController::BuildArturoImage()
     memcpy(m_pfArturoPrevious, m_pfArturoCurrent, nPixels * sizeof(float));
     memcpy(m_pfArturoCurrent, m_pfArturoNext, nPixels * sizeof(float));
 }
-// PC 0x004608A0  Xbox 0x002CE470
+// PC 0x00476720
 float FloatInterpolate(float* pfValues, float fX, float fY, int nWidth,
                        int nHeight)
 {
@@ -473,7 +473,7 @@ float FloatInterpolate(float* pfValues, float fX, float fY, int nWidth,
                ((1.0f - fColumnWeight) * pfValues[nNextRow * nWidth + nColumn] +
                 fColumnWeight * pfValues[nNextRow * nWidth + nNextColumn]);
 }
-// PC 0x00460970  Xbox 0x002CDE90
+// PC 0x00476520
 void CycleTIDTextureController::Control()
 {
     if (m_nLastUpdate != texcurrentframe)
@@ -489,7 +489,7 @@ void CycleTIDTextureController::Control()
         }
     }
 }
-// PC 0x004609F0  Xbox 0x002CDF10
+// PC 0x004765A0
 void RandomTextureController::Init()
 {
     int nWidth = m_pTexture->GetWidth();
@@ -504,7 +504,7 @@ void RandomTextureController::Init()
     m_pRandomImage = new unsigned char[nWidth * nHeight];
     m_pChannelImage = new unsigned char[nWidth * nHeight * nBPP];
 }
-// PC 0x00460A50  Xbox 0x002CDF70
+// PC 0x00476810
 void RingDistortTextureController::Init()
 {
     int nWidth = m_pTexture->GetWidth();
@@ -514,7 +514,7 @@ void RingDistortTextureController::Init()
     m_fAngle = 0.0f;
     m_pRingImage = new unsigned char[nWidth * nHeight * nBPP];
 }
-// PC 0x00460A90  Xbox 0x002CDFB0
+// PC 0x00476850
 void RingDistortTextureController::Control()
 {
     if (m_nLastUpdate != texcurrentframe && m_pRingImage != NULL)
@@ -593,7 +593,7 @@ void RingDistortTextureController::Control()
         }
     }
 }
-// PC 0x00461060  Xbox 0x002CE8B0
+// PC 0x00476E20
 unsigned char* TextureController::Height2Channel(unsigned char* pHeight,
                                                 unsigned char* pImage)
 {
@@ -674,7 +674,7 @@ unsigned char* TextureController::Height2Channel(unsigned char* pHeight,
     }
     return pResult;
 }
-// PC 0x004615A0  Xbox 0x002CEBC0
+// PC 0x00477360
 void PerlinTextureController::Control()
 {
     if (m_nLastUpdate != texcurrentframe)
@@ -725,7 +725,7 @@ void PerlinTextureController::Control()
         }
     }
 }
-// PC 0x00461820  Xbox 0x002CED20
+// PC 0x004775E0
 void WaterTextureController::Control()
 {
     if (m_nLastUpdate == texcurrentframe)
@@ -903,7 +903,7 @@ void WaterTextureController::Control()
         ++m_nUnknown64;
     }
 }
-// PC 0x00462030  Xbox 0x002CF4C0
+// PC 0x00477DF0
 void WaveTextureController::Control()
 {
     if (m_nLastUpdate == texcurrentframe)
@@ -1003,7 +1003,7 @@ void WaveTextureController::Control()
         delete[] pResult;
     }
 }
-// PC 0x00462520  Xbox 0x002CF8F0
+// PC 0x00478410
 void ArturoTextureController::Control()
 {
 
@@ -1089,7 +1089,7 @@ void ArturoTextureController::Control()
         }
     }
 }
-// PC 0x00462800  Xbox 0x002CFBD0
+// PC 0x004786F0
 void RandomTextureController::Control()
 {
     int nWidth;
@@ -1127,7 +1127,7 @@ void RandomTextureController::Control()
         }
     }
 }
-// PC 0x00462B00  Xbox 0x002CFD40
+// PC 0x00478CE0
 void TextureController::ParseField(char* sField)
 {
 
@@ -1316,7 +1316,7 @@ void TextureController::ParseField(char* sField)
         }
     }
 }
-// PC 0x004630B0  Xbox 0x002D0290
+// PC 0x00479290
 WaterTextureController::WaterTextureController(CAurTexture* pTexture)
     : TextureController(pTexture), m_fForceCycleSpeed(RAD_TO_DEG),
       m_fAngleCycleSpeed(RAD_TO_DEG / 20.0f)
@@ -1329,7 +1329,7 @@ WaterTextureController::WaterTextureController(CAurTexture* pTexture)
     m_pDistortImage = 0;
     m_nWaveType = 2;
 }
-// PC 0x004631A0  Xbox 0x002D0390
+// PC 0x00479380
 void WaterTextureController::ParseField(char* sField)
 {
     const char* sKeyword;
@@ -1356,19 +1356,19 @@ void WaterTextureController::ParseField(char* sField)
         Parse(sField + 11, m_nWaterHeight);
     }
 }
-// PC 0x00463260  Xbox 0x002D0450
+// PC 0x00479440
 WaveTextureController::WaveTextureController(CAurTexture* pTexture)
     : TextureController(pTexture)
 {
     m_pfWaveImage = 0;
     m_pfOffsetImage = 0;
 }
-// PC 0x00463310  Xbox 0x002D0500
+// PC 0x004794F0
 void WaveTextureController::ParseField(char* sField)
 {
     TextureController::ParseField(sField);
 }
-// PC 0x00463320  Xbox 0x002D0510
+// PC 0x00479500
 ArturoTextureController::ArturoTextureController(CAurTexture* pTexture)
     : TextureController(pTexture)
 {
@@ -1380,7 +1380,7 @@ ArturoTextureController::ArturoTextureController(CAurTexture* pTexture)
     m_pfArturoPrevious = 0;
     m_nLastUpdate = -1;
 }
-// PC 0x00463400  Xbox 0x002D05F0
+// PC 0x004795E0
 void ArturoTextureController::ParseField(char* sField)
 {
     const char* sKeyword;
@@ -1397,7 +1397,7 @@ void ArturoTextureController::ParseField(char* sField)
         Parse(sField + 12, m_nArturoHeight);
     }
 }
-// PC 0x00463470  Xbox 0x002D0660
+// PC 0x00479650
 CycleTIDTextureController::CycleTIDTextureController(CAurTexture* pTexture)
     : TextureController(pTexture)
 {
@@ -1415,7 +1415,7 @@ CycleTIDTextureController::CycleTIDTextureController(CAurTexture* pTexture)
 void CycleTIDTextureController::Init()
 {
 }
-// PC 0x004634D0  Xbox 0x002D06D0
+// PC 0x004796B0
 void CycleTIDTextureController::ParseField(char* sField)
 {
     const char* sKeyword = firstword(sField);
@@ -1438,7 +1438,7 @@ void HeatDistortTextureController::Init()
     m_fAngle = 0.0f;
     m_pHeatImage = new unsigned char[nWidth * nHeight * nBPP];
 }
-// Xbox 0x002CE210
+
 void HeatDistortTextureController::Control()
 {
     if (m_nLastUpdate != texcurrentframe)

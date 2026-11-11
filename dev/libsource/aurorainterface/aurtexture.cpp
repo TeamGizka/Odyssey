@@ -1,5 +1,5 @@
 #include "aurora.h"
-// PC 0x0070F410
+// PC 0x00782C40
 int CAuroraTexture::GetTextureDataSize()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -8,7 +8,7 @@ int CAuroraTexture::GetTextureDataSize()
     }
     return 0;
 }
-// PC 0x0070F3E0
+// PC 0x00782C10
 unsigned char* CAuroraTexture::GetTextureDataPtr()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -17,7 +17,7 @@ unsigned char* CAuroraTexture::GetTextureDataPtr()
     }
     return 0;
 }
-// PC 0x0070EBB0  Xbox 0x002F8E10
+// PC 0x007823E0
 int CAuroraTexture::GetTextureAttrib(unsigned long* pnWidth,
                                      unsigned long* pnHeight,
                                      unsigned char* pnDepth)
@@ -31,7 +31,7 @@ int CAuroraTexture::GetTextureAttrib(unsigned long* pnWidth,
         return 0;
     }
 }
-// PC 0x0070EBF0  Xbox 0x002F8E50
+// PC 0x00782420
 int CAuroraTexture::Load()
 {
     unsigned char* nTGADataPtr;
@@ -57,7 +57,7 @@ int CAuroraTexture::Load()
     pTrailer->nType = 3;
     return 1;
 }
-// PC 0x0070EC70
+// PC 0x007824A0
 void CAuroraTexture::Unload()
 {
     int nBytesPerPixel;
@@ -88,7 +88,7 @@ void CAuroraTexture::Unload()
         }
     }
 }
-// PC 0x0070ECE0  Xbox 0x002F8ED0
+// PC 0x00782510
 int CAuroraTexture::ReadTextureHeader(int* pnWidth, int* pnHeight, int* pnDepth)
 {
     TGAHeader tgaHeader;
@@ -106,7 +106,7 @@ int CAuroraTexture::ReadTextureHeader(int* pnWidth, int* pnHeight, int* pnDepth)
     *pnDepth = tgaHeader.nBitsPerPixel >> 3;
     return 1;
 }
-// PC 0x0070ED40  Xbox 0x002F8F20
+// PC 0x00782570
 unsigned char* CAuroraTexture::GetPtrToResHelperInfo()
 {
     unsigned char* nTGADataPtr;
@@ -122,13 +122,13 @@ unsigned char* CAuroraTexture::GetPtrToResHelperInfo()
     }
     return 0;
 }
-// PC 0x0070EFA0  Xbox 0x002F9180
+// PC 0x007827D0
 CAuroraTexture::CAuroraTexture(CResRef cResRef, int bRequest)
     : CResHelper<CResTGA, RESTYPE_TGA>()
 {
     SetResRef(cResRef, bRequest);
 }
-// PC 0x0070F030  Xbox 0x002F9210
+// PC 0x00782860
 CAuroraTexture::~CAuroraTexture()
 {
 }

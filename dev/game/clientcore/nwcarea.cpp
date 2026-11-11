@@ -65,7 +65,7 @@ extern int countpart;
 
 float darkvaluemultiplier = 0.35f;
 float lightvaluemultiplier = 0.5f;
-// PC 0x00604B50  Xbox 0x00034BF0
+// PC 0x00650B80
 void PlayRoomSoundEvent(CAurObject* pObject, char* sEvent, void* pData)
 {
     if (pData != NULL)
@@ -78,7 +78,7 @@ static CSWCRoom* AllocateRoomArray(int nCount)
 {
     return new CSWCRoom[nCount];
 }
-// PC 0x00604BC0  Xbox 0x00034C60
+// PC 0x00650BF0
 int CSWCArea::GetIsObjectCorpse(unsigned long oidObject)
 {
     for (int i = 0; i < 4; i++)
@@ -90,7 +90,7 @@ int CSWCArea::GetIsObjectCorpse(unsigned long oidObject)
     }
     return FALSE;
 }
-// PC 0x00604BF0  Xbox 0x00034C90
+// PC 0x00650C20
 int CSWCArea::GetSurfaceMaterial(Vector vPosition)
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -108,7 +108,7 @@ int CSWCArea::GetSurfaceMaterial(Vector vPosition)
     }
     return 0;
 }
-// PC 0x00604C40  Xbox 0x00034CE0
+// PC 0x00650C70
 int CSWCArea::TestDirectLine(unsigned long oidObject, const Vector& vStart,
                              const Vector& vEnd, const float& fDistance,
                              float fWidth, int nFlags,
@@ -122,7 +122,7 @@ int CSWCArea::TestDirectLine(unsigned long oidObject, const Vector& vStart,
     }
     return FALSE;
 }
-// PC 0x00604C90  Xbox 0x00034D20
+// PC 0x00650CC0
 int CSWCArea::ApplyFireAndForgetVisualEffect(unsigned short nEffect,
                                              Vector vPosition)
 {
@@ -144,7 +144,7 @@ int CSWCArea::ApplyFireAndForgetVisualEffect(unsigned short nEffect,
     pEffect->DoVFXRumble();
     return TRUE;
 }
-// PC 0x00604D70  Xbox 0x00034E00
+// PC 0x00650DA0
 void CSWCArea::StartSounds()
 {
     g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
@@ -152,7 +152,7 @@ void CSWCArea::StartSounds()
     g_pAppManager->m_pClientExoApp->StopLoadMusic();
     m_pAmbientSound->StartSounds();
 }
-// PC 0x00604DB0  Xbox 0x00034E40
+// PC 0x00650DE0
 int CSWCArea::SetWeather(unsigned char nWeather, float fStrength)
 {
 
@@ -290,7 +290,7 @@ int CSWCArea::SetWeather(unsigned char nWeather, float fStrength)
     }
     return TRUE;
 }
-// PC 0x00605090  Xbox 0x00035140
+// PC 0x006510F0
 int CSWCArea::SetFogColor(const Vector& vColor)
 {
     if (m_pScene == NULL)
@@ -304,7 +304,7 @@ int CSWCArea::SetFogColor(const Vector& vColor)
     m_vFogColor = vColor;
     return TRUE;
 }
-// PC 0x00605160  Xbox 0x00035210
+// PC 0x006511C0
 int CSWCArea::SetGlobalLightDiffuse(int nLight, Vector vColor)
 {
     char szCommand[128];
@@ -325,7 +325,7 @@ int CSWCArea::SetGlobalLightDiffuse(int nLight, Vector vColor)
     }
     return TRUE;
 }
-// PC 0x006051F0  Xbox 0x000352C0
+// PC 0x00651250
 int CSWCArea::SetGlobalLightAmbient(int nLight, Vector vColor)
 {
     char szCommand[128];
@@ -339,7 +339,7 @@ int CSWCArea::SetGlobalLightAmbient(int nLight, Vector vColor)
     AurControlPart(szCommand);
     return TRUE;
 }
-// PC 0x00605260  Xbox 0x00035350
+// PC 0x006512C0
 int CSWCArea::SetWind(unsigned char nWind)
 {
     float fMaximumDeviation = 0.0f;
@@ -374,7 +374,7 @@ int CSWCArea::SetWind(unsigned char nWind)
     return TRUE;
 }
 
-// PC 0x00605370  Xbox 0x00035480
+// PC 0x006513D0
 int CSWCArea::ClearLineOfSightOneWay(Vector vStart, Vector vEnd, Vector* pHit)
 {
     return 1;
@@ -410,19 +410,19 @@ void CSWCArea::DisplayAllTriggers(int bDisplay)
         pTrigger->SpecialDisplayTrigger(bDisplay);
     }
 }
-// PC 0x00605380  Xbox 0x00035490
+// PC 0x006513E0
 void CSWCArea::StartWeather(unsigned char nWeather)
 {
     m_nNewWeatherType = nWeather;
     m_nWeatherDuration = WEATHER_FADE_DURATION;
 }
-// PC 0x006053A0  Xbox 0x000354B0
+// PC 0x00651400
 void CSWCArea::StopWeather(unsigned char nWeather)
 {
     m_nNewWeatherType = WEATHER_CLEAR;
     m_nWeatherDuration = WEATHER_FADE_DURATION;
 }
-// PC 0x006053C0  Xbox 0x000354D0
+// PC 0x00651420
 void CSWCArea::SetLightningDone()
 {
     shadowalpha = g_fOldShadowAlpha;
@@ -433,7 +433,7 @@ void CSWCArea::SetLightningDone()
         m_pLightningEffect->AttachToScene(NULL);
     }
 }
-// PC 0x00605410  Xbox 0x00035570
+// PC 0x00651470
 void CSWCArea::UpdateShadowingLights()
 {
     if (m_pShadowLight != NULL)
@@ -446,7 +446,7 @@ void CSWCArea::UpdateShadowingLights()
         }
     }
 }
-// PC 0x00605440  Xbox 0x000355A0
+// PC 0x006514A0
 int CSWCArea::GetIsDark()
 {
     if (m_pScene == NULL)
@@ -484,12 +484,12 @@ int CSWCArea::GetIsDark()
     m_bIsDark = bIsDark;
     return bIsDark;
 }
-// PC 0x006054E0  Xbox 0x000356A0
+// PC 0x00651540
 int CSWCArea::GetObjectsAtPositionVisible(const Vector& vPosition)
 {
     return 1;
 }
-// PC 0x006054F0  Xbox 0x000356B0
+// PC 0x00651550
 CSWCRoom* CSWCArea::GetRoom(int nRoom)
 {
     CSWCRoom* pRoom = NULL;
@@ -499,7 +499,7 @@ CSWCRoom* CSWCArea::GetRoom(int nRoom)
     }
     return pRoom;
 }
-// PC 0x00605510  Xbox 0x000356D0
+// PC 0x00651570
 CSWCRoom* CSWCArea::GetRoom(const CExoString& sRoomName)
 {
     CSWCRoom* pRoom = NULL;
@@ -517,7 +517,7 @@ CSWCRoom* CSWCArea::GetRoom(const CExoString& sRoomName)
     }
     return pRoom;
 }
-// PC 0x00605870  Xbox 0x00035AC0
+// PC 0x006518D0
 int CSWCArea::SetFog(float fNear, float fFar, const Vector& vColor)
 {
     NwcareaTrace1();
@@ -531,7 +531,7 @@ int CSWCArea::SetFog(float fNear, float fFar, const Vector& vColor)
     SetFogColor(vColor);
     return TRUE;
 }
-// PC 0x006058C0  Xbox 0x00035B10
+// PC 0x00651920
 void CSWCArea::SetAsDay()
 {
     NwcareaTrace1();
@@ -551,7 +551,7 @@ void CSWCArea::SetAsDay()
     SetGlobalLightDiffuse(1, m_vDayDiffuseColor);
     UpdateShadowingLights();
 }
-// PC 0x006059C0  Xbox 0x00035C10
+// PC 0x00651A20
 void CSWCArea::SetAsNight()
 {
     if (m_bDayNightCycle == 0 && m_bIsNight == 0)
@@ -570,7 +570,7 @@ void CSWCArea::SetAsNight()
     SetGlobalLightDiffuse(1, m_vNightDiffuseColor);
     UpdateShadowingLights();
 }
-// PC 0x00605AC0  Xbox 0x00035D10
+// PC 0x00651B20
 CSWCMapPin* CSWCArea::GetMapPin(unsigned long nReference, int nType)
 {
     NwcareaTrace1();
@@ -586,7 +586,7 @@ CSWCMapPin* CSWCArea::GetMapPin(unsigned long nReference, int nType)
     }
     return NULL;
 }
-// PC 0x00605B10  Xbox 0x00035D60
+// PC 0x00651B70
 void CSWCArea::UpdateSoundObjectsTimeOfDay()
 {
     NwcareaTrace1();
@@ -603,7 +603,7 @@ void CSWCArea::UpdateSoundObjectsTimeOfDay()
         }
     }
 }
-// PC 0x00605B50  Xbox 0x00035DA0
+// PC 0x00651BB0
 void CSWCArea::RemovePlaceableObjectLight(unsigned long oidPlaceable, int bFlag)
 {
     NwcareaTrace1();
@@ -634,7 +634,7 @@ void CSWCArea::RemovePlaceableObjectLight(unsigned long oidPlaceable, int bFlag)
         }
     }
 }
-// PC 0x00605BF0  Xbox 0x00035E40
+// PC 0x00651C50
 Gob* CSWCArea::GetPlaceableObjectLight(unsigned long oidPlaceable)
 {
     NwcareaTrace1();
@@ -649,7 +649,7 @@ Gob* CSWCArea::GetPlaceableObjectLight(unsigned long oidPlaceable)
     }
     return NULL;
 }
-// PC 0x00605C40  Xbox 0x00035E90
+// PC 0x00651CA0
 void CSWCArea::HiliteAreaObjects(int bHilite)
 {
     NwcareaTrace1();
@@ -732,7 +732,7 @@ void CSWCArea::HiliteAreaObjects(int bHilite)
         }
     }
 }
-// PC 0x00605E50
+// PC 0x00651EB0
 CSWMiniGame* CSWCArea::RestartMiniGame()
 {
     if (m_pMiniGame != NULL)
@@ -763,7 +763,7 @@ CSWMiniGame* CSWCArea::RestartMiniGame()
     }
     return m_pMiniGame;
 }
-// PC 0x00605FA0  Xbox 0x000360E0
+// PC 0x00652000
 CSWCRoom* CSWCArea::GetRoom(const Vector& vPosition)
 {
     CSWCRoom* pRoom = NULL;
@@ -774,13 +774,13 @@ CSWCRoom* CSWCArea::GetRoom(const Vector& vPosition)
     }
     return pRoom;
 }
-// PC 0x00605610  Xbox 0x000357D0
+// PC 0x00651670
 int CSWCArea::GetRoomIndex(const Vector& vPosition, int nFlags)
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
     return pServerExoApp->GetRoomIndex(m_cAreaResRef, vPosition, nFlags);
 }
-// PC 0x00605640  Xbox 0x00035800
+// PC 0x006516A0
 CSWSArea* CSWCArea::GetServerArea()
 {
     if (m_pServerArea == NULL)
@@ -796,17 +796,17 @@ CSWSArea* CSWCArea::GetServerArea()
     }
     return m_pServerArea;
 }
-// PC 0x00605690  Xbox 0x00035850
+// PC 0x006516F0
 void CSWCArea::AttachmentFromServerArea(CSWSArea* pArea)
 {
     m_pServerArea = pArea;
 }
-// PC 0x006056A0  Xbox 0x00035860
+// PC 0x00651700
 void CSWCArea::DetachFromServerArea()
 {
     m_pServerArea = NULL;
 }
-// PC 0x006056B0  Xbox 0x00035870
+// PC 0x00651710
 void CSWCArea::AddCorpse(unsigned long oidCorpse)
 {
     m_anCorpseObjectIds[m_nCorpseWriteIndex] = oidCorpse;
@@ -848,7 +848,7 @@ void CSWCArea::AddCorpse(unsigned long oidCorpse)
         }
     }
 }
-// PC 0x006057B0  Xbox 0x00035970
+// PC 0x00651810
 int CSWCArea::ParentCorpseExists(unsigned long oidParent)
 {
     for (unsigned char i = 0; i < 4; i++)
@@ -863,7 +863,7 @@ int CSWCArea::ParentCorpseExists(unsigned long oidParent)
     }
     return FALSE;
 }
-// PC 0x00605FE0
+// PC 0x00652040
 void CSWCArea::ForceBrightSunAndMoon()
 {
     Vector vBlack(0.0f, 0.0f, 0.0f);
@@ -882,7 +882,7 @@ void CSWCArea::ForceBrightSunAndMoon()
         SetAsDay();
     }
 }
-// PC 0x00606090  Xbox 0x00036190
+// PC 0x006520F0
 CSWCArea::CSWCArea()
     : CGameObject(CGameObject::OBJECT_TYPE_AREA, OBJECT_INVALID)
 {
@@ -936,13 +936,13 @@ CSWCArea::CSWCArea()
     m_nCorpseWriteIndex = 1;
     m_pServerArea = 0;
 }
-// PC 0x006075B0  Xbox 0x00037980
+// PC 0x00653610
 void CSWCArea::ClearTilePathNodes()
 {
     m_lstTilePathNodeIds.SetSize(0);
     m_lstTilePathNodes.SetSize(0);
 }
-// PC 0x00607610  Xbox 0x00037B20
+// PC 0x00653670
 int CSWCArea::LoadArea(CAurCamera* pCamera, CGuiAreaLoadscreen* pLoadScreen,
                        int bLoad)
 {
@@ -1367,7 +1367,7 @@ LoadFailed:
     m_pScene = NULL;
     return FALSE;
 }
-// PC 0x00609410  Xbox 0x00039970
+// PC 0x00655500
 void CSWCArea::UnloadArea()
 {
     if (g_pAppManager->m_pClientExoApp->GetInGameGui() != NULL)
@@ -1511,7 +1511,7 @@ void CSWCArea::UnloadArea()
     m_nCorpseReadIndex = 0;
     m_nCorpseWriteIndex = 1;
 }
-// PC 0x006097F0  Xbox 0x00039D00
+// PC 0x006558E0
 void CSWCArea::Update(float fTimeDelta)
 {
     unsigned long nCalendarDay;
@@ -1719,7 +1719,7 @@ void CSWCArea::Update(float fTimeDelta)
 }
 
 
-// PC 0x00606490  Xbox 0x00036650
+// PC 0x00652500
 void CSWCArea::UpdateDayNightCycle(float fTimeStep)
 {
     Vector vAmbient;
@@ -1860,7 +1860,7 @@ void CSWCArea::UpdateDayNightCycle(float fTimeStep)
     UpdateSoundObjectsTimeOfDay();
     m_pAmbientSound->UpdateTimeOfDay();
 }
-// PC 0x00606C50  Xbox 0x00037020
+// PC 0x00652CC0
 void CSWCArea::SetAsDusk()
 {
     if (m_bDayNightCycle == 0)
@@ -1885,7 +1885,7 @@ void CSWCArea::SetAsDusk()
         UpdateShadowingLights();
     }
 }
-// PC 0x00606CF0  Xbox 0x000370C0
+// PC 0x00652D60
 void CSWCArea::SetAsDawn()
 {
     if (m_bDayNightCycle == 0)
@@ -1910,12 +1910,12 @@ void CSWCArea::SetAsDawn()
         UpdateShadowingLights();
     }
 }
-// PC 0x00606D90  Xbox 0x00037160
+// PC 0x00652E00
 void CSWCArea::AddMapPin(CSWCMapPin* pMapPin)
 {
     m_lstMapPins.Add(pMapPin);
 }
-// PC 0x00606DD0  Xbox 0x000371A0
+// PC 0x00652E40
 void CSWCArea::ClearAllMapPins()
 {
     int nCount = m_lstMapPins.num;
@@ -1929,7 +1929,7 @@ void CSWCArea::ClearAllMapPins()
     }
     m_lstMapPins.SetSize(0);
 }
-// PC 0x00606E30  Xbox 0x00037200
+// PC 0x00652EA0
 int CSWCArea::AddPlaceableObjectLight(unsigned long oidPlaceable,
                                       unsigned char nAppearance,
                                       Vector vPosition)
@@ -2045,7 +2045,7 @@ int CSWCArea::AddPlaceableObjectLight(unsigned long oidPlaceable,
     }
     return TRUE;
 }
-// PC 0x006072D0  Xbox 0x000376A0
+// PC 0x00653330
 int CSWCArea::AddPlaceableObjectStatic(unsigned long oidPlaceable,
                                       unsigned char nAppearance,
                                       Vector vPosition, Vector vOrientation)
@@ -2124,7 +2124,7 @@ void CSWCArea::EmptyCAurObjectToHitCheckIgnoreList()
         m_lstHitCheckIgnoreObjects.RemoveHead();
     }
 }
-// PC 0x0060A0F0  Xbox 0x0003A6B0
+// PC 0x00656310
 CSWCArea::~CSWCArea()
 {
     UnloadArea();
@@ -2149,7 +2149,7 @@ static inline void NwcareaTrace1()
 
 
 
-// Xbox 0x00034B60
+
 char* setweatherdensity(char* sArguments)
 {
     int nDensity;
@@ -2175,7 +2175,7 @@ ConsoleFunc ConFsetweatherdensity("setweatherdensity", setweatherdensity);
 
 #ifdef _XBOX
 
-// Xbox 0x00035520
+
 void CSWCArea::SetGeometryFadeMode(unsigned char nMode)
 {
     if (m_pScene)
@@ -2197,7 +2197,7 @@ void CSWCArea::SetGeometryFadeMode(unsigned char nMode)
 
 #include "aurconsole.h"
 
-// Xbox 0x00034BE0
+
 char* sethighlightamplitude(char* szArgs)
 {
     return "Success";
@@ -2219,7 +2219,7 @@ ConsoleFunc ConFsethighlightfrequency("sethighlightfrequency", sethighlightfrequ
 ConsoleFunc ConFsethighlightsize("sethighlightsize", sethighlightsize);
 ConsoleFunc ConFsethighlightintensity("sethighlightintensity", sethighlightintensity);
 
-// Xbox 0x000379E0
+
 char* daytonight(char* szArgs)
 {
     if (g_pAppManager == NULL || g_pAppManager->m_pClientExoApp == NULL ||
@@ -2235,7 +2235,7 @@ char* daytonight(char* szArgs)
 }
 ConsoleFunc ConFdaytonight("daytonight", daytonight);
 
-// Xbox 0x00037A80
+
 char* nighttoday(char* szArgs)
 {
     if (g_pAppManager == NULL || g_pAppManager->m_pClientExoApp == NULL ||

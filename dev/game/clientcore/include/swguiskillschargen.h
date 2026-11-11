@@ -31,11 +31,11 @@ public:
     void OnEnterPointsButton(CSWGuiControl* pControl);
     void ConfirmAccept(CSWGuiControl* pControl);
     void OnRecommendButton();
-    void OnMinusButtonPushed(CSWGuiControl*)  // PC 0x0067CB40
+    void OnMinusButtonPushed(CSWGuiControl*)  // PC 0x006D2FC0
     {
         HandleInputEvent(GUIEVENT_LEFT, 1);
     }
-    void OnPlusButtonPushed(CSWGuiControl*)  // PC 0x0067CB50
+    void OnPlusButtonPushed(CSWGuiControl*)  // PC 0x006D2FD0
     {
         HandleInputEvent(GUIEVENT_RIGHT, 1);
     }

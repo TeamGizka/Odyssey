@@ -11,7 +11,7 @@
 static inline void SwguiquickorcustompanelTrace2();
 static inline void SwguiquickorcustompanelTrace1();
 #define SWGUIQUICKORCUSTOMPANEL_TRACE() SwguiquickorcustompanelTrace2()
-// PC 0x006F07D0  Xbox 0x001288F0
+// PC 0x00761970
 void CSWGuiQuickOrCustomPanel::HandleCancelButton()
 {
     if (m_pMainCharGen != NULL)
@@ -21,7 +21,7 @@ void CSWGuiQuickOrCustomPanel::HandleCancelButton()
     m_bDeferredRemoval = 0;
     m_nExitState = EXITSTATE_DELETE;
 }
-// PC 0x006F0800  Xbox 0x00128920
+// PC 0x007619A0
 void CSWGuiQuickOrCustomPanel::OnSelectQuickCharacterButton(
     CSWGuiControl* pControl)
 {
@@ -33,7 +33,7 @@ void CSWGuiQuickOrCustomPanel::OnSelectQuickCharacterButton(
         }
     }
 }
-// PC 0x006F0830  Xbox 0x00128950
+// PC 0x007619D0
 void CSWGuiQuickOrCustomPanel::OnSelectCustomCharacterButton(
     CSWGuiControl* pControl)
 {
@@ -45,7 +45,7 @@ void CSWGuiQuickOrCustomPanel::OnSelectCustomCharacterButton(
         }
     }
 }
-// PC 0x006F0860  Xbox 0x00128980
+// PC 0x00761AD0
 void CSWGuiQuickOrCustomPanel::SetDescription(unsigned long nStrRef)
 {
     STR_RES strRes;
@@ -78,7 +78,7 @@ void CSWGuiQuickOrCustomPanel::SetDescription(unsigned long nStrRef)
                             pList->m_lItems.num > 0 &&
                             !pList->m_bHideScrollIcon);
 }
-// PC 0x006F09F0  Xbox 0x00128BF0
+// PC 0x00761C70
 CSWGuiQuickOrCustomPanel::CSWGuiQuickOrCustomPanel(CSWGuiManager* pManager,
                                                    CSWCCreature* pCreature)
     : CSWGuiPanel(pManager)
@@ -136,7 +136,7 @@ CSWGuiQuickOrCustomPanel::CSWGuiQuickOrCustomPanel(CSWGuiManager* pManager,
     m_bCenterHorizontal = 1;
     m_bCenterVertical = 1;
 }
-// PC 0x006F0E10  Xbox 0x00128B20
+// PC 0x00761A00
 void CSWGuiQuickOrCustomPanel::HandleInputEvent(int nEvent, int nState)
 {
     SWGUIQUICKORCUSTOMPANEL_TRACE();

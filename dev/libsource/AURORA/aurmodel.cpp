@@ -103,7 +103,7 @@ const int MdlNodeTriMesh::DEFAULT_PROPERTIES = 0;
 const int TileData::FADE = 1;
 const int TileData::DO_NOT_FADE = 2;
 const int TileData::FADE_NOT_CHECKED = 4;
-// PC 0x0043E0D0  Xbox 0x00294810
+// PC 0x0044FD60
 MaxFace_PostProcess::MaxFace_PostProcess()
 {
     m_pFaces = 0;
@@ -112,7 +112,7 @@ MaxFace_PostProcess::MaxFace_PostProcess()
     m_nFaces = 0;
     m_nFaceIndices = 0;
 }
-// PC 0x0043E0F0  Xbox 0x00294830
+// PC 0x0044FD80
 MaxFace_PostProcess::~MaxFace_PostProcess()
 {
     if (m_pFaces)
@@ -133,17 +133,17 @@ MaxFace_PostProcess::~MaxFace_PostProcess()
     m_nFaces = 0;
     m_nFaceIndices = 0;
 }
-// PC 0x0043E130  Xbox 0x00294870
+// PC 0x0044FDC0
 int MaxTree::GetType()
 {
     return m_nType & TYPE_MASK;
 }
-// PC 0x0043E140  Xbox 0x00294880
+// PC 0x0044FDD0
 MaxFace::~MaxFace()
 {
     --countmaxfaces;
 }
-// PC 0x0043E150  Xbox 0x00294890
+// PC 0x0044FDE0
 void CAurObject::AnimateExternal(float fTimeStep)
 {
     Gob* pGob = (Gob*)this;
@@ -159,17 +159,17 @@ void CAurObject::AnimateExternal(float fTimeStep)
         pGob->Animate(fTimeStep);
     }
 }
-// PC 0x0044AE60  Xbox 0x0029EE80
+// PC 0x0045F3B0
 MdlNode* MdlNodeAnimMesh::InternalConJoin()
 {
     return new MdlNodeAnimMesh(TranslateNodeName());
 }
-// PC 0x0043E190  Xbox 0x002948D0
+// PC 0x0044FE20
 int MaxTreeParseField(void* pTree, char* szField)
 {
     return ((MaxTree*)pTree)->InternalParseField(szField);
 }
-// PC 0x0044AEC0  Xbox 0x0029EF10
+// PC 0x0045F410
 void MaxTree::operator delete(void* pMemory)
 {
     MaxTree* pTree = (MaxTree*)pMemory;
@@ -230,12 +230,12 @@ void MaxTree::operator delete(void* pMemory)
             ::delete pTree->AsAnimation();
     }
 }
-// PC 0x0043E1B0  Xbox 0x002948F0
+// PC 0x0044FE40
 void* MaxTree::operator new(size_t nSize)
 {
     return ::operator new(nSize);
 }
-// PC 0x0043E1C0  Xbox 0x00294900
+// PC 0x0044FE50
 Model* MaxTree::AsModel()
 {
 #ifdef _XBOX
@@ -246,7 +246,7 @@ Model* MaxTree::AsModel()
 }
 
 void InsertModel(Model* pModel);
-// PC 0x0043E1D0  Xbox 0x00294910
+// PC 0x0044FE60
 Animation* MaxTree::AsAnimation()
 {
 #ifdef _XBOX
@@ -255,17 +255,17 @@ Animation* MaxTree::AsAnimation()
     return (m_nType & TYPE_MASK) == MAXTREE_ANIMATION_ID ? (Animation*)this : 0;
 #endif
 }
-// PC 0x0043E1E0  Xbox 0x00294920
+// PC 0x0044FE70
 int ModelParseField(void* pModel, char* szField)
 {
     return ((Model*)pModel)->InternalParseField(szField);
 }
-// PC 0x0043E1F0
+// PC 0x0044FE80
 int operator!=(const Vector& vFirst, const Vector& vSecond)
 {
     return !equal(vFirst, vSecond);
 }
-// PC 0x0043E210  Xbox 0x00294930
+// PC 0x0044FEA0
 int Model::DelRef(Model* pModel)
 {
     if (removedelref)
@@ -276,13 +276,13 @@ int Model::DelRef(Model* pModel)
         operator delete(this);
     return nReferenceCount;
 }
-// PC 0x0043E240  Xbox 0x00294960
+// PC 0x0044FED0
 int Model::AddRef(Gob* pGob)
 {
     m_nReferenceCount++;
     return m_nReferenceCount;
 }
-// PC 0x0043E240
+// PC 0x0044FED0
 int Model::AddRef(Model* pModel)
 {
     m_nReferenceCount++;
@@ -292,7 +292,7 @@ int Model::AddRef(Model* pModel)
 #ifdef _XBOX
 static char sFuncPrefix[64];
 #endif
-// PC 0x00449F60  Xbox 0x0029DA20
+// PC 0x0045E490
 void Model::InternalDestructor()
 {
     if (Models.Contains(this))
@@ -325,7 +325,7 @@ void Model::InternalDestructor()
         m_pRootNode->DestructorDispatch();
 #endif
 }
-// PC 0x00438A00  Xbox 0x0028FB30
+// PC 0x00448F30
 inline char* MdlNode::TranslateNodeName()
 {
     if (m_pModel->AsModel())
@@ -337,18 +337,18 @@ inline char* MdlNode::TranslateNodeName()
         return ((Model*)m_pModel->AsAnimation()->m_pBinaryData)->m_lNames[m_nIndex];
     }
 }
-// PC 0x0043F710
+// PC 0x004525E0
 MaxFace::MaxFace()
 {
     AURMODEL_TRACE();
     ++countmaxfaces;
     m_nSurfaceType = 0;
 }
-// PC 0x0043F730  Xbox 0x00295B30
+// PC 0x00452600
 MaxTree::~MaxTree()
 {
 }
-// PC 0x0043F790  Xbox 0x00295B80
+// PC 0x00452690
 Model::~Model()
 {
     if (m_nType)
@@ -367,7 +367,7 @@ Model::~Model()
             delete[] m_lNames[j];
     }
 }
-// PC 0x0043F890  Xbox 0x00295C50
+// PC 0x00452770
 void MdlNode::ControlDispatch(Part* pPart, float fTime,
                               float fPreviousTime, float fBlend)
 {
@@ -424,7 +424,7 @@ int MdlNodeAffectedByWind(MdlNode* pNode)
     MdlNodeEmitter* pEmitter = pNode->AsMdlNodeEmitter();
     return pEmitter != 0 && pEmitter->IsAffectedByWind();
 }
-// PC 0x0043FA10  Xbox 0x00295E70
+// PC 0x004528F0
 void MdlNode::ParseFieldDispatch(char* szField)
 {
     switch (m_nNodeType)
@@ -467,7 +467,7 @@ void MdlNode::ParseFieldDispatch(char* szField)
         break;
     }
 }
-// PC 0x0043FB90  Xbox 0x00295FE0
+// PC 0x00452A70
 void MdlNode::PostProcessDispatch()
 {
     switch (m_nNodeType)
@@ -511,7 +511,7 @@ void MdlNode::PostProcessDispatch()
     }
 }
 #ifndef _XBOX
-void MdlNodeLightsaber::InternalDestructor()  // PC 0x0043FD10  Xbox 0x00296130
+void MdlNodeLightsaber::InternalDestructor()  // PC 0x00452BF0
 {
     GLRender::DeletePool(m_nBladePool);
     m_nBladePool = RequestPoolManager::INVALID_POOL;
@@ -523,11 +523,11 @@ void MdlNodeLightsaber::InternalDestructor()  // PC 0x0043FD10  Xbox 0x00296130
     --countnode;
 }
 #endif
-inline MdlNode* MdlNodeTrigger::InternalConJoin()  // PC 0x0043FD70
+inline MdlNode* MdlNodeTrigger::InternalConJoin()  // PC 0x00453170
 {
     return new MdlNodeTrigger(TranslateNodeName());
 }
-// PC 0x0043FDD0  Xbox 0x002960F0
+// PC 0x00452C50
 void MdlNode::InternalDestructor()
 {
     int i = m_lChildren.m_nCount;
@@ -535,18 +535,18 @@ void MdlNode::InternalDestructor()
         m_lChildren[--i]->DestructorDispatch();
     --countnode;
 }
-// PC 0x00445190  Xbox 0x0029A110
+// PC 0x00459390
 void MaxTree::AddToFreeTokenList(unsigned long nPool)
 {
     m_lFreeTokens.Add(nPool);
 }
-// PC 0x004451D0  Xbox 0x0029A120
+// PC 0x004593D0
 void MaxTree::ResetFreeLists()
 {
     m_lFreeNodes.SetSize(0);
     m_lFreeTokens.SetSize(0);
 }
-// PC 0x00445210  Xbox 0x0029A1A0
+// PC 0x00459410
 MdlNode::MdlNode(char* sName)
     : m_lChildren(0), m_lstControllers(0), m_lstControllerData(0)
 {
@@ -564,12 +564,12 @@ MdlNode::MdlNode(char* sName)
     m_qOrientation = Quaternion();
     ++countmodelnodes;
 }
-// PC 0x004452D0
+// PC 0x004594D0
 void MdlNode::AddToFreeList(MdlNode* pNode)
 {
     m_pModel->m_lFreeNodes.Add(pNode);
 }
-// PC 0x00445310  Xbox 0x0029A2C0
+// PC 0x00459510
 void MdlNode::AddToFreeTokenList(unsigned long nPool)
 {
 #ifdef _XBOX
@@ -578,12 +578,12 @@ void MdlNode::AddToFreeTokenList(unsigned long nPool)
     m_pModel->m_lFreeTokens.Add(nPool);
 #endif
 }
-// PC 0x00445350  Xbox 0x0029A2D0
+// PC 0x00459550
 MdlNode* MdlNode::InternalConJoin()
 {
     return new MdlNode(TranslateNodeName());
 }
-// PC 0x004453B0  Xbox 0x0029A360
+// PC 0x004595B0
 MdlNodeTriMesh_PostProcess::~MdlNodeTriMesh_PostProcess()
 {
     m_lPositions.SetSize(0);
@@ -601,11 +601,11 @@ MdlNodeTriMesh_PostProcess::~MdlNodeTriMesh_PostProcess()
     }
     m_lstVertices.SetSize(0);
 }
-// PC 0x004488C0  Xbox 0x0029C550
+// PC 0x0045CD20
 inline CAurObject::~CAurObject()
 {
 }
-// PC 0x004488F0  Xbox 0x0029C580
+// PC 0x0045CB60
 void MdlNode::DestructorDispatch()
 {
     switch (m_nNodeType)
@@ -648,7 +648,7 @@ void MdlNode::DestructorDispatch()
         break;
     }
 }
-// PC 0x00448000  Xbox 0x0029BE80
+// PC 0x0045C290
 void MdlNodeLight::InternalDestructor()
 {
     for (int i = m_lstTextures.m_nCount; i != 0; --m_lstTextures.m_nCount)
@@ -659,7 +659,7 @@ void MdlNodeLight::InternalDestructor()
     }
     MdlNode::InternalDestructor();
 }
-// PC 0x00448A70  Xbox 0x0029C690
+// PC 0x0045CD30
 Part* MdlNode::CreateInstanceDispatch(Gob* pGob)
 {
     switch (m_nNodeType)
@@ -693,13 +693,13 @@ Part* MdlNode::CreateInstanceDispatch(Gob* pGob)
     }
 }
 static void findallmaterials(Part* pPart, List<Material*>& lMaterials);
-// PC 0x004480C0  Xbox 0x0029BEC0
+// PC 0x0045C350
 Part* MdlNodeLightsaber::InternalCreateInstance(Gob*)
 {
     AurModelTrace4();
     return new PartLightsaber(this);
 }
-// PC 0x00448130  Xbox 0x0029BF30
+// PC 0x0045C3C0
 void Gob::EnableRenderBumpedOut(char* sTexture, float fHeight)
 {
     m_bRenderBumpedOut = 1;
@@ -806,7 +806,7 @@ void Gob::EnableRenderBumpedOut(char* sTexture, float fHeight)
     }
     m_fBumpedOutShellHeight = fHeight;
 }
-// PC 0x004485C0  Xbox 0x0029C2C0
+// PC 0x0045C860
 void Gob::DisableRenderBumpedOut()
 {
     if (m_bRenderBumpedOut)
@@ -824,7 +824,7 @@ void Gob::DisableRenderBumpedOut()
         m_fBumpedOutShellHeight = 0;
     }
 }
-// PC 0x00448690  Xbox 0x0029C380
+// PC 0x0045C930
 int Gob::SetEnvironmentMap(char* sName)
 {
     char sTexture[64];
@@ -852,7 +852,7 @@ int Gob::SetEnvironmentMap(char* sName)
     }
     return 1;
 }
-// PC 0x00448BF0  Xbox 0x0029C810
+// PC 0x0045CED0
 MdlNodeTriMesh::~MdlNodeTriMesh()
 {
     if (m_nNodeType != 0)
@@ -879,7 +879,7 @@ MdlNodeTriMesh::~MdlNodeTriMesh()
     delete[] m_pVertexPositions;
 #endif
 }
-// PC 0x0043FE00  Xbox 0x00296180
+// PC 0x00452C80
 Part* FindPart(Part* pPart, char* sName)
 {
     if (pPart == 0)
@@ -903,7 +903,7 @@ Part* FindPart(Part* pPart, char* sName)
     }
     return 0;
 }
-// PC 0x00440110  Xbox 0x002961F0
+// PC 0x00452F90
 void Part::PostProcess(Part* pPart)
 {
     for (int i = 0; i < m_lstChildren.m_nCount; i++)
@@ -911,7 +911,7 @@ void Part::PostProcess(Part* pPart)
         m_lstChildren[i]->PostProcess(pPart);
     }
 }
-// PC 0x00448DA0  Xbox 0x0029C970
+// PC 0x0045D080
 MdlNodeAnimMesh::~MdlNodeAnimMesh()
 {
     if (m_nNodeType != 0)
@@ -921,7 +921,7 @@ MdlNodeAnimMesh::~MdlNodeAnimMesh()
     delete[] m_pAnimationData1;
     delete[] m_pAnimationData2;
 }
-// PC 0x00448E60  Xbox 0x0029CA20
+// PC 0x0045D140
 MdlNodeSkin::~MdlNodeSkin()
 {
     if (m_nNodeType != 0)
@@ -935,7 +935,7 @@ MdlNodeSkin::~MdlNodeSkin()
     m_lstTBoneRefInv.SetSize(0);
     m_lstQBoneRefInv.SetSize(0);
 }
-// PC 0x00448F80  Xbox 0x0029CAF0
+// PC 0x0045D260
 MdlNodeLight::~MdlNodeLight()
 {
     if (m_nNodeType != 0)
@@ -947,14 +947,14 @@ MdlNodeLight::~MdlNodeLight()
         m_lstTextureNames.m_nCount--;
     }
 }
-// PC 0x00449090  Xbox 0x0029CBC0
+// PC 0x0045D370
 MdlNodeLightsaber::~MdlNodeLightsaber()
 {
     if (m_nNodeType != 0)
         DestructorDispatch();
     m_nNodeType = 0;
 }
-// PC 0x004490F0  Xbox 0x0029CC20
+// PC 0x0045D3D0
 MdlNodeDanglyMesh::~MdlNodeDanglyMesh()
 {
     if (m_nNodeType != 0)
@@ -962,7 +962,7 @@ MdlNodeDanglyMesh::~MdlNodeDanglyMesh()
     m_nNodeType = 0;
     delete[] m_pVertexPositions;
 }
-// PC 0x00449170  Xbox 0x0029CCA0
+// PC 0x0045D450
 MdlNodeAABB::~MdlNodeAABB()
 {
     if (m_nNodeType != 0)
@@ -970,7 +970,7 @@ MdlNodeAABB::~MdlNodeAABB()
     m_nNodeType = 0;
     delete m_pAABBData;
 }
-// PC 0x00449200  Xbox 0x0029CD30
+// PC 0x0045D4E0
 Part* CreateInstanceTreeR(MdlNode* pNode, Gob* pGob)
 {
     if (!pNode)
@@ -989,25 +989,25 @@ Part* CreateInstanceTreeR(MdlNode* pNode, Gob* pGob)
     pPart->m_nNodeID = pNode->m_nNodeID;
     return pPart;
 }
-// PC 0x00449410  Xbox 0x0029CDF0
+// PC 0x0045D6F0
 Part* CreateInstanceTree(MdlNode* pNode, Gob* pGob)
 {
     Part* pPart = CreateInstanceTreeR(pNode, pGob);
     pPart->PostProcess(pPart);
     return pPart;
 }
-// Xbox 0x0029B780
+
 inline CAurObjectLightContainer::CAurObjectLightContainer()
     : m_lstLights(0), m_lstFadeIntensities(0)
 {
     m_pShadowLight = 0;
     m_fShadowFade = 0.0f;
 }
-// PC 0x00445600  Xbox 0x0029B800
+// PC 0x00459830
 inline CAurObjectLightContainer::~CAurObjectLightContainer()
 {
 }
-// PC 0x004478D0  Xbox 0x0029B860
+// PC 0x0045BB60
 PartLightsaber::PartLightsaber(MdlNode* pNode)
     : PartTriMesh(pNode)
 {
@@ -1015,14 +1015,14 @@ PartLightsaber::PartLightsaber(MdlNode* pNode)
     m_nFirstSegment = 0;
     m_nNextSegment = 0;
 }
-// PC 0x00445670  Xbox 0x0029A490
+// PC 0x004597E0
 PartLightsaber::~PartLightsaber()
 {
     m_nSegments = 0;
     m_nFirstSegment = 0;
     m_nNextSegment = 0;
 }
-// PC 0x00447980  Xbox 0x0029B920
+// PC 0x0045BC10
 PartDanglyMesh::PartDanglyMesh(MdlNode* pNode)
     : PartTriMesh(pNode),
       m_pVertexPositions(0)
@@ -1042,7 +1042,7 @@ PartDanglyMesh::PartDanglyMesh(MdlNode* pNode)
     GLRender::UnlockPool(m_nVertexPool);
 #endif
 }
-// PC 0x004456A0  Xbox 0x0029A4C0
+// PC 0x004598A0
 PartDanglyMesh::~PartDanglyMesh()
 {
     delete m_pVertexPositions;
@@ -1051,16 +1051,16 @@ PartDanglyMesh::~PartDanglyMesh()
     m_nVertexPool = RequestPoolManager::INVALID_POOL;
 #endif
 }
-// PC 0x00445710  Xbox 0x0029A520
+// PC 0x00459910
 PartSkin::~PartSkin()
 {
 }
-// PC 0x00447B20  Xbox 0x0029BA30
+// PC 0x0045BDB0
 Part* MdlNode::InternalCreateInstance(Gob*)
 {
     return new Part(this);
 }
-// PC 0x00447B90  Xbox 0x0029BAA0
+// PC 0x0045BE20
 Part* MdlNodeLight::InternalCreateInstance(Gob* pGob)
 {
     PartLight* pLight = new PartLight(this);
@@ -1078,37 +1078,37 @@ Part* MdlNodeLight::InternalCreateInstance(Gob* pGob)
     }
     return pLight;
 }
-// PC 0x00447C80  Xbox 0x0029BB70
+// PC 0x0045BF10
 Part* MdlNodeCamera::InternalCreateInstance(Gob*)
 {
     return new PartCamera(this);
 }
-// PC 0x00447CE0  Xbox 0x0029BBD0
+// PC 0x0045BF70
 Part* MdlNodeReference::InternalCreateInstance(Gob*)
 {
     return new PartReference(this);
 }
-// PC 0x00447D60  Xbox 0x0029BC50
+// PC 0x0045BFF0
 PartTriMesh* MdlNodeTriMesh::InternalCreateInstance(Gob*)
 {
     return new PartTriMesh(this);
 }
-// PC 0x00447DD0  Xbox 0x0029BCC0
+// PC 0x0045C060
 Part* MdlNodeAnimMesh::InternalCreateInstance(Gob*)
 {
     return new PartAnimMesh(this);
 }
-// PC 0x00447E30  Xbox 0x0029BD20
+// PC 0x0045C0C0
 Part* MdlNodeAABB::InternalCreateInstance(Gob*)
 {
     return new PartAABB(this);
 }
-// PC 0x00447E90  Xbox 0x0029BD80
+// PC 0x0045C120
 Part* MdlNodeDanglyMesh::InternalCreateInstance(Gob*)
 {
     return new PartDanglyMesh(this);
 }
-// PC 0x00445720  Xbox 0x0029A530
+// PC 0x00459920
 MdlNodeTriMesh_PostProcess::MdlNodeTriMesh_PostProcess()
     : m_lPositions(0),
       m_lTextureCoordinates0(0),
@@ -1121,15 +1121,15 @@ MdlNodeTriMesh_PostProcess::MdlNodeTriMesh_PostProcess()
       m_lstVertices(0)
 {
 }
-// PC 0x0043E2E0  Xbox 0x002949B0
+// PC 0x0044FF70
 inline CAurPart::~CAurPart()
 {
 }
-// PC 0x0043E310  Xbox 0x002949E0
+// PC 0x0044FFA0
 inline CAurPathInfo::~CAurPathInfo()
 {
 }
-// PC 0x004457A0  Xbox 0x0029A5F0
+// PC 0x004599A0
 Part::Part(MdlNode* pNode)
     : m_lstChildren(0)
 {
@@ -1143,7 +1143,7 @@ Part::Part(MdlNode* pNode)
     m_nNodeID = 0;
     m_bIncludeChildBounds = 0;
 }
-// PC 0x00440140  Xbox 0x00296220
+// PC 0x00452FC0
 Part::~Part()
 {
     for (int i = m_lstChildren.m_nCount; i != 0; m_lstChildren.m_nCount = i)
@@ -1153,7 +1153,7 @@ Part::~Part()
     delete m_pMaterial;
     --countpart;
 }
-// PC 0x00445840  Xbox 0x0029A6C0
+// PC 0x00459A40
 PartTriMesh::PartTriMesh(MdlNode* pNode)
     : Part(pNode)
 {
@@ -1199,7 +1199,7 @@ PartTriMesh::PartTriMesh(MdlNode* pNode)
     else
         m_pOriginalTexCoords = 0;
 }
-// PC 0x00440230  Xbox 0x00296310
+// PC 0x004530B0
 PartTriMesh::~PartTriMesh()
 {
     if (m_pVertexPrimitive)
@@ -1229,7 +1229,7 @@ PartTriMesh::~PartTriMesh()
         m_pOriginalTexCoords = 0;
     }
 }
-// PC 0x004402F0  Xbox 0x002963D0
+// PC 0x004531D0
 Part* Gob::GetPart(char* sName)
 {
     if (stricmp("root", sName) != 0)
@@ -1239,7 +1239,7 @@ Part* Gob::GetPart(char* sName)
 
     return m_pRootPart;
 }
-// PC 0x00445A40  Xbox 0x0029A8B0
+// PC 0x00459C40
 PartLight::PartLight(MdlNode* pNode)
     : Part(pNode)
 {
@@ -1277,7 +1277,7 @@ PartLight::PartLight(MdlNode* pNode)
     m_fShadowRadius = -1.0f;
 #endif
 }
-// PC 0x00440320  Xbox 0x00296400
+// PC 0x00453200
 PartLight::~PartLight()
 {
     for (int i = 0; i < gobs.m_nCount; i++)
@@ -1299,7 +1299,7 @@ PartLight::~PartLight()
         }
     }
 }
-static int FindGobIdx(char* sName)  // PC 0x00440410  Xbox 0x002964A0
+static int FindGobIdx(char* sName)  // PC 0x004532F0
 {
     int nLow = 0;
     int nHigh = gobs.m_nCount - 1;
@@ -1318,7 +1318,7 @@ static int FindGobIdx(char* sName)  // PC 0x00440410  Xbox 0x002964A0
 
     return nLow;
 }
-// PC 0x00440460  Xbox 0x002964F0
+// PC 0x00453340
 Gob* FindGob(char* sName)
 {
     int nIndex = FindGobIdx(sName);
@@ -1331,7 +1331,7 @@ Gob* FindGob(char* sName)
 
     return 0;
 }
-// Xbox 0x00296540
+
 const char* setmirrorimage(char* sCommand)
 {
 #ifdef _XBOX
@@ -1384,7 +1384,7 @@ const char* setmirrorimage(char* sCommand)
     return "SUCCESS";
 #endif
 }
-// PC 0x004404B0  Xbox 0x00296620
+// PC 0x00453390
 void Gob::SetUpImposters(int nImposterType, float* pfImposterValues)
 {
     AURMODEL_TRACE();
@@ -1395,7 +1395,7 @@ void Gob::SetUpImposters(int nImposterType, float* pfImposterValues)
     m_nImposters = GLRender::SetUpImposters(nImposterType, pfImposterValues);
 #endif
 }
-// PC 0x0043E340  Xbox 0x00294A10
+// PC 0x0044FFD0
 MdlNodeAABB* MdlNode::AsMdlNodeAABB()
 {
     if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_AABB)) == (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_AABB))
@@ -1403,7 +1403,7 @@ MdlNodeAABB* MdlNode::AsMdlNodeAABB()
     else
         return 0;
 }
-// PC 0x0043E360  Xbox 0x00294A30
+// PC 0x0044FFF0
 MdlNodeAnimMesh* MdlNode::AsMdlNodeAnimMesh()
 {
     if ((m_nNodeType &
@@ -1413,7 +1413,7 @@ MdlNodeAnimMesh* MdlNode::AsMdlNodeAnimMesh()
     else
         return 0;
 }
-// PC 0x0043E370  Xbox 0x00294A40
+// PC 0x00450000
 MdlNodeCamera* MdlNode::AsMdlNodeCamera()
 {
     if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_CAMERA)) ==
@@ -1422,7 +1422,7 @@ MdlNodeCamera* MdlNode::AsMdlNodeCamera()
     else
         return 0;
 }
-// PC 0x0043E380  Xbox 0x00294A50
+// PC 0x00450010
 MdlNodeDanglyMesh* MdlNode::AsMdlNodeDanglyMesh()
 {
     if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_DANGLYMESH)) ==
@@ -1431,7 +1431,7 @@ MdlNodeDanglyMesh* MdlNode::AsMdlNodeDanglyMesh()
     else
         return 0;
 }
-// PC 0x0043E3A0  Xbox 0x00294A70
+// PC 0x00450030
 MdlNodeLightsaber* MdlNode::AsMdlNodeLightsaber()
 {
     if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_LIGHTSABER)) ==
@@ -1440,7 +1440,7 @@ MdlNodeLightsaber* MdlNode::AsMdlNodeLightsaber()
     else
         return 0;
 }
-// PC 0x0043E3C0  Xbox 0x00294A90
+// PC 0x00450050
 MdlNodeEmitter* MdlNode::AsMdlNodeEmitter()
 {
     if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_EMITTER)) ==
@@ -1449,7 +1449,7 @@ MdlNodeEmitter* MdlNode::AsMdlNodeEmitter()
     else
         return 0;
 }
-// PC 0x0043E3D0  Xbox 0x00294AA0
+// PC 0x00450060
 MdlNodeLight* MdlNode::AsMdlNodeLight()
 {
     if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_LIGHT)) ==
@@ -1458,7 +1458,7 @@ MdlNodeLight* MdlNode::AsMdlNodeLight()
     else
         return 0;
 }
-// PC 0x0043E3E0  Xbox 0x00294AB0
+// PC 0x00450070
 MdlNodeReference* MdlNode::AsMdlNodeReference()
 {
     if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_REFERENCE)) ==
@@ -1467,7 +1467,7 @@ MdlNodeReference* MdlNode::AsMdlNodeReference()
     else
         return 0;
 }
-// PC 0x0043E3F0  Xbox 0x00294AC0
+// PC 0x00450080
 MdlNodeSkin* MdlNode::AsMdlNodeSkin()
 {
     if ((m_nNodeType &
@@ -1478,7 +1478,7 @@ MdlNodeSkin* MdlNode::AsMdlNodeSkin()
         return 0;
 }
 #ifdef _XBOX
-// Xbox 0x00294AD0
+
 MdlNodeTrigger* MdlNode::AsMdlNodeTrigger()
 {
     if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIGGER)) ==
@@ -1487,7 +1487,7 @@ MdlNodeTrigger* MdlNode::AsMdlNodeTrigger()
     return 0;
 }
 #endif
-// PC 0x004404D0  Xbox 0x00296640
+// PC 0x004533B0
 Vector Gob::GetCutsceneDummyPosition()
 {
     Part* pPart = FindPart(m_pRootPart, "cutscenedummy");
@@ -1500,7 +1500,7 @@ Vector Gob::GetCutsceneDummyPosition()
     }
     return Vector();
 }
-// PC 0x00440550  Xbox 0x002966E0
+// PC 0x00453430
 void PartSetFog(Part* pPart, bool bFog)
 {
     PartTriMesh* pMesh = pPart->AsPartTriMesh();
@@ -1510,17 +1510,17 @@ void PartSetFog(Part* pPart, bool bFog)
     for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)
         PartSetFog(pPart->m_lstChildren[i], bFog);
 }
-// PC 0x00440870  Xbox 0x00296720
+// PC 0x00453750
 void Gob::DisableFog()
 {
     PartSetFog(m_pRootPart, false);
 }
-// PC 0x00440880  Xbox 0x00296730
+// PC 0x00453770
 void Gob::EnableFog()
 {
     PartSetFog(m_pRootPart, true);
 }
-// Xbox 0x002967A0
+
 const char* loadaddin(char* sCommand)
 {
     char sName[64];
@@ -1539,7 +1539,7 @@ const char* loadaddin(char* sCommand)
     pGob->PlayAnimation("ca1slashl", 1.0f, 0, 0);
     return "Playing ca1slashl";
 }
-// PC 0x00440890  Xbox 0x002968B0
+// PC 0x00453790
 int Gob::LoadAddInAnimations(char* sName)
 {
     m_pAnimationModel = FindModel(sName);
@@ -1564,7 +1564,7 @@ int Gob::LoadAddInAnimations(char* sName)
     AUR_MODEL_ADDREF(m_pAnimationModel, this);
     return 1;
 }
-// PC 0x00440960  Xbox 0x00296FB0
+// PC 0x00453870
 void Part::GetMinimumBoundingBox(Vector& vMinimum, Vector& vMaximum, float fScale)
 {
     PartTriMesh* pPart = AsPartTriMesh();
@@ -1607,7 +1607,7 @@ void Part::GetMinimumBoundingBox(Vector& vMinimum, Vector& vMaximum, float fScal
     for (int i = 0; i < m_lstChildren.m_nCount; i++)
         m_lstChildren[i]->GetMinimumBoundingBox(vMinimum, vMaximum, fLocalScale);
 }
-// Xbox 0x00297440
+
 const char* setillumination(char* sCommand)
 {
     char sName[64];
@@ -1638,7 +1638,7 @@ const char* setillumination(char* sCommand)
     pGob->SetIllumination(Vector(fRed, fGreen, fBlue), 1);
     return "Success";
 }
-// PC 0x00440CF0  Xbox 0x00297510
+// PC 0x00453E60
 int AnimMeshHitCheck(PartAnimMesh* pPart, MdlNodeAnimMesh* pNode,
                      Vector vStart, Vector vEnd, Vector* pHit, float fScale)
 {
@@ -1691,7 +1691,7 @@ int AnimMeshHitCheck(PartAnimMesh* pPart, MdlNodeAnimMesh* pNode,
         *pHit = vEnd;
     return nHit;
 }
-// PC 0x00440FF0  Xbox 0x002978A0
+// PC 0x00454160
 int PartTriMesh::HitCheckGeom(const Vector& vStart, Vector& vEnd,
                               Vector* pHit, CHitInfo* pInfo, float fScale)
 {
@@ -1851,7 +1851,7 @@ int PartTriMesh::HitCheckGeom(const Vector& vStart, Vector& vEnd,
 #endif
     return nHit;
 }
-// PC 0x00441510  Xbox 0x00297ED0
+// PC 0x00454680
 int PartAnimMesh::HitCheckGeom(Vector const& vStart, Vector& vEnd,
                                Vector* pHit, CHitInfo*, float fScale)
 {
@@ -1859,7 +1859,7 @@ int PartAnimMesh::HitCheckGeom(Vector const& vStart, Vector& vEnd,
     return AnimMeshHitCheck(this, pNode, vStart, vEnd, pHit, fScale);
 }
 inline void DebugValidatePartMaterial(Part* pPart, char* sName);
-// PC 0x00441570  Xbox 0x00297F30
+// PC 0x004546E0
 int HitCheckAABBnode(AABB* pNode, const Vector& vStart, Vector& vEnd, float fScale)
 {
     ++countboxes;
@@ -2002,7 +2002,7 @@ int HitCheckAABBnode(AABB* pNode, const Vector& vStart, Vector& vEnd, float fSca
     }
 
 }
-// PC 0x004428F0  Xbox 0x002982B0
+// PC 0x00455A60
 int PartAABB::HitCheckGeom(const Vector& vStart, Vector& vEnd,
                            Vector* pHit, CHitInfo* pInfo, float fScale)
 {
@@ -2018,7 +2018,7 @@ int PartAABB::HitCheckGeom(const Vector& vStart, Vector& vEnd,
         *pHit = vEnd;
     return nHit;
 }
-// PC 0x004429D0  Xbox 0x00298370
+
 CAurPart* Part::HitCheck(Vector vStart, Vector vEnd, Vector* pHit,
                         CHitInfo* pInfo, float fScale)
 {
@@ -2095,7 +2095,7 @@ CAurPart* Part::HitCheck(Vector vStart, Vector vEnd, Vector* pHit,
     }
     return pHitPart;
 }
-// PC 0x00442D70  Xbox 0x002987A0
+// PC 0x00456710
 void PartInitMaterial(Gob* pGob, Part* pPart, char* sName)
 {
     PartTriMesh* pTriMesh = pPart->AsPartTriMesh();
@@ -2125,7 +2125,7 @@ void PartInitMaterial(Gob* pGob, Part* pPart, char* sName)
     }
     DebugValidatePartMaterial(pPart, sName);
 }
-// PC 0x00443080  Xbox 0x00298920
+// PC 0x00456A20
 void Part::GetMinimumSphere(Vector& vPosition, float& fRadius)
 {
     Vector vCenter;
@@ -2165,7 +2165,7 @@ void Part::GetMinimumSphere(Vector& vPosition, float& fRadius)
     vPosition = vCenter;
     fRadius = fSphereRadius;
 }
-// PC 0x00443330  Xbox 0x00298BE0
+// PC 0x00456DE0
 void PartTriMesh::GetMinimumSphere(Vector& vPosition, float& fRadius)
 {
     Part::GetMinimumSphere(vPosition, fRadius);
@@ -2220,7 +2220,7 @@ void PartTriMesh::GetMinimumSphere(Vector& vPosition, float& fRadius)
     }
 #endif
 }
-// PC 0x004434A0  Xbox 0x00298E10
+// PC 0x00456F50
 int PartSetCanDownSample(Part* pPart, char bCanDownSample)
 {
     int nChanged = 0;
@@ -2235,7 +2235,7 @@ int PartSetCanDownSample(Part* pPart, char bCanDownSample)
         nChanged += PartSetCanDownSample(pPart->m_lstChildren[i], bCanDownSample);
     return nChanged;
 }
-// PC 0x0043E400  Xbox 0x00294AF0
+// PC 0x00450090
 MdlNodeTriMesh* MdlNode::AsMdlNodeTriMesh()
 {
     if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIMESH)) ==
@@ -2244,52 +2244,52 @@ MdlNodeTriMesh* MdlNode::AsMdlNodeTriMesh()
     else
         return 0;
 }
-// PC 0x0043E410  Xbox 0x00294B00
+// PC 0x004500A0
 unsigned char MdlNodeTriMesh::HasTangentBases()
 {
     return m_TangentBases != -1;
 }
-// PC 0x0043E420  Xbox 0x00294B10
+// PC 0x004500B0
 void MdlNodeAnimMeshGenVertices(void* pNode)
 {
     return ((MdlNodeAnimMesh*)pNode)->InternalGenVertices();
 }
-// PC 0x0043E430  Xbox 0x00294B20
+// PC 0x004500C0
 void MdlNodeAnimMeshRemoveTemporaryArrays(void* pNode)
 {
     return ((MdlNodeAnimMesh*)pNode)->InternalRemoveTemporaryArrays();
 }
-// PC 0x0043E440  Xbox 0x00294B30
+// PC 0x004500D0
 void MdlNodeSkinGenVertices(void* pNode)
 {
     return ((MdlNodeSkin*)pNode)->InternalGenVertices();
 }
-// PC 0x0043E450  Xbox 0x00294B40
+// PC 0x004500E0
 void MdlNodeSkinRemoveTemporaryArrays(void* pNode)
 {
     return ((MdlNodeSkin*)pNode)->InternalRemoveTemporaryArrays();
 }
-// PC 0x0043E460  Xbox 0x00294B50
+// PC 0x004500F0
 void MdlNodeDanglyMeshRemoveTemporaryArrays(void* pNode)
 {
     return ((MdlNodeDanglyMesh*)pNode)->InternalRemoveTemporaryArrays();
 }
-// PC 0x0043E470  Xbox 0x00294B60
+// PC 0x00450100
 void MdlNodeDanglyMeshGenVertices(void* pNode)
 {
     return ((MdlNodeDanglyMesh*)pNode)->InternalGenVertices();
 }
-// PC 0x0043E480  Xbox 0x00294B70
+// PC 0x00450110
 void MdlNodeTriMeshGenVertices(void* pNode)
 {
     return ((MdlNodeTriMesh*)pNode)->InternalGenVertices();
 }
-// PC 0x0043E490  Xbox 0x00294B80
+// PC 0x00450120
 void MdlNodeTriMeshRemoveTemporaryArrays(void* pNode)
 {
     return ((MdlNodeTriMesh*)pNode)->InternalRemoveTemporaryArrays();
 }
-// PC 0x0043E4A0  Xbox 0x00294B90
+// PC 0x004506B0
 void Part::GetWorld(Vector& vPosition, Quaternion& qOrientation)
 {
     Part* pPart = this;
@@ -2321,7 +2321,7 @@ void Part::GetWorld(Vector& vPosition, Quaternion& qOrientation)
     vPosition = pGob->m_vPosition + vPosition;
     qOrientation = pGob->m_qOrientation * qOrientation;
 }
-// PC 0x0043E6A0  Xbox 0x00294DB0
+
 void Part::GetLocal(Vector& vPosition, Quaternion& qOrientation)
 {
     float fScale = 1.0f;
@@ -2341,69 +2341,69 @@ void Part::GetLocal(Vector& vPosition, Quaternion& qOrientation)
     vPosition = -m_qOrientation * (vPosition - m_vPosition);
     vPosition *= 1.0f / fScale;
 }
-// PC 0x0043E830  Xbox 0x00294F70
+// PC 0x00450B90
 void Gob::EnableForceAnimations()
 {
     m_bForceAnimated = 1;
 }
-// PC 0x0043E840  Xbox 0x00294F80
+// PC 0x00450BA0
 void Gob::DisableForceAnimations()
 {
     m_bForceAnimated = 0;
 }
-// PC 0x0043E850  Xbox 0x00294F90
+// PC 0x00450BB0
 bool Gob::IsForceAnimated()
 {
     return m_bForceAnimated;
 }
-// PC 0x0043E860  Xbox 0x00294FA0
+// PC 0x00450BC0
 void Gob::EnableAlwaysRender()
 {
     m_bAlwaysRendering = 1;
 }
-// PC 0x0043E870  Xbox 0x00294FB0
+// PC 0x00450BD0
 void Gob::DisableAlwaysRender()
 {
     m_bAlwaysRendering = 0;
 }
-// PC 0x0043E880  Xbox 0x00294FC0
+// PC 0x00450BE0
 void Gob::EnableInCutscene()
 {
     m_bInCutscene = 1;
 }
-// PC 0x0043E890  Xbox 0x00294FD0
+// PC 0x00450BF0
 void Gob::DisableInCutscene()
 {
     m_bInCutscene = 0;
 }
-// PC 0x0043E8A0  Xbox 0x00294FE0
+// PC 0x00450C00
 bool Gob::IsInCutscene()
 {
     return m_bInCutscene;
 }
-// PC 0x0043E8B0  Xbox 0x00294FF0
+// PC 0x00450C10
 bool Gob::IsAlwaysRendering()
 {
     return m_bAlwaysRendering;
 }
-// PC 0x0043E8C0  Xbox 0x00295000
+// PC 0x00450C20
 void Gob::GetBoundingBox(Vector& vMinimum, Vector& vMaximum)
 {
     vMinimum = m_vBoundingBoxMinimum;
     vMaximum = m_vBoundingBoxMaximum;
 }
-// PC 0x0043E900  Xbox 0x00295040
+// PC 0x00450C60
 void Gob::EnableInViewVolume()
 {
     m_bInViewVolume = 1;
     DoEvent("propagateviewvolume", 0);
 }
-// PC 0x0043E920  Xbox 0x00295060
+// PC 0x0045DDD0
 void Gob::DisableInViewVolume()
 {
     m_bInViewVolume = 0;
 }
-// PC 0x0043E930  Xbox 0x00296980
+// PC 0x00450C80
 CAurObject* Gob::HitCheckPart(CAurPart* pPart, Vector vStart, Vector vEnd,
                             Vector* pHit, CHitInfo* pInfo)
 {
@@ -2440,7 +2440,7 @@ CAurObject* Gob::HitCheckPart(CAurPart* pPart, Vector vStart, Vector vEnd,
     }
     return nHit ? this : 0;
 }
-// PC 0x0043EB80  Xbox 0x00296C10
+// PC 0x004513A0
 CAurObject* Gob::HitCheck(Vector vStart, Vector vEnd, Vector* pHit,
                            CHitInfo* pInfo)
 {
@@ -2480,7 +2480,7 @@ CAurObject* Gob::HitCheck(Vector vStart, Vector vEnd, Vector* pHit,
     }
     return bHit ? this : 0;
 }
-// PC 0x0043EDD0  Xbox 0x00295070
+// PC 0x00451AD0
 void Gob::SetWind(bool bWind, float fWindY, float fWindX, float fWindZ)
 {
     m_bWind = bWind;
@@ -2488,23 +2488,23 @@ void Gob::SetWind(bool bWind, float fWindY, float fWindX, float fWindZ)
     m_fWindX = fWindX;
     m_fWindZ = fWindZ;
 }
-// PC 0x0043EE00  Xbox 0x002950B0
+// PC 0x00451B00
 void Gob::EnableRenderGobBBox(Vector const& vBoundingBox)
 {
     m_bRenderGobBBox = 1;
     m_vRenderGobBBox = vBoundingBox;
 }
-// PC 0x0043EE30  Xbox 0x002950E0
+// PC 0x00451B30
 void Gob::DisableRenderGobBBox()
 {
     m_bRenderGobBBox = 0;
 }
-// PC 0x0043EE40  Xbox 0x002950F0
+// PC 0x00451B40
 int PartHasMaterial(CAurPart* pPart)
 {
     return ((Part*)pPart)->m_pMaterial != 0;
 }
-// PC 0x0043EE50  Xbox 0x00295100
+// PC 0x00451B50
 void Gob::SetColorShifting(Vector vColor, float fAlpha, int nFlags)
 {
     m_vColor = vColor;
@@ -2520,7 +2520,7 @@ void Gob::SetColorShifting(Vector vColor, float fAlpha, int nFlags)
         DoEvent("propagatecolorshift", 0);
     }
 }
-// PC 0x0043EEA0  Xbox 0x00295150
+// PC 0x00451BA0
 void Gob::SetIllumination(Vector vColor, int nFlags)
 {
     m_vIllumination = vColor;
@@ -2530,7 +2530,7 @@ void Gob::SetIllumination(Vector vColor, int nFlags)
         DoEvent("propagateillumination", 0);
     }
 }
-// PC 0x0043EEE0  Xbox 0x00295190
+// PC 0x00451BE0
 void Gob::GetMinimumBoundingBox()
 {
     m_vBoundingBoxMinimum = Vector(10000.0f, 10000.0f, 10000.0f);
@@ -2546,12 +2546,12 @@ List<Vector> MaxFace_PostProcess::texindices3;
 List<Model*> Models;
 List<Gob*> gobs;
 Vector g_HitCheckBoxExpansion;
-// PC 0x0043EF70  Xbox 0x00295230
+// PC 0x00451C70
 int Part::HitCheckGeom(const Vector&, Vector&, Vector*, CHitInfo*, float)
 {
     return 0;
 }
-// PC 0x0043EF80  Xbox 0x00295240
+// PC 0x00451C80
 void Gob::GetMinimumBoundingBox(Vector& vMinimum, Vector& vMaximum)
 {
     GetMinimumBoundingBox();
@@ -2562,14 +2562,14 @@ void Gob::GetMinimumBoundingBox(Vector& vMinimum, Vector& vMaximum)
 inline void DebugValidatePartMaterial(Part* pPart, char* sName)
 {
 }
-// PC 0x0043EFD0  Xbox 0x00295290
+// PC 0x00451CD0
 void Gob::GetMinimumBoundingSphere(Vector& vPosition, float& fRadius)
 {
     GetMinimumSphere();
     vPosition = m_vMinimumBoundingSphere;
     fRadius = m_fMinimumBoundingSphereRadius;
 }
-// PC 0x0043F010  Xbox 0x002952D0
+// PC 0x00451D10
 void Gob::GetMinimumSphere()
 {
     if (m_pRootPart)
@@ -2581,19 +2581,19 @@ void Gob::GetMinimumSphere()
         m_fMinimumBoundingSphereRadius = m_fScale * m_fMinimumBoundingSphereRadius * gobspherescaling;
     }
 }
-// PC 0x0043F0C0  Xbox 0x002953F0
+// PC 0x00451DD0
 Vector Gob::SetPosition(Vector vPosition)
 {
     m_vPosition = vPosition;
     return m_vPosition;
 }
-// PC 0x0043F0F0  Xbox 0x00295420
+// PC 0x00451E10
 Quaternion Gob::SetOrientation(Quaternion qOrientation)
 {
     m_qOrientation = qOrientation;
     return m_qOrientation;
 }
-// PC 0x0043F130  Xbox 0x00295460
+// PC 0x00451E50
 CAurBehavior* Gob::GetBehavior(int nIndex)
 {
     if (nIndex != -1)
@@ -2614,19 +2614,19 @@ CAurBehavior* Gob::GetBehavior(int nIndex)
 
     return m_pBehavior;
 }
-// PC 0x0043F170  Xbox 0x002954A0
+// PC 0x00451E90
 CAurObject* Gob::HitCheckHack(Vector vStart, Vector vEnd, Vector* pHit)
 {
     return HitCheck(vStart, vEnd, pHit, 0);
 }
-// PC 0x0043F1C0  Xbox 0x002954F0
+// PC 0x00451EE0
 char* Gob::GetModelName()
 {
     if (m_pModel == NULL)
         return NULL;
     return m_pModel->m_sName;
 }
-// PC 0x0043F1D0  Xbox 0x00295500
+// PC 0x00451EF0
 void Gob::SetBehavior(CAurBehavior* pBehavior)
 {
     CAurBehavior* pOldBehavior = m_pBehavior;
@@ -2637,7 +2637,7 @@ void Gob::SetBehavior(CAurBehavior* pBehavior)
         delete pOldBehavior;
     }
 }
-// PC 0x004437F0  Xbox 0x00298E90
+// PC 0x004572A0
 int Gob::SetCanDownSample(char bCanDownSample)
 {
     if (m_bCanDownSample == bCanDownSample)
@@ -2648,7 +2648,7 @@ int Gob::SetCanDownSample(char bCanDownSample)
     m_bCanDownSample = bCanDownSample;
     return PartSetCanDownSample(m_pRootPart, bCanDownSample);
 }
-// PC 0x00443820  Xbox 0x00298F40
+// PC 0x004572D0
 CAurBehavior* Gob::AttachToObject(CAurObject* pObject, char* sPart, int nFlags)
 {
     CAurBehavior* pBehavior = 0;
@@ -2681,7 +2681,7 @@ CAurBehavior* Gob::AttachToObject(CAurObject* pObject, char* sPart, int nFlags)
     }
     return pBehavior;
 }
-// PC 0x004439A0  Xbox 0x00299090
+// PC 0x00457430
 CAurBehavior* Gob::AttachToPart(CAurObject* pObject, CAurPart* pPart, int nFlags)
 {
     pPart->GetWorld(m_vPosition, m_qOrientation);
@@ -2707,7 +2707,7 @@ CAurBehavior* Gob::AttachToPart(CAurObject* pObject, CAurPart* pPart, int nFlags
     SetScene(((Gob*)pObject)->m_pScene);
     return pBehavior;
 }
-// PC 0x0043F200  Xbox 0x00295530
+// PC 0x00451F20
 void Gob::SetScene(Scene* pScene)
 {
     if (m_pScene != pScene)
@@ -2726,7 +2726,7 @@ void Gob::SetScene(Scene* pScene)
         DoEvent("UpdateScenes", 0);
     }
 }
-// PC 0x0043F250  Xbox 0x00295580
+// PC 0x00451F70
 void Gob::InheritExternal(CAurObject* pSource)
 {
     Gob* pGob = (Gob*)pSource;
@@ -2734,12 +2734,12 @@ void Gob::InheritExternal(CAurObject* pSource)
     m_pExternalData = pGob->m_pExternalData;
     m_nExternalDataType = pGob->m_nExternalDataType;
 }
-// PC 0x0043F270  Xbox 0x002955A0
+// PC 0x00451F90
 void Gob::SetProcessFlag()
 {
     m_bProcessFlag = 1;
 }
-// PC 0x0043F280  Xbox 0x002955B0
+// PC 0x00451FA0
 int Gob::SetPartPosition(char* sPart, Vector vPosition,
                          Quaternion qOrientation)
 {
@@ -2761,7 +2761,7 @@ int Gob::SetPartPosition(char* sPart, Vector vPosition,
     pPart->m_nInstanceState = 1;
     return 1;
 }
-// PC 0x0043F430  Xbox 0x00295760
+// PC 0x00452300
 int Gob::GetPartPosition(char* sPart, Vector* pPosition,
                          Quaternion* pOrientation)
 {
@@ -2785,7 +2785,7 @@ int Gob::GetPartPosition(char* sPart, Vector* pPosition,
     }
     return 1;
 }
-// PC 0x0043F4E0  Xbox 0x00295810
+// PC 0x004523B0
 int Gob::SetPartLocalPosition(char* sPart, Vector vPosition,
                               Quaternion qOrientation)
 {
@@ -2799,7 +2799,7 @@ int Gob::SetPartLocalPosition(char* sPart, Vector vPosition,
     pPart->m_nInstanceState = 1;
     return 1;
 }
-// PC 0x0043F540  Xbox 0x00295870
+// PC 0x00452410
 int Gob::GetPartLocalPosition(char* sPart, Vector* pPosition,
                               Quaternion* pOrientation)
 {
@@ -2818,7 +2818,7 @@ int Gob::GetPartLocalPosition(char* sPart, Vector* pPosition,
     }
     return 1;
 }
-// PC 0x0043F5A0  Xbox 0x002958D0
+// PC 0x00452470
 void Gob::BehaviorMessage(char* sMessage)
 {
     if (m_pBehavior)
@@ -2826,12 +2826,12 @@ void Gob::BehaviorMessage(char* sMessage)
         m_pBehavior->Message(sMessage);
     }
 }
-// PC 0x0043F5C0  Xbox 0x002F1110
+// PC 0x00452490
 Vector Part::SetPartPosition(Vector vPosition)
 {
     return Vector();
 }
-// PC 0x00443B30  Xbox 0x00299390
+// PC 0x004575D0
 char TreeHasSingleTexture(Part* pPart)
 {
     PartTriMesh* pMesh = pPart->AsPartTriMesh();
@@ -2862,7 +2862,7 @@ char TreeHasSingleTexture(Part* pPart)
     }
     return 1;
 }
-// PC 0x00443D70  Xbox 0x00299410
+// PC 0x00457810
 char TreeHasTransparency(Part* pPart)
 {
     PartTriMesh* pMesh = pPart->AsPartTriMesh();
@@ -2882,7 +2882,7 @@ char TreeHasTransparency(Part* pPart)
     }
     return false;
 }
-// PC 0x004440D0  Xbox 0x00299480
+// PC 0x00457B70
 char TreeHasGeometry(Part* pPart)
 {
     PartTriMesh* pMesh = pPart->AsPartTriMesh();
@@ -2899,7 +2899,7 @@ char TreeHasGeometry(Part* pPart)
     }
     return false;
 }
-// PC 0x004443E0  Xbox 0x002994E0
+// PC 0x00457E80
 char TreeSetGeometryFlags(Part* pPart)
 {
     pPart->m_bIncludeChildBounds = 0;
@@ -2912,7 +2912,7 @@ char TreeSetGeometryFlags(Part* pPart)
         pPart->m_bIncludeChildBounds = 1;
     return pPart->m_bIncludeChildBounds;
 }
-// PC 0x00444840  Xbox 0x00299530
+// PC 0x004582E0
 void Gob::ProcessGob()
 {
     if (m_bProcessFlag)
@@ -2934,7 +2934,7 @@ void Gob::ProcessGob()
         m_bProcessFlag = 0;
     }
 }
-// PC 0x004448C0  Xbox 0x002995B0
+// PC 0x00458370
 void CreateReferenceObjects(Gob* pGob, Part* pPart)
 {
     PartReference* pReference = pPart->AsPartReference();
@@ -2956,7 +2956,7 @@ void CreateReferenceObjects(Gob* pGob, Part* pPart)
         CreateReferenceObjects(pGob, pChild);
     }
 }
-// Xbox 0x00299690
+
 const char* append(char* sCommand)
 {
     char sName[64];
@@ -2993,7 +2993,7 @@ const char* append(char* sCommand)
     pGob->Append(sModel, sPart);
     return "OK";
 }
-// Xbox 0x00299760
+
 const char* amputate(char* sCommand)
 {
     char sName[64];
@@ -3027,7 +3027,7 @@ const char* amputate(char* sCommand)
     pGob->Amputate(sPart);
     return "Amputation Sucessful";
 }
-// PC 0x00444D90  Xbox 0x00299810
+// PC 0x00458840
 bool Gob::SetObjectScale(float fScale, bool bBaseScale)
 {
     if (!m_pModel)
@@ -3052,12 +3052,12 @@ bool Gob::SetObjectScale(float fScale, bool bBaseScale)
     }
     return true;
 }
-// PC 0x00444E20  Xbox 0x00299900
+// PC 0x004588D0
 TileData::~TileData()
 {
     delete m_pStaticObject;
 }
-// Xbox 0x00299D40
+
 const char* setgobwind(char* sCommand)
 {
     char sName[64];
@@ -3075,7 +3075,7 @@ const char* setgobwind(char* sCommand)
     pGob->SetWind(true, fIntensity, 0.0f, 0.0f);
     return "Success.";
 }
-// PC 0x00445AE0  Xbox 0x0029A980
+// PC 0x00459CE0
 static void findalllightparts(Part* pPart, List<PartLight*>& lLights)
 {
     PartLight* pLight = pPart->AsPartLight();
@@ -3084,7 +3084,7 @@ static void findalllightparts(Part* pPart, List<PartLight*>& lLights)
     for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)
         findalllightparts(pPart->m_lstChildren[i], lLights);
 }
-// PC 0x00445E30  Xbox 0x0029A9D0
+// PC 0x0045A030
 void Gob::SetLightPriority(int nPriority)
 {
     List<PartLight*> lLights;
@@ -3094,7 +3094,7 @@ void Gob::SetLightPriority(int nPriority)
         lLights[i]->m_nPriority = nPriority;
     }
 }
-// PC 0x00445EC0  Xbox 0x0029AA60
+// PC 0x0045A0C0
 static void findallmaterials(Part* pPart, List<Material*>& lMaterials)
 {
     if (pPart->m_pMaterial)
@@ -3102,7 +3102,7 @@ static void findallmaterials(Part* pPart, List<Material*>& lMaterials)
     for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)
         findallmaterials(pPart->m_lstChildren[i], lMaterials);
 }
-// PC 0x00447F00  Xbox 0x0029BDF0
+// PC 0x0045C190
 float Gob::GetMaximumLightRadius()
 {
     float fMaximumRadius = 0.0f;
@@ -3115,7 +3115,7 @@ float Gob::GetMaximumLightRadius()
     return fMaximumRadius;
 }
 #ifndef _XBOX
-// PC 0x00447FA0  Xbox 0x00064C20
+// PC 0x0045C230
 template <> inline SafePointer<CAurObject>& SafePointer<CAurObject>::operator=(CAurObject* pObject)
 {
     AurModelTrace3();
@@ -3123,13 +3123,13 @@ template <> inline SafePointer<CAurObject>& SafePointer<CAurObject>::operator=(C
     return *this;
 }
 #endif
-void Gob::RemoveAddInAnimations()  // PC 0x0044B2C0  Xbox 0x0029F2B0
+void Gob::RemoveAddInAnimations()  // PC 0x0045F820
 {
     if (m_pAnimationModel != NULL)
         m_pAnimationModel->DelRef(this);
     m_pAnimationModel = NULL;
 }
-// PC 0x004461D0  Xbox 0x0029AAA0
+// PC 0x0045A3D0
 static void findalltrimeshparts(Part* pPart, List<PartTriMesh*>& lParts)
 {
     PartTriMesh* pTriMesh = pPart->AsPartTriMesh();
@@ -3138,7 +3138,7 @@ static void findalltrimeshparts(Part* pPart, List<PartTriMesh*>& lParts)
     for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)
         findalltrimeshparts(pPart->m_lstChildren[i], lParts);
 }
-// PC 0x00446520  Xbox 0x0029AAF0
+// PC 0x0045A720
 int Gob::ReplaceTexture(char* sOld, char* sNew)
 {
     if (sOld[0] == 0)
@@ -3165,7 +3165,7 @@ int Gob::ReplaceTexture(char* sOld, char* sNew)
 #endif
     return 1;
 }
-// PC 0x00446660  Xbox 0x0029AC20
+// PC 0x0045A860
 int Gob::RestoreTexture()
 {
     List<PartTriMesh*> lParts;
@@ -3178,7 +3178,7 @@ int Gob::RestoreTexture()
     }
     return 1;
 }
-int Gob::ReplaceTexture(char* sOld, char* sNew, int nCount,  // PC 0x00446720  Xbox 0x0029ACC0
+int Gob::ReplaceTexture(char* sOld, char* sNew, int nCount,  // PC 0x0045A920
                         unsigned short* pTXI, int nFlags)
 {
     if (spewpltfp)
@@ -3214,7 +3214,7 @@ int Gob::ReplaceTexture(char* sOld, char* sNew, int nCount,  // PC 0x00446720  X
 #endif
     return 1;
 }
-// PC 0x00446910  Xbox 0x0029AE60
+// PC 0x0045AB10
 int Gob::ReplaceTextureSubtree(char* sPart, char* sTexture, int nNumTXI,
                                unsigned short* pTXI)
 {
@@ -3249,7 +3249,7 @@ int Gob::ReplaceTextureSubtree(char* sPart, char* sTexture, int nNumTXI,
 #endif
     return 1;
 }
-// PC 0x00446AB0  Xbox 0x0029AFE0
+// PC 0x0045ACB0
 void GetAllNamedTextures(Part* pPart, List<CAurTexture*>& lTextures, char* sName)
 {
     PartTriMesh* pTriMesh = pPart->AsPartTriMesh();
@@ -3266,7 +3266,7 @@ void GetAllNamedTextures(Part* pPart, List<CAurTexture*>& lTextures, char* sName
     for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)
         GetAllNamedTextures(pPart->m_lstChildren[i], lTextures, sName);
 }
-// PC 0x00446E10  Xbox 0x0029B060
+// PC 0x0045B010
 int Gob::SetTextureAttributes(char* sTexture, char* sAttributes)
 {
     List<CAurTexture*> lTextures;
@@ -3282,7 +3282,7 @@ int Gob::SetTextureAttributes(char* sTexture, char* sAttributes)
     return 0;
 }
 #ifndef _XBOX
-// PC 0x00446EE0  Xbox 0x0029B120
+// PC 0x0045B0F0
 void Gob::ReattachReference(CAurObject* pObject, char* sPart)
 {
     List<Part*> lstParts;
@@ -3312,7 +3312,7 @@ void Gob::ReattachReference(CAurObject* pObject, char* sPart)
     }
 }
 #endif
-// PC 0x00447180  Xbox 0x0029B360
+// PC 0x0045B410
 void Gob::CollectLights(List<PartLight*>& lstLights)
 {
     List<Part*> lstParts;
@@ -3332,7 +3332,7 @@ void Gob::CollectLights(List<PartLight*>& lstLights)
         }
     }
 }
-// PC 0x00447310  Xbox 0x0029B420
+// PC 0x0045B5A0
 void Gob::AddAttachment(Gob* pAttachment)
 {
     if (!m_lstAttachments.Contains(pAttachment))
@@ -3340,7 +3340,7 @@ void Gob::AddAttachment(Gob* pAttachment)
         m_lstAttachments.Add(pAttachment);
     }
 }
-// PC 0x00447370  Xbox 0x0029B450
+// PC 0x0045B600
 void Gob::RemoveAttachment(Gob* pAttachment)
 {
     if (m_lstAttachments.Contains(pAttachment))
@@ -3348,7 +3348,7 @@ void Gob::RemoveAttachment(Gob* pAttachment)
         m_lstAttachments.Remove(pAttachment);
     }
 }
-// PC 0x004473B0  Xbox 0x0029B480
+// PC 0x0045B640
 TileData::TileData()
     : m_lstParts(0),
       m_lstAdjacentTiles(0),
@@ -3375,7 +3375,7 @@ TileData::TileData()
     m_vMaximum = Vector(AUR_TILE_UNSET_BOUND, AUR_TILE_UNSET_BOUND,
                         AUR_TILE_UNSET_BOUND);
 }
-// PC 0x004474D0  Xbox 0x0029B5D0
+// PC 0x0045B760
 void Gob::EnumParts(Part* pPart, int (*pFilter)(CAurPart*), List<CAurPart*>* pParts)
 {
     if (pPart)
@@ -3389,7 +3389,7 @@ void Gob::EnumParts(Part* pPart, int (*pFilter)(CAurPart*), List<CAurPart*>* pPa
             EnumParts(pPart->m_lstChildren[i], pFilter, pParts);
     }
 }
-// PC 0x004477B0  Xbox 0x0029B630
+// PC 0x0045BA40
 void Gob::EnumParts(int (*pFilter)(CAurPart*), List<CAurPart*>* pParts)
 {
     EnumParts(m_pRootPart, pFilter, pParts);
@@ -3398,7 +3398,7 @@ void Gob::EnumParts(int (*pFilter)(CAurPart*), List<CAurPart*>* pParts)
 inline CAurObject::CAurObject()
 {
 }
-// PC 0x00449440  Xbox 0x0029CE20
+// PC 0x0045D720
 Gob::Gob(char* sName)
     : m_lstRoomData(0), m_lOutOfOrderAnimations(0),
       m_lstAppendModels(0), m_lstAppendParts(0), m_lCallBacks(0),
@@ -3492,7 +3492,7 @@ Gob::Gob(char* sName)
 #endif
     gobs.Insert(this, FindGobIdx(m_sName));
 }
-// PC 0x0044B2F0  Xbox 0x0029F2D0
+// PC 0x0045F850
 Gob::~Gob()
 {
     --g_nCountOfGobs;
@@ -3550,7 +3550,7 @@ Gob::~Gob()
     DeleteFuncWithPrefix(sFuncPrefix);
 #endif
 }
-// PC 0x00449B10  Xbox 0x0029D4D0
+// PC 0x0045E020
 int Gob::Append(char* sModel, char* sPart)
 {
     Part* pParent = FindPart(m_pRootPart, sPart);
@@ -3577,7 +3577,7 @@ int Gob::Append(char* sModel, char* sPart)
     DoEvent("_EmitterTarget", 0);
     return 1;
 }
-// Xbox 0x0029DB00
+
 const char* spinmodels(char* sCommand)
 {
     for (int i = 0; i < 1000; i++)
@@ -3602,7 +3602,7 @@ const char* spinmodels(char* sCommand)
     }
     return "SUCK-CESS";
 }
-// PC 0x00449CC0  Xbox 0x0029D600
+// PC 0x0045E1D0
 CAurObject* NewCAurObject(char* sModel, char* sName, FILE* pModelFile, FILE* pVertexFile)
 {
     bool bKeepHistory = g_bKeepHistory;
@@ -3682,7 +3682,7 @@ CAurObject* NewCAurObject(char* sModel, char* sName, FILE* pModelFile, FILE* pVe
     pGob->Animate(0.0f);
     return pGob;
 }
-// PC 0x0044A040  Xbox 0x0029DF70
+// PC 0x0045E570
 MdlNode::~MdlNode()
 {
     if (m_nNodeType != 0)
@@ -3718,18 +3718,18 @@ MdlNode::~MdlNode()
     }
     countmodelnodes--;
 }
-// PC 0x0044A280  Xbox 0x0029E170
+// PC 0x0045E7B0
 MdlNodeCamera::MdlNodeCamera(char* sName)
     : MdlNode(sName)
 {
     m_nNodeType = MDL_NODE_HEADER | MDL_NODE_CAMERA;
 }
-// PC 0x0044A2A0  Xbox 0x0029E190
+// PC 0x0045E7D0
 MdlNode* MdlNodeCamera::InternalConJoin()
 {
     return new MdlNodeCamera(TranslateNodeName());
 }
-// PC 0x0044A300  Xbox 0x0029E220
+// PC 0x0045E830
 MdlNodeEmitter::MdlNodeEmitter(char* sName)
     : MdlNode(sName)
 {
@@ -3756,12 +3756,12 @@ MdlNodeEmitter::MdlNodeEmitter(char* sName)
     m_sTexture[0] = 0;
     m_sChunkName[0] = 0;
 }
-// PC 0x0044A390  Xbox 0x0029E2D0
+// PC 0x0045E8C0
 MdlNode* MdlNodeEmitter::InternalConJoin()
 {
     return new MdlNodeEmitter(TranslateNodeName());
 }
-// PC 0x0044A3F0  Xbox 0x0029E360
+// PC 0x0045E920
 MdlNodeLight::MdlNodeLight(char* sName)
     : MdlNode(sName),
       m_lstTextures(0),
@@ -3780,12 +3780,12 @@ MdlNodeLight::MdlNodeLight(char* sName)
     m_bFadingLight = 1;
     m_nPriority = DEFAULT_LIGHT_PRIORITY;
 }
-// PC 0x0044A4A0  Xbox 0x0029E440
+// PC 0x0045E9D0
 MdlNode* MdlNodeLight::InternalConJoin()
 {
     return new MdlNodeLight(TranslateNodeName());
 }
-// PC 0x0044A500  Xbox 0x0029E4D0
+// PC 0x0045EA30
 void MdlNodeLight::BinaryInternalDestructor()
 {
     for (int i = m_lstTextures.m_nCount; i != 0; )
@@ -3798,18 +3798,18 @@ void MdlNodeLight::BinaryInternalDestructor()
     }
     m_lstTextures.SetSize(0);
 }
-// PC 0x0044A5C0  Xbox 0x0029E520
+// PC 0x0045EAF0
 MdlNodeReference::MdlNodeReference(char* sName)
     : MdlNode(sName)
 {
     m_nNodeType = MDL_NODE_HEADER | MDL_NODE_REFERENCE;
 }
-// PC 0x0044A5E0  Xbox 0x0029E540
+// PC 0x0045EB10
 MdlNode* MdlNodeReference::InternalConJoin()
 {
     return new MdlNodeReference(TranslateNodeName());
 }
-// PC 0x0044A640  Xbox 0x0029E5D0
+// PC 0x0045EB70
 MdlNodeTriMesh::MdlNodeTriMesh(char* sName)
     : MdlNode(sName), m_lFaces(0), m_lstIndexArrays(0),
       m_lstTriangleIndices(0), m_lstIndexCounts(0), m_lstIndexOffsets(0),
@@ -3863,12 +3863,12 @@ MdlNodeTriMesh::MdlNodeTriMesh(char* sName)
     m_pVertexPositions = 0;
 }
 #endif
-// PC 0x0044A850  Xbox 0x0029E810
+// PC 0x0045EDA0
 MdlNode* MdlNodeTriMesh::InternalConJoin()
 {
     return new MdlNodeTriMesh(TranslateNodeName());
 }
-// PC 0x0044A8B0  Xbox 0x0029E8A0
+// PC 0x0045EE00
 MdlNodeAABB::MdlNodeAABB(char* sName)
     : MdlNodeTriMesh(sName)
 {
@@ -3877,19 +3877,19 @@ MdlNodeAABB::MdlNodeAABB(char* sName)
     m_bShadow = 0;
     m_nNodeType = MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_AABB;
 }
-// PC 0x0044A8E0  Xbox 0x0029E8D0
+// PC 0x0045EE30
 void MaxTreeDestructor(void* pTree)
 {
     ((MaxTree*)pTree)->InternalDestructor();
 }
-// Xbox 0x0029DA10
+
 void MaxTree::InternalDestructor()
 {
     MdlNode* pRootNode = m_pRootNode;
     if (pRootNode != NULL)
         pRootNode->DestructorDispatch();
 }
-// PC 0x0044A900  Xbox 0x0029E8E0
+// PC 0x0045EE50
 MaxTree::MaxTree(char* sName)
 {
     strcpy(m_sName, sName);
@@ -3902,7 +3902,7 @@ MaxTree::MaxTree(char* sName)
     m_pfnDestructor = MaxTreeDestructor;
     m_pfnParseField = MaxTreeParseField;
 }
-// PC 0x0044A9C0  Xbox 0x0029E980
+// PC 0x0045EF10
 void MaxTree::FreeTheFreeList()
 {
     for (int i = 0; i < m_lFreeNodes.m_nCount; ++i)
@@ -3918,12 +3918,12 @@ void MaxTree::FreeTheFreeList()
     }
     m_lFreeTokens.SetSize(0);
 }
-// PC 0x0044AA60  Xbox 0x0029E9F0
+// PC 0x0045EFB0
 void ModelDestructor(void* pModel)
 {
     ((Model*)pModel)->InternalDestructor();
 }
-// PC 0x0044AA70  Xbox 0x0029EA00
+// PC 0x0045EFC0
 Model::Model(char* sName) : MaxTree(sName)
 {
     m_nType = MAXTREE_MODEL_ID;
@@ -3948,7 +3948,7 @@ Model::Model(char* sName) : MaxTree(sName)
     m_pVertexResource = 0;
     m_lNames.m_nCount = 0;
 }
-// PC 0x0044ABC0  Xbox 0x0029EB80
+// PC 0x0045F110
 MdlNodeAnimMesh::MdlNodeAnimMesh(char* sName)
     : MdlNodeTriMesh(sName),
       m_lAnimationVectors1(0),
@@ -3966,7 +3966,7 @@ MdlNodeAnimMesh::MdlNodeAnimMesh(char* sName)
     m_pfnRemoveTemporaryArrays = MdlNodeAnimMeshRemoveTemporaryArrays;
     m_nNodeType = MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_ANIMMESH;
 }
-// PC 0x0044AC70  Xbox 0x0029EC40
+// PC 0x0045F1C0
 MdlNodeSkin::MdlNodeSkin(char* sName)
     : MdlNodeTriMesh(sName),
       m_lstSkinWeights(0),
@@ -3981,12 +3981,12 @@ MdlNodeSkin::MdlNodeSkin(char* sName)
     m_nSkinWeightOffset = -1;
     m_nBoneIndexOffset = -1;
 }
-// PC 0x0044AD20  Xbox 0x0029ED00
+// PC 0x0045F270
 MdlNode* MdlNodeSkin::InternalConJoin()
 {
     return new MdlNodeSkin(TranslateNodeName());
 }
-// PC 0x0044AD80  Xbox 0x0029ED90
+// PC 0x0045F2D0
 MdlNodeLightsaber::MdlNodeLightsaber(char* sName)
     : MdlNodeTriMesh(sName)
 {
@@ -3994,7 +3994,7 @@ MdlNodeLightsaber::MdlNodeLightsaber(char* sName)
     GLRender::RequestPool(Aurora::POOL_VERTEX, 256, 2, 4114, &m_nBladePool);
     GLRender::RequestPool(Aurora::POOL_VERTEX, 1600, 2, 4112, &m_nGlowPool);
 }
-// PC 0x0044AE00  Xbox 0x0029EE10
+// PC 0x0045F350
 MdlNodeDanglyMesh::MdlNodeDanglyMesh(char* sName)
     : MdlNodeTriMesh(sName),
       m_lConstraints(0)
@@ -4003,7 +4003,7 @@ MdlNodeDanglyMesh::MdlNodeDanglyMesh(char* sName)
     m_pfnRemoveTemporaryArrays = MdlNodeDanglyMeshRemoveTemporaryArrays;
     m_pfnGenVertices = MdlNodeDanglyMeshGenVertices;
 }
-// PC 0x0044B670  Xbox 0x0029F520
+// PC 0x0045FBD0
 int Gob::Amputate(char* sPart)
 {
     Part* pPart = FindPart(m_pRootPart, sPart);
@@ -4049,7 +4049,7 @@ int Model::DelRef(Gob* pGob)
         operator delete(this);
     return nReferenceCount;
 }
-// PC 0x0044B900  Xbox 0x0029F770
+// PC 0x0045FE60
 bool AurControlPart(char* sCommand)
 {
     char sGob[64];
@@ -4095,7 +4095,7 @@ bool AurControlPart(char* sCommand)
     return false;
 #endif
 }
-// PC 0x0044B140  Xbox 0x0029F190
+// PC 0x0045F6A0
 MdlNode* MdlNode::ConJoinDispatch()
 {
     switch (m_nNodeType)
@@ -4127,7 +4127,7 @@ MdlNode* MdlNode::ConJoinDispatch()
     }
     return 0;
 }
-// Xbox 0x0029D880
+
 const char* spawn(char* sCommand)
 {
     char sModel[128];
@@ -4173,7 +4173,7 @@ static inline void AurModelTrace1()
 }
 
 #ifdef _XBOX
-// Xbox 0x002998C0
+
 bool Gob::IsVisibilityTested()
 {
     return (IsInCutscene() || IsAlternateShadowCaster() || IsAllRooms() || IsEmitterBounds()) ? false : true;
@@ -4181,29 +4181,29 @@ bool Gob::IsVisibilityTested()
 #endif
 
 #ifdef _XBOX
-// Xbox 0x00295220
+
 const char* lasthitpart(char* sCommand)
 {
     return hitpartname ? hitpartname : "NULL";
 }
-// Xbox 0x002953B0
+
 const char* spewpltnames(char* sCommand)
 {
     spewpltfp = fopen("D:\\override\\filenamesofplts", "wb");
     return "SPEWING";
 }
-// Xbox 0x002953D0
+
 const char* quitspewing(char* sCommand)
 {
     fclose(spewpltfp);
     return "CLOSESD";
 }
-// Xbox 0x002958F0
+
 const char* lastspawned(char* sCommand)
 {
     return lastspawnedobject;
 }
-// Xbox 0x00296740
+
 const char* gobdisablefog(char* sCommand)
 {
     Gob* pGob = FindGob(sCommand);
@@ -4214,7 +4214,7 @@ const char* gobdisablefog(char* sCommand)
     pGob->DisableFog();
     return "Success.";
 }
-// Xbox 0x00296770
+
 const char* gobenablefog(char* sCommand)
 {
     Gob* pGob = FindGob(sCommand);
@@ -4225,7 +4225,7 @@ const char* gobenablefog(char* sCommand)
     pGob->EnableFog();
     return "Success.";
 }
-// Xbox 0x00296830
+
 const char* removeaddin(char* sCommand)
 {
     char sName[64];
@@ -4244,7 +4244,7 @@ const char* removeaddin(char* sCommand)
     pGob->PlayAnimation("ca1slashl", 1.0f, 0, 0);
     return "Removed add-in anims";
 }
-// Xbox 0x00296EA0
+
 const char* enablebumpout(char* sCommand)
 {
     static char sResult[128];
@@ -4266,7 +4266,7 @@ const char* enablebumpout(char* sCommand)
     pGob->EnableRenderBumpedOut(sTexture, fDistance);
     return "success";
 }
-// Xbox 0x00296F40
+
 const char* getmaximumlightradius(char* sCommand)
 {
     static char sResult[128];
@@ -4284,7 +4284,7 @@ const char* getmaximumlightradius(char* sCommand)
     sprintf(sResult, "Maximum light radius for %s is %.2f", sName, pGob->GetMaximumLightRadius());
     return sResult;
 }
-// Xbox 0x00297340
+
 const char* setcolorshifting(char* sCommand)
 {
     char sName[64];
@@ -4313,7 +4313,7 @@ const char* setcolorshifting(char* sCommand)
     pGob->SetColorShifting(Vector(fRed, fGreen, fBlue), fAlpha, bPropagate);
     return "Success";
 }
-// Xbox 0x00298DB0
+
 const char* rt(char* sCommand)
 {
     char sName[32];
@@ -4329,7 +4329,7 @@ const char* rt(char* sCommand)
     pGob->ReplaceTexture(sNewTexture, sOldTexture);
     return "Replaced the texture";
 }
-// Xbox 0x00298EC0
+
 const char* setgobshit(char* sCommand)
 {
     char sName[64];
@@ -4349,7 +4349,7 @@ const char* setgobshit(char* sCommand)
     pGob->SetTextureAttributes(sTexture, "shitty mcshit");
     return "Shitty McShit";
 }
-// Xbox 0x002991F0
+
 void ExposeParts(Gob* pGob, Part* pPart)
 {
     char sName[256];
@@ -4369,7 +4369,7 @@ void ExposeParts(Gob* pGob, Part* pPart)
         ExposeParts(pGob, pPart->m_lstChildren[i]);
     }
 }
-// Xbox 0x00299360
+
 const char* exposeparts(char* sCommand)
 {
     Gob* pGob = FindGob(sCommand);
@@ -4380,7 +4380,7 @@ const char* exposeparts(char* sCommand)
     ExposeParts(pGob, pGob->m_pRootPart);
     return "OK";
 }
-// Xbox 0x00299990
+
 const char* behaviormessage(char* sCommand)
 {
     char sName[64];
@@ -4401,7 +4401,7 @@ const char* behaviormessage(char* sCommand)
     pGob->BehaviorMessage(sMessage);
     return "OK";
 }
-// Xbox 0x00299A10
+
 const char* attach(char* sCommand)
 {
     static char sResult[128];
@@ -4446,7 +4446,7 @@ const char* attach(char* sCommand)
     }
     return "success";
 }
-// Xbox 0x00299B60
+
 const char* setgobscheme(char* sCommand)
 {
     char sTexture[64];
@@ -4469,7 +4469,7 @@ const char* setgobscheme(char* sCommand)
     }
     return pGob->ReplaceTexture(sPalette, sTexture, 256, anColors, 0) ? "Success" : "Failure";
 }
-// Xbox 0x00299C20
+
 const char* setprimarygob(char* sCommand)
 {
     int nPriority = 0;
@@ -4487,7 +4487,7 @@ const char* setprimarygob(char* sCommand)
     pGob->SetLightPriority(nPriority);
     return "Success, set the primary gob";
 }
-// Xbox 0x00299C90
+
 const char* setbboxongob(char* sCommand)
 {
     int bOn = 0;
@@ -4514,7 +4514,7 @@ const char* setbboxongob(char* sCommand)
     }
     return "Success.";
 }
-// Xbox 0x0029A070
+
 const char* message(char* sCommand)
 {
     int nLength;
@@ -4536,7 +4536,7 @@ const char* message(char* sCommand)
     pGob->m_pBehavior->Message(sMessage);
     return "OK";
 }
-// Xbox 0x0029A140
+
 const char* purgemodels(char* sCommand)
 {
     static char sResult[128];
@@ -4561,7 +4561,7 @@ const char* purgemodels(char* sCommand)
 
 #ifdef _XBOX
 char* bload(char* sArguments);
-// Xbox 0x0029D920
+
 const char* spawnbload(char* sCommand)
 {
     char sModel[128];
@@ -4579,7 +4579,7 @@ const char* spawnbload(char* sCommand)
     FuncInterp("attach [lastspawned] scene");
     return pObject ? "success" : "failure";
 }
-// Xbox 0x0029F670
+
 const char* controlpart(char* sCommand)
 {
     char sGob[64];
@@ -4613,7 +4613,7 @@ const char* controlpart(char* sCommand)
 #ifdef _XBOX
 
 #define DOGANMODELS_ITERATIONS 500
-// Xbox 0x0029DC50
+
 const char* doganmodels(char* sCommand)
 {
     unsigned short anColors[10] = {2, 0x104, 0x200, 0x200, 0x400, 0x500, 0x500, 0x624, 0x629, 0x629};
@@ -4659,7 +4659,7 @@ const char* doganmodels(char* sCommand)
 #endif
 
 #ifdef _XBOX
-void Gob::ReattachReference(CAurObject* pObject, char* sPart)  // PC 0x00446EE0  Xbox 0x0029B120
+void Gob::ReattachReference(CAurObject* pObject, char* sPart)
 {
     List<Part*> lstParts;
     lstParts.Add(m_pRootPart);
@@ -4689,7 +4689,7 @@ void Gob::ReattachReference(CAurObject* pObject, char* sPart)  // PC 0x00446EE0 
 #endif
 
 #ifdef _XBOX
-void MdlNodeLightsaber::InternalDestructor()  // PC 0x0043FD10  Xbox 0x00296130
+void MdlNodeLightsaber::InternalDestructor()
 {
     GLRender::DeletePool(m_nBladePool);
     m_nBladePool = RequestPoolManager::INVALID_POOL;
@@ -4697,12 +4697,12 @@ void MdlNodeLightsaber::InternalDestructor()  // PC 0x0043FD10  Xbox 0x00296130
     m_nGlowPool = RequestPoolManager::INVALID_POOL;
     MdlNodeTriMesh::InternalDestructor();
 }
-// Xbox 0x00296120
+
 void MdlNodeTriMesh::InternalDestructor()
 {
     MdlNode::InternalDestructor();
 }
-// Xbox 0x00296170
+
 void MdlNodeSkin::InternalDestructor()
 {
     MdlNodeTriMesh::InternalDestructor();

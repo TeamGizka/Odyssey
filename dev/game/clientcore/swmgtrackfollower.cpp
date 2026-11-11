@@ -31,7 +31,7 @@ void CSWTrackFollower::AttachGuns()
         AttachGuns(m_lstModels.element[i].m_pModel);
     }
 }
-// PC 0x0066C6A0  Xbox 0x000A5D20
+// PC 0x006C1820
 void SetInitialHook(CAurObject* pObject, char* sEvent, void* pUserData)
 {
     Vector vPosition;
@@ -41,12 +41,12 @@ void SetInitialHook(CAurObject* pObject, char* sEvent, void* pUserData)
         ->GetWorld(vPosition, qOrientation);
     static_cast<CSWMiniPlayer*>(pUserData)->m_vInitialHook = vPosition;
 }
-// PC 0x0066C720  Xbox 0x000A5DA0
+// PC 0x006C18A0
 int EnumGunAttachPoints(CAurPart* pPart)
 {
     return strnicmp(pPart->Name(), "gunbank", 7) == 0;
 }
-// PC 0x0066C740  Xbox 0x000A5DC0
+// PC 0x006C18C0
 void CSWTrackFollower::LoadScripts(CResGFF* pGFF, CResStruct* pStruct,
                                    CResStruct& structScripts)
 {
@@ -79,7 +79,7 @@ void CSWTrackFollower::LoadScripts(CResGFF* pGFF, CResStruct* pStruct,
                                                 bSuccess, resDefault));
     }
 }
-// PC 0x0066C870  Xbox 0x000A5EF0
+// PC 0x006C1A90
 float CSWTrackFollower::SetSpeed(float fSpeed)
 {
     m_fTrackSpeed = fSpeed;
@@ -98,7 +98,7 @@ float CSWTrackFollower::SetSpeed(float fSpeed)
     }
     return m_fTrackSpeed;
 }
-// PC 0x0066C8D0  Xbox 0x000A5F50
+// PC 0x006C1AF0
 float CSWTrackFollower::SetSphereRadius(float fRadius)
 {
     if (fRadius >= 0.0f)
@@ -107,7 +107,7 @@ float CSWTrackFollower::SetSphereRadius(float fRadius)
     }
     return m_fSphereRadius;
 }
-// PC 0x0066C900  Xbox 0x000A5F70
+// PC 0x006C1B20
 int CSWTrackFollower::SetHitPoints(int nHitPoints)
 {
     if (nHitPoints > 0)
@@ -116,7 +116,7 @@ int CSWTrackFollower::SetHitPoints(int nHitPoints)
     }
     return m_nHitPoints;
 }
-// PC 0x0066C920  Xbox 0x000A5F90
+// PC 0x006C1B40
 float CSWTrackFollower::SetInvincibility(float fTime)
 {
     if (fTime >= 0.0f)
@@ -125,7 +125,7 @@ float CSWTrackFollower::SetInvincibility(float fTime)
     }
     return m_fInvincePeriod;
 }
-// PC 0x0066C950  Xbox 0x000A5FB0
+// PC 0x006C1B70
 int CSWTrackFollower::SetMaxHitPoints(int nHitPoints)
 {
     if (nHitPoints > 0)
@@ -134,7 +134,7 @@ int CSWTrackFollower::SetMaxHitPoints(int nHitPoints)
     }
     return m_nMaxHPs;
 }
-// PC 0x0066C970  Xbox 0x000A5FD0
+// PC 0x006C1B90
 CResRef CSWTrackFollower::GetScriptName(int nScript)
 {
     if (nScript < 0 || nScript >= 10)
@@ -143,7 +143,7 @@ CResRef CSWTrackFollower::GetScriptName(int nScript)
     }
     return m_aScripts[nScript];
 }
-// PC 0x0066C9C0  Xbox 0x000A6020
+// PC 0x006C1BE0
 void CSWTrackFollower::SetScriptName(int nScript, const CResRef& resRef)
 {
     if (nScript < 0 || nScript >= 10)
@@ -152,7 +152,7 @@ void CSWTrackFollower::SetScriptName(int nScript, const CResRef& resRef)
     }
     m_aScripts[nScript] = resRef;
 }
-// PC 0x0066C9F0  Xbox 0x000A6050
+// PC 0x006C1C10
 int CSWTrackFollower::GetSoundVolume(int nSound)
 {
     if (nSound < 0 || nSound >= 2)
@@ -161,7 +161,7 @@ int CSWTrackFollower::GetSoundVolume(int nSound)
     }
     return m_aSounds[nSound].m_nFrequency;
 }
-// PC 0x0066CA10  Xbox 0x000A6070
+// PC 0x006C1C30
 void CSWTrackFollower::SetSoundFrequency(int nSound, int nFrequency)
 {
     if (nSound >= 0 && nSound < 2)
@@ -169,7 +169,7 @@ void CSWTrackFollower::SetSoundFrequency(int nSound, int nFrequency)
         m_aSounds[nSound].m_nFrequency = nFrequency;
     }
 }
-// PC 0x0066CA30  Xbox 0x000A6090
+// PC 0x006C1C50
 int CSWTrackFollower::GetSoundFrequencyIsRandom(int nSound)
 {
     if (nSound < 0 || nSound >= 2)
@@ -178,7 +178,7 @@ int CSWTrackFollower::GetSoundFrequencyIsRandom(int nSound)
     }
     return m_aSounds[nSound].m_bFrequencyIsRandom;
 }
-// PC 0x0066CA50  Xbox 0x000A60B0
+// PC 0x006C1C70
 void CSWTrackFollower::SetSoundFrequencyIsRandom(int nSound, int bRandom)
 {
     if (nSound >= 0 && nSound < 2)
@@ -186,7 +186,7 @@ void CSWTrackFollower::SetSoundFrequencyIsRandom(int nSound, int bRandom)
         m_aSounds[nSound].m_bFrequencyIsRandom = bRandom;
     }
 }
-// PC 0x0066CA70  Xbox 0x000A60D0
+// PC 0x006C1C90
 int CSWTrackFollower::GetSoundFrequency(int nSound)
 {
     if (nSound < 0 || nSound >= 2)
@@ -195,7 +195,7 @@ int CSWTrackFollower::GetSoundFrequency(int nSound)
     }
     return m_aSounds[nSound].m_nVolume;
 }
-// PC 0x0066CA90  Xbox 0x000A60F0
+// PC 0x006C1CB0
 void CSWTrackFollower::SetSoundVolume(int nSound, int nVolume)
 {
     if (nSound >= 0 && nSound < 2)
@@ -207,7 +207,7 @@ void CSWTrackFollower::SetSoundVolume(int nSound, int nVolume)
         }
     }
 }
-// PC 0x0066CAD0  Xbox 0x000A6130
+// PC 0x006C1CF0
 CExoString CSWTrackFollower::GetName()
 {
     if (m_pTrack != 0)
@@ -216,7 +216,7 @@ CExoString CSWTrackFollower::GetName()
     }
     return CExoString("");
 }
-// PC 0x0066CB10  Xbox 0x000A6180
+// PC 0x006C1D30
 int CSWTrackFollower::GetLastObstacleHit()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -229,7 +229,7 @@ int CSWTrackFollower::GetLastObstacleHit()
     }
     return nResult;
 }
-// PC 0x0066CB40  Xbox 0x000A61B0
+// PC 0x006C1D60
 void CSWMiniPlayer::KeepInTunnel(Vector& vPosition)
 {
     if (m_vTunnelWrap.m_fX != 0.0f)
@@ -301,14 +301,14 @@ void CSWMiniPlayer::KeepInTunnel(Vector& vPosition)
         vPosition.m_fZ = m_vTunnelMaximum.m_fZ + m_vOrigin.m_fZ;
     }
 }
-// PC 0x0066CCF0  Xbox 0x000A6330
+// PC 0x006C1F10
 Vector CSWMiniPlayer::SetOffset(const Vector& vOffset)
 {
     m_vOffset = vOffset;
     KeepInTunnel(m_vOffset);
     return m_vOffset;
 }
-// PC 0x0066CD30  Xbox 0x000A6370
+
 Vector CSWMiniPlayer::DoInertia(const Vector& vPrevious,
                                const Vector& vCurrent,
                                const Quaternion& qOrientation, float fTime)
@@ -321,7 +321,7 @@ Vector CSWMiniPlayer::DoInertia(const Vector& vPrevious,
     float fScale = fInertiaScale;
     return fScale * (-qOrientation * vChange);
 }
-// PC 0x0066CE60  Xbox 0x000A6530
+// PC 0x006C1F50
 void CSWMiniPlayer::AdjustPosition(int nPosition, int bRelative)
 {
     if (bRelative)
@@ -358,7 +358,7 @@ void CSWMiniPlayer::AdjustPosition(int nPosition, int bRelative)
     }
     PlayAnimation(szAnimation, 1.0f, 16);
 }
-// PC 0x0066CF20  Xbox 0x000A6600
+// PC 0x006C2030
 int CSWMiniPlayer::SetLooping(int nLooping)
 {
     int nResult = nLooping;
@@ -368,7 +368,7 @@ int CSWMiniPlayer::SetLooping(int nLooping)
     }
     return nResult;
 }
-// PC 0x0066CF40  Xbox 0x000A6620
+// PC 0x006C2050
 float CSWMiniPlayer::SetMinSpeed(float fSpeed)
 {
     if (fSpeed >= 0.0f)
@@ -377,7 +377,7 @@ float CSWMiniPlayer::SetMinSpeed(float fSpeed)
     }
     return m_fMinimumSpeed;
 }
-// PC 0x0066CF70  Xbox 0x000A6640
+// PC 0x006C2070
 float CSWMiniPlayer::SetMaxSpeed(float fSpeed)
 {
     if (fSpeed >= 0.0f)
@@ -386,7 +386,7 @@ float CSWMiniPlayer::SetMaxSpeed(float fSpeed)
     }
     return m_fMaximumSpeed;
 }
-// PC 0x0066CFA0  Xbox 0x000A6660
+// PC 0x006C20A0
 float CSWMiniPlayer::SetAPS(float fAPS)
 {
     if (fAPS >= 0.0f)
@@ -395,7 +395,7 @@ float CSWMiniPlayer::SetAPS(float fAPS)
     }
     return m_fAPS;
 }
-// PC 0x0066CFD0  Xbox 0x000A6680
+// PC 0x006C20C0
 Vector CSWMiniPlayer::SetOrigin(const Vector& vOrigin)
 {
     m_vOrigin = vOrigin;
@@ -405,7 +405,7 @@ Vector CSWMiniPlayer::SetOrigin(const Vector& vOrigin)
     }
     return m_vOrigin;
 }
-// PC 0x0066D030  Xbox 0x000A66E0
+// PC 0x006C2120
 void CSWMiniPlayer::SetCameraHook(CAurObject* pCameraHook,
                                   unsigned char bAttached)
 {
@@ -431,7 +431,7 @@ void CSWMiniPlayer::SetCameraHook(CAurObject* pCameraHook,
         m_pCameraHook->AttachToObject(m_pTrack, "modelhook", nAttachType);
     }
 }
-// PC 0x0066D090  Xbox 0x000A6740
+// PC 0x006C2180
 int CSWMiniEnemy::SetLooping(int nLooping)
 {
     int nResult = abs(nLooping);
@@ -441,7 +441,7 @@ int CSWMiniEnemy::SetLooping(int nLooping)
     }
     return nResult;
 }
-// PC 0x0066D0B0  Xbox 0x000A6760
+// PC 0x006C21A0
 int CSWMGObstacle::Load(CResGFF* pGFF, CResStruct* pStruct)
 {
     CResStruct scripts;
@@ -452,7 +452,7 @@ int CSWMGObstacle::Load(CResGFF* pGFF, CResStruct* pStruct)
     OnCreate();
     return 1;
 }
-// PC 0x0066D100  Xbox 0x000A67B0
+// PC 0x006C21F0
 CResRef CSWMGObstacle::GetScriptName(int nScript)
 {
     if (nScript < 0 || nScript >= 5)
@@ -461,7 +461,7 @@ CResRef CSWMGObstacle::GetScriptName(int nScript)
     }
     return m_aScripts[nScript];
 }
-// PC 0x0066D150  Xbox 0x000A6800
+// PC 0x006C2240
 void CSWMGObstacle::SetScriptName(int nScript, const CResRef& resRef)
 {
     if (nScript < 0 || nScript >= 5)
@@ -470,7 +470,7 @@ void CSWMGObstacle::SetScriptName(int nScript, const CResRef& resRef)
     }
     m_aScripts[nScript] = resRef;
 }
-// PC 0x0066D180  Xbox 0x000A6830
+// PC 0x006C2270
 void CSWMGObstacle::LoadScripts(CResGFF* pGFF, CResStruct* pStruct,
                                 CResStruct& structScripts)
 {
@@ -480,7 +480,7 @@ void CSWMGObstacle::LoadScripts(CResGFF* pGFF, CResStruct* pStruct,
 int bDoAcceleration = 1;
 float fSpeed = 100.0f;
 float fLastSpeedSet = 100.0f;
-// PC 0x0066D240  Xbox 0x000A68F0
+// PC 0x006C23C0
 CSWMGTargettingGunBank* CSWTrackFollower::GetGunBank(int nGunBank)
 {
     if (nGunBank < 0 || nGunBank >= m_lstGunBanks.num)
@@ -489,7 +489,7 @@ CSWMGTargettingGunBank* CSWTrackFollower::GetGunBank(int nGunBank)
     }
     return (CSWMGTargettingGunBank*)m_lstGunBanks[nGunBank];
 }
-// PC 0x0066D260  Xbox 0x000A6910
+// PC 0x006C23E0
 Gob* CSWTrackFollower::GetModel(int nIndex)
 {
     if (nIndex >= m_lstModels.num)
@@ -498,7 +498,7 @@ Gob* CSWTrackFollower::GetModel(int nIndex)
     }
     return m_lstModels[nIndex].m_pModel;
 }
-// PC 0x0066DD60  Xbox 0x000A7450
+
 void OnReportKey(CAurObject* pObject, char* sEvent, void* pUserData)
 {
     CSWMiniGame* pMiniGame = g_pAppManager->m_pClientExoApp->GetMiniGame();
@@ -540,7 +540,7 @@ void CSWTrackFollower::UpdateGunBanks()
         }
     }
 }
-// PC 0x0066DE50  Xbox 0x000A7550
+// PC 0x006C2B00
 void TrackFollowerPartDie(CAurObject* pObject, char* sEvent, void* pUserData)
 {
     CSWTrackFollower* pFollower = (CSWTrackFollower*)pUserData;
@@ -572,7 +572,7 @@ void TrackFollowerPartDie(CAurObject* pObject, char* sEvent, void* pUserData)
         }
     }
 }
-// PC 0x0066D280  Xbox 0x000A6930
+// PC 0x006C2400
 CAurObject* CSWTrackFollower::RemoveModel(CAurObject* pModel)
 {
     for (int i = 0; i < m_lstModels.num; i++)
@@ -586,7 +586,7 @@ CAurObject* CSWTrackFollower::RemoveModel(CAurObject* pModel)
     }
     return 0;
 }
-// PC 0x0066DEE0  Xbox 0x000A75E0
+// PC 0x006C2B90
 CSWTrackFollower::CSWTrackFollower(CSWMiniGame* pMiniGame, unsigned long nType)
     : CSWMiniGameObject(nType)
 {
@@ -608,7 +608,7 @@ CSWTrackFollower::CSWTrackFollower(CSWMiniGame* pMiniGame, unsigned long nType)
         m_apSoundSources[i] = 0;
     }
 }
-// PC 0x0066E000  Xbox 0x000A7700
+// PC 0x006C2CB0
 CSWTrackFollower::~CSWTrackFollower()
 {
     int nModels = m_lstModels.num;
@@ -635,7 +635,7 @@ CSWTrackFollower::~CSWTrackFollower()
 
     delete m_pTrack;
 }
-// PC 0x0066E110  Xbox 0x000A7810
+// PC 0x006C2DC0
 void CSWTrackFollower::RemoveGunBank(CSWMGGunBank* pGunBank)
 {
     SwmgtrackfollowerTrace2();
@@ -644,7 +644,7 @@ void CSWTrackFollower::RemoveGunBank(CSWMGGunBank* pGunBank)
         m_lstGunBanks.Remove(pGunBank);
     }
 }
-// PC 0x0066E130  Xbox 0x000A7830
+// PC 0x006C2DE0
 void CSWTrackFollower::Update(float fTime)
 {
     SwmgtrackfollowerTrace2();
@@ -666,7 +666,7 @@ void CSWTrackFollower::Update(float fTime)
         m_apSoundSources[0]->SetPosition(vSoundPosition, 0.0f);
     }
 }
-// PC 0x0066E1F0  Xbox 0x000A78E0
+// PC 0x006C2EA0
 int CSWTrackFollower::AddModel(CAurObject* pModel, unsigned char bAttach)
 {
     if (pModel == 0)
@@ -693,7 +693,7 @@ int CSWTrackFollower::AddModel(CAurObject* pModel, unsigned char bAttach)
     }
     return (int)pModel;
 }
-// PC 0x0066E280  Xbox 0x000A7970
+// PC 0x006C2F30
 int CSWTrackFollower::SetTrack(CAurObject* pTrack, int bPlayAnimation)
 {
     if (pTrack != m_pTrack)
@@ -702,7 +702,7 @@ int CSWTrackFollower::SetTrack(CAurObject* pTrack, int bPlayAnimation)
     }
     return (int)m_pTrack;
 }
-// PC 0x0066D2F0  Xbox 0x000A69A0
+// PC 0x006C2470
 int CSWTrackFollower::ForceSetTrack(CAurObject* pTrack, int bPlayAnimation)
 {
     if (m_pTrack != 0 && m_pTrack != pTrack)
@@ -752,7 +752,7 @@ int CSWTrackFollower::ForceSetTrack(CAurObject* pTrack, int bPlayAnimation)
     }
     return (int)m_pTrack;
 }
-// PC 0x0066D440  Xbox 0x000A6AF0
+// PC 0x006C25C0
 void CSWTrackFollower::Stop()
 {
     SwmgtrackfollowerTrace1();
@@ -776,7 +776,7 @@ void CSWTrackFollower::Stop()
         }
     }
 }
-// PC 0x0066D490  Xbox 0x000A6B40
+// PC 0x006C2610
 void CSWTrackFollower::Hit()
 {
     PlayAnimation("damage", 1.0f, 1);
@@ -787,7 +787,7 @@ void CSWTrackFollower::Hit()
         m_lstGunBanks[i]->Hit();
     }
 }
-// PC 0x0066D4E0  Xbox 0x000A6B90
+// PC 0x006C2660
 int CSWTrackFollower::DoBulletHitCheck(CAurObject* pBullet)
 {
     CSWMGBehaviorBullet* pBehavior =
@@ -812,7 +812,7 @@ int CSWTrackFollower::DoBulletHitCheck(CAurObject* pBullet)
     }
     return 0;
 }
-// PC 0x0066D550  Xbox 0x000A6C00
+// PC 0x006C26D0
 void CSWTrackFollower::PlayAnimation(char* szAnimation, float fSpeed, int nFlags)
 {
     int nModels = m_lstModels.num;
@@ -831,7 +831,7 @@ void CSWTrackFollower::PlayAnimation(char* szAnimation, float fSpeed, int nFlags
         }
     }
 }
-// PC 0x0066E2A0  Xbox 0x000A7990
+// PC 0x006C2F50
 void CSWTrackFollower::OnDeath(int nReserved)
 {
     if (nReserved == 0)
@@ -898,7 +898,7 @@ void CSWTrackFollower::OnDeath(int nReserved)
     }
     GetMiniGame()->RemoveEnemy((CSWMiniEnemy*)this);
 }
-// PC 0x0066E490  Xbox 0x000A7B80
+// PC 0x006C3140
 int CSWTrackFollower::AttachGuns(CAurObject* pObject)
 {
     SwmgtrackfollowerTrace2();
@@ -936,7 +936,7 @@ int CSWTrackFollower::AttachGuns(CAurObject* pObject)
     }
     return nAttached;
 }
-// PC 0x0066E5C0  Xbox 0x000A7CD0
+// PC 0x006C3270
 void CSWTrackFollower::OnHitObstacle(int nReserved)
 {
     int nModels;
@@ -964,7 +964,7 @@ void CSWTrackFollower::OnHitObstacle(int nReserved)
         return;
     }
 }
-// PC 0x0066E6B0  Xbox 0x000A7DC0
+// PC 0x006C3370
 int CSWTrackFollower::DoObstacleHitCheck(CSWMGObstacle* pObstacle)
 {
     Gob* pObstacleModel = (Gob*)(CAurObject*)pObstacle->m_pModel;
@@ -998,7 +998,7 @@ int CSWTrackFollower::DoObstacleHitCheck(CSWMGObstacle* pObstacle)
     }
     return 0;
 }
-// PC 0x0066E7A0  Xbox 0x000A7EB0
+// PC 0x006C3480
 void CSWTrackFollower::OnDamage(int nReserved)
 {
     if (nReserved == 0)
@@ -1040,13 +1040,13 @@ void CSWTrackFollower::OnDamage(int nReserved)
         }
     }
 }
-// PC 0x0066E8E0  Xbox 0x000A7FD0
+// PC 0x006C35C0
 void CSWTrackFollower::AdjustHitPoints(int nHitPoints)
 {
     m_nDamage = nHitPoints;
     return OnDamage(0);
 }
-// PC 0x0066F7E0  Xbox 0x000A8E70
+// PC 0x006C3C80
 void CSWTrackFollower::LoadSounds(CResGFF* pGFF, CResStruct* pStruct,
                                   CResStruct& structSounds)
 {
@@ -1068,7 +1068,7 @@ void CSWTrackFollower::LoadSounds(CResGFF* pGFF, CResStruct* pStruct,
                                                resDefault));
     }
 }
-// PC 0x0066E900  Xbox 0x000A7FF0
+// PC 0x006C35E0
 CExoSoundSource* CSWTrackFollower::SetSoundName(int nSound,
                                                 const CResRef& resRef)
 {
@@ -1133,7 +1133,7 @@ CExoSoundSource* CSWTrackFollower::SetSoundName(int nSound,
     }
     return 0;
 }
-// PC 0x0066D5D0  Xbox 0x000A6C80
+// PC 0x006C2750
 Vector CSWTrackFollower::GetPosition()
 {
     Vector vPosition;
@@ -1143,7 +1143,7 @@ Vector CSWTrackFollower::GetPosition()
     }
     return vPosition;
 }
-// PC 0x0066D640  Xbox 0x000A6CE0
+// PC 0x006C27C0
 void CSWMiniPlayer::Control(float fTime, CSWMGPhysicsState& stateCurrent,
                            CSWMGPhysicsState& statePrevious)
 {
@@ -1321,7 +1321,7 @@ void CSWMiniPlayer::Control(float fTime, CSWMGPhysicsState& stateCurrent,
             ((CAurBehaviorAttachRotate*)pBehavior)->m_vRotation = m_vOffset;
     }
 }
-// PC 0x0066DC50  Xbox 0x000A7340
+// PC 0x006C29E0
 void CSWMiniPlayer::Fire()
 {
     int nGunBanks = m_lstGunBanks.num;
@@ -1330,7 +1330,7 @@ void CSWMiniPlayer::Fire()
         m_lstGunBanks[i]->Fire();
     }
 }
-// PC 0x0066DC80  Xbox 0x000A7370
+// PC 0x006C2A10
 CExoString CSWMGObstacle::GetName()
 {
     if (m_pModel != 0)
@@ -1341,7 +1341,7 @@ CExoString CSWMGObstacle::GetName()
 }
 
 #ifndef _XBOX
-template <> void CExoArrayList<CSWMGGunBank*>::Remove(CSWMGGunBank* value)  // PC 0x0066DCC0  Xbox 0x000A73B0
+template <> void CExoArrayList<CSWMGGunBank*>::Remove(CSWMGGunBank* value)  // PC 0x004E3B70
 {
     int nIndex;
     for (nIndex = 0; nIndex < num; nIndex++)
@@ -1352,7 +1352,7 @@ template <> void CExoArrayList<CSWMGGunBank*>::Remove(CSWMGGunBank* value)  // P
     DelIndex(nIndex);
 }
 #endif
-// PC 0x0066EB50  Xbox 0x000A8240
+// PC 0x006C3D10
 CSWMiniPlayer::CSWMiniPlayer(CSWMiniGame* pMiniGame)
     : CSWTrackFollower(pMiniGame, SWMG_OBJECT_PLAYER)
 {
@@ -1369,7 +1369,7 @@ CSWMiniPlayer::CSWMiniPlayer(CSWMiniGame* pMiniGame)
     m_lstPositionKeys.num = 0;
     m_lstOrientationKeys.num = 0;
 }
-// PC 0x0066ECF0  Xbox 0x000A8420
+// PC 0x006C3830
 CSWMiniPlayer::~CSWMiniPlayer()
 {
     if (m_pCameraHook != 0)
@@ -1377,7 +1377,7 @@ CSWMiniPlayer::~CSWMiniPlayer()
         delete m_pCameraHook;
     }
 }
-// PC 0x0066EDA0  Xbox 0x000A84D0
+
 int CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>& lstEnemyIds,
                                      int bRunScripts)
 {
@@ -1495,7 +1495,7 @@ int CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>& lstEnemyIds,
     }
     return nHits;
 }
-// PC 0x0066F890  Xbox 0x000A8F20
+// PC 0x006C3ED0
 int CSWMiniPlayer::LoadGun(CResGFF* pGFF, CResStruct* pStruct)
 {
     int bSuccess;
@@ -1576,7 +1576,7 @@ int CSWMiniPlayer::LoadGun(CResGFF* pGFF, CResStruct* pStruct)
     CreateGunBank(nBank, resBullet, resGun, bullet, resFireSound);
     return 1;
 }
-// PC 0x0066F440  Xbox 0x000A8AC0
+// PC 0x006C38E0
 CSWMGGunBank* CSWMiniPlayer::CreateGunBank(int nBank, const CResRef& sBank,
                                            const CResRef& sGun,
                                            const CSWMGBullet& bullet,
@@ -1616,7 +1616,7 @@ CSWMGGunBank* CSWMiniPlayer::CreateGunBank(int nBank, const CResRef& sBank,
 
     return pGunBank;
 }
-// PC 0x0066FB20  Xbox 0x000A91C0
+// PC 0x006C4160
 int CSWMiniEnemy::LoadGun(CResGFF* pGFF, CResStruct* pStruct)
 {
     int bSuccess;
@@ -1719,7 +1719,7 @@ int CSWMiniEnemy::LoadGun(CResGFF* pGFF, CResStruct* pStruct)
     CreateGunBank(nBank, resBullet, resGun, bullet, params, resFireSound);
     return 1;
 }
-// PC 0x0066F5F0  Xbox 0x000A8C80
+// PC 0x006C3A90
 CSWMGGunBank* CSWMiniEnemy::CreateGunBank(int nBank, const CResRef& sBank,
                                       const CResRef& sGun,
                                       const CSWMGBullet& bullet,
@@ -1761,7 +1761,7 @@ CSWMGGunBank* CSWMiniEnemy::CreateGunBank(int nBank, const CResRef& sBank,
 
     return pGunBank;
 }
-// PC 0x0066FE50  Xbox 0x000A9500
+// PC 0x006C4490
 void OnAnimKeyEvent(CAurObject* pObject, char* sEvent, void* pUserData)
 {
     CSWMiniGameObject* pMiniGameObject = (CSWMiniGameObject*)pUserData;
@@ -1804,7 +1804,7 @@ void OnAnimKeyEvent(CAurObject* pObject, char* sEvent, void* pUserData)
         }
     }
 }
-// PC 0x0066FFF0  Xbox 0x000A96B0
+// PC 0x006C4630
 int CSWTrackFollower::Load(CResGFF* pGFF, CResStruct* pStruct)
 {
     SwmgtrackfollowerTrace4();
@@ -1847,7 +1847,7 @@ int CSWTrackFollower::Load(CResGFF* pGFF, CResStruct* pStruct)
     OnCreate();
     return 1;
 }
-// PC 0x006701C0  Xbox 0x000A98A0
+// PC 0x006C4800
 void CSWTrackFollower::Go()
 {
     if (m_pTrack != 0 && !m_bTrackPlaying)
@@ -1887,7 +1887,7 @@ void CSWTrackFollower::Go()
         }
     }
 }
-// PC 0x006702F0  Xbox 0x000A99D0
+// PC 0x006C4930
 int CSWMiniPlayer::Load(CResGFF* pGFF, CResStruct* pStruct)
 {
     int bSuccess;
@@ -1948,7 +1948,7 @@ int CSWMiniPlayer::Load(CResGFF* pGFF, CResStruct* pStruct)
         pGFF->ReadFieldFLOAT(pStruct, "Target_Offset_Z", bSuccess, 0.0f));
     return 1;
 }
-// PC 0x006705F0  Xbox 0x000A9CE0
+// PC 0x006C4C20
 int CSWMiniEnemy::Load(CResGFF* pGFF, CResStruct* pStruct)
 {
     int bSuccess;
@@ -1961,13 +1961,13 @@ int CSWMiniEnemy::Load(CResGFF* pGFF, CResStruct* pStruct)
     m_bTrigger = pGFF->ReadFieldBYTE(pStruct, "Trigger", bSuccess, 0);
     return 1;
 }
-// PC 0x00670640  Xbox 0x000A9D30
+// PC 0x006C4C70
 CSWMGObstacle::CSWMGObstacle(CSWMiniGame* pMiniGame, CAurObject* pModel)
     : CSWMiniGameObject(3)
 {
     m_pModel = pModel;
 }
-// PC 0x006706E0  Xbox 0x000A9DD0
+// PC 0x006C4D10
 CSWMGObstacle::~CSWMGObstacle()
 {
     if (m_pModel != 0)

@@ -1,5 +1,5 @@
 #include "aurora.h"
-// PC 0x00710100
+// PC 0x00783630
 void CAuroraCompressedTexture::Unload()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -7,7 +7,7 @@ void CAuroraCompressedTexture::Unload()
         m_pRes->Release();
     }
 }
-// PC 0x007107B0
+// PC 0x00783FE0
 unsigned char* CAuroraCompressedTexture::GetCompressedTextureDataPtr()
 {
     if (m_pRes != 0 && m_pRes->GetDemands() >= 1)
@@ -16,7 +16,7 @@ unsigned char* CAuroraCompressedTexture::GetCompressedTextureDataPtr()
     }
     return 0;
 }
-// PC 0x007103C0  Xbox 0x002FA610
+// PC 0x00783BF0
 int CAuroraCompressedTexture::GetCompressedTextureAttrib(
     unsigned long* pnWidth, unsigned long* pnHeight, unsigned char* pnBpp,
     unsigned long* pnSize, float* pfAlpha)
@@ -30,7 +30,7 @@ int CAuroraCompressedTexture::GetCompressedTextureAttrib(
         return 0;
     }
 }
-// PC 0x00710400  Xbox 0x002FA650
+// PC 0x00783C30
 int CAuroraCompressedTexture::Load()
 {
     SCompressedTextureDataTrailer* pInfo;
@@ -44,7 +44,7 @@ int CAuroraCompressedTexture::Load()
     pInfo->nType = 2033;
     return 1;
 }
-// PC 0x00710430  Xbox 0x002FA680
+// PC 0x00783C60
 int CAuroraCompressedTexture::ReadTextureHeader(int* pnWidth, int* pnHeight,
                                                 int* pnBpp, int* pnSize,
                                                 float* pfAlpha)
@@ -73,7 +73,7 @@ int CAuroraCompressedTexture::ReadTextureHeader(int* pnWidth, int* pnHeight,
     *pfAlpha = header.fAlpha;
     return 1;
 }
-// PC 0x00710490  Xbox 0x002FA6F0
+// PC 0x00783CC0
 unsigned char* CAuroraCompressedTexture::GetPtrToResHelperInfo()
 {
     if (m_pRes == 0 || m_pRes->GetDemands() < 1)
@@ -82,12 +82,12 @@ unsigned char* CAuroraCompressedTexture::GetPtrToResHelperInfo()
     }
     return (GetCompressedTextureDataPtr() - 26);
 }
-// PC 0x007106B0  Xbox 0x002FA910
+// PC 0x00783EE0
 CAuroraCompressedTexture::CAuroraCompressedTexture(CResRef cResRef, int bRequest)
 {
     SetResRef(cResRef, bRequest);
 }
-// PC 0x00710740  Xbox 0x002FA9A0
+// PC 0x00783F70
 CAuroraCompressedTexture::~CAuroraCompressedTexture()
 {
 }

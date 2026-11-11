@@ -50,7 +50,7 @@ float camerafollowspeedfactor = 1.0f;
 int enablecameracollision = 1;
 float fShakePeriod = 30.0f;
 float fShakeMag = 20.0f;
-// PC 0x00643F40  Xbox 0x00067170
+// PC 0x0069AD60
 CSWCModule::CSWCModule()
     : CGameObject(CGameObject::OBJECT_TYPE_MODULE, OBJECT_INVALID)
 {
@@ -102,7 +102,7 @@ CSWCModule::CSWCModule()
     m_pAnimatedCamera = NULL;
     m_nLastCameraMode = CAMERA_UNINITIALIZED;
 }
-// PC 0x0063F5E0  Xbox 0x00062040
+// PC 0x006963F0
 inline int CSWCObject::IsModelLoaded()
 {
     if (m_pAnimBase != NULL &&
@@ -112,7 +112,7 @@ inline int CSWCObject::IsModelLoaded()
     }
     return 0;
 }
-// PC 0x0063F600  Xbox 0x00062060
+// PC 0x00696410
 inline Vector CSWCameraOnAStick::GetPosition()
 {
     if (m_pCamera != NULL)
@@ -121,7 +121,7 @@ inline Vector CSWCameraOnAStick::GetPosition()
     }
     return Vector();
 }
-// PC 0x0063F630  Xbox 0x000620A0
+// PC 0x00696440
 void CSWCameraOnAStick::SetPosition(Vector vPosition)
 {
     if (m_pCamera != NULL)
@@ -133,7 +133,7 @@ void CSWCameraOnAStick::SetPosition(Vector vPosition)
 void CSWCModule::UnloadModule()
 {
 }
-// PC 0x0063F660  Xbox 0x00062690
+// PC 0x00696470
 int CSWCModule::LoadModule()
 {
     CSWCMessage* pMessage = g_pAppManager->GetClientExoApp()->GetSWCMessage();
@@ -199,7 +199,7 @@ int CSWCModule::LoadModule()
     }
     return 0;
 }
-// PC 0x0063F9D0  Xbox 0x000629E0
+// PC 0x006967E0
 void CSWCModule::SetCameraFollow(unsigned long oidTarget, int bSnap)
 {
     CSWCCreature* pCreature;
@@ -310,7 +310,7 @@ void CSWCModule::SetCameraFollow(unsigned long oidTarget, int bSnap)
         }
     }
 }
-// PC 0x0063FCC0  Xbox 0x00062D00
+// PC 0x00696AD0
 void CSWCModule::TiltCamera(float fTilt)
 {
     CAurBehavior* pResult;
@@ -371,7 +371,7 @@ void CSWCModule::TiltCamera(float fTilt)
 }
 
 #ifndef _XBOX
-void CSWCModule::AcclTiltCamera(float fTilt)  // PC 0x0063FDB0
+void CSWCModule::AcclTiltCamera(float fTilt)  // PC 0x00696BC0
 {
     int nCameraType;
     CAurBehavior* pBehavior;
@@ -397,7 +397,7 @@ void CSWCModule::AcclTiltCamera(float fTilt)  // PC 0x0063FDB0
 }
 
 #endif
-// PC 0x0063FE10  Xbox 0x00062DD0
+// PC 0x00696C30
 void CSWCModule::TurnCamera(float fTurn, float fTimeStep)
 {
     if (g_pAppManager->m_pClientExoApp->GetCombatMode() != 0)
@@ -504,7 +504,7 @@ void CSWCModule::TurnCamera(float fTurn, float fTimeStep)
         }
     }
 }
-// PC 0x00640090
+// PC 0x00696EB0
 void CSWCModule::AcclTurnCamera(float fTurn, float fTimeStep)
 {
     CSWBehaviorCameraCombat* pCombat;
@@ -583,7 +583,7 @@ void CSWCModule::AcclTurnCamera(float fTurn, float fTimeStep)
         }
     }
 }
-// PC 0x006401D0  Xbox 0x000630B0
+// PC 0x00696FF0
 void CSWCModule::ZoomCamera(float fZoom)
 {
     CAurBehavior* pBehavior;
@@ -609,7 +609,7 @@ void CSWCModule::ZoomCamera(float fZoom)
         m_nReserved80 |= bChanged;
     }
 }
-// PC 0x00640240  Xbox 0x00063120
+// PC 0x00697060
 void CSWCModule::ScrollCamera(Vector vScroll)
 {
     Vector vPosition;
@@ -622,7 +622,7 @@ void CSWCModule::ScrollCamera(Vector vScroll)
         m_nReserved80 = 1;
     }
 }
-// PC 0x006402F0  Xbox 0x000631E0
+// PC 0x00697110
 int CSWCModule::GetNextCameraPosition(float fTimeStep, Vector* pPosition)
 {
     Quaternion qTarget;
@@ -669,7 +669,7 @@ int CSWCModule::GetNextCameraPosition(float fTimeStep, Vector* pPosition)
     *pPosition = vPosition + vOffset;
     return 1;
 }
-// PC 0x00640640  Xbox 0x000635D0
+// PC 0x00697460
 void CSWCModule::SetTimeOfDayState(unsigned char nState, unsigned long nTime)
 {
     CSWCArea* pArea;
@@ -711,7 +711,7 @@ void CSWCModule::SetTimeOfDayState(unsigned char nState, unsigned long nTime)
     m_fTimeOfDay = nTime * 0.001f;
     m_fTimeOfDayHours = nHours * 60.0f;
 }
-// PC 0x00640700  Xbox 0x00063690
+// PC 0x00697520
 void CSWCModule::UpdateCameraModeChaseCam()
 {
     CAurBehavior* pBehavior;
@@ -845,7 +845,7 @@ void CSWCModule::UpdateCameraModeChaseCam()
         }
     }
 }
-// PC 0x00640A80  Xbox 0x00063A20
+// PC 0x006978A0
 void CSWCModule::UpdateCameraModeBG()
 {
     CAurBehavior* pBehavior;
@@ -880,7 +880,7 @@ void CSWCModule::UpdateCameraModeBG()
         }
     }
 }
-// PC 0x00640B90  Xbox 0x00063B40
+// PC 0x006979B0
 void CSWCModule::UpdateCameraModeEQ(float fTimeStep)
 {
     CAurScene* pScene = NULL;
@@ -1014,7 +1014,7 @@ void CSWCModule::UpdateCameraModeEQ(float fTimeStep)
         }
     }
 }
-// PC 0x00640F70  Xbox 0x00063EE0
+// PC 0x00697D90
 void CSWCModule::LoadAnimatedCamera(const CResRef& cAnimatedCamera)
 {
     if (m_pAnimatedCamera == NULL)
@@ -1030,7 +1030,7 @@ void CSWCModule::LoadAnimatedCamera(const CResRef& cAnimatedCamera)
         }
     }
 }
-// PC 0x00641010  Xbox 0x00063F90
+// PC 0x00697E30
 float CSWCModule::SetAnimatedCamera(unsigned short nAnimation,
                                     float fFieldOfView, unsigned long oidTarget)
 {
@@ -1106,7 +1106,7 @@ float CSWCModule::SetAnimatedCamera(unsigned short nAnimation,
     }
     return 0.0f;
 }
-// PC 0x006412B0  Xbox 0x00064230
+// PC 0x006980D0
 int CSWCModule::IsCameraAnimated()
 {
     if (m_pAnimatedCamera != NULL)
@@ -1116,7 +1116,7 @@ int CSWCModule::IsCameraAnimated()
     }
     return 0;
 }
-// PC 0x006412F0  Xbox 0x00064270
+// PC 0x00698110
 void CSWCModule::SetDialogCamera(int nDialogType)
 {
     unsigned char nCameraMode;
@@ -1139,7 +1139,7 @@ void CSWCModule::SetDialogCamera(int nDialogType)
     g_pAppManager->m_pClientExoApp->GetClientOptions()->SetCameraMode(CClientOptions::CAMERA_MODE_DIALOG);
     m_pModuleCamera->SetBehavior(pDialog);
 }
-// PC 0x006413C0  Xbox 0x00064340
+// PC 0x006981E0
 int CSWCModule::SetFreeLookCamera(unsigned long oidTarget)
 {
     CSWCObject* pObject;
@@ -1181,7 +1181,7 @@ int CSWCModule::SetFreeLookCamera(unsigned long oidTarget)
     m_nCameraType = 5;
     return 1;
 }
-// PC 0x00641540  Xbox 0x000644C0
+// PC 0x00698360
 int CSWCModule::SetCombatCamera()
 {
     unsigned char nCameraMode;
@@ -1204,7 +1204,7 @@ int CSWCModule::SetCombatCamera()
     m_pModuleCamera->SetBehavior(pCombat);
     return 1;
 }
-// PC 0x00641610  Xbox 0x00064580
+// PC 0x00698430
 int CSWCModule::SetNavigateCamera()
 {
     unsigned char nCameraMode;
@@ -1231,7 +1231,7 @@ int CSWCModule::SetNavigateCamera()
     m_pModuleCamera->SetBehavior(pNavigate);
     return 1;
 }
-// PC 0x006416F0  Xbox 0x00064660
+// PC 0x00698510
 int CSWCModule::ShakeCamera(unsigned long nDelay, unsigned long nDuration)
 {
     int nResult;
@@ -1248,7 +1248,7 @@ int CSWCModule::ShakeCamera(unsigned long nDelay, unsigned long nDuration)
     }
     return nResult;
 }
-// PC 0x00641730  Xbox 0x000646A0
+// PC 0x00698550
 int CSWCModule::BumpCamera(unsigned long nDelay)
 {
     int nResult;
@@ -1263,7 +1263,7 @@ int CSWCModule::BumpCamera(unsigned long nDelay)
     }
     return nResult;
 }
-// PC 0x00641760  Xbox 0x000646D0
+// PC 0x00698580
 void CSWCModule::UpdateCameraBumpAndShake(float fTimeDelta)
 {
     CSWCameraOnAStick* pOnAStick;
@@ -1365,7 +1365,7 @@ void CSWCModule::UpdateCameraBumpAndShake(float fTimeDelta)
         }
     }
 }
-// PC 0x00641980  Xbox 0x000648F0
+// PC 0x006987A0
 CSWMiniGame* CSWCModule::GetMiniGame()
 {
     CSWCArea* pArea;
@@ -1377,7 +1377,7 @@ CSWMiniGame* CSWCModule::GetMiniGame()
     }
     return 0;
 }
-// PC 0x006419A0  Xbox 0x00064910
+// PC 0x006987C0
 void CSWCModule::UpdateCameraFollow(float fTimeDelta)
 {
     int nCameraMode =
@@ -1488,7 +1488,7 @@ void CSWCModule::UpdateCameraFollow(float fTimeDelta)
     m_nLastCameraMode =
         g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nCameraMode;
 }
-// PC 0x00641CD0  Xbox 0x00064CA0
+// PC 0x00698AF0
 CSWCModule::~CSWCModule()
 {
     m_sModuleTitle = "";
@@ -1509,7 +1509,7 @@ CSWCModule::~CSWCModule()
         m_pAnimatedCamera = NULL;
     }
 }
-// PC 0x00641DC0  Xbox 0x00064D80
+// PC 0x00698BE0
 int CSWCModule::RestoreCamera()
 {
     if (g_pAppManager->GetClientExoApp()->GetCombatMode())
@@ -1638,7 +1638,7 @@ int CSWCModule::RestoreCamera()
     EXOXBOXASSERT(0);
     return 0;
 }
-// PC 0x006422E0  Xbox 0x000652B0
+// PC 0x00699100
 float CSWCModule::UpdateNormalCameraCollision(float fTimeDelta, float fZoom)
 {
     CAurBehavior* pBehavior = m_pModuleCamera->GetBehavior(-1);
@@ -1867,7 +1867,7 @@ float CSWCModule::UpdateNormalCameraCollision(float fTimeDelta, float fZoom)
     }
     return fZoom;
 }
-// PC 0x00644170  Xbox 0x00067400
+// PC 0x0069AF90
 float CSWCModule::UpdateCameraCollision(float fTimeDelta, float fUnknown)
 {
     if (m_bCameraCollisionChanged != 0)
@@ -1880,7 +1880,7 @@ float CSWCModule::UpdateCameraCollision(float fTimeDelta, float fUnknown)
     }
     return UpdateNormalCameraCollision(fTimeDelta, fUnknown);
 }
-// PC 0x006433B0  Xbox 0x00066500
+// PC 0x0069A1D0
 float CSWCModule::UpdatePushCameraCollision(float fTimeDelta, float fZoom)
 {
     CAurBehavior* pBehavior = m_pModuleCamera->GetBehavior(-1);
@@ -2044,7 +2044,7 @@ float CSWCModule::UpdatePushCameraCollision(float fTimeDelta, float fZoom)
     }
     return fZoom;
 }
-// PC 0x006441D0  Xbox 0x00067460
+// PC 0x0069AFF0
 int CSWCModule::FindClearView(float fTimeDelta, float* pfYaw, float* pfPitch)
 {
     NwcmoduleTrace5();
@@ -2149,7 +2149,7 @@ int CSWCModule::FindClearView(float fTimeDelta, float* pfYaw, float* pfPitch)
     }
     return 0;
 }
-// PC 0x00644650  Xbox 0x00067900
+// PC 0x0069B470
 void CSWCModule::Update(float fTimeDelta)
 {
     float fYaw;
@@ -2222,7 +2222,7 @@ static inline void NwcmoduleTrace1()
 #include <string.h>
 
 static char g_szViewResult[256];
-// Xbox 0x000620E0
+
 char* viewmindist(char* szArgs)
 {
     char szCommand[256];
@@ -2243,7 +2243,7 @@ char* viewmindist(char* szArgs)
     return "Failure";
 }
 ConsoleFunc ConFviewmindist("viewmindist", viewmindist);
-// Xbox 0x000621F0
+
 char* viewmaxdist(char* szArgs)
 {
     char szCommand[256];
@@ -2264,7 +2264,7 @@ char* viewmaxdist(char* szArgs)
     return "Failure";
 }
 ConsoleFunc ConFviewmaxdist("viewmaxdist", viewmaxdist);
-// Xbox 0x00062300
+
 char* viewminpitch(char* szArgs)
 {
     char szCommand[256];
@@ -2285,7 +2285,7 @@ char* viewminpitch(char* szArgs)
     return "Failure";
 }
 ConsoleFunc ConFviewminpitch("viewminpitch", viewminpitch);
-// Xbox 0x00062410
+
 char* viewmaxpitch(char* szArgs)
 {
     char szCommand[256];
@@ -2306,7 +2306,7 @@ char* viewmaxpitch(char* szArgs)
     return "Failure";
 }
 ConsoleFunc ConFviewmaxpitch("viewmaxpitch", viewmaxpitch);
-// Xbox 0x00062520
+
 char* viewfollowoffset(char* szArgs)
 {
     Vector vOffset(0.0f, 0.0f, 0.0f);
@@ -2324,7 +2324,7 @@ char* viewfollowoffset(char* szArgs)
     return "Failure";
 }
 ConsoleFunc ConFviewfollowoffset("viewfollowoffset", viewfollowoffset);
-// Xbox 0x00062630
+
 char* setcameramode(char* szArgs)
 {
     int nMode;

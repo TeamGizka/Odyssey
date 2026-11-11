@@ -42,7 +42,7 @@ static inline void NwsmoduleTrace2();
 static inline void NwsmoduleTrace1();
 
 void UpdateScreen(float fElapsed, int bRunWorld, int bSkipRender);
-// PC 0x004C84A0  Xbox 0x0019B310
+// PC 0x00509340
 CSWSModule::CSWSModule(const CExoString& sModuleName, int bRequest, int bUnknown)
     : CGameObject(CGameObject::OBJECT_TYPE_MODULE, OBJECT_INVALID)
 {
@@ -109,7 +109,7 @@ CSWSModule::CSWSModule(const CExoString& sModuleName, int bRequest, int bUnknown
     m_pAreaCached = NULL;
     m_oidAreaCached = OBJECT_INVALID;
 }
-// PC 0x004C5120  Xbox 0x001980E0
+// PC 0x00506390
 void CSWSModule::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                               void* pEventData, unsigned long nCalendarDay,
                               unsigned long nTimeOfDay)
@@ -209,7 +209,7 @@ void CSWSModule::EventHandler(unsigned long nEventId, unsigned long oidCaller,
         delete pData;
     }
 }
-// PC 0x004C68A0  Xbox 0x00199700
+// PC 0x00507A30
 CSWSModule::~CSWSModule()
 {
     if (m_n1D8 == 0)
@@ -261,7 +261,7 @@ void CSWSModule::ClearAreaVisitedFlags()
         pArea->m_bTransitionCounted = 0;
     }
 }
-// PC 0x004C6BD0  Xbox 0x00199A30
+// PC 0x00507D60
 int CSWSModule::ComputeInterAreaPath(CPathfindInformation* pPathfind)
 {
     int nDepth;
@@ -292,7 +292,7 @@ int CSWSModule::ComputeInterAreaPath(CPathfindInformation* pPathfind)
     SetIntraAreaGoal(pPathfind);
     return 1;
 }
-// PC 0x004C54A0  Xbox 0x00198460
+// PC 0x00506710
 int CSWSModule::GenerateInterAreaDFSSuccessors(
     int nArea, CPathfindInformation* pPathfind, unsigned long** ppSuccessors)
 {
@@ -311,12 +311,12 @@ int CSWSModule::GenerateInterAreaDFSSuccessors(
     return pArea->CountAreaTransitionTriggers(
         *ppSuccessors, pPathfind->GetAreaListCount(), pPathfind->GetAreaList());
 }
-// PC 0x004C30C0  Xbox 0x00196020
+// PC 0x00504120
 inline CResIFO::CResIFO()
 {
     strncpy(m_szFileType, "IFO ", 4);
 }
-// PC 0x004C30F0  Xbox 0x00196050
+// PC 0x00504150
 CSWSArea* CSWSModule::GetArea()
 {
     if (m_oidAreaCached != m_oidArea)
@@ -337,13 +337,13 @@ CSWSArea* CSWSModule::GetArea()
     }
     return m_pAreaCached;
 }
-// PC 0x004C3150  Xbox 0x001960B0
+// PC 0x005041B0
 void CSWSModule::ClearAreaCache()
 {
     m_pAreaCached = NULL;
     m_oidAreaCached = OBJECT_INVALID;
 }
-// PC 0x004C3170  Xbox 0x001960D0
+// PC 0x005041D0
 void CSWSModule::PackModuleIntoMessage(unsigned long nPlayerId)
 {
     CSWSMessage* pMessage = g_pAppManager->m_pServerExoApp->GetSWSMessage();
@@ -358,7 +358,7 @@ void CSWSModule::PackModuleIntoMessage(unsigned long nPlayerId)
     pMessage->WriteCResRef(m_cHak, 16);
     pMessage->WriteCResRef(m_cStartMovie, 16);
 }
-// PC 0x004C3260  Xbox 0x001961C0
+// PC 0x005042C0
 int CSWSModule::PlotPathInArea(CPathfindInformation* pPathfind,
                               unsigned long nFlags)
 {
@@ -608,7 +608,7 @@ int CSWSModule::PlotPathInArea(CPathfindInformation* pPathfind,
         pPathfind->m_nField_88 = 1;
     return nResult;
 }
-// PC 0x004C3960  Xbox 0x00196A60
+// PC 0x005049D0
 int CSWSModule::SaveModuleFAC()
 {
     CExoString sFileName;
@@ -641,7 +641,7 @@ int CSWSModule::SaveModuleFAC()
     delete pStruct;
     return bSuccess;
 }
-// PC 0x004C3B10  Xbox 0x00196C10
+// PC 0x00504B80
 int CSWSModule::SaveModuleInProgress()
 {
     CExoString sName;
@@ -667,7 +667,7 @@ int CSWSModule::SaveModuleInProgress()
         1, nProgress);
     return 1;
 }
-// PC 0x004C3C70  Xbox 0x00196D70
+// PC 0x00504CE0
 void CSWSModule::SavePrimaryPlayerInfo(CSWSCreature* pCreature,
                                       const CExoString& sPath)
 {
@@ -698,7 +698,7 @@ void CSWSModule::SavePrimaryPlayerInfo(CSWSCreature* pCreature,
     }
     delete pGFF;
 }
-// PC 0x004C3EA0  Xbox 0x00196FA0
+// PC 0x00504F10
 void CSWSModule::SetIntraAreaGoal(CPathfindInformation* pPathfind)
 {
     if (pPathfind->m_nField_A8 > 1)
@@ -752,7 +752,7 @@ void CSWSModule::SetIntraAreaGoal(CPathfindInformation* pPathfind)
         }
     }
 }
-// PC 0x004C5510  Xbox 0x001984D0
+// PC 0x00506780
 int CSWSModule::InterAreaDFS(int nArea, int nDepth,
                             CPathfindInformation* pPathfind)
 {
@@ -832,7 +832,7 @@ int CSWSModule::InterAreaDFS(int nArea, int nDepth,
         delete[] pSuccessors;
     return 0;
 }
-// PC 0x004C5720  Xbox 0x001986E0
+// PC 0x00506990
 int CSWSModule::LoadModuleInProgress(int nAreasLoaded, int nAreasToLoad)
 {
     CSWSArea* pArea;
@@ -872,7 +872,7 @@ int CSWSModule::LoadModuleInProgress(int nAreasLoaded, int nAreasToLoad)
         ->SendServerToPlayerLoadBar_UpdateStallEvent(nAreasLoaded + 1, -1);
     return 0;
 }
-// PC 0x004C5880  Xbox 0x00198840
+// PC 0x00506AF0
 int CSWSModule::LoadModuleFinish()
 {
     CResStruct cTopLevelStruct;
@@ -906,7 +906,7 @@ int CSWSModule::LoadModuleFinish()
 void CSWSModule::PostProcess()
 {
 }
-// PC 0x004C5980  Xbox 0x00198950
+// PC 0x00506C00
 int CSWSModule::SaveStatic(CERFFile* pERFFile, const CExoString& sFileType,
                            unsigned short nResType, int bIsGFF)
 {
@@ -970,7 +970,7 @@ int CSWSModule::SaveStatic(CERFFile* pERFFile, const CExoString& sFileType,
     delete pResources;
     return bSuccess;
 }
-// PC 0x004C6C90  Xbox 0x00199AF0
+// PC 0x00507E20
 int CSWSModule::AIUpdate()
 {
     unsigned long nDiffDay;
@@ -1007,7 +1007,7 @@ int CSWSModule::AIUpdate()
     }
     return 0;
 }
-// PC 0x004C6DC0  Xbox 0x00199C20
+// PC 0x00507F50
 int CSWSModule::DoUpdate()
 {
     CServerExoApp* pExoApp;
@@ -1027,13 +1027,13 @@ int CSWSModule::DoUpdate()
     }
     m_bAIUpdate = 1;
 }
-// PC 0x004C6E00  Xbox 0x00199C60
+// PC 0x00507F90
 unsigned long CSWSModule::GetWaypoint(const CExoString& sTag)
 {
     return FindObjectByTagTypeOrdinal(sTag, CGameObject::OBJECT_TYPE_WAYPOINT,
                                       0);
 }
-// PC 0x004C6E20  Xbox 0x00199C80
+// PC 0x00507FB0
 int CSWSModule::PlotInterAreaPath(CPathfindInformation* pPathfind,
                                   unsigned long nFlags)
 {
@@ -1107,7 +1107,7 @@ int CSWSModule::PlotInterAreaPath(CPathfindInformation* pPathfind,
     }
     return nResult;
 }
-// PC 0x004C6F70  Xbox 0x00199DD0
+// PC 0x00508100
 int CSWSModule::PlotPath(CPathfindInformation* pPathfind, unsigned long nFlags)
 {
     int nResult;
@@ -1156,7 +1156,7 @@ int CSWSModule::PlotPath(CPathfindInformation* pPathfind, unsigned long nFlags)
     }
     return nResult;
 }
-// PC 0x004C8960  Xbox 0x0019B7E0
+// PC 0x00509800
 void CSWSModule::SaveModuleStart(CExoString& sPath, CExoString& sName)
 {
     m_bIsSaveGame = 1;
@@ -1194,7 +1194,7 @@ void CSWSModule::SaveModuleStart(CExoString& sPath, CExoString& sName)
         m_pERFStruct = NULL;
     }
 }
-// PC 0x004C7050  Xbox 0x00199EB0
+// PC 0x005081E0
 int CSWSModule::SaveModuleIFOStart(CResGFF* pRes, CResStruct* pStruct)
 {
     CExoLocString lsDefault;
@@ -1377,7 +1377,7 @@ int CSWSModule::SaveModuleIFOStart(CResGFF* pRes, CResStruct* pStruct)
     g_pAppManager->GetServerExoApp()->GetServerAIMaster()->SaveEventQueue(pRes, pStruct);
     return 1;
 }
-// PC 0x004C5BB0  Xbox 0x00198B80
+// PC 0x00506E30
 void CSWSModule::SaveLimboCreatures(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList cList;
@@ -1401,7 +1401,7 @@ void CSWSModule::SaveLimboCreatures(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 }
-// PC 0x004C8B90  Xbox 0x0019B9F0
+// PC 0x00509A30
 int CSWSModule::SaveModuleIFOFinish(CResGFF* pRes, CResStruct* pStruct,
                                     CERFFile* pERFFile, CExoString& sPath,
                                     CExoArrayList<unsigned long>& lstPlayers)
@@ -1416,7 +1416,7 @@ int CSWSModule::SaveModuleIFOFinish(CResGFF* pRes, CResStruct* pStruct,
     delete pStruct;
     return 1;
 }
-// PC 0x004C7870  Xbox 0x0019A6D0
+// PC 0x00508A00
 int CSWSModule::SavePlayers(CResGFF* pRes, CResStruct* pStruct,
                             const CExoString& sPath,
                             CExoArrayList<unsigned long>& lstPlayers)
@@ -1540,7 +1540,7 @@ int CSWSModule::SavePlayers(CResGFF* pRes, CResStruct* pStruct,
     g_pExoResMan->ReleaseResObject(pModule);
     return 1;
 }
-// PC 0x004C5C70  Xbox 0x00198C40
+// PC 0x00506EF0
 int CSWSModule::GetPlayerIndexInPlayerList(CSWSPlayer* pPlayer)
 {
     int nIndex = 0;
@@ -1570,7 +1570,7 @@ int CSWSModule::GetPlayerIndexInPlayerList(CSWSPlayer* pPlayer)
     }
     return -1;
 }
-// PC 0x004C5D90  Xbox 0x00198D60
+// PC 0x00507010
 int CSWSModule::GetPrimaryPlayerIndex()
 {
     int nPrimaryPlayerIndex = -1;
@@ -1595,11 +1595,11 @@ int CSWSModule::GetPrimaryPlayerIndex()
     }
     return nPrimaryPlayerIndex;
 }
-// PC 0x004C5DF0  Xbox 0x00198DC0
+// PC 0x00507070
 inline NWPlayerCharacterList_st::~NWPlayerCharacterList_st()
 {
 }
-// PC 0x004C7DE0  Xbox 0x0019AC50
+// PC 0x00508CB0
 int CSWSModule::AddObjectToLookupTable(const CExoString& sTag,
                                        unsigned long oidObject)
 {
@@ -1619,7 +1619,7 @@ int CSWSModule::AddObjectToLookupTable(const CExoString& sTag,
     m_lstTagTable.Insert(cNode, nIndex);
     return 1;
 }
-// PC 0x004C5E60  Xbox 0x00198E30
+// PC 0x005070E0
 int CSWSModule::FindTagPositionInTable(char* sTag)
 {
     int nLow = 0;
@@ -1642,7 +1642,7 @@ int CSWSModule::FindTagPositionInTable(char* sTag)
     }
     return nLow;
 }
-// PC 0x004C5EF0  Xbox 0x00198EC0
+// PC 0x00507170
 int CSWSModule::RemoveObjectFromLookupTable(const CExoString& sTag,
                                             unsigned long oidObject)
 {
@@ -1662,7 +1662,7 @@ int CSWSModule::RemoveObjectFromLookupTable(const CExoString& sTag,
     }
     return 0;
 }
-// PC 0x004C5FE0  Xbox 0x00198FB0
+// PC 0x00507260
 unsigned long CSWSModule::FindObjectByTagOrdinal(const CExoString& sTag,
                                                  unsigned long nNth)
 {
@@ -1690,7 +1690,7 @@ unsigned long CSWSModule::FindObjectByTagOrdinal(const CExoString& sTag,
     }
     return OBJECT_INVALID;
 }
-// PC 0x004C60B0  Xbox 0x00199080
+// PC 0x00507330
 unsigned long CSWSModule::FindObjectByTagTypeOrdinal(const CExoString& sTag,
                                                      int nObjectType,
                                                      unsigned long nNth)
@@ -1722,7 +1722,7 @@ unsigned long CSWSModule::FindObjectByTagTypeOrdinal(const CExoString& sTag,
     }
     return OBJECT_INVALID;
 }
-// PC 0x004C61D0  Xbox 0x001991C0
+// PC 0x00507450
 int CSWSModule::GetWorldJournalIndexUnique()
 {
     int nEntryCount = m_lstWorldJournal.num;
@@ -1744,7 +1744,7 @@ int CSWSModule::GetWorldJournalIndexUnique()
     }
     return nIndex;
 }
-// PC 0x004C6210  Xbox 0x00199200
+// PC 0x00507490
 void CSWSModule::UpdateTime(unsigned long nDay, unsigned long nTime,
                            unsigned long nDeltaTime)
 {
@@ -1839,7 +1839,7 @@ void CSWSModule::UpdateTime(unsigned long nDay, unsigned long nTime,
         }
     }
 }
-// PC 0x004C63F0  Xbox 0x001993E0
+// PC 0x00507670
 void CSWSModule::RemoveObjectFromLimbo(unsigned long oidObject)
 {
     for (int nIndex = m_lLimbo.num - 1; nIndex >= 0; nIndex--)
@@ -1851,7 +1851,7 @@ void CSWSModule::RemoveObjectFromLimbo(unsigned long oidObject)
         }
     }
 }
-// PC 0x004C6450  Xbox 0x00199440
+// PC 0x005076D0
 int CSWSModule::IsObjectInLimbo(unsigned long oidObject)
 {
     for (int nIndex = m_lLimbo.num - 1; nIndex >= 0; nIndex--)
@@ -1863,7 +1863,7 @@ int CSWSModule::IsObjectInLimbo(unsigned long oidObject)
     }
     return 0;
 }
-// PC 0x004C7ED0  Xbox 0x0019AD40
+// PC 0x00508DA0
 void CSWSModule::AddWorldJournalEntry(int nIndex, const CExoString& sText,
                                      const CExoString& sTag,
                                      unsigned long nCalendarDay,
@@ -1910,7 +1910,7 @@ void CSWSModule::AddWorldJournalEntry(int nIndex, const CExoString& sText,
         }
     }
 }
-// PC 0x004C8030  Xbox 0x0019AEA0
+// PC 0x00508F00
 void CSWSModule::AddWorldJournalEntryStrref(unsigned long nIndex,
                                             unsigned long nStrRef,
                                             unsigned long nCalendarDay,
@@ -1956,7 +1956,7 @@ void CSWSModule::AddWorldJournalEntryStrref(unsigned long nIndex,
         }
     }
 }
-// PC 0x004C8170  Xbox 0x0019AFE0
+// PC 0x00509040
 void CSWSModule::DeleteWorldJournalEntry(int nIndex)
 {
     CSWSMessage* pMessage = g_pAppManager->m_pServerExoApp->GetSWSMessage();
@@ -1998,7 +1998,7 @@ void CSWSModule::DeleteWorldJournalEntry(int nIndex)
         }
     }
 }
-// PC 0x004C8230  Xbox 0x0019B0A0
+// PC 0x00509100
 void CSWSModule::DeleteWorldJournalEntryStrref(unsigned long nStrRef)
 {
     CSWSMessage* pMessage = g_pAppManager->m_pServerExoApp->GetSWSMessage();
@@ -2038,7 +2038,7 @@ void CSWSModule::DeleteWorldJournalEntryStrref(unsigned long nStrRef)
         }
     }
 }
-// PC 0x004C82F0  Xbox 0x0019B160
+// PC 0x005091C0
 void CSWSModule::DeleteWorldJournalAllEntries()
 {
     CSWSMessage* pMessage = g_pAppManager->m_pServerExoApp->GetSWSMessage();
@@ -2069,7 +2069,7 @@ void CSWSModule::DeleteWorldJournalAllEntries()
         }
     }
 }
-// PC 0x004C8C70  Xbox 0x0019BAC0
+// PC 0x00509B10
 int CSWSModule::LoadLimboCreatures(CResGFF* pRes, CResStruct* pStruct,
                                    int bIsSaveGame)
 {
@@ -2128,7 +2128,7 @@ int CSWSModule::LoadLimboCreatures(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x004C83B0  Xbox 0x0019B220
+// PC 0x00509280
 void CSWSModule::AddObjectToLimbo(unsigned long oidObject)
 {
     for (int i = 0; i < m_lLimbo.num; i++)
@@ -2140,7 +2140,7 @@ void CSWSModule::AddObjectToLimbo(unsigned long oidObject)
     }
     m_lLimbo.Add(oidObject);
 }
-// PC 0x004C8E90  Xbox 0x0019BD00
+// PC 0x00509D30
 void CSWSModule::PackPlayerCharacterListIntoMessage(CSWSPlayer* pPlayer,
     CExoArrayList<NWPlayerCharacterList_st*>& lstCharacters)
 {
@@ -2172,7 +2172,7 @@ void CSWSModule::PackPlayerCharacterListIntoMessage(CSWSPlayer* pPlayer,
         nIndex++;
     }
 }
-// PC 0x004C9050  Xbox 0x0019BEC0
+// PC 0x00509EF0
 int CSWSModule::LoadModuleStart(const CExoString& sModule, int bLoadModuleTime)
 {
     CExoString sModuleName;
@@ -2510,7 +2510,7 @@ int CSWSModule::LoadModuleStart(const CExoString& sModule, int bLoadModuleTime)
     m_n1D8 = 0;
     return LOAD_MODULE_SUCCESS;
 }
-// PC 0x004CA680  Xbox 0x0019D500
+// PC 0x0050B530
 int CSWSModule::SaveModuleFinish(CExoString& sPath, CExoString& sName)
 {
     if (m_pERFFile == NULL)
@@ -2531,7 +2531,7 @@ int CSWSModule::SaveModuleFinish(CExoString& sPath, CExoString& sName)
     m_plstPlayers = NULL;
     return 1;
 }
-// PC 0x004C6480  Xbox 0x00199470
+// PC 0x00507700
 void CSWSModule::TimeStopSanityCheck()
 {
     int bTimeStop = 0;
@@ -2562,7 +2562,7 @@ void CSWSModule::TimeStopSanityCheck()
         g_pAppManager->m_pServerExoApp->TogglePauseState(1);
     }
 }
-// PC 0x004C4100  Xbox 0x00197130
+// PC 0x00505170
 int CSWSModule::GetTime(unsigned long* pnYear, unsigned long* pnMonth,
                         unsigned long* pnDay, unsigned long* pnTimeOfDay,
                         unsigned char* pnDawnDusk, unsigned long* pnTimeOfDay2)
@@ -2583,7 +2583,7 @@ int CSWSModule::GetTime(unsigned long* pnYear, unsigned long* pnMonth,
 #define XB7_RESTYPE_ERF 9997
 #define XB7_RESTYPE_MOD 2011
 #endif
-void CSWSModule::AddModuleResources(const CExoString& sModuleName)  // PC 0x004C4150  Xbox 0x001971C0
+void CSWSModule::AddModuleResources(const CExoString& sModuleName)  // PC 0x005051C0
 {
     CExoString sResourceName;
     CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
@@ -2677,7 +2677,7 @@ void CSWSModule::AddModuleResources(const CExoString& sModuleName)  // PC 0x004C
     g_pAppManager->m_pClientExoApp->SetLoadBarProgress(nProgressEnd, 1);
     UpdateScreen(0.033333335f, 0, 0);
 }
-// PC 0x004C44D0  Xbox 0x001975B0
+// PC 0x00505500
 void CSWSModule::RemoveModuleResources(const CExoString& sModuleName)
 {
     g_pExoResMan->RemoveEncapsulatedResourceFile(sModuleName);
@@ -2783,7 +2783,7 @@ void CSWSModule::RemoveModuleResources(const CExoString& sModuleName)
 #endif
     g_pAppManager->m_pClientExoApp->ResetModuleResourcesLoaded();
 }
-// PC 0x004C4B80  Xbox 0x00197C80
+// PC 0x00505DB0
 CExoString CSWSModule::GetModuleResourceName()
 {
     int nColon;
@@ -2815,7 +2815,7 @@ static inline void NwsmoduleTrace1()
 }
 
 #ifdef _XBOX
-// Xbox 0x00197180
+
 void CSWSModule::TestPathPoints(char* szArgs)
 {
     float fPersonalSpace = (float)atof(szArgs);

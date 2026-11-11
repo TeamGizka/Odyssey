@@ -41,7 +41,7 @@ public:
     void SetEndX(float fX) { m_fEndX = fX; }
     void SetEndY(float fY) { m_fEndY = fY; }
     void SetEndZ(float fZ) { m_fEndZ = fZ; }
-    void SetPathPointPath(unsigned long* pPath)  // PC 0x004BB340
+    void SetPathPointPath(unsigned long* pPath)  // PC 0x004FBEC0
     {
         if (m_pPathPointDFSPath != 0)
         {
@@ -50,31 +50,31 @@ public:
         }
         m_pPathPointDFSPath = pPath;
     }
-    void GetPathPointEndpoints(Vector& vStart, Vector& vEnd)  // PC 0x004BB380  Xbox 0x0018D4D0
+    void GetPathPointEndpoints(Vector& vStart, Vector& vEnd)  // PC 0x004FBF00
     {
         vStart = m_vField_1E4;
         vEnd = m_vField_1F0;
     }
-    void SetPathPointEndpoints(const Vector& vStart, const Vector& vEnd)  // PC 0x004BB3C0  Xbox 0x0018D510
+    void SetPathPointEndpoints(const Vector& vStart, const Vector& vEnd)  // PC 0x004FBF40
     {
         m_vField_1E4 = vStart;
         m_vField_1F0 = vEnd;
     }
-    void SetPathPointStartPath(int nCount, float* pfPoints)  // PC 0x004BB400  Xbox 0x0018D550
+    void SetPathPointStartPath(int nCount, float* pfPoints)  // PC 0x004FBF80
     {
         m_nPathPointStartCount = nCount;
         if (m_pfPathPointStartPoints != 0)
             delete m_pfPathPointStartPoints;
         m_pfPathPointStartPoints = pfPoints;
     }
-    void SetPathPointEndPath(int nCount, float* pfPoints)  // PC 0x004BB440  Xbox 0x0018D590
+    void SetPathPointEndPath(int nCount, float* pfPoints)  // PC 0x004FBFC0
     {
         m_nPathPointEndCount = nCount;
         if (m_pfPathPointEndPoints != 0)
             delete m_pfPathPointEndPoints;
         m_pfPathPointEndPoints = pfPoints;
     }
-    // PC 0x004BB480
+    // PC 0x004FC000
     void SetSmoothFirstPoints(float* pfPoints)
     {
         if (m_pfSmoothFirstPoints == 0 && pfPoints != 0)
@@ -92,7 +92,7 @@ public:
             m_pfSmoothFirstPoints = pfPoints;
         }
     }
-    void SetSmoothSecondPoints(float* pfPoints)  // PC 0x004BB4D0
+    void SetSmoothSecondPoints(float* pfPoints)  // PC 0x004FC050
     {
         if (m_pfSmoothSecondPoints == 0 && pfPoints != 0)
         {
@@ -109,7 +109,7 @@ public:
             m_pfSmoothSecondPoints = pfPoints;
         }
     }
-    void SetSmoothFinalPoints(float* pfPoints)  // PC 0x004BB520
+    void SetSmoothFinalPoints(float* pfPoints)  // PC 0x004FC0A0
     {
         if (m_pfSmoothFinalPoints == 0 && pfPoints != 0)
         {
@@ -146,7 +146,7 @@ public:
     void ResetInterAreaPathSearchData();
     void ResetInterAreaSearchData();
     void ResetAtEndOfPath();
-    void SetBlockingCreature(unsigned long oidCreature)  // PC 0x004CC440
+    void SetBlockingCreature(unsigned long oidCreature)  // PC 0x004F6030
     {
         m_oidBlockingCreature = oidCreature;
         if (oidCreature == OBJECT_INVALID)
@@ -282,7 +282,7 @@ public:
     int m_nField_23C;
     int m_nField_240;
     int m_nField_244;
-    // PC 0x0050E250  Xbox 0x001ABBB0
+    // PC 0x00541EB0
     void SetTargetPosition(const Vector& vPosition) { m_vField_248 = vPosition; }
     Vector m_vField_248;
     unsigned long m_oidBlockingCreature;
@@ -308,7 +308,7 @@ public:
         PATH_CLEAR = 2
     };
     CAvoidCreature();
-    void Reset()  // PC 0x0050E270  Xbox 0x0015BD00
+    void Reset()  // PC 0x00541ED0
     {
         m_vHexPoints[0] = Vector();
         m_vHexPoints[1] = Vector();

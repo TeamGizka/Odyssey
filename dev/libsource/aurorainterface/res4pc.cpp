@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x00710F90  Xbox 0x002FB1E0
+// PC 0x007847E0
 CRes4PC::CRes4PC()
 {
     m_bServiced = 0;
@@ -8,16 +8,16 @@ CRes4PC::CRes4PC()
     m_pHeader = 0;
     m_bAllocPrefix = 1;
 }
-// PC 0x00710FC0  Xbox 0x002FB210
+// PC 0x00784810
 CRes4PC::~CRes4PC()
 {
 }
-// PC 0x00404DD0
+// PC 0x00404CF0
 unsigned char* CRes4PC::Get4PCDataPtr()
 {
     return m_pData;
 }
-// PC 0x00710FD0  Xbox 0x002FB220
+// PC 0x00784820
 int CRes4PC::Get4PCAttrib(unsigned long* pnA, unsigned long* pnB, float* pfC, int* pnD)
 {
     if (m_pHeader == 0)
@@ -30,7 +30,7 @@ int CRes4PC::Get4PCAttrib(unsigned long* pnA, unsigned long* pnB, float* pfC, in
     *pnD = m_pHeader[3];
     return 1;
 }
-// PC 0x00711010
+// PC 0x00784760
 int CRes4PC::OnResourceFreed()
 {
     m_bServiced = 0;
@@ -39,7 +39,7 @@ int CRes4PC::OnResourceFreed()
     m_pHeader = 0;
     return 1;
 }
-// PC 0x00711030  Xbox 0x002FB270
+// PC 0x00784860
 int CRes4PC::OnResourceServiced()
 {
     unsigned char* pResource = (unsigned char*)m_pResource;

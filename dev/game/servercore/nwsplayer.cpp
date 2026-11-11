@@ -17,7 +17,7 @@
 #include "nwscreaturestats.h"
 
 #define LOCAL_CHARACTER_RESREF "TEMP_CHAR"
-// PC 0x00563040  Xbox 0x001C1D40
+// PC 0x0059FBE0
 CSWSPlayer::~CSWSPlayer()
 {
     delete m_pPartyObjectsLastUpdate;
@@ -46,7 +46,7 @@ CSWSPlayer::~CSWSPlayer()
     delete m_pLastUpdateObject;
     m_pLastUpdateObject = NULL;
 }
-// PC 0x00560BA0  Xbox 0x001BF710
+// PC 0x0059D660
 void CSWSPlayerCharSheetGUI::SetCreatureDisplayed(unsigned long oidCreature)
 {
     if (m_oidCreature != oidCreature)
@@ -59,13 +59,13 @@ void CSWSPlayerCharSheetGUI::SetCreatureDisplayed(unsigned long oidCreature)
     }
     m_oidCreature = oidCreature;
 }
-// PC 0x00560C20  Xbox 0x001BF790
+// PC 0x0059D6E0
 CSWSPlayerInventoryGUI::CSWSPlayerInventoryGUI()
 {
     m_bOpen = 0;
     m_pLastUpdateObject = new CSWSPlayerLUOInventory;
 }
-// PC 0x00560C90  Xbox 0x001BF800
+// PC 0x0059D750
 void CSWSPlayerInventoryGUI::SetOpen(int bOpen)
 {
     if (bOpen == 0)
@@ -78,12 +78,12 @@ void CSWSPlayerInventoryGUI::SetOpen(int bOpen)
     }
     m_bOpen = bOpen;
 }
-// PC 0x00560CC0  Xbox 0x001BF830
+// PC 0x0059D780
 int CSWSPlayer::GetIsAllowedToSave()
 {
     return m_bIsAllowedToSave != 0;
 }
-// PC 0x00560CD0  Xbox 0x001BF840
+// PC 0x0059D790
 void CSWSPlayer::SetAreaTransitionBMP(int nState, const CExoString& sBMP)
 {
     if (nState == 1)
@@ -92,7 +92,7 @@ void CSWSPlayer::SetAreaTransitionBMP(int nState, const CExoString& sBMP)
     }
     m_nAreaTransitionState = nState;
 }
-// PC 0x00560D00  Xbox 0x001BF870
+// PC 0x0059D7C0
 int CSWSPlayer::GetCharacterInfoFromIFO(unsigned char& nClassCount,
                                         int* pnClasses,
                                         unsigned char* pnClassLevels,
@@ -140,7 +140,7 @@ int CSWSPlayer::GetCharacterInfoFromIFO(unsigned char& nClassCount,
     g_pExoResMan->ReleaseResObject(pRes);
     return 1;
 }
-// PC 0x00560E60  Xbox 0x001BF9D0
+// PC 0x0059D920
 int CSWSPlayer::LoadCreatureData(CResRef cResRef, CSWSCreature* pCreature)
 {
     CResGFF* pRes = new CResGFF(RESTYPE_BIC, "BIC ", cResRef);
@@ -189,7 +189,7 @@ int CSWSPlayer::LoadCreatureData(CResRef cResRef, CSWSCreature* pCreature)
     delete pRes;
     return 0;
 }
-// PC 0x00561080  Xbox 0x001BFBF0
+// PC 0x0059DB40
 CSWSObject* CSWSPlayer::GetGameObject()
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -202,7 +202,7 @@ CSWSObject* CSWSPlayer::GetGameObject()
     }
     return (CSWSObject*)pGameObject;
 }
-// PC 0x005610B0  Xbox 0x001BFC20
+// PC 0x0059DB70
 CExoString CSWSPlayer::GetPlayerName()
 {
     CNetLayerPlayerInfo* pPlayerInfo =
@@ -215,7 +215,7 @@ CExoString CSWSPlayer::GetPlayerName()
     }
     return CExoString("");
 }
-// PC 0x00561100  Xbox 0x001BFC70
+// PC 0x0059DBC0
 CSWSPlayerLastUpdateObject* CSWSPlayer::CreateNewPlayerLastUpdateObject()
 {
     CSWSPlayerLastUpdateObject* pLastUpdateObject = m_pLastUpdateObject;
@@ -229,7 +229,7 @@ CSWSPlayerLastUpdateObject* CSWSPlayer::CreateNewPlayerLastUpdateObject()
     m_pLastUpdateObject->ClearKnownSpellUsesLeft();
     return m_pLastUpdateObject;
 }
-// PC 0x00561190  Xbox 0x001BFD00
+// PC 0x0059DC50
 int CSWSPlayer::PermittedToDisplayCharacterSheet(unsigned long oidCreature)
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -252,7 +252,7 @@ int CSWSPlayer::PermittedToDisplayCharacterSheet(unsigned long oidCreature)
     }
     return pPlayerCreature->m_nId == pCreature->m_nId;
 }
-// PC 0x00561260  Xbox 0x001BFDD0
+// PC 0x0059DD20
 int CSWSPlayerCharSheetGUI::ComputeCharacterSheetUpdateRequired(CSWSPlayer* pPlayer)
 {
     int nUpdate = 0;
@@ -439,7 +439,7 @@ int CSWSPlayerCharSheetGUI::ComputeCharacterSheetUpdateRequired(CSWSPlayer* pPla
     }
     return nUpdate;
 }
-// PC 0x00561820  Xbox 0x001C0390
+// PC 0x0059E2E0
 CLastUpdateObject* CSWSPlayer::GetLastUpdateObject(unsigned long oidObject)
 {
     CExoLinkedListNode* pNode = m_pActiveObjectsLastUpdate->GetHeadPos();
@@ -456,7 +456,7 @@ CLastUpdateObject* CSWSPlayer::GetLastUpdateObject(unsigned long oidObject)
     }
     return NULL;
 }
-// PC 0x00561870  Xbox 0x001C03E0
+// PC 0x0059E330
 int CSWSPlayer::PackCreatureIntoMessage()
 {
     int bSuccess = 1;
@@ -527,7 +527,7 @@ int CSWSPlayer::PackCreatureIntoMessage()
     delete pGFF;
     return bSuccess;
 }
-// PC 0x00561C40  Xbox 0x001C07C0
+// PC 0x0059E700
 void CSWSPlayer::SetGameObject(CSWSObject* pObject)
 {
     unsigned long oidOldObject = m_oidNWSObject;
@@ -582,7 +582,7 @@ void CSWSPlayer::SetGameObject(CSWSObject* pObject)
             pOldArea->DecrementPlayersInArea();
     }
 }
-// PC 0x00561D70  Xbox 0x001C09C0
+// PC 0x0059E830
 int CSWSPlayer::LoadLocalCharacter()
 {
     CSWSObject* pCreature =
@@ -602,7 +602,7 @@ int CSWSPlayer::LoadLocalCharacter()
     }
     return nResult;
 }
-// PC 0x00561E30  Xbox 0x001C0AC0
+// PC 0x0059E9F0
 int CSWSPlayer::LoadCharacterFromIFO(unsigned long nPlayerIndex,
                                       int bLoadModuleCharacter,
                                       int bPostProcess)
@@ -738,7 +738,7 @@ int CSWSPlayer::LoadCharacterFromIFO(unsigned long nPlayerIndex,
     }
     return 1;
 }
-// PC 0x00562380  Xbox 0x001C1030
+// PC 0x0059EF40
 int CSWSPlayer::LoadServerCharacter(CResRef cResRef)
 {
     CSWSObject* pCreature =
@@ -761,7 +761,7 @@ int CSWSPlayer::LoadServerCharacter(CResRef cResRef)
     }
     return 0;
 }
-// PC 0x005624C0  Xbox 0x001C11B0
+// PC 0x0059F080
 int CSWSPlayer::SaveServerCharacter()
 {
     CExoString sResRef;
@@ -884,7 +884,7 @@ int CSWSPlayer::SaveServerCharacter()
     delete pGFF;
     return 1;
 }
-// PC 0x00562C70  Xbox 0x001C1970
+// PC 0x0059F810
 CSWSPlayer::CSWSPlayer(unsigned long nPlayerId)
     : CSWSClient(nPlayerId)
 {
@@ -926,7 +926,7 @@ void CSWSPlayer::ClearPlayerLastUpdateObject()
         m_pLastUpdateObject->ClearFeats();
     }
 }
-// PC 0x00562E40  Xbox 0x001C1B40
+// PC 0x0059F9E0
 void CSWSPlayer::ClearPlayerOnDestroyGame()
 {
     CSWSPlayerInventoryGUI* pInventoryGUI = m_pInventoryGUI;

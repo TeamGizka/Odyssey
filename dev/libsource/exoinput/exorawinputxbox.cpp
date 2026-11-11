@@ -13,14 +13,14 @@ void ExoXboxLaunch(KOTOR_LAUNCH_DATA* pParams, const char* pszModuleName);
 float g_fDeadzonePreCalibration = 0.5f;
 float g_fDeadzonePostCalibration = 0.2f;
 float g_fDeadzoneCalibrationDetect = 0.95f;
-// PC 0x005C5A30
+
 CExoDeviceBuffer::CExoDeviceBuffer()
 {
     m_nEvents = 0;
     m_nCapacity = 0;
     m_pEvents = NULL;
 }
-// PC 0x005E2FF0  Xbox 0x0013BFC0
+
 CExoDeviceBuffer::~CExoDeviceBuffer()
 {
     if (m_pEvents != NULL)
@@ -29,23 +29,23 @@ CExoDeviceBuffer::~CExoDeviceBuffer()
         m_pEvents = NULL;
     }
 }
-// PC 0x005E3BE0
+
 void CExoRawInputInternal::KeyboardModeOn()
 {
 }
-// PC 0x005E3C00
+
 void CExoRawInputInternal::KeyboardModeOff()
 {
 }
-// PC 0x005E3010
+
 void CExoRawInputInternal::ClearKeyboardBuffer()
 {
 }
-// PC 0x005E3080
+
 void CExoRawInputInternal::ClearMouseBuffer()
 {
 }
-// PC 0x005E3AE0
+
 int CExoRawInputInternal::GetKeyboardBuffer(CExoDeviceBuffer& buffer)
 {
     return 1;
@@ -55,12 +55,12 @@ int CExoRawInputInternal::GetMouseBuffer(CExoDeviceBuffer& buffer)
 {
     return 1;
 }
-// PC 0x0063E7F0
+
 int CExoRawInputInternal::GetMainDeviceLost()
 {
     return m_bMainDeviceLost;
 }
-// Xbox 0x0013BFE0
+
 void CExoRawInputInternal::ClearJoystickBuffer(int nJoystick)
 {
     unsigned long nTime =
@@ -90,7 +90,7 @@ void CExoRawInputInternal::ClearJoystickBuffer(int nJoystick)
     m_pStates[nJoystick].m_nRightYMax = 0;
     m_pStates[nJoystick].m_nRightYMin = 0;
 }
-// Xbox 0x0013C140
+
 int CExoRawInputInternal::GetAutoCalInfo()
 {
     int nFlags = 0;
@@ -130,7 +130,7 @@ int CExoRawInputInternal::GetAutoCalInfo()
 
     return nFlags;
 }
-// Xbox 0x0013C230
+
 int CExoRawInputInternal::GetPortBinding()
 {
     int nAssignment = 0;
@@ -146,7 +146,7 @@ int CExoRawInputInternal::GetPortBinding()
     nAssignment |= m_nDebugOption << 30;
     return nAssignment;
 }
-// Xbox 0x0013C2A0
+
 int CExoRawInputInternal::SetAutoCalInfo(unsigned long nFlags)
 {
     m_pStates[0].m_bLeftXCalibrated = (nFlags >> 3) & 1;
@@ -203,7 +203,7 @@ int CExoRawInputInternal::SetAutoCalInfo(unsigned long nFlags)
 
     return 1;
 }
-// PC 0x005E3930  Xbox 0x0013C5D0
+
 int CExoRawInputInternal::GetLastState(unsigned long nDevice,
                                        unsigned long nControl)
 {
@@ -246,7 +246,7 @@ int CExoRawInputInternal::GetLastState(unsigned long nDevice,
     }
     return 0;
 }
-// PC 0x005E3A60  Xbox 0x0013C680
+
 float CExoRawInputInternal::GetMaxUseable(unsigned long nDevice,
                                           unsigned long nControl)
 {
@@ -265,7 +265,7 @@ float CExoRawInputInternal::GetMaxUseable(unsigned long nDevice,
     }
     return 0.0f;
 }
-// PC 0x005E3AA0  Xbox 0x0013C6D0
+
 float CExoRawInputInternal::GetMinUseable(unsigned long nDevice,
                                           unsigned long nControl)
 {
@@ -297,7 +297,7 @@ float CExoRawInputInternal::GetMinUseable(unsigned long nDevice,
     }
     return 0.0f;
 }
-// PC 0x005E39F0  Xbox 0x0013C790
+
 int CExoRawInputInternal::IsDigital(unsigned long nDevice,
                                     unsigned long nControl)
 {
@@ -308,7 +308,7 @@ int CExoRawInputInternal::IsDigital(unsigned long nDevice,
     }
     return 0;
 }
-// PC 0x0063E7C0  Xbox 0x0013C7B0
+
 int CExoRawInputInternal::GetControlThreshold(unsigned long nControl)
 {
     if (nControl >= GAMEPAD_THUMB_LX && nControl <= GAMEPAD_THUMB_RY)
@@ -317,7 +317,7 @@ int CExoRawInputInternal::GetControlThreshold(unsigned long nControl)
     }
     return 0;
 }
-// Xbox 0x0013C7D0
+
 void CExoRawInputInternal::UpdateJoysticks()
 {
     DWORD dwInsertions;
@@ -543,7 +543,7 @@ void CExoRawInputInternal::UpdateJoysticks()
 
     m_nCheatCombo = 0;
 }
-// Xbox 0x0013CC60
+
 int CExoRawInputInternal::SetRumble(int nJoystick, float fLeft, float fRight,
                                     unsigned long nDuration)
 {
@@ -634,7 +634,7 @@ int CExoRawInputInternal::SetRumble(int nJoystick, float fLeft, float fRight,
     }
     return 0;
 }
-// Xbox 0x0013CF00
+
 void CExoRawInputInternal::UpdateRumble()
 {
     unsigned long nTime =
@@ -679,7 +679,7 @@ void CExoRawInputInternal::UpdateRumble()
         }
     }
 }
-// PC 0x005E3C20  Xbox 0x0013D030
+
 void CExoRawInputInternal::SetActive(int bActive)
 {
     if (bActive != m_bActive)
@@ -687,7 +687,7 @@ void CExoRawInputInternal::SetActive(int bActive)
         m_bActive = bActive;
     }
 }
-// Xbox 0x0013D040
+
 void CExoRawInputInternal::ShutDownDirectInput()
 {
     if (m_pStates != NULL)
@@ -710,7 +710,7 @@ void CExoRawInputInternal::ShutDownDirectInput()
         }
     }
 }
-// Xbox 0x0013D0A0
+
 void CExoRawInputInternal::SetBindEvent(int nPort, int nControl, int nValue,
                                         int nSequence, int nTimeStamp)
 {
@@ -739,7 +739,7 @@ void CExoRawInputInternal::SetBindEvent(int nPort, int nControl, int nValue,
         }
     }
 }
-// Xbox 0x0013D150
+
 int CExoRawInputInternal::GetBindEvent(int& nControl, int& nValue,
                                        int& nSequence, int& nTimeStamp)
 {
@@ -751,7 +751,7 @@ int CExoRawInputInternal::GetBindEvent(int& nControl, int& nValue,
     nTimeStamp = m_nBindTimeStamp;
     return bBindEvent;
 }
-// Xbox 0x0013D190
+
 void CExoRawInputInternal::PauseRumble()
 {
     if (!m_bRumblePaused)
@@ -772,7 +772,7 @@ void CExoRawInputInternal::PauseRumble()
         m_bRumblePaused = 1;
     }
 }
-// Xbox 0x0013D220
+
 void CExoRawInputInternal::UnpauseRumble()
 {
     if (m_bRumblePaused)
@@ -804,7 +804,7 @@ void CExoRawInputInternal::UnpauseRumble()
         }
     }
 }
-// Xbox 0x0013D2F0
+
 int CExoRawInputInternal::GetCheatCombo(unsigned char nCombo)
 {
     if (nCombo > 1)
@@ -813,12 +813,12 @@ int CExoRawInputInternal::GetCheatCombo(unsigned char nCombo)
     }
     return (m_nCheatCombo & (1 << nCombo)) != 0;
 }
-// Xbox 0x0013D320
+
 int CExoRawInputInternal::GetDebugOption()
 {
     return m_nDebugOption;
 }
-// Xbox 0x0013D330
+
 CExoRawInputInternal::CExoRawInputInternal()
 {
     m_bInitialized = 0;
@@ -873,12 +873,12 @@ CExoRawInputInternal::CExoRawInputInternal()
     UpdateJoysticks();
     m_nDebugOption = 0;
 }
-// PC 0x005E3F90  Xbox 0x0013D490
+
 CExoRawInputInternal::~CExoRawInputInternal()
 {
     ShutDownDirectInput();
 }
-// Xbox 0x0013D4A0
+
 int CExoRawInputInternal::SetPortBinding(unsigned long nBinding)
 {
     m_bRestorePorts = 1;
@@ -896,7 +896,7 @@ int CExoRawInputInternal::SetPortBinding(unsigned long nBinding)
     UpdateJoysticks();
     return 0;
 }
-// PC 0x005E30E0  Xbox 0x0013D550
+
 int CExoRawInputInternal::GetJoystickBuffer(int nJoystick,
                                             CExoDeviceBuffer& buffer)
 {

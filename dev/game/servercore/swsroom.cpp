@@ -8,17 +8,17 @@ inline void CSWSRoom::DestroyWalkMesh()
         m_pWalkMesh = NULL;
     }
 }
-// PC 0x005793B0  Xbox 0x001E0B70
+// PC 0x0055B030
 CSWSRoom::CSWSRoom()
 {
     m_pWalkMesh = new CSWRoomSurfaceMesh;
 }
-// PC 0x00579420  Xbox 0x001E0BF0
+// PC 0x0055B260
 int CSWSRoom::GetAdjacentRoom(int nEdge)
 {
     return m_pWalkMesh->GetAdjacentRoom(nEdge);
 }
-// PC 0x00579430  Xbox 0x001E0C00
+// PC 0x0055B3E0
 float CSWSRoom::ComputeHeight(Vector vPosition, int nFace)
 {
     float fHeight = 0.0f;
@@ -28,7 +28,7 @@ float CSWSRoom::ComputeHeight(Vector vPosition, int nFace)
     }
     return fHeight;
 }
-// PC 0x00579470  Xbox 0x001E0C40
+// PC 0x0055B420
 float CSWSRoom::ComputeHeight(int nFace, Vector vPosition)
 {
     float fHeight = 0.0f;
@@ -38,7 +38,7 @@ float CSWSRoom::ComputeHeight(int nFace, Vector vPosition)
     }
     return fHeight;
 }
-// PC 0x005794B0  Xbox 0x001E0C80
+// PC 0x0055B4B0
 CSWSRoom::~CSWSRoom()
 {
     if (m_pWalkMesh != NULL)
@@ -47,7 +47,7 @@ CSWSRoom::~CSWSRoom()
     }
     m_pWalkMesh = NULL;
 }
-// PC 0x00579520  Xbox 0x001E0CF0
+// PC 0x0055B0A0
 int CSWSRoom::LoadWalkMesh(int nType)
 {
     if (m_bNoWalkMesh)
@@ -57,7 +57,7 @@ int CSWSRoom::LoadWalkMesh(int nType)
     m_pWalkMesh->m_cResRef = m_cResRef;
     return m_pWalkMesh->LoadMesh(nType);
 }
-// PC 0x00579560  Xbox 0x001E0D30
+// PC 0x0055B0E0
 int CSWSRoom::CheckAABBWalkable(Vector vMin, Vector vMax,
                                 CSWRoomSurfaceMeshHitInfo& hitInfo)
 {
@@ -71,7 +71,7 @@ int CSWSRoom::CheckAABBWalkable(Vector vMin, Vector vMax,
     }
     return bResult;
 }
-// PC 0x00579610  Xbox 0x001E0E00
+// PC 0x0055B1A0
 int CSWSRoom::CheckAABBAll(Vector vMin, Vector vMax,
                            CSWRoomSurfaceMeshHitInfo& hitInfo)
 {
@@ -82,7 +82,7 @@ int CSWSRoom::CheckAABBAll(Vector vMin, Vector vMax,
     }
     return bResult;
 }
-// PC 0x00579670  Xbox 0x001E0E60
+// PC 0x0055B200
 int CSWSRoom::ClippedLineSegmentWalkable(const Vector& vStart,
                                          const Vector& vEnd,
                                          Vector& vClippedStart,
@@ -92,7 +92,7 @@ int CSWSRoom::ClippedLineSegmentWalkable(const Vector& vStart,
     return m_pWalkMesh->ClippedLineSegmentWalkable(
         vStart, vEnd, vClippedStart, vClippedEnd, fStartT, fEndT, nFace);
 }
-// PC 0x00579680  Xbox 0x001E0E70
+// PC 0x0055B210
 int CSWSRoom::NoNonWalkPolysOnRoom(const Vector& vStart, const Vector& vEnd,
                                    const float& fA, const float& fB,
                                    const float& fC, CWalkHitInfo* pHitInfo)
@@ -100,7 +100,7 @@ int CSWSRoom::NoNonWalkPolysOnRoom(const Vector& vStart, const Vector& vEnd,
     CSWCollisionMesh* pMesh = m_pWalkMesh;
     return pMesh->NoNonWalkPolys(vStart, vEnd, fA, fB, fC, pHitInfo);
 }
-// PC 0x005796B0  Xbox 0x001E0EA0
+// PC 0x0055B240
 void CSWSRoom::TransformToWorld()
 {
     if (!m_bNoWalkMesh)
@@ -108,7 +108,7 @@ void CSWSRoom::TransformToWorld()
         m_pWalkMesh->TransformToWorld(m_vPosition);
     }
 }
-// PC 0x005796D0  Xbox 0x001E0EC0
+// PC 0x0055B270
 int CSWSRoom::WeldRoom(CSWSRoom& other, float fTolerance)
 {
     if (m_bNoWalkMesh || other.m_bNoWalkMesh)
@@ -119,7 +119,7 @@ int CSWSRoom::WeldRoom(CSWSRoom& other, float fTolerance)
     return m_pWalkMesh->WeldEdgeVertices(other.m_pWalkMesh, fTolerance,
                                          &m_vPosition, &vOtherPosition);
 }
-// PC 0x00579730  Xbox 0x001E0F20
+// PC 0x0055B2D0
 void CSWSRoom::ComputeMeshNormals()
 {
     if (!m_bNoWalkMesh)
@@ -127,7 +127,7 @@ void CSWSRoom::ComputeMeshNormals()
         m_pWalkMesh->ComputeMeshNormals();
     }
 }
-// PC 0x00579740  Xbox 0x001E0F30
+// PC 0x0055B2E0
 int CSWSRoom::SetRoomAdjacency(CSWSRoom& other, int nEdge, int nOtherEdge)
 {
     if (m_bNoWalkMesh || other.m_bNoWalkMesh)
@@ -138,7 +138,7 @@ int CSWSRoom::SetRoomAdjacency(CSWSRoom& other, int nEdge, int nOtherEdge)
     return m_pWalkMesh->SetRoomAdjacency(other.m_pWalkMesh, nEdge, nOtherEdge,
                                          m_vPosition, vOtherPosition);
 }
-// PC 0x005797A0  Xbox 0x001E0F90
+// PC 0x0055B340
 int CSWSRoom::ClearLineOfSight(Vector vStart, Vector vEnd, Vector* pvHit,
                                unsigned long* pnFace)
 {
@@ -155,7 +155,7 @@ int CSWSRoom::ClearLineOfSight(Vector vStart, Vector vEnd, Vector* pvHit,
     }
     return bHit == 0;
 }
-// PC 0x00579840  Xbox 0x001E1030
+// PC 0x0055B460
 Vector CSWSRoom::GetNormalOfPoint(int nFace)
 {
     if (nFace >= 0)

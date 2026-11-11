@@ -448,7 +448,7 @@ public:
         m_nVarLevel = 0;
         m_nVarRunTimeLocation = 0;
     }
-    // PC 0x005D1140  Xbox 0x00157D60
+    // PC 0x0061CD80
     ~CScriptCompilerVarStackEntry()
     {
     }
@@ -467,7 +467,7 @@ public:
         m_pchType = 0;
         m_nLocation = 0;
     }
-    // PC 0x005D1190  Xbox 0x00157DB0
+    // PC 0x0061CDE0
     ~CScriptCompilerStructureFieldEntry()
     {
     }
@@ -528,7 +528,7 @@ public:
     int m_nCharacterOnLine;
     int m_nTokenStatus;
     int m_nTokenCharacters;
-    // PC 0x005D1370  Xbox 0x00157F90
+    // PC 0x0061CFC0
     ~CScriptCompilerIncludeFileStackEntry()
     {
     }

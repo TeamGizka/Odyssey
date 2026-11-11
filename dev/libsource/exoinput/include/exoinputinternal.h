@@ -33,12 +33,12 @@ public:
         m_nUnknown8 = desc.m_nUnknown8;
         m_nCoolDown = desc.m_nCoolDown;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual int IsDetailed()
     {
         return 0;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual int Is2Button()
     {
         return 0;
@@ -58,7 +58,7 @@ class CExoInputEventDescDetailed : public CExoInputEventDesc
 public:
     CExoInputEventDescDetailed();
     CExoInputEventDescDetailed(const CExoInputEventDesc& desc);
-    // PC 0x0063E7A0
+    // PC 0x0065D0F0
     virtual int IsDetailed()
     {
         return 1;
@@ -74,7 +74,7 @@ class CExoInputeventDesc2ButtonAxis : public CExoInputEventDescDetailed
 {
 public:
     CExoInputeventDesc2ButtonAxis();
-    // PC 0x0063E7A0
+    // PC 0x0065D0F0
     virtual int Is2Button()
     {
         return 1;
@@ -107,7 +107,7 @@ struct CExoInputRepeatEvent
 class CExoInputClass
 {
 public:
-    CExoInputClass()  // PC 0x005E0A80  Xbox 0x0013A980
+    CExoInputClass()  // PC 0x0062CD40
         : m_lstMembers(0)
     {
     }

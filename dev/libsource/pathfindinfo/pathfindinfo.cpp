@@ -31,7 +31,7 @@ const int CPathfindInformation::SMOOTHING_STEP_4 = 4;
 
 Vector cross(const Vector& vLeft, const Vector& vRight);
 Vector normalize(const Vector& vVector);
-// PC 0x005D00A0  Xbox 0x0015D090
+// PC 0x0061BC10
 void CPathfindInformation::ResetInterTileSearchData()
 {
     if (m_pTileOpen != 0)
@@ -58,7 +58,7 @@ void CPathfindInformation::ResetInterTileSearchData()
     m_pTileCost = 0;
     ResetIntraTileSearchData();
 }
-// PC 0x005D0160  Xbox 0x0015D630
+// PC 0x0061BCD0
 int CAvoidCreature::FindEntryAndExit(CPathfindInformation* pInfo)
 {
     int nIntersections = 0;
@@ -159,7 +159,7 @@ int CAvoidCreature::FindEntryAndExit(CPathfindInformation* pInfo)
     }
     return bFound;
 }
-// PC 0x005D0690  Xbox 0x0015DBA0
+// PC 0x0061C200
 Vector* CAvoidCreature::FindPath(int& nPoints)
 {
     int nEntrySide = m_nEntrySide;
@@ -178,7 +178,7 @@ Vector* CAvoidCreature::FindPath(int& nPoints)
     }
     return FindPath_Right(nPoints);
 }
-// PC 0x005D0770  Xbox 0x0015DC80
+// PC 0x0061C2E0
 int CAvoidCreature::IsPathClear(unsigned long oidCreature, Vector* pPoints,
                                 int nPoints, unsigned long& oidBlocker)
 {
@@ -196,11 +196,11 @@ int CAvoidCreature::IsPathClear(unsigned long oidCreature, Vector* pPoints,
     }
     return 1;
 }
-// PC 0x005B5E90
+// PC 0x006049D0
 void CPathfindInformation::HandlePathfindError(int nError, char* szMessage)
 {
 }
-// PC 0x005CEB70  Xbox 0x0015BA60
+// PC 0x0061A130
 void CPathfindInformation::DeleteFirstTileFValueAlternatives()
 {
     if (m_ppFirstTileFValueAlternatives != 0)
@@ -250,7 +250,7 @@ void CPathfindInformation::ResetIntraTileSearchData()
     }
     m_pField_F4 = 0;
 }
-// PC 0x005CEC10  Xbox 0x0015BB00
+// PC 0x0061A1D0
 void CPathfindInformation::FlipStartEndPoints()
 {
     float fTemp = m_fStartX;
@@ -267,7 +267,7 @@ void CPathfindInformation::FlipStartEndPoints()
     m_nStartArea = m_nEndArea;
     m_nEndArea = nArea;
 }
-// PC 0x005CEC50  Xbox 0x0015BB50
+// PC 0x0061A210
 void CPathfindInformation::FlipTempEndPoints()
 {
     float fTemp = m_fStartX;
@@ -287,7 +287,7 @@ void CPathfindInformation::FlipTempEndPoints()
     m_nStartArea = m_nTempArea;
     m_nTempArea = nArea;
 }
-// PC 0x005CEC90  Xbox 0x0015BBA0
+// PC 0x0061A250
 void CPathfindInformation::ComputeStepTolerance()
 {
     if (m_fStepScale != 0.0f)
@@ -299,7 +299,7 @@ void CPathfindInformation::ComputeStepTolerance()
         m_nStepTolerance = (int)m_fStartDistance;
     }
 }
-// PC 0x005CECC0  Xbox 0x0015C800
+// PC 0x0061B540
 int CAvoidCreature::InsertPathSegmentBetween(int nFirstSegment,
                                              int nLastSegment,
                                              Vector* pNewPoints, int nNewPoints,
@@ -345,7 +345,7 @@ int CAvoidCreature::InsertPathSegmentBetween(int nFirstSegment,
     pInfo->m_nWayPointCount = nTotal;
     return 1;
 }
-// PC 0x005CEDE0  Xbox 0x0015BE70
+// PC 0x0061A280
 void CPathfindInformation::Shutdown()
 {
     if (m_pWayPoints != 0)
@@ -436,7 +436,7 @@ void CPathfindInformation::Shutdown()
     }
     m_pfSmoothFinalPoints = 0;
 }
-// PC 0x005CEFA0  Xbox 0x0015C010
+// PC 0x0061A440
 void CPathfindInformation::ResetGridSearchData()
 {
     Vector vGridStart;
@@ -460,7 +460,7 @@ void CPathfindInformation::ResetGridSearchData()
     m_nGridDFSBestDistance = 700;
     m_fPathPointDFSBestDistance = 100000.0f;
 }
-// PC 0x005CF060  Xbox 0x0015C0E0
+// PC 0x0061A500
 void CPathfindInformation::ResetWayPointData()
 {
     Vector vOrigin;
@@ -489,7 +489,7 @@ void CPathfindInformation::ResetWayPointData()
     vDirection.m_fZ = 0.0f;
     m_vWayPointDirection = vDirection;
 }
-// PC 0x005CF130  Xbox 0x0015C1B0
+// PC 0x0061A5D0
 void CPathfindInformation::ResetPathPointSearchData()
 {
     Vector vStart;
@@ -512,7 +512,7 @@ void CPathfindInformation::ResetPathPointSearchData()
     m_fPathPointDFSBestScore = 700.0f;
     m_fPathPointDFSBestDistance = 3.402823466e+38f;
 }
-// PC 0x005CF1F0  Xbox 0x0015D150
+// PC 0x0061A690
 void CAvoidCreature::ComputeHexPoints(const Vector& vCenter,
                                      const Vector& vDirection, float fRadius)
 {
@@ -561,7 +561,7 @@ void CAvoidCreature::ComputeHexPoints(const Vector& vCenter,
         vPoint, 1);
     m_vHexPoints[5] = vPoint;
 }
-// PC 0x005CF650  Xbox 0x0015C290
+// PC 0x0061B0B0
 Vector* CAvoidCreature::FindPath_Left(int& nPoints)
 {
     Vector aPoints[10];
@@ -590,7 +590,7 @@ Vector* CAvoidCreature::FindPath_Left(int& nPoints)
     memcpy(pPath, aPoints, sizeof(Vector) * nPoints);
     return pPath;
 }
-// PC 0x005CF7A0  Xbox 0x0015C460
+// PC 0x0061B200
 Vector* CAvoidCreature::FindPath_Right(int& nPoints)
 {
     Vector aPoints[10];
@@ -612,7 +612,7 @@ Vector* CAvoidCreature::FindPath_Right(int& nPoints)
     memcpy(pPath, aPoints, sizeof(Vector) * nPoints);
     return pPath;
 }
-// PC 0x005CF8D0  Xbox 0x0015C610
+// PC 0x0061B330
 int CAvoidCreature::SideClearOfObstructions(unsigned long oidCreature,
                                             const Vector& vFrom,
                                             const Vector& vTo,
@@ -658,7 +658,7 @@ int CAvoidCreature::SideClearOfObstructions(unsigned long oidCreature,
         return 0;
     }
 }
-// PC 0x005CFAE0  Xbox 0x0015CA00
+// PC 0x0061B660
 int CAvoidCreature::GetClosestPointTo(Vector& vPoint)
 {
     float fBest = FLT_MAX;
@@ -674,7 +674,7 @@ int CAvoidCreature::GetClosestPointTo(Vector& vPoint)
     }
     return nBest;
 }
-// PC 0x005CFC70  Xbox 0x0015CBB0
+// PC 0x0061B7F0
 int CAvoidCreature::IsPointInHex(const Vector& vPoint)
 {
     for (int i = 0; i < 6; i++)
@@ -691,12 +691,12 @@ int CAvoidCreature::IsPointInHex(const Vector& vPoint)
     }
     return 1;
 }
-// PC 0x005CFD90  Xbox 0x0015CD10
+// PC 0x0061B900
 CPathfindInformation::~CPathfindInformation()
 {
     Shutdown();
 }
-// PC 0x005D0840  Xbox 0x0015DD50
+// PC 0x0061C3B0
 int CAvoidCreature::PlotPathAroundCreature(CSWSCreature* pCreature,
                                            CSWSCreature* pAvoidCreature)
 {
@@ -869,7 +869,7 @@ int CAvoidCreature::PlotPathAroundCreature(CSWSCreature* pCreature,
     }
     return bResult;
 }
-// PC 0x005D0CE0  Xbox 0x0015E220
+// PC 0x0061C850
 CPathfindInformation::CPathfindInformation()
 {
     m_pGridDFSBestPath = 0;
@@ -877,7 +877,7 @@ CPathfindInformation::CPathfindInformation()
     Initialize();
     return;
 }
-// PC 0x005D0E00  Xbox 0x0015E390
+// PC 0x0061C970
 void CPathfindInformation::ResetInterAreaPathSearchData()
 {
     if (m_pAreaPath != 0)
@@ -898,7 +898,7 @@ void CPathfindInformation::ResetInterAreaPathSearchData()
     ResetInterTileSearchData();
     ResetPathPointSearchData();
 }
-// PC 0x005D0E70  Xbox 0x0015E400
+// PC 0x0061C9E0
 void CPathfindInformation::ResetInterAreaSearchData()
 {
     if (m_pAreaList != 0)
@@ -914,7 +914,7 @@ void CPathfindInformation::ResetInterAreaSearchData()
     m_nField_88 = 1;
     ResetInterAreaPathSearchData();
 }
-// PC 0x005D0EC0  Xbox 0x0015E450
+// PC 0x0061CA30
 void CPathfindInformation::ResetAtEndOfPath()
 {
     m_nField_194 = 0;
@@ -935,7 +935,7 @@ void CPathfindInformation::ResetAtEndOfPath()
     m_nEndArea = 0;
     ResetInterAreaSearchData();
 }
-// PC 0x005CFDA0  Xbox 0x0015CD20
+// PC 0x0061B910
 void CPathfindInformation::Initialize()
 {
     m_fStepScale = 0.6f;

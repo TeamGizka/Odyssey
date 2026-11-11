@@ -84,16 +84,16 @@ public:
 
     CSWCObject(unsigned char nObjectType);
     virtual ~CSWCObject();
-    virtual void SetId(unsigned long nId)  // PC 0x00616FA0  Xbox 0x000475A0
+    virtual void SetId(unsigned long nId)  // PC 0x00664830
     {
         m_nId = nId;
     }
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWCObject* AsSWCObject()
     {
         return this;
     }
-    // PC 0x0063E730  Xbox 0x00098CC0
+    // PC 0x00695520
     virtual CExoString GetName()
     {
         return CExoString("");
@@ -132,16 +132,16 @@ public:
     virtual void UpdateVisualEffectsList();
     virtual void StopAllVisualEffects();
     virtual int HasVisualEffectApplied(unsigned long nEffect);
-    virtual CAurObject* GetCameraFollowPart()  // PC 0x0063E760  Xbox 0x00098CF0
+    virtual CAurObject* GetCameraFollowPart()  // PC 0x00695550
     {
         return m_pAnimBase->GetModel(CSWCObject::MODEL_SLOT_DEFAULT);
     }
-    // PC 0x0063E7A0
+    // PC 0x0065D0F0
     virtual int GetFollowingBody()
     {
         return 1;
     }
-    // PC 0x00616FE0
+    // PC 0x00664870
     virtual float GetHeadHeightOffset()
     {
         return 1.5f;
@@ -154,24 +154,24 @@ public:
     virtual void UpdatePopUpBubble();
 
     virtual void SetPortrait(const CResRef& cPortrait);
-    virtual CResRef GetPortrait(unsigned char nSize)  // PC 0x0063E770  Xbox 0x00098D00
+    virtual CResRef GetPortrait(unsigned char nSize)  // PC 0x00695560
     {
         return m_cPortrait.GetPortrait(nSize);
     }
     virtual void SetPortraitId(unsigned short nPortraitId);
-    // PC 0x0063E790  Xbox 0x00098D20
+    // PC 0x00695581
     virtual unsigned short GetPortraitId()
     {
         return m_nPortraitId;
     }
-    // PC 0x0063E7A0
+    // PC 0x0065D0F0
     virtual int ApplyShadowBlob()
     {
         return 1;
     }
 
     virtual void RemoveShadowBlob();
-    // PC 0x00616FB0  Xbox 0x000475B0
+    // PC 0x00664840
     virtual void ShowShadowBlob()
     {
         if (m_pAnimBase != NULL)
@@ -179,7 +179,7 @@ public:
             m_pAnimBase->ShowShadowBlob(0);
         }
     }
-    // PC 0x00616FD0  Xbox 0x000475D0
+    // PC 0x00664860
     virtual void HideShadowBlob()
     {
         if (m_pAnimBase != NULL)
@@ -189,7 +189,7 @@ public:
     }
 
     virtual void SetGroundNormal(const Vector& vNormal);
-    // PC 0x0060B310  Xbox 0x0003B100
+    // PC 0x006575B0
     virtual void TurnOnShadows()
     {
         if (m_pAnimBase != NULL)
@@ -197,7 +197,7 @@ public:
             m_pAnimBase->TurnOnShadows();
         }
     }
-    // PC 0x0060B320  Xbox 0x0003B120
+    // PC 0x006575C0
     virtual void TurnOffShadows()
     {
         if (m_pAnimBase != NULL)
@@ -209,12 +209,12 @@ public:
     virtual void SetQuededAnimationCallback()
     {
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual int ClearQuededAnimationCallback()
     {
         return 0;
     }
-    // PC 0x0063E7B0  Xbox 0x00098D30
+    // PC 0x00695590
     virtual int BarkString(unsigned long nStrRef, const CExoString& sText,
                                const CResRef& cSound, int bFlag)
     {
@@ -222,24 +222,24 @@ public:
     }
     virtual int BarkBubble(unsigned long nStrRef, const CExoString& sText,
                            const CResRef& cSound, int bFlag);
-    // PC 0x0063E7C0
+    // PC 0x006955A0
     virtual int LipSync(const CResRef& cLip)
     {
         return 0;
     }
-    // PC 0x0063E7D0  Xbox 0x00098D40
+    // PC 0x006955B0
     virtual void ClientServerSyncHandler_Position(const Vector& vPosition,
                                                       int nFlags, float fTime)
     {
         SetPosition(vPosition);
     }
-    virtual void ClientServerSyncHandler_Orientation(const Vector& vOrientation)  // PC 0x0063E7E0  Xbox 0x00098D50
+    virtual void ClientServerSyncHandler_Orientation(const Vector& vOrientation)  // PC 0x006955C0
     {
         SetOrientation(vOrientation);
     }
     virtual void ClientServerSyncHandler_Animation(int nAnimation,
                                                    float fSpeed);
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual int IsHostile()
     {
         return 0;
@@ -252,7 +252,7 @@ public:
         RETICLE_POINT_BEHIND = 2
     };
     virtual unsigned char GetReticlePoint(Vector& vPoint);
-    virtual float GetCanSeeHeight()  // PC 0x00616FE0  Xbox 0x000475F0
+    virtual float GetCanSeeHeight()  // PC 0x00664870
     {
         return 1.5f;
     }

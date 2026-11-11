@@ -27,14 +27,14 @@ public:
 
     CSWCSoundObject();
     virtual ~CSWCSoundObject();
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWCSoundObject* AsSWCSoundObject()
     {
         return this;
     }
 
     virtual void AIUpdate();
-    virtual void SetPosition(const Vector& vPosition)  // PC 0x0066B310  Xbox 0x000BAF30
+    virtual void SetPosition(const Vector& vPosition)  // PC 0x0069E4D0
     {
         CSWCObject::SetPosition(vPosition);
         if (m_bStreaming == 0 && m_pSoundSource != NULL)
@@ -46,12 +46,12 @@ public:
             m_pStreamingSource->SetPosition(vPosition);
         }
     }
-    virtual int LoadModel(const CResRef& cModel, unsigned char nModel,  // PC 0x0066B360
+    virtual int LoadModel(const CResRef& cModel, unsigned char nModel,  // PC 0x0069E520
                           unsigned char nFlags)
     {
         return 0;
     }
-    virtual void UnloadModel(unsigned char nModel)  // PC 0x0060E760
+    virtual void UnloadModel(unsigned char nModel)  // PC 0x005EE1C0
     {
     }
     virtual void UnloadModel()  // PC 0x004015A0

@@ -9,7 +9,7 @@
 
 static inline void NwitemTrace1();
 #define NWITEM_TRACE() NwitemTrace1()
-// PC 0x005B2EF0
+// PC 0x005FEEB0
 CSWBaseItem::CSWBaseItem()
 {
     m_nEquipableSlots = 0;
@@ -27,7 +27,7 @@ CSWBaseItem::CSWBaseItem()
     m_nBodyVar = 1;
     m_nDexBonus = -1;
 }
-// PC 0x005B2FC0  Xbox 0x000679E0
+// PC 0x005FEF80
 CSWBaseItem::~CSWBaseItem()
 {
     if (m_pRequiredFeats != NULL)
@@ -35,7 +35,7 @@ CSWBaseItem::~CSWBaseItem()
         delete[] m_pRequiredFeats;
     }
 }
-// PC 0x005B3050  Xbox 0x00067BC0
+// PC 0x005FF010
 CResRef CSWBaseItem::GetIconResRef(short nVariation, char cPrefix)
 {
     char sBuffer[20];
@@ -50,7 +50,7 @@ CResRef CSWBaseItem::GetIconResRef(short nVariation, char cPrefix)
     }
     return CResRef(sBuffer);
 }
-// PC 0x005B30C0  Xbox 0x00067A70
+// PC 0x005FF080
 short CSWBaseItem::GetRequiredFeat(unsigned char nIndex)
 {
     if (nIndex >= m_nRequiredFeatCount)
@@ -59,7 +59,7 @@ short CSWBaseItem::GetRequiredFeat(unsigned char nIndex)
     }
     return m_pRequiredFeats[nIndex];
 }
-// PC 0x005B30E0  Xbox 0x00067CF0
+// PC 0x005FF0A0
 CResRef CSWBaseItem::GetModelResRef(short nVariation, char cPrefix)
 {
     char sBuffer[20];
@@ -74,23 +74,23 @@ CResRef CSWBaseItem::GetModelResRef(short nVariation, char cPrefix)
     }
     return CResRef(sBuffer);
 }
-// PC 0x005B3150  Xbox 0x00067D70
+// PC 0x005FF110
 int CSWBaseItem::GetIsTwoHanded()
 {
     return m_nWeaponWield == 3 || m_nWeaponWield == 5 || m_nWeaponWield == 6;
 }
-// PC 0x005B3170  Xbox 0x00067D90
+// PC 0x005FF130
 int CSWBaseItem::GetIsOneHanded()
 {
     return m_nWeaponWield == 1 || m_nWeaponWield == 2 || m_nWeaponWield == 4;
 }
-// PC 0x005B3190
+// PC 0x005FF150
 CSWBaseItemArray::CSWBaseItemArray()
 {
     m_nNumBaseItems = 0;
     m_pBaseItems = NULL;
 }
-// PC 0x005B31A0  Xbox 0x00067A90
+// PC 0x005FF160
 CSWBaseItem* CSWBaseItemArray::GetBaseItem(int nIndex) const
 {
     if (m_pBaseItems != NULL && nIndex >= 0 && nIndex < m_nNumBaseItems)
@@ -99,7 +99,7 @@ CSWBaseItem* CSWBaseItemArray::GetBaseItem(int nIndex) const
     }
     return NULL;
 }
-// PC 0x005B31D0  Xbox 0x00067DF0
+// PC 0x005FF190
 void CSWBaseItemArray::Load()
 {
     C2DA* pTable = new C2DA("BASEITEMS", 0);
@@ -283,17 +283,17 @@ void CSWBaseItemArray::Load()
     }
     delete pTable;
 }
-// PC 0x005B4660  Xbox 0x00067AC0
+// PC 0x00600630
 CSWItem::CSWItem()
 {
     m_nBaseItem = DEFAULT_BASE_ITEM;
     memset(m_aUnknown04, 0, sizeof(m_aUnknown04));
 }
-// PC 0x005B4680  Xbox 0x00067AE0
+// PC 0x00600650
 CSWItem::~CSWItem()
 {
 }
-// PC 0x005B4690  Xbox 0x00067C40
+// PC 0x00600660
 CExoString CSWBaseItem::GetNameText()
 {
     STR_RES strRes;
@@ -301,7 +301,7 @@ CExoString CSWBaseItem::GetNameText()
     g_pTlkTable->Fetch(m_nName, strRes, CTlkTable::GENDER_MALE);
     return strRes.m_sString;
 }
-// PC 0x005B4730  Xbox 0x00067DB0
+// PC 0x00600700
 CSWBaseItemArray::~CSWBaseItemArray()
 {
     if (m_pBaseItems != NULL)
@@ -311,7 +311,7 @@ CSWBaseItemArray::~CSWBaseItemArray()
         m_nNumBaseItems = 0;
     }
 }
-// PC 0x005B4790  Xbox 0x000692C0
+// PC 0x00600760
 CSWBaseItem* CSWItem::GetBaseItem()
 {
     NWITEM_TRACE();

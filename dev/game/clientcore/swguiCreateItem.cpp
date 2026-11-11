@@ -10,7 +10,7 @@
 #include "swmain.h"
 
 static inline void SwguiCreateItemTrace1();
-// PC 0x006D03A0  Xbox 0x000F77D0
+// PC 0x0073E8C0
 void CSWGuiCreateItemMenu::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -61,7 +61,7 @@ void CSWGuiCreateItemMenu::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006D0490  Xbox 0x000F7950
+// PC 0x0073EA30
 CSWGuiButton* CSWGuiCreateItemMenu::CreateOption(const CExoString& sText,
                                                  CSWGuiHandler pHandler,
                                                  CSWGuiButton* pPrototype)
@@ -97,7 +97,7 @@ CSWGuiButton* CSWGuiCreateItemMenu::CreateOption(const CExoString& sText,
     pButton->AddEvent(GUIEVENT_ACCEPT, this, pHandler);
     return pButton;
 }
-// PC 0x006D05A0
+// PC 0x0073E9B0
 void CSWGuiCreateItemMenu::Back(CSWGuiControl* pControl)
 {
     SwguiCreateItemTrace1();
@@ -107,7 +107,7 @@ void CSWGuiCreateItemMenu::Back(CSWGuiControl* pControl)
         g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowDebugMenu();
     }
 }
-// PC 0x006D05E0
+// PC 0x0073E9F0
 void CSWGuiCreateItemMenu::ItemSubTypeMenu(CSWGuiControl* pControl)
 {
     SwguiCreateItemTrace1();
@@ -121,7 +121,7 @@ void CSWGuiCreateItemMenu::ItemSubTypeMenu(CSWGuiControl* pControl)
             nSubType);
     }
 }
-// PC 0x006D0620  Xbox 0x000F7A50
+// PC 0x0073EAF0
 CSWGuiCreateItemMenu::CSWGuiCreateItemMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager), m_nSelectedSubType(0)
 {

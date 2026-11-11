@@ -27,12 +27,12 @@ public:
 
     CSWCPlaceable();
     virtual ~CSWCPlaceable();
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWCPlaceable* AsSWCPlaceable()
     {
         return this;
     }
-    // PC 0x006823C0  Xbox 0x000B7530
+    // PC 0x006D96B0
     virtual CExoString GetName()
     {
         return m_sName;

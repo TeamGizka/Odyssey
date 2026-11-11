@@ -267,7 +267,7 @@ static const DWORD s_aDeclarationV[] =
     D3DVSD_REG(0, D3DVSDT_FLOAT3),
     D3DVSD_END()
 };
-// Xbox 0x00283530
+
 unsigned long TranslatePoolUsage(unsigned long nUsage)
 {
     unsigned long nD3DUsage = 0;
@@ -285,7 +285,7 @@ unsigned long TranslatePoolUsage(unsigned long nUsage)
     }
     return nD3DUsage;
 }
-// Xbox 0x00283560
+
 unsigned long TranslatePoolFormat(unsigned long nFormat)
 {
     unsigned long nFVF = 0;
@@ -319,7 +319,7 @@ unsigned long TranslatePoolFormat(unsigned long nFormat)
     }
     return nFVF;
 }
-// Xbox 0x002835B0
+
 unsigned long TranslatePoolLockFlags(unsigned long nFlags)
 {
     unsigned long nD3DFlags = 0;
@@ -333,7 +333,7 @@ unsigned long TranslatePoolLockFlags(unsigned long nFlags)
     }
     return nD3DFlags;
 }
-// Xbox 0x002835D0
+
 int GetPrimitiveCount(int nPrimitive, int nVertices)
 {
     switch (nPrimitive)
@@ -354,7 +354,7 @@ int GetPrimitiveCount(int nPrimitive, int nVertices)
     }
     return 0;
 }
-// Xbox 0x00283640
+
 D3DResource* RequestPoolManager::GetPool(unsigned long nPool)
 {
     if (nPool == (unsigned long)INVALID_POOL)
@@ -367,7 +367,7 @@ D3DResource* RequestPoolManager::GetPool(unsigned long nPool)
     }
     return m_ppIndexPools[nPool];
 }
-// PC 0x00423C40  Xbox 0x00283670
+
 Vector Quaternion::axis() const
 {
     Vector vAxis(m_fX, m_fY, m_fZ);
@@ -379,7 +379,7 @@ Vector Quaternion::axis() const
     float fScale = (float)(1.0 / sin(dAngle * 0.5));
     return Vector(vAxis.m_fX * fScale, vAxis.m_fY * fScale, vAxis.m_fZ * fScale);
 }
-// Xbox 0x00283730
+
 void GLRender::SetColor4f(float fRed, float fGreen, float fBlue, float fAlpha)
 {
     D3DCOLORVALUE color;
@@ -415,12 +415,12 @@ void GLRender::SetColor4f(float fRed, float fGreen, float fBlue, float fAlpha)
         }
     }
 }
-// Xbox 0x00283890
+
 void GLRender::SetColorv(const float* pColor)
 {
     SetColor4f(pColor[0], pColor[1], pColor[2], pColor[3]);
 }
-// Xbox 0x002838B0
+
 void GLRender::CopyTextureToTextureMemory(void* pImage, D3DLOCKED_RECT* pLock, int nWidth, int nHeight, int nFormat)
 {
     char szMessage[256];
@@ -532,7 +532,7 @@ void GLRender::CopyTextureToTextureMemory(void* pImage, D3DLOCKED_RECT* pLock, i
         AurReportError(2996, "aurdxcore.cpp", szMessage);
     }
 }
-// PC 0x00424D70  Xbox 0x00283D20
+
 int GetCompressedContactSheetOffset(int nIndex, int nWidth, int nBytesPerPixel)
 {
     int nMipWidth = nWidth;
@@ -552,7 +552,7 @@ int GetCompressedContactSheetOffset(int nIndex, int nWidth, int nBytesPerPixel)
 
     return nIndex * nSize;
 }
-// Xbox 0x00283DA0
+
 void GLRender::EnableClientState(int nArray)
 {
     switch (nArray)
@@ -587,7 +587,7 @@ void GLRender::EnableClientState(int nArray)
         break;
     }
 }
-// Xbox 0x00283E40
+
 void GLRender::DisableClientState(int nArray)
 {
     switch (nArray)
@@ -626,7 +626,7 @@ void GLRender::DisableClientState(int nArray)
         break;
     }
 }
-// Xbox 0x00283F10
+
 int GLRender::InitializeVertexShaders()
 {
     g_pD3DDevice->CreateVertexShader(s_aDeclarationVN, NULL, &g_hVertexShaderVN, 0);
@@ -644,7 +644,7 @@ int GLRender::InitializeVertexShaders()
     g_pD3DDevice->CreateVertexShader(s_aDeclarationVNT4C, NULL, &g_hVertexShaderVNT4C, 0);
     return 1;
 }
-// Xbox 0x00284010
+
 DWORD GLRender::CreateClientStateVertexShader()
 {
     DWORD hShader;
@@ -695,7 +695,7 @@ DWORD GLRender::CreateClientStateVertexShader()
     g_pD3DDevice->CreateVertexShader(g_aClientStateDeclaration, NULL, &hShader, 0);
     return hShader;
 }
-// Xbox 0x00284130
+
 DWORD GLRender::GetVertexShader(int bSeparateStreams)
 {
     static int bVertexShadersCreated = InitializeVertexShaders();
@@ -734,7 +734,7 @@ DWORD GLRender::GetVertexShader(int bSeparateStreams)
     g_bCustomVertexShader = 1;
     return CreateClientStateVertexShader();
 }
-// Xbox 0x00284280
+
 void GLRender::PushCurrentMatrix()
 {
     g_nMatrixStackDepth++;
@@ -754,22 +754,22 @@ void GLRender::PushCurrentMatrix()
         break;
     }
 }
-// PC 0x0041FE80  Xbox 0x002842E0
+
 void GLRender::SetActiveTexture(unsigned long nStage)
 {
     cm_uiCurrentStage = nStage;
 }
-// Xbox 0x002842F0
+
 void GLRender::SetTextureStageFlag(unsigned long nStage, int nValue)
 {
     cm_nGLCurrentTID[nStage] = nValue;
 }
-// Xbox 0x00284300
+
 unsigned int GLRender::GetCurrentStageTID()
 {
     return cm_nGLCurrentTID[cm_uiCurrentStage];
 }
-// Xbox 0x00284310
+
 DXVertexProgram::DXVertexProgram()
 {
     m_pConstants = NULL;
@@ -777,7 +777,7 @@ DXVertexProgram::DXVertexProgram()
     m_pErrors = NULL;
     m_hShader = 0;
 }
-// Xbox 0x00284320
+
 void GLRender::SetOrthoTransform(double fLeft, double fRight, double fBottom, double fTop, double fNear, double fFar)
 {
     if (g_pD3DDevice)
@@ -789,7 +789,7 @@ void GLRender::SetOrthoTransform(double fLeft, double fRight, double fBottom, do
         g_pProjectionMatrixStack->LoadMatrix(&mProjection);
     }
 }
-// Xbox 0x00284390
+
 static float AdjustBrightness(float fValue)
 {
     fValue += g_fBrightness;
@@ -820,17 +820,17 @@ static float AdjustBrightness(float fValue)
     }
     return fResult;
 }
-// PC 0x00426650  Xbox 0x00284450
+
 void GLRender::SetFilmNoiseTexture(CAurTexture* pTexture)
 {
     cm_pFilmNoiseTexture = pTexture;
 }
-// Xbox 0x00284460
+
 void GLRender::SetForceDistortionTexture(CAurTexture* pTexture)
 {
     cm_pForceDistortionTexture = pTexture;
 }
-// Xbox 0x00284470
+
 void GLRender::ReleaseFrameTexture()
 {
     g_bFrameTextureReleased = true;
@@ -840,14 +840,14 @@ void GLRender::ReleaseFrameTexture()
     }
     g_pFrameTexture = NULL;
 }
-// Xbox 0x002844A0
+
 void GLRender::SetFrameBufferMode(int nMode)
 {
     g_nFrameBufferMode = nMode;
     g_bFrameBufferModeChanged = 1;
     g_bFrameBufferChanged = 1;
 }
-// PC 0x004263C0  Xbox 0x002844C0
+
 void GLRender::InitAttenuationTexture()
 {
     unsigned char pixels[64 * 64 * 4];
@@ -879,7 +879,7 @@ void GLRender::InitAttenuationTexture()
     XGSwizzleRect(pixels, 0, NULL, lock.pBits, 64, 64, NULL, 4);
     pSurface->Release();
 }
-// Xbox 0x002845E0
+
 void GLRender::SetShadowLightPosition(const Vector& vPosition)
 {
     Vector vLight = vPosition;
@@ -893,7 +893,7 @@ void GLRender::SetShadowLightPosition(const Vector& vPosition)
     vLight4.w = 1.0f;
     D3DXVec4Transform(&g_vShadowLightView, &vLight4, g_pViewMatrixStack->GetTop());
 }
-// PC 0x00426940  Xbox 0x002846C0
+
 char* AllocateShadowMemory(int nSize)
 {
     static char* data = new char[nSize];
@@ -913,7 +913,7 @@ char* AllocateShadowMemory(int nSize)
 
     return data;
 }
-// Xbox 0x00284880
+
 void GLRender::Rotate(float fAngle, float fX, float fY, float fZ)
 {
     switch (g_nMatrixMode)
@@ -929,7 +929,7 @@ void GLRender::Rotate(float fAngle, float fX, float fY, float fZ)
         break;
     }
 }
-// Xbox 0x00284950
+
 void GLRender::Translate(float fX, float fY, float fZ)
 {
     switch (g_nMatrixMode)
@@ -949,7 +949,7 @@ void GLRender::Translate(float fX, float fY, float fZ)
         break;
     }
 }
-// Xbox 0x00284A00
+
 void GLRender::MultMatrix(const float* pMatrix)
 {
     D3DXMATRIX mMatrix(pMatrix);
@@ -969,7 +969,7 @@ void GLRender::MultMatrix(const float* pMatrix)
         break;
     }
 }
-// PC 0x00459150  Xbox 0x00284A90
+
 void GLRender::Scale(float fX, float fY, float fZ)
 {
     if (fX != 1.0f || fY != 1.0f || fZ != 1.0f)
@@ -991,7 +991,7 @@ void GLRender::Scale(float fX, float fY, float fZ)
         }
     }
 }
-// Xbox 0x00284B60
+
 void GLRender::SetStencilOp(int nFail, int nZFail, int nPass)
 {
     if (stencilOpTranslationTable[nFail] != g_nCurrentStencilFail)
@@ -1010,7 +1010,7 @@ void GLRender::SetStencilOp(int nFail, int nZFail, int nPass)
         g_nCurrentStencilPass = stencilOpTranslationTable[nPass];
     }
 }
-// Xbox 0x00284C90
+
 void RequestPoolManager::ResizePool(unsigned long nPool, unsigned long nSize, D3DDevice* pDevice)
 {
     if (nPool == (unsigned long)INVALID_POOL)
@@ -1052,7 +1052,7 @@ void RequestPoolManager::ResizePool(unsigned long nPool, unsigned long nSize, D3
         m_pIndexPoolSize[nPool] = nSize;
     }
 }
-// Xbox 0x00284E00
+
 void* RequestPoolManager::LockPool(unsigned long nPool, unsigned long nOffset, unsigned long nSize,
                                    unsigned long nFlags)
 {
@@ -1075,7 +1075,7 @@ void* RequestPoolManager::LockPool(unsigned long nPool, unsigned long nOffset, u
     m_ppIndexPools[nPool]->Lock(nOffset, 0, &pData, 0);
     return pData;
 }
-// Xbox 0x00284E60
+
 void RequestPoolManager::ReleasePools()
 {
     unsigned int nPool;
@@ -1096,7 +1096,7 @@ void RequestPoolManager::ReleasePools()
         }
     }
 }
-// Xbox 0x00284ED0
+
 RequestPoolManager::~RequestPoolManager()
 {
     delete[] m_ppVertexPools;
@@ -1112,7 +1112,7 @@ struct DXShapeVertex
     float z;
     D3DCOLOR color;
 };
-// Xbox 0x00284F10
+
 void DXBox::Render(D3DDevice* pDevice)
 {
     pDevice->SetStreamSource(0, m_pVertexBuffer, sizeof(DXShapeVertex));
@@ -1121,7 +1121,7 @@ void DXBox::Render(D3DDevice* pDevice)
     pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 12);
     pDevice->SetRenderState(D3DRS_COLORVERTEX, FALSE);
 }
-// Xbox 0x00284F70
+
 DXBox::DXBox(D3DDevice* pDevice)
 {
     DXShapeVertex vertices[36];
@@ -1246,19 +1246,19 @@ DXBox::DXBox(D3DDevice* pDevice)
     m_pVertexBuffer->Lock(0, 0, &pData, 0);
     memcpy(pData, vertices, sizeof(vertices));
 }
-// Xbox 0x00285360
+
 DXCircle::~DXCircle()
 {
     m_pVertexBuffer->Release();
 }
-// Xbox 0x00285370
+
 void DXCircle::Render(D3DDevice* pDevice)
 {
     pDevice->SetStreamSource(0, m_pVertexBuffer, sizeof(DXShapeVertex));
     pDevice->SetVertexShader(D3DFVF_XYZ | D3DFVF_DIFFUSE);
     pDevice->DrawPrimitive(D3DPT_LINESTRIP, 0, 8);
 }
-// Xbox 0x002853A0
+
 DXCircle::DXCircle(D3DDevice* pDevice)
 {
     DXShapeVertex vertices[9];
@@ -1279,7 +1279,7 @@ DXCircle::DXCircle(D3DDevice* pDevice)
     m_pVertexBuffer->Lock(0, 0, &pData, 0);
     memcpy(pData, vertices, sizeof(vertices));
 }
-// Xbox 0x00285430
+
 void GLRender::RestoreVertexPrograms()
 {
     for (int i = 0; i < g_listVertexPrograms.m_nCount; i++)
@@ -1293,7 +1293,7 @@ void GLRender::RestoreVertexPrograms()
         }
     }
 }
-// PC 0x0046F060  Xbox 0x00285490
+
 void GLRender::Transform(const Vector& vPosition, const Quaternion& qOrientation, int nForce)
 {
     static float m[16];
@@ -1341,7 +1341,7 @@ void GLRender::Transform(const Vector& vPosition, const Quaternion& qOrientation
         }
     }
 }
-// PC 0x00431CC0  Xbox 0x00285610
+
 void GLRender::RenderObjectsVTCQuadUP(RenderVertexVTC* pVertices, int nVertices)
 {
     if (nVertices == 0)
@@ -1361,7 +1361,7 @@ void GLRender::RenderObjectsVTCQuadUP(RenderVertexVTC* pVertices, int nVertices)
     }
     g_pD3DDevice->DrawPrimitiveUP(D3DPT_QUADLIST, nVertices / 4, pVertices, sizeof(RenderVertexVTC));
 }
-// PC 0x00431EB0  Xbox 0x002856A0
+
 void GLRender::RenderObjectsVTQuadUP(RenderVertexVT* pVertices, int nVertices)
 {
     if (nVertices == 0)
@@ -1384,7 +1384,7 @@ void GLRender::RenderObjectsVTQuadUP(RenderVertexVT* pVertices, int nVertices)
     }
     g_pD3DDevice->DrawPrimitiveUP(D3DPT_QUADLIST, nVertices / 4, pVertices, sizeof(RenderVertexVT));
 }
-// Xbox 0x00285780
+
 void GLRender::CreateTextureImageRaw(int nTarget, int nLevel, int nComponents, int nWidth, int nHeight, int nBorder,
                           int nFormat, void* pImage)
 {
@@ -1402,7 +1402,7 @@ void GLRender::CreateTextureImageRaw(int nTarget, int nLevel, int nComponents, i
     CopyTextureToTextureMemory(pImage, &lock, nWidth, nHeight, nFormat);
     pSurface->Release();
 }
-// Xbox 0x00285820
+
 void GLRender::CreateTexSubImage(int nTarget, int nLevel, int nWidth, int nHeight, int nFormat, void* pImage)
 {
     D3DTexture* pTexture = (D3DTexture*)g_pCurrentTexture;
@@ -1420,7 +1420,7 @@ void GLRender::CreateTexSubImage(int nTarget, int nLevel, int nWidth, int nHeigh
     CopyTextureToTextureMemory(pImage, &lock, nWidth, nHeight, nFormat);
     pSurface->Release();
 }
-// Xbox 0x00285880
+
 void GLRender::CreateCompressedTexImage(int nTarget, int bMipMaps, int nLevel, int nFormat, int nWidth, int nHeight,
                                     int nBorder, int nSize, void* pData)
 {
@@ -1448,7 +1448,7 @@ void GLRender::CreateCompressedTexImage(int nTarget, int bMipMaps, int nLevel, i
         pLevel->Release();
     }
 }
-// Xbox 0x00285970
+
 void GLRender::CreateMipMaps(int nTarget, int nComponents, int nWidth, int nHeight, int nFormat, void* pImage)
 {
     D3DTexture* pTexture;
@@ -1787,7 +1787,7 @@ char g_szPixelShaderWhite[] =
     "xps.1.1\n"
     "mov r0, 1-zero\n"
     "xfc 1-zero, r0.rgb, fog.rgb, zero, zero, zero, r0.a;\n";
-// PC 0x00423F90  Xbox 0x00285A90
+
 void GLRender::CreateCubeTexture(CAurTexture* pTexture, bool bMipMaps,
                                  int nIndex)
 {
@@ -1971,7 +1971,7 @@ void GLRender::CreateCubeTexture(CAurTexture* pTexture, bool bMipMaps,
         D3DXFilterCubeTexture(pCubeTexture, NULL, 0, D3DX_FILTER_LINEAR);
     }
 }
-// PC 0x00424230  Xbox 0x002862E0
+
 void GLRender::CreateProcessedCubeTexture(CAurTexture* pTexture, bool bSubImage,
                                           int nIndex)
 {
@@ -2050,7 +2050,7 @@ void GLRender::CreateProcessedCubeTexture(CAurTexture* pTexture, bool bSubImage,
     g_pCurrentTexture = pCubeTexture;
     cm_pCurrentTexture[cm_uiCurrentStage] = pCubeTexture;
 }
-// Xbox 0x00286540
+
 void GLRender::ReadPixelsFromBuffer(int nX, int nY, int nWidth, int nHeight, int nFormat,
                           unsigned char* pPixels)
 {
@@ -2093,7 +2093,7 @@ void GLRender::ReadPixelsFromBuffer(int nX, int nY, int nWidth, int nHeight, int
     }
     pSurface->Release();
 }
-// PC 0x00426230  Xbox 0x00286730
+
 void GLRender::DrawLightmappedGrass(void* pVertices, int nVertexStride,
                                     void* pIndices, int nStride, int nFirst,
                                     int nQuads)
@@ -2116,7 +2116,7 @@ void GLRender::DrawLightmappedGrass(void* pVertices, int nVertexStride,
     g_pD3DDevice->SetStreamSource(0, NULL, 0);
     g_pD3DDevice->SetStreamSource(1, NULL, 0);
 }
-// PC 0x004A23C0  Xbox 0x00286800
+
 void GLRender::DrawElementsInShadow(unsigned int nProgram,
                                     unsigned long nLength,
                                     const char* sProgram,
@@ -2143,7 +2143,7 @@ void GLRender::DrawElementsInShadow(unsigned int nProgram,
     g_pD3DDevice->SetVertexShader(pProgram->m_hShader);
     g_bVertexProgramBound = 1;
 }
-// Xbox 0x00286890
+
 bool GLRender::IsProgramNV(int nProgram)
 {
     if (nProgram < g_listVertexPrograms.m_nCount &&
@@ -2153,7 +2153,7 @@ bool GLRender::IsProgramNV(int nProgram)
     }
     return false;
 }
-// Xbox 0x002868B0
+
 void GLRender::BindVertexProgram(int nProgram)
 {
     if (nProgram == 0)
@@ -2164,7 +2164,7 @@ void GLRender::BindVertexProgram(int nProgram)
     g_bVertexProgramBound = 1;
     g_pD3DDevice->SetVertexShader(g_listVertexPrograms.m_pList[nProgram]->m_hShader);
 }
-// Xbox 0x002868E0
+
 void GLRender::TrackMatrix()
 {
     D3DXMATRIX mWorldView;
@@ -2178,12 +2178,12 @@ void GLRender::TrackMatrix()
     D3DXMatrixTranspose(&mWorldView, &mWorldView);
     g_pD3DDevice->SetVertexShaderConstant(8, &mWorldView, 4);
 }
-// PC 0x00436490  Xbox 0x00286960
+
 void GLRender::InitExtensions()
 {
     InitAttenuationTexture();
 }
-// Xbox 0x00286970
+
 int GLRender::InitializePixelShaders()
 {
     LPXGBUFFER pCompiledShader;
@@ -2587,7 +2587,7 @@ int GLRender::InitializePixelShaders()
 
     return 1;
 }
-// Xbox 0x00287580
+
 void GLRender::SetPerspectiveTransform(double fFieldOfView, double fAspect,
                               double fNearClip, double fFarClip)
 {
@@ -2601,7 +2601,7 @@ void GLRender::SetPerspectiveTransform(double fFieldOfView, double fAspect,
         g_pProjectionMatrixStack->LoadMatrix(&mProjection);
     }
 }
-// PC 0x00425CA0  Xbox 0x002875E0
+
 void GLRender::SetViewTransform(Vector& vPosition, Quaternion& qOrientation)
 {
     g_nMatrixMode = 1;
@@ -2622,7 +2622,7 @@ void GLRender::SetViewTransform(Vector& vPosition, Quaternion& qOrientation)
         Translate(-vPosition.m_fX, -vPosition.m_fY, -vPosition.m_fZ);
     }
 }
-// Xbox 0x002876F0
+
 void GLRender::PopCurrentMatrix()
 {
     g_nMatrixStackDepth--;
@@ -2649,7 +2649,7 @@ void GLRender::PopCurrentMatrix()
         break;
     }
 }
-// PC 0x00425EA0  Xbox 0x00287780
+
 void GLRender::MakeNormalizationCubeMap(int nSize)
 {
     DXTextureState* pState = g_listTextureStates.m_pList[g_nCurrentTexture];
@@ -2746,7 +2746,7 @@ void GLRender::MakeNormalizationCubeMap(int nSize)
     }
     delete[] pSourceBits;
 }
-// Xbox 0x00287AB0
+
 DXVertexProgram::~DXVertexProgram()
 {
     if (m_pConstants)
@@ -2766,7 +2766,7 @@ DXVertexProgram::~DXVertexProgram()
         g_pD3DDevice->DeleteVertexShader(m_hShader);
     }
 }
-// PC 0x004260A0  Xbox 0x00287AF0
+
 void GLRender::ConvertHeightFieldAndLoadNormalMapTexture(
     unsigned char* pHeightField, int nWidth, int nHeight, int nRowWidth,
     int nRowCount, float fScale, int bUpdate, bool bNormalMap)
@@ -2825,7 +2825,7 @@ void GLRender::ConvertHeightFieldAndLoadNormalMapTexture(
     }
     delete[] pNormalMap;
 }
-// Xbox 0x00287CC0
+
 void GLRender::RenderOverlayConvolution(D3DTexture* pTexture)
 {
     static const DWORD dwDeclaration[] =
@@ -3126,7 +3126,7 @@ static D3DTexture* g_pBrightnessBlueTexture;
 static D3DTexture* g_pBrightnessGreenTexture;
 static D3DTexture* g_pBrightnessRedTexture;
 static int g_bBrightnessSetUp;
-// Xbox 0x00288870
+
 void GLRender::RenderBrightnessAdjustment(unsigned long nTexture)
 {
     SetBlendFunc(BLEND_ONE, BLEND_ZERO);
@@ -3223,7 +3223,7 @@ void GLRender::RenderBrightnessAdjustment(unsigned long nTexture)
     SetTextureStageFlag(2, 0);
     SetTextureStageFlag(3, 0);
 }
-// PC 0x00434240  Xbox 0x00288CC0
+
 void GLRender::RenderOverlayOverbrightenATI(unsigned long nTexture)
 {
     SetBlendFunc(BLEND_ONE, BLEND_ZERO);
@@ -3260,7 +3260,7 @@ void GLRender::RenderOverlayOverbrightenATI(unsigned long nTexture)
     g_pD3DDevice->SetPixelShader(0);
     SetActiveTexture(0);
 }
-// PC 0x00434890  Xbox 0x00288E80
+
 void GLRender::RenderSaturationAdjustment(unsigned long nTexture)
 {
     SetBlendFunc(BLEND_ONE, BLEND_ZERO);
@@ -3312,7 +3312,7 @@ void GLRender::RenderSaturationAdjustment(unsigned long nTexture)
     g_pD3DDevice->SetPixelShader(0);
     SetActiveTexture(0);
 }
-// PC 0x004361F0  Xbox 0x00289190
+
 void GLRender::FrameBufferModifications2(unsigned long nFlags)
 {
     if (doframebuffer && g_nFrameBufferMode != 4 && visualizepass4 && m_bSaturationEnabled &&
@@ -3365,7 +3365,7 @@ void GLRender::FrameBufferModifications2(unsigned long nFlags)
 
 extern D3DXVECTOR4 g_vShadowLightClip;
 extern D3DXVECTOR4 g_vShadowLightView;
-// Xbox 0x00289410
+
 void GLRender::SetShadowLightConstants()
 {
     float fConstant[4];
@@ -3381,7 +3381,7 @@ void GLRender::SetShadowLightConstants()
     fConstant[3] = g_vShadowLightView.w;
     g_pD3DDevice->SetVertexShaderConstant(SHADOW_CONSTANT_LIGHT_VIEW, fConstant, 1);
 }
-// PC 0x00426660  Xbox 0x002894A0
+
 void GLRender::RenderShadowArray(int nVertices, int nEdges, int nPool)
 {
     static unsigned short* indexToken = new unsigned short[AUR_SHADOW_INDEX_COUNT];
@@ -3434,7 +3434,7 @@ void GLRender::RenderShadowArray(int nVertices, int nEdges, int nPool)
                                          D3DFMT_INDEX16, cm_pUserShadowData, 12);
     countfaces += nEdges * 8;
 }
-// Xbox 0x002898D0
+
 void GLRender::EnableLight(unsigned long nLight)
 {
     if (!g_lstLights.Contains(nLight))
@@ -3457,7 +3457,7 @@ void GLRender::EnableLight(unsigned long nLight)
     }
     g_pD3DDevice->LightEnable(nLight, TRUE);
 }
-// Xbox 0x002899F0
+
 void GLRender::GenPrograms(int nCount, unsigned int* pnPrograms)
 {
     for (unsigned int i = 0; i < nCount; i++)
@@ -3479,7 +3479,7 @@ void GLRender::GenPrograms(int nCount, unsigned int* pnPrograms)
         }
     }
 }
-// Xbox 0x00289AA0
+
 void RequestPoolManager::DeletePool(unsigned long nPool)
 {
     if (nPool == INVALID_POOL)
@@ -3535,7 +3535,7 @@ void RequestPoolManager::DeletePool(unsigned long nPool)
         m_lstFreeIndexPools.Add(nPool);
     }
 }
-// Xbox 0x00289C00
+
 unsigned long RequestPoolManager::AddVertexPool(D3DVertexBuffer* pBuffer, unsigned long nSize)
 {
     totalvertexpool += nSize;
@@ -3578,7 +3578,7 @@ unsigned long RequestPoolManager::AddVertexPool(D3DVertexBuffer* pBuffer, unsign
     m_nVertexPools *= 2;
     return nPool | POOL_VERTEX_FLAG;
 }
-// Xbox 0x00289D90
+
 unsigned long RequestPoolManager::AddIndexPool(D3DIndexBuffer* pBuffer, unsigned long nSize)
 {
     totalindexpool += nSize;
@@ -3621,7 +3621,7 @@ unsigned long RequestPoolManager::AddIndexPool(D3DIndexBuffer* pBuffer, unsigned
     m_nIndexPools *= 2;
     return nPool;
 }
-// Xbox 0x00289F20
+
 unsigned long RequestPoolManager::RequestIndexPool(unsigned long nSize, unsigned long nUsage,
                                                    D3DFORMAT nFormat, unsigned long* pnPool,
                                                    D3DDevice* pDevice)
@@ -3676,7 +3676,7 @@ unsigned long RequestPoolManager::RequestIndexPool(unsigned long nSize, unsigned
     m_nIndexPools *= 2;
     return *pnPool;
 }
-// Xbox 0x0028A0F0
+
 unsigned long RequestPoolManager::RequestVertexPool(unsigned long nSize, unsigned long nUsage,
                                                     unsigned long nFVF, unsigned long* pnPool,
                                                     D3DDevice* pDevice)
@@ -3731,7 +3731,7 @@ unsigned long RequestPoolManager::RequestVertexPool(unsigned long nSize, unsigne
     *pnPool |= POOL_VERTEX_FLAG;
     return *pnPool;
 }
-// Xbox 0x0028A2B0
+
 RequestPoolManager::RequestPoolManager() : m_lstFreeVertexPools(0), m_lstFreeIndexPools(0)
 {
     unsigned int i;
@@ -3762,13 +3762,13 @@ RequestPoolManager::RequestPoolManager() : m_lstFreeVertexPools(0), m_lstFreeInd
     memset(m_pVertexPoolState, 0, m_nVertexPools);
     memset(m_pIndexPoolState, 0, m_nIndexPools);
 }
-// Xbox 0x0028A420
+
 RequestPoolManager* RequestPoolManager::GetInstance()
 {
     static RequestPoolManager instance;
     return &instance;
 }
-// PC 0x00431A50  Xbox 0x0028A480
+
 void GLRender::DrawSphereBound(float fRadius, Vector& vCenter, const Vector& vColor, float fScale,
                                bool bBillboard)
 {
@@ -3812,7 +3812,7 @@ void GLRender::DrawSphereBound(float fRadius, Vector& vCenter, const Vector& vCo
     circle.Render(g_pD3DDevice);
     PopCurrentMatrix();
 }
-// Xbox 0x0028A6C0
+
 void GLRender::RenderBox(const Vector& vMinimum, const Vector& vMaximum, const Vector& vColor)
 {
     static DXBox box(g_pD3DDevice);
@@ -3848,7 +3848,7 @@ void RequestPoolManager::UnlockPool(unsigned long nPool)
         }
     }
 }
-// PC 0x00423EE0  Xbox 0x0028A7E0
+
 unsigned long GLRender::RequestPool(Aurora::AuroraBufferRequestType nType, unsigned long nSize,
                                     unsigned long nUsage, unsigned long nPoolFlags,
                                     unsigned long* pnPool)
@@ -3865,38 +3865,38 @@ unsigned long GLRender::RequestPool(Aurora::AuroraBufferRequestType nType, unsig
     }
     return *pnPool;
 }
-// PC 0x00423F10  Xbox 0x0028A8B0
+
 void* GLRender::LockPool(unsigned long nPool, unsigned long nOffset, unsigned long nSize,
                          unsigned long nCount)
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
     return pManager->LockPool(nPool, nOffset, nSize, TranslatePoolLockFlags(nCount));
 }
-// Xbox 0x0028A930
+
 unsigned long GLRender::AddVertexPool(D3DVertexBuffer* pBuffer, unsigned long nSize)
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
     return pManager->AddVertexPool(pBuffer, nSize);
 }
-// Xbox 0x0028A9A0
+
 unsigned long GLRender::AddIndexPool(D3DIndexBuffer* pBuffer, unsigned long nSize)
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
     return pManager->AddIndexPool(pBuffer, nSize);
 }
-// Xbox 0x0028AA10
+
 D3DResource* GLRender::GetPool(unsigned long nPool)
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
     return pManager->GetPool(nPool);
 }
-// PC 0x00423F30  Xbox 0x0028AA70
+
 void GLRender::UnlockPool(unsigned long nPool)
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
     pManager->UnlockPool(nPool);
 }
-// PC 0x00423F50  Xbox 0x0028AAD0
+
 void GLRender::DeletePool(unsigned long nPool)
 {
     if (nPool != RequestPoolManager::INVALID_POOL)
@@ -3905,19 +3905,19 @@ void GLRender::DeletePool(unsigned long nPool)
         pManager->DeletePool(nPool);
     }
 }
-// Xbox 0x0028AB40
+
 void GLRender::ReleasePools()
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
     pManager->ReleasePools();
 }
-// PC 0x00423F70  Xbox 0x0028ABA0
+
 void GLRender::ResizePool(unsigned long nPool, unsigned long nSize)
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
     pManager->ResizePool(nPool, nSize, g_pD3DDevice);
 }
-// Xbox 0x0028AC10
+
 void GLRender::RenderObjectsVTCQuadUPVP(RenderVertexVTC* pVertices, int nVertices)
 {
     if (nVertices)
@@ -3930,7 +3930,7 @@ void GLRender::RenderObjectsVTCQuadUPVP(RenderVertexVTC* pVertices, int nVertice
         g_pD3DDevice->DrawPrimitiveUP(D3DPT_QUADLIST, nVertices / 4, pVertices, sizeof(RenderVertexVTC));
     }
 }
-// Xbox 0x0028AC50
+
 void GLRender::CreateTexture(CAurTexture* pTexture, bool bSubImage, int nIndex, bool bLinear)
 {
     int nHeight = pTexture->GetHeight();
@@ -4058,7 +4058,7 @@ void GLRender::CreateTexture(CAurTexture* pTexture, bool bSubImage, int nIndex, 
 }
 
 #define AUR_REPLACE_CURRENT_TEXTURE(pTexture)     {         D3DBaseTexture* pOldTexture = g_listTextures.m_pList[g_nCurrentTexture];         if (pOldTexture)         {             int nOldType = g_listTextureStates.m_pList[g_nCurrentTexture]->m_nType;             if (nOldType == 1)             {                 g_pD3DDevice->SetTexture(0, NULL);                 g_pD3DDevice->SetTexture(1, NULL);                 g_pD3DDevice->SetTexture(2, NULL);                 g_pD3DDevice->SetTexture(3, NULL);                 delete pOldTexture;             }             else if (nOldType == 0)             {                 pOldTexture->Release();             }         }         g_listTextures.m_pList[g_nCurrentTexture] = (pTexture);         g_pCurrentTexture = (pTexture);         cm_pCurrentTexture[cm_uiCurrentStage] = (pTexture);     }
-// Xbox 0x0028B100
+
 void GLRender::CreateProcessedTexture(CAurTexture* pTexture, bool bSubImage, int nIndex, bool bLinear)
 {
     int nHeight = pTexture->GetHeight();
@@ -4203,7 +4203,7 @@ void GLRender::CreateProcessedTexture(CAurTexture* pTexture, bool bSubImage, int
 }
 
 static unsigned int lookup;
-// PC 0x00423D80  Xbox 0x0028B7E0
+
 void GLRender::MakeLookUpTexture(float fGamma)
 {
     if (lookup == 0 || g_listTextures[lookup] == NULL)
@@ -4232,7 +4232,7 @@ void GLRender::MakeLookUpTexture(float fGamma)
         delete[] pPixels;
     }
 }
-// PC 0x00451D70  Xbox 0x0028B900
+
 void GLRender::DrawFromVerts(int nMode, List<Vector>& lstVertices)
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
@@ -4322,7 +4322,7 @@ void GLRender::DrawFromVerts(int nMode, List<Vector>& lstVertices)
         g_pD3DDevice->DrawVertices(D3DPT_LINESTRIP, 0, lstVertices.m_nCount + 1);
     }
 }
-// Xbox 0x0028BCE0
+
 void GLRender::RenderObjectsVC(Aurora::AuroraPrimitiveTypes nPrimitive, unsigned long nPool, int nVertices)
 {
     static RequestPoolManager* pManager = RequestPoolManager::GetInstance();
@@ -4348,7 +4348,7 @@ void GLRender::RenderObjectsVC(Aurora::AuroraPrimitiveTypes nPrimitive, unsigned
 }
 
 int g_nStreamBufferIndex = -1;
-// PC 0x00425520  Xbox 0x0028BE40
+
 void GLRender::SetInterleavedBuffer(unsigned long nStride, int nFlags, unsigned long nPool,
                                     int nVertexCount, MdlNodeTriMesh* pMesh, unsigned long nOffset)
 {
@@ -4362,7 +4362,7 @@ void GLRender::SetInterleavedBuffer(unsigned long nStride, int nFlags, unsigned 
     XGSetVertexBufferHeader(0, 0, 0, 0, pBuffer, GetPool(nPool)->Data + nOffset);
     g_pD3DDevice->SetStreamSource(0, pBuffer, nStride);
 }
-// PC 0x00425AB0  Xbox 0x0028BEC0
+
 void GLRender::DrawElements(Aurora::AuroraPrimitiveTypes nPrimitive, unsigned long nCount,
                             unsigned long nOffset, unsigned long nPool)
 {
@@ -4410,7 +4410,7 @@ float g_fTimerScale;
 __int64 g_nTimerDivisor;
 __int64 g_nRenderStartTime;
 __int64 AurGetHighResolutionTime();
-// Xbox 0x0028C090
+
 void GLRender::InitRenderSystem()
 {
     if (FAILED(D3DXCreateMatrixStack(0, &g_pWorldMatrixStack)))
@@ -4473,7 +4473,7 @@ void GLRender::InitRenderSystem()
     }
     g_nRenderStartTime = AurGetHighResolutionTime();
 }
-// Xbox 0x0028C2C0
+
 void GLRender::SetPoolBufferHeaders(unsigned long nPool, D3DVertexBuffer* pBuffer,
                                     D3DVertexBuffer* pOffsetBuffer, unsigned long nOffset)
 {
@@ -4491,7 +4491,7 @@ static inline void UnbindCurrentTexture()
     g_pD3DDevice->SetTexture(GLRender::cm_uiCurrentStage, NULL);
     GLRender::SetTextureStageFlag(GLRender::cm_uiCurrentStage, 0);
 }
-// PC 0x00423CD0  Xbox 0x0028C310
+
 void GLRender::DisableCombiners(CAurTexture* pTexture)
 {
     if (tex1on)
@@ -4546,7 +4546,7 @@ bool GLRender::cm_bFirstFrameBufferFrame = true;
 char* AllocateShadowMemory(int nSize);
 
 extern unsigned int lookup;
-// Xbox 0x0028C3E0
+
 void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,
                                CAurTexture* pTexture1, CAurTexture* pTexture2,
                                CAurTexture* pTexture3)
@@ -4856,7 +4856,7 @@ void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,
             break;
     }
 }
-// PC 0x00432180  Xbox 0x0028CFC0
+
 void GLRender::Shutdown(int bReleaseRenderer)
 {
     if (bReleaseRenderer && g_bRendererShutDown != true)
@@ -4943,7 +4943,7 @@ void GLRender::Shutdown(int bReleaseRenderer)
         g_lstLightBackUp.SetSize(0);
     }
 }
-// PC 0x00435B40  Xbox 0x0028D1C0
+
 void GLRender::AddSquareToRender(unsigned long nPool)
 {
     if (nPool != (unsigned long)-1)
@@ -4951,14 +4951,14 @@ void GLRender::AddSquareToRender(unsigned long nPool)
         cm_listSquaresToRender.Add(nPool);
     }
 }
-// PC 0x00426000  Xbox 0x0028D1E0
+
 void GLRender::RenderSquares(unsigned int nPool)
 {
     static RequestPoolManager* pPoolManager = RequestPoolManager::GetInstance();
     D3DDevice_SetStreamSource(0, (D3DVertexBuffer*)pPoolManager->GetPool(nPool), 16);
     g_pD3DDevice->DrawPrimitive(D3DPT_LINESTRIP, 0, 4);
 }
-// PC 0x00432720  Xbox 0x0028D250
+
 void GLRender::RenderDrawableSquares()
 {
     g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
@@ -4978,7 +4978,7 @@ void GLRender::RenderDrawableSquares()
 
     g_pD3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 }
-// Xbox 0x0028D2F0
+
 void GLRender::BackUpLights()
 {
     if (g_nLightBackUpDepth++ == 0)
@@ -4996,7 +4996,7 @@ void GLRender::BackUpLights()
         }
     }
 }
-// Xbox 0x0028D3B0
+
 void GLRender::RestoreLights()
 {
     if (--g_nLightBackUpDepth == 0)
@@ -5016,12 +5016,12 @@ void GLRender::RestoreLights()
         }
     }
 }
-// Xbox 0x0028D490
+
 void GLRender::ValidatePool(unsigned long nPool)
 {
     static RequestPoolManager* pPoolManager = RequestPoolManager::GetInstance();
 }
-// Xbox 0x0028D4E0
+
 void GLRender::RenderToTexture(int nUnused, D3DTexture* pTarget, D3DBaseTexture* pSource,
                                int nWidth, int nHeight, int nTargetWidth, int nTargetHeight)
 {
@@ -5048,7 +5048,7 @@ void GLRender::RenderToTexture(int nUnused, D3DTexture* pTarget, D3DBaseTexture*
     }
     g_pD3DDevice->End();
 }
-// Xbox 0x0028D660
+
 void GLRender::CopyFrameBufferTexture(D3DBaseTexture* pSource, D3DTexture* pTarget)
 {
     D3DSurface* pDepthStencil;
@@ -5094,7 +5094,7 @@ static unsigned long g_adwHeatDistortionDeclaration[] =
     D3DVSD_REG(D3DVSDE_TEXCOORD2, D3DVSDT_FLOAT2),
     D3DVSD_END()
 };
-// PC 0x004331D0  Xbox 0x0028D6E0
+
 void GLRender::RenderForceDistortion(unsigned long nTexture)
 {
     float fParameter[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
@@ -5166,7 +5166,7 @@ void GLRender::RenderForceDistortion(unsigned long nTexture)
     SetTextureStageFlag(2, 0);
     SetTextureStageFlag(3, 0);
 }
-// Xbox 0x0028DA70
+
 void GLRender::ResetViewPort(int nX, int nY, int nWidth, int nHeight)
 {
     static RequestPoolManager* pPoolManager = RequestPoolManager::GetInstance();
@@ -5235,7 +5235,7 @@ struct RenderVertexVNC
     D3DXVECTOR3 normal;
     D3DCOLOR color;
 };
-// Xbox 0x0028DD30
+
 void GLRender::DrawTriangles(int nFaces, List<MaxFace>& lFaces, unsigned long nVertexPool,
                              int nVertexStride, int nPositionOffset, short nVertexCount,
                              unsigned long nColorPool, int nPoolOffset)
@@ -5289,7 +5289,7 @@ void GLRender::DrawTriangles(int nFaces, List<MaxFace>& lFaces, unsigned long nV
     g_pD3DDevice->SetVertexShader(hShader);
     g_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, lFaces.m_nCount);
 }
-// PC 0x00435B90  Xbox 0x0028E160
+
 void GLRender::RemoveSquareToRender(unsigned long nPool)
 {
     if (nPool != (unsigned long)-1)
@@ -5301,7 +5301,7 @@ void GLRender::RemoveSquareToRender(unsigned long nPool)
         }
     }
 }
-// Xbox 0x0028E190
+
 void GLRender::RemoveAllSquaresToRender()
 {
     int i = cm_listSquaresToRender.m_nCount;
@@ -5332,7 +5332,7 @@ static const DWORD dwDeclaration[] =
     D3DVSD_REG(D3DVSDE_TEXCOORD3, D3DVSDT_FLOAT2),
     D3DVSD_END()
 };
-// Xbox 0x0028E1C0
+
 void GLRender::RenderOverlayConvolutionPyramid(D3DTexture* pTexture)
 {
     static RequestPoolManager* pPoolManager = RequestPoolManager::GetInstance();
@@ -5576,7 +5576,7 @@ void GLRender::RenderOverlayConvolutionPyramid(D3DTexture* pTexture)
     pDepthStencil->Release();
     pBackBuffer->Release();
 }
-// Xbox 0x0028ED30
+
 void GLRender::RenderAccumulationBlur(D3DTexture* pFrame, D3DTexture* pAccumulation)
 {
     static RequestPoolManager* pPoolManager = RequestPoolManager::GetInstance();
@@ -5636,7 +5636,7 @@ void GLRender::RenderAccumulationBlur(D3DTexture* pFrame, D3DTexture* pAccumulat
     SetTextureStageFlag(2, 0);
     SetTextureStageFlag(3, 0);
 }
-// PC 0x00437520  Xbox 0x0028F0B0
+
 void GLRender::FrameBufferModifications(unsigned long nFlags)
 {
     static int bAccumulationCreated;
@@ -5752,7 +5752,7 @@ void GLRender::FrameBufferModifications(unsigned long nFlags)
     cm_bFirstFrameBufferFrame = false;
     g_fFrameBufferTime = DeltaT + g_fFrameBufferTime;
 }
-// Xbox 0x0028F550
+
 int GLRender::BuildShadowArray(const Vector& vLight, const float& fRadius,
                                const Plane& plane, const Vector& vNearCap,
                                const Vector& vFarCap, int nVertices,
@@ -5796,7 +5796,7 @@ int GLRender::BuildShadowArray(const Vector& vLight, const float& fRadius,
     UnlockPool(nPool);
     return nUsed;
 }
-// Xbox 0x0028F8B0
+
 int __cdecl CompareTransparencyHint(const void* pFirst, const void* pSecond)
 {
     MdlNodeTriMesh* pFirstMesh = (*(MdlNode**)pFirst)->AsMdlNodeTriMesh();
@@ -5829,7 +5829,7 @@ int __cdecl CompareTransparencyHint(const void* pFirst, const void* pSecond)
     }
     return -1;
 }
-// Xbox 0x0028F910
+
 int __fastcall FindFaceCorner(MaxFace_PostProcess& face, int nPosition)
 {
     int nCorner;

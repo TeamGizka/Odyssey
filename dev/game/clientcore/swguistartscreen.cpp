@@ -6,7 +6,7 @@
 #include "swmain.h"
 
 #define STARTSCREEN_ATTRACT_TIME 90.0f
-// Xbox 0x000B6570
+
 void CSWGuiStartScreen::HandleInputEvent(int nEvent, int nState)
 {
     if (nState)
@@ -18,7 +18,7 @@ void CSWGuiStartScreen::HandleInputEvent(int nEvent, int nState)
         }
     }
 }
-// Xbox 0x000B65B0
+
 void CSWGuiStartScreen::Draw(float fElapsed)
 {
     if (!g_pAppManager->m_pClientExoApp->IsMoviePlaying())
@@ -45,7 +45,7 @@ void CSWGuiStartScreen::Draw(float fElapsed)
         }
     }
 }
-// Xbox 0x000B66C0
+
 CSWGuiStartScreen::CSWGuiStartScreen(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {

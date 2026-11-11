@@ -13,7 +13,7 @@ class CLoopingVisualEffect;
 class CSWSPlayerLUOSortedObjectList
 {
 public:
-    CSWSPlayerLUOSortedObjectList()  // PC 0x00566D80  Xbox 0x00229DB0
+    CSWSPlayerLUOSortedObjectList()  // PC 0x0058B7C0
         : m_oidObject(OBJECT_INVALID), m_fDistance(0.0f), m_nCategory(0)
     {
     }

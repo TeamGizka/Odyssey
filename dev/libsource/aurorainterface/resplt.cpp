@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x00710B50  Xbox 0x002FAD80
+// PC 0x00784380
 CResPLT::CResPLT()
 {
     m_bDecoded = 0;
@@ -11,11 +11,11 @@ CResPLT::CResPLT()
     m_pPLTHeader = 0;
     m_bAllocSuffix = 1;
 }
-// PC 0x00710B80  Xbox 0x002FADB0
+// PC 0x007843B0
 CResPLT::~CResPLT()
 {
 }
-// PC 0x00710B90  Xbox 0x002FADC0
+// PC 0x007843C0
 int CResPLT::GetPLTAttrib(unsigned long* pnA, unsigned long* pnB, unsigned long* pnC)
 {
     if (m_pPLTHeader == 0)
@@ -27,7 +27,7 @@ int CResPLT::GetPLTAttrib(unsigned long* pnA, unsigned long* pnB, unsigned long*
     *pnC = m_pPLTHeader[2];
     return 1;
 }
-// PC 0x00710BD0  Xbox 0x002FAE00
+// PC 0x00784400
 int CResPLT::OnResourceFreed()
 {
     if (m_bDecoded != 0 && m_pPLTData != 0)
@@ -43,7 +43,7 @@ int CResPLT::OnResourceFreed()
     m_pPLTHeader = 0;
     return 1;
 }
-// PC 0x00710CC0  Xbox 0x002FAEF0
+// PC 0x007844F0
 int CResPLT::OnResourceServiced()
 {
     unsigned long* pHeader = (unsigned long*)m_pResource;
@@ -92,7 +92,7 @@ int CResPLT::OnResourceServiced()
     }
     return 1;
 }
-// PC 0x00710C10  Xbox 0x002FAE40
+// PC 0x00784440
 int CResPLT::ReadRLEPLT()
 {
     unsigned char* pSource = m_pPLTData;
@@ -127,7 +127,7 @@ int CResPLT::ReadRLEPLT()
     m_bDecoded = 1;
     return 1;
 }
-// PC 0x00712F90
+// PC 0x00786830
 unsigned char* CResPLT::GetPLTDataPtr()
 {
     return m_pPLTData;

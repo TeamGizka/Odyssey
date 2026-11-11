@@ -24,7 +24,7 @@ static int wireframe = 0;
 int overridecamera = 0;
 Vector cameraposition;
 Quaternion cameraorientation;
-// PC 0x0045BEA0  Xbox 0x002BC750
+// PC 0x004710C0
 void Camera::Render(bool bRenderLast)
 {
     if (CurrentCamera != this && CurrentCamera != 0)
@@ -38,18 +38,18 @@ int Camera::PlayAnimation(const char* sName, float fSpeed, int nFlags,
 {
     return 0;
 }
-// PC 0x0045BEC0  Xbox 0x002BC770
+// PC 0x004710E0
 void Camera::SetClipDist(float fNear, float fFar)
 {
     m_fNearClip = fNear;
     m_fFarClip = fFar;
 }
-// PC 0x0045BEE0  Xbox 0x002BC790
+// PC 0x00471100
 void Camera::SetViewAngle(float fViewAngle)
 {
     m_fViewAngle = fViewAngle;
 }
-// PC 0x0045BEF0  Xbox 0x002BC850
+// PC 0x00471110
 void Camera::BeginViewAngleAnimation(float fTarget, float fDuration, int nType)
 {
     if (m_pViewAngleAnimation != 0)
@@ -65,7 +65,7 @@ void Camera::BeginViewAngleAnimation(float fTarget, float fDuration, int nType)
     m_pViewAngleAnimation->m_fStartAngle = m_fViewAngle;
     m_pViewAngleAnimation->m_nType = nType;
 }
-// PC 0x0045BF60  Xbox 0x002BC8D0
+// PC 0x00471180
 void Camera::EndViewAngleAnimation(bool bReset)
 {
     delete m_pViewAngleAnimation;
@@ -76,7 +76,7 @@ void Camera::EndViewAngleAnimation(bool bReset)
         m_fViewAngle = 45.0f;
     }
 }
-// PC 0x0045BFA0  Xbox 0x002BC910
+// PC 0x004711C0
 void Camera::SetViewPort(int nX, int nY, int nWidth, int nHeight)
 {
     m_nViewPortX = nX;
@@ -96,30 +96,30 @@ void Camera::SetViewPort(int nX, int nY, int nWidth, int nHeight)
 
     m_nViewPortHeight = nHeight;
 }
-// PC 0x0045BFE0  Xbox 0x002BC950
+// PC 0x00471200
 CAurObject* Camera::HitCheck(Vector vStart, Vector vEnd, Vector* pHit)
 {
     return Gob::HitCheck(vStart, vEnd, pHit, 0);
 }
-// PC 0x0045C030  Xbox 0x002BC9A0
+// PC 0x00471250
 Vector Camera::SetPosition(Vector vPosition)
 {
     m_vPosition = vPosition;
     return vPosition;
 }
-// PC 0x0045C060  Xbox 0x002BC9D0
+// PC 0x00471290
 Quaternion Camera::SetOrientation(Quaternion qOrientation)
 {
     m_qOrientation = qOrientation;
     return qOrientation;
 }
-// PC 0x0045C0A0  Xbox 0x002BCA10
+// PC 0x004712D0
 int Camera::AttachToScene(CAurScene* pScene)
 {
     SetScene((Scene*)pScene);
     return 1;
 }
-// PC 0x0045C0C0  Xbox 0x002BCA60
+// PC 0x004712F0
 void Camera::SetFollow(CAurObject* pObject)
 {
     if (pObject != 0)
@@ -131,12 +131,12 @@ void Camera::SetFollow(CAurObject* pObject)
         SetBehavior(0);
     }
 }
-// PC 0x0045C160  Xbox 0x002BCB00
+// PC 0x00471390
 void Camera::BehaviorMessage(char* sMessage)
 {
     Gob::BehaviorMessage(sMessage);
 }
-// PC 0x0045C170  Xbox 0x002BCB10
+// PC 0x004713A0
 float Camera::GetYaw()
 {
     if (m_pBehavior != 0 && m_pBehavior->AsBehaviorCameraFollow() != 0)
@@ -146,7 +146,7 @@ float Camera::GetYaw()
 
     return 0.0f;
 }
-// PC 0x0045C1A0  Xbox 0x002BCB40
+// PC 0x004713D0
 float Camera::GetPitch()
 {
     if (m_pBehavior != 0 && m_pBehavior->AsBehaviorCameraFollow() != 0)
@@ -156,7 +156,7 @@ float Camera::GetPitch()
 
     return 0.0f;
 }
-// PC 0x0045C1D0  Xbox 0x002BCB70
+// PC 0x00471400
 float Camera::GetDist()
 {
     if (m_pBehavior != 0 && m_pBehavior->AsBehaviorCameraFollow() != 0)
@@ -166,38 +166,38 @@ float Camera::GetDist()
 
     return 0.0f;
 }
-// PC 0x0045C200  Xbox 0x002BCBA0
+// PC 0x00471430
 CAurBehavior* Camera::AttachToObject(CAurObject* pObject, char* sPart, int nFlags)
 {
     return Gob::AttachToObject(pObject, sPart, nFlags);
 }
-// PC 0x0045C210  Xbox 0x002BCBB0
+// PC 0x00471440
 CAurBehavior* Camera::AttachToPart(CAurObject* pObject, CAurPart* pPart, int nFlags)
 {
     return Gob::AttachToPart(pObject, pPart, nFlags);
 }
-// PC 0x0045C220  Xbox 0x002BCBC0
+// PC 0x00471450
 CAurBehavior* Camera::GetBehavior(int nIndex)
 {
     return Gob::GetBehavior(nIndex);
 }
-// PC 0x0045C230  Xbox 0x002BCBD0
+// PC 0x00471460
 void Camera::SetBehavior(CAurBehavior* pBehavior)
 {
     Gob::SetBehavior(pBehavior);
 }
-// PC 0x0045C240  Xbox 0x002BCA30
+// PC 0x00471500
 inline CAurCamera::~CAurCamera()
 {
 }
-// PC 0x0045C300  Xbox 0x002ACC10
+// PC 0x00471530
 inline void GLRender::SetViewPort(double fFieldOfView, double fAspect,
                            double fNearClip, double fFarClip)
 {
     AURCAMERA_TRACE();
     GLRender_SetPerspectiveTransform(fFieldOfView, fAspect, fNearClip, fFarClip);
 }
-// PC 0x0045D800  Xbox 0x002BDDA0
+// PC 0x00473530
 Camera::Camera(char* sName)
     : Gob(sName), m_lstViewVolume(0)
 {
@@ -230,7 +230,7 @@ Camera::Camera(char* sName)
     lstViewVolume.m_nCount = 6;
 #endif
 }
-// PC 0x0045C330  Xbox 0x002BCC80
+// PC 0x00471560
 Camera::~Camera()
 {
 #ifdef _XBOX
@@ -239,7 +239,7 @@ Camera::~Camera()
     DeleteFuncWithPrefix(g_sObjectFuncName);
 #endif
 }
-// PC 0x0045C540  Xbox 0x002BE180
+// PC 0x00471780
 void Camera::RenderScene()
 {
 
@@ -362,7 +362,7 @@ void Camera::RenderScene()
         }
     }
 }
-// PC 0x0045CC90  Xbox 0x002BCED0
+// PC 0x00472730
 int Camera::HitCheck(int nX, int nY, Vector* pHit, CHitInfo* pInfo)
 {
 
@@ -403,7 +403,7 @@ int Camera::HitCheck(int nX, int nY, Vector* pHit, CHitInfo* pInfo)
     return m_pScene->HitCheck(vNear + m_vPosition, vFar + m_vPosition,
                              pHit, pInfo);
 }
-// PC 0x0045CF30  Xbox 0x002BD1B0
+// PC 0x004729E0
 Vector Camera::MouseDir(int nX, int nY)
 {
     AurcameraTrace1();
@@ -428,7 +428,7 @@ Vector Camera::MouseDir(int nX, int nY)
     vDirection.Normalize();
     return vDirection;
 }
-// PC 0x0045D040  Xbox 0x002BD2E0
+// PC 0x00472C20
 Vector Camera::MapToScreen(Vector vPoint, bool bNormalize)
 {
     AurcameraTrace1();
@@ -463,7 +463,7 @@ Vector Camera::MapToScreen(Vector vPoint, bool bNormalize)
     }
     return Vector();
 }
-// PC 0x0045D220  Xbox 0x002BD4E0
+// PC 0x00472F20
 void Camera::Animate(float fTimeStep)
 {
     AurcameraTrace1();
@@ -516,11 +516,11 @@ void Camera::Animate(float fTimeStep)
 
     Gob::Animate(fTimeStep);
 }
-// PC 0x005B5E90
+// PC 0x006049D0
 void Camera::GetMinimumBoundingBox(Vector& vMinimum, Vector& vMaximum)
 {
 }
-// PC 0x0045D300  Xbox 0x002BD600
+// PC 0x00473000
 float Camera::HitCheckViewVolumeNearest(const Vector& vStart,
                                         const Vector& vEnd, Vector* pHit,
                                         int* pPlane)
@@ -583,7 +583,7 @@ float Camera::HitCheckViewVolumeNearest(const Vector& vStart,
 
     return fNearest;
 }
-// PC 0x0045D490  Xbox 0x002BD7B0
+// PC 0x004731B0
 int Camera::SceneBoundaryCheck(const Vector& vStart, const Vector& vEnd,
                                const Plane& plane, Vector* pHit)
 {
@@ -632,12 +632,12 @@ int Camera::SceneBoundaryCheck(const Vector& vStart, const Vector& vEnd,
                                      m_lstViewVolume.m_pList[VIEW_PLANE_FAR].m_vNormal);
     return 1;
 }
-// PC 0x0045D760  Xbox 0x002BDB30
+// PC 0x00473490
 Plane Camera::GetViewVolume(int nIndex)
 {
     return m_lstViewVolume[nIndex];
 }
-// PC 0x0045D930  Xbox 0x002BE970
+// PC 0x00473660
 CAurCamera* NewCAurCamera(char* sName)
 {
     return new Camera(sName);
@@ -654,7 +654,7 @@ static inline void AurcameraTrace1()
 
 #ifdef _XBOX
 Gob* FindGob(char* sName);
-// Xbox 0x002BC7B0
+
 char* beginviewangleanim(char* sArguments)
 {
     float fAngle;
@@ -666,7 +666,7 @@ char* beginviewangleanim(char* sArguments)
     pCamera->BeginViewAngleAnimation(fAngle, fLength, nInterpType);
     return "success";
 }
-// Xbox 0x002BC820
+
 char* endviewangleanim(char* sArguments)
 {
     Camera* pCamera = (Camera*)FindGob("camera");

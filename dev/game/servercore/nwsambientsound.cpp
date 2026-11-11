@@ -12,12 +12,12 @@
 #include "exoresman.h"
 
 const int CSWSAmbientSound::BATTLE_DELAY = 5000;
-// PC 0x005C95A0  Xbox 0x00247E40
+// PC 0x005741D0
 CSWSAmbientSound::CSWSAmbientSound(unsigned long oidArea)
 {
     m_oidArea = oidArea;
 }
-// PC 0x005C95F0  Xbox 0x00247E90
+// PC 0x00574220
 int CSWSAmbientSound::Load(CResGFF* pRes, CResStruct* pStruct)
 {
     int bSuccess;
@@ -54,7 +54,7 @@ void CSWSAmbientSound::CacheSound(int nTrack, int bMusic)
         g_pExoResMan->CacheResource(sFileName, RESTYPE_WAV);
     }
 }
-// PC 0x005C96E0  Xbox 0x00247F80
+// PC 0x00574310
 int CSWSAmbientSound::Save(CResGFF* pRes, CResStruct* pStruct)
 {
     pRes->WriteFieldINT(pStruct, m_nMusicDelay, "MusicDelay");
@@ -67,7 +67,7 @@ int CSWSAmbientSound::Save(CResGFF* pRes, CResStruct* pStruct)
     return pRes->WriteFieldINT(pStruct, m_nAmbientNightVolume,
                                "AmbientSndNitVol");
 }
-// PC 0x005C9780  Xbox 0x00248020
+// PC 0x005743B0
 void CSWSAmbientSound::PackIntoMessage(CSWSMessage* pMessage)
 {
     pMessage->WriteBOOL(m_bMusicEnabled);
@@ -82,7 +82,7 @@ void CSWSAmbientSound::PackIntoMessage(CSWSMessage* pMessage)
     pMessage->WriteBYTE(m_nAmbientDayVolume, 8);
     pMessage->WriteBYTE(m_nAmbientNightVolume, 8);
 }
-// PC 0x005C9820  Xbox 0x002480C0
+// PC 0x00574450
 int CSWSAmbientSound::GetPlayersInArea(CExoArrayList<unsigned long>* pPlayerList)
 {
     CExoLinkedList<CSWSClient>* pPlayers;
@@ -112,7 +112,7 @@ int CSWSAmbientSound::GetPlayersInArea(CExoArrayList<unsigned long>* pPlayerList
     }
     return pPlayerList->num;
 }
-// PC 0x005C9900  Xbox 0x002481A0
+// PC 0x00574530
 void CSWSAmbientSound::PlayMusic(int bPlay)
 {
     int i;
@@ -128,7 +128,7 @@ void CSWSAmbientSound::PlayMusic(int bPlay)
             lstPlayers[i], bPlay);
     }
 }
-// PC 0x005C99A0  Xbox 0x00248240
+// PC 0x005745D0
 void CSWSAmbientSound::SetMusicDelay(int nDelay)
 {
     int i;
@@ -146,7 +146,7 @@ void CSWSAmbientSound::SetMusicDelay(int nDelay)
         }
     }
 }
-// PC 0x005C9A40  Xbox 0x002482E0
+// PC 0x00574670
 void CSWSAmbientSound::SetMusicDayTrack(int nTrack)
 {
     int i;
@@ -161,7 +161,7 @@ void CSWSAmbientSound::SetMusicDayTrack(int nTrack)
             lstPlayers[i], 1, nTrack);
     }
 }
-// PC 0x005C9AE0  Xbox 0x00248380
+// PC 0x00574720
 void CSWSAmbientSound::SetMusicNightTrack(int nTrack)
 {
     int i;
@@ -180,7 +180,7 @@ void CSWSAmbientSound::SetMusicNightTrack(int nTrack)
         }
     }
 }
-// PC 0x005C9B90  Xbox 0x00248430
+// PC 0x005747E0
 void CSWSAmbientSound::PlayBattleMusic(int bPlay)
 {
     int i;
@@ -198,7 +198,7 @@ void CSWSAmbientSound::PlayBattleMusic(int bPlay)
         }
     }
 }
-// PC 0x005C9C30  Xbox 0x002484D0
+// PC 0x00574880
 void CSWSAmbientSound::SetBattleMusicTrack(int nTrack)
 {
     int i;
@@ -216,7 +216,7 @@ void CSWSAmbientSound::SetBattleMusicTrack(int nTrack)
         }
     }
 }
-// PC 0x005C9CD0  Xbox 0x00248570
+// PC 0x00574920
 void CSWSAmbientSound::PlayAmbientSound(int bPlay)
 {
     int i;
@@ -231,7 +231,7 @@ void CSWSAmbientSound::PlayAmbientSound(int bPlay)
                                                          bPlay);
     }
 }
-// PC 0x005C9D70  Xbox 0x00248610
+// PC 0x005749C0
 void CSWSAmbientSound::SetAmbientDayTrack(int nTrack)
 {
     int i;
@@ -249,7 +249,7 @@ void CSWSAmbientSound::SetAmbientDayTrack(int nTrack)
         }
     }
 }
-// PC 0x005C9E20  Xbox 0x002486C0
+// PC 0x00574A70
 void CSWSAmbientSound::SetAmbientNightTrack(int nTrack)
 {
     int i;
@@ -268,7 +268,7 @@ void CSWSAmbientSound::SetAmbientNightTrack(int nTrack)
         }
     }
 }
-// PC 0x005C9ED0  Xbox 0x00248770
+// PC 0x00574B20
 void CSWSAmbientSound::SetAmbientDayVolume(int nVolume)
 {
     int i;
@@ -286,7 +286,7 @@ void CSWSAmbientSound::SetAmbientDayVolume(int nVolume)
         }
     }
 }
-// PC 0x005C9F80  Xbox 0x00248820
+// PC 0x00574BD0
 void CSWSAmbientSound::SetAmbientNightVolume(int nVolume)
 {
     int i;

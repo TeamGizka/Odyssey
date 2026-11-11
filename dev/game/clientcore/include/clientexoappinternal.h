@@ -153,7 +153,7 @@ class CResRef;
 
 struct CPlayBackEventNode
 {
-    CPlayBackEventNode()  // PC 0x0061F760  Xbox 0x00060300
+    CPlayBackEventNode()  // PC 0x0066FC10
     {
         nTime = 0;
         cType = 0;
@@ -360,7 +360,7 @@ public:
 #ifdef _XBOX
 
     void SetInputClass(int nClass);
-    void SetInputClass(int nClass, int) { SetInputClass(nClass); }  // PC 0x006200E0
+    void SetInputClass(int nClass, int) { SetInputClass(nClass); }
 #else
     void SetInputClass(int nClass, int bHideInterface);
 #endif
@@ -1061,7 +1061,7 @@ public:
 class CSWCPlayer
 {
 public:
-    virtual CSWCDungeonMaster* AsSWCDungeonMaster() { return 0; }  // PC 0x0063E7F0
+    virtual CSWCDungeonMaster* AsSWCDungeonMaster() { return 0; }  // PC 0x004065A0
     unsigned long m_nPlayerId;
     int m_nUnknown8;
     CExoString m_sPlayerName;
@@ -1077,7 +1077,7 @@ public:
     void SetPrimaryPCPortrait(CResRef cPortrait);
     void SetPrimaryPCPortraitId(unsigned short nPortraitId);
     unsigned long GetPlayerId() { return m_nPlayerId; }
-    CSWCPlayer(unsigned long nPlayerId)  // PC 0x0064B460  Xbox 0x00070AE0
+    CSWCPlayer(unsigned long nPlayerId)  // PC 0x0069FDF0
         : m_sPlayerName(),
           m_cPrimaryPCPortrait(),
           m_sPrimaryPCName()

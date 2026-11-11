@@ -100,7 +100,7 @@ public:
     void Combine(const NvFaceInfoList& lstForward,
                  const NvFaceInfoList& lstBackward);
     void Build(NvEdgeInfoList& lstEdges, NvFaceInfoList& lstFaces);
-    bool IsInStrip(const NvFaceInfo* pFace) const  // PC 0x0047BA70  Xbox 0x002D2040
+    bool IsInStrip(const NvFaceInfo* pFace) const  // PC 0x004AC100
     {
         if (pFace == 0)
         {
@@ -175,7 +175,7 @@ public:
                   int nMinStripLength, MyFaceList& lstFaces,
                   NvStripInfoList& lstStrips, NvFaceInfoList& lstFaceInfos);
 #ifndef _XBOX
-    static int GetUniqueVertexInB(NvFaceInfo* pFaceA, NvFaceInfo* pFaceB)  // Xbox 0x002D1FA0
+    static int GetUniqueVertexInB(NvFaceInfo* pFaceA, NvFaceInfo* pFaceB)
     {
         if (pFaceB->m_nVertex0 != pFaceA->m_nVertex0 &&
             pFaceB->m_nVertex0 != pFaceA->m_nVertex1 &&
@@ -197,7 +197,7 @@ public:
         }
         return -1;
     }
-    // Xbox 0x002D1FF0
+
     static int GetSharedVertex(NvFaceInfo* pFaceA, NvFaceInfo* pFaceB)
     {
         int nVertex = pFaceB->m_nVertex0;

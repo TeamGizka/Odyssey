@@ -6,7 +6,7 @@
 
 #include "swminigame.h"
 #include "nwcanimbase.h"
-// PC 0x005CB350  Xbox 0x00274770
+// PC 0x006176F0
 int CSWVirtualMachineCommands::ExecuteCommandAurPostString(int nCommand,
                                                            int nArgs)
 {
@@ -34,17 +34,17 @@ int CSWVirtualMachineCommands::ExecuteCommandAurPostString(int nCommand,
     sString.CStr();
     return 0;
 }
-// PC 0x005CB440
+// PC 0x006176B0
 int CSWTrackFollower::GetIsInvulnerable()
 {
     return m_fInvincibilityRemaining > 0.0f;
 }
-// PC 0x005CB460
+// PC 0x006176D0
 void CSWMGGunBank::SetBankModel(const CResRef& sBank)
 {
     m_resBank = sBank;
 }
-// PC 0x005CB480  Xbox 0x00274860
+// PC 0x006177C0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastEvent(int nCommand,
                                                                int nArgs)
 {
@@ -66,7 +66,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastEvent(int nCommand,
     }
     return 0;
 }
-// PC 0x005CB560  Xbox 0x00274940
+// PC 0x00619640
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastEventModelName(
     int nCommand, int nArgs)
 {
@@ -89,7 +89,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastEventModelName(
     }
     return 0;
 }
-// PC 0x005CB650  Xbox 0x00274A30
+// PC 0x006178A0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectByName(int nCommand,
                                                                   int nArgs)
 {
@@ -116,7 +116,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectByName(int nCommand,
     }
     return 0;
 }
-// PC 0x005CB730  Xbox 0x00274B10
+// PC 0x00617980
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_PlayAnimation(int nCommand,
                                                                 int nArgs)
 {
@@ -170,7 +170,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_PlayAnimation(int nCommand,
     }
     return 0;
 }
-// PC 0x005CB870  Xbox 0x00274C50
+// PC 0x00617AE0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastBulletInfo(
     int nCommand, int nArgs)
 {
@@ -211,7 +211,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastBulletInfo(
     }
     return g_pVirtualMachine->StackPushInteger(nValue) != 0 ? 0 : -2000;
 }
-// PC 0x005CB930  Xbox 0x00274D10
+// PC 0x00617BA0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastBulletShooter(
     int nCommand, int nArgs)
 {
@@ -234,7 +234,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastBulletShooter(
     }
     return g_pVirtualMachine->StackPushObject(nObjectId) != 0 ? 0 : -2000;
 }
-// PC 0x005CB990  Xbox 0x00274D70
+// PC 0x00617C00
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_AdjustFollowerHitPoints(
     int nCommand, int nArgs)
 {
@@ -268,7 +268,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_AdjustFollowerHitPoints(
     }
     return 0;
 }
-// PC 0x005CBA20  Xbox 0x00274E00
+// PC 0x00617C90
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_DefaultImplementations(
     int nCommand, int nArgs)
 {
@@ -308,7 +308,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_DefaultImplementations(
     }
     return 0;
 }
-// PC 0x005CBB00  Xbox 0x00274EE0
+// PC 0x00617D70
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastObjectHit(int nCommand,
                                                                    int nArgs)
 {
@@ -348,7 +348,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastObjectHit(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(nObjectId) != 0 ? 0 : -2000;
 }
-// PC 0x005CBB80  Xbox 0x00274F60
+// PC 0x00617DF0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectName(int nCommand,
                                                                 int nArgs)
 {
@@ -374,7 +374,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectName(int nCommand,
     }
     return 0;
 }
-// PC 0x005CBC80  Xbox 0x00275060
+// PC 0x00617EF0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_IsSomething(int nCommand,
                                                               int nArgs)
 {
@@ -433,7 +433,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_IsSomething(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(bResult) != 0 ? 0 : -2000;
 }
-// PC 0x005CBD60  Xbox 0x00275140
+// PC 0x00617FD0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastHPChange(int nCommand,
                                                                   int nArgs)
 {
@@ -451,7 +451,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastHPChange(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nChange) != 0 ? 0 : -2000;
 }
-// PC 0x005CBDB0  Xbox 0x00275190
+// PC 0x00618020
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_RemoveAnimation(int nCommand,
                                                                   int nArgs)
 {
@@ -477,7 +477,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_RemoveAnimation(int nCommand,
     }
     return 0;
 }
-// PC 0x005CBE90  Xbox 0x00275270
+// PC 0x00618100
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetCameraClipping(
     int nCommand, int nArgs)
 {
@@ -502,7 +502,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetCameraClipping(
     }
     return g_pVirtualMachine->StackPushFloat(fClip) != 0 ? 0 : -2000;
 }
-// PC 0x005CBF00  Xbox 0x002752D0
+// PC 0x00618170
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetCameraClipping(
     int nCommand, int nArgs)
 {
@@ -527,7 +527,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetCameraClipping(
     }
     return 0;
 }
-// PC 0x005CBF70  Xbox 0x00275340
+// PC 0x006181E0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayer(int nCommand,
                                                             int nArgs)
 {
@@ -547,7 +547,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayer(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidPlayer) != 0 ? 0 : -2000;
 }
-// PC 0x005CBFB0  Xbox 0x00275380
+// PC 0x00619730
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetMiniGameCounts(
     int nCommand, int nArgs)
 {
@@ -572,7 +572,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetMiniGameCounts(
     }
     return g_pVirtualMachine->StackPushInteger(nCount) != 0 ? 0 : -2000;
 }
-// PC 0x005CC000  Xbox 0x002753D0
+// PC 0x00618220
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetMiniGameObjects(
     int nCommand, int nArgs)
 {
@@ -607,7 +607,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetMiniGameObjects(
     }
     return g_pVirtualMachine->StackPushObject(nObjectId) != 0 ? 0 : -2000;
 }
-// PC 0x005CC0A0  Xbox 0x00275470
+// PC 0x00619780
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerIntInfo(
     int nCommand, int nArgs)
 {
@@ -647,7 +647,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerIntInfo(
     }
     return g_pVirtualMachine->StackPushInteger(nValue) != 0 ? 0 : -2000;
 }
-// PC 0x005CC190  Xbox 0x00275560
+// PC 0x006182C0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_StartInvulnerability(
     int nCommand, int nArgs)
 {
@@ -668,7 +668,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_StartInvulnerability(
     }
     return 0;
 }
-// PC 0x005CC1E0  Xbox 0x002755B0
+// PC 0x00618310
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerFloatInfo(
     int nCommand, int nArgs)
 {
@@ -699,7 +699,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerFloatInfo(
     }
     return g_pVirtualMachine->StackPushFloat(fValue) != 0 ? 0 : -2000;
 }
-// PC 0x005CC280  Xbox 0x00275650
+// PC 0x00619870
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerPosition(
     int nCommand, int nArgs)
 {
@@ -721,7 +721,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerPosition(
     }
     return g_pVirtualMachine->StackPushVector(vPosition) != 0 ? 0 : -2000;
 }
-// PC 0x005CC330  Xbox 0x00275700
+// PC 0x006183B0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerIntInfo(
     int nCommand, int nArgs)
 {
@@ -755,7 +755,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerIntInfo(
     }
     return 0;
 }
-// PC 0x005CC3C0  Xbox 0x00275790
+// PC 0x00618440
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerFloatInfo(
     int nCommand, int nArgs)
 {
@@ -789,7 +789,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerFloatInfo(
     }
     return 0;
 }
-// PC 0x005CC450  Xbox 0x00275820
+// PC 0x006184D0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankStringInfo(
     int nCommand, int nArgs)
 {
@@ -833,7 +833,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankStringInfo(
     }
     return 0;
 }
-// PC 0x005CC580  Xbox 0x00275940
+// PC 0x00618600
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankIntInfo(
     int nCommand, int nArgs)
 {
@@ -880,7 +880,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankIntInfo(
         return g_pVirtualMachine->StackPushInteger(nValue) != 0 ? 0 : -2000;
     }
 }
-// PC 0x005CC640  Xbox 0x00275A00
+// PC 0x006186C0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankFloatInfo(
     int nCommand, int nArgs)
 {
@@ -927,7 +927,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankFloatInfo(
         return g_pVirtualMachine->StackPushFloat(fValue) != 0 ? 0 : -2000;
     }
 }
-// PC 0x005CC700  Xbox 0x00275AC0
+// PC 0x00618780
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetTargettingGunBankFloatInfo(
     int nCommand, int nArgs)
 {
@@ -977,7 +977,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetTargettingGunBankFloatInfo(
         return g_pVirtualMachine->StackPushFloat(fValue) != 0 ? 0 : -2000;
     }
 }
-// PC 0x005CC7F0  Xbox 0x00275BB0
+// PC 0x00618870
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankStringInfo(
     int nCommand, int nArgs)
 {
@@ -1025,7 +1025,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankStringInfo(
     }
     return 0;
 }
-// PC 0x005CC920  Xbox 0x00275CE0
+// PC 0x006189A0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankIntInfo(
     int nCommand, int nArgs)
 {
@@ -1069,7 +1069,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankIntInfo(
     }
     return 0;
 }
-// PC 0x005CC9D0  Xbox 0x00275D90
+// PC 0x00618A50
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankFloatInfo(
     int nCommand, int nArgs)
 {
@@ -1116,7 +1116,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankFloatInfo(
     }
     return 0;
 }
-// PC 0x005CCAA0  Xbox 0x00275E60
+// PC 0x00618B20
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetTargettingGunBankFloatInfo(
     int nCommand, int nArgs)
 {
@@ -1168,7 +1168,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetTargettingGunBankFloatInfo(
     }
     return 0;
 }
-// PC 0x005CCBB0  Xbox 0x00275F70
+// PC 0x00618C30
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastBulletHitPart(
     int nCommand, int nArgs)
 {
@@ -1189,7 +1189,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastBulletHitPart(
     }
     return 0;
 }
-// PC 0x005CCC60  Xbox 0x00276020
+// PC 0x00618CE0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerFloatInfo(
     int nCommand, int nArgs)
 {
@@ -1218,7 +1218,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerFloatInfo(
     }
     return g_pVirtualMachine->StackPushFloat(fValue) != 0 ? 0 : -2000;
 }
-// PC 0x005CCD20  Xbox 0x002760E0
+// PC 0x00618DA0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerVectorInfo(
     int nCommand, int nArgs)
 {
@@ -1249,7 +1249,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerVectorInfo(
     }
     return g_pVirtualMachine->StackPushVector(vValue) != 0 ? 0 : -2000;
 }
-// PC 0x005CCE70  Xbox 0x00276220
+// PC 0x00618EF0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerFloatInfo(
     int nCommand, int nArgs)
 {
@@ -1283,7 +1283,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerFloatInfo(
     }
     return 0;
 }
-// PC 0x005CCF30  Xbox 0x002762E0
+// PC 0x00618FB0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerVectorInfo(
     int nCommand, int nArgs)
 {
@@ -1317,7 +1317,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerVectorInfo(
     }
     return 0;
 }
-// PC 0x005CD0A0  Xbox 0x00276430
+// PC 0x00619120
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetSoundProperty(int nCommand,
                                                                    int nArgs)
 {
@@ -1359,7 +1359,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetSoundProperty(int nCommand,
         return g_pVirtualMachine->StackPushInteger(nValue) != 0 ? 0 : -2000;
     }
 }
-// PC 0x005CD160  Xbox 0x002764F0
+// PC 0x006191E0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetSoundProperty(int nCommand,
                                                                    int nArgs)
 {
@@ -1401,7 +1401,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetSoundProperty(int nCommand,
     }
     return 0;
 }
-// PC 0x005CD230  Xbox 0x002765C0
+// PC 0x006192B0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetLateralAccelPerSec(
     int nCommand, int nArgs)
 {
@@ -1418,7 +1418,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetLateralAccelPerSec(
     pApp->GetMiniGame()->m_fLateralAccel = fAccel;
     return 0;
 }
-// PC 0x005CD280  Xbox 0x00276610
+// PC 0x00619340
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLateralAccelPerSec(
     int nCommand, int nArgs)
 {
@@ -1429,7 +1429,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLateralAccelPerSec(
     fAccel = pApp->GetMiniGame()->m_fLateralAccel;
     return g_pVirtualMachine->StackPushFloat(fAccel) != 0 ? 0 : -2000;
 }
-// PC 0x005CD2C0  Xbox 0x00276650
+// PC 0x00619960
 void CSWVirtualMachineCommands::InitializeSWMGCommands()
 {
     m_pCommands[582] = &CSWVirtualMachineCommands::ExecuteCommandAurPostString;

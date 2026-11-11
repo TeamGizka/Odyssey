@@ -1,9 +1,9 @@
 #include "nwrules.h"
-// PC 0x0057A1F0  Xbox 0x002746D0
+// PC 0x005DAC90
 CSWSRules::CSWSRules()
 {
 }
-// PC 0x0057A210  Xbox 0x002746F0
+// PC 0x005DACB0
 CSWSRules::~CSWSRules()
 {
 }

@@ -15,13 +15,13 @@ public:
     virtual ~CSWSWaypoint();
 
     virtual void AIUpdate();
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWSWaypoint* AsSWSWaypoint() { return this; }
 
     virtual void EventHandler(unsigned long nEventId, unsigned long oidCaller,
                               void* pEventData, unsigned long nCalendarDay,
                               unsigned long nTimeOfDay);
-    virtual CExoLocString* GetFirstName()  // PC 0x005C7F00  Xbox 0x00246750
+    virtual CExoLocString* GetFirstName()  // PC 0x0056F440
     {
         return &m_lsLocalizedName;
     }

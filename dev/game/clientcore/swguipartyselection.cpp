@@ -14,7 +14,7 @@
 #include "swguipartyselection.h"
 #include "guiingame.h"
 #include "nwccreature.h"
-// PC 0x006BE310  Xbox 0x000F2A90
+// PC 0x0071E140
 void CSWGuiPartySelection::SetForcedNPC(int nFirstNPC, int nSecondNPC)
 {
     if (nFirstNPC >= 0 && nFirstNPC < 9)
@@ -35,7 +35,7 @@ inline void SetButtonToggled(CSWGuiButtonToggle& cButton, int bToggled)
 {
     cButton.m_bToggled = bToggled;
 }
-// PC 0x006BECC0
+
 inline void CSWGuiPartySelection::SetAddRemoveLabel(int bAdd)
 {
     if (bAdd != 0)
@@ -46,7 +46,7 @@ inline void CSWGuiPartySelection::SetAddRemoveLabel(int bAdd)
 #endif
 
 #ifndef _XBOX
-inline CSWGuiPartySelectionButton::~CSWGuiPartySelectionButton()  // PC 0x006BE360
+inline CSWGuiPartySelectionButton::~CSWGuiPartySelectionButton()
 {
 }
 
@@ -54,7 +54,7 @@ inline CSWGuiPartySelectionButton::CSWGuiPartySelectionButton()
 {
     m_bPartySelected = 0;
 }
-// PC 0x006BE370
+// PC 0x0071DEB0
 void CSWGuiPartySelectionButton::SetSelected(int bSelected)
 {
     m_bPartySelected = bSelected;
@@ -73,11 +73,11 @@ void CSWGuiPartySelectionButton::SetSelected(int bSelected)
     }
 }
 #endif
-// PC 0x006BE420  Xbox 0x000F3FC0
+// PC 0x0071F6C0
 inline CSWGuiPartySelectionData::~CSWGuiPartySelectionData()
 {
 }
-// PC 0x006BE490  Xbox 0x000F2B00
+// PC 0x0071DF70
 void CSWGuiPartySelection::OnPanelRemoved()
 {
     CSWPartyTable* pPartyTable =
@@ -97,7 +97,7 @@ void CSWGuiPartySelection::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 #endif
 }
-// PC 0x006BFA40  Xbox 0x000F4020
+// PC 0x0071FDE0
 CSWGuiPartySelection::CSWGuiPartySelection(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -186,7 +186,7 @@ CSWGuiPartySelection::CSWGuiPartySelection(CSWGuiManager* pManager)
 #endif
     m_bPlaySound = 0;
 }
-// PC 0x006BEDE0  Xbox 0x000F3430
+// PC 0x0071F730
 void CSWGuiPartySelection::HandleInputEvent(int nEvent, int bPressed)
 {
     if (bPressed != 0 && (nEvent == 40 || nEvent == 46))
@@ -227,7 +227,7 @@ void CSWGuiPartySelection::HandleInputEvent(int nEvent, int bPressed)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, bPressed);
 }
-// PC 0x006BEEB0  Xbox 0x000F3610
+// PC 0x0071F820
 void CSWGuiPartySelection::OnPanelAdded()
 {
     CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
@@ -341,14 +341,14 @@ void CSWGuiPartySelection::OnPanelAdded()
     g_pAppManager->GetClientExoApp()->ShowTutorialWindow(
         CClientExoApp::TUTORIAL_PARTY_SELECTION, OBJECT_INVALID, OBJECT_INVALID, 0);
 }
-// PC 0x006BE4E0  Xbox 0x000F2B90
+// PC 0x0071E020
 void CSWGuiPartySelection::UpdateCount()
 {
     CExoString sCount;
     sCount.Format("%d", 2 - m_nSelectedCount);
     m_lblCount.m_cText.m_cParams.SetText(sCount);
 }
-// PC 0x006BE560  Xbox 0x000F2C10
+// PC 0x0071E190
 void CSWGuiPartySelection::AcceptParty()
 {
 
@@ -493,7 +493,7 @@ void CSWGuiPartySelection::AcceptParty()
     CGuiInGame* pInGame = g_pAppManager->GetClientExoApp()->GetInGameGui();
     pInGame->m_pMessageBox->m_nPreviousInputClass = m_nInputClass;
 }
-// PC 0x006BF2A0  Xbox 0x000F38D0
+// PC 0x0071EE10
 void CSWGuiPartySelection::OnToggled(CSWGuiControl* pControl)
 {
     CSWGuiPartySelectionButton* pButton = (CSWGuiPartySelectionButton*)pControl;
@@ -571,7 +571,7 @@ void CSWGuiPartySelection::OnToggled(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006BF3B0  Xbox 0x000F39F0
+// PC 0x0071EF70
 void CSWGuiPartySelection::OnDone(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -630,7 +630,7 @@ void CSWGuiPartySelection::OnDone(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006BEC90  Xbox 0x000F33A0
+// PC 0x0071E9C0
 void CSWGuiPartySelection::ConfirmPartySelection(CSWGuiControl*)
 {
     CGuiInGame* pInGame = g_pAppManager->m_pClientExoApp->GetInGameGui();
@@ -639,7 +639,7 @@ void CSWGuiPartySelection::ConfirmPartySelection(CSWGuiControl*)
         AcceptParty();
     }
 }
-// PC 0x006BF5B0  Xbox 0x000F3B30
+// PC 0x0071F1C0
 void CSWGuiPartySelection::OnEnter(CSWGuiControl* pControl)
 {
     CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
@@ -732,7 +732,7 @@ void CSWGuiPartySelection::OnEnter(CSWGuiControl* pControl)
 }
 
 #ifndef _XBOX
-void CSWGuiPartySelection::SetAddRemoveLabel(int bAdd)  // PC 0x006BECC0
+void CSWGuiPartySelection::SetAddRemoveLabel(int bAdd)  // PC 0x0071EA40
 {
     CSWGuiTextParams* pButtonLabel;
     if (bAdd != 0)
@@ -760,7 +760,7 @@ void CSWGuiPartySelection::SetAddRemoveLabel(int bAdd)  // PC 0x006BECC0
 #endif
 
 #ifdef _XBOX
-void CSWGuiPartySelection::OnDoneEnter(CSWGuiControl* pControl)  // Xbox 0x000F2B40
+void CSWGuiPartySelection::OnDoneEnter(CSWGuiControl* pControl)
 {
     m_lbl3D.SetShown(0);
     m_lblNPCName.SetShown(0);

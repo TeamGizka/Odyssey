@@ -16,7 +16,7 @@ inline CSWCJournal::~CSWCJournal()
 
 const unsigned long CSWCJournal::STRREF_CSWCJOURNAL_QUESTENTRYADDED = 32296;
 const unsigned long CSWCJournal::STRREF_CSWCJOURNAL_WORLDENTRYADDED = 0;
-// PC 0x00676530  Xbox 0x00091450
+// PC 0x006CBC00
 void CSWCSortedJournalArrayList::SortList()
 {
     int (CSWCSortedJournalArrayList::*pfnCompare)(int, int);
@@ -60,17 +60,17 @@ void CSWCSortedJournalArrayList::SortList()
 CWorldJournalEntry::~CWorldJournalEntry()
 {
 }
-// PC 0x00675DB0  Xbox 0x00090780
+// PC 0x006CB480
 void CSWCJournal::EnableSort()
 {
     m_bSortEnabled = 1;
 }
-// PC 0x00675DC0  Xbox 0x00090790
+// PC 0x006CB490
 void CSWCJournal::DisableSort()
 {
     m_bSortEnabled = 0;
 }
-// PC 0x00675ED0  Xbox 0x00090BE0
+// PC 0x006CB5A0
 int CSWCSortedJournalArrayList::SortItemsByDate(int nFirst, int nSecond)
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -80,7 +80,7 @@ int CSWCSortedJournalArrayList::SortItemsByDate(int nFirst, int nSecond)
         m_lstEntries[nSecond].m_nDate,
         m_lstEntries[nSecond].m_nTime);
 }
-// PC 0x00675F10  Xbox 0x00090C20
+// PC 0x006CB5E0
 int CSWCSortedJournalArrayList::SortItemsByName(int nFirst, int nSecond)
 {
     CExoString sFirst;
@@ -98,7 +98,7 @@ int CSWCSortedJournalArrayList::SortItemsByName(int nFirst, int nSecond)
     }
     return 0;
 }
-// PC 0x00676050  Xbox 0x00090D60
+// PC 0x006CB720
 int CSWCSortedJournalArrayList::SortItemsByPriority(int nFirst, int nSecond)
 {
     unsigned long nFirstPriority = m_lstEntries.element[nFirst].m_nPriority;
@@ -113,7 +113,7 @@ int CSWCSortedJournalArrayList::SortItemsByPriority(int nFirst, int nSecond)
     }
     return SortItemsByDate(nFirst, nSecond);
 }
-// PC 0x006760A0  Xbox 0x00090DB0
+// PC 0x006CB770
 int CSWCSortedJournalArrayList::SortItemsByPlanet(int nFirst, int nSecond)
 {
     int nFirstPlanet = m_lstEntries.element[nFirst].m_nPlanetID;
@@ -128,7 +128,7 @@ int CSWCSortedJournalArrayList::SortItemsByPlanet(int nFirst, int nSecond)
     }
     return SortItemsByDate(nFirst, nSecond);
 }
-// PC 0x006760F0  Xbox 0x00090E00
+// PC 0x006CB7C0
 void CSWCJournal::Remove(const CExoString& sTag)
 {
     int nActive = m_lstActive.m_lstEntries.num;
@@ -183,7 +183,7 @@ void CSWCJournal::Remove(const CExoString& sTag)
         }
     }
 }
-// PC 0x00676260  Xbox 0x00090F70
+// PC 0x006CB930
 void CSWCJournal::SetJournalPicture(const CExoString& sTag, int nPicture)
 {
     int nDone = m_lstDone.m_lstEntries.num;
@@ -211,7 +211,7 @@ void CSWCJournal::SetJournalPicture(const CExoString& sTag, int nPicture)
         }
     }
 }
-// PC 0x00676310  Xbox 0x00091020
+// PC 0x006CB9E0
 CSWJournalEntry* CSWCJournal::GetActiveEntryAt(int nIndex)
 {
     if (nIndex >= 0 && nIndex < m_lstActive.m_lstEntries.num)
@@ -221,7 +221,7 @@ CSWJournalEntry* CSWCJournal::GetActiveEntryAt(int nIndex)
     }
     return 0;
 }
-// PC 0x00676340  Xbox 0x00091050
+// PC 0x006CBA10
 CSWJournalEntry* CSWCJournal::GetDoneEntryAt(int nIndex)
 {
     if (nIndex >= 0 && nIndex < m_lstDone.m_lstEntries.num)
@@ -231,17 +231,17 @@ CSWJournalEntry* CSWCJournal::GetDoneEntryAt(int nIndex)
     }
     return 0;
 }
-// PC 0x005A4C50  Xbox 0x000907A0
+// PC 0x005ED200
 int CSWCJournal::GetNumActiveEntries()
 {
     return m_lstActive.m_lstEntries.num;
 }
-// PC 0x00675DD0
+// PC 0x006CB4A0
 int CSWCJournal::GetNumDoneEntries()
 {
     return m_lstDone.m_lstEntries.num;
 }
-// PC 0x00676610  Xbox 0x00091530
+// PC 0x006CBCE0
 void CSWCJournal::Add(SJournalEntry entry, unsigned short nFlags)
 {
     int nDoneCount = m_lstDone.m_lstEntries.num;
@@ -345,7 +345,7 @@ void CSWCJournal::Add(SJournalEntry entry, unsigned short nFlags)
         }
     }
 }
-// PC 0x00676B00  Xbox 0x00091A20
+// PC 0x006CC1D0
 void CSWCJournal::ClearAll()
 {
     m_lstDone.m_lstEntries.SetSize(0);
@@ -353,13 +353,13 @@ void CSWCJournal::ClearAll()
     m_lstActive.m_lstEntries.SetSize(0);
     m_lstActive.m_lstOrder.SetSize(0);
 }
-// PC 0x00676BA0  Xbox 0x00091AC0
+// PC 0x006CC270
 void CSWCJournal::CallFullUpdateComplete()
 {
     m_lstActive.SortList();
     m_lstDone.SortList();
 }
-// PC 0x00676BC0  Xbox 0x00091AE0
+// PC 0x006CC290
 void CSWCJournal::SetActiveSortBy(int nSortBy)
 {
     if (nSortBy == CSWCSortedJournalArrayList::SORT_BY_DATE ||
@@ -374,7 +374,7 @@ void CSWCJournal::SetActiveSortBy(int nSortBy)
         }
     }
 }
-// PC 0x00676BF0  Xbox 0x00091B10
+// PC 0x006CC2C0
 void CSWCJournal::SetDoneSortBy(int nSortBy)
 {
     if (nSortBy == CSWCSortedJournalArrayList::SORT_BY_DATE ||
@@ -389,7 +389,7 @@ void CSWCJournal::SetDoneSortBy(int nSortBy)
         }
     }
 }
-// PC 0x00676C20  Xbox 0x00091B40
+// PC 0x006CC2F0
 void CSWCJournal::JournalUpdated(int bFromServer, int bActive,
                                  const CExoString& sMessage)
 {
@@ -422,17 +422,17 @@ void CSWCJournal::JournalUpdated(int bFromServer, int bActive,
         g_bOverrideJournalSortType = 1;
     }
 }
-// PC 0x00676DA0  Xbox 0x00091D90
+// PC 0x006CC470
 CSWCWorldJournal::CSWCWorldJournal() : m_lstEntries(0), m_lstOrder(0)
 {
     m_nSortBy = 0;
     m_bChanged = 0;
 }
-// PC 0x00676DE0  Xbox 0x00091DE0
+// PC 0x006CC4B0
 CSWCWorldJournal::~CSWCWorldJournal()
 {
 }
-// PC 0x00676E60  Xbox 0x00091E60
+// PC 0x006CC530
 void CSWCWorldJournal::DeleteEntryStrRef(unsigned long nStrRef)
 {
     int nCount = m_lstEntries.num;
@@ -461,7 +461,7 @@ void CSWCWorldJournal::DeleteEntryStrRef(unsigned long nStrRef)
     }
     m_bChanged = 1;
 }
-// PC 0x00676F00  Xbox 0x00091F00
+// PC 0x006CC5D0
 void CSWCWorldJournal::DeleteEntry(unsigned long nId)
 {
     int nCount = m_lstEntries.num;
@@ -485,7 +485,7 @@ void CSWCWorldJournal::DeleteEntry(unsigned long nId)
     }
     m_bChanged = 1;
 }
-// PC 0x00676FA0  Xbox 0x00091FA0
+// PC 0x006CC670
 void CSWCWorldJournal::DeleteAllEntries()
 {
     m_lstEntries.SetSize(0);
@@ -499,7 +499,7 @@ CSWCSortedJournalArrayList::CSWCSortedJournalArrayList()
     m_nSortBy = SORT_BY_DATE;
     m_bHasChanged = 0;
 }
-// PC 0x00677000  Xbox 0x00092000
+// PC 0x006CC6D0
 void CSWCWorldJournal::SortList()
 {
     int (CSWCWorldJournal::*pfnCompare)(int, int, int);
@@ -530,13 +530,13 @@ void CSWCWorldJournal::SortList()
         m_lstOrder.element[nBest] = nSwap;
     }
 }
-// PC 0x006770C0  Xbox 0x000920C0
+// PC 0x006CC790
 CSWCJournal::CSWCJournal()
     : m_lstPendingUpdates(0)
 {
     m_bSortEnabled = 1;
 }
-// PC 0x00676370  Xbox 0x00091080
+// PC 0x006CBA40
 int CSWCWorldJournal::SortItemsByDate(int nFirst, int nSecond, int bNoTie)
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -551,7 +551,7 @@ int CSWCWorldJournal::SortItemsByDate(int nFirst, int nSecond, int bNoTie)
     }
     return nResult;
 }
-// PC 0x006763D0  Xbox 0x000910E0
+// PC 0x006CBAA0
 int CSWCWorldJournal::SortItemsByName(int nFirst, int nSecond, int bNoTie)
 {
     if (m_lstEntries[nFirst].m_sTag <
@@ -570,7 +570,7 @@ int CSWCWorldJournal::SortItemsByName(int nFirst, int nSecond, int bNoTie)
     }
     return 0;
 }
-// PC 0x00676470  Xbox 0x00091180
+// PC 0x006CBB40
 int CSWCJournal::HasNewEntries()
 {
     int nCount = m_lstActive.m_lstEntries.num;
@@ -583,7 +583,7 @@ int CSWCJournal::HasNewEntries()
     }
     return 0;
 }
-// PC 0x00677130  Xbox 0x00092130
+// PC 0x006CC800
 void CSWCWorldJournal::AddEntryStrRef(unsigned long nNameStrRef,
                                       unsigned long nTextStrRef,
                                       unsigned long nCalendarDay,
@@ -613,7 +613,7 @@ void CSWCWorldJournal::AddEntryStrRef(unsigned long nNameStrRef,
     SortList();
     m_bChanged = 1;
 }
-// PC 0x00677300  Xbox 0x00092310
+// PC 0x006CC9D0
 void CSWCWorldJournal::AddEntry(unsigned long nId, const CExoString& sText,
                                 const CExoString& sName,
                                 unsigned long nCalendarDay,

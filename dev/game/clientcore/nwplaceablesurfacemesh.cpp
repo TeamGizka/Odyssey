@@ -2,21 +2,21 @@
 #include <string.h>
 
 #include "SWCollisionMesh.h"
-// PC 0x005CDA60  Xbox 0x00228D50
+// PC 0x006161D0
 void CSWPlaceableSurfaceMesh::SetUsePoint(int nIndex, const Vector& vPosition)
 {
     m_avUsePoints[nIndex] = WorldToLocal(vPosition);
 }
-// PC 0x005CDAA0  Xbox 0x00229810
+// PC 0x00616BF0
 CSWPlaceableSurfaceMesh::CSWPlaceableSurfaceMesh()
     : CSWCollisionMesh(RESTYPE_MDL, 0x805)
 {
 }
-// PC 0x005CDAC0  Xbox 0x00229830
+// PC 0x00616C10
 CSWPlaceableSurfaceMesh::~CSWPlaceableSurfaceMesh()
 {
 }
-// PC 0x005CDAD0  Xbox 0x00229840
+// PC 0x00616C20
 int CSWPlaceableSurfaceMesh::LoadMeshText(unsigned char* pData,
                                           unsigned long nDataSize)
 {

@@ -30,7 +30,7 @@ CSWGuiClassType CSWGuiClassSelection::CHAR_TYPES[6] = {
     {CSWClass::CCLASS_SCOUT, 1, 83, 0, 32110},
     {CSWClass::CCLASS_SCOUNDREL, 1, 83, 0, 32109}
 };
-// PC 0x006DC3C0  Xbox 0x0010E330
+// PC 0x0074A8B0
 CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
                                          const CExoString& sModule)
     : CSWGuiPanel(pManager)
@@ -258,7 +258,7 @@ CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
     UpdateScreen(0.033333335f, 0, 0);
     delete pPortraits;
 }
-// PC 0x006DB720  Xbox 0x0010E050
+// PC 0x0074A650
 CSWGuiClassSelection::~CSWGuiClassSelection()
 {
     for (int i = 0; i < 6; i++)
@@ -280,7 +280,7 @@ CSWGuiClassSelection::~CSWGuiClassSelection()
         g_pExoResMan->m_bCharGenImageLoaded = 1;
     }
 }
-// PC 0x006DB8F0  Xbox 0x0010D520
+// PC 0x007499E0
 void CSWGuiClassSelection::OnPanelAdded()
 {
     {
@@ -300,7 +300,7 @@ void CSWGuiClassSelection::OnPanelAdded()
 #endif
     g_pAppManager->m_pClientExoApp->StartMenuMusic(0, CClientExoAppInternal::MENU_MUSIC_VOLUME, CClientExoAppInternal::MENU_MUSIC_PRIORITY_GROUP);
 }
-// PC 0x006DB9B0  Xbox 0x0010D5D0
+// PC 0x00749AE0
 void CSWGuiClassSelection::OnSelectButton(CSWGuiControl* pControl)
 {
     int nSelected = pControl->m_bSelected;
@@ -335,7 +335,7 @@ void CSWGuiClassSelection::OnSelectButton(CSWGuiControl* pControl)
 }
 
 #include "nwclass.h"
-// PC 0x006DBA70  Xbox 0x0010D690
+// PC 0x00749BA0
 void CSWGuiClassSelection::OnEnterButton(CSWGuiControl* pControl)
 {
     int nSelected = pControl->m_bSelected;
@@ -392,7 +392,7 @@ void CSWGuiClassSelection::HandleCancelButton()
     m_nExitState = EXITSTATE_DELETE;
     g_pAppManager->m_pClientExoApp->DisplayMainMenu(0);
 }
-// PC 0x006DBD30  Xbox 0x0010D950
+// PC 0x00749E60
 void CSWGuiClassSelection::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -414,7 +414,7 @@ void CSWGuiClassSelection::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006DBDF0  Xbox 0x0010DA10
+// PC 0x00749F00
 void CSWGuiClassSelection::BeginPlayGame()
 {
     g_pAppManager->m_pClientExoApp->BusyWaitMenuMusic();
@@ -457,7 +457,7 @@ void CSWGuiClassSelection::BeginPlayGame()
     pClientExoApp->SetLoadScreenHint(
         pClientExoApp->GetNextLoadScreenHintSTRREF(m_sModule, 0));
 }
-// PC 0x006DC030  Xbox 0x0010DC50
+// PC 0x0074A220
 void CSWGuiClassSelection::Draw(float fElapsed)
 {
     CSWGuiExtent cButtonExtent;
@@ -592,7 +592,7 @@ void CSWGuiClassSelection::Draw(float fElapsed)
     }
     CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x006DC350  Xbox 0x0010DF70
+// PC 0x0074A840
 CSWGuiClassSelChar::CSWGuiClassSelChar()
 {
 }

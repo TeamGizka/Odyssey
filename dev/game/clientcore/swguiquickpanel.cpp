@@ -33,7 +33,7 @@ void CSWGuiQuickPanel::CancelPanel()
     SetState(0);
 #endif
 }
-// PC 0x006EFC10  Xbox 0x00127FC0
+// PC 0x00760D20
 void CSWGuiQuickPanel::SetState(int nState)
 {
     m_nState = nState;
@@ -97,7 +97,7 @@ void CSWGuiQuickPanel::SetState(int nState)
     }
     SetActiveControl(&m_btnStep[m_nState], 0);
 }
-// PC 0x006EFD60  Xbox 0x001280B0
+// PC 0x00761180
 void CSWGuiQuickPanel::OnSelectPlayButton(CSWGuiControl* pControl)
 {
 #ifndef _XBOX
@@ -110,7 +110,7 @@ void CSWGuiQuickPanel::OnSelectPlayButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006EFD80  Xbox 0x001280D0
+// PC 0x00760F30
 void CSWGuiQuickPanel::OnSelectNameButton(CSWGuiControl* pControl)
 {
     CSWGuiNameChargen* pPanel;
@@ -131,7 +131,7 @@ void CSWGuiQuickPanel::OnSelectNameButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006EFE10  Xbox 0x00128160
+// PC 0x00760FC0
 void CSWGuiQuickPanel::OnSelectPortraitButton(CSWGuiControl* pControl)
 {
 #ifndef _XBOX
@@ -159,7 +159,7 @@ void CSWGuiQuickPanel::OnSelectPortraitButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006EFF10
+// PC 0x007610C0
 void CSWGuiQuickPanel::CancelledByChild()
 {
     if (m_nState == 0)
@@ -171,24 +171,24 @@ void CSWGuiQuickPanel::CancelledByChild()
     CSWGuiTextParams* pParams = &pButton->m_cText.m_cParams;
     pParams->m_bHilightText = 1;
 }
-// PC 0x006EFF60  Xbox 0x00128250
+// PC 0x00761110
 void CSWGuiQuickPanel::PortraitCreationCompleted()
 {
     m_pMainCharGen->PortraitChanged();
     SetState(1);
 }
-// PC 0x006EFF80  Xbox 0x00128270
+// PC 0x00761130
 void CSWGuiQuickPanel::NameCreationCompleted()
 {
     m_pMainCharGen->NameChanged();
     SetState(2);
 }
-// PC 0x006EFFA0
+// PC 0x00761150
 CExoString CSWGuiCustomPanel::GetCurrentName()
 {
     return ((CSWGuiMainCharGen*)m_pParentPanel)->m_sName;
 }
-// PC 0x006EFFD0  Xbox 0x00128290
+// PC 0x00761270
 void CSWGuiQuickPanel::DoQuickStats()
 {
     unsigned char nIndex = m_pCreature->GetStats()->GetNumClasses() - 1;
@@ -212,7 +212,7 @@ void CSWGuiQuickPanel::DoQuickStats()
     m_pCreature->GetStats()->AddDefaultPackageSkills(nClass, 1);
     m_pCreature->GetStats()->UpdateAbilityModifiedSkillRanks();
 }
-// PC 0x006F0220
+// PC 0x007611A0
 void CSWGuiQuickPanel::ConfirmCancel(CSWGuiControl* pControl)
 {
     CGuiInGame* pInGameGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
@@ -222,7 +222,7 @@ void CSWGuiQuickPanel::ConfirmCancel(CSWGuiControl* pControl)
         CancelPanel();
     }
 }
-// PC 0x006F0260  Xbox 0x00128840
+// PC 0x00761950
 void CSWGuiQuickPanel::OnPanelAdded()
 {
     DoQuickStats();
@@ -231,7 +231,7 @@ void CSWGuiQuickPanel::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
-// PC 0x006F0280  Xbox 0x00128860
+// PC 0x007611E0
 void CSWGuiQuickPanel::HandleInputEvent(int nEvent, int bPressed)
 {
     if (bPressed != 0)
@@ -267,7 +267,7 @@ CExoString CSWGuiQuickPanel::GetCurrentName()
 {
     return m_pMainCharGen->m_sName;
 }
-// PC 0x006F0310
+// PC 0x007614D0
 void CSWGuiQuickPanel::OnCancelPressed(CSWGuiControl* pControl)
 {
     if (m_nState != 0)
@@ -285,7 +285,7 @@ void CSWGuiQuickPanel::OnCancelPressed(CSWGuiControl* pControl)
         CancelPanel();
     }
 }
-// PC 0x006F0390  Xbox 0x001284E0
+// PC 0x00761550
 CSWGuiQuickPanel::CSWGuiQuickPanel(CSWGuiManager* pManager,
                                    CSWCCreature* pCreature)
     : CSWGuiPanel(pManager)

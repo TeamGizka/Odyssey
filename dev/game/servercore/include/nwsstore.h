@@ -32,7 +32,7 @@ public:
                                         unsigned long oidCreature);
     unsigned long CalculateItemSellPrice(CSWSItem* pItem,
                                          unsigned long oidCreature);
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWSStore* AsSWSStore()
     {
         return this;

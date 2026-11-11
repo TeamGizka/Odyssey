@@ -61,7 +61,7 @@ public:
     void OnCancelPressed(CSWGuiControl* pControl);
     void SetCanCancel(int bCanCancel);
 #else
-    void SetCanCancel(int bCanCancel) { m_bCanCancel = bCanCancel; }  // PC 0x006EE640
+    void SetCanCancel(int bCanCancel) { m_bCanCancel = bCanCancel; }
 #endif
     void PlayGame();
     void OnSelectAcceptButton(CSWGuiControl* pControl);

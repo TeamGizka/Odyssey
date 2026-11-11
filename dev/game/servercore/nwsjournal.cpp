@@ -12,19 +12,19 @@
 #include "twodimarrays.h"
 
 static inline void NwsjournalTrace1();
-// PC 0x005C5A30  Xbox 0x00205FC0
+// PC 0x00600DB0
 CSWSJournal::CSWSJournal()
 {
 }
-// PC 0x005C58F0  Xbox 0x00205FD0
+// PC 0x00600DC0
 CSWSJournal::~CSWSJournal()
 {
 }
-// PC 0x005C5630  Xbox 0x00205D70
+// PC 0x006009E0
 void CSWSJournal::SetPicture(const CExoString& sName, int nPicture, int nFlag)
 {
 }
-// PC 0x005C5740  Xbox 0x00205D80
+// PC 0x00600AF0
 void SJournalEntry::Update(SJournalEntry entry, unsigned short nFlags)
 {
     NwsjournalTrace1();
@@ -51,7 +51,7 @@ void SJournalEntry::Update(SJournalEntry entry, unsigned short nFlags)
         m_nXP = entry.m_nXP;
     m_bNew = 1;
 }
-// PC 0x005C5850  Xbox 0x00205E90
+// PC 0x00600C00
 int CSWSJournal::GetQuestEntryXP(const CExoString& sName)
 {
     int nNum = m_lstEntries.num;
@@ -64,7 +64,7 @@ int CSWSJournal::GetQuestEntryXP(const CExoString& sName)
     }
     return 0;
 }
-// PC 0x005C58A0  Xbox 0x00205EE0
+// PC 0x00600C50
 int CSWSJournal::GetState(const CExoString& sName)
 {
     int nNum = m_lstEntries.num;
@@ -77,7 +77,7 @@ int CSWSJournal::GetState(const CExoString& sName)
     }
     return 0;
 }
-// PC 0x005C5A40  Xbox 0x00206000
+// PC 0x00600DF0
 void CSWSJournal::SetState(const CExoString& sName, unsigned long nState,
                            int nFlag)
 {
@@ -351,7 +351,7 @@ void CSWSJournal::SetState(const CExoString& sName, unsigned long nState,
         }
     }
 }
-// PC 0x005C63F0  Xbox 0x002069D0
+// PC 0x006017A0
 void CSWSJournal::SetDate(const CExoString& sName, unsigned long nDate,
                           int nFlag)
 {
@@ -434,7 +434,7 @@ void CSWSJournal::SetDate(const CExoString& sName, unsigned long nDate,
         }
     }
 }
-// PC 0x005C6650  Xbox 0x00206C30
+// PC 0x00601A00
 void CSWSJournal::SetTime(const CExoString& sName, unsigned long nTime,
                           int nFlag)
 {
@@ -517,7 +517,7 @@ void CSWSJournal::SetTime(const CExoString& sName, unsigned long nTime,
         }
     }
 }
-// PC 0x005C68B0  Xbox 0x00206E90
+// PC 0x00601C60
 void CSWSJournal::Destroy(const CExoString& sName)
 {
     int nNum = m_lstEntries.num;

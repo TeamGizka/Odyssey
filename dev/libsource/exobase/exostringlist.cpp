@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <windows.h>
-// PC 0x005E94A0  Xbox 0x00135C60
+// PC 0x00634D50
 void CExoStringList::Introduce(CExoString* pString, int nPosition)
 {
     int nNewSize = m_nAllocated;
@@ -32,7 +32,7 @@ void CExoStringList::Introduce(CExoString* pString, int nPosition)
     m_nAllocated = nNewSize;
     m_nCount++;
 }
-// PC 0x005E9530
+// PC 0x00634DE0
 CExoStringList::CExoStringList()
 {
     m_pStrings = 0;
@@ -41,7 +41,7 @@ CExoStringList::CExoStringList()
     m_nSortMode = 0;
     m_nAllocated = 0;
 }
-// PC 0x005E9550  Xbox 0x00135CF0
+// PC 0x00634E00
 CExoStringList::CExoStringList(int nSortMode, int nDuplicateMode, int nSize)
 {
     m_pStrings = (CExoString**)calloc(nSize, sizeof(CExoString*));
@@ -50,7 +50,7 @@ CExoStringList::CExoStringList(int nSortMode, int nDuplicateMode, int nSize)
     m_nSortMode = nSortMode;
     m_nAllocated = nSize;
 }
-// PC 0x005E9860  Xbox 0x00135FC0
+// PC 0x00635110
 CExoStringList::~CExoStringList()
 {
     if (m_pStrings)
@@ -65,7 +65,7 @@ CExoStringList::~CExoStringList()
         free(m_pStrings);
     }
 }
-// PC 0x005E9590  Xbox 0x00135D30
+// PC 0x00634E40
 void CExoStringList::Clear()
 {
     for (int i = 0; i < m_nAllocated; i++)
@@ -78,12 +78,12 @@ void CExoStringList::Clear()
     }
     m_nCount = 0;
 }
-// PC 0x005E95E0
+// PC 0x00634E90
 CExoString* CExoStringList::GetString(int nIndex)
 {
     return m_pStrings[nIndex];
 }
-// PC 0x005E95E0  Xbox 0x00135D90
+// PC 0x00634E90
 CExoString* CExoStringList::operator[](int nIndex)
 {
     return m_pStrings[nIndex];
@@ -102,7 +102,7 @@ void CExoStringList::Insert(CExoString* pString, int nPosition)
     }
     Introduce(pString, nPosition);
 }
-// PC 0x005E98B0  Xbox 0x00136010
+// PC 0x00635160
 void CExoStringList::Add(CExoString* pString)
 {
     int nCount = m_nCount;
@@ -139,7 +139,7 @@ void CExoStringList::Add(CExoString* pString)
         Introduce(pString, nCount);
     }
 }
-// PC 0x005E95F0  Xbox 0x00135DA0
+// PC 0x00634EA0
 void CExoStringList::AddSorted(CExoString* pString)
 {
     int bDone = 0;
@@ -244,7 +244,7 @@ void CExoStringList::AddSorted(CExoString* pString)
         }
     }
 }
-// PC 0x005E9980  Xbox 0x001360E0
+// PC 0x00635230
 CExoStringList* CExoStringList::Merge(CExoStringList* pList, int nSortMode,
                                       int nDuplicateMode)
 {
@@ -267,7 +267,7 @@ CExoStringList* CExoStringList::Merge(CExoStringList* pList, int nSortMode,
 
     return pNewList;
 }
-// PC 0x00675DD0  Xbox 0x00135D80
+// PC 0x006CB4A0
 int CExoStringList::GetCount()
 {
     return m_nCount;

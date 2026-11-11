@@ -190,20 +190,20 @@ public:
 
 
 
-    // PC 0x00406490
+    // PC 0x00406590
     virtual int GetFixedResourceSize()
     {
         return -1;
     }
-    virtual int GetFixedResourceDataOffset()  // PC 0x0063E7F0  Xbox 0x002CC450
+    virtual int GetFixedResourceDataOffset()  // PC 0x004065A0
     {
         return 0;
     }
-    virtual int OnResourceFreed()  // PC 0x0063E7A0
+    virtual int OnResourceFreed()  // PC 0x0065D0F0
     {
         return 1;
     }
-    virtual int OnResourceServiced()  // PC 0x0063E7A0
+    virtual int OnResourceServiced()  // PC 0x0065D0F0
     {
         return 1;
     }

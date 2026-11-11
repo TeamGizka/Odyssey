@@ -268,7 +268,7 @@ const int CExoInput::JOYSTICK_BUTTON13 = 106;
 const int CExoInput::JOYSTICK_BUTTON14 = 107;
 const int CExoInput::JOYSTICK_BUTTON15 = 108;
 #endif
-// PC 0x005DF3F0  Xbox 0x00139E50
+// PC 0x0062B6F0
 CExoInput::CExoInput()
 {
 #ifdef _XBOX
@@ -277,24 +277,24 @@ CExoInput::CExoInput()
     m_pExoInputInternal = new CExoInputInternal(g_hInst, g_hRenderWnd);
 #endif
 }
-// PC 0x005DF460  Xbox 0x00139EC0
+// PC 0x0062B760
 int CExoInput::CreateNewEvent(unsigned long nArg1, int nArg2, int nArg3,
                               unsigned long nArg4, unsigned long nArg5)
 {
     return m_pExoInputInternal->CreateNewEvent(nArg1, nArg2, nArg3, nArg4,
                                                nArg5);
 }
-// PC 0x005DF470  Xbox 0x00139ED0
+// PC 0x0062B770
 void CExoInput::AddEvent(unsigned long nArg1, unsigned long nArg2)
 {
     m_pExoInputInternal->AddEvent(nArg1, nArg2);
 }
-// PC 0x005DF480  Xbox 0x00139EE0
+// PC 0x0062B780
 int CExoInput::ScaleEvent(unsigned long nArg1, float fArg2, float fArg3)
 {
     return m_pExoInputInternal->ScaleEvent(nArg1, fArg2, fArg3);
 }
-// PC 0x005DF490  Xbox 0x00139EF0
+// PC 0x0062B790
 int CExoInput::SetEventRepeatable(unsigned long nArg1, unsigned long nArg2,
                                   unsigned long nArg3)
 {
@@ -302,70 +302,70 @@ int CExoInput::SetEventRepeatable(unsigned long nArg1, unsigned long nArg2,
 }
 
 #ifdef _XBOX
-void CExoInput::SetEventNonRepeatable(unsigned long nEvent)  // Xbox 0x00139F00
+void CExoInput::SetEventNonRepeatable(unsigned long nEvent)
 {
     m_pExoInputInternal->SetEventNonRepeatable(nEvent);
 }
 #endif
-// PC 0x005DF4A0  Xbox 0x00139F10
+// PC 0x0062B7A0
 void CExoInput::ClearEventRepeat(unsigned long nArg1)
 {
     m_pExoInputInternal->ClearEventRepeat(nArg1);
 }
-// PC 0x005DF4B0  Xbox 0x00139F20
+// PC 0x0062B7B0
 void CExoInput::CoolDownEvent(unsigned long nArg1, unsigned long nArg2)
 {
     m_pExoInputInternal->CoolDownEvent(nArg1, nArg2);
 }
-// PC 0x005DF4C0
+// PC 0x0062B7C0
 CExoInputEventDesc* CExoInput::GetEvent(unsigned long nEvent, int nEventClass)
 {
     return m_pExoInputInternal->GetEvent(nEvent, nEventClass);
 }
-// PC 0x005DF4D0  Xbox 0x00139F30
+// PC 0x0062B7D0
 float CExoInput::PollInput(unsigned long nEvent, int nEventClass)
 {
     return m_pExoInputInternal->PollInput(nEvent, nEventClass);
 }
-// PC 0x005DF4E0  Xbox 0x00139F40
+// PC 0x0062B7E0
 void CExoInput::ClearEvents()
 {
     m_pExoInputInternal->ClearEvents();
 }
-// PC 0x005DF4F0  Xbox 0x00139F50
+// PC 0x0062B7F0
 void CExoInput::WriteEventToFile(unsigned long nTimeStamp, int nEvent,
                                  CExoFile* pFile)
 {
     m_pExoInputInternal->WriteEventToFile(nTimeStamp, nEvent, pFile);
 }
-// PC 0x005DF500  Xbox 0x00139F60
+// PC 0x0062B800
 void CExoInput::Configure()
 {
     m_pExoInputInternal->Configure();
 }
-// PC 0x005DF510  Xbox 0x00139F70
+// PC 0x0062B810
 int CExoInput::GetActive()
 {
     return m_pExoInputInternal->GetActive();
 }
-// PC 0x005DF520  Xbox 0x00139F80
+// PC 0x0062B820
 void CExoInput::KeyboardModeOn()
 {
     m_pExoInputInternal->KeyboardModeOn();
 }
-// PC 0x005DF530  Xbox 0x00139F90
+// PC 0x0062B830
 void CExoInput::KeyboardModeOff()
 {
     m_pExoInputInternal->KeyboardModeOff();
 }
-// PC 0x005ED700
+// PC 0x00638950
 int CExoInput::GetKeyboardMode()
 {
     return m_pExoInputInternal->m_bKeyboardMode;
 }
 
 #ifndef _XBOX
-void CExoInput::UpdateJoysticks()  // PC 0x005ED310  Xbox 0x0013A020
+void CExoInput::UpdateJoysticks()  // PC 0x0062B870
 {
     m_pExoInputInternal->UpdateJoysticks();
 }
@@ -379,12 +379,12 @@ CExoInput::~CExoInput()
         m_pExoInputInternal = NULL;
     }
 }
-// PC 0x005DF540  Xbox 0x00139FA0
+// PC 0x0062B840
 void CExoInput::SetActive(int bActive)
 {
     m_pExoInputInternal->SetActive(bActive);
 }
-// PC 0x005DF550  Xbox 0x00139FB0
+// PC 0x0062B850
 int CExoInput::SetRumble(int nArg1, float fArg2, float fArg3,
                          unsigned long nArg4)
 {
@@ -392,60 +392,60 @@ int CExoInput::SetRumble(int nArg1, float fArg2, float fArg3,
 }
 
 #ifdef _XBOX
-int CExoInput::GetAutoCalInfo()  // Xbox 0x00139FC0
+int CExoInput::GetAutoCalInfo()
 {
     return m_pExoInputInternal->GetAutoCalInfo();
 }
-// Xbox 0x00139FD0
+
 int CExoInput::GetPortBinding()
 {
     return m_pExoInputInternal->GetPortBinding();
 }
-// Xbox 0x00139FE0
+
 int CExoInput::SetAutoCalInfo(unsigned long nFlags)
 {
     return m_pExoInputInternal->SetAutoCalInfo(nFlags);
 }
-// Xbox 0x00139FF0
+
 int CExoInput::SetPortBinding(unsigned long nBinding)
 {
     return m_pExoInputInternal->SetPortBinding(nBinding);
 }
 #endif
-// PC 0x005ED310  Xbox 0x0013A000
+// PC 0x0062B870
 void CExoInput::EndAttemptedBind()
 {
     m_pExoInputInternal->EndAttemptedBind();
 }
-// PC 0x005DF560  Xbox 0x0013A010
+// PC 0x0062B860
 int CExoInput::GetMainDeviceLost()
 {
     return m_pExoInputInternal->GetMainDeviceLost();
 }
 
 #ifdef _XBOX
-void CExoInput::UpdateJoysticks()  // PC 0x005ED310  Xbox 0x0013A020
+void CExoInput::UpdateJoysticks()
 {
     m_pExoInputInternal->UpdateJoysticks();
 }
 #endif
-// PC 0x005DF570  Xbox 0x0013A030
+// PC 0x0062B880
 void CExoInput::PauseRumble()
 {
     m_pExoInputInternal->PauseRumble();
 }
-// PC 0x005DF580  Xbox 0x0013A040
+// PC 0x0062B890
 void CExoInput::UnpauseRumble()
 {
     m_pExoInputInternal->UnpauseRumble();
 }
 
 #ifdef _XBOX
-int CExoInput::GetCheatCombo(unsigned char nCombo)  // Xbox 0x0013A050
+int CExoInput::GetCheatCombo(unsigned char nCombo)
 {
     return m_pExoInputInternal->GetCheatCombo(nCombo);
 }
-// Xbox 0x0013A060
+
 int CExoInput::GetDebugOption()
 {
     return m_pExoInputInternal->GetDebugOption();
@@ -453,53 +453,53 @@ int CExoInput::GetDebugOption()
 #endif
 
 #ifndef _XBOX
-void CExoInput::BufferEvent(void* pArg1)  // PC 0x005DF590
+void CExoInput::BufferEvent(void* pArg1)  // PC 0x0062B8A0
 {
     m_pExoInputInternal->BufferEvent(pArg1);
 }
-// PC 0x005DF5A0
+// PC 0x0062B8B0
 int CExoInput::SetMouseMode(unsigned char cArg1)
 {
     return m_pExoInputInternal->SetMouseMode(cArg1);
 }
-// PC 0x005DF5B0
+// PC 0x0062B8C0
 void CExoInput::RefreshMouseCursor(int nArg1)
 {
     m_pExoInputInternal->RefreshMouseCursor(nArg1);
 }
-// PC 0x005DF5C0
+// PC 0x0062B8D0
 int CExoInput::SetMouseCursor(int nArg1, int nArg2, int nArg3)
 {
     return m_pExoInputInternal->SetMouseCursor(nArg1, nArg2, nArg3);
 }
-// PC 0x005DF5D0
+// PC 0x0062B8E0
 void CExoInput::SetMousePos(int nX, int nY)
 {
     m_pExoInputInternal->SetMousePos(nX, nY);
 }
-// PC 0x005DF5E0
+// PC 0x0062B8F0
 void CExoInput::HideMouse()
 {
     m_pExoInputInternal->HideMouse();
 }
-// PC 0x005DF5F0
+// PC 0x0062B900
 void CExoInput::ShowMouse()
 {
     m_pExoInputInternal->ShowMouse();
 }
 #endif
-// PC 0x005DF600
+// PC 0x0062B910
 void CExoInput::ClearAllInputEventDescriptions()
 {
     m_pExoInputInternal->ClearAllInputEventDescriptions();
 }
 
 #ifndef _XBOX
-void CExoInput::GetMouseDelta(float* fArg1, float* fArg2)  // PC 0x005DF610
+void CExoInput::GetMouseDelta(float* fArg1, float* fArg2)  // PC 0x0062B920
 {
     m_pExoInputInternal->GetMouseDelta(fArg1, fArg2);
 }
-// PC 0x005DF620
+// PC 0x0062B930
 void CExoInput::UpdateMouseDelta(float fArg1)
 {
     m_pExoInputInternal->UpdateMouseDelta(fArg1);
@@ -519,31 +519,31 @@ int CExoInput::IsModalKeyDown_Alt()
 {
     return m_pExoInputInternal->IsModalKeyDown_Alt();
 }
-// PC 0x005DF630
+// PC 0x0062B940
 int CExoInput::GetLastCapturedKeyboardKey()
 {
     return m_pExoInputInternal->GetLastCapturedKeyboardKey();
 }
-// PC 0x005DF640
+// PC 0x0062B950
 CExoString CExoInput::GetDisplayCharacterForKey(int nKey)
 {
     return m_pExoInputInternal->GetDisplayCharacterForKey(nKey);
 }
 #endif
-// PC 0x005DF6B0  Xbox 0x0013A0B0
+// PC 0x0062B9C0
 CExoArrayList<CExoInputEvent> CExoInput::GetEvents(int& nEvents, int nEventClass)
 {
     return m_pExoInputInternal->GetEvents(nEvents, nEventClass);
 }
 
 #ifndef _XBOX
-unsigned char CExoInput::GetMouseMode()  // PC 0x005DF6E0
+unsigned char CExoInput::GetMouseMode()  // PC 0x0062B9F0
 {
     EXOINPUT_TRACE();
     return m_pExoInputInternal->m_nMouseMode;
 }
 #endif
-// PC 0x005DF6F0
+// PC 0x0062BA00
 int CExoInput::EventExists(unsigned long nEvent)
 {
     EXOINPUT_TRACE();
@@ -557,12 +557,12 @@ int CExoInput::EventExists(unsigned long nEvent)
 }
 
 #ifndef _XBOX
-void CExoInput::SetCaptureKeyboardKeys(int bCapture)  // PC 0x005DF720
+void CExoInput::SetCaptureKeyboardKeys(int bCapture)  // PC 0x0062BA30
 {
     EXOINPUT_TRACE();
     m_pExoInputInternal->m_bCaptureKeyboardKeys = bCapture;
 }
-// PC 0x005DF730
+// PC 0x0062BA40
 int CExoInput::GetLastSetMouseDownState()
 {
     EXOINPUT_TRACE();

@@ -4,7 +4,7 @@
 static inline void NwsexpressionTrace2();
 static inline void NwsexpressionTrace1();
 #define NWSEXPRESSION_TRACE() NwsexpressionTrace2()
-// PC 0x0059D7D0  Xbox 0x002455F0
+// PC 0x005E45F0
 void CSWSExpressionList::DeleteAlternate(CSWSExpressionNode* pNode)
 {
     while (pNode != NULL)
@@ -25,7 +25,7 @@ void CSWSExpressionList::DeleteAlternate(CSWSExpressionNode* pNode)
         pNode = pNext;
     }
 }
-// PC 0x0059D820  Xbox 0x00245640
+// PC 0x005E4640
 int CSWSExpressionList::AddNode(CSWSExpressionNode* pNode)
 {
     NwsexpressionTrace2();
@@ -50,7 +50,7 @@ int CSWSExpressionList::AddNode(CSWSExpressionNode* pNode)
     }
     return (int)pNode;
 }
-// PC 0x0059D860  Xbox 0x00245680
+// PC 0x005E4680
 CSWSExpressionNode* CSWSExpression::NewNode(int nType)
 {
     NwsexpressionTrace2();
@@ -58,7 +58,7 @@ CSWSExpressionNode* CSWSExpression::NewNode(int nType)
     pNode->m_nType = nType;
     return pNode;
 }
-// PC 0x0059D8E0  Xbox 0x00245700
+// PC 0x005E4700
 void CSWSExpression::ClearAlternate(CSWSExpressionNode* pNode)
 {
     NWSEXPRESSION_TRACE();
@@ -78,7 +78,7 @@ void CSWSExpression::ClearAlternate(CSWSExpressionNode* pNode)
         pNode->m_nVisits = 0;
     }
 }
-// PC 0x0059D920  Xbox 0x00245740
+// PC 0x005E4740
 void CSWSExpressionList::DeleteList()
 {
     CSWSExpressionNode* pNode = m_pHead;
@@ -96,7 +96,7 @@ void CSWSExpressionList::DeleteList()
         pNode = pNext;
     }
 }
-// PC 0x0059D960  Xbox 0x00245780
+// PC 0x005E4780
 void CSWSExpression::ClearGraph()
 {
     CSWSExpressionNode* pNode = m_pList->m_pHead;
@@ -112,14 +112,14 @@ void CSWSExpression::ClearGraph()
         pNode = pNode->m_pNext;
     }
 }
-// PC 0x0059D990  Xbox 0x002457B0
+// PC 0x005E47B0
 CSWSExpression::CSWSExpression()
 {
     m_pList = NULL;
     m_bCaseSensitive = 0;
     m_nReserved = 0;
 }
-// PC 0x0059D9E0  Xbox 0x00245800
+// PC 0x005E4800
 CSWSExpression::~CSWSExpression()
 {
     if (m_pList != NULL)
@@ -141,7 +141,7 @@ CSWSExpression::~CSWSExpression()
 
     m_lstMatches.SetSize(0);
 }
-// PC 0x0059DAB0  Xbox 0x002458D0
+// PC 0x005E48D0
 int CSWSExpression::ParseString(CExoString sPattern)
 {
     int nDepth = 0;
@@ -313,7 +313,7 @@ int CSWSExpression::ParseString(CExoString sPattern)
     m_sPattern = sPattern;
     return 0;
 }
-// PC 0x0059E170  Xbox 0x00245FE0
+// PC 0x005E4FC0
 int CSWSExpression::TestString(const CExoString& sString, int bCapture)
 {
     CExoString sText;

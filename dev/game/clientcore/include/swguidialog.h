@@ -33,7 +33,7 @@ public:
     virtual void SetReplies(int nCount, CExoString* pReplies,
                             unsigned long* pReplyIndices, int nStartIndex,
                             int bUnknown);
-    virtual unsigned long SetOwner(unsigned long nOwner)  // PC 0x006A7C90  Xbox 0x000D4CE0
+    virtual unsigned long SetOwner(unsigned long nOwner)  // PC 0x0070E380
     {
         m_nOwner = nOwner;
         return nOwner;

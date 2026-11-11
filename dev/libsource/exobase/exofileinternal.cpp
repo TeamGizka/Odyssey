@@ -13,7 +13,7 @@ DWORD WINAPI AsyncReadThreadProc(LPVOID lpParameter);
 static CExoFileThread g_AsyncFileThread;
 
 CExoString g_sErrorString;
-// PC 0x005EB570  Xbox 0x001385B0
+// PC 0x00636F60
 CExoFileThread::~CExoFileThread()
 {
     m_bStop = 1;
@@ -24,17 +24,17 @@ CExoFileThread::~CExoFileThread()
         CloseHandle(m_hThread);
     }
 }
-// PC 0x005EB5B0  Xbox 0x001385F0
+// PC 0x00636FA0
 CExoAliasListInternal::CExoAliasListInternal()
 {
     m_pAliasList = NULL;
     m_sDefault = "";
 }
-// PC 0x005EB600  Xbox 0x00138640
+// PC 0x00636FF0
 inline CExoAliasListInternal::CExoAlias::CExoAlias()
 {
 }
-// PC 0x005EB650  Xbox 0x00138690
+// PC 0x00637040
 const CExoString& CExoAliasListInternal::GetAliasPath(const CExoString& sAlias,
                                                       int nLength) const
 {
@@ -68,7 +68,7 @@ const CExoString& CExoAliasListInternal::GetAliasPath(const CExoString& sAlias,
     }
     return m_sDefault;
 }
-// PC 0x005EB6B0  Xbox 0x001386F0
+// PC 0x006370B0
 CExoString CExoAliasListInternal::ResolveFileName(const CExoString& sName,
                                                   unsigned short nResType) const
 {
@@ -110,7 +110,7 @@ CExoString CExoAliasListInternal::ResolveFileName(const CExoString& sName,
         return sResult;
     }
 }
-// PC 0x005EB840  Xbox 0x00138880
+// PC 0x00637250
 CExoFileInternal::CExoFileInternal(const CExoString& path,
                                    unsigned short resourceType,
                                    const CExoString& mode)
@@ -130,7 +130,7 @@ CExoFileInternal::CExoFileInternal(const CExoString& path,
     m_pFile = fopen(m_sFileName.CStr(), mode.CStr());
 #endif
 }
-// PC 0x005EB900  Xbox 0x00138930
+// PC 0x00637320
 CExoFileInternal::~CExoFileInternal()
 {
     if (m_pFile)
@@ -139,7 +139,7 @@ CExoFileInternal::~CExoFileInternal()
         m_pFile = NULL;
     }
 }
-// PC 0x005EB970  Xbox 0x00138950
+// PC 0x00637350
 unsigned long CExoFileInternal::GetOffset()
 {
     if (m_pFile != NULL)
@@ -148,7 +148,7 @@ unsigned long CExoFileInternal::GetOffset()
     }
     return 0;
 }
-// PC 0x005EB990  Xbox 0x00138970
+// PC 0x00637370
 unsigned long CExoFileInternal::GetSize()
 {
     if (m_pFile != NULL)
@@ -165,7 +165,7 @@ unsigned long CExoFileInternal::GetSize()
     }
     return (unsigned long)-1;
 }
-// PC 0x005EB9F0  Xbox 0x001389D0
+// PC 0x006373D0
 unsigned long CExoFileInternal::Read(CExoString* text, unsigned long count)
 {
     if (m_pFile != NULL)
@@ -179,7 +179,7 @@ unsigned long CExoFileInternal::Read(CExoString* text, unsigned long count)
     }
     return 0;
 }
-// PC 0x005EBA40  Xbox 0x00138A20
+// PC 0x00637470
 unsigned long CExoFileInternal::Read(void* data, unsigned long size,
                                      unsigned long count)
 {
@@ -243,20 +243,20 @@ unsigned long CExoFileInternal::Read(void* data, unsigned long size,
     return 0;
 #endif
 }
-// PC 0x005EBBF0  Xbox 0x00138A50
+// PC 0x006374F0
 void CExoFileInternal::ReadAsync(void* data, unsigned long size,
                                  unsigned long count)
 {
     g_AsyncFileThread.Read(data, size, count, m_pFile);
 }
-// PC 0x005EBC50  Xbox 0x00138F30
+// PC 0x00637550
 int CExoFileInternal::ReadAsyncComplete()
 {
     return g_AsyncFileThread.m_bComplete;
 }
 
 #ifdef _XBOX
-// Xbox 0x00138AB0
+
 unsigned long CExoFileInternal::Write(const char* text)
 {
     if (m_pFile != NULL)
@@ -266,7 +266,7 @@ unsigned long CExoFileInternal::Write(const char* text)
     return 0;
 }
 #else
-unsigned long CExoFileInternal::Write(const void* data, unsigned long size,  // PC 0x005EBC60
+unsigned long CExoFileInternal::Write(const void* data, unsigned long size,
                                       unsigned long count)
 {
     int nAttempt = 0;
@@ -324,7 +324,7 @@ unsigned long CExoFileInternal::Write(const void* data, unsigned long size,  // 
     return 0;
 }
 #endif
-// PC 0x005EBE10  Xbox 0x00138AF0
+// PC 0x006375A0
 DWORD WINAPI AsyncReadThreadProc(LPVOID lpParameter)
 {
     while (!g_AsyncFileThread.m_bStop)
@@ -336,7 +336,7 @@ DWORD WINAPI AsyncReadThreadProc(LPVOID lpParameter)
     }
     ExitThread(1);
 }
-// PC 0x005EBED0  Xbox 0x00138BB0
+// PC 0x00637660
 CExoFileThread::CExoFileThread()
 {
     m_bComplete = 0;
@@ -351,7 +351,7 @@ CExoFileThread::CExoFileThread()
                              CREATE_SUSPENDED, &m_nThreadId);
     SetThreadPriority(m_hThread, THREAD_PRIORITY_LOWEST);
 }
-// PC 0x005EBF30  Xbox 0x00138C10
+// PC 0x006376C0
 void CExoAliasListInternal::Add(const CExoString& sAlias,
                                 const CExoString& sPath)
 {
@@ -406,7 +406,7 @@ void CExoAliasListInternal::Add(const CExoString& sAlias,
 }
 
 #ifdef _XBOX
-// Xbox 0x00138DC0
+
 void CExoAliasListInternal::ChangePath(const CExoString& sAlias,
                                    const CExoString& sPath)
 {
@@ -443,7 +443,7 @@ void CExoAliasListInternal::ChangePath(const CExoString& sAlias,
     }
 }
 #endif
-// PC 0x005EC0E0  Xbox 0x00138F50
+// PC 0x00637880
 CExoAliasListInternal::~CExoAliasListInternal()
 {
     CExoAlias* pAlias = m_pAliasList;
@@ -456,7 +456,7 @@ CExoAliasListInternal::~CExoAliasListInternal()
 }
 
 #ifdef _XBOX
-// Xbox 0x00138F40
+
 unsigned long CExoFileInternal::ReadAsyncBytesRead()
 {
     return g_AsyncFileThread.m_nBytesRead;

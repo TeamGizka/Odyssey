@@ -142,7 +142,7 @@ public:
                                   int bGuaranteed);
     virtual int HandleMessage(unsigned long nPlayerId, unsigned char* pMessage,
                               unsigned long nSize, int bGuaranteed);
-    virtual float GetFPS() { return g_fFPS; }  // PC 0x005EE350  Xbox 0x0001C1A0
+    virtual float GetFPS() { return g_fFPS; }  // PC 0x00639650
     virtual int ContinueMessageProcessing();
     virtual CNetLayer* GetNetLayer();
     virtual void ShutDownToMainMenu();
@@ -265,7 +265,7 @@ public:
 #ifdef _XBOX
 
     void SetInputClass(int nClass);
-    void SetInputClass(int nClass, int) { SetInputClass(nClass); }  // PC 0x005EDA60
+    void SetInputClass(int nClass, int) { SetInputClass(nClass); }
 #else
     void SetInputClass(int nClass, int bHideInterface);
 #endif
@@ -324,7 +324,7 @@ public:
 #ifdef _XBOX
 
     void HideLoadScreen(int bFade);
-    void HideLoadScreen(int bFade, int bUpdateScreen) { HideLoadScreen(bFade); }  // PC 0x005EDA90
+    void HideLoadScreen(int bFade, int bUpdateScreen) { HideLoadScreen(bFade); }
 #else
     void HideLoadScreen(int bFade, int bUpdateScreen);
 #endif

@@ -1,15 +1,15 @@
 #include "nwcanimbase.h"
-// PC 0x006E5CE0  Xbox 0x0011E0E0
+// PC 0x00756A10
 CSWCAnimBaseVisualEffect::CSWCAnimBaseVisualEffect()
 {
     m_nAnimationType = 8;
 }
-// PC 0x006E5D00  Xbox 0x0011E100
+// PC 0x00756A30
 CSWCAnimBaseVisualEffect::~CSWCAnimBaseVisualEffect()
 {
     UnloadModel();
 }
-// PC 0x006E5D50  Xbox 0x0011E150
+// PC 0x00756A80
 int CSWCAnimBaseVisualEffect::LoadModel(const CResRef& sResRef,
                                         unsigned char nType)
 {
@@ -27,7 +27,7 @@ int CSWCAnimBaseVisualEffect::LoadModel(const CResRef& sResRef,
     m_pModel->DisableFog();
     return 1;
 }
-// PC 0x006E5DC0  Xbox 0x0011E1E0
+// PC 0x00756AF0
 CExoString CSWCAnimBaseVisualEffect::GetAnimationName(unsigned short nAnimation)
 {
     switch (nAnimation)
@@ -44,7 +44,7 @@ CExoString CSWCAnimBaseVisualEffect::GetAnimationName(unsigned short nAnimation)
         return CExoString("");
     }
 }
-// PC 0x006E5E60  Xbox 0x0011E280
+// PC 0x00756B90
 int CSWCAnimBaseVisualEffect::SetAnimationInternal(CAurObject* pObject,
                                                    unsigned short nAnimation,
                                                    float fSpeed, int nFlags,

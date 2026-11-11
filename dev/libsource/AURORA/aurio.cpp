@@ -745,18 +745,18 @@ void Input::InputBinary::ResetLightsaberLite(MdlNodeLightsaber* pNode,
 }
 
 }
-// Xbox 0x002F1770
+
 IODispatcher::IODispatcher() : m_lDispatchEntries(0)
 {
 }
-// PC 0x004A0580  Xbox 0x002F1780
+// PC 0x004CD870
 IODispatcher* IODispatcher::GetRef()
 {
     static IODispatcher ioDispatch;
 
     return &ioDispatch;
 }
-// PC 0x004A15B0  Xbox 0x002F25D0
+// PC 0x004CE990
 MaxTree* IODispatcher::ReadSync(char* sFileName)
 {
     Input input;
@@ -764,7 +764,7 @@ MaxTree* IODispatcher::ReadSync(char* sFileName)
     input.m_pResource = 0;
     return input.Read(sFileName);
 }
-// PC 0x004A15D0  Xbox 0x002F25F0
+// PC 0x004CE9B0
 MaxTree* IODispatcher::ReadSync(FILE* pModelFile, FILE* pVertexFile)
 {
     Input input;
@@ -776,7 +776,7 @@ MaxTree* IODispatcher::ReadSync(FILE* pModelFile, FILE* pVertexFile)
 static const int WRITE_PATH_LENGTH = 256;
 
 #ifndef _XBOX
-bool IODispatcher::WriteSync(MaxTree* pTree, char* sFileName)  // Xbox 0x002F17E0
+bool IODispatcher::WriteSync(MaxTree* pTree, char* sFileName)
 {
     char sPath[WRITE_PATH_LENGTH];
 
@@ -1555,7 +1555,7 @@ Output::~Output()
     }
 }
 }
-// Xbox 0x002F17E0
+
 bool IODispatcher::WriteSync(MaxTree* pTree, char* sFileName)
 {
     Output output;

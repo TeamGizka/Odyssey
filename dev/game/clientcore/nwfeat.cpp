@@ -1,6 +1,6 @@
 #include "nwfeat.h"
 #include "exotlktable.h"
-// PC 0x005CD700
+// PC 0x00619DF0
 CSWFeat::CSWFeat()
 {
     m_nNameStrRef = -1;
@@ -31,14 +31,14 @@ CSWFeat::CSWFeat()
 CSWFeat::~CSWFeat()
 {
 }
-// PC 0x005CD760  Xbox 0x000B6410
+// PC 0x00619E70
 CExoString CSWFeat::GetNameText()
 {
     STR_RES strRes;
     g_pTlkTable->Fetch(m_nNameStrRef, strRes, CTlkTable::GENDER_MALE);
     return strRes.m_sString;
 }
-// PC 0x005CD800  Xbox 0x000B64C0
+// PC 0x00619F10
 CExoString CSWFeat::GetDescriptionText()
 {
     STR_RES strRes;

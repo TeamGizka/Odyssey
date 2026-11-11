@@ -175,7 +175,7 @@ public:
 
     CSWCProjectile();
     virtual ~CSWCProjectile();
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWCProjectile* AsSWCProjectile()
     {
         return this;

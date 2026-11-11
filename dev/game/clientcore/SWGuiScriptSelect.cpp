@@ -8,7 +8,7 @@
 #include "swguiingamecharacter.h"
 
 static inline void SwguiscriptselectTrace1();
-// PC 0x006EA000  Xbox 0x00123D50
+
 CSWGuiScriptSelect::CSWGuiScriptSelect(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -80,12 +80,12 @@ CSWGuiScriptSelect::CSWGuiScriptSelect(CSWGuiManager* pManager)
     m_lbxScripts.SetSelectOnLeftClick(1);
     SetActiveControl(&m_lbxScripts, 0);
 }
-// PC 0x006E9AC0  Xbox 0x00123C30
+
 CSWGuiScriptSelect::~CSWGuiScriptSelect()
 {
     m_lbxDescription.ClearItems();
 }
-// PC 0x006E9B90  Xbox 0x00123840
+
 void CSWGuiScriptSelect::OnPanelAdded()
 {
     SwguiscriptselectTrace1();
@@ -95,7 +95,7 @@ void CSWGuiScriptSelect::OnPanelAdded()
     g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0xA, OBJECT_INVALID,
                                                        OBJECT_INVALID, 0);
 }
-// PC 0x006E9BC0  Xbox 0x00123860
+
 void CSWGuiScriptSelect::HandleInputEvent(int nEvent, int nState)
 {
     SwguiscriptselectTrace1();
@@ -137,7 +137,7 @@ void CSWGuiScriptSelect::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006E9CA0  Xbox 0x00123A00
+
 void CSWGuiScriptSelect::SetCreatureID(unsigned long oidCreature)
 {
     SwguiscriptselectTrace1();
@@ -170,7 +170,7 @@ void CSWGuiScriptSelect::SetCreatureID(unsigned long oidCreature)
         EXOXBOXASSERT(0);
     }
 }
-// PC 0x006E9F10  Xbox 0x00123940
+
 CSWGuiControl* CSWGuiScriptSelect::CreateOption(unsigned long nStrRef,
                                                 PFNGUIEVENT pHandler,
                                                 CSWGuiButtonToggle* pProto)
@@ -197,7 +197,7 @@ CSWGuiControl* CSWGuiScriptSelect::CreateOption(unsigned long nStrRef,
 #endif
     return pOption;
 }
-// PC 0x006E9FE0  Xbox 0x00123D30
+
 void CSWGuiScriptSelect::OnEnter(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -206,7 +206,7 @@ void CSWGuiScriptSelect::OnEnter(CSWGuiControl* pControl)
             m_aScripts[pControl->m_nID].m_nDescriptionStrRef);
     }
 }
-// PC 0x006E9D50  Xbox 0x00123AB0
+
 void CSWGuiScriptSelect::SetDescription(unsigned long nStrRef)
 {
     SwguiscriptselectTrace1();
@@ -229,7 +229,7 @@ void CSWGuiScriptSelect::SetDescription(unsigned long nStrRef)
     m_lbxDescription.AddControls(&pControl, 1, 0, 0, 0);
     m_lbxDescription.SetSelectedControl(&m_lblDescription, 0);
 }
-// PC 0x006E9E70
+
 void CSWGuiScriptSelect::OnScriptSelected(CSWGuiControl* pControl)
 {
     SwguiscriptselectTrace1();

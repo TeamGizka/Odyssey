@@ -86,7 +86,7 @@ public:
     int GetIsCorpse() { return m_bIsCorpse; }
     void SetLocked(int bLocked) { m_bLocked = bLocked; }
     virtual ~CSWSPlaceable();
-    virtual CSWSPlaceable* AsSWSPlaceable()  // PC 0x00641DB0
+    virtual CSWSPlaceable* AsSWSPlaceable()  // PC 0x00698BD0
     {
         return this;
     }
@@ -95,20 +95,20 @@ public:
     virtual void EventHandler(unsigned long nEventId, unsigned long oidCaller,
                               void* pEventData, unsigned long nCalendarDay,
                               unsigned long nTimeOfDay);
-    virtual CResRef GetDialogResref()  // PC 0x00585620  Xbox 0x00207F00
+    virtual CResRef GetDialogResref()  // PC 0x00587F50
     {
         return m_cConversation;
     }
-    virtual CExoLocString* GetFirstName()  // PC 0x0058ED60  Xbox 0x00207EF0
+    virtual CExoLocString* GetFirstName()  // PC 0x00587F40
     {
         return &m_lsLocName;
     }
     virtual void DoDamage(int nDamage);
-    virtual unsigned long GetEffectSpellId()  // PC 0x00585650  Xbox 0x00207F30
+    virtual unsigned long GetEffectSpellId()  // PC 0x00587F80
     {
         return m_EffectSpellId;
     }
-    virtual void SetEffectSpellId(unsigned long nSpellId)  // PC 0x00585660  Xbox 0x00207F40
+    virtual void SetEffectSpellId(unsigned long nSpellId)
     {
         m_EffectSpellId = nSpellId;
     }

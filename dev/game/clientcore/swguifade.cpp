@@ -7,7 +7,7 @@
 #include "exoresman.h"
 #include "guiingame.h"
 #include "swguifade.h"
-// PC 0x006244B0  Xbox 0x000D6560
+// PC 0x00674F80
 int CSWGuiFade::IsFadeDone()
 {
     if (m_fFadeElapsed == 0.0f)
@@ -16,7 +16,7 @@ int CSWGuiFade::IsFadeDone()
     }
     return m_fFadeLength + m_fFadeStart < m_fFadeElapsed;
 }
-// PC 0x006244E0  Xbox 0x000D6590
+// PC 0x00674EF0
 void CSWGuiFade::SetFade(int bFadeIn, float fFadeStart, float fFadeLength,
                          Vector const& vColor)
 {
@@ -41,7 +41,7 @@ void CSWGuiFade::SetFade(int bFadeIn, float fFadeStart, float fFadeLength,
                       ->m_pPauseTimer->GetSnapshotTime() /
                   1000;
 }
-// PC 0x00624570  Xbox 0x000D6620
+// PC 0x00674FB0
 void CSWGuiFade::Draw(float fElapsed)
 {
     unsigned long nTime = (unsigned long)((__int64)g_pAppManager->m_pClientExoApp
@@ -94,7 +94,7 @@ void CSWGuiFade::Draw(float fElapsed)
     CSWGuiPanel::Draw(fElapsed);
 }
 #ifndef _XBOX
-CSWGuiControl* CSWGuiFade::HitCheckMouse(int nX, int nY)  // PC 0x006246A0
+CSWGuiControl* CSWGuiFade::HitCheckMouse(int nX, int nY)  // PC 0x006750E0
 {
     if (m_fAlpha > 0.001f)
     {
@@ -103,7 +103,7 @@ CSWGuiControl* CSWGuiFade::HitCheckMouse(int nX, int nY)  // PC 0x006246A0
     return 0;
 }
 #endif
-void CSWGuiFade::SetMsg(unsigned long nStrRef)  // PC 0x006246C0  Xbox 0x000D6750
+void CSWGuiFade::SetMsg(unsigned long nStrRef)  // PC 0x00675100
 {
     CExoString sText;
     if (nStrRef != 0)
@@ -118,7 +118,7 @@ void CSWGuiFade::SetMsg(unsigned long nStrRef)  // PC 0x006246C0  Xbox 0x000D675
         m_lblMessage.m_cText.m_cParams.SetText(sText);
     }
 }
-// PC 0x006247A0  Xbox 0x000D6830
+// PC 0x006751E0
 void CSWGuiFade::ResetFade()
 {
     m_fAlpha = 0.0f;
@@ -132,7 +132,7 @@ void CSWGuiFade::ResetFade()
                       ->m_pPauseTimer->GetSnapshotTime() /
                   1000;
 }
-// PC 0x00624810  Xbox 0x000D68C0
+// PC 0x00675250
 CSWGuiFade::CSWGuiFade(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -158,7 +158,7 @@ CSWGuiFade::CSWGuiFade(CSWGuiManager* pManager)
 }
 
 #ifdef _XBOX
-// Xbox 0x000D6730
+
 int CSWGuiFade::IsObscuring()
 {
     return m_fAlpha > 0.001f;

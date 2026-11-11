@@ -167,7 +167,7 @@ public:
     CResRef m_aPortraits[3];
 
     CExoString GetGameDirectory();
-    // PC 0x006C8200
+    // PC 0x00708210
     CResRef GetPortrait(int nIndex)
     {
         if (nIndex >= 0 && nIndex < 3)
@@ -195,7 +195,7 @@ public:
     void HandleCancelButton(CSWGuiControl*);
     void HandleOkButton(CSWGuiControl*);
     CSWGuiSaveNamePanel(CSWGuiManager*);
-    virtual void HandleInputEvent(int nEvent, int nState)  // PC 0x006CB040
+    virtual void HandleInputEvent(int nEvent, int nState)  // PC 0x0070A780
     {
         switch (nEvent)
         {
@@ -233,11 +233,11 @@ public:
     int m_nTimePauseDay;
     int m_nTimePauseTime;
     CStatusSummary m_cStatusSummary;
-    KOTOR_AUTOSAVE_PARAMS()  // PC 0x004B2840
+    KOTOR_AUTOSAVE_PARAMS()  // PC 0x004EC380
     {
         Reset();
     }
-    int Reset()  // PC 0x004B1400
+    int Reset()  // PC 0x004EA110
     {
         m_sStartWaypoint = "";
         m_sLoadMusic = "";

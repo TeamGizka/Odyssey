@@ -36,7 +36,7 @@ const unsigned long CWorldTimer::WORLD_TIME_INVALID = 0xfffffffeUL;
 CWorldTimer::~CWorldTimer()
 {
 }
-// PC 0x004ADBA0  Xbox 0x00276A90
+// PC 0x004DB330
 void CWorldTimer::SetMinutesPerHour(unsigned char nMinutesPerHour)
 {
     m_nMinutesPerHour = nMinutesPerHour;
@@ -47,7 +47,7 @@ void CWorldTimer::SetMinutesPerHour(unsigned char nMinutesPerHour)
     m_nSecondsPerDay = 1440 * m_nMinutesPerHour;
     m_nMillisecondsPerDay = 1440000 * m_nMinutesPerHour;
 }
-// PC 0x004ADBD0  Xbox 0x00276AC0
+// PC 0x004DB360
 void CWorldTimer::SetSnapshotTime()
 {
     unsigned __int64 nSnapshotTime = m_nSnapshotTime;
@@ -66,12 +66,12 @@ void CWorldTimer::SetSnapshotTime()
                                               100;
     }
 }
-// PC 0x004ADC70  Xbox 0x00276B60
+// PC 0x004DB400
 unsigned __int64 CWorldTimer::GetSnapshotTime()
 {
     return m_nSnapshotTime;
 }
-// PC 0x004ADC80  Xbox 0x00276B70
+// PC 0x004DB410
 unsigned __int64 CWorldTimer::GetSnapshotTimeDifference()
 {
     if (m_bPaused != 0)
@@ -80,7 +80,7 @@ unsigned __int64 CWorldTimer::GetSnapshotTimeDifference()
     }
     return m_nSnapshotTime - m_nPreviousSnapshotTime;
 }
-// PC 0x004ADCA0  Xbox 0x00276B90
+// PC 0x004DB430
 unsigned long CWorldTimer::ConvertToCalendarDay(unsigned long nYear,
                                                 unsigned long nMonth,
                                                 unsigned long nDay)
@@ -108,7 +108,7 @@ unsigned long CWorldTimer::ConvertToCalendarDay(unsigned long nYear,
     }
     return nCalendarDay;
 }
-// PC 0x004ADCF0  Xbox 0x00276BE0
+// PC 0x004DB480
 unsigned long CWorldTimer::ConvertToTimeOfDay(unsigned long nHour,
                                               unsigned long nMinute,
                                               unsigned long nSecond,
@@ -141,7 +141,7 @@ unsigned long CWorldTimer::ConvertToTimeOfDay(unsigned long nHour,
     }
     return nTimeOfDay + nMillisecond;
 }
-// PC 0x004ADD50  Xbox 0x00276C40
+// PC 0x004DB4E0
 unsigned long CWorldTimer::ConvertFromCalendarDay(unsigned long nCalendarDay,
                                                   unsigned long* pnYear,
                                                   unsigned long* pnMonth,
@@ -157,7 +157,7 @@ unsigned long CWorldTimer::ConvertFromCalendarDay(unsigned long nCalendarDay,
     }
     return nYear;
 }
-// PC 0x004ADD90  Xbox 0x00276C80
+// PC 0x004DB520
 unsigned long CWorldTimer::ConvertFromTimeOfDay(unsigned long nTimeOfDay,
                                                 unsigned long* pnHour,
                                                 unsigned long* pnMinute,
@@ -171,7 +171,7 @@ unsigned long CWorldTimer::ConvertFromTimeOfDay(unsigned long nTimeOfDay,
     *pnHour = nHour;
     return nHour;
 }
-// PC 0x004ADDE0  Xbox 0x00276CD0
+// PC 0x004DB570
 void CWorldTimer::SetWorldTime(unsigned long nCalendarDay,
                                unsigned long nTimeOfDay, int bUpdateSnapshot)
 {
@@ -183,7 +183,7 @@ void CWorldTimer::SetWorldTime(unsigned long nCalendarDay,
     m_nCalendarDayOffset = nCalendarDay - nMilliseconds / m_nMillisecondsPerDay;
     m_nTimeOfDayOffset = nTimeOfDay - nMilliseconds % m_nMillisecondsPerDay;
 }
-// PC 0x004ADE40  Xbox 0x00276D30
+// PC 0x004DB5D0
 void CWorldTimer::GetWorldTime(unsigned long* pnCalendarDay,
                                unsigned long* pnTimeOfDay)
 {
@@ -211,7 +211,7 @@ void CWorldTimer::GetWorldTime(unsigned long* pnCalendarDay,
         *pnTimeOfDay -= m_nMillisecondsPerDay;
     }
 }
-// PC 0x004ADEF0  Xbox 0x00276DE0
+// PC 0x004DB680
 void CWorldTimer::ResetTimer(CWorldTimer* pTimer)
 {
     m_bFixedSnapshotRate = pTimer->m_bFixedSnapshotRate;
@@ -228,7 +228,7 @@ void CWorldTimer::ResetTimer(CWorldTimer* pTimer)
     m_nSecondsPerDay = pTimer->m_nSecondsPerDay;
     m_nSnapshotScale = 100;
 }
-// PC 0x004ADF50  Xbox 0x00276E40
+// PC 0x004DB6E0
 int CWorldTimer::AddWorldTimes(unsigned long nDay1, unsigned long nTime1,
                                unsigned long nDay2, unsigned long nTime2,
                                unsigned long* pnDay, unsigned long* pnTime)
@@ -246,7 +246,7 @@ int CWorldTimer::AddWorldTimes(unsigned long nDay1, unsigned long nTime1,
     }
     return 0;
 }
-// PC 0x004ADFA0  Xbox 0x00276E90
+// PC 0x004DB730
 int CWorldTimer::CompareWorldTimes(unsigned long nDay1, unsigned long nTime1,
                                    unsigned long nDay2, unsigned long nTime2)
 {
@@ -272,7 +272,7 @@ int CWorldTimer::CompareWorldTimes(unsigned long nDay1, unsigned long nTime1,
     }
     return -1;
 }
-// PC 0x004ADFF0  Xbox 0x00276EE0
+// PC 0x004DB780
 void CWorldTimer::PauseWorldTimer()
 {
     if (m_bPaused == 0)
@@ -285,7 +285,7 @@ void CWorldTimer::PauseWorldTimer()
         m_bPaused = 1;
     }
 }
-// PC 0x004AE030  Xbox 0x00276F20
+// PC 0x004DB7C0
 void CWorldTimer::UnpauseWorldTimer()
 {
     if (m_bPaused == 1)
@@ -298,7 +298,7 @@ void CWorldTimer::UnpauseWorldTimer()
             m_nPausedTimeOfDay - nMilliseconds % m_nMillisecondsPerDay;
     }
 }
-// PC 0x004AE090  Xbox 0x00276F80
+// PC 0x004DB820
 unsigned long CWorldTimer::GetWorldTimeHour()
 {
     unsigned long nCalendarDay;
@@ -306,7 +306,7 @@ unsigned long CWorldTimer::GetWorldTimeHour()
     GetWorldTime(&nCalendarDay, &nTimeOfDay);
     return nTimeOfDay / MILLISECONDS_IN_SECOND / SECONDS_IN_MINUTE / m_nMinutesPerHour;
 }
-// PC 0x004AE0D0  Xbox 0x00276FC0
+// PC 0x004DB860
 unsigned long CWorldTimer::GetWorldTimeMinute()
 {
     unsigned long nCalendarDay;
@@ -314,7 +314,7 @@ unsigned long CWorldTimer::GetWorldTimeMinute()
     GetWorldTime(&nCalendarDay, &nTimeOfDay);
     return nTimeOfDay / MILLISECONDS_IN_SECOND / SECONDS_IN_MINUTE % m_nMinutesPerHour;
 }
-// PC 0x004AE110  Xbox 0x00277000
+// PC 0x004DB8A0
 unsigned long CWorldTimer::GetWorldTimeSecond()
 {
     unsigned long nCalendarDay;
@@ -322,7 +322,7 @@ unsigned long CWorldTimer::GetWorldTimeSecond()
     GetWorldTime(&nCalendarDay, &nTimeOfDay);
     return nTimeOfDay / MILLISECONDS_IN_SECOND % SECONDS_IN_MINUTE;
 }
-// PC 0x004AE140  Xbox 0x00277030
+// PC 0x004DB8D0
 unsigned long CWorldTimer::GetWorldTimeMillisecond()
 {
     unsigned long nCalendarDay;
@@ -330,7 +330,7 @@ unsigned long CWorldTimer::GetWorldTimeMillisecond()
     GetWorldTime(&nCalendarDay, &nTimeOfDay);
     return nTimeOfDay % MILLISECONDS_IN_SECOND;
 }
-// PC 0x004AE170  Xbox 0x00277060
+// PC 0x004DB900
 void CWorldTimer::SetFixedSnapshotRate(int nFixed, int nRate)
 {
     m_nSnapshotTime = 0;
@@ -338,12 +338,12 @@ void CWorldTimer::SetFixedSnapshotRate(int nFixed, int nRate)
     m_bFixedSnapshotRate = nFixed;
     m_nFixedSnapshotRate = nRate;
 }
-// PC 0x004AE190  Xbox 0x00277080
+// PC 0x004DB920
 void CWorldTimer::SetSnapshotScale(float fScale)
 {
     m_nSnapshotScale = (int)(fScale * 100.0f);
 }
-// PC 0x004AE1B0  Xbox 0x002770A0
+// PC 0x004DB940
 unsigned long CWorldTimer::GetCalendarDayFromSeconds(float fSeconds)
 {
     float fSecondsPerDay = (float)m_nSecondsPerDay;
@@ -360,7 +360,7 @@ unsigned long CWorldTimer::GetCalendarDayFromSeconds(float fSeconds)
     } while (fTime >= fSecondsPerDay);
     return nCalendarDay;
 }
-// PC 0x004AE200  Xbox 0x002770F0
+// PC 0x004DB990
 unsigned long CWorldTimer::GetTimeOfDayFromSeconds(float fSeconds)
 {
     if (fSeconds < 0.0f)
@@ -379,7 +379,7 @@ unsigned long CWorldTimer::GetTimeOfDayFromSeconds(float fSeconds)
     } while (fTime >= fSecondsPerDay);
     return (int)(fTime * 1000.0f);
 }
-// PC 0x004AE260  Xbox 0x00277160
+// PC 0x004DB9F0
 void CWorldTimer::AdvanceToTime(int nHour, int nMinute, int nSecond,
                                 int nMillisecond)
 {
@@ -428,7 +428,7 @@ void CWorldTimer::AdvanceToTime(int nHour, int nMinute, int nSecond,
     SetWorldTime(ConvertToCalendarDay(nYear, nMonth, nDay),
                  ConvertToTimeOfDay(nHour, nMinute, nSecond, nMillisecond), 0);
 }
-// PC 0x004AE3E0  Xbox 0x002772E0
+// PC 0x004DBB70
 void CWorldTimer::SetWorldTime(unsigned long nYear, unsigned long nMonth,
                                unsigned long nDay, unsigned long nHour,
                                unsigned long nMinute, unsigned long nSecond,
@@ -439,7 +439,7 @@ void CWorldTimer::SetWorldTime(unsigned long nYear, unsigned long nMonth,
         ConvertToTimeOfDay(nHour, nMinute, nSecond, nMillisecond);
     SetWorldTime(nCalendarDay, nTimeOfDay, bUpdateSnapshot);
 }
-// PC 0x004AE460  Xbox 0x00277360
+// PC 0x004DBBF0
 int CWorldTimer::SubtractWorldTimes(unsigned long nDay1, unsigned long nTime1,
                                     unsigned long nDay2, unsigned long nTime2,
                                     unsigned long* pnDay, unsigned long* pnTime)
@@ -457,7 +457,7 @@ int CWorldTimer::SubtractWorldTimes(unsigned long nDay1, unsigned long nTime1,
     }
     return 0;
 }
-// PC 0x004AE4C0  Xbox 0x002773C0
+// PC 0x004DBC50
 CWorldTimer::CWorldTimer()
 {
     m_bFixedSnapshotRate = 0;
@@ -472,7 +472,7 @@ CWorldTimer::CWorldTimer()
                  DEFAULT_MINUTE, DEFAULT_SECOND, DEFAULT_MILLISECOND, 0);
     m_bPaused = 0;
 }
-// PC 0x004AE570  Xbox 0x00277470
+// PC 0x004DBD00
 unsigned long CWorldTimer::GetTimeDifferenceFromWorldTime(unsigned long nDay,
                                                           unsigned long nTime)
 {

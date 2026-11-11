@@ -16,7 +16,7 @@
 static inline void NwsstoreTrace2();
 static inline void NwsstoreTrace1();
 #define NWSSTORE_TRACE() NwsstoreTrace2()
-// PC 0x005C6AB0  Xbox 0x00213DB0
+// PC 0x00570AE0
 CSWSStore::CSWSStore(unsigned long oidStore)
     : CSWSObject(CGameObject::OBJECT_TYPE_STORE, oidStore, 0)
 {
@@ -65,12 +65,12 @@ unsigned long CSWSStore::CalculateItemSellPrice(CSWSItem* pItem,
     }
     return nCost;
 }
-// PC 0x005C6BA0  Xbox 0x00213EA0
+// PC 0x00570BD0
 int CSWSStore::RemoveItem(CSWSItem* pItem)
 {
     return m_pItemRepository->RemoveItem(pItem);
 }
-// PC 0x005C6BB0  Xbox 0x00213EB0
+// PC 0x00570BE0
 int CSWSStore::GetItemInInventory(unsigned long oidItem)
 {
     CServerExoApp* pServerExoApp;
@@ -82,7 +82,7 @@ int CSWSStore::GetItemInInventory(unsigned long oidItem)
     return pItem != NULL &&
            m_pItemRepository->GetItemInRepository(pItem, 0) != 0;
 }
-// PC 0x005C6BF0  Xbox 0x00213EF0
+// PC 0x00570C20
 CSWSStore::~CSWSStore()
 {
     delete m_pItemRepository;
@@ -97,7 +97,7 @@ CSWSStore::~CSWSStore()
         pModule->RemoveObjectFromLookupTable(m_sTag, oidObject);
     }
 }
-// PC 0x005C6CD0  Xbox 0x00213FD0
+// PC 0x00570D00
 int CSWSStore::SaveStore(CResGFF* pRes, CResStruct* pStruct)
 {
     NwsstoreTrace1();
@@ -138,7 +138,7 @@ int CSWSStore::SaveStore(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldFLOAT(pStruct, m_vOrientation.m_fZ, "ZOrientation");
     return 1;
 }
-// PC 0x005C6E80  Xbox 0x00214180
+// PC 0x00570EB0
 int CSWSStore::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
                          int bLoadingGame)
 {
@@ -155,7 +155,7 @@ int CSWSStore::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
 
     return result;
 }
-// PC 0x005C6EE0  Xbox 0x002141F0
+// PC 0x00570F10
 void CSWSStore::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                              void* pEventData, unsigned long nCalendarDay,
                              unsigned long nTimeOfDay)
@@ -182,7 +182,7 @@ void CSWSStore::EventHandler(unsigned long nEventId, unsigned long oidCaller,
         delete this;
     }
 }
-// PC 0x005C6F70  Xbox 0x00214280
+// PC 0x00570FA0
 int CSWSStore::SellItem(CSWSItem* pItem, CSWSCreature* pCreature)
 {
     NwsstoreTrace1();
@@ -208,7 +208,7 @@ int CSWSStore::SellItem(CSWSItem* pItem, CSWSCreature* pCreature)
     }
     return 0;
 }
-// PC 0x005C7180  Xbox 0x002144F0
+// PC 0x005711E0
 int CSWSStore::LoadStore(CResGFF* pRes, CResStruct* pStruct, int bFromTemplate)
 {
     CResStruct cItemStruct;
@@ -294,7 +294,7 @@ int CSWSStore::LoadStore(CResGFF* pRes, CResStruct* pStruct, int bFromTemplate)
         m_sTag, oidStore);
     return 1;
 }
-// PC 0x005C7610  Xbox 0x00214980
+// PC 0x00571670
 int CSWSStore::AcquireItem(CSWSItem* pItem)
 {
     NWSSTORE_TRACE();
@@ -344,7 +344,7 @@ int CSWSStore::AcquireItem(CSWSItem* pItem)
         return AddItemToInventory(&pItem);
     }
 }
-// PC 0x005C70C0  Xbox 0x002143D0
+// PC 0x005710F0
 int CSWSStore::AddItemToInventory(CSWSItem** ppItem)
 {
     NwsstoreTrace1();
@@ -382,7 +382,7 @@ int CSWSStore::AddItemToInventory(CSWSItem** ppItem)
     }
     return 0;
 }
-// PC 0x005C7760  Xbox 0x00214AD0
+// PC 0x005717C0
 int CSWSStore::LoadFromTemplate(const CResRef& cResRef, int bFromTemplate)
 {
     CResStruct stTop;

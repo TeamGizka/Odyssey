@@ -18,7 +18,7 @@ static inline void NwcsoundobjectTrace2();
 static inline void NwcsoundobjectTrace1();
 
 const int CSWCSoundObject::MAX_VOLUME = 127;
-// PC 0x0066B200  Xbox 0x000BAE10
+// PC 0x0069E3C0
 CSWCSoundObject::CSWCSoundObject()
     : CSWCObject(CGameObject::OBJECT_TYPE_SOUND)
 {
@@ -47,7 +47,7 @@ CSWCSoundObject::CSWCSoundObject()
     m_fRandomRangeY = 0.0f;
     m_bRestart = 0;
 }
-// PC 0x0066AD00  Xbox 0x000BA850
+// PC 0x0069DE70
 void CSWCSoundObject::ChangeVolume(int nVolume)
 {
     if (m_bStreaming == 0)
@@ -60,7 +60,7 @@ void CSWCSoundObject::ChangeVolume(int nVolume)
     }
     m_nVolume = nVolume;
 }
-// PC 0x0066B370  Xbox 0x000BAF80
+// PC 0x0069E530
 CSWCSoundObject::~CSWCSoundObject()
 {
     if (m_pSoundSource != NULL)
@@ -79,7 +79,7 @@ CSWCSoundObject::~CSWCSoundObject()
         m_pSounds = NULL;
     }
 }
-// PC 0x0066B420  Xbox 0x000BB030
+// PC 0x0069E5E0
 void CSWCSoundObject::LoadFromMessage(CSWCMessage* pMessage)
 {
     Vector vPosition;
@@ -175,7 +175,7 @@ void CSWCSoundObject::LoadFromMessage(CSWCMessage* pMessage)
     }
     UpdateIntervalVariation();
 }
-// PC 0x0066AD40  Xbox 0x000BA890
+// PC 0x0069DEB0
 void CSWCSoundObject::ChangePitchVariation(float fVariation)
 {
     if (m_bStreaming == 0)
@@ -188,7 +188,7 @@ void CSWCSoundObject::ChangePitchVariation(float fVariation)
         m_fPitchVariation = fVariation;
     }
 }
-// PC 0x0066AD80  Xbox 0x000BA8F0
+// PC 0x0069DEF0
 void CSWCSoundObject::ChangeFixedVariance(float fVariance)
 {
     if (m_bStreaming == 0)
@@ -201,7 +201,7 @@ void CSWCSoundObject::ChangeFixedVariance(float fVariance)
         m_fFixedVariance = fVariance;
     }
 }
-// PC 0x0066ADC0  Xbox 0x000BA950
+// PC 0x0069DF30
 void CSWCSoundObject::ChangePosition(const Vector& vPosition)
 {
     Vector vSource = vPosition;
@@ -230,7 +230,7 @@ inline int CSWCSoundObject::GetLooping()
     }
     return 0;
 }
-// PC 0x0066AE30  Xbox 0x000BA9D0
+// PC 0x0069DFA0
 void CSWCSoundObject::SetIsActive(int bActive)
 {
     if (m_bPlaying != bActive)
@@ -249,7 +249,7 @@ void CSWCSoundObject::SetIsActive(int bActive)
         }
     }
 }
-// PC 0x0066AE90  Xbox 0x000BAA30
+// PC 0x0069E000
 void CSWCSoundObject::UpdateTimeOfDay()
 {
     if (m_nTimeOfDay != TIME_OF_DAY_CUSTOM)
@@ -278,7 +278,7 @@ void CSWCSoundObject::UpdateTimeOfDay()
             0;
     }
 }
-// PC 0x0066AF30  Xbox 0x000BAAD0
+// PC 0x0069E0A0
 unsigned long CSWCSoundObject::GetTimeDiff()
 {
     unsigned long nDay;
@@ -293,7 +293,7 @@ unsigned long CSWCSoundObject::GetTimeDiff()
         &nDiffTime);
     return nDiffTime;
 }
-// PC 0x0066AFA0  Xbox 0x000BAB40
+// PC 0x0069E110
 void CSWCSoundObject::UpdateVolumeVariation()
 {
     int nVariation = m_nVolumeVariation;
@@ -319,7 +319,7 @@ void CSWCSoundObject::UpdateVolumeVariation()
         }
     }
 }
-// PC 0x0066B000  Xbox 0x000BABB0
+// PC 0x0069E170
 void CSWCSoundObject::UpdateIntervalVariation()
 {
     if (m_nInterval != 0)
@@ -345,7 +345,7 @@ void CSWCSoundObject::ResetLastUpdate()
     g_pAppManager->GetClientExoApp()->GetWorldTimer()->GetWorldTime(
         &m_nLastUpdateDay, &m_nLastUpdateTime);
 }
-// PC 0x0066B050  Xbox 0x000BAC00
+// PC 0x0069E210
 void CSWCSoundObject::Play()
 {
     CResRef cResRef;
@@ -372,7 +372,7 @@ void CSWCSoundObject::Play()
         m_bRestart = 1;
     }
 }
-// PC 0x0066B130  Xbox 0x000BACF0
+// PC 0x0069E2F0
 void CSWCSoundObject::Stop()
 {
     if (m_bPlaying != 0)
@@ -391,7 +391,7 @@ void CSWCSoundObject::Stop()
     m_nSoundTimer = 0;
     m_nIntervalTimer = 0;
 }
-// PC 0x0066B190  Xbox 0x000BAD50
+// PC 0x0069E350
 void CSWCSoundObject::FadeAndStop(unsigned long nFadeTime)
 {
     if (m_bPlaying != 0)
@@ -410,7 +410,7 @@ void CSWCSoundObject::FadeAndStop(unsigned long nFadeTime)
     m_nSoundTimer = 0;
     m_nIntervalTimer = 0;
 }
-// PC 0x0066B8A0  Xbox 0x000BB4B0
+// PC 0x0069EA60
 int CSWCSoundObject::AddToArea(CSWCArea* pArea, CGameObjectArray* pObjectArray)
 {
     CClientAIMaster* pAIMaster =
@@ -436,7 +436,7 @@ int CSWCSoundObject::AddToArea(CSWCArea* pArea, CGameObjectArray* pObjectArray)
     }
     return 1;
 }
-// PC 0x0066B980  Xbox 0x000BB590
+// PC 0x0069EB40
 void CSWCSoundObject::ShuffleList()
 {
     CExoArrayList<CResRef>* pSounds = new CExoArrayList<CResRef>(0);
@@ -452,7 +452,7 @@ void CSWCSoundObject::ShuffleList()
     delete m_pSounds;
     m_pSounds = pSounds;
 }
-// PC 0x0066BAD0  Xbox 0x000BB6E0
+// PC 0x0069EC90
 CResRef CSWCSoundObject::GetNextSound()
 {
     NwcsoundobjectTrace3();
@@ -484,7 +484,7 @@ CResRef CSWCSoundObject::GetNextSound()
     }
     return cResRef;
 }
-// PC 0x0066BBD0  Xbox 0x000BB7F0
+// PC 0x0069ED90
 void CSWCSoundObject::AIUpdate()
 {
     CResRef cResRef;

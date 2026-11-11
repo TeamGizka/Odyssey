@@ -6,12 +6,12 @@ CScriptCompiler::CScriptCompiler()
 {
     m_pScriptCompilerInternal = new CScriptCompilerInternal;
 }
-// PC 0x005D0F40  Xbox 0x00157B50
+// PC 0x0061CAB0
 CVirtualMachine::CVirtualMachine()
 {
     m_pVirtualMachineInternal = new CVirtualMachineInternal;
 }
-// PC 0x005D0FB0  Xbox 0x00157D40
+
 CVirtualMachine::~CVirtualMachine()
 {
     if (m_pVirtualMachineInternal != NULL)
@@ -19,107 +19,107 @@ CVirtualMachine::~CVirtualMachine()
         delete m_pVirtualMachineInternal;
     }
 }
-// PC 0x005D0FC0  Xbox 0x00157BC0
+// PC 0x0061CC00
 int CVirtualMachine::RunScript(CExoString* psScript, unsigned long nObjectId, int nInstructionLimit)
 {
     return m_pVirtualMachineInternal->RunScript(psScript, nObjectId, nInstructionLimit);
 }
-// PC 0x005D0FD0  Xbox 0x00157BD0
+// PC 0x0061CC10
 int CVirtualMachine::RunScriptSituation(void* pScript, unsigned long nObjectId, int bOneInstruction)
 {
     return m_pVirtualMachineInternal->RunScriptSituation((CVirtualMachineScript*)pScript, nObjectId, bOneInstruction);
 }
-// PC 0x005D0FE0  Xbox 0x00157BE0
+// PC 0x0061CC20
 int CVirtualMachine::GetRunScriptReturnValue(int* pnType, void** ppValue)
 {
     return m_pVirtualMachineInternal->GetRunScriptReturnValue(pnType, ppValue);
 }
-// PC 0x005D0FF0  Xbox 0x00157BF0
+// PC 0x0061CC30
 void CVirtualMachine::SetCommandImplementer(CVirtualMachineCmdImplementer* pImplementer)
 {
     m_pVirtualMachineInternal->SetCommandImplementer(pImplementer);
 }
-// PC 0x005D1000  Xbox 0x00157C00
+// PC 0x0061CC40
 int CVirtualMachine::StackPopInteger(int* pnValue)
 {
     return m_pVirtualMachineInternal->StackPopInteger(pnValue);
 }
-// PC 0x005D1010  Xbox 0x00157C10
+// PC 0x0061CC50
 int CVirtualMachine::StackPushInteger(int nValue)
 {
     return m_pVirtualMachineInternal->StackPushInteger(nValue);
 }
-// PC 0x005D1020  Xbox 0x00157C20
+// PC 0x0061CC60
 int CVirtualMachine::StackPopFloat(float* pfValue)
 {
     return m_pVirtualMachineInternal->StackPopFloat(pfValue);
 }
-// PC 0x005D1030  Xbox 0x00157C30
+// PC 0x0061CC70
 int CVirtualMachine::StackPushFloat(float fValue)
 {
     return m_pVirtualMachineInternal->StackPushFloat(fValue);
 }
-// PC 0x005D1040  Xbox 0x00157C40
+// PC 0x0061CC80
 int CVirtualMachine::StackPopVector(Vector* pvValue)
 {
     return m_pVirtualMachineInternal->StackPopVector(pvValue);
 }
-// PC 0x005D1050  Xbox 0x00157C50
+// PC 0x0061CC90
 int CVirtualMachine::StackPushVector(Vector vValue)
 {
     return m_pVirtualMachineInternal->StackPushVector(vValue);
 }
-// PC 0x005D1080  Xbox 0x00157C80
+// PC 0x0061CCC0
 int CVirtualMachine::StackPopString(CExoString* psValue)
 {
     return m_pVirtualMachineInternal->StackPopString(psValue);
 }
-// PC 0x005D1090  Xbox 0x00157C90
+// PC 0x0061CCD0
 int CVirtualMachine::StackPushString(const CExoString& sValue)
 {
     return m_pVirtualMachineInternal->StackPushString(sValue);
 }
-// PC 0x005D10A0  Xbox 0x00157CA0
+// PC 0x0061CCE0
 int CVirtualMachine::StackPopEngineStructure(int nType, void** ppValue)
 {
     return m_pVirtualMachineInternal->StackPopEngineStructure(nType, ppValue);
 }
-// PC 0x005D10B0  Xbox 0x00157CB0
+// PC 0x0061CCF0
 int CVirtualMachine::StackPushEngineStructure(int nType, void* pValue)
 {
     return m_pVirtualMachineInternal->StackPushEngineStructure(nType, pValue);
 }
-// PC 0x005D10C0  Xbox 0x00157CC0
+// PC 0x0061CD00
 int CVirtualMachine::StackPopObject(unsigned long* pnValue)
 {
     return m_pVirtualMachineInternal->StackPopObject(pnValue);
 }
-// PC 0x005D10D0  Xbox 0x00157CD0
+// PC 0x0061CD10
 int CVirtualMachine::StackPushObject(unsigned long nValue)
 {
     return m_pVirtualMachineInternal->StackPushObject(nValue);
 }
-// PC 0x005D10E0  Xbox 0x00157CE0
+// PC 0x0061CD20
 int CVirtualMachine::StackPopCommand(void** ppCommand)
 {
     return m_pVirtualMachineInternal->StackPopCommand((CVirtualMachineScript**)ppCommand);
 }
-// PC 0x005D10F0  Xbox 0x00157CF0
+// PC 0x0061CD30
 int CVirtualMachine::SaveScriptSituation(void* pScript, CResGFF* pGFF, CResStruct* pStruct)
 {
     return m_pVirtualMachineInternal->SaveScriptSituation((CVirtualMachineScript*)pScript, pGFF, pStruct);
 }
-// PC 0x005D1100  Xbox 0x00157D00
+// PC 0x0061CD40
 int CVirtualMachine::LoadScriptSituation(void** ppScript, CResGFF* pGFF, CResStruct* pStruct)
 {
     return m_pVirtualMachineInternal->LoadScriptSituation((CVirtualMachineScript**)ppScript, pGFF, pStruct);
 }
-// PC 0x005D1110  Xbox 0x00157D10
+// PC 0x0061CD50
 void CVirtualMachine::DeleteScriptSituation(void* pScript)
 {
     m_pVirtualMachineInternal->DeleteScriptSituation((CVirtualMachineScript*)pScript);
 }
-// PC 0x005D1120  Xbox 0x00157D20
+// PC 0x0061CD60
 CScriptCompiler::~CScriptCompiler()
 {
     if (m_pScriptCompilerInternal != NULL)

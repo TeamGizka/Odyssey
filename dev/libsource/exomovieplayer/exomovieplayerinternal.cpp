@@ -34,7 +34,7 @@ void MovieSetUpProjection()
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 }
-// PC 0x00404B60  Xbox 0x0029F880
+// PC 0x00404BD0
 void AurOrtho(double dLeft, double dRight, double dBottom, double dTop,
               double dNear, double dFar)
 {
@@ -47,7 +47,7 @@ void MovieSetUpAlphaTest()
 }
 
 static CExoMoviePlayerInternal* g_pMoviePlayer;
-// PC 0x00405190
+// PC 0x00404F70
 LRESULT CALLBACK MovieMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,
                                     LPARAM lParam)
 {
@@ -112,7 +112,7 @@ LRESULT CALLBACK MovieMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,
     }
     return DefWindowProcA(hWnd, nMsg, wParam, lParam);
 }
-// PC 0x00405D70  Xbox 0x00304400
+// PC 0x00405E30
 CExoMoviePlayerInternal::CExoMoviePlayerInternal()
     : m_lstMovies(0),
       m_lstSkippable(0)
@@ -137,7 +137,7 @@ CExoMoviePlayerInternal::CExoMoviePlayerInternal()
     m_nUnknown70 = 0;
     m_hMovieWnd = NULL;
 }
-// PC 0x00405A50  Xbox 0x003044B0
+// PC 0x00405B10
 CExoMoviePlayerInternal::~CExoMoviePlayerInternal()
 {
     DWORD dwExitCode;
@@ -159,7 +159,7 @@ CExoMoviePlayerInternal::~CExoMoviePlayerInternal()
 
     ShutDown();
 }
-// PC 0x00404BB0
+// PC 0x00404C20
 int CExoMoviePlayerInternal::ShutDown()
 {
     int nResult;
@@ -187,14 +187,14 @@ int CExoMoviePlayerInternal::ShutDown()
     m_bShuttingDown = 0;
     return nResult;
 }
-// PC 0x00404C20
+// PC 0x00404C90
 void CExoMoviePlayerInternal::OnDeactivation(int bToggleFullScreen)
 {
     m_nUnknown1C = 1;
     if (m_nUnknown20 == 0 || bToggleFullScreen == 1)
         m_nUnknown20 = bToggleFullScreen;
 }
-// PC 0x00404C40
+// PC 0x00404CB0
 int CExoMoviePlayerInternal::CancelMovie(int nA, int nB)
 {
     if (nB == 0)
@@ -218,7 +218,7 @@ int CExoMoviePlayerInternal::CancelMovie(int nA, int nB)
     m_nCancelResult = nA;
     return nA;
 }
-// PC 0x00404C80
+// PC 0x004056E0
 int CExoMoviePlayerInternal::RunMovieLoop(int nWait)
 {
     MSG msg;
@@ -262,18 +262,18 @@ int CExoMoviePlayerInternal::RunMovieLoop(int nWait)
     }
     return 0;
 }
-// PC 0x00404DD0
+// PC 0x00404CF0
 int CExoMoviePlayerInternal::IsMoviePlaying()
 {
     return m_bMoviePlaying;
 }
-// PC 0x00404DE0  Xbox 0x00303F60
+// PC 0x00404D00
 void CExoMoviePlayerInternal::FinishMovie()
 {
     ShutDown();
     m_bMoviePlaying = 0;
 }
-// PC 0x00404E00  Xbox 0x003041B0
+// PC 0x00405840
 void CExoMoviePlayerInternal::ShowFadePanel()
 {
     m_critSect.EnterCriticalSection();
@@ -287,7 +287,7 @@ void CExoMoviePlayerInternal::ShowFadePanel()
     UpdateScreen(1.0f / 30.0f, 0, 1);
     m_critSect.LeaveCriticalSection();
 }
-// PC 0x00404F00
+// PC 0x00405940
 void CExoMoviePlayerInternal::HideFadePanel()
 {
     m_critSect.EnterCriticalSection();
@@ -298,7 +298,7 @@ void CExoMoviePlayerInternal::HideFadePanel()
     }
     m_critSect.LeaveCriticalSection();
 }
-// PC 0x00404F40
+// PC 0x00404D20
 void CExoMoviePlayerInternal::OnWindowPosChanging(WINDOWPOS* pWindowPos)
 {
     if (m_hBinkBuffer != NULL)
@@ -310,7 +310,7 @@ void CExoMoviePlayerInternal::OnWindowPosChanging(WINDOWPOS* pWindowPos)
         pWindowPos->y = nY;
     }
 }
-// PC 0x00404F80
+// PC 0x00404D60
 void CExoMoviePlayerInternal::OnWindowPosChanged(WINDOWPOS*)
 {
     if (m_hBinkBuffer != NULL)
@@ -330,12 +330,12 @@ void CExoMoviePlayerInternal::OnWindowPosChanged(WINDOWPOS*)
         ShowWindow(m_hMovieWnd, SW_SHOWNA);
     }
 }
-// PC 0x00405040  Xbox 0x00095070
+// PC 0x00404E60
 int CExoMoviePlayerInternal::GetNumberOfMoviesToPlay()
 {
     return m_lstMovies.num;
 }
-// PC 0x00405050
+// PC 0x00404E70
 int CExoMoviePlayerInternal::RestartMoviesAsync()
 {
     SetThreadPriority(m_hWorkerThread, THREAD_PRIORITY_NORMAL);
@@ -353,7 +353,7 @@ double MovieGetFrameRate()
     return (double)(S32)g_pMoviePlayer->m_hBink->FrameRate /
            (double)(S32)g_pMoviePlayer->m_hBink->FrameRateDiv;
 }
-// PC 0x004053E0  Xbox 0x00303EC0
+// PC 0x004051E0
 int CExoMoviePlayerInternal::StartMovie(const CExoString& sMovie)
 {
     static int bClassRegistered;
@@ -503,7 +503,7 @@ int CExoMoviePlayerInternal::StartMovie(const CExoString& sMovie)
     ShowWindow(m_hMovieWnd, SW_SHOWNA);
     return 1;
 }
-// PC 0x00405B30  Xbox 0x00304320
+// PC 0x00405BF0
 DWORD WINAPI CExoMoviePlayerInternal::PlayMoviesAsync(LPVOID pParam)
 {
     CExoMoviePlayerInternal* self;
@@ -586,7 +586,7 @@ DWORD WINAPI CExoMoviePlayerInternal::PlayMoviesAsync(LPVOID pParam)
     }
     ExitThread(0);
 }
-// PC 0x00405E50
+// PC 0x00405F10
 int CExoMoviePlayerInternal::PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies,
                                         int nMode,
                                         const CExoArrayList<int>* pSkippable)

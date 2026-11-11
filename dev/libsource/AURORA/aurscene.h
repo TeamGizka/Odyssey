@@ -121,12 +121,12 @@ public:
 
     Scene(char* sName);
     virtual ~Scene();
-    virtual int SetFog(int bFog)  // PC 0x00458B30  Xbox 0x002AC820
+    virtual int SetFog(int bFog)  // PC 0x0046DC80
     {
         m_bFog = bFog;
         return bFog;
     }
-    virtual void SetFogColor(const Vector& vColor)  // PC 0x00458B40  Xbox 0x002AC830
+    virtual void SetFogColor(const Vector& vColor)  // PC 0x0050B650
     {
         m_vFogColor = vColor;
     }
@@ -153,26 +153,26 @@ public:
     virtual void DeleteTile(const Vector& vPosition);
     virtual int HitCheck(Vector vStart, Vector vEnd, Vector* pHit,
                          CHitInfo* pHitInfo);
-    virtual void GetFogRange(float& fNear, float& fFar)  // PC 0x00458B60  Xbox 0x002AC850
+    virtual void GetFogRange(float& fNear, float& fFar)  // PC 0x0046DC90
     {
         fNear = m_fFogNear;
         fFar = m_fFogFar;
     }
-    virtual void SetFogRange(float fNear, float fFar)  // PC 0x00458B80  Xbox 0x002AC870
+    virtual void SetFogRange(float fNear, float fFar)  // PC 0x0046DCB0
     {
         m_fFogNear = fNear;
         m_fFogFar = fFar;
     }
-    virtual void SetSceneFocus(Vector vFocus)  // PC 0x00458BA0  Xbox 0x002AC890
+    virtual void SetSceneFocus(Vector vFocus)  // PC 0x0046DCD0
     {
         m_vSceneFocus = vFocus;
     }
     virtual unsigned char SetGeomFadeProperties(int nProperties);
-    virtual char IsGeomFadeEnabled()  // PC 0x00458BC0  Xbox 0x002AC8B0
+    virtual char IsGeomFadeEnabled()  // PC 0x0046DCF0
     {
         return geomFadeEnabled == 1;
     }
-    virtual int GetObjectCount()  // PC 0x005D6000  Xbox 0x002AC8C0
+    virtual int GetObjectCount()  // PC 0x0046DD00
     {
         return m_lstObjects.m_nCount;
     }
@@ -203,7 +203,7 @@ public:
     virtual void RenderGobAfter(CAurObject* pObject, CAurObject* pAfter);
     virtual void RenderGobBefore(CAurObject* pObject, CAurObject* pBefore);
     virtual char IsAnimating();
-    virtual void AddObject(CAurObject* pObject)  // PC 0x00458BD0  Xbox 0x002AC8D0
+    virtual void AddObject(CAurObject* pObject)  // PC 0x0046DD10
     {
         ChildAdd((Gob*)pObject);
     }
@@ -345,7 +345,7 @@ public:
     };
 
     CHitInfo(int nType, int nFlags, int nMask);
-    // PC 0x00456B30  Xbox 0x0004B230
+    // PC 0x0046B430
     ~CHitInfo()
     {
         AurSceneTrace(this);

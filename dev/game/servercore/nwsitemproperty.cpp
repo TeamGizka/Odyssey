@@ -10,7 +10,7 @@
 #include "nwscript.h"
 #include "nwscreaturestats.h"
 #include "nwrules.h"
-// PC 0x004E53A0  Xbox 0x00221D60
+// PC 0x00539330
 CSWSItemPropertyHandler::~CSWSItemPropertyHandler()
 {
     if (m_pApplyItemProperty != NULL)
@@ -25,7 +25,7 @@ CSWSItemPropertyHandler::~CSWSItemPropertyHandler()
         m_pRemoveItemProperty = NULL;
     }
 }
-// PC 0x004E5410  Xbox 0x00221DD0
+// PC 0x005393A0
 int CSWSItemPropertyHandler::OnItemPropertyApplied(CSWSItem* pItem,
                                                    CSWItemProperty* pProperty,
                                                    CSWSCreature* pCreature,
@@ -42,7 +42,7 @@ int CSWSItemPropertyHandler::OnItemPropertyApplied(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E5450  Xbox 0x00221E10
+// PC 0x005393E0
 int CSWSItemPropertyHandler::OnItemPropertyRemoved(CSWSItem* pItem,
                                                    CSWItemProperty* pProperty,
                                                    CSWSCreature* pCreature,
@@ -58,7 +58,7 @@ int CSWSItemPropertyHandler::OnItemPropertyRemoved(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E5490  Xbox 0x00221E50
+// PC 0x00539420
 int CSWSItemPropertyHandler::ApplyEnhancementBonus(CSWSItem* pItem,
                                                     CSWItemProperty* pProperty,
                                                     CSWSCreature* pCreature,
@@ -257,7 +257,7 @@ int CSWSItemPropertyHandler::ApplyEnhancementBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E58C0  Xbox 0x00222280
+// PC 0x00539860
 int CSWSItemPropertyHandler::ApplyEnhancementPenalty(CSWSItem* pItem,
                                                     CSWItemProperty* pProperty,
                                                     CSWSCreature* pCreature,
@@ -398,7 +398,7 @@ int CSWSItemPropertyHandler::ApplyEnhancementPenalty(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E5C60  Xbox 0x00222620
+// PC 0x0053C5A0
 int CSWSItemPropertyHandler::ApplyDamageBonus(CSWSItem* pItem,
                                               CSWItemProperty* pProperty,
                                               CSWSCreature* pCreature,
@@ -495,7 +495,7 @@ int CSWSItemPropertyHandler::ApplyDamageBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E5E80  Xbox 0x00222840
+// PC 0x00539C00
 int CSWSItemPropertyHandler::ApplyAttackBonus(CSWSItem* pItem,
                                               CSWItemProperty* pProperty,
                                               CSWSCreature* pCreature,
@@ -602,7 +602,7 @@ int CSWSItemPropertyHandler::ApplyAttackBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E60C0  Xbox 0x00222A80
+// PC 0x00539E40
 int CSWSItemPropertyHandler::ApplyAttackPenalty(CSWSItem* pItem,
                                                 CSWItemProperty* pProperty,
                                                 CSWSCreature* pCreature,
@@ -674,7 +674,7 @@ int CSWSItemPropertyHandler::ApplyAttackPenalty(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E62D0  Xbox 0x00222C90
+// PC 0x0053A060
 int CSWSItemPropertyHandler::ApplyLight(CSWSItem* pItem,
                                         CSWItemProperty* pProperty,
                                         CSWSCreature* pCreature,
@@ -696,7 +696,7 @@ int CSWSItemPropertyHandler::ApplyLight(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E6390  Xbox 0x00222D50
+// PC 0x0053A120
 int CSWSItemPropertyHandler::ApplyAbilityBonus(CSWSItem* pItem,
                                                CSWItemProperty* pProperty,
                                                CSWSCreature* pCreature,
@@ -751,7 +751,7 @@ int CSWSItemPropertyHandler::ApplyAbilityBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E6510  Xbox 0x00222ED0
+// PC 0x0053A2A0
 int CSWSItemPropertyHandler::ApplyACBonus(CSWSItem* pItem,
                                           CSWItemProperty* pProperty,
                                           CSWSCreature* pCreature,
@@ -805,7 +805,7 @@ int CSWSItemPropertyHandler::ApplyACBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E66B0  Xbox 0x00223070
+// PC 0x0053A460
 int CSWSItemPropertyHandler::ApplyImprovedForceResistance(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex, int bLoading)
@@ -836,7 +836,7 @@ int CSWSItemPropertyHandler::ApplyImprovedForceResistance(
 
     return 0;
 }
-// PC 0x004E67D0  Xbox 0x00223190
+// PC 0x0053A580
 int CSWSItemPropertyHandler::ApplyChangedSavingThrow(CSWSItem* pItem,
                                                      int nSaveValue,
                                                      CSWItemProperty* pProperty,
@@ -878,7 +878,7 @@ int CSWSItemPropertyHandler::ApplyChangedSavingThrow(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E68E0  Xbox 0x002232A0
+// PC 0x0053A690
 int CSWSItemPropertyHandler::ApplySpecialWalk(CSWSItem* pItem,
                                               CSWItemProperty* pProperty,
                                               CSWSCreature* pCreature,
@@ -915,7 +915,7 @@ int CSWSItemPropertyHandler::ApplySpecialWalk(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E6A30  Xbox 0x002233F0
+// PC 0x0053A7E0
 int CSWSItemPropertyHandler::ApplyTrueSeeing(CSWSItem* pItem,
                                              CSWItemProperty* pProperty,
                                              CSWSCreature* pCreature,
@@ -931,7 +931,7 @@ int CSWSItemPropertyHandler::ApplyTrueSeeing(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E6AD0  Xbox 0x00223490
+// PC 0x0053A880
 int CSWSItemPropertyHandler::ApplyFreedomOfMovement(CSWSItem* pItem,
                                                     CSWItemProperty* pProperty,
                                                     CSWSCreature* pCreature,
@@ -1001,7 +1001,7 @@ int CSWSItemPropertyHandler::ApplyFreedomOfMovement(CSWSItem* pItem,
     }
     return 0;
 }
-// PC 0x004E6D50  Xbox 0x00223710
+// PC 0x0053AB00
 int CSWSItemPropertyHandler::ApplyBonusFeat(CSWSItem* pItem,
                                             CSWItemProperty* pProperty,
                                             CSWSCreature* pCreature,
@@ -1025,7 +1025,7 @@ int CSWSItemPropertyHandler::ApplyBonusFeat(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E6E20  Xbox 0x002237E0
+// PC 0x0053ABD0
 int CSWSItemPropertyHandler::ApplyDamageImmunity(CSWSItem* pItem,
                                                  CSWItemProperty* pProperty,
                                                  CSWSCreature* pCreature,
@@ -1068,7 +1068,7 @@ int CSWSItemPropertyHandler::ApplyDamageImmunity(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E6F60  Xbox 0x00223920
+// PC 0x0053AD10
 int CSWSItemPropertyHandler::ApplyDamagePenalty(CSWSItem* pItem,
                                                 CSWItemProperty* pProperty,
                                                 CSWSCreature* pCreature,
@@ -1144,7 +1144,7 @@ int CSWSItemPropertyHandler::ApplyDamagePenalty(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E7190  Xbox 0x00223B50
+// PC 0x0053AF50
 int CSWSItemPropertyHandler::ApplyDamageReduction(CSWSItem* pItem,
                                                   CSWItemProperty* pProperty,
                                                   CSWSCreature* pCreature,
@@ -1172,7 +1172,7 @@ int CSWSItemPropertyHandler::ApplyDamageReduction(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E72B0  Xbox 0x00223C70
+// PC 0x0053B070
 int CSWSItemPropertyHandler::ApplyDamageResistance(CSWSItem* pItem,
                                                    CSWItemProperty* pProperty,
                                                    CSWSCreature* pCreature,
@@ -1200,7 +1200,7 @@ int CSWSItemPropertyHandler::ApplyDamageResistance(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E73D0  Xbox 0x00223D90
+// PC 0x0053B190
 int CSWSItemPropertyHandler::ApplyDamageVulnerability(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex, int bLoading)
@@ -1231,7 +1231,7 @@ int CSWSItemPropertyHandler::ApplyDamageVulnerability(
 
     return 0;
 }
-// PC 0x004E74F0  Xbox 0x00223EB0
+// PC 0x0053B2B0
 int CSWSItemPropertyHandler::ApplyDecreaseAbilityScore(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex, int bLoading)
@@ -1285,7 +1285,7 @@ int CSWSItemPropertyHandler::ApplyDecreaseAbilityScore(
 
     return 0;
 }
-// PC 0x004E7670  Xbox 0x00224030
+// PC 0x0053B430
 int CSWSItemPropertyHandler::ApplyDecreaseAC(CSWSItem* pItem,
                                              CSWItemProperty* pProperty,
                                              CSWSCreature* pCreature,
@@ -1320,7 +1320,7 @@ int CSWSItemPropertyHandler::ApplyDecreaseAC(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E77C0  Xbox 0x00224180
+// PC 0x0053B580
 int CSWSItemPropertyHandler::ApplyDecreaseSkillModifier(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex, int bLoading)
@@ -1353,7 +1353,7 @@ int CSWSItemPropertyHandler::ApplyDecreaseSkillModifier(
 
     return 0;
 }
-// PC 0x004E7900  Xbox 0x002242C0
+// PC 0x0053B6C0
 int CSWSItemPropertyHandler::ApplyImmunity(CSWSItem* pItem,
                                            CSWItemProperty* pProperty,
                                            CSWSCreature* pCreature,
@@ -1432,7 +1432,7 @@ int CSWSItemPropertyHandler::ApplyImmunity(CSWSItem* pItem,
     }
     return 0;
 }
-// PC 0x004E7B10  Xbox 0x002244E0
+// PC 0x0053B8D0
 int CSWSItemPropertyHandler::ApplySkillBonus(CSWSItem* pItem,
                                              CSWItemProperty* pProperty,
                                              CSWSCreature* pCreature,
@@ -1457,7 +1457,7 @@ int CSWSItemPropertyHandler::ApplySkillBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E7C00  Xbox 0x002245D0
+// PC 0x0053B9C0
 int CSWSItemPropertyHandler::ApplyRegeneration(CSWSItem* pItem,
                                                CSWItemProperty* pProperty,
                                                CSWSCreature* pCreature,
@@ -1482,7 +1482,7 @@ int CSWSItemPropertyHandler::ApplyRegeneration(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E7CE0  Xbox 0x002246B0
+// PC 0x0053BAB0
 int CSWSItemPropertyHandler::ApplyBlasterBoltDeflectionIncrease(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex, int bLoading)
@@ -1506,7 +1506,7 @@ int CSWSItemPropertyHandler::ApplyBlasterBoltDeflectionIncrease(
 
     return 0;
 }
-// PC 0x004E7DB0  Xbox 0x00224780
+// PC 0x0053BB80
 int CSWSItemPropertyHandler::ApplyBlasterBoltDeflectionDecrease(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex, int bLoading)
@@ -1530,7 +1530,7 @@ int CSWSItemPropertyHandler::ApplyBlasterBoltDeflectionDecrease(
 
     return 0;
 }
-// PC 0x004E7E80  Xbox 0x00224850
+// PC 0x0053BC50
 int CSWSItemPropertyHandler::ApplyDisguise(CSWSItem* pItem,
                                            CSWItemProperty* pProperty,
                                            CSWSCreature* pCreature,
@@ -1549,7 +1549,7 @@ int CSWSItemPropertyHandler::ApplyDisguise(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E7F40  Xbox 0x00224910
+// PC 0x0053BDF0
 int CSWSItemPropertyHandler::RemoveEnhancementBonus(CSWSItem* pItem,
                                                        CSWItemProperty* pProperty,
                                                        CSWSCreature* pCreature,
@@ -1825,7 +1825,7 @@ int CSWSItemPropertyHandler::RemoveEnhancementBonus(CSWSItem* pItem,
     }
     return 0;
 }
-// PC 0x004E83A0  Xbox 0x00224D70
+// PC 0x0053C250
 int CSWSItemPropertyHandler::RemoveEnhancementPenalty(CSWSItem* pItem,
                                                        CSWItemProperty* pProperty,
                                                        CSWSCreature* pCreature,
@@ -1999,7 +1999,7 @@ int CSWSItemPropertyHandler::RemoveEnhancementPenalty(CSWSItem* pItem,
     }
     return 0;
 }
-// PC 0x004E86F0  Xbox 0x002250C0
+// PC 0x0053C810
 int CSWSItemPropertyHandler::RemoveDamageBonus(CSWSItem* pItem,
                                                CSWItemProperty* pProperty,
                                                CSWSCreature* pCreature,
@@ -2159,7 +2159,7 @@ int CSWSItemPropertyHandler::RemoveDamageBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E8950  Xbox 0x00225320
+// PC 0x0053CA70
 int CSWSItemPropertyHandler::RemoveAttackBonus(CSWSItem* pItem,
                                                CSWItemProperty* pProperty,
                                                CSWSCreature* pCreature,
@@ -2308,7 +2308,7 @@ int CSWSItemPropertyHandler::RemoveAttackBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E8BC0  Xbox 0x00225590
+// PC 0x0053CCE0
 int CSWSItemPropertyHandler::RemoveAttackPenalty(CSWSItem* pItem,
                                                 CSWItemProperty* pProperty,
                                                 CSWSCreature* pCreature,
@@ -2413,7 +2413,7 @@ int CSWSItemPropertyHandler::RemoveAttackPenalty(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E8DB0  Xbox 0x00225780
+// PC 0x0053CED0
 int CSWSItemPropertyHandler::RemoveAbilityBonus(CSWSItem* pItem,
                                                 CSWItemProperty* pProperty,
                                                 CSWSCreature* pCreature,
@@ -2501,7 +2501,7 @@ int CSWSItemPropertyHandler::RemoveAbilityBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E8F70  Xbox 0x00225940
+// PC 0x0053D090
 int CSWSItemPropertyHandler::RemoveACBonus(CSWSItem* pItem,
                                            CSWItemProperty* pProperty,
                                            CSWSCreature* pCreature,
@@ -2577,7 +2577,7 @@ int CSWSItemPropertyHandler::RemoveACBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E9110  Xbox 0x00225AE0
+// PC 0x0053D230
 int CSWSItemPropertyHandler::RemoveImprovedForceResistance(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex)
@@ -2617,7 +2617,7 @@ int CSWSItemPropertyHandler::RemoveImprovedForceResistance(
 
     return 0;
 }
-// PC 0x004E9230  Xbox 0x00225C00
+// PC 0x0053D350
 int CSWSItemPropertyHandler::ApplyImprovedSavingThrow(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex, int bLoading)
@@ -2637,7 +2637,7 @@ int CSWSItemPropertyHandler::ApplyImprovedSavingThrow(
     }
     return 0;
 }
-// PC 0x004E92E0  Xbox 0x00225CB0
+// PC 0x0053D400
 int CSWSItemPropertyHandler::ApplyReducedSavingThrow(CSWSItem* pItem,
                                                      CSWItemProperty* pProperty,
                                                      CSWSCreature* pCreature,
@@ -2661,7 +2661,7 @@ int CSWSItemPropertyHandler::ApplyReducedSavingThrow(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E9390  Xbox 0x00225D60
+// PC 0x0053D4B0
 int CSWSItemPropertyHandler::RemoveChangedSavingThrow(
     int nSaveValue, CSWSItem* pItem, CSWItemProperty* pProperty,
     CSWSCreature* pCreature)
@@ -2728,7 +2728,7 @@ int CSWSItemPropertyHandler::RemoveChangedSavingThrow(
 
     return 0;
 }
-// PC 0x004E94B0  Xbox 0x00225E80
+// PC 0x0053D5D0
 int CSWSItemPropertyHandler::RemoveSpecialWalk(CSWSItem* pItem,
                                                CSWItemProperty* pProperty,
                                                CSWSCreature* pCreature,
@@ -2767,7 +2767,7 @@ int CSWSItemPropertyHandler::RemoveSpecialWalk(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E95A0  Xbox 0x00225F70
+// PC 0x0053D6C0
 int CSWSItemPropertyHandler::RemoveTrueSeeing(CSWSItem* pItem,
                                               CSWItemProperty* pProperty,
                                               CSWSCreature* pCreature,
@@ -2791,7 +2791,7 @@ int CSWSItemPropertyHandler::RemoveTrueSeeing(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E9620  Xbox 0x00225FF0
+// PC 0x0053D740
 int CSWSItemPropertyHandler::RemoveFreedomOfMovement(CSWSItem* pItem,
                                                      CSWItemProperty* pProperty,
                                                      CSWSCreature* pCreature,
@@ -2826,7 +2826,7 @@ int CSWSItemPropertyHandler::RemoveFreedomOfMovement(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E9700  Xbox 0x002260D0
+// PC 0x0053D820
 int CSWSItemPropertyHandler::RemoveBonusFeat(CSWSItem* pItem,
                                              CSWItemProperty* pProperty,
                                              CSWSCreature* pCreature,
@@ -2865,7 +2865,7 @@ int CSWSItemPropertyHandler::RemoveBonusFeat(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E97A0  Xbox 0x00226170
+// PC 0x0053D8C0
 int CSWSItemPropertyHandler::RemoveDamageImmunity(CSWSItem* pItem,
                                                   CSWItemProperty* pProperty,
                                                   CSWSCreature* pCreature,
@@ -2974,7 +2974,7 @@ int CSWSItemPropertyHandler::RemoveDamageImmunity(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E9990  Xbox 0x00226350
+// PC 0x0053DAB0
 int CSWSItemPropertyHandler::RemoveDamagePenalty(CSWSItem* pItem,
                                                 CSWItemProperty* pProperty,
                                                 CSWSCreature* pCreature,
@@ -3090,7 +3090,7 @@ int CSWSItemPropertyHandler::RemoveDamagePenalty(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E9BB0  Xbox 0x00226570
+// PC 0x0053DCD0
 int CSWSItemPropertyHandler::RemoveDamageReduction(CSWSItem* pItem,
                                                    CSWItemProperty* pProperty,
                                                    CSWSCreature* pCreature,
@@ -3136,7 +3136,7 @@ int CSWSItemPropertyHandler::RemoveDamageReduction(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E9CF0  Xbox 0x002266B0
+// PC 0x0053DE10
 int CSWSItemPropertyHandler::RemoveDamageResistance(CSWSItem* pItem,
                                                     CSWItemProperty* pProperty,
                                                     CSWSCreature* pCreature,
@@ -3179,7 +3179,7 @@ int CSWSItemPropertyHandler::RemoveDamageResistance(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004E9E30  Xbox 0x002267F0
+// PC 0x0053DF50
 int CSWSItemPropertyHandler::RemoveDamageVulnerability(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex)
@@ -3220,7 +3220,7 @@ int CSWSItemPropertyHandler::RemoveDamageVulnerability(
 
     return 0;
 }
-// PC 0x004E9F60  Xbox 0x00226920
+// PC 0x0053E080
 int CSWSItemPropertyHandler::RemoveDecreaseAbilityScore(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex)
@@ -3308,7 +3308,7 @@ int CSWSItemPropertyHandler::RemoveDecreaseAbilityScore(
 
     return 0;
 }
-// PC 0x004EA130  Xbox 0x00226AF0
+// PC 0x0053E250
 int CSWSItemPropertyHandler::RemoveDecreaseAC(CSWSItem* pItem,
                                               CSWItemProperty* pProperty,
                                               CSWSCreature* pCreature,
@@ -3360,7 +3360,7 @@ int CSWSItemPropertyHandler::RemoveDecreaseAC(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004EA290  Xbox 0x00226C50
+// PC 0x0053E3B0
 int CSWSItemPropertyHandler::RemoveDecreaseSkillModifier(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex)
@@ -3411,7 +3411,7 @@ int CSWSItemPropertyHandler::RemoveDecreaseSkillModifier(
 
     return 0;
 }
-// PC 0x004EA3F0  Xbox 0x00226DB0
+// PC 0x0053E510
 int CSWSItemPropertyHandler::RemoveImmunity(CSWSItem* pItem,
                                             CSWItemProperty* pProperty,
                                             CSWSCreature* pCreature,
@@ -3494,7 +3494,7 @@ int CSWSItemPropertyHandler::RemoveImmunity(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004EA580  Xbox 0x00226F40
+// PC 0x0053E6A0
 int CSWSItemPropertyHandler::RemoveSkillBonus(CSWSItem* pItem,
                                               CSWItemProperty* pProperty,
                                               CSWSCreature* pCreature,
@@ -3532,7 +3532,7 @@ int CSWSItemPropertyHandler::RemoveSkillBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004EA650  Xbox 0x00227010
+// PC 0x0053E770
 int CSWSItemPropertyHandler::RemoveRegeneration(CSWSItem* pItem,
                                                 CSWItemProperty* pProperty,
                                                 CSWSCreature* pCreature,
@@ -3563,7 +3563,7 @@ int CSWSItemPropertyHandler::RemoveRegeneration(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004EA6E0  Xbox 0x002270A0
+// PC 0x0053E800
 int CSWSItemPropertyHandler::RemoveBlasterBoltDeflectionIncrease(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex)
@@ -3594,7 +3594,7 @@ int CSWSItemPropertyHandler::RemoveBlasterBoltDeflectionIncrease(
 
     return 0;
 }
-// PC 0x004EA770  Xbox 0x00227130
+// PC 0x0053E890
 int CSWSItemPropertyHandler::RemoveBlasterBoltDeflectionDecrease(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex)
@@ -3625,7 +3625,7 @@ int CSWSItemPropertyHandler::RemoveBlasterBoltDeflectionDecrease(
 
     return 0;
 }
-// PC 0x004EA800  Xbox 0x002271C0
+// PC 0x0053E920
 int CSWSItemPropertyHandler::RemoveDisguise(CSWSItem* pItem,
                                             CSWItemProperty* pProperty,
                                             CSWSCreature* pCreature,
@@ -3656,7 +3656,7 @@ int CSWSItemPropertyHandler::RemoveDisguise(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x004EA890  Xbox 0x00227250
+// PC 0x0053E9B0
 int CSWSItemPropertyHandler::RemoveImprovedSavingThrow(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex)
@@ -3685,7 +3685,7 @@ int CSWSItemPropertyHandler::RemoveLight(
 {
     return 0;
 }
-// PC 0x004EA940  Xbox 0x00227300
+// PC 0x0053EA60
 int CSWSItemPropertyHandler::RemoveReducedSavingThrow(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex)
@@ -3707,7 +3707,7 @@ int CSWSItemPropertyHandler::RemoveReducedSavingThrow(
 
     return 0;
 }
-// PC 0x004EA9F0  Xbox 0x002273B0
+// PC 0x0053EB10
 void CSWSItemPropertyHandler::InitializeItemProperties()
 {
     int i;

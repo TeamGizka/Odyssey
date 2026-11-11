@@ -1,6 +1,6 @@
 #include "exolocstringinternal.h"
 #include "exobase.h"
-// PC 0x005EC700  Xbox 0x00139130
+// PC 0x00635880
 int CExoLocStringInternal::AddString(int nID, const CExoString& sString)
 {
     CExoLinkedListNode* pPos = m_lstStrings.GetHeadPos();
@@ -39,7 +39,7 @@ int CExoLocStringInternal::AddString(int nID, const CExoString& sString)
     m_nCount++;
     return 1;
 }
-// PC 0x005EC7F0  Xbox 0x00139220
+// PC 0x00635970
 int CExoLocStringInternal::Compare(const CExoLocString& lsString) const
 {
     int nCount = m_nCount;
@@ -68,7 +68,7 @@ int CExoLocStringInternal::Compare(const CExoLocString& lsString) const
     delete psOther;
     return 1;
 }
-// PC 0x005EC950  Xbox 0x00139390
+// PC 0x00635AD0
 int CExoLocStringInternal::GetString(unsigned long nIndex, int* pnID,
                                      CExoString* psString) const
 {
@@ -92,7 +92,7 @@ int CExoLocStringInternal::GetString(unsigned long nIndex, int* pnID,
     }
     return 0;
 }
-// PC 0x005EC9C0  Xbox 0x00139400
+// PC 0x00635B40
 int CExoLocStringInternal::GetString(int nID, CExoString* psString) const
 {
     CExoLinkedListNode* pPos = m_lstStrings.GetHeadPos();
@@ -121,7 +121,7 @@ int CExoLocStringInternal::GetString(int nID, CExoString* psString) const
     *psString = pEntry->m_sString;
     return 1;
 }
-// PC 0x005ECA20  Xbox 0x00139460
+// PC 0x00635BA0
 int CExoLocStringInternal::GetStringLength(unsigned long nIndex) const
 {
     if (nIndex >= (unsigned long)m_nCount)
@@ -142,13 +142,13 @@ int CExoLocStringInternal::GetStringLength(unsigned long nIndex) const
     }
     return 0;
 }
-// PC 0x005ECAF0  Xbox 0x00139550
+// PC 0x00635C80
 CExoLocStringInternal::CExoLocStringInternal()
 {
     m_nCount = 0;
     m_bFetched = 0;
 }
-// PC 0x005ECB10  Xbox 0x00139570
+// PC 0x00635CA0
 void CExoLocStringInternal::ClearLocString()
 {
     while (!m_lstStrings.IsEmpty())
@@ -161,7 +161,7 @@ void CExoLocStringInternal::ClearLocString()
     }
     m_nCount = 0;
 }
-// PC 0x005ECA80  Xbox 0x001394C0
+// PC 0x00635C10
 void CExoLocStringInternal::RemoveString(int nID)
 {
     CExoLinkedListNode* pPos = m_lstStrings.GetHeadPos();
@@ -190,12 +190,12 @@ void CExoLocStringInternal::RemoveString(int nID)
         m_nCount--;
     }
 }
-// PC 0x005ECB50  Xbox 0x001395B0
+// PC 0x00635CE0
 CExoLocStringInternal::~CExoLocStringInternal()
 {
     ClearLocString();
 }
-// PC 0x005ECBB0  Xbox 0x00139610
+// PC 0x00635D40
 int CExoLocStringInternal::Assign(CExoLocStringInternal* pInternal)
 {
     ClearLocString();

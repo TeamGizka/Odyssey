@@ -10,13 +10,13 @@
 #include "nwsplayer.h"
 #include "swguiabilitieschargen.h"
 #include "nwsparty.h"
-// PC 0x005BE780  Xbox 0x00227800
+// PC 0x00601E60
 int CSWSFaction::GetMemberList(unsigned long** ppMembers)
 {
     *ppMembers = m_lstMembers.element;
     return m_lstMembers.num;
 }
-// PC 0x005BE790  Xbox 0x00227810
+// PC 0x00601E70
 int CSWSFaction::InviteMember(unsigned long oidCreature,
                               unsigned long oidInvitedBy)
 {
@@ -37,7 +37,7 @@ int CSWSFaction::InviteMember(unsigned long oidCreature,
     }
     return 0;
 }
-// PC 0x005BE800  Xbox 0x00227880
+// PC 0x00601EE0
 int CSWSFaction::GetCreatureInParty(unsigned long oidCreature)
 {
     unsigned long* pElement = m_lstMembers.element;
@@ -52,7 +52,7 @@ int CSWSFaction::GetCreatureInParty(unsigned long oidCreature)
     }
     return 0;
 }
-// PC 0x005BE830  Xbox 0x002278B0
+// PC 0x00601F10
 void CSWSFaction::Initialise()
 {
     {
@@ -63,11 +63,11 @@ void CSWSFaction::Initialise()
     m_nLastFactionMember = 0;
     m_bGlobal = 1;
 }
-// PC 0x005BE8A0  Xbox 0x00227920
+// PC 0x00601F80
 CSWSFaction::~CSWSFaction()
 {
 }
-// PC 0x005BE900  Xbox 0x00227980
+// PC 0x00601FE0
 void CSWSFaction::SendChatMessage(unsigned long nVolume,
                                   const CExoString& sMessage)
 {
@@ -87,7 +87,7 @@ void CSWSFaction::SendChatMessage(unsigned long nVolume,
         }
     }
 }
-// PC 0x005BE960  Xbox 0x002279E0
+// PC 0x00602040
 int CSWSFaction::SendFactionUpdateList()
 {
     CServerExoApp* pExoApp = g_pAppManager->m_pServerExoApp;
@@ -108,7 +108,7 @@ int CSWSFaction::SendFactionUpdateList()
     }
     return nResult;
 }
-// PC 0x005BE9C0  Xbox 0x00227A40
+// PC 0x006020A0
 void CSWSFaction::SendFactionUpdateAdd(unsigned long oidCreature)
 {
     CServerExoApp* pExoApp = g_pAppManager->m_pServerExoApp;
@@ -128,7 +128,7 @@ void CSWSFaction::SendFactionUpdateAdd(unsigned long oidCreature)
         }
     }
 }
-// PC 0x005BEA20  Xbox 0x00227AA0
+// PC 0x00602100
 void CSWSFaction::SendFactionUpdateRemove(unsigned long oidCreature)
 {
     CServerExoApp* pExoApp = g_pAppManager->m_pServerExoApp;
@@ -147,7 +147,7 @@ void CSWSFaction::SendFactionUpdateRemove(unsigned long oidCreature)
         }
     }
 }
-// PC 0x005BEA80  Xbox 0x00227B00
+// PC 0x00602160
 unsigned long CSWSFaction::GetWeakestMember(unsigned long oidSource,
                                             int bMustBeVisible)
 {
@@ -194,7 +194,7 @@ unsigned long CSWSFaction::GetWeakestMember(unsigned long oidSource,
     }
     return oidWeakest;
 }
-// PC 0x005BEBC0  Xbox 0x00227C40
+// PC 0x006022A0
 unsigned long CSWSFaction::GetStrongestMember(unsigned long oidSource,
                                               int bMustBeVisible)
 {
@@ -241,7 +241,7 @@ unsigned long CSWSFaction::GetStrongestMember(unsigned long oidSource,
     }
     return oidStrongest;
 }
-// PC 0x005BED00  Xbox 0x00227D80
+// PC 0x006023E0
 unsigned long CSWSFaction::GetMostDamagedMember(unsigned long oidSource,
                                                  int bMustBeVisible)
 {
@@ -290,7 +290,7 @@ unsigned long CSWSFaction::GetMostDamagedMember(unsigned long oidSource,
     }
     return oidMostDamaged;
 }
-// PC 0x005BEE70  Xbox 0x00227EF0
+// PC 0x00602570
 unsigned long CSWSFaction::GetLeastDamagedMember(unsigned long oidSource,
                                                  int bMustBeVisible)
 {
@@ -338,7 +338,7 @@ unsigned long CSWSFaction::GetLeastDamagedMember(unsigned long oidSource,
     }
     return oidLeastDamaged;
 }
-// PC 0x005BEFE0  Xbox 0x00228050
+// PC 0x006026F0
 int CSWSFaction::GetGold()
 {
     for (int i = 0; i < m_lstMembers.num; ++i)
@@ -348,7 +348,7 @@ int CSWSFaction::GetGold()
     }
     return 0;
 }
-// PC 0x005BF020  Xbox 0x00228090
+// PC 0x00602730
 int CSWSFaction::GetAverageReputation(unsigned long oidCreature)
 {
     int nTotalReputation = 0;
@@ -378,7 +378,7 @@ int CSWSFaction::GetAverageReputation(unsigned long oidCreature)
     }
     return nTotalReputation;
 }
-// PC 0x005BF090  Xbox 0x00228110
+// PC 0x006027A0
 int CSWSFaction::GetAverageGoodEvilAlignment()
 {
     int nTotalAlignment = 0;
@@ -413,7 +413,7 @@ int CSWSFaction::GetAverageGoodEvilAlignment()
     }
     return CSWSCreatureStats::ALIGNMENT_NEUTRAL;
 }
-// PC 0x005BF140  Xbox 0x002281C0
+// PC 0x00602860
 int CSWSFaction::GetAverageLevel()
 {
     int nTotalLevel = 0;
@@ -435,7 +435,7 @@ int CSWSFaction::GetAverageLevel()
     }
     return 0;
 }
-// PC 0x005BF1A0  Xbox 0x00228220
+// PC 0x006028C0
 int CSWSFaction::GetAverageXP()
 {
     int nTotalXP = 0;
@@ -456,7 +456,7 @@ int CSWSFaction::GetAverageXP()
     }
     return 0;
 }
-// PC 0x005BF1F0  Xbox 0x00228270
+// PC 0x00602910
 int CSWSFaction::GetMostFrequentClass()
 {
     int i;
@@ -517,7 +517,7 @@ int CSWSFaction::GetMostFrequentClass()
     }
     return nBestClass;
 }
-// PC 0x005BF340  Xbox 0x002283C0
+// PC 0x00602A60
 unsigned long CSWSFaction::GetWorstAC(unsigned long oidSource,
                                       int bMustBeVisible)
 {
@@ -565,7 +565,7 @@ unsigned long CSWSFaction::GetWorstAC(unsigned long oidSource,
     }
     return oidWeakest;
 }
-// PC 0x005BF480  Xbox 0x00228500
+// PC 0x00602BA0
 unsigned long CSWSFaction::GetBestAC(unsigned long oidSource,
                                      int bMustBeVisible)
 {
@@ -613,7 +613,7 @@ unsigned long CSWSFaction::GetBestAC(unsigned long oidSource,
     }
     return oidBest;
 }
-// PC 0x005BF750  Xbox 0x002287D0
+// PC 0x00602E70
 CSWSFaction::CSWSFaction(unsigned long oidCreature)
 {
     CSWSCreature* pCreature =
@@ -646,7 +646,7 @@ CSWSFaction::CSWSFaction(unsigned long oidCreature)
     }
     Initialise();
 }
-// PC 0x005BF860  Xbox 0x002288E0
+// PC 0x00602F80
 CSWSFaction::CSWSFaction()
 {
     CFactionManager* pFactionManager = GetFactionManager();
@@ -680,7 +680,7 @@ CFactionManager* CSWSFaction::GetFactionManager()
     }
     return NULL;
 }
-// PC 0x005BF920  Xbox 0x002289A0
+// PC 0x00603040
 void CSWSFaction::RemoveMember(unsigned long oidCreature)
 {
     CServerExoApp* pExoApp = g_pAppManager->m_pServerExoApp;
@@ -718,7 +718,7 @@ void CSWSFaction::RemoveMember(unsigned long oidCreature)
         SendFactionUpdateRemove(oidCreature);
     }
 }
-// PC 0x005BFA30  Xbox 0x00228AC0
+// PC 0x00603150
 int CSWSFaction::TransferLeadership(unsigned long oidCreature,
                                     unsigned long oidLeader)
 {
@@ -730,7 +730,7 @@ int CSWSFaction::TransferLeadership(unsigned long oidCreature,
     }
     return 0;
 }
-// PC 0x005BF5C0  Xbox 0x00228640
+// PC 0x00602CE0
 unsigned long CSWSFaction::GetLeader()
 {
     CServerExoApp* pExoApp;
@@ -775,7 +775,7 @@ unsigned long CSWSFaction::GetLeader()
     }
     return oidLeader;
 }
-// PC 0x005BF690  Xbox 0x00228710
+// PC 0x00602DB0
 int CSWSFaction::GetSingletonParty()
 {
     int i;
@@ -801,7 +801,7 @@ int CSWSFaction::GetSingletonParty()
     return 1;
 }
 #ifndef _XBOX
-unsigned long CSWSFaction::GetFactionMember(int nMember, int nFaction)  // PC 0x005BF6E0  Xbox 0x00228760
+unsigned long CSWSFaction::GetFactionMember(int nMember, int nFaction)  // PC 0x00602E00
 {
     int i;
     CServerExoApp* pExoApp;
@@ -824,7 +824,7 @@ unsigned long CSWSFaction::GetFactionMember(int nMember, int nFaction)  // PC 0x
     return OBJECT_INVALID;
 }
 #endif
-void CSWSFaction::AddMember(unsigned long oidCreature, int bSilent)  // PC 0x005BFA70  Xbox 0x00228B00
+void CSWSFaction::AddMember(unsigned long oidCreature, int bSilent)  // PC 0x00603190
 {
     CSWSCreature* pCreature;
     CSWSFaction* pOldFaction;
@@ -871,7 +871,7 @@ void CSWSFaction::AddMember(unsigned long oidCreature, int bSilent)  // PC 0x005
         }
     }
 }
-// PC 0x005BFB20  Xbox 0x00228BB0
+// PC 0x00603240
 int CSWSFaction::AttemptRemove(unsigned long oidCreature,
                                unsigned long oidLeader)
 {
@@ -885,7 +885,7 @@ int CSWSFaction::AttemptRemove(unsigned long oidCreature,
 }
 
 #ifdef _XBOX
-// PC 0x005BF6E0  Xbox 0x00228760
+
 unsigned long CSWSFaction::GetFactionMember(int nMember, int nFaction)
 {
     int i;

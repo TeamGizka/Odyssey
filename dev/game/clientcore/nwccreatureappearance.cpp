@@ -17,7 +17,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "nwrules.h"
-// PC 0x00696430  Xbox 0x000C1C20
+// PC 0x006F0430
 CSWCCreatureAppearance::CSWCCreatureAppearance(CSWCCreature* pCreature)
 {
     m_nUnmapped10 = CGameObjectArray::INVALIDOBJID;
@@ -54,17 +54,17 @@ CSWCCreatureAppearance::CSWCCreatureAppearance(CSWCCreature* pCreature)
 CSWCCreatureAppearance::~CSWCCreatureAppearance()
 {
 }
-// PC 0x006054E0
+// PC 0x00651540
 int CSWCCreatureAppearance::RequestTailAppearance(CCAppearanceInfo* pAppearance)
 {
     return 1;
 }
-// PC 0x006054E0
+// PC 0x00651540
 int CSWCCreatureAppearance::RequestWingAppearance(CCAppearanceInfo* pAppearance)
 {
     return 1;
 }
-// PC 0x006964C0  Xbox 0x000C1CB0
+// PC 0x006F04C0
 int CSWCCreatureAppearance::CreateHead(unsigned char nType, CCAppearanceInfo* pAppearance)
 {
     CResRef cHeadModel;
@@ -258,7 +258,7 @@ int CSWCCreatureAppearance::CreateHead(unsigned char nType, CCAppearanceInfo* pA
     m_bForceAnimate = g_pAppManager->m_pClientExoApp->GetPausedByCombat();
     return 1;
 }
-// PC 0x00696CA0  Xbox 0x000C2540
+// PC 0x006F0E70
 char CSWCCreatureAppearance::GetGenderChar()
 {
     CExoString sGender;
@@ -272,12 +272,12 @@ char CSWCCreatureAppearance::GetGenderChar()
     }
     return sGender[0];
 }
-// PC 0x0063E7F0
+// PC 0x004065A0
 int CSWCCreatureAppearance::GetArmourClass()
 {
     return 0;
 }
-// PC 0x00697A20  Xbox 0x000C3370
+// PC 0x006F1BF0
 int CSWCCreatureAppearance::CreateHeadAppearance(CCAppearanceInfo* pAppearance)
 {
     CExoString sModelType;
@@ -297,7 +297,7 @@ int CSWCCreatureAppearance::CreateHeadAppearance(CCAppearanceInfo* pAppearance)
 
     return CreateHead(3, pAppearance);
 }
-// PC 0x00697B00  Xbox 0x000C3470
+// PC 0x006F1CD0
 int CSWCCreatureAppearance::CreateTailAppearance(CCAppearanceInfo* pAppearance)
 {
     CExoString sModelType;
@@ -317,7 +317,7 @@ int CSWCCreatureAppearance::CreateTailAppearance(CCAppearanceInfo* pAppearance)
 
     return 1;
 }
-// PC 0x00697BC0  Xbox 0x000C3540
+// PC 0x006F1D90
 int CSWCCreatureAppearance::CreateWingAppearance(CCAppearanceInfo* pAppearance)
 {
     CExoString sModelType;
@@ -337,7 +337,7 @@ int CSWCCreatureAppearance::CreateWingAppearance(CCAppearanceInfo* pAppearance)
 
     return 1;
 }
-// PC 0x00697C80  Xbox 0x000C3610
+// PC 0x006F1E50
 int CSWCCreatureAppearance::RequestBType(CCAppearanceInfo* pAppearance)
 {
     CResRef cModel;
@@ -349,7 +349,7 @@ int CSWCCreatureAppearance::RequestBType(CCAppearanceInfo* pAppearance)
     m_pCreature->RequestModel(cModel, cTexture, 3);
     return 1;
 }
-// PC 0x00697CE0  Xbox 0x000C3680
+// PC 0x006F1EB0
 int CSWCCreatureAppearance::CreateBTypeBody(unsigned char nType, CCAppearanceInfo* pAppearance)
 {
 
@@ -457,7 +457,7 @@ int CSWCCreatureAppearance::CreateBTypeBody(unsigned char nType, CCAppearanceInf
     m_bForceAnimate = g_pAppManager->m_pClientExoApp->GetPausedByCombat();
     return 1;
 }
-// PC 0x00698150  Xbox 0x000C3AE0
+// PC 0x006F2330
 void CSWCCreatureAppearance::SetAppearanceAlignment(short nAlignment)
 {
     if (m_nUnknown50 == 0 && m_nAlignment == nAlignment)
@@ -597,7 +597,7 @@ void CSWCCreatureAppearance::SetAppearanceAlignment(short nAlignment)
         }
     }
 }
-// PC 0x00698550  Xbox 0x000C3F10
+// PC 0x006F2D30
 int CSWCCreatureAppearance::CreateSimple(unsigned char nType,
                                        CCAppearanceInfo* pAppearance)
 {
@@ -727,7 +727,7 @@ int CSWCCreatureAppearance::CreateSimple(unsigned char nType,
     m_bForceAnimate = g_pAppManager->GetClientExoApp()->GetPausedByCombat();
     return 1;
 }
-// PC 0x00696D40  Xbox 0x000C25E0
+// PC 0x006F0F10
 unsigned char CSWCCreatureAppearance::GetAnimType(const CExoString& sModelType)
 {
     int nResult;
@@ -758,7 +758,7 @@ unsigned char CSWCCreatureAppearance::GetAnimType(const CExoString& sModelType)
         return nResult;
     }
 }
-// PC 0x00696E10  Xbox 0x000C26B0
+// PC 0x006F0FE0
 int CSWCCreatureAppearance::RequestSimple(CCAppearanceInfo* pAppearance)
 {
     CExoString sResRef;
@@ -795,7 +795,7 @@ int CSWCCreatureAppearance::RequestSimple(CCAppearanceInfo* pAppearance)
 #endif
     return 1;
 }
-// PC 0x00696F60  Xbox 0x000C2800
+// PC 0x006F1130
 int CSWCCreatureAppearance::RequestHeadAppearance(CCAppearanceInfo* pAppearance)
 {
 
@@ -860,7 +860,7 @@ int CSWCCreatureAppearance::RequestHeadAppearance(CCAppearanceInfo* pAppearance)
     }
     return 1;
 }
-// PC 0x006973B0  Xbox 0x000C2C50
+// PC 0x006F1580
 float CSWCCreatureAppearance::GetHeight()
 {
     Vector vPosition;
@@ -886,7 +886,7 @@ float CSWCCreatureAppearance::GetHeight()
 
     return 0.0f;
 }
-// PC 0x00697460  Xbox 0x000C2D00
+// PC 0x006F1630
 CAurObject* CSWCCreatureAppearance::GetCameraFollowPart()
 {
     Gob* pModel = m_pCreature->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
@@ -899,14 +899,14 @@ CAurObject* CSWCCreatureAppearance::GetCameraFollowPart()
 
     return pModel;
 }
-// PC 0x006974A0  Xbox 0x000C2D40
+// PC 0x006F1670
 int CSWCCreatureAppearance::GetFollowingBody()
 {
     Gob* pModel = m_pCreature->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
 
     return pModel->GetPart("CAMERAHOOK") != 0;
 }
-// PC 0x006974D0  Xbox 0x000C2D70
+// PC 0x006F16A0
 float CSWCCreatureAppearance::GetHeadHeightOffset()
 {
     Gob* pModel = m_pCreature->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
@@ -925,7 +925,7 @@ float CSWCCreatureAppearance::GetHeadHeightOffset()
     }
     return 0.0f;
 }
-// PC 0x00697580  Xbox 0x000C2E20
+// PC 0x006F1750
 float CSWCCreatureAppearance::GetCameraOffset()
 {
     float fOffset = 0.0f;
@@ -940,7 +940,7 @@ float CSWCCreatureAppearance::GetCameraOffset()
 
     return 0.0f;
 }
-// PC 0x006975D0  Xbox 0x000C2EC0
+// PC 0x006F17A0
 float CSWCCreatureAppearance::GetRunLooksAwfulRate()
 {
     float fRunDist;
@@ -949,7 +949,7 @@ float CSWCCreatureAppearance::GetRunLooksAwfulRate()
         m_nAppearance, CTwoDimArrays::COL2DA_APPEARANCETABLE_RUNDIST, &fRunDist);
     return (fRunDist * 1000.0f) * 0.37f;
 }
-// PC 0x00697610  Xbox 0x000C2F50
+// PC 0x006F17E0
 void CSWCCreatureAppearance::GetBTypeModelAndTextureResRef(
     CCAppearanceInfo* pAppearance, CResRef* pModel, CResRef* pTexture)
 {
@@ -1017,7 +1017,7 @@ void CSWCCreatureAppearance::GetBTypeModelAndTextureResRef(
         }
     }
 }
-// PC 0x006978A0  Xbox 0x000C31F0
+// PC 0x006F1A70
 void CSWCCreatureAppearance::ForceAnimate()
 {
     if (m_bForceAnimate)
@@ -1080,7 +1080,7 @@ void CSWCCreatureAppearance::ForceAnimate()
         }
     }
 }
-// PC 0x00698A40  Xbox 0x000C4420
+// PC 0x006F3230
 int CSWCCreatureAppearance::RequestBodyAppearance(CCAppearanceInfo* pAppearance)
 {
     CExoString sModelType;
@@ -1111,7 +1111,7 @@ int CSWCCreatureAppearance::RequestBodyAppearance(CCAppearanceInfo* pAppearance)
 
     return bResult;
 }
-// PC 0x00698B10  Xbox 0x000C44F0
+// PC 0x006F3300
 int CSWCCreatureAppearance::CreateBodyAppearance(CCAppearanceInfo* pAppearance)
 {
     CExoString sModelType;

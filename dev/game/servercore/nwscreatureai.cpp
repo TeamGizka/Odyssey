@@ -63,7 +63,7 @@ static Vector* AllocateVectorArray(int nCount)
 {
     return new Vector[nCount];
 }
-// PC 0x0050E400  Xbox 0x001ABBD0
+// PC 0x00542060
 int CSWSCreature::AIActionFlagMine(CSWSObjectActionNode* pAction)
 {
     Vector vPosition;
@@ -186,7 +186,7 @@ int CSWSCreature::AIActionFlagMine(CSWSObjectActionNode* pAction)
     m_bMineActionStarted = FALSE;
     return ACTION_COMPLETE;
 }
-// PC 0x0050E900  Xbox 0x001AC0E0
+// PC 0x00542570
 int CSWSCreature::AIActionExamineMine(CSWSObjectActionNode* pAction)
 {
     Vector vTarget;
@@ -331,7 +331,7 @@ int CSWSCreature::AIActionExamineMine(CSWSObjectActionNode* pAction)
 
     return ACTION_COMPLETE;
 }
-// PC 0x0050EE30  Xbox 0x001AC630
+// PC 0x00542AB0
 void CSWSCreature::SetDetectMode(unsigned char nDetectMode)
 {
     if (nDetectMode != m_nDetectMode)
@@ -340,7 +340,7 @@ void CSWSCreature::SetDetectMode(unsigned char nDetectMode)
         ComputeModifiedMovementRate();
     }
 }
-// PC 0x0050EE50  Xbox 0x001AC650
+// PC 0x00542AD0
 void CSWSCreature::SetStealthMode(unsigned char nStealthMode, int nValue)
 {
     if (nStealthMode != m_nStealthMode)
@@ -350,7 +350,7 @@ void CSWSCreature::SetStealthMode(unsigned char nStealthMode, int nValue)
         ComputeModifiedMovementRate();
     }
 }
-// PC 0x0050EE80  Xbox 0x001AC680
+// PC 0x00542B00
 void CSWSCreature::SetCombatMode(unsigned char nMode, int bUpdate)
 {
     unsigned char nOldMode;
@@ -477,7 +477,7 @@ void CSWSCreature::SetCombatMode(unsigned char nMode, int bUpdate)
             SetActivity(ACTIVITY_BIT_13, FALSE, 0);
     }
 }
-// PC 0x0050F170  Xbox 0x001AC970
+// PC 0x00542DF0
 int CSWSCreature::AIActionItemCastSpell(CSWSObjectActionNode* pAction)
 {
     Vector vTarget;
@@ -792,7 +792,7 @@ int CSWSCreature::AIActionItemCastSpell(CSWSObjectActionNode* pAction)
     ProcessPendingCombatActions();
     return ACTION_COMPLETE;
 }
-// PC 0x0050FB60  Xbox 0x001AD2D0
+// PC 0x00543920
 int CSWSCreature::AIActionChangeFacingObject(CSWSObjectActionNode* pAction)
 {
     if (GetDead() == 1 || GetIsPCDying() == 1 || GetDeadTemp() == 1)
@@ -821,7 +821,7 @@ int CSWSCreature::AIActionChangeFacingObject(CSWSObjectActionNode* pAction)
 
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x0050FC90  Xbox 0x001AD400
+// PC 0x00543A50
 int CSWSCreature::AIActionChangeFacingPoint(CSWSObjectActionNode* pAction)
 {
     if (GetDead() == 1 || GetIsPCDying() == 1 || GetDeadTemp() == 1)
@@ -845,7 +845,7 @@ int CSWSCreature::AIActionChangeFacingPoint(CSWSObjectActionNode* pAction)
 
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x0050FD50  Xbox 0x001AD4D0
+// PC 0x00543B20
 int CSWSCreature::AIActionCheckMoveAwayFromLocation(CSWSObjectActionNode* pAction)
 {
     if (GetDead() == 1 || GetIsPCDying() == 1 || GetDeadTemp() == 1)
@@ -878,7 +878,7 @@ int CSWSCreature::AIActionCheckMoveAwayFromLocation(CSWSObjectActionNode* pActio
     }
     return ACTION_COMPLETE;
 }
-// PC 0x0050FF20  Xbox 0x001AD6B0
+// PC 0x00543CF0
 int CSWSCreature::AIActionCheckInterAreaPathfinding(CSWSObjectActionNode* pAction)
 {
     if (GetDead() == 1 || GetIsPCDying() == 1 || GetDeadTemp() == 1)
@@ -935,7 +935,7 @@ int CSWSCreature::AIActionCheckInterAreaPathfinding(CSWSObjectActionNode* pActio
         0, NULL, 0, NULL, 0, NULL);
     return ACTION_COMPLETE;
 }
-// PC 0x005101A0  Xbox 0x001AD930
+// PC 0x00543F80
 int CSWSCreature::AIActionCheckMoveToObject(CSWSObjectActionNode* pAction)
 {
     if (GetDead() == 1 || GetIsPCDying() == 1 || GetDeadTemp() == 1)
@@ -979,7 +979,7 @@ int CSWSCreature::AIActionCheckMoveToObject(CSWSObjectActionNode* pAction)
     SetLockOrientationToObject(CGameObjectArray::INVALIDOBJID, 0);
     return ACTION_COMPLETE;
 }
-// PC 0x005103B0  Xbox 0x001ADB40
+// PC 0x005441A0
 int CSWSCreature::AIActionCheckMoveToObjectRadius(CSWSObjectActionNode* pAction)
 {
     if (GetDead() == 1 || GetIsPCDying() == 1 || GetDeadTemp() == 1)
@@ -1035,7 +1035,7 @@ int CSWSCreature::AIActionCheckMoveToObjectRadius(CSWSObjectActionNode* pAction)
     }
     return ACTION_COMPLETE;
 }
-// PC 0x00510670  Xbox 0x001ADE00
+// PC 0x00544460
 int CSWSCreature::AIActionCheckMoveToPoint(CSWSObjectActionNode* pAction)
 {
     if (GetDead() == 1 || GetIsPCDying() == 1 || GetDeadTemp() == 1 ||
@@ -1074,7 +1074,7 @@ int CSWSCreature::AIActionCheckMoveToPoint(CSWSObjectActionNode* pAction)
     }
     return ACTION_COMPLETE;
 }
-// PC 0x005108A0  Xbox 0x001AE040
+// PC 0x00544690
 int CSWSCreature::AIActionCheckMoveToPointRadius(CSWSObjectActionNode* pAction)
 {
     if (GetDead() == 1 || GetIsPCDying() == 1 || GetDeadTemp() == 1)
@@ -1114,7 +1114,7 @@ int CSWSCreature::AIActionCheckMoveToPointRadius(CSWSObjectActionNode* pAction)
     }
     return ACTION_COMPLETE;
 }
-// PC 0x00510AB0  Xbox 0x001AE270
+// PC 0x005448B0
 int CSWSCreature::AIActionCheckMoveToFollowRadius(CSWSObjectActionNode* pAction)
 {
     if (GetDead() == 1 || GetIsPCDying() == 1 || GetDeadTemp() == 1)
@@ -1155,7 +1155,7 @@ int CSWSCreature::AIActionCheckMoveToFollowRadius(CSWSObjectActionNode* pAction)
     }
     return ACTION_COMPLETE;
 }
-// PC 0x00510C20  Xbox 0x001AE3F0
+// PC 0x00544A30
 int CSWSCreature::AIActionEncounterCreatureDestroySelf()
 {
     if (GetDead() == 1 || GetIsPCDying() == 1 || GetDeadTemp() == 1)
@@ -1177,7 +1177,7 @@ int CSWSCreature::AIActionEncounterCreatureDestroySelf()
     m_bCommandable = 0;
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x00510CD0  Xbox 0x001AE4A0
+// PC 0x00544AF0
 unsigned char CSWSCreature::CanEquipWeapon(CSWSItem* pItem,
                                          unsigned long* pnSlot,
                                          int bFeedback, int bUnknown)
@@ -1249,7 +1249,7 @@ unsigned char CSWSCreature::CanEquipWeapon(CSWSItem* pItem,
     }
     return 0;
 }
-// PC 0x005155B0  Xbox 0x001B3320
+// PC 0x0054AD10
 int CSWSCreature::AIActionCheckMoveAwayFromObject(CSWSObjectActionNode* pAction)
 {
 
@@ -1336,7 +1336,7 @@ int CSWSCreature::AIActionCheckMoveAwayFromObject(CSWSObjectActionNode* pAction)
     }
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x00519E30  Xbox 0x001B81B0
+// PC 0x0054F440
 int CSWSCreature::AIActionSetMine(CSWSObjectActionNode* pAction)
 {
     CExoString sTrapScript;
@@ -1606,7 +1606,7 @@ int CSWSCreature::AIActionSetMine(CSWSObjectActionNode* pAction)
     m_bMineActionStarted = FALSE;
     return ACTION_COMPLETE;
 }
-// PC 0x0051AA60  Xbox 0x001B8E40
+// PC 0x00550620
 unsigned char CSWSCreature::CanEquipItem(CSWSItem* pItem,
                                         unsigned long* pnSlot,
                                         int bCheckRestrictions,
@@ -1689,7 +1689,7 @@ unsigned char CSWSCreature::CanEquipItem(CSWSItem* pItem,
     }
     return nResult;
 }
-// PC 0x00515860  Xbox 0x001B35F0
+// PC 0x0054AFD0
 unsigned char CSWSCreature::CanEquipMiscellaneous(CSWSItem* pItem,
                                                   unsigned long* pnSlot,
                                                   int bFeedback, int bUnknown)
@@ -1714,7 +1714,7 @@ unsigned char CSWSCreature::CanEquipMiscellaneous(CSWSItem* pItem,
 
     return 1;
 }
-// PC 0x00510E30  Xbox 0x001AE600
+// PC 0x00544DC0
 int CSWSCreature::CheckProficiencies(CSWSItem* pItem, unsigned long nSlot)
 {
     int i;
@@ -1739,7 +1739,7 @@ int CSWSCreature::CheckProficiencies(CSWSItem* pItem, unsigned long nSlot)
 
     return 1;
 }
-// PC 0x005158E0  Xbox 0x001B3670
+// PC 0x0054B050
 int CSWSCreature::AcquireItem(CSWSItem** ppItem, unsigned long oidCaller,
                               unsigned long oidRepository, int bFlag)
 {
@@ -1823,7 +1823,7 @@ int CSWSCreature::AcquireItem(CSWSItem** ppItem, unsigned long oidCaller,
     }
     return bResult;
 }
-// PC 0x00515AC0  Xbox 0x001B3850
+// PC 0x0054B230
 int CSWSCreature::AIActionRandomWalk(CSWSObjectActionNode* pAction)
 {
     float fWait = NWSCREATURE_RANDOM_WALK_WAIT;
@@ -1905,7 +1905,7 @@ int CSWSCreature::AIActionRandomWalk(CSWSObjectActionNode* pAction)
     }
     return ACTION_COMPLETE;
 }
-// PC 0x00516020  Xbox 0x001B3E00
+// PC 0x0054B740
 int CSWSCreature::HandleSubAreaStateChanges(
     CExoArrayList<unsigned long>* pNewSubAreas,
     CExoArrayList<unsigned long>* pIntersectingSubAreas,
@@ -2039,7 +2039,7 @@ int CSWSCreature::HandleSubAreaStateChanges(
     }
     return bChanged;
 }
-// PC 0x00516630  Xbox 0x001B4410
+// PC 0x0054BD50
 int CSWSCreature::WalkUpdateLocationDistance(float fDistance, Vector* pvPosition,
     Vector* pvDirection, CExoArrayList<unsigned long>* pIntersectingSubAreas)
 {
@@ -2283,7 +2283,7 @@ int CSWSCreature::WalkUpdateLocationDistance(float fDistance, Vector* pvPosition
     *pvPosition = vPosition;
     return bAtEnd;
 }
-// PC 0x00517410  Xbox 0x001B52C0
+// PC 0x0054C9B0
 int CSWSCreature::AIActionPickUpItem(CSWSObjectActionNode* pAction)
 {
     Vector vDestination;
@@ -2373,7 +2373,7 @@ int CSWSCreature::AIActionPickUpItem(CSWSObjectActionNode* pAction)
     }
     return ACTION_FAILED;
 }
-// PC 0x005178F0  Xbox 0x001B5810
+// PC 0x0054CE90
 void CSWSCreature::ClearVisibleList()
 {
     int i;
@@ -2392,7 +2392,7 @@ void CSWSCreature::ClearVisibleList()
         }
     }
 }
-// PC 0x0051B7B0  Xbox 0x001B9BB0
+// PC 0x00551610
 int CSWSCreature::UpdateSubareasOnMoveTo(
     const Vector& vFrom, const Vector& vTo, int bUseIntersectList,
     CExoArrayList<unsigned long>* pIntersectList, int bFlag)
@@ -2430,7 +2430,7 @@ int CSWSCreature::UpdateSubareasOnMoveTo(
     }
     return bChanged;
 }
-// PC 0x0051B940  Xbox 0x001B9D40
+// PC 0x005517A0
 int CSWSCreature::UpdateSubareasOnJumpPosition(const Vector& vPosition,
                                                unsigned long oidArea,
                                                int bRunScripts)
@@ -2492,7 +2492,7 @@ int CSWSCreature::UpdateSubareasOnJumpPosition(const Vector& vPosition,
     }
     return bReturn;
 }
-// PC 0x0051BB10  Xbox 0x001B9F10
+// PC 0x00551970
 int CSWSCreature::WalkUpdateLocation()
 {
     if (m_nElapsedTime == 0)
@@ -2634,7 +2634,7 @@ int CSWSCreature::WalkUpdateLocation()
     }
     return CSWSObject::ACTION_IN_PROGRESS;
 }
-// PC 0x0051C0D0  Xbox 0x001BA550
+// PC 0x00551F30
 int CSWSCreature::WalkUpdateLocation_QuickWalk_ForcePushed()
 {
     int nResult = ACTION_IN_PROGRESS;
@@ -2694,7 +2694,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_ForcePushed()
     }
     return nResult;
 }
-// PC 0x0051C360  Xbox 0x001BA760
+// PC 0x005521C0
 int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader()
 {
     CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
@@ -2919,7 +2919,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader()
     pMember->m_fSpeed = fSpeed;
     return nResult;
 }
-// PC 0x0051AC10  Xbox 0x001B8FF0
+// PC 0x005508D0
 int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_FindPath(
     CSWPartyMemberData* pMember, CSWPartyFollowDataArray* pPaths,
     float& fDistance, int bRun)
@@ -2992,7 +2992,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_FindPath(
     pMember->m_bUpdateLastPosition = TRUE;
     return ACTION_COMPLETE;
 }
-// PC 0x0051AFD0  Xbox 0x001B93C0
+// PC 0x00550DA0
 void CSWSCreature::SetVisibilityList(CExoArrayList<CSWVisibilityNode*>* pList)
 {
     m_lstVisibilityList.SetSize(0);
@@ -3006,7 +3006,7 @@ void CSWSCreature::SetVisibilityList(CExoArrayList<CSWVisibilityNode*>* pList)
         }
     }
 }
-// PC 0x0051B050  Xbox 0x001B9440
+// PC 0x00550E20
 void CSWSCreature::UpdateVisibleList(unsigned char nUpdateType)
 {
     int i;
@@ -3118,7 +3118,7 @@ void CSWSCreature::UpdateVisibleList(unsigned char nUpdateType)
     }
     m_bVisibleListUpdatePending = 0;
 }
-// PC 0x00517960  Xbox 0x001B5880
+// PC 0x0054CF00
 void CSWSCreature::RemoveFromVisibleList(unsigned long oidObject)
 {
     int i;
@@ -3140,7 +3140,7 @@ void CSWSCreature::RemoveFromVisibleList(unsigned long oidObject)
         }
     }
 }
-// PC 0x005179E0  Xbox 0x001B5900
+// PC 0x0054CF80
 int CSWSCreature::CheckVisibleList(unsigned long oidObject)
 {
     int i;
@@ -3154,7 +3154,7 @@ int CSWSCreature::CheckVisibleList(unsigned long oidObject)
     }
     return 0;
 }
-// PC 0x00517A20  Xbox 0x001B5940
+// PC 0x0054CFC0
 CSWVisibilityNode* CSWSCreature::GetVisibleListElement(unsigned long oidObject)
 {
     int i;
@@ -3168,7 +3168,7 @@ CSWVisibilityNode* CSWSCreature::GetVisibleListElement(unsigned long oidObject)
     }
     return NULL;
 }
-// PC 0x00517A60  Xbox 0x001B5980
+// PC 0x0054D000
 int CSWSCreature::AIActionHeal(CSWSObjectActionNode* pAction)
 {
     if ((GetDead() == TRUE && GetIsPCDying() == TRUE) || GetDeadTemp() == TRUE)
@@ -3359,7 +3359,7 @@ int CSWSCreature::AIActionHeal(CSWSObjectActionNode* pAction)
     m_bHealAnimationPlayed = FALSE;
     return ACTION_COMPLETE;
 }
-// PC 0x00510EF0  Xbox 0x001AE6C0
+// PC 0x00544E80
 int CSWSCreature::RemoveItem(CSWSItem* pItem, int bUnknown1, int bUnknown2,
                              CSWSItem** ppItem)
 {
@@ -3405,7 +3405,7 @@ int CSWSCreature::RemoveItem(CSWSItem* pItem, int bUnknown1, int bUnknown2,
     pItem->SetPossessor(OBJECT_INVALID, 1, bUnknown2, OBJECT_INVALID);
     return 1;
 }
-// PC 0x00510FD0  Xbox 0x001AE7A0
+// PC 0x00544FD0
 int CSWSCreature::AIActionEquipItem(CSWSObjectActionNode* pAction)
 {
     ActivityManager(ACTIVITY_ACTION_OBJECT_INTERACTION);
@@ -3433,7 +3433,7 @@ int CSWSCreature::AIActionEquipItem(CSWSObjectActionNode* pAction)
     }
     return ACTION_FAILED;
 }
-// PC 0x00511080  Xbox 0x001AE850
+// PC 0x00545090
 int CSWSCreature::AIActionAreaWait(CSWSObjectActionNode*)
 {
     if (m_nAreaWaitState == 0)
@@ -3448,7 +3448,7 @@ int CSWSCreature::AIActionAreaWait(CSWSObjectActionNode*)
 
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x005110B0  Xbox 0x001AE880
+// PC 0x005450C0
 void CSWSCreature::TerminateClientSidePath(int nPathType)
 {
     CServerExoAppInternal* pServer =
@@ -3467,7 +3467,7 @@ void CSWSCreature::TerminateClientSidePath(int nPathType)
         }
     }
 }
-// PC 0x00511130  Xbox 0x001AE8F0
+// PC 0x00545140
 int CSWSCreature::AIActionPartyFollowLeader(CSWSObjectActionNode*)
 {
     if (m_bInParty != 0 && m_pFollowInfo != NULL &&
@@ -3489,7 +3489,7 @@ int CSWSCreature::AIActionPartyFollowLeader(CSWSObjectActionNode*)
 
     return CSWSObject::ACTION_FAILED;
 }
-// PC 0x005111C0  Xbox 0x001AEA20
+// PC 0x005453D0
 float CSWSCreature::ComputeTotalWalkDistance()
 {
     int nFirstPoint = m_pPathfindInformation->m_nField_9C;
@@ -3524,7 +3524,7 @@ float CSWSCreature::ComputeTotalWalkDistance()
     }
     return fDistance;
 }
-// PC 0x00511290  Xbox 0x001AEB00
+// PC 0x005454A0
 int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_Offset(
     CSWPartyMemberData* pMember, CSWPartyFollowDataArray* pPaths,
     float& fDistance, int nMemberIndex)
@@ -3611,7 +3611,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_Offset(
     pMember->m_nFollowPathIndex = nPathIndex;
     return ACTION_COMPLETE;
 }
-// PC 0x00511860  Xbox 0x001AF190
+// PC 0x00545C70
 int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_Moving_To_Path(
     CSWPartyMemberData* pMember, CSWPartyFollowDataArray* pPaths,
     float& fDistance, int bRun)
@@ -3676,7 +3676,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_Moving_To_Path(
     }
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x00511B60  Xbox 0x001AF4C0
+// PC 0x00545F70
 int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_Following_Path(
     CSWPartyMemberData* pMember, CSWPartyFollowDataArray* pPaths,
     float& fDistance, int bRun)
@@ -3832,7 +3832,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_Following_Path(
     }
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x00512430  Xbox 0x001AFE10
+// PC 0x00546B40
 int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_Moving_To_Offset(
     CSWPartyMemberData* pMember, CSWPartyFollowDataArray* pPaths,
     float& fDistance, int bRun)
@@ -3905,7 +3905,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_Moving_To_Offset(
     pMember->m_nCharacterIndex = CSWPartyMemberData::FOLLOW_TELEPORT_FORWARD;
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x005127D0  Xbox 0x001B01F0
+// PC 0x00546FD0
 int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_WaitingForPath(
     CSWPartyMemberData* pMember, CSWPartyFollowDataArray* pPaths,
     float& fDistance, int bRun)
@@ -3971,7 +3971,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_WaitingForPath(
     }
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x00512A60  Xbox 0x001B0510
+// PC 0x00547360
 int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_OffsetWaitDest(
     CSWPartyMemberData* pMember, CSWPartyFollowDataArray* pPaths,
     float& fDistance, int bRun)
@@ -4006,7 +4006,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_OffsetWaitDest(
     }
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x00512B40  Xbox 0x001B0610
+// PC 0x00547440
 int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_PathWaitDest(
     CSWPartyMemberData* pMember, CSWPartyFollowDataArray* pPaths,
     float& fDistance, int bRun)
@@ -4041,7 +4041,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_PathWaitDest(
     }
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x00512C20  Xbox 0x001B0710
+// PC 0x00547520
 int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_ToOffsetWaitDest(
     CSWPartyMemberData* pMember, CSWPartyFollowDataArray* pPaths,
     float& fDistance, int bRun)
@@ -4076,7 +4076,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_ToOffsetWaitDest(
     }
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x00512D00  Xbox 0x001B0810
+// PC 0x00547600
 int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_ToPathWaitDest(
     CSWPartyMemberData* pMember, CSWPartyFollowDataArray* pPaths,
     float& fDistance, int bRun)
@@ -4111,7 +4111,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_ToPathWaitDest(
     }
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x00512DE0  Xbox 0x001B0910
+// PC 0x005476E0
 int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_TeleportForward(
     CSWPartyMemberData* pMember, CSWPartyFollowDataArray* pPaths,
     float& fDistance, int bRun)
@@ -4146,7 +4146,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_TeleportForward(
     }
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x00512F10  Xbox 0x001B0A40
+// PC 0x00547810
 float CSWSCreature::ComputeSpeedFactor(float fDistance, int nTime)
 {
     float fSpeedFactor;
@@ -4191,7 +4191,7 @@ float CSWSCreature::ComputeSpeedFactor(float fDistance, int nTime)
     }
     return fSpeedFactor;
 }
-// PC 0x00512FD0  Xbox 0x001B0B10
+// PC 0x005478D0
 int CSWSCreature::WalkUpdateLocationTestDistance(
     const Vector& vStart, const Vector& vEnd,
     Vector* pvHitPosition, unsigned long* poidHitCreature)
@@ -4265,7 +4265,7 @@ int CSWSCreature::WalkUpdateLocationTestDistance(
     }
     return bCanWalk;
 }
-// PC 0x005132E0  Xbox 0x001B0E20
+// PC 0x00547BE0
 int CSWSCreature::AIActionForceFollowObject(CSWSObjectActionNode* pAction)
 {
     if (GetDead() || GetIsPCDying() || GetDeadTemp())
@@ -4346,7 +4346,7 @@ int CSWSCreature::AIActionForceFollowObject(CSWSObjectActionNode* pAction)
     }
     return ACTION_IN_PROGRESS;
 }
-// PC 0x005136B0  Xbox 0x001B1190
+// PC 0x005480C0
 int CSWSCreature::AIActionCheckForceFollowObject(CSWSObjectActionNode* pAction)
 {
     Vector vPosition = m_vPosition;
@@ -4375,7 +4375,7 @@ int CSWSCreature::AIActionCheckForceFollowObject(CSWSObjectActionNode* pAction)
 
     return ACTION_COMPLETE;
 }
-// PC 0x005137C0  Xbox 0x001B12D0
+// PC 0x005481D0
 int CSWSCreature::AIActionOrientCamera(CSWSObjectActionNode* pAction)
 {
     int nX;
@@ -4407,7 +4407,7 @@ int CSWSCreature::AIActionOrientCamera(CSWSObjectActionNode* pAction)
 
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x00513830  Xbox 0x001B1340
+// PC 0x00548240
 int CSWSCreature::AIActionDropItem(CSWSObjectActionNode* pAction)
 {
     CItemRepository* pRepository = NULL;
@@ -4556,7 +4556,7 @@ int CSWSCreature::AIActionDropItem(CSWSObjectActionNode* pAction)
         pMessage->SendServerToPlayerInventory_DropCancel(pPlayer->m_nPlayerId, oidItem);
     return ACTION_FAILED;
 }
-// PC 0x00513E30  Xbox 0x001B1990
+// PC 0x00548840
 unsigned char CSWSCreature::CanUnEquipWeapon(CSWSItem* pItem)
 {
     CSWSItem* pRightItem;
@@ -4585,7 +4585,7 @@ unsigned char CSWSCreature::CanUnEquipWeapon(CSWSItem* pItem)
 
     return 1;
 }
-// PC 0x00513EC0  Xbox 0x001B1A20
+// PC 0x00548960
 int CSWSCreature::AIActionUnequipItem(CSWSObjectActionNode* pAction)
 {
     unsigned long oidItem;
@@ -4619,7 +4619,7 @@ int CSWSCreature::AIActionUnequipItem(CSWSObjectActionNode* pAction)
 
     return CSWSObject::ACTION_FAILED;
 }
-// PC 0x00513F60  Xbox 0x001B1AC0
+// PC 0x00548A30
 int CSWSCreature::AIActionWaitForEndOfRound(CSWSObjectActionNode*)
 {
     if (((CSWSObject*)this)->GetDead() == 1 ||
@@ -4637,7 +4637,7 @@ int CSWSCreature::AIActionWaitForEndOfRound(CSWSObjectActionNode*)
 
     return CSWSObject::ACTION_IN_PROGRESS;
 }
-// PC 0x00513FC0  Xbox 0x001B1B20
+// PC 0x00548AA0
 CSWSFaction* CSWSCreature::GetFaction()
 {
     CFactionManager* pFactionManager;
@@ -4654,7 +4654,7 @@ CSWSFaction* CSWSCreature::GetFaction()
 #endif
     return pFactionManager->GetFaction(m_pStats->m_nFactionId);
 }
-// PC 0x00513FF0  Xbox 0x001B1B60
+// PC 0x00548AD0
 int CSWSCreature::GetCreatureReputation(unsigned long oidCreature, int nFaction)
 {
     int nFaction1;
@@ -4690,7 +4690,7 @@ int CSWSCreature::GetCreatureReputation(unsigned long oidCreature, int nFaction)
 #endif
         ->GetNPCFactionReputation(nFaction2, nFaction1);
 }
-// PC 0x00514070  Xbox 0x001B1BF0
+// PC 0x00548B50
 void CSWSCreature::AdjustReputation(int nFaction, int nAdjustment)
 {
     CFactionManager* pFactionManager;
@@ -4720,27 +4720,27 @@ void CSWSCreature::AdjustReputation(int nFaction, int nAdjustment)
 }
 
 extern int g_bRunSubAreaScripts;
-// PC 0x005140D0  Xbox 0x001B1C60
+// PC 0x00548BB0
 int CSWSCreature::AIActionPickPocket(CSWSObjectActionNode*)
 {
     return CSWSObject::ACTION_FAILED;
 }
-// PC 0x005140D0
+// PC 0x00548BB0
 int CSWSCreature::AIActionAnimalEmpathy(CSWSObjectActionNode*)
 {
     return CSWSObject::ACTION_FAILED;
 }
-// PC 0x005140D0
+// PC 0x00548BB0
 int CSWSCreature::AIActionTaunt(CSWSObjectActionNode*)
 {
     return CSWSObject::ACTION_FAILED;
 }
-// PC 0x005140E0  Xbox 0x001B1C70
+// PC 0x00548BC0
 int CSWSCreature::AIActionRest(CSWSObjectActionNode*)
 {
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x005140F0  Xbox 0x001B1C80
+// PC 0x00548BD0
 int CSWSCreature::AIActionAppear(CSWSObjectActionNode*)
 {
     CServerExoApp* pServerApp;
@@ -4768,7 +4768,7 @@ int CSWSCreature::AIActionAppear(CSWSObjectActionNode*)
     }
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x005141B0  Xbox 0x001B1D40
+// PC 0x00548C90
 int CSWSCreature::AIActionDisappear(CSWSObjectActionNode*)
 {
     CServerExoApp* pServerApp;
@@ -4796,7 +4796,7 @@ int CSWSCreature::AIActionDisappear(CSWSObjectActionNode*)
     }
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x00514270  Xbox 0x001B1E00
+// PC 0x00548D50
 int CSWSCreature::AIActionCounterSpell(CSWSObjectActionNode* pAction)
 {
     unsigned long oidTarget;
@@ -4858,7 +4858,7 @@ int CSWSCreature::AIActionCounterSpell(CSWSObjectActionNode* pAction)
     }
     return ACTION_IN_PROGRESS;
 }
-// PC 0x005145A0  Xbox 0x001B2170
+// PC 0x00549350
 int CSWSCreature::CheckItemAlignmentRestrictions(CSWSItem* pItem)
 {
     if (!pItem->GetPropertyByTypeExists(
@@ -4888,7 +4888,7 @@ int CSWSCreature::CheckItemAlignmentRestrictions(CSWSItem* pItem)
     }
     return 1;
 }
-// PC 0x00514650  Xbox 0x001B2220
+// PC 0x00549630
 int CSWSCreature::CheckItemFeatRestrictions(CSWSItem* pItem)
 {
     if (!pItem->GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_FEAT, 0))
@@ -4918,7 +4918,7 @@ int CSWSCreature::CheckItemFeatRestrictions(CSWSItem* pItem)
     }
     return 1;
 }
-// PC 0x00514700  Xbox 0x001B22D0
+// PC 0x00549B40
 void CSWSCreature::SetFormation(unsigned long oidLeader, int nFormation,
                                 int nPosition)
 {
@@ -4958,7 +4958,7 @@ void CSWSCreature::SetFormation(unsigned long oidLeader, int nFormation,
         0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL,
         0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL);
 }
-// PC 0x005149B0  Xbox 0x001B2630
+// PC 0x00549F80
 void CSWSCreature::UnsummonMyself()
 {
     CExoString sScript;
@@ -4977,7 +4977,7 @@ void CSWSCreature::UnsummonMyself()
     g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
         0, 0, m_nId, m_nId, CServerAIMaster::EVENT_DESTROY_OBJECT, NULL);
 }
-// PC 0x00518210  Xbox 0x001B6140
+// PC 0x0054D850
 int CSWSCreature::CheckItemClassRestrictions(CSWSItem* pItem)
 {
     if (!pItem->GetPropertyByTypeExists(
@@ -5017,7 +5017,7 @@ int CSWSCreature::CheckItemClassRestrictions(CSWSItem* pItem)
     }
     return 0;
 }
-// PC 0x0051B370  Xbox 0x001B9800
+// PC 0x00551150
 void CSWSCreature::AddToVisibleList(unsigned long oidObject, int bSeen, int bHeard,
                                   unsigned char nSanctuary, int bInvisible)
 {
@@ -5032,7 +5032,7 @@ void CSWSCreature::AddToVisibleList(unsigned long oidObject, int bSeen, int bHea
         m_lstVisibilityList.Add(pNode);
     }
 }
-// PC 0x0051B420  Xbox 0x001B98B0
+// PC 0x00551200
 int CSWSCreature::AIActionSurrenderToEnemies(CSWSObjectActionNode*)
 {
     if (m_nAreaWaitState == 1)
@@ -5043,7 +5043,7 @@ int CSWSCreature::AIActionSurrenderToEnemies(CSWSObjectActionNode*)
     SurrenderToEnemies(0);
     return CSWSObject::ACTION_COMPLETE;
 }
-// PC 0x0051B440  Xbox 0x001B98D0
+// PC 0x00551220
 int CSWSCreature::CanUseItem(CSWSItem* pItem, int bUnknown)
 {
     int bCanUse = TRUE;
@@ -5104,7 +5104,7 @@ int CSWSCreature::CanUseItem(CSWSItem* pItem, int bUnknown)
     }
     return bCanUse;
 }
-// PC 0x005182F0  Xbox 0x001B6220
+// PC 0x00549450
 int CSWSCreature::CheckItemRaceRestrictions(CSWSItem* pItem)
 {
     int bCheckDroidOrHuman = 1;
@@ -5182,7 +5182,7 @@ int CSWSCreature::CheckItemRaceRestrictions(CSWSItem* pItem)
     }
     return 0;
 }
-// PC 0x00518450  Xbox 0x001B6380
+// PC 0x0054D940
 int CSWSCreature::GetIsInInvitationsOffered(unsigned long oidCreature)
 {
     int i;
@@ -5217,7 +5217,7 @@ int CSWSCreature::GetIsInInvitationsOffered(unsigned long oidCreature)
     }
     return 0;
 }
-// PC 0x00518530  Xbox 0x001B6460
+// PC 0x0054DA20
 void CSWSCreature::RemoveFromInvitationsOffered(unsigned long oidCreature)
 {
     int i;
@@ -5233,7 +5233,7 @@ void CSWSCreature::RemoveFromInvitationsOffered(unsigned long oidCreature)
         }
     }
 }
-// PC 0x00518580  Xbox 0x001B64B0
+// PC 0x0054DA70
 int CSWSCreature::GetIsInInvitationsIgnored(unsigned long oidCreature)
 {
     int i;
@@ -5268,7 +5268,7 @@ int CSWSCreature::GetIsInInvitationsIgnored(unsigned long oidCreature)
     }
     return 0;
 }
-// PC 0x00518660  Xbox 0x001B6590
+// PC 0x0054DB50
 void CSWSCreature::CleanInvitationLists()
 {
     unsigned long nDay;
@@ -5321,13 +5321,13 @@ void CSWSCreature::CleanInvitationLists()
         SetInvitedToParty(FALSE);
     }
 }
-// PC 0x00514AB0  Xbox 0x001B2730
+// PC 0x0054A0D0
 CAvoidCreature::CAvoidCreature()
 {
     m_nUnused = 0;
     Reset();
 }
-// PC 0x00514AF0  Xbox 0x001B27D0
+// PC 0x0054A110
 int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
 {
     Vector vTarget;
@@ -5611,7 +5611,7 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
         return ACTION_IN_PROGRESS;
     }
 }
-// PC 0x005188C0  Xbox 0x001B67F0
+// PC 0x0054DDB0
 int CSWSCreature::GetNumInvited()
 {
     NwscreatureaiTrace1();
@@ -5621,7 +5621,7 @@ int CSWSCreature::GetNumInvited()
     }
     return 0;
 }
-// PC 0x005188E0  Xbox 0x001B6810
+// PC 0x0054DDD0
 int CSWSCreature::HasAction(unsigned long nAction)
 {
     if (m_lstActions.GetHeadPos() != NULL)
@@ -5641,7 +5641,7 @@ int CSWSCreature::HasAction(unsigned long nAction)
     }
     return FALSE;
 }
-// PC 0x00518940  Xbox 0x001B6870
+// PC 0x0054DE30
 CSWSObjectActionNode* CSWSCreature::GetAction(unsigned long nAction)
 {
     if (m_lstActions.GetHeadPos() != NULL)
@@ -5661,7 +5661,7 @@ CSWSObjectActionNode* CSWSCreature::GetAction(unsigned long nAction)
     }
     return NULL;
 }
-// PC 0x00518990  Xbox 0x001B6D50
+// PC 0x0054DE80
 void CSWSCreature::SurrenderToEnemies(int bKeepOwnEffects)
 {
     CancelCombat(0);
@@ -5704,7 +5704,7 @@ void CSWSCreature::SurrenderToEnemies(int bKeepOwnEffects)
             AddMember(GetId(), 0);
     }
 }
-// PC 0x00518B30  Xbox 0x001B6F10
+// PC 0x0054E020
 int CSWSCreature::GetUserActionsPending()
 {
     CExoLinkedListNode* pPos = m_pcCombatRound->m_pScheduledActions->GetHeadPos();
@@ -5748,7 +5748,7 @@ int CSWSCreature::GetUserActionsPending()
     }
     return FALSE;
 }
-// PC 0x00518C40  Xbox 0x001B6F80
+// PC 0x0054E130
 int CSWSCreature::AIActionRecoverMine(CSWSObjectActionNode* pAction)
 {
     int nDC = 0;
@@ -5948,7 +5948,7 @@ int CSWSCreature::AIActionRecoverMine(CSWSObjectActionNode* pAction)
     m_bMineActionStarted = FALSE;
     return ACTION_COMPLETE;
 }
-// PC 0x00519570  Xbox 0x001B78D0
+// PC 0x0054EB00
 int CSWSCreature::AIActionDisarmMine(CSWSObjectActionNode* pAction)
 {
     int nRoll;
@@ -6160,7 +6160,7 @@ int CSWSCreature::AIActionDisarmMine(CSWSObjectActionNode* pAction)
     }
     return nResult;
 }
-// PC 0x0051B580  Xbox 0x001B9A10
+// PC 0x005513E0
 void CSWSCreature::AddToInvitationsOffered(unsigned long oidCreature)
 {
     unsigned long nDay;
@@ -6178,7 +6178,7 @@ void CSWSCreature::AddToInvitationsOffered(unsigned long oidCreature)
     }
     m_pInvitationsOffered->Add(invitation);
 }
-// PC 0x0051CD20  Xbox 0x001BB230
+// PC 0x00552B90
 int CSWSCreature::DriveUpdateLocation(int bRun)
 {
     if (m_nElapsedTime == 0)
@@ -6229,7 +6229,7 @@ int CSWSCreature::DriveUpdateLocation(int bRun)
     SetPosition(vPosition, 1, 1, 0);
     return nResult;
 }
-// PC 0x0051D060  Xbox 0x001BB5F0
+// PC 0x00552ED0
 int CSWSCreature::ReplyToInvitation(int nReply, unsigned long oidInviter)
 {
     CSWSCreature* pInviter;
@@ -6266,7 +6266,7 @@ int CSWSCreature::ReplyToInvitation(int nReply, unsigned long oidInviter)
     }
     return bReturn;
 }
-// PC 0x0051B650  Xbox 0x001B9AE0
+// PC 0x005514B0
 void CSWSCreature::AddToInvitationsIgnored(unsigned long oidCreature)
 {
     unsigned long nDay;
@@ -6284,7 +6284,7 @@ void CSWSCreature::AddToInvitationsIgnored(unsigned long oidCreature)
     }
     m_pInvitationsIgnored->Add(invitation);
 }
-// PC 0x0051D110  Xbox 0x001BB6A0
+// PC 0x00552F80
 int CSWSCreature::AIActionJumpToObject(CSWSObjectActionNode* pAction)
 {
     if (GetDead() == 1 || GetIsPCDying() == 1 || GetDeadTemp() == 1 ||
@@ -6397,7 +6397,7 @@ int CSWSCreature::AIActionJumpToObject(CSWSObjectActionNode* pAction)
     m_pPathfindInformation->ResetInterAreaSearchData();
     return ACTION_FAILED;
 }
-// PC 0x0051D600  Xbox 0x001BBC90
+// PC 0x00553480
 int CSWSCreature::AIActionJumpToPoint(CSWSObjectActionNode* pAction)
 {
     if (GetDead() != 1 && GetIsPCDying() != 1 && GetDeadTemp() != 1 &&
@@ -6491,7 +6491,7 @@ int CSWSCreature::CheckUseMagicDeviceSkill(CSWSItem* pItem, int nRestrictionType
 {
     return 0;
 }
-// PC 0x0051D9C0  Xbox 0x001BC080
+// PC 0x00553850
 int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
 {
     if (m_nClientState == 0)
@@ -6816,7 +6816,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
     }
     return ACTION_IN_PROGRESS;
 }
-// PC 0x0051E6A0  Xbox 0x001BCE00
+// PC 0x00554710
 int CSWSCreature::AIActionDrive(CSWSObjectActionNode* pAction)
 {
     if (GetDead() == TRUE || GetIsPCDying() == TRUE || GetDeadTemp() == TRUE)
@@ -7097,7 +7097,7 @@ static __int64 QueryTimer();
 #else
 #define AIACTIONMOVETOPOINT_RETURN(nValue) return nValue
 #endif
-int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x0051F4F0  Xbox 0x001BDDE0
+int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x005559F0
 {
     if (GetDead() == 1 || GetIsPCDying() == 1 || GetDeadTemp() == 1)
         return ACTION_FAILED;
@@ -7562,7 +7562,7 @@ static inline void NwscreatureaiTrace1()
 #ifdef _XBOX
 #include <stdio.h>
 #include "aurconsole.h"
-// Xbox 0x001B68C0
+
 static char* Draw_Marker(char* szArgs)
 {
     float fX = 0.0f;
@@ -7574,7 +7574,7 @@ static char* Draw_Marker(char* szArgs)
         g_pAppManager->GetServerExoApp()->GetModule()->GetArea()->GetResRef(), vMarker, 1);
     return " ";
 }
-// Xbox 0x001B6960
+
 static char* Draw_Line(char* szArgs)
 {
     float fX1 = 0.0f;
@@ -7590,7 +7590,7 @@ static char* Draw_Line(char* szArgs)
         g_pAppManager->GetServerExoApp()->GetModule()->GetArea()->GetResRef(), vLine[1], 1);
     return " ";
 }
-// Xbox 0x001B6A70
+
 static char* TestLocationIsSafe(char* szArgs)
 {
     float fX = 0.0f;
@@ -7611,7 +7611,7 @@ static char* TestLocationIsSafe(char* szArgs)
         sprintf(sRet, "Invalid Location");
     return sRet;
 }
-// Xbox 0x001B6B90
+
 static char* LocateNearestPathPoint(char* szArgs)
 {
     float fX = 0.0f;
@@ -7638,7 +7638,7 @@ static char* LocateNearestPathPoint(char* szArgs)
     sprintf(sRet, "Invalid Location");
     return sRet;
 }
-// Xbox 0x001B25C0
+
 static char* ValidateCreaturePath(char* szArgs)
 {
     unsigned long oidCreature = OBJECT_INVALID;
@@ -7662,7 +7662,7 @@ ConsoleFunc ConFValidateCreaturePath("ValidateCreaturePath", ValidateCreaturePat
 #endif
 
 #ifdef _XBOX
-// Xbox 0x001AE9A0
+
 static __int64 QueryTimer()
 {
     LARGE_INTEGER nFrequency;

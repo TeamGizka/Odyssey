@@ -1,17 +1,17 @@
 #include "swcroom.h"
 #include "aurscene.h"
-// PC 0x00646080  Xbox 0x000B7230
+// PC 0x0069FB80
 CSWCRoom::CSWCRoom()
 {
     m_pAuroraRoom = NULL;
     m_pRoomGob = NULL;
     m_nRoomIndex = -1;
 }
-// PC 0x006460B0  Xbox 0x000B7260
+// PC 0x0069FBB0
 CSWCRoom::~CSWCRoom()
 {
 }
-// PC 0x006460C0  Xbox 0x000B7270
+// PC 0x0069FBC0
 Gob* CSWCRoom::SpawnRoom(CAurScene* pScene)
 {
     if (m_bNoWalkMesh != 0)
@@ -28,7 +28,7 @@ Gob* CSWCRoom::SpawnRoom(CAurScene* pScene)
     }
     return m_pRoomGob;
 }
-// PC 0x00646180  Xbox 0x000B7330
+// PC 0x0069FC80
 void CSWCRoom::PlayAnimation(unsigned short nAnimation)
 {
     if (m_pRoomGob != 0)

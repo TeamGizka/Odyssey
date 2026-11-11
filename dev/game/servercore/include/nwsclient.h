@@ -8,7 +8,7 @@ class CSWSClient
 public:
     CSWSClient(unsigned long nPlayerId);
     virtual ~CSWSClient();
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWSPlayer* AsSWSPlayer()
     {
         return 0;

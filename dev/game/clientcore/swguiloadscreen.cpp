@@ -8,7 +8,7 @@
 #include "clientexoappinternal.h"
 
 static inline void SwguiloadscreenTrace1();
-// PC 0x0067A6D0  Xbox 0x00099B70
+// PC 0x006D03F0
 void CSWGuiLoadScreen::SetImage(const CResRef& cImage)
 {
 #ifdef _XBOX
@@ -22,7 +22,7 @@ void CSWGuiLoadScreen::SetImage(const CResRef& cImage)
         SetBackground(cImage);
     }
 }
-// PC 0x0067A710  Xbox 0x00099CE0
+// PC 0x006D0490
 CSWGuiLoadScreen::CSWGuiLoadScreen(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -60,7 +60,7 @@ CSWGuiLoadScreen::CSWGuiLoadScreen(CSWGuiManager* pManager)
     m_bCenterHorizontal = 1;
     m_bCenterVertical = 1;
 }
-// PC 0x0067A9C0  Xbox 0x00099BC0
+// PC 0x006D02B0
 void CSWGuiLoadScreen::SetHint(unsigned long nStrRef)
 {
     SwguiloadscreenTrace1();
@@ -77,7 +77,7 @@ void CSWGuiLoadScreen::SetHint(unsigned long nStrRef)
     }
     m_lblHint.m_cText.m_cParams.SetText(sHint);
 }
-// PC 0x0067AA80
+// PC 0x006D0370
 void CSWGuiLoadScreen::AddHintToMessageBuffer()
 {
     SwguiloadscreenTrace1();
@@ -88,7 +88,7 @@ void CSWGuiLoadScreen::AddHintToMessageBuffer()
 }
 
 #ifndef _XBOX
-void CSWGuiLoadScreen::Draw(float fElapsed)  // PC 0x0067AB00
+void CSWGuiLoadScreen::Draw(float fElapsed)  // PC 0x006D0430
 {
     SwguiloadscreenTrace1();
     AurGUIStartLayer();

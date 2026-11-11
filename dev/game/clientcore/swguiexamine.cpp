@@ -7,7 +7,7 @@
 static inline void SwguiexamineTrace1();
 static inline void SwguiexamineTrace2();
 #define SWGUIEXAMINE_TRACE() SwguiexamineTrace1()
-// PC 0x006CE9C0  Xbox 0x000F54C0
+// PC 0x0073CF90
 CSWGuiExamine::CSWGuiExamine(CSWGuiManager* pManager)
     : CSWGuiMessageBox(pManager)
 {
@@ -19,7 +19,7 @@ CSWGuiExamine::CSWGuiExamine(CSWGuiManager* pManager)
     SetAllowCancel(0);
     m_nReturnInputMode = 0;
 }
-// PC 0x006CEA30  Xbox 0x000F5460
+// PC 0x0073CF30
 void CSWGuiExamine::HandleInputEvent(int nEvent, int nState)
 {
     SWGUIEXAMINE_TRACE();

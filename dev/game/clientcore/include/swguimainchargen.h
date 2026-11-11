@@ -77,7 +77,7 @@ public:
 };
 
 #ifdef _XBOX
-inline void CSWGuiMainCharGen::SetNameString(const CExoString& sName)  // PC 0x006EA9B0
+inline void CSWGuiMainCharGen::SetNameString(const CExoString& sName)
 {
     m_sName = sName;
     m_lblName.m_cText.m_cParams.SetText(m_sName);

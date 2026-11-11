@@ -16,7 +16,7 @@
 static inline void SwguistoreTrace2();
 static inline void SwguistoreTrace1();
 #define SWGUISTORE_TRACE() SwguistoreTrace1()
-// PC 0x006C0610  Xbox 0x000F0ED0
+// PC 0x00720E90
 void CSWGuiStore::PopulateStore()
 {
     CServerExoApp* pServer;
@@ -32,7 +32,7 @@ void CSWGuiStore::PopulateStore()
         m_lblCreditsValue.m_cText.m_cParams.SetText(CExoString(nGold));
     }
 }
-// PC 0x006C0690  Xbox 0x000F0F50
+// PC 0x00721300
 void CSWGuiStore::SetDescription(CExoString const& sDescription)
 {
     CSWGuiListBox* pListBox;
@@ -61,7 +61,7 @@ void CSWGuiStore::SetDescription(CExoString const& sDescription)
             pListBox->m_cItemExtent.m_nHeight &&
         pListBox->m_lItems.num > 0 && !pListBox->m_bHideScrollIcon;
 }
-// PC 0x006C0AA0  Xbox 0x000F1360
+// PC 0x00721B80
 void CSWGuiStore::OnControlEntered(CSWGuiControl* pControl)
 {
     CServerExoApp* pServer;
@@ -92,7 +92,7 @@ void CSWGuiStore::OnControlEntered(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006C0EE0  Xbox 0x000F1780
+// PC 0x00721250
 void CSWGuiStore::SellItemCallback(CSWGuiControl* pControl)
 {
     CGuiInGame* pInGame = g_pAppManager->m_pClientExoApp->GetInGameGui();
@@ -108,7 +108,7 @@ void CSWGuiStore::SellItemCallback(CSWGuiControl* pControl)
             SellItem(pItem);
     }
 }
-// PC 0x006C0F40  Xbox 0x000F1E00
+// PC 0x00721670
 void CSWGuiStore::OnControlInvAButton(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -163,7 +163,7 @@ void CSWGuiStore::OnControlInvAButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006C1130  Xbox 0x000F1FF0
+// PC 0x00722090
 void CSWGuiStore::OnControlStoreAButton(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -222,7 +222,7 @@ void CSWGuiStore::OnControlStoreAButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006C0BE0  Xbox 0x000F14A0
+// PC 0x00721F10
 void CSWGuiStore::BuyItem(CSWSItem* pItem)
 {
     SWGUISTORE_TRACE();
@@ -253,7 +253,7 @@ void CSWGuiStore::BuyItem(CSWSItem* pItem)
         m_lblCreditsValue.m_cText.m_cParams.SetText(CExoString(m_nGold));
     }
 }
-// PC 0x006C0790  Xbox 0x000F1050
+// PC 0x00720F10
 int CSWGuiStore::GetItemBuyValue(CSWSItem* pItem)
 {
     CSWSStore* pStore;
@@ -267,7 +267,7 @@ int CSWGuiStore::GetItemBuyValue(CSWSItem* pItem)
     nMarkup = pStore->m_nMarkUp + pStore->m_nBonusMarkUp;
     return nMarkup * pItem->GetCost() / 100u;
 }
-// PC 0x006C07F0  Xbox 0x000F10B0
+// PC 0x00720F70
 int CSWGuiStore::GetItemSellValue(CSWSItem* pItem)
 {
     CSWSStore* pStore;
@@ -281,7 +281,7 @@ int CSWGuiStore::GetItemSellValue(CSWSItem* pItem)
     nMarkup = pStore->m_nMarkDown + pStore->m_nBonusMarkDown;
     return nMarkup * pItem->GetCost() / 100u;
 }
-// PC 0x006C0D20  Xbox 0x000F15D0
+// PC 0x00722030
 void CSWGuiStore::BuyItemCallback(CSWGuiControl* pControl)
 {
     CGuiInGame* pInGame = g_pAppManager->m_pClientExoApp->GetInGameGui();
@@ -297,7 +297,7 @@ void CSWGuiStore::BuyItemCallback(CSWGuiControl* pControl)
             BuyItem(pItem);
     }
 }
-// PC 0x006C0D80  Xbox 0x000F1630
+// PC 0x007210E0
 void CSWGuiStore::SellItem(CSWSItem* pItem)
 {
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
@@ -336,7 +336,7 @@ void CSWGuiStore::SellItem(CSWSItem* pItem)
         }
     }
 }
-// PC 0x006C0850  Xbox 0x000F1110
+// PC 0x007228E0
 void CSWGuiStore::PopulateInventoryItemListBox()
 {
     CServerExoApp* pServer;
@@ -417,7 +417,7 @@ void CSWGuiStore::PopulateInventoryItemListBox()
     }
     m_nUnknown2274 = 0;
 }
-// PC 0x006C1330  Xbox 0x000F2200
+// PC 0x00722370
 void CSWGuiStore::DeleteItemEntries()
 {
     SwguistoreTrace2();
@@ -438,7 +438,7 @@ void CSWGuiStore::DeleteItemEntries()
     }
     lInventoryEntries.num = 0;
 }
-// PC 0x006C13C0
+// PC 0x00722C40
 void CSWGuiStore::ShowSellGUI()
 {
     CSWGuiListBox* pActiveList;
@@ -463,7 +463,7 @@ void CSWGuiStore::ShowSellGUI()
     SetActiveControl(pActiveList, 0);
     PopulateInventoryItemListBox();
 }
-// PC 0x006C1C00  Xbox 0x000F1850
+// PC 0x00722EA0
 CSWGuiStore::CSWGuiStore(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -530,7 +530,7 @@ CSWGuiStore::CSWGuiStore(CSWGuiManager* pManager)
     m_nBackground = 1;
 #endif
 }
-// PC 0x006C2170  Xbox 0x000F2990
+// PC 0x00723780
 void CSWGuiStore::OnPanelAdded()
 {
     InitializeStoreType();
@@ -540,7 +540,7 @@ void CSWGuiStore::OnPanelAdded()
 #endif
     ShowBuyGUI();
 }
-// PC 0x006C2190  Xbox 0x000F29B0
+// PC 0x007237C0
 void CSWGuiStore::HandleInputEvent(int nEvent, int nState)
 {
     CSWGuiPanel::HandleInputEvent(nEvent, nState);
@@ -571,12 +571,12 @@ void CSWGuiStore::HandleInputEvent(int nEvent, int nState)
         }
     }
 }
-// PC 0x006C1470  Xbox 0x000F2290
+// PC 0x007224B0
 CSWGuiStore::~CSWGuiStore()
 {
     DeleteItemEntries();
 }
-// PC 0x006C1650  Xbox 0x000F2440
+// PC 0x00722700
 void CSWGuiStore::OnPanelRemoved()
 {
     DeleteItemEntries();
@@ -584,7 +584,7 @@ void CSWGuiStore::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 #endif
 }
-// PC 0x006C1840  Xbox 0x000F2630
+// PC 0x00721410
 void CSWGuiStore::PopulateStoreItemListBox()
 {
     CItemRepository* pRepository;
@@ -655,7 +655,7 @@ void CSWGuiStore::PopulateStoreItemListBox()
     }
     m_nUnknown2274 = 0;
 }
-// PC 0x006C1660  Xbox 0x000F2450
+// PC 0x00722710
 int CSWGuiStore::CreateItemEntry(int& nEntries,
                                  CExoArrayList<CSWGuiControl*>& lControls,
                                  unsigned long oidItem, int bInventory)
@@ -706,7 +706,7 @@ int CSWGuiStore::CreateItemEntry(int& nEntries,
     nEntries++;
     return 0;
 }
-// PC 0x006C1A50  Xbox 0x000F2840
+// PC 0x00722400
 void CSWGuiStore::ShowBuyGUI()
 {
     CSWGuiListBox* pActiveList;
@@ -739,7 +739,7 @@ void CSWGuiStore::ShowBuyGUI()
 }
 
 #ifdef _XBOX
-void CSWGuiStore::OnControlXButton()  // Xbox 0x000F28C0
+void CSWGuiStore::OnControlXButton()
 {
     CServerExoApp* pServer;
     CSWSStore* pStore;
@@ -755,7 +755,7 @@ void CSWGuiStore::OnControlXButton()  // Xbox 0x000F28C0
     }
 }
 #else
-void CSWGuiStore::OnControlXButton(CSWGuiControl* pControl)  // PC 0x006C1B00
+void CSWGuiStore::OnControlXButton(CSWGuiControl* pControl)  // PC 0x00722D80
 {
     CServerExoApp* pServer;
     CSWSStore* pStore;
@@ -774,7 +774,7 @@ void CSWGuiStore::OnControlXButton(CSWGuiControl* pControl)  // PC 0x006C1B00
     }
 }
 #endif
-// PC 0x006C1B50  Xbox 0x000F2900
+// PC 0x00722DD0
 void CSWGuiStore::InitializeStoreType()
 {
     CServerExoApp* pServer;

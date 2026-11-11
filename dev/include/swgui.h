@@ -126,43 +126,43 @@ public:
 
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void SetActiveControl(CSWGuiControl* pControl, int bPlaySound);
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWGuiPanel* AsSWGuiPanel()
     {
         return this;
     }
 
     virtual void Draw(float fElapsed);
-    // PC 0x0060E760
+    // PC 0x005EE1C0
     virtual void Update(float fElapsed)
     {
     }
 
     virtual void HandleInputEvent(int nEvent, int nState);
     virtual CSWGuiControl* HitCheckMouse(int nX, int nY);
-    SWGUI_PCVIRTUAL CSWGuiControl* GetActiveControl()  // PC 0x0040B630
+    SWGUI_PCVIRTUAL CSWGuiControl* GetActiveControl()
     {
         return m_pActiveControl;
     }
     virtual void OnPanelAdded();
     virtual void OnPanelRemoved();
-    SWGUI_PCVIRTUAL void OnAButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B640
+    SWGUI_PCVIRTUAL void OnAButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B890
     {
         return HandleInputEvent(GUIEVENT_ACTIVATE, 1);
     }
-    SWGUI_PCVIRTUAL void OnBButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B650
+    SWGUI_PCVIRTUAL void OnBButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B8A0
     {
         return HandleInputEvent(GUIEVENT_CANCEL, 1);
     }
-    SWGUI_PCVIRTUAL void OnXButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B660
+    SWGUI_PCVIRTUAL void OnXButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B8B0
     {
         return HandleInputEvent(41, 1);
     }
-    SWGUI_PCVIRTUAL void OnYButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B670
+    SWGUI_PCVIRTUAL void OnYButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B8C0
     {
         return HandleInputEvent(42, 1);
     }
-    SWGUI_PCVIRTUAL void OnBlackButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B680
+    SWGUI_PCVIRTUAL void OnBlackButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B8D0
     {
         return HandleInputEvent(43, 1);
     }
@@ -175,7 +175,7 @@ public:
     {
         return m_pManager;
     }
-    void SetAlpha(float fAlpha)  // PC 0x00404B00
+    void SetAlpha(float fAlpha)  // PC 0x00404B70
     {
         m_fAlpha = max(min(fAlpha, 1.0f), 0.0f);
     }
@@ -188,7 +188,7 @@ public:
 #endif
     void AddControl(CSWGuiControl* pControl);
     CSWGuiControl* GetControl(int nIndex);
-    void SetModal(int bModal)  // PC 0x00624A00  Xbox 0x0004CE80
+    void SetModal(int bModal)  // PC 0x00639690
     {
         m_bDeferredRemoval = bModal;
         if (m_nExitState != EXITSTATE_DELETE)
@@ -564,7 +564,7 @@ public:
 
     enum { STRREF_ATTACK = 375 };
     enum { ACTION_ATTACK = 1003 };
-    // PC 0x004EAE30  Xbox 0x0003B0B0
+    // PC 0x0050B780
     CSWGuiInterfaceAction()
     {
         Clear();

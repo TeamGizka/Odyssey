@@ -1,5 +1,5 @@
 #include "nwcanimbase.h"
-// PC 0x00690EF0  Xbox 0x000B7060
+// PC 0x006EA4A0
 CSWBehaviorAttachSound::CSWBehaviorAttachSound(CAurObject* pObject,
                                                CAurObject* pParent,
                                                CAurPart* pPart,
@@ -13,7 +13,7 @@ CSWBehaviorAttachSound::CSWBehaviorAttachSound(CAurObject* pObject,
     m_pSoundSource->SetPriorityGroup(25);
     m_pSoundSource->SetDistance(20.0f, 150.0f);
 }
-// PC 0x00690FC0  Xbox 0x000B71A0
+// PC 0x006EA570
 int CSWBehaviorAttachSound::Control(float fTimeStep)
 {
     int nResult = CAurBehaviorAttach::Control(fTimeStep);
@@ -21,7 +21,7 @@ int CSWBehaviorAttachSound::Control(float fTimeStep)
     m_pSoundSource->SetPosition(vPosition);
     return nResult;
 }
-// PC 0x00691000  Xbox 0x000B71E0
+// PC 0x006EA5B0
 int CSWBehaviorAttachSound::PlaySoundA()
 {
     int nResult = m_pSoundSource->IsPlaying();
@@ -31,7 +31,7 @@ int CSWBehaviorAttachSound::PlaySoundA()
     }
     return nResult;
 }
-// PC 0x00691030  Xbox 0x000B7140
+// PC 0x006EA5E0
 CSWBehaviorAttachSound::~CSWBehaviorAttachSound()
 {
     if (m_pSoundSource != 0)

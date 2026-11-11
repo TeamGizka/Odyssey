@@ -1,6 +1,6 @@
 #include "exobase.h"
 #include "swsareamap.h"
-// PC 0x00578BE0  Xbox 0x0020F280
+// PC 0x00573A00
 CSWSAreaMap::CSWSAreaMap()
 {
     m_pnExplored = NULL;
@@ -18,7 +18,7 @@ CSWSAreaMap::CSWSAreaMap()
         m_fPartyOrientation[i] = 0.0f;
     }
 }
-// PC 0x00578C30  Xbox 0x0020F2D0
+// PC 0x00573A50
 CSWSAreaMap::~CSWSAreaMap()
 {
     if (m_pnExplored != NULL)
@@ -28,7 +28,7 @@ CSWSAreaMap::~CSWSAreaMap()
         m_nExploredSize = 0;
     }
 }
-// PC 0x00578C60  Xbox 0x0020F300
+// PC 0x00573A80
 void CSWSAreaMap::Initialize(int bEnabled, int nMapWidth, unsigned long nNorthAxis,
                              float fWorldX1, float fWorldY1, float fWorldX2,
                              float fWorldY2, int nMapX1, int nMapY1,
@@ -95,7 +95,7 @@ void CSWSAreaMap::Initialize(int bEnabled, int nMapWidth, unsigned long nNorthAx
 #endif
     }
 }
-// PC 0x00578E00  Xbox 0x0020F490
+// PC 0x00573C90
 int CSWSAreaMap::GetMapPixelFromWorldCoord(Vector vPosition, int& nMapX,
                                            int& nMapY)
 {
@@ -127,7 +127,7 @@ int CSWSAreaMap::GetMapPixelFromWorldCoord(Vector vPosition, int& nMapX,
     nMapY = -1;
     return 0;
 }
-// PC 0x00578ED0  Xbox 0x0020F550
+// PC 0x00573D60
 float CSWSAreaMap::GetMapRotateCCWFromWorldOrientation(Vector vOrientation)
 {
     float fAngle = Yaw(vOrientation);
@@ -142,7 +142,7 @@ float CSWSAreaMap::GetMapRotateCCWFromWorldOrientation(Vector vOrientation)
     }
     return fAngle;
 }
-// PC 0x00578F10  Xbox 0x0020F5D0
+// PC 0x00573DA0
 int CSWSAreaMap::GetGridPixelFromMapPixel(int nMapX, int nMapY, int& nGridX,
                                           int& nGridY)
 {
@@ -157,7 +157,7 @@ int CSWSAreaMap::GetGridPixelFromMapPixel(int nMapX, int nMapY, int& nGridX,
     nGridY = -1;
     return 0;
 }
-// PC 0x00578FA0  Xbox 0x0020F670
+// PC 0x00574040
 void CSWSAreaMap::SetEntireMapExplored()
 {
     if (m_pnExplored != NULL)
@@ -165,7 +165,7 @@ void CSWSAreaMap::SetEntireMapExplored()
         memset(m_pnExplored, 0xFF, m_nExploredSize * 4);
     }
 }
-// PC 0x00578FC0  Xbox 0x0020F690
+// PC 0x00573C20
 void CSWSAreaMap::LoadSavedAreaMapData(unsigned long* pData,
                                        unsigned long nSize, int nWidth,
                                        int nHeight)
@@ -176,7 +176,7 @@ void CSWSAreaMap::LoadSavedAreaMapData(unsigned long* pData,
         memcpy(m_pnExplored, pData, nSize * 4);
     }
 }
-// PC 0x00579000  Xbox 0x0020F6D0
+// PC 0x00574060
 void CSWSAreaMap::SetMapPointExplored(int nMapX, int nMapY)
 {
     if (nMapX <= 440 && nMapX >= 0 && nMapY <= 256 && nMapY >= 0)
@@ -193,7 +193,7 @@ void CSWSAreaMap::SetMapPointExplored(int nMapX, int nMapY)
         }
     }
 }
-// PC 0x00579090  Xbox 0x0020F760
+// PC 0x00573C60
 unsigned long* CSWSAreaMap::GetMapData(unsigned long& nSize, int& nWidth,
                                        int& nHeight)
 {
@@ -206,7 +206,7 @@ unsigned long* CSWSAreaMap::GetMapData(unsigned long& nSize, int& nWidth,
     nHeight = m_nHeight;
     return m_pnExplored;
 }
-// PC 0x005790C0  Xbox 0x0020F790
+// PC 0x00573E30
 void CSWSAreaMap::SetPartyMemberWorldLocation(int nMember, Vector vPosition)
 {
     if (m_nExploredSize > 0 && nMember < 3)
@@ -220,7 +220,7 @@ void CSWSAreaMap::SetPartyMemberWorldLocation(int nMember, Vector vPosition)
         }
     }
 }
-// PC 0x00579130  Xbox 0x0020F800
+// PC 0x00573EA0
 void CSWSAreaMap::SetPartyMemberWorldOrientation(int nMember,
                                                  Vector vOrientation)
 {
@@ -230,7 +230,7 @@ void CSWSAreaMap::SetPartyMemberWorldOrientation(int nMember,
             GetMapRotateCCWFromWorldOrientation(vOrientation);
     }
 }
-// PC 0x005791B0  Xbox 0x0020F840
+// PC 0x00573F20
 int CSWSAreaMap::GetPartyMemberMapLocation(int nMember, int& nMapX, int& nMapY)
 {
     if (m_nExploredSize <= 0)
@@ -250,7 +250,7 @@ int CSWSAreaMap::GetPartyMemberMapLocation(int nMember, int& nMapX, int& nMapY)
     nMapY = m_nPartyMapY[nMember];
     return 1;
 }
-// PC 0x005791F0  Xbox 0x0020F880
+// PC 0x00573F60
 float CSWSAreaMap::GetPartyMemberMapOrientation(int nMember)
 {
     if (m_nExploredSize <= 0)
@@ -263,7 +263,7 @@ float CSWSAreaMap::GetPartyMemberMapOrientation(int nMember)
     }
     return m_fPartyOrientation[nMember];
 }
-// PC 0x00579210  Xbox 0x0020F8A0
+// PC 0x00573F80
 int CSWSAreaMap::IsWorldPointExplored(Vector vPosition)
 {
     unsigned long nSize = m_nExploredSize;
@@ -297,7 +297,7 @@ int CSWSAreaMap::IsWorldPointExplored(Vector vPosition)
         return 1;
     }
 }
-// PC 0x005792D0  Xbox 0x0020F960
+// PC 0x005740F0
 void CSWSAreaMap::SetWorldPointExplored(Vector vPosition, int nRadius)
 {
     if (m_nExploredSize > 0)

@@ -14,7 +14,7 @@ public:
     CGameEffectApplierRemover()
     {
     }
-    // PC 0x004AF2D0  Xbox 0x0015F170
+
     virtual ~CGameEffectApplierRemover()
     {
     }

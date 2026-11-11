@@ -123,7 +123,7 @@ class CAurTexture : public SafePointerList<CAurTexture>
 public:
     CAurTexture();
     virtual ~CAurTexture();
-    virtual CAurTextureBasic* AsCAurTextureBasic()  // PC 0x0063E7F0
+    virtual CAurTextureBasic* AsCAurTextureBasic()  // PC 0x004065A0
     {
         return 0;
     }
@@ -187,7 +187,7 @@ class CAurTextureBasic : public CAurTexture
 public:
     CAurTextureBasic(char* sName, char* sExtra);
     virtual ~CAurTextureBasic();
-    virtual CAurTextureBasic* AsCAurTextureBasic()  // PC 0x00641DB0
+    virtual CAurTextureBasic* AsCAurTextureBasic()  // PC 0x00698BD0
     {
         return this;
     }
@@ -345,7 +345,7 @@ extern int currenttextime;
 extern int texcurrentframe;
 
 #ifdef _XBOX
-// PC 0x0045F950
+
 inline int AurTextureCompressionAvailable()
 {
     return 1;

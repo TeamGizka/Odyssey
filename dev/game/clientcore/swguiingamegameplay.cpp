@@ -9,12 +9,12 @@
 #include "swguiingamegameplay.h"
 #include "swguiinOPTKeyMapping.h"
 #include "nwrules.h"
-// PC 0x006E6170
+// PC 0x0074F770
 void CSWGuiInGameGameplay::OnPanelAdded()
 {
     CSWGuiPanel::OnPanelAdded();
 }
-// PC 0x006E6180  Xbox 0x0011F430
+// PC 0x00759190
 void CSWGuiInGameGameplay::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -51,7 +51,7 @@ void CSWGuiInGameGameplay::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006E62A0  Xbox 0x0011F580
+// PC 0x007592B0
 void CSWGuiInGameGameplay::OnAutoLevelUp(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -62,7 +62,7 @@ void CSWGuiInGameGameplay::OnAutoLevelUp(CSWGuiControl* pControl)
             bAutoLevelUp);
     }
 }
-// PC 0x006E62E0  Xbox 0x0011F5C0
+// PC 0x007592F0
 void CSWGuiInGameGameplay::OnAutoSave(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -74,7 +74,7 @@ void CSWGuiInGameGameplay::OnAutoSave(CSWGuiControl* pControl)
         pOptions->m_bAutoSave = bAutoSave;
     }
 }
-// PC 0x006E6330  Xbox 0x0011F610
+// PC 0x00759340
 void CSWGuiInGameGameplay::OnInvertCam(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -86,7 +86,7 @@ void CSWGuiInGameGameplay::OnInvertCam(CSWGuiControl* pControl)
         pOptions->m_bMouseLook = bInvertCam;
     }
 }
-// PC 0x006E6380  Xbox 0x0011F660
+// PC 0x00759390
 void CSWGuiInGameGameplay::OnReverse(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -98,7 +98,7 @@ void CSWGuiInGameGameplay::OnReverse(CSWGuiControl* pControl)
         pOptions->m_bReverseMinigameYAxis = bReverse;
     }
 }
-// PC 0x006E63D0  Xbox 0x0011F6B0
+// PC 0x007593E0
 void CSWGuiInGameGameplay::OnCombatMovement(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -111,7 +111,7 @@ void CSWGuiInGameGameplay::OnCombatMovement(CSWGuiControl* pControl)
         pOptions->m_bCombatMovement = bCombatMovement;
     }
 }
-// PC 0x006E6420
+// PC 0x00759480
 void CSWGuiInGameGameplay::OnKeyMap(CSWGuiControl* pControl)
 {
 #ifndef _XBOX
@@ -124,7 +124,7 @@ void CSWGuiInGameGameplay::OnKeyMap(CSWGuiControl* pControl)
     }
 #endif
 }
-// PC 0x006E64A0
+// PC 0x00759500
 void CSWGuiInGameGameplay::OnMouse(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -134,7 +134,7 @@ void CSWGuiInGameGameplay::OnMouse(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x006E6520  Xbox 0x0011F700
+// PC 0x00759580
 void CSWGuiInGameGameplay::SetDifficultyText()
 {
     int nNameStrRef;
@@ -183,7 +183,7 @@ void CSWGuiInGameGameplay::SetDifficultyText()
     }
 #endif
 }
-// PC 0x006E6620  Xbox 0x0011F810
+// PC 0x00759680
 void CSWGuiInGameGameplay::SetDescription(unsigned long nStrRef)
 {
 #ifdef _XBOX
@@ -230,7 +230,7 @@ void CSWGuiInGameGameplay::SetDescription(unsigned long nStrRef)
     m_lbxDescription.SetSelectedControl(&m_lblDescription, 0);
 #endif
 }
-// PC 0x006E6710  Xbox 0x0011F950
+// PC 0x00759780
 void CSWGuiInGameGameplay::OnEnterDiff(CSWGuiControl* pControl)
 {
     CSWGuiTextParams* pText = &m_btnDifficulty.m_cText.m_cParams;
@@ -242,7 +242,7 @@ void CSWGuiInGameGameplay::OnEnterDiff(CSWGuiControl* pControl)
     m_lblSelect.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
 #endif
 }
-// PC 0x006E6750  Xbox 0x0011F9A0
+// PC 0x007597C0
 void CSWGuiInGameGameplay::OnExitDiff(CSWGuiControl* pControl)
 {
     CSWGuiTextParams* pText = &m_btnDifficulty.m_cText.m_cParams;
@@ -252,7 +252,7 @@ void CSWGuiInGameGameplay::OnExitDiff(CSWGuiControl* pControl)
     m_lblSelect.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
 #endif
 }
-// PC 0x006E6770
+// PC 0x007597E0
 void CSWGuiInGameGameplay::SetUpOptions()
 {
     CClientOptions* pOptions =
@@ -280,12 +280,12 @@ void CSWGuiInGameGameplay::SetUpOptions()
         pToggle->m_bToggled = bValue;
     }
 }
-// PC 0x006E68A0  Xbox 0x0011F9D0
+// PC 0x00759940
 void CSWGuiInGameGameplay::OnEnterSlot(CSWGuiControl* pControl)
 {
     SetDescription(pControl->m_nIndex);
 }
-// PC 0x006E68B0
+// PC 0x00759950
 void CSWGuiInGameGameplay::OnDefault(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -295,7 +295,7 @@ void CSWGuiInGameGameplay::OnDefault(CSWGuiControl* pControl)
         SetUpOptions();
     }
 }
-// PC 0x006E68E0  Xbox 0x0011FA90
+// PC 0x00759980
 void CSWGuiInGameGameplay::OnDifficultyLeft(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -313,7 +313,7 @@ void CSWGuiInGameGameplay::OnDifficultyLeft(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006E6930  Xbox 0x0011FAF0
+// PC 0x007599D0
 void CSWGuiInGameGameplay::OnDifficultyRight(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -339,7 +339,7 @@ void CSWGuiInGameGameplay::OnDifficultyRight(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006E69A0  Xbox 0x0011FB70
+// PC 0x00759A40
 CSWGuiInGameGameplay::CSWGuiInGameGameplay(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -530,7 +530,7 @@ CSWGuiInGameGameplay::CSWGuiInGameGameplay(CSWGuiManager* pManager)
 }
 
 #ifdef _XBOX
-// Xbox 0x0011F9E0
+
 void CSWGuiInGameGameplay::FlashLabel(CSWGuiLabel* pLabel)
 {
     int nCount = m_aFlashes.num;
@@ -547,7 +547,7 @@ void CSWGuiInGameGameplay::FlashLabel(CSWGuiLabel* pLabel)
     m_aFlashes.element[nCount].m_fTime = 0.25f;
     pLabel->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
 }
-// Xbox 0x0011F4D0
+
 void CSWGuiInGameGameplay::Draw(float fElapsed)
 {
     for (int i = m_aFlashes.num - 1; i >= 0; i--)

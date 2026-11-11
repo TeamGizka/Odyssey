@@ -20,7 +20,7 @@ long ExoSoundVolumeToMillibels(unsigned char nVolume, long nMinVolume);
 #define MOVIE_VOLUME_MIN -6400
 #define MOVIE_VOLUME_SURROUND -1204
 #define MOVIE_MIXBIN_VOLUME(nDecibels)     (m_nPlaybackMode ? MOVIE_VOLUME_MIN :      ExoSoundVolumeToMillibels((unsigned char)(ExoSoundMillibelsToVolume(nDecibels, MOVIE_VOLUME_MIN) * fVolume),                               MOVIE_VOLUME_MIN))
-// PC 0x004053E0  Xbox 0x00303EC0
+
 int CExoMoviePlayerInternal::StartMovie(const CExoString& sMovie)
 {
     if (!sMovie.IsEmpty())
@@ -36,7 +36,7 @@ int CExoMoviePlayerInternal::StartMovie(const CExoString& sMovie)
     }
     return 0;
 }
-// Xbox 0x00303F20
+
 void CExoMoviePlayerInternal::SetFadeMsg(unsigned long nStrRef)
 {
     if (m_pFadePanel != NULL && g_bMovieNotification != 0)
@@ -48,7 +48,7 @@ void CExoMoviePlayerInternal::SetFadeMsg(unsigned long nStrRef)
         }
     }
 }
-// PC 0x00404DE0  Xbox 0x00303F60
+
 void CExoMoviePlayerInternal::FinishMovie()
 {
     m_critSect.EnterCriticalSection();
@@ -61,7 +61,7 @@ void CExoMoviePlayerInternal::FinishMovie()
     m_bMoviePlaying = 0;
     m_critSect.LeaveCriticalSection();
 }
-// Xbox 0x00303FB0
+
 void CExoMoviePlayerInternal::RunMovieLoop(int nWait)
 {
     RECT rect;
@@ -107,7 +107,7 @@ void CExoMoviePlayerInternal::RunMovieLoop(int nWait)
     m_pDecoder = NULL;
     m_sCurrentMovie = "";
 }
-// Xbox 0x00304190
+
 void CExoMoviePlayerInternal::CancelMovie()
 {
     if (m_pDecoder != NULL)
@@ -116,7 +116,7 @@ void CExoMoviePlayerInternal::CancelMovie()
         m_bCancelMovie = 1;
     }
 }
-// PC 0x00404E00  Xbox 0x003041B0
+
 void CExoMoviePlayerInternal::ShowFadePanel()
 {
     m_critSect.EnterCriticalSection();
@@ -130,7 +130,7 @@ void CExoMoviePlayerInternal::ShowFadePanel()
     UpdateScreen(1.0f / 30.0f, 0, 0);
     m_critSect.LeaveCriticalSection();
 }
-// Xbox 0x003042B0
+
 void CExoMoviePlayerInternal::HideFadePanel(int bWait)
 {
     m_critSect.EnterCriticalSection();
@@ -146,7 +146,7 @@ void CExoMoviePlayerInternal::HideFadePanel(int bWait)
     }
     m_critSect.LeaveCriticalSection();
 }
-// PC 0x00405B30  Xbox 0x00304320
+
 DWORD WINAPI CExoMoviePlayerInternal::PlayMoviesAsync(LPVOID pParam)
 {
     CExoMoviePlayerInternal* self;
@@ -179,7 +179,7 @@ DWORD WINAPI CExoMoviePlayerInternal::PlayMoviesAsync(LPVOID pParam)
     }
     ExitThread(0);
 }
-// PC 0x00405D70  Xbox 0x00304400
+
 CExoMoviePlayerInternal::CExoMoviePlayerInternal()
     : m_lstMovies(0)
 {
@@ -197,7 +197,7 @@ CExoMoviePlayerInternal::CExoMoviePlayerInternal()
     m_pFadePanel = NULL;
     m_nFinishTime = -1;
 }
-// PC 0x00405A50  Xbox 0x003044B0
+
 CExoMoviePlayerInternal::~CExoMoviePlayerInternal()
 {
     DWORD dwExitCode;
@@ -218,7 +218,7 @@ CExoMoviePlayerInternal::~CExoMoviePlayerInternal()
         m_pFadePanel = NULL;
     }
 }
-// Xbox 0x00304570
+
 int CExoMoviePlayerInternal::PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies,
                                              int nMode)
 {
@@ -227,7 +227,7 @@ int CExoMoviePlayerInternal::PlayMoviesAsync(const CExoArrayList<CExoString>& ls
     m_bMoviePlaying = 1;
     return SetEvent(m_hWakeEvent);
 }
-// PC 0x00404DD0
+
 int CExoMoviePlayerInternal::IsMoviePlaying()
 {
     return m_bMoviePlaying;

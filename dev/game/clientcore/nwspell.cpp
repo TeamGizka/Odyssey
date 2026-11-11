@@ -12,7 +12,7 @@ const int CSWSpell::USERTYPE_MONSTERPOWER = 2;
 const int CSWSpell::USERTYPE_FEAT = 3;
 const int CSWSpell::USERTYPE_ITEM = 4;
 const int CSWSpell::USERTYPE_MASTER = 5;
-// PC 0x0059B310  Xbox 0x000692F0
+// PC 0x005E1D00
 CSWSpell::CSWSpell()
 {
     m_nConjureTime = 3000;
@@ -52,7 +52,7 @@ CSWSpell::CSWSpell()
     m_nCatchTime = 0;
     m_nCatchAnim = 0;
 }
-// PC 0x0059B5B0  Xbox 0x00069590
+// PC 0x005E1FB0
 CSWSpell::~CSWSpell()
 {
     if (m_pSubRadialSpells != 0)
@@ -60,7 +60,7 @@ CSWSpell::~CSWSpell()
         delete m_pSubRadialSpells;
     }
 }
-// PC 0x0059B650  Xbox 0x00069630
+// PC 0x005E2050
 unsigned char CSWSpell::GetSpellLevel(unsigned char nClass)
 {
     switch (nClass)
@@ -79,7 +79,7 @@ unsigned char CSWSpell::GetSpellLevel(unsigned char nClass)
         return m_nInnateLevel;
     }
 }
-// PC 0x0059B6A0  Xbox 0x00069680
+// PC 0x005E20F0
 int CSWSpell::GetSubRadialSpell(unsigned char nIndex)
 {
     if (nIndex >= m_nSubRadialSpellCount)
@@ -88,13 +88,13 @@ int CSWSpell::GetSubRadialSpell(unsigned char nIndex)
     }
     return m_pSubRadialSpells[nIndex];
 }
-// PC 0x005B3190
+// PC 0x005FF150
 CSWSpellArray::CSWSpellArray()
 {
     m_nNumSpells = 0;
     m_pSpells = NULL;
 }
-// PC 0x0059B6D0  Xbox 0x000696B0
+// PC 0x005E2120
 CSWSpell* CSWSpellArray::GetSpell(int nIndex) const
 {
     if (m_pSpells != 0 && nIndex >= 0 && nIndex < m_nNumSpells)
@@ -103,7 +103,7 @@ CSWSpell* CSWSpellArray::GetSpell(int nIndex) const
     }
     return 0;
 }
-// PC 0x0059B700  Xbox 0x000696E0
+// PC 0x005E2150
 void CSWSpell::SetPrerequisites(const CExoString& sSpells)
 {
     m_sPrerequisites = sSpells;
@@ -131,7 +131,7 @@ void CSWSpell::SetPrerequisites(const CExoString& sSpells)
         }
     }
 }
-// PC 0x0059B9E0  Xbox 0x00069A70
+// PC 0x005E2500
 CSWSpellArray::~CSWSpellArray()
 {
     if (m_pSpells != 0)
@@ -141,7 +141,7 @@ CSWSpellArray::~CSWSpellArray()
         m_nNumSpells = 0;
     }
 }
-// PC 0x0059BA20  Xbox 0x00069AB0
+// PC 0x005E2540
 void CSWSpellArray::Load()
 {
     C2DA* p2DA = new C2DA("SPELLS", 0);
@@ -464,7 +464,7 @@ void CSWSpellArray::Load()
     }
     delete p2DA;
 }
-// PC 0x0059B7D0  Xbox 0x000697B0
+// PC 0x005E2230
 void CSWSpell::SetMasterSpells(const CExoString& sSpells)
 {
     m_sMasterSpells = sSpells;
@@ -492,7 +492,7 @@ void CSWSpell::SetMasterSpells(const CExoString& sSpells)
         }
     }
 }
-// PC 0x0059B8A0  Xbox 0x00069880
+// PC 0x005E2310
 int CSWSpell::GetAdjustedForcePoints(unsigned long nLevel, int bAdjust)
 {
     int nForcePoints = m_nForcePoints;
@@ -528,7 +528,7 @@ int CSWSpell::GetAdjustedForcePoints(unsigned long nLevel, int bAdjust)
     }
     return m_nForcePoints;
 }
-// PC 0x0059B940  Xbox 0x000699C0
+// PC 0x005E2460
 CExoString CSWSpell::GetSpellNameText()
 {
     STR_RES strRes;

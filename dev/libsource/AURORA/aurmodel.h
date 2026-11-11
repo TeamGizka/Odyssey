@@ -117,12 +117,12 @@ public:
     void SetAnimationPercentage(char* sName, float fPercentage);
     int ShouldWeCheckVisibilityHACK();
     static int cm_nLastGobIndex;
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CAurCamera* AsCAurCamera() { return 0; }
-    virtual Camera* AsCamera() { return 0; }  // PC 0x0063E7F0
-    virtual CAurObject* AsCAurObject() { return this; }  // PC 0x00641DB0
-    virtual StringGob* AsString() { return 0; }  // PC 0x0063E7F0
-    virtual char* GetName()  // PC 0x00449970
+    virtual Camera* AsCamera() { return 0; }  // PC 0x004065A0
+    virtual CAurObject* AsCAurObject() { return this; }  // PC 0x00698BD0
+    virtual StringGob* AsString() { return 0; }  // PC 0x004065A0
+    virtual char* GetName()  // PC 0x0045DCB0
     {
         return m_sName;
     }
@@ -153,34 +153,34 @@ public:
     virtual void SetBehavior(CAurBehavior* pBehavior);
     virtual Vector SetPosition(Vector vPosition);
     virtual Quaternion SetOrientation(Quaternion qOrientation);
-    virtual Vector GetPosition()  // PC 0x00449980  Xbox 0x0029D340
+    virtual Vector GetPosition()  // PC 0x0045DCC0
     {
         return m_vPosition;
     }
-    virtual Quaternion GetOrientation()  // PC 0x004499A0  Xbox 0x0029D360
+    virtual Quaternion GetOrientation()  // PC 0x0045DCF0
     {
         return m_qOrientation;
     }
-    virtual Vector GetPreviousPosition()  // PC 0x004499D0  Xbox 0x0029D390
+    virtual Vector GetPreviousPosition()  // PC 0x0045DD20
     {
         return m_vPreviousPosition;
     }
-    // PC 0x00449A00  Xbox 0x002F0FC0
+    // PC 0x0045DD50
     virtual void* GetExternalData()
     {
         return m_pExternalData;
     }
-    // PC 0x00449A10  Xbox 0x002F0FD0
+    // PC 0x0045DE40
     virtual void SetExternalData(void* pData)
     {
         m_pExternalData = pData;
     }
-    // PC 0x00449A20  Xbox 0x0029D3C0
+    // PC 0x0045DD70
     virtual int GetExternalDataType()
     {
         return m_nExternalDataType;
     }
-    // PC 0x00449A30  Xbox 0x0029D3D0
+    // PC 0x0045DD80
     virtual void SetExternalDataType(int nType)
     {
         m_nExternalDataType = nType;
@@ -192,7 +192,7 @@ public:
                              Vector* pHit, CHitInfo* pInfo);
     virtual CAurObject* HitCheck(Vector vStart, Vector vEnd, Vector* pHit,
                                 CHitInfo* pInfo);
-    // PC 0x00449A40  Xbox 0x0029D3E0
+    // PC 0x0045DD90
     virtual void SetIgnoreHitCheck(bool bIgnore)
     {
         m_bIgnoreHitCheck = bIgnore;
@@ -212,12 +212,12 @@ public:
     virtual int Amputate(char* sPart);
     virtual void SetColorShifting(Vector vColor, float fAlpha, int nFlags);
     virtual void SetIllumination(Vector vColor, int nFlags);
-    // PC 0x00449A50  Xbox 0x0029D3F0
+    // PC 0x0045DDA0
     virtual void TurnOffShadows()
     {
         m_bCastShadows = 0;
     }
-    // PC 0x00449A60  Xbox 0x0029D400
+    // PC 0x0045DDB0
     virtual void TurnOnShadows()
     {
         m_bCastShadows = 1;
@@ -225,7 +225,7 @@ public:
 
     virtual void DoEvent(char* sEvent, void* pData);
     virtual bool IsForceAnimated();
-    // PC 0x00449A70  Xbox 0x0029D410
+    // PC 0x0045DDC0
     virtual bool IsAnimating()
     {
         return m_bAnimating;
@@ -233,7 +233,7 @@ public:
 
     virtual void EnableInViewVolume();
     virtual void DisableInViewVolume();
-    // PC 0x00449A80  Xbox 0x0029D420
+    // PC 0x0045DDE0
     virtual bool IsInViewVolume()
     {
         return m_bInViewVolume;
@@ -260,7 +260,7 @@ public:
     bool IsSceneHitExcluded();
     bool HasHitFilterOverride();
     bool IsVisibilityCheckDisabled();
-    // PC 0x00449A90  Xbox 0x0029D430
+    // PC 0x0045DDF0
     virtual void SetAsCharacter()
     {
         if (m_pModel)
@@ -268,7 +268,7 @@ public:
             ((GobModel*)m_pModel)->m_bCharacter = 1;
         }
     }
-    // PC 0x0063C070  Xbox 0x0029D440
+    // PC 0x00692D70
     virtual CAurScene* GetScene()
     {
         return (CAurScene*)m_pScene;
@@ -277,7 +277,7 @@ public:
     virtual Part* GetPart(char* sName);
     virtual void EnumParts(int (*pFilter)(CAurPart*), List<CAurPart*>* pParts);
     void EnumParts(Part* pPart, int (*pFilter)(CAurPart*), List<CAurPart*>* pParts);
-    // PC 0x00449AA0  Xbox 0x0029D450
+    // PC 0x0045DE10
     virtual void SetRenderPersonalSpace(bool bRender)
     {
         m_bRenderPersonalSpace = bRender;
@@ -299,12 +299,12 @@ public:
     virtual void EnableInCutscene();
     virtual void DisableInCutscene();
     virtual Vector GetCutsceneDummyPosition();
-    // PC 0x00449AB0  Xbox 0x0029D460
+    // PC 0x0045DE20
     virtual void SetMotionBlurred(bool bBlurred)
     {
         m_bMotionBlurred = bBlurred;
     }
-    // PC 0x00449AC0  Xbox 0x0029D470
+    // PC 0x0045DE30
     virtual bool GetMotionBlurred()
     {
         return m_bMotionBlurred;
@@ -313,22 +313,22 @@ public:
     virtual void RenderBlur();
     virtual void EnableRenderBumpedOut(char* sTexture, float fHeight);
     virtual void DisableRenderBumpedOut();
-    // PC 0x00449AD0  Xbox 0x0029D480
+
     virtual void SetMaxBlurLength(float fLength)
     {
         m_fMaxBlurLength = fLength;
     }
-    // PC 0x00449AE0  Xbox 0x0029D4A0
+    // PC 0x0045DE50
     virtual float GetMaxBlurLength()
     {
         return m_fMaxBlurLength;
     }
-    // PC 0x00449AF0  Xbox 0x0029D4B0
+    // PC 0x0045DE60
     virtual void EnableDistortion()
     {
         m_bDistortion = 1;
     }
-    // PC 0x00449B00  Xbox 0x0029D4C0
+    // PC 0x0045DE70
     virtual void DisableDistortion()
     {
         m_bDistortion = 0;
@@ -1110,12 +1110,12 @@ class PartReference : public Part
 {
 public:
     PartReference(MdlNode* pNode) : Part(pNode), m_pReferenceObject(0) {}
-    virtual ~PartReference()  // PC 0x00447820  Xbox 0x0029B6D0
+    virtual ~PartReference()  // PC 0x0045BAB0
     {
         delete m_pReferenceObject;
     }
-    virtual PartReference* AsPartReference() { return this; }  // PC 0x00641DB0
-    virtual PartReference* AsPartDummy() { return 0; }  // PC 0x0063E7F0
+    virtual PartReference* AsPartReference() { return this; }  // PC 0x00698BD0
+    virtual PartReference* AsPartDummy() { return 0; }  // PC 0x004065A0
 
     Gob* m_pReferenceObject;
 
@@ -1127,8 +1127,8 @@ class PartSkin : public PartTriMesh
 public:
     PartSkin(MdlNode* pNode) : PartTriMesh(pNode) {}
     ~PartSkin();
-    virtual PartSkin* AsPartSkin() { return this; }  // PC 0x00641DB0
-    virtual Part* AsPartDummy() { return 0; }  // PC 0x0063E7F0
+    virtual PartSkin* AsPartSkin() { return this; }  // PC 0x00698BD0
+    virtual Part* AsPartDummy() { return 0; }  // PC 0x004065A0
     virtual void Project(const Vector&, float, const Plane&, CAurShadowData*);
     virtual void PostProcess(Part*);
 
@@ -1155,8 +1155,8 @@ class PartAnimMesh : public PartTriMesh
 {
 public:
     PartAnimMesh(MdlNode* pNode) : PartTriMesh(pNode) {}
-    virtual PartAnimMesh* AsPartAnimMesh() { return this; }  // PC 0x00641DB0
-    virtual Part* AsPartDummy() { return 0; }  // PC 0x0063E7F0
+    virtual PartAnimMesh* AsPartAnimMesh() { return this; }  // PC 0x00698BD0
+    virtual Part* AsPartDummy() { return 0; }  // PC 0x004065A0
     virtual int HitCheckGeom(Vector const&, Vector&, Vector*, CHitInfo*, float);
     virtual void Draw(bool);
 };
@@ -1165,8 +1165,8 @@ class PartAABB : public PartTriMesh
 {
 public:
     PartAABB(MdlNode* pNode) : PartTriMesh(pNode) {}
-    virtual PartAABB* AsPartAABB() { return this; }  // PC 0x00641DB0
-    virtual Part* AsPartDummy() { return 0; }  // PC 0x0063E7F0
+    virtual PartAABB* AsPartAABB() { return this; }  // PC 0x00698BD0
+    virtual Part* AsPartDummy() { return 0; }  // PC 0x004065A0
     virtual int HitCheckGeom(Vector const&, Vector&, Vector*, CHitInfo*, float);
     virtual void Draw(bool);
 };
@@ -1190,8 +1190,8 @@ public:
     PartDanglyMesh(MdlNode*);
     virtual void Draw(bool);
     virtual void Animate(float);
-    virtual PartDanglyMesh* AsPartDanglyMesh() { return this; }  // PC 0x00641DB0
-    virtual Part* AsPartDummy() { return 0; }  // PC 0x0063E7F0
+    virtual PartDanglyMesh* AsPartDanglyMesh() { return this; }  // PC 0x00698BD0
+    virtual Part* AsPartDummy() { return 0; }  // PC 0x004065A0
 };
 
 class PartLight : public Part
@@ -1227,10 +1227,10 @@ public:
     float m_fShadowFade;
     Vector m_vWorldPosition;
     virtual ~PartLight();
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual PartLight* AsPartLight() { return this; }
-    virtual Part* AsPartDummy() { return 0; }  // PC 0x0063E7F0
-    virtual void Draw(bool) {}  // PC 0x0060E760
+    virtual Part* AsPartDummy() { return 0; }  // PC 0x004065A0
+    virtual void Draw(bool) {}  // PC 0x005EE1C0
     virtual void Mat();
     PartLight(MdlNode*);
 };
@@ -1262,7 +1262,7 @@ public:
     PartLightsaber(MdlNode*);
     virtual void Draw(bool);
     virtual void Animate(float);
-    virtual Part* AsPartDummy() { return 0; }  // PC 0x0063E7F0
+    virtual Part* AsPartDummy() { return 0; }  // PC 0x004065A0
 };
 
 #define AUR_TILE_UNSET_BOUND 1000000.0f
@@ -1402,7 +1402,7 @@ public:
     MaxTree* m_pTree;
     OOAnimRun* m_pOutOfOrderRun;
 #ifndef _XBOX
-    CustomAnimation()  // Xbox 0x002D72B0
+    CustomAnimation()
     { m_pTree = 0; m_pOutOfOrderRun = 0; m_bDeactivated = 0;
     }
 #else
@@ -1613,12 +1613,12 @@ public:
 extern Vector g_HitCheckBoxExpansion;
 bool AurControlPart(char* sCommand);
 extern List<Model*> Models;
-// PC 0x004401F0  Xbox 0x002962E0
+// PC 0x00453070
 inline CAurObject* Part::GetAurObject()
 {
     return m_pAurObject;
 }
-// PC 0x00440200  Xbox 0x002962F0
+// PC 0x00453080
 inline char* Part::Name()
 {
 #ifdef _XBOX

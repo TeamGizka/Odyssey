@@ -6,7 +6,7 @@
 #include "swguiabilitieschargen.h"
 #include "swguiingame.h"
 #include "nwccreature.h"
-// PC 0x006F6B60  Xbox 0x0012EE20
+// PC 0x007683E0
 int CSWGuiAbilitiesCharGen::DetermineCostToDecreaseScore(int nScore)
 {
     if (m_bLevelUp != 0)
@@ -27,7 +27,7 @@ int CSWGuiAbilitiesCharGen::DetermineCostToDecreaseScore(int nScore)
     }
     return -3;
 }
-// PC 0x006F6BB0  Xbox 0x0012EE70
+// PC 0x00768430
 int CSWGuiAbilitiesCharGen::DetermineCostToIncreaseScore(int nScore)
 {
     if (m_bLevelUp != 0)
@@ -40,7 +40,7 @@ int CSWGuiAbilitiesCharGen::DetermineCostToIncreaseScore(int nScore)
     }
     return (nScore > 13) + 1;
 }
-// PC 0x006F7600  Xbox 0x0012FAD0
+// PC 0x00768ED0
 CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
                                                CSWCCreature* pCreature,
                                                int bLevelUp)
@@ -295,12 +295,12 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     SetActiveControl(&m_btnPoints[0], 0);
     m_nSelected = 0;
 }
-// PC 0x006F6BF0  Xbox 0x0012F2C0
+// PC 0x007686D0
 CSWGuiAbilitiesCharGen::~CSWGuiAbilitiesCharGen()
 {
     m_lbDescription.ClearItems();
 }
-// PC 0x006F6DB0  Xbox 0x0012EEB0
+// PC 0x00768320
 void CSWGuiAbilitiesCharGen::OnPanelAdded()
 {
 #ifndef _XBOX
@@ -309,7 +309,7 @@ void CSWGuiAbilitiesCharGen::OnPanelAdded()
     g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0x10, OBJECT_INVALID,
                                                        OBJECT_INVALID, 0);
 }
-// PC 0x006F6DE0  Xbox 0x0012EED0
+// PC 0x00768350
 void CSWGuiAbilitiesCharGen::HandleCancelButton()
 {
     if (m_pParentPanel != NULL)
@@ -330,7 +330,7 @@ void CSWGuiAbilitiesCharGen::HandleCancelButton()
         }
     }
 }
-// PC 0x006F6E40  Xbox 0x0012EF30
+// PC 0x007683B0
 void CSWGuiAbilitiesCharGen::OnExitPointsButton(CSWGuiControl* pControl)
 {
     CSWGuiTextParams* pLabelParams;
@@ -341,7 +341,7 @@ void CSWGuiAbilitiesCharGen::OnExitPointsButton(CSWGuiControl* pControl)
     pButtonParams = &m_btnPoints[pControl->m_nIndex].m_cText.m_cParams;
     pButtonParams->m_bHilightText = 0;
 }
-// PC 0x006F8480  Xbox 0x00130920
+// PC 0x0076A350
 void CSWGuiAbilitiesCharGen::OnMinusButton()
 {
     int nScore = m_aScore[m_nSelected];
@@ -387,7 +387,7 @@ void CSWGuiAbilitiesCharGen::OnMinusButton()
     m_btnPlus[m_nSelected].SetEnabledFlag(1);
 #endif
 }
-// PC 0x006F8670  Xbox 0x00130B10
+// PC 0x0076A650
 void CSWGuiAbilitiesCharGen::OnPlusButton()
 {
     int nRemaining = m_nPointsRemaining;
@@ -441,7 +441,7 @@ void CSWGuiAbilitiesCharGen::OnPlusButton()
         }
     }
 }
-// PC 0x006F8880  Xbox 0x00130D20
+// PC 0x0076A960
 void CSWGuiAbilitiesCharGen::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -485,7 +485,7 @@ void CSWGuiAbilitiesCharGen::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006F70E0  Xbox 0x0012F4E0
+// PC 0x007688A0
 void CSWGuiAbilitiesCharGen::OnEnterPointsButton(CSWGuiControl* pControl)
 {
     int i;
@@ -535,7 +535,7 @@ void CSWGuiAbilitiesCharGen::OnEnterPointsButton(CSWGuiControl* pControl)
         &m_btnPoints[m_nSelected].m_cText.m_cParams;
     pButtonParams->m_bHilightText = 1;
 }
-// PC 0x006F7330  Xbox 0x0012F730
+// PC 0x00768AE0
 void CSWGuiAbilitiesCharGen::OnAcceptButton()
 {
     if (m_nPointsRemaining > 0)
@@ -556,7 +556,7 @@ void CSWGuiAbilitiesCharGen::OnAcceptButton()
         CompletePanel();
     }
 }
-// PC 0x006F6E70  Xbox 0x0012EF60
+// PC 0x00768470
 void CSWGuiAbilitiesCharGen::CompletePanel()
 {
     if (m_bLevelUp != 0)
@@ -593,14 +593,14 @@ void CSWGuiAbilitiesCharGen::CompletePanel()
 }
 
 #ifdef _XBOX
-// PC 0x0041A290  Xbox 0x0004CEC0
+
 inline int CSWGuiListBox::IsOversized()
 {
     return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
            m_lItems.num > 0 && !m_bHideScrollIcon;
 }
 #endif
-// PC 0x006F6FA0  Xbox 0x0012F090
+// PC 0x007685A0
 void CSWGuiAbilitiesCharGen::SetDescription(unsigned long nStrRef)
 {
     STR_RES strRes;
@@ -625,7 +625,7 @@ void CSWGuiAbilitiesCharGen::SetDescription(unsigned long nStrRef)
     m_lblRanalog.SetEnabledFlag(m_lbDescription.IsOversized());
 #endif
 }
-// PC 0x006F7390  Xbox 0x0012F790
+// PC 0x00768B40
 void CSWGuiAbilitiesCharGen::OnRecommendButton()
 {
     unsigned char nLevel;
@@ -703,7 +703,7 @@ void CSWGuiAbilitiesCharGen::OnRecommendButton()
 }
 
 #ifdef _XBOX
-// Xbox 0x0012F210
+
 void CSWGuiAbilitiesCharGen::Draw(float fElapsed)
 {
     int nCount = m_lArrowHilights.num;
@@ -719,7 +719,7 @@ void CSWGuiAbilitiesCharGen::Draw(float fElapsed)
     }
     CSWGuiPanel::Draw(fElapsed);
 }
-// Xbox 0x0012FA20
+
 void CSWGuiAbilitiesCharGen::HilightArrow(CSWGuiLabel* pLabel)
 {
     int nCount = m_lArrowHilights.num;

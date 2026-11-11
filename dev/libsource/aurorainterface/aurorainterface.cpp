@@ -19,7 +19,7 @@ Model* BinaryFindModel(char*);
 
 CExoLinkedList<CAuroraModel> CAuroraInterface::m_lstRequestedModel;
 CExoString CAuroraInterface::m_pCurrentTexturePack[4];
-// PC 0x0070C6E0  Xbox 0x002F6CE0
+// PC 0x0077FEB0
 unsigned char* CAuroraInterface::GetLayeredRaster(char* szName, int* pnWidth,
                                        int* pnHeight, int* pnReserved)
 {
@@ -43,7 +43,7 @@ unsigned char* CAuroraInterface::GetLayeredRaster(char* szName, int* pnWidth,
     *pnReserved = nReserved;
     return pTexture->GetTextureDataPtr();
 }
-// PC 0x0070C790  Xbox 0x002F6D90
+// PC 0x0077FF60
 unsigned char* CAuroraInterface::GetRaster(char* szName, int* pnWidth, int* pnHeight,
                                 int* pnFormat)
 {
@@ -68,7 +68,7 @@ unsigned char* CAuroraInterface::GetRaster(char* szName, int* pnWidth, int* pnHe
     *pnFormat = nBpp >> 3;
     return pTexture->GetTextureDataPtr();
 }
-// PC 0x0070C850  Xbox 0x002F6E50
+// PC 0x00780020
 void CAuroraInterface::ReleaseLayeredRaster(void* pRaster, int nWidth,
                                             int nHeight)
 {
@@ -78,7 +78,7 @@ void CAuroraInterface::ReleaseLayeredRaster(void* pRaster, int nWidth,
     ReleaseLayeredTextureInternal(
         ((SPLTLayeredTrailer*)(pPixels + nHeight * nWidth + 2))->pOwner);
 }
-// PC 0x0070C870  Xbox 0x002F6E70
+// PC 0x00780040
 void CAuroraInterface::ReleaseRaster(void* pRaster, int nWidth, int nHeight,
                                     int nBytesPerPixel, int nSize,
                                     int nReservedSize, int nTXISize,
@@ -147,7 +147,7 @@ void CAuroraInterface::ReleaseRaster(void* pRaster, int nWidth, int nHeight,
         }
     }
 }
-// PC 0x0070C920  Xbox 0x002F6F20
+// PC 0x007800F0
 void* CAuroraInterface::GetResource(char* szName, char* szExtension, int* pnSize)
 {
     char* szActualExtension;
@@ -238,7 +238,7 @@ void* CAuroraInterface::GetResource(char* szName, char* szExtension, int* pnSize
     }
     return 0;
 }
-// PC 0x0070CBD0  Xbox 0x002F72D0
+// PC 0x007803A0
 void CAuroraInterface::ReleaseResource(void* pResource, int nSize)
 {
     unsigned char* pData;
@@ -283,7 +283,7 @@ void CAuroraInterface::ReleaseResource(void* pResource, int nSize)
         }
     }
 }
-// PC 0x0070CC60  Xbox 0x002F7360
+// PC 0x00780430
 int CAuroraInterface::ReadRasterHeader(char* szName, int* pnWidth,
                                        int* pnHeight, int* pnFormat)
 {
@@ -294,7 +294,7 @@ int CAuroraInterface::ReadRasterHeader(char* szName, int* pnWidth,
     CAuroraTexture texture(szName, 0);
     return texture.ReadTextureHeader(pnWidth, pnHeight, pnFormat);
 }
-// PC 0x0070CD10  Xbox 0x002F7410
+// PC 0x007804E0
 int CAuroraInterface::ReadProcessedRasterHeader(char* szName, int* pnWidth,
                                                 int* pnHeight, char* pnFormat,
                                                 int* pnSize, int* pnTXISize,
@@ -308,7 +308,7 @@ int CAuroraInterface::ReadProcessedRasterHeader(char* szName, int* pnWidth,
     return texture.ReadProcessedTextureHeader(
         pnWidth, pnHeight, pnFormat, pnSize, pnTXISize, pfAlpha, pnMips);
 }
-// PC 0x0070CDD0  Xbox 0x002F74D0
+// PC 0x007805A0
 int CAuroraInterface::ReadCompressedRasterHeader(char* szName, int* pnWidth,
                                                  int* pnHeight, int* pnFormat,
                                                  int* pnSize, float* pfAlpha)
@@ -321,7 +321,7 @@ int CAuroraInterface::ReadCompressedRasterHeader(char* szName, int* pnWidth,
     return texture.ReadTextureHeader(pnWidth, pnHeight, pnFormat, pnSize,
                                      pfAlpha);
 }
-// PC 0x0070CE80  Xbox 0x002F7580
+// PC 0x00780650
 int CAuroraInterface::Get16BitRasterHeader(char* szName, int* pnWidth,
                                            int* pnHeight, float* pfAlpha,
                                            int* pnFormat)
@@ -333,7 +333,7 @@ int CAuroraInterface::Get16BitRasterHeader(char* szName, int* pnWidth,
     CAurora16BitTexture texture(szName, 0);
     return texture.ReadTextureHeader(pnWidth, pnHeight, pfAlpha, pnFormat);
 }
-// PC 0x0070CF30
+// PC 0x00780700
 int CAuroraInterface::LoadTexturePack(unsigned char nPack,
                                       const CExoString& sName)
 {
@@ -352,7 +352,7 @@ int CAuroraInterface::LoadTexturePack(unsigned char nPack,
     m_pCurrentTexturePack[nPack] = sName;
     return 1;
 }
-// PC 0x0070CF80
+// PC 0x00780760
 int CAuroraInterface::UnloadTexturePack(unsigned char nPack)
 {
     CExoString sName;
@@ -372,7 +372,7 @@ int CAuroraInterface::UnloadTexturePack(unsigned char nPack)
     }
     return 1;
 }
-// PC 0x0070D060
+// PC 0x00780850
 CExoString CAuroraInterface::GetCurrentTexturePack(unsigned char nPack)
 {
     if (nPack >= 4)
@@ -383,7 +383,7 @@ CExoString CAuroraInterface::GetCurrentTexturePack(unsigned char nPack)
 }
 
 #ifndef _XBOX
-int CAuroraInterface::GetNearestVideoMode(unsigned long nWidth,  // PC 0x0070D0A0
+int CAuroraInterface::GetNearestVideoMode(unsigned long nWidth,  // PC 0x00780890
                                           unsigned long nHeight,
                                           unsigned char nBitsPerPixel,
                                           unsigned long nRefreshRate)
@@ -457,7 +457,7 @@ int CAuroraInterface::GetNearestVideoMode(unsigned long nWidth,  // PC 0x0070D0A
 #endif
 
 #ifndef _XBOX
-int CAuroraInterface::GetExactVideoMode(unsigned long nWidth,  // PC 0x0070D220  Xbox 0x002F7630
+int CAuroraInterface::GetExactVideoMode(unsigned long nWidth,  // PC 0x00780A30
                                         unsigned long nHeight,
                                         unsigned char nBitsPerPixel,
                                         unsigned long nRefreshRate)
@@ -489,7 +489,7 @@ int CAuroraInterface::GetExactVideoMode(unsigned long nWidth,  // PC 0x0070D220 
     return -1;
 }
 #else
-// PC 0x0070D220  Xbox 0x002F7630
+
 int CAuroraInterface::GetExactVideoMode(unsigned long nWidth,
                                         unsigned long nHeight,
                                         unsigned char nBitsPerPixel,
@@ -498,7 +498,7 @@ int CAuroraInterface::GetExactVideoMode(unsigned long nWidth,
     return 1;
 }
 #endif
-// PC 0x0070D340  Xbox 0x002F76B0
+// PC 0x00780B70
 CAuroraInterface::~CAuroraInterface()
 {
     AURORAINTERFACE_TRACE();
@@ -606,7 +606,7 @@ int CAuroraInterface::GetHighestPriorityTextureFormat(
     }
     return 0;
 }
-// PC 0x0070D380  Xbox 0x002F76F0
+// PC 0x00780BB0
 unsigned char* CAuroraInterface::GetCompressedRaster(char* szName, int* pnWidth,
                                           int* pnHeight, int* pnBpp,
                                           int* pnSize, float* pfAlpha)
@@ -641,7 +641,7 @@ unsigned char* CAuroraInterface::GetCompressedRaster(char* szName, int* pnWidth,
     *pfAlpha = fAlpha;
     return pTexture->GetCompressedTextureDataPtr();
 }
-// PC 0x0070D510  Xbox 0x002F7880
+// PC 0x00780D40
 unsigned char* CAuroraInterface::GetProcessedRaster(char* szName, int* pnWidth,
                                          int* pnHeight, char* pnBpp,
                                          int* pnSize, int* pnTXISize,
@@ -667,7 +667,7 @@ unsigned char* CAuroraInterface::GetProcessedRaster(char* szName, int* pnWidth,
                                         pnTXISize, pnMips, pfAlpha, pnFormat);
     return pTexture->GetProcessedTextureDataPtr();
 }
-// PC 0x0070D9C0  Xbox 0x002F7C20
+// PC 0x007811F0
 CAuroraInterface::CAuroraInterface()
 {
     AurGetResource = GetResource;
@@ -686,7 +686,7 @@ CAuroraInterface::CAuroraInterface()
     AurTextureSetDim(0, 0);
     AurTextureSetMem(g_nMaxTexMem);
 }
-// PC 0x0070D6B0  Xbox 0x002F7A20
+// PC 0x00780EE0
 unsigned char* CAuroraInterface::Get16BitRaster(char* szName, int* pnWidth, int* pnHeight,
                                      float* pfAlpha, int* pnFormat)
 {
@@ -718,7 +718,7 @@ unsigned char* CAuroraInterface::Get16BitRaster(char* szName, int* pnWidth, int*
     *pnFormat = nTextureFormat;
     return pTexture->GetTextureDataPtr();
 }
-// PC 0x0070D800
+// PC 0x00781030
 int CAuroraInterface::SetTexturePack(unsigned char nPack,
                                      const CExoString& sName)
 {
@@ -740,7 +740,7 @@ int CAuroraInterface::SetTexturePack(unsigned char nPack,
     }
     return LoadTexturePack(nPack, sName);
 }
-// PC 0x0070D8D0  Xbox 0x002F7B70
+// PC 0x00781100
 void CAuroraInterface::RequestModel(char* szName)
 {
     AURORAINTERFACE_TRACE();
@@ -778,7 +778,7 @@ inline bool IsResident(char* szName)
                : (unsigned char)false;
 }
 }
-// PC 0x0070D980
+// PC 0x007811B0
 int CAuroraInterface::IsResident(char* szName)
 {
     AURORAINTERFACE_TRACE();

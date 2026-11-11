@@ -7,7 +7,7 @@
 #include "nwsmodule.h"
 #include "serveraimaster.h"
 #include "nwswaypoint.h"
-// PC 0x005C7E70  Xbox 0x002466C0
+// PC 0x0056F3B0
 CSWSWaypoint::CSWSWaypoint(unsigned long oidWaypoint)
     : CSWSObject(CGameObject::OBJECT_TYPE_WAYPOINT, oidWaypoint, 0)
 {
@@ -19,7 +19,7 @@ CSWSWaypoint::CSWSWaypoint(unsigned long oidWaypoint)
 void CSWSWaypoint::AIUpdate()
 {
 }
-// PC 0x005C7F10  Xbox 0x00246760
+// PC 0x0056F450
 void CSWSWaypoint::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                                 void* pEventData, unsigned long nCalendarDay,
                                 unsigned long nTimeOfDay)
@@ -32,7 +32,7 @@ void CSWSWaypoint::EventHandler(unsigned long nEventId, unsigned long oidCaller,
         }
     }
 }
-// PC 0x005C7F30  Xbox 0x00246780
+// PC 0x0056F470
 int CSWSWaypoint::LoadWaypoint(CResGFF* pRes, CResStruct* pStruct)
 {
     Vector vPosition;
@@ -89,7 +89,7 @@ int CSWSWaypoint::LoadWaypoint(CResGFF* pRes, CResStruct* pStruct)
         m_sTag, m_nId);
     return 1;
 }
-// PC 0x005C8230  Xbox 0x00246A80
+// PC 0x0056F770
 int CSWSWaypoint::SaveWaypoint(CResGFF* pRes, CResStruct* pStruct)
 {
     pRes->WriteFieldCExoString(pStruct, GetTag(), "Tag");
@@ -111,7 +111,7 @@ int CSWSWaypoint::SaveWaypoint(CResGFF* pRes, CResStruct* pStruct)
     }
     return 1;
 }
-// PC 0x005C8350  Xbox 0x00246BA0
+// PC 0x0056F890
 void CSWSWaypoint::RemoveFromArea()
 {
     if (GetArea() != NULL)
@@ -122,7 +122,7 @@ void CSWSWaypoint::RemoveFromArea()
     Vector vPosition;
     SetPosition(vPosition, 1, 1, 0);
 }
-// PC 0x005C83B0  Xbox 0x00246C00
+// PC 0x0056F8F0
 int CSWSWaypoint::LoadFromTemplate(const CResRef& cResRef)
 {
     CResGFF* pRes = new CResGFF(2058, "UTW ", cResRef);
@@ -144,7 +144,7 @@ int CSWSWaypoint::LoadFromTemplate(const CResRef& cResRef)
     delete pRes;
     return 1;
 }
-// PC 0x005C84E0  Xbox 0x00246D30
+// PC 0x0056FA20
 CSWSWaypoint::~CSWSWaypoint()
 {
     if (GetArea() != NULL)
@@ -158,7 +158,7 @@ CSWSWaypoint::~CSWSWaypoint()
         pModule->RemoveObjectFromLookupTable(m_sTag, oid);
     }
 }
-// PC 0x005C8580  Xbox 0x00246DD0
+// PC 0x0056FAC0
 void CSWSWaypoint::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
                              int bLoadingGame)
 {

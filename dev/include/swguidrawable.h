@@ -199,11 +199,11 @@ class CSWGuiDrawable
 public:
 
     virtual ~CSWGuiDrawable();
-    virtual void SetExtent(const CSWGuiExtent& cExtent)  // PC 0x00409E90
+    virtual void SetExtent(const CSWGuiExtent& cExtent)  // PC 0x0040A2B0
     {
         m_cExtent = cExtent;
     }
-    virtual int GetIdealHeight()  // PC 0x004064A0
+    virtual int GetIdealHeight()  // PC 0x004065B0
     {
         return m_cExtent.m_nHeight;
     }
@@ -241,7 +241,7 @@ public:
 #ifdef _XBOX
 
     void Initialize(const CSWGuiExtent& cExtent, const CSWGuiTextParams& cParams);
-    void Initialize(const CSWGuiExtent& cExtent, const CSWGuiTextParams& cParams, float)  // PC 0x00417310
+    void Initialize(const CSWGuiExtent& cExtent, const CSWGuiTextParams& cParams, float)
     {
         Initialize(cExtent, cParams);
     }
@@ -309,7 +309,7 @@ public:
     CSWGuiScene();
     virtual ~CSWGuiScene();
     virtual void Draw(float fElapsed);
-    virtual void Load(CResGFF* pGFF, CResStruct& cStruct,  // PC 0x005C5630
+    virtual void Load(CResGFF* pGFF, CResStruct& cStruct,  // PC 0x006009E0
                            const CExoString& sName)
     {
     }

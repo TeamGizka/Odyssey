@@ -17,7 +17,7 @@
 #include "swgui.h"
 #include "swguilevelupchargen.h"
 #include "nwccreature.h"
-// PC 0x006AE980  Xbox 0x000E5290
+// PC 0x0071B2C0
 void CSWGuiInGameCharacter::OnPanelRemoved()
 {
     m_pShownCreature = 0;
@@ -25,13 +25,13 @@ void CSWGuiInGameCharacter::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 #endif
 }
-// PC 0x006AE990  Xbox 0x000E5030
+// PC 0x0071B060
 inline void CSWGuiInGameCharacter::SetModText(CSWGuiLabel& lblMod, int nMod)
 {
     lblMod.m_cText.m_cParams.SetText(nMod > 0 ? CExoString("+") + nMod
                                               : CExoString(nMod));
 }
-// PC 0x006B0E40  Xbox 0x000E6960
+// PC 0x0071CA10
 CSWGuiInGameCharacter::CSWGuiInGameCharacter(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -226,7 +226,7 @@ CSWGuiInGameCharacter::CSWGuiInGameCharacter(CSWGuiManager* pManager)
 #endif
 #endif
 }
-// PC 0x006B2220  Xbox 0x000E7BF0
+// PC 0x0071DC60
 void CSWGuiInGameCharacter::OnPanelAdded()
 {
 #ifdef _XBOX
@@ -248,7 +248,7 @@ void CSWGuiInGameCharacter::OnPanelAdded()
 }
 
 #ifdef _XBOX
-void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)  // PC 0x006B2250  Xbox 0x000E7C60
+void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)
 {
     g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
     CClientExoApp* pClient;
@@ -314,7 +314,7 @@ void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)  // PC 0x00
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 #else
-void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)  // PC 0x006B2250  Xbox 0x000E7C60
+void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)  // PC 0x0071DC70
 {
     g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
     if (nState != 0)
@@ -426,13 +426,13 @@ void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)  // PC 0x00
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 #endif
-// PC 0x006AF970  Xbox 0x000E54B0
+// PC 0x0071B8C0
 CSWGuiInGameCharacter::~CSWGuiInGameCharacter()
 {
     delete m_pScriptSelect;
     delete m_pCreature;
 }
-// PC 0x006AFDA0  Xbox 0x000E5900
+// PC 0x0071BC70
 void CSWGuiInGameCharacter::SetStats()
 {
     CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
@@ -654,13 +654,13 @@ void CSWGuiInGameCharacter::SetStats()
         m_sldAlign.SetCurValue(ALIGNMENT_SLIDER_MAX - m_nShownAlignment);
     }
 }
-// PC 0x006B0B90  Xbox 0x000E66D0
+// PC 0x0071C750
 void CSWGuiInGameCharacter::Draw(float fElapsed)
 {
     SetStats();
     return CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x006B0BB0  Xbox 0x000E66F0
+// PC 0x0071C780
 int CSWGuiInGameCharacter::ShowLevelUpGUI(int bAutomatic)
 {
     int bLevelUpMode = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_LevelUpMode;
@@ -688,7 +688,7 @@ int CSWGuiInGameCharacter::ShowLevelUpGUI(int bAutomatic)
     return 0;
 #endif
 }
-// PC 0x006B0CB0  Xbox 0x000E67D0
+// PC 0x0071C880
 void CSWGuiInGameCharacter::StartAutoLevelup()
 {
     CSWCCreature* pPlayer =
@@ -726,7 +726,7 @@ void CSWGuiInGameCharacter::StartAutoLevelup()
         0);
     m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
-// PC 0x006AEAC0  Xbox 0x000E5160
+// PC 0x0071B190
 void CSWGuiBlackenedLabel::Draw(float fElapsed)
 {
     CSWGuiExtent cExtent = m_cText.m_cExtent;
@@ -751,7 +751,7 @@ void CSWGuiBlackenedLabel::Draw(float fElapsed)
     m_cText.SetExtent(cExtent);
     CSWGuiLabel::Draw(fElapsed);
 }
-// PC 0x006AEBF0  Xbox 0x000E52A0
+// PC 0x0071B2D0
 void CSWGuiInGameCharacter::AttachModel()
 {
     if (g_bDo3DGUIs != 0)
@@ -767,7 +767,7 @@ void CSWGuiInGameCharacter::AttachModel()
         }
     }
 }
-// PC 0x006AEC80  Xbox 0x000E5330
+// PC 0x0071B360
 void CSWGuiInGameCharacter::DoAutoLevelup(CSWGuiControl* pControl)
 {
     CGuiInGame* pInGame = g_pAppManager->m_pClientExoApp->GetInGameGui();
@@ -782,7 +782,7 @@ void CSWGuiInGameCharacter::DoAutoLevelup(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006AECD0  Xbox 0x000E5380
+// PC 0x0071B3B0
 void CSWGuiInGameCharacter::SetLabelBonusPenaltyColour(CSWGuiLabel& lblStat,
                                                        int nBonus)
 {
@@ -799,7 +799,7 @@ void CSWGuiInGameCharacter::SetLabelBonusPenaltyColour(CSWGuiLabel& lblStat,
         lblStat.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
     }
 }
-// PC 0x006AED20  Xbox 0x000E53D0
+
 void CSWGuiInGameCharacter::RotateCharacter(int nDirection)
 {
     float fYaw = nDirection ? -10.0f : 10.0f;
@@ -808,18 +808,18 @@ void CSWGuiInGameCharacter::RotateCharacter(int nDirection)
 }
 
 #ifndef _XBOX
-void CSWGuiInGameCharacter::RotateCharacterLeft(int nUnused)  // PC 0x006AED90
+void CSWGuiInGameCharacter::RotateCharacterLeft(int nUnused)
 {
     m_pCreature->SetOrientation(
         YawPitchRoll(-10.0f, 0.0f, 0.0f) * m_pCreature->m_vOrientation);
 }
-// PC 0x006AEDE0
+
 void CSWGuiInGameCharacter::RotateCharacterRight(int nUnused)
 {
     m_pCreature->SetOrientation(
         YawPitchRoll(10.0f, 0.0f, 0.0f) * m_pCreature->m_vOrientation);
 }
-// PC 0x006AEE30
+
 void CSWGuiInGameCharacter::UpdatePortraits()
 {
     CSWServerInfo* pInfo =
@@ -1033,7 +1033,7 @@ void CSWGuiInGameCharacter::UpdatePortraits()
         }
     }
 }
-// PC 0x006AF350
+
 void CSWGuiInGameCharacter::OnChangeCharacter(CSWGuiControl* pControl)
 {
     int nMember = 1;
@@ -1091,7 +1091,7 @@ void CSWGuiInGameCharacter::OnChangeCharacter(CSWGuiControl* pControl)
         UpdatePortraits();
     }
 }
-// PC 0x006AF450
+
 void CSWGuiInGameCharacter::OnSwitchLeft(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -1198,7 +1198,7 @@ void CSWGuiInGameCharacter::OnSwitchLeft(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006AF6D0
+
 void CSWGuiInGameCharacter::OnSwitchRight(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)

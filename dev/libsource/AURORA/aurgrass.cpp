@@ -25,18 +25,18 @@ float grassstiffness = 1.0f;
 int enablepointwind = 1;
 
 List<CAurGrassInfo> g_GrassInfo;
-// PC 0x004A67A0  Xbox 0x002B6180
+// PC 0x004D2EA0
 void AurGrassClearInfo()
 {
     g_GrassInfo.m_nCount = 0;
 }
-// PC 0x004A67B0
+// PC 0x004D2EB0
 void CAurTriangleBin::FinishGeometry()
 {
     m_vMaximum = (m_vBoundingBoxMinimum + m_vBoundingBoxMaximum) / 2.0f;
     m_fRadius = magnitude(m_vBoundingBoxMinimum - m_vBoundingBoxMaximum) * 0.5f;
 }
-// PC 0x004A6840  Xbox 0x002B61A0
+// PC 0x004D2F40
 char AurGrassMaterialInUse(int nMaterial)
 {
     AurgrassTrace1();
@@ -47,7 +47,7 @@ char AurGrassMaterialInUse(int nMaterial)
 
     return g_GrassInfo.m_pList[nMaterial].m_bInUse;
 }
-// PC 0x004A6870  Xbox 0x002B61D0
+// PC 0x004D2F70
 CAurGrassInfo::CAurGrassInfo()
 {
     m_szTextureName[0] = 0;
@@ -59,7 +59,7 @@ CAurGrassInfo::CAurGrassInfo()
         m_afProbability[i] = 0.25f;
     }
 }
-// PC 0x004A68B0  Xbox 0x002B62E0
+// PC 0x004D2FB0
 void CAurTriangleBin::UpdateGrassForWind(WindManager* pWindManager)
 {
     if (!(~m_nFlags & GRASS_POLYS_BUILT))
@@ -120,7 +120,7 @@ void CAurTriangleBin::UpdateGrassForWind(WindManager* pWindManager)
 bool AurNV1xLevelShadersAvailable();
 
 int maxgrass = 0;
-// PC 0x004A6D30  Xbox 0x002B6770
+// PC 0x004D3430
 void CAurTriangleBin::RenderGrassPolys(int nGrassInfo, const Vector& vPosition,
                                       WindManager* pWindManager)
 {
@@ -294,7 +294,7 @@ void CAurTriangleBin::RenderGrassPolys(int nGrassInfo, const Vector& vPosition,
     countfaces += m_nTriangles;
 #endif
 }
-// PC 0x004A7220  Xbox 0x002B6A40
+// PC 0x004D3AA0
 CAurTriangleListElem::CAurTriangleListElem()
 {
     AurgrassTrace2();
@@ -302,7 +302,7 @@ CAurTriangleListElem::CAurTriangleListElem()
     m_pTriMesh = 0;
     m_nTriangle = 0;
 }
-// PC 0x004A7240  Xbox 0x002B6A70
+// PC 0x004D3AC0
 CAurTriangleListElem::CAurTriangleListElem(List<float> lstVertices,
                                            MaxFace* pFace,
                                            PartTriMesh* pTriMesh, int nTriangle)
@@ -312,7 +312,7 @@ CAurTriangleListElem::CAurTriangleListElem(List<float> lstVertices,
     m_pTriMesh = pTriMesh;
     m_nTriangle = nTriangle;
 }
-// PC 0x004A72D0  Xbox 0x002B6AF0
+// PC 0x004D3B50
 CAurTriangleListElem::~CAurTriangleListElem()
 {
     AURGRASS_TRACE();
@@ -331,7 +331,7 @@ CAurTriangleListElem::~CAurTriangleListElem()
 void CAurTriangleBin::ReloadColor()
 {
 }
-// PC 0x004A74F0  Xbox 0x002B6D30
+// PC 0x004D3DD0
 void AurGrassAddInfo(int nMaterial, const CAurGrassInfo& info)
 {
     while (nMaterial >= g_GrassInfo.m_nCount)
@@ -360,7 +360,7 @@ void AurGrassAddInfo(int nMaterial, const CAurGrassInfo& info)
     strcpy(g_GrassInfo[nMaterial].m_szTextureName, info.m_szTextureName);
     g_GrassInfo[nMaterial].m_bInUse = 1;
 }
-// PC 0x004A7690  Xbox 0x002B6E60
+// PC 0x004D3FA0
 int GrassSortTris(const void* pFirst, const void* pSecond)
 {
     CAurTriangleListElem first(*(CAurTriangleListElem*)pFirst);
@@ -382,7 +382,7 @@ int GrassSortTris(const void* pFirst, const void* pSecond)
 #include <stdlib.h>
 
 extern int enablelightmap;
-// PC 0x004A7860  Xbox 0x002B7060
+// PC 0x004D4170
 void CAurTriangleBin::AddTriangle(const MaxFace& face, PartTriMesh* pTriMesh,
                                   MdlNodeTriMesh* pNode)
 {
@@ -483,7 +483,7 @@ void CAurTriangleBin::AddTriangle(const MaxFace& face, PartTriMesh* pTriMesh,
         m_vMaximum = (m_vBoundingBoxMinimum + m_vBoundingBoxMaximum) * 0.5f;
     }
 }
-// PC 0x004A82B0  Xbox 0x002B7980
+// PC 0x004D5060
 CAurTriangleBin::CAurTriangleBin()
 {
     m_nTriangles = 0;
@@ -499,7 +499,7 @@ CAurTriangleBin::CAurTriangleBin()
     m_nVertexOffset = 0;
     m_nIndexOffset = 0;
 }
-// PC 0x004A8350  Xbox 0x002B7A40
+// PC 0x004D5100
 CAurTriangleBin::~CAurTriangleBin()
 {
     if (m_nFlags & HAS_VERTEX_DATA)
@@ -528,7 +528,7 @@ CAurTriangleBin::~CAurTriangleBin()
     m_pTexture = 0;
     AurTextureRelease(pTexture);
 }
-// PC 0x004A8460  Xbox 0x002B7B20
+// PC 0x004D5210
 void CAurTriangleBin::DestroyGrassPolys()
 {
     if (!(~m_nFlags & GRASS_POLYS_BUILT))
@@ -562,12 +562,12 @@ void CAurTriangleBin::DestroyGrassPolys()
         m_nFlags ^= GRASS_POLYS_BUILT;
     }
 }
-// PC 0x00616FA0  Xbox 0x002B6190
+// PC 0x00664830
 void CAurTriangleBin::SetMinDistanceSquared(float fDistanceSquared)
 {
     m_fDistance = fDistanceSquared;
 }
-// PC 0x004A8500  Xbox 0x002B7BA0
+// PC 0x004D52A0
 void CAurTriangleBin::SortTriangles()
 {
     if (m_lstTriangles.m_nCount == 1)
@@ -603,7 +603,7 @@ void CAurTriangleBin::SortTriangles()
     m_lstTextureIndices.Add(nTriangles);
 }
 #ifndef _XBOX
-void CAurTriangleBin::CreateArrays()  // PC 0x004A87C0  Xbox 0x002B7D30
+void CAurTriangleBin::CreateArrays()  // PC 0x004D5560
 {
     int nVertices = 4 * m_nTriangles;
     m_pVertices = (float*)new unsigned char[nVertices * m_nVertexSize];
@@ -818,7 +818,7 @@ void CAurTriangleBin::CreateArrays()  // PC 0x004A87C0  Xbox 0x002B7D30
     m_nFlags |= GRASS_POLYS_BUILT;
 }
 #endif
-void CAurTriangleBin::BuildGrassPolys()  // PC 0x004A9630  Xbox 0x002B8DC0
+void CAurTriangleBin::BuildGrassPolys()  // PC 0x004D68C0
 {
     if (!(m_nFlags & GRASS_POLYS_BUILT) && m_nTriangles != 0)
     {
@@ -869,7 +869,7 @@ static inline void AurgrassTrace1()
 }
 
 #ifdef _XBOX
-// PC 0x004A87C0  Xbox 0x002B7D30
+
 void CAurTriangleBin::CreateArrays()
 {
     int nVertices = 4 * m_nTriangles;

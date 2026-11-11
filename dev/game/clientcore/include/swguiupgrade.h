@@ -240,10 +240,10 @@ public:
     CSWGuiBorder m_CSWGuiBorder_2C0;
     CSWGuiText m_CSWGuiText_334;
     virtual void Initialize(CSWGuiText&, CSWGuiBorder&, CSWGuiBorder&, int);
-    virtual void Initialize(const CSWGuiExtent&, CSWGuiButton*)  // PC 0x005B5E90
+    virtual void Initialize(const CSWGuiExtent&, CSWGuiButton*)  // PC 0x006049D0
     {
     }
-    virtual void Initialize(const CSWGuiExtent&, const CSWGuiTextParams&,  // PC 0x0063CFC0
+    virtual void Initialize(const CSWGuiExtent&, const CSWGuiTextParams&,  // PC 0x00693D50
                             const CSWGuiBorderParams&, const CSWGuiBorderParams&)
     {
     }

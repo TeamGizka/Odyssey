@@ -20,27 +20,27 @@ unsigned long CSWGuiInGameJournal::s_pnSortLabels[4] =
 {
     32173, 32174, 32175, 32176
 };
-// PC 0x00644740  Xbox 0x000E1300
+// PC 0x0069B540
 void CGuiInGame::SetJournalDone(int bDone)
 {
     m_bJournalDone = bDone;
 }
-// PC 0x00644760
+// PC 0x00406600
 inline int CSWCJournal::GetDoneSortBy()
 {
     return m_lstDone.m_nSortBy;
 }
-// PC 0x00644770
+// PC 0x0069B560
 inline void CSWCJournal::ClearActiveHasChanged()
 {
     m_lstActive.m_bHasChanged = 0;
 }
-// PC 0x00644780
+// PC 0x0069B570
 inline void CSWCJournal::ClearDoneHasChanged()
 {
     m_lstDone.m_bHasChanged = 0;
 }
-// PC 0x00644790  Xbox 0x000E1340
+// PC 0x0069B580
 inline void CSWGuiJournalItemEntry::SetEncouraged(int bEncouraged)
 {
     if (m_bEncouraged != bEncouraged)
@@ -59,7 +59,7 @@ inline void CSWGuiJournalItemEntry::SetEncouraged(int bEncouraged)
         }
     }
 }
-// PC 0x00644A40  Xbox 0x000E15E0
+// PC 0x0069B930
 CSWGuiInGameJournal::CSWGuiInGameJournal(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -170,14 +170,14 @@ CSWGuiInGameJournal::CSWGuiInGameJournal(CSWGuiManager* pManager)
     }
     m_lblDescription.m_cText.m_cParams.SetText("");
 }
-// PC 0x00644850  Xbox 0x000E1400
+// PC 0x0069B7C0
 CSWGuiInGameJournal::~CSWGuiInGameJournal()
 {
     m_lblItemDescription.ClearItems();
     m_lbxItems.ClearItems();
     delete m_pQuestItemPanel;
 }
-// PC 0x00644960  Xbox 0x000E1570
+// PC 0x0069B650
 CSWJournalEntry* CSWGuiInGameJournal::GetQuestEntryAt(int nIndex)
 {
     SWGUIINGAMEJOURNAL_TRACE();
@@ -198,14 +198,14 @@ CSWJournalEntry* CSWGuiInGameJournal::GetQuestEntryAt(int nIndex)
 }
 
 #ifdef _XBOX
-// PC 0x0041A290  Xbox 0x0004CEC0
+
 inline int CSWGuiListBox::IsOversized()
 {
     return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
            m_lItems.num > 0 && !m_bHideScrollIcon;
 }
 #endif
-// PC 0x00645100  Xbox 0x000E1DD0
+// PC 0x0069C070
 void CSWGuiInGameJournal::OnControlEntered(CSWGuiControl* pControl)
 {
     if (pControl != 0)
@@ -254,7 +254,7 @@ void CSWGuiInGameJournal::OnControlEntered(CSWGuiControl* pControl)
     m_lblRAnalog.SetEnabledFlag(m_lblItemDescription.IsOversized());
 #endif
 }
-// PC 0x00645330  Xbox 0x000E2100
+// PC 0x0069C320
 void CSWGuiInGameJournal::PopulateItemListBox()
 {
     CSWCJournal* pJournal = g_pAppManager->m_pClientExoApp->GetQuestJournal();
@@ -314,7 +314,7 @@ void CSWGuiInGameJournal::PopulateItemListBox()
     }
     (pJournal->*pfnClearHasChanged)();
 }
-// PC 0x00645610  Xbox 0x000E2060
+// PC 0x0069C670
 void CSWGuiInGameJournal::MarkNewQuestsObserved()
 {
     for (int i = 0; i < m_aNewQuests.num; i++)
@@ -327,7 +327,7 @@ void CSWGuiInGameJournal::MarkNewQuestsObserved()
     }
     m_aNewQuests.SetSize(0);
 }
-// PC 0x00645670  Xbox 0x000E23D0
+// PC 0x0069C6D0
 void CSWGuiInGameJournal::Draw(float fElapsed)
 {
     CSWCJournal* pJournal = g_pAppManager->m_pClientExoApp->GetQuestJournal();
@@ -340,7 +340,7 @@ void CSWGuiInGameJournal::Draw(float fElapsed)
     }
     return CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x006456E0  Xbox 0x000E2440
+// PC 0x0069C740
 void CSWGuiInGameJournal::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -479,7 +479,7 @@ void CSWGuiInGameJournal::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x00645E00  Xbox 0x000E2AB0
+// PC 0x0069C9E0
 void CSWGuiInGameJournal::OnPanelAdded()
 {
     CSWCJournal* pJournal = g_pAppManager->m_pClientExoApp->GetQuestJournal();
@@ -525,7 +525,7 @@ void CSWGuiInGameJournal::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
-// PC 0x00646070
+// PC 0x0069CA60
 void CSWGuiInGameJournal::OnPanelRemoved()
 {
     MarkNewQuestsObserved();

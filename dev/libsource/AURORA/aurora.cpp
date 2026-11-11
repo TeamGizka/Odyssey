@@ -25,19 +25,19 @@ float memoryfree = 0.0f;
 int g_nCurrentAnisotropy = 0;
 char disablepostprocessing = 0;
 bool g_bDisableVertexBufferObjects = false;
-// PC 0x0044ED70  Xbox 0x002A2460
+// PC 0x00462E30
 CAurInternalGL* NewCAurora()
 {
     return CAurInternal::NewCAuroraInstance();
 }
-// PC 0x0044ED80  Xbox 0x002A2470
+// PC 0x00462E40
 void DestroyCAurora()
 {
     CAurInternal::DestroyCAuroraInstance();
 }
 
 #ifdef _XBOX
-// Xbox 0x002A2480
+
 void sleep(int nMilliseconds)
 {
     clock_t nEndTime = clock() + nMilliseconds;
@@ -52,7 +52,7 @@ void sleep(unsigned long nMilliseconds)
         ;
 }
 #endif
-// PC 0x0044ED90  Xbox 0x002A24A0
+// PC 0x00462E50
 int AurMakeCurrent()
 {
 #ifdef _XBOX
@@ -79,52 +79,52 @@ int AurMakeCurrent()
 inline CAurPathInfo::~CAurPathInfo()
 {
 }
-// PC 0x0044EE00  Xbox 0x002A2500
+// PC 0x00462EC0
 CAurPathInfo::CAurPathInfo()
 {
     m_pfCoordinates = NULL;
     m_nCoordinates = 0;
 }
-// PC 0x0044EE20
+// PC 0x00462EF0
 void AurEnableShadows()
 {
     enableshadows = 1;
 }
-// PC 0x0044EE30
+// PC 0x00462EE0
 void AurDisableGrass()
 {
     enablegrass = 1;
 }
-// PC 0x0044EE40
+// PC 0x00463190
 void AurEnableGrass()
 {
     enablegrass = 0;
 }
-// PC 0x0044EE50
+// PC 0x00462F10
 int AurEnableSoftShadows()
 {
     enablesoftshadows = 1;
     enableshadows = 1;
     return 1;
 }
-// PC 0x0044EE60
+// PC 0x00462F20
 void AurDisableSoftShadows()
 {
     enablesoftshadows = 0;
 }
-// PC 0x0044EE70
+// PC 0x00462F30
 void AurEnableFrameBufferEffects()
 {
     doframebuffer = 1;
 }
-// PC 0x0044EE80
+// PC 0x00462F40
 void AurDisableFrameBufferEffects()
 {
     doframebuffer = 0;
 }
 
 #ifndef _XBOX
-// PC 0x0044EE90  Xbox 0x00016B94
+// PC 0x00462F50
 void AurSetVSyncState(bool bEnabled)
 {
     if (AuroraUseARBShaders())
@@ -134,7 +134,7 @@ void AurSetVSyncState(bool bEnabled)
     }
 }
 #endif
-// PC 0x0044EEC0
+
 const char* AurGetVersionString()
 {
     sprintf(versionstring, "SWPC 0027");
@@ -142,7 +142,7 @@ const char* AurGetVersionString()
 }
 
 #ifndef _XBOX
-void AurGetGLError()  // PC 0x0044EEE0
+void AurGetGLError()  // PC 0x00462F80
 {
     int nError = glGetError();
     if (nError != 0)
@@ -151,7 +151,7 @@ void AurGetGLError()  // PC 0x0044EEE0
     }
 }
 #endif
-// PC 0x0044EF00
+// PC 0x00462FA0
 void AurSetPauseOverlayColor(float fRed, float fGreen, float fBlue,
                              float fAlpha)
 {
@@ -160,7 +160,7 @@ void AurSetPauseOverlayColor(float fRed, float fGreen, float fBlue,
                               ((unsigned int)(fBlue * 255.0f) << 16) |
                               ((unsigned int)(fAlpha * 255.0f) << 24);
 }
-// Xbox 0x002A2540
+
 char* testsetpausecolor(char* sArguments)
 {
 #ifdef _XBOX
@@ -181,24 +181,24 @@ char* testsetpausecolor(char* sArguments)
 #endif
     return "SUCCESS";
 }
-// PC 0x0044EF60
+// PC 0x00463030
 void AurDisableVertexBufferObjects()
 {
     g_bDisableVertexBufferObjects = true;
 }
-// PC 0x0044EF70
+// PC 0x00463040
 void AurDisableVertexBufferObjectsWriteOnly()
 {
     g_bVertexBufferObjectsWriteOnly = false;
 }
-// PC 0x0044EF80
+// PC 0x00463050
 void AurEnableVertexBufferObjectsWriteOnly()
 {
     g_bVertexBufferObjectsWriteOnly = true;
 }
 
 #ifndef _XBOX
-void AurATIUnlockSoftShadowsForHotFix()  // PC 0x0044EF90
+void AurATIUnlockSoftShadowsForHotFix()  // PC 0x00463060
 {
     g_nUnlockATISoftShadowsForHotFix = 1;
     enablesoftshadows = 0;
@@ -206,7 +206,7 @@ void AurATIUnlockSoftShadowsForHotFix()  // PC 0x0044EF90
 #endif
 
 #ifdef _XBOX
-// Xbox 0x002A25F0
+
 void AurReportError(int nLine, const char* sFile, const char* sMessage)
 {
     char sReport[1024];
@@ -227,7 +227,7 @@ void AurReportError(int nLine, const char* sFile, const char* sMessage)
     }
 }
 #endif
-// PC 0x0044EFB0  Xbox 0x002A2680
+// PC 0x00463080
 int AurAddDrawableSquare(float* pVertices, unsigned long nColor)
 {
     unsigned long nPool;
@@ -262,7 +262,7 @@ int AurAddDrawableSquare(float* pVertices, unsigned long nColor)
     GLRender::AddSquareToRender(nPool);
     return nPool;
 }
-// PC 0x0044F050  Xbox 0x002A2750
+// PC 0x00463160
 void AurRemoveDrawableSquare(unsigned long nSquare)
 {
     if (nSquare != (unsigned int)-1)
@@ -272,13 +272,13 @@ void AurRemoveDrawableSquare(unsigned long nSquare)
 }
 
 #ifdef _XBOX
-// Xbox 0x002A2770
+
 void AurRemoveAllDrawableSquares()
 {
     GLRender::RemoveAllSquaresToRender();
 }
 #endif
-// Xbox 0x002A2780
+
 char* addsquaretorender(char* sArguments)
 {
     float fVertices[12];
@@ -290,7 +290,7 @@ char* addsquaretorender(char* sArguments)
     sprintf(returnvalue, "%u", nSquare);
     return returnvalue;
 }
-// Xbox 0x002A27D0
+
 char* removesquaretorender(char* sArguments)
 {
 #ifdef _XBOX
@@ -303,12 +303,12 @@ char* removesquaretorender(char* sArguments)
     return _itoa(nSquare, returnvalue, 10);
 #endif
 }
-// PC 0x0044F070  Xbox 0x002A27F0
+// PC 0x00463180
 void AurInitExtensions()
 {
     GLRender::InitExtensions();
 }
-// PC 0x0044F080
+// PC 0x00462F00
 int AurDisableShadows()
 {
     enableshadows = 0;
@@ -317,54 +317,54 @@ int AurDisableShadows()
 }
 
 #ifndef _XBOX
-int AurQueryMaximumAnisotropy()  // PC 0x0044F090
+int AurQueryMaximumAnisotropy()  // PC 0x004631A0
 {
     return (int)largest_supported_anisotropy;
 }
 #endif
-// PC 0x0044F0A0  Xbox 0x002A2800
+// PC 0x004631C0
 void AurEnableSpeedBlur()
 {
     GLRender::m_bSpeedBlurEnabled = true;
 }
-// PC 0x0044F0B0  Xbox 0x002A2810
+// PC 0x004631D0
 void AurDisableSpeedBlur()
 {
     GLRender::m_bSpeedBlurEnabled = false;
 }
-// Xbox 0x002A2820
+
 char* startblur(char* sArguments)
 {
     AurEnableSpeedBlur();
     return "blah";
 }
-// Xbox 0x002A2830
+
 char* endblur(char* sArguments)
 {
     AurDisableSpeedBlur();
     return "blah";
 }
-// PC 0x0044F0C0  Xbox 0x002A2840
+// PC 0x004631E0
 void AurEnableSaturation()
 {
     GLRender::m_bSaturationEnabled = true;
 }
-// PC 0x0044F0D0  Xbox 0x002A2850
+// PC 0x004631F0
 void AurDisableSaturation()
 {
     GLRender::m_bSaturationEnabled = false;
 }
-// PC 0x0044F0E0  Xbox 0x002A2860
+// PC 0x00463200
 void AurEnableScanNoise()
 {
     GLRender::m_bScanNoiseEnabled = true;
 }
-// PC 0x0044F0F0  Xbox 0x002A2870
+// PC 0x00463210
 void AurDisableScanNoise()
 {
     GLRender::m_bScanNoiseEnabled = false;
 }
-// PC 0x0044F100  Xbox 0x002A2880
+// PC 0x00463250
 void AurSetSaturationParams(Vector vColor, float fSaturation)
 {
 #ifdef _XBOX
@@ -377,14 +377,14 @@ void AurSetSaturationParams(Vector vColor, float fSaturation)
 #endif
     GLRender::m_fSaturation = fSaturation;
 }
-// PC 0x0044F130  Xbox 0x002A28B0
+// PC 0x00463280
 void AurSetSpeedBlurRatio(float fRatio)
 {
     GLRender::m_fAccumulationRatio = fRatio;
 }
 
 #ifndef _XBOX
-int AurQueryAntiAliasingMode(int nMode)  // PC 0x0044F140
+int AurQueryAntiAliasingMode(int nMode)  // PC 0x00463290
 {
     if (nMode >= 0)
     {
@@ -438,7 +438,7 @@ int AurQueryAntiAliasingMode(int nMode)  // PC 0x0044F140
     }
     return 0;
 }
-// PC 0x0044F2C0
+// PC 0x00463450
 int SetAnisotropicFilter(int nLevel)
 {
     if (AurAnisotropicFilterAvailable() != 0 &&
@@ -470,7 +470,7 @@ char* setanisotropy(char* sArguments)
     g_nCurrentAnisotropy = nLevel;
     return "SUCCESS";
 }
-// PC 0x0044F2F0
+// PC 0x00463480
 extern "C" int AurSetAntiAliasingMode(int nMode)
 {
     int nResult = AurQueryAntiAliasingMode(nMode);
@@ -500,12 +500,12 @@ char* setaliasing(char* sArguments)
     return "SUCCESS";
 }
 #else
-// Xbox 0x002A28C0
+
 void AurPersistDisplay()
 {
     g_pD3DDevice->PersistDisplay();
 }
-// Xbox 0x002A28D0
+
 void AurReleaseFrameTexture()
 {
     GLRender::ReleaseFrameTexture();
@@ -513,12 +513,12 @@ void AurReleaseFrameTexture()
 #endif
 
 Scene* FindScene(char* sName);
-// Xbox 0x002A2520
+
 int NodeHasTileData(BSPNode* pNode, void* pData)
 {
     return pNode->m_pData->m_pTileData != 0;
 }
-// Xbox 0x002A28E0
+
 void AuroraSetTileFoggedByWar(Vector& vPosition, bool bFogged)
 {
     Scene* pScene = FindScene("mainscene");

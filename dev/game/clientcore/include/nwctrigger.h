@@ -28,12 +28,12 @@ public:
 
     CSWCTrigger();
     virtual ~CSWCTrigger();
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWCTrigger* AsSWCTrigger()
     {
         return this;
     }
-    // PC 0x006912B0  Xbox 0x000B94A0
+    // PC 0x006EA750
     virtual CExoString GetName()
     {
         return m_sName;
@@ -43,7 +43,7 @@ public:
                           unsigned char nFlags);
     virtual void UnloadModel();
     virtual void UnloadModel(unsigned char nModel);
-    virtual int IsHostile()  // PC 0x006912E0  Xbox 0x000B94D0
+    virtual int IsHostile()  // PC 0x006EA780
     {
         return m_bHostile;
     }

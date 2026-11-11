@@ -35,7 +35,7 @@ inline void PartyTableReleaseStorage(CItemRepository* pItems, CSWSJournal* pJour
     delete pItems;
     delete pJournal;
 }
-// PC 0x00565130  Xbox 0x001667C0
+// PC 0x0057C840
 int CSWPartyTable::SpawnNPC(int nNPC, int bUsePosition, const Vector& vPosition,
                             const Vector& vOrientation, int bResurrect)
 {
@@ -103,7 +103,7 @@ int CSWPartyTable::SpawnNPC(int nNPC, int bUsePosition, const Vector& vPosition,
     }
     return oidNPC;
 }
-// PC 0x005653A0  Xbox 0x00166A50
+// PC 0x0057CC50
 void CSWPartyTable::DistributeExperience(int nExperience, int bFeedback)
 {
     if (nExperience > 0)
@@ -150,7 +150,7 @@ void CSWPartyTable::DistributeExperience(int nExperience, int bFeedback)
         }
     }
 }
-// PC 0x00565500  Xbox 0x00166BB0
+// PC 0x0057CE60
 void CSWPartyTable::SetSoloMode(int bSoloMode, int bUnstealth)
 {
     if (bSoloMode == 0 && bUnstealth != 0)
@@ -159,7 +159,7 @@ void CSWPartyTable::SetSoloMode(int bSoloMode, int bUnstealth)
     }
     m_bSoloMode = bSoloMode;
 }
-// PC 0x00565530  Xbox 0x00166BE0
+// PC 0x0057CF10
 void CSWPartyTable::UpdateMembers(int bClearActions)
 {
     for (int i = 0; i < 9; i++)
@@ -168,7 +168,7 @@ void CSWPartyTable::UpdateMembers(int bClearActions)
     }
 }
 #ifndef _XBOX
-int CSWPartyTable::RemoveMember(int nNPC)  // PC 0x00565560  Xbox 0x00166C10
+int CSWPartyTable::RemoveMember(int nNPC)  // PC 0x0057EB80
 {
     if (m_nControlledNPC != -1 || m_nNumMembers <= 0 || nNPC < 0 || nNPC >= 9 ||
         m_abNPCAvailable[nNPC] == 0)
@@ -202,7 +202,7 @@ int CSWPartyTable::RemoveMember(int nNPC)  // PC 0x00565560  Xbox 0x00166C10
     return 0;
 }
 #endif
-int CSWPartyTable::AddMember(int nNPC, unsigned long oidMember)  // PC 0x00565620  Xbox 0x00166CD0
+int CSWPartyTable::AddMember(int nNPC, unsigned long oidMember)  // PC 0x0057D020
 {
     if (m_nControlledNPC == -1 && m_nNumMembers != 2 && nNPC >= 0 && nNPC < 9 &&
         m_abNPCAvailable[nNPC] != 0 &&
@@ -259,7 +259,7 @@ int CSWPartyTable::AddMember(int nNPC, unsigned long oidMember)  // PC 0x0056562
     }
     return 0;
 }
-// PC 0x00565760  Xbox 0x00166E20
+// PC 0x0057D180
 void CSWPartyTable::CreateParty()
 {
     if (m_bInventoryDirty == 0)
@@ -376,7 +376,7 @@ void CSWPartyTable::CreateParty()
         m_bInventoryDirty = 1;
     }
 }
-// PC 0x00565B00  Xbox 0x001671B0
+// PC 0x0057D800
 void CSWPartyTable::PositionParty()
 {
     CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
@@ -427,7 +427,7 @@ void CSWPartyTable::PositionParty()
     }
     m_bSkipPartyPositioning = 0;
 }
-// PC 0x00565D20  Xbox 0x00167450
+// PC 0x0057DC50
 int CSWPartyTable::LoadTableInfo()
 {
     CResGFF* pGFF = new CResGFF(0, "PT  ", "PARTYTABLE");
@@ -612,7 +612,7 @@ int CSWPartyTable::LoadTableInfo()
     }
     return 0;
 }
-// PC 0x005665C0  Xbox 0x00167CE0
+// PC 0x0057E990
 void CSWPartyTable::Save(const CExoString& sAlias, int bSaveMembers)
 {
     if (bSaveMembers != 0)
@@ -625,7 +625,7 @@ void CSWPartyTable::Save(const CExoString& sAlias, int bSaveMembers)
     }
     SaveTableInfo(sAlias);
 }
-// PC 0x00563200  Xbox 0x001648F0
+// PC 0x005795E0
 void CSWPartyTable::ClearTable()
 {
 #ifndef _XBOX
@@ -702,7 +702,7 @@ void CSWPartyTable::ClearTable()
         m_pPartyJournal = NULL;
     }
 }
-// PC 0x00563340  Xbox 0x00164A10
+// PC 0x00579780
 CItemRepository* CSWPartyTable::GetPartyItems()
 {
     if (m_pPartyItems == NULL)
@@ -712,7 +712,7 @@ CItemRepository* CSWPartyTable::GetPartyItems()
     }
     return m_pPartyItems;
 }
-// PC 0x005633C0  Xbox 0x00164A90
+// PC 0x00579800
 CSWSJournal* CSWPartyTable::GetPartyJournal()
 {
     if (m_pPartyJournal == NULL)
@@ -721,7 +721,7 @@ CSWSJournal* CSWPartyTable::GetPartyJournal()
     }
     return m_pPartyJournal;
 }
-// PC 0x00563430  Xbox 0x00164B00
+// PC 0x00579870
 void CSWPartyTable::LoadJournal(CResGFF* pRes, CResStruct* pStruct)
 {
     int bSuccess;
@@ -759,7 +759,7 @@ void CSWPartyTable::LoadJournal(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 }
-// PC 0x00563600  Xbox 0x00164CD0
+// PC 0x00579A40
 void CSWPartyTable::ClearInventory()
 {
     if (m_pPartyItems != NULL)
@@ -768,14 +768,14 @@ void CSWPartyTable::ClearInventory()
     }
     m_bInventoryDirty = 0;
 }
-// PC 0x00563620  Xbox 0x00164CF0
+// PC 0x00579AF0
 CExoString CSWPartyTable::GetFilename(int nNPC)
 {
     CExoString sFilename;
     sFilename.Format("AVAILNPC%d", nNPC);
     return sFilename;
 }
-// PC 0x005636B0  Xbox 0x00164D80
+// PC 0x00579B80
 int CSWPartyTable::GetIsNPCAvailable(int nNPC)
 {
     if (nNPC >= 0 && nNPC < 9)
@@ -784,7 +784,7 @@ int CSWPartyTable::GetIsNPCAvailable(int nNPC)
     }
     return 0;
 }
-// PC 0x005636D0
+
 unsigned char CSWPartyTable::GetNumNPCAvailable()
 {
     unsigned char nNum = 0;
@@ -799,7 +799,7 @@ unsigned char CSWPartyTable::GetNumNPCAvailable()
     }
     return nNum;
 }
-// PC 0x005636F0  Xbox 0x00164DA0
+// PC 0x00579C00
 int CSWPartyTable::SetNPCObject(int nNPC, unsigned long oidNPC)
 {
     if (nNPC >= 0 && nNPC < 9 && m_abNPCAvailable[nNPC] != 0)
@@ -808,7 +808,7 @@ int CSWPartyTable::SetNPCObject(int nNPC, unsigned long oidNPC)
     }
     return nNPC;
 }
-// PC 0x00563710  Xbox 0x00164DC0
+// PC 0x00579C50
 int CSWPartyTable::GetIsMember(int nNPC)
 {
     for (int i = 0; i < m_nNumMembers; i++)
@@ -820,7 +820,7 @@ int CSWPartyTable::GetIsMember(int nNPC)
     }
     return 0;
 }
-// PC 0x00563740  Xbox 0x00164DF0
+// PC 0x00579CB0
 int CSWPartyTable::GetIsMember(unsigned long oidObject)
 {
     for (int nNPC = 0; nNPC < 9; nNPC++)
@@ -839,7 +839,7 @@ int CSWPartyTable::GetIsMember(unsigned long oidObject)
     }
     return 0;
 }
-// PC 0x00563790  Xbox 0x00164E40
+// PC 0x00579D00
 int CSWPartyTable::GetIsAvailable(unsigned long oidObject)
 {
     for (int i = 0; i < 9; i++)
@@ -851,7 +851,7 @@ int CSWPartyTable::GetIsAvailable(unsigned long oidObject)
     }
     return 0;
 }
-// PC 0x005637C0  Xbox 0x00164E70
+// PC 0x00579D30
 unsigned char CSWPartyTable::GetNPCSelectability(int nNPC)
 {
     if (nNPC >= 0 && nNPC < 9 && m_abNPCAvailable[nNPC] != 0)
@@ -860,7 +860,7 @@ unsigned char CSWPartyTable::GetNPCSelectability(int nNPC)
     }
     return 0xFF;
 }
-// PC 0x005637F0  Xbox 0x00164EA0
+// PC 0x00579D60
 int CSWPartyTable::SetNPCSelectability(int nNPC, unsigned char nSelectability)
 {
     if (nNPC >= 0 && nNPC < 9 && m_abNPCAvailable[nNPC] != 0)
@@ -870,7 +870,7 @@ int CSWPartyTable::SetNPCSelectability(int nNPC, unsigned char nSelectability)
     return nNPC;
 }
 #ifndef _XBOX
-int CSWPartyTable::KillNPCObject(int nNPC, int bFade)  // PC 0x00563810  Xbox 0x00164EC0
+int CSWPartyTable::KillNPCObject(int nNPC, int bFade)  // PC 0x00579D80
 {
     if (nNPC < 0 || nNPC >= 9)
     {
@@ -905,7 +905,7 @@ int CSWPartyTable::KillNPCObject(int nNPC, int bFade)  // PC 0x00563810  Xbox 0x
     return 1;
 }
 #endif
-int CSWPartyTable::GetNPCID(unsigned long oidObject)  // PC 0x005638A0  Xbox 0x00164F60
+int CSWPartyTable::GetNPCID(unsigned long oidObject)  // PC 0x00579EB0
 {
     if (oidObject == OBJECT_INVALID)
     {
@@ -921,7 +921,7 @@ int CSWPartyTable::GetNPCID(unsigned long oidObject)  // PC 0x005638A0  Xbox 0x0
     }
     return -1;
 }
-// PC 0x005638D0  Xbox 0x00164F90
+// PC 0x00579F20
 int CSWPartyTable::AddGameInProgress()
 {
     if (m_nGameInProgress == 0)
@@ -931,7 +931,7 @@ int CSWPartyTable::AddGameInProgress()
     }
     return ++m_nGameInProgress;
 }
-// PC 0x00563950  Xbox 0x00165010
+// PC 0x00579FA0
 void CSWPartyTable::RemoveGameInProgress()
 {
     if (--m_nGameInProgress == 0)
@@ -940,7 +940,7 @@ void CSWPartyTable::RemoveGameInProgress()
         g_pExoResMan->RemoveResourceDirectory(sAlias);
     }
 }
-// PC 0x005639C0  Xbox 0x00165080
+// PC 0x0057A010
 int CSWPartyTable::ClearMembers()
 {
     for (int i = 0; i < 9; i++)
@@ -949,7 +949,7 @@ int CSWPartyTable::ClearMembers()
     }
     return OBJECT_INVALID;
 }
-// PC 0x005639E0  Xbox 0x001650B0
+// PC 0x0057A070
 int CSWPartyTable::ClearMember(int nNPC)
 {
     if (nNPC >= 0 && nNPC < 9)
@@ -958,7 +958,7 @@ int CSWPartyTable::ClearMember(int nNPC)
     }
     return nNPC;
 }
-// PC 0x00563A00  Xbox 0x001650D0
+// PC 0x0057A090
 int CSWPartyTable::GetIsLeader(unsigned long oidObject)
 {
     if (oidObject == OBJECT_INVALID)
@@ -975,7 +975,7 @@ int CSWPartyTable::GetIsLeader(unsigned long oidObject)
     }
     return 0;
 }
-// PC 0x00563A40  Xbox 0x00165110
+// PC 0x0057A0D0
 void CSWPartyTable::SetLeader(unsigned long oidObject)
 {
     m_nLeader = -1;
@@ -991,13 +991,13 @@ void CSWPartyTable::SetLeader(unsigned long oidObject)
         }
     }
 }
-// PC 0x00563A80  Xbox 0x00165150
+// PC 0x0057A110
 void CSWPartyTable::SetPartyFollowState(int nFollowState)
 {
     m_nFollowState = 0;
     g_pAppManager->m_pClientExoApp->GetSWParty()->FollowStateChanged();
 }
-// PC 0x00563AB0  Xbox 0x00165180
+// PC 0x0057A140
 int CSWPartyTable::SetReturnStrref(int nReturnFlag, unsigned long nStrref,
                                    unsigned long nTitleStrref)
 {
@@ -1006,7 +1006,7 @@ int CSWPartyTable::SetReturnStrref(int nReturnFlag, unsigned long nStrref,
     m_nReturnTitleStrref = nTitleStrref;
     return nTitleStrref;
 }
-// PC 0x00563AE0  Xbox 0x001651B0
+// PC 0x0057A170
 int CSWPartyTable::SetPlanetSelectable(unsigned long nPlanet, int bSelectable)
 {
     if (nPlanet < 16)
@@ -1015,7 +1015,7 @@ int CSWPartyTable::SetPlanetSelectable(unsigned long nPlanet, int bSelectable)
     }
     return nPlanet;
 }
-// PC 0x00563B00  Xbox 0x001651D0
+// PC 0x0057A190
 int CSWPartyTable::GetPlanetSelectable(unsigned long nPlanet)
 {
     if (nPlanet < 16)
@@ -1024,7 +1024,7 @@ int CSWPartyTable::GetPlanetSelectable(unsigned long nPlanet)
     }
     return 0;
 }
-// PC 0x00563B20  Xbox 0x001651F0
+// PC 0x0057A1B0
 int CSWPartyTable::SetPlanetAvailable(unsigned long nPlanet, int bAvailable)
 {
     if (nPlanet < 16)
@@ -1033,7 +1033,7 @@ int CSWPartyTable::SetPlanetAvailable(unsigned long nPlanet, int bAvailable)
     }
     return nPlanet;
 }
-// PC 0x00563B40  Xbox 0x00165210
+// PC 0x0057A1D0
 int CSWPartyTable::GetPlanetAvailable(unsigned long nPlanet)
 {
     if (nPlanet < 16)
@@ -1042,7 +1042,7 @@ int CSWPartyTable::GetPlanetAvailable(unsigned long nPlanet)
     }
     return 0;
 }
-// PC 0x00563B60  Xbox 0x00165230
+// PC 0x0057A1F0
 int CSWPartyTable::SetSelectedPlanet(int nPlanet)
 {
     if (nPlanet >= 0 && nPlanet < 16 && m_abPlanetAvailable[nPlanet] != 0 &&
@@ -1052,7 +1052,7 @@ int CSWPartyTable::SetSelectedPlanet(int nPlanet)
     }
     return nPlanet;
 }
-// PC 0x00563B90  Xbox 0x00165260
+// PC 0x0057A220
 void CSWPartyTable::AutoLevelUpNPCs()
 {
     int i = 0;
@@ -1071,7 +1071,7 @@ void CSWPartyTable::AutoLevelUpNPCs()
         } while (i < m_nNumMembers);
     }
 }
-// PC 0x00563BF0  Xbox 0x001652C0
+// PC 0x0057A280
 int CSWPartyTable::GetTotalPlayedSeconds()
 {
     FILETIME ftNow;
@@ -1085,7 +1085,7 @@ int CSWPartyTable::GetTotalPlayedSeconds()
     }
     return m_nPlayedSeconds + (nElapsed + 5000000) / 10000000ui64;
 }
-// PC 0x00563C60  Xbox 0x00165330
+// PC 0x0057A2F0
 void CSWPartyTable::UnstealthParty(int nFlag)
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -1119,7 +1119,7 @@ void CSWPartyTable::UnstealthParty(int nFlag)
         } while (nMember < m_nNumMembers);
     }
 }
-// PC 0x00563CF0  Xbox 0x001653C0
+// PC 0x0057A380
 int CSWPartyTable::ResetCurrentSessionStartTime()
 {
     FILETIME ftNow;
@@ -1128,7 +1128,7 @@ int CSWPartyTable::ResetCurrentSessionStartTime()
         ftNow.dwLowDateTime | ((__int64)ftNow.dwHighDateTime << 32);
     return ftNow.dwLowDateTime;
 }
-// PC 0x00563D20  Xbox 0x001653F0
+// PC 0x0057A5B0
 CSWPartyTable::CSWPartyTable()
 {
     m_pPartyItems = NULL;
@@ -1155,7 +1155,7 @@ CSWPartyTable::CSWPartyTable()
 #endif
     ClearTable();
 }
-// PC 0x00563D40  Xbox 0x00165480
+// PC 0x0057A610
 CSWPartyTable::~CSWPartyTable()
 {
     if (m_pPartyItems != NULL)
@@ -1170,7 +1170,7 @@ CSWPartyTable::~CSWPartyTable()
         m_pPartyJournal = NULL;
     }
 }
-// PC 0x00563D90  Xbox 0x001654D0
+// PC 0x0057A6B0
 void CSWPartyTable::SaveJournal(CResGFF* pRes, CResStruct* pStruct)
 {
     CSWSJournal* pJournal = GetPartyJournal();
@@ -1199,7 +1199,7 @@ void CSWPartyTable::SaveJournal(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 }
-// PC 0x00563E80  Xbox 0x001655C0
+// PC 0x0057A7A0
 void CSWPartyTable::SaveMember(int nNPC, int bClearActions)
 {
     if (nNPC >= 0 && nNPC < 9)
@@ -1230,7 +1230,7 @@ void CSWPartyTable::SaveMember(int nNPC, int bClearActions)
         }
     }
 }
-// PC 0x00564030  Xbox 0x00165760
+// PC 0x0057AE60
 void CSWPartyTable::UpdateInventory(int bClearItems)
 {
     if (m_pPartyItems != NULL)
@@ -1262,7 +1262,7 @@ void CSWPartyTable::UpdateInventory(int bClearItems)
         delete pGFF;
     }
 }
-// PC 0x005641E0  Xbox 0x00165910
+// PC 0x0057B010
 void CSWPartyTable::TransferInventory(CSWSCreature* pCreature)
 {
     CSWSItem* pItem;
@@ -1293,7 +1293,7 @@ void CSWPartyTable::TransferInventory(CSWSCreature* pCreature)
     }
 }
 #ifndef _XBOX
-int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x00564300  Xbox 0x00165A30
+int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x0057B260
 {
     if (nNPC < 0 || nNPC >= MAX_NPCS)
     {
@@ -1363,7 +1363,7 @@ int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x00564300  
     return pGFF->WriteGFFFile(sPath.CStr(), RESTYPE_UTC);
 }
 #endif
-int CSWPartyTable::AddNPC(int nNPC, const CExoString& sTemplate)  // PC 0x005645F0  Xbox 0x00165D40
+int CSWPartyTable::AddNPC(int nNPC, const CExoString& sTemplate)  // PC 0x0057B760
 {
     if (nNPC < 0 || nNPC >= 9 || m_abNPCAvailable[nNPC] != 0)
     {
@@ -1382,7 +1382,7 @@ int CSWPartyTable::AddNPC(int nNPC, const CExoString& sTemplate)  // PC 0x005645
     delete (CSWSObject*)pCreature;
     return nResult;
 }
-// PC 0x005646D0  Xbox 0x00165E40
+// PC 0x0057B920
 int CSWPartyTable::RemoveNPC(int nNPC)
 {
     if (nNPC < 0)
@@ -1403,7 +1403,7 @@ int CSWPartyTable::RemoveNPC(int nNPC)
     m_abNPCAvailable[nNPC] = 0;
     return 1;
 }
-// PC 0x00564700  Xbox 0x00165E70
+// PC 0x0057BB30
 unsigned long CSWPartyTable::GetNPCObject(int nNPC, int bLoad, int bResurrect)
 {
     if (nNPC >= 0 && nNPC < 9 && m_abNPCAvailable[nNPC] != 0)
@@ -1440,7 +1440,7 @@ unsigned long CSWPartyTable::GetNPCObject(int nNPC, int bLoad, int bResurrect)
     }
     return OBJECT_INVALID;
 }
-// PC 0x005648C0  Xbox 0x00166040
+// PC 0x0057BCF0
 void CSWPartyTable::SaveTableInfo(const CExoString& sAlias)
 {
     CExoString sFile;
@@ -1594,7 +1594,7 @@ void CSWPartyTable::SaveTableInfo(const CExoString& sAlias)
         delete pGFF;
     }
 }
-// PC 0x00566600  Xbox 0x00167D20
+// PC 0x0057E9C0
 void CSWPartyTable::GivePlotXP(const CExoString& sPlotID, int nPercent)
 {
     int nXP = 0;
@@ -1616,7 +1616,7 @@ void CSWPartyTable::GivePlotXP(const CExoString& sPlotID, int nPercent)
         }
     }
 }
-// PC 0x005666E0  Xbox 0x00167E10
+// PC 0x0057EAA0
 void CSWPartyTable::GivePlotXP(unsigned long nPlotIndex, int nPercent)
 {
     int nXP = 0;
@@ -1640,7 +1640,7 @@ void CSWPartyTable::GivePlotXP(unsigned long nPlotIndex, int nPercent)
 }
 
 inline unsigned long CSWSPlayer::GetPCObject() { return m_oidPCObject; }
-// PC 0x005667C0  Xbox 0x00167F00
+// PC 0x0057EC70
 int CSWPartyTable::SwitchPlayerCharacter(int nNPC)
 {
     CExoString sPath;
@@ -1790,7 +1790,7 @@ int CSWPartyTable::SwitchPlayerCharacter(int nNPC)
 }
 
 #ifdef _XBOX
-// PC 0x00565560  Xbox 0x00166C10
+
 int CSWPartyTable::RemoveMember(int nNPC)
 {
     if (m_nControlledNPC == -1 && m_nNumMembers > 0 && nNPC >= 0 && nNPC < 9 &&
@@ -1822,7 +1822,7 @@ int CSWPartyTable::RemoveMember(int nNPC)
     }
     return 0;
 }
-// PC 0x00563810  Xbox 0x00164EC0
+
 int CSWPartyTable::KillNPCObject(int nNPC, int bFade)
 {
     if (nNPC < 0 || nNPC >= 9)
@@ -1856,7 +1856,7 @@ int CSWPartyTable::KillNPCObject(int nNPC, int bFade)
     }
     return 0;
 }
-// PC 0x00564300  Xbox 0x00165A30
+
 int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)
 {
     if (nNPC < 0 || nNPC >= MAX_NPCS || pCreature == NULL || m_abNPCAvailable[nNPC] != 0)

@@ -13,7 +13,7 @@ const unsigned char CSWClass::CCLASS_JEDICONSULAR = 4;
 const unsigned char CSWClass::CCLASS_JEDISENTINEL = 5;
 const unsigned char CSWClass::CCLASS_COMBATDROID = 6;
 const unsigned char CSWClass::CCLASS_EXPERTDROID = 7;
-// PC 0x005BCAC0  Xbox 0x00101B60
+// PC 0x0060CD40
 CSWClass::CSWClass()
 {
     m_nNameStrRef = -1;
@@ -53,7 +53,7 @@ CSWClass::CSWClass()
     m_nAlignRestrict = 0;
     m_nAlignRestrictType = 0;
 }
-// PC 0x005BCBB0  Xbox 0x00101C50
+// PC 0x0060CE30
 CSWClass::~CSWClass()
 {
     if (m_ppSpellsKnown != 0)
@@ -90,7 +90,7 @@ CSWClass::~CSWClass()
         m_pSpells = 0;
     }
 }
-// PC 0x005BCCB0  Xbox 0x00101D50
+// PC 0x0060CF30
 unsigned char CSWClass::GetAttackBonus(unsigned char nLevel)
 {
     if (nLevel >= 1 && nLevel <= 60)
@@ -99,7 +99,7 @@ unsigned char CSWClass::GetAttackBonus(unsigned char nLevel)
     }
     return 0;
 }
-// PC 0x005BCCD0  Xbox 0x00101D70
+// PC 0x0060CF50
 unsigned char CSWClass::GetFortSaveBonus(unsigned char nLevel)
 {
     if (nLevel >= 1 && nLevel <= 60)
@@ -108,7 +108,7 @@ unsigned char CSWClass::GetFortSaveBonus(unsigned char nLevel)
     }
     return 0;
 }
-// PC 0x005BCCF0  Xbox 0x00101D90
+// PC 0x0060CF70
 unsigned char CSWClass::GetRefSaveBonus(unsigned char nLevel)
 {
     if (nLevel >= 1 && nLevel <= 60)
@@ -117,7 +117,7 @@ unsigned char CSWClass::GetRefSaveBonus(unsigned char nLevel)
     }
     return 0;
 }
-// PC 0x005BCD10  Xbox 0x00101DB0
+// PC 0x0060CF90
 unsigned char CSWClass::GetWillSaveBonus(unsigned char nLevel)
 {
     if (nLevel >= 1 && nLevel <= 60)
@@ -126,7 +126,7 @@ unsigned char CSWClass::GetWillSaveBonus(unsigned char nLevel)
     }
     return 0;
 }
-// PC 0x005BCD30  Xbox 0x00101DD0
+// PC 0x0060CFB0
 unsigned char CSWClass::GetSpellGain(unsigned char nLevel,
                                      unsigned char nSpellLevel)
 {
@@ -137,7 +137,7 @@ unsigned char CSWClass::GetSpellGain(unsigned char nLevel,
     }
     return -1;
 }
-// PC 0x005BCD60  Xbox 0x00101E00
+// PC 0x0060CFE0
 unsigned char CSWClass::GetSpellsKnownPerLevel(unsigned char nLevel,
                                                unsigned char nSpellLevel,
                                                unsigned char nClass,
@@ -151,7 +151,7 @@ unsigned char CSWClass::GetSpellsKnownPerLevel(unsigned char nLevel,
     }
     return 0;
 }
-// PC 0x005BCDA0  Xbox 0x00101E40
+// PC 0x0060D020
 void CSWClass::LoadAttackBonusTable(const CExoString& sTable)
 {
     int nValue;
@@ -174,7 +174,7 @@ void CSWClass::LoadAttackBonusTable(const CExoString& sTable)
 
     delete p2DA;
 }
-// PC 0x005BCF70  Xbox 0x00102010
+// PC 0x0060D1F0
 void CSWClass::LoadFeatGain(const CExoString& sTable)
 {
     int nValue;
@@ -201,7 +201,7 @@ void CSWClass::LoadFeatGain(const CExoString& sTable)
 
     delete p2DA;
 }
-// PC 0x005BD0F0  Xbox 0x001021A0
+// PC 0x0060D370
 void CSWClass::LoadFeatsTable(const CExoString& sTable, CSWRules* pRules)
 {
     int nValue;
@@ -265,7 +265,7 @@ void CSWClass::LoadFeatsTable(const CExoString& sTable, CSWRules* pRules)
 
     delete p2DA;
 }
-// PC 0x005BD480  Xbox 0x00102540
+// PC 0x0060D780
 void CSWClass::LoadSavingThrowTable(const CExoString& sTable)
 {
     int nValue;
@@ -291,7 +291,7 @@ void CSWClass::LoadSavingThrowTable(const CExoString& sTable)
 
     delete p2DA;
 }
-// PC 0x005BD6C0  Xbox 0x00102780
+// PC 0x0060D9C0
 void CSWClass::LoadSkillsTable(const CExoString& sTable)
 {
     C2DA* p2DA = new C2DA("skills", 0);
@@ -331,7 +331,7 @@ void CSWClass::LoadSkillsTable(const CExoString& sTable)
 
     delete p2DA;
 }
-// PC 0x005BD900  Xbox 0x001029D0
+// PC 0x0060DC00
 void CSWClass::LoadSpellGainTable(const CExoString& sTable)
 {
     int nValue;
@@ -381,7 +381,7 @@ void CSWClass::LoadSpellGainTable(const CExoString& sTable)
         delete pNumLevels;
     }
 }
-// PC 0x005BDBE0  Xbox 0x00102CC0
+// PC 0x0060DF00
 void CSWClass::LoadSpellKnownTable(const CExoString& sTable)
 {
     int nValue;
@@ -435,7 +435,7 @@ void CSWClass::LoadSpellKnownTable(const CExoString& sTable)
 
     delete p2DA;
 }
-// PC 0x005BDE80  Xbox 0x00102F60
+// PC 0x0060E1A0
 void CSWClass::LoadArmorClassTable(const CExoString& sTable)
 {
     int nValue;
@@ -470,7 +470,7 @@ void CSWClass::LoadArmorClassTable(const CExoString& sTable)
 
     delete p2DA;
 }
-// PC 0x005BE010  Xbox 0x00103100
+// PC 0x0060E330
 int CSWClass::IsSkillClassSkill(unsigned short nSkill)
 {
     if (nSkill >= g_pRules->m_nNumSkills)
@@ -486,7 +486,7 @@ int CSWClass::IsSkillClassSkill(unsigned short nSkill)
     }
     return 0;
 }
-// PC 0x005BE070  Xbox 0x00103160
+// PC 0x0060E390
 int CSWClass::IsSkillUseable(unsigned short nSkill)
 {
     if (nSkill >= g_pRules->m_nNumSkills)
@@ -510,21 +510,21 @@ int CSWClass::IsSkillUseable(unsigned short nSkill)
     }
     return 0;
 }
-// PC 0x005BE0E0  Xbox 0x001031D0
+// PC 0x0060E400
 CExoString CSWClass::GetNameText()
 {
     STR_RES strRes;
     g_pTlkTable->Fetch(m_nNameStrRef, strRes, CTlkTable::GENDER_MALE);
     return strRes.m_sString;
 }
-// PC 0x005BE180  Xbox 0x00103280
+// PC 0x0060E4A0
 CExoString CSWClass::GetNameLowerText()
 {
     STR_RES strRes;
     g_pTlkTable->Fetch(m_nNameLowerStrRef, strRes, CTlkTable::GENDER_MALE);
     return strRes.m_sString;
 }
-// PC 0x005BE220  Xbox 0x00103330
+// PC 0x0060E540
 unsigned char CSWClass::GetLevelFeatGranted(unsigned short nFeat)
 {
     for (unsigned short i = 0; i < m_nNumFeats; i++)
@@ -537,7 +537,7 @@ unsigned char CSWClass::GetLevelFeatGranted(unsigned short nFeat)
     }
     return -1;
 }
-// PC 0x005BE270  Xbox 0x00103380
+// PC 0x0060E5A0
 int CSWClass::IsBonusFeat(unsigned short nFeat)
 {
     for (unsigned short i = 0; i < m_nNumFeats; i++)
@@ -549,7 +549,7 @@ int CSWClass::IsBonusFeat(unsigned short nFeat)
     }
     return 0;
 }
-// PC 0x005BE2C0  Xbox 0x001033D0
+// PC 0x0060E5F0
 int CSWClass::IsNormalFeat(unsigned short nFeat)
 {
     for (unsigned short i = 0; i < m_nNumFeats; i++)
@@ -561,7 +561,7 @@ int CSWClass::IsNormalFeat(unsigned short nFeat)
     }
     return 0;
 }
-// PC 0x005BE310  Xbox 0x00103420
+// PC 0x0060E640
 int CSWClass::IsGrantedFeat(unsigned short nFeat, unsigned char& nLevel)
 {
     nLevel = -1;
@@ -579,7 +579,7 @@ int CSWClass::IsGrantedFeat(unsigned short nFeat, unsigned char& nLevel)
     }
     return 0;
 }
-// PC 0x005BE370  Xbox 0x00103480
+// PC 0x0060E700
 int CSWClass::IsFeatUseable(unsigned short nFeat)
 {
     if (g_pRules->GetFeat(nFeat) == 0)
@@ -595,7 +595,7 @@ int CSWClass::IsFeatUseable(unsigned short nFeat)
     }
     return 0;
 }
-// PC 0x005BE3C0  Xbox 0x001034D0
+// PC 0x0060E760
 int CSWClass::GetRecommendedFeat(int nIndex)
 {
     int nCount = -1;
@@ -615,7 +615,7 @@ int CSWClass::GetRecommendedFeat(int nIndex)
     }
     return nFeat;
 }
-// PC 0x005BE430  Xbox 0x00103540
+// PC 0x0060E7D0
 int CSWClass::GetRecommendedSkill(int nIndex)
 {
     int nCount = -1;
@@ -635,12 +635,12 @@ int CSWClass::GetRecommendedSkill(int nIndex)
     }
     return nSkill;
 }
-// PC 0x005BE4A0  Xbox 0x001035B0
+// PC 0x0060E840
 int CSWClass::IsJedi(int nClass)
 {
     return (nClass == CCLASS_JEDIGUARDIAN) || ((nClass == CCLASS_JEDICONSULAR) || (nClass == CCLASS_JEDISENTINEL));
 }
-// PC 0x005BE4C0  Xbox 0x001035D0
+// PC 0x0060E880
 void CSWClass::LoadSpellsTable()
 {
     C2DA* p2DA = new C2DA("spells", 0);
@@ -675,7 +675,7 @@ void CSWClass::LoadSpellsTable()
 
     delete p2DA;
 }
-// PC 0x005BE6D0  Xbox 0x001037F0
+// PC 0x0060EA90
 int CSWClass::GetRecommendedSpell(int nSide, int nIndex)
 {
     int nSpell = -1;
@@ -711,7 +711,7 @@ int CSWClass::GetRecommendedSpell(int nSide, int nIndex)
     }
     return nSpell;
 }
-// PC 0x005BE770  Xbox 0x00103890
+// PC 0x0060EB30
 char CSWClass::GetArmorBonus(int nLevel)
 {
     return m_pArmorBonus[nLevel];

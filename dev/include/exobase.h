@@ -209,12 +209,12 @@ template <class T> inline CExoLinkedList<T>::CExoLinkedList()
 {
     m_pInternal = new CExoLinkedListInternal;
 }
-// PC 0x005D86C0  Xbox 0x00139530
+// PC 0x00685200
 template <class T> inline CExoLinkedList<T>::~CExoLinkedList()
 {
     delete m_pInternal;
 }
-// PC 0x005D6CB0
+// PC 0x00622930
 template <class T> inline CExoLinkedListNode* CExoLinkedList<T>::AddHead(T* pData)
 {
     return m_pInternal->AddHead(pData);
@@ -234,17 +234,17 @@ template <class T> inline CExoLinkedListNode* CExoLinkedList<T>::AddBefore(T* pD
 {
     return m_pInternal->AddBefore(pData, pPosition);
 }
-// PC 0x005D6CC0
+// PC 0x00622940
 template <class T> inline int CExoLinkedList<T>::Contains(T* pData)
 {
     return m_pInternal->Contains(pData);
 }
-// PC 0x005D6CD0
+// PC 0x00622950
 template <class T> inline T* CExoLinkedList<T>::GetHead()
 {
     return (T*)m_pInternal->GetHead();
 }
-// PC 0x005D6CE0  Xbox 0x00014568
+// PC 0x00622960
 template <class T> inline CExoLinkedListNode* CExoLinkedList<T>::GetHeadPos()
 {
     return m_pInternal->m_pHead;
@@ -259,7 +259,7 @@ template <class T> inline CExoLinkedListNode* CExoLinkedList<T>::GetTailPos()
 {
     return m_pInternal->m_pTail;
 }
-// PC 0x005D6CF0
+// PC 0x00622970
 template <class T> inline T* CExoLinkedList<T>::Remove(CExoLinkedListNode* pPosition)
 {
     return (T*)m_pInternal->Remove(pPosition);
@@ -274,7 +274,7 @@ template <class T> inline T* CExoLinkedList<T>::RemoveTail()
 {
     return (T*)m_pInternal->RemoveTail();
 }
-// PC 0x005D6D00
+// PC 0x00622980
 template <class T> inline unsigned long CExoLinkedList<T>::Count()
 {
     return m_pInternal->m_nCount;
@@ -284,12 +284,12 @@ template <class T> inline int CExoLinkedList<T>::IsEmpty()
 {
     return m_pInternal->m_pHead == NULL;
 }
-// PC 0x005D6D10
+// PC 0x00622990
 template <class T> inline T* CExoLinkedList<T>::GetAtPos(CExoLinkedListNode* pPosition)
 {
     return (T*)m_pInternal->GetAtPos(pPosition);
 }
-// PC 0x005D6D20
+// PC 0x006229A0
 template <class T> inline T* CExoLinkedList<T>::GetNext(CExoLinkedListNode*& pPosition)
 {
     return (T*)m_pInternal->GetNext(pPosition);
@@ -615,7 +615,7 @@ public:
     int array_size;
 };
 
-// PC 0x00405D50
+// PC 0x00405E10
 template <class T> void CExoArrayList<T>::RemoveAll(int bReleaseStorage)
 {
     num = 0;
@@ -680,7 +680,7 @@ template <class T> void CExoArrayList<T>::AddUnique(T value)
         Add(value);
     }
 }
-// Xbox 0x0012AB10
+
 template <class T> int CExoArrayList<T>::IndexOf(T value) const
 {
     for (int i = 0; i < num; i++)
@@ -692,7 +692,7 @@ template <class T> int CExoArrayList<T>::IndexOf(T value) const
     }
     return -1;
 }
-// PC 0x005F4FB0  Xbox 0x00023610
+// PC 0x00640890
 template <class T> int CExoArrayList<T>::IndexOf(void* pValue, int (*pCompare)(void*, T)) const
 {
     if (pCompare == NULL)
@@ -738,7 +738,7 @@ template <class T> int CExoArrayList<T>::Contains(T value) const
     return nCount;
 }
 
-// PC 0x004C4ED0  Xbox 0x00197FD0
+// PC 0x00506110
 template <class T> int CExoArrayList<T>::DerefContains(T value) const
 {
     for (int i = 0; i < num; i++)

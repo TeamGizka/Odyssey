@@ -9,17 +9,17 @@
 
 static inline void NwcanimbasetriggerTrace1();
 #define NWCANIMBASETRIGGER_TRACE() NwcanimbasetriggerTrace1()
-// PC 0x006E5F40  Xbox 0x0011EB60
+// PC 0x00756C70
 CSWCAnimBaseTrigger::CSWCAnimBaseTrigger()
 {
     m_nAnimationType = 9;
 }
-// PC 0x006E5F60  Xbox 0x0011EB80
+// PC 0x00756C90
 CSWCAnimBaseTrigger::~CSWCAnimBaseTrigger()
 {
     CSWCAnimBase::UnloadModel();
 }
-// PC 0x006E5FB0  Xbox 0x0011EBD0
+// PC 0x00756CE0
 int CSWCAnimBaseTrigger::LoadModel(const CResRef& sResRef, unsigned char nType)
 {
     Gob* pModel;
@@ -37,7 +37,7 @@ int CSWCAnimBaseTrigger::LoadModel(const CResRef& sResRef, unsigned char nType)
     m_bPaletteReplaced = 0;
     return 1;
 }
-// PC 0x006E6040  Xbox 0x0011EC70
+// PC 0x00756D50
 CExoString CSWCAnimBaseTrigger::GetAnimationName(unsigned short nAnimation)
 {
     NWCANIMBASETRIGGER_TRACE();
@@ -54,7 +54,7 @@ CExoString CSWCAnimBaseTrigger::GetAnimationName(unsigned short nAnimation)
     }
     return sName;
 }
-// PC 0x006E6100  Xbox 0x0011ED50
+// PC 0x00756E10
 unsigned short CSWCAnimBaseTrigger::ServerToClientAnimation(
     unsigned short nAnimation)
 {

@@ -6,7 +6,7 @@
 template <class T> class SafePointer
 {
 public:
-    SafePointer()  // PC 0x004204E0  Xbox 0x0027F830
+    SafePointer()  // PC 0x00421C30
         : m_pObject(0)
     {
     }
@@ -14,7 +14,7 @@ public:
 #ifdef _XBOX
     SafePointer(T* pObject);
 #else
-    SafePointer(T* pObject)  // Xbox 0x000B05D0
+    SafePointer(T* pObject)
         : m_pObject(pObject)
     {
         if (m_pObject)
@@ -24,7 +24,7 @@ public:
     }
 #endif
 #ifndef _XBOX
-    SafePointer(const SafePointer& other) : m_pObject(other.m_pObject)  // Xbox 0x002B6C10
+    SafePointer(const SafePointer& other) : m_pObject(other.m_pObject)
     {
         if (m_pObject) m_pObject->m_lstSafePointers.Add(this);
     }
@@ -152,7 +152,7 @@ template <class T> SafePointerList<T>::~SafePointerList()
 
 #ifdef _XBOX
 
-// Xbox 0x002BA530
+
 template <class T> void SafePointerList<T>::AddSafePointer(SafePointer<T>* pPointer)
 {
     if (m_lstSafePointers.m_nAllocated == 0)
@@ -161,7 +161,7 @@ template <class T> void SafePointerList<T>::AddSafePointer(SafePointer<T>* pPoin
 }
 
 
-// Xbox 0x002B6C10
+
 template <class T> SafePointer<T>::SafePointer(const SafePointer& other)
     : m_pObject(other.m_pObject)
 {
@@ -169,7 +169,7 @@ template <class T> SafePointer<T>::SafePointer(const SafePointer& other)
         m_pObject->AddSafePointer(this);
 }
 
-// Xbox 0x002BB500
+
 template <class T> void SafePointerList<T>::RemoveSafePointer(SafePointer<T>* pPointer)
 {
     m_lstSafePointers.Remove(pPointer);

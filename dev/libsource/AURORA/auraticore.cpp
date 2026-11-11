@@ -49,7 +49,7 @@ void GetGLError()
         gluErrorString(nError);
     }
 }
-// PC 0x004794E0
+
 void GLRender::InitializeATIFragmentShaders()
 {
     GLenum nError;
@@ -225,17 +225,17 @@ void GLRender::InitializeATIFragmentShaders()
     glEndFragmentShaderATI();
     glDisable(GL_FRAGMENT_SHADER_ATI);
 }
-// PC 0x0047A280
+// PC 0x0049B3A0
 void GLRender::SetFragmentShaderConstant0(Vector& vColor, float fAlpha)
 {
     glSetFragmentShaderConstantATI(GL_CON_0_ATI, Homogenize(vColor, fAlpha));
 }
-// PC 0x0047A2A0
+// PC 0x0049B3C0
 void GLRender::SetFragmentShaderConstant1(Vector& vColor, float fAlpha)
 {
     glSetFragmentShaderConstantATI(GL_CON_1_ATI, Homogenize(vColor, fAlpha));
 }
-// PC 0x0047A2C0
+// PC 0x0049B3E0
 void AurGetVertexProgramARBError(char* sError)
 {
     GLint anParameters[10];
@@ -246,7 +246,7 @@ void AurGetVertexProgramARBError(char* sError)
         glGetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB, anParameters);
     }
 }
-// PC 0x0047A2F0
+
 void GLRender::EnableFragmentShaders(int nShader, CAurTexture* pTexture0,
                                      CAurTexture* pTexture1,
                                      CAurTexture* pTexture2,

@@ -21,7 +21,7 @@
 static inline void SwguisaveloadTrace2();
 static inline void SwguisaveloadTrace1();
 #define SWGUISAVELOAD_TRACE() SwguisaveloadTrace1()
-// PC 0x006CC0E0  Xbox 0x00115CE0
+// PC 0x00738D90
 void CSWGuiSaveLoad::VerifyLoadGame(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected)
@@ -52,7 +52,7 @@ void CSWGuiSaveLoad::VerifyLoadGame(CSWGuiControl* pControl)
     }
 }
 #ifndef _XBOX
-int CSWGuiSaveLoad::CopyGameToFutureGame(unsigned long nSaveGame,  // PC 0x006C9A90  Xbox 0x00110F50
+int CSWGuiSaveLoad::CopyGameToFutureGame(unsigned long nSaveGame,  // PC 0x0070A2E0
                                        const CExoString& sSaveName)
 {
 
@@ -85,7 +85,7 @@ int CSWGuiSaveLoad::CopyGameToFutureGame(unsigned long nSaveGame,  // PC 0x006C9
     return 1;
 }
 #endif
-void CSWGuiSaveNamePanel::HandleOkButton(CSWGuiControl* pControl)  // PC 0x006C9D50
+void CSWGuiSaveNamePanel::HandleOkButton(CSWGuiControl* pControl)  // PC 0x00708480
 {
     {
         CExoString sSaveName(m_edtSaveName.m_cText.m_sText);
@@ -102,7 +102,7 @@ static void ConstructSaveNameEditBox()
 {
     new CSWGuiSaveGameEditBox;
 }
-// PC 0x006C9DE0
+// PC 0x00708920
 inline void KOTOR_AUTOSAVE_PARAMS::LoadFromGFF(CResGFF* pGFF, CResStruct& cStruct)
 {
     int bSuccess;
@@ -148,7 +148,7 @@ inline void KOTOR_AUTOSAVE_PARAMS::LoadFromGFF(CResGFF* pGFF, CResStruct& cStruc
         m_cStatusSummary.LoadFromGFF(pGFF, cStatusSummary);
     }
 }
-// PC 0x006CC680  Xbox 0x00116750
+// PC 0x0070CD30
 CSWGuiSaveLoad::CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode,
                              int bExitToMainMenu)
     : CSWGuiPanel(pManager)
@@ -242,7 +242,7 @@ CSWGuiSaveLoad::CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode,
     g_pExoResMan->AddResourceDirectory("TEMP:");
     SetActiveControl(&m_lbSaveGames, 0);
 }
-// PC 0x006C8250  Xbox 0x0010EF80
+// PC 0x00708260
 CExoString CSWGuiSaveLoadEntry::GetGameDirectory()
 {
     CExoString sDirectory;
@@ -250,7 +250,7 @@ CExoString CSWGuiSaveLoadEntry::GetGameDirectory()
     sDirectory.Format("SAVES:%06d - %s", m_nSaveGame, m_sGameName);
     return sDirectory;
 }
-// PC 0x006C82F0
+// PC 0x00708300
 void CSWGuiSaveGameEditBox::HandleKeyPress(int nKey)
 {
     static char szTmp[2];
@@ -292,7 +292,7 @@ void CSWGuiSaveGameEditBox::HandleKeyPress(int nKey)
         break;
     }
 }
-// PC 0x006C8410
+// PC 0x00708420
 void CSWGuiSaveNamePanel::OnPanelAdded()
 {
     CSWGuiExtent cExtent;
@@ -305,7 +305,7 @@ void CSWGuiSaveNamePanel::OnPanelAdded()
     g_pGuiMan->MoveMouseToPosition(cExtent.m_nLeft, cExtent.m_nTop);
 #endif
 }
-// PC 0x006C8460
+// PC 0x00708470
 void CSWGuiSaveNamePanel::OnPanelRemoved()
 {
     CSWGuiPanel::OnPanelRemoved();
@@ -313,14 +313,14 @@ void CSWGuiSaveNamePanel::OnPanelRemoved()
     g_pGuiMan->RestoreOldMousePosition();
 #endif
 }
-// PC 0x006C8470
+// PC 0x00708500
 void CSWGuiSaveNamePanel::HandleCancelButton(CSWGuiControl* pControl)
 {
     m_bDeferredRemoval = 0;
     m_nExitState = EXITSTATE_DELETE;
     m_pManager->PopModalPanel();
 }
-// PC 0x006C8490  Xbox 0x0010F020
+// PC 0x005792E0
 inline int CStatusSummary::LoadFromGFF(CResGFF* pGFF, CResStruct& cStruct)
 {
     int bSuccess;
@@ -368,7 +368,7 @@ void CSWGuiSaveLoad::ExitPanel()
         m_pManager->PopModalPanel();
     }
 }
-// PC 0x006C86D0  Xbox 0x0010FA30
+// PC 0x0070BD00
 void CSWGuiSaveLoad::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0 &&
@@ -379,7 +379,7 @@ void CSWGuiSaveLoad::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006CA110  Xbox 0x00112240
+// PC 0x00736460
 CSWGuiSaveLoad::~CSWGuiSaveLoad()
 {
     g_pExoResMan->RemoveResourceDirectory("TEMP:");
@@ -393,7 +393,7 @@ CSWGuiSaveLoad::~CSWGuiSaveLoad()
 #endif
 }
 #ifndef _XBOX
-void CSWGuiSaveLoad::LoadPCAutoSave(const CExoString& sModuleName)  // PC 0x006CA250
+void CSWGuiSaveLoad::LoadPCAutoSave(const CExoString& sModuleName)  // PC 0x00708C50
 {
 
     CExoString sSavePath;
@@ -485,7 +485,7 @@ void CSWGuiSaveLoad::LoadPCAutoSave(const CExoString& sModuleName)  // PC 0x006C
     g_pAppManager->GetServerExoApp()->ExecuteLoadModule(sModuleName);
 }
 #endif
-int LoadScreenUpdate(int nStep, int nSteps, int nStart, int nRange)  // PC 0x006C8750  Xbox 0x0010FB50
+int LoadScreenUpdate(int nStep, int nSteps, int nStart, int nRange)  // PC 0x007074D0
 {
 #ifdef _XBOX
     g_pAppManager->m_pClientExoApp->SetLoadBarProgress(
@@ -497,7 +497,7 @@ int LoadScreenUpdate(int nStep, int nSteps, int nStart, int nRange)  // PC 0x006
     UpdateScreen(0.033333335f, 0, 0);
     return 0;
 }
-// PC 0x006C8790
+// PC 0x00707510
 void CSWGuiSaveLoad::WriteGame(const CExoString& sSaveName)
 {
     CSWGuiSaveLoadEntry* pEntry =
@@ -541,7 +541,7 @@ void CSWGuiSaveLoad::WriteGame(const CExoString& sSaveName)
     m_nExitState = EXITSTATE_DELETE;
     m_pManager->PopModalPanel();
 }
-// PC 0x006CAA90  Xbox 0x00115AB0
+// PC 0x0070B0D0
 void CSWGuiSaveLoad::DeleteGame(CSWGuiControl* pControl)
 {
     int bSelected;
@@ -560,7 +560,7 @@ void CSWGuiSaveLoad::DeleteGame(CSWGuiControl* pControl)
     }
 }
 #ifndef _XBOX
-void CSWGuiSaveLoad::RemoveGame(CSWGuiControl* pControl)  // PC 0x006C8900  Xbox 0x00114260
+void CSWGuiSaveLoad::RemoveGame(CSWGuiControl* pControl)  // PC 0x00709490
 {
     CSWGuiMessageBox* pMessageBox;
     CSWGuiControl* pSelected;
@@ -588,7 +588,7 @@ void CSWGuiSaveLoad::RemoveGame(CSWGuiControl* pControl)  // PC 0x006C8900  Xbox
         }
     }
 }
-// PC 0x006C89D0  Xbox 0x0010FDD0
+// PC 0x00709560
 void CSWGuiSaveLoad::ShowGame(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected && pControl->AsButton() != NULL)
@@ -698,7 +698,7 @@ void CSWGuiSaveLoad::ShowGame(CSWGuiControl* pControl)
 #endif
     }
 }
-// PC 0x006C8E50  Xbox 0x001104B0
+// PC 0x007076A0
 void CSWGuiSaveLoadEntry::LoadData(const CExoString& sSaveDirectory)
 {
 
@@ -782,7 +782,7 @@ void CSWGuiSaveLoadEntry::LoadData(const CExoString& sSaveDirectory)
     m_bDataLoaded = 1;
 }
 #endif
-void CSWGuiSaveLoadEntry::SetXboxTitle(const CExoString& sTitle)  // PC 0x006C9780  Xbox 0x00110EA0
+void CSWGuiSaveLoadEntry::SetXboxTitle(const CExoString& sTitle)  // PC 0x0070A070
 {
 
     m_sXboxTitle = sTitle;
@@ -829,7 +829,7 @@ void CSWGuiSaveLoadEntry::SetXboxTitle(const CExoString& sTitle)  // PC 0x006C97
     m_cText.m_cParams.SetText(m_sXboxTitle);
 }
 #ifndef _XBOX
-void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)  // PC 0x006CB0E0  Xbox 0x00114870
+void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)  // PC 0x0070BDB0
 {
     if (m_bExitToMainMenu ||
         g_pAppManager->GetClientExoApp()->GetInGameGui()->GetMessageBox()->m_bAccepted)
@@ -965,7 +965,7 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)  // PC 0x006CB0E0  Xbox 0
     }
 }
 #endif
-void CSWGuiSaveLoad::PromptForSaveName(CSWGuiControl* pControl)  // PC 0x006CB820
+void CSWGuiSaveLoad::PromptForSaveName(CSWGuiControl* pControl)  // PC 0x0070AFB0
 {
     SwguisaveloadTrace2();
     CExoString sSaveName;
@@ -994,7 +994,7 @@ void CSWGuiSaveLoad::PromptForSaveName(CSWGuiControl* pControl)  // PC 0x006CB82
         g_pGuiMan->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
 }
-// PC 0x006CB940  Xbox 0x00115B10
+// PC 0x0070B130
 CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry()
 {
     SwguisaveloadTrace2();
@@ -1019,7 +1019,7 @@ CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry()
 #endif
 }
 #ifndef _XBOX
-void CSWGuiSaveLoad::HandleSaveButton(CSWGuiControl* pControl)  // PC 0x006CBB60  Xbox 0x00115680
+void CSWGuiSaveLoad::HandleSaveButton(CSWGuiControl* pControl)  // PC 0x0070B710
 {
     int bSelected = pControl->m_bSelected;
     int nOptionsSpace = 0;
@@ -1107,7 +1107,7 @@ void CSWGuiSaveLoad::HandleSaveButton(CSWGuiControl* pControl)  // PC 0x006CBB60
     }
 }
 #endif
-int CSWGuiSaveLoad::UnpackGame(unsigned long nSaveGame,  // PC 0x006CAAF0  Xbox 0x001144C0
+int CSWGuiSaveLoad::UnpackGame(unsigned long nSaveGame,  // PC 0x0070B380
                                const CExoString& sSaveName,
                                CSWGuiControl* pControl)
 {
@@ -1150,7 +1150,7 @@ int CSWGuiSaveLoad::UnpackGame(unsigned long nSaveGame,  // PC 0x006CAAF0  Xbox 
     cFile.Flush();
     return 0;
 }
-// PC 0x006CAE70
+// PC 0x0070A5A0
 CSWGuiSaveNamePanel::CSWGuiSaveNamePanel(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -1181,7 +1181,7 @@ void CSWGuiSaveNamePanel::SetTextAndPointer(CSWGuiSaveLoad* pSaveLoad, const CEx
     m_edtSaveName.m_cText.SetText(sText);
 }
 #ifndef _XBOX
-void CSWGuiSaveLoad::PopulateGameList()  // PC 0x006CC160  Xbox 0x00115D50
+void CSWGuiSaveLoad::PopulateGameList()  // PC 0x0070C600
 {
     CExoArrayList<CExoString> lDirectories;
     CExoArrayList<CSWGuiControl*> lControls;
@@ -1281,7 +1281,7 @@ static inline void SwguisaveloadTrace1()
 
 #ifdef _XBOX
 #include "exoinput.h"
-// Xbox 0x0010FBA0
+
 void CSWGuiSaveLoad::UpdateFreeBlocks()
 {
     unsigned __int64 nFreeBlocks;
@@ -1321,7 +1321,7 @@ void CSWGuiSaveLoad::UpdateFreeBlocks()
         pParams->SetColor(CGuiInGame::COLOR_BLUE);
     }
 }
-// Xbox 0x00116720
+
 void CSWGuiSaveLoad::OnSaveErrorDone(CSWGuiControl* pControl)
 {
     int nSelected = m_lbSaveGames.m_nSelectedItem;
@@ -1329,7 +1329,7 @@ void CSWGuiSaveLoad::OnSaveErrorDone(CSWGuiControl* pControl)
     int nLast = m_lbSaveGames.m_lItems.num - 1;
     m_lbSaveGames.SetSelectedControl(nSelected < nLast ? nSelected : nLast, 0);
 }
-// Xbox 0x001118E0
+
 void CSWGuiSaveLoad::ShowSaveError(unsigned long nStrRef)
 {
     CSWGuiMessageBox* pMessageBox =
@@ -1357,7 +1357,7 @@ void ExoXboxLaunch(KOTOR_LAUNCH_DATA* pParams, const char* pszModuleName);
 
 #define XBOX_STRREF_MISSING_LIVE_CONTENT 42496
 #define XBOX_STRREF_SAVE_CORRUPT 42027
-// PC 0x006CB0E0  Xbox 0x00114870
+
 void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)
 {
     if (m_bExitToMainMenu ||
@@ -1566,7 +1566,7 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006C8900  Xbox 0x00114260
+
 void CSWGuiSaveLoad::RemoveGame(CSWGuiControl* pControl)
 {
     CSWGuiMessageBox* pMessageBox;
@@ -1597,7 +1597,7 @@ void CSWGuiSaveLoad::RemoveGame(CSWGuiControl* pControl)
 }
 
 #define XBOX_STRREF_NOT_ENOUGH_BLOCKS 42140
-// PC 0x006CBB60  Xbox 0x00115680
+
 void CSWGuiSaveLoad::HandleSaveButton(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -1672,7 +1672,7 @@ void CSWGuiSaveLoad::HandleSaveButton(CSWGuiControl* pControl)
         }
     }
 }
-// Xbox 0x0010FAB0
+
 void CSWGuiSaveLoad::OnCorruptGameSelected(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected)
@@ -1692,7 +1692,7 @@ void CSWGuiSaveLoad::OnCorruptGameSelected(CSWGuiControl* pControl)
 }
 
 #define XBOX_STRREF_DAMAGED_SAVE_LABEL 42121
-// PC 0x006C89D0  Xbox 0x0010FDD0
+
 void CSWGuiSaveLoad::ShowGame(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected)
@@ -1810,7 +1810,7 @@ void CSWGuiSaveLoad::ShowGame(CSWGuiControl* pControl)
             pEntry->m_bDataLoaded ? CGuiInGame::COLOR_BLUE : CGuiInGame::DISABLED_TEXT);
     }
 }
-// PC 0x006C8E50  Xbox 0x001104B0
+
 void CSWGuiSaveLoadEntry::LoadData(const CExoString& sSaveDirectory)
 {
 
@@ -1902,7 +1902,7 @@ void CSWGuiSaveLoadEntry::LoadData(const CExoString& sSaveDirectory)
 #define XBOX_RESTYPE_SAVE_IMAGE 3011
 
 #define XBOX_STRREF_SAVE_GAME_TITLE 1594
-// Xbox 0x00113BF0
+
 void CSWGuiSaveLoad::SaveGameToSlot(CSWGuiControl* pControl)
 {
     CSWGuiSaveLoadEntry* pEntry = (CSWGuiSaveLoadEntry*)pControl;
@@ -2009,7 +2009,7 @@ void CSWGuiSaveLoad::SaveGameToSlot(CSWGuiControl* pControl)
 }
 
 #define XBOX_FUTUREGAME_LOAD_STEP 40
-// PC 0x006C9A90  Xbox 0x00110F50
+
 int CSWGuiSaveLoad::CopyGameToFutureGame(unsigned long nSaveGame,
                                        const CExoString& sSaveName)
 {
@@ -2089,7 +2089,7 @@ int CSWGuiSaveLoad::CopyGameToFutureGame(unsigned long nSaveGame,
     g_pAppManager->m_pReentrantServerStats->m_nUnknown56 = 4;                                         \
     g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory);          \
     g_pExoBase->m_pExoDebug->FlushScriptLogFile()
-// Xbox 0x001123F0
+
 int CSWGuiSaveLoad::LoadPCAutoSave()
 {
 
@@ -2248,7 +2248,7 @@ int CSWGuiSaveLoad::LoadPCAutoSave()
 #define XBOX_SAVE_SLOT_FIRST_NORMAL 1
 
 #define XBOX_SAVE_SLOT_CORRUPT 1000
-// PC 0x006CC160  Xbox 0x00115D50
+
 void CSWGuiSaveLoad::PopulateGameList()
 {
     CExoArrayList<CExoString> lDirectories;
@@ -2373,7 +2373,7 @@ void CSWGuiSaveLoad::PopulateGameList()
     m_lbSaveGames.AddControls(lControls, 1, 0, 0);
     m_nMaxSaveGame = nNextSlot;
 }
-// Xbox 0x0010F260
+
 void KOTOR_LAUNCH_OPTIONS_DATA::LoadFromGFF(CResGFF* pRes, CResStruct& stStruct)
 {
     int bSuccess;
@@ -2419,7 +2419,7 @@ void KOTOR_LAUNCH_OPTIONS_DATA::LoadFromGFF(CResGFF* pRes, CResStruct& stStruct)
         }
     }
 }
-// Xbox 0x00111970
+
 void KOTOR_LAUNCH_DATA::LoadFromGFF(CResGFF* pRes, CResStruct& stStruct)
 {
     int bSuccess;

@@ -18,7 +18,7 @@
 #include "worldtimer.h"
 
 static int enableitemgroundalignment = 0;
-// PC 0x00646230  Xbox 0x0009F260
+// PC 0x0069CAB0
 CSWCItem::CSWCItem(unsigned long nBaseItem)
     : CSWItem(), CSWCObject(CGameObject::OBJECT_TYPE_ITEM)
 {
@@ -59,7 +59,7 @@ CSWCItem::CSWCItem(unsigned long nBaseItem)
 
 static inline void NwcitemTrace1();
 #define NWCITEM_TRACE() NwcitemTrace1()
-// PC 0x00646390  Xbox 0x0009F3D0
+// PC 0x0069CC10
 void CSWCItem::AIUpdate()
 {
     unsigned long nDay;
@@ -108,7 +108,7 @@ void CSWCItem::AIUpdate()
     m_nLastUpdateDay = nDay;
     m_nLastUpdateTime = nTime;
 }
-// PC 0x00646500  Xbox 0x0009F540
+// PC 0x0069CD80
 int CSWCItem::LoadModel(const CResRef& cModel, unsigned char nModel,
                         unsigned char nFlags)
 {
@@ -141,7 +141,7 @@ int CSWCItem::LoadModel(const CResRef& cModel, unsigned char nModel,
 
     return 1;
 }
-// PC 0x00646600  Xbox 0x0009F650
+// PC 0x0069CE80
 int CSWCItem::SetEquippedBy(CSWCCreature* pCreature)
 {
     int nEquippedBy = (int)pCreature;
@@ -156,7 +156,7 @@ int CSWCItem::SetEquippedBy(CSWCCreature* pCreature)
     }
     return nEquippedBy;
 }
-// PC 0x00646630  Xbox 0x0009F680
+// PC 0x0069CF30
 CSWCCreature* CSWCItem::GetEquippedBy()
 {
     unsigned long nEquippedBy = m_oidEquippedBy;
@@ -167,7 +167,7 @@ CSWCCreature* CSWCItem::GetEquippedBy()
     CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
     return pClientExoApp->GetCreatureByGameObjectID(nEquippedBy);
 }
-// PC 0x00646650  Xbox 0x0009F6A0
+// PC 0x0069CF50
 void CSWCItem::UnloadModel(unsigned char nModel)
 {
     if (m_pAnimBase != NULL)
@@ -175,7 +175,7 @@ void CSWCItem::UnloadModel(unsigned char nModel)
         m_pAnimBase->UnloadModel(nModel);
     }
 }
-// PC 0x00646660  Xbox 0x0009F6C0
+// PC 0x0069CF60
 void CSWCItem::SetNumActiveProperties(int nNumActiveProperties)
 {
     m_nNumActiveProperties = nNumActiveProperties;
@@ -185,7 +185,7 @@ void CSWCItem::SetNumActiveProperties(int nNumActiveProperties)
     }
     m_pActiveProperties = new CSWItemProperty[m_nNumActiveProperties];
 }
-// PC 0x006466A0  Xbox 0x0009F700
+// PC 0x0069CFA0
 CSWItemProperty* CSWCItem::GetActiveProperty(int nIndex)
 {
     if (nIndex < 0 || nIndex >= m_nNumActiveProperties)
@@ -194,7 +194,7 @@ CSWItemProperty* CSWCItem::GetActiveProperty(int nIndex)
     }
     return m_pActiveProperties + nIndex;
 }
-// PC 0x006466D0  Xbox 0x0009F730
+// PC 0x0069CFD0
 void CSWCItem::PlayDropSound()
 {
     CResRef cSound;
@@ -227,7 +227,7 @@ void CSWCItem::PlayDropSound()
     g_pExoSound->PlayOneShotSound(cSound, CExoSound::SOUND_TYPE_GUI,
                                  0, 0, 0.0f, 0.0f);
 }
-// PC 0x006467E0  Xbox 0x0009F850
+// PC 0x0069D0E0
 int CSWCItem::GetActivePropertySpellID(int nIndex)
 {
     if (nIndex >= m_nNumActiveProperties)
@@ -240,7 +240,7 @@ int CSWCItem::GetActivePropertySpellID(int nIndex)
     }
     return m_pActiveProperties[nIndex].m_nSubtype;
 }
-// PC 0x00646810  Xbox 0x0009F880
+// PC 0x0069D110
 void CSWCItem::SetStackSize(int nStackSize)
 {
     m_nStackSize = nStackSize;
@@ -304,7 +304,7 @@ int CSWCItem::LoadVisualEffect(unsigned char nEffect)
     m_nUnknown198 = 1;
     return 1;
 }
-// PC 0x00646830  Xbox 0x0009F8A0
+// PC 0x0069D130
 void CSWCItem::ShowVisualEffect()
 {
     if (m_pAnimBase != NULL)
@@ -333,7 +333,7 @@ inline void CSWCItem::HideVisualEffect()
         }
     }
 }
-// PC 0x00646880  Xbox 0x0009F8F0
+// PC 0x0069D180
 void CSWCItem::SpawnVisualEffect(const CExoString& sModel,
                                  const CExoString& sHook)
 {
@@ -364,7 +364,7 @@ inline void CSWCItem::ComputeZValue(Vector* pPosition, float fOffset,
     }
     pPosition->m_fZ = fZ + fOffset;
 }
-// PC 0x00646930  Xbox 0x0009F9A0
+// PC 0x0069D230
 void CSWCItem::SetArea(CSWCArea* pArea)
 {
     if (pArea != NULL)
@@ -382,7 +382,7 @@ void CSWCItem::SetArea(CSWCArea* pArea)
         SetPosition(m_vPosition);
     }
 }
-// PC 0x006469B0  Xbox 0x0009FA20
+// PC 0x0069D2B0
 void CSWCItem::SetItemPropertyUsesLeft(int nIndex, unsigned short nUsesLeft)
 {
     if (nIndex < 8)
@@ -408,7 +408,7 @@ void CSWCItem::SetItemPropertyUsesLeft(int nIndex, unsigned short nUsesLeft)
         }
     }
 }
-// PC 0x00646A30  Xbox 0x0009FAA0
+// PC 0x0069D330
 void CSWCItem::UpdateOrientation(const Vector& vNormal)
 {
     Quaternion qOrientation;
@@ -436,7 +436,7 @@ void CSWCItem::UpdateOrientation(const Vector& vNormal)
         m_pAnimBase->SetOrientation(qOrientation);
     }
 }
-// PC 0x006825F0  Xbox 0x000B3350
+// PC 0x006DB7A0
 void CSWCItem::UnloadModel()
 {
     if (m_pAnimBase != NULL)
@@ -446,7 +446,7 @@ void CSWCItem::UnloadModel()
         m_pAnimBase = NULL;
     }
 }
-// PC 0x00646BA0  Xbox 0x0009FC20
+// PC 0x0069D520
 void CSWCItem::ResolveCreaturePoweredAnimations(int bPower)
 {
     CSWCCreature* pCreature = g_pAppManager->GetClientExoApp()->
@@ -493,7 +493,7 @@ void CSWCItem::ResolveCreaturePoweredAnimations(int bPower)
         }
     }
 }
-// PC 0x00646C90  Xbox 0x0009FD10
+// PC 0x0069D610
 CSWSItem* CSWCItem::GetServerItem()
 {
     if (GetServerObject() != NULL)
@@ -502,7 +502,7 @@ CSWSItem* CSWCItem::GetServerItem()
     }
     return NULL;
 }
-// PC 0x00646CD0  Xbox 0x0009FD50
+// PC 0x0069D650
 CSWCItem::~CSWCItem()
 {
     NWCITEM_TRACE();
@@ -529,7 +529,7 @@ CSWCItem::~CSWCItem()
     }
     m_pPowerSound = NULL;
 }
-// PC 0x00646DD0  Xbox 0x0009FE50
+// PC 0x0069D750
 void CSWCItem::SetOrientation(const Vector& vOrientation)
 {
     NWCITEM_TRACE();
@@ -543,7 +543,7 @@ void CSWCItem::SetOrientation(const Vector& vOrientation)
     }
     UpdateOrientation(vNormal);
 }
-// PC 0x00646E70  Xbox 0x0009FEF0
+// PC 0x0069D7F0
 CExoString CSWCItem::GetName(int bFullName)
 {
     NWCITEM_TRACE();
@@ -575,7 +575,7 @@ CExoString CSWCItem::GetName(int bFullName)
 
     return sName;
 }
-// PC 0x00647030  Xbox 0x000A00D0
+// PC 0x0069D9D0
 void CSWCItem::SetPosition(const Vector& vPosition)
 {
     NWCITEM_TRACE();
@@ -606,7 +606,7 @@ void CSWCItem::SetPosition(const Vector& vPosition)
         }
     }
 }
-// PC 0x00647130  Xbox 0x000A0200
+// PC 0x0069DAD0
 void CSWCItem::PowerItem(int bPower, int bOverride, int bAnimate,
                          int bSilent)
 {

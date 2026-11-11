@@ -13,7 +13,7 @@ public:
         OPERATION_SAVE_GAME = 2,
         OPERATION_LOAD_GAME = 3
     };
-    // PC 0x004B13E0  Xbox 0x000122B0
+    // PC 0x004E9ED0
     void StartStallEvent(unsigned long nEvent)
     {
         m_bOperationActive = 1;

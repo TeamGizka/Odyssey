@@ -78,14 +78,14 @@ extern int cullfoggeometry;
 extern int countculledgobs;
 extern int countculledshadows;
 extern int countculledbeams;
-// PC 0x0046A610  Xbox 0x002B8E70
+// PC 0x004808F0
 int AurClearActiveBins()
 {
     g_pActiveBins.m_nCount = 0;
     g_pOldActiveBins.m_nCount = 0;
     return 0;
 }
-// PC 0x0046A6B0  Xbox 0x002B8F90
+// PC 0x00480990
 int PartOutside(PartTriMesh* pTriMesh, List<Plane>& lstPlanes)
 {
     static int lastClipped = 0;
@@ -103,7 +103,7 @@ int PartOutside(PartTriMesh* pTriMesh, List<Plane>& lstPlanes)
 
     return 0;
 }
-// PC 0x0046A730  Xbox 0x002B9010
+// PC 0x00480A10
 int PartOutside(PartEmitter* pEmitter, List<Plane>& lstPlanes)
 {
     Vector vPosition;
@@ -122,7 +122,7 @@ int PartOutside(PartEmitter* pEmitter, List<Plane>& lstPlanes)
 
     return 0;
 }
-// PC 0x0046A7E0  Xbox 0x002B90C0
+// PC 0x00480AC0
 int PartOutside(PartProjection* pProjection, List<Plane>& lstPlanes)
 {
     static int lastClipped = 0;
@@ -140,7 +140,7 @@ int PartOutside(PartProjection* pProjection, List<Plane>& lstPlanes)
 
     return 0;
 }
-// PC 0x0046A850  Xbox 0x002B9130
+// PC 0x00480B30
 int PartOutside(PartTrigger* pTrigger, List<Plane>& lstPlanes)
 {
     static int lastClipped = 0;
@@ -156,7 +156,7 @@ int PartOutside(PartTrigger* pTrigger, List<Plane>& lstPlanes)
     }
     return 0;
 }
-// Xbox 0x002B8E80
+
 char* GetToken(char** psLine)
 {
 #ifdef _XBOX
@@ -210,38 +210,38 @@ int checkprimitive = 1;
 #endif
 
 #ifdef _XBOX
-// Xbox 0x002B8E10
+
 void nodedata::ClearMovingObjects()
 {
     m_lstMovingObjects.m_nCount = 0;
 }
-// Xbox 0x002B8E20
+
 void nodedata::ClearMovingLights()
 {
     m_lstMovingLights.m_nCount = 0;
 }
-// Xbox 0x002B8E30
+
 void nodedata::ClearMovingEmitters()
 {
     m_lstMovingEmitters.m_nCount = 0;
 }
-// Xbox 0x002B8E40
+
 List<Gob*>& nodedata::GetMovingObjects()
 {
     return m_lstMovingObjects;
 }
-// Xbox 0x002B8E50
+
 List<PartLight*>& nodedata::GetMovingLights()
 {
     return m_lstMovingLights;
 }
-// Xbox 0x002B8E60
+
 List<PartEmitter*>& nodedata::GetMovingEmitters()
 {
     return m_lstMovingEmitters;
 }
 #endif
-// PC 0x0046A8C0  Xbox 0x002B91A0
+// PC 0x00480BA0
 int GobOutside(Gob* pGob, List<Plane>& lstPlanes)
 {
     if (pGob->IsInViewVolume())
@@ -267,7 +267,7 @@ int GobOutside(Gob* pGob, List<Plane>& lstPlanes)
 
     return 0;
 }
-// PC 0x0046A980  Xbox 0x002B9270
+// PC 0x00480DC0
 int BinOutside(CAurTriangleBin* pBin, List<Plane>& lstPlanes)
 {
     for (int i = 0; i < lstPlanes.m_nCount; i++)
@@ -280,7 +280,7 @@ int BinOutside(CAurTriangleBin* pBin, List<Plane>& lstPlanes)
     }
     return 0;
 }
-// PC 0x0046A9E0  Xbox 0x002B92D0
+// PC 0x00480E20
 void LightPartTriMesh(PartTriMesh* pPart, List<PartLight*> lstLights, Scene* pScene)
 {
     if (pPart == 0)
@@ -437,7 +437,7 @@ List<Gob*> blurbucket;
 List<Gob*> fadinginbucket;
 List<Gob*> fadingoutbucket;
 List<CAurTriangleBin*> g_pActiveBins, g_pOldActiveBins;
-// PC 0x0046B1E0  Xbox 0x002B9AA0
+// PC 0x00481940
 nodedata::~nodedata()
 {
     if (m_pTileData != 0)
@@ -445,7 +445,7 @@ nodedata::~nodedata()
         delete m_pTileData;
     }
 }
-// PC 0x0046B340
+// PC 0x00481AA0
 static int NodeHasLight(BSPNode* pNode, void* pData)
 {
     if (pNode == 0)
@@ -454,7 +454,7 @@ static int NodeHasLight(BSPNode* pNode, void* pData)
     }
     return pNode->m_pData->m_lstLights.Contains((PartLight*)pData);
 }
-// PC 0x0046B370
+// PC 0x00481AD0
 static int NodeHasEmitter(BSPNode* pNode, void* pData)
 {
     if (pNode == 0)
@@ -463,7 +463,7 @@ static int NodeHasEmitter(BSPNode* pNode, void* pData)
     }
     return pNode->m_pData->m_lstEmitters.Contains((PartEmitter*)pData);
 }
-// PC 0x0046B3A0
+// PC 0x00481B00
 static int NodeHasProjection(BSPNode* pNode, void* pData)
 {
     if (pNode == 0)
@@ -474,7 +474,7 @@ static int NodeHasProjection(BSPNode* pNode, void* pData)
     return pNodeData->m_lstShadowProjections.Contains((PartShadow*)pData) ||
            pNodeData->m_lstBeamProjections.Contains((PartBeam*)pData);
 }
-// PC 0x0046B400
+// PC 0x00481B60
 static int NodeHasTriMesh(BSPNode* pNode, void* pData)
 {
     if (pNode == 0)
@@ -483,7 +483,7 @@ static int NodeHasTriMesh(BSPNode* pNode, void* pData)
     }
     return pNode->m_pData->m_lstTriMeshes.Contains((PartTriMesh*)pData);
 }
-// PC 0x0046B430
+// PC 0x00481B90
 static int NodeHasTrigger(BSPNode* pNode, void* pData)
 {
     if (pNode == 0)
@@ -492,7 +492,7 @@ static int NodeHasTrigger(BSPNode* pNode, void* pData)
     }
     return pNode->m_pData->m_lstTriggers.Contains((PartTrigger*)pData);
 }
-// PC 0x0046B460
+// PC 0x00481BC0
 static int NodeHasOther(BSPNode* pNode, void* pData)
 {
     if (pNode == 0)
@@ -501,7 +501,7 @@ static int NodeHasOther(BSPNode* pNode, void* pData)
     }
     return pNode->m_pData->m_lstOthers.Contains((Part*)pData);
 }
-// PC 0x0046B490
+// PC 0x00481BF0
 static int NodeHasGob(BSPNode* pNode, void* pData)
 {
     if (pNode == 0)
@@ -510,7 +510,7 @@ static int NodeHasGob(BSPNode* pNode, void* pData)
     }
     return pNode->m_pData->m_lstGobs.Contains((Gob*)pData);
 }
-// PC 0x0046B4C0  Xbox 0x002B9CA0
+// PC 0x00481C20
 int HitPartOnBSPNode(BSPNode* pNode, Vector vStart, Vector vEnd, Vector* pHit)
 {
     counthitcheckscenebspnode++;
@@ -582,7 +582,7 @@ int HitPartOnBSPNode(BSPNode* pNode, Vector vStart, Vector vEnd, Vector* pHit)
     }
     return bHit;
 }
-// PC 0x0046B790  Xbox 0x002B9F60
+// PC 0x00481EF0
 void LightBins(BSPNode* pNode, void* pData)
 {
     nodedata* pNodeData = pNode->m_pData;
@@ -592,7 +592,7 @@ void LightBins(BSPNode* pNode, void* pData)
         pNodeData->m_lstBins[i]->ReloadColor();
     }
 }
-// PC 0x0046A660  Xbox 0x002B8F20
+// PC 0x00480940
 static int NodeHasAABB(BSPNode* pNode, void* pData)
 {
     if (pNode == 0)
@@ -601,7 +601,7 @@ static int NodeHasAABB(BSPNode* pNode, void* pData)
     }
     return pNode->m_pData->m_pAABB == pData;
 }
-// PC 0x0046A680  Xbox 0x002B8F40
+// PC 0x00480960
 TileData* SceneBSPGetTileData(Scene* pScene, const Vector& vPosition)
 {
     if (pScene->m_pBSPRoot == 0)
@@ -611,7 +611,7 @@ TileData* SceneBSPGetTileData(Scene* pScene, const Vector& vPosition)
     return BSPFitSphere(pScene->m_pBSPRoot, vPosition, 0.0f)
         ->m_pData->m_pTileData;
 }
-// PC 0x0046B7C0  Xbox 0x002B9F90
+// PC 0x00481F20
 static void ConstructCameraFadePlane(Scene* pScene)
 {
     AURSCENEMANAGER_TRACE();
@@ -656,7 +656,7 @@ static void ConstructCameraFadePlane(Scene* pScene)
         CurrentCamera->SetFadePlanes(planeRight, planeLeft);
     }
 }
-// PC 0x0046BBC0  Xbox 0x002BA420
+// PC 0x00482330
 void AurProcessActiveBins()
 {
     for (int i = 0; i < g_pActiveBins.m_nCount; i++)
@@ -682,7 +682,7 @@ void AurProcessActiveBins()
         }
     }
 }
-// PC 0x0046BC40  Xbox 0x002BA4A0
+// PC 0x004823B0
 void ClearSceneRooms(Scene* pScene)
 {
     for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
@@ -699,7 +699,7 @@ void ClearSceneRooms(Scene* pScene)
 #endif
     }
 }
-// PC 0x0046BC80
+// PC 0x00551580
 template <> inline List<CAurRoom*>& List<CAurRoom*>::operator=(List<CAurRoom*>& other)
 {
     AURSCENEMANAGER_TRACE();
@@ -710,25 +710,25 @@ template <> inline List<CAurRoom*>& List<CAurRoom*>::operator=(List<CAurRoom*>& 
     }
     return *this;
 }
-// PC 0x0046BD70  Xbox 0x002BA560
+// PC 0x004838E0
 void nodedata::AddMovingObject(Gob* pGob)
 {
     m_lstMovingObjects.Add(pGob);
 }
 
 #ifdef _XBOX
-// Xbox 0x002BA570
+
 void nodedata::AddMovingLight(PartLight* pLight)
 {
     m_lstMovingLights.Add(pLight);
 }
 #endif
-// PC 0x0046BDB0  Xbox 0x002BA580
+// PC 0x00483920
 void nodedata::AddMovingEmitter(PartEmitter* pEmitter)
 {
     m_lstMovingEmitters.Add(pEmitter);
 }
-// PC 0x0046BDF0  Xbox 0x002BA590
+// PC 0x00482450
 void AddPartToMeshBuckets(PartTriMesh* pTriMesh)
 {
     PartDanglyMesh* pDanglyMesh = pTriMesh->AsPartDanglyMesh();
@@ -748,7 +748,7 @@ void AddPartToMeshBuckets(PartTriMesh* pTriMesh)
         meshshadowbucket.Add(pTriMesh);
     }
 }
-// PC 0x0046BEF0  Xbox 0x002BA600
+// PC 0x00482550
 void ClearBuckets(Scene* pScene)
 {
     int nMaxTexID = AurTextureGetMaxTexID();
@@ -786,7 +786,7 @@ void ClearBuckets(Scene* pScene)
     countactivebins = 0;
     countmodels = Models.m_nCount;
 }
-// PC 0x0046BFB0  Xbox 0x002BA6C0
+// PC 0x00482600
 nodedata::nodedata()
     : m_lstLights(0),
       m_lstGobs(0),
@@ -806,7 +806,7 @@ nodedata::nodedata()
     m_pAABB = 0;
     m_pTileData = pTileData;
 }
-// PC 0x0046C060  Xbox 0x002BA7C0
+// PC 0x004826B0
 void SceneBSPGetObjectTextures(Part* pPart, List<CAurTexture*>& lstTextures)
 {
     if (pPart != 0)
@@ -822,7 +822,7 @@ void SceneBSPGetObjectTextures(Part* pPart, List<CAurTexture*>& lstTextures)
         }
     }
 }
-// PC 0x0046C380  Xbox 0x002BA810
+// PC 0x004829D0
 void SceneBSPGetTileTextures(Scene* pScene, const Vector& vPosition,
                              List<CAurTexture*>& lstTextures)
 {
@@ -844,7 +844,7 @@ void SceneBSPGetTileTextures(Scene* pScene, const Vector& vPosition,
         }
     }
 }
-// PC 0x0046C420  Xbox 0x002BA880
+// PC 0x00482A70
 void SceneBSPAddGob(Scene* pScene, Gob* pGob)
 {
     if (pScene->m_pBSPRoot == 0)
@@ -859,7 +859,7 @@ void SceneBSPAddGob(Scene* pScene, Gob* pGob)
         pNode->m_pData->m_lstGobs.Add(pGob);
     }
 }
-// PC 0x0046C4A0  Xbox 0x002BA8D0
+// PC 0x00482AF0
 void SceneBSPRemoveGob(Scene* pScene, Gob* pGob)
 {
     if (pScene->m_pBSPRoot == 0)
@@ -877,7 +877,7 @@ void SceneBSPRemoveGob(Scene* pScene, Gob* pGob)
         pNode->m_pData->m_lstGobs.Remove(pGob);
     }
 }
-// PC 0x0046C510  Xbox 0x002BA930
+// PC 0x00482B60
 void SceneBSPRemovePart(Scene* pScene, Part* pPart)
 {
     if (pScene->m_pBSPRoot == 0)
@@ -984,7 +984,7 @@ void SceneBSPRemovePart(Scene* pScene, Part* pPart)
         pNodeData->m_lstOthers.Remove(pPart);
     }
 }
-// PC 0x0046C850  Xbox 0x002BAC60
+// PC 0x00482EA0
 void DeleteNonGobParts(BSPNode* pNode, void* pData)
 {
     nodedata* pNodeData = pNode->m_pData;
@@ -1071,7 +1071,7 @@ void DeleteNonGobParts(BSPNode* pNode, void* pData)
 
     delete pNodeData;
 }
-// PC 0x0046CA30  Xbox 0x002BAE80
+// PC 0x00483080
 void UpdateStaticLighting(Scene* pScene, PartLight* pLight)
 {
     if (pLight->m_nLightType == PartLight::LIGHTTYPE_STATIC)
@@ -1088,7 +1088,7 @@ void UpdateStaticLighting(Scene* pScene, PartLight* pLight)
         }
     }
 }
-// PC 0x0046CAE0  Xbox 0x002BAF30
+// PC 0x00483130
 void CollectBins(BSPNode* pNode, const Vector& vPosition, float fRangeSquared)
 {
     nodedata* pNodeData = pNode->m_pData;
@@ -1123,7 +1123,7 @@ void CollectBins(BSPNode* pNode, const Vector& vPosition, float fRangeSquared)
 #endif
     }
 }
-// PC 0x0046CC00  Xbox 0x002BB030
+// PC 0x00484BC0
 void AddLightToRooms(Scene* pScene, PartLight* pLight)
 {
     int nRooms = 0;
@@ -1155,7 +1155,7 @@ void AddLightToRooms(Scene* pScene, PartLight* pLight)
         }
     }
 }
-// PC 0x0046CD70  Xbox 0x002BB0F0
+// PC 0x00484D30
 void AddEmitterToRooms(Scene* pScene, PartEmitter* pEmitter)
 {
     if (pEmitter->m_pAurObject == 0)
@@ -1198,7 +1198,7 @@ void AddEmitterToRooms(Scene* pScene, PartEmitter* pEmitter)
 }
 
 static const int AUR_ROOM_INDEX_ALL = 999;
-// PC 0x0046CE70  Xbox 0x002BB1E0
+// PC 0x00484E30
 void AddObjectToRooms(Scene* pScene, Gob* pGob)
 {
     int nRooms = 0;
@@ -1242,7 +1242,7 @@ void AddObjectToRooms(Scene* pScene, Gob* pGob)
         crap = AUR_ROOM_INDEX_ALL;
     }
 }
-// PC 0x0046D070  Xbox 0x002BB380
+// PC 0x00483670
 void CollectActiveRooms(Scene* pScene, List<CAurRoom*>& lstRooms)
 {
     AurscenemanagerTrace2();
@@ -1282,7 +1282,7 @@ void CollectActiveRooms(Scene* pScene, List<CAurRoom*>& lstRooms)
         lstRooms = pScene->m_lstRooms;
     }
 }
-// PC 0x0046D130  Xbox 0x002BB410
+// PC 0x004837C0
 void SceneAddPartToRooms(Scene* pScene, Part* pPart)
 {
     PartTrigger* pTrigger = pPart->AsPartTrigger();
@@ -1302,7 +1302,7 @@ void SceneAddPartToRooms(Scene* pScene, Part* pPart)
         }
     }
 }
-// PC 0x0046D1E0  Xbox 0x002BB4A0
+// PC 0x00483870
 void SceneRemovePartFromRooms(Scene* pScene, Part* pPart)
 {
     PartTrigger* pTrigger = pPart->AsPartTrigger();
@@ -1318,7 +1318,7 @@ void SceneRemovePartFromRooms(Scene* pScene, Part* pPart)
         }
     }
 }
-// PC 0x0046D2F0  Xbox 0x002BB510
+// PC 0x00483A00
 void SceneBSPRemoveTiledata(Scene* pScene, const Vector& vPosition)
 {
     AurscenemanagerTrace3();
@@ -1358,7 +1358,7 @@ void SceneBSPRemoveTiledata(Scene* pScene, const Vector& vPosition)
 #ifdef _XBOX
 static void AddVisibleTriMeshes(nodedata* pNodeData, List<Plane>& planes);
 #endif
-// PC 0x0046D3B0  Xbox 0x002BB5D0
+// PC 0x00483AC0
 static void ProcessParts(BSPNode* pNode, void* pData, List<Plane>& planes)
 {
     if (pNode == 0)
@@ -1515,7 +1515,7 @@ static void ProcessParts(BSPNode* pNode, void* pData, List<Plane>& planes)
         }
     }
 }
-// PC 0x0046DB60  Xbox 0x002BB9D0
+// PC 0x004847D0
 void LightNodeTile(BSPNode* pNode, void* pData)
 {
     nodedata* pNodeData = pNode->m_pData;
@@ -1551,7 +1551,7 @@ void LightNodeTile(BSPNode* pNode, void* pData)
         }
     }
 }
-// PC 0x0046DDA0  Xbox 0x002BBC00
+// PC 0x00484B50
 void DoStaticLightBuckets(Scene* pScene)
 {
     for (int i = 0; i < staticlightbucket.m_nCount; i++)
@@ -1564,13 +1564,13 @@ void DoStaticLightBuckets(Scene* pScene)
         BSPTraverse(pScene->m_pBSPRoot, LightBins, pScene);
     }
 }
-// PC 0x0046DDF0  Xbox 0x002BBC50
+// PC 0x00484BA0
 void AnimateStaticLight(CAurObject* pObject, char* sEvent, void* pData)
 {
     AurscenemanagerTrace3();
     UpdateStaticLighting(((Gob*)pObject)->m_pScene, (PartLight*)pData);
 }
-// PC 0x0046DE10  Xbox 0x002BBC70
+// PC 0x00483250
 void LightManager::CollectLightsForGivenRoom(CAurRoom* pRoom)
 {
     m_lstNearbyLights.m_nCount = 0;
@@ -1622,7 +1622,7 @@ void LightManager::CollectLightsForGivenRoom(CAurRoom* pRoom)
         }
     }
 }
-// PC 0x0046E5C0  Xbox 0x002BC180
+// PC 0x004854F0
 void ManageSceneBSP(Scene* pScene)
 {
     LightManager::cm_bLightManagerUpdated = 1;
@@ -1789,7 +1789,7 @@ void ManageSceneBSP(Scene* pScene)
     lastcameraclipfar = CurrentCamera->m_fFarClip;
     firsttime = 0;
 }
-// PC 0x0046ED00  Xbox 0x002BC6E0
+// PC 0x00485D00
 void SceneBSPAddTileData(Scene* pScene, TileData* pTileData, Vector vPosition)
 {
     if (pScene->m_pBSPRoot == 0)
@@ -1805,7 +1805,7 @@ void SceneBSPAddTileData(Scene* pScene, TileData* pTileData, Vector vPosition)
         SceneBSPAddPart(pScene, pPart, pPart->m_pNode->m_pModel->AsModel());
     }
 }
-// PC 0x0046E290  Xbox 0x002BBE70
+// PC 0x004851C0
 int SceneBSPAddPart(Scene* pScene, Part* pPart, Model* pModel)
 {
     if (pScene->m_pBSPRoot == 0)
@@ -1915,7 +1915,7 @@ static inline void AurscenemanagerTrace1()
 }
 
 #ifdef _XBOX
-// Xbox 0x002BAE40
+
 static void AddVisibleTriMeshes(nodedata* pNodeData, List<Plane>& planes)
 {
     for (int i = 0; i < pNodeData->m_lstTriMeshes.m_nCount; i++)
@@ -1931,7 +1931,7 @@ static void AddVisibleTriMeshes(nodedata* pNodeData, List<Plane>& planes)
 
 #ifdef _XBOX
 Scene* FindScene(char* sName);
-// Xbox 0x002B8ED0
+
 char* setbsphere(char* sArguments)
 {
     char* sToken = GetToken(&sArguments);
@@ -1944,7 +1944,7 @@ char* setbsphere(char* sArguments)
     pModel->m_fRadius = (float)atof(sToken);
     return "1";
 }
-// Xbox 0x002B8F70
+
 char* setfadetoalways(char* sArguments)
 {
     FindScene("mainscene");

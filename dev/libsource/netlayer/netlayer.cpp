@@ -20,7 +20,7 @@ const unsigned char CNetLayer::CONNECTTYPE_SERVERADMIN = 64;
 const unsigned long CNetLayer::INSTANCE_CLIENT = 0;
 const unsigned long CNetLayer::INSTANCE_SERVER = 1;
 const unsigned long CNetLayer::CONNECTION_PENDING = 2;
-// PC 0x005D4CB0  Xbox 0x00156F80
+// PC 0x006208D0
 int CNetLayer::SendMessageToPlayer(unsigned long nPlayerId,
                                    unsigned char* pData, unsigned long nSize,
                                    unsigned long nFlags)
@@ -68,7 +68,7 @@ int CNetLayer::SendMessageToPlayer(unsigned long nPlayerId,
     m_pPeer->m_nWritePos = nNewWritePos;
     return 1;
 }
-// PC 0x005D4FB0  Xbox 0x00157290
+// PC 0x00620BD0
 int CNetLayer::StartServerMode(const CExoString& sServerName,
                                unsigned long nPort)
 {
@@ -83,7 +83,7 @@ int CNetLayer::StartServerMode(const CExoString& sServerName,
     m_sServerString3 = "";
     return 1;
 }
-// PC 0x005D5020  Xbox 0x00157300
+// PC 0x00620C40
 int CNetLayer::EndServerMode()
 {
     if (m_bServerMode == 0)
@@ -93,7 +93,7 @@ int CNetLayer::EndServerMode()
     m_bServerMode = 0;
     return 1;
 }
-// PC 0x005D5040  Xbox 0x00157320
+// PC 0x00620C60
 int CNetLayer::StartConnectToSession(unsigned long nPlayerId,
                                      const CExoString& sSessionName,
                                      const CExoString& sPlayerName,
@@ -127,7 +127,7 @@ int CNetLayer::StartConnectToSession(unsigned long nPlayerId,
     delete[] pMessage;
     return 1;
 }
-// PC 0x005D5650  Xbox 0x00157930
+// PC 0x006212A0
 int CNetLayer::UpdateStatusLoop(unsigned long nMessage)
 {
     if (nMessage == 0x400000 && m_bConnecting == 1 && m_bConnected == 1 &&
@@ -137,7 +137,7 @@ int CNetLayer::UpdateStatusLoop(unsigned long nMessage)
     }
     return 1;
 }
-// PC 0x005D5140  Xbox 0x00157420
+// PC 0x00620D90
 int CNetLayer::UpdateStatus()
 {
     if (m_bConnecting == 0)
@@ -150,12 +150,12 @@ int CNetLayer::UpdateStatus()
     m_nReserved = 0;
     return 1;
 }
-// PC 0x005D5170  Xbox 0x00157450
+// PC 0x00620DC0
 CNetLayerPlayerInfo* CNetLayer::GetPlayerInfo(unsigned long nPlayerId)
 {
     return &m_cPlayerInfo;
 }
-// PC 0x005D5180  Xbox 0x00157460
+// PC 0x00620DD0
 int CNetLayer::HandleBNCSMessage(unsigned long nPlayerId, unsigned char* pData,
                                  unsigned long nSize)
 {
@@ -231,7 +231,7 @@ int CNetLayer::HandleBNCSMessage(unsigned long nPlayerId, unsigned char* pData,
 void CNetLayer::SetUpPlayBackConnection()
 {
 }
-// PC 0x005D5690  Xbox 0x00157970
+// PC 0x006212E0
 int CNetLayer::NonWindowMessages(unsigned long nPlayerId, unsigned char* pData,
                                  unsigned long nSize)
 {
@@ -254,7 +254,7 @@ int CNetLayer::NonWindowMessages(unsigned long nPlayerId, unsigned char* pData,
         return 0;
     }
 }
-// PC 0x005D53F0  Xbox 0x001576D0
+// PC 0x00621040
 int CNetLayer::HandleBNCRMessage(unsigned long nPlayerId, unsigned char* pData,
                                  unsigned long nSize)
 {
@@ -274,7 +274,7 @@ int CNetLayer::HandleBNCRMessage(unsigned long nPlayerId, unsigned char* pData,
     }
     return 1;
 }
-// PC 0x005D5440  Xbox 0x00157720
+// PC 0x00621090
 CNetLayerPlayerInfo::CNetLayerPlayerInfo()
 {
     m_nPlayerId = 0;
@@ -283,7 +283,7 @@ CNetLayerPlayerInfo::CNetLayerPlayerInfo()
     m_bGameMaster = 0;
     m_bAuthorized = 0;
 }
-// PC 0x005D5720  Xbox 0x00157A00
+// PC 0x00621370
 CNetLayer::~CNetLayer()
 {
     if (m_bInitialized == 1)
@@ -291,13 +291,13 @@ CNetLayer::~CNetLayer()
         ShutDown();
     }
 }
-// PC 0x005D54A0  Xbox 0x00157780
+// PC 0x006210F0
 CNetLayer::CNetLayer()
 {
     m_pPeer = 0;
     m_bInitialized = 0;
 }
-// PC 0x005D5550  Xbox 0x00157830
+// PC 0x006211A0
 int CNetLayer::Initialize(CBaseExoApp* pExoApp)
 {
     if (g_pcTmpNetLayer == 0)
@@ -331,7 +331,7 @@ int CNetLayer::Initialize(CBaseExoApp* pExoApp)
     m_nReserved = 0;
     return 1;
 }
-// PC 0x005D5600  Xbox 0x001578E0
+// PC 0x00621250
 int CNetLayer::ShutDown()
 {
     if (m_bInitialized == 0)
@@ -353,7 +353,7 @@ int CNetLayer::ShutDown()
     m_bInitialized = 0;
     return 1;
 }
-// PC 0x005D57D0  Xbox 0x00157AB0
+// PC 0x00621420
 void CNetLayer::ProcessReceivedFrames(int bProcess)
 {
     int nFramePos;

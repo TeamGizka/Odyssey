@@ -5,7 +5,7 @@
 #include "swmain.h"
 
 #ifndef _XBOX
-void GetGameVersionInfo()  // PC 0x005E6B10
+void GetGameVersionInfo()  // PC 0x00632460
 {
     char szFileName[256];
     DWORD dwHandle = 0;
@@ -78,7 +78,7 @@ void GetGameVersionInfo()  // PC 0x005E6B10
     }
 }
 #endif
-// PC 0x005E6D20  Xbox 0x001362B0
+// PC 0x00632620
 void CExoBaseInternal::CreateResourceExtensionTable()
 {
 #ifdef _XBOX
@@ -272,7 +272,7 @@ void CExoBaseInternal::CreateResourceExtensionTable()
 #endif
 }
 #ifndef _XBOX
-void CExoBaseInternal::AddAlias(const CExoString& sFile,  // PC 0x005E7760  Xbox 0x00136CD0
+void CExoBaseInternal::AddAlias(const CExoString& sFile,  // PC 0x00633040
                                 const CExoString& sAlias,
                                 const CExoString& sDefault,
                                 const CExoString& sUnused)
@@ -287,7 +287,7 @@ void CExoBaseInternal::AddAlias(const CExoString& sFile,  // PC 0x005E7760  Xbox
     g_pExoBase->m_pExoAliasList->Add(sAlias, sPath);
 }
 #endif
-int CExoBaseInternal::GetDirectorySize(const CExoString& sDir)  // PC 0x005E7820
+int CExoBaseInternal::GetDirectorySize(const CExoString& sDir)  // PC 0x00633100
 {
     CExoString sPath;
     CExoString sFile;
@@ -332,7 +332,7 @@ int CExoBaseInternal::GetDirectorySize(const CExoString& sDir)  // PC 0x005E7820
         return 0;
     }
 }
-// PC 0x005E7A00  Xbox 0x00136D90
+// PC 0x006332F0
 const CExoString& CExoBaseInternal::GetResourceExtension(
     unsigned short resourceType)
 {
@@ -347,7 +347,7 @@ const CExoString& CExoBaseInternal::GetResourceExtension(
     return m_pResourceExtensions[87];
 #endif
 }
-// PC 0x005E7A40  Xbox 0x00136DD0
+// PC 0x00633330
 unsigned short CExoBaseInternal::GetResTypeFromExtension(
     const CExoString& extension)
 {
@@ -363,7 +363,7 @@ unsigned short CExoBaseInternal::GetResTypeFromExtension(
 #endif
 }
 #ifndef _XBOX
-void CExoBaseInternal::LoadAliases(const CExoString& sFile)  // PC 0x005E7A90  Xbox 0x00136E20
+void CExoBaseInternal::LoadAliases(const CExoString& sFile)  // PC 0x00633380
 {
     CExoString sAliasFile;
 
@@ -654,7 +654,7 @@ void CExoBaseInternal::SpawnExternalApplication(const CExoString& sApplication,
     }
 }
 #endif
-// PC 0x005E8B20  Xbox 0x00137F30
+// PC 0x00634510
 int CExoBaseInternal::WcsToMbs(char* sDest, const wchar_t* sSource,
                                unsigned long nLength)
 {
@@ -678,12 +678,12 @@ int CExoBaseInternal::WcsToMbs(char* sDest, const wchar_t* sSource,
 
     return 1;
 }
-// PC 0x005E8BA0  Xbox 0x00137FD0
+// PC 0x00634590
 CExoBaseInternal::CExoBaseInternal()
 {
     CreateResourceExtensionTable();
 }
-// PC 0x005E8BB0  Xbox 0x00137FE0
+// PC 0x006345A0
 CExoBaseInternal::~CExoBaseInternal()
 {
     if (m_pResourceTypes)
@@ -692,7 +692,7 @@ CExoBaseInternal::~CExoBaseInternal()
 }
 
 static inline int GetListCount(const CExoArrayList<CExoString>* pList);
-// PC 0x005E8CF0  Xbox 0x00138090
+// PC 0x006346E0
 int CExoBaseInternal::GetDirectoryList(CExoArrayList<CExoString>* pList,
                                        const CExoString& sDir,
                                        unsigned short nResType,
@@ -1030,7 +1030,7 @@ int CExoBaseInternal::GetAugmentedDirectoryList(CExoArrayList<CFileInfo>* pList,
     return 1;
 }
 #ifdef _XBOX
-// PC 0x005E7760  Xbox 0x00136CD0
+
 void CExoBaseInternal::AddAlias(const CExoString& sFile,
                                 const CExoString& sAlias,
                                 const CExoString& sDefault,
@@ -1045,7 +1045,7 @@ void CExoBaseInternal::AddAlias(const CExoString& sFile,
 
     g_pExoBase->m_pExoAliasList->Add(sAlias, sPath);
 }
-// PC 0x005E7A90  Xbox 0x00136E20
+
 void CExoBaseInternal::LoadAliases(const CExoString& sFile)
 {
     CExoString sAliasFile;

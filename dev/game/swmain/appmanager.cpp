@@ -50,7 +50,7 @@ void FreeAppObjectTables(CAppManager* pManager)
     delete pManager->m_pLargeTempBuffer;
     pManager->m_pLargeTempBuffer = NULL;
 }
-// PC 0x00401000  Xbox 0x00011000
+// PC 0x00401000
 CSWReentrantServerStats::~CSWReentrantServerStats()
 {
 }
@@ -63,7 +63,7 @@ void CAppManager::FreeLargeTempBuffer()
         m_pLargeTempBuffer = NULL;
     }
 }
-// PC 0x00401060  Xbox 0x00011060
+// PC 0x00401060
 CObjectTableManager* CAppManager::GetObjectTableManager(unsigned long nTable)
 {
     if (nTable == 0)
@@ -80,7 +80,7 @@ CObjectTableManager* CAppManager::GetObjectTableManager(unsigned long nTable)
     return NULL;
 }
 #ifndef _XBOX
-void CAppManager::DoSaveGameScreenShot(const CExoString& sName)  // PC 0x00401080  Xbox 0x00011090
+void CAppManager::DoSaveGameScreenShot(const CExoString& sName)  // PC 0x00401080
 {
     AurSaveGameSnapshot((char*)sName.CStr(), 256, true, true);
 }
@@ -90,7 +90,7 @@ void CAppManager::TakeScreenShot(const CExoString& sName)
     AurSaveGameSnapshot((char*)sName.CStr(), (short)m_pClientExoApp->m_pcExoAppInternal->m_nScreenShot, false, true);
 }
 #endif
-void CAppManager::AllocLargeTempBuffer()  // PC 0x004010A0  Xbox 0x00011250
+void CAppManager::AllocLargeTempBuffer()  // PC 0x004010A0
 {
     if (m_pLargeTempBuffer == NULL)
     {
@@ -149,7 +149,7 @@ int WriteFileToStream(FILE* pStream, CAppManagerFileEntry& entry)
     fwrite(&entry.nTime, sizeof(entry.nTime), 1, pStream);
     return 1;
 }
-// PC 0x004010C0  Xbox 0x00011270
+// PC 0x004010C0
 CSWReentrantServerStats::CSWReentrantServerStats()
 {
     m_bOperationActive = 0;
@@ -176,7 +176,7 @@ static Vector* AllocateVectorArray(int nCount)
 {
     return new Vector[nCount];
 }
-// PC 0x00401160  Xbox 0x00011310
+// PC 0x00401160
 CAppManager::CAppManager()
 {
     m_pClientExoApp = NULL;
@@ -189,7 +189,7 @@ CAppManager::CAppManager()
     m_pLargeTempBuffer = NULL;
     AllocLargeTempBuffer();
 }
-// PC 0x00401280  Xbox 0x00011430
+// PC 0x00401280
 void CAppManager::DestroyServer()
 {
     if (m_pServerExoApp)
@@ -202,7 +202,7 @@ void CAppManager::DestroyServer()
 
     SetWindowTitle();
 }
-// PC 0x004012C0  Xbox 0x00011470
+// PC 0x004012C0
 CAppManager::~CAppManager()
 {
     if (m_pClientExoApp)
@@ -251,7 +251,7 @@ CAppManager::~CAppManager()
         m_pLargeTempBuffer = NULL;
     }
 }
-// PC 0x00401380  Xbox 0x00011530
+// PC 0x00401380
 void CAppManager::CreateServer(int nServices)
 {
     if (m_pServerExoApp)
@@ -265,7 +265,7 @@ void CAppManager::CreateServer(int nServices)
 }
 
 #ifdef _XBOX
-// Xbox 0x000115E0
+
 const char* SetResolution(char* sCommand)
 {
     static char sBuffer[80];
@@ -299,7 +299,7 @@ const char* SetResolution(char* sCommand)
     return sBuffer;
 }
 #else
-const char* SetResolution(char* sBuffer)  // Xbox 0x000115E0
+const char* SetResolution(char* sBuffer)
 {
     int nWidth = 0;
     int nHeight = 0;
@@ -333,7 +333,7 @@ const char* SetResolution(char* sBuffer)  // Xbox 0x000115E0
 #endif
 
 #ifdef _XBOX
-// Xbox 0x000110B0
+
 unsigned char CAppManager::GetCodeWord()
 {
     CExoIni cIni;
@@ -371,7 +371,7 @@ unsigned char CAppManager::GetCodeWord()
 #endif
 
 #ifdef _XBOX
-// PC 0x00401080  Xbox 0x00011090
+
 void CAppManager::DoSaveGameScreenShot(const CExoString& sName)
 {
     AurSaveGameSnapshot((char*)sName.CStr(), 256, false);

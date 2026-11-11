@@ -255,7 +255,7 @@ const int CSWSEffectListHandler::VISION_EFFECT_TYPE_BLIND = 4;
 const int CSWSEffectListHandler::MISS_CHANCE_TYPE_NORMAL = 0;
 const int CSWSEffectListHandler::MISS_CHANCE_TYPE_DARKNESS = 1;
 const int CSWSEffectListHandler::VFX_NONE = -1;
-// PC 0x004D82B0  Xbox 0x001F5BA0
+// PC 0x0052B600
 CSWSEffectListHandler::~CSWSEffectListHandler()
 {
     if (m_pEffectApplied != NULL)
@@ -270,7 +270,7 @@ CSWSEffectListHandler::~CSWSEffectListHandler()
         m_pEffectRemoved = NULL;
     }
 }
-// PC 0x004D8320  Xbox 0x001F5C10
+// PC 0x0052B670
 int CSWSEffectListHandler::OnEffectApplied(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -286,7 +286,7 @@ int CSWSEffectListHandler::OnEffectApplied(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004D8360  Xbox 0x001F5C50
+// PC 0x0052B6B0
 int CSWSEffectListHandler::OnEffectRemoved(CSWSObject* pObject,
                                            CGameEffect* pEffect)
 {
@@ -298,7 +298,7 @@ int CSWSEffectListHandler::OnEffectRemoved(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004D83A0  Xbox 0x001F5CA0
+// PC 0x0052BCF0
 int CSWSEffectListHandler::OnApplyAssuredHit(CSWSObject* pObject,
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
@@ -318,7 +318,7 @@ int CSWSEffectListHandler::OnApplyAssuredHit(CSWSObject* pObject,
     }
     return nResult;
 }
-// PC 0x004D83F0  Xbox 0x001F5CF0
+// PC 0x0052BD40
 int CSWSEffectListHandler::OnRemoveAssuredHit(CSWSObject* pObject,
                                               CGameEffect* pEffect)
 {
@@ -328,7 +328,7 @@ int CSWSEffectListHandler::OnRemoveAssuredHit(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004D8420  Xbox 0x001F5D20
+// PC 0x0052BD70
 int CSWSEffectListHandler::OnApplyAssuredDeflection(CSWSObject* pObject,
                                                     CGameEffect* pEffect,
                                                     int bLoadingModule)
@@ -353,7 +353,7 @@ int CSWSEffectListHandler::OnApplyAssuredDeflection(CSWSObject* pObject,
     }
     return nResult;
 }
-// PC 0x004D8490  Xbox 0x001F5D90
+// PC 0x0052BDE0
 int CSWSEffectListHandler::OnRemoveAssuredDeflection(CSWSObject* pObject,
                                                      CGameEffect* pEffect)
 {
@@ -364,7 +364,7 @@ int CSWSEffectListHandler::OnRemoveAssuredDeflection(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004D84D0  Xbox 0x001F5DD0
+// PC 0x0052BE20
 int CSWSEffectListHandler::OnApplyAbilityIncrease(CSWSObject* pObject,
                                                   CGameEffect* pEffect,
                                                   int bLoadingModule)
@@ -391,7 +391,7 @@ int CSWSEffectListHandler::OnApplyAbilityIncrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004D8550  Xbox 0x001F5E50
+// PC 0x0052BE90
 int CSWSEffectListHandler::OnRemoveAbilityIncrease(CSWSObject* pObject,
                                                    CGameEffect* pEffect)
 {
@@ -404,7 +404,7 @@ int CSWSEffectListHandler::OnRemoveAbilityIncrease(CSWSObject* pObject,
 
     return 1;
 }
-// PC 0x004D8590  Xbox 0x001F5E90
+// PC 0x0052BED0
 int CSWSEffectListHandler::OnApplyAbilityDecrease(CSWSObject* pObject,
                                                   CGameEffect* pEffect,
                                                   int bLoadingModule)
@@ -447,7 +447,7 @@ int CSWSEffectListHandler::OnApplyAbilityDecrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004D8650  Xbox 0x001F5F50
+// PC 0x0052BF80
 int CSWSEffectListHandler::OnRemoveAbilityDecrease(CSWSObject* pObject,
                                                    CGameEffect* pEffect)
 {
@@ -459,7 +459,7 @@ int CSWSEffectListHandler::OnRemoveAbilityDecrease(CSWSObject* pObject,
 
     return 1;
 }
-// PC 0x004D8680  Xbox 0x001F5F80
+// PC 0x0052BFB0
 int CSWSEffectListHandler::OnApplySummonCreature(CSWSObject* pObject,
                                                   CGameEffect* pEffect,
                                                   int bLoadingModule)
@@ -539,7 +539,7 @@ int CSWSEffectListHandler::OnApplySummonCreature(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004D8A10
+// PC 0x0052C5C0
 int CSWSEffectListHandler::OnRemoveSummonCreature(CSWSObject* pObject,
                                                   CGameEffect* pEffect)
 {
@@ -556,7 +556,7 @@ int CSWSEffectListHandler::OnRemoveSummonCreature(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004D8A10  Xbox 0x001F6330
+// PC 0x0052C5C0
 int CSWSEffectListHandler::OnRemoveSummonParty(CSWSObject* pObject,
                                                CGameEffect* pEffect)
 {
@@ -573,7 +573,7 @@ int CSWSEffectListHandler::OnRemoveSummonParty(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004D8A40  Xbox 0x001F6360
+// PC 0x0052C340
 int CSWSEffectListHandler::OnApplySummonParty(CSWSObject* pObject,
                                                CGameEffect* pEffect,
                                                int bLoadingModule)
@@ -635,7 +635,7 @@ int CSWSEffectListHandler::OnApplySummonParty(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004D8CB0  Xbox 0x001F65E0
+// PC 0x0052C5F0
 int CSWSEffectListHandler::OnApplySavingThrowIncrease(CSWSObject* pObject,
                                                       CGameEffect* pEffect,
                                                       int bLoadingModule)
@@ -656,7 +656,7 @@ int CSWSEffectListHandler::OnApplySavingThrowIncrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004D8D00  Xbox 0x001F6630
+// PC 0x0052C640
 int CSWSEffectListHandler::OnApplySavingThrowDecrease(CSWSObject* pObject,
                                                       CGameEffect* pEffect,
                                                       int bLoadingModule)
@@ -678,7 +678,7 @@ int CSWSEffectListHandler::OnApplySavingThrowDecrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004D8D80  Xbox 0x001F66B0
+// PC 0x0052C6C0
 int CSWSEffectListHandler::OnApplyACIncrease(CSWSObject* pObject,
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
@@ -742,7 +742,7 @@ int CSWSEffectListHandler::OnApplyACIncrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004D8F80  Xbox 0x001F68B0
+// PC 0x0052C8D0
 int CSWSEffectListHandler::OnApplyACDecrease(CSWSObject* pObject,
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
@@ -812,7 +812,7 @@ int CSWSEffectListHandler::OnApplyACDecrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004D9120  Xbox 0x001F6A50
+// PC 0x0052CA70
 int CSWSEffectListHandler::OnApplyAttackIncrease(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -827,7 +827,7 @@ int CSWSEffectListHandler::OnApplyAttackIncrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004D9170  Xbox 0x001F6AD0
+// PC 0x0052CAC0
 int CSWSEffectListHandler::OnApplyAttackDecrease(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -858,7 +858,7 @@ int CSWSEffectListHandler::OnApplyAttackDecrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004D9200  Xbox 0x001F6B60
+// PC 0x0052CB50
 int CSWSEffectListHandler::OnApplyDamageIncrease(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -869,7 +869,7 @@ int CSWSEffectListHandler::OnApplyDamageIncrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004D9230  Xbox 0x001F6B90
+// PC 0x0052CB80
 int CSWSEffectListHandler::OnApplyDamageDecrease(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -892,7 +892,7 @@ int CSWSEffectListHandler::OnApplyDamageDecrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004D92A0  Xbox 0x001F6AA0
+// PC 0x0052CBF0
 int CSWSEffectListHandler::OnRemoveSavingThrowIncrease(CSWSObject* pObject,
                                                        CGameEffect* pEffect)
 {
@@ -902,7 +902,7 @@ int CSWSEffectListHandler::OnRemoveSavingThrowIncrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004D92A0
+// PC 0x0052CBF0
 int CSWSEffectListHandler::OnRemoveSavingThrowDecrease(CSWSObject* pObject,
                                                        CGameEffect* pEffect)
 {
@@ -912,7 +912,7 @@ int CSWSEffectListHandler::OnRemoveSavingThrowDecrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004D92A0
+// PC 0x0052CBF0
 int CSWSEffectListHandler::OnRemoveAttackIncrease(CSWSObject* pObject,
                                                   CGameEffect* pEffect)
 {
@@ -922,7 +922,7 @@ int CSWSEffectListHandler::OnRemoveAttackIncrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004D92A0
+// PC 0x0052CBF0
 int CSWSEffectListHandler::OnRemoveAttackDecrease(CSWSObject* pObject,
                                                   CGameEffect* pEffect)
 {
@@ -932,7 +932,7 @@ int CSWSEffectListHandler::OnRemoveAttackDecrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004D92A0
+// PC 0x0052CBF0
 int CSWSEffectListHandler::OnRemoveDamageIncrease(CSWSObject* pObject,
                                                   CGameEffect* pEffect)
 {
@@ -942,7 +942,7 @@ int CSWSEffectListHandler::OnRemoveDamageIncrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004D92A0
+// PC 0x0052CBF0
 int CSWSEffectListHandler::OnRemoveDamageDecrease(CSWSObject* pObject,
                                                   CGameEffect* pEffect)
 {
@@ -952,7 +952,7 @@ int CSWSEffectListHandler::OnRemoveDamageDecrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004D92D0  Xbox 0x001F6C00
+// PC 0x0052CC20
 int CSWSEffectListHandler::OnApplyTemporaryHitpoints(CSWSObject* pObject,
                                                      CGameEffect* pEffect,
                                                      int bLoadingModule)
@@ -972,7 +972,7 @@ int CSWSEffectListHandler::OnApplyTemporaryHitpoints(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004D9320  Xbox 0x001F6C50
+// PC 0x0052CC70
 int CSWSEffectListHandler::OnRemoveTemporaryHitpoints(CSWSObject* pObject,
                                                       CGameEffect* pEffect)
 {
@@ -1047,7 +1047,7 @@ int CSWSEffectListHandler::OnRemoveTemporaryHitpoints(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004D9620  Xbox 0x001F6F50
+// PC 0x0052CF10
 int CSWSEffectListHandler::OnApplyDamageImmunityIncrease(CSWSObject* pObject,
                                                          CGameEffect* pEffect,
                                                          int bLoadingModule)
@@ -1068,7 +1068,7 @@ int CSWSEffectListHandler::OnApplyDamageImmunityIncrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004D9680  Xbox 0x001F6FB0
+// PC 0x0052CF70
 int CSWSEffectListHandler::OnApplyDamageImmunityDecrease(CSWSObject* pObject,
                                                          CGameEffect* pEffect,
                                                          int bLoadingModule)
@@ -1110,7 +1110,7 @@ int CSWSEffectListHandler::OnApplyDamageImmunityDecrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004D9720  Xbox 0x001F7050
+// PC 0x0052D010
 int CSWSEffectListHandler::OnApplyEntangled(CSWSObject* pObject,
                                           CGameEffect* pEffect,
                                           int bLoadingModule)
@@ -1173,7 +1173,7 @@ int CSWSEffectListHandler::OnApplyEntangled(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004D9970  Xbox 0x001F72B0
+// PC 0x0052D260
 int CSWSEffectListHandler::OnRemoveEntangled(CSWSObject* pObject,
                                              CGameEffect* pEffect)
 {
@@ -1190,7 +1190,7 @@ int CSWSEffectListHandler::OnRemoveEntangled(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004D99B0  Xbox 0x001F72F0
+// PC 0x0052D2A0
 int CSWSEffectListHandler::OnApplyKnockdown(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -1261,7 +1261,7 @@ int CSWSEffectListHandler::OnApplyKnockdown(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004D9C50  Xbox 0x001F75E0
+// PC 0x0052D5A0
 int CSWSEffectListHandler::OnRemoveKnockdown(CSWSObject* pObject,
                                             CGameEffect* pEffect)
 {
@@ -1291,7 +1291,7 @@ int CSWSEffectListHandler::OnRemoveKnockdown(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004D9CE0  Xbox 0x001F7670
+// PC 0x0052D630
 int CSWSEffectListHandler::OnApplyDisarm(CSWSObject* pObject,
                                        CGameEffect* pEffect,
                                        int bLoadingModule)
@@ -1374,7 +1374,7 @@ int CSWSEffectListHandler::OnApplyDisarm(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DA050  Xbox 0x001F79F0
+// PC 0x0052D9A0
 int CSWSEffectListHandler::OnApplySetAIState(CSWSObject* pObject,
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
@@ -1393,7 +1393,7 @@ int CSWSEffectListHandler::OnApplySetAIState(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DA090  Xbox 0x001F7A30
+// PC 0x0052D9E0
 int CSWSEffectListHandler::OnApplyDeaf(CSWSObject* pObject,
                                       CGameEffect* pEffect,
                                       int bLoadingModule)
@@ -1446,7 +1446,7 @@ int CSWSEffectListHandler::OnApplyDeaf(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DA260  Xbox 0x001F7C10
+// PC 0x0052DBB0
 int CSWSEffectListHandler::OnApplyEnemyAttackBonus(CSWSObject* pObject,
                                                    CGameEffect* pEffect,
                                                    int bLoadingModule)
@@ -1470,7 +1470,7 @@ int CSWSEffectListHandler::OnApplyEnemyAttackBonus(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DA2C0  Xbox 0x001F7C70
+// PC 0x0052DC10
 int CSWSEffectListHandler::OnApplyArcaneSpellFailure(CSWSObject* pObject,
                                                      CGameEffect* pEffect,
                                                      int bLoadingModule)
@@ -1493,7 +1493,7 @@ int CSWSEffectListHandler::OnApplyArcaneSpellFailure(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DA330  Xbox 0x001F7CF0
+// PC 0x0052DC80
 int CSWSEffectListHandler::OnApplySetStateInternal(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -1624,7 +1624,7 @@ int CSWSEffectListHandler::OnApplySetStateInternal(CSWSObject* pObject,
     }
     return 0;
 }
-int CSWSEffectListHandler::OnRemoveSetStateInternal(CSWSObject* pObject,  // PC 0x004DA870  Xbox 0x001F8230
+int CSWSEffectListHandler::OnRemoveSetStateInternal(CSWSObject* pObject,  // PC 0x0052E1F0
                                                     CGameEffect* pEffect)
 {
     CSWSCreature* pCreature;
@@ -1658,7 +1658,7 @@ int CSWSEffectListHandler::OnRemoveSetStateInternal(CSWSObject* pObject,  // PC 
     }
     return 1;
 }
-// PC 0x004DA910  Xbox 0x001F82D0
+// PC 0x0052E290
 int CSWSEffectListHandler::OnApplyMovementSpeedIncrease(CSWSObject* pObject,
                                                         CGameEffect* pEffect,
                                                         int bLoadingModule)
@@ -1679,7 +1679,7 @@ int CSWSEffectListHandler::OnApplyMovementSpeedIncrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DA990  Xbox 0x001F8350
+// PC 0x0052E310
 int CSWSEffectListHandler::OnApplyMovementSpeedDecrease(CSWSObject* pObject,
                                                         CGameEffect* pEffect,
                                                         int bLoadingModule)
@@ -1704,7 +1704,7 @@ int CSWSEffectListHandler::OnApplyMovementSpeedDecrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DAA40  Xbox 0x001F8400
+// PC 0x0052E3C0
 int CSWSEffectListHandler::OnApplyVisualEffect(CSWSObject* pObject,
                                                CGameEffect* pEffect,
                                                int bLoadingModule)
@@ -1798,7 +1798,7 @@ int CSWSEffectListHandler::OnApplyVisualEffect(CSWSObject* pObject,
                                    oidCreator, nBeamType);
     return 0;
 }
-// PC 0x004DADC0  Xbox 0x001F87A0
+// PC 0x0052E740
 int CSWSEffectListHandler::OnRemoveVisualEffect(CSWSObject* pObject,
                                                 CGameEffect* pEffect)
 {
@@ -1808,7 +1808,7 @@ int CSWSEffectListHandler::OnRemoveVisualEffect(CSWSObject* pObject,
     pObject->RemoveLoopingVisualEffect(nVisualEffect);
     return 1;
 }
-// PC 0x004DADE0  Xbox 0x001F87C0
+// PC 0x0052E760
 int CSWSEffectListHandler::OnApplyAreaOfEffect(CSWSObject* pObject,
                                                CGameEffect* pEffect,
                                                int bLoadingModule)
@@ -1848,7 +1848,7 @@ int CSWSEffectListHandler::OnApplyAreaOfEffect(CSWSObject* pObject,
     pEffect->SetObjectID(0, pAreaEffect->m_nId);
     return 0;
 }
-// PC 0x004DB010  Xbox 0x001F89F0
+// PC 0x0052E990
 int CSWSEffectListHandler::OnRemoveAreaOfEffect(CSWSObject* pObject,
                                                 CGameEffect* pEffect)
 {
@@ -1873,7 +1873,7 @@ int CSWSEffectListHandler::OnRemoveAreaOfEffect(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DB090  Xbox 0x001F8A70
+// PC 0x0052EA10
 int CSWSEffectListHandler::OnApplyBeam(CSWSObject* pObject,
                                        CGameEffect* pEffect, int bLoadingModule)
 {
@@ -1893,7 +1893,7 @@ int CSWSEffectListHandler::OnApplyBeam(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DB180  Xbox 0x001F8B60
+// PC 0x0052EB10
 int CSWSEffectListHandler::OnApplyForceResistanceIncrease(CSWSObject* pObject,
                                                           CGameEffect* pEffect,
                                                           int bLoadingModule)
@@ -1927,7 +1927,7 @@ int CSWSEffectListHandler::OnApplyForceResistanceIncrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DB210  Xbox 0x001F8BF0
+// PC 0x0052EBA0
 int CSWSEffectListHandler::OnApplyForceResistanceDecrease(CSWSObject* pObject,
                                                           CGameEffect* pEffect,
                                                           int bLoadingModule)
@@ -1970,7 +1970,7 @@ int CSWSEffectListHandler::OnApplyForceResistanceDecrease(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DB2C0  Xbox 0x001F8CA0
+// PC 0x0052EC50
 int CSWSEffectListHandler::OnApplyRegenerate(CSWSObject* pObject,
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
@@ -1990,7 +1990,7 @@ int CSWSEffectListHandler::OnApplyRegenerate(CSWSObject* pObject,
 }
 
 inline unsigned short CGameEffect::GetSubType() { return m_nSubType; }
-// PC 0x004DF540  Xbox 0x001FCB40
+// PC 0x00532FD0
 int CSWSEffectListHandler::OnApplyForceShield(CSWSObject* pObject,
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
@@ -2076,7 +2076,7 @@ int CSWSEffectListHandler::OnApplyForceShield(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DFA40  Xbox 0x001FD060
+// PC 0x005335F0
 int CSWSEffectListHandler::OnApplyDamage(CSWSObject* pObject,
                                          CGameEffect* pEffect,
                                          int bLoadingModule)
@@ -2432,7 +2432,7 @@ int CSWSEffectListHandler::OnApplyDamage(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DB320  Xbox 0x001F8D00
+// PC 0x0052ECB0
 int CSWSEffectListHandler::OnApplyPoison(CSWSObject* pObject,
                                          CGameEffect* pEffect, int bLoadingModule)
 {
@@ -2548,7 +2548,7 @@ int CSWSEffectListHandler::OnApplyPoison(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DB810  Xbox 0x001F91F0
+// PC 0x0052F210
 int CSWSEffectListHandler::OnRemovePoison(CSWSObject* pObject,
                                           CGameEffect* pEffect)
 {
@@ -2566,7 +2566,7 @@ int CSWSEffectListHandler::OnRemovePoison(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DB870  Xbox 0x001F9250
+// PC 0x0052F270
 int CSWSEffectListHandler::OnRemoveDisease(CSWSObject* pObject,
                                            CGameEffect* pEffect)
 {
@@ -2576,7 +2576,7 @@ int CSWSEffectListHandler::OnRemoveDisease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DB8A0  Xbox 0x001F9280
+// PC 0x0052F2A0
 int CSWSEffectListHandler::OnApplyLink(CSWSObject* pObject,
                                        CGameEffect* pEffect, int bLoadingModule)
 {
@@ -2597,7 +2597,7 @@ int CSWSEffectListHandler::OnApplyLink(CSWSObject* pObject,
     pEffect->SetLinked(NULL, NULL);
     return 1;
 }
-// PC 0x004DB8F0  Xbox 0x001F92D0
+// PC 0x0052F2F0
 int CSWSEffectListHandler::OnApplyHasteInternal(CSWSObject* pObject,
                                                 CGameEffect* pEffect,
                                                 int bLoadingModule)
@@ -2625,7 +2625,7 @@ int CSWSEffectListHandler::OnApplyHasteInternal(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DBA30  Xbox 0x001F9410
+// PC 0x0052F430
 int CSWSEffectListHandler::OnRemoveHasteInternal(CSWSObject* pObject,
                                                  CGameEffect* pEffect)
 {
@@ -2638,7 +2638,7 @@ int CSWSEffectListHandler::OnRemoveHasteInternal(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DBA50  Xbox 0x001F9430
+// PC 0x0052F450
 int CSWSEffectListHandler::OnApplySlowInternal(CSWSObject* pObject,
                                                CGameEffect* pEffect,
                                                int bLoadingModule)
@@ -2685,7 +2685,7 @@ int CSWSEffectListHandler::OnApplySlowInternal(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DBCC0  Xbox 0x001F96A0
+// PC 0x0052F6C0
 int CSWSEffectListHandler::OnRemoveSlowInternal(CSWSObject* pObject,
                                                 CGameEffect* pEffect)
 {
@@ -2698,7 +2698,7 @@ int CSWSEffectListHandler::OnRemoveSlowInternal(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DBCE0  Xbox 0x001F96C0
+// PC 0x0052F6E0
 int CSWSEffectListHandler::OnApplyLight(CSWSObject* pObject,
                                         CGameEffect* pEffect,
                                         int bLoadingModule)
@@ -2715,7 +2715,7 @@ int CSWSEffectListHandler::OnApplyLight(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DBD90  Xbox 0x001F9770
+// PC 0x0052F790
 int CSWSEffectListHandler::OnApplyModifyNumAttacks(CSWSObject* pObject,
                                                      CGameEffect* pEffect,
                                                      int bLoadingModule)
@@ -2748,7 +2748,7 @@ int CSWSEffectListHandler::OnApplyModifyNumAttacks(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DBE00  Xbox 0x001F97E0
+// PC 0x0052F7D0
 int CSWSEffectListHandler::OnRemoveModifyNumAttacks(CSWSObject* pObject,
                                                     CGameEffect* pEffect)
 {
@@ -2777,7 +2777,7 @@ int CSWSEffectListHandler::OnRemoveModifyNumAttacks(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DBE60  Xbox 0x001F9860
+// PC 0x0052F810
 int CSWSEffectListHandler::OnApplyCurse(CSWSObject* pObject,
                                      CGameEffect* pEffect, int bLoadingModule)
 {
@@ -2855,7 +2855,7 @@ int CSWSEffectListHandler::OnApplyCurse(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DC200  Xbox 0x001F9C10
+// PC 0x0052FBB0
 int CSWSEffectListHandler::OnApplySilence(CSWSObject* pObject,
                                          CGameEffect* pEffect,
                                          int bLoadingModule)
@@ -2904,7 +2904,7 @@ int CSWSEffectListHandler::OnApplySilence(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DC380  Xbox 0x001F9DA0
+// PC 0x0052FD30
 int CSWSEffectListHandler::OnRemoveSilence(CSWSObject* pObject,
                                            CGameEffect* pEffect)
 {
@@ -2914,7 +2914,7 @@ int CSWSEffectListHandler::OnRemoveSilence(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DC3B0  Xbox 0x001F9DD0
+// PC 0x0052FD60
 int CSWSEffectListHandler::OnApplyTaunt(CSWSObject* pObject,
                                        CGameEffect* pEffect,
                                        int bLoadingModule)
@@ -2950,7 +2950,7 @@ int CSWSEffectListHandler::OnApplyTaunt(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DC500  Xbox 0x001F9F30
+// PC 0x0052FEB0
 int CSWSEffectListHandler::OnRemoveTaunt(CSWSObject* pObject,
                                          CGameEffect* pEffect)
 {
@@ -2960,7 +2960,7 @@ int CSWSEffectListHandler::OnRemoveTaunt(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DC530  Xbox 0x001F9F60
+// PC 0x0052FEE0
 int CSWSEffectListHandler::OnApplyLimitMovementSpeed(CSWSObject* pObject,
                                                      CGameEffect* pEffect,
                                                      int bLoadingModule)
@@ -2975,7 +2975,7 @@ int CSWSEffectListHandler::OnApplyLimitMovementSpeed(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DC580  Xbox 0x001F9FB0
+// PC 0x0052FF30
 int CSWSEffectListHandler::OnApplySkillIncrease(CSWSObject* pObject,
                                                 CGameEffect* pEffect,
                                                 int bLoadingModule)
@@ -2995,7 +2995,7 @@ int CSWSEffectListHandler::OnApplySkillIncrease(CSWSObject* pObject,
     }
     return pObject->AsSWSCreature() == NULL;
 }
-// PC 0x004DC5D0  Xbox 0x001FA000
+// PC 0x0052FF80
 int CSWSEffectListHandler::OnApplySkillDecrease(CSWSObject* pObject,
                                                 CGameEffect* pEffect,
                                                 int bLoadingModule)
@@ -3023,7 +3023,7 @@ int CSWSEffectListHandler::OnApplySkillDecrease(CSWSObject* pObject,
     pStats = pObject->AsSWSCreature()->m_pStats;
     return pStats->GetEffectImmunity(IMMUNITY_TYPE_SKILL_DECREASE, pCreator) != 0;
 }
-// PC 0x004DC660  Xbox 0x001FA090
+// PC 0x00530010
 int CSWSEffectListHandler::OnApplyHitPointChangeWhenDying(CSWSObject* pObject,
                                                         CGameEffect* pEffect,
                                                         int bLoadingModule)
@@ -3052,7 +3052,7 @@ int CSWSEffectListHandler::OnApplyHitPointChangeWhenDying(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DC7A0  Xbox 0x001FA1D0
+// PC 0x00530150
 int CSWSEffectListHandler::OnRemoveHitPointChangeWhenDying(CSWSObject* pObject,
                                                          CGameEffect* pEffect)
 {
@@ -3127,7 +3127,7 @@ int CSWSEffectListHandler::OnRemoveHitPointChangeWhenDying(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DCA80  Xbox 0x001FA4B0
+// PC 0x005303C0
 int CSWSEffectListHandler::OnApplySpecialWalkAnimation(CSWSObject* pObject,
                                                        CGameEffect* pEffect,
                                                        int bLoadingModule)
@@ -3142,7 +3142,7 @@ int CSWSEffectListHandler::OnApplySpecialWalkAnimation(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DCAC0  Xbox 0x001FA4F0
+// PC 0x00530400
 int CSWSEffectListHandler::OnRemoveDisguise(CSWSObject* pObject,
                                              CGameEffect* pEffect)
 {
@@ -3172,7 +3172,7 @@ int CSWSEffectListHandler::OnRemoveDisguise(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DCB40  Xbox 0x001FA570
+// PC 0x00530480
 int CSWSEffectListHandler::OnApplyTimestop(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -3220,7 +3220,7 @@ int CSWSEffectListHandler::OnApplyTimestop(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DCC90  Xbox 0x001FA6C0
+// PC 0x005305D0
 int CSWSEffectListHandler::OnRemoveTimestop(CSWSObject* pObject,
                                             CGameEffect* pEffect)
 {
@@ -3229,7 +3229,7 @@ int CSWSEffectListHandler::OnRemoveTimestop(CSWSObject* pObject,
                                                             1);
     return 1;
 }
-// PC 0x004DCCC0  Xbox 0x001FA6F0
+// PC 0x00530600
 int CSWSEffectListHandler::OnApplyRacialType(CSWSObject* pObject,
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
@@ -3240,7 +3240,7 @@ int CSWSEffectListHandler::OnApplyRacialType(CSWSObject* pObject,
     }
     return &g_pRules->m_pRaces[(unsigned short)pEffect->GetInteger(0)] == NULL;
 }
-// PC 0x004DCD00  Xbox 0x001FA730
+// PC 0x00530640
 int CSWSEffectListHandler::OnApplySeeInvisible(CSWSObject* pObject,
                                                CGameEffect* pEffect,
                                                int bLoadingModule)
@@ -3254,7 +3254,7 @@ int CSWSEffectListHandler::OnApplySeeInvisible(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DCD30  Xbox 0x001FA760
+// PC 0x00530670
 int CSWSEffectListHandler::OnApplyBlindness(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -3346,21 +3346,21 @@ int CSWSEffectListHandler::OnApplyBlindness(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DCFC0
+// PC 0x00530900
 int CSWSEffectListHandler::OnApplyMissChance(CSWSObject* pObject,
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
 {
     return pEffect->GetInteger(0) > 100 || pEffect->GetInteger(0) < 1;
 }
-// PC 0x004DCFC0  Xbox 0x001FAA00
+// PC 0x00530900
 int CSWSEffectListHandler::OnApplyConcealment(CSWSObject* pObject,
                                           CGameEffect* pEffect,
                                           int bLoadingModule)
 {
     return pEffect->GetInteger(0) > 100 || pEffect->GetInteger(0) < 1;
 }
-// PC 0x004DCFF0  Xbox 0x001FAA30
+// PC 0x00530930
 int CSWSEffectListHandler::OnApplyDarkness(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -3384,7 +3384,7 @@ int CSWSEffectListHandler::OnApplyDarkness(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DD100  Xbox 0x001FAB40
+// PC 0x00530A40
 int CSWSEffectListHandler::OnApplyTurnResistance(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -3392,7 +3392,7 @@ int CSWSEffectListHandler::OnApplyTurnResistance(CSWSObject* pObject,
     return pObject == NULL || pObject->AsSWSCreature() == NULL ||
            pObject->AsSWSCreature()->m_pStats->m_bIsPC != 0;
 }
-// PC 0x004DD140  Xbox 0x001FAB80
+// PC 0x00530A80
 int CSWSEffectListHandler::OnApplyDisappearAppear(CSWSObject* pObject,
                                                   CGameEffect* pEffect,
                                                   int bLoadingModule)
@@ -3437,7 +3437,7 @@ int CSWSEffectListHandler::OnApplyDisappearAppear(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DD270  Xbox 0x001FACB0
+// PC 0x00530BB0
 int CSWSEffectListHandler::OnRemoveDisappearAppear(CSWSObject* pObject,
                                                   CGameEffect* pEffect)
 {
@@ -3481,7 +3481,7 @@ int CSWSEffectListHandler::OnRemoveDisappearAppear(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DD470  Xbox 0x001FAEB0
+// PC 0x00530DB0
 int CSWSEffectListHandler::OnApplyDisappear(CSWSObject* pObject,
                                             CGameEffect* pEffect,
                                             int bLoadingModule)
@@ -3508,7 +3508,7 @@ int CSWSEffectListHandler::OnApplyDisappear(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DD4F0  Xbox 0x001FAF30
+// PC 0x00530E30
 int CSWSEffectListHandler::OnApplyAppear(CSWSObject* pObject,
                                        CGameEffect* pEffect,
                                        int bLoadingModule)
@@ -3521,7 +3521,7 @@ int CSWSEffectListHandler::OnApplyAppear(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DD520  Xbox 0x001FAF60
+// PC 0x00530E60
 int CSWSEffectListHandler::OnApplyNegativeLevel(CSWSObject* pObject,
                                                 CGameEffect* pEffect,
                                                 int bLoadingModule)
@@ -3627,7 +3627,7 @@ int CSWSEffectListHandler::OnApplyNegativeLevel(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DD970  Xbox 0x001FB3C0
+// PC 0x005312B0
 int CSWSEffectListHandler::OnRemoveNegativeLevel(CSWSObject* pObject,
                                                  CGameEffect* pEffect)
 {
@@ -3647,7 +3647,7 @@ int CSWSEffectListHandler::OnRemoveNegativeLevel(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DD9D0  Xbox 0x001FB420
+// PC 0x00531310
 int CSWSEffectListHandler::OnApplyWounding(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -3670,7 +3670,7 @@ int CSWSEffectListHandler::OnApplyWounding(CSWSObject* pObject,
     pObject->ApplyEffect(pWoundEffect, bLoadingModule, 0);
     return 0;
 }
-// PC 0x004DDAC0  Xbox 0x001FB510
+// PC 0x00531400
 int CSWSEffectListHandler::OnRemoveWounding(CSWSObject* pObject,
                                             CGameEffect* pEffect)
 {
@@ -3738,7 +3738,7 @@ int CSWSEffectListHandler::OnRemoveWounding(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DDD50  Xbox 0x001FB7B0
+// PC 0x005316C0
 int CSWSEffectListHandler::OnApplyVampiricRegeneration(CSWSObject* pObject,
                                                        CGameEffect* pEffect,
                                                        int bLoadingModule)
@@ -3770,7 +3770,7 @@ int CSWSEffectListHandler::OnApplyVampiricRegeneration(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DDE40  Xbox 0x001FB8A0
+// PC 0x005317B0
 int CSWSEffectListHandler::OnApplyTemporaryForce(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -3792,7 +3792,7 @@ int CSWSEffectListHandler::OnApplyTemporaryForce(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DDE80  Xbox 0x001FB8E0
+// PC 0x005317F0
 int CSWSEffectListHandler::OnRemoveTemporaryForce(CSWSObject* pObject,
                                                   CGameEffect* pEffect)
 {
@@ -3813,7 +3813,7 @@ int CSWSEffectListHandler::OnRemoveTemporaryForce(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DDEC0  Xbox 0x001FB920
+// PC 0x00531830
 int CSWSEffectListHandler::OnApplyForceDrain(CSWSObject* pObject,
                                              CGameEffect* pEffect,
                                              int bLoadingModule)
@@ -3837,14 +3837,14 @@ int CSWSEffectListHandler::OnApplyForceDrain(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DDF20  Xbox 0x001FC0B0
+// PC 0x00531890
 int CSWSEffectListHandler::OnRemoveDroidStun(CSWSObject* pObject,
                                                   CGameEffect* pEffect)
 {
     pObject->AsSWSCreature();
     return 1;
 }
-// PC 0x004DDF40  Xbox 0x001FB990
+// PC 0x005318B0
 int CSWSEffectListHandler::OnApplyForceJump(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -3886,7 +3886,7 @@ int CSWSEffectListHandler::OnApplyForceJump(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DE0A0  Xbox 0x001FBAF0
+// PC 0x00531A10
 int CSWSEffectListHandler::OnApplyForceJumpDelayed(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -3960,7 +3960,7 @@ int CSWSEffectListHandler::OnApplyForceJumpDelayed(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DE400  Xbox 0x001FBEB0
+// PC 0x00531D70
 int CSWSEffectListHandler::OnRemoveForcePush(CSWSObject* pObject,
                                              CGameEffect* pEffect)
 {
@@ -3983,7 +3983,7 @@ int CSWSEffectListHandler::OnRemoveForcePush(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DE4D0  Xbox 0x001FBF90
+// PC 0x00531E40
 int CSWSEffectListHandler::OnApplyDamageForcePoints(CSWSObject* pObject,
                                                     CGameEffect* pEffect,
                                                     int bLoadingModule)
@@ -4006,7 +4006,7 @@ int CSWSEffectListHandler::OnApplyDamageForcePoints(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DE540  Xbox 0x001FC000
+// PC 0x00531EB0
 int CSWSEffectListHandler::OnApplyHealForcePoints(CSWSObject* pObject,
                                                   CGameEffect* pEffect,
                                                   int bLoadingModule)
@@ -4031,7 +4031,7 @@ int CSWSEffectListHandler::OnApplyHealForcePoints(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DE5B0  Xbox 0x001FC070
+// PC 0x00531FA0
 int CSWSEffectListHandler::OnApplyBodyFuel(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -4045,7 +4045,7 @@ int CSWSEffectListHandler::OnApplyBodyFuel(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DE5D0  Xbox 0x001FC090
+// PC 0x00531FC0
 int CSWSEffectListHandler::OnRemoveBodyFuel(CSWSObject* pObject,
                                             CGameEffect* pEffect)
 {
@@ -4058,7 +4058,7 @@ int CSWSEffectListHandler::OnRemoveBodyFuel(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DE5F0  Xbox 0x001FB980
+// PC 0x00531FE0
 int CSWSEffectListHandler::OnApplyEffectImmunity(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
@@ -4066,7 +4066,7 @@ int CSWSEffectListHandler::OnApplyEffectImmunity(CSWSObject* pObject,
     pObject->AsSWSCreature();
     return 0;
 }
-// PC 0x004DE5F0
+// PC 0x00531FE0
 int CSWSEffectListHandler::OnApplyDroidStun(CSWSObject* pObject,
                                             CGameEffect* pEffect,
                                             int bLoadingModule)
@@ -4074,7 +4074,7 @@ int CSWSEffectListHandler::OnApplyDroidStun(CSWSObject* pObject,
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 0;
 }
-// PC 0x004DE5F0
+// PC 0x00531FE0
 int CSWSEffectListHandler::OnApplyWhirlWind(CSWSObject* pObject,
                                             CGameEffect* pEffect,
                                             int bLoadingModule)
@@ -4082,7 +4082,7 @@ int CSWSEffectListHandler::OnApplyWhirlWind(CSWSObject* pObject,
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 0;
 }
-// PC 0x004DE5F0
+// PC 0x00531FE0
 int CSWSEffectListHandler::OnApplyBlasterDeflectionIncrease(CSWSObject* pObject,
                                                             CGameEffect* pEffect,
                                                             int bLoadingModule)
@@ -4090,7 +4090,7 @@ int CSWSEffectListHandler::OnApplyBlasterDeflectionIncrease(CSWSObject* pObject,
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 0;
 }
-// PC 0x004DE5F0
+// PC 0x00531FE0
 int CSWSEffectListHandler::OnApplyBlasterDeflectionDecrease(CSWSObject* pObject,
                                                             CGameEffect* pEffect,
                                                             int bLoadingModule)
@@ -4098,7 +4098,7 @@ int CSWSEffectListHandler::OnApplyBlasterDeflectionDecrease(CSWSObject* pObject,
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 0;
 }
-// PC 0x004DE5F0
+// PC 0x00531FE0
 int CSWSEffectListHandler::OnApplyHorrified(CSWSObject* pObject,
                                             CGameEffect* pEffect,
                                             int bLoadingModule)
@@ -4106,7 +4106,7 @@ int CSWSEffectListHandler::OnApplyHorrified(CSWSObject* pObject,
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 0;
 }
-// PC 0x004DE5F0
+// PC 0x00531FE0
 int CSWSEffectListHandler::OnApplyChoke(CSWSObject* pObject,
                                         CGameEffect* pEffect,
                                         int bLoadingModule)
@@ -4114,7 +4114,7 @@ int CSWSEffectListHandler::OnApplyChoke(CSWSObject* pObject,
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 0;
 }
-// PC 0x004DE5F0
+// PC 0x00531FE0
 int CSWSEffectListHandler::OnApplyPsychicStatic(CSWSObject* pObject,
                                                 CGameEffect* pEffect,
                                                 int bLoadingModule)
@@ -4122,7 +4122,7 @@ int CSWSEffectListHandler::OnApplyPsychicStatic(CSWSObject* pObject,
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 0;
 }
-// PC 0x004DE600  Xbox 0x001FC0D0
+// PC 0x00531FF0
 int CSWSEffectListHandler::OnApplyLightsaberThrow(CSWSObject* pObject,
                                                   CGameEffect* pEffect,
                                                   int bLoadingModule)
@@ -4287,7 +4287,7 @@ int CSWSEffectListHandler::OnApplyLightsaberThrow(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004DECE0  Xbox 0x001FC860
+// PC 0x00532700
 int CSWSEffectListHandler::OnRemoveLightsaberThrow(CSWSObject* pObject,
                                                    CGameEffect* pEffect)
 {
@@ -4300,7 +4300,7 @@ int CSWSEffectListHandler::OnRemoveLightsaberThrow(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DED00  Xbox 0x001FC880
+// PC 0x00532720
 int CSWSEffectListHandler::OnApplyForceResisted(CSWSObject* pObject,
                                                 CGameEffect* pEffect,
                                                 int bLoadingModule)
@@ -4322,7 +4322,7 @@ int CSWSEffectListHandler::OnApplyForceResisted(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004DEDE0  Xbox 0x001FC960
+// PC 0x00532800
 int CSWSEffectListHandler::OnApplyForceFizzle(CSWSObject* pObject,
                                               CGameEffect* pEffect,
                                               int bLoadingModule)
@@ -4348,139 +4348,139 @@ int CSWSEffectListHandler::OnRemoveNothing(CSWSObject* pObject,
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveSpellLevelAbsorption(CSWSObject* pObject,
                                                        CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveSpellImmunity(CSWSObject* pObject,
                                                  CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveMissChance(CSWSObject* pObject,
                                              CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveEffectImmunity(CSWSObject* pObject,
                                                  CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveLight(CSWSObject* pObject,
                                         CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveSkillIncrease(CSWSObject* pObject,
                                                 CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveSkillDecrease(CSWSObject* pObject,
                                                 CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveRacialType(CSWSObject* pObject,
                                              CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveVision(CSWSObject* pObject,
                                          CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveTurnResistance(CSWSObject* pObject,
                                                  CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveForceJump(CSWSObject* pObject,
                                             CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveForceJumpDelayed(CSWSObject* pObject,
                                                    CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveForceShield(CSWSObject* pObject,
                                               CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemovePureGoodPowers(CSWSObject* pObject,
                                                  CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemovePureEvilPowers(CSWSObject* pObject,
                                                  CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x0066B360  Xbox 0x002F0ED0
+// PC 0x0069E520
 int CSWSEffectListHandler::OnApplyDamageResistance(CSWSObject* pObject,
                                                   CGameEffect* pEffect,
                                                   int bLoadingModule)
 {
     return 0;
 }
-// PC 0x0066B360
+// PC 0x0069E520
 int CSWSEffectListHandler::OnApplyDamageReduction(CSWSObject* pObject,
                                                  CGameEffect* pEffect,
                                                  int bLoadingModule)
 {
     return 0;
 }
-// PC 0x0066B360
+// PC 0x0069E520
 int CSWSEffectListHandler::OnApplySpellImmunity(CSWSObject* pObject,
                                                CGameEffect* pEffect,
                                                int bLoadingModule)
 {
     return 0;
 }
-// PC 0x0066B360
+// PC 0x0069E520
 int CSWSEffectListHandler::OnApplyDamageShield(CSWSObject* pObject,
                                               CGameEffect* pEffect,
                                               int bLoadingModule)
 {
     return 0;
 }
-// PC 0x0066B360
+// PC 0x0069E520
 int CSWSEffectListHandler::OnApplySpellLevelAbsorption(CSWSObject* pObject,
                                                       CGameEffect* pEffect,
                                                       int bLoadingModule)
 {
     return 0;
 }
-// PC 0x0066B360
+// PC 0x0069E520
 int CSWSEffectListHandler::OnApplyBonusSpellOfLevel(CSWSObject* pObject,
                                                    CGameEffect* pEffect,
                                                    int bLoadingModule)
 {
     return 0;
 }
-// PC 0x004DEE90
+// PC 0x005328B0
 int CSWSEffectListHandler::OnApplyPureGoodPowers(CSWSObject* pObject,
                                               CGameEffect* pEffect,
                                               int bLoadingModule)
@@ -4553,7 +4553,7 @@ int CSWSEffectListHandler::OnApplyPureGoodPowers(CSWSObject* pObject,
     pCreature->CSWSObject::ApplyEffect(pBonusEffect, 0, 0);
     return 0;
 }
-// PC 0x004DF160
+// PC 0x00532BC0
 int CSWSEffectListHandler::OnApplyPureEvilPowers(CSWSObject* pObject,
                                                 CGameEffect* pEffect,
                                                 int bLoadingModule)
@@ -4624,49 +4624,49 @@ int CSWSEffectListHandler::OnApplyPureEvilPowers(CSWSObject* pObject,
     pCreature->CSWSObject::ApplyEffect(pBonusEffect, 0, 0);
     return 0;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveBeam(CSWSObject* pObject,
                                        CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveBonusSpellOfLevel(CSWSObject* pObject,
                                                     CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveConcealment(CSWSObject* pObject,
                                               CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveCurse(CSWSObject* pObject,
                                         CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveDamageShield(CSWSObject* pObject,
                                                CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveDarkness(CSWSObject* pObject,
                                            CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF410  Xbox 0x001F5C90
+// PC 0x00532EA0
 int CSWSEffectListHandler::OnRemoveDisarm(CSWSObject* pObject,
                                          CGameEffect* pEffect)
 {
     return 1;
 }
-// PC 0x004DF420  Xbox 0x001FCA10
+// PC 0x00532EB0
 int CSWSEffectListHandler::IsEffectToIgnoreOnDeath(CGameEffect* pEffect)
 {
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
@@ -4693,7 +4693,7 @@ int CSWSEffectListHandler::IsEffectToIgnoreOnDeath(CGameEffect* pEffect)
     }
     return 0;
 }
-// PC 0x004E0750  Xbox 0x001FDDC0
+// PC 0x005342B0
 int CSWSEffectListHandler::OnApplyHeal(CSWSObject* pObject,
                                       CGameEffect* pEffect,
                                       int bLoadingModule)
@@ -4796,7 +4796,7 @@ int CSWSEffectListHandler::OnApplyHeal(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E0AC0  Xbox 0x001FE120
+// PC 0x005345C0
 int CSWSEffectListHandler::OnApplyDeath(CSWSObject* pObject,
                                       CGameEffect* pEffect,
                                       int bLoadingModule)
@@ -5033,7 +5033,7 @@ int CSWSEffectListHandler::OnApplyDeath(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E13C0  Xbox 0x001FEA20
+// PC 0x00534EE0
 int CSWSEffectListHandler::OnApplyResurrection(CSWSObject* pObject,
                                                CGameEffect* pEffect,
                                                int bLoadingModule)
@@ -5086,7 +5086,7 @@ int CSWSEffectListHandler::OnApplyResurrection(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E14D0  Xbox 0x001FEB30
+// PC 0x00535020
 int CSWSEffectListHandler::OnRemoveACIncrease(CSWSObject* pObject,
                                               CGameEffect* pEffect)
 {
@@ -5167,7 +5167,7 @@ int CSWSEffectListHandler::OnRemoveACIncrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E16E0  Xbox 0x001FED30
+// PC 0x00535260
 int CSWSEffectListHandler::OnRemoveACDecrease(CSWSObject* pObject,
                                               CGameEffect* pEffect)
 {
@@ -5243,7 +5243,7 @@ int CSWSEffectListHandler::OnRemoveACDecrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E18D0  Xbox 0x001FEF20
+// PC 0x00535450
 int CSWSEffectListHandler::OnRemoveDamageImmunityIncrease(CSWSObject* pObject,
                                                           CGameEffect* pEffect)
 {
@@ -5279,7 +5279,7 @@ int CSWSEffectListHandler::OnRemoveDamageImmunityIncrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E19A0  Xbox 0x001FEFF0
+// PC 0x00535520
 int CSWSEffectListHandler::OnRemoveDamageImmunityDecrease(CSWSObject* pObject,
                                                           CGameEffect* pEffect)
 {
@@ -5315,7 +5315,7 @@ int CSWSEffectListHandler::OnRemoveDamageImmunityDecrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E1A70  Xbox 0x001FF0C0
+// PC 0x005355F0
 int CSWSEffectListHandler::OnRemoveSetAIState(CSWSObject* pObject,
                                              CGameEffect* pEffect)
 {
@@ -5351,7 +5351,7 @@ int CSWSEffectListHandler::OnRemoveSetAIState(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E1B00  Xbox 0x001FF150
+// PC 0x00535680
 int CSWSEffectListHandler::OnRemoveEnemyAttackBonus(CSWSObject* pObject,
                                                     CGameEffect* pEffect)
 {
@@ -5385,7 +5385,7 @@ int CSWSEffectListHandler::OnRemoveEnemyAttackBonus(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E1B80  Xbox 0x001FF1D0
+// PC 0x00535700
 int CSWSEffectListHandler::OnRemoveArcaneSpellFailure(CSWSObject* pObject,
                                                       CGameEffect* pEffect)
 {
@@ -5423,7 +5423,7 @@ int CSWSEffectListHandler::OnRemoveArcaneSpellFailure(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E1C20  Xbox 0x001FF270
+// PC 0x005357A0
 int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
                                           CGameEffect* pEffect,
                                           int bLoadingModule)
@@ -5645,7 +5645,7 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004E22F0  Xbox 0x001FFA10
+// PC 0x005360E0
 int CSWSEffectListHandler::OnRemoveSetState(CSWSObject* pObject,
                                             CGameEffect* pEffect)
 {
@@ -5714,7 +5714,7 @@ int CSWSEffectListHandler::OnRemoveSetState(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E2490
+// PC 0x00536280
 int CSWSEffectListHandler::OnRemoveMovementSpeedIncrease(CSWSObject* pObject,
                                                          CGameEffect* pEffect)
 {
@@ -5754,7 +5754,7 @@ int CSWSEffectListHandler::OnRemoveMovementSpeedIncrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E2490  Xbox 0x001FFBB0
+// PC 0x00536280
 int CSWSEffectListHandler::OnRemoveMovementSpeedDecrease(CSWSObject* pObject,
                                                          CGameEffect* pEffect)
 {
@@ -5795,7 +5795,7 @@ int CSWSEffectListHandler::OnRemoveMovementSpeedDecrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E2570  Xbox 0x001FFCB0
+// PC 0x00536360
 int CSWSEffectListHandler::OnRemoveForceResistanceIncrease(CSWSObject* pObject,
                                                            CGameEffect* pEffect)
 {
@@ -5845,7 +5845,7 @@ int CSWSEffectListHandler::OnRemoveForceResistanceIncrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E2650  Xbox 0x001FFD90
+// PC 0x00536440
 int CSWSEffectListHandler::OnRemoveForceResistanceDecrease(CSWSObject* pObject,
                                                            CGameEffect* pEffect)
 {
@@ -5892,7 +5892,7 @@ int CSWSEffectListHandler::OnRemoveForceResistanceDecrease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E2720  Xbox 0x001FFE60
+// PC 0x00536510
 int CSWSEffectListHandler::OnApplyDisease(CSWSObject* pObject,
                                           CGameEffect* pEffect,
                                           int bLoadingModule)
@@ -5985,7 +5985,7 @@ int CSWSEffectListHandler::OnApplyDisease(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E2A90  Xbox 0x00200200
+// PC 0x00536880
 int CSWSEffectListHandler::OnApplyHasteOrSlow(CSWSObject* pObject,
                                               CGameEffect* pEffect,
                                               int bLoadingModule)
@@ -6098,7 +6098,7 @@ int CSWSEffectListHandler::OnApplyHasteOrSlow(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004E2D50  Xbox 0x002004D0
+// PC 0x00536B40
 int CSWSEffectListHandler::OnRemoveHasteOrSlow(CSWSObject* pObject,
                                             CGameEffect* pEffect)
 {
@@ -6185,7 +6185,7 @@ int CSWSEffectListHandler::OnRemoveHasteOrSlow(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E2F40  Xbox 0x002006C0
+// PC 0x00536D30
 int CSWSEffectListHandler::OnApplyVision(CSWSObject* pObject,
                                          CGameEffect* pEffect,
                                          int bLoadingModule)
@@ -6204,7 +6204,7 @@ int CSWSEffectListHandler::OnApplyVision(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E2FE0  Xbox 0x00200760
+// PC 0x00536DD0
 int CSWSEffectListHandler::OnRemoveLimitMovementSpeed(CSWSObject* pObject,
                                                       CGameEffect* pEffect)
 {
@@ -6239,7 +6239,7 @@ int CSWSEffectListHandler::OnRemoveLimitMovementSpeed(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E3050  Xbox 0x002007D0
+// PC 0x00536E40
 int CSWSEffectListHandler::OnRemoveSpecialWalkAnimation(CSWSObject* pObject,
                                                         CGameEffect* pEffect)
 {
@@ -6282,7 +6282,7 @@ int CSWSEffectListHandler::OnRemoveSpecialWalkAnimation(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E30D0  Xbox 0x00200850
+// PC 0x00536EC0
 int CSWSEffectListHandler::OnRemoveEffectIcon(CSWSObject* pObject,
                                               CGameEffect* pEffect)
 {
@@ -6327,7 +6327,7 @@ int CSWSEffectListHandler::OnRemoveEffectIcon(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E31D0  Xbox 0x00200960
+// PC 0x00536FC0
 int CSWSEffectListHandler::OnApplyDisguise(CSWSObject* pObject,
                                          CGameEffect* pEffect,
                                          int bLoadingModule)
@@ -6362,7 +6362,7 @@ int CSWSEffectListHandler::OnApplyDisguise(CSWSObject* pObject,
     pCreature->Disguise(nAppearance, pEffect, bLoadingModule);
     return 0;
 }
-// PC 0x004E3BE0  Xbox 0x002013C0
+// PC 0x005379D0
 int CSWSEffectListHandler::OnApplyInvisibility(CSWSObject* pObject,
                                                CGameEffect* pGameEffect,
                                                int nValue)
@@ -6381,7 +6381,7 @@ int CSWSEffectListHandler::OnApplyInvisibility(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004E3C30  Xbox 0x00201410
+// PC 0x00537A20
 int CSWSEffectListHandler::OnRemoveInvisibility(CSWSObject* pObject,
                                                 CGameEffect* pEffect)
 {
@@ -6423,7 +6423,7 @@ int CSWSEffectListHandler::OnRemoveInvisibility(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E3D10  Xbox 0x002014F0
+// PC 0x00537B00
 int CSWSEffectListHandler::OnApplySanctuary(CSWSObject* pObject,
                                             CGameEffect* pEffect,
                                             int bLoadingModule)
@@ -6475,7 +6475,7 @@ int CSWSEffectListHandler::OnApplySanctuary(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004E3E70  Xbox 0x00201650
+// PC 0x00537C60
 int CSWSEffectListHandler::OnRemoveSanctuary(CSWSObject* pObject,
                                            CGameEffect* pEffect)
 {
@@ -6575,7 +6575,7 @@ int CSWSEffectListHandler::OnRemoveSanctuary(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E40D0  Xbox 0x002018C0
+// PC 0x00537ED0
 int CSWSEffectListHandler::OnApplyDispelAllMagic(CSWSObject* pObject,
                                                CGameEffect* pEffect,
                                                int bLoadingModule)
@@ -6672,7 +6672,7 @@ int CSWSEffectListHandler::OnApplyDispelAllMagic(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E43C0  Xbox 0x00201BB0
+// PC 0x005381C0
 int CSWSEffectListHandler::OnApplyDispelBestMagic(CSWSObject* pObject,
                                                 CGameEffect* pEffect,
                                                 int bLoadingModule)
@@ -6771,7 +6771,7 @@ int CSWSEffectListHandler::OnApplyDispelBestMagic(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E46E0  Xbox 0x00201ED0
+// PC 0x005384E0
 int CSWSEffectListHandler::OnApplyBonusFeat(CSWSObject* pObject,
                                             CGameEffect* pEffect,
                                             int bLoadingModule)
@@ -6786,7 +6786,7 @@ int CSWSEffectListHandler::OnApplyBonusFeat(CSWSObject* pObject,
     pObject->AsSWSCreature()->m_pStats->m_lstBonusFeats.Add(nFeat);
     return 0;
 }
-// PC 0x004E4750  Xbox 0x00201F40
+// PC 0x00538550
 int CSWSEffectListHandler::OnRemoveBonusFeat(CSWSObject* pObject,
                                              CGameEffect* pGameEffect)
 {
@@ -6802,7 +6802,7 @@ int CSWSEffectListHandler::OnRemoveBonusFeat(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E32A0  Xbox 0x00200A30
+// PC 0x00537090
 int CSWSEffectListHandler::OnRemoveSeeInvisible(CSWSObject* pObject,
                                                 CGameEffect* pEffect)
 {
@@ -6839,7 +6839,7 @@ int CSWSEffectListHandler::OnRemoveSeeInvisible(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E3320  Xbox 0x00200AB0
+// PC 0x00537110
 int CSWSEffectListHandler::OnApplyUltraVision(CSWSObject* pObject,
                                               CGameEffect* pEffect,
                                               int bLoadingModule)
@@ -6909,7 +6909,7 @@ static inline int NwseffectlistEffectCount(CExoArrayList<CGameEffect*>* pList)
 {
     return pList->num;
 }
-// PC 0x004E3480  Xbox 0x00200C10
+// PC 0x00537270
 int CSWSEffectListHandler::OnRemoveUltraVision(CSWSObject* pObject,
                                                CGameEffect* pEffect)
 {
@@ -6961,7 +6961,7 @@ int CSWSEffectListHandler::OnRemoveUltraVision(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E35B0  Xbox 0x00200D40
+// PC 0x005373A0
 int CSWSEffectListHandler::OnApplyTrueSeeing(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -7005,7 +7005,7 @@ int CSWSEffectListHandler::OnApplyTrueSeeing(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004E3690  Xbox 0x00200E30
+// PC 0x00537480
 int CSWSEffectListHandler::OnRemoveTrueSeeing(CSWSObject* pObject,
                                               CGameEffect* pEffect)
 {
@@ -7051,7 +7051,7 @@ int CSWSEffectListHandler::OnRemoveTrueSeeing(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E3760  Xbox 0x00200F10
+// PC 0x00537550
 int CSWSEffectListHandler::OnRemoveBlindness(CSWSObject* pObject,
                                              CGameEffect* pEffect)
 {
@@ -7085,7 +7085,7 @@ int CSWSEffectListHandler::OnRemoveBlindness(CSWSObject* pObject,
     }
     return 1;
 }
-// PC 0x004E3800  Xbox 0x00200FB0
+// PC 0x005375F0
 int CSWSEffectListHandler::OnApplyForcePush(CSWSObject* pObject,
                                           CGameEffect* pEffect,
                                           int bLoadingModule)
@@ -7161,7 +7161,7 @@ int CSWSEffectListHandler::OnApplyForcePush(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004E4790  Xbox 0x00201F80
+// PC 0x00538590
 int CSWSEffectListHandler::OnApplyEffectIcon(CSWSObject* pObject,
                                            CGameEffect* pEffect,
                                            int bLoadingModule)
@@ -7220,7 +7220,7 @@ int CSWSEffectListHandler::OnApplyEffectIcon(CSWSObject* pObject,
     }
     return 0;
 }
-// PC 0x004E4A10  Xbox 0x00202240
+// PC 0x005388E0
 void CSWSEffectListHandler::InitializeEffects()
 {
     m_pEffectApplied = new EffectAppliedHandler[MAX_EFFECTS];
@@ -7429,42 +7429,42 @@ void CSWSEffectListHandler::InitializeEffects()
     m_pEffectApplied[EFFECT_PUREEVILPOWERS] = &CSWSEffectListHandler::OnApplyPureEvilPowers; m_pEffectRemoved[EFFECT_PUREEVILPOWERS] = &CSWSEffectListHandler::OnRemovePureEvilPowers;
 #endif
 }
-// PC 0x004DDF20
+// PC 0x00531890
 int CSWSEffectListHandler::OnRemoveWhirlWind(CSWSObject* pObject,
                                           CGameEffect* pEffect)
 {
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 1;
 }
-// PC 0x004DDF20
+// PC 0x00531890
 int CSWSEffectListHandler::OnRemoveBlasterDeflectionIncrease(
     CSWSObject* pObject, CGameEffect* pEffect)
 {
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 1;
 }
-// PC 0x004DDF20
+// PC 0x00531890
 int CSWSEffectListHandler::OnRemoveBlasterDeflectionDecrease(
     CSWSObject* pObject, CGameEffect* pEffect)
 {
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 1;
 }
-// PC 0x004DDF20
+// PC 0x00531890
 int CSWSEffectListHandler::OnRemoveHorrified(CSWSObject* pObject,
                                           CGameEffect* pEffect)
 {
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 1;
 }
-// PC 0x004DDF20
+// PC 0x00531890
 int CSWSEffectListHandler::OnRemoveChoke(CSWSObject* pObject,
                                       CGameEffect* pEffect)
 {
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 1;
 }
-// PC 0x004DDF20
+// PC 0x00531890
 int CSWSEffectListHandler::OnRemovePsychicStatic(CSWSObject* pObject,
                                               CGameEffect* pEffect)
 {

@@ -12,7 +12,7 @@
 
 bool g_bDisplayServicedResources = false;
 bool g_bExtendedResourceTracking = false;
-// PC 0x005EC290  Xbox 0x00135830
+// PC 0x00637A30
 CExoDebugInternal::CExoDebugInternal()
 {
     m_pScriptLogFile = 0;
@@ -69,7 +69,7 @@ void CExoDebugInternal::InitializeWarningFile()
         fclose(pFile);
     }
 }
-// PC 0x005EC2B0  Xbox 0x00135850
+// PC 0x00637B80
 void CExoDebugInternal::Warning(int line, char* file, const char* message)
 {
     CExoString sWarning;
@@ -166,7 +166,7 @@ void CExoDebugInternal::Warning(int line, char* file, const char* message)
         fclose(pFile);
     }
 }
-// PC 0x005EC560  Xbox 0x00135B30
+// PC 0x00637A50
 void CExoDebugInternal::GetCurrentTimestamp(CExoString& timestamp)
 {
     struct _timeb tb;
@@ -176,7 +176,7 @@ void CExoDebugInternal::GetCurrentTimestamp(CExoString& timestamp)
     sprintf(szTimestamp, "%.19s", ctime(&tb.time));
     timestamp.Format(szTimestamp);
 }
-// PC 0x005EC5A0  Xbox 0x00135B70
+// PC 0x00637A90
 void CExoDebugInternal::WriteToScriptLogFile(const CExoString& text)
 {
     if (m_bLogFilesOpen)
@@ -184,7 +184,7 @@ void CExoDebugInternal::WriteToScriptLogFile(const CExoString& text)
         m_pScriptLogFile->Write(text);
     }
 }
-// PC 0x005EC5B0  Xbox 0x00135B80
+// PC 0x00637AA0
 void CExoDebugInternal::FlushScriptLogFile()
 {
     if (m_bLogFilesOpen)
@@ -192,11 +192,11 @@ void CExoDebugInternal::FlushScriptLogFile()
         m_pScriptLogFile->Flush();
     }
 }
-// PC 0x0060E760
+// PC 0x005EE1C0
 void CExoDebugInternal::OpenLogFiles(const CExoString& path)
 {
 }
-// PC 0x005EC5C0  Xbox 0x00135B90
+// PC 0x00637AB0
 void CExoDebugInternal::CloseLogFiles()
 {
     if (m_bLogFilesOpen)
@@ -234,7 +234,7 @@ void CExoDebugInternal::CloseLogFiles()
         m_bLogFilesOpen = 0;
     }
 }
-// PC 0x005EC680  Xbox 0x00135C50
+// PC 0x00637E60
 CExoDebugInternal::~CExoDebugInternal()
 {
     CloseLogFiles();

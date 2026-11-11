@@ -1,26 +1,26 @@
 #include "exoresman.h"
-// PC 0x005D4C30  Xbox 0x0015BA10
+// PC 0x00620880
 CResNCS::CResNCS()
 {
     m_bServiced = 0;
     m_nNCSSize = 0;
     m_pNCSData = NULL;
 }
-// PC 0x005D4C50  Xbox 0x0015BA30
+// PC 0x006208A0
 CResNCS::~CResNCS()
 {
 }
-// PC 0x00404DD0
+// PC 0x00404CF0
 char* CResNCS::GetNCSDataPtr()
 {
     return (char*)m_pNCSData;
 }
-// PC 0x00710E50
+// PC 0x007846A0
 unsigned long CResNCS::GetNCSSize()
 {
     return m_nNCSSize;
 }
-// PC 0x00710E60
+// PC 0x007845C0
 int CResNCS::OnResourceFreed()
 {
     m_bServiced = 0;
@@ -28,7 +28,7 @@ int CResNCS::OnResourceFreed()
     m_pNCSData = 0;
     return 1;
 }
-// PC 0x005D4C60
+// PC 0x0077FE60
 int CResNCS::OnResourceServiced()
 {
     unsigned char* pData;
@@ -49,7 +49,7 @@ int CResNCS::OnResourceServiced()
     m_bServiced = 1;
     return 1;
 }
-// PC 0x005D4C60
+// PC 0x0077FE60
 int CResMDX::OnResourceServiced()
 {
     unsigned char* pData;

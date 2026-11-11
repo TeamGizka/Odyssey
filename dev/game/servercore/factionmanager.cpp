@@ -6,7 +6,7 @@
 #include "nwsparty.h"
 #include "factionmanager.h"
 #include "nwrules.h"
-// PC 0x0052B8E0  Xbox 0x0023E0D0
+// PC 0x005AD1E0
 CFactionManager::CFactionManager()
 {
     m_pPlayer = NULL;
@@ -20,7 +20,7 @@ CFactionManager::CFactionManager()
     m_nNumFactions = 0;
     m_pReputations = NULL;
 }
-// PC 0x0052B950  Xbox 0x0023E140
+// PC 0x005AD250
 CFactionManager::~CFactionManager()
 {
     if (m_pFactions != NULL)
@@ -41,12 +41,12 @@ CFactionManager::~CFactionManager()
         m_pReputations = NULL;
     }
 }
-// PC 0x0052B280  Xbox 0x0023DA60
+// PC 0x005ACB80
 int CFactionManager::GetIsNPCFaction(int nFaction)
 {
     return nFaction >= 1 && nFaction <= m_nNumFactions;
 }
-// PC 0x0052B2A0  Xbox 0x0023DA80
+// PC 0x005ACBA0
 void CFactionManager::ResolveFactionName(const CExoString& sName,
                                          CSWSFaction* pFaction)
 {
@@ -79,7 +79,7 @@ void CFactionManager::ResolveFactionName(const CExoString& sName,
         m_pInsane = pFaction;
     }
 }
-// PC 0x0052B370  Xbox 0x0023DB50
+// PC 0x005ACC70
 void CFactionManager::DeleteFaction(int nFaction)
 {
     if (m_pFactions != NULL)
@@ -92,7 +92,7 @@ void CFactionManager::DeleteFaction(int nFaction)
         }
     }
 }
-// PC 0x0052B830  Xbox 0x0023E020
+// PC 0x005AD130
 int CFactionManager::SaveReputations(CResGFF* pRes, CResList* pList)
 {
     CResStruct stRep;
@@ -114,7 +114,7 @@ int CFactionManager::SaveReputations(CResGFF* pRes, CResList* pList)
     }
     return 1;
 }
-// PC 0x0052B3B0  Xbox 0x0023DB90
+// PC 0x005ACCB0
 CSWSFaction* CFactionManager::GetFaction(int nFaction)
 {
     if (nFaction < 0 || nFaction >= m_pFactions->num)
@@ -123,7 +123,7 @@ CSWSFaction* CFactionManager::GetFaction(int nFaction)
     }
     return m_pFactions->element[nFaction];
 }
-// PC 0x0052B3D0  Xbox 0x0023DBB0
+// PC 0x005ACCD0
 void CFactionManager::SetNPCFactionReputation(int nFaction1, int nFaction2,
                                               int nReputation)
 {
@@ -145,7 +145,7 @@ void CFactionManager::SetNPCFactionReputation(int nFaction1, int nFaction2,
         }
     }
 }
-// PC 0x0052B420  Xbox 0x0023DC00
+// PC 0x005ACD20
 int CFactionManager::GetNPCFactionReputation(int nFaction1, int nFaction2)
 {
     if (!GetIsNPCFaction(nFaction1) && !GetIsNPCFaction(nFaction2))
@@ -163,7 +163,7 @@ int CFactionManager::GetNPCFactionReputation(int nFaction1, int nFaction2)
     }
     return GetNPCFactionReputation(nFaction2, nFaction1);
 }
-// PC 0x0052B490  Xbox 0x0023DC70
+// PC 0x005ACD90
 int CFactionManager::LoadFactions(int bAppend)
 {
     CExoString sName;
@@ -192,7 +192,7 @@ int CFactionManager::LoadFactions(int bAppend)
     }
     return 1;
 }
-// PC 0x0052B5C0  Xbox 0x0023DDB0
+// PC 0x005ACEC0
 int CFactionManager::LoadFactionsFromSaveGame(CResGFF* pRes, CResList* pList)
 {
     CResStruct stFaction;
@@ -226,7 +226,7 @@ int CFactionManager::LoadFactionsFromSaveGame(CResGFF* pRes, CResList* pList)
     int bLoaded = LoadFactions(1);
     return bSuccess && bLoaded;
 }
-// PC 0x0052B790  Xbox 0x0023DF80
+// PC 0x005AD090
 int CFactionManager::SaveFactions(CResGFF* pRes, CResList* pList)
 {
     CResStruct stFaction;
@@ -242,7 +242,7 @@ int CFactionManager::SaveFactions(CResGFF* pRes, CResList* pList)
     }
     return 1;
 }
-// PC 0x0052B9E0  Xbox 0x0023E1D0
+// PC 0x005AD2E0
 int CFactionManager::LoadReputations()
 {
     int nEntries = m_nNumFactions * (m_nNumFactions + 1);
@@ -280,7 +280,7 @@ int CFactionManager::LoadReputations()
     }
     return bSuccess;
 }
-// PC 0x0052BBE0  Xbox 0x0023E3E0
+// PC 0x005AD4E0
 int CFactionManager::LoadReputationsFromSaveGame(CResGFF* pRes, CResList* pList)
 {
     int bSuccess;
@@ -300,7 +300,7 @@ int CFactionManager::LoadReputationsFromSaveGame(CResGFF* pRes, CResList* pList)
     }
     return bSuccess;
 }
-// PC 0x0052BCE0  Xbox 0x0023E4E0
+// PC 0x005AD5E0
 void CFactionManager::CreateDefaultFactions()
 {
     m_pPlayer = new CSWSFaction;

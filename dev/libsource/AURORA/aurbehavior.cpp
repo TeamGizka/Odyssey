@@ -23,11 +23,11 @@ extern char sPropagateColorShifting[];
 extern char sPropagateIllumination[];
 extern char sPropagateRender[];
 extern char sPropagateViewVolume[];
-// PC 0x0060E760
+// PC 0x005EE1C0
 void CAurBehavior::Message(char* sMessage)
 {
 }
-// PC 0x0049EB40  Xbox 0x002BE9D0
+// PC 0x004CBD30
 void UpdateScenesAttach(CAurObject* pObject, char* sEvent, void* pContext)
 {
     CAurBehaviorAttach* pBehavior = (CAurBehaviorAttach*)pContext;
@@ -42,7 +42,7 @@ void UpdateScenesAttach(CAurObject* pObject, char* sEvent, void* pContext)
         delete pBehavior->m_pObject;
     }
 }
-// PC 0x0049EB90  Xbox 0x002BEA20
+// PC 0x004CBD80
 void UpdateDependentPosition(CAurObject* pObject, char* sEvent, void* pContext)
 {
     if (stricmp(sEvent, "UpdateDependentPosition") == 0)
@@ -50,7 +50,7 @@ void UpdateDependentPosition(CAurObject* pObject, char* sEvent, void* pContext)
         ((CAurBehaviorAttach*)pContext)->UpdateGobPosition();
     }
 }
-// PC 0x0049EBB0  Xbox 0x002BEA40
+// PC 0x004CBDA0
 void PropagateColorShifting(CAurObject* pObject, char* sEvent, void* pContext)
 {
     if (stricmp(sEvent, "propagatecolorshift") == 0)
@@ -60,7 +60,7 @@ void PropagateColorShifting(CAurObject* pObject, char* sEvent, void* pContext)
             ->SetColorShifting(pSource->m_vColor, pSource->m_fAlpha, 1);
     }
 }
-// PC 0x0049EC00  Xbox 0x002BEA90
+// PC 0x004CBDF0
 void PropagateIllumination(CAurObject* pObject, char* sEvent, void* pContext)
 {
     if (stricmp(sEvent, "propagateillumination") == 0)
@@ -69,7 +69,7 @@ void PropagateIllumination(CAurObject* pObject, char* sEvent, void* pContext)
         ((Gob*)pContext)->SetIllumination(pSource->m_vIllumination, 1);
     }
 }
-// PC 0x0049EC50  Xbox 0x002BEAE0
+// PC 0x004CBE40
 void PropagateRender(CAurObject* pObject, char* sEvent, void* pContext)
 {
     Gob* pGob;
@@ -84,7 +84,7 @@ void PropagateRender(CAurObject* pObject, char* sEvent, void* pContext)
         pGob->Render(1);
     }
 }
-// PC 0x0049EC90  Xbox 0x002BEB20
+// PC 0x004CBE80
 void PropagateViewVolume(CAurObject* pObject, char* sEvent, void* pContext)
 {
     if (stricmp(sEvent, "propagateviewvolume") == 0)
@@ -95,14 +95,14 @@ void PropagateViewVolume(CAurObject* pObject, char* sEvent, void* pContext)
         }
     }
 }
-// PC 0x0049ECD0  Xbox 0x002BEB60
+// PC 0x004CBEC0
 void CAurBehaviorAttach::UpdateGobPosition()
 {
     Gob* pGob = (Gob*)m_pObject;
     m_pPart->GetWorld(pGob->m_vPosition, pGob->m_qOrientation);
     pGob->DoEvent("UpdateDependentPosition", 0);
 }
-// PC 0x0049ED00  Xbox 0x002BEB90
+// PC 0x004CBEF0
 void CAurBehaviorAttach::Message(char* sMessage)
 {
     if (stricmp("diewithoutparent", firstword(sMessage)) == 0)
@@ -110,7 +110,7 @@ void CAurBehaviorAttach::Message(char* sMessage)
         Parse(sMessage + 16, m_nDieWithoutParent);
     }
 }
-// PC 0x0049ED40  Xbox 0x002BEC90
+// PC 0x004CBF30
 void CAurBehaviorAttachTranslate::Message(char* sMessage)
 {
     CAurBehaviorAttach::Message(sMessage);
@@ -119,7 +119,7 @@ void CAurBehaviorAttachTranslate::Message(char* sMessage)
         Parse(sMessage + 14, m_vTranslation);
     }
 }
-// PC 0x0049EDA0  Xbox 0x002BECD0
+// PC 0x004CBF90
 void CAurBehaviorAttachRotate::Message(char* sMessage)
 {
     CAurBehaviorAttach::Message(sMessage);
@@ -128,7 +128,7 @@ void CAurBehaviorAttachRotate::Message(char* sMessage)
         Parse(sMessage + 11, m_vRotation);
     }
 }
-// Xbox 0x002BED10
+
 void CAurBehaviorNavigate::Message(char* sMessage)
 {
     if (stricmp("turn", firstword(sMessage)) == 0)
@@ -168,7 +168,7 @@ void CAurBehaviorCameraOnAStick::Message(char* sMessage)
         Parse(sMessage + 9, m_fHeight);
     }
 }
-// PC 0x0049EE00  Xbox 0x002BEDF0
+// PC 0x004CBFF0
 void CAurBehaviorCameraFollow::Message(char* sMessage)
 {
     if (stricmp("turn", firstword(sMessage)) == 0)
@@ -240,7 +240,7 @@ void CAurBehaviorCameraFollow::Message(char* sMessage)
         Parse(sMessage + 9, m_fClampDistance);
     }
 }
-// PC 0x0049F0C0  Xbox 0x002BF0B0
+// PC 0x004CC2B0
 void CAurBehaviorAttach::SetScene()
 {
     if (m_pParent != 0)
@@ -248,7 +248,7 @@ void CAurBehaviorAttach::SetScene()
         ((Gob*)m_pObject)->SetScene(((Gob*)(CAurObject*)m_pParent)->m_pScene);
     }
 }
-// PC 0x0049F0E0  Xbox 0x002BF0D0
+// PC 0x004CC2D0
 Vector CAurBehaviorCameraFollow::GetTargetWorldPosition()
 {
     Gob* pTarget;
@@ -256,19 +256,19 @@ Vector CAurBehaviorCameraFollow::GetTargetWorldPosition()
     pTarget = (Gob*)(CAurObject*)m_pTarget;
     return pTarget->m_vPosition;
 }
-// PC 0x0049F110  Xbox 0x002BF100
+// PC 0x004CC300
 CAurBehavior::CAurBehavior(CAurObject* pObject)
 {
     m_pObject = pObject;
 }
 
 #ifdef _XBOX
-void CAurBehavior::AddDependency(CAurObject* pObject)  // Xbox 0x002BF120
+void CAurBehavior::AddDependency(CAurObject* pObject)
 {
     m_lstDependencies.Add(new SafePointer<CAurObject>(pObject));
 }
 #else
-int CAurBehavior::AddDependency(CAurObject* pObject)  // PC 0x0049F130
+int CAurBehavior::AddDependency(CAurObject* pObject)  // PC 0x004CC320
 {
     SafePointer<CAurObject>* pDependency = new SafePointer<CAurObject>(pObject);
     List<SafePointer<CAurObject>*>& lstDependencies = m_lstDependencies;
@@ -276,7 +276,7 @@ int CAurBehavior::AddDependency(CAurObject* pObject)  // PC 0x0049F130
     return lstDependencies.m_nCount;
 }
 #endif
-// PC 0x0049FA70  Xbox 0x002BFDB0
+// PC 0x004CCDC0
 CAurBehavior::~CAurBehavior()
 {
     int i;
@@ -292,7 +292,7 @@ CAurBehavior::~CAurBehavior()
 
     m_lstDependencies.SetSize(0);
 }
-// PC 0x0049F1F0  Xbox 0x002BF190
+// PC 0x004CC3B0
 void CAurBehavior::RemoveDependency(CAurObject* pObject)
 {
     int nIndex;
@@ -318,7 +318,7 @@ void CAurBehavior::RemoveDependency(CAurObject* pObject)
         }
     }
 }
-// PC 0x0049F270  Xbox 0x002BF1F0
+// PC 0x004CC430
 int CAurBehavior::Control(float fTimeStep)
 {
     SafePointer<CAurObject> pObject(m_pObject);
@@ -359,7 +359,7 @@ int CAurBehavior::Control(float fTimeStep)
     }
     return 1;
 }
-// PC 0x0049F3B0  Xbox 0x002BF2C0
+// PC 0x004CC580
 int CAurBehaviorAttach::Control(float fTimeStep)
 {
     Gob* pGob;
@@ -402,7 +402,7 @@ int CAurBehaviorAttach::Control(float fTimeStep)
     m_pPart->GetWorld(pGob->m_vPosition, pGob->m_qOrientation);
     return 1;
 }
-// PC 0x0049F4F0  Xbox 0x002BF3B0
+// PC 0x004CC6D0
 int CAurBehaviorAttachTranslate::Control(float fTimeStep)
 {
     int nResult = CAurBehaviorAttach::Control(fTimeStep);
@@ -421,7 +421,7 @@ int CAurBehaviorAttachTranslate::Control(float fTimeStep)
     }
     return nResult;
 }
-// PC 0x0049F5F0  Xbox 0x002BF4D0
+// PC 0x004CC8C0
 int CAurBehaviorAttachRotate::Control(float fTimeStep)
 {
     int nResult = CAurBehaviorAttach::Control(fTimeStep);
@@ -432,7 +432,7 @@ int CAurBehaviorAttachRotate::Control(float fTimeStep)
     }
     return nResult;
 }
-// PC 0x0049F670  Xbox 0x002BF550
+// PC 0x004CC9C0
 int CAurBehaviorAttachNoOrientation::Control(float fTimeStep)
 {
     Quaternion qOrientation = ((Gob*)m_pObject)->GetOrientation();
@@ -443,7 +443,7 @@ int CAurBehaviorAttachNoOrientation::Control(float fTimeStep)
     }
     return nResult;
 }
-// PC 0x0049F6D0  Xbox 0x002BF950
+// PC 0x004CCA20
 int CAurBehaviorCameraFollow::Control(float fTimeStep)
 {
     if (currentscene)
@@ -493,7 +493,7 @@ int CAurBehaviorCameraFollow::Control(float fTimeStep)
     }
     return 1;
 }
-// Xbox 0x002BF5B0
+
 int CAurBehaviorNavigate::Control(float fTimeStep)
 {
     if (currentscene)
@@ -553,7 +553,7 @@ int CAurBehaviorCameraOnAStick::Control(float fTimeStep)
     }
     return 1;
 }
-// PC 0x0049FB10  Xbox 0x002BFE30
+// PC 0x004CCE60
 CAurBehaviorAttach::CAurBehaviorAttach(CAurObject* pObject, CAurObject* pParent,
                                        CAurPart* pPart)
     : CAurBehavior(pObject)
@@ -605,7 +605,7 @@ CAurBehaviorAttach::CAurBehaviorAttach(CAurObject* pObject, CAurObject* pParent,
     m_nViewVolumeCallback = ((Gob*)(CAurObject*)m_pParent)->RegisterCallBack(
         PropagateViewVolume, "propagateviewvolume", m_pObject, AUR_CALLBACK_LONG_DELAY, 0);
 }
-// PC 0x0049FCE0  Xbox 0x002C0000
+// PC 0x004CD050
 CAurBehaviorAttach::~CAurBehaviorAttach()
 {
     Gob* pParent = (Gob*)m_pParent.m_pObject;
@@ -636,27 +636,27 @@ CAurBehaviorAttach::~CAurBehaviorAttach()
         pParent->DeregisterCallback(m_nViewVolumeCallback);
     }
 }
-// PC 0x0049FDC0  Xbox 0x002C00E0
+// PC 0x004CD130
 CAurBehaviorAttachTranslate::CAurBehaviorAttachTranslate(CAurObject* pObject,
                                                          CAurObject* pParent,
                                                          CAurPart* pPart)
     : CAurBehaviorAttach(pObject, pParent, pPart)
 {
 }
-// PC 0x0049FE00  Xbox 0x002C0130
+// PC 0x004CD170
 CAurBehaviorAttachRotate::CAurBehaviorAttachRotate(CAurObject* pObject,
                                                    CAurObject* pParent,
                                                    CAurPart* pPart)
     : CAurBehaviorAttach(pObject, pParent, pPart)
 {
 }
-// PC 0x0049FE40  Xbox 0x002C0180
+// PC 0x004CD1B0
 CAurBehaviorAttachNoOrientation::CAurBehaviorAttachNoOrientation(
     CAurObject* pObject, CAurObject* pParent, CAurPart* pPart)
     : CAurBehaviorAttach(pObject, pParent, pPart)
 {
 }
-// Xbox 0x002C01C0
+
 CAurBehaviorNavigate::CAurBehaviorNavigate(CAurObject* pObject)
     : CAurBehavior(pObject)
 {
@@ -678,7 +678,7 @@ CAurBehaviorCameraOnAStick::CAurBehaviorCameraOnAStick(CAurObject* pCamera,
     m_fSpeed = 1.0f;
     m_fHeight = 1.0f;
 }
-// PC 0x0049FE80  Xbox 0x002C0240
+// PC 0x004CD1F0
 CAurBehaviorCameraFollow::CAurBehaviorCameraFollow(CAurObject* pCamera,
                                                    CAurObject* pTarget)
     : CAurBehavior(pCamera)
@@ -699,7 +699,7 @@ CAurBehaviorCameraFollow::CAurBehaviorCameraFollow(CAurObject* pCamera,
     m_fMaxPitch = m_fMaxYaw = 360.0f;
     m_fMaxDistance = 10.0f;
 }
-// PC 0x0049FFA0  Xbox 0x002C03B0
+// PC 0x004CD310
 CAurBehaviorCameraFollow::~CAurBehaviorCameraFollow()
 {
 }
@@ -715,11 +715,11 @@ CSWMGBehaviorFire::~CSWMGBehaviorFire()
 #ifdef _XBOX
 Gob* FindGob(char* sName);
 Scene* FindScene(char* sName);
-// Xbox 0x002C0230
+
 CAurBehaviorNavigate::~CAurBehaviorNavigate()
 {
 }
-// Xbox 0x002BEBD0
+
 const char* nullscene(char* sCommand)
 {
     Gob* pGob = FindGob(sCommand);
@@ -730,7 +730,7 @@ const char* nullscene(char* sCommand)
     pGob->SetScene(0);
     return "OK";
 }
-// Xbox 0x002BEC00
+
 const char* setscene(char* sCommand)
 {
     char sGob[64];
@@ -753,7 +753,7 @@ const char* setscene(char* sCommand)
     pGob->SetScene(pScene);
     return "OK";
 }
-// Xbox 0x002C03D0
+
 const char* navigate(char* sCommand)
 {
     Gob* pGob = FindGob(sCommand);

@@ -29,22 +29,22 @@
 #include "clientoptions.h"
 
 static inline void NwsdialogTrace1();
-// PC 0x0059F4E0  Xbox 0x00187F00
+// PC 0x005E6980
 inline CSWSDialogNode::CSWSDialogNode()
 {
 }
-// PC 0x0059F550  Xbox 0x00187F80
+// PC 0x005E69F0
 inline CSWSDialogNode::~CSWSDialogNode()
 {
 }
-// PC 0x0059F5B0  Xbox 0x00187FE0
+// PC 0x005E6A50
 inline CSWSDialogReply::CSWSDialogReply()
 {
     m_nEntries = 0;
     m_pEntries = NULL;
     m_nReplyIndex = -1;
 }
-// PC 0x004CC4B0  Xbox 0x00188010
+// PC 0x004F60A0
 inline unsigned long CSWSDialog::GetCurrentPlayerId()
 {
     if (m_lstPlayers.GetHeadPos() != NULL)
@@ -53,7 +53,7 @@ inline unsigned long CSWSDialog::GetCurrentPlayerId()
     }
     return OBJECT_INVALID;
 }
-// PC 0x0059E860  Xbox 0x00187350
+// PC 0x005E56D0
 inline CSWSDialogBase::CSWSDialogBase()
     : m_nWaitFlags(0),
       m_nDelay(0),
@@ -65,21 +65,21 @@ inline CSWSDialogBase::CSWSDialogBase()
       m_bSoundExists(0)
 {
 }
-// PC 0x0059E900  Xbox 0x001873F0
+// PC 0x005E6960
 inline CSWSDialogLinkEntry::CSWSDialogLinkEntry()
     : m_nIndex(LINK_INDEX_NONE), m_bDisplayInactive(0)
 {
 }
-// PC 0x0059E920  Xbox 0x00187410
+// PC 0x005E5870
 inline CSWSDialogBase::~CSWSDialogBase()
 {
 }
-// PC 0x0059E990  Xbox 0x00187480
+// PC 0x005E5900
 inline CSWSDialogSpeaker::CSWSDialogSpeaker()
     : m_oidSpeaker(OBJECT_INVALID)
 {
 }
-// PC 0x0059E9B0  Xbox 0x001874A0
+// PC 0x005E5920
 void CSWSDialog::ClearDialogOwnerInObject(unsigned long oidObject)
 {
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
@@ -100,7 +100,7 @@ void CSWSDialog::ClearDialogOwnerInObject(unsigned long oidObject)
         }
     }
 }
-// PC 0x005A27B0  Xbox 0x0018B360
+// PC 0x005EA490
 void CSWSDialog::Cleanup()
 {
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
@@ -194,15 +194,15 @@ void CSWSDialog::Cleanup()
     m_bMultiPCDialogViewOnly = 0;
     m_n90 = 0;
 }
-// PC 0x0059EA40  Xbox 0x00187510
+// PC 0x005E59A0
 CSWSDialogStuntModel::CSWSDialogStuntModel()
 {
 }
-// PC 0x0059EA90
+// PC 0x0074C290
 CSWSDialogAnimation::CSWSDialogAnimation()
 {
 }
-// PC 0x0059EAA0  Xbox 0x00187560
+// PC 0x005E59F0
 void CSWSDialog::LoadDialogCamera(CSWSDialogCamera& camera, CResGFF* pGFF,
                                   CResStruct& resStruct, int& bSuccess)
 {
@@ -236,7 +236,7 @@ void CSWSDialog::LoadDialogCamera(CSWSDialogCamera& camera, CResGFF* pGFF,
         camera.m_nCameraId = -1;
     }
 }
-// PC 0x0059EC10  Xbox 0x001876D0
+// PC 0x005E5B60
 void CSWSDialog::LoadDialogLinkedNode(CSWSDialogLinkEntry& link, CResGFF* pGFF,
                                       CResStruct& resStruct, int& bSuccess,
                                       unsigned long nReplies)
@@ -251,7 +251,7 @@ void CSWSDialog::LoadDialogLinkedNode(CSWSDialogLinkEntry& link, CResGFF* pGFF,
         bSuccess = 0;
     }
 }
-// PC 0x0059EC90  Xbox 0x00187750
+// PC 0x005E5DE0
 int CSWSDialog::CheckScript(CSWSObject* pObject, const CResRef& cScript)
 {
     if (cScript == "")
@@ -282,7 +282,7 @@ int CSWSDialog::CheckScript(CSWSObject* pObject, const CResRef& cScript)
     }
     return bResult;
 }
-// PC 0x0059ED70  Xbox 0x00187830
+// PC 0x005E5EC0
 void CSWSDialog::RunScript(CSWSObject* pObject, const CResRef& cScript)
 {
     if (cScript == "")
@@ -296,7 +296,7 @@ void CSWSDialog::RunScript(CSWSObject* pObject, const CResRef& cScript)
     oidSelf = pObject->m_nId;
     g_pVirtualMachine->RunScript(&sScript, oidSelf, 1);
 }
-// PC 0x0059EE00  Xbox 0x001878C0
+// PC 0x005E5F50
 int CSWSDialog::GetStartEntryOneLiner(CSWSObject* pOwner,
                                       CExoLocString& lsText,
                                       CResRef& cSound, CResRef& cScript)
@@ -317,7 +317,7 @@ int CSWSDialog::GetStartEntryOneLiner(CSWSObject* pOwner,
     }
     return 0;
 }
-// PC 0x0059EF00  Xbox 0x001879C0
+// PC 0x005E61A0
 void CSWSDialog::AddJournalEntry(const CExoString& sPlotID,
                                 unsigned long nState, unsigned long nPlayerId)
 {
@@ -387,7 +387,7 @@ void CSWSDialog::AddJournalEntry(const CExoString& sPlotID,
         }
     }
 }
-// PC 0x0059F140  Xbox 0x00187C00
+// PC 0x005E63F0
 inline CSWSDialogBase& CSWSDialogBase::operator=(const CSWSDialogBase& dialogBase)
 {
     m_sSpeaker = dialogBase.m_sSpeaker;
@@ -413,7 +413,7 @@ inline CSWSDialogBase& CSWSDialogBase::operator=(const CSWSDialogBase& dialogBas
     m_bSoundExists = dialogBase.m_bSoundExists;
     return *this;
 }
-// PC 0x0059F220  Xbox 0x00189630
+// PC 0x005E65A0
 void CSWSDialog::InitializePsuedoRandomCameraAngles(CResGFF* pResGFF)
 {
     CResRef cResRef;
@@ -440,7 +440,7 @@ void CSWSDialog::InitializePsuedoRandomCameraAngles(CResGFF* pResGFF)
     m_nPseudoRandomCameraStep = nHash % 5 + 1;
     m_bPseudoRandomCameraDirection = nHash & 1;
 }
-// PC 0x0059F320  Xbox 0x00187CE0
+// PC 0x005E67A0
 CExoString CSWSDialog::GetExoStringFromLocString(CExoLocString& locString,
                                                  unsigned char nGender)
 {
@@ -453,7 +453,7 @@ CExoString CSWSDialog::GetExoStringFromLocString(CExoLocString& locString,
                         nGender);
     return sString;
 }
-// PC 0x0059F3C0  Xbox 0x00187D80
+// PC 0x005E6840
 void CSWSDialog::GiveDialogPlotXP(int nPlotIndex, float fPercent)
 {
     if (nPlotIndex != CSWSDialogBase::PLOT_INDEX_INVALID && fPercent > 0.0f &&
@@ -464,7 +464,7 @@ void CSWSDialog::GiveDialogPlotXP(int nPlotIndex, float fPercent)
             nPlotIndex, (int)ceil(fPercent * 100.0f));
     }
 }
-// PC 0x0059F430  Xbox 0x00187DF0
+// PC 0x005E68B0
 int CSWSDialog::SetDialogOwner(CSWSObject* pOwner)
 {
     int nResult = (int)pOwner;
@@ -483,7 +483,7 @@ int CSWSDialog::SetDialogOwner(CSWSObject* pOwner)
     }
     return nResult;
 }
-// PC 0x0059F5F0  Xbox 0x00188040
+// PC 0x005E6A90
 void CSWSDialog::LoadDialogBase(CSWSDialogBase& dialogBase, CResGFF* pGFF,
                                 CResStruct& resStruct, unsigned long& nDelay,
                                 int& bSuccess)
@@ -617,7 +617,7 @@ void CSWSDialog::LoadDialogBase(CSWSDialogBase& dialogBase, CResGFF* pGFF,
             pGFF->ReadFieldWORD(&animationStruct, "Animation", bSuccess, 0);
     }
 }
-// PC 0x0059FB60  Xbox 0x001885B0
+// PC 0x005E73D0
 int CSWSDialog::RemovePlayer(unsigned long oidPlayer)
 {
     CExoLinkedListNode* pPosition = m_lstPlayers.GetHeadPos();
@@ -656,7 +656,7 @@ int CSWSDialog::RemovePlayer(unsigned long oidPlayer)
     }
     return m_lstPlayers.GetHeadPos() != NULL;
 }
-// PC 0x0059FC30  Xbox 0x00188680
+// PC 0x005E74B0
 CSWSObject* CSWSDialog::GetSpeaker(CSWSObject* pOwner, const CExoString& sSpeaker)
 {
     unsigned long oidSpeaker;
@@ -740,7 +740,7 @@ CSWSObject* CSWSDialog::GetSpeaker(CSWSObject* pOwner, const CExoString& sSpeake
     }
     return pSpeaker;
 }
-// PC 0x0059FF50  Xbox 0x001889E0
+// PC 0x005E77E0
 float CSWSDialog::SetDialogDelay(CSWSObject* pObject, CExoLocString& lsText,
                                  unsigned long nDelay, int bSound,
                                  unsigned long nFlag)
@@ -771,7 +771,7 @@ float CSWSDialog::SetDialogDelay(CSWSObject* pObject, CExoLocString& lsText,
     pObject->SetDialogDelay(fDelay);
     return fDelay;
 }
-// PC 0x005A0080  Xbox 0x00188B10
+// PC 0x005E7930
 int CSWSDialog::SendDialogModels(CSWSObject* pOwner, unsigned long oidPlayer)
 {
     CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
@@ -813,7 +813,7 @@ int CSWSDialog::SendDialogModels(CSWSObject* pOwner, unsigned long oidPlayer)
     delete[] pModels;
     return 1;
 }
-// PC 0x005A0240  Xbox 0x00188CD0
+// PC 0x005E7AF0
 unsigned long CSWSDialog::GetDialogModel(int nStunt, int& bNonDependant)
 {
     bNonDependant = 0;
@@ -848,14 +848,14 @@ unsigned long CSWSDialog::GetDialogModel(int nStunt, int& bNonDependant)
     }
     return OBJECT_INVALID;
 }
-// PC 0x005A0360  Xbox 0x00188DF0
+// PC 0x005E7C10
 inline CSWSDialogNode& CSWSDialogNode::operator=(const CSWSDialogNode& dialogNode)
 {
     CSWSDialogBase::operator=(dialogNode);
     CSWSDialogCamera::operator=(dialogNode);
     return *this;
 }
-// PC 0x005A03C0  Xbox 0x00188E50
+// PC 0x005E7C80
 int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject* pOwner,
                             unsigned long nReply, int bEscape,
                             unsigned long nEntry, int bSkip)
@@ -1009,7 +1009,7 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject* pOwner,
     m_n60 = 1;
     return 0;
 }
-// PC 0x005A0940  Xbox 0x001893D0
+// PC 0x005E83F0
 void CSWSDialog::ClearAllPlayerHostileActions()
 {
     unsigned long oidPlayer =
@@ -1046,7 +1046,7 @@ void CSWSDialog::ClearAllPlayerHostileActions()
         }
     }
 }
-// PC 0x005A0E80  Xbox 0x00189A40
+// PC 0x005E8930
 CSWSDialog::CSWSDialog()
 {
     m_oidDialogOwner = OBJECT_INVALID;
@@ -1104,7 +1104,7 @@ CSWSDialog::CSWSDialog()
     m_nLastEntryTime = 0;
     m_nOwnerAILevel = 2;
 }
-// PC 0x005A2AE0  Xbox 0x0018B690
+// PC 0x005EA850
 int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
 {
     int bSuccess = 1;
@@ -1274,7 +1274,7 @@ int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
     }
     return bSuccess;
 }
-// PC 0x005A3640  Xbox 0x0018C1F0
+// PC 0x005EB2C0
 int CSWSDialog::GetStartEntry(CSWSObject* pOwner)
 {
     unsigned long nStart;
@@ -1314,7 +1314,7 @@ int CSWSDialog::GetStartEntry(CSWSObject* pOwner)
     }
     return DIALOG_INDEX_INVALID;
 }
-// PC 0x005A1050  Xbox 0x00189C10
+// PC 0x005E8BA0
 void CSWSDialog::BarkOneLine(int nEntry)
 {
     CExoString sText;
@@ -1401,7 +1401,7 @@ void CSWSDialog::BarkOneLine(int nEntry)
         }
     }
 }
-// PC 0x005A0A40  Xbox 0x001894D0
+// PC 0x005E84F0
 void CSWSDialog::RunEndConversationScript(CSWSObject* pObject, int bAborted)
 {
     CGameObjectArray* pObjectArray;
@@ -1473,7 +1473,7 @@ void CSWSDialog::RunEndConversationScript(CSWSObject* pObject, int bAborted)
 
     RunScript(pObject, m_cEndConversationAbortedScript);
 }
-// PC 0x005A0BA0  Xbox 0x00189760
+// PC 0x005E8650
 void CSWSDialog::UnequipItemsForDialog(unsigned long oidObject)
 {
     if (oidObject == OBJECT_INVALID)
@@ -1511,7 +1511,7 @@ void CSWSDialog::UnequipItemsForDialog(unsigned long oidObject)
         pCreature->HideEquippedItems(CResRef(), CResRef());
     }
 }
-// PC 0x005A0C80  Xbox 0x00189840
+// PC 0x005E8730
 void CSWSDialog::ReEquipItemsForDialog()
 {
     unsigned long* pObjectId;
@@ -1544,7 +1544,7 @@ void CSWSDialog::ReEquipItemsForDialog()
         m_lstUnequippedItems.GetNext(pPosition);
     }
 }
-// PC 0x005A13D0  Xbox 0x00189F90
+// PC 0x005E8F50
 int CSWSDialog::SendDialogEntryNode(
     unsigned long nPlayerId, unsigned long oidTarget, unsigned long oidSpeaker,
     unsigned long oidListener, unsigned long oidCamera, unsigned char nGender,
@@ -1801,7 +1801,7 @@ int CSWSDialog::SendDialogEntryNode(
     if (pDependant != NULL) delete[] pDependant;
     return 1;
 }
-// PC 0x005A3820  Xbox 0x0018C3D0
+// PC 0x005EB8E0
 int CSWSDialog::SendDialogReplies(CSWSObject* pOwner, unsigned long nPlayerId)
 {
 
@@ -1966,7 +1966,7 @@ int CSWSDialog::SendDialogReplies(CSWSObject* pOwner, unsigned long nPlayerId)
     }
     return bResult;
 }
-// PC 0x005A1C00  Xbox 0x0018A7B0
+// PC 0x005E98F0
 int CSWSDialog::SendDialogReplyNode(unsigned long nPlayerId, unsigned long oidPlayer,
     unsigned char nGender, CSWSDialogReply* pReplies, unsigned long nActive,
     unsigned long nInactive, unsigned long nEntry, int bEndOfDialog)
@@ -2203,7 +2203,7 @@ int CSWSDialog::SendDialogReplyNode(unsigned long nPlayerId, unsigned long oidPl
         delete[] pnAnimations;
     return 1;
 }
-// PC 0x005A0D10  Xbox 0x001898D0
+// PC 0x005E87C0
 void CSWSDialog::UnequipHItemForDialog(unsigned long oidObject)
 {
     if (oidObject == OBJECT_INVALID)
@@ -2241,7 +2241,7 @@ void CSWSDialog::UnequipHItemForDialog(unsigned long oidObject)
         pCreature->HideEquippedHeadItem();
     }
 }
-// PC 0x005A0DD0  Xbox 0x00189990
+// PC 0x005E8880
 void CSWSDialog::ReEquipHItemForDialog()
 {
     unsigned long* pObjectId;
@@ -2274,13 +2274,13 @@ void CSWSDialog::ReEquipHItemForDialog()
         m_lstUnequippedHeadItems.GetNext(pPosition);
     }
 }
-// PC 0x005A0E60  Xbox 0x00189A20
+// PC 0x005E8910
 CSWSDialogEntry::CSWSDialogEntry()
 {
     m_nReplies = 0;
     m_pReplies = NULL;
 }
-// PC 0x005A4010  Xbox 0x0018CBC0
+// PC 0x005EC310
 int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
                                 unsigned long nEntry, unsigned long& nResult)
 {
@@ -2481,7 +2481,7 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
     m_nCurrentEntry = nEntry;
     return pOwner->SendDialogReplies();
 }
-// PC 0x005A4880  Xbox 0x0018D420
+// PC 0x005ECD70
 inline CSWSDialog::~CSWSDialog()
 {
     ReEquipItemsForDialog();

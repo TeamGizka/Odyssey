@@ -8,7 +8,7 @@
 
 static inline void NwcanimbasewieldTrace1();
 #define NWCANIMBASEWIELD_TRACE() NwcanimbasewieldTrace1()
-// PC 0x00699DD0  Xbox 0x000C5980
+// PC 0x006F45C0
 CSWCAnimBaseWield::CSWCAnimBaseWield()
 {
     m_nRightItemId = CGameObjectArray::INVALIDOBJID;
@@ -24,7 +24,7 @@ CSWCAnimBaseWield::CSWCAnimBaseWield()
     m_bTorchLit = 0;
     m_pTorchSound = 0;
 }
-// PC 0x00699ED0  Xbox 0x000C5A80
+// PC 0x006F4700
 CSWCAnimBaseWield::~CSWCAnimBaseWield()
 {
     if (m_pTorchSound != 0)
@@ -48,12 +48,12 @@ CSWCAnimBaseWield::~CSWCAnimBaseWield()
     }
     UnloadModel();
 }
-// PC 0x00699FC0  Xbox 0x000C5B70
+// PC 0x006F47F0
 void CSWCAnimBaseWield::SetWieldLimited(int bLimited)
 {
     m_bWieldLimited = bLimited;
 }
-// PC 0x00699FD0  Xbox 0x000C5B80
+// PC 0x006F4A70
 int CSWCAnimBaseWield::SetAnimationOnSubObjectInternal(
     CAurObject* pObject, unsigned char nSubObject, unsigned short nAnimation,
     float fSpeed, int nFlags, float fBlend)
@@ -64,7 +64,7 @@ int CSWCAnimBaseWield::SetAnimationOnSubObjectInternal(
     }
     return SetAnimationInternal(pObject, nAnimation, fSpeed, nFlags, fBlend);
 }
-// PC 0x0069A3E0  Xbox 0x000C5C70
+// PC 0x006F4800
 int CSWCAnimBaseWield::SetAnimationInternal(CAurObject* pObject,
                                             unsigned short nAnimation,
                                             float fSpeed, int nFlags,
@@ -127,7 +127,7 @@ int CSWCAnimBaseWield::SetAnimationInternal(CAurObject* pObject,
     return CSWCAnimBaseTW::SetAnimationInternal(pObject, nAnimation, fSpeed,
                                                 nFlags, fBlend);
 }
-// PC 0x0069A010  Xbox 0x000C6190
+// PC 0x006F4D50
 void CSWCAnimBaseWield::ShowWieldedItems()
 {
     if (m_bItemsHidden != 0)
@@ -183,17 +183,17 @@ void CSWCAnimBaseWield::ShowWieldedItems()
         m_bItemsHidden = 0;
     }
 }
-// PC 0x0069A170  Xbox 0x000C5BC0
+// PC 0x006F4EB0
 void CSWCAnimBaseWield::TurnOnShadows()
 {
     CSWCAnimBase::TurnOnShadows();
 }
-// PC 0x0069A180  Xbox 0x000C5BD0
+// PC 0x006F4EC0
 void CSWCAnimBaseWield::TurnOffShadows()
 {
     CSWCAnimBase::TurnOffShadows();
 }
-// PC 0x0069A190  Xbox 0x000C62F0
+// PC 0x006F4ED0
 void CSWCAnimBaseWield::UpdateSound(int bPlaying)
 {
     if (bPlaying != 0 && m_bTorchLit != 0)
@@ -236,7 +236,7 @@ void CSWCAnimBaseWield::UpdateSound(int bPlaying)
         }
     }
 }
-// PC 0x0069AA90  Xbox 0x000C6620
+// PC 0x006F5250
 Gob* CSWCAnimBaseWield::GetModel(unsigned char nSlot)
 {
     switch (nSlot)
@@ -260,7 +260,7 @@ Gob* CSWCAnimBaseWield::GetModel(unsigned char nSlot)
     }
     return CSWCAnimBaseTW::GetModel(nSlot);
 }
-// PC 0x0069AB80  Xbox 0x000C6710
+// PC 0x006F5340
 int CSWCAnimBaseWield::Wield(unsigned long nItemId, const CExoString& sAttach,
                              unsigned char nHand, float fScale)
 {
@@ -409,7 +409,7 @@ int CSWCAnimBaseWield::Wield(unsigned long nItemId, const CExoString& sAttach,
     RefreshHilite();
     return 1;
 }
-// PC 0x0069AFE0  Xbox 0x000C6B70
+// PC 0x006F57D0
 int CSWCAnimBaseWield::LoadModel(const CResRef& sResRef, unsigned char nType)
 {
     if (CSWCAnimBaseTW::LoadModel(sResRef, nType) != 0)
@@ -419,7 +419,7 @@ int CSWCAnimBaseWield::LoadModel(const CResRef& sResRef, unsigned char nType)
     }
     return 0;
 }
-// PC 0x0069AF10  Xbox 0x000C6AA0
+// PC 0x006F56D0
 void CSWCAnimBaseWield::ReAttachWieldedObjects()
 {
     Gob* pRightModel = GetItemAurObject(m_nRightItemId, CSWCObject::MODEL_SLOT_DEFAULT);
@@ -434,7 +434,7 @@ void CSWCAnimBaseWield::ReAttachWieldedObjects()
     }
     RefreshHilite();
 }
-// PC 0x0069A650  Xbox 0x000C5EF0
+// PC 0x006F4AB0
 Gob* CSWCAnimBaseWield::GetItemAurObject(unsigned long nItemId,
                                                 unsigned char nSlot)
 {
@@ -447,7 +447,7 @@ Gob* CSWCAnimBaseWield::GetItemAurObject(unsigned long nItemId,
     }
     return pItem->GetModel(nSlot, 1);
 }
-// PC 0x0069A680  Xbox 0x000C5F20
+// PC 0x006F4AE0
 int CSWCAnimBaseWield::ItemIsValid(unsigned long nItemId)
 {
     NWCANIMBASEWIELD_TRACE();
@@ -458,7 +458,7 @@ int CSWCAnimBaseWield::ItemIsValid(unsigned long nItemId)
     return g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(nItemId) !=
            0;
 }
-// PC 0x0069A6B0  Xbox 0x000C5F50
+// PC 0x006F4B10
 void CSWCAnimBaseWield::HideWieldedItems(const CResRef& sRight,
                                          const CResRef& sLeft)
 {
@@ -539,7 +539,7 @@ void CSWCAnimBaseWield::HideWieldedItems(const CResRef& sRight,
 
     m_bItemsHidden = 1;
 }
-// PC 0x0069A8F0  Xbox 0x000C6460
+// PC 0x006F5070
 void CSWCAnimBaseWield::EnableDistortion()
 {
     Gob* pLeftModel = GetItemAurObject(m_nLeftItemId, CSWCObject::MODEL_SLOT_DEFAULT);
@@ -554,7 +554,7 @@ void CSWCAnimBaseWield::EnableDistortion()
     }
     CSWCAnimBase::EnableDistortion();
 }
-// PC 0x0069A980  Xbox 0x000C64F0
+// PC 0x006F5100
 void CSWCAnimBaseWield::DisableDistortion()
 {
     Gob* pLeftModel = GetItemAurObject(m_nLeftItemId, CSWCObject::MODEL_SLOT_DEFAULT);

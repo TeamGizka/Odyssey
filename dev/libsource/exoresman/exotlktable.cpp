@@ -20,13 +20,13 @@ const int CTlkTable::CUSTOMTOKEN_RESERVED_END = 9;
 const unsigned char CTlkTable::GENDER_MALE = 0;
 const unsigned char CTlkTable::GENDER_FEMALE = 1;
 const unsigned char CTlkTable::NUM_CONTENT_PKGS = 7;
-// PC 0x0041D810  Xbox 0x001430F0
+// PC 0x0041EC10
 CTlkFile::CTlkFile(const CExoString& sResRef)
     : CExoFile(sResRef, RESTYPE_TLK, "rb")
 {
     memset(&m_nFileType, 0, 20);
 }
-// PC 0x0041D890  Xbox 0x00143170
+// PC 0x0041EC90
 int CTlkFile::ReadHeader()
 {
     SeekBeginning();
@@ -38,7 +38,7 @@ int CTlkFile::ReadHeader()
 
     return m_nFileType == TLK_FILE_TYPE;
 }
-// PC 0x0041D8D0  Xbox 0x001431B0
+// PC 0x0041ECD0
 CTlkTable::CTlkTable()
 {
     m_nCurGender = GENDER_MALE;
@@ -66,7 +66,7 @@ inline void TlkTableReleaseEntries(CTlkFile* pFile, CTlkTable::SCustomToken* pTo
     pNew[0] = pTokens[0];
     delete[] pTokens;
 }
-// PC 0x0041D920  Xbox 0x00143220
+// PC 0x0041ED10
 int CTlkTable::AddFile(const CExoString& sResRef, int nContentPkg)
 {
     if (nContentPkg < 0 || nContentPkg > NUM_CONTENT_PKGS || sResRef == "")
@@ -121,7 +121,7 @@ int CTlkTable::ExoIsDBCSLeadByte(unsigned char c)
     return FALSE;
 }
 #endif
-// PC 0x0041DB50  Xbox 0x00143470
+// PC 0x0041EF40
 void CTlkTable::SetCustomToken(int nToken, const CExoString& sValue)
 {
     if (nToken < 0)
@@ -166,7 +166,7 @@ void CTlkTable::SetCustomToken(int nToken, const CExoString& sValue)
     m_pCustomTokens = pTokens;
     m_nCustomTokenCount++;
 }
-// PC 0x0041E550  Xbox 0x00143EE0
+// PC 0x0041FAB0
 int CTlkTable::Fetch(unsigned long nStrRef, STR_RES& pResult,
                      unsigned char nGender)
 {
@@ -182,7 +182,7 @@ int CTlkTable::Fetch(unsigned long nStrRef, STR_RES& pResult,
 
     return nResult;
 }
-// PC 0x0041E5A0  Xbox 0x00143F30
+// PC 0x0041FB10
 int CTlkTable::OpenFile(const CExoString& sResRef)
 {
     if (!AddFile(sResRef, 0))
@@ -239,7 +239,7 @@ int CTlkTable::OpenFile(const CExoString& sResRef)
 
     return 1;
 }
-// PC 0x0041E8F0  Xbox 0x00144280
+// PC 0x0041FE60
 CExoString CTlkTable::GetSimpleString(unsigned long nStrRef)
 {
     STR_RES strRes;
@@ -254,7 +254,7 @@ CExoString CTlkTable::GetSimpleString(unsigned long nStrRef)
 
     return strRes.m_sString;
 }
-// PC 0x0041E100  Xbox 0x00143A30
+// PC 0x0041F660
 CTlkTable::~CTlkTable()
 {
     delete[] m_pCustomTokens;
@@ -274,7 +274,7 @@ CTlkTable::~CTlkTable()
         pFile += 2;
     }
 }
-// PC 0x0041E1A0  Xbox 0x00143AD0
+// PC 0x0041F700
 int CTlkTable::FetchInternal(unsigned long nStrRef, STR_RES& strRes, int bParseTokens)
 {
     CExoString sString;
@@ -379,14 +379,14 @@ int CTlkTable::FetchInternal(unsigned long nStrRef, STR_RES& strRes, int bParseT
     }
     return TRUE;
 }
-// PC 0x0041DCF0  Xbox 0x00143620
+// PC 0x0041F0E0
 void CTlkTable::ClearCustomTokens()
 {
     delete[] m_pCustomTokens;
     m_pCustomTokens = NULL;
     m_nCustomTokenCount = 0;
 }
-// PC 0x0041DD30  Xbox 0x00143660
+// PC 0x0041F120
 void CTlkTable::ParseStr(CExoString& sText)
 {
     CExoString sParsed;
@@ -515,7 +515,7 @@ TokenDone:
         sText = sParsed;
     }
 }
-// PC 0x0041E0F0  Xbox 0x00143A20
+// PC 0x0041F650
 int CTlkTable::GetLanguageVersion()
 {
     CTlkFile* pFile = m_aFiles[0];

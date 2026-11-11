@@ -1,6 +1,6 @@
 #include "math3d.h"
 #include <math.h>
-// PC 0x004ACEA0  Xbox 0x00310950
+// PC 0x004DA630
 void BSPTraverse(BSPNode* pNode, BSPTraverseCallback pCallback, void* pData)
 {
     while (pNode != 0)
@@ -10,7 +10,7 @@ void BSPTraverse(BSPNode* pNode, BSPTraverseCallback pCallback, void* pData)
         pNode = pNode->m_pPositive;
     }
 }
-// PC 0x004AD630  Xbox 0x003112A0
+// PC 0x004DADC0
 BSPNode::BSPNode(Vector vNormal, float fDistance)
     : m_Plane(vNormal, fDistance),
       m_vMinimum(0.0f, 0.0f, 0.0f),
@@ -24,7 +24,7 @@ BSPNode::BSPNode(Vector vNormal, float fDistance)
     m_bLeaf = 0;
     m_pData = 0;
 }
-// PC 0x004AD6D0  Xbox 0x00311350
+// PC 0x004DAE60
 void BSPTraverse(BSPNode* pNode, Vector vPoint, BSPPlaneCallback pCallback,
                  void* pData)
 {
@@ -44,7 +44,7 @@ void BSPTraverse(BSPNode* pNode, Vector vPoint, BSPPlaneCallback pCallback,
     BSPTraverse(pNear, vPoint, pCallback, pData);
     BSPTraverse(pFar, vPoint, pCallback, pData);
 }
-// PC 0x004ACED0  Xbox 0x00310980
+// PC 0x004DA660
 BSPNode::~BSPNode()
 {
     if (m_pNegative != 0)
@@ -56,7 +56,7 @@ BSPNode::~BSPNode()
         delete m_pPositive;
     }
 }
-// PC 0x004ACF60  Xbox 0x00310A10
+// PC 0x004DA6F0
 void BSPTraverse(BSPNode* pNode, const Vector& vCenter, float fRadiusSquared,
                  BSPVolumeCallback pCallback)
 {
@@ -81,7 +81,7 @@ void BSPTraverse(BSPNode* pNode, const Vector& vCenter, float fRadiusSquared,
         } while (pNode != 0);
     }
 }
-// PC 0x004ACFF0  Xbox 0x00310AB0
+// PC 0x004DA780
 int RFaceSplitTest(List<Vector>& vertices, const Plane& plane)
 {
     int nResult = 0;
@@ -96,7 +96,7 @@ int RFaceSplitTest(List<Vector>& vertices, const Plane& plane)
     }
     return nResult;
 }
-// PC 0x004AD060  Xbox 0x00310C60
+// PC 0x004DA7F0
 BSPNode* BSPFitSphere(BSPNode* pNode, const Vector& vCenter, float fRadius)
 {
     while (!pNode->m_bLeaf)
@@ -118,7 +118,7 @@ BSPNode* BSPFitSphere(BSPNode* pNode, const Vector& vCenter, float fRadius)
     }
     return pNode;
 }
-// PC 0x004AD0D0  Xbox 0x00310CD0
+// PC 0x004DA860
 BSPNode* BSPFitBox(BSPNode* pNode, const Vector& vMinimum,
                    const Vector& vMaximum)
 {
@@ -142,7 +142,7 @@ BSPNode* BSPFitBox(BSPNode* pNode, const Vector& vMinimum,
     }
     return pNode;
 }
-// PC 0x004AD1A0  Xbox 0x00310DB0
+// PC 0x004DA930
 BSPNode* BSPSearch(BSPNode* pNode, Vector vPoint, BSPSearchCallback pCallback,
                    void* pData)
 {
@@ -175,7 +175,7 @@ BSPNode* BSPSearch(BSPNode* pNode, Vector vPoint, BSPSearchCallback pCallback,
     }
     return BSPSearch(pSecond, vPoint, pCallback, pData);
 }
-// PC 0x004AD260  Xbox 0x00310E90
+// PC 0x004DA9F0
 int BSPHitCheck(BSPNode* pNode, Vector vStart, Vector vEnd, Vector* pHit,
                 BSPHitCallback pCallback)
 {
@@ -240,7 +240,7 @@ int BSPHitCheck(BSPNode* pNode, Vector vStart, Vector vEnd, Vector* pHit,
     return nHit | BSPHitCheck(pNode->m_pNegative, vIntersection, vEnd, pHit,
                               pCallback);
 }
-// PC 0x004AD560  Xbox 0x003111B0
+// PC 0x004DACF0
 void BSPSphereCheck(BSPNode* pNode, const Vector& vCenter, float fRadius,
                     List<BSPNode*>& nodes)
 {
@@ -263,7 +263,7 @@ void BSPSphereCheck(BSPNode* pNode, const Vector& vCenter, float fRadius,
     }
     nodes.Add(pNode);
 }
-// PC 0x004AD7E0  Xbox 0x00311460
+// PC 0x004DAF70
 void BSPTraverseVolumeApprox(BSPNode* pNode, const Vector& vPoint,
                              List<Plane>& planes,
                              BSPPlaneCallback pCallback, void* pData)

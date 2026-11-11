@@ -1,20 +1,20 @@
 #include "exoresman.h"
-// PC 0x006DB650  Xbox 0x0010CAB0
+// PC 0x00749960
 CResSSF::CResSSF()
 {
     m_bServiced = 0;
 }
-// PC 0x006DB670  Xbox 0x0010CAD0
+// PC 0x00749980
 CResSSF::~CResSSF()
 {
 }
-// PC 0x006DB680  Xbox 0x0010CAE0
+// PC 0x00749990
 int CResSSF::OnResourceFreed()
 {
     m_bServiced = 0;
     return 1;
 }
-// PC 0x006DB690  Xbox 0x0010CAF0
+// PC 0x007499A0
 int CResSSF::OnResourceServiced()
 {
     if (m_pResource == 0)

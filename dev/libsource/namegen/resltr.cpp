@@ -1,6 +1,6 @@
 #include <string.h>
 #include "exoresman.h"
-// PC 0x007121B0  Xbox 0x0027CC80
+// PC 0x00785A50
 CResLTR::CResLTR()
 {
     m_pLTRData = 0;
@@ -17,11 +17,11 @@ CResLTR::CResLTR()
     m_pnLetterTable2 = 0;
     m_pnLetterTable3 = 0;
 }
-// PC 0x007121F0  Xbox 0x0027CCC0
+// PC 0x00785A90
 CResLTR::~CResLTR()
 {
 }
-// PC 0x00712200  Xbox 0x0027CCD0
+// PC 0x00785AA0
 int CResLTR::OnResourceFreed()
 {
     unsigned char i;
@@ -123,7 +123,7 @@ int CResLTR::OnResourceFreed()
     m_nDataSize = 0;
     return 1;
 }
-// PC 0x00712410  Xbox 0x0027CEE0
+// PC 0x00785CB0
 int CResLTR::OnResourceServiced()
 {
     LTRHeader* pHeader = (LTRHeader*)m_pResource;

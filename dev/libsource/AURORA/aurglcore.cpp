@@ -334,7 +334,7 @@ enum
     GL_SINGLE_COLOR_EXT = 0x81F9,
     GL_SEPARATE_SPECULAR_COLOR_EXT = 0x81FA
 };
-// PC 0x00423A90
+// PC 0x00425350
 void RequestPoolManagerSys::ResizePool(unsigned int nPool, unsigned int nSize)
 {
     totalvertexpool += nSize - m_pPoolSize[nPool];
@@ -347,12 +347,12 @@ void RequestPoolManagerSys::ResizePool(unsigned int nPool, unsigned int nSize)
     m_pPoolSize[nPool] = nSize;
     m_ppPools[nPool] = pNewPool;
 }
-// PC 0x00423B40
+// PC 0x00425400
 int RequestPoolManagerSys::GetPoolSize(unsigned int nPool)
 {
     return m_pPoolSize[nPool];
 }
-// PC 0x00423B50
+// PC 0x00425410
 int RequestPoolManagerSys::GetPool(unsigned int nPool)
 {
     if (nPool == (unsigned int)-1)
@@ -362,7 +362,7 @@ int RequestPoolManagerSys::GetPool(unsigned int nPool)
 
     return (int)m_ppPools[nPool];
 }
-// PC 0x00423B50
+// PC 0x00425410
 int RequestPoolManagerSys::GetIndexPool(unsigned int nPool)
 {
     if (nPool == (unsigned int)-1)
@@ -376,7 +376,7 @@ int RequestPoolManagerSys::GetIndexPool(unsigned int nPool)
 inline ImposterManager::ImposterManager() : m_pImposters(NULL), m_nImposters(2)
 {
 }
-// PC 0x00434CC0
+// PC 0x00434BB0
 void RequestPoolManagerVBO::BackUpPoolManager()
 {
     int nSize;
@@ -403,7 +403,7 @@ void RequestPoolManagerVBO::BackUpPoolManager()
         }
     }
 }
-// PC 0x00420440
+// PC 0x00421C40
 inline int GLRender::BindTexture(Aurora::AuroraEnableEnums nTarget,
                                  unsigned long nTexture)
 {
@@ -413,7 +413,7 @@ inline int GLRender::BindTexture(Aurora::AuroraEnableEnums nTarget,
     GLRender::cm_nGLCurrentTID[GLRender::cm_uiCurrentStage] = nTexture;
     return GLRender::cm_uiCurrentStage;
 }
-// PC 0x00434E70
+// PC 0x00434D60
 void RequestPoolManagerVBO::RestorePoolManager()
 {
     for (int nPool = 0; nPool < m_lstPoolBackup.m_nCount; nPool++)
@@ -439,7 +439,7 @@ void RequestPoolManagerVBO::RestorePoolManager()
 void AurInitVertexArrayRange(int nBytes)
 {
 }
-// PC 0x005B5E90
+// PC 0x006049D0
 void RequestPoolManagerSys::RefreshPool(int nPool, int nUsage)
 {
 }
@@ -511,7 +511,7 @@ inline void SetStencilMask(unsigned int nMask)
 {
     glStencilMask(nMask);
 }
-// PC 0x00423C40  Xbox 0x00283670
+// PC 0x00425500
 Vector Quaternion::axis() const
 {
     Vector vAxis(m_fX, m_fY, m_fZ);
@@ -531,7 +531,7 @@ void (*GLRender::pfuncEnablePixelShaders)(int nShader, CAurTexture* pTexture0,
                                          CAurTexture* pTexture2,
                                          CAurTexture* pTexture3);
 unsigned short GLRender::m_UsedVertices[GLRender::MAX_SHADOW_VERTICES];
-// PC 0x00423CD0  Xbox 0x0028C310
+// PC 0x004255A0
 inline void GLRender::DisableCombiners(CAurTexture* pTexture)
 {
     glDisable(GL_REGISTER_COMBINERS_NV);
@@ -555,7 +555,7 @@ inline void GLRender::DisableCombiners(CAurTexture* pTexture)
     }
     glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
 }
-// PC 0x00423D80  Xbox 0x0028B7E0
+// PC 0x004259B0
 void GLRender::MakeLookUpTexture(float fGamma)
 {
     if (!glIsTexture(lookup))
@@ -654,25 +654,25 @@ int GLRender::SetSpecularMode(int bSeparateSpecular)
     glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT, GL_SINGLE_COLOR_EXT);
     return 1;
 }
-// PC 0x00423EE0  Xbox 0x0028A7E0
+// PC 0x00425B10
 unsigned long GLRender::RequestPool(Aurora::AuroraBufferRequestType nType,
                            unsigned long nSize, unsigned long nUsage,
                            unsigned long nPoolFlags, unsigned long* pnPool)
 {
     return *pnPool = manRef->RequestPoolGeneric(nType, nSize, nUsage);
 }
-// PC 0x00423F10  Xbox 0x0028A8B0
+// PC 0x00425B40
 void* GLRender::LockPool(unsigned long nPool, unsigned long nOffset,
                          unsigned long nSize, unsigned long nCount)
 {
     return manRef->LockPool(nPool, nCount);
 }
-// PC 0x00423F30  Xbox 0x0028AA70
+// PC 0x00425B60
 void GLRender::UnlockPool(unsigned long nPool)
 {
     manRef->UnlockPool(nPool);
 }
-// PC 0x00423F50  Xbox 0x0028AAD0
+// PC 0x00425B80
 void GLRender::DeletePool(unsigned long nPool)
 {
     if (nPool != (unsigned int)-1)
@@ -680,12 +680,12 @@ void GLRender::DeletePool(unsigned long nPool)
         manRef->DeletePool(nPool);
     }
 }
-// PC 0x00423F70  Xbox 0x0028ABA0
+// PC 0x00425BA0
 void GLRender::ResizePool(unsigned long nPool, unsigned long nSize)
 {
     manRef->ResizePool(nPool, nSize);
 }
-// PC 0x00423F90  Xbox 0x00285A90
+// PC 0x00425BC0
 void GLRender::CreateCubeTexture(CAurTexture* pTexture, bool bMipMaps,
                                  int nIndex)
 {
@@ -777,7 +777,7 @@ void GLRender::CreateCubeTexture(CAurTexture* pTexture, bool bMipMaps,
                         pTexture->GetFilter() ? GL_LINEAR : GL_NEAREST);
     }
 }
-// PC 0x00424230  Xbox 0x002862E0
+// PC 0x00425E60
 void GLRender::CreateProcessedCubeTexture(CAurTexture* pTexture, bool bSubImage,
                                           int nIndex)
 {
@@ -875,7 +875,7 @@ void GLRender::CreateProcessedCubeTexture(CAurTexture* pTexture, bool bSubImage,
         glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER,
                          pTexture->GetFilter() ? GL_LINEAR : GL_NEAREST);
 }
-// PC 0x00424580
+// PC 0x004261B0
 void AurBuild2DMipMaps(int nSrcWidth, int nSrcHeight, int nBPP,
                        unsigned char* pImage, bool bSubImage)
 {
@@ -972,19 +972,19 @@ void AurBuild2DMipMaps(int nSrcWidth, int nSrcHeight, int nBPP,
     }
     delete pMipImage;
 }
-// PC 0x00424940
+// PC 0x00425650
 inline void GLRender::SetCombinerConstant0(Vector& vColor, float fAlpha)
 {
     glCombinerParameterfvNV(0x852A, Homogenize(vColor, fAlpha));
 }
-// PC 0x00424960
+// PC 0x00425670
 inline void GLRender::SetCombinerConstant1(Vector& vColor, float fAlpha)
 {
     glCombinerParameterfvNV(0x852B, Homogenize(vColor, fAlpha));
 }
 
 extern unsigned int g_rgbaPauseOverlayColor;
-// PC 0x00424980
+// PC 0x00426570
 void GLRender::CreateTexture(CAurTexture* pTexture, bool bSubImage, int nIndex)
 {
     int nHeight = pTexture->GetHeight();
@@ -1106,7 +1106,7 @@ void GLRender::CreateTexture(CAurTexture* pTexture, bool bSubImage, int nIndex)
     if (pSubImage != pImage)
         delete pSubImage;
 }
-// PC 0x00424D70  Xbox 0x00283D20
+// PC 0x004269B0
 int GetCompressedContactSheetOffset(int nIndex, int nWidth, int nBytesPerPixel)
 {
     int nMipWidth = nWidth;
@@ -1121,7 +1121,7 @@ int GetCompressedContactSheetOffset(int nIndex, int nWidth, int nBytesPerPixel)
 
     return nIndex * nSize;
 }
-// PC 0x00424DD0
+// PC 0x00426A10
 void GLRender::CreateProcessedTexture(CAurTexture* pTexture, bool bSubImage,
                                       int nIndex)
 {
@@ -1275,7 +1275,7 @@ inline void SetStencilFunc(unsigned int nFunc, int nRef, unsigned int nMask)
 {
     glStencilFunc(nFunc, nRef, nMask);
 }
-// PC 0x00425280
+// PC 0x00426E90
 void GLRender::SetLightmapTexCoordToStage0(unsigned long nStride, int nFlags,
                                          unsigned long nPool, int nVertexCount,
                                          MdlNodeTriMesh* pMesh,
@@ -1305,7 +1305,7 @@ void GLRender::SetLightmapTexCoordToStage0(unsigned long nStride, int nFlags,
         ActivateTextureStage(0);
     }
 }
-// PC 0x004253D0
+// PC 0x00426FE0
 void GLRender::SetDecalTexCoordToStage0(unsigned long nStride, int nFlags,
                                       unsigned long nPool, int nVertexCount,
                                       MdlNodeTriMesh* pMesh,
@@ -1335,7 +1335,7 @@ void GLRender::SetDecalTexCoordToStage0(unsigned long nStride, int nFlags,
         ActivateTextureStage(0);
     }
 }
-// PC 0x00425520  Xbox 0x0028BE40
+// PC 0x00427130
 void GLRender::SetInterleavedBuffer(unsigned long nStride, int nFlags,
                                    unsigned long nPool, int nVertexCount,
                                    MdlNodeTriMesh* pMesh, unsigned long nOffset)
@@ -1464,7 +1464,7 @@ void GLRender::SetInterleavedBuffer(unsigned long nStride, int nFlags,
         }
     }
 }
-// PC 0x00425900
+// PC 0x00427510
 void GLRender::SetVertexBuffer(unsigned long nStride, unsigned long nOffset,
                                unsigned long nPool, int nUsage)
 {
@@ -1481,7 +1481,7 @@ void GLRender::SetVertexBuffer(unsigned long nStride, unsigned long nOffset,
                         (const GLvoid*)(nOffset + nBuffer));
     }
 }
-// PC 0x00425970
+// PC 0x00427580
 void GLRender::SetColorBuffer(unsigned long nStride, unsigned long nOffset,
                               unsigned long nPool, int nUsage)
 {
@@ -1498,7 +1498,7 @@ void GLRender::SetColorBuffer(unsigned long nStride, unsigned long nOffset,
                        (const GLvoid*)(nOffset + nBuffer));
     }
 }
-// PC 0x004259E0
+// PC 0x004275F0
 void GLRender::SetNormalBuffer(unsigned int nStride, unsigned int nOffset,
                                unsigned int nPool, int nUsage)
 {
@@ -1514,7 +1514,7 @@ void GLRender::SetNormalBuffer(unsigned int nStride, unsigned int nOffset,
         glNormalPointer(GL_FLOAT, nStride, (const GLvoid*)(nOffset + nBuffer));
     }
 }
-// PC 0x00425A40
+// PC 0x00427650
 void GLRender::SetTexCoordBuffer(unsigned long nStride, unsigned long nOffset,
                                  unsigned long nPool, int nUsage)
 {
@@ -1536,7 +1536,7 @@ inline void DrawPrimitive(unsigned int nMode, int nFirst, int nCount)
 {
     glDrawArrays(nMode, nFirst, nCount);
 }
-// PC 0x00425AB0  Xbox 0x0028BEC0
+// PC 0x004276C0
 void GLRender::DrawElements(Aurora::AuroraPrimitiveTypes nPrimitive,
                             unsigned long nCount, unsigned long nOffset,
                             unsigned long nPool)
@@ -1546,7 +1546,7 @@ void GLRender::DrawElements(Aurora::AuroraPrimitiveTypes nPrimitive,
                    GL_UNSIGNED_SHORT,
                    (const GLvoid*)(nIndexPool + 2 * nOffset));
 }
-// PC 0x00425AF0
+// PC 0x00427700
 void ImposterManager::AllocateImposter(unsigned long nRecord, int nVertices,
                                       float* pVertices)
 {
@@ -1635,7 +1635,7 @@ void EndImposterRender(unsigned long nRecord)
     glVertex3f(0.0f, 4.0f, 0.0f);
     glEnd();
 }
-// PC 0x00425C30
+// PC 0x00427840
 int GLRender::InitRenderSystem()
 {
     GLRender::m_hGLRC = wglGetCurrentContext();
@@ -1644,7 +1644,7 @@ int GLRender::InitRenderSystem()
     GLRender::cm_uiCurrentStage = 0;
     return 0;
 }
-// PC 0x00425C60
+// PC 0x00427E20
 int GLRender::GetFogArraysInfoRef()
 {
     int nPool = manRef->RequestPoolGeneric(0, 8, 2);
@@ -1655,7 +1655,7 @@ int GLRender::GetFogArraysInfoRef()
     pPoolManager->UnlockPool(nPool);
     return nPool;
 }
-// PC 0x00425CA0  Xbox 0x002875E0
+// PC 0x00427E60
 void GLRender::SetViewTransform(Vector& vPosition, Quaternion& qOrientation)
 {
     glMatrixMode(GL_MODELVIEW);
@@ -1676,7 +1676,7 @@ void GLRender::SetViewTransform(Vector& vPosition, Quaternion& qOrientation)
     }
     Translate(-vPosition.m_fX, -vPosition.m_fY, -vPosition.m_fZ);
 }
-// PC 0x00425D80
+// PC 0x00427F50
 static void CalculateCubeMapNormal(int nFace, int nSize, int nX, int nY,
                                    float* pNormal)
 {
@@ -1698,7 +1698,7 @@ static void CalculateCubeMapNormal(int nFace, int nSize, int nX, int nY,
     pNormal[1] *= fScale;
     pNormal[2] *= fScale;
 }
-// PC 0x00425EA0  Xbox 0x00287780
+// PC 0x00428070
 void GLRender::MakeNormalizationCubeMap(int nSize)
 {
 
@@ -1726,7 +1726,7 @@ void GLRender::MakeNormalizationCubeMap(int nSize)
     }
     delete[] pPixels;
 }
-// PC 0x00426000  Xbox 0x0028D1E0
+// PC 0x004281D0
 void GLRender::RenderSquares(unsigned int nPool)
 {
     int nVBOAvailable = AurVertexBufferObjectARBAvailable();
@@ -1788,7 +1788,7 @@ void GLRender::RenderBox(Vector& vMinimum, Vector& vMaximum)
     glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
     glEnd();
 }
-// PC 0x004260A0  Xbox 0x00287AF0
+// PC 0x00428270
 void GLRender::ConvertHeightFieldAndLoadNormalMapTexture(
     unsigned char* pHeightField, int nWidth, int nHeight, int nRowWidth,
     int nRowCount, float fScale, int bUpdate, bool bNormalMap)
@@ -1841,7 +1841,7 @@ void GLRender::ConvertHeightFieldAndLoadNormalMapTexture(
     }
     delete[] pNormalMap;
 }
-// PC 0x00426230  Xbox 0x00286730
+// PC 0x00428400
 void GLRender::DrawLightmappedGrass(void* pVertices, int nVertexStride,
                                     void* pIndices, int nStride, int nFirst,
                                     int nQuads)
@@ -1892,7 +1892,7 @@ void GLRender::RenderPausePlane()
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING);
 }
-// PC 0x004263C0  Xbox 0x002844C0
+// PC 0x00428590
 void GLRender::InitAttenuationTexture()
 {
     unsigned char pixels[64 * 64 * 4];
@@ -1926,13 +1926,13 @@ void GLRender::InitAttenuationTexture()
                  GL_UNSIGNED_BYTE, pixels);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, cm_nAnisotropy);
 }
-// PC 0x00426550
+// PC 0x00428720
 int GLRender::SetCurrentStageTID(unsigned long nStage, unsigned int nTID)
 {
     GLRender::cm_nGLCurrentTID[nStage] = nTID;
     return nTID;
 }
-// PC 0x00426560
+// PC 0x00428730
 PBUFFERARB* GLRender::CreatePBuffer(int nWidth, int nHeight)
 {
     HDC hDC = m_hDC;
@@ -1957,12 +1957,12 @@ PBUFFERARB* GLRender::CreatePBuffer(int nWidth, int nHeight)
     return wglCreatePBufferARB(hDC, nPixelFormat, nWidth, nHeight,
                                nPbufferAttributes);
 }
-// PC 0x00426650  Xbox 0x00284450
+// PC 0x00428830
 void GLRender::SetFilmNoiseTexture(CAurTexture* pTexture)
 {
     GLRender::cm_pFilmNoiseTexture = pTexture;
 }
-// PC 0x00426660  Xbox 0x002894A0
+// PC 0x00428840
 void GLRender::RenderShadowArray(int nVertices, int nEdges, int nPool)
 {
     static unsigned short* indexToken = new unsigned short[AUR_SHADOW_INDEX_COUNT];
@@ -2034,7 +2034,7 @@ void GLRender::RenderShadowArray(int nVertices, int nEdges, int nPool)
     }
     countfaces += nEdges * 8;
 }
-// PC 0x00426940  Xbox 0x002846C0
+// PC 0x00428B20
 char* AllocateShadowMemory(int nSize)
 {
     static char* data = new char[nSize];
@@ -2059,7 +2059,7 @@ static Vector* AllocateVectorArray(int nCount)
 {
     return new Vector[nCount];
 }
-// PC 0x004269F0
+// PC 0x00428BD0
 int GLRender::BuildShadowArray(const Vector& vLight, const float& fRadius,
                                const Plane& plane, const Vector& vNearCap,
                                const Vector& vFarCap, int nVertices,
@@ -2101,7 +2101,7 @@ int GLRender::BuildShadowArray(const Vector& vLight, const float& fRadius,
     *(Vector*)pCap = vFarCap;
     return nUsed;
 }
-// PC 0x00426CC0
+// PC 0x00428EA0
 void GLRender::InitializeImageSpaceSoftShadows()
 {
     if (AurSoftShadowsAvailable() && cm_bSetUpImageSpaceShadows && enablesoftshadows)
@@ -2235,7 +2235,7 @@ unsigned int ones32popcount(unsigned int x)
     x += (x >> 16);
     return x & 0x3F;
 }
-// PC 0x004273E0
+// PC 0x004295C0
 unsigned int log2integer(unsigned int x)
 {
     x |= (x >> 1);
@@ -2245,7 +2245,7 @@ unsigned int log2integer(unsigned int x)
     x |= (x >> 16);
     return ones32popcount(x >> 1);
 }
-// PC 0x00427450
+// PC 0x00429630
 void FindSmallestPowerOf2WidthHeight(unsigned int nWidth, unsigned int nHeight,
                                     unsigned long& nWidthPow2,
                                     unsigned long& nHeightPow2)
@@ -2253,7 +2253,7 @@ void FindSmallestPowerOf2WidthHeight(unsigned int nWidth, unsigned int nHeight,
     nWidthPow2 = 1 << (log2integer(nWidth) + 1);
     nHeightPow2 = 1 << (log2integer(nHeight) + 1);
 }
-// PC 0x00427490
+// PC 0x00429670
 void GLRender::InitializeFrameBufferModificationFragmentShadersATI()
 {
     glEnable(GL_FRAGMENT_SHADER_ATI);
@@ -2350,7 +2350,7 @@ void GLRender::InitializeFrameBufferModificationFragmentShadersATI()
     glEndFragmentShaderATI();
     glDisable(GL_FRAGMENT_SHADER_ATI);
 }
-// PC 0x00427C90
+// PC 0x00429FF0
 void GLRender::InitializeFrameBufferModifications()
 {
     if (doframebuffer && cm_bSetUpFrameBuffer)
@@ -2873,7 +2873,7 @@ void GLRender::InitializeFrameBufferModifications()
         }
     }
 }
-// PC 0x004293F0
+// PC 0x0042B750
 void GLRender::FrameBufferModificationPixelShadersATI(unsigned long nMode,
     unsigned long nTexture0, unsigned long nTexture1,
     unsigned long nTexture2, unsigned long nTexture3)
@@ -3020,7 +3020,7 @@ void GLRender::FrameBufferModificationPixelShadersATI(unsigned long nMode,
     }
     }
 }
-// PC 0x004299C0
+// PC 0x0042BDD0
 void GLRender::FrameBufferModificationPixelShaders(unsigned long nMode,
     unsigned long nTexture0, unsigned long nTexture1,
     unsigned long nTexture2, unsigned long nTexture3)
@@ -3384,7 +3384,7 @@ void GLRender::FrameBufferModificationPixelShaders(unsigned long nMode,
     }
     }
 }
-// PC 0x0042B370
+// PC 0x0042DA50
 void GLRender::MipmapFilterATI(HDC hDC, HGLRC hContext, float fWidth,
                               float fHeight, PBUFFERARB* pBuffer,
                               unsigned long nTexture, float fSourceSize)
@@ -3428,7 +3428,7 @@ void GLRender::MipmapFilterATI(HDC hDC, HGLRC hContext, float fWidth,
     wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
     glFlush();
 }
-// PC 0x0042B5D0
+// PC 0x0042DCB0
 void GLRender::MipmapFilter(HDC hDC, HGLRC hContext, float fWidth,
                             float fHeight, PBUFFERARB* pBuffer,
                             unsigned long nTexture, float fSourceSize)
@@ -3471,7 +3471,7 @@ void GLRender::MipmapFilter(HDC hDC, HGLRC hContext, float fWidth,
     wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
     glFlush();
 }
-// PC 0x0042B810
+// PC 0x0042DEF0
 void GLRender::BloomFilterATI(HDC hDC, HGLRC hContext, float fWidth,
                            float fHeight, PBUFFERARB* pBuffer,
                            unsigned long nTexture, float fSourceSize,
@@ -3620,7 +3620,7 @@ void GLRender::BloomFilterATI(HDC hDC, HGLRC hContext, float fWidth,
     glActiveTextureARB(GL_TEXTURE0_ARB);
     glFlush();
 }
-// PC 0x0042BF80
+// PC 0x0042E680
 void GLRender::BloomFilter(HDC hDC, HGLRC hContext, float fWidth,
                            float fHeight, PBUFFERARB* pBuffer,
                            unsigned long nTexture, float fSourceSize,
@@ -3876,7 +3876,7 @@ void GLRender::BloomFilterFromTexture(HDC hDC, HGLRC hContext, float fWidth,
     glActiveTextureARB(GL_TEXTURE0_ARB);
     glFlush();
 }
-// PC 0x0042C6E0
+// PC 0x0042EDE0
 void GLRender::RenderOverlayConvolutionATI(unsigned long nTexture)
 {
     if (!renderregular)
@@ -3975,7 +3975,7 @@ void GLRender::RenderOverlayConvolutionATI(unsigned long nTexture)
     wglReleaseTexImageARB(cm_hConvolutionPBuffer[displaylayer], WGL_FRONT_LEFT_ARB);
     FrameBufferModificationPixelShadersATI(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
 }
-// PC 0x0042CC60
+// PC 0x0042F360
 void GLRender::RenderOverlayConvolution(unsigned long nTexture)
 {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
@@ -4072,7 +4072,7 @@ void GLRender::SetUpSoftShadowsARB()
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
-// PC 0x0042D140
+// PC 0x0042F840
 void GLRender::SetUpSoftShadowsATI()
 {
     glEnable(GL_TEXTURE_2D);
@@ -4084,7 +4084,7 @@ void GLRender::SetUpSoftShadowsATI()
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
-// PC 0x0042D1C0
+// PC 0x0042F8C0
 void GLRender::SetUpSoftShadows()
 {
     if (AurATISoftShadowsAvailable())
@@ -4101,7 +4101,7 @@ void GLRender::SetUpSoftShadows()
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
-// PC 0x0042D250
+// PC 0x0042F950
 void GLRender::FinishSoftShadowsATI()
 {
     glDisable(enableTranslationTable[ENABLE_DEPTH_TEST]);
@@ -4252,7 +4252,7 @@ void GLRender::FinishSoftShadowsATI()
     glStencilMask(STENCIL_WRITE_MASK);
     glDisable(GL_FRAGMENT_SHADER_ATI);
 }
-// PC 0x0042D9A0
+// PC 0x004300A0
 void GLRender::FinishSoftShadows()
 {
     if (AurATISoftShadowsAvailable())
@@ -4385,7 +4385,7 @@ void GLRender::FinishSoftShadows()
     SetDepthMask(GL_TRUE);
     glStencilMask(STENCIL_WRITE_MASK);
 }
-// PC 0x0042E040
+// PC 0x00430740
 int GLRender::InitializeAntiAliasing()
 {
 
@@ -4472,7 +4472,7 @@ int GLRender::InitializeAntiAliasing()
     ReleaseDC(hWindow, hDC);
     return DestroyWindow(hWindow);
 }
-// PC 0x0042E240
+// PC 0x00448F80
 template <> inline List<unsigned long>::~List()
 {
     if (m_pList != 0)
@@ -4480,15 +4480,15 @@ template <> inline List<unsigned long>::~List()
         delete[] m_pList;
     }
 }
-// PC 0x0042E250
+// PC 0x00431DA0
 inline RequestPoolManager::~RequestPoolManager()
 {
 }
-// Xbox 0x0028A2B0
+
 inline RequestPoolManager::RequestPoolManager() : m_lstFreePools(0), m_lstPoolLocks(0)
 {
 }
-// PC 0x00434F30
+// PC 0x00434E20
 RequestPoolManagerVBO::RequestPoolManagerVBO()
 {
     m_nPoolCount = 100;
@@ -4501,7 +4501,7 @@ RequestPoolManagerVBO::RequestPoolManagerVBO()
         m_lstPoolTypes.Add(GL_ARRAY_BUFFER_ARB);
     }
 }
-// PC 0x004351C0
+// PC 0x004350B0
 RequestPoolManagerVBO::~RequestPoolManagerVBO()
 {
     for (unsigned int nPool = 0; nPool < m_nPoolCount; nPool++)
@@ -4522,7 +4522,7 @@ RequestPoolManagerVBO::~RequestPoolManagerVBO()
     m_lstPoolBackupSize.SetSize(0);
     m_lstPoolTypes.SetSize(0);
 }
-// PC 0x00435310
+// PC 0x00435200
 int RequestPoolManagerVBO::RequestPoolGeneric(int nType, int nSize, int nUsage)
 {
     if (nSize == 0)
@@ -4588,7 +4588,7 @@ int RequestPoolManagerVBO::RequestPoolGeneric(int nType, int nSize, int nUsage)
     m_nPoolCount *= 2;
     return nResult;
 }
-// PC 0x00435670
+// PC 0x00435560
 void RequestPoolManagerVBO::DeletePool(unsigned int nPool)
 {
     if (nPool == INVALID_POOL)
@@ -4602,7 +4602,7 @@ void RequestPoolManagerVBO::DeletePool(unsigned int nPool)
     glDeleteBuffersARB(1, &nBuffer);
     m_lstPools[nPool] = 0;
 }
-// PC 0x004356E0
+// PC 0x004355D0
 RequestPoolManagerSys::RequestPoolManagerSys()
 {
     m_nPoolCount = 100;
@@ -4616,7 +4616,7 @@ RequestPoolManagerSys::RequestPoolManagerSys()
         m_lstPoolLocks.Add(0);
     }
 }
-// PC 0x00435890
+// PC 0x00435780
 int RequestPoolManagerSys::RequestPoolGeneric(int nType, int nSize, int nUsage)
 {
     totalvertexpool += nSize;
@@ -4663,7 +4663,7 @@ int RequestPoolManagerSys::RequestPoolGeneric(int nType, int nSize, int nUsage)
     m_nPoolCount *= 2;
     return nResult;
 }
-// PC 0x00435A90
+// PC 0x00435980
 void RequestPoolManagerSys::DeletePool(unsigned int nPool)
 {
     if (nPool == INVALID_POOL)
@@ -4683,7 +4683,7 @@ void RequestPoolManagerSys::DeletePool(unsigned int nPool)
     m_ppPools[nPool] = 0;
     m_pPoolSize[nPool] = 0;
 }
-// PC 0x00435B40  Xbox 0x0028D1C0
+// PC 0x00446BA0
 void GLRender::AddSquareToRender(unsigned long nPool)
 {
     if (nPool != (unsigned long)-1)
@@ -4691,7 +4691,7 @@ void GLRender::AddSquareToRender(unsigned long nPool)
         cm_listSquaresToRender.Add(nPool);
     }
 }
-// PC 0x00435B90  Xbox 0x0028E160
+// PC 0x00446BF0
 void GLRender::RemoveSquareToRender(unsigned long nPool)
 {
     if (nPool != (unsigned long)-1)
@@ -4702,7 +4702,7 @@ void GLRender::RemoveSquareToRender(unsigned long nPool)
         }
     }
 }
-// PC 0x00436490  Xbox 0x00286960
+// PC 0x00447610
 void GLRender::InitExtensions()
 {
     wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)
@@ -5227,7 +5227,7 @@ void GLRender::InitExtensions()
         InitializeSystemPoolManager();
     manRef->RestorePoolManager();
 }
-// PC 0x00437520  Xbox 0x0028F0B0
+// PC 0x004486C0
 void GLRender::FrameBufferModifications(unsigned long nFlags)
 {
     static bool c_bPreviousFrameWasSpeed = false;
@@ -5358,7 +5358,7 @@ void GLRender::FrameBufferModifications(unsigned long nFlags)
         }
     }
 }
-// PC 0x00435BD0
+// PC 0x00446C30
 void GLRender::FrameBufferModificationsATI(unsigned long nFlags)
 {
     static bool c_bPreviousFrameWasSpeed = false;
@@ -5476,7 +5476,7 @@ void GLRender::FrameBufferModificationsATI(unsigned long nFlags)
     glMatrixMode(GL_MODELVIEW);
     cm_bFirstFrameBufferFrame = false;
 }
-// PC 0x00436070
+// PC 0x004471F0
 void GLRender::FrameBufferModificationsATI2(unsigned long nFlags)
 {
     if (visualizepass4 && m_bSaturationEnabled &&
@@ -5514,7 +5514,7 @@ void GLRender::FrameBufferModificationsATI2(unsigned long nFlags)
         glPopMatrix();
     }
 }
-// PC 0x004361F0  Xbox 0x00289190
+// PC 0x00447370
 void GLRender::FrameBufferModifications2(unsigned long nFlags)
 {
     if (doframebuffer && cm_bPBuffersAllocated && cm_bSetUpFrameBuffer)
@@ -5564,7 +5564,7 @@ void GLRender::FrameBufferModifications2(unsigned long nFlags)
         }
     }
 }
-// PC 0x00436390
+// PC 0x00447510
 void InitializeSystemPoolManager()
 {
     if (manRef == 0)
@@ -5572,7 +5572,7 @@ void InitializeSystemPoolManager()
         manRef = new RequestPoolManagerSys;
     }
 }
-// PC 0x00436400
+// PC 0x00447580
 void InitializeVertexBufferObjectPoolManager()
 {
     if (manRef == 0)
@@ -5580,7 +5580,7 @@ void InitializeVertexBufferObjectPoolManager()
         manRef = new RequestPoolManagerVBO;
     }
 }
-// PC 0x0042E2A0
+// PC 0x00431DF0
 void* RequestPoolManagerVBO::LockPool(int nPool, int nUsage)
 {
     if (nPool == INVALID_POOL)
@@ -5602,7 +5602,7 @@ void* RequestPoolManagerVBO::LockPool(int nPool, int nUsage)
                           g_bVertexBufferObjectsWriteOnly ? GL_WRITE_ONLY_ARB :
                                                           GL_READ_WRITE_ARB);
 }
-// PC 0x0042E340
+// PC 0x00431E90
 void RequestPoolManagerVBO::UnlockPool(unsigned int nPool)
 {
     if (nPool != (unsigned int)-1 && m_lstPoolLocks.m_pList[nPool] != 0)
@@ -5612,7 +5612,7 @@ void RequestPoolManagerVBO::UnlockPool(unsigned int nPool)
         glUnmapBufferARB(m_lstPoolTypes.m_pList[nPool]);
     }
 }
-// PC 0x0042E390
+// PC 0x00431EE0
 int RequestPoolManagerVBO::GetPool(unsigned int nPool)
 {
     if (nPool == (unsigned int)-1)
@@ -5622,7 +5622,7 @@ int RequestPoolManagerVBO::GetPool(unsigned int nPool)
 
     return m_lstPools.m_pList[nPool];
 }
-// PC 0x0042E3B0
+// PC 0x00431F00
 int RequestPoolManagerVBO::GetIndexPool(unsigned int nPool)
 {
     if (nPool != (unsigned int)-1)
@@ -5632,7 +5632,7 @@ int RequestPoolManagerVBO::GetIndexPool(unsigned int nPool)
 
     return 0;
 }
-// PC 0x0042E3D0
+// PC 0x00431F20
 int RequestPoolManagerVBO::GetPoolSize(unsigned int nPool)
 {
     int nIndex = nPool;
@@ -5646,7 +5646,7 @@ int RequestPoolManagerVBO::GetPoolSize(unsigned int nPool)
     glGetBufferParameterivARB(m_lstPoolTypes.m_pList[nIndex], GL_BUFFER_SIZE_ARB, &nSize);
     return nSize;
 }
-// PC 0x0042E420
+// PC 0x00431F70
 void RequestPoolManagerVBO::ResizePool(unsigned int nPool, unsigned int nSize)
 {
     if (nPool == INVALID_POOL)
@@ -5672,7 +5672,7 @@ void RequestPoolManagerVBO::ResizePool(unsigned int nPool, unsigned int nSize)
     glBufferSubDataARB(m_lstPoolTypes.m_pList[nPool], 0, nOldSize, pBackup);
     delete[] pBackup;
 }
-// PC 0x0042E540
+// PC 0x00432090
 RequestPoolManagerSys::~RequestPoolManagerSys()
 {
     for (unsigned int nPool = 0; nPool < m_nPoolCount; nPool++)
@@ -5682,7 +5682,7 @@ RequestPoolManagerSys::~RequestPoolManagerSys()
     delete[] m_ppPools;
     delete[] m_pPoolSize;
 }
-// PC 0x0042E5B0
+// PC 0x00432100
 void* RequestPoolManagerSys::LockPool(int nPool, int nUsage)
 {
     if (nPool == -1)
@@ -5700,7 +5700,7 @@ void* RequestPoolManagerSys::LockPool(int nPool, int nUsage)
     *pLock = 1;
     return m_ppPools[nPool];
 }
-// PC 0x0042E5E0
+// PC 0x00432130
 void RequestPoolManagerSys::UnlockPool(unsigned int nPool)
 {
     if (nPool != (unsigned int)-1)
@@ -5712,7 +5712,7 @@ void RequestPoolManagerSys::UnlockPool(unsigned int nPool)
         }
     }
 }
-// PC 0x0042E600
+
 void GLRender::EnableCombiners(int nShader, CAurTexture* pTexture0,
                                CAurTexture* pTexture1, CAurTexture* pTexture2,
                                CAurTexture* pTexture3)
@@ -6473,7 +6473,7 @@ void GLRender::EnableCombiners(int nShader, CAurTexture* pTexture0,
     }
     glEnable(GL_REGISTER_COMBINERS_NV);
 }
-// PC 0x004318F0
+// PC 0x00432150
 void GLRender::DrawTriangles(List<MaxFace>& lFaces, RenderVertexV* pVertices,
                               RenderVertexC* pColors)
 {
@@ -6497,7 +6497,7 @@ void GLRender::DrawTriangles(List<MaxFace>& lFaces, RenderVertexV* pVertices,
 
     glEnd();
 }
-// PC 0x00431A50  Xbox 0x0028A480
+// PC 0x004322B0
 void GLRender::DrawSphereBound(float fRadius, Vector& vCenter,
                                const Vector& vColor, float fScale,
                                bool bBillboard)
@@ -6544,7 +6544,7 @@ void GLRender::DrawSphereBound(float fRadius, Vector& vCenter,
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING);
 }
-// PC 0x00431BB0
+
 void GLRender::RenderObjectsVTC(Aurora::AuroraPrimitiveTypes nPrimitive,
                                 unsigned long nPool, int nVertices)
 {
@@ -6575,7 +6575,7 @@ void GLRender::RenderObjectsVTC(Aurora::AuroraPrimitiveTypes nPrimitive,
         glEnd();
     }
 }
-// PC 0x00431CC0  Xbox 0x00285610
+// PC 0x00425730
 void GLRender::RenderObjectsVTCQuadUP(RenderVertexVTC* pVertices, int nVertices)
 {
     if (AurVertexBufferObjectARBAvailable())
@@ -6603,7 +6603,7 @@ void GLRender::RenderObjectsVTCQuadUP(RenderVertexVTC* pVertices, int nVertices)
         glEnd();
     }
 }
-// PC 0x00431DB0
+// PC 0x00432410
 void GLRender::RenderObjectsVTCQuad(unsigned long nPool, int nVertices)
 {
     if (AurVertexBufferObjectARBAvailable())
@@ -6634,7 +6634,7 @@ void GLRender::RenderObjectsVTCQuad(unsigned long nPool, int nVertices)
         glEnd();
     }
 }
-// PC 0x00431EB0  Xbox 0x002856A0
+// PC 0x00425820
 void GLRender::RenderObjectsVTQuadUP(RenderVertexVT* pVertices, int nVertices)
 {
     if (AurVertexBufferObjectARBAvailable())
@@ -6659,7 +6659,7 @@ void GLRender::RenderObjectsVTQuadUP(RenderVertexVT* pVertices, int nVertices)
         glEnd();
     }
 }
-// PC 0x00431F70
+// PC 0x004258E0
 void GLRender::RenderObjectsVCUP(Aurora::AuroraPrimitiveTypes nPrimitive,
                                 RenderVertexVC* pVertices, int nVertices)
 {
@@ -6685,7 +6685,7 @@ void GLRender::RenderObjectsVCUP(Aurora::AuroraPrimitiveTypes nPrimitive,
         glEnd();
     }
 }
-// PC 0x00432040
+
 void SpitLetters(char* szString)
 {
     if (initialized == 0)
@@ -6698,7 +6698,7 @@ void SpitLetters(char* szString)
     glCallLists(strlen(szString), GL_UNSIGNED_BYTE, szString);
     AurPopAttrib();
 }
-// PC 0x00432090
+// PC 0x00432510
 int ImposterManager::AllocateImposterRecord(int nVertices, float* pVertices)
 {
     int nRecord;
@@ -6720,12 +6720,12 @@ int ImposterManager::AllocateImposterRecord(int nVertices, float* pVertices)
     m_nImposters *= 2;
     return m_nImposters >> 1;
 }
-// PC 0x00432160
+// PC 0x004325E0
 int GLRender::SetUpImposters(int nType, float* pfValues)
 {
     return manRefImposter.AllocateImposterRecord(nType, pfValues);
 }
-// PC 0x00432180  Xbox 0x0028CFC0
+// PC 0x00427870
 void GLRender::Shutdown(int bReleaseRenderer)
 {
     if (manRef)
@@ -6927,7 +6927,7 @@ void GLRender::Shutdown(int bReleaseRenderer)
         manRef = 0;
     }
 }
-// PC 0x00432720  Xbox 0x0028D250
+// PC 0x00432600
 void GLRender::RenderDrawableSquares()
 {
     glDisable(GL_LIGHTING);
@@ -6942,7 +6942,7 @@ void GLRender::RenderDrawableSquares()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
 }
-// PC 0x00432780
+// PC 0x00432660
 void GLRender::RenderOverlayFilmNoiseATI(unsigned long nTexture, bool bScanLines)
 {
     glMatrixMode(GL_PROJECTION);
@@ -7005,7 +7005,7 @@ void GLRender::RenderOverlayFilmNoiseATI(unsigned long nTexture, bool bScanLines
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
 }
-// PC 0x00432AD0
+// PC 0x004329B0
 void GLRender::RenderOverlayFilmNoise(unsigned long nTexture, bool bScanLines)
 {
     glBlendFunc(GL_ONE, GL_ZERO);
@@ -7054,7 +7054,7 @@ void GLRender::RenderOverlayFilmNoise(unsigned long nTexture, bool bScanLines)
     glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
     glFlush();
 }
-// PC 0x00432D70
+// PC 0x00432C50
 void GLRender::RenderForceDistortionATI(unsigned long nTexture)
 {
     glMatrixMode(GL_PROJECTION);
@@ -7136,7 +7136,7 @@ void GLRender::RenderForceDistortionATI(unsigned long nTexture)
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
 }
-// PC 0x004331D0  Xbox 0x0028D6E0
+// PC 0x004330C0
 void GLRender::RenderForceDistortion(unsigned long nTexture)
 {
     glEnable(GL_VERTEX_PROGRAM_ARB);
@@ -7211,7 +7211,7 @@ void GLRender::RenderForceDistortion(unsigned long nTexture)
     }
     glFlush();
 }
-// PC 0x00433580
+// PC 0x00433470
 void GLRender::RenderFrameToTextureATI(unsigned long nTexture)
 {
     HDC hOldDC = m_hDC;
@@ -7251,7 +7251,7 @@ void GLRender::RenderFrameToTextureATI(unsigned long nTexture)
     wglMakeContextCurrentARB(hOldDC, hOldDC, hOldContext);
     glDrawBuffer(GL_BACK);
 }
-// PC 0x004337A0
+// PC 0x00433690
 void GLRender::RenderFrameToTexture(unsigned long nTexture)
 {
     wglMakeCurrent(cm_hAccumulationHDC, cm_hAccumulationHGLRC);
@@ -7284,7 +7284,7 @@ void GLRender::RenderFrameToTexture(unsigned long nTexture)
     glFlush();
     wglMakeCurrent(m_hDC, m_hGLRC);
 }
-// PC 0x00433970
+// PC 0x00433860
 void GLRender::RenderAccumulationBlurATI(unsigned long nTexture)
 {
     glMatrixMode(GL_PROJECTION);
@@ -7355,7 +7355,7 @@ void GLRender::RenderAccumulationBlurATI(unsigned long nTexture)
     glDisable(GL_FRAGMENT_SHADER_ATI);
     glFlush();
 }
-// PC 0x00433DA0
+// PC 0x00433C90
 void GLRender::RenderAccumulationBlur(unsigned long nTexture)
 {
     glDisable(GL_DEPTH_TEST);
@@ -7410,7 +7410,7 @@ void GLRender::RenderAccumulationBlur(unsigned long nTexture)
     glDisable(GL_TEXTURE_RECTANGLE_NV);
     glActiveTextureARB(GL_TEXTURE0_ARB);
 }
-// PC 0x004340F0
+// PC 0x00433FE0
 void GLRender::RenderOverlayOverbrighten(unsigned long nTexture)
 {
     glBlendFunc(GL_ONE, GL_ZERO);
@@ -7434,7 +7434,7 @@ void GLRender::RenderOverlayOverbrighten(unsigned long nTexture)
     glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
     glDisable(GL_TEXTURE_RECTANGLE_NV);
 }
-// PC 0x00434240  Xbox 0x00288CC0
+// PC 0x00434130
 void GLRender::RenderOverlayOverbrightenATI(unsigned long nTexture)
 {
     glBlendFunc(GL_ONE, GL_ZERO);
@@ -7460,7 +7460,7 @@ void GLRender::RenderOverlayOverbrightenATI(unsigned long nTexture)
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_TEXTURE_2D);
 }
-// PC 0x004343D0
+// PC 0x004342C0
 void GLRender::RenderSaturationAdjustmentATI(unsigned long nTexture)
 {
     glMatrixMode(GL_PROJECTION);
@@ -7535,7 +7535,7 @@ void GLRender::RenderSaturationAdjustmentATI(unsigned long nTexture)
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
 }
-// PC 0x00434890  Xbox 0x00288E80
+// PC 0x00434780
 void GLRender::RenderSaturationAdjustment(unsigned long nTexture)
 {
     glBlendFunc(GL_ONE, GL_ZERO);
@@ -7596,7 +7596,7 @@ void GLRender::RenderSaturationAdjustment(unsigned long nTexture)
     glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
     glDisable(GL_TEXTURE_RECTANGLE_NV);
 }
-// PC 0x005B5E90
+// PC 0x006049D0
 void RequestPoolManagerVBO::RefreshPool(int nPool, int nUsage)
 {
 }

@@ -38,7 +38,7 @@ class CAurCamera;
 class CSWMGPhysicsState
 {
 public:
-    CSWMGPhysicsState(const Vector& vValue = Vector(),  // PC 0x00670750  Xbox 0x00093510
+    CSWMGPhysicsState(const Vector& vValue = Vector(),  // PC 0x00617660
                       const Vector& vRate = Vector())
     {
         m_vValue = vValue;
@@ -63,30 +63,30 @@ public:
     static const int SWDRIVE_DOWN;
     CSWPlayerControl();
     CSWPlayerControl(unsigned long oidPlayer, CAurCamera* pCamera);
-    // PC 0x0060E760
+    // PC 0x005EE1C0
     virtual void UpDown(float fValue)
     {
     }
-    // PC 0x006796F0
+    // PC 0x006CEEE0
     virtual float GetUpDown()
     {
         return 0.0f;
     }
-    // PC 0x0060E760
+    // PC 0x005EE1C0
     virtual void LeftRight(float fValue)
     {
     }
-    // PC 0x006796F0
+    // PC 0x006CEEE0
     virtual float GetLeftRight()
     {
         return 0.0f;
     }
 
 #ifndef _XBOX
-    virtual void SetPlayerWalking(int bWalking)  // PC 0x0060E760
+    virtual void SetPlayerWalking(int bWalking)  // PC 0x005EE1C0
     {
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual int GetPlayerWalking()
     {
         return 0;
@@ -96,20 +96,20 @@ public:
     virtual void RunKey()
     {
     }
-    // PC 0x006796F0
+    // PC 0x006CEEE0
     virtual float GetCurSpeed()
     {
         return 0.0f;
     }
-    // PC 0x0060E760
+    // PC 0x005EE1C0
     virtual void MouseLeftRight(float fValue)
     {
     }
-    // PC 0x0060E760
+    // PC 0x005EE1C0
     virtual void MouseUpDown(float fValue)
     {
     }
-    // PC 0x0063E7C0
+    // PC 0x006955A0
     virtual int Control(float fTimeStep)
     {
         return 0;
@@ -140,34 +140,34 @@ class CSWPlayerControlCamRelative : public CSWPlayerControl
 public:
     CSWPlayerControlCamRelative();
     CSWPlayerControlCamRelative(unsigned long oidPlayer, CAurCamera* pCamera);
-    // PC 0x00679700
+    // PC 0x006CEEF0
     virtual void UpDown(float fValue)
     {
         m_fUpDown = fValue;
     }
-    virtual float GetUpDown()  // PC 0x00679710  Xbox 0x00093C40
+    virtual float GetUpDown()  // PC 0x006CEF00
     {
         return m_fUpDown;
     }
-    virtual void LeftRight(float fValue)  // PC 0x00679720  Xbox 0x00093C50
+    virtual void LeftRight(float fValue)  // PC 0x006CEF10
     {
         m_fLeftRight = fValue;
     }
-    virtual float GetLeftRight()  // PC 0x00679730  Xbox 0x00093C60
+    virtual float GetLeftRight()  // PC 0x006CEF20
     {
         return m_fLeftRight;
     }
 #ifndef _XBOX
-    virtual void SetPlayerWalking(int bWalking)  // PC 0x00679740
+    virtual void SetPlayerWalking(int bWalking)  // PC 0x006CEF30
     {
         m_bPlayerWalking = bWalking;
     }
-    virtual int GetPlayerWalking()  // PC 0x00644760
+    virtual int GetPlayerWalking()  // PC 0x00406600
     {
         return m_bPlayerWalking;
     }
 #endif
-    virtual float GetCurSpeed()  // PC 0x00679750  Xbox 0x00093C70
+    virtual float GetCurSpeed()  // PC 0x006CEF40
     {
         float fForward = (float)fabs(m_stateB.m_vValue.m_fX);
         float fSideways = (float)fabs(m_stateB.m_vValue.m_fY);

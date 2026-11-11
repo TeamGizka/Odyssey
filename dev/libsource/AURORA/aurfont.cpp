@@ -53,22 +53,22 @@ static StringGob* g_pStringObj;
 static CAurString* g_pStringObj;
 #endif
 #ifdef _XBOX
-// PC 0x00404B60  Xbox 0x0029F880
+
 void AurOrtho(double dLeft, double dRight, double dBottom, double dTop,
               double dNear, double dFar)
 {
     GLRender::SetOrthoTransform(dLeft, dRight, dBottom, dTop, dNear, dFar);
 }
-// PC 0x0044CC40
+
 void AurInitFont()
 {
 }
-// PC 0x0044CE50
+
 void AurPrintString(char* szString, int nColumn, int nRow)
 {
 }
 #else
-// PC 0x0044CB10
+// PC 0x00461070
 inline void GLRender::SetUpTextFormat()
 {
     int nChar;
@@ -93,7 +93,7 @@ inline void FreeTextFormat()
 {
     glDeleteLists(fontOffset, 128);
 }
-// PC 0x0044CB90
+
 inline void GLRender::PrintStringAtScreenPos(char* szString, float fX, float fY)
 {
     glPushAttrib(GL_TEXTURE_BIT | GL_DEPTH_BUFFER_BIT | GL_LIGHTING_BIT);
@@ -111,7 +111,7 @@ inline void GLRender::PrintStringAtScreenPos(char* szString, float fX, float fY)
     glMatrixMode(GL_MODELVIEW);
     glPopAttrib();
 }
-// PC 0x0044CC40
+// PC 0x004610F0
 void AurInitFont()
 {
     g_bUseTexturedFont = false;
@@ -119,7 +119,7 @@ void AurInitFont()
     initialized = 1;
 }
 #endif
-// PC 0x0044CC60  Xbox 0x0029F950
+// PC 0x00461110
 void AurFreeFont()
 {
     if (initialized != 0)
@@ -137,7 +137,7 @@ void AurFreeFont()
 }
 
 #ifndef _XBOX
-// PC 0x0044CCA0
+
 void PrintStringScreenPos_UseTextureFont(char* szString, float fX, float fY)
 {
     GLint aViewport[4];
@@ -168,7 +168,7 @@ void PrintStringScreenPos_UseTextureFont(char* szString, float fX, float fY)
         glPopAttrib();
     }
 }
-// PC 0x0044CE50
+
 void AurPrintString(char* szString, int nColumn, int nRow)
 {
     GLint aViewport[4];
@@ -235,7 +235,7 @@ void AurPrintString(char* szString, int nColumn, int nRow)
 }
 #endif
 #ifndef _XBOX
-// Xbox 0x0029F8C0
+
 int SetConsoleFont(char* szFontName)
 {
     if (initialized == 0)
@@ -255,7 +255,7 @@ int SetConsoleFont(char* szFontName)
     return g_nFontNum;
 }
 #endif
-void PostedString::Post()  // PC 0x0044D010  Xbox 0x0029FBF0
+void PostedString::Post()  // PC 0x00461150
 {
     float fElapsedRatio;
     float fRed;
@@ -304,7 +304,7 @@ void PostedString::Post()  // PC 0x0044D010  Xbox 0x0029FBF0
         }
     }
 }
-// PC 0x0044D1E0  Xbox 0x0029FCF0
+// PC 0x00461240
 void AurStringsFree()
 {
     int i;
@@ -323,7 +323,7 @@ void AurStringsFree()
         }
     }
 }
-// PC 0x0044D250  Xbox 0x0029FD30
+// PC 0x004612B0
 char* untrace(char* szPrefix)
 {
     static char buf[256];
@@ -440,12 +440,12 @@ PostedString::PostedString(char* szString, int nColumn, int nRow,
     m_fEndBlue = g_cDefCol2.m_fBlue;
     m_fEndAlpha = g_cDefCol2.m_fAlpha;
 }
-// PC 0x0044D490  Xbox 0x0029FF20
+// PC 0x004614F0
 void AurPostString(char* szString, int nColumn, int nRow, float fDuration)
 {
     new PostedString(szString, nColumn, nRow, fDuration);
 }
-// PC 0x0044D4F0
+// PC 0x00461550
 void AurPrintf(const char* szFormat, ...)
 {
     char szBuffer[512];
@@ -472,7 +472,7 @@ void AurPrintf(const char* szFormat, ...)
         va_end(vaArgs);
     }
 }
-// PC 0x0044D620  Xbox 0x0029FF80
+// PC 0x00461680
 void PostTraceStrings()
 {
     char szBuffer[512];
@@ -506,7 +506,7 @@ void PostTraceStrings()
 #endif
     g_bKeepHistory = bKeepHistory;
 }
-// PC 0x0044D6A0  Xbox 0x002A0010
+// PC 0x00461700
 void AurRenderStrings()
 {
     int i;
@@ -524,18 +524,18 @@ void AurRenderStrings()
 int g_bEnableAurPrintf = 0;
 
 #ifdef _XBOX
-// Xbox 0x0029FAD0
+
 TraceString::TraceString(char* szCommand)
 {
     strcpy(m_szCommand, szCommand);
     TraceStrings.Add(this);
 }
-// Xbox 0x0029FB00
+
 TraceString::~TraceString()
 {
     TraceStrings.Remove(this);
 }
-// Xbox 0x0029FB10
+
 char* trace(char* szCommand)
 {
     for (int i = 0; i < TraceStrings.m_nCount; i++)
@@ -550,7 +550,7 @@ char* trace(char* szCommand)
 #endif
 
 #ifdef _XBOX
-void AurSetStringColor(char* szColors)  // Xbox 0x0029F980
+void AurSetStringColor(char* szColors)
 {
     g_cDefCol = CStringColor(1.0f, 1.0f, 1.0f, 1.0f);
     g_cDefCol2 = CStringColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -564,14 +564,14 @@ void AurSetStringColor(char* szColors)  // Xbox 0x0029F980
 #endif
 
 #ifdef _XBOX
-PostedString::~PostedString()  // Xbox 0x0029FAC0
+PostedString::~PostedString()
 {
     posts.Remove(this);
 }
 #endif
 
 #ifdef _XBOX
-int SetConsoleFont(char* szFontName)  // Xbox 0x0029F8C0
+int SetConsoleFont(char* szFontName)
 {
     g_bUseTexturedFont = true;
     if (g_pStringObj == NULL)

@@ -14,11 +14,11 @@ class CSWGuiInGameSkillEntry : public CSWGuiLabelHilight
 public:
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
-    virtual void Initialize(const CSWGuiExtent& cExtent,  // PC 0x005B5E90
+    virtual void Initialize(const CSWGuiExtent& cExtent,  // PC 0x006049D0
                                            CSWGuiLabelHilight* pProto)
     {
     }
-    virtual void Initialize(const CSWGuiExtent& cExtent,  // PC 0x0063CFC0
+    virtual void Initialize(const CSWGuiExtent& cExtent,  // PC 0x00693D50
                             const CSWGuiTextParams& cText,
                             const CSWGuiBorderParams& cBorder,
                             const CSWGuiBorderParams& cHilite)
@@ -73,11 +73,11 @@ public:
     unsigned char m_aUnmapped121[3];
     unsigned long m_bSelected : 1;
     unsigned long m_nUnmapped124 : 31;
-    // PC 0x006CCB80  Xbox 0x000EF0B0
+    // PC 0x0073ABF0
     CSWGuiFlowSkillStruct()
     {
     }
-    ~CSWGuiFlowSkillStruct()  // PC 0x006CCBE0  Xbox 0x000EF110
+    ~CSWGuiFlowSkillStruct()  // PC 0x0073AC40
     {
     }
 };
@@ -98,7 +98,7 @@ public:
     CSWGuiSkillFlow();
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
-    SWGUI_PCVIRTUAL CSWGuiSkillFlow* AsSkillFlow()  // PC 0x00641DB0
+    SWGUI_PCVIRTUAL CSWGuiSkillFlow* AsSkillFlow()  // PC 0x00698BD0
     {
         return this;
     }

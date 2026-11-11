@@ -1,5 +1,5 @@
 #include "swpattern.h"
-// PC 0x0068FCB0  Xbox 0x000A1A60
+// PC 0x006E9200
 float CSWRumbleMotorData::GetMagnitude(float fTime, int bLoop)
 {
     if (!m_pfTimes || !m_pfMagnitudes)
@@ -51,7 +51,7 @@ float CSWRumbleMotorData::GetMagnitude(float fTime, int bLoop)
                 m_pfMagnitudes[m_nCurrentSamplePoint]) +
            m_pfMagnitudes[m_nCurrentSamplePoint];
 }
-// PC 0x0068FDD0  Xbox 0x000A1E20
+// PC 0x006E9320
 int CSWRumblePattern::GetMagnitudes(float fTime, float& fLeftMagnitude,
                                     float& fRightMagnitude)
 {

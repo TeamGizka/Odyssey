@@ -1,20 +1,20 @@
 #include "exobase.h"
-// PC 0x005EC250  Xbox 0x00139E20
+// PC 0x006379F0
 CExoCriticalSectionInternal::CExoCriticalSectionInternal()
 {
     ::InitializeCriticalSection(&m_CriticalSection);
 }
-// PC 0x005EC260
+// PC 0x00637A00
 CExoCriticalSectionInternal::~CExoCriticalSectionInternal()
 {
     DeleteCriticalSection(&m_CriticalSection);
 }
-// PC 0x005EC270  Xbox 0x00139E30
+// PC 0x00637A10
 void CExoCriticalSectionInternal::EnterCriticalSection()
 {
     ::EnterCriticalSection(&m_CriticalSection);
 }
-// PC 0x005EC280  Xbox 0x00139E40
+// PC 0x00637A20
 void CExoCriticalSectionInternal::LeaveCriticalSection()
 {
     ::LeaveCriticalSection(&m_CriticalSection);

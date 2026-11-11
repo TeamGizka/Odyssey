@@ -52,20 +52,20 @@ class CSWGuiPanel;
 class CSWGuiObject
 {
 public:
-    virtual ~CSWGuiObject()  // PC 0x00409E80  Xbox 0x0004CE30
+    virtual ~CSWGuiObject()  // PC 0x0040A2A0
     {
     }
-    virtual void SetExtent(const CSWGuiExtent& cExtent)  // PC 0x00409E90
+    virtual void SetExtent(const CSWGuiExtent& cExtent)  // PC 0x0040A2B0
     {
         m_cExtent = cExtent;
     }
-    virtual void SetActiveControl(CSWGuiControl* pControl, int bUnknown)  // PC 0x005B5E90  Xbox 0x0015C270
+    virtual void SetActiveControl(CSWGuiControl* pControl, int bUnknown)  // PC 0x006049D0
     {
     }
-    SWGUI_PCVIRTUAL void HandleMouseOver(int bOver)  // PC 0x0060E760
+    SWGUI_PCVIRTUAL void HandleMouseOver(int bOver)  // PC 0x005EE1C0
     {
     }
-    SWGUI_PCVIRTUAL int HandleMouseCapturedMovement(int nX, int nY)  // PC 0x00409EB0
+    SWGUI_PCVIRTUAL int HandleMouseCapturedMovement(int nX, int nY)  // PC 0x0040A2D0
     {
         return 0;
     }
@@ -89,17 +89,17 @@ public:
     SWGUI_PCVIRTUAL void HandleRMouseUp()
     {
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWGuiPanel* AsSWGuiPanel()
     {
         return 0;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWGuiListBox* AsSWGuiListBox()
     {
         return 0;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     SWGUI_PCVIRTUAL CSWGuiControl* AsSWGuiControl()
     {
         return 0;
@@ -134,7 +134,7 @@ public:
 
     CSWGuiControl();
 #ifndef _XBOX
-    virtual ~CSWGuiControl()  // PC 0x00419A20  Xbox 0x0004CF00
+    virtual ~CSWGuiControl()  // PC 0x00419640
     {
     }
 #endif
@@ -143,17 +143,17 @@ public:
     SWGUI_PCVIRTUAL void HandleLMouseUp();
     SWGUI_PCVIRTUAL void HandleRMouseUp();
     SWGUI_PCVIRTUAL void HandleLoseMouseFocus();
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     SWGUI_PCVIRTUAL CSWGuiControl* AsSWGuiControl()
     {
         return this;
     }
-    // PC 0x004064A0  Xbox 0x0004DC50
+    // PC 0x004065B0
     virtual int GetIdealHeight()
     {
         return m_cExtent.m_nHeight;
     }
-    // PC 0x0060E760
+    // PC 0x005EE1C0
     virtual void Draw(float fElapsed)
     {
     }
@@ -164,61 +164,61 @@ public:
     virtual CSWGuiControl* HitCheckMouse(int nX, int nY);
 #endif
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
-    virtual CSWGuiNavigable* AsNavigable()  // PC 0x0063E7F0
+    virtual CSWGuiNavigable* AsNavigable()  // PC 0x004065A0
     {
         return 0;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWGuiLabel* AsLabel()
     {
         return 0;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWGuiLabelHilight* AsLabelHilight()
     {
         return 0;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWGuiButton* AsButton()
     {
         return 0;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWGuiButtonToggle* AsButtonToggle()
     {
         return 0;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     SWGUI_PCVIRTUAL CSWGuiRadioButton* AsRadioButton()
     {
         return 0;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWGuiSlider* AsSlider()
     {
         return 0;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWGuiProgressBar* AsProgressBar()
     {
         return 0;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWGuiScrollBar* AsScrollBar()
     {
         return 0;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     virtual CSWGuiListBox* AsListBox()
     {
         return 0;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     SWGUI_PCVIRTUAL CSWGuiSkillFlow* AsSkillFlow()
     {
         return 0;
     }
-    // PC 0x0063E7F0
+    // PC 0x004065A0
     SWGUI_PCVIRTUAL CSWGuiEditbox* AsEditBox()
     {
         return 0;
@@ -234,7 +234,7 @@ public:
     }
 
     SWGUI_PCVIRTUAL int DisplayToolTip();
-    // PC 0x005B5E90
+    // PC 0x006049D0
     SWGUI_PCVIRTUAL void DrawDragDrop(int nX, int nY)
     {
     }
@@ -334,12 +334,12 @@ class CSWGui3DSceneView : public CSWGuiControl
 {
 public:
 #ifndef _XBOX
-    virtual ~CSWGui3DSceneView()  // PC 0x0067AC50  Xbox 0x000A0D00
+    virtual ~CSWGui3DSceneView()  // PC 0x006D1430
     {
     }
 #endif
     virtual void SetExtent(const CSWGuiExtent& cExtent);
-    virtual void Draw(float fElapsed)  // PC 0x0067ACB0  Xbox 0x000A0CF0
+    virtual void Draw(float fElapsed)  // PC 0x006D1490
     {
         m_cScene.Draw(fElapsed);
     }
@@ -353,7 +353,7 @@ public:
     CSWGuiNavigable();
 
 #ifndef _XBOX
-    virtual ~CSWGuiNavigable()  // PC 0x00419CE0  Xbox 0x0009AE90
+    virtual ~CSWGuiNavigable()  // PC 0x004196D0
     {
     }
 #endif
@@ -361,7 +361,7 @@ public:
     SWGUI_PCVIRTUAL void HandleMouseOver(int bOver);
     virtual void HandleInputEvent(int nEvent, int nState);
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWGuiNavigable* AsNavigable()
     {
         return this;
@@ -378,7 +378,7 @@ class CSWGuiLabel : public CSWGuiControl
 public:
     CSWGuiLabel();
 #ifndef _XBOX
-    virtual ~CSWGuiLabel()  // PC 0x00419D10  Xbox 0x0004DC80
+    virtual ~CSWGuiLabel()  // PC 0x00419700
     {
     }
 #endif
@@ -387,7 +387,7 @@ public:
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWGuiLabel* AsLabel()
     {
         return this;
@@ -426,7 +426,7 @@ class CSWGuiLabelHilight : public CSWGuiLabel
 {
 public:
 #ifndef _XBOX
-    virtual ~CSWGuiLabelHilight()  // PC 0x0041B610  Xbox 0x0004F7A0
+    virtual ~CSWGuiLabelHilight()  // PC 0x0041B000
     {
     }
 #endif
@@ -434,7 +434,7 @@ public:
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWGuiLabelHilight* AsLabelHilight()
     {
         return this;
@@ -457,11 +457,11 @@ public:
     using CSWGuiControl::Initialize;
 
 #ifndef _XBOX
-    virtual ~CSWGuiButton()  // PC 0x00419DA0  Xbox 0x0009C520
+    virtual ~CSWGuiButton()  // PC 0x00419790
     {
     }
 #endif
-    // PC 0x0041C0F0  Xbox 0x0009C4B0
+    // PC 0x0041BB50
     CSWGuiButton()
     {
     }
@@ -470,7 +470,7 @@ public:
     virtual void HandleInputEvent(int nEvent, int nState);
     virtual void SetActive(int bActive);
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWGuiButton* AsButton()
     {
         return this;
@@ -494,7 +494,7 @@ class CSWGuiButtonToggle : public CSWGuiButton
 public:
     CSWGuiButtonToggle();
 #ifndef _XBOX
-    virtual ~CSWGuiButtonToggle()  // PC 0x0041CAD0  Xbox 0x000F33D0
+    virtual ~CSWGuiButtonToggle()  // PC 0x0041C4D0
     {
     }
 #endif
@@ -508,7 +508,7 @@ public:
                             const CSWGuiBorderParams& cHilite,
                             const CSWGuiBorderParams& cToggleBorder,
                             const CSWGuiBorderParams& cToggleHilite);
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWGuiButtonToggle* AsButtonToggle()
     {
         return this;
@@ -544,7 +544,7 @@ public:
 
     CSWGuiScrollBar();
 #ifndef _XBOX
-    virtual ~CSWGuiScrollBar()  // PC 0x00419E40  Xbox 0x002FE370
+    virtual ~CSWGuiScrollBar()  // PC 0x00419CF0
     {
     }
 #endif
@@ -554,7 +554,7 @@ public:
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWGuiScrollBar* AsScrollBar()
     {
         return this;
@@ -612,7 +612,7 @@ public:
     SWGUI_PCVIRTUAL int HandleMouseCapturedMovement(int nX, int nY);
     SWGUI_PCVIRTUAL void HandleLMouseDown();
     SWGUI_PCVIRTUAL void HandleLMouseUp();
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWGuiListBox* AsSWGuiListBox()
     {
         return this;
@@ -622,7 +622,7 @@ public:
     virtual void HandleInputEvent(int nEvent, int nState);
     virtual void SetActive(int bActive);
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWGuiListBox* AsListBox()
     {
         return this;
@@ -638,7 +638,7 @@ public:
                                      const CSWGuiBorderParams& cBorder,
                                      const CResRef& sUpArrow,
                                      const CResRef& sDownArrow, int bLeft);
-    SWGUI_PCVIRTUAL void SetSelectOnLeftClick(int bSelect)  // PC 0x0041B120
+    SWGUI_PCVIRTUAL void SetSelectOnLeftClick(int bSelect)  // PC 0x0041A950
     {
 #ifndef _XBOX
         m_bSelectOnLeftClick = bSelect;
@@ -692,7 +692,7 @@ public:
     {
         return m_lItems.num;
     }
-    void SetTopVisible(short nTopItem)  // PC 0x006B2590
+    void SetTopVisible(short nTopItem)  // PC 0x00721090
     {
         m_nTopVisibleItem = min((int)nTopItem, max(0, GetNumItems() - m_nVisibleItems));
     }
@@ -769,7 +769,7 @@ public:
 
     CSWGuiSlider();
 #ifndef _XBOX
-    virtual ~CSWGuiSlider()  // PC 0x0041BB40  Xbox 0x000E5440
+    virtual ~CSWGuiSlider()  // PC 0x0041B530
     {
     }
 #endif
@@ -778,7 +778,7 @@ public:
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     SWGUI_PCVIRTUAL int HandleMouseCapturedMovement(int nX, int nY);
     SWGUI_PCVIRTUAL void HandleLMouseDown();
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWGuiSlider* AsSlider()
     {
         return this;
@@ -814,7 +814,7 @@ class CSWGuiProgressBar : public CSWGuiControl
 public:
     CSWGuiProgressBar();
 #ifndef _XBOX
-    virtual ~CSWGuiProgressBar()  // PC 0x0041AF70  Xbox 0x00099C80
+    virtual ~CSWGuiProgressBar()  // PC 0x0041A7A0
     {
     }
 #endif
@@ -823,7 +823,7 @@ public:
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWGuiProgressBar* AsProgressBar()
     {
         return this;
@@ -866,12 +866,12 @@ public:
     SWGUI_PCVIRTUAL void HandleFocusChange(int);
     CSWGuiEditbox();
 #ifndef _XBOX
-    virtual ~CSWGuiEditbox()  // PC 0x0041C740
+    virtual ~CSWGuiEditbox()  // PC 0x0041C140
     {
     }
 #endif
     virtual void Load(CResGFF*, CResStruct&);
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     SWGUI_PCVIRTUAL CSWGuiEditbox* AsEditBox()
     {
         return this;
@@ -885,7 +885,7 @@ class CSWGuiRadioButton : public CSWGuiButton
 {
 public:
 #ifndef _XBOX
-    virtual ~CSWGuiRadioButton()  // PC 0x006BE360
+    virtual ~CSWGuiRadioButton()
     {
     }
 #endif
@@ -893,7 +893,7 @@ public:
     SWGUI_PCVIRTUAL void HandleMouseOver(int bOver);
     SWGUI_PCVIRTUAL void HandleLMouseDown();
     SWGUI_PCVIRTUAL void HandleLMouseUp();
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     SWGUI_PCVIRTUAL CSWGuiRadioButton* AsRadioButton()
     {
         return this;

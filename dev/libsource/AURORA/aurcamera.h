@@ -58,7 +58,7 @@ public:
     virtual float GetYaw() = 0;
     virtual float GetPitch() = 0;
     virtual float GetDist() = 0;
-    virtual CAurCamera* AsAurCamera()  // PC 0x00641DB0
+    virtual CAurCamera* AsAurCamera()  // PC 0x00698BD0
     {
         return this;
     }
@@ -91,21 +91,21 @@ public:
     virtual void Render(bool bRenderLast);
     virtual int PlayAnimation(const char* sName, float fSpeed, int nFlags,
                               float fBlend);
-    // PC 0x0045C430
+    // PC 0x00471660
     virtual CAurCamera* AsCAurCamera()
     {
         return this;
     }
-    virtual Camera* AsCamera()  // PC 0x0045C430
+    virtual Camera* AsCamera()  // PC 0x00471660
     {
         return this;
     }
-    virtual CAurObject* AsCAurObject()  // PC 0x0045C440  Xbox 0x002BCDC0
+    virtual CAurObject* AsCAurObject()  // PC 0x00471670
     {
         return this;
     }
     virtual void GetMinimumBoundingBox(Vector& vMinimum, Vector& vMaximum);
-    virtual void GetMinimumBoundingSphere(Vector& vPosition, float& fRadius)  // PC 0x005B5E90
+    virtual void GetMinimumBoundingSphere(Vector& vPosition, float& fRadius)  // PC 0x006049D0
     {
     }
     virtual int AttachToScene(CAurScene* pScene);
@@ -114,11 +114,11 @@ public:
     virtual void SetBehavior(CAurBehavior* pBehavior);
     virtual Vector SetPosition(Vector vPosition);
     virtual Quaternion SetOrientation(Quaternion qOrientation);
-    virtual Vector GetPosition()  // PC 0x0045C450  Xbox 0x002BCDD0
+    virtual Vector GetPosition()  // PC 0x00471680
     {
         return m_vPosition;
     }
-    virtual Quaternion GetOrientation()  // PC 0x0045C470  Xbox 0x002BCDF0
+    virtual Quaternion GetOrientation()  // PC 0x004716B0
     {
         return m_qOrientation;
     }
@@ -127,18 +127,18 @@ public:
     virtual void Animate(float fTimeStep);
 
     Vector MouseDir(int nX, int nY);
-    int GetViewPortHeight()  // PC 0x0045C4A0  Xbox 0x002BCE20
+    int GetViewPortHeight()  // PC 0x004716E0
     {
         return m_nViewPortHeight;
     }
     void SetClipDist(float fNear, float fFar);
-    void GetClipDist(float& fNear, float& fFar)  // PC 0x0045C4B0  Xbox 0x002BCE30
+    void GetClipDist(float& fNear, float& fFar)  // PC 0x004716F0
     {
         fNear = m_fNearClip;
         fFar = m_fFarClip;
     }
     void SetViewAngle(float fViewAngle);
-    float GetViewAngle()  // PC 0x0045C4D0  Xbox 0x002BCE50
+    float GetViewAngle()  // PC 0x00471710
     {
         return m_fViewAngle;
     }
@@ -151,12 +151,12 @@ public:
     float GetYaw();
     float GetPitch();
     float GetDist();
-    virtual void SetFadePlanes(Plane& planeNear, Plane& planeFar)  // PC 0x0045C4E0  Xbox 0x002BCE60
+    virtual void SetFadePlanes(Plane& planeNear, Plane& planeFar)  // PC 0x00471720
     {
         m_planeFadeNear = planeNear;
         m_planeFadeFar = planeFar;
     }
-    int ViewVolumeSet()  // PC 0x0045C530  Xbox 0x002BCEC0
+    int ViewVolumeSet()  // PC 0x00471770
     {
         return m_bViewVolumeSet;
     }

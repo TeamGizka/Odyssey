@@ -26,7 +26,7 @@ const int CSWGuiInGameInventory::m_nFilterName[6] =
     41822, 42165, 41818, 41821, 41819, 41820
 };
 #ifndef _XBOX
-void CSWGuiInGameInventory::OnControlSelected(CSWGuiControl* pControl)  // PC 0x006B25E0  Xbox 0x000E80E0
+void CSWGuiInGameInventory::OnControlSelected(CSWGuiControl* pControl)  // PC 0x00738C80
 {
     if (pControl->m_bSelected != 0)
     {
@@ -66,7 +66,7 @@ void CSWGuiInGameInventory::OnControlSelected(CSWGuiControl* pControl)  // PC 0x
     }
 }
 #endif
-void CSWGuiInGameInventory::CantEquip(CSWGuiControl* pControl)  // PC 0x006B26E0  Xbox 0x000E82B0
+void CSWGuiInGameInventory::CantEquip(CSWGuiControl* pControl)  // PC 0x00738E50
 {
     if (pControl->m_bSelected != 0)
     {
@@ -78,7 +78,7 @@ void CSWGuiInGameInventory::CantEquip(CSWGuiControl* pControl)  // PC 0x006B26E0
         m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
 }
-// PC 0x006B2740  Xbox 0x000E8310
+// PC 0x00738EB0
 void CSWGuiInGameInventory::NotUseable(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -92,7 +92,7 @@ void CSWGuiInGameInventory::NotUseable(CSWGuiControl* pControl)
     }
 }
 #ifndef _XBOX
-void CSWGuiInGameInventory::NotUseableOnHawk(CSWGuiControl* pControl)  // PC 0x006B27A0
+void CSWGuiInGameInventory::NotUseableOnHawk(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
     {
@@ -105,7 +105,7 @@ void CSWGuiInGameInventory::NotUseableOnHawk(CSWGuiControl* pControl)  // PC 0x0
     }
 }
 #endif
-void CSWGuiInGameInventory::FullHealth(CSWGuiControl* pControl)  // PC 0x006B2800  Xbox 0x000E8370
+void CSWGuiInGameInventory::FullHealth(CSWGuiControl* pControl)  // PC 0x00738DF0
 {
     if (pControl->m_bSelected != 0)
     {
@@ -118,7 +118,7 @@ void CSWGuiInGameInventory::FullHealth(CSWGuiControl* pControl)  // PC 0x006B280
     }
 }
 #ifndef _XBOX
-void CSWGuiInGameInventory::SquadFullHealth(CSWGuiControl* pControl)  // PC 0x006B2860
+void CSWGuiInGameInventory::SquadFullHealth(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
     {
@@ -136,7 +136,7 @@ void CSWGuiInGameInventory::SquadFullHealth(CSWGuiControl* pControl)  // PC 0x00
 static inline void SwguiingameinventorySync3();
 static inline void SwguiingameinventorySync2();
 static inline void SwguiingameinventorySync1();
-// PC 0x006B28C0  Xbox 0x000E83D0
+
 void CSWGuiInGameInventory::UpdatePlayerStats()
 {
     CSWCCreature* pCreature;
@@ -180,7 +180,7 @@ void CSWGuiInGameInventory::UpdatePlayerStats()
         }
     }
 }
-// PC 0x006B2A80  Xbox 0x000E8540
+
 void CSWGuiInGameInventory::SetNextFilter()
 {
     int nFilter =
@@ -206,7 +206,7 @@ void CSWGuiInGameInventory::SetNextFilter()
             g_pTlkTable->GetSimpleString(m_nFilterName[nFilter]);
     m_lblInv.m_cText.m_cParams.SetText(sText);
 }
-// PC 0x006B2C90  Xbox 0x000E8750
+// PC 0x00738FD0
 int CSWGuiInGameInventory::CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature,
                                        int nSlot)
 {
@@ -264,7 +264,7 @@ int CSWGuiInGameInventory::CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature,
     }
     return bResult;
 }
-// PC 0x006B2DC0
+
 void CSWGuiInGameInventory::UpdatePortraits()
 {
     CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
@@ -303,7 +303,7 @@ void CSWGuiInGameInventory::UpdatePortraits()
         m_btnChange2.m_bEnabled = 0;
     }
 }
-// PC 0x006B2EC0
+
 void CSWGuiInGameInventory::OnChangeCharacter(CSWGuiControl* pControl)
 {
     int nChange = 1;
@@ -364,7 +364,7 @@ void CSWGuiInGameInventory::OnChangeCharacter(CSWGuiControl* pControl)
         UpdatePortraits();
     }
 }
-// PC 0x006B2FD0
+
 void CSWGuiInGameInventory::OnSwitchRight(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -477,7 +477,7 @@ void CSWGuiInGameInventory::OnSwitchRight(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006B3250
+
 void CSWGuiInGameInventory::OnSwitchLeft(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -589,7 +589,7 @@ void CSWGuiInGameInventory::OnSwitchLeft(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006B34C0  Xbox 0x000E9570
+// PC 0x00739440
 CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -668,7 +668,7 @@ CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)
     m_btnChange2.m_nToolTipStrRef = 38693;
 #endif
 }
-// PC 0x006B3D10  Xbox 0x000E8E80
+// PC 0x00739E30
 void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -706,7 +706,7 @@ void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
         m_lbxDescription.SetSelectedControl(&m_lblUnknown64, 0);
     }
 }
-// PC 0x006B3ED0  Xbox 0x000E9080
+// PC 0x00739280
 void CSWGuiInGameInventory::HandleInputEvent(int nEvent, int nState)
 {
     SwguiingameinventoryTrace2();
@@ -754,7 +754,7 @@ void CSWGuiInGameInventory::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006B40C0  Xbox 0x000E9260
+// PC 0x0073A040
 CSWGuiInGameInventory::~CSWGuiInGameInventory()
 {
     SwguiingameinventoryTrace2();
@@ -770,7 +770,7 @@ CSWGuiInGameInventory::~CSWGuiInGameInventory()
     }
     m_aItemEntries.num = 0;
 }
-// PC 0x006B4430  Xbox 0x000E9510
+// PC 0x0073A310
 void CSWGuiInGameInventory::OnPanelRemoved()
 {
     SwguiingameinventoryTrace2();
@@ -795,7 +795,7 @@ void CSWGuiInGameInventory::OnPanelRemoved()
         ->GetPartyItems()
         ->ClearNewItems(&m_aNewItems);
 }
-// PC 0x006B44D0
+// PC 0x0073A3B0
 void CSWGuiInGameInventory::CreateItemEntry(
     CSWCCreature* pCreature, int& nItem,
     CExoArrayList<CSWGuiControl*>& lControls, CSWSItem* pItem, int bSquadItem,
@@ -901,7 +901,7 @@ void CSWGuiInGameInventory::CreateItemEntry(
     lControls.Add(pItemEntry);
     ++nItem;
 }
-// PC 0x006B4810  Xbox 0x000E8A90
+// PC 0x0073A700
 void CSWGuiInGameInventory::PopulateItemListBox()
 {
     CSWCCreature* pCreature;
@@ -990,7 +990,7 @@ void CSWGuiInGameInventory::PopulateItemListBox()
     }
     m_bUpdateItems = 0;
 }
-// PC 0x006B4BB0  Xbox 0x000E9470
+// PC 0x0073AA70
 void CSWGuiInGameInventory::Draw(float fElapsed)
 {
     SwguiingameinventorySync3();
@@ -1019,7 +1019,7 @@ void CSWGuiInGameInventory::Draw(float fElapsed)
     }
     return CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x006B4C30  Xbox 0x000E94A0
+// PC 0x0073ABB0
 void CSWGuiInGameInventory::OnPanelAdded()
 {
     SwguiingameinventorySync3();
@@ -1063,7 +1063,7 @@ static inline void SwguiingameinventorySync1()
 #ifdef _XBOX
 #include "nwccreature.h"
 #include "exoinput.h"
-// PC 0x006B34C0  Xbox 0x000E9570
+
 CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -1129,13 +1129,13 @@ CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)
                 g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nInventoryFilter]);
     m_lblInv.m_cText.m_cParams.SetText(sText);
 }
-// PC 0x006B40C0  Xbox 0x000E9260
+
 CSWGuiInGameInventory::~CSWGuiInGameInventory()
 {
     m_lbxDescription.ClearItems();
     m_lItems.RemoveAll();
 }
-// PC 0x006B4BB0  Xbox 0x000E9470
+
 void CSWGuiInGameInventory::Draw(float fElapsed)
 {
     if (m_bUpdateItems)
@@ -1145,7 +1145,7 @@ void CSWGuiInGameInventory::Draw(float fElapsed)
     UpdatePlayerStats();
     CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x006B4C30  Xbox 0x000E94A0
+
 void CSWGuiInGameInventory::OnPanelAdded()
 {
     m_lblBlack.SetShown(g_pAppManager->m_pClientExoApp->GetSWParty()->GetNumCharacters() > 1);
@@ -1154,7 +1154,7 @@ void CSWGuiInGameInventory::OnPanelAdded()
     g_pAppManager->m_pClientExoApp->ShowTutorialWindow(20, OBJECT_INVALID,
                                                        OBJECT_INVALID, 0);
 }
-// PC 0x006B4430  Xbox 0x000E9510
+
 void CSWGuiInGameInventory::OnPanelRemoved()
 {
     m_lItems.RemoveAll();
@@ -1162,7 +1162,7 @@ void CSWGuiInGameInventory::OnPanelRemoved()
         ->GetPartyItems()
         ->ClearNewItems(&m_aNewItems);
 }
-// PC 0x006B3ED0  Xbox 0x000E9080
+
 void CSWGuiInGameInventory::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -1212,7 +1212,7 @@ void CSWGuiInGameInventory::HandleInputEvent(int nEvent, int nState)
     }
     CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// Xbox 0x000E7EA0
+
 void CSWGuiInGameInventory::SetItemRows(int nTopItem, int nSelectedItem)
 {
     int nRows = m_lItems.num > NUM_ITEM_ROWS ? NUM_ITEM_ROWS : m_lItems.num;
@@ -1241,7 +1241,7 @@ void CSWGuiInGameInventory::SetItemRows(int nTopItem, int nSelectedItem)
         SetActiveControl(&m_aItemRows[nSelectedItem - nTopItem], 1);
     }
 }
-// Xbox 0x000E8020
+
 void CSWGuiInGameInventory::SelectNextItem()
 {
     int nSelected = m_nSelectedItem + 1;
@@ -1258,7 +1258,7 @@ void CSWGuiInGameInventory::SelectNextItem()
     }
     SetItemRows(nTop, nSelected);
 }
-// Xbox 0x000E8080
+
 void CSWGuiInGameInventory::SelectPreviousItem()
 {
     int nSelected = m_nSelectedItem - 1;
@@ -1275,7 +1275,7 @@ void CSWGuiInGameInventory::SelectPreviousItem()
     }
     SetItemRows(nTop, nSelected);
 }
-// Xbox 0x000E89A0
+
 void CSWGuiInGameInventory::CreateItemEntry(CSWCCreature* pCreature, CSWSItem* pItem,
                                             ItemListEntry* pEntry, int bSquadItem,
                                             int bEquipped)
@@ -1315,7 +1315,7 @@ void CSWGuiInGameInventory::CreateItemEntry(CSWCCreature* pCreature, CSWSItem* p
         pEntry->m_bUsable = 0;
     }
 }
-// PC 0x006B2A80  Xbox 0x000E8540
+
 void CSWGuiInGameInventory::SetNextFilter()
 {
     int nFilter =
@@ -1341,7 +1341,7 @@ void CSWGuiInGameInventory::SetNextFilter()
             g_pTlkTable->GetSimpleString(m_nFilterName[nFilter]);
     m_lblInv.m_cText.m_cParams.SetText(sText);
 }
-// PC 0x006B28C0  Xbox 0x000E83D0
+
 void CSWGuiInGameInventory::UpdatePlayerStats()
 {
     CSWCCreature* pCreature =
@@ -1370,7 +1370,7 @@ void CSWGuiInGameInventory::UpdatePlayerStats()
         }
     }
 }
-// PC 0x006B2C90  Xbox 0x000E8750
+
 int CSWGuiInGameInventory::CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature,
                                        int nSlot)
 {
@@ -1428,13 +1428,13 @@ int CSWGuiInGameInventory::CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature,
     }
     return bResult;
 }
-// PC 0x0041A290  Xbox 0x0004CEC0
+
 inline int CSWGuiListBox::IsOversized()
 {
     return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
            m_lItems.num > 0 && !m_bHideScrollIcon;
 }
-// PC 0x006B3D10  Xbox 0x000E8E80
+
 void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -1480,7 +1480,7 @@ void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
         m_lblRanalog.SetShown(m_lbxDescription.IsOversized());
     }
 }
-// PC 0x006B25E0  Xbox 0x000E80E0
+
 void CSWGuiInGameInventory::OnControlSelected(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -1534,7 +1534,7 @@ void CSWGuiInGameInventory::OnControlSelected(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x006B4810  Xbox 0x000E8A90
+
 void CSWGuiInGameInventory::PopulateItemListBox()
 {
     CSWCCreature* pCreature = g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter();

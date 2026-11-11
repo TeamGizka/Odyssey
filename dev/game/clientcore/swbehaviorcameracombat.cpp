@@ -18,7 +18,7 @@
 #include "exobase.h"
 #include <math.h>
 #include "nwrules.h"
-// PC 0x006D12B0  Xbox 0x00100800
+// PC 0x0073F790
 CSWBehaviorCameraCombat::CSWBehaviorCameraCombat(CAurObject* pObject)
     : CAurBehavior(pObject)
 {
@@ -82,7 +82,7 @@ CSWBehaviorCameraCombat::CSWBehaviorCameraCombat(CAurObject* pObject)
 }
 
 #ifndef _XBOX
-Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(  // PC 0x006D14E0  Xbox 0x001009E0
+Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(  // PC 0x0073F9C0
     CSWCCreature* pCreature, CSWCObject* pTarget, float fTimeStep,
     float& fYaw)
 {
@@ -125,7 +125,7 @@ Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(  // PC 0x006D14E0  Xbo
                    pCreature->m_vPosition.m_fZ + m_fHeight;
     return vResult;
 }
-// PC 0x006D16F0  Xbox 0x00100CE0
+// PC 0x0073FC40
 float CSWBehaviorCameraCombat::GetNextYaw(const Vector& vDirection, float fYaw,
                                           float fTimeStep, float& fTurn)
 {
@@ -143,7 +143,7 @@ float CSWBehaviorCameraCombat::GetNextYaw(const Vector& vDirection, float fYaw,
     return fYaw;
 }
 #endif
-// PC 0x006D1760  Xbox 0x00100DF0
+// PC 0x0073FCB0
 Vector CSWBehaviorCameraCombat::GetNextPosition(const Vector& vTarget,
                                                 float fTimeStep, float fSpeed)
 {
@@ -161,7 +161,7 @@ Vector CSWBehaviorCameraCombat::GetNextPosition(const Vector& vTarget,
     }
     return vResult;
 }
-// PC 0x006D1870
+// PC 0x0073FDC0
 int CSWBehaviorCameraCombat::SetTurn(float fTurn)
 {
     int bToggle = g_bMouseCameraRotateToggle;
@@ -185,7 +185,7 @@ int CSWBehaviorCameraCombat::SetTurn(float fTurn)
 CSWMGBehaviorBullet::~CSWMGBehaviorBullet()
 {
 }
-// PC 0x006D18E0  Xbox 0x00100F40
+// PC 0x0073FE10
 Vector CSWBehaviorCameraCombat::DetermineSafePosition(CSWCCreature* pCreature,
                                                       const Vector& vDesired,
                                                       const Vector& vCurrent)
@@ -258,7 +258,7 @@ Vector CSWBehaviorCameraCombat::DetermineSafePosition(CSWCCreature* pCreature,
 
     return vSafe;
 }
-// PC 0x006D1FC0  Xbox 0x00101800
+// PC 0x00740540
 int CSWBehaviorCameraCombat::Control(float fTimeStep)
 {
     int nResult = CAurBehavior::Control(fTimeStep);
@@ -352,7 +352,7 @@ int CSWBehaviorCameraCombat::Control(float fTimeStep)
     }
     return 1;
 }
-// PC 0x006D22C0  Xbox 0x001019A0
+// PC 0x00740840
 void CSWBehaviorCameraCombat::PutAtDesiredLocation()
 {
     CSWParty* pSWParty = g_pAppManager->m_pClientExoApp->GetSWParty();
@@ -385,7 +385,7 @@ void CSWBehaviorCameraCombat::PutAtDesiredLocation()
 }
 
 #ifdef _XBOX
-// PC 0x006D14E0  Xbox 0x001009E0
+
 Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(
     CSWCCreature* pCreature, CSWCObject* pTarget, float fTimeStep,
     float& fYaw)
@@ -444,7 +444,7 @@ Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(
                    pCreature->m_vPosition.m_fZ + m_fHeight;
     return vResult;
 }
-// PC 0x006D16F0  Xbox 0x00100CE0
+
 float CSWBehaviorCameraCombat::GetNextYaw(const Vector& vDirection, float fYaw,
                                           float fTimeStep, float& fTurn)
 {

@@ -77,7 +77,7 @@ public:
         return m_locTransitionDestination;
     }
     virtual ~CSWSDoor();
-    virtual CSWSDoor* AsSWSDoor()  // PC 0x00641DB0
+    virtual CSWSDoor* AsSWSDoor()  // PC 0x00698BD0
     {
         return this;
     }
@@ -85,14 +85,14 @@ public:
     virtual void EventHandler(unsigned long nEventId, unsigned long oidCaller,
                               void* pEventData, unsigned long nCalendarDay,
                               unsigned long nTimeOfDay);
-    // PC 0x0058A1B0  Xbox 0x0020CB70
+    // PC 0x00580E10
     virtual CResRef GetDialogResref()
     {
         return m_crConversation;
     }
 
     void SetDialogResref(CResRef cResRef) { m_crConversation = cResRef; }
-    // PC 0x0058A1E0  Xbox 0x0020CBA0
+    // PC 0x00580E40
     virtual CExoLocString* GetFirstName()
     {
         return &m_locName;

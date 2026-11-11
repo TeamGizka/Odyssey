@@ -8,14 +8,14 @@ static int nCurrentJoystick = 0;
 
 int g_nRawJoystickUnused1;
 int g_nRawJoystickUnused2;
-// PC 0x005C5A30
+// PC 0x00600DB0
 CExoDeviceBuffer::CExoDeviceBuffer()
 {
     m_nEvents = 0;
     m_nCapacity = 0;
     m_pEvents = NULL;
 }
-// PC 0x005E2FF0  Xbox 0x0013BFC0
+// PC 0x0062F2C0
 CExoDeviceBuffer::~CExoDeviceBuffer()
 {
     if (m_pEvents != NULL)
@@ -24,12 +24,12 @@ CExoDeviceBuffer::~CExoDeviceBuffer()
         m_pEvents = NULL;
     }
 }
-// PC 0x0063E7F0
+// PC 0x004065A0
 int CExoRawInputInternal::GetMainDeviceLost()
 {
     return 0;
 }
-// PC 0x005E3010
+// PC 0x0062F2E0
 void CExoRawInputInternal::ClearKeyboardBuffer()
 {
     if (m_bKeyboardMode == 0 && m_pKeyboard != NULL && m_bActive != 0)
@@ -52,7 +52,7 @@ void CExoRawInputInternal::ClearKeyboardBuffer()
         } while (nResult == DIERR_INPUTLOST);
     }
 }
-// PC 0x005E3080
+// PC 0x0062F350
 void CExoRawInputInternal::ClearMouseBuffer()
 {
     if (m_pMouse != NULL && m_bActive != 0)
@@ -75,14 +75,14 @@ void CExoRawInputInternal::ClearMouseBuffer()
         } while (nResult == DIERR_INPUTLOST);
     }
 }
-// Xbox 0x0013BFE0
+
 void CExoRawInputInternal::ClearJoystickBuffer(int nJoystick)
 {
     memset(&m_pJoystickStates[nJoystick], 0, sizeof(DIJOYSTATE));
     m_pJoystickStates[nJoystick].m_nTime =
         (unsigned long)(g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
 }
-// PC 0x005E30E0  Xbox 0x0013D550
+// PC 0x0062F3B0
 int CExoRawInputInternal::GetJoystickBuffer(int nJoystick,
                                             CExoDeviceBuffer& buffer)
 {
@@ -308,7 +308,7 @@ int CExoRawInputInternal::GetJoystickBuffer(int nJoystick,
     }
     return 1;
 }
-// PC 0x005E3930  Xbox 0x0013C5D0
+// PC 0x0062FC00
 int CExoRawInputInternal::GetLastState(unsigned long nDevice,
                                        unsigned long nControl)
 {
@@ -356,7 +356,7 @@ int CExoRawInputInternal::GetLastState(unsigned long nDevice,
     }
     return nResult;
 }
-// PC 0x005E39F0  Xbox 0x0013C790
+// PC 0x0062FCC0
 int CExoRawInputInternal::IsDigital(unsigned long nDevice,
                                     unsigned long nControl)
 {
@@ -376,7 +376,7 @@ int CExoRawInputInternal::IsDigital(unsigned long nDevice,
            ((nControl >= 0x30 && nControl <= 0x4F) ||
             (nControl >= 0x384 && nControl <= 0x393) || nControl == 32);
 }
-// PC 0x005E3A60  Xbox 0x0013C680
+// PC 0x0062FD30
 float CExoRawInputInternal::GetMaxUseable(unsigned long nDevice,
                                           unsigned long nControl)
 {
@@ -401,7 +401,7 @@ float CExoRawInputInternal::GetMaxUseable(unsigned long nDevice,
         }
     }
 }
-// PC 0x005E3AA0  Xbox 0x0013C6D0
+// PC 0x0062FD70
 float CExoRawInputInternal::GetMinUseable(unsigned long nDevice,
                                           unsigned long nControl)
 {
@@ -426,7 +426,7 @@ float CExoRawInputInternal::GetMinUseable(unsigned long nDevice,
         }
     }
 }
-// PC 0x005E3AE0
+// PC 0x0062FDB0
 int CExoRawInputInternal::GetKeyboardBuffer(CExoDeviceBuffer& buffer)
 {
     if (m_pKeyboard == NULL)
@@ -505,7 +505,7 @@ int CExoRawInputInternal::GetKeyboardBuffer(CExoDeviceBuffer& buffer)
     }
     return 1;
 }
-// PC 0x005E3BE0
+// PC 0x0062FEB0
 void CExoRawInputInternal::KeyboardModeOn()
 {
     m_bKeyboardMode = 1;
@@ -514,7 +514,7 @@ void CExoRawInputInternal::KeyboardModeOn()
         m_pKeyboard->Unacquire();
     }
 }
-// PC 0x005E3C00
+// PC 0x0062FED0
 void CExoRawInputInternal::KeyboardModeOff()
 {
     m_bKeyboardMode = 0;
@@ -523,7 +523,7 @@ void CExoRawInputInternal::KeyboardModeOff()
         m_pKeyboard->Acquire();
     }
 }
-// PC 0x005E3C20  Xbox 0x0013D030
+// PC 0x0062FEF0
 void CExoRawInputInternal::SetActive(int bActive)
 {
     if (bActive != m_bActive)
@@ -583,7 +583,7 @@ void CExoRawInputInternal::SetActive(int bActive)
         }
     }
 }
-// PC 0x005E3D10
+// PC 0x0062FFE0
 CExoString CExoRawInputInternal::GetDisplayCharacterDirectInputValue(
     unsigned long nKey)
 {
@@ -612,7 +612,7 @@ void CExoRawInputInternal::ShutDownDirectInputMouse()
         m_pMouse = NULL;
     }
 }
-// PC 0x005E3DC0
+// PC 0x00630090
 int CExoRawInputInternal::ShutDownDirectInput()
 {
     int nResult = (int)m_pDirectInput;
@@ -653,7 +653,7 @@ int CExoRawInputInternal::ShutDownDirectInput()
     }
     return nResult;
 }
-// PC 0x005E3E80
+// PC 0x00630150
 CExoRawInputInternal::CExoRawInputInternal(HINSTANCE hInstance, HWND hWnd)
 {
     DIPROPDWORD dipBuffer;
@@ -697,12 +697,12 @@ CExoRawInputInternal::CExoRawInputInternal(HINSTANCE hInstance, HWND hWnd)
     m_bInitialized = 1;
     nCurrentJoystick = 0;
 }
-// PC 0x005E3F90  Xbox 0x0013D490
+// PC 0x00630260
 CExoRawInputInternal::~CExoRawInputInternal()
 {
     ShutDownDirectInput();
 }
-// PC 0x005E3FA0
+// PC 0x00630270
 int CExoRawInputInternal::InitializeDirectInputMouse()
 {
     DIPROPDWORD dipBuffer;
@@ -738,7 +738,7 @@ int CExoRawInputInternal::InitializeDirectInputMouse()
     }
     return 1;
 }
-// PC 0x005E4050
+// PC 0x00630320
 int CExoRawInputInternal::GetMouseState(CExoMouseState& state)
 {
     if (m_pMouse == NULL)
@@ -776,7 +776,7 @@ int CExoRawInputInternal::GetMouseState(CExoMouseState& state)
     }
     return 1;
 }
-// PC 0x0063E7C0  Xbox 0x0013C7B0
+// PC 0x006955A0
 int CExoRawInputInternal::GetControlThreshold(unsigned long nControl)
 {
     return 0;

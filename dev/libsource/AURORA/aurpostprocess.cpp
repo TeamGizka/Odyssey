@@ -27,7 +27,7 @@ int countprunedanimnodes = 0;
 int countcrappyfaces1 = 0;
 int countcrappyfaces2 = 0;
 int countcrappyfaces3 = 0;
-// PC 0x00437DB0  Xbox 0x0028FB80
+// PC 0x004490F0
 int UpdateAnimFootprint(MdlNode* pNode, int nMultiplier)
 {
     animationfootprint += nMultiplier * pNode->m_lstControllerData.m_nCount * sizeof(float);
@@ -59,7 +59,7 @@ int UpdateAnimFootprint(MdlNode* pNode, int nMultiplier)
         UpdateAnimFootprint(pNode->m_lChildren[i], nMultiplier);
     return animationfootprint;
 }
-// PC 0x00438400  Xbox 0x0028FEE0
+// PC 0x00449AC0
 int GetMaxID(MdlNode* pNode, int nMaximumID)
 {
     if (pNode->m_nNodeID > nMaximumID)
@@ -68,7 +68,7 @@ int GetMaxID(MdlNode* pNode, int nMaximumID)
         nMaximumID = GetMaxID(pNode->m_lChildren[i], nMaximumID);
     return nMaximumID;
 }
-// PC 0x004386B0  Xbox 0x0028FFA0
+// PC 0x00449DF0
 void MdlNodeTriMesh::BuildNeighborLists()
 {
     for (int nFace = 0; nFace < m_lFaces.m_nCount; nFace++)
@@ -128,7 +128,7 @@ void MdlNodeTriMesh::BuildNeighborLists()
 #endif
     }
 }
-// PC 0x004388A0  Xbox 0x00290230
+// PC 0x0044A060
 void MdlNodeTriMesh::ComputeLocalSurfaceArea(List<MaxFace>& lFaces, float& fArea)
 {
     int i = 0;
@@ -155,7 +155,7 @@ void MdlNodeTriMesh::ComputeLocalSurfaceArea(List<MaxFace>& lFaces, float& fArea
     nPool = m_pModel->AsModel()->m_nVertexPool;
     GLRender::UnlockPool(nPool);
 }
-// PC 0x00438A00  Xbox 0x0028FB30
+// PC 0x00448F30
 inline char* MdlNode::TranslateNodeName()
 {
     if (m_pModel->AsModel())
@@ -167,7 +167,7 @@ inline char* MdlNode::TranslateNodeName()
         return ((Model*)m_pModel->AsAnimation()->m_pBinaryData)->m_lNames[m_nIndex];
     }
 }
-// PC 0x00438C40  Xbox 0x00290580
+// PC 0x0044A480
 int MdlNode::CreateSkinNodeList(List<MdlNodeTriMesh*>& lstNodes)
 {
     int nSkinNodes = 0;
@@ -187,7 +187,7 @@ int MdlNode::CreateSkinNodeList(List<MdlNodeTriMesh*>& lstNodes)
     }
     return nSkinNodes;
 }
-// PC 0x00438FA0  Xbox 0x00290610
+// PC 0x0044A7E0
 void MdlNode::ProcessSkinSeams()
 {
     if (m_pModel->m_nType & MaxTree::BINARY_TYPE_FLAG)
@@ -354,7 +354,7 @@ void MdlNode::ProcessSkinSeams()
     }
 }
 void SynchronizeNodes(MdlNode* pDestination, MdlNode* pSource, int& nNodeID);
-// PC 0x00439A10  Xbox 0x0028FD90
+// PC 0x00449760
 void SynchronizeNodes(MdlNode* pDestination, MdlNode* pSource, int& nNodeID)
 {
     AurpostprocessTrace2();
@@ -388,14 +388,14 @@ void MdlNode::InternalPostProcess()
 void MdlNodeAnimMesh::InternalPostProcess()
 {
 }
-// PC 0x00437C10  Xbox 0x0028F940
+// PC 0x00448EF0
 void MdlNodeEmitter::InternalPostProcess()
 {
     Model* pModel = m_pModel->AsModel();
     if (pModel != 0 && pModel->m_fRadius < 40.0f)
         pModel->m_fRadius = 40.0f;
 }
-// PC 0x00439D70  Xbox 0x0028FF20
+// PC 0x00449D70
 void MaxTree::SynchronizeTree(MaxTree* pTree)
 {
     if (pTree != 0)
@@ -417,7 +417,7 @@ void MaxTree::SynchronizeTree(MaxTree* pTree)
 int pruneanimations = 1;
 int enabletristrips = 0;
 int minstripsize = 5;
-// PC 0x0043C400  Xbox 0x002937C0
+// PC 0x0044E570
 void MdlNodeTriMesh::BuildVertexIndices()
 {
     int nCorner;
@@ -539,7 +539,7 @@ void MdlNodeTriMesh::BuildVertexIndices()
 #endif
     }
 }
-// PC 0x00439DF0  Xbox 0x002910F0
+// PC 0x0044BA40
 void MdlNodeTriMesh::InternalGenVertices()
 {
     int nFace;
@@ -728,7 +728,7 @@ void MdlNodeTriMesh::ProcessVerts()
             m_fSphereRadius = fRadius;
     }
 }
-// PC 0x0043CF00  Xbox 0x00293CE0
+// PC 0x0044F070
 void MdlNodeTriMesh::InternalPostProcess()
 {
     if (m_nVertexCount <= 0)
@@ -885,7 +885,7 @@ void MdlNodeTriMesh::InternalPostProcess()
         m_pfnRemoveTemporaryArrays(this);
     }
 }
-// PC 0x0043A820  Xbox 0x00291A60
+// PC 0x0044C490
 void MdlNodeTriMesh::CalculateTangentSpaceBasis()
 {
     unsigned long nPool = m_pModel->AsModel()->m_nVertexPool;
@@ -1007,7 +1007,7 @@ void MdlNodeTriMesh::CalculateTangentSpaceBasis()
     nPool = m_pModel->AsModel()->m_nVertexPool;
     GLRender::UnlockPool(nPool);
 }
-// PC 0x0043B350  Xbox 0x00292610
+// PC 0x0044D030
 void MdlNodeSkin::InternalPostProcess()
 {
     if (m_nVertexCount <= 0)
@@ -1020,7 +1020,7 @@ void MdlNodeSkin::InternalPostProcess()
 #endif
     }
 }
-// PC 0x0043B380  Xbox 0x00292620
+// PC 0x0044D060
 void MdlNodeLightsaber::InternalPostProcess()
 {
     if (m_nVertexCount <= 0)
@@ -1195,7 +1195,7 @@ void MdlNodeLightsaber::InternalPostProcess()
         m_nVertexStride = 0;
     }
 }
-// PC 0x0043BD40  Xbox 0x00292EB0
+// PC 0x0044DA20
 void MdlNodeDanglyMesh::InternalGenVertices()
 {
 
@@ -1247,7 +1247,7 @@ void MdlNodeDanglyMesh::InternalGenVertices()
     m_lConstraints.SetSize(0);
     m_lConstraints = lConstraints;
 }
-// PC 0x0043C090  Xbox 0x00293150
+// PC 0x0044DD70
 void MdlNodeTriMesh::InternalRemoveTemporaryArrays()
 {
     if (m_pPostProcess != 0)
@@ -1267,7 +1267,7 @@ void MdlNodeTriMesh::InternalRemoveTemporaryArrays()
     delete m_pPostProcess;
     m_pPostProcess = 0;
 }
-// PC 0x0043C130  Xbox 0x00293260
+// PC 0x0044DEF0
 void MdlNodeDanglyMesh::InternalRemoveTemporaryArrays()
 {
     List<NodeVertex*>* pVertexList;
@@ -1293,7 +1293,7 @@ void MdlNodeDanglyMesh::InternalRemoveTemporaryArrays()
 
     return ((MdlNodeTriMesh*)this)->InternalRemoveTemporaryArrays();
 }
-// PC 0x0043D450  Xbox 0x00293380
+// PC 0x0044E030
 void MdlNodeAnimMesh::InternalGenVertices()
 {
 
@@ -1368,19 +1368,19 @@ void MdlNodeAnimMesh::InternalGenVertices()
         }
     }
 }
-// PC 0x0043C1A0  Xbox 0x002932B0
+// PC 0x0044DF60
 void MdlNodeSkin::InternalRemoveTemporaryArrays()
 {
     MdlNodeTriMesh::InternalRemoveTemporaryArrays();
 }
-// PC 0x0043C1B0  Xbox 0x00290500
+// PC 0x0044A340
 inline NodeVertexAnim::~NodeVertexAnim()
 {
     m_lstPositions.SetSize(0);
     m_lstNormals.SetSize(0);
     m_lstTexCoords.SetSize(0);
 }
-// PC 0x0043C320  Xbox 0x002931E0
+// PC 0x0044DE10
 void MdlNodeAnimMesh::InternalRemoveTemporaryArrays()
 {
     for (int i = 0; i < m_pPostProcess->m_lstVertices.m_nCount; i++)
@@ -1395,7 +1395,7 @@ void MdlNodeAnimMesh::InternalRemoveTemporaryArrays()
 
     MdlNodeTriMesh::InternalRemoveTemporaryArrays();
 }
-// PC 0x0043D990  Xbox 0x00294210
+// PC 0x0044F5C0
 void MdlNodeDanglyMesh::InternalPostProcess()
 {
     if (m_nVertexCount <= 0)
@@ -1523,7 +1523,7 @@ void MdlNodeDanglyMesh::InternalPostProcess()
         m_pfnRemoveTemporaryArrays(this);
     }
 }
-// PC 0x0043DFC0  Xbox 0x002947B0
+// PC 0x0044FC00
 void MdlNodeLight::InternalPostProcess()
 {
     m_lstTextures.SetSize(m_lstTextureNames.m_nCount);
@@ -1552,7 +1552,7 @@ void AurPostProcessArrayListDefiners()
 #ifdef _XBOX
 
 MdlNode* findnode(MdlNode* pNode, char* sName);
-// Xbox 0x00290F80
+
 void Animation::PruneNodes(MdlNode* pNode)
 {
     countanimnodes++;
@@ -1568,7 +1568,7 @@ void Animation::PruneNodes(MdlNode* pNode)
         countprunedanimnodes++;
     }
 }
-// Xbox 0x00291000
+
 void Animation::PruneToAnimRoot()
 {
     if (strcmp(m_sAnimRoot, "") != 0 && stricmp(m_sAnimRoot, "NULL") != 0)
@@ -1604,7 +1604,7 @@ void Animation::PruneToAnimRoot()
 #ifdef _XBOX
 
 int __cdecl CompareTransparencyHint(const void* pFirst, const void* pSecond);
-// Xbox 0x0028FD10
+
 void MdlNode::SortChildrenByTransparency()
 {
     int i;

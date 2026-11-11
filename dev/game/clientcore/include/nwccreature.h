@@ -198,7 +198,7 @@ public:
     void UpdateMonkVisuals();
 
     void HandleConjuringCreature();
-    // PC 0x00641DB0
+    // PC 0x00698BD0
     virtual CSWCCreature* AsSWCCreature()
     {
         return this;

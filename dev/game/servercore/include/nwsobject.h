@@ -173,7 +173,7 @@ public:
     void CopyScriptLocation(CScriptLocation* pLocation);
     int LoadLocation(CResGFF* pRes, CResStruct* pStruct);
     int SaveLocation(CResGFF* pRes, CResStruct* pStruct);
-    int Equals(CScriptLocation* pLocation)  // PC 0x0052BF80  Xbox 0x00162320
+    int Equals(CScriptLocation* pLocation)  // PC 0x005AD880
     {
         return equal(m_vPosition, pLocation->m_vPosition) != 0 &&
                equal(m_vOrientation, pLocation->m_vOrientation) != 0;
@@ -488,7 +488,7 @@ public:
                                          float fDistance);
 
     virtual ~CSWSObject();
-    virtual CSWSObject* AsSWSObject() { return this; }  // PC 0x00641DB0
+    virtual CSWSObject* AsSWSObject() { return this; }  // PC 0x00698BD0
 
     virtual void AIUpdate() = 0;
     virtual int ClearAction(CSWSObjectActionNode* pNode, int bRemove);
@@ -496,26 +496,26 @@ public:
                               void* pEventData, unsigned long nCalendarDay,
                               unsigned long nTimeOfDay) = 0;
     virtual void SetAnimation(int nAnimation);
-    virtual CResRef GetDialogResref()  // PC 0x004D0170  Xbox 0x001C7A90
+    virtual CResRef GetDialogResref()  // PC 0x004FA0F0
     {
         return CResRef("");
     }
-    virtual int GetDialogInterruptable()  // PC 0x0063E7A0
+    virtual int GetDialogInterruptable()  // PC 0x0065D0F0
     {
         return 1;
     }
     virtual unsigned char GetGender();
-    virtual CExoLocString* GetFirstName()  // PC 0x004D0190  Xbox 0x001C7AB0
+    virtual CExoLocString* GetFirstName()  // PC 0x004FA110
     {
         return &m_locLastName;
     }
-    // PC 0x004D0190
+    // PC 0x004FA110
     virtual CExoLocString& GetLastName()
     {
         return m_locLastName;
     }
     virtual int GetDead();
-    // PC 0x004D01A0  Xbox 0x001C7AC0
+    // PC 0x004FA120
     virtual short GetMaxHitPoints(int bBaseOnly) { return (short)m_nMaxHitPoints; }
     virtual short GetCurrentHitPoints(int bBaseOnly);
     virtual void DoDamage(int nDamage);
@@ -532,29 +532,29 @@ public:
     virtual char GetDamageImmunity(unsigned char nType);
     virtual int GetDamageImmunityByFlags(unsigned short nFlags);
     virtual unsigned long GetEffectSpellId();
-    virtual void SetEffectSpellId(unsigned long nSpellId)  // PC 0x0060E760
+    virtual void SetEffectSpellId(unsigned long nSpellId)  // PC 0x005EE1C0
     {
     }
-    // PC 0x0060E760
+    // PC 0x005EE1C0
     virtual void SetLockOrientationToObject(unsigned long oidTarget)
     {
     }
-    // PC 0x004D01B0  Xbox 0x001C7AD0
+    // PC 0x004FA130
     virtual unsigned long GetLockOrientationToObject()
     {
         return OBJECT_INVALID;
     }
-    // PC 0x004D01C0  Xbox 0x001C7AE0
+    // PC 0x004FA140
     virtual CResRef GetPortrait()
     {
         return m_cPortrait;
     }
-    // PC 0x004D01F0  Xbox 0x001C7B10
+    // PC 0x004FA170
     virtual void SetPortrait(CResRef const& cResRef)
     {
         m_cPortrait = cResRef;
     }
-    virtual unsigned short GetPortraitId()  // PC 0x004D0210  Xbox 0x0017C050
+    virtual unsigned short GetPortraitId()  // PC 0x004FA190
     {
         return m_nPortraitId;
     }
@@ -562,7 +562,7 @@ public:
     virtual void UpdateEffectPtrs()  // PC 0x004015A0
     {
     }
-    virtual void UpdateAttributesOnEffect(CGameEffect* pEffect)  // PC 0x0060E760
+    virtual void UpdateAttributesOnEffect(CGameEffect* pEffect)  // PC 0x005EE1C0
     {
     }
 
@@ -607,7 +607,7 @@ public:
 
     float GetAnimationSpeed() { return m_fSyncHeight; }
     float GetMovementRate() { return m_fMovementRate; }
-    void SetSpellTargetPosition(const Vector& vPosition) { m_vSpellTargetPosition = vPosition; }  // PC 0x0064B4F0
+    void SetSpellTargetPosition(const Vector& vPosition) { m_vSpellTargetPosition = vPosition; }  // PC 0x0069FDD0
 
 
     void SetLastDamageAmount(int nIndex, int nAmount);
@@ -627,7 +627,7 @@ public:
 
     void CopyScriptVars(CSWSScriptVarTable* pVarTable);
     CExoString& GetTag() { return m_sTag; }
-    void SetTag(const CExoString& sTag)  // PC 0x00553040  Xbox 0x0019D640
+    void SetTag(const CExoString& sTag)  // PC 0x0055B690
     {
         m_sTag = sTag.LowerCase();
     }
@@ -1309,7 +1309,7 @@ public:
     ~CSWSCreature();
     short GetArmorClass();
     unsigned char GetBodyBagAppearance();
-    virtual CSWSCreature* AsSWSCreature() { return this; }  // PC 0x00641DB0
+    virtual CSWSCreature* AsSWSCreature() { return this; }  // PC 0x00698BD0
     virtual void AIUpdate();
     void SpawnInHeartbeatPerception(int bForce);
     void UpdateMineCheck();
@@ -2652,11 +2652,11 @@ public:
     void BroadcastDamageDataToParty(CSWCCMessageData* pMessageData, int bHealing);
 
     enum DamageBroadcastRangeLimit { DAMAGE_BROADCAST_RANGE_SQUARED = 900 };
-    unsigned long GetLockOrientationToObject()  // PC 0x004F8280  Xbox 0x0017C060
+    unsigned long GetLockOrientationToObject()  // PC 0x0051A2F0
     {
         return m_oidLockOrientationToObject;
     }
-    CResRef GetDialogResref()  // PC 0x004F8290  Xbox 0x0017C070
+    CResRef GetDialogResref()  // PC 0x0051A300
     {
         if (m_pStats == NULL)
         {
@@ -2664,7 +2664,7 @@ public:
         }
         return m_pStats->m_cConversation;
     }
-    int GetDialogInterruptable()  // PC 0x004F82E0  Xbox 0x0017C0C0
+    int GetDialogInterruptable()  // PC 0x0051A350
     {
         if (m_pStats == NULL)
         {
@@ -2672,7 +2672,7 @@ public:
         }
         return m_pStats->m_bInterruptable;
     }
-    unsigned char GetGender()  // PC 0x004F82F0  Xbox 0x0017C0D0
+    unsigned char GetGender()  // PC 0x0051A360
     {
         if (m_pStats == NULL)
         {
@@ -2680,7 +2680,7 @@ public:
         }
         return m_pStats->m_nGender;
     }
-    CExoLocString* GetFirstName()  // PC 0x004F8310  Xbox 0x0017C0F0
+    CExoLocString* GetFirstName()  // PC 0x0051A380
     {
         if (m_pStats == NULL)
         {
@@ -2688,7 +2688,7 @@ public:
         }
         return &m_pStats->m_lsFirstName;
     }
-    CExoLocString& GetLastName()  // PC 0x004F8330  Xbox 0x0017C110
+    CExoLocString& GetLastName()  // PC 0x0051A3A0
     {
         if (m_pStats == NULL)
         {
@@ -2696,15 +2696,15 @@ public:
         }
         return m_pStats->m_lsLastName;
     }
-    unsigned long GetEffectSpellId()  // PC 0x004F8350  Xbox 0x0017C130
+    unsigned long GetEffectSpellId()  // PC 0x0051A3C0
     {
         return m_nEffectSpellId;
     }
-    void SetEffectSpellId(unsigned long nSpellId)  // PC 0x004F8360  Xbox 0x0017C140
+    void SetEffectSpellId(unsigned long nSpellId)  // PC 0x0051A3D0
     {
         m_nEffectSpellId = nSpellId;
     }
-    CResRef GetPortrait()  // PC 0x004F8370  Xbox 0x0017C150
+    CResRef GetPortrait()  // PC 0x0051A3E0
     {
         if (m_pStats != NULL)
         {
@@ -2712,7 +2712,7 @@ public:
         }
         return CResRef("");
     }
-    void SetPortrait(const CResRef& cResRef)  // PC 0x004F83C0  Xbox 0x0017C1A0
+    void SetPortrait(const CResRef& cResRef)  // PC 0x0051A430
     {
         if (m_pStats != NULL)
         {

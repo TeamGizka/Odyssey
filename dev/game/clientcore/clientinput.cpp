@@ -66,17 +66,17 @@ CAurObject* g_pDialogIconModel = NULL;
 
 int HandleWMKeyDownMessage(HWND hWnd, unsigned int nKey, long nKeyData);
 int HandleWMCharMessage(unsigned short nChar);
-// PC 0x0061F7C0  Xbox 0x00060520
+// PC 0x0066FC70
 void CClientExoAppInternal::DisableInput()
 {
     m_bInputDisabled = 1;
 }
-// PC 0x0061F7D0  Xbox 0x00060530
+// PC 0x0066FC80
 void CClientExoAppInternal::EnableInput()
 {
     m_bInputDisabled = 0;
 }
-// PC 0x0061F7E0
+// PC 0x0066FC90
 int CClientExoAppInternal::PerformXMouseMoveAction(int nX)
 {
     if (m_nMouseX == nX)
@@ -89,7 +89,7 @@ int CClientExoAppInternal::PerformXMouseMoveAction(int nX)
         m_nMouseX >= g_nScreenWidth - 1 ? g_nScreenWidth - 1 : m_nMouseX;
     return 1;
 }
-// PC 0x0061F830
+// PC 0x0066FCE0
 int CClientExoAppInternal::PerformYMouseMoveAction(int nY)
 {
     int nNewY = g_nScreenHeight - nY - 1;
@@ -105,7 +105,7 @@ int CClientExoAppInternal::PerformYMouseMoveAction(int nY)
 }
 
 #ifndef _XBOX
-void CClientExoAppInternal::PerformLButtonDownAction(int nArg)  // PC 0x0061F880
+void CClientExoAppInternal::PerformLButtonDownAction(int nArg)  // PC 0x0066FD30
 {
     int bToggle;
     CClientOptions* pOptions;
@@ -142,7 +142,7 @@ void CClientExoAppInternal::PerformLButtonDownAction(int nArg)  // PC 0x0061F880
     }
 }
 #endif
-// PC 0x0061F940
+// PC 0x0066FDF0
 void CClientExoAppInternal::PerformRButtonDownAction()
 {
     g_bMouseCameraRotateToggle = 1;
@@ -150,7 +150,7 @@ void CClientExoAppInternal::PerformRButtonDownAction()
     g_pGuiMan->HandleRMouseDown();
 #endif
 }
-// PC 0x0061F960
+// PC 0x0066FE10
 int CClientExoAppInternal::PerformRButtonUpAction()
 {
     CSWGuiManager* pGuiManager = g_pGuiMan;
@@ -161,7 +161,7 @@ int CClientExoAppInternal::PerformRButtonUpAction()
     return 0;
 #endif
 }
-// PC 0x0061F980
+// PC 0x0066FE30
 void CClientExoAppInternal::SetMouseCursor(int nCursor, int nArg2, int nArg3)
 {
     if (g_pExoInput != NULL)
@@ -177,7 +177,7 @@ void CClientExoAppInternal::SetMouseCursor(int nCursor, int nArg2, int nArg3)
 #endif
     }
 }
-// PC 0x0061F9C0
+// PC 0x0066FE70
 void CClientExoAppInternal::HideMouse(int nFlags)
 {
     m_nMouseHidden |= nFlags;
@@ -195,7 +195,7 @@ void CClientExoAppInternal::HideMouse(int nFlags)
         }
     }
 }
-// PC 0x0061FA00
+// PC 0x0066FEB0
 void CClientExoAppInternal::ShowMouse(int nFlags)
 {
     m_nMouseHidden = ~nFlags & m_nMouseHidden;
@@ -232,12 +232,12 @@ int NearestObjectCompare(void* pObjectId, CNearestStruct cNearest)
 {
     return pObjectId == (void*)cNearest.m_oidObject;
 }
-// PC 0x0061FA90
+// PC 0x0066FF40
 int TestNearestStruct(void* pObjectId, CNearestStruct cNearest)
 {
     return (unsigned long)pObjectId == cNearest.m_oidObject;
 }
-// PC 0x0061FAA0
+// PC 0x0066FF50
 int CClientExoAppInternal::ActionIconToMouseCursor(int nAction, int nArg2)
 {
     int nCursor;
@@ -276,7 +276,7 @@ int CClientExoAppInternal::ActionIconToMouseCursor(int nAction, int nArg2)
     }
     return nCursor;
 }
-// PC 0x0061FBA0  Xbox 0x00060630
+// PC 0x00670050
 void CClientExoAppInternal::ReadPlayBackInputEvents()
 {
     CLIENTINPUT_TRACE();
@@ -461,7 +461,7 @@ void CClientExoAppInternal::ReadPlayBackInputEvents()
 }
 
 #ifndef _XBOX
-// PC 0x006200E0
+// PC 0x00670590
 void CClientExoAppInternal::SetInputClass(int nClass, int bHideInterface)
 
 {
@@ -551,7 +551,7 @@ void CClientExoAppInternal::SetInputClass(int nClass, int bHideInterface)
     }
 }
 #endif
-int CClientExoAppInternal::DismissInGameGUI()  // PC 0x00620320
+int CClientExoAppInternal::DismissInGameGUI()  // PC 0x00670810
 {
 #ifdef _XBOX
     if (m_pGuiInGame->HideSWInGameGui() != 0)
@@ -566,7 +566,7 @@ int CClientExoAppInternal::DismissInGameGUI()  // PC 0x00620320
 }
 
 #ifndef _XBOX
-void CClientExoAppInternal::PerformLButtonUpAction()  // PC 0x00620530
+void CClientExoAppInternal::PerformLButtonUpAction()  // PC 0x00670A20
 {
     int bToggle;
     CSWGuiControl* pControl;
@@ -616,7 +616,7 @@ void CClientExoAppInternal::PerformLButtonUpAction()  // PC 0x00620530
 #endif
 
 #ifndef _XBOX
-void CClientExoAppInternal::HandleMouseClickInWorld()  // PC 0x00620350
+void CClientExoAppInternal::HandleMouseClickInWorld()  // PC 0x00670840
 {
     CLIENTINPUT_TRACE();
     if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nGlobalDialogState == 0 &&
@@ -665,7 +665,7 @@ CResRef CClientExoAppInternal::ActionIconToCursorResref(int nAction, int nArg2)
 }
 
 #ifndef _XBOX
-void CClientExoAppInternal::GetDefaultActions()  // PC 0x00620620
+void CClientExoAppInternal::GetDefaultActions()  // PC 0x00670B10
 {
     int nAction = 0;
     CSWCCreature* pPlayer =
@@ -869,7 +869,7 @@ void CClientExoAppInternal::GetDefaultActions()  // PC 0x00620620
 }
 #endif
 #ifndef _XBOX
-int CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // PC 0x00621210
+int CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // PC 0x006717B0
 {
     int nResult = 0;
     switch (nEvent)
@@ -1419,7 +1419,7 @@ int CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // PC 0x006
 }
 #endif
 #ifndef _XBOX
-void CClientExoAppInternal::HandleMouseOver(unsigned long oidObject,  // PC 0x006222F0
+void CClientExoAppInternal::HandleMouseOver(unsigned long oidObject,  // PC 0x00672810
                                           const Vector& vPosition,
                                           int bForceUpdate)
 {
@@ -1486,7 +1486,7 @@ void CClientExoAppInternal::HandleMouseOver(unsigned long oidObject,  // PC 0x00
     }
 }
 #endif
-// PC 0x006224E0  Xbox 0x00061200
+// PC 0x00672A00
 void CClientExoAppInternal::PlayBackInputEvents()
 {
     if (m_lstPlayBackEvents.GetHeadPos() != NULL)
@@ -1586,7 +1586,7 @@ inline CSWGuiMainInterface* CGuiInGame::GetMainInterface()
     return m_pMainInterface;
 }
 #ifndef _XBOX
-void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x006227E0  Xbox 0x00061540
+void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
 {
     int bInputHandled = 0;
     int nEvents;
@@ -2265,7 +2265,7 @@ static inline void ClientInputTrace()
 }
 
 #ifdef _XBOX
-// Xbox 0x00060BB0
+
 void CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)
 {
     switch (nEvent)
@@ -2465,7 +2465,7 @@ void CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)
 #endif
 
 #ifdef _XBOX
-// PC 0x006227E0  Xbox 0x00061540
+
 void CClientExoAppInternal::ProcessInput(float fTimeStep)
 {
     int nEvents;
@@ -2746,7 +2746,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)
         pMiniGame->Control(fTimeStep);
     }
 }
-// Xbox 0x00060340
+
 void CClientExoAppInternal::SetInputClass(int nClass)
 {
     if (m_nInputClass != nClass)

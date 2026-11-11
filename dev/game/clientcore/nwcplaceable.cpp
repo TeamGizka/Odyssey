@@ -19,7 +19,7 @@
 #include "nwskill.h"
 #include "serverexoapp.h"
 #include "nwsplayer.h"
-// PC 0x00682270  Xbox 0x000B73E0
+// PC 0x006D9560
 CSWCPlaceable::CSWCPlaceable()
     : CSWCObject(CGameObject::OBJECT_TYPE_PLACEABLE)
 {
@@ -50,7 +50,7 @@ CSWCPlaceable::CSWCPlaceable()
     m_pLight = NULL;
     m_nUnknown140 = 0;
 }
-// PC 0x006823F0  Xbox 0x000B7560
+// PC 0x006D9A20
 int CSWCPlaceable::LoadModel(const CResRef& cModel, unsigned char nModel,
                              unsigned char nFlags)
 {
@@ -94,7 +94,7 @@ int CSWCPlaceable::LoadModel(const CResRef& cModel, unsigned char nModel,
 
     return 1;
 }
-// PC 0x006825F0
+// PC 0x006DB7A0
 void CSWCPlaceable::UnloadModel()
 {
     if (m_pAnimBase != NULL)
@@ -104,11 +104,11 @@ void CSWCPlaceable::UnloadModel()
         m_pAnimBase = NULL;
     }
 }
-// PC 0x0060E760
+// PC 0x005EE1C0
 void CSWCPlaceable::HilightPlaceable(int)
 {
 }
-// PC 0x00682620  Xbox 0x000B7760
+// PC 0x006D9C20
 void CSWCPlaceable::AddFireAndForgetAnimation(unsigned short nAnimation,
                                              void* pData, unsigned short nFlags)
 {
@@ -117,7 +117,7 @@ void CSWCPlaceable::AddFireAndForgetAnimation(unsigned short nAnimation,
         (unsigned long)(GetAnimationLength(nAnimation) / fSpeed);
     InsertFireForgetAnimation(nAnimation, nLength, fSpeed, pData, 0);
 }
-// PC 0x00682660  Xbox 0x000B77A0
+// PC 0x006D9C60
 void CSWCPlaceable::UsePlaceable(unsigned long oidUser, CSWCCreature* pCreature)
 {
     CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
@@ -128,7 +128,7 @@ void CSWCPlaceable::UsePlaceable(unsigned long oidUser, CSWCCreature* pCreature)
         pMessage->SendPlayerToServerInput_UseObject(m_nId);
     }
 }
-// PC 0x006826A0  Xbox 0x000B77E0
+// PC 0x006D9CA0
 void CSWCPlaceable::BashPlaceable(unsigned long oidUser,
                                   CSWCCreature* pCreature)
 {
@@ -145,7 +145,7 @@ void CSWCPlaceable::BashPlaceable(unsigned long oidUser,
         }
     }
 }
-// PC 0x006826E0  Xbox 0x000B7820
+// PC 0x006D9CE0
 int CSWCPlaceable::LoadLight()
 {
 
@@ -264,7 +264,7 @@ int CSWCPlaceable::LoadLight()
     }
     return TRUE;
 }
-// PC 0x00682BE0  Xbox 0x000B7D30
+// PC 0x006DA1E0
 void CSWCPlaceable::UnloadLight()
 {
     if (g_pAppManager->GetClientExoApp()->GetModule() != NULL)
@@ -283,7 +283,7 @@ void CSWCPlaceable::UnloadLight()
         m_pLight = NULL;
     }
 }
-// PC 0x00682C60  Xbox 0x000B7DB0
+// PC 0x006DA260
 int CSWCPlaceable::ApplyShadowBlob()
 {
     CExoString sShadowModel;
@@ -333,7 +333,7 @@ int CSWCPlaceable::ApplyShadowBlob()
     }
     return bResult;
 }
-// PC 0x00646650
+// PC 0x0069CF50
 void CSWCPlaceable::UnloadModel(unsigned char nModel)
 {
     if (m_pAnimBase != NULL)
@@ -341,7 +341,7 @@ void CSWCPlaceable::UnloadModel(unsigned char nModel)
         m_pAnimBase->UnloadModel(nModel);
     }
 }
-// PC 0x00682DD0  Xbox 0x000B7F20
+// PC 0x006DA3D0
 void CSWCPlaceable::ActionMenuSecurity(unsigned long oidUser,
                                        CSWCCreature* pCreature)
 {
@@ -351,7 +351,7 @@ void CSWCPlaceable::ActionMenuSecurity(unsigned long oidUser,
         pMessage->SendPlayerToServerInput_UnlockObject(m_nId, OBJECT_INVALID);
     }
 }
-// PC 0x00682E00  Xbox 0x000B7F80
+// PC 0x006DA500
 CSWSPlaceable* CSWCPlaceable::GetServerPlaceable()
 {
     if (GetServerObject() != NULL)
@@ -360,7 +360,7 @@ CSWSPlaceable* CSWCPlaceable::GetServerPlaceable()
     }
     return NULL;
 }
-// PC 0x00682E20  Xbox 0x000B7FA0
+// PC 0x006DA520
 void CSWCPlaceable::SetAppearance(unsigned char nAppearance)
 {
     m_nAppearance = nAppearance;
@@ -387,7 +387,7 @@ void CSWCPlaceable::SetAppearance(unsigned char nAppearance)
         pPlaceables->GetINTEntry(nAppearance, sColumn, &bNonCull);
     }
 }
-// PC 0x00682F20  Xbox 0x000B80A0
+// PC 0x006DA620
 float CSWCPlaceable::GetCanSeeHeight()
 {
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
@@ -409,7 +409,7 @@ float CSWCPlaceable::GetCanSeeHeight()
     }
     return fHeight;
 }
-// PC 0x00682FF0  Xbox 0x000B8160
+// PC 0x006DA6F0
 unsigned char CSWCPlaceable::GetReticlePoint(Vector& vPoint)
 {
     CSWSPlaceable* pPlaceable = GetServerPlaceable();
@@ -450,7 +450,7 @@ unsigned char CSWCPlaceable::GetReticlePoint(Vector& vPoint)
 
     return CSWCObject::GetReticlePoint(vPoint);
 }
-// PC 0x006831B0  Xbox 0x000B83B0
+// PC 0x006DA8B0
 inline int CSWCPlaceable::IsHostile()
 {
     if (GetServerPlaceable() != NULL)
@@ -459,13 +459,13 @@ inline int CSWCPlaceable::IsHostile()
     }
     return 0;
 }
-// PC 0x00683200  Xbox 0x000B8400
+// PC 0x006DA900
 CSWCPlaceable::~CSWCPlaceable()
 {
     UnloadLight();
     UnloadModel();
 }
-// PC 0x006836C0  Xbox 0x000B88D0
+// PC 0x006DA9A0
 void CSWCPlaceable::AIUpdate()
 {
     unsigned long nDay;
@@ -518,7 +518,7 @@ void CSWCPlaceable::AIUpdate()
     m_nLastUpdateDay = nDay;
     m_nLastUpdateTime = nTime;
 }
-// PC 0x006832A0  Xbox 0x000B84A0
+// PC 0x006D96E0
 void CSWCPlaceable::AnimationUpdate()
 {
     unsigned short nAnimation;
@@ -638,7 +638,7 @@ void CSWCPlaceable::AnimationUpdate()
         }
     }
 }
-// PC 0x00683630  Xbox 0x000B8840
+// PC 0x006DAAB0
 int CSWCPlaceable::SetAnimation(unsigned short nAnimation, int nA, int nB)
 {
     if (GetServerObject() != NULL)
@@ -658,7 +658,7 @@ int CSWCPlaceable::SetAnimation(unsigned short nAnimation, int nA, int nB)
     return CSWCObject::SetAnimation(nAnimation, nA, nB);
 }
 #ifndef _XBOX
-void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 0x006837D0  Xbox 0x000B8C70
+void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 0x006DB0C0
                                     CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
     CSWSPlaceable* pPlaceable = GetServerPlaceable();
@@ -752,12 +752,12 @@ void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 
 enum { XBOX_TARGET_ACTION_MENU_USE_ITEMS = 5 };
 
 enum { XBOX_ITEM_TARGETING_PLACEABLE = 2 };
-// Xbox 0x000B7F50
+
 void CSWCPlaceable::MenuActionUseItem(unsigned long oidItem, CSWCCreature* pCreature)
 {
     pCreature->PerformUseItem(oidItem & ~OBJECT_LISTTYPE_MASK, 0, m_nId, m_vPosition);
 }
-// Xbox 0x000B89E0
+
 void CSWCPlaceable::GetUseItems(CSWCCreature* pCreature,
                                 CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
@@ -808,7 +808,7 @@ void CSWCPlaceable::GetUseItems(CSWCCreature* pCreature,
         }
     }
 }
-// PC 0x006837D0  Xbox 0x000B8C70
+
 void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,
                                     CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {

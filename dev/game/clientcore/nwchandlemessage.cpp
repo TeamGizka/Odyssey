@@ -66,25 +66,25 @@ static inline CClientExoApp* ClientExoAppLate1(CAppManager* p);
 
 int enablemodelrequest = 1;
 int g_bLogConversations = 0;
-// PC 0x0064B4D0  Xbox 0x00070B50
+// PC 0x0069FDB0
 void CSWCProjectile::SetDesiredPosition(const Vector& vPosition)
 {
     m_vDesiredPosition = vPosition;
 }
-// PC 0x0064B4F0  Xbox 0x0016E480
+// PC 0x0069FDD0
 void CSWCProjectile::SetSourcePosition(const Vector& vPosition)
 {
     m_vSourcePosition = vPosition;
 }
-// PC 0x0064B510  Xbox 0x00070B70
+// PC 0x0069FE60
 CSWCMessage::CSWCMessage()
 {
 }
-// PC 0x0064B530  Xbox 0x00070B90
+// PC 0x0069FE80
 CSWCMessage::~CSWCMessage()
 {
 }
-// PC 0x00654CC0  Xbox 0x0007A4C0
+// PC 0x006A98F0
 int CSWCMessage::HandleServerToPlayerChat(unsigned char nMinor)
 {
     NwchandlemessageTrace1();
@@ -369,7 +369,7 @@ int CSWCMessage::HandleServerToPlayerChat(unsigned char nMinor)
     }
     return 1;
 }
-// PC 0x00655E40  Xbox 0x0007B670
+// PC 0x006AAA60
 int CSWCMessage::HandleServerToPlayerCreatureUpdate_Appearance()
 {
 
@@ -892,7 +892,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Appearance()
     }
     return 1;
 }
-// PC 0x00656BA0  Xbox 0x0007C430
+// PC 0x006AB8A0
 int CSWCMessage::HandleServerToPlayerSound(unsigned char nMinor)
 {
     switch (nMinor)
@@ -906,7 +906,7 @@ int CSWCMessage::HandleServerToPlayerSound(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x00656BD0  Xbox 0x0007C460
+// PC 0x006AB8D0
 int CSWCMessage::HandleServerToPlayerUpdate_Add()
 {
     unsigned char nObjectType = ReadBYTE(8);
@@ -941,7 +941,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_Add()
     }
     return 0;
 }
-// PC 0x00656C60  Xbox 0x0007C4F0
+// PC 0x006AB960
 int CSWCMessage::HandleServerToPlayerUpdate_Appearance()
 {
     unsigned char nObjectType = ReadBYTE(8);
@@ -953,7 +953,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_Appearance()
     }
     return HandleServerToPlayerCreatureUpdate_Appearance();
 }
-// PC 0x00656C90  Xbox 0x0007C520
+// PC 0x006AB990
 int CSWCMessage::HandleServerToPlayerUpdate_Delete()
 {
     unsigned char nObjectType = ReadBYTE(8);
@@ -988,7 +988,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_Delete()
     }
     return 0;
 }
-// PC 0x00656D20  Xbox 0x0007C5B0
+// PC 0x006ABA20
 int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
 {
     CExoString sMessage;
@@ -3268,7 +3268,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x006631C0  Xbox 0x00088910
+// PC 0x006B90B0
 int CSWCMessage::HandleServerToPlayerSafeProjectile(unsigned char nMinor)
 {
     int bSuccess;
@@ -3284,7 +3284,7 @@ int CSWCMessage::HandleServerToPlayerSafeProjectile(unsigned char nMinor)
     }
     return bSuccess;
 }
-// PC 0x006631E0  Xbox 0x00088930
+// PC 0x006B90D0
 int CSWCMessage::HandleServerToPlayerGuiInfoPopupMessage(unsigned char nMinor)
 {
     NwchandlemessageTrace1();
@@ -3303,7 +3303,7 @@ int CSWCMessage::HandleServerToPlayerGuiInfoPopupMessage(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x00663220  Xbox 0x00088970
+// PC 0x006B9110
 int CSWCMessage::HandleServerToPlayerCheatMessage(unsigned char nMinor)
 {
     switch (nMinor)
@@ -3317,7 +3317,7 @@ int CSWCMessage::HandleServerToPlayerCheatMessage(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x006632A0  Xbox 0x000889F0
+// PC 0x006B9190
 int CSWCMessage::HandleServerToPlayerJournalMessage_AddQuest()
 {
     NwchandlemessageTrace1();
@@ -3352,7 +3352,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_AddQuest()
     }
     return 1;
 }
-// PC 0x0064B540  Xbox 0x00070BA0
+// PC 0x0069FE90
 CSWCItem* CSWCMessage::CreateItem(unsigned long nBaseItem,
                                   unsigned char nVariation, char cPrefix)
 {
@@ -3406,7 +3406,7 @@ CSWCItem* CSWCMessage::CreateItem(unsigned long nBaseItem,
     pItem->m_cModelResRef = cResRef;
     return pItem;
 }
-// PC 0x0064B8E0  Xbox 0x00070F40
+// PC 0x006A0230
 int CSWCMessage::HandleServerToPlayerCamera(unsigned char nMinor)
 {
     unsigned char nFlags;
@@ -3489,7 +3489,7 @@ int CSWCMessage::HandleServerToPlayerCamera(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x0064BAB0  Xbox 0x00071130
+// PC 0x006A0400
 int CSWCMessage::HandleServerToPlayerArea(unsigned char nMinor)
 {
     if (MessageReadOverflow(1))
@@ -3610,7 +3610,7 @@ int CSWCMessage::HandleServerToPlayerArea(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x0064BF30  Xbox 0x000715C0
+// PC 0x006A08A0
 int CSWCMessage::HandleServerToPlayerSetCustomToken(unsigned char nMinor)
 {
     CExoString sToken;
@@ -3648,7 +3648,7 @@ int CSWCMessage::HandleServerToPlayerSetCustomToken(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x0064C0A0  Xbox 0x00071730
+// PC 0x006A0A10
 int CSWCMessage::HandleServerToPlayerCreatureUpdate_Add()
 {
 
@@ -3735,7 +3735,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Add()
     pCreature->m_bFadeLocked = 0;
     return 1;
 }
-// PC 0x0064C3C0  Xbox 0x00071A50
+// PC 0x006A0D30
 int CSWCMessage::HandleServerToPlayerCreatureUpdate_VisEffect()
 {
 
@@ -3895,7 +3895,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_VisEffect()
     }
     return 1;
 }
-// PC 0x0064CAF0  Xbox 0x000721E0
+// PC 0x006A1460
 int CSWCMessage::HandleServerToPlayerCreatureUpdate_ControlObject(
     unsigned long oidObject)
 {
@@ -3969,7 +3969,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_ControlObject(
     }
     return 1;
 }
-// PC 0x0064CC90  Xbox 0x00072370
+// PC 0x006A1600
 int CSWCMessage::HandleServerToPlayerCreatureUpdate_Delete()
 {
 
@@ -4040,7 +4040,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Delete()
     }
     return 1;
 }
-// PC 0x006634A0  Xbox 0x00088BF0
+// PC 0x006B9390
 int CSWCMessage::HandleServerToPlayerExportReply()
 {
 
@@ -4093,7 +4093,7 @@ ExportDone:
     }
     return 1;
 }
-// PC 0x006637C0  Xbox 0x00088F60
+// PC 0x006B96B0
 int CSWCMessage::HandleServerToPlayerGuiQuickbar(unsigned char nMinor)
 {
     unsigned char nButton;
@@ -4108,7 +4108,7 @@ int CSWCMessage::HandleServerToPlayerGuiQuickbar(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x00663810  Xbox 0x00088FB0
+// PC 0x006B9700
 int CSWCMessage::HandleServerToPlayerMapPin(unsigned char nMinor)
 {
     switch (nMinor)
@@ -4120,7 +4120,7 @@ int CSWCMessage::HandleServerToPlayerMapPin(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x00663840  Xbox 0x00088FE0
+// PC 0x006B9730
 int CSWCMessage::HandleServerToPlayerDebugInfo_Creature(unsigned long oidObject)
 {
     CExoString asEquippedItems[CSWInventory::TOTAL_SLOT_COUNT];
@@ -4417,7 +4417,7 @@ int CSWCMessage::HandleServerToPlayerDebugInfo_Creature(unsigned long oidObject)
         delete[] psRepositoryItems;
     return 1;
 }
-// PC 0x00665510  Xbox 0x0008ACB0
+// PC 0x006BB4E0
 int CSWCMessage::HandleServerToPlayerAmbient(unsigned char nMinor)
 {
     int bSuccess;
@@ -4454,7 +4454,7 @@ int CSWCMessage::HandleServerToPlayerAmbient(unsigned char nMinor)
     }
     return bSuccess;
 }
-// PC 0x00665590  Xbox 0x0008AD30
+// PC 0x006BB560
 int CSWCMessage::HandleServerToPlayerGuiTimingEvent(unsigned char nMinor)
 {
     if (MessageReadOverflow(1))
@@ -4469,7 +4469,7 @@ int CSWCMessage::HandleServerToPlayerGuiTimingEvent(unsigned char nMinor)
     }
     return !MessageReadOverflow(1) && MessageReadUnderflow(1) == 0;
 }
-// PC 0x006655E0  Xbox 0x0008AE70
+// PC 0x006BB5B0
 int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
     unsigned long oidObject, unsigned long nUpdateMask)
 {
@@ -5433,7 +5433,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
     }
     return 1;
 }
-// PC 0x00667CC0  Xbox 0x0008D740
+// PC 0x006BE010
 int CSWCMessage::HandleServerToPlayerUpdate_CharacterSheet()
 {
     unsigned long oidCreature = ReadOBJECTIDClient();
@@ -5656,7 +5656,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_CharacterSheet()
     }
     return 1;
 }
-// PC 0x0064CE90  Xbox 0x00072590
+// PC 0x006A1800
 void CSWCMessage::SetGuiSkillRank(CSWCCreature* pCreature,
                                 unsigned short nSkillFlags,
                                 unsigned short nSkillMask,
@@ -5678,7 +5678,7 @@ void CSWCMessage::SetGuiSkillRank(CSWCCreature* pCreature,
         }
     }
 }
-// PC 0x0064CF30  Xbox 0x00072630
+// PC 0x006A18A0
 int CSWCMessage::HandleServerToPlayerDoorUpdate_Add()
 {
 
@@ -5789,7 +5789,7 @@ int CSWCMessage::HandleServerToPlayerDoorUpdate_Add()
     pDoor->m_sTransitionDestination = sTransitionDestination;
     return 1;
 }
-// PC 0x0064D3A0  Xbox 0x00072AA0
+// PC 0x006A1DE0
 int CSWCMessage::HandleServerToPlayerDoorUpdate_Delete()
 {
     unsigned long oidDoor = ReadOBJECTIDClient();
@@ -5817,7 +5817,7 @@ int CSWCMessage::HandleServerToPlayerDoorUpdate_Delete()
     }
     return 1;
 }
-// PC 0x0064D420  Xbox 0x00072B20
+// PC 0x006A1E60
 int CSWCMessage::HandleServerToPlayerDoorUpdate_Update(
     unsigned long oidObject, unsigned long nUpdateMask)
 {
@@ -5859,7 +5859,7 @@ int CSWCMessage::HandleServerToPlayerDoorUpdate_Update(
     }
     return 1;
 }
-// PC 0x0064D500  Xbox 0x00072C00
+// PC 0x006A1F40
 int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Add()
 {
 
@@ -6007,7 +6007,7 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Add()
     }
     return 1;
 }
-// PC 0x0064DA20  Xbox 0x00073110
+// PC 0x006A2560
 int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Delete()
 {
     unsigned long oidPlaceable = ReadOBJECTIDClient();
@@ -6044,7 +6044,7 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Delete()
     }
     return 1;
 }
-// PC 0x0064DAE0  Xbox 0x000731D0
+// PC 0x006A2620
 int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Update(
     unsigned long oidObject, unsigned long nUpdateMask)
 {
@@ -6086,7 +6086,7 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Update(
     }
     return 1;
 }
-// PC 0x0064DBC0  Xbox 0x000732B0
+// PC 0x006A2700
 int CSWCMessage::HandleServerToPlayerUpdateVisualEffects(CSWCObject* pObject)
 {
     unsigned short nCount = ReadWORD(16);
@@ -6138,7 +6138,7 @@ int CSWCMessage::HandleServerToPlayerUpdateVisualEffects(CSWCObject* pObject)
     }
     return 1;
 }
-// PC 0x0064DCF0  Xbox 0x000733E0
+// PC 0x006A2830
 int CSWCMessage::HandleServerToPlayerUpdate_WorkRemaining()
 {
     unsigned char nStep = ReadBYTE(8);
@@ -6180,7 +6180,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_WorkRemaining()
     }
     return 1;
 }
-// PC 0x0064DEA0  Xbox 0x000735A0
+// PC 0x006A29E0
 int CSWCMessage::HandleServerToPlayerGuiInventory(unsigned char nMinor)
 {
     int bSuccess = 1;
@@ -6195,7 +6195,7 @@ int CSWCMessage::HandleServerToPlayerGuiInventory(unsigned char nMinor)
     }
     return bSuccess;
 }
-// PC 0x0064DEE0  Xbox 0x000735E0
+// PC 0x006A2A20
 int CSWCMessage::HandleServerToPlayerInventory(unsigned char nMinor)
 {
 
@@ -6391,7 +6391,7 @@ int CSWCMessage::HandleServerToPlayerInventory(unsigned char nMinor)
         return 0;
     }
 }
-// PC 0x0064E3D0  Xbox 0x00073AD0
+// PC 0x006A2F90
 int CSWCMessage::HandleServerToPlayerActiveItemProperties(unsigned long oidItem)
 {
 
@@ -6492,7 +6492,7 @@ int CSWCMessage::HandleServerToPlayerActiveItemProperties(unsigned long oidItem)
     }
     return 1;
 }
-// PC 0x0064E730  Xbox 0x00073E50
+// PC 0x006A32F0
 int CSWCMessage::HandleServerToPlayerItemAppearance(
     unsigned long* pnBaseItem, unsigned char* pnModelVariation,
     unsigned char* pnBodyVariation, unsigned char* pnTextureVariation)
@@ -6511,7 +6511,7 @@ int CSWCMessage::HandleServerToPlayerItemAppearance(
     }
     return 1;
 }
-// PC 0x0064E7B0  Xbox 0x00073ED0
+// PC 0x006A3370
 int CSWCMessage::HandleServerToPlayerItemUpdate_Add(int nMode, CSWCItem** ppItem)
 {
 
@@ -6628,7 +6628,7 @@ int CSWCMessage::HandleServerToPlayerItemUpdate_Add(int nMode, CSWCItem** ppItem
     HandleServerToPlayerActiveItemProperties(oidItem);
     return 1;
 }
-// PC 0x0064EAC0  Xbox 0x000741E0
+// PC 0x006A3680
 int CSWCMessage::HandleServerToPlayerItemUpdate_Delete()
 {
     unsigned long oidItem = ReadOBJECTIDClient();
@@ -6678,7 +6678,7 @@ int CSWCMessage::HandleServerToPlayerItemUpdate_Delete()
     }
     return 1;
 }
-// PC 0x0064EB90  Xbox 0x000742B0
+// PC 0x006A3750
 int CSWCMessage::HandleServerToPlayerItemUpdate_Update(
     unsigned long oidObject, unsigned long nUpdateMask)
 {
@@ -6698,7 +6698,7 @@ int CSWCMessage::HandleServerToPlayerItemUpdate_Update(
     pItem->SetArea(pArea);
     return 1;
 }
-// PC 0x0064EC00  Xbox 0x00074340
+// PC 0x006A37C0
 int CSWCMessage::HandleServerToPlayerLogin(unsigned char nMinor)
 {
     CExoString sPlayerName;
@@ -6744,7 +6744,7 @@ int CSWCMessage::HandleServerToPlayerLogin(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x0064EDD0  Xbox 0x00074510
+// PC 0x006A3990
 int CSWCMessage::HandleServerToPlayerLoadBar(unsigned char nMinor)
 {
 
@@ -6824,7 +6824,7 @@ int CSWCMessage::HandleServerToPlayerLoadBar(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x0064F050  Xbox 0x000747C0
+// PC 0x006A3C10
 int CSWCMessage::HandleServerToPlayerSoundObject_Play()
 {
     unsigned long oidObject = ReadOBJECTIDClient();
@@ -6843,7 +6843,7 @@ int CSWCMessage::HandleServerToPlayerSoundObject_Play()
     }
     return 0;
 }
-// PC 0x0064F0A0  Xbox 0x00074810
+// PC 0x006A3C60
 int CSWCMessage::HandleServerToPlayerSoundObject_Stop()
 {
     unsigned long oidObject = ReadOBJECTIDClient();
@@ -6862,7 +6862,7 @@ int CSWCMessage::HandleServerToPlayerSoundObject_Stop()
     }
     return 0;
 }
-// PC 0x0064F0F0  Xbox 0x00074860
+// PC 0x006A3CB0
 int CSWCMessage::HandleServerToPlayerSoundObject_ChangePosition()
 {
     Vector vPosition;
@@ -6885,7 +6885,7 @@ int CSWCMessage::HandleServerToPlayerSoundObject_ChangePosition()
     }
     return 0;
 }
-// PC 0x0064F1A0  Xbox 0x00074910
+// PC 0x006A3D60
 int CSWCMessage::HandleServerToPlayerParty(unsigned char nMinor)
 {
     if (MessageReadOverflow(1))
@@ -6924,7 +6924,7 @@ int CSWCMessage::HandleServerToPlayerParty(unsigned char nMinor)
     }
     return 1;
 }
-// PC 0x0064F280  Xbox 0x00074A00
+// PC 0x006A3E40
 int CSWCMessage::HandleServerToPlayerServerStatus(unsigned char nMinor)
 {
     CExoString sCommand;
@@ -6966,7 +6966,7 @@ int CSWCMessage::HandleServerToPlayerServerStatus(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x0064F430  Xbox 0x00074BB0
+// PC 0x006A4000
 int CSWCMessage::HandleServerToPlayerTriggerUpdate_Update(
     unsigned long oidObject, unsigned long nUpdateMask)
 {
@@ -6996,7 +6996,7 @@ int CSWCMessage::HandleServerToPlayerTriggerUpdate_Update(
     }
     return 1;
 }
-// PC 0x0064F4B0  Xbox 0x00074C30
+// PC 0x006A4090
 int CSWCMessage::HandleServerToPlayerTriggerUpdate_Add()
 {
 
@@ -7106,7 +7106,7 @@ int CSWCMessage::HandleServerToPlayerTriggerUpdate_Add()
     pTrigger->m_sTag = sTag;
     return 1;
 }
-// PC 0x0064F960  Xbox 0x000750E0
+// PC 0x006A4540
 int CSWCMessage::HandleServerToPlayerTriggerUpdate_Delete()
 {
 
@@ -7167,7 +7167,7 @@ int CSWCMessage::HandleServerToPlayerTriggerUpdate_Delete()
     }
     return 1;
 }
-// PC 0x0064FB20  Xbox 0x000752C0
+// PC 0x006A4700
 int CSWCMessage::HandleServerToPlayerUpdate_GuiQuickbarItemUseCount()
 {
     unsigned char nCount = ReadBYTE(8);
@@ -7210,7 +7210,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiQuickbarItemUseCount()
     return 1;
 }
 #ifndef _XBOX
-int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()  // PC 0x0064FC10  Xbox 0x000753B0
+int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()  // PC 0x006A47F0
 {
 
     unsigned char nMode = ReadCHAR(8);
@@ -7281,7 +7281,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()  // PC 0x0064FC10  Xb
     return 0;
 }
 #endif
-int CSWCMessage::HandleServerToPlayerUpdate_GuiRepository(int bBank)  // PC 0x0064FDF0  Xbox 0x00075480
+int CSWCMessage::HandleServerToPlayerUpdate_GuiRepository(int bBank)  // PC 0x006A4910
 {
     unsigned char nMode = ReadCHAR(8);
     unsigned long oidItem;
@@ -7332,7 +7332,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiRepository(int bBank)  // PC 0x00
     }
     return 0;
 }
-// PC 0x0064FEF0  Xbox 0x00075580
+// PC 0x006A4A10
 int CSWCMessage::HandleServerToPlayerUpdate_GuiContainer()
 {
     unsigned char nMode = ReadCHAR(8);
@@ -7414,7 +7414,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiContainer()
     }
     return 0;
 }
-// PC 0x006500B0  Xbox 0x00075740
+// PC 0x006A4BD0
 int CSWCMessage::GetSingleCustomTokenStringPart(int nToken,
                                                 unsigned long nStrRef,
                                                 CExoString& sResult)
@@ -7434,7 +7434,7 @@ int CSWCMessage::GetSingleCustomTokenStringPart(int nToken,
     }
     return bSuccess;
 }
-// PC 0x006501B0  Xbox 0x00075840
+// PC 0x006A4CD0
 int CSWCMessage::HandleServerToPlayerSafeProjectileProjectile()
 {
 
@@ -7655,7 +7655,7 @@ int CSWCMessage::HandleServerToPlayerSafeProjectileProjectile()
     }
     return bResult;
 }
-// PC 0x00650B90  Xbox 0x00076250
+// PC 0x006A56B0
 int CSWCMessage::HandleServerToPlayerSafeProjectileSpell()
 {
 
@@ -7881,7 +7881,7 @@ int CSWCMessage::HandleServerToPlayerSafeProjectileSpell()
     }
     return 1;
 }
-// PC 0x006514C0  Xbox 0x00076BB0
+// PC 0x006A6040
 int CSWCMessage::HandleServerToPlayerCombatRound(unsigned char nMinor)
 {
     CExoString sText;
@@ -7896,7 +7896,7 @@ int CSWCMessage::HandleServerToPlayerCombatRound(unsigned char nMinor)
     }
     return 1;
 }
-// PC 0x00651560  Xbox 0x00076C50
+// PC 0x006A60E0
 int CSWCMessage::HandleServerToPlayerActiveItemPropertyUpdate(
     unsigned char nMinor)
 {
@@ -7949,7 +7949,7 @@ int CSWCMessage::HandleServerToPlayerActiveItemPropertyUpdate(
     }
     return 1;
 }
-// PC 0x00651680  Xbox 0x00076D90
+// PC 0x006A6200
 int CSWCMessage::HandleServerToPlayerAreaOfEffectUpdate_Add()
 {
     unsigned long oidObject = ReadOBJECTIDClient();
@@ -7989,7 +7989,7 @@ int CSWCMessage::HandleServerToPlayerAreaOfEffectUpdate_Add()
     pAIMaster->AddObject(pAreaOfEffect);
     return 1;
 }
-// PC 0x006517B0  Xbox 0x00076EC0
+// PC 0x006A6330
 int CSWCMessage::HandleServerToPlayerAreaOfEffectUpdate_Delete()
 {
     unsigned long oidObject = ReadOBJECTIDClient();
@@ -8008,7 +8008,7 @@ int CSWCMessage::HandleServerToPlayerAreaOfEffectUpdate_Delete()
     }
     return 1;
 }
-// PC 0x006517F0  Xbox 0x00076F00
+// PC 0x006A6370
 int CSWCMessage::HandleServerToPlayerAreaOfEffectUpdate_Update(
     unsigned long oidObject, unsigned long nUpdateMask)
 {
@@ -8016,7 +8016,7 @@ int CSWCMessage::HandleServerToPlayerAreaOfEffectUpdate_Update(
 
     return pClientExoApp->GetAreaOfEffectByGameObjectID(oidObject) != NULL;
 }
-// PC 0x00651810  Xbox 0x00076F20
+// PC 0x006A6390
 int CSWCMessage::HandleServerToPlayerGuiContainerObjectMessage(
     unsigned char nMinor)
 {
@@ -8034,7 +8034,7 @@ int CSWCMessage::HandleServerToPlayerGuiContainerObjectMessage(
     }
     return 0;
 }
-// PC 0x00651880  Xbox 0x00076F90
+// PC 0x006A6400
 int CSWCMessage::HandleServerToPlayerGenericObjectUpdate_Update(
     unsigned long oidObject, unsigned long nUpdateMask)
 {
@@ -8131,7 +8131,7 @@ int CSWCMessage::HandleServerToPlayerGenericObjectUpdate_Update(
     }
     return 1;
 }
-// PC 0x00651AF0  Xbox 0x00077220
+// PC 0x006A6670
 int CSWCMessage::HandleServerToPlayerCreatureUpdate_StripEquippedItems()
 {
     unsigned long oidObject = ReadOBJECTIDClient();
@@ -8150,7 +8150,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_StripEquippedItems()
     pCreature->StripEquippedItems();
     return 1;
 }
-// PC 0x00651B30  Xbox 0x00077260
+// PC 0x006A66B0
 int CSWCMessage::HandleServerToPlayerItemUpdate_DestroyItem()
 {
     unsigned long oidItem = ReadOBJECTIDClient();
@@ -8176,7 +8176,7 @@ int CSWCMessage::HandleServerToPlayerItemUpdate_DestroyItem()
     delete pItem;
     return 1;
 }
-// PC 0x00651BA0  Xbox 0x000772E0
+// PC 0x006A6720
 int CSWCMessage::HandleServerToPlayerVoiceChatMessage(unsigned char nMinor)
 {
     unsigned long oidCreature;
@@ -8202,7 +8202,7 @@ int CSWCMessage::HandleServerToPlayerVoiceChatMessage(unsigned char nMinor)
     }
     return 1;
 }
-// PC 0x00651C10  Xbox 0x00077350
+// PC 0x006A6790
 int CSWCMessage::HandleServerToPlayerCheat_DoNasty()
 {
 
@@ -8249,7 +8249,7 @@ int CSWCMessage::HandleServerToPlayerCheat_DoNasty()
     }
     return 1;
 }
-// PC 0x00651ED0  Xbox 0x00077700
+// PC 0x006A6AE0
 int CSWCMessage::HandleServerToPlayerJournalMessage_RemoveQuest()
 {
     CExoString sTag;
@@ -8267,7 +8267,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_RemoveQuest()
     }
     return 1;
 }
-// PC 0x00651FB0  Xbox 0x000777E0
+// PC 0x006A6BC0
 int CSWCMessage::HandleServerToPlayerJournalMessage_SetQuestPicture()
 {
     CSWCJournal* pJournal = g_pAppManager->m_pClientExoApp->GetQuestJournal();
@@ -8287,7 +8287,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_SetQuestPicture()
     }
     return 1;
 }
-// PC 0x006520A0  Xbox 0x000778D0
+// PC 0x006A6CB0
 int CSWCMessage::HandleServerToPlayerJournalMessage_AddWorld()
 {
     CExoString sName;
@@ -8314,7 +8314,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_AddWorld()
     }
     return 1;
 }
-// PC 0x00652210  Xbox 0x00077A40
+// PC 0x006A6E20
 int CSWCMessage::HandleServerToPlayerJournalMessage_AddWorldStrref()
 {
     CSWCWorldJournal* pJournal =
@@ -8335,7 +8335,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_AddWorldStrref()
     pJournal->AddEntryStrRef(nStrRef, nTime, nDay, nType);
     return MessageReadUnderflow(1) == 0;
 }
-// PC 0x00652290  Xbox 0x00077AC0
+// PC 0x006A6EA0
 int CSWCMessage::HandleServerToPlayerJournalMessage_DeleteWorld()
 {
     CSWCWorldJournal* pJournal =
@@ -8350,7 +8350,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_DeleteWorld()
     pJournal->DeleteEntry(nId);
     return MessageReadUnderflow(1) == 0;
 }
-// PC 0x006522E0  Xbox 0x00077B10
+// PC 0x006A6EF0
 int CSWCMessage::HandleServerToPlayerJournalMessage_DeleteWorldStrref()
 {
     CSWCWorldJournal* pJournal =
@@ -8365,7 +8365,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_DeleteWorldStrref()
     pJournal->DeleteEntryStrRef(nStrRef);
     return MessageReadUnderflow(1) == 0;
 }
-// PC 0x006684F0  Xbox 0x0008DF70
+// PC 0x006BE840
 int CSWCMessage::HandleServerToPlayerModule(unsigned char nMinor)
 {
 
@@ -8408,7 +8408,7 @@ int CSWCMessage::HandleServerToPlayerModule(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x00668640  Xbox 0x0008E0C0
+// PC 0x006BE990
 int CSWCMessage::HandleServerToPlayerPlayerList(unsigned char nMinor)
 {
     CExoLinkedListNode* pNode;
@@ -8525,7 +8525,7 @@ int CSWCMessage::HandleServerToPlayerPlayerList(unsigned char nMinor)
         return 0;
     return 1;
 }
-// PC 0x00668BB0  Xbox 0x0008E640
+// PC 0x006BEF00
 int CSWCMessage::HandleServerToPlayerUpdate_PlayerInfo()
 {
 
@@ -9268,7 +9268,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_PlayerInfo()
     }
     return 1;
 }
-// PC 0x0066A1F0  Xbox 0x0008FC80
+// PC 0x006C0570
 int CSWCMessage::HandleServerToPlayerUpdate_GuiElements()
 {
     unsigned char nType = ReadBYTE(8);
@@ -9295,7 +9295,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiElements()
     }
     return 0;
 }
-// PC 0x0066A2A0  Xbox 0x0008FD30
+// PC 0x006C0620
 int CSWCMessage::HandleServerToPlayerUpdate_Update()
 {
     NwchandlemessageTrace2();
@@ -9341,7 +9341,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_Update()
     }
     return 0;
 }
-// PC 0x0066A370  Xbox 0x0008FE00
+// PC 0x006C06F0
 int CSWCMessage::HandleServerToPlayerJournalMessage(unsigned char nMinor)
 {
     NWCHANDLEMESSAGE_TRACE();
@@ -9370,7 +9370,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x00652330  Xbox 0x00077B60
+// PC 0x006A6F40
 int CSWCMessage::HandleServerToPlayerJournalMessage_DeleteWorldAll()
 {
     CSWCWorldJournal* pJournal =
@@ -9384,7 +9384,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_DeleteWorldAll()
     pJournal->DeleteAllEntries();
     return MessageReadUnderflow(1) == 0;
 }
-// PC 0x00652380  Xbox 0x00077BB0
+// PC 0x006A6F90
 int CSWCMessage::HandleServerToPlayerJournalMessage_FullQuestUpdate()
 {
 
@@ -9473,7 +9473,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_FullQuestUpdate()
     }
     return 1;
 }
-// PC 0x006526E0  Xbox 0x00077F00
+// PC 0x006A72F0
 int CSWCMessage::HandleServerToPlayerJournalMessage_Updated()
 {
     CSWCWorldJournal* pJournal =
@@ -9498,7 +9498,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_Updated()
     }
     return 1;
 }
-// PC 0x006527E0  Xbox 0x00078000
+// PC 0x006A73F0
 int CSWCMessage::HandleServerToPlayerLevelUpMessage(unsigned char nMinor)
 {
     CGuiInGame* pInGameGui;
@@ -9519,13 +9519,13 @@ int CSWCMessage::HandleServerToPlayerLevelUpMessage(unsigned char nMinor)
     }
     return !MessageReadOverflow(1) && MessageReadUnderflow(1) == 0;
 }
-// PC 0x00652840  Xbox 0x00078060
+// PC 0x006A7450
 int CSWCMessage::HandleServerToPlayerModule_StartStartNewModule()
 {
     g_pAppManager->m_pClientExoApp->SetInStartNewModule(1);
     return 1;
 }
-// PC 0x00652860  Xbox 0x00078080
+// PC 0x006A7470
 int CSWCMessage::HandleServerToPlayerModule_EndStartNewModule()
 {
     int bSuccess = ReadBOOL();
@@ -9541,7 +9541,7 @@ int CSWCMessage::HandleServerToPlayerModule_EndStartNewModule()
     }
     return 0;
 }
-// PC 0x006528B0  Xbox 0x000780D0
+// PC 0x006A74C0
 int CSWCMessage::HandleServerToPlayerModuleUpdate_Time()
 {
     unsigned char nFlags = ReadBYTE(8);
@@ -9620,7 +9620,7 @@ int CSWCMessage::HandleServerToPlayerModuleUpdate_Time()
     }
     return 1;
 }
-// PC 0x006529F0  Xbox 0x00078210
+// PC 0x006A7600
 int CSWCMessage::HandleServerToPlayerSaveGameStatus()
 {
 
@@ -9634,14 +9634,14 @@ int CSWCMessage::HandleServerToPlayerSaveGameStatus()
     }
     return 0;
 }
-// PC 0x00652AD0  Xbox 0x000782F0
+// PC 0x006A76E0
 int CSWCMessage::HandleServerToPlayerEndGame()
 {
     CExoString sMessage = ReadCExoString(32);
 
     return 1;
 }
-// PC 0x00652B00  Xbox 0x00078310
+// PC 0x006A7710
 int CSWCMessage::HandleServerToPlayerGuiQuickbar_SetButton(unsigned char nButton,
                                                          int bClear)
 {
@@ -9724,7 +9724,7 @@ int CSWCMessage::HandleServerToPlayerGuiQuickbar_SetButton(unsigned char nButton
     }
     return 1;
 }
-// PC 0x00652D00  Xbox 0x00078510
+// PC 0x006A7910
 int CSWCMessage::HandleServerToPlayerMapPinEnabled()
 {
     unsigned long oidPin;
@@ -9746,7 +9746,7 @@ int CSWCMessage::HandleServerToPlayerMapPinEnabled()
     }
     return MessageReadUnderflow(1) == 0;
 }
-// PC 0x00652D60  Xbox 0x00078570
+// PC 0x006A7970
 int CSWCMessage::HandleServerToPlayerMapPinReferenceNumber()
 {
 
@@ -9775,7 +9775,7 @@ int CSWCMessage::HandleServerToPlayerMapPinReferenceNumber()
     pArea->AddMapPin(pMapPin);
     return 1;
 }
-// PC 0x00652F20  Xbox 0x00078720
+// PC 0x006A7B30
 int CSWCMessage::HandleServerToPlayerDebugInfo_Item(unsigned long oidItem)
 {
 
@@ -9878,7 +9878,7 @@ int CSWCMessage::HandleServerToPlayerDebugInfo_Item(unsigned long oidItem)
         delete[] pnPassiveProperties;
     return 1;
 }
-// PC 0x00653850  Xbox 0x00079050
+// PC 0x006A8460
 int CSWCMessage::HandleServerToPlayerDebugInfo_Placeable(unsigned long oidObject)
 {
     CResRef cTemplate;
@@ -9967,7 +9967,7 @@ int CSWCMessage::HandleServerToPlayerDebugInfo_Placeable(unsigned long oidObject
                            CGuiInGame::MESSAGE_MASK_DEBUG_INFO, 0);
     return 1;
 }
-// PC 0x00654230  Xbox 0x00079A30
+// PC 0x006A8E40
 int CSWCMessage::HandleServerToPlayerPopUpGUIPanel(unsigned char nMinor)
 {
     switch (nMinor)
@@ -9999,7 +9999,7 @@ int CSWCMessage::HandleServerToPlayerPopUpGUIPanel(unsigned char nMinor)
     }
     return 1;
 }
-// PC 0x00654380  Xbox 0x00079B80
+// PC 0x006A8F90
 int CSWCMessage::HandleServerToPlayerAmbientMusicPlay()
 {
     int bPlay;
@@ -10017,7 +10017,7 @@ int CSWCMessage::HandleServerToPlayerAmbientMusicPlay()
         ->m_pInfo->m_pAmbientSound->PlayMusic(bPlay);
     return 1;
 }
-// PC 0x006543E0  Xbox 0x00079BE0
+// PC 0x006A8FF0
 int CSWCMessage::HandleServerToPlayerAmbientMusicSetDelay()
 {
     int nDelay;
@@ -10035,7 +10035,7 @@ int CSWCMessage::HandleServerToPlayerAmbientMusicSetDelay()
         ->m_pInfo->m_pAmbientSound->SetMusicDelay(nDelay);
     return 1;
 }
-// PC 0x00654450  Xbox 0x00079C50
+// PC 0x006A9060
 int CSWCMessage::HandleServerToPlayerAmbientMusicChangeTrack()
 {
     int bDay;
@@ -10065,7 +10065,7 @@ int CSWCMessage::HandleServerToPlayerAmbientMusicChangeTrack()
     }
     return 1;
 }
-// PC 0x006544D0  Xbox 0x00079CD0
+// PC 0x006A90F0
 int CSWCMessage::HandleServerToPlayerAmbientBattleMusicPlay()
 {
     int bPlay;
@@ -10083,7 +10083,7 @@ int CSWCMessage::HandleServerToPlayerAmbientBattleMusicPlay()
         ->m_pInfo->m_pAmbientSound->PlayBattleMusic(bPlay);
     return 1;
 }
-// PC 0x00654530  Xbox 0x00079D30
+// PC 0x006A9150
 int CSWCMessage::HandleServerToPlayerAmbientBattleMusicChange()
 {
     int nTrack;
@@ -10101,7 +10101,7 @@ int CSWCMessage::HandleServerToPlayerAmbientBattleMusicChange()
         ->m_pInfo->m_pAmbientSound->SetBattleMusicTrack(nTrack);
     return 1;
 }
-// PC 0x006545A0  Xbox 0x00079DA0
+// PC 0x006A91C0
 int CSWCMessage::HandleServerToPlayerAmbientSoundLoopPlay()
 {
     int bPlay;
@@ -10119,7 +10119,7 @@ int CSWCMessage::HandleServerToPlayerAmbientSoundLoopPlay()
         ->m_pInfo->m_pAmbientSound->PlayAmbientSound(bPlay);
     return 1;
 }
-// PC 0x00654600  Xbox 0x00079E00
+// PC 0x006A9220
 int CSWCMessage::HandleServerToPlayerAmbientSoundLoopChange()
 {
     int bDay;
@@ -10149,7 +10149,7 @@ int CSWCMessage::HandleServerToPlayerAmbientSoundLoopChange()
     }
     return 1;
 }
-// PC 0x00654680  Xbox 0x00079E80
+// PC 0x006A92A0
 int CSWCMessage::HandleServerToPlayerAmbientSoundVolume()
 {
 
@@ -10178,7 +10178,7 @@ int CSWCMessage::HandleServerToPlayerAmbientSoundVolume()
     }
     return 1;
 }
-// PC 0x00654700  Xbox 0x00079F00
+// PC 0x006A9320
 int CSWCMessage::HandleServerToPlayerCharacterDownload(unsigned char nMinor)
 {
 
@@ -10239,7 +10239,7 @@ int CSWCMessage::HandleServerToPlayerCheat_DebugMode()
     g_pAppManager->GetClientExoApp()->SetDebugMode(bDebugMode);
     return 1;
 }
-// PC 0x00654900  Xbox 0x0007A100
+// PC 0x006A9530
 int CSWCMessage::HandleServerToPlayerSaveLoad(unsigned char nMinor)
 {
     int bSuccess = 1;
@@ -10264,7 +10264,7 @@ int CSWCMessage::HandleServerToPlayerSaveLoad(unsigned char nMinor)
     }
     return bSuccess;
 }
-// PC 0x00654970  Xbox 0x0007A170
+// PC 0x006A95A0
 int CSWCMessage::HandlePlayerToServerShutDownServer(unsigned char nMinor)
 {
 
@@ -10282,7 +10282,7 @@ int CSWCMessage::HandlePlayerToServerShutDownServer(unsigned char nMinor)
     }
     return 1;
 }
-// PC 0x00654A30  Xbox 0x0007A230
+// PC 0x006A9660
 int CSWCMessage::HandleServerToPlayerGuiTimingEvent_Info()
 {
     if (ReadBOOL())
@@ -10305,7 +10305,7 @@ int CSWCMessage::HandleServerToPlayerGuiTimingEvent_Info()
     }
     return 1;
 }
-// PC 0x00654AA0  Xbox 0x0007A2A0
+// PC 0x006A96D0
 int CSWCMessage::HandleServerToPlayerGUICharacterSheet(unsigned char nMinor)
 {
     if (MessageReadOverflow(1))
@@ -10325,7 +10325,7 @@ int CSWCMessage::HandleServerToPlayerGUICharacterSheet(unsigned char nMinor)
     }
     return !MessageReadOverflow(1) && MessageReadUnderflow(1) == 0;
 }
-// PC 0x00654B10  Xbox 0x0007A310
+// PC 0x006A9740
 int CSWCMessage::HandleServerToPlayerItemScript_Add()
 {
     unsigned long oidItem = ReadOBJECTIDClient();
@@ -10386,7 +10386,7 @@ int CSWCMessage::HandleServerToPlayerItemScript_Add()
 }
 
 #include "guiingame.h"
-// PC 0x0066A410  Xbox 0x0008FEA0
+// PC 0x006C0790
 int CSWCMessage::HandleServerToPlayerDebugInfo(unsigned char nMinor)
 {
     unsigned long oidObject = ReadOBJECTIDClient();
@@ -10417,7 +10417,7 @@ int CSWCMessage::HandleServerToPlayerDebugInfo(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x0066A4A0  Xbox 0x0008FF30
+// PC 0x006C0820
 int CSWCMessage::HandleServerToPlayerGameObjectUpdate(unsigned char nMinor)
 {
     if (MessageReadOverflow(1))
@@ -10488,7 +10488,7 @@ int CSWCMessage::HandleServerToPlayerGameObjectUpdate(unsigned char nMinor)
 #include "twodimarray.h"
 
 #include "twodimarrays.h"
-// PC 0x0066A640  Xbox 0x000900C0
+// PC 0x006C09C0
 int CSWCMessage::HandleServerToPlayerMessage(unsigned char* pMessage,
                                             unsigned long nSize)
 {
@@ -10713,7 +10713,7 @@ static inline void NwchandlemessageTrace3()
 }
 
 #ifdef _XBOX
-// PC 0x0064FC10  Xbox 0x000753B0
+
 int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()
 {
     unsigned char nMode = ReadBYTE(8);

@@ -77,7 +77,7 @@ public:
     int GetNumDoneEntries();
     int GetNumActiveEntries();
     int GetDoneSortBy();
-    int GetActiveSortBy()  // PC 0x00712FC0
+    int GetActiveSortBy()  // PC 0x00786860
     {
         return m_lstActive.m_nSortBy;
     }

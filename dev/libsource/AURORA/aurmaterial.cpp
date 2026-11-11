@@ -34,7 +34,7 @@ static inline void CopyString(char* sDest, const char* sSource)
         *sDest++ = c;
     } while (c != 0);
 }
-// Xbox 0x002D1280
+
 CAurTexture* LoadTexture(char* sName)
 {
     if (sName == 0 || *sName == 0 || strcmp("NULL", sName) == 0)
@@ -43,7 +43,7 @@ CAurTexture* LoadTexture(char* sName)
     }
     return AurTextureGetReference(sName, 0);
 }
-// PC 0x0047ABC0
+// PC 0x00479A90
 template <> List<Aurora::AuroraBlendModes>::~List()
 {
     if (m_pList != 0)
@@ -51,7 +51,7 @@ template <> List<Aurora::AuroraBlendModes>::~List()
         delete[] m_pList;
     }
 }
-// PC 0x0047ABD0  Xbox 0x002D1300
+// PC 0x004AB240
 void Material::ParseField(char* sField)
 {
     char sBlending[32];
@@ -122,7 +122,7 @@ void Material::ParseField(char* sField)
         }
     }
 }
-// Xbox 0x002D12C0
+
 #ifndef _XBOX
 inline
 #endif
@@ -143,7 +143,7 @@ void Material::PurgeBadTexture(SafePointer<CAurTexture>& pTexture)
         }
     }
 }
-// PC 0x0047ADF0  Xbox 0x002D1520
+// PC 0x004AB460
 int Material::BindTexture0()
 {
     PurgeBadTexture(m_pTexture0);
@@ -159,7 +159,7 @@ int Material::BindTexture0()
         return AurTextureGetTID(AsTexture(m_pTexture0));
     }
 }
-// PC 0x0047AE60  Xbox 0x002D1570
+// PC 0x004AB4D0
 int Material::BindTexture1()
 {
     PurgeBadTexture(m_pTexture1);
@@ -167,7 +167,7 @@ int Material::BindTexture1()
     AsTexture(m_pTexture1)->Bind();
     return AurTextureGetTID(AsTexture(m_pTexture1));
 }
-// PC 0x0047AEB0
+// PC 0x004AB520
 int Material::BindEnvMap()
 {
     PurgeBadTexture(m_pEnvMap);
@@ -175,12 +175,12 @@ int Material::BindEnvMap()
     AsTexture(m_pEnvMap)->Bind();
     return AurTextureGetTID(AsTexture(m_pEnvMap));
 }
-// PC 0x0047AF00  Xbox 0x002D15A0
+// PC 0x004AB570
 int Material::GetTextureTID()
 {
     return AurTextureGetTID(AsTexture(m_pTexture0));
 }
-// PC 0x0047AF10  Xbox 0x002D15B0
+// PC 0x004AB580
 int Material::SetDownSampling(int nMax)
 {
     char sCommand[20];
@@ -188,7 +188,7 @@ int Material::SetDownSampling(int nMax)
     sprintf(sCommand, "downsamplemax %d", nMax);
     return AurTextureMessage((CAurTexture*)m_pTexture0.m_pObject, sCommand);
 }
-// PC 0x0047AF50  Xbox 0x002D15F0
+// PC 0x004AB5C0
 int Material::BumpMapIsSpecular()
 {
     if (AsTexture(m_pBumpMap) != 0)
@@ -200,7 +200,7 @@ int Material::BumpMapIsSpecular()
         return 0;
     }
 }
-// PC 0x0047AF70  Xbox 0x002D1610
+// PC 0x004AB5E0
 void Material::SetBlendingMode(int nIndex)
 {
     GLRender_SetBlendFunc(m_lstBlendSrc.m_pList[nIndex], m_lstBlendDst.m_pList[nIndex]);
@@ -228,7 +228,7 @@ void Material::SetBlendingMode(int nIndex)
         }
     }
 }
-// PC 0x0047B000  Xbox 0x002D16E0
+// PC 0x004AB670
 void Material::SetGUIBlendingMode()
 {
     GLRender_SetBlendFunc(*m_lstBlendSrc.m_pList, *m_lstBlendDst.m_pList);
@@ -245,7 +245,7 @@ void Material::SetGUIBlendingMode()
         }
     }
 }
-// PC 0x0047B070  Xbox 0x002D1760
+// PC 0x004AB6E0
 void Material::SetMaterialColor(Vector vColor, float fAlpha)
 {
     if (AsTexture(m_pTexture0)->IsUsingGlobalAlpha())
@@ -254,18 +254,18 @@ void Material::SetMaterialColor(Vector vColor, float fAlpha)
         GLRender_SetMaterialv(0, MATERIAL_DIFFUSE, Homogenize(vColor, fAlpha));
     }
 }
-// PC 0x0047B0C0  Xbox 0x002D17E0
+// PC 0x004AB730
 unsigned char Material::HasBumpyShinyMap()
 {
     return AsTexture(m_pEnvMap) != 0 && AsTexture(m_pEnvMap)->IsCubeMap() != 0;
 }
-// PC 0x0047B0E0  Xbox 0x002D1800
+// PC 0x004AB750
 unsigned char Material::HasEnvMap()
 {
     return AsTexture(m_pEnvMap) != 0 && AsTexture(m_pEnvMap)->IsNull() == 0 &&
            AsTexture(m_pEnvMap)->IsInvalid() == 0;
 }
-// PC 0x0047B110  Xbox 0x002D1830
+// PC 0x004AB780
 void Material::Init(char* sName)
 {
     char sLine[8192];
@@ -337,7 +337,7 @@ void Material::Init(char* sName)
         }
     }
 }
-// PC 0x0047B290  Xbox 0x002D19B0
+// PC 0x004AB900
 Material::Material()
 {
     m_sBumpMapName = 0;
@@ -358,7 +358,7 @@ Material::Material()
     materials.Add(this);
     m_fWaterAlpha = 1.0f;
 }
-// PC 0x0047B440  Xbox 0x002D1AC0
+// PC 0x004ABAB0
 void Material::ClearTextures()
 {
     CAurTexture* pTexture;
@@ -411,7 +411,7 @@ static inline bool IsTextureName(char* sName)
 {
     return sName != 0 && *sName != 0 && strcmp("NULL", sName) != 0;
 }
-// PC 0x0047B560  Xbox 0x002D1B80
+// PC 0x004ABBD0
 void Material::InitializeTextures(char* sTexture0, char* sTexture1,
                                   char* sTexture2, char* sTexture3)
 {
@@ -507,7 +507,7 @@ void Material::InitializeTextures(char* sTexture0, char* sTexture1,
         m_sEnvMapName = 0;
     }
 }
-// PC 0x0047B770  Xbox 0x002D1D00
+// PC 0x004ABDE0
 void Material::LoadTextures(Part* pPart)
 {
     char* sTexture0;
@@ -532,7 +532,7 @@ void Material::LoadTextures(Part* pPart)
 
     InitializeTextures(sTexture0, sTexture1, 0, 0);
 }
-// PC 0x0047B7E0  Xbox 0x002D1D70
+// PC 0x004ABE50
 void Material::ReplaceTexture(char* sOld, char* sNew, char* sLayer, int* pTXI,
                               int nFlags)
 {
@@ -560,7 +560,7 @@ void Material::ReplaceTexture(char* sOld, char* sNew, char* sLayer, int* pTXI,
         AurTextureSetLayered(AsTexture(m_pTexture0), sNew, pTXI, nFlags);
     }
 }
-// PC 0x0047B890  Xbox 0x002D1E20
+// PC 0x004ABF00
 void Material::ReplaceTexture(char* sOld, char* sNew)
 {
     if (AsTexture(m_pTexture0) != 0 && AsTexture(m_pTexture0)->IsNull() == 0)
@@ -578,7 +578,7 @@ void Material::ReplaceTexture(char* sOld, char* sNew)
     m_pTexture0 = AurTextureGetReference(sOld, sNew);
     AurTextureRelease(pOld);
 }
-// PC 0x0041F250
+// PC 0x00420990
 unsigned char Material::HasNormalMap()
 {
     return 0;
@@ -588,7 +588,7 @@ unsigned char Material::HasNormalMap()
 
 void AurReportError(int nLine, const char* sFile, const char* sMessage);
 #endif
-// PC 0x0047B8F0  Xbox 0x002D1E80
+// PC 0x004ABF80
 unsigned char Material::HasBumpMap()
 {
     char sMessage[256];
@@ -615,7 +615,7 @@ unsigned char Material::HasBumpMap()
     }
     return 0;
 }
-// PC 0x0047B980  Xbox 0x002D1F00
+// PC 0x004AC010
 Material::~Material()
 {
     ClearTextures();

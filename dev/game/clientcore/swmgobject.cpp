@@ -9,7 +9,7 @@
 #include "swminigame.h"
 
 #include <string.h>
-// PC 0x0066BF10  Xbox 0x000B2B60
+// PC 0x006C1080
 CSWMiniGameObjectArray::CSWMiniGameObjectArray()
 {
     for (int i = 0; i < 255; i++)
@@ -18,7 +18,7 @@ CSWMiniGameObjectArray::CSWMiniGameObjectArray()
     }
     m_nCurrentObject = 0;
 }
-// PC 0x0066BF30  Xbox 0x000B2B80
+// PC 0x006C10A0
 void* CSWMiniGameObjectArray::GetMiniGameObject(unsigned long nObjectId,
                                                  unsigned char nType)
 {
@@ -59,7 +59,7 @@ void* CSWMiniGameObjectArray::GetMiniGameObject(unsigned long nObjectId,
 
     return 0;
 }
-// PC 0x0066BFB0  Xbox 0x000B2C10
+// PC 0x006C1120
 CSWMiniGameObject* CSWMiniGameObjectArray::GetMiniGameObjectByName(const CExoString& sName)
 {
     int nObject;
@@ -74,7 +74,7 @@ CSWMiniGameObject* CSWMiniGameObjectArray::GetMiniGameObjectByName(const CExoStr
     }
     return 0;
 }
-// PC 0x0066C060  Xbox 0x000B2CC0
+// PC 0x006C11E0
 inline unsigned long CSWMiniGameObjectArray::FindNextEmptyIndex()
 {
     unsigned long nStart = m_nCurrentObject;
@@ -88,7 +88,7 @@ inline unsigned long CSWMiniGameObjectArray::FindNextEmptyIndex()
     }
     return m_nCurrentObject;
 }
-// PC 0x0066C0A0  Xbox 0x000B2D00
+// PC 0x006C1220
 void CSWMiniGameObject::Update(float fTime)
 {
     CResRef resScript = GetScriptName(4);
@@ -101,7 +101,7 @@ void CSWMiniGameObject::Update(float fTime)
         g_pVirtualMachine->RunScript(&sScript, nObjectId, 1);
     }
 }
-// PC 0x0066C130  Xbox 0x000B2DA0
+// PC 0x006C12B0
 void* CSWMiniGameObject::GetLastBulletHitShooter()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -115,7 +115,7 @@ void* CSWMiniGameObject::GetLastBulletHitShooter()
     }
     return pResult;
 }
-// PC 0x0066C160  Xbox 0x000B2DD0
+// PC 0x006C12E0
 void* CSWMiniGameObject::GetLastFollowerHit()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -128,7 +128,7 @@ void* CSWMiniGameObject::GetLastFollowerHit()
     }
     return pResult;
 }
-// PC 0x0066C190  Xbox 0x000B2E00
+// PC 0x006C1310
 void CSWMiniGameObject::OnHitBullet(int bScript)
 {
     if (bScript == 0)
@@ -163,7 +163,7 @@ void CSWMiniGameObject::OnHitBullet(int bScript)
                                         nGroup, 0, 0, 0.0f, 0.0f);
     }
 }
-// PC 0x0066C2D0  Xbox 0x000B2F40
+// PC 0x006C1450
 void CSWMiniGameObject::OnHitFollower(int bScript)
 {
     if (bScript == 0)
@@ -178,7 +178,7 @@ void CSWMiniGameObject::OnHitFollower(int bScript)
         }
     }
 }
-// PC 0x0066C370  Xbox 0x000B2FF0
+// PC 0x006C14F0
 void CSWMiniGameObject::OnCreate()
 {
     CResRef resScript;
@@ -195,7 +195,7 @@ void CSWMiniGameObject::OnCreate()
         }
     }
 }
-// PC 0x0066C420  Xbox 0x000B30C0
+// PC 0x006C15A0
 void CSWMiniGameObject::LoadScripts(CResGFF* pGFF, CResStruct* pStruct,
                                     CResStruct& structScripts)
 {
@@ -227,7 +227,7 @@ void CSWMiniGameObject::LoadScripts(CResGFF* pGFF, CResStruct* pStruct,
                                                 bSuccess, resDefault));
     }
 }
-// PC 0x0066C540  Xbox 0x000B31E0
+// PC 0x006C16C0
 CSWMiniGameObject::CSWMiniGameObject(unsigned long nType)
 {
     CSWMiniGameObjectArray* pArray =
@@ -240,7 +240,7 @@ CSWMiniGameObject::CSWMiniGameObject(unsigned long nType)
     m_nLastBulletHitShooter = 255;
     m_nLastFollowerHit = 255;
 }
-// PC 0x0066C610  Xbox 0x000B32C0
+// PC 0x006C1790
 CSWMiniGameObject::~CSWMiniGameObject()
 {
     g_pAppManager->m_pClientExoApp->GetMGOArray()->m_apObjects[m_nObjectId] = 0;

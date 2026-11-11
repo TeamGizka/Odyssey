@@ -34,30 +34,30 @@ inline void SwminigameContainerAllocates(CExoArrayList<unsigned long>* pIds,
 }
 
 #define SWMINIGAME_TRACE() SwminigameTrace1()
-// PC 0x00670A10
+// PC 0x006C55D0
 inline void CSWMiniGame::AxisVelocity(const Vector& vAxis, float fScale)
 {
     Vector vVelocity = m_fAxisScale * vAxis;
     m_NextState.m_vRate = m_CurrentState.m_vRate + vVelocity * fScale;
 }
-// PC 0x00670A90
+// PC 0x006C5650
 inline Vector CSWMiniGame::GetAcceleration(CSWMGPhysicsState& state,
                                            const Vector& vTarget)
 {
     return m_fLateralAccel * vTarget -
            (m_fLateralAccel / m_fAxisScale) * state.m_vValue;
 }
-// PC 0x00670B10  Xbox 0x000BBBA0
+// PC 0x006C56D0
 inline int CSWMiniEnemy::TargetType()
 {
     return TARGET_ENEMY;
 }
-// PC 0x00670B20  Xbox 0x000BBBB0
+// PC 0x006C56E0
 void BulletDie(CAurObject* pBullet, char*, void*)
 {
     delete pBullet;
 }
-// PC 0x00670B30  Xbox 0x000BBBC0
+// PC 0x006C56F0
 void CSWMiniGame::GetClipDist(float* pfNear, float* pfFar)
 {
     if (pfNear != NULL)
@@ -69,7 +69,7 @@ void CSWMiniGame::GetClipDist(float* pfNear, float* pfFar)
         *pfFar = m_fFarClip;
     }
 }
-// PC 0x00670B50  Xbox 0x000BBBE0
+// PC 0x006C5710
 void CSWMiniGame::SetClipDist(float fNear, float fFar)
 {
     if (fNear > fFar)
@@ -98,7 +98,7 @@ void CSWMiniGame::SetClipDist(float fNear, float fFar)
         m_pCam->SetClipDist(m_fNearClip, m_fFarClip);
     }
 }
-// PC 0x00670BB0  Xbox 0x000BBC30
+// PC 0x006C5770
 Vector CSWMiniGame::BumpPlane(const Quaternion& qOrientation)
 {
     switch (m_nBumpPlane)
@@ -113,7 +113,7 @@ Vector CSWMiniGame::BumpPlane(const Quaternion& qOrientation)
         return Vector();
     }
 }
-// PC 0x00670C10  Xbox 0x000BBDF0
+// PC 0x006C57D0
 int CSWMiniGame::GetAttachType()
 {
     switch (m_nAttachType)
@@ -126,7 +126,7 @@ int CSWMiniGame::GetAttachType()
         return 0;
     }
 }
-// PC 0x00670C30  Xbox 0x000BBE10
+// PC 0x006C57F0
 void CSWMiniGame::AxisAcceleration(const Vector& vAxis, float fScale)
 {
 
@@ -152,7 +152,7 @@ void CSWMiniGame::AxisAcceleration(const Vector& vAxis, float fScale)
                   k3 / 3.0f + k4 / 6.0f;
     m_vPosition = vAxis;
 }
-// PC 0x00670FB0  Xbox 0x000BC920
+// PC 0x006C5BB0
 void CSWMiniGame::UpdateAxis(Vector& vAxis, float fScale)
 {
     switch (m_nAttachType)
@@ -182,7 +182,7 @@ void CSWMiniGame::UpdateAxis(Vector& vAxis, float fScale)
         break;
     }
 }
-// PC 0x00671020
+// PC 0x006C5C20
 void CSWMiniGame::UpdateMouse(float fDeltaX, float fDeltaY, float fTimeStep)
 {
     int nAxisX = m_nMouseAxisX;
@@ -224,7 +224,7 @@ void CSWMiniGame::UpdateMouse(float fDeltaX, float fDeltaY, float fTimeStep)
         break;
     }
 }
-// PC 0x006710E0  Xbox 0x000BCA70
+// PC 0x006C5CE0
 void CSWMiniGame::Control(float fTimeStep)
 {
     if (m_pPlayer != NULL)
@@ -351,7 +351,7 @@ void CSWMiniGame::Control(float fTimeStep)
         }
     }
 }
-// PC 0x006714E0  Xbox 0x000BD010
+// PC 0x006C60E0
 void CSWMiniGame::Go()
 {
     SWMINIGAME_TRACE();
@@ -388,7 +388,7 @@ void CSWMiniGame::Go()
 #endif
     }
 }
-// PC 0x00671570  Xbox 0x000BD0A0
+// PC 0x006C61A0
 int CSWMiniGame::GetEnemy(int nIndex)
 {
     SWMINIGAME_TRACE();
@@ -399,7 +399,7 @@ int CSWMiniGame::GetEnemy(int nIndex)
     return (int)g_pAppManager->GetClientExoApp()->GetMGOArray()->GetMiniGameObject(
         m_lstEnemyIds.element[nIndex], 2);
 }
-// PC 0x006715B0  Xbox 0x000BD0E0
+// PC 0x006C61E0
 CSWMiniEnemy* CSWMiniGame::RemoveEnemy(CSWMiniEnemy* pEnemy)
 {
     unsigned long nObjectId = pEnemy->m_nObjectId;
@@ -411,7 +411,7 @@ CSWMiniEnemy* CSWMiniGame::RemoveEnemy(CSWMiniEnemy* pEnemy)
     m_lstEnemyIds.DelIndex(nIndex);
     return pEnemy;
 }
-// PC 0x00671610
+// PC 0x006C62B0
 SWMGTrackInfo* CSWMiniGame::GetProtoTrack(int nIndex)
 {
     SWMINIGAME_TRACE();
@@ -435,7 +435,7 @@ SWMGTrackInfo* CSWMiniGame::GetProtoTrack(const CResRef& cResRef)
     }
     return NULL;
 }
-// PC 0x00671630  Xbox 0x000BD140
+// PC 0x006C62D0
 CSWMGObstacle* CSWMiniGame::GetObstacle(int nIndex)
 {
     SWMINIGAME_TRACE();
@@ -446,7 +446,7 @@ CSWMGObstacle* CSWMiniGame::GetObstacle(int nIndex)
     return (CSWMGObstacle*)g_pAppManager->GetClientExoApp()->GetMGOArray()->GetMiniGameObject(
         m_lstObstacleIds.element[nIndex], SWMG_OBJECT_OBSTACLE);
 }
-// PC 0x00671670  Xbox 0x000BD180
+// PC 0x006C6310
 CAurCamera* CSWMiniGame::SetCamera(CAurCamera* pCamera)
 {
     SWMINIGAME_TRACE();
@@ -498,7 +498,7 @@ CAurCamera* CSWMiniGame::SetCamera(CAurCamera* pCamera)
     }
     return m_pCam;
 }
-// PC 0x006717F0  Xbox 0x000BD300
+// PC 0x006C6490
 CSWMiniPlayer* CSWMiniGame::SetPlayer(CSWMiniPlayer* pPlayer)
 {
     if (m_pPlayer != NULL)
@@ -510,7 +510,7 @@ CSWMiniPlayer* CSWMiniGame::SetPlayer(CSWMiniPlayer* pPlayer)
     SetCamera(pCamera);
     return m_pPlayer;
 }
-// PC 0x00671820  Xbox 0x000BD330
+// PC 0x006C64C0
 CSWMiniPlayer* CSWMiniGame::SetPlayer(CExoArrayList<CResRef>& lstModels,
                                       CExoArrayList<unsigned char>& lstRotating,
                                       const CResRef& cTrack)
@@ -547,7 +547,7 @@ CSWMiniPlayer* CSWMiniGame::SetPlayer(CExoArrayList<CResRef>& lstModels,
     SetCamera(m_pCam);
     return m_pPlayer;
 }
-// PC 0x006719D0  Xbox 0x000BD4F0
+// PC 0x006C6670
 CSWMiniPlayer* CSWMiniGame::SetPlayer(CExoArrayList<CResRef>& lstModels,
                                       CExoArrayList<unsigned char>& lstRotating,
                                       const CResRef& cTrack, const CResRef& cCamera,
@@ -592,7 +592,7 @@ CSWMiniPlayer* CSWMiniGame::SetPlayer(CExoArrayList<CResRef>& lstModels,
     SetCamera(m_pCam);
     return m_pPlayer;
 }
-// PC 0x00671BC0  Xbox 0x000BD700
+// PC 0x006C6860
 int CSWMiniGame::SetMouseAxisX(int nAxis)
 {
     SWMINIGAME_TRACE();
@@ -602,7 +602,7 @@ int CSWMiniGame::SetMouseAxisX(int nAxis)
     }
     return m_nMouseAxisX;
 }
-// PC 0x00671BE0  Xbox 0x000BD720
+// PC 0x006C6880
 int CSWMiniGame::SetMouseAxisY(int nAxis)
 {
     SWMINIGAME_TRACE();
@@ -612,7 +612,7 @@ int CSWMiniGame::SetMouseAxisY(int nAxis)
     }
     return m_nMouseAxisY;
 }
-// PC 0x00671C00  Xbox 0x000BD740
+// PC 0x00410CD0
 template <> void CExoArrayList<SWMGExplodeBullet*>::Add(SWMGExplodeBullet* value)
 {
     if (num == array_size)
@@ -621,7 +621,7 @@ template <> void CExoArrayList<SWMGExplodeBullet*>::Add(SWMGExplodeBullet* value
     }
     element[num++] = value;
 }
-// PC 0x00671C40  Xbox 0x000BD780
+// PC 0x006C6960
 CSWMiniGame::CSWMiniGame(CSWCArea* pArea)
 {
     m_pArea = pArea;
@@ -642,7 +642,7 @@ CSWMiniGame::CSWMiniGame(CSWCArea* pArea)
     m_pImpactSound->SetLooping(1);
     SetResRef(pArea->m_cAreaResRef, 0);
 }
-// PC 0x00671E40  Xbox 0x000BDA00
+// PC 0x006C6C40
 CSWMiniEnemy* CSWMiniGame::AddEnemy(CExoArrayList<CResRef>& lstModels,
                                     CExoArrayList<unsigned char>& lstRotating,
                                     const CResRef& cTrack)
@@ -675,7 +675,7 @@ CSWMiniEnemy* CSWMiniGame::AddEnemy(CExoArrayList<CResRef>& lstModels,
     m_lstEnemyIds.Add(pEnemy->m_nObjectId);
     return pEnemy;
 }
-// PC 0x00672040  Xbox 0x000BDC00
+// PC 0x006C6E40
 int CSWMiniGame::ClearEnemies()
 {
     int nCount = m_lstEnemyIds.num;
@@ -693,7 +693,7 @@ int CSWMiniGame::ClearEnemies()
     m_lstEnemyIds.SetSize(0);
     return nCount;
 }
-// PC 0x006720C0  Xbox 0x000BDC80
+// PC 0x006C6EC0
 SWMGTrackInfo* CSWMiniGame::AddTrack(const CResRef& cResRef,
                                      const Vector& vPosition)
 {
@@ -712,7 +712,7 @@ SWMGTrackInfo* CSWMiniGame::AddTrack(const CResRef& cResRef,
     m_lstTracks.Add(pNewTrack);
     return pNewTrack;
 }
-// PC 0x006721F0  Xbox 0x000BDDD0
+// PC 0x006C6FF0
 int CSWMiniGame::ClearTracks()
 {
     int nOldCount = m_lstTracks.num;
@@ -723,7 +723,7 @@ int CSWMiniGame::ClearTracks()
     m_lstTracks.SetSize(0);
     return nOldCount;
 }
-// PC 0x00672240  Xbox 0x000BDE20
+// PC 0x006C7040
 CSWMGObstacle* CSWMiniGame::AddObstacle(const CResRef& cResRef,
                                         const Vector& vPosition)
 {
@@ -742,7 +742,7 @@ CSWMGObstacle* CSWMiniGame::AddObstacle(const CResRef& cResRef,
     }
     return pObstacle;
 }
-// PC 0x006723D0  Xbox 0x000BDFC0
+// PC 0x006C71D0
 int CSWMiniGame::Load()
 {
     CResRef cResRef;
@@ -911,7 +911,7 @@ int CSWMiniGame::Load()
     m_pRes->Release();
     return 1;
 }
-// PC 0x00672EB0  Xbox 0x000BEB30
+// PC 0x006C7CB0
 CSWMiniGame::~CSWMiniGame()
 {
     if (m_pPlayer != NULL)
@@ -925,16 +925,16 @@ CSWMiniGame::~CSWMiniGame()
     ClearObstacles();
     delete m_pImpactSound;
 }
-// PC 0x00672FA0  Xbox 0x000BEC20
+// PC 0x006C7DA0
 void CSWMiniGame::AddBullet(CAurObject* pBullet)
 {
     m_lstBullets.Add(new SafePointer<CAurObject>(pBullet));
 }
-// PC 0x00673080
+// PC 0x006C7E50
 SWMGExplodeBullet::SWMGExplodeBullet()
 {
 }
-// PC 0x006732F0  Xbox 0x000BEF50
+// PC 0x006C81F0
 void CSWMiniGame::DoHitCheck()
 {
     int nBullets = m_lstBullets.num;
@@ -1036,7 +1036,7 @@ NextBullet:
         }
     }
 }
-// PC 0x006730A0  Xbox 0x000BECD0
+// PC 0x006C7E70
 int CSWMiniGame::HitCheckBullet(CAurObject* pBullet, CAurObject* pTarget,
                                CSWMiniGameObject* pHit)
 {
@@ -1080,7 +1080,7 @@ int CSWMiniGame::HitCheckBullet(CAurObject* pBullet, CAurObject* pTarget,
     }
     return 0;
 }
-// PC 0x006735D0  Xbox 0x000BF230
+// PC 0x006C8AD0
 void CSWMiniGame::Update(float fTimeStep)
 {
     CSWMiniGameObjectArray* pArray =
@@ -1154,7 +1154,7 @@ void CSWMiniGame::Update(float fTimeStep)
         m_pArea->m_pScene->SetCurrentRoom(m_pCurrentRoom->m_nRoomIndex);
     }
 }
-// PC 0x00672350  Xbox 0x000BDF40
+// PC 0x006C7150
 int CSWMiniGame::ClearObstacles()
 {
     int nOldCount = m_lstObstacleIds.num;
@@ -1186,7 +1186,7 @@ static inline void SwminigameTrace1()
 }
 
 #ifdef _XBOX
-// Xbox 0x000BCA30
+
 void CSWMiniGame::UpdateAxis(float fX, float fZ, float fTimeStep)
 {
     Vector vAxis(fX, 0.0f, fZ);

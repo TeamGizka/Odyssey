@@ -36,7 +36,7 @@ static inline void NwsplaceableTrace1();
 static inline CServerExoApp* GetServerExoApp();
 
 int RenderPlaceableBBox = 0;
-// PC 0x005877E0  Xbox 0x0020A0A0
+// PC 0x0058A400
 CSWSPlaceable::CSWSPlaceable(unsigned long oidSelf)
     : CSWSObject(CGameObject::OBJECT_TYPE_PLACEABLE, oidSelf, 0)
 {
@@ -83,7 +83,7 @@ CSWSPlaceable::CSWSPlaceable(unsigned long oidSelf)
     m_bIsCorpse = 0;
     m_bInventoryOpening = 0;
 }
-// PC 0x00587A70  Xbox 0x0020A340
+// PC 0x0058A6B0
 int CSWSPlaceable::LoadFromTemplate(const CResRef& cResRef, int bLoadState)
 {
     CResStruct stTop;
@@ -106,14 +106,14 @@ int CSWSPlaceable::LoadFromTemplate(const CResRef& cResRef, int bLoadState)
         return 1;
     }
 }
-// PC 0x00588AB0  Xbox 0x00207D50
+// PC 0x0057F480
 int CSWSPlaceable::GetDead()
 {
     if (m_bPlotObject != 0)
         return 0;
     return CSWSObject::GetDead();
 }
-// PC 0x005854B0  Xbox 0x00207DC0
+// PC 0x00587DD0
 CSWSPlaceable::~CSWSPlaceable()
 {
     if (m_pcItemRepository != NULL)
@@ -144,7 +144,7 @@ CSWSPlaceable::~CSWSPlaceable()
             pCreature->m_oidParentCorpse = OBJECT_INVALID;
     }
 }
-// PC 0x00585670  Xbox 0x00207F50
+// PC 0x00587F90
 int CSWSPlaceable::LoadPlaceable(CResGFF* pRes, CResStruct* pStruct, int bLoadState)
 {
     CExoString sScript;
@@ -320,7 +320,7 @@ int CSWSPlaceable::LoadPlaceable(CResGFF* pRes, CResStruct* pStruct, int bLoadSt
     PostProcess();
     return 1;
 }
-// PC 0x005864B0  Xbox 0x00208D90
+// PC 0x00588EE0
 int CSWSPlaceable::LoadBodyBag(unsigned char nAppearance)
 {
     CExoLocString lsName;
@@ -448,7 +448,7 @@ int CSWSPlaceable::LoadBodyBag(unsigned char nAppearance)
     PostProcess();
     return 1;
 }
-// PC 0x00584870  Xbox 0x00207090
+// PC 0x00586EA0
 void CSWSPlaceable::PostProcess()
 {
     if (m_nHardness > 0)
@@ -465,7 +465,7 @@ void CSWSPlaceable::PostProcess()
         m_n1EC = 0;
     }
 }
-// PC 0x00586A70  Xbox 0x00209350
+// PC 0x005894A0
 int CSWSPlaceable::SavePlaceable(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList lstItems;
@@ -599,7 +599,7 @@ int CSWSPlaceable::SavePlaceable(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldBYTE(pStruct, m_bIsCorpse, "IsCorpse");
     return 1;
 }
-// PC 0x00587170  Xbox 0x00209A50
+// PC 0x00589C60
 void CSWSPlaceable::AddToArea(CSWSArea* pArea, const Vector& vPosition,
                             int bLoadingGame)
 {
@@ -659,7 +659,7 @@ void CSWSPlaceable::AddToArea(CSWSArea* pArea, const Vector& vPosition,
         GetArea()->AddObjectToArea(m_nId, 1);
     }
 }
-// PC 0x00584950  Xbox 0x00207170
+// PC 0x00586F80
 void CSWSPlaceable::RemoveFromArea()
 {
     if (GetArea() != NULL)
@@ -677,7 +677,7 @@ void CSWSPlaceable::RemoveFromArea()
     Vector vPosition;
     SetPosition(vPosition, 1, 1, 0);
 }
-// PC 0x005849D0  Xbox 0x002071F0
+// PC 0x00587000
 void CSWSPlaceable::AIUpdate()
 {
     unsigned long nCalendarDay;
@@ -704,7 +704,7 @@ void CSWSPlaceable::AIUpdate()
     UpdateEffectList(nCalendarDay, nTimeOfDay);
     RunActions(nCalendarDay, nTimeOfDay, nTimer);
 }
-// PC 0x00584AC0  Xbox 0x002072E0
+// PC 0x005871B0
 int CSWSPlaceable::RemoveItem(CSWSItem* pItem)
 {
     CItemRepository* pRepository = m_pcItemRepository;
@@ -717,7 +717,7 @@ int CSWSPlaceable::RemoveItem(CSWSItem* pItem)
 
     return 0;
 }
-// PC 0x00584B10  Xbox 0x00207330
+// PC 0x00587200
 int CSWSPlaceable::AcquireItem(CSWSItem** ppItem, unsigned long oidPossessor,
                                int bDisplayFeedback)
 {
@@ -761,7 +761,7 @@ int CSWSPlaceable::AcquireItem(CSWSItem** ppItem, unsigned long oidPossessor,
     }
     return 0;
 }
-// PC 0x00584C20  Xbox 0x00207460
+// PC 0x00587550
 Vector CSWSPlaceable::GetNearestActionPoint(const Vector& vPosition)
 {
     Vector vActionPoint;
@@ -779,7 +779,7 @@ Vector CSWSPlaceable::GetNearestActionPoint(const Vector& vPosition)
         vActionPoint = m_vPosition;
     return vActionPoint;
 }
-// PC 0x00584DB0  Xbox 0x00207630
+// PC 0x005876E0
 int CSWSPlaceable::AddCastSpellActions(unsigned long nSpellId, int nMultiClass,
                                        const Vector& vTarget,
                                        unsigned long oidTarget, int bFake,
@@ -814,7 +814,7 @@ int CSWSPlaceable::AddCastSpellActions(unsigned long nSpellId, int nMultiClass,
               &nPathType, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     return 1;
 }
-// PC 0x00584EC0  Xbox 0x00207740
+// PC 0x005877F0
 int CSWSPlaceable::AIActionCastSpell(CSWSObjectActionNode* pNode)
 {
     Vector vTarget;
@@ -859,7 +859,7 @@ int CSWSPlaceable::AIActionCastSpell(CSWSObjectActionNode* pNode)
     return ACTION_COMPLETE;
 }
 #ifndef _XBOX
-void CSWSPlaceable::SetLightIsOn(int bLightIsOn)  // PC 0x00585080  Xbox 0x00207910
+void CSWSPlaceable::SetLightIsOn(int bLightIsOn)  // PC 0x005879B0
 {
     if (m_bLightIsOn != bLightIsOn)
     {
@@ -880,7 +880,7 @@ void CSWSPlaceable::SetLightIsOn(int bLightIsOn)  // PC 0x00585080  Xbox 0x00207
     }
 }
 #endif
-int CSWSPlaceable::GetLightIsOn()  // PC 0x00585130  Xbox 0x002079E0
+int CSWSPlaceable::GetLightIsOn()  // PC 0x00587A60
 {
     int nLightColor;
     bool bFailed;
@@ -896,7 +896,7 @@ int CSWSPlaceable::GetLightIsOn()  // PC 0x00585130  Xbox 0x002079E0
 
     return m_bLightIsOn;
 }
-// PC 0x005851E0  Xbox 0x00207A90
+// PC 0x00587B00
 unsigned char CSWSPlaceable::GetBodyBagAppearance()
 {
     int nAppearance;
@@ -933,7 +933,7 @@ unsigned char CSWSPlaceable::GetBodyBagAppearance()
 
     return nAppearance;
 }
-// PC 0x00585350  Xbox 0x00207C10
+// PC 0x00587C70
 int CSWSPlaceable::NoNonWalkPolys(const Vector& vStart, const Vector& vEnd,
                                   const float& fDistance, const float& fWidth,
                                   const float& fHeight,
@@ -944,7 +944,7 @@ int CSWSPlaceable::NoNonWalkPolys(const Vector& vStart, const Vector& vEnd,
     return m_cSurfaceMesh.NoNonWalkPolys(vStart, vEnd, fDistance, fWidth,
                                          fHeight, pWalkHitInfo);
 }
-// PC 0x005853C0  Xbox 0x00207C80
+// PC 0x00587CE0
 void CSWSPlaceable::SetOrientation(const Quaternion& qOrientation)
 {
     m_qOrientation = qOrientation;
@@ -958,14 +958,14 @@ void CSWSPlaceable::SetOrientation(const Quaternion& qOrientation)
     vOrientation = normalize(vOrientation);
     CSWSObject::SetOrientation(vOrientation);
 }
-// PC 0x00585460  Xbox 0x00207D70
+// PC 0x00587D80
 void CSWSPlaceable::OnEndDialog(CSWSObject* pObject)
 {
     g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ONENDDIALOGUE], m_nId,
                                  1);
     m_n43C = 0;
 }
-// PC 0x00585490  Xbox 0x00207DA0
+// PC 0x00587DB0
 CSWCPlaceable* CSWSPlaceable::GetClientPlaceable()
 {
     if (GetClientObject() != NULL)
@@ -973,7 +973,7 @@ CSWCPlaceable* CSWSPlaceable::GetClientPlaceable()
 
     return NULL;
 }
-// PC 0x00587420  Xbox 0x00209D10
+// PC 0x00589F00
 void CSWSPlaceable::OpenInventory(unsigned long oidOpener, int bAnimate)
 {
     if (m_bOpen == 0 && m_bHasInventory != 0)
@@ -1006,7 +1006,7 @@ void CSWSPlaceable::OpenInventory(unsigned long oidOpener, int bAnimate)
         m_bOpen = 1;
     }
 }
-// PC 0x00587560  Xbox 0x00209E20
+// PC 0x0058A060
 void CSWSPlaceable::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
 {
     if (m_bOpen)
@@ -1043,7 +1043,7 @@ void CSWSPlaceable::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
         }
     }
 }
-// PC 0x00587710  Xbox 0x00209FD0
+// PC 0x0058A330
 int CSWSPlaceable::GetItemCount(int bDropableOnly)
 {
     NwsplaceableTrace1();
@@ -1065,7 +1065,7 @@ int CSWSPlaceable::GetItemCount(int bDropableOnly)
 
     return nCount;
 }
-// PC 0x00587770  Xbox 0x0020A030
+// PC 0x0058A390
 void CSWSPlaceable::ClosePlaceableForAllPlayers()
 {
     CExoLinkedList<CSWSClient>* pPlayerList;
@@ -1089,7 +1089,7 @@ void CSWSPlaceable::ClosePlaceableForAllPlayers()
         }
     }
 }
-// PC 0x00587BA0  Xbox 0x0020A470
+// PC 0x0058A7E0
 void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                                  void* pEventData, unsigned long nCalendarDay,
                                  unsigned long nTimeOfDay)
@@ -1453,7 +1453,7 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
     }
     return;
 }
-// PC 0x00588690  Xbox 0x0020AFE0
+// PC 0x0058B510
 int CSWSPlaceable::AcquireItemsFromObject(unsigned long oidSource,
                                         int bDropableOnly)
 {
@@ -1520,7 +1520,7 @@ int CSWSPlaceable::AcquireItemsFromObject(unsigned long oidSource,
     }
     return nCount;
 }
-// PC 0x00589190  Xbox 0x00207440
+// PC 0x0057F6F0
 void CSWSPlaceable::DoDamage(int nDamage)
 {
     if (m_bPlotObject == 0)
@@ -1539,7 +1539,7 @@ static inline void NwsplaceableTrace1()
 }
 
 #ifdef _XBOX
-// PC 0x00585080  Xbox 0x00207910
+
 void CSWSPlaceable::SetLightIsOn(int bLightIsOn)
 {
     int nLightColor;

@@ -10,7 +10,7 @@ static inline void ExoresfileTrace1();
 #define EXORESFILE_TRACE() ExoresfileTrace1()
 
 unsigned long CExoKeyTable::m_nCRC32[256];
-// PC 0x0040DB50
+// PC 0x0040E420
 int CExoResFile::CloseAsyncFile()
 {
     if (m_bAsyncFileOpened)
@@ -26,7 +26,7 @@ int CExoResFile::CloseAsyncFile()
 
     return 1;
 }
-// PC 0x0040ED20  Xbox 0x0014D280
+// PC 0x0040F5F0
 CExoStringList* CExoKeyTable::GetKeysOfType(unsigned short nType)
 {
     if (nType == 0xFFFF)
@@ -62,7 +62,7 @@ CExoStringList* CExoKeyTable::GetKeysOfType(unsigned short nType)
 
     return pList;
 }
-// PC 0x0040D030  Xbox 0x0014B4A0
+// PC 0x0040D8F0
 CExoKeyTable::CExoKeyTable()
 {
     m_nUnknown00 = 0;
@@ -94,7 +94,7 @@ CExoKeyTable::CExoKeyTable()
         m_nCRC32[i] = nValue;
     }
 }
-// PC 0x0040D0D0  Xbox 0x0014B540
+// PC 0x0040FB20
 CExoKeyTable::~CExoKeyTable()
 {
     if (m_pPackedFiles != NULL)
@@ -125,7 +125,7 @@ CExoKeyTable::~CExoKeyTable()
     m_nPackedFileCount = 0;
     m_pPackedFiles = NULL;
 }
-// PC 0x0040D1A0  Xbox 0x0014B610
+// PC 0x0040DAD0
 int CExoKeyTable::GetEntryCount(int bCountAll)
 {
     int nCount = 0;
@@ -146,7 +146,7 @@ int CExoKeyTable::GetEntryCount(int bCountAll)
 
     return nCount;
 }
-// PC 0x0040D200  Xbox 0x0014B670
+// PC 0x0040DB30
 int CExoKeyTable::LocateBifFile(const CExoString& sFileName)
 {
     CExoFile* pFile = new CExoFile(sFileName, RESTYPE_BIF, "rb");
@@ -165,7 +165,7 @@ int CExoKeyTable::LocateBifFile(const CExoString& sFileName)
     delete pFile;
     return 1;
 }
-// PC 0x0040D2E0  Xbox 0x0014B750
+// PC 0x0040DC10
 void CExoKeyTable::DestroyTable()
 {
     CExoKeyTable* pKeyTable = NULL;
@@ -229,7 +229,7 @@ void CExoKeyTable::DestroyTable()
         }
     }
 }
-// PC 0x0040D490  Xbox 0x0014B900
+// PC 0x0040DDC0
 unsigned long CExoKeyTable::GetTableIndex(unsigned long& nIndex,
                                           const CResRef& resRef,
                                           unsigned short nType)
@@ -251,7 +251,7 @@ unsigned long CExoKeyTable::GetTableIndex(unsigned long& nIndex,
 
     return 0;
 }
-// PC 0x0040D500  Xbox 0x0014B970
+// PC 0x0040DE30
 unsigned long CExoKeyTable::Hash(const CResRef& resRef, unsigned short nType)
 {
     unsigned long nHash = 0;
@@ -265,21 +265,21 @@ unsigned long CExoKeyTable::Hash(const CResRef& resRef, unsigned short nType)
 
     return nHash % m_nTableSize;
 }
-// PC 0x0040D560  Xbox 0x0014B9D0
+// PC 0x0040DE90
 CExoPackedFile::~CExoPackedFile()
 {
 }
-// PC 0x0040D570
+// PC 0x0040DEA0
 CExoFile* CExoPackedFile::GetFile()
 {
     return m_pFile;
 }
-// PC 0x00644760
+// PC 0x00406600
 CExoFile* CExoPackedFile::GetAsyncFile()
 {
     return m_pAsyncFile;
 }
-// PC 0x0040D580
+// PC 0x0040F030
 void CExoResFile::AddRefCount()
 {
     if (m_nRefCount <= 0)
@@ -290,7 +290,7 @@ void CExoResFile::AddRefCount()
 
     m_nRefCount++;
 }
-// PC 0x0040D580
+// PC 0x0040F030
 void CExoEncapsulatedFile::AddRefCount()
 {
     if (m_nRefCount <= 0)
@@ -301,7 +301,7 @@ void CExoEncapsulatedFile::AddRefCount()
 
     m_nRefCount++;
 }
-// PC 0x0040D580  Xbox 0x0014B9E0
+// PC 0x0040F030
 void CExoResourceImageFile::AddRefCount()
 {
     if (m_nRefCount <= 0)
@@ -312,7 +312,7 @@ void CExoResourceImageFile::AddRefCount()
 
     m_nRefCount++;
 }
-// PC 0x0040D5A0
+// PC 0x0040E3C0
 void CExoResFile::AddAsyncRefCount()
 {
     if (m_nAsyncRefCount <= 0)
@@ -323,7 +323,7 @@ void CExoResFile::AddAsyncRefCount()
 
     m_nAsyncRefCount++;
 }
-// PC 0x0040D5A0  Xbox 0x0014BA00
+// PC 0x0040E3C0
 void CExoEncapsulatedFile::AddAsyncRefCount()
 {
     if (m_nAsyncRefCount <= 0)
@@ -334,7 +334,7 @@ void CExoEncapsulatedFile::AddAsyncRefCount()
 
     m_nAsyncRefCount++;
 }
-// PC 0x0040D5C0
+// PC 0x0040DEB0
 int CExoResFile::CloseFile()
 {
     if (m_bFileOpened)
@@ -352,7 +352,7 @@ int CExoResFile::CloseFile()
 
     return 1;
 }
-// PC 0x0040D600  Xbox 0x0014BAA0
+// PC 0x0040DEF0
 int CExoResFile::UnloadHeader()
 {
     if (m_bHeaderLoaded)
@@ -375,7 +375,7 @@ int CExoResFile::UnloadHeader()
 
     return 1;
 }
-// PC 0x0040D650
+// PC 0x0040E4B0
 void CExoResFile::DeleteRefCount()
 {
     int nRefCount = m_nRefCount;
@@ -391,7 +391,7 @@ void CExoResFile::DeleteRefCount()
         m_nRefCount = nRefCount;
     }
 }
-// PC 0x0040D650  Xbox 0x0014BAF0
+// PC 0x0040E4B0
 void CExoEncapsulatedFile::DeleteRefCount()
 {
     int nRefCount = m_nRefCount;
@@ -407,7 +407,7 @@ void CExoEncapsulatedFile::DeleteRefCount()
         m_nRefCount = nRefCount;
     }
 }
-// PC 0x0040D670
+// PC 0x0040E4D0
 void CExoResFile::DeleteAsyncRefCount()
 {
     int nRefCount = m_nAsyncRefCount;
@@ -423,7 +423,7 @@ void CExoResFile::DeleteAsyncRefCount()
         m_nAsyncRefCount = nRefCount;
     }
 }
-// PC 0x0040D670  Xbox 0x0014BB10
+// PC 0x0040E4D0
 void CExoEncapsulatedFile::DeleteAsyncRefCount()
 {
     int nRefCount = m_nAsyncRefCount;
@@ -439,12 +439,12 @@ void CExoEncapsulatedFile::DeleteAsyncRefCount()
         m_nAsyncRefCount = nRefCount;
     }
 }
-// PC 0x0040D690  Xbox 0x0014BB30
+// PC 0x0040DF40
 unsigned long CExoResFile::GetResourceSize(unsigned long nId)
 {
     return m_pResourceTable[nId & 0x3FFF].nSize;
 }
-// PC 0x0040D6B0  Xbox 0x0014BB50
+// PC 0x0040DF60
 int CExoResFile::Initialize()
 {
 #ifndef _XBOX
@@ -462,7 +462,7 @@ int CExoResFile::Initialize()
     m_pResourceTable = NULL;
     return 1;
 }
-// PC 0x0040D6F0  Xbox 0x0014BB80
+// PC 0x0040DFA0
 int CExoResFile::OpenFile()
 {
     if (m_bFileOpened)
@@ -489,7 +489,7 @@ int CExoResFile::OpenFile()
     m_bFileOpened = 1;
     return 1;
 }
-// PC 0x0040D800  Xbox 0x0014BC90
+// PC 0x0040E0B0
 int CExoResFile::OpenAsyncFile()
 {
     if (m_bAsyncFileOpened)
@@ -515,7 +515,7 @@ int CExoResFile::OpenAsyncFile()
 
     return 1;
 }
-// PC 0x0040D910  Xbox 0x0014BDA0
+// PC 0x0040E1C0
 int CExoResFile::LoadHeader(unsigned char nType)
 {
     if (m_bHeaderLoaded == 0)
@@ -575,7 +575,7 @@ int CExoResFile::LoadHeader(unsigned char nType)
 
     return 1;
 }
-// PC 0x0040DA20  Xbox 0x0014BEB0
+// PC 0x0040E2D0
 unsigned long CExoResFile::ReadResource(unsigned long nId, void* pBuffer,
                                         unsigned long nSize,
                                         unsigned long nOffset)
@@ -605,7 +605,7 @@ unsigned long CExoResFile::ReadResource(unsigned long nId, void* pBuffer,
 
     return 0;
 }
-// PC 0x0040DAA0  Xbox 0x0014BF30
+// PC 0x0040E350
 void CExoResFile::ReadResourceAsync(unsigned long nId, void* pBuffer,
                                     unsigned long nSize, unsigned long nOffset)
 {
@@ -630,7 +630,7 @@ void CExoResFile::ReadResourceAsync(unsigned long nId, void* pBuffer,
         }
     }
 }
-// PC 0x0040DB10  Xbox 0x0014BA20
+// PC 0x0040E3E0
 int CExoEncapsulatedFile::CloseFile()
 {
     if (m_bFileOpened)
@@ -646,7 +646,7 @@ int CExoEncapsulatedFile::CloseFile()
 
     return 1;
 }
-// PC 0x0040DB50  Xbox 0x0014BA60
+// PC 0x0040E420
 int CExoEncapsulatedFile::CloseAsyncFile()
 {
     if (m_bAsyncFileOpened)
@@ -662,7 +662,7 @@ int CExoEncapsulatedFile::CloseAsyncFile()
 
     return 1;
 }
-// PC 0x0040DB90  Xbox 0x0014BFA0
+// PC 0x0040E460
 int CExoEncapsulatedFile::UnloadHeader()
 {
     if (m_bHeaderLoaded)
@@ -686,12 +686,12 @@ int CExoEncapsulatedFile::UnloadHeader()
 
     return 1;
 }
-// PC 0x0040DBE0  Xbox 0x0014BFF0
+// PC 0x0040E4F0
 unsigned long CExoEncapsulatedFile::GetResourceSize(unsigned long nId)
 {
     return m_pResourceList[nId & 0x3FFF].nSize;
 }
-// PC 0x0040DC00  Xbox 0x0014C010
+// PC 0x0040E510
 int CExoEncapsulatedFile::Initialize()
 {
 
@@ -709,7 +709,7 @@ int CExoEncapsulatedFile::Initialize()
 
     return 1;
 }
-// PC 0x0040DC30  Xbox 0x0014C040
+// PC 0x0040E540
 int CExoEncapsulatedFile::OpenFile()
 {
     if (m_bFileOpened)
@@ -757,7 +757,7 @@ int CExoEncapsulatedFile::OpenFile()
     m_bFileOpened = 0;
     return 0;
 }
-// PC 0x0040DF10  Xbox 0x0014C320
+// PC 0x0040E820
 int CExoEncapsulatedFile::OpenAsyncFile()
 {
     if (m_bAsyncFileOpened)
@@ -805,7 +805,7 @@ int CExoEncapsulatedFile::OpenAsyncFile()
     m_bAsyncFileOpened = 0;
     return 0;
 }
-// PC 0x0040E1F0  Xbox 0x0014C600
+// PC 0x0040EB00
 int CExoEncapsulatedFile::LoadHeader(unsigned char nType)
 {
     CExoString sString;
@@ -965,7 +965,7 @@ int CExoEncapsulatedFile::LoadHeader(unsigned char nType)
 
     return 1;
 }
-// PC 0x0040E640  Xbox 0x0014CA50
+// PC 0x0040EF50
 unsigned long CExoEncapsulatedFile::ReadResource(unsigned long nId,
                                                  void* pBuffer,
                                                  unsigned long nSize,
@@ -992,7 +992,7 @@ unsigned long CExoEncapsulatedFile::ReadResource(unsigned long nId,
 
     return 0;
 }
-// PC 0x0040E6B0  Xbox 0x0014CAD0
+// PC 0x0040EFC0
 void CExoEncapsulatedFile::ReadResourceAsync(unsigned long nId, void* pBuffer,
                                              unsigned long nSize,
                                              unsigned long nOffset)
@@ -1022,7 +1022,7 @@ void CExoEncapsulatedFile::ReadResourceAsync(unsigned long nId, void* pBuffer,
 #ifdef _XBOX
 extern int g_nContiguousResourceMemory;
 #endif
-// PC 0x0040E720  Xbox 0x0014CB40
+// PC 0x0040F050
 int CExoResourceImageFile::CloseFile()
 {
     if (m_bFileOpened)
@@ -1050,7 +1050,7 @@ int CExoResourceImageFile::CloseFile()
 
     return 1;
 }
-// PC 0x0040E750  Xbox 0x0014CC10
+// PC 0x0040F080
 void CExoResourceImageFile::DeleteRefCount()
 {
     int nRefCount = m_nRefCount;
@@ -1065,7 +1065,7 @@ void CExoResourceImageFile::DeleteRefCount()
         m_nRefCount = nRefCount;
     }
 }
-// PC 0x0040E770  Xbox 0x0014CC30
+// PC 0x0040F0A0
 int CExoResourceImageFile::Initialize()
 {
     m_pFile = NULL;
@@ -1077,7 +1077,7 @@ int CExoResourceImageFile::Initialize()
 
     return 1;
 }
-// PC 0x0040E790  Xbox 0x0014CC50
+// PC 0x0040F0C0
 int CExoResourceImageFile::OpenFile()
 {
     if (m_bFileOpened)
@@ -1150,14 +1150,14 @@ int CExoResourceImageFile::OpenFile()
 
     return 1;
 }
-// PC 0x0040E980  Xbox 0x0014CEC0
+// PC 0x0040F2B0
 void CExoResourceImageFile::ReadResourceAsync(unsigned long nId, void* pBuffer,
                                               unsigned long nSize,
                                               unsigned long nOffset)
 {
     ReadResource(nId, pBuffer, nSize, nOffset);
 }
-// PC 0x0040E990  Xbox 0x0014CED0
+// PC 0x0040F2C0
 CKeyTableEntry* CExoKeyTable::AddKey(const CResRef& resRef,
                                      unsigned short nType, unsigned long nResId,
                                      int)
@@ -1237,7 +1237,7 @@ static CKeyTableEntry* AllocateKeyTableEntries(unsigned long nCount)
 {
     return new CKeyTableEntry[nCount];
 }
-// PC 0x0040EB80  Xbox 0x0014D0E0
+// PC 0x0040DA00
 CKeyTableEntry* CExoKeyTable::AllocateTable(unsigned long nSize)
 {
     CKeyTableEntry* pTable = new CKeyTableEntry[nSize];
@@ -1256,7 +1256,7 @@ CKeyTableEntry* CExoKeyTable::AllocateTable(unsigned long nSize)
 
     return pTable;
 }
-// PC 0x0040EC50  Xbox 0x0014D1B0
+// PC 0x0040F520
 CKeyTableEntry* CExoKeyTable::FindKey(const CResRef& resRef,
                                       unsigned short nType)
 {
@@ -1303,26 +1303,26 @@ CKeyTableEntry* CExoKeyTable::FindKey(const CResRef& resRef,
 
     return pEntry;
 }
-// PC 0x0040EE80  Xbox 0x0014D3E0
+// PC 0x0040F750
 CExoResFile::CExoResFile()
 {
     ExoresfileTrace2();
     m_nRefCount = 0;
     Initialize();
 }
-// PC 0x0040EF00  Xbox 0x0014D420
+// PC 0x0040F7D0
 CExoResFile::~CExoResFile()
 {
     ExoresfileTrace2();
     CloseFile();
 }
-// PC 0x0040EF90  Xbox 0x0014D4A0
+// PC 0x0040F860
 CExoEncapsulatedFile::CExoEncapsulatedFile()
 {
     ExoresfileTrace2();
     Initialize();
 }
-// PC 0x0040F010  Xbox 0x0014D520
+// PC 0x0040F8E0
 CExoEncapsulatedFile::~CExoEncapsulatedFile()
 {
     ExoresfileTrace2();
@@ -1339,13 +1339,13 @@ CExoResourceImageFile::CExoResourceImageFile()
     m_bFileOpened = 0;
     m_pImageFile = NULL;
 }
-// PC 0x0040F0A0  Xbox 0x0014D5B0
+// PC 0x0040F970
 CExoResourceImageFile::~CExoResourceImageFile()
 {
     ExoresfileTrace2();
     CExoResourceImageFile::CloseFile();
 }
-// PC 0x0040F120  Xbox 0x0014D610
+// PC 0x0040F9F0
 unsigned long CExoResourceImageFile::GetResourceSize(unsigned long nId)
 {
     ExoresfileTrace2();
@@ -1353,7 +1353,7 @@ unsigned long CExoResourceImageFile::GetResourceSize(unsigned long nId)
 
     return sEntry.m_nSize;
 }
-// PC 0x0040F160  Xbox 0x0014D650
+// PC 0x0040FA30
 void* CExoResourceImageFile::GetResource(unsigned long nId)
 {
     ExoresfileTrace2();
@@ -1361,7 +1361,7 @@ void* CExoResourceImageFile::GetResource(unsigned long nId)
 
     return m_pImageFile + sEntry.m_nOffset;
 }
-// PC 0x0040F1A0  Xbox 0x0014D690
+// PC 0x0040FA70
 unsigned long CExoResourceImageFile::ReadResource(unsigned long nId,
                                                   void* pBuffer,
                                                   unsigned long nSize,
@@ -1396,7 +1396,7 @@ unsigned long CExoResourceImageFile::ReadResource(unsigned long nId,
 
     return 0;
 }
-// PC 0x0040F200  Xbox 0x0014D700
+// PC 0x00410D70
 int CExoKeyTable::AddDirectoryContents(int bFlag)
 {
     CExoString sFile;
@@ -1441,7 +1441,7 @@ int CExoKeyTable::AddDirectoryContents(int bFlag)
 
     return 1;
 }
-// PC 0x0040F3C0  Xbox 0x0014D8C0
+// PC 0x0040FC00
 int CExoKeyTable::AddEncapsulatedContents(int bFlag)
 {
     CExoString sString1;
@@ -1648,7 +1648,7 @@ int CExoKeyTable::AddEncapsulatedContents(int bFlag)
 
     return 1;
 }
-// PC 0x0040F990  Xbox 0x0014DE90
+// PC 0x004101F0
 int CExoKeyTable::AddResourceImageContents(int bFlag)
 {
     ExoresfileTrace2();
@@ -1718,7 +1718,7 @@ int CExoKeyTable::AddResourceImageContents(int bFlag)
 
     return 1;
 }
-// PC 0x0040FB80  Xbox 0x0014E080
+// PC 0x004103D0
 int CExoKeyTable::AddKeyTableContents(int bFlag)
 {
     CExoString sDrive;
@@ -1910,7 +1910,7 @@ int CExoKeyTable::AddKeyTableContents(int bFlag)
 
     return 1;
 }
-// PC 0x00410190  Xbox 0x0014E830
+// PC 0x00411340
 int CExoKeyTable::BuildNewTable(unsigned long nTableType,
                                 const CExoString& sName, unsigned long nId,
                                 int bFlag)
@@ -1984,7 +1984,7 @@ int CExoKeyTable::BuildNewTable(unsigned long nTableType,
 
     return 0;
 }
-// PC 0x00410260  Xbox 0x0014E950
+// PC 0x00411410
 void CExoKeyTable::RebuildTable()
 {
     unsigned long nIndex = 0;
@@ -2112,7 +2112,7 @@ void CExoKeyTable::RebuildTable()
 void CExoResourceImageFile::AddAsyncRefCount()
 {
 }
-// PC 0x0063E7A0
+// PC 0x0065D0F0
 int CExoResourceImageFile::CloseAsyncFile()
 {
     return 1;
@@ -2121,17 +2121,17 @@ int CExoResourceImageFile::CloseAsyncFile()
 void CExoResourceImageFile::DeleteAsyncRefCount()
 {
 }
-// PC 0x0063E7A0
+// PC 0x0065D0F0
 int CExoResourceImageFile::OpenAsyncFile()
 {
     return 1;
 }
-// PC 0x0063E7C0
+// PC 0x006955A0
 int CExoResourceImageFile::LoadHeader(unsigned char)
 {
     return 0;
 }
-// PC 0x0063E7A0
+// PC 0x0065D0F0
 int CExoResourceImageFile::UnloadHeader()
 {
     return 1;
