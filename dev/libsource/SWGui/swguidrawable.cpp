@@ -397,7 +397,7 @@ CSWGuiBorderParams::CSWGuiBorderParams(const CResRef& cCorner,
                                        const CResRef& cEdge,
                                        const CResRef& cFill, int nFillMode,
                                        int nBorderDim, float fAlpha,
-                                       const Vector& vColor, int nInnerOffset)
+                                       const Vector& vColor, int nInnerOffset, int n8)
 {
     m_cCornerImage = cCorner;
     m_cEdgeImage = cEdge;
@@ -412,6 +412,7 @@ CSWGuiBorderParams::CSWGuiBorderParams(const CResRef& cCorner,
     m_pBorder = NULL;
     m_fRotation = 0.0f;
     m_nInnerOffset = nInnerOffset;
+    m_n8 = n8;
 }
 
 inline void CSWGuiBorderParams::SetCornerImage(const CResRef& cImage)
@@ -445,6 +446,7 @@ CSWGuiBorderParams& CSWGuiBorderParams::operator=(const CSWGuiBorderParams& cPar
     m_bLowAlpha = cParams.m_bLowAlpha;
     m_bHighAlpha = cParams.m_bHighAlpha;
     m_nInnerOffset = cParams.m_nInnerOffset;
+    m_n8 = cParams.GetVerticalInnerOffset();
     SetBorder(m_pBorder);
     return *this;
 }
@@ -529,12 +531,14 @@ CSWGuiExtent CSWGuiBorder::GetInnerExtent()
         cInner.m_nHeight = 0;
     }
 
-    cInner.m_nTop -= m_cParams.GetInnerOffset();
-    cInner.m_nLeft -= m_cParams.GetInnerOffset() < m_cParams.GetBorderDim() ?
-        m_cParams.GetInnerOffset() : m_cParams.GetBorderDim();
-    cInner.m_nWidth += 2 * (m_cParams.GetInnerOffset() < m_cParams.GetBorderDim() ?
-        m_cParams.GetInnerOffset() : m_cParams.GetBorderDim());
-    cInner.m_nHeight += 2 * m_cParams.GetInnerOffset();
+    int nInnerOffset = m_cParams.GetInnerOffset();
+    int nVerticalOffset = m_cParams.GetVerticalInnerOffset();
+    cInner.m_nTop -= nVerticalOffset;
+    cInner.m_nLeft -= nInnerOffset < m_cParams.GetBorderDim() ?
+        nInnerOffset : m_cParams.GetBorderDim();
+    cInner.m_nWidth += 2 * (nInnerOffset < m_cParams.GetBorderDim() ?
+        nInnerOffset : m_cParams.GetBorderDim());
+    cInner.m_nHeight += 2 * nVerticalOffset;
     return cInner;
 }
 
@@ -565,6 +569,8 @@ void CSWGuiBorder::Load(CResGFF* pGFF, CResStruct& cStruct,
                                                   bSuccess, 0);
         m_cParams.m_nInnerOffset = pGFF->ReadFieldINT(&cBorder, "INNEROFFSET",
                                                     bSuccess, 0);
+        m_cParams.m_n8 = pGFF->ReadFieldINT(&cBorder, "INNEROFFSETY",
+                                          bSuccess, 0);
         m_cParams.m_vColor = pGFF->ReadFieldVector(&cBorder, "COLOR", bSuccess,
                                                  Vector(1.0f, 1.0f, 1.0f));
         unsigned char nPulsing = pGFF->ReadFieldBYTE(&cBorder, "PULSING",
@@ -776,11 +782,13 @@ void CSWGuiBorder::Draw(float fElapsed)
         m_pCornerImage->DrawBuffered(m_cExtent.m_nLeft, m_cExtent.m_nTop,
             nCornerWidth, nCornerHeight, 0, 0.0f, m_cParams.m_vColor, fBorderAlpha);
         m_pCornerImage->DrawBuffered(m_cExtent.m_nLeft, nBottom,
-            nCornerWidth, nBottomHeight, 0, 90.0f, m_cParams.m_vColor, fBorderAlpha);
+            nCornerWidth, nBottomHeight, CAurGUIImage::GUI_IMAGE_MAPPING_MIRRORED, 0.0f, m_cParams.m_vColor,
+            fBorderAlpha);
         m_pCornerImage->DrawBuffered(nRight, nBottom,
             nRightWidth, nBottomHeight, 0, 180.0f, m_cParams.m_vColor, fBorderAlpha);
         m_pCornerImage->DrawBuffered(nRight, m_cExtent.m_nTop,
-            nRightWidth, nCornerHeight, 0, 270.0f, m_cParams.m_vColor, fBorderAlpha);
+            nRightWidth, nCornerHeight, CAurGUIImage::GUI_IMAGE_MAPPING_REVERSED, 0.0f, m_cParams.m_vColor,
+            fBorderAlpha);
 
         if (m_pEdgeImage != NULL)
         {
@@ -1288,6 +1296,7 @@ CSWGuiText::~CSWGuiText()
     if (m_pString != NULL)
     {
         delete m_pString;
+        m_pString = NULL;
     }
 }
 // PC 0x004158B0

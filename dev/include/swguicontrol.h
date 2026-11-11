@@ -796,6 +796,7 @@ public:
 
     void SetMaxValue(int nMaxValue);
     void SetCurValue(int nValue);
+    int GetMaxValue() { return m_nMaxValue; }
     int HitCheckSlider(int nX, int nY);
 
 #ifndef _XBOX

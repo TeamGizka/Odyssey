@@ -84,7 +84,7 @@ void CSWGuiDialog::SetReplyActive(CSWGuiControl* pControl)
     SWGUIDIALOG_TRACE();
     EXOXBOXASSERT(pControl->AsLabel());
     CSWGuiLabel* pLabel = pControl->AsLabel();
-    pLabel->m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
+    pLabel->m_cText.m_cParams.SetColor(m_vReplyHighlightColor);
 }
 // PC 0x0070D440
 void CSWGuiDialog::SetReplyInactive(CSWGuiControl* pControl)
@@ -150,7 +150,7 @@ void CSWGuiDialog::Reset()
     m_nSelectedReply = -1;
     m_nReplyCount = 0;
     m_sMessage = "";
-    for (int i = 0; i < 20; i++)
+    for (int i = 0; i < MAX_REPLIES; i++)
     {
         m_lblReply[i].m_cText.m_cParams.SetColor(m_vReplyColor);
         CExoString sText("");
@@ -565,23 +565,19 @@ void CSWGuiDialogTop::SetReply(const CExoString& sReply)
 CSWGuiDialogCinematic::CSWGuiDialogCinematic(CSWGuiManager* pManager)
     : CSWGuiDialog(pManager)
 {
-    m_vReplyColor = CGuiInGame::COLOR_BLUE;
-    StartLoadFromLayout("dialog");
-    InitControl(m_lbReplies, "LB_REPLIES", 1);
+    m_vReplyColor = CGuiInGame::COLOR_NEW_TEXT;
+    m_vReplyHighlightColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+    StartLoadFromLayout("dialog_p", 0, 0);
+    InitControl(m_lbReplies, "LB_REPLIES", 1, 0);
     CSWGuiListBox& cReplies = m_lbReplies;
-    InitControl(m_lblMessage, "LBL_MESSAGE", 1);
+    InitControl(m_lblMessage, "LBL_MESSAGE", 1, 0);
     StopLoadFromLayout();
 
     int nMarginX, nMarginY;
     m_pManager->GetSafeMargin(nMarginX, nMarginY);
     CSWGuiExtent cExtent;
-#ifdef _XBOX
     cExtent.m_nTop = cExtent.m_nWidth = cExtent.m_nHeight = 0;
     cExtent.m_nLeft = nMarginX;
-#else
-    cExtent.m_nLeft = nMarginX;
-    cExtent.m_nTop = cExtent.m_nWidth = cExtent.m_nHeight = 0;
-#endif
     cExtent.m_nTop =
         (m_pManager->m_nHeight - (int)(m_pManager->m_nWidth / -2.333333f)) / 2;
     cExtent.m_nWidth = m_pManager->m_nWidth - 2 * nMarginX;
@@ -593,7 +589,7 @@ CSWGuiDialogCinematic::CSWGuiDialogCinematic(CSWGuiManager* pManager)
     SetExtent(cExtent);
 
     CSWGuiLabel* pProto = (CSWGuiLabel*)m_lbReplies.m_pProtoItem;
-    for (int i = 0; i < 20; ++i)
+    for (int i = 0; i < MAX_REPLIES; ++i)
     {
         int nReplyWidth = cReplies.m_cItemExtent.m_nWidth - 2 * cReplies.m_nPadding;
         CSWGuiExtent cReplyExtent;
@@ -754,7 +750,6 @@ CSWGuiDialogComputer::CSWGuiDialogComputer(CSWGuiManager* pManager)
     : CSWGuiDialog(pManager)
 {
     CExoString sControl;
-    m_vReplyColor = Vector(0.67f, 0.56f, 0.87f);
     m_pSound = new CExoSoundSource("computer_lp_04");
     if (m_pSound)
     {
@@ -762,45 +757,38 @@ CSWGuiDialogComputer::CSWGuiDialogComputer(CSWGuiManager* pManager)
         m_pSound->SetVolume(30);
     }
 
-    StartLoadFromLayout("computer");
+    StartLoadFromLayout("computer_p");
     InitControl(m_lbMessage, "LB_MESSAGE", 1);
     InitControl(m_lbReplies, "LB_REPLIES", 1);
     CSWGuiListBox& cReplies = m_lbReplies;
-#ifdef _XBOX
-    InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
-#endif
-    InitControl(m_lblObscure, "LBL_OBSCURE", 1);
-    for (int i = 0; i < 4; ++i)
-    {
-        sControl.Format("LBL_STATIC%d", i + 1);
-        InitControl(m_lblStatic[i], sControl, 1);
-        m_lblStatic[i].m_cBorder.m_cParams.m_fHilightAlpha = 0.4f;
-    }
-
     InitControl(m_aInfo[INFO_COMP_SKILL].m_lblName, "LBL_COMP_SKILL", 1);
-    InitControl(m_aInfo[INFO_COMP_SKILL].m_lblIcon, "LBL_COMP_SKILL_ICON", 1);
     InitControl(m_aInfo[INFO_COMP_SKILL].m_lblValue, "LBL_COMP_SKILL_VAL", 1);
     InitControl(m_aInfo[INFO_REP_SKILL].m_lblName, "LBL_REP_SKILL", 1);
-    InitControl(m_aInfo[INFO_REP_SKILL].m_lblIcon, "LBL_REP_SKILL_ICON", 1);
     InitControl(m_aInfo[INFO_REP_SKILL].m_lblValue, "LBL_REP_SKILL_VAL", 1);
     InitControl(m_aInfo[INFO_COMP_SPIKES].m_lblName, "LBL_COMP_SPIKES", 1);
-    InitControl(m_aInfo[INFO_COMP_SPIKES].m_lblIcon, "LBL_COMP_SPIKES_ICON", 1);
     InitControl(m_aInfo[INFO_COMP_SPIKES].m_lblValue, "LBL_COMP_SPIKES_VAL", 1);
     InitControl(m_aInfo[INFO_REP_UNITS].m_lblName, "LBL_REP_UNITS", 1);
-    InitControl(m_aInfo[INFO_REP_UNITS].m_lblIcon, "LBL_REP_UNITS_ICON", 1);
     InitControl(m_aInfo[INFO_REP_UNITS].m_lblValue, "LBL_REP_UNITS_VAL", 1);
+    InitControl(m_lblBar[0], "LBL_BAR1", 1);
+    InitControl(m_lblBar[1], "LBL_BAR2", 1);
+    InitControl(m_lblBar[2], "LBL_BAR3", 1);
+    InitControl(m_lblBar[3], "LBL_BAR4", 1);
+    InitControl(m_lblBar[4], "LBL_BAR5", 1);
+    InitControl(m_lblBar[5], "LBL_BAR6", 1);
+    InitControl(m_lblBar[6], "LBL_BAR7", 1);
+    InitControl(m_lblBar[7], "LBL_BAR8", 1);
+    InitControl(m_lblBar[8], "LBL_BAR9", 1);
+    InitControl(m_lblBar[9], "LBL_BAR10", 1);
     StopLoadFromLayout();
 
     CSWSkill* pSkill = &g_pRules->m_pSkills[CSWRules::SKILL_COMPUTER_USE];
     m_aInfo[INFO_COMP_SKILL].m_lblName.m_cText.m_cParams.SetStrRef(pSkill->GetNameStrRef());
-    m_aInfo[INFO_COMP_SKILL].m_lblIcon.m_cBorder.m_cParams.SetFillImage(pSkill->m_sIcon, 0);
     pSkill = &g_pRules->m_pSkills[CSWRules::SKILL_REPAIR];
     m_aInfo[INFO_REP_SKILL].m_lblName.m_cText.m_cParams.SetStrRef(pSkill->GetNameStrRef());
-    m_aInfo[INFO_REP_SKILL].m_lblIcon.m_cBorder.m_cParams.SetFillImage(pSkill->m_sIcon, 0);
 
     {
         CSWGuiLabel* pProto = (CSWGuiLabel*)m_lbReplies.m_pProtoItem;
-        for (int i = 0; i < 20; ++i)
+        for (int i = 0; i < MAX_REPLIES; ++i)
         {
             int nReplyWidth = cReplies.m_cItemExtent.m_nWidth - 2 * cReplies.m_nPadding;
             CSWGuiExtent cExtent;
@@ -817,7 +805,9 @@ CSWGuiDialogComputer::CSWGuiDialogComputer(CSWGuiManager* pManager)
     }
     CSWGuiLabel* pProto = (CSWGuiLabel*)m_lbMessage.m_pProtoItem;
     m_lblMessage.Initialize(pProto->m_cExtent, pProto, 1.0f);
+    m_vReplyColor = pProto->m_cText.m_cParams.m_vColor;
     m_lblMessage.m_cText.m_cParams.SetColor(m_vReplyColor);
+    m_vReplyHighlightColor = CGuiInGame::COLOR_WHITE;
 }
 // PC 0x0070EDD0
 CSWGuiDialogComputer::~CSWGuiDialogComputer()
@@ -1002,14 +992,12 @@ void CSWGuiDialog::SetReplies(int nCount, CExoString* pReplies,
     cExtent.m_nLeft = cExtent.m_nTop = cExtent.m_nWidth = cExtent.m_nHeight =
         0;
     CExoArrayList<CSWGuiControl*> lReplies;
-#ifndef _XBOX
-    CExoString sNumber;
-#endif
     if (nCount >= MAX_REPLIES)
     {
         nCount = MAX_REPLIES;
     }
     m_nReplyCount = nCount;
+    int nNumber = 0;
     for (int i = 0; i < m_nReplyCount; i++)
     {
         if (!pReplies[i].IsEmpty())
@@ -1017,14 +1005,8 @@ void CSWGuiDialog::SetReplies(int nCount, CExoString* pReplies,
 #ifdef _XBOX
             m_lblReply[i].m_cText.m_cParams.SetText(pReplies[i]);
 #else
-            if (i < NUMBERED_REPLIES)
-            {
-                sNumber.Format("%d. ", i + 1);
-            }
-            else
-            {
-                sNumber = "-. ";
-            }
+            CExoString sNumber;
+            sNumber.Format("%d. ", ++nNumber);
             m_lblReply[i].m_cText.m_cParams.SetText(sNumber + pReplies[i]);
 #endif
 #ifndef _XBOX
@@ -1065,17 +1047,10 @@ void CSWGuiDialog::SetReplies(int nCount, CExoString* pReplies,
 CSWGuiDialogLetterbox::CSWGuiDialogLetterbox(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-#ifdef _XBOX
     m_vColor = CGuiInGame::COLOR_BLACK;
     ResetFade();
     m_nPosition = 0;
     m_bDone = 0;
-#else
-    m_nPosition = 0;
-    m_bDone = 0;
-    m_vColor = CGuiInGame::COLOR_BLACK;
-    ResetFade();
-#endif
 }
 
 #include "nwrules.h"

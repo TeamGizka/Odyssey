@@ -9,7 +9,7 @@
 #endif
 #endif
 
-#define SWGUI_PANEL_MODE_OVERLAY 4
+#define SWGUI_PANEL_MODE_OVERLAY 0
 
 #define SWGUI_PANEL_FLAG_PUSH_MODAL 1
 #define SWGUI_PANEL_FLAG_MODAL 2
@@ -196,10 +196,10 @@ public:
             m_nExitState = EXITSTATE_REMOVE;
         }
     }
-    void StartLoadFromLayout(const CResRef& cLayout);
+    void StartLoadFromLayout(const CResRef& cLayout, int bScalePosition = 1, int bScaleSize = 1);
     void StopLoadFromLayout();
     void InitControl(CSWGuiControl& cControl, const CExoString& sName,
-                     int bUnknown);
+                     int bUnknown, int bScale = 1);
 
 #ifndef _XBOX
     int m_bUseFont;
@@ -395,9 +395,6 @@ public:
     int GetPosInModalStack(CSWGuiPanel* pPanel);
     int GetPosInPanelList(CSWGuiPanel* pPanel);
     void DetermineNeedToDraw();
-#ifndef _XBOX
-    void DrawPCBG(float fElapsed);
-#endif
     int HandleKeyPress(int nKey);
 #ifndef _XBOX
     CSWGuiControl* UpdateMouseOverControl();
@@ -653,5 +650,7 @@ extern int g_bDrawSafeRegion;
 
 #define PC_BACKGROUND_SUFFIX_PAZAAK 2
 extern char* g_asMouseCursorNames[];
+extern unsigned long g_nGUIWidth;
+extern unsigned long g_nGUIHeight;
 
 #endif

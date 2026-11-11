@@ -6,7 +6,6 @@ class CSWGuiControl;
 class CSWGuiLabel;
 class CSWGuiLevelUpPanel;
 class CSWGuiManager;
-class CSWGuiScriptSelect;
 
 #include "swguicontrol.h"
 #include "swguidrawable.h"
@@ -120,7 +119,6 @@ public:
 
     enum
     {
-        EVENT_SCRIPT_SELECT = 41,
         EVENT_AUTO_LEVELUP = 42,
         EVENT_ROTATE_LEFT = 59,
         EVENT_ROTATE_RIGHT = 60,
@@ -245,7 +243,6 @@ public:
     CSWGuiButton m_btnCharLeft;
     CSWGuiButton m_btnCharRight;
     CSWGuiButton m_btnExit;
-    CSWGuiButton m_btnScripts;
     CSWGuiSliderReadOnly m_sldAlign;
     CSWGui3DSceneView m_viewCharacter;
     CSWGuiSpeedButton m_btn3DChar;
@@ -255,75 +252,6 @@ public:
     int m_nShownAlignment;
     char m_nSelectedNPC;
 #endif
-    CSWGuiScriptSelect* m_pScriptSelect;
-};
-
-class CSWGuiButtonToggle;
-class CSWGuiControl;
-class CSWGuiManager;
-class CSWGuiObject;
-#include "exobase.h"
-#include "swgui.h"
-#include "swguicontrol.h"
-
-class CSWGuiScriptCreatureStats
-{
-public:
-    unsigned char m_aUnknown00[0x13A];
-    unsigned short m_nAIState;
-};
-
-class CSWGuiScriptCreature
-{
-public:
-#ifdef _XBOX
-    unsigned char m_aUnknown00[0xA84];
-#else
-    unsigned char m_aUnknown00[0xA74];
-#endif
-    CSWGuiScriptCreatureStats* m_pStats;
-};
-
-class CSWGuiScriptSelect : public CSWGuiPanel
-{
-public:
-
-    struct SCRIPT_INFO
-    {
-        unsigned long m_nDescriptionStrRef;
-        int m_nAIState;
-    };
-
-    CSWGuiScriptSelect(CSWGuiManager* pManager);
-    virtual ~CSWGuiScriptSelect();
-
-    void SetCreatureID(unsigned long oidCreature);
-    CExoArrayList<SCRIPT_INFO> m_aScripts;
-    CSWGuiListBox m_lbxScripts;
-    CSWGuiListBox m_lbxDescription;
-    CSWGuiLabel m_lblDescription;
-#ifdef _XBOX
-
-    CSWGuiLabel m_lblAImg;
-    CSWGuiLabel m_lblAccept;
-    CSWGuiLabel m_lblBImg;
-    CSWGuiLabel m_lblBack;
-    CSWGuiLabel m_lblTitle;
-    CSWGuiLabel m_lblRAnalog;
-#else
-    CSWGuiLabel m_lblTitle;
-    CSWGuiButton m_btnBack;
-    CSWGuiButton m_btnAccept;
-#endif
-    int m_nUnknownC38;
-    unsigned long m_oidCreature;
-    virtual void HandleInputEvent(int nEvent, int nState);
-    virtual void OnPanelAdded();
-    void SetDescription(unsigned long nStrRef);
-    void OnScriptSelected(CSWGuiControl* pControl);
-    CSWGuiControl* CreateOption(unsigned long nStrRef, PFNGUIEVENT pHandler,
-                                CSWGuiButtonToggle* pProto);
-    void OnEnter(CSWGuiControl* pControl);
 };
 
 #endif

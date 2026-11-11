@@ -104,7 +104,6 @@ set(sources
   swguiingamegameplay.cpp
   swguiingameautopause.cpp
   swguilevelupchargen.cpp
-  SWGuiScriptSelect.cpp
   swguimainchargen.cpp
   swguiinOPTKeyMapping.cpp
   swguileveluppanel.cpp
@@ -129,7 +128,8 @@ set(sources
   swguiingamesolomodequery.cpp
   swpattern.cpp
   swguistartscreen.cpp
-  swguilegalscreen.cpp)
+  swguilegalscreen.cpp
+  swguimusic.cpp)
 if(KOTOR_PLATFORM STREQUAL "pc")
   # Xbox only
   list(REMOVE_ITEM sources

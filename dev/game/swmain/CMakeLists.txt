@@ -348,6 +348,7 @@ kotor_archive(clientcore2
   OBJECTS
     clientcore/swguiclassselection.cpp
     clientcore/swguimovie.cpp
+    clientcore/swguimusic.cpp
     clientcore/swguioptions.cpp
     clientcore/swpazaak.cpp
     clientcore/nwcanimbaseplaceable.cpp
@@ -357,7 +358,6 @@ kotor_archive(clientcore2
     clientcore/swguiingamegameplay.cpp
     clientcore/swguiingameautopause.cpp
     clientcore/swguilevelupchargen.cpp
-    clientcore/SWGuiScriptSelect.cpp
     clientcore/nwcanimbaseprojectile.cpp
     clientcore/swguimainchargen.cpp
     clientcore/swguiinOPTKeyMapping.cpp

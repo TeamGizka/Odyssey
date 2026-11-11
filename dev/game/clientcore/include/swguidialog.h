@@ -24,7 +24,7 @@ public:
         GUIEVENT_DIALOG_SKIP = 505
     };
 
-    enum { MAX_REPLIES = 20, NUMBERED_REPLIES = 9 };
+    enum { MAX_REPLIES = 30, NUMBERED_REPLIES = 9 };
     CSWGuiDialog(CSWGuiManager* pManager);
 
     virtual void HandleInputEvent(int nEvent, int nState);
@@ -60,6 +60,7 @@ public:
     CSWGuiListBox m_lbReplies;
     CSWGuiLabel m_lblMessage;
     Vector m_vReplyColor;
+    Vector m_vReplyHighlightColor;
     CExoString m_sMessage;
 #ifdef _XBOX
     int m_bDialogEnded;
@@ -149,7 +150,6 @@ public:
 class CSWGuiDialogComputerInfo
 {
 public:
-    CSWGuiLabel m_lblIcon;
     CSWGuiLabel m_lblName;
     CSWGuiLabel m_lblValue;
 };
@@ -183,11 +183,7 @@ public:
 
     CSWGuiDialogComputerInfo m_aInfo[4];
     CSWGuiListBox m_lbMessage;
-#ifdef _XBOX
-    CSWGuiLabel m_lblRAnalog;
-#endif
-    CSWGuiLabel m_lblStatic[4];
-    CSWGuiLabel m_lblObscure;
+    CSWGuiLabel m_lblBar[10];
     CExoSoundSource* m_pSound;
 };
 

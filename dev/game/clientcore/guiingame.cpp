@@ -17,6 +17,7 @@
 #include "nwcarea.h"
 #include "nwsarea.h"
 #include "swguiCreateItem.h"
+#include "swguilegalscreen.h"
 #include "swguiSubCreateItem.h"
 #include "swguiingameequip.h"
 #include "guiingame.h"
@@ -106,7 +107,17 @@ Vector CGuiInGame::COLOR_RED(0.74f, 0.11f, 0.0f);
 Vector CGuiInGame::COLOR_GREEN(0.28f, 0.92f, 0.11f);
 Vector CGuiInGame::COLOR_ORANGE(0.98f, 0.45f, 0.0f);
 Vector CGuiInGame::COLOR_PURPLE(0.95f, 0.0f, 0.85f);
-Vector CGuiInGame::DISABLED_TEXT(0.0f, 0.33f, 0.49f);
+Vector CGuiInGame::DISABLED_TEXT(0.4f, 0.4f, 0.3f);
+Vector CGuiInGame::COLOR_NEW_GREEN(0.05f, 0.35f, 0.27f);
+Vector CGuiInGame::COLOR_NEW_HIGHLIGHT(0.7f, 0.7f, 0.6f);
+Vector CGuiInGame::COLOR_NEW_TEXT(0.1f, 0.7f, 0.55f);
+Vector CGuiInGame::COLOR_NEW_BONUS(0.95f, 0.66f, 0.3f);
+Vector CGuiInGame::COLOR_LIGHT_GOLD(0.64f, 0.53f, 0.18f);
+Vector CGuiInGame::COLOR_DARK_GOLD(0.31f, 0.25f, 0.09f);
+Vector CGuiInGame::COLOR_DARK_TAN(0.4f, 0.4f, 0.3f);
+Vector CGuiInGame::COLOR_PAZAAK_GOLD(0.8f, 0.65f, 0.2f);
+Vector CGuiInGame::COLOR_UPGRADE_TEXT(0.0f, 0.66f, 0.98f);
+Vector CGuiInGame::COLOR_UPGRADE_BORDER(0.0f, 0.33f, 0.5f);
 Vector CGuiInGame::COLOR_BLACK;
 
 extern int bDisableLetterbox;
@@ -2700,6 +2711,39 @@ void CGuiInGame::ResetInterfaceFont()
         {
             m_apScreenPanels[nScreen]->ResetFont();
         }
+    }
+}
+// PC 0x00682A10
+void CGuiInGame::ShowDemoScreen(CExoString sImage, int nMinShowTime, int nStrRef, int nLeft, int nTop)
+{
+    if (m_bItemCreateMenuAvailable != 0 && m_pGuiManager != NULL && m_pDemoScreen == NULL)
+    {
+        g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL_BUT_MUSIC);
+        if (m_bPaused == 0)
+        {
+            g_pAppManager->m_pClientExoApp->GetSWCMessage()->SendPlayerToServerInput_TogglePauseRequest();
+        }
+        m_pDemoScreen = new CSWDemoScreen(m_pGuiManager, nMinShowTime, nStrRef, nLeft, nTop);
+        m_pGuiManager->AddPanel(m_pDemoScreen, 3, 1);
+        CResRef cImage(sImage.CStr());
+        m_pDemoScreen->SetImage(cImage);
+        g_pAppManager->m_pClientExoApp->SetInputClass(2, 1);
+    }
+}
+// PC 0x00682B40
+void CGuiInGame::HideDemoScreen()
+{
+    if (m_bItemCreateMenuAvailable != 0 && m_pGuiManager != NULL && m_pDemoScreen != NULL)
+    {
+        if (m_bPaused == 0)
+        {
+            g_pAppManager->m_pClientExoApp->GetSWCMessage()->SendPlayerToServerInput_TogglePauseRequest();
+        }
+        g_pAppManager->m_pClientExoApp->SetInputClass(0, 1);
+        g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
+        m_pDemoScreen->m_nExitState = 2;
+        m_pDemoScreen->m_bDeferredRemoval = 0;
+        m_pDemoScreen = NULL;
     }
 }
 // PC 0x00682DC0

@@ -124,7 +124,6 @@ CSWGuiInGameCharacter::CSWGuiInGameCharacter(CSWGuiManager* pManager)
     m_pCreature = new CSWCCreature();
     m_pShownCreature = 0;
     m_nShownAlignment = -1;
-    m_pScriptSelect = new CSWGuiScriptSelect(m_pManager);
     CSWGuiTextParams* pText = &m_lblALevelUp.m_cText.m_cParams;
     pText->m_bHilightText = 1;
     pText = &m_lblAuto.m_cText.m_cParams;
@@ -143,7 +142,6 @@ CSWGuiInGameCharacter::CSWGuiInGameCharacter(CSWGuiManager* pManager)
     InitControl(m_btnChange1, "BTN_CHANGE1", 1);
     InitControl(m_btnChange2, "BTN_CHANGE2", 1);
     InitControl(m_btnExit, "BTN_EXIT", 1);
-    InitControl(m_btnScripts, "BTN_SCRIPTS", 1);
     InitControl(m_btn3DChar, "BTN_3DCHAR", 1);
     InitControl(m_btnCharLeft, "BTN_CHARLEFT", 1);
     InitControl(m_btnCharRight, "BTN_CHARRIGHT", 1);
@@ -190,7 +188,6 @@ CSWGuiInGameCharacter::CSWGuiInGameCharacter(CSWGuiManager* pManager)
     m_pCreature = new CSWCCreature();
     m_pShownCreature = 0;
     m_nShownAlignment = -1;
-    m_pScriptSelect = new CSWGuiScriptSelect(m_pManager);
     CSWGuiTextParams* pText = &m_btnLevelUp.m_cText.m_cParams;
     pText->m_bHilightText = 1;
     pText = &m_btnAuto.m_cText.m_cParams;
@@ -215,10 +212,6 @@ CSWGuiInGameCharacter::CSWGuiInGameCharacter(CSWGuiManager* pManager)
     m_btnExit.AddEvent(
         GUIEVENT_ACTIVATE, this,
         reinterpret_cast<CSWGuiHandler>(&CSWGuiPanel::OnBButtonPressed));
-    m_btnScripts.SetFocusable(0);
-    m_btnScripts.AddEvent(
-        GUIEVENT_ACTIVATE, this,
-        reinterpret_cast<CSWGuiHandler>(&CSWGuiPanel::OnXButtonPressed));
     m_sldAlign.SetFocusable(0);
     m_btnChange1.SetToolTip(STRREF_CHANGE_CHARACTER, EVENT_NEXT_CHARACTER);
 #ifndef _XBOX
@@ -264,26 +257,6 @@ void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)
                 ShowLevelUpGUI(0);
             }
             break;
-        case EVENT_SCRIPT_SELECT:
-        {
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            CSWCCreature* pLeader =
-                g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
-            if (pLeader != 0)
-            {
-                unsigned long oidLeader = pLeader->m_nId;
-                oidLeader = g_pAppManager->m_pServerExoApp
-                                ->ClientToServerObjectId(oidLeader);
-                m_pScriptSelect->SetCreatureID(oidLeader);
-                m_pManager->AddPanel(m_pScriptSelect,
-                                     CSWGuiManager::PANEL_MODE_MODAL, 1);
-            }
-            else
-            {
-                EXOXBOXASSERT(0);
-            }
-            break;
-        }
         case EVENT_AUTO_LEVELUP:
             if (pClient->GetInGameGui()->m_LevelUpMode != 0)
             {
@@ -331,22 +304,6 @@ void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)  // PC 0x00
                 ShowLevelUpGUI(0);
             }
             break;
-        case EVENT_SCRIPT_SELECT:
-        {
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            CSWCCreature* pLeader =
-                g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
-            if (pLeader != 0)
-            {
-                unsigned long oidLeader = pLeader->m_nId;
-                oidLeader = g_pAppManager->m_pServerExoApp
-                                ->ClientToServerObjectId(oidLeader);
-                m_pScriptSelect->SetCreatureID(oidLeader);
-                m_pManager->AddPanel(m_pScriptSelect,
-                                     CSWGuiManager::PANEL_MODE_MODAL, 1);
-            }
-            break;
-        }
         case EVENT_AUTO_LEVELUP:
             if (g_pAppManager->m_pClientExoApp->GetInGameGui()
                         ->m_LevelUpMode != 0 &&
@@ -429,7 +386,6 @@ void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)  // PC 0x00
 // PC 0x0071B8C0
 CSWGuiInGameCharacter::~CSWGuiInGameCharacter()
 {
-    delete m_pScriptSelect;
     delete m_pCreature;
 }
 // PC 0x0071BC70

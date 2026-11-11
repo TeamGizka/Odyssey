@@ -9,6 +9,9 @@ CExoString CSWGuiManager::FULLSCREEN_BGS[5] = {
     "back", "store", "pazaak", "map", "comp"
 };
 
+unsigned long g_nGUIWidth = 800;
+unsigned long g_nGUIHeight = 600;
+
 char* g_asMouseCursorNames[] = {
     "", "gui_mp_defaultu", "gui_mp_defaultd", "gui_mp_walku",
     "gui_mp_walkd", "gui_mp_invalidu", "gui_mp_invalid", "gui_mp_bashu",
@@ -527,6 +530,13 @@ void CSWGuiPanel::CenterPanel()
 {
     m_cExtent.m_nLeft = (m_pManager->m_nWidth - m_cExtent.m_nWidth) / 2;
     m_cExtent.m_nTop = (m_pManager->m_nHeight - m_cExtent.m_nHeight) / 2;
+
+    CSWGuiExtent cBorderExtent;
+    cBorderExtent.m_nLeft = 0;
+    cBorderExtent.m_nTop = 0;
+    cBorderExtent.m_nWidth = m_cExtent.m_nWidth;
+    cBorderExtent.m_nHeight = m_cExtent.m_nHeight;
+    m_pBorder->SetExtent(cBorderExtent);
 #ifndef _XBOX
     m_bPositioned = 1;
 #endif
@@ -552,7 +562,7 @@ void CSWGuiPanel::SetActiveControl(CSWGuiControl* pControl, int bPlaySound)
     }
 }
 // PC 0x0040A840
-void CSWGuiPanel::StartLoadFromLayout(const CResRef& cLayout)
+void CSWGuiPanel::StartLoadFromLayout(const CResRef& cLayout, int bScalePosition, int bScaleSize)
 {
     if (!m_bLoadingLayout)
     {
@@ -599,6 +609,33 @@ void CSWGuiPanel::StartLoadFromLayout(const CResRef& cLayout)
             pGFF->GetList(&m_lLayoutControls, &cStruct, "CONTROLS");
             m_bLoadingLayout = 1;
         }
+
+        CSWGuiExtent cExtent = m_cExtent;
+        float fScaleX;
+        float fScaleY;
+        if (g_pAppManager->m_pClientExoApp->GetSWGuiManager() != NULL)
+        {
+            fScaleX = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
+            fScaleY = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
+        }
+        else
+        {
+            fScaleX = (float)g_nScreenWidth / (float)g_nGUIWidth;
+            fScaleY = (float)g_nScreenHeight / (float)g_nGUIHeight;
+        }
+        if (bScaleSize)
+        {
+            cExtent.m_nHeight = (int)(cExtent.m_nHeight * fScaleY);
+            cExtent.m_nWidth = (int)(cExtent.m_nWidth * fScaleX);
+        }
+        if (bScalePosition)
+        {
+            cExtent.m_nTop = (int)(cExtent.m_nTop * fScaleY);
+            cExtent.m_nLeft = (int)(cExtent.m_nLeft * fScaleX);
+        }
+        SetExtent(cExtent);
+        m_pBorder->SetExtent(cExtent);
+        m_bPositioned = 1;
     }
 }
 // PC 0x0040AB70
@@ -642,8 +679,29 @@ void CSWGuiPanel::ConnectControlMoves()
 // PC 0x0040A180
 CExoString CSWGuiPanel::GetFullScreenBG()
 {
-    CExoString sBackground = CSWGuiManager::GetScreenResolutionString(
-        g_nScreenWidth, g_nScreenHeight);
+    CExoString sBackground = "800x600";
+
+    if (g_nScreenWidth == 1024)
+    {
+        if (g_nScreenHeight == 768)
+        {
+            sBackground = "1024x768";
+        }
+    }
+    else if (g_nScreenWidth == 1280)
+    {
+        if (g_nScreenHeight == 960 || g_nScreenHeight == 1024)
+        {
+            sBackground = "1280x960";
+        }
+    }
+    else if (g_nScreenWidth == 1600)
+    {
+        if (g_nScreenHeight == 1200)
+        {
+            sBackground = "1600x1200";
+        }
+    }
 
 #ifndef _XBOX
     sBackground = sBackground + CSWGuiManager::FULLSCREEN_BGS[m_nBackground];
@@ -670,12 +728,7 @@ void CSWGuiPanel::ResetFont()
 void CSWGuiPanel::GetExtentAccountingForPanelOffset(CSWGuiExtent* pExtent)
 {
     *pExtent = m_cExtent;
-    if (m_bModal)
-    {
-        pExtent->m_nLeft += (m_pManager->m_nWidth - pExtent->m_nWidth) / 2;
-        pExtent->m_nTop += (m_pManager->m_nHeight - pExtent->m_nHeight) / 2;
-    }
-    else
+    if (!m_bModal)
     {
         if (m_bCenterHorizontal)
         {
@@ -946,37 +999,6 @@ int CSWGuiManager::IsOnTop(CSWGuiPanel* pPanel)
     return 0;
 }
 
-#ifndef _XBOX
-void CSWGuiManager::DrawPCBG(float fElapsed)
-{
-    AurGUIStartLayer();
-
-    if (AurGUISetupViewport(0, 0, m_nWidth, m_nHeight, Vector(), false, 1.0f) !=
-        0)
-    {
-        if (m_pPCBackground == NULL)
-        {
-            m_pPCBackground = new CSWGuiLabel();
-            CResRef cBackground(m_sBackground);
-
-            m_pPCBackground->Initialize(
-                CSWGuiExtent(0, 0, m_nWidth, m_nHeight), CSWGuiTextParams(),
-                CSWGuiBorderParams(CResRef(), CResRef(), cBackground,
-                                   0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0), 1.0f);
-        }
-        {
-            CResRef cFill(m_sBackground);
-
-            m_pPCBackground->m_cBorder.m_cParams.SetFillImage(cFill, 0);
-            CSWGuiBorderParams& cParams = m_pPCBackground->m_cBorder.m_cParams;
-            cParams.m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
-        }
-        m_pPCBackground->Draw(fElapsed);
-        AurGUICloseViewport();
-    }
-    AurGUIStopLayer();
-}
-#endif
 
 inline CAurCamera* CSWGuiScene::GetCamera()
 {
@@ -1754,7 +1776,7 @@ CSWGuiPanel::CSWGuiPanel(CSWGuiManager* pManager)
     m_pLayout = NULL;
 #ifndef _XBOX
     m_nBackground = 0;
-    m_bPositioned = 0;
+    m_bPositioned = 1;
 #endif
     m_bLoadingLayout = 0;
     m_bVisible = 1;
@@ -1918,9 +1940,22 @@ void CSWGuiPanel::StopLoadFromLayout()
 }
 // PC 0x0040BB80
 void CSWGuiPanel::InitControl(CSWGuiControl& cControl, const CExoString& sName,
-                              int bRequired)
+                              int bRequired, int bScale)
 {
     cControl.Load(this, m_pLayout, m_lLayoutControls, sName);
+    CSWGuiExtent cExtent = cControl.m_cExtent;
+    float fScaleX = 1.0f;
+    float fScaleY = 1.0f;
+    if (bScale && g_pAppManager->m_pClientExoApp->GetSWGuiManager() != NULL)
+    {
+        fScaleX = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
+        fScaleY = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
+    }
+    cExtent.m_nHeight = (int)(cExtent.m_nHeight * fScaleY);
+    cExtent.m_nWidth = (int)(cExtent.m_nWidth * fScaleX);
+    cExtent.m_nTop = (int)(cExtent.m_nTop * fScaleY);
+    cExtent.m_nLeft = (int)(cExtent.m_nLeft * fScaleX);
+    cControl.SetExtent(cExtent);
     if (bRequired != 0)
     {
         int nIndex = cControl.m_nID;
@@ -2215,12 +2250,6 @@ void CSWGuiManager::Draw(float fElapsed)
     AurMakeCurrent();
     CSWGuiListBox::UpdateArrowPulsing(fElapsed);
     CSWGuiDrawable::UpdatePulsing(fElapsed);
-    if (m_nBackgroundPanels > 0)
-    {
-#ifndef _XBOX
-        DrawPCBG(fElapsed);
-#endif
-    }
     for (int i = 0; i < nPanels; i++)
     {
         CSWGuiPanel* pPanel = m_lPanels.element[i];

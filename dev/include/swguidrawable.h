@@ -162,7 +162,7 @@ public:
 
     CSWGuiBorderParams(const CResRef& cCorner, const CResRef& cEdge,
                        const CResRef& cFill, int nDimension, int nUnknown,
-                       float fAlpha, const Vector& vColor, int bPulsing);
+                       float fAlpha, const Vector& vColor, int bPulsing, int n8 = 0);
     void SetPulsingAlpha(int bPulsing, int nLow, int nHigh);
     void SetCornerImage(const CResRef& cImage, int bTile);
     void SetCornerImage(const CResRef& cImage);
@@ -175,6 +175,7 @@ public:
     int GetBorderDim() const;
 
     int GetInnerOffset() const { return m_nInnerOffset; }
+    int GetVerticalInnerOffset() const { return m_n8 != 0 ? m_n8 : m_nInnerOffset; }
     void SetColor(const Vector& vColor) { m_vColor = vColor; }
 
     int m_nBorderDim;

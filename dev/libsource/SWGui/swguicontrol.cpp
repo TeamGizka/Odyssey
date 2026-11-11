@@ -938,7 +938,7 @@ void CSWGuiListBox::AddControls(CExoArrayList<CSWGuiControl*>& aControls,
     for (int i = 0; i < nCount; i++)
     {
         CSWGuiControl* pControl = aControls[i];
-        if (m_lItems.IndexOf(pControl) == -1)
+        if (pControl != NULL && m_lItems.IndexOf(pControl) == -1)
         {
             pControl->m_pOwner = this;
             pControl->m_nID = nID++;

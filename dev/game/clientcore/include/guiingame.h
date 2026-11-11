@@ -202,6 +202,16 @@ public:
     static Vector COLOR_ORANGE;
     static Vector COLOR_PURPLE;
     static Vector DISABLED_TEXT;
+    static Vector COLOR_NEW_GREEN;
+    static Vector COLOR_NEW_HIGHLIGHT;
+    static Vector COLOR_NEW_TEXT;
+    static Vector COLOR_NEW_BONUS;
+    static Vector COLOR_LIGHT_GOLD;
+    static Vector COLOR_DARK_GOLD;
+    static Vector COLOR_DARK_TAN;
+    static Vector COLOR_PAZAAK_GOLD;
+    static Vector COLOR_UPGRADE_TEXT;
+    static Vector COLOR_UPGRADE_BORDER;
     static Vector STANDARD_BLUE;
     static Vector COLOR_TRANSPARENT;
 
@@ -397,6 +407,8 @@ public:
     void HideItemCreateMenu();
     void DestroyDeathMenuGUI();
     void ShowSubItemCreateMenu(unsigned long nSubType);
+    void ShowDemoScreen(CExoString sImage, int nMinShowTime, int nStrRef, int nLeft, int nTop);
+    void HideDemoScreen();
     void DialogGuiDoneScroll();
     CExoString DialogNodeSpanningTextParse(const CExoString& sText);
     void StopGlobalFade();
