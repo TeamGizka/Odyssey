@@ -339,14 +339,14 @@ int CExoResFile::CloseFile()
 {
     if (m_bFileOpened)
     {
+#ifndef _XBOX
         m_sFileName.CStr();
-
+#endif
         if (m_pFile)
         {
             delete m_pFile;
             m_pFile = NULL;
         }
-
         m_bFileOpened = 0;
     }
 
@@ -447,8 +447,9 @@ unsigned long CExoResFile::GetResourceSize(unsigned long nId)
 // PC 0x0040D6B0  Xbox 0x0014BB50
 int CExoResFile::Initialize()
 {
+#ifndef _XBOX
     m_sFileName.CStr();
-
+#endif
     m_pFile = NULL;
     m_pAsyncFile = NULL;
     m_nResourceType = 0;
@@ -459,7 +460,6 @@ int CExoResFile::Initialize()
     m_bAsyncFileOpened = 0;
     m_pHeader = NULL;
     m_pResourceTable = NULL;
-
     return 1;
 }
 // PC 0x0040D6F0  Xbox 0x0014BB80
@@ -483,10 +483,10 @@ int CExoResFile::OpenFile()
         m_pFile = NULL;
         return 0;
     }
-
+#ifndef _XBOX
     m_sFileName.CStr();
+#endif
     m_bFileOpened = 1;
-
     return 1;
 }
 // PC 0x0040D800  Xbox 0x0014BC90
@@ -527,10 +527,10 @@ int CExoResFile::LoadHeader(unsigned char nType)
             m_nRefCount--;
             return 0;
         }
-
+#ifndef _XBOX
         m_sFileName.CStr();
+#endif
         m_nFileSize = m_pFile->GetSize();
-
         m_pHeader = new CExoResFileHeader;
         m_pFile->Read(m_pHeader, sizeof(CExoResFileHeader), 1);
 
@@ -1853,6 +1853,32 @@ int CExoKeyTable::AddKeyTableContents(int bFlag)
             return 0;
         }
 
+#ifdef _XBOX
+        CExoString sCache("CACHE:");
+
+        if (sFileName.SubString(0, 4).LowerCase() == "live")
+        {
+            sCache.Format("CACHE:%s\\", sFileName.SubString(0, 5));
+        }
+
+        m_pPackedFiles[i]->m_sFileName = sCache + sFileName.SubString(0, nDot);
+
+        if (!LocateBifFile(m_pPackedFiles[i]->m_sFileName))
+        {
+            m_pPackedFiles[i]->m_sFileName =
+                sDrive + ":" + sFileName.SubString(0, nDot);
+        }
+
+        if (!m_pPackedFiles[i]->LoadHeader(0))
+        {
+            if (sFileName.SubString(0, 4).LowerCase() != "live")
+            {
+                ExoFree(pFileTable);
+                delete pFile;
+                return 0;
+            }
+        }
+#else
         m_pPackedFiles[i]->m_sFileName =
             sDrive + ":" + sFileName.SubString(0, nDot);
 
@@ -1864,6 +1890,7 @@ int CExoKeyTable::AddKeyTableContents(int bFlag)
         }
 
         m_pPackedFiles[i]->LoadHeader(0);
+#endif
     }
 
     pFile->Seek(sHeader.nKeyTableOffset, 0);
@@ -1975,7 +2002,7 @@ void CExoKeyTable::RebuildTable()
     else
     {
         unsigned long nOldTableSize = m_nTableSize;
-
+#ifndef _XBOX
         if (m_nTableType == 4)
         {
             if (m_pPackedFiles != NULL)
@@ -1983,7 +2010,7 @@ void CExoKeyTable::RebuildTable()
                 m_pPackedFiles[0]->CloseFile();
             }
         }
-
+#endif
         m_nTableSize = 0;
         m_pKeyTable = NULL;
         BuildNewTable(m_nTableType, m_sResourceName, m_nId, 0);

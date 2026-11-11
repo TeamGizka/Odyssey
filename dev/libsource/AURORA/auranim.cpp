@@ -267,8 +267,8 @@ void PartLightsaber::Animate(float fTimeStep)
     }
     lightsaberSegments = m_nSegments;
 }
-
-OOAnimRun::~OOAnimRun()
+#ifndef _XBOX
+OOAnimRun::~OOAnimRun()  // Xbox 0x002D7600
 {
     if (m_pDeltaValues != 0)
     {
@@ -281,7 +281,8 @@ OOAnimRun::~OOAnimRun()
     m_pDeltaValues = 0;
     m_pStartValues = 0;
 }
-// PC 0x00481D60
+#endif
+// PC 0x00481D60  Xbox 0x002D7B80
 bool Gob::IsCharacter()
 {
     if (m_pModel != 0)
@@ -292,7 +293,7 @@ bool Gob::IsCharacter()
 
     return false;
 }
-// PC 0x00481D80
+// PC 0x00481D80  Xbox 0x002D7BA0
 inline bool Gob::IsRenderEarly()
 {
     if (m_pModel != 0)
@@ -1694,6 +1695,7 @@ void LookAtAnimation::BuildAnimation()
     ((Animation*)m_pTree)->m_fLength = m_fDuration;
     ((Animation*)m_pTree)->m_fTransitionTime = m_fDuration;
 }
+#ifndef _XBOX
 // PC 0x00486560  Xbox 0x002DB7E0
 void Gob::DoEvent(char* sEvent, void* pData)
 {
@@ -1714,8 +1716,8 @@ void Gob::DoEvent(char* sEvent, void* pData)
         --nIndex;
     }
 }
-// PC 0x00486670  Xbox 0x002DB8A0
-void Gob::Animate(float fTimeStep)
+#endif
+void Gob::Animate(float fTimeStep)  // PC 0x00486670  Xbox 0x002DB8A0
 {
     ProcessGob();
     if (!enablegobanimations)
@@ -1833,11 +1835,11 @@ void Gob::Animate(float fTimeStep)
                     if (pRun->m_nFlags & AnimRun::FLAG_OUT_OF_ORDER)
                     {
                         OOAnimRun* pOutOfOrder = (OOAnimRun*)pRun;
-                        delete[] pOutOfOrder->m_pDeltaValues;
-                        delete[] pOutOfOrder->m_pStartValues;
-                        pOutOfOrder->m_pDeltaValues = 0;
-                        pOutOfOrder->m_pStartValues = 0;
-                        delete pRun;
+#ifdef _XBOX
+                        delete pOutOfOrder;
+#else
+                        delete[] pOutOfOrder->m_pDeltaValues; delete[] pOutOfOrder->m_pStartValues; pOutOfOrder->m_pDeltaValues = 0; pOutOfOrder->m_pStartValues = 0; delete pRun;
+#endif
                     }
                     else
                         delete pRun;
@@ -2055,3 +2057,251 @@ static inline void AuranimTrace2()
 static inline void AuranimTrace1()
 {
 }
+
+#ifdef _XBOX
+
+Gob* FindGob(char* sName);
+// Xbox 0x002D7310
+const char* beginlookatanimate(char* sCommand)
+{
+    char sLookingGob[32];
+    char sLookAtGob[32];
+    char sLookingPart[32];
+    char sLookAtPart[32];
+
+    if (sscanf(sCommand, "%s %s %s %s", sLookingGob, sLookingPart, sLookAtGob, sLookAtPart) != 4)
+    {
+        return "Usage: beginlookatanimate lookinggob lookingpart lookatgob lookatpart";
+    }
+    Gob* pLooking = FindGob(sLookingGob);
+    if (pLooking == 0)
+    {
+        return "Cannot find looking gob.";
+    }
+    Gob* pLookAt = FindGob(sLookAtGob);
+    if (pLookAt == 0)
+    {
+        return "Cannot find lookat gob.";
+    }
+    pLooking->BeginLookAtAnimate(pLookAt, sLookAtPart, sLookingPart, 60.0f, 45.0f, 0.25f, 10.0f);
+    return "success";
+}
+// Xbox 0x002D73D0
+const char* endlookatanimate(char* sCommand)
+{
+    Gob* pGob = FindGob(sCommand);
+    if (pGob == 0)
+    {
+        return "Cannot find gob.";
+    }
+    pGob->EndLookAtAnimate();
+    return "success";
+}
+// Xbox 0x002D7400
+int animqueue(char* sCommand)
+{
+    return Gob::ANIMATION_FLAG_QUEUE;
+}
+// Xbox 0x002D7410
+int animremove(char* sCommand)
+{
+    return Gob::ANIMATION_FLAG_STOP;
+}
+// Xbox 0x002D7980
+const char* addflag(char* sCommand)
+{
+    int nFlag;
+    char sName[64];
+
+    if (sscanf(sCommand, "%s %d", sName, &nFlag) != 2)
+    {
+        return "Usage: addflag <gobname> <flag>";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "Failure - could not find gob with that name.";
+    }
+    pGob->AddAnimationFlag(nFlag);
+    return "Success";
+}
+// Xbox 0x002D79E0
+const char* play(char* sCommand)
+{
+    float fSpeed = 1.0f;
+    float fStartTime;
+    int nFlags;
+    char sObject[64];
+    char sAnimation[64];
+
+    nFlags = 0;
+    fStartTime = 0.0f;
+    int nRead = sscanf(sCommand, "%s %s %f %d %f", sObject, sAnimation, &fSpeed, &nFlags, &fStartTime);
+    if (nRead != 2 && nRead != 3 && nRead != 4 && nRead != 5)
+    {
+        return "usage:  play object anim [speed] [flags] [starttime]";
+    }
+    Gob* pGob = FindGob(sObject);
+    if (pGob == 0)
+    {
+        return "unable to find object by that name";
+    }
+    if (pGob->PlayAnimation(sAnimation, fSpeed, nFlags, fStartTime) == 0)
+    {
+        return "didn't find animation by that name";
+    }
+    return "success";
+}
+// Xbox 0x002D7AA0
+const char* getanim(char* sCommand)
+{
+    static char sResult[128];
+    float fTime;
+    float fLength;
+    char sObject[64];
+    char sAnimation[64];
+
+    if (sscanf(sCommand, "%s %s", sObject, sAnimation) != 2)
+    {
+        return "usage:  getanim object anim";
+    }
+    Gob* pGob = FindGob(sObject);
+    if (pGob == 0)
+    {
+        return "unable to find object by that name";
+    }
+    if (pGob->GetAnimation(sAnimation, &fTime, &fLength) == 0)
+    {
+        return "animation not found on that gob";
+    }
+    sprintf(sResult, "animation found: time=%.2f, length=%.2f", fTime, fLength);
+    return sResult;
+}
+// Xbox 0x002D9FE0
+const char* animadvance(char* sCommand)
+{
+    static char sResult[128];
+    float fAdvance = 0.0f;
+    char sName[64];
+
+    sName[0] = 0;
+    sscanf(sCommand, "%s %f", sName, &fAdvance);
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "No Object with that name";
+    }
+    AnimRun* pRun = CurrentAnimation(pGob);
+    if (pRun == 0)
+    {
+        return "No Current Animation";
+    }
+    pRun->m_fTime += fAdvance;
+    if (pRun->m_nFlags & AnimRun::FLAG_STOP_AT_END)
+    {
+        if (pRun->m_fTime > pRun->m_pAnimation->m_fLength)
+        {
+            pRun->m_fTime = pRun->m_pAnimation->m_fLength;
+        }
+        if (pRun->m_fTime < 0.0f)
+        {
+            pRun->m_fTime = 0.0f;
+        }
+    }
+    else
+    {
+        if (pRun->m_fTime > pRun->m_pAnimation->m_fLength)
+        {
+            pRun->m_fTime -= pRun->m_pAnimation->m_fLength;
+        }
+        if (pRun->m_fTime < 0.0f)
+        {
+            pRun->m_fTime += pRun->m_pAnimation->m_fLength;
+        }
+    }
+    sprintf(sResult, "%s %s %f", sName, pRun->m_pAnimation->m_sName, pRun->m_fTime);
+    return sResult;
+}
+#endif
+
+#ifdef _XBOX
+void AnimateHierarchy(Part* pPart, MdlNode* pNode, float fTime, float fPreviousTime, float fWeight, bool bBlend);
+// Xbox 0x002D9E80
+void Gob::ResetAnimationScales()
+{
+    for (int i = 0; i < m_lOutOfOrderAnimations.m_nCount; i++)
+    {
+        AnimRun* pRun = m_lOutOfOrderAnimations[i];
+        pRun->m_fScale = FindAnimScale(m_pModel, FindAnimation(m_pModel, pRun->m_pAnimation->m_sName));
+    }
+    position_scale_factor = 1.0f;
+    AnimateHierarchy(m_pRootPart, m_pRootPart->m_pNode, 0.0f, 0.0f, 1.0f, false);
+}
+// Xbox 0x002DA0C0
+const char* resetgob(char* sCommand)
+{
+    char sName[64];
+
+    sName[0] = 0;
+    sscanf(sCommand, "%s", sName);
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "No Object with that name";
+    }
+    pGob->ResetAnimationScales();
+    return "Gob has been reset";
+}
+#endif
+
+#ifdef _XBOX
+bool Gob::CheckEventCallBack(float fDelay, bool bRepeat)  // Xbox 0x002D7680
+{
+    if (!checkevents)
+        return true;
+    bool bFire = false;
+    if (fDelay > m_fCameraDistance || (bRepeat && IsInViewVolume()))
+        bFire = true;
+    return bFire;
+}
+#endif
+
+#ifdef _XBOX
+CustomAnimation::CustomAnimation()  // Xbox 0x002D72B0
+{
+    m_pTree = 0;
+    m_pOutOfOrderRun = 0;
+    m_bDeactivated = 0;
+}
+#endif
+
+#ifdef _XBOX
+OOAnimRun::~OOAnimRun()  // Xbox 0x002D7600
+{
+    delete[] m_pDeltaValues;
+    delete[] m_pStartValues;
+    m_pDeltaValues = 0;
+    m_pStartValues = 0;
+}
+#endif
+
+#ifdef _XBOX
+void Gob::DoEvent(char* sEvent, void* pData)  // PC 0x00486560  Xbox 0x002DB7E0
+{
+    int nIndex = m_lCallBacks.m_nCount - 1;
+    SafePointer<CAurObject> pObject(this);
+    while (pObject && nIndex >= 0)
+    {
+        CallBack* pCallBack = m_lCallBacks[nIndex];
+        if ((pCallBack->m_sEvent[0] == 0 ||
+             pCallBack->m_sEvent[0] == '*' ||
+             stricmp(pCallBack->m_sEvent, sEvent) == 0) &&
+            CheckEventCallBack(pCallBack->m_fDelay, pCallBack->m_bRepeat))
+        {
+            pCallBack->m_pfnCallBack(this, sEvent,
+                                   pData ? pData : pCallBack->m_pData);
+        }
+        --nIndex;
+    }
+}
+#endif

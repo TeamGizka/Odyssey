@@ -685,8 +685,8 @@ void PartEmitter::StopEmitterLayer()
     GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
     GLRender_EnableClientState(CLIENT_STATE_NORMAL);
 }
-// PC 0x0048F040  Xbox 0x002E2C90
-void PartEmitter::RenderStandard()
+#ifndef _XBOX
+void PartEmitter::RenderStandard()  // PC 0x0048F040  Xbox 0x002E2C90
 {
     static unsigned long poolSize = 1000;
     static RenderVertexVTC* particlePool =
@@ -1059,8 +1059,8 @@ void PartEmitter::RenderStandard()
                 BLEND_ONE_MINUS_SRC_ALPHA);
     if (bFog) GLRender_Enable(ENABLE_FOG);
 }
-// PC 0x00490700  Xbox 0x002E4A80
-void PartEmitter::RenderNothing()
+#endif
+void PartEmitter::RenderNothing()  // PC 0x00490700  Xbox 0x002E4A80
 {
     if (m_pAurObject != 0 &&
         static_cast<Gob*>(m_pAurObject)->m_pTileData != 0 &&
@@ -1093,8 +1093,8 @@ void PartEmitter::RenderNothing()
 }
 
 #define EMITTER_MOTIONBLUR_DEBUG 0
-// PC 0x00490820  Xbox 0x002E4BA0
-void PartEmitter::RenderMotionBlurred()
+#ifndef _XBOX
+void PartEmitter::RenderMotionBlurred()  // PC 0x00490820  Xbox 0x002E4BA0
 {
 
     static unsigned long poolSize = 1000;
@@ -1414,8 +1414,8 @@ void PartEmitter::RenderMotionBlurred()
         qCamera.m_fZ = 0.0f;
     }
 }
-// PC 0x00491A50  Xbox 0x002E60D0
-void LightningEmitter::UpdateBranches()
+#endif
+void LightningEmitter::UpdateBranches()  // PC 0x00491A50  Xbox 0x002E60D0
 {
     MdlNodeEmitter* pNode = m_pNode->AsMdlNodeEmitter();
     if (pNode->m_nNumBranches != 0)
@@ -2188,8 +2188,8 @@ static inline float GetGobAlpha(Gob* pGob)
         fAlpha = pGob->m_fAlpha;
     return fAlpha;
 }
-// PC 0x00495B20  Xbox 0x002EA390
-void PartEmitter::RenderLinked()
+#ifndef _XBOX
+void PartEmitter::RenderLinked()  // PC 0x00495B20  Xbox 0x002EA390
 {
     static unsigned long poolSize = 1000;
     static RenderVertexVTC* particlePool =
@@ -2473,8 +2473,8 @@ void PartEmitter::RenderLinked()
     if (bFog)
         GLRender_Enable(ENABLE_FOG);
 }
-// PC 0x00496E40  Xbox 0x002EB8F0
-void FountainEmitter::Update(float fTimeStep)
+#endif
+void FountainEmitter::Update(float fTimeStep)  // PC 0x00496E40  Xbox 0x002EB8F0
 {
     MdlNodeEmitter* pNode = (MdlNodeEmitter*)m_pNode;
     float fBirthRate = m_fBirthRate;
@@ -4028,5 +4028,1013 @@ unsigned char MdlNodeEmitter::IsSplat()
 unsigned char MdlNodeEmitter::IsDepthTexture()
 {
     return false;
+}
+#endif
+
+#ifdef _XBOX
+// Xbox 0x002E1E00
+char* aurstartlog(char* sArguments)
+{
+    pAurLogFile = fopen("AurLogFile.txt", "w");
+    if (pAurLogFile)
+        return "success";
+    return "failed";
+}
+#endif
+
+#ifdef _XBOX
+void PartEmitter::RenderLinked()  // PC 0x00495B20  Xbox 0x002EA390
+{
+    static unsigned long poolSize = 1000;
+    static RenderVertexVTC* particlePool =
+        static_cast<RenderVertexVTC*>(operator new(sizeof(RenderVertexVTC) * 1000));
+
+    Quaternion qRotation;
+    Quaternion qCamera;
+    int bFog = 0;
+    int i;
+    Vector vCameraX = CurrentCamera->m_qOrientation.xdir();
+    Vector vCameraY = CurrentCamera->m_qOrientation.ydir();
+    MdlNodeEmitter* pNode = static_cast<MdlNodeEmitter*>(m_pNode);
+    float fFrameTime = m_fFramesPerSecond;
+    List<Vector> lstPositions;
+    float fScale = 1.0f;
+
+    if (m_lstActive.m_nCount == 0)
+        return;
+
+    LightningEmitter* pLightning = AsLightningEmitter();
+    lstPositions.SetSize(m_lstActive.m_nCount);
+    for (i = 0; i < m_lstActive.m_nCount; i++)
+    {
+        lstPositions[i] = m_lstActive[i]->m_vPosition;
+        if (pLightning)
+            lstPositions[i] += pLightning->m_lstReserved270[i];
+    }
+
+    if (renderemitterspheres)
+        RenderBoundingSphere();
+
+    if (4 * m_lstActive.m_nCount > poolSize)
+    {
+        particlePool = ResizeEmitterPool(particlePool, poolSize, 8 * m_lstActive.m_nCount);
+        poolSize = 8 * m_lstActive.m_nCount;
+    }
+    if (m_pAurObject && m_pAurObject->m_fScale != 1.0f)
+        fScale = m_pAurObject->m_fScale;
+    if (fFrameTime > 0.0f)
+        fFrameTime = 1.0f / fFrameTime;
+    else
+        fFrameTime = 0.0f;
+
+    m_pEmitterMaterial->BindTexture0();
+    m_pEmitterMaterial->SetBlendingMode(0);
+    qCamera = CurrentCamera->m_qOrientation;
+    Vector vCameraZ = CurrentCamera->m_qOrientation.zdir();
+    float fInverseLife;
+    if (m_pReserved1F4 == LIGHTNING)
+        fInverseLife = 1.0f / m_lstActive.m_nCount;
+    else if (m_fLifeTime > 0.0f)
+        fInverseLife = 1.0f / m_fLifeTime;
+    else
+        fInverseLife = 0.01f;
+    int nXGrid = pNode->m_nXGrid;
+    if (!nXGrid) nXGrid = 1;
+    int nYGrid = pNode->m_nYGrid;
+    if (!nYGrid) nYGrid = 1;
+
+    GLRender_SetDepthMask(GL_FALSE);
+    GLRender_Disable(ENABLE_LIGHTING);
+    GLRender_Enable(ENABLE_BLEND);
+    GLRender_Disable(ENABLE_ALPHA_TEST);
+    if (m_nBlendMode == BLEND_NORMAL)
+        GLRender_SetBlendFunc(BLEND_SRC_ALPHA,
+                    BLEND_ONE_MINUS_SRC_ALPHA);
+    else if (m_nBlendMode == BLEND_PUNCH_THROUGH)
+    {
+        GLRender_Disable(ENABLE_BLEND);
+        GLRender_Enable(ENABLE_ALPHA_TEST);
+    }
+    else
+    {
+        GLRender_SetBlendFunc(BLEND_SRC_ALPHA,
+                    BLEND_ONE);
+        bFog = GLRender_IsEnabled(ENABLE_FOG);
+        GLRender_Disable(ENABLE_FOG);
+    }
+    updateParticleFrame(fFrameTime);
+    particlecount += m_lstActive.m_nCount;
+    float fUScale = 1.0f / nXGrid;
+    float fVScale = 1.0f / nYGrid;
+    float fTileAlpha = GetTileAlpha();
+    float fGobAlpha = GetObjectAlpha();
+
+    for (i = 0; i < m_lstActive.m_nCount; i++)
+    {
+        Vector vColor;
+        float fAlpha;
+        float fXSize;
+        float fYSize;
+        if (m_fLifeTime >= 0.0f)
+        {
+            float fAge;
+            if (m_pReserved1F4 == LIGHTNING)
+                fAge = i * fInverseLife;
+            else
+                fAge = fInverseLife * m_lstActive[i]->m_fAge;
+            if (m_fPercentStart == EMITTER_UNSET_COLOR_KEY_TIME)
+            {
+
+                vColor = Interpolate(m_vColorStart, m_vColorEnd, fAge);
+                fAlpha = (1.0f - fAge) * m_fAlphaStart + fAge * m_fAlphaEnd;
+                fXSize = ((1.0f - fAge) * m_fXSizeStart + fAge * m_fXSizeEnd) * 0.5f;
+                if (m_fYSizeStart != 0.0f || m_fYSizeEnd != 0.0f)
+                    fYSize = (fAge * m_fYSizeEnd + (1.0f - fAge) * m_fYSizeStart) * 0.5f;
+                else
+                    fYSize = fXSize;
+            }
+            else if (fAge >= m_fPercentEnd)
+            {
+                vColor = m_vColorEnd;
+                fAlpha = m_fAlphaEnd;
+                fXSize = m_fXSizeEnd;
+                fYSize = m_fYSizeEnd != 0.0f ? m_fYSizeEnd : fXSize;
+            }
+
+            else if (fAge >= m_fPercentMid)
+            {
+                fAge = (fAge - m_fPercentMid) / (m_fPercentEnd - m_fPercentMid);
+                vColor = Interpolate(m_vColorMid, m_vColorEnd, fAge);
+                fAlpha = (1.0f - fAge) * m_fAlphaMid + fAge * m_fAlphaEnd;
+                fXSize = ((1.0f - fAge) * m_fXSizeMid + fAge * m_fXSizeEnd) * 0.5f;
+                if (m_fYSizeMid == 0.0f && m_fYSizeEnd == 0.0f)
+                    fYSize = fXSize;
+                else
+                    fYSize = (fAge * m_fYSizeEnd + (1.0f - fAge) * m_fYSizeMid) * 0.5f;
+            }
+            else if (fAge >= m_fPercentStart)
+            {
+                fAge = (fAge - m_fPercentStart) / (m_fPercentMid - m_fPercentStart);
+                vColor = Interpolate(m_vColorStart, m_vColorMid, fAge);
+                fAlpha = (1.0f - fAge) * m_fAlphaStart + fAge * m_fAlphaMid;
+                fXSize = ((1.0f - fAge) * m_fXSizeStart + fAge * m_fXSizeMid) * 0.5f;
+                if (m_fYSizeStart == 0.0f && m_fYSizeMid == 0.0f)
+                    fYSize = fXSize;
+                else
+                    fYSize = (fAge * m_fYSizeMid + (1.0f - fAge) * m_fYSizeStart) * 0.5f;
+            }
+            else
+            {
+                vColor = m_vColorStart;
+                fAlpha = m_fAlphaStart;
+                fXSize = m_fXSizeStart;
+                if (m_fYSizeStart != 0.0f)
+                    fYSize = m_fYSizeStart;
+                else
+                    fYSize = fXSize;
+            }
+            if (vColor.m_fX < 0.0f) vColor.m_fX = 0.0f;
+            else if (vColor.m_fX > 1.0f) vColor.m_fX = 1.0f;
+            if (vColor.m_fY < 0.0f) vColor.m_fY = 0.0f;
+            else if (vColor.m_fY > 1.0f) vColor.m_fY = 1.0f;
+            if (vColor.m_fZ < 0.0f) vColor.m_fZ = 0.0f;
+            else if (vColor.m_fZ > 1.0f) vColor.m_fZ = 1.0f;
+            if (fAlpha < 0.0f) fAlpha = 0.0f;
+            else if (fAlpha > 1.0f) fAlpha = 1.0f;
+        }
+        else
+        {
+            vColor = m_vColorStart;
+            fAlpha = m_fAlphaStart;
+            if (vColor.m_fX < 0.0f) vColor.m_fX = 0.0f;
+            else if (vColor.m_fX > 1.0f) vColor.m_fX = 1.0f;
+            if (vColor.m_fY < 0.0f) vColor.m_fY = 0.0f;
+            else if (vColor.m_fY > 1.0f) vColor.m_fY = 1.0f;
+            if (vColor.m_fZ < 0.0f) vColor.m_fZ = 0.0f;
+            else if (vColor.m_fZ > 1.0f) vColor.m_fZ = 1.0f;
+            if (fAlpha < 0.0f) fAlpha = 0.0f;
+            else if (fAlpha > 1.0f) fAlpha = 1.0f;
+            fXSize = m_fXSizeStart * 0.5f;
+            if (m_fYSizeStart == 0.0f && m_fYSizeMid == 0.0f && m_fYSizeEnd == 0.0f)
+                fYSize = fXSize;
+            else
+                fYSize = m_fYSizeStart * 0.5f;
+        }
+
+        qRotation = Quaternion(vCameraZ, m_lstActive[i]->m_fRotation);
+        qRotation = qRotation * qCamera;
+        int nRow = (int)(m_lstActive[i]->m_nFrame * fUScale);
+        int nColumn = m_lstActive[i]->m_nFrame - nXGrid * nRow;
+        if (fScale != 1.0f)
+        {
+            fXSize *= fScale;
+            fYSize *= fScale;
+        }
+        if (i < m_lstActive.m_nCount - 1)
+        {
+            Vector vSegment = lstPositions[i + 1] - lstPositions[i];
+            float fX = vCameraX * vSegment;
+            float fY = vSegment * vCameraY;
+            float fLength = (float)sqrt(fX * fX + fY * fY);
+            Vector vSide;
+            Vector vAlong;
+            if (fLength > EMITTER_LINK_LENGTH_EPSILON)
+            {
+
+                fX /= fLength;
+                fY /= fLength;
+                vSide = vCameraX * fY - vCameraY * fX;
+                vAlong = vCameraX * fX + vCameraY * fY;
+            }
+            else
+            {
+                vSide = vCameraX;
+                vAlong = vCameraY;
+            }
+            vSide = vSide * (fXSize + fXSize);
+            vAlong = vAlong * (fYSize * 0.5f);
+
+            unsigned long nColor = (unsigned long)(vColor.m_fX * 255.0f) |
+                (((unsigned long)(vColor.m_fY * 255.0f) |
+                (((unsigned long)(vColor.m_fZ * 255.0f) |
+                ((unsigned long)(fAlpha * (fGobAlpha * fTileAlpha) * 255.0f) << 8)) << 8)) << 8);
+
+            int nVertex = i * 4;
+            *reinterpret_cast<unsigned long*>(particlePool[nVertex].color) = nColor;
+            *reinterpret_cast<unsigned long*>(particlePool[nVertex + 1].color) = nColor;
+            *reinterpret_cast<unsigned long*>(particlePool[nVertex + 2].color) = nColor;
+            *reinterpret_cast<unsigned long*>(particlePool[nVertex + 3].color) = nColor;
+            Vector vCorner;
+            if (nVertex > 0)
+            {
+                vCorner.m_fX = particlePool[4 * i - 3].position[0];
+                vCorner.m_fY = particlePool[4 * i - 3].position[1];
+                vCorner.m_fZ = particlePool[4 * i - 3].position[2];
+            }
+            else
+                vCorner = (vSide + lstPositions[i]) - vAlong;
+            particlePool[4 * i].position[0] = vCorner.m_fX;
+            particlePool[4 * i].position[1] = vCorner.m_fY;
+            particlePool[4 * i].position[2] = vCorner.m_fZ;
+            particlePool[4 * i].u = (nColumn + 1) * fUScale;
+            particlePool[4 * i].v = 1.0f - (nRow + 1) * fVScale;
+            vCorner = (vSide + lstPositions[i + 1]) + vAlong;
+            particlePool[4 * i + 1].position[0] = vCorner.m_fX;
+            particlePool[4 * i + 1].position[1] = vCorner.m_fY;
+            particlePool[4 * i + 1].position[2] = vCorner.m_fZ;
+            particlePool[4 * i + 1].u = (nColumn + 1) * fUScale;
+            particlePool[4 * i + 1].v = 1.0f - nRow * fVScale;
+            vCorner = (lstPositions[i + 1] - vSide) + vAlong;
+            particlePool[4 * i + 2].position[0] = vCorner.m_fX;
+            particlePool[4 * i + 2].position[1] = vCorner.m_fY;
+            particlePool[4 * i + 2].position[2] = vCorner.m_fZ;
+            particlePool[4 * i + 2].u = nColumn * fUScale;
+            particlePool[4 * i + 2].v = 1.0f - nRow * fVScale;
+            if (nVertex > 0)
+            {
+                vCorner.m_fX = particlePool[4 * i - 2].position[0];
+                vCorner.m_fY = particlePool[4 * i - 2].position[1];
+                vCorner.m_fZ = particlePool[4 * i - 2].position[2];
+            }
+            else
+                vCorner = (lstPositions[i] - vSide) - vAlong;
+            vAlong.m_fX = vAlong.m_fY = vAlong.m_fZ = 0.0f;
+            particlePool[4 * i + 3].position[0] = vCorner.m_fX;
+            particlePool[4 * i + 3].position[1] = vCorner.m_fY;
+            particlePool[4 * i + 3].position[2] = vCorner.m_fZ;
+            particlePool[4 * i + 3].u = nColumn * fUScale;
+            particlePool[4 * i + 3].v = 1.0f - (nRow + 1) * fVScale;
+        }
+    }
+    countfaces += m_lstActive.m_nCount;
+    int nVertices = 4 * m_lstActive.m_nCount - 4;
+    GLRender::RenderObjectsVTCQuadUP(particlePool, nVertices);
+    GLRender_SetDepthMask(GL_TRUE);
+    GLRender_Enable(ENABLE_LIGHTING);
+    GLRender_SetBlendFunc(BLEND_SRC_ALPHA,
+                BLEND_ONE_MINUS_SRC_ALPHA);
+    if (bFog)
+        GLRender_Enable(ENABLE_FOG);
+}
+#endif
+
+#ifdef _XBOX
+void PartEmitter::RenderMotionBlurred()  // PC 0x00490820  Xbox 0x002E4BA0
+{
+
+    static unsigned long poolSize = 1000;
+    static RenderVertexVTC* particlePool =
+        static_cast<RenderVertexVTC*>(operator new(1000 * sizeof(RenderVertexVTC)));
+
+    Vector vCameraDirection;
+    Quaternion qRotation;
+    Quaternion qCamera;
+    Vector vCameraX = CurrentCamera->m_qOrientation.xdir();
+    Vector vCameraY = CurrentCamera->m_qOrientation.ydir();
+    MdlNodeEmitter* pNode = static_cast<MdlNodeEmitter*>(m_pNode);
+    int bFog = 0;
+    float fScale = 1.0f;
+    float fStart = 0.0f;
+    float fFrameTime = m_fFramesPerSecond;
+
+    if (m_lstActive.m_nCount == 0)
+        return;
+    if (renderemitterspheres)
+        RenderBoundingSphere();
+
+    if (4 * m_lstActive.m_nCount > poolSize)
+    {
+        particlePool = ResizeEmitterPool(particlePool, poolSize, 8 * m_lstActive.m_nCount);
+        poolSize = 8 * m_lstActive.m_nCount;
+    }
+
+    if (m_pAurObject && m_pAurObject->m_fScale != 1.0f)
+        fScale = m_pAurObject->m_fScale;
+    if (fFrameTime > 0.0f)
+        fFrameTime = 1.0f / fFrameTime;
+    else
+        fFrameTime = 0.0f;
+    m_pEmitterMaterial->BindTexture0();
+    m_pEmitterMaterial->SetBlendingMode(0);
+    if (EMITTER_MOTIONBLUR_DEBUG)
+    {
+        vCameraDirection.m_fX = 0.0f;
+        vCameraDirection.m_fY = 0.0f;
+        vCameraDirection.m_fZ = 0.0f;
+    }
+    vCameraDirection = CurrentCamera->m_qOrientation.zdir();
+    qCamera = CurrentCamera->m_qOrientation;
+
+    float fReciprocalLife;
+    if (m_pReserved1F4 == LIGHTNING)
+        fReciprocalLife = 1.0f / m_lstActive.m_nCount;
+    else if (m_fLifeTime > 0.0f)
+        fReciprocalLife = 1.0f / m_fLifeTime;
+    else
+        fReciprocalLife = 0.01f;
+
+    int nXGrid = pNode->m_nXGrid;
+    if (nXGrid == 0)
+        nXGrid = 1;
+    int nYGrid = pNode->m_nYGrid;
+    if (nYGrid == 0)
+        nYGrid = 1;
+
+    GLRender_SetDepthMask(0);
+    GLRender_Disable(ENABLE_LIGHTING);
+    GLRender_Enable(ENABLE_BLEND);
+    GLRender_Disable(ENABLE_ALPHA_TEST);
+    GLRender_Disable(ENABLE_CULL_FACE);
+    if (m_nBlendMode == BLEND_NORMAL)
+        GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+    else if (m_nBlendMode == BLEND_PUNCH_THROUGH)
+    {
+        GLRender_Disable(ENABLE_BLEND);
+        GLRender_Enable(ENABLE_ALPHA_TEST);
+    }
+    else
+    {
+        GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE);
+        bFog = GLRender_IsEnabled(ENABLE_FOG);
+        GLRender_Disable(ENABLE_FOG);
+    }
+
+    updateParticleFrame(fFrameTime);
+    particlecount += m_lstActive.m_nCount;
+    float fU = 1.0f / nXGrid;
+    float fV = 1.0f / nYGrid;
+    float fTileAlpha = GetTileAlpha();
+    float fAlpha = 0.0f;
+    float fTailAlpha = 0.0f;
+#ifdef _XBOX
+    float fObjectAlpha = GetObjectAlpha();
+#else
+    float fObjectAlpha = 1.0f;
+    if (m_pAurObject)
+        fObjectAlpha = m_pAurObject->m_fAlpha;
+#endif
+
+    int i = m_lstActive.m_nCount;
+    while (i != 0)
+    {
+        --i;
+        Particle* pParticle = m_lstActive[i];
+        Vector vColor;
+        float fWidth;
+        float fHeight;
+        if (m_fLifeTime >= 0.0f)
+        {
+            if (m_pReserved1F4 == LIGHTNING)
+                fFrameTime = i * fReciprocalLife;
+            else
+                fFrameTime = fReciprocalLife * pParticle->m_fAge;
+
+            if (m_fPercentStart == EMITTER_UNSET_COLOR_KEY_TIME)
+            {
+                vColor = Interpolate(m_vColorStart, m_vColorEnd, fFrameTime);
+                fStart = 1.0f - fFrameTime;
+                fAlpha = fFrameTime * m_fAlphaEnd + fStart * m_fAlphaStart;
+                fWidth = fFrameTime * m_fXSizeEnd;
+                fWidth += fStart * m_fXSizeStart;
+                fWidth *= 0.5f;
+                if (m_fYSizeStart == 0.0f && m_fYSizeEnd == 0.0f)
+                    fHeight = fWidth;
+                else
+                {
+                    fHeight = fFrameTime * m_fYSizeEnd;
+                    fHeight += fStart * m_fYSizeStart;
+                    fHeight *= 0.5f;
+                }
+            }
+            else if (fFrameTime >= m_fPercentEnd)
+            {
+                vColor = m_vColorEnd;
+                fAlpha = m_fAlphaEnd;
+                fWidth = m_fXSizeEnd;
+                fHeight = m_fYSizeEnd != 0.0f ? m_fYSizeEnd : fWidth;
+            }
+            else if (fFrameTime >= m_fPercentMid)
+            {
+                fFrameTime = (fFrameTime - m_fPercentMid) / (m_fPercentEnd - m_fPercentMid);
+                vColor = Interpolate(m_vColorMid, m_vColorEnd, fFrameTime);
+                float fStart = 1.0f - fFrameTime;
+                fAlpha = fStart * m_fAlphaMid;
+                fAlpha += fFrameTime * m_fAlphaEnd;
+                fWidth = fStart * m_fXSizeMid;
+                fWidth += fFrameTime * m_fXSizeEnd;
+                fWidth *= 0.5f;
+                if (m_fYSizeMid == 0.0f && m_fYSizeEnd == 0.0f)
+                    fHeight = fWidth;
+                else
+                {
+                    fHeight = fFrameTime * m_fYSizeEnd;
+                    fHeight += fStart * m_fYSizeMid;
+                    fHeight *= 0.5f;
+                }
+            }
+            else if (fFrameTime >= m_fPercentStart)
+            {
+                fFrameTime = (fFrameTime - m_fPercentStart) / (m_fPercentMid - m_fPercentStart);
+                vColor = Interpolate(m_vColorStart, m_vColorMid, fFrameTime);
+                float fStart = 1.0f - fFrameTime;
+                fAlpha = fStart * m_fAlphaStart;
+                fAlpha += fFrameTime * m_fAlphaMid;
+                fWidth = fStart * m_fXSizeStart;
+                fWidth += fFrameTime * m_fXSizeMid;
+                fWidth *= 0.5f;
+                if (m_fYSizeStart != 0.0f || m_fYSizeMid != 0.0f)
+                {
+                    fHeight = fFrameTime * m_fYSizeMid;
+                    fHeight += fStart * m_fYSizeStart;
+                    fHeight *= 0.5f;
+                }
+                else
+                    fHeight = fWidth;
+            }
+            else
+            {
+                vColor = m_vColorStart;
+                fAlpha = m_fAlphaStart;
+                fWidth = m_fXSizeStart;
+                if (m_fYSizeStart != 0.0f)
+                    fHeight = m_fYSizeStart;
+                else
+                    fHeight = fWidth;
+            }
+            if (vColor.m_fX < 0.0f) vColor.m_fX = 0.0f;
+            else if (vColor.m_fX > 1.0f) vColor.m_fX = 1.0f;
+            if (vColor.m_fY < 0.0f) vColor.m_fY = 0.0f;
+            else if (vColor.m_fY > 1.0f) vColor.m_fY = 1.0f;
+            if (vColor.m_fZ < 0.0f) vColor.m_fZ = 0.0f;
+            else if (vColor.m_fZ > 1.0f) vColor.m_fZ = 1.0f;
+            if (fAlpha < 0.0f) fAlpha = 0.0f;
+            else if (fAlpha > 1.0f) fAlpha = 1.0f;
+        }
+        else
+        {
+            vColor = m_vColorStart;
+            fAlpha = m_fAlphaStart;
+            if (vColor.m_fX < 0.0f) vColor.m_fX = 0.0f;
+            else if (vColor.m_fX > 1.0f) vColor.m_fX = 1.0f;
+            if (vColor.m_fY < 0.0f) vColor.m_fY = 0.0f;
+            else if (vColor.m_fY > 1.0f) vColor.m_fY = 1.0f;
+            if (vColor.m_fZ < 0.0f) vColor.m_fZ = 0.0f;
+            else if (vColor.m_fZ > 1.0f) vColor.m_fZ = 1.0f;
+            if (fAlpha < 0.0f) fAlpha = 0.0f;
+            else if (fAlpha > 1.0f) fAlpha = 1.0f;
+            fWidth = m_fXSizeStart * 0.5f;
+
+            if (m_fYSizeStart == 0.0f)
+            {
+                if (m_fYSizeEnd == 0.0f)
+                    fHeight = fWidth;
+                else
+                    fHeight = m_fYSizeStart * 0.5f;
+            }
+            else
+                fHeight = m_fYSizeStart * 0.5f;
+        }
+
+        Vector vImaginary = normalize(vCameraDirection) *
+            sineLUT(pParticle->m_fRotation * 0.5f);
+        qRotation = Quaternion(cosineLUT(pParticle->m_fRotation * 0.5f),
+            vImaginary.m_fX, vImaginary.m_fY, vImaginary.m_fZ);
+        qRotation = qRotation * qCamera;
+        int nRow = (int)(pParticle->m_nFrame * fU);
+        int nColumn = pParticle->m_nFrame - nXGrid * nRow;
+        Vector vOrigin = pParticle->m_vOrigin;
+        Vector vTravel = pParticle->m_vPosition - vOrigin;
+        float fTravelX = vCameraX * vTravel;
+        float fTravelY = vCameraY * vTravel;
+        float fLength = sqrt(fTravelY * fTravelY + fTravelX * fTravelX);
+        Vector vRight;
+        Vector vUp;
+        if (fLength != 1.0f && fLength > 0.00001)
+        {
+            float fDirectionX = (fTravelX * (1.0f / fLength));
+            float fDirectionY = ((1.0f / fLength) * fTravelY);
+            vRight = vCameraX * fDirectionY - vCameraY * fDirectionX;
+            vUp = vCameraX * fDirectionX + vCameraY * fDirectionY;
+        }
+        else
+        {
+            vRight = vCameraX;
+            vUp = vCameraY;
+            if (fLength == 0.0f)
+                fLength = 1.0f;
+        }
+        fTailAlpha = fWidth / fLength * 2.0f;
+        if (!(fTailAlpha < 1.0f))
+            fTailAlpha = 1.0f;
+        if (fScale != 1.0f)
+        {
+            fWidth *= fScale;
+            fHeight *= fScale;
+        }
+        Vector vWidth;
+        Vector vHeight;
+        vWidth = vRight * (fWidth * 2.0f);
+        vHeight = vUp * (fHeight * 0.5f);
+        int nBlue = (int)(vColor.m_fZ * 255.0f);
+        int nGreen = (int)(vColor.m_fY * 255.0f);
+        int nRed = (int)(vColor.m_fX * 255.0f);
+        unsigned long nColor = nRed | ((nGreen | ((nBlue |
+            ((unsigned long)((fObjectAlpha * fAlpha) * fTileAlpha * 255.0f) << 8)) << 8)) << 8);
+        int nVertex = i * 4;
+        *reinterpret_cast<unsigned long*>(particlePool[nVertex + 0].color) = nColor;
+        *reinterpret_cast<unsigned long*>(particlePool[nVertex + 1].color) = nColor;
+        nColor = nRed | ((nGreen | ((nBlue |
+            ((unsigned long)((fObjectAlpha * fTailAlpha * fAlpha * fTileAlpha) * 255.0f) << 8)) << 8)) << 8);
+        *reinterpret_cast<unsigned long*>(particlePool[nVertex + 2].color) = nColor;
+        *reinterpret_cast<unsigned long*>(particlePool[nVertex + 3].color) = nColor;
+
+        Vector vVertexPosition = pParticle->m_vPosition + vWidth + vHeight;
+        particlePool[i * 4 + 0].position[0] = vVertexPosition.m_fX;
+        particlePool[i * 4 + 0].position[1] = vVertexPosition.m_fY;
+        particlePool[i * 4 + 0].position[2] = vVertexPosition.m_fZ;
+        particlePool[i * 4 + 0].u = (nColumn + 1) * fU;
+        particlePool[i * 4 + 0].v = 1.0f - nRow * fV;
+        vVertexPosition = pParticle->m_vPosition - vWidth + vHeight;
+        particlePool[i * 4 + 1].position[0] = vVertexPosition.m_fX;
+        particlePool[i * 4 + 1].position[1] = vVertexPosition.m_fY;
+        particlePool[i * 4 + 1].position[2] = vVertexPosition.m_fZ;
+        particlePool[i * 4 + 1].u = nColumn * fU;
+        particlePool[i * 4 + 1].v = 1.0f - nRow * fV;
+        vVertexPosition = vOrigin - vWidth - vHeight;
+        particlePool[i * 4 + 2].position[0] = vVertexPosition.m_fX;
+        particlePool[i * 4 + 2].position[1] = vVertexPosition.m_fY;
+        particlePool[i * 4 + 2].position[2] = vVertexPosition.m_fZ;
+        particlePool[i * 4 + 2].u = nColumn * fU;
+        particlePool[i * 4 + 2].v = 1.0f - (nRow + 1) * fV;
+        vVertexPosition = vOrigin + vWidth - vHeight;
+        particlePool[i * 4 + 3].position[0] = vVertexPosition.m_fX;
+        particlePool[i * 4 + 3].position[1] = vVertexPosition.m_fY;
+        particlePool[i * 4 + 3].position[2] = vVertexPosition.m_fZ;
+        particlePool[i * 4 + 3].u = (nColumn + 1) * fU;
+        particlePool[i * 4 + 3].v = 1.0f - (nRow + 1) * fV;
+    }
+
+    countfaces += m_lstActive.m_nCount;
+    GLRender::RenderObjectsVTCQuadUP(particlePool, 4 * m_lstActive.m_nCount);
+    GLRender_SetDepthMask(1);
+    GLRender_Enable(ENABLE_LIGHTING);
+    GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+    GLRender_Enable(ENABLE_CULL_FACE);
+    if (bFog)
+        GLRender_Enable(ENABLE_FOG);
+    if (EMITTER_MOTIONBLUR_DEBUG)
+    {
+        qCamera.m_fW = 0.0f;
+        qCamera.m_fX = 0.0f;
+        qCamera.m_fY = 0.0f;
+        qCamera.m_fZ = 0.0f;
+    }
+}
+#endif
+
+#ifdef _XBOX
+
+#define AUR_EMITTER_DEPTH_PIXEL_SHADER 29
+#define AUR_EMITTER_VP_DEPTH_SETUP 16
+#define AUR_EMITTER_VP_DEPTH_SCALE 18
+#define AUR_EMITTER_VP_PARTICLE_POSITION 19
+#define AUR_EMITTER_VP_PARTICLE_NEAR 20
+void PartEmitter::RenderStandard()  // PC 0x0048F040  Xbox 0x002E2C90
+{
+    static unsigned long poolSize = 1000;
+    static RenderVertexVTC* particlePool =
+        static_cast<RenderVertexVTC*>(operator new(1000 * sizeof(RenderVertexVTC)));
+
+    Vector vUp;
+    Vector vDirection;
+    Vector vRight;
+    MdlNodeEmitter* pNode = static_cast<MdlNodeEmitter*>(m_pNode);
+    unsigned char bSplat = pNode->IsSplat();
+    Quaternion qRotation;
+    Quaternion qCamera;
+    float fFrameTime = m_fFramesPerSecond;
+    int bFog = 0;
+    float fScale = 1.0f;
+    int nPass = 0;
+    int nPasses = 1;
+    if (pNode->m_bFrameBlending)
+        nPasses = 5;
+
+    if (renderemitterspheres)
+        RenderBoundingSphere();
+    if (m_lstActive.m_nCount == 0)
+        return;
+    if (4 * m_lstActive.m_nCount > poolSize)
+    {
+        particlePool = ResizeEmitterPool(particlePool, poolSize, 8 * m_lstActive.m_nCount);
+        poolSize = 8 * m_lstActive.m_nCount;
+    }
+    if (m_pAurObject && m_pAurObject->m_fScale != 1.0f)
+        fScale = m_pAurObject->m_fScale;
+    if (fFrameTime > 0.0f)
+        fFrameTime = 1.0f / fFrameTime;
+    else
+        fFrameTime = 0.0f;
+
+    m_pEmitterMaterial->BindTexture0();
+    m_pEmitterMaterial->SetBlendingMode(0);
+    unsigned char bDepthTexture = 0;
+    if (pNode->IsDepthTexture() && !m_pEmitterMaterial->m_pTexture1->IsNull())
+    {
+        bDepthTexture = 1;
+        m_pEmitterMaterial->BindTexture1();
+        GLRender_Enable(ENABLE_VERTEX_PROGRAM);
+        static VertexProgram* emittervp = new VertexProgram(cEmitterVP, cEmitterVPDeclaration);
+        emittervp->Enable(this, false);
+        GLRender_EnablePixelShaders(AUR_EMITTER_DEPTH_PIXEL_SHADER, m_pEmitterMaterial->m_pTexture0,
+                                    m_pEmitterMaterial->m_pTexture1, 0, 0);
+        AurSetVertexProgramParameter4f(AUR_EMITTER_VP_DEPTH_SETUP, 0.0f, 2.0f, 3.0f, 1.0f);
+        AurSetVertexProgramParameter4f(AUR_EMITTER_VP_DEPTH_SCALE, 16777216.0f, 8388608.0f, 0.0625f, 1.0f);
+    }
+    vUp.m_fX = vUp.m_fY = 0.0f;
+    vUp.m_fZ = 1.0f;
+    if (m_nReserved114 == NORMAL)
+    {
+        vDirection = CurrentCamera->m_qOrientation.zdir();
+        qCamera = CurrentCamera->m_qOrientation;
+    }
+    else if (m_nReserved114 == WorldZ)
+    {
+        vDirection = vUp;
+        qCamera = Quaternion(vUp, 0.0f);
+    }
+    else if (m_nReserved114 == LocalZ)
+    {
+        vDirection = m_qOrientation.zdir();
+        qCamera = m_qOrientation;
+    }
+    else
+    {
+        vDirection = CurrentCamera->m_qOrientation.zdir();
+        qCamera = CurrentCamera->m_qOrientation;
+        if (qCamera.ydir() * vUp < 0.0f)
+            vUp.m_fZ = -1.0f;
+    }
+
+    float fInverseLife = m_fLifeTime > 0.0f ? 1.0f / m_fLifeTime : 0.01f;
+    int nXGrid = pNode->m_nXGrid ? pNode->m_nXGrid : 1;
+    int nYGrid = pNode->m_nYGrid ? pNode->m_nYGrid : 1;
+
+    GLRender_SetDepthMask(GL_FALSE);
+    GLRender_Disable(ENABLE_LIGHTING);
+    GLRender_Enable(ENABLE_BLEND);
+    GLRender_Disable(ENABLE_ALPHA_TEST);
+    if (static_cast<MdlNodeEmitter*>(m_pNode)->m_nTwoSidedTex)
+    {
+        GLRender_SetPolygonRenderMode(FACING_FRONT_AND_BACK,
+                      FILL_SOLID);
+        GLRender_Disable(ENABLE_CULL_FACE);
+    }
+    if (m_nBlendMode == BLEND_NORMAL)
+        GLRender_SetBlendFunc(BLEND_SRC_ALPHA,
+                    BLEND_ONE_MINUS_SRC_ALPHA);
+    else if (m_nBlendMode == BLEND_PUNCH_THROUGH)
+    {
+        GLRender_Disable(ENABLE_BLEND);
+        GLRender_Enable(ENABLE_ALPHA_TEST);
+    }
+    else
+    {
+        GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE);
+        bFog = GLRender_IsEnabled(ENABLE_FOG);
+        GLRender_Disable(ENABLE_FOG);
+    }
+    updateParticleFrame(fFrameTime);
+    particlecount += m_lstActive.m_nCount;
+    float fUScale = 1.0f / nXGrid;
+    float fVScale = 1.0f / nYGrid;
+    GLRender_PushCurrentMatrix();
+    float fTileAlpha = GetTileAlpha();
+    float fAlpha = 0.0f;
+    float fFrameAlpha = 0.0f;
+#ifdef _XBOX
+    float fObjectAlpha = GetObjectAlpha();
+#else
+    float fObjectAlpha = 1.0f;
+    if (m_pAurObject)
+        fObjectAlpha = m_pAurObject->m_fAlpha;
+#endif
+    int nNextFrame;
+    int nPreviousFrame;
+    for (; nPass < nPasses; nPass++)
+    {
+        Vector vCameraDirection = CurrentCamera->m_qOrientation.zdir();
+        int i = m_lstActive.m_nCount;
+        while (i--)
+        {
+            Particle* pParticle = m_lstActive[m_lstActive.m_nCount - i - 1];
+            Vector vColor;
+            float fXSize;
+            float fYSize;
+            float fAge;
+            float fT;
+            if (m_fLifeTime >= 0.0f)
+            {
+                fAge = fInverseLife * pParticle->m_fAge;
+                if (m_fPercentStart == EMITTER_UNSET_COLOR_KEY_TIME)
+                {
+
+                    fT = fAge;
+                    vColor = Interpolate(m_vColorStart, m_vColorEnd, fT);
+                    fAlpha = (1.0f - fT) * m_fAlphaStart + fT * m_fAlphaEnd;
+                    fXSize = ((1.0f - fT) * m_fXSizeStart + fT * m_fXSizeEnd) * 0.5f;
+                    if (m_fYSizeStart != 0.0f || m_fYSizeEnd != 0.0f)
+                        fYSize = (fT * m_fYSizeEnd + (1.0f - fT) * m_fYSizeStart) * 0.5f;
+                    else
+                        fYSize = fXSize;
+                }
+                else if (fAge >= m_fPercentEnd)
+                {
+                    vColor = m_vColorEnd;
+                    fAlpha = m_fAlphaEnd;
+                    fXSize = m_fXSizeEnd * 0.5f;
+                    fYSize = m_fYSizeEnd != 0.0f ? m_fYSizeEnd * 0.5f : fXSize;
+                }
+
+                else if (fAge >= m_fPercentMid)
+                {
+                    fT = (fAge - m_fPercentMid) / (m_fPercentEnd - m_fPercentMid);
+                    vColor = Interpolate(m_vColorMid, m_vColorEnd, fT);
+                    fAlpha = (1.0f - fT) * m_fAlphaMid + fT * m_fAlphaEnd;
+                    fXSize = ((1.0f - fT) * m_fXSizeMid + fT * m_fXSizeEnd) * 0.5f;
+                    if (m_fYSizeMid == 0.0f && m_fYSizeEnd == 0.0f)
+                        fYSize = fXSize;
+                    else
+                        fYSize = (fT * m_fYSizeEnd + (1.0f - fT) * m_fYSizeMid) * 0.5f;
+                }
+                else if (fAge >= m_fPercentStart)
+                {
+                    fT = (fAge - m_fPercentStart) / (m_fPercentMid - m_fPercentStart);
+                    vColor = Interpolate(m_vColorStart, m_vColorMid, fT);
+                    fAlpha = (1.0f - fT) * m_fAlphaStart + fT * m_fAlphaMid;
+                    fXSize = ((1.0f - fT) * m_fXSizeStart + fT * m_fXSizeMid) * 0.5f;
+                    if (m_fYSizeStart == 0.0f && m_fYSizeMid == 0.0f)
+                        fYSize = fXSize;
+                    else
+                        fYSize = (fT * m_fYSizeMid + (1.0f - fT) * m_fYSizeStart) * 0.5f;
+                }
+                else
+                {
+                    vColor = m_vColorStart;
+                    fAlpha = m_fAlphaStart;
+                    fXSize = m_fXSizeStart * 0.5f;
+                    if (m_fYSizeStart != 0.0f)
+                        fYSize = m_fYSizeStart * 0.5f;
+                    else
+                        fYSize = fXSize;
+                }
+                if (vColor.m_fX < 0.0f) vColor.m_fX = 0.0f;
+                else if (vColor.m_fX > 1.0f) vColor.m_fX = 1.0f;
+                if (vColor.m_fY < 0.0f) vColor.m_fY = 0.0f;
+                else if (vColor.m_fY > 1.0f) vColor.m_fY = 1.0f;
+                if (vColor.m_fZ < 0.0f) vColor.m_fZ = 0.0f;
+                else if (vColor.m_fZ > 1.0f) vColor.m_fZ = 1.0f;
+                if (fAlpha < 0.0f) fAlpha = 0.0f;
+                else if (fAlpha > 1.0f) fAlpha = 1.0f;
+            }
+            else
+            {
+                vColor = m_vColorStart;
+                fAlpha = m_fAlphaStart;
+                if (vColor.m_fX < 0.0f) vColor.m_fX = 0.0f;
+                else if (vColor.m_fX > 1.0f) vColor.m_fX = 1.0f;
+                if (vColor.m_fY < 0.0f) vColor.m_fY = 0.0f;
+                else if (vColor.m_fY > 1.0f) vColor.m_fY = 1.0f;
+                if (vColor.m_fZ < 0.0f) vColor.m_fZ = 0.0f;
+                else if (vColor.m_fZ > 1.0f) vColor.m_fZ = 1.0f;
+                if (fAlpha < 0.0f) fAlpha = 0.0f;
+                else if (fAlpha > 1.0f) fAlpha = 1.0f;
+                fXSize = m_fXSizeStart * 0.5f;
+                if (m_fYSizeStart == 0.0f && m_fYSizeMid == 0.0f && m_fYSizeEnd == 0.0f)
+                    fYSize = fXSize;
+                else
+                    fYSize = m_fYSizeStart * 0.5f;
+            }
+            if (bDepthTexture)
+            {
+                Vector vNear = pParticle->m_vPosition - vCameraDirection * fXSize;
+                AurSetVertexProgramParameter4f(AUR_EMITTER_VP_PARTICLE_POSITION, pParticle->m_vPosition.m_fX,
+                    pParticle->m_vPosition.m_fY, pParticle->m_vPosition.m_fZ, 1.0f);
+                AurSetVertexProgramParameter4f(AUR_EMITTER_VP_PARTICLE_NEAR, vNear.m_fX, vNear.m_fY, vNear.m_fZ,
+                    1.0f);
+            }
+
+            if (bSplat)
+            {
+                if (pParticle->m_bReserved6C)
+                {
+                    fXSize = m_fXSizeEnd;
+                    if (m_fYSizeEnd != 0.0f)
+                        fYSize = m_fYSizeEnd;
+                    else
+                        fYSize = fXSize;
+                }
+                else
+                {
+                    fXSize = m_fXSizeStart;
+                    if (m_fYSizeStart != 0.0f)
+                        fYSize = m_fYSizeStart;
+                    else
+                        fYSize = fXSize;
+                }
+            }
+            if (pParticle->m_bReserved6C)
+            {
+                qRotation = Quaternion(pParticle->m_vHeading, pParticle->m_fRotation);
+                qRotation = qRotation * pParticle->m_qOrientation;
+            }
+            else
+            {
+                qRotation = Quaternion(vDirection, pParticle->m_fRotation);
+                qRotation = qRotation * qCamera;
+            }
+            if (fScale != 1.0f)
+            {
+                fXSize *= fScale;
+                fYSize *= fScale;
+            }
+
+            fFrameAlpha = 0.0f;
+            int nColumn = 0;
+            int nRow = 0;
+            if (nPass == 1)
+            {
+                nNextFrame = GetNextFrame(pParticle->m_nFrame);
+                if (nNextFrame >= 0)
+                {
+                    fFrameAlpha = (pParticle->m_fAge - pParticle->m_fFrameAge) /
+                                  fFrameTime * 0.5f;
+                    nRow = (int)(nNextFrame * fUScale);
+                    nColumn = nNextFrame - nXGrid * nRow;
+                }
+            }
+            else if (nPass == 2)
+            {
+                nPreviousFrame = GetNeighborFrame(pParticle->m_nFrame);
+                if (nPreviousFrame >= 0)
+                {
+                    fAge = (pParticle->m_fAge - pParticle->m_fFrameAge) / fFrameTime;
+                    fFrameAlpha = 1.0f - fAge * 0.5f;
+                    nRow = (int)(nPreviousFrame * fUScale);
+                    nColumn = nPreviousFrame - nXGrid * nRow;
+                }
+            }
+            else if (nPass == 3)
+            {
+                nNextFrame = GetNextFrame(nNextFrame);
+                if (nNextFrame >= 0)
+                {
+                    fFrameAlpha = (pParticle->m_fAge - pParticle->m_fFrameAge) /
+                                  fFrameTime * 0.25f;
+                    nRow = (int)(nNextFrame * fUScale);
+                    nColumn = nNextFrame - nXGrid * nRow;
+                }
+            }
+            else if (nPass == 4)
+            {
+                nPreviousFrame = GetNeighborFrame(nPreviousFrame);
+                if (nPreviousFrame >= 0)
+                {
+                    fAge = (pParticle->m_fAge - pParticle->m_fFrameAge) / fFrameTime;
+                    fFrameAlpha = (1.0f - fAge) * 0.25f;
+                    nRow = (int)(nPreviousFrame * fUScale);
+                    nColumn = nPreviousFrame - nXGrid * nRow;
+                }
+            }
+            else
+            {
+                roundToInt(nRow, (float)floor(pParticle->m_nFrame * fUScale));
+                nColumn = pParticle->m_nFrame - nXGrid * nRow;
+                if (pNode->m_bFrameBlending)
+                    fFrameAlpha = 0.5f;
+                else
+                    fFrameAlpha = 1.0f;
+            }
+            Vector vVertical;
+            if (m_nReserved114 == AlignedToParticleDir)
+            {
+                vRight = pParticle->m_qOrientation.xdir();
+                vVertical = pParticle->m_qOrientation.zdir();
+            }
+            else
+            {
+                vRight = qRotation.xdir();
+                if (m_nReserved114 == Aligned)
+                    vVertical = vUp;
+                else if (bSplat)
+                    vVertical = cross(pParticle->m_vHeading, vRight);
+                else
+                    vVertical = cross(vDirection, vRight);
+            }
+            vRight = vRight * fXSize;
+            vVertical = vVertical * fYSize;
+            int nRed, nGreen, nBlue, nAlpha;
+            roundToInt(nRed, vColor.m_fX * 255.0f);
+            roundToInt(nGreen, vColor.m_fY * 255.0f);
+            roundToInt(nBlue, vColor.m_fZ * 255.0f);
+            roundToInt(nAlpha, fObjectAlpha * fFrameAlpha * fAlpha * fTileAlpha * 255.0f);
+            unsigned long nColor = nRed | ((nGreen | ((nBlue | (nAlpha << 8)) << 8)) << 8);
+
+            RenderVertexVTC* pVertices = particlePool + 4 * i;
+            for (int j = 0; j < 4; j++)
+                *reinterpret_cast<unsigned long*>(pVertices[j].color) = nColor;
+
+            Vector vLeftCorner = pParticle->m_vPosition - vRight - vVertical;
+            pVertices[0].position[0] = vLeftCorner.m_fX;
+            particlePool[4 * i + 0].position[1] = vLeftCorner.m_fY;
+            particlePool[4 * i + 0].position[2] = vLeftCorner.m_fZ;
+            pVertices[0].u = nColumn * fUScale;
+            pVertices[0].v = 1.0f - (nRow + 1) * fVScale;
+            Vector vRightCorner = pParticle->m_vPosition + vRight - vVertical;
+            pVertices[1].position[0] = vRightCorner.m_fX;
+            particlePool[4 * i + 1].position[1] = vRightCorner.m_fY;
+            particlePool[4 * i + 1].position[2] = vRightCorner.m_fZ;
+            pVertices[1].u = (nColumn + 1) * fUScale;
+            pVertices[1].v = 1.0f - (nRow + 1) * fVScale;
+            vRightCorner = pParticle->m_vPosition + vRight + vVertical;
+            pVertices[2].position[0] = vRightCorner.m_fX;
+            particlePool[4 * i + 2].position[1] = vRightCorner.m_fY;
+            particlePool[4 * i + 2].position[2] = vRightCorner.m_fZ;
+            pVertices[2].u = (nColumn + 1) * fUScale;
+            pVertices[2].v = 1.0f - nRow * fVScale;
+            vLeftCorner = pParticle->m_vPosition - vRight + vVertical;
+            pVertices[3].position[0] = vLeftCorner.m_fX;
+            particlePool[4 * i + 3].position[1] = vLeftCorner.m_fY;
+            particlePool[4 * i + 3].position[2] = vLeftCorner.m_fZ;
+            pVertices[3].u = nColumn * fUScale;
+            pVertices[3].v = 1.0f - nRow * fVScale;
+        }
+        if (nPass > 0)
+        {
+            GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE);
+            bFog = GLRender_IsEnabled(ENABLE_FOG);
+            GLRender_Disable(ENABLE_FOG);
+        }
+        countfaces += m_lstActive.m_nCount;
+        if (bDepthTexture)
+            GLRender::RenderObjectsVTCQuadUPVP(particlePool, 4 * m_lstActive.m_nCount);
+        else
+            GLRender::RenderObjectsVTCQuadUP(particlePool, 4 * m_lstActive.m_nCount);
+    }
+    GLRender_PopCurrentMatrix();
+    GLRender_SetDepthMask(GL_TRUE);
+    GLRender_Enable(ENABLE_LIGHTING);
+    GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+    if (static_cast<MdlNodeEmitter*>(m_pNode)->m_nTwoSidedTex)
+    {
+        GLRender_SetPolygonRenderMode(FACING_FRONT_AND_BACK, FILL_SOLID);
+        GLRender_Enable(ENABLE_CULL_FACE);
+    }
+    if (bDepthTexture)
+    {
+        GLRender_Disable(ENABLE_VERTEX_PROGRAM);
+        GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
+    }
+    if (bFog) GLRender_Enable(ENABLE_FOG);
 }
 #endif

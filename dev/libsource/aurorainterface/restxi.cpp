@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x00710DB0
+// PC 0x00710DB0  Xbox 0x002FAFE0
 CResTXI::CResTXI()
 {
     m_bServiced = 0;
@@ -7,7 +7,7 @@ CResTXI::CResTXI()
     m_pTXIData = 0;
     m_bAllocPrefix = 1;
 }
-// PC 0x00710DE0
+// PC 0x00710DE0  Xbox 0x002FB010
 CResTXI::~CResTXI()
 {
 }

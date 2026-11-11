@@ -11,7 +11,7 @@ CVirtualMachine::CVirtualMachine()
 {
     m_pVirtualMachineInternal = new CVirtualMachineInternal;
 }
-// PC 0x005D0FB0
+// PC 0x005D0FB0  Xbox 0x00157D40
 CVirtualMachine::~CVirtualMachine()
 {
     if (m_pVirtualMachineInternal != NULL)

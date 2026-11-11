@@ -131,7 +131,7 @@ class TimeTrigger;
 
 List<Binding*> bindings;
 List<TimeTrigger*> timetriggers;
-
+// Xbox 0x002ACBB0
 char* keysdown()
 {
     static char sKeys[256];
@@ -145,3 +145,190 @@ char* keysdown()
 #endif
     return sKeys;
 }
+#ifdef _XBOX
+
+class Binding
+{
+public:
+    Binding();
+    ~Binding();
+
+    char m_cKey;
+    char m_sCommand[256];
+    int m_bRepeat;
+    int m_bDown;
+};
+
+class TimeTrigger
+{
+public:
+    TimeTrigger(float fTime, char* sCommand);
+
+    float m_fTime;
+    char m_sCommand[256];
+};
+// Xbox 0x002ACD40
+Binding* FindBinding(char cKey)
+{
+    for (int i = 0; i < bindings.m_nCount; i++)
+    {
+        if (bindings[i]->m_cKey == cKey)
+            return bindings[i];
+    }
+    return 0;
+}
+// Xbox 0x002ACD70
+Binding::Binding()
+{
+    m_cKey = 0;
+    m_sCommand[0] = 0;
+    bindings.Add(this);
+    m_bRepeat = 0;
+    m_bDown = 0;
+}
+// Xbox 0x002ACDA0
+Binding::~Binding()
+{
+    bindings.Remove(this);
+}
+// Xbox 0x002ACDB0
+TimeTrigger::TimeTrigger(float fTime, char* sCommand)
+{
+    m_fTime = fTime;
+    strcpy(m_sCommand, sCommand ? sCommand : "");
+    int i;
+    for (i = 0; i < timetriggers.m_nCount; i++)
+    {
+        if (!(m_fTime > timetriggers[i]->m_fTime))
+            break;
+    }
+    timetriggers.Insert(this, i);
+}
+// Xbox 0x002ACE20
+char* at(char* sArguments)
+{
+    static char sResult[256];
+    float fBase = 0.0f;
+    float fTime = 0.0f;
+    int nRead;
+    char sTime[64];
+    char* sNumber = sTime;
+    sTime[0] = 0;
+    sscanf(sArguments, "%s%n", sNumber, &nRead);
+    if (!sTime[0])
+    {
+        sprintf(sResult, "%d time triggers", timetriggers.m_nCount);
+        return sResult;
+    }
+    sArguments += nRead;
+    while (*sArguments == ' ' || *sArguments == '\t' || *sArguments == '\r' || *sArguments == '\n')
+        sArguments++;
+    if (sTime[0] == '+')
+    {
+        sNumber = sTime + 1;
+        fBase = GlobalTime;
+    }
+    if (sscanf(sNumber, "%f", &fTime) == 1)
+    {
+        fTime += fBase;
+        if (!*sArguments)
+        {
+            int nCount = timetriggers.m_nCount;
+            if (!nCount)
+                return "no active timetriggers";
+            TimeTrigger* pNearest = timetriggers[0];
+            for (int i = 0; i < nCount; i++)
+            {
+                if (fabs(fTime - timetriggers[i]->m_fTime) < fabs(fTime - pNearest->m_fTime))
+                    pNearest = timetriggers[i];
+            }
+            sprintf(sResult, "At %g: \"%s\"", pNearest->m_fTime, pNearest->m_sCommand);
+            return sResult;
+        }
+        new TimeTrigger(fTime, sArguments);
+        sprintf(sResult, "Added at %g: \"%s\"", fTime, sArguments);
+        return sResult;
+    }
+    return "only time triggers supported at this time";
+}
+// Xbox 0x002AD0F0
+char* bind(char* sArguments)
+{
+    static char sResult[256];
+    Binding* pBinding = 0;
+    int bRepeat = 0;
+    int nRead;
+    char sKey[64];
+    sKey[0] = 0;
+    sResult[0] = 0;
+    sscanf(sArguments, "%s%n", sKey, &nRead);
+    if (!sKey[0])
+    {
+        sprintf(sResult, "%d bindings: ", bindings.m_nCount);
+        for (int i = 0; i < bindings.m_nCount; i++)
+            sprintf(sResult + strlen(sResult), " %c(%d)", bindings[i]->m_cKey, bindings[i]->m_cKey);
+    }
+    else
+    {
+        sArguments += nRead;
+        while (*sArguments == ' ' || *sArguments == '\t')
+            sArguments++;
+        if (*sArguments == '+')
+        {
+            bRepeat = 1;
+            sArguments++;
+        }
+        char cKey = sKey[0];
+        if (cKey == '\\')
+        {
+            int nKey = 0;
+            sscanf(sKey + 1, "%d", &nKey);
+            cKey = (char)nKey;
+        }
+        else
+        {
+            if (strlen(sKey) != 1)
+                return "sorry, only basic alpha chars at this time";
+            if (cKey >= 'a' && cKey <= 'z')
+            {
+                cKey -= 32;
+                sKey[0] = cKey;
+            }
+        }
+        pBinding = FindBinding(cKey);
+        if (!*sArguments)
+        {
+            if (!pBinding)
+                sprintf(sResult, "%s has no binding", sKey);
+            else
+                sprintf(sResult, "%s bound to %s (%s)", sKey, pBinding->m_sCommand, pBinding->m_bRepeat ? "repeat" : "once");
+        }
+        else
+        {
+            char sFirst[64];
+            sFirst[0] = 0;
+            sscanf(sArguments, "%s", sFirst);
+            if (!_stricmp(sFirst, "0") || !_stricmp(sFirst, "NULL"))
+            {
+                if (!pBinding)
+                    sprintf(sResult, "%s didn't have a binding anyway", sKey);
+                else
+                {
+                    sprintf(sResult, "%s no longer bound to %s", sKey, pBinding->m_sCommand);
+                    delete pBinding;
+                }
+            }
+            else
+            {
+                sprintf(sResult, "%s binding for %s \"%s\" %s", pBinding ? "changing" : "adding", sKey, sArguments, bRepeat ? "repeat" : "once");
+                if (!pBinding)
+                    pBinding = new Binding;
+                pBinding->m_cKey = cKey;
+                pBinding->m_bRepeat = bRepeat;
+                strcpy(pBinding->m_sCommand, sArguments);
+            }
+        }
+    }
+    return sResult;
+}
+#endif

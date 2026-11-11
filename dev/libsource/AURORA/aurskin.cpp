@@ -2102,3 +2102,26 @@ void PartSkin::Draw(bool bRenderLast)
 #endif
 }
 
+#ifdef _XBOX
+// Xbox 0x002DC720
+char* usebumpdiffuseonly(char* sArguments)
+{
+    usebumpdiffuse = 1;
+    usebumpspecular = 0;
+    return "Displaying only diffuse highlights on bumpmapped objects.";
+}
+// Xbox 0x002DC740
+char* usebumpspecularonly(char* sArguments)
+{
+    usebumpdiffuse = 0;
+    usebumpspecular = 1;
+    return "Displaying only specular highlights on bumpmapped objects.";
+}
+// Xbox 0x002DC760
+char* usebumpspecularanddiffuse(char* sArguments)
+{
+    usebumpdiffuse = 1;
+    usebumpspecular = 1;
+    return "Displaying both specular and diffuse highlights on bumpmapped objects.";
+}
+#endif

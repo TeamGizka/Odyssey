@@ -188,7 +188,11 @@ void MaxTree::operator delete(void* pMemory)
         pTree->m_pfnDestructor(pTree);
         if (pTree->AsModel()->m_pVertexResource)
             AurResFree(pTree->AsModel()->m_pVertexResource, 0);
+#ifdef _XBOX
+        AurResFree(pTree->m_pModelResource, 0);
+#else
         delete[] (unsigned char*)pTree;
+#endif
     }
     else if (pTree->m_nType)
     {
@@ -369,6 +373,11 @@ void MdlNode::ControlDispatch(Part* pPart, float fTime,
 {
     switch (m_nNodeType)
     {
+#ifdef _XBOX
+    case MDL_NODE_HEADER:
+        InternalControl(pPart, fTime, fPreviousTime, fBlend);
+        break;
+#endif
     case MDL_NODE_HEADER | MDL_NODE_LIGHT:
         AsMdlNodeLight()->InternalControl(pPart, fTime, fPreviousTime, fBlend);
         break;
@@ -399,9 +408,11 @@ void MdlNode::ControlDispatch(Part* pPart, float fTime,
     case MDL_NODE_HEADER | MDL_NODE_TRIGGER:
         AsMdlNodeTrigger()->InternalControl(pPart, fTime, fPreviousTime, fBlend);
         break;
+#ifndef _XBOX
     case MDL_NODE_HEADER:
         InternalControl(pPart, fTime, fPreviousTime, fBlend);
         break;
+#endif
     case MDL_NODE_HEADER | MDL_NODE_TRIMESH | MDL_NODE_LIGHTSABER:
         AsMdlNodeLightsaber()->InternalControl(pPart, fTime, fPreviousTime, fBlend);
         break;
@@ -499,8 +510,8 @@ void MdlNode::PostProcessDispatch()
         break;
     }
 }
-// PC 0x0043FD10
-void MdlNodeLightsaber::InternalDestructor()
+#ifndef _XBOX
+void MdlNodeLightsaber::InternalDestructor()  // PC 0x0043FD10  Xbox 0x00296130
 {
     GLRender::DeletePool(m_nBladePool);
     m_nBladePool = RequestPoolManager::INVALID_POOL;
@@ -511,8 +522,8 @@ void MdlNodeLightsaber::InternalDestructor()
         m_lChildren[--i]->DestructorDispatch();
     --countnode;
 }
-// PC 0x0043FD70
-inline MdlNode* MdlNodeTrigger::InternalConJoin()
+#endif
+inline MdlNode* MdlNodeTrigger::InternalConJoin()  // PC 0x0043FD70
 {
     return new MdlNodeTrigger(TranslateNodeName());
 }
@@ -637,7 +648,7 @@ void MdlNode::DestructorDispatch()
         break;
     }
 }
-// PC 0x00448000
+// PC 0x00448000  Xbox 0x0029BE80
 void MdlNodeLight::InternalDestructor()
 {
     for (int i = m_lstTextures.m_nCount; i != 0; --m_lstTextures.m_nCount)
@@ -985,14 +996,14 @@ Part* CreateInstanceTree(MdlNode* pNode, Gob* pGob)
     pPart->PostProcess(pPart);
     return pPart;
 }
-
+// Xbox 0x0029B780
 inline CAurObjectLightContainer::CAurObjectLightContainer()
     : m_lstLights(0), m_lstFadeIntensities(0)
 {
     m_pShadowLight = 0;
     m_fShadowFade = 0.0f;
 }
-// PC 0x00445600
+// PC 0x00445600  Xbox 0x0029B800
 inline CAurObjectLightContainer::~CAurObjectLightContainer()
 {
 }
@@ -1320,9 +1331,31 @@ Gob* FindGob(char* sName)
 
     return 0;
 }
-
+// Xbox 0x00296540
 const char* setmirrorimage(char* sCommand)
 {
+#ifdef _XBOX
+    Gob* pGob = FindGob(GetToken(&sCommand));
+    if (pGob == 0)
+    {
+        return "FAILURE";
+    }
+    char* sImposters = GetToken(&sCommand);
+    int nImposters = atoi(sImposters);
+    float* pfValues = new float[3 * nImposters];
+    if (nImposters == 0)
+    {
+        nImposters = 1;
+    }
+    for (int i = 0; i < nImposters; i++)
+    {
+        pfValues[3 * i] = 3.0f * (float)sin(TWO_PI / nImposters);
+        pfValues[3 * i + 1] = 3.0f * (float)cos(TWO_PI / nImposters);
+        pfValues[3 * i + 2] = 0.0f;
+    }
+    pGob->SetUpImposters(atoi(sImposters), pfValues);
+    return "SUCCESS";
+#else
     char sName[64];
     int nImposters;
 
@@ -1349,6 +1382,7 @@ const char* setmirrorimage(char* sCommand)
     }
     pGob->SetUpImposters(nImposters, pfValues);
     return "SUCCESS";
+#endif
 }
 // PC 0x004404B0  Xbox 0x00296620
 void Gob::SetUpImposters(int nImposterType, float* pfImposterValues)
@@ -1443,6 +1477,16 @@ MdlNodeSkin* MdlNode::AsMdlNodeSkin()
     else
         return 0;
 }
+#ifdef _XBOX
+// Xbox 0x00294AD0
+MdlNodeTrigger* MdlNode::AsMdlNodeTrigger()
+{
+    if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIGGER)) ==
+        (MDL_NODE_HEADER | MDL_NODE_TRIGGER))
+        return (MdlNodeTrigger*)this;
+    return 0;
+}
+#endif
 // PC 0x004404D0  Xbox 0x00296640
 Vector Gob::GetCutsceneDummyPosition()
 {
@@ -1517,7 +1561,7 @@ int Gob::LoadAddInAnimations(char* sName)
         else
             return 0;
     }
-    ++m_pAnimationModel->m_nReferenceCount;
+    AUR_MODEL_ADDREF(m_pAnimationModel, this);
     return 1;
 }
 // PC 0x00440960  Xbox 0x00296FB0
@@ -1571,9 +1615,18 @@ const char* setillumination(char* sCommand)
     float fGreen;
     float fBlue;
 
+#ifdef _XBOX
+    fBlue = 0.0f;
+    fGreen = 0.0f;
+    fRed = 0.0f;
+    sName[0] = 0;
+    int nCount = sscanf(sCommand, "%s%f%f%f", sName, &fRed, &fGreen, &fBlue);
+    if (nCount != 4 && nCount != 5)
+#else
     sName[0] = 0;
     int nCount = sscanf(sCommand, "%s%f%f%f", sName, &fRed, &fGreen, &fBlue);
     if (nCount != 4)
+#endif
     {
         return "Usage:  setillumination <gobname> <red> <green> <blue> <optional alpha>";
     }
@@ -2773,7 +2826,7 @@ void Gob::BehaviorMessage(char* sMessage)
         m_pBehavior->Message(sMessage);
     }
 }
-// PC 0x0043F5C0  Xbox 0x002958F0
+// PC 0x0043F5C0  Xbox 0x002F1110
 Vector Part::SetPartPosition(Vector vPosition)
 {
     return Vector();
@@ -2910,9 +2963,15 @@ const char* append(char* sCommand)
     char sPart[64];
     char sModel[64];
 
+#ifdef _XBOX
+    sPart[0] = 0;
+    sModel[0] = 0;
+    sName[0] = 0;
+#else
     sName[0] = 0;
     sPart[0] = 0;
     sModel[0] = 0;
+#endif
     sscanf(sCommand, "%s%s%s", sName, sPart, sModel);
     if (sName[0] == 0 || sPart[0] == 0 || sModel[0] == 0)
     {
@@ -2923,7 +2982,11 @@ const char* append(char* sCommand)
     {
         return "Error:  No gob by that name";
     }
+#ifdef _XBOX
+    if (FindPart(pGob->m_pRootPart, sPart) == 0)
+#else
     if (pGob->GetPart(sPart) == 0)
+#endif
     {
         return "Error:  Object does not have part with that name";
     }
@@ -2936,8 +2999,13 @@ const char* amputate(char* sCommand)
     char sName[64];
     char sPart[64];
 
+#ifdef _XBOX
+    sPart[0] = 0;
+    sName[0] = 0;
+#else
     sName[0] = 0;
     sPart[0] = 0;
+#endif
     sscanf(sCommand, "%s%s", sName, sPart);
     if (sName[0] == 0 || sPart[0] == 0)
     {
@@ -2948,7 +3016,11 @@ const char* amputate(char* sCommand)
     {
         return "Error:  No gob by that name";
     }
+#ifdef _XBOX
+    if (FindPart(pGob->m_pRootPart, sPart) == 0)
+#else
     if (pGob->GetPart(sPart) == 0)
+#endif
     {
         return "Error:  Object does not have part with that name";
     }
@@ -3042,6 +3114,7 @@ float Gob::GetMaximumLightRadius()
     }
     return fMaximumRadius;
 }
+#ifndef _XBOX
 // PC 0x00447FA0  Xbox 0x00064C20
 template <> inline SafePointer<CAurObject>& SafePointer<CAurObject>::operator=(CAurObject* pObject)
 {
@@ -3049,8 +3122,8 @@ template <> inline SafePointer<CAurObject>& SafePointer<CAurObject>::operator=(C
     SetPointer(pObject);
     return *this;
 }
-// PC 0x0044B2C0  Xbox 0x0029F2B0
-void Gob::RemoveAddInAnimations()
+#endif
+void Gob::RemoveAddInAnimations()  // PC 0x0044B2C0  Xbox 0x0029F2B0
 {
     if (m_pAnimationModel != NULL)
         m_pAnimationModel->DelRef(this);
@@ -3208,6 +3281,7 @@ int Gob::SetTextureAttributes(char* sTexture, char* sAttributes)
     }
     return 0;
 }
+#ifndef _XBOX
 // PC 0x00446EE0  Xbox 0x0029B120
 void Gob::ReattachReference(CAurObject* pObject, char* sPart)
 {
@@ -3237,6 +3311,7 @@ void Gob::ReattachReference(CAurObject* pObject, char* sPart)
         }
     }
 }
+#endif
 // PC 0x00447180  Xbox 0x0029B360
 void Gob::CollectLights(List<PartLight*>& lstLights)
 {
@@ -3410,7 +3485,11 @@ Gob::Gob(char* sName)
     m_bInCutscene = false;
     m_bHierarchyAnimated = false;
     m_pLightContainer = new CAurObjectLightContainer;
+#ifdef _XBOX
+    m_nVisiblePixels = 1;
+#else
     m_nUnused2 = 1;
+#endif
     gobs.Insert(this, FindGobIdx(m_sName));
 }
 // PC 0x0044B2F0  Xbox 0x0029F2D0
@@ -3480,7 +3559,7 @@ int Gob::Append(char* sModel, char* sPart)
     Model* pModel = FindModel(sModel);
     if (pModel == 0)
         return 0;
-    ++pModel->m_nReferenceCount;
+    AUR_MODEL_ADDREF(pModel, this);
     Part* pPart = CreateInstanceTree(pModel->m_pRootNode, this);
     pPart->m_vPosition = Vector(0.0f, 0.0f, 0.0f);
     pPart->m_qOrientation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
@@ -3562,13 +3641,13 @@ CAurObject* NewCAurObject(char* sModel, char* sName, FILE* pModelFile, FILE* pVe
         sName = pModel->m_sName;
     Gob* pGob = new Gob(sName);
     pGob->m_pModel = pModel;
-    ++pModel->m_nReferenceCount;
+    AUR_MODEL_ADDREF(pModel, pGob);
     pGob->m_pModelX = pModelX;
     if (pModelX)
-        ++pModelX->m_nReferenceCount;
+        AUR_MODEL_ADDREF(pModelX, pGob);
     pGob->m_pModelZ = pModelZ;
     if (pModelZ)
-        ++pModelZ->m_nReferenceCount;
+        AUR_MODEL_ADDREF(pModelZ, pGob);
     pGob->m_pRootPart = CreateInstanceTree(pModel->m_pRootNode, pGob);
     pGob->m_pRootPart->m_pNode->ProcessSkinSeams();
     pGob->m_pRootPart->m_pAurObject = pGob;
@@ -3981,6 +4060,27 @@ bool AurControlPart(char* sCommand)
 
     sPart[0] = 0;
     sGob[0] = 0;
+#ifdef _XBOX
+    if (sscanf(sCommand, "%s%s%n", sGob, sPart, &nChars) < 2 || sGob[0] == 0 || sPart[0] == 0)
+    {
+        return false;
+    }
+    pGob = FindGob(sGob);
+    if (pGob == 0)
+    {
+        return false;
+    }
+    pPart = pGob->GetPart(sPart);
+    if (pPart == 0)
+    {
+        return false;
+    }
+    MdlNode* pNode = pPart->m_pNode->ConJoinDispatch();
+    pNode->ParseFieldDispatch(skipspace(sCommand + nChars));
+    pNode->ControlDispatch(pPart, 0.0f, 0.0f, 1.0f);
+    delete pNode;
+    return true;
+#else
     if (sscanf(sCommand, "%s%s%n", sGob, sPart, &nChars) >= 2 &&
         sGob[0] && sPart[0] &&
         (pGob = FindGob(sGob)) != 0 &&
@@ -3993,6 +4093,7 @@ bool AurControlPart(char* sCommand)
         return true;
     }
     return false;
+#endif
 }
 // PC 0x0044B140  Xbox 0x0029F190
 MdlNode* MdlNode::ConJoinDispatch()
@@ -4038,11 +4139,15 @@ const char* spawn(char* sCommand)
     CAurObject* pObject = NewCAurObject(sModel, sName, 0, 0);
     strcpy(lastspawnedobject, pObject ? pObject->GetName() : "NULL");
     FuncInterp("attach [lastspawned] scene");
+#ifdef _XBOX
+    return pObject ? "success" : "failure";
+#else
     if (pObject == 0)
     {
         return "failure";
     }
     return "success";
+#endif
 }
 
 Vector defaultdiffuse(0.8f, 0.8f, 0.8f);
@@ -4066,3 +4171,555 @@ static inline void AurModelTrace2()
 static inline void AurModelTrace1()
 {
 }
+
+#ifdef _XBOX
+// Xbox 0x002998C0
+bool Gob::IsVisibilityTested()
+{
+    return (IsInCutscene() || IsAlternateShadowCaster() || IsAllRooms() || IsEmitterBounds()) ? false : true;
+}
+#endif
+
+#ifdef _XBOX
+// Xbox 0x00295220
+const char* lasthitpart(char* sCommand)
+{
+    return hitpartname ? hitpartname : "NULL";
+}
+// Xbox 0x002953B0
+const char* spewpltnames(char* sCommand)
+{
+    spewpltfp = fopen("D:\\override\\filenamesofplts", "wb");
+    return "SPEWING";
+}
+// Xbox 0x002953D0
+const char* quitspewing(char* sCommand)
+{
+    fclose(spewpltfp);
+    return "CLOSESD";
+}
+// Xbox 0x002958F0
+const char* lastspawned(char* sCommand)
+{
+    return lastspawnedobject;
+}
+// Xbox 0x00296740
+const char* gobdisablefog(char* sCommand)
+{
+    Gob* pGob = FindGob(sCommand);
+    if (pGob == 0)
+    {
+        return "Cannot find gob.";
+    }
+    pGob->DisableFog();
+    return "Success.";
+}
+// Xbox 0x00296770
+const char* gobenablefog(char* sCommand)
+{
+    Gob* pGob = FindGob(sCommand);
+    if (pGob == 0)
+    {
+        return "Cannot find gob.";
+    }
+    pGob->EnableFog();
+    return "Success.";
+}
+// Xbox 0x00296830
+const char* removeaddin(char* sCommand)
+{
+    char sName[64];
+
+    if (sscanf(sCommand, "%s", sName) != 1)
+    {
+        return "Incorrect number of params";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "Couldn't find Gob";
+    }
+    pGob->PlayAnimation("NULL", 1.0f, 0, 0);
+    pGob->RemoveAddInAnimations();
+    pGob->PlayAnimation("ca1slashl", 1.0f, 0, 0);
+    return "Removed add-in anims";
+}
+// Xbox 0x00296EA0
+const char* enablebumpout(char* sCommand)
+{
+    static char sResult[128];
+    float fDistance = 0.0f;
+    char sName[64];
+    char sTexture[64];
+
+    int nRead = sscanf(sCommand, "%s%f%s", sName, &fDistance, sTexture);
+    if (nRead != 2 && nRead != 3)
+    {
+        return "incorrect parameters  usage: enablebumpout gob bumpdist texture";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        sprintf(sResult, "Object '%s' not found.", sName);
+        return sResult;
+    }
+    pGob->EnableRenderBumpedOut(sTexture, fDistance);
+    return "success";
+}
+// Xbox 0x00296F40
+const char* getmaximumlightradius(char* sCommand)
+{
+    static char sResult[128];
+    char sName[64];
+
+    if (sscanf(sCommand, "%s", sName) != 1)
+    {
+        return "Failure: getmaximumlightradius requires a gob name";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "That gob cannot be found!";
+    }
+    sprintf(sResult, "Maximum light radius for %s is %.2f", sName, pGob->GetMaximumLightRadius());
+    return sResult;
+}
+// Xbox 0x00297340
+const char* setcolorshifting(char* sCommand)
+{
+    char sName[64];
+    float fRed;
+    float fGreen;
+    float fBlue;
+    float fAlpha;
+    int bPropagate;
+
+    fBlue = 0.0f;
+    fGreen = 0.0f;
+    fRed = 0.0f;
+    fAlpha = 1.0f;
+    bPropagate = 1;
+    sName[0] = 0;
+    int nRead = sscanf(sCommand, "%s%f%f%f%f%d", sName, &fRed, &fGreen, &fBlue, &fAlpha, &bPropagate);
+    if (nRead != 4 && nRead != 5 && nRead != 6)
+    {
+        return "Usage:  setcolorshifting <gobname> <red> <green> <blue> <optional alpha> <optional propagate>";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "Error:  No gob by that name";
+    }
+    pGob->SetColorShifting(Vector(fRed, fGreen, fBlue), fAlpha, bPropagate);
+    return "Success";
+}
+// Xbox 0x00298DB0
+const char* rt(char* sCommand)
+{
+    char sName[32];
+    char sOldTexture[32];
+    char sNewTexture[32];
+
+    sscanf(sCommand, "%s %s %s", sName, sOldTexture, sNewTexture);
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "No gob by that name!";
+    }
+    pGob->ReplaceTexture(sNewTexture, sOldTexture);
+    return "Replaced the texture";
+}
+// Xbox 0x00298EC0
+const char* setgobshit(char* sCommand)
+{
+    char sName[64];
+    char sTexture[64];
+
+    sTexture[0] = 0;
+    sName[0] = 0;
+    if (sscanf(sCommand, "%s %s", sName, sTexture) != 2)
+    {
+        return "needs 2 params";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "Can't find gob";
+    }
+    pGob->SetTextureAttributes(sTexture, "shitty mcshit");
+    return "Shitty McShit";
+}
+// Xbox 0x002991F0
+void ExposeParts(Gob* pGob, Part* pPart)
+{
+    char sName[256];
+
+    if (pGob == 0 || pPart == 0)
+    {
+        return;
+    }
+    sprintf(sName, "%s.%s.position", pGob->m_sName, pPart->m_pNode->TranslateNodeName());
+    new ConsoleFunc(sName, &pPart->m_vPosition);
+    sprintf(sName, "%s.%s.orientation", pGob->m_sName, pPart->m_pNode->TranslateNodeName());
+    new ConsoleFunc(sName, &pPart->m_qOrientation);
+    sprintf(sName, "%s.%s.controlmode", pGob->m_sName, pPart->m_pNode->TranslateNodeName());
+    new ConsoleFunc(sName, &pPart->m_nInstanceState);
+    for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)
+    {
+        ExposeParts(pGob, pPart->m_lstChildren[i]);
+    }
+}
+// Xbox 0x00299360
+const char* exposeparts(char* sCommand)
+{
+    Gob* pGob = FindGob(sCommand);
+    if (pGob == 0)
+    {
+        return "no gob of that name";
+    }
+    ExposeParts(pGob, pGob->m_pRootPart);
+    return "OK";
+}
+// Xbox 0x00299990
+const char* behaviormessage(char* sCommand)
+{
+    char sName[64];
+    int nLength;
+
+    int nRead = sscanf(sCommand, "%s%n", sName, &nLength);
+    char* sText = sCommand + nLength;
+    char* sMessage = *sText ? sText + 1 : sText;
+    if (nRead < 1 || sName[0] == 0 || *sMessage == 0)
+    {
+        return "usage behaviormesage gob message";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "no object by that name";
+    }
+    pGob->BehaviorMessage(sMessage);
+    return "OK";
+}
+// Xbox 0x00299A10
+const char* attach(char* sCommand)
+{
+    static char sResult[128];
+    char sTarget[64];
+    char sPart[64];
+    char sName[64];
+
+    sPart[0] = 0;
+    int nRead = sscanf(sCommand, "%s%s%s", sName, sTarget, sPart);
+    if (nRead != 2 && nRead != 3)
+    {
+        return "incorrect parameters  usage: attach thing object [part]";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        sprintf(sResult, "Object '%s' not found.", sName);
+        return sResult;
+    }
+    if (stricmp(sTarget, "null") == 0)
+    {
+        pGob->SetBehavior(0);
+        pGob->SetScene(0);
+        return "unattached object from everything";
+    }
+    Scene* pScene = FindScene(sTarget);
+    if (pScene)
+    {
+        pGob->SetScene(pScene);
+        return "attached to scene";
+    }
+    Gob* pTarget = FindGob(sTarget);
+    if (pTarget == 0)
+    {
+        sprintf(sResult, "Object '%s' not found.", sTarget);
+        return sResult;
+    }
+    if (pGob->AttachToObject(pTarget, sPart, 0) == 0)
+    {
+        sprintf(sResult, "Invalid target for attachment: '%s %s'.", sTarget, sPart);
+        return sResult;
+    }
+    return "success";
+}
+// Xbox 0x00299B60
+const char* setgobscheme(char* sCommand)
+{
+    char sTexture[64];
+    char sPalette[64];
+    char sName[64];
+    unsigned short anColors[256];
+
+    if (sscanf(sCommand, "%s %s %s", sName, sPalette, sTexture) != 3)
+    {
+        return "Failure: setgobscheme requires name, texture, and pltname!";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "That gob cannot be found!";
+    }
+    for (int i = 0; i < 256; i++)
+    {
+        anColors[i] = rand() % 10;
+    }
+    return pGob->ReplaceTexture(sPalette, sTexture, 256, anColors, 0) ? "Success" : "Failure";
+}
+// Xbox 0x00299C20
+const char* setprimarygob(char* sCommand)
+{
+    int nPriority = 0;
+    char sName[64];
+
+    if (sscanf(sCommand, "%s%d", sName, &nPriority) != 2)
+    {
+        return "Failure: setprimarygob requires a gob name and a light priority";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "That gob cannot be found!";
+    }
+    pGob->SetLightPriority(nPriority);
+    return "Success, set the primary gob";
+}
+// Xbox 0x00299C90
+const char* setbboxongob(char* sCommand)
+{
+    int bOn = 0;
+    Vector vColor(0.0f, 0.0f, 0.0f);
+    char sName[64];
+
+    int nRead = sscanf(sCommand, "%s %d %f %f %f", sName, &bOn, &vColor.m_fX, &vColor.m_fY, &vColor.m_fZ);
+    if (nRead != 2 && nRead != 5)
+    {
+        return "USAGE: setbboxongob <gobname> <1/0 (on/off)> <color>";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "That gob cannot be found!";
+    }
+    if (bOn)
+    {
+        pGob->EnableRenderGobBBox(vColor);
+    }
+    else
+    {
+        pGob->DisableRenderGobBBox();
+    }
+    return "Success.";
+}
+// Xbox 0x0029A070
+const char* message(char* sCommand)
+{
+    int nLength;
+    char sName[64];
+
+    sName[0] = 0;
+    nLength = 0;
+    sscanf(sCommand, "%s%n", sName, &nLength);
+    Gob* pGob = FindGob(sName);
+    if (pGob == 0)
+    {
+        return "no object by that name";
+    }
+    char* sMessage = skipspace(sCommand + nLength);
+    if (pGob->m_pBehavior == 0)
+    {
+        return "object doesn't even have a behavior associated with it";
+    }
+    pGob->m_pBehavior->Message(sMessage);
+    return "OK";
+}
+// Xbox 0x0029A140
+const char* purgemodels(char* sCommand)
+{
+    static char sResult[128];
+    int nDeleted = 0;
+
+    for (int i = Models.m_nCount; i != 0;)
+    {
+        --i;
+        if (i < Models.m_nCount)
+        {
+            if (Models[i]->m_nReferenceCount == 0)
+            {
+                delete Models[i];
+                ++nDeleted;
+            }
+        }
+    }
+    sprintf(sResult, "deleted %d models", nDeleted);
+    return sResult;
+}
+#endif
+
+#ifdef _XBOX
+char* bload(char* sArguments);
+// Xbox 0x0029D920
+const char* spawnbload(char* sCommand)
+{
+    char sModel[128];
+    char sName[128];
+
+    sModel[0] = 0;
+    sName[0] = 0;
+    sscanf(sCommand, "%s %s", sModel, sName);
+    if (stricmp(bload(sModel), "FAILURE") == 0)
+    {
+        return "FAILURE";
+    }
+    CAurObject* pObject = NewCAurObject(sModel, sName, 0, 0);
+    strcpy(lastspawnedobject, pObject ? pObject->GetName() : "NULL");
+    FuncInterp("attach [lastspawned] scene");
+    return pObject ? "success" : "failure";
+}
+// Xbox 0x0029F670
+const char* controlpart(char* sCommand)
+{
+    char sGob[64];
+    char sPart[64];
+    int nChars;
+
+    sPart[0] = 0;
+    sGob[0] = 0;
+    if (sscanf(sCommand, "%s%s%n", sGob, sPart, &nChars) < 2 || sGob[0] == 0 || sPart[0] == 0)
+    {
+        return "usage:  setcolor objectname partname r g b";
+    }
+    Gob* pGob = FindGob(sGob);
+    if (pGob == 0)
+    {
+        return "no object by that name";
+    }
+    Part* pPart = pGob->GetPart(sPart);
+    if (pPart == 0)
+    {
+        return "no part by that name";
+    }
+    MdlNode* pNode = pPart->m_pNode->ConJoinDispatch();
+    pNode->ParseFieldDispatch(skipspace(sCommand + nChars));
+    pNode->ControlDispatch(pPart, 0.0f, 0.0f, 1.0f);
+    delete pNode;
+    return "OK";
+}
+#endif
+
+#ifdef _XBOX
+
+#define DOGANMODELS_ITERATIONS 500
+// Xbox 0x0029DC50
+const char* doganmodels(char* sCommand)
+{
+    unsigned short anColors[10] = {2, 0x104, 0x200, 0x200, 0x400, 0x500, 0x500, 0x624, 0x629, 0x629};
+
+    for (int i = DOGANMODELS_ITERATIONS; i != 0; i--)
+    {
+        CAurObject* pObject = NewCAurObject("pmh0", "", 0, 0);
+        pObject->Append("PMH0_FOOTR005", "rfoot_g");
+        pObject->Append("PMH0_FOOTL005", "lfoot_g");
+        pObject->Append("PMH0_SHINR009", "rshin_g");
+        pObject->Append("PMH0_SHINL009", "lshin_g");
+        pObject->Append("PMH0_LEGR003", "rthigh_g");
+        pObject->Append("PMH0_LEGL003", "lthigh_g");
+        pObject->Append("PMH0_PELVIS007", "pelvis_g");
+        pObject->Append("PMH0_CHEST012", "torso_g");
+        pObject->Append("PMH0_NECK001", "neck_g");
+        pObject->Append("PMH0_FORER013", "rforearm_g");
+        pObject->Append("PMH0_FOREL013", "lforearm_g");
+        pObject->Append("PMH0_BICEPR010", "rbicep_g");
+        pObject->Append("PMH0_BICEPL010", "lbicep_g");
+        pObject->Append("PMH0_HANDR004", "rhand_g");
+        pObject->Append("PMH0_HANDL004", "lhand_g");
+        pObject->ReplaceTextureSubtree("rfoot_g", "pmh0_footr001", 10, anColors);
+        pObject->ReplaceTextureSubtree("lfoot_g", "pmh0_footl001", 10, anColors);
+        pObject->ReplaceTextureSubtree("rshin_g", "pmh0_shinr001", 10, anColors);
+        pObject->ReplaceTextureSubtree("lshin_g", "pmh0_shinl001", 10, anColors);
+        pObject->ReplaceTextureSubtree("rthigh_g", "pmh0_legr001", 10, anColors);
+        pObject->ReplaceTextureSubtree("lthigh_g", "pmh0_legl001", 10, anColors);
+        pObject->ReplaceTextureSubtree("pelvis_g", "pmh0_pelvis001", 10, anColors);
+        pObject->ReplaceTextureSubtree("torso_g", "pmh0_chest001", 10, anColors);
+        pObject->ReplaceTextureSubtree("neck_g", "pmh0_neck001", 10, anColors);
+        pObject->ReplaceTextureSubtree("rforearm_g", "pmh0_forer002", 10, anColors);
+        pObject->ReplaceTextureSubtree("lforearm_g", "pmh0_forel002", 10, anColors);
+        pObject->ReplaceTextureSubtree("rbicep_g", "pmh0_bicepr001", 10, anColors);
+        pObject->ReplaceTextureSubtree("lbicep_g", "pmh0_bicepl001", 10, anColors);
+        pObject->ReplaceTextureSubtree("rhand_g", "pmh0_handr001", 10, anColors);
+        pObject->ReplaceTextureSubtree("lhand_g", "pmh0_handl001", 10, anColors);
+        AurTextureMakeCurrent();
+        delete pObject;
+    }
+    return "SUCKY-SUCKY?  FIVE DOLLAR!";
+}
+#endif
+
+#ifdef _XBOX
+void Gob::ReattachReference(CAurObject* pObject, char* sPart)  // PC 0x00446EE0  Xbox 0x0029B120
+{
+    List<Part*> lstParts;
+    lstParts.Add(m_pRootPart);
+    while (lstParts.m_nCount)
+    {
+        Part* pPart = lstParts[0];
+        PartReference* pReference = pPart->AsPartReference();
+        MdlNodeReference* pReferenceNode;
+        if (pReference && (pReferenceNode = pReference->m_pNode->AsMdlNodeReference()) != 0 &&
+            pReferenceNode->m_bReattachable &&
+            pReference->m_pReferenceObject)
+        {
+            if (pObject)
+                pReference->m_pReferenceObject->AttachToObject(pObject, sPart, ATTACH_NORMAL);
+            if (!pObject)
+                pReference->m_pReferenceObject->AttachToObject(this, pReference->Name(), ATTACH_NORMAL);
+            m_qOrientation = RotationArc(m_qOrientation.zdir(),
+                pReference->m_pReferenceObject->GetPosition() - m_vPosition) * m_qOrientation;
+        }
+        lstParts.DelIndex(0);
+        for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)
+        {
+            lstParts.Add(pPart->m_lstChildren[i]);
+        }
+    }
+}
+#endif
+
+#ifdef _XBOX
+void MdlNodeLightsaber::InternalDestructor()  // PC 0x0043FD10  Xbox 0x00296130
+{
+    GLRender::DeletePool(m_nBladePool);
+    m_nBladePool = RequestPoolManager::INVALID_POOL;
+    GLRender::DeletePool(m_nGlowPool);
+    m_nGlowPool = RequestPoolManager::INVALID_POOL;
+    MdlNodeTriMesh::InternalDestructor();
+}
+// Xbox 0x00296120
+void MdlNodeTriMesh::InternalDestructor()
+{
+    MdlNode::InternalDestructor();
+}
+// Xbox 0x00296170
+void MdlNodeSkin::InternalDestructor()
+{
+    MdlNodeTriMesh::InternalDestructor();
+}
+
+void MdlNodeDanglyMesh::InternalDestructor()
+{
+    MdlNodeTriMesh::InternalDestructor();
+}
+
+void MdlNodeAnimMesh::InternalDestructor()
+{
+    MdlNodeTriMesh::InternalDestructor();
+}
+
+void MdlNodeAABB::InternalDestructor()
+{
+    MdlNodeTriMesh::InternalDestructor();
+}
+#endif

@@ -157,7 +157,6 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
 #endif
     m_aDescriptionStrRef[5] = 227;
     StopLoadFromLayout();
-
 #ifdef _XBOX
     unsigned char nStrength = m_pCreature->GetStats()->m_aAbilities[0];
     m_aScore[0] = nStrength;
@@ -223,7 +222,6 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
         m_aScore[5] = m_pCreature->GetStats()->m_aAbilities[5];
     }
 #endif
-
     for (int i = 0; i < 6; i++)
     {
         m_btnPoints[i].AddEvent(
@@ -271,7 +269,6 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     m_btnBack.SetFocusable(0);
     m_btnBack.AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
 #endif
-
     if (m_bLevelUp != 0)
     {
         if (m_pCreature->m_pStats->GetLevel() % 4 == 0)
@@ -290,8 +287,11 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
         m_nPointsRemaining = pStats->m_nCreationStage;
     }
     m_lblRemainingSelections.m_cText.m_cParams.SetText(m_nPointsRemaining);
-    m_lblDescription.Initialize(m_lbDescription.m_pProtoItem->m_cExtent,
-                                (CSWGuiLabel*)m_lbDescription.m_pProtoItem, 1.0f);
+#ifndef _XBOX
+    m_lblDescription.Initialize(m_lbDescription.m_pProtoItem->m_cExtent, (CSWGuiLabel*)m_lbDescription.m_pProtoItem, 1.0f);
+#else
+    m_lblDescription.Initialize(m_lbDescription.m_pProtoItem->m_cExtent, (CSWGuiLabel*)m_lbDescription.m_pProtoItem);
+#endif
     SetActiveControl(&m_btnPoints[0], 0);
     m_nSelected = 0;
 }
@@ -593,7 +593,7 @@ void CSWGuiAbilitiesCharGen::CompletePanel()
 }
 
 #ifdef _XBOX
-// PC 0x0041A290
+// PC 0x0041A290  Xbox 0x0004CEC0
 inline int CSWGuiListBox::IsOversized()
 {
     return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&

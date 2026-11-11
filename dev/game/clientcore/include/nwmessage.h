@@ -339,11 +339,11 @@ public:
     unsigned long m_nUnknown38;
     unsigned long m_nUnknown3C;
     unsigned long m_nUnknown40;
-    unsigned char m_bUnknown44;
-    unsigned char m_bUnknown45;
+    unsigned char m_bUnknown44; unsigned char m_bUnknown45;
+#ifndef _XBOX
     unsigned char m_aUnknown46[2];
-    int m_nMsgType;
-    unsigned long m_nRecipient;
+#endif
+    int m_nMsgType; unsigned long m_nRecipient;
 };
 
 class CSWCCMessageData
@@ -1619,13 +1619,13 @@ public:
                                         unsigned long oidTarget,
                                         const Vector& vTarget);
     int SendPlayerToServerInput_UseObject(unsigned long oidObject);
-    int SendPlayerToServerInput_ChangeDoorState(unsigned long oidDoor,
-                                                unsigned short nState);
-    int SendPlayerToServerInput_UnlockObject(unsigned long oidObject,
-                                             unsigned long oidKey);
+    int SendPlayerToServerInput_ChangeDoorState(unsigned long oidDoor, unsigned short nState);
+    int SendPlayerToServerInput_UnlockObject(unsigned long oidObject, unsigned long oidKey);
     int SendPlayerToServerInput_Dialog(unsigned long oidObject);
-    int SendPlayerToServerInventory_Equip(unsigned long oidItem,
-                                          unsigned long nSlot);
+    int SendPlayerToServerInventory_Equip(unsigned long oidItem, unsigned long nSlot);
+#ifdef _XBOX
+    int SendPlayerToServerInventory_Unequip(unsigned long oidItem, unsigned long oidRepository);
+#endif
     int SendPlayerToServerLogin_LoginLocalCharacter(unsigned char* pData,
                                                     unsigned long nSize,
                                                     int bNewCharacter);
@@ -1634,6 +1634,19 @@ public:
                                                     int bNewCharacter);
     int SendPlayerToServer_LevelUp(CSWCLevelUpStats* pOldStats,
                                    CSWCLevelUpStats* pNewStats);
+#ifdef _XBOX
+
+    int SendPlayerToServerCheat_DebugMode(int bDebugMode);
+    int SendPlayerToServerCheat_ComputeSafeLocation();
+    int SendPlayerToServerCheat_PlayVisualEffect(unsigned long oidTarget, unsigned short nVisualEffect,
+                                                 float fDuration, unsigned long oidSource,
+                                                 unsigned char nType);
+
+    int SendPlayerToServerUpdate_AppearanceRace(unsigned long oidCreature, unsigned short nRace);
+    int SendPlayerToServerItem_Add(unsigned long oidArea, const Vector& vPosition, const CResRef& cResRef,
+                                   unsigned char nA, unsigned char nB, unsigned char nC);
+    int SendPlayerToServerParty_Add(unsigned long oidArea, const Vector& vPosition, const CExoString& sTemplate);
+#endif
 };
 
 #endif

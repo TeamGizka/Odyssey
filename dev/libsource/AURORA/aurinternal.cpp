@@ -800,23 +800,22 @@ int CAurInternalGL::InitEditor(HWND hApplicationWindow, HWND hRenderWindow,  // 
 // PC 0x0044E9E0  Xbox 0x002A2220
 void CAurInternalGL::Reshape(int nWidth, int nHeight)
 {
-    int nViewportWidth = nWidth;
-    int nViewportHeight = nHeight;
-    m_nWidth = nViewportWidth;
-    m_nHeight = nViewportHeight;
-    g_nScreenWidth = nViewportWidth;
-    g_nScreenHeight = nViewportHeight;
-    if (nViewportWidth != 1 && nViewportHeight != 1)
+    m_nWidth = nWidth;
+    m_nHeight = nHeight;
+    g_nScreenWidth = nWidth;
+    g_nScreenHeight = nHeight;
+    if (nWidth != 1 && nHeight != 1)
     {
+        int nViewportHeight = nHeight;
         if (nViewportHeight == 0)
         {
             nViewportHeight = 1;
         }
-        if (nViewportWidth == 0)
+        if (nWidth == 0)
         {
-            nViewportWidth = 1;
+            nWidth = 1;
         }
-        GLRender::ResetViewPort(0, 0, nViewportWidth, nViewportHeight);
+        GLRender::ResetViewPort(0, 0, nWidth, nViewportHeight);
     }
 
 }
@@ -846,8 +845,11 @@ void CAurInternalGL::Reshape(int nWidth, int nHeight)  // PC 0x0044E9E0  Xbox 0x
     }
 }
 #endif
-// PC 0x0044EA30  Xbox 0x002A2270
+#ifdef _XBOX  // PC 0x0044EA30  Xbox 0x002A2270
+void CAurInternalGL::ShutDown(int bReleaseRenderer)
+#else
 int CAurInternalGL::ShutDown(int bReleaseRenderer, int bDestroyWindow)
+#endif
 {
 #ifndef _XBOX
     VertexProgramManager::ResetVertexPrograms();
@@ -913,8 +915,7 @@ int CAurInternalGL::ShutDown(int bReleaseRenderer, int bDestroyWindow)
     }
     GLRender::Shutdown(bReleaseRenderer);
 #ifndef _XBOX
-    if (szBumpyShinyVPARB != NULL)
-    {
+    if (szBumpyShinyVPARB != NULL) {
         delete szBumpyShinyVPARB;
         szBumpyShinyVPARB = NULL;
     }
@@ -950,10 +951,8 @@ int CAurInternalGL::ShutDown(int bReleaseRenderer, int bDestroyWindow)
         nResult = DestroyWindow(g_hRenderWnd);
         g_hRenderWnd = NULL;
     }
-#else
-    int nResult;
-#endif
     return nResult;
+#endif
 }
 // PC 0x0044ECD0  Xbox 0x002A23D0
 CAurInternalGL* CAurInternalGL::NewCAuroraInstance()
@@ -975,9 +974,10 @@ CAurInternalGL::CAurInternalGL()
 // PC 0x0044EC60  Xbox 0x002A22B0
 CAurInternalGL::~CAurInternalGL()
 {
-    untrace(NULL);
-    AurStringsFree();
-    AurFreeFont();
-    AurDeleteAllFonts();
+    untrace(NULL); AurStringsFree(); AurFreeFont(); AurDeleteAllFonts();
+#ifdef _XBOX
+    ShutDown(1);
+#else
     ShutDown(1, 1);
+#endif
 }

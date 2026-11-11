@@ -433,7 +433,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_IsSomething(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(bResult) != 0 ? 0 : -2000;
 }
-// PC 0x005CBD60
+// PC 0x005CBD60  Xbox 0x00275140
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastHPChange(int nCommand,
                                                                   int nArgs)
 {
@@ -1429,7 +1429,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLateralAccelPerSec(
     fAccel = pApp->GetMiniGame()->m_fLateralAccel;
     return g_pVirtualMachine->StackPushFloat(fAccel) != 0 ? 0 : -2000;
 }
-// PC 0x005CD2C0
+// PC 0x005CD2C0  Xbox 0x00276650
 void CSWVirtualMachineCommands::InitializeSWMGCommands()
 {
     m_pCommands[582] = &CSWVirtualMachineCommands::ExecuteCommandAurPostString;

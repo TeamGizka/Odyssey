@@ -459,17 +459,13 @@ void CClientExoAppInternal::ReadPlayBackInputEvents()
         }
     }
 }
-// PC 0x006200E0  Xbox 0x00060340
-#ifdef _XBOX
-void CClientExoAppInternal::SetInputClass(int nClass)
-#else
-void CClientExoAppInternal::SetInputClass(int nClass, int bHideInterface)
-#endif
-{
-#ifdef _XBOX
 
-    const int bHideInterface = 1;
-#endif
+#ifndef _XBOX
+// PC 0x006200E0
+void CClientExoAppInternal::SetInputClass(int nClass, int bHideInterface)
+
+{
+
     if (m_nInputClass != nClass)
     {
         CLIENTINPUT_TRACE();
@@ -554,8 +550,8 @@ void CClientExoAppInternal::SetInputClass(int nClass, int bHideInterface)
         }
     }
 }
-// PC 0x00620320
-int CClientExoAppInternal::DismissInGameGUI()
+#endif
+int CClientExoAppInternal::DismissInGameGUI()  // PC 0x00620320
 {
 #ifdef _XBOX
     if (m_pGuiInGame->HideSWInGameGui() != 0)
@@ -2748,6 +2744,81 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)
         float fX = min(1.0f, max(-1.0f, fButtonX + fPadX + fStickX));
         pMiniGame->UpdateAxis(fX, fY, fTimeStep);
         pMiniGame->Control(fTimeStep);
+    }
+}
+// Xbox 0x00060340
+void CClientExoAppInternal::SetInputClass(int nClass)
+{
+    if (m_nInputClass != nClass)
+    {
+        int nOldClass = m_nInputClass;
+        m_nInputClass = nClass;
+        g_pExoInput->ClearEvents();
+
+        switch (nClass)
+        {
+        case INPUT_CLASS_GAME:
+            if (m_oidReattachedCreature != OBJECT_INVALID)
+            {
+                CSWSCreature* pCreature =
+                    g_pAppManager->GetServerExoApp()->GetPlayerCreature();
+                if (pCreature != NULL)
+                {
+                    SetPlayerCreature(g_pAppManager->GetClientExoApp()->
+                        ServerToClientObjectId(pCreature->GetId()));
+                    m_oidReattachedCreature = OBJECT_INVALID;
+                    AttachPlayerGameObjectToArea();
+                }
+            }
+            if (m_pModule != NULL && m_pModule->GetCamera() != NULL)
+            {
+                Vector vOrientation = GetPlayerCreature()->m_vOrientation;
+                CSWCameraOnAStick* pCameraBehavior = (CSWCameraOnAStick*)
+                    m_pModule->GetCamera()->GetBehavior(
+                        AUR_BEHAVIOR_CAMERA_ONASTICK);
+                if (pCameraBehavior != NULL)
+                {
+                    pCameraBehavior->m_nOrientationState = 0;
+                    pCameraBehavior->m_vPlayerOrientation = vOrientation;
+                }
+            }
+            if (GetPlayerCreature() != NULL)
+                GetPlayerCreature()->SwitchMode(CSWCCreature::MODE_SWDRIVE);
+            if (m_pPlayerControl != NULL)
+                m_pPlayerControl->SetEnabled(1);
+            if (m_pGuiInGame != NULL)
+                m_pGuiInGame->SetSWGuiStatus(
+                    CGuiInGame::GUISTATUS_RESTORE_MAIN_INTERFACE, 1);
+            break;
+
+        case INPUT_CLASS_DIALOG:
+            IndicateObject(NULL, 0);
+            break;
+
+        case INPUT_CLASS_MINIGAME:
+        {
+            CSWMiniGame* pMiniGame = m_pModule->m_pInfo->m_pMiniGame;
+            if (pMiniGame != NULL)
+            {
+                IndicateObject(NULL, 0);
+                if (m_pGuiInGame != NULL)
+                    m_pGuiInGame->SetSWGuiStatus(CGuiInGame::GUISTATUS_DIALOG, 0);
+                if (GetPlayerCreature() != NULL)
+                {
+                    GetPlayerCreature()->AttachToScene(NULL);
+                    m_oidReattachedCreature = GetPlayerCreature()->GetId();
+                    SetPlayerCreature(OBJECT_INVALID);
+                }
+                pMiniGame->SetCamera(m_pModule->GetCamera());
+                pMiniGame->Go();
+            }
+            else
+            {
+                SetInputClass(nOldClass);
+            }
+            break;
+        }
+        }
     }
 }
 #endif

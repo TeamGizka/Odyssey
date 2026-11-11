@@ -41,8 +41,81 @@ void CERFFile::ImportFiles(const CExoString& sDirectory, void* pUnused,
     }
 
 }
-// PC 0x005DD3C0  Xbox 0x0014A250
-int CERFFile::ReadHeaderVariance(const CExoString& sFileName)
+
+#ifdef _XBOX
+// Xbox 0x0014A250
+int CERFFile::ReadHeaderVariance(const CExoString& sFileName, void* pSignature)
+{
+    CExoFile file(sFileName, 2057, "rb");
+    HANDLE hSignature = INVALID_HANDLE_VALUE;
+
+    if (pSignature != NULL)
+    {
+        hSignature = XCalculateSignatureBegin(0);
+    }
+
+    if (file.FileOpened())
+    {
+        file.Seek(160, 0);
+
+        for (unsigned long i = 0; i < m_nLanguageCount; i++)
+        {
+            CERFString* pString = new CERFString;
+            pString->Read(file);
+
+            if (pSignature != NULL && hSignature != INVALID_HANDLE_VALUE)
+            {
+                XCalculateSignatureUpdate(hSignature, (BYTE*)pString, 4);
+                XCalculateSignatureUpdate(hSignature, (BYTE*)pString->m_pText,
+                                          pString->m_nLength);
+            }
+
+            m_lstStrings.AddTail(pString);
+        }
+
+        for (unsigned long j = 0; j < m_nEntryCount; j++)
+        {
+            CERFKey* pKey = new CERFKey;
+            pKey->Read(file);
+
+            if (pSignature != NULL && hSignature != INVALID_HANDLE_VALUE)
+            {
+                XCalculateSignatureUpdate(hSignature, (BYTE*)pKey, 16);
+                XCalculateSignatureUpdate(hSignature, (BYTE*)&pKey->m_nResId,
+                                          4);
+                XCalculateSignatureUpdate(hSignature, (BYTE*)&pKey->m_nResType,
+                                          2);
+                XCalculateSignatureUpdate(hSignature, (BYTE*)&pKey->m_nUnused,
+                                          2);
+            }
+
+            m_lstKeys.AddTail(pKey);
+        }
+
+        for (unsigned long k = 0; k < m_nEntryCount; k++)
+        {
+            CERFRes* pRes = new CERFRes;
+            pRes->Read(file);
+
+            if (pSignature != NULL && hSignature != INVALID_HANDLE_VALUE)
+            {
+                XCalculateSignatureUpdate(hSignature, (BYTE*)pRes, 4);
+                XCalculateSignatureUpdate(hSignature, (BYTE*)&pRes->m_nSize, 4);
+            }
+
+            m_lstResources.AddTail(pRes);
+        }
+    }
+
+    if (pSignature != NULL && hSignature != INVALID_HANDLE_VALUE)
+    {
+        XCalculateSignatureEnd(hSignature, (PXCALCSIG_SIGNATURE)pSignature);
+    }
+
+    return 1;
+}
+#else
+int CERFFile::ReadHeaderVariance(const CExoString& sFileName)  // PC 0x005DD3C0
 {
     CExoFile file(sFileName, 2057, "rb");
 
@@ -74,6 +147,7 @@ int CERFFile::ReadHeaderVariance(const CExoString& sFileName)
 
     return 1;
 }
+#endif
 // PC 0x005DD5A0  Xbox 0x0014A500
 int CERFFile::WriteStringTable()
 {
@@ -349,7 +423,12 @@ void CERFFile::SetVersion(char* sVersion)
     memcpy(m_sVersion, sVersion + 4, 4);
 }
 // PC 0x005DCE50  Xbox 0x00149D10
+#ifdef _XBOX
+
+int CERFFile::Read(const CExoString& sFileName, void* pSignature)
+#else
 int CERFFile::Read(const CExoString& sFileName)
+#endif
 {
     CExoFile file(sFileName, 2057, "rb");
 
@@ -368,6 +447,20 @@ int CERFFile::Read(const CExoString& sFileName)
         file.Read(&m_nBuildDay, 4, 1);
         file.Read(&m_nDescriptionStrRef, 4, 1);
         file.Read(m_aReserved, 116, 1);
+#ifdef _XBOX
+        if (pSignature != NULL)
+        {
+            HANDLE hSignature = XCalculateSignatureBegin(0);
+
+            if (hSignature != INVALID_HANDLE_VALUE)
+            {
+                XCalculateSignatureUpdate(hSignature, (BYTE*)this, 160);
+                XCalculateSignatureUpdate(hSignature, (BYTE*)&m_nFileSize, 4);
+                XCalculateSignatureEnd(hSignature,
+                                       (PXCALCSIG_SIGNATURE)pSignature);
+            }
+        }
+#endif
     }
 
     return 1;
@@ -386,7 +479,9 @@ int CERFFile::WriteHeader()
         time_t tTime = time(NULL);
         struct tm* pTime = localtime(&tTime);
 
+#ifndef _XBOX
         if (pTime != NULL)
+#endif
         {
             m_nBuildYear = pTime->tm_year;
             m_nBuildDay = pTime->tm_yday;

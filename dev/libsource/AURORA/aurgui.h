@@ -31,14 +31,18 @@ class CAurGUIDraw
 {
 public:
     virtual void Draw() = 0;
-
-    CAurGUIDraw()
+#ifndef _XBOX
+    CAurGUIDraw()  // Xbox 0x002C8700
     {
     }
-
-    ~CAurGUIDraw()
+#endif
+#ifdef _XBOX
+    CAurGUIDraw(); ~CAurGUIDraw();
+#else
+    ~CAurGUIDraw()  // Xbox 0x002C8710
     {
     }
+#endif
 
     static short cm_nCurrentViewport;
     static float cm_fViewportAlpha[10];

@@ -57,7 +57,10 @@ public:
     void Insert(T item, int nIndex);
     void DelIndex(int nIndex);
 
-    int IndexOf(T item)
+#ifdef _XBOX
+    int IndexOf(T item);
+#else
+    int IndexOf(T item)  // Xbox 0x00295900
     {
         for (int i = 0; i < m_nCount; i++)
         {
@@ -69,6 +72,7 @@ public:
 
         return -1;
     }
+#endif
     // PC 0x00437C40
     T& operator[](int nIndex)
     {
@@ -78,7 +82,7 @@ public:
 #ifdef _XBOX
     int Contains(T item);
 #else
-    int Contains(T item)  // PC 0x004AF240
+    int Contains(T item)  // PC 0x004AF240  Xbox 0x002D7B50
     {
         int nFound = 0;
         for (int i = 0; i < m_nCount; i++)
@@ -109,7 +113,7 @@ template <class T> List<T>::List(List<T>& other)
         Add(other.m_pList[i]);
     }
 }
-// PC 0x004AF240
+// PC 0x004AF240  Xbox 0x002D7B50
 template <class T> int List<T>::Contains(T item)
 {
     int nFound = 0;
@@ -121,6 +125,19 @@ template <class T> int List<T>::Contains(T item)
         }
     }
     return nFound;
+}
+// Xbox 0x00295900
+template <class T> int List<T>::IndexOf(T item)
+{
+    for (int i = 0; i < m_nCount; i++)
+    {
+        if (m_pList[i] == item)
+        {
+            return i;
+        }
+    }
+
+    return -1;
 }
 #endif
 template <class T> List<T>::List(int nAllocated)
@@ -207,20 +224,28 @@ template <class T> void List<T>::AddUnique(T item)
 {
     if (!Contains(item))
     {
+#ifdef _XBOX
+        Add(item);
+#else
         if (m_nCount == m_nAllocated)
         {
             allocate(m_nAllocated ? m_nAllocated * 2 : INITIAL_ALLOCATION);
         }
         m_pList[m_nCount++] = item;
+#endif
     }
 }
 
 template <class T> void List<T>::Insert(T item, int nIndex)
 {
     int nLast = m_nCount;
+#ifdef _XBOX
+    Add(item);
+#else
     if (m_nCount == m_nAllocated)
         allocate(m_nAllocated ? m_nAllocated * 2 : INITIAL_ALLOCATION);
     m_pList[m_nCount++] = item;
+#endif
     for (; nLast > nIndex; nLast--)
         m_pList[nLast] = m_pList[nLast - 1];
     m_pList[nIndex] = item;

@@ -130,7 +130,7 @@ CExoFileInternal::CExoFileInternal(const CExoString& path,
     m_pFile = fopen(m_sFileName.CStr(), mode.CStr());
 #endif
 }
-// PC 0x005EB900
+// PC 0x005EB900  Xbox 0x00138930
 CExoFileInternal::~CExoFileInternal()
 {
     if (m_pFile)

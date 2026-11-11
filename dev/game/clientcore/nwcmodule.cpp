@@ -369,8 +369,9 @@ void CSWCModule::TiltCamera(float fTilt)
         m_nReserved80 |= bChanged;
     }
 }
-// PC 0x0063FDB0
-void CSWCModule::AcclTiltCamera(float fTilt)
+
+#ifndef _XBOX
+void CSWCModule::AcclTiltCamera(float fTilt)  // PC 0x0063FDB0
 {
     int nCameraType;
     CAurBehavior* pBehavior;
@@ -394,6 +395,8 @@ void CSWCModule::AcclTiltCamera(float fTilt)
         m_pModuleCamera->GetBehavior(AUR_BEHAVIOR_CAMERA_NAVIGATE);
     }
 }
+
+#endif
 // PC 0x0063FE10  Xbox 0x00062DD0
 void CSWCModule::TurnCamera(float fTurn, float fTimeStep)
 {
@@ -434,7 +437,7 @@ void CSWCModule::TurnCamera(float fTurn, float fTimeStep)
         {
 #ifdef _XBOX
 
-            fTurn = pFreeLook->m_fTiltAcceleration * fTimeStep * fTurn;
+            fTurn = pFreeLook->m_fRotateSpeed * fTimeStep * fTurn;
 #else
             float fTurnRate = max(-30.0f, min(30.0f, fTurn * 0.5f));
             float fSpeed = pFreeLook->m_fRotateSpeed;
@@ -515,8 +518,10 @@ void CSWCModule::AcclTurnCamera(float fTurn, float fTimeStep)
             m_pModuleCamera->GetBehavior(AUR_BEHAVIOR_CAMERA_COMBAT));
         if (pCombat != NULL)
         {
+#ifndef _XBOX
             pCombat->SetTurn(0.0f);
             pCombat->m_fTurnAcceleration = -fTurn;
+#endif
         }
     }
     else if (m_nCameraType == 3)
@@ -525,8 +530,10 @@ void CSWCModule::AcclTurnCamera(float fTurn, float fTimeStep)
             m_pModuleCamera->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK));
         if (pOnAStick != NULL)
         {
+#ifndef _XBOX
             pOnAStick->m_fTurn = 0;
             pOnAStick->m_fTurnAcceleration = fTurn;
+#endif
         }
     }
     else if (m_nCameraType == 5)
@@ -2207,3 +2214,128 @@ static inline void NwcmoduleTrace2()
 static inline void NwcmoduleTrace1()
 {
 }
+#ifdef _XBOX
+
+#include "aurconsole.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+static char g_szViewResult[256];
+// Xbox 0x000620E0
+char* viewmindist(char* szArgs)
+{
+    char szCommand[256];
+    if (strlen(szArgs) < 1)
+    {
+        sprintf(g_szViewResult, "%f", g_fMinDist);
+        return g_szViewResult;
+    }
+    sprintf(szCommand, "mindist %s", szArgs);
+    if (g_pAppManager != NULL && g_pAppManager->m_pClientExoApp != NULL &&
+        g_pAppManager->m_pClientExoApp->GetModule() != NULL &&
+        g_pAppManager->m_pClientExoApp->GetModule()->m_pModuleCamera != NULL)
+    {
+        g_pAppManager->m_pClientExoApp->GetModule()->GetCamera()->BehaviorMessage(szCommand);
+        g_fMinDist = (float)atof(szArgs);
+        return "Success";
+    }
+    return "Failure";
+}
+ConsoleFunc ConFviewmindist("viewmindist", viewmindist);
+// Xbox 0x000621F0
+char* viewmaxdist(char* szArgs)
+{
+    char szCommand[256];
+    if (strlen(szArgs) < 1)
+    {
+        sprintf(g_szViewResult, "%f", g_fMaxDist);
+        return g_szViewResult;
+    }
+    sprintf(szCommand, "maxdist %s", szArgs);
+    if (g_pAppManager != NULL && g_pAppManager->m_pClientExoApp != NULL &&
+        g_pAppManager->m_pClientExoApp->GetModule() != NULL &&
+        g_pAppManager->m_pClientExoApp->GetModule()->m_pModuleCamera != NULL)
+    {
+        g_pAppManager->m_pClientExoApp->GetModule()->GetCamera()->BehaviorMessage(szCommand);
+        g_fMaxDist = (float)atof(szArgs);
+        return "Success";
+    }
+    return "Failure";
+}
+ConsoleFunc ConFviewmaxdist("viewmaxdist", viewmaxdist);
+// Xbox 0x00062300
+char* viewminpitch(char* szArgs)
+{
+    char szCommand[256];
+    if (strlen(szArgs) < 1)
+    {
+        sprintf(g_szViewResult, "%f", g_fMinPitch);
+        return g_szViewResult;
+    }
+    sprintf(szCommand, "minpitch %s", szArgs);
+    if (g_pAppManager != NULL && g_pAppManager->m_pClientExoApp != NULL &&
+        g_pAppManager->m_pClientExoApp->GetModule() != NULL &&
+        g_pAppManager->m_pClientExoApp->GetModule()->m_pModuleCamera != NULL)
+    {
+        g_pAppManager->m_pClientExoApp->GetModule()->GetCamera()->BehaviorMessage(szCommand);
+        g_fMinPitch = (float)atof(szArgs);
+        return "Success";
+    }
+    return "Failure";
+}
+ConsoleFunc ConFviewminpitch("viewminpitch", viewminpitch);
+// Xbox 0x00062410
+char* viewmaxpitch(char* szArgs)
+{
+    char szCommand[256];
+    if (strlen(szArgs) < 1)
+    {
+        sprintf(g_szViewResult, "%f", g_fMaxPitch);
+        return g_szViewResult;
+    }
+    sprintf(szCommand, "maxpitch %s", szArgs);
+    if (g_pAppManager != NULL && g_pAppManager->m_pClientExoApp != NULL &&
+        g_pAppManager->m_pClientExoApp->GetModule() != NULL &&
+        g_pAppManager->m_pClientExoApp->GetModule()->m_pModuleCamera != NULL)
+    {
+        g_pAppManager->m_pClientExoApp->GetModule()->GetCamera()->BehaviorMessage(szCommand);
+        g_fMaxPitch = (float)atof(szArgs);
+        return "Success";
+    }
+    return "Failure";
+}
+ConsoleFunc ConFviewmaxpitch("viewmaxpitch", viewmaxpitch);
+// Xbox 0x00062520
+char* viewfollowoffset(char* szArgs)
+{
+    Vector vOffset(0.0f, 0.0f, 0.0f);
+    char szCommand[64];
+    sscanf(szArgs, "%f %f %f", &vOffset.m_fX, &vOffset.m_fY, &vOffset.m_fZ);
+    sprintf(szCommand, "offset %f %f %f", vOffset.m_fX, vOffset.m_fY, vOffset.m_fZ);
+    if (g_pAppManager != NULL && g_pAppManager->m_pClientExoApp != NULL &&
+        g_pAppManager->m_pClientExoApp->GetModule() != NULL &&
+        g_pAppManager->m_pClientExoApp->GetModule()->m_pModuleCamera != NULL)
+    {
+        g_pAppManager->m_pClientExoApp->GetModule()->SetCameraOffset(vOffset);
+        g_pAppManager->m_pClientExoApp->GetModule()->GetCamera()->BehaviorMessage(szCommand);
+        return "Success";
+    }
+    return "Failure";
+}
+ConsoleFunc ConFviewfollowoffset("viewfollowoffset", viewfollowoffset);
+// Xbox 0x00062630
+char* setcameramode(char* szArgs)
+{
+    int nMode;
+    sscanf(szArgs, "%i", &nMode);
+    if (g_pAppManager != NULL && g_pAppManager->m_pClientExoApp != NULL &&
+        g_pAppManager->m_pClientExoApp->GetClientOptions() != NULL)
+    {
+        g_pAppManager->GetClientExoApp()->GetClientOptions()->SetCameraMode((unsigned char)nMode);
+        return "Success";
+    }
+    return "Failure";
+}
+ConsoleFunc ConFsetcameramode("setcameramode", setcameramode);
+#endif

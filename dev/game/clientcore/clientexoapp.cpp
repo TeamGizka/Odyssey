@@ -428,16 +428,16 @@ int CClientExoApp::SetDebugMode(int nDebugMode)
 {
     return m_pcExoAppInternal->SetDebugMode(nDebugMode);
 }
-// PC 0x005ED860  Xbox 0x0001B710
-int CClientExoApp::StartServices(int nServices, const CExoString& sArg2,
+#ifndef _XBOX
+int CClientExoApp::StartServices(int nServices, const CExoString& sArg2,  // PC 0x005ED860
                                  const CExoString& sArg3,
                                  const CExoString& sArg4, unsigned long nArg5)
 {
     return m_pcExoAppInternal->StartServices(nServices, sArg2, sArg3, sArg4,
                                              nArg5);
 }
-// PC 0x005ED870
-void CClientExoApp::SetEventDescriptions()
+#endif
+void CClientExoApp::SetEventDescriptions()  // PC 0x005ED870
 {
     m_pcExoAppInternal->SetEventDescriptions();
 }
@@ -1185,8 +1185,8 @@ void CClientExoApp::ShowMouse(int nFlags)
 {
     m_pcExoAppInternal->ShowMouse(nFlags);
 }
-// PC 0x005EE190
-int CClientExoApp::GetCharacterChangeInProgress()
+#ifndef _XBOX
+int CClientExoApp::GetCharacterChangeInProgress()  // PC 0x005EE190
 {
     return m_pcExoAppInternal->m_bCharacterChangeInProgress;
 }
@@ -1195,14 +1195,14 @@ void CClientExoApp::SetCharacterChangeInProgress(int bInProgress)
 {
     m_pcExoAppInternal->m_bCharacterChangeInProgress = bInProgress;
 }
-// PC 0x005EE1B0
-void CClientExoApp::FadeAndStopStreamingSoundSource(
+#endif
+void CClientExoApp::FadeAndStopStreamingSoundSource(  // PC 0x005EE1B0
     CExoStreamingSoundSource* pSource, unsigned long nB)
 {
     m_pcExoAppInternal->FadeAndStopStreamingSoundSource(pSource, nB);
 }
-// PC 0x005EE1C0
-void CClientExoApp::StartCreditSequence(const Vector& vColor,
+#ifndef _XBOX
+void CClientExoApp::StartCreditSequence(const Vector& vColor,  // PC 0x005EE1C0
                                       const CExoString& sMusic)
 {
     m_pcExoAppInternal->StartCreditSequence(vColor, sMusic);
@@ -1222,13 +1222,13 @@ void CClientExoApp::SetCreditSequenceInProgress(int bInProgress)
 {
     m_pcExoAppInternal->m_bCreditSequenceInProgress = bInProgress;
 }
-// PC 0x005EE1F0
-void CClientExoApp::EnableMouseAtEndOfLoadModuleMovie()
+#endif
+void CClientExoApp::EnableMouseAtEndOfLoadModuleMovie()  // PC 0x005EE1F0
 {
     m_pcExoAppInternal->EnableMouseAtEndOfLoadModuleMovie();
 }
-// PC 0x005EE200
-void CClientExoApp::SetLastClickedOnTarget(unsigned long oidObject)
+#ifndef _XBOX
+void CClientExoApp::SetLastClickedOnTarget(unsigned long oidObject)  // PC 0x005EE200
 {
     m_pcExoAppInternal->m_oidLastClickedOnTarget = oidObject;
 }
@@ -1237,7 +1237,7 @@ unsigned long CClientExoApp::GetLastClickedOnTarget()
 {
     return m_pcExoAppInternal->m_oidLastClickedOnTarget;
 }
-
+#endif
 #ifndef _XBOX
 int CClientExoApp::AddMovieToMovieQueue(const CExoString& sMovie, int nFlags)  // PC 0x005EE210
 {
@@ -1288,17 +1288,17 @@ int CClientExoApp::IsValidResolution(unsigned long nWidth,
 {
     return m_pcExoAppInternal->IsValidResolution(nWidth, nHeight);
 }
-// PC 0x005EE2C0
-int CClientExoApp::GetAllowHighMonitorFrequency()
+#ifndef _XBOX
+int CClientExoApp::GetAllowHighMonitorFrequency()  // PC 0x005EE2C0
 {
     return m_pcExoAppInternal->m_bAllowHighMonitorFrequency;
 }
-// PC 0x005C5630
-void CClientExoApp::PlayerListChange(unsigned long, int, int)
+#endif
+void CClientExoApp::PlayerListChange(unsigned long, int, int)  // PC 0x005C5630
 {
 }
-// PC 0x005EE2D0
-int CClientExoApp::GetSoundPausedByCombat()
+#ifndef _XBOX
+int CClientExoApp::GetSoundPausedByCombat()  // PC 0x005EE2D0
 {
     return m_pcExoAppInternal->m_nSoundPausedByCombat;
 }
@@ -1307,8 +1307,8 @@ void CClientExoApp::SetSoundPausedByCombat(int nPaused)
 {
     m_pcExoAppInternal->m_nSoundPausedByCombat = nPaused;
 }
-// PC 0x005EE2E0
-int CClientExoApp::DontUseThisSetPlayerCreature(unsigned long oidObject)
+#endif
+int CClientExoApp::DontUseThisSetPlayerCreature(unsigned long oidObject)  // PC 0x005EE2E0
 {
     return m_pcExoAppInternal->DontUseThisSetPlayerCreature(oidObject);
 }
@@ -1332,7 +1332,7 @@ CClientExoApp::~CClientExoApp()
         delete m_pcExoAppInternal;
     }
 }
-// PC 0x005EE380
+// PC 0x005EE380  Xbox 0x0001C2A0
 void CClientExoApp::RemoveMoveToModuleMovies()
 {
     m_pcExoAppInternal->m_aMoveToModuleMovies.RemoveAll(0);
@@ -1342,5 +1342,23 @@ void CClientExoApp::RemoveMoveToModuleMovies()
 int CClientExoApp::ChangeCharacterToNextLivingPartyMember(int nA, int nB)  // Xbox 0x0001BE20
 {
     return m_pcExoAppInternal->ChangeCharacterToNextLivingPartyMember(nA, nB);
+}
+#endif
+
+#ifdef _XBOX
+// Xbox 0x0001C040
+void CClientExoApp::SetMissingFilePending(int bPending)
+{
+    m_pcExoAppInternal->m_nXboxUnmapped468 = bPending;
+}
+#endif
+
+#ifdef _XBOX
+// Xbox 0x0001B710
+void CClientExoApp::StartServices(int nServices, const CExoString& sArg2,
+                                  const CExoString& sArg3,
+                                  const CExoString& sArg4, unsigned long nArg5)
+{
+    m_pcExoAppInternal->StartServices(nServices, sArg2, sArg3, sArg4, nArg5);
 }
 #endif

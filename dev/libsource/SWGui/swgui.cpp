@@ -88,7 +88,7 @@ void CSWGuiPanel::HandleInputEvent(int nEvent, int nState)
 #include "aurora.h"
 #include "aurcamera.h"
 #include <string.h>
-// PC 0x0040BAD0
+// PC 0x0040BAD0  Xbox 0x002FBFC0
 CSWGuiManager::CSWGuiManager()
     : m_lPanels(0),
       m_lModalPanels(0)
@@ -137,16 +137,16 @@ CSWGuiManager::CSWGuiManager()
 #endif
     m_apGuiSounds = NULL;
     m_nGuiSounds = 0;
+#ifndef _XBOX
     g_pGuiMan = this;
     m_nLastInputEvent = 0;
     if (g_pAppManager->m_pClientExoApp->GetClientOptions() != NULL)
     {
         double fToolTipDelay =
             g_pAppManager->m_pClientExoApp->GetClientOptions()->m_fGuiScale;
-#ifndef _XBOX
         m_fToolTipDelay = fToolTipDelay;
-#endif
     }
+#endif
 #ifndef _XBOX
     m_nOldMouseX = -1;
     m_nOldMouseY = -1;
@@ -699,7 +699,7 @@ void CSWGuiPanel::GetExtentAccountingForPanelOffset(CSWGuiExtent* pExtent)
         }
     }
 }
-// PC 0x0040AAA0
+// PC 0x0040AAA0  Xbox 0x002FBA30
 CSWGuiManager::~CSWGuiManager()
 {
     if (m_pSafeRegionBorder != NULL)
@@ -721,8 +721,6 @@ CSWGuiManager::~CSWGuiManager()
 #endif
 #ifndef _XBOX
     DeactivateSoftwareMouse();
-#endif
-#ifndef _XBOX
     if (m_pToolTipPanel != NULL)
     {
         delete m_pToolTipPanel;
@@ -730,7 +728,9 @@ CSWGuiManager::~CSWGuiManager()
     }
 #endif
     UnloadGuiSounds();
+#ifndef _XBOX
     g_pGuiMan = NULL;
+#endif
 }
 // PC 0x0040AB70  Xbox 0x002FBAC0
 int CSWGuiManager::GetPosInModalStack(CSWGuiPanel* pPanel)
@@ -850,16 +850,15 @@ int CSWGuiManager::HitCheckMouse(int nX, int nY, CSWGuiPanel** ppPanel,
 CSWGuiPanel* CSWGuiManager::PopModalPanel()
 {
     int nPanels = m_lModalPanels.num;
-
     if (nPanels == 0)
     {
         return NULL;
     }
     CSWGuiPanel* pPanel = m_lModalPanels.element[nPanels - 1];
     CExoArrayList<CSWGuiPanel*>* pModalPanels = &m_lModalPanels;
-
     pModalPanels->DelIndex(nPanels - 1);
     DetermineNeedToDraw();
+#ifndef _XBOX
     if (m_lModalPanels.num > 0)
     {
         if (pModalPanels->element[m_lModalPanels.num - 1]
@@ -870,6 +869,7 @@ CSWGuiPanel* CSWGuiManager::PopModalPanel()
                 ->HandleFocusChange(1);
         }
     }
+#endif
     return pPanel;
 }
 // PC 0x0040ACC0  Xbox 0x002FBB20
@@ -1787,11 +1787,10 @@ CSWGuiPanel::CSWGuiPanel(CSWGuiManager* pManager)
     m_bUseFont = 1;
 #endif
 }
-// PC 0x0040B690
-CSWGuiControl* CSWGuiPanel::HitCheckMouse(int nX, int nY)
+#ifndef _XBOX
+CSWGuiControl* CSWGuiPanel::HitCheckMouse(int nX, int nY)  // PC 0x0040B690  Xbox 0x002FB5D0
 {
     CSWGuiExtent cExtent = m_cExtent;
-
 #ifndef _XBOX
     if (!(m_bPositioned))
     {
@@ -1826,8 +1825,8 @@ CSWGuiControl* CSWGuiPanel::HitCheckMouse(int nX, int nY)
     }
     return NULL;
 }
-// PC 0x0040B760  Xbox 0x002FB690
-void CSWGuiPanel::Draw(float fElapsed)
+#endif
+void CSWGuiPanel::Draw(float fElapsed)  // PC 0x0040B760  Xbox 0x002FB690
 {
     if (!m_bNeedsDraw)
     {
@@ -2046,7 +2045,6 @@ enum SWGuiInputState
 void CSWGuiManager::HandleInputEvent(int nEvent, int nState)
 {
     int nIndex;
-
     m_nLastInputEvent = nEvent;
     if (nState != GUIINPUT_RELEASED)
     {
@@ -2138,6 +2136,7 @@ void CSWGuiManager::HandleInputEvent(int nEvent, int nState)
             break;
         }
     }
+#ifndef _XBOX
     switch (nEvent)
     {
     case GUIEVENT_CANCEL_SHORTCUT:
@@ -2149,8 +2148,7 @@ void CSWGuiManager::HandleInputEvent(int nEvent, int nState)
         break;
     case GUIEVENT_ACTIVATE_SHORTCUT:
     case GUIEVENT_ACTIVATE_SHORTCUT_ALTERNATE:
-        nEvent = GUIEVENT_ACTIVATE;
-        break;
+        nEvent = GUIEVENT_ACTIVATE; break;
     case GUIEVENT_UP_SHORTCUT:
         nEvent = GUIEVENT_UP_ALTERNATE;
         break;
@@ -2163,9 +2161,9 @@ void CSWGuiManager::HandleInputEvent(int nEvent, int nState)
     case GUIEVENT_RIGHT_SHORTCUT:
         nEvent = GUIEVENT_RIGHT_ALTERNATE;
         break;
-    default:
-        break;
+    default: break;
     }
+#endif
     if (m_lModalPanels.num != 0)
     {
         m_lModalPanels.element[m_lModalPanels.num - 1]->HandleInputEvent(
@@ -2174,7 +2172,6 @@ void CSWGuiManager::HandleInputEvent(int nEvent, int nState)
     else
     {
         CExoArrayList<CSWGuiPanel*> lPanels(0);
-
         lPanels.SetSize(m_lPanels.num);
         for (nIndex = 0; nIndex < m_lPanels.num; nIndex++)
         {
@@ -2195,34 +2192,37 @@ void CSWGuiManager::HandleInputEvent(int nEvent, int nState)
             } while (nIndex < lPanels.num);
         }
     }
-    int nPanels = m_lPanels.num;
-
-    for (nIndex = nPanels - 1; nIndex >= 0; nIndex--)
+#ifdef _XBOX
+    for (nIndex = m_lPanels.num - 1; nIndex >= 0; nIndex--)
+#else
+    int nPanels = m_lPanels.num; for (nIndex = nPanels - 1; nIndex >= 0; nIndex--)
+#endif
     {
         CSWGuiPanel* pPanel = m_lPanels.element[nIndex];
-
         if (pPanel->m_nExitState == CSWGuiPanel::EXITSTATE_DELETE)
         {
-            RemovePanel(pPanel);
-            delete pPanel;
+            RemovePanel(pPanel); delete pPanel;
         }
         else if (pPanel->m_nExitState != 0)
         {
-            pPanel->m_bDeferredRemoval = 0;
-            pPanel->m_nExitState = 0;
+            pPanel->m_bDeferredRemoval = 0; pPanel->m_nExitState = 0;
             RemovePanel(pPanel);
         }
     }
-    if (g_pExoResMan->m_bMainMenuImageLoaded)
-    {
+    if (g_pExoResMan->m_bMainMenuImageLoaded) {
+#ifdef _XBOX
+        g_pExoResMan->RemoveResourceImageFile("RIMSXBOX:MAINMENU"); g_pExoResMan->RemoveResourceImageFile("RIMSXBOX:MAINMENUDX");
+#else
         g_pExoResMan->RemoveResourceImageFile("RIMS:MAINMENU");
-        g_pExoResMan->m_bMainMenuImageLoaded = 0;
-    }
-    if (g_pExoResMan->m_bCharGenImageLoaded)
-    {
+#endif
+        g_pExoResMan->m_bMainMenuImageLoaded = 0; }
+    if (g_pExoResMan->m_bCharGenImageLoaded) {
+#ifdef _XBOX
+        g_pExoResMan->RemoveResourceImageFile("RIMSXBOX:CHARGEN"); g_pExoResMan->RemoveResourceImageFile("RIMSXBOX:CHARGENDX");
+#else
         g_pExoResMan->RemoveResourceImageFile("RIMS:CHARGEN");
-        g_pExoResMan->m_bCharGenImageLoaded = 0;
-    }
+#endif
+        g_pExoResMan->m_bCharGenImageLoaded = 0; }
 }
 // PC 0x0040CC50  Xbox 0x002FC970
 void CSWGuiManager::Draw(float fElapsed)
@@ -2433,3 +2433,24 @@ static inline void SwguiTrace2()
 static inline void SwguiTrace1()
 {
 }
+
+#ifdef _XBOX
+// PC 0x0040B690  Xbox 0x002FB5D0
+CSWGuiControl* CSWGuiPanel::HitCheckMouse(int nX, int nY)
+{
+    if (nX >= m_cExtent.m_nLeft && nX <= m_cExtent.GetRight() &&
+        nY >= m_cExtent.m_nTop && nY <= m_cExtent.GetBottom())
+    {
+        int nLocalX = nX - m_cExtent.m_nLeft;
+        int nLocalY = nY - m_cExtent.m_nTop;
+        for (int i = m_lControls.num - 1; i >= 0; i--)
+        {
+            if (m_lControls.element[i]->HitCheckMouse(nLocalX, nLocalY))
+            {
+                return m_lControls.element[i];
+            }
+        }
+    }
+    return NULL;
+}
+#endif

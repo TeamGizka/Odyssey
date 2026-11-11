@@ -25,11 +25,11 @@ class CSWGuiPazaakCard : public CSWGuiButton
 public:
 
     enum { EVENT_CARD_DROP = 98283 };
-
     CSWGuiPazaakCard();
+#ifndef _XBOX
     virtual ~CSWGuiPazaakCard();
-    virtual void Draw(float fElapsed);
-    virtual void HandleInputEvent(int nEvent, int nState);
+#endif
+    virtual void Draw(float fElapsed); virtual void HandleInputEvent(int nEvent, int nState);
 #ifndef _XBOX
     SWGUI_PCVIRTUAL int GetIsSelectable()  // PC 0x0067DE60
     {
@@ -136,18 +136,18 @@ public:
     int IsAvailCardActive();
     int ClearSideDeck();
     void ShowDisabledButtons();
-    void OnAvailCardEntered(CSWGuiControl* pControl);
-    void OnChosenCardEntered(CSWGuiControl* pControl);
+    void OnAvailCardEntered(CSWGuiControl* pControl); void OnChosenCardEntered(CSWGuiControl* pControl);
+#ifndef _XBOX
     int AddChosenCard(int nAvail, int nSlot);
+#else
+    int AddChosenCard(int nAvail);
+#endif
     int RemoveChosenCard(int nSlot);
 #ifndef _XBOX
     void HandleAvailCardDrop(CSWGuiControl* pControl);
-#endif
-#ifndef _XBOX
     void HandleChosenCardDrop(CSWGuiControl* pControl);
 #endif
-    void HandleMoveCard(CSWGuiControl* pControl);
-    void HandleStartDialog(CSWGuiControl* pControl);
+    void HandleMoveCard(CSWGuiControl* pControl); void HandleStartDialog(CSWGuiControl* pControl);
     void HandleAcceptButton(CSWGuiControl* pControl);
 
     CSWGuiLabel m_lblTitle;
@@ -298,9 +298,7 @@ public:
 
     CSWGuiWagerPopup(CSWGuiManager* pManager, CSWGuiPazaakStart* pStart,
                      int nMaxWager);
-    virtual void Draw(float fElapsed);
-    virtual void HandleInputEvent(int nEvent, int nState);
-
+    virtual void Draw(float fElapsed); virtual void HandleInputEvent(int nEvent, int nState);
     void UpdateWagerText();
     void HandleButtonLess(CSWGuiControl* pControl);
     void HandleButtonMore(CSWGuiControl* pControl);
@@ -326,10 +324,12 @@ public:
     CSWGuiButton m_btnWager;
     CSWGuiButton m_btnQuit;
 #endif
-    CSWGuiLabel m_lblBg;
-    int m_nWager;
-    int m_nMaxWager;
+    CSWGuiLabel m_lblBg; int m_nWager; int m_nMaxWager;
+#ifdef _XBOX
+    struct CFlashLabel { CSWGuiLabel* pLabel; float fTimer; }; CExoArrayList<CFlashLabel> m_lFlashLabels; void FlashLabel(CSWGuiLabel* pLabel);
+#else
     CExoArrayList<int> m_lUnknownC9C;
+#endif
     CSWGuiPazaakStart* m_pStart;
 };
 

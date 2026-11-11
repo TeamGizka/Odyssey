@@ -165,12 +165,12 @@ public:
     {
         return m_vPreviousPosition;
     }
-    // PC 0x00449A00
+    // PC 0x00449A00  Xbox 0x002F0FC0
     virtual void* GetExternalData()
     {
         return m_pExternalData;
     }
-    // PC 0x00449A10
+    // PC 0x00449A10  Xbox 0x002F0FD0
     virtual void SetExternalData(void* pData)
     {
         m_pExternalData = pData;
@@ -342,6 +342,9 @@ public:
 
     bool IsInCutscene();
     void SetScene(Scene* pScene);
+#ifdef _XBOX
+    void ResetAnimationScales();
+#endif
     void CollectLights(List<PartLight*>& lstLights);
     void SetProcessFlag();
     void ProcessGob();
@@ -478,7 +481,16 @@ public:
 
     List<Gob*> m_lstAttachments;
 
+#ifdef _XBOX
+
+    int m_nVisiblePixels;
+    bool IsVisibilityTested();
+    void RenderVisibilityBounds();
+    bool IsAlternateShadowCaster();
+    bool IsEmitterBounds(); bool CheckEventCallBack(float fDelay, bool bRepeat);
+#else
     int m_nUnused2;
+#endif
 };
 
 CAurObject* NewCAurObject(char* sModel, char* sName, FILE* pModelFile, FILE* pVertexFile);
@@ -616,8 +628,9 @@ public:
 
     unsigned long m_nVertexDataOffset;
 #ifndef _XBOX
-
     Vector* m_pVertexPositions;
+#else
+    void InternalDestructor();
 #endif
     void BuildNeighborLists();
     void InternalGenVertices();
@@ -629,8 +642,7 @@ public:
     void ComputeLocalSurfaceArea(List<MaxFace>& lFaces, float& fArea);
     unsigned char HasTangentBases();
     PartTriMesh* InternalCreateInstance(Gob*);
-    ~MdlNodeTriMesh();
-    MdlNodeTriMesh(char*);
+    ~MdlNodeTriMesh(); MdlNodeTriMesh(char*);
     MdlNode* InternalConJoin();
     void InternalParseField(char*);
     void InternalControl(Part*, float, float, float);
@@ -641,19 +653,19 @@ public:
 class MdlNodeDanglyMesh : public MdlNodeTriMesh
 {
 public:
-
     List<float> m_lConstraints;
     float m_fDisplacement;
     float m_fTightness;
     float m_fPeriod;
-
     Vector* m_pVertexPositions;
+#ifdef _XBOX
+    void InternalDestructor();
+#endif
     void InternalGenVertices();
     void InternalRemoveTemporaryArrays();
     void InternalPostProcess();
     Part* InternalCreateInstance(Gob*);
-    ~MdlNodeDanglyMesh();
-    MdlNodeDanglyMesh(char*);
+    ~MdlNodeDanglyMesh(); MdlNodeDanglyMesh(char*);
     void InternalParseField(char*);
 };
 
@@ -899,6 +911,28 @@ inline bool Gob::IsAllRooms()
     }
     return false;
 }
+#ifdef _XBOX
+
+inline bool Gob::IsAlternateShadowCaster()
+{
+    if (m_pModel)
+    {
+        char bFlag = m_pModel->m_Classification.m_bAlternateShadowCaster;
+        return bFlag;
+    }
+    return false;
+}
+
+inline bool Gob::IsEmitterBounds()
+{
+    if (m_pModel)
+    {
+        char bFlag = m_pModel->m_Classification.m_bEmitterBounds;
+        return bFlag;
+    }
+    return false;
+}
+#endif
 
 inline bool Gob::IsSceneHitExcluded()
 {
@@ -932,13 +966,13 @@ inline bool Gob::HasHitFilterOverride()
 class MdlNodeAABB : public MdlNodeTriMesh
 {
 public:
-    AABB* m_pAABBData;
-    Part* InternalCreateInstance(Gob*);
-    ~MdlNodeAABB();
-    MdlNodeAABB(char*);
+    AABB* m_pAABBData; Part* InternalCreateInstance(Gob*);
+    ~MdlNodeAABB(); MdlNodeAABB(char*);
     void InternalParseField(char*);
+#ifdef _XBOX
+    void InternalDestructor();
+#endif
 };
-
 class MdlNodeAnimMesh : public MdlNodeTriMesh
 {
 public:
@@ -951,11 +985,12 @@ public:
     void* m_pAnimationData2;
     int m_nAnimationDataCount1;
     int m_nAnimationDataCount2;
-    void InternalGenVertices();
-    void InternalRemoveTemporaryArrays();
+    void InternalGenVertices(); void InternalRemoveTemporaryArrays();
     Part* InternalCreateInstance(Gob*);
-    ~MdlNodeAnimMesh();
-    MdlNodeAnimMesh(char*);
+    ~MdlNodeAnimMesh(); MdlNodeAnimMesh(char*);
+#ifdef _XBOX
+    void InternalDestructor();
+#endif
     MdlNode* InternalConJoin();
     void InternalParseField(char*);
     void InternalControl(Part*, float, float, float);
@@ -1049,7 +1084,7 @@ public:
     int m_nBoneIndexOffset;
 
 #ifdef _XBOX
-
+    void InternalDestructor();
     short* m_pfBoneMap;
 #else
     float* m_pfBoneMap;
@@ -1366,13 +1401,13 @@ public:
     char m_bDeactivated;
     MaxTree* m_pTree;
     OOAnimRun* m_pOutOfOrderRun;
-
-    CustomAnimation()
-    {
-        m_pTree = 0;
-        m_pOutOfOrderRun = 0;
-        m_bDeactivated = 0;
+#ifndef _XBOX
+    CustomAnimation()  // Xbox 0x002D72B0
+    { m_pTree = 0; m_pOutOfOrderRun = 0; m_bDeactivated = 0;
     }
+#else
+    CustomAnimation();
+#endif
     virtual ~CustomAnimation();
     virtual unsigned char IsActive() = 0;
     virtual void Deactivate() = 0;
@@ -1537,6 +1572,10 @@ public:
     Animation(char* sName);
     ~Animation();
     int InternalParseField(char*);
+#ifdef _XBOX
+    void PruneNodes(MdlNode* pNode);
+    void PruneToAnimRoot();
+#endif
 };
 
 Animation* FindAnimation(Model* pModel, char* sName);
@@ -1582,10 +1621,17 @@ inline CAurObject* Part::GetAurObject()
 // PC 0x00440200  Xbox 0x002962F0
 inline char* Part::Name()
 {
-    MaxTree* pTree = m_pNode->m_pModel;
-    Model* pModel = (pTree->m_nType & MaxTree::TYPE_MASK) == 2
-                        ? static_cast<Model*>(pTree) : 0;
-    return pModel->m_lNames.m_pList[m_pNode->m_nIndex];
+#ifdef _XBOX
+    return m_pNode->m_pModel->AsModel()->m_lNames.m_pList[m_pNode->m_nIndex];
+#else
+    MaxTree* pTree = m_pNode->m_pModel; Model* pModel = (pTree->m_nType & MaxTree::TYPE_MASK) == 2 ? static_cast<Model*>(pTree) : 0; return pModel->m_lNames.m_pList[m_pNode->m_nIndex];
+#endif
 }
+
+#ifdef _XBOX
+#define AUR_MODEL_ADDREF(pModel, pGob) (pModel)->AddRef(pGob)
+#else
+#define AUR_MODEL_ADDREF(pModel, pGob) ++(pModel)->m_nReferenceCount
+#endif
 
 #endif

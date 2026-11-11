@@ -493,7 +493,7 @@ int CAurBehaviorCameraFollow::Control(float fTimeStep)
     }
     return 1;
 }
-
+// Xbox 0x002BF5B0
 int CAurBehaviorNavigate::Control(float fTimeStep)
 {
     if (currentscene)
@@ -656,7 +656,7 @@ CAurBehaviorAttachNoOrientation::CAurBehaviorAttachNoOrientation(
     : CAurBehaviorAttach(pObject, pParent, pPart)
 {
 }
-
+// Xbox 0x002C01C0
 CAurBehaviorNavigate::CAurBehaviorNavigate(CAurObject* pObject)
     : CAurBehavior(pObject)
 {
@@ -711,3 +711,59 @@ CAurBehaviorCameraOnAStick::~CAurBehaviorCameraOnAStick()
 CSWMGBehaviorFire::~CSWMGBehaviorFire()
 {
 }
+
+#ifdef _XBOX
+Gob* FindGob(char* sName);
+Scene* FindScene(char* sName);
+// Xbox 0x002C0230
+CAurBehaviorNavigate::~CAurBehaviorNavigate()
+{
+}
+// Xbox 0x002BEBD0
+const char* nullscene(char* sCommand)
+{
+    Gob* pGob = FindGob(sCommand);
+    if (pGob == 0)
+    {
+        return "hey, no Gob by that name";
+    }
+    pGob->SetScene(0);
+    return "OK";
+}
+// Xbox 0x002BEC00
+const char* setscene(char* sCommand)
+{
+    char sGob[64];
+    char sScene[64];
+
+    if (sscanf(sCommand, "%s %s", sGob, sScene) != 2)
+    {
+        return "Must specify gobname and scenename!";
+    }
+    Gob* pGob = FindGob(sGob);
+    if (pGob == 0)
+    {
+        return "hey, no Gob by that name";
+    }
+    Scene* pScene = FindScene(sScene);
+    if (pScene == 0)
+    {
+        return "hey, no Scene by that name";
+    }
+    pGob->SetScene(pScene);
+    return "OK";
+}
+// Xbox 0x002C03D0
+const char* navigate(char* sCommand)
+{
+    Gob* pGob = FindGob(sCommand);
+    if (pGob == 0)
+    {
+        return "hey, no Gob by that name";
+    }
+    Scene* pScene = pGob->m_pScene;
+    pGob->SetBehavior(new CAurBehaviorNavigate(pGob));
+    pGob->SetScene(pScene);
+    return "OK";
+}
+#endif

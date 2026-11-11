@@ -31,7 +31,11 @@ public:
     virtual void Reshape(int nWidth, int nHeight) = 0;
     virtual void RestoreDesktopDisplayMode() = 0;
     virtual void RestoreAuroraDisplayMode() = 0;
+#ifdef _XBOX
+    virtual void ShutDown(int bReleaseRenderer) = 0;
+#else
     virtual int ShutDown(int bReleaseRenderer, int bDestroyWindow) = 0;
+#endif
     virtual int ResetGammaRamp(float fGamma, int bSaveGamma) = 0;
 };
 
@@ -57,7 +61,11 @@ public:
     virtual void Reshape(int nWidth, int nHeight) = 0;
     virtual void RestoreDesktopDisplayMode();
     virtual void RestoreAuroraDisplayMode();
+#ifdef _XBOX
+    virtual void ShutDown(int bReleaseRenderer) = 0;
+#else
     virtual int ShutDown(int bReleaseRenderer, int bDestroyWindow) = 0;
+#endif
     virtual int ResetGammaRamp(float fGamma, int bSaveGamma);
     virtual int GetGLContext();
 #ifdef _XBOX
@@ -106,7 +114,11 @@ public:
                    unsigned char nBitsPerPixel, unsigned long nRefreshRate,
                    int bFullScreen);
     void Reshape(int nWidth, int nHeight);
+#ifdef _XBOX
+    void ShutDown(int bReleaseRenderer);
+#else
     int ShutDown(int bReleaseRenderer, int bDestroyWindow);
+#endif
 #ifndef _XBOX
     int GetGLContext();
 #endif

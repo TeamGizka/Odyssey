@@ -39,24 +39,24 @@ public:
     void OnDifficultyLeft(CSWGuiControl* pControl);
     void OnDifficultyRight(CSWGuiControl* pControl);
 
-    CSWGuiLabel m_lblDescription;
-    CSWGuiLabel m_lblTitle;
-    CSWGuiListBox m_lbxDescription;
-    CSWGuiButton m_btnBack;
-    CSWGuiButton m_btnDefault;
-    CSWGuiButton m_btnKeyMap;
-    CSWGuiButton m_btnMouse;
-    CSWGuiButton m_btnDifficulty;
-    CSWGuiButton m_btnDiffRight;
-    CSWGuiButton m_btnDiffLeft;
-    CSWGuiOptionsCheckbox m_cbAutoLevelUp;
-    CSWGuiOptionsCheckbox m_cbInvertCam;
-    CSWGuiOptionsCheckbox m_cbAutoSave;
-    CSWGuiOptionsCheckbox m_cbReverse;
-    CSWGuiOptionsCheckbox m_cbCombatMovement;
-    CSWGuiSlider m_sliMouseSen;
-    CSWGuiLabel m_lblMouseSen;
+#ifdef _XBOX
+
+    struct CFlash { CSWGuiLabel* m_pLabel; float m_fTime; };
+    virtual void Draw(float fElapsed); void FlashLabel(CSWGuiLabel* pLabel);
+    CSWGuiButton m_btnDifficulty; CSWGuiOptionsCheckbox m_cbAutoLevelUp; CSWGuiOptionsCheckbox m_cbInvertCam;
+    CSWGuiOptionsCheckbox m_cbAutoSave; CSWGuiOptionsCheckbox m_cbReverse; CSWGuiOptionsCheckbox m_cbCombatMovement;
+    CSWGuiLabel m_lblDiffRight; CSWGuiLabel m_lblDiffLeft; CSWGuiLabel m_lblA; CSWGuiLabel m_lblB; CSWGuiLabel m_lblDescription;
+    CSWGuiLabel m_lblSelect; CSWGuiLabel m_lblBack; CSWGuiLabel m_lblTitle; CSWGuiLabel m_lblRAnalog;
+    CSWGuiListBox m_lbxDescription; int m_nDifficulty; CExoArrayList<CFlash> m_aFlashes;
+#else
+    CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblTitle; CSWGuiListBox m_lbxDescription;
+    CSWGuiButton m_btnBack; CSWGuiButton m_btnDefault; CSWGuiButton m_btnKeyMap; CSWGuiButton m_btnMouse;
+    CSWGuiButton m_btnDifficulty; CSWGuiButton m_btnDiffRight; CSWGuiButton m_btnDiffLeft;
+    CSWGuiOptionsCheckbox m_cbAutoLevelUp; CSWGuiOptionsCheckbox m_cbInvertCam; CSWGuiOptionsCheckbox m_cbAutoSave;
+    CSWGuiOptionsCheckbox m_cbReverse; CSWGuiOptionsCheckbox m_cbCombatMovement;
+    CSWGuiSlider m_sliMouseSen; CSWGuiLabel m_lblMouseSen;
     int m_nDifficulty;
+#endif
 };
 
 #endif

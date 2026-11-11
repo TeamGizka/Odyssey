@@ -156,7 +156,7 @@ int CResTGA::OnResourceServiced()
         OnResourceFreed();
         return 0;
     }
-
+#ifndef _XBOX
     if (m_pHeader->nImageType != TGA_IMAGE_GRAYSCALE)
     {
         unsigned int nBytes = m_pHeader->nBitsPerPixel >> 3;
@@ -171,7 +171,7 @@ int CResTGA::OnResourceServiced()
             nPixels--;
         }
     }
-
+#endif
     m_bServiced = 1;
     return 1;
 }

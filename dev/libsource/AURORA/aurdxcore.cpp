@@ -77,7 +77,7 @@ extern D3DMATERIAL8 g_Material;
 extern int counttrans;
 
 bool g_bColorMaterial;
-int g_nColorMaterialMode;
+int g_nColorMaterialMode = 4;
 unsigned short g_nClientState;
 DWORD g_aClientStateDeclaration[100];
 int g_bCustomVertexShader;
@@ -93,19 +93,19 @@ DWORD g_hVertexShaderVNT3;
 DWORD g_hVertexShaderVNT3C;
 DWORD g_hVertexShaderVNT4;
 DWORD g_hVertexShaderVNT4C;
-float g_fBrightness;
-float g_fContrast;
+float g_fBrightness = 0.05f;
+float aquadraticterm = 0.5f;
 D3DTexture* g_pFrameTexture;
 bool g_bFrameTextureReleased;
 int g_nFrameBufferMode;
-int g_bFrameBufferModeChanged;
-int g_bFrameBufferChanged;
+int g_bFrameBufferModeChanged = 1;
+int g_bFrameBufferChanged = 1;
 D3DTexture* GLRender::cm_pAttenuationTexture;
 D3DXVECTOR4 g_vShadowLightClip;
 D3DXVECTOR4 g_vShadowLightView;
-int g_nCurrentStencilFail;
-int g_nCurrentStencilZFail;
-int g_nCurrentStencilPass;
+int g_nCurrentStencilFail = D3DSTENCILOP_KEEP;
+int g_nCurrentStencilZFail = D3DSTENCILOP_KEEP;
+int g_nCurrentStencilPass = D3DSTENCILOP_KEEP;
 unsigned int GLRender::cm_uiCurrentStage;
 unsigned int GLRender::cm_nGLCurrentTID[4];
 CAurTexture* GLRender::cm_pFilmNoiseTexture;
@@ -804,11 +804,11 @@ static float AdjustBrightness(float fValue)
     float fResult;
     if (fValue < 0.5)
     {
-        fResult = ((1.0f - g_fContrast) + g_fContrast * fValue * 2.0f) * fValue;
+        fResult = ((1.0f - aquadraticterm) + aquadraticterm * fValue * 2.0f) * fValue;
     }
     else
     {
-        fResult = 1.0f - (1.0f - fValue) * (1.0f - fValue) * g_fContrast * 2.0f - (1.0f - g_fContrast) * (1.0f - fValue);
+        fResult = 1.0f - (1.0f - fValue) * (1.0f - fValue) * aquadraticterm * 2.0f - (1.0f - aquadraticterm) * (1.0f - fValue);
     }
     if (fResult > 1.0f)
     {
@@ -1486,7 +1486,7 @@ void GLRender::CreateMipMaps(int nTarget, int nComponents, int nWidth, int nHeig
     D3DXFilterTexture(pTexture, NULL, 0, D3DX_FILTER_LINEAR);
 }
 
-int g_nMatrixMode;
+int g_nMatrixMode = 2;
 int g_nMatrixStackDepth;
 LPD3DXMATRIXSTACK g_pProjectionMatrixStack;
 LPD3DXMATRIXSTACK g_pViewMatrixStack;
@@ -1499,7 +1499,7 @@ List<D3DBaseTexture*> g_listTextures;
 List<DXTextureState*> g_listTextureStates;
 DXTextureState* g_pCurrentTextureState;
 D3DBaseTexture* g_pCurrentTexture;
-int g_bMaterialDirty;
+int g_bMaterialDirty = 1;
 D3DTexture* GLRender::cm_pConvolutionTextureLarge;
 D3DTexture* GLRender::cm_pConvolutionTextureMedium;
 D3DTexture* GLRender::cm_pConvolutionTextureSmall;
@@ -1508,7 +1508,7 @@ D3DTexture* GLRender::cm_pGreenTexture;
 D3DTexture* GLRender::cm_pRedTexture;
 int g_bConvolutionSetUp;
 DWORD g_hConvolutionVertexShader;
-float g_fConvolutionAlpha = 0.4f;
+float multiplier = 0.4f;
 
 float g_afConvolutionWeights[25] =
 {
@@ -3051,7 +3051,7 @@ void GLRender::RenderOverlayConvolution(D3DTexture* pTexture)
             int nColumn3 = (nColumn + 3) % 5;
             g_pD3DDevice->SetVertexDataColor(
                 D3DVSDE_DIFFUSE,
-                ((int)(g_fConvolutionAlpha * 255.0f) << 24) | 0xffffff);
+                ((int)(multiplier * 255.0f) << 24) | 0xffffff);
             float t0 = (i == 0 || i == 3) ? (float)nLine - 1.0f : (float)(nLine + 59);
             float s0 = (i == 0 || i == 1) ? (float)nColumn - 1.0f : (float)nColumn + 80.0f - 1.0f;
             g_pD3DDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, s0, t0);
@@ -3121,7 +3121,7 @@ int totalvertexpool4k;
 int totalindexpool;
 int totalindexpool4;
 
-int g_bBrightnessChanged;
+int rerunoverbrighten;
 static D3DTexture* g_pBrightnessBlueTexture;
 static D3DTexture* g_pBrightnessGreenTexture;
 static D3DTexture* g_pBrightnessRedTexture;
@@ -3130,11 +3130,11 @@ static int g_bBrightnessSetUp;
 void GLRender::RenderBrightnessAdjustment(unsigned long nTexture)
 {
     SetBlendFunc(BLEND_ONE, BLEND_ZERO);
-    if (!g_bBrightnessSetUp || g_bBrightnessChanged)
+    if (!g_bBrightnessSetUp || rerunoverbrighten)
     {
         D3DLOCKED_RECT lock;
         unsigned int i;
-        g_bBrightnessChanged = 0;
+        rerunoverbrighten = 0;
         g_bBrightnessSetUp = 1;
         g_pD3DDevice->CreateTexture(1, FRAMEBUFFER_LOOKUP_SIZE, 1, 0, D3DFMT_A8R8G8B8, 0,
                                     &g_pBrightnessRedTexture);
@@ -3312,8 +3312,8 @@ void GLRender::RenderSaturationAdjustment(unsigned long nTexture)
     g_pD3DDevice->SetPixelShader(0);
     SetActiveTexture(0);
 }
-// PC 0x00437520  Xbox 0x00289190
-void GLRender::FrameBufferModifications(unsigned long nFlags)
+// PC 0x004361F0  Xbox 0x00289190
+void GLRender::FrameBufferModifications2(unsigned long nFlags)
 {
     if (doframebuffer && g_nFrameBufferMode != 4 && visualizepass4 && m_bSaturationEnabled &&
         (nFlags & FRAMEBUFFER_SATURATION))
@@ -4403,7 +4403,7 @@ void GLRender::DrawElements(Aurora::AuroraPrimitiveTypes nPrimitive, unsigned lo
     }
 }
 
-int g_bHighResolutionTimer;
+int g_bHighResolutionTimer = 1;
 LARGE_INTEGER g_nTimerFrequency;
 int g_bTimerScaled;
 float g_fTimerScale;
@@ -4444,8 +4444,8 @@ void GLRender::InitRenderSystem()
     g_Material.Emissive.b = 0.0f;
     g_Material.Emissive.a = 1.0f;
 
-    g_listTextureStates.Add(NULL);
-    g_listTextures.Add(NULL);
+    g_listTextureStates.SetSize(0);
+    g_listTextures.SetSize(0);
     g_listVertexPrograms.SetSize(0);
     for (int i = 0; i < 16; i++)
     {
@@ -4711,12 +4711,12 @@ void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,
             pTexture0->Bind();
             SetActiveTexture(1);
             pTexture1->Bind();
-            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
             g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
             SetActiveTexture(2);
             pTexture2->Bind();
-            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
             g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
             SetActiveTexture(3);
             pTexture3->Bind();
             g_pD3DDevice->SetPixelShader(g_ahPixelShader[PIXEL_SHADER_BUMP_SPECULAR_POWER]);
@@ -4772,8 +4772,8 @@ void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,
             pTexture3->Bind();
             g_pD3DDevice->SetTextureStageState(3, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT3);
             g_pD3DDevice->SetTextureStageState(3, D3DTSS_TEXCOORDINDEX, D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR | 3);
-            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
             g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
             g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSW, D3DTADDRESS_CLAMP);
             SetActiveTexture(0);
             return;
@@ -4796,8 +4796,8 @@ void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,
             pTexture0->Bind();
             SetActiveTexture(1);
             pTexture1->Bind();
-            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
             g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
             SetActiveTexture(2);
             pTexture2->Bind();
             SetActiveTexture(3);
@@ -4811,8 +4811,8 @@ void GLRender::EnablePixelShaders(int nShader, CAurTexture* pTexture0,
             pTexture0->Bind();
             SetActiveTexture(1);
             pTexture1->Bind();
-            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
             g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+            g_pD3DDevice->SetTextureStageState(cm_uiCurrentStage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
             SetActiveTexture(2);
             pTexture2->Bind();
             SetActiveTexture(3);
@@ -5636,8 +5636,8 @@ void GLRender::RenderAccumulationBlur(D3DTexture* pFrame, D3DTexture* pAccumulat
     SetTextureStageFlag(2, 0);
     SetTextureStageFlag(3, 0);
 }
-// PC 0x004361F0  Xbox 0x0028F0B0
-void GLRender::FrameBufferModifications2(unsigned long nFlags)
+// PC 0x00437520  Xbox 0x0028F0B0
+void GLRender::FrameBufferModifications(unsigned long nFlags)
 {
     static int bAccumulationCreated;
     static D3DTexture* pAccumulationTexture;

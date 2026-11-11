@@ -140,6 +140,10 @@ public:
     CCameraSettings m_cameraSettings;
     Gob* m_pAnimatedCamera;
     CExoString m_sAnimatedCamera;
+#ifdef _XBOX
+
+    void SetCameraOffset(Vector vOffset) { m_vCameraOffset = vOffset; }
+#endif
 };
 
 #endif

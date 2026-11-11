@@ -100,7 +100,7 @@ public:
     void Combine(const NvFaceInfoList& lstForward,
                  const NvFaceInfoList& lstBackward);
     void Build(NvEdgeInfoList& lstEdges, NvFaceInfoList& lstFaces);
-    bool IsInStrip(const NvFaceInfo* pFace) const  // PC 0x0047BA70
+    bool IsInStrip(const NvFaceInfo* pFace) const  // PC 0x0047BA70  Xbox 0x002D2040
     {
         if (pFace == 0)
         {
@@ -174,8 +174,8 @@ public:
     void Stripify(const NvIndexList& lstIndices, int nCacheSize,
                   int nMinStripLength, MyFaceList& lstFaces,
                   NvStripInfoList& lstStrips, NvFaceInfoList& lstFaceInfos);
-    // Xbox 0x002D1FA0
-    static int GetUniqueVertexInB(NvFaceInfo* pFaceA, NvFaceInfo* pFaceB)
+#ifndef _XBOX
+    static int GetUniqueVertexInB(NvFaceInfo* pFaceA, NvFaceInfo* pFaceB)  // Xbox 0x002D1FA0
     {
         if (pFaceB->m_nVertex0 != pFaceA->m_nVertex0 &&
             pFaceB->m_nVertex0 != pFaceA->m_nVertex1 &&
@@ -230,30 +230,30 @@ public:
         bool bIsCW = false;
         if (pFace->m_nVertex0 == nVertex0)
         {
-            bIsCW = (pFace->m_nVertex1 == nVertex1);
-        }
+            bIsCW = (pFace->m_nVertex1 == nVertex1); }
         else if (pFace->m_nVertex1 == nVertex0)
         {
-            bIsCW = (pFace->m_nVertex2 == nVertex1);
-        }
+            bIsCW = (pFace->m_nVertex2 == nVertex1); }
         else
         {
-            bIsCW = (pFace->m_nVertex0 == nVertex1);
-        }
+            bIsCW = (pFace->m_nVertex0 == nVertex1); }
         return bIsCW;
     }
+#else
+    static int GetUniqueVertexInB(NvFaceInfo* pFaceA, NvFaceInfo* pFaceB); static int GetSharedVertex(NvFaceInfo* pFaceA, NvFaceInfo* pFaceB); bool IsCW(NvFaceInfo* pFace, int nVertex0, int nVertex1);
+#endif
 
     static int GetNextIndex(const NvIndexList& lstIndices, NvFaceInfo* pFace);
     static NvEdgeInfo* FindEdgeInfo(NvEdgeInfoList& lstEdges, int nVertex0,
                                     int nVertex1);
-
-    static NvFaceInfo* FindOtherFace(NvEdgeInfoList& lstEdges, int nVertex0,
-                                     int nVertex1, NvFaceInfo* pFace)
+#ifndef _XBOX
+    static NvFaceInfo* FindOtherFace(NvEdgeInfoList& lstEdges, int nVertex0, int nVertex1, NvFaceInfo* pFace)
     {
-        NvEdgeInfo* pEdge = FindEdgeInfo(lstEdges, nVertex0, nVertex1);
-        return (pEdge->m_pFace0 == pFace ? pEdge->m_pFace1 : pEdge->m_pFace0);
+        NvEdgeInfo* pEdge = FindEdgeInfo(lstEdges, nVertex0, nVertex1); return (pEdge->m_pFace0 == pFace ? pEdge->m_pFace1 : pEdge->m_pFace0);
     }
-
+#else
+    static NvFaceInfo* FindOtherFace(NvEdgeInfoList& lstEdges, int nVertex0, int nVertex1, NvFaceInfo* pFace);
+#endif
     int FindStartPoint(NvFaceInfoList& lstFaces, NvEdgeInfoList& lstEdges);
     int NumNeighbors(NvFaceInfo* pFace, NvEdgeInfoList& lstEdges);
     float AvgStripSize(const NvStripInfoList& lstStrips);
@@ -269,6 +269,9 @@ public:
     int m_nMinStripLength;
     float m_fMeshJump;
     bool m_bFirstTimeResetPoint;
+#ifdef _XBOX
+public: NvStripifier();
+#endif
 };
 
 void AurStripify(List<int>& lstIndices, List<List<int> >& lstStrips);

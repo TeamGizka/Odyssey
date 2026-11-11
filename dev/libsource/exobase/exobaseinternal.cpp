@@ -81,7 +81,11 @@ void GetGameVersionInfo()  // PC 0x005E6B10
 // PC 0x005E6D20  Xbox 0x001362B0
 void CExoBaseInternal::CreateResourceExtensionTable()
 {
+#ifdef _XBOX
+    m_nResourceTypeCount = 87;
+#else
     m_nResourceTypeCount = 88;
+#endif
     m_pResourceTypes = new unsigned short[m_nResourceTypeCount];
     m_pResourceExtensions = new CExoString[m_nResourceTypeCount];
 
@@ -257,10 +261,15 @@ void CExoBaseInternal::CreateResourceExtensionTable()
     m_pResourceExtensions[84] = "xmv";
     m_pResourceTypes[85] = 3011;
     m_pResourceExtensions[85] = "xbx";
+#ifdef _XBOX
+    m_pResourceTypes[86] = 65535;
+    m_pResourceExtensions[86] = "";
+#else
     m_pResourceTypes[86] = 14;
     m_pResourceExtensions[86] = "log";
     m_pResourceTypes[87] = 65535;
     m_pResourceExtensions[87] = "";
+#endif
 }
 #ifndef _XBOX
 void CExoBaseInternal::AddAlias(const CExoString& sFile,  // PC 0x005E7760  Xbox 0x00136CD0

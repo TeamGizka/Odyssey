@@ -23,14 +23,14 @@ public:
         }
     }
 #endif
-
-    SafePointer(const SafePointer& other)
-        : m_pObject(other.m_pObject)
+#ifndef _XBOX
+    SafePointer(const SafePointer& other) : m_pObject(other.m_pObject)  // Xbox 0x002B6C10
     {
-        if (m_pObject)
-            m_pObject->m_lstSafePointers.Add(this);
+        if (m_pObject) m_pObject->m_lstSafePointers.Add(this);
     }
-
+#else
+    SafePointer(const SafePointer& other);
+#endif
     ~SafePointer();
 
     SafePointer& operator=(T* pObject);
@@ -59,30 +59,30 @@ public:
 
     void RemovePointer()
     {
-        List<SafePointer<T>*>& list = m_pObject->m_lstSafePointers;
-        list.Remove(this);
+#ifdef _XBOX
+        m_pObject->RemoveSafePointer(this);
+#else
+        List<SafePointer<T>*>& list = m_pObject->m_lstSafePointers; list.Remove(this);
+#endif
     }
-
-
-
 
 
 
 
     __forceinline void SetPointer(T* pObject)
     {
+#ifdef _XBOX
+        if (m_pObject) m_pObject->RemoveSafePointer(this);
+        m_pObject = pObject; if (pObject) pObject->AddSafePointer(this);
+#else
         List<SafePointer<T>*>* pList;
-        if (m_pObject)
-        {
+        if (m_pObject) {
             pList = &m_pObject->m_lstSafePointers;
-            pList->Remove(this);
-        }
-        m_pObject = pObject;
-        if (pObject)
-        {
+            pList->Remove(this); }
+        m_pObject = pObject; if (pObject) {
             pList = &pObject->m_lstSafePointers;
-            pList->Add(this);
-        }
+            pList->Add(this); }
+#endif
     }
 
     T* m_pObject;
@@ -93,10 +93,10 @@ public:
 template <class T> class SafePointerList
 {
 public:
-    SafePointerList()
-    {
-    }
-
+    SafePointerList() {}
+#ifdef _XBOX
+    void AddSafePointer(SafePointer<T>* pPointer); void RemoveSafePointer(SafePointer<T>* pPointer);
+#endif
     ~SafePointerList();
 
     List<SafePointer<T>*> m_lstSafePointers;
@@ -109,7 +109,7 @@ template <class T> SafePointer<T>::SafePointer(T* pObject)
 {
     if (m_pObject)
     {
-        m_pObject->m_lstSafePointers.Add(this);
+        m_pObject->AddSafePointer(this);
     }
 }
 
@@ -149,5 +149,31 @@ template <class T> SafePointerList<T>::~SafePointerList()
     }
     m_lstSafePointers.SetSize(0);
 }
+
+#ifdef _XBOX
+
+// Xbox 0x002BA530
+template <class T> void SafePointerList<T>::AddSafePointer(SafePointer<T>* pPointer)
+{
+    if (m_lstSafePointers.m_nAllocated == 0)
+        m_lstSafePointers.allocate(2);
+    m_lstSafePointers.Add(pPointer);
+}
+
+
+// Xbox 0x002B6C10
+template <class T> SafePointer<T>::SafePointer(const SafePointer& other)
+    : m_pObject(other.m_pObject)
+{
+    if (m_pObject)
+        m_pObject->AddSafePointer(this);
+}
+
+// Xbox 0x002BB500
+template <class T> void SafePointerList<T>::RemoveSafePointer(SafePointer<T>* pPointer)
+{
+    m_lstSafePointers.Remove(pPointer);
+}
+#endif
 
 #endif

@@ -151,7 +151,7 @@ void CSWSSoundObject::PackIntoMessage(CSWSMessage* pMessage)
         pMessage->WriteCResRef(m_lstSounds.element[nSound], 16);
     }
 }
-// PC 0x004015A0  Xbox 0x00246ED0
+// PC 0x004015A0
 void CSWSSoundObject::AIUpdate()
 {
 }

@@ -159,6 +159,29 @@ int PartOutside(PartTrigger* pTrigger, List<Plane>& lstPlanes)
 // Xbox 0x002B8E80
 char* GetToken(char** psLine)
 {
+#ifdef _XBOX
+    char* sToken = *psLine;
+    while (**psLine == ' ')
+    {
+        (*psLine)++;
+    }
+    if (**psLine == 0)
+    {
+        return NULL;
+    }
+    while (**psLine != ' ')
+    {
+        if (**psLine == 0)
+            break;
+        (*psLine)++;
+    }
+    if (**psLine == ' ')
+    {
+        **psLine = 0;
+    }
+    (*psLine)++;
+    return sToken;
+#else
     char* sLine = *psLine;
     while (*sLine == ' ')
     {
@@ -179,6 +202,7 @@ char* GetToken(char** psLine)
         ++*psLine;
     }
     return sToken;
+#endif
 }
 
 #ifdef _XBOX
@@ -1330,6 +1354,10 @@ void SceneBSPRemoveTiledata(Scene* pScene, const Vector& vPosition)
     delete pNodeData->m_pTileData;
     pNodeData->m_pTileData = 0;
 }
+
+#ifdef _XBOX
+static void AddVisibleTriMeshes(nodedata* pNodeData, List<Plane>& planes);
+#endif
 // PC 0x0046D3B0  Xbox 0x002BB5D0
 static void ProcessParts(BSPNode* pNode, void* pData, List<Plane>& planes)
 {
@@ -1428,6 +1456,9 @@ static void ProcessParts(BSPNode* pNode, void* pData, List<Plane>& planes)
 
     if (!renderaabb)
     {
+#ifdef _XBOX
+        AddVisibleTriMeshes(pNodeData, planes);
+#else
         for (int i = 0; i < pNodeData->m_lstTriMeshes.m_nCount; i++)
         {
             PartTriMesh* pTriMesh = pNodeData->m_lstTriMeshes[i];
@@ -1436,6 +1467,7 @@ static void ProcessParts(BSPNode* pNode, void* pData, List<Plane>& planes)
                 AddPartToMeshBuckets(pTriMesh);
             }
         }
+#endif
     }
 
     for (int i = 0; i < pNodeData->m_lstShadowProjections.m_nCount; i++)
@@ -1881,3 +1913,42 @@ static inline void AurscenemanagerTrace2()
 static inline void AurscenemanagerTrace1()
 {
 }
+
+#ifdef _XBOX
+// Xbox 0x002BAE40
+static void AddVisibleTriMeshes(nodedata* pNodeData, List<Plane>& planes)
+{
+    for (int i = 0; i < pNodeData->m_lstTriMeshes.m_nCount; i++)
+    {
+        PartTriMesh* pTriMesh = pNodeData->m_lstTriMeshes[i];
+        if (!PartOutside(pTriMesh, planes))
+        {
+            AddPartToMeshBuckets(pTriMesh);
+        }
+    }
+}
+#endif
+
+#ifdef _XBOX
+Scene* FindScene(char* sName);
+// Xbox 0x002B8ED0
+char* setbsphere(char* sArguments)
+{
+    char* sToken = GetToken(&sArguments);
+    if (!sToken)
+        return "0";
+    Model* pModel = FindModel(sToken);
+    sToken = GetToken(&sArguments);
+    if (!sToken)
+        return "0";
+    pModel->m_fRadius = (float)atof(sToken);
+    return "1";
+}
+// Xbox 0x002B8F70
+char* setfadetoalways(char* sArguments)
+{
+    FindScene("mainscene");
+    Scene::geomFadeEnabled = CAurScene::ALWAYS_FADE;
+    return "SUCCESS";
+}
+#endif

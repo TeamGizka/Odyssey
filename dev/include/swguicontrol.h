@@ -52,7 +52,7 @@ class CSWGuiPanel;
 class CSWGuiObject
 {
 public:
-    virtual ~CSWGuiObject()  // PC 0x00409E80
+    virtual ~CSWGuiObject()  // PC 0x00409E80  Xbox 0x0004CE30
     {
     }
     virtual void SetExtent(const CSWGuiExtent& cExtent)  // PC 0x00409E90
@@ -148,7 +148,7 @@ public:
     {
         return this;
     }
-    // PC 0x004064A0
+    // PC 0x004064A0  Xbox 0x0004DC50
     virtual int GetIdealHeight()
     {
         return m_cExtent.m_nHeight;
@@ -157,14 +157,14 @@ public:
     virtual void Draw(float fElapsed)
     {
     }
-
-    virtual void HandleInputEvent(int nEvent, int nState);
-    void SetVisible(int bVisible);
-    virtual void SetActive(int bActive);
+    virtual void HandleInputEvent(int nEvent, int nState); void SetVisible(int bVisible); virtual void SetActive(int bActive);
+#ifdef _XBOX
+    virtual int HitCheckMouse(int nX, int nY);
+#else
     virtual CSWGuiControl* HitCheckMouse(int nX, int nY);
+#endif
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
-    // PC 0x0063E7F0
-    virtual CSWGuiNavigable* AsNavigable()
+    virtual CSWGuiNavigable* AsNavigable()  // PC 0x0063E7F0
     {
         return 0;
     }
@@ -334,12 +334,12 @@ class CSWGui3DSceneView : public CSWGuiControl
 {
 public:
 #ifndef _XBOX
-    virtual ~CSWGui3DSceneView()  // PC 0x0067AC50
+    virtual ~CSWGui3DSceneView()  // PC 0x0067AC50  Xbox 0x000A0D00
     {
     }
 #endif
     virtual void SetExtent(const CSWGuiExtent& cExtent);
-    virtual void Draw(float fElapsed)  // PC 0x0067ACB0
+    virtual void Draw(float fElapsed)  // PC 0x0067ACB0  Xbox 0x000A0CF0
     {
         m_cScene.Draw(fElapsed);
     }
@@ -426,7 +426,7 @@ class CSWGuiLabelHilight : public CSWGuiLabel
 {
 public:
 #ifndef _XBOX
-    virtual ~CSWGuiLabelHilight()  // PC 0x0041B610
+    virtual ~CSWGuiLabelHilight()  // PC 0x0041B610  Xbox 0x0004F7A0
     {
     }
 #endif
@@ -494,7 +494,7 @@ class CSWGuiButtonToggle : public CSWGuiButton
 public:
     CSWGuiButtonToggle();
 #ifndef _XBOX
-    virtual ~CSWGuiButtonToggle()  // PC 0x0041CAD0
+    virtual ~CSWGuiButtonToggle()  // PC 0x0041CAD0  Xbox 0x000F33D0
     {
     }
 #endif
@@ -732,13 +732,13 @@ public:
     unsigned long m_bOrganizePending : 1;
     unsigned long m_bScrollBarOnLeft : 1;
     unsigned long m_bShowScrollBar : 1;
-    unsigned long m_bLooping : 1;
-    unsigned long m_bTopAnchored : 1;
-    unsigned long m_bHideScrollIcon : 1;
-    unsigned long m_bScrollOnly : 1;
+    unsigned long m_bLooping : 1; unsigned long m_bTopAnchored : 1;
+    unsigned long m_bHideScrollIcon : 1; unsigned long m_bScrollOnly : 1;
     unsigned long m_bClipItems : 1;
     unsigned long m_bPulseArrows : 1;
+#ifndef _XBOX
     unsigned long m_bScrollToSelected : 1;
+#endif
     unsigned long m_nCONTROLTYPE : 4;
     unsigned long m_nListFlagsUnused : 15;
     unsigned char m_nPadding;

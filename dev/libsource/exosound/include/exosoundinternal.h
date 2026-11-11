@@ -889,4 +889,33 @@ extern int g_bSoundPaused;
 
 template void CResHelper<CResWave, RESTYPE_WAV>::SetResRef(const CResRef&, int);
 
+#ifdef _XBOX
+
+// PC 0x00675DD0
+inline int CExoStreamingSoundSourceInternal::GetLooping()
+{
+    return m_bLooping;
+}
+// PC 0x005D6000
+inline int CExoStreamingSoundSourceInternal::Get3D() { return m_b3D; }
+// PC 0x005A4C50
+inline int CExoSoundSourceInternal::GetLooping() { return m_bLooping; }
+
+// PC 0x005D6010
+inline float CExoSoundInternal::GetMusicVolume(int bTemporary)
+{
+    return bTemporary ? m_fTempMusicVolume : m_fMusicVolume;
+}
+// PC 0x005D6030
+inline float CExoSoundInternal::GetSoundEffectVolume(int bTemporary)
+{
+    return bTemporary ? m_fTempSoundEffectVolume : m_fSoundEffectVolume;
+}
+// PC 0x005D6050
+inline float CExoSoundInternal::GetDialogVolume(int bTemporary)
+{
+    return bTemporary ? m_fTempDialogVolume : m_fDialogVolume;
+}
+#endif
+
 #endif

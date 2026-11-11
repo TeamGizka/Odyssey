@@ -322,7 +322,7 @@ inline void GLRender::Scale(float fX, float fY, float fZ)  // PC 0x00459150  Xbo
 
 #ifdef _XBOX
 // PC 0x0046EF10  Xbox 0x002AD9B0
-inline void GLRender::DrawAxisAlignedFrame(const Vector& vMinimum,
+void GLRender::DrawAxisAlignedFrame(const Vector& vMinimum,
                                     const Vector& vMaximum,
                                     const Vector& vColor)
 {
@@ -606,10 +606,13 @@ void PartAABB::Draw(bool bRenderChildren)
     }
 }
 
+#ifdef _XBOX
+static inline void SetVertexData4f(Aurora::AuroraStreamMode nStream, float fX, float fY, float fZ, float fW);
+#else
 static void SetVertexData4f(Aurora::AuroraStreamMode nStream,
                             float fX, float fY, float fZ, float fW);
-// PC 0x00471860  Xbox 0x002AF210
-void PartLightsaber::Draw(bool bRenderChildren)
+#endif
+void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00471860  Xbox 0x002AF210
 {
     if (lightsaberrender != 0)
     {
@@ -3965,3 +3968,183 @@ void Part::Project(const Vector& vPoint, float fDistance, const Plane& cPlane,
 static inline void AurmodelrenderTrace1()
 {
 }
+
+#ifdef _XBOX
+// Xbox 0x002B26F0
+void Gob::RenderVisibilityBounds()
+{
+    GLRender_Disable(ENABLE_CULL_FACE);
+    GLRender::PushCurrentMatrix();
+    Transform(m_vPosition, m_qOrientation, 1);
+    if (m_fScale != 1.0f)
+    {
+        GLRender::Scale(m_fScale, m_fScale, m_fScale);
+    }
+    Vector vMaximum = m_vBoundingBoxMaximum;
+    if (m_vBoundingBoxMaximum.m_fZ <= 0.1f)
+
+    {
+        vMaximum.m_fZ = 0.1f;
+    }
+    GLRender::DrawAxisAlignedFrame(m_vBoundingBoxMinimum, vMaximum, m_vRenderGobBBox);
+    GLRender::PopCurrentMatrix();
+    GLRender_Enable(ENABLE_CULL_FACE);
+}
+#endif
+
+#ifdef _XBOX
+Gob* FindGob(char* sName);
+// Xbox 0x002AD420
+char* setspecularexponent(char* sArguments)
+{
+    int nExponent = atoi(sArguments);
+    if (nExponent != 1 && nExponent != 2 && nExponent != 4 && nExponent != 8)
+    {
+        return "Exponent must be one of 1,2,4,8";
+    }
+    bmspecularexponent = nExponent;
+    return "Okey dokey.";
+}
+// Xbox 0x002AD4D0
+char* turnoffshadows(char* sArguments)
+{
+    static char sResult[256];
+    char sName[64];
+
+    sName[0] = 0;
+    if (sscanf(sArguments, "%s", sName) != 1)
+    {
+        return "Usage: turnoffshadowing <gobname>";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == NULL)
+    {
+        sprintf(sResult, "couldn't find object %s", sName);
+        return sResult;
+    }
+    pGob->TurnOffShadows();
+    return "Success, shadowing turned off for specified gob.";
+}
+// Xbox 0x002AD540
+char* turnonshadows(char* sArguments)
+{
+    static char sResult[256];
+    char sName[64];
+
+    sName[0] = 0;
+    if (sscanf(sArguments, "%s", sName) != 1)
+    {
+        return "Usage: turnonshadowing <gobname>";
+    }
+    Gob* pGob = FindGob(sName);
+    if (pGob == NULL)
+    {
+        sprintf(sResult, "couldn't find object %s", sName);
+        return sResult;
+    }
+    pGob->TurnOnShadows();
+    return "Success, shadowing turned on for specified gob.";
+}
+// Xbox 0x002AD790
+char* setpersonalradius(char* sArguments)
+{
+    char sName[64];
+    float fRadius = 0.0f;
+
+    sscanf(sArguments, "%s %f", sName, &fRadius);
+    Gob* pGob = FindGob(sName);
+    if (pGob == NULL)
+    {
+        return "no object by that name";
+    }
+    pGob->m_fPersonalSpaceRadius = fRadius;
+    return "done";
+}
+// Xbox 0x002AD7F0
+char* setcreatureradius(char* sArguments)
+{
+    char sName[64];
+    float fRadius = 0.0f;
+
+    sscanf(sArguments, "%s %f", sName, &fRadius);
+    Gob* pGob = FindGob(sName);
+    if (pGob == NULL)
+    {
+        return "no object by that name";
+    }
+    pGob->m_fPersonalSpaceRadius2 = fRadius;
+    return "done";
+}
+// Xbox 0x002AD850
+char* setpath(char* sArguments)
+{
+    char sName[64];
+
+    sscanf(sArguments, "%s", sName);
+    Gob* pGob = FindGob(sName);
+    if (pGob == NULL)
+    {
+        return "no object by that name";
+    }
+    pGob->m_PathInfo.m_nCoordinates = 12;
+    pGob->m_PathInfo.m_pfCoordinates = testpath;
+    return "done";
+}
+// Xbox 0x002B27A0
+static void SetPartAlpha(Part* pPart, float fAlpha)
+{
+    if (pPart->AsPartTriMesh())
+    {
+        pPart->AsPartTriMesh()->m_fAlpha = fAlpha;
+    }
+    for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)
+    {
+        SetPartAlpha(pPart->m_lstChildren[i], fAlpha);
+    }
+}
+// Xbox 0x002B27F0
+char* setalpha(char* sArguments)
+{
+    char sName[64];
+    float fAlpha = 1.0f;
+
+    sscanf(sArguments, "%s %f", sName, &fAlpha);
+    Gob* pGob = FindGob(sName);
+    if (pGob == NULL)
+    {
+        return "no object by that name";
+    }
+    SetPartAlpha(pGob->m_pRootPart, fAlpha);
+    return "done";
+}
+// Xbox 0x002B5C80
+char* setenvironmentmap(char* sArguments)
+{
+    static char sResult[256];
+    char sTexture[64];
+    char sName[64];
+
+    sTexture[0] = 0;
+    sName[0] = 0;
+    sscanf(sArguments, "%s %s", sName, sTexture);
+    Gob* pGob = FindGob(sName);
+    if (pGob == NULL)
+    {
+        sprintf(sResult, "couldn't find object %s", sName);
+        return sResult;
+    }
+    if (_stricmp("NULL", sTexture) == 0 || _stricmp("0", sTexture) == 0)
+    {
+        pGob->m_pEnvironmentMap = NULL;
+        sprintf(sResult, "Setting object %s environmentmap to 0", sName);
+        return sResult;
+    }
+    if (!pGob->SetEnvironmentMap(sTexture))
+    {
+        return "Bad texture!  Environment map not changed.";
+    }
+    sprintf(sResult, "bitmap %s  %s  texid=%d", sArguments, pGob->m_pEnvironmentMap.m_pObject ? "found" : "not found",
+            pGob->m_pEnvironmentMap.m_pObject);
+    return sResult;
+}
+#endif

@@ -362,7 +362,7 @@ int CVirtualMachineInternal::StackPushFloat(float fValue)
            sizeof(fValue));
     return 1;
 }
-// PC 0x005D18B0
+// PC 0x005D18B0  Xbox 0x001591A0
 int CVirtualMachineInternal::StackPushVector(Vector vValue)
 {
     float fValue;
@@ -451,8 +451,8 @@ void CVirtualMachineStack::SetStackPointer(int nStackPointer)
         m_nStackPointer = nStackPointer;
     }
 }
-// PC 0x005D2260  Xbox 0x00158DE0
-int CVirtualMachineInternal::ReadScriptFile(CExoString* psScript)
+#ifndef _XBOX
+int CVirtualMachineInternal::ReadScriptFile(CExoString* psScript)  // PC 0x005D2260  Xbox 0x00158DE0
 {
     char* pNCSData;
     unsigned long nNCSSize;
@@ -559,8 +559,8 @@ int CVirtualMachineInternal::ReadScriptFile(CExoString* psScript)
 #endif
     return -96;
 }
-// PC 0x005D23E0  Xbox 0x00158F10
-int CVirtualMachineInternal::SetUpScriptSituation(
+#endif
+int CVirtualMachineInternal::SetUpScriptSituation(  // PC 0x005D23E0  Xbox 0x00158F10
     CVirtualMachineScript* pScript)
 {
     int nCRC;
@@ -755,8 +755,8 @@ int CVirtualMachineInternal::StackPopObject(unsigned long* pnValue)
     m_cStack.SetStackPointer(nStackPointer);
     return 1;
 }
-// PC 0x005D26F0  Xbox 0x00159460
-int CVirtualMachineInternal::LoadScriptSituation(
+#ifndef _XBOX
+int CVirtualMachineInternal::LoadScriptSituation(  // PC 0x005D26F0  Xbox 0x00159460
     CVirtualMachineScript** ppScript, CResGFF* pGFF, CResStruct* pStruct)
 {
     int bSuccess;
@@ -798,8 +798,8 @@ int CVirtualMachineInternal::LoadScriptSituation(
     (*ppScript)->m_pStack->LoadStack(pGFF, &cStackStruct);
     return 1;
 }
-// PC 0x005D28E0  Xbox 0x00159620
-inline CVirtualMachineStack::~CVirtualMachineStack()
+#endif
+inline CVirtualMachineStack::~CVirtualMachineStack()  // PC 0x005D28E0  Xbox 0x00159620
 {
     ClearStack();
 }
@@ -1564,8 +1564,8 @@ int CVirtualMachineInternal::RunScriptFile(int nStartInstructionPtr)
 
     return nReturn;
 }
-// PC 0x005D4380  Xbox 0x0015B120
-int CVirtualMachineInternal::StackPopCommand(CVirtualMachineScript** ppCommand)
+#ifndef _XBOX
+int CVirtualMachineInternal::StackPopCommand(CVirtualMachineScript** ppCommand)  // PC 0x005D4380  Xbox 0x0015B120
 {
     *ppCommand = new CVirtualMachineScript();
     if (m_aScripts[m_nCurrentScript].m_bLoaded == 0)
@@ -1594,8 +1594,8 @@ int CVirtualMachineInternal::StackPopCommand(CVirtualMachineScript** ppCommand)
     (*ppCommand)->m_sName = m_aScripts[m_nCurrentScript].m_sName;
     return 1;
 }
-// PC 0x005D45D0  Xbox 0x0015B290
-int CVirtualMachineInternal::RunScript(CExoString* psScript,
+#endif
+int CVirtualMachineInternal::RunScript(CExoString* psScript,  // PC 0x005D45D0  Xbox 0x0015B290
                                        unsigned long nObjectId,
                                        int bValidObjectRunScript)
 {
@@ -1705,8 +1705,8 @@ int CVirtualMachineInternal::RunScript(CExoString* psScript,
     }
     return 0;
 }
-// PC 0x005D47A0  Xbox 0x0015B490
-int CVirtualMachineInternal::SaveScriptSituation(
+#ifndef _XBOX
+int CVirtualMachineInternal::SaveScriptSituation(  // PC 0x005D47A0  Xbox 0x0015B490
     CVirtualMachineScript* pScript, CResGFF* pGFF, CResStruct* pStruct)
 {
     CResStruct cStack;
@@ -1746,8 +1746,8 @@ int CVirtualMachineInternal::SaveScriptSituation(
     pScript->m_pStack->SaveStack(pGFF, &cStack);
     return 1;
 }
-// PC 0x005D44F0  Xbox 0x0015B250
-int CVirtualMachineInternal::DeleteScript(CVirtualMachineScript* pScript)
+#endif
+int CVirtualMachineInternal::DeleteScript(CVirtualMachineScript* pScript)  // PC 0x005D44F0  Xbox 0x0015B250
 {
     CVirtualMachineStack* pStack;
 
@@ -1774,8 +1774,8 @@ int CVirtualMachineInternal::DeleteScript(CVirtualMachineScript* pScript)
 
     return 1;
 }
-// PC 0x005D4AD0  Xbox 0x0015B840
-int CVirtualMachineInternal::RunScriptSituation(
+#ifndef _XBOX
+int CVirtualMachineInternal::RunScriptSituation(  // PC 0x005D4AD0  Xbox 0x0015B840
     CVirtualMachineScript* pScript, unsigned long nObjectId,
     int bOneInstruction)
 {
@@ -1822,13 +1822,13 @@ int CVirtualMachineInternal::RunScriptSituation(
     delete pScript;
     return 0;
 }
-// PC 0x005D48E0  Xbox 0x0015B820
-void CVirtualMachineInternal::DeleteScriptSituation(
+#endif
+void CVirtualMachineInternal::DeleteScriptSituation(  // PC 0x005D48E0  Xbox 0x0015B820
     CVirtualMachineScript* pScript)
 {
     delete pScript;
 }
-// PC 0x005D4900
+// PC 0x005D4900  Xbox 0x0015B690
 CVirtualMachineInternal::CVirtualMachineInternal()
 {
     m_nCurrentScript = -1;
@@ -1839,7 +1839,7 @@ CVirtualMachineInternal::CVirtualMachineInternal()
     InitializeCRCTable();
 #endif
 }
-// PC 0x005D49B0
+// PC 0x005D49B0  Xbox 0x0015B740
 CVirtualMachineInternal::~CVirtualMachineInternal()
 {
     for (int nScript = 0; nScript < VM_MAX_SCRIPTS; nScript++)
@@ -1907,6 +1907,227 @@ int CVirtualMachineFile::LoadFile(CExoString* psFileName, char** ppData, unsigne
     }
     *ppData = m_pRes->GetNCSDataPtr();
     *pnSize = m_pRes->GetNCSSize();
+    return 0;
+}
+#endif
+
+#ifdef _XBOX
+void AurPostString(char* szString, int nColumn, int nRow, float fDuration);
+
+// PC 0x005D2260  Xbox 0x00158DE0
+int CVirtualMachineInternal::ReadScriptFile(CExoString* psScript)
+{
+    char* pNCSData;
+    unsigned long nNCSSize;
+    char cVersion;
+    char cRevision;
+    int nVersion;
+
+    m_nCurrentScript++;
+    if (m_nCurrentScript >= 8)
+    {
+        m_nCurrentScript--;
+        return -94;
+    }
+
+    int nResult = m_aVMFile[m_nCurrentScript].LoadFile(psScript, &pNCSData,
+                                                       &nNCSSize);
+    if (nResult < 0)
+    {
+        m_nCurrentScript--;
+        return nResult;
+    }
+
+    m_aScripts[m_nCurrentScript].m_sName = *psScript;
+    if (pNCSData[0] == 'N' && pNCSData[1] == 'C' && pNCSData[2] == 'S' &&
+        pNCSData[3] == ' ' && pNCSData[4] == 'V' && pNCSData[6] == '.')
+    {
+        cVersion = pNCSData[5];
+        nVersion = 0;
+        if (cVersion >= '1' && cVersion <= '9')
+        {
+            nVersion = 10 * (cVersion - '0');
+        }
+
+        cRevision = pNCSData[7];
+        if (cRevision >= '1' && cRevision <= '9')
+        {
+            nVersion += cRevision - '0';
+        }
+
+        if (nVersion != 10)
+        {
+            m_aVMFile[m_nCurrentScript].m_pRes->Release();
+            m_nCurrentScript--;
+            return -96;
+        }
+
+        if (pNCSData[8] == 'B')
+        {
+            InitializeScript(&m_aScripts[m_nCurrentScript], pNCSData + 13,
+                             nNCSSize - 13);
+            return 0;
+        }
+    }
+
+    m_aVMFile[m_nCurrentScript].m_pRes->Release();
+    m_nCurrentScript--;
+    return -96;
+}
+
+// PC 0x005D26F0  Xbox 0x00159460
+int CVirtualMachineInternal::LoadScriptSituation(
+    CVirtualMachineScript** ppScript, CResGFF* pGFF, CResStruct* pStruct)
+{
+    int bSuccess;
+    CResStruct cStackStruct;
+
+    *ppScript = new CVirtualMachineScript;
+    (*ppScript)->m_nCodeSize = 0;
+    (*ppScript)->m_pCode = 0;
+    (*ppScript)->m_nObjectId =
+        pGFF->ReadFieldDWORD(pStruct, "CRC", bSuccess, 0);
+    (*ppScript)->m_bLoaded = 1;
+    (*ppScript)->m_nInstructionPtr =
+        pGFF->ReadFieldINT(pStruct, "InstructionPtr", bSuccess, 0);
+    (*ppScript)->m_nSecondaryPtr =
+        pGFF->ReadFieldINT(pStruct, "SecondaryPtr", bSuccess, 0);
+    (*ppScript)->m_sName =
+        pGFF->ReadFieldCExoString(pStruct, "Name", bSuccess, "");
+    (*ppScript)->m_nStackSize =
+        pGFF->ReadFieldINT(pStruct, "StackSize", bSuccess, 0);
+    pGFF->GetStructFromStruct(&cStackStruct, pStruct, "Stack");
+    (*ppScript)->m_pStack = new CVirtualMachineStack;
+    (*ppScript)->m_pStack->m_pVirtualMachine = this;
+    (*ppScript)->m_pStack->LoadStack(pGFF, &cStackStruct);
+    return 1;
+}
+
+// PC 0x005D4380  Xbox 0x0015B120
+int CVirtualMachineInternal::StackPopCommand(CVirtualMachineScript** ppCommand)
+{
+    *ppCommand = new CVirtualMachineScript();
+    if (m_aScripts[m_nCurrentScript].m_bLoaded == 0)
+    {
+        (*ppCommand)->m_nCodeSize = 0;
+        (*ppCommand)->m_pCode = 0;
+    }
+    else
+    {
+        (*ppCommand)->m_nCodeSize = 0;
+        (*ppCommand)->m_pCode = 0;
+    }
+
+    (*ppCommand)->m_nObjectId = m_aScripts[m_nCurrentScript].m_nObjectId;
+    (*ppCommand)->m_bLoaded = m_aScripts[m_nCurrentScript].m_bLoaded;
+    (*ppCommand)->m_nSecondaryPtr = 0;
+    (*ppCommand)->m_nInstructionPtr = m_nSavedInstructionPtr;
+    (*ppCommand)->m_nStackSize = m_cStack.m_nStackPointer;
+    (*ppCommand)->m_pStack = new CVirtualMachineStack;
+    (*ppCommand)->m_pStack->m_pVirtualMachine = this;
+    (*ppCommand)->m_pStack->CopyFromStack(&m_cStack, m_nSavedStackPointer,
+                                          m_nSavedStackSize);
+    (*ppCommand)->m_sName = m_aScripts[m_nCurrentScript].m_sName;
+    return 1;
+}
+
+// PC 0x005D47A0  Xbox 0x0015B490
+int CVirtualMachineInternal::SaveScriptSituation(
+    CVirtualMachineScript* pScript, CResGFF* pGFF, CResStruct* pStruct)
+{
+    CResStruct cStack;
+
+    pScript->m_nCodeSize = 0;
+    pGFF->WriteFieldINT(pStruct, 0, "CodeSize");
+    if (pScript->m_pCode != 0 && pScript->m_nCodeSize != 0)
+    {
+        pGFF->WriteFieldDWORD(pStruct, pScript->m_nObjectId, "CRC");
+    }
+    else
+    {
+        if (ReadScriptFile(&pScript->m_sName) == 0)
+        {
+            m_aScripts[m_nCurrentScript].m_nObjectId = ComputeCRC(
+                m_aScripts[m_nCurrentScript].m_pCode,
+                m_aScripts[m_nCurrentScript].m_nCodeSize);
+            pGFF->WriteFieldDWORD(pStruct,
+                m_aScripts[m_nCurrentScript].m_nObjectId, "CRC");
+            DeleteScript(&m_aScripts[m_nCurrentScript]);
+            m_aVMFile[m_nCurrentScript].m_pRes->Release();
+            m_nCurrentScript--;
+        }
+        else
+        {
+            pGFF->WriteFieldDWORD(pStruct,
+                m_aScripts[m_nCurrentScript].m_nObjectId, "CRC");
+        }
+    }
+
+    pGFF->WriteFieldINT(pStruct, pScript->m_nInstructionPtr,
+                        "InstructionPtr");
+    pGFF->WriteFieldINT(pStruct, pScript->m_nSecondaryPtr, "SecondaryPtr");
+    pGFF->WriteFieldCExoString(pStruct, pScript->m_sName, "Name");
+    pGFF->WriteFieldINT(pStruct, pScript->m_nStackSize, "StackSize");
+    pGFF->AddStructToStruct(&cStack, pStruct, "Stack", 0);
+    pScript->m_pStack->SaveStack(pGFF, &cStack);
+    return 1;
+}
+
+
+// PC 0x005D4AD0  Xbox 0x0015B840
+int CVirtualMachineInternal::RunScriptSituation(
+    CVirtualMachineScript* pScript, unsigned long nObjectId,
+    int bOneInstruction)
+{
+    int nResult;
+
+    m_cStack.ClearStack();
+    m_cStack.m_nStackPointer = pScript->m_pStack->m_nStackPointer;
+    m_cStack.m_nAllocated = pScript->m_pStack->m_nAllocated;
+    m_cStack.m_pVirtualMachine = this;
+    m_cStack.CopyFromStack(pScript->m_pStack, 0, 0);
+    if (pScript->m_pStack != 0)
+    {
+        delete pScript->m_pStack;
+        pScript->m_pStack = 0;
+    }
+
+    m_nReturnStackPointer = 0;
+    m_nInstructionCount = 0;
+    if (SetUpScriptSituation(pScript) == 0)
+    {
+        if (m_aScripts[m_nCurrentScript].m_nObjectId ==
+            ComputeCRC(m_aScripts[m_nCurrentScript].m_pCode,
+                       m_aScripts[m_nCurrentScript].m_nCodeSize))
+        {
+            m_abValidObjectRunScript[m_nCurrentScript] = bOneInstruction;
+            m_aoidObjectRunScript[m_nCurrentScript] = nObjectId;
+            if (m_pCommandImplementer != 0)
+            {
+                m_pCommandImplementer->m_nCommandContext =
+                    m_abValidObjectRunScript[m_nCurrentScript];
+                m_pCommandImplementer->m_oidObject =
+                    m_aoidObjectRunScript[m_nCurrentScript];
+            }
+
+            nResult = RunScriptFile(pScript->m_nInstructionPtr);
+            DeleteScript(&m_aScripts[m_nCurrentScript]);
+            m_aVMFile[m_nCurrentScript].m_pRes->Release();
+            m_nCurrentScript--;
+            delete pScript;
+            return nResult == 0;
+        }
+
+        AurPostString("ERROR: TRYING TO RUN WITH 64 MB CAP, BUT SCRIPTS HAVE CHANGED.", 2, 4, 15.0f);
+        AurPostString("ERROR: PLOTS COULD BE BROKEN.", 2, 6, 15.0f);
+        AurPostString("ERROR: REPORT THIS BUG IMMEDIATELY IF YOU THINK THIS IS IN ERROR.", 2, 8, 15.0f);
+        AurPostString("ERROR: STOP TESTING IMMEDIATELY!", 2, 10, 15.0f);
+        DeleteScript(&m_aScripts[m_nCurrentScript]);
+        m_aVMFile[m_nCurrentScript].m_pRes->Release();
+        m_nCurrentScript--;
+    }
+
+    delete pScript;
     return 0;
 }
 #endif

@@ -188,7 +188,7 @@ CSWGuiNameChargen::CSWGuiNameChargen(CSWGuiManager* pManager, CSWCCreature* pCre
     m_editName.m_cText.m_nMaxLength = MAX_NAME_LENGTH;
     m_editName.AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiNameChargen::HandleDoneButton);
 }
-// PC 0x006FA140
+// PC 0x006FA140  Xbox 0x001321B0
 void CSWGuiNameChargen::OnPanelAdded()
 {
     CExoString sName;
@@ -460,5 +460,10 @@ void CSWGuiNameChargen::SetInternational(int bInternational)
         m_btnDone.SetMoveToControl(2, &m_aStdButtons[KEYS_PER_ROW - 1]);
         m_lblIntl.m_cText.m_cParams.SetStrRef(42282);
     }
+}
+// PC 0x006FA140  Xbox 0x001321B0
+void CSWGuiNameChargen::OnPanelAdded()
+{
+    SetActiveControl(&m_btnDone, 0);
 }
 #endif

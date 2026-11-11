@@ -8,7 +8,7 @@
 #include "LaunchData.h"
 
 void AurPersistDisplay();
-void ExoXboxLaunch(KOTOR_LAUNCH_DATA* pParams);
+void ExoXboxLaunch(KOTOR_LAUNCH_DATA* pParams, const char* pszModuleName);
 
 float g_fDeadzonePreCalibration = 0.5f;
 float g_fDeadzonePostCalibration = 0.2f;
@@ -926,10 +926,9 @@ int CExoRawInputInternal::GetJoystickBuffer(int nJoystick,
 
     for (unsigned char nAnalog = 0; nAnalog < 8; nAnalog++)
     {
-        if (state.Gamepad.bAnalogButtons[nAnalog] <= 55)
-        {
-            state.Gamepad.bAnalogButtons[nAnalog] = 0;
-        }
+
+        state.Gamepad.bAnalogButtons[nAnalog] =
+            (state.Gamepad.bAnalogButtons[nAnalog] > 55) ? state.Gamepad.bAnalogButtons[nAnalog] : 0;
         if (state.Gamepad.bAnalogButtons[nAnalog] !=
             pState->m_State.Gamepad.bAnalogButtons[nAnalog])
         {
@@ -1166,7 +1165,7 @@ int CExoRawInputInternal::GetJoystickBuffer(int nJoystick,
                 launchData.SetLoadScreen("load_default");
                 launchData.m_nLoadScreenHint = 0;
                 AurPersistDisplay();
-                ExoXboxLaunch(&launchData);
+                ExoXboxLaunch(&launchData, NULL);
             }
         }
         else

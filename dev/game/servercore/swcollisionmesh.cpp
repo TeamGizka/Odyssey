@@ -1131,3 +1131,159 @@ int CSWCollisionMesh::SaveBinaryMesh(const CExoString& sFileName)
     fclose(pFile);
     return 1;
 }
+
+#ifdef _XBOX
+#include "nwsarea.h"
+#include "swsroom.h"
+#include "nwdoorsurfacemesh.h"
+#include "aurconsole.h"
+// Xbox 0x00168780
+int ConvertRoomWalkMeshes(const CResRef& cLayout, const CExoString& sDirectory)
+{
+    CExoString sLayout;
+    CExoString sPath;
+    char szLayout[17];
+    cLayout.CopyToString(szLayout);
+    sPath = sDirectory;
+    if (sPath.Right(1) != "\\")
+    {
+        sPath = sPath + "\\";
+    }
+    CLYT* pLayout = new CLYT;
+    if (pLayout->LoadLayout(cLayout))
+    {
+        int nRooms = pLayout->GetRoomCount();
+        CSWSRoom* pRooms = CSWSArea::LoadRooms(pLayout);
+        for (int nRoom = 0; nRoom < nRooms; nRoom++)
+        {
+            CExoString sFile;
+            CExoString sRoom;
+            pLayout->GetRoomName(nRoom).CopyToString(sRoom);
+            sFile.Format("%s%s.WOK", sPath.CStr(), sRoom.CStr());
+            if (!pRooms[nRoom].m_pWalkMesh->SaveBinaryMesh(sFile))
+            {
+                delete[] pRooms;
+                pLayout->UnloadLayout();
+                delete pLayout;
+                return 0;
+            }
+        }
+        delete[] pRooms;
+        pLayout->UnloadLayout();
+        delete pLayout;
+        return 1;
+    }
+    pLayout->UnloadLayout();
+    delete pLayout;
+    return 0;
+}
+// Xbox 0x00168A60
+static char* ConvertRooms(char* szArgs)
+{
+    CExoString sLayout;
+    CExoString sArgs(szArgs);
+    int nSpace = sArgs.Find(' ', 0);
+    sLayout = sArgs.Left(nSpace);
+    sArgs = sArgs.Right(sArgs.GetLength() - nSpace - 1);
+    if (ConvertRoomWalkMeshes(CResRef(sLayout), sArgs) == 1)
+    {
+        return "SUSSESS";
+    }
+    return "FAILURE";
+}
+// Xbox 0x001692D0
+int ConvertDoorWalkMeshes(const CResRef& cDoor, const CExoString& sDirectory)
+{
+    CExoString sFile;
+    CExoString sDoor;
+    CExoString sPath;
+    cDoor.CopyToString(sDoor);
+    sPath = sDirectory;
+    if (sPath.Right(1) != "\\")
+    {
+        sPath = sPath + "\\";
+    }
+    int bResult = 1;
+    for (int nState = CSWDoorSurfaceMesh::DOOR_STATE_CLOSED; nState <= CSWDoorSurfaceMesh::DOOR_STATE_OPEN2; nState++)
+    {
+        CSWDoorSurfaceMesh* pMesh = new CSWDoorSurfaceMesh;
+        pMesh->SetDoorType(nState);
+        pMesh->m_cResRef = cDoor;
+        int nLoaded = pMesh->LoadMesh(1);
+        if (nLoaded <= 0)
+        {
+            bResult = nLoaded;
+        }
+        pMesh->ComputeMeshNormals();
+        sFile.Format("%s%s%d.DWK", sPath.CStr(), sDoor.CStr(), nState);
+        if (!pMesh->SaveBinaryMesh(sFile))
+        {
+            delete pMesh;
+            return 0;
+        }
+        delete pMesh;
+    }
+    return bResult;
+}
+// Xbox 0x00169520
+static char* ConvertDoor(char* szArgs)
+{
+    CExoString sDoor;
+    CExoString sArgs(szArgs);
+    int nSpace = sArgs.Find(' ', 0);
+    sDoor = sArgs.Left(nSpace);
+    sArgs = sArgs.Right(sArgs.GetLength() - nSpace - 1);
+    if (ConvertDoorWalkMeshes(CResRef(sDoor), sArgs) == 1)
+    {
+        return "SUSSESS";
+    }
+    return "FAILURE";
+}
+// Xbox 0x00169660
+int ConvertPlaceableWalkMesh(const CResRef& cPlaceable, const CExoString& sDirectory)
+{
+    CExoString sFile;
+    CExoString sPlaceable;
+    CExoString sPath;
+    cPlaceable.CopyToString(sPlaceable);
+    sPath = sDirectory;
+    if (sPath.Right(1) != "\\")
+    {
+        sPath = sPath + "\\";
+    }
+    CSWPlaceableSurfaceMesh* pMesh = new CSWPlaceableSurfaceMesh;
+    pMesh->m_cResRef = cPlaceable;
+    if (pMesh->LoadMesh(1) <= 0)
+    {
+        return -1;
+    }
+    sFile.Format("%s%s.PWK", sPath.CStr(), sPlaceable.CStr());
+    if (!pMesh->SaveBinaryMesh(sFile))
+    {
+        delete pMesh;
+        return 0;
+    }
+    delete pMesh;
+    return 1;
+}
+// Xbox 0x001698B0
+static char* ConvertPlaceable(char* szArgs)
+{
+    CExoString sPlaceable;
+    CExoString sArgs(szArgs);
+    int nSpace = sArgs.Find(' ', 0);
+    sPlaceable = sArgs.Left(nSpace);
+    sArgs = sArgs.Right(sArgs.GetLength() - nSpace - 1);
+    if (ConvertPlaceableWalkMesh(CResRef(sPlaceable), sArgs) == 1)
+    {
+        return "SUSSESS";
+    }
+    return "FAILURE";
+}
+
+ConsoleFunc ConVrendercollisionboxes("rendercollisionboxes", &rendercollisionboxes);
+ConsoleFunc ConVWalkTestMaterial("WalkTestMaterial", &WalkTestMaterial);
+ConsoleFunc ConFConvertDoor("ConvertDoor", ConvertDoor);
+ConsoleFunc ConFConvertPlaceable("ConvertPlaceable", ConvertPlaceable);
+ConsoleFunc ConFConvertRooms("ConvertRooms", ConvertRooms);
+#endif

@@ -134,11 +134,11 @@ float CSWSAreaMap::GetMapRotateCCWFromWorldOrientation(Vector vOrientation)
     switch (m_nOrientation)
     {
     case 1:
-        return fAngle + 180.0f;
+        fAngle += 180.0f; break;
     case 2:
-        return fAngle + 90.0f;
+        fAngle += 90.0f; break;
     case 3:
-        return fAngle + 270.0f;
+        fAngle += 270.0f; break;
     }
     return fAngle;
 }

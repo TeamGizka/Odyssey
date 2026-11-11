@@ -27,12 +27,18 @@ int Parse(char* sText, MaxFace_PostProcess& face);
 int Parse(char* sText, SkinVertexWeight& weight);
 int Parse(char* sText, unsigned int* pValues);
 
-inline void Parse(char* sText, unsigned int& nValue)
+#ifdef _XBOX
+
+void Parse(char* sText, unsigned int& nValue);
+#define AURPARSE_XBOX_NO_ENDLIST_SKIP
+#else
+inline void Parse(char* sText, unsigned int& nValue)  // Xbox 0x002C0620
 {
     int nInteger;
     Parse(sText, nInteger);
     nValue = nInteger;
 }
+#endif
 void Parse(char* sText, Quaternion& qOrientation);
 template <class T> void Parse(char* sText, AurKey<T>& key);
 template <class T> void Parse(char* sText, List<T>& lstValues);
@@ -254,9 +260,48 @@ int Parse(char* sText, SkinVertexWeight& weight)
     weight.m_nWeights = nWeights;
     return nWeights;
 }
-
+// Xbox 0x002C12A0
 void classification(char* sType)
 {
+#ifdef _XBOX
+    if (stricmp(sType, "forcedistortion") == 0)
+    {
+        currentmodel->m_Classification.m_bSceneHitDisabled = 1;
+    }
+    if (stricmp(sType, "heatdistortion") == 0)
+    {
+        currentmodel->m_Classification.m_bSceneHitExcluded = 1;
+    }
+    else if (stricmp(sType, "character") == 0)
+    {
+        currentmodel->m_Classification.m_bCharacter = 1;
+    }
+    else if (stricmp(sType, "ambient") == 0)
+    {
+        currentmodel->m_Classification.m_bSkipVisibilityCheck = 1;
+    }
+    else if (stricmp(sType, "effect") == 0 || stricmp(sType, "effects") == 0 || stricmp(sType, "track") == 0)
+    {
+        currentmodel->m_Classification.m_bEmitterBounds = 1;
+    }
+    else if (stricmp(sType, "door") == 0)
+    {
+        currentmodel->m_Classification.m_bDoor = 1;
+    }
+    else if (stricmp(sType, "lightsaber") == 0)
+    {
+        currentmodel->m_Classification.m_bRenderEarly = 1;
+    }
+    else if (stricmp(sType, "item") == 0)
+    {
+        currentmodel->m_Classification.m_bAlternateShadowCaster = 1;
+    }
+    else if (stricmp(sType, "placeable") == 0)
+    {
+        currentmodel->m_Classification.m_bAlternateShadowCaster = 1;
+        currentmodel->m_Classification.m_bHitFilterOverride = 1;
+    }
+#else
     if (stricmp(sType, "character") == 0)
     {
         currentmodel->m_Classification.m_bCharacter = 1;
@@ -282,8 +327,9 @@ void classification(char* sType)
         currentmodel->m_Classification.m_bAlternateShadowCaster = 1;
         currentmodel->m_Classification.m_bHitFilterOverride = 1;
     }
+#endif
 }
-
+// Xbox 0x002C0920
 const char* setanimationscale(char* sCommand)
 {
     float fScale = 1.0f;
@@ -461,7 +507,9 @@ template <> void Parse<char*>(char* sText, List<char*>& lstValues)
             nCount++;
             sLine = AurResGetNextLine();
         }
+#ifndef _XBOX
         skipspace(skipspace(sLine) + 7);
+#endif
     }
 }
 // PC 0x00464A40  Xbox 0x002C1F70
@@ -491,6 +539,7 @@ Model* BinaryFindModel(char* sName)
     nLast = Models.m_nCount - 1;
     return BinarySearchModel(sName, 0, nLast);
 }
+#ifndef _XBOX
 // PC 0x00464110  Xbox 0x002C14B0
 Model* FindModel(char* sName)
 {
@@ -499,8 +548,7 @@ Model* FindModel(char* sName)
     MaxTree* pTree;
     char sBuffer[256];
 
-    if (sName == 0 || stricmp(sName, "NULL") == 0)
-        return 0;
+    if (sName == 0 || stricmp(sName, "NULL") == 0) return 0;
 
     int nCount = Models.m_nCount;
     pModel = BinarySearchModel(sName, 0, nCount - 1);
@@ -528,6 +576,7 @@ Model* FindModel(char* sName)
     }
     return 0;
 }
+#endif
 Model* LoadModel(FILE* pModelFile, FILE* pVertexFile)  // PC 0x00464200  Xbox 0x002C15A0
 {
     if (pModelFile == 0)
@@ -586,7 +635,7 @@ MdlNode* FindMdlNode(MdlNode* pNode, char* sName)
     return 0;
 }
 #ifdef _XBOX
-
+// Xbox 0x002C1080
 MdlNode* FindMdlNode(MaxTree* pTree, char* sName)
 {
     if (pTree == 0)
@@ -1656,14 +1705,13 @@ MdlNode* ParseNode(char* sField, MaxTree* pTree)
         pNode = new MdlNode(sName);
 
     pNode->m_pModel = pTree;
-    bool bEndNode = false;
-    while (!bEndNode)
+#ifdef _XBOX
+    for (char* sLine = skipspace(AurResGetNextLine()); sLine != 0; sLine = skipspace(AurResGetNextLine()))
     {
-        char* sLine = AurResGetNextLine();
-        if (sLine == 0)
-            bEndNode = true;
-        else
-        {
+        if (strncmp(sLine, "endnode", 7) == 0) break; pNode->ParseFieldDispatch(sLine); }
+#else
+    bool bEndNode = false; while (!bEndNode) {
+        char* sLine = AurResGetNextLine(); if (sLine == 0) bEndNode = true; else {
             while (*sLine == ' ' || *sLine == '\t')
                 sLine++;
             if (strncmp(sLine, "endnode", 7) == 0)
@@ -1672,6 +1720,7 @@ MdlNode* ParseNode(char* sField, MaxTree* pTree)
                 pNode->ParseFieldDispatch(sLine);
         }
     }
+#endif
 
     if (pTree->AsAnimation())
     {
@@ -2310,5 +2359,169 @@ template <> void List<AurKey<char[32]> >::Insert(AurKey<char[32]> item, int nInd
         m_pList[nLast] = m_pList[nLast - 1];
     m_pList[nIndex] = item;
     AurModelParseTrace3();
+}
+#endif
+
+#ifdef _XBOX
+void Parse(char* sText, unsigned int& nValue)  // Xbox 0x002C0620
+{
+    int nInteger;
+    Parse(sText, nInteger);
+    nValue = nInteger;
+}
+#endif
+
+#ifdef _XBOX
+
+int bRecordSuperModel = 0;
+char* sSuperModelRecord = 0;
+// Xbox 0x002C08B0
+void newmodel(char* sName)
+{
+    currentmodel = new Model(sName);
+}
+// Xbox 0x002C1190
+void ReadTreeFields(char* sCommand, MaxTree* pTree)
+{
+    char sAnimRoot[64];
+
+    for (char* sLine = skipspace(AurResGetNextLine()); sLine != 0; sLine = skipspace(AurResGetNextLine()))
+    {
+        if (strncmp(sLine, "done", 4) == 0 || strncmp(sLine, "end", 3) == 0)
+        {
+            break;
+        }
+        if (stricmp("sModelAnimationRootName", firstword(sLine)) == 0)
+        {
+            Parse(sLine + 23, sAnimRoot);
+        }
+        pTree->m_pfnParseField(pTree, sLine);
+    }
+    Model* pModel = pTree->AsModel();
+    if (pModel != 0)
+    {
+        pModel->m_pRootNode->SortChildrenByTransparency();
+
+        if ((pModel->m_pBinaryData = FindMdlNode(pTree, sAnimRoot)) == 0)
+        {
+            pModel->m_pBinaryData = pModel->m_pRootNode;
+        }
+    }
+}
+// Xbox 0x002C1260
+void beginmodelgeom(char* sCommand)
+{
+    if (currentmodel->m_pParentModel)
+    {
+        currentmodel->m_nNodeCount = currentmodel->m_pParentModel->m_nNodeCount + 1;
+    }
+    ReadTreeFields(sCommand, currentmodel);
+    currentmodel->SynchronizeTree(currentmodel->m_pParentModel);
+}
+// Xbox 0x002C13E0
+void secondaryclassification(char* sType)
+{
+    if (stricmp(sType, "sensitive") == 0)
+    {
+        currentmodel->m_Classification.m_bNoQuaternionCompression = 1;
+    }
+}
+// Xbox 0x002C1400
+void ignorefog(char* sCommand)
+{
+    int nIgnore;
+
+    sscanf(sCommand, "%d", &nIgnore);
+    if (nIgnore == 1)
+    {
+        currentmodel->m_bModelOptionEnabled = 0;
+    }
+}
+// Xbox 0x002C1650
+const char* setsupermodel(char* sCommand)
+{
+    char sSuperModel[64];
+    char sName[64];
+
+    if (sSuperModelRecord == 0 && bRecordSuperModel)
+    {
+        sSuperModelRecord = new char[64];
+    }
+    sscanf(sCommand, "%s%s", sName, sSuperModel);
+    if (currentmodel->m_pParentModel)
+    {
+        currentmodel->m_pParentModel->DelRef(currentmodel);
+    }
+    strcpy(currentmodel->m_sSuperModel, sSuperModel);
+    Model* pSuperModel = FindModel(sSuperModel);
+    if (pSuperModel == currentmodel)
+    {
+        pSuperModel = 0;
+    }
+    currentmodel->m_pParentModel = pSuperModel;
+    if (sSuperModelRecord)
+    {
+        strcpy(sSuperModelRecord, sSuperModel);
+    }
+    if (currentmodel->m_pParentModel)
+    {
+        currentmodel->m_pParentModel->AddRef(currentmodel);
+    }
+    return "done";
+}
+// Xbox 0x002C5A90
+void newanim(char* sCommand)
+{
+    char sName[64];
+    char sModel[64];
+
+    sscanf(sCommand, "%s %s", sName, sModel);
+    Animation* pAnimation = new Animation(sName);
+    currentmodel->m_lAnimations.Add(pAnimation);
+
+    pAnimation->m_pBinaryData = (unsigned char*)currentmodel;
+    ReadTreeFields(sCommand, pAnimation);
+    pAnimation->PruneToAnimRoot();
+    pAnimation->SynchronizeTree(currentmodel);
+}
+#endif
+
+#ifdef _XBOX
+// PC 0x00464110  Xbox 0x002C14B0
+Model* FindModel(char* sName)
+{
+    Model* pModel;
+    Model* pPreviousModel;
+    MaxTree* pTree;
+    char sBuffer[256];
+
+    if (sName == 0 || stricmp(sName, "NULL") == 0)
+        return 0;
+
+    pModel = BinaryFindModel(sName);
+    if (pModel != 0)
+        return pModel;
+
+    pPreviousModel = currentmodel;
+    currentmodel = 0;
+    IODispatcher* pDispatcher = IODispatcher::GetRef();
+    pTree = pDispatcher->ReadSync(sName);
+    if (pTree != 0)
+        currentmodel = pTree->AsModel();
+    pModel = currentmodel;
+    currentmodel = pPreviousModel;
+    if (pModel == 0)
+        return 0;
+    if (stricmp(pModel->m_sName, sName) != 0)
+    {
+        FILE* pErrorFile = fopen("AR_ERROR.LOG", "w");
+        if (pErrorFile)
+        {
+            sprintf(sBuffer, "Names Differ: %s %s", pModel->m_sName, sName);
+            fprintf(pErrorFile, "Names Differ: %s %s", pModel->m_sName, sName);
+            fclose(pErrorFile);
+        }
+    }
+    return pModel;
 }
 #endif

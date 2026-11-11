@@ -26,7 +26,7 @@ int AurIsAAliasingAvailable()
 #endif
 
 #ifndef _XBOX
-int AurPixelShadersAvailable()  // PC 0x0046EDA0
+int AurPixelShadersAvailable()  // PC 0x0046EDA0  Xbox 0x002D1250
 {
     static int returnval = -1;
 
@@ -47,7 +47,7 @@ int AurPixelShadersAvailable()  // PC 0x0046EDA0
     return returnval;
 }
 #else
-// PC 0x0046EDA0
+// PC 0x0046EDA0  Xbox 0x002D1250
 int AurPixelShadersAvailable()
 {
     static int returnval = -1;
@@ -56,7 +56,7 @@ int AurPixelShadersAvailable()
     {
         D3DCAPS8 caps;
         g_pD3DDevice->GetDeviceCaps(&caps);
-        returnval = caps.PixelShaderVersion != 0;
+        returnval = caps.PixelShaderVersion >= 1;
     }
 
     return returnval;

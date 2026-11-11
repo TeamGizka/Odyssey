@@ -999,12 +999,13 @@ int CExoStreamingSoundSource::GetHasStartedStreaming()  // PC 0x0063E7A0  Xbox 0
     return 1;
 }
 #endif
-// PC 0x005A4C50
-inline int CExoSoundSourceInternal::GetLooping()
+
+#ifndef _XBOX
+inline int CExoSoundSourceInternal::GetLooping()  // PC 0x005A4C50
 {
     return m_bLooping;
 }
-
+#endif
 inline void CExoSoundSourceInternal::SetDistance(float fMaxDistance,
                                                  float fMinDistance)
 {
@@ -1016,12 +1017,12 @@ inline CResRef CExoStreamingSoundSourceInternal::GetFilePlaying()
 {
     return m_resRef;
 }
-// PC 0x00675DD0
-inline int CExoStreamingSoundSourceInternal::GetLooping()
+#ifndef _XBOX
+inline int CExoStreamingSoundSourceInternal::GetLooping()  // PC 0x00675DD0
 {
     return m_bLooping;
 }
-
+#endif
 #ifndef _XBOX
 inline void CExoStreamingSoundSourceInternal::Set3D(int b3D)  // Xbox 0x001560A0
 {
@@ -1054,8 +1055,8 @@ inline unsigned char CExoStreamingSoundSourceInternal::GetPriorityGroup()
 {
     return m_nPriorityGroup;
 }
-// PC 0x005D6000
-inline int CExoStreamingSoundSourceInternal::Get3D()
+#ifndef _XBOX
+inline int CExoStreamingSoundSourceInternal::Get3D()  // PC 0x005D6000
 {
     return m_b3D;
 }
@@ -1074,7 +1075,7 @@ inline float CExoSoundInternal::GetDialogVolume(int bTemporary)
 {
     return bTemporary ? m_fTempDialogVolume : m_fDialogVolume;
 }
-
+#endif
 inline void CExoSoundInternal::Set2D3DBias(float fBias)
 {
     m_f2D3DBias = fBias;

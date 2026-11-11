@@ -181,7 +181,7 @@ VertexPrimitiveAnim::~VertexPrimitiveAnim()
     GLRender::DeletePool(m_nTexCoordPool);
     m_nTexCoordPool = RequestPoolManager::INVALID_POOL;
 }
-// PC 0x004015A0
+// PC 0x004015A0  Xbox 0x002D0730
 void VertexPrimitiveAnim::BuildVertexArrays()
 {
 }

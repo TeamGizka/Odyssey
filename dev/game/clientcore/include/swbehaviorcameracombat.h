@@ -45,11 +45,9 @@ public:
     float m_fDistance;
     float m_fSpeed;
     float m_fHeight;
+#ifndef _XBOX
     CSWRK4SplitAcceleration m_Acceleration;
     int m_bMouseCameraRotateToggle;
-#ifdef _XBOX
-
-    float m_fTurnAcceleration;
 #endif
 };
 

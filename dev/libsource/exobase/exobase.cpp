@@ -11,13 +11,22 @@ CExoBase::CExoBase()
     m_pInternal = new CExoBaseInternal;
     EXOXBOXASSERT(m_pInternal);
 }
-// PC 0x005E6640  Xbox 0x00134890
-void CExoBase::GetDirectoryList(CExoArrayList<CExoString>* pList,
+
+#ifdef _XBOX
+int CExoBase::GetDirectoryList(CExoArrayList<CExoString>* pList,  // Xbox 0x00134890
+                               const CExoString& sPath,
+                               unsigned short nResType, int nArg4, int nArg5)
+{
+    return m_pInternal->GetDirectoryList(pList, sPath, nResType, nArg4, nArg5);
+}
+#else
+void CExoBase::GetDirectoryList(CExoArrayList<CExoString>* pList,  // PC 0x005E6640
                                 const CExoString& sPath,
                                 unsigned short nResType, int nArg4, int nArg5)
 {
     m_pInternal->GetDirectoryList(pList, sPath, nResType, nArg4, nArg5);
 }
+#endif
 // PC 0x005E6650
 int CExoBase::GetDirectorySize(const CExoString& sPath)
 {

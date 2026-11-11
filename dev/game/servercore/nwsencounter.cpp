@@ -55,8 +55,8 @@ int CSWSEncounter::LineSegmentIntersectActivateArea(const Vector& vStart,
     }
     return 0;
 }
-// PC 0x00590090  Xbox 0x0023E8B0
-int CSWSEncounter::GetInActivateArea(const Vector& vPosition)
+#ifndef _XBOX
+int CSWSEncounter::GetInActivateArea(const Vector& vPosition)  // PC 0x00590090  Xbox 0x0023E8B0
 {
     int nIntersections = 0;
     int nVertexCount = m_nActivateAreaVertexCount;
@@ -119,8 +119,8 @@ int CSWSEncounter::GetInActivateArea(const Vector& vPosition)
 
     return nIntersections % 2 == 1;
 }
-// PC 0x00590250  Xbox 0x0023EA80
-CEncounterListEntry& CEncounterListEntry::operator=(
+#endif
+CEncounterListEntry& CEncounterListEntry::operator=(  // PC 0x00590250  Xbox 0x0023EA80
     const CEncounterListEntry& other)
 {
     m_cResRef = other.m_cResRef;
@@ -1825,3 +1825,68 @@ void CSWSEncounter::SetActive(int bActive)
         return;
     }
 }
+
+#ifdef _XBOX
+// PC 0x00590090  Xbox 0x0023E8B0
+int CSWSEncounter::GetInActivateArea(const Vector& vPosition)
+{
+    int nIntersections = 0;
+    int nIndex = 0;
+    int nLast = m_nActivateAreaVertexCount - 1;
+
+    for (nIndex = 0; nIndex < m_nActivateAreaVertexCount; nIndex++)
+    {
+        int nFirst = m_pActivateAreaIndices[nIndex];
+        int nSecond = m_pActivateAreaIndices[nIndex != nLast ? nIndex + 1 : 0];
+
+        if (m_pActivateAreaVertices[nSecond].m_fX != m_pActivateAreaVertices[nFirst].m_fX)
+        {
+            float fY = m_pActivateAreaVertices[nFirst].m_fY;
+            fY = fY - (m_pActivateAreaVertices[nFirst].m_fX - vPosition.m_fX) *
+                ((m_pActivateAreaVertices[nSecond].m_fY - fY) /
+                 (m_pActivateAreaVertices[nSecond].m_fX - m_pActivateAreaVertices[nFirst].m_fX));
+
+            if (fY > vPosition.m_fY)
+            {
+                float fX = vPosition.m_fX;
+                if (fabs(m_pActivateAreaVertices[nSecond].m_fY - m_pActivateAreaVertices[nFirst].m_fY) >
+                    fabs(m_pActivateAreaVertices[nSecond].m_fX - m_pActivateAreaVertices[nFirst].m_fX))
+                {
+                    if (m_pActivateAreaVertices[nSecond].m_fY > m_pActivateAreaVertices[nFirst].m_fY)
+                    {
+                        if (fY >= m_pActivateAreaVertices[nFirst].m_fY && fY < m_pActivateAreaVertices[nSecond].m_fY)
+                            nIntersections++;
+                    }
+                    else if (m_pActivateAreaVertices[nFirst].m_fY > m_pActivateAreaVertices[nSecond].m_fY &&
+                             fY > m_pActivateAreaVertices[nSecond].m_fY && fY <= m_pActivateAreaVertices[nFirst].m_fY)
+                    {
+                        nIntersections++;
+                    }
+                }
+                else
+                {
+                    if (m_pActivateAreaVertices[nSecond].m_fX > m_pActivateAreaVertices[nFirst].m_fX)
+                    {
+                        if (fX >= m_pActivateAreaVertices[nFirst].m_fX && fX < m_pActivateAreaVertices[nSecond].m_fX)
+                            nIntersections++;
+                    }
+                    else if (m_pActivateAreaVertices[nFirst].m_fX > m_pActivateAreaVertices[nSecond].m_fX &&
+                             fX > m_pActivateAreaVertices[nSecond].m_fX && fX <= m_pActivateAreaVertices[nFirst].m_fX)
+                    {
+                        nIntersections++;
+                    }
+                }
+            }
+        }
+
+        if (m_pActivateAreaVertices[nSecond].m_fX == vPosition.m_fX &&
+            (m_pActivateAreaVertices[nSecond].m_fY > vPosition.m_fY ||
+             m_pActivateAreaVertices[nFirst].m_fY >= vPosition.m_fY))
+        {
+            nIntersections++;
+        }
+    }
+
+    return nIntersections % 2 == 1;
+}
+#endif

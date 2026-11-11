@@ -47,8 +47,11 @@ CStringColor g_cDefCol2(1.0f, 1.0f, 1.0f, 1.0f);
 
 int countreset();
 
+#ifdef _XBOX
+static StringGob* g_pStringObj;
+#else
 static CAurString* g_pStringObj;
-
+#endif
 #ifdef _XBOX
 // PC 0x00404B60  Xbox 0x0029F880
 void AurOrtho(double dLeft, double dRight, double dBottom, double dTop,
@@ -231,7 +234,8 @@ void AurPrintString(char* szString, int nColumn, int nRow)
     }
 }
 #endif
-
+#ifndef _XBOX
+// Xbox 0x0029F8C0
 int SetConsoleFont(char* szFontName)
 {
     if (initialized == 0)
@@ -250,8 +254,8 @@ int SetConsoleFont(char* szFontName)
     }
     return g_nFontNum;
 }
-// PC 0x0044D010  Xbox 0x0029FBF0
-void PostedString::Post()
+#endif
+void PostedString::Post()  // PC 0x0044D010  Xbox 0x0029FBF0
 {
     float fElapsedRatio;
     float fRed;
@@ -293,7 +297,9 @@ void PostedString::Post()
     {
         if (m_fTimeRemaining < 0.0f)
         {
+#ifndef _XBOX
             posts.Remove(this);
+#endif
             delete this;
         }
     }
@@ -310,7 +316,9 @@ void AurStringsFree()
         pPostedString = posts.m_pList[--i];
         if (pPostedString != NULL)
         {
+#ifndef _XBOX
             posts.Remove(pPostedString);
+#endif
             delete pPostedString;
         }
     }
@@ -365,7 +373,7 @@ char* untrace(char* szPrefix)
     sprintf(buf, "deleted %d trace commands", nDeleted);
     return buf;
 }
-// PC 0x0044D320  Xbox 0x0029FDB0
+
 PostedString::PostedString(char* szString, int nColumn, int nRow,
                            float fDuration)
 {
@@ -392,6 +400,17 @@ PostedString::PostedString(char* szString, int nColumn, int nRow,
     while (i != 0)
     {
         pPostedString = posts.m_pList[--i];
+#ifdef _XBOX
+
+        PostedString* pOther = posts.m_pList[i];
+        if ((pOther->m_nColumn <= m_nColumn &&
+             posts.m_pList[i]->m_nColumn + posts.m_pList[i]->m_nLength >=
+                 m_nColumn) ||
+            (m_nColumn <= pOther->m_nColumn &&
+             m_nColumn + m_nLength >= pOther->m_nColumn))
+        {
+            if (pOther->m_nRow == m_nRow)
+#else
         if ((posts.m_pList[i]->m_nColumn <= m_nColumn &&
              posts.m_pList[i]->m_nColumn + posts.m_pList[i]->m_nLength >=
                  m_nColumn) ||
@@ -399,10 +418,13 @@ PostedString::PostedString(char* szString, int nColumn, int nRow,
              m_nColumn + m_nLength >= posts.m_pList[i]->m_nColumn))
         {
             if (posts.m_pList[i]->m_nRow == m_nRow)
+#endif
             {
                 if (pPostedString != NULL)
                 {
+#ifndef _XBOX
                     posts.Remove(pPostedString);
+#endif
                     delete pPostedString;
                 }
             }
@@ -538,5 +560,29 @@ void AurSetStringColor(char* szColors)  // Xbox 0x0029F980
     {
         g_cDefCol2 = g_cDefCol;
     }
+}
+#endif
+
+#ifdef _XBOX
+PostedString::~PostedString()  // Xbox 0x0029FAC0
+{
+    posts.Remove(this);
+}
+#endif
+
+#ifdef _XBOX
+int SetConsoleFont(char* szFontName)  // Xbox 0x0029F8C0
+{
+    g_bUseTexturedFont = true;
+    if (g_pStringObj == NULL)
+    {
+        g_pStringObj = new StringGob(1);
+    }
+    g_nFontNum = g_pStringObj->SetFont(szFontName);
+    if ((int)g_nFontNum >= CAurFont::s_LoadedFontList.m_nCount)
+    {
+        g_bUseTexturedFont = false;
+    }
+    return g_nFontNum;
 }
 #endif

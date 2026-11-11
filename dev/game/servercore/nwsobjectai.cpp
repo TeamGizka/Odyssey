@@ -1172,8 +1172,8 @@ int CSWSObject::AddUseObjectAction(unsigned long oidObject)
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     return 1;
 }
-// PC 0x0057C870  Xbox 0x001E80B0
-int CSWSObject::AddGiveItemActions(unsigned long oidItem, unsigned long oidTarget,
+#ifndef _XBOX
+int CSWSObject::AddGiveItemActions(unsigned long oidItem, unsigned long oidTarget,  // PC 0x0057C870  Xbox 0x001E80B0
                                   int nQuantity, int bAddToQueue)
 {
     CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidTarget);
@@ -1217,8 +1217,8 @@ int CSWSObject::AddGiveItemActions(unsigned long oidItem, unsigned long oidTarge
     }
     return 0;
 }
-// PC 0x0057C980  Xbox 0x001E81C0
-int CSWSObject::AddTakeItemActions(unsigned long oidItem, unsigned long oidTarget,
+#endif
+int CSWSObject::AddTakeItemActions(unsigned long oidItem, unsigned long oidTarget,  // PC 0x0057C980  Xbox 0x001E81C0
                                   int bAddToQueue)
 {
     int bRun = 0;
@@ -1273,8 +1273,8 @@ int CSWSObject::AddDoCommandAction(void* pScriptSituation)
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     return 1;
 }
-// PC 0x0057CB80  Xbox 0x001E83E0
-int CSWSObject::GetReputation(unsigned long oidObject, int bUnknown)
+#ifndef _XBOX
+int CSWSObject::GetReputation(unsigned long oidObject, int bUnknown)  // PC 0x0057CB80  Xbox 0x001E83E0
 {
     if (OverrideReputation != REPUTATION_NO_OVERRIDE)
     {
@@ -1357,8 +1357,8 @@ int CSWSObject::GetReputation(unsigned long oidObject, int bUnknown)
     }
     return REPUTATION_DEFAULT;
 }
-// PC 0x0057CD90  Xbox 0x001E8600
-unsigned char CSWSObject::GetAIStateReputation(unsigned long oidObject)
+#endif
+unsigned char CSWSObject::GetAIStateReputation(unsigned long oidObject)  // PC 0x0057CD90  Xbox 0x001E8600
 {
     CServerExoApp* pServer;
     int nReputation;
@@ -1611,8 +1611,8 @@ int CSWSObject::AIActionPlayAnimation(CSWSObjectActionNode* pNode)
     }
     return ACTION_COMPLETE;
 }
-// PC 0x0057D490  Xbox 0x001E8D20
-int CSWSObject::AIActionOpenDoor(CSWSObjectActionNode* pNode)
+#ifndef _XBOX
+int CSWSObject::AIActionOpenDoor(CSWSObjectActionNode* pNode)  // PC 0x0057D490  Xbox 0x001E8D20
 {
     int nDeadTemp = 0;
     if (AsSWSCreature() != NULL)
@@ -1724,6 +1724,7 @@ int CSWSObject::AIActionOpenDoor(CSWSObjectActionNode* pNode)
     m_bOpenDoorStarted = 0;
     return ACTION_FAILED;
 }
+#endif
 // PC 0x0057D9D0  Xbox 0x001E92B0
 int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
 {
@@ -2840,3 +2841,254 @@ static inline CServerExoApp* GetServerExoApp()
 {
     return g_pAppManager->m_pServerExoApp;
 }
+
+#ifdef _XBOX
+// PC 0x0057CB80  Xbox 0x001E83E0
+int CSWSObject::GetReputation(unsigned long oidObject, int bUnknown)
+{
+    if (OverrideReputation != REPUTATION_NO_OVERRIDE)
+    {
+        return OverrideReputation;
+    }
+
+    CGameObject* pObject;
+    CGameObject* pCreator;
+    int nTargetFaction;
+    int nSourceFaction;
+    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+    int nReputation = REPUTATION_MIN;
+    if (pServer->GetObjectArray()->GetGameObject(
+            oidObject, &pObject) != CGameObjectArray::SUCCESS)
+    {
+        return REPUTATION_DEFAULT;
+    }
+    {
+        CFactionManager* pFactionManager =
+            g_pAppManager->m_pServerExoApp->m_pcExoAppInternal->m_pFactionManager;
+        if (pFactionManager != NULL)
+        {
+            if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_AREAOFEFFECTOBJECT &&
+                pObject->AsSWSAreaOfEffectObject() != NULL)
+            {
+                oidObject = pObject->AsSWSAreaOfEffectObject()->m_oidCreator;
+            }
+
+            if (AsSWSAreaOfEffectObject() != NULL)
+            {
+                unsigned long oidCreator = AsSWSAreaOfEffectObject()->m_oidCreator;
+                pServer = g_pAppManager->m_pServerExoApp;
+                if (pServer->GetObjectArray()->GetGameObject(
+                        oidCreator, &pCreator) == CGameObjectArray::SUCCESS)
+                {
+                    return pCreator->AsSWSObject()->GetReputation(oidObject, bUnknown);
+                }
+            }
+            else
+            {
+                pServer = g_pAppManager->m_pServerExoApp;
+                if (pServer->GetFactionOfObject(
+                        oidObject, &nTargetFaction))
+                {
+                    unsigned long oidSource = m_nId;
+                    pServer = g_pAppManager->m_pServerExoApp;
+                    if (pServer->GetFactionOfObject(oidSource, &nSourceFaction))
+                    {
+                        if (oidObject == m_nId)
+                        {
+                            return REPUTATION_MAX;
+                        }
+                        if (pFactionManager->GetIsNPCFaction(nTargetFaction) == 0 &&
+                            pFactionManager->GetIsNPCFaction(nSourceFaction) == 1)
+                        {
+                            unsigned long oidSelf = m_nId;
+                            return pObject->AsSWSObject()->GetReputation(oidSelf, 0);
+                        }
+                        if (AsSWSCreature() != NULL)
+                        {
+                            nReputation = AsSWSCreature()->GetCreatureReputation(
+                                oidObject, nTargetFaction);
+                        }
+                        else if (AsSWSPlaceable() != NULL || AsSWSEncounter() != NULL ||
+                                 AsSWSDoor() != NULL || AsSWSTrigger() != NULL)
+                        {
+                            nReputation = pFactionManager->GetNPCFactionReputation(
+                                nTargetFaction, nSourceFaction);
+                        }
+                        if (nReputation < REPUTATION_MIN)
+                        {
+                            nReputation = REPUTATION_MIN;
+                        }
+                        else if (nReputation > REPUTATION_MAX)
+                        {
+                            nReputation = REPUTATION_MAX;
+                        }
+                        return nReputation;
+                    }
+                }
+            }
+        }
+    }
+    return REPUTATION_DEFAULT;
+}
+// PC 0x0057D490  Xbox 0x001E8D20
+int CSWSObject::AIActionOpenDoor(CSWSObjectActionNode* pNode)
+{
+    int nDeadTemp = 0;
+    if (AsSWSCreature() != NULL)
+        nDeadTemp = AsSWSCreature()->GetDeadTemp();
+
+    if (GetDead() != 1 && GetIsPCDying() != 1 && nDeadTemp != 1)
+    {
+        if (AsSWSCreature() != NULL)
+            AsSWSCreature()->ActivityManager(CSWSCreature::ACTIVITY_ACTION_OBJECT_INTERACTION);
+
+        int bRun = 1;
+        unsigned long oidDoor = (unsigned long)pNode->m_apParam[0];
+        if (pNode->m_nNumParams > 1 && pNode->m_apParam[1] != NULL)
+            bRun = (int)pNode->m_apParam[1];
+
+        CGameObject* pObject;
+        Vector vPosition;
+        if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
+                oidDoor, &pObject) != CGameObjectArray::SUCCESS)
+        {
+            m_bOpenDoorStarted = 0;
+            return ACTION_FAILED;
+        }
+        {
+            if (AsSWSCreature() != NULL)
+            {
+                CSWSDoor* pDoor = pObject->AsSWSDoor();
+                if (pDoor == NULL)
+                {
+                    m_bOpenDoorStarted = 0;
+                    return ACTION_FAILED;
+                }
+                CSWSArea* pArea = ((CSWSObject*)pObject)->GetArea();
+                float fRange;
+                AsSWSCreature()->GetUseRange(oidDoor, vPosition, fRange, 0);
+                if (pDoor->m_nAnimation != DOOR_ANIMATION_CLOSED)
+                    return ACTION_COMPLETE;
+
+                if (GetArea() != pObject->AsSWSObject()->GetArea() ||
+                    !AsSWSCreature()->GetIsInUseRange(oidDoor, 0.0f, 0))
+                {
+                    AsSWSCreature()->AddActionToFront(
+                        ACTION_OPEN_DOOR, ACTION_GROUP_NEW,
+                        ACTION_PARAM_OBJECT, &oidDoor, ACTION_PARAM_INTEGER, &bRun,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                    if (pDoor->m_bPreciseUse && pDoor->m_bLocked)
+                    {
+                        float fWait = 0.5f;
+                        AsSWSCreature()->AddActionToFront(
+                            ACTION_WAIT, ACTION_GROUP_LAST, ACTION_PARAM_FLOAT, &fWait,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                        AsSWSCreature()->AddActionToFront(
+                            ACTION_CHANGE_FACING_OBJECT, ACTION_GROUP_LAST,
+                            ACTION_PARAM_OBJECT, &oidDoor,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                    }
+                    Vector vOrientation;
+                    AsSWSCreature()->AddMoveToPointActionToFront(
+                        ACTION_GROUP_LAST, vPosition,
+                        pObject->AsSWSObject()->m_oidArea, OBJECT_INVALID,
+                        bRun, fRange, 0.0f, 0, 0, 0, 0, 0, 0, vOrientation, 0, 0, 0);
+                    m_bOpenDoorStarted = 1;
+                    return ACTION_COMPLETE;
+                }
+                else
+                {
+                    if (pDoor->m_bTrapFlag &&
+                        pDoor->GetReputation(GetId(), 0) < MIN_FRIENDLY_REPUTATION)
+                    {
+                        int nDoorFaction = pDoor->m_nFactionId;
+                        if (nDoorFaction != AsSWSCreature()->GetFactionId())
+                        {
+                            CScriptEvent* pEvent = new CScriptEvent;
+                            pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_MINE_TRIGGERED;
+                            unsigned long oidSelf = m_nId;
+                            GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                                0, 0, oidSelf, oidDoor, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+                            return ACTION_FAILED;
+                        }
+                    }
+                    if (!AsSWSCreature()->EvaluateLock(pObject->AsSWSObject(), 0))
+                    {
+                        CScriptEvent* pEvent = new CScriptEvent;
+                        pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_FAIL_TO_OPEN;
+                        unsigned long oidSelf = m_nId;
+                        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                            0, 0, oidSelf, oidDoor, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+                        m_bOpenDoorStarted = 0;
+                        return ACTION_FAILED;
+                    }
+                    SetLockOrientationToObject(oidDoor);
+                    if (!m_bOpenDoorStarted)
+                    {
+                        AsSWSCreature()->AddActionToFront(
+                            ACTION_OPEN_DOOR, ACTION_GROUP_NEW,
+                            ACTION_PARAM_OBJECT, &oidDoor, ACTION_PARAM_INTEGER, &bRun,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                        m_bOpenDoorStarted = 1;
+                        return ACTION_COMPLETE;
+                    }
+                }
+            }
+            m_bOpenDoorStarted = 0;
+            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                0, 0, m_nId, oidDoor, CServerAIMaster::EVENT_OPEN_OBJECT, NULL);
+            float fDelay = 0.5f;
+            AddActionToFront(ACTION_WAIT, pNode->m_nGroupId,
+                ACTION_PARAM_FLOAT, &fDelay,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            return ACTION_COMPLETE;
+        }
+    }
+    m_bOpenDoorStarted = 0;
+    return ACTION_FAILED;
+}
+// PC 0x0057C870  Xbox 0x001E80B0
+int CSWSObject::AddGiveItemActions(unsigned long oidItem, unsigned long oidTarget,
+                                  int nQuantity, int bAddToQueue)
+{
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidTarget);
+    if (pGameObject == NULL)
+    {
+        return 0;
+    }
+    if (pGameObject->AsSWSObject() == NULL)
+    {
+        return 0;
+    }
+
+    CSWSItem* pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
+    if (pItem != NULL)
+    {
+        CSWSCreature* pCreature = AsSWSCreature();
+        unsigned long oidPossessor = pItem->m_oidPossessor;
+        CSWSCreature* pPossessor =
+            g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidPossessor);
+        if ((pPossessor->m_bInParty == 0 || pCreature->m_bInParty == 0) &&
+            pItem->m_oidPossessor != GetId())
+        {
+            return 0;
+        }
+
+        if (m_bCommandable != 0)
+        {
+            int nStackSize = pItem->m_nStackSize;
+            if (nQuantity > nStackSize)
+            {
+                nQuantity = nStackSize;
+            }
+            AddAction(ACTION_GIVE_ITEM, ACTION_GROUP_LAST,
+                      ACTION_PARAM_OBJECT, &oidItem, ACTION_PARAM_OBJECT, &oidTarget,
+                      ACTION_PARAM_INTEGER, &nQuantity, ACTION_PARAM_INTEGER, &bAddToQueue,
+                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            return 1;
+        }
+        return 0;
+    }
+    return 0;
+}
+#endif

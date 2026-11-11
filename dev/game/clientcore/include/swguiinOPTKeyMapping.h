@@ -36,11 +36,11 @@ public:
     CExoString GetActionId(int nAction, int nType);
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     void Draw(float fElapsed);
+#ifndef _XBOX
     CSWGuiControl* HitCheckMouse(int nX, int nY);
-    void UpdateColor();
-    void SetEditing(int bEditing);
-    void SetUnchangable();
-    void SetDescription(const CExoString& sDescription);
+#endif
+    void UpdateColor(); void SetEditing(int bEditing);
+    void SetUnchangable(); void SetDescription(const CExoString& sDescription);
     void SetEvents();
     void ResetToDefault();
     void PostChangeToEvent();

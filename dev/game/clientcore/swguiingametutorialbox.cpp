@@ -187,7 +187,7 @@ void CSWGuiTutorialBox::PerformNonCombatXButton(CSWGuiControl* pControl)
     MessageBoxUnpause(0);
 #ifdef _XBOX
     g_pAppManager->m_pClientExoApp->GetInGameGui()
-        ->m_pMainInterface->ClearAllActions();
+        ->m_pMainInterface->OnNonCombatXButton();
 #else
     g_pAppManager->m_pClientExoApp->GetInGameGui();
 #endif
@@ -255,11 +255,11 @@ int CSWGuiTutorialBox::SetNextMessage()
             bFound = pTutorial->GetCExoStringEntry(
                 m_nTutorialReason, sIconColumn, &sIconResRef);
         }
-        if (bFound != 0)
-        {
-            CResRef cIcon(sIconResRef);
-            SetIcon(cIcon);
-        }
+#ifndef _XBOX
+        if (bFound != 0) { CResRef cIcon(sIconResRef); SetIcon(cIcon); }
+#else
+        if (bFound != 0) SetIcon(sIconResRef);
+#endif
         SetAllowCancel(0);
         SetMessage(nStrRef);
     }

@@ -2173,3 +2173,16 @@ float CSWCObject::GetStickyMouseThreshhold()  // PC 0x0063D780
 static inline void NwcobjectTrace1()
 {
 }
+
+#ifdef _XBOX
+// Xbox 0x00098A30
+void CSWCObject::MenuActionUseSecuritySpike(unsigned long oidItem, CSWCCreature* pCreature)
+{
+    if (pCreature != NULL)
+    {
+        pCreature->ClearAllActions();
+    }
+    CSWCMessage* pMessage = g_pAppManager->GetClientExoApp()->GetSWCMessage();
+    pMessage->SendPlayerToServerInput_UnlockObject(m_nId, oidItem & ~OBJECT_LISTTYPE_MASK);
+}
+#endif

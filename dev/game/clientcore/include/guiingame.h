@@ -214,7 +214,7 @@ public:
     void ClearLastDialogAnimationData();
     int CloseDialog();
 #ifdef _XBOX
-    void ClearDialogReplyText();
+    void ClearDialogReplyText(); void SetGlobalUnpauseableState(int bUnpauseable); void PostDialogConversationText(const CExoString& sConversation); void PostDialogSoundText(const CExoString& sSound);
 #endif
     int GetMiniMapVisible();
     int IsOnDialogNonDependantList(const CExoString& sName);
@@ -363,11 +363,11 @@ public:
         return m_pMessageBox;
     }
     CSWGuiMainInterface* GetMainInterface();
+#ifndef _XBOX
     int SetGlobalUnpauseableState(int bUnpauseable);
-    int GetPartyAccessPanelUp(int bAny);
-    int GetCurrentEquipScreenNPC();
-    void UpdateStatus(unsigned char nMessage, int nUnknown);
-    SFeedbackMessage* GetMessageBuffer();
+#endif
+    int GetPartyAccessPanelUp(int bAny); int GetCurrentEquipScreenNPC();
+    void UpdateStatus(unsigned char nMessage, int nUnknown); SFeedbackMessage* GetMessageBuffer();
     int GetMessageBufferSize();
 
     enum ChatMessageMask
@@ -406,8 +406,15 @@ public:
                           float fHeight, unsigned long oidTarget, int nVideoEffect);
     int IsInDialog(unsigned long oidObject);
     void EndDialogCamera();
+#ifdef _XBOX
+
+    void UpdateAreaTransitionGUI(unsigned long oidArea, const Vector& vPosition);
+    unsigned long GetAreaTransitionObject();
+
+#else
     void SetAreaTransition(unsigned long oidArea, const Vector& vPosition);
     void UpdateAreaTransitionGUI();
+#endif
     void HideAreaTransition();
     Vector GetAreaTranstionPosition();
     int SetDialogSelection(int nReply, int nReplyCount, int bSelected);
@@ -596,7 +603,7 @@ public:
     int m_bHoldWorldFadeInForDialog;
 #ifdef _XBOX
 
-    unsigned char m_aUnknownB9C[0xBA0 - 0xB9C];
+    int m_nXboxUnmappedB98;
     int m_nDialogReplyRow;
 #else
     unsigned char m_aUnknownB9C[0xBA4 - 0xB9C];
@@ -607,6 +614,7 @@ public:
 #ifdef _XBOX
 
     int m_bCreditSequenceInProgress;
+    void StartCreditSequence(const Vector& vColor, const CExoString& sMusic);
 #endif
     int m_nDialogScrollWait;
     int m_bDialogScrollFinished;
@@ -614,7 +622,7 @@ public:
     float m_fDialogCameraPullBackRange;
     CExoStreamingSoundSource* m_pDialogAmbientTrack;
 #ifdef _XBOX
-    int m_nXboxUnmappedBC0;
+    CExoStreamingSoundSource* m_pCreditsMusic;
 #endif
     unsigned char m_nAbilityMode;
     unsigned char m_nInventoryFilter;
@@ -643,15 +651,13 @@ public:
     void SetXboxUnmappedC0C(int nValue) { m_nXboxUnmappedC0C = nValue; }
 #endif
     int m_bInputActiveBeforeControllerPause;
-#ifdef _XBOX
-
-    int m_nPauseState;
-#endif
+#ifndef _XBOX
     Vector m_vAreaTransition;
     unsigned long m_oidAreaTransition;
 
     int m_bCameraRelativeAreaTransition;
     int m_bDanceDanceMalak;
+#endif
     void ShowGalaxyMapGui(int nPlanet);
     int ShowLevelUpGUI(int nArg1);
     void ShowUpgradeScreen(unsigned long oidItem);

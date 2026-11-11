@@ -49,7 +49,7 @@ inline void CSWGuiPartySelection::SetAddRemoveLabel(int bAdd)
 inline CSWGuiPartySelectionButton::~CSWGuiPartySelectionButton()  // PC 0x006BE360
 {
 }
-// Xbox 0x000F33D0
+
 inline CSWGuiPartySelectionButton::CSWGuiPartySelectionButton()
 {
     m_bPartySelected = 0;
@@ -73,7 +73,7 @@ void CSWGuiPartySelectionButton::SetSelected(int bSelected)
     }
 }
 #endif
-// PC 0x006BE420
+// PC 0x006BE420  Xbox 0x000F3FC0
 inline CSWGuiPartySelectionData::~CSWGuiPartySelectionData()
 {
 }

@@ -148,7 +148,7 @@ if(KOTOR_PLATFORM STREQUAL "xbox")
   # /GS for every source except these
   set(selected ${sources})
   list(REMOVE_ITEM selected
-    nwdoorsurfacemesh.cpp nwcareaofeffectobject.cpp nwcsendmessage.cpp nwcvisualeffectonobject.cpp swmgbehavior.cpp)
+    nwdoorsurfacemesh.cpp nwcareaofeffectobject.cpp nwcvisualeffectonobject.cpp swmgbehavior.cpp)
   set_source_files_properties(${selected} PROPERTIES COMPILE_OPTIONS "/GS")
 endif()
 

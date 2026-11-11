@@ -18,7 +18,8 @@ char cheatreturnvalue[256];
 int g_bShowCheatResult = 1;
 CExoString g_returnCode;
 
-char* dm_setrace(char* szArgs)
+#ifndef _XBOX
+char* dm_setrace(char* szArgs)  // Xbox 0x00050A00
 {
     unsigned short nRace;
     if (stricmp(szArgs, "human") == 0)
@@ -65,7 +66,7 @@ char* dm_setrace(char* szArgs)
     }
     return szResult;
 }
-
+#endif
 #ifndef _XBOX
 char* setvideomode(char* szArgs)
 {
@@ -306,16 +307,16 @@ int CSWCMessage::SendPlayerToServerArea_AreaLoaded()
 {
     return SendPlayerToServerMessage(4, 3, NULL, 0);
 }
-// PC 0x00677940  Xbox 0x000512D0
-int CSWCMessage::SendPlayerToServerCheat_Resurrect()
+#ifndef _XBOX
+int CSWCMessage::SendPlayerToServerCheat_Resurrect()  // PC 0x00677940  Xbox 0x000512D0
 {
     CResRef cSound("HEAL_PLAYER");
 
     g_pExoSound->PlayOneShotSound(cSound, CExoSound::PRIORITY_GROUP_POWERED_ITEM, 0, 0, 0.0f, 0.0f);
     return SendPlayerToServerMessage(15, 2, NULL, 0);
 }
-// PC 0x006779D0
-int CSWCMessage::SendPlayerToServerCheat_Invulnerability()
+#endif
+int CSWCMessage::SendPlayerToServerCheat_Invulnerability()  // PC 0x006779D0
 {
     return SendPlayerToServerMessage(15, 4, NULL, 0);
 }
@@ -768,3 +769,568 @@ int CSWCMessage::SendPlayerToServer_LevelUp(CSWCLevelUpStats* pOldStats,
     }
     return SendPlayerToServerMessage(29, 0, pBuffer, nSize);
 }
+
+#ifdef _XBOX
+// Xbox 0x000519C0
+int CSWCMessage::SendPlayerToServerInventory_Unequip(unsigned long oidItem, unsigned long oidRepository)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 8;
+
+    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidItem);
+    WriteOBJECTIDClient(oidRepository);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(12, 7, pBuffer, nSize);
+}
+#endif
+
+#ifdef _XBOX
+
+#include "aurconsole.h"
+#include "nwrules.h"
+// Xbox 0x000509D0
+char* NetProfile(char* szArgs)
+{
+    if (g_pAppManager->m_pClientExoApp->GetSWCMessage() == NULL)
+        sprintf(cheatreturnvalue, "Failure");
+    return cheatreturnvalue;
+}
+ConsoleFunc ConFNetProfile("NetProfile", NetProfile);
+
+#define XBOX_DICE_COMMAND(nSides)                                                \
+    char* d##nSides(char* szArgs)                                                \
+    {                                                                            \
+        int nDice = atoi(szArgs);                                                \
+        if (nDice < 1)                                                           \
+            nDice = 1;                                                           \
+        int nRoll = g_pRules->RollDice((unsigned char)nDice, nSides);            \
+        sprintf(cheatreturnvalue, "Roll Dice %dd%d: %d", nDice, nSides, nRoll);  \
+        return cheatreturnvalue;                                                 \
+    }                                                                            \
+    ConsoleFunc ConFd##nSides("d" #nSides, d##nSides);
+XBOX_DICE_COMMAND(2)  // Xbox 0x00051280
+XBOX_DICE_COMMAND(3)
+XBOX_DICE_COMMAND(4)
+XBOX_DICE_COMMAND(6)
+XBOX_DICE_COMMAND(8)
+XBOX_DICE_COMMAND(10)
+XBOX_DICE_COMMAND(12)
+XBOX_DICE_COMMAND(20)
+XBOX_DICE_COMMAND(100)
+
+int CSWCMessage::SendPlayerToServerCheat_ComputeSafeLocation()
+{
+    return SendPlayerToServerMessage(15, 32, NULL, 0);
+}
+// Xbox 0x00051360
+int CSWCMessage::SendPlayerToServerCheat_PlayVisualEffect(unsigned long oidTarget,
+                                                          unsigned short nVisualEffect,
+                                                          float fDuration,
+                                                          unsigned long oidSource,
+                                                          unsigned char nType)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(15, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidTarget);
+    WriteSHORT(nVisualEffect, 16);
+    WriteFLOAT(fDuration, 1.0f, 32);
+    WriteOBJECTIDClient(oidSource);
+    WriteCHAR(nType, 8);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(15, 10, pBuffer, nSize);
+}
+// Xbox 0x000513F0
+int CSWCMessage::SendPlayerToServerCheat_DebugMode(int bDebugMode)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    WriteBOOL(bDebugMode);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(15, 21, pBuffer, nSize);
+}
+// Xbox 0x000522F0
+char* dm_heal(char* szArgs)
+{
+    CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+    if (pMessage == NULL)
+    {
+        sprintf(cheatreturnvalue, "Failure");
+        return cheatreturnvalue;
+    }
+    pMessage->SendPlayerToServerCheat_Resurrect();
+    sprintf(cheatreturnvalue, "Success");
+    return cheatreturnvalue;
+}
+ConsoleFunc ConFdm_heal("dm_heal", dm_heal);
+// Xbox 0x00052340
+char* makesafe(char* szArgs)
+{
+    CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+    if (pMessage == NULL)
+    {
+        sprintf(cheatreturnvalue, "Failure");
+        return cheatreturnvalue;
+    }
+    pMessage->SendPlayerToServerCheat_ComputeSafeLocation();
+    sprintf(cheatreturnvalue, "Success");
+    return cheatreturnvalue;
+}
+ConsoleFunc ConFmakesafe("makesafe", makesafe);
+// Xbox 0x00052390
+char* DebugMode(char* szArgs)
+{
+    int bDebugMode = atoi(szArgs);
+    CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+    pMessage->SendPlayerToServerCheat_DebugMode(bDebugMode);
+    sprintf(cheatreturnvalue, "Success");
+    return cheatreturnvalue;
+}
+ConsoleFunc ConFDebugMode("DebugMode", DebugMode);
+// Xbox 0x00052120
+char* visualeffect(char* szArgs)
+{
+    CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
+    CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+    if (pGui == NULL || pMessage == NULL)
+    {
+        return "Failure: NULL pointers";
+    }
+    unsigned long oidSource = g_pAppManager->m_pClientExoApp->GetPlayerCreatureId();
+    unsigned long oidTarget = g_pAppManager->m_pClientExoApp->GetLastTarget();
+    if (oidTarget == OBJECT_INVALID || oidSource == OBJECT_INVALID)
+    {
+        return "Failure: Missing target or source";
+    }
+    int nVisualEffect = 0;
+    float fDuration = 0.0f;
+    sscanf(szArgs, "%i %f", &nVisualEffect, &fDuration);
+    CExoString sType;
+    g_pRules->Get2DArrays()->GetVisualEffect()->GetCExoStringEntry(CExoString(nVisualEffect), "Type_FD",
+                                                               &sType);
+    if (sType.CompareNoCase("F"))
+    {
+        fDuration = 0.0f;
+    }
+    else if (sType.CompareNoCase("D") && fDuration <= 0.0f)
+    {
+        fDuration = 1.0f;
+    }
+    pMessage->SendPlayerToServerCheat_PlayVisualEffect(oidTarget, (unsigned short)nVisualEffect,
+                                                       fDuration, oidSource, 0);
+    return "Success";
+}
+ConsoleFunc ConFvisualeffect("visualeffect", visualeffect);
+#endif
+
+#ifdef _XBOX
+
+#include "nwcarea.h"
+#include "nwcmodule.h"
+#include "nwsobject.h"
+#include "nwscreaturestats.h"
+#include "exotlktable.h"
+// PC 0x00677940  Xbox 0x000512D0
+int CSWCMessage::SendPlayerToServerCheat_Resurrect()
+{
+    g_pExoSound->PlayOneShotSound("HEAL_PLAYER", CExoSound::PRIORITY_GROUP_POWERED_ITEM, 0, 0, 0.0f, 0.0f);
+    return SendPlayerToServerMessage(15, 2, NULL, 0);
+}
+// Xbox 0x000506A0
+int CSWCMessage::SendPlayerToServerUpdate_AppearanceRace(unsigned long oidCreature, unsigned short nRace)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(3, RECIPIENT_UNSPECIFIED, 1);
+    WriteCHAR('R', 8);
+    WriteOBJECTIDClient(oidCreature);
+    WriteWORD(nRace, 16);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(5, 1, pBuffer, nSize);
+}
+// Xbox 0x00051A30
+int CSWCMessage::SendPlayerToServerItem_Add(unsigned long oidArea, const Vector& vPosition,
+                                            const CResRef& cResRef, unsigned char nA,
+                                            unsigned char nB, unsigned char nC)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(0x24, RECIPIENT_UNSPECIFIED, 1);
+    WriteCHAR('A', 8);
+    WriteOBJECTIDClient(oidArea);
+    WriteFLOAT(vPosition.m_fX, 1.0f, 32);
+    WriteFLOAT(vPosition.m_fY, 1.0f, 32);
+    WriteFLOAT(vPosition.m_fZ, 1.0f, 32);
+    WriteBYTE(nA, 8);
+    WriteBYTE(nB, 8);
+    WriteBYTE(nC, 8);
+    WriteCResRef(cResRef, 16);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(5, 1, pBuffer, nSize);
+}
+// Xbox 0x00051B20
+int CSWCMessage::SendPlayerToServerParty_Add(unsigned long oidArea, const Vector& vPosition,
+                                             const CExoString& sTemplate)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize;
+
+    CreateWriteMessage(sTemplate.GetLength() + 0x11, RECIPIENT_UNSPECIFIED, 1);
+    WriteCHAR('M', 8);
+    WriteOBJECTIDClient(oidArea);
+    WriteFLOAT(vPosition.m_fX, 1.0f, 32);
+    WriteFLOAT(vPosition.m_fY, 1.0f, 32);
+    WriteFLOAT(vPosition.m_fZ, 1.0f, 32);
+    WriteCExoString(sTemplate, 32);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(5, 1, pBuffer, nSize);
+}
+// Xbox 0x00050A00
+char* dm_setrace(char* szArgs)
+{
+    unsigned short nRace;
+    if (stricmp(szArgs, "human") == 0)
+    {
+        nRace = 6;
+    }
+    else if (stricmp(szArgs, "halforc") == 0)
+    {
+        nRace = 5;
+    }
+    else if (stricmp(szArgs, "elf") == 0)
+    {
+        nRace = 1;
+    }
+    else if (stricmp(szArgs, "halfling") == 0)
+    {
+        nRace = 3;
+    }
+    else if (stricmp(szArgs, "dwarf") == 0)
+    {
+        nRace = 0;
+    }
+    else if (stricmp(szArgs, "gnome") == 0)
+    {
+        nRace = 2;
+    }
+    else if (stricmp(szArgs, "halfelf") == 0)
+    {
+        nRace = 4;
+    }
+    else
+    {
+        nRace = (unsigned short)atoi(szArgs);
+    }
+
+    CExoString sLabel;
+    g_pRules->Get2DArrays()->GetAppearance()->GetCExoStringEntry(nRace, "LABEL", &sLabel);
+    if (sLabel.GetLength() < 1)
+    {
+        return "Failure";
+    }
+    CSWCCreature* pCreature = g_pAppManager->m_pClientExoApp->GetPlayerCreature();
+    CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+    if (pMessage->SendPlayerToServerUpdate_AppearanceRace(pCreature->GetId(), nRace) == 0)
+    {
+        return "Failure";
+    }
+    return "Success";
+}
+// Xbox 0x00050BC0
+char* dm_gettime(char* szArgs)
+{
+    char szLine[128];
+
+    if (g_pAppManager->m_pClientExoApp->GetModule() != NULL)
+    {
+        unsigned char nMinutesPerHour = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeOfDayHour;
+        int nYear = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeA4;
+        int nMonth = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeA8;
+        int nDay = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeAC;
+        int nHour = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeB0;
+        unsigned char nState = g_pAppManager->m_pClientExoApp->GetModule()->m_nTimeOfDayState;
+
+        sprintf(szLine, "MinutesPerHour: %i", nMinutesPerHour);
+        AurPostString(szLine, 0, 4, 5.0f);
+        sprintf(szLine, "Year: %i", nYear);
+        AurPostString(szLine, 0, 5, 5.0f);
+        sprintf(szLine, "Month: %i", nMonth);
+        AurPostString(szLine, 0, 6, 5.0f);
+        sprintf(szLine, "Day: %i", nDay);
+        AurPostString(szLine, 0, 7, 5.0f);
+        sprintf(szLine, "Hour: %i", nHour);
+        AurPostString(szLine, 0, 8, 5.0f);
+        switch (nState)
+        {
+        case 1:
+            sprintf(szLine, "TimeOfDayState: Day");
+            break;
+        case 2:
+            sprintf(szLine, "TimeOfDayState: Night");
+            break;
+        case 3:
+            sprintf(szLine, "TimeOfDayState: Dawn");
+            break;
+        case 4:
+            sprintf(szLine, "TimeOfDayState: Dusk");
+            break;
+        default:
+            sprintf(szLine, "TimeOfDayState: Uh oh...");
+            break;
+        }
+        AurPostString(szLine, 0, 9, 5.0f);
+        return "Success";
+    }
+    return "Failure";
+}
+// Xbox 0x000510A0
+char* giveforcepowers(char* szArgs)
+{
+    CExoIni cIni;
+    CExoString sValue;
+    CExoString sKey;
+    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+    CSWSCreature* pCreature = pServerExoApp->GetCreatureByGameObjectID(pServerExoApp->GetPlayerCreatureId());
+    int bFound = 0;
+
+    for (int i = 1; i < 1000; i++)
+    {
+        sKey.Format("power%d", i);
+        int bRead = cIni.ReadIniEntry(sValue, "d:\\forcepowers.ini", "Force Powers", sKey);
+        if (bRead != 1)
+        {
+            break;
+        }
+        bFound = 1;
+        unsigned long nSpell = sValue.AsINT();
+        if (!pCreature->m_pStats->HasSpell(0, nSpell, 1))
+        {
+            pCreature->AddPrerequisiteSpells(nSpell);
+        }
+    }
+    if (bFound)
+    {
+        sprintf(cheatreturnvalue, "Success");
+    }
+    else
+    {
+        sprintf(cheatreturnvalue, "Failed: no entries");
+    }
+    return cheatreturnvalue;
+}
+// Xbox 0x00051CC0
+char* spawnitem(char* szArgs)
+{
+    char szResRef[256];
+
+    CSWCCreature* pPlayer = g_pAppManager->m_pClientExoApp->GetPlayerCreature();
+    if (pPlayer == NULL)
+    {
+        sprintf(cheatreturnvalue, "Failure");
+        return cheatreturnvalue;
+    }
+    CSWCArea* pArea = pPlayer->m_pArea;
+    if (pArea == NULL)
+    {
+        sprintf(cheatreturnvalue, "Failure");
+        return cheatreturnvalue;
+    }
+    CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+    if (pMessage == NULL)
+    {
+        sprintf(cheatreturnvalue, "Failure");
+        return cheatreturnvalue;
+    }
+
+    char* pSpace = strchr(szArgs, ' ');
+    if (pSpace != NULL)
+    {
+        *pSpace = 0;
+        strcpy(szResRef, szArgs);
+        szArgs = pSpace + 1;
+    }
+    else
+    {
+        strcpy(szResRef, szArgs);
+    }
+
+    Vector vPosition = g_pAppManager->m_pClientExoApp->GetPlayerCreature()->m_vPosition;
+    Vector vOrientation = g_pAppManager->m_pClientExoApp->GetPlayerCreature()->m_vOrientation;
+    Vector vSpawn = vPosition + normalize(vOrientation);
+
+    pSpace = strchr(szArgs, ' ');
+    if (pSpace != NULL)
+    {
+        *pSpace = 0;
+        vSpawn.m_fX = (float)atof(szArgs);
+        szArgs = pSpace + 1;
+        pSpace = strchr(szArgs, ' ');
+        if (pSpace != NULL)
+        {
+            *pSpace = 0;
+            vSpawn.m_fY = (float)atof(szArgs);
+            szArgs = pSpace + 1;
+            if (strlen(szArgs) != 0)
+            {
+                vSpawn.m_fZ = (float)atof(szArgs);
+            }
+            else
+            {
+                vSpawn.m_fZ = 0.2f;
+            }
+        }
+    }
+
+    pMessage->SendPlayerToServerItem_Add(pArea->GetId(), vSpawn, szResRef, 0, 0, 0);
+    sprintf(cheatreturnvalue, "Success");
+    return cheatreturnvalue;
+}
+// Xbox 0x00051F00
+char* spawnweapon(char* szArgs)
+{
+    char szResRef[256];
+
+    CSWCCreature* pPlayer = g_pAppManager->m_pClientExoApp->GetPlayerCreature();
+    CSWCArea* pArea;
+    if (pPlayer == NULL || (pArea = pPlayer->m_pArea) == NULL)
+    {
+        sprintf(cheatreturnvalue, "Failure");
+        return cheatreturnvalue;
+    }
+    CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+    if (pMessage == NULL)
+    {
+        sprintf(cheatreturnvalue, "Failure");
+    }
+    else
+    {
+        char* pSpace = strchr(szArgs, ' ');
+        if (pSpace != NULL)
+        {
+            *pSpace = 0;
+            strcpy(szResRef, szArgs);
+            szArgs = pSpace + 1;
+        }
+        else
+        {
+            strcpy(szResRef, szArgs);
+        }
+
+        Vector vPosition = g_pAppManager->m_pClientExoApp->GetPlayerCreature()->m_vPosition;
+        Vector vOrientation = g_pAppManager->m_pClientExoApp->GetPlayerCreature()->m_vOrientation;
+        Vector vSpawn = normalize(vOrientation) + vPosition;
+
+        unsigned char nA = 0;
+        unsigned char nB = 0;
+        unsigned char nC = 0;
+        pSpace = strchr(szArgs, ' ');
+        if (pSpace != NULL)
+        {
+            *pSpace = 0;
+            nA = (unsigned char)atoi(szArgs);
+            szArgs = pSpace + 1;
+            pSpace = strchr(szArgs, ' ');
+            if (pSpace != NULL)
+            {
+                *pSpace = 0;
+                nB = (unsigned char)atoi(szArgs);
+                nC = (unsigned char)atoi(pSpace + 1);
+            }
+        }
+
+        pMessage->SendPlayerToServerItem_Add(pArea->GetId(), vSpawn, szResRef, nA, nB, nC);
+        sprintf(cheatreturnvalue, "Success");
+    }
+    return cheatreturnvalue;
+}
+// Xbox 0x000523D0
+char* displaystrref(char* szArgs)
+{
+    unsigned long nFirst = 0;
+    unsigned long nLast = 0;
+    unsigned long nGender = (unsigned long)-1;
+    STR_RES strRes;
+    CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
+
+    sscanf(szArgs, "%u %u %u", &nFirst, &nLast, &nGender);
+    if (nGender == (unsigned long)-1)
+    {
+        return "";
+    }
+    if (nLast < nFirst)
+    {
+        nLast = nFirst;
+    }
+    g_returnCode = szArgs;
+    for (unsigned long nStrRef = nFirst; nStrRef <= nLast; nStrRef++)
+    {
+        g_pTlkTable->Fetch(nStrRef, strRes, (unsigned char)nGender);
+        pGui->AppendToMsgBuffer(strRes.m_sString, 0x10000000, 0);
+    }
+    g_pExoSound->PlayOneShotSound(strRes.m_resSound, 0, 0, 0, 0.0f, 0.0f);
+    return g_returnCode.CStr();
+}
+// Xbox 0x00052530
+char* addpartymember(char* szArgs)
+{
+    CSWCCreature* pPlayer = g_pAppManager->m_pClientExoApp->GetPlayerCreature();
+    if (pPlayer == NULL)
+    {
+        sprintf(cheatreturnvalue, "Failure - Player creture is NULL");
+        return cheatreturnvalue;
+    }
+    CSWCArea* pArea = pPlayer->m_pArea;
+    if (pArea == NULL)
+    {
+        sprintf(cheatreturnvalue, "Failure - Area is NULL");
+        return cheatreturnvalue;
+    }
+    CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+    if (pMessage == NULL)
+    {
+        sprintf(cheatreturnvalue, "Failure - Message is NULL");
+        return cheatreturnvalue;
+    }
+
+    Vector vPosition = pPlayer->m_vPosition;
+    float fX = rand() % 100 < 50 ? (rand() % 100) * 0.01f + 1.0f : -1.0f - (rand() % 100) * 0.01f;
+    float fY = rand() % 100 < 50 ? (rand() % 100) * 0.01f + 1.0f : -1.0f - (rand() % 100) * 0.01f;
+    vPosition = Vector(vPosition.m_fX + fX, vPosition.m_fY + fY, vPosition.m_fZ);
+    vPosition.m_fZ += 0.2f;
+    pMessage->SendPlayerToServerParty_Add(pArea->GetId(), vPosition, "PARTYMEMBER");
+    sprintf(cheatreturnvalue, "Success");
+    return cheatreturnvalue;
+}
+
+ConsoleFunc ConFspawnitem("spawnitem", spawnitem);
+ConsoleFunc ConFspawnweapon("spawnweapon", spawnweapon);
+ConsoleFunc ConFdm_setrace("dm_setrace", dm_setrace);
+ConsoleFunc ConFdm_gettime("dm_gettime", dm_gettime);
+ConsoleFunc ConFdisplaystrref("displaystrref", displaystrref);
+ConsoleFunc ConFaddpartymember("addpartymember", addpartymember);
+ConsoleFunc ConFgiveforcepowers("giveforcepowers", giveforcepowers);
+#endif

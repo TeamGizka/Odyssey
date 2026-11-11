@@ -316,13 +316,13 @@ CAurTriangleListElem::CAurTriangleListElem(List<float> lstVertices,
 CAurTriangleListElem::~CAurTriangleListElem()
 {
     AURGRASS_TRACE();
-    if (m_lstVertices.m_pList != 0)
-    {
-        delete[] m_lstVertices.m_pList;
-        m_lstVertices.m_pList = 0;
-    }
-    m_lstVertices.m_nAllocated = 0;
-    m_lstVertices.m_nCount = 0;
+#ifdef _XBOX
+    m_lstVertices.SetSize(0);
+#else
+    if (m_lstVertices.m_pList != 0) {
+        delete[] m_lstVertices.m_pList; m_lstVertices.m_pList = 0; }
+    m_lstVertices.m_nAllocated = 0; m_lstVertices.m_nCount = 0;
+#endif
     m_pFace = 0;
     m_pTriMesh = 0;
     m_nTriangle = 0;
@@ -596,13 +596,13 @@ void CAurTriangleBin::SortTriangles()
         }
     }
 
-    if (lstTriangles[i - 1].m_pTriMesh == lstTriangles[i - 2].m_pTriMesh)
-        nTriangles += lstTriangles[i - 1].m_nTriangle;
+    if (lstTriangles[i - 1].m_pTriMesh == lstTriangles[i - 2].m_pTriMesh) nTriangles += lstTriangles[i - 1].m_nTriangle;
     else
         nTriangles = lstTriangles[i - 1].m_nTriangle;
     m_lstTextures.Add(m_lstTriangles[i - 1].m_pTriMesh->m_pMaterial->m_pTexture1);
     m_lstTextureIndices.Add(nTriangles);
 }
+#ifndef _XBOX
 void CAurTriangleBin::CreateArrays()  // PC 0x004A87C0  Xbox 0x002B7D30
 {
     int nVertices = 4 * m_nTriangles;
@@ -817,8 +817,8 @@ void CAurTriangleBin::CreateArrays()  // PC 0x004A87C0  Xbox 0x002B7D30
     m_pCurrentVertices = 0;
     m_nFlags |= GRASS_POLYS_BUILT;
 }
-// PC 0x004A9630  Xbox 0x002B8DC0
-void CAurTriangleBin::BuildGrassPolys()
+#endif
+void CAurTriangleBin::BuildGrassPolys()  // PC 0x004A9630  Xbox 0x002B8DC0
 {
     if (!(m_nFlags & GRASS_POLYS_BUILT) && m_nTriangles != 0)
     {
@@ -867,3 +867,240 @@ static inline void AurgrassTrace2()
 static inline void AurgrassTrace1()
 {
 }
+
+#ifdef _XBOX
+// PC 0x004A87C0  Xbox 0x002B7D30
+void CAurTriangleBin::CreateArrays()
+{
+    int nVertices = 4 * m_nTriangles;
+    GLRender::RequestPool(Aurora::POOL_VERTEX, nVertices * m_nVertexSize,
+                          RequestPoolManager::POOL_COLOR | RequestPoolManager::POOL_STATIC, 0,
+                          (unsigned long*)&m_pVertices);
+    float* pVertices = (float*)GLRender::LockPool((unsigned long)m_pVertices, 0, 0,
+                                                  RequestPoolManager::POOL_LOCK_WRITE);
+    int nIndexOffset = 3 * sizeof(float) * nVertices;
+    m_pCurrentVertices = (float*)new unsigned char[nIndexOffset];
+    m_nVertexOffset = (int)new D3DVertexBuffer;
+    memset((void*)m_nVertexOffset, 0, sizeof(D3DVertexBuffer));
+    m_nIndexOffset = (int)new D3DVertexBuffer;
+    memset((void*)m_nIndexOffset, 0, sizeof(D3DVertexBuffer));
+    GLRender::SetPoolBufferHeaders((unsigned long)m_pVertices, (D3DVertexBuffer*)m_nVertexOffset,
+                                   (D3DVertexBuffer*)m_nIndexOffset, nIndexOffset);
+    if (m_nFlags & MULTI_TEXTURE)
+        SortTriangles();
+    int nTriangles = m_lstTriangles.m_nCount;
+    m_nFlags |= HAS_VERTEX_DATA;
+    int nAttribute = nIndexOffset / sizeof(float) - 1;
+    Vector vUp(0.0f, 0.0f, 1.0f);
+    int nVertex = -1;
+    Vector vWeight;
+    Quaternion qRotation;
+    Vector vPosition;
+    Vector vVertex;
+    for (int i = 0; i < nTriangles; ++i)
+    {
+        static Vector v0;
+        static Vector v1;
+        static Vector v2;
+        v0.m_fX = m_lstTriangles[i].m_lstVertices[0];
+        v0.m_fY = m_lstTriangles[i].m_lstVertices[1];
+        v0.m_fZ = m_lstTriangles[i].m_lstVertices[2];
+        v1.m_fX = m_lstTriangles[i].m_lstVertices[3];
+        v1.m_fY = m_lstTriangles[i].m_lstVertices[4];
+        v1.m_fZ = m_lstTriangles[i].m_lstVertices[5];
+        v2.m_fX = m_lstTriangles[i].m_lstVertices[6];
+        v2.m_fY = m_lstTriangles[i].m_lstVertices[7];
+        v2.m_fZ = m_lstTriangles[i].m_lstVertices[8];
+        int nGrass = m_lstTriangles[i].m_nTriangle;
+        if (nGrass != 0)
+        {
+            int nSeed;
+            roundToInt(nSeed, v2.m_fZ + v1.m_fY + v0.m_fX);
+            srand(nSeed);
+            float fQuadSize = g_GrassInfo[m_nGrassInfo].m_fQuadSize;
+            Vector vBottomLeft(-0.5f * fQuadSize, 0.0f, 0.0f);
+            Vector vBottomRight(0.5f * fQuadSize, 0.0f, 0.0f);
+            Vector vTopRight(0.5f * fQuadSize, 0.0f, fQuadSize);
+            Vector vTopLeft(-0.5f * fQuadSize, 0.0f, fQuadSize);
+            MaxFace* pFace = m_lstTriangles[i].m_pFace;
+            PartTriMesh* pTriMesh = m_lstTriangles[i].m_pTriMesh;
+
+            unsigned long nPackedNormal =
+                ((((int)(pFace->m_vNormal.m_fZ * 511.0f) << 11) |
+                  ((int)(pFace->m_vNormal.m_fY * 1023.0f) & 0x7ff)) << 11) |
+                ((int)(pFace->m_vNormal.m_fX * 1023.0f) & 0x7ff);
+            MdlNodeTriMesh* pNode = pTriMesh->m_pNode->AsMdlNodeTriMesh();
+            Vector vLight(0.0f, 0.0f, 0.0f);
+            unsigned char nRed = 0, nGreen = 0, nBlue = 0, nAlpha = 127;
+            for (int j = 0; j < nGrass; ++j)
+            {
+                vWeight.m_fX = (rand() % 10000) * 0.0001f;
+                vWeight.m_fY = (rand() % 10000) * 0.0001f;
+                vWeight.m_fZ = (rand() % 10000) * 0.0001f;
+                vWeight = vWeight / (vWeight.m_fX + vWeight.m_fY + vWeight.m_fZ);
+                if (m_nFlags & MULTI_TEXTURE)
+                {
+                    int nVertexPool = pNode->m_pModel->AsModel()->m_nVertexPool;
+                    unsigned char* pVertexData = (unsigned char*)GLRender::LockPool(
+                        nVertexPool, 0, 0, RequestPoolManager::POOL_LOCK_READ_ONLY);
+                    float* pUV0 = (float*)(pVertexData + pNode->m_nVertexDataOffset +
+                        pNode->m_nTexCoord1Offset +
+                        pNode->m_nVertexStride * pFace->m_anVertexIndices[0]);
+                    Vector vUV0;
+                    vUV0.m_fX = pUV0[0];
+                    vUV0.m_fY = pUV0[1];
+                    float* pUV1 = (float*)(pVertexData + pNode->m_nVertexDataOffset +
+                        pNode->m_nTexCoord1Offset +
+                        pNode->m_nVertexStride * pFace->m_anVertexIndices[1]);
+                    Vector vUV1;
+                    vUV1.m_fX = pUV1[0];
+                    vUV1.m_fY = pUV1[1];
+                    float* pUV2 = (float*)(pVertexData + pNode->m_nVertexDataOffset +
+                        pNode->m_nTexCoord1Offset +
+                        pNode->m_nVertexStride * pFace->m_anVertexIndices[2]);
+                    Vector vUV2;
+                    vUV2.m_fX = pUV2[0];
+                    vUV2.m_fY = pUV2[1];
+                    vLight = vWeight.m_fX * vUV0 + vWeight.m_fY * vUV1 + vWeight.m_fZ * vUV2;
+                    nVertexPool = pNode->m_pModel->AsModel()->m_nVertexPool;
+                    GLRender::UnlockPool(nVertexPool);
+                }
+                else if (m_nFlags & FOUR_COMPONENTS)
+                {
+                    int nColorPool = pTriMesh->m_nColorPool;
+                    unsigned long* pColors = (unsigned long*)GLRender::LockPool(
+                        nColorPool, 0, 0, RequestPoolManager::POOL_LOCK_READ_ONLY);
+                    float fWeightA = vWeight.m_fX;
+                    float fWeightB = vWeight.m_fY;
+                    float fWeightC = vWeight.m_fZ;
+                    float fRed = (pColors[pFace->m_anVertexIndices[0]] & 0xff) * fWeightA +
+                                 (pColors[pFace->m_anVertexIndices[1]] & 0xff) * fWeightB +
+                                 (pColors[pFace->m_anVertexIndices[2]] & 0xff) * fWeightC;
+                    float fGreen = ((pColors[pFace->m_anVertexIndices[0]] & 0xff00) >> 8) * vWeight.m_fX +
+                                   ((pColors[pFace->m_anVertexIndices[1]] & 0xff00) >> 8) * vWeight.m_fY +
+                                   ((pColors[pFace->m_anVertexIndices[2]] & 0xff00) >> 8) * vWeight.m_fZ;
+                    float fBlue = ((pColors[pFace->m_anVertexIndices[0]] & 0xff0000) >> 16) * vWeight.m_fX +
+                                  ((pColors[pFace->m_anVertexIndices[1]] & 0xff0000) >> 16) * vWeight.m_fY +
+                                  ((pColors[pFace->m_anVertexIndices[2]] & 0xff0000) >> 16) * vWeight.m_fZ;
+                    float fAlpha = ((pColors[pFace->m_anVertexIndices[0]] & 0xff000000) >> 24) * vWeight.m_fX +
+                                   ((pColors[pFace->m_anVertexIndices[1]] & 0xff000000) >> 24) * vWeight.m_fY +
+                                   ((pColors[pFace->m_anVertexIndices[2]] & 0xff000000) >> 24) * vWeight.m_fZ;
+                    nRed = (unsigned char)max(0.0f, min(255.0f, fRed));
+                    nGreen = (unsigned char)max(0.0f, min(255.0f, fGreen));
+                    nBlue = (unsigned char)max(0.0f, min(255.0f, fBlue));
+                    nAlpha = (unsigned char)max(0.0f, min(255.0f, fAlpha));
+                    nColorPool = pTriMesh->m_nColorPool;
+                    GLRender::UnlockPool(nColorPool);
+                }
+                vPosition = vWeight.m_fX * v0 + vWeight.m_fY * v1 + vWeight.m_fZ * v2;
+                qRotation = Quaternion(vUp, ((rand() % 10000) * 0.0001f) * TWO_PI);
+                float fProbability = (rand() % 10000) * 0.0001f;
+                int nCell = 0;
+                for (int nIndex = 0; nIndex < CAurGrassInfo::NUM_GRASS_PROBABILITIES; ++nIndex)
+                {
+                    if (fProbability < g_GrassInfo[m_nGrassInfo].m_afProbability[nIndex])
+                    {
+                        nCell = nIndex;
+                        break;
+                    }
+                    fProbability -= g_GrassInfo[m_nGrassInfo].m_afProbability[nIndex];
+                }
+                float fU = nCell % 2 == 1 ? 0.5f : 0.0f;
+                float fV = (nCell / 2) % 2 == 1 ? 0.5f : 0.0f;
+                float fHeightScale = ((rand() % 10000) * 0.0001f - 0.5f) *
+                                     0.4f + 1.0f;
+                vVertex = (qRotation * vBottomLeft) + vPosition;
+                ++nVertex;
+                m_pCurrentVertices[nVertex * 3] = vVertex.m_fX;
+                m_pCurrentVertices[nVertex * 3 + 1] = vVertex.m_fY;
+                m_pCurrentVertices[nVertex * 3 + 2] = vVertex.m_fZ;
+                pVertices[nVertex * 3] = vVertex.m_fX;
+                pVertices[nVertex * 3 + 1] = vVertex.m_fY;
+                pVertices[nVertex * 3 + 2] = vVertex.m_fZ;
+                ((unsigned long*)pVertices)[++nAttribute] = nPackedNormal;
+                pVertices[++nAttribute] = fU;
+                pVertices[++nAttribute] = fV;
+                if (m_nFlags & MULTI_TEXTURE)
+                {
+                    pVertices[++nAttribute] = vLight.m_fX;
+                    pVertices[++nAttribute] = vLight.m_fY;
+                }
+                else if (m_nFlags & FOUR_COMPONENTS)
+                {
+
+                    pVertices[++nAttribute] = (float)(unsigned int)(nRed |
+                        ((nGreen | ((nBlue | (nAlpha << 8)) << 8)) << 8));
+                }
+                vVertex = vPosition + (qRotation * vBottomRight);
+                ++nVertex;
+                m_pCurrentVertices[nVertex * 3] = vVertex.m_fX;
+                m_pCurrentVertices[nVertex * 3 + 1] = vVertex.m_fY;
+                m_pCurrentVertices[nVertex * 3 + 2] = vVertex.m_fZ;
+                pVertices[nVertex * 3] = vVertex.m_fX;
+                pVertices[nVertex * 3 + 1] = vVertex.m_fY;
+                pVertices[nVertex * 3 + 2] = vVertex.m_fZ;
+                ((unsigned long*)pVertices)[++nAttribute] = nPackedNormal;
+                pVertices[++nAttribute] = fU + 0.5f;
+                pVertices[++nAttribute] = fV;
+                if (m_nFlags & MULTI_TEXTURE)
+                {
+                    pVertices[++nAttribute] = vLight.m_fX;
+                    pVertices[++nAttribute] = vLight.m_fY;
+                }
+                else if (m_nFlags & FOUR_COMPONENTS)
+                {
+
+                    pVertices[++nAttribute] = (float)(unsigned int)(nRed |
+                        ((nGreen | ((nBlue | (nAlpha << 8)) << 8)) << 8));
+                }
+                vVertex = vPosition + fHeightScale * (qRotation * vTopRight);
+                ++nVertex;
+                m_pCurrentVertices[nVertex * 3] = vVertex.m_fX;
+                m_pCurrentVertices[nVertex * 3 + 1] = vVertex.m_fY;
+                m_pCurrentVertices[nVertex * 3 + 2] = vVertex.m_fZ;
+                pVertices[nVertex * 3] = vVertex.m_fX;
+                pVertices[nVertex * 3 + 1] = vVertex.m_fY;
+                pVertices[nVertex * 3 + 2] = vVertex.m_fZ;
+                ((unsigned long*)pVertices)[++nAttribute] = nPackedNormal;
+                pVertices[++nAttribute] = fU + 0.5f;
+                pVertices[++nAttribute] = fV + 0.5f;
+                if (m_nFlags & MULTI_TEXTURE)
+                {
+                    pVertices[++nAttribute] = vLight.m_fX;
+                    pVertices[++nAttribute] = vLight.m_fY;
+                }
+                else if (m_nFlags & FOUR_COMPONENTS)
+                {
+
+                    pVertices[++nAttribute] = (float)(unsigned int)(nRed |
+                        ((nGreen | ((nBlue | (nAlpha << 8)) << 8)) << 8));
+                }
+                vVertex = vPosition + fHeightScale * (qRotation * vTopLeft);
+                ++nVertex;
+                m_pCurrentVertices[nVertex * 3] = vVertex.m_fX;
+                m_pCurrentVertices[nVertex * 3 + 1] = vVertex.m_fY;
+                m_pCurrentVertices[nVertex * 3 + 2] = vVertex.m_fZ;
+                pVertices[nVertex * 3] = vVertex.m_fX;
+                pVertices[nVertex * 3 + 1] = vVertex.m_fY;
+                pVertices[nVertex * 3 + 2] = vVertex.m_fZ;
+                ((unsigned long*)pVertices)[++nAttribute] = nPackedNormal;
+                pVertices[++nAttribute] = fU;
+                pVertices[++nAttribute] = fV + 0.5f;
+                if (m_nFlags & MULTI_TEXTURE)
+                {
+                    pVertices[++nAttribute] = vLight.m_fX;
+                    pVertices[++nAttribute] = vLight.m_fY;
+                }
+                else if (m_nFlags & FOUR_COMPONENTS)
+                {
+
+                    pVertices[++nAttribute] = (float)(unsigned int)(nRed |
+                        ((nGreen | ((nBlue | (nAlpha << 8)) << 8)) << 8));
+                }
+            }
+        }
+    }
+    GLRender::UnlockPool((unsigned long)m_pVertices);
+    m_nFlags |= GRASS_POLYS_BUILT;
+}
+#endif

@@ -1181,8 +1181,9 @@ int CTwoDimArrays::Load2DArrays_AmmunitionTypes()
     m_pAmmunitionTypes = new C2DA("AmmunitionTypes", 0);
     return m_pAmmunitionTypes != 0 && m_pAmmunitionTypes->Load2DArray() != 0;
 }
-// PC 0x005C2400
-int CTwoDimArrays::Load2DArrays_Keymap()
+
+#ifndef _XBOX
+int CTwoDimArrays::Load2DArrays_Keymap()  // PC 0x005C2400
 {
     m_pKeymap = new C2DA("keymap", 0);
     return m_pKeymap != 0 && m_pKeymap->Load2DArray() != 0;
@@ -1193,6 +1194,7 @@ int CTwoDimArrays::Load2DArrays_BindableKey()
     m_pBindableKey = new C2DA("BindableKeys", 0);
     return m_pBindableKey != 0 && m_pBindableKey->Load2DArray() != 0;
 }
+#endif
 // PC 0x005C2540
 int CTwoDimArrays::Load2DArrays_CameraStyle()
 {
@@ -1602,8 +1604,9 @@ int CTwoDimArrays::Load2DArrays_RemoveFXOnDeath()
     }
     return 1;
 }
-// PC 0x005C4670
-int CTwoDimArrays::Load2DArrays_TexPacks()
+
+#ifndef _XBOX
+int CTwoDimArrays::Load2DArrays_TexPacks()  // PC 0x005C4670
 {
     m_pTexPacks = new C2DA("TexPacks", 0);
     if (m_pTexPacks == 0)
@@ -1618,6 +1621,7 @@ int CTwoDimArrays::Load2DArrays_TexPacks()
     }
     return 1;
 }
+#endif
 // PC 0x005C4730  Xbox 0x0011ACD0
 int CTwoDimArrays::LoadIPRPCostTables()
 {
@@ -1762,7 +1766,7 @@ C2DA* CTwoDimArrays::GetIPRPParamTable(unsigned char nTable)
     }
     return pResult;
 }
-// PC 0x005C4C20
+// PC 0x005C4C20  Xbox 0x0011B0B0
 int CTwoDimArrays::Load2DArrays()
 {
     LoadIPRPCostTables();

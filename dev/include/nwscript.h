@@ -312,7 +312,7 @@ public:
     };
 
     CVirtualMachineCmdImplementer();
-    virtual ~CVirtualMachineCmdImplementer() {};  // PC 0x004B1330
+    virtual ~CVirtualMachineCmdImplementer() {};  // PC 0x004B1330  Xbox 0x00214FA0
     virtual void InitializeCommands() = 0;
     virtual int ExecuteCommand(int nCommand, int nArgs) = 0;
     virtual void RunScriptCallback(CExoString& sScript) = 0;

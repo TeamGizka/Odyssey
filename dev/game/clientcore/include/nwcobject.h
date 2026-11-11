@@ -401,6 +401,10 @@ public:
     float GetFinalFadeAlpha();
     int FadeObject();
     void SetObjectVisibilityOnSetArea(CSWCArea* pArea);
+#ifdef _XBOX
+
+    void MenuActionUseSecuritySpike(unsigned long oidItem, CSWCCreature* pCreature);
+#endif
 };
 
 #endif

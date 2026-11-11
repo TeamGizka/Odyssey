@@ -130,6 +130,10 @@ public:
     static int m_nMaxShadowLights;
     static CAurObject* m_pOnlyGob;
     static int m_nMaxLights;
+#ifdef _XBOX
+    static void SetMaxLights(int nMaxLights);
+    static void SetMaxShadowLights(int nMaxShadowLights);
+#endif
 
     int m_bDynamicOnly;
     List<PartLight*> m_lstLights;

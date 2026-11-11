@@ -40,8 +40,9 @@ void messagepump(int nUnused = 0);
 void messagepump();
 #endif
 void SetClearColor(char* sColor);
+#ifndef _XBOX
 const char* DumpLogCounters(char* sBuffer);
-
+#endif
 class CExoString;
 extern int g_fullScreenDesired;
 extern CExoString g_sBuildNumber;
@@ -58,5 +59,9 @@ extern CExoString g_sVersionNumber;
 extern CExoString g_sCopyrightInfo;
 extern int g_bSwappingBuffers;
 extern int g_bDisableSound;
+
+#ifdef _XBOX
+char* DumpLogCounters(char* sBuffer);
+#endif
 
 #endif

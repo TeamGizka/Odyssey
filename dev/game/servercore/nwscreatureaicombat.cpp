@@ -2081,14 +2081,14 @@ int CSWSCreature::AIActionPhysicalAttacks(CSWSObjectActionNode* pAction)
     if (GetInParty())
     {
         CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
-        int nMember = pClient->GetSWParty()->GetIndex(
-            pClient->ServerToClientObjectId(GetId()));
+        int nMember = pClient->GetSWParty()->GetIndex(pClient->ServerToClientObjectId(GetId()));
         if (nMember >= 0)
         {
-            CSWParty* pParty = pClient->GetSWParty();
-            EXOXBOXASSERT(nMember >= 0 && nMember < 3);
-            pParty->m_aPartyMemberData[nMember].SetCombatMessage(
-                CSWPartyMemberData::COMBAT_MESSAGE_ENGAGED);
+#ifdef _XBOX
+            CSWPartyMemberData* pMember = pClient->GetSWParty()->GetMemberData(nMember); pMember->SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_ENGAGED);
+#else
+            CSWParty* pParty = pClient->GetSWParty(); EXOXBOXASSERT(nMember >= 0 && nMember < 3); pParty->m_aPartyMemberData[nMember].SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_ENGAGED);
+#endif
         }
     }
 
@@ -2287,14 +2287,14 @@ int CSWSCreature::AIActionPhysicalAttacks(CSWSObjectActionNode* pAction)
 
                     if (GetInParty() && fDistanceSquared > NWSCREATURE_ATTACK_MOVE_MESSAGE_DISTANCE_SQUARED)
                     {
-                        CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
-                        int nMember = pClient->GetSWParty()->GetIndex(
-                            pClient->ServerToClientObjectId(GetId()));
+                        CClientExoApp* pClient = g_pAppManager->GetClientExoApp(); int nMember = pClient->GetSWParty()->GetIndex(pClient->ServerToClientObjectId(GetId()));
                         if (nMember >= 0)
                         {
-                            CSWParty* pParty = pClient->GetSWParty();
-                            pParty->m_aPartyMemberData[nMember].SetCombatMessage(
-                                CSWPartyMemberData::COMBAT_MESSAGE_CLOSING_TO_ATTACK);
+#ifdef _XBOX
+                            CSWPartyMemberData* pMember = pClient->GetSWParty()->GetMemberData(nMember); pMember->SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_CLOSING_TO_ATTACK);
+#else
+                            CSWParty* pParty = pClient->GetSWParty(); pParty->m_aPartyMemberData[nMember].SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_CLOSING_TO_ATTACK);
+#endif
                         }
                     }
                 }
@@ -2316,14 +2316,14 @@ int CSWSCreature::AIActionPhysicalAttacks(CSWSObjectActionNode* pAction)
 
                     if (GetInParty() && fDistanceSquared > NWSCREATURE_ATTACK_MOVE_MESSAGE_DISTANCE_SQUARED)
                     {
-                        CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
-                        int nMember = pClient->GetSWParty()->GetIndex(
-                            pClient->ServerToClientObjectId(GetId()));
+                        CClientExoApp* pClient = g_pAppManager->GetClientExoApp(); int nMember = pClient->GetSWParty()->GetIndex(pClient->ServerToClientObjectId(GetId()));
                         if (nMember >= 0)
                         {
-                            CSWParty* pParty = pClient->GetSWParty();
-                            pParty->m_aPartyMemberData[nMember].SetCombatMessage(
-                                CSWPartyMemberData::COMBAT_MESSAGE_CLOSING_TO_ATTACK);
+#ifdef _XBOX
+                            CSWPartyMemberData* pMember = pClient->GetSWParty()->GetMemberData(nMember); pMember->SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_CLOSING_TO_ATTACK);
+#else
+                            CSWParty* pParty = pClient->GetSWParty(); pParty->m_aPartyMemberData[nMember].SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_CLOSING_TO_ATTACK);
+#endif
                         }
                     }
                 }

@@ -1402,26 +1402,20 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
         if (GetIsPC() == 1 && pTarget->AsSWSCreature()->GetIsPC() == 0)
         {
             bPCToNPC = 1;
-            nDifficulty = g_pAppManager->GetServerExoApp()->GetDifficultyOption(
-                CSWRules::DIFFICULTY_PC_DAMAGE);
+            nDifficulty = g_pAppManager->GetServerExoApp()->GetDifficultyOption(CSWRules::DIFFICULTY_PC_DAMAGE);
         }
         else if (GetIsPC() == 0 && pTarget->AsSWSCreature()->GetIsPC() == 1)
         {
             bNPCToPC = 1;
-            nDifficulty = g_pAppManager->GetServerExoApp()->GetDifficultyOption(
-                CSWRules::DIFFICULTY_NPC_DAMAGE);
+            nDifficulty = g_pAppManager->GetServerExoApp()->GetDifficultyOption(CSWRules::DIFFICULTY_NPC_DAMAGE);
         }
     }
 
-    if (pWeapon != NULL &&
-        pWeapon->GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_UNARMED_DAMAGE_19 &&
-        pWeapon->GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_EQUIPPED_ACTIVATION_20)
+    if (pWeapon != NULL && pWeapon->GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_UNARMED_DAMAGE_19 && pWeapon->GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_EQUIPPED_ACTIVATION_20)
     {
         if (!bMaxDamage)
         {
-            if (GetCreature()->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_CREATURE1 ||
-                GetCreature()->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_CREATURE2 ||
-                GetCreature()->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_CREATURE3)
+            if (GetCreature()->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_CREATURE1 || GetCreature()->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_CREATURE2 || GetCreature()->m_pcCombatRound->GetWeaponAttackType() == CSWSCombatRound::WEAPON_ATTACK_CREATURE3)
             {
                 if (pWeapon->GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_MONSTER_DAMAGE, 0))
                 {
@@ -1430,16 +1424,19 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
                     if (pProperty != NULL && pProperty->m_nCostValue != 0)
                     {
                         int nRow = pProperty->m_nCostValue;
-                        {
-                            CExoString sColumn("NumDice");
+#ifdef _XBOX
+                        { CExoString sColumn("NumDice"); g_pRules->Get2DArrays()->GetIPRPMonsterDamage()->GetINTEntry(nRow, sColumn, &nNumDice); }
+                        { CExoString sColumn("Die"); g_pRules->Get2DArrays()->GetIPRPMonsterDamage()->GetINTEntry(nRow, sColumn, &nDie); }
+#else
+                        { CExoString sColumn("NumDice");
                             C2DA* pTable = g_pRules->Get2DArrays()->m_pIPRPMonsterDamage;
                             pTable->GetINTEntry(nRow, sColumn, &nNumDice);
                         }
-                        {
-                            CExoString sColumn("Die");
+                        { CExoString sColumn("Die");
                             C2DA* pTable = g_pRules->Get2DArrays()->m_pIPRPMonsterDamage;
                             pTable->GetINTEntry(nRow, sColumn, &nDie);
                         }
+#endif
                         short nMaximum = nNumDice * nDie;
                         if (bCritical)
                         {
@@ -1489,16 +1486,19 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
                     if (pProperty != NULL && pProperty->m_nCostValue != 0)
                     {
                         int nRow = pProperty->m_nCostValue;
-                        {
-                            CExoString sColumn("NumDice");
+#ifdef _XBOX
+                        { CExoString sColumn("NumDice"); g_pRules->Get2DArrays()->GetIPRPMonsterDamage()->GetINTEntry(nRow, sColumn, &nNumDice); }
+                        { CExoString sColumn("Die"); g_pRules->Get2DArrays()->GetIPRPMonsterDamage()->GetINTEntry(nRow, sColumn, &nDie); }
+#else
+                        { CExoString sColumn("NumDice");
                             C2DA* pTable = g_pRules->Get2DArrays()->m_pIPRPMonsterDamage;
                             pTable->GetINTEntry(nRow, sColumn, &nNumDice);
                         }
-                        {
-                            CExoString sColumn("Die");
+                        { CExoString sColumn("Die");
                             C2DA* pTable = g_pRules->Get2DArrays()->m_pIPRPMonsterDamage;
                             pTable->GetINTEntry(nRow, sColumn, &nDie);
                         }
+#endif
                     }
                 }
             }

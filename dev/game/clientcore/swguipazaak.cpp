@@ -461,13 +461,13 @@ void CSWGuiTutorial::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiMessageBox::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006C00B0
-void CSWGuiWagerPopup::Draw(float fElapsed)
+#ifndef _XBOX
+void CSWGuiWagerPopup::Draw(float fElapsed)  // PC 0x006C00B0  Xbox 0x0009A5F0
 {
     CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x0067D340  Xbox 0x0009A580
-void CSWGuiWagerPopup::UpdateWagerText()
+#endif
+void CSWGuiWagerPopup::UpdateWagerText()  // PC 0x0067D340  Xbox 0x0009A580
 {
     CExoString sWager(m_nWager);
     m_lblWagerval.m_cText.m_cParams.SetText(sWager);
@@ -894,7 +894,7 @@ CSWGuiActivatedButton::CSWGuiActivatedButton()
     m_bActivated = 1;
 #endif
 }
-// PC 0x0067DDD0
+// PC 0x0067DDD0  Xbox 0x0009D4F0
 CSWGuiPazaakCard::CSWGuiPazaakCard()
 {
 #ifndef _XBOX
@@ -907,8 +907,8 @@ CSWGuiPazaakCard::CSWGuiPazaakCard()
     pLabel->m_bIgnoreMouse = 1;
 #endif
 }
-// PC 0x0067DE80
-CSWGuiPazaakCard::~CSWGuiPazaakCard()
+#ifndef _XBOX
+CSWGuiPazaakCard::~CSWGuiPazaakCard()  // PC 0x0067DE80  Xbox 0x0009C590
 {
 #ifndef _XBOX
     if (g_pGuiMan->m_pDragControl == this)
@@ -917,8 +917,8 @@ CSWGuiPazaakCard::~CSWGuiPazaakCard()
     }
 #endif
 }
-// PC 0x0067DEF0  Xbox 0x0009C600
-CSWGuiTutorial::CSWGuiTutorial(CSWGuiManager* pManager)
+#endif
+CSWGuiTutorial::CSWGuiTutorial(CSWGuiManager* pManager)  // PC 0x0067DEF0  Xbox 0x0009C600
     : CSWGuiMessageBox(pManager), m_lHelp(0)
 {
     m_nHelpIndex = 0;
@@ -987,8 +987,8 @@ void CSWGuiTutorial::ShowMultipleHelp(const unsigned long* pStrRefs, int nCount)
 #endif
     }
 }
-// PC 0x0067E150
-void CSWGuiWagerPopup::HandleInputEvent(int nEvent, int nState)
+#ifndef _XBOX
+void CSWGuiWagerPopup::HandleInputEvent(int nEvent, int nState)  // PC 0x0067E150  Xbox 0x0009C7B0
 {
     if (nState != 0)
     {
@@ -1045,8 +1045,8 @@ void CSWGuiWagerPopup::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0067D3D0  Xbox 0x0009A7C0
-void CSWGuiPazaakStart::HandleQuitDialog(CSWGuiControl* pControl)
+#endif
+void CSWGuiPazaakStart::HandleQuitDialog(CSWGuiControl* pControl)  // PC 0x0067D3D0  Xbox 0x0009A7C0
 {
     if (g_pAppManager->m_pClientExoApp->GetInGameGui()
             ->m_pMessageBox->m_bAccepted)
@@ -1355,8 +1355,8 @@ void CSWGuiPazaakStart::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
-// PC 0x0067FB10  Xbox 0x0009BB10
-int CSWGuiPazaakStart::AddChosenCard(int nAvail, int nSlot)
+#ifndef _XBOX
+int CSWGuiPazaakStart::AddChosenCard(int nAvail, int nSlot)  // PC 0x0067FB10
 {
     if (m_anAvailCount[nAvail] < 1)
     {
@@ -1408,8 +1408,8 @@ int CSWGuiPazaakStart::AddChosenCard(int nAvail, int nSlot)
     ShowDisabledButtons();
     return 1;
 }
-// PC 0x0067FD10  Xbox 0x0009BCA0
-int CSWGuiPazaakStart::RemoveChosenCard(int nSlot)
+#endif
+int CSWGuiPazaakStart::RemoveChosenCard(int nSlot)  // PC 0x0067FD10  Xbox 0x0009BCA0
 {
     int nCard = m_aChosen[nSlot].m_nType;
     if (nCard < 0)
@@ -1453,7 +1453,7 @@ CSWGuiPazaakStart::~CSWGuiPazaakStart()
 }
 
 #ifdef _XBOX
-// PC 0x0067E400
+// PC 0x0067E400  Xbox 0x0009A6C0
 void CSWGuiPazaakStart::ShowDisabledButtons()
 {
     m_btnAtext.SetActivated(m_bSideDeckFull);
@@ -1487,7 +1487,7 @@ void CSWGuiPazaakStart::ShowDisabledButtons()
     }
 }
 #else
-void CSWGuiPazaakStart::ShowDisabledButtons()  // PC 0x0067E400
+void CSWGuiPazaakStart::ShowDisabledButtons()  // PC 0x0067E400  Xbox 0x0009A6C0
 {
     m_btnAtext.SetEnabled(m_bSideDeckFull);
     if (m_pActiveControl != NULL)
@@ -1798,14 +1798,14 @@ CSWGuiPazaakGame::CSWGuiPazaakGame(CSWGuiManager* pManager, CSWPazaak* pPazaak,
 }
 
 #ifdef _XBOX
-// PC 0x006816F0
+// PC 0x006816F0  Xbox 0x0009F020
 void CSWGuiPazaakStart::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
     {
         switch (nEvent)
         {
-        case 39:
+        case 39: case 45:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
             if (m_bSideDeckFull != 0)
             {
@@ -1855,7 +1855,7 @@ void CSWGuiPazaakStart::HandleInputEvent(int nEvent, int nState)
             {
                 if (&m_cAvail[nIndex] == m_pActiveControl)
                 {
-                    nChanged = AddChosenCard(nIndex, -1);
+                    nChanged = AddChosenCard(nIndex);
                 }
             }
             if (nChanged != 0)
@@ -1892,7 +1892,7 @@ void CSWGuiPazaakStart::HandleInputEvent(int nEvent, int nState)
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 #else
-void CSWGuiPazaakStart::HandleInputEvent(int nEvent, int nState)  // PC 0x006816F0
+void CSWGuiPazaakStart::HandleInputEvent(int nEvent, int nState)  // PC 0x006816F0  Xbox 0x0009F020
 {
     if (nState != 0)
     {
@@ -1981,7 +1981,7 @@ void CSWGuiPazaakStart::HandleStartDialog(CSWGuiControl* pControl)
         m_pManager->AddPanel(pGame, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x006819E0  Xbox 0x0009F020
+// PC 0x006819E0
 void CSWGuiPazaakStart::HandleAcceptButton(CSWGuiControl* pControl)
 {
     if (pControl != NULL && pControl->m_bSelected != 0)
@@ -2304,8 +2304,8 @@ void CSWGuiPazaakGame::HandleHandcardAction(CSWGuiControl* pControl)
     }
 }
 #endif
-// PC 0x006807E0
-void CSWGuiPazaakStart::HandleMoveCard(CSWGuiControl* pControl)
+#ifndef _XBOX
+void CSWGuiPazaakStart::HandleMoveCard(CSWGuiControl* pControl)  // PC 0x006807E0
 {
     if (pControl != NULL && pControl->m_bSelected != 0)
     {
@@ -2336,8 +2336,8 @@ void CSWGuiPazaakStart::HandleMoveCard(CSWGuiControl* pControl)
         ShowDisabledButtons();
     }
 }
-// PC 0x0067E540  Xbox 0x0009CAC0
-CSWGuiPazaakGame::~CSWGuiPazaakGame()
+#endif
+CSWGuiPazaakGame::~CSWGuiPazaakGame()  // PC 0x0067E540  Xbox 0x0009CAC0
 {
     if (m_pPazaak != NULL)
     {
@@ -2699,5 +2699,140 @@ void CSWGuiPazaakGame::HandleFlipButtons(CSWGuiControl* pControl)
 void CSWGuiPazaakGame::OnHandCardEntered(CSWGuiControl* pControl)  // Xbox 0x0009AEB0
 {
     RefreshDisplay();
+}
+// Xbox 0x0009BB10
+int CSWGuiPazaakStart::AddChosenCard(int nAvail)
+{
+    if (m_anAvailCount[nAvail] < 1)
+    {
+        return 0;
+    }
+    int nSlot;
+    for (nSlot = 0; nSlot < ChosenCardCount; nSlot++)
+    {
+        if (m_aChosen[nSlot].m_nType < 0)
+        {
+            break;
+        }
+    }
+    if (nSlot == ChosenCardCount)
+    {
+        return 0;
+    }
+    CPazaakCard cCard;
+    cCard.m_nType = nAvail;
+    m_aChosen[nSlot] = cCard;
+    m_anAvailCount[nAvail] = m_anAvailCount[nAvail] - 1;
+    {
+        CExoString sCount(m_anAvailCount[nAvail]);
+        m_lblAvailCount[nAvail].m_cText.m_cParams.SetText(sCount);
+    }
+    CResRef cImage = m_cAvail[nAvail].m_cBorder.m_cParams.m_cFillImage;
+    m_cChosen[nSlot].m_cBorder.m_cParams.SetFillImage(cImage, 0);
+    CExoString sText = m_cAvail[nAvail].m_lblCard.m_cText.m_cParams.m_sText;
+    m_cChosen[nSlot].m_lblCard.m_cText.m_cParams.SetText(sText);
+    m_bSideDeckFull = 1;
+    for (int i = 0; i < ChosenCardCount; i++)
+    {
+        int nType = m_aChosen[i].m_nType;
+        if (nType < 0)
+        {
+            m_bSideDeckFull = 0;
+            break;
+        }
+    }
+    ShowDisabledButtons();
+    return 1;
+}
+// PC 0x006C00B0  Xbox 0x0009A5F0
+void CSWGuiWagerPopup::Draw(float fElapsed)
+{
+    for (int i = m_lFlashLabels.num - 1; i >= 0; i--)
+    {
+        m_lFlashLabels.element[i].fTimer -= fElapsed;
+        if (m_lFlashLabels.element[i].fTimer <= 0.0f)
+        {
+            m_lFlashLabels.element[i].pLabel->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+            m_lFlashLabels.DelIndex(i);
+        }
+    }
+    CSWGuiPanel::Draw(fElapsed);
+}
+// Xbox 0x0009B700
+void CSWGuiWagerPopup::FlashLabel(CSWGuiLabel* pLabel)
+{
+    int nCount = m_lFlashLabels.num;
+    for (int i = 0; i < nCount; i++)
+    {
+        if (m_lFlashLabels.element[i].pLabel == pLabel)
+        {
+            m_lFlashLabels.element[i].fTimer = 0.25f;
+            return;
+        }
+    }
+    m_lFlashLabels.SetSize(nCount + 1);
+    m_lFlashLabels.element[nCount].pLabel = pLabel;
+    m_lFlashLabels.element[nCount].fTimer = 0.25f;
+    pLabel->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+}
+// PC 0x0067E150  Xbox 0x0009C7B0
+void CSWGuiWagerPopup::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case 39:
+        case 45:
+            m_pStart->HandleWagerExit(m_nWager);
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            m_pManager->PopModalPanel();
+            m_pManager->RemovePanel(this);
+            break;
+        case 40:
+        case 46:
+        {
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            CSWGuiMessageBox* pMessageBox =
+                g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+            pMessageBox->SetAllowCancel(1);
+            pMessageBox->SetCallback(
+                m_pStart, (CSWGuiHandler)&CSWGuiPazaakStart::HandleQuitDialog,
+                NULL);
+            pMessageBox->SetMessage(42424);
+            m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+            break;
+        }
+        case 47:
+        case 50:
+        case 58:
+        case 59:
+        case 62:
+        case 63:
+            if (m_nWager > 1)
+            {
+                m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
+                m_nWager = m_nWager - 1;
+                UpdateWagerText();
+                FlashLabel(&m_lblLess);
+            }
+            break;
+        case 48:
+        case 49:
+        case 57:
+        case 60:
+        case 61:
+        case 64:
+            if (m_nWager < m_nMaxWager)
+            {
+                m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
+                m_nWager = m_nWager + 1;
+                UpdateWagerText();
+                FlashLabel(&m_lblMore);
+            }
+            break;
+        }
+    }
+    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 #endif

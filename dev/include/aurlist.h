@@ -46,6 +46,9 @@ public:
     void Insert(T item, int nIndex);
     void DelIndex(int nIndex);
 
+#ifdef _XBOX
+    int IndexOf(T item);
+#else
     int IndexOf(T item)
     {
         for (int i = 0; i < m_nCount; i++)
@@ -58,6 +61,7 @@ public:
 
         return -1;
     }
+#endif
 
     T& operator[](int nIndex)
     {
@@ -109,6 +113,19 @@ template <class T> int List<T>::Contains(T item)
         }
     }
     return nFound;
+}
+
+template <class T> int List<T>::IndexOf(T item)
+{
+    for (int i = 0; i < m_nCount; i++)
+    {
+        if (m_pList[i] == item)
+        {
+            return i;
+        }
+    }
+
+    return -1;
 }
 #endif
 template <class T> List<T>::List(int nAllocated)
@@ -195,20 +212,28 @@ template <class T> void List<T>::AddUnique(T item)
 {
     if (!Contains(item))
     {
+#ifdef _XBOX
+        Add(item);
+#else
         if (m_nCount == m_nAllocated)
         {
             allocate(m_nAllocated ? m_nAllocated * 2 : INITIAL_ALLOCATION);
         }
         m_pList[m_nCount++] = item;
+#endif
     }
 }
 
 template <class T> void List<T>::Insert(T item, int nIndex)
 {
     int nLast = m_nCount;
+#ifdef _XBOX
+    Add(item);
+#else
     if (m_nCount == m_nAllocated)
         allocate(m_nAllocated ? m_nAllocated * 2 : INITIAL_ALLOCATION);
     m_pList[m_nCount++] = item;
+#endif
     for (; nLast > nIndex; nLast--)
         m_pList[nLast] = m_pList[nLast - 1];
     m_pList[nIndex] = item;

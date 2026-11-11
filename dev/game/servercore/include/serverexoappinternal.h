@@ -183,7 +183,11 @@ public:
     int ContinueMessageProcessing();
     void Shutdown(int bExit, int bSave);
     int UnloadModule();
+#ifdef _XBOX
+    int LoadModule(CExoString sModule, CSWSPlayer* pPlayer);
+#else
     int LoadModule(const CExoString& sModule, CSWSPlayer* pPlayer);
+#endif
     int RunModule();
 
 
@@ -240,11 +244,11 @@ public:
     int GetFirstPCObject();
     int GetNextPCObject();
     unsigned long ClientToServerObjectId(unsigned long oidClient);
-    int DebugValidatePath(unsigned long oidCreature, int bTempWayPoints);
-    int DebugValidatePath_Point(CSWSArea* pArea, const Vector& vPoint);
-    int DebugValidatePath_Segment(CSWSArea* pArea,
-                                  CPathfindInformation* pPathfind,
-                                  const Vector& vStart, const Vector& vEnd);
+#ifdef _XBOX
+    int DebugValidatePath(unsigned long oidCreature, int bTempWayPoints); int DebugValidatePath_Point(CSWSArea* pArea, Vector vPoint); int DebugValidatePath_Segment(CSWSArea* pArea, CPathfindInformation* pPathfind, Vector vStart, Vector vEnd);
+#else
+    int DebugValidatePath(unsigned long oidCreature, int bTempWayPoints); int DebugValidatePath_Point(CSWSArea* pArea, const Vector& vPoint); int DebugValidatePath_Segment(CSWSArea* pArea, CPathfindInformation* pPathfind, const Vector& vStart, const Vector& vEnd);
+#endif
     int GetPlayerCreatureId();
     void UpDatePlayerPosition(unsigned long oidObject, const Vector& vPosition,
                               const Vector& vOrientation);
@@ -252,11 +256,11 @@ public:
                                 const Vector& vTo);
     int IsActionsPending(unsigned long oidObject);
     int CreatureAcquireItem(unsigned long oidObject, const CResRef& cResRef);
-    int TestSafeLocation(unsigned long oidObject, const Vector& vPosition);
-    int ComputeSafeLocation(const Vector& vPosition, float fRadius,
-                            unsigned long oidObject, int nFlags,
-                            Vector* pvSafe);
-    Vector GetNormalOfPoint(const Vector& vPosition);
+#ifdef _XBOX
+    int TestSafeLocation(unsigned long oidObject, Vector vPosition); int ComputeSafeLocation(Vector vPosition, float fRadius, unsigned long oidObject, int nFlags, Vector* pvSafe); Vector GetNormalOfPoint(Vector vPosition);
+#else
+    int TestSafeLocation(unsigned long oidObject, const Vector& vPosition); int ComputeSafeLocation(const Vector& vPosition, float fRadius, unsigned long oidObject, int nFlags, Vector* pvSafe); Vector GetNormalOfPoint(const Vector& vPosition);
+#endif
     void ClearLastModuleFound();
     void ClearAreaCache();
     int ShrinkLineByCreatures(const Vector& vStart, const Vector& vEnd,
@@ -277,7 +281,7 @@ public:
     int StartNewModule(const CExoString& sModule);
 #ifdef _XBOX
     void DoPCAutosave(const CExoString& sModule, class KOTOR_LAUNCH_DATA& cLaunchData, C2DA* p2DA);
-    int IsMoveToModuleMinGlobalRim();
+    int IsMoveToModuleMinGlobalRim(); CExoString GetLastConversation();
 #else
     void DoPCAutosave(const CExoString& sModule, C2DA* p2DA);
 #endif

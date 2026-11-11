@@ -157,20 +157,20 @@ public:
     CResRef m_cResRef;
     Vector m_vPosition;
 };
-// PC 0x006707A0
+// PC 0x006707A0  Xbox 0x00093570
 inline CSWMGPhysicsState operator+(const CSWMGPhysicsState& stateA,
                                    const CSWMGPhysicsState& stateB)
 {
     return CSWMGPhysicsState(stateA.m_vValue + stateB.m_vValue,
                              stateA.m_vRate + stateB.m_vRate);
 }
-// PC 0x00670830
+// PC 0x00670830  Xbox 0x00093630
 inline CSWMGPhysicsState operator*(const CSWMGPhysicsState& state, float fScale)
 {
     return CSWMGPhysicsState(fScale * state.m_vValue,
                              fScale * state.m_vRate);
 }
-// PC 0x006708C0
+// PC 0x006708C0  Xbox 0x000936F0
 inline CSWMGPhysicsState operator/(const CSWMGPhysicsState& state, float fScale)
 {
     if (fScale != 0.0f)

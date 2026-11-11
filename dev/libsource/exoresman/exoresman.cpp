@@ -539,13 +539,13 @@ int CExoResMan::Release(CRes* pRes)
     if (nFlags & 0x100)
     {
         Dump(pRes, 0);
-
+#ifndef _XBOX
         if (pRes->m_pResource != NULL)
         {
             m_lstReleased.AddHead(pRes);
             Dump(pRes, 0);
         }
-
+#endif
         pRes->m_nFlags &= ~0x100;
 
         return 0;
@@ -754,8 +754,8 @@ int CExoResMan::NukeDirectory(const CExoString& sPath, int bDeleteFiles,
 {
     return WipeDirectory(sPath, bDeleteFiles, 1, 0, bRecurse);
 }
-// PC 0x004094A0  Xbox 0x00142430
-void CExoResMan::AsyncLoad()
+#ifndef _XBOX
+void CExoResMan::AsyncLoad()  // PC 0x004094A0  Xbox 0x00142430
 {
     CExoCriticalSection* pCriticalSection = &m_csAsync;
     pCriticalSection->EnterCriticalSection();
@@ -916,6 +916,7 @@ void CExoResMan::AsyncLoad()
     pCriticalSection->LeaveCriticalSection();
 
 }
+#endif
 
 int CExoResMan::GetNewResRef(const CResRef& cResRef, unsigned short nType,
                              CResRef& cNewResRef)
@@ -2510,20 +2511,20 @@ int CExoResMan::RemoveFile(const CExoString& sFileName, unsigned short nType)
     {
         return 0;
     }
-
+#ifdef _XBOX
+    return DeleteFile(sFullPath.CStr()) != 0;
+#else
     if (stat(sFullPath.CStr(), &stStatus) == -1)
     {
         return 0;
     }
-
     if (stStatus.st_mode & _S_IFDIR)
     {
         return 0;
     }
-
     chmod(sFullPath.CStr(), _S_IWRITE);
-
     return remove(sFullPath.CStr()) != -1;
+#endif
 }
 
 #ifdef _XBOX
@@ -2534,6 +2535,8 @@ int CExoResMan::RemoveFile(const CExoString& sFileName, unsigned short nType)
 #include "clientexoapp.h"
 #include "aurora.h"
 #include "aurgui.h"
+
+void AurFlushPostedStrings();
 // Xbox 0x0013EB30
 void CExoResMan::ReportMissingFile(const CExoString& sFileName,
                                    unsigned short nType, int bFatal)
@@ -2551,8 +2554,11 @@ void CExoResMan::ReportMissingFile(const CExoString& sFileName,
 
         if (!bOptional)
         {
-
-            if (g_pAuroraInterface != NULL)
+            if (g_pAuroraInterface == NULL)
+            {
+                g_pAppManager->m_pClientExoApp->SetMissingFilePending(1);
+            }
+            else
             {
                 g_pAppManager->m_pClientExoApp->ShutDownLegalScreen();
                 AurGUIStartLayer();
@@ -2565,8 +2571,8 @@ void CExoResMan::ReportMissingFile(const CExoString& sFileName,
                 AurGUICloseViewport();
                 AurGUIStopLayer();
 
-                AurRenderStrings();
-                messagepump();
+                AurFlushPostedStrings();
+
                 for (;;)
                 {
                 }
@@ -2675,6 +2681,96 @@ void CExoResMan::WriteSignatureFile(const CExoString& sFileName,
         pFile->Write(pSignature, SIGNATURE_SIZE, 1);
         delete pFile;
     }
+}
+// PC 0x00406C70  Xbox 0x0013F140
+CExoString CExoResMan::CacheResource(const CExoString& sFileName,
+                                     unsigned short nType, int& nResult)
+{
+    CExoString sResult(sFileName);
+    CExoString sCacheName("CACHE:");
+    CExoString sSource =
+        g_pExoBase->m_pExoAliasList->ResolveFileName(sFileName, nType);
+    CExoString sDest;
+    CExoString sDirectory;
+    int bCached = 0;
+
+    nResult = 0;
+
+    int nColon = sFileName.Find(":", 0);
+    if (nColon == -1)
+    {
+        sCacheName = sCacheName + sFileName;
+    }
+    else
+    {
+        sCacheName =
+            sCacheName + sFileName.Right(sFileName.GetLength() - nColon - 1);
+    }
+
+    CreateDirectory2("CACHE:");
+
+    int nSlash = sCacheName.Find("\\", 0);
+    if (nSlash != -1)
+    {
+        sDirectory = sCacheName.Left(nSlash);
+        CreateDirectory2(sDirectory);
+    }
+
+    sDest = g_pExoBase->m_pExoAliasList->ResolveFileName(sCacheName, nType);
+
+    if (!CopyFile(sSource.CStr(), sDest.CStr(), TRUE))
+    {
+        if (GetLastError() == ERROR_ALREADY_EXISTS)
+        {
+            HANDLE hSource = CreateFile(sSource.CStr(), GENERIC_READ,
+                                        FILE_SHARE_DELETE, NULL, OPEN_EXISTING,
+                                        FILE_ATTRIBUTE_NORMAL, NULL);
+            HANDLE hDest = CreateFile(sDest.CStr(), GENERIC_READ,
+                                      FILE_SHARE_DELETE, NULL, OPEN_EXISTING,
+                                      FILE_ATTRIBUTE_NORMAL, NULL);
+            unsigned long nSourceSize = GetFileSize(hSource, NULL);
+            unsigned long nDestSize = GetFileSize(hDest, NULL);
+            CloseHandle(hSource);
+            CloseHandle(hDest);
+
+            if (nSourceSize != nDestSize)
+            {
+                SetFileAttributes(sDest.CStr(), FILE_ATTRIBUTE_NORMAL);
+                if (!CopyFile(sSource.CStr(), sDest.CStr(), FALSE))
+                {
+                    return sResult;
+                }
+                nResult = 1;
+            }
+
+            sResult = sCacheName;
+            bCached = 1;
+        }
+    }
+    else
+    {
+        sResult = sCacheName;
+        nResult = 1;
+        bCached = 1;
+    }
+
+    if (nResult)
+    {
+        SetFileAttributes(sDest.CStr(), FILE_ATTRIBUTE_NORMAL);
+    }
+
+    if (!bCached)
+    {
+        AurPostString("!!!WARNING!!! ATTEMPT TO CACHE FILE FAILED!!!", 5, 5,
+                      60.0f);
+        AurPostString(sDest.CStr(), 5, 7, 60.0f);
+        AurPostString("!!!WARNING!!! CACHE MAY CONTAIN INVALID FILES!!!", 5, 10,
+                      60.0f);
+        AurPostString("!!!WARNING!!! PROGRAM MAY NOT BEHAVE AS EXPECTED!!!", 5,
+                      15, 60.0f);
+    }
+
+    return sResult;
 }
 #endif
 
@@ -3148,7 +3244,7 @@ int CExoResMan::ServiceCurrentAsyncRes()
 CExoString CExoResMan::CacheResource(const CExoString& sFileName,
                                      unsigned short nType)
 {
-    int nResult = 0;
+    int nResult;
 
     return CacheResource(sFileName, nType, nResult);
 }
@@ -3174,96 +3270,6 @@ static inline void ExoresmanTrace1()
 
 #ifdef _XBOX
 #include "exotlktable.h"
-// PC 0x00406C70  Xbox 0x0013F140
-CExoString CExoResMan::CacheResource(const CExoString& sFileName,
-                                     unsigned short nType, int& nResult)
-{
-    CExoString sResult(sFileName);
-    CExoString sCacheName("CACHE:");
-    CExoString sSource =
-        g_pExoBase->m_pExoAliasList->ResolveFileName(sFileName, nType);
-    CExoString sDest;
-    CExoString sDirectory;
-    int bCached = 0;
-
-    nResult = 0;
-
-    int nColon = sFileName.Find(":", 0);
-    if (nColon == -1)
-    {
-        sCacheName = sCacheName + sFileName;
-    }
-    else
-    {
-        sCacheName =
-            sCacheName + sFileName.Right(sFileName.GetLength() - nColon - 1);
-    }
-
-    CreateDirectory2("CACHE:");
-
-    int nSlash = sCacheName.Find("\\", 0);
-    if (nSlash != -1)
-    {
-        sDirectory = sCacheName.Left(nSlash);
-        CreateDirectory2(sDirectory);
-    }
-
-    sDest = g_pExoBase->m_pExoAliasList->ResolveFileName(sCacheName, nType);
-
-    if (!CopyFile(sSource.CStr(), sDest.CStr(), TRUE))
-    {
-        if (GetLastError() == ERROR_ALREADY_EXISTS)
-        {
-            HANDLE hSource = CreateFile(sSource.CStr(), GENERIC_READ,
-                                        FILE_SHARE_DELETE, NULL, OPEN_EXISTING,
-                                        FILE_ATTRIBUTE_NORMAL, NULL);
-            HANDLE hDest = CreateFile(sDest.CStr(), GENERIC_READ,
-                                      FILE_SHARE_DELETE, NULL, OPEN_EXISTING,
-                                      FILE_ATTRIBUTE_NORMAL, NULL);
-            unsigned long nSourceSize = GetFileSize(hSource, NULL);
-            unsigned long nDestSize = GetFileSize(hDest, NULL);
-            CloseHandle(hSource);
-            CloseHandle(hDest);
-
-            if (nSourceSize != nDestSize)
-            {
-                SetFileAttributes(sDest.CStr(), FILE_ATTRIBUTE_NORMAL);
-                if (!CopyFile(sSource.CStr(), sDest.CStr(), FALSE))
-                {
-                    return sResult;
-                }
-                nResult = 1;
-            }
-
-            sResult = sCacheName;
-            bCached = 1;
-        }
-    }
-    else
-    {
-        sResult = sCacheName;
-        nResult = 1;
-        bCached = 1;
-    }
-
-    if (nResult)
-    {
-        SetFileAttributes(sDest.CStr(), FILE_ATTRIBUTE_NORMAL);
-    }
-
-    if (!bCached)
-    {
-        AurPostString("!!!WARNING!!! ATTEMPT TO CACHE FILE FAILED!!!", 5, 5,
-                      60.0f);
-        AurPostString(sDest.CStr(), 5, 7, 60.0f);
-        AurPostString("!!!WARNING!!! CACHE MAY CONTAIN INVALID FILES!!!", 5, 10,
-                      60.0f);
-        AurPostString("!!!WARNING!!! PROGRAM MAY NOT BEHAVE AS EXPECTED!!!", 5,
-                      15, 60.0f);
-    }
-
-    return sResult;
-}
 // Xbox 0x00141100
 int CExoResMan::VerifySignatureFile(const CExoString& sFileName,
                                     unsigned short nType, unsigned long nSize,
@@ -3338,3 +3344,172 @@ int CExoResMan::FindModuleDownloadedPkg(const CExoString& sModuleName)
     return nPackage < CTlkTable::NUM_CONTENT_PKGS ? nPackage : 0;
 }
 #endif
+
+#ifdef _XBOX
+// PC 0x004094A0  Xbox 0x00142430
+void CExoResMan::AsyncLoad()
+{
+    CExoCriticalSection* pCriticalSection = &m_csAsync;
+    pCriticalSection->EnterCriticalSection();
+
+    int bResult = 1;
+    int bSaveGame = 0;
+    CExoString sPath;
+    CExoString sDirectory;
+
+    if (m_bAsyncIsModule == 0)
+    {
+        sPath = CExoString("RIMS:") + m_sAsyncModuleName;
+        bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
+    }
+    else
+    {
+        int nDownloadedPackage = FindModuleDownloadedPkg(m_sAsyncModuleName);
+
+        sPath = m_sAsyncModuleName + CExoString("_a");
+        if (Exists(sPath, RESTYPE_RIM, (unsigned long*)NULL))
+        {
+            if (nDownloadedPackage == 0)
+            {
+                sPath = CExoString("RIMSXBOX:") + sPath;
+                bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
+            }
+            else
+            {
+                sDirectory.Format("LIVE%d:RIMSXBOX\\", nDownloadedPackage);
+                sPath = sDirectory + sPath;
+                bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
+            }
+
+            if (bResult)
+            {
+                m_nAsyncLoadedFlags |= LOADED_MODULE_AREA_RIM;
+            }
+        }
+
+        if (bResult)
+        {
+            sPath = m_sAsyncModuleName + CExoString("_adx");
+            if (Exists(sPath, RESTYPE_RIM, (unsigned long*)NULL))
+            {
+                if (nDownloadedPackage == 0)
+                {
+                    sPath = CExoString("RIMSXBOX:") + sPath;
+                    bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
+                }
+                else
+                {
+                    sDirectory.Format("LIVE%d:RIMSXBOX\\", nDownloadedPackage);
+                    sPath = sDirectory + sPath;
+                    bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
+                }
+
+                if (bResult)
+                {
+                    m_nAsyncLoadedFlags |= LOADED_MODULE_ADX_RIM;
+                }
+            }
+
+            if (bResult)
+            {
+                AddKeyTable("MODULES:", TABLE_DIRECTORY, 0);
+                if (nDownloadedPackage != 0)
+                {
+                    sDirectory.Format("LIVE%d:MODULES", nDownloadedPackage);
+                    AddKeyTable(sDirectory, TABLE_DIRECTORY, 0);
+                }
+                if (!Exists(m_sAsyncModuleName, RESTYPE_MOD, (unsigned long*)NULL))
+                {
+                    sPath = m_sAsyncModuleName + CExoString("_s");
+                    if (Exists(sPath, RESTYPE_RIM, (unsigned long*)NULL))
+                    {
+                        if (nDownloadedPackage == 0)
+                        {
+                            sPath = CExoString("MODULES:") + sPath;
+                            bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
+                        }
+                        else
+                        {
+                            sDirectory = sDirectory + "\\";
+                            sPath = sDirectory + sPath;
+                            bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
+                        }
+
+                        if (bResult)
+                        {
+                            bSaveGame = 1;
+                            m_nAsyncLoadedFlags |= LOADED_SAVE_GAME_RIM;
+                        }
+                    }
+                }
+                else
+                {
+                    if (nDownloadedPackage == 0)
+                    {
+                        sPath = CExoString("MODULES:") + m_sAsyncModuleName;
+                    }
+                    else
+                    {
+                        sDirectory = sDirectory + "\\";
+                        sPath = sDirectory + m_sAsyncModuleName;
+                    }
+                    bResult = AddKeyTable(sPath, TABLE_ENCAPSULATED, PRIORITY_MODULE);
+
+                    if (bResult)
+                    {
+                        m_nAsyncLoadedFlags |= LOADED_MODULE_RIM;
+                    }
+                }
+
+                RemoveKeyTable("MODULES:", TABLE_DIRECTORY);
+                if (nDownloadedPackage != 0)
+                {
+                    sDirectory.Format("LIVE%d:MODULES", nDownloadedPackage);
+                    RemoveKeyTable(sDirectory, TABLE_DIRECTORY);
+                }
+            }
+        }
+
+        if (!m_bAsyncFromCurrentGame && bResult)
+        {
+            sPath = CExoString("CURRENTGAME:") + m_sAsyncModuleName;
+
+            AddKeyTable("CURRENTGAME:", TABLE_DIRECTORY, 0);
+            if (Exists(m_sAsyncModuleName, RESTYPE_RSV, (unsigned long*)NULL) ||
+                Exists(m_sAsyncModuleName, RESTYPE_RIM, (unsigned long*)NULL))
+            {
+                bResult = AddKeyTable(sPath, TABLE_RESOURCE_IMAGE, 0);
+
+                if (bResult)
+                {
+                    m_nAsyncLoadedFlags |= LOADED_CURRENT_GAME_RIM;
+                }
+            }
+
+            RemoveKeyTable("CURRENTGAME:", TABLE_DIRECTORY);
+        }
+        else
+        {
+            sPath = CExoString("CURRENTGAME:") + m_sAsyncModuleName;
+            bResult = AddKeyTable(sPath, TABLE_ENCAPSULATED, PRIORITY_MODULE);
+
+            if (bResult)
+            {
+                m_nAsyncLoadedFlags |= LOADED_CURRENT_GAME_KEY;
+            }
+        }
+    }
+
+    if (bResult)
+    {
+        m_nAsyncState = (bSaveGame == 0) + ASYNC_MODULE_LOADED;
+    }
+    else
+    {
+        m_nAsyncState = ASYNC_LOAD_FAILED;
+    }
+
+    pCriticalSection->LeaveCriticalSection();
+}
+#endif
+

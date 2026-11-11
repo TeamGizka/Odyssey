@@ -82,6 +82,11 @@ public:
     int m_nUnknown140;
     CExoString m_sModel;
     Gob* m_pLight;
+#ifdef _XBOX
+
+    void MenuActionUseItem(unsigned long oidItem, CSWCCreature* pCreature);
+    void GetUseItems(CSWCCreature* pCreature, CExoArrayList<CSWGuiInterfaceAction>& lstActions);
+#endif
 };
 
 #endif

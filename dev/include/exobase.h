@@ -209,7 +209,7 @@ template <class T> inline CExoLinkedList<T>::CExoLinkedList()
 {
     m_pInternal = new CExoLinkedListInternal;
 }
-// PC 0x005D86C0
+// PC 0x005D86C0  Xbox 0x00139530
 template <class T> inline CExoLinkedList<T>::~CExoLinkedList()
 {
     delete m_pInternal;
@@ -799,9 +799,15 @@ class CExoBase
 public:
     CExoBase();
     ~CExoBase();
+#ifdef _XBOX
+    int GetDirectoryList(CExoArrayList<CExoString>* pList,
+                         const CExoString& sPath, unsigned short nResType,
+                         int nArg4, int nArg5);
+#else
     void GetDirectoryList(CExoArrayList<CExoString>* pList,
                           const CExoString& sPath, unsigned short nResType,
                           int nArg4, int nArg5);
+#endif
     int GetDirectorySize(const CExoString& sPath);
     const CExoString& GetResourceExtension(unsigned short resourceType);
     unsigned short GetResTypeFromExtension(const CExoString& extension);

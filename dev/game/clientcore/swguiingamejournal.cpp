@@ -198,7 +198,7 @@ CSWJournalEntry* CSWGuiInGameJournal::GetQuestEntryAt(int nIndex)
 }
 
 #ifdef _XBOX
-// PC 0x0041A290
+// PC 0x0041A290  Xbox 0x0004CEC0
 inline int CSWGuiListBox::IsOversized()
 {
     return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&

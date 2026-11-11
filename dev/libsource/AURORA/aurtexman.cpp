@@ -1753,8 +1753,11 @@ inline void GetViewport(GLint* pViewport)
     glGetIntegerv(GL_VIEWPORT, pViewport);
 }
 #endif
-
+#ifdef _XBOX
+void AurSnapshot(char* sFileName)
+#else
 void AurSnapshot(char* sFileName, bool bScreenSize)
+#endif
 {
     static int k;
     char sBuffer[64];
@@ -1800,23 +1803,21 @@ void AurSnapshot(char* sFileName, bool bScreenSize)
 #ifdef _XBOX
         GLRender::ReadPixelsFromBuffer(0, 0, nWidth, nHeight, Aurora::TEXTURE_FORMAT_RGB, pPixels);
 #else
-        glReadPixels(0, 0, nWidth, nHeight,
-                     textureFormatTranslationTable[Aurora::TEXTURE_FORMAT_RGB],
-                     0x1401, pPixels);
+        glReadPixels(0, 0, nWidth, nHeight, textureFormatTranslationTable[Aurora::TEXTURE_FORMAT_RGB], 0x1401, pPixels);
 #endif
         ImageFlipY(pPixels, nWidth, nHeight, 3);
         ImageWriteTGA(sBuffer, nWidth, nHeight, 3, pPixels);
         delete[] pPixels;
     }
 #ifndef _XBOX
-    else
-    {
+    else {
         AurSaveGameSnapshot(sFileName, nWidth, false, false);
     }
 #endif
 }
-// PC 0x00421310  Xbox 0x00035A30
-template <> inline void List<Vector>::allocate(int nAllocated)
+
+#ifndef _XBOX
+template <> inline void List<Vector>::allocate(int nAllocated)  // PC 0x00421310  Xbox 0x00035A30
 {
     Vector* pOldList = m_pList;
     m_nAllocated = nAllocated;
@@ -1853,6 +1854,7 @@ template <> inline void List<Vector>::Add(Vector item)
     }
     m_pList[m_nCount++] = item;
 }
+#endif
 
 #include "aurcamera.h"
 // PC 0x004204F0  Xbox 0x00280CF0
@@ -1923,12 +1925,12 @@ const char* savegamesnapshot(char* sCommand)
 #else
     int nSize;
 #endif
-
-    if (sscanf(sCommand, "%s %d", sName, &nSize) != 2)
-    {
-        return "Usage: savegamesnapshot imagename dimension";
-    }
+    if (sscanf(sCommand, "%s %d", sName, &nSize) != 2) { return "Usage: savegamesnapshot imagename dimension"; }
+#ifdef _XBOX
+    AurSaveGameSnapshot(sName, nSize, true);
+#else
     AurSaveGameSnapshot(sName, nSize, false, true);
+#endif
     return "Attempted to save save game file";
 }
 
@@ -2350,6 +2352,18 @@ void CAurTexture::Bind()
 void CAurTextureBasic::AddToOrderedLists()
 {
     int i = 0;
+#ifdef _XBOX
+    int nCount = m_OrderedTextureList.m_nCount;
+    CAurTextureBasic** ppList = m_OrderedTextureList.m_pList;
+    while (i < nCount && m_nOrder > ppList[i]->m_nOrder)
+    {
+        i++;
+    }
+    while (i < nCount && ppList[i]->m_nOrder == m_nOrder)
+    {
+        i++;
+    }
+#else
     if (m_OrderedTextureList.m_nCount > 0)
     {
         while (i < m_OrderedTextureList.m_nCount &&
@@ -2363,6 +2377,7 @@ void CAurTextureBasic::AddToOrderedLists()
             i++;
         }
     }
+#endif
     m_OrderedTextureList.Insert(this, i);
 #ifdef _XBOX
 
@@ -2909,8 +2924,11 @@ int AurTextureResetAll()
     }
     return RefreshTextures.m_nCount;
 }
-// PC 0x00421D90  Xbox 0x00281B90
+#ifdef _XBOX  // PC 0x00421D90  Xbox 0x00281B90
+int AurTextureSetMem(int nMem)
+#else
 bool AurTextureSetMem(int nMem)
+#endif
 {
     maxtexmem = nMem;
     roundToInt(nMem, nMem * g_fDynamicMemoryRatio);
@@ -2919,14 +2937,11 @@ bool AurTextureSetMem(int nMem)
     {
         RefreshTextures[i]->Reset();
     }
-    AurTextureMemCheck(CAurTextureBasic::m_DynamicTextureList, nMem,
-                       &g_dynamicTMS, memcheckratio);
+    AurTextureMemCheck(CAurTextureBasic::m_DynamicTextureList, nMem, &g_dynamicTMS, memcheckratio);
     useddynamictexturememory = g_dynamicTMS.m_nTotal;
-    AurTextureMemCheck(CAurTextureBasic::m_StaticTextureList,
-                       maxtexmem - nMem, &g_staticTMS, 1.0f);
+    AurTextureMemCheck(CAurTextureBasic::m_StaticTextureList, maxtexmem - nMem, &g_staticTMS, 1.0f);
     usedstatictexturememory = g_staticTMS.m_nTotal;
-    usedbumpmapmemory =
-        g_dynamicTMS.m_nBumpMap + g_staticTMS.m_nBumpMap;
+    usedbumpmapmemory = g_dynamicTMS.m_nBumpMap + g_staticTMS.m_nBumpMap;
     usedcomptexmemory =
         g_dynamicTMS.m_nStatic + g_staticTMS.m_nStatic;
     usedcubemapmemory =
@@ -3467,8 +3482,8 @@ int BuildTextureNormalMap(unsigned char* pHeightField, float fScale,
 
 #ifdef _XBOX
 Scene* FindScene(char* sName);
-// PC 0x00420F20  Xbox 0x002803E0
-void AurSaveGameSnapshot(char* sFileName, int nSize, bool bSquare, bool bCrop)
+// Xbox 0x002803E0
+void AurSaveGameSnapshot(char* sFileName, int nSize, bool bSquare)
 {
     static int k;
     char sBuffer[64];
@@ -3542,7 +3557,7 @@ void AurSaveGameSnapshot(char* sFileName, int nSize, bool bSquare, bool bCrop)
     pTexture->Release();
 }
 #else
-void AurSaveGameSnapshot(char* sFileName, int nSize, bool bSquare, bool bCrop)  // PC 0x00420F20  Xbox 0x002803E0
+void AurSaveGameSnapshot(char* sFileName, int nSize, bool bSquare, bool bCrop)  // PC 0x00420F20
 {
     static int k;
     char sBuffer[64];
@@ -4106,10 +4121,10 @@ const char* snapshot(char* sCommand)
 
     if (sscanf(sCommand, "%s", sName) != 1)
     {
-        AurSnapshot(NULL, false);
+        AurSnapshot(NULL);
         return "Attempted to save file";
     }
-    AurSnapshot(sName, false);
+    AurSnapshot(sName);
     return "Attempted to save file";
 }
 // Xbox 0x00281EE0

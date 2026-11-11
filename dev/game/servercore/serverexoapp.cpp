@@ -394,13 +394,13 @@ int CServerExoApp::CreatureAcquireItem(unsigned long oidObject,
 {
     return m_pcExoAppInternal->CreatureAcquireItem(oidObject, cResRef);
 }
-// PC 0x004AEB50  Xbox 0x0015E9C0
-int CServerExoApp::TestSafeLocation(unsigned long oidObject,
+#ifndef _XBOX
+int CServerExoApp::TestSafeLocation(unsigned long oidObject,  // PC 0x004AEB50
                                     const Vector& vPosition)
 {
     return m_pcExoAppInternal->TestSafeLocation(oidObject, vPosition);
 }
-// PC 0x004AEB60  Xbox 0x0015E9F0
+// PC 0x004AEB60
 int CServerExoApp::ComputeSafeLocation(const Vector& vPosition, float fRadius,
                                        unsigned long oidObject, int nFlags,
                                        Vector* pvSafe)
@@ -408,13 +408,13 @@ int CServerExoApp::ComputeSafeLocation(const Vector& vPosition, float fRadius,
     return m_pcExoAppInternal->ComputeSafeLocation(vPosition, fRadius,
                                                    oidObject, nFlags, pvSafe);
 }
-// PC 0x004AEB70  Xbox 0x0015EA30
+// PC 0x004AEB70
 Vector CServerExoApp::GetNormalOfPoint(const Vector& vPosition)
 {
     return m_pcExoAppInternal->GetNormalOfPoint(vPosition);
 }
-// PC 0x004AEB90  Xbox 0x0015EA60
-void CServerExoApp::ClearLastModuleFound()
+#endif
+void CServerExoApp::ClearLastModuleFound()  // PC 0x004AEB90  Xbox 0x0015EA60
 {
     m_pcExoAppInternal->ClearLastModuleFound();
 }
@@ -452,7 +452,7 @@ int CServerExoApp::GetModulePreviouslyVisited(const CExoString& sModule)
 {
     return m_pcExoAppInternal->GetModulePreviouslyVisited(sModule);
 }
-// PC 0x004AEBF0  Xbox 0x0015EAC0
+// PC 0x004AEBF0
 int CServerExoApp::ExecuteLoadModule(const CExoString& sModule)
 {
     return m_pcExoAppInternal->ExecuteLoadModule(sModule);
@@ -744,13 +744,13 @@ void CServerExoApp::SetLastConversation(const CExoString& sConversation)
 {
     m_pcExoAppInternal->m_sLastConversation = sConversation;
 }
-// PC 0x004AEFE0  Xbox 0x0015EEB0
-CExoString CServerExoApp::GetLastConversation()
+#ifndef _XBOX
+CExoString CServerExoApp::GetLastConversation()  // PC 0x004AEFE0  Xbox 0x0015EEB0
 {
     return m_pcExoAppInternal->m_sLastConversation;
 }
-// PC 0x004AF010  Xbox 0x0015EED0
-void CServerExoApp::SetActionConversation(int bActionConversation)
+#endif
+void CServerExoApp::SetActionConversation(int bActionConversation)  // PC 0x004AF010  Xbox 0x0015EED0
 {
     m_pcExoAppInternal->m_nActionConversation = bActionConversation;
 }
@@ -831,3 +831,46 @@ int CServerExoApp::GetApplicationId()
 {
     return g_pAppManager->m_nAppId;
 }
+
+#ifdef _XBOX
+// Xbox 0x0015EAC0
+CExoString CServerExoAppInternal::GetLastConversation()
+{
+    return m_sLastConversation;
+}
+// PC 0x004AEFE0  Xbox 0x0015EEB0
+CExoString CServerExoApp::GetLastConversation()
+{
+    return m_pcExoAppInternal->GetLastConversation();
+}
+// Xbox 0x0015E9C0
+int CServerExoApp::TestSafeLocation(unsigned long oidObject, Vector vPosition)
+{
+    return m_pcExoAppInternal->TestSafeLocation(oidObject, vPosition);
+}
+// Xbox 0x0015E9F0
+int CServerExoApp::ComputeSafeLocation(Vector vPosition, float fRadius,
+                                       unsigned long oidObject, int nFlags,
+                                       Vector* pvSafe)
+{
+    return m_pcExoAppInternal->ComputeSafeLocation(vPosition, fRadius,
+                                                   oidObject, nFlags, pvSafe);
+}
+// Xbox 0x0015EA30
+Vector CServerExoApp::GetNormalOfPoint(Vector vPosition)
+{
+    return m_pcExoAppInternal->GetNormalOfPoint(vPosition);
+}
+// Xbox 0x0015E8A0
+int CServerExoApp::DebugValidatePath(unsigned long oidCreature, int bTempWayPoints)
+{
+    return m_pcExoAppInternal->DebugValidatePath(oidCreature, bTempWayPoints);
+}
+// Xbox 0x0015EFA0
+void CServerExoApp::SetHintTimers(unsigned long nHintTimer1, unsigned long nHintTimer2)
+{
+    CServerExoAppInternal* pInternal = m_pcExoAppInternal;
+    pInternal->m_nAutoSaveElapsedTime = nHintTimer1;
+    pInternal->m_bAutoSaveTimerExpired = nHintTimer2;
+}
+#endif

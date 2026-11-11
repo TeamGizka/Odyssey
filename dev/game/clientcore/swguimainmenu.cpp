@@ -87,7 +87,7 @@ void CSWGuiMainMenu::OnNewGamePicked(CSWGuiControl* pControl)
 #ifdef _XBOX
                 CExoString sStartModule;
                 CExoString sModule;
-                if (cIni.ReadIniEntry(sStartModule, "d:\swplayer.ini", "Game Options",
+                if (cIni.ReadIniEntry(sStartModule, "d:\\swplayer.ini", "Game Options",
                                       "NewCharStartLevel"))
                 {
                     sModule = sStartModule;

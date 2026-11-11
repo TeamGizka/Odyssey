@@ -343,8 +343,8 @@ int CSWCDoor::LoadModel(const CResRef& cModel, unsigned char nModel,
     cModel.CopyToString(m_sModel);
     return 1;
 }
-// PC 0x00684410  Xbox 0x000C05C0
-void CSWCDoor::GetTargetActions(CSWCCreature* pCreature, int nMenu,
+#ifndef _XBOX
+void CSWCDoor::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 0x00684410  Xbox 0x000C05C0
                               CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
     CSWSDoor* pServerDoor = GetServerDoor();
@@ -395,8 +395,8 @@ void CSWCDoor::GetTargetActions(CSWCCreature* pCreature, int nMenu,
         break;
     }
 }
-// PC 0x00684660  Xbox 0x000C0890
-void CSWCDoor::UpdateAreaTransitionDisplay()
+#endif
+void CSWCDoor::UpdateAreaTransitionDisplay()  // PC 0x00684660  Xbox 0x000C0890
 {
     CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
     CSWCCreature* pPlayer =
@@ -416,6 +416,9 @@ void CSWCDoor::UpdateAreaTransitionDisplay()
     }
 
     Vector vDirection;
+#ifdef _XBOX
+    vDirection = pPlayer->m_vOrientation;
+#else
     if (pGui->m_bCameraRelativeAreaTransition)
     {
         vDirection = g_pAppManager->m_pClientExoApp->GetModuleCamera()
@@ -427,6 +430,7 @@ void CSWCDoor::UpdateAreaTransitionDisplay()
     {
         vDirection = pPlayer->m_vOrientation;
     }
+#endif
 
     float fFacing = (m_vPosition - pPlayer->m_vPosition) * vDirection;
     if (fFacing <= 0.0f)
@@ -499,11 +503,19 @@ void CSWCDoor::UpdateAreaTransitionDisplay()
         Vector vPrevious =
             pGui->GetAreaTranstionPosition() - pPlayer->m_vPosition;
         Vector vDelta = vStart - vIntersection;
+#ifdef _XBOX
+        if (pGui->GetAreaTransitionObject() == OBJECT_INVALID ||
+            vPrevious * vPrevious < vDelta * vDelta)
+        {
+            pGui->UpdateAreaTransitionGUI(m_nId, m_vPosition);
+        }
+#else
         if (pGui->m_oidAreaTransition == OBJECT_INVALID ||
             vPrevious * vPrevious < vDelta * vDelta)
         {
             pGui->SetAreaTransition(m_nId, m_vPosition);
         }
+#endif
     }
     else
     {
@@ -513,11 +525,19 @@ void CSWCDoor::UpdateAreaTransitionDisplay()
         {
             Vector vPrevious =
                 pGui->GetAreaTranstionPosition() - pPlayer->m_vPosition;
+#ifdef _XBOX
+            if (pGui->GetAreaTransitionObject() == OBJECT_INVALID ||
+                vPrevious * vPrevious > fDistanceSquared)
+            {
+                pGui->UpdateAreaTransitionGUI(m_nId, m_vPosition);
+            }
+#else
             if (pGui->m_oidAreaTransition == OBJECT_INVALID ||
                 vPrevious * vPrevious > fDistanceSquared)
             {
                 pGui->SetAreaTransition(m_nId, m_vPosition);
             }
+#endif
         }
     }
 }
@@ -575,3 +595,84 @@ void CSWCDoor::AIUpdate()
     m_nLastUpdateDay = nDay;
     m_nLastUpdateTime = nTime;
 }
+
+#ifdef _XBOX
+
+enum { XBOX_TARGET_ACTION_MENU_USE_ITEMS = 5 };
+// Xbox 0x000C0500
+void CSWCDoor::GetUseItems(CSWCCreature* pCreature,
+                           CExoArrayList<CSWGuiInterfaceAction>& lstActions)
+{
+    CSWSCreature* pServerCreature = pCreature->GetServerCreature();
+    int nFirstAction = lstActions.num;
+    if (m_bLockable && pCreature->m_pStats->GetCanUseSkill(CSWRules::SKILL_SECURITY))
+    {
+        if (pServerCreature != NULL)
+            pServerCreature->GetSpikeDetails(lstActions, 1);
+        for (int i = nFirstAction; i < lstActions.num; ++i)
+        {
+            lstActions[i].m_pfnAction =
+                (PFNMENUACTION)&CSWCObject::MenuActionUseSecuritySpike;
+            lstActions[i].m_oidTarget = (unsigned long)this;
+        }
+    }
+}
+// PC 0x00684410  Xbox 0x000C05C0
+void CSWCDoor::GetTargetActions(CSWCCreature* pCreature, int nMenu,
+                              CExoArrayList<CSWGuiInterfaceAction>& lstActions)
+{
+    CSWSDoor* pServerDoor = GetServerDoor();
+    int nRestrictMode = m_pArea->GetServerArea()->m_nPlayerRestrictMode;
+    int nAction = lstActions.num;
+    CExoString sAction;
+
+    switch (nMenu)
+    {
+    case TARGET_ACTION_MENU_PRIMARY:
+        if (GetCurrentAnimation() != DOOR_ANIMATION_OPEN1 &&
+            GetCurrentAnimation() != DOOR_ANIMATION_OPEN2 &&
+            !m_bStatic)
+        {
+            lstActions.SetSize(nAction + 1);
+            lstActions[nAction].m_sName =
+                g_pAppManager->GetClientExoApp()->GetGUIString(
+                    CClientExoApp::GUI_STRING_OPEN);
+            lstActions[nAction].m_nAction = CSWGuiInterfaceAction::ACTION_OPEN_DOOR;
+            lstActions[nAction].m_pfnAction = (PFNMENUACTION)&CSWCDoor::ToggleDoorState;
+            lstActions[nAction].m_oidTarget = (unsigned long)this;
+            lstActions[nAction].m_resIcon = "i_opendoor";
+            nAction++;
+            if (!m_bLocked && !nRestrictMode && m_bLockable)
+            {
+                lstActions.SetSize(nAction + 1);
+                lstActions[nAction].m_sName =
+                    g_pAppManager->GetClientExoApp()->GetGUIString(
+                        CClientExoApp::GUI_STRING_BASH);
+                lstActions[nAction].m_nAction = CSWGuiInterfaceAction::ACTION_BASH;
+                lstActions[nAction].m_pfnAction = (PFNMENUACTION)&CSWCDoor::MenuActionBash;
+                lstActions[nAction].m_oidTarget = (unsigned long)this;
+                lstActions[nAction].m_resIcon = "i_attack";
+            }
+        }
+        break;
+    case TARGET_ACTION_MENU_SKILLS:
+        if (m_bLockable &&
+            pCreature->m_pStats->GetCanUseSkill(CSWRules::SKILL_SECURITY))
+        {
+            lstActions.SetSize(nAction + 1);
+            lstActions[nAction].m_sName =
+                g_pAppManager->GetClientExoApp()->GetGUIString(
+                    CClientExoApp::GUI_STRING_SECURITY);
+            lstActions[nAction].m_pfnAction = (PFNMENUACTION)&CSWCDoor::MenuActionSecurity;
+            lstActions[nAction].m_oidTarget = (unsigned long)this;
+            lstActions[nAction].m_nAction = CSWGuiInterfaceAction::ACTION_SECURITY;
+            lstActions[nAction].m_resIcon =
+                g_pRules->m_pSkills[CSWRules::SKILL_SECURITY].m_sIcon;
+        }
+        break;
+    case XBOX_TARGET_ACTION_MENU_USE_ITEMS:
+        GetUseItems(pCreature, lstActions);
+        break;
+    }
+}
+#endif

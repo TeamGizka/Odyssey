@@ -258,18 +258,25 @@ public:
     MdlNodeTriMesh* AsMdlNodeTriMesh();
     MdlNodeAABB* AsMdlNodeAABB();
     MdlNodeLightsaber* AsMdlNodeLightsaber();
-    MdlNodeTrigger* AsMdlNodeTrigger()
+#ifdef _XBOX
+    MdlNodeTrigger* AsMdlNodeTrigger();
+#else
+    MdlNodeTrigger* AsMdlNodeTrigger()  // Xbox 0x00294AD0
     {
         if ((m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_TRIGGER)) ==
             (MDL_NODE_HEADER | MDL_NODE_TRIGGER))
             return (MdlNodeTrigger*)this;
         return 0;
     }
+#endif
     Part* InternalCreateInstance(Gob* pGob);
     Part* CreateInstanceDispatch(Gob* pGob);
 
     char* TranslateNodeName();
     void PostProcessDispatch();
+#ifdef _XBOX
+    void SortChildrenByTransparency();
+#endif
     void ProcessSkinSeams();
     int CreateSkinNodeList(List<MdlNodeTriMesh*>& lstNodes);
     void InternalPostProcess();

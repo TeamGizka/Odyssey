@@ -1,5 +1,5 @@
 #include "aurora.h"
-// PC 0x00710100  Xbox 0x002F9570
+// PC 0x00710100
 void CAuroraProcessedTexture::Unload()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)

@@ -48,7 +48,7 @@ public:
     virtual int OnResourceServiced();
     int IsBinary();
     unsigned long GetBWMSize();
-    // PC 0x005CE010  Xbox 0x00228D30
+    // PC 0x005CE010
     Vector GetAbsoluteUsePoint(int nIndex)
     {
         return m_pBWMHeader ? m_pBWMHeader->m_avAbsoluteUsePoints[nIndex]

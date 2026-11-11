@@ -373,7 +373,7 @@ int CSWCAnimBaseHead::SetMotionBlur(int bBlur)
     m_pHeadModel->SetMotionBlurred(bBlur != 0);
     return CSWCAnimBase::SetMotionBlur(bBlur);
 }
-// PC 0x0069B950
+// PC 0x0069B950  Xbox 0x000C7860
 void CSWCAnimBaseHead::EnableDistortion()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;

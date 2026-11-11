@@ -162,7 +162,7 @@ public:
                              int bIncludeEffects);
 
     enum { WEAPON_SPECIALIZATION_DAMAGE_BONUS = 2 };
-    // PC 0x005A4C50  Xbox 0x0019D620
+    // PC 0x005A4C50
     CSWSCreature* GetCreature() { return m_pCreature; }
 
     short GetCurrentForcePoints()

@@ -800,8 +800,8 @@ int CSWSFaction::GetSingletonParty()
     }
     return 1;
 }
-// PC 0x005BF6E0  Xbox 0x00228760
-unsigned long CSWSFaction::GetFactionMember(int nMember, int nFaction)
+#ifndef _XBOX
+unsigned long CSWSFaction::GetFactionMember(int nMember, int nFaction)  // PC 0x005BF6E0  Xbox 0x00228760
 {
     int i;
     CServerExoApp* pExoApp;
@@ -823,8 +823,8 @@ unsigned long CSWSFaction::GetFactionMember(int nMember, int nFaction)
     }
     return OBJECT_INVALID;
 }
-// PC 0x005BFA70  Xbox 0x00228B00
-void CSWSFaction::AddMember(unsigned long oidCreature, int bSilent)
+#endif
+void CSWSFaction::AddMember(unsigned long oidCreature, int bSilent)  // PC 0x005BFA70  Xbox 0x00228B00
 {
     CSWSCreature* pCreature;
     CSWSFaction* pOldFaction;
@@ -883,3 +883,28 @@ int CSWSFaction::AttemptRemove(unsigned long oidCreature,
     RemoveMember(oidCreature);
     return 1;
 }
+
+#ifdef _XBOX
+// PC 0x005BF6E0  Xbox 0x00228760
+unsigned long CSWSFaction::GetFactionMember(int nMember, int nFaction)
+{
+    int i;
+    CServerExoApp* pExoApp;
+    CSWSCreature* pCreature;
+
+    if (m_lstMembers.num >= 1 && nMember < m_lstMembers.num)
+    {
+        for (i = nMember; i < m_lstMembers.num; ++i)
+        {
+            pExoApp = g_pAppManager->m_pServerExoApp;
+            pCreature = pExoApp->GetCreatureByGameObjectID(m_lstMembers[i]);
+            if (pCreature != NULL && pCreature->m_pStats->m_bIsPC == nFaction)
+            {
+                m_nLastFactionMember = i + 1;
+                return m_lstMembers[i];
+            }
+        }
+    }
+    return OBJECT_INVALID;
+}
+#endif

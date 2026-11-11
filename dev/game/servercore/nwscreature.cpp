@@ -1348,13 +1348,13 @@ int CSWSCreature::GetPauseReadyAnimation()
 }
 // PC 0x004F8A50  Xbox 0x0017C830
 int CSWSCreature::AddMoveToPointActionToFront(
-    unsigned short nGroupId, const Vector& vPosition,
-    unsigned long oidArea, unsigned long oidTarget, int bRun,
-    float fRange, float fTimeout, int bUsePath, int nMovementRate,
-    int bUnknown1, int bClientMoving, int bUnknown2, int bUnknown3,
-    const Vector& vOrientation, unsigned long nUnknown4,
-    unsigned long nUnknown5, int bUnknown6)
+    unsigned short nGroupId, const Vector& vPosition, unsigned long oidArea, unsigned long oidTarget, int bRun,
+    float fRange, float fTimeout, int bUsePath, int nMovementRate, int bUnknown1, int bClientMoving, int bUnknown2, int bUnknown3,
+    const Vector& vOrientation, unsigned long nUnknown4, unsigned long nUnknown5, int bUnknown6)
 {
+#ifdef _XBOX
+    m_nMoveToPointElapsed = -1;
+#endif
     int nMoveFlags = bRun | (bUsePath << MOVE_USE_PATH_SHIFT);
     if (fTimeout != 0.0f)
     {
@@ -1395,12 +1395,12 @@ int CSWSCreature::AddMoveToPointActionToFront(
 }
 // PC 0x004F8B60  Xbox 0x0017C950
 int CSWSCreature::AddMoveToPointAction(
-    unsigned short nGroupId, const Vector& vPosition, unsigned long oidArea,
-    unsigned long oidTarget, int bRun, float fRange, float fTimeout,
-    int bUsePath, int nMovementRate, int bUnknown1, int bClientMoving,
-    int bUnknown2, int bUnknown3, const Vector& vOrientation,
-    unsigned long nUnknown4, unsigned long nUnknown5, int bUnknown6)
+    unsigned short nGroupId, const Vector& vPosition, unsigned long oidArea, unsigned long oidTarget, int bRun, float fRange, float fTimeout,
+    int bUsePath, int nMovementRate, int bUnknown1, int bClientMoving, int bUnknown2, int bUnknown3, const Vector& vOrientation, unsigned long nUnknown4, unsigned long nUnknown5, int bUnknown6)
 {
+#ifdef _XBOX
+    m_nMoveToPointElapsed = -1;
+#endif
     int nFlags;
     CPathfindInformation* pPathfind;
 
@@ -1670,16 +1670,14 @@ int CSWSCreature::AddItemCastSpellActions(unsigned long oidItem,
                 0, NULL,
                 0, NULL,
                 0, NULL,
-                0, NULL,
-                0, NULL);
+                0, NULL, 0, NULL);
         }
         Vector vDelta = vTarget - m_vPosition;
         float fDistanceSquared = vDelta.m_fX * vDelta.m_fX + vDelta.m_fY * vDelta.m_fY +
             vDelta.m_fZ * vDelta.m_fZ;
         if (fDistanceSquared > fRange * fRange)
         {
-            AddMoveToPointActionToFront(ACTION_GROUP_LAST, vTarget, oidArea, oidTarget,
-                bRun, fRange, 0.0f, 0, 0, 0, 0, 0, 0, Vector(), 0, 0, bPathfinding);
+            AddMoveToPointActionToFront(ACTION_GROUP_LAST, vTarget, oidArea, oidTarget, bRun, fRange, 0.0f, 0, 0, 0, 0, 0, 0, Vector(), 0, 0, bPathfinding);
             if (GetInParty() && fDistanceSquared > 0.25f)
             {
                 CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
@@ -1687,9 +1685,11 @@ int CSWSCreature::AddItemCastSpellActions(unsigned long oidItem,
                     pClient->ServerToClientObjectId(GetId()));
                 if (nIndex >= 0)
                 {
-                    CSWParty* pParty = pClient->GetSWParty();
-                    pParty->m_aPartyMemberData[nIndex].SetCombatMessage(
-                        CSWPartyMemberData::COMBAT_MESSAGE_APPROACH_TARGET);
+#ifdef _XBOX
+                    CSWPartyMemberData* pMember = pClient->GetSWParty()->GetMemberData(nIndex); pMember->SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_APPROACH_TARGET);
+#else
+                    CSWParty* pParty = pClient->GetSWParty(); pParty->m_aPartyMemberData[nIndex].SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_APPROACH_TARGET);
+#endif
                 }
             }
         }
@@ -2003,15 +2003,13 @@ int CSWSCreature::AddCastSpellActions(unsigned long nSpellId, int nMultiClass,
                 0, NULL,
                 0, NULL,
                 0, NULL,
-                0, NULL,
-                0, NULL);
+                0, NULL, 0, NULL);
         }
         Vector vDelta = vTarget - m_vPosition;
         float fDistanceSquared = vDelta * vDelta;
         if (fDistanceSquared > fRange * fRange)
         {
-            AddMoveToPointActionToFront(ACTION_GROUP_LAST, vTarget, oidArea, oidTarget,
-                bRun, fRange, 0.0f, 0, 0, 0, 0, 0, 0, Vector(), 0, 0, bPathfinding);
+            AddMoveToPointActionToFront(ACTION_GROUP_LAST, vTarget, oidArea, oidTarget, bRun, fRange, 0.0f, 0, 0, 0, 0, 0, 0, Vector(), 0, 0, bPathfinding);
             if (GetInParty() && fDistanceSquared > 0.25f)
             {
                 CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
@@ -2019,9 +2017,11 @@ int CSWSCreature::AddCastSpellActions(unsigned long nSpellId, int nMultiClass,
                 int nIndex = pClient->GetSWParty()->GetIndex(oidClient);
                 if (nIndex >= 0)
                 {
-                    CSWParty* pParty = pClient->GetSWParty();
-                    pParty->m_aPartyMemberData[nIndex].SetCombatMessage(
-                        CSWPartyMemberData::COMBAT_MESSAGE_APPROACH_TARGET);
+#ifdef _XBOX
+                    CSWPartyMemberData* pMember = pClient->GetSWParty()->GetMemberData(nIndex); pMember->SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_APPROACH_TARGET);
+#else
+                    CSWParty* pParty = pClient->GetSWParty(); pParty->m_aPartyMemberData[nIndex].SetCombatMessage(CSWPartyMemberData::COMBAT_MESSAGE_APPROACH_TARGET);
+#endif
                 }
             }
         }
@@ -2961,13 +2961,13 @@ int CSWSCreature::ClearAction(CSWSObjectActionNode* pNode, int bRemove)
     {
         if (m_bInParty != 0)
         {
-            unsigned long oidClient = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetId());
-            int nIndex = g_pAppManager->GetClientExoApp()->GetSWParty()->GetIndex(oidClient);
-            if (nIndex >= 0 && nIndex <= 2)
-            {
-                CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
-                EXOLOG("CSWSCreature::ClearAction: party %p", &pParty);
-                pParty->m_aPartyMemberData[nIndex].Reset();
+            unsigned long oidClient = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetId()); int nIndex = g_pAppManager->GetClientExoApp()->GetSWParty()->GetIndex(oidClient);
+            if (nIndex >= 0 && nIndex <= 2) {
+#ifdef _XBOX
+                g_pAppManager->GetClientExoApp()->GetSWParty()->GetMemberData(nIndex)->Reset();
+#else
+                CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty(); EXOLOG("CSWSCreature::ClearAction: party %p", &pParty); pParty->m_aPartyMemberData[nIndex].Reset();
+#endif
             }
         }
     }
@@ -4238,8 +4238,8 @@ float CSWSCreature::GetRunRate()
     fRunRate = fRunRate * fFactor * 1000.0f;
     return max(1000.0f, fRunRate);
 }
-// PC 0x004EC370  Xbox 0x0016F960
-float CSWSCreature::GetMovementRateFactor()
+#ifndef _XBOX
+float CSWSCreature::GetMovementRateFactor()  // PC 0x004EC370  Xbox 0x0016F960
 {
     float fMovementRateFactor;
 
@@ -4273,8 +4273,8 @@ void CSWSCreature::SetMovementRateFactor(float fMovementRateFactor)
 
     m_fMovementRateFactor = fMovementRateFactor;
 }
-// PC 0x004EC400  Xbox 0x0016FA50
-void CSWSCreature::BroadcastDamageDataToParty(CSWCCMessageData* pMessageData,
+#endif
+void CSWSCreature::BroadcastDamageDataToParty(CSWCCMessageData* pMessageData,  // PC 0x004EC400  Xbox 0x0016FA50
                                             int bHealing)
 {
     unsigned long* pMembers;
@@ -9450,12 +9450,12 @@ int CSWSCreature::BumpFriends(CSWSCreature* pCreature, const Vector& vStart,
                 pCreature->SetPosition(vSafePosition, 1, 1, 0);
                 if (pCreature->GetInParty())
                 {
-                    int nMember = g_pAppManager->GetClientExoApp()->GetSWParty()->GetIndex(
-                        g_pAppManager->GetClientExoApp()->ServerToClientObjectId(
-                            pCreature->GetId()));
-                    CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
-                    pParty->m_aPartyMemberData[nMember].m_nCharacterIndex =
-                        CSWPartyMemberData::FOLLOW_FIND_PATH;
+                    int nMember = g_pAppManager->GetClientExoApp()->GetSWParty()->GetIndex(g_pAppManager->GetClientExoApp()->ServerToClientObjectId(pCreature->GetId()));
+#ifdef _XBOX
+                    g_pAppManager->GetClientExoApp()->GetSWParty()->GetMemberData(nMember)->m_nCharacterIndex = CSWPartyMemberData::FOLLOW_FIND_PATH;
+#else
+                    CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty(); pParty->m_aPartyMemberData[nMember].m_nCharacterIndex = CSWPartyMemberData::FOLLOW_FIND_PATH;
+#endif
                 }
                 sDebug.Format("Bumped %x ends up at %f,%f\n", pCreature->GetId(),
                               vSafePosition.m_fX, vSafePosition.m_fY);
@@ -11116,8 +11116,8 @@ int CSWSCreature::UpdateSpecialAttacks()
 {
     return 0;
 }
-// PC 0x004EF770  Xbox 0x00173190
-CItemRepository* CSWSCreature::GetItemRepository(int bParty)
+#ifndef _XBOX
+CItemRepository* CSWSCreature::GetItemRepository(int bParty)  // PC 0x004EF770  Xbox 0x00173190
 {
     if (bParty)
     {
@@ -11139,8 +11139,8 @@ CItemRepository* CSWSCreature::GetItemRepository(int bParty)
 
     return m_pcItemRepository;
 }
-// PC 0x004EF820  Xbox 0x001731D0
-int CSWSCreature::GetDead()
+#endif
+int CSWSCreature::GetDead()  // PC 0x004EF820  Xbox 0x001731D0
 {
     int nCharacters;
     int nCharacter;
@@ -11191,7 +11191,8 @@ int CSWSCreature::OnEndDialog(CSWSObject* pObject)
 {
     return g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_END_DIALOGUE], m_nId, 1);
 }
-
+#ifndef _XBOX
+// Xbox 0x00185820
 void CSWSCreature::GetSpikeDetails(CExoArrayList<CSWGuiInterfaceAction>& lstActions,
                                    unsigned char nSpikeType)
 {
@@ -11253,8 +11254,8 @@ void CSWSCreature::GetSpikeDetails(CExoArrayList<CSWGuiInterfaceAction>& lstActi
         }
     }
 }
-// PC 0x004EF930  Xbox 0x001732E0
-void CSWSCreature::ReceiveExperience(int nExperience)
+#endif
+void CSWSCreature::ReceiveExperience(int nExperience)  // PC 0x004EF930  Xbox 0x001732E0
 {
     int nPercentXP = 100;
     int nPartyPercentXP = 100;
@@ -11500,3 +11501,115 @@ int CSWSCreature::IsInjured()
 static inline void NwscreatureTrace1()
 {
 }
+
+#ifdef _XBOX
+// PC 0x004EC370  Xbox 0x0016F960
+float CSWSCreature::GetMovementRateFactor()
+{
+    float fMovementRateFactor = m_fMovementRateFactor;
+    if (fMovementRateFactor < 0.125f)
+        fMovementRateFactor = 0.125f;
+    else if (fMovementRateFactor > 1.5f)
+        fMovementRateFactor = 1.5f;
+    return fMovementRateFactor;
+}
+// PC 0x004EC3B0  Xbox 0x0016F9A0
+void CSWSCreature::SetMovementRateFactor(float fMovementRateFactor)
+{
+    if (fMovementRateFactor < 0.125f)
+        fMovementRateFactor = 0.125f;
+    else if (fMovementRateFactor > 1.5f)
+        fMovementRateFactor = 1.5f;
+    m_fMovementRateFactor = fMovementRateFactor;
+}
+// PC 0x004EF770  Xbox 0x00173190
+CItemRepository* CSWSCreature::GetItemRepository(int bParty)
+{
+    if (m_bInParty != 0 && bParty)
+        return g_pAppManager->m_pServerExoApp->GetPartyTable()->GetPartyItems();
+    return m_pcItemRepository;
+}
+// Xbox 0x0016F9D0
+void CSWSCreature::AddPrerequisiteSpells(unsigned long nSpell)
+{
+    const int nNoPrerequisiteSpell = -1;
+    CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
+    if (pSpell != NULL)
+    {
+        int* pNext = pSpell->m_aPrerequisites;
+        if (*pNext != nNoPrerequisiteSpell)
+        {
+            int* pPrerequisite = pNext;
+            do
+            {
+                unsigned long nPrerequisite = *pNext;
+                if (m_pStats->HasSpell(0, nPrerequisite, 1) == 0)
+                {
+                    AddPrerequisiteSpells(nPrerequisite);
+                }
+                pNext = ++pPrerequisite;
+            }
+            while (*pNext != nNoPrerequisiteSpell);
+        }
+        m_pStats->AddKnownSpell(m_pStats->m_nClassCount - 1, nSpell);
+    }
+}
+// Xbox 0x00185820
+void CSWSCreature::GetSpikeDetails(CExoArrayList<CSWGuiInterfaceAction>& lstActions,
+                                   unsigned char nSpikeType)
+{
+    CItemRepository* pRepository = GetItemRepository(1);
+    CExoString sName;
+    int nLanguage = g_pAppManager->m_pClientExoApp->GetClientLanguage();
+    int nAction = lstActions.num;
+
+    if (pRepository == NULL)
+    {
+        return;
+    }
+
+    for (unsigned long i = 0; i < pRepository->m_lstItems.num; i++)
+    {
+        CSWSItem* pItem = pRepository->ItemListGetItem(i);
+        if (pItem != NULL &&
+            pItem->GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_SPIKE)
+        {
+            continue;
+        }
+
+        CSWItemProperty* pProperty;
+        if (nSpikeType == 1)
+        {
+            if (pItem->GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_SECURITY_SPIKE, 0) &&
+                pItem->GetPropertyByType(&pProperty, CSWItemProperty::ITEM_PROPERTY_SECURITY_SPIKE, 0) &&
+                pProperty != NULL)
+            {
+                lstActions.SetSize(nAction + 1);
+                pItem->m_sLocalizedName.GetString(nLanguage, &sName, 0);
+                if (pItem->m_nStackSize > 1)
+                    sName.Format("%s (%d)", sName.CStr(), pItem->m_nStackSize);
+                else if (pItem->m_nCharges > 1)
+                    sName.Format("%s (%d)", sName.CStr(), pItem->m_nCharges);
+                lstActions[nAction].m_sName = sName;
+                lstActions[nAction].m_nAction = pItem->GetId() | OBJECT_LISTTYPE_MASK;
+                lstActions[nAction].m_resIcon = pItem->GetIcon();
+                nAction++;
+            }
+        }
+        else if (nSpikeType == 0)
+        {
+            if (pItem->GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_COMPUTER_SPIKE, 0) &&
+                pItem->GetPropertyByType(&pProperty, CSWItemProperty::ITEM_PROPERTY_COMPUTER_SPIKE, 0) &&
+                pProperty != NULL)
+            {
+                lstActions.SetSize(nAction + 1);
+                pItem->m_sLocalizedName.GetString(nLanguage, &sName, 0);
+                lstActions[nAction].m_sName = sName;
+                lstActions[nAction].m_nAction = pItem->GetId() | OBJECT_LISTTYPE_MASK;
+                lstActions[nAction].m_resIcon = pItem->GetIcon();
+                nAction++;
+            }
+        }
+    }
+}
+#endif

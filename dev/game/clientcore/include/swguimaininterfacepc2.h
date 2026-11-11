@@ -64,7 +64,7 @@ public:
 class CSWGuiCharBar : public CSWGuiProgressBar
 {
 public:
-    CSWGuiExtent m_cStartExtent;
+    CSWGuiExtent m_cStartExtent; virtual void SetExtent(const CSWGuiExtent& cExtent); virtual void Draw(float fElapsed);
 };
 #endif
 
@@ -541,7 +541,7 @@ public:
     void ShowFlashingStatus(unsigned char nEffect);
     void RemoveFloatyText(CSWGuiFloatyText*);
 #ifdef _XBOX
-    void OnCombatXButton(int nEvent);
+    void OnCombatXButton(int nEvent); void OnNonCombatXButton();
 #endif
     void OnCombatYButton();
     void UpdateAndDrawFogOfWar(CSWGuiExtent const&);
@@ -568,10 +568,10 @@ public:
     void DoTargetAction(int, int);
     void DoPersonalAction(int, int);
     void OnActionUpArrowPressed(CSWGuiControl*);
-    void OnActionDownArrowPressed(CSWGuiControl*);
-    void OnClearOneButtonPressed(CSWGuiControl*);
-    void OnClearAllButtonPressed(CSWGuiControl*);
+    void OnActionDownArrowPressed(CSWGuiControl*); void OnClearOneButtonPressed(CSWGuiControl*); void OnClearAllButtonPressed(CSWGuiControl*);
+#ifndef _XBOX
     ~CSWGuiMainInterface();
+#endif
     virtual void Draw(float);
     void AddFloatyText(unsigned long, CExoString const&, Vector const&, float);
     void OnDefaultActionLeft(CSWGuiControl*);
