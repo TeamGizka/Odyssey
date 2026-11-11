@@ -11,7 +11,8 @@ reproduce `swkotor2.exe`.
 dev/          the game: engine libraries (libsource/) and game layers and the executable (game/)
 3rdparty/     where the Miles Sound System, Bink and NvTriStrip SDKs go (not distributed, see below)
 cmake/        toolchain files, platform settings and build helpers
-scripts/      extract_res.py: copies the cursors and icon out of your swkotor2.exe
+scripts/      extract_res.py: copies the cursors and icon out of your swkotor2.exe; make_implibs.py: writes the
+              Bink and Miles import libraries from the DLLs the game ships
 ```
 
 ## Prerequisites
@@ -29,6 +30,14 @@ scripts/      extract_res.py: copies the cursors and icon out of your swkotor2.e
 
   This writes `dev/game/swmain/res/` (`icon101.ico`, `cursors.res`) and checks each file against
   `scripts/extract_res.sha256`.
+- The Bink 1.6b and Miles import libraries, written once from the `binkw32.dll` and `Mss32.dll` of your game folder
+  with Visual Studio .NET 2003 (`VS2003_ROOT` = the folder that holds its `Vc7`):
+
+  ```
+  python scripts/make_implibs.py "C:\path\to\Knights of the Old Republic II"
+  ```
+
+  This writes `3rdparty/Bink/1.6b/lib/binkw32.lib` and `3rdparty/Miles/6.6g/lib/mss32.lib` (see their README.md).
 
 None of these files are part of the repository. With them in place the build reads nothing else outside the
 repository and the toolchain.
@@ -43,9 +52,10 @@ cmake --build --preset vc70
 
 The executable is written to `build/vc70/release/swkotor2.exe`. Targets: `swmain` links
 `dev/game/swmain/swkotor2.exe` in the build directory; `swkotor2_release` (part of the default build) writes
-`release/swkotor2.exe` from it, setting the link time stamp and checksum fields of the shipped file
-(`cmake/release/release_header.py`). The `xbox` preset configures the libraries for Xbox (environment variables
-`XDK_ROOT` and `VS2002_ROOT`); there is no Xbox executable yet.
+`release/swkotor2.exe` from it: the cursors are added with the Win32 resource-update API, which rewrites the
+resource section as the shipped file's (`cmake/release/release_resources.py`), then the link time stamp and checksum
+fields of the shipped file are set (`cmake/release/release_header.py`). The `xbox` preset configures the libraries
+for Xbox (environment variables `XDK_ROOT` and `VS2002_ROOT`); there is no Xbox executable yet.
 
 ## Addresses
 

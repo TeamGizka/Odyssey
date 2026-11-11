@@ -27,16 +27,12 @@ set_target_properties(swmain PROPERTIES OUTPUT_NAME swkotor2)
 target_link_options(swmain PRIVATE "/MAP:${CMAKE_CURRENT_BINARY_DIR}/swkotor2.map")
 enable_language(RC)
 target_sources(swmain PRIVATE swmain.rc)
-# The cursors are linked as compiled resources, extracted by scripts/extract_res.py.
-target_link_options(swmain PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/res/cursors.res")
-set_property(TARGET swmain APPEND PROPERTY LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/res/cursors.res")
 
 # The static libraries of the link, in link order. Each lists its objects in the order they are stored.
 kotor_archive(exomovieplayer
   OBJECTS
     exomovieplayer/exomovieplayerinternal.cpp
-    exomovieplayer/exomovieplayer.cpp
-  IMPORT_LIBRARIES "${BINK_DIR}/lib/binkw32.lib")
+    exomovieplayer/exomovieplayer.cpp)
 kotor_archive(exoresman
   OBJECTS
     exoresman/exoresman.cpp
@@ -222,7 +218,7 @@ kotor_archive(exosound
     exosound/exosoundinternal.cpp
     exosound/exosoundsourceinternal.cpp
     exosound/exostreamingsoundsourceinternal.cpp
-  IMPORT_LIBRARIES "${MILES_DIR}/lib/mss32.lib")
+  IMPORT_LIBRARIES "${MILES_LIB_DIR}/lib/mss32.lib")
 kotor_archive(exoresfmt
   OBJECTS
     exoresman/nwerffile.cpp
@@ -237,7 +233,7 @@ kotor_archive(exoinput
     exoinput/exoimeui.cpp
     exoinput/exoinputinternal.cpp
     exoinput/exorawinputwin32.cpp
-  IMPORT_LIBRARIES dinput8.lib)
+  IMPORT_LIBRARIES "${DX81_DIR}/lib/dinput8.lib")
 kotor_archive(exobase
   OBJECTS
     exobase/exostring.cpp
@@ -379,5 +375,6 @@ kotor_archive(clientcore2
 target_link_libraries(swmain PRIVATE
   opengl32.lib glu32.lib version.lib imm32.lib kernel32.lib user32.lib gdi32.lib ole32.lib lib_exomovieplayer
   lib_exoresman lib_aurorainterface lib_namegen lib_AURORA lib_math3d lib_worldtimer lib_servercore lib_pathfindinfo
-  lib_nwscript lib_netlayer lib_exosound lib_exoresfmt lib_exoinput "${MILES_61C_DIR}/lib/mss32.lib" lib_exobase
+  lib_nwscript lib_netlayer lib_exosound lib_exoresfmt lib_exoinput "${MILES_LIB_DIR}/lib/mss32.lib"
+  "${BINK_LIB_DIR}/lib/binkw32.lib" lib_exobase
   lib_clientcore NvTriStrip winmm.lib lib_clientcore2)

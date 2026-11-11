@@ -7,8 +7,11 @@ and build files are tracked.
 
 | Directory | SDK | Use |
 |---|---|---|
-| `Miles/6.5h/` | Miles Sound System 6.5h | headers and the import library the game links |
+| `Miles/6.6g/` | Miles Sound System import library | the import library the game links (written by `scripts/make_implibs.py`) |
+| `Miles/6.5h/` | Miles Sound System 6.5h | headers; its import library declares the exports for `scripts/make_implibs.py` |
 | `Miles/6.5c/` | Miles Sound System 6.5c | older SDK; not used by the build |
-| `Miles/6.1c/` | Miles Sound System 6.1c | older import library that resolves three imports of `reswave.cpp` |
-| `Bink/1.5v/` | Bink 1.5v | headers and `binkw32.lib` |
+| `Miles/6.1c/` | Miles Sound System 6.1c | older import library (swkotor.exe); not used by the build |
+| `Bink/1.6b/` | Bink 1.6b | `binkw32.lib` the game links (written by `scripts/make_implibs.py`) |
+| `Bink/1.5v/` | Bink 1.5v | headers |
+| `DirectX/8.1/` | DirectX 8.1 SDK | `dinput8.lib` |
 | `NvTriStrip/original/` | NVIDIA NvTriStrip | built from source as `NvTriStrip.lib` |

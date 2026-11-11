@@ -1,7 +1,8 @@
 """Extract the cursors and the icon of swkotor2.exe into dev/game/swmain/res/.
 
 icon101.ico is compiled by dev/game/swmain/swmain.rc; cursors.res, the cursors as compiled resources (their
-directories are not what a resource compiler writes for .cur files), is linked as it is. Neither is distributed
+directories are not what a resource compiler writes for .cur files), is added to the linked executable by the release
+step (cmake/release/release_resources.py). Neither is distributed
 with the source. Run once, with your own copy of the game executable (the Steam release, file version 2.2.0.0):
 
     python scripts/extract_res.py "C:/path/to/swkotor2.exe"

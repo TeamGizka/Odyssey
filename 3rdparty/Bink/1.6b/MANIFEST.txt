@@ -1,0 +1,1 @@
+written by scripts/make_implibs.py from binkw32.dll 1.6b (sha256 d963112ea8545c8aaa6bd48a9d2d229605806ae1bbc03f90b0106db3034466ed)  lib/binkw32.lib
