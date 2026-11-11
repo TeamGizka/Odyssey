@@ -96,9 +96,6 @@ CSWGuiManager::CSWGuiManager()
     m_nWidth = 0;
     m_nHeight = 0;
     m_nBackgroundPanels = 0;
-#ifndef _XBOX
-    m_nCountedPanels = 0;
-#endif
     m_nLastKeyTime = 0;
     m_nLastDirection = 0;
     m_pSafeRegionPanel = NULL;
@@ -179,19 +176,10 @@ void CSWGuiManager::AddPanel(CSWGuiPanel* pPanel, int nFlags, int bPlaySound)
         else
         {
             pPanel->m_bModal = (nFlags & SWGUI_PANEL_FLAG_MODAL) != 0;
-#ifndef _XBOX
-            pPanel->m_bOverlay = (nFlags & SWGUI_PANEL_FLAG_OVERLAY) != 0;
-#endif
             if (pPanel->m_bModal)
             {
                 m_nBackgroundPanels++;
             }
-#ifndef _XBOX
-            if ((pPanel->m_bOverlay) == 0)
-            {
-                m_nCountedPanels++;
-            }
-#endif
             m_lPanels.Add(pPanel);
             if ((nFlags & SWGUI_PANEL_FLAG_PUSH_MODAL) != 0)
             {
@@ -1332,12 +1320,6 @@ int CSWGuiManager::RemovePanel(CSWGuiPanel* pPanel)
     {
         m_nBackgroundPanels--;
     }
-#ifndef _XBOX
-    if ((pPanel->m_bOverlay) == 0)
-    {
-        m_nCountedPanels--;
-    }
-#endif
     DetermineNeedToDraw();
 #ifndef _XBOX
     m_pMouseOverControl = NULL;

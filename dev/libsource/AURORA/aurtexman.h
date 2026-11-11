@@ -145,6 +145,7 @@ public:
     virtual int GetFileRange();
     virtual int GetWidth();
     virtual int GetHeight();
+    virtual int GetDepth();
     virtual int GetBPP();
     virtual int GetNumMipMaps();
     virtual int GetNumX();
@@ -231,6 +232,7 @@ public:
     int m_nTxiSize;
     int m_nWidth;
     int m_nHeight;
+    int m_nDepth;
     int m_nBPP;
     int m_nTextureFormat;
     char m_sName[32];
@@ -268,6 +270,7 @@ public:
     char m_bTxiLoaded;
     char m_bControllerDirty;
     int m_nMemorySize;
+    char m_bF0;
 
 #ifdef _XBOX
 

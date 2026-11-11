@@ -50,10 +50,7 @@ public:
     CExoString m_sPlayerList;
     CExoString m_sSavegameList;
     CExoString m_sVaultList;
-#ifdef _XBOX
-
-    CExoString m_sXboxUnmapped028;
-#endif
+    CExoString m_sModuleName;
     int m_bAllowLocal;
     int m_bAllowServer;
     int m_bAllowVault;
@@ -94,10 +91,8 @@ public:
     int m_nLoseExpNum;
     int m_nLoseItemsNum;
     int m_bPauseAndPlay;
-#ifdef _XBOX
     int m_nXboxUnmapped0D0;
     int m_nXboxUnmapped0D4;
-#endif
     int m_bItemLevelRestrictions;
     int m_bResetOnVacant;
     int m_bResetOnVictory;
@@ -111,9 +106,7 @@ public:
     CPersistantWorldOptions m_PersistantWorldOptions;
 
     int m_bSuppressBaseServerVault;
-    CExoString m_sModuleName;
 #ifdef _XBOX
-
     short m_nXboxUnmapped114;
 #endif
     unsigned int m_bPartyPicking : 1;
@@ -121,9 +114,7 @@ public:
     unsigned int m_bConversationMultiPlayer : 1;
     unsigned int m_bConversationMultiPlayerViewOnly : 1;
 
-#ifdef _XBOX
     int m_nXboxUnmapped11C;
-#endif
     int m_nDifficultyLevel;
     SServerOption m_aOptions[50];
     ~CServerInfo()  // PC 0x004E9E50

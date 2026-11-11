@@ -46,9 +46,13 @@ public:
 #endif
     CSWGuiListBox m_lbSaveGames;
 #ifndef _XBOX
+    CSWGuiLabel m_lblPCName;
+    CSWGuiLabel m_lblTimePlayed;
     CSWGuiButton m_btnSaveLoad;
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnDelete;
+    CSWGuiButton m_btnFilter;
+    CSWGuiLabel m_alblBar[4];
 #endif
 #ifdef _XBOX
     void UpdateFreeBlocks();

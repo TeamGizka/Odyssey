@@ -260,7 +260,7 @@ public:
                                 int nMultiplier, int nChance);
     void LoadFeatInfo();
 
-    enum { EXPERIENCE_TABLE_LAST_INDEX = 20 };
+    enum { EXPERIENCE_TABLE_LAST_INDEX = 50 };
 
     int GetExperienceForLevel(unsigned char nLevel) { return m_anExperience[nLevel]; }
 

@@ -13,6 +13,8 @@
 #include "aurbehavior.h"
 #include <aurpointer.h>
 
+class C2DA;
+
 class CSWMGTargettingParameters
 {
 public:
@@ -296,6 +298,12 @@ public:
     float m_fLateralAccel;
     CSWMGPhysicsState m_CurrentState;
     CSWMGPhysicsState m_NextState;
+    float m_fF0;
+    float m_fF4;
+    float m_fF8;
+    C2DA* m_pFC;
+    int m_an100[6];
+    int m_n118;
 };
 
 #include <aurpointer.h>
@@ -469,6 +477,8 @@ public:
 
     static const int NUM_SOUND_SOURCES = 1;
 
+    enum { NUM_SCRIPTS = 13 };
+
     enum SoundSlot
     {
         SOUND_ENGINE = 0,
@@ -592,7 +602,7 @@ public:
     float m_fTrackSpeed;
     float m_fInvincibilityRemaining;
     float m_fInvincePeriod;
-    CResRef m_aScripts[10];
+    CResRef m_aScripts[NUM_SCRIPTS];
     CExoSoundSource* m_apSoundSources[NUM_SOUND_SOURCES];
     CResRef m_aOtherSoundNames[1];
     CSWMGSound m_aSounds[2];

@@ -227,6 +227,7 @@ public:
     virtual void DoBlurBuckets();
 
     virtual void DoGobBuckets();
+    virtual void DoHologramGobBuckets();
     virtual void DoDistortionBuckets();
     virtual void DoLightSaberBucket();
     virtual void DoCapBucket();
@@ -283,6 +284,7 @@ public:
     int m_nFogMode;
     float m_fFogDensity;
     Vector m_vFogColor;
+    Vector m_v80;
     LightManager* m_pLightManager;
     WindManager* m_pWindManager;
     Vector m_vAmbient;
@@ -310,6 +312,11 @@ public:
 
     CAurTexture* m_pFilmNoiseTexture;
     CAurTexture* m_pDistortionTexture;
+    CAurTexture* m_pDirtyTexture;
+    CAurTexture* m_pDirtyTexture2;
+    CAurTexture* m_pDirtyTexture3;
+    CAurTexture* m_pClairTexture;
+    CAurTexture* m_pHoloTexture;
     List<Gob*> m_lstAnimatedObjects;
 
     Gob m_SceneRoot;
@@ -392,6 +399,7 @@ public:
     List<Gob*> m_lstAnimatedObjects;
     Gob* m_pRoomObject;
     char m_sName[64];
+    char m_bB8;
     ~CAurRoom();
     CAurRoom(char*);
 };

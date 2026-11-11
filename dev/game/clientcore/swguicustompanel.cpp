@@ -354,7 +354,6 @@ CSWGuiCustomPanel::CSWGuiCustomPanel(CSWGuiManager* pManager,
     m_pManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
     m_pCreature = pCreature;
     StartLoadFromLayout("CUSTPNL");
-    InitControl(m_lblBackground, "LBL_BG", 1);
 
     for (int i = 0; i < 6; i++)
     {

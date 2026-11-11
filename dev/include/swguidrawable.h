@@ -179,6 +179,7 @@ public:
 
     int m_nBorderDim;
     int m_nInnerOffset;
+    int m_n8;
 
     float m_fRotation;
     float m_fHilightAlpha;

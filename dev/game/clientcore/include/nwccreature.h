@@ -596,6 +596,8 @@ public:
 
     int m_bCombatReady;
     unsigned long m_nGold;
+    int m_n148;
+    int m_n14C;
 #ifdef _XBOX
     float m_fUnknown148;
 #else
@@ -669,7 +671,7 @@ public:
         EQUIPPED_ITEM_ARMS = 10
     };
 
-    enum { EQUIPPED_ITEM_COUNT = 18 };
+    enum { EQUIPPED_ITEM_COUNT = 20 };
     enum { EQUIPPED_MENU_ITEM_COUNT = 15 };
     unsigned long m_aoidEquippedItems[EQUIPPED_ITEM_COUNT];
 
@@ -779,6 +781,9 @@ public:
 #ifndef _XBOX
     float m_fFreeLookTurn;
 #endif
+    int m_n464;
+    int m_n468;
+    int m_n46C;
 #ifdef _XBOX
 
     int IsLeaderUsableItem(CSWSItem* pItem, int nSlot);

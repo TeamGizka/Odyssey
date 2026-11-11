@@ -14,7 +14,6 @@ public:
     CSWGuiButton m_aOptions[7];
 #else
     CSWGuiButton m_aOptions[8];
-    CSWGuiButton m_btnUnknown;
 #endif
     CSWGuiLabel m_lblTitle;
     CSWGuiLabel m_lblDescription;
@@ -25,7 +24,9 @@ public:
     CSWGuiLabel m_lblScrollIcon;
     CSWGuiListBox m_lbDescription;
 #ifndef _XBOX
+    CSWGuiButton m_btnUnknown;
     CSWGuiButton m_btnExit;
+    CSWGuiLabel m_alblBar[5];
 #endif
     virtual void OnPanelRemoved();
     void OnLoadGame(CSWGuiControl*);

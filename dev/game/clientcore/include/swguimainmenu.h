@@ -62,6 +62,7 @@ public:
     void OnLoadGamePicked();
     void OnWarpButtonPressed(CSWGuiControl* pControl);
 
+    int m_n68;
     CSWGuiListBox m_lbModules;
     CExoArrayList<CExoString> m_lstModules;
     int m_nMenuState;
@@ -70,6 +71,7 @@ public:
     CSWGuiButton m_btnNewGame;
     CSWGuiButton m_btnLoadGame;
     CSWGuiButton m_btnMovies;
+    CSWGuiButton m_btnMusic;
     CSWGuiButton m_btnOptions;
     CSWGuiButton m_btnUnused;
 #ifdef _XBOX
@@ -78,6 +80,8 @@ public:
 #endif
     CSWGuiLabel m_lblNewContent;
     CSWGuiLabel m_alblBackdrop[2];
+    CSWGuiLabel m_lbl12C4;
+    CSWGuiLabel m_lbl140C;
 #ifndef _XBOX
     CSWGuiButton m_btnExit;
     CSWGuiButton m_btnWarp;
@@ -111,6 +115,9 @@ public:
     CSWGuiLabel m_lblPlayMovie;
 #else
     CSWGuiButton m_btnBack;
+    CSWGuiLabel m_alblBar[3];
+    CSWGuiLabel m_lblUnlocked;
+    CSWGuiLabel m_lblUnlockedValue;
 #endif
     CExoArrayList<CExoString> m_lMovieNames;
 };

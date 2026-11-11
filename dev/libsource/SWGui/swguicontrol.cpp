@@ -1508,6 +1508,19 @@ void CSWGuiProgressBar::SetStartFromLeft(int bDrawMode)
         SetExtent(m_cExtent);
     }
 }
+#ifndef _XBOX
+// PC 0x00417830
+void CSWGuiProgressBarReveal::Draw(float fElapsed)
+{
+    m_cBorder.Draw(fElapsed);
+    if (AurGUISetupViewport(m_cStartExtent.m_nLeft, m_cStartExtent.m_nTop, m_cStartExtent.m_nWidth, m_cStartExtent.m_nHeight,
+                            CSWGuiDrawable::NO_COLOURING, false, 1.0f) != 0)
+    {
+        m_cFill.Draw(fElapsed);
+        AurGUICloseViewport();
+    }
+}
+#endif
 // PC 0x00417890
 int CSWGuiScrollBar::GetTopArrowOn()
 {
@@ -3044,6 +3057,40 @@ void CSWGuiProgressBar::SetExtent(const CSWGuiExtent& cExtent)  // PC 0x00418AF0
                 cFill.m_nLeft += cFill.m_nWidth - nWidth;
             }
             cFill.m_nWidth = nWidth;
+        }
+    }
+    m_cFill.SetExtent(cFill);
+}
+// PC 0x00418BE0
+void CSWGuiProgressBarReveal::SetExtent(const CSWGuiExtent& cExtent)
+{
+    CSWGuiExtent cFill = cExtent;
+
+    m_cExtent = cExtent;
+    m_cStartExtent = cExtent;
+    cFill.m_nLeft = cFill.m_nTop = 0;
+    m_cBorder.SetExtent(cExtent);
+    if (m_nMaxValue > 0)
+    {
+        if (m_cExtent.m_nHeight > m_cExtent.m_nWidth)
+        {
+            int nHeight = (int)((float)m_nCurValue / (float)m_nMaxValue * m_cStartExtent.m_nHeight);
+            if (!m_bStartFromLeft)
+            {
+                m_cStartExtent.m_nTop += m_cStartExtent.m_nHeight - nHeight;
+                cFill.m_nTop += nHeight - m_cStartExtent.m_nHeight;
+            }
+            m_cStartExtent.m_nHeight = nHeight;
+        }
+        else
+        {
+            int nWidth = (int)((float)m_nCurValue / (float)m_nMaxValue * m_cStartExtent.m_nWidth);
+            if (!m_bStartFromLeft)
+            {
+                m_cStartExtent.m_nLeft += m_cStartExtent.m_nWidth - nWidth;
+                cFill.m_nLeft += nWidth - m_cStartExtent.m_nWidth;
+            }
+            m_cStartExtent.m_nWidth = nWidth;
         }
     }
     m_cFill.SetExtent(cFill);

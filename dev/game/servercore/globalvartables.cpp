@@ -29,7 +29,7 @@ int CSWGlobalVariableTable::Hash(const CExoString& sIdentifier)
             m_anCRCTable[(nHash ^ toupper(cCharacter)) & 0xFF] ^ (nHash >> 8);
     }
 
-    return nHash % 1775;
+    return nHash % 2365;
 }
 // PC 0x005AA7B0
 int CSWGlobalVariableTable::AddIdentifier(const CExoString& sIdentifier,
@@ -46,7 +46,7 @@ int CSWGlobalVariableTable::AddIdentifier(const CExoString& sIdentifier,
 
     if (m_aIdentifiers[nIdentifier].m_szIdentifier[0] != 0)
     {
-        nNextIdentifier = (nIdentifier + 1) % 1775;
+        nNextIdentifier = (nIdentifier + 1) % 2365;
         ++m_nCollisions;
         nSteps = 1;
 
@@ -59,7 +59,7 @@ int CSWGlobalVariableTable::AddIdentifier(const CExoString& sIdentifier,
                     break;
                 }
 
-                nNextIdentifier = (nNextIdentifier + 1) % 1775;
+                nNextIdentifier = (nNextIdentifier + 1) % 2365;
                 ++nSteps;
             } while (nIdentifier != nNextIdentifier);
 
@@ -107,7 +107,7 @@ int CSWGlobalVariableTable::AddIdentifierNumber(const CExoString& sIdentifier)
 {
     int nIndex = m_nNumberCount;
     int nIdentifier = -1;
-    if (nIndex < 500)
+    if (nIndex < 1000)
     {
         nIdentifier = AddIdentifier(sIdentifier, 1, nIndex);
         m_nNumberCount++;
@@ -151,8 +151,8 @@ int CSWGlobalVariableTable::FindIdentifierIndex(const CExoString& sIdentifier)
         sIdentifier.CompareNoCase(m_aIdentifiers[nIdentifier].m_szIdentifier) ==
             0)
     {
-        for (int i = (nIdentifier + 1) % 1775; nIdentifier != i;
-             i = (i + 1) % 1775)
+        for (int i = (nIdentifier + 1) % 2365; nIdentifier != i;
+             i = (i + 1) % 2365)
         {
             if (m_aIdentifiers[i].m_szIdentifier[0] == 0)
             {
@@ -408,7 +408,7 @@ void CSWGlobalVariableTable::WriteTable(const CExoString& sFileName,
                                        int bWriteCatalogue)
 {
     unsigned char aBooleanValues[113];
-    char acNumberValues[500];
+    char acNumberValues[1000];
     CScriptLocation aLocations[100];
     CExoString asStrings[5];
     CExoString sAlias;
@@ -446,7 +446,7 @@ void CSWGlobalVariableTable::WriteTable(const CExoString& sFileName,
     int nLocation = 0;
     int nString = 0;
 
-    for (int i = 0; i < 1775; ++i)
+    for (int i = 0; i < 2365; ++i)
     {
         if (m_aIdentifiers[i].m_szIdentifier[0] != 0)
         {
@@ -521,7 +521,7 @@ void CSWGlobalVariableTable::ReadTableWithoutCatalogue(CResGFF* pRes,
                                                       CResStruct& sStruct)
 {
     unsigned char aBooleanValues[113];
-    char acNumberValues[500];
+    char acNumberValues[1000];
     CScriptLocation aLocations[100];
     CExoString asStrings[5];
     CResList lStrings;
@@ -555,7 +555,7 @@ void CSWGlobalVariableTable::ReadTableWithoutCatalogue(CResGFF* pRes,
     int nNumber = 0;
     int nLocation = 0;
 
-    for (int i = 0; i < 1775; ++i)
+    for (int i = 0; i < 2365; ++i)
     {
         if (m_aIdentifiers[i].m_szIdentifier[0] != 0)
         {
@@ -605,7 +605,7 @@ void CSWGlobalVariableTable::ReadTableWithCatalogue(CResGFF* pRes,
                                                    CResStruct& sStruct)
 {
     unsigned char aBooleanValues[113];
-    char acNumberValues[500];
+    char acNumberValues[1000];
     CScriptLocation aLocations[100];
     CExoString asStrings[5];
     CExoString sName;
@@ -755,7 +755,7 @@ int CSWGlobalVariableTable::ReadTable(const CExoString& sFileName)
 #ifdef _XBOX
         HandleLoadError(0xA3A8);
 #else
-        HandleLoadError(0xBC4E);
+        HandleLoadError(0xBE76);
 #endif
         delete pRes;
         return 0;

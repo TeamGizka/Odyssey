@@ -72,6 +72,20 @@ public:
     CExoString m_sSpeaker;
     CExoLocString m_lsText;
     CResRef m_cScript;
+    int m_nActionParam1;
+    int m_nActionParam2;
+    int m_nActionParam3;
+    int m_nActionParam4;
+    int m_nActionParam5;
+    CResRef m_cScript2;
+    int m_nActionParam1b;
+    int m_nActionParam2b;
+    int m_nActionParam3b;
+    int m_nActionParam4b;
+    int m_nActionParam5b;
+    CExoString m_sActionParamStrA;
+    CExoString m_sActionParamStrB;
+    int m_bNodeUnskippable;
     unsigned long m_nWaitFlags;
     int m_nDelay;
     int m_nSoundDelay;
@@ -91,6 +105,9 @@ public:
     float m_fFadeLength;
     float m_fFadeDelay;
     unsigned char m_bSoundExists;
+    int m_nAlienRaceNode;
+    int m_nEmotion;
+    int m_nFacialAnim;
 };
 
 class CSWSDialogCamera
@@ -118,6 +135,7 @@ public:
     short m_nCameraAnimation;
     float m_fCameraFieldOfView;
     int m_nCameraVideoEffect;
+    int m_n24;
 };
 
 class CSWSDialogNode : public CSWSDialogBase, public CSWSDialogCamera
@@ -151,7 +169,7 @@ class CSWSDialog
 {
 public:
 
-    enum { PSEUDO_RANDOM_CAMERA_COUNT = 19 };
+    enum { PSEUDO_RANDOM_CAMERA_COUNT = 41 };
     enum DialogCameraAngle
     {
         CAMERA_ANGLE_FIRST = 1,
@@ -238,6 +256,7 @@ public:
     CSWSDialogStuntModel* m_pStunts;
     CResRef m_cCameraModel;
     int m_n60;
+    int m_n64;
     CExoLinkedList<CSWSDialogPlayer> m_lstPlayers;
 
     int m_bRepliesSent;
@@ -266,6 +285,9 @@ public:
     CResRef m_cAmbientTrack;
     int m_n10C;
     int m_n110;
+    int m_n170;
+    int m_n174;
+    int m_n178;
     CExoLinkedList<unsigned long> m_lstUnequippedItems;
     CExoLinkedList<unsigned long> m_lstUnequippedHeadItems;
     int m_nOwnerAILevel;

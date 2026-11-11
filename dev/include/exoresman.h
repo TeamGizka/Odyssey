@@ -913,6 +913,7 @@ public:
     {
         m_pRes = NULL;
         m_nResId = 0;
+        m_s1C = "";
     }
 
     CResRef m_resRef;
@@ -923,6 +924,7 @@ public:
     unsigned long m_nResId;
     unsigned short m_nReserved;
     unsigned short m_nType;
+    CExoString m_s1C;
 };
 
 class CExoPackedFile;

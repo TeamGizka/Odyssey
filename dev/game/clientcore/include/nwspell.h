@@ -66,6 +66,7 @@ public:
 
     enum { SPELL_KNOCK = 93 };
 
+    int m_n00;
     CExoString m_sLabel;
     unsigned long m_nNameStrRef;
     unsigned long m_nDescriptionStrRef;
@@ -78,6 +79,12 @@ public:
     unsigned char m_nConsularLevel;
     unsigned char m_nSentinelLevel;
     unsigned char m_nInnateLevel;
+    unsigned char m_n44;
+    unsigned char m_n45;
+    unsigned char m_n46;
+    unsigned char m_n47;
+    unsigned char m_n48;
+    unsigned char m_n49;
     unsigned char GetInnateLevel();
     unsigned char GetUserType();
     int m_nConjureTime;
@@ -124,6 +131,7 @@ public:
     int m_nExclusion;
     int m_nForbidItemMask;
     int m_nRequireItemMask;
+    int m_n1A0;
     unsigned char m_nItemTargeting;
 
     CSWSpell();

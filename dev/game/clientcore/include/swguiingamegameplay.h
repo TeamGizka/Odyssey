@@ -53,8 +53,9 @@ public:
     CSWGuiButton m_btnBack; CSWGuiButton m_btnDefault; CSWGuiButton m_btnKeyMap; CSWGuiButton m_btnMouse;
     CSWGuiButton m_btnDifficulty; CSWGuiButton m_btnDiffRight; CSWGuiButton m_btnDiffLeft;
     CSWGuiOptionsCheckbox m_cbAutoLevelUp; CSWGuiOptionsCheckbox m_cbInvertCam; CSWGuiOptionsCheckbox m_cbAutoSave;
-    CSWGuiOptionsCheckbox m_cbReverse; CSWGuiOptionsCheckbox m_cbCombatMovement;
+    CSWGuiOptionsCheckbox m_cbReverse; CSWGuiOptionsCheckbox m_cbReverseInGame; CSWGuiOptionsCheckbox m_cbCombatMovement;
     CSWGuiSlider m_sliMouseSen; CSWGuiLabel m_lblMouseSen;
+    CSWGuiLabel m_alblBar[4];
     int m_nDifficulty;
 #endif
 };

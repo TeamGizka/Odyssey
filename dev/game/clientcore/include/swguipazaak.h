@@ -324,6 +324,7 @@ public:
     CSWGuiButton m_btnWager;
     CSWGuiButton m_btnQuit;
 #endif
+    CSWGuiLabel m_alblBar[1];
     CSWGuiLabel m_lblBg; int m_nWager; int m_nMaxWager;
 #ifdef _XBOX
     struct CFlashLabel { CSWGuiLabel* pLabel; float fTimer; }; CExoArrayList<CFlashLabel> m_lFlashLabels; void FlashLabel(CSWGuiLabel* pLabel);

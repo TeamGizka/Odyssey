@@ -49,7 +49,6 @@ CSWGuiLevelUpCharGen::CSWGuiLevelUpCharGen(CSWGuiManager* pManager,
     InitControl(m_lblTitle, "MAIN_TITLE_LBL", 1);
     InitControl(m_lblName, "LBL_NAME", 1);
     InitControl(m_lblClass, "LBL_CLASS", 1);
-    InitControl(m_lblLevel, "LBL_LEVEL", 1);
     InitControl(m_lblLevelValue, "LBL_LEVEL_VAL", 1);
     InitControl(m_lblStrength, "STR_LBL", 1);
     InitControl(m_lblDexterity, "DEX_LBL", 1);

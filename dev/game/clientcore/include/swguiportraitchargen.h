@@ -59,6 +59,7 @@ public:
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnRight;
     CSWGuiButton m_btnLeft;
+    CSWGuiLabel m_alblBar[8];
 #endif
     CExoArrayList<int> m_lstPortraits;
     CExoArrayList<int> m_lstAppearances;

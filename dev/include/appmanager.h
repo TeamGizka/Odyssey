@@ -19,7 +19,6 @@ public:
 
     CObjectTableManager* GetObjectTableManager(unsigned long nTable);
     void DoSaveGameScreenShot(const CExoString& sName);
-    void TakeScreenShot(const CExoString& sName);
     void AllocLargeTempBuffer();
     void FreeLargeTempBuffer();
     void DestroyServer();

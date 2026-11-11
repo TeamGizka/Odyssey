@@ -34,7 +34,7 @@ int CSWSItemPropertyHandler::OnItemPropertyApplied(CSWSItem* pItem,
 {
     ITEM_PROPERTY_APPLY pfnApply;
 
-    if (pProperty->m_nPropertyType < 60 &&
+    if (pProperty->m_nPropertyType < 70 &&
         (pfnApply = m_pApplyItemProperty[pProperty->m_nPropertyType]) != NULL)
     {
         return (this->*pfnApply)(pItem, pProperty, pCreature, nIndex, bLoading);
@@ -50,7 +50,7 @@ int CSWSItemPropertyHandler::OnItemPropertyRemoved(CSWSItem* pItem,
 {
     ITEM_PROPERTY_REMOVE pfnRemove;
 
-    if (pProperty->m_nPropertyType < 60 &&
+    if (pProperty->m_nPropertyType < 70 &&
         (pfnRemove = m_pRemoveItemProperty[pProperty->m_nPropertyType]) != NULL)
     {
         return (this->*pfnRemove)(pItem, pProperty, pCreature, nIndex);
@@ -3712,9 +3712,9 @@ void CSWSItemPropertyHandler::InitializeItemProperties()
 {
     int i;
 
-    m_pApplyItemProperty = new ITEM_PROPERTY_APPLY[60];
-    m_pRemoveItemProperty = new ITEM_PROPERTY_REMOVE[60];
-    for (i = 0; i < 60; i++)
+    m_pApplyItemProperty = new ITEM_PROPERTY_APPLY[70];
+    m_pRemoveItemProperty = new ITEM_PROPERTY_REMOVE[70];
+    for (i = 0; i < 70; i++)
     {
         m_pApplyItemProperty[i] = NULL;
         m_pRemoveItemProperty[i] = NULL;

@@ -17,12 +17,12 @@
 // PC 0x0071E140
 void CSWGuiPartySelection::SetForcedNPC(int nFirstNPC, int nSecondNPC)
 {
-    if (nFirstNPC >= 0 && nFirstNPC < 9)
+    if (nFirstNPC >= 0 && nFirstNPC < 12)
     {
         m_bForcedNPC = 1;
         m_aPartyMembers[nFirstNPC].m_bForced = 1;
     }
-    if (nSecondNPC >= 0 && nSecondNPC < 9)
+    if (nSecondNPC >= 0 && nSecondNPC < 12)
     {
         m_bForcedNPC = 1;
         m_aPartyMembers[nSecondNPC].m_bForced = 1;
@@ -92,7 +92,7 @@ void CSWGuiPartySelection::OnPanelRemoved()
         }
         ++nNPC;
         ++pData;
-    } while (nNPC < 9);
+    } while (nNPC < 12);
 #ifndef _XBOX
     CSWGuiPanel::OnPanelRemoved();
 #endif
@@ -104,7 +104,7 @@ CSWGuiPartySelection::CSWGuiPartySelection(CSWGuiManager* pManager)
     CExoString sName;
     m_bForcedNPC = 0;
     StartLoadFromLayout("partyselection");
-    for (int nNPC = 0; nNPC < 9; ++nNPC)
+    for (int nNPC = 0; nNPC < 12; ++nNPC)
     {
         sName.Format("LBL_NA%d", nNPC);
         InitControl(m_aPartyMembers[nNPC].m_lblNotAvailable, sName, 1);
@@ -195,13 +195,13 @@ void CSWGuiPartySelection::HandleInputEvent(int nEvent, int bPressed)
         if (m_bPlaySound == 0 && m_bForcedNPC == 0)
         {
 #ifdef _XBOX
-            for (int nNPC = 0; nNPC < 9; ++nNPC)
+            for (int nNPC = 0; nNPC < 12; ++nNPC)
             {
                 SetButtonToggled(m_aPartyMembers[nNPC].m_btnNPC, m_aPartyMembers[nNPC].m_nPartyIndex != -1);
             }
 #else
             CSWGuiPartySelectionData* pData = m_aPartyMembers;
-            int nCount = 9;
+            int nCount = 12;
             do
             {
 #ifdef _XBOX
@@ -585,7 +585,7 @@ void CSWGuiPartySelection::OnDone(CSWGuiControl* pControl)
             unsigned char nSelected = 0;
             unsigned char nForced = 0;
             unsigned char nSelectable = 0;
-            for (int i = 0; i < 9; ++i)
+            for (int i = 0; i < 12; ++i)
             {
                 if (m_aPartyMembers[i].m_bSelectable != 0)
                     ++nSelectable;
@@ -669,7 +669,9 @@ void CSWGuiPartySelection::OnEnter(CSWGuiControl* pControl)
                                        (unsigned long*)0))
                     sPortrait = sEvilPortrait;
             }
+#ifdef _XBOX
             m_lbl3D.m_cBorder.m_cParams.SetFillImage(sPortrait, 0);
+#endif
             CExoString sLevel;
             sLevel.Format("%s %d %s",
                 g_pTlkTable->GetSimpleString(STRREF_LEVEL).CStr(),

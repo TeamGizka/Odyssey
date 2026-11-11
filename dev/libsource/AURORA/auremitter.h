@@ -150,6 +150,8 @@ public:
     int m_nNodeID;
 
     char m_bIncludeChildBounds;
+    char m_bHologram;
+    char m_bPerObjectIllumination;
 
     List<Part*> m_lstChildren;
 
@@ -580,6 +582,7 @@ public:
     short m_pReserved1F4;
     char m_bDetonated;
     char m_pReserved1F7;
+    bool m_bWeather;
 
     void RecursiveFractal(int nIndex, int nStep, int nCount,
                           Vector vDirection, Vector vOffset, float fRange);

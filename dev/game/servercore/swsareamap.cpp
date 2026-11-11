@@ -119,7 +119,7 @@ int CSWSAreaMap::GetMapPixelFromWorldCoord(Vector vPosition, int& nMapX,
     }
     nMapX = (int)((fX - m_fOffsetX) / m_fScaleX + 0.5f);
     nMapY = (int)((fY - m_fOffsetY) / m_fScaleY + 0.5f);
-    if (nMapX >= 0 && nMapX <= 440 && nMapY >= 0 && nMapY <= 256)
+    if (nMapX >= 0 && nMapX <= 588 && nMapY >= 0 && nMapY <= 294)
     {
         return 1;
     }
@@ -146,10 +146,10 @@ float CSWSAreaMap::GetMapRotateCCWFromWorldOrientation(Vector vOrientation)
 int CSWSAreaMap::GetGridPixelFromMapPixel(int nMapX, int nMapY, int& nGridX,
                                           int& nGridY)
 {
-    if (nMapX <= 440 && nMapX >= 0 && nMapY <= 256 && nMapY >= 0)
+    if (nMapX <= 588 && nMapX >= 0 && nMapY <= 294 && nMapY >= 0)
     {
-        float fPixelsPerRow = 256.0f / m_nHeight;
-        nGridX = (int)(nMapX / (440.0f / m_nWidth) + 0.5f);
+        float fPixelsPerRow = 294.0f / m_nHeight;
+        nGridX = (int)(nMapX / (588.0f / m_nWidth) + 0.5f);
         nGridY = (int)(nMapY / fPixelsPerRow + 0.5f);
         return 1;
     }
@@ -179,7 +179,7 @@ void CSWSAreaMap::LoadSavedAreaMapData(unsigned long* pData,
 // PC 0x00574060
 void CSWSAreaMap::SetMapPointExplored(int nMapX, int nMapY)
 {
-    if (nMapX <= 440 && nMapX >= 0 && nMapY <= 256 && nMapY >= 0)
+    if (nMapX <= 588 && nMapX >= 0 && nMapY <= 294 && nMapY >= 0)
     {
         int nGridX = 0;
         int nGridY = 0;
@@ -311,8 +311,8 @@ void CSWSAreaMap::SetWorldPointExplored(Vector vPosition, int nRadius)
                 int nSpan = nRadius - abs(i);
                 for (int j = -nSpan; j <= nSpan; j++)
                 {
-                    int nX = nMapX + i * (440 / m_nWidth);
-                    int nY = nMapY + j * (256 / m_nHeight);
+                    int nX = nMapX + i * (588 / m_nWidth);
+                    int nY = nMapY + j * (294 / m_nHeight);
                     if (nX < 0)
                     {
                         nX = 0;
@@ -321,13 +321,13 @@ void CSWSAreaMap::SetWorldPointExplored(Vector vPosition, int nRadius)
                     {
                         nY = 0;
                     }
-                    if (nX > 440)
+                    if (nX > 588)
                     {
-                        nX = 440;
+                        nX = 588;
                     }
-                    if (nY > 256)
+                    if (nY > 294)
                     {
-                        nY = 256;
+                        nY = 294;
                     }
                     SetMapPointExplored(nX, nY);
                 }

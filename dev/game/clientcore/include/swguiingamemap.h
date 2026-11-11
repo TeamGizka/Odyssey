@@ -136,6 +136,7 @@ public:
     CSWGuiButton m_aPlanetButtons[PLANET_COUNT];
     CSWGuiLabel m_lblPlanetDesc;
     CSWGuiLabel m_lblPlanetName;
+    CSWGuiLabel m_alblBar[2];
     CSWGuiButton m_btnNext;
     CSWGuiButton m_btnPrev;
 #endif

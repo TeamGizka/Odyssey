@@ -294,7 +294,6 @@ CSWGuiQuickPanel::CSWGuiQuickPanel(CSWGuiManager* pManager,
 
     m_pCreature = pCreature;
     StartLoadFromLayout("QUICKPNL");
-    InitControl(m_lblDecoration, "LBL_DECORATION", 1);
     for (int i = 0; i < 3; i++)
     {
         sName.Format("LBL_%d", i + 1);

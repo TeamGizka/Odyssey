@@ -339,6 +339,13 @@ public:
 
     unsigned short m_nInventoryIndex;
     unsigned char m_aUnmapped29A[2];
+    int m_n2DC;
+    int m_n2E0;
+    int m_n2E4;
+    int m_n2E8;
+    int m_n2EC;
+    int m_n2F0;
+    int m_an2F4[6];
 
     int SaveItem(CResGFF* pRes, CResStruct* pStruct);
     int LoadItem(CResGFF* pRes, CResStruct* pStruct);

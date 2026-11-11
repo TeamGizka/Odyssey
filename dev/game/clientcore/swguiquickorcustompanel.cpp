@@ -89,9 +89,7 @@ CSWGuiQuickOrCustomPanel::CSWGuiQuickOrCustomPanel(CSWGuiManager* pManager,
     InitControl(m_cCustomButton, "CUST_CHAR_BTN", 1);
     InitControl(m_cDescriptionList, "LB_DESC", 1);
     m_cDescriptionList.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
-    InitControl(m_cDecoration, "LBL_DECORATION", 1);
     InitControl(m_cRightAnalog, "LBL_RANALOG", 1);
-    InitControl(m_cBackground, "LBL_RBG", 1);
 #ifndef _XBOX
     InitControl(m_cBackButton, "BTN_BACK", 1);
 #endif

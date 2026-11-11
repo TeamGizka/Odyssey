@@ -177,29 +177,26 @@ public:
     static int COL2DA_CREATURESPEED_WALKRATE;
 
     C2DA** m_ppIPRPCostTables;
-    C2DA** m_ppIPRPParamTables;
     unsigned char m_nIPRPCostTableCount;
+    unsigned char m_aUnknown05[3];
+    C2DA** m_ppIPRPParamTables;
     unsigned char m_nIPRPParamTableCount;
-    unsigned char m_aUnknown0A[2];
+    unsigned char m_aUnknown0D[3];
     C2DA* m_pAppearance;
     C2DA* m_pGender;
     C2DA* m_pSurfaceMaterial;
-    C2DA* m_pAreaTransition;
+    C2DA* m_pVisualEffect;
     C2DA* m_pVisualEffectsPersistent;
     C2DA* m_pCreatureSpeed;
-    C2DA* m_pDoorTypes;
     C2DA* m_pGenericDoors;
+    C2DA* m_pDoorTypes;
     C2DA* m_pPlaceables;
+    C2DA* m_pAreaTransition;
     C2DA* m_pIPRPMelee;
     C2DA* m_pItemPropDef;
     C2DA* m_pPortrait;
-    C2DA* m_pAnimations;
-    C2DA* m_pDialogAnimations;
-    C2DA* m_pHeads;
-#ifdef _XBOX
-
-    C2DA* m_pMinGlobalRim;
-#endif
+    C2DA* m_pIPRPDamage;
+    C2DA* m_pTraps;
     C2DA* m_pLightColor;
     C2DA* m_pCursor;
     C2DA* m_pAmbientMusic;
@@ -214,29 +211,27 @@ public:
 #endif
     C2DA* m_pPlaceableSounds;
     C2DA* m_pCameraStyle;
-    C2DA* m_pCombatAnimations;
+    C2DA* m_pTutorial;
     C2DA* m_pDifficultyOptions;
     C2DA* m_pGamma;
     C2DA* m_pStateScripts;
-    C2DA* m_pVisualEffect;
-    C2DA* m_pTraps;
     C2DA* m_pPoison;
     C2DA* m_pDisease;
     C2DA* m_pRepAdjustments;
     C2DA* m_pFractionalCR;
+    C2DA* m_pEncounterDifficulty;
     C2DA* m_pExcitedDuration;
     C2DA* m_pRegeneration;
-    C2DA* m_pEncounterDifficulty;
+    C2DA* m_pXpBase;
     C2DA* m_pIPRPMonsterDamage;
-    C2DA* m_pIPRPDamage;
     C2DA* m_pIPRPBonusCost;
     C2DA* m_pIPRPSRCost;
     C2DA* m_pIPRPNeg5Cost;
-    C2DA* m_pXpBase;
     C2DA* m_pRanges;
     C2DA* m_pOnHit;
     C2DA* m_pOnHitDuration;
     C2DA* m_pDamageHitVisual;
+    C2DA* m_pAnimations;
     C2DA* m_pBodyBag;
     C2DA* m_pForcePointAdjust;
     C2DA* m_pGameEffects;
@@ -244,6 +239,8 @@ public:
     C2DA* m_pWeaponDischarge;
     C2DA* m_pDroidDischarge;
     C2DA* m_pPlotXP;
+    C2DA* m_pCombatAnimations;
+    C2DA* m_pDialogAnimations;
     C2DA* m_pNPC;
     C2DA* m_pSpells;
     C2DA* m_pFeat;
@@ -252,17 +249,27 @@ public:
     C2DA* m_pJournal;
     C2DA* m_pFeedBackText;
     C2DA* m_pForceShields;
-    C2DA* m_pVideoEffects;
-    C2DA* m_pItemValues;
-    C2DA* m_pTutorial;
-    C2DA* m_pMovies2DA;
-
-    C2DA* m_pEffectIcon;
-
-    C2DA* m_pRemoveFXOnDeath;
-#ifndef _XBOX
-    C2DA* m_pTexPacks;
+    C2DA* m_pHeads;
+#ifdef _XBOX
+    C2DA* m_pMinGlobalRim;
 #endif
+    C2DA* m_pItemValues;
+    C2DA* m_pVideoEffects;
+    C2DA* m_pMovies2DA;
+    C2DA* m_pEffectIcon;
+    C2DA* m_pRemoveFXOnDeath;
+    C2DA* m_pTexPacks;
+    C2DA* m_pSubrace;
+    C2DA* m_pIPRPPC;
+    C2DA* m_pInfluence;
+    C2DA* m_pItemCreate;
+    C2DA* m_pChemicalCreate;
+    C2DA* m_pSwoopUpgrade;
+    C2DA* m_pMusic;
+    C2DA* m_pAlienVO;
+    C2DA* m_pEmotion;
+    C2DA* m_pAutoBalance;
+    C2DA* m_pAIScripts;
 
     CTwoDimArrays();
     ~CTwoDimArrays();

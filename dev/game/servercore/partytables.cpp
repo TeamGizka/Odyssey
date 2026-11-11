@@ -162,7 +162,7 @@ void CSWPartyTable::SetSoloMode(int bSoloMode, int bUnstealth)
 // PC 0x0057CF10
 void CSWPartyTable::UpdateMembers(int bClearActions)
 {
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < 12; i++)
     {
         SaveMember(i, bClearActions);
     }
@@ -170,7 +170,7 @@ void CSWPartyTable::UpdateMembers(int bClearActions)
 #ifndef _XBOX
 int CSWPartyTable::RemoveMember(int nNPC)  // PC 0x0057EB80
 {
-    if (m_nControlledNPC != -1 || m_nNumMembers <= 0 || nNPC < 0 || nNPC >= 9 ||
+    if (m_nControlledNPC != -1 || m_nNumMembers <= 0 || nNPC < 0 || nNPC >= 12 ||
         m_abNPCAvailable[nNPC] == 0)
     {
         return 0;
@@ -204,7 +204,7 @@ int CSWPartyTable::RemoveMember(int nNPC)  // PC 0x0057EB80
 #endif
 int CSWPartyTable::AddMember(int nNPC, unsigned long oidMember)  // PC 0x0057D020
 {
-    if (m_nControlledNPC == -1 && m_nNumMembers != 2 && nNPC >= 0 && nNPC < 9 &&
+    if (m_nControlledNPC == -1 && m_nNumMembers != 2 && nNPC >= 0 && nNPC < 12 &&
         m_abNPCAvailable[nNPC] != 0 &&
         g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(oidMember) !=
             NULL)
@@ -216,7 +216,7 @@ int CSWPartyTable::AddMember(int nNPC, unsigned long oidMember)  // PC 0x0057D02
                 return 0;
             }
         }
-        for (int j = 0; j < 9; j++)
+        for (int j = 0; j < 12; j++)
         {
             if (j != nNPC && m_aoidNPC[j] == oidMember)
             {
@@ -349,7 +349,7 @@ void CSWPartyTable::CreateParty()
         {
             TransferInventory(pPlayer);
         }
-        for (int j = 0; j < 9; j++)
+        for (int j = 0; j < 12; j++)
         {
             CSWSCreature* pNPCCreature =
                 pServerExoApp->GetCreatureByGameObjectID(m_aoidNPC[j]);
@@ -364,7 +364,7 @@ void CSWPartyTable::CreateParty()
         {
             pPlayer->ForceEquipClothing();
         }
-        for (int k = 0; k < 9; k++)
+        for (int k = 0; k < 12; k++)
         {
             CSWSCreature* pNPCCreature =
                 pServerExoApp->GetCreatureByGameObjectID(m_aoidNPC[k]);
@@ -617,7 +617,7 @@ void CSWPartyTable::Save(const CExoString& sAlias, int bSaveMembers)
 {
     if (bSaveMembers != 0)
     {
-        for (int i = 0; i < 9; i++)
+        for (int i = 0; i < 12; i++)
         {
             SaveMember(i, 0);
         }
@@ -664,7 +664,7 @@ void CSWPartyTable::ClearTable()
     m_nLeader = -1;
     m_bInventoryDirty = 0;
 
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < 12; i++)
     {
         m_abNPCAvailable[i] = 0;
         m_anNPCSelectability[i] = 1;
@@ -778,7 +778,7 @@ CExoString CSWPartyTable::GetFilename(int nNPC)
 // PC 0x00579B80
 int CSWPartyTable::GetIsNPCAvailable(int nNPC)
 {
-    if (nNPC >= 0 && nNPC < 9)
+    if (nNPC >= 0 && nNPC < 12)
     {
         return m_abNPCAvailable[nNPC];
     }
@@ -789,7 +789,7 @@ unsigned char CSWPartyTable::GetNumNPCAvailable()
 {
     unsigned char nNum = 0;
     int* pAvailable = m_abNPCAvailable;
-    for (int i = 9; i != 0; i--)
+    for (int i = 12; i != 0; i--)
     {
         if (*pAvailable != 0)
         {
@@ -802,7 +802,7 @@ unsigned char CSWPartyTable::GetNumNPCAvailable()
 // PC 0x00579C00
 int CSWPartyTable::SetNPCObject(int nNPC, unsigned long oidNPC)
 {
-    if (nNPC >= 0 && nNPC < 9 && m_abNPCAvailable[nNPC] != 0)
+    if (nNPC >= 0 && nNPC < 12 && m_abNPCAvailable[nNPC] != 0)
     {
         m_aoidNPC[nNPC] = oidNPC;
     }
@@ -823,7 +823,7 @@ int CSWPartyTable::GetIsMember(int nNPC)
 // PC 0x00579CB0
 int CSWPartyTable::GetIsMember(unsigned long oidObject)
 {
-    for (int nNPC = 0; nNPC < 9; nNPC++)
+    for (int nNPC = 0; nNPC < 12; nNPC++)
     {
         if (oidObject == m_aoidNPC[nNPC])
         {
@@ -842,7 +842,7 @@ int CSWPartyTable::GetIsMember(unsigned long oidObject)
 // PC 0x00579D00
 int CSWPartyTable::GetIsAvailable(unsigned long oidObject)
 {
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < 12; i++)
     {
         if (oidObject == m_aoidNPC[i])
         {
@@ -854,7 +854,7 @@ int CSWPartyTable::GetIsAvailable(unsigned long oidObject)
 // PC 0x00579D30
 unsigned char CSWPartyTable::GetNPCSelectability(int nNPC)
 {
-    if (nNPC >= 0 && nNPC < 9 && m_abNPCAvailable[nNPC] != 0)
+    if (nNPC >= 0 && nNPC < 12 && m_abNPCAvailable[nNPC] != 0)
     {
         return m_anNPCSelectability[nNPC];
     }
@@ -863,7 +863,7 @@ unsigned char CSWPartyTable::GetNPCSelectability(int nNPC)
 // PC 0x00579D60
 int CSWPartyTable::SetNPCSelectability(int nNPC, unsigned char nSelectability)
 {
-    if (nNPC >= 0 && nNPC < 9 && m_abNPCAvailable[nNPC] != 0)
+    if (nNPC >= 0 && nNPC < 12 && m_abNPCAvailable[nNPC] != 0)
     {
         m_anNPCSelectability[nNPC] = nSelectability;
     }
@@ -872,7 +872,7 @@ int CSWPartyTable::SetNPCSelectability(int nNPC, unsigned char nSelectability)
 #ifndef _XBOX
 int CSWPartyTable::KillNPCObject(int nNPC, int bFade)  // PC 0x00579D80
 {
-    if (nNPC < 0 || nNPC >= 9)
+    if (nNPC < 0 || nNPC >= 12)
     {
         return 0;
     }
@@ -912,7 +912,7 @@ int CSWPartyTable::GetNPCID(unsigned long oidObject)  // PC 0x00579EB0
         return -1;
     }
 
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < 12; i++)
     {
         if (m_aoidNPC[i] == oidObject)
         {
@@ -943,7 +943,7 @@ void CSWPartyTable::RemoveGameInProgress()
 // PC 0x0057A010
 int CSWPartyTable::ClearMembers()
 {
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < 12; i++)
     {
         m_aoidNPC[i] = OBJECT_INVALID;
     }
@@ -952,7 +952,7 @@ int CSWPartyTable::ClearMembers()
 // PC 0x0057A070
 int CSWPartyTable::ClearMember(int nNPC)
 {
-    if (nNPC >= 0 && nNPC < 9)
+    if (nNPC >= 0 && nNPC < 12)
     {
         m_aoidNPC[nNPC] = OBJECT_INVALID;
     }
@@ -966,7 +966,7 @@ int CSWPartyTable::GetIsLeader(unsigned long oidObject)
         return 0;
     }
 
-    for (int nNPC = 0; nNPC < 9; nNPC++)
+    for (int nNPC = 0; nNPC < 12; nNPC++)
     {
         if (oidObject == m_aoidNPC[nNPC])
         {
@@ -981,7 +981,7 @@ void CSWPartyTable::SetLeader(unsigned long oidObject)
     m_nLeader = -1;
     if (oidObject != OBJECT_INVALID)
     {
-        for (int i = 0; i < 9; i++)
+        for (int i = 0; i < 12; i++)
         {
             if (oidObject == m_aoidNPC[i])
             {
@@ -1202,7 +1202,7 @@ void CSWPartyTable::SaveJournal(CResGFF* pRes, CResStruct* pStruct)
 // PC 0x0057A7A0
 void CSWPartyTable::SaveMember(int nNPC, int bClearActions)
 {
-    if (nNPC >= 0 && nNPC < 9)
+    if (nNPC >= 0 && nNPC < 12)
     {
         CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
         CSWSCreature* pCreature =
@@ -1365,7 +1365,7 @@ int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x0057B260
 #endif
 int CSWPartyTable::AddNPC(int nNPC, const CExoString& sTemplate)  // PC 0x0057B760
 {
-    if (nNPC < 0 || nNPC >= 9 || m_abNPCAvailable[nNPC] != 0)
+    if (nNPC < 0 || nNPC >= 12 || m_abNPCAvailable[nNPC] != 0)
     {
         return 0;
     }
@@ -1390,7 +1390,7 @@ int CSWPartyTable::RemoveNPC(int nNPC)
         return 0;
     }
 
-    if (nNPC >= 9)
+    if (nNPC >= 12)
     {
         return 0;
     }
@@ -1406,7 +1406,7 @@ int CSWPartyTable::RemoveNPC(int nNPC)
 // PC 0x0057BB30
 unsigned long CSWPartyTable::GetNPCObject(int nNPC, int bLoad, int bResurrect)
 {
-    if (nNPC >= 0 && nNPC < 9 && m_abNPCAvailable[nNPC] != 0)
+    if (nNPC >= 0 && nNPC < 12 && m_abNPCAvailable[nNPC] != 0)
     {
         if (m_aoidNPC[nNPC] != OBJECT_INVALID)
         {
@@ -1793,7 +1793,7 @@ int CSWPartyTable::SwitchPlayerCharacter(int nNPC)
 
 int CSWPartyTable::RemoveMember(int nNPC)
 {
-    if (m_nControlledNPC == -1 && m_nNumMembers > 0 && nNPC >= 0 && nNPC < 9 &&
+    if (m_nControlledNPC == -1 && m_nNumMembers > 0 && nNPC >= 0 && nNPC < 12 &&
         m_abNPCAvailable[nNPC] != 0)
     {
         CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -1825,7 +1825,7 @@ int CSWPartyTable::RemoveMember(int nNPC)
 
 int CSWPartyTable::KillNPCObject(int nNPC, int bFade)
 {
-    if (nNPC < 0 || nNPC >= 9)
+    if (nNPC < 0 || nNPC >= 12)
     {
         return 0;
     }

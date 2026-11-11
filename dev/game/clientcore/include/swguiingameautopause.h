@@ -29,7 +29,7 @@ public:
 #ifdef _XBOX
     CSWGuiLabel m_lblA; CSWGuiLabel m_lblB; CSWGuiLabel m_lblSelect; CSWGuiLabel m_lblBack; CSWGuiLabel m_lblRAnalog; CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblTitle; CSWGuiListBox m_lbxDetails;
 #else
-    CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblTitle; CSWGuiButton m_btnBack; CSWGuiButton m_btnDefault; CSWGuiListBox m_lbxDetails;
+    CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblTitle; CSWGuiButton m_btnBack; CSWGuiButton m_btnDefault; CSWGuiLabel m_alblBar[4]; CSWGuiListBox m_lbxDetails;
 #endif
 };
 

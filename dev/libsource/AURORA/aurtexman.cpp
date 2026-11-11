@@ -583,6 +583,19 @@ int CAurTexture::GetHeight()
     }
 }
 // PC 0x004206B0
+int CAurTexture::GetDepth()
+{
+    CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
+    if (pTexture != NULL)
+    {
+        return pTexture->m_nDepth;
+    }
+    else
+    {
+        return 0;
+    }
+}
+// PC 0x00420730
 int CAurTexture::GetBPP()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -2397,7 +2410,7 @@ void CAurTextureBasic::AddToOrderedLists()
             m_DynamicTextureList.allocate(
                 m_DynamicTextureList.m_nAllocated != 0
                     ? 2 * m_DynamicTextureList.m_nAllocated
-                    : 8);
+                    : List<CAurTextureBasic*>::INITIAL_ALLOCATION);
         }
         m_DynamicTextureList.m_pList[m_DynamicTextureList.m_nCount] = this;
         m_DynamicTextureList.m_nCount++;
@@ -2409,7 +2422,7 @@ void CAurTextureBasic::AddToOrderedLists()
             m_StaticTextureList.allocate(
                 m_StaticTextureList.m_nAllocated != 0
                     ? 2 * m_StaticTextureList.m_nAllocated
-                    : 8);
+                    : List<CAurTextureBasic*>::INITIAL_ALLOCATION);
         }
         m_StaticTextureList.m_pList[m_StaticTextureList.m_nCount] = this;
         m_StaticTextureList.m_nCount++;

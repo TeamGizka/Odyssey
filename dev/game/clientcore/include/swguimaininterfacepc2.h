@@ -212,7 +212,11 @@ public:
     enum LabelIndex
     {
         LABEL_BACK, LABEL_DEBILATATED, LABEL_DISABLED,
+#ifdef _XBOX
         LABEL_LEVELUP, LABEL_LVLUPBG, LABEL_CHAR
+#else
+        LABEL_LEVELUP, LABEL_CHAR
+#endif
     };
     enum BarIndex { BAR_VIT, BAR_FORCE };
 #ifndef _XBOX
@@ -226,10 +230,11 @@ public:
     CExoString m_sName;
     CExoString m_sDescription;
 #endif
-    CSWGuiLabel m_aLabels[6];
 #ifndef _XBOX
-    CSWGuiProgressBar m_aBars[2];
+    CSWGuiLabel m_aLabels[5];
+    CSWGuiProgressBarReveal m_aBars[2];
 #else
+    CSWGuiLabel m_aLabels[6];
     CSWGuiCharBar m_aBars[2];
 #endif
     CSWGuiLabel m_cBuffLabel;
@@ -384,7 +389,7 @@ public:
     float m_fActionDescriptionTimer;
 
     unsigned long m_nActionDescription;
-    CExoArrayList<CSWGuiInterfaceAction> m_aPersonalActionLists[6];
+    CExoArrayList<CSWGuiInterfaceAction> m_aPersonalActionLists[7];
     CSWGuiTargetActionMenu m_cTargetActionMenu;
 #endif
 #ifndef _XBOX
@@ -394,10 +399,12 @@ public:
     }
 #endif
 #ifndef _XBOX
-    int m_aSelectedPersonalActions[6];
+    int m_aSelectedPersonalActions[7];
     int m_nDefaultAction;
+    float m_f1C90;
+    float m_f1C94;
 
-    CSWGuiLabel m_aMoulding[3];
+    CSWGuiLabel m_aMoulding[2];
 
     CSWGuiMainInterfaceChar m_aCharacters[3];
     CSWGuiMainInterfaceChar m_cTransitionCharacter;
@@ -421,7 +428,7 @@ public:
     CSWGuiButton m_btnMinimap;
 
     CSWGuiLabel m_aActionIcons[ACTION_QUEUE_ICON_COUNT];
-    CSWGuiLabel m_aCombatbg[ACTION_ICON_COUNT - ACTION_QUEUE_FIRST_ICON];
+    CSWGuiLabel m_aCombatbg[2];
     CSWGuiLabelHilight m_CSWGuiLabelHilight_6B1C;
     CSWGuiButton m_btnClearone;
     CSWGuiButton m_btnClearone2;
@@ -437,7 +444,7 @@ public:
     float m_fCombatMessageTime;
     unsigned long m_nCombatMessage;
 
-    CSWGuiMainInterfaceAction m_aPersonalActions[6];
+    CSWGuiMainInterfaceAction m_aPersonalActions[7];
     CSWGuiLabel m_cActionText;
     CSWGuiLabel m_cActionTextBack;
     int m_nActionTextBottom;
@@ -445,7 +452,7 @@ public:
     char gap_A459[3];
     CSWGuiControlFlags m_cActionDescriptionState;
 
-    CSWGuiMainInterfaceStatus m_aEffects[9];
+    CSWGuiMainInterfaceStatus m_aEffects[13];
     CSWGuiButton m_btnEqu;
     CSWGuiButton m_btnInv;
     CSWGuiButton m_btnChar;
@@ -459,6 +466,8 @@ public:
     CSWGuiButtonToggle m_tbPause;
     CSWGuiButtonToggle m_tbSolo;
     CSWGuiButtonToggle m_tbStealth;
+    CSWGuiButton m_btnSwapWeapons;
+    CSWGuiButton m_btnD56C;
 
     CAurGUIImageInternal* m_pBlackDot;
 #else

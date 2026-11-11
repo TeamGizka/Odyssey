@@ -19,6 +19,7 @@ struct CPazaakCard
     {
         m_nType = nType;
         m_bFlipped = 0;
+        m_n08 = 0;
     }
 
     int GetCardValue()
@@ -38,6 +39,7 @@ struct CPazaakCard
 
     int m_nType;
     int m_bFlipped;
+    int m_n08;
 };
 
 class CPazaakPlayer

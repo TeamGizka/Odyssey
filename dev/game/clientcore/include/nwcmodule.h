@@ -138,6 +138,7 @@ public:
     int m_nReserved104;
     int m_nReserved108;
     CCameraSettings m_cameraSettings;
+    int m_n12C;
     Gob* m_pAnimatedCamera;
     CExoString m_sAnimatedCamera;
 #ifdef _XBOX

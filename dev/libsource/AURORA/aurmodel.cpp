@@ -3057,6 +3057,39 @@ TileData::~TileData()
 {
     delete m_pStaticObject;
 }
+// PC 0x00458990
+void Gob::SetAllEmitterAsWeather(Part* pPart, bool bWeather)
+{
+    PartEmitter* pEmitter = pPart->AsPartEmitter();
+    if (pEmitter)
+    {
+        pEmitter->m_bWeather = bWeather;
+    }
+    for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)
+    {
+        SetAllEmitterAsWeather(pPart->m_lstChildren[i], bWeather);
+    }
+}
+// PC 0x00458CD0
+void Gob::EnableHologramRendering(Part* pPart, bool bEnable)
+{
+    m_bHologram = bEnable;
+    pPart->m_bHologram = bEnable;
+    for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)
+    {
+        EnableHologramRendering(pPart->m_lstChildren[i], bEnable);
+    }
+}
+// PC 0x00458F50
+void Gob::EnablePerObjectIllumination(Part* pPart, bool bEnable)
+{
+    pPart->m_bPerObjectIllumination = bEnable;
+    m_bPerObjectIllumination = bEnable;
+    for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)
+    {
+        EnablePerObjectIllumination(pPart->m_lstChildren[i], bEnable);
+    }
+}
 
 const char* setgobwind(char* sCommand)
 {

@@ -76,7 +76,7 @@ struct CSWClass
         SPELL_RECOMMEND_LIGHT = 1
     };
 
-    enum { MAX_FEAT_GAIN_LEVELS = 20 };
+    enum { MAX_FEAT_GAIN_LEVELS = 50 };
     CSWClass();
     ~CSWClass();
 
@@ -275,8 +275,8 @@ struct CSWClass
     unsigned char m_aUnknown10B[1];
     unsigned char* m_pArmorBonus;
     unsigned char** m_ppSpellsKnown;
-    unsigned char m_aNumSpellLevels[20];
-    unsigned char m_aSpellGain[20];
+    unsigned char m_aNumSpellLevels[50];
+    unsigned char m_aSpellGain[50];
     unsigned char m_aBonusFeatGain[MAX_FEAT_GAIN_LEVELS];
     unsigned char m_aFeatGain[MAX_FEAT_GAIN_LEVELS];
     CSWClassSkill* m_pSkills;
@@ -294,7 +294,7 @@ struct CSWClass
     unsigned char m_nCharisma;
     unsigned char m_nAlignRestrict;
     unsigned char m_nAlignRestrictType;
-    unsigned char m_aEffectiveCRLevel[21];
+    unsigned char m_aEffectiveCRLevel[51];
     int m_bPlayerClass;
     int m_bSpellCaster;
 };

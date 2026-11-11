@@ -63,6 +63,14 @@ public:
     CSWGuiLabel m_lblFortitude;
     CSWGuiLabel m_lblReflex;
     CSWGuiLabel m_lblWill;
+#ifndef _XBOX
+    CSWGuiLabel m_lblStatsBack;
+    CSWGuiLabel m_lblStatsBorder;
+    CSWGuiLabel m_lblPortBorder;
+    CSWGuiLabel m_lblVitName;
+    CSWGuiLabel m_lblDefName;
+    CSWGuiLabel m_alblBar[1];
+#endif
 #ifdef _XBOX
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblB;

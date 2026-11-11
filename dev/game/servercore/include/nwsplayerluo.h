@@ -51,8 +51,8 @@ public:
     void ItemListAddHead(unsigned long oidItem, unsigned char nList,
                          unsigned long nStackSize, unsigned long nCost);
 
-    unsigned long m_oidSlot[18];
-    int m_nSlotIndex[18];
+    unsigned long m_oidSlot[20];
+    int m_nSlotIndex[20];
     CExoLinkedList<CSWSPlayerLUOInventoryItem> m_lstRepository;
     unsigned long m_oidRepository;
     CExoLinkedList<CSWSPlayerLUOInventoryItem> m_lstContainer;
@@ -81,6 +81,8 @@ public:
                        unsigned long nSpell);
     void ClearSpellAddDeleteLists();
 
+    int m_nComponent;
+    int m_nChemical;
     unsigned long m_nGold;
     short m_nArmorClass;
     short m_nEncumbranceState;
@@ -216,7 +218,9 @@ public:
     unsigned char m_nClassLevel[2];
     char m_nUnknown116[2];
     short m_nGoodEvilAlignment;
-    char m_nUnknown11A[2];
+    short m_n11A;
+    int m_n11C;
+    CExoString m_s120;
     int m_nObjectF4;
     int m_nAreaWaitState;
 

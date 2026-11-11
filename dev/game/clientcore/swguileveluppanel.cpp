@@ -361,7 +361,6 @@ CSWGuiLevelUpPanel::CSWGuiLevelUpPanel(CSWGuiManager* pManager,
     nNumber = 0;
 
     StartLoadFromLayout("LEVELUPPNL");
-    InitControl(m_lblBackground, "LBL_BG", 1);
     for (int i = 0; i < 5; i++)
     {
         sName.Format("LBL_%d", i + 1);

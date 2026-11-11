@@ -126,6 +126,7 @@ public:
     unsigned char m_nTrapType;
     int m_nTrapDetectDC;
     int m_nTrapDisarmDC;
+    int m_n320;
     float m_fHighlightHeight;
     unsigned long m_oidCreator;
     float m_fBoundingMinX;
@@ -133,7 +134,6 @@ public:
     float m_fBoundingMinY;
     float m_fBoundingMaxY;
 
-    int m_nCustomScriptEventId;
     unsigned char m_nCursor;
     unsigned long m_nLastHeartbeatTime;
     unsigned long m_nLastHeartbeatDay;

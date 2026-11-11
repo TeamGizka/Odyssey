@@ -130,6 +130,55 @@ public:
     virtual void DisableRenderBumpedOut() = 0;
     virtual void SetMaxBlurLength(float fLength) = 0;
     virtual float GetMaxBlurLength() = 0;
+    virtual void SetForcePoints(short nForcePoints)  // PC 0x005EE1C0
+    {
+    }
+    virtual short GetForcePoints()  // PC 0x0045CCE0
+    {
+        return 0;
+    }
+    virtual void SetAlignmentValue(short nAlignmentValue)  // PC 0x005EE1C0
+    {
+    }
+    virtual short GetAlignmentValue()  // PC 0x0045CCE0
+    {
+        return 0;
+    }
+    virtual void SetForceGlowColor(float fRed, float fGreen, float fBlue,
+                                   float fAlpha)  // PC 0x00693D50
+    {
+    }
+    virtual void GetForceGlowColor(float& fRed, float& fGreen, float& fBlue,
+                                   float& fAlpha)  // PC 0x0045CCF0
+    {
+        fRed = 0.0f;
+        fGreen = 0.0f;
+        fBlue = 0.0f;
+        fAlpha = 0.0f;
+    }
+    virtual void EnableForceGlow(bool bEnable)  // PC 0x005EE1C0
+    {
+    }
+    virtual bool IsForceGlowEnabled()  // PC 0x00420990
+    {
+        return false;
+    }
+    virtual void SetNonForceBlending(bool bNonForceBlending)  // PC 0x005EE1C0
+    {
+    }
+    virtual bool IsNonForceBlending()  // PC 0x00420990
+    {
+        return false;
+    }
+    virtual void SetEmitterAsWeather(bool bWeather) = 0;
+    virtual void EnableHologram(bool bEnable) = 0;
+    virtual bool IsHologramEnabled() = 0;
+    virtual void EnableIllumination(bool bEnable, float fRed, float fGreen,
+                                    float fBlue) = 0;
+    virtual bool IsIlluminationEnable() = 0;
+    virtual void GetIlluminationColor(float& fRed, float& fGreen, float& fBlue) = 0;
+    virtual void EnableRendering(bool bEnable) = 0;
+    virtual bool IsRenderingEnabled() = 0;
     void AnimateExternal(float);
 
 };

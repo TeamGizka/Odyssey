@@ -215,9 +215,6 @@ public:
     unsigned long m_bLoadingLayout : 1;
     unsigned long m_bVisible : 1;
     unsigned long m_bModal : 1;
-#ifndef _XBOX
-    unsigned long m_bOverlay : 1;
-#endif
     unsigned long m_bCenterHorizontal : 1;
     unsigned long m_bCenterVertical : 1;
     unsigned long m_bNeedsDraw : 1;
@@ -335,9 +332,6 @@ public:
     short m_nWidth;
     short m_nHeight;
     unsigned char m_nBackgroundPanels;
-#ifndef _XBOX
-    char m_nCountedPanels;
-#endif
     unsigned char m_nLastDirection;
 #ifndef _XBOX
     CExoString m_sBackground;
@@ -511,9 +505,11 @@ public:
     int m_nLblRAnalogRightOffset;
 #endif
     int m_nPreviousInputClass;
+    int m_n9BC;
 #ifndef _XBOX
     int m_bFocusOk;
 #endif
+    int m_n9C4;
 };
 
 struct CSWGuiTimedControl
@@ -582,6 +578,7 @@ public:
     unsigned long : 27;
 #ifndef _XBOX
     int m_nStackSize;
+    int m_n38;
 #endif
 };
 #ifndef _XBOX

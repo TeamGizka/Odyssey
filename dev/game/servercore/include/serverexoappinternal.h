@@ -404,8 +404,10 @@ public:
     unsigned int m_bLevelUpSound : 1;
     unsigned int m_bNewQuestSound : 1;
     unsigned int m_bCompleteSound : 1;
+    unsigned int m_bDarkAlignSound : 1;
+    unsigned int m_bLightAlignSound : 1;
     unsigned int m_bCreditsNet : 1;
-    unsigned int : 23;
+    unsigned int : 21;
     unsigned char m_nLightShift;
     unsigned char m_nDarkShift;
     char m_aUnmapped6[2];
@@ -413,6 +415,10 @@ public:
     int m_nExperience;
     int m_nStealthExperience;
     int m_nSuppressed;
+    int m_nInfluenceGain;
+    int m_nInfluenceLost;
+    int m_nMaxForcePointsGain;
+    int m_nMaxForcePointsLost;
     int SaveToGFF(CResGFF* pRes, CResStruct& stStruct);
     int LoadFromGFF(CResGFF* pGFF, CResStruct& cStruct);
 };

@@ -194,6 +194,7 @@ public:
     CSWSArea* m_pServerArea;
 #ifndef _XBOX
     CExoLinkedList<CSWBehaviorAttachSound> m_lstRoomSounds;
+    CExoArrayList<CAurObject*> m_a288;
 #endif
 };
 

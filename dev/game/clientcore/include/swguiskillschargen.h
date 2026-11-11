@@ -63,7 +63,6 @@ public:
     CSWGuiLabel m_lblRemainingBox;
     CSWGuiLabel m_lblRemainingSelections;
     CSWGuiLabel m_lblSelectionsRemaining;
-    CSWGuiLabel m_lblDescriptionHeader;
     CSWGuiLabel m_lblCost;
     CSWGuiLabel m_lblCostPoints;
     CSWGuiLabel m_lblClassSkill;
@@ -89,6 +88,7 @@ public:
     CSWGuiButton m_btnRecommended;
     CSWGuiButton m_btnPlus[8];
     CSWGuiButton m_btnMinus[8];
+    CSWGuiLabel m_alblBar[2];
 #endif
     CExoString m_sDescription[8];
 #ifdef _XBOX

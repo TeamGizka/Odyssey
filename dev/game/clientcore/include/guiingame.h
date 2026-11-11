@@ -16,7 +16,7 @@ const unsigned char GUI_STATUS_LIGHT_SHIFT = 5;
 const unsigned char GUI_STATUS_NET_SHIFT = 6;
 const unsigned char GUI_STATUS_ITEM_RECEIVED = 7;
 const unsigned char GUI_STATUS_ITEM_LOST = 8;
-const unsigned char GUI_STATUS_COUNT = 9;
+const unsigned char GUI_STATUS_COUNT = 13;
 
 const unsigned char GUI_STATUS_LEVEL_UP = 9;
 const unsigned char GUI_STATUS_NEW_QUEST = 10;
@@ -31,6 +31,9 @@ class CSWGuiDialogComputer;
 class CSWGuiDialogLetterbox;
 class CSWGuiFade;
 class CSWGuiControllerLossBox;
+class CSWGuiCreateMedicalItem;
+class CSWGuiDeathDisplay;
+class CSWDemoScreen;
 class CSWGuiCreateItemMenu;
 class CSWGuiCreateItemSubMenu;
 class CSWGuiContainer;
@@ -49,6 +52,7 @@ class CSWGuiMessageBox;
 class CSWGuiPanel;
 class CSWGuiPartySelection;
 class CSWGuiSkillInfoBox;
+class CSWGuiSwoopUpgrade;
 class CSWGuiStore;
 class CSWGuiStatusSummary;
 class CSWGuiTutorialBox;
@@ -130,7 +134,7 @@ public:
 
     enum { MESSAGE_BUFFER_CAPACITY = 64 };
 
-    enum { MAX_PLACEABLE_CAMERAS = 50 };
+    enum { MAX_PLACEABLE_CAMERAS = 70 };
 
     enum { IN_GAME_SCREEN_COUNT = 8 };
 
@@ -497,14 +501,20 @@ public:
     CSWGuiStore* m_pStorePanel;
 
     CSWGuiUpgradeSelection* m_pUpgradeScreen;
+    CSWGuiCreateMedicalItem* m_pChemicalUpgradeScreen;
+    CSWGuiSwoopUpgrade* m_pSwoopUpgradeScreen;
     CSWGuiInGameSoloModeQuery* m_pSoloModeQuery;
     CSWGuiMainInterface* m_pMainInterface;
     CSWGuiInGameAreaTransition* m_pAreaTransition;
     CSWGuiMessageBox* m_pMessageBox;
+    CSWGuiMessageBox* m_pA4;
+    CSWGuiDeathDisplay* m_pDeathDisplay;
     CSWGuiSkillInfoBox* m_pSkillInfoBox;
     CSWGuiTutorialBox* m_pTutorialBox;
     CSWGuiControllerLossBox* m_pControllerLossBox;
     CSWGuiStatusSummary* m_pStatusSummary;
+    int m_nBC;
+    CSWDemoScreen* m_pDemoScreen;
     CStatusSummary* m_pPendingStatusSummary;
     int m_bDialogEntryShown;
     int m_nGlobalDialogState;
@@ -524,8 +534,10 @@ public:
     float m_fComputerCameraMicRange;
     CGuiInGameMessage* m_pMessageBuffer;
     CGuiInGameDialogMessage* m_pDialogBuffer;
+    CGuiInGameMessage* m_pCombatBuffer;
     unsigned long m_MessageBufferSize;
     unsigned long m_nDialogBufferSize;
+    unsigned long m_nCombatBufferSize;
     int m_bItemCreateMenuAvailable;
     int m_LevelUpMode;
 
@@ -609,8 +621,8 @@ public:
     unsigned char m_aUnknownB9C[0xBA4 - 0xB9C];
 #endif
     unsigned long m_oidPostDialogCharacterSwitch;
-    unsigned char m_aTutorialWindowsShown[6];
-    unsigned char m_aUnknownBAE[2];
+    unsigned char m_aTutorialWindowsShown[33];
+    unsigned char m_aUnmappedFA9[7];
 #ifdef _XBOX
 
     int m_bCreditSequenceInProgress;
@@ -657,6 +669,12 @@ public:
 
     int m_bCameraRelativeAreaTransition;
     int m_bDanceDanceMalak;
+    int m_n1024;
+    int m_n1028;
+    int m_n102C;
+    CExoArrayList<CExoLocString> m_a1030;
+    CExoArrayList<unsigned long> m_a103C;
+    CExoArrayList<unsigned long> m_a1048;
 #endif
     void ShowGalaxyMapGui(int nPlanet);
     int ShowLevelUpGUI(int nArg1);

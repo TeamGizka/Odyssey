@@ -137,7 +137,7 @@ int CSWTrackFollower::SetMaxHitPoints(int nHitPoints)
 // PC 0x006C1B90
 CResRef CSWTrackFollower::GetScriptName(int nScript)
 {
-    if (nScript < 0 || nScript >= 10)
+    if (nScript < 0 || nScript >= NUM_SCRIPTS)
     {
         return CResRef();
     }
@@ -146,7 +146,7 @@ CResRef CSWTrackFollower::GetScriptName(int nScript)
 // PC 0x006C1BE0
 void CSWTrackFollower::SetScriptName(int nScript, const CResRef& resRef)
 {
-    if (nScript < 0 || nScript >= 10)
+    if (nScript < 0 || nScript >= NUM_SCRIPTS)
     {
         return;
     }
@@ -1363,9 +1363,9 @@ CSWMiniPlayer::CSWMiniPlayer(CSWMiniGame* pMiniGame)
     m_bSpeedOverride = 0;
     m_pCameraHook = 0;
 
-    m_lstPositionKeys.SetSize(4);
-    m_lstOrientationKeys.SetSize(4);
-    m_lstKeyAddresses.SetSize(8);
+    m_lstPositionKeys.SetSize(8);
+    m_lstOrientationKeys.SetSize(8);
+    m_lstKeyAddresses.SetSize(16);
     m_lstPositionKeys.num = 0;
     m_lstOrientationKeys.num = 0;
 }

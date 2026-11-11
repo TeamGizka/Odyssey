@@ -69,7 +69,6 @@ public:
     CSWGuiLabel m_lblRecommended;
     CSWGuiLabel m_lblAccept;
 #endif
-    CSWGuiLabel m_lblDescriptionHeader;
     CSWGuiLabel m_lblUnmapped7EC;
     CSWGuiLabel m_lblUnmapped92C;
     CSWGuiLabel m_lblDescription;
@@ -90,6 +89,7 @@ public:
     CSWGuiButton m_btnSelect;
     CSWGuiButton m_btnAccept;
     CSWGuiButton m_btnBack;
+    CSWGuiLabel m_alblBar[2];
 #endif
     unsigned char m_nPowersRemaining;
     unsigned char m_nSpellLevel;

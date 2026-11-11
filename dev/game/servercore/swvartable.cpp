@@ -4,15 +4,15 @@
 // PC 0x005A11E0
 CSWVarTable::CSWVarTable()
 {
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 5; i++)
         m_nLocalBoolean[i] = 0;
-    for (int j = 0; j < 8; j++)
+    for (int j = 0; j < 32; j++)
         m_aLocalNumber[j] = 0;
 }
 // PC 0x005A1210
 int CSWVarTable::GetLocalBoolean(int nIndex)
 {
-    if (nIndex < 0 || nIndex >= 96)
+    if (nIndex < 0 || nIndex >= 160)
     {
         return 0;
     }
@@ -21,7 +21,7 @@ int CSWVarTable::GetLocalBoolean(int nIndex)
 // PC 0x005A1260
 void CSWVarTable::SetLocalBoolean(int nIndex, int bValue)
 {
-    if (nIndex < 0 || nIndex >= 96)
+    if (nIndex < 0 || nIndex >= 160)
     {
         return;
     }
@@ -38,7 +38,7 @@ void CSWVarTable::SetLocalBoolean(int nIndex, int bValue)
 // PC 0x005A12E0
 unsigned char CSWVarTable::GetLocalNumber(int nIndex)
 {
-    if (nIndex < 0 || nIndex >= 8)
+    if (nIndex < 0 || nIndex >= 32)
     {
         return 0;
     }
@@ -47,7 +47,7 @@ unsigned char CSWVarTable::GetLocalNumber(int nIndex)
 // PC 0x005A1300
 void CSWVarTable::SetLocalNumber(int nIndex, unsigned char nValue)
 {
-    if (nIndex >= 0 && nIndex < 8)
+    if (nIndex >= 0 && nIndex < 32)
     {
         m_aLocalNumber[nIndex] = nValue;
     }
@@ -67,13 +67,13 @@ void CSWVarTable::LoadVarTable(CResGFF* pRes, CResStruct* pStruct)
         if (pRes->GetList(&lstVariables, &sVarTable, "BitArray"))
         {
             pRes->GetListCount(&lstVariables);
-            if (pRes->GetListCount(&lstVariables) < 3)
+            if (pRes->GetListCount(&lstVariables) < 5)
             {
                 nCount = pRes->GetListCount(&lstVariables);
             }
             else
             {
-                nCount = 3;
+                nCount = 5;
             }
 
             for (i = 0; i < nCount; i++)
@@ -89,13 +89,13 @@ void CSWVarTable::LoadVarTable(CResGFF* pRes, CResStruct* pStruct)
         if (pRes->GetList(&lstVariables, &sVarTable, "ByteArray"))
         {
             pRes->GetListCount(&lstVariables);
-            if (pRes->GetListCount(&lstVariables) < 8)
+            if (pRes->GetListCount(&lstVariables) < 32)
             {
                 nCount = pRes->GetListCount(&lstVariables);
             }
             else
             {
-                nCount = 8;
+                nCount = 32;
             }
 
             for (i = 0; i < nCount; i++)
@@ -119,14 +119,14 @@ void CSWVarTable::SaveVarTable(CResGFF* pRes, CResStruct* pStruct)
 
     pRes->AddStructToStruct(&sVarTable, pStruct, "SWVarTable", 0);
     pRes->AddList(&lstVariables, &sVarTable, "BitArray");
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < 5; i++)
     {
         pRes->AddListElement(&sVariable, &lstVariables, 0);
         pRes->WriteFieldDWORD(&sVariable, m_nLocalBoolean[i], "Variable");
     }
 
     pRes->AddList(&lstVariables, &sVarTable, "ByteArray");
-    for (i = 0; i < 8; i++)
+    for (i = 0; i < 32; i++)
     {
         pRes->AddListElement(&sVariable, &lstVariables, 0);
         pRes->WriteFieldBYTE(&sVariable, m_aLocalNumber[i], "Variable");

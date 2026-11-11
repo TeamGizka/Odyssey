@@ -171,6 +171,16 @@ struct CSWSCombatAttackExtra1
     unsigned char m_nEffectAttackBonus;
     int m_nUnknown18;
     int m_nUnknown1C;
+    unsigned char m_nUnknown20;
+    unsigned char m_nUnknown21;
+    unsigned char m_nUnknown22;
+    unsigned char m_nUnknown23;
+    unsigned char m_nUnknown24;
+    unsigned char m_nUnknown25;
+    unsigned char m_nUnknown26;
+    unsigned char m_nUnknown27;
+    int m_nUnknown28;
+    unsigned char m_nUnknown2C;
 };
 
 struct CSWSCombatAttackExtra3
@@ -210,6 +220,8 @@ struct CSWSCombatAttackExtra3
     unsigned char m_nUnknown9;
     unsigned char m_nUnknownA;
     unsigned char m_nEffectDamageBonus;
+    int m_nUnknownC;
+    unsigned char m_nUnknown10;
     short m_nUnknownDamage[15];
 };
 
@@ -263,14 +275,22 @@ struct CSWSCombatAttackExtra5
     }
 
     unsigned char m_nUnknown0;
-    unsigned char m_nUnknown1;
+    int m_nUnknown1;
     unsigned char m_nUnknown2;
     unsigned char m_nUnknown3;
-    unsigned char m_nUnknown4;
+    char m_nUnknown4;
     unsigned char m_nUnknown5;
     unsigned char m_nUnknown6;
     unsigned char m_nUnknown7;
-    unsigned char m_nUnknown8;
+    int m_nUnknown8;
+    unsigned char m_nUnknown14;
+    unsigned char m_nUnknown15;
+    int m_nUnknown18;
+    int m_nUnknown1C;
+    unsigned char m_nUnknown20;
+    char m_nUnknown21;
+    unsigned char m_nUnknown22;
+    char m_nUnknown23;
 };
 
 class CSWSCombatSubAttack
@@ -552,6 +572,8 @@ public:
     unsigned long GetMasterTarget() { return m_oidMasterTarget; }
 
     CSWSCombatRoundAction* m_pCurrentAction;
+    unsigned char m_cB1C;
+    char m_aUnmappedB1D[0x3];
     unsigned long m_oidUnknown9CC;
     unsigned char m_nCurrentActionType;
     int m_nUnknown9D4;

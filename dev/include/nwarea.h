@@ -139,6 +139,7 @@ public:
 
     unsigned long m_nGrassAmbient;
     unsigned long m_nGrassDiffuse;
+    unsigned long m_nGrassEmissive;
     float m_fGrassDensity;
     float m_fGrassQuadSize;
 

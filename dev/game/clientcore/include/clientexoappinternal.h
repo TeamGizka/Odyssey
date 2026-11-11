@@ -354,6 +354,7 @@ public:
     int PerformRButtonUpAction();
     void SetMouseCursor(int nCursor, int nArg2, int nArg3);
     void RestoreMousePositionTo(int nX, int nY);
+    void DoScreenShot();
     void HideMouse(int nFlags);
     void ShowMouse(int nFlags);
     int DismissInGameGUI();
@@ -817,9 +818,7 @@ public:
     unsigned char m_aUnmappedD8[4];
     int m_bClientImeUI;
     CExoImeUI* m_pImeUI;
-#ifdef _XBOX
     int m_nXboxUnmappedE4;
-#endif
     int m_nUnknownE4;
     int m_nUnknownE8;
     int m_nUnknownEC;
@@ -847,7 +846,6 @@ public:
     unsigned char m_aUnmapped14A[0x2];
     CSWCMessage* m_pSWCMessage;
     int m_bScreenShot;
-    int m_nScreenShot;
     char m_szScreenShot[SCREENSHOT_NAME_LENGTH];
     CExoLinkedList<CQueuedAnim> m_lstPlayerAnimations;
 
@@ -1027,24 +1025,23 @@ public:
     unsigned long m_nLoadScreenStartTime;
     unsigned char m_nGamePlayHint;
     unsigned char m_nStoryHint;
-    unsigned char m_aUnmapped492[0x2];
+    unsigned char m_aUnmapped492[10];
     int m_bMainMenuTransition;
     unsigned char m_nModuleResourcesLoaded;
     unsigned char m_aUnmapped499[3];
     int m_nUnknown49C;
     int m_nUnknown4A0;
 #ifndef _XBOX
+    int m_bCharacterChangeInProgress;
     unsigned long m_oidMouseOverTarget;
     Vector m_vMouseOverPosition;
-#endif
-#ifndef _XBOX
-    int m_bCharacterChangeInProgress;
     int m_bCreditSequenceInProgress;
     int m_bEvilEndingHackInProgress;
-    int m_bAllowHighMonitorFrequency;
     int m_nSoundPausedByCombat;
 
     CExoArrayList<CSWGuiInterfaceAction> m_aDefaultActions;
+    unsigned char m_n4D8;
+    unsigned char m_bAllowHighMonitorFrequency;
 #else
 
     int m_nXboxUnmapped468;

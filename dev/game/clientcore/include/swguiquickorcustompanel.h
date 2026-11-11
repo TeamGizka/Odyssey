@@ -20,9 +20,7 @@ public:
     CSWGuiButton m_cQuickButton;
     CSWGuiButton m_cCustomButton;
     CSWGuiLabel m_cDescription;
-    CSWGuiLabel m_cDecoration;
     CSWGuiLabel m_cRightAnalog;
-    CSWGuiLabel m_cBackground;
     CSWGuiListBox m_cDescriptionList;
 #ifndef _XBOX
     CSWGuiButton m_cBackButton;

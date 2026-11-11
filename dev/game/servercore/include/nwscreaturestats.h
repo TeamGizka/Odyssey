@@ -465,6 +465,7 @@ public:
 
     int m_nOriginalFactionId;
     unsigned char m_aUnmapped80[0x4];
+    float m_f84;
     float m_fChallengeRating;
     float GetChallengeRating() const { return m_fChallengeRating; }
     unsigned char m_nStartingPackage;
@@ -511,6 +512,9 @@ public:
     unsigned char m_nAttacksPerRound;
     unsigned char m_aUnmapped115[3];
     CCombatInformation* m_pCombatInformation;
+    unsigned char m_c120;
+    unsigned char m_aUnmapped121A[3];
+    int m_n124;
     unsigned char m_nArcaneSpellFailure;
 
     unsigned char m_nBaseArmorArcaneSpellFailure;
@@ -571,6 +575,7 @@ public:
 #ifdef _XBOX
     void SetGoodEvilAlignment(short nAlignment);
 #endif
+    short m_n18C;
     unsigned char m_aUnmapped180[2];
     unsigned char m_nSkinColor;
     unsigned char m_nHairColor;

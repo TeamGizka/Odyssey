@@ -36,7 +36,6 @@ CSWGuiFeatsCharGen::CSWGuiFeatsCharGen(CSWGuiManager* pManager,
     InitControl(m_lblRemainingBox, "REMAINING_BOX_LBL", 1);
     InitControl(m_lblStdRemainingSelections, "STD_REMAINING_SELECTIONS_LBL", 1);
     InitControl(m_lblStdSelectionsRemaining, "STD_SELECTIONS_REMAINING_LBL", 1);
-    InitControl(m_lblDesc, "DESC_LBL", 1);
     InitControl(m_lbDesc, "LB_DESC", 1);
     m_lbDesc.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     InitControl(m_lbFeats, "LB_FEATS", 1);

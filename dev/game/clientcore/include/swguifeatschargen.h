@@ -48,7 +48,6 @@ public:
     CSWGuiLabel m_lblRemainingBox;
     CSWGuiLabel m_lblStdRemainingSelections;
     CSWGuiLabel m_lblStdSelectionsRemaining;
-    CSWGuiLabel m_lblDesc;
     CSWGuiLabel m_lblSelectionsRemaining;
     CSWGuiLabel m_lblTitle;
     CSWGuiLabel m_lblDescription;
@@ -69,6 +68,7 @@ public:
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnRecommended;
     CSWGuiButton m_btnSelect;
+    CSWGuiLabel m_alblBar[2];
 #endif
     CSWGuiListBox m_lbFeats;
     CSWGuiListBox m_lbDesc;

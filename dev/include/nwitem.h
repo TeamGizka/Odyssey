@@ -353,7 +353,7 @@ public:
 
     enum { EQUIPMENT_SLOT_COUNT = 14 };
 
-    enum { TOTAL_SLOT_COUNT = 18 };
+    enum { TOTAL_SLOT_COUNT = 20 };
 
     enum SlotIndex
     {
@@ -388,7 +388,7 @@ public:
     void PutItemInSlot(unsigned long nSlot, CSWSItem* pItem);
     CSWSItem* GetItemInSlot(unsigned long nSlot);
 
-    unsigned long m_oidSlot[18];
+    unsigned long m_oidSlot[20];
 };
 
 #endif

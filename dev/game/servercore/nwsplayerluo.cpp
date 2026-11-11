@@ -7,7 +7,7 @@
 // PC 0x006151B0
 void CSWSPlayerLUOInventory::ClearSlots()
 {
-    for (int i = 0; i < 18; i++)
+    for (int i = 0; i < 20; i++)
     {
         m_oidSlot[i] = CGameObjectArray::INVALIDOBJID;
         m_nSlotIndex[i] = -1;

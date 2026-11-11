@@ -49,6 +49,7 @@ public:
     CSWGuiLabel m_lblDescription;
     CSWGuiLabel m_lblTitle;
     CSWGuiButton m_btnBack;
+    CSWGuiLabel m_alblBar[3];
     CSWGuiListBox m_lbDescription;
 #endif
 };
@@ -120,6 +121,7 @@ public:
     CSWGuiLabel m_lblBack; CSWGuiLabel m_lblTitle; CSWGuiLabel m_lblRAnalog; CSWGuiListBox m_lbDescription; void OnRumble(CSWGuiControl* pControl);
 #else
     CSWGuiListBox m_lbOptions; CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblTitle; CSWGuiListBox m_lbDescription; CSWGuiButton m_btnBack; CSWGuiButton m_btnDefault;
+    CSWGuiLabel m_alblBar[3];
 #endif
 };
 
@@ -151,6 +153,7 @@ public:
     CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblTitle;
     CSWGuiListBox m_lbDescription;
     CSWGuiButton m_btnBack; CSWGuiButton m_btnDefault; CSWGuiButton m_btnAdvanced;
+    CSWGuiLabel m_alblBar[4];
 #endif
 };
 
@@ -184,6 +187,7 @@ public:
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnDefault;
     CSWGuiButton m_btnCancel;
+    CSWGuiLabel m_alblBar[4];
     int m_bForceSoftware;
     int m_bChanged;
     int m_bDiscard;
@@ -214,6 +218,7 @@ public:
     CSWGuiSlider m_sldMouseSen;
     CSWGuiLabel m_lblMouseSen;
     CSWGuiOptionsCheckbox m_cbRevButtons;
+    CSWGuiLabel m_alblBar[4];
 };
 
 class CSWGuiOptionsResolution : public CSWGuiPanel
@@ -264,6 +269,7 @@ public:
     CSWGuiButton m_btnAdvanced;
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnDefault;
+    CSWGuiLabel m_alblBar[4];
     int m_nUnknown18BC;
 };
 
@@ -312,6 +318,7 @@ public:
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnDefault;
     CSWGuiButton m_btnCancel;
+    CSWGuiLabel m_alblBar[4];
     int m_nTexQual;
     int m_nMaxTexQual;
     int m_nAntiAlias;

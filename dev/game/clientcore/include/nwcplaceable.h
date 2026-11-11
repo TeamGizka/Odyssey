@@ -69,6 +69,7 @@ public:
     int m_bPlotObject;
     int m_nUnknown114;
     int m_bLocked;
+    int m_n11C;
 
     int m_bTrap;
     int m_nUnknown120;

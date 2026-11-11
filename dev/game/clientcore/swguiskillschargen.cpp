@@ -40,7 +40,6 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
     InitControl(m_lblRemainingBox, "REMAINING_BOX_LBL", 1);
     InitControl(m_lblRemainingSelections, "REMAINING_SELECTIONS_LBL", 1);
     InitControl(m_lblSelectionsRemaining, "SELECTIONS_REMAINING_LBL", 1);
-    InitControl(m_lblDescriptionHeader, "DESC_LBL", 1);
     InitControl(m_lblCost, "COST_LBL", 1);
     InitControl(m_lblCostPoints, "COST_POINTS_LBL", 1);
     InitControl(m_lblClassSkill, "CLASSSKL_LBL", 1);

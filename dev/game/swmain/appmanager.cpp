@@ -84,11 +84,6 @@ void CAppManager::DoSaveGameScreenShot(const CExoString& sName)  // PC 0x0040108
 {
     AurSaveGameSnapshot((char*)sName.CStr(), 256, true, true);
 }
-
-void CAppManager::TakeScreenShot(const CExoString& sName)
-{
-    AurSaveGameSnapshot((char*)sName.CStr(), (short)m_pClientExoApp->m_pcExoAppInternal->m_nScreenShot, false, true);
-}
 #endif
 void CAppManager::AllocLargeTempBuffer()  // PC 0x004010A0
 {
@@ -375,10 +370,5 @@ unsigned char CAppManager::GetCodeWord()
 void CAppManager::DoSaveGameScreenShot(const CExoString& sName)
 {
     AurSaveGameSnapshot((char*)sName.CStr(), 256, false);
-}
-
-void CAppManager::TakeScreenShot(const CExoString& sName)
-{
-    AurSaveGameSnapshot((char*)sName.CStr(), (short)m_pClientExoApp->m_pcExoAppInternal->m_nScreenShot, false);
 }
 #endif

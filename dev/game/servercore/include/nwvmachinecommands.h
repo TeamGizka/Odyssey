@@ -805,7 +805,7 @@ public:
         COMMAND_YAVIN_HACK_CLOSE_DOOR = 771,
     };
 
-    static const int COMMAND_COUNT = 772;
+    static const int COMMAND_COUNT = 877;
     typedef int (CSWVirtualMachineCommands::*CommandFunction)(int, int);
     CommandFunction* m_pCommands;
     virtual ~CSWVirtualMachineCommands();

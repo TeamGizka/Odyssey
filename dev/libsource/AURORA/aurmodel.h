@@ -333,6 +333,110 @@ public:
     {
         m_bDistortion = 0;
     }
+    // PC 0x0045DE80
+    virtual void SetForcePoints(short nForcePoints)
+    {
+        m_nForcePoints = nForcePoints;
+    }
+    // PC 0x0045DE90
+    virtual short GetForcePoints()
+    {
+        return m_nForcePoints;
+    }
+    // PC 0x0045DEA0
+    virtual void SetAlignmentValue(short nAlignmentValue)
+    {
+        m_nAlignmentValue = nAlignmentValue;
+    }
+    // PC 0x0045DEB0
+    virtual short GetAlignmentValue()
+    {
+        return m_nAlignmentValue;
+    }
+    // PC 0x0045DEC0
+    virtual void SetForceGlowColor(float fRed, float fGreen, float fBlue, float fAlpha)
+    {
+        m_fForceGlowRed = fRed;
+        m_fForceGlowGreen = fGreen;
+        m_fForceGlowBlue = fBlue;
+        m_fForceGlowAlpha = fAlpha;
+    }
+    // PC 0x0045DEE0
+    virtual void GetForceGlowColor(float& fRed, float& fGreen, float& fBlue, float& fAlpha)
+    {
+        fRed = m_fForceGlowRed;
+        fGreen = m_fForceGlowGreen;
+        fBlue = m_fForceGlowBlue;
+        fAlpha = m_fForceGlowAlpha;
+    }
+    // PC 0x0045DF10
+    virtual void EnableForceGlow(bool bEnable)
+    {
+        m_bForceGlow = bEnable;
+    }
+    // PC 0x0045DF20
+    virtual bool IsForceGlowEnabled()
+    {
+        return m_bForceGlow;
+    }
+    // PC 0x0045DF30
+    virtual void SetNonForceBlending(bool bNonForceBlending)
+    {
+        m_bNonForceBlending = bNonForceBlending;
+    }
+    // PC 0x0045DF40
+    virtual bool IsNonForceBlending()
+    {
+        return m_bNonForceBlending;
+    }
+    // PC 0x0045DF50
+    virtual bool IsHologramEnabled()
+    {
+        return m_bHologram;
+    }
+    // PC 0x0045DF60
+    virtual bool IsIlluminationEnable()
+    {
+        return m_bPerObjectIllumination;
+    }
+    // PC 0x0045DF70
+    virtual void GetIlluminationColor(float& fRed, float& fGreen, float& fBlue)
+    {
+        fRed = m_fIlluminationRed;
+        fGreen = m_fIlluminationGreen;
+        fBlue = m_fIlluminationBlue;
+    }
+    // PC 0x0045DF90
+    virtual void EnableRendering(bool bEnable)
+    {
+        m_bRenderingEnabled = bEnable;
+    }
+    // PC 0x0045DFA0
+    virtual bool IsRenderingEnabled()
+    {
+        return m_bRenderingEnabled;
+    }
+    // PC 0x0045DFB0
+    virtual void SetEmitterAsWeather(bool bWeather)
+    {
+        SetAllEmitterAsWeather(m_pRootPart, bWeather);
+    }
+    // PC 0x0045DFD0
+    virtual void EnableHologram(bool bEnable)
+    {
+        EnableHologramRendering(m_pRootPart, bEnable);
+    }
+    // PC 0x0045DFF0
+    virtual void EnableIllumination(bool bEnable, float fRed, float fGreen, float fBlue)
+    {
+        m_fIlluminationRed = fRed;
+        m_fIlluminationGreen = fGreen;
+        m_fIlluminationBlue = fBlue;
+        EnablePerObjectIllumination(m_pRootPart, bEnable);
+    }
+    void SetAllEmitterAsWeather(Part* pPart, bool bWeather);
+    void EnableHologramRendering(Part* pPart, bool bEnable);
+    void EnablePerObjectIllumination(Part* pPart, bool bEnable);
 
     virtual void GetMinimumBoundingBox(Vector& vMinimum, Vector& vMaximum);
     virtual void GetMinimumBoundingBox();
@@ -381,6 +485,21 @@ public:
     char m_abReserved19[3];
     float m_fVisibilityCheckTime;
 #endif
+
+    short m_nForcePoints;
+    short m_nAlignmentValue;
+    bool m_bNonForceBlending;
+    bool m_bForceGlow;
+    float m_fForceGlowRed;
+    float m_fForceGlowGreen;
+    float m_fForceGlowBlue;
+    float m_fForceGlowAlpha;
+    bool m_bHologram;
+    bool m_bPerObjectIllumination;
+    float m_fIlluminationRed;
+    float m_fIlluminationGreen;
+    float m_fIlluminationBlue;
+    bool m_bRenderingEnabled;
 
     List<nodedata*> m_lstRoomData;
 
@@ -491,6 +610,8 @@ public:
 #else
     int m_nUnused2;
 #endif
+    int m_n1F8;
+    int m_n1FC;
 };
 
 CAurObject* NewCAurObject(char* sModel, char* sName, FILE* pModelFile, FILE* pVertexFile);
@@ -615,7 +736,10 @@ public:
     bool m_bBeaming;
 
     bool m_bRender;
-    char gap_18A[2];
+    char m_bDirtEnabled;
+    short m_nDirtTexture;
+    short m_nDirtCoordSpace;
+    char m_bHideInHolograms;
 
     float m_fSurfaceArea;
 #ifdef _XBOX

@@ -7,11 +7,7 @@ template <class T> class List
 {
 public:
 
-#ifdef _XBOX
     enum { INITIAL_ALLOCATION = 16 };
-#else
-    enum { INITIAL_ALLOCATION = 8 };
-#endif
 
 
 

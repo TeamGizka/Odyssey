@@ -117,6 +117,13 @@ public:
     char gap_2C3[1];
     int m_bLocked;
     int m_bLockable;
+    unsigned char m_nOpenLockDiff;
+    char m_nOpenLockDiffMod;
+    char m_aUnmapped30E[0x2];
+    int m_nOwnerDemolitionsSkill;
+    unsigned char m_bUseTweakColor;
+    char m_aUnmapped315[0x3];
+    unsigned long m_nTweakColor;
     char m_nOpenState;
     char m_nTargetOpenState;
     char gap_2CE[2];
@@ -169,6 +176,7 @@ public:
 
     int m_bPreciseUse;
     CExoLocString m_locTransitionDestination;
+    int m_n420;
 
     int GetMeshOutline(Vector, Vector, Vector&, Vector&, Vector&, Vector&);
     int SaveDoor(CResGFF*, CResStruct*);

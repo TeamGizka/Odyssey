@@ -163,7 +163,7 @@ const int CSWSEffectListHandler::EFFECT_PUREEVILPOWERS = 109;
 #ifdef _XBOX
 const int CSWSEffectListHandler::MAX_EFFECTS = 108;
 #else
-const int CSWSEffectListHandler::MAX_EFFECTS = 110;
+const int CSWSEffectListHandler::MAX_EFFECTS = 118;
 #endif
 const int CSWSEffectListHandler::EFFECT_ABILITY_INVALID = -1;
 const int CSWSEffectListHandler::EFFECT_ABILITY_STRENGTH = 0;

@@ -57,6 +57,11 @@ public:
     CSWGuiButton m_btnCancel;
     CSWGuiButton m_btnExamine;
     CSWGuiButton m_btnAccept;
+    CSWGuiLabel m_alblBar[5];
+    CSWGuiLabel m_lblFilter;
+    CSWGuiLabel m_lblOnHand;
+    CSWGuiLabel m_lblOnHandValue;
+    CSWGuiButton m_abtnFilter[4];
 #endif
     int m_nUnknown226C;
     int m_nGold;

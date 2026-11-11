@@ -108,6 +108,7 @@ public:
     void SetExtent(CSWGuiExtent* pExtent);
 
     CSWGuiExtent m_cExtent;
+    int m_n14;
     void OnYButtonEvent(CSWGuiControl* pControl);
     void OnBlackButtonEvent(CSWGuiControl* pControl);
 };
@@ -847,6 +848,17 @@ public:
     CSWGuiBorder m_cBorder;
     CSWGuiBorder m_cFill;
 };
+
+#ifndef _XBOX
+class CSWGuiProgressBarReveal : public CSWGuiProgressBar
+{
+public:
+    virtual void SetExtent(const CSWGuiExtent& cExtent);
+    virtual void Draw(float fElapsed);
+
+    CSWGuiExtent m_cStartExtent;
+};
+#endif
 
 class CSWGuiEditbox : public CSWGuiNavigable
 {

@@ -93,7 +93,6 @@ public:
     CSWGuiLabelHilight m_aHilights[6];
     CSWGuiLabel m_aNumbers[6];
     CSWGuiButton m_aSteps[6];
-    CSWGuiLabel m_lblBackground;
 #ifndef _XBOX
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnCancel;

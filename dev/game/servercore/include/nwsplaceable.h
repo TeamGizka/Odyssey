@@ -52,6 +52,7 @@ public:
         SCRIPT_ONUSERDEFINED,
         SCRIPT_ONDIALOG,
         SCRIPT_ONENDDIALOGUE,
+        SCRIPT_ONFAILTOOPEN,
         NUM_SCRIPTS
     };
 
@@ -160,6 +161,12 @@ public:
     int m_bAutoRemoveKey;
     unsigned char m_nOpenLockDC;
     unsigned char m_nCloseLockDC;
+    unsigned char m_nOpenLockDiff;
+    char m_nOpenLockDiffMod;
+    int m_nOwnerDemolitionsSkill;
+    unsigned char m_bUseTweakColor;
+    char m_aUnmapped2BD[0x3];
+    unsigned long m_nTweakColor;
     unsigned char m_nTrapDetectDC;
     char m_aUnmapped277[0x1];
     int m_nTrapFlag;
@@ -227,6 +234,7 @@ public:
     int m_bIsCorpse;
 
     int m_bInventoryOpening;
+    int m_n4AC;
 };
 
 #endif

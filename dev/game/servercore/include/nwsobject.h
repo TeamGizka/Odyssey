@@ -878,6 +878,8 @@ public:
     int m_nCameraAnimState;
     int m_n74;
     int m_nAILevel;
+    char m_c7C;
+    char m_aUnmapped7D[0x3];
     char m_aUnmapped7C[0x4];
     unsigned short m_nCurrentAction;
     char m_aUnmapped82[0x2];
@@ -970,6 +972,7 @@ public:
     int m_n1D8;
     int m_n1DC;
     int m_n1E0;
+    int m_n208;
 
     CSWSObjectActionNode* m_pCurrentActionNode;
 
@@ -981,6 +984,7 @@ public:
     int m_nDialogReplyState;
     int m_nClientState;
     unsigned long m_aDirtyFlags[1];
+    int m_bNotBlastable;
     int m_bMin1HP;
     int m_bDeleteNoFade;
     int m_bKeepCorpse;
@@ -991,7 +995,14 @@ public:
 
 
     int m_bDialogFaceSpeaker;
+    int m_n24C;
+    unsigned char m_c250;
+    unsigned char m_c251;
+    char m_aUnmapped252[0x2];
+    int m_n254;
+    int m_n258;
     int m_bDialogSoundStopped;
+    int m_n260;
     CSWCObject* m_pClientObject;
     void ClearAllEffects(int bKeepOwnEffects);
     void RemoveSomeEffectsOfDurationType(unsigned short nDurationType);
@@ -1143,6 +1154,7 @@ public:
     CExoString m_sScript;
     unsigned long m_oidArea;
     int m_nUnknown28;
+    int m_nFinalForceCost;
 };
 
 
@@ -1246,6 +1258,7 @@ struct CSWSCreatureAppearanceInfo
     unsigned char m_nAppearanceHead;
 };
 
+#pragma pack(push, 4)
 class CSWSCreature : public CSWSObject
 {
 public:
@@ -1962,6 +1975,7 @@ public:
 
 
     int m_nCombatStateTimer;
+    int m_n528;
     int m_bNewAttackTarget;
 
 
@@ -2004,12 +2018,13 @@ public:
     int m_nLastAttackResult;
     int m_nUnknown560;
     int m_bLastForcePowerSuccessful;
+    int m_n5AC;
 
 
-    enum { EFFECT_STACK_COUNT = 36, EFFECT_BONUS_LIMIT = 36,
-           EFFECT_ATTACK_LIMIT = 20, EFFECT_SAVING_THROW_LIMIT = 20,
-           EFFECT_ABILITY_BONUS_LIMIT = 20, EFFECT_ABILITY_PENALTY_LIMIT = 30,
-           EFFECT_SKILL_LIMIT = 30, EFFECT_SKILL_ALL = 255 };
+    enum { EFFECT_STACK_COUNT = 108, EFFECT_BONUS_LIMIT = 108,
+           EFFECT_ATTACK_LIMIT = 60, EFFECT_SAVING_THROW_LIMIT = 60,
+           EFFECT_ABILITY_BONUS_LIMIT = 60, EFFECT_ABILITY_PENALTY_LIMIT = 90,
+           EFFECT_SKILL_LIMIT = 90, EFFECT_SKILL_ALL = 255 };
     int m_nEffectBonus[EFFECT_STACK_COUNT];
     int m_nEffectPenalty[EFFECT_STACK_COUNT];
     int m_nEffectBonusSpell[EFFECT_STACK_COUNT];
@@ -2086,6 +2101,9 @@ public:
     int m_nUnknown99C;
     int m_nUnknown9A0;
     int m_bUnlockObjectFacingSet;
+    int m_n10B0;
+    int m_n10B4;
+    int m_n10B8;
     unsigned long m_anSkillCooldowns[8];
 
 
@@ -2114,6 +2132,11 @@ public:
     }
     int m_bDiseased;
     unsigned __int64 m_nPoisonEffectID;
+    int m_n1104;
+    int m_n1108;
+    unsigned char m_c110C;
+    char m_aUnmapped110D[0x3];
+    int m_n1110;
 
 
 
@@ -2215,6 +2238,7 @@ public:
     float m_fForcedMovementDistance;
     float m_fForcedMovementHeight;
     int m_bRun;
+    int m_n11C0;
     int m_bBodyFuel;
 
     int m_bVisibleListUpdatePending;
@@ -2238,6 +2262,14 @@ public:
     unsigned char GetItemUseState() { return m_nItemUseState; }
 
     int m_bDisableInjuredAnim;
+    int m_n11F0;
+    int m_n11F4;
+    int m_n11F8;
+    int m_n11FC;
+    int m_n1200;
+    int m_n1204;
+    Vector m_v1208;
+    Vector m_v1214;
     void AddPazaakCard(CSWSItem* pItem);
     int RemovePazaakCard(CSWSItem* pItem);
     CSWCCreature* GetClientCreature();
@@ -2981,5 +3013,6 @@ public:
     void AddPrerequisiteSpells(unsigned long nSpell);
 #endif
 };
+#pragma pack(pop)
 
 #endif

@@ -106,6 +106,7 @@ public:
     CSWGuiButton m_btnFilterGame;
     CSWGuiButton m_btnFilterMini;
     CSWGuiListBox m_lstEvents;
+    CSWGuiLabel m_alblBar[3];
     int m_nFilter;
     int m_bCapturing;
     CSWGuiKeyMapButton* m_pCaptureButton;

@@ -225,9 +225,16 @@ public:
     unsigned int m_bAutoSave : 1;
     unsigned int m_bReverseMinigameYAxis : 1;
     unsigned int m_bCombatMovement : 1;
-    unsigned int m_nGameplayBits : 27;
+    unsigned int m_bReverseIngame : 1;
+    unsigned int m_nGameplayBits : 26;
     float m_fGuiScale;
     int m_bMouseTeleporting;
+    unsigned char m_n14;
+    unsigned char m_n15;
+    unsigned char m_n16;
+    unsigned short m_n18;
+    unsigned char m_n1A;
+    unsigned char m_n1B;
     unsigned int m_bHideUnequippable : 1;
     unsigned int m_bTutorialPopups : 1;
     unsigned int m_bSubtitles : 1;
@@ -249,9 +256,9 @@ public:
     unsigned char m_nBrightness;
     float m_fGammaMin;
     float m_fGammaMax;
-    unsigned long m_nShadows;
-    unsigned long m_nSoftShadows;
     unsigned long m_nGrass;
+    unsigned long m_nSoftShadows;
+    unsigned long m_nShadows;
     unsigned long m_nFrameBuffer;
     unsigned long m_nAnisotropy;
     int m_nShaderLevel;
@@ -268,8 +275,6 @@ public:
     unsigned char m_nMouseSensitivity;
     int m_bReverseMouseButtons;
     unsigned char m_bEnableScreenShot;
-    unsigned int m_bGUIsInScreenShot : 1;
-    unsigned int m_nScreenShotBits : 31;
     unsigned char m_aMoviesShown[11];
 
     unsigned char m_nGeometryFadeMode;
@@ -291,7 +296,7 @@ public:
     unsigned char m_nGoreLevel;
 
     unsigned char m_nAmbientSoundOptions;
-    int m_nInputFlags;
+    unsigned char m_bGUIsInScreenShot;
     float m_fCameraDistance;
     float m_fCameraHeight;
     unsigned char m_nFontMode;

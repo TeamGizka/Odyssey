@@ -22,12 +22,12 @@ public:
     void SaveVarTable(CResGFF* pRes, CResStruct* pStruct);
     void LoadVarTable(CResGFF* pRes, CResStruct* pStruct);
 
-    unsigned long m_nLocalBoolean[3];
+    unsigned long m_nLocalBoolean[5];
 
     union
     {
-        unsigned char m_aLocalNumber[8];
-        unsigned long m_anLocalNumber[2];
+        unsigned char m_aLocalNumber[32];
+        unsigned long m_anLocalNumber[8];
     };
 };
 
@@ -173,9 +173,9 @@ public:
     int Load();
     void ReadCatalogue(const CResRef& cResRef);
 
-    CSWGlobalVariable m_aIdentifiers[1775];
+    CSWGlobalVariable m_aIdentifiers[2365];
     unsigned char m_aBooleanValues[113];
-    char m_acNumberValues[500];
+    char m_acNumberValues[1000];
     char m_aUnmappedA8CD[3];
     CScriptLocation m_aLocations[100];
     CExoString m_asStrings[5];

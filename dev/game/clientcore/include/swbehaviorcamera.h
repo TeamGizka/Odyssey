@@ -214,6 +214,12 @@ public:
     float m_fTilt;
     float m_fDesiredPitch;
     float m_fTurnAcceleration;
+    CSWRK4Acceleration m_integrator110;
+    int m_n158;
+    int m_n15C;
+    float m_f160;
+    float m_f164;
+    float m_f168;
 #endif
     float m_fDistance;
     float m_fSpeed;
@@ -224,6 +230,7 @@ public:
     int m_nOrientationState;
     Vector m_vPlayerOrientation;
     float m_fTiltSpeed;
+    int m_n194;
 #ifdef _XBOX
 
     float m_fTurn;

@@ -14,7 +14,9 @@ class CSWPartyTable
 {
 public:
 
-    static const int MAX_NPCS = 9;
+    static const int MAX_NPCS = 12;
+
+    static const int MAX_PUPPETS = 3;
 
     enum { GALAXY_MAP_NUM_POINTS = 16, GALAXY_MAP_SELECTABLE_SHIFT = 16 };
 
@@ -83,7 +85,9 @@ public:
     void LoadJournal(CResGFF* pRes, CResStruct* pStruct);
 
     int m_nNumMembers;
+    int m_nNumPuppets;
     int m_anMembers[2];
+    int m_anPuppets[MAX_PUPPETS];
     unsigned long m_aoidNPC[MAX_NPCS];
     int m_abNPCAvailable[MAX_NPCS];
     unsigned char m_anNPCSelectability[MAX_NPCS];
@@ -94,9 +98,21 @@ public:
     int m_nFollowState;
     int m_nLeader;
     int m_nControlledNPC;
+    int m_anNPCInfluence[MAX_NPCS];
+    unsigned long m_aoidPuppet[MAX_PUPPETS];
+    int m_abPuppetAvailable[MAX_PUPPETS];
+    unsigned char m_anPuppetSelectability[MAX_PUPPETS];
     int m_nGameInProgress;
     int m_nXPPool;
     unsigned long m_nGold;
+    int m_nItemComponent;
+    int m_nItemChemical;
+    int m_nSwoop1;
+    int m_nSwoop2;
+    int m_nSwoop3;
+    int m_n188;
+    int m_n18C;
+    int m_n190;
     int m_nReturnFlag;
     unsigned long m_nReturnStrref;
     unsigned long m_nReturnTitleStrref;
@@ -106,7 +122,7 @@ public:
     CItemRepository* m_pPartyItems;
     CSWSJournal* m_pPartyJournal;
 
-    enum { PAZAAK_CARD_COUNT = 18 };
+    enum { PAZAAK_CARD_COUNT = 23 };
     int m_anPazaakCards[PAZAAK_CARD_COUNT];
 
     enum { PAZAAK_SIDE_DECK_SIZE = 10 };
@@ -115,6 +131,13 @@ public:
 #ifndef _XBOX
     int m_bCheatUsed;
 #endif
+    CExoString m_sPCName;
+    int m_n248;
+    int m_nForfeitViolation;
+    int m_nForfeitConditions;
+    int m_n254;
+    int m_bDisableMap;
+    int m_bDisableRegen;
 };
 
 #endif

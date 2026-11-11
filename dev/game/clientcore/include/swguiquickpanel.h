@@ -32,7 +32,6 @@ public:
 
     CSWCCreature* m_pCreature;
     CSWGuiMainCharGen* m_pMainCharGen;
-    CSWGuiLabel m_lblDecoration;
     CSWGuiLabelHilight m_lblHilight[3];
     CSWGuiLabel m_lblNumber[3];
     CSWGuiButton m_btnStep[3];

@@ -34,7 +34,6 @@ public:
 
     CSWCCreature* m_pCreature;
     CSWGuiLevelUpCharGen* m_pParent;
-    CSWGuiLabel m_lblBackground;
     CSWGuiLabelHilight m_aHilights[STATE_COUNT];
     CSWGuiLabel m_aNumbers[STATE_COUNT];
     CSWGuiButton m_aSteps[STATE_COUNT];

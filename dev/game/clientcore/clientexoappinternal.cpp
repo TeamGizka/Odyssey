@@ -3610,7 +3610,6 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_bClientImeUI = 0;
     m_pImeUI = NULL;
     m_bScreenShot = 0;
-    m_nScreenShot = 0;
     m_pCaptureEventFile = NULL;
     m_nCaptureEvents = 0;
     m_nCaptureEventPlayBack = 0;
@@ -8241,6 +8240,24 @@ void CClientExoAppInternal::RestoreMousePositionTo(int nX, int nY)  // PC 0x0064
     m_nMouseX = nX;
     m_nMouseY = nY;
 }
+// PC 0x006406D0
+void CClientExoAppInternal::DoScreenShot()
+{
+    WIN32_FIND_DATA cFindData;
+    for (int nScreenShot = 0; nScreenShot < 99999; nScreenShot++)
+    {
+        sprintf(m_szScreenShot, "K2_%05i.tga", nScreenShot);
+        HANDLE hFind = FindFirstFile(m_szScreenShot, &cFindData);
+        if (hFind == INVALID_HANDLE_VALUE)
+        {
+            FindClose(hFind);
+            m_bScreenShot = 1;
+            return;
+        }
+        FindClose(hFind);
+    }
+    m_bScreenShot = 1;
+}
 
 int CClientExoAppInternal::DontUseThisSetPlayerCreature(unsigned long oidObject)
 {
@@ -8697,7 +8714,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
     if (m_bScreenShot && g_bEnableScreenCapture)
     {
 #ifndef _XBOX
-        bool bShowGui = GetClientOptions()->m_bGUIsInScreenShot || m_pSWGuiManager->m_nCountedPanels != 0;
+        bool bShowGui = GetClientOptions()->m_bGUIsInScreenShot != 0;
 #endif
 #ifndef _XBOX
         AurSnapshot(m_szScreenShot, bShowGui);

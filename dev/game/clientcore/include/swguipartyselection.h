@@ -87,8 +87,9 @@ public:
     int m_nSelectedCount;
     int m_bForcedNPC;
     int m_bPlaySound;
+    int m_n78;
     CExoString m_sRunScript;
-    CSWGuiPartySelectionData m_aPartyMembers[9];
+    CSWGuiPartySelectionData m_aPartyMembers[12];
     CSWGuiLabel m_lblCount;
 #ifdef _XBOX
     CSWGuiLabel m_lblBack;
@@ -97,12 +98,18 @@ public:
     CSWGuiButton m_btnDone;
     CSWGuiLabel m_lblNPCName;
     CSWGuiLabel m_lblNPCLevel;
+#ifdef _XBOX
     CSWGuiLabel m_lbl3D;
+#else
+    CSWGui3DSceneView m_lbl3D;
+#endif
     CSWGuiLabel m_aLabels[7];
 #ifndef _XBOX
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnAccept;
     CSWGuiControl* m_pSelectedControl;
+    CSWGuiLabel m_alblBar[5];
+    CSWGuiLabel m_lblNameBack;
 #endif
 };
 

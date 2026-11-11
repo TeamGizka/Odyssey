@@ -3680,6 +3680,10 @@ void Scene::DoGobBuckets()
         }
     }
 }
+
+void Scene::DoHologramGobBuckets()
+{
+}
 // PC 0x0046CCF0
 void Scene::RenderLensFlares()
 {

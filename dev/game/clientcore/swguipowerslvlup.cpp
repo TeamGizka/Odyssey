@@ -39,7 +39,6 @@ CSWGuiPowersLevelUp::CSWGuiPowersLevelUp(CSWGuiManager* pManager,
     InitControl(m_lblRecommended, "RECOMMENDED_LBL", 1);
     InitControl(m_lblAccept, "ACCEPT_LBL", 1);
 #endif
-    InitControl(m_lblDescriptionHeader, "DESC_LBL", 1);
     InitControl(m_lbDescription, "LB_DESC", 1);
     m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
 #ifdef _XBOX

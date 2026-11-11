@@ -531,12 +531,16 @@ public:
     float* m_pfRoomAudio;
     int m_nRoomAudioCount;
     int m_nRoomAudioEntryCount;
+    int* m_pnRoomForceRating;
+    unsigned char* m_pbRoomDisableWeather;
+    unsigned char* m_p29C;
     CExoArrayList<CExoString> m_lstRoomAudioNames;
     CExoArrayList<int> m_lstRoomAudioLooping;
     CExoArrayList<CExoString> m_lstRoomAudioModelParts;
     CExoArrayList<CExoString> m_lstRoomAudioOmenEvents;
     CExoArrayList<CResRef> m_lstRoomAudioSounds;
     int m_bUnescapable;
+    int m_bDisableTransit;
     int m_nPlayerRestrictMode;
     unsigned long m_nStealthXPMax;
     unsigned long m_nStealthXPCurrent;
@@ -546,6 +550,10 @@ public:
     char m_nNextTransitionPendingId;
     unsigned char m_nCurrentTransitionPendingId;
     char m_aUnmapped2CA[0x2];
+    unsigned long m_nDirtyARGB[3];
+    int m_nDirtySize[3];
+    int m_nDirtyFormula[3];
+    int m_nDirtyFunc[3];
 
     CPathfindInformation* m_pActivePathfindInformation;
     CSWCArea* m_pClientArea;

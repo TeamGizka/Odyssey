@@ -999,19 +999,7 @@ int CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // PC 0x006
     case INPUT_EVENT_SCREENSHOT:
         if (nValue != 0)
         {
-            m_bScreenShot = 1;
-            sprintf(m_szScreenShot, "KotOR%04i.tga", m_nScreenShot);
-            FILE* pFile = fopen(m_szScreenShot, "rb");
-            char cSuffix = 'a';
-            while (pFile != NULL && cSuffix <= 'z')
-            {
-                fclose(pFile);
-                sprintf(m_szScreenShot, "KotOR%04i%c.tga", m_nScreenShot, cSuffix++);
-                pFile = fopen(m_szScreenShot, "rb");
-            }
-            if (cSuffix > 'z')
-                m_bScreenShot = 0;
-            m_nScreenShot++;
+            DoScreenShot();
         }
         break;
     case INPUT_EVENT_PAUSE:
@@ -1560,20 +1548,6 @@ void CClientExoAppInternal::PlayBackInputEvents()
         m_nCaptureEventPlayBack = 0;
         m_pWorldTimer->SetFixedSnapshotRate(0, 30);
     }
-
-    m_bScreenShot = 1;
-    sprintf(m_szScreenShot, "NWN%04i.tga", m_nScreenShot);
-    FILE* pFile = fopen(m_szScreenShot, "rb");
-    char cSuffix = 'a';
-    while (pFile != NULL && cSuffix <= 'z')
-    {
-        fclose(pFile);
-        sprintf(m_szScreenShot, "NWN%04i%c.tga", m_nScreenShot, cSuffix++);
-        pFile = fopen(m_szScreenShot, "rb");
-    }
-    if (cSuffix > 'z')
-        m_bScreenShot = 0;
-    m_nScreenShot++;
 }
 
 inline CClientOptions* CClientExoAppInternal::GetClientOptions()

@@ -8,8 +8,8 @@ class CSWSAreaMap
 {
 public:
 
-    static const int MAP_PIXEL_WIDTH = 440;
-    static const int MAP_PIXEL_HEIGHT = 256;
+    static const int MAP_PIXEL_WIDTH = 588;
+    static const int MAP_PIXEL_HEIGHT = 294;
 
     static const int EXPLORED_BITS_PER_WORD = 32;
 

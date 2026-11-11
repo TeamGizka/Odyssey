@@ -1099,7 +1099,9 @@ void CSWGuiMainInterfaceChar::Show(int bShow, unsigned char nState,
     m_aLabels[LABEL_DEBILATATED].SetEnabledFlag(bShow != 0 && (nState & PORTRAIT_DEBILITATED) != 0);
     m_aLabels[LABEL_DISABLED].SetEnabledFlag(bShow != 0 && (nState & PORTRAIT_DEAD) != 0);
     m_aLabels[LABEL_LEVELUP].SetEnabledFlag(bShow != 0 && (nState & PORTRAIT_LEVEL_UP) != 0);
+#ifdef _XBOX
     m_aLabels[LABEL_LVLUPBG].SetEnabledFlag(bShow != 0 && (nState & PORTRAIT_LEVEL_UP) != 0);
+#endif
     m_nBuffCount = nState != 0 ? 0 : nBuffCount;
     m_nDebuffCount = nState != 0 ? 0 : nDebuffCount;
 #ifndef _XBOX
@@ -1465,8 +1467,6 @@ void CSWGuiMainInterfaceChar::Initialize(CSWGuiMainInterface* pMainInterface,
     pMainInterface->InitControl(m_aBars[BAR_FORCE], sControl, 1);
     sControl.Format("LBL_LEVELUP%d", nCharacter);
     pMainInterface->InitControl(m_aLabels[LABEL_LEVELUP], sControl, 1);
-    sControl.Format("LBL_LVLUPBG%d", nCharacter);
-    pMainInterface->InitControl(m_aLabels[LABEL_LVLUPBG], sControl, 1);
     sControl.Format("LBL_BACK%d", nCharacter);
     pMainInterface->InitControl(m_aLabels[LABEL_BACK], sControl, 1);
     sControl.Format("LBL_DEBILATATED%d", nCharacter);
@@ -2119,9 +2119,9 @@ void CSWGuiMainInterface::ShowActionQueue(int bShow)
     m_lblActionQueueBackground.SetEnabledFlag(bShow);
     m_lblCmbtmodemsg.SetEnabledFlag(bShow);
 #else
-    for (int nIcon = ACTION_QUEUE_FIRST_ICON; nIcon < ACTION_ICON_COUNT; nIcon++)
+    for (int nIcon = 0; nIcon < 2; nIcon++)
     {
-        m_aCombatbg[nIcon - ACTION_QUEUE_FIRST_ICON].SetEnabledFlag(bShow);
+        m_aCombatbg[nIcon].SetEnabledFlag(bShow);
     }
     m_lblActionQueueBackground.SetEnabledFlag(bShow);
     m_btnClearone.SetEnabledFlag(bShow);
@@ -2948,7 +2948,7 @@ CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // PC 0x006E5
 #ifndef _XBOX
     m_bPositioned = 1;
 #endif
-    for (nIndex = 0; nIndex < 6; ++nIndex)
+    for (nIndex = 0; nIndex < 7; ++nIndex)
         m_aPersonalActions[nIndex].Initialize(this, nIndex, 0);
     for (nIndex = 0; nIndex < 3; ++nIndex)
         m_aCharacters[nIndex].Initialize(this, nIndex + 1);
@@ -2961,16 +2961,10 @@ CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // PC 0x006E5
     for (nIndex = 0; nIndex < GUI_STATUS_COUNT; ++nIndex)
         m_aEffects[nIndex].Initialize(this, nIndex);
     m_cTargetActionMenu.Initialize(this);
-    for (nIndex = 0; nIndex < 3; ++nIndex)
-    {
-        sControl.Format("LBL_MOULDING%d", nIndex + 1);
-        InitControl(m_aMoulding[nIndex], sControl, 1);
-    }
-    for (nIndex = 0; nIndex < 3; ++nIndex)
-    {
-        sControl.Format("LBL_COMBATBG%d", nIndex + 1);
-        InitControl(m_aCombatbg[nIndex], sControl, 1);
-    }
+    InitControl(m_aMoulding[0], "LBL_MOULDING1", 1);
+    InitControl(m_aMoulding[1], "LBL_MOULDING3", 1);
+    InitControl(m_aCombatbg[0], "LBL_COMBATBG2", 1);
+    InitControl(m_aCombatbg[1], "LBL_COMBATBG3", 1);
 
     InitControl(m_btnClearone, "BTN_CLEARONE", 1);
     InitControl(m_btnClearone2, "BTN_CLEARONE2", 1);
@@ -3051,7 +3045,7 @@ CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // PC 0x006E5
     m_oidPlayerCharacter = OBJECT_INVALID;
     m_fTargetUpdateDelay = -1.0f;
     m_fActionDescriptionTimer = -1.0f;
-    for (nIndex = 0; nIndex < 6; nIndex++)
+    for (nIndex = 0; nIndex < 7; nIndex++)
         m_aSelectedPersonalActions[nIndex] = CSWGuiInterfaceAction::INVALID_ACTION;
     m_cActionDescriptionState.m_bEnabled = 1;
     m_fPortraitTransitionTime = 0.0f;
@@ -3178,7 +3172,7 @@ void CSWGuiMainInterface::Draw(float fElapsed)
     UpdateIndicator(fIndicatorElapsed);
 #endif
     ShowActionQueue(ClientExoAppLate3(g_pAppManager)->GetCombatMode());
-    for (int nAction = 0; nAction < 6; ++nAction)
+    for (int nAction = 0; nAction < 7; ++nAction)
         m_aPersonalActions[nAction].Update(fElapsed);
     if (m_cActionDescriptionState.m_bEnabled)
         UpdateActionQueue();

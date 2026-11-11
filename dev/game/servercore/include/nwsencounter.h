@@ -183,6 +183,9 @@ public:
     CExoArrayList<float>* m_plstFractionalCR;
     int m_nCustomScriptId;
     int m_bPlayerOnly;
+    int m_n35C;
+    int m_n360;
+    int m_n364;
 
     static CExoArrayList<float> m_sPowerLookup;
 

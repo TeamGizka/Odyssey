@@ -279,7 +279,8 @@ public:
     CSWPortrait m_cPortrait;
 
     short m_nGoodEvilAlignment;
-    unsigned char m_aUnknown82[2];
+    short m_n82;
+    CExoString m_s84;
     char* m_pSkillRanksTotal;
     char* m_pSkillRanks;
     unsigned short m_nAppearance;
@@ -312,6 +313,7 @@ public:
     short m_nForcePointsBase;
     short m_nCurrentForcePoints;
     short m_nForcePointBonus;
+    CCombatInformation* m_p130;
 };
 
 class CSWCLevelUpStats : public CSWCCreatureStats

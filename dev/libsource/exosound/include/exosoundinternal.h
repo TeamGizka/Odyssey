@@ -519,6 +519,8 @@ public:
     unsigned char m_nPriorityGroup;
     C2DVoice* m_p2DVoice;
     C3DVoice* m_p3DVoice;
+    int m_n40;
+    int m_n44;
     CExoLinkedListNode* m_pListNode;
     CExoSoundInternal* m_pSound;
     unsigned long m_nSampleRate;
@@ -817,6 +819,7 @@ public:
     enum { LEGACY_WAVE_HEADER_SIZE = 470 };
 
     HSTREAM m_hStream;
+    int m_n4;
     int m_bLooping;
     unsigned char m_nPriorityGroup;
     CResRef m_resRef;
@@ -846,6 +849,7 @@ public:
     Vector m_vObstructionListenerPosition;
     unsigned long m_nObstructionTime;
     float m_fOcclusion;
+    int m_n88;
     int SetReverbEnabled(int bEnabled);
 
 

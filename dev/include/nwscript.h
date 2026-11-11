@@ -358,6 +358,8 @@ public:
                             CResStruct* pStruct);
     void DeleteScriptSituation(void* pScript);
 
+    int m_nScriptParameters[5];
+    CExoString m_sScriptStringParameter[1];
     CVirtualMachineInternal* m_pVirtualMachineInternal;
 };
 
