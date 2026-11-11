@@ -1,4 +1,4 @@
-# The game tree: engine libraries (libsource), game layers and executables (game), utilities.
+# The game tree: engine libraries (libsource), game layers and the executable (game).
 set(KOTOR_DEV "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # SDK files the game is built against.
@@ -43,9 +43,3 @@ add_subdirectory(libsource/SWGui)
 add_subdirectory(game/clientcore)
 add_subdirectory(game/servercore)
 add_subdirectory(game/swmain)
-if(KOTOR_PLATFORM STREQUAL "pc")
-  add_subdirectory(utilities/swstub)
-endif()
-if(KOTOR_BUILD_SWSERVER AND KOTOR_PLATFORM STREQUAL "pc")
-  add_subdirectory(game/swserver)
-endif()

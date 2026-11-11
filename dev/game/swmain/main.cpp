@@ -181,9 +181,6 @@ const int XBOX_LEVEL_MEMORY_CAP = 0xd00000;
 #define XBOX_TEXTURE_COMPRESSION 0.23f
 
 #ifndef _XBOX
-#include "keeperfill_main.inc"
-#endif
-#ifndef _XBOX
 const char* Buffers(char* sBuffer)
 {
     sprintf(sBuffer, "VB[%d][%d] IB[%d][%d]",

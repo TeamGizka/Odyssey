@@ -1,12 +1,13 @@
-"""Extract the cursors and the icon of swkotor.exe 1.03 into dev/game/swmain/res/.
+"""Extract the cursors and the icon of swkotor2.exe into dev/game/swmain/res/.
 
-These files are compiled by dev/game/swmain/swmain.rc but are not distributed with the source. Run once, with
-your own copy of the game executable:
+icon101.ico is compiled by dev/game/swmain/swmain.rc; cursors.res, the cursors as compiled resources (their
+directories are not what a resource compiler writes for .cur files), is linked as it is. Neither is distributed
+with the source. Run once, with your own copy of the game executable (the Steam release, file version 2.2.0.0):
 
-    python scripts/extract_res.py "C:/path/to/swkotor.exe"
+    python scripts/extract_res.py "C:/path/to/swkotor2.exe"
 
-Every written file is checked against scripts/extract_res.sha256; a mismatch means the executable is not
-version 1.03 (or its resources were modified), and the build would not reproduce the original.
+Every written file is checked against scripts/extract_res.sha256; a mismatch means the executable is not that
+release (or its resources were modified), and the build would not reproduce the original.
 """
 import hashlib
 import os
@@ -69,38 +70,43 @@ class Image:
         return table
 
 
+def _res_entry(kind, ident, lang, flags, data):
+    """One record of a .res file: header (numeric type and name) and data, padded to a DWORD boundary."""
+    header = struct.pack('<IIHHHHIHHII', len(data), 32, 0xFFFF, kind, 0xFFFF, ident, 0, flags, lang, 0, 0)
+    return header + data + bytes(-len(data) % 4)
+
+
 def build_files(image):
-    """Rebuild each icon/cursor group as an .ico/.cur file: {filename: bytes}."""
+    """The icon group as an .ico file and the cursors, images and directories as they are in the executable, as a
+    compiled resource file: {filename: bytes}."""
     table = image.resources()
     files = {}
-    for group_type, image_type, keyword, extension in ((RT_GROUP_ICON, RT_ICON, 'icon', 'ico'),
-                                                       (RT_GROUP_CURSOR, RT_CURSOR, 'cursor', 'cur')):
-        for (ident, lang), data in table.get(group_type, {}).items():
-            _reserved, kind, count = struct.unpack_from('<HHH', data, 0)
-            entries = [struct.unpack_from('<BBBBHHIH', data, 6 + 14 * i) for i in range(count)]
-            directory = b''
-            body = b''
-            offset = 6 + 16 * count
-            for width, height, colors, reserved, planes, bits, _size, image_id in entries:
-                blob = table[image_type][(image_id, lang)]
-                if image_type == RT_CURSOR:
-                    hotspot_x, hotspot_y = struct.unpack_from('<HH', blob, 0)
-                    blob = blob[4:]
-                    bih_width, bih_height = struct.unpack_from('<ii', blob, 4)
-                    directory += struct.pack('<BBBBHHII', bih_width & 0xFF, (bih_height // 2) & 0xFF, colors,
-                                             reserved, hotspot_x, hotspot_y, len(blob), offset)
-                else:
-                    directory += struct.pack('<BBBBHHII', width, height, colors, reserved, planes, bits,
-                                             len(blob), offset)
-                body += blob
-                offset += len(blob)
-            files['%s%s.%s' % (keyword, ident, extension)] = struct.pack('<HHH', 0, kind, count) + directory + body
+    for (ident, lang), data in table.get(RT_GROUP_ICON, {}).items():
+        _reserved, kind, count = struct.unpack_from('<HHH', data, 0)
+        entries = [struct.unpack_from('<BBBBHHIH', data, 6 + 14 * i) for i in range(count)]
+        directory = b''
+        body = b''
+        offset = 6 + 16 * count
+        for width, height, colors, reserved, planes, bits, _size, image_id in entries:
+            blob = table[RT_ICON][(image_id, lang)]
+            directory += struct.pack('<BBBBHHII', width, height, colors, reserved, planes, bits, len(blob), offset)
+            body += blob
+            offset += len(blob)
+        files['icon%s.ico' % ident] = struct.pack('<HHH', 0, kind, count) + directory + body
+    res = _res_entry(0, 0, 0, 0, b'')[:32]
+    for (ident, lang), data in sorted(table.get(RT_GROUP_CURSOR, {}).items()):
+        count = struct.unpack_from('<H', data, 4)[0]
+        for i in range(count):
+            image_id = struct.unpack_from('<H', data, 6 + 14 * i + 12)[0]
+            res += _res_entry(RT_CURSOR, image_id, lang, 0x1010, table[RT_CURSOR][(image_id, lang)])
+        res += _res_entry(RT_GROUP_CURSOR, ident, lang, 0x1030, data)
+    files['cursors.res'] = res
     return files
 
 
 def main():
     if len(sys.argv) != 2:
-        sys.exit('usage: python scripts/extract_res.py <path to swkotor.exe 1.03>')
+        sys.exit('usage: python scripts/extract_res.py <path to swkotor2.exe>')
     try:
         with open(sys.argv[1], 'rb') as handle:
             files = build_files(Image(handle.read()))
@@ -114,11 +120,11 @@ def main():
                 expected[name] = digest
     missing = sorted(set(expected) - set(files))
     if missing:
-        sys.exit('the executable lacks %d expected resources (first: %s); is it swkotor.exe 1.03?'
+        sys.exit('the executable lacks %d expected resources (first: %s); is it swkotor2.exe?'
                  % (len(missing), missing[0]))
     wrong = [name for name in expected if hashlib.sha256(files[name]).hexdigest() != expected[name]]
     if wrong:
-        sys.exit('%d resources differ from version 1.03 (first: %s); nothing written' % (len(wrong), wrong[0]))
+        sys.exit('%d resources differ from the expected release (first: %s); nothing written' % (len(wrong), wrong[0]))
     os.makedirs(OUT_DIR, exist_ok=True)
     for name in sorted(expected):
         with open(os.path.join(OUT_DIR, name), 'wb') as handle:

@@ -1,49 +1,50 @@
-"""Write the release form of a linked swkotor.exe.
+"""Write the release form of a linked executable.
 
-    python release_header.py <linked swkotor.exe> <output>
+    python release_header.py --time-date-stamp <value> --checksum <value> <linked image> <output>
 
-The shipped 1.03 executable differs from the linker's output in three header fields only; they are settings of the
-release process, not code, and are applied here:
+A shipped executable differs from the linker's output in three header fields; they are settings of the release
+process, not code, and are applied here:
 
-  * file offsets 0x40..0x10F (the DOS stub program and the linker's tool signature) are zero;
-  * the PE TimeDateStamp is the release link time, 2004-02-12 18:15:53 UTC;
-  * the PE CheckSum is 0.
+  * the bytes from file offset 0x40 up to the PE header (the DOS stub program and the linker's tool signature) are zero;
+  * the PE TimeDateStamp is the release link time (--time-date-stamp);
+  * the PE CheckSum is --checksum.
 
-Nothing else is changed. The PE header must start at file offset 0x110, as it does in every link of this tree.
-Prints the SHA-256 of the output.
+Nothing else is changed. Values are decimal or 0x-prefixed hexadecimal. Prints the PE header offset and the SHA-256
+of the output.
 """
+import argparse
 import hashlib
 import os
 import struct
 import sys
 
 STUB_START = 0x40
-PE_OFFSET = 0x110
-TIME_DATE_STAMP = 0x402BC2D9
-CHECKSUM = 0
 
 
-def release_image(linked):
+def release_image(linked, time_date_stamp, checksum):
     pe = struct.unpack_from('<I', linked, 0x3C)[0]
-    if pe != PE_OFFSET or linked[pe:pe + 4] != b'PE\0\0':
-        raise ValueError('PE header at %#x, expected %#x' % (pe, PE_OFFSET))
+    if pe < STUB_START or linked[pe:pe + 4] != b'PE\0\0':
+        raise ValueError('no PE header at %#x' % pe)
     out = bytearray(linked)
-    out[STUB_START:PE_OFFSET] = bytes(PE_OFFSET - STUB_START)
-    struct.pack_into('<I', out, pe + 8, TIME_DATE_STAMP)
-    struct.pack_into('<I', out, pe + 0x58, CHECKSUM)
-    return bytes(out)
+    out[STUB_START:pe] = bytes(pe - STUB_START)
+    struct.pack_into('<I', out, pe + 8, time_date_stamp)
+    struct.pack_into('<I', out, pe + 0x58, checksum)
+    return pe, bytes(out)
 
 
 def main(argv):
-    if len(argv) != 3:
-        print(__doc__, file=sys.stderr)
-        return 2
-    with open(argv[1], 'rb') as f:
-        data = release_image(f.read())
-    os.makedirs(os.path.dirname(os.path.abspath(argv[2])), exist_ok=True)
-    with open(argv[2], 'wb') as f:
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument('--time-date-stamp', required=True, type=lambda v: int(v, 0))
+    ap.add_argument('--checksum', required=True, type=lambda v: int(v, 0))
+    ap.add_argument('linked')
+    ap.add_argument('output')
+    a = ap.parse_args(argv[1:])
+    with open(a.linked, 'rb') as f:
+        pe, data = release_image(f.read(), a.time_date_stamp, a.checksum)
+    os.makedirs(os.path.dirname(os.path.abspath(a.output)), exist_ok=True)
+    with open(a.output, 'wb') as f:
         f.write(data)
-    print('%s  sha256 %s' % (argv[2], hashlib.sha256(data).hexdigest()))
+    print('%s  PE header at %#x  sha256 %s' % (a.output, pe, hashlib.sha256(data).hexdigest()))
     return 0
 
 

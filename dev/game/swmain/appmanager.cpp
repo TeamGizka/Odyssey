@@ -22,10 +22,6 @@ extern int g_nReInitializing;
 
 const int LARGE_TEMP_BUFFER_SIZE = 0x40000;
 
-#ifndef _XBOX
-#include "keeperfill_appmanager.inc"
-#endif
-
 void FreeAppObjectTables(CAppManager* pManager)
 {
     unsigned long nTable;

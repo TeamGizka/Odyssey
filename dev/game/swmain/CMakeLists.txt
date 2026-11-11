@@ -1,4 +1,4 @@
-# swmain: the game executable, swkotor.exe (default.exe on Xbox).
+# swmain: the game executable, swkotor2.exe (default.exe on Xbox).
 set(sources
   appmanager.cpp
   main.cpp)
@@ -12,7 +12,6 @@ kotor_executable(swmain ${sources})
 target_compile_options(swmain PRIVATE /YX)
 
 kotor_automatic_pch_order(swmain)
-kotor_keeper_fill(swmain appmanager.cpp main.cpp)
 
 if(KOTOR_PLATFORM STREQUAL "xbox")
   set_target_properties(swmain PROPERTIES OUTPUT_NAME default)
@@ -24,10 +23,13 @@ if(KOTOR_PLATFORM STREQUAL "xbox")
   return()
 endif()
 
-set_target_properties(swmain PROPERTIES OUTPUT_NAME swkotor)
-target_link_options(swmain PRIVATE "/MAP:${CMAKE_CURRENT_BINARY_DIR}/swkotor.map")
+set_target_properties(swmain PROPERTIES OUTPUT_NAME swkotor2)
+target_link_options(swmain PRIVATE "/MAP:${CMAKE_CURRENT_BINARY_DIR}/swkotor2.map")
 enable_language(RC)
 target_sources(swmain PRIVATE swmain.rc)
+# The cursors are linked as compiled resources, extracted by scripts/extract_res.py.
+target_link_options(swmain PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/res/cursors.res")
+set_property(TARGET swmain APPEND PROPERTY LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/res/cursors.res")
 
 # The static libraries of the link, in link order. Each lists its objects in the order they are stored.
 kotor_archive(exomovieplayer

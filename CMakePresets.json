@@ -19,22 +19,6 @@
       }
     },
     {
-      "name": "tier-b",
-      "inherits": "vc70",
-      "displayName": "PC, byte-identical swkotor.exe (filler block on)",
-      "cacheVariables": {
-        "KOTOR_KEEPER_FILL": "ON"
-      }
-    },
-    {
-      "name": "tier-a",
-      "inherits": "vc70",
-      "displayName": "PC, source tree only (filler block off)",
-      "cacheVariables": {
-        "KOTOR_KEEPER_FILL": "OFF"
-      }
-    },
-    {
       "name": "xbox",
       "displayName": "Xbox, XDK Visual C++ 7.1",
       "generator": "NMake Makefiles",
@@ -54,8 +38,6 @@
   ],
   "buildPresets": [
     { "name": "vc70", "configurePreset": "vc70" },
-    { "name": "tier-b", "configurePreset": "tier-b" },
-    { "name": "tier-a", "configurePreset": "tier-a" },
     { "name": "xbox", "configurePreset": "xbox" }
   ]
 }
