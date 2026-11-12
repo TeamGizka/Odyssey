@@ -1093,11 +1093,11 @@ int polyhit(const Vector* pVertices, int nVertices, const Vector& vStart,
     {
         return 0;
     }
-    Vector vNormal = vSum * (1.0f / fMagnitude);
+    float fReciprocal = 1.0f / fMagnitude;
+    Vector vNormal = vSum * fReciprocal;
     float fDistance = -(vNormal * pVertices[0]);
     float fStart, fEnd;
-    if ((fStart = vNormal.m_fX * vStart.m_fX +
-                  (vNormal.m_fY * vStart.m_fY + vNormal.m_fZ * vStart.m_fZ) + fDistance) < 0.0f ||
+    if ((fStart = vNormal * vStart + fDistance) < 0.0f ||
         (fEnd = vNormal * vEnd + fDistance) > 0.0f || fStart == fEnd)
     {
         return 0;

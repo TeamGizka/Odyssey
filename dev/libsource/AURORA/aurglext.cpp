@@ -6,8 +6,13 @@
 #include "aurrendergl.h"
 #include "aurglext.h"
 
+typedef void (WINAPI* PFNGLTEXIMAGE3DPROC) (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const GLvoid *pixels);
+typedef void (WINAPI* PFNGLTEXSUBIMAGE3DPROC) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid *pixels);
+
 extern "C"
 {
+    PFNGLTEXIMAGE3DPROC glTexImage3D;
+    PFNGLTEXSUBIMAGE3DPROC glTexSubImage3D;
     PFNGLMULTITEXCOORD2IARBPROC glMultiTexCoord2iARB;
     PFNGLMULTITEXCOORD3FARBPROC glMultiTexCoord3fARB;
     PFNGLMULTITEXCOORD2FVARBPROC glMultiTexCoord2fvARB;

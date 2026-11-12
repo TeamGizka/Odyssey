@@ -63,15 +63,15 @@ extern "C" AurWglGetExtensionsStringProc wglGetExtensionsStringARB;
 #define GL_CND_ATI 0x896A
 #define GL_TEXTURE_3D 0x806F
 extern bool g_ForceSight;
-int g_Letterbox_top = 0;
-int g_Letterbox_bottom = 0;
-bool g_bLetterBoxMode = 0;
+extern int g_Letterbox_top;
+extern int g_Letterbox_bottom;
+extern bool g_bLetterBoxMode;
 typedef void (WINAPI* PFNGLTEXIMAGE3DPROC) (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const GLvoid *pixels);
 typedef void (WINAPI* PFNGLTEXSUBIMAGE3DPROC) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid *pixels);
 extern "C"
 {
-    PFNGLTEXIMAGE3DPROC glTexImage3D;
-    PFNGLTEXSUBIMAGE3DPROC glTexSubImage3D;
+    extern PFNGLTEXIMAGE3DPROC glTexImage3D;
+    extern PFNGLTEXSUBIMAGE3DPROC glTexSubImage3D;
 }
 float largest_supported_anisotropy = 0.0f;
 int GLRender::cm_nAnisotropy = 0;

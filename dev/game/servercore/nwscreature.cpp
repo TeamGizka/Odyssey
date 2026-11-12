@@ -174,6 +174,362 @@ int CSWSCreature::LearnScroll(unsigned long oidItem)
 {
     return 0;
 }
+// PC 0x00510DF0
+void CSWSCreature::SetActivity(int nActivity, int bFlag, int nArg)
+{
+    if ((nActivity & m_bInDialog) == nActivity)
+    {
+        return;
+    }
+    if (((nActivity & ACTIVITY_GROUP_LOW) && bFlag == 1) ||
+        (nActivity == ACTIVITY_GROUP_LOW && bFlag == 0))
+    {
+        ClearActivities(ACTIVITY_GROUP_LOW);
+    }
+    if (((nActivity & ACTIVITY_GROUP_HIGH) && bFlag == 1) ||
+        (nActivity == ACTIVITY_GROUP_HIGH && bFlag == 0))
+    {
+        ClearActivities(ACTIVITY_GROUP_HIGH);
+    }
+    int nChanged;
+    if (bFlag == 1)
+    {
+        nChanged = (m_nActivity & nActivity) == 0;
+        m_nActivity |= nActivity;
+    }
+    else
+    {
+        nChanged = m_nActivity & nActivity;
+        m_nActivity &= ~nActivity;
+    }
+    if (nChanged)
+    {
+        if (nActivity & ACTIVITY_STEALTH)
+        {
+            if (bFlag == 1 && !(m_nActivity & (ACTIVITY_DIALOG | ACTIVITY_REST)))
+            {
+                SetStealthMode(1, nArg);
+            }
+            else if (bFlag == 0)
+            {
+                SetStealthMode(0, nArg);
+            }
+            else
+            {
+                m_nActivity &= ~nActivity;
+            }
+        }
+        if (nActivity & ACTIVITY_DETECT)
+        {
+            SetDetectMode(bFlag != 0);
+        }
+        if ((nActivity & ACTIVITY_DIALOG) && bFlag == 0)
+        {
+            StopDialog();
+        }
+    }
+}
+// PC 0x0050BB00
+void CSWSCreature::ClearActivities(int nActivity)
+{
+    if ((nActivity & ACTIVITY_STEALTH) && (m_nActivity & ACTIVITY_STEALTH) &&
+        (m_bInDialog & ACTIVITY_STEALTH) != ACTIVITY_STEALTH)
+    {
+        SetActivity(ACTIVITY_STEALTH, 0, 0);
+    }
+    if ((nActivity & ACTIVITY_DIALOG) && (m_nActivity & ACTIVITY_DIALOG) &&
+        (m_bInDialog & ACTIVITY_DIALOG) != ACTIVITY_DIALOG)
+    {
+        SetActivity(ACTIVITY_DIALOG, 0, 0);
+    }
+    if ((nActivity & ACTIVITY_REST) && (m_nActivity & ACTIVITY_REST) &&
+        (m_bInDialog & ACTIVITY_REST) != ACTIVITY_REST)
+    {
+        SetActivity(ACTIVITY_REST, 0, 0);
+    }
+    if ((nActivity & ACTIVITY_BIT_4) && (m_nActivity & ACTIVITY_BIT_4) &&
+        (m_bInDialog & ACTIVITY_BIT_4) != ACTIVITY_BIT_4)
+    {
+        SetActivity(ACTIVITY_BIT_4, 0, 0);
+    }
+    if ((nActivity & ACTIVITY_BIT_5) && (m_nActivity & ACTIVITY_BIT_5) &&
+        (m_bInDialog & ACTIVITY_BIT_5) != ACTIVITY_BIT_5)
+    {
+        SetActivity(ACTIVITY_BIT_5, 0, 0);
+    }
+    if ((nActivity & ACTIVITY_BIT_6) && (m_nActivity & ACTIVITY_BIT_6) &&
+        (m_bInDialog & ACTIVITY_BIT_6) != ACTIVITY_BIT_6)
+    {
+        SetActivity(ACTIVITY_BIT_6, 0, 0);
+    }
+    if ((nActivity & ACTIVITY_BIT_7) && (m_nActivity & ACTIVITY_BIT_7) &&
+        (m_bInDialog & ACTIVITY_BIT_7) != ACTIVITY_BIT_7)
+    {
+        SetActivity(ACTIVITY_BIT_7, 0, 0);
+    }
+    if ((nActivity & ACTIVITY_BIT_8) && (m_nActivity & ACTIVITY_BIT_8) &&
+        (m_bInDialog & ACTIVITY_BIT_8) != ACTIVITY_BIT_8)
+    {
+        SetActivity(ACTIVITY_BIT_8, 0, 0);
+    }
+    if ((nActivity & ACTIVITY_BIT_9) && (m_nActivity & ACTIVITY_BIT_9) &&
+        (m_bInDialog & ACTIVITY_BIT_9) != ACTIVITY_BIT_9)
+    {
+        SetActivity(ACTIVITY_BIT_9, 0, 0);
+    }
+    if ((nActivity & ACTIVITY_BIT_10) && (m_nActivity & ACTIVITY_BIT_10) &&
+        (m_bInDialog & ACTIVITY_BIT_10) != ACTIVITY_BIT_10)
+    {
+        SetActivity(ACTIVITY_BIT_10, 0, 0);
+    }
+    if ((nActivity & ACTIVITY_BIT_11) && (m_nActivity & ACTIVITY_BIT_11) &&
+        (m_bInDialog & ACTIVITY_BIT_11) != ACTIVITY_BIT_11)
+    {
+        SetActivity(ACTIVITY_BIT_11, 0, 0);
+    }
+    if ((nActivity & ACTIVITY_BIT_12) && (m_nActivity & ACTIVITY_BIT_12) &&
+        !(m_bInDialog & ACTIVITY_BIT_12))
+    {
+        SetActivity(ACTIVITY_BIT_12, 0, 0);
+    }
+    if ((nActivity & ACTIVITY_BIT_13) && (m_nActivity & ACTIVITY_BIT_13) &&
+        !(m_bInDialog & ACTIVITY_BIT_13))
+    {
+        SetActivity(ACTIVITY_BIT_13, 0, 0);
+    }
+}
+// PC 0x0050BCF0
+float CSWSCreature::ComputeSpellRange(CExoString sRange, unsigned long oidTarget)
+{
+    float fRange = 0.0f;
+
+    if (sRange == "P")
+        sRange = "T";
+
+    if (sRange == "P")
+        fRange = g_pRules->m_afPrimaryRange[CSWRules::RANGE_PERSONAL];
+    else if (sRange == "T")
+        fRange = g_pRules->m_afPrimaryRange[CSWRules::RANGE_TOUCH];
+    else if (sRange == "S")
+        fRange = g_pRules->m_afPrimaryRange[CSWRules::RANGE_SHORT];
+    else if (sRange == "M")
+        fRange = g_pRules->m_afPrimaryRange[CSWRules::RANGE_MEDIUM];
+    else if (sRange == "L")
+        fRange = g_pRules->m_afPrimaryRange[CSWRules::RANGE_LONG];
+    else if (sRange == "W")
+        fRange = g_pRules->m_afPrimaryRange[CSWRules::RANGE_WEAPON];
+
+    fRange += GetPathfindInformation()->GetCreaturePersonalSpace() - 0.1f;
+    CSWSCreature* pTarget = g_pAppManager->GetServerExoApp()
+        ->GetCreatureByGameObjectID(oidTarget);
+    if (pTarget != NULL)
+        fRange += pTarget->GetPathfindInformation()->GetCreaturePersonalSpace() - 0.1f;
+
+    return fRange;
+}
+// PC 0x0050BE60
+int CSWSCreature::AddDriveAction(unsigned short nGroupId,
+                                 const Vector& vPosition, int nDirection,
+                                 int nDriveMode, int nFlags, int nUnknown)
+{
+    int nArea;
+    int nState;
+    char bInterruptable;
+
+    nArea = (int)((CSWSObject*)this)->GetArea();
+    if (nArea == 0)
+    {
+        return nArea;
+    }
+
+    nState = m_nUnknown8E8;
+    bInterruptable = 1;
+    if (nState != 0)
+    {
+        nFlags &= 0xFFFDu;
+    }
+
+    ((CSWSObject*)this)
+        ->AddAction(0x33u, nGroupId, 2u, (Vector*)&vPosition, 2u,
+                    &((Vector*)&vPosition)->m_fY, 1u, &nDirection, 1u,
+                    &nDriveMode, 1u, &nFlags, 1u, &nUnknown, 1u,
+                    &bInterruptable, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    return 1;
+}
+// PC 0x0050BEF0
+int CSWSCreature::AddPathfindingWaitActionToFront(unsigned short nGroupId)
+{
+    float fWaitTime = 0.3f;
+    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+
+    if (pServer->GetClientObjectByObjectId(m_nId) != 0)
+    {
+        fWaitTime = 0.1f;
+    }
+
+    ((CSWSObject*)this)
+        ->AddActionToFront(0x1E, nGroupId, 2, &fWaitTime, 0, 0, 0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    return 1;
+}
+// PC 0x0050BF70
+void CSWSCreature::SetSilentMove(int bSilentMove)
+{
+    if (bSilentMove != 0)
+    {
+        m_nSilentMove++;
+    }
+    else
+    {
+        m_nSilentMove--;
+    }
+}
+// PC 0x0050BFA0
+int CSWSCreature::AddPickUpItemActions(unsigned long oidItem,
+                                      unsigned long oidRepository,
+                                      unsigned char nPanel)
+{
+    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+    if (pServer->GetItemByGameObjectID(oidItem) != NULL &&
+        ((CSWSObject*)this)->GetArea() != NULL && m_bCommandable != 0)
+    {
+        ((CSWSObject*)this)->AddAction(
+            CSWSObject::ACTION_PICK_UP_ITEM, CSWSObject::ACTION_GROUP_NEW,
+            CSWSObject::ACTION_PARAM_OBJECT, &oidItem,
+            CSWSObject::ACTION_PARAM_OBJECT, &oidRepository,
+            CSWSObject::ACTION_PARAM_INTEGER, &nPanel,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        return 1;
+    }
+    return 0;
+}
+// PC 0x0050C030
+void CSWSCreature::ResetUpdateTimes(unsigned long nDay, unsigned long nTime)
+{
+    m_nLastHeartbeatDay = nDay;
+    m_nLastHeartbeatTime = nTime;
+    m_nLastPerceptionDay = nDay;
+    m_nLastPerceptionTime = nTime;
+    m_nLastUpdateDay = nDay;
+    m_nLastUpdateTime = nTime;
+}
+// PC 0x00511CC0
+void CSWSCreature::SpawnInHeartbeatPerception(int bForce)
+{
+    unsigned long nDay = 0, nTime = 0;
+    unsigned long nElapsedDay = 0, nElapsedTime = 0;
+    unsigned long nPerceptionElapsedDay = 0, nPerceptionElapsedTime = 0;
+    CServerAIMaster* pAIMaster = g_pAppManager->GetServerExoApp()->GetServerAIMaster();
+    g_pAppManager->GetServerExoApp()->GetActiveTimer(GetId())->GetWorldTime(&nDay, &nTime);
+    g_pAppManager->GetServerExoApp()->GetWorldTimer()->SubtractWorldTimes(
+        nDay, nTime, m_nLastHeartbeatDay, m_nLastHeartbeatTime, &nElapsedDay, &nElapsedTime);
+    int bCreationScriptFired = m_bCreationScriptFired;
+    if (bCreationScriptFired == 0)
+    {
+        HandleAutoBalancing();
+        CExoString& sSpawn = m_sScripts[SCRIPT_SPAWN];
+        g_pVirtualMachine->RunScript(&sSpawn, m_nId, 1);
+    }
+    if ((bForce == 1 && nElapsedTime >= m_nHeartbeatInterval) || m_bCreationScriptFired == 0)
+    {
+        ++m_nHeartbeatUpdateCount;
+        if (m_nAILevel != CServerAIMaster::AI_LEVEL_EMPTY_AREA_CREATURE || m_nHeartbeatUpdateCount >= (m_nHeartbeatInterval >> CREATURE_HEARTBEAT_COUNT_SHIFT) ||
+            m_bCreationScriptFired == 0)
+        {
+            m_nHeartbeatUpdateCount = 0;
+            if ((m_bCreationScriptFired == 0 || m_nLastHeartbeatTime != 0) &&
+                GetDead() == 0 && GetIsPCDying() == 0)
+            {
+                int nDebilitated = m_bDebilitated;
+                if (nDebilitated == CSWSEffectListHandler::STATE_CONFUSION ||
+                    nDebilitated == CSWSEffectListHandler::STATE_VARIANT_16)
+                {
+                    m_bCommandable = 0;
+                }
+                CExoString& sHeartbeat = m_sScripts[CREATURE_SCRIPT_HEARTBEAT];
+                g_pVirtualMachine->RunScript(&sHeartbeat, m_nId, 1);
+                unsigned char nStateScript = 0;
+                switch (m_bDebilitated)
+                {
+                case CREATURE_STATE_SCRIPT_STATE_11:
+                    nStateScript = CREATURE_STATE_SCRIPT_OTHER;
+                    break;
+                case CSWSEffectListHandler::STATE_FEAR:
+                    nStateScript = CREATURE_STATE_SCRIPT_FEAR;
+                    break;
+                case CSWSEffectListHandler::STATE_CONFUSION:
+                case CSWSEffectListHandler::STATE_VARIANT_16:
+                    nStateScript = CREATURE_STATE_SCRIPT_CONFUSION;
+                    break;
+                }
+                if (nStateScript != 0)
+                {
+                    CExoString sScript;
+                    g_pRules->Get2DArrays()->GetStateScripts()->GetCExoStringEntry(
+                        nStateScript, "SCRIPTNAME", &sScript);
+                    g_pVirtualMachine->RunScript(&sScript, m_nId, 1);
+                    m_bCommandable = 0;
+                }
+                CleanInvitationLists();
+            }
+            m_nLastHeartbeatDay = nDay;
+            m_nLastHeartbeatTime = nTime;
+            m_nHeartbeatInterval = rand() % CREATURE_HEARTBEAT_RANDOM_INTERVAL + CREATURE_HEARTBEAT_BASE_INTERVAL;
+        }
+    }
+    g_pAppManager->GetServerExoApp()->GetActiveTimer(GetId())->GetWorldTime(&nDay, &nTime);
+    g_pAppManager->GetServerExoApp()->GetWorldTimer()->SubtractWorldTimes(
+        nDay, nTime, m_nLastVisibilityDay, m_nLastVisibilityTime, &nElapsedDay, &nElapsedTime);
+    if (m_bCreationScriptFired == 0 ||
+        (m_bInParty == 0 && ((m_nAreaWaitState != 0 && bForce == 1 && nElapsedTime >= m_nVisibilityInterval) ||
+                            (m_nAreaWaitState == 0 && bForce == 1 && nElapsedTime >= CREATURE_IDLE_PERCEPTION_INTERVAL))))
+    {
+        UpdateVisibleList(1);
+        m_nVisibilityInterval = rand() % CREATURE_VISIBILITY_RANDOM_INTERVAL + CREATURE_VISIBILITY_BASE_INTERVAL;
+    }
+    g_pAppManager->GetServerExoApp()->GetWorldTimer()->SubtractWorldTimes(
+        nDay, nTime, m_nLastPerceptionDay, m_nLastPerceptionTime,
+        &nPerceptionElapsedDay, &nPerceptionElapsedTime);
+    if (m_bCreationScriptFired == 0 ||
+        (m_nAreaWaitState != 0 && bForce == 1 && nPerceptionElapsedTime >= CREATURE_ACTIVE_PERCEPTION_INTERVAL) ||
+        (m_nAreaWaitState == 0 && bForce == 1 && nPerceptionElapsedTime >= CREATURE_IDLE_PERCEPTION_INTERVAL))
+    {
+        ++m_nPerceptionUpdateCount;
+        if (m_nAILevel != CServerAIMaster::AI_LEVEL_EMPTY_AREA_CREATURE || (int)m_nPerceptionUpdateCount >= CREATURE_PERCEPTION_UPDATE_LIMIT || m_bCreationScriptFired == 0)
+        {
+            m_nPerceptionUpdateCount = rand() % CREATURE_PERCEPTION_RANDOM_COUNT;
+            if (m_nLastPerceptionTime != 0 || m_bCreationScriptFired == 0)
+            {
+                if (m_bInParty != 0)
+                    UpdateVisibleList(0);
+                else
+                    UpdateVisibleList(2);
+            }
+            m_nLastPerceptionDay = nDay;
+            m_nLastPerceptionTime = nTime;
+            CSWSArea* pArea = GetArea();
+            if (pArea != NULL && pArea->m_nPlayersInArea == 0 && m_nAILevel != CServerAIMaster::AI_LEVEL_EMPTY_AREA_CREATURE)
+                pAIMaster->SetAILevel(this, CServerAIMaster::AI_LEVEL_EMPTY_AREA_CREATURE);
+        }
+    }
+    if (m_bCreationScriptFired == 0)
+        m_bCreationScriptFired = 1;
+}
+// PC 0x0050C060
+int CSWSCreature::RangeWeaponEquipped()
+{
+    CSWSItem* pItem = m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
+
+    if (pItem != NULL)
+    {
+        int bRanged =
+            g_pRules->m_pBaseItems->GetBaseItem(pItem->GetBaseItemType())
+                ->m_nRangedWeapon > 0;
+        return bRanged > 0;
+    }
+
+    return 0;
+}
 // PC 0x00519980
 CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     : CSWSObject(CGameObject::OBJECT_TYPE_CREATURE, oidCreature, bFlag)
@@ -536,362 +892,6 @@ void CSWSCreature::ActivityManager(unsigned long nAction)
     {
         ClearActivities(ACTIVITY_GROUP_ALL_LOW);
     }
-}
-// PC 0x00510DF0
-void CSWSCreature::SetActivity(int nActivity, int bFlag, int nArg)
-{
-    if ((nActivity & m_bInDialog) == nActivity)
-    {
-        return;
-    }
-    if (((nActivity & ACTIVITY_GROUP_LOW) && bFlag == 1) ||
-        (nActivity == ACTIVITY_GROUP_LOW && bFlag == 0))
-    {
-        ClearActivities(ACTIVITY_GROUP_LOW);
-    }
-    if (((nActivity & ACTIVITY_GROUP_HIGH) && bFlag == 1) ||
-        (nActivity == ACTIVITY_GROUP_HIGH && bFlag == 0))
-    {
-        ClearActivities(ACTIVITY_GROUP_HIGH);
-    }
-    int nChanged;
-    if (bFlag == 1)
-    {
-        nChanged = (m_nActivity & nActivity) == 0;
-        m_nActivity |= nActivity;
-    }
-    else
-    {
-        nChanged = m_nActivity & nActivity;
-        m_nActivity &= ~nActivity;
-    }
-    if (nChanged)
-    {
-        if (nActivity & ACTIVITY_STEALTH)
-        {
-            if (bFlag == 1 && !(m_nActivity & (ACTIVITY_DIALOG | ACTIVITY_REST)))
-            {
-                SetStealthMode(1, nArg);
-            }
-            else if (bFlag == 0)
-            {
-                SetStealthMode(0, nArg);
-            }
-            else
-            {
-                m_nActivity &= ~nActivity;
-            }
-        }
-        if (nActivity & ACTIVITY_DETECT)
-        {
-            SetDetectMode(bFlag != 0);
-        }
-        if ((nActivity & ACTIVITY_DIALOG) && bFlag == 0)
-        {
-            StopDialog();
-        }
-    }
-}
-// PC 0x0050BB00
-void CSWSCreature::ClearActivities(int nActivity)
-{
-    if ((nActivity & ACTIVITY_STEALTH) && (m_nActivity & ACTIVITY_STEALTH) &&
-        (m_bInDialog & ACTIVITY_STEALTH) != ACTIVITY_STEALTH)
-    {
-        SetActivity(ACTIVITY_STEALTH, 0, 0);
-    }
-    if ((nActivity & ACTIVITY_DIALOG) && (m_nActivity & ACTIVITY_DIALOG) &&
-        (m_bInDialog & ACTIVITY_DIALOG) != ACTIVITY_DIALOG)
-    {
-        SetActivity(ACTIVITY_DIALOG, 0, 0);
-    }
-    if ((nActivity & ACTIVITY_REST) && (m_nActivity & ACTIVITY_REST) &&
-        (m_bInDialog & ACTIVITY_REST) != ACTIVITY_REST)
-    {
-        SetActivity(ACTIVITY_REST, 0, 0);
-    }
-    if ((nActivity & ACTIVITY_BIT_4) && (m_nActivity & ACTIVITY_BIT_4) &&
-        (m_bInDialog & ACTIVITY_BIT_4) != ACTIVITY_BIT_4)
-    {
-        SetActivity(ACTIVITY_BIT_4, 0, 0);
-    }
-    if ((nActivity & ACTIVITY_BIT_5) && (m_nActivity & ACTIVITY_BIT_5) &&
-        (m_bInDialog & ACTIVITY_BIT_5) != ACTIVITY_BIT_5)
-    {
-        SetActivity(ACTIVITY_BIT_5, 0, 0);
-    }
-    if ((nActivity & ACTIVITY_BIT_6) && (m_nActivity & ACTIVITY_BIT_6) &&
-        (m_bInDialog & ACTIVITY_BIT_6) != ACTIVITY_BIT_6)
-    {
-        SetActivity(ACTIVITY_BIT_6, 0, 0);
-    }
-    if ((nActivity & ACTIVITY_BIT_7) && (m_nActivity & ACTIVITY_BIT_7) &&
-        (m_bInDialog & ACTIVITY_BIT_7) != ACTIVITY_BIT_7)
-    {
-        SetActivity(ACTIVITY_BIT_7, 0, 0);
-    }
-    if ((nActivity & ACTIVITY_BIT_8) && (m_nActivity & ACTIVITY_BIT_8) &&
-        (m_bInDialog & ACTIVITY_BIT_8) != ACTIVITY_BIT_8)
-    {
-        SetActivity(ACTIVITY_BIT_8, 0, 0);
-    }
-    if ((nActivity & ACTIVITY_BIT_9) && (m_nActivity & ACTIVITY_BIT_9) &&
-        (m_bInDialog & ACTIVITY_BIT_9) != ACTIVITY_BIT_9)
-    {
-        SetActivity(ACTIVITY_BIT_9, 0, 0);
-    }
-    if ((nActivity & ACTIVITY_BIT_10) && (m_nActivity & ACTIVITY_BIT_10) &&
-        (m_bInDialog & ACTIVITY_BIT_10) != ACTIVITY_BIT_10)
-    {
-        SetActivity(ACTIVITY_BIT_10, 0, 0);
-    }
-    if ((nActivity & ACTIVITY_BIT_11) && (m_nActivity & ACTIVITY_BIT_11) &&
-        (m_bInDialog & ACTIVITY_BIT_11) != ACTIVITY_BIT_11)
-    {
-        SetActivity(ACTIVITY_BIT_11, 0, 0);
-    }
-    if ((nActivity & ACTIVITY_BIT_12) && (m_nActivity & ACTIVITY_BIT_12) &&
-        !(m_bInDialog & ACTIVITY_BIT_12))
-    {
-        SetActivity(ACTIVITY_BIT_12, 0, 0);
-    }
-    if ((nActivity & ACTIVITY_BIT_13) && (m_nActivity & ACTIVITY_BIT_13) &&
-        !(m_bInDialog & ACTIVITY_BIT_13))
-    {
-        SetActivity(ACTIVITY_BIT_13, 0, 0);
-    }
-}
-// PC 0x0050BCF0
-float CSWSCreature::ComputeSpellRange(CExoString sRange, unsigned long oidTarget)
-{
-    float fRange = 0.0f;
-
-    if (sRange == "P")
-        sRange = "T";
-
-    if (sRange == "P")
-        fRange = g_pRules->m_afPrimaryRange[CSWRules::RANGE_PERSONAL];
-    else if (sRange == "T")
-        fRange = g_pRules->m_afPrimaryRange[CSWRules::RANGE_TOUCH];
-    else if (sRange == "S")
-        fRange = g_pRules->m_afPrimaryRange[CSWRules::RANGE_SHORT];
-    else if (sRange == "M")
-        fRange = g_pRules->m_afPrimaryRange[CSWRules::RANGE_MEDIUM];
-    else if (sRange == "L")
-        fRange = g_pRules->m_afPrimaryRange[CSWRules::RANGE_LONG];
-    else if (sRange == "W")
-        fRange = g_pRules->m_afPrimaryRange[CSWRules::RANGE_WEAPON];
-
-    fRange += GetPathfindInformation()->GetCreaturePersonalSpace() - 0.1f;
-    CSWSCreature* pTarget = g_pAppManager->GetServerExoApp()
-        ->GetCreatureByGameObjectID(oidTarget);
-    if (pTarget != NULL)
-        fRange += pTarget->GetPathfindInformation()->GetCreaturePersonalSpace() - 0.1f;
-
-    return fRange;
-}
-// PC 0x0050BE60
-int CSWSCreature::AddDriveAction(unsigned short nGroupId,
-                                 const Vector& vPosition, int nDirection,
-                                 int nDriveMode, int nFlags, int nUnknown)
-{
-    int nArea;
-    int nState;
-    char bInterruptable;
-
-    nArea = (int)((CSWSObject*)this)->GetArea();
-    if (nArea == 0)
-    {
-        return nArea;
-    }
-
-    nState = m_nUnknown8E8;
-    bInterruptable = 1;
-    if (nState != 0)
-    {
-        nFlags &= 0xFFFDu;
-    }
-
-    ((CSWSObject*)this)
-        ->AddAction(0x33u, nGroupId, 2u, (Vector*)&vPosition, 2u,
-                    &((Vector*)&vPosition)->m_fY, 1u, &nDirection, 1u,
-                    &nDriveMode, 1u, &nFlags, 1u, &nUnknown, 1u,
-                    &bInterruptable, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    return 1;
-}
-// PC 0x0050BEF0
-int CSWSCreature::AddPathfindingWaitActionToFront(unsigned short nGroupId)
-{
-    float fWaitTime = 0.3f;
-    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
-
-    if (pServer->GetClientObjectByObjectId(m_nId) != 0)
-    {
-        fWaitTime = 0.1f;
-    }
-
-    ((CSWSObject*)this)
-        ->AddActionToFront(0x1E, nGroupId, 2, &fWaitTime, 0, 0, 0, 0, 0, 0, 0,
-                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    return 1;
-}
-// PC 0x0050BF70
-void CSWSCreature::SetSilentMove(int bSilentMove)
-{
-    if (bSilentMove != 0)
-    {
-        m_nSilentMove++;
-    }
-    else
-    {
-        m_nSilentMove--;
-    }
-}
-// PC 0x0050BFA0
-int CSWSCreature::AddPickUpItemActions(unsigned long oidItem,
-                                      unsigned long oidRepository,
-                                      unsigned char nPanel)
-{
-    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
-    if (pServer->GetItemByGameObjectID(oidItem) != NULL &&
-        ((CSWSObject*)this)->GetArea() != NULL && m_bCommandable != 0)
-    {
-        ((CSWSObject*)this)->AddAction(
-            CSWSObject::ACTION_PICK_UP_ITEM, CSWSObject::ACTION_GROUP_NEW,
-            CSWSObject::ACTION_PARAM_OBJECT, &oidItem,
-            CSWSObject::ACTION_PARAM_OBJECT, &oidRepository,
-            CSWSObject::ACTION_PARAM_INTEGER, &nPanel,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        return 1;
-    }
-    return 0;
-}
-// PC 0x0050C030
-void CSWSCreature::ResetUpdateTimes(unsigned long nDay, unsigned long nTime)
-{
-    m_nLastHeartbeatDay = nDay;
-    m_nLastHeartbeatTime = nTime;
-    m_nLastPerceptionDay = nDay;
-    m_nLastPerceptionTime = nTime;
-    m_nLastUpdateDay = nDay;
-    m_nLastUpdateTime = nTime;
-}
-// PC 0x00511CC0
-void CSWSCreature::SpawnInHeartbeatPerception(int bForce)
-{
-    unsigned long nDay = 0, nTime = 0;
-    unsigned long nElapsedDay = 0, nElapsedTime = 0;
-    unsigned long nPerceptionElapsedDay = 0, nPerceptionElapsedTime = 0;
-    CServerAIMaster* pAIMaster = g_pAppManager->GetServerExoApp()->GetServerAIMaster();
-    g_pAppManager->GetServerExoApp()->GetActiveTimer(GetId())->GetWorldTime(&nDay, &nTime);
-    g_pAppManager->GetServerExoApp()->GetWorldTimer()->SubtractWorldTimes(
-        nDay, nTime, m_nLastHeartbeatDay, m_nLastHeartbeatTime, &nElapsedDay, &nElapsedTime);
-    int bCreationScriptFired = m_bCreationScriptFired;
-    if (bCreationScriptFired == 0)
-    {
-        HandleAutoBalancing();
-        CExoString& sSpawn = m_sScripts[SCRIPT_SPAWN];
-        g_pVirtualMachine->RunScript(&sSpawn, m_nId, 1);
-    }
-    if ((bForce == 1 && nElapsedTime >= m_nHeartbeatInterval) || m_bCreationScriptFired == 0)
-    {
-        ++m_nHeartbeatUpdateCount;
-        if (m_nAILevel != CServerAIMaster::AI_LEVEL_EMPTY_AREA_CREATURE || m_nHeartbeatUpdateCount >= (m_nHeartbeatInterval >> CREATURE_HEARTBEAT_COUNT_SHIFT) ||
-            m_bCreationScriptFired == 0)
-        {
-            m_nHeartbeatUpdateCount = 0;
-            if ((m_bCreationScriptFired == 0 || m_nLastHeartbeatTime != 0) &&
-                GetDead() == 0 && GetIsPCDying() == 0)
-            {
-                int nDebilitated = m_bDebilitated;
-                if (nDebilitated == CSWSEffectListHandler::STATE_CONFUSION ||
-                    nDebilitated == CSWSEffectListHandler::STATE_VARIANT_16)
-                {
-                    m_bCommandable = 0;
-                }
-                CExoString& sHeartbeat = m_sScripts[CREATURE_SCRIPT_HEARTBEAT];
-                g_pVirtualMachine->RunScript(&sHeartbeat, m_nId, 1);
-                unsigned char nStateScript = 0;
-                switch (m_bDebilitated)
-                {
-                case CREATURE_STATE_SCRIPT_STATE_11:
-                    nStateScript = CREATURE_STATE_SCRIPT_OTHER;
-                    break;
-                case CSWSEffectListHandler::STATE_FEAR:
-                    nStateScript = CREATURE_STATE_SCRIPT_FEAR;
-                    break;
-                case CSWSEffectListHandler::STATE_CONFUSION:
-                case CSWSEffectListHandler::STATE_VARIANT_16:
-                    nStateScript = CREATURE_STATE_SCRIPT_CONFUSION;
-                    break;
-                }
-                if (nStateScript != 0)
-                {
-                    CExoString sScript;
-                    g_pRules->Get2DArrays()->GetStateScripts()->GetCExoStringEntry(
-                        nStateScript, "SCRIPTNAME", &sScript);
-                    g_pVirtualMachine->RunScript(&sScript, m_nId, 1);
-                    m_bCommandable = 0;
-                }
-                CleanInvitationLists();
-            }
-            m_nLastHeartbeatDay = nDay;
-            m_nLastHeartbeatTime = nTime;
-            m_nHeartbeatInterval = rand() % CREATURE_HEARTBEAT_RANDOM_INTERVAL + CREATURE_HEARTBEAT_BASE_INTERVAL;
-        }
-    }
-    g_pAppManager->GetServerExoApp()->GetActiveTimer(GetId())->GetWorldTime(&nDay, &nTime);
-    g_pAppManager->GetServerExoApp()->GetWorldTimer()->SubtractWorldTimes(
-        nDay, nTime, m_nLastVisibilityDay, m_nLastVisibilityTime, &nElapsedDay, &nElapsedTime);
-    if (m_bCreationScriptFired == 0 ||
-        (m_bInParty == 0 && ((m_nAreaWaitState != 0 && bForce == 1 && nElapsedTime >= m_nVisibilityInterval) ||
-                            (m_nAreaWaitState == 0 && bForce == 1 && nElapsedTime >= CREATURE_IDLE_PERCEPTION_INTERVAL))))
-    {
-        UpdateVisibleList(1);
-        m_nVisibilityInterval = rand() % CREATURE_VISIBILITY_RANDOM_INTERVAL + CREATURE_VISIBILITY_BASE_INTERVAL;
-    }
-    g_pAppManager->GetServerExoApp()->GetWorldTimer()->SubtractWorldTimes(
-        nDay, nTime, m_nLastPerceptionDay, m_nLastPerceptionTime,
-        &nPerceptionElapsedDay, &nPerceptionElapsedTime);
-    if (m_bCreationScriptFired == 0 ||
-        (m_nAreaWaitState != 0 && bForce == 1 && nPerceptionElapsedTime >= CREATURE_ACTIVE_PERCEPTION_INTERVAL) ||
-        (m_nAreaWaitState == 0 && bForce == 1 && nPerceptionElapsedTime >= CREATURE_IDLE_PERCEPTION_INTERVAL))
-    {
-        ++m_nPerceptionUpdateCount;
-        if (m_nAILevel != CServerAIMaster::AI_LEVEL_EMPTY_AREA_CREATURE || (int)m_nPerceptionUpdateCount >= CREATURE_PERCEPTION_UPDATE_LIMIT || m_bCreationScriptFired == 0)
-        {
-            m_nPerceptionUpdateCount = rand() % CREATURE_PERCEPTION_RANDOM_COUNT;
-            if (m_nLastPerceptionTime != 0 || m_bCreationScriptFired == 0)
-            {
-                if (m_bInParty != 0)
-                    UpdateVisibleList(0);
-                else
-                    UpdateVisibleList(2);
-            }
-            m_nLastPerceptionDay = nDay;
-            m_nLastPerceptionTime = nTime;
-            CSWSArea* pArea = GetArea();
-            if (pArea != NULL && pArea->m_nPlayersInArea == 0 && m_nAILevel != CServerAIMaster::AI_LEVEL_EMPTY_AREA_CREATURE)
-                pAIMaster->SetAILevel(this, CServerAIMaster::AI_LEVEL_EMPTY_AREA_CREATURE);
-        }
-    }
-    if (m_bCreationScriptFired == 0)
-        m_bCreationScriptFired = 1;
-}
-// PC 0x0050C060
-int CSWSCreature::RangeWeaponEquipped()
-{
-    CSWSItem* pItem = m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
-
-    if (pItem != NULL)
-    {
-        int bRanged =
-            g_pRules->m_pBaseItems->GetBaseItem(pItem->GetBaseItemType())
-                ->m_nRangedWeapon > 0;
-        return bRanged > 0;
-    }
-
-    return 0;
 }
 // PC 0x00511280
 int CSWSCreature::ReplaceEquipItemActions(CSWSItem* pItem, unsigned long nSlot,

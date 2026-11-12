@@ -23,6 +23,9 @@ float CAurGUIDraw::cm_fViewportAlpha[10];
 float sleepseconds = 0.0f;
 float memoryfree = 0.0f;
 int g_nCurrentAnisotropy = 0;
+int g_Letterbox_top = 0;
+int g_Letterbox_bottom = 0;
+bool g_bLetterBoxMode = 0;
 char disablepostprocessing = 0;
 bool g_bDisableVertexBufferObjects = false;
 // PC 0x00462E30
