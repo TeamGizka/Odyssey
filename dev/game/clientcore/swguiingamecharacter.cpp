@@ -768,11 +768,11 @@ void CSWGuiInGameCharacter::SetLabelBonusPenaltyColour(CSWGuiLabel& lblStat,
     }
 }
 
+// PC 0x0071B400
 void CSWGuiInGameCharacter::RotateCharacter(int nDirection)
 {
-    float fYaw = nDirection ? -10.0f : 10.0f;
     m_pCreature->SetOrientation(
-        YawPitchRoll(fYaw, 0.0f, 0.0f) * m_pCreature->m_vOrientation);
+        YawPitchRoll(nDirection ? -10.0f : 10.0f, 0.0f, 0.0f) * m_pCreature->m_vOrientation);
 }
 
 #ifndef _XBOX

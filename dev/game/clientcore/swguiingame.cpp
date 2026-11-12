@@ -1933,7 +1933,8 @@ void CSWGuiInGameMessages::AddMessages(CGuiInGameMessage* pMessages, unsigned lo
 {
     CExoArrayList<CSWGuiControl*> aControls;
     CSWGuiListBox* pList = &m_lbMessages;
-    int nWidth = pList->m_cItemExtent.m_nWidth - 2 * pList->m_nPadding;
+    CSWGuiExtent& cItemExtent = pList->m_cItemExtent;
+    int nWidth = cItemExtent.m_nWidth - 2 * pList->m_nPadding;
     CSWGuiExtent cExtent;
     cExtent.m_nLeft = 0;
     cExtent.m_nTop = 0;
@@ -1945,7 +1946,8 @@ void CSWGuiInGameMessages::AddMessages(CGuiInGameMessage* pMessages, unsigned lo
         CExoString sMessage(pMessages[i].m_sMessage);
         int nToken = sMessage.Find('<', 0);
         int nCustomToken = sMessage.Find('{', 0);
-        if (nToken != -1 || nCustomToken != -1)
+        int bHasToken = nToken != -1 || nCustomToken != -1;
+        if (bHasToken)
         {
             g_pSWTlkTable->ParseStr(sMessage,
                 (CGameObject*)g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter(),
