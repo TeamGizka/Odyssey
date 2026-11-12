@@ -4738,18 +4738,18 @@ void CSWCCreature::CreateUsableItemEntry(  // PC 0x00667B60
         CExoString sName;
         pItem->m_sLocalizedName.GetString(
             g_pAppManager->GetClientExoApp()->GetClientLanguage(), &sName, 0);
-        if (pItem->m_nStackSize > 1)
+        if (pItem->GetStackSize() > 1)
         {
             if (bEquipped)
             {
                 sName.Format("%s (%s) (%d)", sName.CStr(),
                     g_pAppManager->GetClientExoApp()->GetGUIString(
                         CSWGuiInterfaceAction::STRREF_SELF).CStr(),
-                    pItem->m_nStackSize);
+                    pItem->GetStackSize());
             }
             else
             {
-                sName.Format("%s (%d)", sName.CStr(), pItem->m_nStackSize);
+                sName.Format("%s (%d)", sName.CStr(), pItem->GetStackSize());
             }
         }
         else if (bEquipped)
@@ -4774,8 +4774,10 @@ void CSWCCreature::CreateUsableItemEntry(  // PC 0x00667B60
         lstActions.SetSize(nNum + 1);
         lstActions[nEntry].m_sName = sName;
         lstActions[nEntry].m_nAction = pItem->GetId() | OBJECT_LISTTYPE_MASK;
-        lstActions[nEntry].m_pfnAction = (PFNMENUACTION)(nActionMask == 1 ?
-            &CSWCCreature::PartyMenuUseItemSelect : &CSWCCreature::PartyMenuUseItem);
+        if (nActionMask == 1)
+            lstActions[nEntry].m_pfnAction = (PFNMENUACTION)&CSWCCreature::PartyMenuUseItemSelect;
+        else
+            lstActions[nEntry].m_pfnAction = (PFNMENUACTION)&CSWCCreature::PartyMenuUseItem;
         lstActions[nEntry].m_oidTarget = GetObjectId();
         lstActions[nEntry].m_resIcon = pItem->GetIcon();
 

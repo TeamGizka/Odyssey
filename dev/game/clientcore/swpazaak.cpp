@@ -27,7 +27,6 @@ CSWPazaak::EAIState CSWPazaak::PlayAITurn(CPazaakPlayer& cSelf,
                                           CPazaakPlayer& cOpponent,
                                           EAIState eState)
 {
-    int nCard;
     int nOpponentTotal = cOpponent.GetTotal();
     if (nOpponentTotal > 20)
     {
@@ -48,6 +47,7 @@ CSWPazaak::EAIState CSWPazaak::PlayAITurn(CPazaakPlayer& cSelf,
         return AISTATE_PLAY_CARD;
     case AISTATE_PLAY_CARD:
     {
+        int nCard;
         int bOpponentBehind;
         int nSelfTotal = cSelf.GetTotal();
         bOpponentBehind = 1;
@@ -115,6 +115,7 @@ CSWPazaak::EAIState CSWPazaak::PlayAITurn(CPazaakPlayer& cSelf,
     }
     case AISTATE_DECIDE:
     {
+        int nCard;
         int nSelfTotal = cSelf.GetTotal();
         if (nSelfTotal > 20)
         {
