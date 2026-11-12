@@ -617,7 +617,7 @@ public:
     unsigned long SpawnBodyBag();
 
     enum { BODY_BAG_SPAWN_DELAY = 500 };
-    int GetIsPCDying();
+    int GetIsPCDying() { return 0; }
     void UpdateEffectList(unsigned long nDay, unsigned long nTime);
     void RunActions(unsigned long nDay, unsigned long nTime,
                    unsigned __int64 nTimer);
@@ -1380,7 +1380,8 @@ public:
         COMBAT_STATE_NOTIFY = 1,
         COMBAT_STATE_EQUIPMENT = 2
     };
-    void SetCombatState(int bCombatState, unsigned char bFeedback);
+    void SetCombatState(int bCombatState, unsigned char bFeedback,
+                        int nArg3 = 0);
     void ClearHostileActionsVersus(CSWSCreature* pCreature);
     int AddDisappearActions(int bRemoveFromArea);
     int AddAppearActions();
@@ -1624,8 +1625,9 @@ public:
         ACTIVITY_ACTION_COUNTERSPELL = 4
     };
     int GetUseRange(unsigned long oidObject, Vector& vPosition,
-                    float& fRange, int bFlag);
-    int GetIsInUseRange(unsigned long oidObject, float fRange, int bFlag);
+                    float& fRange, int bFlag, int nArg5 = 0);
+    int GetIsInUseRange(unsigned long oidObject, float fRange, int bFlag,
+                        int nArg4 = 0);
     int AddCounterSpellActions(unsigned long oidTarget);
     int AIActionCounterSpell(CSWSObjectActionNode* pAction);
 
@@ -1777,7 +1779,7 @@ public:
     unsigned long GetFirstAttacker();
     unsigned long GetNextAttacker();
     void ClearAttackerList();
-    int IsDebilitated();
+    int IsDebilitated(int bCheckMeditation = 1);
     void CancelAllCombatModes(int nUnknown);
     void CreateNewAttackActions(int bFindNewTarget, int bCheckCleaveRange,
                                 unsigned long oidKilledCreature);
@@ -2597,12 +2599,14 @@ public:
                                   unsigned long oidSaveVersus,
                                   int nArg5, unsigned short nArg6, int nArg7);
     int AddEquipItemActions(CSWSItem* pItem, unsigned long nSlot, int nArg3,
-                            int nArg4, int nArg5, int nArg6, int nArg7);
+                            int nArg4, int nArg5, int nArg6, int nArg7,
+                            int nArg8 = 0);
     void ProcessPendingCombatActions();
     int ReplaceEquipItemActions(CSWSItem* pItem, unsigned long nSlot,
                                int bInstant, int nEquipFlags);
     int AddUnequipActions(CSWSItem* pArg1, unsigned long nArg2, int nArg3,
-                          int nArg4, int nArg5);
+                          int nArg4, int nArg5, int nArg6 = 0,
+                          int nArg7 = 0);
     void AddGold(int nGold, int bFeedback);
     void RemoveGold(int nGold, int bFeedback);
 

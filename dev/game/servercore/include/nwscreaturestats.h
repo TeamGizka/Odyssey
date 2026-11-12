@@ -572,9 +572,19 @@ public:
     char m_nShieldCheckPenalty;
     CResRef m_cPortrait;
     short m_nGoodEvilAlignment;
-#ifdef _XBOX
-    void SetGoodEvilAlignment(short nAlignment);
-#endif
+    void SetGoodEvilAlignment(short nAlignment)
+    {
+        int nValue;
+        if (nAlignment < 0)
+            nValue = 0;
+        else
+        {
+            nValue = nAlignment;
+            if (nValue > 100)
+                nValue = 100;
+        }
+        m_nGoodEvilAlignment = nValue;
+    }
     short m_n18C;
     unsigned char m_aUnmapped180[2];
     unsigned char m_nSkinColor;

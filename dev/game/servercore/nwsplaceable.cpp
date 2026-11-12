@@ -30,6 +30,7 @@
 #include "nwitem.h"
 #include "nwcanimbase.h"
 #include "nwscombatround.h"
+#include "clientoptions.h"
 
 static inline void NwsplaceableTrace1();
 
@@ -760,6 +761,48 @@ int CSWSPlaceable::AcquireItem(CSWSItem** ppItem, unsigned long oidPossessor,
         return 1;
     }
     return 0;
+}
+// PC 0x005873C0
+unsigned char CSWSPlaceable::GetDetectDC()
+{
+    unsigned char nDC = m_nTrapDetectDC;
+    int nModifier = 0;
+    switch (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nDifficulty)
+    {
+        case 0:
+            nModifier = -5;
+            break;
+        case 2:
+            nModifier = 5;
+            break;
+    }
+    nDC += nModifier;
+    if (nDC < 1)
+    {
+        return 1;
+    }
+    return nDC;
+}
+// PC 0x00587410
+unsigned char CSWSPlaceable::GetDisarmDC()
+{
+    unsigned char nDC = m_nDisarmDC;
+    int nModifier = 0;
+    switch (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nDifficulty)
+    {
+        case 0:
+            nModifier = -5;
+            break;
+        case 2:
+            nModifier = 5;
+            break;
+    }
+    nDC += nModifier;
+    if (nDC < 1)
+    {
+        return 1;
+    }
+    return nDC;
 }
 // PC 0x00587550
 Vector CSWSPlaceable::GetNearestActionPoint(const Vector& vPosition)

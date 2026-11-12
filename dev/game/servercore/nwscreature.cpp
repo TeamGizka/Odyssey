@@ -904,7 +904,7 @@ int CSWSCreature::AddEquipItemActions(CSWSItem* pItem,
                                      unsigned long nInventorySlot,
                                      int bAddToFront, int bIgnoreCombatRound,
                                      int nEquipFlags, int nArg6,
-                                     int bSkipReplace)
+                                     int bSkipReplace, int nArg8)
 {
     if (m_pInventory != NULL &&
         (nInventorySlot == INVENTORY_SLOT_ARMOUR ||
@@ -1018,7 +1018,8 @@ int CSWSCreature::ReplaceUnequipItemActions(CSWSItem* pItem,
 // PC 0x00511640
 int CSWSCreature::AddUnequipActions(CSWSItem* pItem,
                                      unsigned long oidRepository,
-                                     int bFront, int bInstant, int nFlags)
+                                     int bFront, int bInstant, int nFlags,
+                                     int nArg6, int nArg7)
 {
     unsigned long oidItem = pItem->GetId();
     CSWSPlayer* pPlayer =
@@ -5578,7 +5579,8 @@ void CSWSCreature::BroadcastVoiceChat(unsigned char nVoiceChat)
     }
 }
 // PC 0x00513E90
-void CSWSCreature::SetCombatState(int bCombatState, unsigned char bFeedback)
+void CSWSCreature::SetCombatState(int bCombatState, unsigned char bFeedback,
+                                  int nArg3)
 {
     int nFaction = GetFaction()->m_nIndex;
     if (nFaction == STANDARD_FACTION_NEUTRAL)
@@ -8713,7 +8715,7 @@ void CSWSCreature::RemoveCombatInvisibilityEffects()
 }
 // PC 0x0051F5E0
 int CSWSCreature::GetIsInUseRange(unsigned long oidObject, float fRange,
-                                 int bFlag)
+                                 int bFlag, int nArg4)
 {
     CGameObject* pObject =
         g_pAppManager->GetServerExoApp()->GetGameObject(oidObject);
@@ -10691,7 +10693,8 @@ void CSWSCreature::BroadcastAttackDataToParty(CSWCCMessageData* pData,
 }
 // PC 0x00517CF0
 int CSWSCreature::GetUseRange(unsigned long oidObject, Vector& vPosition,
-                             float& fRange, int bIgnorePreciseUse)
+                             float& fRange, int bIgnorePreciseUse,
+                             int nArg5)
 {
     CGameObject* pObject =
         g_pAppManager->GetServerExoApp()->GetGameObject(oidObject);

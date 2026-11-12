@@ -62,7 +62,8 @@ public:
     void SetLocked(int bLocked) { m_bLocked = bLocked; }
 
     int GetFactionId() { return m_nFactionId; }
-    unsigned char GetDisarmDC() { return m_nDisarmDC; }
+    unsigned char GetDetectDC();
+    unsigned char GetDisarmDC();
 
     void SetDetectDC(unsigned char nDC) { m_nTrapDetectDC = nDC; }
     void SetDisarmDC(unsigned char nDC) { m_nDisarmDC = nDC; }

@@ -6931,6 +6931,12 @@ int CGuiInGame::IsGlobalFadeObscuring()
 }
 #endif
 
+#ifndef _XBOX
+void CGuiInGame::StartCreditSequence(const Vector& vColor, const CExoString& sMusic)
+{
+}
+#endif
+
 #ifdef _XBOX
 #include "nwcambientsound.h"
 

@@ -6320,19 +6320,4 @@ static inline void NwscreaturestatsTrace1()
 {
 }
 
-#ifdef _XBOX
 
-void CSWSCreatureStats::SetGoodEvilAlignment(short nAlignment)
-{
-    int nValue;
-    if (nAlignment < 0)
-        nValue = 0;
-    else
-    {
-        nValue = nAlignment;
-        if (nValue > 100)
-            nValue = 100;
-    }
-    m_nGoodEvilAlignment = nValue;
-}
-#endif

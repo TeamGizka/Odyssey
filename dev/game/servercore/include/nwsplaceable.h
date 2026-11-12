@@ -75,8 +75,10 @@ public:
     };
 
     int GetFactionId() { return m_nFaction; }
+    void SetFactionId(int nFaction) { m_nFaction = nFaction; }
     unsigned char GetTrapType() { return m_nTrapType; }
-    unsigned char GetDisarmDC() { return m_nDisarmDC; }
+    unsigned char GetDetectDC();
+    unsigned char GetDisarmDC();
     void SetFlagged(unsigned char bFlagged) { m_bTrapFlagged = bFlagged; }
     unsigned char GetFlagged() { return m_bTrapFlagged; }
     int GetTrapFlag() { return m_nTrapFlag; }

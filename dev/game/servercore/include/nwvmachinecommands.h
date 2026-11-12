@@ -803,9 +803,13 @@ public:
         COMMAND_QUEUE_MOVIE = 769,
         COMMAND_PLAY_MOVIE_QUEUE = 770,
         COMMAND_YAVIN_HACK_CLOSE_DOOR = 771,
+        COMMAND_GET_FEAT_ACQUIRED = 783,
+        COMMAND_GET_SPELL_ACQUIRED = 784,
+        COMMAND_GET_SKILL_RANK_BASE = 870,
     };
 
     static const int COMMAND_COUNT = 877;
+    enum { VISUAL_EFFECT_FRAME_BUFFER = 8000, VISUAL_EFFECT_FRAME_BUFFER_FALLBACK = 8002 };
     typedef int (CSWVirtualMachineCommands::*CommandFunction)(int, int);
     CommandFunction* m_pCommands;
     virtual ~CSWVirtualMachineCommands();

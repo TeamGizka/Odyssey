@@ -638,8 +638,8 @@ public:
 #ifdef _XBOX
 
     int m_bCreditSequenceInProgress;
-    void StartCreditSequence(const Vector& vColor, const CExoString& sMusic);
 #endif
+    void StartCreditSequence(const Vector& vColor, const CExoString& sMusic);
     int m_nDialogScrollWait;
     int m_bDialogScrollFinished;
 
@@ -698,6 +698,9 @@ public:
     void SetLockHeadFollowInDialog(unsigned long oidObject, int bLock);
     int IsAnimationPlayingInDialog();
     int IsFadingInDialog();
+#ifndef _XBOX
+    void AddItemReceived(const CExoLocString& sName) { m_a1030.Add(sName); }
+#endif
 };
 
 #include "swgui.h"

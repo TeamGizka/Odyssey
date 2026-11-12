@@ -30,6 +30,7 @@
 #include "swparty.h"
 #include "nwsplayer.h"
 #include "serverexoappinternal.h"
+#include "clientoptions.h"
 
 static inline void NwstriggerTrace2();
 static inline void NwstriggerTrace1();
@@ -347,6 +348,40 @@ void CSWSTrigger::ComputeBoundingBox(float* pfMinimumX, float* pfMinimumY,
     *pfMinimumY = m_fBoundingMinY;
     *pfMaximumX = m_fBoundingMaxX;
     *pfMaximumY = m_fBoundingMaxY;
+}
+// PC 0x00584090
+int CSWSTrigger::GetDetectDC()
+{
+    int nDC = m_nTrapDetectDC;
+    int nModifier = 0;
+    switch (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nDifficulty)
+    {
+        case 0:
+            nModifier = -5;
+            break;
+        case 2:
+            nModifier = 5;
+            break;
+    }
+    nDC += nModifier;
+    return nDC < 1 ? 1 : nDC;
+}
+// PC 0x005840E0
+int CSWSTrigger::GetDisarmDC()
+{
+    int nDC = m_nTrapDisarmDC;
+    int nModifier = 0;
+    switch (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nDifficulty)
+    {
+        case 0:
+            nModifier = -5;
+            break;
+        case 2:
+            nModifier = 5;
+            break;
+    }
+    nDC += nModifier;
+    return nDC < 1 ? 1 : nDC;
 }
 // PC 0x00584130
 int CSWSTrigger::LineSegmentIntersectTrigger(const Vector& vStart,

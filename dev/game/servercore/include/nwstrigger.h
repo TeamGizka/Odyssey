@@ -64,6 +64,7 @@ public:
     Vector* GetGeometry() { return m_pGeometry; }
 
     int GetFactionId() { return m_nFaction; }
+    void SetFactionId(int nFaction) { m_nFaction = nFaction; }
     unsigned char GetCursor() { return m_nCursor; }
     unsigned char GetTrapType() { return m_nTrapType; }
     float GetHighlightHeight() { return m_fHighlightHeight; }
@@ -73,7 +74,8 @@ public:
     }
 
     int GetTrapFlag() { return m_bMineTrigger; }
-    int GetDisarmDC() { return m_nTrapDisarmDC; }
+    int GetDetectDC();
+    int GetDisarmDC();
     unsigned long GetCreator() { return m_oidCreator; }
     void SetFlagged(int bFlagged) { m_bTrapFlagged = bFlagged; }
     int GetFlagged() { return m_bTrapFlagged; }

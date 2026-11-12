@@ -530,11 +530,6 @@ int CSWVirtualMachineCommands::ExecuteCommandActionFollowLeader(
     if (pCreature != NULL && pCreature->m_bInParty != 0 &&
         pCreature->m_bCommandable == 1)
     {
-        if (RenderPartyFollow != 0)
-        {
-
-            EXOLOG("%s: follow leader\n", pCreature->m_sTag.CStr());
-        }
         pCreature->AddAction(CSWSObject::ACTION_FOLLOW_LEADER,
             CSWSObject::ACTION_GROUP_NEW, 0, NULL, 0, NULL, 0, NULL,
             0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL,
@@ -2164,13 +2159,21 @@ int CSWVirtualMachineCommands::ExecuteCommandChangeFaction(int nCommand, int nAr
         nFaction = nStandardFaction;
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
-    CSWSPlaceable* pPlaceable = pServerExoApp->GetPlaceableByGameObjectID(oidObjectToChangeFaction);
-    if (pPlaceable != NULL)
+    CGameObject* pGameObject = pServerExoApp->GetGameObject(oidObjectToChangeFaction);
+    if (pGameObject != NULL)
     {
-        pPlaceable->m_nFaction = nFaction;
-        return 0;
+        if (pGameObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
+        {
+            pGameObject->AsSWSPlaceable()->SetFactionId(nFaction);
+            return 0;
+        }
+        if (pGameObject->m_nObjectType == CGameObject::OBJECT_TYPE_TRIGGER)
+        {
+            pGameObject->AsSWSTrigger()->SetFactionId(nFaction);
+            return 0;
+        }
+        pFactionManager->GetFaction(nFaction)->AddMember(oidObjectToChangeFaction, 0);
     }
-    pFactionManager->GetFaction(nFaction)->AddMember(oidObjectToChangeFaction, 0);
     return 0;
 }
 // PC 0x005B1570
@@ -4662,6 +4665,12 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectVisualEffect(int nCommand,
             return -2001;
         }
     }
+    if (nResult2 == VISUAL_EFFECT_FRAME_BUFFER &&
+        (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nFrameBuffer == 0 ||
+         !AurCheckFrameBufferModificationsAvailable()))
+    {
+        nResult2 = VISUAL_EFFECT_FRAME_BUFFER_FALLBACK;
+    }
     pGameEffect = new CGameEffect(1);
     pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_VISUALEFFECT;
     pGameEffect->m_nSubType =
@@ -5018,11 +5027,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEndGame(int nCommand, int nArgs)
         return -2001;
     }
     g_pAppManager->m_pClientExoApp->SetEndGamePending(
-        1, bEndGame != 0 ? 5.0f : 0.0f, bEndGame);
-    if (bEndGame != 0)
-    {
-        g_pAppManager->m_pClientExoApp->SetGameOver(1);
-    }
+        1, bEndGame != 0 ? 60.0f : 0.0f, bEndGame);
     return 0;
 }
 // PC 0x005B7D50
@@ -5055,7 +5060,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEquipItem(int nCommand, int nArgs)
             return ERROR_STACK_POP;
         }
     }
-    if (nInventorySlot >= 0 && nInventorySlot < 18)
+    if (nInventorySlot >= 0 && nInventorySlot < 20)
     {
         nInventorySlot = (int)pow(2.0, nInventorySlot);
         if (m_nCommandContext == 1)
@@ -5101,6 +5106,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEventActivateItem(int nCommand,
                                                  (void**)&pLocation) == 0 ||
         g_pVirtualMachine->StackPopObject(&oidTarget) == 0)
     {
+        delete pEvent;
         return ERROR_STACK_POP;
     }
 
@@ -5120,6 +5126,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEventActivateItem(int nCommand,
     pEvent->SetFloat(2, pLocation->m_vPosition.m_fZ);
     if (g_pVirtualMachine->StackPushEngineStructure(STRUCTURE_EVENT, pEvent) == 0)
     {
+        delete pEvent;
         return ERROR_STACK_PUSH;
     }
     delete pEvent;
@@ -5153,16 +5160,19 @@ int CSWVirtualMachineCommands::ExecuteCommandEventSpellCastAt(int nCommand,
 
     if (g_pVirtualMachine->StackPopObject(&oidObject) == 0)
     {
+        delete pEvent;
         return -2001;
     }
     if (g_pVirtualMachine->StackPopInteger(&nSpell) == 0)
     {
+        delete pEvent;
         return -2001;
     }
     if (nArgs > 2)
     {
         if (g_pVirtualMachine->StackPopInteger(&nEventType) == 0)
         {
+            delete pEvent;
             return -2001;
         }
     }
@@ -5172,6 +5182,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEventSpellCastAt(int nCommand,
     pEvent->SetObjectID(0, oidObject);
     if (g_pVirtualMachine->StackPushEngineStructure(1, pEvent) == 0)
     {
+        delete pEvent;
         return -2000;
     }
     delete pEvent;
@@ -5186,12 +5197,14 @@ int CSWVirtualMachineCommands::ExecuteCommandEventUserDefined(int nCommand,
 
     if (g_pVirtualMachine->StackPopInteger(&nEvent) == 0)
     {
+        delete pEvent;
         return -2001;
     }
     pEvent->m_nType = 11;
     pEvent->SetInteger(0, nEvent);
     if (g_pVirtualMachine->StackPushEngineStructure(1, pEvent) == 0)
     {
+        delete pEvent;
         return -2000;
     }
     delete pEvent;
@@ -5329,6 +5342,8 @@ int CSWVirtualMachineCommands::ExecuteCommandAddJournalQuestEntry(
     {
         g_pAppManager->m_pServerExoApp->GetPartyTable()->DistributeExperience(
             nExperience, 1);
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateStatus(
+            2, nExperience);
     }
     return 0;
 }
@@ -6428,23 +6443,22 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCommandable(int nCommand,
 {
     unsigned long oidObject;
     CServerExoApp* pServerExoApp;
+    int nResult;
 
     oidObject = m_oidObject;
+    nResult = 0;
     if (nArgs >= 1 && g_pVirtualMachine->StackPopObject(&oidObject) == 0)
     {
         return -2001;
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
-    return g_pVirtualMachine->StackPushInteger(
-               (unsigned char)((CGameObjectArray*)pServerExoApp
-                                   ->GetObjectArray())
-                           ->GetGameObject(oidObject,
-                                           (CGameObject**)&nArgs) ==
-                       CGameObjectArray::SUCCESS
-                   ? ((CSWSObject*)nArgs)->m_bCommandable
-                   : nArgs) != 0
-               ? 0
-               : -2000;
+    if ((unsigned char)((CGameObjectArray*)pServerExoApp->GetObjectArray())
+            ->GetGameObject(oidObject, (CGameObject**)&nArgs) ==
+        CGameObjectArray::SUCCESS)
+    {
+        nResult = ((CSWSObject*)nArgs)->m_bCommandable;
+    }
+    return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
 // PC 0x005B9720
 int CSWVirtualMachineCommands::ExecuteCommandGetCreatureHasTalent(int nCommand,
@@ -6613,6 +6627,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetDamageDealtByType(int nCommand,
     int nDamageType;
     char cResult;
 
+    pObject = NULL;
     nResult = 0;
     pServerExoApp = g_pAppManager->m_pServerExoApp;
     pGameObject = pServerExoApp->GetGameObject(m_oidObject);
@@ -7070,7 +7085,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetEncounterData(int nCommand,
                                                               int nArgs)
 {
     unsigned long oidEncounter = OBJECT_INVALID;
-    int nResult;
+    int nResult = 0;
     CServerExoApp* pServerExoApp;
     CSWSEncounter* pEncounter;
 
@@ -8106,12 +8121,9 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFortitudeSavingThrow(int nComman
 int CSWVirtualMachineCommands::ExecuteCommandGetGameDifficulty(int nCommand,
                                                                 int nArgs)
 {
-    int nDifficulty;
-
-    nDifficulty =
-        ((CServerInfo*)g_pAppManager->m_pServerExoApp->GetServerInfo())
-            ->m_nDifficultyLevel;
-    return g_pVirtualMachine->StackPushInteger(nDifficulty) != 0 ? 0 : -2000;
+    return g_pVirtualMachine->StackPushInteger(
+               g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nDifficulty) != 0
+               ? 0 : -2000;
 }
 // PC 0x005BB530
 int CSWVirtualMachineCommands::ExecuteCommandGetGlobalLocation(int nCommand,
@@ -8300,7 +8312,6 @@ int CSWVirtualMachineCommands::ExecuteCommandGetHasFeat(int nCommand, int nArgs)
     CGameObject* pGameObject;
     CServerExoApp* pServerExoApp;
     CSWSCreature* pCreature;
-    CSWSCreatureStats* pStats;
 
     if (g_pVirtualMachine->StackPopInteger(&nFeat) == 0)
     {
@@ -8319,8 +8330,14 @@ int CSWVirtualMachineCommands::ExecuteCommandGetHasFeat(int nCommand, int nArgs)
             pGameObject->AsSWSCreature() != NULL)
         {
             pCreature = pGameObject->AsSWSCreature();
-            pStats = pCreature->m_pStats;
-            nResult = pStats->GetFeatRemainingUses(nFeat) > 0;
+            if (nCommand != COMMAND_GET_FEAT_ACQUIRED)
+            {
+                nResult = pCreature->GetStats()->GetFeatRemainingUses(nFeat) > 0;
+            }
+            else
+            {
+                nResult = pCreature->GetStats()->HasFeat(nFeat);
+            }
         }
         return g_pVirtualMachine->StackPushInteger(nResult) != 0
                    ? 0 : ERROR_STACK_PUSH;
@@ -8437,7 +8454,6 @@ int CSWVirtualMachineCommands::ExecuteCommandGetHasSpell(int nCommand, int nArgs
     int nSpell;
     unsigned long oidCreature;
     CSWSCreature* pCreature;
-    CSWSCreatureStats* pStats;
     CServerExoApp* pServerExoApp;
 
     if (g_pVirtualMachine->StackPopInteger(&nSpell) == 0)
@@ -8454,8 +8470,14 @@ int CSWVirtualMachineCommands::ExecuteCommandGetHasSpell(int nCommand, int nArgs
         pCreature = pServerExoApp->GetCreatureByGameObjectID(oidCreature);
         if (pCreature != NULL)
         {
-            pStats = pCreature->m_pStats;
-            nResult = pStats->HasSpell(0, nSpell, 1);
+            if (nCommand != COMMAND_GET_SPELL_ACQUIRED)
+            {
+                nResult = pCreature->GetStats()->HasSpell(0, nSpell, 1);
+            }
+            else
+            {
+                nResult = pCreature->GetStats()->HasSpell(0, nSpell, 0);
+            }
         }
         return g_pVirtualMachine->StackPushInteger(nResult) != 0
                    ? 0 : ERROR_STACK_PUSH;
@@ -8975,11 +8997,11 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsOpen(int nCommand, int nArgs)
 int CSWVirtualMachineCommands::ExecuteCommandGetIsRacialTypePlayable(int nCommand,
                                                                    int nArgs)
 {
+    int nRace = g_pRules->m_nNumRaces;
     int bPlayable = false;
     unsigned long oidCreature;
     CServerExoApp* pServerExoApp;
     CGameObject* pGameObject;
-    int nRace;
 
     if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
     {
@@ -9621,10 +9643,10 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastDamager(int nCommand,
     if (pGameObject != NULL && pGameObject->AsSWSObject() != NULL)
     {
         pObject = pGameObject->AsSWSObject();
-    }
-    if (pObject != NULL)
-    {
-        oidDamager = pObject->m_oidLastDamager;
+        if (pObject != NULL)
+        {
+            oidDamager = pObject->m_oidLastDamager;
+        }
     }
     return g_pVirtualMachine->StackPushObject(oidDamager) != 0 ? 0 : -2000;
 }
@@ -9677,16 +9699,16 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastDisturbed(int nCommand,
     if (pGameObject != NULL && pGameObject->AsSWSObject() != NULL)
     {
         pObject = pGameObject->AsSWSObject();
-    }
-    if (pObject != NULL)
-    {
-        if (pObject->m_nObjectType == SW_OBJECT_TYPE_CREATURE)
+        if (pObject != NULL)
         {
-            oidDisturber = pObject->AsSWSCreature()->m_oidLastDisturbed;
-        }
-        else if (pObject->m_nObjectType == SW_OBJECT_TYPE_PLACEABLE)
-        {
-            oidDisturber = pObject->AsSWSPlaceable()->m_oidLastDisturbed;
+            if (pObject->m_nObjectType == SW_OBJECT_TYPE_CREATURE)
+            {
+                oidDisturber = pObject->AsSWSCreature()->m_oidLastDisturbed;
+            }
+            else if (pObject->m_nObjectType == SW_OBJECT_TYPE_PLACEABLE)
+            {
+                oidDisturber = pObject->AsSWSPlaceable()->m_oidLastDisturbed;
+            }
         }
     }
     return g_pVirtualMachine->StackPushObject(oidDisturber) != 0
@@ -9822,16 +9844,16 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastLocked(int nCommand,
     if (pGameObject != NULL && pGameObject->AsSWSObject() != NULL)
     {
         pObject = pGameObject->AsSWSObject();
-    }
-    if (pObject != NULL)
-    {
-        if (pObject->m_nObjectType == SW_OBJECT_TYPE_DOOR)
+        if (pObject != NULL)
         {
-            oidLocker = pObject->AsSWSDoor()->m_oidLastLockedBy;
-        }
-        else if (pObject->m_nObjectType == SW_OBJECT_TYPE_PLACEABLE)
-        {
-            oidLocker = pObject->AsSWSPlaceable()->m_oidLastLockedBy;
+            if (pObject->m_nObjectType == SW_OBJECT_TYPE_DOOR)
+            {
+                oidLocker = pObject->AsSWSDoor()->m_oidLastLockedBy;
+            }
+            else if (pObject->m_nObjectType == SW_OBJECT_TYPE_PLACEABLE)
+            {
+                oidLocker = pObject->AsSWSPlaceable()->m_oidLastLockedBy;
+            }
         }
     }
     return g_pVirtualMachine->StackPushObject(oidLocker) != 0
@@ -10002,16 +10024,16 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastUnlocked(int nCommand,
     if (pGameObject != NULL && pGameObject->AsSWSObject() != NULL)
     {
         pObject = pGameObject->AsSWSObject();
-    }
-    if (pObject != NULL)
-    {
-        if (pObject->m_nObjectType == SW_OBJECT_TYPE_DOOR)
+        if (pObject != NULL)
         {
-            oidUnlocker = pObject->AsSWSDoor()->m_oidLastUnlockedBy;
-        }
-        else if (pObject->m_nObjectType == SW_OBJECT_TYPE_PLACEABLE)
-        {
-            oidUnlocker = pObject->AsSWSPlaceable()->m_oidLastUnlockedBy;
+            if (pObject->m_nObjectType == SW_OBJECT_TYPE_DOOR)
+            {
+                oidUnlocker = pObject->AsSWSDoor()->m_oidLastUnlockedBy;
+            }
+            else if (pObject->m_nObjectType == SW_OBJECT_TYPE_PLACEABLE)
+            {
+                oidUnlocker = pObject->AsSWSPlaceable()->m_oidLastUnlockedBy;
+            }
         }
     }
     return g_pVirtualMachine->StackPushObject(oidUnlocker) != 0
@@ -10375,13 +10397,10 @@ int CSWVirtualMachineCommands::ExecuteCommandGetMetaMagicFeat(int nCommand,
     if (pGameObject != NULL && pGameObject->AsSWSObject() != 0)
     {
         pObject = (CSWSObject*)pGameObject->AsSWSObject();
-    }
-    else
-    {
-    }
-    if (pObject != 0)
-    {
-        nResult = pObject->m_c1D5;
+        if (pObject != 0)
+        {
+            nResult = pObject->m_c1D5;
+        }
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
@@ -11025,7 +11044,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetReflexAdjustedDamage(
 
     int nDamage;
     unsigned long oidTarget;
-    int nDC;
+    int nDC = 0;
     int nSaveType;
     unsigned long oidSaveVersus;
 
@@ -11078,7 +11097,14 @@ int CSWVirtualMachineCommands::ExecuteCommandGetReflexAdjustedDamage(
         pCreature->SavingThrowRoll(CSWSCreature::SAVING_THROW_REFLEX,
                                   nDC, nSaveType, oidSaveVersus, 1, 0, 0))
     {
-        nDamage /= 2;
+        if (pCreature->GetStats()->HasFeat(CSWFeat::FEAT_EVASION))
+        {
+            nDamage = 0;
+        }
+        else
+        {
+            nDamage /= 2;
+        }
         CGameEffect* pEffect = new CGameEffect(1);
         pEffect->m_nSubType =
             (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
@@ -11225,7 +11251,6 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSkillRank(int nCommand, int nArg
     CGameObject* pGameObject;
     CServerExoApp* pServerExoApp;
     CSWSCreature* pCreature;
-    CSWSCreatureStats* pStats;
     int nResult;
 
     if (g_pVirtualMachine->StackPopInteger(&nSkill) == 0)
@@ -11243,8 +11268,14 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSkillRank(int nCommand, int nArg
         pGameObject->AsSWSCreature() != NULL)
     {
         pCreature = pGameObject->AsSWSCreature();
-        pStats = pCreature->m_pStats;
-        nResult = pStats->GetSkillRank(nSkill, NULL, 0);
+        if (nCommand == COMMAND_GET_SKILL_RANK_BASE)
+        {
+            nResult = pCreature->GetStats()->GetSkillRank(nSkill, NULL, 1);
+        }
+        else
+        {
+            nResult = pCreature->GetStats()->GetSkillRank(nSkill, NULL, 0);
+        }
     }
     if (g_pVirtualMachine->StackPushInteger(nResult) != 0)
         return 0;
@@ -11768,15 +11799,15 @@ int CSWVirtualMachineCommands::ExecuteCommandGetTotalDamageDealt(int nCommand,
     if (pGameObject != NULL && pGameObject->AsSWSObject() != NULL)
     {
         pObject = pGameObject->AsSWSObject();
-    }
-    if (pObject != NULL)
-    {
-        for (nDamageType = 0; nDamageType < CSWSObject::LAST_DAMAGE_TYPE_COUNT;
-             ++nDamageType)
+        if (pObject != NULL)
         {
-            if (pObject->GetLastDamageAmountByFlags(1 << nDamageType) > 0)
+            for (nDamageType = 0; nDamageType < CSWSObject::LAST_DAMAGE_TYPE_COUNT;
+                 ++nDamageType)
             {
-                nResult += pObject->GetLastDamageAmountByFlags(1 << nDamageType);
+                if (pObject->GetLastDamageAmountByFlags(1 << nDamageType) > 0)
+                {
+                    nResult += pObject->GetLastDamageAmountByFlags(1 << nDamageType);
+                }
             }
         }
     }
@@ -12298,6 +12329,10 @@ int CSWVirtualMachineCommands::ExecuteCommandIsAvailableNPC(int nCommand,
         {
             CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
             nResult = pServerExoApp->GetPartyTable()->GetNPCSelectability(nNPC);
+            if (nResult == 255)
+            {
+                nResult = -1;
+            }
             break;
         }
     }
@@ -12571,6 +12606,7 @@ int CSWVirtualMachineCommands::ExecuteCommandLocation(int nCommand, int nArgs)
     {
         if (g_pVirtualMachine->StackPopFloat(&fOrientation) == 0)
         {
+            delete pLocation;
             return ERROR_STACK_POP;
         }
 
@@ -12581,6 +12617,7 @@ int CSWVirtualMachineCommands::ExecuteCommandLocation(int nCommand, int nArgs)
         if (g_pVirtualMachine->StackPushEngineStructure(STRUCTURE_LOCATION,
                                                        pLocation) == 0)
         {
+            delete pLocation;
             return ERROR_STACK_PUSH;
         }
         delete pLocation;
@@ -12588,6 +12625,7 @@ int CSWVirtualMachineCommands::ExecuteCommandLocation(int nCommand, int nArgs)
     }
     else
     {
+        delete pLocation;
         return ERROR_STACK_POP;
     }
 }
@@ -14188,6 +14226,10 @@ int CSWVirtualMachineCommands::ExecuteCommandResistSpell(int nCommand,
                         {
                             nResult = 0;
                         }
+                    }
+                    else if (pSpell->GetUserType() == 2)
+                    {
+                        nResult = 0;
                     }
                 }
             }
@@ -16080,6 +16122,7 @@ int CSWVirtualMachineCommands::ExecuteCommandTalent(int nCommand, int nArgs)
     int nID;
     if (g_pVirtualMachine->StackPopInteger(&nID) == 0)
     {
+        delete pTalent;
         return ERROR_STACK_POP;
     }
 
@@ -16098,6 +16141,7 @@ int CSWVirtualMachineCommands::ExecuteCommandTalent(int nCommand, int nArgs)
     pTalent->m_nID = nID;
     if (g_pVirtualMachine->StackPushEngineStructure(STRUCTURE_TALENT, pTalent) == 0)
     {
+        delete pTalent;
         return ERROR_STACK_PUSH;
     }
     delete pTalent;
@@ -16862,7 +16906,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetMinOneHP(int nCommand,
     unsigned long oidObject;
     CServerExoApp* pServerExoApp;
     CGameObject* pGameObject;
-    int nResult;
+    int nResult = 0;
 
     if (g_pVirtualMachine->StackPopObject(&oidObject) == 0)
     {
@@ -16873,10 +16917,6 @@ int CSWVirtualMachineCommands::ExecuteCommandGetMinOneHP(int nCommand,
     if (pGameObject != NULL && pGameObject->AsSWSObject() != NULL)
     {
         nResult = pGameObject->AsSWSObject()->m_bMin1HP;
-    }
-    else
-    {
-        nResult = oidObject;
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
@@ -16938,6 +16978,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetFadeIn(int nCommand, int nArgs)
         return ERROR_STACK_POP;
     }
     Vector vColor(fRed, fGreen, fBlue);
+    g_pAppManager->m_pClientExoApp->GetInGameGui()->m_n1024 = 0;
     CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
     pClientExoApp->GetInGameGui()
         ->StartGlobalFade(1, fDelay, fLength, vColor);
@@ -17070,7 +17111,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsDebilitated(int nCommand,
         (CSWSCreature*)pServerExoApp->GetCreatureByGameObjectID(oidResult);
     if (pCreature != NULL)
     {
-        nResult = pCreature->IsDebilitated();
+        nResult = pCreature->IsDebilitated(FALSE);
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
@@ -17271,13 +17312,20 @@ int CSWVirtualMachineCommands::ExecuteCommandSetItemStackSize(int nCommand,
             pMessageData->SetInteger(0, 1);
             if (nStackSize > nOldStackSize)
             {
-                pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_ITEM_RECEIVED, pMessageData);
-                g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(GUI_STATUS_ITEM_RECEIVED, 0);
+                if (pCreature != NULL && pCreature->m_bInParty != 0)
+                {
+                    pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_ITEM_RECEIVED, pMessageData);
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->AddItemReceived(pItem->m_sLocalizedName);
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(GUI_STATUS_ITEM_RECEIVED, 0);
+                }
             }
             else
             {
-                pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_ITEM_LOST, pMessageData);
-                g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(GUI_STATUS_ITEM_LOST, 0);
+                if (pCreature != NULL && pCreature->m_bInParty != 0)
+                {
+                    pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_ITEM_LOST, pMessageData);
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(GUI_STATUS_ITEM_LOST, 0);
+                }
             }
         }
     }
@@ -17883,6 +17931,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEnableVideoEffect(int nCommand,
         return -2001;
     }
 
+    g_pAppManager->m_pClientExoApp->GetInGameGui()->m_n1028 = 1;
     g_pAppManager->m_pClientExoApp->EnableVideoEffect(nEffect);
     return 0;
 }
@@ -17890,6 +17939,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEnableVideoEffect(int nCommand,
 int CSWVirtualMachineCommands::ExecuteCommandDisableVideoEffect(int nCommand,
                                                                 int nArgs)
 {
+    g_pAppManager->m_pClientExoApp->GetInGameGui()->m_n1028 = 0;
     g_pAppManager->m_pClientExoApp->DisableVideoEffect();
     return 0;
 }
@@ -17991,24 +18041,21 @@ int CSWVirtualMachineCommands::ExecuteCommandStartCreditSequence(
     {
         return ERROR_STACK_POP;
     }
-    if (nArgs > 1)
+    if (g_pVirtualMachine->StackPopString(&sMusic) == 0)
     {
-        if (g_pVirtualMachine->StackPopString(&sMusic) == 0)
-        {
-            return ERROR_STACK_POP;
-        }
+        return ERROR_STACK_POP;
     }
     if (bTransparentBackground)
     {
         Vector vColor(-1.0f, -1.0f, -1.0f);
         CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
-        pClientExoApp->StartCreditSequence(vColor, sMusic);
+        pClientExoApp->GetInGameGui()->StartCreditSequence(vColor, sMusic);
     }
     else
     {
         Vector vColor(0.0f, 0.0f, 0.0f);
         CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
-        pClientExoApp->StartCreditSequence(vColor, sMusic);
+        pClientExoApp->GetInGameGui()->StartCreditSequence(vColor, sMusic);
     }
     return 0;
 }
@@ -18252,12 +18299,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetGoodEvilValue(int nCommand,
     pCreature = pServerExoApp->GetCreatureByGameObjectID(oidCreature);
     if (pCreature != NULL)
     {
-#ifndef _XBOX
-        pCreature->m_pStats->ModifyAlignment(
-            nAlignment - pCreature->m_pStats->m_nGoodEvilAlignment);
-#else
         pCreature->m_pStats->SetGoodEvilAlignment(nAlignment);
-#endif
     }
     return 0;
 }
@@ -19287,8 +19329,8 @@ int CSWVirtualMachineCommands::ExecuteCommandGetObjectInShape(int nCommand,
     int nShape;
     int bLineOfSight;
     int nObjectFilter;
-    CScriptLocation* pLocation;
-    CGameObject* pGameObject;
+    CScriptLocation* pLocation = NULL;
+    CGameObject* pGameObject = NULL;
     CGameObjectArray* pObjectArray =
         g_pAppManager->GetServerExoApp()->GetObjectArray();
 
@@ -20215,11 +20257,11 @@ int CSWVirtualMachineCommands::ExecuteCommandGetMineInfo(int nCommand, int nArgs
         if (pGameObject != NULL)
         {
             if (pGameObject->m_nObjectType == CGameObject::OBJECT_TYPE_TRIGGER)
-                nDisarmDC = pGameObject->AsSWSTrigger()->m_nTrapDisarmDC;
+                nDisarmDC = pGameObject->AsSWSTrigger()->GetDisarmDC();
             else if (pGameObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
-                nDisarmDC = pGameObject->AsSWSPlaceable()->m_nDisarmDC;
+                nDisarmDC = pGameObject->AsSWSPlaceable()->GetDisarmDC();
             else if (pGameObject->m_nObjectType == CGameObject::OBJECT_TYPE_DOOR)
-                nDisarmDC = pGameObject->AsSWSDoor()->m_nDisarmDC;
+                nDisarmDC = pGameObject->AsSWSDoor()->GetDisarmDC();
         }
         if (g_pVirtualMachine->StackPushInteger(nDisarmDC) == 0)
             return ERROR_STACK_PUSH;
@@ -20230,11 +20272,11 @@ int CSWVirtualMachineCommands::ExecuteCommandGetMineInfo(int nCommand, int nArgs
         if (pGameObject != NULL)
         {
             if (pGameObject->m_nObjectType == CGameObject::OBJECT_TYPE_TRIGGER)
-                nDetectDC = pGameObject->AsSWSTrigger()->m_nTrapDetectDC;
+                nDetectDC = pGameObject->AsSWSTrigger()->GetDetectDC();
             else if (pGameObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
-                nDetectDC = pGameObject->AsSWSPlaceable()->m_nTrapDetectDC;
+                nDetectDC = pGameObject->AsSWSPlaceable()->GetDetectDC();
             else if (pGameObject->m_nObjectType == CGameObject::OBJECT_TYPE_DOOR)
-                nDetectDC = pGameObject->AsSWSDoor()->m_nTrapDetectDC;
+                nDetectDC = pGameObject->AsSWSDoor()->GetDetectDC();
         }
         if (g_pVirtualMachine->StackPushInteger(nDetectDC) == 0)
             return ERROR_STACK_PUSH;

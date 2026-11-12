@@ -75,7 +75,8 @@ public:
         FEAT_EMPATHY_2 = 121,
         FEAT_EMPATHY_3 = 122,
         FEAT_IMPROVED_TOUGHNESS = 123,
-        FEAT_MASTER_TOUGHNESS = 124
+        FEAT_MASTER_TOUGHNESS = 124,
+        FEAT_EVASION = 125
     };
 
     enum RangedAttackACPenalty

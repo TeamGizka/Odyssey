@@ -3337,11 +3337,6 @@ int CSWSObject::GetDead()
         return GetCurrentHitPoints(0) <= 0;
     }
 }
-// PC 0x004065A0
-int CSWSObject::GetIsPCDying()
-{
-    return 0;
-}
 // PC 0x004F55B0
 void CSWSObject::BroadcastSpellData(CSWSpell* pSpell, CSWCCMessageData* pData)
 {

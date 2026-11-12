@@ -60,7 +60,7 @@ int CSWSCreature::IsCreature()
     return bCreature;
 }
 // PC 0x00603360
-int CSWSCreature::IsDebilitated()
+int CSWSCreature::IsDebilitated(int bCheckMeditation)
 {
     int bDebilitated = 0;
 

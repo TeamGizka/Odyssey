@@ -32,6 +32,8 @@
 #include "swparty.h"
 #include "nwsplayer.h"
 #include "nwportrait.h"
+#include "clientexoapp.h"
+#include "clientoptions.h"
 
 static inline void NwsdoorTrace2();
 static inline void NwsdoorTrace1();
@@ -91,6 +93,44 @@ int CSWSDoor::GetDead()
     {
         return CSWSObject::GetDead();
     }
+}
+// PC 0x0057F590
+unsigned char CSWSDoor::GetDetectDC()
+{
+    int nDC = m_nTrapDetectDC;
+    int nModifier = 0;
+    switch (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nDifficulty)
+    {
+        case 0:
+            nModifier = -5;
+            break;
+        case 2:
+            nModifier = 5;
+            break;
+    }
+    nDC += nModifier;
+    return nDC < 1 ? 1 : nDC;
+}
+// PC 0x0057F5E0
+unsigned char CSWSDoor::GetDisarmDC()
+{
+    unsigned char nDC = m_nDisarmDC;
+    int nModifier = 0;
+    switch (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nDifficulty)
+    {
+        case 0:
+            nModifier = -5;
+            break;
+        case 2:
+            nModifier = 5;
+            break;
+    }
+    nDC += nModifier;
+    if (nDC < 1)
+    {
+        return 1;
+    }
+    return nDC;
 }
 // PC 0x005802B0
 int CSWSDoor::SaveDoor(CResGFF* pRes, CResStruct* pStruct)
