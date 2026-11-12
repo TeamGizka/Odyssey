@@ -3861,9 +3861,9 @@ void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
                     vLight.m_fX, vLight.m_fY, vLight.m_fZ, 1.0f);
                 AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_EYE_POSITION,
                     vEye.m_fX, vEye.m_fY, vEye.m_fZ, 1.0f);
-                float fRadius = lstLights[nLight]->m_fRadius;
                 AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_ATTENUATION,
-                    1.0f, 0.0f, AUR_LIGHT_ATTENUATION_SCALE / (fRadius * fRadius + fRadius * fRadius), 1.0f);
+                    1.0f, 0.0f, AUR_LIGHT_ATTENUATION_SCALE / (lstLights[nLight]->m_fRadius * lstLights[nLight]->m_fRadius +
+                                                    lstLights[nLight]->m_fRadius * lstLights[nLight]->m_fRadius), 1.0f);
                 RenderFlat(pPrimitive);
                 if (bAlphaTestEnabled)
                 {
