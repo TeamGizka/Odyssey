@@ -1199,8 +1199,7 @@ void DirtyTextureController::Init(int nARGB, int nSize, int nFormula, int nFunc)
     m_pTexture->SetDepth(m_pTexture->GetHeight());
 
     int nOffset = 0;
-    int nRange = nRed;
-    nRange = nRange > nGreen ? nRange : nGreen;
+    int nRange = nRed > nGreen ? nRed : nGreen;
     nRange = nRange > nBlue ? nRange : nBlue;
 
     if (nFunc == 1)

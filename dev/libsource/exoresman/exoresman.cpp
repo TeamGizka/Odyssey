@@ -845,24 +845,25 @@ void CExoResMan::AsyncLoad()  // PC 0x004096E0
                         {
                             bSaveGame = 1;
                             m_nAsyncLoadedFlags |= LOADED_SAVE_GAME_RIM;
-                            if (nDownloadedPackage == 0)
-                            {
-                                sPath = CExoString("MODULES:") + m_sAsyncModuleName +
-                                        CExoString("_dlg");
-                            }
-                            else
-                            {
-                                sPath = CExoString("MODULES\\") + m_sAsyncModuleName +
-                                        CExoString("_dlg");
-                                CExoString sDirectory;
-                                sDirectory.Format("LIVE%d:%s", nDownloadedPackage,
-                                                  sPath.CStr());
-                                sPath = sDirectory;
-                            }
-                            AddKeyTable(CacheResource(sPath, RESTYPE_ERF),
-                                        TABLE_ENCAPSULATED, PRIORITY_MODULE);
                         }
                     }
+
+                    if (nDownloadedPackage == 0)
+                    {
+                        sPath = CExoString("MODULES:") + m_sAsyncModuleName +
+                                CExoString("_dlg");
+                    }
+                    else
+                    {
+                        sPath = CExoString("MODULES\\") + m_sAsyncModuleName +
+                                CExoString("_dlg");
+                        CExoString sDirectory;
+                        sDirectory.Format("LIVE%d:%s", nDownloadedPackage,
+                                          sPath.CStr());
+                        sPath = sDirectory;
+                    }
+                    AddKeyTable(CacheResource(sPath, RESTYPE_ERF),
+                                TABLE_ENCAPSULATED, PRIORITY_MODULE);
                 }
                 else
                 {

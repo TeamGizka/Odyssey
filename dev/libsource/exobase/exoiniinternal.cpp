@@ -132,19 +132,20 @@ int CExoIniInternal::ReadIniEntry(CExoString& sValue, const CExoString& sFile,
                     *pEqual = 0;
                 }
 
-                if (strcmp(sLine, szEntry) == 0)
+                if (strcmp(sLine, szEntry) != 0)
                 {
-                    sValue = strchr(pKey->m_sLine.CStr(), '=') + 1;
-
-                    if (sValue.Right(1) == "\n")
-                    {
-                        sValue = sValue.Left(sValue.GetLength() - 1);
-                    }
-
-                    return 1;
+                    pKey = pSection->m_lstEntries.GetNext(pEntryPos);
+                    continue;
                 }
 
-                pKey = pSection->m_lstEntries.GetNext(pEntryPos);
+                sValue = strchr(pKey->m_sLine.CStr(), '=') + 1;
+
+                if (sValue.Right(1) == "\n")
+                {
+                    sValue = sValue.Left(sValue.GetLength() - 1);
+                }
+
+                return 1;
             }
 
             return 0;

@@ -2047,7 +2047,6 @@ void CExoKeyTable::RebuildTable()
     unsigned long nIndex = 0;
     CKeyTableEntry* pKeyEntry = NULL;
     CExoKeyTable* pKeyTable = NULL;
-    CKeyTableEntry* pOldTable = m_pKeyTable;
 
     if (m_pKeyTable == NULL)
     {
@@ -2058,6 +2057,7 @@ void CExoKeyTable::RebuildTable()
     }
     else
     {
+        CKeyTableEntry* pOldTable = m_pKeyTable;
         unsigned long nOldTableSize = m_nTableSize;
 #ifndef _XBOX
         if (m_nTableType == 4)

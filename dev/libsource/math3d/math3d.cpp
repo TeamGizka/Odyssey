@@ -1092,9 +1092,7 @@ Vector NormalOf(const Vector& vFirst, const Vector& vSecond,
     {
         return Vector(1.0f, 0.0f, 0.0f);
     }
-    float fReciprocal = 1.0f / fMagnitude;
-    return Vector(vNormal.m_fX * fReciprocal, vNormal.m_fY * fReciprocal,
-                  vNormal.m_fZ * fReciprocal);
+    return vNormal * (1.0f / fMagnitude);
 }
 
 // PC 0x004D82B0
