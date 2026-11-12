@@ -2069,8 +2069,7 @@ void MdlNodeTriMesh::InternalParseField(char* sField)
             if (pLightMap != 0)
             {
                 List<int> lstOffsets(0);
-                sField = AurResGetNextLine();
-                while (sField != 0)
+                for (sField = AurResGetNextLine(); sField != 0; sField = AurResGetNextLine())
                 {
                     while (*sField == ' ' || *sField == '\t')
                         ++sField;
@@ -2078,7 +2077,6 @@ void MdlNodeTriMesh::InternalParseField(char* sField)
                         Parse<int>(sField + 13, lstOffsets);
                     if (stricmp("texture1", firstword(sField)) == 0)
                         Parse(sField + 8, m_sTexture1);
-                    sField = AurResGetNextLine();
                 }
                 AurResFree(pLightMap, 0);
                 if (lstTextureCoordinates1.m_nCount * 4 == lstOffsets.m_nCount)

@@ -1696,8 +1696,8 @@ int CExoResMan::ServiceFromDirectory(CRes* pRes, int bAsync)
             }
             else
             {
-                sFullPath = pTable->m_sResourceName + "\\" +
-                            CExoString(pRes->m_pKeyEntry->m_sDirectory) + "\\" + sResRef;
+                CExoString sDirectory(pRes->m_pKeyEntry->m_sDirectory);
+                sFullPath = pTable->m_sResourceName + "\\" + sDirectory + "\\" + sResRef;
             }
 
             if (pTable->m_sResourceName == "REBOOTDATA:")

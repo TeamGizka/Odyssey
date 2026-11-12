@@ -1005,13 +1005,13 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 const Vector& vFirst = mRotation.m_vFirst;
                 const Vector& vSecond = mRotation.m_vSecond;
                 const Vector& vThird = mRotation.m_vThird;
-                AurSetVertexProgramParameter4f(nRegister,
+                GLRender_SetVertexProgramParameter4f(nRegister,
                     vFirst.m_fX, vSecond.m_fX,
                     vThird.m_fX, vBone.m_fX);
-                AurSetVertexProgramParameter4f(++nRegister,
+                GLRender_SetVertexProgramParameter4f(++nRegister,
                     vFirst.m_fY, vSecond.m_fY,
                     vThird.m_fY, vBone.m_fY);
-                AurSetVertexProgramParameter4f(nRegister + 1,
+                GLRender_SetVertexProgramParameter4f(nRegister + 1,
                     vFirst.m_fZ, vSecond.m_fZ,
                     vThird.m_fZ, vBone.m_fZ);
             }
@@ -1980,13 +1980,14 @@ void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
             Vector vPosition;
             pSkin->GetWorld(vPosition, qOrientation);
             Vector vCamera = -qOrientation * (CurrentCamera->m_vPosition - vPosition);
-            Vector vSide = cross(vDisplacement,
-                pSkin->m_pAurObject->m_qOrientation.zdir());
+            Quaternion& qObject = pSkin->m_pAurObject->m_qOrientation;
+            Vector vSide = cross(vDisplacement, qObject.zdir());
             vDisplacement = -qOrientation * vDisplacement;
             vSide = -qOrientation * vSide;
             fBlurLength = fBlurLength / (2.0f * DeltaT);
             Vector vOrigin;
-            vOrigin = -qOrientation * (pSkin->m_pAurObject->m_vPosition - vPosition);
+            Vector& vObjectPosition = pSkin->m_pAurObject->m_vPosition;
+            vOrigin = -qOrientation * (vObjectPosition - vPosition);
 
             AurSetVertexProgramParameter4f(PartSkin::SKIN_VP_CONSTANTS,
                 0.0f, 2.0f, 3.0f, 1.0f);

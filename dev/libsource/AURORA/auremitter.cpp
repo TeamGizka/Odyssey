@@ -38,6 +38,7 @@ static int LIGHTNING = 6;
 static int OTHER = 7;
 static int AlignedToParticleDir = 8;
 static int MotionBlurred = 9;
+CAurCamera* g_pWeatherCamera = 0;
 int totalparticles = 0;
 int totalemitters = 0;
 int particlecount = 0;
@@ -1615,11 +1616,12 @@ void PartEmitter::moveParticleStandard(float fTimeStep)
                         pParticle->m_vDrift = (m_pHitInfo->m_vOutputNormal * -2.0f *
                             (m_pHitInfo->m_vOutputNormal * pParticle->m_vDrift) +
                             pParticle->m_vDrift) * EMITTER_BOUNCE_SPEED_DAMPING;
-                        float fZ = fBounceScale * pParticle->m_vDrift.m_fZ;
-                        pParticle->m_vDrift.m_fZ = fZ * m_fBounceCoefficient;
+                        float fZ = fBounceScale *
+                            (pParticle->m_vDrift.m_fZ * m_fBounceCoefficient);
+                        pParticle->m_vDrift.m_fZ = fZ;
                         fSpeed = pParticle->m_vDrift.m_fX * pParticle->m_vDrift.m_fX +
-                                 pParticle->m_vDrift.m_fY * pParticle->m_vDrift.m_fY +
-                                 pParticle->m_vDrift.m_fZ * pParticle->m_vDrift.m_fZ;
+                            pParticle->m_vDrift.m_fY * pParticle->m_vDrift.m_fY +
+                            pParticle->m_vDrift.m_fZ * pParticle->m_vDrift.m_fZ;
                     }
                 }
                 else if (EmitterBounceType == EMITTER_BOUNCE_ELASTIC)
@@ -1642,9 +1644,30 @@ void PartEmitter::moveParticleStandard(float fTimeStep)
                     pParticle->m_vPosition += m_pHitInfo->m_vOutputNormal * EMITTER_BOUNCE_SURFACE_OFFSET;
                     pParticle->m_vHeading = m_pHitInfo->m_vOutputNormal;
                     if (pNode->m_sChunkName[0])
-                        pParticle->m_vPosition += m_pHitInfo->m_vOutputNormal * m_fXSizeStart;
+                        pParticle->m_vPosition += m_fXSizeStart * m_pHitInfo->m_vOutputNormal;
                 }
             }
+        }
+
+        if (m_bWeather && g_pWeatherCamera)
+        {
+            Vector vCamera = g_pWeatherCamera->GetPosition();
+            static float halfWidth = 5.0f;
+            static float halfHeight = 5.0f;
+            static float width = halfWidth + halfWidth;
+            static float height = halfHeight + halfHeight;
+            Vector vOffset = pParticle->m_vPosition - vCamera;
+            vOffset.m_fX += halfWidth;
+            vOffset.m_fY += halfHeight;
+            if (vOffset.m_fX >= 0.0f)
+                vOffset.m_fX = (float)fmod(vOffset.m_fX, width) - halfWidth;
+            else
+                vOffset.m_fX = (float)fmod(vOffset.m_fX, width) + halfWidth;
+            if (vOffset.m_fY >= 0.0f)
+                vOffset.m_fY = (float)fmod(vOffset.m_fY, height) - halfHeight;
+            else
+                vOffset.m_fY = (float)fmod(vOffset.m_fY, height) + halfHeight;
+            pParticle->m_vPosition = vCamera + vOffset;
         }
     }
 

@@ -464,5 +464,7 @@ void BSPTraverseVolumeApprox(BSPNode* pNode, const Vector& vPoint,
                               List<Plane>& planes,
                               void (*pCallback)(BSPNode*, void*, List<Plane>&),
                               void* pData);
+float ClosestDistanceBetweenSegments(const Vector& vFirstStart, const Vector& vFirstEnd,
+                                     const Vector& vSecondStart, const Vector& vSecondEnd);
 
 #endif

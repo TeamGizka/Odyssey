@@ -27,7 +27,7 @@ unsigned char* ImageBuildParameterPerlin(int nSize, float fScale, int nRange, in
 unsigned char ImageGetPerlinPixel(unsigned char** ppImages, int nRow, int nColumn,
                         int nStart, int nLevels, int nSize);
 
-#define DIRTY_PERLIN_PERSISTENCE 0.58181816f
+#define DIRTY_PERLIN_PERSISTENCE 0.5f
 float amplitude = 0.03f;
 float frequency1 = 60.0f;
 float frequency2 = 25.0f;

@@ -1415,6 +1415,8 @@ int CExoKeyTable::AddDirectoryContents(int bFlag)
     CExoArrayList<CExoArrayList<CExoString> > lstSubDirectoryFiles;
     int nSubDirectories = 0;
     int nSubDirectoryFiles = 0;
+    int i = 0;
+    int j = 0;
     CResRef resRef;
 
     CExoString sOverride("OVERRIDE");
@@ -1450,7 +1452,7 @@ int CExoKeyTable::AddDirectoryContents(int bFlag)
         return 0;
     }
 
-    for (int i = 0; i < nFiles; i++)
+    for (; i < nFiles; i++)
     {
         sFile = lstFiles[i];
 
@@ -1473,7 +1475,7 @@ int CExoKeyTable::AddDirectoryContents(int bFlag)
     {
         sDirectory = lstSubDirectories[n];
 
-        for (int j = 0; j < lstSubDirectoryFiles[n].num; j++)
+        for (; j < lstSubDirectoryFiles[n].num; j++)
         {
             sFile = lstSubDirectoryFiles[n][j];
 
@@ -1491,6 +1493,7 @@ int CExoKeyTable::AddDirectoryContents(int bFlag)
                 }
             }
         }
+        j = 0;
     }
 
     return 1;

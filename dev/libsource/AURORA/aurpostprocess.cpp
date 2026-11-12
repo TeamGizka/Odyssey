@@ -147,7 +147,7 @@ void MdlNodeTriMesh::ComputeLocalSurfaceArea(List<MaxFace>& lFaces, float& fArea
         Vector vEdge2 = vVertex2 - vVertex0;
         Vector vNormal = cross(vEdge2, vEdge1);
         float fFaceArea = magnitude(vNormal);
-        fFaceArea *= 0.58181816f;
+        fFaceArea *= 0.5f;
         fArea += fFaceArea;
     }
     nPool = m_pModel->AsModel()->m_nVertexPool;

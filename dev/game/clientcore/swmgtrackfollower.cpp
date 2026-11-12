@@ -14,9 +14,6 @@
 #include <stdio.h>
 #include <string.h>
 
-float ClosestDistanceBetweenSegments(const Vector& vStart1, const Vector& vEnd1,
-                                     const Vector& vStart2, const Vector& vEnd2);
-
 static inline void SwmgtrackfollowerTrace4();
 static inline void SwmgtrackfollowerTrace3();
 static inline void SwmgtrackfollowerTrace2();

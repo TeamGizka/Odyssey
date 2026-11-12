@@ -114,7 +114,8 @@ void CAurGUIStringInternal::WrapStrings(int nWidth)
 
             while (nLineWidth < nWrapWidth)
             {
-                if (*pChar == '-' && isalpha(pChar[-1]) && isalpha(pChar[1]))
+                if (*pChar == ' ' ||
+                    (*pChar == '-' && isalpha(pChar[-1]) && isalpha(pChar[1])))
                 {
                     pBreak = pChar;
                     nBreakWidth = nLineWidth;
@@ -1078,13 +1079,10 @@ void CAurGUIImageInternal::DrawBuffered(float fX, float fY, float fWidth,
 #else
         int nColor = nRed | ((nGreen | ((nBlue | (nAlpha << 8)) << 8)) << 8);
 #endif
-        union { int nColor; float fColor; } color;
-        color.nColor = nColor;
-        float fColor = color.fColor;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed] = fX;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 1] = 1.0f - fY;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 2] = 0.0f;
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 3] = fColor;
+        *(int*)&cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 3] = nColor;
 #ifdef _XBOX
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[0] * 6 + 4] = fHalfU;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[0] * 6 + 5] = 1.0f - fHalfV;
@@ -1095,7 +1093,7 @@ void CAurGUIImageInternal::DrawBuffered(float fX, float fY, float fWidth,
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 6] = fX;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 7] = 1.0f - (fY + fHeight);
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 8] = 0.0f;
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 9] = fColor;
+        *(int*)&cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 9] = nColor;
 #ifdef _XBOX
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[1] * 6 + 4] = fHalfU;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[1] * 6 + 5] = fHalfV;
@@ -1106,7 +1104,7 @@ void CAurGUIImageInternal::DrawBuffered(float fX, float fY, float fWidth,
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 12] = fX + fWidth;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 13] = 1.0f - (fY + fHeight);
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 14] = 0.0f;
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 15] = fColor;
+        *(int*)&cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 15] = nColor;
 #ifdef _XBOX
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[2] * 6 + 4] = 1.0f - fHalfU;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[2] * 6 + 5] = fHalfV;
@@ -1121,7 +1119,7 @@ void CAurGUIImageInternal::DrawBuffered(float fX, float fY, float fWidth,
 #else
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 20] = 0.0f;
 #endif
-        cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 21] = fColor;
+        *(int*)&cm_fGUIBuffer[cm_nGUIBufferSizeUsed + 21] = nColor;
 #ifdef _XBOX
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[3] * 6 + 4] = 1.0f - fHalfU;
         cm_fGUIBuffer[cm_nGUIBufferSizeUsed + nRotated[3] * 6 + 5] = 1.0f - fHalfV;

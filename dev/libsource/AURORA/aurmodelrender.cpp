@@ -1339,17 +1339,19 @@ void SetupForceSightShader(Gob* pGob, int nForceShader, int nShader,
         if (bForceGlow)
         {
             GLRender_SetBlendFunc(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
-            float fRed;
-            float fGreen;
-            float fBlue;
-            float fAlpha;
             unsigned char nPhase = (unsigned char)(g_SceneRender_CurrentTime_ms * 0.125f);
             float fPulse = (float)sin(nPhase * AUR_FORCE_GLOW_PULSE_STEP) * 0.25f + 0.75f;
-            pGob->GetForceGlowColor(fRed, fGreen, fBlue, fAlpha);
-            afColor[0] = fRed;
-            afColor[1] = fGreen;
-            afColor[2] = fBlue;
-            afColor[3] = fAlpha * fPulse;
+            {
+                float fRed;
+                float fGreen;
+                float fBlue;
+                float fAlpha;
+                pGob->GetForceGlowColor(fRed, fGreen, fBlue, fAlpha);
+                afColor[0] = fRed;
+                afColor[1] = fGreen;
+                afColor[2] = fBlue;
+                afColor[3] = fAlpha * fPulse;
+            }
             memcpy(GLRender::m_ForceSightColor, afColor, sizeof(afColor));
             GLRender_EnablePixelShaders(nForceShader, pTexture0, pTexture1, pTexture2, pTexture3);
             return;
