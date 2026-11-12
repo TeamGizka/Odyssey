@@ -17,6 +17,7 @@
 #include "swgui.h"
 #include "swguilevelupchargen.h"
 #include "nwccreature.h"
+#include "nwseffectlist.h"
 // PC 0x0071B2C0
 void CSWGuiInGameCharacter::OnPanelRemoved()
 {
@@ -35,7 +36,11 @@ inline void CSWGuiInGameCharacter::SetModText(CSWGuiLabel& lblMod, int nMod)
 CSWGuiInGameCharacter::CSWGuiInGameCharacter(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
+#ifdef _XBOX
     StartLoadFromLayout("character");
+#else
+    StartLoadFromLayout("character_p");
+#endif
 #ifdef _XBOX
     InitControl(m_lblName, "LBL_NAME", 1);
     InitControl(m_lblClass, "LBL_CLASS", 1);
@@ -142,6 +147,16 @@ CSWGuiInGameCharacter::CSWGuiInGameCharacter(CSWGuiManager* pManager)
     InitControl(m_btnLevelUp, "BTN_LEVELUP", 1);
     InitControl(m_btnExit, "BTN_EXIT", 1);
     InitControl(m_btn3DChar, "BTN_3DCHAR", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    InitControl(m_alblBar[4], "LBL_BAR5", 1);
+    InitControl(m_alblBar[5], "LBL_BAR6", 1);
+    InitControl(m_lblXpBack, "LBL_XP_BACK", 1);
+    InitControl(m_lblMoreBack, "LBL_MORE_BACK", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lblStatsBorder, "LBL_STATSBORDER", 1);
     StopLoadFromLayout();
     m_lblMore.SetShown(0);
     CAurCamera* pCamera = m_viewCharacter.m_cScene.m_pCamera;
@@ -168,6 +183,7 @@ CSWGuiInGameCharacter::CSWGuiInGameCharacter(CSWGuiManager* pManager)
     m_pCreature = new CSWCCreature();
     m_pShownCreature = 0;
     m_nShownAlignment = -1;
+    m_lblForceMastery.SetShown(0);
     CSWGuiTextParams* pText = &m_btnLevelUp.m_cText.m_cParams;
     pText->m_bHilightText = 1;
     pText = &m_btnAuto.m_cText.m_cParams;
@@ -256,10 +272,11 @@ void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)  // PC 0x00
     g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
     if (nState != 0)
     {
+        CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
         switch (nEvent)
         {
         case GUIEVENT_ACTIVATE:
-            if (g_pAppManager->m_pClientExoApp->GetInGameGui()
+            if (pClient->GetInGameGui()
                         ->m_LevelUpMode != 0 &&
                 g_pAppManager->m_pClientExoApp
                         ->GetCharacterChangeInProgress() == 0)
@@ -269,7 +286,7 @@ void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)  // PC 0x00
             }
             break;
         case EVENT_AUTO_LEVELUP:
-            if (g_pAppManager->m_pClientExoApp->GetInGameGui()
+            if (pClient->GetInGameGui()
                         ->m_LevelUpMode != 0 &&
                 g_pAppManager->m_pClientExoApp
                         ->GetCharacterChangeInProgress() == 0)
@@ -281,15 +298,14 @@ void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)  // PC 0x00
         case EVENT_NEXT_CHARACTER:
         {
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
-            g_pAppManager->m_pClientExoApp
-                ->ChangeCharacterToNextLivingPartyMember(0, 0, 1);
+            pClient->ChangeCharacterToNextLivingPartyMember(0, 0, 1);
             break;
         }
         case GUIEVENT_CANCEL:
         case GUIEVENT_ACCEPT:
         case GUIEVENT_CANCEL_ALTERNATE:
         case EVENT_EXIT:
-            if (g_pAppManager->m_pClientExoApp->GetInGameGui()->HideSWInGameGui(
+            if (pClient->GetInGameGui()->HideSWInGameGui(
                     0) != 0)
             {
 #ifdef _XBOX
@@ -368,16 +384,31 @@ void CSWGuiInGameCharacter::SetStats()
                       pStats->GetMaxHitPoints());
     m_lblVitalityStat.m_cText.m_cParams.SetText(sHitPoints);
     SetLabelBonusPenaltyColour(m_lblVitalityStat, pStats->m_nHitPointBonus);
+#ifdef _XBOX
     m_lblDefenseStat.m_cText.m_cParams.SetText(
         pStats->GetArmorClass(0));
     SetLabelBonusPenaltyColour(
         m_lblDefenseStat,
         pCreature->GetServerCreature()->GetTotalACEffectBonus());
+#else
+    m_lblDefenseStat.m_cText.m_cParams.SetText(
+        pStats->GetArmorClass(1));
+    m_lblDefenseStat.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+#endif
     if (CSWClass::IsJedi(nClass) != 0)
     {
+#ifdef _XBOX
         short nForcePoints = pStats->m_nCurrentForcePoints;
         short nMaxForcePoints = pStats->m_nMaxForcePoints;
         nForcePoints += pStats->m_nForcePointBonus;
+#else
+        int nForcePoints = pStats->GetForcePoints();
+        int nMaxForcePoints = pStats->GetMaxForcePoints();
+        if (nMaxForcePoints < 1)
+        {
+            nForcePoints = 0;
+        }
+#endif
         sHitPoints.Format("%d/%d", nForcePoints, nMaxForcePoints);
         m_lblForceStat.m_cText.m_cParams.SetText(sHitPoints);
         m_lblForce.SetEnabledFlag(1);
@@ -472,7 +503,7 @@ void CSWGuiInGameCharacter::SetStats()
     m_lblAuto.SetEnabledFlag(bCanLevelUp);
     m_lblY.SetEnabledFlag(bCanLevelUp);
 #else
-    int bCanLevelUp = pServerStats->CanLevelUp() != 0;
+    int bCanLevelUp = pServerStats->CanLevelUp();
     m_btnLevelUp.SetEnabledFlag(bCanLevelUp);
     m_btnAuto.SetEnabledFlag(bCanLevelUp);
 #endif
@@ -493,9 +524,7 @@ void CSWGuiInGameCharacter::SetStats()
             ++nIcon;
         } while (nIcon < pServerCreature->GetEffectIconCount());
     }
-#endif
     m_lblMore.SetEnabledFlag(pServerCreature->GetEffectIconCount() > EFFECT_ICON_CAPACITY);
-#ifdef _XBOX
     while (nIcon < EFFECT_ICON_CAPACITY)
     {
         if (!m_lblGood[nIcon].m_bEnabled)
@@ -516,7 +545,11 @@ void CSWGuiInGameCharacter::SetStats()
         {
             m_pCreature->SetAppearance(&aAppearance,
                 CSWCCreature::APPEARANCE_PART_BODY | CSWCCreature::APPEARANCE_PART_HEAD, 1);
+#ifdef _XBOX
             short nAlignment = pCreature->m_pStats->m_nGoodEvilAlignment;
+#else
+            int nAlignment = pCreature->GetStats()->m_nGoodEvilAlignment;
+#endif
             m_pCreature->GetAppearance()->SetAppearanceAlignment(nAlignment);
             CAurScene* pScene = m_viewCharacter.m_cScene.m_pScene;
             m_pCreature->AttachToScene(pScene);
@@ -527,6 +560,65 @@ void CSWGuiInGameCharacter::SetStats()
         m_pShownCreature = pCreature;
         m_nShownAlignment = pStats->m_nGoodEvilAlignment;
         m_sldAlign.SetCurValue(ALIGNMENT_SLIDER_MAX - m_nShownAlignment);
+#ifndef _XBOX
+        unsigned long nMasteryStrRef;
+        if (pServerCreature->HasEffect(CSWSEffectListHandler::EFFECT_PUREGOODPOWERS))
+        {
+            switch (nClass)
+            {
+            case CSWClass::CLASS_INDEX_JEDIGUARDIAN:
+            case CSWClass::CLASS_INDEX_JEDIWEAPONMASTER:
+            case CSWClass::CLASS_INDEX_SITHMARAUDER:
+                nMasteryStrRef = STRREF_LIGHT_MASTERY_STR;
+                break;
+            case CSWClass::CLASS_INDEX_JEDISENTINEL:
+            case CSWClass::CLASS_INDEX_JEDIWATCHMAN:
+            case CSWClass::CLASS_INDEX_SITHASSASSIN:
+                nMasteryStrRef = STRREF_LIGHT_MASTERY_CON;
+                break;
+            case CSWClass::CLASS_INDEX_JEDICONSULAR:
+            case CSWClass::CLASS_INDEX_JEDIMASTER:
+            case CSWClass::CLASS_INDEX_SITHLORD:
+                nMasteryStrRef = STRREF_LIGHT_MASTERY_WIS;
+                break;
+            default:
+                m_lblForceMastery.SetEnabledFlag(0);
+                return;
+            }
+            m_lblForceMastery.SetEnabledFlag(1);
+            m_lblForceMastery.m_cText.m_cParams.SetStrRef(nMasteryStrRef);
+        }
+        else if (pServerCreature->HasEffect(CSWSEffectListHandler::EFFECT_PUREEVILPOWERS))
+        {
+            switch (nClass)
+            {
+            case CSWClass::CLASS_INDEX_JEDIGUARDIAN:
+            case CSWClass::CLASS_INDEX_JEDIWEAPONMASTER:
+            case CSWClass::CLASS_INDEX_SITHMARAUDER:
+                nMasteryStrRef = STRREF_DARK_MASTERY_DAMAGE;
+                break;
+            case CSWClass::CLASS_INDEX_JEDISENTINEL:
+            case CSWClass::CLASS_INDEX_JEDIWATCHMAN:
+            case CSWClass::CLASS_INDEX_SITHASSASSIN:
+                nMasteryStrRef = STRREF_DARK_MASTERY_DEX;
+                break;
+            case CSWClass::CLASS_INDEX_JEDICONSULAR:
+            case CSWClass::CLASS_INDEX_JEDIMASTER:
+            case CSWClass::CLASS_INDEX_SITHLORD:
+                nMasteryStrRef = STRREF_DARK_MASTERY_FORCE_POINTS;
+                break;
+            default:
+                m_lblForceMastery.SetEnabledFlag(0);
+                return;
+            }
+            m_lblForceMastery.SetEnabledFlag(1);
+            m_lblForceMastery.m_cText.m_cParams.SetStrRef(nMasteryStrRef);
+        }
+        else
+        {
+            m_lblForceMastery.SetEnabledFlag(0);
+        }
+#endif
     }
 }
 // PC 0x0071C750
@@ -663,7 +755,7 @@ void CSWGuiInGameCharacter::SetLabelBonusPenaltyColour(CSWGuiLabel& lblStat,
 {
     if (nBonus > 0)
     {
-        lblStat.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_GREEN);
+        lblStat.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_BONUS);
     }
     else if (nBonus < 0)
     {
@@ -671,7 +763,7 @@ void CSWGuiInGameCharacter::SetLabelBonusPenaltyColour(CSWGuiLabel& lblStat,
     }
     else
     {
-        lblStat.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+        lblStat.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
     }
 }
 

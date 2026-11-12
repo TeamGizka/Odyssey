@@ -46,7 +46,7 @@ void CSWGuiQuickPanel::SetState(int nState)
     else
     {
         m_btnBack.SetEnabled(1);
-        m_btnBack.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+        m_btnBack.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
     }
 #endif
     for (int i = 0; i < 3; i++)
@@ -58,9 +58,16 @@ void CSWGuiQuickPanel::SetState(int nState)
             m_lblNumber[i].SetEnabled(1);
             m_btnStep[i].SetEnabled(1);
 #endif
+#ifdef _XBOX
             m_lblNumber[i].m_cText.m_cParams.SetColor(
                 CGuiInGame::COLOR_YELLOW);
             m_btnStep[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
+#else
+            m_lblNumber[i].m_cText.m_cParams.SetColor(
+                CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            m_btnStep[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            m_btnStep[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+#endif
             CSWGuiTextParams* pParams = &m_lblNumber[i].m_cText.m_cParams;
             pParams->m_bHilightText = 1;
             pParams = &m_btnStep[i].m_cText.m_cParams;
@@ -79,6 +86,9 @@ void CSWGuiQuickPanel::SetState(int nState)
                 m_lblNumber[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
                 m_btnStep[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
 #else
+                m_lblNumber[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+                m_btnStep[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+                m_btnStep[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
                 m_lblNumber[i].SetEnabled(0);
                 m_btnStep[i].SetEnabled(0);
 #endif
@@ -89,6 +99,9 @@ void CSWGuiQuickPanel::SetState(int nState)
                 m_lblNumber[i].m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
                 m_btnStep[i].m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
 #else
+                m_lblNumber[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_GREEN);
+                m_btnStep[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_GREEN);
+                m_btnStep[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_TEXT;
                 m_lblNumber[i].SetEnabled(0);
                 m_btnStep[i].SetEnabled(0);
 #endif
@@ -166,7 +179,7 @@ void CSWGuiQuickPanel::CancelledByChild()
     {
         m_pMainCharGen->PortraitChanged();
     }
-    m_btnStep[m_nState].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
+    m_btnStep[m_nState].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
     CSWGuiButton* pButton = &m_btnStep[m_nState];
     CSWGuiTextParams* pParams = &pButton->m_cText.m_cParams;
     pParams->m_bHilightText = 1;
@@ -202,6 +215,9 @@ void CSWGuiQuickPanel::DoQuickStats()
     m_pCreature->GetStats()->SetCHABase(pClass->GetCharisma());
     CExoArrayList<unsigned short> lstFeats;
     m_pCreature->GetStats()->AddGrantedFeats(0, true);
+#ifndef _XBOX
+    m_pCreature->GetStats()->AddGrantedPowers(0);
+#endif
     m_pCreature->GetStats()->AddDefaultPackageFeats(nClass, &lstFeats, 1, 1);
     for (int i = 0; i < lstFeats.num; i++)
     {
@@ -293,7 +309,11 @@ CSWGuiQuickPanel::CSWGuiQuickPanel(CSWGuiManager* pManager,
     CExoString sName;
 
     m_pCreature = pCreature;
+#ifdef _XBOX
     StartLoadFromLayout("QUICKPNL");
+#else
+    StartLoadFromLayout("QUICKPNL_p", 0);
+#endif
     for (int i = 0; i < 3; i++)
     {
         sName.Format("LBL_%d", i + 1);
@@ -305,10 +325,10 @@ CSWGuiQuickPanel::CSWGuiQuickPanel(CSWGuiManager* pManager,
         InitControl(m_lblNumber[i], sName, 1);
     }
 #ifndef _XBOX
-    CSWGuiButton* pBackButton = &m_btnBack;
-    InitControl(*pBackButton, "BTN_BACK", 1);
     CSWGuiButton* pCancelButton = &m_btnCancel;
     InitControl(*pCancelButton, "BTN_CANCEL", 1);
+    CSWGuiButton* pBackButton = &m_btnBack;
+    InitControl(*pBackButton, "BTN_BACK", 1);
 #endif
     StopLoadFromLayout();
 
@@ -337,6 +357,8 @@ CSWGuiQuickPanel::CSWGuiQuickPanel(CSWGuiManager* pManager,
         GUIEVENT_ACTIVATE, this, (CSWGuiEventHandler)&CSWGuiQuickPanel::OnCancelPressed);
 #endif
     SetState(0);
+#ifdef _XBOX
     m_bCenterHorizontal = 1;
     m_bCenterVertical = 1;
+#endif
 }

@@ -18,14 +18,16 @@ public:
         POWER_AVAILABLE = 0,
         POWER_CHOSEN = 1,
         POWER_GRANTED = 2,
-        POWER_UNAVAILABLE = 3
+        POWER_UNAVAILABLE = 3,
+        POWER_LOCKED = 4
     };
     enum
     {
         STRREF_POWER_RESTRICTED = 42470,
         STRREF_NO_POWERS_REMAINING = 42529,
         STRREF_POWER_GRANTED = 42185,
-        STRREF_POWER_UNAVAILABLE = 42186
+        STRREF_POWER_UNAVAILABLE = 42186,
+        STRREF_POWER_LOCKED = 111634
     };
 
     CSWGuiPowersLevelUp(CSWGuiManager* pManager, unsigned long nCreature);
@@ -105,7 +107,7 @@ public:
     CExoArrayList<unsigned long> m_lAvailable;
     CExoArrayList<unsigned long> m_lChosen;
 #ifndef _XBOX
-    CExoArrayList<unsigned long> m_l1BEC;
+    CExoArrayList<unsigned long> m_lLocked;
 #endif
     CSWGuiSkillFlowChart m_cChart;
 #ifndef _XBOX

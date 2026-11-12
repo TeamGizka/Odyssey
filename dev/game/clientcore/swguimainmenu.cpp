@@ -1,4 +1,5 @@
 #include "swguimainmenu.h"
+#include "swguimusic.h"
 #include "aurcamera.h"
 #include "nwccreature.h"
 #include "partytables.h"
@@ -10,6 +11,7 @@
 #include "netlayer.h"
 #include "nwmessage.h"
 #include "serverexoapp.h"
+#include "nwsvartable.h"
 #include "worldtimer.h"
 #include "guiingame.h"
 #include "swguiclassselection.h"
@@ -19,6 +21,10 @@
 #include "swguiportraitchargen.h"
 #include "nwcanimbase.h"
 #include "aurscene.h"
+#include "aurmodel.h"
+#include "clientoptions.h"
+#include "nwccreaturestats.h"
+#include "nwccreatureappearance.h"
 
 static inline void SwguimainmenuTrace3();
 static inline void SwguimainmenuTrace2();
@@ -28,6 +34,8 @@ static inline void SwguimainmenuTrace1();
 #define SWGUIMAINMENU_HOLD() SwguimainmenuTrace1()
 
 #ifndef _XBOX
+static int s_nPreCacheStep = 0;
+
 void CSWGuiMainMenu::Draw(float fElapsed)  // PC 0x006D0C10
 {
     CSWGuiPanel::Draw(fElapsed);
@@ -35,6 +43,25 @@ void CSWGuiMainMenu::Draw(float fElapsed)  // PC 0x006D0C10
     if (nDrawCount > 4)
     {
         m_bReady = 1;
+        if (s_nPreCacheStep < 3)
+        {
+            if (s_nPreCacheStep == 0)
+            {
+                CExoString sCombat("HD0:combat");
+                g_pExoResMan->CacheResource(sCombat, RESTYPE_ERF);
+            }
+            else if (s_nPreCacheStep == 1)
+            {
+                CExoString sFootsteps("HD0:footsteps");
+                g_pExoResMan->CacheResource(sFootsteps, RESTYPE_ERF);
+            }
+            else if (s_nPreCacheStep == 2)
+            {
+                CExoString sWeapons("HD0:weapons");
+                g_pExoResMan->CacheResource(sWeapons, RESTYPE_ERF);
+            }
+            s_nPreCacheStep++;
+        }
         return;
     }
     m_nDrawCount = ++nDrawCount;
@@ -45,13 +72,20 @@ void CSWGuiMainMenu::Draw(float fElapsed)  // PC 0x006D0C10
 void CSWGuiMainMenu::LoadFromLayout(CSWGuiManager* pManager)  // PC 0x006D08A0
 {
     SWGUIMAINMENU_HOLD();
+    CExoString sLayout;
+    sLayout = "mainmenu8x6_p";
+    if (sLayout.GetLength() > 0)
     {
-        CResRef cLayout("mainmenu");
+        CResRef cLayout(sLayout);
         StartLoadFromLayout(cLayout);
+        m_bPositioned = 1;
     }
-#ifndef _XBOX
-    m_bPositioned = 1;
-#endif
+    else
+    {
+        CResRef cLayout("mainmenu_p");
+        StartLoadFromLayout(cLayout);
+        m_bPositioned = 0;
+    }
     InitControl(m_lbModules, "LB_MODULES", 1);
     InitControl(m_btnExit, "BTN_EXIT", 1);
     InitControl(m_btnWarp, "BTN_WARP", 1);
@@ -59,6 +93,7 @@ void CSWGuiMainMenu::LoadFromLayout(CSWGuiManager* pManager)  // PC 0x006D08A0
     InitControl(m_btnNewGame, "BTN_NEWGAME", 1);
     InitControl(m_btnLoadGame, "BTN_LOADGAME", 1);
     InitControl(m_btnMovies, "BTN_MOVIES", 1);
+    InitControl(m_btnMusic, "BTN_MUSIC", 1);
     InitControl(m_btnOptions, "BTN_OPTIONS", 1);
     InitControl(m_lblNewContent, "LBL_NEWCONTENT", 1);
     InitControl(m_alblBackdrop[0], "LBL_GAMELOGO", 1);
@@ -84,6 +119,9 @@ void CSWGuiMainMenu::OnNewGamePicked(CSWGuiControl* pControl)
 #endif
             {
                 CSWPartyTable::ResetCurrentSessionStartTime();
+#ifndef _XBOX
+                g_pAppManager->CreateServer(0);
+#endif
                 CExoIni cIni;
 #ifdef _XBOX
                 CExoString sStartModule;
@@ -99,13 +137,21 @@ void CSWGuiMainMenu::OnNewGamePicked(CSWGuiControl* pControl)
                 }
 #else
                 CExoString sUnused;
-                CExoString sModule("END_M01AA");
+                CExoString sModule("001ebo");
+                {
+                    CExoString sEffects("HD0:effects");
+                    g_pExoResMan->CacheResource(sEffects, RESTYPE_ERF);
+                }
 #endif
                 g_pExoResMan->AddResourceDirectory("MODULES:");
                 if (!g_pExoResMan->Exists(sModule, RESTYPE_MOD, (unsigned long*)0) &&
                     !g_pExoResMan->Exists(sModule, RESTYPE_RIM, (unsigned long*)0))
                 {
+#ifdef _XBOX
                     sModule = "END_M01AA";
+#else
+                    sModule = "001ebo";
+#endif
                 }
                 g_pExoResMan->RemoveResourceDirectory("MODULES:");
                 CSWGuiClassSelection* pSelection =
@@ -114,7 +160,14 @@ void CSWGuiMainMenu::OnNewGamePicked(CSWGuiControl* pControl)
                 g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
                 m_bDeferredRemoval = 0;
                 m_nExitState = EXITSTATE_DELETE;
+#ifndef _XBOX
+                g_pAppManager->m_pClientExoApp->ClearMainMenuPointer();
+#endif
             }
+#ifndef _XBOX
+            if (g_pAppManager->m_pClientExoApp->GetInGameGui() != NULL)
+                g_pAppManager->m_pClientExoApp->GetInGameGui()->ResetTutorialWindowTracker();
+#endif
         }
 #ifndef _XBOX
     }
@@ -130,6 +183,10 @@ void CSWGuiMainMenu::OnLoadSaveGame(CSWGuiControl* pControl)
         if (m_bReady)
 #endif
         {
+            {
+                CExoString sEffects("HD0:effects");
+                g_pExoResMan->CacheResource(sEffects, RESTYPE_ERF);
+            }
 #ifdef _XBOX
             int bSelected = pControl->m_bSelected;
             if (bSelected)
@@ -137,12 +194,14 @@ void CSWGuiMainMenu::OnLoadSaveGame(CSWGuiControl* pControl)
             if (pControl->m_bSelected)
 #endif
             {
+                m_bIdleTimerDisabled = 1;
                 CSWGuiSaveLoad* pSaveLoad = new CSWGuiSaveLoad(GetManager(), 0, 1);
                 GetManager()->AddPanel(pSaveLoad, CSWGuiManager::PANEL_MODE_FOREGROUND, 1);
                 if (pSaveLoad->m_nExitState != EXITSTATE_DELETE)
                 {
                     m_bDeferredRemoval = 0;
                     m_nExitState = EXITSTATE_DELETE;
+                    g_pAppManager->m_pClientExoApp->ClearMainMenuPointer();
                 }
             }
         }
@@ -174,6 +233,7 @@ void CSWGuiMainMenu::OnMoviesPicked(CSWGuiControl* pControl)
                 pMovies = new CSWGuiTitleMovies(GetManager());
 #else
                 g_pAppManager->m_pClientExoApp->BusyWaitMenuMusic();
+                m_bIdleTimerDisabled = 1;
                 pNewMovies = new CSWGuiTitleMovies(m_pManager);
                 if (pNewMovies != 0)
                 {
@@ -191,13 +251,26 @@ void CSWGuiMainMenu::OnMoviesPicked(CSWGuiControl* pControl)
     }
 #endif
 }
+// PC 0x006D11C0
+void CSWGuiMainMenu::OnMusicPicked(CSWGuiControl* pControl)
+{
+    SWGUIMAINMENU_HOLD();
+    if (pControl->m_bSelected)
+    {
+        g_pAppManager->m_pClientExoApp->BusyWaitMenuMusic();
+        m_bIdleTimerDisabled = 1;
+        CSWGuiTitleMusic* pMusic = new CSWGuiTitleMusic(m_pManager);
+        m_pManager->AddPanel(pMusic, CSWGuiManager::PANEL_MODE_MODAL, 1);
+    }
+}
 // PC 0x006D1250
 void CSWGuiMainMenu::OnOptionsPicked(CSWGuiControl* pControl)
 {
     SWGUIMAINMENU_HOLD();
     CSWGuiOptionsMain* pOptions;
+#ifdef _XBOX
     CSWGuiOptionsMain* pNewOptions;
-    CSWGuiControl* pClickedControl;
+#endif
 #ifndef _XBOX
     if (m_nExitState != EXITSTATE_DELETE)
     {
@@ -208,15 +281,12 @@ void CSWGuiMainMenu::OnOptionsPicked(CSWGuiControl* pControl)
             int bSelected = pControl->m_bSelected;
             if (bSelected)
 #else
-            pClickedControl = pControl;
-            if (pClickedControl->m_bSelected)
+            if (pControl->m_bSelected)
 #endif
             {
+                m_bIdleTimerDisabled = 1;
 #ifdef _XBOX
                 pNewOptions = new CSWGuiOptionsMain(GetManager());
-#else
-                pNewOptions = new CSWGuiOptionsMain(m_pManager);
-#endif
                 if (pNewOptions != 0)
                 {
                     pOptions = pNewOptions;
@@ -225,6 +295,9 @@ void CSWGuiMainMenu::OnOptionsPicked(CSWGuiControl* pControl)
                 {
                     pOptions = 0;
                 }
+#else
+                pOptions = new CSWGuiOptionsMain(GetManager());
+#endif
                 m_pManager->AddPanel(pOptions, CSWGuiManager::PANEL_MODE_MODAL, 1);
             }
         }
@@ -248,6 +321,9 @@ void CSWGuiMainMenu::HandleInputEvent(int nEvent, int nState)
                 m_view3D.SetEnabledFlag(1);
                 m_btnLoadGame.SetEnabledFlag(1);
                 m_btnMovies.SetEnabledFlag(1);
+#ifndef _XBOX
+                m_btnMusic.SetEnabledFlag(1);
+#endif
                 m_btnNewGame.SetEnabledFlag(1);
                 m_btnOptions.SetEnabledFlag(1);
 #ifdef _XBOX
@@ -274,15 +350,17 @@ void CSWGuiMainMenu::HandleInputEvent(int nEvent, int nState)
 void CSWGuiMainMenu::OnEnterButton(CSWGuiControl* pControl)
 {
     SWGUIMAINMENU_HOLD();
+#ifdef _XBOX
     ((CSWGuiButton*)pControl)
         ->m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
+#else
+    ((CSWGuiButton*)pControl)
+        ->m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+#endif
 }
 
 void CSWGuiMainMenu::OnExitButton(CSWGuiControl* pControl)
 {
-    SWGUIMAINMENU_HOLD();
-    ((CSWGuiButton*)pControl)
-        ->m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
 }
 
 #ifdef _XBOX
@@ -427,6 +505,18 @@ void CSWGuiMainMenu::OnModulePicked(CSWGuiControl* pControl)
         g_pAppManager->CreateServer(0);
         g_pAppManager->m_pClientExoApp->GetWorldTimer()->PauseWorldTimer();
         g_pAppManager->m_pServerExoApp->GetWorldTimer()->PauseWorldTimer();
+#ifndef _XBOX
+        char nPCLevel;
+        g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
+            ->GetValueNumber("G_PC_LEVEL", nPCLevel);
+        if (nPCLevel == 0)
+        {
+            g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
+                ->SetValueNumber("G_PC_LEVEL", 12);
+            g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
+                ->SetValueNumber("G_PC_Align_Val", 70);
+        }
+#endif
         pClientExoApp->GetNetLayer()->StartConnectToSession(
             0, pClientExoApp->GetClientName(), "", 10,
             CNetLayer::CONNECTTYPE_PLAYER);
@@ -451,6 +541,9 @@ void CSWGuiMainMenu::OnModulePicked(CSWGuiControl* pControl)
         m_lbModules.ClearItems();
         m_bDeferredRemoval = 0;
         m_nExitState = EXITSTATE_DELETE;
+#ifndef _XBOX
+        g_pAppManager->m_pClientExoApp->ClearMainMenuPointer();
+#endif
         g_pAppManager->m_pClientExoApp->GetInGameGui()
             ->SetGlobalUnpauseableState(1);
     }
@@ -573,6 +666,12 @@ void CSWGuiMainMenu::OnLoadGamePicked()
         if (m_bReady)
 #endif
         {
+#ifndef _XBOX
+            {
+                CExoString sEffects("HD0:effects");
+                g_pExoResMan->CacheResource(sEffects, RESTYPE_ERF);
+            }
+#endif
             if (m_lbModules.m_lItems.num == 0)
             {
                 PopulateModules();
@@ -581,6 +680,9 @@ void CSWGuiMainMenu::OnLoadGamePicked()
             m_view3D.SetEnabledFlag(0);
             m_btnLoadGame.SetEnabledFlag(0);
             m_btnMovies.SetEnabledFlag(0);
+#ifndef _XBOX
+            m_btnMusic.SetEnabledFlag(0);
+#endif
             m_btnNewGame.SetEnabledFlag(0);
             m_btnOptions.SetEnabledFlag(0);
 #ifdef _XBOX
@@ -646,6 +748,8 @@ CSWGuiMainMenu::CSWGuiMainMenu(CSWGuiManager* pManager)
     m_lblWarp.SetEnabledFlag(0);
 #else
     LoadFromLayout(pManager);
+    m_lbl12C4.SetEnabledFlag(0);
+    m_lbl140C.SetEnabledFlag(0);
     m_btnWarp.SetEnabledFlag(0);
 #endif
     m_lblNewContent.SetEnabledFlag(0);
@@ -656,6 +760,8 @@ CSWGuiMainMenu::CSWGuiMainMenu(CSWGuiManager* pManager)
                            (CSWGuiHandler)&CSWGuiMainMenu::OnLoadSaveGame);
     m_btnMovies.AddEvent(39, this,
                          (CSWGuiHandler)&CSWGuiMainMenu::OnMoviesPicked);
+    m_btnMusic.AddEvent(39, this,
+                        (CSWGuiHandler)&CSWGuiMainMenu::OnMusicPicked);
     m_btnOptions.AddEvent(39, this,
                           (CSWGuiHandler)&CSWGuiMainMenu::OnOptionsPicked);
 #ifndef _XBOX
@@ -670,6 +776,8 @@ CSWGuiMainMenu::CSWGuiMainMenu(CSWGuiManager* pManager)
                            (CSWGuiHandler)&CSWGuiMainMenu::OnLoadSaveGame);
     m_btnMovies.AddEvent(45, this,
                          (CSWGuiHandler)&CSWGuiMainMenu::OnMoviesPicked);
+    m_btnMusic.AddEvent(45, this,
+                        (CSWGuiHandler)&CSWGuiMainMenu::OnMusicPicked);
     m_btnOptions.AddEvent(45, this,
                           (CSWGuiHandler)&CSWGuiMainMenu::OnOptionsPicked);
 #ifndef _XBOX
@@ -684,6 +792,8 @@ CSWGuiMainMenu::CSWGuiMainMenu(CSWGuiManager* pManager)
                            (CSWGuiHandler)&CSWGuiMainMenu::OnEnterButton);
     m_btnMovies.AddEvent(0, this,
                          (CSWGuiHandler)&CSWGuiMainMenu::OnEnterButton);
+    m_btnMusic.AddEvent(0, this,
+                        (CSWGuiHandler)&CSWGuiMainMenu::OnEnterButton);
     m_btnOptions.AddEvent(0, this,
                           (CSWGuiHandler)&CSWGuiMainMenu::OnEnterButton);
 #ifndef _XBOX
@@ -695,6 +805,7 @@ CSWGuiMainMenu::CSWGuiMainMenu(CSWGuiManager* pManager)
     m_btnLoadGame.AddEvent(1, this,
                            (CSWGuiHandler)&CSWGuiMainMenu::OnExitButton);
     m_btnMovies.AddEvent(1, this, (CSWGuiHandler)&CSWGuiMainMenu::OnExitButton);
+    m_btnMusic.AddEvent(1, this, (CSWGuiHandler)&CSWGuiMainMenu::OnExitButton);
     m_btnOptions.AddEvent(1, this,
                           (CSWGuiHandler)&CSWGuiMainMenu::OnExitButton);
 #ifndef _XBOX
@@ -706,7 +817,31 @@ CSWGuiMainMenu::CSWGuiMainMenu(CSWGuiManager* pManager)
     if (g_bDo3DGUIs != 0)
     {
         pScene->SpawnRoom("gui3D_room", Vector(), Quaternion(0, 0, 0, 1));
-        CAurObject* pModel = m_view3D.m_cScene.AddModel("mainmenu", -1);
+        g_pAppManager->m_pClientExoApp->LoadOptions(1);
+        int nSithLord = g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nCurSithLord;
+        CExoString sModel;
+        switch (nSithLord)
+        {
+        case 0:
+            sModel = "mainmenu01";
+            break;
+        case 1:
+            sModel = "mainmenu02";
+            break;
+        case 2:
+            sModel = "mainmenu03";
+            break;
+        case 3:
+            sModel = "mainmenu04";
+            break;
+        case 4:
+            sModel = "mainmenu05";
+            break;
+        default:
+            sModel = "mainmenu01";
+            break;
+        }
+        CAurObject* pModel = m_view3D.m_cScene.AddModel(sModel, -1);
         if (pModel != 0)
         {
             ((Gob*)pModel)->PlayAnimation("default", 1.0f, 0, 0);
@@ -715,6 +850,35 @@ CSWGuiMainMenu::CSWGuiMainMenu(CSWGuiManager* pManager)
 #endif
             pCamera->AttachToObject(pModel, "camerahook", Gob::ATTACH_NORMAL);
             pCamera->SetViewAngle(22.726f);
+        }
+        if (nSithLord == 4 && pModel != 0)
+        {
+            m_pCreature = new CSWCCreature();
+            CCAppearanceInfo cAppearance = *m_pCreature->GetAppearance();
+            cAppearance.m_nGender =
+                g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nPCGender;
+            cAppearance.m_nAppearance =
+                g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nAppearanceType;
+            cAppearance.m_bUseBodyVariation = 1;
+            cAppearance.m_nBodyVariation =
+                g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nBodyVariation;
+            cAppearance.m_nTextureVar =
+                g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nTextureVariation;
+            m_pCreature->GetStats()->m_nAppearance = cAppearance.m_nAppearance;
+            m_pCreature->SetAppearance(&cAppearance, 3, 1);
+            m_pCreature->AttachToScene(pScene);
+            m_pCreature->SetOrientation(Vector(0.0f, -1.0f, 0.0f));
+            m_pCreature->SetPosition(((Gob*)pModel)->GetCutsceneDummyPosition());
+            Gob* pGob = m_pCreature->GetAnimationBase()->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN);
+            if (pGob != NULL)
+                pGob->PlayAnimation("evil", 1.0f, Gob::ANIMATION_FLAG_OUT_OF_PLACE, 0.0f);
+            pGob = m_pCreature->GetAnimationBase()->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD);
+            if (pGob != NULL)
+                pGob->PlayAnimation("evil", 1.0f, Gob::ANIMATION_FLAG_OUT_OF_PLACE, 0.0f);
+        }
+        else
+        {
+            m_pCreature = NULL;
         }
     }
     SetActiveControl(&m_btnNewGame, 0);
@@ -730,10 +894,9 @@ CSWGuiMainMenu::CSWGuiMainMenu(CSWGuiManager* pManager)
     g_pExoResMan->CleanDirectory("REBOOTDATA:", 0, 0);
     g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
 #ifndef _XBOX
-    m_pCreature = NULL;
     m_bReady = 0;
     m_nDrawCount = 0;
-    m_n1900 = 0;
+    m_bIdleTimerDisabled = 0;
 #endif
 }
 

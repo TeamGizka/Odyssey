@@ -46,6 +46,7 @@ public:
     void OnNewGamePicked(CSWGuiControl* pControl);
     void OnLoadSaveGame(CSWGuiControl* pControl);
     void OnMoviesPicked(CSWGuiControl* pControl);
+    void OnMusicPicked(CSWGuiControl* pControl);
     void OnOptionsPicked(CSWGuiControl* pControl);
     void OnEnterButton(CSWGuiControl* pControl);
     void OnExitButton(CSWGuiControl* pControl);
@@ -89,7 +90,7 @@ public:
     int m_bReady;
     int m_nDrawCount;
     CSWCCreature* m_pCreature;
-    int m_n1900;
+    int m_bIdleTimerDisabled;
 #endif
 };
 

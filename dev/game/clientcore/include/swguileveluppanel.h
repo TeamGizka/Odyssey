@@ -46,8 +46,8 @@ public:
     int m_anStateUsed[STATE_COUNT];
     int m_bCanCancel;
 #ifndef _XBOX
-    int m_n1C68;
-    int m_n1C6C;
+    int m_bShowGrantedFeats;
+    int m_bShowGrantedPowers;
 #endif
     CSWGuiLevelUpPanel(CSWGuiManager* pManager, unsigned long nCreature);
     virtual void HandleInputEvent(int nEvent, int nState);
@@ -63,6 +63,7 @@ public:
 #ifndef _XBOX
     void OnCancelPressed(CSWGuiControl* pControl);
     void SetCanCancel(int bCanCancel);
+    void ShowGrantedPowers(CSWGuiControl* pControl);
 #else
     void SetCanCancel(int bCanCancel) { m_bCanCancel = bCanCancel; }
 #endif

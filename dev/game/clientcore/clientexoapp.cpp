@@ -1364,7 +1364,7 @@ void CClientExoApp::EnableMainMenuIdleTimer()
 {
     if (m_pcExoAppInternal != NULL && m_pcExoAppInternal->m_pMainMenu != NULL)
     {
-        m_pcExoAppInternal->m_pMainMenu->m_n1900 = 0;
+        m_pcExoAppInternal->m_pMainMenu->m_bIdleTimerDisabled = 0;
     }
 }
 int CClientExoApp::DontUseThisSetPlayerCreature(unsigned long oidObject)

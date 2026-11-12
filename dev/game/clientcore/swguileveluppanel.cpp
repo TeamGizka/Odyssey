@@ -107,9 +107,9 @@ void CSWGuiLevelUpPanel::ChangeState(int bBack)
 #endif
                 m_aHilights[i].SetActive(1);
                 m_aNumbers[i].m_cText.m_cParams.SetColor(
-                    CGuiInGame::COLOR_YELLOW);
+                    CGuiInGame::COLOR_NEW_HIGHLIGHT);
                 m_aSteps[i].m_cText.m_cParams.SetColor(
-                    CGuiInGame::COLOR_YELLOW);
+                    CGuiInGame::COLOR_NEW_HIGHLIGHT);
                 CSWGuiTextParams* pParams = &m_aNumbers[i].m_cText.m_cParams;
                 pParams->m_bHilightText = 1;
                 pParams = &m_aSteps[i].m_cText.m_cParams;
@@ -163,7 +163,7 @@ void CSWGuiLevelUpPanel::ChangeState(int bBack)
 #else
     BOOL bEnable = (m_nState != m_nFirstState) || (m_bCanCancel != 0);
     m_btnBack.SetEnabled(bEnable);
-    Vector* pColor = &CGuiInGame::COLOR_BLUE;
+    Vector* pColor = &CGuiInGame::COLOR_NEW_TEXT;
     if (!bEnable)
     {
         pColor = &CGuiInGame::DISABLED_TEXT;
@@ -262,6 +262,25 @@ void CSWGuiLevelUpPanel::PowersSelectionCompleted()
     m_pParent->SetVisible(1);
     ChangeState(0);
 }
+// PC 0x0075D3C0
+void CSWGuiLevelUpPanel::PlayGame()
+{
+    if (m_anStateUsed[STATE_FEATS] == 0)
+    {
+        m_pCreature->m_pStats->AddGrantedFeats(0);
+        m_pParent->SetVisible(1);
+        ChangeState(0);
+    }
+#ifndef _XBOX
+    if (m_anStateUsed[STATE_POWERS] == 0)
+    {
+        m_pCreature->m_pStats->AddGrantedPowers(0);
+        m_pParent->SetVisible(1);
+        ChangeState(0);
+    }
+#endif
+    m_pParent->BeginPlayGame();
+}
 
 #ifndef _XBOX
 void CSWGuiLevelUpPanel::OnCancelPressed(CSWGuiControl* pControl)  // PC 0x0075D430
@@ -276,13 +295,27 @@ void CSWGuiLevelUpPanel::OnCancelPressed(CSWGuiControl* pControl)  // PC 0x0075D
         ChangeState(1);
     }
 }
+// PC 0x0075D480
+void CSWGuiLevelUpPanel::ShowGrantedPowers(CSWGuiControl* pControl)
+{
+    CExoArrayList<unsigned long> lPowers;
+    m_pCreature->m_pStats->AddGrantedPowers(&lPowers);
+    if (lPowers.num > 0)
+    {
+        CSWGuiSkillInfoBox* pInfoBox =
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pSkillInfoBox;
+        pInfoBox->SetSkillList(lPowers, CSWGuiInGameSkillEntry::ABILITY_POWER);
+        pInfoBox->SetMessage(111635);
+        m_pManager->AddPanel(pInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+    }
+}
 // PC 0x0075D060
 void CSWGuiLevelUpPanel::SetCanCancel(int bCanCancel)
 {
     m_bCanCancel = bCanCancel;
     BOOL bEnable = (m_nState != m_nFirstState) || (bCanCancel != 0);
     m_btnBack.SetEnabled(bEnable);
-    Vector* pColor = &CGuiInGame::COLOR_BLUE;
+    Vector* pColor = &CGuiInGame::COLOR_NEW_TEXT;
     if (!bEnable)
     {
         pColor = &CGuiInGame::DISABLED_TEXT;
@@ -307,6 +340,31 @@ void CSWGuiLevelUpPanel::OnPanelAdded()
         m_btnCancel.m_bEnabled = 0;
     }
     CSWGuiPanel::OnPanelAdded();
+    if (m_bShowGrantedFeats != 0)
+    {
+        CExoArrayList<unsigned long> lFeats;
+        m_pCreature->GetStats()->AddGrantedFeats(&lFeats);
+        CSWGuiSkillInfoBox* pInfoBox =
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pSkillInfoBox;
+        pInfoBox->SetSkillList(lFeats, CSWGuiInGameSkillEntry::ABILITY_FEAT);
+        pInfoBox->SetMessage(42258);
+        if (m_bShowGrantedPowers != 0)
+        {
+            pInfoBox->SetCallback(this,
+                                  (CSWGuiHandler)&CSWGuiLevelUpPanel::ShowGrantedPowers);
+        }
+        m_pManager->AddPanel(pInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+    }
+    if (m_bShowGrantedPowers != 0 && m_bShowGrantedFeats == 0)
+    {
+        CExoArrayList<unsigned long> lPowers;
+        m_pCreature->GetStats()->AddGrantedPowers(&lPowers);
+        CSWGuiSkillInfoBox* pInfoBox =
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pSkillInfoBox;
+        pInfoBox->SetSkillList(lPowers, CSWGuiInGameSkillEntry::ABILITY_POWER);
+        pInfoBox->SetMessage(111635);
+        m_pManager->AddPanel(pInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+    }
 #endif
 }
 // PC 0x0075D530
@@ -328,17 +386,7 @@ void CSWGuiLevelUpPanel::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-
-void CSWGuiLevelUpPanel::PlayGame()
-{
-    if (m_anStateUsed[2] == 0)
-    {
-        m_pCreature->m_pStats->AddGrantedFeats(0);
-        FeatSelectionCompleted();
-    }
-    m_pParent->BeginPlayGame();
-}
-
+// PC 0x0075D590
 void CSWGuiLevelUpPanel::OnSelectAcceptButton(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -355,8 +403,8 @@ CSWGuiLevelUpPanel::CSWGuiLevelUpPanel(CSWGuiManager* pManager,
     int nNumber;
 
 #ifndef _XBOX
-    m_n1C68 = 0;
-    m_n1C6C = 0;
+    m_bShowGrantedFeats = 0;
+    m_bShowGrantedPowers = 0;
 #endif
     m_pManager = g_pAppManager->GetClientExoApp()->GetSWGuiManager();
     m_pCreature =
@@ -364,7 +412,11 @@ CSWGuiLevelUpPanel::CSWGuiLevelUpPanel(CSWGuiManager* pManager,
     m_bCanCancel = 0;
     nNumber = 0;
 
+#ifdef _XBOX
     StartLoadFromLayout("LEVELUPPNL");
+#else
+    StartLoadFromLayout("LEVELUPPNL_p");
+#endif
     for (int i = 0; i < 5; i++)
     {
         sName.Format("LBL_%d", i + 1);
@@ -446,11 +498,7 @@ CSWGuiLevelUpPanel::CSWGuiLevelUpPanel(CSWGuiManager* pManager,
         m_pCreature->GetStats()->AddGrantedFeats(&lstGrantedFeats);
         if (lstGrantedFeats.num > 0)
         {
-            CSWGuiSkillInfoBox* pInfoBox =
-                g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pSkillInfoBox;
-            pInfoBox->SetSkillList(lstGrantedFeats, CSWGuiInGameSkillEntry::ABILITY_FEAT);
-            pInfoBox->SetMessage(0xA512);
-            m_pManager->AddPanel(pInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+            m_bShowGrantedFeats = 1;
         }
     }
 
@@ -471,6 +519,14 @@ CSWGuiLevelUpPanel::CSWGuiLevelUpPanel(CSWGuiManager* pManager,
         m_aHilights[3].SetEnabledFlag(0);
         m_aNumbers[3].SetEnabledFlag(0);
         m_anStateUsed[3] = 0;
+#ifndef _XBOX
+        CExoArrayList<unsigned long> lstGrantedPowers;
+        m_pCreature->GetStats()->AddGrantedPowers(&lstGrantedPowers);
+        if (lstGrantedPowers.num > 0)
+        {
+            m_bShowGrantedPowers = 1;
+        }
+#endif
     }
 
     m_aSteps[4].AddEvent(
@@ -481,9 +537,10 @@ CSWGuiLevelUpPanel::CSWGuiLevelUpPanel(CSWGuiManager* pManager,
     m_anStateUsed[4] = 1;
     m_aNumbers[4].m_cText.m_cParams.SetText(nNumber);
 
+#ifdef _XBOX
     m_bCenterHorizontal = 1;
     m_bCenterVertical = 1;
-#ifndef _XBOX
+#else
     m_btnBack.SetFocusable(0);
     m_btnBack.AddEvent(39, this,
                        (PFNGUIEVENT)&CSWGuiPanel::OnBButtonPressed);

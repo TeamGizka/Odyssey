@@ -24,10 +24,7 @@ CSWGuiPowersLevelUp::CSWGuiPowersLevelUp(CSWGuiManager* pManager,
 #ifdef _XBOX
     StartLoadFromLayout("pwrlvlup");
 #else
-    {
-        CResRef cLayout("pwrlvlup");
-        StartLoadFromLayout(cLayout);
-    }
+    StartLoadFromLayout("pwrlvlup_p");
 #endif
 
     InitControl(m_lblTitle, "MAIN_TITLE_LBL", 1);
@@ -59,6 +56,8 @@ CSWGuiPowersLevelUp::CSWGuiPowersLevelUp(CSWGuiManager* pManager,
     InitControl(m_btnSelect, "SELECT_BTN", 1);
     InitControl(m_btnAccept, "ACCEPT_BTN", 1);
     InitControl(m_btnBack, "BACK_BTN", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
 #endif
     StopLoadFromLayout();
 
@@ -159,13 +158,14 @@ void CSWGuiPowersLevelUp::Draw(float fElapsed)  // PC 0x00762060
     switch (m_nPowerState)
     {
     case POWER_GRANTED:
+    case POWER_LOCKED:
         m_btnSelect.m_cText.m_cParams.SetText(m_sDeselectText);
-        m_btnSelect.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
+        m_btnSelect.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_GREEN);
         m_btnSelect.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_ICON_COLOR;
         break;
     case POWER_UNAVAILABLE:
         m_btnSelect.m_cText.m_cParams.SetText(m_sSelectText);
-        m_btnSelect.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
+        m_btnSelect.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_GREEN);
         m_btnSelect.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_ICON_COLOR;
         break;
     }
@@ -223,34 +223,35 @@ void CSWGuiPowersLevelUp::OnEnterPower(unsigned long nPower)
         {
             CSWGuiTextParams* pParams = &m_btnSelect.m_cText.m_cParams;
             pParams->SetText(m_sSelectText);
-            pParams->SetColor(CGuiInGame::COLOR_BLUE);
+            pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
             m_btnSelect.m_cBorder.m_cParams.m_vColor =
-                CGuiInGame::ENABLED_ICON_COLOR;
+                CGuiInGame::COLOR_NEW_GREEN;
             break;
         }
     case POWER_CHOSEN:
         {
             CSWGuiTextParams* pParams = &m_btnSelect.m_cText.m_cParams;
             pParams->SetText(m_sDeselectText);
-            pParams->SetColor(CGuiInGame::COLOR_BLUE);
+            pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
             m_btnSelect.m_cBorder.m_cParams.m_vColor =
-                CGuiInGame::ENABLED_ICON_COLOR;
-            break;
-        }
-    case POWER_GRANTED:
-        {
-            CSWGuiTextParams* pParams = &m_btnSelect.m_cText.m_cParams;
-            pParams->SetText(m_sDeselectText);
-            pParams->SetColor(CGuiInGame::DISABLED_TEXT);
-            m_btnSelect.m_cBorder.m_cParams.m_vColor =
-                CGuiInGame::DISABLED_ICON_COLOR;
+                CGuiInGame::COLOR_NEW_GREEN;
             break;
         }
     case POWER_UNAVAILABLE:
         {
             CSWGuiTextParams* pParams = &m_btnSelect.m_cText.m_cParams;
             pParams->SetText(m_sSelectText);
-            pParams->SetColor(CGuiInGame::DISABLED_TEXT);
+            pParams->SetColor(CGuiInGame::COLOR_NEW_GREEN);
+            m_btnSelect.m_cBorder.m_cParams.m_vColor =
+                CGuiInGame::DISABLED_ICON_COLOR;
+            break;
+        }
+    case POWER_GRANTED:
+    case POWER_LOCKED:
+        {
+            CSWGuiTextParams* pParams = &m_btnSelect.m_cText.m_cParams;
+            pParams->SetText(m_sDeselectText);
+            pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
             m_btnSelect.m_cBorder.m_cParams.m_vColor =
                 CGuiInGame::DISABLED_ICON_COLOR;
             break;
@@ -289,6 +290,13 @@ void CSWGuiPowersLevelUp::BuildButtons()
             m_cChart.SetSkillStatus(m_lAvailable.element[k], 0);
         }
     }
+#ifndef _XBOX
+    for (int m = 0; m < m_lLocked.num; m++)
+    {
+        m_cChart.SetSkillStatus(m_lLocked.element[m],
+                                CSWGuiSkillFlow::STATUS_GRANTED_ALTERNATE);
+    }
+#endif
     if (m_nSelectedPower == -1)
     {
         m_lbPowers.AddControls(
@@ -315,6 +323,9 @@ void CSWGuiPowersLevelUp::BuildAvailableList()
         if (m_lGranted.IndexOf(nSpell) != -1 ||
             m_lChosen.IndexOf(nSpell) != -1 ||
             m_lAvailable.IndexOf(nSpell) != -1 ||
+#ifndef _XBOX
+            m_lLocked.IndexOf(nSpell) != -1 ||
+#endif
             !pStats->CanChooseSpell(nSpell, m_nSpellLevel, &m_lChosen))
         {
             continue;
@@ -414,6 +425,30 @@ void CSWGuiPowersLevelUp::InitiatePowers()
         }
     }
 
+#ifndef _XBOX
+    m_bShowGrantedTutorial = 0;
+    CExoArrayList<unsigned long> lGranted;
+    pStats->AddGrantedPowers(&lGranted);
+    if (lGranted.num > 0)
+    {
+        for (int i = 0; i < lGranted.num; i++)
+        {
+            m_lLocked.Add(lGranted.element[i]);
+        }
+        for (int i = lGranted.num - 1; i >= 0; i--)
+        {
+            if (m_lGranted.Contains(lGranted.element[i]))
+            {
+                lGranted.DelIndex(i);
+            }
+        }
+        CSWGuiSkillInfoBox* pInfoBox =
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pSkillInfoBox;
+        pInfoBox->SetSkillList(lGranted, CSWGuiInGameSkillEntry::ABILITY_POWER);
+        pInfoBox->SetMessage(111635);
+        m_bShowGrantedTutorial = 1;
+    }
+#endif
     m_nPowersRemaining = pStats->ComputeNumberKnownSpellsLeft();
     m_nSpellLevel = m_nPowersRemaining + 1;
     BuildAvailableList();
@@ -506,6 +541,12 @@ void CSWGuiPowersLevelUp::OnRecommendButton()
         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pSkillInfoBox;
     pInfoBox->SetSkillList(lRecommended, CSWGuiInGameSkillEntry::ABILITY_POWER);
     pInfoBox->SetMessage(0xA511);
+#ifndef _XBOX
+    if (m_pManager->PanelExists(pInfoBox))
+    {
+        m_pManager->RemovePanel(pInfoBox);
+    }
+#endif
     m_pManager->AddPanel(pInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     BuildButtons();
 }
@@ -591,6 +632,11 @@ void CSWGuiPowersLevelUp::OnPowerPicked(unsigned long nPower)
     case POWER_UNAVAILABLE:
         nMessage = STRREF_POWER_UNAVAILABLE;
         break;
+#ifndef _XBOX
+    case POWER_LOCKED:
+        nMessage = STRREF_POWER_LOCKED;
+        break;
+#endif
     default:
         return;
     }
@@ -649,6 +695,12 @@ void CSWGuiPowersLevelUp::DeterminePower(unsigned long nPower,
     {
         nState = POWER_AVAILABLE;
     }
+#ifndef _XBOX
+    else if (m_lLocked.IndexOf(nPower) != -1)
+    {
+        nState = POWER_LOCKED;
+    }
+#endif
     else
     {
         nState = POWER_UNAVAILABLE;
