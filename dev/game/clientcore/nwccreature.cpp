@@ -5940,8 +5940,9 @@ int CSWCCreature::SetPrecalculatedPosition(const Vector& vPosition)
             {
                 Vector vSquare[4] =
                     {m_vPosition, m_vPosition, vNewPosition, vNewPosition};
-                WT[nTries] = AurAddDrawableSquare((float*)vSquare,
-                    nTries * SWCCREATURE_WALK_TRY_COLOR_STEP | SWCCREATURE_WALK_TRY_COLOR_MASK);
+                WT[nTries] = (AurAddDrawableSquare)((float*)vSquare,
+                    nTries * SWCCREATURE_WALK_TRY_COLOR_STEP | SWCCREATURE_WALK_TRY_COLOR_MASK,
+                    "nwccreature.cpp", 11925);
             }
             nResult = pModule->GetArea()->TestDirectLine(GetObjectId(), m_vPosition,
                 vNewPosition, fDistance, pPathfind->GetHalfStep(), 1, &cHit);

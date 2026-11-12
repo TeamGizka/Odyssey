@@ -2670,7 +2670,8 @@ void CClientExoAppInternal::ShowObject(CSWCObject* pObject, int bLookAt,
                             g_pAppManager->GetServerExoApp()->GetModule()->GetArea()->GetResRef(),
                             vEnd, 0);
                         Vector avSquare[4] = {vStart, vStart, vEnd, vEnd};
-                        nPathNumbers[i - 1] = AurAddDrawableSquare((float*)avSquare, AUR_DRAWABLE_COLOR_WHITE);
+                        nPathNumbers[i - 1] = (AurAddDrawableSquare)((float*)avSquare, AUR_DRAWABLE_COLOR_WHITE,
+                                                                     "clientexoappinternal.cpp", 13250);
                     }
                 }
                 if (pCreature->m_lstActions.GetHeadPos() != NULL)
