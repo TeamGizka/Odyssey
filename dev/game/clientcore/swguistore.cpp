@@ -5,6 +5,8 @@
 #include "swguistore.h"
 
 #include "guiingame.h"
+#include "nwrules.h"
+#include "twodimarrays.h"
 #include "nwccreature.h"
 #include "nwcitem.h"
 #include "nwitem.h"
@@ -67,31 +69,95 @@ void CSWGuiStore::SetDescription(CExoString const& sDescription)
 // PC 0x00721B80
 void CSWGuiStore::OnControlEntered(CSWGuiControl* pControl)
 {
-    CServerExoApp* pServer;
-    unsigned long oidItem;
-    CSWSItem* pItem;
-
+    CItemRepository* pStoreRepository = NULL;
+    CSWSStore* pStore =
+        g_pAppManager->GetServerExoApp()->GetStoreByGameObjectID(m_nStoreId);
+    CSWSCreature* pCreature =
+        g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(m_nCreatureId);
+    if (pStore != NULL)
+        pStoreRepository = pStore->m_pItemRepository;
+    if (pCreature == NULL)
+        return;
+    CItemRepository* pRepository = pCreature->GetItemRepository(1);
+    if (pStore == NULL)
+        return;
+    int bSelling = m_lbxInventoryItems.m_bEnabled;
     if (pControl->m_bSelected != 0)
     {
-        oidItem = static_cast<CSWGuiStoreItemEntry*>(pControl)->m_oidItem;
-        pServer = g_pAppManager->m_pServerExoApp;
-        pItem = pServer->GetItemByGameObjectID(pServer->ClientToServerObjectId(oidItem));
+        unsigned long oidItem = static_cast<CSWGuiStoreItemEntry*>(pControl)->m_oidItem;
+        CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+        CSWSItem* pItem = pServer->GetItemByGameObjectID(pServer->ClientToServerObjectId(oidItem));
         if (pItem != 0)
         {
-            if (m_lbxStoreItems.m_bEnabled)
+            if (!bSelling)
                 m_lblItemValue.m_cText.m_cParams.SetText(CExoString(GetItemBuyValue(pItem)));
             else
                 m_lblItemValue.m_cText.m_cParams.SetText(CExoString(GetItemSellValue(pItem)));
-            if (pItem->m_bInfinite)
+            if (!bSelling)
             {
-                m_lblUnknownD00.m_cText.m_cParams.SetStrRef(STRREF_INFINITE);
+                if (pItem->m_bInfinite)
+                    m_lblUnknownD00.m_cText.m_cParams.SetStrRef(STRREF_INFINITE);
+                else
+                {
+                    int nStackSize = pItem->m_nStackSize;
+                    m_lblUnknownD00.m_cText.m_cParams.SetText(CExoString(nStackSize));
+                }
             }
             else
             {
-                int nStackSize = pItem->m_nStackSize;
-                m_lblUnknownD00.m_cText.m_cParams.SetText(CExoString(nStackSize));
+                int nStock = pStoreRepository->GetMatchingItemCount(pItem);
+                if (nStock == -1)
+                    m_lblUnknownD00.m_cText.m_cParams.SetStrRef(STRREF_INFINITE);
+                else
+                    m_lblUnknownD00.m_cText.m_cParams.SetText(CExoString(nStock));
             }
-            SetDescription(pItem->GetPropertyDescription());
+            if (!bSelling)
+            {
+                int nOnHand = pRepository->GetMatchingItemCount(pItem);
+                int nEquipped = 0;
+                for (int i = 0; i < 3; i++)
+                {
+                    CSWCCreature* pCharacter =
+                        g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(i);
+                    if (pCharacter != NULL)
+                        nEquipped += pCharacter->GetMatchingEquippedItemCount(pItem);
+                }
+                if (nOnHand == -1)
+                    m_lblOnHandValue.m_cText.m_cParams.SetStrRef(STRREF_INFINITE);
+                else
+                    m_lblOnHandValue.m_cText.m_cParams.SetText(CExoString(nOnHand + nEquipped));
+            }
+            else
+            {
+                if (pItem->m_bInfinite)
+                {
+                    m_lblOnHandValue.m_cText.m_cParams.SetStrRef(STRREF_INFINITE);
+                }
+                else
+                {
+                    int nOnHand = 0;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        CSWCCreature* pCharacter =
+                            g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(i);
+                        if (pCharacter != NULL)
+                            nOnHand += pCharacter->GetMatchingEquippedItemCount(pItem);
+                    }
+                    if (static_cast<CSWGuiStoreItemEntry*>(pControl)->m_nCharacter != -1)
+                        nOnHand += pRepository->GetMatchingItemCount(pItem) - 1;
+                    nOnHand += pItem->m_nStackSize;
+                    m_lblOnHandValue.m_cText.m_cParams.SetText(CExoString(nOnHand));
+                }
+            }
+            CExoString sDescription = pItem->GetPropertyDescription();
+            if (sDescription.Find('<', 0) != -1 || sDescription.Find('{', 0) != -1)
+            {
+                g_pSWTlkTable->ParseStr(
+                    sDescription,
+                    (CGameObject*)g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter(),
+                    0, 1);
+            }
+            SetDescription(sDescription);
         }
     }
 }
@@ -113,13 +179,13 @@ void CSWGuiStore::SellItemCallback(CSWGuiControl* pControl)
             if (nCharacter != -1)
             {
                 CSWCCreature* pCharacter =
-                    g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(nCharacter);
+                    g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nCharacter);
                 if (pCharacter != NULL)
                 {
                     CSWSCreature* pServerCreature = pCharacter->GetServerCreature();
                     if (pServerCreature != NULL)
                     {
-                        pServerCreature->RunUnequip(pItem->GetId(), OBJECT_INVALID, 0, NULL, 1);
+                        pServerCreature->RunUnequip(pItem->GetId(), OBJECT_INVALID, 0, NULL, 1, 1);
                     }
                     m_bInventoryDirty = 1;
                 }
@@ -133,9 +199,10 @@ void CSWGuiStore::OnControlInvAButton(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
     {
+#ifdef _XBOX
         if (pControl->m_nEvent == CSWGuiControl::EVENT_CONFIRM)
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-#ifndef _XBOX
+#else
         if (pControl == &m_btnAccept)
         {
             pControl = m_lbxInventoryItems.GetSelectedControl();
@@ -163,6 +230,50 @@ void CSWGuiStore::OnControlInvAButton(CSWGuiControl* pControl)
             }
             else
                 nConfirmationValue = SELL_CONFIRM_VALUE_MAX;
+            if (static_cast<CSWGuiStoreItemEntry*>(pControl)->m_nCharacter != -1)
+            {
+                CSWCCreature* pCharacter =
+                    g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(
+                        static_cast<CSWGuiStoreItemEntry*>(pControl)->m_nCharacter);
+                if (pCharacter != NULL)
+                {
+                    int nAppearance = pCharacter->GetAppearance()->m_nAppearance;
+                    int nSlotsLocked = 0;
+                    {
+                        CExoString sColumn("EquipSlotsLocked");
+                        g_pRules->Get2DArrays()->GetAppearance()->GetINTEntry(
+                            nAppearance, sColumn, &nSlotsLocked);
+                    }
+                    if (nSlotsLocked != 0 &&
+                        (nSlotsLocked &
+                         pCharacter->GetServerCreature()->GetInventory()->GetSlotFromItem(pItem)))
+                    {
+                        CSWGuiMessageBox* pMessageBox =
+                            g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMessageBox;
+                        pMessageBox->SetMessageColors(CGuiInGame::COLOR_DARK_GOLD,
+                                                      CGuiInGame::COLOR_NEW_HIGHLIGHT);
+                        pMessageBox->SetAllowCancel(0);
+                        pMessageBox->SetMessage(STRREF_CANNOT_SELL_EQUIPMENT);
+                        pMessageBox->SetCallback(0, 0, 0);
+                        g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(
+                            pMessageBox, 1, 1);
+                        return;
+                    }
+                }
+                CSWGuiMessageBox* pMessageBox =
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMessageBox;
+                CExoString sMessage =
+                    g_pSWTlkTable->Fetch(STRREF_CONFIRM_SELL_EQUIPPED, 0, 0, 0);
+                pMessageBox->SetMessageColors(CGuiInGame::COLOR_DARK_GOLD,
+                                              CGuiInGame::COLOR_NEW_HIGHLIGHT);
+                pMessageBox->SetAllowCancel(1);
+                pMessageBox->SetMessage(sMessage);
+                pMessageBox->SetCallback(this,
+                    (CSWGuiHandler)&CSWGuiStore::SellItemCallback, pControl);
+                g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(
+                    pMessageBox, 1, 1);
+                return;
+            }
             if ((unsigned int)GetItemSellValue(pItem) > nConfirmationValue)
             {
                 CSWGuiMessageBox* pMessageBox =
@@ -171,6 +282,8 @@ void CSWGuiStore::OnControlInvAButton(CSWGuiControl* pControl)
                 g_pTlkTable->SetCustomToken(SELL_CONFIRM_VALUE_TOKEN,
                                             CExoString(nConfirmationValue));
                 sMessage = g_pSWTlkTable->Fetch(STRREF_CONFIRM_SELL, 0, 0, 0);
+                pMessageBox->SetMessageColors(CGuiInGame::COLOR_DARK_GOLD,
+                                              CGuiInGame::COLOR_NEW_HIGHLIGHT);
                 pMessageBox->SetAllowCancel(1);
                 pMessageBox->SetMessage(sMessage);
                 pMessageBox->SetCallback(this,
@@ -179,7 +292,40 @@ void CSWGuiStore::OnControlInvAButton(CSWGuiControl* pControl)
                     pMessageBox, 1, 1);
             }
             else
+            {
+                int nCharacter = static_cast<CSWGuiStoreItemEntry*>(pControl)->m_nCharacter;
+                if (nCharacter != -1)
+                {
+                    CSWCCreature* pCharacter =
+                        g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(nCharacter);
+                    if (pCharacter != NULL)
+                    {
+                        for (int nSlot = 0; nSlot < NUM_INVENTORY_SLOTS; ++nSlot)
+                        {
+                            unsigned long nSlotMask = 1 << nSlot;
+                            if (nSlotMask == INVENTORY_SLOT_CREATUREWEAPON1 ||
+                                nSlotMask == INVENTORY_SLOT_CREATUREWEAPON2 ||
+                                nSlotMask == INVENTORY_SLOT_CREATUREWEAPON3 ||
+                                nSlotMask == INVENTORY_SLOT_CREATUREARMOUR)
+                            {
+                                continue;
+                            }
+                            if (pCharacter->GetEquippedItemID(nSlotMask) ==
+                                pItem->GetClientItem()->GetId())
+                            {
+                                pCharacter->SetEquippedItemID(nSlotMask, OBJECT_INVALID);
+                            }
+                        }
+                        CSWSCreature* pServerCreature = pCharacter->GetServerCreature();
+                        if (pServerCreature != NULL)
+                        {
+                            pServerCreature->RunUnequip(pItem->GetId(), OBJECT_INVALID,
+                                                        0, NULL, 1, 1);
+                        }
+                    }
+                }
                 SellItem(pItem);
+            }
         }
     }
 }
@@ -226,6 +372,8 @@ void CSWGuiStore::OnControlStoreAButton(CSWGuiControl* pControl)
                     g_pTlkTable->SetCustomToken(BUY_CONFIRM_VALUE_TOKEN,
                                                 CExoString(nConfirmationValue));
                     sMessage = g_pSWTlkTable->Fetch(STRREF_CONFIRM_BUY, 0, 0, 0);
+                    pMessageBox->SetMessageColors(CGuiInGame::COLOR_DARK_GOLD,
+                                                  CGuiInGame::COLOR_NEW_HIGHLIGHT);
                     pMessageBox->SetAllowCancel(1);
                     pMessageBox->SetMessage(sMessage);
                     pMessageBox->SetCallback(this,
@@ -237,8 +385,18 @@ void CSWGuiStore::OnControlStoreAButton(CSWGuiControl* pControl)
                     BuyItem(pItem);
             }
             else
-                g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowExamineBox(
-                    STRREF_INSUFFICIENT_CREDITS, 1);
+            {
+                CSWGuiMessageBox* pMessageBox =
+                    g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+                pMessageBox->SetMessageColors(CGuiInGame::COLOR_DARK_GOLD,
+                                              CGuiInGame::COLOR_NEW_HIGHLIGHT);
+                pMessageBox->SetAllowCancel(0);
+                pMessageBox->SetMessage(
+                    g_pSWTlkTable->Fetch(STRREF_INSUFFICIENT_CREDITS, 0, 0, 0));
+                pMessageBox->SetCallback(0, 0, 0);
+                g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(
+                    pMessageBox, 1, 1);
+            }
         }
     }
 }
@@ -366,7 +524,10 @@ void CSWGuiStore::SellItem(CSWSItem* pItem)
             m_nGold += GetItemSellValue(pItem);
             pCreature->SetGold(m_nGold);
             if (pItem->m_nStackSize > 1)
-                pStore->AcquireItem(pItem->SplitItem(1));
+            {
+                CSWSItem* pSplitItem = pItem->SplitItem(1);
+                pStore->AcquireItem(pSplitItem);
+            }
             else
             {
                 pInventory->RemoveItem(pItem);

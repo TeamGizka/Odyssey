@@ -108,7 +108,7 @@ CSWGuiCreateItemMenu::CSWGuiCreateItemMenu(CSWGuiManager* pManager)
     int nBaseItems;
     int i;
 
-    StartLoadFromLayout("debug");
+    StartLoadFromLayout("debug_p");
     InitControl(m_lbOptions, "LB_OPTIONS", 1);
     InitControl(m_lblBuild, "LBL_BUILD", 1);
     StopLoadFromLayout();

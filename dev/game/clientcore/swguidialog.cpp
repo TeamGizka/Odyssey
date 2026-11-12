@@ -16,6 +16,9 @@
 #include "twodimarray.h"
 #include "clientexoappinternal.h"
 
+extern int g_Letterbox_top;
+extern int g_Letterbox_bottom;
+
 static inline void SwguidialogTrace2();
 static inline void SwguidialogTrace1();
 #define SWGUIDIALOG_TRACE() SwguidialogTrace1()
@@ -58,11 +61,24 @@ void CSWGuiDialogComputer::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 #endif
 }
-// PC 0x0070B2A0
+// PC 0x0070E120
 CExoString CSWGuiDialogComputer::GetFullScreenBG()
 {
-    CExoString sBackground = CSWGuiManager::GetScreenResolutionString(
-        g_nScreenWidth, g_nScreenHeight);
+    CExoString sBackground("800x600");
+    if (g_nScreenWidth == 1024)
+    {
+        if (g_nScreenHeight == 768)
+            sBackground = "1024x768";
+    }
+    else if (g_nScreenWidth == 1280)
+    {
+        if (g_nScreenHeight == 960 || g_nScreenHeight == 1024)
+            sBackground = "1280x960";
+    }
+    else if (g_nScreenWidth == 1600 && g_nScreenHeight == 1200)
+    {
+        sBackground = "1600x1200";
+    }
 #ifndef _XBOX
     sBackground = sBackground +
         CSWGuiManager::FULLSCREEN_BGS[PC_BACKGROUND_SUFFIX_COMPUTER] +
@@ -259,9 +275,11 @@ void CSWGuiDialogLetterbox::SetExtentSpecial(CSWGuiExtent cExtent)
     {
     case POSITION_TOP:
         cExtent.m_nTop = 0;
+        g_Letterbox_top = cExtent.m_nHeight;
         break;
     case POSITION_BOTTOM:
         cExtent.m_nHeight = m_pManager->m_nHeight - cExtent.m_nTop;
+        g_Letterbox_bottom = cExtent.m_nTop;
         break;
     }
     if (m_bDone)
@@ -335,6 +353,7 @@ void CSWGuiDialogLetterbox::SetTop()
     m_cExtent.m_nWidth = pManager->m_nWidth;
     m_cExtent.m_nHeight = 0;
     m_nPosition = POSITION_TOP;
+    g_Letterbox_top = 0;
 }
 // PC 0x0070DA10
 void CSWGuiDialogLetterbox::SetBottom()
@@ -365,6 +384,7 @@ void CSWGuiDialogLetterbox::SetBottom()
     m_cExtent.m_nLeft = 0;
     m_cExtent.m_nWidth = pManager->m_nWidth;
     m_cExtent.m_nHeight = nBarHeight;
+    g_Letterbox_bottom = m_cExtent.m_nTop;
     m_nPosition = POSITION_BOTTOM;
 }
 // PC 0x0070DAB0
@@ -467,6 +487,7 @@ void CSWGuiDialogLetterbox::Draw(float fElapsed)
                 m_bDone = 1;
             }
             SetExtent(cExtent);
+            g_Letterbox_top = m_cExtent.m_nHeight;
         }
         else if (m_nPosition == POSITION_BOTTOM)
         {
@@ -485,6 +506,7 @@ void CSWGuiDialogLetterbox::Draw(float fElapsed)
                 cExtent = m_cTarget;
             }
             SetExtent(cExtent);
+            g_Letterbox_bottom = m_cExtent.m_nTop;
         }
     }
     CSWGuiPanel::Draw(fElapsed);
@@ -945,7 +967,7 @@ CSWGuiDialogComputerCamera::CSWGuiDialogComputerCamera(CSWGuiManager* pManager)
     StopLoadFromLayout();
 #else
     {
-        CResRef cLayout("computercamera");
+        CResRef cLayout("computercam_p");
         StartLoadFromLayout(cLayout);
     }
 
@@ -1004,7 +1026,6 @@ void CSWGuiDialog::SetReplies(int nCount, CExoString* pReplies,
         nCount = MAX_REPLIES;
     }
     m_nReplyCount = nCount;
-    int nNumber = 0;
     for (int i = 0; i < m_nReplyCount; i++)
     {
         if (!pReplies[i].IsEmpty())
@@ -1013,7 +1034,7 @@ void CSWGuiDialog::SetReplies(int nCount, CExoString* pReplies,
             m_lblReply[i].m_cText.m_cParams.SetText(pReplies[i]);
 #else
             CExoString sNumber;
-            sNumber.Format("%d. ", ++nNumber);
+            sNumber.Format("%d. ", i + 1);
             m_lblReply[i].m_cText.m_cParams.SetText(sNumber + pReplies[i]);
 #endif
 #ifndef _XBOX

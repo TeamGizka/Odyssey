@@ -14,6 +14,7 @@ static inline void SwguiDebugLoadModuleTrace1();
 CSWGuiControl* CSWGuiLoadModuleDebugMenu::CreateOption(
     const CExoString& sText, PFNGUIEVENT pHandler, CSWGuiButton* pPrototype)
 {
+#ifdef _XBOX
     CSWGuiExtent cExtent;
     CSWGuiButton* pButton;
     CSWGuiBorderParams* pBorder;
@@ -44,6 +45,15 @@ CSWGuiControl* CSWGuiLoadModuleDebugMenu::CreateOption(
     pButton->AddEvent(45, this, pHandler);
     pButton->AddEvent(GUIEVENT_ACTIVATE, this, pHandler);
     return pButton;
+#else
+    CSWGuiExtent cExtent = pPrototype->m_cExtent;
+    CSWGuiButton* pButton = new CSWGuiButton;
+    pButton->Initialize(cExtent, pPrototype);
+    pButton->m_cText.m_cParams.SetText(sText);
+    pButton->AddEvent(45, this, pHandler);
+    pButton->AddEvent(GUIEVENT_ACTIVATE, this, pHandler);
+    return pButton;
+#endif
 }
 // PC 0x0073DDC0
 void CSWGuiLoadModuleDebugMenu::Back()
@@ -74,7 +84,7 @@ CSWGuiLoadModuleDebugMenu::CSWGuiLoadModuleDebugMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
     m_nSelection = 0;
-    StartLoadFromLayout("debug");
+    StartLoadFromLayout("debug_p");
     InitControl(m_CSWGuiListBox_64, "LB_OPTIONS", 1);
     InitControl(m_lblBuild, "LBL_BUILD", 1);
     StopLoadFromLayout();

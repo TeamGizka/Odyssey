@@ -27,7 +27,7 @@ CSWGuiFeatsCharGen::CSWGuiFeatsCharGen(CSWGuiManager* pManager,
     StartLoadFromLayout("FTCHRGEN");
 #else
     {
-        CResRef cLayout("FTCHRGEN");
+        CResRef cLayout("FTCHRGEN_p");
         StartLoadFromLayout(cLayout);
     }
 #endif
@@ -56,6 +56,8 @@ CSWGuiFeatsCharGen::CSWGuiFeatsCharGen(CSWGuiManager* pManager,
     InitControl(m_btnRecommended, "BTN_RECOMMENDED", 1);
     InitControl(m_btnBack, "BTN_BACK", 1);
     InitControl(m_btnSelect, "BTN_SELECT", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
 #endif
     StopLoadFromLayout();
     CExoString sFeat = g_pTlkTable->GetSimpleString(STRREF_FEAT);
@@ -139,6 +141,12 @@ void CSWGuiFeatsCharGen::ShowGranted(CSWGuiControl* pControl)
 void CSWGuiFeatsCharGen::HandleCancelButton()
 {
     SWGUIFEATSCHARGEN_TRACE();
+#ifndef _XBOX
+    if (m_pCreature != 0 && m_pCreature->m_pStats != 0 && !m_bLevelUp)
+    {
+        m_pCreature->m_pStats->ClearFeats();
+    }
+#endif
     if (m_pParentPanel != NULL)
     {
         m_pManager->PopModalPanel();
@@ -241,18 +249,18 @@ void CSWGuiFeatsCharGen::OnEnterFeat(unsigned short nFeat)
         {
             CSWGuiTextParams* pParams = &m_btnSelect.m_cText.m_cParams;
             pParams->SetText(m_sFeatUnavailableText);
-            pParams->SetColor(CGuiInGame::COLOR_BLUE);
+            pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
             m_btnSelect.m_cBorder.m_cParams.m_vColor =
-                CGuiInGame::ENABLED_ICON_COLOR;
+                CGuiInGame::COLOR_NEW_GREEN;
             break;
         }
     case FEAT_CHOSEN:
         {
             CSWGuiTextParams* pParams = &m_btnSelect.m_cText.m_cParams;
             pParams->SetText(m_sFeatLockedText);
-            pParams->SetColor(CGuiInGame::COLOR_BLUE);
+            pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
             m_btnSelect.m_cBorder.m_cParams.m_vColor =
-                CGuiInGame::ENABLED_ICON_COLOR;
+                CGuiInGame::COLOR_NEW_GREEN;
             break;
         }
     case FEAT_LOCKED:
@@ -260,7 +268,7 @@ void CSWGuiFeatsCharGen::OnEnterFeat(unsigned short nFeat)
         {
             CSWGuiTextParams* pParams = &m_btnSelect.m_cText.m_cParams;
             pParams->SetText(m_sFeatLockedText);
-            pParams->SetColor(CGuiInGame::DISABLED_TEXT);
+            pParams->SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
             m_btnSelect.m_cBorder.m_cParams.m_vColor =
                 CGuiInGame::DISABLED_ICON_COLOR;
             break;
@@ -269,7 +277,7 @@ void CSWGuiFeatsCharGen::OnEnterFeat(unsigned short nFeat)
         {
             CSWGuiTextParams* pParams = &m_btnSelect.m_cText.m_cParams;
             pParams->SetText(m_sFeatUnavailableText);
-            pParams->SetColor(CGuiInGame::DISABLED_TEXT);
+            pParams->SetDefaultColor(CGuiInGame::COLOR_NEW_GREEN);
             m_btnSelect.m_cBorder.m_cParams.m_vColor =
                 CGuiInGame::DISABLED_ICON_COLOR;
             break;
@@ -374,14 +382,33 @@ void CSWGuiFeatsCharGen::InitiateFeats()
     }
     for (int i = 0; i < (unsigned short)pStats->GetNumFeats(); i++)
     {
+#ifdef _XBOX
         m_lGranted.Add(pStats->GetFeat(i));
+#else
+        if (pStats->GetFeat(i) != CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS &&
+            pStats->GetFeat(i) != CSWFeat::FEAT_MINE_IMMUNITY)
+        {
+            m_lGranted.Add(pStats->GetFeat(i));
+        }
+#endif
     }
 
     m_bShowGrantedTutorial = 0;
     if (!m_bBonusFeatSelection)
     {
         CExoArrayList<unsigned long> lGranted;
+#ifdef _XBOX
         pStats->AddGrantedFeats(&lGranted);
+#else
+        if (!m_bLevelUp)
+        {
+            pStats->AddGrantedFeats(&lGranted, true);
+        }
+        else
+        {
+            pStats->AddGrantedFeats(&lGranted, false);
+        }
+#endif
         if (lGranted.num > 0)
         {
             for (int i = 0; i < lGranted.num; i++)

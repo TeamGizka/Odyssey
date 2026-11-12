@@ -28,6 +28,9 @@ public:
     void PortraitChanged();
     void AbilitiesChanged();
     void ClearAbilities();
+#ifndef _XBOX
+    void ClearFeats();
+#endif
     void NameChanged();
     void BeginPlayGame();
 
@@ -69,7 +72,7 @@ public:
     CSWGuiLabel m_lblPortBorder;
     CSWGuiLabel m_lblVitName;
     CSWGuiLabel m_lblDefName;
-    CSWGuiLabel m_alblBar[1];
+    CSWGuiLabel m_lblBar;
 #endif
 #ifdef _XBOX
     CSWGuiLabel m_lblA;

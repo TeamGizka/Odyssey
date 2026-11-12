@@ -77,7 +77,7 @@ CSWGuiInGameCredits::CSWGuiInGameCredits(CSWGuiManager* pManager,  // PC 0x006E8
     m_bPositioned = 1;
 #endif
     {
-        CResRef cLayout("credits");
+        CResRef cLayout("credits_p");
         StartLoadFromLayout(cLayout);
     }
     InitControl(m_lbxCredits, "LB_CREDITS", 1);

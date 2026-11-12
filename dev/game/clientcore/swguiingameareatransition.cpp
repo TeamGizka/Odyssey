@@ -17,7 +17,7 @@ CSWGuiInGameAreaTransition::CSWGuiInGameAreaTransition(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
 #ifndef _XBOX
-    { CResRef cLayout("areatransition"); StartLoadFromLayout(cLayout); }
+    { CResRef cLayout("areatrans_p"); StartLoadFromLayout(cLayout); }
 #else
     StartLoadFromLayout("areatransition");
 #endif
@@ -29,8 +29,35 @@ CSWGuiInGameAreaTransition::CSWGuiInGameAreaTransition(CSWGuiManager* pManager)
     m_v460 = m_lblIcon.m_cBorder.m_cParams.m_vColor;
     m_v46C = m_lblDescription.m_cText.m_cParams.m_vColor;
 
+    CSWGuiExtent cExtent = m_cExtent;
     m_oidTransitionObject = OBJECT_INVALID;
-    m_bCenterHorizontal = 1; m_bCenterVertical = 0;
+    cExtent.m_nLeft =
+        g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nWidth / 2 - AREA_TRANSITION_WIDTH / 2;
+    cExtent.m_nWidth = AREA_TRANSITION_WIDTH;
+    cExtent.m_nHeight = AREA_TRANSITION_HEIGHT;
+    SetExtent(cExtent);
+
+    cExtent = m_lblIcon.m_cExtent;
+    cExtent.m_nHeight = 50;
+    cExtent.m_nWidth = 50;
+    cExtent.m_nTop = 27;
+    cExtent.m_nLeft = 175;
+    m_lblIcon.SetExtent(cExtent);
+
+    cExtent = m_lblDescription.m_cExtent;
+    cExtent.m_nHeight = 20;
+    cExtent.m_nWidth = 348;
+    cExtent.m_nTop = 6;
+    cExtent.m_nLeft = 26;
+    m_lblDescription.SetExtent(cExtent);
+
+    cExtent = m_lblTextBackground.m_cExtent;
+    cExtent.m_nHeight = 32;
+    cExtent.m_nWidth = AREA_TRANSITION_WIDTH;
+    cExtent.m_nTop = 0;
+    cExtent.m_nLeft = 0;
+    m_lblTextBackground.SetExtent(cExtent);
+
     m_nDefaultTop = m_cExtent.m_nTop;
 }
 // PC 0x00734400

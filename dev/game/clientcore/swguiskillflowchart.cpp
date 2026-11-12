@@ -1,8 +1,11 @@
 #include "swguiskillflowchart.h"
 #include "guiingame.h"
+#include "appmanager.h"
+#include "clientexoapp.h"
 #include "exoresman.h"
 #include "nwccreaturestats.h"
 #include "nwscreaturestats.h"
+#include "nwsobject.h"
 #include "nwrules.h"
 #include "nwfeat.h"
 
@@ -66,14 +69,23 @@ CSWGuiSkillFlow::CSWGuiSkillFlow()
     }
 }
 
+// PC 0x0073AC90
 void CSWGuiSkillFlow::SetExtent(const CSWGuiExtent& cExtent)
 {
     SwguiskillflowchartTrace1();
+    CSWGuiExtent cFlowExtent = cExtent;
+    float fScale = 1.0f;
+    if (g_pAppManager->m_pClientExoApp->GetSWGuiManager() != NULL)
+    {
+        fScale = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
+    }
+    cFlowExtent.m_nWidth = (int)(fScale * FLOW_WIDTH);
+    cFlowExtent.m_nHeight = FLOW_HEIGHT;
     CSWGuiExtent cSkillExtent;
-    cSkillExtent.m_nLeft = cExtent.m_nLeft;
-    cSkillExtent.m_nTop = cExtent.m_nTop;
-    cSkillExtent.m_nWidth = cExtent.m_nHeight;
-    cSkillExtent.m_nHeight = cExtent.m_nHeight;
+    cSkillExtent.m_nLeft = cFlowExtent.m_nLeft;
+    cSkillExtent.m_nTop = cFlowExtent.m_nTop + (cFlowExtent.m_nHeight - SKILL_ICON_SIZE) / 2;
+    cSkillExtent.m_nHeight = SKILL_ICON_SIZE;
+    cSkillExtent.m_nWidth = SKILL_ICON_SIZE;
     CSWGuiExtent cArrowExtent;
     cArrowExtent.m_nLeft = 0;
     cArrowExtent.m_nTop = 0;
@@ -84,20 +96,20 @@ void CSWGuiSkillFlow::SetExtent(const CSWGuiExtent& cExtent)
     m_aSkills[0].m_cRightImage.SetExtent(cSkillExtent);
 
     cSkillExtent.m_nLeft =
-        cExtent.m_nLeft + (cExtent.m_nWidth - cExtent.m_nHeight) / 2;
+        cFlowExtent.m_nLeft + (cFlowExtent.m_nWidth - cFlowExtent.m_nHeight) / 2;
     m_aSkills[1].m_cRightImage.SetExtent(cSkillExtent);
 
     cSkillExtent.m_nLeft =
-        cExtent.m_nLeft + cExtent.m_nWidth - cExtent.m_nHeight;
+        cFlowExtent.m_nLeft + cFlowExtent.m_nWidth - cFlowExtent.m_nHeight;
     m_aSkills[2].m_cRightImage.SetExtent(cSkillExtent);
 
-    cArrowExtent.m_nTop = cExtent.m_nTop + (cExtent.m_nHeight - 32) / 2;
+    cArrowExtent.m_nTop = cFlowExtent.m_nTop + (cFlowExtent.m_nHeight - 32) / 2;
     cArrowExtent.m_nLeft =
-        cExtent.m_nLeft + (cExtent.m_nWidth + cExtent.m_nHeight) / 4 - 16;
+        cFlowExtent.m_nLeft + (cFlowExtent.m_nWidth + cFlowExtent.m_nHeight) / 4 - 16;
     m_aArrows[0].SetExtent(cArrowExtent);
 
     cArrowExtent.m_nLeft =
-        cExtent.m_nLeft + (3 * cExtent.m_nWidth - cExtent.m_nHeight) / 4 - 16;
+        cFlowExtent.m_nLeft + (3 * cFlowExtent.m_nWidth - cFlowExtent.m_nHeight) / 4 - 16;
     m_aArrows[1].SetExtent(cArrowExtent);
 
     for (i = 0; i < 3; i++)
@@ -105,7 +117,7 @@ void CSWGuiSkillFlow::SetExtent(const CSWGuiExtent& cExtent)
         m_aSkills[i].m_cLeftImage.SetExtent(
             m_aSkills[i].m_cRightImage.m_cExtent);
     }
-    m_cExtent = cExtent;
+    m_cExtent = cFlowExtent;
 }
 // PC 0x0073B2E0
 void CSWGuiSkillFlow::SetSkillSelected(unsigned char nSkill, int bSelected)
@@ -138,11 +150,19 @@ void CSWGuiSkillFlowChart::BuildSortedPowerList(
     CSWSpell* pSpell;
     CSWSpell* pOther;
 
+    CExoArrayList<unsigned long>* pCachedPowers =
+        &g_pAppManager->m_pClientExoApp->GetInGameGui()->m_a1048;
+    if (pCachedPowers != NULL && pCachedPowers->num > 0)
+    {
+        lstPowers = *pCachedPowers;
+        return;
+    }
     for (nSpell = 0; nSpell < g_pRules->m_pSpellArray->m_nNumSpells; nSpell++)
     {
         pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
         if (pSpell == NULL ||
-            pSpell->m_nUserType != CSWSpell::USER_TYPE_FORCE_POWER ||
+            (pSpell->m_nUserType != CSWSpell::USER_TYPE_FORCE_POWER &&
+             pSpell->m_nUserType != USER_TYPE_FORM) ||
             pSpell->m_nNameStrRef == 0)
         {
             continue;
@@ -186,11 +206,13 @@ void CSWGuiSkillFlowChart::BuildSortedPowerList(
             lstPowers.Add(nSpell);
         }
     }
+    CGuiInGame* pInGameGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
+    pInGameGui->m_a1048 = lstPowers;
 }
 // PC 0x0073B970
 void CSWGuiSkillFlowChart::AddPowerSet(unsigned long nPower1,
                                       unsigned long nPower2,
-                                      unsigned long nPower3)
+                                      unsigned long nPower3, int bSecret)
 {
     CResRef resIcon;
     CSWGuiSkillFlow* pFlow = new CSWGuiSkillFlow;
@@ -199,7 +221,9 @@ void CSWGuiSkillFlowChart::AddPowerSet(unsigned long nPower1,
     for (int i = 0; i < 3; i++)
     {
         CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(aPowers[i]);
-        if (pSpell != NULL)
+        if (bSecret)
+            resIcon = "ip_secret";
+        else if (pSpell != NULL)
             resIcon = pSpell->m_resIcon;
         else
             resIcon = "";
@@ -209,7 +233,7 @@ void CSWGuiSkillFlowChart::AddPowerSet(unsigned long nPower1,
         CSWGuiExtent cExtent;
         cExtent.m_nLeft = 0;
         cExtent.m_nTop = 0;
-        cExtent.m_nWidth = 242;
+        cExtent.m_nWidth = CSWGuiSkillFlow::FLOW_WIDTH;
         cExtent.m_nHeight = 40;
         pFlow->SetExtent(cExtent);
     }
@@ -219,10 +243,19 @@ void CSWGuiSkillFlowChart::AddPowerSet(unsigned long nPower1,
 void CSWGuiSkillFlowChart::BuildSortedFeatList(
     CExoArrayList<unsigned short>& cFeats)
 {
+    CExoArrayList<unsigned short>* pCachedFeats =
+        &g_pAppManager->m_pClientExoApp->GetInGameGui()->m_a103C;
+    if (pCachedFeats != NULL && pCachedFeats->num > 0)
+    {
+        cFeats = *pCachedFeats;
+        return;
+    }
     for (int nFeat = 0; nFeat < g_pRules->m_nNumFeats; nFeat++)
     {
         CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
-        if (pFeat != NULL && pFeat->m_nNameStrRef != 0)
+        if (nFeat != CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS &&
+            nFeat != CSWFeat::FEAT_MINE_IMMUNITY &&
+            pFeat != NULL && pFeat->m_nNameStrRef != 0)
         {
             int nDepth = pFeat->m_nPrereqFeat1 == CSWFeat::FEAT_INVALID ? 0 :
                 (pFeat->m_nPrereqFeat2 == CSWFeat::FEAT_INVALID ? 1 : 2);
@@ -252,6 +285,8 @@ void CSWGuiSkillFlowChart::BuildSortedFeatList(
             }
         }
     }
+    CGuiInGame* pInGameGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
+    pInGameGui->m_a103C = cFeats;
 }
 
 #include "nwspell.h"
@@ -277,7 +312,7 @@ void CSWGuiSkillFlowChart::AddFeatSet(unsigned long nFeat1,
         CSWGuiExtent cExtent;
         cExtent.m_nLeft = 0;
         cExtent.m_nTop = 0;
-        cExtent.m_nWidth = 262;
+        cExtent.m_nWidth = CSWGuiSkillFlow::FLOW_WIDTH;
         cExtent.m_nHeight = 40;
         pFlow->SetExtent(cExtent);
     }
@@ -411,7 +446,7 @@ CSWGuiSkillInfoBox::CSWGuiSkillInfoBox(CSWGuiManager* pManager)
     StartLoadFromLayout("skillinfo");
 #else
     {
-        CResRef resLayout("skillinfo");
+        CResRef resLayout("skillinfo_p");
         StartLoadFromLayout(resLayout);
     }
 #endif
@@ -460,28 +495,38 @@ void CSWGuiSkillFlow::SetSkillStatus(unsigned char nSkill, unsigned char nStatus
     {
     case STATUS_GRANTED:
     case STATUS_GRANTED_ALTERNATE:
-        m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_GREEN;
+        m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_TEXT;
+        if (m_aSkills[nSkill].m_bSelected)
+            m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_TEXT;
+        else
+            m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_TEXT;
         break;
     case STATUS_CHOSEN:
-        m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_GREEN;
+        m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
         break;
     case STATUS_UNAVAILABLE:
         m_aSkills[nSkill].m_cLeftImage.m_cParams.m_fAlpha = 0.25f;
-        m_aSkills[nSkill].m_cRightImage.m_cParams.m_fAlpha = 0.25f;
         m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_RED;
         if (nSkill > 0)
             m_aArrows[nSkill - 1].m_cParams.m_fAlpha = 0.0f;
         break;
     case STATUS_YELLOW_DIM_ARROW:
-        m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+        m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_BONUS;
         if (nSkill > 0)
             m_aArrows[nSkill - 1].m_cParams.m_fAlpha = 0.25f;
         break;
     case STATUS_AVAILABLE:
         m_aSkills[nSkill].m_cLeftImage.m_cParams.m_fAlpha = 0.25f;
-
+        if (m_aSkills[nSkill].m_bSelected)
+            m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
+        else
+            m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
+        break;
     case STATUS_YELLOW:
-        m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+        if (m_aSkills[nSkill].m_bSelected)
+            m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+        else
+            m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
         break;
     }
     if (m_aSkills[nSkill].m_bSelected)
@@ -603,45 +648,69 @@ void CSWGuiSkillFlowChart::CreatePowerChart(CSWSCreatureStats* pStats,
             bContinue = 0;
             continue;
         }
-        if (!bAllPowers && !pStats->HasSpell(0, aPowers[i], 0))
+        int bAvailable = 1;
+        if (bAllPowers)
         {
-            continue;
-        }
-
-        nNextPower = CSWGuiSkillFlow::SKILL_INVALID;
-        nAltPower = CSWGuiSkillFlow::SKILL_INVALID;
-        for (j = i + 1; j < aPowers.num &&
-                        (nNextPower == CSWGuiSkillFlow::SKILL_INVALID ||
-                         nAltPower == CSWGuiSkillFlow::SKILL_INVALID); j++)
-        {
-            if (!bAllPowers && !pStats->HasSpell(0, aPowers[j], 1))
+            if (pSpell->GetSpellLevel(pStats->GetClass(pStats->GetNumClasses() - 1)) ==
+                CSWSpell::SPELL_LEVEL_INVALID)
             {
-                continue;
+                bAvailable = 0;
             }
-            unsigned long nNext = aPowers[j];
-            pNextSpell = g_pRules->m_pSpellArray->GetSpell(nNext);
-            if (pNextSpell != NULL)
+        }
+        if ((bAllPowers && bAvailable) ||
+            (!bAllPowers && pStats->HasSpell(0, aPowers[i], 0)))
+        {
+            nNextPower = CSWGuiSkillFlow::SKILL_INVALID;
+            nAltPower = CSWGuiSkillFlow::SKILL_INVALID;
+            for (j = i + 1; j < aPowers.num &&
+                            (nNextPower == CSWGuiSkillFlow::SKILL_INVALID ||
+                             nAltPower == CSWGuiSkillFlow::SKILL_INVALID); j++)
             {
-                int nPowerType = pSpell->GetSubRadialSpell(0) / CSWSpell::SUBRADIAL_TYPE_SCALE;
-                if (pNextSpell->GetSubRadialSpell(0) / CSWSpell::SUBRADIAL_TYPE_SCALE != nPowerType)
+                if (!bAllPowers && !pStats->HasSpell(0, aPowers[j], 0))
                 {
                     continue;
                 }
-                if (pNextSpell->GetSlot(0) != pSpell->GetSlot(0))
+                unsigned long nNext = aPowers[j];
+                pNextSpell = g_pRules->m_pSpellArray->GetSpell(nNext);
+                if (pNextSpell != NULL)
                 {
-                    continue;
-                }
-                if (pNextSpell->GetPriority(0) == CSWSpell::POWER_PRIORITY_FIRST_UPGRADE)
-                {
-                    nNextPower = aPowers[j];
-                }
-                else if (pNextSpell->GetPriority(0) == CSWSpell::POWER_PRIORITY_SECOND_UPGRADE)
-                {
-                    nAltPower = aPowers[j];
+                    int nPowerType = pSpell->GetSubRadialSpell(0) / CSWSpell::SUBRADIAL_TYPE_SCALE;
+                    if (pNextSpell->GetSubRadialSpell(0) / CSWSpell::SUBRADIAL_TYPE_SCALE != nPowerType)
+                    {
+                        continue;
+                    }
+                    if (pNextSpell->GetSlot(0) != pSpell->GetSlot(0))
+                    {
+                        continue;
+                    }
+                    if (pNextSpell->GetPriority(0) == CSWSpell::POWER_PRIORITY_FIRST_UPGRADE)
+                    {
+                        nNextPower = aPowers[j];
+                    }
+                    else if (pNextSpell->GetPriority(0) == CSWSpell::POWER_PRIORITY_SECOND_UPGRADE)
+                    {
+                        nAltPower = aPowers[j];
+                    }
                 }
             }
+            AddPowerSet(aPowers[i], nNextPower, nAltPower, 0);
         }
-        AddPowerSet(aPowers[i], nNextPower, nAltPower);
+        else
+        {
+            if (pStats->m_pCreature->m_bPlayerCreated && !bAllPowers && bAvailable &&
+                !pStats->HasSpell(0, aPowers[i], 0) &&
+                (aPowers[i] == FORCE_POWER_FORCE_CRUSH ||
+                 aPowers[i] == FORCE_POWER_PRECOGNITION ||
+                 aPowers[i] == CSWSpell::FORCE_POWER_BATTLE_PRECOGNITION ||
+                 aPowers[i] == FORCE_POWER_FORCE_ENLIGHTENMENT ||
+                 aPowers[i] == CSWSpell::FORCE_POWER_BEAST_TRICK ||
+                 aPowers[i] == FORCE_POWER_BREATH_CONTROL ||
+                 aPowers[i] == FORCE_POWER_FORCE_SIGHT))
+            {
+                AddPowerSet(aPowers[i], CSWGuiSkillFlow::SKILL_INVALID,
+                            CSWGuiSkillFlow::SKILL_INVALID, 1);
+            }
+        }
     }
 }
 // PC 0x0073C580
@@ -667,6 +736,11 @@ void CSWGuiSkillFlowChart::CreateFeatChart(CSWSCreatureStats* pStats)
     for (i = 0; bContinue && i < aFeats.num; i++)
     {
         pFeat = g_pRules->GetFeat(aFeats[i]);
+        if (aFeats[i] == CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS ||
+            aFeats[i] == CSWFeat::FEAT_MINE_IMMUNITY)
+        {
+            continue;
+        }
         if (pFeat == NULL)
         {
             continue;
@@ -729,6 +803,7 @@ void CSWGuiSkillFlowChart::CreateFeatChart(CSWCCreatureStats* pStats,
     unsigned long nAltFeat;
     unsigned char nLevel;
     int bContinue;
+    int bCompanionFeat;
     int i;
     int j;
 
@@ -738,9 +813,15 @@ void CSWGuiSkillFlowChart::CreateFeatChart(CSWCCreatureStats* pStats,
     BuildSortedFeatList(aFeats);
 
     bContinue = 1;
+    bCompanionFeat = 0;
     for (i = 0; bContinue && i < aFeats.num; i++)
     {
         pFeat = g_pRules->GetFeat(aFeats[i]);
+        if (aFeats[i] == CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS ||
+            aFeats[i] == CSWFeat::FEAT_MINE_IMMUNITY)
+        {
+            continue;
+        }
         if (pFeat == NULL)
         {
             continue;
@@ -755,14 +836,57 @@ void CSWGuiSkillFlowChart::CreateFeatChart(CSWCCreatureStats* pStats,
         {
             continue;
         }
-        if (!(pClass->IsGrantedFeat(aFeats[i], nLevel) &&
-              pStats->HasFeat(aFeats[i])))
+        int bSelectable = 0;
+        if ((pClass->IsGrantedFeat(aFeats[i], nLevel) &&
+             pStats->HasFeat(aFeats[i])) ||
+            (bBonusFeats && pClass->IsBonusFeat(aFeats[i])) ||
+            (!bBonusFeats && pClass->IsNormalFeat(aFeats[i])))
         {
-            if (!((bBonusFeats && pClass->IsBonusFeat(aFeats[i])) ||
-                  (!bBonusFeats && pClass->IsNormalFeat(aFeats[i]))))
+            bSelectable = 1;
+        }
+        unsigned char nCompanionLevel = 0;
+        if (pStats->GetTag().CompareNoCase("handmaiden"))
+        {
+            nCompanionLevel = pFeat->m_bHandmaiden;
+        }
+        else if (pStats->GetTag().CompareNoCase("baodur"))
+        {
+            if (pFeat->m_bBaoDur == 0xff)
             {
                 continue;
             }
+            nCompanionLevel = pFeat->m_bBaoDur;
+        }
+        else if (pStats->GetTag().CompareNoCase("kreia"))
+        {
+            if (pFeat->m_bKreia == 0xff)
+            {
+                continue;
+            }
+        }
+        else if (pStats->GetTag().CompareNoCase("hanharr"))
+        {
+            nCompanionLevel = pFeat->m_bHanharr;
+        }
+        else if (pStats->GetTag().CompareNoCase("hk47"))
+        {
+            nCompanionLevel = pFeat->m_bHK47;
+        }
+        else if (pStats->GetTag().CompareNoCase("g0t0"))
+        {
+            nCompanionLevel = pFeat->m_bG0T0;
+        }
+        else if (pStats->GetTag().CompareNoCase("atton"))
+        {
+            nCompanionLevel = pFeat->m_bAtton;
+        }
+        if (nCompanionLevel > 0)
+        {
+            bCompanionFeat = 1;
+        }
+        else if (!bSelectable)
+        {
+            continue;
         }
 
         nNextFeat = CSWGuiSkillFlow::SKILL_INVALID;
@@ -772,6 +896,17 @@ void CSWGuiSkillFlowChart::CreateFeatChart(CSWCCreatureStats* pStats,
              j++)
         {
             pNextFeat = g_pRules->GetFeat(aFeats[j]);
+            int bExcluded = 0;
+            if (pStats->GetTag().CompareNoCase("baodur") &&
+                pNextFeat->m_bBaoDur == 0xff)
+            {
+                bExcluded = 1;
+            }
+            else if (pStats->GetTag().CompareNoCase("kreia") &&
+                     pNextFeat->m_bKreia == 0xff)
+            {
+                bExcluded = 1;
+            }
             if (pNextFeat != NULL)
             {
                 unsigned short nPrereqFeat = pNextFeat->m_nPrereqFeat1;
@@ -780,15 +915,21 @@ void CSWGuiSkillFlowChart::CreateFeatChart(CSWCCreatureStats* pStats,
                     continue;
                 }
                 if (pStats->HasFeat(aFeats[j]) ||
-                    pClass->IsFeatUseable(aFeats[j]))
+                    pClass->IsFeatUseable(aFeats[j]) || bCompanionFeat)
                 {
                     if (pNextFeat->m_nPrereqFeat2 == CSWFeat::FEAT_INVALID)
                     {
-                        nNextFeat = aFeats[j];
+                        if (!bExcluded)
+                        {
+                            nNextFeat = aFeats[j];
+                        }
                     }
                     else
                     {
-                        nAltFeat = aFeats[j];
+                        if (!bExcluded)
+                        {
+                            nAltFeat = aFeats[j];
+                        }
                     }
                 }
             }
@@ -829,11 +970,11 @@ void CSWGuiSkillInfoBox::HandleInputEvent(int nEvent, int nState)
         switch (nEvent)
         {
         case 39:
-        case 40:
         case 45:
         case 46:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
             SetModal(0);
+            m_pManager->PopModalPanel();
             if (m_pCallbackObject != NULL && m_pCallback != NULL)
             {
                 (m_pCallbackObject->*m_pCallback)(NULL);
@@ -842,6 +983,18 @@ void CSWGuiSkillInfoBox::HandleInputEvent(int nEvent, int nState)
         }
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
+// PC 0x0073B180
+void CSWGuiSkillInfoBox::SetCallback(CSWGuiObject* pObject, CSWGuiHandler pfnCallback)
+{
+    m_pCallback = pfnCallback;
+    m_pCallbackObject = pObject;
+}
+// PC 0x0073B1A0
+void CSWGuiSkillInfoBox::OnPanelRemoved()
+{
+    m_pCallback = NULL;
+    m_pCallbackObject = NULL;
 }
 
 static inline void SwguiskillflowchartTrace3()

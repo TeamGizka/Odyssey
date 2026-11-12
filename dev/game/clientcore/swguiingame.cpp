@@ -137,13 +137,13 @@ void CSWGuiStatusSummary::HandleLevelUpDLG()
         char bFired = 0;
         {
             CExoString sVariable("000_Level_Dlg_Fired");
-            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->GetValueNumber(sVariable, bFired);
+            g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(sVariable, bFired);
         }
         if (!bFired)
         {
             {
                 CExoString sVariable("000_Level_Dlg_Fired");
-                g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(sVariable, 1);
+                g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(sVariable, 1);
             }
             CExoString sScript("k_level_dlg");
             g_pVirtualMachine->RunScript(&sScript, 0, 0);
@@ -453,7 +453,7 @@ CSWGuiInGameMenu::CSWGuiInGameMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
     SwguiingameTrace2();
-    StartLoadFromLayout("top");
+    StartLoadFromLayout("top_p");
     InitControl(m_LblhEqu, "LBLH_EQU", 1);
     InitControl(m_LblhInv, "LBLH_INV", 1);
     InitControl(m_LblhCha, "LBLH_CHA", 1);
@@ -2075,7 +2075,7 @@ CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager)
     m_bHideButtons = 0;
     m_bHasIcon = 0;
     m_n9BC = 0;
-    StartLoadFromLayout("confirm");
+    StartLoadFromLayout("confirm_p");
 #ifdef _XBOX
     InitControl(m_lblA, "LBL_A", 1);
     InitControl(m_lblOk, "LBL_OK", 1);

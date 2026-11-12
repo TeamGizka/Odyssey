@@ -225,7 +225,7 @@ int CSWGuiTutorialBox::SetNextMessage()
     CExoString sColumn;
     CExoString sIconResRef;
     unsigned long nStrRef = 0;
-    sColumn.Format("Message%i", (unsigned char)m_nMessageIndex);
+    sColumn.Format("Message_PC%i", (unsigned char)m_nMessageIndex);
     ++m_nMessageIndex;
     CTwoDimArrays* p2DArrays = g_pRules->Get2DArrays();
     EXOXBOXASSERT(p2DArrays->m_pTutorial);
@@ -233,7 +233,7 @@ int CSWGuiTutorialBox::SetNextMessage()
     if (pTutorial->GetINTEntry(m_nTutorialReason, sColumn, (int*)&nStrRef) != 0)
     {
         int bFound;
-        sColumn.Format("Message%i", (unsigned char)m_nMessageIndex);
+        sColumn.Format("Message_PC%i", (unsigned char)m_nMessageIndex);
         int nStrRef2;
         p2DArrays = g_pRules->Get2DArrays();
         EXOXBOXASSERT(p2DArrays->m_pTutorial);
@@ -256,7 +256,25 @@ int CSWGuiTutorialBox::SetNextMessage()
                 m_nTutorialReason, sIconColumn, &sIconResRef);
         }
 #ifndef _XBOX
-        if (bFound != 0) { CResRef cIcon(sIconResRef); SetIcon(cIcon); }
+        if (bFound != 0 &&
+            !sIconResRef.CompareNoCase("WHITEBUTTON") &&
+            !sIconResRef.CompareNoCase("STARTBUTTON") &&
+            !sIconResRef.CompareNoCase("XBUTTON") &&
+            !sIconResRef.CompareNoCase("YBUTTON") &&
+            !sIconResRef.CompareNoCase("Abutton") &&
+            !sIconResRef.CompareNoCase("Backbutton") &&
+            !sIconResRef.CompareNoCase("Bbutton") &&
+            !sIconResRef.CompareNoCase("Blbutton") &&
+            !sIconResRef.CompareNoCase("Whbutton") &&
+            !sIconResRef.CompareNoCase("Xbutton") &&
+            !sIconResRef.CompareNoCase("Ybutton") &&
+            !sIconResRef.CompareNoCase("uibut_Start") &&
+            !sIconResRef.CompareNoCase("uibut_X") &&
+            !sIconResRef.CompareNoCase("uibut_Y"))
+        {
+            CResRef cIcon(sIconResRef);
+            SetIcon(cIcon);
+        }
 #else
         if (bFound != 0) SetIcon(sIconResRef);
 #endif

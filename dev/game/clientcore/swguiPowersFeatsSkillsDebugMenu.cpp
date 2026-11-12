@@ -275,7 +275,7 @@ CSWGuiPowersFeatsSkillsDebugMenu::CSWGuiPowersFeatsSkillsDebugMenu(
     CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-    StartLoadFromLayout("debug");
+    StartLoadFromLayout("debug_p");
     InitControl(m_lbOptions, "LB_OPTIONS", 1);
     InitControl(m_lblBuild, "LBL_BUILD", 1);
     StopLoadFromLayout();
@@ -347,6 +347,7 @@ void CSWGuiPowersFeatsSkillsDebugMenu::HandleInputEvent(int nEvent, int nState)
 CSWGuiControl* CSWGuiPowersFeatsSkillsDebugMenu::CreateOption(
     const CExoString& sText, PFNGUIEVENT pHandler, CSWGuiButton* pPrototype)
 {
+#ifdef _XBOX
     CSWGuiButton* pButton = NULL;
     CSWGuiExtent cExtent;
     CSWGuiBorderParams* pBorder;
@@ -375,6 +376,15 @@ CSWGuiControl* CSWGuiPowersFeatsSkillsDebugMenu::CreateOption(
     pButton->AddEvent(GUIEVENT_ACTIVATE, this, pHandler);
     pButton->AddEvent(45, this, pHandler);
     return pButton;
+#else
+    CSWGuiExtent cExtent = pPrototype->m_cExtent;
+    CSWGuiButton* pButton = new CSWGuiButton;
+    pButton->Initialize(cExtent, pPrototype);
+    pButton->m_cText.m_cParams.SetText(sText);
+    pButton->AddEvent(45, this, pHandler);
+    pButton->AddEvent(GUIEVENT_ACTIVATE, this, pHandler);
+    return pButton;
+#endif
 }
 
 static inline void SwguipowersfeatsskillsdebugmenuTrace2()

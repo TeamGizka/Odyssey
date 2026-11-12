@@ -712,7 +712,7 @@ public:
     int m_n1028;
     int m_n102C;
     CExoArrayList<CExoLocString> m_a1030;
-    CExoArrayList<unsigned long> m_a103C;
+    CExoArrayList<unsigned short> m_a103C;
     CExoArrayList<unsigned long> m_a1048;
 #endif
     void ShowGalaxyMapGui(int nPlanet);

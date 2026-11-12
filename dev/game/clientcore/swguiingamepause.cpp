@@ -5,6 +5,7 @@
 #include "clientexoapp.h"
 #include "guiingame.h"
 #include "swguiingamepause.h"
+#include "swminigame.h"
 #ifndef _XBOX
 void CSWGuiInGamePause::Draw(float fElapsed)
 {
@@ -40,7 +41,7 @@ void CSWGuiInGamePause::SetPauseReason(unsigned char nReason)  // PC 0x007206F0
         break;
 #else
     case 1:
-        nStrRef = 48212;
+        nStrRef = STRREF_ENEMY_SIGHTED;
         bShowPress = 0;
         break;
     case 5:
@@ -56,15 +57,15 @@ void CSWGuiInGamePause::SetPauseReason(unsigned char nReason)  // PC 0x007206F0
         nStrRef = 42397;
         break;
     case 10:
-        nStrRef = 48423;
+        nStrRef = STRREF_ACTION_QUEUED;
         break;
     case 11:
-        nStrRef = 49118;
+        nStrRef = STRREF_MINE_SIGHTED;
         bShowPress = 0;
         break;
 #endif
     default:
-        nStrRef = 1508;
+        nStrRef = STRREF_PAUSED;
         break;
     }
 
@@ -90,6 +91,10 @@ void CSWGuiInGamePause::SetPauseReason(unsigned char nReason)  // PC 0x007206F0
     if (bShowPress)
     {
         m_lblPress.SetEnabledFlag(1);
+        CExoString sPress =
+            g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_PRESS_TO_CONTINUE);
+        g_pTlkTable->ParseStr(sPress);
+        m_lblPress.m_cText.m_cParams.SetText(sPress);
         nHeight = m_lblPress.m_cText.GetIdealHeight();
         cExtent = m_lblPress.m_cExtent;
         cExtent.m_nHeight = nHeight;
@@ -113,10 +118,30 @@ void CSWGuiInGamePause::SetPauseReason(unsigned char nReason)  // PC 0x007206F0
 #ifndef _XBOX
 void CSWGuiInGamePause::OnPanelAdded()  // PC 0x00720970
 {
-    if (g_pAppManager->m_pClientExoApp->GetMiniGame() != 0)
+    CSWMiniGame* pMiniGame = g_pAppManager->GetClientExoApp()->GetMiniGame();
+    if (pMiniGame != 0)
     {
-        m_cExtent.m_nLeft = (m_pManager->m_nWidth - m_cExtent.m_nWidth) / 2;
-        m_cExtent.m_nTop = (m_pManager->m_nHeight - m_cExtent.m_nHeight) / 2;
+        int nAttachType = pMiniGame->m_nAttachType;
+        if (nAttachType != CSWMiniGame::ATTACH_PLAYER_MODEL)
+        {
+            m_cExtent.m_nLeft = (m_pManager->m_nWidth - m_cExtent.m_nWidth) / 2;
+            m_cExtent.m_nTop = (m_pManager->m_nHeight - m_cExtent.m_nHeight) / 2;
+            m_lblPauseReason.m_cText.m_cParams.SetStrRef(STRREF_PAUSED);
+            CExoString sPress =
+                g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_PRESS_TO_UNPAUSE_MINIGAME);
+            g_pTlkTable->ParseStr(sPress);
+            m_lblPress.m_cText.m_cParams.SetText(sPress);
+        }
+        else
+        {
+            m_cExtent.m_nLeft = (m_pManager->m_nWidth - m_cExtent.m_nWidth) / 2;
+            m_cExtent.m_nTop = (m_pManager->m_nHeight - m_cExtent.m_nHeight) / 2;
+            m_lblPauseReason.m_cText.m_cParams.SetStrRef(STRREF_PAUSED);
+            CExoString sPress =
+                g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_PRESS_TO_FORFEIT);
+            g_pTlkTable->ParseStr(sPress);
+            m_lblPress.m_cText.m_cParams.SetText(sPress);
+        }
     }
     else
     {
@@ -184,10 +209,30 @@ CSWGuiInGamePause::CSWGuiInGamePause(CSWGuiManager* pManager)
 
 void CSWGuiInGamePause::OnPanelAdded()
 {
-    if (g_pAppManager->m_pClientExoApp->GetMiniGame() != 0)
+    CSWMiniGame* pMiniGame = g_pAppManager->GetClientExoApp()->GetMiniGame();
+    if (pMiniGame != 0)
     {
-        m_cExtent.m_nLeft = (m_pManager->m_nWidth - m_cExtent.m_nWidth) / 2;
-        m_cExtent.m_nTop = (m_pManager->m_nHeight - m_cExtent.m_nHeight) / 2;
+        int nAttachType = pMiniGame->m_nAttachType;
+        if (nAttachType != CSWMiniGame::ATTACH_PLAYER_MODEL)
+        {
+            m_cExtent.m_nLeft = (m_pManager->m_nWidth - m_cExtent.m_nWidth) / 2;
+            m_cExtent.m_nTop = (m_pManager->m_nHeight - m_cExtent.m_nHeight) / 2;
+            m_lblPauseReason.m_cText.m_cParams.SetStrRef(STRREF_PAUSED);
+            CExoString sPress =
+                g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_PRESS_TO_UNPAUSE_MINIGAME);
+            g_pTlkTable->ParseStr(sPress);
+            m_lblPress.m_cText.m_cParams.SetText(sPress);
+        }
+        else
+        {
+            m_cExtent.m_nLeft = (m_pManager->m_nWidth - m_cExtent.m_nWidth) / 2;
+            m_cExtent.m_nTop = (m_pManager->m_nHeight - m_cExtent.m_nHeight) / 2;
+            m_lblPauseReason.m_cText.m_cParams.SetStrRef(STRREF_PAUSED);
+            CExoString sPress =
+                g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_PRESS_TO_FORFEIT);
+            g_pTlkTable->ParseStr(sPress);
+            m_lblPress.m_cText.m_cParams.SetText(sPress);
+        }
     }
     else
     {

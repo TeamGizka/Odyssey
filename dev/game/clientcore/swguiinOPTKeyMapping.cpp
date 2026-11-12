@@ -120,7 +120,7 @@ void CSWGuiKeyMapButton::SetEditing(int bEditing)
 {
     if (bEditing)
     {
-        m_btnKey.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+        m_btnKey.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
     }
     else
     {
@@ -183,7 +183,7 @@ CSWGuiInGameOptKeyMappings::CSWGuiInGameOptKeyMappings(CSWGuiManager* pManager)
     m_nFilter = FILTER_MOVE;
     m_pCaptureButton = 0;
 
-    StartLoadFromLayout("OPTKeyMapping");
+    StartLoadFromLayout("OPTKeyMapping_p");
     InitControl(m_lblTitle, "LBL_Title", 1);
     InitControl(m_btnDefault, "BTN_Default", 1);
     InitControl(m_btnAccept, "BTN_Accept", 1);
@@ -191,10 +191,13 @@ CSWGuiInGameOptKeyMappings::CSWGuiInGameOptKeyMappings(CSWGuiManager* pManager)
     InitControl(m_btnFilterMove, "BTN_Filter_Move", 1);
     InitControl(m_btnFilterGame, "BTN_Filter_Game", 1);
     InitControl(m_btnFilterMini, "BTN_Filter_Mini", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
     InitControl(m_lstEvents, "LST_EventList", 1);
     StopLoadFromLayout();
 
-    m_btnFilterMove.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
+    m_btnFilterMove.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
     FillListWithEvents();
     FillListBox(m_nFilter);
 
@@ -291,29 +294,29 @@ void CSWGuiInGameOptKeyMappings::FixFilterColors(CSWGuiControl* pControl)
     switch (m_nFilter)
     {
     case FILTER_MOVE:
-        m_btnFilterMove.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
+        m_btnFilterMove.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
         if (pControl == 0)
         {
-            m_btnFilterGame.m_cText.m_cParams.SetColor(CGuiInGame::STANDARD_BLUE);
-            m_btnFilterMini.m_cText.m_cParams.SetColor(CGuiInGame::STANDARD_BLUE);
+            m_btnFilterGame.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+            m_btnFilterMini.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
         }
         break;
 
     case FILTER_GAME:
-        m_btnFilterGame.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
+        m_btnFilterGame.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
         if (pControl == 0)
         {
-            m_btnFilterMove.m_cText.m_cParams.SetColor(CGuiInGame::STANDARD_BLUE);
-            m_btnFilterMini.m_cText.m_cParams.SetColor(CGuiInGame::STANDARD_BLUE);
+            m_btnFilterMove.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+            m_btnFilterMini.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
         }
         break;
 
     case FILTER_MINI:
-        m_btnFilterMini.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
+        m_btnFilterMini.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
         if (pControl == 0)
         {
-            m_btnFilterMove.m_cText.m_cParams.SetColor(CGuiInGame::STANDARD_BLUE);
-            m_btnFilterGame.m_cText.m_cParams.SetColor(CGuiInGame::STANDARD_BLUE);
+            m_btnFilterMove.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+            m_btnFilterGame.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
         }
         break;
     }
@@ -479,13 +482,13 @@ void CSWGuiKeyMapButton::UpdateColor()
 {
     if (m_bChanged)
     {
-        m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_PURPLE;
-        m_btnKey.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_PURPLE;
+        m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_BONUS;
+        m_btnKey.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_BONUS;
     }
     else
     {
-        m_cBorder.m_cParams.m_vColor = CGuiInGame::STANDARD_BLUE;
-        m_btnKey.m_cBorder.m_cParams.m_vColor = CGuiInGame::STANDARD_BLUE;
+        m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
+        m_btnKey.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
     }
 }
 // PC 0x0075F010
@@ -732,13 +735,13 @@ void CSWGuiKeyMapButton::ResetToDefault()
     SetDescription(GetActionId(m_nAction, m_nType));
     if (m_bChanged)
     {
-        m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_PURPLE;
-        m_btnKey.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_PURPLE;
+        m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_BONUS;
+        m_btnKey.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_BONUS;
     }
     else
     {
-        m_cBorder.m_cParams.m_vColor = CGuiInGame::STANDARD_BLUE;
-        m_btnKey.m_cBorder.m_cParams.m_vColor = CGuiInGame::STANDARD_BLUE;
+        m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
+        m_btnKey.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
     }
 }
 // PC 0x0075E8D0

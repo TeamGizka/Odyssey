@@ -6,6 +6,13 @@
 #include "swguiabilitieschargen.h"
 #include "swguiingame.h"
 #include "nwccreature.h"
+#ifndef _XBOX
+static inline void SetPortraitImage(CSWGuiLabel* pLabel,
+                                    const CResRef& cPortrait)
+{
+    pLabel->m_cBorder.m_cParams.SetFillImage(cPortrait, 0);
+}
+#endif
 // PC 0x007683E0
 int CSWGuiAbilitiesCharGen::DetermineCostToDecreaseScore(int nScore)
 {
@@ -50,12 +57,16 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
 
     m_bLevelUp = bLevelUp;
     m_pCreature = pCreature;
+#ifdef _XBOX
     StartLoadFromLayout("ABCHRGEN");
+#else
+    StartLoadFromLayout("ABCHRGEN_p");
+#endif
 
     InitControl(m_lblTitle, "MAIN_TITLE_LBL", 1);
     if (bLevelUp != 0)
     {
-        m_lblTitle.m_cText.m_cParams.SetStrRef(0x42F);
+        m_lblTitle.m_cText.m_cParams.SetStrRef(STRREF_LEVEL_UP);
     }
     InitControl(m_lblSubTitle, "SUB_TITLE_LBL", 1);
     InitControl(m_lblRemainingBox, "REMAINING_BOX_LBL", 1);
@@ -93,7 +104,7 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     InitControl(m_btnPlus[0], "STR_PLUS_BTN", 1);
     InitControl(m_alblBonus[0], "LBL_BONUS_STR", 1);
 #endif
-    m_aDescriptionStrRef[0] = 222;
+    m_aDescriptionStrRef[0] = STRREF_STRENGTH_DESC;
 #ifdef _XBOX
     InitControl(m_lblScore[1], "DEX_LBL", 1);
     InitControl(m_lblMinus[1], "DEX_MINUS_LBL", 1);
@@ -106,7 +117,7 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     InitControl(m_btnPlus[1], "DEX_PLUS_BTN", 1);
     InitControl(m_alblBonus[1], "LBL_BONUS_DEX", 1);
 #endif
-    m_aDescriptionStrRef[1] = 223;
+    m_aDescriptionStrRef[1] = STRREF_DEXTERITY_DESC;
 #ifdef _XBOX
     InitControl(m_lblScore[2], "CON_LBL", 1);
     InitControl(m_lblMinus[2], "CON_MINUS_LBL", 1);
@@ -119,7 +130,7 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     InitControl(m_btnPlus[2], "CON_PLUS_BTN", 1);
     InitControl(m_alblBonus[2], "LBL_BONUS_CON", 1);
 #endif
-    m_aDescriptionStrRef[2] = 224;
+    m_aDescriptionStrRef[2] = STRREF_CONSTITUTION_DESC;
 #ifdef _XBOX
     InitControl(m_lblScore[3], "WIS_LBL", 1);
     InitControl(m_lblMinus[3], "WIS_MINUS_LBL", 1);
@@ -132,7 +143,7 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     InitControl(m_btnPlus[3], "WIS_PLUS_BTN", 1);
     InitControl(m_alblBonus[3], "LBL_BONUS_WIS", 1);
 #endif
-    m_aDescriptionStrRef[3] = 225;
+    m_aDescriptionStrRef[3] = STRREF_WISDOM_DESC;
 #ifdef _XBOX
     InitControl(m_lblScore[4], "INT_LBL", 1);
     InitControl(m_lblMinus[4], "INT_MINUS_LBL", 1);
@@ -145,7 +156,7 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     InitControl(m_btnPlus[4], "INT_PLUS_BTN", 1);
     InitControl(m_alblBonus[4], "LBL_BONUS_INT", 1);
 #endif
-    m_aDescriptionStrRef[4] = 226;
+    m_aDescriptionStrRef[4] = STRREF_INTELLIGENCE_DESC;
 #ifdef _XBOX
     InitControl(m_lblScore[5], "CHA_LBL", 1);
     InitControl(m_lblMinus[5], "CHA_MINUS_LBL", 1);
@@ -158,7 +169,7 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     InitControl(m_btnPlus[5], "CHA_PLUS_BTN", 1);
     InitControl(m_alblBonus[5], "LBL_BONUS_CHA", 1);
 #endif
-    m_aDescriptionStrRef[5] = 227;
+    m_aDescriptionStrRef[5] = STRREF_CHARISMA_DESC;
 #ifndef _XBOX
     InitControl(m_alblBar[0], "LBL_BAR1", 1);
     InitControl(m_alblBar[1], "LBL_BAR2", 1);
@@ -167,6 +178,14 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     InitControl(m_lblPortrait, "LBL_PORTRAIT", 1);
 #endif
     StopLoadFromLayout();
+#ifndef _XBOX
+    m_v49CC = m_lblScore[0].m_cText.m_cParams.m_vColor;
+    m_v49D8 = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+    m_v49E4 = m_lblScore[0].m_cBorder.m_cParams.m_vColor;
+    m_v49F0 = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+    m_v49FC = m_btnPlus[0].m_cBorder.m_cParams.m_vColor;
+    m_v4A08 = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+#endif
 #ifdef _XBOX
     unsigned char nStrength = m_pCreature->GetStats()->m_aAbilities[0];
     m_aScore[0] = nStrength;
@@ -267,6 +286,23 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
         m_btnPlus[i].AddEvent(
             39, this,
             (CSWGuiHandler)&CSWGuiAbilitiesCharGen::OnPlusButtonPushed);
+        CExoString sBonus;
+        CSWCLevelUpStats* pStats = m_pCreature->m_pStats;
+        int nModifier = pStats->CalcStatModifier((unsigned char)m_aScore[i]);
+        if (nModifier < 0)
+        {
+            CExoString sNegative(nModifier);
+            sBonus = sNegative;
+        }
+        else if (nModifier == 0)
+        {
+            sBonus = "-";
+        }
+        else if (nModifier > 0)
+        {
+            sBonus = CExoString("+") + CExoString(nModifier);
+        }
+        m_alblBonus[i].m_cText.m_cParams.SetText(sBonus);
 #endif
     }
 #ifndef _XBOX
@@ -289,7 +325,11 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
         {
             m_nPointsRemaining = 0;
         }
+#ifdef _XBOX
         m_lblSelectionsRemaining.m_cText.m_cParams.SetText("Points Remaining");
+#else
+        m_lblSelectionsRemaining.m_cText.m_cParams.SetStrRef(STRREF_REMAINING_POINTS);
+#endif
     }
     else
     {
@@ -304,6 +344,9 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
 #endif
     SetActiveControl(&m_btnPoints[0], 0);
     m_nSelected = 0;
+#ifndef _XBOX
+    SetPortraitImage(&m_lblPortrait, m_pCreature->GetPortrait(0));
+#endif
 }
 // PC 0x007686D0
 CSWGuiAbilitiesCharGen::~CSWGuiAbilitiesCharGen()
@@ -365,7 +408,7 @@ void CSWGuiAbilitiesCharGen::OnMinusButton()
         CSWGuiMessageBox* pMessageBox =
             g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
         pMessageBox->SetAllowCancel(0);
-        pMessageBox->SetMessage(42180);
+        pMessageBox->SetMessage(STRREF_SCORE_BELOW_MINIMUM);
         pMessageBox->SetCallback(NULL, NULL, NULL);
         m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
         return;
@@ -378,6 +421,25 @@ void CSWGuiAbilitiesCharGen::OnMinusButton()
 
     CExoString sScore(m_aScore[m_nSelected]);
     m_btnPoints[m_nSelected].m_cText.m_cParams.SetText(sScore);
+#ifndef _XBOX
+    CExoString sBonus;
+    CSWCLevelUpStats* pStats = m_pCreature->m_pStats;
+    int nModifier = pStats->CalcStatModifier((unsigned char)m_aScore[m_nSelected]);
+    if (nModifier < 0)
+    {
+        CExoString sNegative(nModifier);
+        sBonus = sNegative;
+    }
+    else if (nModifier == 0)
+    {
+        sBonus = "-";
+    }
+    else if (nModifier > 0)
+    {
+        sBonus = CExoString("+") + CExoString(nModifier);
+    }
+    m_alblBonus[m_nSelected].m_cText.m_cParams.SetText(sBonus);
+#endif
     CExoString sRemaining(m_nPointsRemaining);
     m_lblRemainingSelections.m_cText.m_cParams.SetText(sRemaining);
     OnEnterPointsButton(&m_btnPoints[m_nSelected]);
@@ -419,6 +481,25 @@ void CSWGuiAbilitiesCharGen::OnPlusButton()
 
             CExoString sScore(m_aScore[m_nSelected]);
             m_btnPoints[m_nSelected].m_cText.m_cParams.SetText(sScore);
+#ifndef _XBOX
+            CExoString sBonus;
+            CSWCLevelUpStats* pStats = m_pCreature->m_pStats;
+            int nModifier = pStats->CalcStatModifier((unsigned char)m_aScore[m_nSelected]);
+            if (nModifier < 0)
+            {
+                CExoString sNegative(nModifier);
+                sBonus = sNegative;
+            }
+            else if (nModifier == 0)
+            {
+                sBonus = "-";
+            }
+            else if (nModifier > 0)
+            {
+                sBonus = CExoString("+") + CExoString(nModifier);
+            }
+            m_alblBonus[m_nSelected].m_cText.m_cParams.SetText(sBonus);
+#endif
             CExoString sRemaining(m_nPointsRemaining);
             m_lblRemainingSelections.m_cText.m_cParams.SetText(sRemaining);
             OnEnterPointsButton(&m_btnPoints[m_nSelected]);
@@ -445,7 +526,7 @@ void CSWGuiAbilitiesCharGen::OnPlusButton()
             CSWGuiMessageBox* pMessageBox =
                 g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
             pMessageBox->SetAllowCancel(0);
-            pMessageBox->SetMessage(42181);
+            pMessageBox->SetMessage(STRREF_SCORE_ABOVE_MAXIMUM);
             pMessageBox->SetCallback(NULL, NULL, NULL);
             m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
         }
@@ -480,7 +561,11 @@ void CSWGuiAbilitiesCharGen::HandleInputEvent(int nEvent, int nState)
             break;
         case 42:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+#ifdef _XBOX
             if (m_nPointsRemaining > 0)
+#else
+            if (m_nPointsRemaining > 0 || m_bLevelUp == 0)
+#endif
             {
                 OnRecommendButton();
             }
@@ -505,13 +590,23 @@ void CSWGuiAbilitiesCharGen::OnEnterPointsButton(CSWGuiControl* pControl)
         if (pControl == &m_btnPoints[i])
         {
             m_nSelected = i;
+#ifdef _XBOX
             m_btnPoints[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
             m_lblScore[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
+#else
+            m_btnPoints[i].m_cText.m_cParams.SetColor(m_v49D8);
+            m_lblScore[i].m_cText.m_cParams.SetColor(m_v49D8);
+#endif
         }
         else
         {
+#ifdef _XBOX
             m_btnPoints[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
             m_lblScore[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+#else
+            m_btnPoints[i].m_cText.m_cParams.SetColor(m_v49CC);
+            m_lblScore[i].m_cText.m_cParams.SetColor(m_v49CC);
+#endif
         }
     }
 
@@ -553,9 +648,9 @@ void CSWGuiAbilitiesCharGen::OnAcceptButton()
             g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
         pMessageBox->SetAllowCancel(0);
 #ifdef _XBOX
-        pMessageBox->SetMessage(41816);
+        pMessageBox->SetMessage(STRREF_SPEND_ALL_POINTS_XBOX);
 #else
-        pMessageBox->SetMessage(48729);
+        pMessageBox->SetMessage(STRREF_SPEND_ALL_POINTS);
 #endif
         pMessageBox->SetCallback(NULL, NULL, NULL);
         m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
@@ -629,13 +724,12 @@ void CSWGuiAbilitiesCharGen::SetDescription(unsigned long nStrRef)
 // PC 0x00768B40
 void CSWGuiAbilitiesCharGen::OnRecommendButton()
 {
-    unsigned char nLevel;
     CSWClass* pClass;
     int i;
 
     if (m_bLevelUp != 0)
     {
-        nLevel = m_pCreature->m_pStats->GetNumClasses() - 1;
+        unsigned char nLevel = m_pCreature->m_pStats->GetNumClasses() - 1;
         pClass = &g_pRules->m_pClasses[m_pCreature->m_pStats->GetClass(nLevel)];
         switch (pClass->m_nPrimaryAbility)
         {
@@ -661,7 +755,7 @@ void CSWGuiAbilitiesCharGen::OnRecommendButton()
     }
     else
     {
-        nLevel = m_pCreature->m_pStats->GetNumClasses() - 1;
+        unsigned char nLevel = m_pCreature->m_pStats->GetNumClasses() - 1;
         pClass = &g_pRules->m_pClasses[m_pCreature->m_pStats->GetClass(nLevel)];
         m_aScore[0] = pClass->GetStrength();
         m_aScore[1] = pClass->GetDexterity();
@@ -681,6 +775,25 @@ void CSWGuiAbilitiesCharGen::OnRecommendButton()
             CExoString sScore(m_aScore[i]);
             m_btnPoints[i].m_cText.m_cParams.SetText(sScore);
         }
+#ifndef _XBOX
+        CExoString sBonus;
+        CSWCLevelUpStats* pStats = m_pCreature->m_pStats;
+        int nModifier = pStats->CalcStatModifier((unsigned char)m_aScore[i]);
+        if (nModifier < 0)
+        {
+            CExoString sNegative(nModifier);
+            sBonus = sNegative;
+        }
+        else if (nModifier == 0)
+        {
+            sBonus = "-";
+        }
+        else if (nModifier > 0)
+        {
+            sBonus = CExoString("+") + CExoString(nModifier);
+        }
+        m_alblBonus[i].m_cText.m_cParams.SetText(sBonus);
+#endif
         if (m_bLevelUp != 0)
         {
 #ifdef _XBOX

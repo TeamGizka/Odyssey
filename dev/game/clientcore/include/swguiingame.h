@@ -304,7 +304,11 @@ public:
     void OnEnterPower(unsigned long nPower);
 
     enum { STRREF_LIGHT_SIDE = 41891, STRREF_DARK_SIDE = 41890,
-           STRREF_ADJUSTMENT = 47888 };
+           STRREF_ADJUSTMENT = 47888, STRREF_SKILL_RANK = 1579,
+           STRREF_BONUS = 32129, STRREF_BASE_COST = 37655,
+           STRREF_TOTAL_RANK = 41904, STRREF_COST_PER_USE = 41905,
+           STRREF_UNKNOWN_FORCE_POWER = 125555,
+           STRREF_UNKNOWN_FORCE_POWER_DESC = 125556 };
     void OnEnterSkill(CSWGuiControl* pControl);
     void OnEnterFeat(unsigned short nFeat);
 #ifndef _XBOX

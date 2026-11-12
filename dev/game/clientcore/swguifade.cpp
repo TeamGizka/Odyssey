@@ -144,7 +144,7 @@ CSWGuiFade::CSWGuiFade(CSWGuiManager* pManager)
     StartLoadFromLayout("fade");
 #else
     {
-        CResRef cLayout("fade");
+        CResRef cLayout("fade_p");
         StartLoadFromLayout(cLayout);
     }
 #endif

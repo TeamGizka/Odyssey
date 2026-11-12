@@ -1099,6 +1099,14 @@ void CSWGuiPartySelection::UpdateVisibleCharacters()
         m_aPartyMembers[NPC_DISCIPLE].m_lblCharacter.SetShown(1);
         m_aPartyMembers[NPC_DISCIPLE].m_lblNotAvailable.SetShown(1);
         m_aPartyMembers[NPC_DISCIPLE].m_bHidden = 0;
+        m_aPartyMembers[NPC_CANDEROUS].m_btnNPC.SetMoveToControl(2, pShared);
+        m_aPartyMembers[NPC_KREIA].m_btnNPC.SetMoveToControl(0, pShared);
+        m_aPartyMembers[NPC_G0T0].m_btnNPC.SetMoveToControl(1, pShared);
+        m_aPartyMembers[NPC_G0T0].m_btnNPC.SetMoveToControl(3, pShared);
+        pShared->SetMoveToControl(0, &m_aPartyMembers[NPC_CANDEROUS].m_btnNPC);
+        pShared->SetMoveToControl(2, &m_aPartyMembers[NPC_KREIA].m_btnNPC);
+        pShared->SetMoveToControl(1, &m_aPartyMembers[NPC_G0T0].m_btnNPC);
+        pShared->SetMoveToControl(3, &m_aPartyMembers[NPC_G0T0].m_btnNPC);
     }
     else
     {
@@ -1111,15 +1119,15 @@ void CSWGuiPartySelection::UpdateVisibleCharacters()
         m_aPartyMembers[NPC_HANDMAIDEN].m_lblCharacter.SetShown(1);
         m_aPartyMembers[NPC_HANDMAIDEN].m_lblNotAvailable.SetShown(1);
         m_aPartyMembers[NPC_HANDMAIDEN].m_bHidden = 0;
+        m_aPartyMembers[NPC_CANDEROUS].m_btnNPC.SetMoveToControl(2, pShared);
+        m_aPartyMembers[NPC_KREIA].m_btnNPC.SetMoveToControl(0, pShared);
+        m_aPartyMembers[NPC_G0T0].m_btnNPC.SetMoveToControl(1, pShared);
+        m_aPartyMembers[NPC_G0T0].m_btnNPC.SetMoveToControl(3, pShared);
+        pShared->SetMoveToControl(0, &m_aPartyMembers[NPC_CANDEROUS].m_btnNPC);
+        pShared->SetMoveToControl(2, &m_aPartyMembers[NPC_KREIA].m_btnNPC);
+        pShared->SetMoveToControl(1, &m_aPartyMembers[NPC_G0T0].m_btnNPC);
+        pShared->SetMoveToControl(3, &m_aPartyMembers[NPC_G0T0].m_btnNPC);
     }
-    m_aPartyMembers[NPC_CANDEROUS].m_btnNPC.SetMoveToControl(2, pShared);
-    m_aPartyMembers[NPC_KREIA].m_btnNPC.SetMoveToControl(0, pShared);
-    m_aPartyMembers[NPC_G0T0].m_btnNPC.SetMoveToControl(1, pShared);
-    m_aPartyMembers[NPC_G0T0].m_btnNPC.SetMoveToControl(3, pShared);
-    pShared->SetMoveToControl(0, &m_aPartyMembers[NPC_CANDEROUS].m_btnNPC);
-    pShared->SetMoveToControl(2, &m_aPartyMembers[NPC_KREIA].m_btnNPC);
-    pShared->SetMoveToControl(1, &m_aPartyMembers[NPC_G0T0].m_btnNPC);
-    pShared->SetMoveToControl(3, &m_aPartyMembers[NPC_G0T0].m_btnNPC);
 }
 #endif
 

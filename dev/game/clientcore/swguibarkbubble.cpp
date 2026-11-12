@@ -15,6 +15,12 @@
 #ifdef _XBOX
 #include "exoinput.h"
 #endif
+#include "nwcmodule.h"
+#include "nwcarea.h"
+#include "nwsarea.h"
+
+#define BARK_MIN_SOUND_HEIGHT 0.5f
+#define BARK_MAX_TIME_STEP 36.0f
 
 static inline void SwguibarkbubbleTrace1();
 #define SWGUIBARKBUBBLE_TRACE() SwguibarkbubbleTrace1()
@@ -26,7 +32,7 @@ CSWGuiBarkBubble::CSWGuiBarkBubble(CSWGuiManager* pManager)
     StartLoadFromLayout("barkbubble");
 #else
     {
-        CResRef cLayout("barkbubble");
+        CResRef cLayout("barkbubble_p");
         StartLoadFromLayout(cLayout);
     }
 #endif
@@ -58,13 +64,15 @@ void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
                                const CResRef& cSound, int bForceVisible)
 {
     SWGUIBARKBUBBLE_TRACE();
-    unsigned long oidPC =
-        g_pAppManager->m_pServerExoApp->GetClientObjectByObjectId(
-            g_pAppManager->m_pServerExoApp->GetPlayerCreatureId())->m_oidPCObject;
-    CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
-    unsigned long oidClientPC = pClientExoApp->ServerToClientObjectId(oidPC);
-    CClientExoApp* pObjectApp = g_pAppManager->m_pClientExoApp;
-    CSWCObject* pPlayerObject = pObjectApp->GetGameObject(oidClientPC);
+    SetExtent(m_cInitialExtent);
+    unsigned long oidPlayer = g_pAppManager->GetServerExoApp()->GetPlayerCreatureId();
+    CSWSPlayer* pPlayer =
+        g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidPlayer);
+    unsigned long oidPC = pPlayer->m_oidPCObject;
+    unsigned long oidClientPC =
+        g_pAppManager->GetClientExoApp()->ServerToClientObjectId(oidPC);
+    CSWCObject* pPlayerObject =
+        g_pAppManager->GetClientExoApp()->GetGameObject(oidClientPC);
     CExoString sText(sBarkText);
 
     g_pSWTlkTable->ParseStr(sText, (CGameObject*)pPlayerObject, 0, 0);
@@ -74,6 +82,19 @@ void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
     int nHeight = m_lblBarkText.m_cText.GetIdealHeight() + nBorderDim * 2 + 10;
     CSWGuiExtent cExtent = m_cExtent;
     cExtent.m_nHeight = nHeight;
+    if (m_nBarkX != -1)
+        cExtent.m_nLeft = m_nBarkX;
+    if (m_nBarkY != -1)
+        cExtent.m_nTop = m_nBarkY;
+    float fScaleX = 1.0f;
+    float fScaleY = 1.0f;
+    if (g_pAppManager->GetClientExoApp()->GetSWGuiManager() != NULL)
+    {
+        fScaleX = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
+        fScaleY = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
+    }
+    cExtent.m_nLeft = (int)(cExtent.m_nLeft * fScaleX);
+    cExtent.m_nTop = (int)(cExtent.m_nTop * fScaleY);
     SetExtent(cExtent);
 
     m_bDeferredRemoval = 0;
@@ -95,6 +116,18 @@ void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
                                ->GetGameObject(oidSpeaker)
                                ->AsSWCObject()
                                ->m_vPosition;
+        CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
+        if (pModule != NULL && pModule->GetArea() != NULL)
+        {
+            CSWSArea* pServerArea = pModule->GetArea()->GetServerArea();
+            if (pServerArea != NULL)
+            {
+                float fHeight = g_pAppManager->GetServerExoApp()->ComputeHeight(
+                    pServerArea->GetResRef(), vPosition, 0);
+                if (vPosition.m_fZ - fHeight < BARK_MIN_SOUND_HEIGHT)
+                    vPosition.m_fZ = fHeight + BARK_MIN_SOUND_HEIGHT;
+            }
+        }
         m_pSoundSource->Set3D(1);
         m_pSoundSource->SetReverbEnabled(0);
         m_pSoundSource->SetPosition(vPosition);
@@ -115,6 +148,8 @@ void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
     }
 #else
     m_bSoundStarted = m_pSoundSource->Play(cSound, 8, 1, 0, 0);
+    if (m_bSoundStarted == 0)
+        m_bSoundStarted = m_pSoundSource->Play(cSound, 4, 1, 0, 0);
 #endif
 }
 // PC 0x00712710
@@ -175,6 +210,10 @@ void CSWGuiBarkBubble::Draw(float fElapsed)
         m_pManager->GetSafeMargin(nMarginX, nMarginY);
         cExtent.m_nWidth = m_pManager->m_nWidth - 2 * nMarginX;
     }
+    if (m_nBarkX != -1)
+        cExtent.m_nLeft = m_nBarkX;
+    if (m_nBarkY != -1)
+        cExtent.m_nTop = m_nBarkY;
     if (g_pAppManager->m_pClientExoApp->GetCombatMode())
     {
         cExtent.m_nTop +=
@@ -213,7 +252,7 @@ void CSWGuiBarkBubble::Draw(float fElapsed)
         if (bShowBark)
         {
             CSWGuiPanel::Draw(fElapsed);
-            if (m_pManager->m_fGuiScale < 1.5f)
+            if (m_pManager->m_fGuiScale < BARK_MAX_TIME_STEP)
             {
                 m_fTimeLeft -= m_pManager->m_fGuiScale;
             }
@@ -233,7 +272,7 @@ void CSWGuiBarkBubble::Draw(float fElapsed)
         if (m_fTimeLeft > 0.0f && bShowBark)
         {
             CSWGuiPanel::Draw(fElapsed);
-            if (m_pManager->m_fGuiScale < 1.5f)
+            if (m_pManager->m_fGuiScale < BARK_MAX_TIME_STEP)
             {
                 m_fTimeLeft -= m_pManager->m_fGuiScale;
             }

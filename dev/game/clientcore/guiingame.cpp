@@ -4145,6 +4145,21 @@ void CGuiInGame::SetComputerCameraShot(int nCamera, unsigned long oidTarget,
         m_oidComputerCameraTarget = oidTarget;
     }
 }
+// PC 0x0067F430
+void CGuiInGame::ResetComputerCameraShot()
+{
+    if (m_pGuiManager->PanelExists(m_pComputerScreen))
+    {
+        m_pGuiManager->RemovePanel(m_pComputerScreen);
+#ifdef _XBOX
+        m_pGuiManager->AddPanel(m_pDialog, 0, 1);
+#else
+        m_pGuiManager->AddPanel(m_pDialog, CSWGuiManager::PANEL_MODE_FOREGROUND, 1);
+#endif
+        if (m_n1028 == 0)
+            g_pAppManager->m_pClientExoApp->DisableVideoEffect();
+    }
+}
 // PC 0x0067F480
 void CGuiInGame::EndDialogCamera()
 {
@@ -5108,21 +5123,6 @@ void CGuiInGame::CleanUpReplyNode()
     g_pExoInput->CoolDownEvent(CClientExoAppInternal::INPUT_EVENT_MOUSE_LEFT, 750);
     g_pExoInput->CoolDownEvent(CClientExoAppInternal::INPUT_EVENT_GUI_ACCEPT, 750);
 #endif
-}
-// PC 0x0067F430
-void CGuiInGame::ResetComputerCameraShot()
-{
-    if (m_pGuiManager->PanelExists(m_pComputerScreen))
-    {
-        m_pGuiManager->RemovePanel(m_pComputerScreen);
-#ifdef _XBOX
-        m_pGuiManager->AddPanel(m_pDialog, 0, 1);
-#else
-        m_pGuiManager->AddPanel(m_pDialog, CSWGuiManager::PANEL_MODE_FOREGROUND, 1);
-#endif
-        if (m_n1028 == 0)
-            g_pAppManager->m_pClientExoApp->DisableVideoEffect();
-    }
 }
 // PC 0x006800C0
 void CGuiInGame::HideLoadModuleDebugMenu()

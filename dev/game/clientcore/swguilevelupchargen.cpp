@@ -26,7 +26,7 @@ void CSWGuiLevelUpCharGen::OnPanelAdded()
     m_pLevelUpPanel->SetCanCancel(m_nInputClass != 0);
     m_pManager->AddPanel(m_pLevelUpPanel, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 #else
-    m_pLevelUpPanel->SetCanCancel(0);
+    m_pLevelUpPanel->SetCanCancel(m_nInputClass != 0);
     m_pManager->AddPanel(m_pLevelUpPanel, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     CSWGuiPanel::OnPanelAdded();
 #endif
@@ -45,7 +45,11 @@ CSWGuiLevelUpCharGen::CSWGuiLevelUpCharGen(CSWGuiManager* pManager,
     CopyCreatureStats(pOriginal, m_pCreature);
     LevelUpCreature();
     DetermineClass();
+#ifdef _XBOX
     StartLoadFromLayout("MAINCG");
+#else
+    StartLoadFromLayout("MAINCG_p");
+#endif
     InitControl(m_lblTitle, "MAIN_TITLE_LBL", 1);
     InitControl(m_lblName, "LBL_NAME", 1);
     InitControl(m_lblClass, "LBL_CLASS", 1);
@@ -81,6 +85,14 @@ CSWGuiLevelUpCharGen::CSWGuiLevelUpCharGen(CSWGuiManager* pManager,
 #endif
     InitControl(m_viewModel, "MODEL_LBL", 1);
     InitControl(m_lblPortrait, "PORTRAIT_LBL", 1);
+#ifndef _XBOX
+    InitControl(m_lblStatsBack, "LBL_STATSBACK", 1);
+    InitControl(m_lblStatsBorder, "LBL_STATSBORDER", 1);
+    InitControl(m_lblPortBorder, "LBL_PORTBORDER", 1);
+    InitControl(m_lblVitName, "LBL_VIT_NAME", 1);
+    InitControl(m_lblDefName, "LBL_DEF_NAME", 1);
+    InitControl(m_lblBar, "LBL_BAR1", 1);
+#endif
     StopLoadFromLayout();
     m_lblTitle.m_cText.m_cParams.SetStrRef(1071);
     m_pLevelUpPanel = new CSWGuiLevelUpPanel(m_pManager, m_nCreatureId);
@@ -127,7 +139,13 @@ void CSWGuiLevelUpCharGen::DetermineClass()
 void CSWGuiLevelUpCharGen::SetNameString(const CExoString& sName)
 {
     m_sName = sName;
+#ifdef _XBOX
     CExoString sLevel(m_pCreature->m_pStats->GetLevel() + 1);
+#else
+    CExoString sLevel =
+        g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_LEVEL_LABEL);
+    sLevel = sLevel + CExoString(m_pCreature->m_pStats->GetLevel() + 1);
+#endif
     m_lblName.m_cText.m_cParams.SetText(m_sName);
     m_lblClass.m_cText.m_cParams.SetText(m_sClass);
     m_lblLevelValue.m_cText.m_cParams.SetText(sLevel);
@@ -193,8 +211,13 @@ void CSWGuiLevelUpCharGen::AbilitiesChanged()
         char nHitDie = g_pRules->m_pClasses[nClass].m_nHitDie;
         pStats = pCreature->GetStats();
         nStat = pStats->m_nConstitution;
+#ifdef _XBOX
         char nHitPoints = nHitDie + pStats->CalcStatModifier(nStat) +
                           m_pCreature->GetStats()->GetLevel() * nConDiff;
+#else
+        char nHitPoints = m_pCreature->GetStats()->GetLevel() * nConDiff +
+                          pStats->CalcStatModifier(nStat) + nHitDie;
+#endif
         if (nHitPoints <= 1)
         {
             nHitPoints = 1;
@@ -211,11 +234,16 @@ void CSWGuiLevelUpCharGen::AbilitiesChanged()
             char nForceDie = g_pRules->m_pClasses[nClass].m_nForceDie;
             pStats = pCreature->GetStats();
             unsigned char nWisdom = pStats->m_nWisdom;
+#ifdef _XBOX
             unsigned char nCharisma = pStats->m_nCharisma;
             char nChaMod = pStats->CalcStatModifier(nCharisma);
             char nForcePoints =
                 nForceDie + pStats->CalcStatModifier(nWisdom) + nChaMod +
                 m_pCreature->GetStats()->GetLevel() * (nWisDiff + nChaDiff);
+#else
+            char nForcePoints = m_pCreature->GetStats()->GetLevel() * nWisDiff +
+                                pStats->CalcStatModifier(nWisdom) + nForceDie;
+#endif
             nForcePoints = nForcePoints > 1 ? nForcePoints : 1;
             short nForcePointsBase = m_pCreature->GetStats()->m_nForcePointsBase;
             pCreature->GetStats()->m_nForcePointsBase = nForcePointsBase + nForceDie;
@@ -326,6 +354,7 @@ void CSWGuiLevelUpCharGen::ClearPowers()
 
     if (pCreature != 0)
     {
+#ifdef _XBOX
         int nClass = m_pCreature->m_pStats->m_nClassCount - 1;
         pCreature->GetStats()->ClearKnownSpells();
         for (unsigned char i = 0;
@@ -336,6 +365,20 @@ void CSWGuiLevelUpCharGen::ClearPowers()
             unsigned long nSpell = pOldStats->GetKnownSpell(nClass, 0, i);
             pStats->AddKnownSpell(nClass, nSpell);
         }
+#else
+        pCreature->GetStats()->ClearKnownSpells();
+        for (int nClass = 0; nClass < 2; nClass++)
+        {
+            for (unsigned char i = 0;
+                 i < m_pCreature->m_pStats->GetNumberKnownSpells(nClass, 0); i++)
+            {
+                CSWCLevelUpStats* pOldStats = m_pCreature->m_pStats;
+                CSWCLevelUpStats* pStats = pCreature->m_pStats;
+                unsigned long nSpell = pOldStats->GetKnownSpell(nClass, 0, i);
+                pStats->AddKnownSpell(nClass, nSpell);
+            }
+        }
+#endif
     }
 }
 // PC 0x007579C0
@@ -379,19 +422,28 @@ int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
     CSWCLevelUpStats* pNewStats = pTo->m_pStats;
     CSWCLevelUpStats* pOldStats = pFrom->m_pStats;
 
+#ifdef _XBOX
     pNewStats->m_sFirstName = pOldStats->m_sFirstName;
     pNewStats->m_sLastName = pOldStats->m_sLastName;
+#else
+    CExoString sName = pOldStats->GetFirstName() + " " + pOldStats->GetLastName();
+    pNewStats->SetName(sName, "");
+#endif
     pNewStats->m_cPortrait.CResRef::operator=(pOldStats->GetPortrait(0));
     pNewStats->m_nExperience = pOldStats->m_nExperience;
     pNewStats->m_nStartingPackage = pOldStats->m_nStartingPackage;
     pNewStats->m_nGender = pOldStats->m_nGender;
     pNewStats->m_nGoodEvilAlignment = pOldStats->GetAlignment();
+#ifndef _XBOX
+    pNewStats->SetBaseCNPCAlignment(pOldStats->m_nBaseCNPCAlignment);
+#endif
     pNewStats->SetSTRBase(pOldStats->m_aAbilities[0]);
     pNewStats->SetDEXBase(pOldStats->m_aAbilities[1], 1);
     pNewStats->SetCONBase(pOldStats->m_aAbilities[2]);
     pNewStats->SetINTBase(pOldStats->m_aAbilities[3]);
     pNewStats->SetWISBase(pOldStats->m_aAbilities[4]);
     pNewStats->SetCHABase(pOldStats->m_aAbilities[5]);
+#ifdef _XBOX
     pNewStats->m_nHitPointsBase = pOldStats->m_nHitPointsBase;
     pNewStats->m_nCurrentHitPoints = pOldStats->m_nCurrentHitPoints;
     pNewStats->m_nMaxHitPoints = pOldStats->GetMaxHitPoints();
@@ -399,6 +451,14 @@ int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
     pNewStats->m_nCurrentForcePoints =
         pOldStats->m_nCurrentForcePoints + pOldStats->m_nForcePointBonus;
     pNewStats->m_nMaxForcePoints = pOldStats->m_nMaxForcePoints;
+#else
+    pNewStats->m_nHitPointsBase = pOldStats->GetBaseHitPoints();
+    pNewStats->m_nCurrentHitPoints = pOldStats->GetCurrentHitPoints();
+    pNewStats->m_nMaxHitPoints = pOldStats->GetMaxHitPoints();
+    pNewStats->m_nForcePointsBase = pOldStats->GetBaseForcePoints();
+    pNewStats->m_nCurrentForcePoints = pOldStats->GetForcePoints();
+    pNewStats->m_nMaxForcePoints = pOldStats->GetMaxForcePoints();
+#endif
 
     for (unsigned char nClass = 0; nClass < pOldStats->m_nClassCount; nClass++)
     {
@@ -423,8 +483,15 @@ int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
     for (int nAttack = 0; nAttack < 4; nAttack++)
         pNewStats->m_nUnknown64 = pOldStats->GetBaseAttackBonus();
     pNewStats->m_nGoodEvilAlignment = pOldStats->GetAlignment();
+#ifndef _XBOX
+    pNewStats->SetBaseCNPCAlignment(pOldStats->m_nBaseCNPCAlignment);
+#endif
     pNewStats->ClearSkills();
+#ifdef _XBOX
     pNewStats->m_nSkillPoints = pOldStats->m_nSkillPoints;
+#else
+    pNewStats->m_nSkillPoints = pOldStats->GetSkillPoints();
+#endif
     for (unsigned char nSkill = 0; nSkill < g_pRules->m_nNumSkills; nSkill++)
         pNewStats->SetSkillRankBase(nSkill, pOldStats->GetSkillRank(nSkill));
     pNewStats->ClearFeats();

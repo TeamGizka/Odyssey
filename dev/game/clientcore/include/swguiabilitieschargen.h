@@ -69,6 +69,19 @@ struct CSWGuiAbilitiesArrowHilight
 class CSWGuiAbilitiesCharGen : public CSWGuiPanel
 {
 public:
+    static const unsigned long STRREF_REMAINING_POINTS = 210;
+    static const unsigned long STRREF_STRENGTH_DESC = 222;
+    static const unsigned long STRREF_DEXTERITY_DESC = 223;
+    static const unsigned long STRREF_CONSTITUTION_DESC = 224;
+    static const unsigned long STRREF_WISDOM_DESC = 225;
+    static const unsigned long STRREF_INTELLIGENCE_DESC = 226;
+    static const unsigned long STRREF_CHARISMA_DESC = 227;
+    static const unsigned long STRREF_LEVEL_UP = 1071;
+    static const int STRREF_SPEND_ALL_POINTS_XBOX = 41816;
+    static const int STRREF_SCORE_BELOW_MINIMUM = 42180;
+    static const int STRREF_SCORE_ABOVE_MAXIMUM = 42181;
+    static const int STRREF_SPEND_ALL_POINTS = 48729;
+
     CSWGuiAbilitiesCharGen(CSWGuiManager* pManager, CSWCCreature* pCreature,
                            int bLevelUp);
     virtual ~CSWGuiAbilitiesCharGen();

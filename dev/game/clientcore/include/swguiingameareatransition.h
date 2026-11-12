@@ -8,6 +8,7 @@ class Vector;
 class CSWGuiInGameAreaTransition : public CSWGuiPanel
 {
 public:
+    enum { AREA_TRANSITION_WIDTH = 400, AREA_TRANSITION_HEIGHT = 82 };
     CSWGuiLabel m_lblTextBackground;
     CSWGuiLabel m_lblIcon;
     CSWGuiLabel m_lblDescription;

@@ -275,6 +275,8 @@ public:
         GUISOUND_QUESTCOMPLETE = 14,
 
         GUISOUND_ASSEMBLE = 16,
+        GUISOUND_DARK_SIDE = 17,
+        GUISOUND_LIGHT_SIDE = 18,
 
         PANEL_MODE_MODAL = 3,
 

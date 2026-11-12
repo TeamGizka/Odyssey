@@ -29,7 +29,11 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
     m_bDroid = m_pCreature->m_pStats->m_nRace == CSWRace::CRACE_DROID;
     unsigned char nClass = m_pCreature->m_pStats->GetClass(
         m_pCreature->m_pStats->GetNumClasses() - 1);
+#ifdef _XBOX
     StartLoadFromLayout("SKCHRGEN");
+#else
+    StartLoadFromLayout("SKCHRGEN_p");
+#endif
     InitControl(m_lblTitle, "MAIN_TITLE_LBL", 1);
     if (bLevelUp)
     {
@@ -57,6 +61,8 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
     InitControl(m_btnAccept, "BTN_ACCEPT", 1);
     InitControl(m_btnRecommended, "BTN_RECOMMENDED", 1);
     InitControl(m_btnBack, "BTN_BACK", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
 #endif
 #ifdef _XBOX
     InitControl(m_lblSkill[0], "COMPUTER_USE_LBL", 1);
@@ -67,9 +73,9 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
 #else
     InitControl(m_btnPoints[0], "COMPUTER_USE_POINTS_BTN", 1);
     InitControl(m_lblSkill[0], "COMPUTER_USE_LBL", 1);
-    m_sDescription[0] = g_pRules->m_pSkills[0].GetDescriptionText();
     InitControl(m_btnMinus[0], "COM_MINUS_BTN", 1);
     InitControl(m_btnPlus[0], "COM_PLUS_BTN", 1);
+    m_sDescription[0] = g_pRules->m_pSkills[0].GetDescriptionText();
 #endif
 #ifdef _XBOX
     InitControl(m_lblSkill[1], "DEMOLITIONS_LBL", 1);
@@ -80,9 +86,9 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
 #else
     InitControl(m_btnPoints[1], "DEMOLITIONS_POINTS_BTN", 1);
     InitControl(m_lblSkill[1], "DEMOLITIONS_LBL", 1);
-    m_sDescription[1] = g_pRules->m_pSkills[1].GetDescriptionText();
     InitControl(m_btnMinus[1], "DEM_MINUS_BTN", 1);
     InitControl(m_btnPlus[1], "DEM_PLUS_BTN", 1);
+    m_sDescription[1] = g_pRules->m_pSkills[1].GetDescriptionText();
 #endif
 #ifdef _XBOX
     InitControl(m_lblSkill[2], "STEALTH_LBL", 1);
@@ -93,9 +99,9 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
 #else
     InitControl(m_btnPoints[2], "STEALTH_POINTS_BTN", 1);
     InitControl(m_lblSkill[2], "STEALTH_LBL", 1);
-    m_sDescription[2] = g_pRules->m_pSkills[2].GetDescriptionText();
     InitControl(m_btnMinus[2], "STE_MINUS_BTN", 1);
     InitControl(m_btnPlus[2], "STE_PLUS_BTN", 1);
+    m_sDescription[2] = g_pRules->m_pSkills[2].GetDescriptionText();
 #endif
 #ifdef _XBOX
     InitControl(m_lblSkill[4], "PERSUADE_LBL", 1);
@@ -106,9 +112,9 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
 #else
     InitControl(m_btnPoints[4], "PERSUADE_POINTS_BTN", 1);
     InitControl(m_lblSkill[4], "PERSUADE_LBL", 1);
-    m_sDescription[4] = g_pRules->m_pSkills[4].GetDescriptionText();
     InitControl(m_btnMinus[4], "PER_MINUS_BTN", 1);
     InitControl(m_btnPlus[4], "PER_PLUS_BTN", 1);
+    m_sDescription[4] = g_pRules->m_pSkills[4].GetDescriptionText();
 #endif
 #ifdef _XBOX
     InitControl(m_lblSkill[5], "REPAIR_LBL", 1);
@@ -119,9 +125,9 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
 #else
     InitControl(m_btnPoints[5], "REPAIR_POINTS_BTN", 1);
     InitControl(m_lblSkill[5], "REPAIR_LBL", 1);
-    m_sDescription[5] = g_pRules->m_pSkills[5].GetDescriptionText();
     InitControl(m_btnMinus[5], "REP_MINUS_BTN", 1);
     InitControl(m_btnPlus[5], "REP_PLUS_BTN", 1);
+    m_sDescription[5] = g_pRules->m_pSkills[5].GetDescriptionText();
 #endif
 #ifdef _XBOX
     InitControl(m_lblSkill[6], "SECURITY_LBL", 1);
@@ -132,9 +138,9 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
 #else
     InitControl(m_btnPoints[6], "SECURITY_POINTS_BTN", 1);
     InitControl(m_lblSkill[6], "SECURITY_LBL", 1);
-    m_sDescription[6] = g_pRules->m_pSkills[6].GetDescriptionText();
     InitControl(m_btnMinus[6], "SEC_MINUS_BTN", 1);
     InitControl(m_btnPlus[6], "SEC_PLUS_BTN", 1);
+    m_sDescription[6] = g_pRules->m_pSkills[6].GetDescriptionText();
 #endif
 #ifdef _XBOX
     InitControl(m_lblSkill[3], "AWARENESS_LBL", 1);
@@ -145,9 +151,9 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
 #else
     InitControl(m_btnPoints[3], "AWARENESS_POINTS_BTN", 1);
     InitControl(m_lblSkill[3], "AWARENESS_LBL", 1);
-    m_sDescription[3] = g_pRules->m_pSkills[3].GetDescriptionText();
     InitControl(m_btnMinus[3], "AWA_MINUS_BTN", 1);
     InitControl(m_btnPlus[3], "AWA_PLUS_BTN", 1);
+    m_sDescription[3] = g_pRules->m_pSkills[3].GetDescriptionText();
 #endif
 #ifdef _XBOX
     InitControl(m_lblSkill[7], "TREAT_INJURY_LBL", 1);
@@ -158,9 +164,9 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
 #else
     InitControl(m_btnPoints[7], "TREAT_INJURY_POINTS_BTN", 1);
     InitControl(m_lblSkill[7], "TREAT_INJURY_LBL", 1);
-    m_sDescription[7] = g_pRules->m_pSkills[7].GetDescriptionText();
     InitControl(m_btnMinus[7], "TRE_MINUS_BTN", 1);
     InitControl(m_btnPlus[7], "TRE_PLUS_BTN", 1);
+    m_sDescription[7] = g_pRules->m_pSkills[7].GetDescriptionText();
 #endif
     StopLoadFromLayout();
 #ifndef _XBOX
@@ -175,6 +181,25 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
         m_btnPoints[i].AddEvent(CSWGuiControl::EVENT_EXIT, this,
             (CSWGuiHandler)&CSWGuiSkillsCharGen::OnExitPointsButton);
         m_btnPoints[i].m_nIndex = i;
+#ifndef _XBOX
+        CSWGuiTextParams* pSkillText;
+        CSWGuiTextParams* pPointsText;
+        if (m_pCreature->GetStats()->GetSkillPointCostForSkillRank(i, 1) !=
+            CSWCLevelUpStats::CLASS_SKILL_POINT_COST)
+        {
+            pSkillText = &m_lblSkill[i].m_cText.m_cParams;
+            pSkillText->SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+            pPointsText = &m_btnPoints[i].m_cText.m_cParams;
+            pPointsText->SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+        }
+        else
+        {
+            pSkillText = &m_lblSkill[i].m_cText.m_cParams;
+            pSkillText->SetDefaultColor(CGuiInGame::COLOR_NEW_BONUS);
+            pPointsText = &m_btnPoints[i].m_cText.m_cParams;
+            pPointsText->SetDefaultColor(CGuiInGame::COLOR_NEW_BONUS);
+        }
+#endif
         if (!m_bLevelUp)
         {
             m_pCreature->GetStats()->SetSkillRankBase(i, 0);
@@ -187,7 +212,11 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
         m_aStartRank[i] = m_pCreature->GetStats()->GetSkillRank(i);
         {
             CExoString sRank(m_aStartRank[i]);
+#ifdef _XBOX
             m_btnPoints[i].m_cText.m_cParams.SetText(sRank);
+#else
+            pPointsText->SetText(sRank);
+#endif
         }
 #ifdef _XBOX
         m_lblMinus[i].SetEnabledFlag(0);
@@ -224,17 +253,29 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
         if (!m_bAllSkills)
         {
             CSWSkill* pSkill = &g_pRules->m_pSkills[(unsigned short)i];
+#ifdef _XBOX
             if (!pSkill->m_bNPCCanUse ||
                 (m_bDroid && !pSkill->m_bDroidCanUse))
             {
                 m_lblSkill[i].m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
                 m_btnPoints[i].m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
-#ifdef _XBOX
                 m_lblPlus[i].SetEnabledFlag(0);
-#else
-                m_btnPlus[i].SetEnabledFlag(0);
-#endif
             }
+#else
+            int bDroidException = 0;
+            if (i == CSWSkill::SKILL_STEALTH &&
+                m_pCreature->GetServerCreature()->GetTag().CompareNoCase("g0t0"))
+            {
+                bDroidException = 1;
+            }
+            if (!pSkill->m_bNPCCanUse ||
+                (m_bDroid && !pSkill->m_bDroidCanUse && !bDroidException))
+            {
+                pSkillText->SetColor(CGuiInGame::DISABLED_TEXT);
+                pPointsText->SetColor(CGuiInGame::DISABLED_TEXT);
+                m_btnPlus[i].SetEnabledFlag(0);
+            }
+#endif
         }
     }
 #ifndef _XBOX
@@ -370,8 +411,22 @@ void CSWGuiSkillsCharGen::OnPlusButton()
         break;
     case CSWRules::SKILL_TREAT_INJURY:
     case CSWRules::SKILL_STEALTH:
+#ifdef _XBOX
         if (m_bDroid)
             nWarning = STRREF_DROID_SKILL_UNAVAILABLE;
+#else
+        {
+            int bDroidException = 0;
+            if (m_nSelected == CSWRules::SKILL_STEALTH &&
+                m_pCreature->GetServerCreature() != 0 &&
+                m_pCreature->GetServerCreature()->GetTag().CompareNoCase("g0t0"))
+            {
+                bDroidException = 1;
+            }
+            if (m_bDroid && bDroidException == 0)
+                nWarning = STRREF_DROID_SKILL_UNAVAILABLE;
+        }
+#endif
         break;
     }
     if (nWarning != 0)
@@ -525,6 +580,7 @@ void CSWGuiSkillsCharGen::OnEnterPointsButton(CSWGuiControl* pControl)
 {
     int i;
 
+#ifdef _XBOX
     for (i = 0; i < 8; i++)
     {
         int bDisabled = 0;
@@ -573,11 +629,11 @@ void CSWGuiSkillsCharGen::OnEnterPointsButton(CSWGuiControl* pControl)
 
     if (IsClassSkill((unsigned short)m_nSelected))
     {
-        m_lblClassSkill.m_cText.m_cParams.SetStrRef(38152);
+        m_lblClassSkill.m_cText.m_cParams.SetStrRef(STRREF_CLASS_SKILL);
     }
     else
     {
-        m_lblClassSkill.m_cText.m_cParams.SetStrRef(38153);
+        m_lblClassSkill.m_cText.m_cParams.SetStrRef(STRREF_CROSS_CLASS_SKILL);
     }
     CSWCLevelUpStats* pStats = m_pCreature->m_pStats;
     CExoString sCost(pStats->GetSkillPointCostForSkillRank(
@@ -588,6 +644,81 @@ void CSWGuiSkillsCharGen::OnEnterPointsButton(CSWGuiControl* pControl)
     pLabelParams->m_bHilightText = 1;
     CSWGuiTextParams* pButtonParams = &m_btnPoints[m_nSelected].m_cText.m_cParams;
     pButtonParams->m_bHilightText = 1;
+#else
+    for (i = 0; i < 8; i++)
+    {
+        int bDisabled = 0;
+        if (!m_bAllSkills)
+        {
+            CSWSkill* pSkill = &g_pRules->m_pSkills[(unsigned short)i];
+            int bDroidException = 0;
+            if (i == CSWSkill::SKILL_STEALTH &&
+                m_pCreature->GetServerCreature()->GetTag().CompareNoCase("g0t0"))
+            {
+                bDroidException = 1;
+            }
+            if (!pSkill->m_bNPCCanUse ||
+                (m_bDroid && !pSkill->m_bDroidCanUse && !bDroidException))
+            {
+                bDisabled = 1;
+            }
+        }
+
+        if (pControl == &m_btnPoints[i])
+        {
+            m_nSelected = i;
+            if (bDisabled)
+            {
+                m_btnPoints[i].m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
+                m_lblSkill[i].m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
+            }
+            else
+            {
+                m_btnPoints[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+                m_lblSkill[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            }
+        }
+        else
+        {
+            if (bDisabled)
+            {
+                m_btnPoints[i].m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
+                m_lblSkill[i].m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
+            }
+            else
+            {
+                m_btnPoints[i].m_cText.m_cParams.RestoreDefaultColor();
+                m_lblSkill[i].m_cText.m_cParams.RestoreDefaultColor();
+            }
+        }
+    }
+
+    if (IsClassSkill((unsigned short)m_nSelected))
+    {
+        m_lblClassSkill.m_cText.m_cParams.SetStrRef(STRREF_CLASS_SKILL);
+        m_lblClassSkill.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_BONUS);
+    }
+    else
+    {
+        m_lblClassSkill.m_cText.m_cParams.SetStrRef(STRREF_CROSS_CLASS_SKILL);
+        m_lblClassSkill.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+    }
+    CSWCLevelUpStats* pStats = m_pCreature->m_pStats;
+    int nCost = pStats->GetSkillPointCostForSkillRank(
+        (unsigned short)m_nSelected, 1);
+    CExoString sCost(nCost);
+    m_lblCostPoints.m_cText.m_cParams.SetText(sCost);
+    SetDescription(m_sDescription[m_nSelected]);
+    CSWGuiTextParams* pLabelParams = &m_lblSkill[m_nSelected].m_cText.m_cParams;
+    pLabelParams->m_bHilightText = 1;
+    CSWGuiTextParams* pButtonParams = &m_btnPoints[m_nSelected].m_cText.m_cParams;
+    pButtonParams->m_bHilightText = 1;
+    if (nCost == CSWCLevelUpStats::CLASS_SKILL_POINT_COST)
+    {
+        m_lblSkill[m_nSelected].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_BONUS);
+        m_btnPoints[m_nSelected].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_BONUS);
+    }
+#endif
 }
 // PC 0x007663B0
 void CSWGuiSkillsCharGen::ConfirmAccept(CSWGuiControl* pControl)
@@ -671,9 +802,20 @@ void CSWGuiSkillsCharGen::OnRecommendButton()
         if (!m_bAllSkills)
         {
             CSWSkill* pSkill = &g_pRules->m_pSkills[i];
+#ifdef _XBOX
             if (!pSkill->m_bNPCCanUse ||
                 (m_bDroid &&
                  !pSkill->m_bDroidCanUse))
+#else
+            int bDroidException = 0;
+            if (i == CSWSkill::SKILL_STEALTH &&
+                m_pCreature->GetServerCreature()->GetTag().CompareNoCase("g0t0"))
+            {
+                bDroidException = 1;
+            }
+            if (!pSkill->m_bNPCCanUse ||
+                (m_bDroid && !pSkill->m_bDroidCanUse && !bDroidException))
+#endif
             {
                 m_lblSkill[i].m_cText.m_cParams.SetColor(
                     CGuiInGame::DISABLED_TEXT);
@@ -720,6 +862,12 @@ int CSWGuiSkillsCharGen::IsClassSkill(unsigned short nSkill)
 {
     int nClass;
 
+#ifndef _XBOX
+    if (m_pCreature->m_pStats->HasClassSkillFeat(nSkill))
+    {
+        return 1;
+    }
+#endif
     for (int i = 0; i < m_pCreature->m_pStats->m_nClassCount; i++)
     {
         nClass = m_pCreature->m_pStats->GetClass(i);

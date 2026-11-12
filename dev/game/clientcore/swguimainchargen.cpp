@@ -279,6 +279,13 @@ void CSWGuiMainCharGen::ClearAbilities()
     m_lblNewWill.m_cText.m_cParams.SetText("");
     m_pCreature->m_pStats->ClearPackage();
 }
+#ifndef _XBOX
+// PC 0x0075BDB0
+void CSWGuiMainCharGen::ClearFeats()
+{
+    m_pCreature->m_pStats->ClearFeats();
+}
+#endif
 // PC 0x0075BDC0
 void CSWGuiMainCharGen::BeginPlayGame()
 {
@@ -318,7 +325,11 @@ CSWGuiMainCharGen::CSWGuiMainCharGen(CSWGuiManager* pManager,
     m_pManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
     m_pCreature = pCreature;
     DetermineClass();
+#ifdef _XBOX
     StartLoadFromLayout("MAINCG");
+#else
+    StartLoadFromLayout("MAINCG_p");
+#endif
     InitControl(m_lblTitle, "MAIN_TITLE_LBL", 1);
     InitControl(m_lblName, "LBL_NAME", 1);
     InitControl(m_lblClass, "LBL_CLASS", 1);
@@ -355,6 +366,14 @@ CSWGuiMainCharGen::CSWGuiMainCharGen(CSWGuiManager* pManager,
 #endif
     InitControl(m_viewModel, "MODEL_LBL", 1);
     InitControl(m_lblPortrait, "PORTRAIT_LBL", 1);
+#ifndef _XBOX
+    InitControl(m_lblStatsBack, "LBL_STATSBACK", 1);
+    InitControl(m_lblStatsBorder, "LBL_STATSBORDER", 1);
+    InitControl(m_lblPortBorder, "LBL_PORTBORDER", 1);
+    InitControl(m_lblVitName, "LBL_VIT_NAME", 1);
+    InitControl(m_lblDefName, "LBL_DEF_NAME", 1);
+    InitControl(m_lblBar, "LBL_BAR1", 1);
+#endif
     StopLoadFromLayout();
     m_pQuickOrCustom = new CSWGuiQuickOrCustomPanel(m_pManager, m_pCreature);
     m_pQuickOrCustom->m_pMainCharGen = this;

@@ -30,9 +30,10 @@ CSWGuiLoadScreen::CSWGuiLoadScreen(CSWGuiManager* pManager)
     StartLoadFromLayout("loadscreen");
 #else
     {
-        CResRef cLayout("loadscreen");
+        CResRef cLayout("loadscreen_p");
         StartLoadFromLayout(cLayout);
     }
+    m_bPositioned = 1;
 #endif
     InitControl(m_pbProgress, "PB_PROGRESS", 1);
     InitControl(m_lblHint, "LBL_HINT", 1);
@@ -47,8 +48,21 @@ CSWGuiLoadScreen::CSWGuiLoadScreen(CSWGuiManager* pManager)
     m_lblBackground.SetExtent(CSWGuiExtent(0, 0, pManager->m_nWidth,
                                          pManager->m_nHeight));
 
-    CExoString sBackground = CSWGuiManager::GetScreenResolutionString(
-        g_nScreenWidth, g_nScreenHeight);
+    CExoString sBackground("800x600");
+    if (g_nScreenWidth == 1024)
+    {
+        if (g_nScreenHeight == 768)
+            sBackground = "1024x768";
+    }
+    else if (g_nScreenWidth == 1280)
+    {
+        if (g_nScreenHeight == 960 || g_nScreenHeight == 1024)
+            sBackground = "1280x960";
+    }
+    else if (g_nScreenWidth == 1600 && g_nScreenHeight == 1200)
+    {
+        sBackground = "1600x1200";
+    }
     sBackground = sBackground + "load";
     {
         CResRef cBackground(sBackground);
@@ -57,8 +71,15 @@ CSWGuiLoadScreen::CSWGuiLoadScreen(CSWGuiManager* pManager)
         cParams.m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
     }
 #endif
-    m_bCenterHorizontal = 1;
-    m_bCenterVertical = 1;
+    m_bCenterHorizontal = 0;
+    m_bCenterVertical = 0;
+#ifndef _XBOX
+    m_res5A0 = m_lblLogo.m_cBorder.m_cParams.m_cFillImage;
+    {
+        CResRef cNoLogo("");
+        m_lblLogo.m_cBorder.m_cParams.SetFillImage(cNoLogo, 0);
+    }
+#endif
 }
 // PC 0x006D02B0
 void CSWGuiLoadScreen::SetHint(unsigned long nStrRef)

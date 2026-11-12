@@ -15,7 +15,9 @@ public:
         STRREF_PERSUADE_MAIN_CHARACTER_ONLY = 42469,
         STRREF_DROID_SKILL_UNAVAILABLE = 42471,
         STRREF_CLASS_SKILL_MAX_RANK = 42178,
-        STRREF_CROSS_CLASS_SKILL_MAX_RANK = 42179
+        STRREF_CROSS_CLASS_SKILL_MAX_RANK = 42179,
+        STRREF_CLASS_SKILL = 38152,
+        STRREF_CROSS_CLASS_SKILL = 38153
     };
     CSWGuiSkillsCharGen(CSWGuiManager* pManager, CSWCCreature* pCreature,
                         int bLevelUp);

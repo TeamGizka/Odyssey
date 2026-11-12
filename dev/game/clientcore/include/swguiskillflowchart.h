@@ -42,6 +42,8 @@ public:
     CSWGuiSkillInfoBox(CSWGuiManager* pManager);
     virtual ~CSWGuiSkillInfoBox();
     virtual void HandleInputEvent(int nEvent, int nState);
+    virtual void OnPanelRemoved();
+    void SetCallback(CSWGuiObject* pObject, CSWGuiHandler pfnCallback);
     void SetSkillList(const CExoArrayList<unsigned long>& lSkills,
                       unsigned char nState);
     void SetMessage(unsigned long nStrRef)
@@ -95,6 +97,9 @@ class CSWGuiSkillFlow : public CSWGuiControl
 public:
 
     static const unsigned long SKILL_INVALID = -1;
+    static const int FLOW_WIDTH = 262;
+    static const int FLOW_HEIGHT = 44;
+    static const int SKILL_ICON_SIZE = 40;
 
     CSWGuiSkillFlow();
     virtual void SetExtent(const CSWGuiExtent& cExtent);
@@ -133,6 +138,13 @@ public:
 class CSWGuiSkillFlowChart
 {
 public:
+    static const unsigned char USER_TYPE_FORM = 6;
+    static const unsigned long FORCE_POWER_FORCE_SIGHT = 176;
+    static const unsigned long FORCE_POWER_FORCE_CRUSH = 177;
+    static const unsigned long FORCE_POWER_PRECOGNITION = 178;
+    static const unsigned long FORCE_POWER_FORCE_ENLIGHTENMENT = 180;
+    static const unsigned long FORCE_POWER_BREATH_CONTROL = 270;
+
     CSWGuiSkillFlowChart();
     ~CSWGuiSkillFlowChart();
     int ClearChart();
@@ -151,7 +163,7 @@ public:
     void SetNumColumns(unsigned char nColumns);
     void Add(unsigned long nSkill, unsigned char nState);
     void AddPowerSet(unsigned long nPower1, unsigned long nPower2,
-                     unsigned long nPower3);
+                     unsigned long nPower3, int bSecret);
     void AddFeatSet(unsigned long nFeat1, unsigned long nFeat2,
                     unsigned long nFeat3);
     unsigned long GetFirst();

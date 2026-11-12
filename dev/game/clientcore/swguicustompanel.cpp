@@ -30,28 +30,12 @@ void CSWGuiMainCharGen::NameChanged()
 void CSWGuiCustomPanel::SetState(int nState)
 {
     m_nState = nState;
-#ifndef _XBOX
-    if (nState == CUSTOM_PANEL_STATE_PORTRAIT)
-    {
-        m_btnBack.SetEnabled(0);
-        m_btnBack.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
-    }
-    else
-    {
-        m_btnBack.SetEnabled(1);
-        m_btnBack.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-    }
-#endif
-
+#ifdef _XBOX
     for (int i = 0; i < 6; i++)
     {
         if (i == m_nState)
         {
             m_aHilights[i].SetActive(1);
-#ifndef _XBOX
-            m_aNumbers[i].SetEnabled(1);
-            m_aSteps[i].SetEnabled(1);
-#endif
             m_aNumbers[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
             m_aSteps[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
             CSWGuiTextParams* pParams = &m_aNumbers[i].m_cText.m_cParams;
@@ -68,26 +52,71 @@ void CSWGuiCustomPanel::SetState(int nState)
             pParams->m_bHilightText = 0;
             if (i < m_nState)
             {
-#ifdef _XBOX
                 m_aNumbers[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
                 m_aSteps[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-#else
-                m_aNumbers[i].SetEnabled(0);
-                m_aSteps[i].SetEnabled(0);
-#endif
             }
             else
             {
-#ifdef _XBOX
                 m_aNumbers[i].m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
                 m_aSteps[i].m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
-#else
-                m_aNumbers[i].SetEnabled(0);
-                m_aSteps[i].SetEnabled(0);
-#endif
             }
         }
     }
+#else
+    if (nState == CUSTOM_PANEL_STATE_PORTRAIT)
+    {
+        m_btnBack.SetEnabled(0);
+        m_btnBack.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_GREEN);
+        m_btnBack.m_cBorder.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
+    }
+    else
+    {
+        m_btnBack.SetEnabled(1);
+        m_btnBack.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+        m_btnBack.m_cBorder.m_cParams.SetColor(CGuiInGame::COLOR_NEW_GREEN);
+    }
+
+    for (int i = 0; i < 6; i++)
+    {
+        if (i == m_nState)
+        {
+            m_aHilights[i].SetActive(1);
+            m_aNumbers[i].SetEnabled(1);
+            m_aSteps[i].SetEnabled(1);
+            m_aNumbers[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            m_aSteps[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            m_aSteps[i].m_cBorder.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            CSWGuiTextParams* pParams = &m_aNumbers[i].m_cText.m_cParams;
+            pParams->m_bHilightText = 1;
+            pParams = &m_aSteps[i].m_cText.m_cParams;
+            pParams->m_bHilightText = 1;
+        }
+        else
+        {
+            m_aHilights[i].SetActive(0);
+            CSWGuiTextParams* pParams = &m_aNumbers[i].m_cText.m_cParams;
+            pParams->m_bHilightText = 0;
+            pParams = &m_aSteps[i].m_cText.m_cParams;
+            pParams->m_bHilightText = 0;
+            if (i < m_nState)
+            {
+                m_aNumbers[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+                m_aSteps[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+                m_aSteps[i].m_cBorder.m_cParams.SetColor(CGuiInGame::COLOR_NEW_GREEN);
+                m_aNumbers[i].SetEnabled(0);
+                m_aSteps[i].SetEnabled(0);
+            }
+            else
+            {
+                m_aNumbers[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_GREEN);
+                m_aSteps[i].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_GREEN);
+                m_aSteps[i].m_cBorder.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
+                m_aNumbers[i].SetEnabled(0);
+                m_aSteps[i].SetEnabled(0);
+            }
+        }
+    }
+#endif
     SetActiveControl(&m_aSteps[m_nState], 0);
 }
 // PC 0x00760250
@@ -313,9 +342,17 @@ void CSWGuiCustomPanel::HandleInputEvent(int nEvent, int nState)
             }
             m_nState = nCurrent - 1;
             SetState(nCurrent - 1);
-            if (m_nState - 1 == 0)
+            switch (m_nState)
             {
+            case CUSTOM_PANEL_STATE_ABILITIES:
                 ClearAbilities();
+                break;
+            case CUSTOM_PANEL_STATE_SKILLS:
+                if (m_pParentPanel != 0)
+                {
+                    ((CSWGuiMainCharGen*)m_pParentPanel)->ClearFeats();
+                }
+                break;
             }
 #endif
             break;
@@ -353,7 +390,11 @@ CSWGuiCustomPanel::CSWGuiCustomPanel(CSWGuiManager* pManager,
 
     m_pManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
     m_pCreature = pCreature;
+#ifdef _XBOX
     StartLoadFromLayout("CUSTPNL");
+#else
+    StartLoadFromLayout("CUSTPNL_p", 0, 1);
+#endif
 
     for (int i = 0; i < 6; i++)
     {
@@ -408,6 +449,8 @@ CSWGuiCustomPanel::CSWGuiCustomPanel(CSWGuiManager* pManager,
         (PFNGUIEVENT)&CSWGuiCustomPanel::OnCancelPressed);
 #endif
     SetState(CUSTOM_PANEL_STATE_PORTRAIT);
+#ifdef _XBOX
     m_bCenterHorizontal = 1;
     m_bCenterVertical = 1;
+#endif
 }

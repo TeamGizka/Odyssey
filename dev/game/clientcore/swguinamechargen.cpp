@@ -168,14 +168,14 @@ CSWGuiNameChargen::CSWGuiNameChargen(CSWGuiManager* pManager, CSWCCreature* pCre
 {
     CExoString sName;
     m_pCreature = pCreature;
-    StartLoadFromLayout("NAME");
+    StartLoadFromLayout("NAME_p");
     InitControl(m_btnDone, "END_BTN", 1);
-    InitControl(m_editName, "NAME_BOX_EDIT", 1);
     InitControl(m_lblTitle, "MAIN_TITLE_LBL", 1);
     InitControl(m_lblSubTitle, "SUB_TITLE_LBL", 1);
     InitControl(m_btnRandom, "BTN_RANDOM", 1);
     CSWGuiButton* pBackButton = &m_btnBack;
     InitControl(*pBackButton, "BTN_BACK", 1);
+    InitControl(m_editName, "NAME_BOX_EDIT", 1);
     StopLoadFromLayout();
     m_btnDone.AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiNameChargen::HandleDoneButton);
     m_btnDone.AddEvent(GUIEVENT_ACCEPT, this, (CSWGuiHandler)&CSWGuiNameChargen::HandleDoneButton);
@@ -193,6 +193,7 @@ void CSWGuiNameChargen::OnPanelAdded()
 {
     CExoString sName;
     m_editName.SetFocus();
+    m_editName.m_cText.SetCaretVisible(0);
     CSWGuiPanel::OnPanelAdded();
     if (m_nParentType == 1)
     {
@@ -384,10 +385,6 @@ void CSWGuiNameChargen::HandleDoneButton(CSWGuiControl* pControl)  // PC 0x0076C
             sName = sName.Left(sName.GetLength() - 1);
         }
         m_pCreature->SetName(sName, "");
-        m_pManager->PopModalPanel();
-        m_pParent->SetVisible(1);
-        m_bDeferredRemoval = 0;
-        m_nExitState = EXITSTATE_DELETE;
         if (m_nParentType == PARENT_QUICK)
         {
             ((CSWGuiQuickPanel*)m_pParent)->NameCreationCompleted();
@@ -396,6 +393,9 @@ void CSWGuiNameChargen::HandleDoneButton(CSWGuiControl* pControl)  // PC 0x0076C
         {
             ((CSWGuiCustomPanel*)m_pParent)->NameCreationCompleted();
         }
+        m_bDeferredRemoval = 0;
+        m_nExitState = EXITSTATE_DELETE;
+        m_pManager->PopModalPanel();
     }
 }
 #endif

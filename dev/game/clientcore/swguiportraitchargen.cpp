@@ -315,7 +315,11 @@ CSWGuiPortraitCharGen::CSWGuiPortraitCharGen(CSWGuiManager* pManager,
     : CSWGuiPanel(pManager)
 {
     m_pCreature = pCreature;
+#ifdef _XBOX
     StartLoadFromLayout("PORTCUST");
+#else
+    StartLoadFromLayout("PORTCUST_p");
+#endif
     InitControl(m_lblTitle, "MAIN_TITLE_LBL", 1);
     InitControl(m_lblSubTitle, "SUB_TITLE_LBL", 1);
 #ifdef _XBOX
@@ -341,6 +345,14 @@ CSWGuiPortraitCharGen::CSWGuiPortraitCharGen(CSWGuiManager* pManager,
     InitControl(m_btnAccept, "BTN_ACCEPT", 1);
     InitControl(m_btnLeft, "BTN_ARRL", 1);
     InitControl(m_btnRight, "BTN_ARRR", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    InitControl(m_alblBar[4], "LBL_BAR5", 1);
+    InitControl(m_alblBar[5], "LBL_BAR6", 1);
+    InitControl(m_alblBar[6], "LBL_BAR7", 1);
+    InitControl(m_alblBar[7], "LBL_BAR8", 1);
 #endif
     StopLoadFromLayout();
 
@@ -350,6 +362,12 @@ CSWGuiPortraitCharGen::CSWGuiPortraitCharGen(CSWGuiManager* pManager,
 
     CAurScene* pScene = m_viewHead.m_cScene.m_pScene;
     CAurCamera* pCamera = m_viewHead.m_cScene.m_pCamera;
+#ifndef _XBOX
+    if (pCamera != 0)
+    {
+        pCamera->SetViewAngle(65.0f);
+    }
+#endif
     if (g_bDo3DGUIs != 0)
     {
         CExoString sCameraHook;

@@ -16,6 +16,8 @@ class CSWGuiLevelUpCharGen;
 class CSWGuiLevelUpCharGen : public CSWGuiPanel
 {
 public:
+    static const unsigned long STRREF_LEVEL_LABEL = 74696;
+
     CSWGuiLevelUpCharGen(CSWGuiManager* pManager, unsigned long nCreature,
                          CSWCCreature* pCreature);
     virtual ~CSWGuiLevelUpCharGen();
@@ -77,7 +79,7 @@ public:
     CSWGuiLabel m_lblPortBorder;
     CSWGuiLabel m_lblVitName;
     CSWGuiLabel m_lblDefName;
-    CSWGuiLabel m_alblBar[1];
+    CSWGuiLabel m_lblBar;
 #endif
 #ifdef _XBOX
     CSWGuiLabel m_lblA;

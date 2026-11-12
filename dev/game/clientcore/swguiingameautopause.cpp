@@ -213,7 +213,7 @@ CSWGuiInGameAutoPause::CSWGuiInGameAutoPause(CSWGuiManager* pManager)
     SetActiveControl(&m_aCheckboxes[0], 0);
 #else
     {
-        CResRef cLayout("optautopause");
+        CResRef cLayout("optautopause_p");
         StartLoadFromLayout(cLayout);
     }
     InitControl(m_aCheckboxes[0], "CB_ENDROUND", 1);
@@ -228,6 +228,10 @@ CSWGuiInGameAutoPause::CSWGuiInGameAutoPause(CSWGuiManager* pManager)
     m_lbxDetails.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     CSWGuiButton* pBack = &m_btnBack;
     InitControl(*pBack, "BTN_BACK", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
     CSWGuiOptionsCheckbox* pCheckbox = m_aCheckboxes;
     for (int nSlot = 6; nSlot != 0; nSlot--)
     {
@@ -235,12 +239,12 @@ CSWGuiInGameAutoPause::CSWGuiInGameAutoPause(CSWGuiManager* pManager)
                             (PFNGUIEVENT)&CSWGuiInGameAutoPause::OnEnterSlot);
         pCheckbox++;
     }
-    m_aCheckboxes[0].m_nIndex = 42445;
-    m_aCheckboxes[1].m_nIndex = 42446;
-    m_aCheckboxes[2].m_nIndex = 49117;
-    m_aCheckboxes[3].m_nIndex = 42447;
-    m_aCheckboxes[4].m_nIndex = 48416;
-    m_aCheckboxes[5].m_nIndex = 48214;
+    m_aCheckboxes[0].m_nIndex = STRREF_DESC_END_ROUND;
+    m_aCheckboxes[1].m_nIndex = STRREF_DESC_ENEMY_SIGHTED;
+    m_aCheckboxes[2].m_nIndex = STRREF_DESC_MINE_SIGHTED;
+    m_aCheckboxes[3].m_nIndex = STRREF_DESC_PARTY_KILLED;
+    m_aCheckboxes[4].m_nIndex = STRREF_DESC_ACTION_MENU;
+    m_aCheckboxes[5].m_nIndex = STRREF_DESC_TARGET_CHANGE;
     StopLoadFromLayout();
 
     CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbxDetails.m_pProtoItem;
