@@ -5,6 +5,8 @@
 #include "swguistore.h"
 
 #include "guiingame.h"
+#include "nwccreature.h"
+#include "nwcitem.h"
 #include "nwitem.h"
 #include "nwtlktable.h"
 #include "nwsitem.h"
@@ -12,6 +14,7 @@
 #include "nwsstore.h"
 #include "swguicustompanel.h"
 #include "swguiingameequip.h"
+#include "swparty.h"
 
 static inline void SwguistoreTrace2();
 static inline void SwguistoreTrace1();
@@ -105,7 +108,24 @@ void CSWGuiStore::SellItemCallback(CSWGuiControl* pControl)
         CSWSItem* pItem = pServer->GetItemByGameObjectID(
             pServer->ClientToServerObjectId(oidItem));
         if (pItem != 0)
+        {
+            int nCharacter = static_cast<CSWGuiStoreItemEntry*>(pControl)->m_nCharacter;
+            if (nCharacter != -1)
+            {
+                CSWCCreature* pCharacter =
+                    g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(nCharacter);
+                if (pCharacter != NULL)
+                {
+                    CSWSCreature* pServerCreature = pCharacter->GetServerCreature();
+                    if (pServerCreature != NULL)
+                    {
+                        pServerCreature->RunUnequip(pItem->GetId(), OBJECT_INVALID, 0, NULL, 1);
+                    }
+                    m_bInventoryDirty = 1;
+                }
+            }
             SellItem(pItem);
+        }
     }
 }
 // PC 0x00721670
@@ -239,17 +259,9 @@ void CSWGuiStore::BuyItem(CSWSItem* pItem)
         m_nGold -= GetItemBuyValue(pItem);
         pCreature->SetGold(m_nGold);
         pStore->SellItem(pItem, pCreature);
-        int nSelectedItem = m_lbxStoreItems.m_nSelectedItem;
-#ifndef _XBOX
         int nTopVisibleItem = m_lbxStoreItems.m_nTopVisibleItem;
-#endif
         PopulateStoreItemListBox();
-        if (nSelectedItem >= m_lbxStoreItems.m_lItems.num)
-            nSelectedItem = m_lbxStoreItems.m_lItems.num - 1;
-#ifndef _XBOX
         m_lbxStoreItems.SetTopVisible(nTopVisibleItem);
-#endif
-        m_lbxStoreItems.SetSelectedControl(nSelectedItem, 0);
         m_lblCreditsValue.m_cText.m_cParams.SetText(CExoString(m_nGold));
     }
 }
@@ -280,6 +292,45 @@ int CSWGuiStore::GetItemSellValue(CSWSItem* pItem)
         return 0;
     nMarkup = pStore->m_nMarkDown + pStore->m_nBonusMarkDown;
     return nMarkup * pItem->GetCost() / 100u;
+}
+// PC 0x00720FD0
+int CSWGuiStore::CheckFilter(CSWSItem* pItem)
+{
+    if (pItem == NULL)
+    {
+        return 0;
+    }
+    int bResult = 0;
+    switch (m_nFilter)
+    {
+    case STORE_FILTER_ALL:
+        bResult = 1;
+        break;
+    case STORE_FILTER_WEAPONS:
+        if (pItem->GetBaseItem() != NULL)
+        {
+            bResult = (pItem->GetBaseItem()->m_nEquipableSlots &
+                       (INVENTORY_SLOT_RIGHTHAND | INVENTORY_SLOT_LEFTHAND)) != 0;
+        }
+        break;
+    case STORE_FILTER_ARMOR:
+        if (pItem->GetBaseItem() != NULL)
+        {
+            bResult = (pItem->GetBaseItem()->m_nEquipableSlots &
+                       (INVENTORY_SLOT_HEAD | INVENTORY_SLOT_ARMOUR | INVENTORY_SLOT_HANDS |
+                        INVENTORY_SLOT_RIGHTRING | INVENTORY_SLOT_NECK | INVENTORY_SLOT_BELT |
+                        INVENTORY_SLOT_ARMS)) != 0;
+        }
+        break;
+    case STORE_FILTER_MISC:
+        bResult = 1;
+        if (pItem->GetBaseItem() != NULL && pItem->GetBaseItem()->m_nEquipableSlots != 0)
+        {
+            bResult = 0;
+        }
+        break;
+    }
+    return bResult;
 }
 // PC 0x00722030
 void CSWGuiStore::BuyItemCallback(CSWGuiControl* pControl)
@@ -325,7 +376,10 @@ void CSWGuiStore::SellItem(CSWSItem* pItem)
 #ifndef _XBOX
             int nTopVisibleItem = m_lbxInventoryItems.m_nTopVisibleItem;
 #endif
-            PopulateInventoryItemListBox();
+            if (!m_bInventoryDirty)
+            {
+                PopulateInventoryItemListBox();
+            }
             if (nSelectedItem >= m_lbxInventoryItems.m_lItems.num)
                 nSelectedItem = m_lbxInventoryItems.m_lItems.num - 1;
 #ifndef _XBOX
@@ -339,55 +393,78 @@ void CSWGuiStore::SellItem(CSWSItem* pItem)
 // PC 0x007228E0
 void CSWGuiStore::PopulateInventoryItemListBox()
 {
-    CServerExoApp* pServer;
-    CSWSCreature* pCreature;
-    CItemRepository* pRepository;
-    int nEntryIndex;
-    int nItemClass;
-    int bCreateItem;
-    unsigned long nItemCount;
-    unsigned long nEntries;
-    int nNextItemClass;
-    unsigned long i;
-    unsigned long j;
-
-    pServer = g_pAppManager->GetServerExoApp();
-    pCreature = pServer->GetCreatureByGameObjectID(m_nCreatureId);
-    if (pCreature != 0)
-        pRepository = pCreature->GetItemRepository(1);
-
+    CSWSCreature* pCreature =
+        g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(m_nCreatureId);
+    if (pCreature == NULL)
+    {
+        return;
+    }
+    CItemRepository* pRepository = pCreature->GetItemRepository(1);
+    m_lbxInventoryItems.ClearItems();
     CExoArrayList<CSWGuiControl*> lControls;
-    nEntryIndex = 0;
-    bCreateItem = 0;
-    nItemCount = 0;
+    int nEntryIndex = 0;
+    int bCreateItem = 0;
+    unsigned long nItemCount = 0;
+
+    CSWCCreature* pCharacter =
+        g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
+    if (pCharacter != NULL)
+    {
+        for (unsigned long nSlot = 0; nSlot < NUM_INVENTORY_SLOTS; ++nSlot)
+        {
+            unsigned long nSlotMask = 1 << nSlot;
+            if (nSlotMask == INVENTORY_SLOT_CREATUREWEAPON1 ||
+                nSlotMask == INVENTORY_SLOT_CREATUREWEAPON2 ||
+                nSlotMask == INVENTORY_SLOT_CREATUREWEAPON3 ||
+                nSlotMask == INVENTORY_SLOT_CREATUREARMOUR)
+            {
+                continue;
+            }
+            CSWCItem* pClientItem = g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(
+                pCharacter->GetEquippedItemID(nSlotMask));
+            if (pClientItem != NULL)
+            {
+                CSWSItem* pItem = pClientItem->GetServerItem();
+                if (pItem != NULL && pItem->m_bPlotObject == 0 && CheckFilter(pItem))
+                {
+                    CreateItemEntry(nEntryIndex, lControls, pItem->GetId(), 1, 0);
+                }
+            }
+        }
+    }
+
+    unsigned long i;
     for (i = 0; i < pRepository->GetNumItems(); i++)
     {
         CSWSItem* pItem = pRepository->ItemListGetItem(i);
-        if (pItem != 0 && pItem->GetPlotObject() == 0)
+        if (pItem != NULL && pItem->m_bPlotObject == 0)
+        {
             nItemCount++;
+        }
     }
 
-    nEntries = 0;
-    nItemClass = 0;
-    nNextItemClass = 0;
+    unsigned long nEntries = 0;
+    int nItemClass = 0;
+    int nNextItemClass = 0;
     while (nEntries < nItemCount)
     {
-        for (j = 0; j < pRepository->GetNumItems(); j++)
+        for (i = 0; i < pRepository->GetNumItems(); i++)
         {
-            CSWSItem* pItem;
-            int nCurrentItemClass;
-
             if (bCreateItem != 0)
-                break;
-            pItem = pRepository->ItemListGetItem(j);
-            if (pItem != 0 && pItem->GetPlotObject() == 0)
             {
-                nCurrentItemClass =
-                    pItem->GetBaseItem()->GetStorePanelSort();
+                break;
+            }
+            CSWSItem* pItem = pRepository->ItemListGetItem(i);
+            if (pItem != NULL && pItem->m_bPlotObject == 0)
+            {
+                int nCurrentItemClass = pItem->GetBaseItem()->GetStorePanelSort();
                 if (nCurrentItemClass == nItemClass)
                 {
-                    bCreateItem = CreateItemEntry(nEntryIndex, lControls,
-                                                  pItem->GetId(), 1);
+                    if (CheckFilter(pItem))
+                    {
+                        bCreateItem = CreateItemEntry(nEntryIndex, lControls,
+                                                      pItem->GetId(), 1, -1);
+                    }
                     nEntries++;
                 }
                 else if (nCurrentItemClass > nItemClass &&
@@ -413,6 +490,7 @@ void CSWGuiStore::PopulateInventoryItemListBox()
             m_lblItemValue.m_cText.m_cParams.SetText("");
             m_lblUnknownD00.m_cText.m_cParams.SetText("");
             m_lblDescription.m_cText.m_cParams.SetText("");
+            m_lblOnHandValue.m_cText.m_cParams.SetText("");
         }
     }
     m_nUnknown2274 = 0;
@@ -463,39 +541,60 @@ void CSWGuiStore::ShowSellGUI()
     SetActiveControl(pActiveList, 0);
     PopulateInventoryItemListBox();
 }
+// PC 0x00722CF0
+void CSWGuiStore::UpdateFilters()
+{
+    for (int i = 0; i < STORE_FILTER_COUNT; i++)
+    {
+        m_abtnFilter[i].m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_LIGHT_GOLD);
+    }
+    m_abtnFilter[m_nFilter].m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    PopulateInventoryItemListBox();
+    PopulateStoreItemListBox();
+}
+// PC 0x00722D50
+void CSWGuiStore::Draw(float fElapsed)
+{
+    if (m_bInventoryDirty)
+    {
+        PopulateInventoryItemListBox();
+        m_bInventoryDirty = 0;
+    }
+    CSWGuiPanel::Draw(fElapsed);
+}
 // PC 0x00722EA0
 CSWGuiStore::CSWGuiStore(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
     m_nUnknown226C = 0;
 
-    StartLoadFromLayout("store");
+    StartLoadFromLayout("store_p");
     InitControl(m_lblBuySell, "LBL_BUYSELL", 1);
     InitControl(m_lbxStoreItems, "LB_SHOPITEMS", 1);
     InitControl(m_lbxInventoryItems, "LB_INVITEMS", 1);
     InitControl(m_lblCredits, "LBL_CREDITS", 1);
     InitControl(m_lblCreditsValue, "LBL_CREDITS_VALUE", 1);
-#ifdef _XBOX
-    InitControl(m_lblUnknown80, "LBL_A", 1);
-    InitControl(m_lblUnknown1C0, "LBL_Accept", 1);
-    InitControl(m_lblUnknown300, "LBL_B", 1);
-    InitControl(m_lblUnknown440, "LBL_Cancel", 1);
-    InitControl(m_lblUnknown800, "LBL_X", 1);
-    InitControl(m_lblUnknown6C0, "LBL_Examine", 1);
-#endif
     InitControl(m_CSWGuiListBox_1A40, "LB_DESCRIPTION", 1);
     m_CSWGuiListBox_1A40.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     InitControl(m_lblCost, "LBL_COST", 1);
     InitControl(m_lblItemValue, "LBL_COST_VALUE", 1);
     InitControl(m_lblStock, "LBL_STOCK", 1);
     InitControl(m_lblUnknownD00, "LBL_STOCK_VALUE", 1);
-#ifdef _XBOX
-    InitControl(m_lblUnknownF80, "LBL_RANALOG", 1);
-#else
     InitControl(m_btnCancel, "BTN_Cancel", 1);
     InitControl(m_btnExamine, "BTN_Examine", 1);
     InitControl(m_btnAccept, "BTN_Accept", 1);
-#endif
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    InitControl(m_alblBar[4], "LBL_BAR5", 1);
+    InitControl(m_lblFilter, "LBL_FILTER", 1);
+    InitControl(m_lblOnHand, "LBL_ONHAND", 1);
+    InitControl(m_lblOnHandValue, "LBL_ONHAND_VALUE", 1);
+    InitControl(m_abtnFilter[0], "BTN_ALL", 1);
+    InitControl(m_abtnFilter[1], "BTN_WEAPONS", 1);
+    InitControl(m_abtnFilter[2], "BTN_ARMOR", 1);
+    InitControl(m_abtnFilter[3], "BTN_MISC", 1);
     StopLoadFromLayout();
 
     CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_CSWGuiListBox_1A40.m_pProtoItem;
@@ -512,7 +611,6 @@ CSWGuiStore::CSWGuiStore(CSWGuiManager* pManager)
     m_nUnknown2274 = 0;
     m_nGold = 0;
 
-#ifndef _XBOX
     CSWGuiButton* pCancel = &m_btnCancel;
     pCancel->m_bFocusable = 0;
     pCancel->AddEvent(CSWGuiControl::EVENT_SELECT, this,
@@ -525,20 +623,28 @@ CSWGuiStore::CSWGuiStore(CSWGuiManager* pManager)
 
     pInventoryItems->SetSelectOnLeftClick(1);
     pStoreItems->SetSelectOnLeftClick(1);
-#endif
-#ifndef _XBOX
+
+    for (int i = 0; i < STORE_FILTER_COUNT; i++)
+    {
+        m_abtnFilter[i].m_bFocusable = 0;
+        m_abtnFilter[i].m_nIndex = i;
+        m_abtnFilter[i].AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                                 (CSWGuiHandler)&CSWGuiStore::OnFilterPressed);
+    }
     m_nBackground = 1;
-#endif
+    m_nFilter = 0;
+    m_bInventoryDirty = 0;
 }
 // PC 0x00723780
 void CSWGuiStore::OnPanelAdded()
 {
     InitializeStoreType();
+    m_nFilter = 0;
+    UpdateFilters();
     PopulateStore();
-#ifndef _XBOX
     CSWGuiPanel::OnPanelAdded();
-#endif
     ShowBuyGUI();
+    m_bInventoryDirty = 0;
 }
 // PC 0x007237C0
 void CSWGuiStore::HandleInputEvent(int nEvent, int nState)
@@ -550,6 +656,7 @@ void CSWGuiStore::HandleInputEvent(int nEvent, int nState)
         switch (nEvent)
         {
         case 40:
+        case 45:
         case 46:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
             g_pAppManager->m_pClientExoApp->GetInGameGui()->HideStoreGui();
@@ -593,6 +700,7 @@ void CSWGuiStore::PopulateStoreItemListBox()
         g_pAppManager->GetServerExoApp()->GetStoreByGameObjectID(m_nStoreId)
             ->m_pItemRepository;
     CExoArrayList<CSWGuiControl*> lControls;
+    m_lbxStoreItems.ClearItems();
     {
         int nEntryIndex;
         int nItemClass;
@@ -621,8 +729,11 @@ void CSWGuiStore::PopulateStoreItemListBox()
                     nCurrentItemClass = pItem->GetBaseItem()->GetStorePanelSort();
                     if (nCurrentItemClass == nItemClass)
                     {
-                        bCreateItem =
-                            CreateItemEntry(nEntryIndex, lControls, pItem->GetId(), 0);
+                        if (CheckFilter(pItem))
+                        {
+                            bCreateItem = CreateItemEntry(nEntryIndex, lControls,
+                                                          pItem->GetId(), 0, -1);
+                        }
                         nEntries++;
                     }
                     else if (nCurrentItemClass > nItemClass &&
@@ -651,6 +762,7 @@ void CSWGuiStore::PopulateStoreItemListBox()
             m_lblItemValue.m_cText.m_cParams.SetText("");
             m_lblUnknownD00.m_cText.m_cParams.SetText("");
             m_lblDescription.m_cText.m_cParams.SetText("");
+            m_lblOnHandValue.m_cText.m_cParams.SetText("");
         }
     }
     m_nUnknown2274 = 0;
@@ -658,7 +770,8 @@ void CSWGuiStore::PopulateStoreItemListBox()
 // PC 0x00722710
 int CSWGuiStore::CreateItemEntry(int& nEntries,
                                  CExoArrayList<CSWGuiControl*>& lControls,
-                                 unsigned long oidItem, int bInventory)
+                                 unsigned long oidItem, int bInventory,
+                                 int nCharacter)
 {
     CExoArrayList<CSWGuiStoreItemEntry*>* pEntries =
         bInventory ? &m_lInventoryEntries : &m_lStoreEntries;
@@ -700,7 +813,7 @@ int CSWGuiStore::CreateItemEntry(int& nEntries,
         pNewEntry->AddEvent(GUIEVENT_MOUSE_ENTER, this,
                         (CSWGuiHandler)&CSWGuiStore::OnControlEntered);
     }
-    pEntry->SetItem(oidItem, 0);
+    pEntry->SetItem(oidItem, 0, nCharacter);
     pEntry->SetActive(0);
     lControls.Add(pEntry);
     nEntries++;
@@ -812,6 +925,12 @@ void CSWGuiStore::InitializeStoreType()
             return;
         }
     }
+}
+// PC 0x00722E80
+void CSWGuiStore::OnFilterPressed(CSWGuiControl* pControl)
+{
+    m_nFilter = (unsigned char)pControl->m_nIndex;
+    UpdateFilters();
 }
 
 static inline void SwguistoreTrace2()

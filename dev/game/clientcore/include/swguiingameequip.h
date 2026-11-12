@@ -263,12 +263,12 @@ public:
     CSWGuiBorder m_cIconHilite;
     CSWGuiBorder m_cCountBorder;
     CSWGuiText m_cCountText;
-    int m_n3AC;
+    int m_nCharacter;
     int m_n3B0;
     int m_n3B4;
     virtual void Initialize(CSWGuiText&, CSWGuiBorder&, CSWGuiBorder&, int);
     CSWGuiStoreItemEntry();
-    void SetItem(unsigned long, int);
+    void SetItem(unsigned long, int, int nCharacter);
 };
 
 #ifdef _XBOX

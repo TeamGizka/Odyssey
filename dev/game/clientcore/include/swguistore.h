@@ -13,6 +13,15 @@ class CSWGuiStore : public CSWGuiPanel
 public:
 
     enum { STRREF_INFINITE = 41951 };
+    enum
+    {
+        STORE_FILTER_ALL = 0,
+        STORE_FILTER_WEAPONS = 1,
+        STORE_FILTER_ARMOR = 2,
+        STORE_FILTER_MISC = 3,
+        STORE_FILTER_COUNT = 4
+    };
+    enum { NUM_INVENTORY_SLOTS = 20 };
 
     enum
     {
@@ -61,7 +70,7 @@ public:
     CSWGuiLabel m_lblFilter;
     CSWGuiLabel m_lblOnHand;
     CSWGuiLabel m_lblOnHandValue;
-    CSWGuiButton m_abtnFilter[4];
+    CSWGuiButton m_abtnFilter[STORE_FILTER_COUNT];
 #endif
     int m_nUnknown226C;
     int m_nGold;
@@ -70,8 +79,12 @@ public:
     unsigned long m_nCreatureId;
 #ifndef _XBOX
     unsigned char m_nFilter;
-    unsigned char m_n34D9;
+    unsigned char m_bInventoryDirty;
 #endif
+    int CheckFilter(CSWSItem* pItem);
+    void UpdateFilters();
+    void OnFilterPressed(CSWGuiControl* pControl);
+    virtual void Draw(float fElapsed);
     void PopulateStore();
     void SetDescription(CExoString const&);
     int GetItemBuyValue(CSWSItem*);
@@ -84,7 +97,7 @@ public:
     void SellItem(CSWSItem*);
     void SellItemCallback(CSWGuiControl*);
     int CreateItemEntry(int&, CExoArrayList<CSWGuiControl*>&, unsigned long,
-                        int);
+                        int, int nCharacter);
     void OnControlInvAButton(CSWGuiControl*);
     void OnControlStoreAButton(CSWGuiControl*);
     void DeleteItemEntries();

@@ -789,7 +789,7 @@ void CSWGuiInGameEquip::OnPanelAdded()
 #endif
 }
 #endif
-void CSWGuiStoreItemEntry::SetItem(unsigned long oidItem, int bUpdate)  // PC 0x00715900
+void CSWGuiStoreItemEntry::SetItem(unsigned long oidItem, int bUpdate, int nCharacter)  // PC 0x00715900
 {
     CResRef cIcon;
     CExoString sName;
@@ -799,6 +799,7 @@ void CSWGuiStoreItemEntry::SetItem(unsigned long oidItem, int bUpdate)  // PC 0x
     CExoString sPrice;
     CServerExoApp* pServer = GetServerExoApp();
     CSWSItem* pItem = pServer->GetItemByGameObjectID(oidItem);
+    m_nCharacter = nCharacter;
     m_oidItem = oidItem;
     if (oidItem != OBJECT_INVALID)
     {
