@@ -3468,8 +3468,8 @@ void CSWGuiCreateItem::OnControlStoreAButton(CSWGuiControl* pControl)
         unsigned long oidItem =
             static_cast<CSWGuiStoreItemEntry*>(pControl)->m_oidItem;
         CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
-        CSWSItem* pItem = pServer->GetItemByGameObjectID(
-            pServer->ClientToServerObjectId(oidItem));
+        unsigned long oidServer = pServer->ClientToServerObjectId(oidItem);
+        CSWSItem* pItem = pServer->GetItemByGameObjectID(oidServer);
         if (pItem != 0)
         {
             if ((unsigned long)m_nComponents >= GetItemBuyValue(pItem))
@@ -3801,8 +3801,8 @@ void CSWGuiCreateItem::OnControlEntered(CSWGuiControl* pControl)
         unsigned long oidItem =
             static_cast<CSWGuiStoreItemEntry*>(pControl)->m_oidItem;
         pServer = g_pAppManager->m_pServerExoApp;
-        CSWSItem* pItem = pServer->GetItemByGameObjectID(
-            pServer->ClientToServerObjectId(oidItem));
+        unsigned long oidServer = pServer->ClientToServerObjectId(oidItem);
+        CSWSItem* pItem = pServer->GetItemByGameObjectID(oidServer);
         if (pItem != 0)
         {
             if (m_lbxStoreItems.m_bEnabled)
@@ -4160,8 +4160,8 @@ void CSWGuiCreateMedicalItem::OnControlStoreAButton(CSWGuiControl* pControl)
             unsigned long oidItem =
                 static_cast<CSWGuiStoreItemEntry*>(pControl)->m_oidItem;
             CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
-            CSWSItem* pItem = pServer->GetItemByGameObjectID(
-                pServer->ClientToServerObjectId(oidItem));
+            unsigned long oidServer = pServer->ClientToServerObjectId(oidItem);
+            CSWSItem* pItem = pServer->GetItemByGameObjectID(oidServer);
             if (pItem != 0)
             {
                 if ((unsigned long)m_nChemicals >= GetItemBuyValue(pItem))
