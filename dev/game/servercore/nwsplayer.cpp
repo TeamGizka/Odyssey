@@ -536,7 +536,7 @@ void CSWSPlayer::SetGameObject(CSWSObject* pObject)
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
     if (pServer != NULL)
     {
-        CGameObject* pOldObject = pServer->GetGameObject(oidOldObject);
+        CGameObject* pOldObject = pServer->GetGameObject(m_oidNWSObject);
         if (pOldObject != NULL &&
             pOldObject->m_nObjectType > CGameObject::OBJECT_TYPE_AREA)
         {
@@ -582,6 +582,10 @@ void CSWSPlayer::SetGameObject(CSWSObject* pObject)
             pOldArea->DecrementPlayersInArea();
     }
 }
+static inline void SetGlobalNumber(const CExoString& sIdentifier, int nValue)
+{
+    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(sIdentifier, nValue);
+}
 // PC 0x0059E830
 int CSWSPlayer::LoadLocalCharacter()
 {
@@ -597,15 +601,14 @@ int CSWSPlayer::LoadLocalCharacter()
 
     int nLevel = 0;
     for (int nClass = 0;
-         nClass < ((CSWSCreature*)pCreature)->m_pStats->m_nClassCount; nClass++)
+         nClass < ((CSWSCreature*)pCreature)->GetStats()->m_nClassCount; nClass++)
     {
-        nLevel += ((CSWSCreature*)pCreature)->m_pStats->GetClassLevel(nClass, 0);
+        int nClassLevel = ((CSWSCreature*)pCreature)->GetStats()->GetClassLevel(nClass, 0);
+        nLevel += nClassLevel;
     }
-    g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
-        "G_PC_LEVEL", nLevel);
-    g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
-        "G_PC_Align_Val",
-        ((CSWSCreature*)pCreature)->m_pStats->m_nGoodEvilAlignment);
+    SetGlobalNumber("G_PC_LEVEL", nLevel);
+    SetGlobalNumber("G_PC_Align_Val",
+        ((CSWSCreature*)pCreature)->GetStats()->m_nGoodEvilAlignment);
     if (nResult != 0)
     {
         SetGameObject((CSWSObject*)NULL);
