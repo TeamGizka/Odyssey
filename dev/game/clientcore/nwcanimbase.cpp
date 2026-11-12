@@ -1100,7 +1100,8 @@ unsigned char CSWCAnimBase::GetCenterPoint(Vector& vCenter)
         Vector vView = -pCamera->GetOrientation().zdir();
         m_pModel->GetBoundingBox(vMinimum, vMaximum);
 
-        Vector avCorners[8];
+        const int nCorners = 8;
+        Vector avCorners[nCorners];
         Vector vWorldMinimum(FLT_MAX, FLT_MAX, FLT_MAX);
         Vector vWorldMaximum(-FLT_MAX, -FLT_MAX, -FLT_MAX);
         avCorners[0] = vMinimum;
@@ -1112,7 +1113,7 @@ unsigned char CSWCAnimBase::GetCenterPoint(Vector& vCenter)
         avCorners[6] = Vector(vMaximum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
         avCorners[7] = Vector(vMaximum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
 
-        for (int i = 0; i < 8; ++i)
+        for (int i = 0; i < nCorners; ++i)
         {
             avCorners[i] = qOrientation * avCorners[i] + vPosition;
             vWorldMinimum.m_fX = min(vWorldMinimum.m_fX, avCorners[i].m_fX);
