@@ -167,6 +167,7 @@ public:
     void InvertFormation();
     void SetFormation(int nFormation);
     float GetFollowRange();
+    int PartyHasRace(unsigned short nRace);
     int IsPartyTogether();
     void SetLeader(int nIndex);
     void RecaulateFollowPoint();

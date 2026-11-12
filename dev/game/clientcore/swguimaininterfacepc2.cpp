@@ -4263,6 +4263,21 @@ CSWGuiMainInterfaceAction::CSWGuiMainInterfaceAction()  // PC 0x006DF630
     m_bTarget = 0;
 }
 #endif
+// PC 0x006DF5F0
+void CSWGuiMainInterface::OnSwapWeaponsPressed(CSWGuiControl* pControl)
+{
+    CSWCCreature* pCreature = g_pAppManager->m_pClientExoApp->GetPlayerCreature();
+    if (pCreature != NULL)
+    {
+        pCreature->ActionMenuSwitchWeapons(0, NULL);
+    }
+}
+// PC 0x006DF610
+void CSWGuiMainInterface::ResetPartyMemberItemUse()
+{
+    m_nUseItemTargetMember = -1;
+    m_bSelectingUseItemTarget = 0;
+}
 
 #ifndef _XBOX
 CSWGuiTargetActionMenu::CSWGuiTargetActionMenu()  // PC 0x006E5060

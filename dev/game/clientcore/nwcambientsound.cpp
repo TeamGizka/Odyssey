@@ -182,6 +182,24 @@ void CSWCAmbientSound::PlayMusic(int bPlay)
                 m_nTimeRemaining = 0;
                 m_pMusicSource->SetPriorityGroup(
                     CExoStreamingSoundSource::PRIORITY_GROUP_MUSIC);
+#ifndef _XBOX
+                CExoString& sMusic = m_bDaytime ? m_MusicDay.m_sSound : m_MusicNight.m_sSound;
+                CResRef cMusic(sMusic);
+                CExoStreamingSoundSource* pSource =
+                    g_pAppManager->GetClientExoApp()->AquireLoadMusic(cMusic);
+                if (pSource != 0)
+                {
+                    delete m_pMusicSource;
+                    m_pMusicSource = pSource;
+                    m_pMusicSource->SetLooping(0);
+                    m_pMusicSource->SetPriorityGroup(
+                        CExoStreamingSoundSource::PRIORITY_GROUP_MUSIC);
+                }
+                else if (!m_pMusicSource->Play(sMusic, RESTYPE_BMU, 0, 1, 0))
+                {
+                    m_nTimeRemaining = STREAM_DOESNT_EXIST_DELAY;
+                }
+#else
                 int bPlaying;
                 if (m_bDaytime != 0)
                 {
@@ -197,6 +215,7 @@ void CSWCAmbientSound::PlayMusic(int bPlay)
                 {
                     m_nTimeRemaining = STREAM_DOESNT_EXIST_DELAY;
                 }
+#endif
             }
             m_bMusicEnabled = 1;
         }

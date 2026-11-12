@@ -5,6 +5,7 @@
 #include "clientexoapp.h"
 #include "guiingame.h"
 #include "nwccreature.h"
+#include "nwccreaturestats.h"
 #include "serverexoapp.h"
 #include "partytables.h"
 #include "nwsobject.h"
@@ -73,6 +74,7 @@ CSWCCreature* CSWParty::RemoveCharacter(int nIndex)
 
     m_aPartyMemberData[MAX_MEMBERS - 1].m_oidCreature = OBJECT_INVALID;
     --m_nCharacters;
+    g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMainInterface->ResetPartyMemberItemUse();
     return pCreature;
 }
 // PC 0x00689F30
@@ -260,6 +262,16 @@ float CSWParty::GetFollowRange()
     }
 
     return fRange;
+}
+// PC 0x0068A4E0
+int CSWParty::PartyHasRace(unsigned short nRace)
+{
+    for (int nIndex = 0; nIndex < m_nCharacters; ++nIndex)
+    {
+        if (GetCharacter(nIndex)->GetStats()->m_nRace == nRace)
+            return 1;
+    }
+    return 0;
 }
 // PC 0x0068A550
 int CSWPartyFollowDataArray::Reset(const Vector& vPosition, float fFacing)
@@ -705,15 +717,11 @@ int CSWParty::IsPartyTogether()
     int nIndex;
 
     pLeader = g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
-        g_pAppManager->m_pServerExoApp->ClientToServerObjectId(
-            g_pAppManager->m_pClientExoApp->GetPlayerCreatureId()));
-    if (pLeader == NULL)
+        g_pAppManager->m_pServerExoApp->GetFirstPCObject());
+    if (pLeader == NULL || pLeader->GetCurrentHitPoints(0) <= 0)
     {
         return 0;
     }
-
-    pLeader->GetArea();
-    Vector vLeaderPosition = pLeader->m_vPosition;
 
     nIndex = 0;
     if (m_nCharacters > 0)
@@ -725,14 +733,7 @@ int CSWParty::IsPartyTogether()
             pMember = g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
                 g_pAppManager->m_pServerExoApp->ClientToServerObjectId(
                     pMemberData->m_oidCreature));
-            if (pMember == NULL)
-            {
-                continue;
-            }
-
-            Vector vMemberPosition = pMember->m_vPosition;
-            Vector vDelta = vLeaderPosition - vMemberPosition;
-            if (vDelta * vDelta > SWPARTY_TOGETHER_DISTANCE_SQUARED)
+            if (pMember != NULL && pMember->GetCurrentHitPoints(0) <= 0)
             {
                 return 0;
             }

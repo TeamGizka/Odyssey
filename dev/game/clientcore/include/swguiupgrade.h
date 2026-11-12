@@ -15,6 +15,9 @@ class CSWGuiText_vtbl;
 class CSWGuiUpgradeItemSelect;
 class CSWGuiUpgradeSelection;
 class CSWUpgradeItemEntry;
+class CSWGuiCreateItem;
+class CSWGuiStoreItemEntry;
+class CSWSStore;
 
 #define UPGRADE_TABLE_TYPE_POWER_CRYSTAL 0
 
@@ -204,60 +207,136 @@ class CSWGuiUpgradeSelection : public CSWGuiPanel
 {
 public:
     CSWGuiLabel m_lblTitle;
-#ifdef _XBOX
-    CSWGuiLabel m_lblA;
-    CSWGuiLabel m_lblUpgradeitems;
-    CSWGuiLabel m_lblB;
-    CSWGuiLabel m_lblBack;
-#else
     CSWGuiLabel m_lblTitle2;
-
     CSWGuiButton m_btnUpgradeitems;
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnCreateitems;
-    CSWGuiPanel* m_pCreateItems;
-#endif
-
-#ifdef _XBOX
-    CSWGuiButton m_aTypeButtons[4];
-    CSWGuiLabel m_aTypeLabels[4];
-#else
+    CSWGuiCreateItem* m_pCreateItems;
     CSWGuiButton m_aTypeButtons[5];
     CSWGuiListBox m_lbUpgradelist;
     CSWGuiListBox m_lbDescription;
     CSWGuiLabel m_lblDescription;
-#endif
-
     unsigned long m_oidItem;
-#ifndef _XBOX
-    int m_n18A8;
-#endif
+    unsigned long m_oidCharacter;
     int m_anUpgradable[4];
-#ifndef _XBOX
-    unsigned long m_n18BC;
-#endif
+    int m_nFilter;
     CSWGuiUpgradeItemSelect* m_pItemSelect;
-#ifndef _XBOX
     CSWGuiControl* m_pSelectedType;
-    int m_n18C8;
-    int m_n18CC;
-    CExoString m_s18D0;
-#endif
+    int m_bDisableItemCreation;
+    int m_bDisableUpgrade;
+    CExoString m_sOverride2DA;
+    // PC 0x0067CB20
+    void SetOverride2DA(CExoString sOverride2DA)
+    {
+        m_sOverride2DA = sOverride2DA;
+    }
     void AutoUpgradeDone();
-    void GetUpgradableItems(CSWSCreature*, int*, C2DA*);
     virtual void HandleInputEvent(int, int);
-    void OnTypeSelected(CSWGuiControl*);
-    void OnEnter(CSWGuiControl*);
+    void OnCreateItems(CSWGuiControl*);
+    void UpdateFilterButtons();
+    void SetDescription(CExoString);
+    void OnItemSelected(CSWGuiControl*);
     ~CSWGuiUpgradeSelection();
+    void OnItemEntered(CSWGuiControl*);
+    void GetPlayerItems(CSWSCreature*, CExoArrayList<CSWGuiControl*>&, C2DA*);
+    void PopulateItemList();
     virtual void OnPanelAdded();
-    CSWGuiUpgradeSelection(CSWGuiManager*);
+    void OnFilterPicked(CSWGuiControl*);
+    CSWGuiUpgradeSelection(CSWGuiManager*, unsigned long oidCharacter);
+};
+
+class CSWGuiCreateItem : public CSWGuiPanel
+{
+public:
+    enum { STRREF_INFINITE = 41951 };
+
+    int m_n68;
+    CExoArrayList<CSWGuiStoreItemEntry*> m_lStoreEntries;
+    CExoArrayList<CSWGuiStoreItemEntry*> m_lInventoryEntries;
+    CSWGuiLabel m_lbl84;
+    CSWGuiLabel m_lbl1CC;
+    CSWGuiLabel m_lbl314;
+    CSWGuiLabel m_lbl45C;
+    CSWGuiLabel m_lbl5A4;
+    CSWGuiLabel m_lbl6EC;
+    CSWGuiLabel m_lbl834;
+    CSWGuiLabel m_lblDescription;
+    CSWGuiLabel m_lblCost;
+    CSWGuiLabel m_lblCostValue;
+    CSWGuiLabel m_lblStock;
+    CSWGuiLabel m_lblStockValue;
+    CSWGuiButton m_btnAccept;
+    CSWGuiButton m_btnCancel;
+    CSWGuiButton m_btnExamine;
+    CSWGuiButton m_abtnCreateFilters[5];
+    CSWGuiButton m_abtnBreakdownFilters[5];
+    CSWGuiLabel m_alblBars[3];
+    CSWGuiLabel m_lblTitle;
+    CSWGuiLabel m_lblTitle2;
+    CSWGuiLabel m_lblRelatedSkill;
+    CSWGuiListBox m_lbxDescriptionInv;
+    CSWGuiLabel m_lblRanalog;
+    CSWGuiLabel m_lblCredits;
+    CSWGuiLabel m_lblCreditsValue;
+    CSWGuiListBox m_lbxStoreItems;
+    CSWGuiListBox m_lbxInventoryItems;
+    CSWGuiListBox m_lbxDescription;
+    int m_n3EBC;
+    int m_n3EC0;
+    int m_nComponents;
+    int m_n3EC8;
+    unsigned long m_nStoreId;
+    unsigned long m_nCreatureId;
+    float m_fRepairFactor;
+    int m_n3ED8;
+    CSWSStore* m_pStore;
+    int m_nCreateFilter;
+    int m_bBuyMode;
+    int m_nBreakdownFilter;
+    CSWGuiUpgradeSelection* m_pUpgradeSelection;
+    CExoString m_s3EF0;
+    void SetCreateTable(CExoString sTable);
+
+    void PopulateStore();
+    int CheckBreakdownFilter(CSWSItem*, CSWSCreature*, int);
+    void CloseCreateItem(CSWGuiControl*);
+    void UpdateBreakdownFilters();
+    void UpdateCreateFilters();
+    unsigned long GetItemBuyValue(CSWSItem*);
+    virtual void HandleInputEvent(int, int);
+    void BuyItem(CSWSItem*);
+    void BuyItemCallback(CSWGuiControl*);
+    void SetDescription(const CExoString&);
+    void PopulateInventoryItemListBox();
+    void OnBreakdownFilterPicked(CSWGuiControl*);
+    void OnControlStoreAButton(CSWGuiControl*);
+    void OnControlEntered(CSWGuiControl*);
+    void SellItem(CSWSItem*);
+    void SellItemCallback(CSWGuiControl*);
+    void ShowSellGUI();
+    void OnControlInvAButton(CSWGuiControl*);
+    void DeleteItemEntries();
+    void OnAcceptPicked(CSWGuiControl*);
+    ~CSWGuiCreateItem();
+    virtual void OnPanelRemoved();
+    int CreateItemEntry(int&, CExoArrayList<CSWGuiControl*>&, unsigned long,
+                        int, CExoString);
+    void PopulateStoreItemListBox();
+    void ShowBuyGUI();
+    void SetItemList();
+    void OnCreateFilterPicked(CSWGuiControl*);
+    void OnControlXButton(CSWGuiControl*);
+    void InitializeStoreType();
+    CSWGuiCreateItem(CSWGuiManager*, unsigned long);
+    virtual void OnPanelAdded();
 };
 
 class CSWUpgradeItemEntry : public CSWGuiButton
 {
 public:
 
-    static const int ENTRY_HEIGHT = 56;
+    static const int ENTRY_HEIGHT = 36;
+    static const int COUNT_HEIGHT = 19;
 
     static const unsigned long STRREF_EQUIPPED = 32346;
     unsigned long m_oidItem;
@@ -269,7 +348,7 @@ public:
     CSWGuiBorder m_CSWGuiBorder_24C;
     CSWGuiBorder m_CSWGuiBorder_2C0;
     CSWGuiText m_CSWGuiText_334;
-    virtual void Initialize(CSWGuiText&, CSWGuiBorder&, CSWGuiBorder&, int);
+    virtual void Initialize(CSWGuiText&, CSWGuiBorder&, CSWGuiBorder&, int, int);
     virtual void Initialize(const CSWGuiExtent&, CSWGuiButton*)  // PC 0x006049D0
     {
     }

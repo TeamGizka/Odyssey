@@ -85,9 +85,8 @@ char* setvideomode(char* szArgs)
             cDevMode.dmPelsHeight == (unsigned long)nHeight &&
             cDevMode.dmBitsPerPel == (unsigned long)nBitsPerPixel &&
             cDevMode.dmDisplayFrequency == (unsigned long)nRefreshRate &&
-            (g_pAppManager->m_pClientExoApp->GetAllowHighMonitorFrequency() != 0 ||
-             (float)cDevMode.dmDisplayFrequency <=
-                 (float)CClientExoAppInternal::VIDEO_MAX_STANDARD_REFRESH_RATE))
+            (float)cDevMode.dmDisplayFrequency <=
+                (float)CClientExoAppInternal::VIDEO_MAX_STANDARD_REFRESH_RATE)
         {
             g_pAppManager->m_pClientExoApp->SetVideoMode(nMode);
             return "Success";
@@ -421,6 +420,22 @@ int CSWCMessage::SendPlayerToServerInput_UseItem(unsigned long oidItem,
     }
     return SendPlayerToServerMessage(6, 9, pBuffer, nSize);
 }
+// PC 0x006CD3E0
+int CSWCMessage::SendPlayerToServerInput_SwitchWeapons(unsigned long oidCreature,
+                                                       int nWeaponSet)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 8;
+
+    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidCreature);
+    WriteOBJECTIDClient(nWeaponSet);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 38, pBuffer, nSize);
+}
 // PC 0x006CD450
 int CSWCMessage::SendPlayerToServerInput_UseObject(unsigned long oidObject)
 {
@@ -500,6 +515,20 @@ int CSWCMessage::SendPlayerToServerInput_UnlockObject(unsigned long oidObject,
         return 0;
     }
     return SendPlayerToServerMessage(6, 12, pBuffer, nSize);
+}
+// PC 0x006CD590
+int CSWCMessage::SendPlayerToServerInput_DoorSaber(unsigned long oidDoor)
+{
+    unsigned char* pBuffer;
+    unsigned long nSize = 4;
+
+    CreateWriteMessage(4, RECIPIENT_UNSPECIFIED, 1);
+    WriteOBJECTIDClient(oidDoor);
+    if (GetWriteMessage(&pBuffer, &nSize) == 0)
+    {
+        return 0;
+    }
+    return SendPlayerToServerMessage(6, 37, pBuffer, nSize);
 }
 // PC 0x006CD5F0
 int CSWCMessage::SendPlayerToServerInput_AbortDriveControl()

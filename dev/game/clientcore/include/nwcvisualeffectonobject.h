@@ -126,7 +126,9 @@ public:
         BEAM_ION_RAY_2 = 18,
         BEAM_FORCE_STORM = 19,
         BEAM_DROID_STUN = 20,
-        BEAM_FORCE_SHOCK = 21
+        BEAM_FORCE_SHOCK = 21,
+        BEAM_FLAMEP = 22,
+        BEAM_FLAMEPL = 23
     };
 
     enum { VFX_MODEL_ATTACHMENT_BEGIN = 1700 };
@@ -134,7 +136,8 @@ public:
     {
         MODEL_ATTACHMENT_MEDAL = 0,
         MODEL_ATTACHMENT_REVAN_MASK_1 = 1,
-        MODEL_ATTACHMENT_REVAN_MASK_2 = 2
+        MODEL_ATTACHMENT_REVAN_MASK_2 = 2,
+        MODEL_ATTACHMENT_MTHMST = 3
     };
 
     enum HardCodedEffectRange
@@ -301,6 +304,9 @@ public:
     void RemoveMotionBlur();
     void ApplyDistortion(unsigned short);
     void RemoveDistortion(unsigned short);
+#ifndef _XBOX
+    void RemoveModelAttachment(unsigned short nVisualEffect);
+#endif
 
     CSWCObject* GetTargetCSWCObject();
     CSWCObject* GetSourceCSWCObject();

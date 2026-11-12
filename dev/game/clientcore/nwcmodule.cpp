@@ -379,7 +379,11 @@ void CSWCModule::AcclTiltCamera(float fTilt)  // PC 0x00696BC0
     nCameraType = m_nCameraType;
     if (nCameraType == 3)
     {
-        m_pModuleCamera->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK);
+        pBehavior = m_pModuleCamera->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK);
+        if (pBehavior != 0)
+        {
+            reinterpret_cast<CSWCameraOnAStick*>(pBehavior)->m_fTilt = fTilt;
+        }
     }
     else if (nCameraType == 5)
     {

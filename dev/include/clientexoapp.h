@@ -221,7 +221,8 @@ public:
         GUI_STRING_DISABLE_MINE = 370,
         GUI_STRING_DIALOG = 371,
         GUI_STRING_RECOVER_MINE = 1531,
-        GUI_STRING_NO_ACTION = 32236
+        GUI_STRING_NO_ACTION = 32236,
+        GUI_STRING_SEARCH = 48182
     };
     CExoString GetGUIString(unsigned long nStrRef);
     void GetGUIString(CExoString& sText, unsigned long nStrRef);
@@ -232,9 +233,9 @@ public:
     int ShowTutorialWindow(unsigned char nTutorial, unsigned long nX,
                            unsigned long nY, unsigned long nActionParam);
     int SaveOptions();
+    int LoadOptions(int bSetAntiAliasing);
 #ifdef _XBOX
 
-    int LoadOptions();
     void SetMinGlobalRim(int bMinGlobalRim);
 #endif
     int SetTexturePack(unsigned char nTexturePack);
@@ -276,7 +277,6 @@ public:
                       unsigned long oidOpponent);
     int SetVideoMode(unsigned long nVideoMode);
     int IsValidResolution(unsigned long nWidth, unsigned long nHeight);
-    int GetAllowHighMonitorFrequency();
     int IsMoviePlaying();
     int GetCreditSequenceInProgress();
     void SetCreditSequenceInProgress(int bInProgress);
@@ -322,12 +322,13 @@ public:
     void StartMenuMusic(int bCultTheme, int nVolume, int nPriorityGroup);
     void StopMenuMusic();
     void StopLoadMusic();
+    CExoStreamingSoundSource* AquireLoadMusic(const CResRef& cResRef);
 #ifdef _XBOX
 
     void HideLoadScreen(int bFade);
     void HideLoadScreen(int bFade, int bUpdateScreen) { HideLoadScreen(bFade); }
 #else
-    void HideLoadScreen(int bFade, int bUpdateScreen);
+    void HideLoadScreen(int bFade, int bStopLoadMusic, int bUpdateScreen = 1);
 #endif
     int MainLoop();
     void EnableMouseAtEndOfLoadModuleMovie();
@@ -386,7 +387,8 @@ public:
     int GetAreaNotReadyToDisplay();
     void SetAreaNotReadyToDisplay(int bNotReady);
     int PlayLoadModuleMovies();
-    int PlayMovie(const CExoString& sMovie, int& nA, int nB, int nC);
+    int PlayMovie(const CExoString& sMovie, int& nA, int nB, int nC,
+                  int nSoundModeFlags = 0);
     int AddMoveToModuleMovie(const CExoString& sMovie);
     CExoArrayList<CExoString>* GetMoveToModuleMovies();
     void IndicateObject(CSWCObject* pObject, int nFlags);
@@ -396,6 +398,7 @@ public:
     int DismissInGameGUI();
     void ChangeCharacter(int nCharacter, int bPlaySound);
     int SetGameOver(int bGameOver);
+    void SetGuiGameSlow(int bSlow);
     void RunDeathSequence();
     int GetGameOver();
     void SetLastPartyMemberTempKilled(unsigned long oidObject);
@@ -442,8 +445,8 @@ public:
     void SetLoadScreenHintUpdateTimer(unsigned long nTimer);
     unsigned char GetGamePlayHint();
     void SetGamePlayHint(unsigned char nHint);
-    unsigned char GetStoryHint();
-    void SetStoryHint(unsigned char nHint);
+    unsigned char GetStoryHint(unsigned char nArea = 0);
+    void SetStoryHint(unsigned char nHint, unsigned char nArea = 0);
     void SetModuleResourceLoaded(unsigned char nMask);
 
     enum { MODULE_RESOURCE_VOICE = 8 };

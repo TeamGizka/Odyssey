@@ -29,6 +29,7 @@
 #include "nwccreaturestats.h"
 #include "nwrules.h"
 #include "swminigame.h"
+#include "nwsvartable.h"
 #include "swbehaviorcamera.h"
 #include "nwreentrantserver.h"
 #include "swmain.h"
@@ -40,6 +41,15 @@
 #else
 #include "platform.h"
 #endif
+
+#define MOUSE_LOOK_THRESHOLD 0.05f
+#define FREE_LOOK_TILT_SPEED 300.0f
+#define FREE_LOOK_RETURN_STEP 3.0f
+#define HOSTILE_TARGET_RANGE 30.0f
+#define TARGET_RANGE 10.0f
+
+float g_fFreeLookUp = 30.0f;
+float g_fFreeLookDown = 30.0f;
 
 static inline void ClientInputTrace();
 #define CLIENTINPUT_TRACE() ClientInputTrace()
@@ -538,6 +548,12 @@ void CClientExoAppInternal::SetInputClass(int nClass, int bHideInterface)
                 HideMouse(MOUSE_HIDE_MINIGAME);
                 if (m_pGuiInGame != NULL)
                     m_pGuiInGame->SetSWGuiStatus(CGuiInGame::GUISTATUS_DIALOG, 0);
+                if (GetPlayerCreature() != NULL)
+                {
+                    GetPlayerCreature()->AttachToScene(NULL);
+                    m_oidReattachedCreature = GetPlayerCreature()->GetId();
+                    SetPlayerCreature(OBJECT_INVALID);
+                }
                 pMiniGame->SetCamera(m_pModule->GetCamera());
                 pMiniGame->Go();
             }
@@ -705,12 +721,16 @@ void CClientExoAppInternal::GetDefaultActions()  // PC 0x00670B10
                 case CSWCCreature::INTERFACE_TARGET_FRIENDLY:
                     if (pTarget->AsSWCCreature() != NULL)
                     {
-                        m_aDefaultActions.SetSize(nAction + 1);
-                        m_aDefaultActions[0].m_sName = g_pAppManager->GetClientExoApp()->GetGUIString(CClientExoApp::GUI_STRING_DIALOG);
-                        m_aDefaultActions[0].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ActionInitiateDialog;
-                        m_aDefaultActions[0].m_oidTarget = pTarget->GetId();
-                        m_aDefaultActions[0].m_nAction = CSWGuiInterfaceAction::ACTION_DIALOG;
-                        m_aDefaultActions[0].m_resIcon = "i_dialog";
+                        CSWSCreature* pServerCreature = pTarget->AsSWCCreature()->GetServerCreature();
+                        if (pServerCreature != NULL && pServerCreature->m_n258 == 0)
+                        {
+                            m_aDefaultActions.SetSize(nAction + 1);
+                            m_aDefaultActions[0].m_sName = g_pAppManager->GetClientExoApp()->GetGUIString(CClientExoApp::GUI_STRING_DIALOG);
+                            m_aDefaultActions[0].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ActionInitiateDialog;
+                            m_aDefaultActions[0].m_oidTarget = pTarget->GetId();
+                            m_aDefaultActions[0].m_nAction = CSWGuiInterfaceAction::ACTION_DIALOG;
+                            m_aDefaultActions[0].m_resIcon = "i_dialog";
+                        }
                     }
                     if (pTarget->AsSWCPlaceable() != NULL)
                     {
@@ -723,7 +743,16 @@ void CClientExoAppInternal::GetDefaultActions()  // PC 0x00670B10
                             if (bUseable)
                             {
                                 m_aDefaultActions.SetSize(nAction + 1);
-                                m_aDefaultActions[0].m_sName = g_pAppManager->GetClientExoApp()->GetGUIString(CClientExoApp::GUI_STRING_OPEN);
+                                unsigned long nStrRef = CClientExoApp::GUI_STRING_OPEN;
+                                int bUseSearch;
+                                int bRead = g_pRules->Get2DArrays()->m_pPlaceables->GetINTEntry(
+                                    pTarget->AsSWCPlaceable()->m_nAppearance,
+                                    "UseSearch", &bUseSearch);
+                                if (bRead ? bUseSearch : pPlaceable->m_bIsBodyBag)
+                                {
+                                    nStrRef = CClientExoApp::GUI_STRING_SEARCH;
+                                }
+                                m_aDefaultActions[0].m_sName = g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef);
                                 m_aDefaultActions[0].m_nAction = CSWGuiInterfaceAction::ACTION_USE_PLACEABLE;
                                 m_aDefaultActions[0].m_pfnAction = (PFNMENUACTION)&CSWCPlaceable::UsePlaceable;
                                 m_aDefaultActions[0].m_oidTarget = pTarget->GetId();
@@ -998,9 +1027,7 @@ int CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // PC 0x006
         break;
     case INPUT_EVENT_SCREENSHOT:
         if (nValue != 0)
-        {
             DoScreenShot();
-        }
         break;
     case INPUT_EVENT_PAUSE:
     case INPUT_EVENT_PAUSE_TOGGLE:
@@ -1080,6 +1107,12 @@ int CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // PC 0x006
     case INPUT_EVENT_SELECT_PREVIOUS:
         if (nValue != 0)
         {
+            if (g_pAppManager->GetClientExoApp()->GetInGameGui() != NULL)
+            {
+                CSWGuiMainInterface* pMainInterface = g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface;
+                if (pMainInterface != NULL)
+                    pMainInterface->m_bSelectingUseItemTarget = 0;
+            }
             if (m_pClientOptions->m_nCameraMode == CClientOptions::CAMERA_MODE_WORLD_CLICK_DISABLED)
             {
                 g_bShowIndicator = 1;
@@ -1098,6 +1131,10 @@ int CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // PC 0x006
     case INPUT_EVENT_SELECT_NEXT:
         if (nValue != 0)
         {
+            if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface != NULL)
+            {
+                g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_bSelectingUseItemTarget = 0;
+            }
             if (m_pClientOptions->m_nCameraMode == CClientOptions::CAMERA_MODE_WORLD_CLICK_DISABLED)
             {
                 g_bShowIndicator = 1;
@@ -1204,12 +1241,22 @@ int CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // PC 0x006
         if (nValue != 0)
             g_pAppManager->GetClientExoApp()->PlayerFlourishWeapons();
         break;
+    case INPUT_EVENT_SWAP_WEAPONS:
+        if (nValue != 0)
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->OnSwapWeaponsPressed(NULL);
+        break;
+    case INPUT_EVENT_FIRE_SECONDARY:
     case INPUT_EVENT_MINIGAME_FIRE:
         if (nValue != 0 && m_pModule != NULL && m_pModule->m_pInfo != NULL && !GetPausedByCombat())
         {
             CSWMiniGame* pMiniGame = m_pModule->m_pInfo->m_pMiniGame;
             if (pMiniGame != NULL && pMiniGame->GetPlayer() != NULL)
-                pMiniGame->GetPlayer()->Fire();
+            {
+                if (pMiniGame->m_nAttachType == CSWMiniGame::ATTACH_CAMERA_HOOK)
+                    pMiniGame->GetPlayer()->Fire();
+                else
+                    pMiniGame->GetPlayer()->OnBrake(0);
+            }
         }
         break;
     case INPUT_EVENT_FIRE:
@@ -1217,7 +1264,12 @@ int CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // PC 0x006
         {
             CSWMiniGame* pMiniGame = m_pModule->m_pInfo->m_pMiniGame;
             if (pMiniGame != NULL && pMiniGame->GetPlayer() != NULL)
-                pMiniGame->GetPlayer()->Fire();
+            {
+                if (pMiniGame->m_nAttachType == CSWMiniGame::ATTACH_CAMERA_HOOK)
+                    pMiniGame->GetPlayer()->Fire();
+                else
+                    pMiniGame->GetPlayer()->OnAccelerate(0);
+            }
         }
         break;
     case INPUT_EVENT_ROTATE_LEFT:
@@ -1379,13 +1431,26 @@ int CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // PC 0x006
         }
         break;
     case INPUT_EVENT_CANCEL_COMBAT:
-        if (nValue != 0 && g_pAppManager->GetClientExoApp()->GetCombatMode())
+        if (nValue != 0)
         {
-            CSWCCreature* pPlayer = g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
-            if (pPlayer != NULL)
+            CSWMiniGame* pMiniGame = g_pAppManager->GetClientExoApp()->GetMiniGame();
+            if (pMiniGame != NULL && g_pAppManager->GetClientExoApp()->GetPausedByCombat())
             {
-                pPlayer->SetCombatMode(0);
-                pPlayer->ClearAllActions();
+                if (pMiniGame->m_nAttachType == CSWMiniGame::ATTACH_PLAYER_MODEL)
+                {
+                    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueBoolean(CExoString("GBL_QUIT_SWOOP"), 1);
+                    g_pAppManager->GetClientExoApp()->SetPausedByCombat(0, PAUSE_REASON_INPUT, 0);
+                    g_pAppManager->GetClientExoApp()->SetAutoPaused(0, 0);
+                }
+            }
+            else if (g_pAppManager->GetClientExoApp()->GetCombatMode())
+            {
+                CSWCCreature* pPlayer = g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
+                if (pPlayer != NULL)
+                {
+                    pPlayer->SetCombatMode(0);
+                    pPlayer->ClearAllActions();
+                }
             }
         }
         break;
@@ -1583,7 +1648,14 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
 #ifndef _XBOX
     g_pExoInput->UpdateMouseDelta(fMouseTime);
 #endif
-    if (g_pExoInput->GetActive())
+    int bPeragusDialog = 0;
+    if (g_pAppManager->GetClientExoApp()->GetModule() != NULL)
+    {
+        int bPeragus = g_pAppManager->GetClientExoApp()->GetModule()->GetModuleTitle().CompareNoCase("107PER");
+        if (bPeragus && m_nInputClass == INPUT_CLASS_DIALOG)
+            bPeragusDialog = 1;
+    }
+    if (g_pExoInput->GetActive() || bPeragusDialog)
     {
         int i;
         CExoArrayList<CExoInputEvent> aEvents =
@@ -1865,8 +1937,8 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
                     vToPlayer = vPlayer - vCamera;
                     vToObject = vObject - vCamera;
                     vDelta = vObject - vPlayer;
-                    pHitObject->IsHostile();
-                    int bTooFar = vDelta.m_fX * vDelta.m_fX + vDelta.m_fY * vDelta.m_fY > 900.0f;
+                    float fRange = pHitObject->AsSWCObject()->IsHostile() ? HOSTILE_TARGET_RANGE : TARGET_RANGE;
+                    int bTooFar = vDelta.m_fX * vDelta.m_fX + vDelta.m_fY * vDelta.m_fY > fRange * fRange;
                     if (vToObject.m_fX * vToPlayer.m_fX + vToObject.m_fY * vToPlayer.m_fY >= 0.0f &&
                         !bTooFar)
                     {
@@ -1930,9 +2002,9 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
                                 vToPlayer = vPlayer - vCamera;
                                 vToObject = vObject - vCamera;
                                 vDelta = vObject - vPlayer;
-                                pObject->AsSWCObject()->IsHostile();
+                                float fRange = pObject->AsSWCObject()->IsHostile() ? HOSTILE_TARGET_RANGE : TARGET_RANGE;
                                 {
-                                    int bTooFar = vDelta.m_fX * vDelta.m_fX + vDelta.m_fY * vDelta.m_fY > 900.0f;
+                                    int bTooFar = vDelta.m_fX * vDelta.m_fX + vDelta.m_fY * vDelta.m_fY > fRange * fRange;
                                     EXOLOG("ProcessInput: nearest object too far %p", &bTooFar);
                                     int bInFront = vToObject.m_fX * vToPlayer.m_fX +
                                                    vToObject.m_fY * vToPlayer.m_fY >= 0.0f;
@@ -2043,13 +2115,84 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
                 fLeftRight = min(1.0f, max(-1.0f, g_pExoInput->PollInput(281, 0)));
                 fUpDown = min(1.0f, max(-1.0f, g_pExoInput->PollInput(280, 0)));
             }
+            if (g_pAppManager->GetClientExoApp()->GetInGameGui()->GetGlobalFadeActive())
+            {
+                fUpDown = 0.0f;
+                fLeftRight = 0.0f;
+            }
             int bRotate = g_bMouseCameraRotateToggle;
             if (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_bMouseLook)
                 bRotate = !bRotate;
+            float fMouseX, fMouseY;
+            g_pExoInput->GetMouseDelta(&fMouseX, &fMouseY);
+            if (bRotate && !g_bLeftMouseDown &&
+                (fMouseY > MOUSE_LOOK_THRESHOLD || fMouseY < -MOUSE_LOOK_THRESHOLD || g_fFreeLookUp > 0.0f) &&
+                (fMouseX < MOUSE_LOOK_THRESHOLD || fMouseX > -MOUSE_LOOK_THRESHOLD))
+            {
+                CSWCameraOnAStick* pCamera = (CSWCameraOnAStick*)
+                    g_pAppManager->GetClientExoApp()->GetModule()->
+                        GetCamera()->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK);
+                if (pCamera != NULL)
+                {
+                    C2DA* pCameraStyle = g_pRules->Get2DArrays()->m_pCameraStyle;
+                    pCameraStyle->GetFLOATEntry(0, CExoString("FL_LOOKUP"), &g_fFreeLookUp);
+                    pCameraStyle->GetFLOATEntry(0, CExoString("FL_LOOKDOWN"), &g_fFreeLookDown);
+                    pCamera->m_fDefaultTiltSpeed = pCamera->m_fTiltSpeed;
+                    pCamera->m_fTiltSpeed = FREE_LOOK_TILT_SPEED;
+                }
+            }
+            else
+            {
+                float fTiltUp, fTiltDown, fTiltSpeed;
+                C2DA* pCameraStyle = g_pRules->Get2DArrays()->m_pCameraStyle;
+                pCameraStyle->GetFLOATEntry(0, CExoString("TILTUP"), &fTiltUp);
+                pCameraStyle->GetFLOATEntry(0, CExoString("TILTDOWN"), &fTiltDown);
+                pCameraStyle->GetFLOATEntry(0, CExoString("TILTSPEED"), &fTiltSpeed);
+                CSWCameraOnAStick* pCamera = (CSWCameraOnAStick*)
+                    g_pAppManager->GetClientExoApp()->GetModule()->
+                        GetCamera()->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK);
+                if (g_fFreeLookUp > fTiltUp)
+                {
+                    g_fFreeLookUp -= FREE_LOOK_RETURN_STEP;
+                    if (g_fFreeLookUp < fTiltUp)
+                        g_fFreeLookUp = fTiltUp;
+                }
+                else if (pCamera != NULL)
+                    pCamera->m_fTiltSpeed = pCamera->m_fDefaultTiltSpeed;
+                if (g_fFreeLookDown > fTiltDown)
+                {
+                    g_fFreeLookDown -= FREE_LOOK_RETURN_STEP;
+                    if (g_fFreeLookDown < fTiltDown)
+                        g_fFreeLookDown = fTiltDown;
+                }
+                else if (pCamera != NULL)
+                    pCamera->m_fTiltSpeed = fTiltSpeed;
+            }
             if (bRotate && g_bLeftMouseDown && fUpDown <= 0.0f)
+            {
+                CSWCameraOnAStick* pCamera = (CSWCameraOnAStick*)
+                    g_pAppManager->GetClientExoApp()->GetModule()->
+                        GetCamera()->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK);
+                if (g_fFreeLookUp > 0.0f)
+                {
+                    g_fFreeLookUp -= FREE_LOOK_RETURN_STEP;
+                    if (g_fFreeLookUp < 0.0f)
+                        g_fFreeLookUp = 0.0f;
+                }
+                else if (pCamera != NULL)
+                    pCamera->m_fTiltSpeed = pCamera->m_fDefaultTiltSpeed;
+                if (g_fFreeLookDown > 0.0f)
+                {
+                    g_fFreeLookDown -= FREE_LOOK_RETURN_STEP;
+                    if (g_fFreeLookDown < 0.0f)
+                        g_fFreeLookDown = 0.0f;
+                }
+                else if (pCamera != NULL)
+                    pCamera->m_fTiltSpeed = pCamera->m_fDefaultTiltSpeed;
                 fUpDown = -1.0f;
+            }
 #ifndef _XBOX
-            if (g_pExoInput->PollInput(265, 0) != 0.0f)
+            if (g_pExoInput->PollInput(268, 0) != 0.0f)
                 m_pPlayerControl->SetPlayerWalking(1);
             else
                 m_pPlayerControl->SetPlayerWalking(0);

@@ -201,14 +201,14 @@ int CClientMsgSysAdmin::HandleServerToSysAdminMessage(unsigned char* pData,
     {
         return 0;
     }
-    ++pData;
-    --nSize;
-    sMessage = CExoString((const char*)pData, nSize);
+    unsigned char* pMessage = pData + 1;
+    unsigned long nMessageSize = nSize - 1;
+    sMessage = CExoString((const char*)pMessage, nMessageSize);
 
     CExoString sCategory;
     CExoString sName;
     CExoString sValue;
-    int nTokens = GetTokenPair(pData, nSize, sCategory, sName, sValue);
+    int nTokens = GetTokenPair(pMessage, nMessageSize, sCategory, sName, sValue);
 
     if (nTokens >= 1 && sCategory == CMessageServerAdmin_ServerStatusCategory)
     {
@@ -228,7 +228,7 @@ int CClientMsgSysAdmin::HandleServerToSysAdminMessage(unsigned char* pData,
                 g_pAppManager->GetClientExoApp()->GetServerInfo()
                     ->m_nDataChangedFlags |= CServerInfo::DATA_CHANGED_SERVER_MODE;
                 printf(":: Server mode: Module Loaded.\n");
-                g_pAppManager->GetClientExoApp()->GetServerInfo()->SetModuleName(sValue);
+                g_pAppManager->GetClientExoApp()->GetServerInfo()->m_sModuleName = sValue;
                 return 1;
             }
             if (sName == CMessageServerAdmin_ServerStatus_ModuleRunning)
@@ -237,7 +237,7 @@ int CClientMsgSysAdmin::HandleServerToSysAdminMessage(unsigned char* pData,
                 g_pAppManager->GetClientExoApp()->GetServerInfo()
                     ->m_nDataChangedFlags |= CServerInfo::DATA_CHANGED_SERVER_MODE;
                 printf(":: Server mode: Module Running.\n");
-                g_pAppManager->GetClientExoApp()->GetServerInfo()->SetModuleName(sValue);
+                g_pAppManager->GetClientExoApp()->GetServerInfo()->m_sModuleName = sValue;
                 return 1;
             }
             if (sName == CMessageServerAdmin_ServerStatus_ModuleList)
@@ -275,7 +275,7 @@ int CClientMsgSysAdmin::HandleServerToSysAdminMessage(unsigned char* pData,
         }
         if (sName == CMessageServerAdmin_ServerStatus_ModuleLoaded)
         {
-            g_pAppManager->GetClientExoApp()->GetServerInfo()->SetModuleName(sValue);
+            g_pAppManager->GetClientExoApp()->GetServerInfo()->m_sModuleName = sValue;
             g_pAppManager->GetClientExoApp()->GetServerInfo()
                 ->m_nDataChangedFlags |= CServerInfo::DATA_CHANGED_MODULE_LIST;
             CExoString sReply;

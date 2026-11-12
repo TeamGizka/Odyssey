@@ -240,7 +240,9 @@ public:
 class CSWGuiOptionsGraphics : public CSWGuiPanel
 {
 public:
-    CSWGuiOptionsGraphics(CSWGuiManager* pManager);
+    enum { STRREF_CANNOT_CHANGE_RESOLUTION = 115761 };
+
+    CSWGuiOptionsGraphics(CSWGuiManager* pManager, int bInGame);
 
     virtual void HandleInputEvent(int nEvent, int nState);
 
@@ -271,7 +273,7 @@ public:
     CSWGuiButton m_btnDefault;
     CSWGuiLabel m_alblBar[4];
     int m_nUnknown18BC;
-    int m_n1E88;
+    int m_bInGame;
 };
 
 class CSWGuiOptionsGraphicsAdvanced : public CSWGuiPanel

@@ -268,7 +268,8 @@ public:
     int m_n3B4;
     virtual void Initialize(CSWGuiText&, CSWGuiBorder&, CSWGuiBorder&, int);
     CSWGuiStoreItemEntry();
-    void SetItem(unsigned long, int, int nCharacter);
+    void SetItem(unsigned long, int, int nCharacter = -1);
+    void SetColors(Vector, Vector, Vector, Vector);
 };
 
 #ifdef _XBOX

@@ -14,6 +14,9 @@
 #include "aurora.h"
 #include <string.h>
 #include "nwccreature.h"
+#include "nwccreaturestats.h"
+#include "nwccreatureappearance.h"
+#include "nwsvartable.h"
 
 CExoString g_sUnlockedMovie;
 float creaturewindintensity = 2.5f;
@@ -63,135 +66,215 @@ void CClientOptions::SetAutoLevelUpNPCs(int bEnabled)
 int CClientOptions::SaveOptions()
 {
     CExoIni cIni;
-    int i = 0;
+    int i;
     CExoString sValue;
     sValue.Format("%d", m_bCombatMovement);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "Combat Movement");
     sValue.Format("%d", m_bReverseMinigameYAxis);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "Reverse Minigame YAxis");
+    sValue.Format("%d", m_bReverseIngame);
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                       "Reverse Ingame YAxis");
     sValue.Format("%d", m_bReverseMouseButtons);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "Reverse Mouse Buttons");
     sValue.Format("%d", m_bEnableScreenShot);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "EnableScreenShot");
-    sValue.Format("%d", m_bGUIsInScreenShot);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
-                       "GUIsInScreenShot");
     sValue.Format("%d", m_bAutoSave);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options", "AutoSave");
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options", "AutoSave");
     sValue.Format("%d", m_bMouseLook);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Mouse Look");
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options", "Mouse Look");
     sValue.Format("%d", m_bAutoLevelUpNPCs);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "Auto Level Up NPCs");
     sValue.Format("%d", m_nDifficulty);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "Difficulty Level");
     sValue.Format("%d", m_nMouseSensitivity);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "Mouse Sensitivity");
     sValue.Format("%d", m_bMouseTeleporting);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "Enable Mouse Teleporting To Buttons");
     sValue.Format("%d", m_bStatusSummary);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "Status Summary");
     sValue.Format("%d", m_bFloatingNumbers);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "Floating Numbers");
     sValue.Format("%d", m_bMiniMap);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Mini Map");
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options", "Mini Map");
     sValue.Format("%d", m_bSubtitles);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Subtitles");
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options", "Subtitles");
     sValue.Format("%d", m_bTutorialPopups);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "Tutorial Popups");
     sValue.Format("%d", m_bHideUnequippable);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "Hide Unequippable");
     sValue.Format("%d", m_bUseSmallFonts);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "Use Small Fonts");
     sValue.Format("%d", m_bHideInGameGUI);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "Hide InGame GUI");
+    CExoString sGlobal("GBL_MAIN_SITH_LORD");
+    char nGlobalValue = 0;
+    if (g_pAppManager->m_pServerExoApp != NULL)
+    {
+        g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+            ->GetValueNumber(sGlobal, nGlobalValue);
+        sValue.Format("%d", nGlobalValue);
+    }
+    else
+    {
+        sValue.Format("%d", m_nCurSithLord);
+    }
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                       "CurSithLord");
+    sGlobal = "GBL_GAME_COMPLETE";
+    if (g_pAppManager->m_pServerExoApp != NULL)
+    {
+        g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+            ->GetValueNumber(sGlobal, nGlobalValue);
+        m_bGameCompleted = nGlobalValue;
+        sValue.Format("%d", nGlobalValue);
+    }
+    else
+    {
+        sValue.Format("%d", m_bGameCompleted);
+    }
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                       "GameCompleted");
+    if (g_pAppManager->m_pServerExoApp == NULL)
+    {
+        sValue.Format("%d", m_nPCGender);
+        cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                           "PCGender");
+        sValue.Format("%d", m_nAppearanceType);
+        cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                           "AppearanceType");
+        sValue.Format("%d", m_nBodyVariation);
+        cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                           "BodyVariation");
+        sValue.Format("%d", m_nTextureVariation);
+        cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                           "TextureVariation");
+    }
+    else
+    {
+        CSWCCreature* pPlayer =
+            g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter();
+        if (pPlayer != NULL && m_bGameCompleted > 2)
+        {
+            sValue.Format("%d", pPlayer->GetStats()->m_nGender);
+            cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                               "PCGender");
+            CCAppearanceInfo cAppearance = *pPlayer->GetAppearance();
+            sValue.Format("%d", cAppearance.m_nAppearance);
+            cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                               "AppearanceType");
+            sValue.Format("%d", cAppearance.m_nBodyVariation);
+            cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                               "BodyVariation");
+            sValue.Format("%d", cAppearance.m_nTextureVar);
+            cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                               "TextureVariation");
+        }
+        else
+        {
+            sValue.Format("%d", m_nPCGender);
+            cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                               "PCGender");
+            sValue.Format("%d", m_nAppearanceType);
+            cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                               "AppearanceType");
+            sValue.Format("%d", m_nBodyVariation);
+            cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                               "BodyVariation");
+            sValue.Format("%d", m_nTextureVariation);
+            cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                               "TextureVariation");
+        }
+    }
     sValue.Format("%d", m_bAutopauseNewTargetSelected);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Autopause Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Autopause Options",
                        "New Target Selected");
     sValue.Format("%d", m_bAutopauseActionMenu);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Autopause Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Autopause Options",
                        "Action Menu");
     sValue.Format("%d", m_bAutopausePartyKilled);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Autopause Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Autopause Options",
                        "Party Killed");
     sValue.Format("%d", m_bAutopauseEnemySighted);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Autopause Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Autopause Options",
                        "Enemy Sighted");
     sValue.Format("%d", m_bAutopauseMineSighted);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Autopause Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Autopause Options",
                        "Mine Sighted");
     sValue.Format("%d", m_bAutopauseEndOfCombatRound);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Autopause Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Autopause Options",
                        "End Of Combat Round");
     sValue.Format("%d", m_nBrightness);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Graphics Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
                        "Brightness");
     sValue.Format("%d", m_nShadows);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "Shadows");
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options", "Shadows");
     sValue.Format("%d", m_nSoftShadows);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Graphics Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
                        "Soft Shadows");
     sValue.Format("%d", m_nGrass);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "Grass");
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options", "Grass");
     sValue.Format("%d", m_nTexQual);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Graphics Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
                        "Texture Quality");
     sValue.Format("%d", m_nAntiAlias);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Graphics Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
                        "Anti Aliasing");
     sValue.Format("%d", m_nFrameBuffer);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Graphics Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
                        "Frame Buffer");
     sValue.Format("%d", m_nAnisotropy);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Graphics Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
                        "Anisotropy");
     sValue.Format("%d", m_nVSync);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "V-Sync");
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options", "V-Sync");
     sValue.Format("%d", m_nMovieVolume);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Sound Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Sound Options",
                        "Movie Volume");
     sValue.Format("%d", m_nSoundEffectsVolume);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Sound Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Sound Options",
                        "Sound Effects Volume");
     sValue.Format("%d", m_nVoiceVolume);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Sound Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Sound Options",
                        "Voiceover Volume");
     sValue.Format("%d", m_nMusicVolume);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Sound Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Sound Options",
                        "Music Volume");
     CExoString sMovie;
+    i = 0;
     do
     {
         sMovie.Format("Movie%2d", i);
         sValue.Format("%d", m_aMoviesShown[i]);
-        cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Movies Shown",
+        cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Movies Shown",
                            sMovie.CStr());
         i++;
     } while (i < 11);
     sValue.Format("%f", m_fKeyboardCameraDPS);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "Keyboard Camera DPS");
     sValue.Format("%f", m_fKeyboardCameraAcceleration);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "Keyboard Camera Acceleration");
     sValue.Format("%f", m_fKeyboardCameraDeceleration);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "Keyboard Camera Deceleration");
     sValue.Format("%d", m_bEnableTooltips);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "Enable Tooltips");
     return 1;
 }
@@ -209,6 +292,11 @@ void CClientOptions::ApplySoundOptions()
 #ifndef _XBOX
 void CClientOptions::SetMovieShown(const CExoString& sMovie, int bShown)  // PC 0x0066CF70
 {
+    if (g_pRules == NULL || g_pRules->m_p2DArrays == NULL)
+    {
+        return;
+    }
+
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
     EXOXBOXASSERT(p2DArrays->m_pMovies2DA);
     C2DA* pMovies = p2DArrays->m_pMovies2DA;
@@ -280,12 +368,19 @@ int CClientOptions::GetMovieShown(const CResRef& sMovie)
 // PC 0x0066D240
 void CClientOptions::SetDefaultGameplayOptions()
 {
-    m_nDifficulty = 1;
     m_bAutoLevelUpNPCs = 0;
     m_bMouseLook = 0;
     m_bAutoSave = 1;
     m_bReverseMinigameYAxis = 0;
+    m_bReverseIngame = 0;
     m_bCombatMovement = 1;
+    m_nDifficulty = 1;
+    m_nCurSithLord = 0;
+    m_bGameCompleted = 0;
+    m_nPCGender = 0;
+    m_nAppearanceType = 0;
+    m_nBodyVariation = 0;
+    m_nTextureVariation = 0;
 }
 // PC 0x0066D270
 void CClientOptions::SetDefaultAutopauseOptions()
@@ -314,7 +409,7 @@ void CClientOptions::SetDefaultSoundOptions()
     m_nMusicVolume = 85;
     m_nVoiceVolume = 85;
     m_nSoundEffectsVolume = 85;
-    m_nMovieVolume = 100;
+    m_nMovieVolume = 85;
 }
 // PC 0x0066D2C0
 int CClientOptions::SetDefaultAdvancedSoundOptions()
@@ -341,7 +436,12 @@ int CClientOptions::SetDefaultAdvancedSoundOptions()
 // PC 0x0066D300
 float CClientOptions::GetGammaSetting()
 {
-    return m_fGammaMax - (m_fGammaMax - m_fGammaMin) * (m_nBrightness * 0.01f);
+    int nBrightness = m_nBrightness + GAMMA_BRIGHTNESS_OFFSET;
+    if (nBrightness >= 100)
+    {
+        nBrightness = 100;
+    }
+    return m_fGammaMax - (m_fGammaMax - m_fGammaMin) * (nBrightness * 0.01f);
 }
 // PC 0x0066D330
 float CClientOptions::GetMouseSenSetting()
@@ -584,15 +684,11 @@ void CClientOptions::SetDefaultOptions()
     SetDefaultGameplayOptions();
     SetDefaultFeedbackOptions();
     SetDefaultAutopauseOptions();
-    m_nMusicVolume = 85;
-    m_nVoiceVolume = 85;
-    m_nSoundEffectsVolume = 85;
     SetDefaultGraphicsOptions();
     SetDefaultAdvancedGraphicsOptions();
-    m_nMovieVolume = 100;
+    SetDefaultSoundOptions();
     SetDefaultMouseOptions();
     m_bEnableScreenShot = 0;
-    m_bGUIsInScreenShot = 1;
     SetDefaultKeyboardCamera();
     memset(m_aMoviesShown, 0, sizeof(m_aMoviesShown));
     m_bEnableCheats = 0;
@@ -628,142 +724,177 @@ CClientOptions::CClientOptions()  // PC 0x0066D8A0
 #endif
     }
     m_bEnableTooltips = 1;
-    m_n14 = 0;
-    m_n15 = 0;
-    m_n16 = 0;
-    m_n18 = 0;
-    m_n1A = 0;
-    m_n1B = 0;
+    m_nCurSithLord = 0;
+    m_bGameCompleted = 0;
+    m_nPCGender = 0;
+    m_nAppearanceType = 0;
+    m_nBodyVariation = 0;
+    m_nTextureVariation = 0;
     m_bMouseTeleporting = 1;
     SetDefaultOptions();
 }
 #endif
-int CClientOptions::LoadOptions()  // PC 0x0066D930
+int CClientOptions::LoadOptions(int bSetAntiAliasing)  // PC 0x0066D930
 {
     SetDefaultOptions();
     CExoIni cIni;
     CExoString sValue;
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Difficulty Level"))
     {
         m_nDifficulty = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Auto Level Up NPCs"))
     {
         SetAutoLevelUpNPCs(sValue.AsINT());
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Mouse Look"))
     {
         m_bMouseLook = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "AutoSave"))
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options", "AutoSave"))
     {
         m_bAutoSave = sValue.AsINT();
         int bAutoSave = m_bAutoSave != 0;
         m_bAutoSave = bAutoSave;
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Reverse Minigame YAxis"))
     {
         m_bReverseMinigameYAxis = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                          "Reverse Ingame YAxis"))
+    {
+        m_bReverseIngame = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Combat Movement"))
     {
         m_bCombatMovement = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Mouse Sensitivity"))
     {
         m_nMouseSensitivity = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Enable Mouse Teleporting To Buttons"))
     {
         m_bMouseTeleporting = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Hide Unequippable"))
     {
         m_bHideUnequippable = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Tutorial Popups"))
     {
         m_bTutorialPopups = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Subtitles"))
     {
         m_bSubtitles = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Mini Map"))
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options", "Mini Map"))
     {
         m_bMiniMap = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Floating Numbers"))
     {
         m_bFloatingNumbers = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Status Summary"))
     {
         m_bStatusSummary = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Use Small Fonts"))
     {
         SetUseSmallFonts(sValue.AsINT());
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Hide InGame GUI"))
     {
         m_bHideInGameGUI = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Autopause Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                          "CurSithLord"))
+    {
+        m_nCurSithLord = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                          "GameCompleted"))
+    {
+        m_bGameCompleted = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                          "PCGender"))
+    {
+        m_nPCGender = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                          "AppearanceType"))
+    {
+        m_nAppearanceType = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                          "BodyVariation"))
+    {
+        m_nBodyVariation = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                          "TextureVariation"))
+    {
+        m_nTextureVariation = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Autopause Options",
                           "End Of Combat Round"))
     {
         m_bAutopauseEndOfCombatRound = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Autopause Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Autopause Options",
                           "Enemy Sighted"))
     {
         m_bAutopauseEnemySighted = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Autopause Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Autopause Options",
                           "Mine Sighted"))
     {
         m_bAutopauseMineSighted = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Autopause Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Autopause Options",
                           "Party Killed"))
     {
         m_bAutopausePartyKilled = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Autopause Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Autopause Options",
                           "Action Menu"))
     {
         m_bAutopauseActionMenu = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Autopause Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Autopause Options",
                           "New Target Selected"))
     {
         m_bAutopauseNewTargetSelected = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
                           "Brightness"))
     {
         m_nBrightness = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
                           "Shadows"))
     {
         SetShadows(sValue.AsINT());
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
                           "AllowSoftShadows"))
     {
 #ifndef _XBOX
@@ -773,17 +904,17 @@ int CClientOptions::LoadOptions()  // PC 0x0066D930
         }
 #endif
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
                           "Soft Shadows"))
     {
         SetSoftShadows(sValue.AsINT());
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
                           "Grass"))
     {
         SetGrass(sValue.AsINT());
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
                           "Texture Quality"))
     {
         unsigned char nTexQual = sValue.AsINT();
@@ -791,36 +922,48 @@ int CClientOptions::LoadOptions()  // PC 0x0066D930
         CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
         pClientExoApp->SetTexturePack(nTexQual);
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options",
+    if (bSetAntiAliasing &&
+        cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
+                          "Anti Aliasing"))
+    {
+        SetAntiAlias(sValue.AsINT());
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
                           "Frame Buffer"))
     {
 #ifndef _XBOX
         SetFrameBuffer(sValue.AsINT());
 #endif
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options",
+    if (bSetAntiAliasing &&
+        cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
+                          "Anisotropy"))
+    {
+        SetAnisotropy(sValue.AsINT());
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
                           "V-Sync"))
     {
 #ifndef _XBOX
         SetVSync(sValue.AsINT());
 #endif
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Sound Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Sound Options",
                           "Music Volume"))
     {
         m_nMusicVolume = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Sound Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Sound Options",
                           "Voiceover Volume"))
     {
         m_nVoiceVolume = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Sound Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Sound Options",
                           "Sound Effects Volume"))
     {
         m_nSoundEffectsVolume = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Sound Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Sound Options",
                           "Movie Volume"))
     {
         m_nMovieVolume = sValue.AsINT();
@@ -830,17 +973,17 @@ int CClientOptions::LoadOptions()  // PC 0x0066D930
     for (int i = 0; i < 11; i++)
     {
         sMovie.Format("Movie%2d", i);
-        cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Movies Shown",
+        cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Movies Shown",
                           sMovie.CStr());
         m_aMoviesShown[i] = sValue.AsINT();
     }
     m_bEnableCheats = 0;
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "EnableCheats"))
     {
         m_bEnableCheats = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Keyboard Camera DPS"))
     {
         float fValue = sValue.AsFLOAT();
@@ -850,7 +993,7 @@ int CClientOptions::LoadOptions()  // PC 0x0066D930
         }
         m_fKeyboardCameraDPS = fValue;
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Keyboard Camera Acceleration"))
     {
         float fValue = sValue.AsFLOAT();
@@ -860,7 +1003,7 @@ int CClientOptions::LoadOptions()  // PC 0x0066D930
         }
         m_fKeyboardCameraAcceleration = fValue;
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Keyboard Camera Deceleration"))
     {
         float fValue = sValue.AsFLOAT();
@@ -870,25 +1013,20 @@ int CClientOptions::LoadOptions()  // PC 0x0066D930
         }
         m_fKeyboardCameraDeceleration = fValue;
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Enable Tooltips"))
     {
         m_bEnableTooltips = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "Reverse Mouse Buttons"))
     {
         m_bReverseMouseButtons = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "EnableScreenShot"))
     {
         m_bEnableScreenShot = sValue.AsINT();
-    }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
-                          "GUIsInScreenShot"))
-    {
-        m_bGUIsInScreenShot = sValue.AsINT();
     }
     return 1;
 }

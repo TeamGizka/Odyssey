@@ -87,6 +87,7 @@ CExoBase* g_pExoBase = NULL;
 CExoInput* g_pExoInput = NULL;
 CExoResMan* g_pExoResMan = NULL;
 CExoSound* g_pExoSound = NULL;
+unsigned char g_bDebugDialogSound;
 CAuroraInterface* g_pAuroraInterface = NULL;
 CSWGuiManager* g_pGuiMan = NULL;
 CAurInternalGL* g_pAurora = NULL;
@@ -101,7 +102,7 @@ static int InitCounterStepBeforeBuildStrings()
     static int s_nStep = atoi("");
     return s_nStep;
 }
-CExoString g_sBuildNumber;
+CExoString g_sBuildNumber("427");
 CExoString g_sInstallBuildNumber;
 CExoString g_sVersionNumber;
 CExoString g_sGameName;
@@ -898,6 +899,8 @@ void UpdateScreen(float fElapsed, int bRunWorld, int bSkipRender)  // PC 0x00401
 #ifndef _XBOX
 void DeactivateRenderWindow()  // PC 0x00401DB0
 {
+    if (g_pExoSound != NULL)
+        g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_LOSTFOCUS);
     if (g_bRenderWindowActive != 0)
     {
         if (g_pAppManager->m_pServerExoApp != NULL)
@@ -908,8 +911,6 @@ void DeactivateRenderWindow()  // PC 0x00401DB0
                 g_pAppManager->m_pServerExoApp->SetPauseState(2, 1);
         }
         g_pAppManager->m_pClientExoApp->SetInputActive(0, 0);
-        if (g_pExoSound != NULL)
-            g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_LOSTFOCUS);
         g_bRenderWindowActive = 0;
     }
 }
@@ -1087,7 +1088,7 @@ int HandleWMCharMessage(unsigned short nChar)  // PC 0x00402270
         {
             CExoString sKey("EnableCheats");
             CExoString sSection("Game Options");
-            CExoString sFileName(".\\swkotor.ini");
+            CExoString sFileName(".\\swkotor2.ini");
 
             cIni.ReadIniEntry(sValue, sFileName, sSection, sKey);
         }
@@ -1734,14 +1735,13 @@ void InitOpenGLWindow(HINSTANCE hInstance, int nCmdShow);
 HWND InitGameApp(HINSTANCE hInstance, int nCmdShow)  // PC 0x00403F70
 {
 
-    static char szClassName[] =
-        "Exo - BioWare Corp., (c) 1999 - Generic Blank Application";
+    static char szClassName[] = "KotOR2";
     HWND hWnd;
 
     GetGameVersionInfo();
-    g_sBuildNumber = g_sBuildNumber + " Graphics " + AurGetVersionString();
     CExoString sTitle = g_sCopyrightInfo + " " + g_sGameName;
-    CExoString sGameName = g_sGameName;
+    CExoString sGameName = g_sGameName + "    v" + g_sInstallBuildNumber + "." +
+                           g_sBuildNumber;
 
     WNDCLASSA wc;
 
@@ -1870,7 +1870,7 @@ void ReInitAurora(unsigned long nWidth, unsigned long nHeight,  // PC 0x00403840
         {
             CExoString sKey("Disable Vertex Buffer Objects");
             CExoString sSection("Graphics Options");
-            CExoString sFileName(".\\swkotor.ini");
+            CExoString sFileName(".\\swkotor2.ini");
 
             bHaveEntry =
                 cIni.ReadIniEntry(sValue, sFileName, sSection, sKey);
@@ -1899,7 +1899,7 @@ void ReInitAurora(unsigned long nWidth, unsigned long nHeight,  // PC 0x00403840
         {
             CExoString sKey("Disable Write-Only VBO");
             CExoString sSection("Graphics Options");
-            CExoString sFileName(".\\swkotor.ini");
+            CExoString sFileName(".\\swkotor2.ini");
 
             bHaveEntry =
                 cIni.ReadIniEntry(sValue, sFileName, sSection, sKey);
@@ -2061,7 +2061,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,  // PC 0x004042
     {
         CExoString sKey("Disable Sound");
         CExoString sSection("Sound Options");
-        CExoString sFileName(".\\swkotor.ini");
+        CExoString sFileName(".\\swkotor2.ini");
 
         bHaveEntry =
             cIni.ReadIniEntry(sDisableSound, sFileName, sSection, sKey);
@@ -2076,7 +2076,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,  // PC 0x004042
         sDisableSound.Format("%d", 0);
         CExoString sKey2("Disable Sound");
         CExoString sSection2("Sound Options");
-        CExoString sFileName2(".\\swkotor.ini");
+        CExoString sFileName2(".\\swkotor2.ini");
 
         cIni.WriteIniEntry(sDisableSound, sFileName2, sSection2, sKey2);
     }
@@ -2221,7 +2221,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,  // PC 0x004042
                 g_pAppManager->m_pClientExoApp
                     ->EnableMouseAtEndOfLoadModuleMovie();
                 if (g_bNiceClient != 0)
-                    Sleep(g_nSleeptime);
+                    Sleep(0);
 
                 if (displayFPS > 0.0f)
                 {
@@ -2720,7 +2720,7 @@ int main()
     {
         CExoString sKey("DisableSound");
         CExoString sSection("Sound Options");
-        CExoString sFileName("d:\\swkotor.ini");
+        CExoString sFileName("d:\\swkotor2.ini");
 
         bHaveEntry =
             cIni.ReadIniEntry(sDisableSound, sFileName, sSection, sKey);
@@ -2735,7 +2735,7 @@ int main()
         sDisableSound.Format("%d", 0);
         CExoString sKey2("DisableSound");
         CExoString sSection2("Sound Options");
-        CExoString sFileName2("d:\\swkotor.ini");
+        CExoString sFileName2("d:\\swkotor2.ini");
 
         cIni.WriteIniEntry(sDisableSound, sFileName2, sSection2, sKey2);
     }
@@ -2798,7 +2798,7 @@ int main()
     else
     {
         if (cParams.m_bOptionsDataValid == 0)
-            g_pAppManager->m_pClientExoApp->LoadOptions();
+            g_pAppManager->m_pClientExoApp->LoadOptions(1);
         g_pAppManager->m_pClientExoApp->GetClientOptions()->ApplySoundOptions();
         g_pAurora->ResetGammaRamp(
             g_pAppManager->m_pClientExoApp->GetClientOptions()->GetGammaSetting(),

@@ -277,7 +277,17 @@ public:
     void CalcLevelUpNumberFeats(unsigned char nClass,
                                unsigned char& nNormalFeats,
                                unsigned char& nBonusFeats);
-    unsigned char GetSimpleAlignmentGoodEvil();
+    // PC 0x0050B730
+    unsigned char GetSimpleAlignmentGoodEvil()
+    {
+        if (m_nGoodEvilAlignment <= 40)
+        {
+            return 3;
+        }
+        unsigned char nAlignment = m_nGoodEvilAlignment >= 60;
+        ++nAlignment;
+        return nAlignment;
+    }
 
     char GetSTRMod() { return m_nStrengthModifier; }
     char GetWISMod() { return m_nWisdomModifier; }

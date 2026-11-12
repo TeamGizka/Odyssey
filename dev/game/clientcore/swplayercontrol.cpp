@@ -11,6 +11,8 @@
 #include "swminigame.h"
 #include "nwccreature.h"
 #include "nwrules.h"
+#include "nwccreaturestats.h"
+#include "nwfeat.h"
 
 const int CSWPlayerControl::SWDRIVE_FORWARD = 1;
 const int CSWPlayerControl::SWDRIVE_BACKWARD = 2;
@@ -141,7 +143,8 @@ float CSWPlayerControlCamRelative::GetMaxSpeed()
     {
         g_pAppManager->m_pClientExoApp->GetSWParty();
         CSWCCreature* pCreature = GetPlayer();
-        if (pCreature->m_bRunning)
+        if (pCreature->m_bRunning &&
+            !GetPlayer()->GetStats()->HasFeat(CSWFeat::FEAT_UNKNOWN_197))
         {
             pCreature = GetPlayer();
             return pCreature->m_pAppearance->m_fDriveAnimWalk;

@@ -5,7 +5,8 @@ class CCAppearanceInfo
 {
 public:
 
-    enum { APPEARANCE_SAFE_PROJECTILE_DUMMY = 201 };
+    enum { APPEARANCE_SAFE_PROJECTILE_DUMMY = 201,
+           HANDMAIDEN_BODY_VARIATION_ROBED = 2, HANDMAIDEN_ALIGNMENT_DARK = 40, APPEARANCE_HANDMAIDEN_ROBED_DARK = 669, APPEARANCE_HANDMAIDEN_ROBED_LIGHT = 454, APPEARANCE_HANDMAIDEN_DEFAULT = 638 };
 
     enum Gender
     {
@@ -13,6 +14,8 @@ public:
         GENDER_FEMALE = 1
     };
     static const unsigned char HEAD_OVERRIDE_DEFAULT = 255;
+#ifndef _XBOX
+#endif
 
     unsigned char m_nBodyVariation;
     unsigned char m_nTextureVar;

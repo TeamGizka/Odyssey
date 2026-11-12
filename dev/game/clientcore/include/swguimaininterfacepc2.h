@@ -564,6 +564,7 @@ public:
     void OnTargetActionFocus(CSWGuiControl*);
     void OnTargetUpArrowPressed(CSWGuiControl*);
     void OnTargetDownArrowPressed(CSWGuiControl*);
+    void OnSwapWeaponsPressed(CSWGuiControl*);
     void OnPauseButtonPressed(CSWGuiControl*);
     void OnSoloButtonPressed(CSWGuiControl*);
     void OnStealthButtonPressed(CSWGuiControl*);
@@ -591,6 +592,10 @@ public:
     void AddFloatyText(unsigned long, CExoString const&, Vector const&, float);
     void OnDefaultActionLeft(CSWGuiControl*);
     CSWGuiMainInterface(CSWGuiManager*);
+    int m_bSelectingUseItemTarget;
+    int m_nUseItemTargetMember;
+    unsigned long m_oidUseItemPending;
+    void ResetPartyMemberItemUse();
 };
 
 #endif

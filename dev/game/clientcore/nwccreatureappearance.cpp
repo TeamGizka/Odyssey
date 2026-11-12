@@ -466,6 +466,35 @@ void CSWCCreatureAppearance::SetAppearanceAlignment(short nAlignment)
     }
 
     m_nAlignment = nAlignment;
+#ifndef _XBOX
+    if (m_pCreature != 0)
+    {
+        CSWSCreature* pServerCreature = m_pCreature->GetServerCreature();
+        if (pServerCreature != 0 && pServerCreature->m_sTag.CompareNoCase("handmaiden") &&
+            m_bUseBodyVariation)
+        {
+            if (m_nBodyVariation == HANDMAIDEN_BODY_VARIATION_ROBED)
+            {
+                if (nAlignment <= HANDMAIDEN_ALIGNMENT_DARK)
+                {
+                    if (m_nAppearance != APPEARANCE_HANDMAIDEN_ROBED_DARK)
+                    {
+                        pServerCreature->Disguise(APPEARANCE_HANDMAIDEN_ROBED_DARK, 0, 0, 1);
+                    }
+                }
+                else if (m_nAppearance != APPEARANCE_HANDMAIDEN_ROBED_LIGHT)
+                {
+                    pServerCreature->Disguise(APPEARANCE_HANDMAIDEN_ROBED_LIGHT, 0, 0, 1);
+                }
+                return;
+            }
+            if (m_nAppearance != APPEARANCE_HANDMAIDEN_DEFAULT)
+            {
+                pServerCreature->Disguise(APPEARANCE_HANDMAIDEN_DEFAULT, 0, 0, 1);
+            }
+        }
+    }
+#endif
     if (m_pCreature == 0 ||
         m_pCreature->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD, 0) == 0)
     {

@@ -149,8 +149,8 @@ void CSWCArea::StartSounds()
 {
     g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
     g_pAppManager->m_pClientExoApp->StopMenuMusic();
-    g_pAppManager->m_pClientExoApp->StopLoadMusic();
     m_pAmbientSound->StartSounds();
+    g_pAppManager->m_pClientExoApp->StopLoadMusic();
 }
 // PC 0x00650DE0
 int CSWCArea::SetWeather(unsigned char nWeather, float fStrength)
@@ -1005,6 +1005,7 @@ int CSWCArea::LoadArea(CAurCamera* pCamera, CGuiAreaLoadscreen* pLoadScreen,
     m_fGrassQuadSize = pMessage->ReadFLOAT(1.0f, 32);
     m_nGrassDiffuse = pMessage->ReadDWORD(32);
     m_nGrassAmbient = pMessage->ReadDWORD(32);
+    m_nGrassEmissive = pMessage->ReadDWORD(32);
     for (int nProbability = 0; nProbability < GRASS_PROB_COUNT; nProbability++)
         m_fGrassProbability[nProbability] = pMessage->ReadFLOAT(1.0f, 32);
 
@@ -1018,6 +1019,9 @@ int CSWCArea::LoadArea(CAurCamera* pCamera, CGuiAreaLoadscreen* pLoadScreen,
     grassInfo.m_vDiffuse.m_fX = (m_nGrassDiffuse & 0xFF) * (1.0f / 255.0f);
     grassInfo.m_vDiffuse.m_fY = ((m_nGrassDiffuse >> 8) & 0xFF) * (1.0f / 255.0f);
     grassInfo.m_vDiffuse.m_fZ = ((m_nGrassDiffuse >> 16) & 0xFF) * (1.0f / 255.0f);
+    grassInfo.m_vEmissive.m_fX = (m_nGrassEmissive & 0xFF) * (1.0f / 255.0f);
+    grassInfo.m_vEmissive.m_fY = ((m_nGrassEmissive >> 8) & 0xFF) * (1.0f / 255.0f);
+    grassInfo.m_vEmissive.m_fZ = ((m_nGrassEmissive >> 16) & 0xFF) * (1.0f / 255.0f);
     memcpy(grassInfo.m_afProbability, m_fGrassProbability, sizeof(m_fGrassProbability));
     int bGrass;
     for (int nMaterial = 0; nMaterial < 32; nMaterial++)
@@ -2127,6 +2131,18 @@ void CSWCArea::EmptyCAurObjectToHitCheckIgnoreList()
 // PC 0x00656310
 CSWCArea::~CSWCArea()
 {
+#ifndef _XBOX
+    for (int i = 0; i < m_lstToBeDeletedEmitters.m_nCount; i++)
+    {
+        CAurObject* pEmitter = m_lstToBeDeletedEmitters[i];
+        if (pEmitter != NULL)
+        {
+            pEmitter->AttachToScene(NULL);
+            delete pEmitter;
+            m_lstToBeDeletedEmitters[i] = NULL;
+        }
+    }
+#endif
     UnloadArea();
     delete m_pAmbientSound;
     m_pAmbientSound = 0;

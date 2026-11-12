@@ -160,6 +160,12 @@ public:
 #endif
     virtual void OnPanelRemoved();
     void AddAlignmentShift(char);
+    void AddInfluenceGained(char nNPC);
+    void AddInfluenceLost(char nNPC);
+    void AddMaxFPGained(int nForcePoints);
+    void AddMaxFPLost(int nForcePoints);
+    void HandleAlignmentMovie();
+    void HandleLevelUpDLG();
     void AddCredits(int nCredits);
     void AddExperience(int nExperience);
     void AddStealthExperience(int nExperience);
@@ -176,6 +182,24 @@ public:
     void DisplayStatus();
     virtual void OnPanelAdded();
     CSWGuiStatusSummary(CSWGuiManager*);
+};
+
+class CSWGuiDeathDisplay : public CSWGuiPanel
+{
+public:
+    CSWGuiLabel m_lblMessage;
+    CSWGuiButton m_btnLastSave;
+    CSWGuiButton m_btnLoadGame;
+    CSWGuiButton m_btnQuit;
+    float m_fFadeTime;
+
+    CSWGuiDeathDisplay(CSWGuiManager* pManager);
+    virtual void OnPanelAdded();
+    virtual void OnPanelRemoved();
+    virtual void Draw(float fDeltaTime);
+    void OnQuitPressed(CSWGuiControl* pControl);
+    void OnLoadGamePressed(CSWGuiControl* pControl);
+    void OnLastSavePressed(CSWGuiControl* pControl);
 };
 
 #include "swguidrawable.h"

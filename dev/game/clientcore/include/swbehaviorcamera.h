@@ -78,6 +78,9 @@ public:
     int m_nHeightMode;
     float m_fPitch;
     int m_nReserved1C;
+#ifndef _XBOX
+    float m_fDesiredPitch;
+#endif
 };
 
 class CSWCameraNavigate : public CAurBehavior
@@ -230,7 +233,7 @@ public:
     int m_nOrientationState;
     Vector m_vPlayerOrientation;
     float m_fTiltSpeed;
-    int m_n194;
+    float m_fDefaultTiltSpeed;
 #ifdef _XBOX
 
     float m_fTurn;

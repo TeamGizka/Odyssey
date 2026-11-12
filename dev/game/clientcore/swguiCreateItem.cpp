@@ -66,33 +66,12 @@ CSWGuiButton* CSWGuiCreateItemMenu::CreateOption(const CExoString& sText,
                                                  CSWGuiHandler pHandler,
                                                  CSWGuiButton* pPrototype)
 {
-    CSWGuiExtent cExtent;
+    CSWGuiExtent cExtent = pPrototype->m_cExtent;
     CSWGuiButton* pButton;
-    CSWGuiBorderParams* pBorder;
-    CSWGuiBorderParams* pHilite;
-    int nBorderDim;
-    int nMaxDim;
 
-    cExtent.m_nHeight = 0;
-    cExtent.m_nWidth = 0;
-    cExtent.m_nTop = 0;
-    cExtent.m_nLeft = 0;
     pButton = new CSWGuiButton();
     pButton->Initialize(cExtent, pPrototype);
     pButton->m_cText.m_cParams.SetText(sText);
-    pHilite = &pButton->m_cHilite.m_cParams;
-    pBorder = &pButton->m_cBorder.m_cParams;
-    nBorderDim = pBorder->GetBorderDim();
-    if (pHilite->GetBorderDim() > nBorderDim)
-    {
-        nMaxDim = pHilite->GetBorderDim();
-    }
-    else
-    {
-        nMaxDim = pBorder->GetBorderDim();
-    }
-    cExtent.m_nHeight = pButton->m_cText.GetIdealHeight() + 2 * nMaxDim;
-    pButton->SetExtent(cExtent);
     pButton->AddEvent(GUIEVENT_ACTIVATE, this, pHandler);
     pButton->AddEvent(GUIEVENT_ACCEPT, this, pHandler);
     return pButton;

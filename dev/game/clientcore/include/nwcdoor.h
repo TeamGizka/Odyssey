@@ -29,7 +29,12 @@ public:
     enum
     {
         INITIAL_APPEARANCE_TYPE = 255,
-        INITIAL_GENERIC_TYPE = 255
+        INITIAL_GENERIC_TYPE = 255,
+        STRREF_CANNOT_SET_MINES = 47861,
+        STRREF_SET_MINE = 48180,
+        TUTORIAL_SET_MINE = 2,
+        ACTION_DOOR_SABER = 1031,
+        GUI_STRING_DOOR_SABER = 48208
     };
 
     CSWCDoor();
@@ -98,9 +103,13 @@ public:
     CExoString m_sModel;
     int m_bStatic;
     CExoString m_sTransitionDestination;
-#ifdef _XBOX
 
     void GetUseItems(CSWCCreature* pCreature, CExoArrayList<CSWGuiInterfaceAction>& lstActions);
+#ifndef _XBOX
+    void DoorSaber(unsigned long oidDoor, CSWCCreature* pCreature);
+    void MenuActionSetDoorMine(unsigned long oidItem, CSWCCreature* pCreature);
+    void GetDoorInterfaceMines(CSWCCreature* pCreature,
+                               CExoArrayList<CSWGuiInterfaceAction>& lstActions);
 #endif
 };
 

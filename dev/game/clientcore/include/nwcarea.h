@@ -194,7 +194,15 @@ public:
     CSWSArea* m_pServerArea;
 #ifndef _XBOX
     CExoLinkedList<CSWBehaviorAttachSound> m_lstRoomSounds;
-    CExoArrayList<CAurObject*> m_a288;
+    List<CAurObject*> m_lstToBeDeletedEmitters;
+    // PC 0x007058A0
+    void AddToBeDeletedEmitter(CAurObject* pEmitter)
+    {
+        if (pEmitter != NULL)
+        {
+            m_lstToBeDeletedEmitters.Add(pEmitter);
+        }
+    }
 #endif
 };
 

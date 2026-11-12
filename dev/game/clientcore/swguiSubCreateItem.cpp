@@ -78,30 +78,11 @@ CSWGuiButton* CSWGuiCreateItemSubMenu::CreateOption(const CExoString& sText,
                                                     CSWGuiButton* pPrototype)
 {
     CSWGuiButton* pButton = NULL;
-    CSWGuiExtent cExtent;
-    CSWGuiBorderParams* pBorder;
-    CSWGuiBorderParams* pHilite;
-    int nBorderDim;
-    int nHiliteDim;
+    CSWGuiExtent cExtent = pPrototype->m_cExtent;
 
-    cExtent.m_nLeft = cExtent.m_nTop = cExtent.m_nWidth = cExtent.m_nHeight = 0;
     pButton = new CSWGuiButton;
     pButton->Initialize(cExtent, pPrototype);
     pButton->m_cText.m_cParams.SetText(sText);
-    pHilite = &pButton->m_cHilite.m_cParams;
-    pBorder = &pButton->m_cBorder.m_cParams;
-    nBorderDim = pBorder->GetBorderDim();
-    nHiliteDim = pHilite->GetBorderDim();
-    if (nHiliteDim > nBorderDim)
-    {
-        nBorderDim = pHilite->GetBorderDim();
-    }
-    else
-    {
-        nBorderDim = pBorder->GetBorderDim();
-    }
-    cExtent.m_nHeight = pButton->m_cText.GetIdealHeight() + 2 * nBorderDim;
-    pButton->SetExtent(cExtent);
     pButton->AddEvent(GUIEVENT_ACTIVATE, this, pHandler);
     pButton->AddEvent(45, this, pHandler);
     return pButton;
@@ -144,7 +125,7 @@ CSWGuiCreateItemSubMenu::CSWGuiCreateItemSubMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
     m_nSelection = 0;
-    StartLoadFromLayout("debug");
+    StartLoadFromLayout("debug_p");
     InitControl(m_lstOptions, "LB_OPTIONS", 1);
     InitControl(m_lblBuild, "LBL_BUILD", 1);
     StopLoadFromLayout();
@@ -211,6 +192,13 @@ void CSWGuiCreateItemSubMenu::LoadItems(int nBaseItem)
                     CExoString sTemplate;
 
                     cTemplate.CopyToString(sTemplate);
+                    CExoString sName;
+                    CExoLocString cName = pGFF->ReadFieldCExoLocString(
+                        &cTopLevel, "LocalizedName", bSuccess, CExoLocString());
+                    cName.GetString(
+                        g_pAppManager->m_pClientExoApp->GetClientLanguage(),
+                        &sName, 0);
+                    sTemplate = sName + " (" + sTemplate + ")";
                     m_lstOptionNames.Add(new CExoString(sTemplate));
                     m_lstBlueprintNames.Add(new CExoString(*pName));
                 }

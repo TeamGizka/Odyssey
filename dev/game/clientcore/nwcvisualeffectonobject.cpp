@@ -157,6 +157,12 @@ int CSWCVisualEffectOnObject::LoadBeam(unsigned short nVisualEffect)
     case BEAM_FORCE_SHOCK:
         sModel = "v_fshock_dur";
         break;
+    case BEAM_FLAMEP:
+        sModel = "v_flamep_dur";
+        break;
+    case BEAM_FLAMEPL:
+        sModel = "v_flamepl_dur";
+        break;
     }
     m_pEffectModel = NewCAurObject((char*)sModel.CStr(), "fxbeam", 0, 0);
     if (m_pEffectModel == 0)
@@ -199,6 +205,9 @@ int CSWCVisualEffectOnObject::LoadModelAttachment(unsigned short nVisualEffect)
         break;
     case MODEL_ATTACHMENT_REVAN_MASK_2:
         m_pEffectModel = NewCAurObject("v_revmask2_dur", "fxrevanmask2", 0, 0);
+        break;
+    case MODEL_ATTACHMENT_MTHMST:
+        m_pEffectModel = NewCAurObject("v_MthMst", "v_MthMst", 0, 0);
         break;
     }
     return m_pEffectModel != 0;
@@ -1767,7 +1776,9 @@ void CSWCVisualEffectOnObject::ApplyDeleteModel(unsigned short nVisualEffect)
 // PC 0x00705950
 void CSWCVisualEffectOnObject::ApplyChunk(unsigned short nVisualEffect)
 {
+#ifdef _XBOX
     Vector vPosition;
+#endif
     if (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nGoreLevel >=
         CClientOptions::GORE_LEVEL_FULL)
     {
@@ -1777,14 +1788,18 @@ void CSWCVisualEffectOnObject::ApplyChunk(unsigned short nVisualEffect)
             CSWCCreature* pCreature = pObject->AsSWCCreature();
             if (pCreature != 0)
             {
+#ifdef _XBOX
                 vPosition = pObject->m_vPosition;
+#endif
                 if (pCreature->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1) != 0)
                 {
                     Quaternion qOrientation;
                     Vector vImpact;
                     pCreature->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1)
                         ->GetPartLocalPosition("impact", &vImpact, &qOrientation);
+#ifdef _XBOX
                     vPosition += vImpact;
+#endif
                 }
                 CExoString sBloodColor;
                 {
@@ -1946,8 +1961,8 @@ void CSWCVisualEffectOnObject::ApplyFOV(unsigned short nVisualEffect)
 void CSWCVisualEffectOnObject::ApplyModelAttachment(
     unsigned short nVisualEffect)
 {
-    nVisualEffect -= VFX_MODEL_ATTACHMENT_BEGIN;
-    switch (nVisualEffect)
+    unsigned short nAttachment = nVisualEffect - VFX_MODEL_ATTACHMENT_BEGIN;
+    switch (nAttachment)
     {
     case MODEL_ATTACHMENT_MEDAL:
         m_sBeamSourceNode = "medalhook";
@@ -1958,13 +1973,34 @@ void CSWCVisualEffectOnObject::ApplyModelAttachment(
     case MODEL_ATTACHMENT_REVAN_MASK_2:
         m_sBeamSourceNode = "revmask2hook";
         break;
+    case MODEL_ATTACHMENT_MTHMST:
+        m_sBeamSourceNode = "maskhook";
+        break;
     }
     if (m_pEffectModel != 0)
     {
-        CSWCObject* pObject = GetTargetCSWCObject();
-        static_cast<Gob*>(m_pEffectModel)->AttachToObject(
-            pObject->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1),
-            (char*)m_sBeamSourceNode.CStr(), 0);
+        if (nAttachment != MODEL_ATTACHMENT_MTHMST)
+        {
+            CSWCObject* pObject = GetTargetCSWCObject();
+            static_cast<Gob*>(m_pEffectModel)->AttachToObject(
+                pObject->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1),
+                (char*)m_sBeamSourceNode.CStr(), 0);
+        }
+        else
+        {
+            Gob* pModel = GetTargetCSWCObject()->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD, 1);
+            if (pModel != 0)
+            {
+                m_nF8 = 1;
+            }
+            else
+            {
+                pModel = GetTargetCSWCObject()->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1);
+            }
+            static_cast<Gob*>(m_pEffectModel)->AttachToObject(
+                pModel, (char*)m_sBeamSourceNode.CStr(), 0);
+            m_pEffectModel->PlayAnimation("impact", 1.0f, 4, 0);
+        }
     }
 }
 // PC 0x00704AD0
@@ -2508,6 +2544,33 @@ void CSWCVisualEffectOnObject::ApplyHardCodedVisualEffect(
         m_bHardCodedEffectApplied = 1;
     }
 }
+#ifndef _XBOX
+// PC 0x00705AF0
+void CSWCVisualEffectOnObject::RemoveModelAttachment(unsigned short nVisualEffect)
+{
+    if (m_pEffectModel == 0)
+    {
+        return;
+    }
+    nVisualEffect -= VFX_MODEL_ATTACHMENT_BEGIN;
+    if (nVisualEffect != MODEL_ATTACHMENT_MTHMST)
+    {
+        m_pEffectModel->AttachToObject(0, 0, 0);
+        m_pEffectModel->AttachToScene(0);
+        return;
+    }
+    m_pEffectModel->PlayAnimation("stop", 0.0f, 1, 0.0f);
+    m_pEffectModel->AttachToObject(0, 0, 0);
+    CSWCModule* pModule = g_pAppManager->GetClientExoApp()->GetModule();
+    if (pModule != 0 && pModule->m_pInfo != 0)
+    {
+        pModule->m_pInfo->AddToBeDeletedEmitter(m_pEffectModel);
+        m_pEffectModel = 0;
+        return;
+    }
+    m_pEffectModel->AttachToScene(0);
+}
+#endif
 // PC 0x00705BA0
 void CSWCVisualEffectOnObject::RemoveHardCodedVisualEffect(
     unsigned short nVisualEffect)
@@ -2564,6 +2627,13 @@ void CSWCVisualEffectOnObject::RemoveHardCodedVisualEffect(
         {
             RemoveMotionBlur();
         }
+#ifndef _XBOX
+        else if (nVisualEffect >= VFX_MODEL_ATTACHMENT_BEGIN &&
+                 nVisualEffect < VFX_MODEL_ATTACHMENT_END)
+        {
+            RemoveModelAttachment(nVisualEffect);
+        }
+#endif
         else if (nVisualEffect >= VFX_DISTORTION_BEGIN &&
                  nVisualEffect < VFX_DISTORTION_END)
         {

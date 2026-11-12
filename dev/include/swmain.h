@@ -24,6 +24,7 @@ extern float DeltaT;
 extern int g_bRenderWindowActive;
 
 extern int g_bDisableSound;
+extern unsigned char g_bDebugDialogSound;
 
 extern int g_bEnableCombatDebugging;
 

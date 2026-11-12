@@ -19,7 +19,8 @@ public:
     CClientOptions();
     ~CClientOptions();
 
-    enum { GORE_LEVEL_FULL = 2 };
+    enum { GORE_LEVEL_FULL = 2,
+           GAMMA_BRIGHTNESS_OFFSET = 15 };
 
     static const int AMBIENT_SOUND_OPTION_MASK = 3;
 
@@ -47,7 +48,7 @@ public:
     void SetFullScreenEnabled(int bEnabled);
     void SetAutoLevelUpNPCs(int bEnabled);
     int SaveOptions();
-    int LoadOptions();
+    int LoadOptions(int bSetAntiAliasing);
     void ApplySoundOptions();
 #ifdef _XBOX
     void SetMovieShown(const CResRef& sMovie, int bShown);
@@ -224,17 +225,17 @@ public:
     unsigned int m_bMouseLook : 1;
     unsigned int m_bAutoSave : 1;
     unsigned int m_bReverseMinigameYAxis : 1;
-    unsigned int m_bCombatMovement : 1;
     unsigned int m_bReverseIngame : 1;
+    unsigned int m_bCombatMovement : 1;
     unsigned int m_nGameplayBits : 26;
     float m_fGuiScale;
     int m_bMouseTeleporting;
-    unsigned char m_n14;
-    unsigned char m_n15;
-    unsigned char m_n16;
-    unsigned short m_n18;
-    unsigned char m_n1A;
-    unsigned char m_n1B;
+    unsigned char m_nCurSithLord;
+    unsigned char m_bGameCompleted;
+    unsigned char m_nPCGender;
+    unsigned short m_nAppearanceType;
+    unsigned char m_nBodyVariation;
+    unsigned char m_nTextureVariation;
     unsigned int m_bHideUnequippable : 1;
     unsigned int m_bTutorialPopups : 1;
     unsigned int m_bSubtitles : 1;

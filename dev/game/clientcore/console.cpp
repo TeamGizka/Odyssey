@@ -41,7 +41,7 @@ int GetCheatsTurnedOn()
     {
         CExoString sKey("EnableCheats");
         CExoString sSection("Game Options");
-        CExoString sFile(".\\swkotor.ini");
+        CExoString sFile(".\\swkotor2.ini");
 
         bRead = cIni.ReadIniEntry(sValue, sFile, sSection, sKey);
     }

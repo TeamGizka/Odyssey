@@ -104,6 +104,7 @@ void CSWGuiInterfaceAction::Clear()
     m_nDisabledReason = CSWGuiInterfaceAction::DISABLED_REASON_NONE;
 #ifndef _XBOX
     m_nStackSize = 1;
+    m_n38 = 0;
 #endif
 }
 // PC 0x00692D60
@@ -667,7 +668,15 @@ int CSWCObject::SetAnimation(unsigned short nAnimation, int nFlags, int nParam)
                     nTransition = 85;
                 if (m_nLoopingAnimation == CREATURE_ANIMATION_LOOPING_PRONE)
                     nTransition = 86;
-                if (nAnimation == DOOR_ANIMATION_DESTROYED)
+                if (nAnimation == 10418)
+                    nTransition = 456;
+                else if (nAnimation == 10424 || nAnimation == 10425 ||
+                         nAnimation == 10426 || nAnimation == 10427 ||
+                         nAnimation == 10428)
+                    nTransition = 20;
+                if (nAnimation == 10501)
+                    nTransition = 559;
+                else if (nAnimation == DOOR_ANIMATION_DESTROYED)
                 {
                     if (m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
                         nTransition = 306;
@@ -1978,6 +1987,18 @@ void QueuedCallbackFunction(CAurObject* pObject, char* sEvent, void* pUserData)
 {
     ((CSWCObject*)pUserData)->QueuedCallback(pObject, sEvent);
 }
+#ifndef _XBOX
+// PC 0x006952C0
+void CSWCObject::MenuActionUseSecuritySpike(unsigned long oidItem, CSWCCreature* pCreature)
+{
+    if (pCreature != NULL)
+    {
+        pCreature->ClearAllActions();
+    }
+    CSWCMessage* pMessage = g_pAppManager->GetClientExoApp()->GetSWCMessage();
+    pMessage->SendPlayerToServerInput_UnlockObject(m_nId, oidItem & ~OBJECT_LISTTYPE_MASK);
+}
+#endif
 // PC 0x006940C0
 void CSWCObject::QueuedCallback(CAurObject* pObject, char* sEvent)
 {

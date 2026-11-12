@@ -37,6 +37,7 @@
 #include "nwitem.h"
 #include "nwcanimbase.h"
 #include "clientexoappinternal.h"
+#include "swguistore.h"
 #include "nwccreaturestats.h"
 #include "soundset.h"
 #include "gameobjectarray.h"
@@ -44,6 +45,7 @@
 #include "nwcanimbase.h"
 #include "serverexoapp.h"
 #include "nwsplaceable.h"
+#include "nwsdoor.h"
 #include "twodimarrays.h"
 #include "twodimarray.h"
 #include "nwspell.h"
@@ -191,7 +193,7 @@ int CSWCMessage::HandleServerToPlayerChat(unsigned char nMinor)
         nMinor != CHAT_SERVER_STRREF)
     {
         if (pCreature != NULL)
-            sPrefix = pCreature->GetStats()->GetFullName();
+            sPrefix = pCreature->GetStats()->m_sFirstName;
         else if (pObject == NULL ||
             !g_pAppManager->GetClientExoApp()->GetObjectName(pObject->GetId(), sPrefix))
         {
@@ -592,18 +594,38 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Appearance()
                     sAppearance.m_nBodyVariation = nBodyVariation;
                     sAppearance.m_nTextureVar = nTextureVariation;
                 }
+                bool bShowHeadModel = true;
+                CSWSCreature* pServerCreature = pCreature->GetServerCreature();
+                if (pServerCreature != NULL)
+                {
+                    CExoString& sTag = pServerCreature->GetTag();
+                    if (sTag.CompareNoCase("kreia") || sTag.CompareNoCase("visasmarr") ||
+                        (sTag.CompareNoCase("handmaiden") && sAppearance.m_nAppearance == 454))
+                    {
+                        bShowHeadModel = false;
+                    }
+                }
                 if (nSlot == INVENTORY_SLOT_HEAD || nSlot == INVENTORY_SLOT_RIGHTHAND ||
                     nSlot == INVENTORY_SLOT_LEFTHAND)
                 {
                     if (pItem->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1) == NULL)
                     {
-                        pItem->LoadModel(pItem->m_cModelResRef,
-                                         CSWCAnimBase::MODEL_SLOT_MAIN, 0);
-                        if (pBaseItem->m_nPartEnvMap == 1)
+                        if (nSlot != INVENTORY_SLOT_HEAD || bShowHeadModel)
                         {
-                            CResRef cEnvMap("default");
-                            pItem->SetEnvMap(CSWCAnimBase::MODEL_SLOT_MAIN, 1, cEnvMap);
+                            pItem->LoadModel(pItem->m_cModelResRef,
+                                             CSWCAnimBase::MODEL_SLOT_MAIN, 0);
+                            if (pBaseItem->m_nPartEnvMap == 1)
+                            {
+                                CResRef cEnvMap("default");
+                                pItem->SetEnvMap(CSWCAnimBase::MODEL_SLOT_MAIN, 1, cEnvMap);
+                            }
                         }
+                    }
+                    else if (nSlot == INVENTORY_SLOT_HEAD && !bShowHeadModel)
+                    {
+                        CResRef cEnvMap("DEFAULT");
+                        pItem->SetEnvMap(CSWCAnimBase::MODEL_SLOT_MAIN, 0, 1, cEnvMap);
+                        pItem->UnloadModel(CSWCAnimBase::MODEL_SLOT_MAIN);
                     }
                 }
                 CAurScene* pScene = pArea->m_pScene;
@@ -620,14 +642,14 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Appearance()
                     sAppearance.m_anArmorModelPart[4] = pItem->m_aUnknown04[4];
                     sAppearance.m_anArmorModelPart[5] = pItem->m_aUnknown04[5];
                     nPartMask |= CSWCCreature::APPEARANCE_PART_BODY;
-                    pCreature->EquipToInventorySlot(INVENTORY_SLOT_ARMOUR, pItem);
+                    pCreature->EquipToInventorySlot(INVENTORY_SLOT_ARMOUR, pItem, 0);
                 }
                 else if (nSlot == INVENTORY_SLOT_HEAD)
                 {
                     pItem->AttachToScene(NULL);
                     sAppearance.m_nUnmapped10 = oidObject;
                     nPartMask |= CSWCCreature::APPEARANCE_PART_HEAD;
-                    pCreature->EquipToInventorySlot(INVENTORY_SLOT_HEAD, pItem);
+                    pCreature->EquipToInventorySlot(INVENTORY_SLOT_HEAD, pItem, 0);
                 }
                 else if (nSlot == INVENTORY_SLOT_LEFTHAND ||
                          nSlot == INVENTORY_SLOT_RIGHTHAND)
@@ -672,7 +694,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Appearance()
                 }
                 if (nSlot != INVENTORY_SLOT_LEFTHAND && nSlot != INVENTORY_SLOT_RIGHTHAND)
                 {
-                    pCreature->EquipToInventorySlot(nSlot, NULL);
+                    pCreature->EquipToInventorySlot(nSlot, NULL, 0);
                 }
             }
         }
@@ -765,13 +787,13 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Appearance()
             }
             else
             {
-                pCreature->EquipToInventorySlot(INVENTORY_SLOT_LEFTHAND, pLeftItem);
+                pCreature->EquipToInventorySlot(INVENTORY_SLOT_LEFTHAND, pLeftItem, 0);
             }
         }
         else
         {
             pCreature->SetLastInstant(INVENTORY_SLOT_LEFTHAND, bLeftLastInstant);
-            pCreature->EquipToInventorySlot(INVENTORY_SLOT_LEFTHAND, NULL);
+            pCreature->EquipToInventorySlot(INVENTORY_SLOT_LEFTHAND, NULL, 0);
         }
     }
     if (bRightChanged)
@@ -800,14 +822,14 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Appearance()
             }
             else
             {
-                pCreature->EquipToInventorySlot(INVENTORY_SLOT_RIGHTHAND, pRightItem);
+                pCreature->EquipToInventorySlot(INVENTORY_SLOT_RIGHTHAND, pRightItem, 0);
             }
             pCreature->SetLastInstant(INVENTORY_SLOT_RIGHTHAND, 0);
         }
         else
         {
             pCreature->SetLastInstant(INVENTORY_SLOT_RIGHTHAND, bRightLastInstant);
-            pCreature->EquipToInventorySlot(INVENTORY_SLOT_RIGHTHAND, NULL);
+            pCreature->EquipToInventorySlot(INVENTORY_SLOT_RIGHTHAND, NULL, 0);
         }
     }
     if (bLeftChanged || bRightChanged)
@@ -3500,13 +3522,19 @@ int CSWCMessage::HandleServerToPlayerArea(unsigned char nMinor)
     {
         unsigned char nWeather = ReadBYTE(8);
         int bEnabled = ReadBOOL();
+        unsigned char nChance = ReadBYTE(8);
         CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
         if (pModule && pModule->m_pInfo)
         {
+            CSWCArea* pArea = pModule->m_pInfo;
             if (bEnabled)
-                pModule->m_pInfo->StartWeather(nWeather);
+            {
+                pArea->StartWeather(nWeather);
+                if (nChance != 0)
+                    pArea->m_nChanceRain = nChance;
+            }
             else
-                pModule->m_pInfo->StopWeather(nWeather);
+                pArea->StopWeather(nWeather);
             return 1;
         }
         break;
@@ -3554,8 +3582,9 @@ int CSWCMessage::HandleServerToPlayerArea(unsigned char nMinor)
             if (nImage == AREA_LOADSCREEN_RANDOM)
             {
                 int nRows = g_pRules->Get2DArrays()->GetAreaTransition()->GetNumRows();
-                nImage = rand() % (nRows - AREA_LOADSCREEN_FIRST_TABLE_ROW) +
-                    AREA_LOADSCREEN_FIRST_TABLE_ROW;
+                if (nRows > AREA_LOADSCREEN_FIRST_TABLE_ROW)
+                    nImage = rand() % (nRows - AREA_LOADSCREEN_FIRST_TABLE_ROW) +
+                        AREA_LOADSCREEN_FIRST_TABLE_ROW;
             }
             if (nImage == AREA_LOADSCREEN_CUSTOM)
             {
@@ -5703,6 +5732,7 @@ int CSWCMessage::HandleServerToPlayerDoorUpdate_Add()
     int bLockable = ReadBOOL();
     int bNoVisibleModel = ReadBOOL();
     int bLocked = ReadBOOL();
+    int n108 = ReadBOOL();
     int bAreaTransition = ReadBOOL();
     sTransitionDestination = ReadCExoLocStringClient(CResRef(), NULL);
     if (MessageReadOverflow(1))
@@ -5773,6 +5803,7 @@ int CSWCMessage::HandleServerToPlayerDoorUpdate_Add()
     pDoor->m_bLockable = bLockable;
     pDoor->m_bNoVisibleModel = bNoVisibleModel;
     pDoor->m_bLocked = bLocked;
+    pDoor->m_n108 = n108;
     pDoor->SetIsAreaTransition(bAreaTransition);
     pDoor->m_nAppearanceType = nAppearanceType;
     pDoor->m_nGenericType = nGenericType;
@@ -5787,6 +5818,19 @@ int CSWCMessage::HandleServerToPlayerDoorUpdate_Add()
         g_pAppManager->GetClientExoApp()->AddObjectToHitcheckIgnoreList(pDoor->GetId());
     }
     pDoor->m_sTransitionDestination = sTransitionDestination;
+    CSWSDoor* pServerDoor = pDoor->GetServerDoor();
+    if (pServerDoor != NULL && pServerDoor->m_bUseTweakColor)
+    {
+        unsigned long nTweakColor = pServerDoor->m_nTweakColor;
+        float fRed = (float)(nTweakColor & 0xFF) * (1.0f / 255.0f);
+        float fGreen = (float)((nTweakColor >> 8) & 0xFF) * (1.0f / 255.0f);
+        float fBlue = (float)((nTweakColor >> 16) & 0xFF) * (1.0f / 255.0f);
+        Gob* pModel = pDoor->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
+        if (pModel != NULL)
+        {
+            pModel->EnableIllumination(true, fRed, fGreen, fBlue);
+        }
+    }
     return 1;
 }
 // PC 0x006A1DE0
@@ -5868,13 +5912,14 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Add()
     unsigned long oidPlaceable = ReadOBJECTIDClient();
     CExoString sName = ReadCExoLocStringClient(CResRef(), NULL);
     int bTrapDetected = ReadBOOL();
-    unsigned char nAppearance = ReadBYTE(8);
+    int nAppearance = ReadINT(32);
     unsigned short nAnimation = ReadWORD(16);
     int nFlag110 = ReadBOOL();
     int nFlag128 = ReadBOOL();
     int nFlag130 = ReadBOOL();
     int nFlag114 = ReadBOOL();
     int nFlag118 = ReadBOOL();
+    int nFlag11C = ReadBOOL();
     int nFlag12C = ReadBOOL();
     int nFlag120 = ReadBOOL();
     if (MessageReadOverflow(1))
@@ -5987,6 +6032,7 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Add()
     pPlaceable->m_nUnknown130 = nFlag130;
     pPlaceable->m_nUnknown114 = nFlag114;
     pPlaceable->m_bLocked = nFlag118;
+    pPlaceable->m_n11C = nFlag11C;
     pPlaceable->m_nUnknown12C = nFlag12C;
     pPlaceable->m_nUnknown120 = nFlag120;
     pPlaceable->m_bTrapDetected = bTrapDetected;
@@ -6004,6 +6050,19 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Add()
     {
         CResRef resEnvMap("DEFAULT");
         pPlaceable->SetEnvMap(1, 1, resEnvMap);
+    }
+    CSWSPlaceable* pServerPlaceable = pPlaceable->GetServerPlaceable();
+    if (pServerPlaceable != NULL && pServerPlaceable->m_bUseTweakColor)
+    {
+        unsigned long nTweakColor = pServerPlaceable->m_nTweakColor;
+        float fRed = (float)(nTweakColor & 0xFF) * (1.0f / 255.0f);
+        float fGreen = (float)((nTweakColor >> 8) & 0xFF) * (1.0f / 255.0f);
+        float fBlue = (float)((nTweakColor >> 16) & 0xFF) * (1.0f / 255.0f);
+        Gob* pModel = pPlaceable->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
+        if (pModel != NULL)
+        {
+            pModel->EnableIllumination(true, fRed, fGreen, fBlue);
+        }
     }
     return 1;
 }
@@ -6241,7 +6300,7 @@ int CSWCMessage::HandleServerToPlayerInventory(unsigned char nMinor)
                     unsigned long nSlot = pItem->m_nEquipSlot;
                     if (nSlot != INVENTORY_SLOT_HEAD)
                     {
-                        g_pAppManager->m_pClientExoApp->GetPlayerCreature()->EquipToInventorySlot(nSlot, NULL);
+                        g_pAppManager->m_pClientExoApp->GetPlayerCreature()->EquipToInventorySlot(nSlot, NULL, 0);
                     }
                 }
             }
@@ -6272,7 +6331,7 @@ int CSWCMessage::HandleServerToPlayerInventory(unsigned char nMinor)
                         g_pAppManager->m_pClientExoApp->GetPlayerCreature()->GetEquippedItemID(pItem->m_nEquipSlot) != pItem->m_nId &&
                         nSlot != INVENTORY_SLOT_HEAD)
                     {
-                        g_pAppManager->m_pClientExoApp->GetPlayerCreature()->EquipToInventorySlot(nSlot, pItem);
+                        g_pAppManager->m_pClientExoApp->GetPlayerCreature()->EquipToInventorySlot(nSlot, pItem, 0);
                     }
                 }
             }
@@ -6335,9 +6394,11 @@ int CSWCMessage::HandleServerToPlayerInventory(unsigned char nMinor)
     case INVENTORY_UNEQUIP_CANCEL:
         {
             int bInstant;
+            int bSuppressDraw;
             if (nMinor == INVENTORY_UNEQUIP)
             {
                 bInstant = ReadBOOL();
+                bSuppressDraw = ReadBOOL();
             }
             if (MessageReadOverflow(1) || MessageReadUnderflow(1))
             {
@@ -6353,17 +6414,35 @@ int CSWCMessage::HandleServerToPlayerInventory(unsigned char nMinor)
                         pItem->PlayDropSound();
                     }
                     pItem->m_bAttached = 0;
-                    if (nMinor == INVENTORY_UNEQUIP &&
-                        g_pAppManager->m_pClientExoApp->GetPlayerCreature()->GetEquippedItemID(pItem->m_nEquipSlot) == pItem->m_nId)
+                    if (nMinor == INVENTORY_UNEQUIP)
                     {
-                        if (pItem->m_nEquipSlot != INVENTORY_SLOT_HEAD)
+                        CSWCCreature* pCreature;
+                        int nOverrideCharacter;
+                        if (g_pAppManager->m_pClientExoApp->GetInGameGui() != NULL &&
+                            (nOverrideCharacter = g_pAppManager->m_pClientExoApp->GetInGameGui()->GetTopMenuOverrideCharacter()) != -1)
                         {
-                            g_pAppManager->m_pClientExoApp->GetPlayerCreature()->SetLastInstant(pItem->m_nEquipSlot, bInstant);
-                            g_pAppManager->m_pClientExoApp->GetPlayerCreature()->EquipToInventorySlot(pItem->m_nEquipSlot, NULL);
+                            CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+                            pCreature = ((CSWSCreature*)pServerExoApp->GetGameObject(
+                                pServerExoApp->GetPartyTable()->GetPUPObject(nOverrideCharacter, 0, 1)))
+                                ->GetClientCreature();
                         }
-                        if (pItem->m_nEquipSlot != INVENTORY_SLOT_INVALID)
+                        else
                         {
-                            pItem->m_nEquipSlot = INVENTORY_SLOT_INVALID;
+                            pCreature = g_pAppManager->m_pClientExoApp->GetPlayerCreature();
+                        }
+                        if (pCreature->GetEquippedItemID(pItem->m_nEquipSlot) == pItem->m_nId)
+                        {
+                            if (pItem->m_nEquipSlot != INVENTORY_SLOT_HEAD ||
+                                (g_pGuiMan != NULL &&
+                                 g_pGuiMan->PanelExists(g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pStorePanel)))
+                            {
+                                pCreature->SetLastInstant(pItem->m_nEquipSlot, bInstant);
+                                pCreature->EquipToInventorySlot(pItem->m_nEquipSlot, NULL, bSuppressDraw);
+                            }
+                            if (pItem->m_nEquipSlot != INVENTORY_SLOT_INVALID)
+                            {
+                                pItem->m_nEquipSlot = INVENTORY_SLOT_INVALID;
+                            }
                         }
                     }
                 }
@@ -6561,11 +6640,11 @@ int CSWCMessage::HandleServerToPlayerItemUpdate_Add(int nMode, CSWCItem** ppItem
                 if (pEquippedBy != NULL)
                 {
                     if (pEquippedBy->GetEquippedItemID(INVENTORY_SLOT_RIGHTHAND) == oidItem)
-                        pEquippedBy->EquipToInventorySlot(INVENTORY_SLOT_RIGHTHAND, NULL);
+                        pEquippedBy->EquipToInventorySlot(INVENTORY_SLOT_RIGHTHAND, NULL, 0);
                     if (pEquippedBy->GetEquippedItemID(INVENTORY_SLOT_LEFTHAND) == oidItem)
-                        pEquippedBy->EquipToInventorySlot(INVENTORY_SLOT_LEFTHAND, NULL);
+                        pEquippedBy->EquipToInventorySlot(INVENTORY_SLOT_LEFTHAND, NULL, 0);
                     if (pEquippedBy->GetEquippedItemID(INVENTORY_SLOT_HEAD) == oidItem)
-                        pEquippedBy->EquipToInventorySlot(INVENTORY_SLOT_HEAD, NULL);
+                        pEquippedBy->EquipToInventorySlot(INVENTORY_SLOT_HEAD, NULL, 0);
                 }
                 else
                 {
@@ -6928,6 +7007,7 @@ int CSWCMessage::HandleServerToPlayerParty(unsigned char nMinor)
 int CSWCMessage::HandleServerToPlayerServerStatus(unsigned char nMinor)
 {
     CExoString sCommand;
+    CClientExoApp* pClientExoApp;
 
     if (MessageReadOverflow(1) || MessageReadUnderflow(1))
         return 0;
@@ -6939,7 +7019,8 @@ int CSWCMessage::HandleServerToPlayerServerStatus(unsigned char nMinor)
         g_pAppManager->m_pClientExoApp->ServerModeChange(
             CClientExoApp::SERVER_MODE_RUN_REQUESTED);
         sCommand.Format("%c%s.%s", MODULE_COMMAND_PREFIX, "Module", "Run");
-        g_pAppManager->m_pClientExoApp->GetNetLayer()->SendMessageToPlayer(
+        pClientExoApp = g_pAppManager->m_pClientExoApp;
+        pClientExoApp->GetNetLayer()->SendMessageToPlayer(
             CNetLayer::PLAYERID_SERVER, (unsigned char*)sCommand.CStr(),
             sCommand.GetLength(), 0);
         return 1;
@@ -6983,6 +7064,7 @@ int CSWCMessage::HandleServerToPlayerTriggerUpdate_Update(
     if ((nUpdateMask & 0x10) != 0 && pTrigger->m_bTrap != 0)
     {
         bHighlight = ReadBOOL();
+        pTrigger->m_bHostile = bHighlight;
         if (MessageReadOverflow(1))
         {
             return 0;
@@ -7212,72 +7294,52 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiQuickbarItemUseCount()
 #ifndef _XBOX
 int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()  // PC 0x006A47F0
 {
-
     unsigned char nMode = ReadCHAR(8);
     if (MessageReadOverflow(1))
     {
         return 0;
     }
 
-    int bChangedPlayer = 0;
-    unsigned long oidPlayer =
-        g_pAppManager->m_pClientExoApp->GetPlayerCreatureId();
-    if (g_pAppManager->m_pServerExoApp->GetServerInfo()->m_bPartyPicking &&
-        g_pAppManager->m_pClientExoApp->GetInGameGui()->GetPartyAccessPanelUp(1))
-    {
-        int nNPC = g_pAppManager->m_pClientExoApp->GetInGameGui()->GetCurrentEquipScreenNPC();
-        unsigned long oidNPC =
-            g_pAppManager->m_pServerExoApp->GetPartyTable()->GetNPCObject(nNPC, 0, 1);
-        if (g_pAppManager->m_pClientExoApp->DontUseThisSetPlayerCreature(oidNPC))
-        {
-            bChangedPlayer = 1;
-        }
-    }
-
     if (nMode == GUI_INVENTORY_RECORD_ADD)
     {
-        unsigned long nSlot = ReadDWORD(32);
+        int nSlot = ReadINT(32);
         if (MessageReadOverflow(1))
         {
-            if (bChangedPlayer)
-                g_pAppManager->m_pClientExoApp->DontUseThisSetPlayerCreature(oidPlayer);
             return 0;
         }
         CSWCItem* pItem;
         if (!HandleServerToPlayerItemUpdate_Add(1, &pItem))
         {
-            if (bChangedPlayer)
-                g_pAppManager->m_pClientExoApp->DontUseThisSetPlayerCreature(oidPlayer);
             return 0;
         }
         pItem->m_nEquipSlot = nSlot;
         pItem->m_nInventorySlot = INVENTORY_SLOT_INVALID;
-        CSWCCreature* pCreature =
-            g_pAppManager->m_pClientExoApp->GetPlayerCreature();
+        CSWCCreature* pCreature;
+        int nOverrideCharacter =
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->GetTopMenuOverrideCharacter();
+        if (nOverrideCharacter != -1)
+        {
+            CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+            pCreature = ((CSWSCreature*)pServerExoApp->GetGameObject(
+                pServerExoApp->GetPartyTable()->GetPUPObject(nOverrideCharacter, 0, 1)))
+                ->GetClientCreature();
+        }
+        else
+        {
+            pCreature = g_pAppManager->m_pClientExoApp->GetPlayerCreature();
+        }
         if (pCreature != NULL)
         {
             if (pCreature->GetEquippedItemID(nSlot) != pItem->GetId())
-                pCreature->EquipToInventorySlot(nSlot, pItem);
+                pCreature->EquipToInventorySlot(nSlot, pItem, 0);
         }
-        if (bChangedPlayer)
-            g_pAppManager->m_pClientExoApp->DontUseThisSetPlayerCreature(oidPlayer);
         return 1;
     }
     else if (nMode == GUI_INVENTORY_RECORD_DELETE)
     {
-        ReadDWORD(32);
-        if (MessageReadOverflow(1))
-        {
-            if (bChangedPlayer)
-                g_pAppManager->m_pClientExoApp->DontUseThisSetPlayerCreature(oidPlayer);
-            return 0;
-        }
-        if (bChangedPlayer)
-            g_pAppManager->m_pClientExoApp->DontUseThisSetPlayerCreature(oidPlayer);
-        return 1;
+        ReadINT(32);
+        return !MessageReadOverflow(1);
     }
-    if (bChangedPlayer)
-        g_pAppManager->m_pClientExoApp->DontUseThisSetPlayerCreature(oidPlayer);
     return 0;
 }
 #endif
@@ -7842,6 +7904,11 @@ int CSWCMessage::HandleServerToPlayerSafeProjectileSpell()
                     pProjectile->SetDesiredPositionTimer(nProjectileTime);
                     pProjectile->SetAnimation(CSWCProjectile::PROJECTILE_ANIMATION_TRAVEL);
                     pProjectile->SetDesiredPosition(vEnd);
+                    unsigned char nItemTargeting = pSpell->m_nItemTargeting;
+                    if (nItemTargeting == CSWSpell::ITEM_TARGETING_UNKNOWN_3)
+                    {
+                        pProjectile->SetDesiredTargetObject(oidTarget, "");
+                    }
                     pProjectile->SetProjectileType(nPathType);
                     if (nPathType == CSWCProjectile::PROJECTILE_PATH_TYPE_BURST_UP)
                     {
@@ -8561,6 +8628,8 @@ int CSWCMessage::HandleServerToPlayerUpdate_PlayerInfo()
     {
         short nDefense = ReadSHORT(16);
         unsigned long nGold = ReadDWORD(32);
+        int n148 = ReadINT(32);
+        int n14C = ReadINT(32);
         int nUnknown1B4 = ReadINT(32);
         int bLevelUp = ReadBOOL();
         unsigned long nExperience = ReadDWORD(32);
@@ -8573,6 +8642,8 @@ int CSWCMessage::HandleServerToPlayerUpdate_PlayerInfo()
             pCreature->GetStats()->m_nExperience = nExperience;
             pCreature->GetStats()->m_nDefenseBase = nDefense;
             pCreature->m_nGold = nGold;
+            pCreature->m_n148 = n148;
+            pCreature->m_n14C = n14C;
             pCreature->m_nUnknown1B4 = nUnknown1B4;
         }
         g_pAppManager->m_pClientExoApp->GetPlayerCreatureId();
@@ -9919,7 +9990,7 @@ int CSWCMessage::HandleServerToPlayerDebugInfo_Placeable(unsigned long oidObject
                            CGuiInGame::MESSAGE_MASK_DEBUG_INFO, 0);
     {
         CExoString sColumn = "LABEL";
-        unsigned char nAppearance = pPlaceable->m_nAppearance;
+        int nAppearance = pPlaceable->m_nAppearance;
         g_pRules->Get2DArrays()->m_pPlaceables->GetCExoStringEntry(
             nAppearance, sColumn, &sLABEL);
     }
@@ -10211,8 +10282,7 @@ int CSWCMessage::HandleServerToPlayerCharacterDownload(unsigned char nMinor)
     case CHARACTER_DOWNLOAD_FILE:
         sCharacterFile = ReadCExoString(32);
         nCharacterFileId = ReadBOOL();
-        pClientExoApp = g_pAppManager->m_pClientExoApp;
-        pClientExoApp->SetCharacterFile(
+        g_pAppManager->GetClientExoApp()->SetCharacterFile(
             sCharacterFile.GetLength(), (unsigned char*)sCharacterFile.CStr(),
             nCharacterFileId);
         break;
@@ -10741,7 +10811,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()
         if (pCreature != NULL)
         {
             if (pCreature->GetEquippedItemID(nSlot) != pItem->GetId())
-                pCreature->EquipToInventorySlot(nSlot, pItem);
+                pCreature->EquipToInventorySlot(nSlot, pItem, 0);
         }
         return 1;
     }

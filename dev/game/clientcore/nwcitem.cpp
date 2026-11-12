@@ -636,9 +636,10 @@ void CSWCItem::PowerItem(int bPower, int bOverride, int bAnimate,
     }
     CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
     pClientExoApp->GetCreatureByGameObjectID(m_oidEquippedBy);
-    if (bPower != m_bPowered)
+    CSWCAnimBase* pAnimBase = GetAnimationBase();
+    if (pAnimBase != NULL && bPower != m_bPowered)
     {
-        Vector vPosition = GetAnimationBase()->GetModel(
+        Vector vPosition = pAnimBase->GetModel(
             CSWCAnimBase::MODEL_SLOT_MAIN)->GetPosition();
         if (m_pPowerSound == NULL)
         {

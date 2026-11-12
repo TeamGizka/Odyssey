@@ -22,6 +22,10 @@
 #include "guiingame.h"
 #include "aurcamera.h"
 #include "aurscene.h"
+#include "nwsitem.h"
+#include "nwscreature.h"
+#include "nwitem.h"
+#include "serverexoapp.h"
 #include "../../libsource/AURORA/aurpointer.h"
 
 #include <math.h>
@@ -116,6 +120,18 @@ void CSWCDoor::SetState(unsigned char nState)
         }
     }
 }
+#ifndef _XBOX
+// PC 0x006DB700
+void CSWCDoor::DoorSaber(unsigned long oidDoor, CSWCCreature* pCreature)
+{
+    if (pCreature != 0)
+    {
+        pCreature->ClearAllActions();
+    }
+    CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+    pMessage->SendPlayerToServerInput_DoorSaber(m_nId);
+}
+#endif
 // PC 0x006DB730
 void CSWCDoor::ToggleDoorState(unsigned long oidDoor, CSWCCreature* pCreature)
 {
@@ -345,6 +361,116 @@ int CSWCDoor::LoadModel(const CResRef& cModel, unsigned char nModel,
     return 1;
 }
 #ifndef _XBOX
+void CSWCDoor::MenuActionSetDoorMine(unsigned long oidItem, CSWCCreature* pCreature)
+{
+    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+    CSWSCreature* pPlayer =
+        pServerExoApp->GetCreatureByGameObjectID(pServerExoApp->GetPlayerCreatureId());
+    if (pPlayer != NULL && pPlayer->GetArea() != NULL &&
+        !pPlayer->GetArea()->GetPlayerCanSetMines())
+    {
+        CSWGuiMessageBox* pMessageBox =
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+        pMessageBox->SetAllowCancel(0);
+        pMessageBox->SetMessage(STRREF_CANNOT_SET_MINES);
+        pMessageBox->SetCallback(NULL, NULL, NULL);
+        g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(
+            pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+        return;
+    }
+    oidItem &= ~OBJECT_LISTTYPE_MASK;
+    if (g_pAppManager->m_pClientExoApp->ShowTutorialWindow(TUTORIAL_SET_MINE, m_nId, oidItem, 0) == 0)
+    {
+        pCreature->PerformUseItem(oidItem, 0, m_nId, m_vPosition);
+    }
+}
+// PC 0x006DBDD0
+void CSWCDoor::GetUseItems(CSWCCreature* pCreature,
+                           CExoArrayList<CSWGuiInterfaceAction>& lstActions)
+{
+    CSWSCreature* pServerCreature = pCreature->GetServerCreature();
+    int nFirstAction = lstActions.num;
+    if (m_bLockable && pCreature->m_pStats->GetCanUseSkill(CSWRules::SKILL_SECURITY))
+    {
+        if (pServerCreature != NULL)
+            pServerCreature->GetSpikeDetails(lstActions, 1);
+        for (int i = nFirstAction; i < lstActions.num; ++i)
+        {
+            lstActions[i].m_pfnAction =
+                (PFNMENUACTION)&CSWCObject::MenuActionUseSecuritySpike;
+            lstActions[i].m_oidTarget = GetId();
+        }
+    }
+}
+// PC 0x006DBE90
+void CSWCDoor::GetDoorInterfaceMines(CSWCCreature* pCreature,
+                                     CExoArrayList<CSWGuiInterfaceAction>& lstActions)
+{
+    if (m_n108)
+    {
+        return;
+    }
+    CSWSCreature* pServerCreature = pCreature->GetServerCreature();
+    if (pServerCreature == NULL || pServerCreature->GetArea()->m_nPlayerRestrictMode ||
+        !pCreature->m_pStats->GetCanUseSkill(CSWRules::SKILL_DEMOLITIONS))
+    {
+        return;
+    }
+    int nAction = lstActions.num;
+    CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+    int nLanguage = pClientExoApp->GetClientLanguage();
+    CItemRepository* pRepository = pServerCreature->GetItemRepository(1);
+    CExoString sName;
+    CExoString sCount;
+    CExoString sSetMine;
+    sSetMine.Format(" (%s)", pClientExoApp->GetGUIString(STRREF_SET_MINE));
+    for (unsigned long i = 0; i < pRepository->m_lstItems.num; ++i)
+    {
+        CSWSItem* pItem = pRepository->ItemListGetItem(i);
+        if (pItem->m_bPlotObject ||
+            pItem->GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_MINE)
+        {
+            continue;
+        }
+        switch (pItem->GetActiveProperty(0)->m_nSubtype)
+        {
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 14:
+        case 15:
+        case 16:
+        case 19:
+        case 20:
+        case 21:
+        case 22:
+        case 25:
+        case 26:
+            pItem->m_sLocalizedName.GetString(nLanguage, &sName, 0);
+            if (pItem->m_nStackSize > 1)
+            {
+                sCount.Format(" (%d)", pItem->m_nStackSize);
+            }
+            else
+            {
+                sCount = "";
+            }
+            sName = sName + sSetMine + sCount;
+            lstActions.SetSize(nAction + 1);
+            lstActions[nAction].m_sName = sName;
+            lstActions[nAction].m_pfnAction =
+                (PFNMENUACTION)&CSWCDoor::MenuActionSetDoorMine;
+            lstActions[nAction].m_oidTarget = GetId();
+            lstActions[nAction].m_nAction = pItem->GetId() | OBJECT_LISTTYPE_MASK;
+            lstActions[nAction].m_resIcon = pItem->GetIcon();
+            nAction++;
+            break;
+        }
+    }
+}
 void CSWCDoor::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 0x006DC1B0
                               CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
@@ -358,9 +484,41 @@ void CSWCDoor::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 0x006
     case TARGET_ACTION_MENU_PRIMARY:
         if (GetCurrentAnimation() != DOOR_ANIMATION_OPEN1 &&
             GetCurrentAnimation() != DOOR_ANIMATION_OPEN2 &&
-            !m_bStatic && !m_bLocked &&
-            !nRestrictMode && m_bLockable)
+            !m_bStatic)
         {
+            int bSaber = 0;
+            if (m_bLockable && !m_bLocked)
+            {
+                CSWSItem* pWeapon = pCreature->GetServerCreature()->m_pInventory->GetItemInSlot(
+                    INVENTORY_SLOT_RIGHTHAND);
+                int bSaberWeapon = 0;
+                if (pWeapon != NULL)
+                {
+                    if (pWeapon->m_n2E0)
+                    {
+                        bSaberWeapon = 1;
+                    }
+                    unsigned char nItemType = pWeapon->GetBaseItem()->m_nItemType;
+                    if (nItemType == CSWBaseItem::ITEM_TYPE_POWERED_HAND_41 ||
+                        nItemType == CSWBaseItem::ITEM_TYPE_POWERED_HAND_40 ||
+                        nItemType == CSWBaseItem::ITEM_TYPE_POWERED_HAND_39 || bSaberWeapon)
+                    {
+                        lstActions.SetSize(nAction + 1);
+                        lstActions[nAction].m_sName =
+                            g_pAppManager->GetClientExoApp()->GetGUIString(GUI_STRING_DOOR_SABER);
+                        lstActions[nAction].m_nAction = ACTION_DOOR_SABER;
+                        lstActions[nAction].m_pfnAction = (PFNMENUACTION)&CSWCDoor::DoorSaber;
+                        lstActions[nAction].m_oidTarget = GetId();
+                        lstActions[nAction].m_resIcon = "i_doorsaber";
+                        nAction++;
+                        bSaber = 1;
+                    }
+                }
+            }
+            if (m_bLocked || nRestrictMode || !m_bLockable || bSaber)
+            {
+                break;
+            }
             lstActions.SetSize(nAction + 1);
             lstActions[nAction].m_sName =
                 g_pAppManager->GetClientExoApp()->GetGUIString(
@@ -392,6 +550,17 @@ void CSWCDoor::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 0x006
             lstActions[nAction].m_nAction = CSWGuiInterfaceAction::ACTION_SECURITY;
             lstActions[nAction].m_resIcon =
                 g_pRules->m_pSkills[CSWRules::SKILL_SECURITY].m_sIcon;
+        }
+        if (m_bLockable && pServerDoor != 0 && !pServerDoor->m_bKeyRequired &&
+            pCreature->m_pStats->GetCanUseSkill(CSWRules::SKILL_SECURITY))
+        {
+            GetUseItems(pCreature, lstActions);
+        }
+        break;
+    case TARGET_ACTION_MENU_MINES:
+        if (m_bLockable)
+        {
+            GetDoorInterfaceMines(pCreature, lstActions);
         }
         break;
     }

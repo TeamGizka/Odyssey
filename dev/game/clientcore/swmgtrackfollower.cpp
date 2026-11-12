@@ -474,6 +474,34 @@ void CSWMGObstacle::LoadScripts(CResGFF* pGFF, CResStruct* pStruct,
 int bDoAcceleration = 1;
 float fSpeed = 100.0f;
 float fLastSpeedSet = 100.0f;
+// PC 0x006C2280
+void CSWTrackFollower::OnAccelerate(int bValue)
+{
+    if (bValue == 0)
+    {
+        CResRef resScript = GetScriptName(SCRIPT_ACCELERATE);
+        if (resScript.IsValid())
+        {
+            CExoString sScript;
+            resScript.CopyToString(sScript);
+            g_pVirtualMachine->RunScript(&sScript, m_nObjectId, 1);
+        }
+    }
+}
+// PC 0x006C2320
+void CSWTrackFollower::OnBrake(int bValue)
+{
+    if (bValue == 0)
+    {
+        CResRef resScript = GetScriptName(SCRIPT_BRAKE);
+        if (resScript.IsValid())
+        {
+            CExoString sScript;
+            resScript.CopyToString(sScript);
+            g_pVirtualMachine->RunScript(&sScript, m_nObjectId, 1);
+        }
+    }
+}
 // PC 0x006C23C0
 CSWMGTargettingGunBank* CSWTrackFollower::GetGunBank(int nGunBank)
 {

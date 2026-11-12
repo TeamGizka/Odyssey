@@ -998,10 +998,8 @@ CSWGuiOptionsResolution::CSWGuiOptionsResolution(CSWGuiManager* pManager)  // PC
                                 ->IsValidResolution(
                                     cDevMode.dmPelsWidth,
                                     cDevMode.dmPelsHeight) != 0 &&
-                        (g_pAppManager->GetClientExoApp()->GetAllowHighMonitorFrequency() !=
-                             0 ||
-                         (float)cDevMode.dmDisplayFrequency <=
-                             (float)CClientExoAppInternal::VIDEO_MAX_STANDARD_REFRESH_RATE))
+                        (float)cDevMode.dmDisplayFrequency <=
+                            (float)CClientExoAppInternal::VIDEO_MAX_STANDARD_REFRESH_RATE)
                     {
                         CSWGuiButton* pButton = new CSWGuiButton;
                         pButton->Initialize(pProto->m_cExtent, pProto);
@@ -1923,12 +1921,24 @@ void CSWGuiOptionsFeedback::PopulateOptionsListbox()  // PC 0x007509A0
 void CSWGuiOptionsGraphics::OnResolution(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
-    CSWGuiOptionsResolution* pPanel = 0;
     if (bSelected != 0)
     {
-        CSWGuiOptionsResolution* pNew = new CSWGuiOptionsResolution(GetManager());
-        pPanel = pNew;
-        pPanel->CenterPanel();
+        CSWGuiPanel* pPanel;
+        if (m_bInGame)
+        {
+            CSWGuiMessageBox* pMessageBox =
+                g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+            pMessageBox->SetAllowCancel(0);
+            pMessageBox->SetCallback(NULL, NULL, NULL);
+            pMessageBox->SetMessage(STRREF_CANNOT_CHANGE_RESOLUTION);
+            pPanel = pMessageBox;
+        }
+        else
+        {
+            CSWGuiOptionsResolution* pResolution = new CSWGuiOptionsResolution(GetManager());
+            pResolution->CenterPanel();
+            pPanel = pResolution;
+        }
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
 }
@@ -2488,10 +2498,10 @@ void CSWGuiOptionsFeedback::SetActiveButton(int nOption)
 #endif
 
 #ifndef _XBOX
-CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager)  // PC 0x00752FE0
+CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager, int bInGame)  // PC 0x00752FE0
     : CSWGuiPanel(pManager)
 {
-    StartLoadFromLayout("optgraphics");
+    StartLoadFromLayout("optgraphics_p");
     InitControl(m_sldGamma, "SLI_GAMMA", 1);
     InitControl(m_lblTitle, "LBL_TITLE", 1);
     InitControl(m_lbDescription, "LB_DESC", 1);
@@ -2504,15 +2514,19 @@ CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager)  // PC 0x0
     InitControl(m_btnAdvanced, "BTN_ADVANCED", 1);
     m_sldGamma.m_nIndex = 42310;
     m_lblGamma.m_nIndex = 42310;
-    m_btnResolution.m_nIndex = 47967;
-    m_btnResolutionLeft.m_nIndex = 47967;
-    m_btnResolutionRight.m_nIndex = 47967;
-    m_cbShadows.m_nIndex = 47951;
-    m_cbGrass.m_nIndex = 47955;
-    m_btnAdvanced.m_nIndex = 49070;
+    m_btnResolution.m_nIndex = 48707;
+    m_btnResolutionLeft.m_nIndex = 48707;
+    m_btnResolutionRight.m_nIndex = 48707;
+    m_cbShadows.m_nIndex = 48708;
+    m_cbGrass.m_nIndex = 48709;
+    m_btnAdvanced.m_nIndex = 48710;
     m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     InitControl(m_btnBack, "BTN_BACK", 1);
     InitControl(m_btnDefault, "BTN_DEFAULT", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
     StopLoadFromLayout();
     CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
     m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
@@ -2533,18 +2547,24 @@ CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager)  // PC 0x0
                         (CSWGuiHandler)&CSWGuiOptionsGraphics::OnDefault);
     m_sldGamma.AddEvent(
         39, this, (CSWGuiHandler)&CSWGuiOptionsGraphics::OnMoveGammaSlider);
-    m_btnResolution.AddEvent(
+    CSWGuiButton* pResolution = &m_btnResolution;
+    pResolution->AddEvent(
         0, this, (CSWGuiHandler)&CSWGuiOptionsGraphics::OnEnterSlot);
     m_cbShadows.AddEvent(0, this,
                          (CSWGuiHandler)&CSWGuiOptionsGraphics::OnEnterSlot);
     m_cbGrass.AddEvent(0, this,
                        (CSWGuiHandler)&CSWGuiOptionsGraphics::OnEnterSlot);
-    m_btnResolution.AddEvent(
+    pResolution->m_bFocusable = 0;
+    pResolution->AddEvent(
         39, this, (CSWGuiHandler)&CSWGuiOptionsGraphics::OnResolution);
-    m_cbShadows.AddEvent(39, this,
-                         (CSWGuiHandler)&CSWGuiOptionsGraphics::OnShadows);
-    m_cbGrass.AddEvent(39, this,
-                       (CSWGuiHandler)&CSWGuiOptionsGraphics::OnGrass);
+    CSWGuiOptionsCheckbox* pShadows = &m_cbShadows;
+    pShadows->m_bFocusable = 0;
+    pShadows->AddEvent(39, this,
+                       (CSWGuiHandler)&CSWGuiOptionsGraphics::OnShadows);
+    CSWGuiOptionsCheckbox* pGrass = &m_cbGrass;
+    pGrass->m_bFocusable = 0;
+    pGrass->AddEvent(39, this,
+                     (CSWGuiHandler)&CSWGuiOptionsGraphics::OnGrass);
     SetUpOptions();
     CSWGuiButton* pBack = &m_btnBack;
     pBack->m_bFocusable = 0;
@@ -2559,7 +2579,13 @@ CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager)  // PC 0x0
                         (CSWGuiHandler)&CSWGuiOptionsGraphics::OnAdvanced);
     SetActiveControl(&m_sldGamma, 0);
     m_nUnknown18BC = 0;
-    m_n1E88 = 0;
+    m_bInGame = bInGame;
+    if (bInGame)
+    {
+        m_btnResolution.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_TEXT;
+        m_btnResolution.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_GREEN);
+        m_btnResolution.m_cHilite.m_cParams.m_vColor = CGuiInGame::DISABLED_TEXT;
+    }
 }
 #endif
 // PC 0x00753970
@@ -2791,7 +2817,7 @@ void CSWGuiOptionsMain::OnGraphicsOpt(CSWGuiControl* pControl)  // PC 0x007542E0
     int bSelected = pControl->m_bSelected;
     if (bSelected != 0)
     {
-        CSWGuiOptionsGraphics* pPanel = new CSWGuiOptionsGraphics(GetManager());
+        CSWGuiOptionsGraphics* pPanel = new CSWGuiOptionsGraphics(GetManager(), 0);
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }

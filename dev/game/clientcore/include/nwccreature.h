@@ -95,6 +95,7 @@ class CAurObject;
 class CResRef;
 class CSWCCreatureAppearance;
 class CSWSItem;
+class CSWCPlaceable;
 class CSWCStats_SpellLikeAbility;
 class CSWVisibilityNode;
 
@@ -140,6 +141,7 @@ void GetCreatureRadius(CAurObject* pObject, char* sEvent, void* pData);
 #define SWCCREATURE_FOLLOW_SPEED_EPSILON 0.0001f
 
 #define SWCCREATURE_WEAPON_OVERLAY_INTERVAL 2000
+#define SWCCREATURE_FORM_MESSAGE_DURATION 4.0f
 #define SWCCREATURE_CORPSE_GROUND_PITCH_MIN 65.0f
 #define SWCCREATURE_CORPSE_GROUND_PITCH_MAX 80.0f
 #define SWCCREATURE_GROUND_PITCH_MIN 40.0f
@@ -220,7 +222,60 @@ public:
     virtual float GetHeadHeightOffset();
     virtual unsigned short GetPortraitId();
 
-    enum { PORTRAIT_INVALID = 0xffff };
+    enum
+    {
+        PORTRAIT_INVALID = 0xffff,
+        STRREF_IMPLANT_NAME_REGEN = 48429,
+        STRREF_IMPLANT_NAME_STR = 48430,
+        STRREF_IMPLANT_NAME_AGI = 48431,
+        STRREF_IMPLANT_NAME_END = 48432,
+        ACTION_BEHAVIOR_AGGRESSIVE = 1040,
+        ACTION_BEHAVIOR_RANGED = 1042,
+        ACTION_BEHAVIOR_STATIONARY = 1043,
+        ACTION_BEHAVIOR_SUPPORT = 1044,
+        AI_STATE_AGGRESSIVE = 9,
+        AI_STATE_PASSIVE = 10,
+        AI_STATE_RANGED = 11,
+        AI_STATE_STATIONARY = 12,
+        AI_STATE_SUPPORT = 13,
+        AI_SCRIPT_ROW_SUPPORT = 4,
+        STRREF_BEHAVIOR_AGGRESSIVE = 123708,
+        STRREF_BEHAVIOR_RANGED = 123710,
+        STRREF_BEHAVIOR_STATIONARY = 123711,
+        STRREF_BEHAVIOR_JEDI_SUPPORT = 126014,
+        STRREF_BEHAVIOR_GRENADIER_NAME = 126053,
+        STRREF_BEHAVIOR_GRENADIER = 126054,
+        TUTORIAL_BEHAVIOR_AGGRESSIVE = 61,
+        TUTORIAL_BEHAVIOR_RANGED = 63,
+        TUTORIAL_BEHAVIOR_STATIONARY = 64,
+        TUTORIAL_BEHAVIOR_JEDI_SUPPORT = 65,
+        TUTORIAL_BEHAVIOR_GRENADIER = 66,
+        TUTORIAL_INVALID = 255,
+        ACTION_SWAP_IMPLANT_REGEN = 1032,
+        ACTION_SWAP_IMPLANT_STR = 1033,
+        ACTION_SWAP_IMPLANT_END = 1034,
+        ACTION_SWAP_IMPLANT_AGI = 1035,
+        CANDEROUS_IMPLANT_REGEN = 1,
+        CANDEROUS_IMPLANT_STR = 2,
+        CANDEROUS_IMPLANT_END = 3,
+        CANDEROUS_IMPLANT_AGI = 4,
+        STRREF_IMPLANT_REGEN = 48438,
+        STRREF_IMPLANT_STR = 48439,
+        STRREF_IMPLANT_END = 48440,
+        STRREF_IMPLANT_AGI = 48441,
+        STRREF_FORM_SABER_I_SHII_CHO = 124098,
+        STRREF_FORM_SABER_II_MAKASHI = 124099,
+        STRREF_FORM_SABER_III_SORESU = 124100,
+        STRREF_FORM_SABER_IV_ATARU = 124101,
+        STRREF_FORM_SABER_V_SHIEN = 124102,
+        STRREF_FORM_SABER_VI_NIMAN = 124103,
+        STRREF_FORM_SABER_VII_JUYO = 124104,
+        STRREF_FORM_FORCE_I_FOCUS = 124105,
+        STRREF_FORM_FORCE_II_POTENCY = 124106,
+        STRREF_FORM_FORCE_III_AFFINITY = 124107,
+        STRREF_FORM_FORCE_IV_MASTERY = 124108,
+        SWITCH_WEAPONS_DELAY = 1000
+    };
     virtual void RemoveShadowBlob();
     virtual int LipSync(const CResRef& cLip);
     virtual void ClientServerSyncHandler_Position(const Vector& vPosition,
@@ -279,7 +334,9 @@ public:
         PERSONAL_ACTION_FORCE_POWERS = 0,
         PERSONAL_ACTION_USABLE_ITEMS_1 = 1,
         PERSONAL_ACTION_USABLE_ITEMS_2 = 2,
-        PERSONAL_ACTION_USABLE_ITEMS_3 = 3
+        PERSONAL_ACTION_USABLE_ITEMS_3 = 3,
+        PERSONAL_ACTION_STANCES = 4,
+        PERSONAL_ACTION_BEHAVIORS = 5
     };
     enum UsableItemActionMask
     {
@@ -303,6 +360,25 @@ public:
     void GetHostileItems(CExoArrayList<CSWGuiInterfaceAction>& lstActions,
                          CSWCCreature* pTarget);
     int IsHostileUsableItem(CSWSItem* pItem);
+    int GetMatchingEquippedItemCount(CSWSItem* pItem);
+    void SetBaseCNPCAlignment(short nAlignment);
+    void ActionMenuSwitchWeapons(unsigned long nAction, CSWCCreature* pInstigator);
+    void PartyMenuUseItemSelect(unsigned long oidItem, CSWCCreature* pTarget);
+    void ActionMenuForm(unsigned long nAction, CSWCCreature* pInstigator);
+    void ActionSwapImplant(int nAction);
+    void ActionMenuSelectBehavior(unsigned long nAction, CSWCCreature* pInstigator);
+    void GetBehaviors(CExoArrayList<CSWGuiInterfaceAction>& lstActions);
+    void GetWookieeRage(CExoArrayList<CSWGuiInterfaceAction>& lstActions);
+    void GetSwappableImplants(CExoArrayList<CSWGuiInterfaceAction>& lstActions);
+    void GetDroidConfusion(CExoArrayList<CSWGuiInterfaceAction>& lstActions, CSWCObject* pTarget);
+    void ActionMenuSwapImplantRegen(unsigned long nAction, CSWCCreature* pInstigator);
+    void ActionMenuSwapImplantStr(unsigned long nAction, CSWCCreature* pInstigator);
+    void ActionMenuSwapImplantAgi(unsigned long nAction, CSWCCreature* pInstigator);
+    void ActionMenuSwapImplantEnd(unsigned long nAction, CSWCCreature* pInstigator);
+    void CreateHostileItemEntry(CExoArrayList<CSWGuiInterfaceAction>& lstActions, CSWSItem* pItem,
+                                CSWCPlaceable* pTarget);
+    void GetHostileItems(CExoArrayList<CSWGuiInterfaceAction>& lstActions, CSWCPlaceable* pTarget);
+    static const unsigned long ACTION_SWITCH_WEAPONS_SECOND_SET = 0xFFFFFFFF;
     void CreateHostileItemEntry(CExoArrayList<CSWGuiInterfaceAction>& lstActions,
                                CSWSItem* pItem, CSWCCreature* pTarget);
     int CheckFeat(int nFeat1, int nFeat2, int nFeat3);
@@ -327,7 +403,7 @@ public:
     void BlurWeapon(int bBlur);
 
     int ResetAnimationState();
-    void EquipToInventorySlot(unsigned long nSlot, CSWCItem* pItem);
+    void EquipToInventorySlot(unsigned long nSlot, CSWCItem* pItem, int bSuppressDraw);
     void SetEquippedItemID(unsigned long nSlot, unsigned long oidItem);
     void SetLastInstant(unsigned long nSlot, int nLastInstant);
     int GetLastInstant(unsigned long nSlot);
@@ -364,7 +440,7 @@ public:
         APPEARANCE_PART_WING = 8
     };
     int SetAppearance(CCAppearanceInfo* pAppearance, unsigned char nMode,
-                       int bUpdate);
+                       int bUpdate, int bKeepAlignment = 0);
 
     enum CGPauseAnimation
     {
@@ -527,7 +603,8 @@ public:
     void LoadSpecialAttacks(unsigned char nType);
     void StopSpecialAttacks(unsigned char nType);
 
-    void UpdateVisibleWeapons(unsigned long nSlot, CSWCItem* pItem, int bInstant);
+    void UpdateVisibleWeapons(unsigned long nSlot, CSWCItem* pItem, int bInstant,
+                              int bSuppressDraw);
     int RequestAppearance(CCAppearanceInfo* pCAppearanceInfo,
                           unsigned char bFlag);
     virtual void SetPortraitId(unsigned short nPortraitId);

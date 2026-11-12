@@ -19,6 +19,10 @@
 #include "nwskill.h"
 #include "serverexoapp.h"
 #include "nwsplayer.h"
+#include "nwsitem.h"
+#include "nwspell.h"
+#include "nwscreature.h"
+#include "nwitem.h"
 // PC 0x006D9560
 CSWCPlaceable::CSWCPlaceable()
     : CSWCObject(CGameObject::OBJECT_TYPE_PLACEABLE)
@@ -351,6 +355,37 @@ void CSWCPlaceable::ActionMenuSecurity(unsigned long oidUser,
         pMessage->SendPlayerToServerInput_UnlockObject(m_nId, OBJECT_INVALID);
     }
 }
+#ifndef _XBOX
+// PC 0x006DA400
+void CSWCPlaceable::MenuActionUseItem(unsigned long oidItem, CSWCCreature* pCreature)
+{
+    pCreature->PerformUseItem(oidItem & ~OBJECT_LISTTYPE_MASK, 0, m_nId, m_vPosition);
+}
+// PC 0x006DA430
+void CSWCPlaceable::MenuActionSetPlaceableMine(unsigned long oidItem, CSWCCreature* pCreature)
+{
+    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+    CSWSCreature* pPlayer =
+        pServerExoApp->GetCreatureByGameObjectID(pServerExoApp->GetPlayerCreatureId());
+    if (pPlayer != NULL && pPlayer->GetArea() != NULL &&
+        !pPlayer->GetArea()->GetPlayerCanSetMines())
+    {
+        CSWGuiMessageBox* pMessageBox =
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+        pMessageBox->SetAllowCancel(0);
+        pMessageBox->SetMessage(STRREF_CANNOT_SET_MINES);
+        pMessageBox->SetCallback(NULL, NULL, NULL);
+        g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(
+            pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+        return;
+    }
+    oidItem &= ~OBJECT_LISTTYPE_MASK;
+    if (g_pAppManager->m_pClientExoApp->ShowTutorialWindow(TUTORIAL_SET_MINE, m_nId, oidItem, 0) == 0)
+    {
+        pCreature->PerformUseItem(oidItem, 0, m_nId, m_vPosition);
+    }
+}
+#endif
 // PC 0x006DA500
 CSWSPlaceable* CSWCPlaceable::GetServerPlaceable()
 {
@@ -361,7 +396,7 @@ CSWSPlaceable* CSWCPlaceable::GetServerPlaceable()
     return NULL;
 }
 // PC 0x006DA520
-void CSWCPlaceable::SetAppearance(unsigned char nAppearance)
+void CSWCPlaceable::SetAppearance(int nAppearance)
 {
     m_nAppearance = nAppearance;
     int bHitCheck = 0;
@@ -583,15 +618,7 @@ void CSWCPlaceable::AnimationUpdate()
                     bSound = pPlaceables->GetINTEntry(nAppearance, sColumn,
                                                       &nSoundAppType);
                 }
-                CSWSPlaceable* pPlaceable = GetServerPlaceable();
-                CSWCArea* pArea = m_pArea;
-                if (pPlaceable != NULL && pPlaceable->m_bIsBodyBag &&
-                    !pPlaceable->m_bIsBodyBagVisible && pArea != NULL &&
-                    pArea->ParentCorpseExists(GetId()))
-                {
-                    nSoundAppType = CTwoDimArrays::PLACEABLE_SOUND_BODY_BAG;
-                }
-                else if (!bSound)
+                if (!bSound)
                 {
                     return;
                 }
@@ -658,6 +685,124 @@ int CSWCPlaceable::SetAnimation(unsigned short nAnimation, int nA, int nB)
     return CSWCObject::SetAnimation(nAnimation, nA, nB);
 }
 #ifndef _XBOX
+// PC 0x006DAB40
+void CSWCPlaceable::GetUseItems(CSWCCreature* pCreature,
+                                CExoArrayList<CSWGuiInterfaceAction>& lstActions)
+{
+    CSWSCreature* pServerCreature = pCreature->GetServerCreature();
+    CSWSPlaceable* pPlaceable = GetServerObject() != NULL ?
+        GetServerObject()->AsSWSPlaceable() : NULL;
+    int nFirstAction = lstActions.num;
+    if (m_bLocked)
+    {
+        if (pServerCreature != NULL &&
+            pCreature->m_pStats->GetCanUseSkill(CSWRules::SKILL_SECURITY))
+            pServerCreature->GetSpikeDetails(lstActions, 1);
+        for (int i = nFirstAction; i < lstActions.num; ++i)
+        {
+            lstActions[i].m_pfnAction =
+                (PFNMENUACTION)&CSWCObject::MenuActionUseSecuritySpike;
+            lstActions[i].m_oidTarget = GetId();
+        }
+    }
+    CItemRepository* pRepository = pServerCreature->GetItemRepository(1);
+    CExoString sName;
+    int nAction = 0;
+    int nLanguage = g_pAppManager->GetClientExoApp()->GetClientLanguage();
+    for (unsigned long i = 0; i < pRepository->m_lstItems.num; ++i)
+    {
+        CSWItemProperty* pProperty;
+        CSWSItem* pItem = pRepository->ItemListGetItem(i);
+        if (pItem != NULL && pItem->m_bPlotObject &&
+            pItem->GetPropertyByType(&pProperty, CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM, 0))
+        {
+            CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(pProperty->m_nSubtype);
+            if (pSpell != NULL && pSpell->m_nItemTargeting == CSWSpell::ITEM_TARGETING_PLACEABLE)
+            {
+                lstActions.SetSize(nAction + 1);
+                pItem->m_sLocalizedName.GetString(nLanguage, &sName, 0);
+                lstActions[nAction].m_sName = sName;
+                lstActions[nAction].m_pfnAction =
+                    (PFNMENUACTION)&CSWCPlaceable::MenuActionUseItem;
+                lstActions[nAction].m_oidTarget = GetId();
+                lstActions[nAction].m_nAction = pItem->GetId() | OBJECT_LISTTYPE_MASK;
+                lstActions[nAction].m_resIcon = pItem->GetIcon();
+                lstActions[nAction].m_nStackSize = pItem->m_nStackSize > pItem->m_nCharges ?
+                    pItem->m_nStackSize : pItem->m_nCharges;
+                nAction++;
+            }
+        }
+    }
+}
+// PC 0x006DADA0
+void CSWCPlaceable::GetPlaceableInterfaceMines(CSWCCreature* pCreature,
+                                               CExoArrayList<CSWGuiInterfaceAction>& lstActions)
+{
+    if (m_n11C)
+    {
+        return;
+    }
+    CSWSCreature* pServerCreature = pCreature->GetServerCreature();
+    if (pServerCreature == NULL || pServerCreature->GetArea()->m_nPlayerRestrictMode ||
+        !pCreature->m_pStats->GetCanUseSkill(CSWRules::SKILL_DEMOLITIONS))
+    {
+        return;
+    }
+    int nAction = lstActions.num;
+    CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+    int nLanguage = pClientExoApp->GetClientLanguage();
+    CItemRepository* pRepository = pServerCreature->GetItemRepository(1);
+    CExoString sName;
+    CExoString sCount;
+    CExoString sSetMine;
+    sSetMine.Format(" (%s)", pClientExoApp->GetGUIString(STRREF_SET_MINE));
+    for (unsigned long i = 0; i < pRepository->m_lstItems.num; ++i)
+    {
+        CSWSItem* pItem = pRepository->ItemListGetItem(i);
+        if (pItem->m_bPlotObject ||
+            pItem->GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_MINE)
+        {
+            continue;
+        }
+        switch (pItem->GetActiveProperty(0)->m_nSubtype)
+        {
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 14:
+        case 15:
+        case 16:
+        case 19:
+        case 20:
+        case 21:
+        case 22:
+        case 25:
+        case 26:
+            pItem->m_sLocalizedName.GetString(nLanguage, &sName, 0);
+            if (pItem->m_nStackSize > 1)
+            {
+                sCount.Format(" (%d)", pItem->m_nStackSize);
+            }
+            else
+            {
+                sCount = "";
+            }
+            sName = sName + sSetMine + sCount;
+            lstActions.SetSize(nAction + 1);
+            lstActions[nAction].m_sName = sName;
+            lstActions[nAction].m_pfnAction =
+                (PFNMENUACTION)&CSWCPlaceable::MenuActionSetPlaceableMine;
+            lstActions[nAction].m_oidTarget = GetId();
+            lstActions[nAction].m_nAction = pItem->GetId() | OBJECT_LISTTYPE_MASK;
+            lstActions[nAction].m_resIcon = pItem->GetIcon();
+            nAction++;
+            break;
+        }
+    }
+}
 void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 0x006DB0C0
                                     CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
@@ -722,7 +867,11 @@ void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 
         }
         break;
     case TARGET_ACTION_MENU_SKILLS:
-        if (pPlaceable != NULL && pPlaceable->m_bHasInventory && m_bLocked &&
+        if (pPlaceable == NULL)
+        {
+            break;
+        }
+        if (pPlaceable->m_bHasInventory && m_bLocked &&
             pCreature->m_pStats->GetCanUseSkill(CSWRules::SKILL_SECURITY))
         {
             lstActions.SetSize(nAction + 1);
@@ -737,6 +886,17 @@ void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 
 #endif
             lstActions[nAction].m_nAction = CSWGuiInterfaceAction::ACTION_SECURITY;
             lstActions[nAction].m_resIcon = g_pRules->m_pSkills[CSWRules::SKILL_SECURITY].m_sIcon;
+        }
+        if (pPlaceable->m_bHasInventory && m_bLocked &&
+            pCreature->m_pStats->GetCanUseSkill(CSWRules::SKILL_SECURITY))
+        {
+            GetUseItems(pCreature, lstActions);
+        }
+        break;
+    case TARGET_ACTION_MENU_MINES:
+        if (m_bLocked)
+        {
+            GetPlaceableInterfaceMines(pCreature, lstActions);
         }
         break;
     }

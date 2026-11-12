@@ -915,13 +915,23 @@ CSWCameraOnAStick::CSWCameraOnAStick(CCameraSettings& settings)
     m_fPitch = settings.m_fPitch;
     m_nStyle = CAMERA_STYLE_UNINITIALIZED;
     SetCameraStyle(settings.m_nStyle);
+#ifndef _XBOX
+    m_integrator110.m_fMaximumVelocity = 200.0f;
+    m_integrator110.m_fMaximumAcceleration = 500.0f;
+    m_n158 = 0;
+#endif
     AddDependency(m_pTarget.m_pObject);
 
     m_nOrientationState = 0;
     m_vPlayerOrientation = Vector();
+#ifdef _XBOX
     m_fDesiredPitch = m_fPresetPitch;
+#endif
     m_fMaximumDistance = 100.0f;
     m_fTilt = 0.0f;
+#ifndef _XBOX
+    m_fDesiredPitch = settings.m_fDesiredPitch;
+#endif
     m_fTurn = 0.0f;
 #ifndef _XBOX
     m_fTurnAcceleration = 0.0f;
@@ -1054,6 +1064,9 @@ void CSWCameraOnAStick::SaveCameraSettings(CCameraSettings& settings)
     settings.m_nStyle = m_nStyle;
     settings.m_fPitch = m_fPitch;
     settings.m_nReserved1C = -1;
+#ifndef _XBOX
+    settings.m_fDesiredPitch = m_fDesiredPitch;
+#endif
 }
 // PC 0x00691280
 CSWCameraFreeLook::CSWCameraFreeLook(CAurObject* pObject, CAurObject* pTarget,

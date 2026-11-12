@@ -77,7 +77,7 @@ void CSWGuiInGameOptions::OnGraphics(CSWGuiControl* pControl)
     int bSelected = pControl->m_bSelected;
     if (bSelected != 0)
     {
-        CSWGuiOptionsGraphics* pPanel = new CSWGuiOptionsGraphics(GetManager());
+        CSWGuiOptionsGraphics* pPanel = new CSWGuiOptionsGraphics(GetManager(), 1);
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }

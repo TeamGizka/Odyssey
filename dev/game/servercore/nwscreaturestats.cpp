@@ -5662,17 +5662,6 @@ unsigned char CSWSCreatureStats::GetClassNegativeLevels(unsigned char nClass)
     }
     return m_aClassInfo[nClass].m_nNegativeLevels;
 }
-// PC 0x0050B730
-unsigned char CSWSCreatureStats::GetSimpleAlignmentGoodEvil()
-{
-    if (m_nGoodEvilAlignment <= 40)
-    {
-        return 3;
-    }
-    unsigned char nAlignment = m_nGoodEvilAlignment >= 60;
-    ++nAlignment;
-    return nAlignment;
-}
 // PC 0x005ED8E0
 int CSWSCreatureStats::GetCriticalHitRoll(int bOffHand)
 {

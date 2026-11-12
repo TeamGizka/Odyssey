@@ -299,6 +299,8 @@ public:
     void HideStoreGui();
     void ShowStoreGui(unsigned long oidStore, unsigned long oidCreature);
     void HideUpgradeScreen();
+    void DisplayDeathMessage();
+    void RemoveDeathMessage(bool bLoading);
     void RemoveGUIPopUps();
     void HideSoloMode();
     void HideSubItemCreateMenu();
@@ -382,6 +384,7 @@ public:
     int SetGlobalUnpauseableState(int bUnpauseable);
 #endif
     int GetPartyAccessPanelUp(int bAny); int GetCurrentEquipScreenNPC();
+    int GetGlobalFadeActive();
     void UpdateStatus(unsigned char nMessage, int nUnknown); SFeedbackMessage* GetMessageBuffer();
     int GetMessageBufferSize();
 
@@ -693,7 +696,9 @@ public:
 #endif
     void ShowGalaxyMapGui(int nPlanet);
     int ShowLevelUpGUI(int nArg1);
-    void ShowUpgradeScreen(unsigned long oidItem);
+    void ShowUpgradeScreen(unsigned long oidItem, unsigned long oidCharacter = 0x7f000000,
+                           int bDisableItemCreation = 0, int bDisableUpgrade = 0,
+                           CExoString sOverride2DA = "");
     void SetShotFromScript(int nCamera, int nVideoEffect);
     void SetComputerCameraShot(int nCamera, unsigned long oidTarget,
                                int nVideoEffect);

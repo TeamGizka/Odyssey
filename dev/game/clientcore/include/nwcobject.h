@@ -73,7 +73,8 @@ public:
     enum TargetActionMenu
     {
         TARGET_ACTION_MENU_PRIMARY = 0,
-        TARGET_ACTION_MENU_SKILLS = 1
+        TARGET_ACTION_MENU_SKILLS = 1,
+        TARGET_ACTION_MENU_MINES = 2
     };
 
     enum { HILITE_CHANNEL_HOSTILE = 0 };
@@ -401,10 +402,8 @@ public:
     float GetFinalFadeAlpha();
     int FadeObject();
     void SetObjectVisibilityOnSetArea(CSWCArea* pArea);
-#ifdef _XBOX
 
     void MenuActionUseSecuritySpike(unsigned long oidItem, CSWCCreature* pCreature);
-#endif
 };
 
 #endif

@@ -74,13 +74,10 @@ CSWCObject* CClientAIList::GetNextObject()
         m_pCurrent = m_lstObjects.GetHeadPos();
     }
 
-    unsigned long nId = (unsigned long)m_lstObjects.GetAtPos(m_pCurrent);
-    CClientExoAppInternal* pInternal =
-        g_pAppManager->m_pClientExoApp->m_pcExoAppInternal;
-    CGameObject* pGameObject = pInternal->GetGameObject(nId);
-    CSWCObject* pSWCObject =
-        pGameObject != NULL ? pGameObject->AsSWCObject() : NULL;
-    return pSWCObject;
+    CGameObject* pGameObject =
+        g_pAppManager->m_pClientExoApp->m_pcExoAppInternal->GetGameObject(
+            (unsigned long)m_lstObjects.GetAtPos(m_pCurrent));
+    return pGameObject != NULL ? pGameObject->AsSWCObject() : NULL;
 }
 // PC 0x006508C0
 int CClientAIMaster::UpdateState()

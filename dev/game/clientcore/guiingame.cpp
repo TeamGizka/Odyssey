@@ -2746,6 +2746,30 @@ void CGuiInGame::HideDemoScreen()
         m_pDemoScreen = NULL;
     }
 }
+// PC 0x00682C40
+void CGuiInGame::DisplayDeathMessage()
+{
+    if (m_pDeathDisplay == NULL)
+    {
+        m_pDeathDisplay = new CSWGuiDeathDisplay(m_pGuiManager);
+    }
+    g_pAppManager->m_pClientExoApp->SetInputClass(2, 0);
+    m_pGuiManager->AddPanel(m_pDeathDisplay, 1, 1);
+}
+// PC 0x00682CE0
+void CGuiInGame::RemoveDeathMessage(bool bLoading)
+{
+    if (m_pDeathDisplay != NULL)
+    {
+        if (bLoading && m_pGuiManager->PanelExists(m_pDeathDisplay))
+        {
+            m_pGuiManager->RemovePanel(m_pDeathDisplay);
+        }
+        m_pDeathDisplay->m_nExitState = 2;
+        m_pDeathDisplay->m_bDeferredRemoval = 0;
+        m_pDeathDisplay = NULL;
+    }
+}
 // PC 0x00682DA0
 int CGuiInGame::GetTopMenuOverrideCharacter()
 {
@@ -2754,6 +2778,15 @@ int CGuiInGame::GetTopMenuOverrideCharacter()
     return -1;
 }
 // PC 0x00682DC0
+int CGuiInGame::GetGlobalFadeActive()
+{
+    if (m_pGlobalFade != NULL && m_pGuiManager->PanelExists(m_pGlobalFade) &&
+        m_pGlobalFade->m_fAlpha >= 0.01f)
+    {
+        return 1;
+    }
+    return 0;
+}
 int CGuiInGame::GetPartyAccessPanelUp(int bAny)
 {
     if (m_pGuiManager == 0)
@@ -5477,7 +5510,9 @@ void CGuiInGame::HideSoloMode()
     }
 }
 // PC 0x00680ED0
-void CGuiInGame::ShowUpgradeScreen(unsigned long oidItem)
+void CGuiInGame::ShowUpgradeScreen(unsigned long oidItem, unsigned long oidCharacter,
+                                   int bDisableItemCreation, int bDisableUpgrade,
+                                   CExoString sOverride2DA)
 {
     GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
@@ -5495,8 +5530,21 @@ void CGuiInGame::ShowUpgradeScreen(unsigned long oidItem)
                         g_pAppManager->m_pClientExoApp->GetSWCMessage()->
                             SendPlayerToServerInput_TogglePauseRequest();
                     }
-                    m_pUpgradeScreen = new CSWGuiUpgradeSelection(m_pGuiManager);
+                    m_pUpgradeScreen = new CSWGuiUpgradeSelection(m_pGuiManager, oidCharacter);
                     m_pUpgradeScreen->m_oidItem = oidItem;
+                    m_pUpgradeScreen->m_oidCharacter = oidCharacter;
+                    if (bDisableItemCreation)
+                        m_pUpgradeScreen->m_bDisableItemCreation = 1;
+                    else
+                        m_pUpgradeScreen->m_bDisableItemCreation = 0;
+                    if (bDisableUpgrade)
+                        m_pUpgradeScreen->m_bDisableUpgrade = 1;
+                    else
+                        m_pUpgradeScreen->m_bDisableUpgrade = 0;
+                    if (!sOverride2DA.IsEmpty())
+                        m_pUpgradeScreen->SetOverride2DA(sOverride2DA);
+                    else
+                        m_pUpgradeScreen->SetOverride2DA("");
                     m_pGuiManager->AddPanel(m_pUpgradeScreen, CSWGuiManager::PANEL_MODE_MODAL, 1);
 #ifdef _XBOX
                     g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GUI);

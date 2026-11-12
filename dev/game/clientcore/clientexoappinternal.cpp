@@ -301,15 +301,15 @@ CAurCamera* CClientExoAppInternal::GetModuleCamera()
 
 void CClientExoAppInternal::ShutDownLegalScreen()
 {
-    if (m_pUnknown27C != NULL)
+    if (m_pLegalScreen != NULL)
     {
-        ((CSWGuiLegalScreen*)m_pUnknown27C)->SetImage("");
-        m_pSWGuiManager->RemovePanel(m_pUnknown27C);
-        if (m_pUnknown27C != NULL)
+        m_pLegalScreen->SetImage("");
+        m_pSWGuiManager->RemovePanel(m_pLegalScreen);
+        if (m_pLegalScreen != NULL)
         {
-            delete m_pUnknown27C;
+            delete m_pLegalScreen;
         }
-        m_pUnknown27C = NULL;
+        m_pLegalScreen = NULL;
     }
 }
 #endif
@@ -536,14 +536,13 @@ void CClientExoAppInternal::SetEventDescriptions()
     g_pExoInput->AddEvent(INPUT_KEY_NUMPADENTER, INPUT_CONTEXT_PC_GUI);
     g_pExoInput->AddEvent(INPUT_KEY_NUMPADENTER, INPUT_CONTEXT_DIALOG);
 #endif
-    if (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_bEnableScreenShot)
-    {
-        g_pExoInput->CreateNewEvent(INPUT_SCREENSHOT, CExoInput::EVENT_TYPE_BUTTON,
-            CExoInput::INPUTDEVICE_KEYBOARD, CExoInput::KEYBOARD_PRINTSCREEN, CExoInput::INPUT_CONTROL_NONE);
-        g_pExoInput->AddEvent(INPUT_SCREENSHOT, INPUT_CONTEXT_PC);
-        g_pExoInput->AddEvent(INPUT_SCREENSHOT, INPUT_CONTEXT_PC_GUI);
-        g_pExoInput->AddEvent(INPUT_SCREENSHOT, INPUT_CONTEXT_FREE_LOOK);
-    }
+    g_pExoInput->CreateNewEvent(INPUT_SCREENSHOT, CExoInput::EVENT_TYPE_BUTTON,
+        CExoInput::INPUTDEVICE_KEYBOARD, CExoInput::KEYBOARD_PRINTSCREEN, CExoInput::INPUT_CONTROL_NONE);
+    g_pExoInput->AddEvent(INPUT_SCREENSHOT, INPUT_CONTEXT_PC);
+    g_pExoInput->AddEvent(INPUT_SCREENSHOT, INPUT_CONTEXT_PC_GUI);
+    g_pExoInput->AddEvent(INPUT_SCREENSHOT, INPUT_CONTEXT_DIALOG);
+    g_pExoInput->AddEvent(INPUT_SCREENSHOT, INPUT_CONTEXT_FREE_LOOK);
+    g_pExoInput->AddEvent(INPUT_SCREENSHOT, INPUT_CONTEXT_MINIGAME);
     g_pExoInput->CreateNewEvent(INPUT_JOYSTICK_Y, CExoInput::EVENT_TYPE_RELATIVE,
         CExoInput::INPUTDEVICE_JOYSTICKSTART, CExoInput::JOYSTICK_YAXIS, CExoInput::INPUT_CONTROL_NONE);
     g_pExoInput->AddEvent(INPUT_JOYSTICK_Y, INPUT_CONTEXT_PC);
@@ -581,6 +580,9 @@ void CClientExoAppInternal::SetEventDescriptions()
     g_pExoInput->CreateNewEvent(INPUT_MINIGAME_MOUSE_BUTTON0, CExoInput::EVENT_TYPE_BUTTON,
         CExoInput::INPUTDEVICE_MOUSE, CExoInput::MOUSE_BUTTON0, CExoInput::INPUT_CONTROL_NONE);
     g_pExoInput->AddEvent(INPUT_MINIGAME_MOUSE_BUTTON0, INPUT_CONTEXT_MINIGAME);
+    g_pExoInput->CreateNewEvent(INPUT_MINIGAME_MOUSE_BUTTON1, CExoInput::EVENT_TYPE_BUTTON,
+        CExoInput::INPUTDEVICE_MOUSE, CExoInput::MOUSE_BUTTON1, CExoInput::INPUT_CONTROL_NONE);
+    g_pExoInput->AddEvent(INPUT_MINIGAME_MOUSE_BUTTON1, INPUT_CONTEXT_MINIGAME);
     g_pExoInput->CreateNewEvent(INPUT_MOUSE_X, CExoInput::EVENT_TYPE_RELATIVE,
         CExoInput::INPUTDEVICE_MOUSE, CExoInput::MOUSE_XAXIS, CExoInput::INPUT_CONTROL_NONE);
     g_pExoInput->AddEvent(INPUT_MOUSE_X, INPUT_CONTEXT_PC_GUI);
@@ -660,7 +662,7 @@ void CClientExoAppInternal::SetEventDescriptions()
         bool bDisabled = (pKeymap = g_pRules->Get2DArrays()->m_pKeymap)->GetINTEntry(sAction, "Disabled", &nKey) && nKey == 1;
         if (!bDisabled)
         {
-            if (cIni.ReadIniEntry(sKey, ".\\swkotor.ini", "Keymapping", sAction))
+            if (cIni.ReadIniEntry(sKey, ".\\swkotor2.ini", "Keymapping", sAction))
             {
                 nKey = sKey.AsINT() & CExoInput::INPUT_CONTROL_INDEX_MASK;
                 if (anKeysUsed[nKey] == 0 || nKey == 0)
@@ -700,7 +702,7 @@ void CClientExoAppInternal::SetEventDescriptions()
                         continue;
                 }
                 sKey.Format("%d", nKey);
-                cIni.WriteIniEntry(sKey, ".\\swkotor.ini", "Keymapping", sAction);
+                cIni.WriteIniEntry(sKey, ".\\swkotor2.ini", "Keymapping", sAction);
             }
         }
     }
@@ -711,7 +713,7 @@ void CClientExoAppInternal::SetEventDescriptions()
         bool bDisabled = (pKeymap = g_pRules->Get2DArrays()->m_pKeymap)->GetINTEntry(sAction, "Disabled", &nKey) && nKey == 1;
         if (!bDisabled)
         {
-            int bReadKey = cIni.ReadIniEntry(sKey, ".\\swkotor.ini", "Keymapping", sAction);
+            int bReadKey = cIni.ReadIniEntry(sKey, ".\\swkotor2.ini", "Keymapping", sAction);
             nKey = -1;
             if (bReadKey)
                 nKey = sKey.AsINT() & CExoInput::INPUT_CONTROL_INDEX_MASK;
@@ -721,12 +723,12 @@ void CClientExoAppInternal::SetEventDescriptions()
                 if (nKey != 0)
                 {
                     sKey.Format("%d", nKey);
-                    cIni.WriteIniEntry(sKey, ".\\swkotor.ini", "Keymapping", sAction);
+                    cIni.WriteIniEntry(sKey, ".\\swkotor2.ini", "Keymapping", sAction);
                 }
             }
             nKey2 = -1;
             sAction = CExoString("Action") + nAction + CExoString("B");
-            if (cIni.ReadIniEntry(sKey, ".\\swkotor.ini", "Keymapping", sAction))
+            if (cIni.ReadIniEntry(sKey, ".\\swkotor2.ini", "Keymapping", sAction))
                 nKey2 = sKey.AsINT() & CExoInput::INPUT_CONTROL_INDEX_MASK;
             else if ((pKeymap = g_pRules->Get2DArrays()->m_pKeymap) != NULL)
             {
@@ -734,7 +736,7 @@ void CClientExoAppInternal::SetEventDescriptions()
                 if (nKey2 != 0)
                 {
                     sKey.Format("%d", nKey2);
-                    cIni.WriteIniEntry(sKey, ".\\swkotor.ini", "Keymapping", sAction);
+                    cIni.WriteIniEntry(sKey, ".\\swkotor2.ini", "Keymapping", sAction);
                 }
             }
             if (nKey >= 0 && nKey2 >= 0 &&
@@ -911,16 +913,14 @@ RenderSound:
 int CClientExoAppInternal::IsValidResolution(unsigned long nWidth,
                                           unsigned long nHeight)
 {
-    if (nWidth == VIDEO_FALLBACK_WIDTH && nHeight == VIDEO_FALLBACK_HEIGHT)
-        return 1;
-    else if (nWidth == VIDEO_XGA_WIDTH && nHeight == VIDEO_XGA_HEIGHT)
-        return 1;
-    else if (nWidth == VIDEO_SXGA_WIDTH &&
-             (nHeight == VIDEO_SXGA_4_3_HEIGHT || nHeight == VIDEO_SXGA_HEIGHT))
-        return 1;
-    else if (nWidth == VIDEO_UXGA_WIDTH && nHeight == VIDEO_UXGA_HEIGHT)
-        return 1;
-    return 0;
+    if (nWidth != VIDEO_FALLBACK_WIDTH && nWidth != VIDEO_XGA_WIDTH &&
+        nWidth != VIDEO_SXGA_WIDTH && nWidth != VIDEO_UXGA_WIDTH)
+        return 0;
+    if (nHeight != VIDEO_FALLBACK_HEIGHT && nHeight != VIDEO_XGA_HEIGHT &&
+        nHeight != VIDEO_SXGA_4_3_HEIGHT && nHeight != VIDEO_SXGA_HEIGHT &&
+        nHeight != VIDEO_UXGA_HEIGHT)
+        return 0;
+    return 1;
 }
 #ifndef _XBOX
 // PC 0x0063BFD0
@@ -931,28 +931,28 @@ int CClientExoAppInternal::ReadVideoModeSettings(unsigned long* pnWidth,
 {
     CExoString sValue;
     CExoIni cIni;
-    int bReadSettings = cIni.ReadIniEntry(sValue, ".\\swkotor.ini",
+    int bReadSettings = cIni.ReadIniEntry(sValue, ".\\swkotor2.ini",
                                          "Graphics Options", "Width");
     *pnWidth = sValue.AsINT();
-    cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "Height");
+    cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options", "Height");
     *pnHeight = sValue.AsINT();
     *pnBitsPerPixel = VIDEO_BITS_PER_PIXEL;
 
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options",
-                         "AllowHighMonitorFrequency"))
-        m_bAllowHighMonitorFrequency = sValue.AsINT() != 0;
-    else
-        m_bAllowHighMonitorFrequency = 0;
-
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "RefreshRate"))
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options", "RefreshRate"))
     {
         g_nDesiredFullScreenRefreshRate = sValue.AsINT();
         *pnRefreshRate = g_nDesiredFullScreenRefreshRate;
     }
     else
+    {
         *pnRefreshRate = g_nDesiredFullScreenRefreshRate;
+    }
 
-    if (!IsValidResolution(*pnWidth, *pnHeight))
+    if ((*pnWidth != VIDEO_FALLBACK_WIDTH && *pnWidth != VIDEO_XGA_WIDTH &&
+         *pnWidth != VIDEO_SXGA_WIDTH && *pnWidth != VIDEO_UXGA_WIDTH) ||
+        (*pnHeight != VIDEO_FALLBACK_HEIGHT && *pnHeight != VIDEO_XGA_HEIGHT &&
+         *pnHeight != VIDEO_SXGA_4_3_HEIGHT && *pnHeight != VIDEO_SXGA_HEIGHT &&
+         *pnHeight != VIDEO_UXGA_HEIGHT))
     {
         *pnWidth = VIDEO_FALLBACK_WIDTH;
         *pnHeight = VIDEO_FALLBACK_HEIGHT;
@@ -960,9 +960,6 @@ int CClientExoAppInternal::ReadVideoModeSettings(unsigned long* pnWidth,
     if (*pnBitsPerPixel != VIDEO_BITS_PER_PIXEL)
         *pnBitsPerPixel = VIDEO_BITS_PER_PIXEL;
     if (*pnRefreshRate < VIDEO_REFRESH_RATE)
-        *pnRefreshRate = VIDEO_REFRESH_RATE;
-    if (!m_bAllowHighMonitorFrequency &&
-        *pnRefreshRate > VIDEO_MAX_STANDARD_REFRESH_RATE)
         *pnRefreshRate = VIDEO_REFRESH_RATE;
 
     return bReadSettings;
@@ -1107,19 +1104,19 @@ void CClientExoAppInternal::ReadAndSetVideoMode(int bStartup, int bFullScreen)
     CExoString sValue;
     CExoIni cIni;
 
-    cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Display Options", "Width");
+    cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Display Options", "Width");
     unsigned long nWidth = sValue.AsINT();
-    cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Display Options", "Height");
+    cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Display Options", "Height");
     unsigned long nHeight = sValue.AsINT();
-    cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Display Options", "BitsPerPixels");
+    cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Display Options", "BitsPerPixels");
     unsigned char nBitsPerPixel = sValue.AsINT();
-    cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Display Options", "RefreshRate");
+    cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Display Options", "RefreshRate");
     unsigned long nRefreshRate = sValue.AsINT();
 
-    if (!cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "NumDynamicLights"))
+    if (!cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "NumDynamicLights"))
     {
         sValue.Format("%d", VIDEO_DEFAULT_DYNAMIC_LIGHTS);
-        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "NumDynamicLights");
+        cIni.WriteIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "NumDynamicLights");
     }
 
     m_pClientOptions->SetFullScreenEnabled(bFullScreen);
@@ -1168,6 +1165,7 @@ void CClientExoAppInternal::ReadAndSetVideoMode(int bStartup, int bFullScreen)  
 void CClientExoAppInternal::StopServices()  // PC 0x00650110
 {
 #ifndef _XBOX
+    UnloadSuperModelSet();
     ShutDownMoviePlayer();
 #endif
     if (m_pSWGuiManager->PanelExists(m_pMainMenu))
@@ -1214,7 +1212,6 @@ void CClientExoAppInternal::StopServices()  // PC 0x00650110
     {
         delete m_pSWGuiManager;
         m_pSWGuiManager = NULL;
-        g_pGuiMan = NULL;
     }
     if (m_pClientAIMaster != NULL)
     {
@@ -1794,10 +1791,10 @@ int CClientExoAppInternal::Uninitialize()
         delete m_pGuiLoadScreen;
         m_pGuiLoadScreen = NULL;
     }
-    if (m_pUnknown27C != NULL)
+    if (m_pLegalScreen != NULL)
     {
-        delete m_pUnknown27C;
-        m_pUnknown27C = NULL;
+        delete m_pLegalScreen;
+        m_pLegalScreen = NULL;
     }
 
     return SetTexturePack(0xFF, 1);
@@ -1837,7 +1834,7 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x006440C0
     m_pGameObjectArray = new CGameObjectArray(1);
     g_pExoResMan = new CExoResMan;
 
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
                           "AllowWindowedMode"))
         g_bAllowWindowedMode = sValue.AsINT() != 0;
     g_pAurora = NewCAurora();
@@ -1849,7 +1846,7 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x006440C0
     m_pClientAIMaster = new CClientAIMaster;
     m_pClientAIMaster->SetExoAppInternal(this);
 
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                           "EnableReleaseLogging"))
         g_pExoBase->m_pExoDebug->SetEnabled(sValue.AsINT() != 0);
     g_bExtendedResourceTracking = false;
@@ -1857,26 +1854,22 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x006440C0
 
     g_pExoResMan->AddResourceDirectory("TEMPCLIENT:");
     g_pExoResMan->AddResourceDirectory("OVERRIDE:");
-    g_pExoResMan->AddResourceDirectory("ERRORTEX:");
     g_pSWTlkTable = new CSWTlkTable;
     g_pTlkTable = g_pSWTlkTable;
-    g_pExoResMan->CacheResource("HD0:DATAXBOX\\items", RESTYPE_BIF);
-    g_pExoResMan->CacheResource("HD0:DATAXBOX\\scripts", RESTYPE_BIF);
-    g_pExoResMan->CacheResource("HD0:DATAXBOX\\gui", RESTYPE_BIF);
+    if (!bPlayLoadMusic)
+    {
+        g_pExoResMan->CacheResource("HD0:DATAXBOX\\templates", RESTYPE_BIF);
+        g_pExoResMan->CacheResource("HD0:DATAXBOX\\gui", RESTYPE_BIF);
+    }
     g_pExoResMan->AddFixedKeyTableFile("HD0:CHITIN");
     g_pExoResMan->AddResourceDirectory("RIMS:");
     g_pAuroraInterface = new CAuroraInterface;
-    g_pExoResMan->AddResourceDirectory("SERVERVAULT:");
-    g_pExoResMan->AddResourceDirectory("PORTRAITS:");
-    g_pExoResMan->AddEncapsulatedResourceFile("OVERRIDE:textures", 1);
     g_pExoResMan->AddEncapsulatedResourceFile("HD0:patch", 1);
+    InitializeSoundOptions();
     g_pExoResMan->AddResourceDirectory("HD0:MOVIES");
-    g_pExoResMan->AddResourceDirectory("HD0:STREAMWAVES");
-    g_pExoResMan->AddResourceDirectory("HD0:STREAMMUSIC");
     if (g_pExoResMan->Exists("GLOBAL", RESTYPE_RIM, (unsigned long*)NULL))
         g_pExoResMan->AddResourceImageFile("RIMS:GLOBAL");
 
-    InitializeSoundOptions();
     if (bPlayLoadMusic)
     {
         m_sLoadMusic = sLoadMusic;
@@ -1890,7 +1883,7 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x006440C0
     m_pModule = new CSWCModule;
     if (m_pModule != NULL)
     {
-        int bTextureQuality = cIni.ReadIniEntry(sValue, ".\\swkotor.ini",
+        int bTextureQuality = cIni.ReadIniEntry(sValue, ".\\swkotor2.ini",
                                                "Graphics Options", "Texture Quality");
         int nTextureQuality = sValue.AsINT();
         if (bTextureQuality && nTextureQuality < CClientOptions::TEXTURE_QUALITY_COUNT)
@@ -1898,34 +1891,44 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x006440C0
         else
             SetTexturePack(0, 1);
 
+        WIN32_FIND_DATA cFindData;
+        memset(&cFindData, 0, sizeof(cFindData));
+        HANDLE hFind = FindFirstFile("d:\\guilocal.erf", &cFindData);
+        if (hFind != INVALID_HANDLE_VALUE)
+        {
+            g_pExoResMan->AddEncapsulatedResourceFile(
+                g_pExoResMan->CacheResource("HD0:guilocal", RESTYPE_ERF), 0);
+        }
+        FindClose(hFind);
+
         int bFullScreen;
-        if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "FullScreen"))
+        if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options", "FullScreen"))
             bFullScreen = sValue.AsINT();
         else
         {
             bFullScreen = 0;
             sValue.Format("%d", bFullScreen);
-            cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "FullScreen");
+            cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options", "FullScreen");
         }
-        if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Disable Movies"))
+        if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options", "Disable Movies"))
             m_bMovieDisabled = sValue.AsINT();
         else
             m_bMovieDisabled = 0;
         m_bSkipIntro = 0;
         int bPlayMovies = m_bMovieDisabled == 0;
         m_pClientOptions->SetDefaultOptions();
-        LoadOptions();
+        LoadOptions(0);
         ReadAndSetVideoMode(bPlayMovies && bFullScreen, bFullScreen);
 
-        int bReadEntry = cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "V-Sync");
+        int bReadEntry = cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options", "V-Sync");
         if (bReadEntry &&
             g_pAppManager->GetClientExoApp()->GetClientOptions() != NULL)
             g_pAppManager->GetClientExoApp()->GetClientOptions()->SetVSync(sValue.AsINT());
-        bReadEntry = cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "Anisotropy");
+        bReadEntry = cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options", "Anisotropy");
         if (bReadEntry &&
             g_pAppManager->GetClientExoApp()->GetClientOptions() != NULL)
             g_pAppManager->GetClientExoApp()->GetClientOptions()->SetAnisotropy(sValue.AsINT());
-        bReadEntry = cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "Anti Aliasing");
+        bReadEntry = cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options", "Anti Aliasing");
         if (bReadEntry &&
             g_pAppManager->GetClientExoApp()->GetClientOptions() != NULL)
         {
@@ -2177,7 +2180,7 @@ void CClientExoAppInternal::AddSimpleObjectModelDirectlyToIgnoreList(
 void CClientExoAppInternal::StartMenuMusic(int bCultTheme, int nVolume,
                                         int nPriorityGroup)
 {
-    CExoString sMusic(bCultTheme ? "mus_theme_cult" : "mus_theme_rep");
+    CExoString sMusic("mus_sion");
     int bChangeMusic = m_pMenuMusic != NULL &&
                       m_pMenuMusic->GetFilePlaying() != sMusic;
 
@@ -2262,11 +2265,13 @@ void CClientExoAppInternal::StartLoadMusic()
         {
             if (m_sLoadMusic != "")
             {
+#ifdef _XBOX
                 CExoString sFileName;
                 sFileName.Format("HD0:STREAMMUSIC\\%s", m_sLoadMusic.CStr());
                 {
                     g_pExoResMan->CacheResource(sFileName, RESTYPE_WAV);
                 }
+#endif
 
                 m_pLoadMusic = new CExoStreamingSoundSource(1);
                 m_pLoadMusic->SetLooping(1);
@@ -2315,7 +2320,7 @@ int CClientExoAppInternal::GetObjectName(unsigned long oidObject, CExoString& sN
     }
     else if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
     {
-        sName = pObject->AsSWCCreature()->GetStats()->GetFullName();
+        sName = pObject->AsSWCCreature()->GetStats()->m_sFirstName;
         return 1;
     }
     else if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
@@ -2363,12 +2368,6 @@ int CClientExoAppInternal::GetObjectName(unsigned long oidObject, CExoString& sN
     return 1;
 }
 
-CGameObject* CClientExoAppInternal::GetGameObject(unsigned long oidObject)
-{
-    CGameObject* pGameObject = NULL;
-    m_pGameObjectArray->GetGameObject(oidObject, &pGameObject);
-    return pGameObject;
-}
 // PC 0x0063C370
 CSWCItem* CClientExoAppInternal::GetItemByGameObjectID(unsigned long nId)
 {
@@ -3565,7 +3564,7 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_nLoadBarState = 0;
     m_pSWGuiManager = NULL;
     m_pGuiLoadScreen = NULL;
-    m_pUnknown27C = NULL;
+    m_pLegalScreen = NULL;
     m_pServerInfo = NULL;
     m_nInputClass = 0;
     m_bPlayBackInputEnd = 0;
@@ -3726,7 +3725,7 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_nLoadScreenHintUpdateTimer = 0;
     m_nLoadScreenStartTime = 0;
     m_nGamePlayHint = 0;
-    m_nStoryHint = 0;
+    memset(m_anStoryHint, 0, sizeof(m_anStoryHint));
     m_bMainMenuTransition = 0;
     m_PauseFlags.m_Bits.m_bLastTargetChanged = 0;
     m_PauseFlags.m_Bits.m_nUnused1 = 0;
@@ -3741,6 +3740,7 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_bCharacterChangeInProgress = 0;
     m_bCreditSequenceInProgress = 0;
     m_bEvilEndingHackInProgress = 0;
+    m_nSuperModelSet = 1;
     m_nSoundPausedByCombat = 0;
 #endif
 }
@@ -3790,6 +3790,15 @@ void CClientExoAppInternal::DisplayMainMenu(int bUnknown)  // PC 0x00648720
         m_pStartupPanel = NULL;
     }
 
+    if (m_pMainMenu != NULL)
+    {
+        m_pMainMenu->SetModal(0);
+        CSWGuiPanel* pPanel = m_pMainMenu;
+        pPanel->m_bDeferredRemoval = 0;
+        pPanel->m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
+        m_pMainMenu = NULL;
+    }
+
     m_pMainMenu = new CSWGuiMainMenu(m_pSWGuiManager);
     SetInputClass(INPUT_CLASS_GUI, 1);
     m_pSWGuiManager->AddPanel(m_pMainMenu,
@@ -3813,15 +3822,15 @@ void CClientExoAppInternal::DisplayStartScreen()
         m_pStartupPanel = new CSWGuiStartScreen(m_pSWGuiManager);
     }
 
-    if (m_pUnknown27C != NULL)
+    if (m_pLegalScreen != NULL)
     {
-        ((CSWGuiLegalScreen*)m_pUnknown27C)->SetImage("");
-        m_pSWGuiManager->RemovePanel(m_pUnknown27C);
-        if (m_pUnknown27C != NULL)
+        m_pLegalScreen->SetImage("");
+        m_pSWGuiManager->RemovePanel(m_pLegalScreen);
+        if (m_pLegalScreen != NULL)
         {
-            delete m_pUnknown27C;
+            delete m_pLegalScreen;
         }
-        m_pUnknown27C = NULL;
+        m_pLegalScreen = NULL;
         g_pExoResMan->RemoveResourceImageFile("RIMSXBOX:LEGAL");
         g_pExoResMan->RemoveResourceImageFile("RIMSXBOX:LEGALDX");
     }
@@ -5505,7 +5514,7 @@ int CClientExoAppInternal::PlayLoadModuleMovies()
         m_pMoviePlayer->ShowFadePanel();
         m_pMoviePlayer->PlayMoviesAsync(lstMovies, 0, NULL);
 #endif
-        Sleep(2);
+        Sleep(0);
         m_bEnableMouseAtEndOfLoadModuleMovie = 1;
         return 1;
     }
@@ -5560,7 +5569,8 @@ void CClientExoAppInternal::ShowLoadScreen(int bFade, int bPlayMusic, int bSavin
 void CClientExoAppInternal::HideLoadScreen(int bFade)
 {
 #else
-void CClientExoAppInternal::HideLoadScreen(int bFade, int bUpdateScreen)  // PC 0x006428D0
+void CClientExoAppInternal::HideLoadScreen(int bFade, int bStopLoadMusic,
+                                           int bUpdateScreen)  // PC 0x006428D0
 {
     ShowMouse(CLIENT_MOUSE_HIDE_LOAD_SCREEN);
 #endif
@@ -5586,7 +5596,9 @@ void CClientExoAppInternal::HideLoadScreen(int bFade, int bUpdateScreen)  // PC 
         m_pGuiLoadScreen->m_pbProgress.SetCurValue(0);
         m_pGuiLoadScreen->SetBackground("");
         SetInputActive(1, 0);
+#ifdef _XBOX
         StopLoadMusic();
+#endif
 
 #ifdef _XBOX
         if (!bFade)
@@ -5806,7 +5818,7 @@ int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nResult,
 
 #else
 int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nA, int nB,  // PC 0x0064ED10
-                                     int nC)
+                                     int nC, int nSoundModeFlags)
 {
     if (m_bMovieDisabled != 0)
     {
@@ -5818,21 +5830,16 @@ int CClientExoAppInternal::PlayMovie(const CExoString& sMovie, int& nA, int nB, 
         return 0;
     }
 
-    return PlayMoviesInExoArrayList(m_aMoveToModuleMovies, nA, 1, 0, NULL);
+    return PlayMoviesInExoArrayList(m_aMoveToModuleMovies, nA, 1, 0, NULL,
+                                    nSoundModeFlags);
 }
 
 #ifndef _XBOX
 int CClientExoAppInternal::PlayMovieQueue(int nFlags)  // PC 0x0064ED60
 {
-    if (m_aMovieQueue.Contains(".\\movies\\55.bik") != 0)
-    {
-        SetEvilEndingHackInProgress(1);
-        HideMouse(CLIENT_MOUSE_HIDE_EVIL_ENDING);
-    }
-
     int nMovie;
     int nResult = PlayMoviesInExoArrayList(m_aMovieQueue, nMovie, 0, nFlags,
-                                           &m_aMovieQueueFlags);
+                                           &m_aMovieQueueFlags, 0);
     int& nMovies = m_aMovieQueue.num;
     nMovies = 0;
     m_aMovieQueueFlags.num = 0;
@@ -5843,7 +5850,7 @@ int CClientExoAppInternal::PlayMovieQueue(int nFlags)  // PC 0x0064ED60
 // PC 0x0064EB10
 int CClientExoAppInternal::PlayMoviesInExoArrayList(
     CExoArrayList<CExoString>& lstMovies, int& nResult, int nWait, int nMode,
-    CExoArrayList<int>* lstSkippable)
+    CExoArrayList<int>* lstSkippable, int nSoundModeFlags)
 {
     if (m_bMovieDisabled != 0)
     {
@@ -5871,7 +5878,7 @@ int CClientExoAppInternal::PlayMoviesInExoArrayList(
     ChangeResolutionForMovie();
     m_pMoviePlayer->ShowFadePanel();
     m_pMoviePlayer->PlayMoviesAsync(lstMovies, nMode, lstSkippable);
-    Sleep(2);
+    Sleep(0);
     nResult = WaitForMovie(nWait);
     RestoreResolutionFromMovie();
     ShowMouse(8);
@@ -6020,36 +6027,13 @@ void CClientExoAppInternal::UpdateDeathSequence()  // PC 0x0063E320
     if (m_nGameOver)
     {
         m_fDeathSequenceElapsed += nElapsed * 0.001f;
-        float fElapsed = m_fDeathSequenceElapsed;
-        float fScale = m_fDeathSequenceScale;
-        float fSpeed = CLIENT_DEATH_SEQUENCE_MIN_SPEED;
         if (m_bGameOverPending)
         {
             m_bGameOverPending = 0;
-            fScale = m_fDeathSequenceScale = (float)(-log(fElapsed / CLIENT_DEATH_SEQUENCE_DURATION) /
-                (1.0 - CLIENT_DEATH_SEQUENCE_MIN_SPEED));
-        }
-        if (m_fDeathSequenceElapsed <= CLIENT_DEATH_SEQUENCE_DURATION)
-        {
-            fSpeed = -(float)log(fElapsed / CLIENT_DEATH_SEQUENCE_DURATION);
-            fSpeed /= fScale;
-            fSpeed += CLIENT_DEATH_SEQUENCE_MIN_SPEED;
-        }
-        SetGameSpeed(fSpeed);
-
-        if ((!m_pGuiInGame->IsGlobalFading() || m_bEndGamePending) &&
-            m_fEndGamePendingDelay <= 0.0f)
-        {
-            SetGameSpeed(1.0f);
-            m_nGameOver = 0;
-            m_bGameOverPending = 1;
-            m_pGuiInGame->StopGlobalFade();
-            m_bEndGamePending = 1;
-            m_fEndGamePendingDelay = 0.0f;
-            m_nEndGamePendingUnknown = 1;
-            CSWGuiPanel* pPanel = m_pGuiInGame->m_pMessageBox;
-            g_pGuiMan->PopModalPanel();
-            g_pGuiMan->RemovePanel(pPanel);
+            m_fDeathSequenceScale =
+                (float)(-log(m_fDeathSequenceElapsed /
+                             CLIENT_DEATH_SEQUENCE_DURATION) /
+                        (1.0 - CLIENT_DEATH_SEQUENCE_MIN_SPEED));
         }
     }
 }
@@ -6161,21 +6145,6 @@ CSWCTrigger* CClientExoAppInternal::GetTriggerByGameObjectID(
     return NULL;
 }
 
-inline int CClientExoAppInternal::GetPlayerMovementInput()
-{
-    if (m_pPlayerControl == NULL)
-    {
-        return 0;
-    }
-
-    if (m_pPlayerControl->GetLeftRight() != 0.0f ||
-        m_pPlayerControl->GetUpDown() != 0.0f)
-    {
-        return 1;
-    }
-
-    return 0;
-}
 // PC 0x0063C4B0
 CSWCProjectile* CClientExoAppInternal::GetProjectileByGameObjectID(
     unsigned long oidObject)
@@ -6491,6 +6460,22 @@ void CClientExoAppInternal::StopLoadMusic()
         m_pLoadMusic = NULL;
     }
 }
+// PC 0x0063CE10
+CExoStreamingSoundSource* CClientExoAppInternal::AquireLoadMusic(const CResRef& cResRef)
+{
+    CExoStreamingSoundSource* pLoadMusic = NULL;
+    if (m_pLoadMusic != NULL)
+    {
+        CExoString sLoadMusic;
+        cResRef.CopyToString(sLoadMusic);
+        if (sLoadMusic.CompareNoCase(m_sLoadMusic))
+        {
+            pLoadMusic = m_pLoadMusic;
+            m_pLoadMusic = NULL;
+        }
+    }
+    return pLoadMusic;
+}
 
 #ifndef _XBOX
 void CClientExoAppInternal::HandleExitGameButton(CSWGuiControl* pControl)  // PC 0x0063CED0
@@ -6511,39 +6496,39 @@ void CClientExoAppInternal::InitializeClientOptions()
     CExoIni cIni;
     CExoString sValue;
 
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                          "TooltipDelay Sec"))
     {
         if (sValue.AsINT() <= 0)
         {
             sValue.Format("1");
-            cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+            cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                                "TooltipDelay Sec");
         }
     }
     else
     {
-        cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Game Options",
+        cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                            "TooltipDelay Sec");
     }
 
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options",
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
                          "EnableHardwareMouse"))
     {
-        CClientOptions* pClientOptions = m_pClientOptions;
-        pClientOptions->SetEnableHardwareMouseCursor(sValue.AsINT() != 0);
+        m_pClientOptions->SetEnableHardwareMouseCursor(sValue.AsINT() != 0);
     }
     else
     {
         m_pClientOptions->SetEnableHardwareMouseCursor(1);
         sValue.Format("%d", 1);
-        cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Graphics Options",
+        cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options",
                            "EnableHardwareMouse");
     }
 }
 #endif
 
 #ifndef _XBOX
+#define DEFAULT_SOUND_VOICES 64
 void CClientExoAppInternal::InitializeSoundOptions()  // PC 0x0063D280
 {
     CExoIni cIni;
@@ -6553,20 +6538,20 @@ void CClientExoAppInternal::InitializeSoundOptions()  // PC 0x0063D280
     int bForceSoftware = 0;
     int bSoundInit = 0;
 
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "Sound Init"))
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Sound Options", "Sound Init"))
     {
         bSoundInit = sValue.AsINT();
     }
     sValue.Format("%d", 1);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "Sound Init");
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Sound Options", "Sound Init");
 
-    unsigned char n2DVoices = CExoSound::DEFAULT_2D_VOICES;
-    unsigned char n3DVoices = CExoSound::DEFAULT_3D_VOICES;
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "Number 2D Voices"))
+    unsigned char n2DVoices = DEFAULT_SOUND_VOICES;
+    unsigned char n3DVoices = DEFAULT_SOUND_VOICES;
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Sound Options", "Number 2D Voices"))
     {
         n2DVoices = sValue.AsINT();
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "Number 3D Voices"))
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Sound Options", "Number 3D Voices"))
     {
         n3DVoices = sValue.AsINT();
     }
@@ -6578,11 +6563,11 @@ void CClientExoAppInternal::InitializeSoundOptions()  // PC 0x0063D280
     }
     else
     {
-        if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "EAX"))
+        if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Sound Options", "EAX"))
         {
             nEAXMode = sValue.AsINT();
         }
-        if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "Force Software"))
+        if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Sound Options", "Force Software"))
         {
             bForceSoftware = sValue.AsINT();
             g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nEAXFlags = bForceSoftware;
@@ -6591,33 +6576,33 @@ void CClientExoAppInternal::InitializeSoundOptions()  // PC 0x0063D280
 
     g_pExoSound = new CExoSound(n2DVoices, n3DVoices, nEAXMode, !bForceSoftware);
 
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "Environment Effects Nonstreaming"))
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Sound Options", "Environment Effects Nonstreaming"))
     {
         g_pExoSound->EnableNonStreamingEnvironmentEffects(sValue.AsINT());
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "Environment Effects Streaming"))
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Sound Options", "Environment Effects Streaming"))
     {
         g_pExoSound->EnableStreamingEnvironmentEffects(sValue.AsINT());
     }
-    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "2D3D Bias"))
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Sound Options", "2D3D Bias"))
     {
         g_pExoSound->Set2D3DBias(sValue.AsFLOAT());
     }
 
     sValue.Format("%d", g_pExoSound->GetEAX());
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "EAX");
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Sound Options", "EAX");
     g_pAppManager->GetClientExoApp()->GetClientOptions()->SetEAXMode((unsigned char)g_pExoSound->GetEAX());
 
     sValue.Format("%d", bForceSoftware);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "Force Software");
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Sound Options", "Force Software");
     sValue.Format("%.2f", g_pExoSound->Get2D3DBias());
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "2D3D Bias");
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Sound Options", "2D3D Bias");
     sValue.Format("%d", g_pExoSound->GetNumber2DVoices());
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "Number 2D Voices");
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Sound Options", "Number 2D Voices");
     sValue.Format("%d", g_pExoSound->GetNumber3DVoices());
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "Number 3D Voices");
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Sound Options", "Number 3D Voices");
     sValue.Format("%d", 0);
-    cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "Sound Init");
+    cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Sound Options", "Sound Init");
 }
 #endif
 #ifndef _XBOX
@@ -6791,21 +6776,38 @@ int CClientExoAppInternal::IsSoundPlayingInDialog()
         unsigned long oidSoundObject = m_pGuiInGame->m_oidDialogSoundObject;
         CGameObjectArray* pObjectArray = m_pGameObjectArray;
         CGameObject* pGameObject = NULL;
+        pObjectArray->GetGameObject(oidSoundObject, &pGameObject);
 
-        CSWCObject* pObject = NULL;
-        if (pObjectArray->GetGameObject(oidSoundObject, &pGameObject) ==
-                CGameObjectArray::SUCCESS && pGameObject != NULL)
+        if (pGameObject != NULL && pGameObject->AsSWCObject() != NULL &&
+            m_pGuiInGame->m_pDialogSound != NULL)
         {
-            pObject = pGameObject->AsSWCObject();
-        }
+            if (g_bDebugDialogSound)
+            {
+                char szSound[17];
+                m_pGuiInGame->m_pDialogSound->GetFilePlaying().CopyToString(
+                    szSound);
+                EXOLOG("IsSoundPlayingInDialog: %s mode %d\n", szSound,
+                       g_pExoSound->GetSoundMode());
+            }
 
-        if (pObject != NULL && m_pGuiInGame->m_pDialogSound != NULL)
-        {
-            bPlaying = m_pGuiInGame->m_pDialogSound->IsPlaying();
+            return m_pGuiInGame->m_pDialogSound->IsPlaying();
         }
     }
     else
     {
+        if (g_bDebugDialogSound)
+        {
+            char szSound[17];
+            CExoStreamingSoundSource* pDialogSound =
+                m_pGuiInGame->m_pDialogSound;
+            if (pDialogSound != NULL)
+            {
+                pDialogSound->GetFilePlaying().CopyToString(szSound);
+            }
+            EXOLOG("IsSoundPlayingInDialog: %s mode %d\n", szSound,
+                   g_pExoSound->GetSoundMode());
+        }
+
         m_pGuiInGame->m_bDialogSoundQueried = 1;
         bPlaying = 1;
     }
@@ -6869,6 +6871,8 @@ void CClientExoAppInternal::SetPausedByCombat(int bPaused,
 #ifndef _XBOX
             m_bTogglePause = bPaused;
 #endif
+            if (nPauseType == PAUSE_REASON_CONTAINER)
+                return;
             if (bPaused == 1)
             {
                 g_pExoInput->PauseRumble();
@@ -6975,12 +6979,14 @@ int CClientExoAppInternal::GetCanSendDialog(
 {
     CGameObject* pObject =
         g_pAppManager->GetServerExoApp()->GetGameObject(oidListener);
-    if (pObject != NULL && pObject->AsSWSCreature() != NULL)
+    if (pObject != NULL && pObject->AsSWSCreature() != NULL &&
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_n102C == 0)
     {
         pObject->AsSWSCreature()->SetActivity(CSWSCreature::ACTIVITY_STEALTH, 0, 1);
     }
     pObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidSpeaker);
-    if (pObject != NULL && pObject->AsSWSCreature() != NULL)
+    if (pObject != NULL && pObject->AsSWSCreature() != NULL &&
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_n102C == 0)
     {
         pObject->AsSWSCreature()->SetActivity(CSWSCreature::ACTIVITY_STEALTH, 0, 1);
     }
@@ -7650,6 +7656,12 @@ void CClientExoAppInternal::AddDownloadedResources()  // PC 0x0063F6B0
 // PC 0x0063F9A0
 void CClientExoAppInternal::PlayerFlourishWeapons()
 {
+    CSWCCreature* pPlayerCreature = GetPlayerCreature();
+    if (pPlayerCreature->m_n464 > 0)
+    {
+        return;
+    }
+
     GetPlayerCreature()->ComputeWeaponOverlays(0, 1);
 
     CSWSCreature* pServerCreature = GetPlayerCreature()->GetServerCreature();
@@ -7657,12 +7669,16 @@ void CClientExoAppInternal::PlayerFlourishWeapons()
     if (pServerCreature != NULL && pServerCreature->GetDead() == 0 &&
         pServerCreature->GetDeadTemp() == 0)
     {
-        unsigned char nWieldClass =
-            pServerCreature->GetClientCreature()->GetAnimationBase()
-                ->m_nWieldClass;
-
-        if (nWieldClass < 2 || nWieldClass > 4)
+        if (pServerCreature->GetArea()->GetPlayerRestrictMode() != 0)
         {
+            return;
+        }
+
+        switch (pServerCreature->GetClientCreature()->GetAnimationBase()
+                    ->m_nWieldClass)
+        {
+        case CSWCAnimBase::WIELD_CLASS_1:
+        case CSWCAnimBase::WIELD_CLASS_UNARMED:
             return;
         }
 
@@ -7709,6 +7725,7 @@ void CClientExoAppInternal::PlayerFlourishWeapons()
         GetPlayerCreature()->InsertFireForgetAnimation(10158, 1500, 1.0f,
                                                        NULL, 0);
     }
+    pPlayerCreature->m_n464 = 1000;
 }
 
 #ifdef _XBOX
@@ -7787,11 +7804,11 @@ int CClientExoAppInternal::SaveOptions()  // PC 0x0063FC00
     return pClientOptions->SaveOptions();
 }
 // PC 0x0063FC20
-int CClientExoAppInternal::LoadOptions()
+int CClientExoAppInternal::LoadOptions(int bSetAntiAliasing)
 {
     CClientExoApp* pClientExoApp;
 
-    if (m_pClientOptions->LoadOptions() == 0)
+    if (m_pClientOptions->LoadOptions(bSetAntiAliasing) == 0)
     {
         m_pClientOptions->SetDefaultOptions();
     }
@@ -7896,21 +7913,29 @@ int CClientExoAppInternal::ChangeCharacterToNextLivingPartyMember(
 // PC 0x00643630
 void CClientExoAppInternal::UpdateLoadingScreenHint()
 {
-    if (g_pAppManager->GetServerExoApp() != NULL &&
-        g_pAppManager->GetServerExoApp()->m_pcExoAppInternal != NULL &&
-        m_pGuiLoadScreen != NULL && m_pGuiLoadScreen->m_nHintStrRef != 0)
+    if (m_pGuiLoadScreen != NULL && m_pGuiLoadScreen->m_nHintStrRef != 0)
     {
         unsigned long nTime = g_pExoBase->m_pExoTimers->GetLowResolutionTimer();
-        unsigned long nElapsed = nTime - m_nLoadScreenStartTime;
+        unsigned long nLastTime = m_nLoadScreenStartTime;
+        if (nLastTime == 0)
+            nLastTime = nTime;
         m_nLoadScreenStartTime = nTime;
-        nTime = m_nLoadScreenHintUpdateTimer;
-        m_nLoadScreenHintUpdateTimer = nTime + nElapsed;
+        m_nLoadScreenHintUpdateTimer += nTime - nLastTime;
         if (m_nLoadScreenHintUpdateTimer >= LOAD_SCREEN_HINT_INTERVAL)
         {
             m_nLoadScreenHintUpdateTimer = 0;
-            CExoString sModule("");
-            SetLoadScreenHint(GetNextLoadScreenHintSTRREF(sModule,
-                                                        LOAD_SCREEN_HINT_STORY));
+            if (g_pAppManager->m_pServerExoApp == NULL ||
+                g_pAppManager->m_pServerExoApp->GetModuleName().GetLength() <= 0)
+            {
+                SetLoadScreenHint(GetNextLoadScreenHintSTRREF(
+                    CExoString(""), LOAD_SCREEN_HINT_GAMEPLAY));
+            }
+            else
+            {
+                SetLoadScreenHint(GetNextLoadScreenHintSTRREF(
+                    g_pAppManager->m_pServerExoApp->GetModuleName(),
+                    LOAD_SCREEN_HINT_STORY));
+            }
         }
     }
 }
@@ -7918,17 +7943,24 @@ void CClientExoAppInternal::UpdateLoadingScreenHint()
 int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
     const CExoString& sModule, unsigned char nHintType)
 {
-    int nStrRef = 0;
-    int nHint = 0;
-    C2DA* pHints = new C2DA("loadscreenhints", 0);
-    if (pHints == NULL)
-        return 0;
-    if (!pHints->Load2DArray())
+    if (!sModule.IsEmpty())
     {
-        delete pHints;
-        return 0;
+        unsigned char nArea = sModule[0] - '0';
+        if (!sModule.CompareNoCase("950COR") && nArea < STORY_HINT_AREAS)
+        {
+            CExoIni cIni;
+            CExoString sValue;
+            cIni.ReadIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
+                              "UnlockedPlanetSongs");
+            int nUnlocked = sValue.AsINT();
+            nUnlocked |= 1 << nArea;
+            cIni.WriteIniEntry(CExoString(nUnlocked), ".\\swkotor2.ini",
+                               "Game Options", "UnlockedPlanetSongs");
+        }
     }
 
+    int nStrRef = 0;
+    int nHint = 0;
     int bStoryHint;
     switch (nHintType)
     {
@@ -7939,30 +7971,22 @@ int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
         bStoryHint = 1;
         break;
     default:
+        bStoryHint = 0;
         if (g_pAppManager->GetServerExoApp() != NULL &&
             g_pAppManager->GetServerExoApp()->m_pcExoAppInternal != NULL)
             bStoryHint = g_pAppManager->GetServerExoApp()->GetModulePreviouslyVisited(sModule);
         break;
     }
-    if (bStoryHint)
+    if (!bStoryHint)
     {
-        if (pHints->GetINTEntry(m_nStoryHint, "StoryHint", &nHint))
+        C2DA* pHints = new C2DA("loadscreenhints", 0);
+        if (pHints == NULL)
+            return 0;
+        if (!pHints->Load2DArray())
         {
-            nStrRef = nHint;
-            ++m_nStoryHint;
+            delete pHints;
+            return 0;
         }
-        else
-        {
-            m_nStoryHint = 0;
-            if (pHints->GetINTEntry(m_nStoryHint, "StoryHint", &nHint))
-            {
-                nStrRef = nHint;
-                ++m_nStoryHint;
-            }
-        }
-    }
-    else
-    {
         if (pHints->GetINTEntry(m_nGamePlayHint, "GamePlayHint", &nHint))
         {
             nStrRef = nHint;
@@ -7977,11 +8001,51 @@ int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
                 ++m_nGamePlayHint;
             }
         }
+        pHints->Unload2DArray();
+        delete pHints;
+        return nStrRef;
     }
-
-    pHints->Unload2DArray();
-    delete pHints;
-    return nStrRef;
+    else
+    {
+        C2DA* pStoryHints = new C2DA("loadstoryhints", 0);
+        if (pStoryHints != NULL)
+        {
+            if (pStoryHints->Load2DArray())
+            {
+                unsigned char nArea = sModule[0] - '0';
+                if (nArea <= STORY_HINT_AREAS)
+                {
+                    int nRows = pStoryHints->GetNumRows() + 1;
+                    CExoString sAreaNumber("AreaNumber");
+                    for (int nTry = 0; nTry <= nRows; ++nTry)
+                    {
+                        if (!pStoryHints->GetINTEntry(m_anStoryHint[nArea], sAreaNumber, &nHint))
+                        {
+                            m_anStoryHint[nArea] = 0;
+                        }
+                        else if (nHint != nArea)
+                        {
+                            ++m_anStoryHint[nArea];
+                        }
+                        else
+                        {
+                            unsigned char bFound =
+                                pStoryHints->GetINTEntry(m_anStoryHint[nArea], "StoryHint", &nHint) != 0;
+                            nStrRef = bFound ? nHint : 0;
+                            ++m_anStoryHint[nArea];
+                            break;
+                        }
+                    }
+                    pStoryHints->Unload2DArray();
+                    delete pStoryHints;
+                    return nStrRef;
+                }
+                pStoryHints->Unload2DArray();
+            }
+            delete pStoryHints;
+        }
+    }
+    return 0;
 }
 // PC 0x00640190
 void CClientExoAppInternal::SetMouseMode(unsigned char nMode)
@@ -8244,9 +8308,9 @@ void CClientExoAppInternal::RestoreMousePositionTo(int nX, int nY)  // PC 0x0064
 void CClientExoAppInternal::DoScreenShot()
 {
     WIN32_FIND_DATA cFindData;
-    for (int nScreenShot = 0; nScreenShot < 99999; nScreenShot++)
+    for (int nIndex = 0; nIndex < SCREENSHOT_MAX_INDEX; nIndex++)
     {
-        sprintf(m_szScreenShot, "K2_%05i.tga", nScreenShot);
+        sprintf(m_szScreenShot, "K2_%05i.tga", nIndex);
         HANDLE hFind = FindFirstFile(m_szScreenShot, &cFindData);
         if (hFind == INVALID_HANDLE_VALUE)
         {
@@ -8257,6 +8321,22 @@ void CClientExoAppInternal::DoScreenShot()
         FindClose(hFind);
     }
     m_bScreenShot = 1;
+}
+// PC 0x00640750
+void CClientExoAppInternal::UnloadSuperModelSet()
+{
+    switch (m_nSuperModelSet)
+    {
+    case 1:
+        g_pExoResMan->RemoveEncapsulatedResourceFile("SUPERMODELS:smseta");
+        break;
+    case 2:
+        g_pExoResMan->RemoveEncapsulatedResourceFile("SUPERMODELS:smsetb");
+        break;
+    case 3:
+        g_pExoResMan->RemoveEncapsulatedResourceFile("SUPERMODELS:smsetc");
+        break;
+    }
 }
 
 int CClientExoAppInternal::DontUseThisSetPlayerCreature(unsigned long oidObject)
@@ -8285,27 +8365,31 @@ int CClientExoAppInternal::DontUseThisSetPlayerCreature(unsigned long oidObject)
 }
 
 #ifndef _XBOX
+const unsigned long LEGAL_SCREEN_MIN_SHOW_TIME = 2000;
+
 void CClientExoAppInternal::BeginIntro()  // PC 0x0064EDA0
 {
     if (!m_bSkipIntro)
     {
         AddMovieToMovieQueue("leclogo", 1);
-        AddMovieToMovieQueue("biologo", 1);
-        AddMovieToMovieQueue("legal", 1);
+        AddMovieToMovieQueue("obsidianent", 1);
         PlayMovieQueue(1);
+
+        if (m_pLegalScreen == NULL)
+        {
+            m_pLegalScreen = new CSWGuiLegalScreen(m_pSWGuiManager,
+                                                   LEGAL_SCREEN_MIN_SHOW_TIME);
+        }
+
+        m_pSWGuiManager->AddPanel(m_pLegalScreen, 1, 1);
+        m_pLegalScreen->SetImage("legal");
+        m_pLegalScreen->SetImage("");
+        m_pSWGuiManager->RemovePanel(m_pLegalScreen);
+        delete m_pLegalScreen;
+        m_pLegalScreen = NULL;
     }
 }
 #endif
-
-const unsigned long LEGAL_SCREEN_MIN_SHOW_TIME = 3000;
-
-void ShowLegalScreen(CSWGuiManager* pGuiManager, const CResRef& cImage)
-{
-    CSWGuiLegalScreen* pLegalScreen = new CSWGuiLegalScreen(pGuiManager, LEGAL_SCREEN_MIN_SHOW_TIME);
-    pLegalScreen->SetImage(cImage);
-    pLegalScreen->SetImage(CResRef());
-    delete pLegalScreen;
-}
 
 void CClientExoAppInternal::ClearCameraInput()
 {
@@ -8360,7 +8444,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
 #else
             if (IsMoviePlaying() != 0 ||
                 g_bRenderWindowActive)
-                HideLoadScreen(1, 1);
+                HideLoadScreen(1, 1, 1);
             if (IsMoviePlaying() == 1)
                 WaitForMovie(1);
             else
@@ -8375,7 +8459,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
 #ifdef _XBOX
                 HideLoadScreen(1);
 #else
-                HideLoadScreen(1, 1);
+                HideLoadScreen(1, 1, 1);
 #endif
                 m_pCombatTimer->PauseWorldTimer();
                 m_pPauseTimer->PauseWorldTimer();
@@ -8972,7 +9056,7 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
     m_pGameObjectArray = new CGameObjectArray(1);
     g_pExoResMan = new CExoResMan;
 
-    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Display Options",
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Display Options",
                           "AllowWindowedMode"))
         g_bAllowWindowedMode = sValue.AsINT() != 0;
     g_pAurora = NewCAurora();
@@ -8985,15 +9069,15 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
     m_pClientAIMaster = new CClientAIMaster;
     m_pClientAIMaster->SetExoAppInternal(this);
 
-    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Game Options",
                           "EnableReleaseLogging"))
         g_pExoBase->m_pExoDebug->SetEnabled(sValue.AsINT() != 0);
-    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Game Options",
                           "ExtendedResourceTracking"))
         g_bExtendedResourceTracking = sValue.AsINT() > 0;
     else
         g_bExtendedResourceTracking = false;
-    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Game Options",
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Game Options",
                           "LegalDisplayMinimum"))
         nLegalDisplayMinimum = sValue.AsINT();
     g_pExoBase->m_pExoDebug->OpenLogFiles("swc");
@@ -9026,7 +9110,7 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
     else
     {
         g_pAppManager->m_pClientExoApp->GetClientOptions()->SetDefaults();
-        g_pAppManager->m_pClientExoApp->LoadOptions();
+        g_pAppManager->m_pClientExoApp->LoadOptions(1);
     }
     int nMissing = m_nXboxUnmapped468;
     if (nMissing == 1)
@@ -9039,9 +9123,9 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
             g_pExoResMan->AddResourceImageFile("RIMSXBOX:LEGAL");
         if (g_pExoResMan->Exists("LEGALDX", RESTYPE_RIM, (unsigned long*)NULL))
             g_pExoResMan->AddResourceImageFile("RIMSXBOX:LEGALDX");
-        m_pUnknown27C = new CSWGuiLegalScreen(m_pSWGuiManager, nLegalDisplayMinimum);
-        m_pSWGuiManager->AddPanel(m_pUnknown27C, 1, 1);
-        ((CSWGuiLegalScreen*)m_pUnknown27C)->SetImage("leclogo");
+        m_pLegalScreen = new CSWGuiLegalScreen(m_pSWGuiManager, nLegalDisplayMinimum);
+        m_pSWGuiManager->AddPanel(m_pLegalScreen, 1, 1);
+        ((CSWGuiLegalScreen*)m_pLegalScreen)->SetImage("leclogo");
     }
     InitializeMoviePlayer();
     sFileName = g_pExoResMan->CacheResource("HD0:DIALOG", RESTYPE_TLK);
@@ -9097,7 +9181,7 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
             g_pExoResMan->AddResourceImageFile(sFileName);
         }
         if (!bPlayLoadMusic)
-            ((CSWGuiLegalScreen*)m_pUnknown27C)->SetImage("biowarelogo");
+            ((CSWGuiLegalScreen*)m_pLegalScreen)->SetImage("biowarelogo");
         if (g_pExoResMan->Exists("GLOBALDX", RESTYPE_RIM, (unsigned long*)NULL))
         {
             sFileName = g_pExoResMan->CacheResource("RIMSXBOX:GLOBALDX", RESTYPE_RIM);
@@ -9136,7 +9220,7 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
             SetLoadBarProgress(60, 1);
             UpdateScreen(1.0f / 30.0f, 0, 0);
         }
-        int bTexturePack = cIni.ReadIniEntry(sValue, "d:\\swkotor.ini",
+        int bTexturePack = cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini",
                                             "Display Options", "TexturePack");
         int nTexturePack = sValue.AsINT();
         if (bTexturePack && nTexturePack < 4)
@@ -9146,19 +9230,19 @@ void CClientExoAppInternal::StartServices(int bPlayLoadMusic,
         AddPatchFiles(0);
 
         int bFullScreen;
-        if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Display Options", "FullScreen"))
+        if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Display Options", "FullScreen"))
             bFullScreen = sValue.AsINT();
         else
         {
             bFullScreen = 0;
             sValue.Format("%d", bFullScreen);
-            cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Display Options", "FullScreen");
+            cIni.WriteIniEntry(sValue, "d:\\swkotor2.ini", "Display Options", "FullScreen");
         }
-        if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Display Options", "Disable Movies"))
+        if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Display Options", "Disable Movies"))
             m_bMovieDisabled = sValue.AsINT();
         else
             m_bMovieDisabled = 0;
-        if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Display Options",
+        if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Display Options",
                               "Disable Intro Movies"))
             m_bSkipIntro = sValue.AsINT();
         else
@@ -9577,7 +9661,7 @@ void CClientExoAppInternal::InitializeClientOptions()
         cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Game Options", "Hide SecondStoryTiles");
     }
 
-    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "AntiAliasing Mode"))
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "AntiAliasing Mode"))
     {
         int nValue = sValue.AsINT();
         if (nValue >= 0 && nValue <= 4)
@@ -9588,17 +9672,17 @@ void CClientExoAppInternal::InitializeClientOptions()
         {
             m_pClientOptions->SetAntiAliasingMode(0);
             sValue.Format("%d", 0);
-            cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "AntiAliasing Mode");
+            cIni.WriteIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "AntiAliasing Mode");
         }
     }
     else
     {
         m_pClientOptions->SetAntiAliasingMode(0);
         sValue.Format("%d", 0);
-        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "AntiAliasing Mode");
+        cIni.WriteIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "AntiAliasing Mode");
     }
 
-    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "Enable VSync"))
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "Enable VSync"))
     {
         CClientOptions* pClientOptions = m_pClientOptions;
         pClientOptions->SetVSyncEnabled(sValue.AsINT() != 0);
@@ -9607,12 +9691,12 @@ void CClientExoAppInternal::InitializeClientOptions()
     {
         m_pClientOptions->SetVSyncEnabled(0);
         sValue.Format("%d", 0);
-        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "Enable VSync");
+        cIni.WriteIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "Enable VSync");
     }
 
     if (m_pClientOptions->GetShinyWaterSupported())
     {
-        if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "ShinyWater"))
+        if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "ShinyWater"))
         {
             CClientOptions* pClientOptions = m_pClientOptions;
             pClientOptions->SetShinyWater(sValue.AsINT() != 0);
@@ -9621,17 +9705,17 @@ void CClientExoAppInternal::InitializeClientOptions()
         {
             m_pClientOptions->SetShinyWater(0);
             sValue.Format("%d", 0);
-            cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "ShinyWater");
+            cIni.WriteIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "ShinyWater");
         }
     }
     else
     {
         m_pClientOptions->SetShinyWater(0);
         sValue.Format("%d", 0);
-        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "ShinyWater");
+        cIni.WriteIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "ShinyWater");
     }
 
-    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "NumShadowCastingLights"))
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "NumShadowCastingLights"))
     {
         int nValue = sValue.AsINT();
         if (nValue >= 1 && nValue <= 3)
@@ -9642,17 +9726,17 @@ void CClientExoAppInternal::InitializeClientOptions()
         {
             m_pClientOptions->SetNumShadowCastingLights(3);
             sValue.Format("%d", 3);
-            cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "NumShadowCastingLights");
+            cIni.WriteIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "NumShadowCastingLights");
         }
     }
     else
     {
         m_pClientOptions->SetNumShadowCastingLights(3);
         sValue.Format("%d", 3);
-        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "NumShadowCastingLights");
+        cIni.WriteIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "NumShadowCastingLights");
     }
 
-    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "EnableVisualEffectsHigh"))
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "EnableVisualEffectsHigh"))
     {
         CClientOptions* pClientOptions = m_pClientOptions;
         pClientOptions->SetVisualEffectsHigh((sValue.AsINT() != 0));
@@ -9661,10 +9745,10 @@ void CClientExoAppInternal::InitializeClientOptions()
     {
         m_pClientOptions->SetVisualEffectsHigh(1);
         sValue.Format("%d", 1);
-        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "EnableVisualEffectsHigh");
+        cIni.WriteIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "EnableVisualEffectsHigh");
     }
 
-    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "Enable Truform"))
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "Enable Truform"))
     {
         CClientOptions* pClientOptions = m_pClientOptions;
         pClientOptions->SetTruform(sValue.AsINT() != 0);
@@ -9673,10 +9757,10 @@ void CClientExoAppInternal::InitializeClientOptions()
     {
         m_pClientOptions->SetTruform(0);
         sValue.Format("%d", 0);
-        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "Enable Truform");
+        cIni.WriteIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "Enable Truform");
     }
 
-    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "Enable AnisotropicFiltering"))
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "Enable AnisotropicFiltering"))
     {
         CClientOptions* pClientOptions = m_pClientOptions;
         pClientOptions->SetAnisotropicFiltering(sValue.AsINT() != 0);
@@ -9685,10 +9769,10 @@ void CClientExoAppInternal::InitializeClientOptions()
     {
         m_pClientOptions->SetAnisotropicFiltering(0);
         sValue.Format("%d", 0);
-        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "Enable AnisotropicFiltering");
+        cIni.WriteIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "Enable AnisotropicFiltering");
     }
 
-    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "CreatureWindSetting"))
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "CreatureWindSetting"))
     {
         int nWind = sValue.AsINT();
         switch (nWind)
@@ -9702,7 +9786,7 @@ void CClientExoAppInternal::InitializeClientOptions()
         default:
             nWind = CClientOptions::WIND_PLAYER;
             sValue.Format("%d", CClientOptions::WIND_PLAYER);
-            cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "CreatureWindSetting");
+            cIni.WriteIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "CreatureWindSetting");
             break;
         }
         m_pClientOptions->SetWindMode(nWind);
@@ -9711,7 +9795,7 @@ void CClientExoAppInternal::InitializeClientOptions()
     {
         m_pClientOptions->SetWindMode(CClientOptions::WIND_PLAYER);
         sValue.Format("%d", CClientOptions::WIND_PLAYER);
-        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "CreatureWindSetting");
+        cIni.WriteIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "CreatureWindSetting");
     }
 
     if (!cIni.ReadIniEntry(sValue, "d:\\swplayer.ini", "Profile", "ShowMessageOfTheDay"))
@@ -9731,7 +9815,7 @@ void CClientExoAppInternal::InitializeClientOptions()
         cIni.WriteIniEntry(sValue, "d:\\swplayer.ini", "Control Options", "Enable ScreenEdgeCameraTurn");
     }
 
-    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "EnableGrass"))
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "EnableGrass"))
     {
         CClientOptions* pClientOptions = m_pClientOptions;
         pClientOptions->SetGrassEnabled(sValue.AsINT() != 0);
@@ -9740,10 +9824,10 @@ void CClientExoAppInternal::InitializeClientOptions()
     {
         m_pClientOptions->SetGrassEnabled(1);
         sValue.Format("%d", 1);
-        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "EnableGrass");
+        cIni.WriteIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "EnableGrass");
     }
 
-    if (cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "EnableFastGrass"))
+    if (cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "EnableFastGrass"))
     {
         CClientOptions* pClientOptions = m_pClientOptions;
         pClientOptions->SetFastGrass(sValue.AsINT() != 0);
@@ -9752,7 +9836,7 @@ void CClientExoAppInternal::InitializeClientOptions()
     {
         m_pClientOptions->SetFastGrass(1);
         sValue.Format("%d", 1);
-        cIni.WriteIniEntry(sValue, "d:\\swkotor.ini", "Video Options", "EnableFastGrass");
+        cIni.WriteIniEntry(sValue, "d:\\swkotor2.ini", "Video Options", "EnableFastGrass");
     }
 }
 
@@ -9776,7 +9860,7 @@ void CClientExoAppInternal::MountDownloadedContent(int bRemove, int bShowProgres
     XCONTENT_FIND_DATA cContentData;
     BYTE aSignature[2000];
 
-    int bLocal = cIni.ReadIniEntry(sValue, "d:\\swkotor.ini", "Game Options", "UseLocalContent");
+    int bLocal = cIni.ReadIniEntry(sValue, "d:\\swkotor2.ini", "Game Options", "UseLocalContent");
     if (bLocal && sValue.AsINT())
     {
         hFind = FindFirstFile("d:\\live*", &cFindData);
@@ -10028,32 +10112,32 @@ void CClientExoAppInternal::InitializeSoundOptions()
     unsigned char n2DVoices = XBOX_DEFAULT_SOUND_VOICES;
     unsigned char n3DVoices = XBOX_DEFAULT_SOUND_VOICES;
 
-    if (cIni.ReadIniEntry(s2DVoices, "d:\\swkotor.ini", "Sound Options", "Number 2D Voices"))
+    if (cIni.ReadIniEntry(s2DVoices, "d:\\swkotor2.ini", "Sound Options", "Number 2D Voices"))
         n2DVoices = s2DVoices.AsINT();
-    if (cIni.ReadIniEntry(s3DVoices, "d:\\swkotor.ini", "Sound Options", "Number 3D Voices"))
+    if (cIni.ReadIniEntry(s3DVoices, "d:\\swkotor2.ini", "Sound Options", "Number 3D Voices"))
         n3DVoices = s3DVoices.AsINT();
 
-    int bProvider = cIni.ReadIniEntry(sProvider, "d:\\swkotor.ini", "Sound Options", "3D Provider");
+    int bProvider = cIni.ReadIniEntry(sProvider, "d:\\swkotor2.ini", "Sound Options", "3D Provider");
     if (bProvider)
         g_pExoSound = new CExoSound(n2DVoices, n3DVoices, sProvider);
     else
         g_pExoSound = new CExoSound(n2DVoices, n3DVoices, "DirectSound3D Hardware Support");
 
-    if (cIni.ReadIniEntry(sVolume, "d:\\swkotor.ini", "Sound Options", "Voice Volume"))
+    if (cIni.ReadIniEntry(sVolume, "d:\\swkotor2.ini", "Sound Options", "Voice Volume"))
         g_pExoSound->SetDialogVolume(sVolume.AsFLOAT());
-    if (cIni.ReadIniEntry(sVolume, "d:\\swkotor.ini", "Sound Options", "Music Volume"))
+    if (cIni.ReadIniEntry(sVolume, "d:\\swkotor2.ini", "Sound Options", "Music Volume"))
         g_pExoSound->SetMusicVolume(sVolume.AsFLOAT(), 0);
-    if (cIni.ReadIniEntry(sVolume, "d:\\swkotor.ini", "Sound Options", "SoundFX Volume"))
+    if (cIni.ReadIniEntry(sVolume, "d:\\swkotor2.ini", "Sound Options", "SoundFX Volume"))
         g_pExoSound->SetSoundEffectVolume(sVolume.AsFLOAT());
-    if (cIni.ReadIniEntry(sSpeakerType, "d:\\swkotor.ini", "Sound Options", "Speaker Type"))
+    if (cIni.ReadIniEntry(sSpeakerType, "d:\\swkotor2.ini", "Sound Options", "Speaker Type"))
         g_pExoSound->SetSpeakerType(sSpeakerType.AsINT());
-    if (cIni.ReadIniEntry(sEnvironmentEffects, "d:\\swkotor.ini", "Sound Options",
+    if (cIni.ReadIniEntry(sEnvironmentEffects, "d:\\swkotor2.ini", "Sound Options",
                           "Environment Effects"))
         g_pExoSound->EnableEnvironmentEffects(sEnvironmentEffects.AsINT());
-    if (cIni.ReadIniEntry(sEnvironmentEffectsLevel, "d:\\swkotor.ini", "Sound Options",
+    if (cIni.ReadIniEntry(sEnvironmentEffectsLevel, "d:\\swkotor2.ini", "Sound Options",
                           "Environment Effects Level"))
         g_pExoSound->SetEnvironmentEffectLevel(sEnvironmentEffectsLevel.AsFLOAT());
-    if (cIni.ReadIniEntry(s2D3DBias, "d:\\swkotor.ini", "Sound Options", "2D3D Bias"))
+    if (cIni.ReadIniEntry(s2D3DBias, "d:\\swkotor2.ini", "Sound Options", "2D3D Bias"))
         g_pExoSound->Set2D3DBias(s2D3DBias.AsFLOAT());
 }
 

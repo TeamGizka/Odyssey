@@ -789,6 +789,18 @@ void CSWGuiInGameEquip::OnPanelAdded()
 #endif
 }
 #endif
+// PC 0x00715870
+void CSWGuiStoreItemEntry::SetColors(Vector vBorderColor, Vector vTextColor,
+                                     Vector vHiliteColor, Vector vUnused)
+{
+    m_cBorder.m_cParams.m_vColor = vBorderColor;
+    m_cIconBorder.m_cParams.m_vColor = vBorderColor;
+    m_cText.m_cParams.SetDefaultColor(vTextColor);
+    m_cCountText.m_cParams.SetDefaultColor(vTextColor);
+    m_cCountText.m_cParams.SetColor(vTextColor);
+    m_cHilite.m_cParams.m_vColor = vHiliteColor;
+    m_cIconHilite.m_cParams.m_vColor = vHiliteColor;
+}
 void CSWGuiStoreItemEntry::SetItem(unsigned long oidItem, int bUpdate, int nCharacter)  // PC 0x00715900
 {
     CResRef cIcon;

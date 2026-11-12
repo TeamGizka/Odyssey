@@ -499,7 +499,9 @@ public:
     {
 
         SCRIPT_DEATH = 6,
-        SCRIPT_TRACK_LOOP = 9
+        SCRIPT_TRACK_LOOP = 9,
+        SCRIPT_ACCELERATE = 10,
+        SCRIPT_BRAKE = 11
     };
 
     static const unsigned char DEATH_SOUND_VOLUME = 100;
@@ -516,6 +518,8 @@ public:
                              CResStruct& structScripts);
     virtual CResRef GetScriptName(int nScript);
     virtual void SetScriptName(int nScript, const CResRef& resRef);
+    void OnAccelerate(int bValue);
+    void OnBrake(int bValue);
     virtual CSWTrackFollower* AsFollower()  // PC 0x00698BD0
     {
         return this;

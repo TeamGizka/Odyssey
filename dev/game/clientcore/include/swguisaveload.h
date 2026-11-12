@@ -8,6 +8,7 @@ class CResGFF;
 class CResStruct;
 class CSWGuiControl;
 class CSWGuiManager;
+class CSWGuiSaveLoadEntry;
 class CSWGuiLabel_vtbl;
 class CSWGuiSaveGameEditBox_vtbl;
 class CSWGuiSaveLoadEntry;
@@ -17,13 +18,15 @@ extern int g_bEnableLiveContentIgnore;
 class CSWGuiSaveLoad : public CSWGuiPanel
 {
 public:
-    CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode, int bExitToMainMenu);
+    CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode, int bExitToMainMenu,
+                   int bEndGameMode = 0);
     virtual ~CSWGuiSaveLoad();
     virtual void HandleInputEvent(int nEvent, int nState);
 
     unsigned long m_bSaveMode : 1;
     unsigned long m_bExitToMainMenu : 1;
-    unsigned long m_nUnknown64Rest : 30;
+    unsigned long m_b68Bit2 : 1;
+    unsigned long m_nUnknown64Rest : 29;
     int m_nMaxSaveGame;
 
     CExoString m_sResourceDirectory;
@@ -55,10 +58,12 @@ public:
     CSWGuiButton m_btnFilter;
     CSWGuiLabel m_alblBar[4];
     CExoArrayList<CSWGuiSaveLoadEntry*> m_lEntries;
-    int m_n1B5C;
-    CExoArrayList<CExoString> m_l1B60;
+    int m_nCurrentFilter;
+    CExoArrayList<CExoString> m_lFilterNames;
     int m_n1B6C;
     int m_bEndGameMode;
+    void SetEndGameMode();
+    int LaunchMostRecentSave();
 #endif
 #ifdef _XBOX
     void UpdateFreeBlocks();
@@ -183,7 +188,10 @@ public:
 
     CResRef m_aPortraits[3];
 #ifndef _XBOX
-    unsigned char m_aUnmapped25C[0x14];
+    unsigned long m_aTimeStamp[2];
+    CExoString m_sPCName;
+    int m_nSaveNumber;
+    CExoString GetPCName() { return m_sPCName; }
 #endif
 
     CExoString GetGameDirectory();

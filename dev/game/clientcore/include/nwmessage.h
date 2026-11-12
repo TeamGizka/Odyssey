@@ -1624,6 +1624,8 @@ public:
     int SendPlayerToServerInput_UseObject(unsigned long oidObject);
     int SendPlayerToServerInput_ChangeDoorState(unsigned long oidDoor, unsigned short nState);
     int SendPlayerToServerInput_UnlockObject(unsigned long oidObject, unsigned long oidKey);
+    int SendPlayerToServerInput_SwitchWeapons(unsigned long oidCreature, int nWeaponSet);
+    int SendPlayerToServerInput_DoorSaber(unsigned long oidDoor);
     int SendPlayerToServerInput_Dialog(unsigned long oidObject);
     int SendPlayerToServerInventory_Equip(unsigned long oidItem, unsigned long nSlot);
 #ifdef _XBOX

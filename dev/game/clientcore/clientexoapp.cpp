@@ -4,8 +4,22 @@
 #include "clientexoappinternal.h"
 #include "nwcmodule.h"
 #include "serverexoapp.h"
+#include "swplayercontrol.h"
 
 extern const int CLIENTEXOAPP_UNREFERENCED_128 = 128;
+
+// PC 0x006384F0
+int CClientExoAppInternal::GetPlayerMovementInput()
+{
+    if (m_pPlayerControl != NULL &&
+        (m_pPlayerControl->GetLeftRight() != 0.0f ||
+         m_pPlayerControl->GetUpDown() != 0.0f))
+    {
+        return 1;
+    }
+
+    return 0;
+}
 
 #ifndef _XBOX
 void CClientExoApp::BeginIntro()  // PC 0x00638540
@@ -539,6 +553,11 @@ void CClientExoApp::StopLoadMusic()
 {
     m_pcExoAppInternal->StopLoadMusic();
 }
+// PC 0x00638C30
+CExoStreamingSoundSource* CClientExoApp::AquireLoadMusic(const CResRef& cResRef)
+{
+    return m_pcExoAppInternal->AquireLoadMusic(cResRef);
+}
 // PC 0x00638C40
 void CClientExoApp::SetStartMenuMusicOnMovieEnd(int bValue)
 {
@@ -610,9 +629,10 @@ void CClientExoApp::HideLoadScreen(int bFade)
     m_pcExoAppInternal->HideLoadScreen(bFade);
 }
 #else
-void CClientExoApp::HideLoadScreen(int bFade, int bUpdateScreen)  // PC 0x00638CF0
+void CClientExoApp::HideLoadScreen(int bFade, int bStopLoadMusic,
+                                   int bUpdateScreen)  // PC 0x00638CF0
 {
-    m_pcExoAppInternal->HideLoadScreen(bFade, bUpdateScreen);
+    m_pcExoAppInternal->HideLoadScreen(bFade, bStopLoadMusic, bUpdateScreen);
 }
 #endif
 // PC 0x00638D00
@@ -664,9 +684,10 @@ int CClientExoApp::PlayLoadModuleMovies()
     return m_pcExoAppInternal->PlayLoadModuleMovies();
 }
 // PC 0x00638D90
-int CClientExoApp::PlayMovie(const CExoString& sMovie, int& nA, int nB, int nC)
+int CClientExoApp::PlayMovie(const CExoString& sMovie, int& nA, int nB, int nC,
+                             int nSoundModeFlags)
 {
-    return m_pcExoAppInternal->PlayMovie(sMovie, nA, nB, nC);
+    return m_pcExoAppInternal->PlayMovie(sMovie, nA, nB, nC, nSoundModeFlags);
 }
 // PC 0x00638DA0
 int CClientExoApp::IsMoviePlaying()
@@ -848,6 +869,11 @@ int CClientExoApp::GetLastTarget()
 {
     return m_pcExoAppInternal->m_nLastTarget;
 }
+// PC 0x00638FF0
+void CClientExoApp::SetGuiGameSlow(int bSlow)
+{
+    m_pcExoAppInternal->m_nUnknown1B0 = bSlow;
+}
 
 void CClientExoApp::SetRunScript(const CExoString& sScript)
 {
@@ -1005,31 +1031,24 @@ void CClientExoApp::LookUpAndPerformRumbleWithCutOff(int nEntry,
     m_pcExoAppInternal->LookUpAndPerformRumbleWithCutOff(nEntry, nTable,
                                                          vPosition);
 }
-#include "swplayercontrol.h"
+#ifndef _XBOX
 // PC 0x006391D0
 int CClientExoApp::GetPlayerMovementInput()
 {
-    CClientExoAppInternal* pInternal = m_pcExoAppInternal;
-    if (pInternal->m_pPlayerControl != 0 &&
-        (pInternal->m_pPlayerControl->GetLeftRight() != 0.0f ||
-         pInternal->m_pPlayerControl->GetUpDown() != 0.0f))
-    {
-        return 1;
-    }
-    return 0;
+    return m_pcExoAppInternal->GetPlayerMovementInput();
 }
+#endif
 // PC 0x00639220
 int CClientExoApp::SaveOptions()
 {
     return m_pcExoAppInternal->SaveOptions();
 }
 
-#ifdef _XBOX
-int CClientExoApp::LoadOptions()
+// PC 0x00639230
+int CClientExoApp::LoadOptions(int bSetAntiAliasing)
 {
-    return m_pcExoAppInternal->LoadOptions();
+    return m_pcExoAppInternal->LoadOptions(bSetAntiAliasing);
 }
-#endif
 // PC 0x00639230
 int CClientExoApp::ChangeCharacterToNextLivingPartyMember(int nA, int nB,
                                                           unsigned char nC)
@@ -1120,14 +1139,14 @@ void CClientExoApp::SetGamePlayHint(unsigned char nHint)
     m_pcExoAppInternal->m_nGamePlayHint = nHint;
 }
 // PC 0x00639320
-unsigned char CClientExoApp::GetStoryHint()
+unsigned char CClientExoApp::GetStoryHint(unsigned char nArea)
 {
-    return m_pcExoAppInternal->m_nStoryHint;
+    return m_pcExoAppInternal->m_anStoryHint[nArea];
 }
 // PC 0x00639340
-void CClientExoApp::SetStoryHint(unsigned char nHint)
+void CClientExoApp::SetStoryHint(unsigned char nHint, unsigned char nArea)
 {
-    m_pcExoAppInternal->m_nStoryHint = nHint;
+    m_pcExoAppInternal->m_anStoryHint[nArea] = nHint;
 }
 // PC 0x00639360
 int CClientExoApp::GetNextLoadScreenHintSTRREF(const CExoString& sModule,
@@ -1226,6 +1245,7 @@ void CClientExoApp::StopCreditSequence()
     m_pcExoAppInternal->StopCreditSequence();
 }
 
+// PC 0x006394B0
 int CClientExoApp::GetCreditSequenceInProgress()
 {
     return m_pcExoAppInternal->m_bCreditSequenceInProgress;
@@ -1311,12 +1331,6 @@ int CClientExoApp::IsValidResolution(unsigned long nWidth,
 {
     return m_pcExoAppInternal->IsValidResolution(nWidth, nHeight);
 }
-#ifndef _XBOX
-int CClientExoApp::GetAllowHighMonitorFrequency()  // PC 0x006394B0
-{
-    return m_pcExoAppInternal->m_bAllowHighMonitorFrequency;
-}
-#endif
 void CClientExoApp::PlayerListChange(unsigned long, int, int)  // PC 0x006009E0
 {
 }

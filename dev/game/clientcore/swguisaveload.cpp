@@ -21,7 +21,29 @@
 static inline void SwguisaveloadTrace2();
 static inline void SwguisaveloadTrace1();
 #define SWGUISAVELOAD_TRACE() SwguisaveloadTrace1()
-// PC 0x00738D90
+#ifndef _XBOX
+// PC 0x0070C480
+int CSWGuiSaveLoad::LaunchMostRecentSave()
+{
+    CSWGuiSaveLoadEntry* pEntry = (CSWGuiSaveLoadEntry*)m_lbSaveGames.GetControl(0);
+    if (pEntry != 0)
+    {
+        CExoString sPCName = pEntry->GetPCName();
+        if (g_pAppManager->m_pServerExoApp != 0)
+        {
+            CExoString sPartyPCName =
+                g_pAppManager->m_pServerExoApp->GetPartyTable()->GetPCName();
+            if (sPartyPCName.CompareNoCase(sPCName))
+            {
+                LoadGame(pEntry);
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+#endif
+// PC 0x0070C570
 void CSWGuiSaveLoad::VerifyLoadGame(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected)
@@ -33,7 +55,11 @@ void CSWGuiSaveLoad::VerifyLoadGame(CSWGuiControl* pControl)
         if (pSelected != NULL)
 #endif
         {
+#ifndef _XBOX
+            if (m_bExitToMainMenu || m_bEndGameMode)
+#else
             if (m_bExitToMainMenu)
+#endif
             {
                 LoadGame(pSelected);
             }
@@ -150,10 +176,14 @@ inline void KOTOR_AUTOSAVE_PARAMS::LoadFromGFF(CResGFF* pGFF, CResStruct& cStruc
 }
 // PC 0x0070CD30
 CSWGuiSaveLoad::CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode,
-                             int bExitToMainMenu)
+                             int bExitToMainMenu, int bEndGameMode)
     : CSWGuiPanel(pManager)
 {
+#ifdef _XBOX
     StartLoadFromLayout("saveload");
+#else
+    StartLoadFromLayout("saveload_p");
+#endif
     InitControl(m_lblPanelName, "LBL_PANELNAME", 1);
     InitControl(m_lblScreenshot, "LBL_SCREENSHOT", 1);
 #ifdef _XBOX
@@ -177,6 +207,11 @@ CSWGuiSaveLoad::CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode,
     InitControl(m_btnSaveLoad, "BTN_SAVELOAD", 1);
     InitControl(m_btnBack, "BTN_BACK", 1);
     InitControl(m_btnDelete, "BTN_DELETE", 1);
+    InitControl(m_btnFilter, "BTN_FILTER", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
 #endif
     StopLoadFromLayout();
 #ifndef _XBOX
@@ -219,7 +254,7 @@ CSWGuiSaveLoad::CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode,
     m_nMaxSaveGame = 1;
 #else
     m_nMaxSaveGame = 2;
-    m_n1B5C = 0;
+    m_nCurrentFilter = 0;
 #endif
     if (m_bSaveMode)
     {
@@ -240,8 +275,9 @@ CSWGuiSaveLoad::CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode,
         m_lblPanelName.m_cText.m_cParams.SetStrRef(STRREF_LOAD_GAME);
     }
 #ifndef _XBOX
-    m_bEndGameMode = 0;
+    m_bEndGameMode = bEndGameMode;
     m_n1B6C = 0;
+    m_b68Bit2 = 0;
 #endif
     PopulateGameList();
     g_pExoResMan->AddResourceDirectory("TEMP:");
@@ -384,7 +420,7 @@ void CSWGuiSaveLoad::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x00736460
+// PC 0x0070A8C0
 CSWGuiSaveLoad::~CSWGuiSaveLoad()
 {
 #ifndef _XBOX
@@ -404,6 +440,11 @@ CSWGuiSaveLoad::~CSWGuiSaveLoad()
 #endif
 }
 #ifndef _XBOX
+// PC 0x007088D0
+void CSWGuiSaveLoad::SetEndGameMode()
+{
+    m_bEndGameMode = 1;
+}
 void CSWGuiSaveLoad::LoadPCAutoSave(const CExoString& sModuleName)  // PC 0x00708C50
 {
 
@@ -543,10 +584,12 @@ void CSWGuiSaveLoad::WriteGame(const CExoString& sSaveName)
     int nIndex = pEntry->m_nSaveGame - 1;
     sGameName.Format("Game%d", nIndex);
     int nSlot = pEntry->m_nSaveGame;
+    g_pAppManager->m_pServerExoApp->GetPartyTable()->m_n248 = nSlot;
 #ifdef _XBOX
-    g_pAppManager->GetClientExoApp()->SendSaveGameRequest(nSlot, sGameName);
+    g_pAppManager->GetClientExoApp()->SendSaveGameRequest(pEntry->m_nSaveGame, sGameName);
 #else
-    g_pAppManager->GetClientExoApp()->SendSaveGameRequest(nSlot, sGameName, sSaveName);
+    g_pAppManager->GetClientExoApp()->SendSaveGameRequest(pEntry->m_nSaveGame, sGameName,
+                                                          sSaveName);
 #endif
     m_bDeferredRemoval = 0;
     m_nExitState = EXITSTATE_DELETE;

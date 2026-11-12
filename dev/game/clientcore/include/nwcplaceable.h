@@ -23,7 +23,10 @@ class CSWCPlaceable : public CSWCObject
 {
 public:
 
-    enum { LOAD_MODEL_FLAGS_PLACEABLE = 0x0a };
+    enum { LOAD_MODEL_FLAGS_PLACEABLE = 0x0a,
+           STRREF_CANNOT_SET_MINES = 47861, STRREF_SET_MINE = 48180, TUTORIAL_SET_MINE = 2 };
+#ifndef _XBOX
+#endif
 
     CSWCPlaceable();
     virtual ~CSWCPlaceable();
@@ -58,13 +61,13 @@ public:
     void GetTargetActions(CSWCCreature* pCreature, int nMenu,
                           CExoArrayList<CSWGuiInterfaceAction>& lstActions);
     CSWSPlaceable* GetServerPlaceable();
-    void SetAppearance(unsigned char nAppearance);
+    void SetAppearance(int nAppearance);
     void AnimationUpdate();
     void HilightPlaceable(int bHilight);
 
     CExoString m_sName;
     CExoString m_sTag;
-    unsigned long m_nAppearance;
+    int m_nAppearance;
 
     int m_bPlotObject;
     int m_nUnknown114;
@@ -83,10 +86,15 @@ public:
     int m_nUnknown140;
     CExoString m_sModel;
     Gob* m_pLight;
-#ifdef _XBOX
 
     void MenuActionUseItem(unsigned long oidItem, CSWCCreature* pCreature);
+#ifndef _XBOX
+    void MenuActionSetPlaceableMine(unsigned long oidItem, CSWCCreature* pCreature);
+#endif
     void GetUseItems(CSWCCreature* pCreature, CExoArrayList<CSWGuiInterfaceAction>& lstActions);
+#ifndef _XBOX
+    void GetPlaceableInterfaceMines(CSWCCreature* pCreature,
+                                    CExoArrayList<CSWGuiInterfaceAction>& lstActions);
 #endif
 };
 

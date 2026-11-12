@@ -461,6 +461,7 @@ public:
     void UpdateControls();
     void AddMessageLabel();
     void FixMessageLabel();
+    void SetMessageColors(Vector vBorderColor, Vector vTextColor);
 #ifndef _XBOX
     void OnOkButtonPressed(CSWGuiControl* pControl); void OnCancelButtonPressed(CSWGuiControl* pControl);
 #else
@@ -575,7 +576,7 @@ public:
     unsigned long : 27;
 #ifndef _XBOX
     int m_nStackSize;
-    int m_n38;
+    unsigned char m_n38;
 #endif
 };
 #ifndef _XBOX

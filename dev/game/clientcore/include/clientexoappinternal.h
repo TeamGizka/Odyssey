@@ -41,6 +41,7 @@ class CAurObject;
 template <class T> class List;
 class CSWCWorldJournal;
 class CSWGuiControl;
+class CSWGuiLegalScreen;
 class CSWGuiLoadScreen;
 class CSWGuiMainMenu;
 class CSWGuiPanel;
@@ -232,7 +233,7 @@ public:
     enum { VIDEO_WINDOW_WIDTH_LIMIT = 639, VIDEO_WINDOW_HEIGHT_LIMIT = 479 };
 
     enum { PLAYBACK_RECORD_LENGTH = 80, PLAYBACK_COMMAND_LENGTH = 64,
-           SCREENSHOT_NAME_LENGTH = 16 };
+           SCREENSHOT_NAME_LENGTH = 16, SCREENSHOT_MAX_INDEX = 99999 };
     void PlayBackInputEvents();
 #ifdef _XBOX
     void HandleInputEvent(int nEvent, int nValue);
@@ -247,7 +248,7 @@ public:
         INPUT_EVENT_PREVIOUS_TARGET = 5, INPUT_EVENT_NEXT_TARGET = 6,
         INPUT_EVENT_NEXT_CHARACTER = 9, INPUT_EVENT_SOLO_MODE = 10,
         INPUT_EVENT_EXIT = 11, INPUT_EVENT_RESTORE_CAMERA = 15,
-        INPUT_EVENT_FIRE = 25,
+        INPUT_EVENT_FIRE = 25, INPUT_EVENT_FIRE_SECONDARY = 26,
         INPUT_EVENT_MOUSE_X = 65, INPUT_EVENT_MOUSE_Y = 66,
         INPUT_EVENT_MOUSE_LEFT = 67, INPUT_EVENT_MOUSE_RIGHT = 68,
         INPUT_EVENT_MOUSE_MIDDLE = 69,
@@ -275,10 +276,10 @@ public:
         INPUT_EVENT_CLEAR_ACTION_ALTERNATE = 251,
         INPUT_EVENT_RESERVED_252 = 252,
         INPUT_EVENT_PAUSE_ALTERNATE = 253, INPUT_EVENT_QUICK_LOAD = 263,
-        INPUT_EVENT_STEALTH = 264
+        INPUT_EVENT_STEALTH = 264, INPUT_EVENT_SWAP_WEAPONS = 265
     };
 
-    enum { PAUSE_REASON_INPUT = 4, AUTOPAUSE_NEW_TARGET = 8,
+    enum { PAUSE_REASON_CONTAINER = 3, PAUSE_REASON_INPUT = 4, AUTOPAUSE_NEW_TARGET = 8,
            TUTORIAL_PAUSE = 6, TUTORIAL_OPTIONS = 7,
            STRREF_PLAYER_DEAD = 42628, QUICK_LOAD_COOLDOWN = 1000 };
     enum
@@ -337,7 +338,12 @@ public:
         SPauseStateFlags m_Flags;
     };
 
-    CGameObject* GetGameObject(unsigned long oidObject);
+    CGameObject* GetGameObject(unsigned long oidObject)
+    {
+        CGameObject* pGameObject = NULL;
+        m_pGameObjectArray->GetGameObject(oidObject, &pGameObject);
+        return pGameObject;
+    }
 
     void DisableInput();
     void EnableInput();
@@ -354,7 +360,6 @@ public:
     int PerformRButtonUpAction();
     void SetMouseCursor(int nCursor, int nArg2, int nArg3);
     void RestoreMousePositionTo(int nX, int nY);
-    void DoScreenShot();
     void HideMouse(int nFlags);
     void ShowMouse(int nFlags);
     int DismissInGameGUI();
@@ -518,7 +523,7 @@ public:
         INPUT_JOYSTICK_SLIDER0 = 12, INPUT_JOYSTICK_SLIDER1 = 13,
         INPUT_JOYSTICK_BUTTON8 = 11,
         INPUT_MINIGAME_MOUSE_X = 23, INPUT_MINIGAME_MOUSE_Y = 24,
-        INPUT_MINIGAME_MOUSE_BUTTON0 = 25,
+        INPUT_MINIGAME_MOUSE_BUTTON0 = 25, INPUT_MINIGAME_MOUSE_BUTTON1 = 26,
         INPUT_MOUSE_X = 65, INPUT_MOUSE_Y = 66,
         INPUT_MOUSE_BUTTON0 = 67, INPUT_MOUSE_BUTTON1 = 68,
         INPUT_MOUSE_BUTTON2 = 69, INPUT_MOUSE_Z = 70,
@@ -545,6 +550,7 @@ public:
     enum { MENU_MUSIC_VOLUME = 127, MENU_MUSIC_PRIORITY_GROUP = 2 };
     void StopMenuMusic();
     void StopLoadMusic();
+    CExoStreamingSoundSource* AquireLoadMusic(const CResRef& cResRef);
     void StartLoadMusic();
     void SetStartMenuMusicOnMovieEnd(int bValue);
     unsigned char GetActivePauseState();
@@ -556,7 +562,7 @@ public:
 #ifdef _XBOX
     void HideLoadScreen(int bFade);
 #else
-    void HideLoadScreen(int bFade, int bUpdateScreen);
+    void HideLoadScreen(int bFade, int bStopLoadMusic, int bUpdateScreen);
 #endif
     int GetLoadScreenVisible();
     CExoString& SetPlayerCharacterName(const CExoString& sName);
@@ -566,7 +572,12 @@ public:
     void SetAreaNotReadyToDisplay(int bNotReady);
     CSWMiniGameObjectArray* GetMGOArray();
     int PlayLoadModuleMovies();
+#ifdef _XBOX
     int PlayMovie(const CExoString& sMovie, int& nA, int nB, int nC);
+#else
+    int PlayMovie(const CExoString& sMovie, int& nA, int nB, int nC,
+                  int nSoundModeFlags);
+#endif
     void StallServerCode();
 #ifdef _XBOX
     int WaitForMovie();
@@ -577,12 +588,14 @@ public:
     int IsOnExclusionList(unsigned long oidObject);
     void InitializeMoviePlayer();
     void ShutDownMoviePlayer();
+    void UnloadSuperModelSet();
     int IsMoviePlaying();
     int AddMovieToExoArrayList(const CExoString& sMovie,
                                CExoArrayList<CExoString>& lstMovies);
     int PlayMoviesInExoArrayList(CExoArrayList<CExoString>& lstMovies,
                                  int& nResult, int nWait, int nMode,
-                                 CExoArrayList<int>* lstSkippable);
+                                 CExoArrayList<int>* lstSkippable,
+                                 int nSoundModeFlags);
     int AddMoveToModuleMovie(const CExoString& sMovie);
     int GetMoveToModuleMovies();
     void IndicateObject(CSWCObject* pObject, int nFlags);
@@ -679,7 +692,7 @@ public:
     void LookUpAndPerformRumbleWithCutOff(int nEntry, unsigned char nTable,
                                           const Vector& vPosition);
     int SaveOptions();
-    int LoadOptions();
+    int LoadOptions(int bSetAntiAliasing);
     void DoQuickSave();
     int ChangeCharacterToNextLivingPartyMember(int nA, int nB,
                                                unsigned char nC);
@@ -712,7 +725,7 @@ public:
     int GetLiveContentName(int nIndex);
     void SetLoadScreenHintUpdateTimer(unsigned long nTimer);
 
-    enum { LOAD_SCREEN_HINT_INTERVAL = 10000 };
+    enum { LOAD_SCREEN_HINT_INTERVAL = 10000, STORY_HINT_AREAS = 10 };
     int GetGamePlayHint();
     void SetGamePlayHint(unsigned char nHint);
     int GetStoryHint();
@@ -744,6 +757,7 @@ public:
     int GetCreditSequenceInProgress();
     void EnableMouseAtEndOfLoadModuleMovie();
     void SetEvilEndingHackInProgress(int bInProgress);
+    void DoScreenShot();
     int AddMovieToMovieQueue(const CExoString& sMovie, int nFlags);
     int PlayMovieQueue(int nFlags);
     int GetInFreeLook();
@@ -919,7 +933,7 @@ public:
     CSWParty* m_pSWParty;
     CSWGuiManager* m_pSWGuiManager;
     CSWGuiLoadScreen* m_pGuiLoadScreen;
-    CSWGuiPanel* m_pUnknown27C;
+    CSWGuiLegalScreen* m_pLegalScreen;
     CSWGuiMainMenu* m_pMainMenu;
     CSWGuiPanel* m_pStartupPanel;
     int m_nAreaNotReadyToDisplay;
@@ -1026,8 +1040,8 @@ public:
     unsigned long m_nLoadScreenHintUpdateTimer;
     unsigned long m_nLoadScreenStartTime;
     unsigned char m_nGamePlayHint;
-    unsigned char m_nStoryHint;
-    unsigned char m_aUnmapped492[10];
+    unsigned char m_anStoryHint[STORY_HINT_AREAS];
+    unsigned char m_aUnmapped49B[0x1];
     int m_bMainMenuTransition;
     unsigned char m_nModuleResourcesLoaded;
     unsigned char m_aUnmapped499[3];
@@ -1042,8 +1056,7 @@ public:
     int m_nSoundPausedByCombat;
 
     CExoArrayList<CSWGuiInterfaceAction> m_aDefaultActions;
-    unsigned char m_n4D8;
-    unsigned char m_bAllowHighMonitorFrequency;
+    unsigned char m_nSuperModelSet;
 #else
 
     int m_nXboxUnmapped468;

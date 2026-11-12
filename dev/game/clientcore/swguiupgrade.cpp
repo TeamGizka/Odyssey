@@ -20,6 +20,12 @@
 #include "aurscene.h"
 #include "nwscript.h"
 #include "swmain.h"
+#include "nwsstore.h"
+#include "swguiingameequip.h"
+#include "nwccreature.h"
+#include "nwtlktable.h"
+#include "nwskill.h"
+#include "swparty.h"
 // PC 0x007292B0
 void CSWGuiUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
 {
@@ -138,7 +144,7 @@ CSWUpgradeItemEntry* CSWGuiUpgrade::CreateItemEntry(unsigned long oidItem, int n
     CSWGuiButton* pProto = (CSWGuiButton*)m_lbItems.m_pProtoItem;
     CSWUpgradeItemEntry* pEntry = new CSWUpgradeItemEntry;
 
-    pEntry->Initialize(pProto->m_cText, pProto->m_cBorder, pProto->m_cHilite, nWidth);
+    pEntry->Initialize(pProto->m_cText, pProto->m_cBorder, pProto->m_cHilite, nWidth, nUpgradeIndex);
     pEntry->AddEvent(CSWGuiControl::EVENT_ENTER, this, (CSWGuiHandler)&CSWGuiUpgrade::OnControlEntered);
     pEntry->AddEvent(CSWGuiControl::EVENT_SELECT, this, (CSWGuiHandler)&CSWGuiUpgrade::OnUpgradeSelected);
     pEntry->AddEvent(CSWGuiControl::EVENT_CONFIRM, this, (CSWGuiHandler)&CSWGuiUpgrade::OnUpgradeSelected);
@@ -234,9 +240,13 @@ void CSWUpgradeItemEntry::SetExtent(const CSWGuiExtent& cExtent)
         m_CSWGuiBorder_2C0.SetExtent(cIconExtent);
 
         CSWGuiExtent cCountExtent = cIconExtent;
-        cCountExtent.m_nWidth = m_CSWGuiText_334.m_cParams.m_sText.GetLength() > 2 ? 42 : 21;
-        cCountExtent.m_nHeight = ENTRY_HEIGHT;
+        if (m_CSWGuiText_334.m_cParams.m_sText.GetLength() > 2)
+            cCountExtent.m_nWidth = 42;
+        else
+            cCountExtent.m_nWidth = 21;
         cCountExtent.m_nLeft += ENTRY_HEIGHT - cCountExtent.m_nWidth;
+        cCountExtent.m_nTop += ENTRY_HEIGHT - COUNT_HEIGHT;
+        cCountExtent.m_nHeight = COUNT_HEIGHT;
         m_CSWGuiText_334.SetExtent(cCountExtent);
 
         cIconExtent.m_nLeft += ENTRY_HEIGHT;
@@ -266,33 +276,45 @@ void CSWUpgradeItemEntry::Draw(float fElapsed)
 }
 // PC 0x007256B0
 void CSWUpgradeItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
-                                     CSWGuiBorder& cHilite, int nWidth)
+                                     CSWGuiBorder& cHilite, int nWidth, int bSlotEntry)
 {
     m_cText.m_cParams = cText.m_cParams;
     CSWGuiBorderParams* pParams = &m_cBorder.m_cParams;
     *pParams = cBorder.m_cParams;
-    pParams->m_vColor = CGuiInGame::COLOR_BLUE;
+    if (!bSlotEntry)
+        pParams->m_vColor = CGuiInGame::COLOR_UPGRADE_BORDER;
+    else
+        pParams->m_vColor = CGuiInGame::COLOR_DARK_TAN;
     pParams = &m_cHilite.m_cParams;
     *pParams = cHilite.m_cParams;
-    pParams->m_vColor = CGuiInGame::COLOR_YELLOW;
+    if (!bSlotEntry)
+        pParams->m_vColor = CGuiInGame::COLOR_UPGRADE_TEXT;
+    else
+        pParams->m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
     pParams->SetPulsingAlpha(1, 1, 0);
     pParams = &m_CSWGuiBorder_1D8.m_cParams;
     {
 #ifndef _XBOX
-        CResRef cFill("lbl_hex_3"); CResRef cEdge(""); CResRef cCorner(""); *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+        CResRef cFill("UIBIT_EQP_ITM1"); CResRef cEdge(""); CResRef cCorner(""); *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
 #else
-        *pParams = CSWGuiBorderParams("", "", "lbl_hex_3", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+        *pParams = CSWGuiBorderParams("", "", "UIBIT_EQP_ITM1", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
 #endif
-        pParams->m_vColor = CGuiInGame::COLOR_BLUE;
+        if (!bSlotEntry)
+            pParams->m_vColor = CGuiInGame::COLOR_UPGRADE_BORDER;
+        else
+            pParams->m_vColor = CGuiInGame::COLOR_DARK_TAN;
     }
     pParams = &m_CSWGuiBorder_24C.m_cParams;
     {
 #ifndef _XBOX
-        CResRef cFill("lbl_hex_3"); CResRef cEdge(""); CResRef cCorner(""); *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+        CResRef cFill("UIBIT_EQP_ITM1"); CResRef cEdge(""); CResRef cCorner(""); *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
 #else
-        *pParams = CSWGuiBorderParams("", "", "lbl_hex_3", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+        *pParams = CSWGuiBorderParams("", "", "UIBIT_EQP_ITM1", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
 #endif
-        pParams->m_vColor = CGuiInGame::COLOR_YELLOW;
+        if (!bSlotEntry)
+            pParams->m_vColor = CGuiInGame::COLOR_UPGRADE_TEXT;
+        else
+            pParams->m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
         pParams->SetPulsingAlpha(1, 0, 1);
     }
     SetExtent(CSWGuiExtent(0, 0, nWidth, ENTRY_HEIGHT));
@@ -337,33 +359,11 @@ CSWUpgradeItemEntry::CSWUpgradeItemEntry()
     m_nUpgradeIndex = -1;
 }
 // PC 0x00733EB0
-CSWGuiUpgradeSelection::CSWGuiUpgradeSelection(CSWGuiManager* pManager)
+CSWGuiUpgradeSelection::CSWGuiUpgradeSelection(CSWGuiManager* pManager, unsigned long oidCharacter)
     : CSWGuiPanel(pManager)
 {
-
-#ifdef _XBOX
-    StartLoadFromLayout("upgradesel");
-#else
-    {
-        CResRef cLayout("upgradesel");
-        StartLoadFromLayout(cLayout);
-    }
-#endif
+    StartLoadFromLayout("upgradesel_p");
     InitControl(m_lblTitle, "LBL_TITLE", 1);
-#ifdef _XBOX
-    InitControl(m_aTypeButtons[0], "BTN_LIGHTSABER", 1);
-    InitControl(m_aTypeButtons[1], "BTN_RANGED", 1);
-    InitControl(m_aTypeButtons[2], "BTN_MELEE", 1);
-    InitControl(m_aTypeButtons[3], "BTN_ARMOR", 1);
-    InitControl(m_aTypeLabels[0], "LBL_LSABER", 1);
-    InitControl(m_aTypeLabels[1], "LBL_RANGED", 1);
-    InitControl(m_aTypeLabels[2], "LBL_MELEE", 1);
-    InitControl(m_aTypeLabels[3], "LBL_ARMOR", 1);
-    InitControl(m_lblA, "LBL_A", 1);
-    InitControl(m_lblB, "LBL_B", 1);
-    InitControl(m_lblBack, "LBL_BACK", 1);
-    InitControl(m_lblUpgradeitems, "LBL_UPGRADEITEMS", 1);
-#else
     InitControl(m_lblTitle2, "LBL_TITLE2", 1);
     InitControl(m_aTypeButtons[0], "BTN_ALL", 1);
     InitControl(m_aTypeButtons[1], "BTN_LIGHTSABER", 1);
@@ -375,54 +375,38 @@ CSWGuiUpgradeSelection::CSWGuiUpgradeSelection(CSWGuiManager* pManager)
     InitControl(m_btnBack, "BTN_BACK", 1);
     InitControl(m_btnUpgradeitems, "BTN_UPGRADEITEMS", 1);
     InitControl(m_btnCreateitems, "BTN_CREATEITEMS", 1);
-#endif
     StopLoadFromLayout();
-#ifndef _XBOX
+    m_lbUpgradelist.SetSelectOnLeftClick(1);
     m_lblDescription.Initialize(m_lbDescription.m_pProtoItem->m_cExtent,
                                 (CSWGuiLabel*)m_lbDescription.m_pProtoItem, 1.0f);
-#endif
 
+    m_oidCharacter = oidCharacter;
     m_oidItem = OBJECT_INVALID;
     m_pItemSelect = new CSWGuiUpgradeItemSelect(pManager);
     m_pItemSelect->m_pSelectionPanel = this;
-#ifndef _XBOX
-    m_pCreateItems = 0;
+    m_pCreateItems = new CSWGuiCreateItem(pManager, oidCharacter);
+    m_pCreateItems->m_pUpgradeSelection = this;
     for (int i = 0; i < 5; i++)
     {
-        m_aTypeButtons[i].AddEvent(GUIEVENT_ACTIVATE, this,
-                                  (CSWGuiHandler)&CSWGuiUpgradeSelection::OnTypeSelected);
         m_aTypeButtons[i].m_nIndex = i;
+        m_aTypeButtons[i].AddEvent(GUIEVENT_ACTIVATE, this,
+                                   (CSWGuiHandler)&CSWGuiUpgradeSelection::OnFilterPicked);
         m_aTypeButtons[i].SetFocusable(0);
     }
-#else
-    for (int i = 0; i < 4; i++)
-    {
-        m_aTypeButtons[i].AddEvent(GUIEVENT_ACTIVATE, this,
-                                  (CSWGuiHandler)&CSWGuiUpgradeSelection::OnTypeSelected);
-        m_aTypeButtons[i].AddEvent(GUIEVENT_ACCEPT, this,
-                                  (CSWGuiHandler)&CSWGuiUpgradeSelection::OnTypeSelected);
-        m_aTypeButtons[i].AddEvent(GUIEVENT_MOUSE_ENTER, this,
-                                  (CSWGuiHandler)&CSWGuiUpgradeSelection::OnEnter);
-        m_aTypeButtons[i].m_nIndex = i;
-        m_aTypeButtons[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
-        m_aTypeButtons[i].m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
-        m_aTypeButtons[i].m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
-        m_aTypeLabels[i].SetEnabledFlag(0);
-    }
-#endif
-#ifndef _XBOX
     m_btnBack.SetFocusable(0);
     m_btnBack.AddEvent(GUIEVENT_ACTIVATE, this,
-                      (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
+                       (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
     m_btnUpgradeitems.SetFocusable(0);
     m_btnUpgradeitems.AddEvent(GUIEVENT_ACTIVATE, this,
-                              (CSWGuiHandler)&CSWGuiUpgradeSelection::OnTypeSelected);
+                               (CSWGuiHandler)&CSWGuiUpgradeSelection::OnItemSelected);
     m_btnCreateitems.SetFocusable(0);
+    m_btnCreateitems.AddEvent(GUIEVENT_ACTIVATE, this,
+                              (CSWGuiHandler)&CSWGuiUpgradeSelection::OnCreateItems);
     m_pSelectedType = 0;
-    m_n18BC = 0;
-    m_n18C8 = 0;
-    m_n18CC = 0;
-#endif
+    m_nFilter = 0;
+    UpdateFilterButtons();
+    m_bDisableItemCreation = 0;
+    m_bDisableUpgrade = 0;
 }
 // PC 0x00731CF0
 CSWGuiUpgradeItemSelect::CSWGuiUpgradeItemSelect(CSWGuiManager* pManager)
@@ -495,7 +479,7 @@ void CSWGuiUpgradeItemSelect::BuildUpgradeList()
         if (pParty->GetIsNPCAvailable(i) && pParty->GetNPCSelectability(i))
         {
             pCreature = pServer->GetCreatureByGameObjectID(
-                pParty->GetNPCObject(i, 0, 1));
+                pParty->GetPUPObject(i, 0, 1));
             if (pCreature != 0)
                 BuildItemList(pCreature, aItems, pTable);
         }
@@ -507,7 +491,7 @@ void CSWGuiUpgradeItemSelect::BuildUpgradeList()
         {
             CSWUpgradeItemEntry* pEntry = new CSWUpgradeItemEntry;
             pEntry->Initialize(pProto->m_cText, pProto->m_cBorder,
-                               pProto->m_cHilite, nWidth);
+                               pProto->m_cHilite, nWidth, 0);
             pEntry->AddEvent(CSWGuiControl::EVENT_ENTER, this,
                              (CSWGuiHandler)&CSWGuiUpgradeItemSelect::OnControlEntered);
             pEntry->AddEvent(CSWGuiControl::EVENT_SELECT, this,
@@ -626,6 +610,14 @@ void CSWUpgradeItemEntry::SetItem(unsigned long oidItem, int bShowItemSuffix,
                 sName = sName + " (" +
                         g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_EQUIPPED) +
                         ")";
+            int nTag = sName.Find('<', 0);
+            int nToken = sName.Find('{', 0);
+            if (nTag != -1 || nToken != -1)
+            {
+                CSWCCreature* pPlayerCharacter =
+                    g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter();
+                g_pSWTlkTable->ParseStr(sName, (CGameObject*)pPlayerCharacter, 0, 1);
+            }
             m_cText.m_cParams.SetText(sName);
             CExoString sCount;
             int nCount = pItem->m_nStackSize;
@@ -633,43 +625,45 @@ void CSWUpgradeItemEntry::SetItem(unsigned long oidItem, int bShowItemSuffix,
             {
                 if (nCount >= 100)
                 {
-                    m_CSWGuiBorder_1D8.m_cParams.SetFillImage("lbl_hex_7", 0);
-                    m_CSWGuiBorder_24C.m_cParams.SetFillImage("lbl_hex_7", 0);
+                    m_CSWGuiBorder_1D8.m_cParams.SetFillImage("UIBIT_EQP_ITM3", 0);
+                    m_CSWGuiBorder_24C.m_cParams.SetFillImage("UIBIT_EQP_ITM3", 0);
                 }
                 else
                 {
-                    m_CSWGuiBorder_1D8.m_cParams.SetFillImage("lbl_hex_6", 0);
-                    m_CSWGuiBorder_24C.m_cParams.SetFillImage("lbl_hex_6", 0);
+                    m_CSWGuiBorder_1D8.m_cParams.SetFillImage("UIBIT_EQP_ITM2", 0);
+                    m_CSWGuiBorder_24C.m_cParams.SetFillImage("UIBIT_EQP_ITM2", 0);
                 }
                 sCount.Format("%d", nCount);
             }
             else
             {
-                m_CSWGuiBorder_1D8.m_cParams.SetFillImage("lbl_hex_3", 0);
-                m_CSWGuiBorder_24C.m_cParams.SetFillImage("lbl_hex_3", 0);
+                m_CSWGuiBorder_1D8.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
+                m_CSWGuiBorder_24C.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
             }
             m_CSWGuiText_334.m_cParams = CSWGuiTextParams(sCount, "fnt_d16x16",
-                CGuiInGame::COLOR_BLUE, CSWGuiTextParams::ALIGNMENT_ITEM_COUNT, 1.0f);
+                CGuiInGame::COLOR_UPGRADE_TEXT, CSWGuiTextParams::ALIGNMENT_ITEM_COUNT, 1.0f);
+            m_CSWGuiText_334.m_cParams.SetText(sCount);
             cIcon = pItem->GetIcon();
         }
         else
         {
-            m_CSWGuiBorder_1D8.m_cParams.SetFillImage("lbl_hex_3", 0);
-            m_CSWGuiBorder_24C.m_cParams.SetFillImage("lbl_hex_3", 0);
+            m_CSWGuiBorder_1D8.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
+            m_CSWGuiBorder_24C.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
             m_cText.m_cParams.SetText(g_pAppManager->GetClientExoApp()->GetGUIString(CClientExoApp::GUI_STRREF_NONE));
             m_CSWGuiText_334.m_cParams = CSWGuiTextParams(CExoString(), "fnt_d16x16",
-                CGuiInGame::COLOR_BLUE, CSWGuiTextParams::ALIGNMENT_ITEM_COUNT, 1.0f);
-            cIcon = "inone";
+                CGuiInGame::COLOR_UPGRADE_TEXT, CSWGuiTextParams::ALIGNMENT_ITEM_COUNT, 1.0f);
+            m_CSWGuiText_334.m_cParams.SetText("");
+            cIcon = "inone_blue";
         }
     }
     else
     {
-        m_CSWGuiBorder_1D8.m_cParams.SetFillImage("lbl_hex_3", 0);
-        m_CSWGuiBorder_24C.m_cParams.SetFillImage("lbl_hex_3", 0);
+        m_CSWGuiBorder_1D8.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
+        m_CSWGuiBorder_24C.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
         m_cText.m_cParams.SetText(g_pAppManager->GetClientExoApp()->GetGUIString(CClientExoApp::GUI_STRREF_NONE));
         m_CSWGuiText_334.m_cParams = CSWGuiTextParams(CExoString(), "fnt_d16x16",
             CGuiInGame::COLOR_BLUE, CSWGuiTextParams::ALIGNMENT_ITEM_COUNT, 1.0f);
-        cIcon = "inone";
+        cIcon = "inone_blue";
     }
     CSWGuiBorderParams* pParams = &m_CSWGuiBorder_2C0.m_cParams;
     pParams->m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
@@ -691,114 +685,186 @@ CSWGuiUpgradeSelection::~CSWGuiUpgradeSelection()
 // PC 0x0072E0B0
 void CSWGuiUpgradeSelection::OnPanelAdded()
 {
-
     C2DA* pTable = new C2DA("upgrade", 0);
     pTable->Load2DArray();
-    if (m_oidItem != OBJECT_INVALID)
+    m_pCreateItems->SetCreateTable(m_sOverride2DA);
+    if (m_bDisableUpgrade)
     {
-        CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
-        CSWSItem* pItem = pServer->GetItemByGameObjectID(m_oidItem);
+        m_pManager->AddPanel(m_pCreateItems, CSWGuiManager::PANEL_MODE_MODAL, 1);
+    }
+    CSWSItem* pItem;
+    if (m_oidItem != OBJECT_INVALID &&
+        (pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(m_oidItem)) != 0)
+    {
+        int nType = pItem->GetUpgradableType(pTable);
+        m_pItemSelect->m_nUpgradeType = nType;
+        m_pItemSelect->m_pPresetItem = pItem;
+        m_pItemSelect->m_nC84 = 1;
+        m_pManager->AddPanel(m_pItemSelect, CSWGuiManager::PANEL_MODE_MODAL, 1);
+    }
+    else
+    {
+        PopulateItemList();
+    }
+    delete pTable;
+    if (m_bDisableItemCreation)
+    {
+        m_btnCreateitems.SetEnabledFlag(0);
+    }
+    CSWGuiPanel::OnPanelAdded();
+}
+// PC 0x0072E200
+void CSWGuiUpgradeSelection::OnFilterPicked(CSWGuiControl* pControl)
+{
+    m_nFilter = pControl->AsButton()->m_nIndex;
+    UpdateFilterButtons();
+    PopulateItemList();
+}
+// PC 0x00728F70
+void CSWGuiUpgradeSelection::GetPlayerItems(CSWSCreature* pCreature,
+                                            CExoArrayList<CSWGuiControl*>& aItems,
+                                            C2DA* pTable)
+{
+    int nWidth = m_lbUpgradelist.m_cItemExtent.m_nWidth -
+                 2 * m_lbUpgradelist.m_nPadding;
+    CSWGuiButton* pProto = (CSWGuiButton*)m_lbUpgradelist.m_pProtoItem;
+
+    for (int i = 0; i < CSWInventory::TOTAL_SLOT_COUNT; i++)
+    {
+        unsigned long nSlot = 1 << i;
+        if (nSlot == 0x4000 || nSlot == 0x8000 || nSlot == 0x10000 || nSlot == 0x20000)
+        {
+            continue;
+        }
+        CSWSItem* pItem = pCreature->m_pInventory->GetItemInSlot(nSlot);
         if (pItem != 0)
         {
             int nType = pItem->GetUpgradableType(pTable);
-            m_pItemSelect->m_nUpgradeType = nType;
-            m_pItemSelect->m_pPresetItem = pItem;
-            m_pManager->AddPanel(m_pItemSelect, CSWGuiManager::PANEL_MODE_MODAL, 1);
-            goto Exit;
+            if (nType > 0 && (m_nFilter == 0 || nType == m_nFilter))
+            {
+                CSWUpgradeItemEntry* pEntry = new CSWUpgradeItemEntry;
+                pEntry->Initialize(pProto->m_cText, pProto->m_cBorder, pProto->m_cHilite, nWidth, 0);
+                pEntry->AddEvent(CSWGuiControl::EVENT_ENTER, this,
+                                 (CSWGuiHandler)&CSWGuiUpgradeSelection::OnItemEntered);
+                pEntry->AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                                 (CSWGuiHandler)&CSWGuiUpgradeSelection::OnItemSelected);
+                pEntry->AddEvent(CSWGuiControl::EVENT_CONFIRM, this,
+                                 (CSWGuiHandler)&CSWGuiUpgradeSelection::OnItemSelected);
+                pEntry->SetItem(pItem->m_nId, 1, pCreature->m_nId, nSlot);
+                aItems.Add(pEntry);
+            }
         }
     }
-    {
-        CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
-        CSWPartyTable* pParty = pServer->GetPartyTable();
-        CItemRepository* pItems = pParty->GetPartyItems();
-        for (int i = 0; i < 4; i++)
-        {
-            m_anUpgradable[i] = 0;
-        }
-#ifdef _XBOX
-        unsigned long oidPlayer = pServer->GetPlayerList()->GetHead()->AsSWSPlayer()->m_oidPCObject;
-        CSWSCreature* pCreature = pServer->GetCreatureByGameObjectID(oidPlayer);
-#else
-        CSWSPlayer* pPlayer = pServer->GetPlayerList()->GetHead()->AsSWSPlayer();
-        CSWSCreature* pCreature = pServer->GetCreatureByGameObjectID(pPlayer->m_oidPCObject);
-#endif
-        GetUpgradableItems(pCreature, m_anUpgradable, pTable);
-        for (unsigned int nNPC = 0; nNPC < CSWPartyTable::MAX_NPCS; nNPC++)
-        {
-            if (pParty->GetIsNPCAvailable(nNPC) && pParty->GetNPCSelectability(nNPC))
-            {
-                pCreature = pServer->GetCreatureByGameObjectID(pParty->GetNPCObject(nNPC, 0, 1));
-                if (pCreature != 0)
-                {
-                    GetUpgradableItems(pCreature, m_anUpgradable, pTable);
-                }
-            }
-        }
-        for (unsigned int nItem = 0; nItem < pItems->GetNumItems(); nItem++)
-        {
-            CSWSItem* pItem = pItems->ItemListGetItem(nItem);
-            if (pItem != 0)
-            {
-                int nType = pItem->GetUpgradableType(pTable);
-                if (nType > 0)
-                {
-                    m_anUpgradable[nType - 1] = 1;
-                }
-            }
-        }
-        for (int nType = 0; nType < 4; nType++)
-        {
-#ifdef _XBOX
-            m_aTypeLabels[nType].SetEnabledFlag(m_anUpgradable[nType]);
-            if (m_anUpgradable[nType] != 0)
-            {
-                m_aTypeButtons[nType].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-            }
-            else
-            {
-                m_aTypeButtons[nType].m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
-            }
-#else
-            if (m_anUpgradable[nType] != 0)
-            {
-                m_aTypeButtons[nType + 1].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-                m_aTypeButtons[nType + 1].SetEnabled(1);
-            }
-            else
-            {
-                m_aTypeButtons[nType + 1].m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
-                m_aTypeButtons[nType + 1].SetEnabled(0);
-            }
-#endif
-        }
-        SetActiveControl(&m_aTypeButtons[0], 0);
-    }
-Exit:
-    delete pTable;
-#ifndef _XBOX
-    CSWGuiPanel::OnPanelAdded();
-#endif
 }
-
-void CSWGuiUpgradeSelection::GetUpgradableItems(CSWSCreature* pCreature,
-                                                int* pnUpgradable, C2DA* pTable)
+// PC 0x0072C580
+void CSWGuiUpgradeSelection::PopulateItemList()
 {
-    int i;
-    CSWInventory* pInventory;
-    CSWSItem* pItem;
-    int nType;
-
-    for (i = 0; i < 18; i++)
+    CExoArrayList<CSWGuiControl*> aItems;
+    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+    CSWPartyTable* pParty = pServer->GetPartyTable();
+    CItemRepository* pRepository = pParty->GetPartyItems();
+    CSWGuiButton* pProto = (CSWGuiButton*)m_lbUpgradelist.m_pProtoItem;
+    int nWidth = m_lbUpgradelist.m_cItemExtent.m_nWidth -
+                 2 * m_lbUpgradelist.m_nPadding;
+    C2DA* pTable = new C2DA("upgrade", 0);
+    pTable->Load2DArray();
+    SetDescription("");
+    unsigned long oidPC = pServer->GetPlayerList()->GetHead()->AsSWSPlayer()->m_oidPCObject;
+    CSWSCreature* pCreature = pServer->GetCreatureByGameObjectID(oidPC);
+    if (pCreature->m_n1200 != 0)
     {
-        pInventory = pCreature->m_pInventory;
-        pItem = pInventory->GetItemInSlot(1 << i);
+        GetPlayerItems(pCreature, aItems, pTable);
+        for (unsigned int i = 0; i < CSWPartyTable::MAX_NPCS; i++)
+        {
+            if (pParty->GetIsNPCAvailable(i))
+            {
+                pCreature = pServer->GetCreatureByGameObjectID(
+                    pParty->GetPUPObject(i, 0, 0));
+                if (pCreature != 0)
+                    GetPlayerItems(pCreature, aItems, pTable);
+            }
+        }
+    }
+    else
+    {
+        for (unsigned int i = 0; i < 3; i++)
+        {
+            CSWCCreature* pMember = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(i);
+            if (pMember != 0)
+            {
+                CSWSCreature* pServerMember = pMember->GetServerCreature();
+                if (pServerMember != 0)
+                    GetPlayerItems(pServerMember, aItems, pTable);
+            }
+        }
+    }
+    for (unsigned int nItem = 0; nItem < (unsigned int)pRepository->m_lstItems.num; nItem++)
+    {
+        CSWSItem* pItem = pRepository->ItemListGetItem(nItem);
         if (pItem != 0)
         {
-            nType = pItem->GetUpgradableType(pTable);
-            if (nType > 0)
+            int nType = pItem->GetUpgradableType(pTable);
+            if (nType > 0 && (m_nFilter == 0 || nType == m_nFilter))
             {
-                pnUpgradable[nType - 1] = 1;
+                CSWUpgradeItemEntry* pEntry = new CSWUpgradeItemEntry;
+                pEntry->Initialize(pProto->m_cText, pProto->m_cBorder,
+                                   pProto->m_cHilite, nWidth, 0);
+                pEntry->AddEvent(CSWGuiControl::EVENT_ENTER, this,
+                                 (CSWGuiHandler)&CSWGuiUpgradeSelection::OnItemEntered);
+                pEntry->AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                                 (CSWGuiHandler)&CSWGuiUpgradeSelection::OnItemSelected);
+                pEntry->AddEvent(CSWGuiControl::EVENT_CONFIRM, this,
+                                 (CSWGuiHandler)&CSWGuiUpgradeSelection::OnItemSelected);
+                unsigned long oidItem = pItem->m_nId;
+                pEntry->SetItem(oidItem, 0, OBJECT_INVALID, 0);
+                aItems.Add(pEntry);
             }
+        }
+    }
+    delete pTable;
+    CSWGuiListBox* pListBox = &m_lbUpgradelist;
+    pListBox->AddControls(aItems, 1, 1, 0);
+    if (m_lbUpgradelist.m_lItems.num > 0)
+    {
+        pListBox->SetSelectedControl(pListBox->GetControl(0), 0);
+        m_btnUpgradeitems.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_UPGRADE_BORDER;
+        CSWGuiTextParams* pParams = &m_btnUpgradeitems.m_cText.m_cParams;
+        pParams->SetColor(CGuiInGame::COLOR_UPGRADE_TEXT);
+        pParams->SetDefaultColor(CGuiInGame::COLOR_UPGRADE_TEXT);
+        m_btnUpgradeitems.SetEnabled(1);
+    }
+    else
+    {
+        m_btnUpgradeitems.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_DARK_TAN;
+        CSWGuiTextParams* pParams = &m_btnUpgradeitems.m_cText.m_cParams;
+        pParams->SetColor(CGuiInGame::COLOR_DARK_TAN);
+        pParams->SetDefaultColor(CGuiInGame::COLOR_DARK_TAN);
+        m_btnUpgradeitems.SetEnabled(0);
+    }
+}
+// PC 0x00727010
+void CSWGuiUpgradeSelection::OnItemEntered(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        CSWUpgradeItemEntry* pEntry = (CSWUpgradeItemEntry*)pControl;
+        if (pEntry->m_oidItem != OBJECT_INVALID)
+        {
+            CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(pEntry->m_oidItem);
+            CExoString sDescription;
+            sDescription = pItem->GetPropertyDescription();
+            if (sDescription != "")
+            {
+                SetDescription(sDescription);
+            }
+            else
+            {
+                SetDescription(g_pAppManager->m_pClientExoApp->GetGUIString(CSWGuiUpgrade::STRREF_NO_DESCRIPTION));
+            }
+        }
+        else
+        {
+            SetDescription("");
         }
     }
 }
@@ -807,6 +873,11 @@ void CSWGuiUpgradeSelection::AutoUpgradeDone()
 {
     g_pAppManager->m_pClientExoApp->GetInGameGui()->HideUpgradeScreen();
 }
+// PC 0x00723C20
+void CSWGuiCreateItem::SetCreateTable(CExoString sTable)
+{
+    m_s3EF0 = sTable;
+}
 // PC 0x00723CF0
 void CSWGuiUpgradeSelection::HandleInputEvent(int nEvent, int nState)
 {
@@ -814,9 +885,7 @@ void CSWGuiUpgradeSelection::HandleInputEvent(int nEvent, int nState)
 
     if (nState != 0 && (nEvent == 40 || nEvent == 46))
     {
-#ifndef _XBOX
-        if (m_n18CC == 0)
-#endif
+        if (m_bDisableUpgrade == 0)
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
         pInGame = (CGuiInGame*)g_pAppManager->m_pClientExoApp->GetInGameGui();
         pInGame->HideUpgradeScreen();
@@ -824,70 +893,76 @@ void CSWGuiUpgradeSelection::HandleInputEvent(int nEvent, int nState)
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 // PC 0x00723D50
-void CSWGuiUpgradeSelection::OnTypeSelected(CSWGuiControl* pControl)
+void CSWGuiUpgradeSelection::OnCreateItems(CSWGuiControl* pControl)
 {
-    if (pControl->m_bSelected != 0)
+    m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+    m_pManager->AddPanel(m_pCreateItems, CSWGuiManager::PANEL_MODE_MODAL, 1);
+}
+// PC 0x00723D80
+void CSWGuiUpgradeSelection::UpdateFilterButtons()
+{
+    for (int i = 0; i < 5; i++)
     {
-        if (pControl->m_nEvent == 45)
+        if (i == m_nFilter)
         {
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            m_aTypeButtons[i].m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
         }
-#ifndef _XBOX
-        if (pControl != &m_btnUpgradeitems ||
-            (pControl = m_pSelectedType) != 0)
-#endif
+        else
         {
-#ifdef _XBOX
-            int nType = pControl->m_nIndex;
-            if (m_anUpgradable[nType] != 0)
-#else
-            int nType = pControl->m_nIndex - 1;
-            if (nType >= 0 && m_anUpgradable[nType] != 0)
-#endif
+            m_aTypeButtons[i].m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_UPGRADE_TEXT);
+        }
+    }
+}
+// PC 0x00723DC0
+void CSWGuiUpgradeSelection::SetDescription(CExoString sDescription)
+{
+    CSWGuiListBox* pListBox;
+    int nHeight;
+    CSWGuiControl* pControl;
+
+    m_lblDescription.m_cText.m_cParams.SetText(sDescription);
+    pListBox = &m_lbDescription;
+    pListBox->ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sDescription.GetLength() > 0)
+    {
+        nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    cExtent.m_nHeight = nHeight;
+    m_lblDescription.SetExtent(cExtent);
+    pControl = &m_lblDescription;
+    pListBox->AddControls(&pControl, 1, 0, 1, 0);
+    pListBox->SetSelectedControl(&m_lblDescription, 0);
+}
+// PC 0x00723EC0
+void CSWGuiUpgradeSelection::OnItemSelected(CSWGuiControl* pControl)
+{
+    if (pControl == &m_btnUpgradeitems)
+    {
+        pControl = m_lbUpgradelist.GetSelectedControl();
+    }
+    if (pControl != 0)
+    {
+        C2DA* pTable = new C2DA("upgrade", 0);
+        pTable->Load2DArray();
+        CSWUpgradeItemEntry* pEntry = (CSWUpgradeItemEntry*)pControl;
+        if (pEntry->m_oidItem != OBJECT_INVALID)
+        {
+            CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(pEntry->m_oidItem);
+            if (pItem != 0)
             {
-                m_pItemSelect->m_nUpgradeType = nType + 1;
+                int nType = pItem->GetUpgradableType(pTable);
+                m_pItemSelect->m_nUpgradeType = nType;
+                m_pItemSelect->m_pPresetItem = pItem;
+                m_pItemSelect->m_nC84 = 0;
                 m_pManager->AddPanel(m_pItemSelect, CSWGuiManager::PANEL_MODE_MODAL, 1);
             }
         }
     }
-}
-
-void CSWGuiUpgradeSelection::OnEnter(CSWGuiControl* pControl)
-{
-    int nType = pControl->m_nIndex;
-#ifdef _XBOX
-    if (nType >= 0 && nType < 4)
-    {
-        if (m_anUpgradable[nType] != 0)
-        {
-            m_lblUpgradeitems.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-        }
-        else
-        {
-            m_lblUpgradeitems.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
-        }
-    }
-#else
-    if (pControl->m_bSelected != 0)
-    {
-        CSWGuiRadioButton* pButton = pControl->AsRadioButton();
-        if (pButton != 0)
-        {
-            if (m_anUpgradable[nType] != 0)
-            {
-                m_btnUpgradeitems.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-                m_btnUpgradeitems.m_cBorder.m_cParams.m_vColor = CGuiInGame::ENABLED_ICON_COLOR;
-                m_pSelectedType = pButton;
-            }
-            else
-            {
-                m_btnUpgradeitems.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
-                m_btnUpgradeitems.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_ICON_COLOR;
-                m_pSelectedType = 0;
-            }
-        }
-    }
-#endif
 }
 // PC 0x00727130
 CSWGuiUpgradeItemSelect::~CSWGuiUpgradeItemSelect()
@@ -1081,7 +1156,7 @@ void CSWGuiUpgradeItemSelect::BuildItemList(CSWSCreature* pCreature,
         if (pItem != 0 && pItem->GetUpgradableType(pTable) == m_nUpgradeType)
         {
             CSWUpgradeItemEntry* pEntry = new CSWUpgradeItemEntry;
-            pEntry->Initialize(pProto->m_cText, pProto->m_cBorder, pProto->m_cHilite, nWidth);
+            pEntry->Initialize(pProto->m_cText, pProto->m_cBorder, pProto->m_cHilite, nWidth, 0);
             pEntry->AddEvent(CSWGuiControl::EVENT_ENTER, this, (CSWGuiHandler)&CSWGuiUpgradeItemSelect::OnControlEntered);
             pEntry->AddEvent(CSWGuiControl::EVENT_SELECT, this, (CSWGuiHandler)&CSWGuiUpgradeItemSelect::OnUpgradableSelected);
             pEntry->AddEvent(CSWGuiControl::EVENT_CONFIRM, this, (CSWGuiHandler)&CSWGuiUpgradeItemSelect::OnUpgradableSelected);
@@ -2285,3 +2360,1131 @@ void CSWGuiUpgrade::ShowItems(int bShow)
     m_lbItems.SetShown(0);
 }
 #endif
+// PC 0x00725F90
+void CSWGuiCreateItem::PopulateStore()
+{
+    CServerExoApp* pServer;
+    CSWSCreature* pCreature;
+    int nComponents;
+
+    pServer = g_pAppManager->m_pServerExoApp;
+    pCreature = pServer->GetCreatureByGameObjectID(m_nCreatureId);
+    if (pCreature != 0)
+    {
+        nComponents = pCreature->GetComponent();
+        m_nComponents = nComponents;
+        m_lblCreditsValue.m_cText.m_cParams.SetText(CExoString(nComponents));
+    }
+}
+// PC 0x00726180
+void CSWGuiCreateItem::CloseCreateItem(CSWGuiControl* pControl)
+{
+    if (m_pUpgradeSelection != 0 && m_pUpgradeSelection->m_bDisableUpgrade != 0)
+    {
+        m_pUpgradeSelection->HandleInputEvent(GUIEVENT_CANCEL, 1);
+    }
+    else
+    {
+        m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+    }
+    SetModal(0);
+    m_pManager->PopModalPanel();
+}
+// PC 0x007261E0
+void CSWGuiCreateItem::UpdateBreakdownFilters()
+{
+    for (int i = 0; i < 5; i++)
+    {
+        if (m_abtnBreakdownFilters[i].m_nID == m_nBreakdownFilter)
+            m_abtnBreakdownFilters[i].m_cText.m_cParams.SetDefaultColor(
+                CGuiInGame::COLOR_NEW_HIGHLIGHT);
+        else
+            m_abtnBreakdownFilters[i].m_cText.m_cParams.SetDefaultColor(
+                CGuiInGame::COLOR_UPGRADE_TEXT);
+    }
+}
+// PC 0x00726220
+void CSWGuiCreateItem::UpdateCreateFilters()
+{
+    for (int i = 0; i < 5; i++)
+    {
+        if (m_abtnCreateFilters[i].m_nID == m_nCreateFilter)
+            m_abtnCreateFilters[i].m_cText.m_cParams.SetDefaultColor(
+                CGuiInGame::COLOR_NEW_HIGHLIGHT);
+        else
+            m_abtnCreateFilters[i].m_cText.m_cParams.SetDefaultColor(
+                CGuiInGame::COLOR_UPGRADE_TEXT);
+    }
+}
+// PC 0x00726260
+unsigned long CSWGuiCreateItem::GetItemBuyValue(CSWSItem* pItem)
+{
+    if (pItem == 0)
+        return 0;
+    return max(1u, pItem->GetCost() / 20u);
+}
+// PC 0x00728220
+void CSWGuiCreateItem::BuyItemCallback(CSWGuiControl* pControl)
+{
+    CGuiInGame* pInGame = g_pAppManager->m_pClientExoApp->GetInGameGui();
+
+    if (pInGame->m_pMessageBox->m_bAccepted)
+    {
+        unsigned long oidItem =
+            static_cast<CSWGuiStoreItemEntry*>(pControl)->m_oidItem;
+        CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+        CSWSItem* pItem = pServer->GetItemByGameObjectID(
+            pServer->ClientToServerObjectId(oidItem));
+        if (pItem != 0)
+            BuyItem(pItem);
+    }
+}
+// PC 0x00729E20
+void CSWGuiCreateItem::OnBreakdownFilterPicked(CSWGuiControl* pControl)
+{
+    if (m_bBuyMode == 0 && pControl != 0)
+    {
+        m_nBreakdownFilter = pControl->m_nID;
+        UpdateBreakdownFilters();
+        PopulateInventoryItemListBox();
+    }
+}
+// PC 0x0072AC50
+void CSWGuiCreateItem::SellItemCallback(CSWGuiControl* pControl)
+{
+    CGuiInGame* pInGame = g_pAppManager->m_pClientExoApp->GetInGameGui();
+
+    if (pInGame->m_pMessageBox->m_bAccepted)
+    {
+        unsigned long oidItem =
+            static_cast<CSWGuiStoreItemEntry*>(pControl)->m_oidItem;
+        CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+        CSWSItem* pItem = pServer->GetItemByGameObjectID(
+            pServer->ClientToServerObjectId(oidItem));
+        if (pItem != 0)
+            SellItem(pItem);
+    }
+}
+// PC 0x0072D5C0
+void CSWGuiCreateItem::DeleteItemEntries()
+{
+    CExoArrayList<CSWGuiStoreItemEntry*>& lStoreEntries = m_lStoreEntries;
+    CExoArrayList<CSWGuiStoreItemEntry*>& lInventoryEntries = m_lInventoryEntries;
+    m_lbxInventoryItems.ClearItems();
+    m_lbxStoreItems.ClearItems();
+    for (int i = 0; i < lStoreEntries.num; i++)
+    {
+        delete lStoreEntries[i];
+        lStoreEntries[i] = 0;
+    }
+    lStoreEntries.num = 0;
+    for (int i = 0; i < lInventoryEntries.num; i++)
+    {
+        delete lInventoryEntries[i];
+        lInventoryEntries[i] = 0;
+    }
+    lInventoryEntries.num = 0;
+}
+// PC 0x0072EF70
+void CSWGuiCreateItem::OnAcceptPicked(CSWGuiControl* pControl)
+{
+    if (m_bBuyMode != 0)
+    {
+        CSWGuiControl* pSelected = m_lbxStoreItems.GetSelectedControl();
+        if (pSelected != 0)
+            OnControlStoreAButton(pSelected);
+    }
+    else
+    {
+        CSWGuiControl* pSelected = m_lbxInventoryItems.GetSelectedControl();
+        if (pSelected != 0)
+            OnControlInvAButton(pSelected);
+    }
+}
+// PC 0x0072EFC0
+CSWGuiCreateItem::~CSWGuiCreateItem()
+{
+    delete m_pStore;
+    DeleteItemEntries();
+}
+// PC 0x0072F250
+void CSWGuiCreateItem::OnPanelRemoved()
+{
+    DeleteItemEntries();
+    CItemRepository* pRepository = m_pStore->m_pItemRepository;
+    for (int i = 0; i < pRepository->GetNumItems(); i++)
+    {
+        CSWSItem* pItem = pRepository->ItemListGetItem(i);
+        if (pItem != 0)
+            delete pItem;
+    }
+    if (m_pUpgradeSelection != 0)
+        m_pUpgradeSelection->PopulateItemList();
+    CSWGuiPanel::OnPanelRemoved();
+}
+// PC 0x00732400
+void CSWGuiCreateItem::OnCreateFilterPicked(CSWGuiControl* pControl)
+{
+    if (m_bBuyMode != 0 && pControl != 0)
+    {
+        m_nCreateFilter = pControl->m_nID;
+        UpdateCreateFilters();
+        SetItemList();
+    }
+}
+// PC 0x00732430
+void CSWGuiCreateItem::OnControlXButton(CSWGuiControl* pControl)
+{
+    m_n3ED8 = !m_n3ED8;
+    m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+    if (m_lbxStoreItems.m_bEnabled)
+        ShowSellGUI();
+    else
+        ShowBuyGUI();
+}
+// PC 0x00732470
+void CSWGuiCreateItem::InitializeStoreType()
+{
+    CServerExoApp* pServer;
+    CSWSStore* pStore;
+
+    pServer = g_pAppManager->m_pServerExoApp;
+    pStore = pServer->GetStoreByGameObjectID(m_nStoreId);
+    if (pStore != 0)
+    {
+        switch (pStore->m_nBuySellFlag)
+        {
+        case CSWSStore::BuySellFlagBuy:
+            m_lbl834.SetEnabledFlag(0);
+            m_lbl6EC.SetEnabledFlag(0);
+            ShowBuyGUI();
+            return;
+        case CSWSStore::BuySellFlagSell:
+            m_lbl834.SetEnabledFlag(0);
+            m_lbl6EC.SetEnabledFlag(0);
+            ShowSellGUI();
+            return;
+        case CSWSStore::BuySellFlagBoth:
+            m_lbl834.SetEnabledFlag(1);
+            m_lbl6EC.SetEnabledFlag(1);
+            ShowBuyGUI();
+            return;
+        }
+    }
+}
+// PC 0x00732880
+CSWGuiCreateItem::CSWGuiCreateItem(CSWGuiManager* pManager,
+                                   unsigned long oidCreature)
+    : CSWGuiPanel(pManager)
+{
+    m_n3EBC = 0;
+
+    StartLoadFromLayout("component_p");
+    InitControl(m_lbxStoreItems, "LB_SHOPITEMS", 1);
+    InitControl(m_lbxInventoryItems, "LB_INVITEMS", 1);
+    InitControl(m_lblCredits, "LBL_CREDITS", 1);
+    InitControl(m_lblCreditsValue, "LBL_CREDITS_VALUE", 1);
+    InitControl(m_btnAccept, "BTN_Accept", 1);
+    InitControl(m_btnCancel, "BTN_Cancel", 1);
+    InitControl(m_btnExamine, "BTN_Examine", 1);
+    m_btnCancel.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                         (CSWGuiHandler)&CSWGuiCreateItem::CloseCreateItem);
+    m_btnExamine.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                          (CSWGuiHandler)&CSWGuiCreateItem::OnControlXButton);
+    InitControl(m_abtnCreateFilters[0], "BTN_CREATE_ARMOR", 1);
+    InitControl(m_abtnCreateFilters[1], "BTN_CREATE_RANGED", 1);
+    InitControl(m_abtnCreateFilters[2], "BTN_CREATE_MELEE", 1);
+    InitControl(m_abtnCreateFilters[3], "BTN_CREATE_LIGHTSABER", 1);
+    InitControl(m_abtnCreateFilters[4], "BTN_CREATE_MISC", 1);
+    InitControl(m_abtnBreakdownFilters[0], "BTN_BREAK_ALL", 1);
+    InitControl(m_abtnBreakdownFilters[1], "BTN_BREAK_WEAPONS", 1);
+    InitControl(m_abtnBreakdownFilters[2], "BTN_BREAK_ARMOR", 1);
+    InitControl(m_abtnBreakdownFilters[3], "BTN_BREAK_USEABLE", 1);
+    InitControl(m_abtnBreakdownFilters[4], "BTN_BREAK_MISC", 1);
+    InitControl(m_alblBars[0], "LBL_BAR1", 1);
+    InitControl(m_alblBars[1], "LBL_BAR2", 1);
+    InitControl(m_alblBars[2], "LBL_BAR3", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lblTitle2, "LBL_TITLE2", 1);
+    InitControl(m_lblRelatedSkill, "LBL_RELATEDSKILL", 1);
+    InitControl(m_lbxDescriptionInv, "LB_DESCRIPTIONINV", 1);
+    InitControl(m_lbxDescription, "LB_DESCRIPTION", 1);
+    m_lbxDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    InitControl(m_lblCost, "LBL_COST", 1);
+    InitControl(m_lblCostValue, "LBL_COST_VALUE", 1);
+    InitControl(m_lblStock, "LBL_STOCK", 1);
+    InitControl(m_lblStockValue, "LBL_STOCK_VALUE", 1);
+    InitControl(m_lblRanalog, "LBL_RANALOG", 1);
+    StopLoadFromLayout();
+
+    CSWGuiListBox* pStoreItems = &m_lbxStoreItems;
+    pStoreItems->SetSelectOnLeftClick(1);
+    CSWGuiListBox* pInventoryItems = &m_lbxInventoryItems;
+    pInventoryItems->SetSelectOnLeftClick(1);
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbxDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    pStoreItems->m_bShowScrollBar = 1;
+    pInventoryItems->m_bShowScrollBar = 1;
+    SetActiveControl(pStoreItems, 0);
+    pInventoryItems->m_bEnabled = 0;
+
+    m_n68 = 0;
+    m_n3EC8 = 0;
+    m_n3EC0 = 0;
+    m_nComponents = 0;
+    m_pStore = new CSWSStore(OBJECT_INVALID);
+    m_nCreateFilter = 0;
+
+    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+    if (oidCreature == OBJECT_INVALID)
+        oidCreature = pServer->GetPlayerList()->GetHead()->AsSWSPlayer()->m_oidPCObject;
+    CSWSCreature* pCreature = pServer->GetCreatureByGameObjectID(oidCreature);
+    m_nCreatureId = pCreature->m_nId;
+    float fFactor =
+        pCreature->GetStats()->GetSkillRank(CSWRules::SKILL_REPAIR, 0, 0) * 0.05f;
+    if (fFactor >= 1.0f)
+        fFactor = 1.0f;
+    m_fRepairFactor = fFactor;
+    m_n3ED8 = 0;
+    m_nBackground = 1;
+
+    for (int i = 0; i < 5; i++)
+    {
+        CSWGuiButton* pButton = &m_abtnCreateFilters[i];
+        pButton->AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                          (CSWGuiHandler)&CSWGuiCreateItem::OnCreateFilterPicked);
+        pButton->AddEvent(CSWGuiControl::EVENT_CONFIRM, this,
+                          (CSWGuiHandler)&CSWGuiCreateItem::OnCreateFilterPicked);
+        pButton->m_bFocusable = 0;
+        pButton->m_nID = i;
+    }
+    UpdateCreateFilters();
+    for (int i = 0; i < 5; i++)
+    {
+        CSWGuiButton* pButton = &m_abtnBreakdownFilters[i];
+        pButton->AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                          (CSWGuiHandler)&CSWGuiCreateItem::OnBreakdownFilterPicked);
+        pButton->AddEvent(CSWGuiControl::EVENT_CONFIRM, this,
+                          (CSWGuiHandler)&CSWGuiCreateItem::OnBreakdownFilterPicked);
+        pButton->m_bFocusable = 0;
+        pButton->m_nID = i;
+    }
+    CSWGuiButton* pAccept = &m_btnAccept;
+    pAccept->AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                      (CSWGuiHandler)&CSWGuiCreateItem::OnAcceptPicked);
+    pAccept->m_bFocusable = 0;
+    m_btnExamine.m_bFocusable = 0;
+    m_btnCancel.m_bFocusable = 0;
+    m_nBreakdownFilter = 0;
+    UpdateBreakdownFilters();
+}
+// PC 0x007333E0
+void CSWGuiCreateItem::OnPanelAdded()
+{
+    if (g_pAppManager->m_pServerExoApp->GetPartyTable()->m_nItemComponent < 0)
+        g_pAppManager->m_pServerExoApp->GetPartyTable()->m_nItemComponent = 0;
+    if (m_pUpgradeSelection != 0 && m_pUpgradeSelection->m_bDisableUpgrade != 0)
+        m_btnCancel.m_cText.m_cParams.SetStrRef(1582);
+    else
+        m_btnCancel.m_cText.m_cParams.SetStrRef(219);
+    m_nCreateFilter = 4;
+    UpdateCreateFilters();
+    InitializeStoreType();
+    SetItemList();
+    PopulateStore();
+    CSWGuiPanel::OnPanelAdded();
+    ShowBuyGUI();
+}
+// PC 0x00727FD0
+void CSWGuiCreateItem::HandleInputEvent(int nEvent, int nState)
+{
+    CSWGuiPanel::HandleInputEvent(nEvent, nState);
+
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case GUIEVENT_CANCEL:
+        case 46:
+            CloseCreateItem(0);
+            break;
+        case 58:
+            if (m_bBuyMode)
+                m_lbxDescription.HandleInputEvent(GUIEVENT_DOWN, 1);
+            else
+                m_lbxDescriptionInv.HandleInputEvent(GUIEVENT_DOWN, 1);
+            break;
+        case 57:
+            if (m_bBuyMode)
+                m_lbxDescription.HandleInputEvent(GUIEVENT_UP, 1);
+            else
+                m_lbxDescriptionInv.HandleInputEvent(GUIEVENT_UP, 1);
+            break;
+        }
+    }
+}
+// PC 0x0072ACB0
+void CSWGuiCreateItem::ShowSellGUI()
+{
+    CSWGuiListBox* pActiveList;
+
+    m_bBuyMode = 0;
+    pActiveList = &m_lbxInventoryItems;
+    pActiveList->m_bEnabled = 1;
+    m_lbxStoreItems.m_bEnabled = 0;
+    m_lblRelatedSkill.SetEnabledFlag(0);
+    m_lblTitle.m_cText.m_cParams.SetStrRef(115425);
+    m_lbxDescriptionInv.SetEnabledFlag(1);
+    m_lbxDescription.SetEnabledFlag(0);
+    for (int i = 0; i < 5; i++)
+        m_abtnCreateFilters[i].SetEnabledFlag(0);
+    for (int i = 0; i < 5; i++)
+        m_abtnBreakdownFilters[i].SetEnabledFlag(1);
+    m_btnAccept.m_cText.m_cParams.SetStrRef(115426);
+    m_btnExamine.m_cText.m_cParams.SetStrRef(48375);
+    m_alblBars[1].SetEnabledFlag(0);
+    m_alblBars[2].SetEnabledFlag(0);
+    m_lblCost.m_cText.m_cParams.SetStrRef(115427);
+    m_lbl1CC.m_cText.m_cParams.SetStrRef(48380);
+    m_lbl6EC.m_cText.m_cParams.SetStrRef(48375);
+    m_lblCost.m_cText.m_cParams.SetStrRef(115427);
+    SetActiveControl(pActiveList, 0);
+    PopulateInventoryItemListBox();
+}
+// PC 0x00731870
+void CSWGuiCreateItem::ShowBuyGUI()
+{
+    CSWGuiListBox* pActiveList;
+
+    m_bBuyMode = 1;
+    pActiveList = &m_lbxStoreItems;
+    m_lbxInventoryItems.m_bEnabled = 0;
+    pActiveList->m_bEnabled = 1;
+    m_lblRelatedSkill.SetEnabledFlag(1);
+    m_lblRelatedSkill.m_cText.m_cParams.SetText("");
+    m_lblTitle.m_cText.m_cParams.SetStrRef(111574);
+    m_lbxDescriptionInv.SetEnabledFlag(0);
+    m_lbxDescription.SetEnabledFlag(1);
+    for (int i = 0; i < 5; i++)
+        m_abtnCreateFilters[i].SetEnabledFlag(1);
+    for (int i = 0; i < 5; i++)
+        m_abtnBreakdownFilters[i].SetEnabledFlag(0);
+    m_btnAccept.m_cText.m_cParams.SetStrRef(48379);
+    m_btnExamine.m_cText.m_cParams.SetStrRef(48373);
+    m_alblBars[1].SetEnabledFlag(1);
+    m_alblBars[2].SetEnabledFlag(1);
+    m_lblCost.m_cText.m_cParams.SetStrRef(48376);
+    m_lbl1CC.m_cText.m_cParams.SetStrRef(48379);
+    m_lbl6EC.m_cText.m_cParams.SetStrRef(48373);
+    m_lblCost.m_cText.m_cParams.SetStrRef(48376);
+    SetActiveControl(pActiveList, 0);
+    PopulateStoreItemListBox();
+}
+// PC 0x007280D0
+void CSWGuiCreateItem::BuyItem(CSWSItem* pItem)
+{
+    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+    CSWSCreature* pCreature = pServer->GetPlayerCreature();
+
+    if (pCreature != 0 && pCreature->GetItemRepository(1) != 0 && pItem != 0)
+    {
+        m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_BUY_ITEM);
+        m_nComponents -= GetItemBuyValue(pItem);
+        pCreature->SetComponent(m_nComponents);
+        CSWSItem* pNewItem = new CSWSItem(OBJECT_INVALID);
+        pNewItem->CopyItem(pItem);
+        pCreature->AcquireItem(&pNewItem, m_pStore->m_nId, OBJECT_INVALID, 1);
+        int nSelectedItem = m_lbxStoreItems.m_nSelectedItem;
+        if (nSelectedItem >= m_lbxStoreItems.m_lItems.num)
+            nSelectedItem = m_lbxStoreItems.m_lItems.num - 1;
+        m_lbxStoreItems.SetSelectedControl(nSelectedItem, 0);
+        m_lblCreditsValue.m_cText.m_cParams.SetText(CExoString(m_nComponents));
+    }
+}
+// PC 0x00728280
+void CSWGuiCreateItem::SetDescription(const CExoString& sDescription)
+{
+    CSWGuiListBox* pListBox;
+    int nHeight;
+    CSWGuiControl* pLabel;
+
+    if (m_bBuyMode)
+        pListBox = &m_lbxDescription;
+    else
+        pListBox = &m_lbxDescriptionInv;
+    m_lblDescription.m_cText.m_cParams.SetText(sDescription);
+    pListBox->ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sDescription.GetLength() > 0)
+    {
+        nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    cExtent.m_nHeight = nHeight;
+    m_lblDescription.SetExtent(cExtent);
+    pLabel = &m_lblDescription;
+    pListBox->AddControls(&pLabel, 1, 0, 0, 0);
+    pListBox->SetSelectedControl(&m_lblDescription, 0);
+    m_lblRanalog.m_bEnabled =
+        pListBox->m_nContentHeight + pListBox->m_nPadding >
+            pListBox->m_cItemExtent.m_nHeight &&
+        pListBox->m_lItems.num > 0 && !pListBox->m_bHideScrollIcon;
+}
+// PC 0x0072AAE0
+void CSWGuiCreateItem::SellItem(CSWSItem* pItem)
+{
+    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+    CSWSCreature* pCreature = pServer->GetPlayerCreature();
+
+    if (pItem != 0 && pCreature != 0)
+    {
+        CItemRepository* pInventory = pCreature->GetItemRepository(1);
+        if (pInventory != 0)
+        {
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELL_ITEM);
+            m_nComponents +=
+                max(1, (int)(GetItemBuyValue(pItem) * m_fRepairFactor));
+            pCreature->SetComponent(m_nComponents);
+            if (pItem->m_nStackSize > 1)
+                pItem->SplitItem(1);
+            else
+                pInventory->RemoveItem(pItem);
+            int nSelectedItem = m_lbxInventoryItems.m_nSelectedItem;
+            PopulateInventoryItemListBox();
+            if (nSelectedItem >= m_lbxInventoryItems.m_lItems.num)
+                nSelectedItem = m_lbxInventoryItems.m_lItems.num - 1;
+            m_lbxInventoryItems.SetSelectedControl(nSelectedItem, 0);
+            m_lblCreditsValue.m_cText.m_cParams.SetText(CExoString(m_nComponents));
+        }
+    }
+}
+// PC 0x00726010
+int CSWGuiCreateItem::CheckBreakdownFilter(CSWSItem* pItem,
+                                           CSWSCreature* pCreature, int nSlot)
+{
+    int bResult = 0;
+
+    if (pItem == 0 || pCreature == 0)
+        return 0;
+
+    switch (m_nBreakdownFilter)
+    {
+    case 0:
+        bResult = 1;
+        break;
+    case 1:
+        if (pItem->GetBaseItem() != 0)
+            bResult = (pItem->GetBaseItem()->m_nEquipableSlots &
+                       (INVENTORY_SLOT_RIGHTHAND | INVENTORY_SLOT_LEFTHAND)) != 0;
+        break;
+    case 2:
+        if (pItem->GetBaseItem() != 0)
+            bResult = (pItem->GetBaseItem()->m_nEquipableSlots &
+                       (INVENTORY_SLOT_HEAD | INVENTORY_SLOT_ARMOUR |
+                        INVENTORY_SLOT_HANDS | INVENTORY_SLOT_RIGHTRING |
+                        INVENTORY_SLOT_NECK | INVENTORY_SLOT_BELT |
+                        INVENTORY_SLOT_ARMS)) != 0;
+        break;
+    case 3:
+        if (pCreature->GetClientCreature() != 0)
+        {
+            if (pCreature->GetClientCreature()->IsLeaderUsableItem(pItem, nSlot,
+                                                                  0xFF) &&
+                pCreature->CanUseItem(pItem, 0, 1))
+                bResult = 1;
+            else
+                bResult = 0;
+        }
+        break;
+    case 4:
+        bResult = 1;
+        if (pItem->GetBaseItem() != 0)
+        {
+            if (pItem->GetBaseItem()->m_nItemType == 24)
+                bResult = 0;
+            if (pItem->GetBaseItem()->m_nEquipableSlots != 0)
+                bResult = 0;
+        }
+        if (pCreature->GetClientCreature() != 0)
+        {
+            if (pCreature->GetClientCreature()->IsLeaderUsableItem(pItem, nSlot,
+                                                                  0xFF) &&
+                pCreature->CanUseItem(pItem, 0, 1))
+                bResult = 0;
+        }
+        break;
+    default:
+        bResult = 0;
+        break;
+    }
+    if (pItem->GetCost() == 0)
+        bResult = 0;
+    return bResult;
+}
+// PC 0x007316A0
+void CSWGuiCreateItem::PopulateStoreItemListBox()
+{
+    CItemRepository* pRepository = m_pStore->m_pItemRepository;
+    CExoArrayList<CSWGuiControl*> lControls;
+    int nEntryIndex = 0;
+
+    for (int i = pRepository->GetNumItems() - 1; i != -1; i--)
+    {
+        CSWSItem* pItem = pRepository->ItemListGetItem(i);
+        if (pItem != 0 && pItem->m_bPlotObject == 0)
+        {
+            CExoString sTag(pItem->m_sTag.CStr());
+            CreateItemEntry(nEntryIndex, lControls, pItem->GetId(), 0, sTag);
+        }
+    }
+
+    m_lbxStoreItems.AddControls(lControls, 0, 1, 0);
+    if (m_lbxStoreItems.m_bEnabled != 0)
+    {
+        if (lControls.num > 0)
+        {
+            m_lbxStoreItems.SetSelectedControl(0, 0);
+        }
+        else
+        {
+            m_lbxStoreItems.SetSelectedControl(-1, 0);
+            m_lblCostValue.m_cText.m_cParams.SetText("");
+            m_lblStockValue.m_cText.m_cParams.SetText("");
+            m_lblDescription.m_cText.m_cParams.SetText("");
+        }
+    }
+    m_n3EC8 = 0;
+}
+// PC 0x00729AE0
+void CSWGuiCreateItem::PopulateInventoryItemListBox()
+{
+    CItemRepository* pRepository;
+    C2DA* pTable;
+
+    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+    CSWSCreature* pCreature = pServer->GetCreatureByGameObjectID(m_nCreatureId);
+    if (m_s3EF0.IsEmpty())
+    {
+        pTable = g_pRules->m_p2DArrays->m_pChemicalCreate;
+    }
+    else
+    {
+        pTable = new C2DA("tutchemcreate", 0);
+        pTable->Load2DArray();
+    }
+    if (pTable == 0)
+        return;
+
+    if (pCreature != 0)
+        pRepository = pCreature->GetItemRepository(1);
+    CExoArrayList<CSWGuiControl*> lControls;
+    int nEntryIndex = 0;
+    CExoString sLabel;
+    for (unsigned long i = 0; i < pRepository->GetNumItems(); i++)
+    {
+        CSWSItem* pItem = pRepository->ItemListGetItem(i);
+        int bComponent = 0;
+        for (int nRow = 0; nRow < pTable->m_nNumRows; nRow++)
+        {
+            pTable->GetCExoStringEntry(nRow, "label", &sLabel);
+            CExoString sTag;
+            sTag = pItem->m_sTag.CStr();
+            if (sTag == sLabel)
+                bComponent = 1;
+        }
+        if (pItem != 0 && pItem->m_bPlotObject == 0 && bComponent == 0 &&
+            CheckBreakdownFilter(pItem, pCreature, 0))
+        {
+            CreateItemEntry(nEntryIndex, lControls, pItem->GetId(), 1, "");
+        }
+    }
+
+    m_lbxInventoryItems.AddControls(lControls, 0, 1, 0);
+    if (m_lbxInventoryItems.m_bEnabled != 0)
+    {
+        if (lControls.num > 0)
+        {
+            m_lbxInventoryItems.SetSelectedControl(0, 0);
+        }
+        else
+        {
+            m_lbxInventoryItems.SetSelectedControl(-1, 0);
+            m_lblCostValue.m_cText.m_cParams.SetText("");
+            m_lblStockValue.m_cText.m_cParams.SetText("");
+            m_lblDescription.m_cText.m_cParams.SetText("");
+        }
+    }
+    if (!m_s3EF0.IsEmpty())
+    {
+        pTable->Unload2DArray();
+        delete pTable;
+    }
+    m_n3EC8 = 0;
+}
+// PC 0x00729E50
+void CSWGuiCreateItem::OnControlStoreAButton(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        if (pControl->m_nEvent != 0)
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+        if (static_cast<CSWGuiStoreItemEntry*>(pControl)->m_n3B4 == 0)
+        {
+            CSWGuiMessageBox* pMessageBox =
+                g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+            pMessageBox->SetAllowCancel(0);
+            pMessageBox->SetCallback(0, 0, 0);
+            pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
+                                          CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            pMessageBox->SetMessage(116292);
+            g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(
+                pMessageBox, 1, 1);
+            return;
+        }
+        unsigned long oidItem =
+            static_cast<CSWGuiStoreItemEntry*>(pControl)->m_oidItem;
+        CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+        CSWSItem* pItem = pServer->GetItemByGameObjectID(
+            pServer->ClientToServerObjectId(oidItem));
+        if (pItem != 0)
+        {
+            if ((unsigned long)m_nComponents >= GetItemBuyValue(pItem))
+            {
+                CServerExoApp* pCreatureServer = g_pAppManager->m_pServerExoApp;
+                CSWSCreature* pCreature = pCreatureServer->GetPlayerCreature();
+                unsigned int nConfirmationValue;
+                if (pCreature != 0)
+                {
+                    CSWSCreatureStats* pStats = pCreature->m_pStats;
+                    nConfirmationValue = pStats->GetLevel(0) * 50;
+                }
+                else
+                    nConfirmationValue = 50;
+                if (GetItemBuyValue(pItem) > nConfirmationValue)
+                {
+                    CSWGuiMessageBox* pMessageBox =
+                        g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+                    CExoString sMessage;
+                    g_pTlkTable->SetCustomToken(0, CExoString(nConfirmationValue));
+                    sMessage = g_pSWTlkTable->Fetch(124113, 0, 0, 0);
+                    pMessageBox->SetAllowCancel(1);
+                    pMessageBox->SetMessage(sMessage);
+                    pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
+                                                  CGuiInGame::COLOR_NEW_HIGHLIGHT);
+                    pMessageBox->SetCallback(this,
+                        (CSWGuiHandler)&CSWGuiCreateItem::BuyItemCallback, pControl);
+                    g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(
+                        pMessageBox, 1, 1);
+                }
+                else
+                    BuyItem(pItem);
+            }
+            else
+            {
+                CSWGuiMessageBox* pMessageBox =
+                    g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+                CExoString sMessage;
+                pMessageBox->SetAllowCancel(0);
+                pMessageBox->SetMessage(116297);
+                pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
+                                              CGuiInGame::COLOR_NEW_HIGHLIGHT);
+                pMessageBox->SetCallback(0, 0, 0);
+                g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(
+                    pMessageBox, 1, 1);
+            }
+        }
+    }
+}
+// PC 0x0072D270
+void CSWGuiCreateItem::OnControlInvAButton(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        if (pControl->m_nEvent == CSWGuiControl::EVENT_CONFIRM)
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+        unsigned long oidItem =
+            static_cast<CSWGuiStoreItemEntry*>(pControl)->m_oidItem;
+        CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+        CSWSItem* pItem = pServer->GetItemByGameObjectID(
+            pServer->ClientToServerObjectId(oidItem));
+        if (pItem != 0)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                if (pItem->m_an2F4[i] >= 0)
+                {
+                    CSWGuiMessageBox* pMessageBox =
+                        g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+                    pMessageBox->SetAllowCancel(0);
+                    pMessageBox->SetMessage(124119);
+                    pMessageBox->SetCallback(0, 0, 0);
+                    pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
+                                                  CGuiInGame::COLOR_NEW_HIGHLIGHT);
+                    g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(
+                        pMessageBox, 1, 1);
+                    return;
+                }
+            }
+            CServerExoApp* pCreatureServer = g_pAppManager->m_pServerExoApp;
+            CSWSCreature* pCreature = pCreatureServer->GetPlayerCreature();
+            unsigned int nConfirmationValue;
+            if (pCreature != 0 && pCreature->m_pStats->GetLevel(0) * 50 <= 250)
+            {
+                CSWSCreatureStats* pStats = pCreature->GetStats();
+                nConfirmationValue = pStats->GetLevel(0) * 50;
+            }
+            else
+                nConfirmationValue = 250;
+            if (max(1u, pItem->GetCost() / 20u) * m_fRepairFactor >
+                nConfirmationValue)
+            {
+                CSWGuiMessageBox* pMessageBox =
+                    g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+                CExoString sMessage;
+                g_pTlkTable->SetCustomToken(0, CExoString(nConfirmationValue));
+                sMessage = g_pSWTlkTable->Fetch(124115, 0, 0, 0);
+                pMessageBox->SetAllowCancel(1);
+                pMessageBox->SetMessage(sMessage);
+                pMessageBox->SetCallback(this,
+                    (CSWGuiHandler)&CSWGuiCreateItem::SellItemCallback, pControl);
+                pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
+                                              CGuiInGame::COLOR_NEW_HIGHLIGHT);
+                g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(
+                    pMessageBox, 1, 1);
+            }
+            else
+                SellItem(pItem);
+        }
+    }
+}
+// PC 0x00731FC0
+void CSWGuiCreateItem::SetItemList()
+{
+    C2DA* pTable;
+
+    CItemRepository* pRepository = m_pStore->m_pItemRepository;
+    CSWSCreature* pCreature =
+        g_pAppManager->m_pServerExoApp->GetPlayerCreature();
+    if (m_s3EF0.IsEmpty())
+    {
+        pTable = g_pRules->m_p2DArrays->m_pItemCreate;
+    }
+    else
+    {
+        pTable = new C2DA(m_s3EF0, 0);
+        pTable->Load2DArray();
+        UpdateCreateFilters();
+    }
+    if (pTable == 0)
+        return;
+
+    for (int i = 0; i < pRepository->GetNumItems(); i++)
+    {
+        CSWSItem* pItem = pRepository->ItemListGetItem(i);
+        if (pItem != 0)
+            delete pItem;
+    }
+    pRepository->ClearItems();
+
+    CExoString sLabel;
+    int nLevel = pCreature->m_pStats->GetLevel(0);
+    int nAlignment = pCreature->m_pStats->GetSimpleAlignmentGoodEvil();
+    for (int nRow = 0; nRow < pTable->m_nNumRows; nRow++)
+    {
+        int nGroup;
+        int nSkill;
+        int nLevelRequired;
+        int nAlignmentRequired;
+        int nBaseSkill;
+
+        if (!pTable->GetINTEntry(nRow, "group", &nGroup))
+            return;
+        if (!pTable->GetINTEntry(nRow, "skill", &nSkill))
+            return;
+        if (!pTable->GetINTEntry(nRow, "level", &nLevelRequired))
+            return;
+        if (!pTable->GetINTEntry(nRow, "align", &nAlignmentRequired))
+            return;
+        if (!pTable->GetINTEntry(nRow, "base_skill", &nBaseSkill))
+            return;
+        if (nSkill <= pCreature->m_pStats->GetSkillRank(nBaseSkill, 0, 0) + 8 &&
+            nGroup == m_nCreateFilter &&
+            (nLevelRequired == 0 || nLevel >= nLevelRequired) &&
+            (nAlignmentRequired == 0 || nAlignment == nAlignmentRequired))
+        {
+            CSWSItem* pItem = new CSWSItem(OBJECT_INVALID);
+            pTable->GetCExoStringEntry(nRow, "label", &sLabel);
+            if (pItem->LoadFromTemplate(CResRef(sLabel.CStr())))
+                m_pStore->AcquireItem(pItem);
+        }
+    }
+    if (!m_s3EF0.IsEmpty())
+    {
+        pTable->Unload2DArray();
+        delete pTable;
+    }
+    PopulateStoreItemListBox();
+}
+// PC 0x0072F2B0
+int CSWGuiCreateItem::CreateItemEntry(int& nEntries,
+                                      CExoArrayList<CSWGuiControl*>& lControls,
+                                      unsigned long oidItem, int bInventory,
+                                      CExoString sTemplate)
+{
+    CExoArrayList<CSWGuiStoreItemEntry*>* pEntries =
+        bInventory ? &m_lInventoryEntries : &m_lStoreEntries;
+    CSWGuiStoreItemEntry* pEntry;
+    if (nEntries < pEntries->num)
+    {
+        pEntry = (*pEntries)[nEntries];
+    }
+    else
+    {
+        CSWGuiStoreItemEntry* pNewEntry = new CSWGuiStoreItemEntry;
+        pEntry = pNewEntry;
+        pEntries->Add(pNewEntry);
+        pNewEntry->m_nClickSound = CSWGuiControl::GUISOUND_NONE;
+        if (bInventory)
+        {
+            CSWGuiButton* pProto = m_lbxInventoryItems.m_pProtoItem->AsButton();
+            pNewEntry->Initialize(pProto->m_cText, pProto->m_cBorder,
+                               pProto->m_cHilite,
+                               m_lbxInventoryItems.m_cItemExtent.m_nWidth -
+                                   2 * m_lbxInventoryItems.m_nPadding);
+            pNewEntry->AddEvent(GUIEVENT_ACTIVATE, this,
+                            (CSWGuiHandler)&CSWGuiCreateItem::OnControlInvAButton);
+        }
+        else
+        {
+            CSWGuiButton* pProto = m_lbxStoreItems.m_pProtoItem->AsButton();
+            pNewEntry->Initialize(pProto->m_cText, pProto->m_cBorder,
+                               pProto->m_cHilite,
+                               m_lbxStoreItems.m_cItemExtent.m_nWidth -
+                                   2 * m_lbxStoreItems.m_nPadding);
+            pNewEntry->AddEvent(GUIEVENT_ACTIVATE, this,
+                            (CSWGuiHandler)&CSWGuiCreateItem::OnControlStoreAButton);
+        }
+        pNewEntry->AddEvent(GUIEVENT_MOUSE_ENTER, this,
+                        (CSWGuiHandler)&CSWGuiCreateItem::OnControlEntered);
+    }
+    if (bInventory == 0)
+    {
+        C2DA* pTable;
+        if (m_s3EF0.IsEmpty())
+        {
+            pTable = g_pRules->m_p2DArrays->m_pItemCreate;
+        }
+        else
+        {
+            pTable = new C2DA(m_s3EF0, 0);
+            pTable->Load2DArray();
+        }
+        if (pTable == 0)
+            return 0;
+
+        CExoString sTag;
+        int nFoundRow = -1;
+        for (int nRow = 0; nRow < pTable->m_nNumRows; nRow++)
+        {
+            if (!pTable->GetCExoStringEntry(nRow, "OverrideTag", &sTag))
+                sTag = "";
+            if (sTag.IsEmpty())
+            {
+                if (!pTable->GetCExoStringEntry(nRow, "label", &sTag))
+                    return 0;
+            }
+            if (sTag.CompareNoCase(sTemplate))
+            {
+                nFoundRow = nRow;
+                break;
+            }
+        }
+        if (nFoundRow != -1)
+        {
+            pEntry->m_n3B0 = nFoundRow;
+            int nBaseSkill = -1;
+            int nSkill = -1;
+            if (!pTable->GetINTEntry(nFoundRow, "base_skill", &nBaseSkill))
+                return 0;
+            if (!pTable->GetINTEntry(nFoundRow, "skill", &nSkill))
+                return 0;
+            CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+            CSWSCreature* pCreature = pServer->GetPlayerCreature();
+            if (nSkill > pCreature->GetStats()->GetSkillRank(nBaseSkill, 0, 0))
+            {
+                pEntry->SetColors(CGuiInGame::DISABLED_TEXT, CGuiInGame::DISABLED_TEXT,
+                                  CGuiInGame::COLOR_NEW_HIGHLIGHT,
+                                  CGuiInGame::COLOR_NEW_HIGHLIGHT);
+                pEntry->m_n3B4 = 0;
+            }
+            else
+            {
+                pEntry->SetColors(CGuiInGame::COLOR_UPGRADE_BORDER,
+                                  CGuiInGame::COLOR_UPGRADE_TEXT,
+                                  CGuiInGame::COLOR_UPGRADE_TEXT,
+                                  CGuiInGame::COLOR_NEW_HIGHLIGHT);
+                pEntry->m_n3B4 = 1;
+            }
+        }
+        else
+        {
+            CExoString sError = "CreateItem::CreateItemEntry() -- Could not find a row for an item. Major error: ";
+            sError = sError + sTemplate;
+        }
+        if (!m_s3EF0.IsEmpty())
+        {
+            pTable->Unload2DArray();
+            delete pTable;
+        }
+    }
+    else
+    {
+        pEntry->SetColors(CGuiInGame::COLOR_UPGRADE_BORDER,
+                          CGuiInGame::COLOR_UPGRADE_TEXT,
+                          CGuiInGame::COLOR_NEW_HIGHLIGHT,
+                          CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    }
+    pEntry->SetItem(oidItem, 0, -1);
+    pEntry->SetActive(0);
+    lControls.Add(pEntry);
+    nEntries++;
+    return 0;
+}
+// PC 0x0072A1B0
+void CSWGuiCreateItem::OnControlEntered(CSWGuiControl* pControl)
+{
+    C2DA* pTable;
+    if (m_s3EF0.IsEmpty())
+    {
+        pTable = g_pRules->m_p2DArrays->m_pItemCreate;
+    }
+    else
+    {
+        pTable = new C2DA(m_s3EF0, 0);
+        pTable->Load2DArray();
+    }
+
+    CExoString sUnused;
+    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+    CItemRepository* pRepository = 0;
+    CSWSCreature* pCreature = pServer->GetPlayerCreature();
+    if (pCreature != 0)
+        pRepository = pCreature->GetItemRepository(1);
+
+    if (pControl->m_bSelected != 0)
+    {
+        unsigned long oidItem =
+            static_cast<CSWGuiStoreItemEntry*>(pControl)->m_oidItem;
+        pServer = g_pAppManager->m_pServerExoApp;
+        CSWSItem* pItem = pServer->GetItemByGameObjectID(
+            pServer->ClientToServerObjectId(oidItem));
+        if (pItem != 0)
+        {
+            if (m_lbxStoreItems.m_bEnabled)
+            {
+                m_lblCostValue.m_cText.m_cParams.SetText(
+                    CExoString(GetItemBuyValue(pItem)));
+                int nRow = static_cast<CSWGuiStoreItemEntry*>(pControl)->m_n3B0;
+                int nBaseSkill = -1;
+                int nRank = -1;
+                if (!pTable->GetINTEntry(nRow, "base_skill", &nBaseSkill))
+                    return;
+                CServerExoApp* pPlayerServer = g_pAppManager->m_pServerExoApp;
+                CSWSCreature* pPlayer = pPlayerServer->GetPlayerCreature();
+                if (pPlayer != 0)
+                    nRank = pPlayer->m_pStats->GetSkillRank(nBaseSkill, 0, 0);
+                CExoString sText;
+                CExoString sSkillName =
+                    g_pRules->m_pSkills[(unsigned short)nBaseSkill].GetNameText();
+                CExoString sRank;
+                sRank.Format("%d", nRank);
+                sText = sSkillName + " (" + sRank + ")";
+                m_lblRelatedSkill.m_cText.m_cParams.SetText(sText);
+                if (static_cast<CSWGuiStoreItemEntry*>(pControl)->m_n3B4)
+                    m_lblRelatedSkill.m_cText.m_cParams.SetColor(
+                        CGuiInGame::COLOR_UPGRADE_TEXT);
+                else
+                    m_lblRelatedSkill.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_RED);
+            }
+            else
+            {
+                float fRepairFactor = m_fRepairFactor;
+                int nValue = (int)(GetItemBuyValue(pItem) * fRepairFactor);
+                if (nValue <= 0)
+                    nValue = 1;
+                m_lblCostValue.m_cText.m_cParams.SetText(CExoString(nValue));
+            }
+
+            if (m_lbxStoreItems.m_bEnabled && pRepository != 0)
+            {
+                int nCount = pRepository->GetMatchingItemCount(pItem);
+                int nEquipped = 0;
+                for (int i = 0; i < 3; i++)
+                {
+                    CSWCCreature* pCharacter = g_pAppManager->m_pClientExoApp
+                                                   ->GetSWParty()
+                                                   ->GetCharacter(i);
+                    if (pCharacter != 0)
+                        nEquipped += pCharacter->GetMatchingEquippedItemCount(pItem);
+                }
+                if (nCount == -1)
+                    m_lblStockValue.m_cText.m_cParams.SetText(
+                        CExoString(STRREF_INFINITE));
+                else
+                    m_lblStockValue.m_cText.m_cParams.SetText(
+                        CExoString(nCount + nEquipped));
+            }
+            else
+            {
+                if (pItem->m_bInfinite)
+                {
+                    m_lblStockValue.m_cText.m_cParams.SetStrRef(STRREF_INFINITE);
+                }
+                else
+                {
+                    m_lblStockValue.m_cText.m_cParams.SetText(
+                        CExoString(pItem->m_nStackSize));
+                }
+            }
+
+            CExoString sDescription = pItem->GetPropertyDescription();
+            int nTag = sDescription.Find('<', 0);
+            int nToken = sDescription.Find('{', 0);
+            if (nTag != -1 || nToken != -2)
+            {
+                CSWCCreature* pPlayerCharacter =
+                    g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter();
+                g_pSWTlkTable->ParseStr(sDescription, (CGameObject*)pPlayerCharacter, 0, 1);
+            }
+
+            if (m_lbxStoreItems.m_bEnabled)
+            {
+                int nRow = static_cast<CSWGuiStoreItemEntry*>(pControl)->m_n3B0;
+                int nSkill = -1;
+                int nBaseSkill = -1;
+                if (!pTable->GetINTEntry(nRow, "base_skill", &nBaseSkill))
+                    return;
+                if (!pTable->GetINTEntry(nRow, "skill", &nSkill))
+                    return;
+                CExoString sRequired = g_pTlkTable->GetSimpleString(115429);
+                CExoString sSkillText;
+                CExoString sSkill(nSkill);
+                sSkillText = g_pRules->m_pSkills[(unsigned short)nBaseSkill].GetNameText() +
+                             " (" + sSkill + ")";
+                CExoString sNewLine1("\n");
+                CExoString sNewLine2("\n");
+                sDescription = sRequired + sNewLine2 + sSkillText + sNewLine1 + sDescription;
+            }
+            SetDescription(sDescription);
+        }
+    }
+
+    if (!m_s3EF0.IsEmpty())
+    {
+        pTable->Unload2DArray();
+        delete pTable;
+    }
+}

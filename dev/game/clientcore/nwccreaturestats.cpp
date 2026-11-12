@@ -18,6 +18,8 @@
 #include "twodimarrays.h"
 #include "nwccreature.h"
 #include "nwcitem.h"
+#include "nwsitem.h"
+#include "nwsvartable.h"
 #include <math.h>
 #include <string.h>
 
@@ -38,7 +40,7 @@ void CSWCCreatureStats::GetMenuInfo(
     }
 }
 // PC 0x00700340
-CSWCCreatureStats::CSWCCreatureStats()
+CSWCCreatureStats::CSWCCreatureStats(CSWCCreature* pCreature)
 {
     m_sFirstName = "";
     m_sLastName = "";
@@ -95,6 +97,7 @@ CSWCCreatureStats::CSWCCreatureStats()
     memset(m_pSkillRanksTotal, 0, g_pRules->m_nNumSkills);
     memset(m_pSkillRanks, 0, g_pRules->m_nNumSkills);
     m_pCombatInformation = new CCombatInformation;
+    m_pCreature = pCreature;
     m_bOwnsCombatInformation = 0;
     m_nPortraitId = PORTRAIT_ID_RESERVED_FFFF;
     m_nMaxForcePoints = 0;
@@ -143,7 +146,25 @@ CExoString CSWCCreatureStats::GetRaceString()
 // PC 0x006FD630
 short CSWCCreatureStats::GetArmorClass(int nType)
 {
-    return m_nDefenseBase;
+    short nWisdomBonus = 0;
+    if (nType == ARMOR_CLASS_TYPE_1 && HasSpell(0, CSWSpell::FORCE_POWER_UNKNOWN_179))
+    {
+        CSWSCreature* pServerCreature = m_pCreature->GetServerCreature();
+        if (pServerCreature != NULL)
+        {
+            CSWSItem* pArmor = pServerCreature->GetInventory()->GetItemInSlot(INVENTORY_SLOT_ARMOUR);
+            CSWBaseItem* pBaseItem;
+            if (pArmor == NULL ||
+                ((pBaseItem = pArmor->GetBaseItem()) != NULL && pBaseItem->m_nBaseAC == 0))
+            {
+                if ((char)GetWISMod() > 0)
+                {
+                    nWisdomBonus = (char)GetWISMod();
+                }
+            }
+        }
+    }
+    return m_nDefenseBase + nWisdomBonus;
 }
 // PC 0x006FB6F0
 unsigned char CSWCCreatureStats::GetClass(unsigned char nIndex)
@@ -202,7 +223,17 @@ int CSWCCreatureStats::GetCanUseSkill(unsigned short nSkill)
         return 0;
     }
 
-    if (g_pRules->m_pSkills[nSkill].m_bUntrained)
+    CSWSkill* pSkill = &g_pRules->m_pSkills[nSkill];
+    if (nSkill == CSWSkill::SKILL_STEALTH &&
+        (HasSpell(0, CSWSpell::FORCE_POWER_FORCE_CAMOUFLAGE) ||
+         HasSpell(0, CSWSpell::FORCE_POWER_IMPROVED_FORCE_CAMOUFLAGE) ||
+         HasSpell(0, CSWSpell::FORCE_POWER_MASTER_FORCE_CAMOUFLAGE) ||
+         HasFeat(CSWFeat::FEAT_UNKNOWN_201)))
+    {
+        return 1;
+    }
+
+    if (pSkill->m_bUntrained)
     {
         for (unsigned char i = 0; i < m_nClassCount; i++)
         {
@@ -254,7 +285,7 @@ int CSWCLevelUpStats::GetSkillPointCostForSkillRank(unsigned short nSkill,
         if (pClass != NULL && pClass->IsSkillUseable(nSkill))
         {
             bUseable = 1;
-            if (pClass->IsSkillClassSkill(nSkill))
+            if (pClass->IsSkillClassSkill(nSkill) || HasClassSkillFeat(nSkill))
             {
                 bClassSkill = 1;
                 break;
@@ -290,7 +321,8 @@ short CSWCCreatureStats::GetMaxHitPoints()
     return m_nMaxHitPoints;
 }
 // PC 0x00700680
-CSWCLevelUpStats::CSWCLevelUpStats()
+CSWCLevelUpStats::CSWCLevelUpStats(CSWCCreature* pCreature)
+    : CSWCCreatureStats(pCreature)
 {
     m_nCreationStage = 30;
     m_nSkillPoints = 0;
@@ -428,6 +460,34 @@ CExoString CSWCCreatureStats::GetFullName()
         return *pName;
     }
     return CExoString("");
+}
+// PC 0x006FBAF0
+CExoString CSWCCreatureStats::GetFirstName()
+{
+    CExoString sFirstName(m_sFirstName);
+    if (m_sFirstName.GetLength() > 0)
+    {
+        int nSpace = m_sFirstName.Find(' ', 0);
+        if (nSpace != -1)
+        {
+            sFirstName = m_sFirstName.SubString(0, nSpace);
+        }
+    }
+    return sFirstName;
+}
+// PC 0x006FBBC0
+CExoString CSWCCreatureStats::GetLastName()
+{
+    CExoString sLastName;
+    if (m_sFirstName.GetLength() > 0)
+    {
+        int nSpace = m_sFirstName.Find(' ', 0);
+        if (nSpace != -1)
+        {
+            sLastName = m_sFirstName.SubString(nSpace + 1, -1);
+        }
+    }
+    return sLastName;
 }
 // PC 0x006FBC90
 float CSWCCreatureStats_ClassInfo::GetMinSpellRange(const CExoString& sRange)
@@ -844,6 +904,37 @@ unsigned char CSWCCreatureStats::GetLevel()
     {
         nLevel += GetClassLevel((unsigned char)i);
     }
+    if (m_pCreature != NULL)
+    {
+        CSWSCreature* pServerCreature = m_pCreature->GetServerCreature();
+        if (pServerCreature != NULL && !pServerCreature->m_pStats->GetIsPC() &&
+            !pServerCreature->m_bInParty && pServerCreature->m_c250 != 0)
+        {
+            int nAutoBalanceRow = pServerCreature->m_c250;
+            if (nAutoBalanceRow != 0)
+            {
+                C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
+                float fLevelMult;
+                pAutoBalance->GetFLOATEntry(nAutoBalanceRow, CExoString("LevelMult"), &fLevelMult);
+                char nPCLevel = pServerCreature->m_c251;
+                if (nPCLevel == 0)
+                {
+                    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(
+                        CExoString("G_PC_LEVEL"), nPCLevel);
+                }
+                if (nPCLevel < 1)
+                {
+                    nPCLevel = 1;
+                }
+                int nBalancedLevel = (int)(nPCLevel * fLevelMult) + nLevel - 1;
+                if (nBalancedLevel < 0)
+                {
+                    nBalancedLevel = 1;
+                }
+                return nBalancedLevel;
+            }
+        }
+    }
     return nLevel;
 }
 // PC 0x006FC440
@@ -867,6 +958,40 @@ CExoString CSWCCreatureStats::GetClassesString(char cSeparator)
     }
 
     return sClasses;
+}
+// PC 0x006FC6B0
+int CSWCCreatureStats::HasClassSkillFeat(unsigned short nSkill)
+{
+    unsigned short nFeat = 0xFFFF;
+    switch (nSkill)
+    {
+    case CSWSkill::SKILL_AWARENESS:
+        nFeat = CSWFeat::FEAT_CLASS_SKILL_AWARENESS;
+        break;
+    case CSWSkill::SKILL_COMPUTER_USE:
+        nFeat = CSWFeat::FEAT_CLASS_SKILL_COMPUTER_USE;
+        break;
+    case CSWSkill::SKILL_DEMOLITIONS:
+        nFeat = CSWFeat::FEAT_CLASS_SKILL_DEMOLITIONS;
+        break;
+    case CSWSkill::SKILL_REPAIR:
+        nFeat = CSWFeat::FEAT_CLASS_SKILL_REPAIR;
+        break;
+    case CSWSkill::SKILL_SECURITY:
+        nFeat = CSWFeat::FEAT_CLASS_SKILL_SECURITY;
+        break;
+    case CSWSkill::SKILL_STEALTH:
+        nFeat = CSWFeat::FEAT_CLASS_SKILL_STEALTH;
+        break;
+    case CSWSkill::SKILL_TREAT_INJURY:
+        nFeat = CSWFeat::FEAT_CLASS_SKILL_TREAT_INJURY;
+        break;
+    }
+    if (nFeat != -1)
+    {
+        return FeatAcquired(nFeat);
+    }
+    return 0;
 }
 // PC 0x006FC730
 unsigned short CSWCCreatureStats::GetFeat(unsigned short nIndex)
@@ -1113,17 +1238,17 @@ void CSWCLevelUpStats::AddSkillPointsPerLevel()
         if (GetLevel() == 1)
         {
             m_nSkillPoints = FIRST_LEVEL_SKILL_POINT_MULTIPLIER *
-                ((pClass->GetSkillPointBase() / 2 + GetBaseINTMod()) >
+                ((pClass->GetSkillPointBase() + GetBaseINTMod()) >
                  MIN_SKILL_POINTS_PER_LEVEL ?
-                 (pClass->GetSkillPointBase() / 2 + GetBaseINTMod()) :
+                 (pClass->GetSkillPointBase() + GetBaseINTMod()) :
                  MIN_SKILL_POINTS_PER_LEVEL);
         }
         else
         {
             m_nSkillPoints +=
-                ((pClass->GetSkillPointBase() + GetBaseINTMod()) / 2 >
+                ((pClass->GetSkillPointBase() + GetBaseINTMod()) >
                  MIN_SKILL_POINTS_PER_LEVEL ?
-                 (pClass->GetSkillPointBase() + GetBaseINTMod()) / 2 :
+                 (pClass->GetSkillPointBase() + GetBaseINTMod()) :
                  MIN_SKILL_POINTS_PER_LEVEL);
         }
     }
@@ -1192,7 +1317,7 @@ int CSWCLevelUpStats::IncreaseSkillRank(unsigned short nSkill)
         if (pClass != NULL && pClass->IsSkillUseable(nSkill))
         {
             bUseable = 1;
-            if (pClass->IsSkillClassSkill(nSkill))
+            if (pClass->IsSkillClassSkill(nSkill) || HasClassSkillFeat(nSkill))
             {
                 bClassSkill = 1;
                 break;
@@ -1254,7 +1379,7 @@ void CSWCLevelUpStats::DecreaseSkillRank(unsigned short nSkill,
         if (pClass != NULL && pClass->IsSkillUseable(nSkill))
         {
             bUseable = 1;
-            if (pClass->IsSkillClassSkill(nSkill))
+            if (pClass->IsSkillClassSkill(nSkill) || HasClassSkillFeat(nSkill))
             {
                 bClassSkill = 1;
                 break;
@@ -1349,12 +1474,18 @@ void CSWCLevelUpStats::AddDefaultPackageSkills(int nClass, int bAllSkills)
             if (!bAllSkills)
             {
                 CSWSkill* pSkill = &g_pRules->m_pSkills[(unsigned short)nSkill];
+                int bDroidException = 0;
+                if (nSkill == CSWSkill::SKILL_STEALTH &&
+                    m_pCreature->GetServerCreature()->GetTag().CompareNoCase("g0t0"))
+                {
+                    bDroidException = 1;
+                }
                 if (!pSkill->m_bNPCCanUse)
                 {
                     continue;
                 }
                 if (m_nRace == CSWRace::CRACE_DROID &&
-                    !pSkill->m_bDroidCanUse)
+                    !pSkill->m_bDroidCanUse && !bDroidException)
                 {
                     continue;
                 }
@@ -1439,18 +1570,6 @@ void CSWCLevelUpStats::SetClass(unsigned char nIndex, unsigned char nClass)
         SetReflexSavingThrow();
         SetWillSavingThrow();
         SetFortSavingThrow();
-        if (m_nHitPointsBase == 0)
-        {
-            short nHitDie = g_pRules->m_pClasses[nClass].m_nHitDie;
-            m_nHitPointsBase = nHitDie;
-            short nHitPoints = nHitDie + CalcStatModifier(m_nConstitution);
-            if (nHitPoints < 1)
-            {
-                nHitPoints = 1;
-            }
-            m_nMaxHitPoints = nHitPoints;
-            m_nCurrentHitPoints = nHitPoints;
-        }
         InitializeCombatInformation();
     }
 }
@@ -1809,16 +1928,17 @@ int CSWCLevelUpStats::CanChooseSpell(unsigned long nSpell, unsigned char nMax,
         {
             return 0;
         }
+        if (pSpell->GetSpellLevel(GetClass(nClass)) == CSWSpell::SPELL_LEVEL_INVALID)
+        {
+            return 0;
+        }
         if (nMax == 0)
         {
             return 0;
         }
-        for (unsigned short i = 0; i < GetNumberKnownSpells(nClass, 0); i++)
+        if (HasSpell(0, nSpell))
         {
-            if (nSpell == GetKnownSpell(nClass, 0, i))
-            {
-                return 0;
-            }
+            return 0;
         }
         for (unsigned short j = 0; j < pList->num; j++)
         {

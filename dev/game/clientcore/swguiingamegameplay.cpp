@@ -103,12 +103,12 @@ void CSWGuiInGameGameplay::OnCombatMovement(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
     {
-        int bCombatMovement =
+        int bReverse =
             !g_pAppManager->m_pClientExoApp->GetClientOptions()
-                 ->m_bCombatMovement;
+                 ->m_bReverseIngame;
         CClientOptions* pOptions =
             g_pAppManager->m_pClientExoApp->GetClientOptions();
-        pOptions->m_bCombatMovement = bCombatMovement;
+        pOptions->m_bReverseIngame = bReverse;
     }
 }
 // PC 0x00759480

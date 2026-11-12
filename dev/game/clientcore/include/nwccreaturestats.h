@@ -83,10 +83,11 @@ public:
         GOOD_EVIL_DARK_SIDE = 0,
         GOOD_EVIL_LIGHT_SIDE = 100,
         GOOD_EVIL_NEUTRAL_MIN = 40,
-        GOOD_EVIL_LIGHT_SIDE_MIN = 60
+        GOOD_EVIL_LIGHT_SIDE_MIN = 60,
+        ARMOR_CLASS_TYPE_1 = 1
     };
 
-    CSWCCreatureStats();
+    CSWCCreatureStats(CSWCCreature* pCreature);
     virtual ~CSWCCreatureStats();
 
     unsigned char GetClass(unsigned char nIndex);
@@ -183,6 +184,8 @@ public:
     void SetGender(unsigned char nGender) { m_nGender = nGender; }
     void SetPortraitId(unsigned short nPortraitId);
     static int CheckCustomPortrait(CResRef* pResRef, int bFemale);
+    CExoString GetFirstName();
+    CExoString GetLastName();
     void ClearKnownSpells(unsigned char nClass);
     void RemoveKnownSpell(unsigned char nClass, unsigned long nSpell);
     CExoString GetRaceString();
@@ -230,6 +233,7 @@ public:
     int HasSpell(unsigned char nClass, unsigned long nSpell);
     int HasFeat(unsigned short nFeat);
     int FeatAcquired(unsigned short nFeat);
+    int HasClassSkillFeat(unsigned short nSkill);
     void ClearFeats();
     void InitializeCombatInformation();
     unsigned char CalculateUnarmedDamageDice();
@@ -313,7 +317,7 @@ public:
     short m_nForcePointsBase;
     short m_nCurrentForcePoints;
     short m_nForcePointBonus;
-    CSWCCreature* m_p130;
+    CSWCCreature* m_pCreature;
 };
 
 class CSWCLevelUpStats : public CSWCCreatureStats
@@ -330,7 +334,7 @@ public:
         FIRST_LEVEL_SKILL_POINT_MULTIPLIER = 4
     };
 
-    CSWCLevelUpStats();
+    CSWCLevelUpStats(CSWCCreature* pCreature);
 
     int FeatAcquired(unsigned short nFeat,
                      CExoArrayList<unsigned short>* pList);
