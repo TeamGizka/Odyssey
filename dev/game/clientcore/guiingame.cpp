@@ -6876,7 +6876,8 @@ void CGuiInGame::HandleDialogSelection(int nReply, int bSelected)
             SetDialogAnimations();
             if (m_pDialog != 0 && m_pDialog == m_pCameraDialog)
             {
-                if (SetAnimatedCamera(m_pnReplyValue8[nReply], m_pfReplyValue9[nReply]) == 0)
+                int bAnimated = SetAnimatedCamera(m_pnReplyValue8[nReply], m_pfReplyValue9[nReply]);
+                if (bAnimated == 0)
                 {
                     if (m_bShotCameraInitialized == 0)
                         InitializeShotCamera();
@@ -6891,9 +6892,10 @@ void CGuiInGame::HandleDialogSelection(int nReply, int bSelected)
                     InitializeShotCamera();
                 SetComputerCameraShot(m_pnReplyValue4[nReply], m_pnReplyValue7[nReply],
                                       m_pnReplyValue10[nReply]);
-                reinterpret_cast<CSWBehaviorCameraDialog*>(
-                    g_pAppManager->m_pClientExoApp->GetModule()->GetCamera()->
-                        GetBehavior(AUR_BEHAVIOR_CAMERA_DIALOG))->ApplyCameraShot();
+                CSWBehaviorCameraDialog* pBehavior = reinterpret_cast<CSWBehaviorCameraDialog*>(
+                    g_pAppManager->GetClientExoApp()->GetModule()->GetCamera()->
+                        GetBehavior(AUR_BEHAVIOR_CAMERA_DIALOG));
+                pBehavior->ApplyCameraShot();
             }
         }
         if (bEscape)

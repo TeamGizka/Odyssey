@@ -8066,7 +8066,7 @@ int CClientExoAppInternal::ChangeCharacterToNextLivingPartyMember(
 // PC 0x00643630
 void CClientExoAppInternal::UpdateLoadingScreenHint()
 {
-    if (m_pGuiLoadScreen != NULL && m_pGuiLoadScreen->m_nHintStrRef != 0)
+    if (GetLoadScreenHint() != 0)
     {
         unsigned long nTime = g_pExoBase->m_pExoTimers->GetLowResolutionTimer();
         unsigned long nLastTime = m_nLoadScreenStartTime;
@@ -8082,13 +8082,14 @@ void CClientExoAppInternal::UpdateLoadingScreenHint()
             if (g_pAppManager->GetServerExoApp() == NULL ||
                 g_pAppManager->GetServerExoApp()->GetModuleName().GetLength() <= 0)
             {
+                CExoString sModule("");
                 SetLoadScreenHint(GetNextLoadScreenHintSTRREF(
-                    CExoString(""), LOAD_SCREEN_HINT_GAMEPLAY));
+                    sModule, LOAD_SCREEN_HINT_GAMEPLAY));
             }
             else
             {
                 SetLoadScreenHint(GetNextLoadScreenHintSTRREF(
-                    g_pAppManager->m_pServerExoApp->GetModuleName(),
+                    g_pAppManager->GetServerExoApp()->GetModuleName(),
                     LOAD_SCREEN_HINT_STORY));
             }
         }

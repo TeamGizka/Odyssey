@@ -126,7 +126,7 @@ int CClientAIMaster::RemoveObject(CSWCObject* pObject)
 // PC 0x00650A50
 CClientAIList::~CClientAIList()
 {
-    while (m_lstObjects.GetHeadPos() != NULL)
+    while (!m_lstObjects.IsEmpty())
     {
         unsigned long nId = (unsigned long)m_lstObjects.GetHead();
         CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
