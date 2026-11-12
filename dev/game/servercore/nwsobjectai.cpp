@@ -1601,14 +1601,10 @@ int CSWSObject::AIActionPlayAnimation(CSWSObjectActionNode* pNode)
             switch (nAnimation)
             {
             case CREATURE_ANIMATION_LOCKPICK_DOOR:
-                nSoundDelay = 250;
-                break;
             case CREATURE_ANIMATION_LOCKPICK_PLACEABLE:
                 nSoundDelay = 250;
                 break;
             case CREATURE_ANIMATION_MINE_DISARM_1:
-                nSoundDelay = 750;
-                break;
             case CREATURE_ANIMATION_MINE_DISARM_2:
             case CREATURE_ANIMATION_MINE_DISARM_3:
                 nSoundDelay = 750;

@@ -1185,8 +1185,12 @@ int CSWSCreature::AddHealActions(unsigned long oidTarget, unsigned long oidItem,
 // PC 0x00511940
 void CSWSCreature::HandleHPRegeneration()
 {
-    if (GetMaxHitPoints(1) != GetCurrentHitPoints(1) &&
-        g_pAppManager->GetServerExoApp()->GetPartyTable()->m_bDisableRegen == 0)
+    if (GetMaxHitPoints(1) == GetCurrentHitPoints(1))
+    {
+        return;
+    }
+    int bDisableRegen = g_pAppManager->GetServerExoApp()->GetPartyTable()->m_bDisableRegen;
+    if (bDisableRegen == 0)
     {
         float fHPBase = 0.0f;
         float fTimePerHP = 0.0f;
@@ -1208,7 +1212,8 @@ void CSWSCreature::HandleHPRegeneration()
         pRegeneration->GetFLOATEntry("SkillRankBons", sValue, &fSkillRankBonus);
 
         fHPBase += GetStats()->m_nConstitutionModifier * fConModBonus;
-        if (GetStats()->m_nRace == CSWRace::CRACE_DROID)
+        unsigned short nRace = GetStats()->m_nRace;
+        if (nRace == CSWRace::CRACE_DROID)
         {
             fHPBase += GetStats()->GetSkillRank(CSWRules::SKILL_REPAIR, NULL, 0) * fSkillRankBonus;
         }
@@ -1246,7 +1251,8 @@ void CSWSCreature::HandleHPRegeneration()
         if (fAdjustment != 0.0)
         {
             int nAdjustment = (short)GetStats()->AdjustHPAccumulatorBy(fAdjustment);
-            float fNewHitPoints = (float)(GetCurrentHitPoints(1) + nAdjustment);
+            nAdjustment += GetCurrentHitPoints(1);
+            float fNewHitPoints = (float)nAdjustment;
             int nNewHitPoints = (int)min(GetMaxHitPoints(1), fNewHitPoints);
             if (nNewHitPoints < 1)
             {
@@ -4198,15 +4204,15 @@ void CSWSCreature::HandleAlignmentInfluence()
         nTotalInfluence = 0;
     }
 
-    float fAlignment = (nTotalInfluence - 50) * fMultiplier * 0.02f *
+    float fAlignment = ((nTotalInfluence - 50) * fMultiplier * 0.02f) *
                        ((nPCAlignment - 50) * 0.02f);
-    if (fAlignment > 0.0f)
+    if (fAlignment <= 0.0f)
     {
-        fAlignment = fAlignment * (100 - (char)nBaseAlignment) + (char)nBaseAlignment;
+        fAlignment = (fAlignment + 1.0f) * (char)nBaseAlignment;
     }
     else
     {
-        fAlignment = (fAlignment + 1.0f) * (char)nBaseAlignment;
+        fAlignment = fAlignment * (100 - (char)nBaseAlignment) + (char)nBaseAlignment;
     }
 
     char nNewAlignment;
@@ -6346,13 +6352,14 @@ int CSWSCreature::DoSpotDetection(CSWSCreature* pCreature, int bInvisible)
     {
         nSpotRank = GetStats()->GetSkillRank(CSWSkill::SKILL_AWARENESS,
                                             pCreature->AsSWSObject(), 0);
+        nCheck += nSpotRank;
     }
     else
     {
         nSpotRank = GetStats()->GetSkillRank(CSWSkill::SKILL_AWARENESS,
                                             pCreature->AsSWSObject(), 0) / 2;
+        nCheck += nSpotRank;
     }
-    nCheck += nSpotRank;
     nCheck += m_nSpotCheckRoll;
     CSWCCreature* pClientCreature = GetClientCreature();
     if (GetStats()->GetIsPC() && pClientCreature != NULL &&
@@ -6414,8 +6421,8 @@ int CSWSCreature::DoSpotDetection(CSWSCreature* pCreature, int bInvisible)
     if (fDistance > 2.0f)
     {
         int nPenalty = (int)(fDistance - 2.0f);
-        nCheck -= nPenalty;
         nDistancePenalty = -nPenalty;
+        nCheck -= nDistancePenalty;
     }
     if (nCheck <= 0)
     {

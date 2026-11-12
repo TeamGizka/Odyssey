@@ -471,7 +471,6 @@ int CSWSFaction::GetMostFrequentClass()
     CSWSCreature* pOther;
     CServerExoApp* pExoApp;
 
-    i = 0;
     nBestClass = 0;
     nBestCount = 0;
     nCount = 0;

@@ -150,7 +150,7 @@ public:
 
     unsigned char m_nObjectType;
     char m_nUnknown29;
-    short m_nUnknown2A;
+    unsigned short m_nUnknown2A;
     unsigned long m_oidObject;
     Vector m_vUnknown30;
     int m_nUnknown3C;

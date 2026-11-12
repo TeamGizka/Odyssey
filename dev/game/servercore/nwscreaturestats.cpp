@@ -2462,7 +2462,7 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
     int nEffectBonus = GetCreature()->GetTotalEffectBonus(CSWSCreature::EFFECT_BONUS_DAMAGE,
         pTarget, nCapped, 0, bMaxDamage, 0, 0,
         CSWSCreature::EFFECT_BONUS_FILTER_ALL, CSWSCreature::EFFECT_BONUS_FILTER_ALL, 0, &nEffectDamage);
-    pAttack->m_DamageBreakdown.m_nEffectDamageBonus = nEffectDamage;
+    pAttack->m_DamageBreakdown.m_nUnknown10 = nEffectDamage;
     nDamage += nEffectDamage;
     if (g_bEnableCombatDebugging && nEffectBonus)
     {

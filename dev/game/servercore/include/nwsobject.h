@@ -2165,8 +2165,8 @@ public:
     int m_nAreaWaitState;
 
 
-    short m_nSoundSetFile;
-    short GetSoundSetFile() { return m_nSoundSetFile; }
+    unsigned short m_nSoundSetFile;
+    unsigned short GetSoundSetFile() { return m_nSoundSetFile; }
 
     unsigned char m_nBodyBag;
     char m_aUnmapped9DB[1];

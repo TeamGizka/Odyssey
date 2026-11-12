@@ -249,13 +249,18 @@ void CSWPartyTable::DistributeExperience(int nExperience, int bFeedback)
                 m_aoidNPC[m_anMembers[i]]);
             if (pCreature != NULL)
             {
-                pCreature->m_sTag.CStr();
+                CExoString* pTag = &pCreature->m_sTag;
+                pTag->CStr();
                 pCreature->ReceiveExperience(nExperience);
-                if (g_pAppManager->m_pClientExoApp->GetClientOptions()
-                            ->m_bAutoLevelUpNPCs != 0 &&
-                    pCreature->m_pStats->CanLevelUp() != 0)
+                CClientOptions* pOptions = g_pAppManager->m_pClientExoApp->GetClientOptions();
+                if (pOptions->m_bAutoLevelUpNPCs != 0)
                 {
-                    pCreature->m_pStats->AutoLevelup(1);
+                    CSWSCreatureStats* pStats = pCreature->m_pStats;
+                    if (pStats->CanLevelUp() != 0)
+                    {
+                        pStats = pCreature->m_pStats;
+                        pStats->AutoLevelup(1);
+                    }
                 }
             }
         }
@@ -1336,9 +1341,9 @@ int CSWPartyTable::KillNPCObject(int nNPC, int bFade)  // PC 0x00579D80
         return 0;
     }
 
+    unsigned long oidNPC = m_aoidNPC[nNPC];
     CSWSCreature* pCreature =
-        g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
-            m_aoidNPC[nNPC]);
+        g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidNPC);
     m_aoidNPC[nNPC] = OBJECT_INVALID;
     if (pCreature == NULL)
     {

@@ -72,7 +72,11 @@ int CSWSItemPropertyHandler::ApplyEnhancementBonus(CSWSItem* pItem,
     int nAmount;
     char nWeaponWield;
 
-    if (nIndex == INVENTORY_SLOT_LEFTHAND2 || nIndex == INVENTORY_SLOT_RIGHTHAND2)
+    if (nIndex == INVENTORY_SLOT_LEFTHAND2)
+    {
+        return 0;
+    }
+    if (nIndex == INVENTORY_SLOT_RIGHTHAND2)
     {
         return 0;
     }

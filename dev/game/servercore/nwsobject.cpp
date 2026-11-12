@@ -3082,7 +3082,7 @@ void CSWSObject::SpellCastAndImpact(
                         AsSWSCreature()->GetForm(), AsSWSCreature()->GetStats()->GetCHAMod());
                 }
                 pData->SetInteger(2, nForceCost);
-                int nForcePoints = AsSWSCreature()->GetStats()->GetCurrentForcePoints();
+                int nForcePoints = AsSWSCreature()->m_pStats->GetCurrentForcePoints();
                 pData->SetInteger(3, nForcePoints);
                 pData->SetInteger(4, nForceBodyCost);
                 int nHitPoints = AsSWSCreature()->GetCurrentHitPoints(0);
@@ -3264,7 +3264,7 @@ CSWSArea* CSWSObject::GetArea()
 {
     CGameObject* pObject = NULL;
 
-    CGameObjectArray* pArray = g_pAppManager->m_pServerExoApp->GetObjectArray();
+    CGameObjectArray* pArray = g_pAppManager->GetServerExoApp()->GetObjectArray();
 
     EXOXBOXASSERT(pArray);
     pArray->GetGameObject(m_oidArea, &pObject);

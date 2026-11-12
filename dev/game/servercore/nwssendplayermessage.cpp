@@ -7705,7 +7705,8 @@ void CSWSMessage::UpdateLastUpdateObject(
             CExoArrayList<unsigned long>* pTrapDetectedBy =
                 &pObject->AsSWSDoor()->m_lstTrapDetectedBy;
             AssignCreatureLists(pTrapDetectedBy, &pLastUpdateObject->m_lstTrapDetectedBy);
-            pLastUpdateObject->m_bTrapFlag = pObject->AsSWSDoor()->m_bTrapFlag;
+            CSWSDoor* pDoor = pObject->AsSWSDoor();
+            pLastUpdateObject->m_bTrapFlag = pDoor->m_bTrapFlag;
             pLastUpdateObject->m_bTrapFlagged =
                 (unsigned char)pObject->AsSWSDoor()->m_bTrapFlagged;
             pLastUpdateObject->m_bLocked = pObject->AsSWSDoor()->m_bLocked;
@@ -7716,7 +7717,8 @@ void CSWSMessage::UpdateLastUpdateObject(
             CExoArrayList<unsigned long>* pTrapDetectedBy =
                 &pObject->AsSWSPlaceable()->m_lstTrapDetectedBy;
             AssignCreatureLists(pTrapDetectedBy, &pLastUpdateObject->m_lstTrapDetectedBy);
-            pLastUpdateObject->m_bTrapFlag = pObject->AsSWSPlaceable()->m_nTrapFlag;
+            CSWSPlaceable* pPlaceable = pObject->AsSWSPlaceable();
+            pLastUpdateObject->m_bTrapFlag = pPlaceable->m_nTrapFlag;
             pLastUpdateObject->m_bTrapFlagged =
                 (unsigned char)pObject->AsSWSPlaceable()->m_bTrapFlagged;
             pLastUpdateObject->m_bLocked = pObject->AsSWSPlaceable()->m_bLocked;

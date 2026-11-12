@@ -3159,25 +3159,30 @@ int CSWVirtualMachineCommands::ExecuteCommandActionStartConversation(
             for (int nMember = 0; nMember < 3; ++nMember)
             {
                 CSWCCreature* pMember =
-                    g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nMember);
+                    g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(nMember);
                 if (pMember != NULL)
                 {
                     CSWSCreature* pServerMember = pMember->GetServerCreature();
-                    if (pServerMember != NULL &&
-                        pServerMember->GetCurrentHitPoints(0) < 1)
+                    if (pServerMember != NULL)
                     {
-                        CGameEffect* pEffect = new CGameEffect(1);
-                        pEffect->m_nType = CSWSEffectListHandler::EFFECT_RESURRECTION;
-                        pEffect->m_nSubType =
-                            (pEffect->m_nSubType & ~CGameEffect::SUBTYPE_MASK) |
-                            SUBTYPE_MAGICAL;
-                        pEffect->SetInteger(0, 2);
-                        if (g_pAppManager->GetServerExoApp()->GetGameObject(m_oidObject) != NULL)
+                        short nHitPoints = pServerMember->GetCurrentHitPoints(0);
+                        if (nHitPoints < 1)
                         {
-                            pEffect->SetCreator(m_oidObject);
+                            CGameEffect* pEffect = new CGameEffect(1);
+                            pEffect->m_nType = CSWSEffectListHandler::EFFECT_RESURRECTION;
+                            pEffect->m_nSubType =
+                                (pEffect->m_nSubType & ~CGameEffect::SUBTYPE_MASK) |
+                                SUBTYPE_MAGICAL;
+                            pEffect->SetInteger(0, 2);
+                            CGameObject* pCaster =
+                                g_pAppManager->GetServerExoApp()->GetGameObject(m_oidObject);
+                            if (pCaster != NULL)
+                            {
+                                pEffect->SetCreator(m_oidObject);
+                            }
+                            pEffect->m_nSubType &= ~CGameEffect::DURATION_MASK;
+                            pServerMember->AsSWSObject()->ApplyEffect(pEffect, 0, 1);
                         }
-                        pEffect->m_nSubType &= ~CGameEffect::DURATION_MASK;
-                        pServerMember->AsSWSObject()->ApplyEffect(pEffect, 0, 1);
                     }
                 }
             }
