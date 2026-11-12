@@ -191,14 +191,18 @@ void CSWGuiUpgrade::InsertUpgrade(CSWSItem* pItem, int nSlot)
 const CSWGuiUpgrade::SlotInfo
     CSWGuiUpgrade::SLOT_INFO[NUM_ITEMLIST_MODES][NUM_UPGRADE_SLOTS] =
 {
-    { { 0, "i_powerc", 36977 }, { -1, "i_colorc", 36978 },
-      { 0, "i_powerc", 36977 }, { -1, "", 0 } },
-    { { 4, "i_scope", 32487 }, { 5, "i_energy", 32488 },
-      { 6, "i_beam", 32489 }, { 7, "i_hair", 32490 } },
-    { { 1, "i_vcell", 32493 }, { 2, "i_durasteel", 32494 },
-      { 3, "i_imp_eng", 32495 }, { -1, "", 0 } },
-    { { -1, "", 0 }, { 8, "i_armorrein", 32491 },
-      { 9, "i_armorrein", 32492 }, { -1, "", 0 } }
+    { { 0, "i_powerc", 48473 }, { -1, "i_powerc", 48472 },
+      { 0, "i_powerc", 48473 }, { 1, "i_lens", 48464 },
+      { 2, "i_emitter", 48465 }, { 3, "i_lsenergy", 48466 } },
+    { { 4, "i_scope", 48471 }, { 5, "i_energy", 48470 },
+      { 6, "i_imp_eng", 48469 }, { -1, "", 0 },
+      { -1, "", 0 }, { -1, "", 0 } },
+    { { 7, "i_grip", 48467 }, { 8, "i_edge", 48468 },
+      { 9, "i_vcell", 48466 }, { -1, "", 0 },
+      { -1, "", 0 }, { -1, "", 0 } },
+    { { 10, "i_armorrein", 48475 }, { 11, "i_armorrein", 48474 },
+      { -1, "", 0 }, { -1, "", 0 },
+      { -1, "", 0 }, { -1, "", 0 } }
 };
 // PC 0x00724610
 void CSWGuiUpgrade::OnPanelRemoved()
@@ -1176,14 +1180,16 @@ void CSWGuiUpgrade::ShowItems(int bShow)  // PC 0x007242E0
         m_cSlotName.SetShown(0);
         m_cProperty.SetShown(0);
         m_cAssemble.SetShown(0);
-        for (int i = 0; i < 4; i++)
+        m_btnOk.SetShown(1);
+        for (int i = 0; i < 3; i++)
         {
-            m_aUpgradeButtons4[i].SetShown(0);
-            if (i < 3)
-            {
-                m_aUpgradeButtons3[i].SetShown(0);
-                m_aUpgradeLabels3[i].SetShown(0);
-            }
+            m_aUpgradeButtons3[i].SetShown(0);
+            m_aUpgradeLabels3[i].SetShown(0);
+        }
+        for (int i = 0; i < 6; i++)
+        {
+            m_aUpgradeButtons3Ls[i].SetShown(0);
+            m_aUpgradeLabels3Ls[i].SetShown(0);
         }
         m_lbItems.SetShown(1);
         return;
@@ -1192,24 +1198,23 @@ void CSWGuiUpgrade::ShowItems(int bShow)  // PC 0x007242E0
     if (m_nItemListMode == ITEMLIST_LIGHTSABER)
     {
         m_3dModel.SetShown(0);
-        m_cSlotName.SetShown(0);
-        m_cProperty.SetShown(0);
+        m_cSlotName.SetShown(1);
+        m_cProperty.SetShown(1);
         m_cDescriptionBackground.SetShown(0);
-        m_lbDesc.SetShown(0);
         m_3dModelLs.SetShown(1);
         m_cAssemble.SetShown(1);
+        m_btnOk.SetShown(0);
         m_cLightsaberDescriptionBackground.SetShown(1);
-        m_lbDescLs.SetShown(1);
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 6; i++)
         {
-            m_aUpgradeButtons4[i].SetShown(0);
-            if (i < 3)
-            {
-                m_aUpgradeButtons3[i].SetShown(1);
-                m_aUpgradeLabels3[i].SetShown(1);
-            }
+            m_aUpgradeButtons3Ls[i].SetShown(1);
+            m_aUpgradeLabels3Ls[i].SetShown(1);
         }
-        SetActiveControl(&m_aUpgradeButtons3[0], 0);
+        for (int i = 0; i < 3; i++)
+        {
+            m_aUpgradeButtons3[i].SetShown(0);
+            m_aUpgradeLabels3[i].SetShown(0);
+        }
     }
     else
     {
@@ -1218,41 +1223,35 @@ void CSWGuiUpgrade::ShowItems(int bShow)  // PC 0x007242E0
         m_cSlotName.SetShown(1);
         m_cProperty.SetShown(1);
         m_cAssemble.SetShown(1);
+        m_btnOk.SetShown(0);
         m_cDescriptionBackground.SetShown(1);
         m_lbDesc.SetShown(1);
         m_3dModelLs.SetShown(0);
         m_cLightsaberDescriptionBackground.SetShown(0);
-        m_lbDescLs.SetShown(0);
-        switch (m_nItemListMode)
-        {
-        case ITEMLIST_BLASTER:
-            for (int i = 0; i < 4; i++)
-            {
-                m_aUpgradeButtons4[i].SetShown(1);
-                }
-            SetActiveControl(&m_aUpgradeButtons4[0], 0);
-            break;
-        case ITEMLIST_ARMOR:
-            m_aUpgradeButtons4[0].SetShown(0);
-            m_aUpgradeButtons4[1].SetShown(1);
-            m_aUpgradeButtons4[2].SetShown(1);
-            m_aUpgradeButtons4[3].SetShown(0);
-            SetActiveControl(&m_aUpgradeButtons4[1], 0);
-            break;
-        case ITEMLIST_MELEE:
-            for (int i = 0; i < 4; i++)
-            {
-                m_aUpgradeButtons4[i].SetShown(0);
-                }
-            SetActiveControl(&m_aUpgradeButtons4[0], 0);
+        if (m_nItemListMode >= ITEMLIST_BLASTER && m_nItemListMode <= ITEMLIST_ARMOR)
             bShowThreeSlots = 1;
-            break;
-        }
         for (int i = 0; i < 3; i++)
         {
             m_aUpgradeButtons3[i].SetShown(bShowThreeSlots);
             m_aUpgradeLabels3[i].SetShown(bShowThreeSlots);
         }
+        for (int i = 0; i < 6; i++)
+        {
+            m_aUpgradeButtons3Ls[i].SetShown(0);
+            m_aUpgradeLabels3Ls[i].SetShown(0);
+        }
+    }
+    if (m_nItemListMode == ITEMLIST_ARMOR)
+    {
+        m_aUpgradeLabels3[2].SetShown(0);
+        m_aUpgradeButtons3[2].SetShown(0);
+        m_aUpgradeButtons3[0].SetMoveToControl(3, &m_aUpgradeButtons3[1]);
+        m_aUpgradeButtons3[1].SetMoveToControl(1, &m_aUpgradeButtons3[0]);
+    }
+    else
+    {
+        m_aUpgradeButtons3[1].SetMoveToControl(1, &m_aUpgradeButtons3[2]);
+        m_aUpgradeButtons3[0].SetMoveToControl(3, &m_aUpgradeButtons3[2]);
     }
     m_lbItems.SetShown(0);
 }
@@ -1617,25 +1616,19 @@ void CSWGuiUpgrade::OnControlEntered(CSWGuiControl* pControl)
             CSWSItem* pItem = g_pAppManager->GetServerExoApp()
                 ->GetItemByGameObjectID(pEntry->m_oidItem);
             CExoString sDescription;
-            CExoLocString& sItemDescription = pItem->m_sDescIdentified;
-            sItemDescription.GetString(g_pAppManager->GetClientExoApp()->GetClientLanguage(),
-                                       &sDescription, 0);
-#ifdef _XBOX
+            sDescription = pItem->GetPropertyDescription();
+            int nTag = sDescription.Find('<', 0);
+            int nToken = sDescription.Find('{', 0);
+            if (nTag != -1 || nToken != -1)
+            {
+                CSWCCreature* pPlayerCharacter =
+                    g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
+                g_pSWTlkTable->ParseStr(sDescription, pPlayerCharacter, 0, 1);
+            }
             if (sDescription != "")
                 SetDescription(sDescription);
             else
                 SetDescription(g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_NO_DESCRIPTION));
-#else
-            if (sDescription == "")
-                sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_NO_DESCRIPTION);
-            int nSlot = (int)m_pItemListControl->GetUserData();
-            if (m_nItemListMode == ITEMLIST_LIGHTSABER && nSlot != UPGRADE_SLOT_COLOR_CRYSTAL)
-            {
-                unsigned char nUpgradeIndex = pEntry->m_nUpgradeIndex;
-                sDescription = m_pSelectedItem->GetKeyedPropertyString(nUpgradeIndex) + sDescription;
-            }
-            SetDescription(sDescription);
-#endif
         }
         else
             SetDescription("");
@@ -1912,24 +1905,13 @@ void CSWGuiUpgrade::HandleInputEvent(int nEvent, int nState)
             }
             break;
         case GUIEVENT_SCROLL_DOWN:
-            if (m_nItemListMode == ITEMLIST_LIGHTSABER)
-            {
-                m_lbDescLs.HandleInputEvent(GUIEVENT_DOWN, 1);
-            }
-            else
-            {
-                m_lbDesc.HandleInputEvent(GUIEVENT_DOWN, 1);
-            }
+            m_lbDesc.HandleInputEvent(GUIEVENT_DOWN, 1);
             break;
         case GUIEVENT_SCROLL_UP:
-            if (m_nItemListMode == ITEMLIST_LIGHTSABER)
-            {
-                m_lbDescLs.HandleInputEvent(GUIEVENT_UP, 1);
-            }
-            else
-            {
-                m_lbDesc.HandleInputEvent(GUIEVENT_UP, 1);
-            }
+            m_lbDesc.HandleInputEvent(GUIEVENT_UP, 1);
+            break;
+        case GUIEVENT_TOGGLE_MODE:
+            OnAssemble(0);
             break;
         }
     }
@@ -1947,13 +1929,6 @@ void CSWGuiUpgrade::SetDescription(const CExoString& sDescription)
 #ifdef _XBOX
     CSWGuiLabel* pRanalog = &m_lblRanalog;
 #endif
-    if (m_nItemListMode == ITEMLIST_LIGHTSABER)
-    {
-        pListBox = &m_lbDescLs;
-#ifdef _XBOX
-        pRanalog = &m_lblRanalogLs;
-#endif
-    }
     pListBox->ClearItems();
     CSWGuiExtent cExtent = m_CSWGuiLabel_1F60.m_cExtent;
     if (sDescription.GetLength() > 0)
@@ -2123,42 +2098,45 @@ void CSWGuiUpgrade::UpdateItems()
 {
     CResRef cIcon;
     CExoString sDescription;
-    int nFirstSlot = 0;
     CSWGuiLabel* pLabels;
     switch (m_nItemListMode)
     {
     case ITEMLIST_LIGHTSABER:
+        pLabels = m_aUpgradeLabels3Ls;
+        break;
+    case ITEMLIST_BLASTER:
+        pLabels = m_aUpgradeLabels3;
+        break;
     case ITEMLIST_MELEE:
         pLabels = m_aUpgradeLabels3;
         break;
     case ITEMLIST_ARMOR:
-        nFirstSlot = 1;
-    case ITEMLIST_BLASTER:
-        pLabels = m_aUpgradeLabels3Ls;
+        pLabels = m_aUpgradeLabels3;
         break;
     }
     unsigned char nSlots = 0;
     switch (m_nItemListMode)
     {
     case ITEMLIST_LIGHTSABER:
-    case ITEMLIST_MELEE:
-        nSlots = 3;
+        nSlots = 6;
         break;
     case ITEMLIST_BLASTER:
-        nSlots = 4;
+    case ITEMLIST_MELEE:
+        nSlots = 3;
         break;
     case ITEMLIST_ARMOR:
         nSlots = 2;
         break;
     }
-    int nEndSlot = nFirstSlot + nSlots;
-    for (int i = nFirstSlot; i < nEndSlot; i++)
+    int nEndSlot = nSlots;
+    for (int i = 0; i < nEndSlot; i++)
     {
         if (m_apItemEntries[i] != 0)
         {
             CSWBaseItem* pBaseItem = g_pRules->m_pBaseItems->GetBaseItem(
                 m_apItemEntries[i]->GetBaseItemType());
             cIcon = m_apItemEntries[i]->GetIcon();
+            pLabels[i].m_cBorder.m_cParams.m_fHilightAlpha = 1.0f;
         }
         else
         {
@@ -2184,51 +2162,55 @@ void CSWGuiUpgrade::OnEnterSlot(CSWGuiControl* pControl)
                 CExoLocString sItemName = m_apItemEntries[nSlot]->m_sLocalizedName;
                 sItemName.GetString(g_pAppManager->GetClientExoApp()->GetClientLanguage(),
                                     &sName, 0);
-#ifdef _XBOX
-                m_cLightsaberSlotName.m_cText.m_cParams.SetText(sName);
-#endif
+                int nTag = sName.Find('<', 0);
+                int nToken = sName.Find('{', 0);
+                if (nTag != -1 || nToken != -1)
+                {
+                    CSWCCreature* pPlayerCharacter =
+                        g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
+                    g_pSWTlkTable->ParseStr(sName, pPlayerCharacter, 1, 1);
+                }
+                m_cSlotName.m_cText.m_cParams.SetText(sName);
+                m_cProperty.m_cText.m_cParams.SetText(
+                    m_apItemEntries[nSlot]->GetPropertiesOnlyDescription());
             }
-#ifdef _XBOX
             else
-                m_cLightsaberSlotName.m_cText.m_cParams.SetStrRef(nStrRef);
-#endif
-#ifdef _XBOX
-            m_lblAAction.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-            m_lblAAction.m_cText.m_cParams.SetStrRef(36841);
-#endif
+            {
+                m_cSlotName.m_cText.m_cParams.SetStrRef(nStrRef);
+                m_cProperty.m_cText.m_cParams.SetText("");
+            }
         }
         else
         {
-            int nCount = 0;
             CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
             CSWSItem* pItem = pServer->GetItemByGameObjectID(
                 pServer->GetPartyTable()->GetPartyItems()->FindItemWithTag(
                     m_asUpgradeTemplates[nSlot]));
-            if (pItem != 0)
-                nCount = pItem->m_nStackSize;
-            m_cSlotName.m_cText.m_cParams.SetStrRef(nStrRef);
-#ifdef _XBOX
+            if (m_apItemEntries[nSlot] != 0)
             {
-                CExoString sCount(nCount);
-                m_cUpgradeCount.m_cText.m_cParams.SetText(sCount);
-            }
-            m_cUpgrades.m_cText.m_cParams.SetStrRef(STRREF_UPGRADES);
-#endif
-            CSWSItem* pSelectedItem = m_pSelectedItem;
-            m_cProperty.m_cText.m_cParams.SetText(
-                pSelectedItem->GetKeyedPropertyString(m_anUpgradeProperties[nSlot]));
-#ifdef _XBOX
-            if (nCount == 0 && m_apItemEntries[nSlot] == 0)
-            {
-                m_lblAAction.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
-                m_lblAAction.m_cText.m_cParams.SetStrRef(31387);
+                CExoString sName;
+                CExoLocString sItemName = m_apItemEntries[nSlot]->m_sLocalizedName;
+                sItemName.GetString(g_pAppManager->GetClientExoApp()->GetClientLanguage(),
+                                    &sName, 0);
+                int nTag = sName.Find('<', 0);
+                int nToken = sName.Find('{', 0);
+                if (nTag != -1 || nToken != -1)
+                {
+                    CSWCCreature* pPlayerCharacter =
+                        g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
+                    g_pSWTlkTable->ParseStr(sName, pPlayerCharacter, 1, 1);
+                }
+                m_cSlotName.m_cText.m_cParams.SetText(sName);
+                m_cProperty.m_cText.m_cParams.SetText(
+                    m_apItemEntries[nSlot]->GetPropertiesOnlyDescription());
             }
             else
             {
-                m_lblAAction.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-                m_lblAAction.m_cText.m_cParams.SetStrRef(m_apItemEntries[nSlot] != 0 ? 36840 : 31387);
+                CSWSItem* pSelectedItem = m_pSelectedItem;
+                m_cProperty.m_cText.m_cParams.SetText(
+                    pSelectedItem->GetKeyedPropertyString(m_anUpgradeProperties[nSlot]));
+                m_cSlotName.m_cText.m_cParams.SetStrRef(nStrRef);
             }
-#endif
         }
     }
 }

@@ -3,6 +3,9 @@
 #include "exoresman.h"
 #include "appmanager.h"
 #include "clientexoapp.h"
+#include "serverexoapp.h"
+#include "nwsvartable.h"
+#include "clientoptions.h"
 #include "exoinput.h"
 #include "exotlktable.h"
 
@@ -14,6 +17,7 @@
 #include "twodimarray.h"
 #include "nwccreatureappearance.h"
 #include "nwclass.h"
+#include "nwscript.h"
 #include "aurscene.h"
 #include "swmain.h"
 #include "nwccreature.h"
@@ -23,12 +27,18 @@
 #include <stdlib.h>
 
 CSWGuiClassType CSWGuiClassSelection::CHAR_TYPES[6] = {
-    {CSWClass::CCLASS_JEDICONSULAR, 0, 85, 0, 48031},
-    {CSWClass::CCLASS_JEDISENTINEL, 0, 85, 0, 48032},
-    {CSWClass::CCLASS_JEDIGUARDIAN, 0, 85, 0, 48033},
-    {CSWClass::CCLASS_JEDIGUARDIAN, 1, 83, 0, 48033},
-    {CSWClass::CCLASS_JEDISENTINEL, 1, 83, 0, 48032},
-    {CSWClass::CCLASS_JEDICONSULAR, 1, 83, 0, 48031}
+    {CSWClass::CCLASS_JEDICONSULAR, CCAppearanceInfo::GENDER_MALE, SOUNDSET_PLAYER_MALE, 0,
+     STRREF_JEDI_CONSULAR_DESCRIPTION},
+    {CSWClass::CCLASS_JEDISENTINEL, CCAppearanceInfo::GENDER_MALE, SOUNDSET_PLAYER_MALE, 0,
+     STRREF_JEDI_SENTINEL_DESCRIPTION},
+    {CSWClass::CCLASS_JEDIGUARDIAN, CCAppearanceInfo::GENDER_MALE, SOUNDSET_PLAYER_MALE, 0,
+     STRREF_JEDI_GUARDIAN_DESCRIPTION},
+    {CSWClass::CCLASS_JEDIGUARDIAN, CCAppearanceInfo::GENDER_FEMALE, SOUNDSET_PLAYER_FEMALE, 0,
+     STRREF_JEDI_GUARDIAN_DESCRIPTION},
+    {CSWClass::CCLASS_JEDISENTINEL, CCAppearanceInfo::GENDER_FEMALE, SOUNDSET_PLAYER_FEMALE, 0,
+     STRREF_JEDI_SENTINEL_DESCRIPTION},
+    {CSWClass::CCLASS_JEDICONSULAR, CCAppearanceInfo::GENDER_FEMALE, SOUNDSET_PLAYER_FEMALE, 0,
+     STRREF_JEDI_CONSULAR_DESCRIPTION}
 };
 // PC 0x0074A8B0
 CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
@@ -40,8 +50,10 @@ CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
     Quaternion qOrientation(0.0f, 0.0f, 0.0f, 1.0f);
 
     g_pAppManager->GetClientExoApp()->SetLoadScreenByModuleName("classsel");
+    g_pAppManager->GetClientExoApp()->SetLoadMusic(
+        g_pAppManager->GetClientExoApp()->GetLoadMusicByModuleName("classsel"));
     g_pAppManager->GetClientExoApp()->SetLoadScreenHint(0);
-    g_pAppManager->GetClientExoApp()->ShowLoadScreen(1, 0, 0);
+    g_pAppManager->GetClientExoApp()->ShowLoadScreen(1, 1, 0);
     UpdateScreen(0.033333335f, 0, 0);
     {
 #ifdef _XBOX
@@ -72,7 +84,7 @@ CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
 #endif
     g_pAppManager->GetClientExoApp()->SetLoadBarProgress(12, 1);
     UpdateScreen(0.033333335f, 0, 0);
-    StartLoadFromLayout("ClassSel");
+    StartLoadFromLayout("ClassSel_p");
 
     C2DA* pPortraits = new C2DA("PORTRAITS", 0);
 #ifdef _XBOX
@@ -123,10 +135,6 @@ CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
         CSWGui3DSceneView* pView = &pCharacter->m_viewModel;
         InitControl(*pView, sControl, 1);
 #endif
-        pButton->m_cBorder.m_cParams.m_vColor =
-            CGuiInGame::COLOR_BLUE;
-        pButton->m_cHilite.m_cParams.m_vColor =
-            CGuiInGame::COLOR_YELLOW;
         pButton->m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
         pButton->AddEvent(
             GUIEVENT_MOUSE_ENTER, this,
@@ -178,23 +186,26 @@ CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
         int nAppearance;
         switch (CHAR_TYPES[i].m_nClass)
         {
-        case CSWClass::CLASS_INDEX_SCOUNDREL:
+        case CLASS_TYPE_JEDICONSULAR:
         {
             CExoString sColumn("Appearance_S");
             pPortraits->GetINTEntry(nPortrait, sColumn, &nAppearance);
         }
+        cAppearance.m_nTextureVar = 3;
         break;
-        case CSWClass::CLASS_INDEX_SCOUT:
+        case CLASS_TYPE_JEDISENTINEL:
         {
             CExoString sColumn("AppearanceNumber");
             pPortraits->GetINTEntry(nPortrait, sColumn, &nAppearance);
         }
+        cAppearance.m_nTextureVar = 2;
         break;
-        case CSWClass::CLASS_INDEX_SOLDIER:
+        case CLASS_TYPE_JEDIGUARDIAN:
         {
             CExoString sColumn("Appearance_L");
             pPortraits->GetINTEntry(nPortrait, sColumn, &nAppearance);
         }
+        cAppearance.m_nTextureVar = 1;
         break;
         default:
         {
@@ -208,7 +219,6 @@ CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
         cAppearance.m_nAppearance = nAppearance;
         cAppearance.m_bUseBodyVariation = 1;
         cAppearance.m_nBodyVariation = 2;
-        cAppearance.m_nTextureVar = 1;
         if (g_bDo3DGUIs != 0)
         {
             pCreature->SetAppearance(&cAppearance,
@@ -217,8 +227,8 @@ CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
             pCreature->SetPosition(vOrigin);
             pCreature->CGPauseCycle(0.0f, 1);
         }
-        m_aCharacters[i].m_pCreature = pCreature;
-        m_aCharacters[i].m_fTransitionTime = CLASSSELECTION_TRANSITION_IDLE;
+        pCharacter->m_pCreature = pCreature;
+        pCharacter->m_fTransitionTime = CLASSSELECTION_TRANSITION_IDLE;
         fProgress = (float)++nProgress / LOAD_STEPS;
         g_pAppManager->GetClientExoApp()->SetLoadBarProgress(
             (int)(fProgress * 100.0f), 1);
@@ -290,15 +300,18 @@ void CSWGuiClassSelection::OnPanelAdded()
     }
     g_pExoInput->CoolDownEvent(40, 500);
     g_pExoInput->CoolDownEvent(46, 500);
-#ifdef _XBOX
-    g_pAppManager->m_pClientExoApp->HideLoadScreen(1);
-#else
-    g_pAppManager->m_pClientExoApp->HideLoadScreen(1, 1);
-#endif
-#ifndef _XBOX
+    g_pAppManager->m_pClientExoApp->HideLoadScreen(1, 0, 1);
     CSWGuiPanel::OnPanelAdded();
-#endif
-    g_pAppManager->m_pClientExoApp->StartMenuMusic(0, CClientExoAppInternal::MENU_MUSIC_VOLUME, CClientExoAppInternal::MENU_MUSIC_PRIORITY_GROUP);
+}
+// PC 0x00749A90
+void CSWGuiClassSelection::HandleCancelButton()
+{
+    m_bDeferredRemoval = 0;
+    m_nExitState = EXITSTATE_DELETE;
+    g_pAppManager->m_pClientExoApp->StopLoadMusic();
+    g_pAppManager->m_pClientExoApp->SetStartMenuMusicOnMovieEnd(1);
+    g_pAppManager->m_pClientExoApp->DisplayMainMenu(0);
+    g_pAppManager->DestroyServer();
 }
 // PC 0x00749AE0
 void CSWGuiClassSelection::OnSelectButton(CSWGuiControl* pControl)
@@ -335,6 +348,7 @@ void CSWGuiClassSelection::OnSelectButton(CSWGuiControl* pControl)
 }
 
 #include "nwclass.h"
+#include "nwscript.h"
 // PC 0x00749BA0
 void CSWGuiClassSelection::OnEnterButton(CSWGuiControl* pControl)
 {
@@ -367,30 +381,23 @@ void CSWGuiClassSelection::OnEnterButton(CSWGuiControl* pControl)
         if (CHAR_TYPES[i].m_nClass == CSWClass::CCLASS_JEDICONSULAR)
         {
             sClass = sClass + " "
-                + g_pTlkTable->GetSimpleString(STRREF_SCOUNDREL);
+                + g_pTlkTable->GetSimpleString(STRREF_JEDI_CONSULAR);
         }
         else if (CHAR_TYPES[i].m_nClass == CSWClass::CCLASS_JEDISENTINEL)
         {
             sClass = sClass + " "
-                + g_pTlkTable->GetSimpleString(STRREF_SCOUT);
+                + g_pTlkTable->GetSimpleString(STRREF_JEDI_SENTINEL);
         }
         else
         {
             sClass = sClass + " "
-                + g_pTlkTable->GetSimpleString(STRREF_SOLDIER);
+                + g_pTlkTable->GetSimpleString(STRREF_JEDI_GUARDIAN);
         }
 
         m_lblDescription.m_cText.m_cParams.SetStrRef(
             CHAR_TYPES[i].m_nDescriptionStrRef);
         m_lblClass.m_cText.m_cParams.SetText(sClass);
     }
-}
-
-void CSWGuiClassSelection::HandleCancelButton()
-{
-    m_bDeferredRemoval = 0;
-    m_nExitState = EXITSTATE_DELETE;
-    g_pAppManager->m_pClientExoApp->DisplayMainMenu(0);
 }
 // PC 0x00749E60
 void CSWGuiClassSelection::HandleInputEvent(int nEvent, int nState)
@@ -433,6 +440,17 @@ void CSWGuiClassSelection::BeginPlayGame()
     m_pSelectedCreature->GetStats()->m_nForcePointsBase = 0;
 
     g_pAppManager->CreateServer(0);
+    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
+        ->SetValueNumber("G_PC_LEVEL", 1);
+    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
+        ->SetValueNumber("G_PC_Align_Val", 50);
+    {
+        CExoString sGlobal("GBL_GAME_COMPLETE");
+        char nGameCompleted =
+            g_pAppManager->GetClientExoApp()->GetClientOptions()->m_bGameCompleted;
+        g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
+            ->SetValueNumber(sGlobal, nGameCompleted);
+    }
     m_pSelectedCreature->SaveCharGenCreature();
     {
         CExoString sPassword("");
@@ -450,6 +468,7 @@ void CSWGuiClassSelection::BeginPlayGame()
     m_bDeferredRemoval = 0;
     m_nExitState = EXITSTATE_DELETE;
     pClientExoApp->SetInputClass(INPUT_CLASS_GAME, 1);
+    pClientExoApp->StopLoadMusic();
     pClientExoApp->SetLoadScreenByModuleName(m_sModule);
     pClientExoApp->SetLoadMusic(
         pClientExoApp->GetLoadMusicByModuleName(m_sModule));
@@ -460,6 +479,12 @@ void CSWGuiClassSelection::BeginPlayGame()
 // PC 0x0074A220
 void CSWGuiClassSelection::Draw(float fElapsed)
 {
+    float fScale = 1.0f;
+    if (g_pAppManager->m_pClientExoApp->GetSWGuiManager() != NULL)
+    {
+        fScale = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nHeight
+                 / (float)g_nGUIHeight;
+    }
     CSWGuiExtent cButtonExtent;
     CSWGuiExtent cModelExtent;
     cButtonExtent.m_nLeft = cButtonExtent.m_nTop = cButtonExtent.m_nWidth =
@@ -485,13 +510,15 @@ void CSWGuiClassSelection::Draw(float fElapsed)
         cModelExtent = m_aCharacters[i].m_viewModel.m_cExtent;
         if (m_aCharacters[i].m_btnSelect.m_bActive)
         {
-            int nDistance = cButtonExtent.m_nTop - PREVIEW_TOP_ACTIVE;
+            float fTopActive = fScale * PREVIEW_TOP_ACTIVE;
+            int nTopActive = (int)fTopActive;
+            int nDistance = cButtonExtent.m_nTop - nTopActive;
             if (nDistance != 0)
             {
                 if (m_aCharacters[i].m_fTransitionTime == CLASSSELECTION_TRANSITION_IDLE)
                 {
                     m_aCharacters[i].m_fTransitionTime =
-                        (nDistance / PREVIEW_TRANSITION_DISTANCE)
+                        (nDistance / (fScale * PREVIEW_TOP_NORMAL - fTopActive))
                         * CLASSSELECTION_TRANSITION_TIME;
                 }
                 else
@@ -500,20 +527,20 @@ void CSWGuiClassSelection::Draw(float fElapsed)
                     int nTop;
                     if (m_aCharacters[i].m_fTransitionTime <= 0.0f)
                     {
-                        nTop = PREVIEW_TOP_ACTIVE;
+                        nTop = nTopActive;
                     }
                     else
                     {
                         float fPercent = (CLASSSELECTION_TRANSITION_TIME
                                           - m_aCharacters[i].m_fTransitionTime)
                                          / CLASSSELECTION_TRANSITION_TIME;
-                        nTop = PREVIEW_TOP_NORMAL
-                            - (int)(fPercent * (PREVIEW_TOP_NORMAL - PREVIEW_TOP_ACTIVE));
+                        nTop = (int)(fScale * PREVIEW_TOP_NORMAL)
+                            - (int)(fPercent * (fScale * PREVIEW_TOP_NORMAL - fTopActive));
                     }
-                    if (nTop <= PREVIEW_TOP_ACTIVE)
+                    if (nTop <= fTopActive)
                     {
                         m_aCharacters[i].m_fTransitionTime = CLASSSELECTION_TRANSITION_IDLE;
-                        nTop = PREVIEW_TOP_ACTIVE;
+                        nTop = nTopActive;
                     }
                     int nChange = cButtonExtent.m_nTop - nTop;
                     if (nChange != 0)
@@ -538,13 +565,13 @@ void CSWGuiClassSelection::Draw(float fElapsed)
         }
         else
         {
-            int nDistance = PREVIEW_TOP_NORMAL - cButtonExtent.m_nTop;
+            int nDistance = (int)(fScale * PREVIEW_TOP_NORMAL) - cButtonExtent.m_nTop;
             if (nDistance != 0)
             {
                 if (m_aCharacters[i].m_fTransitionTime == CLASSSELECTION_TRANSITION_IDLE)
                 {
                     m_aCharacters[i].m_fTransitionTime =
-                        (nDistance / PREVIEW_TRANSITION_DISTANCE)
+                        (nDistance / (fScale * PREVIEW_TOP_NORMAL - fScale * PREVIEW_TOP_ACTIVE))
                         * CLASSSELECTION_TRANSITION_TIME;
                 }
                 else
@@ -553,20 +580,20 @@ void CSWGuiClassSelection::Draw(float fElapsed)
                     int nTop;
                     if (m_aCharacters[i].m_fTransitionTime <= 0.0f)
                     {
-                        nTop = PREVIEW_TOP_NORMAL;
+                        nTop = (int)(fScale * PREVIEW_TOP_NORMAL);
                     }
                     else
                     {
                         float fPercent = (CLASSSELECTION_TRANSITION_TIME
                                           - m_aCharacters[i].m_fTransitionTime)
                                          / CLASSSELECTION_TRANSITION_TIME;
-                        nTop = PREVIEW_TOP_ACTIVE
-                            - (int)(fPercent * (PREVIEW_TOP_ACTIVE - PREVIEW_TOP_NORMAL));
+                        nTop = (int)(fPercent * (fScale * PREVIEW_TOP_NORMAL - fScale * PREVIEW_TOP_ACTIVE))
+                            + (int)(fScale * PREVIEW_TOP_ACTIVE);
                     }
-                    if (nTop >= PREVIEW_TOP_NORMAL)
+                    if (nTop >= fScale * PREVIEW_TOP_NORMAL)
                     {
                         m_aCharacters[i].m_fTransitionTime = CLASSSELECTION_TRANSITION_IDLE;
-                        nTop = PREVIEW_TOP_NORMAL;
+                        nTop = (int)(fScale * PREVIEW_TOP_NORMAL);
                     }
                     int nChange = nTop - cButtonExtent.m_nTop;
                     if (nChange != 0)

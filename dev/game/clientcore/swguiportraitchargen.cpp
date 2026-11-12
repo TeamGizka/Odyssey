@@ -283,13 +283,13 @@ void CSWGuiPortraitCharGen::GetPortraitsList(int nGender)
             {
                 switch (m_pCreature->GetStats()->GetClass(0))
                 {
-                case CLASS_TYPE_SCOUNDREL:
+                case CLASS_TYPE_JEDICONSULAR:
                     p2DA->GetINTEntry(i, "Appearance_S", &nAppearance);
                     break;
-                case CLASS_TYPE_SCOUT:
+                case CLASS_TYPE_JEDISENTINEL:
                     p2DA->GetINTEntry(i, "AppearanceNumber", &nAppearance);
                     break;
-                case CLASS_TYPE_SOLDIER:
+                case CLASS_TYPE_JEDIGUARDIAN:
                     p2DA->GetINTEntry(i, "Appearance_L", &nAppearance);
                     break;
                 default:

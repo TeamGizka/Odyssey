@@ -78,6 +78,8 @@ struct CSWClass
 
     static const unsigned char SPELL_GAIN_INVALID = 0xFF;
 
+    enum { MAX_LEVEL = 60 };
+
     static const unsigned char FEAT_GRANTED_LEVEL_INVALID = 0xFF;
 
     enum SpellRecommendationSide

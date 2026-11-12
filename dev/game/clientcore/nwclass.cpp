@@ -651,7 +651,11 @@ int CSWClass::GetRecommendedSkill(int nIndex)
 // PC 0x0060E840
 int CSWClass::IsJedi(int nClass)
 {
-    return (nClass == CCLASS_JEDIGUARDIAN) || ((nClass == CCLASS_JEDICONSULAR) || (nClass == CCLASS_JEDISENTINEL));
+    return nClass == CCLASS_JEDIGUARDIAN || nClass == CCLASS_JEDICONSULAR
+        || nClass == CCLASS_JEDISENTINEL || nClass == CCLASS_SITHASSASSIN
+        || nClass == CCLASS_SITHLORD || nClass == CCLASS_SITHMARAUDER
+        || nClass == CCLASS_JEDIWATCHMAN || nClass == CCLASS_JEDIWEAPONMASTER
+        || nClass == CCLASS_JEDIMASTER;
 }
 // PC 0x0060E880
 void CSWClass::LoadSpellsTable()
@@ -727,5 +731,9 @@ int CSWClass::GetRecommendedSpell(int nSide, int nIndex)
 // PC 0x0060EB30
 char CSWClass::GetArmorBonus(int nLevel)
 {
-    return m_pArmorBonus[nLevel];
+    if (nLevel >= 1 && nLevel <= MAX_LEVEL)
+    {
+        return m_pArmorBonus[nLevel];
+    }
+    return 0;
 }

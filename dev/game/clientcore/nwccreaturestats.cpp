@@ -1424,7 +1424,13 @@ unsigned char CSWCLevelUpStats::ComputeNumberKnownSpellsLeft()
     }
     if (nClass != CSWClass::CCLASS_JEDICONSULAR &&
         nClass != CSWClass::CCLASS_JEDIGUARDIAN &&
-        nClass != CSWClass::CCLASS_JEDISENTINEL)
+        nClass != CSWClass::CCLASS_JEDISENTINEL &&
+        nClass != CSWClass::CCLASS_JEDIWATCHMAN &&
+        nClass != CSWClass::CCLASS_JEDIWEAPONMASTER &&
+        nClass != CSWClass::CCLASS_JEDIMASTER &&
+        nClass != CSWClass::CCLASS_SITHASSASSIN &&
+        nClass != CSWClass::CCLASS_SITHMARAUDER &&
+        nClass != CSWClass::CCLASS_SITHLORD)
     {
         return 0;
     }
