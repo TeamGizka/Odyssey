@@ -1083,6 +1083,14 @@ void CSWGuiPartySelection::UpdateVisibleCharacters()
         pShared = &m_aPartyMembers[NPC_HANHARR].m_btnNPC;
         pShared->SetShown(1);
         m_aPartyMembers[NPC_HANHARR].m_bHidden = 0;
+        m_aPartyMembers[NPC_HK_47].m_btnNPC.SetMoveToControl(2, pShared);
+        m_aPartyMembers[NPC_ATTON].m_btnNPC.SetMoveToControl(0, &m_btnDone);
+        m_aPartyMembers[NPC_T3_M4].m_btnNPC.SetMoveToControl(1, pShared);
+        m_aPartyMembers[NPC_VISAS].m_btnNPC.SetMoveToControl(3, pShared);
+        pShared->SetMoveToControl(2, &m_btnDone);
+        pShared->SetMoveToControl(0, &m_aPartyMembers[NPC_HK_47].m_btnNPC);
+        pShared->SetMoveToControl(1, &m_aPartyMembers[NPC_VISAS].m_btnNPC);
+        pShared->SetMoveToControl(3, &m_aPartyMembers[NPC_T3_M4].m_btnNPC);
     }
     else
     {
@@ -1095,15 +1103,15 @@ void CSWGuiPartySelection::UpdateVisibleCharacters()
         m_aPartyMembers[NPC_MIRA].m_lblCharacter.SetShown(1);
         m_aPartyMembers[NPC_MIRA].m_lblNotAvailable.SetShown(1);
         m_aPartyMembers[NPC_MIRA].m_bHidden = 0;
+        m_aPartyMembers[NPC_HK_47].m_btnNPC.SetMoveToControl(2, pShared);
+        m_aPartyMembers[NPC_ATTON].m_btnNPC.SetMoveToControl(0, &m_btnDone);
+        m_aPartyMembers[NPC_T3_M4].m_btnNPC.SetMoveToControl(1, pShared);
+        m_aPartyMembers[NPC_VISAS].m_btnNPC.SetMoveToControl(3, pShared);
+        pShared->SetMoveToControl(2, &m_btnDone);
+        pShared->SetMoveToControl(0, &m_aPartyMembers[NPC_HK_47].m_btnNPC);
+        pShared->SetMoveToControl(1, &m_aPartyMembers[NPC_VISAS].m_btnNPC);
+        pShared->SetMoveToControl(3, &m_aPartyMembers[NPC_T3_M4].m_btnNPC);
     }
-    m_aPartyMembers[NPC_HK_47].m_btnNPC.SetMoveToControl(2, pShared);
-    m_aPartyMembers[NPC_ATTON].m_btnNPC.SetMoveToControl(0, &m_btnDone);
-    m_aPartyMembers[NPC_T3_M4].m_btnNPC.SetMoveToControl(1, pShared);
-    m_aPartyMembers[NPC_VISAS].m_btnNPC.SetMoveToControl(3, pShared);
-    pShared->SetMoveToControl(2, &m_btnDone);
-    pShared->SetMoveToControl(0, &m_aPartyMembers[NPC_HK_47].m_btnNPC);
-    pShared->SetMoveToControl(1, &m_aPartyMembers[NPC_VISAS].m_btnNPC);
-    pShared->SetMoveToControl(3, &m_aPartyMembers[NPC_T3_M4].m_btnNPC);
     if (pPartyTable->GetIsNPCAvailable(NPC_DISCIPLE))
     {
         m_aPartyMembers[NPC_HANDMAIDEN].m_btnNPC.SetShown(0);

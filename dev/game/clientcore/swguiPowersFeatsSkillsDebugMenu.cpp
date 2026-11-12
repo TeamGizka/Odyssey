@@ -374,15 +374,15 @@ CSWGuiControl* CSWGuiPowersFeatsSkillsDebugMenu::CreateOption(
     cExtent.m_nHeight = pButton->m_cText.GetIdealHeight() + 2 * nBorderDim;
     pButton->SetExtent(cExtent);
     pButton->AddEvent(GUIEVENT_ACTIVATE, this, pHandler);
-    pButton->AddEvent(45, this, pHandler);
+    pButton->AddEvent(GUIEVENT_ACCEPT, this, pHandler);
     return pButton;
 #else
     CSWGuiExtent cExtent = pPrototype->m_cExtent;
     CSWGuiButton* pButton = new CSWGuiButton;
     pButton->Initialize(cExtent, pPrototype);
     pButton->m_cText.m_cParams.SetText(sText);
-    pButton->AddEvent(45, this, pHandler);
     pButton->AddEvent(GUIEVENT_ACTIVATE, this, pHandler);
+    pButton->AddEvent(GUIEVENT_ACCEPT, this, pHandler);
     return pButton;
 #endif
 }

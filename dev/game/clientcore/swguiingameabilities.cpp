@@ -235,8 +235,8 @@ void CSWGuiInGameAbilities::OnEnterPower(unsigned long nPower)
     CExoString sColumn;
     CExoString sBonus;
     CExoString sBonusValue;
-    Vector vNeutral = CGuiInGame::COLOR_NEW_TEXT;
     Vector vColor;
+    Vector vNeutral = CGuiInGame::COLOR_NEW_TEXT;
 
     if (cGoodEvil == 'E')
     {
@@ -255,7 +255,7 @@ void CSWGuiInGameAbilities::OnEnterPower(unsigned long nPower)
             m_pCreature->GetServerCreature()->m_vPosition);
     }
     char nCharismaModifier =
-        m_pCreature->GetServerCreature()->m_pStats->m_nCharismaModifier;
+        m_pCreature->GetServerCreature()->GetStats()->m_nCharismaModifier;
     int nForm = m_pCreature->GetServerCreature()->GetForm();
     int nCost = pSpell->GetAdjustedForcePoints(
         nAlignment * 10, 1, nRoomForceRating, nForm, nCharismaModifier);
@@ -293,7 +293,7 @@ void CSWGuiInGameAbilities::OnEnterPower(unsigned long nPower)
          nPower == CSWSpell::FORCE_POWER_BEAST_TRICK ||
          nPower == CSWSpell::FORCE_POWER_BREATH_CONTROL ||
          nPower == CSWSpell::FORCE_POWER_FORCE_SIGHT) &&
-        !m_pCreature->GetServerCreature()->m_pStats->HasSpell(0, nPower, 0))
+        !m_pCreature->GetServerCreature()->GetStats()->HasSpell(0, nPower, 0))
     {
         m_lblName.m_cText.m_cParams.SetStrRef(STRREF_UNKNOWN_FORCE_POWER);
         SetDescription(STRREF_UNKNOWN_FORCE_POWER_DESC);

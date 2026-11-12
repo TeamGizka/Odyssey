@@ -890,30 +890,9 @@ void CSWGuiDialogComputer::UpdateSkills()
     m_aInfo[3].m_lblValue.m_cText.m_cParams.SetText(nRepairParts);
 }
 
-void CSWGuiDialogComputer::SetType(unsigned char nType)
+// PC 0x005EE1C0
+void CSWGuiDialogComputer::SetType(unsigned char)
 {
-    SwguidialogTrace1();
-    C2DA* pTypes = new C2DA("comptypes", 0);
-    if (!pTypes->Load2DArray())
-    {
-        return;
-    }
-    if (nType >= pTypes->GetNumRows())
-    {
-        if (pTypes->GetNumRows() == 0)
-        {
-            return;
-        }
-        nType = 0;
-    }
-#ifndef _XBOX
-    m_nBackground = nType;
-#endif
-    CExoString sComputerBackground;
-    pTypes->GetCExoStringEntry(nType, "ComputerBackground",
-                              &sComputerBackground);
-    SetBackground(sComputerBackground);
-    delete pTypes;
 }
 // PC 0x0070FBB0
 void CSWGuiDialogComputer::SetReplies(int nCount, CExoString* pReplies,

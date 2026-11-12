@@ -3109,10 +3109,11 @@ void CSWGuiProgressBar::SetExtent(const CSWGuiExtent& cExtent)  // PC 0x00418AF0
 void CSWGuiProgressBarReveal::SetExtent(const CSWGuiExtent& cExtent)
 {
     CSWGuiExtent cFill = cExtent;
+    cFill.m_nLeft = 0;
+    cFill.m_nTop = 0;
 
     m_cExtent = cExtent;
     m_cStartExtent = cExtent;
-    cFill.m_nLeft = cFill.m_nTop = 0;
     m_cBorder.SetExtent(cExtent);
     if (m_nMaxValue > 0)
     {

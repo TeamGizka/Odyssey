@@ -2296,7 +2296,7 @@ void CSWGuiMainInterface::UpdatePortraits()
 #ifdef _XBOX
     int nShown = 0;
 #endif
-    CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
+    CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
 #ifndef _XBOX
     CExoString sName;
 #endif

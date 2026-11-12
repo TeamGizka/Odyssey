@@ -2388,7 +2388,7 @@ void CSWGuiUpgrade::GetArmorModelAndTextureResRef(
 {
     char sModelColumn[] = "ModelA";
     char sTextureColumn[] = "TEXA";
-    int nBody = max(1, min(10, nBodyVariation));
+    int nBody = max(1, min(CCAppearanceInfo::BODY_VARIATION_N, nBodyVariation));
     int nTexture = max(1, nTextureVar);
     sModelColumn[5] = 'A' + nBody - 1;
     sTextureColumn[3] = 'A' + nBody - 1;
@@ -3389,7 +3389,7 @@ void CSWGuiCreateItem::PopulateInventoryItemListBox()
     CSWSCreature* pCreature = pServer->GetCreatureByGameObjectID(m_nCreatureId);
     if (m_s3EF0.IsEmpty())
     {
-        pTable = g_pRules->m_p2DArrays->m_pChemicalCreate;
+        pTable = g_pRules->Get2DArrays()->m_pChemicalCreate;
     }
     else
     {
@@ -3591,7 +3591,7 @@ void CSWGuiCreateItem::SetItemList()
         g_pAppManager->m_pServerExoApp->GetPlayerCreature();
     if (m_s3EF0.IsEmpty())
     {
-        pTable = g_pRules->m_p2DArrays->m_pItemCreate;
+        pTable = g_pRules->Get2DArrays()->m_pItemCreate;
     }
     else
     {
@@ -3696,7 +3696,7 @@ int CSWGuiCreateItem::CreateItemEntry(int& nEntries,
         C2DA* pTable;
         if (m_s3EF0.IsEmpty())
         {
-            pTable = g_pRules->m_p2DArrays->m_pItemCreate;
+            pTable = g_pRules->Get2DArrays()->m_pItemCreate;
         }
         else
         {
@@ -4547,7 +4547,7 @@ int CSWGuiCreateMedicalItem::CreateItemEntry(int& nEntries,
     }
     if (bInventory == 0)
     {
-        C2DA* pTable = g_pRules->m_p2DArrays->m_pChemicalCreate;
+        C2DA* pTable = g_pRules->Get2DArrays()->m_pChemicalCreate;
 
 
         CExoString sTag;
