@@ -119,6 +119,159 @@ LRESULT CALLBACK MovieMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,
     }
     return DefWindowProcA(hWnd, nMsg, wParam, lParam);
 }
+// PC 0x004051E0
+int CExoMoviePlayerInternal::StartMovie(const CExoString& sMovie)
+{
+    static int bClassRegistered;
+    WINDOWINFO wi;
+    WNDCLASSA WndClass;
+    HDIGDRIVER hDig;
+    const char* pszMovie;
+    int nMovieVolume;
+    int nScaledWidth, nScaledHeight;
+    HDC hDC;
+
+    m_hMovieWnd = NULL;
+    g_hMovieWnd = NULL;
+
+    if (!bClassRegistered)
+    {
+        WndClass.style = 0;
+        WndClass.lpfnWndProc = MovieMessageHandler;
+        WndClass.cbClsExtra = 0;
+        WndClass.cbWndExtra = 0;
+        WndClass.hInstance = g_hInst;
+        WndClass.hIcon = LoadIconA(g_hInst, (LPCSTR)0x65);
+        WndClass.hCursor = LoadCursorA(NULL, (LPCSTR)0x7F00);
+        WndClass.hbrBackground = NULL;
+        WndClass.lpszMenuName = NULL;
+        WndClass.lpszClassName = "SWMovieWindow";
+        if (RegisterClassA(&WndClass) == 0)
+        {
+            LPSTR pszError;
+
+            FormatMessageA(
+                FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+                    FORMAT_MESSAGE_IGNORE_INSERTS,
+                NULL, GetLastError(), 0x400, (LPSTR)&pszError, 0, NULL);
+            MessageBoxA(NULL, pszError, "Error", MB_OK | MB_ICONINFORMATION);
+            LocalFree(pszError);
+            return 0;
+        }
+        bClassRegistered = 1;
+    }
+
+    m_bMoviePlaying = 1;
+    wi.cbSize = sizeof(wi);
+    if (!GetWindowInfo(g_hRenderWnd, &wi))
+    {
+        return 0;
+    }
+
+    RECT rcClient = wi.rcClient;
+
+    m_hMovieWnd = CreateWindowExA(
+        0, "SWMovieWindow", "SW Movie Player Window", WS_POPUP | WS_VISIBLE,
+        rcClient.left, rcClient.top, rcClient.right - rcClient.left,
+        rcClient.bottom - rcClient.top, g_hRenderWnd, NULL, g_hInst,
+        NULL);
+    g_hMovieWnd = m_hMovieWnd;
+    SetCapture(g_hMovieWnd);
+    g_pAurora->FullScreen();
+    SetWindowLongA(m_hMovieWnd, GWL_STYLE, WS_POPUP | WS_CLIPCHILDREN);
+    SetWindowPos(m_hMovieWnd, HWND_TOPMOST, rcClient.left, rcClient.top, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top,
+                 SWP_NOSIZE | SWP_FRAMECHANGED | SWP_NOCOPYBITS);
+
+    m_nUnknown60 = 0;
+    if (m_bPaused == 0)
+    {
+        m_hBink = NULL;
+    }
+
+    pszMovie = strchr(sMovie.CStr(), '.');
+    if (pszMovie == NULL)
+    {
+        m_sMovieFileName = sMovie;
+        if (strchr(m_sMovieFileName.CStr(), ':') == NULL)
+        {
+            m_sMovieFileName.Format("MOVIES:%s", m_sMovieFileName.CStr());
+        }
+        m_sMovieFileName = g_pExoBase->m_pExoAliasList->ResolveFileName(
+            m_sMovieFileName, RESTYPE_BIK);
+    }
+    else
+    {
+        m_sMovieFileName = sMovie;
+    }
+
+    AIL_quick_handles(&hDig, NULL, NULL);
+    BinkSoundUseMiles(hDig);
+
+    if (m_bPaused == 0)
+    {
+        m_hBink = BinkOpen(m_sMovieFileName.CStr(), 0x8000000);
+    }
+    if (m_hBink == NULL)
+    {
+        CExoString sMessage;
+
+        sMessage = "CExoMoviePlayerInternal::CExoMoviePlayerInternal()  Can't "
+                   "open movie: ";
+        sMessage = sMessage + m_sMovieFileName;
+        ShutDown();
+        m_bMoviePlaying = 0;
+        return 0;
+    }
+
+    m_hBinkBuffer = NULL;
+    m_hBinkBuffer = BinkBufferOpen(m_hMovieWnd, m_hBink->Width,
+                                   m_hBink->Height, 0x5D000000);
+    if (m_hBinkBuffer == NULL)
+    {
+        BinkClose(m_hBink);
+        m_bMoviePlaying = 0;
+        return 0;
+    }
+
+    nMovieVolume = g_pAppManager->GetClientExoApp()
+                       ->GetClientOptions()
+                       ->m_nMovieVolume;
+    if (g_pAppManager->GetClientExoApp()->m_pcExoAppInternal
+            ->m_bEvilEndingHackInProgress)
+    {
+        nMovieVolume = 0;
+    }
+    BinkSetVolume(m_hBink, 0, (nMovieVolume << 15) / 100);
+
+    if ((rcClient.right - rcClient.left) != m_hBink->Width)
+    {
+        float fScale = (float)(rcClient.right - rcClient.left) / (float)m_hBink->Width;
+
+        nScaledWidth = (int)(m_hBink->Width * fScale);
+        nScaledHeight = (int)(m_hBink->Height * fScale);
+        BinkBufferSetScale(m_hBinkBuffer, nScaledWidth, nScaledHeight);
+        m_nVideoOffsetX = (rcClient.right - nScaledWidth - rcClient.left) / 2;
+        m_nVideoOffsetY = (rcClient.bottom - nScaledHeight - rcClient.top) / 2;
+    }
+    else
+    {
+        m_nVideoOffsetX = (rcClient.right - m_hBink->Width - rcClient.left) / 2;
+        m_nVideoOffsetY = (rcClient.bottom - m_hBink->Height - rcClient.top) / 2;
+    }
+
+    BinkBufferSetOffset(m_hBinkBuffer, m_nVideoOffsetX,
+                        m_nVideoOffsetY);
+    m_bMoviePlaying = 1;
+    while (g_bSwappingBuffers == 1)
+    {
+        Sleep(1);
+    }
+    hDC = GetDC(g_hRenderWnd);
+    PatBlt(hDC, 0, 0, g_nScreenWidth, g_nScreenHeight, BLACKNESS);
+    ReleaseDC(g_hRenderWnd, hDC);
+    ShowWindow(m_hMovieWnd, SW_SHOWNA);
+    return 1;
+}
 // PC 0x00405E30
 CExoMoviePlayerInternal::CExoMoviePlayerInternal()
     : m_lstMovies(0),
@@ -281,6 +434,13 @@ int CExoMoviePlayerInternal::RunMovieLoop(int nWait)
     }
     return 0;
 }
+void MovieNextFrame()
+{
+    if (g_pMoviePlayer != NULL && g_pMoviePlayer->m_hBink != NULL)
+    {
+        BinkNextFrame(g_pMoviePlayer->m_hBink);
+    }
+}
 // PC 0x00404CF0
 int CExoMoviePlayerInternal::IsMoviePlaying()
 {
@@ -389,159 +549,6 @@ double MovieGetFrameRate()
     }
     return (double)(S32)g_pMoviePlayer->m_hBink->FrameRate /
            (double)(S32)g_pMoviePlayer->m_hBink->FrameRateDiv;
-}
-// PC 0x004051E0
-int CExoMoviePlayerInternal::StartMovie(const CExoString& sMovie)
-{
-    static int bClassRegistered;
-    WINDOWINFO wi;
-    WNDCLASSA WndClass;
-    HDIGDRIVER hDig;
-    const char* pszMovie;
-    int nMovieVolume;
-    int nScaledWidth, nScaledHeight;
-    HDC hDC;
-
-    m_hMovieWnd = NULL;
-    g_hMovieWnd = NULL;
-
-    if (!bClassRegistered)
-    {
-        WndClass.style = 0;
-        WndClass.lpfnWndProc = MovieMessageHandler;
-        WndClass.cbClsExtra = 0;
-        WndClass.cbWndExtra = 0;
-        WndClass.hInstance = g_hInst;
-        WndClass.hIcon = LoadIconA(g_hInst, (LPCSTR)0x65);
-        WndClass.hCursor = LoadCursorA(NULL, (LPCSTR)0x7F00);
-        WndClass.hbrBackground = NULL;
-        WndClass.lpszMenuName = NULL;
-        WndClass.lpszClassName = "SWMovieWindow";
-        if (RegisterClassA(&WndClass) == 0)
-        {
-            LPSTR pszError;
-
-            FormatMessageA(
-                FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
-                    FORMAT_MESSAGE_IGNORE_INSERTS,
-                NULL, GetLastError(), 0x400, (LPSTR)&pszError, 0, NULL);
-            MessageBoxA(NULL, pszError, "Error", MB_OK | MB_ICONINFORMATION);
-            LocalFree(pszError);
-            return 0;
-        }
-        bClassRegistered = 1;
-    }
-
-    m_bMoviePlaying = 1;
-    wi.cbSize = sizeof(wi);
-    if (!GetWindowInfo(g_hRenderWnd, &wi))
-    {
-        return 0;
-    }
-
-    RECT rcClient = wi.rcClient;
-
-    m_hMovieWnd = CreateWindowExA(
-        0, "SWMovieWindow", "SW Movie Player Window", WS_POPUP | WS_VISIBLE,
-        rcClient.left, rcClient.top, rcClient.right - rcClient.left,
-        rcClient.bottom - rcClient.top, g_hRenderWnd, NULL, g_hInst,
-        NULL);
-    g_hMovieWnd = m_hMovieWnd;
-    SetCapture(g_hMovieWnd);
-    g_pAurora->FullScreen();
-    SetWindowLongA(m_hMovieWnd, GWL_STYLE, WS_POPUP | WS_CLIPCHILDREN);
-    SetWindowPos(m_hMovieWnd, HWND_TOPMOST, rcClient.left, rcClient.top, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top,
-                 SWP_NOSIZE | SWP_FRAMECHANGED | SWP_NOCOPYBITS);
-
-    m_nUnknown60 = 0;
-    if (m_bPaused == 0)
-    {
-        m_hBink = NULL;
-    }
-
-    pszMovie = strchr(sMovie.CStr(), '.');
-    if (pszMovie == NULL)
-    {
-        m_sMovieFileName = sMovie;
-        if (strchr(m_sMovieFileName.CStr(), ':') == NULL)
-        {
-            m_sMovieFileName.Format("MOVIES:%s", m_sMovieFileName.CStr());
-        }
-        m_sMovieFileName = g_pExoBase->m_pExoAliasList->ResolveFileName(
-            m_sMovieFileName, RESTYPE_BIK);
-    }
-    else
-    {
-        m_sMovieFileName = sMovie;
-    }
-
-    AIL_quick_handles(&hDig, NULL, NULL);
-    BinkSoundUseMiles(hDig);
-
-    if (m_bPaused == 0)
-    {
-        m_hBink = BinkOpen(m_sMovieFileName.CStr(), 0x8000000);
-    }
-    if (m_hBink == NULL)
-    {
-        CExoString sMessage;
-
-        sMessage = "CExoMoviePlayerInternal::CExoMoviePlayerInternal()  Can't "
-                   "open movie: ";
-        sMessage = sMessage + m_sMovieFileName;
-        ShutDown();
-        m_bMoviePlaying = 0;
-        return 0;
-    }
-
-    m_hBinkBuffer = NULL;
-    m_hBinkBuffer = BinkBufferOpen(m_hMovieWnd, m_hBink->Width,
-                                   m_hBink->Height, 0x5D000000);
-    if (m_hBinkBuffer == NULL)
-    {
-        BinkClose(m_hBink);
-        m_bMoviePlaying = 0;
-        return 0;
-    }
-
-    nMovieVolume = g_pAppManager->GetClientExoApp()
-                       ->GetClientOptions()
-                       ->m_nMovieVolume;
-    if (g_pAppManager->GetClientExoApp()->m_pcExoAppInternal
-            ->m_bEvilEndingHackInProgress)
-    {
-        nMovieVolume = 0;
-    }
-    BinkSetVolume(m_hBink, 0, (nMovieVolume << 15) / 100);
-
-    if ((rcClient.right - rcClient.left) != m_hBink->Width)
-    {
-        float fScale = (float)(rcClient.right - rcClient.left) / (float)m_hBink->Width;
-
-        nScaledWidth = (int)(m_hBink->Width * fScale);
-        nScaledHeight = (int)(m_hBink->Height * fScale);
-        BinkBufferSetScale(m_hBinkBuffer, nScaledWidth, nScaledHeight);
-        m_nVideoOffsetX = (rcClient.right - nScaledWidth - rcClient.left) / 2;
-        m_nVideoOffsetY = (rcClient.bottom - nScaledHeight - rcClient.top) / 2;
-    }
-    else
-    {
-        m_nVideoOffsetX = (rcClient.right - m_hBink->Width - rcClient.left) / 2;
-        m_nVideoOffsetY = (rcClient.bottom - m_hBink->Height - rcClient.top) / 2;
-    }
-
-    BinkBufferSetOffset(m_hBinkBuffer, m_nVideoOffsetX,
-                        m_nVideoOffsetY);
-    m_bMoviePlaying = 1;
-    while (g_bSwappingBuffers == 1)
-    {
-        Sleep(1);
-    }
-    hDC = GetDC(g_hRenderWnd);
-    PatBlt(hDC, 0, 0, g_nScreenWidth, g_nScreenHeight, BLACKNESS);
-    ReleaseDC(g_hRenderWnd, hDC);
-    ShowWindow(m_hMovieWnd, SW_SHOWNA);
-    return 1;
 }
 // PC 0x00405BF0
 DWORD WINAPI CExoMoviePlayerInternal::PlayMoviesAsync(LPVOID pParam)
