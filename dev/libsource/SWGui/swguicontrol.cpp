@@ -1860,6 +1860,38 @@ void CSWGuiEditbox::ReSetFont()
 {
     m_cText.m_cParams.ReSetFont();
 }
+#ifndef _XBOX
+// PC 0x00417E90
+int CSWGuiControl::GetEvent(int nEvent, CSWGuiObject** ppObject, CSWGuiHandler* ppHandler)
+{
+    for (int i = 0; i < m_lEvents.num; i++)
+    {
+        CSWGuiControlEvent* pEvent = &m_lEvents.element[i];
+
+        if (pEvent->m_nEvent == nEvent)
+        {
+            if (ppObject)
+            {
+                *ppObject = pEvent->m_pObject;
+            }
+            if (ppHandler)
+            {
+                *ppHandler = pEvent->m_pHandler;
+            }
+            return 1;
+        }
+    }
+    if (ppObject)
+    {
+        *ppObject = NULL;
+    }
+    if (ppHandler)
+    {
+        *ppHandler = NULL;
+    }
+    return 0;
+}
+#endif
 
 #ifndef _XBOX
 template <> inline void CExoArrayList<CSWGuiControlEvent>::Allocate(int nSize)  // PC 0x00640950

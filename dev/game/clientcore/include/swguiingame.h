@@ -69,6 +69,21 @@ public:
     int m_nTopMenuOverrideCharacter;
     virtual void HandleInputEvent(int, int);
     void SetActiveControlID(int nControl, int bActive);
+    void ShowChangeButtons(int bShow);
+    void OnChangeCharacter(CSWGuiControl* pControl);
+    enum
+    {
+        STRREF_TOOLTIP_EQUIP = 31387,
+        STRREF_TOOLTIP_INVENTORY = 48621,
+        STRREF_TOOLTIP_CHARACTER = 48782,
+        STRREF_TOOLTIP_MAP = 32181,
+        STRREF_TOOLTIP_ABILITIES = 48623,
+        STRREF_TOOLTIP_JOURNAL = 48627,
+        STRREF_TOOLTIP_OPTIONS = 1584,
+        STRREF_TOOLTIP_PARTY_SELECTION = 48625
+    };
+    enum { STRREF_PARTY_ORDER_LOCKED = 119903 };
+    enum { CHANGE_DIRECTION_NEXT = 1, CHANGE_DIRECTION_SECOND = 2 };
     void OnShoulderLeft(CSWGuiControl* pControl);
     void OnShoulderRight(CSWGuiControl* pControl);
     virtual void Update(float);
@@ -123,14 +138,28 @@ public:
     CSWGuiInGameMessages(CSWGuiManager*);
     ~CSWGuiInGameMessages();
 
-    static const int INITIAL_MESSAGE_HEIGHT = 10;
+    static const int INITIAL_MESSAGE_HEIGHT = 100;
+
     void AddMessages(CGuiInGameMessage*, unsigned long);
     void AddDialogMessages(CGuiInGameDialogMessage*, unsigned long);
     virtual void OnPanelAdded();
     virtual void HandleInputEvent(int, int);
+    void ShowCombatMessages();
+    void ShowEffects();
+    void AddCombatMessages(CGuiInGameMessage*, unsigned long);
+    void ChangeMessageDisplay(CSWGuiControl* pControl);
+
+    enum
+    {
+        MESSAGE_DISPLAY_DIALOG = 0,
+        MESSAGE_DISPLAY_FEEDBACK = 1,
+        MESSAGE_DISPLAY_COMBAT = 2,
+        MESSAGE_DISPLAY_EFFECTS = 3
+    };
 };
 
 class CSWGuiStatusSummary : public CSWGuiPanel
+
 {
 public:
 
@@ -141,6 +170,39 @@ public:
     static const unsigned long STRREF_STEALTH_XP_RECEIVED = 0xa5c7;
     static const unsigned long STRREF_NET_LIGHT_SHIFT = 0xbb3f;
     static const unsigned long STRREF_NET_DARK_SHIFT = 0xbb3e;
+    static const unsigned long STRREF_ITEMS_RECEIVED = 42442;
+    static const unsigned long STRREF_INFLUENCE_GAINED = 48607;
+    static const unsigned long STRREF_INFLUENCE_LOST = 48608;
+    static const unsigned long STRREF_NAME_ATTON = 48391;
+    static const unsigned long STRREF_NAME_BAO_DUR = 102045;
+    static const unsigned long STRREF_NAME_MANDALORE = 49456;
+    static const unsigned long STRREF_NAME_G0T0 = 48392;
+    static const unsigned long STRREF_NAME_HANDMAIDEN = 102046;
+    static const unsigned long STRREF_NAME_HK_47 = 27766;
+    static const unsigned long STRREF_NAME_KREIA = 102048;
+    static const unsigned long STRREF_NAME_MIRA = 102049;
+    static const unsigned long STRREF_NAME_T3_M4 = 22095;
+    static const unsigned long STRREF_NAME_VISAS = 48384;
+    static const unsigned long STRREF_NAME_HANHARR = 102047;
+    static const unsigned long STRREF_NAME_DISCIPLE = 48393;
+    static const unsigned long STRREF_NAME_REMOTE = 74943;
+    static const int NPC_ATTON = 0;
+    static const int NPC_BAO_DUR = 1;
+    static const int NPC_MANDALORE = 2;
+    static const int NPC_G0T0 = 3;
+    static const int NPC_HANDMAIDEN = 4;
+    static const int NPC_HK_47 = 5;
+    static const int NPC_KREIA = 6;
+    static const int NPC_MIRA = 7;
+    static const int NPC_T3_M4 = 8;
+    static const int NPC_VISAS = 9;
+    static const int NPC_HANHARR = 10;
+    static const int NPC_DISCIPLE = 11;
+    static const int NPC_REMOTE = 12;
+    static const int INFLUENCE_NPC_COUNT = 12;
+    static const int STATUS_ICON_SIZE = 32;
+    static const int STATUS_DESCRIPTION_HEIGHT = 31;
+    static const int STATUS_ROW_HEIGHT = 37;
     CStatusSummary m_cStatusSummary;
     unsigned int m_bWasPaused : 1;
     unsigned int m_nStatusFlagsUnused : 31;
@@ -170,15 +232,10 @@ public:
     void AddExperience(int nExperience);
     void AddStealthExperience(int nExperience);
     virtual void HandleInputEvent(int, int);
-    void PlayPendingSounds()
-    {
-        if (m_cStatusSummary.m_bLevelUpSound)
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_LEVELUP);
-        if (m_cStatusSummary.m_bNewQuestSound)
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_NEWQUEST);
-        if (m_cStatusSummary.m_bCompleteSound)
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_QUESTCOMPLETE);
-    }
+    enum { GUISOUND_DARK_SIDE = 17, GUISOUND_LIGHT_SIDE = 18 };
+    enum { VFX_IMP_DARK_SIDE = 9014, VFX_IMP_LIGHT_SIDE = 9015 };
+    void PlayPendingSounds();
+
     void DisplayStatus();
     virtual void OnPanelAdded();
     CSWGuiStatusSummary(CSWGuiManager*);
@@ -220,6 +277,7 @@ struct CSWGuiSkillStruct
 class CSWGuiInGameAbilities : public CSWGuiPanel
 {
 public:
+    void UpdateCharacter();
 
     enum
     {

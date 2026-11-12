@@ -1232,6 +1232,99 @@ void CSWGuiManager::HideAllPanels()
         m_lPanels.element[i]->SetVisible(0);
     }
 }
+#ifndef _XBOX
+// PC 0x0040C4B0
+void CSWGuiManager::ReloadPanels(int nWidth, int nHeight)
+{
+    CSWGuiExtent cExtent;
+    float fScaleX;
+    float fScaleY;
+    int i;
+    int j;
+    for (i = 0; i < m_lPanels.num; i++)
+    {
+        cExtent = m_lPanels.element[i]->m_cExtent;
+        fScaleX = (float)nWidth / cExtent.m_nWidth;
+        fScaleY = (float)nHeight / cExtent.m_nHeight;
+        cExtent.m_nLeft = (int)(cExtent.m_nLeft * fScaleX);
+        cExtent.m_nTop = (int)(cExtent.m_nTop * fScaleY);
+        cExtent.m_nWidth = (int)(cExtent.m_nWidth * fScaleX);
+        cExtent.m_nHeight = (int)(cExtent.m_nHeight * fScaleY);
+        m_lPanels.element[i]->SetExtent(cExtent);
+        m_lPanels.element[i]->m_pBorder->SetExtent(cExtent);
+        for (j = 0; j < m_lPanels.element[i]->m_lControls.num; j++)
+        {
+            if (m_lPanels.element[i]->GetControl(j) != NULL &&
+                m_lPanels.element[i]->GetControl(j)->AsSWGuiControl() != NULL)
+            {
+                cExtent = m_lPanels.element[i]->GetControl(j)->AsSWGuiControl()->m_cExtent;
+                cExtent.m_nLeft = (int)(cExtent.m_nLeft * fScaleX);
+                cExtent.m_nTop = (int)(cExtent.m_nTop * fScaleY);
+                cExtent.m_nWidth = (int)(cExtent.m_nWidth * fScaleX);
+                cExtent.m_nHeight = (int)(cExtent.m_nHeight * fScaleY);
+                m_lPanels.element[i]->GetControl(j)->SetExtent(cExtent);
+            }
+        }
+    }
+    for (i = 0; i < m_lModalPanels.num; i++)
+    {
+        cExtent = m_lModalPanels.element[i]->m_cExtent;
+        fScaleX = (float)nWidth / cExtent.m_nWidth;
+        fScaleY = (float)nHeight / cExtent.m_nHeight;
+        cExtent.m_nLeft = (int)(cExtent.m_nLeft * fScaleX);
+        cExtent.m_nTop = (int)(cExtent.m_nTop * fScaleY);
+        cExtent.m_nWidth = (int)(cExtent.m_nWidth * fScaleX);
+        cExtent.m_nHeight = (int)(cExtent.m_nHeight * fScaleY);
+        m_lModalPanels.element[i]->SetExtent(cExtent);
+        m_lModalPanels.element[i]->m_pBorder->SetExtent(cExtent);
+        for (j = 0; j < m_lModalPanels.element[i]->m_lControls.num; j++)
+        {
+            if (m_lModalPanels.element[i]->GetControl(j) != NULL &&
+                m_lModalPanels.element[i]->GetControl(j)->AsSWGuiControl() != NULL)
+            {
+                cExtent = m_lModalPanels.element[i]->GetControl(j)->AsSWGuiControl()->m_cExtent;
+                cExtent.m_nLeft = (int)(cExtent.m_nLeft * fScaleX);
+                cExtent.m_nTop = (int)(cExtent.m_nTop * fScaleY);
+                cExtent.m_nWidth = (int)(cExtent.m_nWidth * fScaleX);
+                cExtent.m_nHeight = (int)(cExtent.m_nHeight * fScaleY);
+                m_lModalPanels.element[i]->GetControl(j)->SetExtent(cExtent);
+            }
+        }
+    }
+    if (g_pAppManager->m_pClientExoApp->GetInGameGui() != NULL)
+    {
+        CGuiInGame* pInGameGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
+        for (i = 0; i < CGuiInGame::IN_GAME_SCREEN_COUNT; i++)
+        {
+            if (pInGameGui->m_apScreenPanels[i] != NULL)
+            {
+                cExtent = pInGameGui->m_apScreenPanels[i]->m_cExtent;
+                fScaleX = (float)nWidth / cExtent.m_nWidth;
+                fScaleY = (float)nHeight / cExtent.m_nHeight;
+                cExtent.m_nLeft = (int)(cExtent.m_nLeft * fScaleX);
+                cExtent.m_nTop = (int)(cExtent.m_nTop * fScaleY);
+                cExtent.m_nWidth = (int)(cExtent.m_nWidth * fScaleX);
+                cExtent.m_nHeight = (int)(cExtent.m_nHeight * fScaleY);
+                pInGameGui->m_apScreenPanels[i]->SetExtent(cExtent);
+                pInGameGui->m_apScreenPanels[i]->m_pBorder->SetExtent(cExtent);
+                for (j = 0; j < pInGameGui->m_apScreenPanels[i]->m_lControls.num; j++)
+                {
+                    if (pInGameGui->m_apScreenPanels[i]->GetControl(j) != NULL &&
+                        pInGameGui->m_apScreenPanels[i]->GetControl(j)->AsSWGuiControl() != NULL)
+                    {
+                        cExtent = pInGameGui->m_apScreenPanels[i]->GetControl(j)->AsSWGuiControl()->m_cExtent;
+                        cExtent.m_nLeft = (int)(cExtent.m_nLeft * fScaleX);
+                        cExtent.m_nTop = (int)(cExtent.m_nTop * fScaleY);
+                        cExtent.m_nWidth = (int)(cExtent.m_nWidth * fScaleX);
+                        cExtent.m_nHeight = (int)(cExtent.m_nHeight * fScaleY);
+                        pInGameGui->m_apScreenPanels[i]->GetControl(j)->SetExtent(cExtent);
+                    }
+                }
+            }
+        }
+    }
+}
+#endif
 // PC 0x0040CA40
 void CSWGuiPanel::OnPanelRemoved()
 {

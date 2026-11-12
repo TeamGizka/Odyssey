@@ -388,6 +388,9 @@ public:
     void ChangeToolTipText(const CExoString& sText);
 #endif
 #ifndef _XBOX
+    void ReloadPanels(int nWidth, int nHeight);
+#endif
+#ifndef _XBOX
     void ReloadToolTipPanel();
 #endif
 #ifndef _XBOX
@@ -446,6 +449,7 @@ class CSWGuiMessageBox : public CSWGuiPanel
 {
 public:
     CSWGuiMessageBox(CSWGuiManager* pManager);
+    CSWGuiMessageBox(CSWGuiManager* pManager, int nStyle);
     virtual void SetMessage(CExoString sMessage);
     virtual void SetMessage(unsigned long nStrRef);
     virtual void SetOkButtonMessage(unsigned long nStrRef);

@@ -13,6 +13,16 @@
 #include "guiingame.h"
 #include "swguioptions.h"
 #include "swguiingame.h"
+#define IS_VALID_RESOLUTION(nWidth, nHeight) \
+    (((nWidth) == CClientExoAppInternal::VIDEO_FALLBACK_WIDTH && \
+      (nHeight) == CClientExoAppInternal::VIDEO_FALLBACK_HEIGHT) || \
+     ((nWidth) == CClientExoAppInternal::VIDEO_XGA_WIDTH && \
+      (nHeight) == CClientExoAppInternal::VIDEO_XGA_HEIGHT) || \
+     ((nWidth) == CClientExoAppInternal::VIDEO_SXGA_WIDTH && \
+      ((nHeight) == CClientExoAppInternal::VIDEO_SXGA_4_3_HEIGHT || \
+       (nHeight) == CClientExoAppInternal::VIDEO_SXGA_HEIGHT)) || \
+     ((nWidth) == CClientExoAppInternal::VIDEO_UXGA_WIDTH && \
+      (nHeight) == CClientExoAppInternal::VIDEO_UXGA_HEIGHT))
 
 #include "swguiingamegameplay.h"
 #include "swguiingameautopause.h"
@@ -145,16 +155,16 @@ void CSWGuiOptionsSoundAdvanced::SetEAXText()
     switch (m_nEAXMode)
     {
     case 0:
-        m_btnEAX.m_cText.m_cParams.SetStrRef(48573);
+        m_btnEAX.m_cText.m_cParams.SetStrRef(STRREF_EAX_DISABLED);
         break;
     case 2:
-        m_btnEAX.m_cText.m_cParams.SetStrRef(48575);
+        m_btnEAX.m_cText.m_cParams.SetStrRef(STRREF_EAX_2);
         break;
     case 3:
-        m_btnEAX.m_cText.m_cParams.SetStrRef(48576);
+        m_btnEAX.m_cText.m_cParams.SetStrRef(STRREF_EAX_3);
         break;
     default:
-        m_btnEAX.m_cText.m_cParams.SetStrRef(48574);
+        m_btnEAX.m_cText.m_cParams.SetStrRef(STRREF_EAX);
         break;
     }
     CSWGuiButton* pLeft = &m_btnEAXLeft;
@@ -178,7 +188,7 @@ void CSWGuiOptionsSoundAdvanced::SetEAXText()
     {
         pLeft->m_bEnabled = 0;
     }
-    else if (m_nEAXMode == nBest)
+    if (m_nEAXMode == nBest)
     {
         pRight->m_bEnabled = 0;
     }
@@ -522,19 +532,6 @@ void CSWGuiOptionsFeedback::OnHideInGameGUI(CSWGuiControl* pControl)
         }
     }
 }
-
-void CSWGuiOptionsFeedback::OnUseSmallFont(CSWGuiControl* pControl)
-{
-    if (pControl->m_bSelected != 0)
-    {
-        CClientOptions* pOptions =
-            g_pAppManager->m_pClientExoApp->GetClientOptions();
-        if (pOptions != 0)
-        {
-            pOptions->SetUseSmallFonts(pOptions->m_bUseSmallFonts == 0);
-        }
-    }
-}
 // PC 0x0074DC50
 void CSWGuiOptionsFeedback::SetUpOptions()
 {
@@ -597,10 +594,6 @@ void CSWGuiOptionsFeedback::SetUpOptions()
         pToggle = pControl->AsButtonToggle();
         pToggle->m_bToggled = bValue;
         pControl = m_lbOptions.GetControl(7);
-        bValue = (pOptions->m_bUseSmallFonts != 0);
-        pToggle = pControl->AsButtonToggle();
-        pToggle->m_bToggled = bValue;
-        pControl = m_lbOptions.GetControl(8);
         bValue = (pOptions->m_bEnableTooltips != 0);
         pToggle = pControl->AsButtonToggle();
         pToggle->m_bToggled = bValue;
@@ -686,7 +679,7 @@ void CSWGuiOptionsGraphics::HandleInputEvent(int nEvent, int nState)  // PC 0x00
                 CExoString sValue;
                 {
                     int bRead = cIni.ReadIniEntry(
-                        sValue, ".\\swkotor.ini", "Graphics Options",
+                        sValue, ".\\swkotor2.ini", "Graphics Options",
                         "Disable Vertex Buffer Objects");
                     if (bRead != 0 && sValue.AsINT() == 1)
                     {
@@ -696,7 +689,7 @@ void CSWGuiOptionsGraphics::HandleInputEvent(int nEvent, int nState)  // PC 0x00
                 ReInitAurora(g_nScreenWidth, g_nScreenHeight, g_nBitsPerPixel,
                              g_pAurora->FullScreen(), 1);
                 {
-                    int bRead = cIni.ReadIniEntry(sValue, ".\\swkotor.ini",
+                    int bRead = cIni.ReadIniEntry(sValue, ".\\swkotor2.ini",
                                                   "Graphics Options",
                                                   "Disable Write-Only VBO");
                     if (bRead != 0)
@@ -726,7 +719,8 @@ void CSWGuiOptionsGraphics::OnMoveGammaSlider(CSWGuiControl* pControl)
 {
     int nMax = pControl->AsSlider()->m_nMaxValue;
     int nValue = pControl->AsSlider()->m_nCurValue;
-    float fGamma = 2.0f - (float)nValue / nMax * 1.77f;
+    int nGamma = min(nValue + GAMMA_SLIDER_OFFSET, GAMMA_SLIDER_MAX);
+    float fGamma = 2.0f - (float)nGamma / nMax * 1.77f;
     g_pAurora->ResetGammaRamp(fGamma, 0);
     g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nBrightness = nValue;
 }
@@ -876,19 +870,19 @@ void CSWGuiOptionsGraphicsAdvanced::SetAntiAliasText()
     switch (m_nAntiAlias)
     {
     case 0:
-        m_btnAntiAlias.m_cText.m_cParams.SetStrRef(47996);
+        m_btnAntiAlias.m_cText.m_cParams.SetStrRef(STRREF_ANTIALIAS_OFF);
         break;
     case 2:
-        m_btnAntiAlias.m_cText.m_cParams.SetStrRef(47997);
+        m_btnAntiAlias.m_cText.m_cParams.SetStrRef(STRREF_ANTIALIAS_2X);
         break;
     case 4:
-        m_btnAntiAlias.m_cText.m_cParams.SetStrRef(47999);
+        m_btnAntiAlias.m_cText.m_cParams.SetStrRef(STRREF_ANTIALIAS_4X);
         break;
     case 6:
-        m_btnAntiAlias.m_cText.m_cParams.SetStrRef(49124);
+        m_btnAntiAlias.m_cText.m_cParams.SetStrRef(STRREF_ANTIALIAS_6X);
         break;
     case 8:
-        m_btnAntiAlias.m_cText.m_cParams.SetStrRef(49125);
+        m_btnAntiAlias.m_cText.m_cParams.SetStrRef(STRREF_ANTIALIAS_8X);
         break;
     }
     CSWGuiButton* pLeft = &m_btnAntiAliasLeft;
@@ -927,7 +921,7 @@ void CSWGuiOptionsGraphicsAdvanced::SetAntiAliasText()
 CSWGuiOptionsResolution::CSWGuiOptionsResolution(CSWGuiManager* pManager)  // PC 0x007517D0
     : CSWGuiPanel(pManager)
 {
-    StartLoadFromLayout("optresolution");
+    StartLoadFromLayout("optresolution_p");
     InitControl(m_lblResolution, "LBL_RESOLUTION", 1);
     InitControl(m_lbResolutions, "LB_RESOLUTIONS", 1);
     InitControl(m_btnAccept, "BTN_OK", 1);
@@ -965,10 +959,8 @@ CSWGuiOptionsResolution::CSWGuiOptionsResolution(CSWGuiManager* pManager)  // PC
                 {
                     if (cDevMode.dmBitsPerPel ==
                             CClientExoAppInternal::VIDEO_BITS_PER_PIXEL &&
-                        g_pAppManager->GetClientExoApp()
-                                ->IsValidResolution(
-                                    cDevMode.dmPelsWidth,
-                                    cDevMode.dmPelsHeight) != 0)
+                        IS_VALID_RESOLUTION(cDevMode.dmPelsWidth,
+                                            cDevMode.dmPelsHeight))
                     {
                         CSWGuiButton* pButton = new CSWGuiButton;
                         pButton->Initialize(pProto->m_cExtent, pProto);
@@ -994,10 +986,8 @@ CSWGuiOptionsResolution::CSWGuiOptionsResolution(CSWGuiManager* pManager)  // PC
                             CClientExoAppInternal::VIDEO_BITS_PER_PIXEL &&
                         cDevMode.dmDisplayFrequency >=
                             CClientExoAppInternal::VIDEO_REFRESH_RATE &&
-                        g_pAppManager->GetClientExoApp()
-                                ->IsValidResolution(
-                                    cDevMode.dmPelsWidth,
-                                    cDevMode.dmPelsHeight) != 0 &&
+                        IS_VALID_RESOLUTION(cDevMode.dmPelsWidth,
+                                            cDevMode.dmPelsHeight) &&
                         (float)cDevMode.dmDisplayFrequency <=
                             (float)CClientExoAppInternal::VIDEO_MAX_STANDARD_REFRESH_RATE)
                     {
@@ -1042,19 +1032,19 @@ void CSWGuiOptionsGraphicsAdvanced::SetAnisotropyText()
     switch (m_nAnisotropy)
     {
     case 1:
-        m_btnAnisotropy.m_cText.m_cParams.SetStrRef(49079);
+        m_btnAnisotropy.m_cText.m_cParams.SetStrRef(STRREF_ANISOTROPY_OFF);
         break;
     case 2:
-        m_btnAnisotropy.m_cText.m_cParams.SetStrRef(49080);
+        m_btnAnisotropy.m_cText.m_cParams.SetStrRef(STRREF_ANISOTROPY_2X);
         break;
     case 4:
-        m_btnAnisotropy.m_cText.m_cParams.SetStrRef(49081);
+        m_btnAnisotropy.m_cText.m_cParams.SetStrRef(STRREF_ANISOTROPY_4X);
         break;
     case 8:
-        m_btnAnisotropy.m_cText.m_cParams.SetStrRef(49082);
+        m_btnAnisotropy.m_cText.m_cParams.SetStrRef(STRREF_ANISOTROPY_8X);
         break;
     case 16:
-        m_btnAnisotropy.m_cText.m_cParams.SetStrRef(49083);
+        m_btnAnisotropy.m_cText.m_cParams.SetStrRef(STRREF_ANISOTROPY_16X);
         break;
     }
     m_btnAnisotropyLeft.SetEnabledFlag(1);
@@ -1169,7 +1159,7 @@ void CSWGuiOptionsResolution::HandleInputEvent(int nEvent, int nState)
                 CExoString sValue;
                 {
                     int bRead = cIni.ReadIniEntry(
-                        sValue, ".\\swkotor.ini", "Graphics Options",
+                        sValue, ".\\swkotor2.ini", "Graphics Options",
                         "Disable Vertex Buffer Objects");
                     if (bRead != 0 && sValue.AsINT() == 1)
                     {
@@ -1179,7 +1169,7 @@ void CSWGuiOptionsResolution::HandleInputEvent(int nEvent, int nState)
                 ReInitAurora(g_nScreenWidth, g_nScreenHeight, g_nBitsPerPixel,
                              g_pAurora->FullScreen(), 1);
                 {
-                    int bRead = cIni.ReadIniEntry(sValue, ".\\swkotor.ini",
+                    int bRead = cIni.ReadIniEntry(sValue, ".\\swkotor2.ini",
                                                   "Graphics Options",
                                                   "Disable Write-Only VBO");
                     if (bRead != 0)
@@ -1224,16 +1214,17 @@ void CSWGuiOptionsResolution::OnResolutionChosen(CSWGuiControl* pControl)  // PC
             CExoString sValue;
             CExoIni cIni;
             sValue.Format("%d", g_nScreenWidth);
-            cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "Width");
+            cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options", "Width");
             sValue.Format("%d", g_nScreenHeight);
-            cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "Height");
+            cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options", "Height");
             sValue.Format("%d", g_nDesiredFullScreenRefreshRate);
-            cIni.WriteIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "RefreshRate");
+            cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Graphics Options", "RefreshRate");
         }
         m_pManager->PopModalPanel();
         m_bDeferredRemoval = 0;
         m_nExitState = EXITSTATE_DELETE;
         m_nUnknown80C = 1;
+        g_pGuiMan->ReloadPanels(g_nScreenWidth, g_nScreenHeight);
         g_pGuiMan->ReloadToolTipPanel();
     }
 }
@@ -1408,7 +1399,7 @@ void CSWGuiOptionsSoundAdvanced::HandleInputEvent(int nEvent, int nState)
                     CExoString sValue;
                     sValue.Format("%d", g_pExoSound->GetEAX());
                     {
-                        cIni.WriteIniEntry(sValue, ".\\swkotor.ini",
+                        cIni.WriteIniEntry(sValue, ".\\swkotor2.ini",
                                            "Sound Options", "EAX");
                     }
                     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -1419,7 +1410,7 @@ void CSWGuiOptionsSoundAdvanced::HandleInputEvent(int nEvent, int nState)
                     int nSavedEAXFlags = pOptions2->m_nEAXFlags;
                     sValue.Format("%d", nSavedEAXFlags);
                     {
-                        cIni.WriteIniEntry(sValue, ".\\swkotor.ini",
+                        cIni.WriteIniEntry(sValue, ".\\swkotor2.ini",
                                            "Sound Options", "Force Software");
                     }
                 }
@@ -1497,9 +1488,13 @@ void CSWGuiOptionsSoundAdvanced::OnForceSoftware(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
     {
-        int bForce = (m_bForceSoftware == 0);
-        m_bForceSoftware = bForce;
-        EnableEAXControls(bForce == 0);
+        m_bForceSoftware = (m_bForceSoftware == 0);
+        if (m_bForceSoftware == 0)
+        {
+            m_nEAXMode = 0;
+            SetEAXText();
+        }
+        EnableEAXControls(m_bForceSoftware == 0);
         m_bChanged = 1;
     }
 }
@@ -1550,7 +1545,7 @@ void CSWGuiOptionsMouse::OnRevMouseButtons(CSWGuiControl* pControl)
         sValue.Format("%d", nReverse);
         CExoString sKey("Reverse Mouse Buttons");
         CExoString sSection("Game Options");
-        CExoString sFile(".\\swkotor.ini");
+        CExoString sFile(".\\swkotor2.ini");
         cIni.WriteIniEntry(sValue, sFile, sSection, sKey);
     }
 }
@@ -1656,13 +1651,16 @@ CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
         pToggle6->m_bToggled = bSummary;
     }
 #else
-    StartLoadFromLayout("optfeedback");
+    StartLoadFromLayout("optfeedback_p");
     InitControl(m_lbOptions, "LB_OPTIONS", 1);
     InitControl(m_lblTitle, "LBL_TITLE", 1);
     InitControl(m_lbDescription, "LB_DESC", 1);
     m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     InitControl(m_btnBack, "BTN_BACK", 1);
     InitControl(m_btnDefault, "BTN_DEFAULT", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
     StopLoadFromLayout();
     PopulateOptionsListbox();
     CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
@@ -1740,6 +1738,9 @@ void CSWGuiOptionsMain::HandleInputEvent(int nEvent, int nState)
         case 40:
         case 46:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+#ifndef _XBOX
+            g_pAppManager->m_pClientExoApp->EnableMainMenuIdleTimer();
+#endif
             m_pManager->PopModalPanel();
 #ifdef _XBOX
             m_pManager->RemovePanel(this);
@@ -1887,16 +1888,6 @@ void CSWGuiOptionsFeedback::PopulateOptionsListbox()  // PC 0x007509A0
                 GUIEVENT_ACCEPT, this,
                 (CSWGuiHandler)&CSWGuiOptionsFeedback::OnHideInGameGUI);
             break;
-        case OPTION_USE_SMALL_FONTS:
-            pCheckbox->m_cText.m_cParams.SetStrRef(STRREF_USE_SMALL_FONTS_LABEL);
-            pCheckbox->m_nIndex = STRREF_USE_SMALL_FONTS_DESCRIPTION;
-            pCheckbox->AddEvent(
-                GUIEVENT_ACTIVATE, this,
-                (CSWGuiHandler)&CSWGuiOptionsFeedback::OnUseSmallFont);
-            pCheckbox->AddEvent(
-                GUIEVENT_ACCEPT, this,
-                (CSWGuiHandler)&CSWGuiOptionsFeedback::OnUseSmallFont);
-            break;
         case OPTION_ENABLE_TOOLTIPS:
             pCheckbox->m_cText.m_cParams.SetStrRef(STRREF_ENABLE_TOOLTIPS_LABEL);
             pCheckbox->m_nIndex = STRREF_ENABLE_TOOLTIPS_DESCRIPTION;
@@ -1947,7 +1938,7 @@ CSWGuiOptionsGraphicsAdvanced::CSWGuiOptionsGraphicsAdvanced(
     CSWGuiManager* pManager, CSWGuiOptionsGraphics* pGraphics)
     : CSWGuiPanel(pManager)
 {
-    StartLoadFromLayout("optgraphicsadv");
+    StartLoadFromLayout("optgraphicadv_p");
     InitControl(m_lblTitle, "LBL_TITLE", 1);
     InitControl(m_lbDescription, "LB_DESC", 1);
     InitControl(m_btnAntiAlias, "BTN_ANTIALIAS", 1);
@@ -1962,18 +1953,22 @@ CSWGuiOptionsGraphicsAdvanced::CSWGuiOptionsGraphicsAdvanced(
     InitControl(m_btnAnisotropyRight, "BTN_ANISOTROPYRIGHT", 1);
     InitControl(m_cbSoftShadows, "CB_SOFTSHADOWS", 1);
     InitControl(m_cbVSync, "CB_VSYNC", 1);
-    m_btnAntiAlias.m_nIndex = 47971;
-    m_btnAntiAliasLeft.m_nIndex = 47971;
-    m_btnAntiAliasRight.m_nIndex = 47971;
-    m_btnTexQual.m_nIndex = 47965;
-    m_btnTexQualLeft.m_nIndex = 47965;
-    m_btnTexQualRight.m_nIndex = 47965;
-    m_cbFrameBuffer.m_nIndex = 47957;
-    m_btnAnisotropy.m_nIndex = 47961;
-    m_btnAnisotropyLeft.m_nIndex = 47961;
-    m_btnAnisotropyRight.m_nIndex = 47961;
-    m_cbSoftShadows.m_nIndex = 47953;
-    m_cbVSync.m_nIndex = 47969;
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    m_btnAntiAlias.m_nIndex = STRREF_ANTIALIAS_DESCRIPTION;
+    m_btnAntiAliasLeft.m_nIndex = STRREF_ANTIALIAS_DESCRIPTION;
+    m_btnAntiAliasRight.m_nIndex = STRREF_ANTIALIAS_DESCRIPTION;
+    m_btnTexQual.m_nIndex = STRREF_TEXTURE_QUALITY_DESCRIPTION;
+    m_btnTexQualLeft.m_nIndex = STRREF_TEXTURE_QUALITY_DESCRIPTION;
+    m_btnTexQualRight.m_nIndex = STRREF_TEXTURE_QUALITY_DESCRIPTION;
+    m_cbFrameBuffer.m_nIndex = STRREF_FRAME_BUFFER_DESCRIPTION;
+    m_btnAnisotropy.m_nIndex = STRREF_ANISOTROPY_DESCRIPTION;
+    m_btnAnisotropyLeft.m_nIndex = STRREF_ANISOTROPY_DESCRIPTION;
+    m_btnAnisotropyRight.m_nIndex = STRREF_ANISOTROPY_DESCRIPTION;
+    m_cbSoftShadows.m_nIndex = STRREF_SOFT_SHADOWS_DESCRIPTION;
+    m_cbVSync.m_nIndex = STRREF_VSYNC_DESCRIPTION;
     m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     InitControl(m_btnBack, "BTN_BACK", 1);
     InitControl(m_btnDefault, "BTN_DEFAULT", 1);
@@ -2059,7 +2054,7 @@ CSWGuiOptionsGraphicsAdvanced::CSWGuiOptionsGraphicsAdvanced(
 CSWGuiOptionsSoundAdvanced::CSWGuiOptionsSoundAdvanced(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-    StartLoadFromLayout("optsoundadv");
+    StartLoadFromLayout("optsoundadv_p");
     InitControl(m_cbForceSoftware, "CB_FORCESOFTWARE", 1);
     InitControl(m_btnEAX, "BTN_EAX", 1);
     InitControl(m_btnEAXRight, "BTN_EAXRIGHT", 1);
@@ -2069,8 +2064,12 @@ CSWGuiOptionsSoundAdvanced::CSWGuiOptionsSoundAdvanced(CSWGuiManager* pManager)
     InitControl(m_btnBack, "BTN_BACK", 1);
     InitControl(m_btnDefault, "BTN_DEFAULT", 1);
     InitControl(m_btnCancel, "BTN_CANCEL", 1);
-    m_cbForceSoftware.m_nIndex = 48577;
-    m_btnEAX.m_nIndex = 48578;
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    m_cbForceSoftware.m_nIndex = STRREF_FORCE_SOFTWARE_DESCRIPTION;
+    m_btnEAX.m_nIndex = STRREF_EAX_DESCRIPTION;
     m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     StopLoadFromLayout();
     CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
@@ -2114,7 +2113,7 @@ CSWGuiOptionsSoundAdvanced::CSWGuiOptionsSoundAdvanced(CSWGuiManager* pManager)
 CSWGuiOptionsMouse::CSWGuiOptionsMouse(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-    StartLoadFromLayout("optmouse");
+    StartLoadFromLayout("optmouse_p");
     InitControl(m_sldMouseSen, "SLI_MOUSESEN", 1);
     InitControl(m_lblMouseSen, "LBL_MOUSESEN", 1);
     InitControl(m_cbRevButtons, "CB_REVBUTTONS", 1);
@@ -2122,6 +2121,10 @@ CSWGuiOptionsMouse::CSWGuiOptionsMouse(CSWGuiManager* pManager)
     InitControl(m_lbDescription, "LB_DESC", 1);
     InitControl(m_btnBack, "BTN_BACK", 1);
     InitControl(m_btnDefault, "BTN_DEFAULT", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
     m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     StopLoadFromLayout();
     CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
@@ -2146,9 +2149,9 @@ CSWGuiOptionsMouse::CSWGuiOptionsMouse(CSWGuiManager* pManager)
         63, this, (CSWGuiHandler)&CSWGuiOptionsMouse::OnMoveMouseSenSlider);
     m_sldMouseSen.AddEvent(
         64, this, (CSWGuiHandler)&CSWGuiOptionsMouse::OnMoveMouseSenSlider);
-    m_sldMouseSen.m_nIndex = 48721;
-    m_lblMouseSen.m_nIndex = 48721;
-    m_cbRevButtons.m_nIndex = 48722;
+    m_sldMouseSen.m_nIndex = STRREF_MOUSE_SENSITIVITY_DESCRIPTION;
+    m_lblMouseSen.m_nIndex = STRREF_MOUSE_SENSITIVITY_DESCRIPTION;
+    m_cbRevButtons.m_nIndex = STRREF_REVERSE_BUTTONS_DESCRIPTION;
     CSWGuiButton* pBack = &m_btnBack;
     pBack->m_bFocusable = 0;
     pBack->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
@@ -2269,7 +2272,7 @@ void CSWGuiOptionsGraphicsAdvanced::HandleInputEvent(int nEvent, int nState)
                     CExoString sValue;
                     {
                         int bRead = cIni.ReadIniEntry(
-                            sValue, ".\\swkotor.ini", "Graphics Options",
+                            sValue, ".\\swkotor2.ini", "Graphics Options",
                             "Disable Vertex Buffer Objects");
                         if (bRead != 0 && sValue.AsINT() == 1)
                         {
@@ -2281,7 +2284,7 @@ void CSWGuiOptionsGraphicsAdvanced::HandleInputEvent(int nEvent, int nState)
                     ReInitAurora(g_nScreenWidth, g_nScreenHeight,
                                  g_nBitsPerPixel, g_pAurora->FullScreen(), 1);
                     {
-                        int bRead = cIni.ReadIniEntry(sValue, ".\\swkotor.ini",
+                        int bRead = cIni.ReadIniEntry(sValue, ".\\swkotor2.ini",
                                                       "Graphics Options",
                                                       "Disable Write-Only VBO");
                         if (bRead != 0)
@@ -2707,7 +2710,7 @@ CSWGuiOptionsSound::CSWGuiOptionsSound(CSWGuiManager* pManager)
     OnMoveVolumeSlider(&m_sldMovie);
     SetActiveControl(&m_sldGamma, 0);
 #else
-    StartLoadFromLayout("optsound");
+    StartLoadFromLayout("optsound_p");
     InitControl(m_sldMusic, "SLI_MUSIC", 1);
     InitControl(m_sldVoice, "SLI_VO", 1);
     InitControl(m_sldEffects, "SLI_FX", 1);
@@ -2719,11 +2722,15 @@ CSWGuiOptionsSound::CSWGuiOptionsSound(CSWGuiManager* pManager)
     InitControl(m_btnAdvanced, "BTN_ADVANCED", 1);
     InitControl(m_lblTitle, "LBL_TITLE", 1);
     InitControl(m_lbDescription, "LB_DESC", 1);
-    m_sldMusic.m_nIndex = 42311;
-    m_sldVoice.m_nIndex = 42312;
-    m_sldEffects.m_nIndex = 42313;
-    m_sldMovie.m_nIndex = 47921;
-    m_btnAdvanced.m_nIndex = 49073;
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    m_sldMusic.m_nIndex = STRREF_MUSIC_VOLUME_DESCRIPTION;
+    m_sldVoice.m_nIndex = STRREF_VOICE_VOLUME_DESCRIPTION;
+    m_sldEffects.m_nIndex = STRREF_EFFECTS_VOLUME_DESCRIPTION;
+    m_sldMovie.m_nIndex = STRREF_MOVIE_VOLUME_DESCRIPTION;
+    m_btnAdvanced.m_nIndex = STRREF_ADVANCED_SOUND_DESCRIPTION;
     m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     InitControl(m_btnBack, "BTN_BACK", 1);
     InitControl(m_btnDefault, "BTN_DEFAULT", 1);
@@ -2947,7 +2954,7 @@ CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)  // PC 0x00754360
     CSWGuiPanel* pPanel = this;
     pPanel->SetActiveControl(&m_btnOptions[0], 0);
 #else
-    StartLoadFromLayout("optionsmain");
+    StartLoadFromLayout("optionsmain_p");
     InitControl(m_lblTitle, "LBL_TITLE", 1);
     InitControl(m_lbDescription, "LB_DESC", 1);
     InitControl(m_btnOptions[0], "BTN_GAMEPLAY", 1);
@@ -2955,19 +2962,15 @@ CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)  // PC 0x00754360
     InitControl(m_btnOptions[2], "BTN_AUTOPAUSE", 1);
     InitControl(m_btnOptions[3], "BTN_GRAPHICS", 1);
     InitControl(m_btnOptions[4], "BTN_SOUND", 1);
-    m_btnOptions[0].m_nIndex = 48006;
-    m_btnOptions[1].m_nIndex = 48537;
-    m_btnOptions[2].m_nIndex = 48572;
-    m_btnOptions[3].m_nIndex = 48010;
-    m_btnOptions[4].m_nIndex = 48012;
+    m_btnOptions[0].m_nIndex = STRREF_GAMEPLAY_DESCRIPTION;
+    m_btnOptions[1].m_nIndex = STRREF_FEEDBACK_DESCRIPTION;
+    m_btnOptions[2].m_nIndex = STRREF_AUTOPAUSE_DESCRIPTION;
+    m_btnOptions[3].m_nIndex = STRREF_GRAPHICS_DESCRIPTION;
+    m_btnOptions[4].m_nIndex = STRREF_SOUND_DESCRIPTION;
     InitControl(m_btnBack, "BTN_BACK", 1);
-    CSWGuiExtent cExtent;
-    for (int i = 0; i < 6; i++)
-    {
-        cExtent = m_btnOptions[i].m_cExtent;
-        cExtent.m_nTop += 20;
-        m_btnOptions[i].SetExtent(cExtent);
-    }
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
     m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     StopLoadFromLayout();
     CSWGuiButton* pBack = &m_btnBack;

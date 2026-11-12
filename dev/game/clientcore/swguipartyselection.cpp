@@ -564,7 +564,7 @@ void CSWGuiPartySelection::AcceptParty(int bCancelled)
                 {
                     if (pTable->GetIsMember(nMember))
                         m_aPartyMembers[nMember].m_nPartyIndex = pParty->GetIndex(
-                            pClient->ServerToClientObjectId(pTable->GetPUPObject(nMember, 0, 0)));
+                            g_pAppManager->m_pClientExoApp->ServerToClientObjectId(pTable->GetPUPObject(nMember, 0, 0)));
                 }
                 bFirstRemoval = 0;
             }

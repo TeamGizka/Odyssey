@@ -972,6 +972,13 @@ CSWGuiDialogComputerCamera::~CSWGuiDialogComputerCamera()
         m_pTop = 0;
     }
 }
+#ifndef _XBOX
+// PC 0x0070E270
+void CSWGuiDialogComputerCamera::SetLiveFeedMessageVisible(int bVisible)
+{
+    m_lblReturn.SetEnabledFlag(bVisible);
+}
+#endif
 // PC 0x0070E2A0
 CSWGuiDialog::CSWGuiDialog(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)

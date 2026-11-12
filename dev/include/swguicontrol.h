@@ -241,6 +241,7 @@ public:
     }
 
     void AddEvent(int nEvent, CSWGuiObject* pObject, CSWGuiHandler pHandler);
+    int GetEvent(int nEvent, CSWGuiObject** ppObject, CSWGuiHandler* ppHandler);
     void Load(CSWGuiObject* pParent, CResGFF* pGFF, CResStruct& cStruct,
               const CExoString& sName);
     void Load(CSWGuiObject* pParent, CResGFF* pGFF, CResList& lControls,
@@ -860,6 +861,9 @@ public:
 class CSWGuiProgressBarReveal : public CSWGuiProgressBar
 {
 public:
+    virtual ~CSWGuiProgressBarReveal()  // PC 0x00676920
+    {
+    }
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
 

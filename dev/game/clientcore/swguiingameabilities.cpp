@@ -986,6 +986,13 @@ void CSWGuiInGameAbilities::OnPanelAdded()  // PC 0x00738870
     CSWGuiPanel::OnPanelAdded();
 }
 #endif
+#ifndef _XBOX
+// PC 0x007388B0
+void CSWGuiInGameAbilities::UpdateCharacter()
+{
+    SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0));
+}
+#endif
 
 static inline void SwguiingameabilitiesTrace2()
 {

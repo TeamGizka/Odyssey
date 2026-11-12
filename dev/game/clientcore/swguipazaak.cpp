@@ -16,6 +16,7 @@ template List<unsigned long>::List(int);
 #include "swguiingame.h"
 #include "swguiingame.inl"
 #include "nwccreature.h"
+#include "nwtlktable.h"
 
 int g_bPazaakShowNPCSideDeck = 0;
 
@@ -88,7 +89,7 @@ void CSWGuiActivatedButton::Draw(float fElapsed)
 #ifndef _XBOX
             if (m_bHilightOnOver)
             {
-                vColor = CGuiInGame::COLOR_BLUE;
+                vColor = CGuiInGame::COLOR_PAZAAK_GOLD;
             }
 #else
             if (m_bActivated)
@@ -118,6 +119,9 @@ void CSWGuiActivatedButton::Draw(float fElapsed)
                             vDim.m_fZ + vFlash.m_fZ);
         }
         m_cText.m_cParams.SetColor(vColor);
+#ifndef _XBOX
+        m_cBorder.m_cParams.m_vColor = vColor;
+#endif
     }
 #ifdef _XBOX
     CSWGuiLabel::Draw(fElapsed);
@@ -132,17 +136,16 @@ void CSWGuiActivatedButton::SetEnabled(int bEnabled)  // PC 0x006D3160
     CSWGuiButton::SetEnabled(bEnabled);
     if (m_fFlashTimer < 0.0f)
     {
-        Vector* pColor = &CGuiInGame::COLOR_BLUE;
-#ifndef _XBOX
+        Vector* pColor = &CGuiInGame::COLOR_PAZAAK_GOLD;
         if (!m_bHilightOnOver)
         {
             pColor = &CGuiInGame::DISABLED_TEXT;
         }
-#endif
         m_cText.m_cParams.SetColor(*pColor);
-#ifndef _XBOX
-        SetActive(m_bHilightOnOver && this == g_pGuiMan->m_pMouseOverControl);
-#endif
+        int bHilight = m_bHilightOnOver;
+        m_cBorder.m_cParams.m_vColor =
+            bHilight ? CGuiInGame::COLOR_PAZAAK_GOLD : CGuiInGame::DISABLED_TEXT;
+        SetActive(bHilight && this == g_pGuiMan->m_pMouseOverControl);
     }
 }
 #else
@@ -164,7 +167,7 @@ void CSWGuiPazaakCard::Load(CResGFF* pGFF, CResStruct& cStruct)
 // PC 0x006D3230
 void CSWGuiPazaakCard::SetCard(CPazaakCard cCard)
 {
-    static char* s_pszCardLabels[28] = {"+1",
+    static char* s_pszCardLabels[33] = {"+1",
                                        "+2",
                                        "+3",
                                        "+4",
@@ -188,6 +191,13 @@ void CSWGuiPazaakCard::SetCard(CPazaakCard cCard)
                                        "5",
                                        "\xB1"
                                        "6",
+                                       "\xB1"
+                                       "1T",
+                                       "D",
+                                       "2|4",
+                                       "3|6",
+                                       "\xB1"
+                                       "1|2",
                                        "1",
                                        "2",
                                        "3",
@@ -200,9 +210,70 @@ void CSWGuiPazaakCard::SetCard(CPazaakCard cCard)
                                        "10"};
 
     m_cCard = cCard;
-    if (cCard.m_nType >= 0 && cCard.m_nType < 28)
+    if (cCard.m_nType >= 0 && cCard.m_nType < 33)
     {
-        if (cCard.m_nType >= 12 && cCard.m_nType < 18)
+        if (cCard.m_nType >= CPazaakCard::CARD_TYPE_TIEBREAKER &&
+            cCard.m_nType < CPazaakCard::CARD_TYPE_DECK_BASE)
+        {
+            CExoString sText;
+            if (cCard.m_nType == CPazaakCard::CARD_TYPE_TIEBREAKER)
+            {
+                if (cCard.m_bFlipped != 0)
+                {
+                    sText = "-1T";
+                }
+                else
+                {
+                    sText = "+1T";
+                }
+            }
+            else if (cCard.m_nType == CPazaakCard::CARD_TYPE_DOUBLE)
+            {
+                if (cCard.GetCardValue() != 0)
+                {
+                    sText.Format("%d", cCard.GetCardValue());
+                }
+                else
+                {
+                    sText = "D";
+                }
+            }
+            else if (cCard.m_nType == CPazaakCard::CARD_TYPE_FLIP_2_4)
+            {
+                if (cCard.m_nValue != 0)
+                {
+                    sText = "0";
+                }
+                else
+                {
+                    sText = "2&4";
+                }
+            }
+            else if (cCard.m_nType == CPazaakCard::CARD_TYPE_FLIP_3_6)
+            {
+                if (cCard.m_nValue != 0)
+                {
+                    sText = "0";
+                }
+                else
+                {
+                    sText = "3&6";
+                }
+            }
+            else if (cCard.m_nType == CPazaakCard::CARD_TYPE_PLUS_MINUS_1_2)
+            {
+                sText.Format("%d", cCard.GetCardValue());
+            }
+            m_lblCard.m_cText.m_cParams.SetText(sText);
+        }
+        else if (cCard.m_nValue != 0)
+        {
+            CExoString sText;
+            sText.Format("%d", cCard.m_nValue);
+            m_lblCard.m_cText.m_cParams.SetText(sText);
+        }
+        else if (cCard.m_nType >= CPazaakCard::CARD_TYPE_FLIPPABLE_BASE &&
+                 cCard.m_nType < CPazaakCard::CARD_TYPE_TIEBREAKER)
         {
             if (cCard.m_bFlipped != 0)
             {
@@ -236,7 +307,7 @@ void CSWGuiPazaakCard::SetCard(CPazaakCard cCard)
     case 3:
     case 4:
     case 5:
-        cImage = "lbl_cardmpos";
+        cImage = "PCARDS_POS_P";
         break;
     case 6:
     case 7:
@@ -244,7 +315,7 @@ void CSWGuiPazaakCard::SetCard(CPazaakCard cCard)
     case 9:
     case 10:
     case 11:
-        cImage = "lbl_cardmneg";
+        cImage = "PCARDS_NEG_P";
         break;
     case 12:
     case 13:
@@ -254,11 +325,11 @@ void CSWGuiPazaakCard::SetCard(CPazaakCard cCard)
     case 17:
         if (cCard.m_bFlipped != 0)
         {
-            cImage = "lbl_cardraref";
+            cImage = "PCARDS_DBLNEG_P";
         }
         else
         {
-            cImage = "lbl_cardrarem";
+            cImage = "PCARDS_DBLPOS_P";
         }
         break;
     case 18:
@@ -266,18 +337,25 @@ void CSWGuiPazaakCard::SetCard(CPazaakCard cCard)
     case 20:
     case 21:
     case 22:
+        cImage = "PCARDS_GOLD_P";
+        break;
     case 23:
     case 24:
     case 25:
     case 26:
     case 27:
-        cImage = "lbl_cardstand";
+    case 28:
+    case 29:
+    case 30:
+    case 31:
+    case 32:
+        cImage = "PCARDS_GENERIC_P";
         break;
     case -1:
         cImage = "";
         break;
     default:
-        cImage = "lbl_cardback";
+        cImage = "PCARDS_BACK_P";
         break;
     }
     m_cBorder.m_cParams.SetFillImage(cImage, 0);
@@ -498,7 +576,7 @@ void CSWGuiPazaakGame::HandleInputEvent(int nEvent, int nState)
             pMessageBox->SetCallback(
                 this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleQuitDialog,
                 NULL);
-            pMessageBox->SetMessage(42425);
+            pMessageBox->SetMessage(STRREF_PAZAAK_CONFIRM_FORFEIT);
             m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
             break;
         }
@@ -516,7 +594,7 @@ void CSWGuiPazaakGame::HandleInputEvent(int nEvent, int nState)
                             m_pPazaak->GetPlayerTotal() <= 12)
                         {
                             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-                            m_cTutorial.ShowHelp(38642, 32330, 38626);
+                            m_cTutorial.ShowHelp(STRREF_PAZAAK_HELP_PLAY_CARD, STRREF_PAZAAK_PLAY_CARD, STRREF_PAZAAK_CANCEL);
                         }
                         else
                         {
@@ -537,8 +615,8 @@ void CSWGuiPazaakGame::HandleInputEvent(int nEvent, int nState)
             {
                 m_bUnknown86DC0 = 1;
                 unsigned long aHelp[2];
-                aHelp[0] = 38643;
-                aHelp[1] = 38644;
+                aHelp[0] = STRREF_PAZAAK_HELP_FLIP_CARDS;
+                aHelp[1] = STRREF_PAZAAK_HELP_DECLARE_SIGN;
                 m_cTutorial.ShowMultipleHelp(aHelp, 2);
             }
             if (m_pActiveControl != NULL)
@@ -570,7 +648,7 @@ void CSWGuiPazaakGame::HandleInputEvent(int nEvent, int nState)
                     if (m_cTutorial.m_bEnabled != 0 &&
                         m_pPazaak->GetPlayerTotal() >= 16)
                     {
-                        m_cTutorial.ShowHelp(38641, 32332, 38626);
+                        m_cTutorial.ShowHelp(STRREF_PAZAAK_HELP_END_TURN, STRREF_PAZAAK_END_TURN, STRREF_PAZAAK_CANCEL);
                     }
                     else
                     {
@@ -591,7 +669,7 @@ void CSWGuiPazaakGame::HandleInputEvent(int nEvent, int nState)
                     if (m_cTutorial.m_bEnabled != 0 &&
                         m_pPazaak->GetPlayerTotal() <= 13)
                     {
-                        m_cTutorial.ShowHelp(38640, 32333, 38626);
+                        m_cTutorial.ShowHelp(STRREF_PAZAAK_HELP_STAND, STRREF_PAZAAK_STAND, STRREF_PAZAAK_CANCEL);
                     }
                     else
                     {
@@ -628,7 +706,9 @@ void CSWGuiPazaakGame::HandleInputEvent(int nEvent, int nState)  // PC 0x006D50F
                 pMessageBox->SetCallback(
                     this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleQuitDialog,
                     NULL);
-                pMessageBox->SetMessage(42425);
+                pMessageBox->SetMessage(STRREF_PAZAAK_CONFIRM_FORFEIT);
+                pMessageBox->SetMessageColors(CGuiInGame::COLOR_DARK_GOLD,
+                                              CGuiInGame::COLOR_NEW_HIGHLIGHT);
                 m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
             }
         }
@@ -642,12 +722,12 @@ void CSWGuiPazaakGame::HandleEndDialog(CSWGuiControl* pControl)
     if (m_pPazaak->m_cPlayer.m_nWins >= 3 ||
         m_pPazaak->m_cOpponent.m_nWins >= 3)
     {
-        m_cTutorial.ShowHelp(38649, 0xFFFFFFFF, 38626);
+        m_cTutorial.ShowHelp(STRREF_PAZAAK_MATCH_OVER, 0xFFFFFFFF, STRREF_PAZAAK_CANCEL);
         m_nState = 12;
     }
     else
     {
-        m_cTutorial.ShowHelp(38648, 0xFFFFFFFF, 38625);
+        m_cTutorial.ShowHelp(STRREF_PAZAAK_HELP_MATCH, 0xFFFFFFFF, STRREF_PAZAAK_QUIT);
         m_nState = 11;
     }
 }
@@ -668,35 +748,35 @@ void CSWGuiPazaakGame::HandleTutorialClose(CSWGuiControl* pControl)
     {
         switch (nHelp)
         {
-        case 38633:
+        case STRREF_PAZAAK_HELP_DRAW:
         {
 #ifdef _XBOX
             unsigned long aHelp[3];
 #else
             unsigned long aHelp[5];
 #endif
-            aHelp[0] = 38634;
-            aHelp[1] = 38635;
-            aHelp[2] = 38636;
+            aHelp[0] = STRREF_PAZAAK_HELP_HAND;
+            aHelp[1] = STRREF_PAZAAK_HELP_PLAY_HAND_CARD;
+            aHelp[2] = STRREF_PAZAAK_HELP_NEGATIVE_TIP;
 #ifdef _XBOX
             pTutorial->ShowMultipleHelp(aHelp, 3);
 #else
-            aHelp[3] = 38643;
-            aHelp[4] = 38644;
+            aHelp[3] = STRREF_PAZAAK_HELP_FLIP_CARDS;
+            aHelp[4] = STRREF_PAZAAK_HELP_DECLARE_SIGN;
             pTutorial->ShowMultipleHelp(aHelp, 5);
 #endif
             pTutorial->PlaceAbove(&m_cPlayerHand[0]);
             break;
         }
-        case 38636:
+        case STRREF_PAZAAK_HELP_NEGATIVE_TIP:
 #ifndef _XBOX
-        case 38644:
+        case STRREF_PAZAAK_HELP_DECLARE_SIGN:
 #endif
         {
             unsigned long aHelp[3];
-            aHelp[0] = 38637;
-            aHelp[1] = 38638;
-            aHelp[2] = 38639;
+            aHelp[0] = STRREF_PAZAAK_HELP_TURN_OVER;
+            aHelp[1] = STRREF_PAZAAK_HELP_STAND_RULES;
+            aHelp[2] = STRREF_PAZAAK_HELP_CHOOSE_ACTION;
             pTutorial->ShowMultipleHelp(aHelp, 3);
 #ifdef _XBOX
             pTutorial->PlaceAbove(&m_lblXbutton);
@@ -705,18 +785,18 @@ void CSWGuiPazaakGame::HandleTutorialClose(CSWGuiControl* pControl)
 #endif
             break;
         }
-        case 38640:
+        case STRREF_PAZAAK_HELP_STAND:
             m_pPazaak->m_cPlayer.m_bStanding = 1;
             m_nState = STATE_END_PLAYER_TURN;
             m_fTimer = 0.4f;
             RefreshDisplay();
             break;
-        case 38641:
+        case STRREF_PAZAAK_HELP_END_TURN:
             m_nState = STATE_END_PLAYER_TURN;
             m_fTimer = 0.4f;
             RefreshDisplay();
             break;
-        case 38642:
+        case STRREF_PAZAAK_HELP_PLAY_CARD:
         {
 #ifdef _XBOX
             m_pPazaak->UsePlayerSidedeckCard(m_pActiveControl->m_nID);
@@ -730,7 +810,7 @@ void CSWGuiPazaakGame::HandleTutorialClose(CSWGuiControl* pControl)
             ReconnectSidedeckButtons();
             break;
         }
-        case 38649:
+        case STRREF_PAZAAK_MATCH_OVER:
             m_bDeferredRemoval = 0;
             m_nExitState = EXITSTATE_DELETE;
             g_pAppManager->m_pClientExoApp->EndPazaakGame(
@@ -739,7 +819,7 @@ void CSWGuiPazaakGame::HandleTutorialClose(CSWGuiControl* pControl)
             break;
         }
     }
-    else if ((unsigned int)nHelp >= 38648 && (unsigned int)nHelp <= 38649)
+    else if ((unsigned int)nHelp >= STRREF_PAZAAK_HELP_MATCH && (unsigned int)nHelp <= STRREF_PAZAAK_MATCH_OVER)
     {
         m_nState = STATE_EXIT_GAME;
     }
@@ -762,7 +842,7 @@ void CSWGuiPazaakGame::HandleContinue(CSWGuiControl* pControl)  // PC 0x006D6940
                     {
                         if (m_pPazaak->GetPlayerTotal() >= 16)
                         {
-                            m_cTutorial.ShowHelp(38641, 32332, 38626);
+                            m_cTutorial.ShowHelp(STRREF_PAZAAK_HELP_END_TURN, STRREF_PAZAAK_END_TURN, STRREF_PAZAAK_CANCEL);
                         }
                         else
                         {
@@ -789,19 +869,18 @@ void CSWGuiPazaakGame::HandleStand(CSWGuiControl* pControl)
     {
         if (m_pPazaak->m_cPlayer.m_bStanding == 0)
         {
-            if (m_nState == 3 || m_nState == 4)
+            if (m_nState == 3 || m_nState == STATE_PLAYER_SIDE_CARD_PLAYED)
             {
-                m_btnStand.StartFlash(CGuiInGame::COLOR_CYAN);
                 m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
                 if (m_cTutorial.m_bEnabled != 0 &&
                     m_pPazaak->GetPlayerTotal() <= 13)
                 {
-                    m_cTutorial.ShowHelp(38640, 32333, 38626);
+                    m_cTutorial.ShowHelp(STRREF_PAZAAK_HELP_STAND, STRREF_PAZAAK_STAND, STRREF_PAZAAK_CANCEL);
                 }
                 else
                 {
                     m_pPazaak->m_cPlayer.m_bStanding = 1;
-                    m_nState = 5;
+                    m_nState = STATE_END_PLAYER_TURN;
                     m_fTimer = 0.4f;
                     RefreshDisplay();
                 }
@@ -822,15 +901,26 @@ void CSWGuiPazaakGame::HandlePlayHandCard(int nIndex)
             {
                 m_nPlayedCard = nIndex;
                 m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-                m_cTutorial.ShowHelp(38642, 32330, 38626);
+                m_cTutorial.ShowHelp(STRREF_PAZAAK_HELP_PLAY_CARD, STRREF_PAZAAK_PLAY_CARD, STRREF_PAZAAK_CANCEL);
             }
             else
             {
                 m_pPazaak->UsePlayerSidedeckCard(nIndex);
+                int nPlayerTotal = m_pPazaak->GetPlayerTotal();
+                int bOpponentStanding = m_pPazaak->m_cOpponent.m_bStanding;
+                int nOpponentTotal = m_pPazaak->GetOpponentTotal();
+                if (bOpponentStanding && nPlayerTotal > nOpponentTotal &&
+                    nOpponentTotal > PAZAAK_TOTAL_BUST && nPlayerTotal < PAZAAK_TOTAL_TARGET &&
+                    nOpponentTotal < PAZAAK_TOTAL_TARGET)
+                {
+                    m_pPazaak->m_cPlayer.m_bStanding = 1;
+                }
                 CResRef cSound(m_szPlaySideSound);
                 g_pExoSound->PlayOneShotSound(cSound, CExoSound::PRIORITY_GROUP_GUI, 0, 0, 0.0f, 0.0f);
-                m_nState = 4;
+                m_nState = STATE_PLAYER_SIDE_CARD_PLAYED;
                 m_fTimer = 0.4f;
+                m_cPlayerHand[nIndex].m_bSelectable = 0;
+                m_cPlayerHand[nIndex].SetActive(0);
                 RefreshDisplay();
                 ReconnectSidedeckButtons();
             }
@@ -946,13 +1036,13 @@ void CSWGuiTutorial::ShowHelp(unsigned long nHelpStrRef,
     if (m_bEnabled != 0)
     {
         m_lHelp.Add(nHelpStrRef);
-        if (nTitleStrRef == 0xFFFFFFFF && nButtonStrRef == 38626)
+        if (nTitleStrRef == 0xFFFFFFFF && nButtonStrRef == STRREF_PAZAAK_CANCEL)
         {
             SetAllowCancel(0);
 #ifdef _XBOX
-            m_lblOk.m_cText.m_cParams.SetStrRef(38623);
+            m_lblOk.m_cText.m_cParams.SetStrRef(STRREF_PAZAAK_CONTINUE);
 #else
-            m_btnOk.m_cText.m_cParams.SetStrRef(38623);
+            m_btnOk.m_cText.m_cParams.SetStrRef(STRREF_PAZAAK_CONTINUE);
 #endif
         }
         else
@@ -975,15 +1065,15 @@ void CSWGuiTutorial::ShowMultipleHelp(const unsigned long* pStrRefs, int nCount)
 {
     if (m_bEnabled)
     {
-        ShowHelp(pStrRefs[0], 0xFFFFFFFF, 38626);
+        ShowHelp(pStrRefs[0], 0xFFFFFFFF, STRREF_PAZAAK_CANCEL);
         for (int i = 1; i < nCount; i++)
         {
             m_lHelp.Add(pStrRefs[i]);
         }
 #ifdef _XBOX
-        m_lblCancel.m_cText.m_cParams.SetStrRef(38624);
+        m_lblCancel.m_cText.m_cParams.SetStrRef(STRREF_PAZAAK_BACK);
 #else
-        m_btnCancel.m_cText.m_cParams.SetStrRef(38624);
+        m_btnCancel.m_cText.m_cParams.SetStrRef(STRREF_PAZAAK_BACK);
 #endif
     }
 }
@@ -1011,7 +1101,9 @@ void CSWGuiWagerPopup::HandleInputEvent(int nEvent, int nState)  // PC 0x006D495
             pMessageBox->SetCallback(
                 m_pStart, (CSWGuiHandler)&CSWGuiPazaakStart::HandleQuitDialog,
                 NULL);
-            pMessageBox->SetMessage(42424);
+            pMessageBox->SetMessage(STRREF_PAZAAK_QUIT_FORFEIT);
+            pMessageBox->SetMessageColors(CGuiInGame::COLOR_DARK_GOLD,
+                                          CGuiInGame::COLOR_NEW_HIGHLIGHT);
             m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
             break;
         }
@@ -1055,10 +1147,10 @@ void CSWGuiPazaakStart::HandleQuitDialog(CSWGuiControl* pControl)  // PC 0x006D3
         {
             m_pManager->RemovePanel(m_pWagerPopup);
         }
-        CSWPazaak* pPazaak = m_pPazaak;
         m_bDeferredRemoval = 0;
         m_nExitState = EXITSTATE_DELETE;
-        g_pAppManager->m_pClientExoApp->EndPazaakGame(0, 0, 0,
+        CSWPazaak* pPazaak = m_pPazaak;
+        g_pAppManager->m_pClientExoApp->EndPazaakGame(0, pPazaak->m_nWager, 0,
                                                       pPazaak->m_oidOpponent);
     }
 }
@@ -1080,7 +1172,11 @@ CSWGuiWagerPopup::CSWGuiWagerPopup(CSWGuiManager* pManager,
     m_pStart = pStart;
     m_nMaxWager = nMaxWager;
     m_nWager = nMaxWager;
-    StartLoadFromLayout("pazaakwager");
+#ifdef _XBOX
+    StartLoadFromLayout("pazaakwager_x");
+#else
+    StartLoadFromLayout("pazaakwager_p");
+#endif
     InitControl(m_lblTitle, "LBL_TITLE", 1);
     InitControl(m_lblMaximum, "LBL_MAXIMUM", 1);
     InitControl(m_lblWagerval, "LBL_WAGERVAL", 1);
@@ -1097,6 +1193,7 @@ CSWGuiWagerPopup::CSWGuiWagerPopup(CSWGuiManager* pManager,
     InitControl(m_btnWager, "BTN_WAGER", 1);
     InitControl(m_btnQuit, "BTN_QUIT", 1);
 #endif
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
     InitControl(m_lblBg, "LBL_BG", 1);
     StopLoadFromLayout();
 #ifdef _XBOX
@@ -1133,8 +1230,6 @@ CSWGuiWagerPopup::CSWGuiWagerPopup(CSWGuiManager* pManager,
     CExoString sText = g_pTlkTable->GetSimpleString(STRREF_MAXIMUM_WAGER) + " " + m_nMaxWager +
                        "\n" + g_pTlkTable->GetSimpleString(STRREF_CREDITS) + " " + nGold;
     m_lblMaximum.m_cText.m_cParams.SetText(sText);
-    m_bCenterHorizontal = 1;
-    m_bCenterVertical = 1;
 }
 // PC 0x006D8CD0
 CSWGuiPazaakStart::CSWGuiPazaakStart(CSWGuiManager* pManager, int nWager,
@@ -1176,7 +1271,11 @@ CSWGuiPazaakStart::CSWGuiPazaakStart(CSWGuiManager* pManager, int nWager,
     CSWPazaak* pPazaak = m_pPazaak;
     pPazaak->m_cOpponent.ChooseSidedeck(aSideDeck);
 
-    StartLoadFromLayout("pazaaksetup");
+#ifdef _XBOX
+    StartLoadFromLayout("pazaaksetup_x");
+#else
+    StartLoadFromLayout("pazaaksetup_p");
+#endif
     InitControl(m_lblTitle, "LBL_TITLE", 1);
 #ifdef _XBOX
     InitControl(m_lblYbutton, "LBL_YBUTTON", 1);
@@ -1318,6 +1417,11 @@ void CSWGuiPazaakStart::OnPanelAdded()
             m_lblAvailCount[i].m_cText.m_cParams.SetText(
                 CExoString(m_anAvailCount[i]));
         }
+        else
+        {
+            CExoString sZero("0");
+            m_lblAvailCount[i].m_cText.m_cParams.SetText(sZero);
+        }
 #ifndef _XBOX
         if (m_anAvailCount[i] == 0)
         {
@@ -1342,15 +1446,22 @@ void CSWGuiPazaakStart::OnPanelAdded()
         m_cAvail[i].SetMoveToControl(1, &m_cAvail[6 * (i / 6) + (i + 5) % 6]);
         m_cAvail[i].SetMoveToControl(3, &m_cAvail[6 * (i / 6) + (i + 1) % 6]);
     }
+    m_cAvail[AvailCardCount - 1].SetShown(0);
+    m_cAvail[AvailCardCount - 1].m_lblCard.SetShown(0);
+    m_lblAvailCount[AvailCardCount - 1].SetShown(0);
+    m_cAvail[17].SetMoveToControl(2, &m_cAvail[5]);
+    m_cAvail[5].SetMoveToControl(0, &m_cAvail[17]);
+    m_cAvail[22].SetMoveToControl(3, &m_cAvail[18]);
+    m_cAvail[18].SetMoveToControl(1, &m_cAvail[22]);
     if (m_pWagerPopup == NULL)
     {
         SetActiveControl(&m_cAvail[0], 0);
     }
     ShowDisabledButtons();
     unsigned long aHelp[3];
-    aHelp[0] = 38627;
-    aHelp[1] = 38628;
-    aHelp[2] = 38629;
+    aHelp[0] = STRREF_PAZAAK_HELP_SIDEDECK_INTRO;
+    aHelp[1] = STRREF_PAZAAK_HELP_BASIC_DECK;
+    aHelp[2] = STRREF_PAZAAK_HELP_SELECT_SIDEDECK;
     m_cTutorial.ShowMultipleHelp(aHelp, 3);
 #ifndef _XBOX
     CSWGuiPanel::OnPanelAdded();
@@ -1419,10 +1530,7 @@ int CSWGuiPazaakStart::RemoveChosenCard(int nSlot)  // PC 0x006D6390
     }
     m_bSideDeckFull = 0;
     ShowDisabledButtons();
-    CPazaakCard cEmpty;
-    cEmpty.m_nType = -1;
-    cEmpty.m_bFlipped = 0;
-    m_aChosen[nSlot] = cEmpty;
+    m_aChosen[nSlot] = CPazaakCard(-1);
     m_anAvailCount[nCard] = m_anAvailCount[nCard] + 1;
     {
         CExoString sCount(m_anAvailCount[nCard]);
@@ -1491,6 +1599,16 @@ void CSWGuiPazaakStart::ShowDisabledButtons()
 void CSWGuiPazaakStart::ShowDisabledButtons()  // PC 0x006D4C50
 {
     m_btnAtext.SetEnabled(m_bSideDeckFull);
+    if (!m_bSideDeckFull)
+    {
+        m_btnAtext.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_DARK_TAN);
+        m_btnAtext.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_DARK_TAN;
+    }
+    else
+    {
+        m_btnAtext.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_PAZAAK_GOLD);
+        m_btnAtext.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_PAZAAK_GOLD;
+    }
 }
 #endif
 
@@ -1600,7 +1718,11 @@ CSWGuiPazaakGame::CSWGuiPazaakGame(CSWGuiManager* pManager, CSWPazaak* pPazaak,
     m_cTutorial.m_bEnabled = bTutorial;
     m_cMessageBox.SetAllowCancel(0);
 
-    StartLoadFromLayout("pazaakgame");
+#ifdef _XBOX
+    StartLoadFromLayout("pazaakgame_x");
+#else
+    StartLoadFromLayout("pazaakgame_p");
+#endif
     InitControl(m_lblPlayerName, "LBL_PLRNAME", 1);
     InitControl(m_lblNpcName, "LBL_NPCNAME", 1);
     InitControl(m_lblPlayerTotal, "LBL_PLRTOTAL", 1);
@@ -1609,8 +1731,8 @@ CSWGuiPazaakGame::CSWGuiPazaakGame(CSWGuiManager* pManager, CSWPazaak* pPazaak,
     InitControl(m_lblNpcSideDeck, "LBL_NPCSIDEDECK", 1);
     InitControl(m_lblPlayerTurn, "LBL_PLRTURN", 1);
     InitControl(m_lblNpcTurn, "LBL_NPCTURN", 1);
-    m_lblPlayerTurn.SetShown(0);
-    m_lblNpcTurn.SetShown(0);
+    m_lblPlayerTurn.m_cBorder.m_cParams.SetFillImage("PZ_PLAYERLITEOFF", 0);
+    m_lblNpcTurn.m_cBorder.m_cParams.SetFillImage("PZ_PLAYERLITEOFF", 0);
     InitControl(m_lblPlayerScore[0], "LBL_PLRSCORE0", 1);
     InitControl(m_lblPlayerScore[1], "LBL_PLRSCORE1", 1);
     InitControl(m_lblPlayerScore[2], "LBL_PLRSCORE2", 1);
@@ -1670,6 +1792,7 @@ CSWGuiPazaakGame::CSWGuiPazaakGame(CSWGuiManager* pManager, CSWPazaak* pPazaak,
         char szNpcHandLabel[16];
 #ifndef _XBOX
         char szFlipButton[16];
+        char szChangeButton[16];
 #endif
         strcpy(szHandButton, "BTN_PLRSIDEx   ");
         strcpy(szNpcHandButton, "BTN_NPCSIDEx   ");
@@ -1677,27 +1800,38 @@ CSWGuiPazaakGame::CSWGuiPazaakGame(CSWGuiManager* pManager, CSWPazaak* pPazaak,
         strcpy(szNpcHandLabel, "LBL_NPCSIDEx   ");
 #ifndef _XBOX
         strcpy(szFlipButton, "BTN_FLIPx      ");
+        strcpy(szChangeButton, "BTN_CHANGEx    ");
 #endif
         for (i = 0; i < 4; i++)
         {
+#ifndef _XBOX
+            CSWGuiPazaakCard* pNpcCard = &m_cNpcHand[i];
+            CSWGuiButton* pChangeButton = &m_btnChange[i];
+#endif
             sprintf(&szHandButton[11], "%d", i);
             sprintf(&szNpcHandButton[11], "%d", i);
             sprintf(&szHandLabel[11], "%d", i);
             sprintf(&szNpcHandLabel[11], "%d", i);
 #ifndef _XBOX
             sprintf(&szFlipButton[8], "%d", i);
+            sprintf(&szChangeButton[10], "%d", i);
 #endif
             InitControl(m_cPlayerHand[i], szHandButton, 1);
             InitControl(m_cPlayerHand[i].m_lblCard, szHandLabel, 1);
 #ifndef _XBOX
             InitControl(m_btnFlip[i], szFlipButton, 1);
+            InitControl(*pChangeButton, szChangeButton, 1);
+            m_btnFlip[i].m_nID = i;
+            pChangeButton->m_nID = i;
 #endif
             m_cPlayerHand[i].m_nID = i;
-#ifndef _XBOX
-            m_btnFlip[i].m_nID = i;
-#endif
+#ifdef _XBOX
             InitControl(m_cNpcHand[i], szNpcHandButton, 1);
             InitControl(m_cNpcHand[i].m_lblCard, szNpcHandLabel, 1);
+#else
+            InitControl(*pNpcCard, szNpcHandButton, 1);
+            InitControl(pNpcCard->m_lblCard, szNpcHandLabel, 1);
+#endif
 #ifdef _XBOX
             m_cPlayerHand[i].AddEvent(
                 GUIEVENT_MOUSE_ENTER, this, (CSWGuiHandler)&CSWGuiPazaakGame::OnHandCardEntered);
@@ -1714,11 +1848,14 @@ CSWGuiPazaakGame::CSWGuiPazaakGame(CSWGuiManager* pManager, CSWPazaak* pPazaak,
             m_cPlayerHand[i].AddEvent(
                 68, this,
                 (CSWGuiHandler)&CSWGuiPazaakGame::HandleHandCardRightClick);
-#ifndef _XBOX
-            m_cNpcHand[i].m_bIgnoreMouse = 1;
-#endif
+            m_cPlayerHand[i].m_bFocusable = 0;
+            pNpcCard->m_bIgnoreMouse = 1;
             m_btnFlip[i].AddEvent(
                 GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleFlipButtons);
+            pChangeButton->AddEvent(
+                GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleChangeButtons);
+            m_btnFlip[i].m_bFocusable = 0;
+            pChangeButton->m_bFocusable = 0;
 #endif
         }
     }
@@ -1744,13 +1881,21 @@ CSWGuiPazaakGame::CSWGuiPazaakGame(CSWGuiManager* pManager, CSWPazaak* pPazaak,
     m_btnX.AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleXButton);
     m_btnBlack.AddEvent(GUIEVENT_ACTIVATE, this,
                         (CSWGuiHandler)&CSWGuiPazaakGame::HandleBlackButton);
+    m_btnForfeitGame.AddEvent(GUIEVENT_ACTIVATE, this,
+                              (CSWGuiHandler)&CSWGuiPazaakGame::HandleForfeitButton);
+    m_btnContinue.m_bFocusable = 0;
+    m_btnStand.m_bFocusable = 0;
+    m_btnX.m_bFocusable = 0;
+    m_btnBlack.m_bFocusable = 0;
+    m_btnForfeitGame.m_bFocusable = 0;
 #endif
     CSWSCreature* pCreature =
         g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidOpponent);
     if (pCreature != NULL)
     {
-        m_lblNpcName.m_cText.m_cParams.SetText(
-            pCreature->GetStats()->GetFullName());
+        CExoString sName = pCreature->GetStats()->GetFullName();
+        g_pSWTlkTable->ParseStr(sName, (CGameObject*)pCreature, 0, 1);
+        m_lblNpcName.m_cText.m_cParams.SetText(sName);
     }
 #ifndef _XBOX
     if (m_btnContinue.m_cText.GetIdealHeight() >
@@ -1766,6 +1911,7 @@ CSWGuiPazaakGame::CSWGuiPazaakGame(CSWGuiManager* pManager, CSWPazaak* pPazaak,
 #ifndef _XBOX
     m_nBackground = PC_BACKGROUND_SUFFIX_PAZAAK;
 #endif
+    m_bPlayerStarts = 1;
 }
 
 #ifdef _XBOX
@@ -1780,7 +1926,7 @@ void CSWGuiPazaakStart::HandleInputEvent(int nEvent, int nState)
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
             if (m_bSideDeckFull != 0)
             {
-                m_cMessageBox.SetMessage(32322);
+                m_cMessageBox.SetMessage(STRREF_PAZAAK_CONFIRM_SIDEDECK);
                 m_cMessageBox.SetCallback(
                     this, (CSWGuiHandler)&CSWGuiPazaakStart::HandleStartDialog,
                     NULL);
@@ -1792,7 +1938,7 @@ void CSWGuiPazaakStart::HandleInputEvent(int nEvent, int nState)
                     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
                 pMessageBox->SetAllowCancel(0);
                 pMessageBox->SetCallback(NULL, NULL, NULL);
-                pMessageBox->SetMessage(38630);
+                pMessageBox->SetMessage(STRREF_PAZAAK_SELECT_TEN_CARDS);
                 m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
             }
             break;
@@ -1806,7 +1952,7 @@ void CSWGuiPazaakStart::HandleInputEvent(int nEvent, int nState)
             pMessageBox->SetCallback(
                 this, (CSWGuiHandler)&CSWGuiPazaakStart::HandleQuitDialog,
                 NULL);
-            pMessageBox->SetMessage(42424);
+            pMessageBox->SetMessage(STRREF_PAZAAK_QUIT_FORFEIT);
             m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
             break;
         }
@@ -1843,7 +1989,7 @@ void CSWGuiPazaakStart::HandleInputEvent(int nEvent, int nState)
                 m_bChosenActive = 0;
                 SetActiveControl(m_pChosenCards, 0);
                 m_pChosenCards = pActive;
-                m_btnMove.m_cText.m_cParams.SetStrRef(38601);
+                m_btnMove.m_cText.m_cParams.SetStrRef(STRREF_PAZAAK_ADD_CARD);
                 m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
             }
             break;
@@ -1854,7 +2000,7 @@ void CSWGuiPazaakStart::HandleInputEvent(int nEvent, int nState)
                 m_bChosenActive = 1;
                 SetActiveControl(m_pChosenCards, 0);
                 m_pChosenCards = pActive;
-                m_btnMove.m_cText.m_cParams.SetStrRef(38602);
+                m_btnMove.m_cText.m_cParams.SetStrRef(STRREF_PAZAAK_REMOVE_CARD);
                 m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
             }
             break;
@@ -1891,7 +2037,9 @@ void CSWGuiPazaakStart::HandleInputEvent(int nEvent, int nState)  // PC 0x006D77
             pMessageBox->SetCallback(
                 this, (CSWGuiHandler)&CSWGuiPazaakStart::HandleQuitDialog,
                 NULL);
-            pMessageBox->SetMessage(42424);
+            pMessageBox->SetMessage(STRREF_PAZAAK_QUIT_FORFEIT);
+            pMessageBox->SetMessageColors(CGuiInGame::COLOR_DARK_GOLD,
+                                          CGuiInGame::COLOR_NEW_HIGHLIGHT);
             m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
             break;
         }
@@ -1958,10 +2106,12 @@ void CSWGuiPazaakStart::HandleAcceptButton(CSWGuiControl* pControl)
         m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
         if (m_bSideDeckFull != 0)
         {
-            m_cMessageBox.SetMessage(32322);
+            m_cMessageBox.SetMessage(STRREF_PAZAAK_CONFIRM_SIDEDECK);
             m_cMessageBox.SetCallback(
                 this, (CSWGuiHandler)&CSWGuiPazaakStart::HandleStartDialog,
                 NULL);
+            m_cMessageBox.SetMessageColors(CGuiInGame::COLOR_DARK_GOLD,
+                                           CGuiInGame::COLOR_NEW_HIGHLIGHT);
             m_pManager->AddPanel(&m_cMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
         }
         else
@@ -1970,7 +2120,9 @@ void CSWGuiPazaakStart::HandleAcceptButton(CSWGuiControl* pControl)
                 g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
             pMessageBox->SetAllowCancel(0);
             pMessageBox->SetCallback(NULL, NULL, NULL);
-            pMessageBox->SetMessage(38630);
+            pMessageBox->SetMessage(STRREF_PAZAAK_SELECT_TEN_CARDS);
+            pMessageBox->SetMessageColors(CGuiInGame::COLOR_DARK_GOLD,
+                                          CGuiInGame::COLOR_NEW_HIGHLIGHT);
             m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
         }
     }
@@ -1999,7 +2151,16 @@ int CSWGuiPazaakGame::DoGameSequence()
     switch (m_nState)
     {
     case 0:
-        m_nState = 1;
+        if (m_bPlayerStarts != 0)
+        {
+            m_nState = 1;
+            m_bPlayerStarts = 0;
+        }
+        else
+        {
+            m_nState = 7;
+            m_bPlayerStarts = 1;
+        }
         nResult = 1;
         break;
     case 1:
@@ -2010,11 +2171,11 @@ int CSWGuiPazaakGame::DoGameSequence()
             nResult = 1;
             break;
         }
-        m_lblPlayerTurn.SetEnabledFlag(1);
-        m_lblNpcTurn.SetEnabledFlag(0);
+        m_lblPlayerTurn.m_cBorder.m_cParams.SetFillImage("pz_playerliteon", 0);
+        m_lblNpcTurn.m_cBorder.m_cParams.SetFillImage("PZ_PLAYERLITEOFF", 0);
         g_pExoSound->PlayOneShotSound(m_szStartTurnSound, CExoSound::PRIORITY_GROUP_GUI, 0, 0, 0.0f, 0.0f);
+        m_fTimer = 0.1f;
         m_nState = 2;
-        m_fTimer = 0.4f;
         break;
     }
     case 2:
@@ -2024,28 +2185,45 @@ int CSWGuiPazaakGame::DoGameSequence()
         if (m_bShownFirstCardHelp == 0)
         {
             m_bShownFirstCardHelp = 1;
-            m_cTutorial.ShowHelp(38633, 0xFFFFFFFF, 38626);
+            m_cTutorial.ShowHelp(STRREF_PAZAAK_HELP_DRAW, 0xFFFFFFFF, STRREF_PAZAAK_CANCEL);
             m_cTutorial.PlaceRightOf(&m_cPlayerBoard[0]);
         }
         if (m_pPazaak->m_cPlayer.m_bStanding != 0)
         {
-            m_btnStand.StartFlash(CGuiInGame::COLOR_CYAN);
             m_fTimer = 0.4f;
         }
-        if (m_pPazaak->GetPlayerTotal() > 20)
+        int nPlayerTotal = m_pPazaak->GetPlayerTotal();
+        if (nPlayerTotal > PAZAAK_TOTAL_TARGET)
         {
             g_pExoSound->PlayOneShotSound(m_szWarnBustSound, CExoSound::PRIORITY_GROUP_GUI, 0, 0, 0.0f, 0.0f);
         }
+        int bOpponentStanding = m_pPazaak->m_cOpponent.m_bStanding;
+        int nOpponentTotal = m_pPazaak->GetOpponentTotal();
+        if (bOpponentStanding && nPlayerTotal > nOpponentTotal &&
+            nOpponentTotal > PAZAAK_TOTAL_BUST && nPlayerTotal < PAZAAK_TOTAL_TARGET &&
+            nOpponentTotal < PAZAAK_TOTAL_TARGET)
+        {
+            m_pPazaak->m_cPlayer.m_bStanding = 1;
+        }
         m_nState = 3;
-#ifndef _XBOX
         CSWGuiControl* pActive = GetActiveControl();
         SetActiveControl(NULL, 0);
         SetActiveControl(pActive, 0);
-#endif
         RefreshDisplay();
         break;
     }
     case 3:
+    {
+        int bOpponentStanding = m_pPazaak->m_cOpponent.m_bStanding;
+        int nOpponentTotal = m_pPazaak->GetOpponentTotal();
+        int nPlayerTotal = m_pPazaak->GetPlayerTotal();
+        if (bOpponentStanding && nPlayerTotal > nOpponentTotal &&
+            nOpponentTotal > PAZAAK_TOTAL_BUST && nPlayerTotal < PAZAAK_TOTAL_TARGET &&
+            nOpponentTotal < PAZAAK_TOTAL_TARGET)
+        {
+            m_pPazaak->m_cPlayer.m_bStanding = 1;
+        }
+    }
     case 4:
         if (m_pPazaak->m_cPlayer.m_bStanding == 0)
         {
@@ -2057,14 +2235,14 @@ int CSWGuiPazaakGame::DoGameSequence()
     case 5:
     {
         int nTotal = m_pPazaak->GetPlayerTotal();
-        if (nTotal > 20)
+        if (nTotal > PAZAAK_TOTAL_TARGET)
         {
-            m_cTutorial.ShowHelp(38647, 0xFFFFFFFF, 38626);
+            m_cTutorial.ShowHelp(STRREF_PAZAAK_HELP_BUST, 0xFFFFFFFF, STRREF_PAZAAK_CANCEL);
         }
-        else if (nTotal == 20 && m_bShownTwentyHelp == 0)
+        else if (nTotal == PAZAAK_TOTAL_TARGET && m_bShownTwentyHelp == 0)
         {
             m_bShownTwentyHelp = 1;
-            m_cTutorial.ShowHelp(38646, 0xFFFFFFFF, 38626);
+            m_cTutorial.ShowHelp(STRREF_PAZAAK_HELP_TWENTY, 0xFFFFFFFF, STRREF_PAZAAK_CANCEL);
         }
         if (m_pPazaak->DetermineWinner() != 0)
         {
@@ -2082,17 +2260,17 @@ int CSWGuiPazaakGame::DoGameSequence()
             nResult = 1;
             break;
         }
-        m_lblPlayerTurn.SetEnabledFlag(0);
-        m_lblNpcTurn.SetEnabledFlag(1);
+        m_lblPlayerTurn.m_cBorder.m_cParams.SetFillImage("pz_playerliteoff", 0);
+        m_lblNpcTurn.m_cBorder.m_cParams.SetFillImage("pz_playerliteon", 0);
         g_pExoSound->PlayOneShotSound(m_szStartTurnSound, CExoSound::PRIORITY_GROUP_GUI, 0, 0, 0.0f, 0.0f);
-        m_fTimer = 0.4f;
+        m_fTimer = 0.1f;
         m_nState = 7;
         if (m_bShownOpponentTurnHelp != 0)
         {
             break;
         }
         m_bShownOpponentTurnHelp = 1;
-        m_cTutorial.ShowHelp(38645, 0xFFFFFFFF, 38626);
+        m_cTutorial.ShowHelp(STRREF_PAZAAK_HELP_OPPONENT, 0xFFFFFFFF, STRREF_PAZAAK_CANCEL);
         break;
     }
     case 7:
@@ -2104,7 +2282,7 @@ int CSWGuiPazaakGame::DoGameSequence()
         {
             g_pExoSound->PlayOneShotSound(m_szDrawMainSound, CExoSound::PRIORITY_GROUP_GUI, 0, 0, 0.0f, 0.0f);
             CSWPazaak* pPazaak = m_pPazaak;
-            if (pPazaak->m_cOpponent.GetTotal() > 20)
+            if (pPazaak->m_cOpponent.GetTotal() > PAZAAK_TOTAL_TARGET)
             {
                 g_pExoSound->PlayOneShotSound(m_szWarnBustSound, CExoSound::PRIORITY_GROUP_GUI, 0, 0, 0.0f, 0.0f);
             }
@@ -2117,7 +2295,6 @@ int CSWGuiPazaakGame::DoGameSequence()
             break;
         }
         case 3:
-            m_btnStand.StartFlash(CGuiInGame::COLOR_RED);
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
             break;
         case 4:
@@ -2129,14 +2306,14 @@ int CSWGuiPazaakGame::DoGameSequence()
         }
         if (nAction == 1 || nAction == 2)
         {
-            m_fTimer = 0.8f;
+            m_fTimer = 0.2f;
             CSWPazaak* pPazaak = m_pPazaak;
-            if (pPazaak->m_cOpponent.GetTotal() == 20)
+            if (pPazaak->m_cOpponent.GetTotal() == PAZAAK_TOTAL_TARGET)
             {
                 if (m_bShownTwentyHelp == 0)
                 {
                     m_bShownTwentyHelp = 1;
-                    m_cTutorial.ShowHelp(38646, 0xFFFFFFFF, 38626);
+                    m_cTutorial.ShowHelp(STRREF_PAZAAK_HELP_TWENTY, 0xFFFFFFFF, STRREF_PAZAAK_CANCEL);
                 }
             }
         }
@@ -2159,13 +2336,13 @@ int CSWGuiPazaakGame::DoGameSequence()
                 m_pPazaak->m_cPlayer.m_nWins++;
                 if (m_pPazaak->m_cPlayer.m_nWins >= 3)
                 {
-                    m_cMessageBox.SetMessage(32336);
+                    m_cMessageBox.SetMessage(STRREF_PAZAAK_MATCH_WON);
                     m_szEndSound = "mgs_winmatch";
                     m_nState = 9;
                 }
                 else
                 {
-                    m_cMessageBox.SetMessage(32334);
+                    m_cMessageBox.SetMessage(STRREF_PAZAAK_SET_WON);
                     m_szEndSound = "mgs_winset";
                     m_nState = 9;
                 }
@@ -2175,20 +2352,20 @@ int CSWGuiPazaakGame::DoGameSequence()
                 m_pPazaak->m_cOpponent.m_nWins++;
                 if (m_pPazaak->m_cOpponent.m_nWins >= 3)
                 {
-                    m_cMessageBox.SetMessage(32337);
+                    m_cMessageBox.SetMessage(STRREF_PAZAAK_MATCH_LOST);
                     m_szEndSound = "mgs_losematch";
                     m_nState = 9;
                 }
                 else
                 {
-                    m_cMessageBox.SetMessage(32335);
+                    m_cMessageBox.SetMessage(STRREF_PAZAAK_SET_LOST);
                     m_szEndSound = "mgs_loseset";
                     m_nState = 9;
                 }
             }
             else
             {
-                m_cMessageBox.SetMessage(32338);
+                m_cMessageBox.SetMessage(STRREF_PAZAAK_SET_TIED);
                 m_nState = 9;
             }
         }
@@ -2206,6 +2383,8 @@ int CSWGuiPazaakGame::DoGameSequence()
             g_pExoSound->PlayOneShotSound(m_szEndSound, CExoSound::PRIORITY_GROUP_GUI, 0, 0, 0.0f, 0.0f);
             m_szEndSound = 0;
         }
+        m_cMessageBox.SetMessageColors(CGuiInGame::COLOR_DARK_GOLD,
+                                       CGuiInGame::COLOR_NEW_HIGHLIGHT);
         m_cMessageBox.SetCallback(
             this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleEndDialog, NULL);
         m_pManager->AddPanel(&m_cMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
@@ -2269,7 +2448,6 @@ void CSWGuiPazaakGame::HandleHandcardAction(CSWGuiControl* pControl)
             HandleFlipHandCard();
         }
         m_nHandAction = 0;
-        SetHandEnabled(0);
     }
 }
 #endif
@@ -2318,21 +2496,20 @@ CSWGuiPazaakGame::~CSWGuiPazaakGame()  // PC 0x006D4E70
 void CSWGuiPazaakGame::StartNewGame()
 {
     m_pPazaak->ClearGameBoard();
-    m_nState = 0;
+    m_nState = STATE_START_GAME;
     RefreshDisplay();
     m_bShownTwentyHelp = 0;
     if (m_bShownGameStartHelp == 0)
     {
         m_bShownGameStartHelp = 1;
         unsigned long aHelp[2];
-        aHelp[0] = 38631;
-        aHelp[1] = 38632;
+        aHelp[0] = STRREF_PAZAAK_HELP_OBJECT;
+        aHelp[1] = STRREF_PAZAAK_HELP_SETS;
         m_cTutorial.ShowMultipleHelp(aHelp, 2);
     }
 #ifndef _XBOX
     m_nHandAction = 0;
-    SetHandEnabled(0);
-    SetActiveControl(&m_btnContinue, 0);
+    SetHandEnabled(1);
 #endif
 }
 // PC 0x006D3A90
@@ -2350,7 +2527,8 @@ inline CSWPazaak* CSWGuiPazaakGame::GetPazaak() { return m_pPazaak; }
 
 static inline int PazaakCardsDiffer(CPazaakCard cA, CPazaakCard cB)
 {
-    return cA.m_nType != cB.m_nType || cA.m_bFlipped != cB.m_bFlipped;
+    return cA.m_nType != cB.m_nType || cA.m_bFlipped != cB.m_bFlipped ||
+           cA.m_nValue != cB.m_nValue;
 }
 
 #define PAZAAK_REFRESH_DISABLED 0
@@ -2374,7 +2552,7 @@ int CSWGuiPazaakGame::RefreshDisplay()
     for (int i = 0; i < 9; i++)
     {
         cCard = GetPazaak()->m_cPlayer.m_aBoard[i];
-        if (PazaakCardsDiffer(m_cPlayerBoard[i].m_cCard, cCard))
+        if (PazaakCardsDiffer(m_cPlayerBoard[i].m_cCard, cCard) || cCard.m_nValue != 0)
         {
             m_cPlayerBoard[i].SetCard(cCard);
             bPlayerChanged = 1;
@@ -2382,7 +2560,7 @@ int CSWGuiPazaakGame::RefreshDisplay()
         m_cPlayerBoard[i].SetDimmed(bPlayerStand);
 
         cCard = GetPazaak()->m_cOpponent.m_aBoard[i];
-        if (PazaakCardsDiffer(m_cNpcBoard[i].m_cCard, cCard))
+        if (PazaakCardsDiffer(m_cNpcBoard[i].m_cCard, cCard) || cCard.m_nValue != 0)
         {
             m_cNpcBoard[i].SetCard(cCard);
             bNpcChanged = 1;
@@ -2393,19 +2571,25 @@ int CSWGuiPazaakGame::RefreshDisplay()
 #ifndef _XBOX
     int bAnyCard = 0;
     int bAnyFlip = 0;
+    int bAnyChange = 0;
 #endif
     for (int i = 0; i < 4; i++)
     {
         cCard = GetPazaak()->m_cPlayer.m_aSideDeck[i];
 #ifndef _XBOX
-        bAnyFlip = bAnyFlip || (cCard.m_nType >= 12 && cCard.m_nType < 18);
+        bAnyFlip = bAnyFlip || cCard.IsFlippable() ||
+                   cCard.m_nType == CPazaakCard::CARD_TYPE_PLUS_MINUS_1_2;
+        bAnyChange = bAnyChange || cCard.m_nType == CPazaakCard::CARD_TYPE_PLUS_MINUS_1_2;
 #endif
         if (PazaakCardsDiffer(m_cPlayerHand[i].m_cCard, cCard))
         {
             m_cPlayerHand[i].SetCard(cCard);
 #ifndef _XBOX
-            m_btnFlip[i].SetEnabled(cCard.m_nType >= 12 && cCard.m_nType < 18);
-            m_btnFlip[i].SetShown(cCard.m_nType >= 12 && cCard.m_nType < 18);
+            m_btnFlip[i].SetEnabled(cCard.IsFlippable() ||
+                                    cCard.m_nType == CPazaakCard::CARD_TYPE_PLUS_MINUS_1_2);
+            m_btnFlip[i].SetShown(cCard.IsFlippable() ||
+                                  cCard.m_nType == CPazaakCard::CARD_TYPE_PLUS_MINUS_1_2);
+            m_btnChange[i].SetShown(cCard.m_nType == CPazaakCard::CARD_TYPE_PLUS_MINUS_1_2);
 #endif
         }
 #ifndef _XBOX
@@ -2439,6 +2623,8 @@ int CSWGuiPazaakGame::RefreshDisplay()
 #ifndef _XBOX
     m_lblFlipIcon.SetShown(bAnyFlip);
     m_lblFlipLegend.SetShown(bAnyFlip);
+    m_lblChangeIcon.SetShown(bAnyChange);
+    m_lblChangeLegend.SetShown(bAnyChange);
 #endif
     if (bPlayerChanged != 0)
     {
@@ -2458,7 +2644,7 @@ int CSWGuiPazaakGame::RefreshDisplay()
 #ifdef _XBOX
             m_lblPlayerScore[nPlayerWin].m_cBorder.m_cParams.SetFillImage("lbl_winmark02", 0);
 #else
-            CResRef cMark("lbl_winmark02");
+            CResRef cMark("pz_rounds_on");
             m_lblPlayerScore[nPlayerWin].m_cBorder.m_cParams.SetFillImage(cMark,
                                                                           0);
 #endif
@@ -2469,7 +2655,7 @@ int CSWGuiPazaakGame::RefreshDisplay()
 #ifdef _XBOX
             m_lblNpcScore[nNpcWin].m_cBorder.m_cParams.SetFillImage("lbl_winmark02", 0);
 #else
-            CResRef cMark("lbl_winmark02");
+            CResRef cMark("pz_rounds_on");
             m_lblNpcScore[nNpcWin].m_cBorder.m_cParams.SetFillImage(cMark, 0);
 #endif
         }
@@ -2569,39 +2755,22 @@ void CSWGuiPazaakGame::HandleQuitDialog(CSWGuiControl* pControl)
 #ifndef _XBOX
 int CSWGuiPazaakGame::SetHandEnabled(int bEnabled)  // PC 0x006D4370
 {
-    int nLastCard = -1;
     for (int i = 3; i >= 0; i--)
     {
         CPazaakCard cCard = m_cPlayerHand[i].m_cCard;
         if (cCard.m_nType >= 0)
         {
-#ifndef _XBOX
             m_cPlayerHand[i].m_bSelectable = bEnabled;
-#endif
-            nLastCard = i;
         }
         else
         {
-#ifndef _XBOX
             m_cPlayerHand[i].m_bSelectable = 0;
-#endif
         }
     }
     m_btnContinue.SetEnabled(bEnabled == 0);
     m_btnStand.SetEnabled(bEnabled == 0);
     m_btnX.SetEnabled(bEnabled == 0);
     m_btnBlack.SetEnabled(bEnabled == 0);
-    if (bEnabled != 0)
-    {
-        if (nLastCard >= 0)
-        {
-            SetActiveControl(&m_cPlayerHand[nLastCard], 0);
-        }
-    }
-    else
-    {
-        SetActiveControl(&m_btnContinue, 0);
-    }
     return RefreshDisplay();
 }
 // PC 0x006D4420
@@ -2631,12 +2800,32 @@ void CSWGuiPazaakGame::HandleFlipHandCard()
         if (nCard >= 0 && nCard < 4 &&
             m_pActiveControl == &m_cPlayerHand[nCard])
         {
-            CPazaakCard cCard = m_pPazaak->m_cPlayer.m_aSideDeck[nCard];
-            if (cCard.m_nType >= 12 && cCard.m_nType < 18)
+            CPazaakCard cCard = GetPazaak()->m_cPlayer.m_aSideDeck[nCard];
+            if (cCard.IsFlippable() || cCard.m_nType == CPazaakCard::CARD_TYPE_PLUS_MINUS_1_2)
             {
                 m_btnBlack.StartFlash(CGuiInGame::COLOR_CYAN);
                 m_pPazaak->m_cPlayer.m_aSideDeck[nCard].m_bFlipped =
                     m_pPazaak->m_cPlayer.m_aSideDeck[nCard].m_bFlipped == 0;
+                m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+                RefreshDisplay();
+            }
+        }
+    }
+}
+// PC 0x006D4530
+void CSWGuiPazaakGame::HandleChangeHandCard()
+{
+    if (m_pActiveControl != NULL)
+    {
+        int nCard = m_pActiveControl->m_nID;
+        if (nCard >= 0 && nCard < 4 &&
+            m_pActiveControl == &m_cPlayerHand[nCard])
+        {
+            CPazaakCard cCard = GetPazaak()->m_cPlayer.m_aSideDeck[nCard];
+            if (cCard.m_nType == CPazaakCard::CARD_TYPE_PLUS_MINUS_1_2)
+            {
+                m_pPazaak->m_cPlayer.m_aSideDeck[nCard].m_nValue =
+                    (cCard.m_nValue == 1 || cCard.m_nValue == 0) ? 2 : 1;
                 m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
                 RefreshDisplay();
             }
@@ -2661,6 +2850,28 @@ void CSWGuiPazaakGame::HandleFlipButtons(CSWGuiControl* pControl)
     m_pActiveControl = &m_cPlayerHand[pControl->m_nID];
     HandleFlipHandCard();
     m_pActiveControl = pOldActive;
+}
+// PC 0x006D4610
+void CSWGuiPazaakGame::HandleChangeButtons(CSWGuiControl* pControl)
+{
+    CSWGuiControl* pOldActive = m_pActiveControl;
+    m_pActiveControl = &m_cPlayerHand[pControl->m_nID];
+    HandleChangeHandCard();
+    m_pActiveControl = pOldActive;
+}
+// PC 0x006D4640
+void CSWGuiPazaakGame::HandleForfeitButton(CSWGuiControl* pControl)
+{
+    m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+    CSWGuiMessageBox* pMessageBox =
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+    pMessageBox->SetAllowCancel(1);
+    pMessageBox->SetCallback(
+        this, (CSWGuiHandler)&CSWGuiPazaakGame::HandleQuitDialog, NULL);
+    pMessageBox->SetMessageColors(CGuiInGame::COLOR_DARK_GOLD,
+                                  CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    pMessageBox->SetMessage(STRREF_PAZAAK_CONFIRM_FORFEIT);
+    m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
 #endif
 
@@ -2768,7 +2979,7 @@ void CSWGuiWagerPopup::HandleInputEvent(int nEvent, int nState)
             pMessageBox->SetCallback(
                 m_pStart, (CSWGuiHandler)&CSWGuiPazaakStart::HandleQuitDialog,
                 NULL);
-            pMessageBox->SetMessage(42424);
+            pMessageBox->SetMessage(STRREF_PAZAAK_QUIT_FORFEIT);
             m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
             break;
         }

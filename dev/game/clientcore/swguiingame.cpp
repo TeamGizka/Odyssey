@@ -43,6 +43,10 @@ void CSWGuiMessageBox::SetMessage(unsigned long nStrRef)
 #include "nwscript.h"
 #include "nwscreaturestats.h"
 #include "nwsvartable.h"
+#include "swparty.h"
+#include "nwtlktable.h"
+#include "nwseffect.h"
+#include "nwseffectlist.h"
 #include "swguiingame.inl"
 // PC 0x00675E60
 void CSWGuiMessageBox::SetCallback(CSWGuiObject* pObject,
@@ -131,12 +135,16 @@ void CSWGuiStatusSummary::HandleLevelUpDLG()
     if (pCreature != 0 && pCreature->m_bPlayerCreated != 0 && pCreature->m_pStats->CanLevelUp())
     {
         char bFired = 0;
-        g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->GetValueNumber(
-            CExoString("000_Level_Dlg_Fired"), bFired);
+        {
+            CExoString sVariable("000_Level_Dlg_Fired");
+            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->GetValueNumber(sVariable, bFired);
+        }
         if (!bFired)
         {
-            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
-                CExoString("000_Level_Dlg_Fired"), 1);
+            {
+                CExoString sVariable("000_Level_Dlg_Fired");
+                g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(sVariable, 1);
+            }
             CExoString sScript("k_level_dlg");
             g_pVirtualMachine->RunScript(&sScript, 0, 0);
         }
@@ -192,6 +200,14 @@ void CSWGuiToolTipPanel::PositionToolTip()  // PC 0x00676600
         cExtent.m_nLeft = nX;
         m_lblToolTip.SetExtent(cExtent);
     }
+}
+// PC 0x006766B0
+void CSWGuiInGameMenu::ShowChangeButtons(int bShow)
+{
+    m_btnChange2.SetShown(bShow);
+    m_btnChange2.SetEnabled(bShow);
+    m_btnChange3.SetShown(bShow);
+    m_btnChange3.SetEnabled(bShow);
 }
 #endif
 // PC 0x00676AD0
@@ -306,64 +322,55 @@ void CSWGuiInGameMessages::ShowDialogMessages()
     m_lbMessages.m_bEnabled = 0;
     CSWGuiListBox* pDialog = &m_lbDialog;
     pDialog->m_bEnabled = 1;
-#ifdef _XBOX
-    m_lblXDesc.m_cText.m_cParams.SetStrRef(STRREF_SHOW_FEEDBACK);
-#endif
+    m_lbCombat.SetEnabledFlag(0);
+    m_lbEffectsGood.SetEnabledFlag(0);
+    m_lbEffectsBad.SetEnabledFlag(0);
+    m_lblEffectsGood.SetEnabledFlag(0);
+    m_lblEffectsBad.SetEnabledFlag(0);
+
+    m_btnDialog.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    m_btnFeedback.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_btnCombat.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_btnEffects.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
     SetActiveControl(pDialog, 0);
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType =
         CGuiInGame::MESSAGE_TYPE_DIALOG;
-
-#ifndef _XBOX
-    CExoString sTitle;
-    sTitle = g_pTlkTable->GetSimpleString(STRREF_MESSAGES) +
-        " - " + g_pTlkTable->GetSimpleString(STRREF_DIALOG);
-    m_lblTitle.m_cText.m_cParams.SetText(sTitle);
-#endif
 }
 // PC 0x006799B0
 CSWGuiToolTipPanel::CSWGuiToolTipPanel(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
     SwguiingameTrace2();
-    if (g_nScreenWidth == 1600)
-    {
-        CResRef cLayout("tooltip16X12");
-        StartLoadFromLayout(cLayout);
-    }
-    if (g_nScreenWidth == 1280)
-    {
-        if (g_nScreenHeight == 960)
-        {
-            CResRef cLayout("tooltip12X9");
-            StartLoadFromLayout(cLayout);
-        }
-        else if (g_nScreenHeight == 1024)
-        {
-            CResRef cLayout("tooltip12x10");
-            StartLoadFromLayout(cLayout);
-        }
-    }
-    else if (g_nScreenWidth == 1024)
-    {
-        CResRef cLayout("tooltip10X8");
-        StartLoadFromLayout(cLayout);
-    }
-    else if (g_nScreenWidth == 800)
-    {
-        CResRef cLayout("tooltip8X6");
-        StartLoadFromLayout(cLayout);
-    }
-    else
-    {
-        CResRef cLayout("tooltip6X4");
-        StartLoadFromLayout(cLayout);
-    }
-#ifndef _XBOX
-    m_bPositioned = 1;
-#endif
+    CResRef cLayout("tooltip8X6_p");
+    StartLoadFromLayout(cLayout);
     InitControl(m_lblToolTip, "tooltip", 1);
     StopLoadFromLayout();
 }
+#ifndef _XBOX
+// PC 0x00679A70
+void CSWGuiInGameMenu::OnChangeCharacter(CSWGuiControl* pControl)
+{
+    int nDirection = CHANGE_DIRECTION_NEXT;
+    if (pControl->m_bSelected == 0)
+        return;
+    if (m_n3DCC != 0)
+    {
+        CSWGuiMessageBox* pMessageBox =
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMessageBox;
+        pMessageBox->SetAllowCancel(0);
+        pMessageBox->SetCallback(NULL, NULL, NULL);
+        pMessageBox->SetMessage(STRREF_PARTY_ORDER_LOCKED);
+        m_pManager->AddPanel(pMessageBox, 1, 1);
+        return;
+    }
+    if (pControl == &m_btnChange3)
+        nDirection = CHANGE_DIRECTION_SECOND;
+    if (g_pAppManager->GetClientExoApp()->ChangeCharacterToNextLivingPartyMember(0, 0, nDirection))
+        m_pManager->PlayGuiSound(1);
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateAbilitiesCharacter();
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateInventory();
+}
+#endif
 // PC 0x00679B50
 void CSWGuiDeathDisplay::OnLoadGamePressed(CSWGuiControl* pControl)
 {
@@ -460,10 +467,34 @@ CSWGuiInGameMenu::CSWGuiInGameMenu(CSWGuiManager* pManager)
     InitControl(m_btnChar, "BTN_CHAR", 1); InitControl(m_btnMap, "BTN_MAP", 1);
     InitControl(m_btnAbi, "BTN_ABI", 1); InitControl(m_btnJou, "BTN_JOU", 1);
     InitControl(m_btnOpt, "BTN_OPT", 1); InitControl(m_btnMsg, "BTN_MSG", 1);
+    InitControl(m_lblTopClass1, "LBL_TOP_CLASS1", 1);
+    InitControl(m_lblTopClass2, "LBL_TOP_CLASS2", 1);
+    InitControl(m_lblTopClass1Level, "LBL_TOP_CLASS1LEVEL", 1);
+    InitControl(m_lblTopClass2Level, "LBL_TOP_CLASS2LEVEL", 1);
+    InitControl(m_lblCharName, "LBL_CHARNAME", 1);
+    m_cChar2350.Initialize((CSWGuiMainInterface*)this, 1);
+    InitControl(m_lblChar2, "LBL_CHAR2", 1);
+    InitControl(m_lblLevelUp2, "LBL_LEVELUP2", 1);
+    InitControl(m_lblBack2, "LBL_BACK2", 1);
+    InitControl(m_btnChange2, "BTN_CHANGE2", 1);
+    InitControl(m_lblChar3, "LBL_CHAR3", 1);
+    InitControl(m_lblLevelUp3, "LBL_LEVELUP3", 1);
+    InitControl(m_lblBack3, "LBL_BACK3", 1);
+    InitControl(m_btnChange3, "BTN_CHANGE3", 1);
+    InitControl(m_lblSecTitle, "LBL_SECTITLE", 1);
 #else
     InitControl(m_lblLeftArrow, "LBL_LEFT_ARROW", 1); InitControl(m_lblRightArrow, "LBL_RIGHT_ARROW", 1);
 #endif
     StopLoadFromLayout();
+#ifndef _XBOX
+    m_btnChange2.SetFocusable(0);
+    m_btnChange2.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnChangeCharacter);
+    m_btnChange3.SetFocusable(0);
+    m_btnChange3.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+        (CSWGuiHandler)&CSWGuiInGameMenu::OnChangeCharacter);
+    m_n3DCC = 0;
+#endif
 
     m_LblhEqu.AddEvent(53, this,
         (CSWGuiHandler)&CSWGuiInGameMenu::OnShoulderLeft);
@@ -522,17 +553,19 @@ CSWGuiInGameMenu::CSWGuiInGameMenu(CSWGuiManager* pManager)
     SetActiveControl(&m_btnEqu, 0);
 #else
     SetActiveControl(&m_LblhEqu, 0);
-#endif
     m_bCenterHorizontal = 1;
     m_bCenterVertical = 1;
+#endif
 #ifndef _XBOX
-    m_btnEqu.SetToolTip(48219, GUIEVENT_MENU_EQUIPMENT);
-    m_btnInv.SetToolTip(48220, GUIEVENT_MENU_INVENTORY);
-    m_btnChar.SetToolTip(48225, GUIEVENT_MENU_CHARACTER);
-    m_btnMap.SetToolTip(48221, GUIEVENT_MENU_MAP);
-    m_btnAbi.SetToolTip(48224, GUIEVENT_MENU_ABILITIES);
-    m_btnJou.SetToolTip(48218, GUIEVENT_MENU_JOURNAL);
-    m_btnOpt.SetToolTip(48222, GUIEVENT_MENU_OPTIONS); m_btnMsg.SetToolTip(48223, GUIEVENT_MENU_MESSAGES);
+    m_btnEqu.SetToolTip(STRREF_TOOLTIP_EQUIP, GUIEVENT_MENU_EQUIPMENT);
+    m_btnInv.SetToolTip(STRREF_TOOLTIP_INVENTORY, GUIEVENT_MENU_INVENTORY);
+    m_btnChar.SetToolTip(STRREF_TOOLTIP_CHARACTER, GUIEVENT_MENU_CHARACTER);
+    m_btnMap.SetToolTip(STRREF_TOOLTIP_MAP, GUIEVENT_MENU_MAP);
+    m_btnAbi.SetToolTip(STRREF_TOOLTIP_ABILITIES, GUIEVENT_MENU_ABILITIES);
+    m_btnJou.SetToolTip(STRREF_TOOLTIP_JOURNAL, GUIEVENT_MENU_JOURNAL);
+    m_btnOpt.SetToolTip(STRREF_TOOLTIP_OPTIONS, GUIEVENT_MENU_OPTIONS);
+    m_btnMsg.SetToolTip(STRREF_TOOLTIP_PARTY_SELECTION, GUIEVENT_MENU_MESSAGES);
+    m_nTopMenuOverrideCharacter = -1;
 #endif
 }
 // PC 0x00675960
@@ -541,20 +574,83 @@ void CSWGuiInGameMessages::ShowFeedbackMessages()
     SWGUIINGAME_TRACE();
     CSWGuiListBox* pMessages = &m_lbMessages;
     pMessages->m_bEnabled = 1;
-    m_lbDialog.m_bEnabled = 0;
-#ifdef _XBOX
-    m_lblXDesc.m_cText.m_cParams.SetStrRef(STRREF_SHOW_DIALOG);
-#endif
+    m_lbDialog.SetEnabledFlag(0);
+    m_lbCombat.SetEnabledFlag(0);
+    m_lbEffectsGood.SetEnabledFlag(0);
+    m_lbEffectsBad.SetEnabledFlag(0);
+    m_lblEffectsGood.SetEnabledFlag(0);
+    m_lblEffectsBad.SetEnabledFlag(0);
+    m_btnDialog.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_btnFeedback.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    m_btnCombat.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_btnEffects.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
     SetActiveControl(pMessages, 0);
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType =
         CGuiInGame::MESSAGE_TYPE_FEEDBACK;
+}
+// PC 0x00675A10
+void CSWGuiInGameMessages::ShowCombatMessages()
+{
+    m_lbMessages.m_bEnabled = 0;
+    m_lbDialog.SetEnabledFlag(0);
+    m_lbEffectsGood.SetEnabledFlag(0);
+    m_lbEffectsBad.SetEnabledFlag(0);
+    CSWGuiListBox* pCombat = &m_lbCombat;
+    pCombat->m_bEnabled = 1;
+    m_lblEffectsGood.SetEnabledFlag(0);
+    m_lblEffectsBad.SetEnabledFlag(0);
 
-#ifndef _XBOX
-    CExoString sTitle;
-    sTitle = g_pTlkTable->GetSimpleString(STRREF_MESSAGES) +
-        " - " + g_pTlkTable->GetSimpleString(STRREF_FEEDBACK);
-    m_lblTitle.m_cText.m_cParams.SetText(sTitle);
-#endif
+    m_btnDialog.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_btnFeedback.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_btnCombat.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    m_btnEffects.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+    SetActiveControl(pCombat, 0);
+    g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType =
+        CGuiInGame::MESSAGE_TYPE_COMBAT;
+}
+// PC 0x00676140
+void CSWGuiStatusSummary::PlayPendingSounds()
+{
+    if (m_cStatusSummary.m_bLevelUpSound)
+        m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_LEVELUP);
+    if (m_cStatusSummary.m_bNewQuestSound)
+        m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_NEWQUEST);
+    if (m_cStatusSummary.m_bCompleteSound)
+        m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_QUESTCOMPLETE);
+    CSWCCreature* pCreature = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
+    CSWSCreature* pServerCreature = 0;
+    if (pCreature)
+        pServerCreature = pCreature->GetServerCreature();
+    if (m_cStatusSummary.m_bDarkAlignSound)
+    {
+        m_pManager->PlayGuiSound(GUISOUND_DARK_SIDE);
+        m_cStatusSummary.m_bDarkAlignSound = 0;
+        if (pServerCreature && pServerCreature->m_bPlayerCreated)
+        {
+            CGameEffect* pEffect = new CGameEffect(1);
+            pEffect->m_nType = CSWSEffectListHandler::EFFECT_VISUALEFFECT;
+            pEffect->SetInteger(0, VFX_IMP_DARK_SIDE);
+            pEffect->m_nSubType = (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
+                CGameEffect::DURATION_TYPE_INSTANTANEOUS;
+            pEffect->SetCreator(pServerCreature->GetId());
+            pServerCreature->ApplyEffect(pEffect, 0, 0);
+        }
+    }
+    if (m_cStatusSummary.m_bLightAlignSound)
+    {
+        m_pManager->PlayGuiSound(GUISOUND_LIGHT_SIDE);
+        m_cStatusSummary.m_bLightAlignSound = 0;
+        if (pServerCreature && pServerCreature->m_bPlayerCreated)
+        {
+            CGameEffect* pEffect = new CGameEffect(1);
+            pEffect->m_nType = CSWSEffectListHandler::EFFECT_VISUALEFFECT;
+            pEffect->SetInteger(0, VFX_IMP_LIGHT_SIDE);
+            pEffect->m_nSubType = (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
+                CGameEffect::DURATION_TYPE_INSTANTANEOUS;
+            pEffect->SetCreator(pServerCreature->GetId());
+            pServerCreature->ApplyEffect(pEffect, 0, 0);
+        }
+    }
 }
 
 #ifdef _XBOX
@@ -1197,6 +1293,18 @@ void CSWGuiStatusSummary::DisplayStatus()
         case GUI_STATUS_ITEM_LOST:
             bShow = m_cStatusSummary.m_bItemLost;
             break;
+        case GUI_STATUS_INFLUENCE_GAIN:
+            bShow = m_cStatusSummary.m_nInfluenceGain;
+            break;
+        case GUI_STATUS_INFLUENCE_LOST:
+            bShow = m_cStatusSummary.m_nInfluenceLost;
+            break;
+        case GUI_STATUS_MAX_FP_GAIN:
+            bShow = m_cStatusSummary.m_nMaxForcePointsGain;
+            break;
+        case GUI_STATUS_MAX_FP_LOST:
+            bShow = m_cStatusSummary.m_nMaxForcePointsLost;
+            break;
         }
         if (bShow)
             g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowFlashingStatus(nStatus);
@@ -1210,25 +1318,43 @@ void CSWGuiStatusSummary::DisplayStatus()
     m_cStatusSummary.m_bLevelUpSound = 0;
     m_cStatusSummary.m_bNewQuestSound = 0;
     m_cStatusSummary.m_bCompleteSound = 0;
+    m_cStatusSummary.m_bDarkAlignSound = 0;
+    m_cStatusSummary.m_bLightAlignSound = 0;
     m_cStatusSummary.m_bCreditsNet = 0;
     m_cStatusSummary.m_nCredits = 0;
     m_cStatusSummary.m_nLightShift = 0;
     m_cStatusSummary.m_nDarkShift = 0;
     m_cStatusSummary.m_nExperience = 0;
     m_cStatusSummary.m_nStealthExperience = 0;
+    m_cStatusSummary.m_nInfluenceGain = 0;
+    m_cStatusSummary.m_nInfluenceLost = 0;
+    m_cStatusSummary.m_nMaxForcePointsGain = 0;
+    m_cStatusSummary.m_nMaxForcePointsLost = 0;
 }
+
 // PC 0x00678930
 void CSWGuiStatusSummary::OnPanelAdded()
 {
     SWGUIINGAME_TRACE();
 
-    int nTop = 10;
-    int nWidth = 150;
     int bJournal = 0;
     CExoString sDescription;
     CSWGuiExtent cExtent;
+    cExtent.m_nLeft = cExtent.m_nTop = cExtent.m_nWidth = cExtent.m_nHeight = 0;
 
     PlayPendingSounds();
+    if (m_cStatusSummary.m_nDarkShift || m_cStatusSummary.m_nLightShift)
+        m_n94 = 1;
+
+    float fScaleX = 1.0f;
+    float fScaleY = 1.0f;
+    if (g_pAppManager->GetClientExoApp()->GetSWGuiManager() != NULL)
+    {
+        fScaleX = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
+        fScaleY = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
+    }
+    int nTop = (int)(fScaleY * 10.0f);
+    int nWidth = (int)(fScaleX * 150.0f);
 
     for (int nStatus = 0; nStatus < GUI_STATUS_COUNT; nStatus++)
     {
@@ -1309,10 +1435,117 @@ void CSWGuiStatusSummary::OnPanelAdded()
             }
             break;
         case GUI_STATUS_ITEM_RECEIVED:
-            bShow = m_cStatusSummary.m_bItemReceived;
+        {
+            CGuiInGame* pInGameGui = g_pAppManager->GetClientExoApp()->GetInGameGui();
+            CExoString sItems;
+            for (int nItem = 0; nItem < pInGameGui->m_a1030.num; nItem++)
+            {
+                CExoLocString sLocName(pInGameGui->m_a1030[nItem]);
+                CExoString sName;
+                sLocName.GetString(g_pAppManager->GetClientExoApp()->GetClientLanguage(), &sName, 0);
+                if (sItems == "")
+                    sItems = sName + "\n";
+                else
+                    sItems.Format("%s%s\n", sItems.CStr(), sName.CStr());
+                int nTokenStart = sItems.Find('<', 0);
+                int nCustomStart = sItems.Find('{', 0);
+                if (nTokenStart != -1 || nCustomStart != -1)
+                    g_pSWTlkTable->ParseStr(sItems,
+                        g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter(), 0, 1);
+            }
+            if (sItems == "")
+                bShow = 0;
+            else
+            {
+                bShow = 1;
+                bSetDescription = 1;
+                g_pTlkTable->SetCustomToken(0, sItems);
+                sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_ITEMS_RECEIVED);
+            }
             break;
+        }
         case GUI_STATUS_ITEM_LOST:
             bShow = m_cStatusSummary.m_bItemLost;
+            break;
+        case GUI_STATUS_INFLUENCE_GAIN:
+        case GUI_STATUS_INFLUENCE_LOST:
+        {
+            CExoString sNames;
+            int nNPC = 0;
+            CSWPartyTable* pPartyTable = g_pAppManager->m_pServerExoApp->GetPartyTable();
+            int nMask = nStatus == GUI_STATUS_INFLUENCE_GAIN ? m_cStatusSummary.m_nInfluenceGain
+                                                              : m_cStatusSummary.m_nInfluenceLost;
+            for (; nNPC < INFLUENCE_NPC_COUNT; nNPC++)
+            {
+                if (((nMask >> nNPC) & 1) == 0)
+                    continue;
+                CExoString sName;
+                switch (nNPC)
+                {
+                case NPC_ATTON:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_ATTON, NULL, 0, 0);
+                    break;
+                case NPC_BAO_DUR:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_BAO_DUR, NULL, 0, 0);
+                    break;
+                case NPC_MANDALORE:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_MANDALORE, NULL, 0, 0);
+                    break;
+                case NPC_G0T0:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_G0T0, NULL, 0, 0);
+                    break;
+                case NPC_HANDMAIDEN:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_HANDMAIDEN, NULL, 0, 0);
+                    break;
+                case NPC_HK_47:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_HK_47, NULL, 0, 0);
+                    break;
+                case NPC_KREIA:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_KREIA, NULL, 0, 0);
+                    break;
+                case NPC_MIRA:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_MIRA, NULL, 0, 0);
+                    break;
+                case NPC_T3_M4:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_T3_M4, NULL, 0, 0);
+                    break;
+                case NPC_VISAS:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_VISAS, NULL, 0, 0);
+                    break;
+                case NPC_HANHARR:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_HANHARR, NULL, 0, 0);
+                    break;
+                case NPC_DISCIPLE:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_DISCIPLE, NULL, 0, 0);
+                    break;
+                case NPC_REMOTE:
+                    sName = g_pSWTlkTable->Fetch(STRREF_NAME_REMOTE, NULL, 0, 0);
+                    break;
+                }
+                if (sNames == "")
+                    sNames = sName;
+                else
+                    sNames.Format("%s, %s", sNames.CStr(), sName.CStr());
+            }
+            if (sNames == "")
+                bShow = 0;
+            else
+            {
+                bShow = 1;
+                bSetDescription = 1;
+                g_pTlkTable->SetCustomToken(0, sNames);
+                if (nStatus == GUI_STATUS_INFLUENCE_GAIN)
+                    sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_INFLUENCE_GAINED);
+                else
+                    sDescription = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_INFLUENCE_LOST);
+            }
+            break;
+        }
+        case GUI_STATUS_MAX_FP_GAIN:
+            bShow = m_cStatusSummary.m_nMaxForcePointsGain;
+            break;
+        case GUI_STATUS_MAX_FP_LOST:
+            bShow = m_cStatusSummary.m_nMaxForcePointsLost;
             break;
         }
 
@@ -1325,32 +1558,56 @@ void CSWGuiStatusSummary::OnPanelAdded()
             if (bSetDescription)
             {
                 m_aStatusDescriptions[nStatus].m_cText.m_cParams.SetText(sDescription);
-#ifndef _XBOX
                 m_aStatusDescriptions[nStatus].m_cText.m_cParams.ReSetFont();
-#endif
             }
             cExtent = m_aStatusLabels[nStatus].m_cExtent;
             cExtent.m_nTop = nTop;
+            cExtent.m_nHeight = STATUS_ICON_SIZE;
+            cExtent.m_nWidth = STATUS_ICON_SIZE;
             pLabel->SetExtent(cExtent);
             cExtent = m_aStatusDescriptions[nStatus].m_cExtent;
             cExtent.m_nTop = nTop - 1;
+            if (nStatus != GUI_STATUS_ITEM_RECEIVED)
+                cExtent.m_nHeight = STATUS_DESCRIPTION_HEIGHT;
+            else
+                cExtent.m_nHeight = m_aStatusDescriptions[GUI_STATUS_ITEM_RECEIVED].m_cText.GetIdealHeight();
             cExtent.m_nWidth = nWidth;
             pDescription->SetExtent(cExtent);
-            if (m_aStatusDescriptions[nStatus].m_cText.m_cParams.m_sText != "" && nWidth < 440)
+            if (nStatus == GUI_STATUS_ITEM_RECEIVED)
+            {
+                if (m_aStatusDescriptions[GUI_STATUS_ITEM_RECEIVED].m_cText.m_cParams.m_sText != "")
+                {
+                    int nItemWidth = (int)(fScaleX * 300.0f);
+                    if (nItemWidth > nWidth)
+                        nWidth = nItemWidth;
+                    cExtent.m_nWidth = nWidth;
+                    m_aStatusDescriptions[GUI_STATUS_ITEM_RECEIVED].SetExtent(cExtent);
+                }
+            }
+            else if (m_aStatusDescriptions[nStatus].m_cText.m_cParams.m_sText != "" && nWidth < 440)
             {
                 do
                 {
                     if (m_aStatusDescriptions[nStatus].m_cText.GetIdealHeight() ==
                         m_aStatusDescriptions[nStatus].m_cText.GetFontHeight())
                         break;
-                    nWidth += 20;
+                    nWidth += (int)(fScaleX * 20.0f);
                     cExtent.m_nWidth = nWidth;
                     pDescription->SetExtent(cExtent);
                 } while (nWidth < 440);
             }
             if (bFlash)
                 g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowFlashingStatus(nStatus);
-            nTop += 37;
+            if (nStatus == GUI_STATUS_ITEM_RECEIVED)
+            {
+                int nIdealHeight = m_aStatusDescriptions[GUI_STATUS_ITEM_RECEIVED].m_cText.GetIdealHeight();
+                if (nIdealHeight < STATUS_ROW_HEIGHT)
+                    nTop += STATUS_ROW_HEIGHT;
+                else
+                    nTop += nIdealHeight;
+            }
+            else
+                nTop += STATUS_ROW_HEIGHT;
         }
         else
         {
@@ -1359,9 +1616,8 @@ void CSWGuiStatusSummary::OnPanelAdded()
             m_aStatusDescriptions[nStatus].m_bEnabled = 0;
         }
     }
-    nTop -= 7;
-    cExtent.m_nHeight = nTop + 32;
-    cExtent.m_nWidth = m_aStatusDescriptions[0].m_cExtent.m_nLeft + nWidth + 10;
+    cExtent.m_nHeight = nTop - (int)(fScaleY * -32.0f);
+    cExtent.m_nWidth = m_aStatusDescriptions[0].m_cExtent.m_nLeft - (int)(fScaleX * -10.0f) + nWidth;
     cExtent.m_nTop = (m_pManager->m_nHeight - cExtent.m_nHeight) / 2;
     cExtent.m_nLeft = (m_pManager->m_nWidth - cExtent.m_nWidth) / 2;
     SetExtent(cExtent);
@@ -1390,12 +1646,18 @@ void CSWGuiStatusSummary::OnPanelAdded()
     m_cStatusSummary.m_bLevelUpSound = 0;
     m_cStatusSummary.m_bNewQuestSound = 0;
     m_cStatusSummary.m_bCompleteSound = 0;
+    m_cStatusSummary.m_bDarkAlignSound = 0;
+    m_cStatusSummary.m_bLightAlignSound = 0;
     m_cStatusSummary.m_bCreditsNet = 0;
     m_cStatusSummary.m_nCredits = 0;
     m_cStatusSummary.m_nLightShift = 0;
     m_cStatusSummary.m_nDarkShift = 0;
     m_cStatusSummary.m_nExperience = 0;
     m_cStatusSummary.m_nStealthExperience = 0;
+    m_cStatusSummary.m_nInfluenceGain = 0;
+    m_cStatusSummary.m_nInfluenceLost = 0;
+    m_cStatusSummary.m_nMaxForcePointsGain = 0;
+    m_cStatusSummary.m_nMaxForcePointsLost = 0;
 #ifndef _XBOX
     CSWGuiPanel::OnPanelAdded();
 #endif
@@ -1415,33 +1677,56 @@ void CSWGuiStatusSummary::OnPanelAdded()
     g_pGuiMan->MoveMouseToPosition(nMouseX, nMouseY);
 #endif
 }
+// PC 0x0067C0F0
+void CSWGuiInGameMessages::ChangeMessageDisplay(CSWGuiControl* pControl)
+{
+    int nIndex = pControl->m_nIndex;
+    if (nIndex == MESSAGE_DISPLAY_DIALOG)
+        ShowDialogMessages();
+    else if (nIndex == MESSAGE_DISPLAY_FEEDBACK)
+        ShowFeedbackMessages();
+    else if (nIndex == MESSAGE_DISPLAY_COMBAT)
+        ShowCombatMessages();
+    else if (nIndex == MESSAGE_DISPLAY_EFFECTS)
+        ShowEffects();
+}
+
 // PC 0x0067C130
 CSWGuiInGameMessages::CSWGuiInGameMessages(CSWGuiManager* pManager)
+
     : CSWGuiPanel(pManager)
 {
     CSWGuiExtent cExtent;
     cExtent.m_nLeft = cExtent.m_nTop =
         cExtent.m_nWidth = cExtent.m_nHeight = 0;
 
-    StartLoadFromLayout("messages");
+    StartLoadFromLayout("messages_p");
     CSWGuiListBox* pMessages = &m_lbMessages;
     InitControl(*pMessages, "LB_MESSAGES", 1);
     InitControl(m_lblTitle, "LBL_MESSAGES", 1);
-#ifdef _XBOX
-    InitControl(m_lblStart, "LBL_START", 1);
-    InitControl(m_lblExit, "LBL_EXIT", 1);
-    InitControl(m_lblX, "LBL_X", 1);
-    InitControl(m_lblXDesc, "LBL_X_DESC", 1);
     InitControl(m_lbDialog, "LB_DIALOG", 1);
-#else
-    InitControl(m_lbDialog, "LB_DIALOG", 1);
+    InitControl(m_lbCombat, "LB_COMBAT", 1);
+    InitControl(m_lbEffectsGood, "LB_EFFECTS_GOOD", 1);
+    InitControl(m_lbEffectsBad, "LB_EFFECTS_BAD", 1);
+    InitControl(m_lblEffectsGood, "LBL_EFFECTS_GOOD", 1);
+    InitControl(m_lblEffectsBad, "LBL_EFFECTS_BAD", 1);
     InitControl(m_btnBack, "BTN_EXIT", 1);
-#endif
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    InitControl(m_alblBar[4], "LBL_BAR5", 1);
+    InitControl(m_alblBar[5], "LBL_BAR6", 1);
+    InitControl(m_btnDialog, "BTN_DIALOG", 1);
+    InitControl(m_btnFeedback, "BTN_FEEDBACK", 1);
+    InitControl(m_btnCombat, "BTN_COMBAT", 1);
+    InitControl(m_btnEffects, "BTN_EFFECTS", 1);
+    InitControl(m_lblFilter, "LBL_FILTER", 1);
     StopLoadFromLayout();
 
     CSWGuiLabelHilight* pProto =
         (CSWGuiLabelHilight*)m_lbMessages.m_pProtoItem;
-    pProto->m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+    pProto->m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
     pProto->m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
     m_pMessageLabels = new CSWGuiLabelHilight[64];
     for (unsigned int i = 0; i < 64; i++)
@@ -1450,7 +1735,7 @@ CSWGuiInGameMessages::CSWGuiInGameMessages(CSWGuiManager* pManager)
     }
 
     pProto = (CSWGuiLabelHilight*)m_lbDialog.m_pProtoItem;
-    pProto->m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+    pProto->m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
     pProto->m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
     m_pDialogLabels = new CSWGuiLabelHilight[64];
     for (unsigned int j = 0; j < 64; j++)
@@ -1458,26 +1743,53 @@ CSWGuiInGameMessages::CSWGuiInGameMessages(CSWGuiManager* pManager)
         m_pDialogLabels[j].Initialize(cExtent, pProto);
     }
 
-    pMessages->m_bClipItems = 1;
-#ifndef _XBOX
+    pProto->m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+    pProto->m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
+    m_pCombatLabels = new CSWGuiLabelHilight[64];
+    for (unsigned int k = 0; k < 64; k++)
+    {
+        m_pCombatLabels[k].Initialize(cExtent, pProto);
+    }
+
     CSWGuiButton* pExit = &m_btnBack;
     pExit->AddEvent(CSWGuiControl::EVENT_SELECT, this,
                     (PFNGUIEVENT)&CSWGuiPanel::OnBButtonPressed);
     pExit->m_bFocusable = 0;
+    m_btnDialog.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                         (PFNGUIEVENT)&CSWGuiInGameMessages::ChangeMessageDisplay);
+    m_btnDialog.m_nIndex = MESSAGE_DISPLAY_DIALOG;
+    m_btnDialog.SetFocusable(0);
+    m_btnFeedback.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                           (PFNGUIEVENT)&CSWGuiInGameMessages::ChangeMessageDisplay);
+    m_btnFeedback.m_nIndex = MESSAGE_DISPLAY_FEEDBACK;
+    m_btnFeedback.SetFocusable(0);
+    m_btnCombat.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                         (PFNGUIEVENT)&CSWGuiInGameMessages::ChangeMessageDisplay);
+    m_btnCombat.m_nIndex = MESSAGE_DISPLAY_COMBAT;
+    m_btnCombat.SetFocusable(0);
+    m_btnEffects.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                          (PFNGUIEVENT)&CSWGuiInGameMessages::ChangeMessageDisplay);
+    m_btnEffects.m_nIndex = MESSAGE_DISPLAY_EFFECTS;
+    m_btnEffects.SetFocusable(0);
     pMessages->SetSelectOnLeftClick(1);
     m_lbDialog.SetSelectOnLeftClick(1);
-#endif
+    m_lbCombat.SetSelectOnLeftClick(1);
     SetActiveControl(pMessages, 0);
 }
+
 // PC 0x00677240
 CSWGuiInGameMessages::~CSWGuiInGameMessages()
 {
     m_lbDialog.ClearItems();
     m_lbMessages.ClearItems();
+    m_lbCombat.ClearItems();
+    m_lbEffectsGood.ClearItems();
+    m_lbEffectsBad.ClearItems();
     delete[] m_pDialogLabels;
     delete[] m_pMessageLabels;
+    delete[] m_pCombatLabels;
 }
-// PC 0x0067A630
+// PC 0x00679F60
 void CSWGuiInGameMessages::AddMessages(CGuiInGameMessage* pMessages, unsigned long nMessages)
 {
     CExoArrayList<CSWGuiControl*> aControls;
@@ -1491,7 +1803,24 @@ void CSWGuiInGameMessages::AddMessages(CGuiInGameMessage* pMessages, unsigned lo
     aControls.SetSize(nMessages);
     for (unsigned long i = 0; i < nMessages; i++)
     {
-        m_pMessageLabels[i].m_cText.m_cParams.SetText(pMessages[i].m_sMessage);
+        CExoString sMessage(pMessages[i].m_sMessage);
+        int nToken = sMessage.Find('<', 0);
+        int nCustomToken = sMessage.Find('{', 0);
+        if (nToken != -1 || nCustomToken != -1)
+        {
+            g_pSWTlkTable->ParseStr(sMessage,
+                (CGameObject*)g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter(),
+                0, 1);
+            int nLength = sMessage.GetLength();
+            while (sMessage[nLength - 1] == ' ')
+            {
+                sMessage = sMessage.SubString(0, sMessage.GetLength() - 1);
+                nLength = sMessage.GetLength();
+                if (nLength < 1)
+                    break;
+            }
+        }
+        m_pMessageLabels[i].m_cText.m_cParams.SetText(sMessage);
 #ifndef _XBOX
         m_pMessageLabels[i].m_cText.m_cParams.ReSetFont();
 #endif
@@ -1502,7 +1831,7 @@ void CSWGuiInGameMessages::AddMessages(CGuiInGameMessage* pMessages, unsigned lo
             vColor = CGuiInGame::COLOR_RED;
             break;
         default:
-            vColor = CGuiInGame::COLOR_BLUE;
+            vColor = CGuiInGame::COLOR_NEW_TEXT;
             break;
         }
         m_pMessageLabels[i].m_cText.m_cParams.SetColor(vColor);
@@ -1527,12 +1856,28 @@ void CSWGuiInGameMessages::AddDialogMessages(CGuiInGameDialogMessage* pMessages,
     CExoArrayList<CSWGuiControl*> lControls;
     CSWGuiListBox* pList = &m_lbDialog;
     CSWGuiExtent cExtent(0, 0,
-        pList->m_cItemExtent.m_nWidth - 2 * pList->m_nPadding, 10);
+        pList->m_cItemExtent.m_nWidth - 2 * pList->m_nPadding, INITIAL_MESSAGE_HEIGHT);
     CExoString sSpeaker;
     lControls.SetSize(nMessages);
     for (unsigned long i = 0; i < nMessages; i++)
     {
         sSpeaker = pMessages[i].m_sSpeaker;
+        int nToken = sSpeaker.Find('<', 0);
+        int nCustomToken = sSpeaker.Find('{', 0);
+        if (nToken != -1 || nCustomToken != -1)
+        {
+            g_pSWTlkTable->ParseStr(sSpeaker,
+                (CGameObject*)g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter(),
+                0, 1);
+            int nLength = sSpeaker.GetLength();
+            while (sSpeaker[nLength - 1] == ' ')
+            {
+                sSpeaker = sSpeaker.SubString(0, sSpeaker.GetLength() - 1);
+                nLength = sSpeaker.GetLength();
+                if (nLength < 1)
+                    break;
+            }
+        }
         if (sSpeaker.GetLength() > 0)
             m_pDialogLabels[i].m_cText.m_cParams.SetText(
                 sSpeaker + ": " + pMessages[i].m_sMessage);
@@ -1555,18 +1900,169 @@ void CSWGuiInGameMessages::AddDialogMessages(CGuiInGameDialogMessage* pMessages,
         pList->SetSelectedControl(nMessages - 1, 0);
     }
 }
+// PC 0x0067A630
+void CSWGuiInGameMessages::AddCombatMessages(CGuiInGameMessage* pMessages, unsigned long nMessages)
+{
+    CExoArrayList<CSWGuiControl*> aControls;
+    CSWGuiListBox* pList = &m_lbCombat;
+    int nWidth = pList->m_cItemExtent.m_nWidth - 2 * pList->m_nPadding;
+    CSWGuiExtent cExtent;
+    cExtent.m_nLeft = 0;
+    cExtent.m_nTop = 0;
+    cExtent.m_nWidth = nWidth;
+    cExtent.m_nHeight = INITIAL_MESSAGE_HEIGHT;
+    aControls.SetSize(nMessages);
+    for (unsigned long i = 0; i < nMessages; i++)
+    {
+        CExoString sMessage(pMessages[i].m_sMessage);
+        int nToken = sMessage.Find('<', 0);
+        int nCustomToken = sMessage.Find('{', 0);
+        if (nToken != -1 || nCustomToken != -1)
+        {
+            g_pSWTlkTable->ParseStr(sMessage,
+                (CGameObject*)g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter(),
+                0, 1);
+            int nLength = sMessage.GetLength();
+            while (sMessage[nLength - 1] == ' ')
+            {
+                sMessage = sMessage.SubString(0, sMessage.GetLength() - 1);
+                nLength = sMessage.GetLength();
+                if (nLength < 1)
+                    break;
+            }
+        }
+        m_pCombatLabels[i].SetExtent(cExtent);
+        m_pCombatLabels[i].m_cText.m_cParams.SetText(sMessage);
+#ifndef _XBOX
+        m_pCombatLabels[i].m_cText.m_cParams.ReSetFont();
+#endif
+        Vector vColor;
+        switch (pMessages[i].m_nColor)
+        {
+        case CGuiInGameMessage::COLOR_RED:
+            vColor = CGuiInGame::COLOR_RED;
+            break;
+        default:
+            vColor = CGuiInGame::COLOR_NEW_TEXT;
+            break;
+        }
+        m_pCombatLabels[i].m_cText.m_cParams.SetColor(vColor);
+        m_pCombatLabels[i].SetExtent(cExtent);
+        CSWGuiText* pText = &m_pCombatLabels[i].m_cText;
+        cExtent.m_nHeight = pText->GetIdealHeight() +
+            2 * m_pCombatLabels[i].m_cHilite.m_cParams.GetBorderDim();
+        m_pCombatLabels[i].SetExtent(cExtent);
+        m_pCombatLabels[i].SetActive(0);
+        aControls[i] = &m_pCombatLabels[i];
+    }
+    if (nMessages)
+    {
+        pList->AddControls(aControls, 0, 0, 1);
+        pList->SetSelectedControl(nMessages - 1, 0);
+    }
+}
+// PC 0x0067A960
+void CSWGuiInGameMessages::ShowEffects()
+{
+    m_lbMessages.m_bEnabled = 0;
+    m_lbDialog.SetEnabledFlag(0);
+    CSWGuiListBox* pGood = &m_lbEffectsGood;
+    pGood->m_bEnabled = 1;
+    CSWGuiListBox* pBad = &m_lbEffectsBad;
+    pBad->m_bEnabled = 1;
+    m_lbCombat.SetEnabledFlag(0);
+    m_lblEffectsGood.SetEnabledFlag(1);
+    m_lblEffectsBad.SetEnabledFlag(1);
+
+    m_btnDialog.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_btnFeedback.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_btnCombat.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+    m_btnEffects.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    pGood->ClearItems();
+    pBad->ClearItems();
+    CSWCCreature* pCreature = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
+    if (pCreature == 0)
+        return;
+    CSWSCreature* pServerCreature = pCreature->GetServerCreature();
+    if (pServerCreature == 0)
+        return;
+    CExoArrayList<CSWGuiControl*> aGood;
+    CExoArrayList<CSWGuiControl*> aBad;
+    CSWGuiExtent cGoodExtent(0, 0,
+        pGood->m_cItemExtent.m_nWidth - 2 * pGood->m_nPadding, 10);
+    CSWGuiLabelHilight* pGoodProto = (CSWGuiLabelHilight*)m_lbEffectsGood.m_pProtoItem;
+    CSWGuiExtent cBadExtent(0, 0,
+        pBad->m_cItemExtent.m_nWidth - 2 * pBad->m_nPadding, 10);
+    CSWGuiLabelHilight* pBadProto = (CSWGuiLabelHilight*)m_lbEffectsBad.m_pProtoItem;
+
+    CExoString sName;
+    for (int i = 0; i < pServerCreature->GetEffectIcons()->num; i++)
+    {
+        CEffectIconObject* pIcon = pServerCreature->GetEffectIcons()->element[i];
+
+        unsigned long nStrRef = pIcon->m_n20;
+        if (nStrRef >= 1)
+        {
+            sName = g_pTlkTable->GetSimpleString(nStrRef);
+
+            CSWGuiLabelHilight* pLabel = new CSWGuiLabelHilight();
+            if (pIcon->m_bGood)
+            {
+                pLabel->Initialize(cGoodExtent, pGoodProto);
+                pLabel->m_cText.m_cParams.SetText(sName);
+                pLabel->m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+                CSWGuiText* pText = &pLabel->m_cText;
+                cGoodExtent.m_nHeight = pText->GetIdealHeight() +
+                    2 * pLabel->m_cHilite.m_cParams.GetBorderDim();
+                pLabel->SetExtent(cGoodExtent);
+                pLabel->SetActive(0);
+                aGood.Add(pLabel);
+            }
+            else
+            {
+                pLabel->Initialize(cBadExtent, pBadProto);
+                pLabel->m_cText.m_cParams.SetText(sName);
+                pLabel->m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+                CSWGuiText* pText = &pLabel->m_cText;
+                cBadExtent.m_nHeight = pText->GetIdealHeight() +
+                    2 * pLabel->m_cHilite.m_cParams.GetBorderDim();
+                pLabel->SetExtent(cBadExtent);
+                pLabel->SetActive(0);
+                aBad.Add(pLabel);
+            }
+        }
+    }
+    if (aGood.num > 0)
+    {
+        pGood->AddControls(aGood, 1, 1, 1);
+        pGood->SetSelectedControl(0, 0);
+    }
+    if (aBad.num > 0)
+    {
+        pBad->AddControls(aBad, 1, 1, 1);
+        pBad->SetSelectedControl(0, 0);
+    }
+    g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType =
+        CGuiInGame::MESSAGE_TYPE_EFFECTS;
+}
 // PC 0x0067C060
 void CSWGuiInGameMessages::OnPanelAdded()
 {
 #ifndef _XBOX
     CSWGuiPanel::OnPanelAdded();
 #endif
-    CGuiInGame* pInGame = g_pAppManager->m_pClientExoApp->GetInGameGui();
-    pInGame->UpdateMessageGUI();
-    if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType == CGuiInGame::MESSAGE_TYPE_DIALOG)
+    g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateMessageGUI(this);
+    int nMessageType = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType;
+    if (nMessageType == CGuiInGame::MESSAGE_TYPE_DIALOG)
         ShowDialogMessages();
-    else
+    else if (nMessageType == CGuiInGame::MESSAGE_TYPE_FEEDBACK)
         ShowFeedbackMessages();
+    else if (nMessageType == CGuiInGame::MESSAGE_TYPE_COMBAT)
+        ShowCombatMessages();
+    else if (nMessageType == CGuiInGame::MESSAGE_TYPE_EFFECTS)
+        ShowEffects();
+
+
     g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0xC, OBJECT_INVALID,
                                                        OBJECT_INVALID, 0);
 }
@@ -1626,6 +2122,51 @@ CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager)
     m_n9C4 = 0;
     m_nOpenSound = 15;
 }
+#ifndef _XBOX
+// PC 0x00677700
+CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager, int nStyle)
+    : CSWGuiPanel(pManager)
+{
+    if (nStyle == 0)
+    {
+        CSWGuiMessageBox::CSWGuiMessageBox(pManager);
+        return;
+    }
+    m_bAllowCancel = 1;
+    m_bShowButtons = 1;
+    m_bHideButtons = 0;
+    m_bHasIcon = 0;
+    m_n9BC = nStyle;
+    StartLoadFromLayout("datapad_p");
+    m_pBorder->m_cParams.SetFillImage("", 0);
+    InitControl(m_btnOk, "BTN_OK", 1);
+    InitControl(m_btnCancel, "BTN_CANCEL", 1);
+    InitControl(m_lbMessage, "LB_MESSAGE", 1);
+    StopLoadFromLayout();
+    m_lbMessage.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    m_btnOk.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                     (CSWGuiHandler)&CSWGuiMessageBox::OnOkButtonPressed);
+    m_btnCancel.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                         (CSWGuiHandler)&CSWGuiMessageBox::OnCancelButtonPressed);
+    CSWGuiLabel* pIcon = &m_lblIcon;
+    pIcon->SetExtent(CSWGuiExtent(0, 10, 32, 32));
+    pIcon->m_bEnabled = 0;
+    AddControl(pIcon);
+    CSWGuiLabel* pProto = (CSWGuiLabel*)m_lbMessage.m_pProtoItem;
+    if (pProto)
+        m_lblMessage.Initialize(pProto->m_cExtent, pProto, 1.0f);
+    CenterPanel();
+    m_cPanelExtent = m_cExtent;
+    m_cMessageExtent = m_lbMessage.m_cExtent;
+    m_bAccepted = 0;
+    m_pCallback = 0;
+    m_pCallbackObject = 0;
+    m_pCallbackControl = 0;
+    m_nPreviousInputClass = 0;
+    m_nOpenSound = 15;
+    m_bFocusOk = 0;
+}
+#endif
 // PC 0x00677A20
 void CSWGuiMessageBox::SetAllowCancel(int bAllowCancel)
 {
@@ -1685,39 +2226,18 @@ void CSWGuiInGameMessages::HandleInputEvent(int nEvent, int nState)
     {
         switch (nEvent)
         {
-        case GUIEVENT_TOGGLE_MODE:
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-#ifdef _XBOX
-            if (m_lbMessages.m_bEnabled)
-                ShowDialogMessages();
-            else
-                ShowFeedbackMessages();
-#else
-            ToggleMessages();
-#endif
-            break;
         case GUIEVENT_CANCEL:
+        case GUIEVENT_TOGGLE_MODE:
         case GUIEVENT_ACCEPT:
         case GUIEVENT_CANCEL_ALTERNATE:
-#ifndef _XBOX
         case GUIEVENT_EXIT:
-#endif
-#ifdef _XBOX
-            if (g_pAppManager->m_pClientExoApp->GetInGameGui()->HideSWInGameGui())
-#else
-            if (g_pAppManager->m_pClientExoApp->GetInGameGui()->HideSWInGameGui(0))
-#endif
-#ifdef _XBOX
-                g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GAME);
-#else
-                g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GAME, 1);
-#endif
+            SetModal(0);
             break;
         }
 
         static int nModeIdx = 0;
-        int nModeSequence[] = { GUIEVENT_TOGGLE_MODE, GUIEVENT_LEFT,
-                                GUIEVENT_ACTIVATE, GUIEVENT_TOGGLE_MODE };
+        int nModeSequence[] = { GUIEVENT_RECOMMEND, GUIEVENT_LEFT,
+                                GUIEVENT_ACTIVATE, GUIEVENT_RECOMMEND };
         if (nEvent != nModeSequence[nModeIdx])
             nModeIdx = 0;
         if (nEvent == nModeSequence[nModeIdx])
@@ -1734,7 +2254,8 @@ void CSWGuiInGameMessages::HandleInputEvent(int nEvent, int nState)
                     pClient->GetInGameGui()->AppendToMsgBuffer(sMessage, CGuiInGame::MESSAGE_MASK_HS_MODE, 0);
                 }
                 g_nHSMode = 1;
-                g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateMessageGUI();
+                g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateMessageGUI(0);
+
             }
         }
     }
@@ -1744,7 +2265,7 @@ void CSWGuiInGameMessages::HandleInputEvent(int nEvent, int nState)
 CSWGuiStatusSummary::CSWGuiStatusSummary(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-    StartLoadFromLayout("statussummary");
+    StartLoadFromLayout("statussummary_p");
     InitControl(m_aStatusLabels[GUI_STATUS_JOURNAL], "LBL_JOURNAL", 1);
     InitControl(m_aStatusDescriptions[GUI_STATUS_JOURNAL], "LBL_JOURNAL_DESC", 1);
     InitControl(m_aStatusLabels[GUI_STATUS_CREDITS], "LBL_CREDITS", 1);
@@ -1763,6 +2284,14 @@ CSWGuiStatusSummary::CSWGuiStatusSummary(CSWGuiManager* pManager)
     InitControl(m_aStatusDescriptions[GUI_STATUS_ITEM_RECEIVED], "LBL_RECEIVED_DESC", 1);
     InitControl(m_aStatusLabels[GUI_STATUS_ITEM_LOST], "LBL_LOST", 1);
     InitControl(m_aStatusDescriptions[GUI_STATUS_ITEM_LOST], "LBL_LOST_DESC", 1);
+    InitControl(m_aStatusLabels[GUI_STATUS_INFLUENCE_GAIN], "LBL_INFLUENCE_RECV", 1);
+    InitControl(m_aStatusDescriptions[GUI_STATUS_INFLUENCE_GAIN], "LBL_INFLUENCE_RECV_DESC", 1);
+    InitControl(m_aStatusLabels[GUI_STATUS_INFLUENCE_LOST], "LBL_INFLUENCE_LOST", 1);
+    InitControl(m_aStatusDescriptions[GUI_STATUS_INFLUENCE_LOST], "LBL_INFLUENCE_LOST_DESC", 1);
+    InitControl(m_aStatusLabels[GUI_STATUS_MAX_FP_GAIN], "LBL_MAX_FP_GAINED", 1);
+    InitControl(m_aStatusDescriptions[GUI_STATUS_MAX_FP_GAIN], "LBL_MAX_FP_GAINED_DESC", 1);
+    InitControl(m_aStatusLabels[GUI_STATUS_MAX_FP_LOST], "LBL_MAX_FP_LOST", 1);
+    InitControl(m_aStatusDescriptions[GUI_STATUS_MAX_FP_LOST], "LBL_MAX_FP_LOST_DESC", 1);
 #ifdef _XBOX
     InitControl(m_lblA, "LBL_A", 1);
     InitControl(m_lblOk, "LBL_OK", 1);
@@ -1783,13 +2312,21 @@ CSWGuiStatusSummary::CSWGuiStatusSummary(CSWGuiManager* pManager)
     m_cStatusSummary.m_bLevelUpSound = 0;
     m_cStatusSummary.m_bNewQuestSound = 0;
     m_cStatusSummary.m_bCompleteSound = 0;
+    m_cStatusSummary.m_bDarkAlignSound = 0;
+    m_cStatusSummary.m_bLightAlignSound = 0;
     m_cStatusSummary.m_bCreditsNet = 0;
     m_cStatusSummary.m_nCredits = 0;
     m_cStatusSummary.m_nLightShift = 0;
     m_cStatusSummary.m_nDarkShift = 0;
     m_cStatusSummary.m_nExperience = 0;
     m_cStatusSummary.m_nStealthExperience = 0;
+    m_cStatusSummary.m_nInfluenceGain = 0;
+    m_cStatusSummary.m_nInfluenceLost = 0;
+    m_cStatusSummary.m_nMaxForcePointsGain = 0;
+    m_cStatusSummary.m_nMaxForcePointsLost = 0;
     m_cStatusSummary.m_nSuppressed = 0;
+    m_n94 = 0;
+
 #ifndef _XBOX
     m_bPositioned = 1;
 #endif

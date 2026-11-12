@@ -28,7 +28,8 @@ public:
 
     enum { STRREF_ITEMS_TO_GIVE = 392, STRREF_GET_ITEMS = 38542, STRREF_GIVE_ITEM = 38543, STRREF_GIVE_BUTTON_PREFIX = 47884 };
 
-    enum { STRREF_CONTAINER_INVENTORY = 393, STRREF_CONTAINER_EMPTY = 394 };
+    enum { STRREF_CONTAINER_INVENTORY = 393, STRREF_CONTAINER_EMPTY = 394,
+           STRREF_TARGET_INVENTORY_EMPTY = 119906 };
 
     unsigned long m_oidContainer;
     unsigned char m_nContainerType;
@@ -79,19 +80,26 @@ public:
 
         STRREF_NO_DESCRIPTION = 32172,
         STRREF_ITEM_PREREQUISITES = 38450,
-        STRREF_INCOMPATIBLE_WEAPON = 42271
+        STRREF_INCOMPATIBLE_WEAPON = 42271,
+        STRREF_CANCEL = 1581,
+        STRREF_CLOSE = 1582,
+        STRREF_SLOT_LOCKED = 125554,
+        STRREF_LEFT_HAND_LOCKED = 125569
     };
     CSWCCreature* m_pCreature;
 
     enum { NUM_EQUIPMENT_SLOTS = 11 };
 
-    enum { INVALID_SLOT_ITEM_INDEX = 10 };
+    enum { INVALID_SLOT_ITEM_INDEX = 12 };
 
     enum { RIGHTHAND_ITEM_INDEX = 1 };
 
     enum { LEFTHAND_ITEM_INDEX = 0 };
 
     enum { ARMOUR_ITEM_INDEX = 5 };
+
+    enum { LEFTHAND2_ITEM_INDEX = 9, RIGHTHAND2_ITEM_INDEX = 10 };
+
     CSWGuiButton m_aSlotButtons[NUM_EQUIPMENT_SLOTS];
     CSWGuiLabel m_aSlotLabels[NUM_EQUIPMENT_SLOTS];
     int m_an2274[NUM_EQUIPMENT_SLOTS];
@@ -153,12 +161,34 @@ public:
 
     enum { CHARACTER_UNSET = -2, CHARACTER_PLAYER = -1 };
 
+    enum
+    {
+        NPC_ATTON = 0,
+        NPC_BAO_DUR = 1,
+        NPC_CANDEROUS = 2,
+        NPC_G0T0 = 3,
+        NPC_HANDMAIDEN = 4,
+        NPC_HK_47 = 5,
+        NPC_KREIA = 6,
+        NPC_MIRA = 7,
+        NPC_T3_M4 = 8,
+        NPC_VISAS = 9,
+        NPC_HANHARR = 10,
+        NPC_DISCIPLE = 11
+    };
+
     CSWSItem* CopyItem(unsigned long);
     int ItemExists(unsigned long);
 
     int GetSlotItemIdIndex(int nSlot);
     void SetCharacter(CSWCCreature*);
+    void ShutdownCleanup();
+    void UpdateSlotLocks();
+    int IsSlotLocked(int nSlot);
+    void OnPrevNPCClicked(CSWGuiControl*);
+    void OnNextNPCClicked(CSWGuiControl*);
     void ShowDescription(int bShow);
+    void OnItemExited(CSWGuiControl*);
     void OnItemSelected(CSWGuiControl*);
     void CloseDescription();
     ~CSWGuiInGameEquip();
@@ -188,9 +218,10 @@ public:
 
 enum SWGuiItemEntryLayout
 {
-    SWGUI_ITEM_ICON_SIZE = 56, SWGUI_ITEM_COUNT_HEIGHT = 19,
+    SWGUI_ITEM_ICON_SIZE = 36, SWGUI_ITEM_COUNT_HEIGHT = 19,
     SWGUI_ITEM_COUNT_SHORT_DIGITS = 2,
-    SWGUI_ITEM_COUNT_SHORT_WIDTH = 21, SWGUI_ITEM_COUNT_LONG_WIDTH = 42
+    SWGUI_ITEM_COUNT_SHORT_WIDTH = 21, SWGUI_ITEM_COUNT_LONG_WIDTH = 55,
+    SWGUI_ITEM_COUNT_LONG_ALIGNMENT = 0x24
 };
 
 class CSWGuiInGameItemEntry : public CSWGuiRadioButton
@@ -202,7 +233,8 @@ public:
         CAN_USE = 0,
         CAN_USE_EQUIPPED = 1,
         CANNOT_USE = 2,
-        CANNOT_USE_WITH_OTHER_HAND = 3
+        CANNOT_USE_WITH_OTHER_HAND = 3,
+        CANNOT_USE_LEFT_HAND_LOCKED = 4
     };
     unsigned long m_oidItem;
     CSWGuiBorder m_cIconBorder;
@@ -238,6 +270,7 @@ public:
     void SetCanUse(unsigned char);
     enum { STRREF_EQUIPPED = 32346 };
     void SetItem(unsigned long, int, int);
+    void UpdateItem();
     CSWGuiInGameItemEntry();
 #ifdef _XBOX
     void RefreshItem();

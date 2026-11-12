@@ -29,14 +29,18 @@ int CSWGuiSaveLoad::LaunchMostRecentSave()
     if (pEntry != 0)
     {
         CExoString sPCName = pEntry->GetPCName();
-        if (g_pAppManager->m_pServerExoApp != 0)
+        CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+        if (pServerExoApp != 0)
         {
-            CExoString sPartyPCName =
-                g_pAppManager->m_pServerExoApp->GetPartyTable()->GetPCName();
+            CExoString sPartyPCName = pServerExoApp->GetPartyTable()->GetPCName();
             if (sPartyPCName.CompareNoCase(sPCName))
             {
                 LoadGame(pEntry);
                 return 1;
+            }
+            else
+            {
+                return 0;
             }
         }
     }
@@ -204,6 +208,8 @@ CSWGuiSaveLoad::CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode,
     InitControl(m_lblFreeblocks, "LBL_FREEBLOCKS", 1);
     InitControl(m_lblFreeblocksAmt, "LBL_FREEBLOCKS_AMT", 1);
 #else
+    InitControl(m_lblPCName, "LBL_PCNAME", 1);
+    InitControl(m_lblTimePlayed, "LBL_TIMEPLAYED", 1);
     InitControl(m_btnSaveLoad, "BTN_SAVELOAD", 1);
     InitControl(m_btnBack, "BTN_BACK", 1);
     InitControl(m_btnDelete, "BTN_DELETE", 1);
@@ -228,6 +234,9 @@ CSWGuiSaveLoad::CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode,
                         (CSWGuiHandler)&CSWGuiPanel::OnXButtonPressed);
     m_btnDelete.AddEvent(GUIEVENT_ACTIVATE, this,
                         (CSWGuiHandler)&CSWGuiSaveLoad::DeleteGame);
+    m_btnFilter.SetFocusable(0);
+    m_btnFilter.AddEvent(GUIEVENT_ACTIVATE, this,
+                        (CSWGuiHandler)&CSWGuiSaveLoad::HandleFilterPress);
     if (bSaveMode)
     {
         m_btnSaveLoad.AddEvent(GUIEVENT_ACTIVATE, this,
@@ -240,8 +249,10 @@ CSWGuiSaveLoad::CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode,
     }
 #endif
     CSWGuiButton* pProto = m_lbSaveGames.m_pProtoItem->AsButton();
+#ifdef _XBOX
     pProto->m_cBorder.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
     pProto->m_cHilite.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
+#endif
     pProto->m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
 #ifdef _XBOX
 
@@ -277,7 +288,7 @@ CSWGuiSaveLoad::CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode,
 #ifndef _XBOX
     m_bEndGameMode = bEndGameMode;
     m_n1B6C = 0;
-    m_b68Bit2 = 0;
+    m_bFiltersLoaded = 0;
 #endif
     PopulateGameList();
     g_pExoResMan->AddResourceDirectory("TEMP:");
@@ -391,9 +402,23 @@ inline int CStatusSummary::LoadFromGFF(CResGFF* pGFF, CResStruct& cStruct)
                                            m_bNewQuestSound);
     m_bCompleteSound = pGFF->ReadFieldBYTE(&cStruct, "COMPLETESOUND", bSuccess,
                                            m_bCompleteSound);
+#ifndef _XBOX
+    m_bDarkAlignSound = pGFF->ReadFieldBYTE(&cStruct, "DARKALIGNSOUND", bSuccess,
+                                            m_bDarkAlignSound);
+    m_bLightAlignSound = pGFF->ReadFieldBYTE(&cStruct, "LIGHTALIGNSOUND", bSuccess,
+                                             m_bLightAlignSound);
+#endif
     m_nSuppressed =
         pGFF->ReadFieldINT(&cStruct, "SUPPRESSED", bSuccess, m_nSuppressed);
+#ifndef _XBOX
+    m_nInfluenceGain = pGFF->ReadFieldINT(&cStruct, "INFGAIN", bSuccess, 0);
+    m_nInfluenceLost = pGFF->ReadFieldINT(&cStruct, "INFLOST", bSuccess, 0);
+    m_nMaxForcePointsGain = pGFF->ReadFieldINT(&cStruct, "MAXFPGAIN", bSuccess, 0);
+    m_nMaxForcePointsLost = pGFF->ReadFieldINT(&cStruct, "MAXFPLOST", bSuccess, 0);
+    return m_nMaxForcePointsLost;
+#else
     return m_nSuppressed;
+#endif
 }
 
 void CSWGuiSaveLoad::ExitPanel()
@@ -409,16 +434,54 @@ void CSWGuiSaveLoad::ExitPanel()
         m_pManager->PopModalPanel();
     }
 }
+#ifndef _XBOX
+// PC 0x0070BC90
+void CSWGuiSaveLoad::HandleFilterPress(CSWGuiControl* pControl)
+{
+    if (pControl == 0 || pControl->m_bSelected)
+    {
+        m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+        if (++m_nCurrentFilter >= m_lFilterNames.num)
+            m_nCurrentFilter = 0;
+        PopulateGameLB();
+    }
+}
+#endif
 // PC 0x0070BD00
 void CSWGuiSaveLoad::HandleInputEvent(int nEvent, int nState)
 {
-    if (nState != 0 &&
-        (nEvent == 40 || (nEvent > 44 && nEvent <= 46)))
+    if (nState != 0)
     {
-        m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-        ExitPanel();
+        switch (nEvent)
+        {
+        case 40:
+        case 45:
+        case 46:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+#ifndef _XBOX
+            if (!m_bEndGameMode)
+            {
+                ExitPanel();
+            }
+            else
+            {
+                g_pAppManager->m_pClientExoApp->SetEndGamePending(1, 0.0f, 1);
+                m_bDeferredRemoval = 0;
+                m_nExitState = EXITSTATE_DELETE;
+                return;
+            }
+#else
+            ExitPanel();
+#endif
+            break;
+#ifndef _XBOX
+        case 41:
+            HandleFilterPress(0);
+            break;
+#endif
+        }
     }
-    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+    CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 // PC 0x0070A8C0
 CSWGuiSaveLoad::~CSWGuiSaveLoad()
@@ -593,7 +656,7 @@ void CSWGuiSaveLoad::WriteGame(const CExoString& sSaveName)
 #endif
     m_bDeferredRemoval = 0;
     m_nExitState = EXITSTATE_DELETE;
-    m_pManager->PopModalPanel();
+    GetManager()->PopModalPanel();
 }
 // PC 0x0070B0D0
 void CSWGuiSaveLoad::DeleteGame(CSWGuiControl* pControl)
@@ -661,9 +724,31 @@ void CSWGuiSaveLoad::ShowGame(CSWGuiControl* pControl)
             }
             else
             {
+#ifdef _XBOX
                 CExoString sPlanet = pEntry->m_sAreaName.Left(nSeparator - 1);
                 CExoString sArea = pEntry->m_sAreaName.Right(
                     pEntry->m_sAreaName.GetLength() - nSeparator - 2);
+#else
+                CExoString sAreaName = pEntry->m_sAreaName;
+                CExoString sPlanet;
+                CExoString sArea;
+                if (sAreaName[nSeparator] == ' ')
+                {
+                    sPlanet = sAreaName.Left(nSeparator - 1);
+                }
+                else
+                {
+                    sPlanet = sAreaName.Left(nSeparator);
+                }
+                if (sAreaName[nSeparator + 1] == ' ')
+                {
+                    sArea = sAreaName.Right(sAreaName.GetLength() - nSeparator - 2);
+                }
+                else
+                {
+                    sArea = sAreaName.Right(sAreaName.GetLength() - nSeparator - 1);
+                }
+#endif
                 m_lblPlanetName.m_cText.m_cParams.SetText(sPlanet);
                 m_lblAreaName.m_cText.m_cParams.SetText(sArea);
             }
@@ -735,20 +820,29 @@ void CSWGuiSaveLoad::ShowGame(CSWGuiControl* pControl)
 #else
         if (!m_bSaveMode)
         {
-            m_btnSaveLoad.m_cText.m_cParams.SetColor(
-                pEntry->m_bMissingLiveContent ? CGuiInGame::DISABLED_TEXT : CGuiInGame::COLOR_BLUE);
+            m_btnSaveLoad.m_cText.m_cParams.SetDefaultColor(
+                pEntry->m_bMissingLiveContent ? CGuiInGame::COLOR_NEW_GREEN : CGuiInGame::COLOR_NEW_TEXT);
             m_btnSaveLoad.m_cBorder.m_cParams.m_vColor =
-                pEntry->m_bMissingLiveContent ? CGuiInGame::DISABLED_ICON_COLOR : CGuiInGame::ENABLED_ICON_COLOR;
+                pEntry->m_bMissingLiveContent ? CGuiInGame::DISABLED_TEXT : CGuiInGame::COLOR_NEW_GREEN;
         }
         else
         {
-            m_btnSaveLoad.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-            m_btnSaveLoad.m_cBorder.m_cParams.m_vColor = CGuiInGame::ENABLED_ICON_COLOR;
+            m_btnSaveLoad.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
+            m_btnSaveLoad.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
         }
-        m_btnDelete.m_cText.m_cParams.SetColor(
-            pEntry->m_bDataLoaded ? CGuiInGame::COLOR_BLUE : CGuiInGame::DISABLED_TEXT);
+        m_btnDelete.m_cText.m_cParams.SetDefaultColor(
+            pEntry->m_bDataLoaded ? CGuiInGame::COLOR_NEW_TEXT : CGuiInGame::COLOR_NEW_GREEN);
         m_btnDelete.m_cBorder.m_cParams.m_vColor =
-            pEntry->m_bDataLoaded ? CGuiInGame::ENABLED_ICON_COLOR : CGuiInGame::DISABLED_ICON_COLOR;
+            pEntry->m_bDataLoaded ? CGuiInGame::COLOR_NEW_GREEN : CGuiInGame::DISABLED_TEXT;
+        CExoString sTimePlayed;
+        unsigned long nTimePlayed = pEntry->m_nTimePlayed;
+        unsigned long nHours = nTimePlayed / 3600;
+        unsigned long nMinutes = (nTimePlayed / 60) % 60;
+        g_pTlkTable->SetCustomToken(CSWGuiSaveLoadEntry::TIME_TOKEN_HOURS, nHours);
+        g_pTlkTable->SetCustomToken(CSWGuiSaveLoadEntry::TIME_TOKEN_MINUTES, nMinutes);
+        sTimePlayed = g_pTlkTable->GetSimpleString(STRREF_TIME_PLAYED);
+        g_pTlkTable->ParseStr(sTimePlayed);
+        m_lblTimePlayed.m_cText.m_cParams.SetText(sTimePlayed);
 #endif
     }
 }
@@ -796,10 +890,31 @@ void CSWGuiSaveLoadEntry::LoadData(const CExoString& sSaveDirectory)
     m_bRebootAutoSave = pGFF->ReadFieldBYTE(&cStruct, "REBOOTAUTOSAVE", bSuccess, 0);
     m_bPCAutoSave = pGFF->ReadFieldBYTE(&cStruct, "PCAUTOSAVE", bSuccess, 0);
     m_sScreenshot = pGFF->ReadFieldCExoString(&cStruct, "SCREENSHOT", bSuccess, "");
+    m_nTimeStamp = pGFF->ReadFieldDWORD64(&cStruct, "TIMESTAMP", bSuccess, 0);
+    m_sPCName = pGFF->ReadFieldCExoString(&cStruct, "PCNAME", bSuccess, "");
+    m_nSaveNumber = pGFF->ReadFieldDWORD(&cStruct, "SAVENUMBER", bSuccess, 0);
     unsigned char nDefault = m_nGameplayHint;
     m_nGameplayHint = pGFF->ReadFieldBYTE(&cStruct, "GAMEPLAYHINT", bSuccess, nDefault);
-    nDefault = m_nStoryHint;
-    m_nStoryHint = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT", bSuccess, nDefault);
+    nDefault = m_anStoryHint[0];
+    m_anStoryHint[0] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT0", bSuccess, nDefault);
+    nDefault = m_anStoryHint[1];
+    m_anStoryHint[1] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT1", bSuccess, nDefault);
+    nDefault = m_anStoryHint[2];
+    m_anStoryHint[2] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT2", bSuccess, nDefault);
+    nDefault = m_anStoryHint[3];
+    m_anStoryHint[3] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT3", bSuccess, nDefault);
+    nDefault = m_anStoryHint[4];
+    m_anStoryHint[4] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT4", bSuccess, nDefault);
+    nDefault = m_anStoryHint[5];
+    m_anStoryHint[5] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT5", bSuccess, nDefault);
+    nDefault = m_anStoryHint[6];
+    m_anStoryHint[6] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT6", bSuccess, nDefault);
+    nDefault = m_anStoryHint[7];
+    m_anStoryHint[7] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT7", bSuccess, nDefault);
+    nDefault = m_anStoryHint[8];
+    m_anStoryHint[8] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT8", bSuccess, nDefault);
+    nDefault = m_anStoryHint[9];
+    m_anStoryHint[9] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT9", bSuccess, nDefault);
     unsigned char nLiveContent = pGFF->ReadFieldBYTE(&cStruct, "LIVECONTENT", bSuccess, 0);
     if (nLiveContent)
     {
@@ -836,6 +951,67 @@ void CSWGuiSaveLoadEntry::LoadData(const CExoString& sSaveDirectory)
     m_bDataLoaded = 1;
 }
 #endif
+#ifndef _XBOX
+// PC 0x00708520
+CExoString CSWGuiSaveLoadEntry::FormatTimeToString()
+{
+    unsigned __int64 nTimeStamp = m_nTimeStamp;
+    if (nTimeStamp == 0)
+    {
+        if (g_pAppManager->m_pServerExoApp != 0)
+        {
+            nTimeStamp = g_pAppManager->m_pServerExoApp->GetSystemTimeAsDWORD64();
+            m_nTimeStamp = nTimeStamp;
+        }
+        else
+        {
+            return CExoString("");
+        }
+    }
+    FILETIME sFileTime;
+    *(unsigned __int64*)&sFileTime = nTimeStamp;
+    SYSTEMTIME sSystemTime;
+    FileTimeToSystemTime(&sFileTime, &sSystemTime);
+
+    CExoString sDay;
+    CExoString sYear;
+    CExoString sHour;
+    CExoString sMinute;
+    CExoString sSecond;
+    CExoString sMonth;
+    switch (sSystemTime.wMonth)
+    {
+        case 1: sMonth = "Jan"; break;
+        case 2: sMonth = "Feb"; break;
+        case 3: sMonth = "Mar"; break;
+        case 4: sMonth = "Apr"; break;
+        case 5: sMonth = "May"; break;
+        case 6: sMonth = "Jun"; break;
+        case 7: sMonth = "Jul"; break;
+        case 8: sMonth = "Aug"; break;
+        case 9: sMonth = "Sep"; break;
+        case 10: sMonth = "Oct"; break;
+        case 11: sMonth = "Nov"; break;
+        case 12: sMonth = "Dec"; break;
+        default: sMonth.Format("%.2d", sSystemTime.wMonth); break;
+    }
+    sYear.Format("%.4d", sSystemTime.wYear);
+    sDay.Format("%.2d", sSystemTime.wDay);
+    sHour.Format("%.2d", sSystemTime.wHour);
+    sMinute.Format("%.2d", sSystemTime.wMinute);
+    sSecond.Format("%.2d", sSystemTime.wSecond);
+
+    CExoString sTimeStamp = g_pTlkTable->GetSimpleString(STRREF_TIME_STAMP);
+    g_pTlkTable->SetCustomToken(STAMP_TOKEN_MONTH, sMonth);
+    g_pTlkTable->SetCustomToken(STAMP_TOKEN_DAY, sDay);
+    g_pTlkTable->SetCustomToken(STAMP_TOKEN_YEAR, sYear);
+    g_pTlkTable->SetCustomToken(STAMP_TOKEN_HOUR, sHour);
+    g_pTlkTable->SetCustomToken(STAMP_TOKEN_MINUTE, sMinute);
+    g_pTlkTable->SetCustomToken(STAMP_TOKEN_SECOND, sSecond);
+    g_pTlkTable->ParseStr(sTimeStamp);
+    return sTimeStamp;
+}
+#endif
 void CSWGuiSaveLoadEntry::SetXboxTitle(const CExoString& sTitle)  // PC 0x0070A070
 {
 
@@ -852,29 +1028,27 @@ void CSWGuiSaveLoadEntry::SetXboxTitle(const CExoString& sTitle)  // PC 0x0070A0
     {
         m_sXboxTitle = g_pTlkTable->GetSimpleString(STRREF_AUTO_SAVE);
     }
+    else if (m_bBadSave)
+    {
+        m_sXboxTitle = sTitle;
+    }
     else if (m_nSaveGame == SAVE_SLOT_QUICK)
     {
         m_sXboxTitle = g_pTlkTable->GetSimpleString(STRREF_QUICK_SAVE);
     }
 
     CExoString sFormattedTitle;
-    unsigned long nHours = m_nTimePlayed / 3600;
-    unsigned long nMinutes = (m_nTimePlayed / 60) % 60;
 
     if (m_nSaveGame == SAVE_SLOT_QUICK || m_nSaveGame == SAVE_SLOT_AUTO)
     {
-        g_pTlkTable->SetCustomToken(TIME_TOKEN_HOURS, nHours);
-        g_pTlkTable->SetCustomToken(TIME_TOKEN_MINUTES, nMinutes);
-        sFormattedTitle = g_pTlkTable->GetSimpleString(STRREF_SAVE_TIME);
-        g_pTlkTable->ParseStr(sFormattedTitle);
-        m_sXboxTitle = m_sXboxTitle + sFormattedTitle;
+        m_sXboxTitle = m_sXboxTitle + "\n" + FormatTimeToString();
     }
     else
     {
-        g_pTlkTable->SetCustomToken(TITLE_TOKEN_GAME, m_nSaveGame - 1);
-        g_pTlkTable->SetCustomToken(TITLE_TOKEN_HOURS, nHours);
-        g_pTlkTable->SetCustomToken(TITLE_TOKEN_MINUTES, nMinutes);
+        CExoString sTimeStamp = FormatTimeToString();
+        g_pTlkTable->SetCustomToken(TITLE_TOKEN_NUMBER, m_nSaveNumber);
         g_pTlkTable->SetCustomToken(TITLE_TOKEN_NAME, m_sSaveGameName);
+        g_pTlkTable->SetCustomToken(TITLE_TOKEN_TIME_STAMP, sTimeStamp);
         sFormattedTitle = g_pTlkTable->GetSimpleString(STRREF_SAVE_TITLE);
         g_pTlkTable->ParseStr(sFormattedTitle);
         m_sXboxTitle = sFormattedTitle;
@@ -886,7 +1060,8 @@ void CSWGuiSaveLoadEntry::SetXboxTitle(const CExoString& sTitle)  // PC 0x0070A0
 void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)  // PC 0x0070BDB0
 {
     if (m_bExitToMainMenu ||
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->GetMessageBox()->m_bAccepted)
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->GetMessageBox()->m_bAccepted ||
+        m_bEndGameMode)
     {
         g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
         if (m_bExitToMainMenu)
@@ -953,11 +1128,14 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)  // PC 0x0070BDB0
                 pClientExoApp->ShowLoadScreen(0, 1, 0);
                 unsigned char nGamePlayHint = pEntry->m_nGameplayHint;
                 pClientExoApp->SetGamePlayHint(nGamePlayHint);
-                unsigned char nStoryHint = pEntry->m_nStoryHint;
-                pClientExoApp->SetStoryHint(nStoryHint);
+                for (int nArea = 0; nArea < CSWGuiSaveLoadEntry::STORY_HINT_AREAS; nArea++)
+                {
+                    unsigned char nStoryHint = pEntry->GetStoryHint(nArea);
+                    pClientExoApp->SetStoryHint(nStoryHint, nArea);
+                }
                 pClientExoApp->SetLoadScreenHint(
                     pClientExoApp->GetNextLoadScreenHintSTRREF(
-                        "", CClientExoAppInternal::LOAD_SCREEN_HINT_STORY));
+                        pEntry->m_sLastModule, CClientExoAppInternal::LOAD_SCREEN_HINT_STORY));
                 pClientExoApp->SetLoadScreenHintUpdateTimer(0);
                 unsigned long nSaveGame = pEntry->m_nSaveGame;
                 CExoString sGameName = pEntry->m_sGameName;
@@ -989,12 +1167,13 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)  // PC 0x0070BDB0
                 pClient->SetLoadScreenByModuleName(pEntry->m_sLastModule);
                 pClient->SetLoadMusic("");
                 pClient->ShowLoadScreen(0, 1, 0);
-                unsigned char nGamePlayHint = pEntry->m_nGameplayHint;
-                pClient->SetGamePlayHint(nGamePlayHint);
-                unsigned char nStoryHint = pEntry->m_nStoryHint;
-                pClient->SetStoryHint(nStoryHint);
+                pClient->SetGamePlayHint(pEntry->m_nGameplayHint);
+                for (int nArea = 0; nArea < CSWGuiSaveLoadEntry::STORY_HINT_AREAS; nArea++)
+                {
+                    pClient->SetStoryHint(pEntry->GetStoryHint(nArea), nArea);
+                }
                 pClient->SetLoadScreenHint(pClient->GetNextLoadScreenHintSTRREF(
-                    "", CClientExoAppInternal::LOAD_SCREEN_HINT_STORY));
+                    pEntry->m_sLastModule, CClientExoAppInternal::LOAD_SCREEN_HINT_STORY));
                 pClient->SetLoadScreenHintUpdateTimer(0);
                 if (UnpackGame(pEntry->GetSaveGame(), pEntry->m_sGameName, pControl))
                 {
@@ -1052,6 +1231,12 @@ void CSWGuiSaveLoad::PromptForSaveName(CSWGuiControl* pControl)  // PC 0x0070AFB
 CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry()
 {
     SwguisaveloadTrace2();
+    m_nGameplayHint = 0;
+#ifndef _XBOX
+    memset(m_anStoryHint, 0, sizeof(m_anStoryHint));
+#else
+    m_nStoryHint = 0;
+#endif
     m_bDataLoaded = 0;
     m_bBadSave = 0;
     m_bNewSlot = 0;
@@ -1063,15 +1248,66 @@ CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry()
     m_bEmptySlot = 0;
     m_bCheatUsed = 0;
 #endif
-    m_nGameplayHint = 0;
-    m_nStoryHint = 0;
     m_nSaveGame = SAVE_SLOT_QUICK;
     m_nTimePlayed = 0;
     m_nSaveSpaceNeeded = 0;
 #ifndef _XBOX
     m_sSaveGameName = "Bad";
+    m_nSaveNumber = 0;
+    m_nTimeStamp = 0;
 #endif
 }
+#ifndef _XBOX
+// PC 0x00709BC0
+CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry(CSWGuiSaveLoadEntry* pEntry)
+{
+    CSWGuiExtent cExtent;
+    cExtent.m_nHeight = SAVE_ENTRY_HEIGHT;
+    Initialize(cExtent, pEntry);
+    m_nGameplayHint = pEntry->m_nGameplayHint;
+    for (int nArea = 0; nArea < STORY_HINT_AREAS; nArea++)
+        m_anStoryHint[nArea] = pEntry->GetStoryHint(nArea);
+    m_bDataLoaded = pEntry->m_bDataLoaded;
+    m_bRebootAutoSave = pEntry->m_bRebootAutoSave;
+    m_bPCAutoSave = pEntry->m_bPCAutoSave;
+    m_nSaveGame = pEntry->m_nSaveGame;
+    m_nTimePlayed = pEntry->m_nTimePlayed;
+    m_bNewSlot = pEntry->m_bNewSlot;
+    m_nSaveSpaceNeeded = pEntry->m_nSaveSpaceNeeded;
+    m_bBadSave = pEntry->m_bBadSave;
+    m_bEmptySlot = pEntry->m_bEmptySlot;
+    m_bCheatUsed = pEntry->m_bCheatUsed;
+    m_sSaveGameName = pEntry->m_sSaveGameName;
+    m_bMissingLiveContent = pEntry->m_bMissingLiveContent;
+    m_sGameName = pEntry->m_sGameName;
+    m_sAreaName = pEntry->m_sAreaName;
+    m_sLastModule = pEntry->m_sLastModule;
+    m_sUnknown1F8 = pEntry->m_sUnknown1F8;
+    m_sXboxTitle = pEntry->m_sXboxTitle;
+    m_sScreenshot = pEntry->m_sScreenshot;
+    m_aPortraits[0] = pEntry->GetPortrait(0);
+    m_aPortraits[1] = pEntry->GetPortrait(1);
+    m_aPortraits[2] = pEntry->GetPortrait(2);
+    m_nTimeStamp = pEntry->m_nTimeStamp;
+    m_sPCName = pEntry->GetPCName();
+    m_nSaveNumber = pEntry->m_nSaveNumber;
+
+    CSWGuiObject* pObject = 0;
+    CSWGuiHandler pHandler = 0;
+    pEntry->GetEvent(GUIEVENT_ACTIVATE, &pObject, &pHandler);
+    if (pHandler != 0 && pObject != 0)
+        AddEvent(GUIEVENT_ACTIVATE, pObject, pHandler);
+    pEntry->GetEvent(GUIEVENT_DELETE, &pObject, &pHandler);
+    if (pHandler != 0 && pObject != 0)
+        AddEvent(GUIEVENT_DELETE, pObject, pHandler);
+    pEntry->GetEvent(GUIEVENT_MOUSE_ENTER, &pObject, &pHandler);
+    if (pHandler != 0 && pObject != 0)
+        AddEvent(GUIEVENT_MOUSE_ENTER, pObject, pHandler);
+    pEntry->GetEvent(GUIEVENT_RECOMMEND, &pObject, &pHandler);
+    if (pHandler != 0 && pObject != 0)
+        AddEvent(GUIEVENT_RECOMMEND, pObject, pHandler);
+}
+#endif
 #ifndef _XBOX
 void CSWGuiSaveLoad::HandleSaveButton(CSWGuiControl* pControl)  // PC 0x0070B710
 {
@@ -1178,31 +1414,33 @@ int CSWGuiSaveLoad::UnpackGame(unsigned long nSaveGame,  // PC 0x0070B380
         rename(sFuturePath.CStr(), sCurrentPath.CStr());
         return 1;
     }
-
-    CExoString sDirectory;
-    CExoString sFileName;
-    if (nSaveGame != (unsigned long)-1)
-    {
-        sDirectory.Format("%06d - %s", nSaveGame, sSaveName.CStr());
-    }
     else
     {
-        sDirectory = sSaveName;
-    }
-    sFileName = "SAVES:";
-    sFileName = sFileName + sDirectory;
+        CExoString sDirectory;
+        CExoString sFileName;
+        if (nSaveGame != (unsigned long)-1)
+        {
+            sDirectory.Format("%06d - %s", nSaveGame, sSaveName.CStr());
+        }
+        else
+        {
+            sDirectory = sSaveName;
+        }
+        sFileName = "SAVES:";
+        sFileName = sFileName + sDirectory;
 #ifdef _XBOX
-    g_pAppManager->m_pClientExoApp->HideLoadScreen(0);
+        g_pAppManager->m_pClientExoApp->HideLoadScreen(0);
 #else
-    g_pAppManager->m_pClientExoApp->HideLoadScreen(0, 1);
+        g_pAppManager->m_pClientExoApp->HideLoadScreen(0, 1);
 #endif
 #ifdef _XBOX
-    ShowSaveError(42027);
+        ShowSaveError(42027);
 #endif
-    CExoFile cFile(sFileName + "\\" + "CORRUPT", 0, "wb+");
-    cFile.Write("CORRUPT");
-    cFile.Flush();
-    return 0;
+        CExoFile cFile(sFileName + "\\" + "CORRUPT", 0, "wb+");
+        cFile.Write("CORRUPT");
+        cFile.Flush();
+        return 0;
+    }
 }
 // PC 0x0070A5A0
 CSWGuiSaveNamePanel::CSWGuiSaveNamePanel(CSWGuiManager* pManager)
@@ -1235,12 +1473,95 @@ void CSWGuiSaveNamePanel::SetTextAndPointer(CSWGuiSaveLoad* pSaveLoad, const CEx
     m_edtSaveName.m_cText.SetText(sText);
 }
 #ifndef _XBOX
+// PC 0x0070A7E0
+void CSWGuiSaveLoad::SortGamesByTimeStamp(CExoArrayList<CSWGuiControl*>& lControls)
+{
+    for (int i = 0; i < lControls.num - 1; i++)
+    {
+        int nNewest = i;
+        unsigned __int64 nNewestTime = ((CSWGuiSaveLoadEntry*)lControls[i])->m_nTimeStamp;
+        CSWGuiControl* pControl = lControls[i];
+        for (int j = i + 1; j < lControls.num; j++)
+        {
+            unsigned __int64 nTime = ((CSWGuiSaveLoadEntry*)lControls[j])->m_nTimeStamp;
+            if (nTime > nNewestTime)
+            {
+                nNewest = j;
+                nNewestTime = nTime;
+            }
+        }
+        lControls[i] = lControls[nNewest];
+        lControls[nNewest] = pControl;
+    }
+}
+// PC 0x0070ABD0
+void CSWGuiSaveLoad::PopulateGameLB()
+{
+    CExoArrayList<CSWGuiControl*> lControls;
+    m_lblTimePlayed.m_cText.m_cParams.SetText("");
+    m_lbSaveGames.ClearItems();
+    if (m_lFilterNames.num > 0)
+    {
+        m_lblPCName.m_cText.m_cParams.SetText(m_lFilterNames[m_nCurrentFilter]);
+    }
+    else
+    {
+        m_lblPCName.m_cText.m_cParams.SetText("");
+    }
+    m_lblPlanetName.m_cText.m_cParams.SetText("");
+    m_lblAreaName.m_cText.m_cParams.SetText("");
+    for (int nPortrait = 0; nPortrait < 3; ++nPortrait)
+    {
+        CResRef* pPortrait = &CResRef();
+        m_aPartyMemberLabels[nPortrait].m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
+    }
+    m_lblScreenshot.m_cText.m_cParams.SetStrRef(STRREF_NEW_SLOT);
+    CResRef* pScreenshot = &CResRef();
+    m_lblScreenshot.m_cBorder.m_cParams.SetFillImage(*pScreenshot, 0);
+    for (int i = 0; i < m_lEntries.num; i++)
+    {
+        CSWGuiSaveLoadEntry* pEntry = new CSWGuiSaveLoadEntry(m_lEntries[i]);
+        int bShow = 1;
+        if (m_lFilterNames.num > 0)
+        {
+            bShow = pEntry->GetPCName() == m_lFilterNames[m_nCurrentFilter];
+            if (!bShow)
+            {
+                if (pEntry->GetPCName().IsEmpty())
+                {
+                    bShow = 1;
+                }
+            }
+        }
+        if (bShow)
+        {
+            if (pEntry->m_bNewSlot)
+            {
+                lControls.Insert(pEntry, 0);
+            }
+            else
+            {
+                lControls.Add(pEntry);
+            }
+        }
+    }
+    if (lControls.num > 0)
+    {
+        m_lbSaveGames.AddControls(lControls, 1, 0, 0);
+        m_lbSaveGames.SetSelectedControl(m_lbSaveGames.GetControl(0), 0);
+        SetActiveControl(&m_lbSaveGames, 0);
+    }
+    else if (!m_bSaveMode)
+    {
+        m_lblScreenshot.m_cText.m_cParams.SetStrRef(STRREF_NO_SAVES);
+    }
+}
 void CSWGuiSaveLoad::PopulateGameList()  // PC 0x0070C600
 {
     CExoArrayList<CExoString> lDirectories;
     CExoArrayList<CSWGuiControl*> lControls;
     CSWGuiExtent cExtent;
-    cExtent.m_nHeight = 42;
+    cExtent.m_nHeight = CSWGuiSaveLoadEntry::SAVE_ENTRY_HEIGHT;
     CSWGuiButton* pProto = (CSWGuiButton*)m_lbSaveGames.m_pProtoItem;
     CExoString sGameDirectory;
 
@@ -1320,7 +1641,52 @@ void CSWGuiSaveLoad::PopulateGameList()  // PC 0x0070C600
         GetManager()->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
         return;
     }
-    m_lbSaveGames.AddControls(lControls, 1, 0, 0);
+    SortGamesByTimeStamp(lControls);
+    if (!m_bFiltersLoaded)
+    {
+        CExoString sPCName;
+        for (int i = 0; i < lControls.num; i++)
+        {
+            sPCName = ((CSWGuiSaveLoadEntry*)lControls[i])->GetPCName();
+            if (!sPCName.IsEmpty())
+            {
+                m_lFilterNames.AddUnique(sPCName);
+            }
+        }
+    }
+    if (!m_bFiltersLoaded)
+    {
+        m_nCurrentFilter = 0;
+    }
+    if (!m_bFiltersLoaded)
+    {
+        if (!m_bExitToMainMenu && g_pAppManager->m_pServerExoApp->GetPartyTable() != 0)
+        {
+            CExoString sPCName = g_pAppManager->m_pServerExoApp->GetPartyTable()->GetPCName();
+            if (!m_lFilterNames.Contains(sPCName))
+            {
+                m_lFilterNames.Insert(sPCName, 0);
+            }
+            else
+            {
+                for (int i = 0; i < m_lFilterNames.num; i++)
+                {
+                    if (m_lFilterNames[i] == sPCName)
+                    {
+                        m_nCurrentFilter = i;
+                        break;
+                    }
+                }
+            }
+        }
+        m_bFiltersLoaded = 1;
+    }
+    m_lEntries.num = 0;
+    for (int i = 0; i < lControls.num; i++)
+    {
+        m_lEntries.Add((CSWGuiSaveLoadEntry*)lControls[i]);
+    }
+    PopulateGameLB();
     m_nMaxSaveGame = nNextSlot;
 }
 #endif

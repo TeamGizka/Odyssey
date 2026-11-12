@@ -20,6 +20,10 @@ class CSWGuiStoreItemEntry;
 class CSWSStore;
 
 #define UPGRADE_TABLE_TYPE_POWER_CRYSTAL 0
+#define UPGRADE_TABLE_TYPE_LS_LENS 1
+#define UPGRADE_TABLE_TYPE_TARGETING 4
+#define UPGRADE_TABLE_TYPE_MELEE_GRIP 7
+#define UPGRADE_TABLE_TYPE_ARMOR_OVERLAY 10
 
 class CSWGuiUpgrade : public CSWGuiPanel
 {
@@ -43,7 +47,8 @@ public:
     {
         UPGRADE_SLOT_POWER_CRYSTAL_1 = 0,
         UPGRADE_SLOT_COLOR_CRYSTAL = 1,
-        UPGRADE_SLOT_POWER_CRYSTAL_2 = 2
+        UPGRADE_SLOT_POWER_CRYSTAL_2 = 2,
+        UPGRADE_SLOT_LS_LENS = 3
     };
 
     enum ItemListMode
@@ -58,6 +63,13 @@ public:
     {
         NUM_ITEMLIST_MODES = 4,
         NUM_UPGRADE_SLOTS = 6
+    };
+
+    enum
+    {
+        ITEM_TYPE_ARMOR_HEAVY = 36,
+        ITEM_TYPE_CLOTHING = 37,
+        ITEM_TYPE_ROBE = 38
     };
 
     CSWGuiButton m_aUpgradeButtons4[4];

@@ -16,11 +16,17 @@ const unsigned char GUI_STATUS_LIGHT_SHIFT = 5;
 const unsigned char GUI_STATUS_NET_SHIFT = 6;
 const unsigned char GUI_STATUS_ITEM_RECEIVED = 7;
 const unsigned char GUI_STATUS_ITEM_LOST = 8;
+const unsigned char GUI_STATUS_INFLUENCE_GAIN = 9;
+const unsigned char GUI_STATUS_INFLUENCE_LOST = 10;
+const unsigned char GUI_STATUS_MAX_FP_GAIN = 11;
+const unsigned char GUI_STATUS_MAX_FP_LOST = 12;
+
 const unsigned char GUI_STATUS_COUNT = 13;
 
-const unsigned char GUI_STATUS_LEVEL_UP = 9;
-const unsigned char GUI_STATUS_NEW_QUEST = 10;
-const unsigned char GUI_STATUS_QUEST_COMPLETE = 11;
+const unsigned char GUI_STATUS_LEVEL_UP = 100;
+const unsigned char GUI_STATUS_NEW_QUEST = 101;
+const unsigned char GUI_STATUS_QUEST_COMPLETE = 102;
+
 
 class CExoLinkedListInternal;
 class CExoStreamingSoundSource;
@@ -28,6 +34,7 @@ class CResRef;
 class CSWGuiBarkBubble;
 class CSWGuiDialog;
 class CSWGuiDialogComputer;
+class CSWGuiDialogComputerCamera;
 class CSWGuiDialogLetterbox;
 class CSWGuiFade;
 class CSWGuiControllerLossBox;
@@ -132,6 +139,11 @@ public:
     void DoQuickLoad();
     void ClearMapDisplays();
     int GetTopMenuOverrideCharacter();
+    void SetTopMenuOverrideCharacter(int nCharacter);
+    void ShowGameMenuChangeButtons(int bShow);
+    void UpdateAbilitiesCharacter();
+    void UpdateInventory();
+    void ResetTutorialWindowTracker();
 
     enum { MESSAGE_BUFFER_CAPACITY = 64 };
 
@@ -163,6 +175,7 @@ public:
     };
 
     enum { CAMERA_VIDEO_EFFECT_DEFAULT = -1, CAMERA_VIDEO_EFFECT_UNCHANGED = -2 };
+    enum { CAMERA_VIDEO_EFFECT_SECURITY_NO_LABEL = 10 };
 
     enum
     {
@@ -254,8 +267,9 @@ public:
 #ifdef _XBOX
     enum { TUTORIAL_WINDOW_COUNT = 42 };
 #else
-    enum { TUTORIAL_WINDOW_COUNT = 43 };
+    enum { TUTORIAL_WINDOW_COUNT = 256 };
 #endif
+    int GetTutorialWindowHasBeenShown(unsigned char nReason);
     int ShowTutorialWindow(unsigned char nReason, unsigned long oidInstigator,
                            unsigned long oidTarget, unsigned long nActionParam);
     int SetTutorialReason(unsigned char nReason);
@@ -390,7 +404,7 @@ public:
     }
     CSWGuiMainInterface* GetMainInterface();
 #ifndef _XBOX
-    int SetGlobalUnpauseableState(int bUnpauseable);
+    void SetGlobalUnpauseableState(int bUnpauseable);
 #endif
     int GetPartyAccessPanelUp(int bAny); int GetCurrentEquipScreenNPC();
     int GetGlobalFadeActive();
@@ -465,7 +479,8 @@ public:
     void FadeAndStopDialogAmbientTrack();
     void LoadAmbientTrackForDialog(const CResRef& cAmbientTrack);
     void SwitchToSWInGameGui(int nMenu);
-    void UpdateMessageGUI();
+    void UpdateMessageGUI(CSWGuiPanel* pPanel);
+
     void StopBarkBubble(int bFade);
     void UpdateCreatedInGameGUI(int nOldScreen, int nNewScreen);
     void ShowFlashingStatus(unsigned char nStatus);
@@ -507,7 +522,7 @@ public:
     CSWGuiDialog* m_pCameraDialog;
     CSWGuiDialogComputer* m_pComputerDialog;
 
-    CSWGuiDialog* m_pComputerScreen;
+    CSWGuiDialogComputerCamera* m_pComputerScreen;
     CSWGuiBarkBubble* m_pBarkBubble;
     CSWGuiExamine* m_pExamineBox;
     CSWGuiContainer* m_pContainer;
@@ -520,7 +535,7 @@ public:
     CSWGuiLoadModuleDebugMenu* m_pLoadModuleDebugMenu;
     CSWGuiPowersFeatsSkillsDebugMenu* m_pPowersFeatsSkillsDebugMenu;
 
-    CSWGuiPartySelection* m_pPartySelectionPanel;
+    CSWGuiInGameMessages* m_pMessagesPanel;
     CSWGuiInGamePause* m_pPausePanel;
 
     CSWGuiPanel* m_pGalaxyMap;
@@ -666,7 +681,7 @@ public:
     unsigned long m_bJournalDone : 1;
     unsigned long m_nJournalFlagsUnused : 31;
 
-    enum { MESSAGE_TYPE_DIALOG = 0, MESSAGE_TYPE_FEEDBACK = 1 };
+    enum { MESSAGE_TYPE_DIALOG = 0, MESSAGE_TYPE_FEEDBACK = 1, MESSAGE_TYPE_COMBAT = 2, MESSAGE_TYPE_EFFECTS = 3 };
     unsigned char m_nMessageType;
     unsigned char m_aUnknownBC9[0xBCC - 0xBC9];
     unsigned long m_nNoClickDay;

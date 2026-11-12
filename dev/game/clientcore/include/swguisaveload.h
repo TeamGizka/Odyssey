@@ -25,7 +25,7 @@ public:
 
     unsigned long m_bSaveMode : 1;
     unsigned long m_bExitToMainMenu : 1;
-    unsigned long m_b68Bit2 : 1;
+    unsigned long m_bFiltersLoaded : 1;
     unsigned long m_nUnknown64Rest : 29;
     int m_nMaxSaveGame;
 
@@ -64,6 +64,9 @@ public:
     int m_bEndGameMode;
     void SetEndGameMode();
     int LaunchMostRecentSave();
+    void HandleFilterPress(CSWGuiControl* pControl);
+    void PopulateGameLB();
+    void SortGamesByTimeStamp(CExoArrayList<CSWGuiControl*>& lControls);
 #endif
 #ifdef _XBOX
     void UpdateFreeBlocks();
@@ -106,6 +109,7 @@ public:
     static const unsigned long STRREF_NEW_SLOT = 1590;
 
     static const unsigned long STRREF_NO_SAVED_GAMES = 42491;
+    enum { STRREF_NO_SAVES = 128527, STRREF_TIME_PLAYED = 48755 };
     void ExitPanel();
     void PopulateGameList();
 
@@ -121,6 +125,9 @@ public:
     virtual void HandleKeyPress(int);
 };
 
+#ifndef _XBOX
+#pragma pack(push, 4)
+#endif
 class CSWGuiSaveLoadEntry : public CSWGuiRadioButton
 {
 public:
@@ -139,15 +146,26 @@ public:
     };
     enum SaveTitleToken
     {
-        TITLE_TOKEN_GAME = 0,
-        TITLE_TOKEN_HOURS = 1,
-        TITLE_TOKEN_MINUTES = 2,
-        TITLE_TOKEN_NAME = 3
+        TITLE_TOKEN_NUMBER = 0,
+        TITLE_TOKEN_NAME = 1,
+        TITLE_TOKEN_TIME_STAMP = 2
     };
-    static const unsigned long STRREF_AUTO_SAVE = 1593;
-    static const unsigned long STRREF_QUICK_SAVE = 47991;
-    static const unsigned long STRREF_SAVE_TIME = 48205;
-    static const unsigned long STRREF_SAVE_TITLE = 48519;
+    enum SaveStampToken
+    {
+        STAMP_TOKEN_MONTH = 0,
+        STAMP_TOKEN_DAY = 1,
+        STAMP_TOKEN_YEAR = 2,
+        STAMP_TOKEN_HOUR = 3,
+        STAMP_TOKEN_MINUTE = 4,
+        STAMP_TOKEN_SECOND = 5
+    };
+    enum
+    {
+        STRREF_AUTO_SAVE = 1593,
+        STRREF_QUICK_SAVE = 48752,
+        STRREF_SAVE_TITLE = 48753,
+        STRREF_TIME_STAMP = 49126
+    };
 
     unsigned long m_bDataLoaded : 1;
 
@@ -165,14 +183,13 @@ public:
     unsigned long m_nTimePlayed;
 
     int m_nSaveSpaceNeeded;
-#ifndef _XBOX
-    unsigned char m_n1E0;
-#endif
     unsigned char m_nGameplayHint;
-    unsigned char m_nStoryHint;
 #ifndef _XBOX
-    int m_n1E4;
-    int m_n1E8;
+    enum { STORY_HINT_AREAS = 10, SAVE_ENTRY_HEIGHT = 36 };
+    unsigned char m_anStoryHint[STORY_HINT_AREAS];
+    unsigned char GetStoryHint(unsigned char nArea) { return m_anStoryHint[nArea]; }
+#else
+    unsigned char m_nStoryHint;
 #endif
 #ifndef _XBOX
     CExoString m_sSaveGameName;
@@ -188,7 +205,7 @@ public:
 
     CResRef m_aPortraits[3];
 #ifndef _XBOX
-    unsigned long m_aTimeStamp[2];
+    unsigned __int64 m_nTimeStamp;
     CExoString m_sPCName;
     int m_nSaveNumber;
     CExoString GetPCName() { return m_sPCName; }
@@ -206,8 +223,17 @@ public:
     }
     void LoadData(CExoString const&);
     void SetXboxTitle(CExoString const&);
+#ifndef _XBOX
+    CExoString FormatTimeToString();
+#endif
     CSWGuiSaveLoadEntry();
+#ifndef _XBOX
+    CSWGuiSaveLoadEntry(CSWGuiSaveLoadEntry* pEntry);
+#endif
 };
+#ifndef _XBOX
+#pragma pack(pop)
+#endif
 
 class CSWGuiSaveNamePanel : public CSWGuiPanel
 {

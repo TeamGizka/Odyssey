@@ -45,6 +45,14 @@ public:
     CSWGuiLabel m_lblRAnalog;
     CSWGuiListBox m_lbDescription;
 #else
+    enum
+    {
+        STRREF_GAMEPLAY_DESCRIPTION = 42273,
+        STRREF_FEEDBACK_DESCRIPTION = 136314,
+        STRREF_AUTOPAUSE_DESCRIPTION = 42275,
+        STRREF_GRAPHICS_DESCRIPTION = 48687,
+        STRREF_SOUND_DESCRIPTION = 48688
+    };
     CSWGuiButton m_btnOptions[6];
     CSWGuiLabel m_lblDescription;
     CSWGuiLabel m_lblTitle;
@@ -67,7 +75,6 @@ public:
         OPTION_FLOATING_NUMBERS,
         OPTION_STATUS_SUMMARY,
         OPTION_HIDE_IN_GAME_GUI,
-        OPTION_USE_SMALL_FONTS,
         OPTION_ENABLE_TOOLTIPS,
         OPTION_COUNT
     };
@@ -80,9 +87,8 @@ public:
         STRREF_MINI_MAP_LABEL = 42283,
         STRREF_FLOATING_NUMBERS_LABEL = 42285,
         STRREF_STATUS_SUMMARY_LABEL = 42450,
-        STRREF_HIDE_IN_GAME_GUI_LABEL = 49061,
-        STRREF_USE_SMALL_FONTS_LABEL = 49062,
-        STRREF_ENABLE_TOOLTIPS_LABEL = 49115,
+        STRREF_HIDE_IN_GAME_GUI_LABEL = 48693,
+        STRREF_ENABLE_TOOLTIPS_LABEL = 48696,
 
         STRREF_HIDE_UNEQUIPPABLE_DESCRIPTION = 42286,
         STRREF_TUTORIAL_POPUPS_DESCRIPTION = 42287,
@@ -90,9 +96,8 @@ public:
         STRREF_MINI_MAP_DESCRIPTION = 42289,
         STRREF_FLOATING_NUMBERS_DESCRIPTION = 42291,
         STRREF_STATUS_SUMMARY_DESCRIPTION = 42451,
-        STRREF_HIDE_IN_GAME_GUI_DESCRIPTION = 49065,
-        STRREF_USE_SMALL_FONTS_DESCRIPTION = 49066,
-        STRREF_ENABLE_TOOLTIPS_DESCRIPTION = 49114
+        STRREF_HIDE_IN_GAME_GUI_DESCRIPTION = 48700,
+        STRREF_ENABLE_TOOLTIPS_DESCRIPTION = 48703
     };
 
 #ifndef _XBOX
@@ -114,7 +119,7 @@ public:
     void OnSubtitles(CSWGuiControl* pControl);
     void OnMiniMap(CSWGuiControl* pControl);
     void OnFloaty(CSWGuiControl* pControl); void OnSummary(CSWGuiControl* pControl);
-    void OnHideInGameGUI(CSWGuiControl* pControl); void OnUseSmallFont(CSWGuiControl* pControl); void OnEnableToolTips(CSWGuiControl* pControl);
+    void OnHideInGameGUI(CSWGuiControl* pControl); void OnEnableToolTips(CSWGuiControl* pControl);
 
 #ifdef _XBOX
     CSWGuiOptionsCheckbox m_aCheckboxes[7]; CSWGuiLabel m_lblA; CSWGuiLabel m_lblB; CSWGuiLabel m_lblDescription; CSWGuiLabel m_lblSelect;
@@ -128,6 +133,14 @@ public:
 class CSWGuiOptionsSound : public CSWGuiPanel
 {
 public:
+    enum
+    {
+        STRREF_MUSIC_VOLUME_DESCRIPTION = 42311,
+        STRREF_VOICE_VOLUME_DESCRIPTION = 42312,
+        STRREF_EFFECTS_VOLUME_DESCRIPTION = 42313,
+        STRREF_MOVIE_VOLUME_DESCRIPTION = 47921,
+        STRREF_ADVANCED_SOUND_DESCRIPTION = 48717
+    };
     CSWGuiOptionsSound(CSWGuiManager* pManager);
 
     virtual void HandleInputEvent(int nEvent, int nState);
@@ -160,6 +173,18 @@ public:
 class CSWGuiOptionsSoundAdvanced : public CSWGuiPanel
 {
 public:
+    enum
+    {
+        STRREF_EAX_DISABLED = 48746,
+        STRREF_EAX = 48747,
+        STRREF_EAX_2 = 48748,
+        STRREF_EAX_3 = 48749
+    };
+    enum
+    {
+        STRREF_FORCE_SOFTWARE_DESCRIPTION = 48718,
+        STRREF_EAX_DESCRIPTION = 48719
+    };
     CSWGuiOptionsSoundAdvanced(CSWGuiManager* pManager);
 
     virtual void HandleInputEvent(int nEvent, int nState);
@@ -196,6 +221,11 @@ public:
 class CSWGuiOptionsMouse : public CSWGuiPanel
 {
 public:
+    enum
+    {
+        STRREF_MOUSE_SENSITIVITY_DESCRIPTION = 48721,
+        STRREF_REVERSE_BUTTONS_DESCRIPTION = 48722
+    };
     CSWGuiOptionsMouse(CSWGuiManager* pManager);
 
     virtual void HandleInputEvent(int nEvent, int nState);
@@ -241,6 +271,7 @@ class CSWGuiOptionsGraphics : public CSWGuiPanel
 {
 public:
     enum { STRREF_CANNOT_CHANGE_RESOLUTION = 115761 };
+    enum { GAMMA_SLIDER_OFFSET = 15, GAMMA_SLIDER_MAX = 100 };
 
     CSWGuiOptionsGraphics(CSWGuiManager* pManager, int bInGame);
 
@@ -279,6 +310,28 @@ public:
 class CSWGuiOptionsGraphicsAdvanced : public CSWGuiPanel
 {
 public:
+    enum
+    {
+        STRREF_ANTIALIAS_OFF = 48738,
+        STRREF_ANTIALIAS_2X = 48739,
+        STRREF_ANTIALIAS_4X = 48741,
+        STRREF_ANTIALIAS_6X = 48744,
+        STRREF_ANTIALIAS_8X = 48745,
+        STRREF_ANISOTROPY_OFF = 49002,
+        STRREF_ANISOTROPY_2X = 49003,
+        STRREF_ANISOTROPY_4X = 49004,
+        STRREF_ANISOTROPY_8X = 49005,
+        STRREF_ANISOTROPY_16X = 49006
+    };
+    enum
+    {
+        STRREF_SOFT_SHADOWS_DESCRIPTION = 48711,
+        STRREF_TEXTURE_QUALITY_DESCRIPTION = 48712,
+        STRREF_ANTIALIAS_DESCRIPTION = 48713,
+        STRREF_FRAME_BUFFER_DESCRIPTION = 48714,
+        STRREF_ANISOTROPY_DESCRIPTION = 48715,
+        STRREF_VSYNC_DESCRIPTION = 48716
+    };
     CSWGuiOptionsGraphicsAdvanced(CSWGuiManager* pManager,
                                   CSWGuiOptionsGraphics* pGraphics);
 

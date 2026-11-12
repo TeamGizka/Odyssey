@@ -192,6 +192,7 @@ class CSWGuiDialogComputerCamera : public CSWGuiDialog
 public:
     CSWGuiDialogComputerCamera(CSWGuiManager* pManager);
     virtual ~CSWGuiDialogComputerCamera();
+    void SetLiveFeedMessageVisible(int bVisible);
 
     CSWGuiLabel m_lblCameraTitle;
     CSWGuiBlackenedLabel m_lblReturn;

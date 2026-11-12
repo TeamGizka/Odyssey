@@ -20,6 +20,52 @@ class CSWGuiPazaakStart;
 extern CSWGuiManager* g_pGuiMan;
 extern int g_bPazaakShowNPCSideDeck;
 
+enum { PAZAAK_TOTAL_BUST = -1000000, PAZAAK_TOTAL_TARGET = 20 };
+
+enum
+{
+    STRREF_PAZAAK_CONFIRM_SIDEDECK = 32322,
+    STRREF_PAZAAK_PLAY_CARD = 32330,
+    STRREF_PAZAAK_END_TURN = 32332,
+    STRREF_PAZAAK_STAND = 32333,
+    STRREF_PAZAAK_SET_WON = 32334,
+    STRREF_PAZAAK_SET_LOST = 32335,
+    STRREF_PAZAAK_MATCH_WON = 32336,
+    STRREF_PAZAAK_MATCH_LOST = 32337,
+    STRREF_PAZAAK_SET_TIED = 32338,
+    STRREF_PAZAAK_ADD_CARD = 38601,
+    STRREF_PAZAAK_REMOVE_CARD = 38602,
+    STRREF_PAZAAK_CONTINUE = 38623,
+    STRREF_PAZAAK_BACK = 38624,
+    STRREF_PAZAAK_QUIT = 38625,
+    STRREF_PAZAAK_CANCEL = 38626,
+    STRREF_PAZAAK_HELP_SIDEDECK_INTRO = 38627,
+    STRREF_PAZAAK_HELP_BASIC_DECK = 38628,
+    STRREF_PAZAAK_HELP_SELECT_SIDEDECK = 38629,
+    STRREF_PAZAAK_SELECT_TEN_CARDS = 38630,
+    STRREF_PAZAAK_HELP_OBJECT = 38631,
+    STRREF_PAZAAK_HELP_SETS = 38632,
+    STRREF_PAZAAK_HELP_DRAW = 38633,
+    STRREF_PAZAAK_HELP_HAND = 38634,
+    STRREF_PAZAAK_HELP_PLAY_HAND_CARD = 38635,
+    STRREF_PAZAAK_HELP_NEGATIVE_TIP = 38636,
+    STRREF_PAZAAK_HELP_TURN_OVER = 38637,
+    STRREF_PAZAAK_HELP_STAND_RULES = 38638,
+    STRREF_PAZAAK_HELP_CHOOSE_ACTION = 38639,
+    STRREF_PAZAAK_HELP_STAND = 38640,
+    STRREF_PAZAAK_HELP_END_TURN = 38641,
+    STRREF_PAZAAK_HELP_PLAY_CARD = 38642,
+    STRREF_PAZAAK_HELP_FLIP_CARDS = 38643,
+    STRREF_PAZAAK_HELP_DECLARE_SIGN = 38644,
+    STRREF_PAZAAK_HELP_OPPONENT = 38645,
+    STRREF_PAZAAK_HELP_TWENTY = 38646,
+    STRREF_PAZAAK_HELP_BUST = 38647,
+    STRREF_PAZAAK_HELP_MATCH = 38648,
+    STRREF_PAZAAK_MATCH_OVER = 38649,
+    STRREF_PAZAAK_QUIT_FORFEIT = 42424,
+    STRREF_PAZAAK_CONFIRM_FORFEIT = 42425
+};
+
 class CSWGuiPazaakCard : public CSWGuiButton
 {
 public:
@@ -215,8 +261,11 @@ public:
     void HandleXButton(CSWGuiControl* pControl);
     void HandleBlackButton(CSWGuiControl* pControl);
     void HandleFlipHandCard();
+    void HandleChangeHandCard();
     void HandleHandCardRightClick(CSWGuiControl* pControl);
     void HandleFlipButtons(CSWGuiControl* pControl);
+    void HandleChangeButtons(CSWGuiControl* pControl);
+    void HandleForfeitButton(CSWGuiControl* pControl);
     void StartNewGame();
     void HandleEndDialog(CSWGuiControl* pControl);
     void HandleTutorialClose(CSWGuiControl* pControl);
@@ -293,7 +342,7 @@ public:
     int m_nPlayedCard;
     int m_nHandAction;
 #endif
-    int m_n9664;
+    int m_bPlayerStarts;
 };
 
 class CSWGuiWagerPopup : public CSWGuiPanel

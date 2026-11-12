@@ -121,6 +121,7 @@ Vector CGuiInGame::COLOR_UPGRADE_BORDER(0.0f, 0.33f, 0.5f);
 Vector CGuiInGame::COLOR_BLACK;
 
 extern int bDisableLetterbox;
+extern bool g_bLetterBoxMode;
 
 const char* HideGUI(char* sCommand)
 {
@@ -182,6 +183,7 @@ CGuiInGame::CGuiInGame()
         ->SetCameraMode(CClientOptions::CAMERA_MODE_ON_A_STICK);
     m_pMessageBuffer = new CGuiInGameMessage[MESSAGE_BUFFER_CAPACITY];
     m_pDialogBuffer = new CGuiInGameDialogMessage[MESSAGE_BUFFER_CAPACITY];
+    m_pCombatBuffer = new CGuiInGameMessage[MESSAGE_BUFFER_CAPACITY];
     m_nAbilityMode = 0;
     m_bJournalDone = 0;
     m_nInventoryFilter = 0;
@@ -212,7 +214,7 @@ CGuiInGame::CGuiInGame()
     m_pCameraDialog = 0;
     m_pComputerDialog = 0;
     m_pComputerScreen = 0;
-    m_pPartySelectionPanel = 0;
+    m_pMessagesPanel = 0;
     m_pStorePanel = 0;
     m_pUpgradeScreen = 0;
     m_pChemicalUpgradeScreen = 0;
@@ -277,22 +279,21 @@ CGuiInGame::CGuiInGame()
     m_nGlobalDialogState = 0;
     m_nC0 = 0;
     m_nDialogCameraType = 0;
-#ifdef _XBOX
     m_bInitialized = 1;
     CExoIni cIni;
     CExoString sCompass;
+#ifdef _XBOX
     if (cIni.ReadIniEntry(sCompass, "d:\\swkotor.ini", "Display Options", "Compass"))
-        m_bInitialized = sCompass.AsINT() != 0;
+#else
+    if (cIni.ReadIniEntry(sCompass, ".\\swkotor2.ini", "Display Options", "Compass"))
 #endif
+        m_bInitialized = sCompass.AsINT() != 0;
     m_nPlaceableCameras = 0;
     m_bComputerCameraShot = 0;
     m_fComputerCameraMicRange = 0.0f;
     m_pDialogSound = 0;
     m_bDialogSoundQueried = 0;
     m_nDialogReply = 0;
-#ifndef _XBOX
-    m_bInitialized = 1;
-#endif
     m_nDialogReplyCount = 0;
     m_bDialogReplySelected = 0;
     m_nDialogReplySelection = 0;
@@ -343,7 +344,10 @@ CGuiInGame::CGuiInGame()
     m_vAreaTransition = Vector(0.0f, 0.0f, 0.0f);
     m_oidAreaTransition = OBJECT_INVALID;
     m_bCameraRelativeAreaTransition = 1;
-    m_bDanceDanceMalak = 0;
+    m_n1024 = 0;
+    m_n1028 = 0;
+    m_n102C = 0;
+    m_pDemoScreen = 0;
 #endif
 }
 // PC 0x006858F0
@@ -353,6 +357,7 @@ CGuiInGame::~CGuiInGame()
     ShutDownGlobal();
     delete [] m_pDialogBuffer;
     delete [] m_pMessageBuffer;
+    delete [] m_pCombatBuffer;
     while (m_lDialogNoOrientList.GetHeadPos() != 0)
         delete m_lDialogNoOrientList.RemoveHead();
     if (m_pDialogAmbientTrack != 0)
@@ -2219,6 +2224,16 @@ void CGuiInGame::ShutDownGlobal()
         delete m_pMessageBox;
         m_pMessageBox = 0;
     }
+    if (m_pA4 != 0)
+    {
+        delete m_pA4;
+        m_pA4 = 0;
+    }
+    if (m_pDeathDisplay != 0)
+    {
+        delete m_pDeathDisplay;
+        m_pDeathDisplay = 0;
+    }
     if (m_pSkillInfoBox != 0)
     {
         delete m_pSkillInfoBox;
@@ -2341,9 +2356,12 @@ int CGuiInGame::IsCameraDialog()
 void CGuiInGame::StartGlobalFade(int nFade, float fA, float fB,
                                  const Vector& vColor)
 {
-    if (m_pGlobalFade != 0)
+    if (m_pDemoScreen != 0 && m_pDemoScreen->m_bShowing != 0)
+        return;
+    if (m_pGlobalFade != 0 && m_n1024 == 0)
     {
-        m_pGuiManager->AddPanel(m_pGlobalFade, SWGUI_PANEL_MODE_OVERLAY, 1);
+        if (!m_pGuiManager->PanelExists(m_pGlobalFade))
+            m_pGuiManager->AddPanel(m_pGlobalFade, SWGUI_PANEL_MODE_OVERLAY, 1);
         m_pGlobalFade->SetVisible(1);
         m_pGlobalFade->SetFade(nFade, fA, fB, vColor);
     }
@@ -2351,7 +2369,7 @@ void CGuiInGame::StartGlobalFade(int nFade, float fA, float fB,
 // PC 0x006805E0
 void CGuiInGame::StopGlobalFade()
 {
-    if (m_pGlobalFade != 0)
+    if (m_pGlobalFade != 0 && m_n1024 == 0)
     {
         m_pGlobalFade->ResetFade();
         m_pGuiManager->RemovePanel(m_pGlobalFade);
@@ -2400,14 +2418,19 @@ CPlaceableCamera* CGuiInGame::GetPlaceableCamera(int nCamera)
     return &m_aPlaceableCameras[nCamera];
 }
 // PC 0x00680C40
-void CGuiInGame::UpdateMessageGUI()
+void CGuiInGame::UpdateMessageGUI(CSWGuiPanel* pPanel)
 {
-    ((CSWGuiInGameMessages*)m_apScreenPanels[4])
-        ->AddMessages((CGuiInGameMessage*)m_pMessageBuffer, m_MessageBufferSize);
-    ((CSWGuiInGameMessages*)m_apScreenPanels[4])
-        ->AddDialogMessages((CGuiInGameDialogMessage*)m_pDialogBuffer,
-                            m_nDialogBufferSize);
+    if (pPanel)
+    {
+        ((CSWGuiInGameMessages*)pPanel)
+            ->AddMessages(m_pMessageBuffer, m_MessageBufferSize);
+        ((CSWGuiInGameMessages*)pPanel)
+            ->AddDialogMessages(m_pDialogBuffer, m_nDialogBufferSize);
+        ((CSWGuiInGameMessages*)pPanel)
+            ->AddCombatMessages(m_pCombatBuffer, m_nCombatBufferSize);
+    }
 }
+
 
 void CGuiInGame::StopBarkBubble(int bFade)
 {
@@ -2615,6 +2638,11 @@ void CGuiInGame::RemoveGUIPopUps()
     {
         m_pContainer->HandleInputEvent(GUIEVENT_CANCEL, 1);
     }
+    pPanel = m_pA4;
+    if (m_pGuiManager->PanelExists(pPanel) != 0)
+    {
+        m_pA4->HandleInputEvent(GUIEVENT_CANCEL, 1);
+    }
 }
 // PC 0x006824A0
 void CGuiInGame::UpdateCreatedInGameGUI(int nOldScreen, int nNewScreen)
@@ -2648,8 +2676,8 @@ void CGuiInGame::UpdateCreatedInGameGUI(int nOldScreen, int nNewScreen)
             case SCREEN_ABILITIES:
                 pNewPanel = new CSWGuiInGameAbilities(m_pGuiManager);
                 break;
-            case SCREEN_MESSAGES:
-                pNewPanel = new CSWGuiInGameMessages(m_pGuiManager);
+            case IN_GAME_SCREEN_PARTY_SELECTION:
+                pNewPanel = new CSWGuiPartySelection(m_pGuiManager);
                 break;
             case SCREEN_JOURNAL:
                 pNewPanel = new CSWGuiInGameJournal(m_pGuiManager);
@@ -2681,17 +2709,12 @@ void CGuiInGame::SetGlobalUnpauseableState(int bUnpauseable)
 
 }
 #else
-int CGuiInGame::SetGlobalUnpauseableState(int bUnpauseable)  // PC 0x006826D0
+void CGuiInGame::SetGlobalUnpauseableState(int bUnpauseable)  // PC 0x006826D0
 {
     if (bUnpauseable == 1)
-    {
-        return ++m_nGlobalUnpauseableState;
-    }
-    if (m_nGlobalUnpauseableState > 0)
-    {
-        return --m_nGlobalUnpauseableState;
-    }
-    return m_nGlobalUnpauseableState;
+        ++m_nGlobalUnpauseableState;
+    else if (m_nGlobalUnpauseableState > 0)
+        --m_nGlobalUnpauseableState;
 }
 #endif
 // PC 0x006827D0
@@ -2749,11 +2772,33 @@ void CGuiInGame::HideDemoScreen()
         }
         g_pAppManager->m_pClientExoApp->SetInputClass(0, 1);
         g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
-        m_pDemoScreen->m_nExitState = 2;
-        m_pDemoScreen->m_bDeferredRemoval = 0;
+        CSWDemoScreen* pDemoScreen = m_pDemoScreen;
+        pDemoScreen->m_bDeferredRemoval = 0;
+        pDemoScreen->m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
         m_pDemoScreen = NULL;
     }
 }
+#ifndef _XBOX
+// PC 0x00682BD0
+void CGuiInGame::ShowGameMenuChangeButtons(int bShow)
+{
+    m_pInGameMenu->ShowChangeButtons(bShow);
+}
+// PC 0x00682BE0
+void CGuiInGame::UpdateAbilitiesCharacter()
+{
+    if (m_apScreenPanels[SCREEN_ABILITIES] != 0 &&
+        g_pAppManager->GetClientExoApp()->GetSWGuiManager()->PanelExists(m_apScreenPanels[SCREEN_ABILITIES]))
+        ((CSWGuiInGameAbilities*)m_apScreenPanels[SCREEN_ABILITIES])->UpdateCharacter();
+}
+// PC 0x00682C10
+void CGuiInGame::UpdateInventory()
+{
+    if (m_apScreenPanels[SCREEN_INVENTORY] != 0 &&
+        g_pAppManager->GetClientExoApp()->GetSWGuiManager()->PanelExists(m_apScreenPanels[SCREEN_INVENTORY]))
+        ((CSWGuiInGameInventory*)m_apScreenPanels[SCREEN_INVENTORY])->PopulateItemListBox();
+}
+#endif
 // PC 0x00682C40
 void CGuiInGame::DisplayDeathMessage()
 {
@@ -2773,8 +2818,9 @@ void CGuiInGame::RemoveDeathMessage(bool bLoading)
         {
             m_pGuiManager->RemovePanel(m_pDeathDisplay);
         }
-        m_pDeathDisplay->m_nExitState = 2;
-        m_pDeathDisplay->m_bDeferredRemoval = 0;
+        CSWGuiDeathDisplay* pDeathDisplay = m_pDeathDisplay;
+        pDeathDisplay->m_bDeferredRemoval = 0;
+        pDeathDisplay->m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
         m_pDeathDisplay = NULL;
     }
 }
@@ -2785,6 +2831,18 @@ void CGuiInGame::EnableCharacterChangeButtons(int bEnable)
     {
         m_pInGameMenu->m_n3DCC = bEnable == 0;
     }
+}
+// PC 0x00682D60
+void CGuiInGame::ResetTutorialWindowTracker()
+{
+    for (int nTutorialByte = 0; nTutorialByte < sizeof(m_aTutorialWindowsShown); nTutorialByte++)
+        m_aTutorialWindowsShown[nTutorialByte] = 0;
+}
+// PC 0x00682D80
+void CGuiInGame::SetTopMenuOverrideCharacter(int nCharacter)
+{
+    if (m_pInGameMenu != NULL)
+        m_pInGameMenu->m_nTopMenuOverrideCharacter = nCharacter;
 }
 // PC 0x00682DA0
 int CGuiInGame::GetTopMenuOverrideCharacter()
@@ -3258,7 +3316,8 @@ void CGuiInGame::SetDialogAnimations()
             }
             else
             {
-                if (pObject->AsSWCObject()->GetCurrentAnimation() != CREATURE_ANIMATION_COMBAT_IDLE)
+                if (pObject->AsSWCObject()->GetCurrentAnimation() != CREATURE_ANIMATION_COMBAT_IDLE &&
+                    pObject->AsSWCDoor() == 0)
                     pObject->AsSWCObject()->SetAnimation(CREATURE_ANIMATION_COMBAT_IDLE, 0, 1);
                 CSWCObject* pCutsceneObject = pObject->AsSWCObject();
                 pCutsceneObject->m_pAnimBase->SetInCutscene(0);
@@ -3283,7 +3342,8 @@ void CGuiInGame::SetDialogAnimations()
             }
             else
             {
-                if (pObject->AsSWCObject()->GetCurrentAnimation() != CREATURE_ANIMATION_COMBAT_IDLE)
+                if (pObject->AsSWCObject()->GetCurrentAnimation() != CREATURE_ANIMATION_COMBAT_IDLE &&
+                    pObject->AsSWCDoor() == 0)
                     pObject->AsSWCObject()->SetAnimation(CREATURE_ANIMATION_COMBAT_IDLE, 0, 1);
                 CSWCObject* pCutsceneObject = pObject->AsSWCObject();
                 pCutsceneObject->m_pAnimBase->SetInCutscene(0);
@@ -3516,7 +3576,8 @@ void CGuiInGame::ResetTalkAnimations()
         }
         else
         {
-            if (pObject->AsSWCObject()->GetCurrentAnimation() != CREATURE_ANIMATION_COMBAT_IDLE)
+            if (pObject->AsSWCObject()->GetCurrentAnimation() != CREATURE_ANIMATION_COMBAT_IDLE &&
+                pObject->AsSWCDoor() == 0)
                 pObject->AsSWCObject()->SetAnimation(CREATURE_ANIMATION_COMBAT_IDLE, 0, 1);
             CSWCObject* pCutsceneObject = pObject->AsSWCObject();
             pCutsceneObject->m_pAnimBase->SetInCutscene(0);
@@ -3538,7 +3599,8 @@ void CGuiInGame::ResetTalkAnimations()
         }
         else
         {
-            if (pObject->AsSWCObject()->GetCurrentAnimation() != CREATURE_ANIMATION_COMBAT_IDLE)
+            if (pObject->AsSWCObject()->GetCurrentAnimation() != CREATURE_ANIMATION_COMBAT_IDLE &&
+                pObject->AsSWCDoor() == 0)
                 pObject->AsSWCObject()->SetAnimation(CREATURE_ANIMATION_COMBAT_IDLE, 0, 1);
             CSWCObject* pCutsceneObject = pObject->AsSWCObject();
             pCutsceneObject->m_pAnimBase->SetInCutscene(0);
@@ -3563,20 +3625,11 @@ int CGuiInGame::HandleDialogEntry(
     unsigned char nFadeType, const Vector& vFadeColor,
     float fFadeDelay, float fFadeLength, int bSoundActive)
 {
-    if (g_pAppManager->GetClientExoApp()->GetInGameGui()
-            ->GetHoldWorldFadeInForDialog() != 0)
+    CGuiInGame* pGui = g_pAppManager->GetClientExoApp()->GetInGameGui();
+    if (pGui->GetHoldWorldFadeInForDialog() != 0)
     {
-        g_pAppManager->GetClientExoApp()->GetInGameGui()
-            ->m_bHoldWorldFadeInForDialog = 0;
-        Vector vBlack;
-        CGuiInGame* pGui = g_pAppManager->GetClientExoApp()->GetInGameGui();
-        if (pGui->m_pGlobalFade != NULL)
-        {
-            pGui->m_pGuiManager->AddPanel(pGui->m_pGlobalFade,
-                                        SWGUI_PANEL_MODE_OVERLAY, 1);
-            pGui->m_pGlobalFade->SetVisible(1);
-            pGui->m_pGlobalFade->SetFade(1, 0.0f, 1.0f, vBlack);
-        }
+        pGui->m_bHoldWorldFadeInForDialog = 0;
+        pGui->StartGlobalFade(1, 0.0f, 1.0f, Vector());
     }
 
     InitializeDialogAnimationData(nAnimations);
@@ -3670,6 +3723,9 @@ int CGuiInGame::HandleDialogEntry(
     {
         InitializeShotCamera();
         SetComputerCameraShot(nCameraId, oidCameraTarget, nVideoEffect);
+        reinterpret_cast<CSWBehaviorCameraDialog*>(
+            g_pAppManager->m_pClientExoApp->GetModule()->GetCamera()->
+                GetBehavior(AUR_BEHAVIOR_CAMERA_DIALOG))->ApplyCameraShot();
     }
     return 1;
 }
@@ -4036,6 +4092,11 @@ void CGuiInGame::SetComputerCameraShot(int nCamera, unsigned long oidTarget,
     GUIINGAME_TRACE();
     if (m_nPlaceableCameras != 0)
     {
+        if (nVideoEffect != CAMERA_VIDEO_EFFECT_UNCHANGED &&
+            nVideoEffect != CAMERA_VIDEO_EFFECT_SECURITY_NO_LABEL)
+            m_pComputerScreen->SetLiveFeedMessageVisible(1);
+        else
+            m_pComputerScreen->SetLiveFeedMessageVisible(0);
         m_pGuiManager->RemovePanel(m_pDialog);
         m_pGuiManager->AddPanel(m_pComputerScreen, 0, 1);
         m_pComputerScreen->SetOwner(m_pDialog->m_nOwner);
@@ -4078,6 +4139,8 @@ void CGuiInGame::SetComputerCameraShot(int nCamera, unsigned long oidTarget,
                 nVideoEffect = 0;
             if (nVideoEffect != CAMERA_VIDEO_EFFECT_UNCHANGED)
                 g_pAppManager->m_pClientExoApp->EnableVideoEffect(nVideoEffect);
+            else
+                g_pAppManager->m_pClientExoApp->DisableVideoEffect();
         }
         m_oidComputerCameraTarget = oidTarget;
     }
@@ -4181,10 +4244,10 @@ void CGuiInGame::ShutDown()
             delete m_pGlobalFade;
             m_pGlobalFade = 0;
         }
-        if (m_pPartySelectionPanel != 0)
+        if (m_pMessagesPanel != 0)
         {
-            delete m_pPartySelectionPanel;
-            m_pPartySelectionPanel = 0;
+            delete m_pMessagesPanel;
+            m_pMessagesPanel = 0;
         }
         if (m_pPausePanel != 0)
         {
@@ -4388,6 +4451,9 @@ int CGuiInGame::ShowSWInGameGui(int nMenu)
     if (m_bItemCreateMenuAvailable != 0)
     {
         CSWGuiManager* pGuiManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
+#ifndef _XBOX
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMainInterface->ResetPartyMemberItemUse();
+#endif
         if (pGuiManager != 0)
         {
             g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL_BUT_MUSIC);
@@ -4479,7 +4545,11 @@ int CGuiInGame::HideSWInGameGui(int bHidePause)  // PC 0x00683F10
     if (m_bItemCreateMenuAvailable != 0)
     {
         CSWGuiManager* pGuiManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
-        if (pGuiManager != 0 && pGuiManager->m_lModalPanels.num == 0)
+        if (pGuiManager == 0)
+            return 0;
+        if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMainInterface != 0)
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMainInterface->RevertActionBarStates();
+        if (pGuiManager->m_lModalPanels.num == 0)
         {
             SetSWGuiStatus(GUISTATUS_RESTORE_MAIN_INTERFACE, 1);
             pGuiManager->RemovePanel(m_pInGameMenu);
@@ -4844,9 +4914,9 @@ int CGuiInGame::IsAnimationPlayingInDialog()
             if (pClientObject != 0)
             {
                 bPlaying = pClientObject->AnimationDialog(pClientObject->m_nCurrentAnimation);
-                if (bPlaying != 0)
+                if (bPlaying == 0)
                 {
-                    return 1;
+                    return 0;
                 }
             }
 #ifdef _XBOX
@@ -4857,6 +4927,10 @@ int CGuiInGame::IsAnimationPlayingInDialog()
 #endif
             i++;
         } while (i < m_nDialogAnimations);
+    }
+    if (i == m_nDialogAnimations)
+    {
+        return 1;
     }
     return bPlaying;
 }
@@ -4993,19 +5067,6 @@ int CGuiInGame::IsOverlayDialogAnimation(unsigned short nAnimation)
     return 0;
 }
 
-void CGuiInGame::ResetComputerCameraShot()
-{
-    if (m_pGuiManager->PanelExists(m_pComputerScreen))
-    {
-        m_pGuiManager->RemovePanel(m_pComputerScreen);
-#ifdef _XBOX
-        m_pGuiManager->AddPanel(m_pDialog, 0, 1);
-#else
-        m_pGuiManager->AddPanel(m_pDialog, CSWGuiManager::PANEL_MODE_FOREGROUND, 1);
-#endif
-        g_pAppManager->m_pClientExoApp->DisableVideoEffect();
-    }
-}
 // PC 0x00684640
 void CGuiInGame::CleanUpEntryNode()
 {
@@ -5047,6 +5108,21 @@ void CGuiInGame::CleanUpReplyNode()
     g_pExoInput->CoolDownEvent(CClientExoAppInternal::INPUT_EVENT_MOUSE_LEFT, 750);
     g_pExoInput->CoolDownEvent(CClientExoAppInternal::INPUT_EVENT_GUI_ACCEPT, 750);
 #endif
+}
+// PC 0x0067F430
+void CGuiInGame::ResetComputerCameraShot()
+{
+    if (m_pGuiManager->PanelExists(m_pComputerScreen))
+    {
+        m_pGuiManager->RemovePanel(m_pComputerScreen);
+#ifdef _XBOX
+        m_pGuiManager->AddPanel(m_pDialog, 0, 1);
+#else
+        m_pGuiManager->AddPanel(m_pDialog, CSWGuiManager::PANEL_MODE_FOREGROUND, 1);
+#endif
+        if (m_n1028 == 0)
+            g_pAppManager->m_pClientExoApp->DisableVideoEffect();
+    }
 }
 // PC 0x006800C0
 void CGuiInGame::HideLoadModuleDebugMenu()
@@ -5291,7 +5367,6 @@ void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)  // PC 0x00680700
                         g_bInScreenshotMode == 0)
                     {
                         m_pGuiManager->AddPanel(m_pPausePanel, SWGUI_PANEL_MODE_OVERLAY, 1);
-                        m_pGuiManager->SendPanelToBack(m_pPausePanel);
                     }
                 }
                 else
@@ -5385,11 +5460,27 @@ int CGuiInGame::HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSoun
         m_pDialogSound = new CExoStreamingSoundSource(1);
         m_pDialogSound->SetPriorityGroup(
             CExoStreamingSoundSource::PRIORITY_GROUP_DIALOG_VOICE);
-        if (m_pDialogSound->Play(cSound, RESTYPE_MP3, 1, 0, 0) == 0 &&
-            m_pDialogSound->Play(cSound, RESTYPE_WAV, 1, 0, 0) == 0)
+        if (m_pDialogSound->Play(cSound, RESTYPE_MP3, 1, 0, 0) == 0)
         {
-            pClientObject->LipSync(cSound);
-            return 0;
+            if (g_bDebugDialogSound)
+            {
+                char szSound[17];
+                cSound.CopyToString(szSound);
+                EXOLOG("HandleDialogSound: no mp3 %s mode %d\n", szSound,
+                       g_pExoSound->GetSoundMode());
+            }
+            if (m_pDialogSound->Play(cSound, RESTYPE_WAV, 1, 0, 0) == 0)
+            {
+                if (g_bDebugDialogSound)
+                {
+                    char szSound[17];
+                    cSound.CopyToString(szSound);
+                    EXOLOG("HandleDialogSound: no wav %s mode %d\n", szSound,
+                           g_pExoSound->GetSoundMode());
+                }
+                pClientObject->LipSync(cSound);
+                return 0;
+            }
         }
         SetDialogSound(oidSpeaker, cSound);
     }
@@ -5756,6 +5847,9 @@ void CGuiInGame::SetShotFromScript(int nCamera, int nVideoEffect)
             if (m_bShotCameraInitialized == 0)
                 InitializeShotCamera();
             SetComputerCameraShot(nCamera, m_oidComputerCameraTarget, nVideoEffect);
+            reinterpret_cast<CSWBehaviorCameraDialog*>(
+                g_pAppManager->m_pClientExoApp->GetModule()->GetCamera()->
+                    GetBehavior(AUR_BEHAVIOR_CAMERA_DIALOG))->ApplyCameraShot();
         }
     }
 }
@@ -5819,6 +5913,9 @@ void CGuiInGame::SetGlobalDialogState(int nState)
 {
     GUIINGAME_TRACE();
     m_nGlobalDialogState = nState;
+#ifndef _XBOX
+    g_bLetterBoxMode = nState == 1;
+#endif
     if (nState == 0)
     {
         m_nC0 = 0;
@@ -5913,7 +6010,20 @@ void CGuiInGame::UpdateStatus(unsigned char nMessage, int nValue)
             pSummary->m_cStatusSummary.m_bCompleteSound = 1;
             pSummary->m_cStatusSummary.m_bSoundPending = 1;
             break;
+        case GUI_STATUS_INFLUENCE_GAIN:
+            pSummary->AddInfluenceGained(nValue);
+            break;
+        case GUI_STATUS_INFLUENCE_LOST:
+            pSummary->AddInfluenceLost(nValue);
+            break;
+        case GUI_STATUS_MAX_FP_GAIN:
+            pSummary->AddMaxFPGained(nValue);
+            break;
+        case GUI_STATUS_MAX_FP_LOST:
+            pSummary->AddMaxFPLost(nValue);
+            break;
         }
+
     }
 }
 // PC 0x00681DB0
@@ -5947,6 +6057,9 @@ void CGuiInGame::ShowStatusSummary()
         }
         else
         {
+            m_pStatusSummary->HandleAlignmentMovie();
+            m_pStatusSummary->HandleLevelUpDLG();
+            m_a1030.RemoveAll(0);
             m_pStatusSummary->DisplayStatus();
         }
     }
@@ -6165,14 +6278,7 @@ int CGuiInGame::TutorialReasonWillShowWindow(unsigned char nReason)
     GUIINGAME_TRACE();
     if (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_bTutorialPopups)
     {
-        int bShown = 0;
-        if (nReason < TUTORIAL_WINDOW_COUNT)
-        {
-            unsigned char nByte = nReason / 8;
-            unsigned char nBit = nReason - nByte * 8;
-            bShown = m_aTutorialWindowsShown[nByte] & (1 << nBit);
-        }
-        if (bShown)
+        if (GetTutorialWindowHasBeenShown(nReason))
         {
             return 0;
         }
@@ -6186,6 +6292,17 @@ int CGuiInGame::TutorialReasonWillShowWindow(unsigned char nReason)
 }
 
 #include "swmain.h"
+// PC 0x00681F30
+int CGuiInGame::GetTutorialWindowHasBeenShown(unsigned char nReason)
+{
+    if (nReason >= TUTORIAL_WINDOW_COUNT)
+    {
+        return 0;
+    }
+    unsigned char nByte = nReason / 8;
+    unsigned char nBit = nReason - nByte * 8;
+    return m_aTutorialWindowsShown[nByte] & (1 << nBit);
+}
 // PC 0x00681F70
 int CGuiInGame::ShowTutorialWindow(unsigned char nReason,
                                   unsigned long oidInstigator,
@@ -6199,14 +6316,7 @@ int CGuiInGame::ShowTutorialWindow(unsigned char nReason,
         return 0;
     }
 
-    int bShown = 0;
-    if (nReason < TUTORIAL_WINDOW_COUNT)
-    {
-        unsigned char nByte = nReason / 8;
-        unsigned char nBit = nReason - nByte * 8;
-        bShown = m_aTutorialWindowsShown[nByte] & (1 << nBit);
-    }
-    if (bShown)
+    if (GetTutorialWindowHasBeenShown(nReason))
     {
         return 0;
     }
@@ -6283,6 +6393,16 @@ void CGuiInGame::ResetInterfaceForSize()
         m_pSkillInfoBox->CenterPanel();
     if (m_pTutorialBox != 0)
         m_pTutorialBox->CenterPanel();
+    if (m_pChemicalUpgradeScreen != 0)
+    {
+        delete m_pChemicalUpgradeScreen;
+        m_pChemicalUpgradeScreen = 0;
+    }
+    if (m_pUpgradeScreen != 0)
+    {
+        delete m_pUpgradeScreen;
+        m_pUpgradeScreen = 0;
+    }
 }
 // PC 0x00682260
 void CGuiInGame::UpdateControllerPauseState()
@@ -6300,11 +6420,9 @@ void CGuiInGame::UpdateControllerPauseState()
 void CGuiInGame::EndControllerPauseState()
 {
     GUIINGAME_TRACE();
-    int bInputActive;
-
-    bInputActive = m_bInputActiveBeforeControllerPause == 1;
     m_bControllerPauseActive = 0;
-    if (bInputActive)
+    g_pExoInput->ClearEvents();
+    if (m_bInputActiveBeforeControllerPause == 1)
     {
         g_pExoInput->SetActive(1);
     }
@@ -6430,7 +6548,7 @@ int CGuiInGame::GetFadeOverridePanelVisible()
     if (m_bItemCreateMenuAvailable != 0 && m_pGuiManager != 0)
     {
         return (m_pGalaxyMap != 0 && m_pGuiManager->PanelExists(m_pGalaxyMap) && m_pGalaxyMap->m_bVisible) ||
-            (m_pPartySelectionPanel != 0 && m_pGuiManager->PanelExists(m_pPartySelectionPanel) && m_pPartySelectionPanel->m_bVisible) ||
+            (m_pMessagesPanel != 0 && m_pGuiManager->PanelExists(m_pMessagesPanel) && m_pMessagesPanel->m_bVisible) ||
             (m_pStorePanel != 0 && m_pGuiManager->PanelExists(m_pStorePanel) && m_pStorePanel->m_bVisible) ||
             (m_pInGameMenu != 0 && m_pGuiManager->PanelExists(m_pInGameMenu) && m_pInGameMenu->m_bVisible) ||
             g_pAppManager->m_pClientExoApp->GetPazaakIsRunning();
@@ -6555,6 +6673,7 @@ void CGuiInGame::InitializeGlobal()
         m_pGuiManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
     }
     m_pMessageBox = new CSWGuiMessageBox(m_pGuiManager);
+    m_pA4 = new CSWGuiMessageBox(m_pGuiManager, 1);
     m_pSkillInfoBox = new CSWGuiSkillInfoBox(m_pGuiManager);
     m_pTutorialBox = new CSWGuiTutorialBox(m_pGuiManager);
     m_pControllerLossBox = new CSWGuiControllerLossBox(m_pGuiManager);
@@ -6590,6 +6709,8 @@ int CGuiInGame::Initialize()
         m_pDialogTop = new CSWGuiDialogLetterbox(m_pGuiManager);
         if (m_pMessageBox == 0)
             m_pMessageBox = new CSWGuiMessageBox(m_pGuiManager);
+        if (m_pA4 == 0)
+            m_pA4 = new CSWGuiMessageBox(m_pGuiManager, 1);
         if (m_pSkillInfoBox == 0)
             m_pSkillInfoBox = new CSWGuiSkillInfoBox(m_pGuiManager);
         if (m_pTutorialBox == 0)
@@ -6609,17 +6730,25 @@ int CGuiInGame::Initialize()
         m_pPausePanel = new CSWGuiInGamePause(m_pGuiManager);
         m_pSoloModeQuery = new CSWGuiInGameSoloModeQuery(m_pGuiManager);
         m_pAreaTransition = new CSWGuiInGameAreaTransition(m_pGuiManager);
+#ifndef _XBOX
+        if (m_n1024 != 0)
+        {
+            m_pGuiManager->AddPanel(m_pGlobalFade, SWGUI_PANEL_MODE_OVERLAY, 1);
+            m_pGlobalFade->SetVisible(1);
+            m_pGlobalFade->SetFade(0, 0.0f, 0.1f, Vector());
+        }
+#endif
         if (g_bCreateAllGUIs != 0)
         {
-            m_pPartySelectionPanel = new CSWGuiPartySelection(m_pGuiManager);
+            m_pMessagesPanel = new CSWGuiInGameMessages(m_pGuiManager);
             m_pStorePanel = new CSWGuiStore(m_pGuiManager);
             m_apScreenPanels[SCREEN_EQUIP] = new CSWGuiInGameEquip(m_pGuiManager);
             m_apScreenPanels[SCREEN_INVENTORY] = new CSWGuiInGameInventory(m_pGuiManager);
         }
 
         pClient = ClientExoAppLate2(g_pAppManager);
-        pClient->SetLoadBarProgress((int)(pClient->GetLoadStep(1) +
-            (pClient->GetLoadStep(0) + pClient->GetLoadStep(3) * 0.6f)), 1);
+        pClient->SetLoadBarProgress((int)(pClient->GetLoadStep(0) +
+            (pClient->GetLoadStep(1) + pClient->GetLoadStep(3) * 0.6f)), 1);
         UpdateScreen(1.0f / 30.0f, 0, 0);
 
         if (g_bCreateAllGUIs != 0)
@@ -6644,7 +6773,7 @@ int CGuiInGame::Initialize()
             m_apScreenPanels[SCREEN_ABILITIES] = new CSWGuiInGameAbilities(m_pGuiManager);
             m_apScreenPanels[SCREEN_JOURNAL] = new CSWGuiInGameJournal(m_pGuiManager);
             m_apScreenPanels[SCREEN_OPTIONS] = new CSWGuiInGameOptions(m_pGuiManager);
-            m_apScreenPanels[SCREEN_MESSAGES] = new CSWGuiInGameMessages(m_pGuiManager);
+            m_apScreenPanels[IN_GAME_SCREEN_PARTY_SELECTION] = new CSWGuiPartySelection(m_pGuiManager);
             m_pGalaxyMap = new CSWGuiInGameGalaxyMap(m_pGuiManager);
         }
 
@@ -6734,6 +6863,9 @@ void CGuiInGame::HandleDialogSelection(int nReply, int bSelected)
                     InitializeShotCamera();
                 SetComputerCameraShot(m_pnReplyValue4[nReply], m_pnReplyValue7[nReply],
                                       m_pnReplyValue10[nReply]);
+                reinterpret_cast<CSWBehaviorCameraDialog*>(
+                    g_pAppManager->m_pClientExoApp->GetModule()->GetCamera()->
+                        GetBehavior(AUR_BEHAVIOR_CAMERA_DIALOG))->ApplyCameraShot();
             }
         }
         if (bEscape)
@@ -6864,10 +6996,13 @@ void CGuiInGame::DoQuickLoad()
             pClient->ShowLoadScreen(0, 1, 0);
             unsigned char nGameplayHint = pEntry->m_nGameplayHint;
             pClient->SetGamePlayHint(nGameplayHint);
-            unsigned char nStoryHint = pEntry->m_nStoryHint;
-            pClient->SetStoryHint(nStoryHint);
+            for (int nArea = 0; nArea < CSWGuiSaveLoadEntry::STORY_HINT_AREAS; nArea++)
+            {
+                unsigned char nStoryHint = pEntry->GetStoryHint(nArea);
+                pClient->SetStoryHint(nStoryHint, nArea);
+            }
             pClient->SetLoadScreenHint(pClient->GetNextLoadScreenHintSTRREF(
-                "", CClientExoAppInternal::LOAD_SCREEN_HINT_STORY));
+                pEntry->m_sLastModule, CClientExoAppInternal::LOAD_SCREEN_HINT_STORY));
             pClient->SetLoadScreenHintUpdateTimer(0);
 
             unsigned long nSaveGame = pEntry->m_nSaveGame;
@@ -6992,6 +7127,8 @@ int CGuiInGame::HandleDialogReplies(
             {
                 unsigned long oidPC = g_pAppManager->m_pServerExoApp->GetPlayerCreatureId();
                 CSWSPlayer* pPlayer = g_pAppManager->m_pServerExoApp->GetClientObjectByObjectId(oidPC);
+
+
                 unsigned long oidServer = pPlayer->m_oidPCObject;
                 CClientExoApp* pConversionApp = g_pAppManager->m_pClientExoApp;
                 unsigned long oidClient = pConversionApp->ServerToClientObjectId(oidServer);
@@ -6999,7 +7136,12 @@ int CGuiInGame::HandleDialogReplies(
                 CSWCObject* pObject = pObjectApp->GetGameObject(oidClient);
                 g_pSWTlkTable->ParseStr(sReply, (CGameObject*)pObject,
                                        nReply > nEntries, 0);
+                while (sReply.GetLength() > 0 && sReply[0] == ' ')
+                    sReply = sReply.SubString(1, sReply.GetLength() - 1);
+                while (sReply.GetLength() > 0 && sReply[sReply.GetLength() - 1] == ' ')
+                    sReply = sReply.SubString(0, sReply.GetLength() - 1);
             }
+
             SetReplyData(nReply, sReply, pnValue1[nReply], pnValue2[nReply],
                          pnValue3[nReply], pnValue4[nReply], pfValue5[nReply],
                          pfValue6[nReply], pnValue7[nReply], pnValue8[nReply],
