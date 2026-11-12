@@ -568,9 +568,12 @@ Model* FindModel(char* sName)
         if (stricmp(pModel->m_sName, sName) != 0)
         {
             FILE* pErrorFile = fopen("AR_ERROR.LOG", "w");
-            sprintf(sBuffer, "Names Differ: %s %s", pModel->m_sName, sName);
-            fprintf(pErrorFile, "Names Differ: %s %s", pModel->m_sName, sName);
-            fclose(pErrorFile);
+            if (pErrorFile)
+            {
+                sprintf(sBuffer, "Names Differ: %s %s", pModel->m_sName, sName);
+                fprintf(pErrorFile, "Names Differ: %s %s", pModel->m_sName, sName);
+                fclose(pErrorFile);
+            }
         }
         return pModel;
     }
@@ -2132,6 +2135,22 @@ void MdlNodeTriMesh::InternalParseField(char* sField)
             Parse(sField + 11, m_bLightMapped);
         if (stricmp("m_bIsBackgroundGeometry", firstword(sField)) == 0)
             Parse(sField + 23, m_bBackground);
+        if (stricmp("dirt_enabled", firstword(sField)) == 0)
+            Parse(sField + 12, m_bDirtEnabled);
+        if (stricmp("dirt_texture", firstword(sField)) == 0)
+        {
+            int nDirtTexture;
+            sscanf(sField + 12, "%d", &nDirtTexture);
+            m_nDirtTexture = nDirtTexture;
+        }
+        if (stricmp("dirt_worldspace", firstword(sField)) == 0)
+        {
+            int nDirtCoordSpace;
+            sscanf(sField + 15, "%d", &nDirtCoordSpace);
+            m_nDirtCoordSpace = nDirtCoordSpace;
+        }
+        if (stricmp("hologram_donotdraw", firstword(sField)) == 0)
+            Parse(sField + 18, m_bHideInHolograms);
 
         if (stricmp("selfillumcolor", firstword(sField)) == 0)
             AddGenericControllerSingle(firstword(sField), sField + 14,

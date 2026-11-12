@@ -10,6 +10,8 @@
 #define GL_SUB_ATI 0x8965
 #define GL_LERP_ATI 0x8969
 #define GL_CON_7_ATI 0x8948
+#define GL_TEXTURE_3D 0x806F
+#define GL_TEXTURE_WRAP_R 0x8072
 
 unsigned int lightmapFragmentShaderID = 0;
 unsigned int envmapFragmentShaderID = 0;
@@ -1239,21 +1241,34 @@ void GLRender::EnableFragmentShaders(int nShader, CAurTexture* pTexture0,
             break;
 
         case MODEL_SHADER_NV1X_DISABLE:
-            if (tex1on != 0)
+            GLRender::SetActiveTexture(3);
+            glDisable(GL_TEXTURE_3D);
+            glBindTexture(GL_TEXTURE_3D, 0);
+            GLRender::cm_nGLCurrentTID[GLRender::cm_uiCurrentStage] = 0;
+            glDisable(GL_TEXTURE_2D);
+            GLRender::SetActiveTexture(2);
+            glDisable(GL_TEXTURE_3D);
+            glBindTexture(GL_TEXTURE_3D, 0);
+            GLRender::cm_nGLCurrentTID[GLRender::cm_uiCurrentStage] = 0;
+            glDisable(GL_TEXTURE_2D);
+            if (envmapon)
             {
-                GLRender::SetActiveTexture(1);
-                if (envmapon != 0)
-                {
-                    glDisable(GL_TEXTURE_CUBE_MAP_ARB);
-                    glDisable(GL_TEXTURE_GEN_S);
-                    glDisable(GL_TEXTURE_GEN_T);
-                    glDisable(GL_TEXTURE_GEN_R);
-                    envmapon = 0;
-                    GLRender::cm_nGLCurrentTID[GLRender::cm_uiCurrentStage] = 0;
-                }
-                glDisable(GL_TEXTURE_2D);
-                tex1on = 0;
+                glDisable(GL_TEXTURE_CUBE_MAP_ARB);
             }
+            GLRender::SetActiveTexture(1);
+            if (envmapon)
+            {
+                glDisable(GL_TEXTURE_CUBE_MAP_ARB);
+                glDisable(GL_TEXTURE_GEN_S);
+                glDisable(GL_TEXTURE_GEN_T);
+                glDisable(GL_TEXTURE_GEN_R);
+                envmapon = 0;
+                GLRender::cm_nGLCurrentTID[GLRender::cm_uiCurrentStage] = 0;
+            }
+            glDisable(GL_TEXTURE_2D);
+            tex1on = 0;
+            glBindTexture(GL_TEXTURE_3D, 0);
+            glDisable(GL_TEXTURE_3D);
             GLRender::SetActiveTexture(0);
             glDisable(GL_FRAGMENT_SHADER_ATI);
             break;
@@ -1276,8 +1291,8 @@ void GLRender::EnableFragmentShaders(int nShader, CAurTexture* pTexture0,
             GLRender::SetActiveTexture(0);
             pTexture0->Bind();
             GLRender::SetActiveTexture(2);
-            pTexture1->Bind();
-            if (pTexture1->IsCubeMap())
+            pTexture2->Bind();
+            if (pTexture2->IsCubeMap())
             {
                 glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
                 glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
@@ -1296,7 +1311,7 @@ void GLRender::EnableFragmentShaders(int nShader, CAurTexture* pTexture0,
             }
             GLRender::SetActiveTexture(1);
             glEnable(GL_TEXTURE_2D);
-            pTexture2->Bind();
+            pTexture1->Bind();
             glEnable(GL_FRAGMENT_SHADER_ATI);
             glBindFragmentShaderATI(envmapLightmapFragmentShaderID);
             break;
@@ -1350,6 +1365,1993 @@ void GLRender::EnableFragmentShaders(int nShader, CAurTexture* pTexture0,
             glBindFragmentShaderATI(fogFragmentShaderID);
             break;
 
+        case MODEL_SHADER_NOISE_SUBTRACT:
+            if (pTexture1)
+            {
+                GLRender::SetActiveTexture(0);
+                glEnable(GL_TEXTURE_2D);
+                pTexture0->Bind();
+                GLRender::SetActiveTexture(1);
+                glEnable(GL_TEXTURE_3D);
+                pTexture1->Bind();
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glEnable(GL_FRAGMENT_SHADER_ATI);
+                glBindFragmentShaderATI(NoiseSubtractFragmentShaderID);
+            }
+            break;
+
+        case MODEL_SHADER_NOISE_ADD:
+            if (pTexture1)
+            {
+                GLRender::SetActiveTexture(0);
+                glEnable(GL_TEXTURE_2D);
+                pTexture0->Bind();
+                GLRender::SetActiveTexture(1);
+                glEnable(GL_TEXTURE_3D);
+                pTexture1->Bind();
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glEnable(GL_FRAGMENT_SHADER_ATI);
+                glBindFragmentShaderATI(NoiseAddFragmentShaderID);
+            }
+            break;
+
+        case MODEL_SHADER_NOISE_MODULATE:
+            if (pTexture1)
+            {
+                GLRender::SetActiveTexture(0);
+                glEnable(GL_TEXTURE_2D);
+                pTexture0->Bind();
+                GLRender::SetActiveTexture(1);
+                glEnable(GL_TEXTURE_3D);
+                pTexture1->Bind();
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glEnable(GL_FRAGMENT_SHADER_ATI);
+                glBindFragmentShaderATI(NoiseModulateFragmentShaderID);
+            }
+            break;
+
+        case MODEL_SHADER_NOISE_EM_SUBTRACT:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture1->Bind();
+            if (pTexture1->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture2->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(NoiseEMSubtractFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_NOISE_EM_ADD:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture1->Bind();
+            if (pTexture1->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture2->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(NoiseEMAddFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_NOISE_EM_MODULATE:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture1->Bind();
+            if (pTexture1->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture2->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(NoiseEMModulateFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_NOISE_LM_SUBTRACT:
+            GLRender::SetActiveTexture(0);
+            glEnable(GL_TEXTURE_2D);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_2D);
+            pTexture1->Bind();
+            tex1on = 1;
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture2->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(NoiseLMSubtractFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_NOISE_LM_ADD:
+            GLRender::SetActiveTexture(0);
+            glEnable(GL_TEXTURE_2D);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_2D);
+            pTexture1->Bind();
+            tex1on = 1;
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture2->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(NoiseLMAddFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_NOISE_LM_MODULATE:
+            GLRender::SetActiveTexture(0);
+            glEnable(GL_TEXTURE_2D);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_2D);
+            pTexture1->Bind();
+            tex1on = 1;
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture2->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(NoiseLMModulateFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_NOISE_EMLM_SUBTRACT:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(2);
+            pTexture2->Bind();
+            if (pTexture2->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_2D);
+            pTexture1->Bind();
+            GLRender::SetActiveTexture(3);
+            glEnable(GL_TEXTURE_3D);
+            pTexture3->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(NoiseEMLMSubtractFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_NOISE_EMLM_ADD:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(2);
+            pTexture2->Bind();
+            if (pTexture2->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_2D);
+            pTexture1->Bind();
+            GLRender::SetActiveTexture(3);
+            glEnable(GL_TEXTURE_3D);
+            pTexture3->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(NoiseEMLMAddFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_NOISE_EMLM_MODULATE:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(2);
+            pTexture2->Bind();
+            if (pTexture2->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_2D);
+            pTexture1->Bind();
+            GLRender::SetActiveTexture(3);
+            glEnable(GL_TEXTURE_3D);
+            pTexture3->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(NoiseEMLMModulateFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_FGLOW:
+            glActiveTextureARB(GL_TEXTURE0_ARB);
+            glEnable(GL_TEXTURE_2D);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(FGlowFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_FGLOW_LM:
+            GLRender::SetActiveTexture(0);
+            glEnable(GL_TEXTURE_2D);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_2D);
+            pTexture1->Bind();
+            tex1on = 1;
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(FGlowLMFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_FGLOW_EM:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture1->Bind();
+            if (pTexture1->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(FGlowEMFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_FGLOW_EMLM:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(2);
+            pTexture2->Bind();
+            if (pTexture2->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_2D);
+            pTexture1->Bind();
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(FGlowEMLMFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_FGLOW_BUMPY_SHINY:
+            GLRender::MakeLookUpTexture(5.0f);
+            GLRender::SetActiveTexture(0);
+            glEnable(GL_TEXTURE_2D);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            AurTextureGetNormalizationCubeMap()->Bind();
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            AurTextureGetNormalizationCubeMap()->Bind();
+            GLRender::SetActiveTexture(3);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            AurTextureGetNormalizationCubeMap()->Bind();
+            GLRender::SetActiveTexture(4);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            AurTextureGetNormalizationCubeMap()->Bind();
+            GLRender::SetActiveTexture(5);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            pTexture3->Bind();
+            GLRender::SetActiveTexture(0);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(FGlowBumpyShinyFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_FGLOW_BUMPMAP:
+            tex1on = 1;
+            glDisable(GL_LIGHTING);
+            GLRender::SetActiveTexture(0);
+            glEnable(GL_TEXTURE_2D);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            pTexture1->Bind();
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            pTexture2->Bind();
+            GLRender::SetActiveTexture(3);
+            glEnable(GL_TEXTURE_2D);
+            pTexture3->Bind();
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(FGlowBumpmapFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_DESAT:
+            glActiveTextureARB(GL_TEXTURE0_ARB);
+            glEnable(GL_TEXTURE_2D);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(DesatFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_DESAT_LM:
+            GLRender::SetActiveTexture(0);
+            glEnable(GL_TEXTURE_2D);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_2D);
+            pTexture1->Bind();
+            tex1on = 1;
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(DesatLMFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_DESAT_EM:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture1->Bind();
+            if (pTexture1->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(DesatEMFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_DESAT_EMLM:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(2);
+            pTexture2->Bind();
+            if (pTexture2->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_2D);
+            pTexture1->Bind();
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(DesatEMLMFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_DESAT_BUMPY_SHINY:
+            GLRender::MakeLookUpTexture(5.0f);
+            GLRender::SetActiveTexture(0);
+            glEnable(GL_TEXTURE_2D);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            AurTextureGetNormalizationCubeMap()->Bind();
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            AurTextureGetNormalizationCubeMap()->Bind();
+            GLRender::SetActiveTexture(3);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            AurTextureGetNormalizationCubeMap()->Bind();
+            GLRender::SetActiveTexture(4);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            AurTextureGetNormalizationCubeMap()->Bind();
+            GLRender::SetActiveTexture(5);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            pTexture3->Bind();
+            GLRender::SetActiveTexture(0);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(DesatBumpyShinyFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_DESAT_BUMPMAP:
+            tex1on = 1;
+            glDisable(GL_LIGHTING);
+            GLRender::SetActiveTexture(0);
+            glEnable(GL_TEXTURE_2D);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            pTexture1->Bind();
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            pTexture2->Bind();
+            GLRender::SetActiveTexture(3);
+            glEnable(GL_TEXTURE_2D);
+            pTexture3->Bind();
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(DesatBumpmapFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_DESAT_NOISE_SUB:
+            if (pTexture1)
+            {
+                GLRender::SetActiveTexture(0);
+                glEnable(GL_TEXTURE_2D);
+                pTexture0->Bind();
+                GLRender::SetActiveTexture(1);
+                glEnable(GL_TEXTURE_3D);
+                pTexture1->Bind();
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                {
+                    float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                    glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+                }
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+                glEnable(GL_FRAGMENT_SHADER_ATI);
+                glBindFragmentShaderATI(DesatNoiseSubFragmentShaderID);
+            }
+            break;
+
+        case MODEL_SHADER_DESAT_NOISE_SUB_EM:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture1->Bind();
+            if (pTexture1->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture2->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(DesatNoiseSubEMFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_DESAT_NOISE_SUB_LM:
+            GLRender::SetActiveTexture(0);
+            glEnable(GL_TEXTURE_2D);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_2D);
+            pTexture1->Bind();
+            tex1on = 1;
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture2->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(DesatNoiseSubLMFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_DESAT_NOISE_SUB_EMLM:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(2);
+            pTexture2->Bind();
+            if (pTexture2->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_2D);
+            pTexture1->Bind();
+            GLRender::SetActiveTexture(3);
+            glEnable(GL_TEXTURE_3D);
+            pTexture3->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(DesatNoiseSubEMLMFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_DESAT_NOISE_ADD:
+            if (pTexture1)
+            {
+                GLRender::SetActiveTexture(0);
+                glEnable(GL_TEXTURE_2D);
+                pTexture0->Bind();
+                GLRender::SetActiveTexture(1);
+                glEnable(GL_TEXTURE_3D);
+                pTexture1->Bind();
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                {
+                    float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                    glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+                }
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+                glEnable(GL_FRAGMENT_SHADER_ATI);
+                glBindFragmentShaderATI(DesatNoiseAddFragmentShaderID);
+            }
+            break;
+
+        case MODEL_SHADER_DESAT_NOISE_ADD_EM:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture1->Bind();
+            if (pTexture1->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture2->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(DesatNoiseAddEMFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_DESAT_NOISE_ADD_LM:
+            GLRender::SetActiveTexture(0);
+            glEnable(GL_TEXTURE_2D);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_2D);
+            pTexture1->Bind();
+            tex1on = 1;
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture2->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(DesatNoiseAddLMFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_DESAT_NOISE_ADD_EMLM:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(2);
+            pTexture2->Bind();
+            if (pTexture2->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_2D);
+            pTexture1->Bind();
+            GLRender::SetActiveTexture(3);
+            glEnable(GL_TEXTURE_3D);
+            pTexture3->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(DesatNoiseAddEMLMFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_DESAT_NOISE_MOD:
+            if (pTexture1)
+            {
+                GLRender::SetActiveTexture(0);
+                glEnable(GL_TEXTURE_2D);
+                pTexture0->Bind();
+                GLRender::SetActiveTexture(1);
+                glEnable(GL_TEXTURE_3D);
+                pTexture1->Bind();
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                {
+                    float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                    glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+                }
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+                glEnable(GL_FRAGMENT_SHADER_ATI);
+                glBindFragmentShaderATI(DesatNoiseModFragmentShaderID);
+            }
+            break;
+
+        case MODEL_SHADER_DESAT_NOISE_MOD_EM:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture1->Bind();
+            if (pTexture1->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture2->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(DesatNoiseModEMFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_DESAT_NOISE_MOD_LM:
+            GLRender::SetActiveTexture(0);
+            glEnable(GL_TEXTURE_2D);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_2D);
+            pTexture1->Bind();
+            tex1on = 1;
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture2->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(DesatNoiseModLMFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_DESAT_NOISE_MOD_EMLM:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(2);
+            pTexture2->Bind();
+            if (pTexture2->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_2D);
+            pTexture1->Bind();
+            GLRender::SetActiveTexture(3);
+            glEnable(GL_TEXTURE_3D);
+            pTexture3->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(DesatNoiseModEMLMFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_NOISE_DISABLE:
+            glDisable(GL_FRAGMENT_SHADER_ATI);
+            glEnable(GL_LIGHTING);
+            GLRender::SetActiveTexture(1);
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glDisable(GL_TEXTURE_2D);
+            glDisable(GL_TEXTURE_3D);
+            glBindTexture(GL_TEXTURE_3D, 0);
+            if (envmapon)
+            {
+                glDisable(GL_TEXTURE_CUBE_MAP_ARB);
+                glDisable(GL_TEXTURE_GEN_S);
+                glDisable(GL_TEXTURE_GEN_T);
+                glDisable(GL_TEXTURE_GEN_R);
+            }
+            GLRender::SetActiveTexture(2);
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glDisable(GL_TEXTURE_2D);
+            glDisable(GL_TEXTURE_3D);
+            glBindTexture(GL_TEXTURE_3D, 0);
+            if (envmapon)
+            {
+                glDisable(GL_TEXTURE_CUBE_MAP_ARB);
+                glDisable(GL_TEXTURE_GEN_S);
+                glDisable(GL_TEXTURE_GEN_T);
+                glDisable(GL_TEXTURE_GEN_R);
+                envmapon = 0;
+            }
+            GLRender::SetActiveTexture(3);
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glDisable(GL_TEXTURE_2D);
+            glDisable(GL_TEXTURE_3D);
+            glBindTexture(GL_TEXTURE_3D, 0);
+            GLRender::SetActiveTexture(0);
+            GLRender::SetCurrentStageTID(0, 0);
+            GLRender::SetCurrentStageTID(1, 0);
+            GLRender::SetCurrentStageTID(2, 0);
+            GLRender::SetCurrentStageTID(3, 0);
+            tex1on = 0;
+            break;
+
+        case MODEL_SHADER_MODULATE:
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(modulateFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_HOLO:
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_2D);
+            GLRender::m_pHologramFilterTexture->Bind();
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, 0.75f };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(HoloFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_HOLO_DESAT:
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_2D);
+            GLRender::m_pHologramFilterTexture->Bind();
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, 0.75f };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(HoloDesatFragmentShaderID);
+            break;
+
+        case MODEL_SHADER_HOLO_DISABLE:
+            glDisable(GL_FRAGMENT_SHADER_ATI);
+            GLRender::SetActiveTexture(1);
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glDisable(GL_TEXTURE_2D);
+            GLRender::SetActiveTexture(0);
+            GLRender::SetCurrentStageTID(0, 0);
+            GLRender::SetCurrentStageTID(1, 0);
+            break;
+
+        case MODEL_SHADER_ILLUM:
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(IllumFragmentShaderID);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            break;
+
+        case MODEL_SHADER_ILLUM_ENV:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture1->Bind();
+            if (pTexture1->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(IllumEnvFragmentShaderID);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            break;
+
+        case MODEL_SHADER_ILLUM_NOISE_SUBTRACT:
+            if (pTexture1)
+            {
+                GLRender::SetActiveTexture(0);
+                glEnable(GL_TEXTURE_2D);
+                pTexture0->Bind();
+                GLRender::SetActiveTexture(1);
+                glEnable(GL_TEXTURE_3D);
+                pTexture1->Bind();
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glEnable(GL_FRAGMENT_SHADER_ATI);
+                glBindFragmentShaderATI(IllumNoiseSubtractFragmentShaderID);
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            }
+            break;
+
+        case MODEL_SHADER_ILLUM_NOISE_ADD:
+            if (pTexture1)
+            {
+                GLRender::SetActiveTexture(0);
+                glEnable(GL_TEXTURE_2D);
+                pTexture0->Bind();
+                GLRender::SetActiveTexture(1);
+                glEnable(GL_TEXTURE_3D);
+                pTexture1->Bind();
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glEnable(GL_FRAGMENT_SHADER_ATI);
+                glBindFragmentShaderATI(IllumNoiseAddFragmentShaderID);
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            }
+            break;
+
+        case MODEL_SHADER_ILLUM_NOISE_MODULATE:
+            if (pTexture1)
+            {
+                GLRender::SetActiveTexture(0);
+                glEnable(GL_TEXTURE_2D);
+                pTexture0->Bind();
+                GLRender::SetActiveTexture(1);
+                glEnable(GL_TEXTURE_3D);
+                pTexture1->Bind();
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glEnable(GL_FRAGMENT_SHADER_ATI);
+                glBindFragmentShaderATI(IllumNoiseModulateFragmentShaderID);
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            }
+            break;
+
+        case MODEL_SHADER_ILLUM_NOISE_EM_SUBTRACT:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture1->Bind();
+            if (pTexture1->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture2->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(IllumNoiseEMSubtractFragmentShaderID);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            break;
+
+        case MODEL_SHADER_ILLUM_NOISE_EM_ADD:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture1->Bind();
+            if (pTexture1->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture2->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(IllumNoiseEMAddFragmentShaderID);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            break;
+
+        case MODEL_SHADER_ILLUM_NOISE_EM_MODULATE:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture1->Bind();
+            if (pTexture1->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture2->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(IllumNoiseEMModulateFragmentShaderID);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            break;
+
+        case MODEL_SHADER_ILLUM_NOISE_LM_SUBTRACT:
+            if (pTexture2)
+            {
+                GLRender::SetActiveTexture(0);
+                glEnable(GL_TEXTURE_2D);
+                pTexture0->Bind();
+                GLRender::SetActiveTexture(1);
+                glEnable(GL_TEXTURE_3D);
+                pTexture2->Bind();
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glEnable(GL_FRAGMENT_SHADER_ATI);
+                glBindFragmentShaderATI(IllumNoiseSubtractFragmentShaderID);
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            }
+            break;
+
+        case MODEL_SHADER_ILLUM_NOISE_LM_ADD:
+            if (pTexture2)
+            {
+                GLRender::SetActiveTexture(0);
+                glEnable(GL_TEXTURE_2D);
+                pTexture0->Bind();
+                GLRender::SetActiveTexture(1);
+                glEnable(GL_TEXTURE_3D);
+                pTexture2->Bind();
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glEnable(GL_FRAGMENT_SHADER_ATI);
+                glBindFragmentShaderATI(IllumNoiseAddFragmentShaderID);
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            }
+            break;
+
+        case MODEL_SHADER_ILLUM_NOISE_LM_MODULATE:
+            if (pTexture2)
+            {
+                GLRender::SetActiveTexture(0);
+                glEnable(GL_TEXTURE_2D);
+                pTexture0->Bind();
+                GLRender::SetActiveTexture(1);
+                glEnable(GL_TEXTURE_3D);
+                pTexture2->Bind();
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glEnable(GL_FRAGMENT_SHADER_ATI);
+                glBindFragmentShaderATI(IllumNoiseModulateFragmentShaderID);
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            }
+            break;
+
+        case MODEL_SHADER_ILLUM_NOISE_EMLM_SUBTRACT:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture2->Bind();
+            if (pTexture2->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture3->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(IllumNoiseEMSubtractFragmentShaderID);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            break;
+
+        case MODEL_SHADER_ILLUM_NOISE_EMLM_ADD:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture2->Bind();
+            if (pTexture2->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture3->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(IllumNoiseEMAddFragmentShaderID);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            break;
+
+        case MODEL_SHADER_ILLUM_NOISE_EMLM_MODULATE:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture2->Bind();
+            if (pTexture2->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture3->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(IllumNoiseEMModulateFragmentShaderID);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            break;
+
+        case MODEL_SHADER_ILLUM_DESAT:
+        case MODEL_SHADER_ILLUM_DESAT_LM:
+            glActiveTextureARB(GL_TEXTURE0_ARB);
+            glEnable(GL_TEXTURE_2D);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(IllumDesatFragmentShaderID);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            break;
+
+        case MODEL_SHADER_ILLUM_DESAT_EM:
+        case MODEL_SHADER_ILLUM_DESAT_EMLM:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture1->Bind();
+            if (pTexture1->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(IllumDesatEMFragmentShaderID);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            break;
+
+        case MODEL_SHADER_ILLUM_DESAT_BUMPY_SHINY:
+            GLRender::MakeLookUpTexture(5.0f);
+            GLRender::SetActiveTexture(0);
+            glEnable(GL_TEXTURE_2D);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            AurTextureGetNormalizationCubeMap()->Bind();
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            AurTextureGetNormalizationCubeMap()->Bind();
+            GLRender::SetActiveTexture(3);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            AurTextureGetNormalizationCubeMap()->Bind();
+            GLRender::SetActiveTexture(4);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            AurTextureGetNormalizationCubeMap()->Bind();
+            GLRender::SetActiveTexture(5);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            pTexture3->Bind();
+            GLRender::SetActiveTexture(0);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(IllumDesatBumpyShinyFragmentShaderID);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            break;
+
+        case MODEL_SHADER_ILLUM_DESAT_BUMPMAP:
+            tex1on = 1;
+            glDisable(GL_LIGHTING);
+            GLRender::SetActiveTexture(0);
+            glEnable(GL_TEXTURE_2D);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            pTexture1->Bind();
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+            pTexture2->Bind();
+            GLRender::SetActiveTexture(3);
+            glEnable(GL_TEXTURE_2D);
+            pTexture3->Bind();
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(IllumDesatBumpmapFragmentShaderID);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            break;
+
+        case MODEL_SHADER_ILLUM_DESAT_NOISE_SUB:
+            if (pTexture1)
+            {
+                GLRender::SetActiveTexture(0);
+                glEnable(GL_TEXTURE_2D);
+                pTexture0->Bind();
+                GLRender::SetActiveTexture(1);
+                glEnable(GL_TEXTURE_3D);
+                pTexture1->Bind();
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                {
+                    float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                    glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+                }
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+                glEnable(GL_FRAGMENT_SHADER_ATI);
+                glBindFragmentShaderATI(IllumDesatNoiseSubFragmentShaderID);
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            }
+            break;
+
+        case MODEL_SHADER_ILLUM_DESAT_NOISE_SUB_LM:
+            if (pTexture2)
+            {
+                GLRender::SetActiveTexture(0);
+                glEnable(GL_TEXTURE_2D);
+                pTexture0->Bind();
+                GLRender::SetActiveTexture(1);
+                glEnable(GL_TEXTURE_3D);
+                pTexture2->Bind();
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                {
+                    float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                    glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+                }
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+                glEnable(GL_FRAGMENT_SHADER_ATI);
+                glBindFragmentShaderATI(IllumDesatNoiseSubFragmentShaderID);
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            }
+            break;
+
+        case MODEL_SHADER_ILLUM_DESAT_NOISE_SUB_EM:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture1->Bind();
+            if (pTexture1->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture2->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(IllumDesatNoiseSubEMFragmentShaderID);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            break;
+
+        case MODEL_SHADER_ILLUM_DESAT_NOISE_SUB_EMLM:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture2->Bind();
+            if (pTexture2->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture3->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(IllumDesatNoiseSubEMFragmentShaderID);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            break;
+
+        case MODEL_SHADER_ILLUM_DESAT_NOISE_ADD:
+            if (pTexture1)
+            {
+                GLRender::SetActiveTexture(0);
+                glEnable(GL_TEXTURE_2D);
+                pTexture0->Bind();
+                GLRender::SetActiveTexture(1);
+                glEnable(GL_TEXTURE_3D);
+                pTexture1->Bind();
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                {
+                    float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                    glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+                }
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+                glEnable(GL_FRAGMENT_SHADER_ATI);
+                glBindFragmentShaderATI(IllumDesatNoiseAddFragmentShaderID);
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            }
+            break;
+
+        case MODEL_SHADER_ILLUM_DESAT_NOISE_ADD_LM:
+            if (pTexture2)
+            {
+                GLRender::SetActiveTexture(0);
+                glEnable(GL_TEXTURE_2D);
+                pTexture0->Bind();
+                GLRender::SetActiveTexture(1);
+                glEnable(GL_TEXTURE_3D);
+                pTexture2->Bind();
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                {
+                    float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                    glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+                }
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+                glEnable(GL_FRAGMENT_SHADER_ATI);
+                glBindFragmentShaderATI(IllumDesatNoiseAddFragmentShaderID);
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            }
+            break;
+
+        case MODEL_SHADER_ILLUM_DESAT_NOISE_ADD_EM:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture1->Bind();
+            if (pTexture1->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture2->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(IllumDesatNoiseAddEMFragmentShaderID);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            break;
+
+        case MODEL_SHADER_ILLUM_DESAT_NOISE_ADD_EMLM:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture2->Bind();
+            if (pTexture2->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture3->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(IllumDesatNoiseAddEMFragmentShaderID);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            break;
+
+        case MODEL_SHADER_ILLUM_DESAT_NOISE_MOD:
+            if (pTexture1)
+            {
+                GLRender::SetActiveTexture(0);
+                glEnable(GL_TEXTURE_2D);
+                pTexture0->Bind();
+                GLRender::SetActiveTexture(1);
+                glEnable(GL_TEXTURE_3D);
+                pTexture1->Bind();
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                {
+                    float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                    glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+                }
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+                glEnable(GL_FRAGMENT_SHADER_ATI);
+                glBindFragmentShaderATI(IllumDesatNoiseModFragmentShaderID);
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            }
+            break;
+
+        case MODEL_SHADER_ILLUM_DESAT_NOISE_MOD_LM:
+            if (pTexture2)
+            {
+                GLRender::SetActiveTexture(0);
+                glEnable(GL_TEXTURE_2D);
+                pTexture0->Bind();
+                GLRender::SetActiveTexture(1);
+                glEnable(GL_TEXTURE_3D);
+                pTexture2->Bind();
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                {
+                    float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                    glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+                }
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+                glEnable(GL_FRAGMENT_SHADER_ATI);
+                glBindFragmentShaderATI(IllumDesatNoiseModFragmentShaderID);
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            }
+            break;
+
+        case MODEL_SHADER_ILLUM_DESAT_NOISE_MOD_EM:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture1->Bind();
+            if (pTexture1->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture2->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(IllumDesatNoiseModEMFragmentShaderID);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            break;
+
+        case MODEL_SHADER_ILLUM_DESAT_NOISE_MOD_EMLM:
+            envmapon = 1;
+            tex1on = 1;
+            GLRender::SetActiveTexture(0);
+            pTexture0->Bind();
+            GLRender::SetActiveTexture(1);
+            pTexture2->Bind();
+            if (pTexture2->IsCubeMap())
+            {
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+            else
+            {
+                glEnable(GL_TEXTURE_2D);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+            }
+            GLRender::SetActiveTexture(2);
+            glEnable(GL_TEXTURE_3D);
+            pTexture3->Bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            {
+                float c7define[4] = { 0.3f, 0.59f, 0.11f, g_DesatureFactor };
+                glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+            }
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_ForceSightColor);
+            glEnable(GL_FRAGMENT_SHADER_ATI);
+            glBindFragmentShaderATI(IllumDesatNoiseModEMFragmentShaderID);
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, GLRender::m_PerInstanceIllumination);
+            break;
     }
 }
 #endif
@@ -2396,3 +4398,444 @@ char szSkinBumpyWSVPARB[] =
     "MAD\tvReg6, vReg9, vWght.z, vReg6;\n"
     "MOV   vReg6.w, program.env[16].w;\n"
     "MOV   result.texcoord[3], vReg6;\n";
+
+char szcStandardDirtyVPARB[] =
+    "!!ARBvp1.0PARAM mvMatrix[4] = { state.matrix.modelview[0] };\n"
+    "PARAM mvpMatrix[4] = { state.matrix.mvp };\n"
+    "TEMP vTemp;\n"
+    "TEMP vReg0, vReg1, vReg2, vReg3;\n"
+    "TEMP vReg10, vReg11;\n"
+    "TEMP vNormalWorld;\n"
+    "ALIAS vFinalColour = vTemp;\n"
+    "DP4   result.position.x, mvpMatrix[0], vertex.position;\n"
+    "DP4   result.position.y, mvpMatrix[1], vertex.position;\n"
+    "DP4   result.position.z, mvpMatrix[2], vertex.position;\n"
+    "DP4   result.position.w, mvpMatrix[3], vertex.position;\n"
+    "DP4   vReg10.x, mvMatrix[0], vertex.position;\n"
+    "DP4   vReg10.y, mvMatrix[1], vertex.position;\n"
+    "DP4   vReg10.z, mvMatrix[2], vertex.position;\n"
+    "DP4   vReg10.w, mvMatrix[3], vertex.position;\n"
+    "DP4\tvReg11.x, vReg10, program.env[92];\n"
+    "DP4\tvReg11.y, vReg10, program.env[91];\n"
+    "DP4\tvReg11.z, vReg10, program.env[90];\n"
+    "DP4\tvReg11.w, vReg10, program.env[89];\n"
+    "MAD\tvReg11, vReg11, program.env[28].x, vReg11;\n"
+    "MAD\tvReg11, vReg11, program.env[28].y, vReg11.yzxw;\n"
+    "MAD\tvReg11, vReg11, program.env[28].z, vReg11.zxyw;\n"
+    "MAD\tresult.texcoord[1], vReg11, program.env[28].w, vReg11;\n"
+    "DP3   vNormalWorld.x, mvMatrix[0], vertex.normal;\n"
+    "DP3   vNormalWorld.y, mvMatrix[1], vertex.normal;\n"
+    "DP3   vNormalWorld.z, mvMatrix[2], vertex.normal;\n"
+    "DP3\tvReg0.x, vReg10, vReg10;\n"
+    "RSQ\tvReg0.x, vReg0.x;\n"
+    "RCP\tvReg0.x, vReg0.x;\n"
+    "MOV result.fogcoord, vReg0.x;\n"
+    "MOV   result.texcoord[0], vertex.texcoord[0];\n"
+    "MOV   result.texcoord[2], vertex.texcoord[2];\n"
+    "MOV   result.texcoord[3], vertex.texcoord[3];\n"
+    "MOV result.color, program.env[15].wwwz;\n";
+
+char szcStandardDirtyLMVPARB[] =
+    "!!ARBvp1.0PARAM mvMatrix[4] = { state.matrix.modelview[0] };\n"
+    "PARAM mvpMatrix[4] = { state.matrix.mvp };\n"
+    "TEMP vTemp;\n"
+    "TEMP vReg0, vReg1, vReg2, vReg3;\n"
+    "TEMP vReg10, vReg11;\n"
+    "TEMP vNormalWorld;\n"
+    "ALIAS vFinalColour = vTemp;\n"
+    "DP4   result.position.x, mvpMatrix[0], vertex.position;\n"
+    "DP4   result.position.y, mvpMatrix[1], vertex.position;\n"
+    "DP4   result.position.z, mvpMatrix[2], vertex.position;\n"
+    "DP4   result.position.w, mvpMatrix[3], vertex.position;\n"
+    "DP4   vReg10.x, mvMatrix[0], vertex.position;\n"
+    "DP4   vReg10.y, mvMatrix[1], vertex.position;\n"
+    "DP4   vReg10.z, mvMatrix[2], vertex.position;\n"
+    "DP4   vReg10.w, mvMatrix[3], vertex.position;\n"
+    "DP4\tvReg11.x, vReg10, program.env[92];\n"
+    "DP4\tvReg11.y, vReg10, program.env[91];\n"
+    "DP4\tvReg11.z, vReg10, program.env[90];\n"
+    "DP4\tvReg11.w, vReg10, program.env[89];\n"
+    "MAD\tvReg11, vReg11, program.env[28].x, vReg11;\n"
+    "MAD\tvReg11, vReg11, program.env[28].y, vReg11.yzxw;\n"
+    "MAD\tvReg11, vReg11, program.env[28].z, vReg11.zxyw;\n"
+    "MAD\tresult.texcoord[2], vReg11, program.env[28].w, vReg11;\n"
+    "DP3   vNormalWorld.x, mvMatrix[0], vertex.normal;\n"
+    "DP3   vNormalWorld.y, mvMatrix[1], vertex.normal;\n"
+    "DP3   vNormalWorld.z, mvMatrix[2], vertex.normal;\n"
+    "DP3\tvReg0.x, vReg10, vReg10;\n"
+    "RSQ\tvReg0.x, vReg0.x;\n"
+    "RCP\tvReg0.x, vReg0.x;\n"
+    "MOV result.fogcoord, vReg0.x;\n"
+    "MOV   result.texcoord[0], vertex.texcoord[0];\n"
+    "MOV   result.texcoord[1], vertex.texcoord[1];\n"
+    "MOV   result.texcoord[3], vertex.texcoord[3];\n"
+    "MOV result.color, program.env[15].wwwz;\n";
+
+char szcStandardDirtyEMVPARB[] =
+    "!!ARBvp1.0PARAM mvMatrix[4] = { state.matrix.modelview[0] };\n"
+    "PARAM mvpMatrix[4] = { state.matrix.mvp };\n"
+    "TEMP vTemp;\n"
+    "TEMP vReg0, vReg1, vReg2, vReg3, vReg4;\n"
+    "TEMP vReg10;\n"
+    "TEMP vNormalWorld;\n"
+    "TEMP vReg11;\n"
+    "ALIAS vFinalColour = vTemp;\n"
+    "DP4   result.position.x, mvpMatrix[0], vertex.position;\n"
+    "DP4   result.position.y, mvpMatrix[1], vertex.position;\n"
+    "DP4   result.position.z, mvpMatrix[2], vertex.position;\n"
+    "DP4   result.position.w, mvpMatrix[3], vertex.position;\n"
+    "DP4   vReg10.x, mvMatrix[0], vertex.position;\n"
+    "DP4   vReg10.y, mvMatrix[1], vertex.position;\n"
+    "DP4   vReg10.z, mvMatrix[2], vertex.position;\n"
+    "DP4   vReg10.w, mvMatrix[3], vertex.position;\n"
+    "DP4\tvReg11.x, vReg10, program.env[92];\n"
+    "DP4\tvReg11.y, vReg10, program.env[91];\n"
+    "DP4\tvReg11.z, vReg10, program.env[90];\n"
+    "DP4\tvReg11.w, vReg10, program.env[89];\n"
+    "MAD\tvReg11, vReg11, program.env[28].x, vReg11;\n"
+    "MAD\tvReg11, vReg11, program.env[28].y, vReg11.yzxw;\n"
+    "MAD\tvReg11, vReg11, program.env[28].z, vReg11.zxyw;\n"
+    "MAD\tresult.texcoord[2], vReg11, program.env[28].w, vReg11;\n"
+    "DP3   vNormalWorld.x, mvMatrix[0], vertex.normal;\n"
+    "DP3   vNormalWorld.y, mvMatrix[1], vertex.normal;\n"
+    "DP3   vNormalWorld.z, mvMatrix[2], vertex.normal;\n"
+    "DP3\tvReg0.x, vReg10, vReg10;\n"
+    "RSQ\tvReg0.x, vReg0.x;\n"
+    "RCP\tvReg0.x, vReg0.x;\n"
+    "MOV result.fogcoord, vReg0.x;\n"
+    "DP3   vReg0.x, vNormalWorld, -vReg10;\n"
+    "MUL   vReg1, vReg0.x, vNormalWorld;\n"
+    "MUL   vReg2, vReg1, program.env[16].y;\n"
+    "ADD   vReg3, vReg10, vReg2;\n"
+    "DP3   vReg3.w, vReg3, vReg3;\n"
+    "RSQ   vReg3.w, vReg3.w;\n"
+    "MUL   vReg3, vReg3, vReg3.w;\n"
+    "DP3   vReg4.x, program.env[92], vReg3;\n"
+    "DP3   vReg4.y, program.env[91], vReg3;\n"
+    "DP3   vReg4.z, program.env[90], vReg3;\n"
+    "MOV   vReg4.w, program.env[16].w;\n"
+    "MOV   result.texcoord[0], vertex.texcoord[0];\n"
+    "MOV   result.texcoord[1], vReg4;\n"
+    "MOV   result.texcoord[3], vertex.texcoord[3];\n"
+    "MOV result.color, program.env[15].wwwz;\n";
+
+char szcStandardDirtyEMLMVPARB[] =
+    "!!ARBvp1.0PARAM mvMatrix[4] = { state.matrix.modelview[0] };\n"
+    "PARAM mvpMatrix[4] = { state.matrix.mvp };\n"
+    "TEMP vTemp;\n"
+    "TEMP vReg0, vReg1, vReg2, vReg3, vReg4;\n"
+    "TEMP vReg10;\n"
+    "TEMP vNormalWorld;\n"
+    "TEMP vReg11;\n"
+    "ALIAS vFinalColour = vTemp;\n"
+    "DP4   result.position.x, mvpMatrix[0], vertex.position;\n"
+    "DP4   result.position.y, mvpMatrix[1], vertex.position;\n"
+    "DP4   result.position.z, mvpMatrix[2], vertex.position;\n"
+    "DP4   result.position.w, mvpMatrix[3], vertex.position;\n"
+    "DP4   vReg10.x, mvMatrix[0], vertex.position;\n"
+    "DP4   vReg10.y, mvMatrix[1], vertex.position;\n"
+    "DP4   vReg10.z, mvMatrix[2], vertex.position;\n"
+    "DP4   vReg10.w, mvMatrix[3], vertex.position;\n"
+    "DP4\tvReg11.x, vReg10, program.env[92];\n"
+    "DP4\tvReg11.y, vReg10, program.env[91];\n"
+    "DP4\tvReg11.z, vReg10, program.env[90];\n"
+    "DP4\tvReg11.w, vReg10, program.env[89];\n"
+    "MAD\tvReg11, vReg11, program.env[28].x, vReg11;\n"
+    "MAD\tvReg11, vReg11, program.env[28].y, vReg11.yzxw;\n"
+    "MAD\tvReg11, vReg11, program.env[28].z, vReg11.zxyw;\n"
+    "MAD\tresult.texcoord[3], vReg11, program.env[28].w, vReg11;\n"
+    "DP3   vNormalWorld.x, mvMatrix[0], vertex.normal;\n"
+    "DP3   vNormalWorld.y, mvMatrix[1], vertex.normal;\n"
+    "DP3   vNormalWorld.z, mvMatrix[2], vertex.normal;\n"
+    "DP3\tvReg0.x, vReg10, vReg10;\n"
+    "RSQ\tvReg0.x, vReg0.x;\n"
+    "RCP\tvReg0.x, vReg0.x;\n"
+    "MOV result.fogcoord, vReg0.x;\n"
+    "DP3   vReg0.x, vNormalWorld, -vReg10;\n"
+    "MUL   vReg1, vReg0.x, vNormalWorld;\n"
+    "MUL   vReg2, vReg1, program.env[16].y;\n"
+    "ADD   vReg3, vReg10, vReg2;\n"
+    "DP3   vReg3.w, vReg3, vReg3;\n"
+    "RSQ   vReg3.w, vReg3.w;\n"
+    "MUL   vReg3, vReg3, vReg3.w;\n"
+    "DP3   vReg4.x, program.env[92], vReg3;\n"
+    "DP3   vReg4.y, program.env[91], vReg3;\n"
+    "DP3   vReg4.z, program.env[90], vReg3;\n"
+    "MOV   vReg4.w, program.env[16].w;\n"
+    "MOV   result.texcoord[0], vertex.texcoord[0];\n"
+    "MOV   result.texcoord[1], vertex.texcoord[1];\n"
+    "MOV   result.texcoord[2], vReg4;\n"
+    "MOV result.color, program.env[15].wwwz;\n";
+
+char szcStandardDirtyLSVPARB[] =
+    "!!ARBvp1.0PARAM mvMatrix[4] = { state.matrix.modelview[0] };\n"
+    "PARAM mvpMatrix[4] = { state.matrix.mvp };\n"
+    "TEMP vTemp;\n"
+    "TEMP vReg0, vReg1, vReg2, vReg3;\n"
+    "TEMP vReg10, vReg11;\n"
+    "TEMP vNormalWorld;\n"
+    "ALIAS vFinalColour = vTemp;\n"
+    "DP4   result.position.x, mvpMatrix[0], vertex.position;\n"
+    "DP4   result.position.y, mvpMatrix[1], vertex.position;\n"
+    "DP4   result.position.z, mvpMatrix[2], vertex.position;\n"
+    "DP4   result.position.w, mvpMatrix[3], vertex.position;\n"
+    "DP4   vReg10.x, mvMatrix[0], vertex.position;\n"
+    "DP4   vReg10.y, mvMatrix[1], vertex.position;\n"
+    "DP4   vReg10.z, mvMatrix[2], vertex.position;\n"
+    "DP4   vReg10.w, mvMatrix[3], vertex.position;\n"
+    "MOV\tvReg11, vertex.position;\n"
+    "ADD\tvReg11, vReg11, vertex.texcoord[0];\n"
+    "MOV\tvReg11.w, program.env[16].w;\n"
+    "MOV\tresult.texcoord[1], vReg11;\n"
+    "DP3   vNormalWorld.x, mvMatrix[0], vertex.normal;\n"
+    "DP3   vNormalWorld.y, mvMatrix[1], vertex.normal;\n"
+    "DP3   vNormalWorld.z, mvMatrix[2], vertex.normal;\n"
+    "DP3\tvReg0.x, vReg10, vReg10;\n"
+    "RSQ\tvReg0.x, vReg0.x;\n"
+    "RCP\tvReg0.x, vReg0.x;\n"
+    "MOV result.fogcoord, vReg0.x;\n"
+    "MOV   result.texcoord[0], vertex.texcoord[0];\n"
+    "MOV   result.texcoord[2], vertex.texcoord[2];\n"
+    "MOV   result.texcoord[3], vertex.texcoord[3];\n"
+    "MOV result.color, program.env[15].wwwz;\n";
+
+char szcStandardDirtyLSLMVPARB[] =
+    "!!ARBvp1.0PARAM mvMatrix[4] = { state.matrix.modelview[0] };\n"
+    "PARAM mvpMatrix[4] = { state.matrix.mvp };\n"
+    "TEMP vTemp;\n"
+    "TEMP vReg0, vReg1, vReg2, vReg3;\n"
+    "TEMP vReg10, vReg11;\n"
+    "TEMP vNormalWorld;\n"
+    "ALIAS vFinalColour = vTemp;\n"
+    "DP4   result.position.x, mvpMatrix[0], vertex.position;\n"
+    "DP4   result.position.y, mvpMatrix[1], vertex.position;\n"
+    "DP4   result.position.z, mvpMatrix[2], vertex.position;\n"
+    "DP4   result.position.w, mvpMatrix[3], vertex.position;\n"
+    "DP4   vReg10.x, mvMatrix[0], vertex.position;\n"
+    "DP4   vReg10.y, mvMatrix[1], vertex.position;\n"
+    "DP4   vReg10.z, mvMatrix[2], vertex.position;\n"
+    "DP4   vReg10.w, mvMatrix[3], vertex.position;\n"
+    "MOV\tvReg11, vertex.position;\n"
+    "ADD\tvReg11, vReg11, vertex.texcoord[0];\n"
+    "MOV\tvReg11.w, program.env[16].w;\n"
+    "MOV\tresult.texcoord[2], vReg11;\n"
+    "DP3   vNormalWorld.x, mvMatrix[0], vertex.normal;\n"
+    "DP3   vNormalWorld.y, mvMatrix[1], vertex.normal;\n"
+    "DP3   vNormalWorld.z, mvMatrix[2], vertex.normal;\n"
+    "DP3\tvReg0.x, vReg10, vReg10;\n"
+    "RSQ\tvReg0.x, vReg0.x;\n"
+    "RCP\tvReg0.x, vReg0.x;\n"
+    "MOV result.fogcoord, vReg0.x;\n"
+    "MOV   result.texcoord[0], vertex.texcoord[0];\n"
+    "MOV   result.texcoord[1], vertex.texcoord[1];\n"
+    "MOV   result.texcoord[3], vertex.texcoord[3];\n"
+    "MOV result.color, program.env[15].wwwz;\n";
+
+char szcStandardDirtyLSEMVPARB[] =
+    "!!ARBvp1.0PARAM mvMatrix[4] = { state.matrix.modelview[0] };\n"
+    "PARAM mvpMatrix[4] = { state.matrix.mvp };\n"
+    "TEMP vTemp;\n"
+    "TEMP vReg0, vReg1, vReg2, vReg3, vReg4;\n"
+    "TEMP vReg10;\n"
+    "TEMP vNormalWorld;\n"
+    "TEMP vReg11;\n"
+    "ALIAS vFinalColour = vTemp;\n"
+    "DP4   result.position.x, mvpMatrix[0], vertex.position;\n"
+    "DP4   result.position.y, mvpMatrix[1], vertex.position;\n"
+    "DP4   result.position.z, mvpMatrix[2], vertex.position;\n"
+    "DP4   result.position.w, mvpMatrix[3], vertex.position;\n"
+    "DP4   vReg10.x, mvMatrix[0], vertex.position;\n"
+    "DP4   vReg10.y, mvMatrix[1], vertex.position;\n"
+    "DP4   vReg10.z, mvMatrix[2], vertex.position;\n"
+    "DP4   vReg10.w, mvMatrix[3], vertex.position;\n"
+    "MOV\tvReg11, vertex.position;\n"
+    "ADD\tvReg11, vReg11, vertex.texcoord[0];\n"
+    "MOV\tvReg11.w, program.env[16].w;\n"
+    "MOV\tresult.texcoord[2], vReg11;\n"
+    "DP3   vNormalWorld.x, mvMatrix[0], vertex.normal;\n"
+    "DP3   vNormalWorld.y, mvMatrix[1], vertex.normal;\n"
+    "DP3   vNormalWorld.z, mvMatrix[2], vertex.normal;\n"
+    "DP3\tvReg0.x, vReg10, vReg10;\n"
+    "RSQ\tvReg0.x, vReg0.x;\n"
+    "RCP\tvReg0.x, vReg0.x;\n"
+    "MOV result.fogcoord, vReg0.x;\n"
+    "DP3   vReg0.x, vNormalWorld, -vReg10;\n"
+    "MUL   vReg1, vReg0.x, vNormalWorld;\n"
+    "MUL   vReg2, vReg1, program.env[16].y;\n"
+    "ADD   vReg3, vReg10, vReg2;\n"
+    "DP3   vReg3.w, vReg3, vReg3;\n"
+    "RSQ   vReg3.w, vReg3.w;\n"
+    "MUL   vReg3, vReg3, vReg3.w;\n"
+    "DP3   vReg4.x, program.env[92], vReg3;\n"
+    "DP3   vReg4.y, program.env[91], vReg3;\n"
+    "DP3   vReg4.z, program.env[90], vReg3;\n"
+    "MOV   vReg4.w, program.env[16].w;\n"
+    "MOV   result.texcoord[0], vertex.texcoord[0];\n"
+    "MOV   result.texcoord[1], vReg4;\n"
+    "MOV   result.texcoord[3], vertex.texcoord[3];\n"
+    "MOV result.color, program.env[15].wwwz;\n";
+
+char szszcStandardDirtyLSEMLMVPARB[] =
+    "!!ARBvp1.0PARAM mvMatrix[4] = { state.matrix.modelview[0] };\n"
+    "PARAM mvpMatrix[4] = { state.matrix.mvp };\n"
+    "TEMP vTemp;\n"
+    "TEMP vReg0, vReg1, vReg2, vReg3, vReg4;\n"
+    "TEMP vReg10;\n"
+    "TEMP vNormalWorld;\n"
+    "TEMP vReg11;\n"
+    "ALIAS vFinalColour = vTemp;\n"
+    "DP4   result.position.x, mvpMatrix[0], vertex.position;\n"
+    "DP4   result.position.y, mvpMatrix[1], vertex.position;\n"
+    "DP4   result.position.z, mvpMatrix[2], vertex.position;\n"
+    "DP4   result.position.w, mvpMatrix[3], vertex.position;\n"
+    "DP4   vReg10.x, mvMatrix[0], vertex.position;\n"
+    "DP4   vReg10.y, mvMatrix[1], vertex.position;\n"
+    "DP4   vReg10.z, mvMatrix[2], vertex.position;\n"
+    "DP4   vReg10.w, mvMatrix[3], vertex.position;\n"
+    "MOV\tvReg11, vertex.position;\n"
+    "ADD\tvReg11, vReg11, vertex.texcoord[0];\n"
+    "MOV\tvReg11.w, program.env[16].w;\n"
+    "MOV\tresult.texcoord[3], vReg11;\n"
+    "DP3   vNormalWorld.x, mvMatrix[0], vertex.normal;\n"
+    "DP3   vNormalWorld.y, mvMatrix[1], vertex.normal;\n"
+    "DP3   vNormalWorld.z, mvMatrix[2], vertex.normal;\n"
+    "DP3\tvReg0.x, vReg10, vReg10;\n"
+    "RSQ\tvReg0.x, vReg0.x;\n"
+    "RCP\tvReg0.x, vReg0.x;\n"
+    "MOV result.fogcoord, vReg0.x;\n"
+    "DP3   vReg0.x, vNormalWorld, -vReg10;\n"
+    "MUL   vReg1, vReg0.x, vNormalWorld;\n"
+    "MUL   vReg2, vReg1, program.env[16].y;\n"
+    "ADD   vReg3, vReg10, vReg2;\n"
+    "DP3   vReg3.w, vReg3, vReg3;\n"
+    "RSQ   vReg3.w, vReg3.w;\n"
+    "MUL   vReg3, vReg3, vReg3.w;\n"
+    "DP3   vReg4.x, program.env[92], vReg3;\n"
+    "DP3   vReg4.y, program.env[91], vReg3;\n"
+    "DP3   vReg4.z, program.env[90], vReg3;\n"
+    "MOV   vReg4.w, program.env[16].w;\n"
+    "MOV   result.texcoord[0], vertex.texcoord[0];\n"
+    "MOV   result.texcoord[1], vertex.texcoord[1];\n"
+    "MOV   result.texcoord[2], vReg4;\n"
+    "MOV result.color, program.env[15].wwwz;\n";
+
+char cHoloSkinVPARB[] =
+    "!!ARBvp1.0\n"
+    "PARAM mvMatrix[4] = { state.matrix.modelview[0] };\n"
+    "PARAM mvpMatrix[4] = { state.matrix.mvp };\n"
+    "ATTRIB vTex0 = vertex.texcoord[0];\n"
+    "ATTRIB vWght = vertex.attrib[1];\n"
+    "PARAM boneArray[51] = {program.env[18..68] };\n"
+    "PARAM fogParams = state.fog.params;\n"
+    "ADDRESS A0;\n"
+    "TEMP vReg4, vReg5, vReg6, vReg7, vReg8, vReg9, vReg10;\n"
+    "TEMP vReg0, vReg1, vReg2, vReg3;\n"
+    "TEMP vNormalWorld;\n"
+    "ALIAS vFinalColour = vReg9;\n"
+    "MUL   vReg0, vertex.attrib[4], program.env[16].zzzz;\n"
+    "ARL   A0.x, vReg0.x;\n"
+    "DP4   vReg1.x, vertex.position, boneArray[A0.x + 0];\n"
+    "DP4   vReg1.y, vertex.position, boneArray[A0.x + 1];\n"
+    "DP4   vReg1.z, vertex.position, boneArray[A0.x + 2];\n"
+    "DP3   vReg5.x, vertex.normal, boneArray[A0.x + 0];\n"
+    "DP3   vReg5.y, vertex.normal, boneArray[A0.x + 1];\n"
+    "DP3   vReg5.z, vertex.normal, boneArray[A0.x + 2];\n"
+    "ARL   A0.x, vReg0.y;\n"
+    "DP4   vReg2.x, vertex.position, boneArray[A0.x + 0];\n"
+    "DP4   vReg2.y, vertex.position, boneArray[A0.x + 1];\n"
+    "DP4   vReg2.z, vertex.position, boneArray[A0.x + 2];\n"
+    "DP3   vReg6.x, vertex.normal, boneArray[A0.x + 0];\n"
+    "DP3   vReg6.y, vertex.normal, boneArray[A0.x + 1];\n"
+    "DP3   vReg6.z, vertex.normal, boneArray[A0.x + 2];\n"
+    "ARL   A0.x, vReg0.z;\n"
+    "DP4   vReg3.x, vertex.position, boneArray[A0.x + 0];\n"
+    "DP4   vReg3.y, vertex.position, boneArray[A0.x + 1];\n"
+    "DP4   vReg3.z, vertex.position, boneArray[A0.x + 2];\n"
+    "DP3   vReg7.x, vertex.normal, boneArray[A0.x + 0];\n"
+    "DP3   vReg7.y, vertex.normal, boneArray[A0.x + 1];\n"
+    "DP3   vReg7.z, vertex.normal, boneArray[A0.x + 2];\n"
+    "ARL   A0.x, vReg0.w;\n"
+    "DP4   vReg4.x, vertex.position, boneArray[A0.x + 0];\n"
+    "DP4   vReg4.y, vertex.position, boneArray[A0.x + 1];\n"
+    "DP4   vReg4.z, vertex.position, boneArray[A0.x + 2];\n"
+    "DP3   vReg8.x, vertex.normal, boneArray[A0.x + 0];\n"
+    "DP3   vReg8.y, vertex.normal, boneArray[A0.x + 1];\n"
+    "DP3   vReg8.z, vertex.normal, boneArray[A0.x + 2];\n"
+    "MUL   vReg9, vWght.x, vReg1;\n"
+    "MAD   vReg9, vReg2, vWght.y, vReg9;\n"
+    "MAD   vReg9, vReg3, vWght.z, vReg9;\n"
+    "MAD   vReg9, vReg4, vWght.w, vReg9;\n"
+    "MOV   vReg9.w, program.env[16].w;\n"
+    "MUL   vReg10, vWght.x, vReg5;\n"
+    "MAD   vReg10, vReg6, vWght.y, vReg10;\n"
+    "MAD   vReg10, vReg7, vWght.z, vReg10;\n"
+    "MAD   vReg10, vReg8, vWght.w, vReg10;\n"
+    "DP4   result.position.x, mvpMatrix[0], vReg9;\n"
+    "DP4   result.position.y, mvpMatrix[1], vReg9;\n"
+    "DP4   result.position.z, mvpMatrix[2], vReg9;\n"
+    "DP4   result.position.w, mvpMatrix[3], vReg9;\n"
+    "DP3   vNormalWorld.x, mvMatrix[0], vReg10;\n"
+    "DP3   vNormalWorld.y, mvMatrix[1], vReg10;\n"
+    "DP3   vNormalWorld.z, mvMatrix[2], vReg10;\n"
+    "DP3   vNormalWorld.w, vNormalWorld, vNormalWorld;\n"
+    "RSQ   vNormalWorld.w, vNormalWorld.w;\n"
+    "MUL   vNormalWorld, vNormalWorld, vNormalWorld.w;\n"
+    "DP4   vReg10.x, mvMatrix[0], vReg9;\n"
+    "DP4   vReg10.y, mvMatrix[1], vReg9;\n"
+    "DP4   vReg10.z, mvMatrix[2], vReg9;\n"
+    "MOV   vReg10.w, mvMatrix[3].w;\n"
+    "DP3\tvReg0.x, vReg10, vReg10;\n"
+    "RSQ\tvReg0.x, vReg0.x;\n"
+    "RCP\tvReg0.x, vReg0.x;\n"
+    "ADD\tvReg1.x, -fogParams.y, vReg0.x;\n"
+    "MUL\tresult.color.secondary.x, vReg1.x, state.fog.params.w;\n"
+    "MOV\tresult.fogcoord.x, vReg0.x;\n"
+    "DP4\tvReg0.x, vReg10, program.env[ 92 ];\n"
+    "DP4\tvReg0.y, vReg10, program.env[ 91 ];\n"
+    "DP4\tvReg0.z, vReg10, program.env[ 90 ];\n"
+    "DP4\tvReg0.w, vReg10, program.env[ 89 ];\n"
+    "MUL\tvReg10, vReg0, program.env[ 16 ].wxwx;\n"
+    "DP3\tvReg10.w, vReg10, vReg10;\n"
+    "RSQ\tvReg10.w, vReg10.w;\n"
+    "RCP\tvReg10.w, vReg10.w;\n"
+    "MOV\tresult.texcoord[ 1 ].x, vReg10.w;\n"
+    "MOV\tresult.texcoord[ 1 ].y, vReg0.z;\n"
+    "MOV   result.texcoord[0], vTex0;\n";
+
+char cHoloVPARB[] =
+    "!!ARBvp1.0PARAM mvMatrix[4] = { state.matrix.modelview[0] };\n"
+    "PARAM mvpMatrix[4] = { state.matrix.mvp };\n"
+    "TEMP vTemp;\n"
+    "TEMP vReg0, vReg1, vReg2, vReg3;\n"
+    "TEMP vReg10;\n"
+    "TEMP vNormalWorld;\n"
+    "ALIAS vFinalColour = vTemp;\n"
+    "DP4   result.position.x, mvpMatrix[0], vertex.position;\n"
+    "DP4   result.position.y, mvpMatrix[1], vertex.position;\n"
+    "DP4   result.position.z, mvpMatrix[2], vertex.position;\n"
+    "DP4   result.position.w, mvpMatrix[3], vertex.position;\n"
+    "DP4   vReg10.x, mvMatrix[0], vertex.position;\n"
+    "DP4   vReg10.y, mvMatrix[1], vertex.position;\n"
+    "DP4   vReg10.z, mvMatrix[2], vertex.position;\n"
+    "DP4   vReg10.w, mvMatrix[3], vertex.position;\n"
+    "DP3   vNormalWorld.x, mvMatrix[0], vertex.normal;\n"
+    "DP3   vNormalWorld.y, mvMatrix[1], vertex.normal;\n"
+    "DP3   vNormalWorld.z, mvMatrix[2], vertex.normal;\n"
+    "DP3\tvReg0.x, vReg10, vReg10;\n"
+    "RSQ\tvReg0.x, vReg0.x;\n"
+    "RCP\tvReg0.x, vReg0.x;\n"
+    "MOV result.fogcoord, vReg0.x;\n"
+    "DP4\tvReg0.x, vReg10, program.env[ 92 ];\n"
+    "DP4\tvReg0.y, vReg10, program.env[ 91 ];\n"
+    "DP4\tvReg0.z, vReg10, program.env[ 90 ];\n"
+    "DP4\tvReg0.w, vReg10, program.env[ 89 ];\n"
+    "MUL\tvReg10, vReg0, program.env[ 16 ].wxwx;\n"
+    "DP3\tvReg10.w, vReg10, vReg10;\n"
+    "RSQ\tvReg10.w, vReg10.w;\n"
+    "RCP\tvReg10.w, vReg10.w;\n"
+    "MOV\tresult.texcoord[ 1 ].x, vReg10.w;\n"
+    "MOV\tresult.texcoord[ 1 ].y, vReg0.z;\n"
+    "MOV   result.texcoord[0], vertex.texcoord[0];\n"
+    "MOV   result.texcoord[2], vertex.texcoord[2];\n"
+    "MOV   result.texcoord[3], vertex.texcoord[3];\n"
+    "MOV result.color, program.env[15].wwwz;\n";

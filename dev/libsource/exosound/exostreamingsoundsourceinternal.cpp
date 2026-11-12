@@ -106,6 +106,15 @@ CExoStreamingSoundSourceInternal::~CExoStreamingSoundSourceInternal()
             fclose(m_pFile);
         }
         m_hStream = NULL;
+        g_totalStreamingHandlesAvailable++;
+        if (m_bReservedStream == 0)
+        {
+            g_generalStreamingHandlesAvailable++;
+        }
+    }
+    else if (m_pFile != NULL)
+    {
+        fclose(m_pFile);
     }
 }
 // PC 0x00627DD0
@@ -424,7 +433,7 @@ void CExoStreamingSoundSourceInternal::Pause()
 // PC 0x006286D0
 void CExoStreamingSoundSourceInternal::FadeAndStop(unsigned long nDuration)
 {
-    if (m_pSoundInternal->m_bInitialized != 0 && IsPlaying())
+    if (IsPlaying())
     {
         m_nFadeStartTime = g_pExoBase->m_pExoTimers->GetLowResolutionTimer();
         m_nFadeDuration = nDuration;
@@ -580,29 +589,40 @@ int CExoStreamingSoundSourceInternal::Play(const CResRef& resRef,
         }
         else if (bVoice != 0)
         {
-            if ((m_sFileName[0] == 'n' || m_sFileName[0] == 'N') &&
-                m_sFileName.GetLength() == 16 && m_sFileName[1] != '_')
+            unsigned int nLength = m_sFileName.GetLength();
+            if (nLength > 0)
             {
-                int i;
-                char szDirectory[8];
-                char szSound[8];
+                unsigned int i;
+                char szDirectory[4];
 
-                for (i = 0; i < 5; i++)
+                for (i = 0; i < 3; i++)
                 {
-                    szDirectory[i] = m_sFileName[i + 1];
+                    szDirectory[i] = m_sFileName[i];
                 }
                 szDirectory[i] = 0;
-                for (i = 0; i < 6; i++)
+                int nDirectory = atoi(szDirectory);
+                if (_stricmp(szDirectory, "gbl") == 0 ||
+                    _stricmp(szDirectory, "avo") == 0 ||
+                    _stricmp(szDirectory, "000") == 0 || nDirectory > 0)
                 {
-                    szSound[i] = m_sFileName[i + 6];
+                    char szSubDirectory[32];
+
+                    for (; i < nLength - 3; i++)
+                    {
+                        szSubDirectory[i - 3] = m_sFileName[i];
+                    }
+                    szSubDirectory[i - 3] = 0;
+                    m_sFileName.Format("HD0:STREAMVOICE\\%s\\%s\\%s", szDirectory,
+                                       szSubDirectory, m_sFileName.CStr());
                 }
-                szSound[i] = 0;
-                m_sFileName.Format("HD0:STREAMWAVES\\%s\\%s\\%s", szDirectory,
-                                   szSound, m_sFileName.CStr());
+                else
+                {
+                    m_sFileName.Format("HD0:STREAMVOICE\\%s", m_sFileName.CStr());
+                }
             }
             else
             {
-                m_sFileName.Format("HD0:STREAMWAVES\\%s", m_sFileName.CStr());
+                m_sFileName = "HD0:STREAMVOICE\\";
             }
         }
         else
@@ -616,6 +636,11 @@ int CExoStreamingSoundSourceInternal::Play(const CResRef& resRef,
         {
             AIL_close_stream(m_hStream);
             m_hStream = NULL;
+            g_totalStreamingHandlesAvailable++;
+            if (m_bReservedStream == 0)
+            {
+                g_generalStreamingHandlesAvailable++;
+            }
         }
         InitializeSource();
     }
@@ -633,8 +658,9 @@ int CExoStreamingSoundSourceInternal::Play(const CResRef& resRef,
         AIL_set_stream_loop_count(m_hStream, nLoopCount);
         m_nPausePosition = 0;
         AIL_stream_ms_position(m_hStream, &nDuration, NULL);
+        unsigned char nGroup = m_nPriorityGroup;
         CExoSoundPriorityGroup* pGroup =
-            m_pSoundInternal->GetPriorityGroup(m_nPriorityGroup);
+            m_pSoundInternal->GetPriorityGroup(nGroup);
         if (pGroup != NULL && pGroup->m_nPlaying >= pGroup->m_nMaxPlaying)
         {
             if (pGroup->m_bInterrupt == 0)
@@ -650,6 +676,7 @@ int CExoStreamingSoundSourceInternal::Play(const CResRef& resRef,
         }
         if (m_bLooping != 0 && GetWithinRangeOfListener() == 0)
         {
+            Stop(1);
             m_pSoundInternal->AddToNonPlayingStreamingLoopingList(this);
             return nDuration;
         }
@@ -672,7 +699,8 @@ void CExoStreamingSoundSourceInternal::SetPriorityGroup(unsigned char nGroup)
 {
     float fMaxDistance;
     float fMinDistance;
-    CExoSoundPriorityGroup* pGroup = m_pSoundInternal->GetPriorityGroup(nGroup);
+    CExoSoundPriorityGroup* pGroup =
+        m_pSoundInternal->GetPriorityGroup(nGroup);
 
     if (pGroup != NULL)
     {
@@ -681,17 +709,18 @@ void CExoStreamingSoundSourceInternal::SetPriorityGroup(unsigned char nGroup)
     else
     {
         pGroup = m_pSoundInternal->GetPriorityGroup(m_nPriorityGroup);
+        if (pGroup == NULL)
+        {
+            return;
+        }
     }
 
-    if (pGroup != NULL)
-    {
-        m_nPriorityVolume = pGroup->m_nVolume;
-        SetVolume(m_nVolume, 0, 1.0f);
-        fMinDistance = pGroup->m_fMinVolumeDist;
-        fMaxDistance = pGroup->m_fMaxVolumeDist;
-        m_fMinDistance = fMaxDistance;
-        m_fMaxDistance = fMinDistance;
-    }
+    m_nPriorityVolume = pGroup->m_nVolume;
+    SetVolume(m_nVolume, 0, 1.0f);
+    fMinDistance = pGroup->m_fMinVolumeDist;
+    fMaxDistance = pGroup->m_fMaxVolumeDist;
+    m_fMinDistance = fMaxDistance;
+    m_fMaxDistance = fMinDistance;
 }
 // PC 0x006290C0
 void CExoStreamingSoundSourceInternal::Resume()

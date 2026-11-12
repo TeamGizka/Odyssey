@@ -555,7 +555,6 @@ int CResGFF::AddStruct(unsigned long nStructType)
         if (nIndex >= m_nStructsAlloc)
         {
             m_nStructsAlloc = m_nStructAllocInc + nIndex;
-            m_nStructAllocInc = 2 * m_nStructAllocInc;
             CResGFFStruct* pNew =
                 (CResGFFStruct*)new char[12 * m_nStructsAlloc];
             memcpy(pNew, m_pStructs, 12 * nIndex);
@@ -599,7 +598,6 @@ int CResGFF::AddLabel(char* szLabel)
     if (nCount >= m_nLabelsAlloc)
     {
         m_nLabelsAlloc = m_nLabelAllocInc + nCount;
-        m_nLabelAllocInc = 2 * m_nLabelAllocInc;
         CResGFFLabel* pNew = (CResGFFLabel*)new char[16 * m_nLabelsAlloc];
         memcpy(pNew, m_pLabels, 16 * nCount);
         delete m_pLabels;
@@ -627,7 +625,6 @@ unsigned char* CResGFF::AddDataField(unsigned long nOldOffset,
         if (nEnd >= m_nFieldDataAlloc)
         {
             m_nFieldDataAlloc = m_nFieldDataAllocInc + nOffset + nSize;
-            m_nFieldDataAllocInc = 2 * m_nFieldDataAllocInc;
             unsigned char* pNew = new unsigned char[m_nFieldDataAlloc];
             memcpy(pNew, m_pFieldData, m_pHeader->m_nFieldDataCount);
             delete m_pFieldData;
@@ -661,7 +658,6 @@ unsigned char* CResGFF::AddDataLayoutField(unsigned long nOldOffset,
         if (nEnd >= m_nFieldIndicesAlloc)
         {
             m_nFieldIndicesAlloc = m_nFieldIndicesAllocInc + nOffset + nSize;
-            m_nFieldIndicesAllocInc = 2 * m_nFieldIndicesAllocInc;
             unsigned char* pNew = new unsigned char[m_nFieldIndicesAlloc];
             memcpy(pNew, m_pFieldIndices, m_pHeader->m_nFieldIndicesCount);
             delete m_pFieldIndices;
@@ -696,7 +692,6 @@ unsigned char* CResGFF::AddDataLayoutList(unsigned long nOldOffset,
         if (nEnd >= m_nListIndicesAlloc)
         {
             m_nListIndicesAlloc = m_nListIndicesAllocInc + nOffset + nSize;
-            m_nListIndicesAllocInc = 2 * m_nListIndicesAllocInc;
             unsigned char* pNew = new unsigned char[m_nListIndicesAlloc];
             memcpy(pNew, m_pListIndices, m_pHeader->m_nListIndicesCount);
             delete m_pListIndices;
@@ -942,7 +937,6 @@ CResGFFField* CResGFF::AddField(CResStruct* pStructure, char* szLabel,
     if (nField >= m_nFieldsAlloc)
     {
         m_nFieldsAlloc = m_nFieldAllocInc + nField;
-        m_nFieldAllocInc = 2 * m_nFieldAllocInc;
         CResGFFField* pNew = (CResGFFField*)new char[12 * m_nFieldsAlloc];
         memcpy(pNew, m_pFields, 12 * nField);
         delete m_pFields;

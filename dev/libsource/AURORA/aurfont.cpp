@@ -171,67 +171,6 @@ void PrintStringScreenPos_UseTextureFont(char* szString, float fX, float fY)
 
 void AurPrintString(char* szString, int nColumn, int nRow)
 {
-    GLint aViewport[4];
-    int nRows;
-    int nColumns;
-    float fX;
-    float fY;
-
-    if (g_bEnableAurPostString != 0)
-    {
-        glGetIntegerv(GL_VIEWPORT, aViewport);
-        if (aViewport[2] >= 300 && aViewport[3] >= 100)
-        {
-            nRows = aViewport[3] / 14;
-            nColumns = aViewport[2] / 10;
-            if (nRow >= nRows)
-            {
-                nRow = nRows - 1;
-            }
-            if (nRow < 0)
-            {
-                nRow += nRows;
-                if (nRow < 0)
-                {
-                    nRow = 0;
-                }
-            }
-            if (nColumn < 0)
-            {
-                nColumn = nColumn + nColumns - strlen(szString) + 1;
-            }
-            if ((int)(nColumn + strlen(szString)) > nColumns)
-            {
-                nColumn = nColumns - strlen(szString);
-            }
-            if (nColumn < 0)
-            {
-                nColumn = 0;
-            }
-            nRow = nRows - nRow - 1;
-            glDisable(enableTranslationTable[ENABLE_LIGHTING]);
-            if (initialized == 0)
-            {
-                g_bUseTexturedFont = false;
-                GLRender::SetUpTextFormat();
-                initialized = 1;
-            }
-            if (g_bUseTexturedFont)
-            {
-                fY = (float)nRow / nRows * aViewport[3] - aViewport[3] / 2;
-                fX =
-                    (float)nColumn / nColumns * aViewport[2] - aViewport[2] / 2;
-                PrintStringScreenPos_UseTextureFont(szString, fX, fY);
-            }
-            else if (szString != NULL && *szString != 0)
-            {
-                fY = (float)nRow / nRows;
-                fX = (float)nColumn / nColumns;
-                GLRender::PrintStringAtScreenPos(szString, fX, fY);
-            }
-            glEnable(enableTranslationTable[ENABLE_LIGHTING]);
-        }
-    }
 }
 #endif
 #ifndef _XBOX
@@ -262,7 +201,6 @@ void PostedString::Post()  // PC 0x00461150
     float fGreen;
     float fBlue;
     float fAlpha;
-    CStringColor cOldColor;
 
     if (m_fDuration > 0.0f)
     {
@@ -279,19 +217,6 @@ void PostedString::Post()  // PC 0x00461150
         (1.0f - fElapsedRatio) * m_fStartGreen + fElapsedRatio * m_fEndGreen;
     fRed = fElapsedRatio * m_fEndRed + (1.0f - fElapsedRatio) * m_fStartRed;
     GLRender_SetColor4f(fRed, fGreen, fBlue, fAlpha);
-#ifndef _XBOX
-    cOldColor = g_cSavedCol;
-    g_cSavedCol.m_fRed =
-        fElapsedRatio * m_fEndRed + (1.0f - fElapsedRatio) * m_fStartRed;
-    g_cSavedCol.m_fGreen =
-        (1.0f - fElapsedRatio) * m_fStartGreen + fElapsedRatio * m_fEndGreen;
-    g_cSavedCol.m_fBlue =
-        fElapsedRatio * m_fEndBlue + (1.0f - fElapsedRatio) * m_fStartBlue;
-    g_cSavedCol.m_fAlpha =
-        fElapsedRatio * m_fEndAlpha + (1.0f - fElapsedRatio) * m_fStartAlpha;
-    AurPrintString(m_szString, m_nColumn, m_nRow);
-    g_cSavedCol = cOldColor;
-#endif
     m_fTimeRemaining -= DeltaT;
     if (m_fDuration > 0.0f)
     {

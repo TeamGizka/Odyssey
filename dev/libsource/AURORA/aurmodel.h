@@ -333,6 +333,7 @@ public:
     {
         m_bDistortion = 0;
     }
+    bool IsDistortionEnabled();
     // PC 0x0045DE80
     virtual void SetForcePoints(short nForcePoints)
     {
@@ -736,10 +737,10 @@ public:
     bool m_bBeaming;
 
     bool m_bRender;
-    char m_bDirtEnabled;
+    bool m_bDirtEnabled;
     short m_nDirtTexture;
     short m_nDirtCoordSpace;
-    char m_bHideInHolograms;
+    bool m_bHideInHolograms;
 
     float m_fSurfaceArea;
 #ifdef _XBOX
@@ -958,7 +959,7 @@ public:
     void ResetFreeLists();
     MaxTree(char*);
     void FreeTheFreeList();
-    static void operator delete(void*);
+    void foobar(void*);
     int InternalParseField(char*);
     static const char MAXTREE_BASE_ID;
     static const char MAXTREE_MODEL_ID;
@@ -1623,7 +1624,8 @@ public:
     enum
     {
         OFFSET_POSITION = 0x08,
-        OFFSET_ORIENTATION = 0x14
+        OFFSET_ORIENTATION = 0x14,
+        OFFSET_SCALE = 0x24
     };
 
     enum { NODE_OFFSET_NONE = -1 };

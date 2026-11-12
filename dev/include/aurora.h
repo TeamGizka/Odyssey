@@ -188,7 +188,10 @@ class Vector;
 int AurMakeCurrent();
 
 enum { AUR_DRAWABLE_COLOR_WHITE = 0xFFFFFFFF };
-int AurAddDrawableSquare(float* pVertices, unsigned long nColor);
+int AurAddDrawableSquare(float* pVertices, unsigned long nColor,
+                         const char* sFile, int nLine);
+#define AurAddDrawableSquare(pVertices, nColor) \
+    AurAddDrawableSquare(pVertices, nColor, __FILE__, __LINE__)
 void AurRemoveDrawableSquare(unsigned long nSquare);
 void AurSnapshot(char* sFileName, bool bScreenSize);
 int AurQueryMaximumAnisotropy();
@@ -221,6 +224,14 @@ void AurDisableScanNoise();
 void AurEnableScanNoise();
 void AurEnableSaturation();
 void AurSetSaturationParams(Vector vModulation, float fSaturation);
+void AurEnableForceSight();
+void AurDisableForceSight();
+bool AurIsSpeedBlurEnabled();
+void AurEnableClairvoyance(bool bLetterbox);
+void AurDisableClairvoyance();
+void AurEnableForceFury(short nLevel);
+void AurSetClearColor(float fRed, float fGreen, float fBlue, float fAlpha);
+void AurGetClearColor(float* pColor);
 
 extern unsigned char g_nBitsPerPixel;
 extern int g_nDesiredFullScreenRefreshRate;

@@ -57,11 +57,7 @@ public:
     int Read(CExoFile& file);
     int Write(CExoFile& file);
 
-    void SetName(CExoString& sName)
-    {
-        memset(m_sResRef, 0, 16);
-        memcpy(m_sResRef, sName.CStr(), sName.GetLength());
-    }
+    void SetName(CExoString& sName);
 
     char m_sResRef[16];
     unsigned long m_nResId;

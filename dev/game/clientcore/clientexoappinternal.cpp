@@ -2268,7 +2268,7 @@ void CClientExoAppInternal::StartLoadMusic()
                     g_pExoResMan->CacheResource(sFileName, RESTYPE_WAV);
                 }
 
-                m_pLoadMusic = new CExoStreamingSoundSource;
+                m_pLoadMusic = new CExoStreamingSoundSource(1);
                 m_pLoadMusic->SetLooping(1);
                 m_pLoadMusic->SetPriorityGroup(
                     CExoStreamingSoundSource::PRIORITY_GROUP_MUSIC);
@@ -8129,6 +8129,16 @@ void CClientExoAppInternal::HideMovieFadePanel()
         m_pMoviePlayer->HideFadePanel();
 #endif
     }
+}
+// PC 0x00640440
+void CClientExoAppInternal::PauseAllSoundsForMovieLostFocus()
+{
+    g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_LOSTFOCUS, 0);
+}
+// PC 0x00640460
+void CClientExoAppInternal::ResumeAllStreamingMusicForMovie()
+{
+    g_pExoSound->ResumeAllStreamingMusicForMovie();
 }
 #ifndef _XBOX
 void CClientExoAppInternal::StartCreditSequence(const Vector& vColor,  // PC 0x00640470

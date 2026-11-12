@@ -377,7 +377,7 @@ void* CExoResMan::Demand(CRes* pRes)
 
             while (!m_pCurrentAsyncFile->ReadAsyncComplete())
             {
-                Sleep(5);
+                Sleep(1);
             }
 
             if (ServiceCurrentAsyncRes())
@@ -845,6 +845,22 @@ void CExoResMan::AsyncLoad()  // PC 0x004096E0
                         {
                             bSaveGame = 1;
                             m_nAsyncLoadedFlags |= LOADED_SAVE_GAME_RIM;
+                            if (nDownloadedPackage == 0)
+                            {
+                                sPath = CExoString("MODULES:") + m_sAsyncModuleName +
+                                        CExoString("_dlg");
+                            }
+                            else
+                            {
+                                sPath = CExoString("MODULES\\") + m_sAsyncModuleName +
+                                        CExoString("_dlg");
+                                CExoString sDirectory;
+                                sDirectory.Format("LIVE%d:%s", nDownloadedPackage,
+                                                  sPath.CStr());
+                                sPath = sDirectory;
+                            }
+                            AddKeyTable(CacheResource(sPath, RESTYPE_ERF),
+                                        TABLE_ENCAPSULATED, PRIORITY_MODULE);
                         }
                     }
                 }
@@ -1674,7 +1690,15 @@ int CExoResMan::ServiceFromDirectory(CRes* pRes, int bAsync)
                 ((pRes->m_nResId >> CRes::RESID_TABLE_SHIFT) & CRes::RESID_TABLE_MASK))
         {
             pRes->m_pKeyEntry->m_resRef.CopyToString(sResRef);
-            sFullPath = pTable->m_sResourceName + "\\" + sResRef;
+            if (pRes->m_pKeyEntry->m_sDirectory.IsEmpty())
+            {
+                sFullPath = pTable->m_sResourceName + "\\" + sResRef;
+            }
+            else
+            {
+                sFullPath = pTable->m_sResourceName + "\\" +
+                            CExoString(pRes->m_pKeyEntry->m_sDirectory) + "\\" + sResRef;
+            }
 
             if (pTable->m_sResourceName == "REBOOTDATA:")
             {

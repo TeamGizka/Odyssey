@@ -1261,6 +1261,16 @@ int CClientExoApp::PlayMovieQueue(int nFlags)
 {
     return m_pcExoAppInternal->PlayMovieQueue(nFlags);
 }
+// PC 0x00639500
+void CClientExoApp::PauseAllSoundsForMovieLostFocus()
+{
+    m_pcExoAppInternal->PauseAllSoundsForMovieLostFocus();
+}
+// PC 0x00639510
+void CClientExoApp::ResumeAllStreamingMusicForMovie()
+{
+    m_pcExoAppInternal->ResumeAllStreamingMusicForMovie();
+}
 #endif
 
 #ifdef _XBOX

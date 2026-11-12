@@ -114,10 +114,10 @@ CExoSoundSourceInternal::CExoSoundSourceInternal(CExoSoundInternal* pSound)
 #else
 CExoSoundSourceInternal::CExoSoundSourceInternal(CExoSoundInternal* pSound)  // PC 0x00626E80
 {
-    m_pSound = pSound;
     m_pListNode = 0;
     m_b3D = 0;
     m_bLooping = 0;
+    m_pSound = pSound;
     m_nVolume = CExoSound::CMAX_VOLUME;
     m_bPlayWhenFree = 0;
     m_p3DVoice = 0;
@@ -129,7 +129,8 @@ CExoSoundSourceInternal::CExoSoundSourceInternal(CExoSoundInternal* pSound)  // 
     m_nRestartPosition = 0;
     m_nListType = LIST_NONE;
     m_nPriorityGroup = CExoSound::PRIORITY_GROUP_DEFAULT;
-    CExoSoundPriorityGroup* pGroup = pSound->GetPriorityGroup(m_nPriorityGroup);
+    CExoSoundPriorityGroup* pGroup =
+        pSound->GetPriorityGroup(CExoSound::PRIORITY_GROUP_DEFAULT);
     if (pGroup != NULL)
     {
         m_nGroupVolume = pGroup->m_nVolume;
@@ -144,9 +145,9 @@ CExoSoundSourceInternal::CExoSoundSourceInternal(CExoSoundInternal* pSound)  // 
     m_nOneShotDelay = 0;
     m_nDelayStart = 0;
     m_nDuration = 0;
-    int nSourceId = pSound->m_nNextSourceId++;
+    int nSourceId = m_pSound->m_nNextSourceId++;
     m_nSourceId = nSourceId;
-    m_vObstructionListenerPosition = Vector();
+    m_vObstructionListenerPosition = Vector(0.0f, 0.0f, 0.0f);
     m_nObstructionTime = 0;
     m_fObstruction = 0.0f;
 }
@@ -161,7 +162,7 @@ CExoSoundSourceInternal::~CExoSoundSourceInternal()
 #else
 CExoSoundSourceInternal::~CExoSoundSourceInternal()  // PC 0x00627440
 {
-    ShutDownSource(1);
+    ShutDownSource(true);
 }
 #endif
 // PC 0x00626FE0
@@ -529,39 +530,40 @@ int CExoSoundSourceInternal::IsPaused()
     }
     return 0;
 }
+
 #else
-int CExoSoundSourceInternal::IsPaused()  // PC 0x00627280
+// PC 0x00627280
+int CExoSoundSourceInternal::IsPaused()
 {
     unsigned long nPosition;
 
-    if (m_pSound->m_bInitialized == 0)
+    if (m_pSound->m_bInitialized != 0)
     {
-        return 0;
-    }
-    if (m_p3DVoice != 0 && m_p3DVoice->m_pSource != 0 &&
-        m_p3DVoice->m_hSample != 0)
-    {
-        if (m_nRestartPosition != 0)
+        if (m_p3DVoice != 0 && m_p3DVoice->m_pSource != 0 &&
+            m_p3DVoice->m_hSample != 0)
+        {
+            if (m_nRestartPosition != 0)
+            {
+                return 1;
+            }
+            nPosition = AIL_3D_sample_offset(m_p3DVoice->m_hSample);
+        }
+        else
+        {
+            if (m_p2DVoice == 0 || m_p2DVoice->m_pSource == 0)
+            {
+                return 0;
+            }
+            if (m_nRestartPosition != 0)
+            {
+                return 1;
+            }
+            nPosition = AIL_sample_position(m_p2DVoice->m_hSample);
+        }
+        if (!IsPlaying() && (nPosition == 0 || nPosition == m_nDataSize))
         {
             return 1;
         }
-        nPosition = AIL_3D_sample_offset(m_p3DVoice->m_hSample);
-    }
-    else if (m_p2DVoice != 0 && m_p2DVoice->m_pSource != 0)
-    {
-        if (m_nRestartPosition != 0)
-        {
-            return 1;
-        }
-        nPosition = AIL_sample_position(m_p2DVoice->m_hSample);
-    }
-    else
-    {
-        return 0;
-    }
-    if (!IsPlaying() && (nPosition == 0 || nPosition == m_nDataSize))
-    {
-        return 1;
     }
     return 0;
 }
@@ -713,8 +715,8 @@ unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)
     }
 
     unsigned int nDuration = m_nDuration;
-    CExoSoundPriorityGroup* pGroup = m_pSound->m_pPriorityGroups + m_nPriorityGroup;
-    if (pGroup->m_nPlaying >= pGroup->m_nMaxPlaying)
+    CExoSoundPriorityGroup* pGroup = m_pSound->GetPriorityGroup(m_nPriorityGroup);
+    if (pGroup != NULL && pGroup->m_nPlaying >= pGroup->m_nMaxPlaying)
     {
         if (bNoInterrupt != 0 || pGroup->m_bInterrupt == 0)
         {
@@ -912,7 +914,8 @@ unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)  // PC
         }
         return m_nDuration;
     }
-    CExoSoundPriorityGroup* pGroup = m_pSound->GetPriorityGroup(m_nPriorityGroup);
+    unsigned char nGroup = m_nPriorityGroup;
+    CExoSoundPriorityGroup* pGroup = m_pSound->GetPriorityGroup(nGroup);
     if (pGroup != NULL && pGroup->m_nPlaying >= pGroup->m_nMaxPlaying)
     {
         if (bNoInterrupt != 0 || pGroup->m_bInterrupt == 0)
@@ -1201,7 +1204,8 @@ void CExoSoundSourceInternal::SetPriorityGroup(unsigned char nPriorityGroup)  //
     if (pSound->m_bInitialized != 0)
     {
         m_nPriorityGroup = nPriorityGroup;
-        CExoSoundPriorityGroup* pGroup = pSound->GetPriorityGroup(nPriorityGroup);
+        CExoSoundPriorityGroup* pGroup =
+            pSound->GetPriorityGroup(nPriorityGroup);
         if (pGroup != NULL)
         {
             m_nGroupVolume = pGroup->m_nVolume;

@@ -83,6 +83,7 @@ void CAurTriangleBin::UpdateGrassForWind(WindManager* pWindManager)
             float fWindScale = 1.0f;
             if (fWindMagnitude > AUR_GRASS_MAX_WIND_MAGNITUDE)
                 fWindScale = AUR_GRASS_MAX_WIND_MAGNITUDE / fWindMagnitude;
+            float fStep = grassstiffness * fQuadSize * fTime;
 
             for (int i = 0; i < m_nTriangles; i++)
             {
@@ -105,8 +106,8 @@ void CAurTriangleBin::UpdateGrassForWind(WindManager* pWindManager)
                 vForceDirection = vWind + vSpringDist + vPoint;
                 if (!vForceDirection.IsZero())
                 {
-                    float fNewTipX = fTipX + vForceDirection.m_fX * grassstiffness * fQuadSize * fTime;
-                    float fNewTipY = fTipY + vForceDirection.m_fY * grassstiffness * fQuadSize * fTime;
+                    float fNewTipX = fTipX + vForceDirection.m_fX * fStep;
+                    float fNewTipY = fTipY + vForceDirection.m_fY * fStep;
                     m_pCurrentVertices[nVertex * 3 + 9] = fNewTipX;
                     m_pCurrentVertices[nVertex * 3 + 10] = fNewTipY;
                     m_pCurrentVertices[nVertex * 3 + 6] = fNewTipX - fBaseX + fSideX;
@@ -118,6 +119,7 @@ void CAurTriangleBin::UpdateGrassForWind(WindManager* pWindManager)
 }
 
 bool AurNV1xLevelShadersAvailable();
+extern unsigned int ATI_FRAGMENT_SHADER_BIT;
 
 int maxgrass = 0;
 // PC 0x004D3430
@@ -195,10 +197,14 @@ void CAurTriangleBin::RenderGrassPolys(int nGrassInfo, const Vector& vPosition,
     }
     countfaces += m_nTriangles;
 #else
-    SetMaterialParameter(FACING_FRONT, MATERIAL_AMBIENT,
-                         Homogenize(g_GrassInfo[nGrassInfo].m_vAmbient, 1.0f));
-    SetMaterialParameter(FACING_FRONT, MATERIAL_DIFFUSE,
-                         Homogenize(g_GrassInfo[nGrassInfo].m_vDiffuse, fAlpha));
+    float afAmbient[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+    float afDiffuse[4] = {0.0f, 0.0f, 0.0f, fAlpha};
+    SetMaterialParameter(FACING_FRONT, MATERIAL_AMBIENT, afAmbient);
+    SetMaterialParameter(FACING_FRONT, MATERIAL_DIFFUSE, afDiffuse);
+    float afEmissive[4] = {g_GrassInfo[nGrassInfo].m_vEmissive.m_fX,
+                           g_GrassInfo[nGrassInfo].m_vEmissive.m_fY,
+                           g_GrassInfo[nGrassInfo].m_vEmissive.m_fZ, fAlpha};
+    SetMaterialParameter(FACING_FRONT, MATERIAL_EMISSION, afEmissive);
     if (newgrass && m_fDistance < m_fNearRadiusSquared)
     {
         m_pCurrentVertices = m_pVertices;
@@ -238,13 +244,33 @@ void CAurTriangleBin::RenderGrassPolys(int nGrassInfo, const Vector& vPosition,
             int nFirst = 0;
             for (int i = 0; i < m_lstTextureIndices.m_nCount; i++)
             {
-                GLRender_EnablePixelShaders(MODEL_SHADER_NV1X_LIGHTMAP,
-                    m_pTexture.m_pObject, m_lstTextures[i].m_pObject, 0, 0);
+                if (g_ForceSight)
+                {
+                    GLRender_EnablePixelShaders(MODEL_SHADER_DESAT_LM,
+                        m_pTexture.m_pObject, m_lstTextures[i].m_pObject, 0, 0);
+                    float afColor[4];
+                    afColor[0] = 0.0f;
+                    afColor[1] = 0.0f;
+                    afColor[2] = 0.0f;
+                    afColor[3] = 0.75f;
+                    if ((existingextensions & ATI_FRAGMENT_SHADER_BIT) == ATI_FRAGMENT_SHADER_BIT)
+                        glSetFragmentShaderConstantATI(GL_CON_1_ATI, afColor);
+                    else
+                        glCombinerParameterfvNV(GL_CONSTANT_COLOR1_NV, afColor);
+                }
+                else
+                {
+                    GLRender_EnablePixelShaders(MODEL_SHADER_NV1X_LIGHTMAP,
+                        m_pTexture.m_pObject, m_lstTextures[i].m_pObject, 0, 0);
+                }
                 GLRender::DrawLightmappedGrass(m_pVertices, 12, &m_nIndexOffset,
                     nStride, nFirst, m_lstTextureIndices[i]);
                 nFirst += m_lstTextureIndices[i] * 4;
             }
-            GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
+            if (g_ForceSight)
+                GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
+            else
+                GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
             GLRender::ActivateTextureStage(1);
             GLRender_DisableClientState(CLIENT_STATE_TEXTURE_COORD);
             GLRender::ActivateTextureStage(0);
@@ -288,8 +314,23 @@ void CAurTriangleBin::RenderGrassPolys(int nGrassInfo, const Vector& vPosition,
     }
     else
     {
-        GLRender::DrawLightmappedGrass(&m_nVertexOffset, 12, &m_nIndexOffset,
+        if (g_ForceSight)
+        {
+            GLRender_EnablePixelShaders(MODEL_SHADER_DESAT, m_pTexture.m_pObject, 0, 0, 0);
+            float afColor[4];
+            afColor[0] = 0.0f;
+            afColor[1] = 0.0f;
+            afColor[2] = 0.0f;
+            afColor[3] = 1.0f;
+            if ((existingextensions & ATI_FRAGMENT_SHADER_BIT) == ATI_FRAGMENT_SHADER_BIT)
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, afColor);
+            else
+                glCombinerParameterfvNV(GL_CONSTANT_COLOR1_NV, afColor);
+        }
+        GLRender::DrawLightmappedGrass(m_pVertices, 12, &m_nIndexOffset,
                                       nStride, 0, m_nTriangles);
+        if (g_ForceSight)
+            GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
     }
     countfaces += m_nTriangles;
 #endif
@@ -600,7 +641,8 @@ void CAurTriangleBin::SortTriangles()
     m_lstTextureIndices.Add(nTriangles);
 }
 #ifndef _XBOX
-void CAurTriangleBin::CreateArrays()  // PC 0x004D5560
+// PC 0x004D5560
+void CAurTriangleBin::CreateArrays()
 {
     int nVertices = 4 * m_nTriangles;
     m_pVertices = (float*)new unsigned char[nVertices * m_nVertexSize];
@@ -611,9 +653,9 @@ void CAurTriangleBin::CreateArrays()  // PC 0x004D5560
     if (m_nFlags & MULTI_TEXTURE)
         SortTriangles();
     int nTriangles = m_lstTriangles.m_nCount;
+    Vector vUp(0.0f, 0.0f, 1.0f);
     m_nFlags |= HAS_VERTEX_DATA;
     int nAttribute = nIndexOffset / sizeof(float) - 1;
-    Vector vUp(0.0f, 0.0f, 1.0f);
     int nVertex = -1;
     Vector vWeight;
     Quaternion qRotation;

@@ -7,6 +7,10 @@
 #include <string.h>
 #include <ctype.h>
 #include "swmain.h"
+#include "exobase.h"
+
+extern bool g_bTexturesRebuilt;
+#define AURGUI_MAX_WRAPPED_LINES 100
 #ifdef _XBOX
 
 #define m_fScale 1.0f
@@ -88,8 +92,14 @@ void CAurGUIStringInternal::WrapStrings(int nWidth)
         if (strlen((char*)pLineStart) <= 2 && nWrapWidth < 2 * nMinWidth)
             return;
 
+        int nLines = 0;
         while (*pChar)
         {
+            if (++nLines > AURGUI_MAX_WRAPPED_LINES)
+            {
+                CExoString sString(m_sString);
+                return;
+            }
             int nChar;
             unsigned char* pBreak = 0;
             while (*pChar == '\n')
@@ -911,13 +921,15 @@ void CAurGUIImageInternal::DrawBuffered(float fX, float fY, float fWidth,
     if (nTextureTID != cm_nGUITID || bColored != cm_bIsVTC ||
         fAlpha != cm_fAlpha ||
         (bColored && cm_nGUIBufferSizeUsed + 24 >= 2048) ||
-        (!bColored && cm_nGUIBufferSizeUsed + 20 >= 2048))
+        (!bColored && cm_nGUIBufferSizeUsed + 20 >= 2048) ||
+        g_bTexturesRebuilt)
     {
         FlushBuffer(cm_fAlpha);
         cm_nGUITID = nTextureTID;
         cm_pMaterial = m_pMaterial;
         cm_bIsVTC = bColored;
         cm_fAlpha = fAlpha;
+        g_bTexturesRebuilt = false;
     }
 
 #ifdef _XBOX

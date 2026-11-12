@@ -181,6 +181,21 @@ float CExoLocString::GetSpokenTimeEstimate(int nID, unsigned char nGender) const
     nGender = (nID == 0) ? 0 : nGender;
     nStringID = nGender + 2 * nID;
     GetString(nStringID, &sString, 0);
+    int nTokenStart = sString.Find('<', 0);
+    int nCustomStart = sString.Find('{', 0);
+    if (nTokenStart != -1 || nCustomStart != -1)
+    {
+        g_pTlkTable->ParseStr(sString);
+    }
+    while (sString.GetLength() > 0 && sString[0] == ' ')
+    {
+        sString = sString.SubString(1, sString.GetLength() - 1);
+    }
+    while (sString.GetLength() > 0 &&
+           sString[sString.GetLength() - 1] == ' ')
+    {
+        sString = sString.SubString(0, sString.GetLength() - 1);
+    }
     if (sString.GetLength() != 0)
     {
         return sString.GetLength() * TIME_PER_CHARACTER_SPOKEN + 1.0f;

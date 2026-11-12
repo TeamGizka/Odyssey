@@ -173,6 +173,10 @@ int CTlkTable::Fetch(unsigned long nStrRef, STR_RES& pResult,
     int nResult;
 
     m_nCurGender = nGender;
+    if (nGender > 1)
+    {
+        m_nCurGender = 0;
+    }
     nResult = FetchInternal(nStrRef, pResult, FALSE);
 
     if (m_bDebugMode)
@@ -501,6 +505,35 @@ void CTlkTable::ParseStr(CExoString& sText)
 TokenDone:
                 nStart = nPos + 1;
                 sParsed = sParsed + sValue;
+            }
+        }
+        else if (pText[nPos] == '{')
+        {
+            if (pText[nPos + 1] == '{')
+            {
+                ++nPos;
+                int bParsing = m_bParsing;
+                if (!bParsing)
+                {
+                    sParsed = sParsed + CExoString(pText + nStart, nPos - nStart);
+                }
+                nStart = nPos + 1;
+            }
+            else
+            {
+                int bParsing = m_bParsing;
+                if (!bParsing)
+                {
+                    sParsed = sParsed + CExoString(pText + nStart, nPos - nStart);
+                }
+                for (++nPos; pText[nPos] != '\0'; ++nPos)
+                {
+                    if (pText[nPos] == '}')
+                    {
+                        break;
+                    }
+                }
+                nStart = nPos + 1;
             }
         }
         ++nPos;

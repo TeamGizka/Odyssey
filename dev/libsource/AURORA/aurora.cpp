@@ -181,6 +181,19 @@ char* testsetpausecolor(char* sArguments)
 #endif
     return "SUCCESS";
 }
+// PC 0x00463000
+void AurEnableForceSight()
+{
+    g_ForceSight = true;
+    if (!AurFrameBufferModificationsAvailable() &&
+        !AurATIFrameBufferModificationsAvailable())
+        g_ForceSight = false;
+}
+// PC 0x00463020
+void AurDisableForceSight()
+{
+    g_ForceSight = false;
+}
 // PC 0x00463030
 void AurDisableVertexBufferObjects()
 {
@@ -228,9 +241,13 @@ void AurReportError(int nLine, const char* sFile, const char* sMessage)
 }
 #endif
 // PC 0x00463080
-int AurAddDrawableSquare(float* pVertices, unsigned long nColor)
+int (AurAddDrawableSquare)(float* pVertices, unsigned long nColor,
+                           const char* sFile, int nLine)
 {
     unsigned long nPool;
+    char sMessage[256];
+    sprintf(sMessage, "BOWTIE [%s line %d] (%.2f, %.2f, %.2f)\n", sFile, nLine,
+            pVertices[3], pVertices[4], pVertices[5]);
 #ifdef _XBOX
 
     unsigned char nBlue = (unsigned char)(nColor >> 16);
@@ -322,6 +339,11 @@ int AurQueryMaximumAnisotropy()  // PC 0x004631A0
     return (int)largest_supported_anisotropy;
 }
 #endif
+// PC 0x004631B0
+bool AurIsSpeedBlurEnabled()
+{
+    return GLRender::m_bSpeedBlurEnabled;
+}
 // PC 0x004631C0
 void AurEnableSpeedBlur()
 {
@@ -363,6 +385,21 @@ void AurEnableScanNoise()
 void AurDisableScanNoise()
 {
     GLRender::m_bScanNoiseEnabled = false;
+}
+// PC 0x00463220
+void AurEnableClairvoyance(bool bLetterbox)
+{
+    GLRender::EnableDreamDistortion(bLetterbox);
+}
+// PC 0x00463230
+void AurDisableClairvoyance()
+{
+    GLRender::DisableDreamDistortion();
+}
+// PC 0x00463240
+void AurEnableForceFury(short nLevel)
+{
+    GLRender::EnableFury(nLevel);
 }
 // PC 0x00463250
 void AurSetSaturationParams(Vector vColor, float fSaturation)
@@ -437,6 +474,16 @@ int AurQueryAntiAliasingMode(int nMode)  // PC 0x00463290
         }
     }
     return 0;
+}
+// PC 0x00463410
+void AurSetClearColor(float fRed, float fGreen, float fBlue, float fAlpha)
+{
+    glClearColor(fRed, fGreen, fBlue, fAlpha);
+}
+// PC 0x00463430
+void AurGetClearColor(float* pColor)
+{
+    glGetFloatv(GL_COLOR_CLEAR_VALUE, pColor);
 }
 // PC 0x00463450
 int SetAnisotropicFilter(int nLevel)

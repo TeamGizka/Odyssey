@@ -82,6 +82,7 @@ void ImageJulia(int nWidth, int nHeight, int nBPP, unsigned char* pImage,
 unsigned char ImageInterpolate(unsigned char* pImage, float fX, float fY,
                                int nWidth, int nHeight);
 unsigned char* ImageBuildPerlin(int nSize, float fScale);
+unsigned char* ImageBuildParameterPerlin(int nSize, float fScale, int nRange, int nBase);
 unsigned char ImageGetPerlinPixel(unsigned char** ppImages, int nRow, int nColumn,
                         int nStart, int nLevels, int nSize);
 float ImageGetAlphaMean(unsigned char* pImage, int nWidth, int nHeight,
@@ -99,7 +100,7 @@ unsigned char* ImageQuarterRotated(unsigned char* pImage, int nWidth,
 void ImageFillAlpha(unsigned char* pImage, int nWidth, int nHeight, int nBPP,
                     const Vector& vColor);
 void ImageWriteTGA(char* sFileName, int nWidth, int nHeight, int nBPP,
-                   unsigned char* pImage);
+                   unsigned char* pImage, bool bFlipY = true);
 unsigned char* ImageReadS3TC(FILE* pFile, int* pnWidth, int* pnHeight,
                              int* pnFormat, int* pnSize, float* pfScale);
 unsigned char* ImageReadS3TC(char* sFileName, int* pnWidth, int* pnHeight,

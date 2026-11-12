@@ -3468,6 +3468,7 @@ PartEmitter::PartEmitter(MdlNode* pNode)
 }
 
 #define AUREMITTER_DEBUG_CONTROL_POINTS 0
+extern unsigned int ATI_FRAGMENT_SHADER_BIT;
 // PC 0x004C87B0
 void PartEmitter::RenderFunc()
 {
@@ -3505,9 +3506,7 @@ void PartEmitter::RenderFunc()
     MdlNodeEmitter* pNode = m_pNode->AsMdlNodeEmitter();
     if (pNode->IsPointToPoint() && m_pTarget == 0)
     {
-        if (m_pAurObject != 0 && m_pAurObject->m_pModel != 0 &&
-            (m_pAurObject->m_bDistortion ||
-             bool(m_pAurObject->m_pModel->m_Classification.m_bSceneHitDisabled)))
+        if (m_pAurObject != 0 && m_pAurObject->IsDistortionEnabled())
         {
             GLRender_SetColorMask(1, 1, 1, 1);
 #ifdef _XBOX
@@ -3531,6 +3530,20 @@ void PartEmitter::RenderFunc()
             GLRender_Disable(ENABLE_STENCIL_TEST);
         }
         return;
+    }
+
+    if (g_ForceSight)
+    {
+        GLRender_EnablePixelShaders(MODEL_SHADER_DESAT, 0, 0, 0, 0);
+        float afColor[4];
+        afColor[0] = 0.0f;
+        afColor[1] = 0.0f;
+        afColor[2] = 0.0f;
+        afColor[3] = 1.0f;
+        if ((existingextensions & ATI_FRAGMENT_SHADER_BIT) == ATI_FRAGMENT_SHADER_BIT)
+            glSetFragmentShaderConstantATI(GL_CON_1_ATI, afColor);
+        else
+            glCombinerParameterfvNV(GL_CONSTANT_COLOR1_NV, afColor);
     }
 
     if (m_nReserved114 == Linked)
@@ -3823,6 +3836,9 @@ void PartEmitter::RenderFunc()
     {
         RenderStandard();
     }
+
+    if (g_ForceSight)
+        GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
 
     if (m_pAurObject != 0 && m_pAurObject->m_pModel != 0 &&
         (m_pAurObject->m_bDistortion ||

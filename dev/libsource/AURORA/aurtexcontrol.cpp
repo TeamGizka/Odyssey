@@ -23,9 +23,11 @@ int filterwater = 1;
 int lowqualityblur2 = 1;
 int lowqualityblur = 0;
 unsigned char* ImageBuildPerlin(int nSize, float fScale);
+unsigned char* ImageBuildParameterPerlin(int nSize, float fScale, int nRange, int nBase);
 unsigned char ImageGetPerlinPixel(unsigned char** ppImages, int nRow, int nColumn,
                         int nStart, int nLevels, int nSize);
 
+#define DIRTY_PERLIN_PERSISTENCE 0.58181816f
 float amplitude = 0.03f;
 float frequency1 = 60.0f;
 float frequency2 = 25.0f;
@@ -503,6 +505,53 @@ void RandomTextureController::Init()
 
     m_pRandomImage = new unsigned char[nWidth * nHeight];
     m_pChannelImage = new unsigned char[nWidth * nHeight * nBPP];
+}
+// PC 0x00476600
+void DirtyTextureController::MakePerlinTexture(unsigned char* pImage, int nRange)
+{
+    int nWidth = m_pTexture->GetWidth();
+    int nSize = m_pTexture->GetHeight();
+    int nImageSize = 4;
+    float fScale = 1.0f;
+    int nLevels = 1;
+    int i;
+    int j;
+    unsigned char** ppImages;
+
+    while ((4 << nLevels) <= nSize)
+    {
+        nLevels++;
+    }
+
+    ppImages = new unsigned char*[nLevels];
+    for (i = 0; i < nLevels; i++, nImageSize *= 2)
+    {
+        ppImages[i] = ImageBuildParameterPerlin(nImageSize, fScale, nRange, 0);
+        fScale *= DIRTY_PERLIN_PERSISTENCE;
+    }
+
+    for (i = 0; i < nSize; i++)
+    {
+        for (j = 0; j < nSize; j++)
+        {
+            pImage[i * nSize + j] =
+                ImageGetPerlinPixel(ppImages, i, j, 4, nLevels, nSize);
+        }
+    }
+
+    for (i = 0; i < nLevels; i++)
+    {
+        delete[] ppImages[i];
+    }
+    delete[] ppImages;
+}
+// PC 0x004767F0
+void DirtyTextureController::Control()
+{
+    if (m_nLastUpdate != texcurrentframe && m_pDirtyImage != NULL)
+    {
+        m_nLastUpdate = texcurrentframe;
+    }
 }
 // PC 0x00476810
 void RingDistortTextureController::Init()
@@ -1126,6 +1175,96 @@ void RandomTextureController::Control()
             }
         }
     }
+}
+// PC 0x004787B0
+void DirtyTextureController::Init(int nColor, int nSize, int nBlendMode, int nNoiseType)
+{
+    int nBPP = m_pTexture->GetBPP();
+    m_nDirtyFrame = 0;
+    m_nBlendMode = nBlendMode;
+    unsigned char* pNoiseX = new unsigned char[nSize * nSize];
+    unsigned char* pNoiseY = new unsigned char[nSize * nSize];
+    unsigned char* pNoiseZ = new unsigned char[nSize * nSize];
+    m_pDirtyImage = new unsigned char[nBPP * nSize * nSize * nSize];
+    m_pTexture->SetDepth(nSize);
+    m_pTexture->SetHeight(nSize);
+    m_pTexture->SetWidth(nSize);
+    int nWidth = m_pTexture->GetWidth();
+    int nHeight = m_pTexture->GetHeight();
+    int nRed = (nColor >> 16) & 0xff;
+    int nGreen = (nColor >> 8) & 0xff;
+    int nBlue = nColor & 0xff;
+    int nAlpha = nColor >> 24;
+    m_pTexture->SetDepth(m_pTexture->GetHeight());
+
+    int nOffset = 0;
+    int nRange = nRed;
+    nRange = nRange > nGreen ? nRange : nGreen;
+    nRange = nRange > nBlue ? nRange : nBlue;
+
+    if (nNoiseType == 1)
+    {
+        MakePerlinTexture(pNoiseX, nRange);
+        MakePerlinTexture(pNoiseY, nRange);
+        MakePerlinTexture(pNoiseZ, nRange);
+    }
+
+    for (int k = 0; k < nHeight; k++)
+    {
+        for (int i = 0; i < nWidth; i++)
+        {
+            for (int j = 0; j < nWidth; j++)
+            {
+                if (nNoiseType == 1)
+                {
+                    int nValue = pNoiseY[k * nHeight + j] + pNoiseX[k * nHeight + i] +
+                                 pNoiseZ[i * nWidth + j];
+                    if (nAlpha)
+                        m_pDirtyImage[nOffset + 3] = nValue % nAlpha;
+                    else
+                        m_pDirtyImage[nOffset + 3] = 0;
+                    if (nRed)
+                        m_pDirtyImage[nOffset] = nValue % nRed;
+                    else
+                        m_pDirtyImage[nOffset] = 0;
+                    if (nGreen)
+                        m_pDirtyImage[nOffset + 1] = nValue % nGreen;
+                    else
+                        m_pDirtyImage[nOffset + 1] = 0;
+                    if (nBlue)
+                        m_pDirtyImage[nOffset + 2] = nValue % nBlue;
+                    else
+                        m_pDirtyImage[nOffset + 2] = 0;
+                }
+                else
+                {
+                    int nValue = (unsigned char)rand();
+                    if (nAlpha)
+                        m_pDirtyImage[nOffset + 3] = nValue % nAlpha;
+                    else
+                        m_pDirtyImage[nOffset + 3] = 0;
+                    if (nRed)
+                        m_pDirtyImage[nOffset] = nValue % nRed;
+                    else
+                        m_pDirtyImage[nOffset] = 0;
+                    if (nGreen)
+                        m_pDirtyImage[nOffset + 1] = nValue % nGreen;
+                    else
+                        m_pDirtyImage[nOffset + 1] = 0;
+                    if (nBlue)
+                        m_pDirtyImage[nOffset + 2] = nValue % nBlue;
+                    else
+                        m_pDirtyImage[nOffset + 2] = 0;
+                }
+                nOffset += 4;
+            }
+        }
+    }
+
+    delete[] pNoiseX;
+    delete[] pNoiseY;
+    delete[] pNoiseZ;
+    m_pTexture->glImage(false, m_pDirtyImage);
 }
 // PC 0x00478CE0
 void TextureController::ParseField(char* sField)

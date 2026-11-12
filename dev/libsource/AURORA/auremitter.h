@@ -150,7 +150,7 @@ public:
     int m_nNodeID;
 
     char m_bIncludeChildBounds;
-    char m_bHologram;
+    bool m_bHologram;
     char m_bPerObjectIllumination;
 
     List<Part*> m_lstChildren;
@@ -588,6 +588,7 @@ public:
                           Vector vDirection, Vector vOffset, float fRange);
     void CalculateRadius();
     float GetTileAlpha();
+    void SetWeather(bool bWeather);
 };
 
 class CAurObject;

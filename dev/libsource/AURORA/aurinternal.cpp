@@ -9,6 +9,8 @@
 #include "aurmodel.h"
 #include "swmain.h"
 
+#define VIDEO_MAX_REFRESH_RATE 85.0f
+
 extern void AurInitExtensions();
 extern void AurTextureRefreshAll();
 
@@ -64,6 +66,7 @@ bool CAurInternal::GetValidMode(unsigned long* pnWidth, unsigned long* pnHeight,
                 displayMode.dmPelsHeight <= *pnHeight &&
                 displayMode.dmBitsPerPel <= *pnBitsPerPixel &&
                 displayMode.dmDisplayFrequency <= *pnRefreshRate &&
+                displayMode.dmDisplayFrequency <= VIDEO_MAX_REFRESH_RATE &&
                 displayMode.dmPelsWidth >= selectedMode.dmPelsWidth &&
                 displayMode.dmPelsHeight >= selectedMode.dmPelsHeight &&
                 displayMode.dmBitsPerPel >= selectedMode.dmBitsPerPel &&
@@ -221,6 +224,7 @@ int CAurInternal::ResetGammaRamp(float fGamma, int bSaveGamma)  // PC 0x00461A10
         return nResult;
     }
     SetDeviceGammaRamp((HDC)nResult, ramp);
+    ReleaseDC(g_hRenderWnd, (HDC)nResult);
     return 1;
 }
 #endif
@@ -414,7 +418,8 @@ int CAurInternalGL::Initialize(HWND hApplicationWindow, HWND hRenderWindow,  // 
                 if (displayMode.dmPelsWidth == nWidth &&
                     displayMode.dmPelsHeight == nHeight &&
                     displayMode.dmBitsPerPel == nBitsPerPixel &&
-                    displayMode.dmDisplayFrequency == nRefreshRate)
+                    displayMode.dmDisplayFrequency == nRefreshRate &&
+                    displayMode.dmDisplayFrequency <= VIDEO_MAX_REFRESH_RATE)
                 {
                     if (ChangeDisplaySettingsA(&displayMode, CDS_TEST) !=
                         DISP_CHANGE_SUCCESSFUL)
@@ -656,7 +661,8 @@ int CAurInternalGL::InitEditor(HWND hApplicationWindow, HWND hRenderWindow,  // 
                 if (displayMode.dmPelsWidth == nWidth &&
                     displayMode.dmPelsHeight == nHeight &&
                     displayMode.dmBitsPerPel == nBitsPerPixel &&
-                    displayMode.dmDisplayFrequency == nRefreshRate)
+                    displayMode.dmDisplayFrequency == nRefreshRate &&
+                    displayMode.dmDisplayFrequency <= VIDEO_MAX_REFRESH_RATE)
                 {
                     if (ChangeDisplaySettingsA(&displayMode, CDS_TEST) !=
                         DISP_CHANGE_SUCCESSFUL)
@@ -695,11 +701,11 @@ int CAurInternalGL::InitEditor(HWND hApplicationWindow, HWND hRenderWindow,  // 
     }
     memset(&pixelFormat, 0, sizeof(pixelFormat));
     pixelFormat.iPixelType = PFD_TYPE_RGBA;
-    pixelFormat.cDepthBits = 32;
-    pixelFormat.cColorBits = 32;
     pixelFormat.nSize = sizeof(pixelFormat);
     pixelFormat.nVersion = 1;
     pixelFormat.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+    pixelFormat.cDepthBits = 32;
+    pixelFormat.cColorBits = 32;
     pixelFormat.iLayerType = PFD_MAIN_PLANE;
     pixelFormat.cStencilBits = 8;
     int nPixelFormat = ChoosePixelFormat(hDeviceContext, &pixelFormat);

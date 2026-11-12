@@ -1185,7 +1185,6 @@ inline int CExoSoundInternal::GetSoundMode()
 {
     return m_anSoundMode[m_nSoundMode];
 }
-
 #ifndef _XBOX
 inline int CExoSoundInternal::GetLostFocusPaused()
 {

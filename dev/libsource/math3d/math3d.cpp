@@ -15,6 +15,11 @@ float DegToRad(float fDegrees)
 }
 
 #include <math.h>
+#define SEGMENT_SMALL_NUM 0.00000001
+#define SEGMENT_SMALL_NUM_F 0.00000001f
+#define SEGMENT_DOT(a, b) ((a).m_fX * (b).m_fX + (a).m_fY * (b).m_fY + (a).m_fZ * (b).m_fZ)
+#define SEGMENT_ABS(x) ((x) < 0 ? -(x) : (x))
+#define SEGMENT_MAX(a, b) ((a) > (b) ? (a) : (b))
 // PC 0x004D6970
 double Round(float fValue, float fRoundTo)
 {
@@ -96,30 +101,6 @@ Vector operator*(const Matrix& matrix, const Vector& vector)
                       matrix.m_vSecond.m_fZ * vector.m_fY +
                       matrix.m_vThird.m_fZ * vector.m_fZ);
 }
-
-Quaternion operator*(const Quaternion& left, const Quaternion& right)
-{
-    return Quaternion(left.m_fW * right.m_fW - left.m_fX * right.m_fX -
-                          left.m_fY * right.m_fY - left.m_fZ * right.m_fZ,
-                      left.m_fW * right.m_fX + left.m_fX * right.m_fW +
-                          left.m_fY * right.m_fZ - left.m_fZ * right.m_fY,
-                      left.m_fW * right.m_fY - left.m_fX * right.m_fZ +
-                          left.m_fY * right.m_fW + left.m_fZ * right.m_fX,
-                      left.m_fW * right.m_fZ + left.m_fX * right.m_fY -
-                          left.m_fY * right.m_fX + left.m_fZ * right.m_fW);
-}
-
-Quaternion operator-(const Quaternion& quaternion)
-{
-    return Quaternion(quaternion.m_fW * -1.0f, quaternion.m_fX, quaternion.m_fY,
-                      quaternion.m_fZ);
-}
-
-Quaternion operator*(const Quaternion& quaternion, float fScale)
-{
-    return Quaternion(quaternion.m_fW * fScale, quaternion.m_fX * fScale,
-                      quaternion.m_fY * fScale, quaternion.m_fZ * fScale);
-}
 // PC 0x004D84C0
 Vector segmentproject(const Vector& vStart, const Vector& vEnd,
                       const Vector& vPoint)
@@ -164,50 +145,6 @@ void Plane::Transform(const Vector& vPosition, const Quaternion& qOrientation)
     m_fDistance = -(origin * newnormal);
 }
 
-Vector operator*(const Quaternion& quaternion, const Vector& vector)
-{
-    if (quaternionidentityoptimization &&
-        (quaternion.m_fW == 1.0f || quaternion.m_fW == -1.0f))
-    {
-        return vector;
-    }
-
-    float fXX = quaternion.m_fX * quaternion.m_fX;
-    float fYY = quaternion.m_fY * quaternion.m_fY;
-    float fZZ = quaternion.m_fZ * quaternion.m_fZ;
-    float fXY = quaternion.m_fY * quaternion.m_fX;
-    float fXZ = quaternion.m_fZ * quaternion.m_fX;
-    float fWX = quaternion.m_fX * quaternion.m_fW;
-    float fYZ = quaternion.m_fZ * quaternion.m_fY;
-    float fWY = quaternion.m_fY * quaternion.m_fW;
-    float fWZ = quaternion.m_fZ * quaternion.m_fW;
-
-    float fM00 = 1.0f - (fZZ + fYY) * 2.0f;
-    float fM01 = (fXY - fWZ) * 2.0f;
-    float fM02 = (fWY + fXZ) * 2.0f;
-    float fM10 = (fWZ + fXY) * 2.0f;
-    float fM11 = 1.0f - (fZZ + fXX) * 2.0f;
-    float fM12 = (fYZ - fWX) * 2.0f;
-    float fM20 = (fXZ - fWY) * 2.0f;
-    float fM21 = (fYZ + fWX) * 2.0f;
-    float fM22 = 1.0f - (fYY + fXX) * 2.0f;
-
-    return Vector(fM00 * vector.m_fX + fM01 * vector.m_fY + fM02 * vector.m_fZ,
-                  fM11 * vector.m_fY + fM10 * vector.m_fX + fM12 * vector.m_fZ,
-                  fM22 * vector.m_fZ + fM20 * vector.m_fX + fM21 * vector.m_fY);
-}
-
-Quaternion operator+(const Quaternion& left, const Quaternion& right)
-{
-    return Quaternion(left.m_fW + right.m_fW, left.m_fX + right.m_fX,
-                      left.m_fY + right.m_fY, left.m_fZ + right.m_fZ);
-}
-
-float quaternionDot(const Quaternion& left, const Quaternion& right)
-{
-    return left.m_fW * right.m_fW + left.m_fX * right.m_fX +
-           left.m_fY * right.m_fY + left.m_fZ * right.m_fZ;
-}
 // PC 0x004D8A90
 Quaternion normalize(Quaternion quaternion)
 {
@@ -513,6 +450,81 @@ int equal(const Vector& vFirst, const Vector& vSecond)
 {
     return vFirst.m_fX == vSecond.m_fX && vFirst.m_fY == vSecond.m_fY &&
            vFirst.m_fZ == vSecond.m_fZ;
+}
+// PC 0x004D7670
+float ClosestDistanceBetweenSegments(const Vector& vFirstStart, const Vector& vFirstEnd,
+                                     const Vector& vSecondStart, const Vector& vSecondEnd)
+{
+    Vector u = vFirstEnd - vFirstStart;
+    Vector v = vSecondEnd - vSecondStart;
+    Vector w = vFirstStart - vSecondStart;
+    float a = SEGMENT_DOT(u, u);
+    float b = SEGMENT_DOT(u, v);
+    float c = SEGMENT_DOT(v, v);
+    float d = SEGMENT_DOT(u, w);
+    float e = SEGMENT_DOT(v, w);
+    float D = a * c - b * b;
+    float sc, sN, sD = D;
+    float tc, tN, tD = D;
+
+    if (D < SEGMENT_SMALL_NUM)
+    {
+        sN = 0.0f;
+        sD = 1.0f;
+        tN = e;
+        tD = c;
+    }
+    else
+    {
+        sN = b * e - c * d;
+        tN = a * e - b * d;
+        if (sN < 0.0)
+        {
+            sN = 0.0f;
+            tN = e;
+            tD = c;
+        }
+        else if (sN > sD)
+        {
+            sN = sD;
+            tN = e + b;
+            tD = c;
+        }
+    }
+
+    if (tN < 0.0)
+    {
+        tN = 0.0f;
+        if (-d < 0.0)
+            sN = 0.0f;
+        else if (-d > a)
+            sN = sD;
+        else
+        {
+            sN = -d;
+            sD = a;
+        }
+    }
+    else if (tN > tD)
+    {
+        tN = tD;
+        if (-d + b < 0.0)
+            sN = 0.0f;
+        else if (-d + b > a)
+            sN = sD;
+        else
+        {
+            sN = -d + b;
+            sD = a;
+        }
+    }
+
+    sc = fabs(sN) < SEGMENT_SMALL_NUM_F ? 0.0f : sN / sD;
+    tc = fabs(tN) < SEGMENT_SMALL_NUM_F ? 0.0f : tN / tD;
+
+    Vector dP = w + (sc * u) - (tc * v);
+    return SEGMENT_MAX(SEGMENT_ABS(dP.m_fX),
+                       SEGMENT_MAX(SEGMENT_ABS(dP.m_fY), SEGMENT_ABS(dP.m_fZ)));
 }
 // PC 0x004D7A90
 void MakeMatrix4x4(float* pMatrix, const Vector& vTranslation,
@@ -1070,11 +1082,6 @@ Vector normalize(const Vector& vector)
                   vector.m_fZ * fReciprocal);
 }
 
-Vector cmul(const Vector& left, const Vector& right)
-{
-    return Vector(left.m_fX * right.m_fX, left.m_fY * right.m_fY,
-                  left.m_fZ * right.m_fZ);
-}
 // PC 0x004D9F80
 Vector NormalOf(const Vector& vFirst, const Vector& vSecond,
                 const Vector& vThird)
@@ -1090,12 +1097,6 @@ Vector NormalOf(const Vector& vFirst, const Vector& vSecond,
                   vNormal.m_fZ * fReciprocal);
 }
 
-Vector cross(const Vector& vFirst, const Vector& vSecond)
-{
-    return Vector(vFirst.m_fY * vSecond.m_fZ - vFirst.m_fZ * vSecond.m_fY,
-                  vFirst.m_fZ * vSecond.m_fX - vFirst.m_fX * vSecond.m_fZ,
-                  vFirst.m_fX * vSecond.m_fY - vFirst.m_fY * vSecond.m_fX);
-}
 // PC 0x004D82B0
 Vector planelineintersection(const Vector& vNormal, float fDistance,
                              const Vector& vStart, const Vector& vEnd)

@@ -80,7 +80,8 @@ public:
         RENDER_LIGHTMAPPED = 12,
         RENDER_LIGHTMAPPED_VP = 13,
         RENDER_LIGHTMAPPED_NO_SHADERS = 14,
-        RENDER_NORMALMAPPED = 15
+        RENDER_NORMALMAPPED = 15,
+        RENDER_NOISEMAPPED = 16
     };
 
     Vector m_vMinimum;

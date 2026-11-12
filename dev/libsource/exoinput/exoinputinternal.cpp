@@ -1433,7 +1433,7 @@ CExoArrayList<CExoInputEvent> CExoInputInternal::GetEvents(int& nEvents, int nEv
 #ifdef _XBOX
         g_pExoBase->m_pExoDebug->Warning(1381, "exoinputinternal.cpp",
 #else
-        g_pExoBase->m_pExoDebug->Warning(1483, "exoinputinternal.cpp",
+        g_pExoBase->m_pExoDebug->Warning(1506, "exoinputinternal.cpp",
 #endif
             "CExoInputInternal::GetEvents() Invalid InputClass parameter");
         return CExoArrayList<CExoInputEvent>();

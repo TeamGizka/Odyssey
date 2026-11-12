@@ -1,5 +1,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <mmsystem.h>
 #include <GL/gl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,18 +43,6 @@ int countcull = 0;
 
 int countdisplaycreates = 0;
 int g_bInScreenshotMode = 0;
-float g_RenderStaticTime = 0.0f;
-float g_RenderGrassTime = 0.0f;
-
-float g_RenderTriggersTime = 0.0f;
-float g_RenderShadowsTime = 0.0f;
-float g_RenderDebugTime = 0.0f;
-float g_RenderDynamicTime = 0.0f;
-float g_RenderEmittersFlaresTime = 0.0f;
-float g_RenderFrameBufferModsTime = 0.0f;
-
-float g_SceneAnimateTime = 0.0f;
-float g_RenderTotalTime = 0.0f;
 static void NOP();
 
 void (*AurRenderCallback)() = NOP;
@@ -62,7 +51,6 @@ int Scene::geomFadeEnabled = ENABLE_FADE;
 int checkstasis = 1;
 
 int g_FocusModelCount = 0;
-extern float g_fLuminanceScale;
 int enablegetnearestlights = 0;
 int count_render = 0;
 int enableshadows = 1;
@@ -128,6 +116,7 @@ int doprofile = 0;
 int g_nDanglyMeshAnimationByMod3Counter = 2;
 
 Scene* g_pLastScene = NULL;
+unsigned long g_SceneRender_CurrentTime_ms;
 
 float mintopshadowalpha = 0.0f;
 float shadowcutoffangle = 0.0f;
@@ -293,6 +282,13 @@ void AurEnableInterleavedAnimations()
 void AurDisableInterleavedAnimations()
 {
     g_bEnableInterleavedAnimations = 0;
+}
+// PC 0x004638A0
+bool Gob::IsDistortionEnabled()
+{
+    if (m_pModel)
+        return m_bDistortion || bool(m_pModel->m_Classification.m_bSceneHitDisabled);
+    return false;
 }
 
 int SceneGetNearestLights(Scene* pScene, Vector vPosition, float fRadius)
@@ -569,8 +565,6 @@ void Scene::RenderGobBefore(CAurObject* pObject, CAurObject* pBefore)
 
 int AurGetStencilClearValue();
 
-static __int64 g_endtime;
-static __int64 g_starttime;
 // PC 0x00468350
 void CollapsePartTree(Gob* pGob, Part* pPart, List<Part*>& lstParts,
                       Vector vPosition, Quaternion qOrientation,
@@ -844,6 +838,14 @@ float Scene::GetObjectScale(CAurObject* pObject)
 {
     return ((Gob*)pObject)->m_fScale;
 }
+// PC 0x00463E90
+void Scene::SetFogColor(const Vector& vColor)
+{
+    m_vFogColor = vColor;
+    Vector& vFog = m_vFogColor;
+    m_v80.m_fX = m_v80.m_fY = m_v80.m_fZ =
+        (vFog.m_fX * 0.3f + vFog.m_fY * 0.59f + vFog.m_fZ * 0.11f) * g_DesatureFactor;
+}
 
 extern int numgobs;
 // PC 0x00463EF0
@@ -988,9 +990,6 @@ void Scene::DoMeshBuckets()
 }
 
 extern int interleaveanimations;
-
-static __int64 g_starttime2;
-static __int64 g_endtime2;
 
 extern int renderpersonalspace;
 
@@ -1597,7 +1596,9 @@ void Scene::AddFacesToBins(PartAABB* pAABB, const Vector& vMinimum,
         Vector vCenter;
         Vector* pVertex = (Vector*)((char*)pBuffer + nOffset + pNode->m_nPositionOffset +
             pNode->m_nVertexStride * face.m_anVertexIndices[0]);
-        vCenter = *pVertex;
+        vCenter.m_fX = pVertex->m_fX;
+        vCenter.m_fY = pVertex->m_fY;
+        vCenter.m_fZ = pVertex->m_fZ;
         pVertex = (Vector*)((char*)pBuffer + nOffset + pNode->m_nPositionOffset +
             pNode->m_nVertexStride * face.m_anVertexIndices[1]);
         vCenter.m_fX += pVertex->m_fX;
@@ -1858,6 +1859,11 @@ void Scene::DoBinBucket()
         return;
     }
 
+    int bAlphaTestEnabled = GLRender_IsEnabled(ENABLE_ALPHA_TEST);
+    if (!bAlphaTestEnabled)
+    {
+        GLRender_Enable(ENABLE_ALPHA_TEST);
+    }
     GLRender_Enable(ENABLE_BLEND);
     GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
     GLRender_Disable(ENABLE_CULL_FACE);
@@ -1891,6 +1897,10 @@ void Scene::DoBinBucket()
     GLRender_SetAlphaFunc(CMP_GREATER, alphatest);
     PartTriMesh::m_bMaterialHasChanged = true;
     GLRender_Enable(ENABLE_CULL_FACE);
+    if (!bAlphaTestEnabled)
+    {
+        GLRender_Disable(ENABLE_ALPHA_TEST);
+    }
 }
 // PC 0x00464460
 int __cdecl GobOrderCmp(const void* pGob1, const void* pGob2)
@@ -1929,27 +1939,31 @@ int __cdecl GobOrderCmp(const void* pGob1, const void* pGob2)
 
     char bCharacterA = pModelA->m_bCharacter;
     char bCharacterB = pModelB->m_bCharacter;
-
-    if (bCharacterA && !bCharacterB)
-        return 1;
-    if (!bCharacterA && bCharacterB)
-        return -1;
-
-    char bRenderEarlyA = pModelA->m_bRenderEarly;
-    char bRenderEarlyB = pModelB->m_bRenderEarly;
-
-    if (bRenderEarlyA && !bRenderEarlyB)
-        return -1;
-    if (!bRenderEarlyA && bRenderEarlyB)
-        return 1;
-
     char bDoorA = pModelA->m_bDoor;
     char bDoorB = pModelB->m_bDoor;
 
-    if (bDoorA && !bDoorB)
-        return -1;
-    if (!bDoorA && bDoorB)
-        return 1;
+    if (!g_ForceSight)
+    {
+        if (bDoorA && !bDoorB)
+            return 1;
+        if (!bDoorA && bDoorB)
+            return -1;
+        if (bCharacterA && !bCharacterB)
+            return -1;
+        if (!bCharacterA && bCharacterB)
+            return 1;
+    }
+    else
+    {
+        if (bDoorA && !bDoorB)
+            return -1;
+        if (!bDoorA && bDoorB)
+            return 1;
+        if (bCharacterA && !bCharacterB)
+            return 1;
+        if (!bCharacterA && bCharacterB)
+            return -1;
+    }
 
     if (pGobA->m_fZOrder > pGobB->m_fZOrder)
         return 1;
@@ -2020,6 +2034,7 @@ void Scene::DoGobShadowsForThisLight(PartLight& light)
     float fRadius = light.m_fRadius;
     if (light.m_fShadowRadius > 0.0f)
         fRadius = light.m_fShadowRadius;
+    Vector vFocus = m_SceneRoot.GetPosition();
 
     int i = gobbucket.m_nCount;
     while (i--)
@@ -2055,6 +2070,11 @@ void Scene::DoGobShadowsForThisLight(PartLight& light)
 #endif
 
         Vector vPosition = pGob->m_vPosition;
+        Vector vDelta = vPosition - vFocus;
+        if (vDelta.m_fX * vDelta.m_fX + vDelta.m_fY * vDelta.m_fY +
+                vDelta.m_fZ * vDelta.m_fZ >
+            AUR_SHADOW_GOB_RANGE_SQUARED)
+            continue;
         if (pGob->IsInCutscene())
 
         {
@@ -2256,20 +2276,7 @@ void Scene::RenderStaticGeometry()
     SetMaterialParameter(FACING_FRONT, MATERIAL_EMISSION, afBlack);
 
     DoMeshBuckets();
-#ifndef _XBOX
-
-    g_endtime = QueryTimer();
-    g_RenderStaticTime = (int)(g_endtime - g_starttime) * 0.001f;
-    g_starttime = QueryTimer();
-#endif
     DoBinBucket();
-#ifndef _XBOX
-    g_endtime = QueryTimer();
-#ifndef _XBOX
-    g_RenderGrassTime = (int)(g_endtime - g_starttime) * 0.001f;
-    g_starttime = QueryTimer();
-#endif
-#endif
 }
 // PC 0x00464F70
 int Scene::RenderOnlyGobs()
@@ -2307,6 +2314,10 @@ void Scene::DoFog()
             {
                 Vector vBlack(0.0f, 0.0f, 0.0f);
                 GLRender_SetFogModev(FOG_COLOR, vBlack);
+            }
+            else if (g_ForceSight)
+            {
+                GLRender_SetFogModev(FOG_COLOR, m_v80);
             }
             else
             {
@@ -2350,6 +2361,10 @@ void Scene::DoFog()
 // PC 0x004651C0
 void RenderPersonalSpace(Scene* pScene)
 {
+    if (!renderpersonalspace)
+    {
+        return;
+    }
     GLRender_Disable(ENABLE_DEPTH_TEST);
     for (int i = 0; i < pScene->m_lstObjects.m_nCount; i++)
     {
@@ -2613,9 +2628,7 @@ void Scene::Render()  // PC 0x00465500
     AurATIValidate();
 #endif
     g_pLastScene = this;
-#ifndef _XBOX
-    g_starttime2 = QueryTimer();
-#endif
+    g_SceneRender_CurrentTime_ms = timeGetTime();
     if (m_nAnimationFrame == 0)
         UpdateEmitters();
     if (!interleaveanimations || !g_bEnableInterleavedAnimations)
@@ -2662,10 +2675,6 @@ void Scene::Render()  // PC 0x00465500
                 maxappendtime = appendtime;
             appendtime = 0;
             IsAnimating();
-#ifndef _XBOX
-            g_endtime2 = QueryTimer();
-            g_RenderTotalTime = (int)(g_endtime2 - g_starttime2) * 0.001f;
-#endif
         }
     }
     if (interleaveanimations && g_bEnableInterleavedAnimations)
@@ -2676,6 +2685,10 @@ void Scene::Render()  // PC 0x00465500
 void Scene::RenderSinglePass()
 
 {
+    GLRender::SetDirtyTexture(0, m_pDirtyTexture);
+    GLRender::SetDirtyTexture(1, m_pDirtyTexture2);
+    GLRender::SetDirtyTexture(2, m_pDirtyTexture3);
+    GLRender::m_pHologramFilterTexture = m_pHoloTexture;
     if (AurNV2xLevelShadersAvailable())
     {
         Matrix mCamera = CurrentCamera->m_qOrientation.getmatrix();
@@ -2698,9 +2711,6 @@ void Scene::RenderSinglePass()
     GLRender_Disable(ENABLE_STENCIL_TEST);
     GLRender_DisableClientState(CLIENT_STATE_COLOR);
     GLRender_DisableColorMaterial();
-#ifndef _XBOX
-    g_starttime = QueryTimer();
-#endif
     GLRender_SetLightModel(Homogenize(Vector(), 1.0f));
     GLRender_SetDepthMask(GL_TRUE);
     if (enablerenderstatic)
@@ -2722,11 +2732,6 @@ void Scene::RenderSinglePass()
         DoTriggerBucket();
         DoHighlightTriggers(false);
     }
-#ifndef _XBOX
-    g_endtime = QueryTimer();
-    g_RenderTriggersTime = (int)(g_endtime - g_starttime) * 0.001f;
-    g_starttime = QueryTimer();
-#endif
 
 #ifdef _XBOX
     ClearStencilBuffer();
@@ -2745,26 +2750,13 @@ void Scene::RenderSinglePass()
     if (m_pCurrentRoom && enableshadows)
         RenderShadows(0, 1, 1, 0);
 #endif
-#ifndef _XBOX
-    g_endtime = QueryTimer();
-    g_RenderShadowsTime = (int)(g_endtime - g_starttime) * 0.001f;
-
-    g_starttime = QueryTimer();
-#endif
     if (enablerenderdynamic)
+    {
         RenderDynamicGeometry();
-#ifndef _XBOX
-    g_endtime = QueryTimer();
-    g_RenderDynamicTime = (int)(g_endtime - g_starttime) * 0.001f;
-    g_starttime = QueryTimer();
-#endif
+        DoHologramGobBuckets();
+    }
     RenderPersonalSpace(this);
     RenderPaths(this);
-#ifndef _XBOX
-    g_endtime = QueryTimer();
-    g_RenderDebugTime = (int)(g_endtime - g_starttime) * 0.001f;
-    g_starttime = QueryTimer();
-#endif
     if (enablerendertriggers)
     {
 #ifdef _XBOX
@@ -2778,20 +2770,9 @@ void Scene::RenderSinglePass()
 #endif
         DoHighlightTriggers(true);
     }
-#ifndef _XBOX
-    g_endtime = QueryTimer();
-    g_RenderTriggersTime = (int)(g_endtime - g_starttime) * 0.001f +
-        g_RenderTriggersTime;
-    g_starttime = QueryTimer();
-#endif
     DoEmitterBucket();
     DoLightSaberBucket();
     GLRender::RenderDrawableSquares();
-#ifndef _XBOX
-    g_endtime = QueryTimer();
-    g_RenderEmittersFlaresTime = (int)(g_endtime - g_starttime) * 0.001f;
-    g_starttime = QueryTimer();
-#endif
     RenderMotionBlur();
     DoDistortionBuckets();
     GLRender::SetFilmNoiseTexture(m_pFilmNoiseTexture);
@@ -2801,6 +2782,8 @@ void Scene::RenderSinglePass()
 #else
     GLRender::cm_pForceDistortionTexture = m_pDistortionTexture;
 #endif
+    GLRender::m_pDreamDistortTexture = m_pClairTexture;
+    GLRender_SetAlphaFunc(CMP_GREATER, 0.0f);
     unsigned long nFrameBufferFlags = GLRender::FRAMEBUFFER_OVERBRIGHTEN |
         GLRender::FRAMEBUFFER_CONVOLUTION | GLRender::FRAMEBUFFER_NOISE |
         GLRender::FRAMEBUFFER_SATURATION | GLRender::FRAMEBUFFER_SPEED_BLUR;
@@ -2829,11 +2812,6 @@ void Scene::RenderSinglePass()
     GLRender_DisableClientState(CLIENT_STATE_VERTEX);
     GLRender_DisableClientState(CLIENT_STATE_COLOR);
     GLRender_DisableColorMaterial();
-#ifndef _XBOX
-    g_endtime = QueryTimer();
-    g_RenderFrameBufferModsTime = (int)(g_endtime - g_starttime) * 0.001f;
-    g_starttime = QueryTimer();
-#endif
 }
 
 #ifdef _XBOX
@@ -3008,15 +2986,8 @@ void Scene::RenderShadows(int nReserved1, int nReserved2,
 }
 #endif
 // PC 0x00465D20
-#ifdef _XBOX
 void Scene::Animate(float fTimeStep)
-#else
-int Scene::Animate(float fTimeStep)
-#endif
 {
-#ifndef _XBOX
-    g_starttime = QueryTimer();
-#endif
     currentscene = this;
 
     if (interleaveanimations && g_bEnableInterleavedAnimations)
@@ -3056,14 +3027,6 @@ int Scene::Animate(float fTimeStep)
     }
 
     currentscene = 0;
-#ifndef _XBOX
-    g_endtime = QueryTimer();
-    int nElapsed = (int)(g_endtime - g_starttime);
-    g_SceneAnimateTime = nElapsed * 0.001f;
-    return nElapsed;
-#else
-#endif
-
 }
 
 #ifndef _XBOX
@@ -3172,6 +3135,11 @@ void Scene::RemoveFromSceneManager(Gob* pGob)
     if (gobbucket.Contains(pGob))
     {
         gobbucket.Remove(pGob);
+        return;
+    }
+    if (g_listHologramBucket.Contains(pGob))
+    {
+        g_listHologramBucket.Remove(pGob);
     }
 }
 // PC 0x0046B460
@@ -3280,7 +3248,7 @@ Gob* Scene::SpawnRoom(char* sName, const Vector& vPosition,
     strcat(sPartName, "a");
     if (findnode(pModel->m_pRootNode, sPartName))
     {
-        pGob = (Gob*)NewCAurObject(sName, "", 0, 0);
+        pGob = (Gob*)NewCAurObject(sName, "lbl_cardstand", 0, 0);
         pRootPart = pGob->m_pRootPart;
         pGob->m_vPosition = vPosition;
         pGob->m_qOrientation = qOrientation;
@@ -3316,6 +3284,10 @@ Gob* Scene::SpawnRoom(char* sName, const Vector& vPosition,
                 {
                     pRoom->m_vMaximum = VectorMax(pRoom->m_vMaximum, pTriMesh->m_vMaximum);
                     pRoom->m_vMinimum = VectorMin(pRoom->m_vMinimum, pTriMesh->m_vMinimum);
+                }
+                else
+                {
+                    pRoom->m_bB8 = 1;
                 }
             }
             pModel->AddRef((Gob*)0);
@@ -3401,12 +3373,12 @@ Scene::Scene(char* sName)
     m_bFog = 0;
     m_nFogMode = FOG_MODE_LINEAR;
     m_vFogColor = Vector(1.0f, 1.0f, 1.0f);
+    m_v80 = Vector(g_DesatureFactor * 0.3f, g_DesatureFactor * 0.59f,
+                   g_DesatureFactor * 0.11f);
     m_fFogNear = 5.0f;
     m_fFogFar = 40.0f;
     m_fFogDensity = 0.1f;
     m_nAnimationFrame = 0;
-    m_v80 = Vector(g_fLuminanceScale * 0.3f, g_fLuminanceScale * 0.59f,
-                   g_fLuminanceScale * 0.11f);
 
     m_pLightManager = new LightManager;
     m_pWindManager = new WindManager;
@@ -3489,6 +3461,36 @@ Scene::~Scene()
         m_pDistortionTexture = 0;
         AurTextureRelease(pTexture);
     }
+    if (m_pDirtyTexture)
+    {
+        CAurTexture* pTexture = m_pDirtyTexture;
+        m_pDirtyTexture = 0;
+        AurTextureRelease(pTexture);
+    }
+    if (m_pDirtyTexture2)
+    {
+        CAurTexture* pTexture = m_pDirtyTexture2;
+        m_pDirtyTexture2 = 0;
+        AurTextureRelease(pTexture);
+    }
+    if (m_pDirtyTexture3)
+    {
+        CAurTexture* pTexture = m_pDirtyTexture3;
+        m_pDirtyTexture3 = 0;
+        AurTextureRelease(pTexture);
+    }
+    if (m_pClairTexture)
+    {
+        CAurTexture* pTexture = m_pClairTexture;
+        m_pClairTexture = 0;
+        AurTextureRelease(pTexture);
+    }
+    if (m_pHoloTexture)
+    {
+        CAurTexture* pTexture = m_pHoloTexture;
+        m_pHoloTexture = 0;
+        AurTextureRelease(pTexture);
+    }
     for (int i = 0; i < AUR_MESH_BUCKET_COUNT; i++)
         meshbuckets[i].m_nCount = 0;
 }
@@ -3536,7 +3538,9 @@ inline CAurScene::CAurScene()
 #ifndef _XBOX
 bool Gob::VisibilityCheck()  // PC 0x0046C2E0
 {
-    if (enablevisibilitytest && !IsVisibilityCheckDisabled() && !IsAlwaysRendering())
+    if (!enablevisibilitytest)
+        return true;
+    if (!IsVisibilityCheckDisabled() && !IsAlwaysRendering())
     {
         float fDistance = magnitude(CurrentCamera->m_vPosition - m_vPosition);
         if (2.0f * m_fMinimumBoundingSphereRadius / fDistance > visibilitycutoffratio)
@@ -3567,12 +3571,10 @@ bool Gob::VisibilityCheck()  // PC 0x0046C2E0
     return true;
 }
 #endif
-// PC 0x0046CA00
+// PC 0x0046C630
 void Scene::DoGobBuckets()
 {
-#ifndef _XBOX
     countvisibilityculls = 0;
-#endif
     Vector vPosition;
     qsort(gobbucket.m_pList, gobbucket.m_nCount, sizeof(Gob*), GobOrderCmp);
     numgobs = gobbucket.m_nCount;
@@ -3580,58 +3582,130 @@ void Scene::DoGobBuckets()
     pLightManager->m_lstPreviousFadeLights.m_nCount = 0;
     pLightManager->m_lstPreviousFadeIntensities.m_nCount = 0;
 
-#ifdef _XBOX
-
-    countvisibilityculls = 0;
-    GLRender_SetDepthMask(GL_FALSE);
-    GLRender_SetColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-    List<Gob*> lstTested(gobbucket);
-    int nTest = gobbucket.m_nCount;
-    while (nTest--)
+    int nPasses = 1;
+    if (g_ForceSight)
+        nPasses = 2;
+    for (int nPass = 0; nPass < nPasses; nPass++)
     {
-        if (gobbucket.m_pList[nTest]->m_bHasGeometry == 1)
+        int i = gobbucket.m_nCount;
+        while (i--)
         {
-            g_pD3DDevice->BeginVisibilityTest();
-            for (int nStage = 0; nStage < 4; nStage++)
-                g_pD3DDevice->SetTexture(nStage, NULL);
-            gobbucket.m_pList[nTest]->RenderVisibilityBounds();
-            g_pD3DDevice->EndVisibilityTest(nTest);
-            g_lstVisibilityTests.Add(nTest);
+            AurRenderCallback();
+            Gob* pGob = gobbucket.m_pList[i];
+            if (g_ForceSight)
+            {
+                Model::Classification classification = pGob->m_pModel->m_Classification;
+                if (nPass == 0)
+                {
+                    if (bool(classification.m_bCharacter) || bool(classification.m_bDoor))
+                        continue;
+                }
+                else
+                {
+                    if (!bool(classification.m_bCharacter) && !bool(classification.m_bDoor))
+                        continue;
+                }
+            }
+            if (interleaveanimations && g_bEnableInterleavedAnimations)
+            {
+                if (i >= gobbucket.m_nCount)
+                    continue;
+                pGob->Animate(DeltaT);
+                if (i >= gobbucket.m_nCount)
+                    continue;
+            }
+            if (!pGob->VisibilityCheck())
+                continue;
 
+            if (rendertransparentcharacters && pGob->m_pModel &&
+                bool(pGob->m_pModel->m_Classification.m_bCharacter))
+                GLRender_Disable(ENABLE_DEPTH_TEST);
+
+            vPosition = pGob->m_vPosition;
+            if (pGob->IsInCutscene())
+            {
+                Part* pDummy = FindPart(pGob->m_pRootPart, "cutscenedummy");
+                if (!pDummy)
+                    m_pLightManager->SetupLightsForThisGob(
+                        pGob->m_vPosition, pGob->m_fMinimumBoundingSphereRadius);
+                else
+                {
+                    static Vector worldPos;
+                    static Quaternion worldOrient;
+                    pDummy->GetWorld(worldPos, worldOrient);
+                    m_pLightManager->SetupLightsForThisGob(
+                        worldPos, pGob->m_fMinimumBoundingSphereRadius);
+                    vPosition = worldPos;
+                }
+            }
+            else
+                m_pLightManager->SetupLightsForThisGob(
+                    pGob->m_vPosition, pGob->m_fMinimumBoundingSphereRadius);
+
+            m_pLightManager->PrioritizeLights(vPosition, false);
+            if (pGob->m_pLightContainer)
+                m_pLightManager->EnableHighestPriorityLightsFade(
+                    LightManager::MAX_ENABLED_LIGHTS, pGob->m_pLightContainer);
+            else
+                m_pLightManager->EnableHighestPriorityLights(
+                    LightManager::MAX_ENABLED_LIGHTS);
+            if (showlightpriorityinfo &&
+                strnicmp(pGob->m_sName, "c_focusgob", 10) == 0)
+                m_pLightManager->DebugPrintLightInfo(LightManager::MAX_ENABLED_LIGHTS,
+                                            pGob->m_vPosition);
+
+            GLRender_Enable(ENABLE_BLEND);
+            GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+            if (dogobrender && pGob->IsRenderingEnabled())
+                pGob->Render(false);
+            if (rendertransparentcharacters &&
+                bool(pGob->m_pModel->m_Classification.m_bCharacter))
+                GLRender_Enable(ENABLE_DEPTH_TEST);
         }
     }
-    GLRender_SetDepthMask(GL_TRUE);
-    GLRender_SetColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-#endif
 
-    int i = gobbucket.m_nCount;
+    if (interleaveanimations && g_bEnableInterleavedAnimations)
+    {
+        int i = m_lstObjects.m_nCount;
+        while (i--)
+        {
+            if (i < m_lstObjects.m_nCount)
+                m_lstObjects.m_pList[i]->Animate(DeltaT);
+        }
+    }
+}
+// PC 0x0046CA00
+void Scene::DoHologramGobBuckets()
+{
+    if (g_listHologramBucket.m_nCount == 0)
+    {
+        return;
+    }
+
+    countvisibilityculls = 0;
+    Vector vPosition;
+    qsort(g_listHologramBucket.m_pList, g_listHologramBucket.m_nCount, sizeof(Gob*),
+          GobOrderCmp);
+    numgobs = g_listHologramBucket.m_nCount;
+    LightManager* pLightManager = m_pLightManager;
+    pLightManager->m_lstPreviousFadeLights.m_nCount = 0;
+    pLightManager->m_lstPreviousFadeIntensities.m_nCount = 0;
+
+    int i = g_listHologramBucket.m_nCount;
     while (i--)
     {
         AurRenderCallback();
-        Gob* pGob = gobbucket.m_pList[i];
+        Gob* pGob = g_listHologramBucket.m_pList[i];
         if (interleaveanimations && g_bEnableInterleavedAnimations)
         {
-            if (i >= gobbucket.m_nCount)
+            if (i >= g_listHologramBucket.m_nCount)
                 continue;
             pGob->Animate(DeltaT);
-            if (i >= gobbucket.m_nCount)
+            if (i >= g_listHologramBucket.m_nCount)
                 continue;
         }
-#ifndef _XBOX
         if (!pGob->VisibilityCheck())
             continue;
-#else
-        HRESULT hResult;
-        if (pGob->m_bHasGeometry && pGob->IsVisibilityTested())
-        {
-            Gob* pTested = gobbucket.m_pList[i];
-            hResult = g_pD3DDevice->GetVisibilityTestResult(
-                lstTested.IndexOf(pTested), (UINT*)&pTested->m_nVisiblePixels, NULL);
-        }
-        if (pGob->m_bHasGeometry && pGob->IsVisibilityTested() &&
-            hResult != D3DERR_TESTINCOMPLETE && pGob->m_nVisiblePixels == 0)
-            continue;
-#endif
 
         if (rendertransparentcharacters && pGob->m_pModel &&
             bool(pGob->m_pModel->m_Classification.m_bCharacter))
@@ -3679,20 +3753,9 @@ void Scene::DoGobBuckets()
             GLRender_Enable(ENABLE_DEPTH_TEST);
     }
 
-    if (interleaveanimations && g_bEnableInterleavedAnimations)
-    {
-        i = m_lstObjects.m_nCount;
-        while (i--)
-        {
-            if (i < m_lstObjects.m_nCount)
-                m_lstObjects.m_pList[i]->Animate(DeltaT);
-        }
-    }
 }
 
-void Scene::DoHologramGobBuckets()
-{
-}
+extern unsigned int ATI_FRAGMENT_SHADER_BIT;
 // PC 0x0046CCF0
 void Scene::RenderLensFlares()
 {
@@ -3726,6 +3789,20 @@ void Scene::RenderLensFlares()
         GLRender_PushCurrentMatrix();
         GLRender_LoadMatrixIdentity();
         GLRender_Translate(0.0f, 0.0f, -2.0f);
+
+        if (g_ForceSight)
+        {
+            GLRender_EnablePixelShaders(MODEL_SHADER_DESAT, 0, 0, 0, 0);
+            float afColor[4];
+            afColor[0] = 0.0f;
+            afColor[1] = 0.0f;
+            afColor[2] = 0.0f;
+            afColor[3] = 0.75f;
+            if ((existingextensions & ATI_FRAGMENT_SHADER_BIT) == ATI_FRAGMENT_SHADER_BIT)
+                glSetFragmentShaderConstantATI(GL_CON_1_ATI, afColor);
+            else
+                glCombinerParameterfvNV(GL_CONSTANT_COLOR1_NV, afColor);
+        }
 
         for (int i = 0; i < lights.m_nCount; i++)
         {
@@ -3837,6 +3914,8 @@ void Scene::RenderLensFlares()
                 }
             }
         }
+        if (g_ForceSight)
+            GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
         GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
         GLRender_Enable(ENABLE_DEPTH_TEST);
         GLRender_Enable(ENABLE_LIGHTING);

@@ -638,7 +638,7 @@ CSWMiniGame::CSWMiniGame(CSWCArea* pArea)
     m_nMouseAxisY = 0;
     m_nPhysicsMode = PHYSICS_ACCELERATION;
     m_pCurrentRoom = NULL;
-    m_pImpactSound = new CExoStreamingSoundSource;
+    m_pImpactSound = new CExoStreamingSoundSource(1);
     m_pImpactSound->SetLooping(1);
     SetResRef(pArea->m_cAreaResRef, 0);
 }

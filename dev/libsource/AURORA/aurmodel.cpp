@@ -170,7 +170,7 @@ int MaxTreeParseField(void* pTree, char* szField)
     return ((MaxTree*)pTree)->InternalParseField(szField);
 }
 // PC 0x0045F410
-void MaxTree::operator delete(void* pMemory)
+void MaxTree::foobar(void* pMemory)
 {
     MaxTree* pTree = (MaxTree*)pMemory;
     if (pTree == 0)
@@ -273,7 +273,7 @@ int Model::DelRef(Model* pModel)
 
     int nReferenceCount = --m_nReferenceCount;
     if (m_nReferenceCount == 0)
-        operator delete(this);
+        foobar(this);
     return nReferenceCount;
 }
 // PC 0x0044FED0
@@ -347,6 +347,10 @@ MaxFace::MaxFace()
 // PC 0x00452600
 MaxTree::~MaxTree()
 {
+    if (m_nType)
+    {
+        delete m_pRootNode;
+    }
 }
 // PC 0x00452690
 Model::~Model()
@@ -357,7 +361,7 @@ Model::~Model()
         int i = m_lAnimations.m_nCount;
         while (i)
         {
-            operator delete(m_lAnimations[--i]);
+            foobar(m_lAnimations[--i]);
             m_lAnimations.m_nCount = i;
         }
         int nPool = m_nVertexPool;
@@ -2291,6 +2295,11 @@ void MdlNodeTriMeshRemoveTemporaryArrays(void* pNode)
 {
     return ((MdlNodeTriMesh*)pNode)->InternalRemoveTemporaryArrays();
 }
+// PC 0x00450130
+void PartEmitter::SetWeather(bool bWeather)
+{
+    m_bWeather = bWeather;
+}
 // PC 0x004506B0
 void Part::GetWorld(Vector& vPosition, Quaternion& qOrientation)
 {
@@ -2574,13 +2583,13 @@ void Gob::GetMinimumBoundingSphere(Vector& vPosition, float& fRadius)
 // PC 0x00451D10
 void Gob::GetMinimumSphere()
 {
-    if (m_pRootPart)
+    if (m_pRootPart && m_fMinimumBoundingSphereRadius == 1.0f)
     {
         m_pRootPart->GetMinimumSphere(m_vMinimumBoundingSphere,
                                       m_fMinimumBoundingSphereRadius);
         m_vMinimumBoundingSphere = m_vMinimumBoundingSphere + m_pRootPart->m_vPosition;
         m_vMinimumBoundingSphere = m_vMinimumBoundingSphere * m_fScale;
-        m_fMinimumBoundingSphereRadius = m_fScale * m_fMinimumBoundingSphereRadius * gobspherescaling;
+        m_fMinimumBoundingSphereRadius = gobspherescaling * m_fScale * m_fMinimumBoundingSphereRadius;
     }
 }
 // PC 0x00451DD0
@@ -3065,7 +3074,7 @@ void Gob::SetAllEmitterAsWeather(Part* pPart, bool bWeather)
     PartEmitter* pEmitter = pPart->AsPartEmitter();
     if (pEmitter)
     {
-        pEmitter->m_bWeather = bWeather;
+        pEmitter->SetWeather(bWeather);
     }
     for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)
     {
@@ -3439,15 +3448,19 @@ Gob::Gob(char* sName)
       m_lstAppendModels(0), m_lstAppendParts(0), m_lCallBacks(0),
       m_lstLights(0), m_lstAttachments(0)
 {
-    m_fIlluminationRed = m_fIlluminationGreen = m_fIlluminationBlue = 0.5f;
+    m_fIlluminationBlue = 0.5f;
+    m_fIlluminationGreen = 0.5f;
+    m_fIlluminationRed = 0.5f;
     m_nForcePoints = 0;
     m_nAlignmentValue = 50;
-    m_bNonForceBlending = false;
-    m_bForceGlow = false;
-    m_fForceGlowRed = m_fForceGlowGreen = m_fForceGlowBlue = 0.0f;
-    m_bHologram = false;
-    m_bPerObjectIllumination = false;
-    m_bRenderingEnabled = true;
+    m_bNonForceBlending = 0;
+    m_bForceGlow = 0;
+    m_fForceGlowBlue = 0.0f;
+    m_fForceGlowGreen = 0.0f;
+    m_fForceGlowRed = 0.0f;
+    m_bHologram = 0;
+    m_bPerObjectIllumination = 0;
+    m_bRenderingEnabled = 1;
     m_bFirstAnimate = 1;
     m_bAnimateUV = 0;
     ++g_nSpawnedGobs;
@@ -3889,10 +3902,10 @@ MdlNodeTriMesh::MdlNodeTriMesh(char* sName)
     m_bLightMapped = false;
     m_bBackground = false;
     m_bRotateTexture = false;
-    m_bDirtEnabled = false;
+    m_bDirtEnabled = 0;
     m_nDirtTexture = 1;
     m_nDirtCoordSpace = 1;
-    m_bHideInHolograms = false;
+    m_bHideInHolograms = 0;
     m_vDiffuse = defaultdiffuse;
     m_vAmbient = defaultambient;
     m_sTexture0[0] = 0;
@@ -4096,7 +4109,7 @@ int Model::DelRef(Gob* pGob)
 
     int nReferenceCount = --m_nReferenceCount;
     if (m_nReferenceCount == 0)
-        operator delete(this);
+        foobar(this);
     return nReferenceCount;
 }
 // PC 0x0045FE60

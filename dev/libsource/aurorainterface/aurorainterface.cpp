@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define VIDEO_MAX_REFRESH_RATE 85.0f
+
 static inline void AuroraInterfaceTrace();
 #define AURORAINTERFACE_TRACE() AuroraInterfaceTrace()
 
@@ -405,7 +407,8 @@ int CAuroraInterface::GetNearestVideoMode(unsigned long nWidth,  // PC 0x0078089
             mode.dmBitsPerPel >= VIDEO_MIN_BITS_PER_PIXEL &&
             (mode.dmDisplayFrequency >= VIDEO_MIN_REFRESH_RATE ||
              mode.dmDisplayFrequency == VIDEO_REFRESH_DEFAULT ||
-             mode.dmDisplayFrequency == VIDEO_REFRESH_DEFAULT_ALTERNATE))
+             mode.dmDisplayFrequency == VIDEO_REFRESH_DEFAULT_ALTERNATE) &&
+            mode.dmDisplayFrequency <= VIDEO_MAX_REFRESH_RATE)
         {
             int nBitDifference = abs(mode.dmBitsPerPel - nBitsPerPixel);
             int nBestBitDifference = abs(bestMode.dmBitsPerPel - nBitsPerPixel);
@@ -474,7 +477,8 @@ int CAuroraInterface::GetExactVideoMode(unsigned long nWidth,  // PC 0x00780A30
                mode.dmBitsPerPel != nBitsPerPixel ||
                (mode.dmDisplayFrequency != nRefreshRate &&
                 mode.dmDisplayFrequency != VIDEO_REFRESH_DEFAULT &&
-                mode.dmDisplayFrequency != VIDEO_REFRESH_DEFAULT_ALTERNATE))
+                mode.dmDisplayFrequency != VIDEO_REFRESH_DEFAULT_ALTERNATE) ||
+               !(mode.dmDisplayFrequency <= VIDEO_MAX_REFRESH_RATE))
         {
             memset(&mode, 0, sizeof(mode));
             nMode++;

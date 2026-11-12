@@ -687,6 +687,8 @@ public:
     int ChangeCharacterToNextLivingPartyMember(int nA, int nB);
 #endif
     void HideMovieFadePanel();
+    void PauseAllSoundsForMovieLostFocus();
+    void ResumeAllStreamingMusicForMovie();
     void SetAttackMashTutorialTimer(unsigned long nTimer);
     int GetAttackMashTutorialTimer();
     int GetLoadingSaveGame();

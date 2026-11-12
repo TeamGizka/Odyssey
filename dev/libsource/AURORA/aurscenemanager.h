@@ -91,6 +91,7 @@ extern List<CAurTriangleBin*> g_pActiveBins;
 extern List<Gob*> blurbucket;
 extern List<Gob*> g_listForcePushBucket;
 extern List<Gob*> g_listLightsaberBucket;
+extern List<Gob*> g_listHologramBucket;
 extern List<Part*> staticbeambucket;
 extern List<CAurTriangleBin*> binbucket;
 extern List<Part*> staticshadowbucket;

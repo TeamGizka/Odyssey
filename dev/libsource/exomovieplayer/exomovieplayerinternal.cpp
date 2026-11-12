@@ -54,11 +54,18 @@ LRESULT CALLBACK MovieMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,
     switch (nMsg)
     {
     case WM_ACTIVATEAPP:
-        if (wParam == 0 && g_pMoviePlayer != NULL &&
-            g_pMoviePlayer->m_bShuttingDown == 0)
+        if (wParam == 0)
         {
-            g_pMoviePlayer->OnDeactivation(0);
-            g_pMoviePlayer->CancelMovie(1, 1);
+            if (g_pMoviePlayer != NULL && g_pMoviePlayer->m_bShuttingDown == 0)
+            {
+                g_pMoviePlayer->OnDeactivation(0);
+                g_pMoviePlayer->PauseMovie();
+                g_pAppManager->GetClientExoApp()->PauseAllSoundsForMovieLostFocus();
+            }
+        }
+        else
+        {
+            g_pAppManager->GetClientExoApp()->ResumeAllStreamingMusicForMovie();
         }
         break;
     case WM_KEYDOWN:
@@ -78,8 +85,8 @@ LRESULT CALLBACK MovieMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,
         if (wParam == VK_RETURN && (lParam & (KF_ALTDOWN << 16)) != 0 &&
             g_pMoviePlayer != NULL)
         {
-            g_pMoviePlayer->OnDeactivation(1);
-            g_pMoviePlayer->CancelMovie(1, 1);
+            g_pMoviePlayer->OnDeactivation(0);
+            g_pMoviePlayer->PauseMovie();
             return 0;
         }
         break;
@@ -136,7 +143,7 @@ CExoMoviePlayerInternal::CExoMoviePlayerInternal()
     m_hBink = NULL;
     m_nUnknown70 = 0;
     m_hMovieWnd = NULL;
-    m_nUnknown64 = 0;
+    m_bPaused = 0;
 }
 // PC 0x00405B10
 CExoMoviePlayerInternal::~CExoMoviePlayerInternal()
@@ -173,9 +180,12 @@ int CExoMoviePlayerInternal::ShutDown()
     {
         BinkGetSummary(m_hBink, &sum);
         BinkPause(m_hBink, 1);
-        BinkClose(m_hBink);
+        if (m_bPaused == 0)
+        {
+            BinkClose(m_hBink);
+            m_hBink = NULL;
+        }
         hBinkBuffer = m_hBinkBuffer;
-        m_hBink = NULL;
         if (hBinkBuffer != NULL)
         {
             BinkBufferClose(hBinkBuffer);
@@ -227,6 +237,10 @@ int CExoMoviePlayerInternal::RunMovieLoop(int nWait)
 
     if (m_hBink != NULL)
     {
+        if (m_bPaused != 0)
+        {
+            ResumeMovie();
+        }
         while (m_hBink->Frames != m_hBink->FrameNum)
         {
             BinkDoFrame(m_hBink);
@@ -244,8 +258,12 @@ int CExoMoviePlayerInternal::RunMovieLoop(int nWait)
             while (BinkWait(m_hBink) == 1)
             {
                 Sleep(1);
+                if (m_bPaused != 0)
+                {
+                    break;
+                }
             }
-            if (m_bCancelMovie == 1)
+            if (m_bCancelMovie == 1 || m_bPaused != 0)
             {
                 break;
             }
@@ -329,6 +347,24 @@ void CExoMoviePlayerInternal::OnWindowPosChanged(WINDOWPOS*)
         PatBlt(hDC, 0, 0, g_nScreenWidth, g_nScreenHeight, BLACKNESS);
         ReleaseDC(g_hRenderWnd, hDC);
         ShowWindow(m_hMovieWnd, SW_SHOWNA);
+    }
+}
+// PC 0x00404E20
+void CExoMoviePlayerInternal::PauseMovie()
+{
+    if (m_hBink != NULL && m_bPaused == 0)
+    {
+        m_bPaused = 1;
+        BinkPause(m_hBink, 1);
+    }
+}
+// PC 0x00404E40
+void CExoMoviePlayerInternal::ResumeMovie()
+{
+    if (m_hBink != NULL && m_bPaused == 1)
+    {
+        m_bPaused = 0;
+        BinkPause(m_hBink, 0);
     }
 }
 // PC 0x00404E60
@@ -417,9 +453,11 @@ int CExoMoviePlayerInternal::StartMovie(const CExoString& sMovie)
     SetWindowPos(m_hMovieWnd, HWND_TOPMOST, rcClient.left, rcClient.top, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top,
                  SWP_NOSIZE | SWP_FRAMECHANGED | SWP_NOCOPYBITS);
 
-    m_hBink = NULL;
     m_nUnknown60 = 0;
-    m_nUnknown64 = 0;
+    if (m_bPaused == 0)
+    {
+        m_hBink = NULL;
+    }
 
     pszMovie = strchr(sMovie.CStr(), '.');
     if (pszMovie == NULL)
@@ -440,7 +478,10 @@ int CExoMoviePlayerInternal::StartMovie(const CExoString& sMovie)
     AIL_quick_handles(&hDig, NULL, NULL);
     BinkSoundUseMiles(hDig);
 
-    m_hBink = BinkOpen(m_sMovieFileName.CStr(), 0x8000000);
+    if (m_bPaused == 0)
+    {
+        m_hBink = BinkOpen(m_sMovieFileName.CStr(), 0x8000000);
+    }
     if (m_hBink == NULL)
     {
         CExoString sMessage;
@@ -448,8 +489,6 @@ int CExoMoviePlayerInternal::StartMovie(const CExoString& sMovie)
         sMessage = "CExoMoviePlayerInternal::CExoMoviePlayerInternal()  Can't "
                    "open movie: ";
         sMessage = sMessage + m_sMovieFileName;
-        g_pExoBase->m_pExoDebug->Warning(1083, "exomovieplayerinternal.cpp",
-                                         sMessage.CStr());
         ShutDown();
         m_bMoviePlaying = 0;
         return 0;
@@ -598,11 +637,6 @@ int CExoMoviePlayerInternal::PlayMoviesAsync(const CExoArrayList<CExoString>& ls
     if (pSkippable != NULL)
     {
         m_lstSkippable = *pSkippable;
-        if (m_lstMovies.num > m_lstSkippable.num)
-        {
-            g_pExoBase->m_pExoDebug->Warning(1619, "exomovieplayerinternal.cpp",
-                "CExoMoviePlayerInternal::PlayMoviesAsync(): More movies specified than skippable flags.");
-        }
     }
     else
     {

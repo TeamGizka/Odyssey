@@ -567,20 +567,12 @@ CAurBehaviorAttach::CAurBehaviorAttach(CAurObject* pObject, CAurObject* pParent,
     pGob->SetScene(pParentGob->m_pScene);
     m_pPart->GetWorld(pGob->m_vPosition, pGob->m_qOrientation);
     pGob->DoEvent("UpdateDependentPosition", 0);
-#ifdef _XBOX
     pGob->DoEvent("_EmitterTarget", 0);
     pParentGob->AddAttachment(pGob);
     if (pParentGob->m_fScale != pGob->m_fScale / pGob->m_fBaseScale)
     {
         pGob->SetObjectScale(pParentGob->m_fScale * pGob->m_fBaseScale, 0);
     }
-#else
-    pParentGob->AddAttachment(pGob);
-    if (pGob->m_fScale / pGob->m_fBaseScale != pParentGob->m_fScale)
-    {
-        pGob->SetObjectScale(pGob->m_fBaseScale * pParentGob->m_fScale, 0);
-    }
-#endif
     m_nUpdateScenesCallback = ((Gob*)(CAurObject*)m_pParent)->RegisterCallBack(
         UpdateScenesAttach, "*", this, AUR_CALLBACK_LONG_DELAY, 0);
     m_nUpdatePositionCallback = ((Gob*)(CAurObject*)m_pParent)->RegisterCallBack(

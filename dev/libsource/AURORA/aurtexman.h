@@ -172,9 +172,13 @@ public:
     virtual int glImage(bool bMipMaps, unsigned char* pImage);
     virtual void FreeImage();
     virtual void Bind();
+    virtual TextureController* GetController();
 
     unsigned char IsNull();
     void SetIsEnvironmentMapped(bool bMapped);
+    void SetWidth(int nWidth);
+    void SetHeight(int nHeight);
+    void SetDepth(int nDepth);
 #ifdef _XBOX
     void SetReferencedTexture(CAurTexture* pTexture);
 #endif
@@ -193,6 +197,10 @@ public:
         return this;
     }
     virtual void FreeImage();
+    virtual TextureController* GetController()
+    {
+        return m_pController;
+    }
 
     void Reset();
     int glImage(bool bMipMaps);

@@ -20,9 +20,11 @@ inline void AurPchListPartLightPtr_Allocate() { (void)&List<PartLight*>::allocat
 #include "aurpointer.h"
 #include "aurrendergl.h"
 #include "aurscenemanager.h"
+#include "aurtexcontrol.h"
 
 static inline void AurmodelrenderTrace1();
 #define AURMODELRENDER_TRACE() AurmodelrenderTrace1()
+#define AUR_FORCE_GLOW_PULSE_STEP 0.024639942f
 
 #ifndef _XBOX
 #pragma inline_recursion(on)
@@ -1171,6 +1173,18 @@ void ClipProjection(Vector& vPosition, const Vector& vStart, const Plane& plane)
     }
 }
 
+// PC 0x004866C0
+void SetBumpLightColor(Vector& vColor)
+{
+    GLRender_SetBumpLightColor(vColor, 1.0f);
+}
+
+// PC 0x004866E0
+void SetPerInstanceIllumination(float* pColor)
+{
+    memcpy(GLRender::m_PerInstanceIllumination, pColor, sizeof(GLRender::m_PerInstanceIllumination));
+}
+
 void Transform(const Vector& vPosition, const Quaternion& qOrientation,
                int nForce)
 {
@@ -1307,6 +1321,68 @@ void UndoEnvMapTransform(CAurTexture* pTexture, unsigned long nStage)
 #endif
 }
 
+// PC 0x00486960
+void SetupForceSightShader(Gob* pGob, int nForceShader, int nShader,
+                           CAurTexture* pTexture0, CAurTexture* pTexture1,
+                           CAurTexture* pTexture2, CAurTexture* pTexture3,
+                           bool bKeepBlend)
+{
+    bool bNonForceBlending = false;
+    bool bIllumination = false;
+    float afColor[4];
+    if (pGob)
+    {
+        bool bForceGlow = pGob->IsForceGlowEnabled();
+        bNonForceBlending = pGob->IsNonForceBlending();
+        pGob->GetForcePoints();
+        bIllumination = pGob->IsIlluminationEnable();
+        if (bForceGlow)
+        {
+            GLRender_SetBlendFunc(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
+            float fRed;
+            float fGreen;
+            float fBlue;
+            float fAlpha;
+            unsigned char nPhase = (unsigned char)(g_SceneRender_CurrentTime_ms * 0.125f);
+            float fPulse = (float)sin(nPhase * AUR_FORCE_GLOW_PULSE_STEP) * 0.25f + 0.75f;
+            pGob->GetForceGlowColor(fRed, fGreen, fBlue, fAlpha);
+            afColor[0] = fRed;
+            afColor[1] = fGreen;
+            afColor[2] = fBlue;
+            afColor[3] = fAlpha * fPulse;
+            memcpy(GLRender::m_ForceSightColor, afColor, sizeof(afColor));
+            GLRender_EnablePixelShaders(nForceShader, pTexture0, pTexture1, pTexture2, pTexture3);
+            return;
+        }
+        if (bNonForceBlending && !bKeepBlend)
+            GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+    }
+    afColor[0] = 0.0f;
+    afColor[1] = 0.0f;
+    afColor[2] = 0.0f;
+    afColor[3] = 0.75f;
+    if (!bNonForceBlending)
+        afColor[3] = 1.0f;
+    memcpy(GLRender::m_ForceSightColor, afColor, sizeof(afColor));
+    if (bIllumination)
+    {
+        int nIlluminationShader = nShader + (MODEL_SHADER_ILLUM_DESAT - MODEL_SHADER_DESAT);
+        if (nIlluminationShader >= MODEL_SHADER_ILLUM_DESAT_NOISE_MOD_EMLM + 1)
+            nIlluminationShader = MODEL_SHADER_ILLUM_DESAT;
+        afColor[0] = 0.0f;
+        afColor[1] = 0.0f;
+        afColor[2] = 0.0f;
+        afColor[3] = 1.0f;
+        pGob->GetIlluminationColor(afColor[0], afColor[1], afColor[2]);
+        memcpy(GLRender::m_PerInstanceIllumination, afColor, sizeof(afColor));
+        GLRender_EnablePixelShaders(nIlluminationShader, pTexture0, pTexture1, pTexture2, pTexture3);
+    }
+    else
+    {
+        GLRender_EnablePixelShaders(nShader, pTexture0, pTexture1, pTexture2, pTexture3);
+    }
+}
+
 void RenderFlat(VertexPrimitiveFlat* pPrimitive)
 {
     if (enablerender == 0)
@@ -1403,10 +1479,22 @@ void RenderLightMapped(VertexPrimitiveFlat* pPrimitive)
     GLRender::ActivateTextureStage(1);
     GLRender_EnableClientState(CLIENT_STATE_TEXTURE_COORD);
     GLRender::ActivateTextureStage(0);
-    GLRender_EnablePixelShaders(MODEL_SHADER_NV1X_LIGHTMAP, pPart->m_pMaterial->m_pTexture0.m_pObject,
-                               pPart->m_pMaterial->m_pTexture1.m_pObject, 0, 0);
-    RenderFlat(pPrimitive);
-    GLRender_EnablePixelShaders(MODEL_SHADER_NV1X_DISABLE, 0, 0, 0, 0);
+    if (g_ForceSight)
+    {
+        SetupForceSightShader(pPart->m_pAurObject, MODEL_SHADER_FGLOW_LM, MODEL_SHADER_DESAT_LM,
+                              pPart->m_pMaterial->m_pTexture0.m_pObject,
+                              pPart->m_pMaterial->m_pTexture1.m_pObject, 0, 0, false);
+        RenderFlat(pPrimitive);
+        GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+        GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
+    }
+    else
+    {
+        GLRender_EnablePixelShaders(MODEL_SHADER_NV1X_LIGHTMAP, pPart->m_pMaterial->m_pTexture0.m_pObject,
+                                   pPart->m_pMaterial->m_pTexture1.m_pObject, 0, 0);
+        RenderFlat(pPrimitive);
+        GLRender_EnablePixelShaders(MODEL_SHADER_NV1X_DISABLE, 0, 0, 0, 0);
+    }
     GLRender::ActivateTextureStage(1);
     GLRender_DisableClientState(CLIENT_STATE_TEXTURE_COORD);
     GLRender::ActivateTextureStage(0);
@@ -1528,6 +1616,246 @@ void RenderLightMappedNoShaders(VertexPrimitiveFlat* pPrimitive)
 }
 #endif
 
+#ifndef _XBOX
+// PC 0x00487280
+void RenderNoiseMapped(VertexPrimitiveFlat* pPrimitive, int nTexture, int nCoordSpace)
+{
+    PartTriMesh* pPart = pPrimitive->m_pPart->AsPartTriMesh();
+    Gob* pGob = pPart->m_pAurObject;
+    Material* pMaterial = pPart->m_pMaterial;
+    DirtyTextureController* pDirty =
+        (DirtyTextureController*)GLRender::m_pDirtyTexture[nTexture]->GetReferencedTexture()->GetController();
+    int nBlendMode;
+    if (pDirty)
+        nBlendMode = pDirty->m_nBlendMode;
+    else
+        nBlendMode = 0;
+    if ((pGob && pGob->m_pEnvironmentMap.m_pObject) || pMaterial->HasEnvMap())
+    {
+        if (pPart->m_pNode->AsMdlNodeTriMesh()->m_bLightMapped && enablelightmap)
+        {
+            static VertexProgram* world_DirtyVP = new VertexProgram(
+                usearbvertexprograms ? szcStandardDirtyEMLMVPARB : cStandardDirtyEMLMVP,
+                cStandardVP2Declaration);
+            static VertexProgram* local_DirtyVP = new VertexProgram(
+                usearbvertexprograms ? szszcStandardDirtyLSEMLMVPARB : cStandardDirtyLSEMLMVP,
+                cStandardVP2Declaration);
+            VertexProgram* pDirtyVP = nCoordSpace == 1 ? world_DirtyVP : local_DirtyVP;
+            GLRender_Enable(ENABLE_VERTEX_PROGRAM);
+            pDirtyVP->Enable(pPart, true);
+            GLRender::ActivateTextureStage(1);
+            GLRender_EnableClientState(CLIENT_STATE_TEXTURE_COORD);
+            GLRender::ActivateTextureStage(0);
+            AurSetVertexProgramParameter4f(VertexProgram::PARAM_DIRTY_SELECT, 1.0f, 0.0f, 1.0f, 0.0f);
+            AurSetVertexProgramParameter4f(VertexProgram::PARAM_DIRTY_CONSTANTS, 0.0f, 2.0f, 3.0f, 1.0f);
+            if (g_ForceSight)
+            {
+                SetupForceSightShader(pGob, MODEL_SHADER_DESAT_NOISE_SUB_EMLM + nBlendMode,
+                                      MODEL_SHADER_DESAT_NOISE_SUB_EMLM + nBlendMode,
+                                      pPart->m_pMaterial->m_pTexture0.m_pObject,
+                                      pPart->m_pMaterial->m_pTexture1.m_pObject,
+                                      pPart->m_pMaterial->m_pEnvMap.m_pObject,
+                                      GLRender::m_pDirtyTexture[nTexture], false);
+            }
+            else if (pGob && pGob->IsIlluminationEnable())
+            {
+                float afColor[4];
+                afColor[0] = 0.0f;
+                afColor[1] = 0.0f;
+                afColor[2] = 0.0f;
+                afColor[3] = 1.0f;
+                pGob->GetIlluminationColor(afColor[0], afColor[1], afColor[2]);
+                SetPerInstanceIllumination(afColor);
+                GLRender_EnablePixelShaders(MODEL_SHADER_ILLUM_NOISE_EMLM_SUBTRACT + nBlendMode,
+                                            pPart->m_pMaterial->m_pTexture0.m_pObject,
+                                            pPart->m_pMaterial->m_pTexture1.m_pObject,
+                                            pPart->m_pMaterial->m_pEnvMap.m_pObject,
+                                            GLRender::m_pDirtyTexture[nTexture]);
+            }
+            else
+            {
+                GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_EMLM_SUBTRACT + nBlendMode,
+                                            pPart->m_pMaterial->m_pTexture0.m_pObject,
+                                            pPart->m_pMaterial->m_pTexture1.m_pObject,
+                                            pPart->m_pMaterial->m_pEnvMap.m_pObject,
+                                            GLRender::m_pDirtyTexture[nTexture]);
+            }
+        }
+        else
+        {
+            static VertexProgram* world_DirtyVP = new VertexProgram(
+                usearbvertexprograms ? szcStandardDirtyEMVPARB : cStandardDirtyEMVP,
+                cStandardVP2Declaration);
+            static VertexProgram* local_DirtyVP = new VertexProgram(
+                usearbvertexprograms ? szcStandardDirtyLSEMVPARB : cStandardDirtyLSEMVP,
+                cStandardVP2Declaration);
+            VertexProgram* pDirtyVP = nCoordSpace == 1 ? world_DirtyVP : local_DirtyVP;
+            GLRender_Enable(ENABLE_VERTEX_PROGRAM);
+            pDirtyVP->Enable(pPart, true);
+            AurSetVertexProgramParameter4f(VertexProgram::PARAM_DIRTY_SELECT, 1.0f, 0.0f, 1.0f, 0.0f);
+            AurSetVertexProgramParameter4f(VertexProgram::PARAM_DIRTY_CONSTANTS, 0.0f, 2.0f, 3.0f, 1.0f);
+            if (pGob && pGob->m_pEnvironmentMap.m_pObject)
+            {
+                if (g_ForceSight)
+                {
+                    SetupForceSightShader(pGob, MODEL_SHADER_DESAT_NOISE_SUB_EM + nBlendMode,
+                                          MODEL_SHADER_DESAT_NOISE_SUB_EM + nBlendMode,
+                                          pPart->m_pMaterial->m_pTexture0.m_pObject,
+                                          pGob->m_pEnvironmentMap.m_pObject,
+                                          GLRender::m_pDirtyTexture[nTexture], 0, false);
+                }
+                else if (pGob->IsIlluminationEnable())
+                {
+                    float afColor[4];
+                    afColor[0] = 0.0f;
+                    afColor[1] = 0.0f;
+                    afColor[2] = 0.0f;
+                    afColor[3] = 1.0f;
+                    pGob->GetIlluminationColor(afColor[0], afColor[1], afColor[2]);
+                    SetPerInstanceIllumination(afColor);
+                    GLRender_EnablePixelShaders(MODEL_SHADER_ILLUM_NOISE_EM_SUBTRACT + nBlendMode,
+                                                pPart->m_pMaterial->m_pTexture0.m_pObject,
+                                                pGob->m_pEnvironmentMap.m_pObject,
+                                                GLRender::m_pDirtyTexture[nTexture], 0);
+                }
+                else
+                {
+                    GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_EM_SUBTRACT + nBlendMode,
+                                                pPart->m_pMaterial->m_pTexture0.m_pObject,
+                                                pGob->m_pEnvironmentMap.m_pObject,
+                                                GLRender::m_pDirtyTexture[nTexture], 0);
+                }
+            }
+            else if (g_ForceSight)
+            {
+                SetupForceSightShader(pGob, MODEL_SHADER_DESAT_NOISE_SUB_EM + nBlendMode,
+                                      MODEL_SHADER_DESAT_NOISE_SUB_EM + nBlendMode,
+                                      pPart->m_pMaterial->m_pTexture0.m_pObject,
+                                      pPart->m_pMaterial->m_pEnvMap.m_pObject,
+                                      GLRender::m_pDirtyTexture[nTexture], 0, false);
+            }
+            else if (pGob && pGob->IsIlluminationEnable())
+            {
+                float afColor[4];
+                afColor[0] = 0.0f;
+                afColor[1] = 0.0f;
+                afColor[2] = 0.0f;
+                afColor[3] = 1.0f;
+                pGob->GetIlluminationColor(afColor[0], afColor[1], afColor[2]);
+                SetPerInstanceIllumination(afColor);
+                GLRender_EnablePixelShaders(MODEL_SHADER_ILLUM_NOISE_EM_SUBTRACT + nBlendMode,
+                                            pPart->m_pMaterial->m_pTexture0.m_pObject,
+                                            pPart->m_pMaterial->m_pEnvMap.m_pObject,
+                                            GLRender::m_pDirtyTexture[nTexture], 0);
+            }
+            else
+            {
+                GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_EM_SUBTRACT + nBlendMode,
+                                            pPart->m_pMaterial->m_pTexture0.m_pObject,
+                                            pPart->m_pMaterial->m_pEnvMap.m_pObject,
+                                            GLRender::m_pDirtyTexture[nTexture], 0);
+            }
+        }
+    }
+    else if (pPart->m_pNode->AsMdlNodeTriMesh()->m_bLightMapped && enablelightmap)
+    {
+        static VertexProgram* world_DirtyVP = new VertexProgram(
+            usearbvertexprograms ? szcStandardDirtyLMVPARB : cStandardDirtyLMVP,
+            cStandardVP2Declaration);
+        static VertexProgram* local_DirtyVP = new VertexProgram(
+            usearbvertexprograms ? szcStandardDirtyLSLMVPARB : cStandardDirtyLSLMVP,
+            cStandardVP2Declaration);
+        VertexProgram* pDirtyVP = nCoordSpace == 1 ? world_DirtyVP : local_DirtyVP;
+        GLRender_Enable(ENABLE_VERTEX_PROGRAM);
+        pDirtyVP->Enable(pPart, true);
+        GLRender::ActivateTextureStage(1);
+        GLRender_EnableClientState(CLIENT_STATE_TEXTURE_COORD);
+        GLRender::ActivateTextureStage(0);
+        AurSetVertexProgramParameter4f(VertexProgram::PARAM_DIRTY_SELECT, 1.0f, 0.0f, 1.0f, 0.0f);
+        AurSetVertexProgramParameter4f(VertexProgram::PARAM_DIRTY_CONSTANTS, 0.0f, 2.0f, 3.0f, 1.0f);
+        if (g_ForceSight)
+        {
+            SetupForceSightShader(pGob, MODEL_SHADER_DESAT_NOISE_SUB_LM + nBlendMode,
+                                  MODEL_SHADER_DESAT_NOISE_SUB_LM + nBlendMode,
+                                  pPart->m_pMaterial->m_pTexture0.m_pObject,
+                                  pPart->m_pMaterial->m_pTexture1.m_pObject,
+                                  GLRender::m_pDirtyTexture[nTexture], 0, false);
+        }
+        else if (pGob && pGob->IsIlluminationEnable())
+        {
+            float afColor[4];
+            afColor[0] = 0.0f;
+            afColor[1] = 0.0f;
+            afColor[2] = 0.0f;
+            afColor[3] = 1.0f;
+            pGob->GetIlluminationColor(afColor[0], afColor[1], afColor[2]);
+            SetPerInstanceIllumination(afColor);
+            GLRender_EnablePixelShaders(MODEL_SHADER_ILLUM_NOISE_LM_SUBTRACT + nBlendMode,
+                                        pPart->m_pMaterial->m_pTexture0.m_pObject,
+                                        pPart->m_pMaterial->m_pTexture1.m_pObject,
+                                        GLRender::m_pDirtyTexture[nTexture], 0);
+        }
+        else
+        {
+            GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_LM_SUBTRACT + nBlendMode,
+                                        pPart->m_pMaterial->m_pTexture0.m_pObject,
+                                        pPart->m_pMaterial->m_pTexture1.m_pObject,
+                                        GLRender::m_pDirtyTexture[nTexture], 0);
+        }
+    }
+    else
+    {
+        static VertexProgram* world_DirtyVP = new VertexProgram(
+            usearbvertexprograms ? szcStandardDirtyVPARB : cStandardDirtyVP,
+            cStandardVPDeclaration);
+        static VertexProgram* local_DirtyVP = new VertexProgram(
+            usearbvertexprograms ? szcStandardDirtyLSVPARB : cStandardDirtyLSVP,
+            cStandardVPDeclaration);
+        VertexProgram* pDirtyVP = nCoordSpace == 1 ? world_DirtyVP : local_DirtyVP;
+        GLRender_Enable(ENABLE_VERTEX_PROGRAM);
+        pDirtyVP->Enable(pPart, true);
+        AurSetVertexProgramParameter4f(VertexProgram::PARAM_DIRTY_SELECT, 1.0f, 0.0f, 1.0f, 0.0f);
+        AurSetVertexProgramParameter4f(VertexProgram::PARAM_DIRTY_CONSTANTS, 0.0f, 2.0f, 3.0f, 1.0f);
+        if (g_ForceSight)
+        {
+            SetupForceSightShader(pGob, MODEL_SHADER_DESAT_NOISE_SUB + nBlendMode,
+                                  MODEL_SHADER_DESAT_NOISE_SUB + nBlendMode,
+                                  pPart->m_pMaterial->m_pTexture0.m_pObject,
+                                  GLRender::m_pDirtyTexture[nTexture], 0, 0, false);
+        }
+        else if (pGob && pGob->IsIlluminationEnable())
+        {
+            float afColor[4];
+            afColor[0] = 0.0f;
+            afColor[1] = 0.0f;
+            afColor[2] = 0.0f;
+            afColor[3] = 1.0f;
+            pGob->GetIlluminationColor(afColor[0], afColor[1], afColor[2]);
+            SetPerInstanceIllumination(afColor);
+            GLRender_EnablePixelShaders(MODEL_SHADER_ILLUM_NOISE_SUBTRACT + nBlendMode,
+                                        pPart->m_pMaterial->m_pTexture0.m_pObject,
+                                        GLRender::m_pDirtyTexture[nTexture], 0, 0);
+        }
+        else
+        {
+            GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_SUBTRACT + nBlendMode,
+                                        pPart->m_pMaterial->m_pTexture0.m_pObject,
+                                        GLRender::m_pDirtyTexture[nTexture], 0, 0);
+        }
+    }
+    AurSetVertexProgramParameter4f(VertexProgram::PARAM_DIRTY_OCTAVES, 0.5f, 0.25f, 0.125f, 0.0675f);
+    RenderFlat(pPrimitive);
+    GLRender_Disable(ENABLE_VERTEX_PROGRAM);
+    GLRender::ActivateTextureStage(1);
+    GLRender_DisableClientState(CLIENT_STATE_TEXTURE_COORD);
+    GLRender::ActivateTextureStage(0);
+    if (g_ForceSight)
+        GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
+    else
+        GLRender_EnablePixelShaders(MODEL_SHADER_NV1X_DISABLE, 0, 0, 0, 0);
+}
+#endif
+
 #ifdef _XBOX
 
 static inline void XbBindTexture(Aurora::AuroraEnableEnums nTarget, unsigned long nTexture)
@@ -1617,23 +1945,67 @@ void RenderEnvironmentMapped(VertexPrimitiveFlat* pPrimitive, bool,
         GLRender_Disable(ENABLE_ALPHA_TEST);
         if (bFog && AurATIValidate())
         {
-            GLRender_EnablePixelShaders(MODEL_SHADER_ATI_ENVIRONMENT_FOG,
-                pPart->m_pMaterial->m_pTexture0.m_pObject, pEnvMap, 0, 0);
+            if (g_ForceSight)
+            {
+                SetupForceSightShader(pGob, MODEL_SHADER_FGLOW_EM, MODEL_SHADER_DESAT_EM,
+                                      pPart->m_pMaterial->m_pTexture0.m_pObject, pEnvMap, 0, 0, false);
+            }
+            else if (pGob && pGob->IsIlluminationEnable())
+            {
+                float afColor[4];
+                afColor[0] = 0.0f;
+                afColor[1] = 0.0f;
+                afColor[2] = 0.0f;
+                afColor[3] = 1.0f;
+                pGob->GetIlluminationColor(afColor[0], afColor[1], afColor[2]);
+                SetPerInstanceIllumination(afColor);
+                GLRender_EnablePixelShaders(MODEL_SHADER_ILLUM_ENV,
+                    pPart->m_pMaterial->m_pTexture0.m_pObject, pEnvMap, 0, 0);
+            }
+            else
+            {
+                GLRender_EnablePixelShaders(MODEL_SHADER_ATI_ENVIRONMENT_FOG,
+                    pPart->m_pMaterial->m_pTexture0.m_pObject, pEnvMap, 0, 0);
+            }
         }
         else
         {
-            GLRender_EnablePixelShaders(MODEL_SHADER_ENVIRONMENT,
-                pPart->m_pMaterial->m_pTexture0.m_pObject, pEnvMap, 0, 0);
+            if (g_ForceSight)
+            {
+                SetupForceSightShader(pGob, MODEL_SHADER_FGLOW_EM, MODEL_SHADER_DESAT_EM,
+                                      pPart->m_pMaterial->m_pTexture0.m_pObject, pEnvMap, 0, 0, false);
+            }
+            else if (pGob && pGob->IsIlluminationEnable())
+            {
+                float afColor[4];
+                afColor[0] = 0.0f;
+                afColor[1] = 0.0f;
+                afColor[2] = 0.0f;
+                afColor[3] = 1.0f;
+                pGob->GetIlluminationColor(afColor[0], afColor[1], afColor[2]);
+                SetPerInstanceIllumination(afColor);
+                GLRender_EnablePixelShaders(MODEL_SHADER_ILLUM_ENV,
+                    pPart->m_pMaterial->m_pTexture0.m_pObject, pEnvMap, 0, 0);
+            }
+            else
+            {
+                GLRender_EnablePixelShaders(MODEL_SHADER_ENVIRONMENT,
+                    pPart->m_pMaterial->m_pTexture0.m_pObject, pEnvMap, 0, 0);
+            }
         }
         DoEnvMapTransform(pEnvMap, 1);
         Vector vColor(1.0f, 1.0f, 1.0f);
 #ifdef _XBOX
         XbSetPixelShaderAmbientColor(vColor, fAlpha);
 #else
-        GLRender_SetPixelShaderAmbientColor(vColor, fAlpha);
+        if (!g_ForceSight)
+            GLRender_SetPixelShaderAmbientColor(vColor, fAlpha);
 #endif
         RenderFlat(pPrimitive);
-        GLRender_EnablePixelShaders(MODEL_SHADER_NV1X_DISABLE, 0, 0, 0, 0);
+        if (g_ForceSight)
+            GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
+        else
+            GLRender_EnablePixelShaders(MODEL_SHADER_NV1X_DISABLE, 0, 0, 0, 0);
         UndoEnvMapTransform(pEnvMap, 1);
         GLRender::SetActiveTexture(1);
         if (AurCubeMapAvailable())
@@ -1783,15 +2155,24 @@ void RenderEMLM(VertexPrimitiveFlat* pPrimitive)
     GLRender::ActivateTextureStage(1);
     GLRender_EnableClientState(CLIENT_STATE_TEXTURE_COORD);
     GLRender::ActivateTextureStage(0);
-    GLRender_EnablePixelShaders(MODEL_SHADER_EMLM,
-        pPart->m_pMaterial->m_pTexture0.m_pObject, pEnvMap,
-        pPart->m_pMaterial->m_pTexture1.m_pObject, 0);
+    if (g_ForceSight)
+        SetupForceSightShader(pGob, MODEL_SHADER_FGLOW_EMLM, MODEL_SHADER_DESAT_EMLM,
+                              pPart->m_pMaterial->m_pTexture0.m_pObject,
+                              pPart->m_pMaterial->m_pTexture1.m_pObject, pEnvMap, 0, false);
+    else
+        GLRender_EnablePixelShaders(MODEL_SHADER_EMLM,
+            pPart->m_pMaterial->m_pTexture0.m_pObject,
+            pPart->m_pMaterial->m_pTexture1.m_pObject, pEnvMap, 0);
     DoEnvMapTransform(pEnvMap, 2);
     Vector vColor(1.0f, 1.0f, 1.0f);
-    GLRender_SetPixelShaderAmbientColor(vColor, fAlpha);
+    if (!g_ForceSight)
+        GLRender_SetPixelShaderAmbientColor(vColor, fAlpha);
     RenderFlat(pPrimitive);
     UndoEnvMapTransform(pEnvMap, 2);
-    GLRender_EnablePixelShaders(MODEL_SHADER_EMLM_DISABLE, 0, 0, 0, 0);
+    if (g_ForceSight)
+        GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
+    else
+        GLRender_EnablePixelShaders(MODEL_SHADER_EMLM_DISABLE, 0, 0, 0, 0);
     GLRender::ActivateTextureStage(1);
     GLRender_DisableClientState(CLIENT_STATE_TEXTURE_COORD);
     GLRender::ActivateTextureStage(0);
@@ -1912,6 +2293,7 @@ void RenderEMBM(VertexPrimitiveFlat* pPrimitive)
     }
     PartTriMesh* pPart = pPrimitive->m_pPart->AsPartTriMesh();
     MdlNodeTriMesh* pNode = (MdlNodeTriMesh*)pPart->m_pNode;
+    Gob* pGob = pPart->m_pAurObject;
     GLRender_Enable(ENABLE_BLEND);
     GLRender_Disable(ENABLE_ALPHA_TEST);
     bool bLightMapped = false;
@@ -1949,9 +2331,40 @@ void RenderEMBM(VertexPrimitiveFlat* pPrimitive)
             {
                 g_pBumpyShinyPass3->Enable(pPart, true);
                 GLRender_Enable(ENABLE_VERTEX_PROGRAM);
-                GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
-                pPart->m_pMaterial->BindTexture0();
+                if (g_ForceSight)
+                {
+                    SetupForceSightShader(pGob, MODEL_SHADER_FGLOW, MODEL_SHADER_DESAT, 0, 0, 0, 0, false);
+                }
+                else
+                {
+                    if (pGob && pGob->IsIlluminationEnable() && AurNV1xLevelShadersAvailable())
+                    {
+                        float afColor[4];
+                        afColor[0] = 0.0f;
+                        afColor[1] = 0.0f;
+                        afColor[2] = 0.0f;
+                        afColor[3] = 1.0f;
+                        pGob->GetIlluminationColor(afColor[0], afColor[1], afColor[2]);
+                        SetPerInstanceIllumination(afColor);
+                        GLRender_EnablePixelShaders(MODEL_SHADER_ILLUM, 0, 0, 0, 0);
+                    }
+                    else
+                    {
+                        GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
+                    }
+                    pPart->m_pMaterial->BindTexture0();
+                }
                 RenderFlat(pPrimitive);
+                if (g_ForceSight)
+                {
+                    GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
+                    SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+                    GLRender_SetDepthMask(1);
+                }
+                else if (pGob && pGob->IsIlluminationEnable())
+                {
+                    GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
+                }
             }
         }
         else if (enabledecal)
@@ -1959,9 +2372,14 @@ void RenderEMBM(VertexPrimitiveFlat* pPrimitive)
             GLRender::ActivateTextureStage(1);
             GLRender_EnableClientState(CLIENT_STATE_TEXTURE_COORD);
             GLRender::ActivateTextureStage(0);
-            GLRender_EnablePixelShaders(MODEL_SHADER_NV1X_LIGHTMAP,
-                pPart->m_pMaterial->m_pTexture0.m_pObject,
-                pPart->m_pMaterial->m_pTexture1.m_pObject, 0, 0);
+            if (g_ForceSight)
+                SetupForceSightShader(pGob, MODEL_SHADER_FGLOW_LM, MODEL_SHADER_DESAT_LM,
+                                      pPart->m_pMaterial->m_pTexture0.m_pObject,
+                                      pPart->m_pMaterial->m_pTexture1.m_pObject, 0, 0, false);
+            else
+                GLRender_EnablePixelShaders(MODEL_SHADER_NV1X_LIGHTMAP,
+                    pPart->m_pMaterial->m_pTexture0.m_pObject,
+                    pPart->m_pMaterial->m_pTexture1.m_pObject, 0, 0);
             GLRender_Enable(ENABLE_VERTEX_PROGRAM);
             g_pBumpyShinyPass1->Enable(pPart, true);
             AurSetVertexProgramParameter4f(VertexProgram::PARAM_BUMPY_SHINY_PASS,
@@ -2005,17 +2423,29 @@ void RenderEMBM(VertexPrimitiveFlat* pPrimitive)
             g_pBumpyShinyPass4->Enable(pPart, false);
         AurSetVertexProgramParameter4f(VertexProgram::PARAM_BUMPY_SHINY_PASS,
             1.0f, 0.0f, 1.0f, 0.0f);
-        GLRender_EnablePixelShaders(MODEL_SHADER_BUMPY_SHINY,
-            pPart->m_pMaterial->m_pBumpMap.m_pObject, 0, 0,
-            pPart->m_pMaterial->m_pEnvMap.m_pObject);
-        GLRender_EnablePixelShaders(MODEL_SHADER_BUMPY_SHINY_ENABLE, 0, 0, 0, 0);
+        if (g_ForceSight)
+        {
+            SetupForceSightShader(pGob, MODEL_SHADER_FGLOW_BUMPY_SHINY, MODEL_SHADER_DESAT_BUMPY_SHINY,
+                                  pPart->m_pMaterial->m_pBumpMap.m_pObject, 0, 0,
+                                  pPart->m_pMaterial->m_pEnvMap.m_pObject, true);
+        }
+        else
+        {
+            GLRender_EnablePixelShaders(MODEL_SHADER_BUMPY_SHINY,
+                pPart->m_pMaterial->m_pBumpMap.m_pObject, 0, 0,
+                pPart->m_pMaterial->m_pEnvMap.m_pObject);
+            GLRender_EnablePixelShaders(MODEL_SHADER_BUMPY_SHINY_ENABLE, 0, 0, 0, 0);
+        }
         if (pPart->m_pMaterial->m_fWaterAlpha < 1.0f)
         {
             GLRender_SetBlendFunc(BLEND_SRC_ALPHA,
                         BLEND_ONE_MINUS_SRC_ALPHA);
-            float fBlendAlpha = pPart->m_pMaterial->m_fWaterAlpha;
-            Vector vWhite(1.0f, 1.0f, 1.0f);
-            GLRender_SetPixelShaderAmbientColor(vWhite, fBlendAlpha);
+            if (!g_ForceSight)
+            {
+                float fBlendAlpha = pPart->m_pMaterial->m_fWaterAlpha;
+                Vector vWhite(1.0f, 1.0f, 1.0f);
+                GLRender_SetPixelShaderAmbientColor(vWhite, fBlendAlpha);
+            }
         }
         else
             GLRender_SetBlendFunc(BLEND_ONE_MINUS_DST_ALPHA,
@@ -2070,6 +2500,81 @@ void RenderEMBM(VertexPrimitiveFlat* pPrimitive)
     GLRender_Enable(ENABLE_ALPHA_TEST);
     GLRender_SetBlendFunc(BLEND_SRC_ALPHA,
                 BLEND_ONE_MINUS_SRC_ALPHA);
+}
+
+// PC 0x00488E30
+void RenderHologramEffect(int nRenderPath, VertexPrimitiveFlat* pPrimitive)
+{
+    PartTriMesh* pPart = pPrimitive->m_pPart->AsPartTriMesh();
+    GLRender_Enable(ENABLE_VERTEX_PROGRAM);
+    VertexProgram* pHoloVP = 0;
+    switch (nRenderPath)
+    {
+    case PartTriMesh::RENDER_EMBM:
+    {
+        static VertexProgram* pHoloBumpyShinyRegularVP =
+            new VertexProgram(cHoloVPARB, cBumpyShinyRegularVPDeclaration);
+        pHoloVP = pHoloBumpyShinyRegularVP;
+        break;
+    }
+    case PartTriMesh::RENDER_LIGHTMAPPED_BUMP_SPECULAR:
+    {
+        static VertexProgram* pHoloBumpMapSpecularVP =
+            new VertexProgram(cHoloVPARB, cBumpMapSpecularVPDeclaration);
+        pHoloVP = pHoloBumpMapSpecularVP;
+        break;
+    }
+    case PartTriMesh::RENDER_LIGHTMAPPED_BUMP_DIFFUSE:
+    {
+        static VertexProgram* pHoloBumpMapDiffuseVP =
+            new VertexProgram(cHoloVPARB, cBumpMapDiffuseVPDeclaration);
+        pHoloVP = pHoloBumpMapDiffuseVP;
+        break;
+    }
+    case PartTriMesh::RENDER_NORMALMAPPED:
+    {
+        static VertexProgram* pHoloNormalmapVP =
+            new VertexProgram(cHoloVPARB, szNormalmapVPARBDeclaration);
+        pHoloVP = pHoloNormalmapVP;
+        break;
+    }
+    case PartTriMesh::RENDER_BUMPMAPPED:
+    case PartTriMesh::RENDER_BUMPMAP_FALLBACK:
+    {
+        static VertexProgram* pHoloBumpMapOnePassVP =
+            new VertexProgram(cHoloVPARB, cBumpMapOnePassVPDeclaration);
+        pHoloVP = pHoloBumpMapOnePassVP;
+        break;
+    }
+    case PartTriMesh::RENDER_FLAT:
+    case PartTriMesh::RENDER_FLAT_VP:
+    case PartTriMesh::RENDER_ENVIRONMENTMAPPED:
+    case PartTriMesh::RENDER_ENVIRONMENTMAPPED_VP:
+    {
+        static VertexProgram* pHoloStandardVP =
+            new VertexProgram(cHoloVPARB, cStandardVPDeclaration);
+        pHoloVP = pHoloStandardVP;
+        break;
+    }
+    }
+    if (pHoloVP)
+    {
+        pHoloVP->Enable(pPart, false);
+        if (g_ForceSight)
+        {
+            GLRender_EnablePixelShaders(MODEL_SHADER_HOLO_DESAT, 0, 0, 0, 0);
+            GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE);
+        }
+        else
+        {
+            GLRender_EnablePixelShaders(MODEL_SHADER_HOLO, 0, 0, 0, 0);
+            GLRender_SetBlendFunc(BLEND_ONE, BLEND_SRC_ALPHA);
+        }
+        RenderFlat(pPrimitive);
+        GLRender_EnablePixelShaders(MODEL_SHADER_HOLO_DISABLE, 0, 0, 0, 0);
+        GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+    }
+    GLRender_Disable(ENABLE_VERTEX_PROGRAM);
 }
 
 #ifndef _XBOX
@@ -2141,8 +2646,14 @@ int PartTriMesh::GetRenderPath()
             nPath = RENDER_ENVIRONMENTMAPPED;
         }
     }
+    else if (pNode->m_bDirtEnabled &&
+             (AurFrameBufferModificationsAvailable() || AurATIFrameBufferModificationsAvailable()))
+    {
+        nPath = RENDER_NOISEMAPPED;
+    }
     else if (bLightMapped && bHasBumpMap && bHasTangentBases &&
-             AurNV2xLevelShadersAvailable() && enablebumpmap && enablelightmap)
+             AurNV2xLevelShadersAvailable() && enablebumpmap && enablelightmap &&
+             !usearbvertexprograms)
     {
         if (m_pMaterial->m_nRenderType != 0)
         {
@@ -2238,7 +2749,32 @@ void RenderFlatVP(VertexPrimitive* pPrimitive, PartTriMesh* pPart)
                                                : cStandardVP,
                           cStandardVPDeclaration);
     standardvp->Enable((Part*)pPart, true);
-    RenderFlat(pPrimitive->AsVertexPrimitiveFlat());
+    Gob* pGob = pPrimitive->m_pPart->m_pAurObject;
+    if (g_ForceSight)
+    {
+        SetupForceSightShader(pGob, MODEL_SHADER_FGLOW, MODEL_SHADER_DESAT, 0, 0, 0, 0, false);
+        RenderFlat(pPrimitive->AsVertexPrimitiveFlat());
+        GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
+        GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+        GLRender_SetDepthMask(1);
+    }
+    else
+    {
+        if (pGob && pGob->IsIlluminationEnable() && AurNV1xLevelShadersAvailable())
+        {
+            float afColor[4];
+            afColor[0] = 0.0f;
+            afColor[1] = 0.0f;
+            afColor[2] = 0.0f;
+            afColor[3] = 1.0f;
+            pGob->GetIlluminationColor(afColor[0], afColor[1], afColor[2]);
+            SetPerInstanceIllumination(afColor);
+            GLRender_EnablePixelShaders(MODEL_SHADER_ILLUM, 0, 0, 0, 0);
+        }
+        RenderFlat(pPrimitive->AsVertexPrimitiveFlat());
+        if (pGob && pGob->IsIlluminationEnable())
+            GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
+    }
     GLRender_Disable(ENABLE_VERTEX_PROGRAM);
 }
 
@@ -2324,13 +2860,26 @@ void RenderEMLMVP(VertexPrimitive* pPrimitive, PartTriMesh* pPart)
     GLRender_Disable(ENABLE_VERTEX_PROGRAM);
 }
 
+// PC 0x004899A0
 void RenderBumpmapFallback(VertexPrimitive* pPrimitive)
 {
-    GLRender_Disable(ENABLE_ALPHA_TEST);
-    GLRender_SetBlendFunc(BLEND_ONE, BLEND_ZERO);
-    RenderFlat(pPrimitive->AsVertexPrimitiveFlat());
-    GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-    GLRender_Enable(ENABLE_ALPHA_TEST);
+    if (g_ForceSight)
+    {
+        PartTriMesh* pPart = pPrimitive->m_pPart->AsPartTriMesh();
+        SetupForceSightShader(pPart->m_pAurObject, MODEL_SHADER_FGLOW, MODEL_SHADER_DESAT, 0, 0, 0, 0, false);
+        RenderFlat(pPrimitive->AsVertexPrimitiveFlat());
+        GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
+        GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+        GLRender_SetDepthMask(1);
+    }
+    else
+    {
+        GLRender_Disable(ENABLE_ALPHA_TEST);
+        GLRender_SetBlendFunc(BLEND_ONE, BLEND_ZERO);
+        RenderFlat(pPrimitive->AsVertexPrimitiveFlat());
+        GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+        GLRender_Enable(ENABLE_ALPHA_TEST);
+    }
 }
 #endif
 
@@ -2374,18 +2923,17 @@ void Gob::PartDraw(Part* pPart, bool bRenderLast)
 void ProcessFaces(const Vector& vPosition, ShadowInfo* pShadowInfo,
                   MdlNodeTriMesh* pNode)
 {
-    List<MaxFace>& lFaces = pNode->m_lFaces;
-
-    for (int nFace = 0; nFace < lFaces.m_nCount; nFace++)
+    for (int nFace = 0; nFace < pNode->m_lFaces.m_nCount; nFace++)
     {
+        MaxFace& face = pNode->m_lFaces[nFace];
         pShadowInfo[nFace].m_fDistance =
-            lFaces[nFace].m_vNormal.m_fX * vPosition.m_fX +
-            lFaces[nFace].m_vNormal.m_fY * vPosition.m_fY +
-            lFaces[nFace].m_vNormal.m_fZ * vPosition.m_fZ +
-            lFaces[nFace].m_fDistance;
+            face.m_vNormal.m_fX * vPosition.m_fX +
+            face.m_vNormal.m_fY * vPosition.m_fY +
+            face.m_vNormal.m_fZ * vPosition.m_fZ +
+            face.m_fDistance;
 
         *(Vector*)pShadowInfo[nFace].m_anAdjacentFaces =
-            *(Vector*)lFaces[nFace].m_anAdjacentFaces;
+            *(Vector*)face.m_anAdjacentFaces;
     }
 }
 
@@ -3061,6 +3609,7 @@ enum MotionBlurredVPRegister
 #ifndef _XBOX
 extern unsigned long* cMotionBlurredVPDeclaration;
 #endif
+#ifdef _XBOX
 void RenderMotionBlurred(VertexPrimitiveFlat* pPrimitive)
 {
 #ifdef _XBOX
@@ -3165,6 +3714,7 @@ void RenderMotionBlurred(VertexPrimitiveFlat* pPrimitive)
 #endif
     GLRender_Disable(ENABLE_VERTEX_PROGRAM);
 }
+#endif
 // PC 0x00492190
 void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
 {
@@ -3255,63 +3805,78 @@ void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
             GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS1);
             GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS2);
         }
-        GLRender_EnablePixelShaders(MODEL_SHADER_BUMP,
-            pPart->m_pMaterial->m_pBumpMap,
-            currentscene->m_pNormalizationCubeMap,
-            currentscene->m_pNormalizationCubeMap,
-            pPart->m_pMaterial->m_pTexture0);
-        AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_FOG,
-            currentscene->m_fFogNear, currentscene->m_fFogFar,
-            currentscene->m_bFog ? 1.0f : 0.0f, 0.5f);
-        AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_CONSTANTS,
-            1.0f, -1.0f, 0.0f, 0.0f);
-
-        Quaternion qOrientation;
-        Vector vPosition;
-        pPart->GetWorld(vPosition, qOrientation);
-        Vector vEye = -qOrientation * (CurrentCamera->m_vPosition - vPosition);
-        for (int nLight = 0; nLight < lstLights.m_nCount; ++nLight)
+        if (g_ForceSight)
         {
-            currentscene->m_pLightManager->DisableBumpMapLights();
             bumpmapvp->Enable(pPart, true);
-            Vector vLight = lstLights[nLight]->m_vWorldPosition;
-            vLight = -qOrientation * (vLight - vPosition);
-            Vector& vColor = lstLights[nLight]->m_vColor;
-            Vector vLightColor = cmul(vColor,
-                (vDiffuse * diffuseintensity) *
-                ((CAurTexture*)pPart->m_pMaterial->m_pBumpMap.m_pObject)->GetDiffuseBumpIntensity());
-            if (usebumpdiffuse)
-            {
-                GLRender_SetBumpLightColor(vLightColor, 1.0f);
-            }
-            else
-            {
-                GLRender_SetBumpLightColor(Vector(1.0f, 0.0f, 0.0f), 1.0f);
-            }
-            vLightColor = cmul(lstLights[nLight]->m_vColor,
-                (vSpecular * specularintensity) *
-                ((CAurTexture*)pPart->m_pMaterial->m_pBumpMap.m_pObject)->GetSpecularBumpIntensity());
-            if (usebumpspecular)
-            {
-                GLRender_SetPixelShaderAmbientColor(vLightColor, 1.0f);
-            }
-            else
-            {
-                GLRender_SetPixelShaderAmbientColor(Vector(0.0f, 1.0f, 0.0f), 1.0f);
-            }
-            AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_LIGHT_POSITION,
-                vLight.m_fX, vLight.m_fY, vLight.m_fZ, 1.0f);
-            AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_EYE_POSITION,
-                vEye.m_fX, vEye.m_fY, vEye.m_fZ, 1.0f);
-            float fRadius = lstLights[nLight]->m_fRadius;
-            AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_ATTENUATION,
-                1.0f, 0.0f, AUR_LIGHT_ATTENUATION_SCALE / (fRadius * fRadius + fRadius * fRadius), 1.0f);
+            SetupForceSightShader(pPrimitive->m_pPart->m_pAurObject, MODEL_SHADER_FGLOW_BUMPMAP,
+                                  MODEL_SHADER_DESAT_BUMPMAP, pPart->m_pMaterial->m_pBumpMap.m_pObject,
+                                  currentscene->m_pNormalizationCubeMap.m_pObject,
+                                  currentscene->m_pNormalizationCubeMap.m_pObject,
+                                  pPart->m_pMaterial->m_pTexture0.m_pObject, false);
             RenderFlat(pPrimitive);
-            if (bAlphaTestEnabled)
+            GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
+            SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+        }
+        else
+        {
+            GLRender_EnablePixelShaders(MODEL_SHADER_BUMP,
+                pPart->m_pMaterial->m_pBumpMap,
+                currentscene->m_pNormalizationCubeMap,
+                currentscene->m_pNormalizationCubeMap,
+                pPart->m_pMaterial->m_pTexture0);
+            AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_FOG,
+                currentscene->m_fFogNear, currentscene->m_fFogFar,
+                currentscene->m_bFog ? 1.0f : 0.0f, 0.5f);
+            AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_CONSTANTS,
+                1.0f, -1.0f, 0.0f, 0.0f);
+
+            Quaternion qOrientation;
+            Vector vPosition;
+            pPart->GetWorld(vPosition, qOrientation);
+            Vector vEye = -qOrientation * (CurrentCamera->m_vPosition - vPosition);
+            for (int nLight = 0; nLight < lstLights.m_nCount; ++nLight)
             {
-                GLRender_Enable(ENABLE_ALPHA_TEST);
+                currentscene->m_pLightManager->DisableBumpMapLights();
+                bumpmapvp->Enable(pPart, true);
+                Vector vLight = lstLights[nLight]->m_vWorldPosition;
+                vLight = -qOrientation * (vLight - vPosition);
+                Vector& vColor = lstLights[nLight]->m_vColor;
+                Vector vLightColor = cmul(vColor,
+                    (vDiffuse * diffuseintensity) *
+                    ((CAurTexture*)pPart->m_pMaterial->m_pBumpMap.m_pObject)->GetDiffuseBumpIntensity());
+                if (usebumpdiffuse)
+                {
+                    GLRender_SetBumpLightColor(vLightColor, 1.0f);
+                }
+                else
+                {
+                    GLRender_SetBumpLightColor(Vector(1.0f, 0.0f, 0.0f), 1.0f);
+                }
+                vLightColor = cmul(lstLights[nLight]->m_vColor,
+                    (vSpecular * specularintensity) *
+                    ((CAurTexture*)pPart->m_pMaterial->m_pBumpMap.m_pObject)->GetSpecularBumpIntensity());
+                if (usebumpspecular)
+                {
+                    GLRender_SetPixelShaderAmbientColor(vLightColor, 1.0f);
+                }
+                else
+                {
+                    GLRender_SetPixelShaderAmbientColor(Vector(0.0f, 1.0f, 0.0f), 1.0f);
+                }
+                AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_LIGHT_POSITION,
+                    vLight.m_fX, vLight.m_fY, vLight.m_fZ, 1.0f);
+                AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_EYE_POSITION,
+                    vEye.m_fX, vEye.m_fY, vEye.m_fZ, 1.0f);
+                float fRadius = lstLights[nLight]->m_fRadius;
+                AurSetVertexProgramParameter4f(VertexProgram::PARAM_NORMAL_MAP_ATTENUATION,
+                    1.0f, 0.0f, AUR_LIGHT_ATTENUATION_SCALE / (fRadius * fRadius + fRadius * fRadius), 1.0f);
+                RenderFlat(pPrimitive);
+                if (bAlphaTestEnabled)
+                {
+                    GLRender_Enable(ENABLE_ALPHA_TEST);
+                }
+                currentscene->m_pLightManager->EnableBumpMapLights();
             }
-            currentscene->m_pLightManager->EnableBumpMapLights();
         }
 
 #ifndef _XBOX
@@ -3333,6 +3898,7 @@ void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
         GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
 #else
         GLRender_EnablePixelShaders(MODEL_SHADER_BUMP_DISABLE, 0, 0, 0, 0);
+        GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
 #endif
 #ifndef _XBOX
         if (usearbvertexprograms)
@@ -3699,56 +4265,93 @@ void PartTriMesh::Draw(bool bRenderChildren)  // PC 0x00493A30
     TransformTextureMatrix();
     m_pVertexPrimitive->SetupVertexArraysStandard();
 
-    switch (GetRenderPath())
+    int nRenderPath = GetRenderPath();
+    if (m_bHologram && AurNV2xLevelShadersAvailable())
     {
-    case RENDER_EMBM:
-        RenderEMBM(m_pVertexPrimitive->AsVertexPrimitiveFlat());
-        break;
-    case RENDER_LIGHTMAPPED_BUMP_SPECULAR:
-        RenderLightMappedBumpSpecular(m_pVertexPrimitive->AsVertexPrimitiveFlat());
-        break;
-    case RENDER_LIGHTMAPPED_BUMP_DIFFUSE:
-        RenderLightMappedBumpDiffuse(m_pVertexPrimitive->AsVertexPrimitiveFlat());
-        break;
-    case RENDER_NORMALMAPPED:
-        RenderNormalMapped(m_pVertexPrimitive->AsVertexPrimitiveFlat());
-        break;
-    case RENDER_BUMPMAPPED:
-        RenderBumpMapped(m_pVertexPrimitive->AsVertexPrimitiveFlat());
-        break;
-    case RENDER_BUMPMAP_FALLBACK:
-        RenderBumpmapFallback(m_pVertexPrimitive);
-        break;
-    case RENDER_EMLM:
-        RenderEMLM(m_pVertexPrimitive->AsVertexPrimitiveFlat());
-        break;
-    case RENDER_NV1X_EMLM:
-        RenderNV1xEMLM(m_pVertexPrimitive->AsVertexPrimitiveFlat());
-        break;
-    case RENDER_ENVIRONMENTMAPPED:
-        RenderEnvironmentMapped(m_pVertexPrimitive->AsVertexPrimitiveFlat(), false, false);
-        break;
-    case RENDER_LIGHTMAPPED_NO_SHADERS:
-        RenderLightMappedNoShaders(m_pVertexPrimitive->AsVertexPrimitiveFlat());
-        break;
-    case RENDER_LIGHTMAPPED:
-        RenderLightMapped(m_pVertexPrimitive->AsVertexPrimitiveFlat());
-        break;
-    case RENDER_EMLM_VP:
-        RenderEMLMVP(m_pVertexPrimitive, this);
-        break;
-    case RENDER_LIGHTMAPPED_VP:
-        RenderLightmappedVP(m_pVertexPrimitive, this);
-        break;
-    case RENDER_FLAT_VP:
-        RenderFlatVP(m_pVertexPrimitive, this);
-        break;
-    case RENDER_ENVIRONMENTMAPPED_VP:
-        RenderEnvironmentMappedVP(m_pVertexPrimitive, this);
-        break;
-    case RENDER_FLAT:
-        RenderFlat(m_pVertexPrimitive->AsVertexPrimitiveFlat());
-        break;
+        if (!pNode->m_bHideInHolograms)
+            RenderHologramEffect(nRenderPath, m_pVertexPrimitive->AsVertexPrimitiveFlat());
+    }
+    else
+    {
+        switch (nRenderPath)
+        {
+        case RENDER_EMBM:
+            RenderEMBM(m_pVertexPrimitive->AsVertexPrimitiveFlat());
+            break;
+        case RENDER_LIGHTMAPPED_BUMP_SPECULAR:
+            RenderLightMappedBumpSpecular(m_pVertexPrimitive->AsVertexPrimitiveFlat());
+            break;
+        case RENDER_LIGHTMAPPED_BUMP_DIFFUSE:
+            RenderLightMappedBumpDiffuse(m_pVertexPrimitive->AsVertexPrimitiveFlat());
+            break;
+        case RENDER_NORMALMAPPED:
+            RenderNormalMapped(m_pVertexPrimitive->AsVertexPrimitiveFlat());
+            break;
+        case RENDER_BUMPMAPPED:
+            RenderBumpMapped(m_pVertexPrimitive->AsVertexPrimitiveFlat());
+            break;
+        case RENDER_BUMPMAP_FALLBACK:
+            RenderBumpmapFallback(m_pVertexPrimitive);
+            break;
+        case RENDER_EMLM:
+            RenderEMLM(m_pVertexPrimitive->AsVertexPrimitiveFlat());
+            break;
+        case RENDER_NV1X_EMLM:
+            RenderNV1xEMLM(m_pVertexPrimitive->AsVertexPrimitiveFlat());
+            break;
+        case RENDER_ENVIRONMENTMAPPED:
+            RenderEnvironmentMapped(m_pVertexPrimitive->AsVertexPrimitiveFlat(), false, false);
+            break;
+        case RENDER_LIGHTMAPPED_NO_SHADERS:
+            RenderLightMappedNoShaders(m_pVertexPrimitive->AsVertexPrimitiveFlat());
+            break;
+        case RENDER_LIGHTMAPPED:
+            RenderLightMapped(m_pVertexPrimitive->AsVertexPrimitiveFlat());
+            break;
+        case RENDER_EMLM_VP:
+            RenderEMLMVP(m_pVertexPrimitive, this);
+            break;
+        case RENDER_LIGHTMAPPED_VP:
+            RenderLightmappedVP(m_pVertexPrimitive, this);
+            break;
+        case RENDER_FLAT_VP:
+            RenderFlatVP(m_pVertexPrimitive, this);
+            break;
+        case RENDER_ENVIRONMENTMAPPED_VP:
+            RenderEnvironmentMappedVP(m_pVertexPrimitive, this);
+            break;
+        case RENDER_NOISEMAPPED:
+            RenderNoiseMapped(m_pVertexPrimitive->AsVertexPrimitiveFlat(),
+                              pNode->m_nDirtTexture - 1, pNode->m_nDirtCoordSpace);
+            break;
+        case RENDER_FLAT:
+            if (g_ForceSight)
+            {
+                SetupForceSightShader(m_pAurObject, MODEL_SHADER_FGLOW, MODEL_SHADER_DESAT, 0, 0, 0, 0, false);
+                RenderFlat(m_pVertexPrimitive->AsVertexPrimitiveFlat());
+                GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
+                SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+                GLRender_SetDepthMask(1);
+            }
+            else
+            {
+                if (m_pAurObject && m_pAurObject->IsIlluminationEnable() && AurNV1xLevelShadersAvailable())
+                {
+                    float afColor[4];
+                    afColor[0] = 0.0f;
+                    afColor[1] = 0.0f;
+                    afColor[2] = 0.0f;
+                    afColor[3] = 1.0f;
+                    m_pAurObject->GetIlluminationColor(afColor[0], afColor[1], afColor[2]);
+                    SetPerInstanceIllumination(afColor);
+                    GLRender_EnablePixelShaders(MODEL_SHADER_ILLUM, 0, 0, 0, 0);
+                }
+                RenderFlat(m_pVertexPrimitive->AsVertexPrimitiveFlat());
+                if (m_pAurObject && m_pAurObject->IsIlluminationEnable())
+                    GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
+            }
+            break;
+        }
     }
 
     if (AurBumpyShinyAvailable() && m_pAurObject != 0 &&
@@ -3765,6 +4368,8 @@ void PartTriMesh::Draw(bool bRenderChildren)  // PC 0x00493A30
         {
             m_pMaterial->SetBlendingMode(1);
         }
+        if (g_ForceSight)
+            SetupForceSightShader(m_pAurObject, MODEL_SHADER_FGLOW, MODEL_SHADER_DESAT, 0, 0, 0, 0, false);
 
         for (int nArray = 0; nArray < pNode->m_lstIndexCounts.m_nCount; nArray++)
         {
@@ -3778,6 +4383,14 @@ void PartTriMesh::Draw(bool bRenderChildren)  // PC 0x00493A30
             GLRender::DrawElements((Aurora::AuroraPrimitiveTypes)GL_LINE_STRIP, pNode->m_nAuxIndexCount,
                 pNode->m_nVertexDataOffset, pNode->m_nAuxIndexPool);
         }
+        if (g_ForceSight)
+        {
+            GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
+            GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+            GLRender_SetDepthMask(1);
+        }
+        GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+        GLRender_SetDepthMask(1);
         GLRender_Disable(ENABLE_VERTEX_PROGRAM);
     }
 

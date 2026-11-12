@@ -578,6 +578,22 @@ unsigned char* ImageBuildPerlin(int nSize, float fScale)
     }
     return pImage;
 }
+// PC 0x00474440
+unsigned char* ImageBuildParameterPerlin(int nSize, float fScale, int nRange, int nBase)
+{
+    int nPixels = nSize * nSize;
+    unsigned char* pImage = new unsigned char[nPixels];
+    int i;
+
+    for (i = 0; i < nPixels; i++)
+    {
+        if (nRange == 0)
+            pImage[i] = 0;
+        else
+            pImage[i] = (unsigned char)((rand() % nRange) * fScale + nBase);
+    }
+    return pImage;
+}
 // PC 0x004744A0
 unsigned char ImageGetPerlinPixel(unsigned char** ppImages, int nRow, int nColumn,
                         int nStart, int nLevels, int nSize)
@@ -824,7 +840,7 @@ void ImageFillAlpha(unsigned char* pImage, int nWidth, int nHeight, int nBPP,
 }
 // PC 0x00475030
 void ImageWriteTGA(char* sFileName, int nWidth, int nHeight, int nBPP,
-                   unsigned char* pImage)
+                   unsigned char* pImage, bool bFlipY)
 {
     TGAOutHeader header;
     FILE* pFile;
@@ -855,10 +871,13 @@ void ImageWriteTGA(char* sFileName, int nWidth, int nHeight, int nBPP,
     ImageDup(pBuffer, nWidth, nHeight, nBPP);
     nSize = nWidth * nHeight * nBPP;
 #else
-    nSize = nBPP * nHeight * nWidth;
+    nSize = nWidth * nHeight * nBPP;
     pBuffer = (unsigned char*)operator new(nSize);
     memcpy(pBuffer, pImage, nSize);
-    ImageFlipY(pBuffer, nWidth, nHeight, nBPP);
+    if (bFlipY)
+    {
+        ImageFlipY(pBuffer, nWidth, nHeight, nBPP);
+    }
     ImageDup(pBuffer, nWidth, nHeight, nBPP);
 #endif
     fwrite(pBuffer, 1, nSize, pFile);

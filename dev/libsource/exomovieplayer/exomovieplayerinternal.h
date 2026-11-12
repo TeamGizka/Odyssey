@@ -75,6 +75,8 @@ public:
     void OnWindowPosChanged(WINDOWPOS* pWindowPos);
     int GetNumberOfMoviesToPlay();
     int RestartMoviesAsync();
+    void PauseMovie();
+    void ResumeMovie();
 
     void AddMovie(const CExoString& sMovie) { m_lstMovies.Add(sMovie); }
 
@@ -105,7 +107,7 @@ public:
     HWND m_hMovieWnd;
     char m_aUnmapped54[12];
     int m_nUnknown60;
-    int m_nUnknown64;
+    int m_bPaused;
     CExoString m_sMovieFileName;
     int m_nUnknown70;
     char m_aUnmapped74[16];

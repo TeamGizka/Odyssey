@@ -186,7 +186,80 @@ enum AuroraModelShader
     MODEL_SHADER_LIGHTMAPPED_BUMP_SPECULAR1 = 9,
     MODEL_SHADER_LIGHTMAPPED_BUMP_SPECULAR2 = 10,
     MODEL_SHADER_LIGHTMAPPED_BUMP_SPECULAR4 = 11,
-    MODEL_SHADER_LIGHTMAPPED_BUMP_SPECULAR8 = 12
+    MODEL_SHADER_LIGHTMAPPED_BUMP_SPECULAR8 = 12,
+
+    MODEL_SHADER_NOISE_SUBTRACT = 38,
+    MODEL_SHADER_NOISE_ADD = 39,
+    MODEL_SHADER_NOISE_MODULATE = 40,
+    MODEL_SHADER_NOISE_EM_SUBTRACT = 41,
+    MODEL_SHADER_NOISE_EM_ADD = 42,
+    MODEL_SHADER_NOISE_EM_MODULATE = 43,
+    MODEL_SHADER_NOISE_LM_SUBTRACT = 44,
+    MODEL_SHADER_NOISE_LM_ADD = 45,
+    MODEL_SHADER_NOISE_LM_MODULATE = 46,
+    MODEL_SHADER_NOISE_EMLM_SUBTRACT = 47,
+    MODEL_SHADER_NOISE_EMLM_ADD = 48,
+    MODEL_SHADER_NOISE_EMLM_MODULATE = 49,
+    MODEL_SHADER_FGLOW = 50,
+    MODEL_SHADER_FGLOW_LM = 51,
+    MODEL_SHADER_FGLOW_EM = 52,
+    MODEL_SHADER_FGLOW_EMLM = 53,
+    MODEL_SHADER_FGLOW_BUMPMAP = 54,
+    MODEL_SHADER_FGLOW_BUMPY_SHINY = 55,
+    MODEL_SHADER_DESAT = 56,
+    MODEL_SHADER_DESAT_LM = 57,
+    MODEL_SHADER_DESAT_EM = 58,
+    MODEL_SHADER_DESAT_EMLM = 59,
+    MODEL_SHADER_DESAT_BUMPMAP = 60,
+    MODEL_SHADER_DESAT_BUMPY_SHINY = 61,
+    MODEL_SHADER_DESAT_NOISE_SUB = 62,
+    MODEL_SHADER_DESAT_NOISE_ADD = 63,
+    MODEL_SHADER_DESAT_NOISE_MOD = 64,
+    MODEL_SHADER_DESAT_NOISE_SUB_EM = 65,
+    MODEL_SHADER_DESAT_NOISE_ADD_EM = 66,
+    MODEL_SHADER_DESAT_NOISE_MOD_EM = 67,
+    MODEL_SHADER_DESAT_NOISE_SUB_LM = 68,
+    MODEL_SHADER_DESAT_NOISE_ADD_LM = 69,
+    MODEL_SHADER_DESAT_NOISE_MOD_LM = 70,
+    MODEL_SHADER_DESAT_NOISE_SUB_EMLM = 71,
+    MODEL_SHADER_DESAT_NOISE_ADD_EMLM = 72,
+    MODEL_SHADER_DESAT_NOISE_MOD_EMLM = 73,
+    MODEL_SHADER_NOISE_DISABLE = 74,
+    MODEL_SHADER_HOLO = 75,
+    MODEL_SHADER_HOLO_DESAT = 76,
+    MODEL_SHADER_HOLO_DISABLE = 77,
+    MODEL_SHADER_ILLUM = 78,
+    MODEL_SHADER_ILLUM_ENV = 79,
+    MODEL_SHADER_ILLUM_NOISE_SUBTRACT = 80,
+    MODEL_SHADER_ILLUM_NOISE_ADD = 81,
+    MODEL_SHADER_ILLUM_NOISE_MODULATE = 82,
+    MODEL_SHADER_ILLUM_NOISE_EM_SUBTRACT = 83,
+    MODEL_SHADER_ILLUM_NOISE_EM_ADD = 84,
+    MODEL_SHADER_ILLUM_NOISE_EM_MODULATE = 85,
+    MODEL_SHADER_ILLUM_NOISE_LM_SUBTRACT = 86,
+    MODEL_SHADER_ILLUM_NOISE_LM_ADD = 87,
+    MODEL_SHADER_ILLUM_NOISE_LM_MODULATE = 88,
+    MODEL_SHADER_ILLUM_NOISE_EMLM_SUBTRACT = 89,
+    MODEL_SHADER_ILLUM_NOISE_EMLM_ADD = 90,
+    MODEL_SHADER_ILLUM_NOISE_EMLM_MODULATE = 91,
+    MODEL_SHADER_ILLUM_DESAT = 92,
+    MODEL_SHADER_ILLUM_DESAT_LM = 93,
+    MODEL_SHADER_ILLUM_DESAT_EM = 94,
+    MODEL_SHADER_ILLUM_DESAT_EMLM = 95,
+    MODEL_SHADER_ILLUM_DESAT_BUMPMAP = 96,
+    MODEL_SHADER_ILLUM_DESAT_BUMPY_SHINY = 97,
+    MODEL_SHADER_ILLUM_DESAT_NOISE_SUB = 98,
+    MODEL_SHADER_ILLUM_DESAT_NOISE_ADD = 99,
+    MODEL_SHADER_ILLUM_DESAT_NOISE_MOD = 100,
+    MODEL_SHADER_ILLUM_DESAT_NOISE_SUB_EM = 101,
+    MODEL_SHADER_ILLUM_DESAT_NOISE_ADD_EM = 102,
+    MODEL_SHADER_ILLUM_DESAT_NOISE_MOD_EM = 103,
+    MODEL_SHADER_ILLUM_DESAT_NOISE_SUB_LM = 104,
+    MODEL_SHADER_ILLUM_DESAT_NOISE_ADD_LM = 105,
+    MODEL_SHADER_ILLUM_DESAT_NOISE_MOD_LM = 106,
+    MODEL_SHADER_ILLUM_DESAT_NOISE_SUB_EMLM = 107,
+    MODEL_SHADER_ILLUM_DESAT_NOISE_ADD_EMLM = 108,
+    MODEL_SHADER_ILLUM_DESAT_NOISE_MOD_EMLM = 109
 };
 #endif
 class MdlNodeTriMesh;
@@ -442,7 +515,8 @@ extern "C" void(WINAPI* glAlphaFragmentOp3ATI)(unsigned int, unsigned int,
 #define GL_PRIMARY_COLOR_NV 0x852C
 #define GL_SECONDARY_COLOR_NV 0x852D
 #define GL_E_TIMES_F_NV 0x8531
-#define GL_SIGNED_NEGATE_NV 0x853C
+#define GL_SIGNED_IDENTITY_NV 0x853C
+#define GL_SIGNED_NEGATE_NV 0x853D
 #define GL_SCALE_BY_FOUR_NV 0x853F
 #define GL_COMBINER4_NV 0x8554
 #define GL_COMBINER5_NV 0x8555
@@ -852,10 +926,13 @@ private:
     static unsigned int cm_nGLCurrentTID[6];
 public:
     static void SetActiveTexture(unsigned long nStage);
+    static void SetCurrentTID(unsigned int nTID);
     static void SetTextureCoordGenerationState(
         Aurora::AuroraTexCoordMappingModes nMode);
     static int SetCurrentStageTID(unsigned long nStage, unsigned int nTID);
     static bool cm_bVSync;
+    static float m_ForceSightColor[4];
+    static float m_PerInstanceIllumination[4];
     static bool m_bSpeedBlurEnabled;
     static bool m_bSaturationEnabled;
     static bool m_bScanNoiseEnabled;
@@ -894,14 +971,12 @@ public:
     static void SetCombinerConstant1(Vector& vColor, float fAlpha);
     static void SetFragmentShaderConstant0(Vector& vColor, float fAlpha);
     static void SetFragmentShaderConstant1(Vector& vColor, float fAlpha);
-private:
     static void (*pfuncSetPixelShaderAmbientColor)(Vector& vColor, float fAlpha);
     static void (*pfuncSetBumpLightColor)(Vector& vColor, float fAlpha);
     static void (*pfuncEnablePixelShaders)(int nShader, CAurTexture* pTexture0,
                                           CAurTexture* pTexture1,
                                           CAurTexture* pTexture2,
                                           CAurTexture* pTexture3);
-public:
     static void DisableCombiners(CAurTexture* pTexture);
     static void EnableCombiners(int nShader, CAurTexture* pTexture0,
                                CAurTexture* pTexture1, CAurTexture* pTexture2,
@@ -1128,6 +1203,7 @@ public:
     static CAurTexture* m_pDreamDistortTexture;
     static bool m_bDreamDistortEnabled;
     static bool m_bDreamDistortLetterbox;
+    static CAurTexture* m_pHologramFilterTexture;
     static short m_FuryLevel;
     static CAurTexture* m_pFuryTexture;
     static CAurTexture* m_pDirtyTexture[3];
@@ -1568,6 +1644,13 @@ public:
         PARAM_NORMAL_MAP_CONSTANTS = 17
     };
 
+    enum DirtyParameter
+    {
+        PARAM_DIRTY_SELECT = 15,
+        PARAM_DIRTY_CONSTANTS = 16,
+        PARAM_DIRTY_OCTAVES = 28
+    };
+
     enum FogParameter
     {
         PARAM_FOG_RANGE = 20,
@@ -1633,6 +1716,16 @@ extern char szSkinBumpyVPARB[];
 extern char szNewSkinBumpyVPARB[];
 extern char szBumpedOutVPARB[];
 extern char szSkinBumpyWSVPARB[];
+extern char szcStandardDirtyVPARB[];
+extern char szcStandardDirtyLMVPARB[];
+extern char szcStandardDirtyEMVPARB[];
+extern char szcStandardDirtyEMLMVPARB[];
+extern char szcStandardDirtyLSVPARB[];
+extern char szcStandardDirtyLSLMVPARB[];
+extern char szcStandardDirtyLSEMVPARB[];
+extern char szszcStandardDirtyLSEMLMVPARB[];
+extern char cHoloSkinVPARB[];
+extern char cHoloVPARB[];
 extern char cBumpyShinyVP[];
 extern char cBumpyShinySkinVP[];
 extern char cBumpMapOnePassVP[];
@@ -1640,6 +1733,14 @@ extern char cBumpMapSpecularVP[];
 extern char cBumpMapDiffuseVP[];
 extern char cBumpMapVP[];
 extern char cStandardVP[];
+extern char cStandardDirtyVP[];
+extern char cStandardDirtyLMVP[];
+extern char cStandardDirtyEMVP[];
+extern char cStandardDirtyEMLMVP[];
+extern char cStandardDirtyLSVP[];
+extern char cStandardDirtyLSLMVP[];
+extern char cStandardDirtyLSEMVP[];
+extern char cStandardDirtyLSEMLMVP[];
 extern char cFogTestVP[];
 extern char cLightProjectionVP[];
 extern char cFogOutputVP[];
@@ -1688,6 +1789,9 @@ extern int enablerender;
 extern int animationfootprint;
 extern int envmapon;
 extern int tex1on;
+extern float g_DesatureFactor;
+extern unsigned long g_SceneRender_CurrentTime_ms;
+extern bool g_ForceSight;
 int AurIsAAliasingAvailable();
 extern void (*AurRenderCallback)();
 extern int g_nModelsRead;

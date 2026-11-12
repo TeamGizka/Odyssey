@@ -203,11 +203,59 @@ float DegToRad(float fDegrees);
 double Round(float fValue, float fRoundTo);
 Matrix Transpose(const Matrix& matrix);
 Vector operator*(const Matrix& matrix, const Vector& vector);
-Quaternion operator-(const Quaternion& quaternion);
-Quaternion operator*(const Quaternion& left, const Quaternion& right);
-Quaternion operator*(const Quaternion& quaternion, float fScale);
-Vector operator*(const Quaternion& quaternion, const Vector& vector);
-Quaternion operator+(const Quaternion& left, const Quaternion& right);
+__forceinline Quaternion operator-(const Quaternion& quaternion)
+{
+    return Quaternion(quaternion.m_fW * -1.0f, quaternion.m_fX, quaternion.m_fY,
+                      quaternion.m_fZ);
+}
+__forceinline Quaternion operator*(const Quaternion& left, const Quaternion& right)
+{
+    return Quaternion(left.m_fW * right.m_fW - left.m_fX * right.m_fX -
+                          left.m_fY * right.m_fY - left.m_fZ * right.m_fZ,
+                      left.m_fW * right.m_fX + left.m_fX * right.m_fW +
+                          left.m_fY * right.m_fZ - left.m_fZ * right.m_fY,
+                      left.m_fW * right.m_fY - left.m_fX * right.m_fZ +
+                          left.m_fY * right.m_fW + left.m_fZ * right.m_fX,
+                      left.m_fW * right.m_fZ + left.m_fX * right.m_fY -
+                          left.m_fY * right.m_fX + left.m_fZ * right.m_fW);
+}
+inline Quaternion operator*(const Quaternion& quaternion, float fScale)
+{
+    return Quaternion(quaternion.m_fW * fScale, quaternion.m_fX * fScale,
+                      quaternion.m_fY * fScale, quaternion.m_fZ * fScale);
+}
+__forceinline Vector operator*(const Quaternion& quaternion, const Vector& vector)
+{
+    if (quaternionidentityoptimization &&
+        (quaternion.m_fW == 1.0f || quaternion.m_fW == -1.0f))
+    {
+        return vector;
+    }
+
+    float fXX = quaternion.m_fX * quaternion.m_fX;
+    float fYY = quaternion.m_fY * quaternion.m_fY;
+    float fZZ = quaternion.m_fZ * quaternion.m_fZ;
+    float fXY = quaternion.m_fY * quaternion.m_fX;
+    float fXZ = quaternion.m_fZ * quaternion.m_fX;
+    float fWX = quaternion.m_fX * quaternion.m_fW;
+    float fYZ = quaternion.m_fZ * quaternion.m_fY;
+    float fWY = quaternion.m_fY * quaternion.m_fW;
+    float fWZ = quaternion.m_fZ * quaternion.m_fW;
+
+    return Vector((1.0f - (fZZ + fYY) * 2.0f) * vector.m_fX + ((fXY - fWZ) * 2.0f) * vector.m_fY + ((fWY + fXZ) * 2.0f) * vector.m_fZ,
+                  (1.0f - (fZZ + fXX) * 2.0f) * vector.m_fY + ((fWZ + fXY) * 2.0f) * vector.m_fX + ((fYZ - fWX) * 2.0f) * vector.m_fZ,
+                  (1.0f - (fYY + fXX) * 2.0f) * vector.m_fZ + ((fXZ - fWY) * 2.0f) * vector.m_fX + ((fYZ + fWX) * 2.0f) * vector.m_fY);
+}
+inline Quaternion operator+(const Quaternion& left, const Quaternion& right)
+{
+    return Quaternion(left.m_fW + right.m_fW, left.m_fX + right.m_fX,
+                      left.m_fY + right.m_fY, left.m_fZ + right.m_fZ);
+}
+inline float quaternionDot(const Quaternion& left, const Quaternion& right)
+{
+    return left.m_fW * right.m_fW + left.m_fX * right.m_fX +
+           left.m_fY * right.m_fY + left.m_fZ * right.m_fZ;
+}
 Quaternion slerp(Quaternion first, const Quaternion& second, float fPosition);
 Quaternion YawPitchRoll(float fYaw, float fPitch, float fRoll);
 float Roll(Quaternion quaternion);
@@ -224,7 +272,12 @@ Vector VectorMin(Vector vFirst, Vector vSecond);
 Vector VectorMax(Vector vFirst, Vector vSecond);
 Vector VectorMin(List<Vector>& vectors);
 Vector VectorMax(List<Vector>& vectors);
-Vector cross(const Vector& vFirst, const Vector& vSecond);
+__forceinline Vector cross(const Vector& vFirst, const Vector& vSecond)
+{
+    return Vector(vFirst.m_fY * vSecond.m_fZ - vFirst.m_fZ * vSecond.m_fY,
+                  vFirst.m_fZ * vSecond.m_fX - vFirst.m_fX * vSecond.m_fZ,
+                  vFirst.m_fX * vSecond.m_fY - vFirst.m_fY * vSecond.m_fX);
+}
 Vector NormalOf(const Vector& vFirst, const Vector& vSecond,
                 const Vector& vThird);
 float SphereAbovePlane(const Vector& vCenter, float fRadius,
@@ -317,6 +370,11 @@ inline float operator*(const Vector& left, const Vector& right)
            left.m_fZ * right.m_fZ;
 }
 // PC 0x00485EA0
+inline Vector cmul(const Vector& left, const Vector& right)
+{
+    return Vector(left.m_fX * right.m_fX, left.m_fY * right.m_fY,
+                  left.m_fZ * right.m_fZ);
+}
 inline Vector Interpolate(const Vector& vFirst, const Vector& vSecond, float fPosition)
 {
     return vFirst * (1.0f - fPosition) + vSecond * fPosition;

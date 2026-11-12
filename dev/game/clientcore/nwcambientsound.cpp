@@ -518,7 +518,7 @@ void CSWCAmbientSound::PlayStinger(CSWCAmbientSoundTrack* pTrack)
             }
 
             delete m_pStingerSource;
-            m_pStingerSource = new CExoStreamingSoundSource;
+            m_pStingerSource = new CExoStreamingSoundSource(1);
             m_pStingerSource->SetPriorityGroup(
                 CExoStreamingSoundSource::PRIORITY_GROUP_STINGER);
             if (!m_pStingerSource->Play(cStinger, RESTYPE_WAV, 0, 0, 0))

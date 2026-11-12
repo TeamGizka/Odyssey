@@ -366,8 +366,6 @@ int CERFFile::WriteResource(const CExoString& sFileName, void* pUnused)
         key.m_nResId = m_nCurEntry;
         key.m_nResType = nType;
 
-#ifdef _XBOX
-
         int nSize = pIn->GetSize();
         int nRemaining = nSize;
         CAppManager* pApp = g_pAppManager;
@@ -385,21 +383,16 @@ int CERFFile::WriteResource(const CExoString& sFileName, void* pUnused)
             int nChunk = nRemaining > 0x3FFFF ? 0x3FFFF : nRemaining;
 
             pIn->Read(pTemp, 1, nChunk);
+#ifdef _XBOX
             if (pUnused != INVALID_HANDLE_VALUE)
             {
                 XCalculateSignatureUpdate((HANDLE)pUnused,
                                           (unsigned char*)pTemp, nChunk);
             }
+#endif
             m_pFile->Write(pTemp, nChunk, 1);
             nRemaining -= nChunk;
         }
-#else
-        unsigned long nSize = pIn->GetSize();
-        void* pData = new char[nSize + 1];
-        unsigned long nOffset = m_pFile->GetOffset();
-        pIn->Read(pData, nSize, 1);
-        m_pFile->Write(pData, nSize, 1);
-#endif
         m_pFile->Seek(m_nResourceListPos + m_nCurEntry * 8, 0);
         m_pFile->Write(&nOffset, 4, 1);
         m_pFile->Write(&nSize, 4, 1);
@@ -511,6 +504,12 @@ int CERFKey::Read(CExoFile& file)
     file.Read(&m_nUnused, 2, 1);
     return 1;
 }
+// PC 0x0062A160
+void CERFKey::SetName(CExoString& sName)
+{
+    memset(m_sResRef, 0, 16);
+    memcpy(m_sResRef, sName.CStr(), sName.GetLength());
+}
 // PC 0x0062A1B0
 int CERFKey::Write(CExoFile& file)
 {
@@ -573,8 +572,7 @@ int CERFFile::WriteResource(char* sResRef, unsigned short nResType, CRes* pRes,
     }
 
     CExoString sName(sResRef);
-    memset(&key, 0, 16);
-    memcpy(&key, sName.CStr(), sName.GetLength());
+    key.SetName(sName);
     key.m_nResId = m_nCurEntry;
     key.m_nResType = nResType;
 

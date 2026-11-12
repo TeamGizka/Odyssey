@@ -565,8 +565,11 @@ void Material::ReplaceTexture(char* sOld, char* sNew)
 {
     if (AsTexture(m_pTexture0) != 0 && AsTexture(m_pTexture0)->IsNull() == 0)
     {
-        AurTextureReplaceSingleReference(AsTexture(m_pTexture0), sOld, sNew, 0,
-                                         0, 0);
+        if (_stricmp(AsTexture(m_pTexture0)->GetName(), "P_BaoDur_Arm") != 0)
+        {
+            AurTextureReplaceSingleReference(AsTexture(m_pTexture0), sOld,
+                                             sNew, 0, 0, 0);
+        }
         return;
     }
 

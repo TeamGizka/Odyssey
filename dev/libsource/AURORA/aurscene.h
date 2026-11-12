@@ -33,6 +33,7 @@ class WindManager;
 #define AUR_SHADOW_LIGHT_HEIGHT 1.75f
 
 #define AUR_SHADOW_MAX_RADIUS 50.0f
+#define AUR_SHADOW_GOB_RANGE_SQUARED 1100.0f
 
 #define AUR_SHADOW_OPACITY 0.5f
 #define AUR_SHADOW_FAN_ANGLE_STEP (40.0f * DEG_TO_RAD)
@@ -67,11 +68,7 @@ public:
     virtual float GetObjectScale(CAurObject* pObject) = 0;
 
     virtual void Render() = 0;
-#ifdef _XBOX
     virtual void Animate(float fTimeStep) = 0;
-#else
-    virtual int Animate(float fTimeStep) = 0;
-#endif
     virtual void InitBSP(int, int, int, bool, float) = 0;
     virtual CAurObject* SpawnTile(char* sName, const Vector& vPosition, int nRotation, int bMeshesOnly) = 0;
     virtual void SetTileLights(const Vector& vPosition, const Vector& vMainLight, const Vector& vSourceLight) = 0;
@@ -126,10 +123,7 @@ public:
         m_bFog = bFog;
         return bFog;
     }
-    virtual void SetFogColor(const Vector& vColor)  // PC 0x0050B650
-    {
-        m_vFogColor = vColor;
-    }
+    virtual void SetFogColor(const Vector& vColor);
     virtual int GetObjectA(char* sName);
 #ifdef _XBOX
     virtual bool SetObjectScale(CAurObject* pObject, float fScale);
@@ -139,11 +133,7 @@ public:
     virtual float GetObjectScale(CAurObject* pObject);
 
     virtual void Render();
-#ifdef _XBOX
     virtual void Animate(float fTimeStep);
-#else
-    virtual int Animate(float fTimeStep);
-#endif
 
     virtual void InitBSP(int, int, int, bool, float);
     virtual CAurObject* SpawnTile(char* sName, const Vector& vPosition, int nRotation, int bMeshesOnly);

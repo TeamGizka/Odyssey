@@ -126,6 +126,8 @@ inline void ExoSoundCopyWaveFormat(XBOXADPCMWAVEFORMAT* pFormat, const WAVEFORMA
 class C2DVoice
 {
 public:
+    C2DVoice() : m_pSource(0), m_hSample(0), m_bLocked(0), m_nState(0) {}
+
     CExoSoundSourceInternal* m_pSource;
     HSAMPLE m_hSample;
 
@@ -138,6 +140,8 @@ public:
 class C3DVoice
 {
 public:
+    C3DVoice() : m_pSource(0), m_hSample(0), m_bLocked(0), m_nState(0) {}
+
     CExoSoundSourceInternal* m_pSource;
     H3DSAMPLE m_hSample;
 
@@ -786,7 +790,7 @@ public:
     int GetResourceType();
     unsigned long GetFadeDuration() { return m_nFadeDuration; }
     unsigned char GetVolume(); CExoSoundInternal* GetSoundInternal() { return m_pSoundInternal; }
-    CExoStreamingSoundSourceInternal(CExoSoundInternal* pSoundInternal, int n4);
+    CExoStreamingSoundSourceInternal(CExoSoundInternal* pSoundInternal, int bReservedStream);
     ~CExoStreamingSoundSourceInternal();
     int GetPlayFailed();
     int IsPlaying();

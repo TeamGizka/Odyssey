@@ -2190,7 +2190,7 @@ void CGuiInGame::LoadAmbientTrackForDialog(const CResRef& cAmbientTrack)
 
     if (cAmbientTrack.IsValid())
     {
-        m_pDialogAmbientTrack = new CExoStreamingSoundSource;
+        m_pDialogAmbientTrack = new CExoStreamingSoundSource(1);
         if (m_pDialogAmbientTrack != 0)
         {
             m_pDialogAmbientTrack->SetPriorityGroup(
@@ -5331,7 +5331,7 @@ int CGuiInGame::HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSoun
             m_pDialogSound->Stop();
             delete m_pDialogSound;
         }
-        m_pDialogSound = new CExoStreamingSoundSource;
+        m_pDialogSound = new CExoStreamingSoundSource(1);
         m_pDialogSound->SetPriorityGroup(
             CExoStreamingSoundSource::PRIORITY_GROUP_DIALOG_VOICE);
         if (m_pDialogSound->Play(cSound, RESTYPE_MP3, 1, 0, 0) == 0 &&

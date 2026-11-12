@@ -429,6 +429,7 @@ List<PartEmitter*> emitterbucket;
 List<Gob*> gobbucket;
 List<Gob*> g_listForcePushBucket;
 List<Gob*> g_listLightsaberBucket;
+List<Gob*> g_listHologramBucket;
 List<BSPNode*> staticlightbucket;
 List<PartTrigger*> triggerbucket;
 List<CAurTriangleBin*> binbucket;
@@ -758,16 +759,13 @@ void ClearBuckets(Scene* pScene)
     g_listLightsaberBucket.m_nCount = 0;
     blurbucket.m_nCount = 0;
     emitterbucket.m_nCount = 0;
-
-    for (int i = 0; i <= nMaxTexID; i++)
-    {
-        capbuckets[i].m_nCount = 0;
-    }
+    g_listHologramBucket.m_nCount = 0;
 
     for (int i = 0; i <= nMaxTexID; i++)
     {
         meshbuckets[i].m_nCount = 0;
         fadebuckets[i].m_nCount = 0;
+        capbuckets[i].m_nCount = 0;
     }
 
     g_listBackgroundBucket.m_nCount = 0;
@@ -1257,23 +1255,27 @@ void CollectActiveRooms(Scene* pScene, List<CAurRoom*>& lstRooms)
     if (pScene->m_bIgnoreVisibilityGraph == 0 && enablevisibilitygraph != 0)
     {
         lstRooms.Add(pScene->m_pCurrentRoom);
+        List<Plane>& lstPlanes = CurrentCamera->m_lstViewVolume;
         for (int i = 0;
              i < pScene->m_pCurrentRoom->m_lstVisibleRooms.m_nCount; i++)
         {
-#ifdef _XBOX
-            lstRooms.Add(pScene->m_pCurrentRoom->m_lstVisibleRooms.m_pList[i]);
-#else
             CAurRoom* pRoom =
                 pScene->m_pCurrentRoom->m_lstVisibleRooms.m_pList[i];
-            if (lstRooms.m_nCount == lstRooms.m_nAllocated)
+            bool bVisible = true;
+            if (!pRoom->m_bB8)
             {
-                lstRooms.allocate(lstRooms.m_nAllocated
-                                      ? lstRooms.m_nAllocated * 2
-                                      : 8);
+                for (int j = 0; j < lstPlanes.m_nCount; j++)
+                {
+                    if (BoxAbovePlane(pRoom->m_vMinimum, pRoom->m_vMaximum,
+                                      lstPlanes.m_pList[j]) > 0.0f)
+                    {
+                        bVisible = false;
+                        break;
+                    }
+                }
             }
-            lstRooms.m_pList[lstRooms.m_nCount] = pRoom;
-            lstRooms.m_nCount++;
-#endif
+            if (bVisible)
+                lstRooms.Add(pRoom);
 
         }
     }
@@ -1404,9 +1406,12 @@ static void ProcessParts(BSPNode* pNode, void* pData, List<Plane>& planes)
     for (int i = 0; i < lstStaticGobs.m_nCount; i++)
     {
         Gob* pGob = lstStaticGobs[i];
-#ifdef _XBOX
-        pGob->IsInViewVolume();
-#endif
+        if (pGob->IsInViewVolume())
+        {
+            pGob->m_fZOrder = magnitude(CurrentCamera->m_vPosition -
+                (pGob->m_vPosition + pGob->m_qOrientation *
+                 pGob->m_vMinimumBoundingSphere));
+        }
         if (!GobOutside(pGob, planes))
 
         {
@@ -1438,7 +1443,8 @@ static void ProcessParts(BSPNode* pNode, void* pData, List<Plane>& planes)
     for (int i = 0; i < lstStaticEmitters.m_nCount; i++)
     {
         PartEmitter* pEmitter = lstStaticEmitters[i];
-        if (!PartOutside(pEmitter, planes))
+        if (!PartOutside(pEmitter, planes) ||
+            strstr(strupr(pEmitter->m_pNode->m_pModel->m_sName), "BAODUR"))
         {
             emitterbucket.AddUnique(pEmitter);
         }
@@ -1603,14 +1609,9 @@ void LightManager::CollectLightsForGivenRoom(CAurRoom* pRoom)
             }
         }
 
-#ifdef _XBOX
-        List<PartLight*> lstRoomLights(pNodeData->GetMovingLights());
-#else
-        List<PartLight*> lstRoomLights(pNodeData->m_lstMovingLights);
-#endif
-        for (int k = 0; k < lstRoomLights.m_nCount; k++)
+        for (int k = 0; k < pNodeData->m_lstMovingLights.m_nCount; k++)
         {
-            PartLight* pLight = lstRoomLights[k];
+            PartLight* pLight = pNodeData->m_lstMovingLights[k];
             if (((MdlNodeLight*)pLight->m_pNode)->m_lstFlareColorShifts.m_nCount > 0)
             {
                 m_lstLensFlareLights.AddUnique(pLight);
@@ -1720,12 +1721,15 @@ void ManageSceneBSP(Scene* pScene)
     if (pScene->m_lstRooms.m_nCount)
     {
         int nRooms = lstRooms.m_nCount;
-        for (int i = 0; i < nRooms; i++)
+        if (pScene->m_bBinsPopulated)
         {
-            BSPTraverse(lstRooms.m_pList[i], CurrentCamera->m_vPosition,
-                        CAurTriangleBin::m_fFarRadiusSquared, CollectBins);
+            for (int i = 0; i < nRooms; i++)
+            {
+                BSPTraverse(lstRooms.m_pList[i], CurrentCamera->m_vPosition,
+                            CAurTriangleBin::m_fFarRadiusSquared, CollectBins);
+            }
+            AurProcessActiveBins();
         }
-        AurProcessActiveBins();
         for (int i = 0; i < nRooms; i++)
         {
             BSPTraverseVolumeApprox(lstRooms.m_pList[i], CurrentCamera->m_vPosition,
@@ -1755,7 +1759,11 @@ void ManageSceneBSP(Scene* pScene)
                     char(pGob->m_pModel->m_Classification.m_bSkipVisibilityCheck) ||
                     pGob->IsAlwaysRendering())
                 {
-                    if (pGob->m_pModel && (pGob->m_bDistortion ||
+                    if (pGob->IsHologramEnabled())
+                    {
+                        g_listHologramBucket.Add(pGob);
+                    }
+                    else if (pGob->m_pModel && (pGob->m_bDistortion ||
                         char(pGob->m_pModel->m_Classification.m_bSceneHitDisabled)))
                     {
                         g_listForcePushBucket.Add(pGob);

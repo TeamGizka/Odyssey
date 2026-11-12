@@ -768,13 +768,23 @@ void NewController::Control(Part* pPart, MdlNode* pNode, float fTime,
             GetFloatValue(fTime, pNode, value0);
             *pValue = (1.0f - fBlend) * value0 + value * fBlend;
         }
+        if (m_nOffset == OFFSET_SCALE)
+        {
+            MdlNodeTriMesh* pTriMesh = pPart->m_pNode->AsMdlNodeTriMesh();
+            if (pTriMesh)
+            {
+                Model* pModel = pTriMesh->m_pModel->AsModel();
+                if (pModel && (bool)pModel->m_Classification.m_bRenderEarly)
+                    pTriMesh->m_bRender = true;
+            }
+        }
     }
     else if (nType == VALUE_TYPE_VECTOR)
     {
-        Vector value0;
-        Vector value;
         Vector* pValue = (Vector*)((char*)pPart + m_nOffset);
         Vector value_old = *pValue;
+        Vector value0;
+        Vector value;
         Vector* pBaseValue;
         GetVectorValue(fPreviousTime, pNode, value);
         if (m_nNumKeys != NODE_OFFSET_NONE)
@@ -799,10 +809,10 @@ void NewController::Control(Part* pPart, MdlNode* pNode, float fTime,
     else if (nType == VALUE_TYPE_QUATERNION ||
              nType == VALUE_TYPE_COMPRESSED_QUATERNION)
     {
-        Quaternion value0;
         Quaternion value;
         Quaternion* pValue = (Quaternion*)((char*)pPart + m_nOffset);
         Quaternion value_old = *pValue;
+        Quaternion value0;
         GetQuaternionValue(fPreviousTime, pNode, value);
         if (fTime < ANIMATION_TRANSITION_TIME_LIMIT)
         {

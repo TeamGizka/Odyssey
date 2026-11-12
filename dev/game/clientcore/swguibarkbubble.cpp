@@ -88,7 +88,7 @@ void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
         delete m_pSoundSource;
         m_pSoundSource = NULL;
     }
-    m_pSoundSource = new CExoStreamingSoundSource();
+    m_pSoundSource = new CExoStreamingSoundSource(1);
     if (oidSpeaker != OBJECT_INVALID)
     {
         Vector vPosition = g_pAppManager->m_pClientExoApp

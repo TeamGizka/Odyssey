@@ -414,6 +414,100 @@ char cStandardVP[] =
     "[15].wwwz;MOV   o[TEX0], v[TEX0];MOV   o[TEX1], v[TEX1];MOV   o[TEX2], v[TEX2];MOV   o[TEX3], v[TEX3"
     "];MOV o[COL0], c[15].wwwz;";
 
+char cStandardDirtyVP[] =
+    "!!VP1.0 # This is the standard vertex program.\n"
+    "DP4\to[HPOS].x, c[0], v[OPOS];DP4\to[HPOS].y, c[1], v[OPOS];DP4\to[HPOS].z, c[2], v[OPOS];DP4\to[HPOS].w"
+    ", c[3], v[OPOS];DP4   R10.x, c[8], v[OPOS];DP4   R10.y, c[9], v[OPOS];DP4   R10.z, c[10], v[OPOS];DP"
+    "4   R10.w, c[11], v[OPOS];DP4\tR11.x, R10, c[92];DP4\tR11.y, R10, C[91];DP4\tR11.z, R10, C[90];DP4\tR11."
+    "w, R10, C[89];MAD\tR11, R11, C[28].x, R11;\n"
+    "MAD\tR11, R11, C[28].y, R11.yzxw;\n"
+    "MAD\tR11, R11, C[28].z, R11.zxyw;\n"
+    "MAD\to[TEX1], R11, C[28].w, R11;\n"
+    "DP3\tR1.w, R10, R10;RSQ\tR1.w, R1.w;RCP\tR1.w, R1.w;MOV\to[FOGC], R1.w;DP3\tR11.x, c[8], v[NRML];DP3\tR11."
+    "y, c[9], v[NRML];DP3\tR11.z, c[10], v[NRML];MOV\tR9, c[15].wwwz;MOV   o[TEX0], v[TEX0];MOV   o[TEX2], "
+    "v[TEX2];MOV   o[TEX3], v[TEX3];MOV o[COL0], c[15].wwwz;";
+
+char cStandardDirtyLMVP[] =
+    "!!VP1.0 # This is the standard vertex program.\n"
+    "DP4\to[HPOS].x, c[0], v[OPOS];DP4\to[HPOS].y, c[1], v[OPOS];DP4\to[HPOS].z, c[2], v[OPOS];DP4\to[HPOS].w"
+    ", c[3], v[OPOS];DP4   R10.x, c[8], v[OPOS];DP4   R10.y, c[9], v[OPOS];DP4   R10.z, c[10], v[OPOS];DP"
+    "4   R10.w, c[11], v[OPOS];DP4\tR11.x, R10, c[92];DP4\tR11.y, R10, C[91];DP4\tR11.z, R10, C[90];DP4\tR11."
+    "w, R10, C[89];MAD\tR11, R11, C[28].x, R11;\n"
+    "MAD\tR11, R11, C[28].y, R11.yzxw;\n"
+    "MAD\tR11, R11, C[28].z, R11.zxyw;\n"
+    "MAD\to[TEX2], R11, C[28].w, R11;\n"
+    "DP3\tR1.w, R10, R10;RSQ\tR1.w, R1.w;RCP\tR1.w, R1.w;MOV\to[FOGC], R1.w;DP3\tR11.x, c[8], v[NRML];DP3\tR11."
+    "y, c[9], v[NRML];DP3\tR11.z, c[10], v[NRML];MOV\tR9, c[15].wwwz;MOV   o[TEX0], v[TEX0];MOV   o[TEX1], "
+    "v[TEX1];MOV   o[TEX3], v[TEX3];MOV o[COL0], c[15].wwwz;";
+
+char cStandardDirtyEMVP[] =
+    "!!VP1.0 # This is the standard vertex program.\n"
+    "DP4\to[HPOS].x, c[0], v[OPOS];DP4\to[HPOS].y, c[1], v[OPOS];DP4\to[HPOS].z, c[2], v[OPOS];DP4\to[HPOS].w"
+    ", c[3], v[OPOS];DP4   R10.x, c[8], v[OPOS];DP4   R10.y, c[9], v[OPOS];DP4   R10.z, c[10], v[OPOS];DP"
+    "4   R10.w, c[11], v[OPOS];DP4\tR11.x, R10, c[92];DP4\tR11.y, R10, C[91];DP4\tR11.z, R10, C[90];DP4\tR11."
+    "w, R10, C[89];MAD\tR11, R11, C[28].x, R11;\n"
+    "MAD\tR11, R11, C[28].y, R11.yzxw;\n"
+    "MAD\tR11, R11, C[28].z, R11.zxyw;\n"
+    "MAD\to[TEX2], R11, C[28].w, R11;\n"
+    "DP3\tR1.w, R10, R10;RSQ\tR1.w, R1.w;RCP\tR1.w, R1.w;MOV\to[FOGC], R1.w;DP3\tR11.x, c[8], v[NRML];DP3\tR11."
+    "y, c[9], v[NRML];DP3\tR11.z, c[10], v[NRML];MOV\tR9, c[15].wwwz;MOV   o[TEX0], v[TEX0];DP3   R0.x, -R1"
+    "0, R11;MUL   R1, R0.x, R11;MUL   R2, R1, c[16].y;ADD   R3, R10, R2;DP3   R3.w, R3, R3;RSQ   R3.w, R3"
+    ".w;MUL   R3, R3, R3.w;DP3   R4.x, c[92], R3;DP3   R4.y, c[91], R3;DP3   R4.z, c[90], R3;MOV   R4.w, "
+    "c[16].w;MOV   o[TEX1], R4;";
+
+char cStandardDirtyEMLMVP[] =
+    "!!VP1.0 # This is the standard vertex program.\n"
+    "DP4\to[HPOS].x, c[0], v[OPOS];DP4\to[HPOS].y, c[1], v[OPOS];DP4\to[HPOS].z, c[2], v[OPOS];DP4\to[HPOS].w"
+    ", c[3], v[OPOS];DP4   R10.x, c[8], v[OPOS];DP4   R10.y, c[9], v[OPOS];DP4   R10.z, c[10], v[OPOS];DP"
+    "4   R10.w, c[11], v[OPOS];DP4\tR11.x, R10, c[92];DP4\tR11.y, R10, C[91];DP4\tR11.z, R10, C[90];DP4\tR11."
+    "w, R10, C[89];MAD\tR11, R11, C[28].x, R11;\n"
+    "MAD\tR11, R11, C[28].y, R11.yzxw;\n"
+    "MAD\tR11, R11, C[28].z, R11.zxyw;\n"
+    "MAD\to[TEX3], R11, C[28].w, R11;\n"
+    "DP3\tR1.w, R10, R10;RSQ\tR1.w, R1.w;RCP\tR1.w, R1.w;MOV\to[FOGC], R1.w;DP3\tR11.x, c[8], v[NRML];DP3\tR11."
+    "y, c[9], v[NRML];DP3\tR11.z, c[10], v[NRML];MOV\tR9, c[15].wwwz;MOV\to[TEX0], v[TEX0];MOV\to[TEX1], v[TE"
+    "X1];DP3   R0.x, -R10, R11;MUL   R1, R0.x, R11;MUL   R2, R1, c[16].y;ADD   R3, R10, R2;DP3   R3.w, R3"
+    ", R3;RSQ   R3.w, R3.w;MUL   R3, R3, R3.w;DP3   R4.x, c[92], R3;DP3   R4.y, c[91], R3;DP3   R4.z, c[9"
+    "0], R3;MOV   R4.w, c[16].w;MOV   o[TEX2], R4;";
+
+char cStandardDirtyLSVP[] =
+    "!!VP1.0 # This is the standard vertex program.\n"
+    "DP4\to[HPOS].x, c[0], v[OPOS];DP4\to[HPOS].y, c[1], v[OPOS];DP4\to[HPOS].z, c[2], v[OPOS];DP4\to[HPOS].w"
+    ", c[3], v[OPOS];DP4   R10.x, c[8], v[OPOS];DP4   R10.y, c[9], v[OPOS];DP4   R10.z, c[10], v[OPOS];DP"
+    "4   R10.w, c[11], v[OPOS];MOV\tR11, v[OPOS];ADD\tR11, R11, v[TEX0];MOV\to[TEX1], R11;DP3\tR1.w, R10, R10"
+    ";RSQ\tR1.w, R1.w;RCP\tR1.w, R1.w;MOV\to[FOGC], R1.w;DP3\tR11.x, c[8], v[NRML];DP3\tR11.y, c[9], v[NRML];D"
+    "P3\tR11.z, c[10], v[NRML];MOV\tR9, c[15].wwwz;MOV   o[TEX0], v[TEX0];";
+
+char cStandardDirtyLSLMVP[] =
+    "!!VP1.0 # This is the standard vertex program.\n"
+    "DP4\to[HPOS].x, c[0], v[OPOS];DP4\to[HPOS].y, c[1], v[OPOS];DP4\to[HPOS].z, c[2], v[OPOS];DP4\to[HPOS].w"
+    ", c[3], v[OPOS];DP4   R10.x, c[8], v[OPOS];DP4   R10.y, c[9], v[OPOS];DP4   R10.z, c[10], v[OPOS];DP"
+    "4   R10.w, c[11], v[OPOS];MOV\tR11, v[OPOS];ADD\tR11, R11, v[TEX0];MOV\to[TEX2], R11;DP3\tR1.w, R10, R10"
+    ";RSQ\tR1.w, R1.w;RCP\tR1.w, R1.w;MOV\to[FOGC], R1.w;DP3\tR11.x, c[8], v[NRML];DP3\tR11.y, c[9], v[NRML];D"
+    "P3\tR11.z, c[10], v[NRML];MOV\tR9, c[15].wwwz;MOV   o[TEX0], v[TEX0];MOV   o[TEX1], v[TEX1];";
+
+char cStandardDirtyLSEMVP[] =
+    "!!VP1.0 # This is the standard vertex program.\n"
+    "DP4\to[HPOS].x, c[0], v[OPOS];DP4\to[HPOS].y, c[1], v[OPOS];DP4\to[HPOS].z, c[2], v[OPOS];DP4\to[HPOS].w"
+    ", c[3], v[OPOS];DP4   R10.x, c[8], v[OPOS];DP4   R10.y, c[9], v[OPOS];DP4   R10.z, c[10], v[OPOS];DP"
+    "4   R10.w, c[11], v[OPOS];MOV\tR11, v[OPOS];ADD\tR11, R11, v[TEX0];MOV\to[TEX2], R11;DP3\tR1.w, R10, R10"
+    ";RSQ\tR1.w, R1.w;RCP\tR1.w, R1.w;MOV\to[FOGC], R1.w;DP3\tR11.x, c[8], v[NRML];DP3\tR11.y, c[9], v[NRML];D"
+    "P3\tR11.z, c[10], v[NRML];MOV\tR9, c[15].wwwz;MOV   o[TEX0], v[TEX0];DP3   R0.x, -R10, R11;MUL   R1, R"
+    "0.x, R11;MUL   R2, R1, c[16].y;ADD   R3, R10, R2;DP3   R3.w, R3, R3;RSQ   R3.w, R3.w;MUL   R3, R3, R"
+    "3.w;DP3   R4.x, c[92], R3;DP3   R4.y, c[91], R3;DP3   R4.z, c[90], R3;MOV   R4.w, c[16].w;MOV   o[TE"
+    "X1], R4;";
+
+char cStandardDirtyLSEMLMVP[] =
+    "!!VP1.0 # This is the standard vertex program.\n"
+    "DP4\to[HPOS].x, c[0], v[OPOS];DP4\to[HPOS].y, c[1], v[OPOS];DP4\to[HPOS].z, c[2], v[OPOS];DP4\to[HPOS].w"
+    ", c[3], v[OPOS];DP4   R10.x, c[8], v[OPOS];DP4   R10.y, c[9], v[OPOS];DP4   R10.z, c[10], v[OPOS];DP"
+    "4   R10.w, c[11], v[OPOS];MOV\tR11, v[OPOS];ADD\tR11, R11, v[TEX0];MOV\to[TEX3], R11;DP3\tR1.w, R10, R10"
+    ";RSQ\tR1.w, R1.w;RCP\tR1.w, R1.w;MOV\to[FOGC], R1.w;DP3\tR11.x, c[8], v[NRML];DP3\tR11.y, c[9], v[NRML];D"
+    "P3\tR11.z, c[10], v[NRML];MOV\tR9, c[15].wwwz;MOV   o[TEX0], v[TEX0];MOV   o[TEX1], v[TEX1];DP3   R0.x"
+    ", -R10, R11;MUL   R1, R0.x, R11;MUL   R2, R1, c[16].y;ADD   R3, R10, R2;DP3   R3.w, R3, R3;RSQ   R3."
+    "w, R3.w;MUL   R3, R3, R3.w;DP3   R4.x, c[92], R3;DP3   R4.y, c[91], R3;DP3   R4.z, c[90], R3;MOV   R"
+    "4.w, c[16].w;MOV   o[TEX2], R4;";
+
 char cFogTestVP[] =
     "!!VP1.0 # This is the standard vertex program.\n"
     "DP4   o[HPOS].x, c[0], v[OPOS];DP4   o[HPOS].y, c[1], v[OPOS];DP4   o[HPOS].z, c[2], v[OPOS];DP4   o"

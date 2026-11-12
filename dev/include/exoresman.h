@@ -74,6 +74,7 @@ enum ExoResourceType
     RESTYPE_TPC = 3007,
     RESTYPE_MDX = 3008,
 
+    RESTYPE_ERF = 9997,
     RESTYPE_BIF = 9998
 };
 

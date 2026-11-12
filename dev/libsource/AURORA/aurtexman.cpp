@@ -91,6 +91,7 @@ int texturecreatetime = 0;
 int textureheadertime = 0;
 int texturecount = 0;
 int basictexturecount = 0;
+bool g_bTexturesRebuilt = false;
 
 float currentoverflow = 0.0f;
 float maxdeltat = 0;
@@ -593,6 +594,33 @@ int CAurTexture::GetDepth()
     else
     {
         return 0;
+    }
+}
+// PC 0x004206D0
+void CAurTexture::SetHeight(int nHeight)
+{
+    CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
+    if (pTexture != NULL)
+    {
+        pTexture->m_nHeight = nHeight;
+    }
+}
+// PC 0x004206F0
+void CAurTexture::SetDepth(int nDepth)
+{
+    CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
+    if (pTexture != NULL)
+    {
+        pTexture->m_nDepth = nDepth;
+    }
+}
+// PC 0x00420710
+void CAurTexture::SetWidth(int nWidth)
+{
+    CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
+    if (pTexture != NULL)
+    {
+        pTexture->m_nWidth = nWidth;
     }
 }
 // PC 0x00420730
@@ -1431,6 +1459,13 @@ void CAurTextureBasic::SetScheme(int* pScheme, int nCount)
     }
     m_nSchemeSize = nCount;
 }
+// PC 0x004215E0
+TextureController* CAurTexture::GetController()
+{
+    if (AsCAurTextureBasic())
+        return AsCAurTextureBasic()->m_pController;
+    return 0;
+}
 
 #include "aurrendergl.h"
 #include "aurscenemanager.h"
@@ -1444,6 +1479,11 @@ int AurTextureSetDim(int nWidth, int nHeight)
 int AurTextureGetMaxTexID()
 {
     return maxtexid;
+}
+// PC 0x00421640
+void GLRender::SetCurrentTID(unsigned int nTID)
+{
+    cm_nGLCurrentTID[cm_uiCurrentStage] = nTID;
 }
 // PC 0x004015A0
 void AurTextureClearAll()
@@ -1808,7 +1848,6 @@ void AurSnapshot(char* sFileName, bool bScreenSize)
         unsigned char* pPixels = new unsigned char[nSize];
         memset(pPixels, 0, nSize);
 #else
-    if (bScreenSize)
     {
         unsigned char* pPixels = new unsigned char[3 * nWidth * nHeight];
         memset(pPixels, 0, 3 * nWidth * nHeight);
@@ -1822,11 +1861,6 @@ void AurSnapshot(char* sFileName, bool bScreenSize)
         ImageWriteTGA(sBuffer, nWidth, nHeight, 3, pPixels);
         delete[] pPixels;
     }
-#ifndef _XBOX
-    else {
-        AurSaveGameSnapshot(sFileName, nWidth, false, false);
-    }
-#endif
 }
 
 #ifndef _XBOX
@@ -2756,6 +2790,7 @@ void AurTextureBuildAndStoreAll()
     int nCount = RefreshTextures.m_nCount;
     if (nCount != 0)
     {
+        g_bTexturesRebuilt = true;
         do
         {
             nCount--;
@@ -3625,7 +3660,7 @@ void AurSaveGameSnapshot(char* sFileName, int nSize, bool bSquare, bool bCrop)  
     ImageFlipY(pPixels, nWidth, nHeight, 3);
     unsigned char* pScaled = ImageScale(pPixels, nWidth,
                                         nHeight, 3, nOutWidth, nOutHeight);
-    if (bSquare || !bCrop)
+    if (bSquare)
     {
         ImageWriteTGA(sBuffer, nOutWidth, nOutHeight, 3, pScaled);
     }

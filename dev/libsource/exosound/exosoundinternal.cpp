@@ -12,6 +12,8 @@
 static inline void ExoSoundTrace();
 #define EXOSOUND_TRACE() ExoSoundTrace()
 
+#define EXOSOUND_RESERVED_STREAMING_HANDLES 8
+
 int g_bDisableSound;
 int g_bSoundPaused;
 int g_totalStreamingHandlesAvailable;
@@ -1256,9 +1258,10 @@ void CExoSoundInternal::AddToPlayingList(CExoSoundSourceInternal* pSource)
 {
     pSource->m_nListType = 1;
     pSource->m_pListNode = m_lstPlaying.AddHead(pSource);
-    CExoSoundPriorityGroup* pGroup = GetPriorityGroup(pSource->m_nPriorityGroup);
+    CExoSoundPriorityGroup* pGroup =
+        GetPriorityGroup(pSource->m_nPriorityGroup);
 
-    if (pGroup)
+    if (pGroup != NULL)
     {
         pGroup->m_nPlaying = pGroup->m_nPlaying + 1;
     }
@@ -1288,7 +1291,7 @@ C3DVoice* CExoSoundInternal::GetFree3DVoice(unsigned char nPriorityGroup)  // PC
                 return &m_p3DVoices[nVoice];
             }
             CExoSoundPriorityGroup* pVoiceGroup =
-                m_pPriorityGroups + pVoiceSource->m_nPriorityGroup;
+                GetPriorityGroup(pVoiceSource->m_nPriorityGroup);
 
             if (pVoiceGroup != NULL &&
                 pVoiceGroup->m_nPriority > pGroup->m_nPriority &&
@@ -1356,7 +1359,7 @@ C2DVoice* CExoSoundInternal::GetFree2DVoice(unsigned char nPriorityGroup)  // PC
                 return &m_p2DVoices[nVoice];
             }
             CExoSoundPriorityGroup* pVoiceGroup =
-                m_pPriorityGroups + pVoiceSource->m_nPriorityGroup;
+                GetPriorityGroup(pVoiceSource->m_nPriorityGroup);
 
             if (pVoiceGroup != NULL &&
                 pVoiceGroup->m_nPriority > pGroup->m_nPriority &&
@@ -1771,10 +1774,10 @@ int CExoSoundInternal::AddToStreamingList(  // PC 0x006242F0
 
     if (m_lstStreaming.Count() >= nMaximum)
     {
-        CExoSoundPriorityGroup* pSourceGroup =
-            GetPriorityGroup(pSource->m_nPriorityGroup);
         CExoStreamingSoundSourceInternal* pInterruptSource = NULL;
         unsigned char nPriority = 0;
+        CExoSoundPriorityGroup* pSourceGroup =
+            GetPriorityGroup(pSource->m_nPriorityGroup);
 
         if (pSourceGroup != NULL)
         {
@@ -1793,7 +1796,7 @@ int CExoSoundInternal::AddToStreamingList(  // PC 0x006242F0
                 else
                 {
                     CExoSoundPriorityGroup* pCurrentGroup =
-                        m_pPriorityGroups + pCurrent->m_nPriorityGroup;
+                        GetPriorityGroup(pCurrent->m_nPriorityGroup);
 
                     if (pCurrentGroup != NULL &&
                         pCurrentGroup->m_nPriority >
@@ -1826,9 +1829,10 @@ int CExoSoundInternal::AddToStreamingList(  // PC 0x006242F0
         }
     }
     pSource->m_bPlaying = (int)m_lstStreaming.AddHead(pSource);
-    CExoSoundPriorityGroup* pGroup = GetPriorityGroup(pSource->m_nPriorityGroup);
+    CExoSoundPriorityGroup* pGroup =
+        GetPriorityGroup(pSource->m_nPriorityGroup);
 
-    if (pGroup)
+    if (pGroup != NULL)
     {
         pGroup->m_nPlaying = pGroup->m_nPlaying + 1;
     }
@@ -2061,7 +2065,7 @@ void CExoSoundInternal::Render()  // PC 0x00625470
             !pStreamingSoundSource->GetWithinRangeOfListener())
         {
             m_lstStreaming.GetNext(pPos);
-            pStreamingSoundSource->Stop();
+            pStreamingSoundSource->Stop(1);
             AddToNonPlayingStreamingLoopingList(pStreamingSoundSource);
             if (pPos != NULL)
             {
@@ -2514,8 +2518,6 @@ int CExoSoundInternal::Initialize(unsigned char n2DVoices,  // PC 0x00626790
                     m_p3DVoices[nVoice].m_hSample = NULL;
                 }
             }
-            delete[] m_p3DVoices;
-            m_p3DVoices = NULL;
         }
         if (m_p2DVoices != NULL)
         {
@@ -2528,8 +2530,6 @@ int CExoSoundInternal::Initialize(unsigned char n2DVoices,  // PC 0x00626790
                     m_p2DVoices[nVoice].m_hSample = NULL;
                 }
             }
-            delete[] m_p2DVoices;
-            m_p2DVoices = NULL;
         }
         AIL_close_3D_provider(m_h3DProvider);
         m_h3DProvider = NULL;
@@ -2587,14 +2587,18 @@ int CExoSoundInternal::Initialize(unsigned char n2DVoices,  // PC 0x00626790
 
     if (m_h3DProvider != NULL && AIL_open_3D_provider(m_h3DProvider) == 0)
     {
-        m_n3DVoices = n3DVoices;
-        m_n3DVoices = m_n3DVoices < MAX_VOICES ? m_n3DVoices : MAX_VOICES;
+        m_n3DVoices = n3DVoices < MAX_VOICES ? n3DVoices : MAX_VOICES;
         m_n3DVoices = m_n3DVoices > MIN_3D_VOICES ? m_n3DVoices : MIN_3D_VOICES;
-        m_p3DVoices = new C3DVoice[m_n3DVoices];
-        m_n2DVoices = n2DVoices;
-        m_n2DVoices = m_n2DVoices < MAX_VOICES ? m_n2DVoices : MAX_VOICES;
+        if (m_p3DVoices == NULL)
+        {
+            m_p3DVoices = new C3DVoice[MAX_VOICES];
+        }
+        m_n2DVoices = n2DVoices < MAX_VOICES ? n2DVoices : MAX_VOICES;
         m_n2DVoices = m_n2DVoices > MIN_2D_VOICES ? m_n2DVoices : MIN_2D_VOICES;
-        m_p2DVoices = new C2DVoice[m_n2DVoices];
+        if (m_p2DVoices == NULL)
+        {
+            m_p2DVoices = new C2DVoice[MAX_VOICES];
+        }
         AIL_quick_handles(&hDriver, NULL, NULL);
         int n3DVoice = 0;
         for (int nVoice = 0;
@@ -2637,6 +2641,9 @@ int CExoSoundInternal::Initialize(unsigned char n2DVoices,  // PC 0x00626790
                 m_p2DVoices[nVoice].m_hSample = NULL;
             }
         }
+        g_totalStreamingHandlesAvailable = m_n2DVoices / 2;
+        g_generalStreamingHandlesAvailable =
+            g_totalStreamingHandlesAvailable - EXOSOUND_RESERVED_STREAMING_HANDLES;
         SetRolloffFactor(1.0f);
         SetEnvironment(0);
         while (lstRestart.Count() != 0)
@@ -2658,6 +2665,8 @@ int CExoSoundInternal::Initialize(unsigned char n2DVoices,  // PC 0x00626790
     m_h3DProvider = NULL;
     m_bInitialized = 0;
     m_s3DProviderName = "";
+    m_nEAX = 0;
+    m_bHardware = 0;
     return 0;
 }
 #endif
@@ -3452,12 +3461,10 @@ void CExoSoundInternal::AddToStreamingList(
     CExoStreamingSoundSourceInternal* pSource)
 {
     m_lstStreaming.AddHead(pSource);
-    CExoSoundPriorityGroup* pGroup = GetPriorityGroup(pSource->m_nPriorityGroup);
+    CExoSoundPriorityGroup* pGroup =
+        m_pPriorityGroups + pSource->m_nPriorityGroup;
 
-    if (pGroup)
-    {
-        pGroup->m_nPlaying = pGroup->m_nPlaying + 1;
-    }
+    pGroup->m_nPlaying = pGroup->m_nPlaying + 1;
 }
 
 

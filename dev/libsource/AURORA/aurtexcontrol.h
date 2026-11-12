@@ -260,4 +260,21 @@ public:
     float m_fElapsed;
 };
 
+class DirtyTextureController : public TextureController
+{
+public:
+    DirtyTextureController(CAurTexture* pTexture);
+    virtual ~DirtyTextureController();
+    virtual void Control();
+    virtual void Init();
+    virtual char IsLinear();
+    void Init(int nWidth, int nHeight, int nBlendMode, int nCoordSpace);
+    void MakePerlinTexture(unsigned char* pImage, int nSize);
+
+    unsigned char* m_pDirtyImage;
+    int m_nDirtyIndex;
+    char m_nBlendMode;
+    int m_nDirtyFrame;
+};
+
 #endif

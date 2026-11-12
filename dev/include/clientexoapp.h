@@ -465,6 +465,8 @@ public:
     unsigned long GetLastClickedOnTarget();
     int AddMovieToMovieQueue(const CExoString& sMovie, int nFlags);
     int PlayMovieQueue(int nFlags);
+    void PauseAllSoundsForMovieLostFocus();
+    void ResumeAllStreamingMusicForMovie();
     int GetSoundPausedByCombat();
     void SetSoundPausedByCombat(int nPaused);
     int DontUseThisSetPlayerCreature(unsigned long oidObject);
