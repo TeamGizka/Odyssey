@@ -1825,58 +1825,6 @@ inline void GetViewport(GLint* pViewport)
     glGetIntegerv(GL_VIEWPORT, pViewport);
 }
 #endif
-void AurSnapshot(char* sFileName)
-{
-    static int k;
-    char sBuffer[64];
-    if (sFileName == NULL || strcmp(sFileName, "NULL") == 0)
-    {
-        sprintf(sBuffer, "snap%d.tga", ++k);
-    }
-    else
-    {
-        strcpy(sBuffer, sFileName);
-        int nLen = strlen(sBuffer);
-        if (nLen <= 3 || stricmp(sBuffer + nLen - 4, ".tga") != 0)
-        {
-            strcat(sBuffer, ".tga");
-        }
-    }
-#ifdef _XBOX
-    D3DVIEWPORT8 viewport;
-    g_pD3DDevice->GetViewport(&viewport);
-    int nWidth = viewport.Width;
-#else
-    GLint viewport[4];
-    GetViewport(viewport);
-    int nWidth = viewport[2];
-    int nHeight = viewport[3];
-#endif
-    if (nWidth % 4 != 0)
-    {
-        nWidth = nWidth - nWidth % 4 + 4;
-    }
-#ifdef _XBOX
-    {
-        int nHeight = viewport.Height;
-        int nSize = nHeight * nWidth * 3;
-        unsigned char* pPixels = new unsigned char[nSize];
-        memset(pPixels, 0, nSize);
-#else
-    {
-        unsigned char* pPixels = new unsigned char[3 * nWidth * nHeight];
-        memset(pPixels, 0, 3 * nWidth * nHeight);
-#endif
-#ifdef _XBOX
-        GLRender::ReadPixelsFromBuffer(0, 0, nWidth, nHeight, Aurora::TEXTURE_FORMAT_RGB, pPixels);
-#else
-        glReadPixels(0, 0, nWidth, nHeight, textureFormatTranslationTable[Aurora::TEXTURE_FORMAT_RGB], 0x1401, pPixels);
-#endif
-        ImageFlipY(pPixels, nWidth, nHeight, 3);
-        ImageWriteTGA(sBuffer, nWidth, nHeight, 3, pPixels);
-        delete[] pPixels;
-    }
-}
 
 #ifndef _XBOX
 template <> inline void List<Vector>::allocate(int nAllocated)  // PC 0x005752B0
@@ -3738,6 +3686,59 @@ void AurSaveGameSnapshot(char* sFileName, int nSize, bool bSquare)  // PC 0x0042
     delete[] pPixels;
 }
 #endif
+// PC 0x00422960
+void AurSnapshot(char* sFileName)
+{
+    static int k;
+    char sBuffer[64];
+    if (sFileName == NULL || strcmp(sFileName, "NULL") == 0)
+    {
+        sprintf(sBuffer, "snap%d.tga", ++k);
+    }
+    else
+    {
+        strcpy(sBuffer, sFileName);
+        int nLen = strlen(sBuffer);
+        if (nLen <= 3 || stricmp(sBuffer + nLen - 4, ".tga") != 0)
+        {
+            strcat(sBuffer, ".tga");
+        }
+    }
+#ifdef _XBOX
+    D3DVIEWPORT8 viewport;
+    g_pD3DDevice->GetViewport(&viewport);
+    int nWidth = viewport.Width;
+#else
+    GLint viewport[4];
+    GetViewport(viewport);
+    int nWidth = viewport[2];
+    int nHeight = viewport[3];
+#endif
+    if (nWidth % 4 != 0)
+    {
+        nWidth = nWidth - nWidth % 4 + 4;
+    }
+#ifdef _XBOX
+    {
+        int nHeight = viewport.Height;
+        int nSize = nHeight * nWidth * 3;
+        unsigned char* pPixels = new unsigned char[nSize];
+        memset(pPixels, 0, nSize);
+#else
+    {
+        unsigned char* pPixels = new unsigned char[3 * nWidth * nHeight];
+        memset(pPixels, 0, 3 * nWidth * nHeight);
+#endif
+#ifdef _XBOX
+        GLRender::ReadPixelsFromBuffer(0, 0, nWidth, nHeight, Aurora::TEXTURE_FORMAT_RGB, pPixels);
+#else
+        glReadPixels(0, 0, nWidth, nHeight, textureFormatTranslationTable[Aurora::TEXTURE_FORMAT_RGB], 0x1401, pPixels);
+#endif
+        ImageFlipY(pPixels, nWidth, nHeight, 3);
+        ImageWriteTGA(sBuffer, nWidth, nHeight, 3, pPixels);
+        delete[] pPixels;
+    }
+}
 // PC 0x00424390
 void CAurTextureBasic::Init(char* sName)
 {

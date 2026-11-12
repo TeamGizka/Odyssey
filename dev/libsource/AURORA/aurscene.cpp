@@ -3248,7 +3248,7 @@ Gob* Scene::SpawnRoom(char* sName, const Vector& vPosition,
     strcat(sPartName, "a");
     if (findnode(pModel->m_pRootNode, sPartName))
     {
-        pGob = (Gob*)NewCAurObject(sName, "lbl_cardstand", 0, 0);
+        pGob = (Gob*)NewCAurObject(sName, "", 0, 0);
         pRootPart = pGob->m_pRootPart;
         pGob->m_vPosition = vPosition;
         pGob->m_qOrientation = qOrientation;

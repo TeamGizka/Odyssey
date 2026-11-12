@@ -305,6 +305,7 @@ float basesize64 = 64.0f;
 float basesize128 = 128.0f;
 
 int renderregular = 1;
+float g_fGLCoreUnused1 = 0.35f;
 float distortionalpha = 0.85f;
 
 bool CheckExtension(char* sExtension, unsigned char const* sExtensions);

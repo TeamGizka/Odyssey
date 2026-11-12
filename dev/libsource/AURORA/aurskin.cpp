@@ -21,6 +21,11 @@ inline Vector Material::GetBumpMapSpecularColor()
 #pragma inline_recursion(on)
 #pragma inline_depth(10)
 
+static VertexProgram* pSkinCubeMapVP = 0;
+static VertexProgram* pHoloSkinVP = 0;
+static VertexProgram* pSkinBumpyVP = 0;
+static VertexProgram* pSkinSphereMapVP = 0;
+static VertexProgram* pSkinVP = 0;
 float g_DesatureFactor = 0.65f;
 int usebumpdiffuse = 1;
 int usebumpspecular = 1;
@@ -49,9 +54,68 @@ void SetupForceSightShader(Gob* pGob, int nForceShader, int nShader,
                            CAurTexture* pTexture2, CAurTexture* pTexture3,
                            bool bKeepBlend);
 
+#ifdef _XBOX
+VertexProgram* GetSkinCubeMapVP(bool)
+{
+    static VertexProgram* pSkinVP = new VertexProgram(cSkinCubeMapVP, cSkinCubeMapVPDeclaration);
+
+    return pSkinVP;
+}
+#else
+// PC 0x004A06B0
+VertexProgram* GetSkinCubeMapVP(bool bHologram)
+{
+    if (!pSkinCubeMapVP)
+    {
+        pSkinCubeMapVP = new VertexProgram(
+            usearbvertexprograms ?
+            szSkinCubeMapVPARB
+            :
+            cSkinCubeMapVP,
+            cSkinCubeMapVPDeclaration);
+    }
+    if (!pHoloSkinVP)
+    {
+        pHoloSkinVP = new VertexProgram(
+            usearbvertexprograms ?
+            cHoloSkinVPARB
+            :
+            cSkinCubeMapVP,
+            cSkinCubeMapVPDeclaration);
+    }
+
+    if (!bHologram)
+        return pSkinCubeMapVP;
+    return pHoloSkinVP;
+}
+#endif
+
+VertexProgram* GetSkinBumpyVP()
+{
+    if (!pSkinBumpyVP)
+    {
+        pSkinBumpyVP = new VertexProgram(
+            cSkinBumpyVP,
+            cSkinBumpyVPDeclaration);
+    }
+
+    return pSkinBumpyVP;
+}
+// PC 0x004A0790
+VertexProgram* GetSkinSphereMapVP()
+{
+    if (!pSkinSphereMapVP)
+    {
+        pSkinSphereMapVP = new VertexProgram(
+            cSkinSphereMapVP,
+            cSkinSphereMapVPDeclaration);
+    }
+
+    return pSkinSphereMapVP;
+}
+// PC 0x004A0810
 VertexProgram* GetSkinVP()
 {
-    static VertexProgram* pSkinVP = 0;
     if (!pSkinVP)
     {
         pSkinVP = new VertexProgram(
@@ -64,57 +128,6 @@ VertexProgram* GetSkinVP()
 
     return pSkinVP;
 }
-// PC 0x004A0790
-VertexProgram* GetSkinSphereMapVP()
-{
-    static VertexProgram* pSkinVP = 0;
-    if (!pSkinVP)
-    {
-        pSkinVP = new VertexProgram(
-            cSkinSphereMapVP,
-            cSkinSphereMapVPDeclaration);
-    }
-
-    return pSkinVP;
-}
-
-#ifdef _XBOX
-VertexProgram* GetSkinCubeMapVP(bool)
-{
-    static VertexProgram* pSkinVP = new VertexProgram(cSkinCubeMapVP, cSkinCubeMapVPDeclaration);
-
-    return pSkinVP;
-}
-#else
-// PC 0x004A06B0
-VertexProgram* GetSkinCubeMapVP(bool bHologram)
-{
-    static VertexProgram* pSkinVP = 0;
-    if (!pSkinVP)
-    {
-        pSkinVP = new VertexProgram(
-            usearbvertexprograms ?
-            szSkinCubeMapVPARB
-            :
-            cSkinCubeMapVP,
-            cSkinCubeMapVPDeclaration);
-    }
-    static VertexProgram* pHoloSkinVP = 0;
-    if (!pHoloSkinVP)
-    {
-        pHoloSkinVP = new VertexProgram(
-            usearbvertexprograms ?
-            cHoloSkinVPARB
-            :
-            cSkinCubeMapVP,
-            cSkinCubeMapVPDeclaration);
-    }
-
-    if (!bHologram)
-        return pSkinVP;
-    return pHoloSkinVP;
-}
-#endif
 
 bool AurNV2xLevelShadersAvailable();
 // PC 0x004A08A0
