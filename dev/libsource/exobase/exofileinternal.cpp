@@ -11,8 +11,6 @@
 DWORD WINAPI AsyncReadThreadProc(LPVOID lpParameter);
 
 static CExoFileThread g_AsyncFileThread;
-
-CExoString g_sErrorString;
 // PC 0x00636F60
 CExoFileThread::~CExoFileThread()
 {

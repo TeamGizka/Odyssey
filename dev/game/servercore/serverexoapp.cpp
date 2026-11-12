@@ -9,6 +9,11 @@
 #include "partytables.h"
 #include "nwsvartable.h"
 #include "serverexoappinternal.h"
+// PC 0x004DBE40
+CServerInfo* CServerExoApp::GetServerInfo()
+{
+    return m_pcExoAppInternal->m_pServerInfo;
+}
 // PC 0x004DBE50
 CSWSModule* CServerExoApp::GetModule()
 {
@@ -41,6 +46,66 @@ int CServerExoApp::StartNewModule(const CExoString& sModule)
 {
     return m_pcExoAppInternal->StartNewModule(sModule);
 }
+// PC 0x004DBEA0
+void CServerExoApp::SetMoveToModulePending(int bPending)
+{
+    m_pcExoAppInternal->m_bMoveToModulePending = bPending;
+}
+// PC 0x004DBEB0
+int CServerExoApp::GetMoveToModulePending()
+{
+    return m_pcExoAppInternal->m_bMoveToModulePending;
+}
+// PC 0x004DBEC0
+void CServerExoApp::SetMoveToModuleString(const CExoString& sModule)
+{
+    m_pcExoAppInternal->m_sMoveToModule = sModule;
+}
+
+CExoString CServerExoApp::GetMoveToModuleString()
+{
+    return m_pcExoAppInternal->m_sMoveToModule;
+}
+// PC 0x004DBED0
+void CServerExoApp::SetExportAllCharactersPending(int bPending)
+{
+    m_pcExoAppInternal->m_bExportAllCharactersPending = bPending;
+}
+
+int CServerExoApp::ExportAllPlayers()
+{
+    return m_pcExoAppInternal->ExportAllPlayers();
+}
+// PC 0x004DBEE0
+int CServerExoApp::GetLoadingModule()
+{
+    return m_pcExoAppInternal->m_bLoadingModule;
+}
+// PC 0x004DBEF0
+void CServerExoApp::SetLoadingModule(int bLoading)
+{
+    m_pcExoAppInternal->m_bLoadingModule = bLoading;
+}
+// PC 0x004DBF00
+void CServerExoApp::SetAutoSavePending(int bPending)
+{
+    m_pcExoAppInternal->m_bAutoSavePending = bPending;
+}
+// PC 0x004DBF10
+int CServerExoApp::GetAutoSavePending()
+{
+    return m_pcExoAppInternal->m_bAutoSavePending;
+}
+// PC 0x004DBF20
+void CServerExoApp::SetMoveToModuleStartWaypoint(const CExoString& sWaypoint)
+{
+    m_pcExoAppInternal->m_sMoveToModuleStartWaypoint = sWaypoint;
+}
+// PC 0x004DBF30
+CExoString CServerExoApp::GetMoveToModuleStartWaypoint()
+{
+    return m_pcExoAppInternal->m_sMoveToModuleStartWaypoint;
+}
 // PC 0x004DBF60
 int CServerExoApp::LoadCharacterStart(unsigned char nType, CSWSPlayer* pPlayer,
                                       CResRef cResRef, void* pData,
@@ -58,6 +123,11 @@ int CServerExoApp::LoadCharacterFinish(CSWSPlayer* pPlayer, int bSuccess)
 int CServerExoApp::LoadPrimaryPlayer(CSWSPlayer* pPlayer)
 {
     return m_pcExoAppInternal->LoadPrimaryPlayer(pPlayer);
+}
+// PC 0x004DBFB0
+CGameObjectArray* CServerExoApp::GetObjectArray()
+{
+    return m_pcExoAppInternal->m_pObjectArray;
 }
 // PC 0x004DBFC0
 CGameObject* CServerExoApp::GetGameObject(unsigned long oidObject)
@@ -133,10 +203,65 @@ int CServerExoApp::GetModuleLanguage()
 {
     return m_pcExoAppInternal->GetModuleLanguage();
 }
+// PC 0x004DC0C0
+CServerAIMaster* CServerExoApp::GetServerAIMaster()
+{
+    return m_pcExoAppInternal->m_pServerAIMaster;
+}
+// PC 0x004DC0D0
+CExoLinkedList<CSWSClient>* CServerExoApp::GetPlayerList()
+{
+    return m_pcExoAppInternal->m_pPlayerList;
+}
+// PC 0x004DC0E0
+CNetLayer* CServerExoApp::GetNetLayer()
+{
+    return m_pcExoAppInternal->m_pNetLayer;
+}
+// PC 0x004DC0F0
+CSWSMessage* CServerExoApp::GetSWSMessage()
+{
+    return m_pcExoAppInternal->m_pSWSMessage;
+}
+// PC 0x004DC100
+CExoLinkedList<CSWSClient>* CServerExoApp::GetSysAdminList()
+{
+    return m_pcExoAppInternal->m_pSysAdminList;
+}
+// PC 0x004DC110
+short CServerExoApp::GetServerMode()
+{
+    return m_pcExoAppInternal->m_nServerMode;
+}
 // PC 0x004DC120
 CWorldTimer* CServerExoApp::GetActiveTimer(unsigned long nTimer)
 {
     return m_pcExoAppInternal->GetActiveTimer(nTimer);
+}
+// PC 0x004DC130
+CWorldTimer* CServerExoApp::GetWorldTimer()
+{
+    return m_pcExoAppInternal->m_pWorldTimer;
+}
+// PC 0x004DC140
+CWorldTimer* CServerExoApp::GetTimestopTimer()
+{
+    return m_pcExoAppInternal->m_pTimestopTimer;
+}
+// PC 0x004DC150
+CWorldTimer* CServerExoApp::GetPauseTimer()
+{
+    return m_pcExoAppInternal->m_pPauseTimer;
+}
+// PC 0x004DC160
+void CServerExoApp::SetDebugMode(int nDebugMode)
+{
+    m_pcExoAppInternal->m_nDebugMode = nDebugMode;
+}
+// PC 0x004DC170
+int CServerExoApp::GetDebugMode()
+{
+    return m_pcExoAppInternal->m_nDebugMode;
 }
 // PC 0x004DC180
 int CServerExoApp::HandleMessage(unsigned long nPlayerId,
@@ -216,6 +341,11 @@ void CServerExoApp::OnLostFocus()
 void CServerExoApp::OnVideoChange()
 {
     m_pcExoAppInternal->OnVideoChange();
+}
+// PC 0x004DC230
+CConnectionLib* CServerExoApp::GetConnectionLib()
+{
+    return m_pcExoAppInternal->m_pConnectionLib;
 }
 // PC 0x004DC240
 void CServerExoApp::StartServices(int nServices)
@@ -325,311 +455,6 @@ int CServerExoApp::GetNextPCObject()
 {
     return m_pcExoAppInternal->GetNextPCObject();
 }
-// PC 0x004DC380
-unsigned long CServerExoApp::ClientToServerObjectId(unsigned long oidClient)
-{
-    return m_pcExoAppInternal->ClientToServerObjectId(oidClient);
-}
-// PC 0x004DC3A0
-int CServerExoApp::GetPlayerCreatureId()
-{
-    return m_pcExoAppInternal->GetPlayerCreatureId();
-}
-// PC 0x004DC4A0
-float CServerExoApp::ComputeHeight(const CResRef& cAreaResRef,
-                                   const Vector& vPosition, int nRoomIndex)
-{
-    if (m_pcExoAppInternal->GetModule() != NULL)
-    {
-        CSWSArea* pArea = m_pcExoAppInternal->GetModule()->GetArea();
-        if (pArea != NULL)
-        {
-            return pArea->ComputeHeight(vPosition, nRoomIndex, NULL);
-        }
-    }
-
-    return 0.0f;
-}
-// PC 0x004DC4F0
-void CServerExoApp::UpDatePlayerPosition(unsigned long oidObject,
-                                         const Vector& vPosition,
-                                         const Vector& vOrientation)
-{
-    unsigned long oidServer =
-        m_pcExoAppInternal->ClientToServerObjectId(oidObject);
-    m_pcExoAppInternal->UpDatePlayerPosition(oidServer, vPosition,
-                                             vOrientation);
-}
-// PC 0x004DC520
-void CServerExoApp::UpdateSubareasOnMoveTo(unsigned long oidObject,
-                                           const Vector& vFrom,
-                                           const Vector& vTo)
-{
-    m_pcExoAppInternal->UpdateSubareasOnMoveTo(oidObject, vFrom, vTo);
-}
-// PC 0x004DC5B0
-int CServerExoApp::IsActionsPending(unsigned long oidObject)
-{
-    return m_pcExoAppInternal->IsActionsPending(oidObject);
-}
-// PC 0x004DC5C0
-int CServerExoApp::GetRoomIndex(const CResRef& cAreaResRef,
-                                const Vector& vPosition, int nFlags)
-{
-    int nRoomIndex = -1;
-    if (m_pcExoAppInternal->GetModule() != NULL)
-    {
-        CSWSArea* pArea = m_pcExoAppInternal->GetModule()->GetArea();
-        if (pArea != NULL)
-        {
-            nRoomIndex = pArea->GetRoomIndex(vPosition, nFlags);
-        }
-    }
-
-    return nRoomIndex;
-}
-// PC 0x004DC610
-int CServerExoApp::CreatureAcquireItem(unsigned long oidObject,
-                                       const CResRef& cResRef)
-{
-    return m_pcExoAppInternal->CreatureAcquireItem(oidObject, cResRef);
-}
-#ifndef _XBOX
-int CServerExoApp::TestSafeLocation(unsigned long oidObject,  // PC 0x004DC6A0
-                                    const Vector& vPosition)
-{
-    return m_pcExoAppInternal->TestSafeLocation(oidObject, vPosition);
-}
-// PC 0x004DC6B0
-int CServerExoApp::ComputeSafeLocation(const Vector& vPosition, float fRadius,
-                                       unsigned long oidObject, int nFlags,
-                                       Vector* pvSafe)
-{
-    return m_pcExoAppInternal->ComputeSafeLocation(vPosition, fRadius,
-                                                   oidObject, nFlags, pvSafe);
-}
-// PC 0x004DC710
-Vector CServerExoApp::GetNormalOfPoint(const Vector& vPosition)
-{
-    return m_pcExoAppInternal->GetNormalOfPoint(vPosition);
-}
-#endif
-void CServerExoApp::ClearLastModuleFound()  // PC 0x004DC730
-{
-    m_pcExoAppInternal->ClearLastModuleFound();
-}
-// PC 0x004DC740
-void CServerExoApp::ClearAreaCache()
-{
-    m_pcExoAppInternal->ClearAreaCache();
-}
-// PC 0x004DC750
-int CServerExoApp::ShrinkLineByCreatures(const Vector& vStart,
-                                         const Vector& vEnd, Vector& vResult)
-{
-    return m_pcExoAppInternal->ShrinkLineByCreatures(vStart, vEnd, vResult);
-}
-// PC 0x004DC7A0
-void CServerExoApp::SetMoveToWorldTime(
-    unsigned long nCalendarDay, unsigned char nHour, unsigned char nMinute,
-    unsigned char nSecond, unsigned short nMillisecond, unsigned short nYear,
-    unsigned short nMonth)
-{
-    m_pcExoAppInternal->SetMoveToWorldTime(
-        nCalendarDay, nHour, nMinute, nSecond, nMillisecond, nYear, nMonth);
-}
-// PC 0x004DC7B0
-void CServerExoApp::GetMoveToWorldTime(
-    unsigned long& nCalendarDay, unsigned char& nHour, unsigned char& nMinute,
-    unsigned char& nSecond, unsigned short& nMillisecond, unsigned short& nYear,
-    unsigned short& nMonth)
-{
-    m_pcExoAppInternal->GetMoveToWorldTime(
-        nCalendarDay, nHour, nMinute, nSecond, nMillisecond, nYear, nMonth);
-}
-// PC 0x004DC7C0
-int CServerExoApp::GetModulePreviouslyVisited(const CExoString& sModule)
-{
-    return m_pcExoAppInternal->GetModulePreviouslyVisited(sModule);
-}
-// PC 0x004DC7D0
-int CServerExoApp::ExecuteLoadModule(const CExoString& sModule)
-{
-    return m_pcExoAppInternal->ExecuteLoadModule(sModule);
-}
-
-inline void CServerExoApp::DestroyExoAppInternal()
-{
-    if (m_pcExoAppInternal != NULL)
-    {
-        delete m_pcExoAppInternal;
-        m_pcExoAppInternal = NULL;
-    }
-}
-// PC 0x004015A0
-inline void CServerExoApp::ShutDownToMainMenu()
-{
-}
-// PC 0x004DC800
-CServerExoApp::CServerExoApp()
-{
-    m_pcExoAppInternal = new CServerExoAppInternal;
-}
-// PC 0x004DC870
-CServerExoApp::~CServerExoApp()
-{
-    if (m_pcExoAppInternal != NULL)
-    {
-        delete m_pcExoAppInternal;
-    }
-}
-// PC 0x004DBE40
-CServerInfo* CServerExoApp::GetServerInfo()
-{
-    return m_pcExoAppInternal->m_pServerInfo;
-}
-// PC 0x004DC890
-CExoLocString* CServerExoApp::GetModuleDescription()
-{
-    if (m_pcExoAppInternal->GetModule() != NULL)
-    {
-        return &m_pcExoAppInternal->GetModule()->m_sDescription;
-    }
-
-    return NULL;
-}
-// PC 0x004DBEA0
-void CServerExoApp::SetMoveToModulePending(int bPending)
-{
-    m_pcExoAppInternal->m_bMoveToModulePending = bPending;
-}
-// PC 0x004DBEB0
-int CServerExoApp::GetMoveToModulePending()
-{
-    return m_pcExoAppInternal->m_bMoveToModulePending;
-}
-// PC 0x004DBEC0
-void CServerExoApp::SetMoveToModuleString(const CExoString& sModule)
-{
-    m_pcExoAppInternal->m_sMoveToModule = sModule;
-}
-
-CExoString CServerExoApp::GetMoveToModuleString()
-{
-    return m_pcExoAppInternal->m_sMoveToModule;
-}
-// PC 0x004DBED0
-void CServerExoApp::SetExportAllCharactersPending(int bPending)
-{
-    m_pcExoAppInternal->m_bExportAllCharactersPending = bPending;
-}
-
-int CServerExoApp::ExportAllPlayers()
-{
-    return m_pcExoAppInternal->ExportAllPlayers();
-}
-// PC 0x004DBEE0
-int CServerExoApp::GetLoadingModule()
-{
-    return m_pcExoAppInternal->m_bLoadingModule;
-}
-// PC 0x004DBEF0
-void CServerExoApp::SetLoadingModule(int bLoading)
-{
-    m_pcExoAppInternal->m_bLoadingModule = bLoading;
-}
-// PC 0x004DBF00
-void CServerExoApp::SetAutoSavePending(int bPending)
-{
-    m_pcExoAppInternal->m_bAutoSavePending = bPending;
-}
-// PC 0x004DBF10
-int CServerExoApp::GetAutoSavePending()
-{
-    return m_pcExoAppInternal->m_bAutoSavePending;
-}
-// PC 0x004DBF20
-void CServerExoApp::SetMoveToModuleStartWaypoint(const CExoString& sWaypoint)
-{
-    m_pcExoAppInternal->m_sMoveToModuleStartWaypoint = sWaypoint;
-}
-// PC 0x004DBF30
-CExoString CServerExoApp::GetMoveToModuleStartWaypoint()
-{
-    return m_pcExoAppInternal->m_sMoveToModuleStartWaypoint;
-}
-// PC 0x004DBFB0
-CGameObjectArray* CServerExoApp::GetObjectArray()
-{
-    return m_pcExoAppInternal->m_pObjectArray;
-}
-// PC 0x004DC0C0
-CServerAIMaster* CServerExoApp::GetServerAIMaster()
-{
-    return m_pcExoAppInternal->m_pServerAIMaster;
-}
-// PC 0x004DC0D0
-CExoLinkedList<CSWSClient>* CServerExoApp::GetPlayerList()
-{
-    return m_pcExoAppInternal->m_pPlayerList;
-}
-// PC 0x004DC0E0
-CNetLayer* CServerExoApp::GetNetLayer()
-{
-    return m_pcExoAppInternal->m_pNetLayer;
-}
-// PC 0x004DC0F0
-CSWSMessage* CServerExoApp::GetSWSMessage()
-{
-    return m_pcExoAppInternal->m_pSWSMessage;
-}
-// PC 0x004DC100
-CExoLinkedList<CSWSClient>* CServerExoApp::GetSysAdminList()
-{
-    return m_pcExoAppInternal->m_pSysAdminList;
-}
-// PC 0x004DC110
-short CServerExoApp::GetServerMode()
-{
-    return m_pcExoAppInternal->m_nServerMode;
-}
-// PC 0x004DC130
-CWorldTimer* CServerExoApp::GetWorldTimer()
-{
-    return m_pcExoAppInternal->m_pWorldTimer;
-}
-// PC 0x004DC140
-CWorldTimer* CServerExoApp::GetTimestopTimer()
-{
-    return m_pcExoAppInternal->m_pTimestopTimer;
-}
-// PC 0x004DC150
-CWorldTimer* CServerExoApp::GetPauseTimer()
-{
-    return m_pcExoAppInternal->m_pPauseTimer;
-}
-// PC 0x004DC160
-void CServerExoApp::SetDebugMode(int nDebugMode)
-{
-    m_pcExoAppInternal->m_nDebugMode = nDebugMode;
-}
-// PC 0x004DC170
-int CServerExoApp::GetDebugMode()
-{
-    return m_pcExoAppInternal->m_nDebugMode;
-}
-// PC 0x004DC230
-CConnectionLib* CServerExoApp::GetConnectionLib()
-{
-    return m_pcExoAppInternal->m_pConnectionLib;
-}
-// PC 0x004DC8B0
-int CServerExoApp::IsInjured(unsigned long oidObject)
-{
-    unsigned long oidServer =
-        m_pcExoAppInternal->ClientToServerObjectId(oidObject);
-    return m_pcExoAppInternal->IsInjured(oidServer);
-}
 // PC 0x004DC370
 CSWGlobalVariableTable* CServerExoApp::GetGlobalVariableTable()
 {
@@ -662,10 +487,20 @@ void CServerExoApp::SetCreatureFollowing(unsigned long oidCreature,
         }
     }
 }
+// PC 0x004DC380
+unsigned long CServerExoApp::ClientToServerObjectId(unsigned long oidClient)
+{
+    return m_pcExoAppInternal->ClientToServerObjectId(oidClient);
+}
 // PC 0x004DC390
 CSWPartyTable* CServerExoApp::GetPartyTable()
 {
     return &m_pcExoAppInternal->m_partyTable;
+}
+// PC 0x004DC3A0
+int CServerExoApp::GetPlayerCreatureId()
+{
+    return m_pcExoAppInternal->GetPlayerCreatureId();
 }
 // PC 0x004DC3B0
 int CServerExoApp::TestDirectLine(unsigned long oidObject,
@@ -713,6 +548,38 @@ CPathfindInformation* CServerExoApp::GetCreaturePathfindInformation(
 
     return NULL;
 }
+// PC 0x004DC4A0
+float CServerExoApp::ComputeHeight(const CResRef& cAreaResRef,
+                                   const Vector& vPosition, int nRoomIndex)
+{
+    if (m_pcExoAppInternal->GetModule() != NULL)
+    {
+        CSWSArea* pArea = m_pcExoAppInternal->GetModule()->GetArea();
+        if (pArea != NULL)
+        {
+            return pArea->ComputeHeight(vPosition, nRoomIndex, NULL);
+        }
+    }
+
+    return 0.0f;
+}
+// PC 0x004DC4F0
+void CServerExoApp::UpDatePlayerPosition(unsigned long oidObject,
+                                         const Vector& vPosition,
+                                         const Vector& vOrientation)
+{
+    unsigned long oidServer =
+        m_pcExoAppInternal->ClientToServerObjectId(oidObject);
+    m_pcExoAppInternal->UpDatePlayerPosition(oidServer, vPosition,
+                                             vOrientation);
+}
+// PC 0x004DC520
+void CServerExoApp::UpdateSubareasOnMoveTo(unsigned long oidObject,
+                                           const Vector& vFrom,
+                                           const Vector& vTo)
+{
+    m_pcExoAppInternal->UpdateSubareasOnMoveTo(oidObject, vFrom, vTo);
+}
 // PC 0x004DC530
 void CServerExoApp::ClearAllActions(unsigned long oidObject)
 {
@@ -738,6 +605,33 @@ void CServerExoApp::ClearAllQueuedCombatActions(unsigned long oidObject)
     {
         pCreature->m_pcCombatRound->RemoveAllActions();
     }
+}
+// PC 0x004DC5B0
+int CServerExoApp::IsActionsPending(unsigned long oidObject)
+{
+    return m_pcExoAppInternal->IsActionsPending(oidObject);
+}
+// PC 0x004DC5C0
+int CServerExoApp::GetRoomIndex(const CResRef& cAreaResRef,
+                                const Vector& vPosition, int nFlags)
+{
+    int nRoomIndex = -1;
+    if (m_pcExoAppInternal->GetModule() != NULL)
+    {
+        CSWSArea* pArea = m_pcExoAppInternal->GetModule()->GetArea();
+        if (pArea != NULL)
+        {
+            nRoomIndex = pArea->GetRoomIndex(vPosition, nFlags);
+        }
+    }
+
+    return nRoomIndex;
+}
+// PC 0x004DC610
+int CServerExoApp::CreatureAcquireItem(unsigned long oidObject,
+                                       const CResRef& cResRef)
+{
+    return m_pcExoAppInternal->CreatureAcquireItem(oidObject, cResRef);
 }
 // PC 0x004DC620
 CFactionManager* CServerExoApp::GetFactionManager()
@@ -774,6 +668,21 @@ int CServerExoApp::GetIgnoreConversationStartRange()
 {
     return m_pcExoAppInternal->m_bIgnoreConversationStartRange;
 }
+#ifndef _XBOX
+int CServerExoApp::TestSafeLocation(unsigned long oidObject,  // PC 0x004DC6A0
+                                    const Vector& vPosition)
+{
+    return m_pcExoAppInternal->TestSafeLocation(oidObject, vPosition);
+}
+// PC 0x004DC6B0
+int CServerExoApp::ComputeSafeLocation(const Vector& vPosition, float fRadius,
+                                       unsigned long oidObject, int nFlags,
+                                       Vector* pvSafe)
+{
+    return m_pcExoAppInternal->ComputeSafeLocation(vPosition, fRadius,
+                                                   oidObject, nFlags, pvSafe);
+}
+#endif
 // PC 0x004DC6C0
 int CServerExoApp::GetLoadFromSaveGame()
 {
@@ -799,6 +708,28 @@ void CServerExoApp::SetDoingStartNewModule(int bDoingStartNewModule)
 {
     m_pcExoAppInternal->m_bDoingStartNewModule = bDoingStartNewModule;
 }
+#ifndef _XBOX
+// PC 0x004DC710
+Vector CServerExoApp::GetNormalOfPoint(const Vector& vPosition)
+{
+    return m_pcExoAppInternal->GetNormalOfPoint(vPosition);
+}
+#endif
+void CServerExoApp::ClearLastModuleFound()  // PC 0x004DC730
+{
+    m_pcExoAppInternal->ClearLastModuleFound();
+}
+// PC 0x004DC740
+void CServerExoApp::ClearAreaCache()
+{
+    m_pcExoAppInternal->ClearAreaCache();
+}
+// PC 0x004DC750
+int CServerExoApp::ShrinkLineByCreatures(const Vector& vStart,
+                                         const Vector& vEnd, Vector& vResult)
+{
+    return m_pcExoAppInternal->ShrinkLineByCreatures(vStart, vEnd, vResult);
+}
 // PC 0x004DC760
 void CServerExoApp::SetMoveToPausedCalendarDay(unsigned long nCalendarDay)
 {
@@ -818,6 +749,47 @@ void CServerExoApp::SetMoveToPausedTimeOfDay(unsigned long nTimeOfDay)
 unsigned long CServerExoApp::GetMoveToPausedTimeOfDay()
 {
     return m_pcExoAppInternal->m_nMoveToPausedTimeOfDay;
+}
+// PC 0x004DC7A0
+void CServerExoApp::SetMoveToWorldTime(
+    unsigned long nCalendarDay, unsigned char nHour, unsigned char nMinute,
+    unsigned char nSecond, unsigned short nMillisecond, unsigned short nYear,
+    unsigned short nMonth)
+{
+    m_pcExoAppInternal->SetMoveToWorldTime(
+        nCalendarDay, nHour, nMinute, nSecond, nMillisecond, nYear, nMonth);
+}
+// PC 0x004DC7B0
+void CServerExoApp::GetMoveToWorldTime(
+    unsigned long& nCalendarDay, unsigned char& nHour, unsigned char& nMinute,
+    unsigned char& nSecond, unsigned short& nMillisecond, unsigned short& nYear,
+    unsigned short& nMonth)
+{
+    m_pcExoAppInternal->GetMoveToWorldTime(
+        nCalendarDay, nHour, nMinute, nSecond, nMillisecond, nYear, nMonth);
+}
+// PC 0x004DC7C0
+int CServerExoApp::GetModulePreviouslyVisited(const CExoString& sModule)
+{
+    return m_pcExoAppInternal->GetModulePreviouslyVisited(sModule);
+}
+// PC 0x004DC7D0
+int CServerExoApp::ExecuteLoadModule(const CExoString& sModule)
+{
+    return m_pcExoAppInternal->ExecuteLoadModule(sModule);
+}
+
+inline void CServerExoApp::DestroyExoAppInternal()
+{
+    if (m_pcExoAppInternal != NULL)
+    {
+        delete m_pcExoAppInternal;
+        m_pcExoAppInternal = NULL;
+    }
+}
+// PC 0x004015A0
+inline void CServerExoApp::ShutDownToMainMenu()
+{
 }
 // PC 0x004DC7E0
 void CServerExoApp::SetSaveGameName(const CExoString& sName)
@@ -840,6 +812,36 @@ void CServerExoApp::Uninitialize()
 int CServerExoApp::GetApplicationId()
 {
     return g_pAppManager->m_nAppId;
+}
+// PC 0x004DC800
+CServerExoApp::CServerExoApp()
+{
+    m_pcExoAppInternal = new CServerExoAppInternal;
+}
+// PC 0x004DC870
+CServerExoApp::~CServerExoApp()
+{
+    if (m_pcExoAppInternal != NULL)
+    {
+        delete m_pcExoAppInternal;
+    }
+}
+// PC 0x004DC890
+CExoLocString* CServerExoApp::GetModuleDescription()
+{
+    if (m_pcExoAppInternal->GetModule() != NULL)
+    {
+        return &m_pcExoAppInternal->GetModule()->m_sDescription;
+    }
+
+    return NULL;
+}
+// PC 0x004DC8B0
+int CServerExoApp::IsInjured(unsigned long oidObject)
+{
+    unsigned long oidServer =
+        m_pcExoAppInternal->ClientToServerObjectId(oidObject);
+    return m_pcExoAppInternal->IsInjured(oidServer);
 }
 
 #ifdef _XBOX

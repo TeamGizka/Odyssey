@@ -124,7 +124,7 @@ int g_nConnectType = CNetLayer::CONNECTTYPE_PLAYER;
 
 static unsigned __int64 g_starttime;
 static unsigned __int64 g_endtime;
-extern CExoString g_sErrorString;
+CExoString g_sErrorString;
 // PC 0x00640B60
 int CClientExoAppInternal::Initialize()
 {

@@ -67,7 +67,6 @@ kotor_library(servercore ${sources})
 
 kotor_source_pch(nwsobject.cpp math3d.h)
 kotor_source_pch(nwscreature.cpp nwsobject.h)
-kotor_source_pch(serveraimaster.cpp serveraimaster.h)
 kotor_source_pch(nwssendplayermessage.cpp nwcanimbase.h)
 kotor_source_pch(swroomsurfacemesh.cpp exobase.h)
 kotor_project_pch(servercore HEADER stdafx.h SOURCE stdafx.cpp

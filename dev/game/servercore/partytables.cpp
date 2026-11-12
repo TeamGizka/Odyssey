@@ -33,6 +33,55 @@
 
 extern __int64 g_nCurrentSessionStartFILETIME;
 
+// PC 0x005792E0
+int CStatusSummary::LoadFromGFF(CResGFF* pGFF, CResStruct& cStruct)
+{
+    int bSuccess;
+
+    m_bDisplaySPending = pGFF->ReadFieldBYTE(&cStruct, "DISPLAYSPENDING",
+                                             bSuccess, m_bDisplaySPending);
+    m_bItemReceived = pGFF->ReadFieldBYTE(&cStruct, "ITEMRECEIVED", bSuccess,
+                                          m_bItemReceived);
+    m_bItemLost =
+        pGFF->ReadFieldBYTE(&cStruct, "ITEMLOST", bSuccess, m_bItemLost);
+    m_bJournal = pGFF->ReadFieldBYTE(&cStruct, "JOURNAL", bSuccess, m_bJournal);
+    m_nLightShift =
+        pGFF->ReadFieldBYTE(&cStruct, "LIGHTSHIFT", bSuccess, m_nLightShift);
+    m_nDarkShift =
+        pGFF->ReadFieldBYTE(&cStruct, "DARKSHIFT", bSuccess, m_nDarkShift);
+    m_nCredits = pGFF->ReadFieldINT(&cStruct, "CREDITS", bSuccess, m_nCredits);
+    m_bCreditsNet =
+        pGFF->ReadFieldBYTE(&cStruct, "CREDITSNET", bSuccess, m_bCreditsNet);
+    m_nExperience = pGFF->ReadFieldINT(&cStruct, "XP", bSuccess, m_nExperience);
+    m_nStealthExperience = pGFF->ReadFieldINT(&cStruct, "STEALTHXP", bSuccess,
+                                              m_nStealthExperience);
+    m_bSoundPending = pGFF->ReadFieldBYTE(&cStruct, "SOUNDPENDING", bSuccess,
+                                          m_bSoundPending);
+    m_bLevelUpSound = pGFF->ReadFieldBYTE(&cStruct, "LEVELUPSOUND", bSuccess,
+                                          m_bLevelUpSound);
+    m_bNewQuestSound = pGFF->ReadFieldBYTE(&cStruct, "NEWQUESTSOUND", bSuccess,
+                                           m_bNewQuestSound);
+    m_bCompleteSound = pGFF->ReadFieldBYTE(&cStruct, "COMPLETESOUND", bSuccess,
+                                           m_bCompleteSound);
+#ifndef _XBOX
+    m_bDarkAlignSound = pGFF->ReadFieldBYTE(&cStruct, "DARKALIGNSOUND", bSuccess,
+                                            m_bDarkAlignSound);
+    m_bLightAlignSound = pGFF->ReadFieldBYTE(&cStruct, "LIGHTALIGNSOUND", bSuccess,
+                                             m_bLightAlignSound);
+#endif
+    m_nSuppressed =
+        pGFF->ReadFieldINT(&cStruct, "SUPPRESSED", bSuccess, m_nSuppressed);
+#ifndef _XBOX
+    m_nInfluenceGain = pGFF->ReadFieldINT(&cStruct, "INFGAIN", bSuccess, 0);
+    m_nInfluenceLost = pGFF->ReadFieldINT(&cStruct, "INFLOST", bSuccess, 0);
+    m_nMaxForcePointsGain = pGFF->ReadFieldINT(&cStruct, "MAXFPGAIN", bSuccess, 0);
+    m_nMaxForcePointsLost = pGFF->ReadFieldINT(&cStruct, "MAXFPLOST", bSuccess, 0);
+    return m_nMaxForcePointsLost;
+#else
+    return m_nSuppressed;
+#endif
+}
+
 inline void PartyTableReleaseStorage(CItemRepository* pItems, CSWSJournal* pJournal)
 {
     delete pItems;
