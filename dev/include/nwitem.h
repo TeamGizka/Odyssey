@@ -361,7 +361,7 @@ class CSWInventory
 {
 public:
 
-    enum { EQUIPMENT_SLOT_COUNT = 14 };
+    enum { EQUIPMENT_SLOT_COUNT = 16 };
 
     enum { TOTAL_SLOT_COUNT = 20 };
 

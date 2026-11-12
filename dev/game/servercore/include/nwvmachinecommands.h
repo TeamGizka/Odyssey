@@ -1464,6 +1464,8 @@ public:
     int ExecuteCommandGetScriptParameter(int nCommand, int nArgs);
     int ExecuteCommandGetScriptStringParameter(int nCommand, int nArgs);
     int ExecuteCommandSetFadeUntilScript(int nCommand, int nArgs);
+    int ExecuteCommandShowChemicalUpgradeScreen(int nCommand, int nArgs);
+    int ExecuteCommandShowSwoopUpgradeScreen(int nCommand, int nArgs);
     int ExecuteCommandSetFakeCombatState(int nCommand, int nArgs);
     int ExecuteCommandSetOrientOnClick(int nCommand, int nArgs);
     int ExecuteCommandGetRacialSubType(int nCommand, int nArgs);
@@ -1576,6 +1578,8 @@ public:
     int ExecuteCommandSWMG_GetLateralAccelPerSec(int nCommand, int nArgs);
     int ExecuteCommandSWMG_GetSwoopUpgrade(int nCommand, int nArgs);
     int ExecuteCommandSWMG_GetTrackPosition(int nCommand, int nArgs);
+    int ExecuteCommandSWMG_SetFollowerPosition(int nCommand, int nArgs);
+    int ExecuteCommandSWMG_DestroyMiniGameObject(int nCommand, int nArgs);
     int ExecuteCommandSWMG_SetJumpSpeed(int nCommand, int nArgs);
     int ExecuteCommandSWMG_PlayerApplyForce(int nCommand, int nArgs);
     void InitializeSWMGCommands();

@@ -1017,6 +1017,18 @@ int CSWVirtualMachineCommands::ExecuteCommandSetFadeUntilScript(int nCommand, in
     g_pAppManager->GetClientExoApp()->GetInGameGui()->m_n1024 = 1;
     return 0;
 }
+// PC 0x005CC090
+int CSWVirtualMachineCommands::ExecuteCommandShowChemicalUpgradeScreen(int nCommand, int nArgs)
+{
+    unsigned long oidCharacter = OBJECT_INVALID;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCharacter) == 0)
+    {
+        return -2001;
+    }
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowChemicalUpgradeScreen(oidCharacter);
+    return 0;
+}
 // PC 0x005CC100
 int CSWVirtualMachineCommands::ExecuteCommandSetFakeCombatState(int nCommand, int nArgs)
 {
@@ -23749,6 +23761,7 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_SHOW_PARTY_SELECTION_GUI] = &CSWVirtualMachineCommands::ExecuteCommandShowPartySelection;
     m_pCommands[COMMAND_SHOW_TUTORIAL_WINDOW] = &CSWVirtualMachineCommands::ExecuteCommandShowTutorialWindow;
     m_pCommands[COMMAND_SHOW_UPGRADE_SCREEN] = &CSWVirtualMachineCommands::ExecuteCommandShowUpgradeScreen;
+    m_pCommands[COMMAND_SHOW_CHEMICAL_UPGRADE_SCREEN] = &CSWVirtualMachineCommands::ExecuteCommandShowChemicalUpgradeScreen;
     m_pCommands[COMMAND_SIGNAL_EVENT] = &CSWVirtualMachineCommands::ExecuteCommandSignalEvent;
     m_pCommands[COMMAND_SIN] = &CSWVirtualMachineCommands::ExecuteCommandMath;
     m_pCommands[COMMAND_SOUND_OBJECT_GET_FIXED_VARIANCE] = &CSWVirtualMachineCommands::ExecuteCommandSoundObjectGetFixedVariance;

@@ -114,7 +114,7 @@ public:
 
     int GetSwoopUpgrade(int nSlot)
     {
-        return (&m_nSwoop1)[nSlot];
+        return m_anSwoopUpgrade[nSlot];
     }
 
     int m_nNumMembers;
@@ -140,12 +140,7 @@ public:
     unsigned long m_nGold;
     int m_nItemComponent;
     int m_nItemChemical;
-    int m_nSwoop1;
-    int m_nSwoop2;
-    int m_nSwoop3;
-    int m_n188;
-    int m_n18C;
-    int m_n190;
+    int m_anSwoopUpgrade[6];
     int m_nReturnFlag;
     unsigned long m_nReturnStrref;
     unsigned long m_nReturnTitleStrref;

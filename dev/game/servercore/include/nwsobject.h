@@ -1916,6 +1916,7 @@ public:
     int m_nMoveToPointElapsed;
 #endif
     unsigned short m_nUnknown228;
+    unsigned char m_c26A;
     int m_nUnknown22C;
 
 
@@ -2015,7 +2016,8 @@ public:
 
     unsigned long m_oidCounterSpellTarget;
     unsigned char m_nUnknown4D8;
-    char m_aUnmapped4D9[3];
+    unsigned char m_c519;
+    char m_aUnmapped51A[2];
     int m_bResolveInitiative;
     int m_bCombatState;
 

@@ -95,6 +95,33 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetTrackPosition(int nCommand,
     }
     return g_pVirtualMachine->StackPushVector(vPosition) != 0 ? 0 : -2000;
 }
+// PC 0x00619480
+int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerPosition(int nCommand, int nArgs)
+{
+    Vector vPosition(0.0f, 0.0f, 0.0f);
+
+    if (g_pVirtualMachine->StackPopVector(&vPosition) != 0)
+    {
+        g_pAppManager->GetClientExoApp()->GetMiniGame()->SetCurPos(vPosition);
+    }
+    return 0;
+}
+// PC 0x006194F0
+int CSWVirtualMachineCommands::ExecuteCommandSWMG_DestroyMiniGameObject(int nCommand, int nArgs)
+{
+    unsigned long oidObject;
+
+    if (g_pVirtualMachine->StackPopObject(&oidObject) != 0)
+    {
+        CSWMiniGameObject* pObject = (CSWMiniGameObject*)g_pAppManager->GetClientExoApp()->GetMGOArray()->GetMiniGameObject(oidObject, SWMG_OBJECT_ANY);
+        CSWMGObstacle* pObstacle = pObject->AsObstacle();
+        if (pObstacle != NULL)
+        {
+            g_pAppManager->GetClientExoApp()->GetMiniGame()->RemoveObstacle(pObstacle);
+        }
+    }
+    return 0;
+}
 // PC 0x00619550
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetJumpSpeed(int nCommand, int nArgs)
 {
@@ -1702,6 +1729,10 @@ void CSWVirtualMachineCommands::InitializeSWMGCommands()
         &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetSwoopUpgrade;
     m_pCommands[COMMAND_SWMG_GET_TRACK_POSITION] =
         &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetTrackPosition;
+    m_pCommands[COMMAND_SWMG_SET_FOLLOWER_POSITION] =
+        &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerPosition;
+    m_pCommands[COMMAND_SWMG_DESTROY_MINI_GAME_OBJECT] =
+        &CSWVirtualMachineCommands::ExecuteCommandSWMG_DestroyMiniGameObject;
     m_pCommands[COMMAND_SWMG_SET_JUMP_SPEED] =
         &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetJumpSpeed;
     m_pCommands[COMMAND_SWMG_PLAYER_APPLY_FORCE] =

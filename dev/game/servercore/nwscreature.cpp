@@ -238,6 +238,7 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     m_n528 = 0;
     m_nActionQueueUpdateDay = 0;
     m_nActionQueueUpdateTime = 0;
+    m_c519 = 0;
     m_bResolveInitiative = 1;
     m_oidDisappearTarget = OBJECT_INVALID;
     m_vDisappearPosition = Vector();
@@ -396,6 +397,7 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     m_n1204 = 0;
     m_v1208 = Vector(0.0f, 0.0f, 0.0f);
     m_v1214 = Vector(0.0f, 0.0f, 0.0f);
+    m_c26A = 0;
 }
 // PC 0x0051A4A0
 CSWSCreature::~CSWSCreature()
@@ -1243,9 +1245,9 @@ void CSWSCreature::HandleHPRegeneration()
         float fAdjustment = fRate * (m_nElapsedTime * 0.001f) * fHPBase;
         if (fAdjustment != 0.0)
         {
-            short nAdjustment = m_pStats->AdjustHPAccumulatorBy(fAdjustment);
+            int nAdjustment = (short)m_pStats->AdjustHPAccumulatorBy(fAdjustment);
             float fNewHitPoints = (float)(GetCurrentHitPoints(1) + nAdjustment);
-            int nNewHitPoints = (int)min(fNewHitPoints, GetMaxHitPoints(1));
+            int nNewHitPoints = (int)min(GetMaxHitPoints(1), fNewHitPoints);
             if (nNewHitPoints < 1)
             {
                 nNewHitPoints = 1;
@@ -3764,7 +3766,10 @@ void CSWSCreature::EventHandler(unsigned long nEventId, unsigned long oidCaller,
             BroadcastCombatStateToParty(oidCaller);
             ResolveInitiative();
             if (GetDead() == 0 && GetDeadTemp() == 0)
+            {
                 g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ATTACKED], GetId(), 1);
+                RemoveMindTrickEffects();
+            }
         }
         return;
     }
@@ -3779,6 +3784,7 @@ void CSWSCreature::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                 m_oidSpellTargetObject = pSpell->m_oidTarget;
                 SetSpellTargetPosition(pSpell->m_vTargetPosition);
                 m_oidSpellCasterItem = pSpell->m_oidItem;
+                m_n208 = pSpell->m_nFinalForceCost;
                 if (pSpell->m_oidTarget != OBJECT_INVALID)
                 {
                     CGameObject* pObject;
@@ -4927,8 +4933,12 @@ float CSWSCreature::CalculateDeathExperience()
                 nChallengeRating = 0;
             }
         }
-        int nRow = min(nLevel - 1, 30);
+        int nRow = nLevel - 1;
         float fExperience = 0.0f;
+        if (nRow > 30)
+        {
+            nRow = 30;
+        }
         int nColumn = nChallengeRating + 1;
         if (nColumn > 31)
         {
@@ -4939,7 +4949,8 @@ float CSWSCreature::CalculateDeathExperience()
         EXOXBOXASSERT(pArraysForXpBase->m_pXpBase);
         pArraysForXpBase->m_pXpBase->GetFLOATEntry(
 #else
-        g_pRules->Get2DArrays()->m_pXpBase->GetFLOATEntry(
+        C2DA* pXpBase = g_pRules->Get2DArrays()->m_pXpBase;
+        pXpBase->GetFLOATEntry(
 #endif
             nRow, nColumn, &fExperience);
         float fPercentXP = 0.0f;
@@ -7710,17 +7721,17 @@ int CSWSCreature::ValidNearestObjectType(CGameObject* pObject, int& bHostile)
 unsigned long CSWSCreature::GetNearestEnemy(float fRange, unsigned long oidExclude,
                                            unsigned long oidRelativeTo)
 {
-    if (GetArea() == NULL)
+    CSWSArea* pArea = GetArea();
+    if (pArea == NULL)
         return OBJECT_INVALID;
 
-    CExoArrayList<unsigned long>* pObjects = &GetArea()->m_lstObjectIds;
     int nIndex;
-    for (nIndex = 0; nIndex < pObjects->num; nIndex++)
+    for (nIndex = 0; nIndex < pArea->m_lstObjectIds.num; nIndex++)
     {
-        if ((*pObjects)[nIndex] == GetId())
+        if (pArea->m_lstObjectIds[nIndex] == GetId())
             break;
     }
-    if (nIndex >= pObjects->num)
+    if (nIndex >= pArea->m_lstObjectIds.num)
         return OBJECT_INVALID;
 
     float fNearest = fRange;
@@ -7730,13 +7741,13 @@ unsigned long CSWSCreature::GetNearestEnemy(float fRange, unsigned long oidExclu
     Vector vHit;
     unsigned long oidHit;
     for (int nOffset = 0; nIndex - nOffset >= 0 ||
-         nIndex + nOffset < pObjects->num; nOffset++)
+         nIndex + nOffset < pArea->m_lstObjectIds.num; nOffset++)
     {
         if (bLeft)
         {
             if (nIndex - nOffset >= 0)
             {
-                unsigned long oidObject = (*pObjects)[nIndex - nOffset];
+                unsigned long oidObject = pArea->m_lstObjectIds[nIndex - nOffset];
                 CGameObject* pObject = g_pAppManager->GetServerExoApp()->
                     GetGameObject(oidObject);
                 if (pObject != NULL && oidObject != GetId() && oidObject != oidExclude)
@@ -7782,7 +7793,7 @@ unsigned long CSWSCreature::GetNearestEnemy(float fRange, unsigned long oidExclu
                                 vStart.m_fZ += 1.5f;
                                 Vector vEnd = pObject->AsSWSCreature()->m_vPosition;
                                 vEnd.m_fZ += 1.5f;
-                                if (GetArea() != NULL && GetArea()->ClearLineOfSight(
+                                if (pArea->ClearLineOfSight(
                                         vStart, vEnd, &vHit, &oidHit, GetId(), oidObject, 1, 0))
                                 {
                                     fNearest = fDistance;
@@ -7805,9 +7816,9 @@ unsigned long CSWSCreature::GetNearestEnemy(float fRange, unsigned long oidExclu
         }
         if (bRight)
         {
-            if (nIndex + nOffset < pObjects->num)
+            if (nIndex + nOffset < pArea->m_lstObjectIds.num)
             {
-                unsigned long oidObject = (*pObjects)[nIndex + nOffset];
+                unsigned long oidObject = pArea->m_lstObjectIds[nIndex + nOffset];
                 CGameObject* pObject = g_pAppManager->GetServerExoApp()->
                     GetGameObject(oidObject);
                 if (pObject != NULL && oidObject != GetId() && oidObject != oidExclude)
@@ -7853,7 +7864,7 @@ unsigned long CSWSCreature::GetNearestEnemy(float fRange, unsigned long oidExclu
                                 vStart.m_fZ += 1.5f;
                                 Vector vEnd = pObject->AsSWSCreature()->m_vPosition;
                                 vEnd.m_fZ += 1.5f;
-                                if (GetArea() != NULL && GetArea()->ClearLineOfSight(
+                                if (pArea->ClearLineOfSight(
                                         vStart, vEnd, &vHit, &oidHit, GetId(), oidObject, 1, 0))
                                 {
                                     fNearest = fDistance;
@@ -8656,16 +8667,16 @@ int CSWSCreature::Disguise(int nAppearance, CGameEffect* pEffect,
 
     if (bPermanent == 0)
     {
-        m_nPMAppearance = m_pStats->m_nAppearance;
-        m_pStats->m_nAppearance = nAppearance;
+        m_nPMAppearance = GetStats()->m_nAppearance;
+        GetStats()->m_nAppearance = nAppearance;
         m_cAppearanceInfo.m_nAppearance = nAppearance;
         m_bPMIsDisguised = 1;
     }
     else
     {
-        m_pStats->m_nAppearance = nAppearance;
+        GetStats()->m_nAppearance = nAppearance;
         m_cAppearanceInfo.m_nAppearance = nAppearance;
-        m_nPMAppearance = m_pStats->m_nAppearance;
+        m_nPMAppearance = GetStats()->GetAppearanceType();
         m_bPMIsDisguised = 0;
     }
     UpdatePersonalSpace();
@@ -10512,16 +10523,22 @@ int CSWSCreature::BumpFriends(CSWSCreature* pCreature, const Vector& vStart,
             oidHit, NULL, 1, 0) == 1;
         if (bSafe && bClear)
         {
-            CSWSObjectActionNode* pAction = pCreature->m_lstActions.GetHead();
-            CExoLinkedListNode* pPos = pCreature->m_lstActions.GetHeadPos();
-            while (pAction != NULL)
+            CExoLinkedList<CSWSObjectActionNode>* pActions = &pCreature->m_lstActions;
+            CSWSObjectActionNode* pAction = NULL;
+            if (pActions != NULL)
             {
-                if (pAction->m_nActionType == ACTION_MOVE_TO_POINT ||
-                    pAction->m_nActionType == ACTION_CHECK_MOVE_TO_OBJECT_RADIUS)
+                pAction = pActions->GetHead();
+                CExoLinkedListNode* pPos = pActions->GetHeadPos();
+                while (pAction != NULL)
                 {
-                    break;
+                    int nActionType = (unsigned short)pAction->m_nActionType;
+                    if (nActionType == ACTION_MOVE_TO_POINT ||
+                        nActionType == ACTION_CHECK_MOVE_TO_OBJECT_RADIUS)
+                    {
+                        break;
+                    }
+                    pAction = pActions->GetNext(pPos);
                 }
-                pAction = pCreature->m_lstActions.GetNext(pPos);
             }
             if (pAction == NULL)
             {
@@ -11634,8 +11651,9 @@ void CSWSCreature::DoPerceptionUpdateOnCreature(CSWSCreature* pCreature)
     CSWSArea* pArea = GetArea();
     if (pArea == NULL || pCreature->GetId() == GetId())
         return;
-    float fRange = GetSpotCheckDistance() >= GetListenCheckDistance() ?
-        GetSpotCheckDistance() : GetListenCheckDistance();
+    float fSpotDistance = GetSpotCheckDistance();
+    float fListenDistance = GetListenCheckDistance();
+    float fRange = fSpotDistance >= fListenDistance ? fSpotDistance : fListenDistance;
     unsigned long oidTarget = pCreature->GetId();
     vPosition = m_vPosition;
     vTarget = pCreature->m_vPosition;
@@ -11653,7 +11671,7 @@ void CSWSCreature::DoPerceptionUpdateOnCreature(CSWSCreature* pCreature)
         {
             unsigned long oidHit;
             Vector vDelta = vPosition - vTarget;
-            if (vDelta * vDelta >= fRange * fRange)
+            if (vDelta * vDelta >= fRange * fRange && pCreature->m_n260 == 0)
                 bPotentiallySeen = 0;
             else
                 bPotentiallySeen = pArea->ClearLineOfSight(vPosition, vTarget, &vHit, &oidHit,
@@ -11665,11 +11683,14 @@ void CSWSCreature::DoPerceptionUpdateOnCreature(CSWSCreature* pCreature)
         {
             CSWSCreature* pInvisible = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
                 pModule->m_lstInvisibleCreatures[nCreature]);
-            if (pInvisible != NULL && GetArea() != NULL && pInvisible->GetArea() != NULL &&
-                GetArea()->GetId() == pInvisible->GetArea()->GetId())
+            if (pInvisible != NULL)
             {
-                bInvisible = 1;
-                break;
+                CSWSArea* pInvisibleArea = pInvisible->GetArea();
+                if (pInvisibleArea != NULL && pArea->GetId() == pInvisibleArea->GetId())
+                {
+                    bInvisible = 1;
+                    break;
+                }
             }
         }
         if (GetBlind())
@@ -11749,8 +11770,23 @@ void CSWSCreature::DoPerceptionUpdateOnCreature(CSWSCreature* pCreature)
         bSeen = 1;
         bHeard = 1;
         bAdded = 1;
+        bRemoved = 0;
     }
-    else if (bRemoved)
+    if (m_bDebilitated == CSWSEffectListHandler::STATE_MIND_TRICK_18 ||
+        m_bDebilitated == CSWSEffectListHandler::STATE_MIND_TRICK_19)
+    {
+        if (bSeen || bHeard)
+        {
+            int nReputation = GetReputation(pCreature->GetId(), 0);
+            if (nReputation <= 10 && pCreature->GetStealthMode() != 1)
+            {
+                Vector vDelta = vPosition - vTarget;
+                if (vDelta * vDelta <= 10.0f)
+                    RemoveMindTrickEffects();
+            }
+        }
+    }
+    if (bRemoved)
     {
         pVisible = GetVisibleListElement(oidTarget);
         if (pVisible != NULL)

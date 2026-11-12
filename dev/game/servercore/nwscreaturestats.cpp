@@ -34,6 +34,8 @@
 #include "clientexoapp.h"
 #include "guiingame.h"
 #include "nwscript.h"
+#include "swparty.h"
+#include "nwccreature.h"
 
 static inline void NwscreaturestatsTrace2();
 static inline void NwscreaturestatsTrace1();
@@ -689,6 +691,22 @@ short CSWSCreatureStats::GetArmorClassVersus(CSWSCreature* pTarget,
         CSWClass* pClass = &g_pRules->m_pClasses[GetClass(nClass)];
         nClassBonus += pClass->GetArmorBonus(GetClassLevel(nClass, 0));
     }
+    if (m_pCreature->m_bInParty == 0)
+    {
+        int nAutoBalance = m_pCreature->m_c250;
+        if (nAutoBalance != 0)
+        {
+            C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
+            float fArmorMult;
+            pAutoBalance->GetFLOATEntry(nAutoBalance, "ArmorMult", &fArmorMult);
+            char nLevel = m_pCreature->m_c251;
+            if ((unsigned char)nLevel < 1)
+            {
+                nLevel = 1;
+            }
+            nClassBonus += (int)(nLevel * fArmorMult);
+        }
+    }
     pAttack->m_Flags.m_nClassArmorModifier = nClassBonus;
     int nAC = SW_BASE_ARMOR_CLASS + nClassBonus;
     int nArmorAC;
@@ -756,9 +774,12 @@ short CSWSCreatureStats::GetArmorClassVersus(CSWSCreature* pTarget,
             }
         }
     }
-    else if (nDexMod == 0 && GetDEXMod(1) < 0)
+    else
     {
-        nDexMod = GetDEXMod(1);
+        if (GetDEXMod(1) < 0)
+        {
+            nDexMod = GetDEXMod(1);
+        }
     }
     int nBaseDexMod = GetDEXMod(0);
     nAC += nDexMod + nDodgeMod;
@@ -861,6 +882,80 @@ short CSWSCreatureStats::GetArmorClassVersus(CSWSCreature* pTarget,
             }
         }
     }
+    int nStanceBonus = 0;
+    if (m_pCreature->IsInTotalDefense())
+    {
+        int bImproved = 0;
+        for (unsigned char nClass = 0; nClass < 2; ++nClass)
+        {
+            unsigned char nClassType = GetClass(nClass);
+            if ((nClassType == CLASS_TYPE_JEDISENTINEL ||
+                 nClassType == CLASS_TYPE_JEDIWATCHMAN ||
+                 nClassType == CLASS_TYPE_SITHASSASSIN ||
+                 nClassType == CLASS_TYPE_SCOUNDREL) &&
+                GetClassLevel(nClass, 1) >= 4)
+            {
+                bImproved = 1;
+                break;
+            }
+        }
+        if (bImproved)
+        {
+            nStanceBonus = 6;
+        }
+        else
+        {
+            nStanceBonus = 4;
+        }
+    }
+    int nFormBonus = 0;
+    if (m_pCreature->IsWieldingLightsaber())
+    {
+        switch (m_pCreature->m_n1110)
+        {
+        case CSWSpell::FORM_SABER_I_SHII_CHO:
+            nFormBonus = 3;
+            if (pTarget->GetId() == m_pCreature->GetAttemptedAttackTarget() ||
+                pTarget->GetId() == m_pCreature->m_oidAttackTarget)
+            {
+                nFormBonus = 0;
+            }
+            break;
+        case CSWSpell::FORM_SABER_III_SORESU:
+            if (pTarget->GetId() == m_pCreature->GetAttemptedAttackTarget() ||
+                pTarget->GetId() == m_pCreature->m_oidAttackTarget)
+            {
+                nFormBonus = 2;
+            }
+            break;
+        case CSWSpell::FORM_SABER_IV_ATARU:
+            nFormBonus = -2;
+            if (pTarget->GetId() == m_pCreature->GetAttemptedAttackTarget() ||
+                pTarget->GetId() == m_pCreature->m_oidAttackTarget)
+            {
+                nFormBonus = 3;
+            }
+            break;
+        case CSWSpell::FORM_SABER_V_SHIEN:
+            if (pTarget->GetId() == m_pCreature->GetAttemptedAttackTarget() ||
+                pTarget->GetId() == m_pCreature->m_oidAttackTarget)
+            {
+                nFormBonus = -5;
+            }
+            break;
+        case CSWSpell::FORM_SABER_VI_NIMAN:
+            nFormBonus = 1;
+            break;
+        case CSWSpell::FORM_SABER_VII_JUYO:
+            nFormBonus = -4;
+            if (pTarget->GetId() == m_pCreature->GetAttemptedAttackTarget() ||
+                pTarget->GetId() == m_pCreature->m_oidAttackTarget)
+            {
+                nFormBonus = -2;
+            }
+            break;
+        }
+    }
     if (g_bEnableCombatDebugging)
     {
         CExoString sDebug(pTarget->GetCombatRound()->GetAttack(nAttack)->m_sAttackDebugText);
@@ -895,9 +990,47 @@ short CSWSCreatureStats::GetArmorClassVersus(CSWSCreature* pTarget,
             pTarget->GetCombatRound()->GetAttack(nAttack)->m_sAttackDebugText = sDebug + sBonus;
             sDebug = pTarget->GetCombatRound()->GetAttack(nAttack)->m_sAttackDebugText;
         }
+        if (nStanceBonus)
+        {
+            sBonus.Format(" + %d (Total Defense Stance Bonus)", nStanceBonus);
+            pTarget->GetCombatRound()->GetAttack(nAttack)->m_sAttackDebugText = sDebug + sBonus;
+            sDebug = pTarget->GetCombatRound()->GetAttack(nAttack)->m_sAttackDebugText;
+        }
+        if (nFormBonus)
+        {
+            sBonus.Format(" + %d", nFormBonus);
+            pTarget->GetCombatRound()->GetAttack(nAttack)->m_sAttackDebugText = sDebug + sBonus;
+            sDebug = pTarget->GetCombatRound()->GetAttack(nAttack)->m_sAttackDebugText;
+        }
     }
-    nAC += nDodgeBonus + nDeflectionBonus + nDeflectionPenalty;
-    pAttack->m_Flags.m_nDodgeDeflectionModifier += nDodgeBonus + nDeflectionBonus + nDeflectionPenalty;
+    nAC += nDodgeBonus + nDeflectionBonus + nDeflectionPenalty + nFormBonus + nStanceBonus;
+    pAttack->m_Flags.m_nDodgeDeflectionModifier += nDodgeBonus + nDeflectionBonus + nDeflectionPenalty + nFormBonus + nStanceBonus;
+    if (HasSpell(0, CSWSpell::FORCE_POWER_BATTLE_PRECOGNITION, 0))
+    {
+        CSWSItem* pArmor = m_pCreature->GetInventory()->GetItemInSlot(INVENTORY_SLOT_ARMOUR);
+        if (pArmor != NULL)
+        {
+            CSWBaseItem* pBaseItem = pArmor->GetBaseItem();
+            if (pBaseItem != NULL && pBaseItem->m_nBaseAC == 0)
+            {
+                char nWisdom = m_nWisdomModifier;
+                if (nWisdom > 0)
+                {
+                    nAC += nWisdom;
+                    pAttack->m_Flags.m_nDodgeDeflectionModifier += nWisdom;
+                }
+            }
+        }
+        else
+        {
+            char nWisdom = m_nWisdomModifier;
+            if (nWisdom > 0)
+            {
+                nAC += nWisdom;
+                pAttack->m_Flags.m_nDodgeDeflectionModifier += nWisdom;
+            }
+        }
+    }
     if (bTouchAttack)
         nAC += nArmorBonus + nShieldBonus + nArmorPenalty + nShieldPenalty;
     int nFeatBonus = GetTotalACFeatMod();
@@ -1214,6 +1347,21 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
                 nTwoWeaponFeatBonus = 2;
                 nTwoWeaponFeat = CSWFeat::FEAT_DOUBLE_WEAPON_FIGHTING;
             }
+            if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_III))
+            {
+                nTwoWeaponFeat = CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_III;
+                nTwoWeaponFeatBonus += 2;
+            }
+            else if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_II))
+            {
+                nTwoWeaponFeat = CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_II;
+                nTwoWeaponFeatBonus += 2;
+            }
+            else if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_I))
+            {
+                nTwoWeaponFeat = CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_I;
+                nTwoWeaponFeatBonus += 1;
+            }
             nTwoWeaponPenalty += nTwoWeaponFeatBonus;
         }
     }
@@ -1237,6 +1385,19 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
             {
                 nTwoWeaponFeatBonus = 4;
                 nTwoWeaponFeat = CSWFeat::FEAT_AMBIDEXTERITY;
+            }
+            if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_III))
+            {
+                nTwoWeaponFeatBonus += 1;
+                nTwoWeaponFeat = CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_III;
+            }
+            else if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_II))
+            {
+                nTwoWeaponFeat = CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_II;
+            }
+            else if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_I))
+            {
+                nTwoWeaponFeat = CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_I;
             }
             nTwoWeaponPenalty = -10 + nTwoWeaponFeatBonus;
         }
@@ -1269,6 +1430,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
     int nDuelingFeat = 0;
     CSWSItem* pRightHand = GetCreature()->GetInventory()->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
     CSWSItem* pLeftHand = GetCreature()->GetInventory()->GetItemInSlot(INVENTORY_SLOT_LEFTHAND);
+    int bDueling = FALSE;
     if (pRightHand != NULL && pLeftHand == NULL)
     {
         CSWBaseItem* pBaseItem = pRightHand->GetBaseItem();
@@ -1276,26 +1438,34 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
             (pBaseItem->m_nWeaponWield == CSWBaseItem::WEAPON_WIELD_ONE_HANDED_2 ||
              pBaseItem->m_nWeaponWield == CSWBaseItem::WEAPON_WIELD_ONE_HANDED_4))
         {
-            if (HasFeat(CSWFeat::FEAT_MASTER_DUELING))
-            {
-                nDuelingBonus = 3;
-                nDuelingFeat = CSWFeat::FEAT_MASTER_DUELING;
-            }
-            else if (HasFeat(CSWFeat::FEAT_IMPROVED_DUELING))
-            {
-                nDuelingBonus = 2;
-                nDuelingFeat = CSWFeat::FEAT_IMPROVED_DUELING;
-            }
-            else if (HasFeat(CSWFeat::FEAT_DUELING))
-            {
-                nDuelingBonus = 1;
-                nDuelingFeat = CSWFeat::FEAT_DUELING;
-            }
+            bDueling = TRUE;
         }
     }
+    else if (pRightHand == NULL && pLeftHand == NULL)
+    {
+        bDueling = TRUE;
+    }
+    if (bDueling)
+    {
+        if (HasFeat(CSWFeat::FEAT_MASTER_DUELING))
+        {
+            nDuelingBonus = 3;
+            nDuelingFeat = CSWFeat::FEAT_MASTER_DUELING;
+        }
+        else if (HasFeat(CSWFeat::FEAT_IMPROVED_DUELING))
+        {
+            nDuelingBonus = 2;
+            nDuelingFeat = CSWFeat::FEAT_IMPROVED_DUELING;
+        }
+        else if (HasFeat(CSWFeat::FEAT_DUELING))
+        {
+            nDuelingBonus = 1;
+            nDuelingFeat = CSWFeat::FEAT_DUELING;
+        }
+    }
+    nAttackBonus += nDuelingBonus;
     pAttack->m_Extra1.m_nDuelingBonus = nDuelingBonus;
     pAttack->m_Extra1.m_nDuelingFeat = nDuelingFeat;
-    nAttackBonus += nDuelingBonus;
     if (g_bEnableCombatDebugging && nSpecialAttackBonus != 0)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
@@ -1311,7 +1481,14 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         float fDistanceSquared = vDelta * vDelta;
         if (fDistanceSquared <= (float)GOOD_AIM_RANGE_SQUARED)
         {
-            nGoodAimBonus = GOOD_AIM_ATTACK_BONUS;
+            if (GetCreature()->GetStats()->HasFeat(CSWFeat::FEAT_CLOSE_COMBAT))
+            {
+                nGoodAimBonus = 1;
+            }
+            if (GetCreature()->GetStats()->HasFeat(CSWFeat::FEAT_IMPROVED_CLOSE_COMBAT))
+            {
+                ++nGoodAimBonus;
+            }
         }
     }
     pAttack->m_Extra1.m_nGoodAimBonus = nGoodAimBonus;
@@ -1330,7 +1507,15 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         CSWSItem* pTargetWeapon = pTarget->m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
         if (pTargetWeapon != NULL && pTargetWeapon->GetBaseItem()->m_nRangedWeapon > 0)
         {
-            nOffensiveTrainingBonus = MELEE_VERSUS_RANGED_ATTACK_BONUS;
+            nOffensiveTrainingBonus = 6;
+            if (pTarget->GetStats()->HasFeat(CSWFeat::FEAT_CLOSE_COMBAT))
+            {
+                nOffensiveTrainingBonus = 4;
+            }
+            if (pTarget->GetStats()->HasFeat(CSWFeat::FEAT_IMPROVED_CLOSE_COMBAT))
+            {
+                nOffensiveTrainingBonus -= 2;
+            }
         }
     }
     pAttack->m_Extra1.m_nOffensiveTrainingBonus = nOffensiveTrainingBonus;
@@ -1342,6 +1527,46 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         sBonus.Format(" + %d (Offensive Training Bonus (vs Race))", nOffensiveTrainingBonus);
         GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText = sDebug + sBonus;
     }
+
+    int nDualStrikeBonus = 0;
+    if ((m_pCreature->m_bInParty && HasFeat(CSWFeat::FEAT_DUAL_STRIKE)) ||
+        HasFeat(CSWFeat::FEAT_IMPROVED_DUAL_STRIKE) ||
+        HasFeat(CSWFeat::FEAT_MASTER_DUAL_STRIKE))
+    {
+        int nCharacters = g_pAppManager->GetClientExoApp()->GetSWParty()->GetNumCharacters();
+        for (int i = 0; i < nCharacters; ++i)
+        {
+            CSWPartyMemberData* pMember = &g_pAppManager->GetClientExoApp()->GetSWParty()->m_aPartyMemberData[i];
+            if (pMember != NULL)
+            {
+                unsigned long oidClient = pMember->m_oidCreature;
+                unsigned long oidMember = g_pAppManager->GetServerExoApp()->ClientToServerObjectId(oidClient);
+                if (oidMember != m_pCreature->GetId())
+                {
+                    CSWSCreature* pAlly = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidMember);
+                    if (pAlly != NULL && pTarget != NULL &&
+                        pAlly->GetAttemptedAttackTarget() == pTarget->GetId())
+                    {
+                        if (HasFeat(CSWFeat::FEAT_DUAL_STRIKE))
+                        {
+                            nDualStrikeBonus = 2;
+                        }
+                        if (HasFeat(CSWFeat::FEAT_IMPROVED_DUAL_STRIKE))
+                        {
+                            nDualStrikeBonus += 2;
+                        }
+                        if (HasFeat(CSWFeat::FEAT_MASTER_DUAL_STRIKE))
+                        {
+                            nDualStrikeBonus += 2;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    pAttack->m_Extra1.m_nUnknown20 = nDualStrikeBonus;
+    nAttackBonus += nDualStrikeBonus;
 
     int nDexterityBonus = 0;
     int nStrengthBonus = 0;
@@ -1382,13 +1607,265 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
     }
 
     int nWeaponFocusBonus = GetWeaponFocus(pWeapon);
-    pAttack->m_Extra1.m_nWeaponFocusBonus = nWeaponFocusBonus;
     nAttackBonus += nWeaponFocusBonus;
-    if (g_bEnableCombatDebugging && nWeaponFocusBonus != 0)
+    pAttack->m_Extra1.m_nWeaponFocusBonus = nWeaponFocusBonus;
+    int nLightsaberBonus = 0;
+    if (pWeapon != NULL && pWeapon->IsLightsaber())
+    {
+        if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_LIGHTSABER_III))
+        {
+            nLightsaberBonus = 3;
+        }
+        else if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_LIGHTSABER_II))
+        {
+            nLightsaberBonus = 2;
+        }
+        else if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_LIGHTSABER_I))
+        {
+            nLightsaberBonus = 1;
+        }
+    }
+    nAttackBonus += nLightsaberBonus;
+    pAttack->m_Extra1.m_nWeaponFocusBonus += nLightsaberBonus;
+    int nTargetingBonus = 0;
+    int nTargetingFeat = 0;
+    if (pAttack->m_bRangedAttack)
+    {
+        if (HasFeat(CSWFeat::FEAT_TARGETING_10))
+        {
+            nTargetingFeat = CSWFeat::FEAT_TARGETING_10;
+            nTargetingBonus = 10;
+        }
+        else if (HasFeat(CSWFeat::FEAT_TARGETING_9))
+        {
+            nTargetingFeat = CSWFeat::FEAT_TARGETING_9;
+            nTargetingBonus = 9;
+        }
+        else if (HasFeat(CSWFeat::FEAT_TARGETING_8))
+        {
+            nTargetingFeat = CSWFeat::FEAT_TARGETING_8;
+            nTargetingBonus = 8;
+        }
+        else if (HasFeat(CSWFeat::FEAT_TARGETING_7))
+        {
+            nTargetingFeat = CSWFeat::FEAT_TARGETING_7;
+            nTargetingBonus = 7;
+        }
+        else if (HasFeat(CSWFeat::FEAT_TARGETING_6))
+        {
+            nTargetingFeat = CSWFeat::FEAT_TARGETING_6;
+            nTargetingBonus = 6;
+        }
+        else if (HasFeat(CSWFeat::FEAT_TARGETING_5))
+        {
+            nTargetingFeat = CSWFeat::FEAT_TARGETING_5;
+            nTargetingBonus = 5;
+        }
+        else if (HasFeat(CSWFeat::FEAT_TARGETING_4))
+        {
+            nTargetingFeat = CSWFeat::FEAT_TARGETING_4;
+            nTargetingBonus = 4;
+        }
+        else if (HasFeat(CSWFeat::FEAT_TARGETING_3))
+        {
+            nTargetingFeat = CSWFeat::FEAT_TARGETING_3;
+            nTargetingBonus = 3;
+        }
+        else if (HasFeat(CSWFeat::FEAT_TARGETING_2))
+        {
+            nTargetingFeat = CSWFeat::FEAT_TARGETING_2;
+            nTargetingBonus = 2;
+        }
+        else if (HasFeat(CSWFeat::FEAT_TARGETING_1))
+        {
+            nTargetingFeat = CSWFeat::FEAT_TARGETING_1;
+            nTargetingBonus = 1;
+        }
+    }
+    pAttack->m_Extra1.m_nUnknown21 = nTargetingFeat;
+    pAttack->m_Extra1.m_nUnknown22 += nTargetingBonus;
+    nAttackBonus += nTargetingBonus;
+    if (g_bEnableCombatDebugging)
+    {
+        if (nWeaponFocusBonus != 0)
+        {
+            CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
+            CExoString sBonus;
+            sBonus.Format(" + %d (Weapon Focus Bonus)", nWeaponFocusBonus + nLightsaberBonus);
+            GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText = sDebug + sBonus;
+        }
+        if (g_bEnableCombatDebugging && nTargetingBonus != 0)
+        {
+            CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
+            CExoString sBonus;
+            sBonus.Format(" + %d (Targeting Bonus)", nTargetingBonus);
+            GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText = sDebug + sBonus;
+        }
+    }
+
+    int nCrushSpell = 0;
+    int nCrushPenalty = 0;
+    if (pTarget != NULL && pTarget->m_bInParty)
+    {
+        int bBest = FALSE;
+        if (pTarget->m_pStats->m_bIsPC)
+        {
+            if (pTarget->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_VI, 0) && pTarget->m_pStats->m_nGoodEvilAlignment <= 40)
+            {
+                bBest = TRUE;
+            }
+            else if (pTarget->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_III, 0) && pTarget->m_pStats->m_nGoodEvilAlignment <= 40)
+            {
+                nCrushSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_III;
+                nCrushPenalty = -1;
+            }
+        }
+        if (!bBest)
+        {
+            for (int i = 0; i < 12; ++i)
+            {
+                if (g_pAppManager->GetServerExoApp()->GetPartyTable()->GetIsNPCAvailable(i) &&
+                    g_pAppManager->GetServerExoApp()->GetPartyTable()->GetIsMember(i))
+                {
+                    unsigned long oidNPC = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetNPCObject(i, 0, 1);
+                    if (oidNPC != OBJECT_INVALID)
+                    {
+                        CSWSCreature* pNPC = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidNPC);
+                        if (pNPC != NULL)
+                        {
+                            if (pNPC->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_VI, 0) &&
+                                pNPC->m_pStats->m_nGoodEvilAlignment <= 40)
+                            {
+                                bBest = TRUE;
+                                break;
+                            }
+                            if (pNPC->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_III, 0) &&
+                                pNPC->m_pStats->m_nGoodEvilAlignment <= 40)
+                            {
+                                nCrushSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_III;
+                                nCrushPenalty = -1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (bBest)
+        {
+            nCrushSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_VI;
+            nCrushPenalty = -2;
+        }
+    }
+    nAttackBonus += nCrushPenalty;
+    pAttack->m_Extra1.m_nUnknown23 += nCrushSpell;
+    pAttack->m_Extra1.m_nUnknown24 += nCrushPenalty;
+    if (g_bEnableCombatDebugging && nCrushPenalty != 0)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
         CExoString sBonus;
-        sBonus.Format(" + %d (Weapon Focus Bonus)", nWeaponFocusBonus);
+        sBonus.Format(" + %d (Crush Opposition Penalty)", nCrushPenalty);
+        GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText = sDebug + sBonus;
+    }
+
+    int nInspireSpell = 0;
+    int nInspireBonus = 0;
+    if (m_pCreature->m_bInParty)
+    {
+        int bBest = FALSE;
+        if (this->m_bIsPC)
+        {
+            if (this->HasSpell(0, CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_VI, 0) && this->m_nGoodEvilAlignment >= 60)
+            {
+                bBest = TRUE;
+            }
+            else if (this->HasSpell(0, CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_III, 0) && this->m_nGoodEvilAlignment >= 60)
+            {
+                nInspireSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_III;
+                nInspireBonus = 1;
+            }
+        }
+        if (!bBest)
+        {
+            for (int i = 0; i < 12; ++i)
+            {
+                if (g_pAppManager->GetServerExoApp()->GetPartyTable()->GetIsNPCAvailable(i) &&
+                    g_pAppManager->GetServerExoApp()->GetPartyTable()->GetIsMember(i))
+                {
+                    unsigned long oidNPC = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetNPCObject(i, 0, 1);
+                    if (oidNPC != OBJECT_INVALID)
+                    {
+                        CSWSCreature* pNPC = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidNPC);
+                        if (pNPC != NULL)
+                        {
+                            if (pNPC->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_VI, 0) &&
+                                pNPC->m_pStats->m_nGoodEvilAlignment >= 60)
+                            {
+                                bBest = TRUE;
+                                break;
+                            }
+                            if (pNPC->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_III, 0) &&
+                                pNPC->m_pStats->m_nGoodEvilAlignment >= 60)
+                            {
+                                nInspireSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_III;
+                                nInspireBonus = 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (bBest)
+        {
+            nInspireSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_VI;
+            nInspireBonus = 2;
+        }
+    }
+    pAttack->m_Extra1.m_nUnknown25 = nInspireSpell;
+    pAttack->m_Extra1.m_nUnknown26 += nInspireBonus;
+    nAttackBonus += nInspireBonus;
+    if (g_bEnableCombatDebugging && nInspireBonus != 0)
+    {
+        CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
+        CExoString sBonus;
+        sBonus.Format(" + %d (Inspire Followers Bonus)", nInspireBonus);
+        GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText = sDebug + sBonus;
+    }
+
+    int nForm = 0;
+    int nFormBonus = 0;
+    if (m_pCreature->IsWieldingLightsaber())
+    {
+        switch (m_pCreature->m_n1110)
+        {
+        case CSWSpell::FORM_SABER_I_SHII_CHO:
+            nForm = CSWSpell::FORM_SABER_I_SHII_CHO;
+            nFormBonus = 1;
+            break;
+        case CSWSpell::FORM_SABER_II_MAKASHI:
+            if (pTarget != NULL && pTarget->IsWieldingLightsaber())
+            {
+                nFormBonus = 3;
+                nForm = CSWSpell::FORM_SABER_II_MAKASHI;
+            }
+            break;
+        case CSWSpell::FORM_SABER_V_SHIEN:
+            nFormBonus = 2;
+            nForm = CSWSpell::FORM_SABER_V_SHIEN;
+            break;
+        case CSWSpell::FORM_SABER_VI_NIMAN:
+            nForm = CSWSpell::FORM_SABER_VI_NIMAN;
+            nFormBonus = 1;
+            break;
+        }
+    }
+    pAttack->m_Extra1.m_nUnknown28 = nForm;
+    pAttack->m_Extra1.m_nUnknown2C += nFormBonus;
+    nAttackBonus += nFormBonus;
+    if (g_bEnableCombatDebugging && nFormBonus != 0)
+    {
+        CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
+        CExoString sBonus;
+        sBonus.Format(" + %d", nFormBonus);
         GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText = sDebug + sBonus;
     }
 
@@ -1399,14 +1876,14 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         nEffectAttackBonus = GetCreature()->GetTotalEffectBonus(
             CSWSCreature::EFFECT_BONUS_ATTACK, pTarget->AsSWSObject(), nCapped, 0, 0, 0, 0,
             CSWSCreature::EFFECT_BONUS_FILTER_ALL,
-            CSWSCreature::EFFECT_BONUS_FILTER_ALL, 0);
+            CSWSCreature::EFFECT_BONUS_FILTER_ALL, 0, NULL);
     }
     else
     {
         nEffectAttackBonus = GetCreature()->GetTotalEffectBonus(
             CSWSCreature::EFFECT_BONUS_ATTACK, NULL, nCapped, 0, 0, 0, 0,
             CSWSCreature::EFFECT_BONUS_FILTER_ALL,
-            CSWSCreature::EFFECT_BONUS_FILTER_ALL, 0);
+            CSWSCreature::EFFECT_BONUS_FILTER_ALL, 0, NULL);
     }
     nAttackBonus += nEffectAttackBonus;
     pAttack->m_Extra1.m_nEffectAttackBonus = nEffectAttackBonus;
@@ -1415,6 +1892,30 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
         CExoString sBonus;
         sBonus.Format(" + %d (Effect Attack Bonus)", nEffectAttackBonus);
+        GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText = sDebug + sBonus;
+    }
+
+    int nCharismaBonus = 0;
+    if (m_pCreature->m_bInParty && !m_bIsPC)
+    {
+        CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
+        int nCharacters = pParty->GetNumCharacters();
+        for (int i = 0; i < nCharacters; ++i)
+        {
+            CSWSCreatureStats* pStats = pParty->GetCharacter(i)->GetServerCreature()->m_pStats;
+            if (pStats->m_bIsPC)
+            {
+                nCharismaBonus = pStats->m_nCharismaModifier;
+            }
+        }
+    }
+    pAttack->m_Extra1.m_nUnknown27 += nCharismaBonus;
+    nAttackBonus += nCharismaBonus;
+    if (g_bEnableCombatDebugging && nCharismaBonus != 0)
+    {
+        CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
+        CExoString sBonus;
+        sBonus.Format(" + %d (PC Charisma Attack Bonus)", nCharismaBonus);
         GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText = sDebug + sBonus;
     }
     return nAttackBonus;
@@ -5323,42 +5824,43 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
     while (GetExperience() >= (unsigned long)g_pRules->GetExperienceForLevel(GetLevel(0)))
     {
         unsigned char nClassLevel = GetClassLevel(nMultiClass, 0) + 1;
+        unsigned char nLevel = GetLevel(0) + 1;
         CSWLevelStats* pLevelStats = new CSWLevelStats;
         pLevelStats->m_nClass = nClass;
-        if (nClassLevel % 4 == 0)
+        if (nLevel % 4 == 0)
         {
             pLevelStats->m_nAbilityIncrease = pClass->m_nPrimaryAbility;
         }
         pLevelStats->m_nHitDie = pClass->GetHitDie();
         pLevelStats->m_nForceDie = pClass->GetForceDie();
 
-        int nSkillPoints = m_nSkillPoints;
-        if (nClassLevel == 1)
+        int nPointsLeft = m_nSkillPoints;
+        if (nLevel == 1)
         {
-            nSkillPoints += 4 * max(GetINTMod() + pClass->GetSkillPointBase() / 2, 1);
+            nPointsLeft += 4 * max(pClass->GetSkillPointBase() + (char)CalcStatModifier(m_nIntelligenceBase), 1);
         }
         else
         {
-            nSkillPoints += max((pClass->GetSkillPointBase() + GetINTMod()) / 2, 1);
+            nPointsLeft += max(pClass->GetSkillPointBase() + (char)CalcStatModifier(m_nIntelligenceBase), 1);
         }
 
         int nRecommended = 1;
         int bPlayer = GetIsPC() &&
             g_pAppManager->GetServerExoApp()->GetPartyTable()->m_nControlledNPC == -1;
-        while (nSkillPoints > 0)
+        while (nPointsLeft > 0)
         {
             if (nRecommended > g_pRules->m_nNumSkills)
                 break;
             int nSkill = pClass->GetRecommendedSkill(nRecommended);
             if (nSkill != -1)
             {
-                unsigned char nMaxRank = nClassLevel + 3;
+                unsigned char nMaxRank = nLevel + 3;
                 CSWSkill* pSkill = &g_pRules->m_pSkills[(unsigned short)nSkill];
                 if (pSkill != NULL &&
                     (pSkill->m_bAllClassesCanUse || pClass->IsSkillUseable(nSkill)))
                 {
                     int bClassSkill;
-                    if (pClass->IsSkillClassSkill(nSkill))
+                    if (pClass->IsSkillClassSkill(nSkill) || HasClassSkillFeat(nSkill))
                         bClassSkill = 1;
                     else
                     {
@@ -5366,21 +5868,32 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
                         nMaxRank /= 2;
                     }
                     int nRanks = nMaxRank - GetSkillRank(nSkill, NULL, 1);
-                    unsigned short nRace;
-                    if ((bPlayer || (pSkill->m_bNPCCanUse &&
-                        ((nRace = m_nRace) != CSWRace::CRACE_DROID || pSkill->m_bDroidCanUse))) &&
-                        nRanks > 0)
+                    int bCanUse = bPlayer;
+                    if (!bCanUse)
+                    {
+                        int bG0T0 = 0;
+                        if (nSkill == CSWSkill::SKILL_STEALTH && GetCreature()->GetTag().CompareNoCase("g0t0"))
+                        {
+                            bG0T0 = 1;
+                        }
+                        if (pSkill->m_bNPCCanUse &&
+                            (m_nRace != CSWRace::CRACE_DROID || pSkill->m_bDroidCanUse || bG0T0))
+                        {
+                            bCanUse = 1;
+                        }
+                    }
+                    if (bCanUse && nRanks > 0)
                     {
                         int nRankChange;
                         if (bClassSkill)
                         {
-                            nRankChange = (unsigned char)min(nRanks, nSkillPoints);
-                            nSkillPoints -= nRankChange;
+                            nRankChange = (unsigned char)min(nRanks, nPointsLeft);
+                            nPointsLeft -= nRankChange;
                         }
                         else
                         {
-                            nRankChange = (unsigned char)min(nRanks, nSkillPoints / 2);
-                            nSkillPoints -= 2 * nRankChange;
+                            nRankChange = (unsigned char)min(nRanks, nPointsLeft / 2);
+                            nPointsLeft -= 2 * nRankChange;
                         }
                         pLevelStats->SetSkillRankChange(nSkill, nRankChange);
                     }
@@ -5388,35 +5901,138 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
             }
             ++nRecommended;
         }
-        pLevelStats->m_nSkillPoints = nSkillPoints;
+        pLevelStats->m_nSkillPoints = nPointsLeft;
 
-        unsigned char nGrantedLevel;
+        int nJediLevel = 0;
+        for (int nIndex = 0; nIndex < GetNumClasses(); ++nIndex)
+        {
+            if (CSWClass::IsJedi(GetClass(nIndex)))
+            {
+                if (nIndex == (unsigned char)(GetNumClasses() - 1))
+                {
+                    nJediLevel += GetClassLevel(nIndex, 0) + 1;
+                }
+                else
+                {
+                    nJediLevel += GetClassLevel(nIndex, 0);
+                }
+            }
+        }
+
         for (int nFeat = 0; nFeat < g_pRules->m_nNumFeats; ++nFeat)
         {
-            if (pClass->IsGrantedFeat(nFeat, nGrantedLevel) && nGrantedLevel == nClassLevel)
-                AddFeat(nFeat);
+            unsigned char nGrantedLevel;
+            if (pClass->IsGrantedFeat(nFeat, nGrantedLevel))
+            {
+                if (nFeat < CSWFeat::FEAT_UNARMED_SPECIALIST_I || nFeat > CSWFeat::FEAT_UNARMED_SPECIALIST_VIII)
+                {
+                    if (nGrantedLevel == nClassLevel)
+                    {
+                        CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
+                        if (GetCreature()->GetTag().CompareNoCase("baodur") && pFeat != NULL && pFeat->m_bBaoDur == 0xFF)
+                        {
+                            continue;
+                        }
+                        if (GetCreature()->GetTag().CompareNoCase("kreia") && pFeat != NULL && pFeat->m_bKreia == 0xFF)
+                        {
+                            continue;
+                        }
+                        AddFeat(nFeat);
+                    }
+                }
+                else if (CSWClass::IsJedi(GetClass(GetNumClasses() - 1)) && nGrantedLevel == nJediLevel)
+                {
+                    AddFeat(nFeat);
+                }
+            }
+            else
+            {
+                unsigned char nNPCLevel;
+                if (GetCreature()->GetTag().CompareNoCase("handmaiden"))
+                {
+                    CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
+                    if (pFeat == NULL)
+                    {
+                        continue;
+                    }
+                    nNPCLevel = pFeat->m_bHandmaiden;
+                }
+                else if (GetCreature()->GetTag().CompareNoCase("baodur"))
+                {
+                    CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
+                    if (pFeat == NULL)
+                    {
+                        continue;
+                    }
+                    nNPCLevel = pFeat->m_bBaoDur;
+                }
+                else if (GetCreature()->GetTag().CompareNoCase("hanharr"))
+                {
+                    CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
+                    if (pFeat == NULL)
+                    {
+                        continue;
+                    }
+                    nNPCLevel = pFeat->m_bHanharr;
+                }
+                else if (GetCreature()->GetTag().CompareNoCase("hk47"))
+                {
+                    CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
+                    if (pFeat == NULL)
+                    {
+                        continue;
+                    }
+                    nNPCLevel = pFeat->m_bHK47;
+                }
+                else if (GetCreature()->GetTag().CompareNoCase("g0t0"))
+                {
+                    CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
+                    if (pFeat == NULL)
+                    {
+                        continue;
+                    }
+                    nNPCLevel = pFeat->m_bG0T0;
+                }
+                else if (GetCreature()->GetTag().CompareNoCase("atton"))
+                {
+                    CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
+                    if (pFeat == NULL)
+                    {
+                        continue;
+                    }
+                    nNPCLevel = pFeat->m_bAtton;
+                }
+                else
+                {
+                    continue;
+                }
+                if (nNPCLevel > 0 && nNPCLevel == nLevel)
+                {
+                    AddFeat(nFeat);
+                }
+            }
         }
 
         unsigned char nNormalFeats, nBonusFeats;
         CalcLevelUpNumberFeats(nClass, nNormalFeats, nBonusFeats);
-        int nLeft = nNormalFeats + nBonusFeats;
+        nPointsLeft = nNormalFeats + nBonusFeats;
         nRecommended = 1;
-        int nNumFeats = g_pRules->m_nNumFeats;
+        int nNumEntries = g_pRules->m_nNumFeats;
         lstFeats.RemoveAll(0);
-        while (nLeft > 0)
+        while (nPointsLeft > 0)
         {
-            if (nRecommended > nNumFeats)
+            if (nRecommended > nNumEntries)
                 break;
             unsigned short nFeat = pClass->GetRecommendedFeat(nRecommended);
             if (nFeat != -1)
             {
                 CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
-                if (pFeat != NULL && pFeat->m_nMinCharLevel <= nClassLevel &&
+                if (pFeat != NULL && pFeat->m_nMinCharLevel <= nLevel &&
                     CanChooseFeat(nFeat, nNormalFeats, nBonusFeats, &lstFeats, 1))
                 {
                     pLevelStats->AddFeat(nFeat);
                     lstFeats.Add(nFeat);
-                    --nLeft;
+                    --nPointsLeft;
                 }
             }
             ++nRecommended;
@@ -5424,21 +6040,168 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
 
         if (pClass->m_bSpellCaster)
         {
-            nLeft = ComputeNumberKnownSpellsLeft(nMultiClass, 1);
-            int nNumSpells = g_pRules->m_pSpellArray->GetNumSpells();
+            int nSpellsLeft = ComputeNumberKnownSpellsLeft(nMultiClass, 1);
+            nPointsLeft = nSpellsLeft;
+            nNumEntries = g_pRules->m_pSpellArray->GetNumSpells();
             nRecommended = 1;
             lstSpells.RemoveAll(0);
-            while (nLeft > 0)
+            for (unsigned char nIndex = 0; nIndex < GetNumClasses(); ++nIndex)
             {
-                if (nRecommended > nNumSpells)
+                unsigned long nSpell;
+                switch (GetClass(nIndex))
+                {
+                case CLASS_TYPE_JEDIGUARDIAN:
+                    switch (nJediLevel)
+                    {
+                    case 11:
+                        nSpell = CSWSpell::FORM_SABER_I_SHII_CHO;
+                        break;
+                    case 13:
+                        nSpell = CSWSpell::FORM_SABER_III_SORESU;
+                        break;
+                    case 14:
+                        nSpell = CSWSpell::FORM_FORCE_I_FOCUS;
+                        break;
+                    case 12:
+                        nSpell = CSWSpell::FORM_SABER_II_MAKASHI;
+                        break;
+                    default:
+                        continue;
+                    }
+                    break;
+                case CLASS_TYPE_JEDICONSULAR:
+                    switch (nJediLevel)
+                    {
+                    case 11:
+                        nSpell = CSWSpell::FORM_SABER_I_SHII_CHO;
+                        break;
+                    case 14:
+                        nSpell = CSWSpell::FORM_SABER_III_SORESU;
+                        break;
+                    case 12:
+                        nSpell = CSWSpell::FORM_FORCE_I_FOCUS;
+                        break;
+                    case 13:
+                        nSpell = CSWSpell::FORM_SABER_II_MAKASHI;
+                        break;
+                    default:
+                        continue;
+                    }
+                    break;
+                case CLASS_TYPE_JEDISENTINEL:
+                    switch (nJediLevel)
+                    {
+                    case 11:
+                        nSpell = CSWSpell::FORM_SABER_I_SHII_CHO;
+                        break;
+                    case 12:
+                        nSpell = CSWSpell::FORM_SABER_III_SORESU;
+                        break;
+                    case 13:
+                        nSpell = CSWSpell::FORM_FORCE_I_FOCUS;
+                        break;
+                    case 14:
+                        nSpell = CSWSpell::FORM_SABER_II_MAKASHI;
+                        break;
+                    default:
+                        continue;
+                    }
+                    break;
+                case CLASS_TYPE_JEDIWATCHMAN:
+                case CLASS_TYPE_SITHASSASSIN:
+                    switch (nClassLevel)
+                    {
+                    case 1:
+                        nSpell = CSWSpell::FORCE_POWER_FORCE_CAMOUFLAGE;
+                        break;
+                    case 7:
+                        nSpell = CSWSpell::FORCE_POWER_IMPROVED_FORCE_CAMOUFLAGE;
+                        break;
+                    case 13:
+                        nSpell = CSWSpell::FORCE_POWER_MASTER_FORCE_CAMOUFLAGE;
+                        break;
+                    default:
+                        continue;
+                    }
+                    break;
+                case CLASS_TYPE_SITHLORD:
+                    switch (nClassLevel)
+                    {
+                    case 1:
+                        nSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_I;
+                        break;
+                    case 5:
+                        nSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_II;
+                        break;
+                    case 9:
+                        nSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_III;
+                        break;
+                    case 13:
+                        nSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_IV;
+                        break;
+                    case 17:
+                        nSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_V;
+                        break;
+                    default:
+                        continue;
+                    }
+                    break;
+                case CLASS_TYPE_JEDIMASTER:
+                    switch (nClassLevel)
+                    {
+                    case 1:
+                        nSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_I;
+                        break;
+                    case 5:
+                        nSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_II;
+                        break;
+                    case 9:
+                        nSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_III;
+                        break;
+                    case 13:
+                        nSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_IV;
+                        break;
+                    case 17:
+                        nSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_V;
+                        break;
+                    default:
+                        continue;
+                    }
+                    break;
+                case CLASS_TYPE_SITHMARAUDER:
+                    switch (nClassLevel)
+                    {
+                    case 1:
+                        nSpell = CSWSpell::FORCE_POWER_FURY;
+                        break;
+                    case 5:
+                        nSpell = CSWSpell::FORCE_POWER_IMPROVED_FURY;
+                        break;
+                    case 9:
+                        nSpell = CSWSpell::FORCE_POWER_MASTER_FURY;
+                        break;
+                    default:
+                        continue;
+                    }
+                    break;
+                default:
+                    continue;
+                }
+                pLevelStats->m_lstSpellsAdded[0].Add(nSpell);
+                lstSpells.Add(nSpell);
+                ++nSpellsLeft;
+            }
+            while (nPointsLeft > 0)
+            {
+                if (nRecommended > nNumEntries)
                     break;
                 unsigned long nSpell = (unsigned short)pClass->GetRecommendedSpell(
                     GetSimpleAlignmentGoodEvil() != ALIGNMENT_EVIL, nRecommended);
-                if (nSpell != -1 && CanChooseSpell(nSpell, nLeft, &lstSpells, 1))
+                if (nSpell != -1 && CanChooseSpell(nSpell, nSpellsLeft, &lstSpells, 1))
                 {
                     pLevelStats->m_lstSpellsAdded[0].Add(nSpell);
                     lstSpells.Add(nSpell);
-                    --nLeft;
+                    --nPointsLeft;
                 }
                 ++nRecommended;
             }
@@ -5446,6 +6209,22 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
 
         if (!ValidateLevelUp(pLevelStats))
             delete pLevelStats;
+    }
+
+    if (m_pCreature->m_bPlayerCreated)
+    {
+        for (int i = 0; i < 12; i++)
+        {
+            unsigned long oidNPC = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetNPCObject(i, 0, 1);
+            if (oidNPC != OBJECT_INVALID)
+            {
+                CSWSCreature* pNPC = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidNPC);
+                if (pNPC != NULL)
+                {
+                    pNPC->HandleAlignmentInfluence();
+                }
+            }
+        }
     }
 
     if (bFeedback)

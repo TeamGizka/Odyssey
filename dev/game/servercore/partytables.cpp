@@ -698,9 +698,9 @@ int CSWPartyTable::LoadTableInfo()
             pGFF->ReadFieldDWORD(&stTop, "PT_ITEM_COMPONENT", bSuccess, 0);
         m_nItemChemical =
             pGFF->ReadFieldDWORD(&stTop, "PT_ITEM_CHEMICAL", bSuccess, 0);
-        m_nSwoop1 = pGFF->ReadFieldDWORD(&stTop, "PT_SWOOP1", bSuccess, 0);
-        m_nSwoop2 = pGFF->ReadFieldDWORD(&stTop, "PT_SWOOP2", bSuccess, 0);
-        m_nSwoop3 = pGFF->ReadFieldDWORD(&stTop, "PT_SWOOP3", bSuccess, 0);
+        m_anSwoopUpgrade[0] = pGFF->ReadFieldDWORD(&stTop, "PT_SWOOP1", bSuccess, 0);
+        m_anSwoopUpgrade[1] = pGFF->ReadFieldDWORD(&stTop, "PT_SWOOP2", bSuccess, 0);
+        m_anSwoopUpgrade[2] = pGFF->ReadFieldDWORD(&stTop, "PT_SWOOP3", bSuccess, 0);
         m_nXPPool = pGFF->ReadFieldINT(&stTop, "PT_XP_POOL", bSuccess, 0);
         bSuccess = 1;
         m_nPlayedSeconds =
@@ -2217,9 +2217,9 @@ void CSWPartyTable::SaveTableInfo(const CExoString& sAlias)
         pGFF->WriteFieldDWORD(&stTop, m_nGold, "PT_GOLD");
         pGFF->WriteFieldDWORD(&stTop, m_nItemComponent, "PT_ITEM_COMPONENT");
         pGFF->WriteFieldDWORD(&stTop, m_nItemChemical, "PT_ITEM_CHEMICAL");
-        pGFF->WriteFieldDWORD(&stTop, m_nSwoop1, "PT_SWOOP1");
-        pGFF->WriteFieldDWORD(&stTop, m_nSwoop2, "PT_SWOOP2");
-        pGFF->WriteFieldDWORD(&stTop, m_nSwoop3, "PT_SWOOP3");
+        pGFF->WriteFieldDWORD(&stTop, m_anSwoopUpgrade[0], "PT_SWOOP1");
+        pGFF->WriteFieldDWORD(&stTop, m_anSwoopUpgrade[1], "PT_SWOOP2");
+        pGFF->WriteFieldDWORD(&stTop, m_anSwoopUpgrade[2], "PT_SWOOP3");
         pGFF->WriteFieldINT(&stTop, m_nXPPool, "PT_XP_POOL");
         pGFF->WriteFieldDWORD(&stTop, m_nPlayedSeconds, "PT_PLAYEDSECONDS");
         pGFF->WriteFieldINT(&stTop, m_nControlledNPC, "PT_CONTROLLED_NPC");
