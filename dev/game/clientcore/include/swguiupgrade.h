@@ -331,6 +331,86 @@ public:
     virtual void OnPanelAdded();
 };
 
+class CSWGuiCreateMedicalItem : public CSWGuiPanel
+{
+public:
+    enum { STRREF_INFINITE = 41951 };
+
+    int m_n68;
+    CExoArrayList<CSWGuiStoreItemEntry*> m_lStoreEntries;
+    CExoArrayList<CSWGuiStoreItemEntry*> m_lInventoryEntries;
+    CSWGuiLabel m_lbl84;
+    CSWGuiLabel m_lbl1CC;
+    CSWGuiLabel m_lbl314;
+    CSWGuiLabel m_lbl45C;
+    CSWGuiLabel m_lbl5A4;
+    CSWGuiLabel m_lbl6EC;
+    CSWGuiLabel m_lbl834;
+    CSWGuiLabel m_lblDescription;
+    CSWGuiLabel m_lblTitle;
+    CSWGuiLabel m_lblTitle2;
+    CSWGuiLabel m_lblRelatedSkill;
+    CSWGuiListBox m_lbxDescriptionInv;
+    CSWGuiButton m_btnAccept;
+    CSWGuiButton m_btnCancel;
+    CSWGuiButton m_btnExamine;
+    CSWGuiLabel m_alblBars[3];
+    CSWGuiButton m_abtnCreateFilters[4];
+    CSWGuiLabel m_lblCost;
+    CSWGuiLabel m_lblCostValue;
+    CSWGuiLabel m_lblStock;
+    CSWGuiLabel m_lblStockValue;
+    CSWGuiLabel m_lblRanalog;
+    CSWGuiLabel m_lblCredits;
+    CSWGuiLabel m_lblCreditsValue;
+    CSWGuiListBox m_lbxStoreItems;
+    CSWGuiListBox m_lbxInventoryItems;
+    CSWGuiListBox m_lbxDescription;
+    int m_n33DC;
+    int m_n33E0;
+    int m_nChemicals;
+    int m_n33E8;
+    unsigned long m_nStoreId;
+    unsigned long m_nCreatureId;
+    float m_fRepairFactor;
+    int m_n33F8;
+    unsigned long m_oidCreature;
+    CSWSStore* m_pStore;
+    int m_nCreateFilter;
+    int m_bBuyMode;
+    int m_n340C;
+
+    void PopulateStore();
+    void CloseChemical(CSWGuiControl*);
+    void UpdateCreateFilters();
+    unsigned long GetItemBuyValue(CSWSItem*);
+    virtual void HandleInputEvent(int, int);
+    void BuyItem(CSWSItem*);
+    void BuyItemCallback(CSWGuiControl*);
+    void SetDescription(const CExoString&);
+    void PopulateInventoryItemListBox();
+    void OnControlStoreAButton(CSWGuiControl*);
+    void OnControlEntered(CSWGuiControl*);
+    void SellItem(CSWSItem*);
+    void SellItemCallback(CSWGuiControl*);
+    void ShowSellGUI();
+    void OnControlInvAButton(CSWGuiControl*);
+    void DeleteItemEntries();
+    void OnAcceptPicked(CSWGuiControl*);
+    ~CSWGuiCreateMedicalItem();
+    virtual void OnPanelRemoved();
+    int CreateItemEntry(int&, CExoArrayList<CSWGuiControl*>&, unsigned long,
+                        int, CExoString);
+    void PopulateStoreItemListBox();
+    void ShowBuyGUI();
+    void SetItemList();
+    void OnCreateFilterPicked(CSWGuiControl*);
+    void OnControlXButton(CSWGuiControl*);
+    void InitializeStoreType();
+    CSWGuiCreateMedicalItem(CSWGuiManager*, unsigned long);
+    virtual void OnPanelAdded();
+};
+
 class CSWUpgradeItemEntry : public CSWGuiButton
 {
 public:

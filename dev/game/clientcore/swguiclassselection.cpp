@@ -23,12 +23,12 @@
 #include <stdlib.h>
 
 CSWGuiClassType CSWGuiClassSelection::CHAR_TYPES[6] = {
-    {CSWClass::CCLASS_SCOUNDREL, 0, 85, 0, 32109},
-    {CSWClass::CCLASS_SCOUT, 0, 85, 0, 32110},
-    {CSWClass::CCLASS_SOLDIER, 0, 85, 0, 32111},
-    {CSWClass::CCLASS_SOLDIER, 1, 83, 0, 32111},
-    {CSWClass::CCLASS_SCOUT, 1, 83, 0, 32110},
-    {CSWClass::CCLASS_SCOUNDREL, 1, 83, 0, 32109}
+    {CSWClass::CCLASS_JEDICONSULAR, 0, 85, 0, 48031},
+    {CSWClass::CCLASS_JEDISENTINEL, 0, 85, 0, 48032},
+    {CSWClass::CCLASS_JEDIGUARDIAN, 0, 85, 0, 48033},
+    {CSWClass::CCLASS_JEDIGUARDIAN, 1, 83, 0, 48033},
+    {CSWClass::CCLASS_JEDISENTINEL, 1, 83, 0, 48032},
+    {CSWClass::CCLASS_JEDICONSULAR, 1, 83, 0, 48031}
 };
 // PC 0x0074A8B0
 CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
@@ -364,12 +364,12 @@ void CSWGuiClassSelection::OnEnterButton(CSWGuiControl* pControl)
             sClass = g_pTlkTable->GetSimpleString(STRREF_FEMALE);
         }
 
-        if (CHAR_TYPES[i].m_nClass == CSWClass::CCLASS_SCOUNDREL)
+        if (CHAR_TYPES[i].m_nClass == CSWClass::CCLASS_JEDICONSULAR)
         {
             sClass = sClass + " "
                 + g_pTlkTable->GetSimpleString(STRREF_SCOUNDREL);
         }
-        else if (CHAR_TYPES[i].m_nClass == CSWClass::CCLASS_SCOUT)
+        else if (CHAR_TYPES[i].m_nClass == CSWClass::CCLASS_JEDISENTINEL)
         {
             sClass = sClass + " "
                 + g_pTlkTable->GetSimpleString(STRREF_SCOUT);

@@ -299,6 +299,10 @@ public:
     void HideStoreGui();
     void ShowStoreGui(unsigned long oidStore, unsigned long oidCreature);
     void HideUpgradeScreen();
+    void ShowChemicalUpgradeScreen(unsigned long oidCharacter);
+    void HideChemicalUpgradeScreen();
+    void ShowSwoopUpgradeScreen(unsigned long nUpgrade);
+    void HideSwoopUpgradeScreen();
     void DisplayDeathMessage();
     void RemoveDeathMessage(bool bLoading);
     void RemoveGUIPopUps();

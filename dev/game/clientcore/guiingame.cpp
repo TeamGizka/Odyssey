@@ -5556,6 +5556,31 @@ void CGuiInGame::ShowUpgradeScreen(unsigned long oidItem, unsigned long oidChara
         }
     }
 }
+// PC 0x00681080
+void CGuiInGame::ShowChemicalUpgradeScreen(unsigned long oidCharacter)
+{
+    GUIINGAME_TRACE();
+    if (m_bItemCreateMenuAvailable != 0)
+    {
+        if (m_pGuiManager != 0)
+        {
+            if (m_pChemicalUpgradeScreen == 0)
+            {
+                g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL_BUT_MUSIC);
+                if (m_bPaused == 0)
+                {
+                    g_pAppManager->m_pClientExoApp->GetSWCMessage()->
+                        SendPlayerToServerInput_TogglePauseRequest();
+                }
+                m_pChemicalUpgradeScreen =
+                    new CSWGuiCreateMedicalItem(m_pGuiManager, oidCharacter);
+                m_pGuiManager->AddPanel(m_pChemicalUpgradeScreen,
+                                        CSWGuiManager::PANEL_MODE_MODAL, 1);
+                g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GUI, 1);
+            }
+        }
+    }
+}
 // PC 0x00681170
 void CGuiInGame::HideUpgradeScreen()
 {
@@ -5581,6 +5606,31 @@ void CGuiInGame::HideUpgradeScreen()
                 pUpgradeScreen->m_bDeferredRemoval = 0;
                 pUpgradeScreen->m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
                 m_pUpgradeScreen = 0;
+            }
+        }
+    }
+}
+// PC 0x00681200
+void CGuiInGame::HideChemicalUpgradeScreen()
+{
+    GUIINGAME_TRACE();
+    if (m_bItemCreateMenuAvailable != 0)
+    {
+        if (m_pGuiManager != 0)
+        {
+            if (m_pChemicalUpgradeScreen != 0)
+            {
+                if (m_bPaused == 0)
+                {
+                    g_pAppManager->m_pClientExoApp->GetSWCMessage()->
+                        SendPlayerToServerInput_TogglePauseRequest();
+                }
+                g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GAME, 1);
+                g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
+                CSWGuiCreateMedicalItem* pChemicalUpgradeScreen = m_pChemicalUpgradeScreen;
+                pChemicalUpgradeScreen->m_bDeferredRemoval = 0;
+                pChemicalUpgradeScreen->m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
+                m_pChemicalUpgradeScreen = 0;
             }
         }
     }
