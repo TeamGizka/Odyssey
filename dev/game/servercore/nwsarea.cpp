@@ -2901,7 +2901,7 @@ void CSWSArea::SetCurrentWeather(unsigned char nWeather, int bEnabled)
                 {
                     g_pAppManager->GetServerExoApp()->GetSWSMessage()
                         ->SendServerToPlayerArea_Weather(pPlayer, nWeather,
-                                                        bEnabled);
+                                                        bEnabled, m_nChanceRain);
                 }
             }
             pPlayer = (CSWSPlayer*)pPlayerList->GetNext(pNode);

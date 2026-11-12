@@ -1326,7 +1326,7 @@ public:
     int SendServerToPlayerModule_EndStartNewModule(int bSuccess);
     int SendServerToPlayerArea_Weather(CSWSPlayer* pPlayer,
                                        unsigned char nWeather, int bEnabled,
-                                       unsigned char nUnknown = 0);
+                                       unsigned char nUnknown);
     int SendServerToPlayerPopUpGUIPanel(unsigned long oidPC, int nGUIPanel,
                                         int bRespawnButtonEnabled,
                                         int bWaitForHelpButtonEnabled,

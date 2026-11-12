@@ -676,7 +676,7 @@ void CSWSTrigger::EventHandler(unsigned long nEventId, unsigned long oidCaller,
         else if (pEvent->m_nType == CSWSSCRIPTEVENT_EVENTTYPE_USER_DEFINED)
         {
             m_nCustomScriptEventId = pEvent->GetInteger(0);
-            g_pVirtualMachine->RunScript(GetScriptName(SCRIPT_USERDEFINE), oidCaller, 1);
+            g_pVirtualMachine->RunScript(GetScriptName(SCRIPT_USERDEFINE), m_nId, 1);
         }
         else if (pEvent->m_nType == CSWSSCRIPTEVENT_EVENTTYPE_ON_DISARM)
         {

@@ -893,7 +893,8 @@ unsigned char CSWSPlaceable::GetOpenLockDC()
         nDC = m_nOpenLockDC;
         if (nDC + nFixedModifier >= 0)
         {
-            return nDC + nFixedModifier;
+            nDC += nFixedModifier;
+            return nDC;
         }
         return 0;
     }
