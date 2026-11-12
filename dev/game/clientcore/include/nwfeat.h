@@ -90,9 +90,9 @@ public:
     enum MeleeAttackACPenalty
     {
         CRITICAL_STRIKE_AC_PENALTY = 5,
-        FLURRY_AC_PENALTY = 4,
-        WHIRLWIND_ATTACK_AC_PENALTY = 1,
-        IMPROVED_FLURRY_AC_PENALTY = 2
+        FLURRY_AC_PENALTY = 2,
+        WHIRLWIND_ATTACK_AC_PENALTY = 0,
+        IMPROVED_FLURRY_AC_PENALTY = 1
     };
 
     enum
