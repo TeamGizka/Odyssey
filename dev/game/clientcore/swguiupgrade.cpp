@@ -5388,6 +5388,8 @@ void CSWGuiSwoopUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
     if (pControl->GetEvent() == GUIEVENT_ACCEPT)
         m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
     CSWUpgradeItemEntry* pEntry = (CSWUpgradeItemEntry*)pControl;
+    if (pEntry == 0)
+        return;
     CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
     CItemRepository* pRepository = pServer->GetPartyTable()->GetPartyItems();
     int nSlot = m_pItemListControl->m_nIndex;

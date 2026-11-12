@@ -5094,7 +5094,11 @@ void CGuiInGame::CleanUpEntryNode()
     m_bComputerCameraShot = 0;
     m_fComputerCameraMicRange = 0;
     m_pDialogFade->ResetFade();
-    if (m_pDialog == 0 || m_pDialog != m_pCameraDialog)
+    if (m_pDialog == 0)
+    {
+        ResetComputerCameraShot();
+    }
+    else if (m_pDialog != m_pCameraDialog)
     {
         ResetComputerCameraShot();
     }
@@ -5115,7 +5119,11 @@ void CGuiInGame::CleanUpReplyNode()
     m_fComputerCameraMicRange = 0;
     m_pDialogFade->ResetFade();
     ClearRepliesData();
-    if (m_pDialog == 0 || m_pDialog != m_pCameraDialog)
+    if (m_pDialog == 0)
+    {
+        ResetComputerCameraShot();
+    }
+    else if (m_pDialog != m_pCameraDialog)
     {
         ResetComputerCameraShot();
     }

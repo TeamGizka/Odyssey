@@ -956,8 +956,10 @@ int CSWGuiStore::CreateItemEntry(int& nEntries,
                                    2 * m_lbxInventoryItems.m_nPadding);
             pNewEntry->AddEvent(GUIEVENT_ACTIVATE, this,
                             (CSWGuiHandler)&CSWGuiStore::OnControlInvAButton);
+#ifdef _XBOX
             pNewEntry->AddEvent(GUIEVENT_ACCEPT, this,
                             (CSWGuiHandler)&CSWGuiStore::OnControlInvAButton);
+#endif
         }
         else
         {
@@ -968,8 +970,10 @@ int CSWGuiStore::CreateItemEntry(int& nEntries,
                                    2 * m_lbxStoreItems.m_nPadding);
             pNewEntry->AddEvent(GUIEVENT_ACTIVATE, this,
                             (CSWGuiHandler)&CSWGuiStore::OnControlStoreAButton);
+#ifdef _XBOX
             pNewEntry->AddEvent(GUIEVENT_ACCEPT, this,
                             (CSWGuiHandler)&CSWGuiStore::OnControlStoreAButton);
+#endif
         }
         pNewEntry->AddEvent(GUIEVENT_MOUSE_ENTER, this,
                         (CSWGuiHandler)&CSWGuiStore::OnControlEntered);
