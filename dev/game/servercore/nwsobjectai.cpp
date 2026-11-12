@@ -47,6 +47,16 @@ static inline CServerExoApp* GetServerExoApp();
 int RenderAi = 0;
 
 int OverrideReputation = CSWSObject::REPUTATION_NO_OVERRIDE;
+// PC 0x005DACE0
+void CSWSCreature::SetPreDialogPosition(Vector vPosition)
+{
+    m_v1208 = vPosition;
+}
+// PC 0x005DAD00
+void CSWSCreature::SetPreDialogOrientation(Vector vOrientation)
+{
+    m_v1214 = vOrientation;
+}
 // PC 0x005DAD20
 unsigned long CSWSObject::GetAcceptableAction(unsigned long nActionType)
 {
@@ -389,7 +399,7 @@ int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
             }
         }
 
-        pTarget->AsSWSCreature();
+        CSWSCreature* pTargetCreature = pTarget->AsSWSCreature();
         unsigned long oidPlayerCreature = g_pAppManager->GetServerExoApp()->GetPlayerCreatureId();
         CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidPlayerCreature);
         if (pPlayer != NULL && GetClientObject() != NULL &&
@@ -478,6 +488,13 @@ int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
             }
 
         }
+        pTargetCreature = pTarget->AsSWSCreature();
+        if (pTargetCreature != NULL && pTargetCreature->m_bInParty)
+        {
+            pTargetCreature->m_n1204 = 1;
+            pTargetCreature->SetPreDialogPosition(pTargetCreature->m_vPosition);
+            pTargetCreature->SetPreDialogOrientation(pTargetCreature->m_vOrientation);
+        }
     }
     else
     {
@@ -486,9 +503,16 @@ int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
             CGameObject* pOriginalLeader = g_pAppManager->GetServerExoApp()->GetGameObject(oidOriginalLeader);
             if (pOriginalLeader != NULL && pOriginalLeader->AsSWSCreature() != NULL)
             {
+                CSWSCreature* pLeaderCreature = pOriginalLeader->AsSWSCreature();
                 Vector vPosition = m_vPosition;
-                Vector vLeaderPosition = pOriginalLeader->AsSWSCreature()->m_vPosition;
-                Vector vOrientation = pOriginalLeader->AsSWSCreature()->m_vOrientation;
+                Vector vLeaderPosition = pLeaderCreature->m_vPosition;
+                Vector vOrientation = pLeaderCreature->m_vOrientation;
+                if (pLeaderCreature->m_bInParty)
+                {
+                    pLeaderCreature->m_n1204 = 1;
+                    pLeaderCreature->SetPreDialogPosition(vLeaderPosition);
+                    pLeaderCreature->SetPreDialogOrientation(vOrientation);
+                }
                 CGameObject* pTarget = g_pAppManager->GetServerExoApp()->GetGameObject(oidTarget);
                 if (pTarget != NULL && pTarget->AsSWSObject() != NULL)
                 {
@@ -1586,8 +1610,6 @@ int CSWSObject::AIActionPlayAnimation(CSWSObjectActionNode* pNode)
                 nSoundDelay = 750;
                 break;
             case CREATURE_ANIMATION_MINE_DISARM_2:
-                nSoundDelay = 750;
-                break;
             case CREATURE_ANIMATION_MINE_DISARM_3:
                 nSoundDelay = 750;
                 break;
@@ -1900,7 +1922,8 @@ int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
                             ACTION_PARAM_FLOAT, &vPosition.m_fX, ACTION_PARAM_FLOAT, &vPosition.m_fY,
                             ACTION_PARAM_FLOAT, &vPosition.m_fZ,
                             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                    AsSWSCreature()->BroadcastVoiceChat(CSWSCreature::VOICE_CHAT_PICK_LOCK);
+                    if (rand() % 100 < 20)
+                        AsSWSCreature()->BroadcastVoiceChat(CSWSCreature::VOICE_CHAT_PICK_LOCK);
                     return ACTION_COMPLETE;
                 }
             }
@@ -2478,7 +2501,7 @@ int CSWSObject::AIActionUseObject(CSWSObjectActionNode* pNode)
                     int bSoundAppType;
                     {
                         CExoString sColumn("SoundAppType");
-                        unsigned char nAppearance = pPlaceable->m_nAppearance;
+                        unsigned long nAppearance = pPlaceable->m_nAppearance;
                         CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
                         C2DA* pPlaceables = p2DArrays->m_pPlaceables;
                         bSoundAppType = pPlaceables->GetINTEntry(nAppearance, sColumn, &nSoundAppType);
@@ -2522,7 +2545,7 @@ int CSWSObject::AIActionUseObject(CSWSObjectActionNode* pNode)
                                     unsigned long nSoundLength = g_pExoSound->Play3DOneShotSound(
                                         cSound, pPlaceable->m_vPosition, 0.0f,
                                         CExoSound::PRIORITY_GROUP_PLACEABLE, 0, 0, 0.0f, 0.0f);
-                                    if (nSoundLength * 0.001f > fDelay)
+                                    if (nSoundLength * 0.001f > fDelay && fDelay != 0.0f)
                                         fDelay = nSoundLength * 0.001f;
                                 }
                                 else
@@ -2558,7 +2581,7 @@ int CSWSObject::AIActionUseObject(CSWSObjectActionNode* pNode)
                 int bSoundAppType;
                 {
                     CExoString sColumn("SoundAppType");
-                    unsigned char nAppearance = pPlaceable->m_nAppearance;
+                    unsigned long nAppearance = pPlaceable->m_nAppearance;
                     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
                     C2DA* pPlaceables = p2DArrays->m_pPlaceables;
                     bSoundAppType = pPlaceables->GetINTEntry(nAppearance, sColumn, &nSoundAppType);
@@ -2601,7 +2624,7 @@ int CSWSObject::AIActionUseObject(CSWSObjectActionNode* pNode)
                                 unsigned long nSoundLength = g_pExoSound->Play3DOneShotSound(
                                     cSound, pPlaceable->m_vPosition, 0.0f,
                                     CExoSound::PRIORITY_GROUP_PLACEABLE, 0, 0, 0.0f, 0.0f);
-                                if (nSoundLength * 0.001f > fDelay)
+                                if (nSoundLength * 0.001f > fDelay && fDelay != 0.0)
                                     fDelay = nSoundLength * 0.001f;
                             }
                             else
@@ -2638,7 +2661,7 @@ int CSWSObject::AIActionUseObject(CSWSObjectActionNode* pNode)
     else if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_ITEM)
     {
         CSWSItem* pItem = pObject->AsSWSItem();
-        if (g_pRules->GetBaseItemArray()->GetBaseItem(pItem->GetBaseItemType())->m_bIsContainer)
+        if (g_pRules->m_pBaseItems->GetBaseItem(pItem->GetBaseItemType())->m_bIsContainer)
         {
             CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(GetId());
             if (pPlayer != NULL)

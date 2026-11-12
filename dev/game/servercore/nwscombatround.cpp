@@ -1895,27 +1895,27 @@ int CSWSCombatRound::CalculateOnHandAttacks(unsigned short nFeat)
     m_nOnHandAttacks = m_pBaseCreature->m_pStats->GetAttacksPerRound();
     m_nOnHandAttacks += GetFunctionalBonusEffectAttacks();
 
-    if (nFeat == 11)
+    if (nFeat == CSWFeat::FEAT_FLURRY)
     {
         m_nOnHandAttacks++;
     }
-    else if (nFeat == 91)
+    else if (nFeat == CSWFeat::FEAT_IMPROVED_FLURRY)
     {
         m_nOnHandAttacks++;
     }
-    else if (nFeat == 53)
+    else if (nFeat == CSWFeat::FEAT_WHIRLWIND_ATTACK)
     {
         m_nOnHandAttacks++;
     }
-    else if (nFeat == 30)
+    else if (nFeat == CSWFeat::FEAT_RAPID_SHOT)
     {
         m_nOnHandAttacks++;
     }
-    else if (nFeat == 92)
+    else if (nFeat == CSWFeat::FEAT_IMPROVED_RAPID_SHOT)
     {
         m_nOnHandAttacks++;
     }
-    else if (nFeat == 26)
+    else if (nFeat == CSWFeat::FEAT_MULTI_SHOT)
     {
         m_nOnHandAttacks++;
     }
@@ -2031,7 +2031,7 @@ int CSWSCombatRound::ResolveChoreographedState(unsigned long oidTarget)
             }
         }
     }
-    else if (m_pBaseCreature->m_pStats->HasFeat(207))
+    else if (m_pBaseCreature->m_pStats->HasFeat(CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS))
     {
         CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
         CGameObject* pObject = pServer->GetGameObject(oidTarget);
@@ -2042,7 +2042,7 @@ int CSWSCombatRound::ResolveChoreographedState(unsigned long oidTarget)
             {
                 bResult = FALSE;
             }
-            else if (pTarget->m_pStats->HasFeat(207))
+            else if (pTarget->m_pStats->HasFeat(CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS))
             {
                 bResult = TRUE;
             }

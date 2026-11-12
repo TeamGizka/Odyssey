@@ -6,6 +6,9 @@
 
 #include "swminigame.h"
 #include "nwcanimbase.h"
+#include "serverexoapp.h"
+#include "nwsobject.h"
+#include "nwscreaturestats.h"
 // PC 0x006176F0
 int CSWVirtualMachineCommands::ExecuteCommandAurPostString(int nCommand,
                                                            int nArgs)
@@ -31,7 +34,6 @@ int CSWVirtualMachineCommands::ExecuteCommandAurPostString(int nCommand,
     {
         return -2001;
     }
-    sString.CStr();
     return 0;
 }
 // PC 0x006176B0
@@ -74,7 +76,8 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetSwoopUpgrade(int nCommand, 
 
     if (g_pVirtualMachine->StackPopInteger(&nSlot) != 0)
     {
-        nUpgrade = g_pAppManager->GetClientExoApp()->GetMiniGame()->m_anSwoopUpgrades[nSlot];
+        int nIndex = nSlot;
+        nUpgrade = g_pAppManager->GetClientExoApp()->GetMiniGame()->m_anSwoopUpgrades[nIndex];
     }
     return g_pVirtualMachine->StackPushInteger(nUpgrade) != 0 ? 0 : -2000;
 }
@@ -222,7 +225,14 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_PlayAnimation(int nCommand,
         {
             nFlags |= 0x20;
         }
-        pObject->PlayAnimation((char*)sAnimation.CStr(), 1.0f, nFlags);
+        if (sAnimation == "")
+        {
+            pObject->PlayAnimation(NULL, 0.0f, 2);
+        }
+        else
+        {
+            pObject->PlayAnimation((char*)sAnimation.CStr(), 1.0f, nFlags);
+        }
     }
     return 0;
 }
@@ -760,20 +770,26 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerPosition(
     int nCommand, int nArgs)
 {
     unsigned long nObjectId;
-    Vector vPosition;
-    CClientExoApp* pApp;
-    CSWTrackFollower* pFollower;
+    Vector vPosition(0.0f, 0.0f, 0.0f);
 
     if (g_pVirtualMachine->StackPopObject(&nObjectId) == 0)
     {
         return -2001;
     }
-    pApp = g_pAppManager->m_pClientExoApp;
-    pFollower =
-        (CSWTrackFollower*)pApp->GetMGOArray()->GetMiniGameObject(nObjectId, SWMG_OBJECT_FOLLOWER);
+    CSWTrackFollower* pFollower =
+        (CSWTrackFollower*)g_pAppManager->GetClientExoApp()->GetMGOArray()->GetMiniGameObject(nObjectId, SWMG_OBJECT_FOLLOWER);
     if (pFollower != NULL)
     {
         vPosition = pFollower->GetPosition();
+    }
+    else
+    {
+        CSWMGObstacle* pObstacle =
+            (CSWMGObstacle*)g_pAppManager->GetClientExoApp()->GetMGOArray()->GetMiniGameObject(nObjectId, SWMG_OBJECT_OBSTACLE);
+        if (pObstacle != NULL)
+        {
+            vPosition = ((Gob*)(CAurObject*)pObstacle->m_pModel)->GetPosition();
+        }
     }
     return g_pVirtualMachine->StackPushVector(vPosition) != 0 ? 0 : -2000;
 }
@@ -1463,15 +1479,17 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetLateralAccelPerSec(
 {
     float fValue;
     float fAccel;
-    CClientExoApp* pApp;
+    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+    CSWSCreature* pCreature = pServerExoApp->GetCreatureByGameObjectID(pServerExoApp->GetPlayerCreatureId());
+    int nDexMod = pCreature->GetStats()->GetDEXMod(0);
 
     if (g_pVirtualMachine->StackPopFloat(&fValue) == 0)
     {
         return -2001;
     }
-    pApp = g_pAppManager->m_pClientExoApp;
+    fValue = (nDexMod * 0.3f + 1.0f) * fValue;
     fAccel = fValue;
-    pApp->GetMiniGame()->m_fLateralAccel = fAccel;
+    g_pAppManager->m_pClientExoApp->GetMiniGame()->m_fLateralAccel = fAccel;
     return 0;
 }
 // PC 0x00619340

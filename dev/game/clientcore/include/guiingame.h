@@ -644,11 +644,8 @@ public:
 #endif
     unsigned long m_oidPostDialogCharacterSwitch;
     unsigned char m_aTutorialWindowsShown[33];
-    unsigned char m_aUnmappedFA9[7];
-#ifdef _XBOX
-
+    unsigned char m_aUnmappedFA9[3];
     int m_bCreditSequenceInProgress;
-#endif
     void StartCreditSequence(const Vector& vColor, const CExoString& sMusic);
     int m_nDialogScrollWait;
     int m_bDialogScrollFinished;

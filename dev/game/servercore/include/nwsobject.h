@@ -2745,6 +2745,8 @@ public:
     void CancelRest(unsigned short nFeedback);
     void Rest(int bFlag);
     void OnEndDialog(CSWSObject* pObject);
+    void SetPreDialogPosition(Vector vPosition);
+    void SetPreDialogOrientation(Vector vOrientation);
     void GetSpikeDetails(CExoArrayList<CSWGuiInterfaceAction>& lstActions,
                          unsigned char nSpikeType);
     void SetLastInstantEquip(unsigned long nSlot, int nValue);
@@ -2842,7 +2844,7 @@ public:
     };
 
     enum EquipItemResult { EQUIP_ITEM_OK = 1, EQUIP_ITEM_REPLACE = 2,
-                           EQUIP_ITEM_REPLACE_HANDS = 3 };
+                           EQUIP_ITEM_REPLACE_HANDS = 3, EQUIP_ITEM_REPLACE_HANDS2 = 4 };
     unsigned char CanEquipItem(CSWSItem* pItem, unsigned long* pnSlot,
                               int bFlag1, int bFlag2, int bFlag3);
     int EquipItem(unsigned long nSlot, CSWSItem* pItem,

@@ -5522,9 +5522,14 @@ int CSWSCreature::CheckItemCNPCRestrictions(CSWSItem* pItem)
     if (m_sTag.CompareNoCase("baodur"))
     {
         int nBaseItem = pItem->m_nBaseItem;
-        if (nBaseItem == 35 || nBaseItem == 36 || nBaseItem == 37 ||
-            nBaseItem == 97 || nBaseItem == 98 || nBaseItem == 99 ||
-            nBaseItem == 100 || nBaseItem == 102)
+        if (nBaseItem == BASE_ITEM_JEDI_ROBE ||
+            nBaseItem == BASE_ITEM_JEDI_KNIGHT_ROBE ||
+            nBaseItem == BASE_ITEM_JEDI_MASTER_ROBE ||
+            nBaseItem == BASE_ITEM_SONIC_GRENADE_TYPE2 ||
+            nBaseItem == BASE_ITEM_ARMOR_ARMD_FLIGHT_SUIT ||
+            nBaseItem == BASE_ITEM_RESTRICTIVE_JEDI_ROBE ||
+            nBaseItem == BASE_ITEM_SLAVE_OUTFIT ||
+            nBaseItem == BASE_ITEM_ARMOR_ZEISON_SHA)
         {
             return 0;
         }

@@ -91,8 +91,8 @@ public:
         SPELL_WOOKIEE_RAGE_I = 271,
         SPELL_WOOKIEE_RAGE_II = 272,
         SPELL_WOOKIEE_RAGE_III = 273,
-        FORCE_POWER_162 = 162,
-        FORCE_POWER_163 = 163
+        FORCE_POWER_FORCE_REPULSION = 162,
+        FORCE_POWER_FORCE_REDIRECTION = 163
     };
 
     static const unsigned char USER_TYPE_FORCE_POWER = 1;

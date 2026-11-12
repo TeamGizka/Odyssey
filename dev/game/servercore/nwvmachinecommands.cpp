@@ -377,8 +377,9 @@ int CSWVirtualMachineCommands::ExecuteCommandForceHeartbeat(int nCommand, int nA
             CGameObjectArray::SUCCESS &&
         pGameObject->AsSWSCreature() != NULL)
     {
-        g_pVirtualMachine->RunScript(&pGameObject->AsSWSCreature()->m_sScripts[CSWSCreature::SCRIPT_HEARTBEAT],
-                                     pGameObject->GetId(), 1);
+        unsigned long oidSelf = pGameObject->GetId();
+        CExoString* pScript = &pGameObject->AsSWSCreature()->m_sScripts[CSWSCreature::SCRIPT_HEARTBEAT];
+        g_pVirtualMachine->RunScript(pScript, oidSelf, 1);
         pGameObject->AsSWSCreature()->ResetHeartbeatTimer();
     }
     return 0;
@@ -404,8 +405,8 @@ int CSWVirtualMachineCommands::ExecuteCommandGetChemical(int nCommand, int nArgs
         CSWSPlaceable* pPlaceable = g_pAppManager->GetServerExoApp()->GetPlaceableByGameObjectID(oidObject);
         if (pPlaceable != NULL && pPlaceable->m_pcItemRepository != NULL)
         {
-            CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(
-                pPlaceable->m_pcItemRepository->FindItemWithBaseItemType(23, 0));
+            unsigned long oidItem = pPlaceable->m_pcItemRepository->FindItemWithBaseItemType(BASE_ITEM_REPEATING_BLASTER, 0);
+            CSWSItem* pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
             if (pItem != NULL)
             {
                 nChemicals = pItem->m_nStackSize;
@@ -469,9 +470,12 @@ int CSWVirtualMachineCommands::ExecuteCommandGetOwnerDemolitionsSkill(int nComma
 int CSWVirtualMachineCommands::ExecuteCommandGetLastForfeitViolation(int nCommand, int nArgs)
 {
     CSWPartyTable* pPartyTable = g_pAppManager->GetServerExoApp()->GetPartyTable();
-    return g_pVirtualMachine->StackPushInteger(pPartyTable != NULL ? pPartyTable->m_nForfeitViolation : 0) != 0
-               ? 0
-               : -2000;
+    if (pPartyTable == NULL)
+    {
+        return g_pVirtualMachine->StackPushInteger(0) != 0 ? 0 : -2000;
+    }
+    int nViolation = pPartyTable->m_nForfeitViolation;
+    return g_pVirtualMachine->StackPushInteger(nViolation) != 0 ? 0 : -2000;
 }
 // PC 0x005BF360
 int CSWVirtualMachineCommands::ExecuteCommandAdjustCreatureAttributes(int nCommand, int nArgs)
@@ -555,7 +559,8 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustCreatureSkills(int nCommand, 
         CSWSCreature* pCreature = pGameObject->AsSWSCreature();
         if (pCreature != NULL && pCreature->m_pStats != NULL)
         {
-            pCreature->m_pStats->SetSkillRank(nSkill, (unsigned char)nAmount + pCreature->m_pStats->GetSkillRank(nSkill, NULL, 1));
+            int nRank = pCreature->m_pStats->GetSkillRank(nSkill, NULL, 1);
+            pCreature->m_pStats->SetSkillRank(nSkill, (unsigned char)(nAmount + nRank));
         }
     }
     return 0;
@@ -864,7 +869,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIsFormActive(int nCommand, int nArg
         }
         CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCreature);
         if (pCreature != NULL && pCreature->m_n1110 == nForm &&
-            (nForm < 258 || nForm > 264 || pCreature->IsWieldingLightsaber() != 0))
+            (nForm < CSWSpell::FORM_SABER_I_SHII_CHO || nForm > CSWSpell::FORM_SABER_VII_JUYO || pCreature->IsWieldingLightsaber() != 0))
         {
             bActive = 1;
         }
@@ -1843,10 +1848,11 @@ int CSWVirtualMachineCommands::ExecuteCommandDisplayDatapad(int nCommand, int nA
             CSWGuiMessageBox* pDatapad = g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pA4;
             pItem->m_lVarTable.SetLocalBoolean(94, 1);
             CExoString sText;
-            pItem->m_sDescIdentified.GetString(0, &sText, 0);
+            CExoLocString* pDescription = &pItem->m_sDescIdentified;
+            pDescription->GetString(0, &sText, 0);
             pDatapad->SetAllowCancel(0);
             pDatapad->m_lblMessage.m_cText.m_cParams.SetAlignment(9);
-            pDatapad->m_lblMessage.m_cText.m_cParams.SetFont(CResRef("fnt_d16x16"));
+            pDatapad->m_lblMessage.m_cText.m_cParams.SetFont("fnt_d16x16");
             pDatapad->SetMessage(sText);
             pDatapad->SetCallback(NULL, NULL, NULL);
             g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(pDatapad, 1, 1);
@@ -2010,7 +2016,7 @@ int CSWVirtualMachineCommands::ExecuteCommandRemoveEffectByID(int nCommand, int 
                 if ((*pEffects)[nEffect]->GetInteger(0) == nEffectID)
                 {
                     CGameEffect* pRemoveEffect = (*pEffects)[nEffect];
-                    pRemoveEffect->m_bExposed = 0;
+                    (*pEffects)[nEffect]->m_bExposed = 0;
                     if (pRemoveEffect != NULL)
                     {
                         g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
@@ -2049,7 +2055,7 @@ int CSWVirtualMachineCommands::ExecuteCommandRemoveEffectByExactMatch(int nComma
                     (*pEffects)[nEffect]->GetInteger(1) == pEffect->GetInteger(1))
                 {
                     CGameEffect* pRemoveEffect = (*pEffects)[nEffect];
-                    pRemoveEffect->m_bExposed = 0;
+                    (*pEffects)[nEffect]->m_bExposed = 0;
                     if (pRemoveEffect != NULL)
                     {
                         g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
@@ -3036,11 +3042,19 @@ int CSWVirtualMachineCommands::ExecuteCommandActionStartConversation(
         g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pBarkBubble;
     if (pBarkBubble != NULL)
     {
-        pBarkBubble->m_nBarkX = nBarkX;
-        pBarkBubble->m_nBarkY = nBarkY;
+        int nY = nBarkY;
+        int nX = nBarkX;
+        pBarkBubble->m_nBarkX = nX;
+        pBarkBubble->m_nBarkY = nY;
     }
-    g_pAppManager->GetClientExoApp()->GetInGameGui()
-        ->m_bUsePartyCharacterForDialog = bUseLeader != 0;
+    if (bUseLeader == 0)
+    {
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bUsePartyCharacterForDialog = 0;
+    }
+    else
+    {
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bUsePartyCharacterForDialog = 1;
+    }
 
     CSWCCreature* pCharacter =
         g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0);
@@ -3111,17 +3125,15 @@ int CSWVirtualMachineCommands::ExecuteCommandActionStartConversation(
                         {
                             pEffect->SetCreator(m_oidObject);
                         }
-                        pEffect->m_nSubType =
-                            (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
-                            CGameEffect::DURATION_TYPE_INSTANTANEOUS;
+                        pEffect->m_nSubType &= ~CGameEffect::DURATION_MASK;
                         pServerMember->AsSWSObject()->ApplyEffect(pEffect, 0, 1);
                     }
                 }
             }
-            unsigned char nAILevel = (unsigned char)pObject->m_nAILevel;
-            if (nAILevel < 3)
+            int nAILevel = pObject->m_nAILevel;
+            if ((unsigned char)nAILevel < 3)
             {
-                pObject->m_c7C = nAILevel;
+                pObject->m_c7C = (unsigned char)nAILevel;
                 g_pAppManager->GetServerExoApp()->GetServerAIMaster()
                     ->SetAILevel(pObject, 3);
             }
@@ -3204,7 +3216,7 @@ int CSWVirtualMachineCommands::ExecuteCommandCreatureFlourishWeapon(int nCommand
                 if (g_pAppManager->GetClientExoApp()->GetPlayerMovementInput())
                 {
                     pClientCreature->GetAnimationBase()->SetOverlayAnimation(
-                        pClientCreature->GetAnimationBase()->ServerToClientAnimation(10157), 1);
+                        pClientCreature->GetAnimationBase()->ServerToClientAnimation(CREATURE_ANIMATION_OVERLAY_DRAW), 1);
                     pClientCreature->m_n464 = 1000;
                     return 0;
                 }
@@ -4881,9 +4893,18 @@ int CSWVirtualMachineCommands::ExecuteCommandDestroyObject(int nCommand, int nAr
         pServerExoApp->GetPartyTable()->GetNPCID(oidDestroy));
     pServerExoApp->GetPartyTable()->ClearPuppet(
         pServerExoApp->GetPartyTable()->GetPUPID(oidDestroy));
-    pServerExoApp->GetServerAIMaster()->AddEventDeltaTime(
-        0, (int)(fDelay * 1000.0f), m_oidObject, oidDestroy,
-        CServerAIMaster::EVENT_DESTROY_OBJECT, (void*)(bNoDrop == 0));
+    if (bNoDrop == 0)
+    {
+        pServerExoApp->GetServerAIMaster()->AddEventDeltaTime(
+            0, (int)(fDelay * 1000.0f), m_oidObject, oidDestroy,
+            CServerAIMaster::EVENT_DESTROY_OBJECT, (void*)1);
+    }
+    else
+    {
+        pServerExoApp->GetServerAIMaster()->AddEventDeltaTime(
+            0, (int)(fDelay * 1000.0f), m_oidObject, oidDestroy,
+            CServerAIMaster::EVENT_DESTROY_OBJECT, (void*)0);
+    }
     return 0;
 }
 // PC 0x005B1FF0
@@ -7796,8 +7817,8 @@ int CSWVirtualMachineCommands::ExecuteCommandBarkString(int nCommand, int nArgs)
     {
         return ERROR_STACK_POP;
     }
-    nBarkY = -1;
     nBarkX = -1;
+    nBarkY = -1;
     if (nArgs >= 3 &&
         (g_pVirtualMachine->StackPopInteger(&nBarkX) == 0 ||
          g_pVirtualMachine->StackPopInteger(&nBarkY) == 0))
@@ -7808,8 +7829,10 @@ int CSWVirtualMachineCommands::ExecuteCommandBarkString(int nCommand, int nArgs)
         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pBarkBubble;
     if (pBarkBubble != NULL)
     {
-        pBarkBubble->m_nBarkX = nBarkX;
-        pBarkBubble->m_nBarkY = nBarkY;
+        int nY = nBarkY;
+        int nX = nBarkX;
+        pBarkBubble->m_nBarkX = nX;
+        pBarkBubble->m_nBarkY = nY;
     }
     nDialogState = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nGlobalDialogState;
     if (nDialogState == 0)
@@ -10612,7 +10635,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetGold(int nCommand, int nArgs)
             pRepository = pPlaceable->m_pcItemRepository;
             if (pRepository != NULL)
             {
-                oidItem = pRepository->FindItemWithBaseItemType(23, 0);
+                oidItem = pRepository->FindItemWithBaseItemType(BASE_ITEM_REPEATING_BLASTER, 0);
                 pServerExoApp = g_pAppManager->m_pServerExoApp;
                 pItem = pServerExoApp->GetItemByGameObjectID(oidItem);
                 if (pItem != NULL)
@@ -12829,11 +12852,11 @@ int CSWVirtualMachineCommands::ExecuteCommandGetModuleName(int nCommand, int nAr
     switch (nCommand)
     {
     case COMMAND_GET_MODULE_NAME:
-        sResult = g_pAppManager->m_pServerExoApp->GetModuleName();
+        sResult = g_pAppManager->GetServerExoApp()->GetModuleName();
         break;
     case COMMAND_GET_MODULE_FILE_NAME:
         {
-            sResult = g_pAppManager->m_pServerExoApp->GetModule()->m_sModuleName;
+            sResult = g_pAppManager->GetServerExoApp()->GetModule()->m_sModuleName;
             int nSeparator = sResult.Find(':', 0);
             if (nSeparator != -1)
             {
@@ -14856,9 +14879,9 @@ int CSWVirtualMachineCommands::ExecuteCommandIsNPCPartyMember(int nCommand,
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
     nResult2 = pServerExoApp->GetPartyTable()->GetIsMember(nNPC);
-    if (nResult2 == 0)
+    if (nResult2 == 0 && g_pAppManager->m_pServerExoApp->GetPartyTable()->m_nControlledNPC == nNPC)
     {
-        nResult2 = g_pAppManager->m_pServerExoApp->GetPartyTable()->m_nControlledNPC == nNPC;
+        nResult2 = 1;
     }
     return g_pVirtualMachine->StackPushInteger(nResult2) != 0 ? 0 : -2000;
 }
@@ -15357,6 +15380,11 @@ int CSWVirtualMachineCommands::ExecuteCommandMoveToPoint(int nCommand,
                         pArea->GetId(), oidTarget, bRun,
                         0.0f, fTimeout, 0, 0, 0, 0, 0, 0, Vector(), 0, 0, 0);
                 }
+                if (pLocation != NULL)
+                {
+                    delete pLocation;
+                }
+                return 0;
             }
         }
     }
@@ -16042,7 +16070,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayMovie(int nCommand, int nArgs)
     g_pAppManager->m_pClientExoApp->HideLoadScreen(0, 1);
 #endif
     CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
-    pClientExoApp->PlayMovie(sMovie, nMovieResult, 0, 0);
+    pClientExoApp->PlayMovie(sMovie, nMovieResult, 0, 0, bKeepMusic != 0);
     g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
     return 0;
 }
@@ -16424,7 +16452,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayOverlayAnimation(int nCommand, 
             CSWCCreature* pClientCreature = pCreature->GetClientCreature();
             if (pClientCreature != NULL)
             {
-                if (nAnimation != 123)
+                if (nAnimation != ANIMATION_FIREFORGET_DIVE_ROLL)
                 {
                     return 0;
                 }
@@ -17839,29 +17867,38 @@ int CSWVirtualMachineCommands::ExecuteCommandShowLevelUpGUI(int nCommand,
 int CSWVirtualMachineCommands::ExecuteCommandShowPartySelection(int nCommand,
                                                                 int nArgs)
 {
-    CExoString sResult;
-    int nResult;
-    int nResult2;
-    CClientExoApp* pClientExoApp;
+    CExoString sExitScript;
+    int nUnknown = 0;
+    int nForceNPC2 = -1;
+    int nForceNPC1 = -1;
 
-    if (g_pVirtualMachine->StackPopString(&sResult) == 0)
+    if (g_pVirtualMachine->StackPopString(&sExitScript) == 0)
     {
         return -2001;
     }
-    if (nArgs == 3)
+    if (nArgs >= 3)
     {
-        if (g_pVirtualMachine->StackPopInteger(&nResult) == 0)
+        if (g_pVirtualMachine->StackPopInteger(&nForceNPC1) == 0)
         {
             return -2001;
         }
-        if (g_pVirtualMachine->StackPopInteger(&nResult2) == 0)
+        else
+        {
+            if (g_pVirtualMachine->StackPopInteger(&nForceNPC2) == 0)
+            {
+                return -2001;
+            }
+        }
+    }
+    if (nArgs >= 4)
+    {
+        if (g_pVirtualMachine->StackPopInteger(&nUnknown) == 0)
         {
             return -2001;
         }
     }
-    pClientExoApp = g_pAppManager->m_pClientExoApp;
-    pClientExoApp->GetInGameGui()->ShowPartySelection(sResult, 1, nResult,
-                                                      nResult2);
+    g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowPartySelection(sExitScript, 1, nForceNPC1,
+                                                                       nForceNPC2);
     return 0;
 }
 // PC 0x005C73B0
@@ -20656,7 +20693,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIsCreditSequenceInProgress(  // PC 
 {
     int bInProgress;
 
-    bInProgress = g_pAppManager->m_pClientExoApp->GetCreditSequenceInProgress();
+    bInProgress = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_bCreditSequenceInProgress;
     return g_pVirtualMachine->StackPushInteger(bInProgress) != 0 ? 0 : -2000;
 }
 // PC 0x005CB190
@@ -22667,9 +22704,8 @@ int CSWVirtualMachineCommands::ExecuteCommandGetNearestObject(int nCommand,
                     if (bMatch)
                     {
                         vDifference = ((CSWSObject*)pGameObject)->m_vPosition - vTarget;
-                        float fDistance = vDifference.m_fZ * vDifference.m_fZ +
-                            vDifference.m_fX * vDifference.m_fX;
-                        fDistance += vDifference.m_fY * vDifference.m_fY;
+                        float fDistance = vDifference.m_fX * vDifference.m_fX + vDifference.m_fY * vDifference.m_fY +
+                            vDifference.m_fZ * vDifference.m_fZ;
                         float fX = ((CSWSObject*)pGameObject)->m_vPosition.m_fX - vTarget.m_fX;
                         if (lstDistances.num >= nNth && fX * fX > lstDistances[nNth - 1])
                         {

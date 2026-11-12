@@ -2978,9 +2978,12 @@ int CSWSCreature::AIActionCombat(CSWSObjectActionNode* pNode)
         GetCombatRound()->SetCurrentAction(nActionType);
         if (nActionType != CSWSCombatRoundAction::ACTION_ITEM_CAST_SPELL &&
             nActionType != CSWSCombatRoundAction::ACTION_STANCE &&
-            pAction->m_nSpellId != 181 && pAction->m_nSpellId != 200 &&
-            pAction->m_nSpellId != 182 && pAction->m_nSpellId != 184 &&
-            pAction->m_nSpellId != 201 && pAction->m_nSpellId != 269)
+            pAction->m_nSpellId != CSWSpell::FORCE_POWER_MIND_TRICK &&
+            pAction->m_nSpellId != CSWSpell::FORCE_POWER_CONFUSION &&
+            pAction->m_nSpellId != CSWSpell::FORCE_POWER_BEAST_TRICK &&
+            pAction->m_nSpellId != CSWSpell::FORCE_POWER_BEAST_CONFUSION &&
+            pAction->m_nSpellId != CSWSpell::FORCE_POWER_DROID_TRICK &&
+            pAction->m_nSpellId != CSWSpell::FORCE_POWER_DROID_CONFUSION)
         {
             SetActivity(ACTIVITY_STEALTH, 0, 0);
         }
@@ -4097,8 +4100,8 @@ int CSWSCreature::IsProjectileParryable(CSWSObject* pTarget, int bRangedAttack,
                 }
             }
         }
-        int bDeflection = pCreature->m_pStats->HasSpell(0, 162, 0);
-        int bRedirection = pCreature->m_pStats->HasSpell(0, 163, 0);
+        int bDeflection = pCreature->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_FORCE_REPULSION, 0);
+        int bRedirection = pCreature->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_FORCE_REDIRECTION, 0);
         if (!bResult && (bDeflection || bRedirection) &&
             !pCreature->IsDebilitated() && !pCreature->m_bLightsaberThrow)
         {

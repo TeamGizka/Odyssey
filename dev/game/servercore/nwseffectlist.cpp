@@ -4443,8 +4443,8 @@ int CSWSEffectListHandler::OnApplyLightsaberThrow(CSWSObject* pObject,
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     if (pCreature != NULL)
     {
-        if (!pCreature->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_162, 0) &&
-            !pCreature->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_163, 0))
+        if (!pCreature->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_FORCE_REPULSION, 0) &&
+            !pCreature->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_FORCE_REDIRECTION, 0))
         {
             pCreature->m_bLightsaberThrow = 1;
         }
@@ -5970,7 +5970,7 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
             {
                 if (pStats->GetEffectImmunity(
                         CSWSCreatureStats::IMMUNITY_TYPE_FEAR, pCreator) != 0 ||
-                    pStats->HasFeat(CSWFeat::FEAT_UNKNOWN_200) != 0)
+                    pStats->HasFeat(CSWFeat::FEAT_MANDALORIAN_COURAGE) != 0)
                 {
                     pMessageData = new CSWCCMessageData;
                     pMessageData->SetObjectID(0, pObject->GetId());
@@ -5994,7 +5994,7 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
             {
                 if (bIgnoreImmunity == 0 &&
                     (pStats->HasFeat(CSWFeat::FEAT_FORCE_IMMUNITY_FEAR) != 0 ||
-                     pStats->HasFeat(CSWFeat::FEAT_UNKNOWN_200) != 0))
+                     pStats->HasFeat(CSWFeat::FEAT_MANDALORIAN_COURAGE) != 0))
                 {
                     pMessageData = new CSWCCMessageData;
                     pMessageData->SetObjectID(0, pObject->GetId());

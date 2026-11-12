@@ -567,21 +567,16 @@ void CSWSDialog::InitializePsuedoRandomCameraAngles(CResGFF* pResGFF)
     CResRef cResRef;
     CExoString sResRef;
     unsigned short nType;
-    unsigned int nHash = 0;
 
     pResGFF->GetResRef(cResRef, nType);
     cResRef.CopyToString(sResRef);
 
-    int nIndex = 0;
-    if (sResRef.GetLength() > 0)
+    unsigned int nHash = 0;
+    for (int nIndex = 0; nIndex < sResRef.GetLength(); nIndex++)
     {
-        do
-        {
-            int nCharacter = (char)sResRef[nIndex];
-            int nPower = (unsigned __int64)pow(10.0, (double)nIndex) + 1;
-            nHash += nPower * nCharacter;
-            ++nIndex;
-        } while (nIndex < sResRef.GetLength());
+        int nCharacter = (char)sResRef[nIndex];
+        int nPower = (unsigned __int64)pow(10.0, (double)nIndex) + 1;
+        nHash += nCharacter * nPower;
     }
 
     m_nPseudoRandomCameraAngle = nHash % PSEUDO_RANDOM_CAMERA_COUNT;
@@ -594,21 +589,16 @@ void CSWSDialog::InitializePseudoRandomAlienVOVariation(CResGFF* pResGFF)
     CResRef cResRef;
     CExoString sResRef;
     unsigned short nType;
-    unsigned int nHash = 0;
 
     pResGFF->GetResRef(cResRef, nType);
     cResRef.CopyToString(sResRef);
 
-    int nIndex = 0;
-    if (sResRef.GetLength() > 0)
+    unsigned int nHash = 0;
+    for (int nIndex = 0; nIndex < sResRef.GetLength(); nIndex++)
     {
-        do
-        {
-            int nCharacter = (char)sResRef[nIndex];
-            int nPower = (unsigned __int64)pow(10.0, (double)nIndex) + 1;
-            nHash += nPower * nCharacter;
-            ++nIndex;
-        } while (nIndex < sResRef.GetLength());
+        int nCharacter = (char)sResRef[nIndex];
+        int nPower = (unsigned __int64)pow(10.0, (double)nIndex) + 1;
+        nHash += nCharacter * nPower;
     }
 
     m_nPseudoRandomAlienVO = nHash % PSEUDO_RANDOM_ALIEN_VO_COUNT;
@@ -2926,8 +2916,8 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
     }
     GiveDialogPlotXP(m_pEntries[nEntry].m_nPlotIndex,
                      m_pEntries[nEntry].m_fPlotXPPercentage);
-    unsigned char nSoundExists = m_pEntries[nEntry].m_bSoundExists;
     CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
+    unsigned char nSoundExists = m_pEntries[nEntry].m_bSoundExists;
     if ((nSoundExists & CSWSDialogBase::SOUND_EXISTS_SKIP) &&
         !(nSoundExists & CSWSDialogBase::SOUND_EXISTS_VARIATION))
     {
@@ -2936,11 +2926,33 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
         m_pEntries[nEntry].m_cSoundResRef += sVariation;
         m_pEntries[nEntry].m_bSoundExists |= CSWSDialogBase::SOUND_EXISTS_VARIATION;
     }
+    char szSound[17];
+    if (g_bDebugDialogSound)
+    {
+        EXOLOG("SendDialogEntry: sound mode %d\n", g_pExoSound->GetSoundMode());
+    }
+    if (g_pExoSound->GetSoundMode() != CExoSound::CEXOSOUND_MODE_GENERIC)
+    {
+        g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
+    }
+    if (g_bDebugDialogSound)
+    {
+        EXOLOG("SendDialogEntry: sound mode %d\n", g_pExoSound->GetSoundMode());
+    }
+    if (g_bDebugDialogSound)
+    {
+        m_pEntries[nEntry].m_cSoundResRef.CopyToString(szSound);
+        EXOLOG("SendDialogEntry: %s mode %d\n", szSound,
+               g_pExoSound->GetSoundMode());
+    }
     int bShowText = m_pEntries[nEntry].m_bSoundActive;
-    pClient->GetInGameGui()->HandleDialogSound(
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->HandleDialogSound(
         pClient->ServerToClientObjectId(pSpeaker->GetId()),
         m_pEntries[nEntry].m_cSoundResRef);
     int bSound;
+    char szPrefix[4];
+    char szSubDir[16];
+    unsigned long i;
     if (g_pAppManager->GetClientExoApp()->GetModuleResourceLoaded(
             CClientExoApp::MODULE_RESOURCE_VOICE) == 1)
     {
@@ -2970,9 +2982,6 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
             unsigned long nLength = sSound.GetLength();
             if (nLength > 0)
             {
-                char szPrefix[4];
-                char szSubDir[16];
-                unsigned long i;
                 for (i = 0; i < 3; ++i)
                     szPrefix[i] = sSound[i];
                 szPrefix[i] = 0;

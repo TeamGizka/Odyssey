@@ -144,7 +144,7 @@ float CSWPlayerControlCamRelative::GetMaxSpeed()
         g_pAppManager->m_pClientExoApp->GetSWParty();
         CSWCCreature* pCreature = GetPlayer();
         if (pCreature->m_bRunning &&
-            !GetPlayer()->GetStats()->HasFeat(CSWFeat::FEAT_UNKNOWN_197))
+            !GetPlayer()->GetStats()->HasFeat(CSWFeat::FEAT_STEALTH_RUN))
         {
             pCreature = GetPlayer();
             return pCreature->m_pAppearance->m_fDriveAnimWalk;

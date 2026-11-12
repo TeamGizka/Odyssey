@@ -150,15 +150,15 @@ int CSWSCreatureStats::GetMeleeAttackBonus(int bOffHand, int bIncludeBase,
     int nLightsaberBonus = 0;
     if (pWeapon != NULL && pWeapon->IsLightsaber())
     {
-        if (HasFeat(158))
+        if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_LIGHTSABER_III))
         {
             nLightsaberBonus = 3;
         }
-        else if (HasFeat(157))
+        else if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_LIGHTSABER_II))
         {
             nLightsaberBonus = 2;
         }
-        else if (HasFeat(156))
+        else if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_LIGHTSABER_I))
         {
             nLightsaberBonus = 1;
         }
@@ -196,15 +196,15 @@ int CSWSCreatureStats::GetMeleeAttackBonus(int bOffHand, int bIncludeBase,
                 {
                     nTwoWeaponPenalty += 2;
                 }
-                if (HasFeat(161))
+                if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_III))
                 {
                     nTwoWeaponPenalty += 2;
                 }
-                else if (HasFeat(160))
+                else if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_II))
                 {
                     nTwoWeaponPenalty += 2;
                 }
-                else if (HasFeat(159))
+                else if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_I))
                 {
                     nTwoWeaponPenalty += 1;
                 }
@@ -225,7 +225,7 @@ int CSWSCreatureStats::GetMeleeAttackBonus(int bOffHand, int bIncludeBase,
             {
                 nTwoWeaponPenalty = -6;
             }
-            if (HasFeat(161))
+            if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_III))
             {
                 nTwoWeaponPenalty += 1;
             }
@@ -336,15 +336,15 @@ int CSWSCreatureStats::GetMeleeDamageBonus(int bOffHand)
         nSpecializationBonus = WEAPON_SPECIALIZATION_DAMAGE_BONUS;
     nDamageBonus += nSpecializationBonus;
 
-    if (HasFeat(155) || HasFeat(174))
+    if (HasFeat(CSWFeat::FEAT_INCREASE_COMBAT_DAMAGE_III) || HasFeat(CSWFeat::FEAT_INCREASE_MELEE_DAMAGE_III))
     {
         nDamageBonus += 6;
     }
-    else if (HasFeat(154) || HasFeat(173))
+    else if (HasFeat(CSWFeat::FEAT_INCREASE_COMBAT_DAMAGE_II) || HasFeat(CSWFeat::FEAT_INCREASE_MELEE_DAMAGE_II))
     {
         nDamageBonus += 4;
     }
-    else if (HasFeat(153) || HasFeat(172))
+    else if (HasFeat(CSWFeat::FEAT_INCREASE_COMBAT_DAMAGE_I) || HasFeat(CSWFeat::FEAT_INCREASE_MELEE_DAMAGE_I))
     {
         nDamageBonus += 2;
     }
@@ -396,15 +396,15 @@ int CSWSCreatureStats::GetRangedAttackBonus(int bOffHand, int bIncludeBase,
             {
                 nTwoWeaponPenalty += 2;
             }
-            if (HasFeat(161))
+            if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_III))
             {
                 nTwoWeaponPenalty += 2;
             }
-            else if (HasFeat(160))
+            else if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_II))
             {
                 nTwoWeaponPenalty += 2;
             }
-            else if (HasFeat(159))
+            else if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_I))
             {
                 nTwoWeaponPenalty += 1;
             }
@@ -425,7 +425,7 @@ int CSWSCreatureStats::GetRangedAttackBonus(int bOffHand, int bIncludeBase,
         {
             nTwoWeaponPenalty = -6;
         }
-        if (HasFeat(161))
+        if (HasFeat(CSWFeat::FEAT_SUPER_WEAPON_FOCUS_2_WEAPON_III))
         {
             nTwoWeaponPenalty += 1;
         }
@@ -435,43 +435,43 @@ int CSWSCreatureStats::GetRangedAttackBonus(int bOffHand, int bIncludeBase,
     nBonus += GetWeaponFocus(pWeapon);
 
     int nFeatBonus = 0;
-    if (HasFeat(135))
+    if (HasFeat(CSWFeat::FEAT_TARGETING_10))
     {
         nFeatBonus = 10;
     }
-    else if (HasFeat(134))
+    else if (HasFeat(CSWFeat::FEAT_TARGETING_9))
     {
         nFeatBonus = 9;
     }
-    else if (HasFeat(133))
+    else if (HasFeat(CSWFeat::FEAT_TARGETING_8))
     {
         nFeatBonus = 8;
     }
-    else if (HasFeat(132))
+    else if (HasFeat(CSWFeat::FEAT_TARGETING_7))
     {
         nFeatBonus = 7;
     }
-    else if (HasFeat(131))
+    else if (HasFeat(CSWFeat::FEAT_TARGETING_6))
     {
         nFeatBonus = 6;
     }
-    else if (HasFeat(130))
+    else if (HasFeat(CSWFeat::FEAT_TARGETING_5))
     {
         nFeatBonus = 5;
     }
-    else if (HasFeat(129))
+    else if (HasFeat(CSWFeat::FEAT_TARGETING_4))
     {
         nFeatBonus = 4;
     }
-    else if (HasFeat(128))
+    else if (HasFeat(CSWFeat::FEAT_TARGETING_3))
     {
         nFeatBonus = 3;
     }
-    else if (HasFeat(127))
+    else if (HasFeat(CSWFeat::FEAT_TARGETING_2))
     {
         nFeatBonus = 2;
     }
-    else if (HasFeat(126))
+    else if (HasFeat(CSWFeat::FEAT_TARGETING_1))
     {
         nFeatBonus = 1;
     }
@@ -1092,36 +1092,36 @@ int CSWSCreatureStats::GetRangedDamageBonus()
     }
     nDamageBonus += nSpecializationBonus;
 
-    if (HasFeat(155))
+    if (HasFeat(CSWFeat::FEAT_INCREASE_COMBAT_DAMAGE_III))
     {
         nDamageBonus += 6;
     }
-    else if (HasFeat(154))
+    else if (HasFeat(CSWFeat::FEAT_INCREASE_COMBAT_DAMAGE_II))
     {
         nDamageBonus += 4;
     }
-    else if (HasFeat(153))
+    else if (HasFeat(CSWFeat::FEAT_INCREASE_COMBAT_DAMAGE_I))
     {
         nDamageBonus += 2;
     }
 
-    if (HasFeat(244))
+    if (HasFeat(CSWFeat::FEAT_PRECISE_SHOT_V))
     {
         nDamageBonus += 8;
     }
-    else if (HasFeat(243))
+    else if (HasFeat(CSWFeat::FEAT_PRECISE_SHOT_IV))
     {
         nDamageBonus += 6;
     }
-    else if (HasFeat(242))
+    else if (HasFeat(CSWFeat::FEAT_PRECISE_SHOT_III))
     {
         nDamageBonus += 4;
     }
-    else if (HasFeat(241))
+    else if (HasFeat(CSWFeat::FEAT_PRECISE_SHOT_II))
     {
         nDamageBonus += 2;
     }
-    else if (HasFeat(240))
+    else if (HasFeat(CSWFeat::FEAT_PRECISE_SHOT_I))
     {
         nDamageBonus += 1;
     }
@@ -1428,52 +1428,56 @@ char CSWSCreatureStats::GetDamageBonus(CSWSCreature* pTarget, int bOffHand, int 
     int bCritical = pAttack->m_nAttackResult == CSWSCombatAttackData::ATTACK_RESULT_CRITICAL_HIT;
     int nWeaponAttackType = pAttack->m_nWeaponAttackType;
     CSWSItem* pWeapon = GetCreature()->GetCombatRound()->GetCurrentAttackWeapon(nWeaponAttackType);
-    CSWSItem* pMainHand = GetCreature()->GetInventory()->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
-    int bTwoHanded = FALSE;
-    if (pMainHand != NULL)
-    {
-        CSWBaseItem* pBaseItem =
-            g_pRules->m_pBaseItems->GetBaseItem(pMainHand->GetBaseItemType());
-        if (pBaseItem->m_nWeaponSize - m_pCreature->m_nCreatureSize == 1 &&
-            pBaseItem->m_nWeaponWield != CSWBaseItem::WIELD_DOUBLE_WEAPON)
-            bTwoHanded = TRUE;
-    }
     int nBonus = 0;
-    int nStrength = 0;
-    if (!bRanged)
-        nStrength = GetSTRMod();
-    pAttack->m_DamageBreakdown.m_nStrengthDamage = nStrength;
 
     if (bOffHand)
     {
-        if (g_bEnableCombatDebugging && nBonus)
+        int nStrength;
+        if (m_nStrengthModifier > 0)
+            nStrength = (int)(m_nStrengthModifier * 0.5f);
+        else
+            nStrength = m_nStrengthModifier;
+        pAttack->m_DamageBreakdown.m_nStrengthDamage = nStrength;
+        if (g_bEnableCombatDebugging)
         {
             CExoString sDebug = GetCreature()->GetCombatRound()->GetAttack(nAttack)->m_sDamageDebugText;
             CExoString sBonus;
             if (bCritical)
                 sBonus.Format(" + %d (Offhand Strength Bonus) (Critical x%d)",
-                    nBonus * GetCriticalHitMultiplier(bOffHand), GetCriticalHitMultiplier(bOffHand));
+                    nStrength * GetCriticalHitMultiplier(bOffHand), GetCriticalHitMultiplier(bOffHand));
             else
-                sBonus.Format(" + %d (Offhand Strength Bonus)", nBonus);
-            GetCreature()->GetCombatRound()->GetAttack(nAttack)->m_sDamageDebugText = sDebug + sBonus;
-        }
-    }
-    else if (bTwoHanded)
-    {
-        if (g_bEnableCombatDebugging && nBonus)
-        {
-            CExoString sDebug = GetCreature()->GetCombatRound()->GetAttack(nAttack)->m_sDamageDebugText;
-            CExoString sBonus;
-            if (bCritical)
-                sBonus.Format(" + %d (Two Handed Strength Bonus) (Critical x%d)",
-                    nBonus * GetCriticalHitMultiplier(bOffHand), GetCriticalHitMultiplier(bOffHand));
-            else
-                sBonus.Format(" + %d (Two Handed Strength Bonus)", nBonus);
+                sBonus.Format(" + %d (Offhand Strength Bonus)", nStrength);
             GetCreature()->GetCombatRound()->GetAttack(nAttack)->m_sDamageDebugText = sDebug + sBonus;
         }
     }
     else
     {
+        CSWBaseItem* pBaseItem = NULL;
+        CSWSItem* pMainHand = GetCreature()->GetInventory()->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
+        if (pMainHand != NULL)
+            pBaseItem = pMainHand->GetBaseItem();
+        CSWSItem* pOffHand = GetCreature()->GetInventory()->GetItemInSlot(INVENTORY_SLOT_LEFTHAND);
+        int nStrength;
+        if (bRanged)
+        {
+            nStrength = 0;
+            pAttack->m_DamageBreakdown.m_nStrengthDamage = nStrength;
+        }
+        else if (pMainHand != NULL && pOffHand == NULL &&
+                 (pBaseItem->m_nWeaponWield == CSWBaseItem::WIELD_DOUBLE_WEAPON ||
+                  pBaseItem->m_nWeaponWield == CSWBaseItem::WEAPON_WIELD_ONE_HANDED_2))
+        {
+            if (m_nStrengthModifier > 0)
+                nStrength = (int)(m_nStrengthModifier * 1.5f);
+            else
+                nStrength = m_nStrengthModifier;
+            pAttack->m_DamageBreakdown.m_nStrengthDamage = nStrength;
+        }
+        else
+        {
+            nStrength = m_nStrengthModifier;
+            pAttack->m_DamageBreakdown.m_nStrengthDamage = nStrength;
+        }
         if (g_bEnableCombatDebugging && nBonus)
         {
             CExoString sDebug = GetCreature()->GetCombatRound()->GetAttack(nAttack)->m_sDamageDebugText;
@@ -1495,10 +1499,10 @@ char CSWSCreatureStats::GetDamageBonus(CSWSCreature* pTarget, int bOffHand, int 
     }
     int nPowerBonus = 0;
     if (GetCreature()->m_nActiveCombatMode == SWSOBJECT_COMBAT_MODE_POWER_ATTACK)
-        nPowerBonus = 5;
+        nPowerBonus = 3;
     unsigned char nCombatMode = GetCreature()->m_nActiveCombatMode;
     if (nCombatMode == SWSOBJECT_COMBAT_MODE_IMPROVED_POWER_ATTACK)
-        nPowerBonus = 10;
+        nPowerBonus = 7;
     if (g_bEnableCombatDebugging && nPowerBonus)
     {
         CExoString sDebug = GetCreature()->GetCombatRound()->GetAttack(nAttack)->m_sDamageDebugText;
@@ -1537,6 +1541,125 @@ char CSWSCreatureStats::GetDamageBonus(CSWSCreature* pTarget, int bOffHand, int 
         else
             sBonus.Format(" + %d (Special Attack Damage Bonus)", nSpecialBonus);
         GetCreature()->GetCombatRound()->GetAttack(nAttack)->m_sDamageDebugText = sDebug + sBonus;
+    }
+    if (pAttack->m_bRangedAttack)
+    {
+        if (HasFeat(CSWFeat::FEAT_INCREASE_COMBAT_DAMAGE_III))
+        {
+            nBonus += 6;
+        }
+        else if (HasFeat(CSWFeat::FEAT_INCREASE_COMBAT_DAMAGE_II))
+        {
+            nBonus += 4;
+        }
+        else if (HasFeat(CSWFeat::FEAT_INCREASE_COMBAT_DAMAGE_I))
+        {
+            nBonus += 2;
+        }
+        if (HasFeat(CSWFeat::FEAT_PRECISE_SHOT_V))
+        {
+            nBonus += 8;
+        }
+        else if (HasFeat(CSWFeat::FEAT_PRECISE_SHOT_IV))
+        {
+            nBonus += 6;
+        }
+        else if (HasFeat(CSWFeat::FEAT_PRECISE_SHOT_III))
+        {
+            nBonus += 4;
+        }
+        else if (HasFeat(CSWFeat::FEAT_PRECISE_SHOT_II))
+        {
+            nBonus += 2;
+        }
+        else if (HasFeat(CSWFeat::FEAT_PRECISE_SHOT_I))
+        {
+            nBonus += 1;
+        }
+    }
+    else
+    {
+        if (HasFeat(CSWFeat::FEAT_INCREASE_COMBAT_DAMAGE_III) || HasFeat(CSWFeat::FEAT_INCREASE_MELEE_DAMAGE_III))
+        {
+            nBonus += 6;
+        }
+        else if (HasFeat(CSWFeat::FEAT_INCREASE_COMBAT_DAMAGE_II) || HasFeat(CSWFeat::FEAT_INCREASE_MELEE_DAMAGE_II))
+        {
+            nBonus += 4;
+        }
+        else if (HasFeat(CSWFeat::FEAT_INCREASE_COMBAT_DAMAGE_I) || HasFeat(CSWFeat::FEAT_INCREASE_MELEE_DAMAGE_I))
+        {
+            nBonus += 2;
+        }
+    }
+    if (m_c120 != -1)
+    {
+        nBonus += m_c120;
+    }
+    int nFormBonus = 0;
+    if (GetCreature()->IsWieldingLightsaber() && GetCreature()->m_n1110 == CSWSpell::FORM_SABER_II_MAKASHI)
+    {
+        nFormBonus = 3;
+    }
+    nBonus += nFormBonus;
+    int bUnarmed = nWeaponAttackType == CSWSCombatRound::WEAPON_ATTACK_UNARMED ||
+                   nWeaponAttackType == CSWSCombatRound::WEAPON_ATTACK_EXTRA_UNARMED;
+    if (bUnarmed)
+    {
+        int nDice = 0;
+        if (HasFeat(CSWFeat::FEAT_ECHANI_STRIKE_III))
+        {
+            nDice = 3;
+        }
+        else if (HasFeat(CSWFeat::FEAT_ECHANI_STRIKE_II))
+        {
+            nDice = 2;
+        }
+        else if (HasFeat(CSWFeat::FEAT_ECHANI_STRIKE_I))
+        {
+            nDice = 1;
+        }
+        if (nDice > 0)
+        {
+            nBonus += g_pRules->RollDice(nDice, 4);
+        }
+        nDice = 0;
+        if (HasFeat(CSWFeat::FEAT_UNARMED_SPECIALIST_VIII))
+        {
+            nDice = 8;
+        }
+        else if (HasFeat(CSWFeat::FEAT_UNARMED_SPECIALIST_VII))
+        {
+            nDice = 7;
+        }
+        else if (HasFeat(CSWFeat::FEAT_UNARMED_SPECIALIST_VI))
+        {
+            nDice = 6;
+        }
+        else if (HasFeat(CSWFeat::FEAT_UNARMED_SPECIALIST_V))
+        {
+            nDice = 5;
+        }
+        else if (HasFeat(CSWFeat::FEAT_UNARMED_SPECIALIST_IV))
+        {
+            nDice = 4;
+        }
+        else if (HasFeat(CSWFeat::FEAT_UNARMED_SPECIALIST_III))
+        {
+            nDice = 3;
+        }
+        else if (HasFeat(CSWFeat::FEAT_UNARMED_SPECIALIST_II))
+        {
+            nDice = 2;
+        }
+        else if (HasFeat(CSWFeat::FEAT_UNARMED_SPECIALIST_I))
+        {
+            nDice = 1;
+        }
+        if (nDice > 0)
+        {
+            nBonus += g_pRules->RollDice(nDice, 4);
+        }
     }
     return nBonus;
 }
@@ -1604,17 +1727,51 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
                         }
 #endif
                         short nMaximum = nNumDice * nDie;
+                        C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
+                        float fDamageMult = 0.0f;
+                        int nAutoBalance = m_pCreature->m_c250;
+                        if (nAutoBalance != 0)
+                        {
+                            pAutoBalance->GetFLOATEntry(nAutoBalance, "DamageMult", &fDamageMult);
+                        }
+                        if (m_pCreature->m_bInParty == 0 && nAutoBalance != 0)
+                        {
+                            char nLevel = m_pCreature->m_c251;
+                            if ((unsigned char)nLevel < 1)
+                            {
+                                nLevel = 1;
+                            }
+                            nMaximum *= (unsigned int)((nLevel - 1) * fDamageMult) + 1;
+                        }
                         if (bCritical)
                         {
                             for (int i = 0; i < GetCriticalHitMultiplier(bOffHand); ++i)
                             {
                                 short nRoll = g_pRules->RollDice(nNumDice, nDie);
+                                if (m_pCreature->m_bInParty == 0 && nAutoBalance != 0)
+                                {
+                                    char nLevel = m_pCreature->m_c251;
+                                    if ((unsigned char)nLevel < 1)
+                                    {
+                                        nLevel = 1;
+                                    }
+                                    nRoll *= (unsigned int)((nLevel - 1) * fDamageMult) + 1;
+                                }
                                 nDamage += g_pRules->GetWeightedDamageAmount(nRoll, nMaximum, bPCToNPC, bNPCToPC, nDifficulty);
                             }
                         }
                         else
                         {
                             short nRoll = g_pRules->RollDice(nNumDice, nDie);
+                            if (m_pCreature->m_bInParty == 0 && nAutoBalance != 0)
+                            {
+                                char nLevel = m_pCreature->m_c251;
+                                if ((unsigned char)nLevel < 1)
+                                {
+                                    nLevel = 1;
+                                }
+                                nRoll *= (unsigned int)((nLevel - 1) * fDamageMult) + 1;
+                            }
                             nDamage = g_pRules->GetWeightedDamageAmount(nRoll, nMaximum, bPCToNPC, bNPCToPC, nDifficulty);
                         }
                     }
@@ -1625,17 +1782,51 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
                 nNumDice = g_pRules->m_pBaseItems->GetBaseItem(pWeapon->GetBaseItemType())->GetNumDice();
                 nDie = g_pRules->m_pBaseItems->GetBaseItem(pWeapon->GetBaseItemType())->GetDieToRoll();
                 short nMaximum = nNumDice * nDie;
+                C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
+                float fDamageMult;
+                int nAutoBalance = m_pCreature->m_c250;
+                if (nAutoBalance != 0)
+                {
+                    pAutoBalance->GetFLOATEntry(nAutoBalance, "DamageMult", &fDamageMult);
+                }
+                if (m_pCreature->m_bInParty == 0 && nAutoBalance != 0)
+                {
+                    char nLevel = m_pCreature->m_c251;
+                    if ((unsigned char)nLevel < 1)
+                    {
+                        nLevel = 1;
+                    }
+                    nMaximum *= (unsigned int)((nLevel - 1) * fDamageMult) + 1;
+                }
                 if (bCritical)
                 {
                     for (int i = 0; i < GetCriticalHitMultiplier(bOffHand); ++i)
                     {
                         short nRoll = g_pRules->RollDice(nNumDice, nDie);
+                        if (m_pCreature->m_bInParty == 0 && nAutoBalance != 0)
+                        {
+                            char nLevel = m_pCreature->m_c251;
+                            if ((unsigned char)nLevel < 1)
+                            {
+                                nLevel = 1;
+                            }
+                            nRoll *= (unsigned int)((nLevel - 1) * fDamageMult) + 1;
+                        }
                         nDamage += g_pRules->GetWeightedDamageAmount(nRoll, nMaximum, bPCToNPC, bNPCToPC, nDifficulty);
                     }
                 }
                 else
                 {
                     short nRoll = g_pRules->RollDice(nNumDice, nDie);
+                    if (m_pCreature->m_bInParty == 0 && nAutoBalance != 0)
+                    {
+                        char nLevel = m_pCreature->m_c251;
+                        if ((unsigned char)nLevel < 1)
+                        {
+                            nLevel = 1;
+                        }
+                        nRoll *= (unsigned int)((nLevel - 1) * fDamageMult) + 1;
+                    }
                     nDamage = g_pRules->GetWeightedDamageAmount(nRoll, nMaximum, bPCToNPC, bNPCToPC, nDifficulty);
                 }
             }
@@ -1759,17 +1950,15 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
         nDamage += pAttack->m_DamageBreakdown.m_nStrengthDamage + pAttack->m_DamageBreakdown.m_nWeaponSpecializationDamage;
         if (pWeapon != NULL && pWeapon->GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_MASSIVE_CRITICALS, 0))
         {
-            CSWItemProperty* pProperty;
-            pWeapon->GetPropertyByType(&pProperty, CSWItemProperty::ITEM_PROPERTY_MASSIVE_CRITICALS, 0);
-            if (pProperty != NULL)
+            for (int i = 0; i < pWeapon->m_nPassiveProperties; ++i)
             {
-                unsigned short nCostValue = pProperty->m_nCostValue;
-                if (nCostValue != 0)
+                CSWItemProperty* pProperty = pWeapon->GetPassiveProperty(i);
+                if (pProperty != NULL && pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_MASSIVE_CRITICALS)
                 {
                     int nCriticalDice;
                     int nCriticalDie;
                     int nCriticalDamage;
-                    int nRow = nCostValue;
+                    int nRow = pProperty->m_nCostValue;
                     {
                         CExoString sColumn("NumDice");
                         C2DA* pTable = g_pRules->Get2DArrays()->m_pIPRPDamage;
@@ -1788,16 +1977,6 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
                     }
                     nDamage += nCriticalDamage;
                     pAttack->m_DamageBreakdown.m_nDamageBonus += nCriticalDamage;
-                    if (g_bEnableCombatDebugging)
-                    {
-                        CExoString sDebug = GetCreature()->GetCombatRound()->GetAttack(nAttack)->m_sDamageDebugText;
-                        CExoString sDamage;
-                        if (nCriticalDice == 0)
-                            sDamage.Format(" + %d (Massive Critical) ", nCriticalDamage);
-                        else
-                            sDamage.Format(" + %d (%dd%d Massive Critical) ", nCriticalDamage, nCriticalDice, nCriticalDie);
-                        GetCreature()->GetCombatRound()->GetAttack(nAttack)->m_sDamageDebugText = sDebug + sDamage;
-                    }
                 }
             }
         }
@@ -1806,10 +1985,12 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
         nDamage += nBonus + pAttack->m_DamageBreakdown.m_nStrengthDamage + pAttack->m_DamageBreakdown.m_nWeaponSpecializationDamage;
 
     int nCapped = 0;
+    int nEffectDamage = 0;
     int nEffectBonus = GetCreature()->GetTotalEffectBonus(CSWSCreature::EFFECT_BONUS_DAMAGE,
         pTarget, nCapped, 0, bMaxDamage, 0, 0,
-        CSWSCreature::EFFECT_BONUS_FILTER_ALL, CSWSCreature::EFFECT_BONUS_FILTER_ALL, 0);
-    pAttack->m_DamageBreakdown.m_nEffectDamageBonus = nEffectBonus;
+        CSWSCreature::EFFECT_BONUS_FILTER_ALL, CSWSCreature::EFFECT_BONUS_FILTER_ALL, 0, &nEffectDamage);
+    pAttack->m_DamageBreakdown.m_nEffectDamageBonus = nEffectDamage;
+    nDamage += nEffectDamage;
     if (g_bEnableCombatDebugging && nEffectBonus)
     {
         CExoString sDebug = GetCreature()->GetCombatRound()->GetAttack(nAttack)->m_sDamageDebugText;
@@ -1834,6 +2015,11 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
         nDamage = pTarget->DoDamageImmunity(GetCreature(), nDamage, nDamageFlags, bMaxDamage, 1);
         nDamage = pTarget->DoDamageResistance(m_pCreature, nDamage, nDamageFlags, bMaxDamage, 1, 1);
         nDamage = pTarget->DoDamageReduction(GetCreature(), nDamage, nDamagePower, bMaxDamage, 1);
+        if ((pTarget->AsSWSDoor() != NULL || pTarget->AsSWSPlaceable() != NULL) &&
+            pWeapon != NULL && pWeapon->m_n2DC)
+        {
+            nDamage = pTarget->GetMaxHitPoints(1);
+        }
         if (nDamage < 0)
             nDamage = 0;
     }
@@ -1878,17 +2064,17 @@ void CSWSCreatureStats::GetTotalDamageRange(CSWSCreature* pCreature,
             nMinDamage += nStrengthBonus;
             nMaxDamage += nStrengthBonus;
 
-            if (HasFeat(155) || HasFeat(174))
+            if (HasFeat(CSWFeat::FEAT_INCREASE_COMBAT_DAMAGE_III) || HasFeat(CSWFeat::FEAT_INCREASE_MELEE_DAMAGE_III))
             {
                 nMinDamage += 6;
                 nMaxDamage += 6;
             }
-            else if (HasFeat(154) || HasFeat(173))
+            else if (HasFeat(CSWFeat::FEAT_INCREASE_COMBAT_DAMAGE_II) || HasFeat(CSWFeat::FEAT_INCREASE_MELEE_DAMAGE_II))
             {
                 nMinDamage += 4;
                 nMaxDamage += 4;
             }
-            else if (HasFeat(153) || HasFeat(172))
+            else if (HasFeat(CSWFeat::FEAT_INCREASE_COMBAT_DAMAGE_I) || HasFeat(CSWFeat::FEAT_INCREASE_MELEE_DAMAGE_I))
             {
                 nMinDamage += 2;
                 nMaxDamage += 2;
@@ -1896,43 +2082,43 @@ void CSWSCreatureStats::GetTotalDamageRange(CSWSCreature* pCreature,
         }
         else
         {
-            if (HasFeat(155))
+            if (HasFeat(CSWFeat::FEAT_INCREASE_COMBAT_DAMAGE_III))
             {
                 nMinDamage += 6;
                 nMaxDamage += 6;
             }
-            else if (HasFeat(154))
+            else if (HasFeat(CSWFeat::FEAT_INCREASE_COMBAT_DAMAGE_II))
             {
                 nMinDamage += 4;
                 nMaxDamage += 4;
             }
-            else if (HasFeat(153))
+            else if (HasFeat(CSWFeat::FEAT_INCREASE_COMBAT_DAMAGE_I))
             {
                 nMinDamage += 2;
                 nMaxDamage += 2;
             }
 
-            if (HasFeat(244))
+            if (HasFeat(CSWFeat::FEAT_PRECISE_SHOT_V))
             {
                 nMinDamage += 8;
                 nMaxDamage += 8;
             }
-            else if (HasFeat(243))
+            else if (HasFeat(CSWFeat::FEAT_PRECISE_SHOT_IV))
             {
                 nMinDamage += 6;
                 nMaxDamage += 6;
             }
-            else if (HasFeat(242))
+            else if (HasFeat(CSWFeat::FEAT_PRECISE_SHOT_III))
             {
                 nMinDamage += 4;
                 nMaxDamage += 4;
             }
-            else if (HasFeat(241))
+            else if (HasFeat(CSWFeat::FEAT_PRECISE_SHOT_II))
             {
                 nMinDamage += 2;
                 nMaxDamage += 2;
             }
-            else if (HasFeat(240))
+            else if (HasFeat(CSWFeat::FEAT_PRECISE_SHOT_I))
             {
                 nMinDamage += 1;
                 nMaxDamage += 1;
@@ -1957,58 +2143,58 @@ void CSWSCreatureStats::GetTotalDamageRange(CSWSCreature* pCreature,
             nMaxDamage += m_nStrengthModifier;
         }
 
-        if (HasFeat(211))
+        if (HasFeat(CSWFeat::FEAT_ECHANI_STRIKE_III))
         {
             nMinDamage += 3;
             nMaxDamage += 12;
         }
-        else if (HasFeat(210))
+        else if (HasFeat(CSWFeat::FEAT_ECHANI_STRIKE_II))
         {
             nMinDamage += 2;
             nMaxDamage += 8;
         }
-        else if (HasFeat(209))
+        else if (HasFeat(CSWFeat::FEAT_ECHANI_STRIKE_I))
         {
             nMinDamage += 1;
             nMaxDamage += 4;
         }
 
-        if (HasFeat(219))
+        if (HasFeat(CSWFeat::FEAT_UNARMED_SPECIALIST_VIII))
         {
             nMinDamage += 8;
             nMaxDamage += 32;
         }
-        else if (HasFeat(218))
+        else if (HasFeat(CSWFeat::FEAT_UNARMED_SPECIALIST_VII))
         {
             nMinDamage += 7;
             nMaxDamage += 28;
         }
-        else if (HasFeat(217))
+        else if (HasFeat(CSWFeat::FEAT_UNARMED_SPECIALIST_VI))
         {
             nMinDamage += 6;
             nMaxDamage += 24;
         }
-        else if (HasFeat(216))
+        else if (HasFeat(CSWFeat::FEAT_UNARMED_SPECIALIST_V))
         {
             nMinDamage += 5;
             nMaxDamage += 20;
         }
-        else if (HasFeat(215))
+        else if (HasFeat(CSWFeat::FEAT_UNARMED_SPECIALIST_IV))
         {
             nMinDamage += 4;
             nMaxDamage += 16;
         }
-        else if (HasFeat(214))
+        else if (HasFeat(CSWFeat::FEAT_UNARMED_SPECIALIST_III))
         {
             nMinDamage += 3;
             nMaxDamage += 12;
         }
-        else if (HasFeat(213))
+        else if (HasFeat(CSWFeat::FEAT_UNARMED_SPECIALIST_II))
         {
             nMinDamage += 2;
             nMaxDamage += 8;
         }
-        else if (HasFeat(212))
+        else if (HasFeat(CSWFeat::FEAT_UNARMED_SPECIALIST_I))
         {
             nMinDamage += 1;
             nMaxDamage += 4;
@@ -2256,7 +2442,7 @@ char CSWSCreatureStats::GetBaseFortSavingThrow()
             float fSaveMult;
             pAutoBalance->GetFLOATEntry(nAutoBalance, "SaveMult", &fSaveMult);
             char nLevel = m_pCreature->m_c251;
-            if (nLevel < 1)
+            if ((unsigned char)nLevel < 1)
             {
                 nLevel = 1;
             }
@@ -2300,7 +2486,7 @@ unsigned char CSWSCreatureStats::GetBaseWillSavingThrow()
             float fSaveMult;
             pAutoBalance->GetFLOATEntry(nAutoBalance, "SaveMult", &fSaveMult);
             char nLevel = m_pCreature->m_c251;
-            if (nLevel < 1)
+            if ((unsigned char)nLevel < 1)
             {
                 nLevel = 1;
             }
@@ -2344,7 +2530,7 @@ unsigned char CSWSCreatureStats::GetBaseReflexSavingThrow()
             float fSaveMult;
             pAutoBalance->GetFLOATEntry(nAutoBalance, "SaveMult", &fSaveMult);
             char nLevel = m_pCreature->m_c251;
-            if (nLevel < 1)
+            if ((unsigned char)nLevel < 1)
             {
                 nLevel = 1;
             }
@@ -2822,7 +3008,7 @@ int CSWSCreatureStats::GetCanUseSkill(unsigned char nSkill)
 
     if (nBaseSkill == CSWRules::SKILL_STEALTH)
     {
-        if (HasSpell(0, 156, 0) || HasSpell(0, 157, 0) || HasSpell(0, 158, 0) || HasFeat(201))
+        if (HasSpell(0, CSWSpell::FORCE_POWER_FORCE_CAMOUFLAGE, 0) || HasSpell(0, CSWSpell::FORCE_POWER_IMPROVED_FORCE_CAMOUFLAGE, 0) || HasSpell(0, CSWSpell::FORCE_POWER_MASTER_FORCE_CAMOUFLAGE, 0) || HasFeat(CSWFeat::FEAT_PERSONAL_CLOAKING_SHIELD))
         {
             return 1;
         }
@@ -2885,7 +3071,7 @@ char CSWSCreatureStats::GetSkillRank(unsigned char nSkill, CSWSObject* pTarget,
 
     if (bBaseRank == 0)
     {
-        if (nSkill == CSWRules::SKILL_STEALTH && nRank == 0 && HasSpell(0, 156, 0))
+        if (nSkill == CSWRules::SKILL_STEALTH && nRank == 0 && HasSpell(0, CSWSpell::FORCE_POWER_FORCE_CAMOUFLAGE, 0))
         {
             nRank = 1;
         }
@@ -2989,11 +3175,11 @@ char CSWSCreatureStats::GetSkillRank(unsigned char nSkill, CSWSObject* pTarget,
             {
                 nRank += 1;
             }
-            if (HasSpell(0, 158, 0))
+            if (HasSpell(0, CSWSpell::FORCE_POWER_MASTER_FORCE_CAMOUFLAGE, 0))
             {
                 nRank += 8;
             }
-            else if (HasSpell(0, 157, 0))
+            else if (HasSpell(0, CSWSpell::FORCE_POWER_IMPROVED_FORCE_CAMOUFLAGE, 0))
             {
                 nRank += 4;
             }
@@ -3831,7 +4017,16 @@ int CSWSCreatureStats::GetCreatureTalentRandomFeat(
             {
                 if (CheckInclusionMatch(CScriptTalent::TALENT_TYPE_FEAT, nFeat, nExclusion) &&
                     nExcludedFeat != nFeat &&
-                    GetCreatureHasTalent(CScriptTalent::TALENT_TYPE_FEAT, nFeat))
+                    nFeat != INVALID_TALENT &&
+                    !(((m_pCreature->m_nAIStateFlags &
+                        (CSWSCreature::AI_STATE_CAN_MOVE |
+                         CSWSCreature::AI_STATE_CAN_USE_HANDS)) !=
+                           (CSWSCreature::AI_STATE_CAN_MOVE |
+                            CSWSCreature::AI_STATE_CAN_USE_HANDS) &&
+                       m_pCreature->GetDead() != 0) ||
+                      m_pCreature->GetIsPCDying() != 0 ||
+                      m_pCreature->GetDeadTemp() != 0) &&
+                    HasFeat(nFeat) && GetFeatRemainingUses(nFeat))
                 {
                     if (nSelection == TALENT_SELECTION_RANDOM)
                     {
@@ -3946,11 +4141,58 @@ int CSWSCreatureStats::GetCreatureTalentRandomKnownPower(
             int nRoomForceRating = 0;
             if (pArea != NULL)
                 nRoomForceRating = pArea->GetRoomForceRating(m_pCreature->m_vPosition);
-            bAdjust = m_pCreature->m_bInParty;
-            nAlignment = m_nGoodEvilAlignment;
-            nForcePoints = pSpell->GetAdjustedForcePoints(nAlignment, bAdjust, nRoomForceRating,
-                m_pCreature->m_n1110, m_nCharismaModifier);
-            if (nForcePoints <= GetCurrentForcePoints() &&
+            int bEnoughPoints = 0;
+            int nForceBodyLevel = -1;
+            CExoArrayList<CGameEffect*>* pEffects = &m_pCreature->m_lstEffects;
+            for (int i = 0; i < pEffects->num; i++)
+            {
+                CGameEffect* pEffect = (*pEffects)[i];
+                if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
+                {
+                    nForceBodyLevel = pEffect->GetInteger(0);
+                    break;
+                }
+            }
+            if (nForceBodyLevel != -1)
+            {
+                int nPercent = 0;
+                int nFullCost = pSpell->GetAdjustedForcePoints(GetGoodEvilAlignment(),
+                    m_pCreature->GetInParty(), nRoomForceRating, m_pCreature->GetForm(), m_pCreature->GetStats()->GetCHAMod());
+                switch (nForceBodyLevel)
+                {
+                case 0:
+                    nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_0;
+                    break;
+                case 1:
+                    nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_1;
+                    break;
+                case 2:
+                    nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
+                    break;
+                }
+                int nHitPointCost = nFullCost * nPercent / 100;
+                if (nHitPointCost <= GetCurrentForcePoints())
+                {
+                    if (m_pCreature->GetCurrentHitPoints(0) - nHitPointCost > 1)
+                    {
+                        bEnoughPoints = 1;
+                    }
+                    else
+                    {
+                        m_pCreature->GetCurrentHitPoints(0);
+                    }
+                }
+            }
+            else
+            {
+                nForcePoints = pSpell->GetAdjustedForcePoints(GetGoodEvilAlignment(),
+                    m_pCreature->GetInParty(), nRoomForceRating, m_pCreature->GetForm(), m_pCreature->GetStats()->GetCHAMod());
+                if (nForcePoints <= GetCurrentForcePoints())
+                {
+                    bEnoughPoints = 1;
+                }
+            }
+            if (bEnoughPoints &&
                 CheckPowerSuitability(nSpell, pSpell, nFilter, nSelection, 0,
                                       nSpellIndex, nClassIndex, nExcludedPower))
             {
@@ -6148,11 +6390,11 @@ int CSWSCreatureStats::GetWeaponFinesse(CSWSItem* pItem)
 {
     if (pItem != NULL && GetDEXMod(0) > m_nStrengthModifier)
     {
-        if ((pItem->IsLightsaber() && HasFeat(193)) ||
+        if ((pItem->IsLightsaber() && HasFeat(CSWFeat::FEAT_FINESSE_LIGHTSABERS)) ||
             ((pItem->GetBaseItem()->m_nWeaponWield == CSWBaseItem::WEAPON_WIELD_ONE_HANDED_1 ||
               pItem->GetBaseItem()->m_nWeaponWield == CSWBaseItem::WEAPON_WIELD_ONE_HANDED_2 ||
               pItem->GetBaseItem()->m_nWeaponWield == CSWBaseItem::WIELD_DOUBLE_WEAPON) &&
-             HasFeat(194)))
+             HasFeat(CSWFeat::FEAT_FINESSE_MELEE_WEAPONS)))
         {
             return 1;
         }

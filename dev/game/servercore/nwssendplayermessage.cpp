@@ -227,7 +227,7 @@ int CSWSMessage::ComputeLastUpdate_GuiKnownSpells(CSWSCreature* pCreature,
 {
     CSWSCreatureStats* pStats = pCreature->m_pStats;
     unsigned char nClass;
-    unsigned char nLevel;
+    int nLevel;
     for (nClass = 0; nClass < 2; nClass++)
     {
         unsigned char nCurrent[1];
@@ -242,7 +242,7 @@ int CSWSMessage::ComputeLastUpdate_GuiKnownSpells(CSWSCreature* pCreature,
                 if (nSpell == (unsigned long)pStats->GetKnownSpell(nClass, nLevel, nCurrent[nLevel]))
                     nCurrent[nLevel]++;
                 else
-                    pLastUpdate->m_aSpellsRemoved[nClass].Add(nSpell);
+                    pLastUpdate->m_aSpellsRemoved[nClass + nLevel].Add(nSpell);
             }
         }
         for (nLevel = 0; nLevel < 1; nLevel++)
@@ -3279,7 +3279,19 @@ int CSWSMessage::ComputeInventoryUpdateRequired(CSWSPlayer* pPlayer,
 
     if (pPlayer != NULL && pPlayer->GetGameObject() != NULL)
     {
-        pGameObject = pPlayer->GetGameObject();
+        int nOverrideCharacter = g_pAppManager->m_pClientExoApp->GetInGameGui()
+                                     ->GetTopMenuOverrideCharacter();
+        if (nOverrideCharacter != -1)
+        {
+            pGameObject =
+                (CSWSObject*)g_pAppManager->m_pServerExoApp->GetGameObject(
+                    g_pAppManager->m_pServerExoApp->GetPartyTable()
+                        ->GetNPCObject(nOverrideCharacter, 0, 1));
+        }
+        else
+        {
+            pGameObject = pPlayer->GetGameObject();
+        }
         if (pGameObject->AsSWSCreature() != NULL &&
             pGameObject->AsSWSCreature()->m_pInventory != NULL)
         {
@@ -5009,7 +5021,19 @@ void CSWSMessage::UpdateLastUpdateInventory(CSWSPlayer* pPlayer,
 
     if (pPlayer != NULL && pPlayer->GetGameObject() != NULL)
     {
-        pGameObject = pPlayer->GetGameObject();
+        int nOverrideCharacter = g_pAppManager->m_pClientExoApp->GetInGameGui()
+                                     ->GetTopMenuOverrideCharacter();
+        if (nOverrideCharacter != -1)
+        {
+            pGameObject =
+                (CSWSObject*)g_pAppManager->m_pServerExoApp->GetGameObject(
+                    g_pAppManager->m_pServerExoApp->GetPartyTable()
+                        ->GetNPCObject(nOverrideCharacter, 0, 1));
+        }
+        else
+        {
+            pGameObject = pPlayer->GetGameObject();
+        }
         if (pGameObject->AsSWSCreature() != NULL &&
             pGameObject->AsSWSCreature()->m_pInventory != NULL)
         {
