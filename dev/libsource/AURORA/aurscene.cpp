@@ -3862,7 +3862,8 @@ void Scene::RenderLensFlares()
                     for (int j = 0; j < pNode->m_lstTextures.m_nCount; j++)
                     {
                         pNode->m_lstTextures.m_pList[j]->Bind();
-                        Vector vPosition = vDirection * pNode->m_lstFlarePositions.m_pList[j];
+                        float fPosition = pNode->m_lstFlarePositions.m_pList[j];
+                        Vector vPosition = vDirection * fPosition;
                         Vector vColor = (pNode->m_lstFlareColorShifts.m_pList[j] + pLight->m_vColor) *
                                         pLight->m_fFlareFade * fFacing *
                                         (pNode->m_fFlareRadius - fDistance) / pNode->m_fFlareRadius;
