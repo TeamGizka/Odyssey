@@ -109,7 +109,6 @@ unsigned char CSWSDoor::GetOpenLockDC()
 {
     unsigned char nDC;
     unsigned char nPercent;
-    char nModifier = 0;
     if (m_nOpenLockDiff == 4)
     {
         char nFixedModifier;
@@ -136,6 +135,7 @@ unsigned char CSWSDoor::GetOpenLockDC()
         }
         return 0;
     }
+    char nModifier = 0;
     switch (m_nOpenLockDiff)
     {
         case 0:
