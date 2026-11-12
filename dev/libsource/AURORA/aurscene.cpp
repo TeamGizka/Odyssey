@@ -3542,7 +3542,8 @@ bool Gob::VisibilityCheck()  // PC 0x0046C2E0
         return true;
     if (!IsVisibilityCheckDisabled() && !IsAlwaysRendering())
     {
-        float fDistance = magnitude(CurrentCamera->m_vPosition - m_vPosition);
+        Camera* pCamera = CurrentCamera;
+        float fDistance = magnitude(pCamera->m_vPosition - m_vPosition);
         if (2.0f * m_fMinimumBoundingSphereRadius / fDistance > visibilitycutoffratio)
         {
             m_fVisibilityCheckTime = 0.0f;

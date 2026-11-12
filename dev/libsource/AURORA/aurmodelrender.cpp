@@ -3320,7 +3320,7 @@ void RenderLightMappedBumpSpecular(VertexPrimitiveFlat* pPrimitive)
     if (AurPixelShadersAvailable())
     {
         PartTriMesh* pPart = pPrimitive->m_pPart->AsPartTriMesh();
-        GLRender_Disable(ENABLE_FOG);
+        GLRender_Enable(ENABLE_FOG);
         MdlNodeTriMesh* pNode = 0;
         if (pPart != 0)
             pNode = (MdlNodeTriMesh*)pPart->m_pNode;
@@ -3400,6 +3400,7 @@ void RenderLightMappedBumpSpecular(VertexPrimitiveFlat* pPrimitive)
             if (bAlphaTest != 0)
                 GLRender_Enable(ENABLE_ALPHA_TEST);
         }
+        GLRender_Disable(ENABLE_FOG);
         GLRender_DisableClientState(CLIENT_STATE_LIGHT_VECTOR);
         GLRender_DisableClientState(CLIENT_STATE_TANGENT_BASIS0);
         GLRender_DisableClientState(CLIENT_STATE_TANGENT_BASIS1);
@@ -3413,6 +3414,8 @@ void RenderLightMappedBumpSpecular(VertexPrimitiveFlat* pPrimitive)
         GLRender_EnablePixelShaders(MODEL_SHADER_DISABLE, 0, 0, 0, 0);
         GLRender_Disable(ENABLE_VERTEX_PROGRAM);
     }
+    if (bAlphaTestEnabled != 0)
+        GLRender_Enable(ENABLE_ALPHA_TEST);
 }
 
 void RenderDiffuseBumpMappedPass(VertexPrimitiveFlat* pPrimitive)
@@ -3806,19 +3809,7 @@ void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
             GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS1);
             GLRender_EnableClientState(CLIENT_STATE_TANGENT_BASIS2);
         }
-        if (g_ForceSight)
-        {
-            bumpmapvp->Enable(pPart, true);
-            SetupForceSightShader(pPrimitive->m_pPart->m_pAurObject, MODEL_SHADER_FGLOW_BUMPMAP,
-                                  MODEL_SHADER_DESAT_BUMPMAP, pPart->m_pMaterial->m_pBumpMap.m_pObject,
-                                  currentscene->m_pNormalizationCubeMap.m_pObject,
-                                  currentscene->m_pNormalizationCubeMap.m_pObject,
-                                  pPart->m_pMaterial->m_pTexture0.m_pObject, false);
-            RenderFlat(pPrimitive);
-            GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
-            SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-        }
-        else
+        if (!g_ForceSight)
         {
             GLRender_EnablePixelShaders(MODEL_SHADER_BUMP,
                 pPart->m_pMaterial->m_pBumpMap,
@@ -3847,11 +3838,11 @@ void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
                     ((CAurTexture*)pPart->m_pMaterial->m_pBumpMap.m_pObject)->GetDiffuseBumpIntensity());
                 if (usebumpdiffuse)
                 {
-                    GLRender_SetBumpLightColor(vLightColor, 1.0f);
+                    SetBumpLightColor(vLightColor);
                 }
                 else
                 {
-                    GLRender_SetBumpLightColor(Vector(1.0f, 0.0f, 0.0f), 1.0f);
+                    SetBumpLightColor(Vector(1.0f, 0.0f, 0.0f));
                 }
                 vLightColor = cmul(lstLights[nLight]->m_vColor,
                     (vSpecular * specularintensity) *
@@ -3878,6 +3869,18 @@ void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
                 }
                 currentscene->m_pLightManager->EnableBumpMapLights();
             }
+        }
+        else
+        {
+            bumpmapvp->Enable(pPart, true);
+            SetupForceSightShader(pPrimitive->m_pPart->m_pAurObject, MODEL_SHADER_FGLOW_BUMPMAP,
+                                  MODEL_SHADER_DESAT_BUMPMAP, pPart->m_pMaterial->m_pBumpMap,
+                                  currentscene->m_pNormalizationCubeMap,
+                                  currentscene->m_pNormalizationCubeMap,
+                                  pPart->m_pMaterial->m_pTexture0, false);
+            RenderFlat(pPrimitive);
+            GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
+            SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
         }
 
 #ifndef _XBOX
@@ -3983,7 +3986,6 @@ void RenderBumpMapped(VertexPrimitiveFlat* pPrimitive)
 #ifndef _XBOX
 void RenderNormalMapped(VertexPrimitiveFlat* pPrimitive)  // PC 0x00492F00
 {
-    MdlNodeTriMesh* pNode = 0;
     if (currentscene == 0)
     {
         RenderFlat(pPrimitive);
@@ -4018,6 +4020,7 @@ void RenderNormalMapped(VertexPrimitiveFlat* pPrimitive)  // PC 0x00492F00
             GLRender_Disable(ENABLE_VERTEX_PROGRAM);
         }
         PartTriMesh* pPart = pPrimitive->m_pPart->AsPartTriMesh();
+        MdlNodeTriMesh* pNode = 0;
         if (pPart)
         {
             pNode = (MdlNodeTriMesh*)pPart->m_pNode;

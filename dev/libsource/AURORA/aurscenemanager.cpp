@@ -1201,17 +1201,19 @@ void AddObjectToRooms(Scene* pScene, Gob* pGob)
 {
     int nRooms = 0;
     Vector vPosition;
-    if (pGob->m_pModel && char(pGob->m_pModel->m_Classification.m_bCharacter))
+    Model* pModel = pGob->m_pModel;
+    if (pModel && char(pModel->m_Classification.m_bCharacter))
     {
         vPosition = pGob->m_vPosition;
     }
     else
     {
-        vPosition = pGob->m_vPosition + pGob->m_qOrientation *
+        Quaternion& qOrientation = pGob->m_qOrientation;
+        vPosition = pGob->m_vPosition + qOrientation *
             ((pGob->m_vBoundingBoxMinimum + pGob->m_vBoundingBoxMaximum) / 2.0f);
     }
 
-    if (!(pGob->m_pModel ? char(pGob->m_pModel->m_Classification.m_bAllRooms) : char(0)))
+    if (!(pModel ? char(pModel->m_Classification.m_bAllRooms) : char(0)))
     {
         for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
         {

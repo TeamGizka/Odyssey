@@ -906,17 +906,18 @@ void RenderSkinned(VertexPrimitiveSkinned* pPrimitive, bool bBumpedOut)
     rbones.m_nCount = 0;
     tbones.m_nCount = 0;
 
+    Part* pRoot = pPart;
     Vector vTranslation = -pPart->m_qOrientation * -pPart->m_vPosition;
     Quaternion qRotation = -pPart->m_qOrientation;
-    while (pPart->m_pParent != 0)
+    while (pRoot->m_pParent != 0)
     {
-        pPart = pPart->m_pParent;
+        pRoot = pRoot->m_pParent;
         vTranslation = vTranslation + qRotation *
-            (-pPart->m_qOrientation * -pPart->m_vPosition);
-        qRotation = qRotation * -pPart->m_qOrientation;
+            (-pRoot->m_qOrientation * -pRoot->m_vPosition);
+        qRotation = qRotation * -pRoot->m_qOrientation;
     }
 
-    GatherBones(pPart, tbones, qbones, vTranslation, qRotation);
+    GatherBones(pRoot, tbones, qbones, vTranslation, qRotation);
     for (int i = 0; i < tbones.m_nCount; i++)
     {
         tbones[i] = tbones[i] + qbones[i] * pNode->m_lstTBoneRefInv[i];
@@ -2107,7 +2108,16 @@ void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490
             pProgram = g_pSkinBumpedOutVP;
         }
         pProgram->Enable(pSkin, false);
+        if (g_ForceSight)
+            SetupForceSightShader(m_pAurObject, MODEL_SHADER_FGLOW, MODEL_SHADER_DESAT,
+                0, 0, 0, 0, false);
         RenderFlat(pPrimitive);
+        if (g_ForceSight)
+        {
+            GLRender_EnablePixelShaders(MODEL_SHADER_NOISE_DISABLE, 0, 0, 0, 0);
+            GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+            glDepthMask(GL_TRUE);
+        }
 #ifndef _XBOX
         if (usearbvertexprograms != 0)
         {
@@ -2120,6 +2130,8 @@ void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490
             GLRender_DisableClientState(CLIENT_STATE_SKIN_WEIGHT);
             GLRender_DisableClientState(CLIENT_STATE_BONE_INDEX);
         }
+        GLRender_SetBlendFunc(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+        glDepthMask(GL_TRUE);
         GLRender_Disable(ENABLE_VERTEX_PROGRAM);
     }
 }
