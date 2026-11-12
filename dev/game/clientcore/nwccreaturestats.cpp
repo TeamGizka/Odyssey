@@ -1406,8 +1406,7 @@ void CSWCLevelUpStats::CalcNumberFeats(unsigned char& nGeneral,
 unsigned char CSWCLevelUpStats::ComputeNumberKnownSpellsLeft()
 {
     NwccreaturestatsTrace1();
-    unsigned char nIndex = m_nClassCount - 1;
-    unsigned char nClass = GetClass(nIndex);
+    unsigned char nClass = GetClass(m_nClassCount - 1);
     CSWClass* pClass = &g_pRules->m_pClasses[nClass];
     if (pClass == NULL)
     {
@@ -1425,7 +1424,7 @@ unsigned char CSWCLevelUpStats::ComputeNumberKnownSpellsLeft()
     {
         return 0;
     }
-    unsigned char nSpells = pClass->GetSpellGain(GetClassLevel(nIndex), 0);
+    unsigned char nSpells = pClass->GetSpellGain(GetClassLevel(m_nClassCount - 1), 0);
     if (nSpells == CSWClass::SPELL_GAIN_INVALID)
     {
         return 0;
@@ -1918,7 +1917,8 @@ int CSWCLevelUpStats::CanChooseFeat(unsigned short nFeat, unsigned char nNormal,
     }
     for (unsigned short m = 0; m < pList->num; m++)
     {
-        if (!lstAssigned[m])
+        int bFeatAssigned = lstAssigned[m];
+        if (!bFeatAssigned)
         {
             if (nNormalLeft)
             {
