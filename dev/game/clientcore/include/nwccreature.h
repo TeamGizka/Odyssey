@@ -230,6 +230,7 @@ public:
         STRREF_IMPLANT_NAME_AGI = 48431,
         STRREF_IMPLANT_NAME_END = 48432,
         ACTION_BEHAVIOR_AGGRESSIVE = 1040,
+        ACTION_BEHAVIOR_PASSIVE = 1041,
         ACTION_BEHAVIOR_RANGED = 1042,
         ACTION_BEHAVIOR_STATIONARY = 1043,
         ACTION_BEHAVIOR_SUPPORT = 1044,
@@ -546,6 +547,7 @@ public:
     void PartyMenuUseItem(unsigned long nItem, CSWCCreature* pTarget);
     void SetCombatMode(int nMode);
     int IsStealthCapable();
+    int CanSwapWeapons();
 
     void SetStealthState(int nState, int bSuppressAnimation);
     void PartyMenuStealth(unsigned long oidTarget, CSWCCreature* pTarget);

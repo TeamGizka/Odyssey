@@ -91,15 +91,17 @@ public:
 
     enum ToolTipStringRef
     {
-        STRREF_ACTION_MENU_UP = 48465,
-        STRREF_ACTION_MENU_DOWN = 48466,
-        STRREF_ACTIVATE_FRIENDLY_POWER = 48486,
-        STRREF_ACTIVATE_MEDICAL_ITEM = 48291,
-        STRREF_ACTIVATE_NON_MEDICAL_ITEM = 48299,
-        STRREF_ACTIVATE_MINE = 48295,
-        STRREF_ACTIVATE_LEFT_ACTION = 48303,
-        STRREF_ACTIVATE_MIDDLE_ACTION = 48307,
-        STRREF_ACTIVATE_RIGHT_ACTION = 48311
+        STRREF_ACTION_MENU_UP = 48784,
+        STRREF_ACTION_MENU_DOWN = 48802,
+        STRREF_ACTIVATE_FRIENDLY_POWER = 48803,
+        STRREF_ACTIVATE_MEDICAL_ITEM = 48804,
+        STRREF_ACTIVATE_NON_MEDICAL_ITEM = 48805,
+        STRREF_ACTIVATE_MINE = 48806,
+        STRREF_ACTIVATE_LEFT_ACTION = 48792,
+        STRREF_ACTIVATE_MIDDLE_ACTION = 48807,
+        STRREF_ACTIVATE_RIGHT_ACTION = 48808,
+        STRREF_SELECT_BEHAVIOR = 125001,
+        STRREF_ACTIVATE_FORM = 125002
     };
 #ifndef _XBOX
     CSWGuiButton m_CSWGuiButton_0;
@@ -355,6 +357,8 @@ public:
 
     enum { ACTION_QUEUE_FIRST_ICON = 4, ACTION_ICON_COUNT = 7 };
 
+    enum { ACTION_FORM_FLAG = 0x20000000 };
+
     static const int FOG_POINT_SPAN = 4;
 
     static const unsigned long STRREF_COMBAT_MODE_ENGAGED = 111303;
@@ -368,20 +372,29 @@ public:
     static const unsigned long STRREF_FULL_HEALTH = 42498;
     static const unsigned long STRREF_PC_DEAD = 47936;
 
-    static const unsigned long STRREF_HOTKEY_HELP = 48458;
-    static const unsigned long STRREF_MENU_EQUIPMENT = 48219;
-    static const unsigned long STRREF_MENU_INVENTORY = 48220;
-    static const unsigned long STRREF_MENU_CHARACTER = 48225;
-    static const unsigned long STRREF_MENU_MAP = 48221;
-    static const unsigned long STRREF_MENU_ABILITIES = 48224;
-    static const unsigned long STRREF_MENU_JOURNAL = 48218;
-    static const unsigned long STRREF_MENU_OPTIONS = 48222;
-    static const unsigned long STRREF_MENU_MESSAGES = 48223;
-    static const unsigned long STRREF_PAUSE = 48019;
-    static const unsigned long STRREF_SOLO = 48035;
+    static const unsigned long STRREF_HOTKEY_HELP = 48972;
+    static const unsigned long STRREF_MENU_EQUIPMENT = 31387;
+    static const unsigned long STRREF_MENU_INVENTORY = 48621;
+    static const unsigned long STRREF_MENU_CHARACTER = 48782;
+    static const unsigned long STRREF_MENU_MAP = 32181;
+    static const unsigned long STRREF_MENU_ABILITIES = 48623;
+    static const unsigned long STRREF_MENU_JOURNAL = 48627;
+    static const unsigned long STRREF_MENU_OPTIONS = 1584;
+    static const unsigned long STRREF_MENU_MESSAGES = 124289;
+    static const unsigned long STRREF_PAUSE = 48798;
+    static const unsigned long STRREF_SOLO = 48799;
     static const unsigned long STRREF_STEALTH = 247;
-    static const unsigned long STRREF_CLEAR_ONE = 48456;
-    static const unsigned long STRREF_CLEAR_ALL = 48518;
+    static const unsigned long STRREF_CLEAR_ONE = 48800;
+    static const unsigned long STRREF_CLEAR_ALL = 109864;
+    static const unsigned long STRREF_SWITCH_WEAPONS = 49127;
+
+    enum
+    {
+        CANCEL_ITEM_SELECT_LEFT = 4,
+        CANCEL_ITEM_SELECT_TOP = 398,
+        CANCEL_ITEM_SELECT_WIDTH = 252,
+        CANCEL_ITEM_SELECT_HEIGHT = 96
+    };
 #ifndef _XBOX
     unsigned long m_nTargetId;
 
@@ -401,8 +414,8 @@ public:
 #ifndef _XBOX
     int m_aSelectedPersonalActions[7];
     int m_nDefaultAction;
-    float m_f1C90;
-    float m_f1C94;
+    float m_fScaleX;
+    float m_fScaleY;
 
     CSWGuiLabel m_aMoulding[2];
 
@@ -469,13 +482,13 @@ public:
     CSWGuiButton m_btnSwapWeapons;
 
     CAurGUIImageInternal* m_pBlackDot;
-    int m_nD560;
-    int m_nD564;
-    unsigned long m_nD568;
-    CSWGuiButton m_btnD56C;
-    int m_nD73C;
-    int m_nD740;
-    int m_nD744;
+    int m_bSelectingUseItemTarget;
+    int m_nUseItemTargetMember;
+    unsigned long m_oidUseItemPending;
+    CSWGuiButton m_btnCancelPartyItemSelect;
+    float m_fFormMessageTime;
+    unsigned long m_nFormMessage;
+    int m_bPersonalActionScrolled;
 #else
     unsigned long m_nTargetId;
     unsigned long m_oidPlayerCharacter;
@@ -565,6 +578,12 @@ public:
     void OnTargetUpArrowPressed(CSWGuiControl*);
     void OnTargetDownArrowPressed(CSWGuiControl*);
     void OnSwapWeaponsPressed(CSWGuiControl*);
+    void OnCancelPartyItemSelect(CSWGuiControl*);
+    void RevertActionBarStates();
+    void UpdateGameMenu();
+    void OnCharacterEntered(CSWGuiControl*);
+    void OnCharacterExited(CSWGuiControl*);
+    void OnPersonalActionExit(CSWGuiControl*);
     void OnPauseButtonPressed(CSWGuiControl*);
     void OnSoloButtonPressed(CSWGuiControl*);
     void OnStealthButtonPressed(CSWGuiControl*);
@@ -592,9 +611,6 @@ public:
     void AddFloatyText(unsigned long, CExoString const&, Vector const&, float);
     void OnDefaultActionLeft(CSWGuiControl*);
     CSWGuiMainInterface(CSWGuiManager*);
-    int m_bSelectingUseItemTarget;
-    int m_nUseItemTargetMember;
-    unsigned long m_oidUseItemPending;
     void ResetPartyMemberItemUse();
 };
 

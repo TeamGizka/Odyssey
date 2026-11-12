@@ -17898,7 +17898,7 @@ int CSWVirtualMachineCommands::ExecuteCommandShowPartySelection(int nCommand,
         }
     }
     g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowPartySelection(sExitScript, 1, nForceNPC1,
-                                                                       nForceNPC2);
+                                                                       nForceNPC2, nUnknown);
     return 0;
 }
 // PC 0x005C73B0

@@ -6389,8 +6389,8 @@ void CSWCCreature::ActionSwapImplant(int nAction)
     g_pVirtualMachine->RunScript(&sScript, GetServerCreature()->m_nId, 1);
     CSWGuiMainInterface* pMainInterface =
         g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface;
-    pMainInterface->m_nCombatMessage = nStrRef;
-    pMainInterface->m_fCombatMessageTime = SWCCREATURE_FORM_MESSAGE_DURATION;
+    pMainInterface->m_nFormMessage = nStrRef;
+    pMainInterface->m_fFormMessageTime = SWCCREATURE_FORM_MESSAGE_DURATION;
 }
 // PC 0x006635D0
 void CSWCCreature::ActionMenuSwapImplantRegen(unsigned long nAction, CSWCCreature* pInstigator)
@@ -7025,8 +7025,8 @@ void CSWCCreature::ActionMenuForm(unsigned long nAction, CSWCCreature* pInstigat
     }
     CSWGuiMainInterface* pMainInterface =
         g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface;
-    pMainInterface->m_nCombatMessage = nStrRef;
-    pMainInterface->m_fCombatMessageTime = SWCCREATURE_FORM_MESSAGE_DURATION;
+    pMainInterface->m_nFormMessage = nStrRef;
+    pMainInterface->m_fFormMessageTime = SWCCREATURE_FORM_MESSAGE_DURATION;
 }
 // PC 0x0065BD40
 void CSWCCreature::AttachToScene(CAurScene* pScene)
@@ -7088,8 +7088,8 @@ void CSWCCreature::ActionMenuSelectBehavior(unsigned long nAction, CSWCCreature*
                 nTutorial, OBJECT_INVALID, OBJECT_INVALID, 0);
             CSWGuiMainInterface* pMainInterface =
                 g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMainInterface;
-            pMainInterface->m_nCombatMessage = nStrRef;
-            pMainInterface->m_fCombatMessageTime = SWCCREATURE_FORM_MESSAGE_DURATION;
+            pMainInterface->m_nFormMessage = nStrRef;
+            pMainInterface->m_fFormMessageTime = SWCCREATURE_FORM_MESSAGE_DURATION;
         }
     }
 }
@@ -7607,6 +7607,11 @@ void CSWCCreature::PlayDrawAnimation(unsigned short nValue)
         InsertFireForgetAnimation(nValue, 1500, 1.0f, NULL, 0);
         m_nDrawAnimation = -1;
     }
+}
+// PC 0x0065D0F0
+int CSWCCreature::CanSwapWeapons()
+{
+    return 1;
 }
 // PC 0x0065CF40
 int CSWCCreature::IsStealthCapable()

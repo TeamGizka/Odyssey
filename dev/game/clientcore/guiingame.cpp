@@ -5149,7 +5149,7 @@ int CGuiInGame::ShowLevelUpGUI(int bAutomatic)
 }
 // PC 0x006803D0
 void CGuiInGame::ShowPartySelection(const CExoString& sExitScript, int bAllowCancel,
-                                    int nForceNPC1, int nForceNPC2)
+                                    int nForceNPC1, int nForceNPC2, int nUnknown)
 {
     GUIINGAME_TRACE();
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
@@ -5163,7 +5163,7 @@ void CGuiInGame::ShowPartySelection(const CExoString& sExitScript, int bAllowCan
             (pServer->GetCreatureByGameObjectID(
                 pServer->GetPlayerCreatureId())->GetArea()->m_bUnescapable == 0 ||
              bAllowCancel != 0) &&
-            m_pGuiManager->PanelExists(m_pPartySelectionPanel) == 0)
+            m_pGuiManager->PanelExists(m_apScreenPanels[IN_GAME_SCREEN_PARTY_SELECTION]) == 0)
         {
             if (bAllowCancel != 0)
             {
@@ -5175,14 +5175,16 @@ void CGuiInGame::ShowPartySelection(const CExoString& sExitScript, int bAllowCan
                 m_pGuiManager->PlayGuiSound(CSWGuiManager::GUISOUND_PAZAAK_START);
                 g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL_BUT_MUSIC);
             }
-            if (m_pPartySelectionPanel == 0)
-                m_pPartySelectionPanel = new CSWGuiPartySelection(m_pGuiManager);
-            m_pPartySelectionPanel->m_sRunScript = sExitScript;
-            m_pPartySelectionPanel->m_bPlaySound = bAllowCancel;
-            m_pPartySelectionPanel->SetForcedNPC(nForceNPC1, nForceNPC2);
-            m_pPartySelectionPanel->m_nInputClass =
-                bAllowCancel != 0 ? INPUT_CLASS_GAME : INPUT_CLASS_GUI;
-            m_pGuiManager->AddPanel(m_pPartySelectionPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
+            if (m_apScreenPanels[IN_GAME_SCREEN_PARTY_SELECTION] == 0)
+                m_apScreenPanels[IN_GAME_SCREEN_PARTY_SELECTION] = new CSWGuiPartySelection(m_pGuiManager);
+            CSWGuiPartySelection* pPartySelection =
+                (CSWGuiPartySelection*)m_apScreenPanels[IN_GAME_SCREEN_PARTY_SELECTION];
+            pPartySelection->m_sRunScript = sExitScript;
+            pPartySelection->m_bPlaySound = bAllowCancel;
+            pPartySelection->SetForcedNPC(nForceNPC1, nForceNPC2);
+            pPartySelection->m_n78 = nUnknown;
+            pPartySelection->m_nInputClass = INPUT_CLASS_GAME;
+            m_pGuiManager->AddPanel(pPartySelection, CSWGuiManager::PANEL_MODE_MODAL, 1);
 #ifdef _XBOX
             g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GUI);
 #else

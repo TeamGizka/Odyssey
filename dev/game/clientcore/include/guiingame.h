@@ -137,7 +137,7 @@ public:
 
     enum { MAX_PLACEABLE_CAMERAS = 70 };
 
-    enum { IN_GAME_SCREEN_COUNT = 8 };
+    enum { IN_GAME_SCREEN_PARTY_SELECTION = 4, IN_GAME_SCREEN_COUNT = 8 };
 
     enum { MAX_DIALOG_SPANNING_TEXT = 8 };
 
@@ -278,7 +278,7 @@ public:
     int GetBarkBubbleVisible(int& nTop);
     int GetFadeOverridePanelVisible();
     void ShowPartySelection(const CExoString& sExitScript, int bAllowCancel,
-                            int nForceNPC1, int nForceNPC2);
+                            int nForceNPC1, int nForceNPC2, int nUnknown);
     void MarkNoClickEvent(unsigned long nMilliseconds);
     void SuppressStatusSummary(int nNumEntries);
     int CanPlayDialogAnimations(unsigned long oidObject);

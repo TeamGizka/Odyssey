@@ -442,7 +442,7 @@ void CSWGuiInGameMap::HandleInputEvent(int nEvent, int nState)
             {
                 CExoString sExitScript("");
                 g_pAppManager->GetClientExoApp()->GetInGameGui()
-                    ->ShowPartySelection(sExitScript, 0, -1, -1);
+                    ->ShowPartySelection(sExitScript, 0, -1, -1, 0);
             }
             else
             {

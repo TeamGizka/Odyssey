@@ -27,6 +27,8 @@ public:
 
     static const unsigned long STRREF_NO_DESCRIPTION = 32172;
 
+    static const unsigned long STRREF_UPGRADE_INCOMPATIBLE = 116713;
+
     static const unsigned long STRREF_UPGRADES = 42026;
 
     static const unsigned long STRREF_UPGRADE_PREVENTS_REEQUIP = 42489;
@@ -128,10 +130,11 @@ public:
     virtual void OnPanelAdded();
     void OnControlEntered(CSWGuiControl*);
     void OnUpgradeSelected(CSWGuiControl*);
-    CSWUpgradeItemEntry* CreateItemEntry(unsigned long, int);
+    CSWUpgradeItemEntry* CreateItemEntry(unsigned long, int, int bDisabled);
     void InsertUpgrade(CSWSItem*, int);
     void VerifyUpgrade(CSWGuiControl*);
     void OnAssemble(CSWGuiControl*);
+    void OnDisabledSelected(CSWGuiControl* pControl);
 #ifdef _XBOX
     void OnEnterAssemble(CSWGuiControl*);
 #endif
@@ -177,6 +180,7 @@ public:
 
     unsigned long m_bDualWield : 1;
     unsigned long m_bLeftHandItem : 1;
+    unsigned long m_bSecondWeaponSet : 1;
     unsigned long m_oidOtherWeapon;
 
     int m_nC84;
@@ -423,6 +427,7 @@ public:
     unsigned long m_nItemId;
     unsigned long m_nItemProperty;
     unsigned int m_bShowItemSuffix : 1;
+    unsigned int m_bDisabled : 1;
     int m_nUpgradeIndex;
     CSWGuiBorder m_CSWGuiBorder_1D8;
     CSWGuiBorder m_CSWGuiBorder_24C;

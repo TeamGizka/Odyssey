@@ -33,16 +33,22 @@ void CSWGuiUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
         return;
     if (pControl->GetEvent() == GUIEVENT_ACCEPT)
         m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-    EXOXBOXASSERT(m_nItemListMode == ITEMLIST_LIGHTSABER);
-
-    EXOXBOXASSERT(m_nItemListMode == 1);
-    CSWUpgradeItemEntry* pEntry = (CSWUpgradeItemEntry*)pControl;
+    CSWUpgradeItemEntry* pEntry;
+    if (pControl == &m_btnOk)
+        pEntry = (CSWUpgradeItemEntry*)m_lbItems.GetSelectedControl();
+    else
+        pEntry = (CSWUpgradeItemEntry*)pControl;
+    if (pEntry == 0)
+        return;
+    if (pEntry->m_bDisabled)
+        return;
     CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
     CItemRepository* pRepository = pServer->GetPartyTable()->GetPartyItems();
     int nSlot = m_pItemListControl->m_nIndex;
-    if (nSlot == UPGRADE_SLOT_COLOR_CRYSTAL)
+    if (nSlot == UPGRADE_SLOT_COLOR_CRYSTAL && m_nItemListMode == ITEMLIST_LIGHTSABER)
     {
-        if (pEntry->m_nUpgradeIndex == -1)
+        int nUpgradeIndex = pEntry->m_nUpgradeIndex;
+        if (nUpgradeIndex == -1)
             goto Exit;
         CExoString sTemplate;
         CExoString sColumn;
@@ -58,20 +64,25 @@ void CSWGuiUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
             sColumn = "LongMdlVar";
             break;
         }
-        unsigned char nUpgradeIndex = pEntry->m_nUpgradeIndex;
-        m_pCrystalTable->GetCExoStringEntry(nUpgradeIndex,
-                                           sColumn, &sTemplate);
+        int nCrystalRow = pEntry->m_nUpgradeIndex;
+        m_pCrystalTable->GetCExoStringEntry(nCrystalRow, sColumn, &sTemplate);
         CSWSItem* pItem = new CSWSItem(OBJECT_INVALID);
-#ifdef _XBOX
-        pItem->LoadFromTemplate(sTemplate);
-#else
-        CResRef resTemplate(sTemplate);
-        pItem->LoadFromTemplate(resTemplate);
-#endif
+        {
+            CResRef resTemplate(sTemplate);
+            pItem->LoadFromTemplate(resTemplate);
+        }
         pItem->SetPossessor(pServer->GetPlayerCreatureId(), 0, 0, OBJECT_INVALID);
         pItem->SetIdentified(1);
         int nUpgrades = m_pSelectedItem->m_nUpgrades;
         pItem->m_nUpgrades = nUpgrades;
+        for (int i = 0; i < NUM_UPGRADE_SLOTS; i++)
+        {
+            if (i != UPGRADE_SLOT_COLOR_CRYSTAL)
+            {
+                pItem->AddUpgrade(m_apItemEntries[i], i);
+                pItem->m_an2F4[i] = m_pSelectedItem->m_an2F4[i];
+            }
+        }
         unsigned long bStolen = m_pSelectedItem->m_bStolen;
         pItem->m_bStolen = bStolen;
         delete m_pSelectedItem;
@@ -80,7 +91,8 @@ void CSWGuiUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
     }
     else
     {
-        if (pEntry->m_nUpgradeIndex == -1 &&
+        int nUpgradeIndex = pEntry->m_nUpgradeIndex;
+        if (nUpgradeIndex == -1 &&
             pEntry->m_oidItem != OBJECT_INVALID)
             goto Exit;
     }
@@ -101,9 +113,13 @@ void CSWGuiUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
             pRepository->AddItem(&pOldItem, 1, 0, 0);
             m_aItemsTaken.Add(pOldItem);
         }
+        if (nSlot != UPGRADE_SLOT_COLOR_CRYSTAL || m_nItemListMode != ITEMLIST_LIGHTSABER)
+        {
+            m_pSelectedItem->RemoveUpgrade(pOldItem, nSlot);
+            m_pSelectedItem->m_an2F4[nSlot] = -1;
+            pOldItem->m_an2F4[nSlot] = -1;
+        }
         pOldItem = 0;
-        if (nSlot != UPGRADE_SLOT_COLOR_CRYSTAL)
-            m_pSelectedItem->m_nUpgrades &= ~(CSWSItem::UPGRADE_PROPERTY_MASK << m_anUpgradeProperties[nSlot]);
     }
     CSWSItem* pItem = pServer->GetItemByGameObjectID(pEntry->m_oidItem);
     if (pItem != 0)
@@ -125,29 +141,53 @@ void CSWGuiUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
                 pRepository->RemoveItem(pItem);
             m_aItemsAdded.Add(pItem);
         }
+        int nRows = m_pUpgradeTable->GetNumRows();
+        int nUpgradeRow = 0;
+        for (int nRow = 0; nRow < nRows; nRow++)
+        {
+            CExoString sTemplate;
+            m_pUpgradeTable->GetCExoStringEntry(nRow, "Template", &sTemplate);
+            if (_stricmp(pItem->m_sTag.CStr(), sTemplate.CStr()) == 0)
+            {
+                nUpgradeRow = nRow;
+                break;
+            }
+        }
         m_apItemEntries[nSlot] = pItem;
-        if (nSlot != UPGRADE_SLOT_COLOR_CRYSTAL)
+        if (nSlot != UPGRADE_SLOT_COLOR_CRYSTAL || m_nItemListMode != ITEMLIST_LIGHTSABER)
         {
             m_anUpgradeProperties[nSlot] = pEntry->m_nUpgradeIndex;
-            int nUpgradeMask = CSWSItem::UPGRADE_PROPERTY_MASK << m_anUpgradeProperties[nSlot];
-            m_pSelectedItem->m_nUpgrades |= nUpgradeMask;
+            m_pSelectedItem->AddUpgrade(pItem, nSlot);
+            m_pSelectedItem->m_an2F4[nSlot] = nUpgradeRow;
         }
     }
 Exit:
     CloseItems();
 }
 // PC 0x007297E0
-CSWUpgradeItemEntry* CSWGuiUpgrade::CreateItemEntry(unsigned long oidItem, int nUpgradeIndex)
+CSWUpgradeItemEntry* CSWGuiUpgrade::CreateItemEntry(unsigned long oidItem, int nUpgradeIndex,
+                                                    int bDisabled)
 {
     int nWidth = m_lbItems.m_cItemExtent.m_nWidth -
                  2 * m_lbItems.m_nPadding;
     CSWGuiButton* pProto = (CSWGuiButton*)m_lbItems.m_pProtoItem;
     CSWUpgradeItemEntry* pEntry = new CSWUpgradeItemEntry;
 
-    pEntry->Initialize(pProto->m_cText, pProto->m_cBorder, pProto->m_cHilite, nWidth, nUpgradeIndex);
+    pEntry->Initialize(pProto->m_cText, pProto->m_cBorder, pProto->m_cHilite, nWidth, bDisabled);
     pEntry->AddEvent(CSWGuiControl::EVENT_ENTER, this, (CSWGuiHandler)&CSWGuiUpgrade::OnControlEntered);
-    pEntry->AddEvent(CSWGuiControl::EVENT_SELECT, this, (CSWGuiHandler)&CSWGuiUpgrade::OnUpgradeSelected);
-    pEntry->AddEvent(CSWGuiControl::EVENT_CONFIRM, this, (CSWGuiHandler)&CSWGuiUpgrade::OnUpgradeSelected);
+    pEntry->m_bDisabled = bDisabled;
+    if (!bDisabled)
+    {
+        pEntry->AddEvent(CSWGuiControl::EVENT_SELECT, this, (CSWGuiHandler)&CSWGuiUpgrade::OnUpgradeSelected);
+        pEntry->AddEvent(CSWGuiControl::EVENT_CONFIRM, this, (CSWGuiHandler)&CSWGuiUpgrade::OnUpgradeSelected);
+    }
+    else
+    {
+        pEntry->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_DARK_TAN;
+        pEntry->m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_DARK_TAN);
+        pEntry->AddEvent(CSWGuiControl::EVENT_SELECT, this, (CSWGuiHandler)&CSWGuiUpgrade::OnDisabledSelected);
+        pEntry->AddEvent(CSWGuiControl::EVENT_CONFIRM, this, (CSWGuiHandler)&CSWGuiUpgrade::OnDisabledSelected);
+    }
     pEntry->SetItem(oidItem, 0, OBJECT_INVALID, 0);
     pEntry->m_nUpgradeIndex = nUpgradeIndex;
     return pEntry;
@@ -521,6 +561,7 @@ void CSWGuiUpgradeItemSelect::FinishUpgrading()
         unsigned long nSlot = m_pUpgradeItem->m_nItemProperty;
         unsigned long oidCreature = m_pUpgradeItem->m_nItemId;
         CSWSCreature* pCreature = pServer->GetCreatureByGameObjectID(oidCreature);
+        pCreature->SetCombatState(1, 2, 0);
         int bCanEquip = 1;
         if (!pCreature->CanEquipItem(pItem, &nSlot, 0, 0, 0))
         {
@@ -530,7 +571,7 @@ void CSWGuiUpgradeItemSelect::FinishUpgrading()
         }
         if (m_bDualWield)
         {
-            if (m_bLeftHandItem)
+            if (m_bLeftHandItem && !m_bSecondWeaponSet)
             {
                 pCreature->EquipItem(INVENTORY_SLOT_RIGHTHAND,
                     pServer->GetItemByGameObjectID(m_oidOtherWeapon), 1, 0, 0);
@@ -539,7 +580,7 @@ void CSWGuiUpgradeItemSelect::FinishUpgrading()
                     pCreature->EquipItem(INVENTORY_SLOT_LEFTHAND, pItem, 1, 0, 0);
                 }
             }
-            else
+            else if (!m_bLeftHandItem && !m_bSecondWeaponSet)
             {
                 if (bCanEquip)
                 {
@@ -553,6 +594,29 @@ void CSWGuiUpgradeItemSelect::FinishUpgrading()
                         pServer->GetItemByGameObjectID(m_oidOtherWeapon), 1, 0, 0);
                 }
             }
+            else if (m_bLeftHandItem && m_bSecondWeaponSet)
+            {
+                pCreature->EquipItem(INVENTORY_SLOT_RIGHTHAND2,
+                    pServer->GetItemByGameObjectID(m_oidOtherWeapon), 1, 0, 0);
+                if (bCanEquip)
+                {
+                    pCreature->EquipItem(INVENTORY_SLOT_LEFTHAND2, pItem, 1, 0, 0);
+                }
+            }
+            else if (!m_bLeftHandItem && m_bSecondWeaponSet)
+            {
+                if (bCanEquip)
+                {
+                    pCreature->EquipItem(INVENTORY_SLOT_RIGHTHAND2, pItem, 1, 0, 0);
+                    pCreature->EquipItem(INVENTORY_SLOT_LEFTHAND2,
+                        pServer->GetItemByGameObjectID(m_oidOtherWeapon), 1, 0, 0);
+                }
+                else
+                {
+                    pCreature->EquipItem(INVENTORY_SLOT_RIGHTHAND2,
+                        pServer->GetItemByGameObjectID(m_oidOtherWeapon), 1, 0, 0);
+                }
+            }
         }
         else if (bCanEquip)
         {
@@ -563,12 +627,20 @@ void CSWGuiUpgradeItemSelect::FinishUpgrading()
     {
         pServer->GetPartyTable()->GetPartyItems()->AddItem(&pItem, 1, 0, 0);
     }
-    if (m_pPresetItem != 0)
+    if (m_pPresetItem != 0 && m_nC84 != 0)
     {
         SetModal(0);
         m_pManager->PopModalPanel();
-        m_pSelectionPanel->AutoUpgradeDone();
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->HideUpgradeScreen();
         m_pPresetItem = 0;
+        delete m_pUpgradeItem;
+    }
+    else if (m_pPresetItem != 0)
+    {
+        SetModal(0);
+        m_pManager->PopModalPanel();
+        m_pPresetItem = 0;
+        m_pSelectionPanel->PopulateItemList();
         delete m_pUpgradeItem;
     }
     else
@@ -1731,7 +1803,84 @@ void CSWGuiUpgradeItemSelect::OnPanelAdded()
             if (nSlot > 0)
             {
                 m_pUpgradeItem->SetItem(m_pPresetItem->m_nId, 1, pCreature->m_nId, nSlot);
-                pCreature->UnequipItem(m_pPresetItem);
+                unsigned long nEquipSlot = m_pUpgradeItem->m_nItemProperty;
+                if (nEquipSlot != INVENTORY_SLOT_RIGHTHAND && nEquipSlot != INVENTORY_SLOT_LEFTHAND)
+                {
+                    if (nEquipSlot != INVENTORY_SLOT_RIGHTHAND2
+                        && nEquipSlot != INVENTORY_SLOT_LEFTHAND2)
+                    {
+                        m_bDualWield = 0;
+                        m_bLeftHandItem = 0;
+                        m_bSecondWeaponSet = 0;
+                        pCreature->UnequipItem(m_pPresetItem);
+                    }
+                    else
+                    {
+                        CSWSItem* pRight =
+                            pCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND2);
+                        CSWSItem* pLeft =
+                            pCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_LEFTHAND2);
+                        if (pLeft == 0)
+                        {
+                            m_bDualWield = 0;
+                            m_bLeftHandItem = 0;
+                            m_bSecondWeaponSet = 1;
+                            m_oidOtherWeapon = OBJECT_INVALID;
+                            pCreature->UnequipItem(pRight);
+                        }
+                        else if (pRight == m_pPresetItem)
+                        {
+                            m_bDualWield = 1;
+                            m_bLeftHandItem = 0;
+                            m_bSecondWeaponSet = 1;
+                            m_oidOtherWeapon = pLeft->m_nId;
+                            pCreature->UnequipItem(pLeft);
+                            pCreature->UnequipItem(pRight);
+                        }
+                        else if (pLeft == m_pPresetItem)
+                        {
+                            m_bDualWield = 1;
+                            m_bLeftHandItem = 1;
+                            m_bSecondWeaponSet = 1;
+                            m_oidOtherWeapon = pRight->m_nId;
+                            pCreature->UnequipItem(pLeft);
+                            pCreature->UnequipItem(pRight);
+                        }
+                    }
+                }
+                else
+                {
+                    CSWSItem* pRight =
+                        pCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
+                    CSWSItem* pLeft =
+                        pCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_LEFTHAND);
+                    if (pLeft == 0)
+                    {
+                        m_bDualWield = 0;
+                        m_bLeftHandItem = 0;
+                        m_bSecondWeaponSet = 0;
+                        m_oidOtherWeapon = OBJECT_INVALID;
+                        pCreature->UnequipItem(pRight);
+                    }
+                    else if (pRight == m_pPresetItem)
+                    {
+                        m_bDualWield = 1;
+                        m_bLeftHandItem = 0;
+                        m_bSecondWeaponSet = 0;
+                        m_oidOtherWeapon = pLeft->m_nId;
+                        pCreature->UnequipItem(pLeft);
+                        pCreature->UnequipItem(pRight);
+                    }
+                    else if (pLeft == m_pPresetItem)
+                    {
+                        m_bDualWield = 1;
+                        m_bLeftHandItem = 1;
+                        m_bSecondWeaponSet = 0;
+                        m_oidOtherWeapon = pRight->m_nId;
+                        pCreature->UnequipItem(pLeft);
+                        pCreature->UnequipItem(pRight);
+                    }
+                }
             }
             else
             {
@@ -1780,7 +1929,7 @@ void CSWGuiUpgrade::OnSlotSelected(CSWGuiControl* pControl)
             if (nSlot == UPGRADE_SLOT_COLOR_CRYSTAL)
             {
                 CExoString sTemplate;
-                aControls.Add(CreateItemEntry(m_apItemEntries[UPGRADE_SLOT_COLOR_CRYSTAL]->GetId(), -1));
+                aControls.Add(CreateItemEntry(m_apItemEntries[UPGRADE_SLOT_COLOR_CRYSTAL]->GetId(), -1, 0));
                 for (int i = 0; i < m_pCrystalTable->GetNumRows(); i++)
                 {
                     m_pCrystalTable->GetCExoStringEntry(i, "Template", &sTemplate);
@@ -1789,7 +1938,7 @@ void CSWGuiUpgrade::OnSlotSelected(CSWGuiControl* pControl)
                     {
                         unsigned long oidItem = pRepository->FindItemWithTag(sTemplate);
                         if (oidItem != OBJECT_INVALID)
-                            aControls.Add(CreateItemEntry(oidItem, i));
+                            aControls.Add(CreateItemEntry(oidItem, i, 0));
                     }
                 }
             }
@@ -1798,12 +1947,12 @@ void CSWGuiUpgrade::OnSlotSelected(CSWGuiControl* pControl)
                 CExoString sTemplate;
                 int nOtherSlot = nSlot == UPGRADE_SLOT_POWER_CRYSTAL_1
                     ? UPGRADE_SLOT_POWER_CRYSTAL_2 : UPGRADE_SLOT_POWER_CRYSTAL_1;
-                aControls.Add(CreateItemEntry(OBJECT_INVALID, -1));
+                aControls.Add(CreateItemEntry(OBJECT_INVALID, -1, 0));
                 if (m_apItemEntries[nSlot] != 0)
 #ifdef _XBOX
-                    aControls.Add(CreateItemEntry(m_apItemEntries[nSlot]->GetId(), -1));
+                    aControls.Add(CreateItemEntry(m_apItemEntries[nSlot]->GetId(), -1, 0));
 #else
-                    aControls.Add(CreateItemEntry(m_apItemEntries[nSlot]->GetId(), m_anUpgradeProperties[nSlot]));
+                    aControls.Add(CreateItemEntry(m_apItemEntries[nSlot]->GetId(), m_anUpgradeProperties[nSlot], 0));
 #endif
                 for (int i = 0; i < m_pUpgradeTable->GetNumRows(); i++)
                 {
@@ -1816,7 +1965,7 @@ void CSWGuiUpgrade::OnSlotSelected(CSWGuiControl* pControl)
                         if (oidItem != OBJECT_INVALID &&
                             (m_apItemEntries[nOtherSlot] == 0 || i != m_anUpgradeProperties[nOtherSlot]) &&
                             (m_apItemEntries[nSlot] == 0 || i != m_anUpgradeProperties[nSlot]))
-                            aControls.Add(CreateItemEntry(oidItem, i));
+                            aControls.Add(CreateItemEntry(oidItem, i, 0));
                     }
                 }
             }
@@ -2145,6 +2294,21 @@ void CSWGuiUpgrade::UpdateItems()
         pLabels[i].m_cBorder.m_cParams.SetFillImage(cIcon, 0);
     }
     SetDescription(m_pSelectedItem->GetPropertyDescription());
+}
+// PC 0x007250B0
+void CSWGuiUpgrade::OnDisabledSelected(CSWGuiControl* pControl)
+{
+    if (pControl != 0 && pControl->m_bSelected)
+    {
+        CSWGuiMessageBox* pMessageBox =
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+        pMessageBox->SetAllowCancel(0);
+        pMessageBox->SetMessage(STRREF_UPGRADE_INCOMPATIBLE);
+        pMessageBox->SetCallback(0, 0, 0);
+        pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
+                                      CGuiInGame::COLOR_NEW_HIGHLIGHT);
+        g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(pMessageBox, 1, 1);
+    }
 }
 // PC 0x00725160
 void CSWGuiUpgrade::OnEnterSlot(CSWGuiControl* pControl)
