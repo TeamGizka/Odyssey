@@ -58,36 +58,6 @@ Vector planeproject(const Vector& vNormal, float fDistance,
            vNormal * (vPoint.m_fX * vNormal.m_fX + vPoint.m_fY * vNormal.m_fY +
                       vPoint.m_fZ * vNormal.m_fZ + fDistance);
 }
-// PC 0x004D83C0
-Vector lineproject(const Vector& vStart, const Vector& vEnd,
-                   const Vector& vPoint)
-{
-
-    static Vector w(0.0f, 0.0f, 0.0f);
-    w = vEnd - vStart;
-    float fProjection = w.m_fX * w.m_fX;
-    fProjection += w.m_fZ * w.m_fZ;
-    fProjection += w.m_fY * w.m_fY;
-    if (fProjection != 0.0f)
-    {
-        const Vector& vOffset = vPoint - vStart;
-        float fDot = vOffset.m_fZ * w.m_fZ;
-        fDot += vOffset.m_fX * w.m_fX;
-        fDot += vOffset.m_fY * w.m_fY;
-        fProjection = fDot / fProjection;
-    }
-    return vStart + w * fProjection;
-}
-// PC 0x004D8620
-Matrix Transpose(const Matrix& matrix)
-{
-    return Matrix(Vector(matrix.m_vFirst.m_fX, matrix.m_vSecond.m_fX,
-                         matrix.m_vThird.m_fX),
-                  Vector(matrix.m_vFirst.m_fY, matrix.m_vSecond.m_fY,
-                         matrix.m_vThird.m_fY),
-                  Vector(matrix.m_vFirst.m_fZ, matrix.m_vSecond.m_fZ,
-                         matrix.m_vThird.m_fZ));
-}
 // PC 0x004D6A10
 Vector operator*(const Matrix& matrix, const Vector& vector)
 {
@@ -100,96 +70,6 @@ Vector operator*(const Matrix& matrix, const Vector& vector)
                   matrix.m_vFirst.m_fZ * vector.m_fX +
                       matrix.m_vSecond.m_fZ * vector.m_fY +
                       matrix.m_vThird.m_fZ * vector.m_fZ);
-}
-// PC 0x004D84C0
-Vector segmentproject(const Vector& vStart, const Vector& vEnd,
-                      const Vector& vPoint)
-{
-    if (equal(vStart, vEnd))
-    {
-        return vStart;
-    }
-
-    static Vector w(0.0f, 0.0f, 0.0f);
-    w = vEnd - vStart;
-    float fProjection = w.m_fX * w.m_fX;
-    fProjection += w.m_fZ * w.m_fZ;
-    fProjection += w.m_fY * w.m_fY;
-    if (fProjection != 0.0f)
-    {
-        const Vector& vOffset = vPoint - vStart;
-        float fDot = vOffset.m_fZ * w.m_fZ;
-        fDot += vOffset.m_fX * w.m_fX;
-        fDot += vOffset.m_fY * w.m_fY;
-        fProjection = fDot / fProjection;
-    }
-    if (1.0f < fProjection)
-    {
-        fProjection = 1.0f;
-    }
-    else if (0.0f > fProjection)
-    {
-        fProjection = 0.0f;
-    }
-    return vStart + w * fProjection;
-}
-// PC 0x004D86D0
-void Plane::Transform(const Vector& vPosition, const Quaternion& qOrientation)
-{
-    static Vector newnormal;
-    static Vector origin;
-
-    newnormal = -qOrientation * m_vNormal;
-    origin = -qOrientation * (-m_vNormal * m_fDistance - vPosition);
-    m_vNormal = newnormal;
-    m_fDistance = -(origin * newnormal);
-}
-
-// PC 0x004D8A90
-Quaternion normalize(Quaternion quaternion)
-{
-    float fMagnitude = (float)sqrt(
-        quaternion.m_fW * quaternion.m_fW + quaternion.m_fX * quaternion.m_fX +
-        quaternion.m_fY * quaternion.m_fY + quaternion.m_fZ * quaternion.m_fZ);
-    if (fMagnitude == 0.0f)
-    {
-        quaternion.m_fW = 1.0f;
-        quaternion.m_fX = 0.0f;
-        quaternion.m_fY = 0.0f;
-        quaternion.m_fZ = 0.0f;
-        return quaternion;
-    }
-    return quaternion * (1.0f / fMagnitude);
-}
-// PC 0x004D8B40
-Quaternion slerp(Quaternion first, const Quaternion& second, float fPosition)
-{
-    float fDot = quaternionDot(first, second);
-    if (fDot < 0.0f)
-    {
-        first.m_fX = -first.m_fX;
-        first.m_fY = -first.m_fY;
-        first.m_fZ = -first.m_fZ;
-        first.m_fW = -first.m_fW;
-    }
-
-    float fCosine = (fDot < 0.0f) ? -fDot : fDot;
-
-    if (fCosine >= 1.0)
-    {
-        return first;
-    }
-    float fAngle = (float)acos(fCosine);
-    if (fAngle == 0.0f)
-    {
-        return first;
-    }
-
-    float fSine = (float)sin(fAngle);
-    Quaternion result =
-        first * (float)(sin(fAngle - fAngle * fPosition) / fSine) +
-        second * (float)(sin(fAngle * fPosition) / fSine);
-    return result;
 }
 // PC 0x004D6A70
 float Yaw(const Quaternion& quaternion)
@@ -207,21 +87,6 @@ float Yaw(const Quaternion& quaternion)
     }
     return (float)atan2(-v.m_fX, v.m_fY) * RAD_TO_DEG;
 }
-// PC 0x004D8CA0
-float Pitch(const Quaternion& quaternion)
-{
-    static Vector v(0.0f, 0.0f, 0.0f);
-    v = Vector(2.0f * (quaternion.m_fY * quaternion.m_fX -
-                                quaternion.m_fZ * quaternion.m_fW),
-                        1.0f - 2.0f * (quaternion.m_fZ * quaternion.m_fZ +
-                                       quaternion.m_fX * quaternion.m_fX),
-                        2.0f * (quaternion.m_fY * quaternion.m_fZ +
-                                quaternion.m_fW * quaternion.m_fX));
-    float fX = v.m_fX;
-    float fY = v.m_fY;
-    float fZ = v.m_fZ;
-    return (float)atan2(fZ, (float)sqrt(fX * fX + fY * fY)) * RAD_TO_DEG;
-}
 // PC 0x004D6B50
 float Yaw(const Vector& vector)
 {
@@ -231,13 +96,35 @@ float Yaw(const Vector& vector)
     }
     return (float)atan2(-vector.m_fX, vector.m_fY) * RAD_TO_DEG;
 }
-// PC 0x004D8D70
-float Pitch(const Vector& vector)
+// PC 0x004D6B90
+int polyhit(const Vector* pVertices, int nVertices, const Vector& vNormal,
+            const float& fDistance, const Vector& vStart, const Vector& vEnd,
+            Vector* pHit)
 {
-    float fX = vector.m_fX;
-    float fY = vector.m_fY;
-    float fZ = vector.m_fZ;
-    return (float)atan2(fZ, (float)sqrt(fX * fX + fY * fY)) * RAD_TO_DEG;
+
+    float fStart = vNormal * vStart + fDistance;
+    float fEnd = vNormal * vEnd + fDistance;
+    if (fStart < 0.0f || fEnd > 0.0f || fStart == fEnd)
+    {
+        return 0;
+    }
+
+    static Vector the_point(0.0f, 0.0f, 0.0f);
+    static Vector side(0.0f, 0.0f, 0.0f);
+    float fPosition = fStart / (fStart - fEnd);
+    the_point = (1.0f - fPosition) * vStart + fPosition * vEnd;
+    int nHit = 1;
+    for (int i = 0; nHit && i < nVertices; i++)
+    {
+        side = cross(pVertices[(i + 1) % nVertices] - pVertices[i],
+                     the_point - pVertices[i]);
+        nHit = side * vNormal >= -POLYHIT_EDGE_TOLERANCE;
+    }
+    if (nHit && pHit)
+    {
+        *pHit = the_point;
+    }
+    return nHit;
 }
 // PC 0x004D6E10
 void BoxOutCode(const Vector& vPoint, const Vector& vMinimum,
@@ -736,190 +623,6 @@ Vector VectorMin(List<Vector>& vectors)
     }
     return vResult;
 }
-// PC 0x004D8DA0
-Quaternion RotationArc(Vector vFirst, Vector vSecond)
-{
-    static Quaternion q;
-    vFirst.Normalize();
-    vSecond.Normalize();
-    Vector vCross = cross(vFirst, vSecond);
-    float fDot = vFirst * vSecond;
-    if (fDot <= -1.0f)
-    {
-        return Quaternion(0.0f, 1.0f, 0.0f, 0.0f);
-    }
-
-    float fScale = (float)sqrt((fDot + 1.0f) * 2.0f);
-    q.m_fX = vCross.m_fX * (1.0f / fScale);
-    q.m_fY = vCross.m_fY * (1.0f / fScale);
-    q.m_fZ = (1.0f / fScale) * vCross.m_fZ;
-    q.m_fW = fScale * 0.5f;
-    return q;
-}
-// PC 0x004D6B90
-int polyhit(const Vector* pVertices, int nVertices, const Vector& vNormal,
-            const float& fDistance, const Vector& vStart, const Vector& vEnd,
-            Vector* pHit)
-{
-
-    float fStart = vNormal * vStart + fDistance;
-    float fEnd = vNormal * vEnd + fDistance;
-    if (fStart < 0.0f || fEnd > 0.0f || fStart == fEnd)
-    {
-        return 0;
-    }
-
-    static Vector the_point(0.0f, 0.0f, 0.0f);
-    static Vector side(0.0f, 0.0f, 0.0f);
-    float fPosition = fStart / (fStart - fEnd);
-    the_point = (1.0f - fPosition) * vStart + fPosition * vEnd;
-    int nHit = 1;
-    for (int i = 0; nHit && i < nVertices; i++)
-    {
-        side = cross(pVertices[(i + 1) % nVertices] - pVertices[i],
-                     the_point - pVertices[i]);
-        nHit = side * vNormal >= -POLYHIT_EDGE_TOLERANCE;
-    }
-    if (nHit && pHit)
-    {
-        *pHit = the_point;
-    }
-    return nHit;
-}
-// PC 0x004D8EF0
-int polyhit(const Vector* pVertices, int nVertices, const Vector& vStart,
-            const Vector& vEnd, Vector* pHit, Vector* pNormal)
-{
-
-    Vector vSum(0.0f, 0.0f, 0.0f);
-    for (int i = 0; i < nVertices - 2; i++)
-    {
-        int nNext = (i + 1) % nVertices;
-        int nAfter = (i + 2) % nVertices;
-        vSum = vSum + cross(pVertices[nNext] - pVertices[i],
-                            pVertices[nAfter] - pVertices[nNext]);
-    }
-    float fMagnitude = magnitude(vSum);
-    if (fMagnitude < 1e-8f)
-    {
-        return 0;
-    }
-    Vector vNormal = vSum * (1.0f / fMagnitude);
-    float fDistance = -(vNormal * pVertices[0]);
-    float fStart, fEnd;
-    if ((fStart = vNormal.m_fX * vStart.m_fX +
-                  (vNormal.m_fY * vStart.m_fY + vNormal.m_fZ * vStart.m_fZ) + fDistance) < 0.0f ||
-        (fEnd = vNormal * vEnd + fDistance) > 0.0f || fStart == fEnd)
-    {
-        return 0;
-    }
-    static Vector the_point(0.0f, 0.0f, 0.0f);
-    float fPosition = fStart / (fStart - fEnd);
-    the_point = (1.0f - fPosition) * vStart + fPosition * vEnd;
-    int nHit = 1;
-    for (i = 0; nHit && i < nVertices; i++)
-    {
-        Vector vFirst = pVertices[i];
-        Vector vSecond = pVertices[(i + 1) % nVertices];
-        Vector vSide;
-        vSide = cross(vSecond - vFirst, the_point - vFirst);
-        nHit = vSide * vNormal >= 0.0;
-    }
-    if (nHit)
-    {
-        if (pNormal)
-        {
-            *pNormal = vNormal;
-        }
-        if (pHit)
-        {
-            *pHit = the_point;
-        }
-    }
-    return nHit;
-}
-// PC 0x004D92C0
-int SphereIntersect(const Vector& vStart, const Vector& vEnd,
-                    const Vector& vCenter, float fRadius)
-{
-    Vector vDirection = vEnd - vStart;
-    float fLengthSquared = vDirection * vDirection;
-    if (fLengthSquared < 1e-9)
-    {
-        return 0;
-    }
-
-    float fPosition = ((vCenter - vStart) * vDirection) / fLengthSquared;
-    if (!(0.0f > fPosition))
-    {
-        if (1.0f < fPosition)
-        {
-            fPosition = 1.0f;
-        }
-    }
-    else
-    {
-        fPosition = 0.0f;
-    }
-
-    Vector vClosest = vStart + vDirection * fPosition;
-    if (magnitude(vClosest - vCenter) < fRadius)
-    {
-        return 1;
-    }
-    return 0;
-}
-// PC 0x004D81D0
-float magnitude(const Vector& vector)
-{
-    return (float)sqrt(vector.m_fX * vector.m_fX + vector.m_fY * vector.m_fY +
-                       vector.m_fZ * vector.m_fZ);
-}
-// PC 0x004D8200
-void Vector::Normalize()
-{
-    float fMagnitude = magnitude(*this);
-    if (fMagnitude < 1e-9)
-    {
-        m_fX = 1.0f;
-        m_fY = 0.0f;
-        m_fZ = 0.0f;
-        return;
-    }
-
-    float fReciprocal = 1.0f / fMagnitude;
-    m_fX *= fReciprocal;
-    m_fY *= fReciprocal;
-    m_fZ *= fReciprocal;
-}
-// PC 0x004D93F0
-float DistanceBetweenLines(const Vector& vFirstPoint, const Vector& vFirstDirection,
-                           const Vector& vSecondPoint, const Vector& vSecondDirection,
-                           Vector* pvFirstClosest, Vector* pvSecondClosest)
-{
-    static Vector cp;
-    cp = cross(vFirstDirection, vSecondDirection);
-    cp.Normalize();
-
-    float fSignedDistance = -(cp * vFirstPoint) - -(cp * vSecondPoint);
-    float fDistance = fSignedDistance < 0.0f ? -fSignedDistance : fSignedDistance;
-
-    if (pvFirstClosest != 0)
-    {
-        Vector vNormal = normalize(cross(vSecondDirection, cp));
-        float fPlaneDistance = -(vNormal * vSecondPoint);
-        *pvFirstClosest = planelineintersection(vNormal, fPlaneDistance,
-                                               vFirstPoint, vFirstPoint + vFirstDirection);
-    }
-    if (pvSecondClosest != 0)
-    {
-        Vector vNormal = normalize(cross(vFirstDirection, cp));
-        float fPlaneDistance = -(vNormal * vFirstPoint);
-        *pvSecondClosest = planelineintersection(vNormal, fPlaneDistance,
-                                                vSecondPoint, vSecondPoint + vSecondDirection);
-    }
-    return fDistance;
-}
 // PC 0x004D9690
 Vector InterpolateBezier(const Vector& vStart, const Vector& vEnd,
                          const Vector& vControl1, const Vector& vControl2,
@@ -1068,20 +771,6 @@ Quaternion::Quaternion(Vector vAxis, float fAngle)
     m_fY = vAxis.m_fY;
     m_fZ = vAxis.m_fZ;
 }
-// PC 0x004D8250
-Vector normalize(const Vector& vector)
-{
-    float fMagnitude = magnitude(vector);
-    if (fMagnitude < 1e-9)
-    {
-        return Vector(1.0f, 0.0f, 0.0f);
-    }
-
-    float fReciprocal = 1.0f / fMagnitude;
-    return Vector(vector.m_fX * fReciprocal, vector.m_fY * fReciprocal,
-                  vector.m_fZ * fReciprocal);
-}
-
 // PC 0x004D9F80
 Vector NormalOf(const Vector& vFirst, const Vector& vSecond,
                 const Vector& vThird)
@@ -1095,26 +784,6 @@ Vector NormalOf(const Vector& vFirst, const Vector& vSecond,
     return vNormal * (1.0f / fMagnitude);
 }
 
-// PC 0x004D82B0
-Vector planelineintersection(const Vector& vNormal, float fDistance,
-                             const Vector& vStart, const Vector& vEnd)
-{
-
-    static Vector dif(0.0f, 0.0f, 0.0f);
-    dif = vEnd - vStart;
-    float fDenominator = dif.m_fX * vNormal.m_fX;
-    fDenominator += dif.m_fZ * vNormal.m_fZ;
-    fDenominator += dif.m_fY * vNormal.m_fY;
-    float fProjection = 0.0f;
-    if (fDenominator != 0.0f)
-    {
-        fProjection =
-            -(vStart.m_fX * vNormal.m_fX + vStart.m_fY * vNormal.m_fY +
-              vStart.m_fZ * vNormal.m_fZ + fDistance) /
-            fDenominator;
-    }
-    return vStart + dif * fProjection;
-}
 // PC 0x004DA050
 Quaternion YawPitchRoll(float fYaw, float fPitch, float fRoll)
 {
@@ -1186,3 +855,334 @@ int logbase2(unsigned int nValue)
     return nLog;
 }
 #endif
+// PC 0x004D81D0
+float magnitude(const Vector& vector)
+{
+    return (float)sqrt(vector.m_fX * vector.m_fX + vector.m_fY * vector.m_fY +
+                       vector.m_fZ * vector.m_fZ);
+}
+// PC 0x004D8200
+void Vector::Normalize()
+{
+    float fMagnitude = magnitude(*this);
+    if (fMagnitude < 1e-9)
+    {
+        m_fX = 1.0f;
+        m_fY = 0.0f;
+        m_fZ = 0.0f;
+        return;
+    }
+
+    float fReciprocal = 1.0f / fMagnitude;
+    m_fX *= fReciprocal;
+    m_fY *= fReciprocal;
+    m_fZ *= fReciprocal;
+}
+// PC 0x004D8250
+Vector normalize(const Vector& vector)
+{
+    float fMagnitude = magnitude(vector);
+    if (fMagnitude < 1e-9)
+    {
+        return Vector(1.0f, 0.0f, 0.0f);
+    }
+
+    float fReciprocal = 1.0f / fMagnitude;
+    return Vector(vector.m_fX * fReciprocal, vector.m_fY * fReciprocal,
+                  vector.m_fZ * fReciprocal);
+}
+
+// PC 0x004D82B0
+Vector planelineintersection(const Vector& vNormal, float fDistance,
+                             const Vector& vStart, const Vector& vEnd)
+{
+
+    static Vector dif(0.0f, 0.0f, 0.0f);
+    dif = vEnd - vStart;
+    float fDenominator = dif.m_fX * vNormal.m_fX;
+    fDenominator += dif.m_fZ * vNormal.m_fZ;
+    fDenominator += dif.m_fY * vNormal.m_fY;
+    float fProjection = 0.0f;
+    if (fDenominator != 0.0f)
+    {
+        fProjection =
+            -(vStart.m_fX * vNormal.m_fX + vStart.m_fY * vNormal.m_fY +
+              vStart.m_fZ * vNormal.m_fZ + fDistance) /
+            fDenominator;
+    }
+    return vStart + dif * fProjection;
+}
+// PC 0x004D83C0
+Vector lineproject(const Vector& vStart, const Vector& vEnd,
+                   const Vector& vPoint)
+{
+
+    static Vector w(0.0f, 0.0f, 0.0f);
+    w = vEnd - vStart;
+    float fProjection = w.m_fX * w.m_fX;
+    fProjection += w.m_fZ * w.m_fZ;
+    fProjection += w.m_fY * w.m_fY;
+    if (fProjection != 0.0f)
+    {
+        const Vector& vOffset = vPoint - vStart;
+        float fDot = vOffset.m_fZ * w.m_fZ;
+        fDot += vOffset.m_fX * w.m_fX;
+        fDot += vOffset.m_fY * w.m_fY;
+        fProjection = fDot / fProjection;
+    }
+    return vStart + w * fProjection;
+}
+// PC 0x004D84C0
+Vector segmentproject(const Vector& vStart, const Vector& vEnd,
+                      const Vector& vPoint)
+{
+    if (equal(vStart, vEnd))
+    {
+        return vStart;
+    }
+
+    static Vector w(0.0f, 0.0f, 0.0f);
+    w = vEnd - vStart;
+    float fProjection = w.m_fX * w.m_fX;
+    fProjection += w.m_fZ * w.m_fZ;
+    fProjection += w.m_fY * w.m_fY;
+    if (fProjection != 0.0f)
+    {
+        const Vector& vOffset = vPoint - vStart;
+        float fDot = vOffset.m_fZ * w.m_fZ;
+        fDot += vOffset.m_fX * w.m_fX;
+        fDot += vOffset.m_fY * w.m_fY;
+        fProjection = fDot / fProjection;
+    }
+    if (1.0f < fProjection)
+    {
+        fProjection = 1.0f;
+    }
+    else if (0.0f > fProjection)
+    {
+        fProjection = 0.0f;
+    }
+    return vStart + w * fProjection;
+}
+// PC 0x004D8620
+Matrix Transpose(const Matrix& matrix)
+{
+    return Matrix(Vector(matrix.m_vFirst.m_fX, matrix.m_vSecond.m_fX,
+                         matrix.m_vThird.m_fX),
+                  Vector(matrix.m_vFirst.m_fY, matrix.m_vSecond.m_fY,
+                         matrix.m_vThird.m_fY),
+                  Vector(matrix.m_vFirst.m_fZ, matrix.m_vSecond.m_fZ,
+                         matrix.m_vThird.m_fZ));
+}
+// PC 0x004D86D0
+void Plane::Transform(const Vector& vPosition, const Quaternion& qOrientation)
+{
+    static Vector newnormal;
+    static Vector origin;
+
+    newnormal = -qOrientation * m_vNormal;
+    origin = -qOrientation * (-m_vNormal * m_fDistance - vPosition);
+    m_vNormal = newnormal;
+    m_fDistance = -(origin * newnormal);
+}
+
+// PC 0x004D8A90
+Quaternion normalize(Quaternion quaternion)
+{
+    float fMagnitude = (float)sqrt(
+        quaternion.m_fW * quaternion.m_fW + quaternion.m_fX * quaternion.m_fX +
+        quaternion.m_fY * quaternion.m_fY + quaternion.m_fZ * quaternion.m_fZ);
+    if (fMagnitude == 0.0f)
+    {
+        quaternion.m_fW = 1.0f;
+        quaternion.m_fX = 0.0f;
+        quaternion.m_fY = 0.0f;
+        quaternion.m_fZ = 0.0f;
+        return quaternion;
+    }
+    return quaternion * (1.0f / fMagnitude);
+}
+// PC 0x004D8B40
+Quaternion slerp(Quaternion first, const Quaternion& second, float fPosition)
+{
+    float fDot = quaternionDot(first, second);
+    if (fDot < 0.0f)
+    {
+        first.m_fX = -first.m_fX;
+        first.m_fY = -first.m_fY;
+        first.m_fZ = -first.m_fZ;
+        first.m_fW = -first.m_fW;
+    }
+
+    float fCosine = (fDot < 0.0f) ? -fDot : fDot;
+
+    if (fCosine >= 1.0)
+    {
+        return first;
+    }
+    float fAngle = (float)acos(fCosine);
+    if (fAngle == 0.0f)
+    {
+        return first;
+    }
+
+    float fSine = (float)sin(fAngle);
+    Quaternion result =
+        first * (float)(sin(fAngle - fAngle * fPosition) / fSine) +
+        second * (float)(sin(fAngle * fPosition) / fSine);
+    return result;
+}
+// PC 0x004D8CA0
+float Pitch(const Quaternion& quaternion)
+{
+    static Vector v(0.0f, 0.0f, 0.0f);
+    v = Vector(2.0f * (quaternion.m_fY * quaternion.m_fX -
+                                quaternion.m_fZ * quaternion.m_fW),
+                        1.0f - 2.0f * (quaternion.m_fZ * quaternion.m_fZ +
+                                       quaternion.m_fX * quaternion.m_fX),
+                        2.0f * (quaternion.m_fY * quaternion.m_fZ +
+                                quaternion.m_fW * quaternion.m_fX));
+    float fX = v.m_fX;
+    float fY = v.m_fY;
+    float fZ = v.m_fZ;
+    return (float)atan2(fZ, (float)sqrt(fX * fX + fY * fY)) * RAD_TO_DEG;
+}
+// PC 0x004D8D70
+float Pitch(const Vector& vector)
+{
+    float fX = vector.m_fX;
+    float fY = vector.m_fY;
+    float fZ = vector.m_fZ;
+    return (float)atan2(fZ, (float)sqrt(fX * fX + fY * fY)) * RAD_TO_DEG;
+}
+// PC 0x004D8DA0
+Quaternion RotationArc(Vector vFirst, Vector vSecond)
+{
+    static Quaternion q;
+    vFirst.Normalize();
+    vSecond.Normalize();
+    Vector vCross = cross(vFirst, vSecond);
+    float fDot = vFirst * vSecond;
+    if (fDot <= -1.0f)
+    {
+        return Quaternion(0.0f, 1.0f, 0.0f, 0.0f);
+    }
+
+    float fScale = (float)sqrt((fDot + 1.0f) * 2.0f);
+    q.m_fX = vCross.m_fX * (1.0f / fScale);
+    q.m_fY = vCross.m_fY * (1.0f / fScale);
+    q.m_fZ = (1.0f / fScale) * vCross.m_fZ;
+    q.m_fW = fScale * 0.5f;
+    return q;
+}
+// PC 0x004D8EF0
+int polyhit(const Vector* pVertices, int nVertices, const Vector& vStart,
+            const Vector& vEnd, Vector* pHit, Vector* pNormal)
+{
+
+    Vector vSum(0.0f, 0.0f, 0.0f);
+    for (int i = 0; i < nVertices - 2; i++)
+    {
+        int nNext = (i + 1) % nVertices;
+        int nAfter = (i + 2) % nVertices;
+        vSum = vSum + cross(pVertices[nNext] - pVertices[i],
+                            pVertices[nAfter] - pVertices[nNext]);
+    }
+    float fMagnitude = magnitude(vSum);
+    if (fMagnitude < 1e-8f)
+    {
+        return 0;
+    }
+    Vector vNormal = vSum * (1.0f / fMagnitude);
+    float fDistance = -(vNormal * pVertices[0]);
+    float fStart, fEnd;
+    if ((fStart = vNormal.m_fX * vStart.m_fX +
+                  (vNormal.m_fY * vStart.m_fY + vNormal.m_fZ * vStart.m_fZ) + fDistance) < 0.0f ||
+        (fEnd = vNormal * vEnd + fDistance) > 0.0f || fStart == fEnd)
+    {
+        return 0;
+    }
+    static Vector the_point(0.0f, 0.0f, 0.0f);
+    float fPosition = fStart / (fStart - fEnd);
+    the_point = (1.0f - fPosition) * vStart + fPosition * vEnd;
+    int nHit = 1;
+    for (i = 0; nHit && i < nVertices; i++)
+    {
+        Vector vFirst = pVertices[i];
+        Vector vSecond = pVertices[(i + 1) % nVertices];
+        Vector vSide;
+        vSide = cross(vSecond - vFirst, the_point - vFirst);
+        nHit = vSide * vNormal >= 0.0;
+    }
+    if (nHit)
+    {
+        if (pNormal)
+        {
+            *pNormal = vNormal;
+        }
+        if (pHit)
+        {
+            *pHit = the_point;
+        }
+    }
+    return nHit;
+}
+// PC 0x004D92C0
+int SphereIntersect(const Vector& vStart, const Vector& vEnd,
+                    const Vector& vCenter, float fRadius)
+{
+    Vector vDirection = vEnd - vStart;
+    float fLengthSquared = vDirection * vDirection;
+    if (fLengthSquared < 1e-9)
+    {
+        return 0;
+    }
+
+    float fPosition = ((vCenter - vStart) * vDirection) / fLengthSquared;
+    if (!(0.0f > fPosition))
+    {
+        if (1.0f < fPosition)
+        {
+            fPosition = 1.0f;
+        }
+    }
+    else
+    {
+        fPosition = 0.0f;
+    }
+
+    Vector vClosest = vStart + vDirection * fPosition;
+    if (magnitude(vClosest - vCenter) < fRadius)
+    {
+        return 1;
+    }
+    return 0;
+}
+// PC 0x004D93F0
+float DistanceBetweenLines(const Vector& vFirstPoint, const Vector& vFirstDirection,
+                           const Vector& vSecondPoint, const Vector& vSecondDirection,
+                           Vector* pvFirstClosest, Vector* pvSecondClosest)
+{
+    static Vector cp;
+    cp = cross(vFirstDirection, vSecondDirection);
+    cp.Normalize();
+
+    float fSignedDistance = -(cp * vFirstPoint) - -(cp * vSecondPoint);
+    float fDistance = fSignedDistance < 0.0f ? -fSignedDistance : fSignedDistance;
+
+    if (pvFirstClosest != 0)
+    {
+        Vector vNormal = normalize(cross(vSecondDirection, cp));
+        float fPlaneDistance = -(vNormal * vSecondPoint);
+        *pvFirstClosest = planelineintersection(vNormal, fPlaneDistance,
+                                               vFirstPoint, vFirstPoint + vFirstDirection);
+    }
+    if (pvSecondClosest != 0)
+    {
+        Vector vNormal = normalize(cross(vFirstDirection, cp));
+        float fPlaneDistance = -(vNormal * vFirstPoint);
+        *pvSecondClosest = planelineintersection(vNormal, fPlaneDistance,
+                                                vSecondPoint, vSecondPoint + vSecondDirection);
+    }
+    return fDistance;
+}

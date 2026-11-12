@@ -21,11 +21,11 @@ inline Vector Material::GetBumpMapSpecularColor()
 #pragma inline_recursion(on)
 #pragma inline_depth(10)
 
-static VertexProgram* pSkinCubeMapVP = 0;
+static VertexProgram* pSkinVP = 0;
 static VertexProgram* pHoloSkinVP = 0;
 static VertexProgram* pSkinBumpyVP = 0;
 static VertexProgram* pSkinSphereMapVP = 0;
-static VertexProgram* pSkinVP = 0;
+static VertexProgram* pSkinCubeMapVP = 0;
 float g_DesatureFactor = 0.65f;
 int usebumpdiffuse = 1;
 int usebumpspecular = 1;
@@ -55,24 +55,24 @@ void SetupForceSightShader(Gob* pGob, int nForceShader, int nShader,
                            bool bKeepBlend);
 
 #ifdef _XBOX
-VertexProgram* GetSkinCubeMapVP(bool)
+VertexProgram* GetSkinVP(bool)
 {
-    static VertexProgram* pSkinVP = new VertexProgram(cSkinCubeMapVP, cSkinCubeMapVPDeclaration);
+    static VertexProgram* pSkinVP = new VertexProgram(cSkinVP, cSkinVPDeclaration);
 
     return pSkinVP;
 }
 #else
 // PC 0x004A06B0
-VertexProgram* GetSkinCubeMapVP(bool bHologram)
+VertexProgram* GetSkinVP(bool bHologram)
 {
-    if (!pSkinCubeMapVP)
+    if (!pSkinVP)
     {
-        pSkinCubeMapVP = new VertexProgram(
+        pSkinVP = new VertexProgram(
             usearbvertexprograms ?
-            szSkinCubeMapVPARB
+            szSkinVPARB
             :
-            cSkinCubeMapVP,
-            cSkinCubeMapVPDeclaration);
+            cSkinVP,
+            cSkinVPDeclaration);
     }
     if (!pHoloSkinVP)
     {
@@ -80,12 +80,12 @@ VertexProgram* GetSkinCubeMapVP(bool bHologram)
             usearbvertexprograms ?
             cHoloSkinVPARB
             :
-            cSkinCubeMapVP,
-            cSkinCubeMapVPDeclaration);
+            cSkinVP,
+            cSkinVPDeclaration);
     }
 
     if (!bHologram)
-        return pSkinCubeMapVP;
+        return pSkinVP;
     return pHoloSkinVP;
 }
 #endif
@@ -114,19 +114,19 @@ VertexProgram* GetSkinSphereMapVP()
     return pSkinSphereMapVP;
 }
 // PC 0x004A0810
-VertexProgram* GetSkinVP()
+VertexProgram* GetSkinCubeMapVP()
 {
-    if (!pSkinVP)
+    if (!pSkinCubeMapVP)
     {
-        pSkinVP = new VertexProgram(
+        pSkinCubeMapVP = new VertexProgram(
             usearbvertexprograms ?
-            szSkinVPARB
+            szSkinCubeMapVPARB
             :
-            cSkinVP,
-            cSkinVPDeclaration);
+            cSkinCubeMapVP,
+            cSkinCubeMapVPDeclaration);
     }
 
-    return pSkinVP;
+    return pSkinCubeMapVP;
 }
 
 bool AurNV2xLevelShadersAvailable();
@@ -1261,7 +1261,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     pEnvMap = pSkin->m_pMaterial->m_pEnvMap;
                 VertexProgram* pProgram;
                 if (pEnvMap->IsCubeMap())
-                    pProgram = GetSkinCubeMapVP(pSkin->m_bHologram);
+                    pProgram = GetSkinCubeMapVP();
                 else
                     pProgram = GetSkinSphereMapVP();
                 pProgram->Enable(pSkin, true);
@@ -1281,7 +1281,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 }
                 else
                 {
-                    pProgram = GetSkinVP();
+                    pProgram = GetSkinVP(pSkin->m_bHologram);
                     pProgram->Enable(pSkin, true);
                 }
                 RenderFlat(pPrimitive);
@@ -1500,7 +1500,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 AurSetVertexProgramParameter4f(LightManager::LIGHT_PROGRAM_COLOR_SCALE,
                     1.0f, 1.0f, 1.0f, 1.0f);
                 static VertexProgram* skinDecalPassvp = new VertexProgram(
-                    usearbvertexprograms ? szSkinCubeMapVPARB : cSkinCubeMapVP,
+                    usearbvertexprograms ? szSkinVPARB : cSkinVP,
                     cSkinBumpyVPDeclaration);
                 skinDecalPassvp->Enable(pSkin, true);
                 if (enabledecal)
@@ -1634,7 +1634,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 AurSetVertexProgramParameter4f(LightManager::LIGHT_PROGRAM_COLOR_SCALE,
                     1.0f, 1.0f, 1.0f, 1.0f);
                 static VertexProgram* skinDecalPassvp = new VertexProgram(
-                    usearbvertexprograms ? szSkinCubeMapVPARB : cSkinCubeMapVP,
+                    usearbvertexprograms ? szSkinVPARB : cSkinVP,
                     szNormalmapVPARBDeclaration);
                 skinDecalPassvp->Enable(pSkin, true);
                 if (enabledecal)
@@ -1770,7 +1770,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 if (bHologram)
                 {
                     static VertexProgram* pHoloSkinCubeMapVP = new VertexProgram(
-                        cHoloSkinVPARB, cSkinVPDeclaration);
+                        cHoloSkinVPARB, cSkinCubeMapVPDeclaration);
                     static VertexProgram* pHoloSkinSphereMapVP = new VertexProgram(
                         cHoloSkinVPARB, cSkinSphereMapVPDeclaration);
                     VertexProgram* pHoloProgram = pHoloSkinCubeMapVP;
@@ -1795,7 +1795,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 {
                     VertexProgram* pProgram;
                     if (pEnvMap->IsCubeMap())
-                        pProgram = GetSkinVP();
+                        pProgram = GetSkinCubeMapVP();
                     else
                         pProgram = GetSkinSphereMapVP();
                     if (AurATIValidate())
@@ -1850,7 +1850,7 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     pProgram = skin3bonevp;
                 }
                 else
-                    pProgram = GetSkinCubeMapVP(bHologram);
+                    pProgram = GetSkinVP(bHologram);
                 pProgram->Enable(pSkin, true);
                 if (pSkin->m_pMaterial->HasBumpMap() && pTriMesh->HasTangentBases() &&
                         !AurNV2xLevelShadersAvailable())
