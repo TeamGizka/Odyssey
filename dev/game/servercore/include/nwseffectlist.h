@@ -141,7 +141,6 @@ public:
     enum HealSelector { HEAL_FORCE_POINTS = 54 };
     enum HealIntegerParameter { HEAL_INTEGER_NO_FEEDBACK = 2 };
     enum DeathIntegerParameter { DEATH_INTEGER_NO_FADE_AWAY = 2 };
-    static const float PLACEABLE_AUTO_OPEN_DISTANCE;
     int OnApplyHeal(CSWSObject* pObject, CGameEffect* pEffect,
                     int bLoadingModule);
 

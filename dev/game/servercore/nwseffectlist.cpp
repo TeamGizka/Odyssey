@@ -44,6 +44,8 @@
 #include "clientoptions.h"
 #include "guiingame.h"
 
+#define PLACEABLE_AUTO_OPEN_DISTANCE 3.0f
+
 static inline void NwseffectlistTrace2();
 static inline void NwseffectlistTrace1();
 #define NWSEFFECTLIST_TRACE() NwseffectlistTrace2()
@@ -92,7 +94,6 @@ const int CSWSEffectListHandler::EFFECT_POISON = 35;
 const int CSWSEffectListHandler::EFFECT_ABILITY_INCREASE = 36;
 const int CSWSEffectListHandler::EFFECT_ABILITY_DECREASE = 37;
 const int CSWSEffectListHandler::EFFECT_DAMAGE = 38;
-const float CSWSEffectListHandler::PLACEABLE_AUTO_OPEN_DISTANCE = 3.0f;
 const int CSWSEffectListHandler::EFFECT_HEAL = 39;
 const int CSWSEffectListHandler::EFFECT_LINK = 40;
 const int CSWSEffectListHandler::EFFECT_HASTE_INTERNAL = 41;

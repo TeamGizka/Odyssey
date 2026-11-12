@@ -26,6 +26,7 @@
 #include "nwcitem.h"
 #include "partytables.h"
 #include "exotlktable.h"
+#include "nwtlktable.h"
 
 static inline void NwsitemTrace1();
 #define NWSITEM_TRACE() NwsitemTrace1()
@@ -2209,7 +2210,7 @@ void CSWSItem::AddAttackModifierProperties(CExoString& sString)
             }
         }
     }
-    CExoString sSuffix = g_pTlkTable->GetSimpleString(TLK_STRREF_ATTACK_MODIFIER_SUFFIX);
+    CExoString sSuffix = g_pSWTlkTable->GetSimpleString(TLK_STRREF_ATTACK_MODIFIER_SUFFIX);
     if (nAttackModifier < 0)
     {
         if (GetBaseItemType() == 45)

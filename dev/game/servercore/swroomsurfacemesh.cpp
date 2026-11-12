@@ -85,13 +85,17 @@ void CSWRoomSurfaceMesh::TransformAABBToWorld(int nNode, const Vector& vOffset)
         nNode = m_lstAABBNodes[nNode].m_nRightChild;
     }
 }
+__int64 QueryTimerFrequency()
+{
+    LARGE_INTEGER nFrequency;
+    QueryPerformanceFrequency(&nFrequency);
+    return nFrequency.QuadPart;
+}
 // PC 0x00574CD0
 static __int64 QueryTimer()
 {
-    LARGE_INTEGER nFrequency;
     LARGE_INTEGER nCount;
-    static __int64 performanceFrequency =
-        (QueryPerformanceFrequency(&nFrequency), nFrequency.QuadPart);
+    static __int64 performanceFrequency = QueryTimerFrequency();
 
     QueryPerformanceCounter(&nCount);
     return 1000000 * nCount.QuadPart / performanceFrequency;
