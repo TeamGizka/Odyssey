@@ -64,9 +64,9 @@ public:
         PREVIEW_TRANSITION_DISTANCE = 10,
         STRREF_MALE = 646,
         STRREF_FEMALE = 647,
-        STRREF_SCOUT = 133,
-        STRREF_SOLDIER = 134,
-        STRREF_SCOUNDREL = 135
+        STRREF_SCOUT = 355,
+        STRREF_SOLDIER = 353,
+        STRREF_SCOUNDREL = 354
     };
 
     unsigned char m_aUnmapped64[4];

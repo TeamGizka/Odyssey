@@ -2719,7 +2719,7 @@ void CSWCVisualEffectOnObject::UpdateMotionBlur(unsigned long nTimeElapsed)
             if (bRemove ||
                 (pTargetCreature != 0 &&
                  (pServerCreature = pTargetCreature->GetServerCreature()) != 0 &&
-                 pServerCreature->IsDebilitated() &&
+                 pServerCreature->IsDebilitated(0) &&
                  pTargetObject->m_nId == pPlayerCreature->m_nId))
             {
                 RemoveHardCodedVisualEffect(nVisualEffect);

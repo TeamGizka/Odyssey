@@ -143,17 +143,15 @@ void CServerInfo::SetModuleName(const CExoString& sModuleName)
 }
 // PC 0x005D5BB0
 CServerInfo::CServerInfo()
-    : m_bSuppressBaseServerVault(0)
 {
     m_nDataChangedFlags = 0;
     m_nServerMode = 0;
     m_nMinLevel = 1;
-    m_nMaxLevel = 20;
+    m_nMaxLevel = 50;
     m_bPauseAndPlay = 1;
     m_nPVP = 1;
     m_bPartyPicking = 0;
     m_bConversationMultiPlayer = 0;
-    m_bConversationMultiPlayerViewOnly = 0;
     m_nDifficultyLevel = GAME_DIFFICULTY_NORMAL;
 
     m_aOptions[0] = SServerOption("Undefined", "UndefinedOption", NULL, SServerOption::OPTION_UNUSED);

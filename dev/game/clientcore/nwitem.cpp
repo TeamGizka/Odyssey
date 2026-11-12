@@ -231,7 +231,7 @@ void CSWBaseItemArray::Load()
         pTable->GetCExoStringEntry(nItem, "BodyVar", &sValue);
         m_pBaseItems[nItem].SetBodyVar(1);
         sValue.UpperCase();
-        if (sValue.GetLength() == 1 && sValue[0] >= 'A' && sValue[0] <= 'J')
+        if (sValue.GetLength() == 1 && sValue[0] >= 'A' && sValue[0] <= 'Z')
         {
             m_pBaseItems[nItem].SetBodyVar(sValue[0] - 'A' + 1);
         }

@@ -66,7 +66,8 @@ void CSWGuiInGameInventory::OnControlSelected(CSWGuiControl* pControl)  // PC 0x
     }
 }
 #endif
-void CSWGuiInGameInventory::CantEquip(CSWGuiControl* pControl)  // PC 0x00738E50
+// PC 0x00738D90
+void CSWGuiInGameInventory::CantEquip(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
     {
@@ -78,7 +79,7 @@ void CSWGuiInGameInventory::CantEquip(CSWGuiControl* pControl)  // PC 0x00738E50
         m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
 }
-// PC 0x00738EB0
+// PC 0x00738DF0
 void CSWGuiInGameInventory::NotUseable(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -105,7 +106,8 @@ void CSWGuiInGameInventory::NotUseableOnHawk(CSWGuiControl* pControl)
     }
 }
 #endif
-void CSWGuiInGameInventory::FullHealth(CSWGuiControl* pControl)  // PC 0x00738DF0
+// PC 0x00738E50
+void CSWGuiInGameInventory::FullHealth(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
     {
@@ -118,6 +120,7 @@ void CSWGuiInGameInventory::FullHealth(CSWGuiControl* pControl)  // PC 0x00738DF
     }
 }
 #ifndef _XBOX
+// PC 0x00738EB0
 void CSWGuiInGameInventory::SquadFullHealth(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -125,7 +128,7 @@ void CSWGuiInGameInventory::SquadFullHealth(CSWGuiControl* pControl)
         CSWGuiMessageBox* pMessageBox =
             g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
         pMessageBox->SetAllowCancel(0);
-        pMessageBox->SetMessage(48494);
+        pMessageBox->SetMessage(48731);
         pMessageBox->SetCallback(0, 0, 0);
         m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }

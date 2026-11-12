@@ -106,7 +106,7 @@ void CSWGuiInGameOptKeyMappings::FillListWithEvents()
         }
     }
 
-    for (nAction = 0; nAction < 66; nAction++)
+    for (nAction = 0; nAction < 70; nAction++)
     {
         pOption = CreateOption(nAction + 200, pProto, 0);
         if (pOption)

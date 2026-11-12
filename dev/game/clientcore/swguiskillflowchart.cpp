@@ -277,7 +277,7 @@ void CSWGuiSkillFlowChart::AddFeatSet(unsigned long nFeat1,
         CSWGuiExtent cExtent;
         cExtent.m_nLeft = 0;
         cExtent.m_nTop = 0;
-        cExtent.m_nWidth = 242;
+        cExtent.m_nWidth = 262;
         cExtent.m_nHeight = 40;
         pFlow->SetExtent(cExtent);
     }
@@ -569,7 +569,7 @@ void CSWGuiSkillInfoBox::SetSkillList(const CExoArrayList<unsigned long>& lSkill
         m_aSkillEntries[i].SetSkill(lSkills.element[i], nState);
         lControls.Add(&m_aSkillEntries[i]);
     }
-    m_lbSkills.AddControls(lControls, 0, 0, 0);
+    m_lbSkills.AddControls(lControls, 0, 1, 0);
     SetActiveControl(&m_lbSkills, 0);
 }
 // PC 0x0073C120

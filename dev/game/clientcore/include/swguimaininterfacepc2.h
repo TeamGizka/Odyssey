@@ -52,7 +52,7 @@ public:
         STRREF_FORCE = 1060,
         STRREF_VITALITY = 1061,
         STRREF_LEVEL = 32154,
-        STRREF_XP_NEEDED = 48459
+        STRREF_XP_NEEDED = 109865
     };
     void UpdateToolTipText();
     SWGUI_PCVIRTUAL int DisplayToolTip();

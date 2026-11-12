@@ -1656,7 +1656,7 @@ void CSWGuiUpgrade::VerifyUpgrade(CSWGuiControl* pControl)
     else
     {
         ((CSWSItem*)pControl)->m_nUpgrades &=
-            ~(1 << m_anUpgradeProperties[nSlot]);
+            ~(1 << (unsigned char)m_anUpgradeProperties[nSlot]);
     }
 }
 // PC 0x0072D0D0
@@ -2395,7 +2395,7 @@ void CSWGuiCreateItem::UpdateBreakdownFilters()
 {
     for (int i = 0; i < 5; i++)
     {
-        if (m_abtnBreakdownFilters[i].m_nID == m_nBreakdownFilter)
+        if (m_abtnBreakdownFilters[i].m_nIndex == m_nBreakdownFilter)
             m_abtnBreakdownFilters[i].m_cText.m_cParams.SetDefaultColor(
                 CGuiInGame::COLOR_NEW_HIGHLIGHT);
         else
@@ -2408,7 +2408,7 @@ void CSWGuiCreateItem::UpdateCreateFilters()
 {
     for (int i = 0; i < 5; i++)
     {
-        if (m_abtnCreateFilters[i].m_nID == m_nCreateFilter)
+        if (m_abtnCreateFilters[i].m_nIndex == m_nCreateFilter)
             m_abtnCreateFilters[i].m_cText.m_cParams.SetDefaultColor(
                 CGuiInGame::COLOR_NEW_HIGHLIGHT);
         else
@@ -2444,7 +2444,7 @@ void CSWGuiCreateItem::OnBreakdownFilterPicked(CSWGuiControl* pControl)
 {
     if (m_bBuyMode == 0 && pControl != 0)
     {
-        m_nBreakdownFilter = pControl->m_nID;
+        m_nBreakdownFilter = pControl->m_nIndex;
         UpdateBreakdownFilters();
         PopulateInventoryItemListBox();
     }
@@ -2527,7 +2527,7 @@ void CSWGuiCreateItem::OnCreateFilterPicked(CSWGuiControl* pControl)
 {
     if (m_bBuyMode != 0 && pControl != 0)
     {
-        m_nCreateFilter = pControl->m_nID;
+        m_nCreateFilter = pControl->m_nIndex;
         UpdateCreateFilters();
         SetItemList();
     }
@@ -2656,7 +2656,7 @@ CSWGuiCreateItem::CSWGuiCreateItem(CSWGuiManager* pManager,
         pButton->AddEvent(CSWGuiControl::EVENT_CONFIRM, this,
                           (CSWGuiHandler)&CSWGuiCreateItem::OnCreateFilterPicked);
         pButton->m_bFocusable = 0;
-        pButton->m_nID = i;
+        pButton->m_nIndex = i;
     }
     UpdateCreateFilters();
     for (int i = 0; i < 5; i++)
@@ -2667,7 +2667,7 @@ CSWGuiCreateItem::CSWGuiCreateItem(CSWGuiManager* pManager,
         pButton->AddEvent(CSWGuiControl::EVENT_CONFIRM, this,
                           (CSWGuiHandler)&CSWGuiCreateItem::OnBreakdownFilterPicked);
         pButton->m_bFocusable = 0;
-        pButton->m_nID = i;
+        pButton->m_nIndex = i;
     }
     CSWGuiButton* pAccept = &m_btnAccept;
     pAccept->AddEvent(CSWGuiControl::EVENT_SELECT, this,
@@ -3218,7 +3218,7 @@ void CSWGuiCreateItem::SetItemList()
             CSWSItem* pItem = new CSWSItem(OBJECT_INVALID);
             pTable->GetCExoStringEntry(nRow, "label", &sLabel);
             if (pItem->LoadFromTemplate(CResRef(sLabel.CStr())))
-                m_pStore->AcquireItem(pItem);
+                m_pStore->AcquireItem(pItem, 1);
         }
     }
     if (!m_s3EF0.IsEmpty())

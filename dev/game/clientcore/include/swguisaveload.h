@@ -94,7 +94,7 @@ public:
     void HandleSaveButton(CSWGuiControl* pControl);
 
     static const unsigned long STRREF_CONFIRM_OVERWRITE = 1591;
-    static const unsigned long STRREF_SAVE_SPACE_REQUIRED = 47989;
+    static const unsigned long STRREF_SAVE_SPACE_REQUIRED = 48754;
     static const int SAVE_SPACE_TOKEN_MB = 0;
 
     static const int SAVE_SPACE_UNITS = 1600;

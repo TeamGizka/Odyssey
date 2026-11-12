@@ -113,7 +113,7 @@ void CSWGuiFeatsCharGen::OnPanelAdded()
     if (m_bShowGrantedTutorial)
     {
         if (g_pAppManager->m_pClientExoApp->ShowTutorialWindow(
-                0x12, OBJECT_INVALID, OBJECT_INVALID, 0))
+                0x13, OBJECT_INVALID, OBJECT_INVALID, 0))
         {
             CGuiInGame* pGui =
                 g_pAppManager->m_pClientExoApp->GetInGameGui();

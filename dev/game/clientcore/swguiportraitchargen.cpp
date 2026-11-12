@@ -74,7 +74,7 @@ void CSWGuiPortraitCharGen::UpdatePortraitButton()
         m_pCreature->SetPortraitId(*pnPortrait);
         CCAppearanceInfo cAppearance = *m_pCreature->m_pAppearance;
         cAppearance.m_nAppearance = m_lstAppearances[m_nPortraitIndex];
-        m_pCreature->SetAppearance(&cAppearance, 2, 1);
+        m_pCreature->SetAppearance(&cAppearance, 2, 1, 1);
         m_pCreature->m_pAppearance->m_nAppearance =
             m_lstAppearances[m_nPortraitIndex];
         if (g_bDo3DGUIs != 0)

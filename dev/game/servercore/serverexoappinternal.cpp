@@ -2238,7 +2238,7 @@ CExoString CServerExoAppInternal::GetModuleName()
     if (GetModule() != NULL)
     {
         CExoString sModuleName;
-        sModuleName = m_pServerInfo->m_sModuleList;
+        sModuleName = m_pServerInfo->m_sModuleName;
         return sModuleName;
     }
     return CExoString();

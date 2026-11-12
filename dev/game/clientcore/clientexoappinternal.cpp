@@ -2780,7 +2780,7 @@ void CClientExoAppInternal::DoPassiveSelection(float fDeltaTime)
             CExoArrayList<unsigned long> aForward;
             CExoArrayList<unsigned long> aNearest;
             pServerCreature->GetNearestObjects(CLIENT_PASSIVE_SELECTION_RANGE,
-                CLIENT_PASSIVE_SELECTION_RANGE, aForward, aNearest);
+                CLIENT_PASSIVE_SELECTION_HEIGHT, aForward, aNearest);
             int nObjects = aNearest.num;
             m_aNearestObjects.num = 0;
             m_aNearestObjects.SetSize(nObjects);
@@ -5998,7 +5998,7 @@ void CClientExoAppInternal::RunDeathSequence()
     m_nGameOver = 1;
     m_bGameOverPending = 1;
     m_pSWGuiManager->HideAllPanels();
-    m_pGuiInGame->m_pMessageBox->DisplayDeathMessage();
+    m_pGuiInGame->DisplayDeathMessage();
 
     CSWCCreature* pCreature =
         GetCreatureByGameObjectID(m_oidLastPartyMemberTempKilled);
@@ -8284,7 +8284,7 @@ CExoString CClientExoAppInternal::GetDisplayCharacterForKey(int nKey)
         return g_pExoInput->GetDisplayCharacterForKey(nKey);
     }
 #endif
-    return g_pTlkTable->GetSimpleString(0xBC10);
+    return g_pTlkTable->GetSimpleString(48724);
 }
 #ifndef _XBOX
 void CClientExoAppInternal::SetEvilEndingHackInProgress(int bInProgress)  // PC 0x00640660
@@ -8308,18 +8308,17 @@ void CClientExoAppInternal::RestoreMousePositionTo(int nX, int nY)  // PC 0x0064
 void CClientExoAppInternal::DoScreenShot()
 {
     WIN32_FIND_DATA cFindData;
+    HANDLE hFind;
     for (int nIndex = 0; nIndex < SCREENSHOT_MAX_INDEX; nIndex++)
     {
         sprintf(m_szScreenShot, "K2_%05i.tga", nIndex);
-        HANDLE hFind = FindFirstFile(m_szScreenShot, &cFindData);
+        hFind = FindFirstFile(m_szScreenShot, &cFindData);
         if (hFind == INVALID_HANDLE_VALUE)
-        {
-            FindClose(hFind);
-            m_bScreenShot = 1;
-            return;
-        }
+            break;
         FindClose(hFind);
     }
+    if (hFind == INVALID_HANDLE_VALUE)
+        FindClose(hFind);
     m_bScreenShot = 1;
 }
 // PC 0x00640750
@@ -8558,7 +8557,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
             else
             {
                 CGuiInGame* pGui = m_pGuiInGame;
-                pGui->m_pMessageBox->DisplayDeathMessage();
+                pGui->DisplayDeathMessage();
             }
         }
         else if (!m_nGameOver)

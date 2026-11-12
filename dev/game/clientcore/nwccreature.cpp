@@ -714,7 +714,7 @@ int CSWCCreature::ComputeWeaponOverlays(int bCheckAnimations, int bUnused)
 void CSWCCreature::RotateCreatureToOrientation(const Vector& vOrientation)
 {
     if (GetServerCreature() != NULL &&
-        (GetServerCreature()->IsDebilitated() || GetServerCreature()->GetDead() ||
+        (GetServerCreature()->IsDebilitated(0) || GetServerCreature()->GetDead() ||
          GetServerCreature()->GetDeadTemp()))
         return;
 
@@ -5770,7 +5770,7 @@ int CSWCCreature::SetPrecalculatedPosition(const Vector& vPosition)
     CSWSCreature* pServerCreature = GetServerCreature();
     if (pServerCreature != NULL)
     {
-        if (pServerCreature->IsDebilitated())
+        if (pServerCreature->IsDebilitated(0))
             return 1;
         if (!(pServerCreature->m_nAIStateFlags & CSWSCreature::AI_STATE_CAN_MOVE))
             return 1;
@@ -5930,7 +5930,7 @@ void CSWCCreature::DriveAnimationUpdate()
         CSWSCreature* pCreature = GetServerCreature();
         if (pCreature != NULL &&
             (pCreature->GetDead() || pCreature->GetIsPCDying() ||
-             pCreature->GetDeadTemp() || pCreature->IsDebilitated() ||
+             pCreature->GetDeadTemp() || pCreature->IsDebilitated(0) ||
              !(pCreature->m_nAIStateFlags & CSWSCreature::AI_STATE_CAN_MOVE)))
             return;
     }
@@ -6061,7 +6061,7 @@ void CSWCCreature::FollowAnimationUpdate()
     if (GetServerCreature() != NULL &&
         (GetServerCreature()->GetDeadTemp() ||
          GetServerCreature()->GetDead() ||
-         GetServerCreature()->IsDebilitated()))
+         GetServerCreature()->IsDebilitated(0)))
         return;
 
     unsigned long oidCreature = m_nId;

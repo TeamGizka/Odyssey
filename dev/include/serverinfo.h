@@ -23,9 +23,10 @@ class CPersistantWorldOptions
 {
 public:
     CPersistantWorldOptions()
-        : bVaultCharsOnly(0), bSaveCharsInSaveGame(1) {}
+        : bVaultCharsOnly(0), bSaveCharsInSaveGame(1), bSuppressBaseServerVault(0) {}
     int bVaultCharsOnly;
     int bSaveCharsInSaveGame;
+    int bSuppressBaseServerVault;
 };
 
 class CServerInfo
@@ -46,11 +47,11 @@ public:
     };
     int m_nDataChangedFlags;
     short m_nServerMode;
+    CExoString m_sModuleName;
     CExoString m_sModuleList;
     CExoString m_sPlayerList;
     CExoString m_sSavegameList;
     CExoString m_sVaultList;
-    CExoString m_sModuleName;
     int m_bAllowLocal;
     int m_bAllowServer;
     int m_bAllowVault;
@@ -105,16 +106,11 @@ public:
     int m_nAutoSaveInterval;
     CPersistantWorldOptions m_PersistantWorldOptions;
 
-    int m_bSuppressBaseServerVault;
 #ifdef _XBOX
     short m_nXboxUnmapped114;
 #endif
-    unsigned int m_bPartyPicking : 1;
-
-    unsigned int m_bConversationMultiPlayer : 1;
-    unsigned int m_bConversationMultiPlayerViewOnly : 1;
-
-    int m_nXboxUnmapped11C;
+    int m_bPartyPicking;
+    int m_bConversationMultiPlayer;
     int m_nDifficultyLevel;
     SServerOption m_aOptions[50];
     ~CServerInfo()  // PC 0x004E9E50

@@ -5881,7 +5881,7 @@ int CGuiInGame::CanPlayDialogAnimations(unsigned long oidObject)
         if (pObject->AsSWSCreature() != 0)
         {
             CSWSCreature* pCreature = pObject->AsSWSCreature();
-            if (pCreature->IsDebilitated() || ((CSWSObject*)pCreature)->GetDead() ||
+            if (pCreature->IsDebilitated(0) || ((CSWSObject*)pCreature)->GetDead() ||
                 pCreature->GetDeadTemp())
             {
                 return 0;

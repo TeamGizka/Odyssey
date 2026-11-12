@@ -175,7 +175,7 @@ void CSWGuiInGameItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
         cExtent.m_nLeft = 0;
         cExtent.m_nTop = 0;
         cExtent.m_nWidth = nWidth;
-        cExtent.m_nHeight = 56;
+        cExtent.m_nHeight = 36;
         SetExtent(cExtent);
     }
     m_bPulsing = bPulsing;
@@ -518,7 +518,7 @@ void CSWGuiStoreItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
         cExtent.m_nLeft = 0;
         cExtent.m_nTop = 0;
         cExtent.m_nWidth = nWidth;
-        cExtent.m_nHeight = 56;
+        cExtent.m_nHeight = 36;
         SetExtent(cExtent);
     }
 }

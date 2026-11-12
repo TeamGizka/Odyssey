@@ -221,13 +221,13 @@ void CSWGuiOptionsSoundAdvanced::OnEnterOption(CSWGuiControl* pControl)
 {
     if (pControl == &m_cbForceSoftware)
     {
-        SetDescription(48577);
+        SetDescription(48718);
         return;
     }
     if (pControl == &m_btnEAX || pControl == &m_btnEAXRight ||
         pControl == &m_btnEAXLeft)
     {
-        SetDescription(48578);
+        SetDescription(48719);
     }
 }
 // PC 0x0074F560

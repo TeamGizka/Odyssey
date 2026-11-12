@@ -2164,7 +2164,7 @@ int CSWSModule::LoadModuleStart(const CExoString& sModule, int bLoadModuleTime)
         "Mod_Creator_ID", bSuccess, 0);
     m_pModuleInfo->m_nVersion = m_pRes->ReadFieldDWORD(&cModuleStruct,
         "Mod_Version", bSuccess, 0);
-    g_pAppManager->GetServerExoApp()->GetServerInfo()->m_sModuleList = sModule;
+    g_pAppManager->GetServerExoApp()->GetServerInfo()->m_sModuleName = sModule;
     m_lsName = m_pRes->ReadFieldCExoLocString(&cModuleStruct,
         "Mod_Name", bSuccess, CExoLocString());
     m_sDescription = m_pRes->ReadFieldCExoLocString(&cModuleStruct,

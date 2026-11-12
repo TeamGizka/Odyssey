@@ -400,7 +400,7 @@ inline void CSWGuiMainMenu::OnPanelAdded()  // PC 0x006D14C0
         CExoString sNeeded;
         sNeeded.Format("%2.3f", fNeededMB);
         g_pTlkTable->SetCustomToken(0, sNeeded);
-        sMessage = g_pTlkTable->GetSimpleString(0xBB78);
+        sMessage = g_pTlkTable->GetSimpleString(48737);
         g_pTlkTable->ParseStr(sMessage);
         pMessageBox->SetAllowCancel(0);
         pMessageBox->SetMessage(sMessage);

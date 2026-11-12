@@ -1195,7 +1195,7 @@ void CSWGuiMainInterfaceStatus::Update(float fElapsed)
         {
             if (m_nStatusEffect != 0)
             {
-                g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateStatus(10,
+                g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateStatus(101,
                                                                              0);
             }
 #ifdef _XBOX
@@ -2316,7 +2316,7 @@ void CSWGuiMainInterface::UpdatePortraits()
                     pCreature->m_bLevelUpSent = 0;
                 }
             }
-            else if (pServer->IsDebilitated())
+            else if (pServer->IsDebilitated(0))
             {
                 nState = CSWGuiMainInterfaceChar::PORTRAIT_DEBILITATED;
                 if (nMember == 0)
@@ -2354,12 +2354,12 @@ void CSWGuiMainInterface::UpdatePortraits()
 #endif
             }
 #ifdef _XBOX
-            if (!pServer->IsDebilitated() && m_nCombatMessage == STRREF_DEBILITATED)
+            if (!pServer->IsDebilitated(0) && m_nCombatMessage == STRREF_DEBILITATED)
             {
                 SetCombatMessage(42475);
             }
 #else
-            if (!pServer->IsDebilitated() && m_nCombatMessage == STRREF_DEBILITATED &&
+            if (!pServer->IsDebilitated(0) && m_nCombatMessage == STRREF_DEBILITATED &&
                 m_fCombatMessageTime == -1.0f)
             {
                 m_lblCmbtmodemsg.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_RED);
@@ -4120,7 +4120,7 @@ void CSWGuiMainInterface::UpdateStickyTarget()  // PC 0x006DEEF0
 #ifndef _XBOX
 void CSWGuiMainInterface::SetupPauseGuiExtent(CSWGuiExtent* pExtent)  // PC 0x006DF370
 {
-    pExtent->m_nTop = 3;
+    pExtent->m_nTop = 11;
     CClientOptions* pOptions =
         g_pAppManager->m_pClientExoApp->GetClientOptions();
     int bShowGUI;
@@ -4138,7 +4138,7 @@ void CSWGuiMainInterface::SetupPauseGuiExtent(CSWGuiExtent* pExtent)  // PC 0x00
                       m_btnEqu.m_cExtent.m_nHeight - 1;
         pExtent->m_nTop += nOffset;
     }
-    pExtent->m_nLeft = m_pManager->m_nWidth - pExtent->m_nWidth - 3;
+    pExtent->m_nLeft = m_pManager->m_nWidth - pExtent->m_nWidth - 6;
 }
 #endif
 // PC 0x006DF410

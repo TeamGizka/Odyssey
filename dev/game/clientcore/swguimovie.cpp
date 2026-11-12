@@ -54,7 +54,7 @@ void CSWGuiTitleMovies::OnMoviePicked(CSWGuiControl* pControl)  // PC 0x0074B4A0
         {
             int nMovieResult = 0;
             g_pAppManager->m_pClientExoApp->PlayMovie(*psMovie, nMovieResult,
-                                                      0, 1);
+                                                      1, 1);
         }
         else
         {

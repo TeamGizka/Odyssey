@@ -434,7 +434,7 @@ float CSWCPlaceable::GetCanSeeHeight()
         bool bFailed;
         {
             CExoString sColumn("CanSeeHeight");
-            unsigned char nAppearance = pPlaceable->m_nAppearance;
+            unsigned long nAppearance = pPlaceable->m_nAppearance;
             bFailed = !pPlaceables->GetFLOATEntry(nAppearance, sColumn, &fHeight);
         }
         if (bFailed)
