@@ -1448,7 +1448,7 @@ CSWGuiSaveNamePanel::CSWGuiSaveNamePanel(CSWGuiManager* pManager)
 {
     SwguisaveloadTrace1();
     m_pSaveLoad = NULL;
-    StartLoadFromLayout("savename");
+    StartLoadFromLayout("savename_p");
     InitControl(m_btnSave, "BTN_OK", 1);
     InitControl(m_btnCancel, "BTN_CANCEL", 1);
     InitControl(m_edtSaveName, "EDITBOX", 1);

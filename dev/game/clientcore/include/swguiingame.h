@@ -392,6 +392,23 @@ public:
 
     enum { STRREF_ITEM_USED_THIS_ROUND = 42409 };
 
+    enum { STRREF_INVENTORY = 48621 };
+
+    enum { BASE_ITEM_ADRENALINE = 53 };
+
+    enum { BASE_ITEM_DROID_REPAIR_EQUIPMENT = 56 };
+
+    enum
+    {
+        FILTER_ALL = 0,
+        FILTER_DATAPADS = 6,
+        FILTER_WEAPONS = 7,
+        FILTER_ARMOR = 8,
+        FILTER_USEABLE = 9,
+        FILTER_QUESTS = 10,
+        FILTER_MISC = 11
+    };
+
     CSWGuiInGameInventory(CSWGuiManager* pManager);
     virtual ~CSWGuiInGameInventory();
     virtual void Draw(float fElapsed);
@@ -401,9 +418,10 @@ public:
 
     int CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature, int nSlot);
     void PopulateItemListBox();
-    void SetNextFilter();
+    void SetNextFilter(CSWGuiControl* pControl);
     void OnControlSelected(CSWGuiControl* pControl);
     void OnControlEntered(CSWGuiControl* pControl);
+    void OnControlExited(CSWGuiControl* pControl);
     void CreateItemEntry(CSWCCreature* pCreature, int& nItem,
                         CExoArrayList<CSWGuiControl*>& lControls,
                         CSWSItem* pItem, int bSquadItem, int bEquipped);
@@ -437,10 +455,9 @@ public:
     unsigned long m_oidSelectedItem;
     short m_nSavedTopItem;
     short m_nSavedSelected;
-    unsigned long m_bUpdateItems : 1;
-
     unsigned long m_bRestoreSelection : 1;
     unsigned long m_bUpdateUseItem : 1;
+    unsigned long m_bUpdateItems : 1;
     unsigned long m_nInventoryFlagsUnused : 29;
 };
 #endif
@@ -484,6 +501,14 @@ public:
     void OnControlEntered(CSWGuiControl* pControl);
     void PopulateItemListBox();
     void MarkNewQuestsObserved();
+#ifndef _XBOX
+    void OnControlExited(CSWGuiControl* pControl);
+    void OnFilterPressed(CSWGuiControl* pControl);
+    void UpdateFilterLabelHighlights();
+
+    static const unsigned long STRREF_ACTIVE_QUESTS_BY = 49145;
+    static const unsigned long STRREF_COMPLETED_QUESTS_BY = 49146;
+#endif
 
     static const unsigned long STRREF_SORT = 42566;
     static const unsigned long STRREF_COMPLETED_QUESTS = 32177;
@@ -521,7 +546,11 @@ public:
     CSWGuiButton m_btnMessages;
 #endif
     CSWGuiLabel m_alblBar[5];
+#ifdef _XBOX
     CSWGuiQuestItem* m_pQuestItemPanel;
+#else
+    CSWGuiInGameMessages* m_pMessagesPanel;
+#endif
     CSWGuiControl* m_pUnknownFB8;
     CExoArrayList<int> m_aNewQuests;
 };

@@ -43,7 +43,7 @@ int CSWGuiTutorialBox::TutorialReasonIsValid(unsigned char nReason)
     SWGUIINGAMETUTORIALBOX_TRACE();
     bool bMissing;
     {
-        CExoString sColumn("Message0");
+        CExoString sColumn("Message_PC0");
         CTwoDimArrays* p2DArrays = g_pRules->Get2DArrays();
         EXOXBOXASSERT(p2DArrays->m_pTutorial);
         C2DA* pTutorial = p2DArrays->m_pTutorial;

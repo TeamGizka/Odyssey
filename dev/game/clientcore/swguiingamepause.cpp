@@ -173,7 +173,7 @@ CSWGuiInGamePause::CSWGuiInGamePause(CSWGuiManager* pManager)
     StartLoadFromLayout("pause");
 #else
     {
-        CResRef cLayout("pause");
+        CResRef cLayout("pause_p");
         StartLoadFromLayout(cLayout);
     }
 #endif

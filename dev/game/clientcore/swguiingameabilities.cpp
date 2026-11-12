@@ -216,6 +216,9 @@ CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)  // PC 0x0
 CSWGuiInGameAbilities::~CSWGuiInGameAbilities()
 {
     m_lbDescription.ClearItems();
+#ifndef _XBOX
+    m_lbDescFeats.ClearItems();
+#endif
     m_lbAbility.ClearItems();
 }
 // PC 0x00737300

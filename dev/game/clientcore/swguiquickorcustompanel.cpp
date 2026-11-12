@@ -84,7 +84,7 @@ CSWGuiQuickOrCustomPanel::CSWGuiQuickOrCustomPanel(CSWGuiManager* pManager,
     : CSWGuiPanel(pManager)
 {
     m_pCreature = pCreature;
-    StartLoadFromLayout("QORCPNL");
+    StartLoadFromLayout("QORCPNL_p");
     InitControl(m_cQuickButton, "QUICK_CHAR_BTN", 1);
     InitControl(m_cCustomButton, "CUST_CHAR_BTN", 1);
     InitControl(m_cDescriptionList, "LB_DESC", 1);

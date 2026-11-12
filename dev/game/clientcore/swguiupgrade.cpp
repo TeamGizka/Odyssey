@@ -469,7 +469,7 @@ CSWGuiUpgradeItemSelect::CSWGuiUpgradeItemSelect(CSWGuiManager* pManager)
     StartLoadFromLayout("upgradeitems");
 #else
     {
-        CResRef cLayout("upgradeitems");
+        CResRef cLayout("upgradeitems_p");
         StartLoadFromLayout(cLayout);
     }
 #endif
@@ -1341,7 +1341,7 @@ CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x00730C60
     StartLoadFromLayout("upgrade");
 #else
     {
-        CResRef cLayout("upgrade");
+        CResRef cLayout("upgrade_p");
         StartLoadFromLayout(cLayout);
     }
 #endif
@@ -1462,14 +1462,14 @@ CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x00730C60
     }
 #endif
     StopLoadFromLayout();
-    m_cSlotName.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+    m_cSlotName.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_UPGRADE_BORDER;
 #ifdef _XBOX
     m_cLightsaberSlotName.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
     m_cUpgradeCount.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
     m_cUpgrades.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
 #endif
-    m_cProperty.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
-    m_lbItems.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+    m_cProperty.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_UPGRADE_BORDER;
+    m_lbItems.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_UPGRADE_BORDER;
 #ifndef _XBOX
     m_CSWGuiLabel_1F60.Initialize(m_lbDesc.m_pProtoItem->m_cExtent, (CSWGuiLabel*)m_lbDesc.m_pProtoItem, 1.0f);
 #else
@@ -4972,7 +4972,7 @@ void CSWGuiSwoopUpgrade::UpdateItems()
 {
     CResRef cIcon;
     CExoString sDescription;
-    for (int i = 0; i < NUM_SWOOP_SLOTS; i++)
+    for (int i = 0; i < NUM_SWOOP_UPGRADE_SLOTS; i++)
     {
         if (m_apItemEntries[i] != 0)
         {

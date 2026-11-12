@@ -260,28 +260,28 @@ void CSWGuiInGameOptions::OnEnterSlot(CSWGuiControl* pControl)
     switch (nSlot)
     {
     case 0:
-        SetDescription(42300);
+        SetDescription(STRREF_DESC_LOAD_GAME);
         break;
     case 1:
-        SetDescription(42301);
+        SetDescription(STRREF_DESC_SAVE_GAME);
         break;
     case 2:
-        SetDescription(48006);
+        SetDescription(STRREF_DESC_GAMEPLAY);
         break;
     case 3:
-        SetDescription(48537);
+        SetDescription(STRREF_DESC_FEEDBACK);
         break;
     case 4:
-        SetDescription(48572);
+        SetDescription(STRREF_DESC_AUTOPAUSE);
         break;
     case 5:
-        SetDescription(48010);
+        SetDescription(STRREF_DESC_GRAPHICS);
         break;
     case 6:
-        SetDescription(48012);
+        SetDescription(STRREF_DESC_SOUND);
         break;
     case 7:
-        SetDescription(42302);
+        SetDescription(STRREF_DESC_QUIT);
         break;
     }
 #endif
@@ -290,7 +290,11 @@ void CSWGuiInGameOptions::OnEnterSlot(CSWGuiControl* pControl)
 CSWGuiInGameOptions::CSWGuiInGameOptions(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
+#ifdef _XBOX
     StartLoadFromLayout("optionsingame");
+#else
+    StartLoadFromLayout("optionsingame_p");
+#endif
 #ifdef _XBOX
     InitControl(m_aOptions[0], "BTN_LOADGAME", 1);
     InitControl(m_aOptions[1], "BTN_SAVEGAME", 1);
@@ -347,6 +351,11 @@ CSWGuiInGameOptions::CSWGuiInGameOptions(CSWGuiManager* pManager)
     InitControl(m_lbDescription, "LB_DESC", 1);
     m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     InitControl(m_btnExit, "BTN_EXIT", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    InitControl(m_alblBar[4], "LBL_BAR5", 1);
     StopLoadFromLayout();
     CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
     m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
@@ -378,6 +387,6 @@ CSWGuiInGameOptions::CSWGuiInGameOptions(CSWGuiManager* pManager)
     pExit->m_bFocusable = 0;
     pExit->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
     CSWGuiPanel* pPanel = this;
-    pPanel->SetActiveControl(&m_aOptions[0], 0);
+    pPanel->SetActiveControl(&m_aOptions[1], 0);
 #endif
 }

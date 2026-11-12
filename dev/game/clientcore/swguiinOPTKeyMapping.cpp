@@ -765,6 +765,6 @@ void CSWGuiKeyMapButton::PostChangeToEvent()
     CExoIni cIni;
     CExoString sKey;
     sKey.Format("%d", m_nNewKey);
-    cIni.WriteIniEntry(sKey, ".\\swkotor.ini", "Keymapping",
+    cIni.WriteIniEntry(sKey, ".\\swkotor2.ini", "Keymapping",
                        GetActionId(m_nAction, m_nType));
 }

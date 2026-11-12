@@ -67,8 +67,11 @@ void CSWGuiInGameMap::Draw(float fElapsed)
     CSWGuiExtent cExtent = m_lblMapNote.m_cExtent;
     CSWGuiPanel::Draw(fElapsed);
 #ifndef _XBOX
-    cExtent.m_nLeft += (m_pManager->m_nWidth - 640) / 2;
-    cExtent.m_nTop += (m_pManager->m_nHeight - 480) / 2;
+    if (!m_bPositioned)
+    {
+        cExtent.m_nLeft += (m_pManager->m_nWidth - 640) / 2;
+        cExtent.m_nTop += (m_pManager->m_nHeight - 480) / 2;
+    }
 #endif
     AurGUIStartLayer();
     if (AurGUISetupViewport(cExtent.m_nLeft, cExtent.m_nTop,
@@ -170,6 +173,19 @@ void CSWGuiInGameMap::OnXButton(CSWGuiControl* pControl)
 void CSWGuiInGameMap::OnPanelAdded()
 {
     CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
+#ifndef _XBOX
+    float fScaleX = 1.0f;
+    float fScaleY = 1.0f;
+    if (g_pAppManager->m_pClientExoApp->GetSWGuiManager() != NULL)
+    {
+        fScaleX = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
+        fScaleY = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
+    }
+    m_imgMap.SetExtent(CSWGuiExtent(0, 0, (int)(fScaleX * CSWSAreaMap::MAP_PIXEL_WIDTH),
+                                    (int)(fScaleY * CSWSAreaMap::MAP_PIXEL_HEIGHT)));
+    m_cMapHider.SetExtent(CSWGuiExtent(0, 0, (int)(fScaleX * CSWSAreaMap::MAP_PIXEL_WIDTH),
+                                       (int)(fScaleY * CSWSAreaMap::MAP_PIXEL_HEIGHT)));
+#endif
     CSWCArea* pClientArea = g_pAppManager->GetClientExoApp()->GetModule()->m_pInfo;
     CExoString sAreaName = pClientArea->m_sAreaName;
     m_lblArea.m_cText.m_cParams.SetText(sAreaName);
@@ -181,6 +197,15 @@ void CSWGuiInGameMap::OnPanelAdded()
     sMapImage.Format("lbl_map%s", sAreaResRef.CStr());
 
     int nMapMode;
+#ifndef _XBOX
+    if (pServer->GetPartyTable()->m_bDisableMap)
+    {
+        CResRef cMapImage("LBL_STATIC");
+        m_imgMap.m_cParams.SetImage(cMapImage, 0);
+        nMapMode = 0;
+    }
+    else
+#endif
     if (pServer->GetModule()->GetAreaMap()->m_nExploredSize > 0)
     {
         CResRef cMapImage(sMapImage);
@@ -198,7 +223,11 @@ void CSWGuiInGameMap::OnPanelAdded()
 
     CSWSCreature* pPlayer =
         pServer->GetPlayerCreature();
+#ifdef _XBOX
     int bUnescapable = pPlayer->GetArea()->m_bUnescapable;
+#else
+    int bUnescapable = pPlayer->GetArea()->m_bDisableTransit;
+#endif
     if (bUnescapable)
     {
         m_nMessageStrRef = STRREF_FUNCTION_UNAVAILABLE;
@@ -299,6 +328,7 @@ void CSWGuiInGameMap::OnPanelAdded()
         m_bReturnButton ? CGuiInGame::COLOR_BLUE : CGuiInGame::DISABLED_TEXT);
 #endif
 #ifndef _XBOX
+    g_pAppManager->m_pClientExoApp->GetClientOptions();
     CSWGuiPanel::OnPanelAdded();
 #endif
     g_pAppManager->GetClientExoApp()->ShowTutorialWindow(
@@ -402,7 +432,11 @@ CExoString CSWGuiMapHider::GetNextMapNote()
                 CSWSAreaMap* pAreaMap =
                     g_pAppManager->m_pServerExoApp->GetModule()->m_pAreaMap;
                 int bExplored = pAreaMap->IsWorldPointExplored(pWaypoint->m_vPosition);
+#ifdef _XBOX
                 if (bExplored)
+#else
+                if (bExplored || !g_bShowFogOfWar)
+#endif
                 {
                     m_pCurrentNote = pPos;
                     CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
@@ -427,6 +461,7 @@ void CSWGuiInGameMap::HandleInputEvent(int nEvent, int nState)
     {
         switch (nEvent)
         {
+#ifdef _XBOX
         case GUIEVENT_TOGGLE_MODE:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
             if (!g_pAppManager->m_pClientExoApp->ShowTutorialWindow(
@@ -436,6 +471,7 @@ void CSWGuiInGameMap::HandleInputEvent(int nEvent, int nState)
                 OnXButton(0);
             }
             break;
+#endif
         case GUIEVENT_ACTIVATE:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
             if (m_bPartySelection)
@@ -526,7 +562,12 @@ CExoString CSWGuiMapHider::GetPrevMapNote()
             {
                 CSWSAreaMap* pAreaMap =
                     g_pAppManager->m_pServerExoApp->GetModule()->m_pAreaMap;
+#ifdef _XBOX
                 if (pAreaMap->IsWorldPointExplored(pWaypoint->m_vPosition))
+#else
+                if (pAreaMap->IsWorldPointExplored(pWaypoint->m_vPosition) ||
+                    !g_bShowFogOfWar)
+#endif
                 {
                     m_pCurrentNote = pPos;
                     pWaypoint->m_lsMapNote.GetString(
@@ -667,8 +708,8 @@ CSWGuiMapHider::CSWGuiMapHider()
                            2, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0),
         CSWGuiBorderParams(CResRef(), CResRef(), "whitetarget",
                            2, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0));
-    m_btnHider.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
-    m_btnHider.m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+    m_btnHider.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_BONUS;
+    m_btnHider.m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_BONUS;
 #endif
 }
 // PC 0x006EDD60
@@ -722,6 +763,15 @@ void CSWGuiMapHider::Draw(float fElapsed)
         return;
     }
 
+#ifndef _XBOX
+    float fGuiScaleX = 1.0f;
+    float fGuiScaleY = 1.0f;
+    if (g_pAppManager->m_pClientExoApp->GetSWGuiManager() != NULL)
+    {
+        fGuiScaleX = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
+        fGuiScaleY = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
+    }
+#endif
     CSWSAreaMap* pAreaMap =
         g_pAppManager->GetServerExoApp()->GetModule()->GetAreaMap();
     if (pAreaMap != NULL && pAreaMap->m_nExploredSize > 0)
@@ -733,8 +783,13 @@ void CSWGuiMapHider::Draw(float fElapsed)
             pAreaMap->GetMapData(nMapSize, nMapWidth, nMapHeight);
         if (pMapData != NULL && g_bShowFogOfWar)
         {
+#ifdef _XBOX
             float fScaleX = (float)CSWSAreaMap::MAP_PIXEL_WIDTH / nMapWidth;
             float fScaleY = (float)CSWSAreaMap::MAP_PIXEL_HEIGHT / nMapHeight;
+#else
+            float fScaleX = fGuiScaleX * CSWSAreaMap::MAP_PIXEL_WIDTH / nMapWidth;
+            float fScaleY = fGuiScaleY * CSWSAreaMap::MAP_PIXEL_HEIGHT / nMapHeight;
+#endif
             float fDotWidth = fScaleX * 4.0f;
             float fDotHeight = fScaleY * 4.0f;
             float fX = 0.0f;
@@ -785,9 +840,16 @@ void CSWGuiMapHider::Draw(float fElapsed)
             if (pObject != NULL && pObject->AsSWSWaypoint() != NULL)
             {
                 CSWSWaypoint* pWaypoint = pObject->AsSWSWaypoint();
+#ifdef _XBOX
                 if (pWaypoint->m_bMapNoteEnabled &&
                     g_pAppManager->GetServerExoApp()->GetModule()->GetAreaMap()
                         ->IsWorldPointExplored(pWaypoint->m_vPosition))
+#else
+                if ((pWaypoint->m_bMapNoteEnabled || !g_bShowFogOfWar) &&
+                    (g_pAppManager->GetServerExoApp()->GetModule()->GetAreaMap()
+                         ->IsWorldPointExplored(pWaypoint->m_vPosition) ||
+                     !g_bShowFogOfWar))
+#endif
                 {
                     int nNoteX, nNoteY = 0;
                     if (g_pAppManager->GetServerExoApp()->GetModule()->GetAreaMap()
@@ -814,6 +876,8 @@ void CSWGuiMapHider::Draw(float fElapsed)
                             m_pNoteImage->Draw(fElapsed);
                         }
 #else
+                        nNoteX = (int)(nNoteX * fGuiScaleX);
+                        nNoteY = (int)(nNoteY * fGuiScaleY);
                         if (pPos == m_pCurrentNote)
                         {
                             cExtent.m_nLeft = nNoteX - 10;
@@ -830,6 +894,8 @@ void CSWGuiMapHider::Draw(float fElapsed)
                             cExtent.m_nTop = nNoteY - 7;
                             cExtent.m_nWidth = 14;
                             cExtent.m_nHeight = 14;
+                            nNoteX = (int)(nNoteX * fGuiScaleX);
+                            nNoteY = (int)(nNoteY * fGuiScaleY);
                             if (m_aControls.num == nButton)
                             {
                                 m_aControls.Add(new CSWGuiButton);
@@ -842,9 +908,9 @@ void CSWGuiMapHider::Draw(float fElapsed)
                                                        "whitetarget", 2, 0, 1.0f,
                                                        Vector(1.0f, 1.0f, 1.0f), 0));
                                 m_aControls[nButton]->m_cBorder.m_cParams.m_vColor =
-                                    CGuiInGame::COLOR_BLUE;
+                                    CGuiInGame::COLOR_NEW_TEXT;
                                 m_aControls[nButton]->m_cHilite.m_cParams.m_vColor =
-                                    CGuiInGame::COLOR_YELLOW;
+                                    CGuiInGame::COLOR_NEW_BONUS;
                                 m_aControls[nButton]->m_bFocusable = 0;
 #ifndef _XBOX
                                 m_aControls[nButton]->AddEvent(
@@ -877,6 +943,7 @@ void CSWGuiMapHider::Draw(float fElapsed)
         {
             nMapX = 0;
             nMapY = 0;
+#ifdef _XBOX
             if (pAreaMap->GetPartyMemberMapLocation(nMember, nMapX, nMapY) &&
                 m_pCircle != NULL)
             {
@@ -887,6 +954,22 @@ void CSWGuiMapHider::Draw(float fElapsed)
                 m_pCircle->SetExtent(cExtent);
                 m_pCircle->Draw(fElapsed);
             }
+#else
+            if (pAreaMap->GetPartyMemberMapLocation(nMember, nMapX, nMapY))
+            {
+                nMapX = (int)(nMapX * fGuiScaleX);
+                nMapY = (int)(nMapY * fGuiScaleY);
+                if (m_pCircle != NULL)
+                {
+                    cExtent.m_nLeft = nMapX - 8;
+                    cExtent.m_nTop = nMapY - 8;
+                    cExtent.m_nWidth = 16;
+                    cExtent.m_nHeight = 16;
+                    m_pCircle->SetExtent(cExtent);
+                    m_pCircle->Draw(fElapsed);
+                }
+            }
+#endif
         }
 
         nMapX = 0;
@@ -894,6 +977,10 @@ void CSWGuiMapHider::Draw(float fElapsed)
         if (m_pArrow != NULL &&
             pAreaMap->GetPartyMemberMapLocation(0, nMapX, nMapY))
         {
+#ifndef _XBOX
+            nMapX = (int)(nMapX * fGuiScaleX);
+            nMapY = (int)(nMapY * fGuiScaleY);
+#endif
             cExtent.m_nLeft = nMapX - 16;
             cExtent.m_nTop = nMapY - 16;
             cExtent.m_nWidth = 32;
@@ -924,11 +1011,19 @@ CSWGuiInGameGalaxyMap::CSWGuiInGameGalaxyMap(CSWGuiManager* pManager)
     int nDescription;
 
     m_nSelectedPlanet = -1;
+#ifdef _XBOX
     StartLoadFromLayout("galaxymap");
+#else
+    StartLoadFromLayout("galaxymap_p");
+#endif
     InitControl(m_lblPlanetName, "LBL_DESC", 1);
     InitControl(m_lblPlanetDesc, "LBL_PLANETNAME", 1);
     InitControl(m_cPlanetBackView, "3D_PlanetModel", 1);
     InitControl(m_cPlanetView, "3D_PlanetDisplay", 1);
+#ifndef _XBOX
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+#endif
 #ifdef _XBOX
     InitControl(m_lblA, "LBL_A", 1);
     InitControl(m_lblB, "LBL_B", 1);
@@ -1033,6 +1128,9 @@ void CSWGuiInGameGalaxyMap::OnPanelAdded()
 {
     CSWPartyTable* pPartyTable =
         g_pAppManager->m_pServerExoApp->GetPartyTable();
+#ifndef _XBOX
+    m_n28D4 = pPartyTable->m_nSelectedPlanet;
+#endif
     if (pPartyTable->m_nSelectedPlanet == -1)
     {
         int nPlanet = 0;
@@ -1079,8 +1177,12 @@ void CSWGuiInGameGalaxyMap::NextPlanet()
         {
             nPlanet = 0;
         }
+#ifdef _XBOX
         if (pPartyTable->GetPlanetAvailable(nPlanet) != 0 &&
             pPartyTable->GetPlanetSelectable(nPlanet) != 0)
+#else
+        if (pPartyTable->GetPlanetAvailable(nPlanet) != 0)
+#endif
         {
             pPartyTable->SetSelectedPlanet(nPlanet);
             break;
@@ -1101,6 +1203,59 @@ void CSWGuiInGameGalaxyMap::HandleInputEvent(int nEvent, int nState)
         case GUIEVENT_ACTIVATE:
         case GUIEVENT_ACCEPT:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+#ifndef _XBOX
+            {
+                CSWPartyTable* pPartyTable =
+                    g_pAppManager->m_pServerExoApp->GetPartyTable();
+                if (pPartyTable->m_nSelectedPlanet == m_n28D4)
+                {
+                    CSWGuiMessageBox* pMessageBox =
+                        g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+                    pMessageBox->SetAllowCancel(0);
+                    pMessageBox->SetCallback(NULL, NULL, NULL);
+                    pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
+                                                  CGuiInGame::COLOR_NEW_HIGHLIGHT);
+                    pMessageBox->SetMessage(STRREF_ALREADY_AT_LOCATION);
+                    g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(
+                        pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+                    return;
+                }
+                if (pPartyTable->GetPlanetSelectable(pPartyTable->m_nSelectedPlanet))
+                {
+                    if (g_pVirtualMachine != 0)
+                    {
+                        g_pAppManager->m_pClientExoApp->GetInGameGui()
+                            ->m_bTransitionScriptRunning = 1;
+                        CExoString sScript("k_sup_galaxymap");
+                        g_pVirtualMachine->RunScript(&sScript, OBJECT_INVALID, 0);
+                        g_pAppManager->m_pClientExoApp->GetInGameGui()
+                            ->m_bTransitionScriptRunning = 0;
+                    }
+                    g_pAppManager->m_pClientExoApp->GetInGameGui()->HideGalaxyMapGui();
+                }
+                else
+                {
+                    if (pPartyTable->m_nSelectedPlanet != -1)
+                    {
+                        int nReason = -1;
+                        if (g_pRules->Get2DArrays()->m_pJournal->GetINTEntry(
+                                pPartyTable->m_nSelectedPlanet, "LockedOutReason", &nReason))
+                        {
+                            CSWGuiMessageBox* pMessageBox =
+                                g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+                            pMessageBox->SetAllowCancel(0);
+                            pMessageBox->SetCallback(NULL, NULL, NULL);
+                            pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
+                                                          CGuiInGame::COLOR_NEW_HIGHLIGHT);
+                            pMessageBox->SetMessage(nReason);
+                            g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(
+                                pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+                            return;
+                        }
+                    }
+                }
+            }
+#else
             if (g_pVirtualMachine != 0)
             {
                 g_pAppManager->m_pClientExoApp->GetInGameGui()
@@ -1111,6 +1266,7 @@ void CSWGuiInGameGalaxyMap::HandleInputEvent(int nEvent, int nState)
                     ->m_bTransitionScriptRunning = 0;
             }
             g_pAppManager->m_pClientExoApp->GetInGameGui()->HideGalaxyMapGui();
+#endif
             break;
         case GUIEVENT_CANCEL:
         case GUIEVENT_CANCEL_ALTERNATE:
@@ -1155,8 +1311,12 @@ void CSWGuiInGameGalaxyMap::PrevPlanet()
         {
             nPlanet = 15;
         }
+#ifdef _XBOX
         if (pPartyTable->GetPlanetAvailable(nPlanet) != 0 &&
             pPartyTable->GetPlanetSelectable(nPlanet) != 0)
+#else
+        if (pPartyTable->GetPlanetAvailable(nPlanet) != 0)
+#endif
         {
             pPartyTable->SetSelectedPlanet(nPlanet);
             break;
@@ -1170,7 +1330,11 @@ void CSWGuiInGameGalaxyMap::PrevPlanet()
 CSWGuiInGameMap::CSWGuiInGameMap(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
+#ifdef _XBOX
     StartLoadFromLayout("map");
+#else
+    StartLoadFromLayout("map_p");
+#endif
     InitControl(m_lblMapNote, "LBL_Map", 0);
     InitControl(m_lblTitle, "LBL_MapNote", 1);
     InitControl(m_lblArea, "LBL_Area", 1);
@@ -1203,14 +1367,23 @@ CSWGuiInGameMap::CSWGuiInGameMap(CSWGuiManager* pManager)
     InitControl(m_lbl1018, "LBL_TITLE", 1);
     StopLoadFromLayout();
 
-    m_imgMap.SetExtent(CSWGuiExtent(0, 0, 512, 256));
+    float fScaleX = 1.0f;
+    float fScaleY = 1.0f;
+    if (g_pAppManager->m_pClientExoApp->GetSWGuiManager() != NULL)
+    {
+        fScaleX = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
+        fScaleY = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
+    }
+    m_imgMap.SetExtent(CSWGuiExtent(0, 0, (int)(fScaleX * CSWSAreaMap::MAP_PIXEL_WIDTH),
+                                    (int)(fScaleY * CSWSAreaMap::MAP_PIXEL_HEIGHT)));
     CSWGuiMapHider* pHider = &m_cMapHider;
-    pHider->SetExtent(CSWGuiExtent(0, 0, 440, 256));
+    pHider->SetExtent(CSWGuiExtent(0, 0, (int)(fScaleX * CSWSAreaMap::MAP_PIXEL_WIDTH),
+                                   (int)(fScaleY * CSWSAreaMap::MAP_PIXEL_HEIGHT)));
     AddControl(pHider);
     pHider->m_bEnabled = 0;
     m_bPartySelection = 1;
-    m_bReturnButton = 1;
     m_nMessageStrRef = 0;
+    m_bReturnButton = 1;
 
     m_btnBack.SetFocusable(0);
     m_btnBack.AddEvent(GUIEVENT_ACTIVATE, this,
@@ -1218,9 +1391,11 @@ CSWGuiInGameMap::CSWGuiInGameMap(CSWGuiManager* pManager)
     m_btnExit.SetFocusable(0);
     m_btnExit.AddEvent(GUIEVENT_ACTIVATE, this,
                          (CSWGuiHandler)&CSWGuiInGameMap::OnUpArrowPressed);
+    m_btnExit.m_cHilite.m_cParams.SetPulsingAlpha(1, 0, 1);
     m_btnReturn.SetFocusable(0);
     m_btnReturn.AddEvent(GUIEVENT_ACTIVATE, this,
                            (CSWGuiHandler)&CSWGuiInGameMap::OnDownArrowPressed);
+    m_btnReturn.m_cHilite.m_cParams.SetPulsingAlpha(1, 0, 1);
 #endif
 }
 // PC 0x006ECE40

@@ -104,6 +104,7 @@ public:
     CSWGuiInGameGalaxyMap(CSWGuiManager* pManager);
 
     enum { PLANET_COUNT = 16 };
+    enum { STRREF_ALREADY_AT_LOCATION = 125629 };
     struct PlanetInfo
     {
         int m_nNameStrRef;

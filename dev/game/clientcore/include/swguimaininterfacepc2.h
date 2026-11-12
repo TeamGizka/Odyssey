@@ -171,6 +171,7 @@ public:
     CSWGuiExtent m_cBounds;
 
     enum { MENU_POINT_SPACING = 32 };
+    enum { STRREF_EMPTY = 125550, STRREF_NOTHING = 125551 };
     CSWGuiLabel m_cNameLabel;
     CSWGuiLabel m_cNameBackground;
     CSWGuiLabel m_cHealthBackground;
@@ -354,12 +355,14 @@ public:
     static const int STICKY_RETICLE_MARGIN = 32;
     static const int STICKY_RETICLE_NEAR_RANGE = 5;
     static const int STICKY_RETICLE_FAR_RANGE = 30;
+    static const int STICKY_RETICLE_OBJECT_FAR_RANGE = 10;
 
     enum { ACTION_QUEUE_FIRST_ICON = 4, ACTION_ICON_COUNT = 7 };
 
     enum { ACTION_FORM_FLAG = 0x20000000 };
 
     static const int FOG_POINT_SPAN = 4;
+    enum { MINIMAP_SOURCE_WIDTH = 588, MINIMAP_SOURCE_HEIGHT = 294 };
 
     static const unsigned long STRREF_COMBAT_MODE_ENGAGED = 111303;
 
@@ -387,6 +390,10 @@ public:
     static const unsigned long STRREF_CLEAR_ONE = 48800;
     static const unsigned long STRREF_CLEAR_ALL = 109864;
     static const unsigned long STRREF_SWITCH_WEAPONS = 49127;
+    static const unsigned long STRREF_USE_ITEM_SELECT_MEMBER = 124446;
+    static const unsigned long STRREF_USE_ITEM_ON = 124447;
+    static const unsigned long STRREF_CANNOT_USE_ITEM_ON = 124448;
+    static const unsigned long STRREF_USE_ITEM_CANCEL = 124449;
 
     enum
     {

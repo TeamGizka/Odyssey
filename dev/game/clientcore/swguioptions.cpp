@@ -217,7 +217,7 @@ void CSWGuiOptionsSoundAdvanced::SetDescription(unsigned long nStrRef)
 void CSWGuiOptionsSoundAdvanced::EnableEAXControls(int bEnable)
 {
     m_btnEAX.SetEnabled(bEnable);
-    Vector* pColor = &CGuiInGame::COLOR_BLUE;
+    Vector* pColor = &CGuiInGame::COLOR_NEW_TEXT;
     if (bEnable == 0)
     {
         pColor = &CGuiInGame::DISABLED_TEXT;
@@ -272,7 +272,7 @@ void CSWGuiOptionsCheckbox::Draw(float fElapsed)
     if (m_bActive)
     {
         pParams = &m_cText.m_cParams;
-        pParams->SetColor(CGuiInGame::COLOR_YELLOW);
+        pParams->SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
         pParams->m_bHilightText = 1;
     }
 #ifndef _XBOX
@@ -284,7 +284,7 @@ void CSWGuiOptionsCheckbox::Draw(float fElapsed)
     else
     {
         pParams = &m_cText.m_cParams;
-        pParams->SetColor(CGuiInGame::COLOR_BLUE);
+        pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
         pParams->m_bHilightText = 0;
     }
     CSWGuiButtonToggle::Draw(fElapsed);
@@ -293,10 +293,10 @@ void CSWGuiOptionsCheckbox::Draw(float fElapsed)
 void CSWGuiOptionsCheckbox::Load(CResGFF* pGFF, CResStruct& cStruct)
 {
     CSWGuiButtonToggle::Load(pGFF, cStruct);
-    m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
-    m_cToggleBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
-    m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
-    m_cToggleHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+    m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_TEXT;
+    m_cToggleBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_TEXT;
+    m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+    m_cToggleHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
 }
 // PC 0x0074E890
 void CSWGuiOptionsMouse::SetDescription(unsigned long nStrRef)

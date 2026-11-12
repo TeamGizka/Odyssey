@@ -22,8 +22,12 @@
 #include "nwsmodule.h"
 #include "nwcdoor.h"
 #include "nwcplaceable.h"
+#include "nwsplaceable.h"
+#include "nwrules.h"
+#include "twodimarrays.h"
 #include "nwctrigger.h"
 #include "nwcjournal.h"
+#include "nwtlktable.h"
 
 #include <math.h>
 
@@ -402,8 +406,8 @@ inline void CSWGuiMainInterfaceChar::SetHealth(int nCurHealth, int nMaxHealth, i
 #ifdef _XBOX
     m_aBars[0].m_cFill.m_cParams.SetFillImage(bAlive != 0 ? "lbl_healthp" : "lbl_health", 0);
 #else
-    CResRef cFill(bAlive != 0 ? "greenfill" : "redfill");
-    m_aBars[0].m_cFill.m_cParams.SetFillImage(cFill, 0);
+    m_aBars[0].m_cFill.m_cParams.SetColor(bAlive != 0 ? CGuiInGame::COLOR_GREEN
+                                                      : CGuiInGame::COLOR_RED);
 #endif
 
 #ifndef _XBOX
@@ -666,7 +670,17 @@ void CSWGuiMainInterface::ShiftControl(CSWGuiControl& cControl, int nOffset)
 #ifndef _XBOX
 void CSWGuiTargetActionMenu::SetNameLabel(const CExoString& sName)  // PC 0x006DF840
 {
-    m_cNameLabel.m_cText.m_cParams.SetText(sName);
+    CExoString sText = sName;
+    int nTokenStart = sText.Find('<', 0);
+    int nCustomStart = sText.Find('{', 0);
+    if (nTokenStart != -1 || nCustomStart != -1)
+    {
+        g_pSWTlkTable->ParseStr(
+            sText,
+            (CGameObject*)g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter(),
+            0, 1);
+    }
+    m_cNameLabel.m_cText.m_cParams.SetText(sText);
 
     CSWGuiExtent cExtent = m_cNameLabel.m_cExtent;
     cExtent.m_nHeight = m_cNameLabel.m_cText.GetIdealHeight();
@@ -757,6 +771,32 @@ void CSWGuiTargetActionMenu::UpdateNameLabel(CSWCObject* pTarget)  // PC 0x006DF
                     else
                     {
                         sName = pTarget->GetName();
+                        if (pTarget->AsSWCPlaceable() != NULL)
+                        {
+                            CSWSPlaceable* pPlaceable =
+                                pTarget->AsSWCPlaceable()->GetServerPlaceable();
+                            if (pPlaceable != NULL &&
+                                pPlaceable->m_bHasInventory &&
+                                pPlaceable->AsSWSPlaceable()->GetItemCount(0) == 0)
+                            {
+                                int bUseSearch = 0;
+                                g_pRules->Get2DArrays()->m_pPlaceables->GetINTEntry(
+                                    pTarget->AsSWCPlaceable()->GetAppearance(),
+                                    "UseSearch", &bUseSearch);
+                                if (bUseSearch)
+                                {
+                                    sName = sName + " (" +
+                                            g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_NOTHING) +
+                                            ")";
+                                }
+                                else
+                                {
+                                    sName = sName + " (" +
+                                            g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_EMPTY) +
+                                            ")";
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -1975,6 +2015,7 @@ void CSWGuiMainInterface::GetActionIcon(
     switch (nActionType)
     {
     case CSWSObject::ACTION_PHYSICAL_ATTACKS:
+        if (pCombatAction != NULL)
         {
             int nSpecialAttack = pCombatAction->m_nSpecialAttack;
             switch (pCombatAction->m_nActionType)
@@ -2065,6 +2106,10 @@ void CSWGuiMainInterface::GetActionIcon(
                     }
                 }
                 break;
+            case CSWSCombatRoundAction::ACTION_SWITCH_WEAPONS:
+                cIcon = "i_swtchwpn";
+                cDefaultIcon = "i_swtchwpn";
+                break;
             case CSWSCombatRoundAction::ACTION_SPECIAL_ATTACK:
                 {
                     CSWFeat* pFeat = g_pRules->GetFeat(pCombatAction->m_nSpecialAttack);
@@ -2075,12 +2120,37 @@ void CSWGuiMainInterface::GetActionIcon(
                     }
                 }
                 break;
+            case CSWSCombatRoundAction::ACTION_STANCE:
+                cIcon = "i_stancedef";
+                cDefaultIcon = "i_stancedefm";
+                break;
             }
         }
         else
         {
-            cIcon = "i_attack";
-            cDefaultIcon = "i_attackm";
+            CSWCCreature* pPlayer =
+                g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
+            CSWSCreature* pCreature = NULL;
+            if (pPlayer != NULL)
+                pCreature = pPlayer->GetServerCreature();
+            if (pCreature != NULL)
+            {
+                if (pCreature->IsInTotalDefense())
+                {
+                    cIcon = "i_stancedef";
+                    cDefaultIcon = "i_stancedefm";
+                }
+                else
+                {
+                    cIcon = "i_attack";
+                    cDefaultIcon = "i_attackm";
+                }
+            }
+            else
+            {
+                cIcon = "i_attack";
+                cDefaultIcon = "i_attackm";
+            }
         }
         break;
     case CSWSObject::ACTION_ITEM_CAST_SPELL:
@@ -2297,8 +2367,8 @@ void CSWGuiMainInterface::UpdatePortraits()
 #ifdef _XBOX
             nShown++;
 #else
-            m_aCharacters[nPortrait].m_sName = pCreature->GetStats()->m_sFirstName;
-            m_aCharacters[nPortrait].m_sDescription = pCreature->GetStats()->m_sLastName;
+            m_aCharacters[nPortrait].m_sName = pCreature->GetStats()->GetFirstName();
+            m_aCharacters[nPortrait].m_sDescription = pCreature->GetStats()->GetLastName();
 #endif
             m_aCharacters[nPortrait].SetPortrait(pCreature->GetPortrait(1));
             int nPoisonState = pServer->m_nPoisonState;
@@ -2323,11 +2393,20 @@ void CSWGuiMainInterface::UpdatePortraits()
                 nState = CSWGuiMainInterfaceChar::PORTRAIT_DEAD;
             else if (pServer->GetStats()->CanLevelUp())
             {
-                nState = CSWGuiMainInterfaceChar::PORTRAIT_LEVEL_UP;
-                if (pCreature->m_bLevelUpSent)
+                if (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_bAutoLevelUpNPCs &&
+                    pCreature->m_nId != g_pAppManager->GetClientExoApp()->GetPlayerCreature()->m_nId &&
+                    !pServer->m_bPlayerCreated)
                 {
-                    g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(GUI_STATUS_LEVEL_UP, 0);
-                    pCreature->m_bLevelUpSent = 0;
+                    pServer->GetStats()->AutoLevelup(1);
+                }
+                else
+                {
+                    nState = CSWGuiMainInterfaceChar::PORTRAIT_LEVEL_UP;
+                    if (pCreature->m_bLevelUpSent)
+                    {
+                        g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(GUI_STATUS_LEVEL_UP, 0);
+                        pCreature->m_bLevelUpSent = 0;
+                    }
                 }
             }
             else if (pServer->IsDebilitated(0))
@@ -2376,7 +2455,7 @@ void CSWGuiMainInterface::UpdatePortraits()
             if (!pServer->IsDebilitated(0) && m_nCombatMessage == STRREF_DEBILITATED &&
                 m_fCombatMessageTime == -1.0f)
             {
-                m_lblCmbtmodemsg.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_RED);
+                m_lblCmbtmodemsg.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
                 m_nCombatMessage = STRREF_COMBAT_MODE_ENGAGED;
                 CExoString sMessage = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_COMBAT_MODE_ENGAGED);
                 m_lblCmbtmodemsg.m_cText.m_cParams.SetText(sMessage);
@@ -2387,8 +2466,8 @@ void CSWGuiMainInterface::UpdatePortraits()
             if (m_fPortraitTransitionTime > 0.0f && nPortrait == 0)
             {
 #ifndef _XBOX
-                m_cTransitionCharacter.m_sName = pCreature->GetStats()->m_sFirstName;
-                m_cTransitionCharacter.m_sDescription = pCreature->GetStats()->m_sLastName;
+                m_cTransitionCharacter.m_sName = pCreature->GetStats()->GetFirstName();
+                m_cTransitionCharacter.m_sDescription = pCreature->GetStats()->GetLastName();
 #endif
                 m_cTransitionCharacter.SetPortrait(pCreature->GetPortrait(1));
 #ifdef _XBOX
@@ -2697,10 +2776,10 @@ void CSWGuiMainInterface::UpdateIndicator(float fElapsed)  // PC 0x006E1B70
                     }
                     Vector vOffset = pPlayer->m_vPosition - pTarget->m_vPosition;
                     float fDistanceSquared = vOffset * vOffset;
-                    if (fDistanceSquared >= STICKY_RETICLE_FAR_RANGE * STICKY_RETICLE_FAR_RANGE)
+                    if (fDistanceSquared >= STICKY_RETICLE_OBJECT_FAR_RANGE * STICKY_RETICLE_OBJECT_FAR_RANGE)
                         nSize = STICKY_RETICLE_OBJECT_MIN_SIZE;
                     else if (fDistanceSquared > STICKY_RETICLE_NEAR_RANGE * STICKY_RETICLE_NEAR_RANGE)
-                        nSize = STICKY_RETICLE_MAX_SIZE - (int)(((sqrt(fDistanceSquared) - STICKY_RETICLE_NEAR_RANGE) / (STICKY_RETICLE_FAR_RANGE - STICKY_RETICLE_NEAR_RANGE)) * (STICKY_RETICLE_MAX_SIZE - STICKY_RETICLE_OBJECT_MIN_SIZE));
+                        nSize = STICKY_RETICLE_MAX_SIZE - (int)(((sqrt(fDistanceSquared) - STICKY_RETICLE_NEAR_RANGE) / (STICKY_RETICLE_OBJECT_FAR_RANGE - STICKY_RETICLE_NEAR_RANGE)) * (STICKY_RETICLE_MAX_SIZE - STICKY_RETICLE_OBJECT_MIN_SIZE));
                     cReticle = bFriendly ? "friendlyreticle2" : "hostilereticle2";
                     cArrow = bFriendly ? "friendlyarrow" : "hostilearrow";
                 }
@@ -3182,11 +3261,87 @@ void CSWGuiMainInterface::Draw(float fElapsed)
     }
 #ifndef _XBOX
     UpdatePortraits();
+    UpdateGameMenu();
     float fIndicatorElapsed = m_pManager->m_fGuiScale;
     UpdateIndicator(fIndicatorElapsed);
     m_cTargetActionMenu.Update(fElapsed);
 #endif
     PopulateMenus(1);
+#ifndef _XBOX
+    if (m_bSelectingUseItemTarget)
+    {
+        CSWSCreature* pServerCreature = pPlayer->GetServerCreature();
+        if (pServerCreature != NULL &&
+            (pServerCreature->IsDebilitated(0) || ((CSWSObject*)pServerCreature)->GetDead() ||
+             pServerCreature->GetDeadTemp()))
+        {
+            m_bSelectingUseItemTarget = 0;
+        }
+    }
+    if (m_bSelectingUseItemTarget)
+    {
+        m_fFormMessageTime = 0.0f;
+        m_nFormMessage = 0;
+        CExoString sText;
+        int nMember = m_nUseItemTargetMember;
+        if (nMember == -1)
+        {
+            sText = g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_USE_ITEM_SELECT_MEMBER);
+            sText = sText + "\n" + g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_USE_ITEM_CANCEL);
+        }
+        else
+        {
+            if (nMember == 2 &&
+                g_pAppManager->m_pClientExoApp->GetSWParty()->m_nCharacters != 3)
+            {
+                nMember = 1;
+            }
+            CSWCCreature* pCharacter = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(nMember);
+            CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(
+                g_pAppManager->m_pServerExoApp->ClientToServerObjectId(m_oidUseItemPending));
+            if (pCharacter->GetServerCreature()->CanUseItem(pItem, 0, 1))
+            {
+                sText = g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_USE_ITEM_ON);
+                sText = sText + " " + pCharacter->GetName();
+                sText = sText + "\n" + g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_USE_ITEM_CANCEL);
+            }
+            else
+            {
+                sText = g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_CANNOT_USE_ITEM_ON);
+                sText = sText + " " + pCharacter->GetName();
+                sText = sText + "\n" + g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_USE_ITEM_CANCEL);
+            }
+        }
+        m_btnCancelPartyItemSelect.m_cText.m_cParams.SetText(sText);
+        m_btnCancelPartyItemSelect.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+        CSWGuiButton* pCancel = &m_btnCancelPartyItemSelect;
+        pCancel->SetEnabled(1);
+        pCancel->SetEnabledFlag(1);
+        pCancel->Draw(fElapsed);
+    }
+    else if (m_fFormMessageTime > 0.0f)
+    {
+        m_fFormMessageTime -= fElapsed;
+        if (m_fFormMessageTime <= 0.0f)
+        {
+            m_fFormMessageTime = 0.0f;
+        }
+        else
+        {
+            m_btnCancelPartyItemSelect.m_cText.m_cParams.SetText(
+                g_pAppManager->m_pClientExoApp->GetGUIString(m_nFormMessage));
+            m_btnCancelPartyItemSelect.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+            CSWGuiButton* pCancel = &m_btnCancelPartyItemSelect;
+            pCancel->SetEnabled(0);
+            pCancel->SetEnabledFlag(1);
+            pCancel->Draw(fElapsed);
+        }
+    }
+    else
+    {
+        m_btnCancelPartyItemSelect.SetEnabledFlag(0);
+    }
+#endif
     for (int nStatus = 0; nStatus < GUI_STATUS_COUNT; ++nStatus)
     {
         float fStatusElapsed = m_pManager->m_fGuiScale;
@@ -3264,6 +3419,15 @@ void CSWGuiMainInterface::DrawMap(float fElapsed)
     CClientOptions* pOptions = g_pAppManager->GetClientExoApp()->GetClientOptions();
     if (pOptions == NULL || pOptions->m_bMiniMap)
     {
+#ifndef _XBOX
+        if (g_pAppManager->GetServerExoApp()->GetPartyTable()->m_bDisableMap)
+        {
+            m_btnMinimap.SetEnabledFlag(0);
+            m_lblMap.SetEnabledFlag(0);
+            m_lblMapborder.SetEnabledFlag(0);
+            return;
+        }
+#endif
         CSWSAreaMap* pMap = g_pAppManager->GetServerExoApp()->GetModule()->GetAreaMap();
         if (pMap != NULL && pMap->m_nExploredSize > 0)
         {
@@ -3277,6 +3441,10 @@ void CSWGuiMainInterface::DrawMap(float fElapsed)
             int nMapX;
             int nMapY;
             pMap->GetPartyMemberMapLocation(0, nMapX, nMapY);
+#ifndef _XBOX
+            nMapX = (int)((float)m_nMapWidth * nMapX / MINIMAP_SOURCE_WIDTH);
+            nMapY = (int)((float)m_nMapHeight * nMapY / MINIMAP_SOURCE_HEIGHT);
+#endif
             cExtent.m_nLeft = (int)(m_cMapViewport.m_nWidth / 2 - nMapX * fScale);
             cExtent.m_nTop = (int)(m_cMapViewport.m_nHeight / 2 - nMapY * fScale);
             m_lblMap.SetExtent(cExtent);
@@ -3287,12 +3455,12 @@ void CSWGuiMainInterface::DrawMap(float fElapsed)
 #else
             m_lblArrow.m_cBorder.m_cParams.m_fRotation =
                 pMap->GetMapRotateCCWFromWorldOrientation(
-                    g_pAppManager->GetClientExoApp()->GetModuleCamera()->GetOrientation().ydir());
+                    -g_pAppManager->GetClientExoApp()->GetModuleCamera()->GetOrientation().zdir());
 #endif
 
             AurGUIStartLayer();
             if (AurGUISetupViewport(m_cMapViewport.m_nLeft, m_cMapViewport.m_nTop,
-                                    m_cMapViewport.m_nWidth, m_cMapViewport.m_nWidth,
+                                    m_cMapViewport.m_nWidth, m_cMapViewport.m_nHeight,
                                     CGuiInGame::COLOR_BLACK, false, m_fAlpha))
             {
                 m_lblMap.Draw(fElapsed);
@@ -3305,6 +3473,7 @@ void CSWGuiMainInterface::DrawMap(float fElapsed)
             AurGUIStopLayer();
 #ifndef _XBOX
             m_btnMinimap.SetEnabledFlag(1);
+            m_lblMapborder.SetEnabledFlag(1);
             return;
 #endif
         }

@@ -12,10 +12,11 @@ public:
 
     enum DescriptionStringRef
     {
-        STRREF_INVERT_CAMERA = 48014, STRREF_AUTO_LEVELUP = 42266,
-        STRREF_AUTO_SAVE = 38038, STRREF_REVERSE_MOUSE = 48213,
-        STRREF_COMBAT_MOVEMENT = 42484, STRREF_MOUSE_OPTIONS = 49071,
-        STRREF_KEYMAP_OPTIONS = 49072
+        STRREF_INVERT_CAMERA = 48697, STRREF_AUTO_LEVELUP = 42266,
+        STRREF_AUTO_SAVE = 38038, STRREF_REVERSE_MOUSE = 48699,
+        STRREF_COMBAT_MOVEMENT = 42484, STRREF_MOUSE_OPTIONS = 48720,
+        STRREF_KEYMAP_OPTIONS = 48723,
+        STRREF_REVERSE_INGAME = 106490
     };
     CSWGuiInGameGameplay(CSWGuiManager* pManager);
 
@@ -27,6 +28,9 @@ public:
     void OnInvertCam(CSWGuiControl* pControl);
     void OnReverse(CSWGuiControl* pControl);
     void OnCombatMovement(CSWGuiControl* pControl);
+#ifndef _XBOX
+    void OnReverseIngame(CSWGuiControl* pControl);
+#endif
     void OnKeyMap(CSWGuiControl* pControl);
     void OnMouse(CSWGuiControl* pControl);
     void SetDifficultyText();

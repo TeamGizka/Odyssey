@@ -44,6 +44,19 @@ public:
     virtual void OnPanelAdded();
     void OnQuit(CSWGuiControl*);
     void OnEnterSlot(CSWGuiControl*);
+#ifndef _XBOX
+    enum
+    {
+        STRREF_DESC_LOAD_GAME = 42300,
+        STRREF_DESC_SAVE_GAME = 42301,
+        STRREF_DESC_GAMEPLAY = 42273,
+        STRREF_DESC_FEEDBACK = 136314,
+        STRREF_DESC_AUTOPAUSE = 42275,
+        STRREF_DESC_GRAPHICS = 48687,
+        STRREF_DESC_SOUND = 48688,
+        STRREF_DESC_QUIT = 42302
+    };
+#endif
     CSWGuiInGameOptions(CSWGuiManager*);
 };
 

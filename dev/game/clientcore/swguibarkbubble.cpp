@@ -20,7 +20,7 @@
 #include "nwsarea.h"
 
 #define BARK_MIN_SOUND_HEIGHT 0.5f
-#define BARK_MAX_TIME_STEP 36.0f
+#define BARK_MAX_TIME_STEP 1.5f
 
 static inline void SwguibarkbubbleTrace1();
 #define SWGUIBARKBUBBLE_TRACE() SwguibarkbubbleTrace1()

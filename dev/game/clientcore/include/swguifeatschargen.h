@@ -78,6 +78,7 @@ public:
     CExoArrayList<unsigned short> m_lChosen;
 
     static const unsigned short FEAT_INVALID = 0xffff;
+    enum { TUTORIAL_ENTER_FEAT_SCREEN_CHAR_GEN = 18 };
     unsigned short m_nSelectedFeat;
 
     unsigned char m_nGeneralFeats;

@@ -236,7 +236,7 @@ void CSWGuiCustomPanel::OnSelectAbilitiesButton(CSWGuiControl* pControl)
 // PC 0x00760590
 void CSWGuiCustomPanel::CancelledByChild()
 {
-    m_aSteps[m_nState].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
+    m_aSteps[m_nState].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
     CSWGuiButton* pButton = &m_aSteps[m_nState];
     CSWGuiTextParams* pParams = &pButton->m_cText.m_cParams;
     pParams->m_bHilightText = 1;

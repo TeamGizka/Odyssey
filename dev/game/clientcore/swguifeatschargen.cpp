@@ -106,7 +106,7 @@ CSWGuiFeatsCharGen::~CSWGuiFeatsCharGen()
     m_lbDesc.ClearItems();
     m_lbFeats.ClearItems();
 }
-// PC 0x007622D0
+// PC 0x00764200
 void CSWGuiFeatsCharGen::OnPanelAdded()
 {
 #ifndef _XBOX
@@ -115,7 +115,8 @@ void CSWGuiFeatsCharGen::OnPanelAdded()
     if (m_bShowGrantedTutorial)
     {
         if (g_pAppManager->m_pClientExoApp->ShowTutorialWindow(
-                0x13, OBJECT_INVALID, OBJECT_INVALID, 0))
+                TUTORIAL_ENTER_FEAT_SCREEN_CHAR_GEN, OBJECT_INVALID,
+                OBJECT_INVALID, 0))
         {
             CGuiInGame* pGui =
                 g_pAppManager->m_pClientExoApp->GetInGameGui();
@@ -124,16 +125,18 @@ void CSWGuiFeatsCharGen::OnPanelAdded()
         }
         else
         {
-            CGuiInGame* pGui =
-                g_pAppManager->m_pClientExoApp->GetInGameGui();
-            m_pManager->AddPanel(pGui->m_pSkillInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+            ShowGranted(NULL);
         }
     }
 }
-// PC 0x00761FF0
+// PC 0x00763EA0
 void CSWGuiFeatsCharGen::ShowGranted(CSWGuiControl* pControl)
 {
     SWGUIFEATSCHARGEN_TRACE();
+    if (!m_bLevelUp)
+    {
+        g_pAppManager->m_pClientExoApp->SetPausedByCombat(0, 2, 0);
+    }
     CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
     m_pManager->AddPanel(pGui->m_pSkillInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
@@ -179,7 +182,7 @@ void CSWGuiFeatsCharGen::Draw(float fElapsed)  // PC 0x00763F60
                     &m_btnSelect.m_cText.m_cParams;
 
                 pParams->SetText(m_sFeatUnavailableText);
-                pParams->SetColor(CGuiInGame::DISABLED_TEXT);
+                pParams->SetColor(CGuiInGame::COLOR_NEW_GREEN);
                 m_btnSelect.m_cBorder.m_cParams.m_vColor =
                     CGuiInGame::DISABLED_ICON_COLOR;
             }
@@ -189,7 +192,7 @@ void CSWGuiFeatsCharGen::Draw(float fElapsed)  // PC 0x00763F60
             CSWGuiTextParams* pParams = &m_btnSelect.m_cText.m_cParams;
 
             pParams->SetText(m_sFeatLockedText);
-            pParams->SetColor(CGuiInGame::DISABLED_TEXT);
+            pParams->SetColor(CGuiInGame::COLOR_NEW_GREEN);
             m_btnSelect.m_cBorder.m_cParams.m_vColor =
                 CGuiInGame::DISABLED_ICON_COLOR;
         }

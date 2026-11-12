@@ -99,7 +99,7 @@ void CSWGuiInGameGameplay::OnReverse(CSWGuiControl* pControl)
     }
 }
 // PC 0x007593E0
-void CSWGuiInGameGameplay::OnCombatMovement(CSWGuiControl* pControl)
+void CSWGuiInGameGameplay::OnReverseIngame(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
     {
@@ -109,6 +109,19 @@ void CSWGuiInGameGameplay::OnCombatMovement(CSWGuiControl* pControl)
         CClientOptions* pOptions =
             g_pAppManager->m_pClientExoApp->GetClientOptions();
         pOptions->m_bReverseIngame = bReverse;
+    }
+}
+// PC 0x00759430
+void CSWGuiInGameGameplay::OnCombatMovement(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        int bCombatMovement =
+            !g_pAppManager->m_pClientExoApp->GetClientOptions()
+                 ->m_bCombatMovement;
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->m_bCombatMovement = bCombatMovement;
     }
 }
 // PC 0x00759480
@@ -234,7 +247,7 @@ void CSWGuiInGameGameplay::SetDescription(unsigned long nStrRef)
 void CSWGuiInGameGameplay::OnEnterDiff(CSWGuiControl* pControl)
 {
     CSWGuiTextParams* pText = &m_btnDifficulty.m_cText.m_cParams;
-    pText->SetColor(CGuiInGame::COLOR_YELLOW);
+    pText->SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
     pText->m_bHilightText = 1;
     SetDifficultyText();
     SetDescription(0xA519);
@@ -246,7 +259,7 @@ void CSWGuiInGameGameplay::OnEnterDiff(CSWGuiControl* pControl)
 void CSWGuiInGameGameplay::OnExitDiff(CSWGuiControl* pControl)
 {
     CSWGuiTextParams* pText = &m_btnDifficulty.m_cText.m_cParams;
-    pText->SetColor(CGuiInGame::COLOR_BLUE);
+    pText->SetColor(CGuiInGame::COLOR_NEW_TEXT);
     pText->m_bHilightText = 0;
 #ifdef _XBOX
     m_lblSelect.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
@@ -275,6 +288,11 @@ void CSWGuiInGameGameplay::SetUpOptions()
         bValue = (pOptions->m_bReverseMinigameYAxis != 0);
         pToggle = m_cbReverse.AsButtonToggle();
         pToggle->m_bToggled = bValue;
+#ifndef _XBOX
+        bValue = (pOptions->m_bReverseIngame != 0);
+        pToggle = m_cbReverseInGame.AsButtonToggle();
+        pToggle->m_bToggled = bValue;
+#endif
         bValue = (pOptions->m_bCombatMovement != 0);
         pToggle = m_cbCombatMovement.AsButtonToggle();
         pToggle->m_bToggled = bValue;
@@ -438,23 +456,28 @@ CSWGuiInGameGameplay::CSWGuiInGameGameplay(CSWGuiManager* pManager)
     CSWGuiButtonToggle* pToggle5 = m_cbCombatMovement.AsButtonToggle();
     pToggle5->m_bToggled = bCombatMovement;
 #else
-    StartLoadFromLayout("optgameplay");
+    StartLoadFromLayout("optgameplay_p");
     InitControl(m_btnDifficulty, "BTN_DIFFICULTY", 1);
-    InitControl(m_btnDiffRight, "BTN_DIFFRIGHT", 1);
-    InitControl(m_btnDiffLeft, "BTN_DIFFLEFT", 1);
-    InitControl(m_cbInvertCam, "CB_INVERTCAM", 1);
     InitControl(m_cbAutoLevelUp, "CB_LEVELUP", 1);
     InitControl(m_cbAutoSave, "CB_AUTOSAVE", 1);
     InitControl(m_cbReverse, "CB_REVERSE", 1);
+    InitControl(m_cbReverseInGame, "CB_REVERSE_INGAME", 1);
     InitControl(m_cbCombatMovement, "CB_DISABLEMOVE", 1);
-    InitControl(m_sliMouseSen, "SLI_MOUSESEN", 1);
-    InitControl(m_lblMouseSen, "LBL_MOUSESEN", 1);
     InitControl(m_lblTitle, "LBL_TITLE", 1);
     InitControl(m_lbxDescription, "LB_DESC", 1);
+    InitControl(m_cbInvertCam, "CB_INVERTCAM", 1);
+    InitControl(m_btnDiffRight, "BTN_DIFFRIGHT", 1);
+    InitControl(m_btnDiffLeft, "BTN_DIFFLEFT", 1);
+    InitControl(m_sliMouseSen, "SLI_MOUSESEN", 1);
+    InitControl(m_lblMouseSen, "LBL_MOUSESEN", 1);
     InitControl(m_btnBack, "BTN_BACK", 1);
     InitControl(m_btnDefault, "BTN_DEFAULT", 1);
     InitControl(m_btnKeyMap, "BTN_KEYMAP", 1);
     InitControl(m_btnMouse, "BTN_MOUSE", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
     m_lbxDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     StopLoadFromLayout();
 
@@ -500,6 +523,12 @@ CSWGuiInGameGameplay::CSWGuiInGameGameplay(CSWGuiManager* pManager)
                          (PFNGUIEVENT)&CSWGuiInGameGameplay::OnReverse);
     m_cbReverse.AddEvent(CSWGuiControl::EVENT_ENTER, this,
                          (PFNGUIEVENT)&CSWGuiInGameGameplay::OnEnterSlot);
+    m_cbReverseInGame.AddEvent(GUIEVENT_ACTIVATE, this,
+                               (PFNGUIEVENT)&CSWGuiInGameGameplay::OnReverseIngame);
+    m_cbReverseInGame.AddEvent(GUIEVENT_ACCEPT, this,
+                               (PFNGUIEVENT)&CSWGuiInGameGameplay::OnReverseIngame);
+    m_cbReverseInGame.AddEvent(CSWGuiControl::EVENT_ENTER, this,
+                               (PFNGUIEVENT)&CSWGuiInGameGameplay::OnEnterSlot);
     m_cbCombatMovement.AddEvent(GUIEVENT_ACTIVATE, this,
                                 (PFNGUIEVENT)&CSWGuiInGameGameplay::OnCombatMovement);
     m_cbCombatMovement.AddEvent(GUIEVENT_ACCEPT, this,
@@ -520,6 +549,7 @@ CSWGuiInGameGameplay::CSWGuiInGameGameplay(CSWGuiManager* pManager)
     m_cbAutoLevelUp.m_nIndex = STRREF_AUTO_LEVELUP;
     m_cbAutoSave.m_nIndex = STRREF_AUTO_SAVE;
     m_cbReverse.m_nIndex = STRREF_REVERSE_MOUSE;
+    m_cbReverseInGame.m_nIndex = STRREF_REVERSE_INGAME;
     m_cbCombatMovement.m_nIndex = STRREF_COMBAT_MOVEMENT;
     m_btnMouse.m_nIndex = STRREF_MOUSE_OPTIONS;
     m_btnKeyMap.m_nIndex = STRREF_KEYMAP_OPTIONS;

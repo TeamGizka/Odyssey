@@ -940,7 +940,7 @@ void CSWGuiPartySelection::OnEnter(CSWGuiControl* pControl)
         if (pCreature != 0)
         {
             CSWSCreatureStats* pStats = pCreature->GetStats();
-            CSWCLevelUpStats* pPreviewStats = pData->m_pCreature->GetStats();
+            CSWCCreatureStats* pPreviewStats = pData->m_pCreature->GetStats();
             pPreviewStats->SetGender(pStats->m_nGender);
             pPreviewStats->SetGoodEvilAlignment(pCreature->GetStats()->m_nGoodEvilAlignment);
             pPreviewStats->SetBaseCNPCAlignment(pCreature->GetStats()->m_n18C);

@@ -225,13 +225,13 @@ CSWGuiInGameAutoPause::CSWGuiInGameAutoPause(CSWGuiManager* pManager)
     InitControl(m_lblTitle, "LBL_TITLE", 1);
     InitControl(m_lbxDetails, "LB_DETAILS", 1);
     InitControl(m_btnDefault, "BTN_DEFAULT", 1);
-    m_lbxDetails.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     CSWGuiButton* pBack = &m_btnBack;
     InitControl(*pBack, "BTN_BACK", 1);
     InitControl(m_alblBar[0], "LBL_BAR1", 1);
     InitControl(m_alblBar[1], "LBL_BAR2", 1);
     InitControl(m_alblBar[2], "LBL_BAR3", 1);
     InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    m_lbxDetails.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     CSWGuiOptionsCheckbox* pCheckbox = m_aCheckboxes;
     for (int nSlot = 6; nSlot != 0; nSlot--)
     {

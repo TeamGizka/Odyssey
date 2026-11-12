@@ -218,30 +218,30 @@ void CSWGuiInGameItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
     m_cText.m_cParams = cText.m_cParams;
     CSWGuiBorderParams* pParams = &CSWGuiButton::m_cBorder.m_cParams;
     *pParams = cBorder.m_cParams;
-    pParams->m_vColor = CGuiInGame::COLOR_BLUE;
+    pParams->m_vColor = CGuiInGame::COLOR_NEW_GREEN;
     pParams = &CSWGuiButton::m_cHilite.m_cParams;
     *pParams = cHilite.m_cParams;
-    pParams->m_vColor = CGuiInGame::COLOR_YELLOW;
+    pParams->m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
     pParams->SetPulsingAlpha(bPulsing, 1, 0);
     pParams = &m_cIconBorder.m_cParams;
     {
 #ifndef _XBOX
-        CResRef cFill("lbl_hex_3"); CResRef cEdge(""); CResRef cCorner("");
+        CResRef cFill("UIBIT_EQP_ITM1"); CResRef cEdge(""); CResRef cCorner("");
         *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
 #else
         *pParams = CSWGuiBorderParams("", "", "lbl_hex_3", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
 #endif
-        pParams->m_vColor = CGuiInGame::COLOR_BLUE;
+        pParams->m_vColor = CGuiInGame::COLOR_NEW_GREEN;
     }
     pParams = &m_cIconHilite.m_cParams;
     {
 #ifndef _XBOX
-        CResRef cFill("lbl_hex_3"); CResRef cEdge(""); CResRef cCorner("");
+        CResRef cFill("UIBIT_EQP_ITM1"); CResRef cEdge(""); CResRef cCorner("");
         *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
 #else
         *pParams = CSWGuiBorderParams("", "", "lbl_hex_3", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
 #endif
-        pParams->m_vColor = CGuiInGame::COLOR_YELLOW;
+        pParams->m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
         pParams->SetPulsingAlpha(bPulsing, 0, 1);
     }
 
@@ -479,10 +479,10 @@ void CSWGuiInGameItemEntry::SetCanUse(unsigned char nCanUse)
     {
     case CAN_USE:
     case CAN_USE_EQUIPPED:
-        m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
-        m_cIconBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
-        m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
-        m_cIconHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+        m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
+        m_cIconBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
+        m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+        m_cIconHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
         break;
     case CANNOT_USE:
     case CANNOT_USE_WITH_OTHER_HAND:
@@ -600,28 +600,28 @@ void CSWGuiStoreItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
     m_cText.m_cParams = cText.m_cParams;
     CSWGuiBorderParams* pParams = &CSWGuiButton::m_cBorder.m_cParams;
     *pParams = cBorder.m_cParams;
-    pParams->m_vColor = CGuiInGame::COLOR_BLUE;
+    pParams->m_vColor = CGuiInGame::COLOR_DARK_GOLD;
     pParams = &CSWGuiButton::m_cHilite.m_cParams;
     *pParams = cHilite.m_cParams;
-    pParams->m_vColor = CGuiInGame::COLOR_YELLOW;
+    pParams->m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
     pParams->SetPulsingAlpha(1, 1, 0);
     pParams = &m_cIconBorder.m_cParams;
     {
 #ifndef _XBOX
-        CResRef cFill("lbl_hex_3"); CResRef cEdge(""); CResRef cCorner(""); *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+        CResRef cFill("UIBIT_EQP_ITM1"); CResRef cEdge(""); CResRef cCorner(""); *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
 #else
         *pParams = CSWGuiBorderParams("", "", "lbl_hex_3", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
 #endif
-        pParams->m_vColor = CGuiInGame::COLOR_BLUE;
+        pParams->m_vColor = CGuiInGame::COLOR_DARK_GOLD;
     }
     pParams = &m_cIconHilite.m_cParams;
     {
 #ifndef _XBOX
-        CResRef cFill("lbl_hex_3"); CResRef cEdge(""); CResRef cCorner(""); *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
+        CResRef cFill("UIBIT_EQP_ITM1"); CResRef cEdge(""); CResRef cCorner(""); *pParams = CSWGuiBorderParams(cCorner, cEdge, cFill, 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
 #else
         *pParams = CSWGuiBorderParams("", "", "lbl_hex_3", 0, 0, 1.0f, Vector(1.0f, 1.0f, 1.0f), 0);
 #endif
-        pParams->m_vColor = CGuiInGame::COLOR_YELLOW;
+        pParams->m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
         pParams->SetPulsingAlpha(1, 0, 1);
     }
     {

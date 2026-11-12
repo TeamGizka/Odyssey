@@ -176,7 +176,8 @@ public:
 
     enum
     {
-        NUM_SWOOP_SLOTS = 6
+        NUM_SWOOP_SLOTS = 6,
+        NUM_SWOOP_UPGRADE_SLOTS = 3
     };
 
     CSWGuiButton m_aUpgradeButtons4[4];
