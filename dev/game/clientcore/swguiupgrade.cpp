@@ -5424,21 +5424,24 @@ void CSWGuiSwoopUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
         }
         pOldItem = 0;
     }
-    CSWSItem* pItem = pServer->GetItemByGameObjectID(pEntry->m_oidItem);
+    unsigned long oidItem = pEntry->m_oidItem;
+    CSWSItem* pItem = pServer->GetItemByGameObjectID(oidItem);
     if (pItem != 0)
     {
         int nIndex = m_aItemsTaken.IndexOf(pItem);
         if (nIndex != -1)
         {
             m_aItemsTaken.DelIndex(nIndex);
-            if (pItem->m_nStackSize > 1)
+            int nStackSize = pItem->m_nStackSize;
+            if (nStackSize > 1)
                 pItem = pItem->SplitItem(1);
             else
                 pRepository->RemoveItem(pItem);
         }
         else
         {
-            if (pItem->m_nStackSize > 1)
+            int nStackSize = pItem->m_nStackSize;
+            if (nStackSize > 1)
                 pItem = pItem->SplitItem(1);
             else
                 pRepository->RemoveItem(pItem);

@@ -71,6 +71,8 @@
 #define SWGUI_PANEL_MODE_OVERLAY 0
 #endif
 
+#define DIALOG_CAMERA_GRAN_PULLBACK_OFFSET 0.25f
+
 static inline void GuiingameTrace2();
 static inline void GuiingameTrace1();
 #define GUIINGAME_HOOK() GuiingameTrace2()
@@ -3054,7 +3056,8 @@ void CGuiInGame::UpdateShotCamera(unsigned long nShot, int nCamera,
                     {
                         fAngle = fAngle - (fHeadTurn + 1.0f);
                         Vector vCross = cross(vFacing, Vector(0.0f, 0.0f, 1.0f));
-                        if (vCross * vTarget > 0.0f)
+                        float fDot = vCross * vTarget;
+                        if (fDot > 0.0f)
                             fAngle *= -1.0f;
                         Quaternion qRotation(Vector(0.0f, 0.0f, 1.0f),
                             fAngle * DEG_TO_RAD);
@@ -3105,7 +3108,8 @@ void CGuiInGame::UpdateShotCamera(unsigned long nShot, int nCamera,
                     {
                         fAngle = fAngle - (fHeadTurn + 1.0f);
                         Vector vCross = cross(vFacing, Vector(0.0f, 0.0f, 1.0f));
-                        if (vCross * vTarget > 0.0f)
+                        float fDot = vCross * vTarget;
+                        if (fDot > 0.0f)
                             fAngle *= -1.0f;
                         Quaternion qRotation(Vector(0.0f, 0.0f, 1.0f),
                             fAngle * DEG_TO_RAD);
@@ -3163,8 +3167,9 @@ void CGuiInGame::UpdateShotCamera(unsigned long nShot, int nCamera,
                             break;
                         }
                     }
-                    if (g_pAppManager->GetClientExoApp()->GetInGameGui()->IsFireForgetDialogAnimation(nAnimation) ||
-                        g_pAppManager->GetClientExoApp()->GetInGameGui()->IsLoopingDialogAnimation(nAnimation))
+                    CGuiInGame* pInGameGui = g_pAppManager->GetClientExoApp()->GetInGameGui();
+                    if (pInGameGui->IsFireForgetDialogAnimation(nAnimation) ||
+                        pInGameGui->IsLoopingDialogAnimation(nAnimation))
                     {
                         if (!g_pRules->Get2DArrays()->GetDialogAnimations()->GetFLOATEntry(
                                 nAnimation - SERVER_ANIMATION_FIRST,
@@ -3172,6 +3177,10 @@ void CGuiInGame::UpdateShotCamera(unsigned long nShot, int nCamera,
                             fPullBackRange = 0.0f;
                         if (fPullBackRange < 0.001 && fPullBackRange > -0.001)
                             fPullBackRange = 0.0f;
+                        CSWCCreature* pCreature =
+                            g_pAppManager->GetClientExoApp()->GetCreatureByGameObjectID(m_oidDialogObject1);
+                        if (pCreature != 0 && pCreature->GetAppearance()->m_nAppearance == CCAppearanceInfo::APPEARANCE_GRAN_01)
+                            fPullBackRange += DIALOG_CAMERA_GRAN_PULLBACK_OFFSET;
                         if (fPullBackRange == 0.0f)
                             m_fDialogCameraPullBackRange = 0.0f;
                     }
@@ -3184,7 +3193,11 @@ void CGuiInGame::UpdateShotCamera(unsigned long nShot, int nCamera,
                     m_fDialogCameraPullBackRange = 0.0f;
                 pCamera->SetShot(m_oidDialogObject1, m_oidDialogObject2,
                     nShot, fPitch, fHeight, fPullBackRange);
-                g_pAppManager->GetClientExoApp()->DisableVideoEffect();
+                if (nVideoEffect != CAMERA_VIDEO_EFFECT_DEFAULT &&
+                    nVideoEffect != CAMERA_VIDEO_EFFECT_UNCHANGED)
+                    g_pAppManager->GetClientExoApp()->EnableVideoEffect(nVideoEffect);
+                else if (m_n1028 == 0)
+                    g_pAppManager->GetClientExoApp()->DisableVideoEffect();
             }
         }
         else if (pCamera != 0)
@@ -3222,6 +3235,8 @@ void CGuiInGame::UpdateShotCamera(unsigned long nShot, int nCamera,
             if (nVideoEffect != CAMERA_VIDEO_EFFECT_DEFAULT &&
                 nVideoEffect != CAMERA_VIDEO_EFFECT_UNCHANGED)
                 g_pAppManager->GetClientExoApp()->EnableVideoEffect(nVideoEffect);
+            else if (m_n1028 == 0)
+                g_pAppManager->GetClientExoApp()->DisableVideoEffect();
         }
     }
     m_oidComputerCameraTarget = oidTarget;

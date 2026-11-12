@@ -706,7 +706,9 @@ void CSWGuiPartySelection::OnToggled(CSWGuiControl* pControl)
 #ifndef _XBOX
         if (m_bCanChangeParty == 0)
         {
-            pMessageBox = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+            CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+            CGuiInGame* pInGameGui = pClientExoApp->GetInGameGui();
+            pMessageBox = pInGameGui->m_pMessageBox;
             pMessageBox->SetAllowCancel(0);
             pMessageBox->SetCallback(0, 0, 0);
             pMessageBox->SetMessage(m_nCannotChangeStrRef);
