@@ -27,8 +27,6 @@ long ExoResFileInfoSize(const char* szFileName)
 struct tm* ExoResFileInfoStamp()
 {
     time(&g_nFileInfoTime);
-    strncpy(g_szFileInfoLine, ctime(&g_nFileInfoTime), EXORESFILEINFO_LINE - 1);
-    g_szFileInfoLine[EXORESFILEINFO_LINE - 1] = 0;
     return localtime(&g_nFileInfoTime);
 }
 
@@ -47,6 +45,8 @@ long ExoResFileInfo(const char* szFileName)
     if (ExoResFileInfoSize(szFileName) != 0)
     {
         pTime = ExoResFileInfoStamp();
+        strncpy(g_szFileInfoLine, ctime(&g_nFileInfoTime), EXORESFILEINFO_LINE - 1);
+        g_szFileInfoLine[EXORESFILEINFO_LINE - 1] = 0;
         fprintf(g_pFileInfoLog, "%-64s %10ld %04d%02d%02d %s %s", szFileName, g_nFileInfoSize,
                 pTime->tm_year + 1900, pTime->tm_mon + 1, pTime->tm_mday, "Used",
                 g_szFileInfoLine);

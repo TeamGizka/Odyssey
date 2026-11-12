@@ -120,12 +120,14 @@ public:
     unsigned char* AddDataLayoutList(unsigned long nOldOffset,
                                      unsigned long nOldSize,
                                      unsigned long nSize);
+    int GetFileData(char* szFileName);
     int GetElementType(CResStruct* pStructure);
     int GetFieldCount(CResStruct* pStructure);
     int GetTopLevelStruct(CResStruct* pStructure);
     int CreateGFFFile(CResStruct* pStructure, const CExoString& sFileType,
                       const CExoString& sVersion);
     int WriteGFFData(CExoFile& file, unsigned long& nSize);
+    int WriteGFFFile(char* szFileName);
     int GetTotalSize();
     unsigned long GetFieldByLabel(CResStruct* pStructure, char* szLabel);
     CResGFFField* AddField(CResStruct* pStructure, char* szLabel,

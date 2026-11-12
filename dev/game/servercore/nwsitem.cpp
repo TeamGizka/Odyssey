@@ -1669,7 +1669,8 @@ int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
     }
     else if (m_bUnknown08)
     {
-        for (nItem = 0; nItem < m_lstItems.num; nItem++)
+        nItem = 0;
+        while (nItem < m_lstItems.num)
         {
             unsigned long oidItem = m_lstItems[nItem];
             pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
@@ -1683,6 +1684,7 @@ int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
                     break;
                 }
             }
+            nItem++;
         }
     }
 

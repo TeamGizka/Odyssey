@@ -1,5 +1,6 @@
 #include "resgff.h"
 #include "math3d.h"
+#include <stdio.h>
 #include <string.h>
 
 char* CResGFF::VERSION = "V3.2";
@@ -709,6 +710,72 @@ unsigned char* CResGFF::AddDataLayoutList(unsigned long nOldOffset,
     }
     return NULL;
 }
+
+int CResGFF::GetFileData(char* szFileName)
+{
+    if (m_pHeader != NULL)
+    {
+        return 0;
+    }
+
+    FILE* pFile = fopen(szFileName, "rb");
+    if (pFile == NULL)
+    {
+        return 0;
+    }
+
+    fseek(pFile, 0, SEEK_END);
+    unsigned long nSize = ftell(pFile);
+    unsigned char* pData = new unsigned char[nSize];
+    fseek(pFile, 0, SEEK_SET);
+    if (fread(pData, nSize, 1, pFile) != 1)
+    {
+        delete[] pData;
+        return 0;
+    }
+    fclose(pFile);
+
+    m_pHeader = (CResGFFHeader*)pData;
+    if (m_pHeader->m_nVersion != ((unsigned char)VERSION[0] |
+             ((unsigned char)VERSION[1] << 8) |
+             ((unsigned char)VERSION[2] << 16) |
+             ((unsigned char)VERSION[3] << 24)))
+    {
+        m_pHeader = NULL;
+        delete[] pData;
+        return 0;
+    }
+
+    if (m_pHeader->m_nStructCount != 0)
+    {
+        m_pStructs = (CResGFFStruct*)(pData + m_pHeader->m_nStructOffset);
+    }
+    if (m_pHeader->m_nFieldCount != 0)
+    {
+        m_pFields = (CResGFFField*)(pData + m_pHeader->m_nFieldOffset);
+    }
+    if (m_pHeader->m_nLabelCount != 0)
+    {
+        m_pLabels = (CResGFFLabel*)(pData + m_pHeader->m_nLabelOffset);
+    }
+    if (m_pHeader->m_nFieldDataCount != 0)
+    {
+        m_pFieldData = pData + m_pHeader->m_nFieldDataOffset;
+    }
+    if (m_pHeader->m_nFieldIndicesCount != 0)
+    {
+        m_pFieldIndices = pData + m_pHeader->m_nFieldIndicesOffset;
+    }
+    if (m_pHeader->m_nListIndicesCount != 0)
+    {
+        m_pListIndices = pData + m_pHeader->m_nListIndicesOffset;
+    }
+
+    m_bInResource = 1;
+    InitializeForWriting();
+    delete[] pData;
+    return 1;
+}
 // PC 0x00412320
 int CResGFF::GetElementType(CResStruct* pStructure)
 {
@@ -832,6 +899,67 @@ int CResGFF::WriteGFFData(CExoFile& file, unsigned long& nSize)
     unsigned long nListIndicesBytes = m_pHeader->m_nListIndicesCount;
     return file.Write(m_pListIndices, nListIndicesBytes, 1) ==
            nListIndicesBytes;
+}
+
+int CResGFF::WriteGFFFile(char* szFileName)
+{
+    if (m_pHeader == NULL)
+    {
+        return 0;
+    }
+
+    FILE* pFile = fopen(szFileName, "wb");
+    if (pFile == NULL)
+    {
+        return 0;
+    }
+
+    Pack(0, 0);
+
+    unsigned long nSize = sizeof(CResGFFHeader);
+    m_pHeader->m_nStructOffset = nSize;
+    nSize = 12 * m_pHeader->m_nStructCount + nSize;
+    m_pHeader->m_nFieldOffset = nSize;
+    nSize = 12 * m_pHeader->m_nFieldCount + nSize;
+    m_pHeader->m_nLabelOffset = nSize;
+    nSize = 16 * m_pHeader->m_nLabelCount + nSize;
+    m_pHeader->m_nFieldDataOffset = nSize;
+    nSize = m_pHeader->m_nFieldDataCount + nSize;
+    m_pHeader->m_nFieldIndicesOffset = nSize;
+    nSize = m_pHeader->m_nFieldIndicesCount + nSize;
+    m_pHeader->m_nListIndicesOffset = nSize;
+
+    if (fwrite(m_pHeader, sizeof(CResGFFHeader), 1, pFile) != 1)
+    {
+        return 0;
+    }
+    if (fwrite(m_pStructs, 12 * m_pHeader->m_nStructCount, 1, pFile) != 1)
+    {
+        return 0;
+    }
+    if (fwrite(m_pFields, 12 * m_pHeader->m_nFieldCount, 1, pFile) != 1)
+    {
+        return 0;
+    }
+    if (fwrite(m_pLabels, 16 * m_pHeader->m_nLabelCount, 1, pFile) != 1)
+    {
+        return 0;
+    }
+    if (fwrite(m_pFieldData, m_pHeader->m_nFieldDataCount, 1, pFile) != 1)
+    {
+        return 0;
+    }
+    if (fwrite(m_pFieldIndices, m_pHeader->m_nFieldIndicesCount, 1, pFile) != 1)
+    {
+        return 0;
+    }
+    if (fwrite(m_pListIndices, m_pHeader->m_nListIndicesCount, 1, pFile) != 1)
+    {
+        return 0;
+    }
+
+    fclose(pFile);
+    return 1;
 }
 // PC 0x004126C0
 int CResGFF::GetTotalSize()

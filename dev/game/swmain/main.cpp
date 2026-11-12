@@ -98,11 +98,7 @@ CTlkTable* g_pTlkTable = NULL;
 CSWTlkTable* g_pSWTlkTable = NULL;
 int g_bDemoMode = 0;
 
-static int InitCounterStepBeforeBuildStrings()
-{
-    static int s_nStep = atoi("");
-    return s_nStep;
-}
+static union { int s_nInitCounterStep; };
 CExoString g_sBuildNumber("427");
 CExoString g_sInstallBuildNumber;
 CExoString g_sVersionNumber;
@@ -2024,7 +2020,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,  // PC 0x004042
     memset(&cMutexAttr, 0, sizeof(cMutexAttr));
     cMutexAttr.nLength = sizeof(cMutexAttr);
 
-    HANDLE hMutex = CreateMutexA(&cMutexAttr, FALSE, "swkotor");
+    HANDLE hMutex = CreateMutexA(&cMutexAttr, FALSE, "swkotor2");
     if (hMutex == NULL)
         return (WPARAM)-1;
     if (WaitForSingleObject(hMutex, 0) != WAIT_OBJECT_0)
@@ -2042,7 +2038,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,  // PC 0x004042
 
     g_pExoBase = new CExoBase();
     {
-        CExoString sAliasFile("swKotor.ini");
+        CExoString sAliasFile("swKotor2.ini");
 
         g_pExoBase->LoadAliases(sAliasFile);
     }

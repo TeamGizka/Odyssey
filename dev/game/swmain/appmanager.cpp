@@ -93,57 +93,11 @@ void CAppManager::AllocLargeTempBuffer()  // PC 0x004010A0
     }
 }
 
-struct CAppManagerFileEntry
-{
-    unsigned long nTime;
-    CExoString sName;
-};
-
 void FreeFileNames(CExoString* pNames)
 {
     delete [] pNames;
 }
 
-static unsigned long s_nFilesWritten;
-static unsigned long s_nBytesWritten;
-static unsigned long s_nLastWriteTime;
-
-int WriteFileToStream(FILE* pStream, CAppManagerFileEntry& entry)
-{
-    FILE* pFile = fopen(entry.sName.CStr(), "rb");
-    if (pFile == NULL)
-    {
-        return 0;
-    }
-
-    if (g_pAppManager->m_pLargeTempBuffer == NULL)
-    {
-        fclose(pFile);
-        return 0;
-    }
-
-    char szName[32];
-    strncpy(szName, entry.sName.CStr(), sizeof(szName));
-    szName[sizeof(szName) - 1] = 0;
-    fwrite(szName, sizeof(szName), 1, pStream);
-
-    unsigned long nSize = fread(g_pAppManager->m_pLargeTempBuffer, 1, LARGE_TEMP_BUFFER_SIZE, pFile);
-    while (nSize != 0)
-    {
-        fwrite(&nSize, sizeof(nSize), 1, pStream);
-        fwrite(g_pAppManager->m_pLargeTempBuffer, 1, nSize, pStream);
-        s_nBytesWritten += nSize;
-        nSize = fread(g_pAppManager->m_pLargeTempBuffer, 1, LARGE_TEMP_BUFFER_SIZE, pFile);
-    }
-    fwrite(&nSize, sizeof(nSize), 1, pStream);
-    fclose(pFile);
-
-    entry.nTime = (unsigned long)time(NULL);
-    s_nLastWriteTime = entry.nTime;
-    s_nFilesWritten++;
-    fwrite(&entry.nTime, sizeof(entry.nTime), 1, pStream);
-    return 1;
-}
 // PC 0x004010C0
 CSWReentrantServerStats::CSWReentrantServerStats()
 {

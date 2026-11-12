@@ -342,6 +342,7 @@ int CExoStreamingSoundSourceInternal::IsPlaying()
 // PC 0x00628550
 int CExoStreamingSoundSourceInternal::IsDone()
 {
+    ExostreamingsoundsourceinternalTrace1();
     if (m_pSoundInternal->m_bInitialized != 0 && m_hStream != NULL)
     {
         return AIL_stream_status(m_hStream) - SMP_DONE == 0;
