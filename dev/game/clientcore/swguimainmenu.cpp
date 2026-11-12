@@ -255,11 +255,12 @@ void CSWGuiMainMenu::OnMoviesPicked(CSWGuiControl* pControl)
 void CSWGuiMainMenu::OnMusicPicked(CSWGuiControl* pControl)
 {
     SWGUIMAINMENU_HOLD();
-    if (pControl->m_bSelected)
+    int bSelected = pControl->m_bSelected;
+    if (bSelected)
     {
         g_pAppManager->m_pClientExoApp->BusyWaitMenuMusic();
         m_bIdleTimerDisabled = 1;
-        CSWGuiTitleMusic* pMusic = new CSWGuiTitleMusic(m_pManager);
+        CSWGuiTitleMusic* pMusic = new CSWGuiTitleMusic(GetManager());
         m_pManager->AddPanel(pMusic, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }

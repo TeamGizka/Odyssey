@@ -299,7 +299,7 @@ void CSWGuiLevelUpPanel::OnCancelPressed(CSWGuiControl* pControl)  // PC 0x0075D
 void CSWGuiLevelUpPanel::ShowGrantedPowers(CSWGuiControl* pControl)
 {
     CExoArrayList<unsigned long> lPowers;
-    m_pCreature->m_pStats->AddGrantedPowers(&lPowers);
+    m_pCreature->GetStats()->AddGrantedPowers(&lPowers);
     if (lPowers.num > 0)
     {
         CSWGuiSkillInfoBox* pInfoBox =

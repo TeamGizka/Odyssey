@@ -263,8 +263,8 @@ void CSWCameraFreeLook::UpdateCamraStyle()
     p2DA->GetFLOATEntry(nRow, "FL_TiltSpeed", &m_fRotateSpeed);
     p2DA->GetFLOATEntry(nRow, "FL_RotateSpeed", &m_fTiltSpeed);
 #else
-    p2DA->GetFLOATEntry(nRow, "FL_TiltSpeed", &m_fTiltSpeed);
-    p2DA->GetFLOATEntry(nRow, "FL_RotateSpeed", &m_fRotateSpeed);
+    p2DA->GetFLOATEntry(nRow, "FL_PC_TiltSpeed", &m_fTiltSpeed);
+    p2DA->GetFLOATEntry(nRow, "FL_PC_RotateSpeed", &m_fRotateSpeed);
 #endif
     p2DA->GetFLOATEntry(nRow, "FL_LOOKUP", &m_fLookUp);
     p2DA->GetFLOATEntry(nRow, "FL_LOOKDOWN", &m_fLookDown);

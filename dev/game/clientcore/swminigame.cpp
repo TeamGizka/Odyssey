@@ -179,7 +179,7 @@ void CSWMiniGame::UpdateAxis(Vector& vAxis, float fScale)
     {
     case 1:
         vAxis.m_fY = vAxis.m_fY * -1.0f;
-        vAxis.m_fZ = vAxis.m_fZ * -1.0f;
+        vAxis.m_fZ = vAxis.m_fZ * 0.0f;
         break;
     case 2:
     {

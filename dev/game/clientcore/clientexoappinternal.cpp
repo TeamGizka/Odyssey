@@ -1288,7 +1288,7 @@ void CClientExoAppInternal::StopServices()  // PC 0x00650110
         g_pExoResMan->RemoveResourceDirectory("OVERRIDE:");
         g_pExoResMan->RemoveResourceDirectory("HD0:MOVIES");
         g_pExoResMan->RemoveResourceDirectory("HD0:STREAMMUSIC");
-        g_pExoResMan->RemoveResourceDirectory("HD0:STREAMWAVES");
+        g_pExoResMan->RemoveResourceDirectory("HD0:STREAMVOICE");
         g_pExoResMan->RemoveResourceDirectory("TEMPCLIENT:");
         if (g_pExoResMan->Exists("GLOBAL", RESTYPE_RIM, (unsigned long*)NULL))
             g_pExoResMan->RemoveResourceImageFile("RIMS:GLOBAL");
