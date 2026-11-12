@@ -100,11 +100,11 @@ CSWSItem::CSWSItem(unsigned long oidItem)
     m_nTextureVar = 0;
     m_n2DC = 0;
     m_n2E0 = 0;
-    m_n2F0 = 0;
+    m_nUpgradeLevel = 0;
     m_n2E8 = 0;
     m_n2E4 = 0;
     m_n2EC = 0;
-    memset(m_an2F4, 0, sizeof(m_an2F4));
+    memset(m_anUpgradeSlot, 0, sizeof(m_anUpgradeSlot));
 }
 // PC 0x0055E950
 int CSWSItem::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
@@ -1119,7 +1119,7 @@ void CSWSItem::AddPCRequirements(CExoString& sString)
                 {
                     {
                         CExoString sColumn("NAME");
-                        C2DA* pPCTable = g_pRules->Get2DArrays()->m_pIPRPPC;
+                        C2DA* pPCTable = g_pRules->m_p2DArrays->m_pIPRPPC;
                         pPCTable->GetINTEntry(nPC, sColumn, &nName);
                     }
                     sPC = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
@@ -1400,9 +1400,10 @@ void CSWSItem::AddDamageProperties(CExoString& sString)
             }
         }
     }
+    {
     int bHeadingAdded = 0;
-    nMaximum = 0;
-    nMinimum = 0;
+    int nMinimum = 0;
+    int nMaximum = 0;
     if (GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_DAMAGE_BONUS, 0))
     {
         for (i = 0; i < m_nPassiveProperties; i++)
@@ -1473,6 +1474,7 @@ NextDamageProperty:
             ;
         }
         if (bHeadingAdded) sString = sString + "\n\n";
+    }
     }
 }
 // PC 0x00567B10
@@ -1797,8 +1799,8 @@ int CSWSItem::CopyItem(CSWSItem* pItem)
     m_nWeight = pItem->m_nWeight;
     m_bIdentified = pItem->m_bIdentified;
     m_nUpgrades = pItem->m_nUpgrades;
-    m_n2F0 = pItem->m_n2F0;
-    memcpy(m_an2F4, pItem->m_an2F4, sizeof(m_an2F4));
+    m_nUpgradeLevel = pItem->m_nUpgradeLevel;
+    memcpy(m_anUpgradeSlot, pItem->m_anUpgradeSlot, sizeof(m_anUpgradeSlot));
     m_nBodyVariation = pItem->m_nBodyVariation;
     m_nTextureVar = pItem->m_nTextureVar;
     m_bNonEquippable = pItem->m_bNonEquippable;
@@ -2477,7 +2479,7 @@ void CSWSItem::AddOnHitProperties(CExoString& sString)
                         nDurationRounds *= 3;
                         sDetails.Format("%s %d\n",
                             g_pAppManager->GetClientExoApp()->GetGUIString(GUI_STRREF_DC).CStr(),
-                            nDurationRounds);
+                            nDcSave);
                         sString = sString + sDetails + "\n";
                         break;
                     }
@@ -3071,30 +3073,30 @@ int CSWSItem::SaveItem(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldWORD(pStruct, m_nStackSize, "StackSize");
     pRes->WriteFieldBYTE(pStruct, m_bStolen, "Stolen");
     pRes->WriteFieldDWORD(pStruct, m_nUpgrades, "Upgrades");
-    pRes->WriteFieldBYTE(pStruct, (unsigned char)m_n2F0, "UpgradeLevel");
-    if (m_an2F4[0] != 0)
+    pRes->WriteFieldBYTE(pStruct, (unsigned char)m_nUpgradeLevel, "UpgradeLevel");
+    if (m_anUpgradeSlot[0] != 0)
     {
-        pRes->WriteFieldINT(pStruct, m_an2F4[0], "UpgradeSlot0");
+        pRes->WriteFieldINT(pStruct, m_anUpgradeSlot[0], "UpgradeSlot0");
     }
-    if (m_an2F4[1] != 0)
+    if (m_anUpgradeSlot[1] != 0)
     {
-        pRes->WriteFieldINT(pStruct, m_an2F4[1], "UpgradeSlot1");
+        pRes->WriteFieldINT(pStruct, m_anUpgradeSlot[1], "UpgradeSlot1");
     }
-    if (m_an2F4[2] != 0)
+    if (m_anUpgradeSlot[2] != 0)
     {
-        pRes->WriteFieldINT(pStruct, m_an2F4[2], "UpgradeSlot2");
+        pRes->WriteFieldINT(pStruct, m_anUpgradeSlot[2], "UpgradeSlot2");
     }
-    if (m_an2F4[3] != 0)
+    if (m_anUpgradeSlot[3] != 0)
     {
-        pRes->WriteFieldINT(pStruct, m_an2F4[3], "UpgradeSlot3");
+        pRes->WriteFieldINT(pStruct, m_anUpgradeSlot[3], "UpgradeSlot3");
     }
-    if (m_an2F4[4] != 0)
+    if (m_anUpgradeSlot[4] != 0)
     {
-        pRes->WriteFieldINT(pStruct, m_an2F4[4], "UpgradeSlot4");
+        pRes->WriteFieldINT(pStruct, m_anUpgradeSlot[4], "UpgradeSlot4");
     }
-    if (m_an2F4[5] != 0)
+    if (m_anUpgradeSlot[5] != 0)
     {
-        pRes->WriteFieldINT(pStruct, m_an2F4[5], "UpgradeSlot5");
+        pRes->WriteFieldINT(pStruct, m_anUpgradeSlot[5], "UpgradeSlot5");
     }
     pRes->WriteFieldBYTE(pStruct, m_bDropable, "Dropable");
     pRes->WriteFieldBYTE(pStruct, m_bPickpocketable, "Pickpocketable");
@@ -3554,7 +3556,7 @@ CSWCItem* CSWSItem::GetClientItem()
 unsigned char CSWSItem::GetUpgradableType(C2DA* pTable)
 {
     unsigned char nType = UPGRADABLE_TYPE_NONE;
-    if (m_n2F0 > 0)
+    if (m_nUpgradeLevel > 0)
     {
         unsigned char nItemType = GetBaseItem()->m_nItemType;
         if (nItemType == 0 || nItemType == 1 || nItemType == 2)
@@ -3829,13 +3831,20 @@ void CSWSItem::GetPropertyStrings(unsigned short nPropertyType,
             switch (nName)
             {
             case 0:
+                nName = -1;
+                break;
             case 727:
+                nName = -1;
+                break;
             case 728:
                 nName = -1;
                 break;
             case 729:
-            case 730:
             case 796:
+                nName = -1;
+                sProperty = "";
+                return;
+            case 730:
             case 797:
                 nName = -1;
                 sProperty = "";
@@ -4090,7 +4099,7 @@ void CSWSItem::RemoveUpgrade(CSWSItem* pUpgrade, unsigned long nSlot)
     int nOldProperties = m_nPassiveProperties;
     int nNewProperties = nOldProperties - nUpgradeProperties;
     CSWItemProperty* pNewProperties = new CSWItemProperty[nNewProperties];
-    CSWItemProperty* pNext = pNewProperties;
+    int nNextProperty = 0;
     for (int nProperty = 0; nProperty < nOldProperties; nProperty++)
     {
         int bUpgrade = 0;
@@ -4104,8 +4113,8 @@ void CSWSItem::RemoveUpgrade(CSWSItem* pUpgrade, unsigned long nSlot)
         }
         if (bUpgrade == 0)
         {
-            memcpy(pNext, pProperty, sizeof(CSWItemProperty));
-            pNext++;
+            memcpy(&pNewProperties[nNextProperty], pProperty, sizeof(CSWItemProperty));
+            nNextProperty++;
         }
     }
     SetNumPassiveProperties(nNewProperties);
@@ -4321,13 +4330,13 @@ void CSWSItem::LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct)
     m_nStackSize = pRes->ReadFieldWORD(pStruct, "StackSize", bSuccess, GetStackSize());
     SetStolen(pRes->ReadFieldBYTE(pStruct, "Stolen", bSuccess, m_bStolen));
     m_nUpgrades = pRes->ReadFieldDWORD(pStruct, "Upgrades", bSuccess, GetUpgrades());
-    m_n2F0 = pRes->ReadFieldBYTE(pStruct, "UpgradeLevel", bSuccess, GetUpgrades());
-    m_an2F4[0] = pRes->ReadFieldINT(pStruct, "UpgradeSlot0", bSuccess, -1);
-    m_an2F4[1] = pRes->ReadFieldINT(pStruct, "UpgradeSlot1", bSuccess, -1);
-    m_an2F4[2] = pRes->ReadFieldINT(pStruct, "UpgradeSlot2", bSuccess, -1);
-    m_an2F4[3] = pRes->ReadFieldINT(pStruct, "UpgradeSlot3", bSuccess, -1);
-    m_an2F4[4] = pRes->ReadFieldINT(pStruct, "UpgradeSlot4", bSuccess, -1);
-    m_an2F4[5] = pRes->ReadFieldINT(pStruct, "UpgradeSlot5", bSuccess, -1);
+    m_nUpgradeLevel = pRes->ReadFieldBYTE(pStruct, "UpgradeLevel", bSuccess, GetUpgrades());
+    m_anUpgradeSlot[0] = pRes->ReadFieldINT(pStruct, "UpgradeSlot0", bSuccess, -1);
+    m_anUpgradeSlot[1] = pRes->ReadFieldINT(pStruct, "UpgradeSlot1", bSuccess, -1);
+    m_anUpgradeSlot[2] = pRes->ReadFieldINT(pStruct, "UpgradeSlot2", bSuccess, -1);
+    m_anUpgradeSlot[3] = pRes->ReadFieldINT(pStruct, "UpgradeSlot3", bSuccess, -1);
+    m_anUpgradeSlot[4] = pRes->ReadFieldINT(pStruct, "UpgradeSlot4", bSuccess, -1);
+    m_anUpgradeSlot[5] = pRes->ReadFieldINT(pStruct, "UpgradeSlot5", bSuccess, -1);
     SetDropable(pRes->ReadFieldBYTE(pStruct, "Dropable", bSuccess, 0));
     SetPickpocketable(pRes->ReadFieldBYTE(pStruct, "Pickpocketable", bSuccess, 0));
     SetNonEquippable(pRes->ReadFieldBYTE(pStruct, "NonEquippable", bSuccess, m_bNonEquippable));

@@ -1861,8 +1861,7 @@ unsigned char CSWSCreature::CanEquipItem(CSWSItem* pItem,
 {
     if (bCheckRestrictions == 1 && m_pStats->m_bIsPC == 1 && !bLoading)
     {
-        unsigned char nLevel = m_pStats->GetLevel(0);
-        if (nLevel < pItem->GetMinEquipLevel() &&
+        if (m_pStats->GetLevel(0) < pItem->GetMinEquipLevel() &&
             g_pAppManager->GetServerExoApp()->GetServerInfo()
                 ->m_bItemLevelRestrictions)
         {
@@ -3799,14 +3798,12 @@ int CSWSCreature::AIActionFollowOwner(CSWSObjectActionNode* pNode)
         }
         Vector vOwner = pOwner->m_vPosition;
         Vector vPosition = m_vPosition;
-        Vector vDistance;
-        vDistance.m_fX = vOwner.m_fX - vPosition.m_fX;
-        vDistance.m_fY = vOwner.m_fY - vPosition.m_fY;
-        vDistance.m_fZ = 0.0f;
-        if (magnitude(vDistance) >= fFollowDistance)
+        if (magnitude(Vector(vOwner.m_fX - vPosition.m_fX,
+                vOwner.m_fY - vPosition.m_fY, 0.0f)) >= fFollowDistance)
         {
-            vPosition = pOwner->m_vPosition;
-            AddMoveToPointAction(ACTION_GROUP_NEW, vPosition, pOwner->GetArea()->GetId(),
+            Vector vDestination = pOwner->m_vPosition;
+            unsigned long oidOwnerArea = pOwner->GetArea()->GetId();
+            AddMoveToPointAction(ACTION_GROUP_NEW, vDestination, oidOwnerArea,
                 pOwner->GetId(), 1, fFollowDistance, 0.0f, 0, 0, 0, 0, 0, 0,
                 Vector(), 0, 0, 0);
             AddAction(ACTION_FOLLOW_OWNER, ACTION_GROUP_NEW, ACTION_PARAM_FLOAT,
@@ -5234,7 +5231,12 @@ int CSWSCreature::AIActionStanceTotalDefense(CSWSObjectActionNode* pNode)
         }
     }
     int bDeadTemp = GetDeadTemp();
-    if (GetDead() || bDeadTemp || m_pcCombatRound == NULL)
+    if (GetDead() || bDeadTemp)
+    {
+        CancelAllCombatModes(1);
+        return CSWSObject::ACTION_FAILED;
+    }
+    if (m_pcCombatRound == NULL)
     {
         CancelAllCombatModes(1);
         return CSWSObject::ACTION_FAILED;
@@ -5643,7 +5645,7 @@ int CSWSCreature::CheckItemClassRestrictions(CSWSItem* pItem)
             if (pItem->GetPassiveProperty(i)->m_nPropertyType ==
                 CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_CLASS)
             {
-                unsigned short nClassRestriction =
+                int nClassRestriction =
                     pItem->GetPassiveProperty(i)->m_nSubtype;
                 EXOLOG("Checking for property %d, subtype %d\n",
                        CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_CLASS, nClassRestriction);

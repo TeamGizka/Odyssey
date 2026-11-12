@@ -1246,7 +1246,7 @@ struct CEffectIconObject
     int m_bGood;
     unsigned short m_nPriority;
     int m_nGood;
-    int m_n20;
+    unsigned long m_nStrRef;
 };
 
 

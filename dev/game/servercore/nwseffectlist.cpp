@@ -402,45 +402,46 @@ int CSWSEffectListHandler::OnRemoveFactionModifier(CSWSObject* pObject,
     switch (pEffect->m_nSpellId)
     {
     case 200:
-        g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
+        g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(
             "000_Human_Conf_Active", 0);
         break;
     case 184:
-        g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
+        g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(
             "000_Beast_Conf_Active", 0);
         break;
     case 269:
-        g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
+        g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(
             "000_Droid_Conf_Active", 0);
         break;
     }
     CFactionManager* pFactionManager =
         g_pAppManager->m_pServerExoApp->GetFactionManager();
-    if (pFactionManager != NULL)
+    if (pFactionManager == NULL)
     {
-        pObject->m_n258 = 0;
-        int nFaction = pEffect->GetInteger(1);
-        if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
+        return 1;
+    }
+    pObject->m_n258 = 0;
+    int nFaction = pEffect->GetInteger(1);
+    if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
+    {
+        pObject->AsSWSPlaceable()->m_nFaction = nFaction;
+    }
+    else if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_TRIGGER)
+    {
+        pObject->AsSWSTrigger()->m_nFaction = nFaction;
+    }
+    else
+    {
+        pFactionManager->GetFaction(nFaction)->AddMember(pObject->GetId(), 0);
+        pObject->ClearAllActions(1);
+        if (pObject->AsSWSCreature() != NULL)
         {
-            pObject->AsSWSPlaceable()->m_nFaction = nFaction;
-        }
-        else if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_TRIGGER)
-        {
-            pObject->AsSWSTrigger()->m_nFaction = nFaction;
-        }
-        else
-        {
-            pFactionManager->GetFaction(nFaction)->AddMember(pObject->GetId(), 0);
-            pObject->ClearAllActions(1);
-            if (pObject->AsSWSCreature() != NULL)
+            CSWSCreature* pCreature = pObject->AsSWSCreature();
+            int bDeadTemp = pCreature->GetDeadTemp();
+            if (pObject->GetDead() == 0 && bDeadTemp == 0)
             {
-                CSWSCreature* pCreature = pObject->AsSWSCreature();
-                int bDeadTemp = pCreature->GetDeadTemp();
-                if (pObject->GetDead() == 0 && bDeadTemp == 0)
-                {
-                    pCreature->ClearVisibleList();
-                    pCreature->UpdateVisibleList(0);
-                }
+                pCreature->ClearVisibleList();
+                pCreature->UpdateVisibleList(0);
             }
         }
     }
@@ -451,7 +452,11 @@ int CSWSEffectListHandler::OnApplyAssassinate(CSWSObject* pObject,
                                               CGameEffect* pEffect,
                                               int bLoadingModule)
 {
-    if (pObject == NULL || pObject->AsSWSCreature() == NULL)
+    if (pObject == NULL)
+    {
+        return 1;
+    }
+    if (pObject->AsSWSCreature() == NULL)
     {
         return 1;
     }
@@ -682,11 +687,10 @@ int CSWSEffectListHandler::OnApplyAbilityDecrease(CSWSObject* pObject,
         {
             return 1;
         }
-        if (nValue < 1 || pCreature->m_bPlotObject != 0)
+        if (nValue >= 1 && pCreature->m_bPlotObject == 0)
         {
-            return 1;
+            return 0;
         }
-        return 0;
     }
     return 1;
 }
@@ -1465,8 +1469,12 @@ int CSWSEffectListHandler::OnApplyKnockdown(CSWSObject* pObject,
                 CSWSCreature::FEEDBACK_KNOCKDOWN_IMMUNITY, pMessageData);
             return 1;
         }
-        if (pCreature->m_bPlotObject != 0 ||
-            pCreature->m_bDebilitated == STATE_KNOCKDOWN)
+        if (pCreature->m_bPlotObject != 0)
+        {
+            return 1;
+        }
+        unsigned char nDebilitated = pCreature->m_bDebilitated;
+        if (nDebilitated == STATE_KNOCKDOWN)
         {
             return 1;
         }
@@ -1870,8 +1878,8 @@ int CSWSEffectListHandler::OnApplySetStateInternal(CSWSObject* pObject,
             break;
         }
     }
-    CSWSCreature* pCreator = g_pAppManager->GetServerExoApp()
-        ->GetCreatureByGameObjectID(pEffect->m_oidCreator);
+    CSWSCreature* pCreator = g_pAppManager->m_pServerExoApp
+        ->GetCreatureByGameObjectID(pEffect->GetCreator());
     if (bActionsCleared == 0 && pCreator != NULL)
     {
         CSWSCombatAttackData* pAttack = pCreator->m_pcCombatRound->GetAttack(
@@ -2381,13 +2389,11 @@ int CSWSEffectListHandler::OnApplyDestroyShields(CSWSObject* pObject,
                           ? pObject->AsSWSCreature()
                                 ->m_pStats->m_nDamageResistanceEffectIndex
                           : 0;
-        for (; nEffect < pObject->m_lstEffects.num; nEffect++)
+        for (; nEffect < pObject->m_lstEffects.num &&
+               pObject->m_lstEffects[nEffect]->m_nType <= EFFECT_DAMAGE_RESISTANCE;
+             nEffect++)
         {
             CGameEffect* pShield = pObject->m_lstEffects[nEffect];
-            if (pShield->m_nType > EFFECT_DAMAGE_RESISTANCE)
-            {
-                break;
-            }
             if (pShield->m_nType == EFFECT_DAMAGE_RESISTANCE &&
                 pShield->GetInteger(4) == 1)
             {
@@ -2536,12 +2542,13 @@ int CSWSEffectListHandler::OnApplyDamage(CSWSObject* pObject,
                                 pCreature->DeleteCurrentAIAction();
                                 pCreature->SetAnimation(CREATURE_ANIMATION_DAMAGE);
                                 unsigned char nCastingClass = pCreature->m_c1D4;
+                                int nLastSpellId = pCreature->m_nLastSpellId;
                                 pCreature->DecrementSpellReadyCount(
-                                    pCreature->m_nLastSpellId, nCastingClass, 0, 0, 255);
+                                    nLastSpellId, nCastingClass, 0, 0, 255);
                                 CGameEffect* pVisualEffect = new CGameEffect(1);
                                 pVisualEffect->m_nType = EFFECT_VISUALEFFECT;
                                 pVisualEffect->m_nSubType =
-                                    (pVisualEffect->GetSubType() & ~CGameEffect::DURATION_MASK) |
+                                    (pVisualEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
                                     CGameEffect::DURATION_TYPE_INSTANTANEOUS;
                                 pVisualEffect->SetCreator(pCreature->GetId());
                                 pCreature->ApplyEffect(pVisualEffect, bLoadingModule, 0);
@@ -5414,7 +5421,7 @@ int CSWSEffectListHandler::OnApplyResurrection(CSWSObject* pObject,
         pCreature->RecomputeAmbientAnimationState();
 
         pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(
-            pObject->m_nId);
+            pObject->GetId());
         if (pPlayer != NULL)
         {
             CSWSMessage* pMessage =
@@ -5422,13 +5429,11 @@ int CSWSEffectListHandler::OnApplyResurrection(CSWSObject* pObject,
             pMessage->SendServerToPlayerDestroyDeathGUI(pPlayer->m_nPlayerId);
         }
 
-        for (nIndex = 0; nIndex < pCreature->m_lstEffects.num; nIndex++)
+        for (nIndex = 0; nIndex < pCreature->m_lstEffects.num &&
+                         pCreature->m_lstEffects[nIndex]->m_nType <= EFFECT_HITPOINTCHANGEWHENDYING;
+             nIndex++)
         {
             pAppliedEffect = pCreature->m_lstEffects[nIndex];
-            if (pAppliedEffect->m_nType > EFFECT_HITPOINTCHANGEWHENDYING)
-            {
-                break;
-            }
             if (pAppliedEffect->m_nType == EFFECT_HITPOINTCHANGEWHENDYING &&
                 (pAppliedEffect->m_nSubType & CGameEffect::DURATION_MASK) ==
                     CGameEffect::DURATION_TYPE_TEMPORARY)
@@ -7654,7 +7659,7 @@ int CSWSEffectListHandler::OnApplyEffectIcon(CSWSObject* pObject,
         pIcon->m_sIconResRef = sIconResRef;
         pIcon->m_bGood = (nGood != 0);
         pIcon->m_nPriority = (unsigned short)nPriority;
-        pIcon->m_n20 = nNameStrRef;
+        pIcon->m_nStrRef = nNameStrRef;
         for (i = 0; i < pIcons->num; ++i)
         {
             if ((*pIcons)[i]->m_nPriority > nPriority)

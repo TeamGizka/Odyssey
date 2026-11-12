@@ -168,7 +168,8 @@ void CSWPartyTable::DistributeExperience(int nExperience, int bFeedback)
             if (pCreature != NULL &&
                 pCreature->m_pStats->HasFeat(CSWFeat::FEAT_MENTOR) != 0)
             {
-                int nLevel = pCreature->m_pStats->GetLevel(0);
+                CSWSCreatureStats* pStats = pCreature->m_pStats;
+                int nLevel = pStats->GetLevel(0);
                 if (nLevel > 0)
                 {
                     float fBonus;
@@ -439,17 +440,18 @@ void CSWPartyTable::CreateParty()
         CResStruct stTop;
         CResStruct stItem;
         CResList lstItemList;
-        int bLoadFromSaveGame =
-            g_pAppManager->m_pServerExoApp->GetLoadFromSaveGame();
+        CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+        int bLoadFromSaveGame = pServer->GetLoadFromSaveGame();
         if (m_nControlledNPC != -1)
         {
             m_aoidNPC[m_nControlledNPC] = pServerExoApp->GetPlayerCreatureId();
         }
-        for (unsigned int nMember = 0; nMember < m_nNumMembers; nMember++)
+        unsigned int i;
+        for (i = 0; i < m_nNumMembers; i++)
         {
             Vector vOrientation;
             Vector vPosition;
-            unsigned long oidNPC = SpawnNPC(m_anMembers[nMember], 0, vPosition,
+            unsigned long oidNPC = SpawnNPC(m_anMembers[i], 0, vPosition,
                                             vOrientation, !bLoadFromSaveGame);
             CSWCCreature* pClientCreature =
                 pClientExoApp->GetCreatureByGameObjectID(
@@ -465,11 +467,11 @@ void CSWPartyTable::CreateParty()
                 pCreature->SetInParty(1, 1);
             }
         }
-        for (unsigned int nPuppet = 0; nPuppet < m_nNumPuppets; nPuppet++)
+        for (i = 0; i < m_nNumPuppets; i++)
         {
             Vector vOrientation;
             Vector vPosition;
-            unsigned long oidPuppet = SpawnPUP(m_anPuppets[nPuppet], 0, vPosition,
+            unsigned long oidPuppet = SpawnPUP(m_anPuppets[i], 0, vPosition,
                                                vOrientation, !bLoadFromSaveGame);
             CSWCCreature* pClientCreature =
                 pClientExoApp->GetCreatureByGameObjectID(
@@ -597,7 +599,8 @@ void CSWPartyTable::PositionParty()
         if (m_nNumMembers > 0)
         {
             CSWPartyFollowDataArray* pPaths = &pParty->m_cFollowPaths;
-            Vector vAxis(0.0f, 0.0f, 1.0f);
+            Vector vAxis;
+            vAxis = Vector(0.0f, 0.0f, 1.0f);
             CSWPartyMemberData* pMember = &pParty->m_aPartyMemberData[1];
             int* pNPC = m_anMembers;
             do
@@ -1630,11 +1633,11 @@ CExoString CSWPartyTable::GetPCLastName()
             sName = m_sPCName.SubString(nSpace + 1, -1);
         }
     }
-    if (sName.m_sString != NULL && (int)strlen(sName.m_sString) >= 1)
+    if (sName.GetLength() < 1)
     {
-        return sName;
+        return GetPCName();
     }
-    return GetPCName();
+    return sName;
 }
 // PC 0x0057A580
 unsigned long CSWPartyTable::GetNextPC()
@@ -1994,13 +1997,14 @@ int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x0057B260
             nNextLevelXP += 1000;
         } while (nLevel <= pCreature->GetStats()->GetLevel(0));
     }
-    pCreature->m_nUnknown22C = 0;
     if (nBaseXP <= nPoolXP)
     {
+        pCreature->m_nUnknown22C = 0;
         pCreature->ReceiveExperience(nPoolXP);
     }
     else
     {
+        pCreature->m_nUnknown22C = 0;
         pCreature->ReceiveExperience(nBaseXP - nPoolXP);
     }
 
@@ -2419,7 +2423,7 @@ void CSWPartyTable::GivePlotXP(const CExoString& sPlotID, int nPercent)
         {
             DistributeExperience(nGiven, 1);
             g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateStatus(
-                2, nGiven);
+                GUI_STATUS_XP, nGiven);
         }
     }
 }
@@ -2441,7 +2445,7 @@ void CSWPartyTable::GivePlotXP(unsigned long nPlotIndex, int nPercent)
         {
             DistributeExperience(nGiven, 1);
             g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateStatus(
-                2, nGiven);
+                GUI_STATUS_XP, nGiven);
         }
     }
 }

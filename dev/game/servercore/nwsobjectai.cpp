@@ -758,7 +758,7 @@ int CSWSObject::AIActionGiveItem(CSWSObjectActionNode* pNode)
     pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
     if (pItem == NULL)
         return ACTION_FAILED;
-    if (pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_CREDITS)
+    if (pItem->GetBaseItem()->GetItemType() == CSWBaseItem::ITEM_TYPE_CREDITS)
     {
         if (AsSWSCreature() != NULL)
         {
@@ -1651,16 +1651,10 @@ int CSWSObject::AIActionPlayAnimation(CSWSObjectActionNode* pNode)
                 {
                     delete pAction;
                     bDone = 0;
-                }
-                else
-                {
-                    m_lstActions.AddHead(pAction);
+                    continue;
                 }
             }
-            else
-            {
-                m_lstActions.AddHead(pAction);
-            }
+            m_lstActions.AddHead(pAction);
         }
     }
 
@@ -2135,10 +2129,7 @@ int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
                 nSkill += nBonus;
                 if (pTarget->AsSWSDoor() != NULL)
                 {
-                    if (pTarget->AsSWSDoor()->GetOpenLockDC() != 0)
-                        nDC = pTarget->AsSWSDoor()->GetOpenLockDC();
-                    else
-                        nDC = 1;
+                    nDC = pTarget->AsSWSDoor()->GetOpenLockDC() < 1 ? 1 : pTarget->AsSWSDoor()->GetOpenLockDC();
                     if (nRoll + nSkill >= nDC)
                     {
                         pTarget->AsSWSDoor()->m_bLocked = 0;
@@ -2148,10 +2139,7 @@ int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
                 }
                 else if (pTarget->AsSWSPlaceable() != NULL)
                 {
-                    if (pTarget->AsSWSPlaceable()->GetOpenLockDC() != 0)
-                        nDC = pTarget->AsSWSPlaceable()->GetOpenLockDC();
-                    else
-                        nDC = 1;
+                    nDC = pTarget->AsSWSPlaceable()->GetOpenLockDC() < 1 ? 1 : pTarget->AsSWSPlaceable()->GetOpenLockDC();
                     if (nRoll + nSkill >= nDC)
                     {
                         pTarget->AsSWSPlaceable()->m_bLocked = 0;
@@ -2181,10 +2169,10 @@ int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
                 {
                     CSWSCreature* pPlayer = g_pAppManager->GetServerExoApp()->GetPlayerCreature();
                     int nExperience;
-                    if (nDC < pPlayer->m_pStats->GetLevel(0) + 20)
-                        nExperience = 5 * pPlayer->m_pStats->GetLevel(0);
+                    if (nDC < pPlayer->GetStats()->GetLevel(0) + 20)
+                        nExperience = 5 * pPlayer->GetStats()->GetLevel(0);
                     else
-                        nExperience = 10 * pPlayer->m_pStats->GetLevel(0);
+                        nExperience = 10 * pPlayer->GetStats()->GetLevel(0);
                     g_pAppManager->GetServerExoApp()->GetPartyTable()->DistributeExperience(nExperience, 1);
                 }
             }
@@ -2209,16 +2197,16 @@ int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
                 pData->SetInteger(CSWCCMessageData::SKILL_DATA_RANK, nSkill);
                 pData->SetInteger(CSWCCMessageData::SKILL_DATA_DC, nDC);
                 pData->SetInteger(CSWCCMessageData::SKILL_DATA_TAKE_20, bTake20);
-                if (nRoll + nSkill >= nDC)
+                if (nRoll + nSkill >= nDC && nDC < CSWSCreature::UNLOCK_OBJECT_IMPOSSIBLE_DC)
                     pData->SetInteger(CSWCCMessageData::SKILL_DATA_RESULT, CSWCCMessageData::SKILL_RESULT_SUCCESS);
-                else if (bTake20)
+                else if (bTake20 && nRoll + nSkill < nDC)
                 {
                     if (nDC >= CSWSCreature::UNLOCK_OBJECT_IMPOSSIBLE_DC)
                         pData->SetInteger(CSWCCMessageData::SKILL_DATA_RESULT, CSWCCMessageData::SKILL_RESULT_IMPOSSIBLE);
                     else
                         pData->SetInteger(CSWCCMessageData::SKILL_DATA_RESULT, CSWCCMessageData::SKILL_RESULT_RETRY);
                 }
-                else
+                else if (nRoll + nSkill < nDC)
                     pData->SetInteger(CSWCCMessageData::SKILL_DATA_RESULT, CSWCCMessageData::SKILL_RESULT_FAILED);
                 pData->SetInteger(CSWCCMessageData::SKILL_DATA_DESCRIPTION, CSWCCMessageData::SKILL_DATA_SECURITY_STRREF);
                 AsSWSCreature()->BroadcastSkillData(pData);

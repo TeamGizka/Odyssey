@@ -1323,7 +1323,8 @@ int CSWSCreature::EvaluateLock(CSWSObject* pObject, int bLocked)
     if (pObject->AsSWSDoor() != NULL)
     {
         CSWSDoor* pDoor = pObject->AsSWSDoor();
-        if (pDoor->m_bLocked == bLocked)
+        int bDoorLocked = pDoor->m_bLocked;
+        if (bDoorLocked == bLocked)
         {
             return TRUE;
         }
@@ -2345,7 +2346,7 @@ void CSWSCreature::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
         SetPosition(Vector(fX, fY, fZ), 1, 1, 0);
         if (GetArea() != pArea || bLoadingGame == 1)
         {
-            pArea->AddObjectToArea(GetId(), !bLoadingGame);
+            pArea->AddObjectToArea(m_nId, !bLoadingGame);
         }
         SetArea(pArea);
         if (m_nAILevel == CServerAIMaster::AI_LEVEL_EMPTY_AREA_CREATURE &&
@@ -3058,13 +3059,13 @@ void CSWSCreature::HandleFPRegeneration()
             pRegeneration->GetFLOATEntry("WisModBonus", sValue, &fWisModBonus);
 
             unsigned char nAlignmentBand;
-            if (GetStats()->m_nGoodEvilAlignment <= 40)
+            if (m_pStats->GetGoodEvilAlignment() <= 40)
             {
                 nAlignmentBand = 3;
             }
             else
             {
-                nAlignmentBand = (GetStats()->m_nGoodEvilAlignment >= 60) + 1;
+                nAlignmentBand = (m_pStats->GetGoodEvilAlignment() >= 60) + 1;
             }
 
             fFPBase += GetStats()->m_nWisdomModifier * fWisModBonus;
@@ -3101,7 +3102,7 @@ void CSWSCreature::HandleFPRegeneration()
                 fTimePerFP = 0.0001f;
             }
 
-            float fPerSecond = fFPBase / fTimePerFP * nMaxForce;
+            float fPerSecond = nMaxForce * (fFPBase / fTimePerFP);
             float fAdjustment = fPerSecond * (m_nElapsedTime * 0.001f);
             if (fAdjustment != 0.0)
             {
@@ -4237,9 +4238,10 @@ float CSWSCreature::MaxAttackRange(unsigned long oidTarget, int nAttackType,
     float fRange = 0.0f;
     CSWSItem* pItem = m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
 
+    int bRanged = 0;
     if (pItem != NULL)
     {
-        int bRanged = pItem->GetBaseItem()->m_nRangedWeapon > 0;
+        bRanged = pItem->GetBaseItem()->m_nRangedWeapon > 0;
         if (bRanged > 0)
         {
             if (bOffHand)
@@ -4257,18 +4259,21 @@ float CSWSCreature::MaxAttackRange(unsigned long oidTarget, int nAttackType,
             {
                 return nRank + fRange;
             }
-            return fRange;
         }
     }
 
-    if (nAttackType != 0)
+    if (bRanged <= 0)
     {
-        Vector vPosition;
-        GetUseRange(oidTarget, vPosition, fRange, 0);
-        return fRange + 0.1f;
-    }
+        if (nAttackType != 0)
+        {
+            Vector vPosition;
+            GetUseRange(oidTarget, vPosition, fRange, 0);
+            return fRange + 0.1f;
+        }
 
-    return DesiredAttackRange(oidTarget, nAttackType) + 0.5f;
+        return DesiredAttackRange(oidTarget, nAttackType) + 0.5f;
+    }
+    return fRange;
 }
 // PC 0x0051D330
 float CSWSCreature::DesiredAttackRange(unsigned long oidTarget, int nAttackType)
@@ -4912,7 +4917,7 @@ float CSWSCreature::CalculateDeathExperience()
             }
         }
 
-        int nChallengeRating = (int)m_pStats->m_fChallengeRating;
+        int nChallengeRating = (int)GetStats()->m_fChallengeRating;
         int nAutoBalance = m_c250;
         if (m_bInParty == 0 && nAutoBalance != 0)
         {
@@ -5009,7 +5014,7 @@ float CSWSCreature::GetWalkRate()
         return 0.0f;
     }
 
-    unsigned long oidClient = g_pAppManager->m_pClientExoApp->ServerToClientObjectId(m_nId);
+    unsigned long oidClient = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(m_nId);
     CSWCCreature* pCreature = g_pAppManager->m_pClientExoApp->GetCreatureByGameObjectID(oidClient);
     CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
     if ((m_nActivity & ACTIVITY_STEALTH) != 0 && !m_pStats->HasFeat(CSWFeat::FEAT_STEALTH_RUN) && pCreature != NULL)
@@ -5759,7 +5764,7 @@ short CSWSCreature::GetArmorClass()
         int nAutoBalance = m_c250;
         if (nAutoBalance != 0)
         {
-            C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
+            C2DA* pAutoBalance = g_pRules->m_p2DArrays->m_pAutoBalance;
             float fArmorMult;
             pAutoBalance->GetFLOATEntry(nAutoBalance, "ArmorMult", &fArmorMult);
             unsigned char nLevel = m_c251;
@@ -6518,7 +6523,7 @@ void CSWSCreature::SetCombatState(int bCombatState, unsigned char bFeedback,
         m_oidAttackTarget = OBJECT_INVALID;
         m_oidAttemptedSpellTarget = OBJECT_INVALID;
         m_oidSpellTarget = OBJECT_INVALID;
-        m_pcCombatRound->m_oidUnknown9CC = OBJECT_INVALID;
+        GetCombatRound()->m_oidUnknown9CC = OBJECT_INVALID;
 
         CSWSCombatRound* pCombatRound = m_pcCombatRound;
         if (pCombatRound->m_bRoundStarted)
@@ -7749,7 +7754,7 @@ unsigned long CSWSCreature::GetNearestEnemy(float fRange, unsigned long oidExclu
             if (nIndex - nOffset >= 0)
             {
                 unsigned long oidObject = pArea->m_lstObjectIds[nIndex - nOffset];
-                CGameObject* pObject = g_pAppManager->GetServerExoApp()->
+                CGameObject* pObject = g_pAppManager->m_pServerExoApp->
                     GetGameObject(oidObject);
                 if (pObject != NULL && oidObject != GetId() && oidObject != oidExclude)
                 {
@@ -11242,7 +11247,7 @@ int CSWSCreature::RunEquip(unsigned long oidItem, unsigned long nSlot, int bInst
     CSWSItem* pOldItem;
     int bUnequipped = FALSE;
     CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(GetId());
-    CSWSMessage* pMessage = g_pAppManager->GetServerExoApp()->GetSWSMessage();
+    CSWSMessage* pMessage = g_pAppManager->m_pServerExoApp->GetSWSMessage();
     CSWSItem* pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
     if (pItem != NULL)
     {
@@ -11465,7 +11470,7 @@ int CSWSCreature::RunUnequip(unsigned long oidItem, unsigned long oidTarget,
     else
     {
         pPlayer = g_pAppManager->GetServerExoApp()
-            ->GetClientObjectByObjectId(m_nId);
+            ->GetClientObjectByObjectId(GetId());
     }
     CSWSMessage* pMessage = g_pAppManager->GetServerExoApp()->GetSWSMessage();
     if (ppItem != NULL)
@@ -11633,6 +11638,7 @@ void CSWSCreature::DoPerceptionUpdateOnCreature(CSWSCreature* pCreature)
     Vector vPosition;
     Vector vTarget;
     Vector vHit;
+    unsigned long oidHit;
     int bAdded = 0;
     int bRemoved = 0;
     int bInvisible = 0;
@@ -11686,7 +11692,6 @@ void CSWSCreature::DoPerceptionUpdateOnCreature(CSWSCreature* pCreature)
             bPotentiallySeen = 1;
         else
         {
-            unsigned long oidHit;
             Vector vDelta = vPosition - vTarget;
             if (vDelta * vDelta >= fRange * fRange && pCreature->m_n260 == 0)
                 bPotentiallySeen = 0;

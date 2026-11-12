@@ -678,11 +678,11 @@ int CSWVirtualMachineCommands::ExecuteCommandInfluence(int nCommand, int nArgs)
         }
         if (nOldInfluence < nValue)
         {
-            g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(9, nNPC);
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(GUI_STATUS_INFLUENCE_GAIN, nNPC);
         }
         else
         {
-            g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(10, nNPC);
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(GUI_STATUS_INFLUENCE_LOST, nNPC);
         }
         if (pCreature != NULL)
         {
@@ -718,11 +718,11 @@ int CSWVirtualMachineCommands::ExecuteCommandInfluence(int nCommand, int nArgs)
         }
         if (nValue > 0)
         {
-            g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(9, nNPC);
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(GUI_STATUS_INFLUENCE_GAIN, nNPC);
         }
         else
         {
-            g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(10, nNPC);
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(GUI_STATUS_INFLUENCE_LOST, nNPC);
         }
         if (pCreature != NULL)
         {
@@ -975,11 +975,11 @@ int CSWVirtualMachineCommands::ExecuteCommandSetCurrentForm(int nCommand, int nA
     {
         return -2001;
     }
-    g_pAppManager->m_pServerExoApp->GetObjectArray()->GetGameObject(oidCreature, &pGameObject);
+    g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidCreature, &pGameObject);
     if (pGameObject != NULL)
     {
         CSWSCreature* pCreature = pGameObject->AsSWSCreature();
-        if (pCreature != NULL && pCreature->m_pStats->HasSpell(0, nForm, 0) != 0)
+        if (pCreature != NULL && pCreature->GetStats()->HasSpell(0, nForm, 0) != 0)
         {
             pCreature->m_n1110 = nForm;
         }
@@ -1158,11 +1158,11 @@ int CSWVirtualMachineCommands::ExecuteCommandSetBonusForcePoints(int nCommand, i
             {
                 if (pCreature->m_n11F4 < nBonus)
                 {
-                    g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(11, nBonus);
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(GUI_STATUS_MAX_FP_GAIN, nBonus);
                 }
                 else
                 {
-                    g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(12, nBonus);
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(GUI_STATUS_MAX_FP_LOST, nBonus);
                 }
             }
             pCreature->m_n11F4 = nBonus;
@@ -1195,11 +1195,11 @@ int CSWVirtualMachineCommands::ExecuteCommandAddBonusForcePoints(int nCommand, i
             {
                 if (nBonus < 0)
                 {
-                    g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(12, nBonus);
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(GUI_STATUS_MAX_FP_LOST, nBonus);
                 }
                 else
                 {
-                    g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(11, nBonus);
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(GUI_STATUS_MAX_FP_GAIN, nBonus);
                 }
             }
         }
@@ -2604,8 +2604,8 @@ int CSWVirtualMachineCommands::ExecuteCommandActionFollowObject(
                         g_pAppManager->GetClientExoApp()->GetSWParty();
                     vDestination = pParty->m_aPartyMemberData[nIndex].m_vFormationOffset;
                     pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
-                    vDestination += Vector(0.0f,
-                        -pParty->m_fFormationRange[pParty->m_nFormation], 0.0f);
+                    float fRange = pParty->m_fFormationRange[pParty->m_nFormation];
+                    vDestination += Vector(0.0f, -fRange, 0.0f);
                 }
             }
         }
@@ -7734,7 +7734,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddJournalQuestEntry(
         g_pAppManager->m_pServerExoApp->GetPartyTable()->DistributeExperience(
             nExperience, 1);
         g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateStatus(
-            2, nExperience);
+            GUI_STATUS_XP, nExperience);
     }
     return 0;
 }
@@ -14502,7 +14502,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGiveGoldToCreature(int nCommand,
                 if (pCreature2->m_bInParty != 0)
                 {
                     pClientExoApp = g_pAppManager->m_pClientExoApp;
-                    pClientExoApp->GetInGameGui()->UpdateStatus(1u, nGP);
+                    pClientExoApp->GetInGameGui()->UpdateStatus(GUI_STATUS_CREDITS, nGP);
                 }
             }
         }

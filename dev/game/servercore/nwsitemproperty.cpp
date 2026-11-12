@@ -72,6 +72,10 @@ int CSWSItemPropertyHandler::ApplyEnhancementBonus(CSWSItem* pItem,
     int nAmount;
     char nWeaponWield;
 
+    if (nIndex == INVENTORY_SLOT_LEFTHAND2 || nIndex == INVENTORY_SLOT_RIGHTHAND2)
+    {
+        return 0;
+    }
     nBaseItem = pItem->m_nBaseItem;
     g_pRules->m_pBaseItems->GetBaseItem(nBaseItem);
     pAttackEffect = new CGameEffect(1);
@@ -407,6 +411,11 @@ int CSWSItemPropertyHandler::ApplyDamageBonus(CSWSItem* pItem,
 {
     CGameEffect* pEffect = new CGameEffect(1);
     int nBaseItem;
+    if (nIndex == INVENTORY_SLOT_RIGHTHAND2 || nIndex == INVENTORY_SLOT_LEFTHAND2)
+    {
+        delete pEffect;
+        return 0;
+    }
     int nAmount = pProperty->m_nCostValue;
 
     if (nAmount > 0)
@@ -491,6 +500,10 @@ int CSWSItemPropertyHandler::ApplyDamageBonus(CSWSItem* pItem,
             ((CSWSObject*)pCreature)->ApplyEffect(pOffHandEffect, bLoading, 0);
         }
         ((CSWSObject*)pCreature)->ApplyEffect(pEffect, bLoading, 0);
+    }
+    else
+    {
+        delete pEffect;
     }
 
     return 0;
@@ -623,54 +636,57 @@ int CSWSItemPropertyHandler::ApplyAttackPenalty(CSWSItem* pItem,
                                                      &nAmount);
     }
     nAmount = -nAmount;
-    if (nAmount == 0)
+    if (nAmount != 0)
     {
-        return 0;
-    }
-    pEffect->m_nType = CSWSEffectListHandler::EFFECT_ATTACK_DECREASE;
-    pEffect->m_nSubType = CGameEffect::DURATION_TYPE_EQUIPPED |
-                          (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK);
-    {
-        unsigned long oidItem = pItem->m_nId;
+        pEffect->m_nType = CSWSEffectListHandler::EFFECT_ATTACK_DECREASE;
+        pEffect->m_nSubType = CGameEffect::DURATION_TYPE_EQUIPPED |
+                              (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK);
+        {
+            unsigned long oidItem = pItem->m_nId;
 
-        pEffect->SetCreator(oidItem);
+            pEffect->SetCreator(oidItem);
+        }
+        pEffect->SetInteger(0, nAmount);
+        pEffect->SetInteger(2, g_pRules->m_nNumRaces);
+        if (nIndex == 16)
+        {
+            pEffect->SetInteger(1, CSWSEffectListHandler::ATTACK_BONUS_ONHAND);
+        }
+        else if (nIndex == 32)
+        {
+            pEffect->SetInteger(1, CSWSEffectListHandler::ATTACK_BONUS_OFFHAND);
+        }
+        else if (nIndex == 16384)
+        {
+            pEffect->SetInteger(1, CSWSEffectListHandler::ATTACK_BONUS_CWEAPON1);
+        }
+        else if (nIndex == 32768)
+        {
+            pEffect->SetInteger(1, CSWSEffectListHandler::ATTACK_BONUS_CWEAPON2);
+        }
+        else if (nIndex == 65536)
+        {
+            pEffect->SetInteger(1, CSWSEffectListHandler::ATTACK_BONUS_CWEAPON3);
+        }
+        else if (nIndex == 8)
+        {
+            pEffect->SetInteger(1, CSWSEffectListHandler::ATTACK_BONUS_UNARMED);
+        }
+        nBaseItem = pItem->m_nBaseItem;
+        if (g_pRules->m_pBaseItems->GetBaseItem(nBaseItem)->m_nWeaponWield == 3)
+        {
+            pOffHandEffect = new CGameEffect(0);
+            pOffHandEffect->CopyEffect(pEffect, 0);
+            pOffHandEffect->SetInteger(1,
+                                       CSWSEffectListHandler::ATTACK_BONUS_OFFHAND);
+            ((CSWSObject*)pCreature)->ApplyEffect(pOffHandEffect, bLoading, 0);
+        }
+        ((CSWSObject*)pCreature)->ApplyEffect(pEffect, bLoading, 0);
     }
-    pEffect->SetInteger(0, nAmount);
-    pEffect->SetInteger(2, g_pRules->m_nNumRaces);
-    if (nIndex == 16)
+    else
     {
-        pEffect->SetInteger(1, CSWSEffectListHandler::ATTACK_BONUS_ONHAND);
+        delete pEffect;
     }
-    else if (nIndex == 32)
-    {
-        pEffect->SetInteger(1, CSWSEffectListHandler::ATTACK_BONUS_OFFHAND);
-    }
-    else if (nIndex == 16384)
-    {
-        pEffect->SetInteger(1, CSWSEffectListHandler::ATTACK_BONUS_CWEAPON1);
-    }
-    else if (nIndex == 32768)
-    {
-        pEffect->SetInteger(1, CSWSEffectListHandler::ATTACK_BONUS_CWEAPON2);
-    }
-    else if (nIndex == 65536)
-    {
-        pEffect->SetInteger(1, CSWSEffectListHandler::ATTACK_BONUS_CWEAPON3);
-    }
-    else if (nIndex == 8)
-    {
-        pEffect->SetInteger(1, CSWSEffectListHandler::ATTACK_BONUS_UNARMED);
-    }
-    nBaseItem = pItem->m_nBaseItem;
-    if (g_pRules->m_pBaseItems->GetBaseItem(nBaseItem)->m_nWeaponWield == 3)
-    {
-        pOffHandEffect = new CGameEffect(0);
-        pOffHandEffect->CopyEffect(pEffect, 0);
-        pOffHandEffect->SetInteger(1,
-                                   CSWSEffectListHandler::ATTACK_BONUS_OFFHAND);
-        ((CSWSObject*)pCreature)->ApplyEffect(pOffHandEffect, bLoading, 0);
-    }
-    ((CSWSObject*)pCreature)->ApplyEffect(pEffect, bLoading, 0);
 
     return 0;
 }
@@ -801,6 +817,10 @@ int CSWSItemPropertyHandler::ApplyACBonus(CSWSItem* pItem,
             pEffect->SetInteger(2, pProperty->m_nSubtype);
         }
         ((CSWSObject*)pCreature)->ApplyEffect(pEffect, bLoading, 0);
+    }
+    else
+    {
+        delete pEffect;
     }
 
     return 0;
@@ -1092,55 +1112,58 @@ int CSWSItemPropertyHandler::ApplyDamagePenalty(CSWSItem* pItem,
                                                      &nAmount);
     }
     nAmount = -nAmount;
-    if (nAmount == 0)
+    if (nAmount != 0)
     {
-        return 0;
-    }
-    pEffect->m_nType = CSWSEffectListHandler::EFFECT_DAMAGE_DECREASE;
-    pEffect->m_nSubType = CGameEffect::DURATION_TYPE_EQUIPPED |
-                          (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK);
-    {
-        unsigned long oidItem = pItem->m_nId;
+        pEffect->m_nType = CSWSEffectListHandler::EFFECT_DAMAGE_DECREASE;
+        pEffect->m_nSubType = CGameEffect::DURATION_TYPE_EQUIPPED |
+                              (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK);
+        {
+            unsigned long oidItem = pItem->m_nId;
 
-        pEffect->SetCreator(oidItem);
+            pEffect->SetCreator(oidItem);
+        }
+        if (nIndex == 16)
+        {
+            pEffect->SetInteger(5, CSWSEffectListHandler::DAMAGE_BONUS_ONHAND);
+        }
+        else if (nIndex == 32)
+        {
+            pEffect->SetInteger(5, CSWSEffectListHandler::DAMAGE_BONUS_OFFHAND);
+        }
+        else if (nIndex == 16384)
+        {
+            pEffect->SetInteger(5, CSWSEffectListHandler::DAMAGE_BONUS_CWEAPON1);
+        }
+        else if (nIndex == 32768)
+        {
+            pEffect->SetInteger(5, CSWSEffectListHandler::DAMAGE_BONUS_CWEAPON2);
+        }
+        else if (nIndex == 65536)
+        {
+            pEffect->SetInteger(5, CSWSEffectListHandler::DAMAGE_BONUS_CWEAPON3);
+        }
+        else if (nIndex == 8)
+        {
+            pEffect->SetInteger(5, CSWSEffectListHandler::DAMAGE_BONUS_UNARMED);
+        }
+        pEffect->SetInteger(0, nAmount);
+        pEffect->SetInteger(1, pItem->GetDamageFlags());
+        pEffect->SetInteger(2, g_pRules->m_nNumRaces);
+        nBaseItem = pItem->m_nBaseItem;
+        if (g_pRules->m_pBaseItems->GetBaseItem(nBaseItem)->m_nWeaponWield == 3)
+        {
+            pOffHandEffect = new CGameEffect(0);
+            pOffHandEffect->CopyEffect(pEffect, 0);
+            pOffHandEffect->SetInteger(5,
+                                       CSWSEffectListHandler::DAMAGE_BONUS_OFFHAND);
+            ((CSWSObject*)pCreature)->ApplyEffect(pOffHandEffect, bLoading, 0);
+        }
+        ((CSWSObject*)pCreature)->ApplyEffect(pEffect, bLoading, 0);
     }
-    if (nIndex == 16)
+    else
     {
-        pEffect->SetInteger(5, CSWSEffectListHandler::DAMAGE_BONUS_ONHAND);
+        delete pEffect;
     }
-    else if (nIndex == 32)
-    {
-        pEffect->SetInteger(5, CSWSEffectListHandler::DAMAGE_BONUS_OFFHAND);
-    }
-    else if (nIndex == 16384)
-    {
-        pEffect->SetInteger(5, CSWSEffectListHandler::DAMAGE_BONUS_CWEAPON1);
-    }
-    else if (nIndex == 32768)
-    {
-        pEffect->SetInteger(5, CSWSEffectListHandler::DAMAGE_BONUS_CWEAPON2);
-    }
-    else if (nIndex == 65536)
-    {
-        pEffect->SetInteger(5, CSWSEffectListHandler::DAMAGE_BONUS_CWEAPON3);
-    }
-    else if (nIndex == 8)
-    {
-        pEffect->SetInteger(5, CSWSEffectListHandler::DAMAGE_BONUS_UNARMED);
-    }
-    pEffect->SetInteger(0, nAmount);
-    pEffect->SetInteger(1, pItem->GetDamageFlags());
-    pEffect->SetInteger(2, g_pRules->m_nNumRaces);
-    nBaseItem = pItem->m_nBaseItem;
-    if (g_pRules->m_pBaseItems->GetBaseItem(nBaseItem)->m_nWeaponWield == 3)
-    {
-        pOffHandEffect = new CGameEffect(0);
-        pOffHandEffect->CopyEffect(pEffect, 0);
-        pOffHandEffect->SetInteger(5,
-                                   CSWSEffectListHandler::DAMAGE_BONUS_OFFHAND);
-        ((CSWSObject*)pCreature)->ApplyEffect(pOffHandEffect, bLoading, 0);
-    }
-    ((CSWSObject*)pCreature)->ApplyEffect(pEffect, bLoading, 0);
 
     return 0;
 }
@@ -1478,6 +1501,10 @@ int CSWSItemPropertyHandler::ApplyRegeneration(CSWSItem* pItem,
         pEffect->SetInteger(1, 6000);
         pEffect->SetInteger(4, pProperty->m_nPropertyType);
         ((CSWSObject*)pCreature)->ApplyEffect(pEffect, bLoading, 0);
+    }
+    else
+    {
+        delete pEffect;
     }
 
     return 0;

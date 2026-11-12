@@ -3286,9 +3286,13 @@ void CSWSCreature::CreateNewAttackActions(int bFindNewTarget,
         }
     }
 
-    if ((oidTarget == OBJECT_INVALID &&
-         m_pcCombatRound->m_pScheduledActions->GetHeadPos() == NULL) ||
-        bFindNewTarget)
+    if (oidTarget == OBJECT_INVALID &&
+        m_pcCombatRound->m_pScheduledActions->GetHeadPos() == NULL)
+    {
+        bValidTarget = 1;
+        bFindTarget = 1;
+    }
+    else if (bFindNewTarget)
     {
         bValidTarget = 1;
         bFindTarget = 1;
@@ -4715,11 +4719,6 @@ void CSWSCreature::SendAttackSummaryFeedback(unsigned long oidTarget)
     delete pMessage;
 }
 // PC 0x00604C30
-enum
-{
-    FEAT_IMMUNITY_HORRIFIED = 200,
-    IMMUNITY_TYPE_VARIANT_33 = 33
-};
 void CSWSCreature::SetAttackSummaryFeedbackEffectData(int nState, unsigned long oidTarget)
 {
     CSWSCreature* pTarget =
@@ -4771,7 +4770,7 @@ void CSWSCreature::SetAttackSummaryFeedbackEffectData(int nState, unsigned long 
         case CSWSEffectListHandler::STATE_VARIANT_16:
         {
             CSWSCreatureStats* pStats = pTarget->m_pStats;
-            if (pStats->GetEffectImmunity(IMMUNITY_TYPE_VARIANT_33, this))
+            if (pStats->GetEffectImmunity(CSWSEffectListHandler::IMMUNITY_TYPE_DROID_CONFUSED, this))
                 pAttack->m_Extra4.m_bStateImmune = 1;
             break;
         }
@@ -4782,13 +4781,13 @@ void CSWSCreature::SetAttackSummaryFeedbackEffectData(int nState, unsigned long 
                 pTarget->m_pStats->HasFeat(CSWFeat::FEAT_FORCE_IMMUNITY_FEAR) ||
                 pTarget->m_pStats->HasFeat(CSWFeat::FEAT_FORCE_IMMUNITY_STUN) ||
                 pTarget->m_pStats->HasFeat(CSWFeat::FEAT_FORCE_IMMUNITY_PARALYSIS) ||
-                pTarget->m_pStats->HasFeat(FEAT_IMMUNITY_HORRIFIED))
+                pTarget->m_pStats->HasFeat(CSWFeat::FEAT_MANDALORIAN_COURAGE))
                 pAttack->m_Extra4.m_bStateImmune = 1;
             break;
         }
         case CSWSEffectListHandler::STATE_HORRIFIED:
         {
-            if (pTarget->m_pStats->HasFeat(FEAT_IMMUNITY_HORRIFIED))
+            if (pTarget->m_pStats->HasFeat(CSWFeat::FEAT_MANDALORIAN_COURAGE))
                 pAttack->m_Extra4.m_bStateImmune = 1;
             break;
         }

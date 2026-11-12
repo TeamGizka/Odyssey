@@ -145,20 +145,7 @@ void CSWSDialog::Cleanup()
     {
         CSWSDialogPlayer* pPlayer = m_lstPlayers.RemoveHead();
         g_pAppManager->m_pClientExoApp->GetInGameGui()->CloseDialog();
-        CGameObject* pObject;
-        if (g_pAppManager->m_pServerExoApp->GetObjectArray()->GetGameObject(
-                pPlayer->m_oidPlayer, &pObject) == CGameObjectArray::SUCCESS)
-        {
-            CSWSObject* pServerObject = (CSWSObject*)pObject;
-            if (pServerObject->m_oidDialogOwner == m_oidDialogOwner)
-            {
-                pServerObject->SetDialogOwner(OBJECT_INVALID);
-                if (pServerObject->AsSWSCreature() != NULL)
-                {
-                    pServerObject->AsSWSCreature()->SetActivity(4, 0, 0);
-                }
-            }
-        }
+        ClearDialogOwnerInObject(pPlayer->m_oidPlayer);
         delete pPlayer;
     }
 
@@ -1132,7 +1119,7 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject* pOwner,
         return 0;
     }
     m_nSelectedReply = nReply;
-    unsigned long nReplyIndex = m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_nIndex;
+    unsigned long nReplyIndex = m_pEntries[m_nCurrentEntry].m_pReplies[m_nSelectedReply].m_nIndex;
     if (m_lstPlayers.GetHeadPos() != NULL)
     {
         pPosition = m_lstPlayers.GetHeadPos();
@@ -1473,12 +1460,12 @@ int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
     {
         m_n110 = 1;
     }
-    else if (nConversationType == CONVERSATION_TYPE_COMPUTER)
+    if (nConversationType == CONVERSATION_TYPE_COMPUTER)
     {
         m_n170 = nConversationType;
         g_pAppManager->GetClientExoApp()->GetInGameGui()->SetConversationType(CONVERSATION_TYPE_COMPUTER, nComputerType);
     }
-    if (nConversationType != CONVERSATION_TYPE_COMPUTER)
+    else
     {
         g_pAppManager->GetClientExoApp()->GetInGameGui()->SetConversationType(CONVERSATION_TYPE_CINEMATIC, 0);
         if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_n102C == 0)
@@ -1498,9 +1485,8 @@ int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
     pGFF->GetList(&resList, &resTop, "ReplyList");
     m_nReplies = pGFF->GetListCount(&resList);
     pGFF->GetList(&resList, &resTop, "EntryList");
-    int nEntries = pGFF->GetListCount(&resList);
-    m_nEntries = nEntries;
-    m_pEntries = new CSWSDialogEntry[nEntries];
+    m_nEntries = pGFF->GetListCount(&resList);
+    m_pEntries = new CSWSDialogEntry[m_nEntries];
     unsigned long nNode;
     unsigned long nLink;
     for (nNode = 0; bSuccess && nNode < (unsigned long)m_nEntries; ++nNode)
@@ -2907,10 +2893,10 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
         pPlayerIds = new unsigned long[m_lstPlayers.Count()];
         pPosition = m_lstPlayers.GetHeadPos();
         pPlayer = m_lstPlayers.GetHead();
-        unsigned long* pId = pPlayerIds;
+        int nPlayer = 0;
         while (pPlayer != NULL)
         {
-            *pId++ = pPlayer->m_nPlayerId;
+            pPlayerIds[nPlayer++] = pPlayer->m_nPlayerId;
             pPlayer = m_lstPlayers.GetNext(pPosition);
         }
     }
@@ -2926,7 +2912,6 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
         m_pEntries[nEntry].m_cSoundResRef += sVariation;
         m_pEntries[nEntry].m_bSoundExists |= CSWSDialogBase::SOUND_EXISTS_VARIATION;
     }
-    char szSound[17];
     if (g_bDebugDialogSound)
     {
         EXOLOG("SendDialogEntry: sound mode %d\n", g_pExoSound->GetSoundMode());
@@ -2941,6 +2926,7 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
     }
     if (g_bDebugDialogSound)
     {
+        char szSound[17];
         m_pEntries[nEntry].m_cSoundResRef.CopyToString(szSound);
         EXOLOG("SendDialogEntry: %s mode %d\n", szSound,
                g_pExoSound->GetSoundMode());
@@ -2950,8 +2936,7 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
         pClient->ServerToClientObjectId(pSpeaker->GetId()),
         m_pEntries[nEntry].m_cSoundResRef);
     int bSound;
-    char szPrefix[4];
-    char szSubDir[16];
+    char szSubDir[32];
     unsigned long i;
     if (g_pAppManager->GetClientExoApp()->GetModuleResourceLoaded(
             CClientExoApp::MODULE_RESOURCE_VOICE) == 1)
@@ -2970,11 +2955,7 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
     }
     else
     {
-        if (g_bDisableSound)
-        {
-            bSound = 0;
-        }
-        else
+        if (!g_bDisableSound)
         {
             bSound = 1;
             CExoString sSound;
@@ -2982,6 +2963,7 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
             unsigned long nLength = sSound.GetLength();
             if (nLength > 0)
             {
+                char szPrefix[4];
                 for (i = 0; i < 3; ++i)
                     szPrefix[i] = sSound[i];
                 szPrefix[i] = 0;
@@ -3012,10 +2994,14 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
                 sFileName = g_pExoBase->m_pExoAliasList->ResolveFileName(sSound, RESTYPE_WAV);
                 pFile = fopen(sFileName.CStr(), "r");
             }
-            if (pFile != NULL)
-                fclose(pFile);
-            else
+            if (pFile == NULL)
                 bSound = 0;
+            else
+                fclose(pFile);
+        }
+        else
+        {
+            bSound = 0;
         }
         if (!bSound && !g_pAppManager->GetClientExoApp()->GetClientOptions()->m_bSubtitles &&
             !bShowText)

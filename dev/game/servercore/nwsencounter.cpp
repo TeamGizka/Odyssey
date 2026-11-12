@@ -560,7 +560,7 @@ void CSWSEncounter::BuildInitialSpawnList(CEncounterListEntry* pEntries,
     if (nToSpawn > 0)
     {
         CEncounterListEntry cEntry;
-        int bAllSingleSpawn = 1;
+        unsigned char bAllSingleSpawn = 1;
         int nIndex;
 
         for (nIndex = 0; nIndex < m_nSpawnEntryCount; nIndex++)
@@ -605,16 +605,20 @@ void CSWSEncounter::BuildInitialSpawnList(CEncounterListEntry* pEntries,
                     }
                 }
             }
+            if (nToSpawn == 0)
+            {
+                return;
+            }
         }
 
         CEncounterListEntry* pMultiSpawn =
             new CEncounterListEntry[m_nSpawnEntryCount];
         int nMultiSpawn = 0;
-        for (nIndex = 0; nIndex < m_nSpawnEntryCount; nIndex++)
+        for (int i = 0; i < m_nSpawnEntryCount; i++)
         {
-            if (m_pSpawnEntries[nIndex].m_bSingleSpawn == 0)
+            if (m_pSpawnEntries[i].m_bSingleSpawn == 0)
             {
-                pMultiSpawn[nMultiSpawn++] = m_pSpawnEntries[nIndex];
+                pMultiSpawn[nMultiSpawn++] = m_pSpawnEntries[i];
             }
         }
         for (; nToSpawn > 0; nToSpawn--)

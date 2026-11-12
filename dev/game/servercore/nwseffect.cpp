@@ -270,6 +270,9 @@ int CGameEffect::GetEffectTypeScriptConstant()
         case 1:
             nResult = 24;
             break;
+        case 16:
+            nResult = 79;
+            break;
         case 2:
             nResult = 25;
             break;
@@ -284,6 +287,12 @@ int CGameEffect::GetEffectTypeScriptConstant()
             break;
         case 3:
             nResult = 35;
+            break;
+        case 18:
+            nResult = 80;
+            break;
+        case 19:
+            nResult = 81;
             break;
         }
     }
@@ -702,8 +711,7 @@ void CGameEffect::LoadGameEffect(CResGFF* pRes, CResStruct* pStruct)
     m_bExposed = pRes->ReadFieldINT(pStruct, "IsExposed", bSuccess, 0);
     SetNumIntegers(pRes->ReadFieldINT(pStruct, "NumIntegers", bSuccess, 0));
 
-    if ((GetEffectType() == CSWSEffectListHandler::EFFECT_DAMAGE ||
-         GetEffectType() == CSWSEffectListHandler::EFFECT_POISON) &&
+    if (GetEffectType() == CSWSEffectListHandler::EFFECT_DAMAGE &&
         m_nNumIntegers < 21)
     {
         unsigned int nOldNum = m_nNumIntegers - 6;

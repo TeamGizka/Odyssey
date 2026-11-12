@@ -2000,7 +2000,7 @@ void CSWGuiInGameMessages::ShowEffects()
     {
         CEffectIconObject* pIcon = pServerCreature->GetEffectIcons()->element[i];
 
-        unsigned long nStrRef = pIcon->m_n20;
+        unsigned long nStrRef = pIcon->m_nStrRef;
         if (nStrRef >= 1)
         {
             sName = g_pTlkTable->GetSimpleString(nStrRef);

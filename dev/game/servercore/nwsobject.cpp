@@ -933,6 +933,10 @@ int CSWSObject::AddSwitchWeaponsAction(int bInstant)
             }
             return 1;
         }
+        ClearAllActions(1);
+        AddAction(ACTION_SWITCH_WEAPONS, ACTION_GROUP_NEW, 0, 0, 0, 0, 0, 0, 0, 0,
+                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        return 1;
     }
 
     ClearAllActions(1);
@@ -1877,6 +1881,7 @@ void CSWSObject::UpdateEffectList(unsigned long nDay, unsigned long nTime)
                     pHeal->m_nType = CSWSEffectListHandler::EFFECT_HEAL;
                     pHeal->SetInteger(0, pEffect->GetInteger(0));
                     pHeal->SetInteger(1, pEffect->GetInteger(4));
+                    pHeal->SetInteger(CSWSEffectListHandler::HEAL_INTEGER_NO_FEEDBACK, 1);
                     pHeal->m_nSubType = (pHeal->m_nSubType & ~CGameEffect::DURATION_MASK) |
                                         CGameEffect::DURATION_TYPE_INSTANTANEOUS;
                     pHeal->SetCreator(pEffect->m_oidCreator);

@@ -80,7 +80,7 @@ void CSWGuiUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
             if (i != UPGRADE_SLOT_COLOR_CRYSTAL)
             {
                 pItem->AddUpgrade(m_apItemEntries[i], i);
-                pItem->m_an2F4[i] = m_pSelectedItem->m_an2F4[i];
+                pItem->m_anUpgradeSlot[i] = m_pSelectedItem->m_anUpgradeSlot[i];
             }
         }
         unsigned long bStolen = m_pSelectedItem->m_bStolen;
@@ -116,8 +116,8 @@ void CSWGuiUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
         if (nSlot != UPGRADE_SLOT_COLOR_CRYSTAL || m_nItemListMode != ITEMLIST_LIGHTSABER)
         {
             m_pSelectedItem->RemoveUpgrade(pOldItem, nSlot);
-            m_pSelectedItem->m_an2F4[nSlot] = -1;
-            pOldItem->m_an2F4[nSlot] = -1;
+            m_pSelectedItem->m_anUpgradeSlot[nSlot] = -1;
+            pOldItem->m_anUpgradeSlot[nSlot] = -1;
         }
         pOldItem = 0;
     }
@@ -158,7 +158,7 @@ void CSWGuiUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
         {
             m_anUpgradeProperties[nSlot] = pEntry->m_nUpgradeIndex;
             m_pSelectedItem->AddUpgrade(pItem, nSlot);
-            m_pSelectedItem->m_an2F4[nSlot] = nUpgradeRow;
+            m_pSelectedItem->m_anUpgradeSlot[nSlot] = nUpgradeRow;
         }
     }
 Exit:
@@ -1795,21 +1795,21 @@ void CSWGuiUpgrade::OnPanelAdded()
         {
             m_asUpgradeTemplates[nSlot] = sTemplate.LowerCase();
             m_anUpgradeProperties[nSlot] = i;
-            if (m_pSelectedItem->m_an2F4[nSlot] == i)
+            if (m_pSelectedItem->m_anUpgradeSlot[nSlot] == i)
             {
                 m_apItemEntries[nSlot] = new CSWSItem(OBJECT_INVALID);
                 CResRef cTemplate(sTemplate);
                 m_apItemEntries[nSlot]->LoadFromTemplate(cTemplate);
-                m_apItemEntries[nSlot]->m_an2F4[nSlot] = i;
+                m_apItemEntries[nSlot]->m_anUpgradeSlot[nSlot] = i;
             }
             else if (m_nItemListMode == ITEMLIST_LIGHTSABER &&
                      nSlot == UPGRADE_SLOT_POWER_CRYSTAL_1 &&
-                     m_pSelectedItem->m_an2F4[UPGRADE_SLOT_POWER_CRYSTAL_2] == i)
+                     m_pSelectedItem->m_anUpgradeSlot[UPGRADE_SLOT_POWER_CRYSTAL_2] == i)
             {
                 m_apItemEntries[UPGRADE_SLOT_POWER_CRYSTAL_2] = new CSWSItem(OBJECT_INVALID);
                 CResRef cTemplate(sTemplate);
                 m_apItemEntries[UPGRADE_SLOT_POWER_CRYSTAL_2]->LoadFromTemplate(cTemplate);
-                m_apItemEntries[UPGRADE_SLOT_POWER_CRYSTAL_2]->m_an2F4[UPGRADE_SLOT_POWER_CRYSTAL_2] = i;
+                m_apItemEntries[UPGRADE_SLOT_POWER_CRYSTAL_2]->m_anUpgradeSlot[UPGRADE_SLOT_POWER_CRYSTAL_2] = i;
             }
             else
             {
@@ -1819,7 +1819,7 @@ void CSWGuiUpgrade::OnPanelAdded()
                 {
                     CGameObject* pObject = g_pAppManager->m_pServerExoApp->GetGameObject(oidItem);
                     CSWSItem* pItem = pObject != 0 ? pObject->AsSWSItem() : 0;
-                    if (pObject->AsSWSItem()->m_n2F0 <= m_pSelectedItem->m_n2F0)
+                    if (pObject->AsSWSItem()->m_nUpgradeLevel <= m_pSelectedItem->m_nUpgradeLevel)
                     {
                         pLabels[nSlot].m_cBorder.m_cParams.m_fHilightAlpha = 1.0f;
                         abAvailable[nSlot] = 1;
@@ -2209,7 +2209,7 @@ void CSWGuiUpgrade::OnSlotSelected(CSWGuiControl* pControl)
                             (m_apItemEntries[nSlot] == 0 || i != m_anUpgradeProperties[nSlot]))
                         {
                             CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidItem);
-                            if (pItem->m_n2F0 <= m_pSelectedItem->m_n2F0)
+                            if (pItem->m_nUpgradeLevel <= m_pSelectedItem->m_nUpgradeLevel)
                                 aControls.Add(CreateItemEntry(oidItem, i, 0));
                             else
                                 aControls.Add(CreateItemEntry(oidItem, i, 1));
@@ -2248,7 +2248,7 @@ void CSWGuiUpgrade::OnSlotSelected(CSWGuiControl* pControl)
                 unsigned long oidItem = pRepository->FindItemWithTag(m_asUpgradeTemplates[nSlot]);
                 CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidItem);
                 if (pItem == 0 ||
-                    (unsigned long)pItem->m_n2F0 >= (unsigned long)m_pSelectedItem->m_n2F0)
+                    (unsigned long)pItem->m_nUpgradeLevel >= (unsigned long)m_pSelectedItem->m_nUpgradeLevel)
                     return;
                 CSWSCreature* pCreature = 0;
                 unsigned long nEquipSlot = 0;
@@ -3517,7 +3517,7 @@ void CSWGuiCreateItem::OnControlInvAButton(CSWGuiControl* pControl)
         {
             for (int i = 0; i < 6; i++)
             {
-                if (pItem->m_an2F4[i] >= 0)
+                if (pItem->m_anUpgradeSlot[i] >= 0)
                 {
                     CSWGuiMessageBox* pMessageBox =
                         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
@@ -5348,7 +5348,7 @@ void CSWGuiSwoopUpgrade::OnPanelAdded()
             {
                 m_apItemEntries[nSlot] = new CSWSItem(OBJECT_INVALID);
                 m_apItemEntries[nSlot]->LoadFromTemplate(CResRef(sTemplate));
-                m_apItemEntries[nSlot]->m_an2F4[nSlot] = nRow;
+                m_apItemEntries[nSlot]->m_anUpgradeSlot[nSlot] = nRow;
                 m_an43CC[nSlot] = nRow;
             }
             else if (g_pAppManager->m_pServerExoApp->GetPartyTable()->GetPartyItems()->FindItemWithTag(
@@ -5401,7 +5401,7 @@ void CSWGuiSwoopUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
         if (nSlot != CSWGuiUpgrade::UPGRADE_SLOT_COLOR_CRYSTAL ||
             m_nItemListMode != CSWGuiUpgrade::ITEMLIST_LIGHTSABER)
         {
-            pOldItem->m_an2F4[nSlot] = -1;
+            pOldItem->m_anUpgradeSlot[nSlot] = -1;
         }
         pOldItem = 0;
     }

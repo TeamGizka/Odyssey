@@ -3694,9 +3694,19 @@ CSWSPlayerLUOSortedObjectList* CSWSMessage::SortObjectsForGameObjectUpdate(
                         nOverride = pObject->AsSWSObject()->m_n260;
                     }
                     if (fDistanceSquared < fVisibleDistance * fVisibleDistance ||
-                        nOverride != 0 ||
-                        pPlayer->GetLastUpdateObject(pPlayerObject->GetId()) != NULL)
+                        nOverride != 0)
+                    {
                         bInclude = 1;
+                    }
+                    else
+                    {
+                        CLastUpdateObject* pLastUpdateObject =
+                            pPlayer->GetLastUpdateObject(pPlayerObject->GetId());
+                        if (pLastUpdateObject != NULL)
+                        {
+                            bInclude = 1;
+                        }
+                    }
                     unsigned long nCategory = SelectCategoryForGameObject(pObject, pPlayerObject);
                     if (bInclude == 1 && nCategory != GAME_OBJECT_CATEGORY_NONE)
                     {
