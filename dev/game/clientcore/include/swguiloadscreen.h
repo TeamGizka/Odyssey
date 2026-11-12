@@ -35,6 +35,7 @@ public:
     CSWGuiLabel m_lblLoading;
     unsigned long m_nHintStrRef;
 #ifndef _XBOX
+    CResRef m_res5A0;
     CSWGuiLabel m_lblBackground;
 #endif
 };

@@ -156,15 +156,12 @@ public:
 #ifndef _XBOX
     void RotateCharacterLeft(int nUnused);
     void RotateCharacterRight(int nUnused);
-    void UpdatePortraits();
-    void OnChangeCharacter(CSWGuiControl* pControl);
-    void OnSwitchLeft(CSWGuiControl* pControl);
-    void OnSwitchRight(CSWGuiControl* pControl);
 #endif
     void SetStats();
     int ShowLevelUpGUI(int bAutomatic);
     void StartAutoLevelup();
 
+#ifdef _XBOX
     CSWGuiLabel m_lblName;
     CSWGuiLabel m_lblClass;
     CSWGuiLabel m_lblClass1;
@@ -172,6 +169,9 @@ public:
     CSWGuiLabel m_lblLevel;
     CSWGuiLabel m_lblLevel1;
     CSWGuiLabel m_lblLevel2;
+#else
+    CSWGuiLabel m_lblForceMastery;
+#endif
     CSWGuiLabel m_lblFortitude;
     CSWGuiLabel m_lblReflex;
     CSWGuiLabel m_lblWill;
@@ -223,7 +223,9 @@ public:
     CSWGuiLabel m_lblBevel;
     CSWGuiLabel m_lblBevel2;
 #endif
+#ifdef _XBOX
     CSWGuiLabel m_lblGood[EFFECT_ICON_CAPACITY];
+#endif
     CSWGuiLabel m_lblMore;
     CSWGuiLabel m_lblAdorn;
     CSWGuiBlackenedLabel m_lblLight;
@@ -238,19 +240,19 @@ public:
 #else
     CSWGuiButton m_btnAuto;
     CSWGuiButton m_btnLevelUp;
-    CSWGuiButton m_btnChange1;
-    CSWGuiButton m_btnChange2;
-    CSWGuiButton m_btnCharLeft;
-    CSWGuiButton m_btnCharRight;
     CSWGuiButton m_btnExit;
     CSWGuiSliderReadOnly m_sldAlign;
     CSWGui3DSceneView m_viewCharacter;
     CSWGuiSpeedButton m_btn3DChar;
+    CSWGuiLabel m_alblBar[6];
+    CSWGuiLabel m_lblXpBack;
+    CSWGuiLabel m_lblMoreBack;
+    CSWGuiLabel m_lblTitle;
+    CSWGuiLabel m_lblStatsBorder;
     int m_nPartySize;
     CSWCCreature* m_pCreature;
     CSWCCreature* m_pShownCreature;
     int m_nShownAlignment;
-    char m_nSelectedNPC;
 #endif
 };
 

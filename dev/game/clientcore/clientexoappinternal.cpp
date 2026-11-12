@@ -2365,16 +2365,9 @@ int CClientExoAppInternal::GetObjectName(unsigned long oidObject, CExoString& sN
 
 CGameObject* CClientExoAppInternal::GetGameObject(unsigned long oidObject)
 {
-    CGameObjectArray* pArray = m_pGameObjectArray;
     CGameObject* pGameObject = NULL;
-
-    if (pArray->GetGameObject(oidObject, &pGameObject) ==
-        CGameObjectArray::SUCCESS)
-    {
-        return pGameObject;
-    }
-
-    return NULL;
+    m_pGameObjectArray->GetGameObject(oidObject, &pGameObject);
+    return pGameObject;
 }
 // PC 0x0063C370
 CSWCItem* CClientExoAppInternal::GetItemByGameObjectID(unsigned long nId)
@@ -3549,9 +3542,6 @@ CClientExoAppInternal::CClientExoAppInternal()
 {
     m_bStartMenuMusicOnMovieEnd = 1;
     m_nUnknown1D4 = 1;
-#ifndef _XBOX
-    m_bAllowHighMonitorFrequency = 0;
-#endif
     m_nUnknown26C = 0;
     m_bClientInitialized = 0;
     m_nDebugMode = 0;

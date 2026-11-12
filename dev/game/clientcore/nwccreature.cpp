@@ -1494,6 +1494,7 @@ void CSWCCreature::UpdateRelativePerception(unsigned long oidObject)
 CSWCCreature::CSWCCreature()
     : CSWCObject(CGameObject::OBJECT_TYPE_CREATURE)
 {
+    m_n46C = 0;
     m_bCombatMode = 0;
     m_bLevelUpSent = 1;
     m_bInParty = 0;
@@ -1580,6 +1581,8 @@ CSWCCreature::CSWCCreature()
     m_nUnknown308 = 200000;
     m_pPartyStatus = NULL;
     m_nGold = 0;
+    m_n148 = 0;
+    m_n14C = 0;
     m_oidUnknown2C8 = CGameObjectArray::INVALIDOBJID;
     m_nWeaponOverlayTimer = SWCCREATURE_WEAPON_OVERLAY_INTERVAL;
     m_nWeaponCheckTimer = 6000;
@@ -1626,6 +1629,8 @@ CSWCCreature::CSWCCreature()
 #ifndef _XBOX
     m_fFreeLookTurn = 0.0f;
 #endif
+    m_n464 = CGameObjectArray::INVALIDOBJID;
+    m_n468 = 0;
 }
 // PC 0x00664960
 CSWCCreature::~CSWCCreature()

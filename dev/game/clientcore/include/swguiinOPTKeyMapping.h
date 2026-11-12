@@ -49,7 +49,7 @@ public:
     void onEventClicked(CSWGuiControl* pControl);
     int UpdateEvent(unsigned long nKey);
 
-    static const int STRREF_NONE_SET = 48144;
+    static const int STRREF_NONE_SET = 48724;
 
     int m_nDescStrRef;
     CSWGuiButton m_btnKey;

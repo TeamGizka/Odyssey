@@ -14,6 +14,9 @@ public:
     Vector m_vTransitionPosition;
     unsigned long m_oidTransitionObject;
     int m_nDefaultTop;
+    Vector m_v454;
+    Vector m_v460;
+    Vector m_v46C;
 
     CSWGuiInGameAreaTransition(CSWGuiManager* pManager);
     void SetTransitionObject(unsigned long oidObject, const Vector& vPosition);

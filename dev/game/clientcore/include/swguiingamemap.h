@@ -83,12 +83,11 @@ public:
     CSWGuiLabel m_lblDown;
     CSWGuiLabel m_lblNoteTitle;
 #else
-    CSWGuiLabel m_lblNoteTitle;
-    CSWGuiButton m_btnUp;
-    CSWGuiButton m_btnDown;
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnExit;
     CSWGuiButton m_btnReturn;
+    CSWGuiLabel m_alblBar[5];
+    CSWGuiLabel m_lbl1018;
 #endif
     CSWGuiMapHider m_cMapHider;
     CSWGuiImage m_imgMap;
@@ -144,6 +143,9 @@ public:
     CSWGui3DSceneView m_cPlanetBackView;
     PlanetInfo m_aPlanets[PLANET_COUNT];
     int m_nSelectedPlanet;
+#ifndef _XBOX
+    int m_n28D4;
+#endif
 };
 
 #endif

@@ -1251,6 +1251,7 @@ CKeyTableEntry* CExoKeyTable::AllocateTable(unsigned long nSize)
             pEntry->m_nResId = 0xFFFFFFFF;
             pEntry->m_nReserved = 0;
             pEntry->m_nType = 0xFFFF;
+            pEntry->m_s1C = "";
         }
     }
 

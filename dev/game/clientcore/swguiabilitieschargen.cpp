@@ -61,7 +61,6 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     InitControl(m_lblRemainingBox, "REMAINING_BOX_LBL", 1);
     InitControl(m_lblRemainingSelections, "REMAINING_SELECTIONS_LBL", 1);
     InitControl(m_lblSelectionsRemaining, "SELECTIONS_REMAINING_LBL", 1);
-    InitControl(m_lblDescriptionHeader, "DESC_LBL", 1);
     InitControl(m_lblCost, "COST_LBL", 1);
     InitControl(m_lblCostPoints, "COST_POINTS_LBL", 1);
     InitControl(m_lbDescription, "LB_DESC", 1);
@@ -74,8 +73,6 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     InitControl(m_lblRecommended, "LBL_RECOMMENDED", 1);
     InitControl(m_lblBack, "LBL_BACK", 1);
 #endif
-    InitControl(m_lblAbilityMod, "LBL_ABILITY_MOD", 1);
-    InitControl(m_lblModifier, "LBL_MODIFIER", 1);
 #ifdef _XBOX
     InitControl(m_lblRanalog, "LBL_RANALOG", 1);
 #else
@@ -94,6 +91,7 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     InitControl(m_lblScore[0], "STR_LBL", 1);
     InitControl(m_btnMinus[0], "STR_MINUS_BTN", 1);
     InitControl(m_btnPlus[0], "STR_PLUS_BTN", 1);
+    InitControl(m_alblBonus[0], "LBL_BONUS_STR", 1);
 #endif
     m_aDescriptionStrRef[0] = 222;
 #ifdef _XBOX
@@ -106,6 +104,7 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     InitControl(m_lblScore[1], "DEX_LBL", 1);
     InitControl(m_btnMinus[1], "DEX_MINUS_BTN", 1);
     InitControl(m_btnPlus[1], "DEX_PLUS_BTN", 1);
+    InitControl(m_alblBonus[1], "LBL_BONUS_DEX", 1);
 #endif
     m_aDescriptionStrRef[1] = 223;
 #ifdef _XBOX
@@ -118,6 +117,7 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     InitControl(m_lblScore[2], "CON_LBL", 1);
     InitControl(m_btnMinus[2], "CON_MINUS_BTN", 1);
     InitControl(m_btnPlus[2], "CON_PLUS_BTN", 1);
+    InitControl(m_alblBonus[2], "LBL_BONUS_CON", 1);
 #endif
     m_aDescriptionStrRef[2] = 224;
 #ifdef _XBOX
@@ -130,6 +130,7 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     InitControl(m_lblScore[3], "WIS_LBL", 1);
     InitControl(m_btnMinus[3], "WIS_MINUS_BTN", 1);
     InitControl(m_btnPlus[3], "WIS_PLUS_BTN", 1);
+    InitControl(m_alblBonus[3], "LBL_BONUS_WIS", 1);
 #endif
     m_aDescriptionStrRef[3] = 225;
 #ifdef _XBOX
@@ -142,6 +143,7 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     InitControl(m_lblScore[4], "INT_LBL", 1);
     InitControl(m_btnMinus[4], "INT_MINUS_BTN", 1);
     InitControl(m_btnPlus[4], "INT_PLUS_BTN", 1);
+    InitControl(m_alblBonus[4], "LBL_BONUS_INT", 1);
 #endif
     m_aDescriptionStrRef[4] = 226;
 #ifdef _XBOX
@@ -154,8 +156,16 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     InitControl(m_lblScore[5], "CHA_LBL", 1);
     InitControl(m_btnMinus[5], "CHA_MINUS_BTN", 1);
     InitControl(m_btnPlus[5], "CHA_PLUS_BTN", 1);
+    InitControl(m_alblBonus[5], "LBL_BONUS_CHA", 1);
 #endif
     m_aDescriptionStrRef[5] = 227;
+#ifndef _XBOX
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    InitControl(m_lblPortrait, "LBL_PORTRAIT", 1);
+#endif
     StopLoadFromLayout();
 #ifdef _XBOX
     unsigned char nStrength = m_pCreature->GetStats()->m_aAbilities[0];
@@ -527,7 +537,6 @@ void CSWGuiAbilitiesCharGen::OnEnterPointsButton(CSWGuiControl* pControl)
     }
 
     m_lblCostPoints.m_cText.m_cParams.SetText(sCost);
-    m_lblAbilityMod.m_cText.m_cParams.SetText(sModifier);
     SetDescription(m_aDescriptionStrRef[m_nSelected]);
     CSWGuiTextParams* pLabelParams = &m_lblScore[m_nSelected].m_cText.m_cParams;
     pLabelParams->m_bHilightText = 1;

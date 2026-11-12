@@ -232,6 +232,7 @@ public:
     static const int KEYBOARD_MULTIPLY;
     static const int KEYBOARD_NUMPADCOMMA;
     static const int KEYBOARD_DIVIDE;
+    static const int KEYBOARD_OEM_102;
     static const int JOYSTICK_XAXIS;
     static const int JOYSTICK_YAXIS;
     static const int JOYSTICK_HAT;

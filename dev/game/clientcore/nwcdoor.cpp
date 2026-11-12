@@ -41,6 +41,7 @@ CSWCDoor::CSWCDoor()
     m_bTrapDetected = 0;
     m_bTrap = 0;
     m_bLocked = 0;
+    m_n108 = 0;
     m_bHilighted = 0;
     m_bAreaTransition = 0;
     m_bUseable = 1;

@@ -357,7 +357,7 @@ public:
 
     static const int FOG_POINT_SPAN = 4;
 
-    static const unsigned long STRREF_COMBAT_MODE_ENGAGED = 48208;
+    static const unsigned long STRREF_COMBAT_MODE_ENGAGED = 111303;
 
     static const unsigned long STRREF_DEBILITATED = 47915;
 
@@ -467,9 +467,15 @@ public:
     CSWGuiButtonToggle m_tbSolo;
     CSWGuiButtonToggle m_tbStealth;
     CSWGuiButton m_btnSwapWeapons;
-    CSWGuiButton m_btnD56C;
 
     CAurGUIImageInternal* m_pBlackDot;
+    int m_nD560;
+    int m_nD564;
+    unsigned long m_nD568;
+    CSWGuiButton m_btnD56C;
+    int m_nD73C;
+    int m_nD740;
+    int m_nD744;
 #else
     unsigned long m_nTargetId;
     unsigned long m_oidPlayerCharacter;

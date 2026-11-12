@@ -2302,7 +2302,7 @@ void CGuiInGame::ShowBarkBubble(unsigned long oidObject,
     if (m_bItemCreateMenuAvailable != 0)
     {
         m_pBarkBubble->SetBark(oidObject, sText, cSound, nFlags);
-        m_pGuiManager->AddPanel(m_pBarkBubble, SWGUI_PANEL_MODE_OVERLAY, 1);
+        m_pGuiManager->AddPanel(m_pBarkBubble, 0, 1);
     }
 }
 // PC 0x0067FFF0

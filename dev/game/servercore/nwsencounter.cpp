@@ -129,6 +129,7 @@ CEncounterListEntry& CEncounterListEntry::operator=(
     m_bSpawned = other.m_bSpawned;
     m_bSelected = other.m_bSelected;
     m_bSingleSpawn = other.m_bSingleSpawn;
+    m_nGuaranteedCount = other.m_nGuaranteedCount;
     return *this;
 }
 // PC 0x0056B950

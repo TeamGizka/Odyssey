@@ -3,40 +3,27 @@
 // PC 0x0060EB50
 CTwoDimArrays::CTwoDimArrays()
 {
-    m_pAppearance = 0;
-    m_pGender = 0;
-    m_pSurfaceMaterial = 0;
-    m_pStateScripts = 0;
-    m_pVisualEffect = 0;
-    m_pAreaTransition = 0;
-    m_pTraps = 0;
-    m_pVisualEffectsPersistent = 0;
-    m_pCreatureSpeed = 0;
-    m_pPoison = 0;
-    m_pDisease = 0;
-    m_pLightColor = 0;
-    m_pRepAdjustments = 0;
-    m_pFractionalCR = 0;
-    m_pEncounterDifficulty = 0;
-    m_pDoorTypes = 0;
-    m_pGenericDoors = 0;
-    m_pPlaceables = 0;
-    m_pExcitedDuration = 0;
-    m_pRegeneration = 0;
-    m_pCursor = 0;
-    m_pIPRPMelee = 0;
-    m_pIPRPMonsterDamage = 0;
-    m_pIPRPDamage = 0;
-    m_pIPRPBonusCost = 0;
-    m_pIPRPSRCost = 0;
-    m_pIPRPNeg5Cost = 0;
-    m_pXpBase = 0;
-    m_pRanges = 0;
-    m_pItemPropDef = 0;
     m_ppIPRPCostTables = 0;
     m_nIPRPCostTableCount = 0;
     m_ppIPRPParamTables = 0;
     m_nIPRPParamTableCount = 0;
+    m_pAppearance = 0;
+    m_pGender = 0;
+    m_pSurfaceMaterial = 0;
+    m_pVisualEffect = 0;
+    m_pVisualEffectsPersistent = 0;
+    m_pCreatureSpeed = 0;
+    m_pDoorTypes = 0;
+    m_pGenericDoors = 0;
+    m_pPlaceables = 0;
+    m_pAreaTransition = 0;
+    m_pIPRPMelee = 0;
+    m_pItemPropDef = 0;
+    m_pPortrait = 0;
+    m_pIPRPDamage = 0;
+    m_pTraps = 0;
+    m_pLightColor = 0;
+    m_pCursor = 0;
     m_pAmbientMusic = 0;
     m_pAmbientSound = 0;
     m_pFootstepSounds = 0;
@@ -45,21 +32,41 @@ CTwoDimArrays::CTwoDimArrays()
     m_pAmmunitionTypes = 0;
 #ifndef _XBOX
     m_pKeymap = 0;
+    m_pBindableKey = 0;
 #endif
+    m_pPlaceableSounds = 0;
+    m_pCameraStyle = 0;
+    m_pTutorial = 0;
+    m_pDifficultyOptions = 0;
+    m_pGamma = 0;
+    m_pStateScripts = 0;
+    m_pPoison = 0;
+    m_pDisease = 0;
+    m_pRepAdjustments = 0;
+    m_pFractionalCR = 0;
+    m_pEncounterDifficulty = 0;
+    m_pExcitedDuration = 0;
+    m_pRegeneration = 0;
+    m_pXpBase = 0;
+    m_pIPRPMonsterDamage = 0;
+    m_pIPRPBonusCost = 0;
+    m_pIPRPSRCost = 0;
+    m_pIPRPNeg5Cost = 0;
+    m_pRanges = 0;
     m_pOnHit = 0;
     m_pOnHitDuration = 0;
     m_pDamageHitVisual = 0;
-    m_pPlaceableSounds = 0;
+    m_pAnimations = 0;
     m_pBodyBag = 0;
-    m_pPortrait = 0;
-    m_pCameraStyle = 0;
+    m_pForcePointAdjust = 0;
+    m_pGameEffects = 0;
     m_pRepute = 0;
     m_pWeaponDischarge = 0;
     m_pDroidDischarge = 0;
     m_pPlotXP = 0;
-    m_pAnimations = 0;
     m_pCombatAnimations = 0;
     m_pDialogAnimations = 0;
+    m_pNPC = 0;
     m_pSpells = 0;
     m_pFeat = 0;
     m_pFormations = 0;
@@ -68,19 +75,26 @@ CTwoDimArrays::CTwoDimArrays()
     m_pFeedBackText = 0;
     m_pForceShields = 0;
     m_pHeads = 0;
+#ifdef _XBOX
+    m_pMinGlobalRim = 0;
+#endif
     m_pItemValues = 0;
     m_pVideoEffects = 0;
-    m_pDifficultyOptions = 0;
-    m_pGamma = 0;
-    m_pTutorial = 0;
     m_pMovies2DA = 0;
     m_pEffectIcon = 0;
     m_pRemoveFXOnDeath = 0;
-#ifdef _XBOX
-    m_pMinGlobalRim = 0;
-#else
     m_pTexPacks = 0;
-#endif
+    m_pSubrace = 0;
+    m_pIPRPPC = 0;
+    m_pInfluence = 0;
+    m_pItemCreate = 0;
+    m_pChemicalCreate = 0;
+    m_pSwoopUpgrade = 0;
+    m_pMusic = 0;
+    m_pAlienVO = 0;
+    m_pEmotion = 0;
+    m_pAutoBalance = 0;
+    m_pAIScripts = 0;
     return;
 }
 
@@ -999,7 +1013,7 @@ int CTwoDimArrays::Load2DArrays_CreatureSpeed()
     }
     return 1;
 }
-// PC 0x006101C0
+// PC 0x006100F0
 int CTwoDimArrays::Load2DArrays_DoorTypes()
 {
     m_pDoorTypes = new C2DA("DoorTypes", 0);
@@ -1012,7 +1026,7 @@ int CTwoDimArrays::Load2DArrays_DoorTypes()
         m_pDoorTypes->GetColumnIndex("SoundAppType");
     return 1;
 }
-// PC 0x006100F0
+// PC 0x006101C0
 int CTwoDimArrays::Load2DArrays_GenericDoors()
 {
     m_pGenericDoors = new C2DA("GenericDoors", 0);

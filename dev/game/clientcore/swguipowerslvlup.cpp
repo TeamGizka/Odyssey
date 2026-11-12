@@ -133,7 +133,7 @@ void CSWGuiPowersLevelUp::OnAcceptButton()
 #ifdef _XBOX
         pMessageBox->SetMessage(42188);
 #else
-        pMessageBox->SetMessage(48210);
+        pMessageBox->SetMessage(125861);
 #endif
         m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }

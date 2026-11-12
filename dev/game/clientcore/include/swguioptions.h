@@ -271,6 +271,7 @@ public:
     CSWGuiButton m_btnDefault;
     CSWGuiLabel m_alblBar[4];
     int m_nUnknown18BC;
+    int m_n1E88;
 };
 
 class CSWGuiOptionsGraphicsAdvanced : public CSWGuiPanel

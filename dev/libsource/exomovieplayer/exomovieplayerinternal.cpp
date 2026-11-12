@@ -136,6 +136,7 @@ CExoMoviePlayerInternal::CExoMoviePlayerInternal()
     m_hBink = NULL;
     m_nUnknown70 = 0;
     m_hMovieWnd = NULL;
+    m_nUnknown64 = 0;
 }
 // PC 0x00405B10
 CExoMoviePlayerInternal::~CExoMoviePlayerInternal()

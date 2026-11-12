@@ -57,15 +57,16 @@ public:
 #else
     CSWGuiButton m_btnExit;
 #endif
+    CSWGuiHandler m_pCallback;
+    CSWGuiObject* m_pCallbackObject;
 
-    enum { MAX_SKILL_ENTRIES = 10 };
+    enum { MAX_SKILL_ENTRIES = 20 };
     CSWGuiInGameSkillEntry m_aSkillEntries[MAX_SKILL_ENTRIES];
 };
 
 class CSWGuiFlowSkillStruct
 {
 public:
-    CSWGuiBorder m_cBorder;
     CSWGuiImage m_cLeftImage;
     CSWGuiImage m_cRightImage;
     unsigned long m_nSkill;

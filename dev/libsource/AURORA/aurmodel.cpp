@@ -1142,6 +1142,8 @@ Part::Part(MdlNode* pNode)
     countpart++;
     m_nNodeID = 0;
     m_bIncludeChildBounds = 0;
+    m_bHologram = 0;
+    m_bPerObjectIllumination = 0;
 }
 // PC 0x00452FC0
 Part::~Part()
@@ -3437,6 +3439,15 @@ Gob::Gob(char* sName)
       m_lstAppendModels(0), m_lstAppendParts(0), m_lCallBacks(0),
       m_lstLights(0), m_lstAttachments(0)
 {
+    m_fIlluminationRed = m_fIlluminationGreen = m_fIlluminationBlue = 0.5f;
+    m_nForcePoints = 0;
+    m_nAlignmentValue = 50;
+    m_bNonForceBlending = false;
+    m_bForceGlow = false;
+    m_fForceGlowRed = m_fForceGlowGreen = m_fForceGlowBlue = 0.0f;
+    m_bHologram = false;
+    m_bPerObjectIllumination = false;
+    m_bRenderingEnabled = true;
     m_bFirstAnimate = 1;
     m_bAnimateUV = 0;
     ++g_nSpawnedGobs;
@@ -3523,6 +3534,8 @@ Gob::Gob(char* sName)
 #else
     m_nUnused2 = 1;
 #endif
+    m_n1F8 = 0;
+    m_n1FC = 0;
     gobs.Insert(this, FindGobIdx(m_sName));
 }
 // PC 0x0045F850
@@ -3876,6 +3889,10 @@ MdlNodeTriMesh::MdlNodeTriMesh(char* sName)
     m_bLightMapped = false;
     m_bBackground = false;
     m_bRotateTexture = false;
+    m_bDirtEnabled = false;
+    m_nDirtTexture = 1;
+    m_nDirtCoordSpace = 1;
+    m_bHideInHolograms = false;
     m_vDiffuse = defaultdiffuse;
     m_vAmbient = defaultambient;
     m_sTexture0[0] = 0;

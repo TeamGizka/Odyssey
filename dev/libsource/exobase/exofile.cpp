@@ -137,15 +137,11 @@ inline unsigned long CExoFileInternal::Write(const char* text)
 
 inline unsigned long CExoFileInternal::Write(const CExoString& text)
 {
-#ifdef _XBOX
     if (m_pFile != NULL)
     {
         return fwrite(text.CStr(), 1, text.GetLength(), m_pFile);
     }
     return 0;
-#else
-    return Write(text.CStr(), 1, text.GetLength());
-#endif
 }
 
 inline int CExoFileInternal::FileOpened()

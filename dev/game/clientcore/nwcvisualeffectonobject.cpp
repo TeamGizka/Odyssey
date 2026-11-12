@@ -336,6 +336,7 @@ CSWCVisualEffectOnObject::CSWCVisualEffectOnObject()
     m_pSoundSource = 0;
     m_bRumblePerformed = 0;
     m_bHardCodedEffectApplied = 0;
+    m_nF8 = 0;
 }
 // PC 0x00702DE0
 void CSWCVisualEffectOnObject::UnloadVisualEffect()

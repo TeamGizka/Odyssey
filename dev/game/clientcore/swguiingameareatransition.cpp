@@ -25,6 +25,9 @@ CSWGuiInGameAreaTransition::CSWGuiInGameAreaTransition(CSWGuiManager* pManager)
     InitControl(m_lblIcon, "LBL_ICON", 1);
     InitControl(m_lblDescription, "LBL_DESCRIPTION", 1);
     StopLoadFromLayout();
+    m_v454 = m_lblTextBackground.m_cBorder.m_cParams.m_vColor;
+    m_v460 = m_lblIcon.m_cBorder.m_cParams.m_vColor;
+    m_v46C = m_lblDescription.m_cText.m_cParams.m_vColor;
 
     m_oidTransitionObject = OBJECT_INVALID;
     m_bCenterHorizontal = 1; m_bCenterVertical = 0;
@@ -91,10 +94,9 @@ void CSWGuiInGameAreaTransition::Draw(float fElapsed)
     CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
     if (pParty->IsPartyTogether() != 0)
     {
-        m_lblTextBackground.m_cBorder.m_cParams.m_vColor =
-            CGuiInGame::ENABLED_ICON_COLOR;
-        m_lblIcon.m_cBorder.m_cParams.m_vColor = CGuiInGame::ENABLED_ICON_COLOR;
-        m_lblDescription.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+        m_lblTextBackground.m_cBorder.m_cParams.m_vColor = m_v454;
+        m_lblIcon.m_cBorder.m_cParams.m_vColor = m_v460;
+        m_lblDescription.m_cText.m_cParams.SetColor(m_v46C);
     }
     else
     {

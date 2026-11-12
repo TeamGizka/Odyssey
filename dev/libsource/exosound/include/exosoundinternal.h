@@ -474,7 +474,7 @@ public:
     int IsScalable();
     void Pause();
     void Resume();
-    void ShutDownSource();
+    void ShutDownSource(int bDestroying = 0);
     void Stop();
     void SetPosition(Vector const&);
     void Set3D(int);
@@ -524,12 +524,7 @@ public:
     CExoLinkedListNode* m_pListNode;
     CExoSoundInternal* m_pSound;
     unsigned long m_nSampleRate;
-#ifdef _XBOX
-
     unsigned long m_nDataSize;
-#else
-    unsigned char m_aUnmapped4C[4];
-#endif
     unsigned long m_nFixedRate;
     unsigned long m_nPitchRate;
     int m_nDuration;
@@ -789,7 +784,7 @@ public:
     int GetResourceType();
     unsigned long GetFadeDuration() { return m_nFadeDuration; }
     unsigned char GetVolume(); CExoSoundInternal* GetSoundInternal() { return m_pSoundInternal; }
-    CExoStreamingSoundSourceInternal(CExoSoundInternal* pSoundInternal);
+    CExoStreamingSoundSourceInternal(CExoSoundInternal* pSoundInternal, int n4);
     ~CExoStreamingSoundSourceInternal();
     int GetPlayFailed();
     int IsPlaying();
@@ -865,7 +860,7 @@ public:
     unsigned long GetFadeDuration() { return m_nFadeDuration; }  // PC 0x007846A0
     unsigned long GetFadeStartTime();
     unsigned char GetVolume();
-    CExoStreamingSoundSourceInternal(CExoSoundInternal* pSoundInternal);
+    CExoStreamingSoundSourceInternal(CExoSoundInternal* pSoundInternal, int n4);
     ~CExoStreamingSoundSourceInternal();
     void InitializeSource();
     int GetPlayFailed();

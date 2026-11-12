@@ -413,11 +413,11 @@ void CSWCJournal::JournalUpdated(int bFromServer, int bActive,
         g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateStatus(0, 0);
         if (bActive != 0)
         {
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateStatus(11, 0);
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateStatus(102, 0);
         }
         else
         {
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateStatus(10, 0);
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateStatus(101, 0);
         }
         g_bOverrideJournalSortType = 1;
     }

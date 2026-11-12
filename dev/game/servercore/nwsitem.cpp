@@ -3146,13 +3146,13 @@ unsigned long CSWSItem::GetDamageFlags()
     pBaseItem = g_pRules->m_pBaseItems->GetBaseItem(nBaseItem);
     if (pBaseItem == NULL)
     {
-        return 8;
+        return 1;
     }
 
     nDamageFlags = pBaseItem->m_nDamageFlags;
     if (nDamageFlags == 0)
     {
-        return 8;
+        return 1;
     }
 
     return nDamageFlags;

@@ -234,8 +234,6 @@ void CSWGuiInGameMessages::ShowDialogMessages()
     pDialog->m_bEnabled = 1;
 #ifdef _XBOX
     m_lblXDesc.m_cText.m_cParams.SetStrRef(STRREF_SHOW_FEEDBACK);
-#else
-    m_btnSwitch.m_cText.m_cParams.SetStrRef(STRREF_SHOW_FEEDBACK);
 #endif
     SetActiveControl(pDialog, 0);
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType =
@@ -395,8 +393,6 @@ void CSWGuiInGameMessages::ShowFeedbackMessages()
     m_lbDialog.m_bEnabled = 0;
 #ifdef _XBOX
     m_lblXDesc.m_cText.m_cParams.SetStrRef(STRREF_SHOW_DIALOG);
-#else
-    m_btnSwitch.m_cText.m_cParams.SetStrRef(STRREF_SHOW_DIALOG);
 #endif
     SetActiveControl(pMessages, 0);
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nMessageType =
@@ -1185,8 +1181,6 @@ CSWGuiInGameMessages::CSWGuiInGameMessages(CSWGuiManager* pManager)
     InitControl(m_lbDialog, "LB_DIALOG", 1);
 #else
     InitControl(m_lbDialog, "LB_DIALOG", 1);
-    CSWGuiButton* pShow = &m_btnSwitch;
-    InitControl(*pShow, "BTN_SHOW", 1);
     InitControl(m_btnBack, "BTN_EXIT", 1);
 #endif
     StopLoadFromLayout();
@@ -1212,9 +1206,6 @@ CSWGuiInGameMessages::CSWGuiInGameMessages(CSWGuiManager* pManager)
 
     pMessages->m_bClipItems = 1;
 #ifndef _XBOX
-    pShow->AddEvent(CSWGuiControl::EVENT_SELECT, this,
-                    (PFNGUIEVENT)&CSWGuiPanel::OnXButtonPressed);
-    pShow->m_bFocusable = 0;
     CSWGuiButton* pExit = &m_btnBack;
     pExit->AddEvent(CSWGuiControl::EVENT_SELECT, this,
                     (PFNGUIEVENT)&CSWGuiPanel::OnBButtonPressed);

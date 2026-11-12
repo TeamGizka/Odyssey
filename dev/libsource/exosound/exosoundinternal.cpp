@@ -144,6 +144,15 @@ inline float CExoSoundInternal::GetDesiredAmbientScale()
 {
     return m_fDesiredAmbientScale;
 }
+// PC 0x00622320
+inline CExoSoundPriorityGroup* CExoSoundInternal::GetPriorityGroup(unsigned char nGroup)
+{
+    if (nGroup >= m_nPriorityGroups)
+    {
+        nGroup = CExoSound::PRIORITY_GROUP_DEFAULT;
+    }
+    return m_pPriorityGroups + nGroup;
+}
 
 
 
@@ -549,7 +558,7 @@ void CExoSoundInternal::SetMusicVolume(float fVolume, int nTemporary,
     if (bFade == 1)
     {
         CExoSoundPriorityGroup* pGroup =
-            m_pPriorityGroups + CExoSoundPriorityGroup::MUSIC_GROUP;
+            GetPriorityGroup(CExoSoundPriorityGroup::MUSIC_GROUP);
 
         if (pGroup != NULL)
         {
@@ -1064,10 +1073,9 @@ int CExoSoundInternal::Play3DOneShotSound(CResRef const& sResRef,  // PC 0x00623
             {
                 m_p3DOneShotStream->SetVolume(nVolume);
             }
-            float fMinVolumeDist =
-                m_pPriorityGroups[nPriorityGroup].m_fMinVolumeDist;
-            float fMaxVolumeDist =
-                m_pPriorityGroups[nPriorityGroup].m_fMaxVolumeDist;
+            CExoSoundPriorityGroup* pGroup = GetPriorityGroup(nPriorityGroup);
+            float fMinVolumeDist = pGroup->m_fMinVolumeDist;
+            float fMaxVolumeDist = pGroup->m_fMaxVolumeDist;
             m_p3DOneShotStream->SetDistance(fMaxVolumeDist, fMinVolumeDist);
             nResult = m_p3DOneShotStream->Play(sResRef, RESTYPE_WAV, 0, 0, 0);
         }
@@ -1093,10 +1101,9 @@ int CExoSoundInternal::Play3DOneShotSound(CResRef const& sResRef,  // PC 0x00623
         {
             pSource->SetPitchVariance(fPitchVariance);
         }
-        float fMinVolumeDist =
-            m_pPriorityGroups[nPriorityGroup].m_fMinVolumeDist;
-        float fMaxVolumeDist =
-            m_pPriorityGroups[nPriorityGroup].m_fMaxVolumeDist;
+        CExoSoundPriorityGroup* pGroup = GetPriorityGroup(nPriorityGroup);
+        float fMinVolumeDist = pGroup->m_fMinVolumeDist;
+        float fMaxVolumeDist = pGroup->m_fMaxVolumeDist;
         pSource->m_fMaxVolumeDist = fMaxVolumeDist;
         pSource->m_fMinVolumeDist = fMinVolumeDist;
         if (nOneShotDelay != 0)
@@ -1151,7 +1158,7 @@ CExoLinkedListNode* CExoSoundInternal::RemoveFromPlayingList(  // PC 0x006235F0
     pSource->m_nListType = CExoSoundSourceInternal::LIST_NONE;
     pSource->m_pListNode = NULL;
     CExoSoundPriorityGroup* pGroup =
-        m_pPriorityGroups + pSource->m_nPriorityGroup;
+        GetPriorityGroup(pSource->m_nPriorityGroup);
 
     pGroup->m_nPlaying = pGroup->m_nPlaying - 1;
     return pPosition;
@@ -1235,7 +1242,7 @@ CExoLinkedListNode* CExoSoundInternal::RemoveFromStreamingList(  // PC 0x006237B
         m_lstStreaming.Remove((CExoLinkedListNode*)pSource->m_bPlaying);
         pSource->m_bPlaying = 0;
         CExoSoundPriorityGroup* pGroup =
-            m_pPriorityGroups + pSource->m_nPriorityGroup;
+            GetPriorityGroup(pSource->m_nPriorityGroup);
 
         pGroup->m_nPlaying = pGroup->m_nPlaying - 1;
     }
@@ -1247,17 +1254,19 @@ void CExoSoundInternal::AddToPlayingList(CExoSoundSourceInternal* pSource)
 {
     pSource->m_nListType = 1;
     pSource->m_pListNode = m_lstPlaying.AddHead(pSource);
-    CExoSoundPriorityGroup* pGroup =
-        m_pPriorityGroups + pSource->m_nPriorityGroup;
+    CExoSoundPriorityGroup* pGroup = GetPriorityGroup(pSource->m_nPriorityGroup);
 
-    pGroup->m_nPlaying = pGroup->m_nPlaying + 1;
+    if (pGroup)
+    {
+        pGroup->m_nPlaying = pGroup->m_nPlaying + 1;
+    }
 }
 
 #ifndef _XBOX
 C3DVoice* CExoSoundInternal::GetFree3DVoice(unsigned char nPriorityGroup)  // PC 0x00624D60
 {
     unsigned char nPriority = 0;
-    CExoSoundPriorityGroup* pGroup = m_pPriorityGroups + nPriorityGroup;
+    CExoSoundPriorityGroup* pGroup = GetPriorityGroup(nPriorityGroup);
     int nInterrupt;
     int nVoice;
 
@@ -1324,7 +1333,7 @@ C3DVoice* CExoSoundInternal::GetFree3DVoice(unsigned char nPriorityGroup)  // PC
 C2DVoice* CExoSoundInternal::GetFree2DVoice(unsigned char nPriorityGroup)  // PC 0x00624EC0
 {
     unsigned char nPriority = 0;
-    CExoSoundPriorityGroup* pGroup = m_pPriorityGroups + nPriorityGroup;
+    CExoSoundPriorityGroup* pGroup = GetPriorityGroup(nPriorityGroup);
     int nInterrupt;
     int nVoice;
 
@@ -1711,7 +1720,7 @@ int CExoSoundInternal::AddToStreamingList(  // PC 0x006242F0
     if (m_lstStreaming.Count() >= nMaximum)
     {
         CExoSoundPriorityGroup* pSourceGroup =
-            m_pPriorityGroups + pSource->m_nPriorityGroup;
+            GetPriorityGroup(pSource->m_nPriorityGroup);
         CExoStreamingSoundSourceInternal* pInterruptSource = NULL;
         unsigned char nPriority = 0;
 
@@ -1765,10 +1774,12 @@ int CExoSoundInternal::AddToStreamingList(  // PC 0x006242F0
         }
     }
     pSource->m_bPlaying = (int)m_lstStreaming.AddHead(pSource);
-    CExoSoundPriorityGroup* pGroup =
-        m_pPriorityGroups + pSource->m_nPriorityGroup;
+    CExoSoundPriorityGroup* pGroup = GetPriorityGroup(pSource->m_nPriorityGroup);
 
-    pGroup->m_nPlaying = pGroup->m_nPlaying + 1;
+    if (pGroup)
+    {
+        pGroup->m_nPlaying = pGroup->m_nPlaying + 1;
+    }
     return 1;
 }
 #endif
@@ -3375,10 +3386,12 @@ void CExoSoundInternal::AddToStreamingList(
     CExoStreamingSoundSourceInternal* pSource)
 {
     m_lstStreaming.AddHead(pSource);
-    CExoSoundPriorityGroup* pGroup =
-        m_pPriorityGroups + pSource->m_nPriorityGroup;
+    CExoSoundPriorityGroup* pGroup = GetPriorityGroup(pSource->m_nPriorityGroup);
 
-    pGroup->m_nPlaying = pGroup->m_nPlaying + 1;
+    if (pGroup)
+    {
+        pGroup->m_nPlaying = pGroup->m_nPlaying + 1;
+    }
 }
 
 

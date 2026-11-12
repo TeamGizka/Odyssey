@@ -344,6 +344,7 @@ void AurGrassAddInfo(int nMaterial, const CAurGrassInfo& info)
     material.m_fQuadSize = info.m_fQuadSize;
     material.m_vAmbient = info.m_vAmbient;
     material.m_vDiffuse = info.m_vDiffuse;
+    material.m_vEmissive = info.m_vEmissive;
     float fTotal = 0.0f;
     for (int i = 0; i < CAurGrassInfo::NUM_GRASS_PROBABILITIES; i++)
     {

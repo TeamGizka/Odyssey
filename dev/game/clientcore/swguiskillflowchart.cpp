@@ -21,7 +21,6 @@ void CSWGuiSkillFlow::Draw(float fElapsed)
         {
             m_aSkills[i].m_cRightImage.Draw(fElapsed);
             m_aSkills[i].m_cLeftImage.Draw(fElapsed);
-            m_aSkills[i].m_cBorder.Draw(fElapsed);
         }
     }
     for (i = 0; i < 2; i++)
@@ -39,15 +38,6 @@ CSWGuiSkillFlow::CSWGuiSkillFlow()
 
     for (i = 0; i < 3; i++)
     {
-#ifdef _XBOX
-        m_aSkills[i].m_cBorder.m_cParams.SetCornerImage("border2d", 0);
-        m_aSkills[i].m_cBorder.m_cParams.SetEdgeImage("border1d", 0);
-#else
-        CResRef cCorner("border2d");
-        m_aSkills[i].m_cBorder.m_cParams.SetCornerImage(cCorner, 0);
-        CResRef cEdge("border1d");
-        m_aSkills[i].m_cBorder.m_cParams.SetEdgeImage(cEdge, 0);
-#endif
         m_aSkills[i].m_cLeftImage.m_cParams.SetDrawStyle(1);
         m_aSkills[i].m_cLeftImage.m_cParams.SetAlignment(CSWGuiTextParams::ALIGNMENT_CENTER);
 #ifdef _XBOX
@@ -91,17 +81,14 @@ void CSWGuiSkillFlow::SetExtent(const CSWGuiExtent& cExtent)
     cArrowExtent.m_nHeight = 32;
     int i;
 
-    m_aSkills[0].m_cBorder.SetExtent(cSkillExtent);
     m_aSkills[0].m_cRightImage.SetExtent(cSkillExtent);
 
     cSkillExtent.m_nLeft =
         cExtent.m_nLeft + (cExtent.m_nWidth - cExtent.m_nHeight) / 2;
-    m_aSkills[1].m_cBorder.SetExtent(cSkillExtent);
     m_aSkills[1].m_cRightImage.SetExtent(cSkillExtent);
 
     cSkillExtent.m_nLeft =
         cExtent.m_nLeft + cExtent.m_nWidth - cExtent.m_nHeight;
-    m_aSkills[2].m_cBorder.SetExtent(cSkillExtent);
     m_aSkills[2].m_cRightImage.SetExtent(cSkillExtent);
 
     cArrowExtent.m_nTop = cExtent.m_nTop + (cExtent.m_nHeight - 32) / 2;
@@ -116,7 +103,7 @@ void CSWGuiSkillFlow::SetExtent(const CSWGuiExtent& cExtent)
     for (i = 0; i < 3; i++)
     {
         m_aSkills[i].m_cLeftImage.SetExtent(
-            m_aSkills[i].m_cBorder.GetInnerExtent());
+            m_aSkills[i].m_cRightImage.m_cExtent);
     }
     m_cExtent = cExtent;
 }
@@ -445,7 +432,7 @@ CSWGuiSkillInfoBox::CSWGuiSkillInfoBox(CSWGuiManager* pManager)
 #endif
     CSWGuiLabelHilight* pProto = m_lbSkills.m_pProtoItem->AsLabelHilight();
     int nWidth = m_lbSkills.GetItemWidth();
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < MAX_SKILL_ENTRIES; i++)
     {
         m_aSkillEntries[i].Initialize(pProto->m_cText, pProto->m_cBorder,
                                      pProto->m_cHilite, nWidth);
@@ -456,13 +443,14 @@ CSWGuiSkillInfoBox::CSWGuiSkillInfoBox(CSWGuiManager* pManager)
                      (CSWGuiHandler)&CSWGuiPanel::OnAButtonPressed);
 #endif
     CenterPanel();
+    m_pCallbackObject = NULL;
+    m_pCallback = NULL;
 }
 // PC 0x0073AEB0
 void CSWGuiSkillFlow::SetSkillStatus(unsigned char nSkill, unsigned char nStatus)
 {
     SwguiskillflowchartTrace1();
     m_aSkills[nSkill].m_nStatus = nStatus;
-    m_aSkills[nSkill].m_cBorder.m_cParams.m_fHilightAlpha = 1.0f;
     m_aSkills[nSkill].m_cLeftImage.m_cParams.m_fAlpha = 1.0f;
     m_aSkills[nSkill].m_cRightImage.m_cParams.m_fAlpha = 1.0f;
     if (nSkill > 0)
@@ -472,28 +460,20 @@ void CSWGuiSkillFlow::SetSkillStatus(unsigned char nSkill, unsigned char nStatus
     {
     case STATUS_GRANTED:
     case STATUS_GRANTED_ALTERNATE:
-        m_aSkills[nSkill].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_GREEN;
-        if (!m_aSkills[nSkill].m_bSelected)
-            m_aSkills[nSkill].m_cBorder.m_cParams.m_fHilightAlpha = 0.5f;
+        m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_GREEN;
         break;
     case STATUS_CHOSEN:
-        m_aSkills[nSkill].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_GREEN;
+        m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_GREEN;
         break;
     case STATUS_UNAVAILABLE:
         m_aSkills[nSkill].m_cLeftImage.m_cParams.m_fAlpha = 0.25f;
         m_aSkills[nSkill].m_cRightImage.m_cParams.m_fAlpha = 0.25f;
-        if (m_aSkills[nSkill].m_bSelected)
-            m_aSkills[nSkill].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_RED;
-        else
-            m_aSkills[nSkill].m_cBorder.m_cParams.m_fHilightAlpha = 0.0f;
+        m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_RED;
         if (nSkill > 0)
             m_aArrows[nSkill - 1].m_cParams.m_fAlpha = 0.0f;
         break;
     case STATUS_YELLOW_DIM_ARROW:
-        if (m_aSkills[nSkill].m_bSelected)
-            m_aSkills[nSkill].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
-        else
-            m_aSkills[nSkill].m_cBorder.m_cParams.m_fHilightAlpha = 0.0f;
+        m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
         if (nSkill > 0)
             m_aArrows[nSkill - 1].m_cParams.m_fAlpha = 0.25f;
         break;
@@ -501,16 +481,13 @@ void CSWGuiSkillFlow::SetSkillStatus(unsigned char nSkill, unsigned char nStatus
         m_aSkills[nSkill].m_cLeftImage.m_cParams.m_fAlpha = 0.25f;
 
     case STATUS_YELLOW:
-        if (m_aSkills[nSkill].m_bSelected)
-            m_aSkills[nSkill].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
-        else
-            m_aSkills[nSkill].m_cBorder.m_cParams.m_fHilightAlpha = 0.0f;
+        m_aSkills[nSkill].m_cRightImage.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
         break;
     }
     if (m_aSkills[nSkill].m_bSelected)
-        m_aSkills[nSkill].m_cBorder.m_cParams.SetPulsingAlpha(1, 1, 0);
+        m_aSkills[nSkill].m_cRightImage.m_cParams.m_bPulsing = 1;
     else
-        m_aSkills[nSkill].m_cBorder.m_cParams.SetPulsingAlpha(0, 0, 0);
+        m_aSkills[nSkill].m_cRightImage.m_cParams.m_bPulsing = 0;
 }
 // PC 0x0073B070
 unsigned int CSWGuiSkillFlow::SkillHitCheckMouse(int nX, int nY)
@@ -523,7 +500,7 @@ unsigned int CSWGuiSkillFlow::SkillHitCheckMouse(int nX, int nY)
     nHit = 0;
     for (i = 0; i < 3 && m_aSkills[i].m_nSkill != -1; i++)
     {
-        cExtent = m_aSkills[i].m_cBorder.m_cExtent;
+        cExtent = m_aSkills[i].m_cRightImage.m_cExtent;
         if (nX >= cExtent.m_nLeft && nX <= cExtent.m_nLeft + cExtent.m_nWidth &&
             nY >= cExtent.m_nTop && nY <= cExtent.m_nTop + cExtent.m_nHeight)
         {
@@ -857,6 +834,10 @@ void CSWGuiSkillInfoBox::HandleInputEvent(int nEvent, int nState)
         case 46:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
             SetModal(0);
+            if (m_pCallbackObject != NULL && m_pCallback != NULL)
+            {
+                (m_pCallbackObject->*m_pCallback)(NULL);
+            }
             break;
         }
     }

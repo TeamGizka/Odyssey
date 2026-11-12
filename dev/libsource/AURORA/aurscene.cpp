@@ -62,6 +62,7 @@ int Scene::geomFadeEnabled = ENABLE_FADE;
 int checkstasis = 1;
 
 int g_FocusModelCount = 0;
+extern float g_fLuminanceScale;
 int enablegetnearestlights = 0;
 int count_render = 0;
 int enableshadows = 1;
@@ -882,6 +883,7 @@ CAurRoom::CAurRoom(char* sName)
 {
     strcpy(m_sName, sName);
     m_pRoomObject = 0;
+    m_bB8 = 0;
 }
 // PC 0x0046C210
 CHitInfo::CHitInfo(int nType, int nFlags, int nMask)
@@ -3403,6 +3405,8 @@ Scene::Scene(char* sName)
     m_fFogFar = 40.0f;
     m_fFogDensity = 0.1f;
     m_nAnimationFrame = 0;
+    m_v80 = Vector(g_fLuminanceScale * 0.3f, g_fLuminanceScale * 0.59f,
+                   g_fLuminanceScale * 0.11f);
 
     m_pLightManager = new LightManager;
     m_pWindManager = new WindManager;
@@ -3432,8 +3436,13 @@ Scene::Scene(char* sName)
     m_SceneRoot.SetScene(this);
     m_pCurrentRoom = 0;
 
+    m_pDirtyTexture = AurTextureGetReference("dirtytex", 0);
+    m_pDirtyTexture2 = AurTextureGetReference("dirtytex2", 0);
+    m_pDirtyTexture3 = AurTextureGetReference("dirtytex3", 0);
     m_pFilmNoiseTexture = AurTextureGetReference("filmnoisetex", 0);
     m_pDistortionTexture = AurTextureGetReference("distortiontex", 0);
+    m_pClairTexture = AurTextureGetReference("fx_Clair01", 0);
+    m_pHoloTexture = AurTextureGetReference("Holotex", 0);
 
     if (AurATIFragmentShaderAvailable())
         VertexProgramManager::ResetVertexPrograms();

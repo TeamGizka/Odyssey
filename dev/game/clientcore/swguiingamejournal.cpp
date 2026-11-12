@@ -92,9 +92,8 @@ CSWGuiInGameJournal::CSWGuiInGameJournal(CSWGuiManager* pManager)
     InitControl(m_lblTitle, "LBL_TITLE", 1);
     InitControl(m_lbxItems, "LB_ITEMS", 1);
     InitControl(m_lblItemDescription, "LBL_ITEM_DESCRIPTION", 1);
-    InitControl(m_btnQuestItems, "BTN_QUESTITEMS", 1);
+    InitControl(m_btnMessages, "BTN_MESSAGES", 1);
     InitControl(m_btnSwapText, "BTN_SWAPTEXT", 1);
-    InitControl(m_btnSort, "BTN_SORT", 1);
     InitControl(m_btnExit, "BTN_EXIT", 1);
 #endif
     StopLoadFromLayout();
@@ -110,7 +109,7 @@ CSWGuiInGameJournal::CSWGuiInGameJournal(CSWGuiManager* pManager)
     pItems->m_bShowScrollBar = 1;
 
 #ifndef _XBOX
-    CSWGuiButton* pQuestItems = &m_btnQuestItems;
+    CSWGuiButton* pQuestItems = &m_btnMessages;
     pQuestItems->SetFocusable(0);
     pQuestItems->AddEvent(CSWGuiControl::EVENT_SELECT, this,
                          (CSWGuiHandler)&CSWGuiPanel::OnXButtonPressed);
@@ -118,10 +117,6 @@ CSWGuiInGameJournal::CSWGuiInGameJournal(CSWGuiManager* pManager)
     pSwapText->SetFocusable(0);
     pSwapText->AddEvent(CSWGuiControl::EVENT_SELECT, this,
                        (CSWGuiHandler)&CSWGuiPanel::OnYButtonPressed);
-    CSWGuiButton* pSort = &m_btnSort;
-    pSort->SetFocusable(0);
-    pSort->AddEvent(CSWGuiControl::EVENT_SELECT, this,
-                   (CSWGuiHandler)&CSWGuiPanel::OnBlackButtonPressed);
     CSWGuiButton* pExit = &m_btnExit;
     pExit->SetFocusable(0);
     pExit->AddEvent(CSWGuiControl::EVENT_SELECT, this,
@@ -140,8 +135,6 @@ CSWGuiInGameJournal::CSWGuiInGameJournal(CSWGuiManager* pManager)
                        g_pTlkTable->GetSimpleString(s_pnSortLabels[nNextSort]);
 #ifdef _XBOX
     m_lblSort.m_cText.m_cParams.SetText(sSort);
-#else
-    m_btnSort.m_cText.m_cParams.SetText(sSort);
 #endif
 
     if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bJournalDone)
@@ -385,8 +378,6 @@ void CSWGuiInGameJournal::HandleInputEvent(int nEvent, int nState)
                 g_pTlkTable->GetSimpleString(s_pnSortLabels[nNextSort]);
 #ifdef _XBOX
             m_lblSort.m_cText.m_cParams.SetText(sSort);
-#else
-            m_btnSort.m_cText.m_cParams.SetText(sSort);
 #endif
             sSort = g_pTlkTable->GetSimpleString(
                         g_pAppManager->GetClientExoApp()->GetInGameGui()
@@ -508,8 +499,6 @@ void CSWGuiInGameJournal::OnPanelAdded()
                        g_pTlkTable->GetSimpleString(s_pnSortLabels[nNextSort]);
 #ifdef _XBOX
     m_lblSort.m_cText.m_cParams.SetText(sSort);
-#else
-    m_btnSort.m_cText.m_cParams.SetText(sSort);
 #endif
     sSort = g_pTlkTable->GetSimpleString(
                 g_pAppManager->m_pClientExoApp->GetInGameGui()->m_bJournalDone

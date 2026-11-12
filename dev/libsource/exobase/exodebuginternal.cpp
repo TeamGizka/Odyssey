@@ -231,6 +231,11 @@ void CExoDebugInternal::CloseLogFiles()
             delete m_pScriptLogFile;
             m_pScriptLogFile = NULL;
         }
+        if (m_p1C)
+        {
+            delete m_p1C;
+            m_p1C = NULL;
+        }
         m_bLogFilesOpen = 0;
     }
 }

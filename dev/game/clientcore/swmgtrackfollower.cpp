@@ -371,10 +371,7 @@ int CSWMiniPlayer::SetLooping(int nLooping)
 // PC 0x006C2050
 float CSWMiniPlayer::SetMinSpeed(float fSpeed)
 {
-    if (fSpeed >= 0.0f)
-    {
-        m_fMinimumSpeed = fSpeed;
-    }
+    m_fMinimumSpeed = fSpeed;
     return m_fMinimumSpeed;
 }
 // PC 0x006C2070
@@ -389,10 +386,7 @@ float CSWMiniPlayer::SetMaxSpeed(float fSpeed)
 // PC 0x006C20A0
 float CSWMiniPlayer::SetAPS(float fAPS)
 {
-    if (fAPS >= 0.0f)
-    {
-        m_fAPS = fAPS;
-    }
+    m_fAPS = fAPS;
     return m_fAPS;
 }
 // PC 0x006C20C0

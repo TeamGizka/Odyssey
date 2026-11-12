@@ -64,7 +64,7 @@ public:
 
     CExoString m_sName;
     CExoString m_sTag;
-    unsigned char m_nAppearance;
+    unsigned long m_nAppearance;
 
     int m_bPlotObject;
     int m_nUnknown114;

@@ -46,27 +46,37 @@ public:
     enum
     {
         NUM_ITEMLIST_MODES = 4,
-        NUM_UPGRADE_SLOTS = 4
+        NUM_UPGRADE_SLOTS = 6
     };
 
     CSWGuiButton m_aUpgradeButtons4[4];
+#ifndef _XBOX
+    CSWGuiButton m_aUpgradeButtons3Ls[6];
+#endif
     CSWGuiButton m_aUpgradeButtons3[3];
+#ifdef _XBOX
     CSWGuiLabel m_aUpgradeLabels4[4];
+#else
+    CSWGuiLabel m_aUpgradeLabels3Ls[6];
+#endif
     CSWGuiLabel m_aUpgradeLabels3[3];
     CSWGuiListBox m_lbItems;
     CSWGuiListBox m_lbDesc;
     CSWGuiListBox m_lbDescLs;
     CSWGuiLabel m_cTitle;
+#ifndef _XBOX
+    CSWGuiLabel m_lblTitle2;
+#endif
     CSWGuiLabel m_CSWGuiLabel_1F60;
     CSWGuiLabel m_cLabel20A0;
     CSWGuiLabel m_cDescriptionBackground;
     CSWGuiLabel m_cLightsaberDescriptionBackground;
     CSWGuiLabel m_cProperty;
     CSWGuiLabel m_cSlotName;
+#ifdef _XBOX
     CSWGuiLabel m_cLightsaberSlotName;
     CSWGuiLabel m_cUpgrades;
     CSWGuiLabel m_cUpgradeCount;
-#ifdef _XBOX
     CSWGuiLabel m_lblA;
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblAAction;
@@ -75,6 +85,9 @@ public:
     CSWGuiLabel m_lblRanalogLs;
 #endif
     CSWGuiButton m_cAssemble;
+#ifndef _XBOX
+    CSWGuiButton m_btnOk;
+#endif
     CSWGui3DSceneView m_3dModel;
     CSWGui3DSceneView m_3dModelLs;
 #ifndef _XBOX
@@ -94,7 +107,7 @@ public:
 
     CSWSItem* m_apItemEntries[NUM_UPGRADE_SLOTS];
     CExoString m_asUpgradeTemplates[NUM_UPGRADE_SLOTS];
-    unsigned char m_anUpgradeProperties[NUM_UPGRADE_SLOTS];
+    int m_anUpgradeProperties[NUM_UPGRADE_SLOTS];
     C2DA* m_pUpgradeTable;
     C2DA* m_pCrystalTable;
     CSWGuiControl* m_pItemListControl;
@@ -163,6 +176,9 @@ public:
     unsigned long m_bLeftHandItem : 1;
     unsigned long m_oidOtherWeapon;
 
+    int m_nC84;
+    unsigned long m_nC88;
+
     CSWSItem* m_pPresetItem;
     CSWUpgradeItemEntry* m_pUpgradeItem;
 
@@ -194,23 +210,38 @@ public:
     CSWGuiLabel m_lblB;
     CSWGuiLabel m_lblBack;
 #else
+    CSWGuiLabel m_lblTitle2;
 
     CSWGuiButton m_btnUpgradeitems;
     CSWGuiButton m_btnBack;
+    CSWGuiButton m_btnCreateitems;
+    CSWGuiPanel* m_pCreateItems;
 #endif
 
 #ifdef _XBOX
     CSWGuiButton m_aTypeButtons[4];
-#else
-    CSWGuiRadioButton m_aTypeButtons[4];
-#endif
     CSWGuiLabel m_aTypeLabels[4];
+#else
+    CSWGuiButton m_aTypeButtons[5];
+    CSWGuiListBox m_lbUpgradelist;
+    CSWGuiListBox m_lbDescription;
+    CSWGuiLabel m_lblDescription;
+#endif
 
     unsigned long m_oidItem;
+#ifndef _XBOX
+    int m_n18A8;
+#endif
     int m_anUpgradable[4];
+#ifndef _XBOX
+    unsigned long m_n18BC;
+#endif
     CSWGuiUpgradeItemSelect* m_pItemSelect;
 #ifndef _XBOX
     CSWGuiControl* m_pSelectedType;
+    int m_n18C8;
+    int m_n18CC;
+    CExoString m_s18D0;
 #endif
     void AutoUpgradeDone();
     void GetUpgradableItems(CSWSCreature*, int*, C2DA*);
@@ -233,8 +264,7 @@ public:
     unsigned long m_nItemId;
     unsigned long m_nItemProperty;
     unsigned int m_bShowItemSuffix : 1;
-    char m_nUpgradeIndex;
-    char gap_1D5[3];
+    int m_nUpgradeIndex;
     CSWGuiBorder m_CSWGuiBorder_1D8;
     CSWGuiBorder m_CSWGuiBorder_24C;
     CSWGuiBorder m_CSWGuiBorder_2C0;

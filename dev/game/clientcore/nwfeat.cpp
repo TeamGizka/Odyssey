@@ -26,6 +26,13 @@ CSWFeat::CSWFeat()
     m_bTargetSelf = 0;
     m_bHostileFeat = 0;
     m_bAvailable = 1;
+    m_bHandmaiden = 0;
+    m_bBaoDur = 0;
+    m_bHanharr = 0;
+    m_bHK47 = 0;
+    m_bG0T0 = 0;
+    m_bAtton = 0;
+    m_bKreia = 0;
 }
 // PC 0x004015A0
 CSWFeat::~CSWFeat()

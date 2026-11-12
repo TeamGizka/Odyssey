@@ -1066,7 +1066,7 @@ void CSWGuiPazaakStart::HandleQuitDialog(CSWGuiControl* pControl)  // PC 0x006D3
 int CSWGuiPazaakStart::IsAvailCardActive()
 {
     int nIndex = m_pActiveControl->m_nID;
-    if (nIndex >= 0 && nIndex < 18)
+    if (nIndex >= 0 && nIndex < AvailCardCount)
     {
         return m_pActiveControl == &m_cAvail[nIndex];
     }
@@ -1153,7 +1153,7 @@ CSWGuiPazaakStart::CSWGuiPazaakStart(CSWGuiManager* pManager, int nWager,
 #ifndef _XBOX
     m_pAvailCards = &m_cAvail[0];
 #endif
-    for (int i = 0; i < 18; i++)
+    for (int i = 0; i < AvailCardCount; i++)
     {
         m_anAvailCount[i] = 0;
     }
@@ -1186,6 +1186,7 @@ CSWGuiPazaakStart::CSWGuiPazaakStart(CSWGuiManager* pManager, int nWager,
     InitControl(m_lblLbutton, "LBL_LBUTTON", 1);
 #else
     InitControl(m_btnAtext, "BTN_ATEXT", 1);
+    InitControl(m_btnClearCards, "BTN_CLEARCARDS", 1);
 #endif
     InitControl(m_lblLtext, "LBL_LTEXT", 1);
 #ifdef _XBOX
@@ -1221,7 +1222,7 @@ CSWGuiPazaakStart::CSWGuiPazaakStart(CSWGuiManager* pManager, int nWager,
     strcpy(szAvailButton, "BTN_AVAILxx    ");
     strcpy(szAvailLabel, "LBL_AVAILxx    ");
     strcpy(szAvailCount, "LBL_AVAILNUMxx ");
-    for (int i = 0; i < 18; i++)
+    for (int i = 0; i < AvailCardCount; i++)
     {
         CSWGuiLabel* pCount = &m_lblAvailCount[i];
         int nRow = i / 6;
@@ -1248,13 +1249,13 @@ CSWGuiPazaakStart::CSWGuiPazaakStart(CSWGuiManager* pManager, int nWager,
         pCount->m_bIgnoreMouse = 1;
 #endif
     }
+#ifndef _XBOX
+    InitControl(m_lblHelp, "LBL_HELP", 1);
+#endif
     StopLoadFromLayout();
 #ifndef _XBOX
-    m_btnMove.AddEvent(GUIEVENT_ACTIVATE, this,
-                       (CSWGuiHandler)&CSWGuiPazaakStart::HandleMoveCard);
     m_btnAtext.AddEvent(GUIEVENT_ACTIVATE, this,
                          (CSWGuiHandler)&CSWGuiPazaakStart::HandleAcceptButton);
-    m_btnMove.SetFocusable(0);
 #endif
 #ifndef _XBOX
     m_nBackground = PC_BACKGROUND_SUFFIX_PAZAAK;
@@ -1271,7 +1272,7 @@ void CSWGuiPazaakStart::OnPanelAdded()
     }
     CSWPartyTable* pPartyTable =
         g_pAppManager->m_pServerExoApp->GetPartyTable();
-    for (i = 0; i < 18; i++)
+    for (i = 0; i < AvailCardCount; i++)
     {
         m_anAvailCount[i] = pPartyTable->m_anPazaakCards[i];
         if (m_anAvailCount[i] == 0)
@@ -1310,7 +1311,7 @@ void CSWGuiPazaakStart::OnPanelAdded()
             m_bSideDeckFull = 0;
         }
     }
-    for (i = 0; i < 18; i++)
+    for (i = 0; i < AvailCardCount; i++)
     {
         if (m_anAvailCount[i] >= 0)
         {
@@ -1334,12 +1335,12 @@ void CSWGuiPazaakStart::OnPanelAdded()
         m_cChosen[i].SetMoveToControl(0, &m_cChosen[(i + 8) % 10]);
         m_cChosen[i].SetMoveToControl(2, &m_cChosen[(i + 2) % 10]);
     }
-    for (i = 0; i < 18; i++)
+    for (i = 0; i < AvailCardCount; i++)
     {
-        m_cAvail[i].SetMoveToControl(1, &m_cAvail[(i + 12) % 18]);
-        m_cAvail[i].SetMoveToControl(3, &m_cAvail[(i + 6) % 18]);
-        m_cAvail[i].SetMoveToControl(0, &m_cAvail[6 * (i / 6) + (i + 5) % 6]);
-        m_cAvail[i].SetMoveToControl(2, &m_cAvail[6 * (i / 6) + (i + 1) % 6]);
+        m_cAvail[i].SetMoveToControl(0, &m_cAvail[(i + 18) % AvailCardCount]);
+        m_cAvail[i].SetMoveToControl(2, &m_cAvail[(i + 6) % AvailCardCount]);
+        m_cAvail[i].SetMoveToControl(1, &m_cAvail[6 * (i / 6) + (i + 5) % 6]);
+        m_cAvail[i].SetMoveToControl(3, &m_cAvail[6 * (i / 6) + (i + 1) % 6]);
     }
     if (m_pWagerPopup == NULL)
     {
@@ -1490,39 +1491,6 @@ void CSWGuiPazaakStart::ShowDisabledButtons()
 void CSWGuiPazaakStart::ShowDisabledButtons()  // PC 0x006D4C50
 {
     m_btnAtext.SetEnabled(m_bSideDeckFull);
-    if (m_pActiveControl != NULL)
-    {
-        if (IsAvailCardActive())
-        {
-            int nIndex = m_pActiveControl->m_nID;
-            int bEnabled = m_bSideDeckFull == 0;
-            if (&m_cAvail[nIndex] == m_pActiveControl &&
-                m_anAvailCount[nIndex] < 1)
-            {
-                bEnabled = 0;
-            }
-            m_btnMove.SetEnabled(bEnabled);
-        }
-        else if (ClearSideDeck())
-        {
-            int nIndex = m_pActiveControl->m_nID;
-            int bEnabled = 1;
-            if (&m_cChosen[nIndex] == m_pActiveControl &&
-                m_aChosen[nIndex].m_nType < 0)
-            {
-                bEnabled = 0;
-            }
-            m_btnMove.SetEnabled(bEnabled);
-        }
-        else
-        {
-            m_btnMove.SetEnabled(0);
-        }
-    }
-    else
-    {
-        m_btnMove.SetEnabled(0);
-    }
 }
 #endif
 
@@ -1571,7 +1539,7 @@ void CSWGuiPazaakStart::HandleChosenCardDrop(CSWGuiControl* pControl)  // PC 0x0
             }
             else
             {
-                if (nTarget >= 18 || pDropTarget != &m_cAvail[nTarget])
+                if (nTarget >= AvailCardCount || pDropTarget != &m_cAvail[nTarget])
                 {
                     return;
                 }
@@ -1652,6 +1620,9 @@ CSWGuiPazaakGame::CSWGuiPazaakGame(CSWGuiManager* pManager, CSWPazaak* pPazaak,
 #ifndef _XBOX
     InitControl(m_lblFlipIcon, "LBL_FLIPICON", 1);
     InitControl(m_lblFlipLegend, "LBL_FLIPLEGEND", 1);
+    InitControl(m_lblChangeIcon, "LBL_CHANGEICON", 1);
+    InitControl(m_lblChangeLegend, "LBL_CHANGELEGEND", 1);
+    InitControl(m_btnForfeitGame, "BTN_FORFEITGAME", 1);
 #endif
     int i;
     {
@@ -1937,7 +1908,6 @@ void CSWGuiPazaakStart::HandleInputEvent(int nEvent, int nState)  // PC 0x006D77
                 break;
             }
             SetActiveControl(m_pAvailCards, 0);
-            m_btnMove.m_cText.m_cParams.SetStrRef(38601);
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
             break;
         case 54:
@@ -1950,7 +1920,6 @@ void CSWGuiPazaakStart::HandleInputEvent(int nEvent, int nState)  // PC 0x006D77
                 break;
             }
             SetActiveControl(m_pChosenCards, 0);
-            m_btnMove.m_cText.m_cParams.SetStrRef(38602);
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
             break;
         }

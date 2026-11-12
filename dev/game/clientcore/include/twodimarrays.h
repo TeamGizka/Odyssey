@@ -188,8 +188,8 @@ public:
     C2DA* m_pVisualEffect;
     C2DA* m_pVisualEffectsPersistent;
     C2DA* m_pCreatureSpeed;
-    C2DA* m_pGenericDoors;
     C2DA* m_pDoorTypes;
+    C2DA* m_pGenericDoors;
     C2DA* m_pPlaceables;
     C2DA* m_pAreaTransition;
     C2DA* m_pIPRPMelee;

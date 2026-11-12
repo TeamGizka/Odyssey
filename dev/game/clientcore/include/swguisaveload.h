@@ -10,6 +10,7 @@ class CSWGuiControl;
 class CSWGuiManager;
 class CSWGuiLabel_vtbl;
 class CSWGuiSaveGameEditBox_vtbl;
+class CSWGuiSaveLoadEntry;
 
 extern int g_bEnableLiveContentIgnore;
 
@@ -53,6 +54,11 @@ public:
     CSWGuiButton m_btnDelete;
     CSWGuiButton m_btnFilter;
     CSWGuiLabel m_alblBar[4];
+    CExoArrayList<CSWGuiSaveLoadEntry*> m_lEntries;
+    int m_n1B5C;
+    CExoArrayList<CExoString> m_l1B60;
+    int m_n1B6C;
+    int m_bEndGameMode;
 #endif
 #ifdef _XBOX
     void UpdateFreeBlocks();
@@ -154,8 +160,15 @@ public:
     unsigned long m_nTimePlayed;
 
     int m_nSaveSpaceNeeded;
+#ifndef _XBOX
+    unsigned char m_n1E0;
+#endif
     unsigned char m_nGameplayHint;
     unsigned char m_nStoryHint;
+#ifndef _XBOX
+    int m_n1E4;
+    int m_n1E8;
+#endif
 #ifndef _XBOX
     CExoString m_sSaveGameName;
 #endif
@@ -169,6 +182,9 @@ public:
     CExoString m_sMissingLiveContent;
 
     CResRef m_aPortraits[3];
+#ifndef _XBOX
+    unsigned char m_aUnmapped25C[0x14];
+#endif
 
     CExoString GetGameDirectory();
     // PC 0x00708210

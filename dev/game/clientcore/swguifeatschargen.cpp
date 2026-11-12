@@ -603,7 +603,7 @@ void CSWGuiFeatsCharGen::OnAcceptButton()
 #ifdef _XBOX
         pMessageBox->SetMessage(42187);
 #else
-        pMessageBox->SetMessage(48215);
+        pMessageBox->SetMessage(48730);
 #endif
         m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
         return;

@@ -350,6 +350,7 @@ CSWGuiUpgradeSelection::CSWGuiUpgradeSelection(CSWGuiManager* pManager)
     }
 #endif
     InitControl(m_lblTitle, "LBL_TITLE", 1);
+#ifdef _XBOX
     InitControl(m_aTypeButtons[0], "BTN_LIGHTSABER", 1);
     InitControl(m_aTypeButtons[1], "BTN_RANGED", 1);
     InitControl(m_aTypeButtons[2], "BTN_MELEE", 1);
@@ -358,20 +359,42 @@ CSWGuiUpgradeSelection::CSWGuiUpgradeSelection(CSWGuiManager* pManager)
     InitControl(m_aTypeLabels[1], "LBL_RANGED", 1);
     InitControl(m_aTypeLabels[2], "LBL_MELEE", 1);
     InitControl(m_aTypeLabels[3], "LBL_ARMOR", 1);
-#ifdef _XBOX
     InitControl(m_lblA, "LBL_A", 1);
     InitControl(m_lblB, "LBL_B", 1);
     InitControl(m_lblBack, "LBL_BACK", 1);
     InitControl(m_lblUpgradeitems, "LBL_UPGRADEITEMS", 1);
 #else
+    InitControl(m_lblTitle2, "LBL_TITLE2", 1);
+    InitControl(m_aTypeButtons[0], "BTN_ALL", 1);
+    InitControl(m_aTypeButtons[1], "BTN_LIGHTSABER", 1);
+    InitControl(m_aTypeButtons[2], "BTN_RANGED", 1);
+    InitControl(m_aTypeButtons[3], "BTN_MELEE", 1);
+    InitControl(m_aTypeButtons[4], "BTN_ARMOR", 1);
+    InitControl(m_lbUpgradelist, "LB_UPGRADELIST", 1);
+    InitControl(m_lbDescription, "LB_DESCRIPTION", 1);
     InitControl(m_btnBack, "BTN_BACK", 1);
     InitControl(m_btnUpgradeitems, "BTN_UPGRADEITEMS", 1);
+    InitControl(m_btnCreateitems, "BTN_CREATEITEMS", 1);
 #endif
     StopLoadFromLayout();
+#ifndef _XBOX
+    m_lblDescription.Initialize(m_lbDescription.m_pProtoItem->m_cExtent,
+                                (CSWGuiLabel*)m_lbDescription.m_pProtoItem, 1.0f);
+#endif
 
     m_oidItem = OBJECT_INVALID;
     m_pItemSelect = new CSWGuiUpgradeItemSelect(pManager);
     m_pItemSelect->m_pSelectionPanel = this;
+#ifndef _XBOX
+    m_pCreateItems = 0;
+    for (int i = 0; i < 5; i++)
+    {
+        m_aTypeButtons[i].AddEvent(GUIEVENT_ACTIVATE, this,
+                                  (CSWGuiHandler)&CSWGuiUpgradeSelection::OnTypeSelected);
+        m_aTypeButtons[i].m_nIndex = i;
+        m_aTypeButtons[i].SetFocusable(0);
+    }
+#else
     for (int i = 0; i < 4; i++)
     {
         m_aTypeButtons[i].AddEvent(GUIEVENT_ACTIVATE, this,
@@ -386,6 +409,7 @@ CSWGuiUpgradeSelection::CSWGuiUpgradeSelection(CSWGuiManager* pManager)
         m_aTypeButtons[i].m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
         m_aTypeLabels[i].SetEnabledFlag(0);
     }
+#endif
 #ifndef _XBOX
     m_btnBack.SetFocusable(0);
     m_btnBack.AddEvent(GUIEVENT_ACTIVATE, this,
@@ -393,7 +417,11 @@ CSWGuiUpgradeSelection::CSWGuiUpgradeSelection(CSWGuiManager* pManager)
     m_btnUpgradeitems.SetFocusable(0);
     m_btnUpgradeitems.AddEvent(GUIEVENT_ACTIVATE, this,
                               (CSWGuiHandler)&CSWGuiUpgradeSelection::OnTypeSelected);
+    m_btnCreateitems.SetFocusable(0);
     m_pSelectedType = 0;
+    m_n18BC = 0;
+    m_n18C8 = 0;
+    m_n18CC = 0;
 #endif
 }
 // PC 0x00731CF0
@@ -440,6 +468,7 @@ CSWGuiUpgradeItemSelect::CSWGuiUpgradeItemSelect(CSWGuiManager* pManager)
 #endif
     m_nUpgradeType = 0;
     m_pPresetItem = 0;
+    m_nC84 = 0;
 #ifndef _XBOX
     SetActiveControl(&m_lbItems, 0);
 #endif
@@ -649,6 +678,10 @@ void CSWUpgradeItemEntry::SetItem(unsigned long oidItem, int bShowItemSuffix,
 // PC 0x00726EE0
 CSWGuiUpgradeSelection::~CSWGuiUpgradeSelection()
 {
+#ifndef _XBOX
+    m_lbDescription.ClearItems();
+    m_lbUpgradelist.ClearItems();
+#endif
     if (m_pItemSelect != 0)
     {
         delete m_pItemSelect;
@@ -715,21 +748,28 @@ void CSWGuiUpgradeSelection::OnPanelAdded()
         }
         for (int nType = 0; nType < 4; nType++)
         {
+#ifdef _XBOX
             m_aTypeLabels[nType].SetEnabledFlag(m_anUpgradable[nType]);
             if (m_anUpgradable[nType] != 0)
             {
                 m_aTypeButtons[nType].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-#ifndef _XBOX
-                m_aTypeButtons[nType].SetEnabled(1);
-#endif
             }
             else
             {
                 m_aTypeButtons[nType].m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
-#ifndef _XBOX
-                m_aTypeButtons[nType].SetEnabled(0);
-#endif
             }
+#else
+            if (m_anUpgradable[nType] != 0)
+            {
+                m_aTypeButtons[nType + 1].m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+                m_aTypeButtons[nType + 1].SetEnabled(1);
+            }
+            else
+            {
+                m_aTypeButtons[nType + 1].m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
+                m_aTypeButtons[nType + 1].SetEnabled(0);
+            }
+#endif
         }
         SetActiveControl(&m_aTypeButtons[0], 0);
     }
@@ -774,7 +814,10 @@ void CSWGuiUpgradeSelection::HandleInputEvent(int nEvent, int nState)
 
     if (nState != 0 && (nEvent == 40 || nEvent == 46))
     {
-        m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+#ifndef _XBOX
+        if (m_n18CC == 0)
+#endif
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
         pInGame = (CGuiInGame*)g_pAppManager->m_pClientExoApp->GetInGameGui();
         pInGame->HideUpgradeScreen();
     }
@@ -794,8 +837,13 @@ void CSWGuiUpgradeSelection::OnTypeSelected(CSWGuiControl* pControl)
             (pControl = m_pSelectedType) != 0)
 #endif
         {
+#ifdef _XBOX
             int nType = pControl->m_nIndex;
             if (m_anUpgradable[nType] != 0)
+#else
+            int nType = pControl->m_nIndex - 1;
+            if (nType >= 0 && m_anUpgradable[nType] != 0)
+#endif
             {
                 m_pItemSelect->m_nUpgradeType = nType + 1;
                 m_pManager->AddPanel(m_pItemSelect, CSWGuiManager::PANEL_MODE_MODAL, 1);
@@ -1051,15 +1099,11 @@ void CSWGuiUpgrade::ShowItems(int bShow)  // PC 0x007242E0
         m_3dModel.SetShown(0);
         m_3dModelLs.SetShown(0);
         m_cSlotName.SetShown(0);
-        m_cLightsaberSlotName.SetShown(0);
-        m_cUpgradeCount.SetShown(0);
-        m_cUpgrades.SetShown(0);
         m_cProperty.SetShown(0);
         m_cAssemble.SetShown(0);
         for (int i = 0; i < 4; i++)
         {
             m_aUpgradeButtons4[i].SetShown(0);
-            m_aUpgradeLabels4[i].SetShown(0);
             if (i < 3)
             {
                 m_aUpgradeButtons3[i].SetShown(0);
@@ -1074,20 +1118,16 @@ void CSWGuiUpgrade::ShowItems(int bShow)  // PC 0x007242E0
     {
         m_3dModel.SetShown(0);
         m_cSlotName.SetShown(0);
-        m_cUpgradeCount.SetShown(0);
-        m_cUpgrades.SetShown(0);
         m_cProperty.SetShown(0);
         m_cDescriptionBackground.SetShown(0);
         m_lbDesc.SetShown(0);
         m_3dModelLs.SetShown(1);
-        m_cLightsaberSlotName.SetShown(1);
         m_cAssemble.SetShown(1);
         m_cLightsaberDescriptionBackground.SetShown(1);
         m_lbDescLs.SetShown(1);
         for (int i = 0; i < 4; i++)
         {
             m_aUpgradeButtons4[i].SetShown(0);
-            m_aUpgradeLabels4[i].SetShown(0);
             if (i < 3)
             {
                 m_aUpgradeButtons3[i].SetShown(1);
@@ -1101,14 +1141,11 @@ void CSWGuiUpgrade::ShowItems(int bShow)  // PC 0x007242E0
         int bShowThreeSlots = 0;
         m_3dModel.SetShown(1);
         m_cSlotName.SetShown(1);
-        m_cUpgradeCount.SetShown(1);
-        m_cUpgrades.SetShown(1);
         m_cProperty.SetShown(1);
         m_cAssemble.SetShown(1);
         m_cDescriptionBackground.SetShown(1);
         m_lbDesc.SetShown(1);
         m_3dModelLs.SetShown(0);
-        m_cLightsaberSlotName.SetShown(0);
         m_cLightsaberDescriptionBackground.SetShown(0);
         m_lbDescLs.SetShown(0);
         switch (m_nItemListMode)
@@ -1117,27 +1154,21 @@ void CSWGuiUpgrade::ShowItems(int bShow)  // PC 0x007242E0
             for (int i = 0; i < 4; i++)
             {
                 m_aUpgradeButtons4[i].SetShown(1);
-                m_aUpgradeLabels4[i].SetShown(1);
-            }
+                }
             SetActiveControl(&m_aUpgradeButtons4[0], 0);
             break;
         case ITEMLIST_ARMOR:
             m_aUpgradeButtons4[0].SetShown(0);
-            m_aUpgradeLabels4[0].SetShown(0);
             m_aUpgradeButtons4[1].SetShown(1);
-            m_aUpgradeLabels4[1].SetShown(1);
             m_aUpgradeButtons4[2].SetShown(1);
-            m_aUpgradeLabels4[2].SetShown(1);
             m_aUpgradeButtons4[3].SetShown(0);
-            m_aUpgradeLabels4[3].SetShown(0);
             SetActiveControl(&m_aUpgradeButtons4[1], 0);
             break;
         case ITEMLIST_MELEE:
             for (int i = 0; i < 4; i++)
             {
                 m_aUpgradeButtons4[i].SetShown(0);
-                m_aUpgradeLabels4[i].SetShown(0);
-            }
+                }
             SetActiveControl(&m_aUpgradeButtons4[0], 0);
             bShowThreeSlots = 1;
             break;
@@ -1169,10 +1200,15 @@ CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x00730C60
     }
 #endif
     InitControl(m_cTitle, "LBL_TITLE", 1);
+#ifndef _XBOX
+    InitControl(m_lblTitle2, "LBL_TITLE2", 1);
+#endif
     InitControl(m_lbItems, "LB_ITEMS", 1);
     InitControl(m_lbDesc, "LB_DESC", 1);
     m_lbDesc.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+#ifdef _XBOX
     InitControl(m_lbDescLs, "LB_DESC_LS", 1);
+#endif
 
     m_lbDesc.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
     InitControl(m_cDescriptionBackground, "LBL_DESCBG", 1);
@@ -1180,9 +1216,11 @@ CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x00730C60
     InitControl(m_3dModel, "3D_MODEL", 1);
     InitControl(m_3dModelLs, "3D_MODEL_LS", 1);
     InitControl(m_cSlotName, "LBL_SLOTNAME", 1);
+#ifdef _XBOX
     InitControl(m_cLightsaberSlotName, "LBL_LSSLOTNAME", 1);
     InitControl(m_cUpgrades, "LBL_UPGRADES", 1);
     InitControl(m_cUpgradeCount, "LBL_UPGRADE_COUNT", 1);
+#endif
 #ifdef _XBOX
     InitControl(m_lblA, "LBL_A", 1);
     InitControl(m_lblB, "LBL_B", 1);
@@ -1196,6 +1234,7 @@ CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x00730C60
 #endif
     InitControl(m_cAssemble, "BTN_ASSEMBLE", 1);
 #ifndef _XBOX
+    InitControl(m_btnOk, "BTN_OK", 1);
     InitControl(m_btnBack, "BTN_BACK", 1);
 #endif
     m_cAssemble.m_nClickSound = CSWGuiManager::GUISOUND_ASSEMBLE;
@@ -1209,7 +1248,10 @@ CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x00730C60
     m_cAssemble.m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
 #else
     m_cAssemble.SetFocusable(0);
+    m_btnOk.SetFocusable(0);
+    m_btnOk.AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiUpgrade::OnUpgradeSelected);
 #endif
+#ifdef _XBOX
     for (int i = 0; i < 4; i++)
     {
         if (i < 3)
@@ -1240,15 +1282,50 @@ CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x00730C60
         m_aUpgradeButtons4[i].m_nIndex = i;
         m_aUpgradeButtons4[i].m_cHilite.m_cParams.SetPulsingAlpha(1, 0, 1);
     }
+#else
+    int i;
+    for (i = 0; i < 3; i++)
+    {
+        sControl.Format("LBL_UPGRADE3%d", i + 1);
+        InitControl(m_aUpgradeLabels3[i], sControl, 1);
+        sControl.Format("BTN_UPGRADE3%d", i + 1);
+        InitControl(m_aUpgradeButtons3[i], sControl, 1);
+        m_aUpgradeButtons3[i].AddEvent(GUIEVENT_ACTIVATE, this,
+                                      (CSWGuiHandler)&CSWGuiUpgrade::OnSlotSelected);
+        m_aUpgradeButtons3[i].AddEvent(GUIEVENT_ACCEPT, this,
+                                      (CSWGuiHandler)&CSWGuiUpgrade::OnSlotSelected);
+        m_aUpgradeButtons3[i].AddEvent(GUIEVENT_MOUSE_ENTER, this,
+                                      (CSWGuiHandler)&CSWGuiUpgrade::OnEnterSlot);
+        m_aUpgradeButtons3[i].m_nIndex = i;
+        m_aUpgradeButtons3[i].m_cHilite.m_cParams.SetPulsingAlpha(1, 0, 1);
+    }
+    for (i = 0; i < 6; i++)
+    {
+        sControl.Format("LBL_UPGRADE3%d_LS", i + 1);
+        InitControl(m_aUpgradeLabels3Ls[i], sControl, 1);
+        sControl.Format("BTN_UPGRADE3%d_LS", i + 1);
+        InitControl(m_aUpgradeButtons3Ls[i], sControl, 1);
+        m_aUpgradeButtons3Ls[i].AddEvent(GUIEVENT_ACTIVATE, this,
+                                        (CSWGuiHandler)&CSWGuiUpgrade::OnSlotSelected);
+        m_aUpgradeButtons3Ls[i].AddEvent(GUIEVENT_ACCEPT, this,
+                                        (CSWGuiHandler)&CSWGuiUpgrade::OnSlotSelected);
+        m_aUpgradeButtons3Ls[i].AddEvent(GUIEVENT_MOUSE_ENTER, this,
+                                        (CSWGuiHandler)&CSWGuiUpgrade::OnEnterSlot);
+        m_aUpgradeButtons3Ls[i].m_nIndex = i;
+        m_aUpgradeButtons3Ls[i].m_cHilite.m_cParams.SetPulsingAlpha(1, 0, 1);
+    }
+#endif
     StopLoadFromLayout();
     m_cSlotName.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+#ifdef _XBOX
     m_cLightsaberSlotName.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
     m_cUpgradeCount.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
     m_cUpgrades.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+#endif
     m_cProperty.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
     m_lbItems.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
 #ifndef _XBOX
-    m_CSWGuiLabel_1F60.Initialize(m_lbDescLs.m_pProtoItem->m_cExtent, (CSWGuiLabel*)m_lbDescLs.m_pProtoItem, 1.0f);
+    m_CSWGuiLabel_1F60.Initialize(m_lbDesc.m_pProtoItem->m_cExtent, (CSWGuiLabel*)m_lbDesc.m_pProtoItem, 1.0f);
 #else
     m_CSWGuiLabel_1F60.Initialize(m_lbDescLs.m_pProtoItem->m_cExtent, (CSWGuiLabel*)m_lbDescLs.m_pProtoItem);
 #endif
@@ -1260,8 +1337,8 @@ CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x00730C60
     m_pSelectedItem = 0;
     m_pSelectedItemCopy = 0;
     m_bItemListShown = 0;
-    for (i = 0; i < NUM_UPGRADE_SLOTS; i++)
-        m_apItemEntries[i] = 0;
+    for (int j = 0; j < NUM_UPGRADE_SLOTS; j++)
+        m_apItemEntries[j] = 0;
     if (g_bDo3DGUIs != 0)
     {
         CSWGuiScene* pScene = &m_3dModel.m_cScene;
@@ -1383,13 +1460,13 @@ void CSWGuiUpgrade::OnPanelAdded()
     case ITEMLIST_BLASTER:
         m_aUpgradeButtons4[1].SetMoveToControl(1, &m_aUpgradeButtons4[0]);
         m_aUpgradeButtons4[2].SetMoveToControl(3, &m_aUpgradeButtons4[3]);
-        pLabels = m_aUpgradeLabels4;
+        pLabels = m_aUpgradeLabels3Ls;
         break;
     case ITEMLIST_ARMOR:
         m_aUpgradeButtons4[1].SetMoveToControl(1, &m_aUpgradeButtons4[2]);
         m_aUpgradeButtons4[2].SetMoveToControl(3, &m_aUpgradeButtons4[1]);
         nFirstSlot = 1;
-        pLabels = m_aUpgradeLabels4;
+        pLabels = m_aUpgradeLabels3Ls;
         break;
     default:
         SetModal(0);
@@ -1982,7 +2059,7 @@ void CSWGuiUpgrade::UpdateItems()
     case ITEMLIST_ARMOR:
         nFirstSlot = 1;
     case ITEMLIST_BLASTER:
-        pLabels = m_aUpgradeLabels4;
+        pLabels = m_aUpgradeLabels3Ls;
         break;
     }
     unsigned char nSlots = 0;
@@ -2032,10 +2109,14 @@ void CSWGuiUpgrade::OnEnterSlot(CSWGuiControl* pControl)
                 CExoLocString sItemName = m_apItemEntries[nSlot]->m_sLocalizedName;
                 sItemName.GetString(g_pAppManager->GetClientExoApp()->GetClientLanguage(),
                                     &sName, 0);
+#ifdef _XBOX
                 m_cLightsaberSlotName.m_cText.m_cParams.SetText(sName);
+#endif
             }
+#ifdef _XBOX
             else
                 m_cLightsaberSlotName.m_cText.m_cParams.SetStrRef(nStrRef);
+#endif
 #ifdef _XBOX
             m_lblAAction.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
             m_lblAAction.m_cText.m_cParams.SetStrRef(36841);
@@ -2051,11 +2132,13 @@ void CSWGuiUpgrade::OnEnterSlot(CSWGuiControl* pControl)
             if (pItem != 0)
                 nCount = pItem->m_nStackSize;
             m_cSlotName.m_cText.m_cParams.SetStrRef(nStrRef);
+#ifdef _XBOX
             {
                 CExoString sCount(nCount);
                 m_cUpgradeCount.m_cText.m_cParams.SetText(sCount);
             }
             m_cUpgrades.m_cText.m_cParams.SetStrRef(STRREF_UPGRADES);
+#endif
             CSWSItem* pSelectedItem = m_pSelectedItem;
             m_cProperty.m_cText.m_cParams.SetText(
                 pSelectedItem->GetKeyedPropertyString(m_anUpgradeProperties[nSlot]));

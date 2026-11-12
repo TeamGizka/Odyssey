@@ -654,6 +654,9 @@ CSWCAnimBase::CSWCAnimBase()
     m_nWieldClass = CSWCAnimBase::WIELD_CLASS_NONE;
     m_nAnimSet = 0;
     m_nOffHandType = 0;
+    m_nD0 = 0;
+    m_nD4 = 0;
+    m_nD8 = 0;
     m_resLoadedModel = "";
     m_bPaletteReplaced = 0;
     m_nPaletteCount = 0;

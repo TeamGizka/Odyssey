@@ -581,6 +581,7 @@ CExoInputInternal::CExoInputInternal(HINSTANCE hInstance, HWND hWnd)  // PC 0x00
     m_aControlMap[CExoInput::KEYBOARD_NUMPADENTER] = DIK_NUMPADENTER;
     m_aControlMap[CExoInput::KEYBOARD_CAPSLOCK] = DIK_CAPITAL;
     m_aControlMap[CExoInput::KEYBOARD_PAUSE] = DIK_PAUSE;
+    m_aControlMap[CExoInput::KEYBOARD_OEM_102] = DIK_OEM_102;
 
     m_pRawInput = new CExoRawInputInternal(hInstance, hWnd);
     if (m_pRawInput != NULL)

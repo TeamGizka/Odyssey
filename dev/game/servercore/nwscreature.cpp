@@ -4061,7 +4061,7 @@ void CSWSCreature::ApplyDeathExperience()
 #else
     C2DA* pNPCTable = g_pRules->Get2DArrays()->m_pNPC;
 #endif
-    pNPCTable->GetINTEntry(10, "PercentXP", &nPercentXP);
+    pNPCTable->GetINTEntry(14, "PercentXP", &nPercentXP);
     if (nPercentXP > 0)
     {
         int nMembers = pParty->m_nNumMembers;

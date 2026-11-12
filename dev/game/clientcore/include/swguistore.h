@@ -68,6 +68,10 @@ public:
     int m_nUnknown2274;
     unsigned long m_nStoreId;
     unsigned long m_nCreatureId;
+#ifndef _XBOX
+    unsigned char m_nFilter;
+    unsigned char m_n34D9;
+#endif
     void PopulateStore();
     void SetDescription(CExoString const&);
     int GetItemBuyValue(CSWSItem*);

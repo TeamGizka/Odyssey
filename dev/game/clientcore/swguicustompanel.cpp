@@ -146,7 +146,7 @@ void CSWGuiCustomPanel::OnSelectNameButton(CSWGuiControl* pControl)
             pNew = new CSWGuiNameChargen(m_pManager, m_pCreature);
             pPanel = pNew;
             pPanel->SetParentPanel(this, 2);
-            m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
+            m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
         }
     }
 }
@@ -334,7 +334,7 @@ void CSWGuiCustomPanel::OnCancelPressed(CSWGuiControl* pControl)
         CSWGuiMessageBox* pMessageBox =
             g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
         pMessageBox->SetAllowCancel(1);
-        pMessageBox->SetMessage(48541);
+        pMessageBox->SetMessage(109863);
         pMessageBox->SetCallback(
             this, (CSWGuiEventHandler)&CSWGuiCustomPanel::ConfirmCancel, 0);
         m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);

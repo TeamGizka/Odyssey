@@ -23,7 +23,7 @@ CSWClass::CSWClass()
     {
         m_aAttackBonus[n] = 0;
     }
-    for (int i = 0; i < 20; i++)
+    for (int i = 0; i < 50; i++)
     {
         m_aSpellGain[i] = 0;
         m_aEffectiveCRLevel[i] = 0;
@@ -58,7 +58,7 @@ CSWClass::~CSWClass()
 {
     if (m_ppSpellsKnown != 0)
     {
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 50; i++)
         {
             if (m_ppSpellsKnown[i] != 0)
             {
@@ -130,7 +130,7 @@ unsigned char CSWClass::GetWillSaveBonus(unsigned char nLevel)
 unsigned char CSWClass::GetSpellGain(unsigned char nLevel,
                                      unsigned char nSpellLevel)
 {
-    if (nLevel >= 1 && nLevel <= 20 &&
+    if (nLevel >= 1 && nLevel <= 50 &&
         nSpellLevel < m_aNumSpellLevels[nLevel - 1])
     {
         return m_aSpellGain[nLevel - 1];
@@ -144,7 +144,7 @@ unsigned char CSWClass::GetSpellsKnownPerLevel(unsigned char nLevel,
                                                unsigned short nSpell,
                                                unsigned char nMulti)
 {
-    if (nLevel >= 1 && nLevel <= 20 &&
+    if (nLevel >= 1 && nLevel <= 50 &&
         nSpellLevel < m_aNumSpellLevels[nLevel - 1] && m_ppSpellsKnown != 0)
     {
         return m_ppSpellsKnown[nLevel - 1][nSpellLevel];
@@ -187,7 +187,7 @@ void CSWClass::LoadFeatGain(const CExoString& sTable)
 
     CExoString sRegular = sTable + "_REG";
     CExoString sBonus = sTable + "_BON";
-    for (int i = 0; i < 20; i++)
+    for (int i = 0; i < 50; i++)
     {
         if (p2DA->GetINTEntry(i, sRegular, &nValue) != 0)
         {
@@ -230,9 +230,11 @@ void CSWClass::LoadFeatsTable(const CExoString& sTable, CSWRules* pRules)
         m_pFeats[i].m_nFeat = 0;
         m_pFeats[i].m_nGrantedLevel = 0;
         m_pFeats[i].m_nList = CSWClassFeat::LIST_GRANTED;
+        m_pFeats[i].m_n04 = 0;
         m_pFeats[nFeat].m_nFeat = 0;
         m_pFeats[nFeat].m_nGrantedLevel = 0;
         m_pFeats[nFeat].m_nList = CSWClassFeat::LIST_GRANTED;
+        m_pFeats[nFeat].m_n04 = 0;
         m_pFeats[nFeat].m_nFeat = i;
         if (pRules->GetFeat(m_pFeats[nFeat].m_nFeat) != 0)
         {
@@ -357,7 +359,7 @@ void CSWClass::LoadSpellGainTable(const CExoString& sTable)
             EXOXBOXASSERT(0);
         }
 
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 50; i++)
         {
             pNumLevels->GetINTEntry(i, "NumSpellLevels", &nValue);
             m_aNumSpellLevels[i] = nValue;
@@ -398,7 +400,7 @@ void CSWClass::LoadSpellKnownTable(const CExoString& sTable)
 
     if (m_ppSpellsKnown != 0)
     {
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 50; i++)
         {
             if (m_ppSpellsKnown[i] != 0)
             {
@@ -410,8 +412,8 @@ void CSWClass::LoadSpellKnownTable(const CExoString& sTable)
         m_ppSpellsKnown = 0;
     }
 
-    m_ppSpellsKnown = new unsigned char*[20];
-    for (int nLevel = 0; nLevel < 20; nLevel++)
+    m_ppSpellsKnown = new unsigned char*[50];
+    for (int nLevel = 0; nLevel < 50; nLevel++)
     {
         if (m_aNumSpellLevels[nLevel] != 0)
         {
@@ -455,8 +457,8 @@ void CSWClass::LoadArmorClassTable(const CExoString& sTable)
         m_pArmorBonus = 0;
     }
 
-    m_pArmorBonus = new unsigned char[21];
-    for (int i = 0; i <= 20; i++)
+    m_pArmorBonus = new unsigned char[51];
+    for (int i = 0; i <= 50; i++)
     {
         if (p2DA->GetINTEntry(i, sTable, &nValue) != 0)
         {

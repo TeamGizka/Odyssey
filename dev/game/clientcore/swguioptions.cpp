@@ -313,7 +313,7 @@ void CSWGuiOptionsMouse::OnEnterSlider(CSWGuiControl* pControl)
 {
     if (pControl == &m_sldMouseSen)
     {
-        SetDescription(48013);
+        SetDescription(48721);
     }
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
     pParams->m_bPulsing = 1;
@@ -1559,7 +1559,7 @@ void CSWGuiOptionsMouse::OnRevMouseButtons(CSWGuiControl* pControl)
 // PC 0x00750940
 void CSWGuiOptionsMouse::OnEnterRevMouseButtons(CSWGuiControl* pControl)
 {
-    SetDescription(48450);
+    SetDescription(48722);
 }
 // PC 0x00750950
 void CSWGuiOptionsMouse::OnDefault(CSWGuiControl* pControl)
@@ -2136,9 +2136,9 @@ CSWGuiOptionsMouse::CSWGuiOptionsMouse(CSWGuiManager* pManager)
         63, this, (CSWGuiHandler)&CSWGuiOptionsMouse::OnMoveMouseSenSlider);
     m_sldMouseSen.AddEvent(
         64, this, (CSWGuiHandler)&CSWGuiOptionsMouse::OnMoveMouseSenSlider);
-    m_sldMouseSen.m_nIndex = 48013;
-    m_lblMouseSen.m_nIndex = 48013;
-    m_cbRevButtons.m_nIndex = 48450;
+    m_sldMouseSen.m_nIndex = 48721;
+    m_lblMouseSen.m_nIndex = 48721;
+    m_cbRevButtons.m_nIndex = 48722;
     CSWGuiButton* pBack = &m_btnBack;
     pBack->m_bFocusable = 0;
     pBack->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
@@ -2559,6 +2559,7 @@ CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager)  // PC 0x0
                         (CSWGuiHandler)&CSWGuiOptionsGraphics::OnAdvanced);
     SetActiveControl(&m_sldGamma, 0);
     m_nUnknown18BC = 0;
+    m_n1E88 = 0;
 }
 #endif
 // PC 0x00753970

@@ -33,6 +33,7 @@ public:
         m_bSingleSpawn = 0;
         m_bSpawned = 0;
         m_bSelected = 0;
+        m_nGuaranteedCount = 0;
     }
     ~CEncounterListEntry() {}  // PC 0x004015A0
     CEncounterListEntry& operator=(const CEncounterListEntry& other);
@@ -43,6 +44,7 @@ public:
     int m_bSpawned;
     int m_bSelected;
     int m_bSingleSpawn;
+    int m_nGuaranteedCount;
 };
 
 class CEncounterSpawnListEntry

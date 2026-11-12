@@ -3798,6 +3798,7 @@ CAurTextureBasic::CAurTextureBasic(char* sName, char* sExtra)
     m_nHeight = 2;
     m_nDefaultWidth = 2;
     m_nDefaultHeight = 2;
+    m_nDepth = 0;
     m_nBPP = 0;
     m_nTIDIndex = 0;
     m_nClamp = 0;
@@ -3846,6 +3847,7 @@ CAurTextureBasic::CAurTextureBasic(char* sName, char* sExtra)
 #endif
     AddToOrderedLists();
     countbasictextures++;
+    m_bF0 = 0;
     m_nMemorySize = -1;
     m_bMemoryDirty = 1;
 }

@@ -64,19 +64,6 @@ void CSWGuiInGameGalaxyMap::OnPanelRemoved()
 // PC 0x006EC250
 void CSWGuiInGameMap::Draw(float fElapsed)
 {
-#ifndef _XBOX
-    if (!m_bReturnButton)
-    {
-        m_btnUp.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
-        m_btnUp.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_ICON_COLOR;
-    }
-    if (!m_bPartySelection)
-    {
-        m_btnDown.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
-        m_btnDown.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_ICON_COLOR;
-    }
-#endif
-
     CSWGuiExtent cExtent = m_lblMapNote.m_cExtent;
     CSWGuiPanel::Draw(fElapsed);
 #ifndef _XBOX
@@ -303,29 +290,13 @@ void CSWGuiInGameMap::OnPanelAdded()
     m_bReturnButton =
         m_bPartySelection && pServer->GetPartyTable()->m_nReturnFlag != 0;
 
-    unsigned long nReturnStrref = pServer->GetPartyTable()->m_nReturnStrref;
 #ifdef _XBOX
+    unsigned long nReturnStrref = pServer->GetPartyTable()->m_nReturnStrref;
     m_lblReturn.m_cText.m_cParams.SetStrRef(nReturnStrref);
     m_lblReturn.m_cText.m_cParams.SetColor(
         m_bPartySelection ? CGuiInGame::COLOR_BLUE : CGuiInGame::DISABLED_TEXT);
     m_lblPrtySlct.m_cText.m_cParams.SetColor(
         m_bReturnButton ? CGuiInGame::COLOR_BLUE : CGuiInGame::DISABLED_TEXT);
-#else
-    m_btnUp.m_cText.m_cParams.SetStrRef(nReturnStrref);
-    m_btnUp.m_cText.m_cParams.SetColor(
-        m_bReturnButton ? CGuiInGame::COLOR_BLUE : CGuiInGame::DISABLED_TEXT);
-    m_btnUp.m_cBorder.m_cParams.m_vColor =
-        m_bReturnButton ? CGuiInGame::ENABLED_ICON_COLOR : CGuiInGame::DISABLED_ICON_COLOR;
-    m_btnDown.m_cText.m_cParams.SetColor(
-        m_bPartySelection ? CGuiInGame::COLOR_BLUE : CGuiInGame::DISABLED_TEXT);
-    m_btnDown.m_cBorder.m_cParams.m_vColor =
-        m_bPartySelection ? CGuiInGame::ENABLED_ICON_COLOR : CGuiInGame::DISABLED_ICON_COLOR;
-
-    if (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_bUseSmallFonts)
-    {
-        m_btnDown.m_cText.m_cParams.SetAlignment(CSWGuiTextParams::ALIGNMENT_CENTER);
-        m_btnUp.m_cText.m_cParams.SetAlignment(CSWGuiTextParams::ALIGNMENT_CENTER);
-    }
 #endif
 #ifndef _XBOX
     CSWGuiPanel::OnPanelAdded();
@@ -1054,6 +1025,7 @@ CSWGuiInGameGalaxyMap::CSWGuiInGameGalaxyMap(CSWGuiManager* pManager)
     }
 #ifndef _XBOX
     m_nBackground = 3;
+    m_n28D4 = -1;
 #endif
 }
 // PC 0x006EF000
@@ -1220,12 +1192,15 @@ CSWGuiInGameMap::CSWGuiInGameMap(CSWGuiManager* pManager)
     m_bReturnButton = 1;
     m_nMessageStrRef = 0;
 #else
-    InitControl(m_lblNoteTitle, "LBL_COMPASS", 1);
-    InitControl(m_btnUp, "BTN_RETURN", 1);
-    InitControl(m_btnDown, "BTN_PRTYSLCT", 1);
     InitControl(m_btnBack, "BTN_EXIT", 1);
     InitControl(m_btnExit, "BTN_UP", 1);
     InitControl(m_btnReturn, "BTN_DOWN", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    InitControl(m_alblBar[4], "LBL_BAR5", 1);
+    InitControl(m_lbl1018, "LBL_TITLE", 1);
     StopLoadFromLayout();
 
     m_imgMap.SetExtent(CSWGuiExtent(0, 0, 512, 256));
@@ -1237,13 +1212,6 @@ CSWGuiInGameMap::CSWGuiInGameMap(CSWGuiManager* pManager)
     m_bReturnButton = 1;
     m_nMessageStrRef = 0;
 
-    CSWGuiButton* pReturn = &m_btnUp;
-    pReturn->SetFocusable(0);
-    pReturn->AddEvent(GUIEVENT_ACTIVATE, this,
-                       (CSWGuiHandler)&CSWGuiPanel::OnXButtonPressed);
-    m_btnDown.SetFocusable(0);
-    m_btnDown.AddEvent(GUIEVENT_ACTIVATE, this,
-                         (CSWGuiHandler)&CSWGuiPanel::OnAButtonPressed);
     m_btnBack.SetFocusable(0);
     m_btnBack.AddEvent(GUIEVENT_ACTIVATE, this,
                          (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);

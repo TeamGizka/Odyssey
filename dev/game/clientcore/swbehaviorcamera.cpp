@@ -835,6 +835,7 @@ CSWCameraOnAStick::CSWCameraOnAStick(CAurObject* pObject, CAurObject* pTarget)
     m_fTurn = 0.0f;
 #ifndef _XBOX
     m_fTurnAcceleration = 0.0f;
+    m_n158 = 0;
 #endif
 
     Quaternion qTarget =

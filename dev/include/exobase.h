@@ -1188,7 +1188,7 @@ public:
         PRIORITY_GROUP_DIALOG_VOICE = 9
     };
 
-    CExoStreamingSoundSource();
+    CExoStreamingSoundSource(int n4 = 0);
     ~CExoStreamingSoundSource();
 
     int IsPlaying();

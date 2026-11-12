@@ -49,6 +49,7 @@ CSWSpell::CSWSpell()
     m_nForbidItemMask = 0;
     m_nRequireItemMask = 0;
     m_nItemTargeting = 0;
+    m_n1A0 = 0;
     m_nCatchTime = 0;
     m_nCatchAnim = 0;
 }

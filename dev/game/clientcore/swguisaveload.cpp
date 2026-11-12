@@ -219,6 +219,7 @@ CSWGuiSaveLoad::CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode,
     m_nMaxSaveGame = 1;
 #else
     m_nMaxSaveGame = 2;
+    m_n1B5C = 0;
 #endif
     if (m_bSaveMode)
     {
@@ -238,6 +239,10 @@ CSWGuiSaveLoad::CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode,
 #endif
         m_lblPanelName.m_cText.m_cParams.SetStrRef(STRREF_LOAD_GAME);
     }
+#ifndef _XBOX
+    m_bEndGameMode = 0;
+    m_n1B6C = 0;
+#endif
     PopulateGameList();
     g_pExoResMan->AddResourceDirectory("TEMP:");
     SetActiveControl(&m_lbSaveGames, 0);
@@ -382,6 +387,12 @@ void CSWGuiSaveLoad::HandleInputEvent(int nEvent, int nState)
 // PC 0x00736460
 CSWGuiSaveLoad::~CSWGuiSaveLoad()
 {
+#ifndef _XBOX
+    for (int i = 0; i < m_lEntries.num; i++)
+    {
+        delete m_lEntries[i];
+    }
+#endif
     g_pExoResMan->RemoveResourceDirectory("TEMP:");
 #ifdef _XBOX
     g_pExoResMan->CleanDirectory("TEMP:", 0, 0);

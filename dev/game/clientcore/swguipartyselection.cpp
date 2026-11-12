@@ -137,6 +137,8 @@ CSWGuiPartySelection::CSWGuiPartySelection(CSWGuiManager* pManager)
 #endif
         m_aPartyMembers[nNPC].m_bForced = 0;
         m_aPartyMembers[nNPC].m_nNPC = nNPC;
+        m_aPartyMembers[nNPC].m_n00 = 0;
+        m_aPartyMembers[nNPC].m_n474 = 0;
     }
     InitControl(m_lblCount, "LBL_COUNT", 1);
 #ifdef _XBOX
@@ -183,8 +185,13 @@ CSWGuiPartySelection::CSWGuiPartySelection(CSWGuiManager* pManager)
         (CSWGuiEventHandler)&CSWGuiPartySelection::OnToggled);
     m_pSelectedControl = 0;
     m_btnDone.SetFocusable(0);
+    m_n50AC = 1;
 #endif
     m_bPlaySound = 0;
+#ifndef _XBOX
+    m_n78 = 0;
+    m_n50B0 = 108426;
+#endif
 }
 // PC 0x0071F730
 void CSWGuiPartySelection::HandleInputEvent(int nEvent, int bPressed)

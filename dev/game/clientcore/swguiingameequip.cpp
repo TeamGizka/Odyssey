@@ -43,7 +43,9 @@ const CSWGuiInGameEquip::SlotInfo CSWGuiInGameEquip::SLOT_INFO[NUM_EQUIPMENT_SLO
     {INVENTORY_SLOT_ARMOUR, "INV_BODY", "armor", 31380, 41813},
     {INVENTORY_SLOT_CLOAK, "INV_HANDS", "hands", 31383, 41811},
     {INVENTORY_SLOT_BELT, "INV_IMPLANT", "implant", 31388, 41811},
-    {INVENTORY_SLOT_ARMS, "INV_BELT", "belt", 31382, 41812}
+    {INVENTORY_SLOT_ARMS, "INV_BELT", "belt", 31382, 41812},
+    {0x80000, "INV_WEAP_L2", "weap_l", 31378, 31378},
+    {0x40000, "INV_WEAP_R2", "weap_r", 31379, 31379}
 };
 
 #ifndef _XBOX
@@ -64,219 +66,6 @@ int CSWGuiInGameEquip::GetSlotItemIdIndex(int nSlot)  // PC 0x00713C80
     }
 }
 
-void CSWGuiInGameEquip::OnSwitchRight(CSWGuiControl* pControl)
-{
-    if (pControl->m_bSelected != 0)
-    {
-        char nFirst = m_btnChange1.m_nIndex;
-        int bFound = 0;
-        if (nFirst != CHARACTER_UNSET)
-        {
-            m_btnChange2.m_cBorder.m_cParams.SetFillImage(
-                m_btnChange1.m_cBorder.m_cParams.m_cFillImage, 0);
-            m_btnChange2.m_cHilite.m_cParams.SetFillImage(
-                m_btnChange1.m_cHilite.m_cParams.m_cFillImage, 0);
-            m_btnChange2.m_nIndex = m_btnChange1.m_nIndex;
-            int nNPC = nFirst - 1;
-            while (nNPC >= 0 && bFound == 0)
-            {
-                if (nNPC != m_nCharacter)
-                {
-                    if (GetServerExoApp()->GetPartyTable()
-                            ->GetIsNPCAvailable(nNPC) != 0)
-                    {
-                        CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
-                        unsigned long oidNPC =
-                            g_pAppManager->m_pServerExoApp->GetPartyTable()
-                                ->GetNPCObject(nNPC, 0, 1);
-                        CSWCCreature* pCreature =
-                            pClient->GetCreatureByGameObjectID(
-                                pClient->ServerToClientObjectId(oidNPC));
-                        if (pCreature != 0)
-                        {
-                            {
-                                CResRef* pPortrait = &pCreature->GetPortrait(1);
-                                m_btnChange1.m_cBorder.m_cParams.SetFillImage(
-                                    *pPortrait, 0);
-                            }
-                            {
-                                CResRef* pPortrait = &pCreature->GetPortrait(1);
-                                m_btnChange1.m_cHilite.m_cParams.SetFillImage(
-                                    *pPortrait, 0);
-                            }
-                            m_btnChange1.m_nIndex = nNPC;
-                            bFound = 1;
-                        }
-                    }
-                }
-                --nNPC;
-            }
-            if (bFound == 0)
-            {
-                if (m_nCharacter == CHARACTER_PLAYER ||
-                    (char)m_btnChange2.m_nIndex == CHARACTER_PLAYER)
-                {
-                    for (int nHigh = CSWPartyTable::MAX_NPCS - 1; nHigh > nFirst && bFound == 0; --nHigh)
-                    {
-                        if (nHigh != m_nCharacter)
-                        {
-                            if (GetServerExoApp()->GetPartyTable()
-                                    ->GetIsNPCAvailable(nHigh) != 0)
-                            {
-                                CClientExoApp* pClient =
-                                    g_pAppManager->m_pClientExoApp;
-                                unsigned long oidNPC =
-                                    g_pAppManager->m_pServerExoApp
-                                        ->GetPartyTable()
-                                        ->GetNPCObject(nHigh, 0, 1);
-                                CSWCCreature* pCreature =
-                                    pClient->GetCreatureByGameObjectID(
-                                        pClient->ServerToClientObjectId(
-                                            oidNPC));
-                                if (pCreature != 0)
-                                {
-                                    {
-                                        CResRef* pPortrait = &pCreature->GetPortrait(1);
-                                        m_btnChange1.m_cBorder.m_cParams.SetFillImage(
-                                            *pPortrait, 0);
-                                    }
-                                    {
-                                        CResRef* pPortrait = &pCreature->GetPortrait(1);
-                                        m_btnChange1.m_cHilite.m_cParams.SetFillImage(
-                                            *pPortrait, 0);
-                                    }
-                                    m_btnChange1.m_nIndex = nHigh;
-                                    bFound = 1;
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    {
-                        CResRef* pPortrait = &g_pAppManager->m_pClientExoApp->GetPlayerCreature()->GetPortrait(1);
-                        m_btnChange1.m_cBorder.m_cParams.SetFillImage(
-                            *pPortrait, 0);
-                    }
-                    {
-                        CResRef* pPortrait = &g_pAppManager->m_pClientExoApp->GetPlayerCreature()->GetPortrait(1);
-                        m_btnChange1.m_cHilite.m_cParams.SetFillImage(
-                            *pPortrait, 0);
-                    }
-                    m_btnChange1.m_nIndex = CHARACTER_PLAYER;
-                }
-            }
-        }
-    }
-}
-
-void CSWGuiInGameEquip::OnSwitchLeft(CSWGuiControl* pControl)
-{
-    if (pControl->m_bSelected != 0)
-    {
-        char nSecond = m_btnChange2.m_nIndex;
-        int bFound = 0;
-        if (nSecond != CHARACTER_UNSET)
-        {
-            m_btnChange1.m_cBorder.m_cParams.SetFillImage(
-                m_btnChange2.m_cBorder.m_cParams.m_cFillImage, 0);
-            m_btnChange1.m_cHilite.m_cParams.SetFillImage(
-                m_btnChange2.m_cHilite.m_cParams.m_cFillImage, 0);
-            m_btnChange1.m_nIndex = m_btnChange2.m_nIndex;
-            int nNPC = nSecond + 1;
-            while (nNPC < CSWPartyTable::MAX_NPCS && bFound == 0)
-            {
-                if (nNPC != m_nCharacter)
-                {
-                    if (GetServerExoApp()->GetPartyTable()
-                            ->GetIsNPCAvailable(nNPC) != 0)
-                    {
-                        CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
-                        unsigned long oidNPC =
-                            g_pAppManager->m_pServerExoApp->GetPartyTable()
-                                ->GetNPCObject(nNPC, 0, 1);
-                        CSWCCreature* pCreature =
-                            pClient->GetCreatureByGameObjectID(
-                                pClient->ServerToClientObjectId(oidNPC));
-                        if (pCreature != 0)
-                        {
-                            {
-                                CResRef* pPortrait = &pCreature->GetPortrait(1);
-                                m_btnChange2.m_cBorder.m_cParams.SetFillImage(
-                                    *pPortrait, 0);
-                            }
-                            {
-                                CResRef* pPortrait = &pCreature->GetPortrait(1);
-                                m_btnChange2.m_cHilite.m_cParams.SetFillImage(
-                                    *pPortrait, 0);
-                            }
-                            m_btnChange2.m_nIndex = nNPC;
-                            bFound = 1;
-                        }
-                    }
-                }
-                ++nNPC;
-            }
-            if (bFound == 0)
-            {
-                if (m_nCharacter != CHARACTER_PLAYER)
-                {
-                    {
-                        CResRef* pPortrait = &g_pAppManager->m_pClientExoApp->GetPlayerCreature() ->GetPortrait(1);
-                        m_btnChange2.m_cBorder.m_cParams.SetFillImage(
-                            *pPortrait, 0);
-                    }
-                    {
-                        CResRef* pPortrait = &g_pAppManager->m_pClientExoApp->GetPlayerCreature() ->GetPortrait(1);
-                        m_btnChange2.m_cHilite.m_cParams.SetFillImage(
-                            *pPortrait, 0);
-                    }
-                    m_btnChange2.m_nIndex = CHARACTER_PLAYER;
-                }
-                else
-                {
-                    for (int nLow = 0; nLow < nSecond && bFound == 0; ++nLow)
-                    {
-                        if (nLow != m_nCharacter)
-                        {
-                            if (GetServerExoApp()->GetPartyTable()
-                                    ->GetIsNPCAvailable(nLow) != 0)
-                            {
-                                CClientExoApp* pClient =
-                                    g_pAppManager->m_pClientExoApp;
-                                unsigned long oidNPC =
-                                    g_pAppManager->m_pServerExoApp
-                                        ->GetPartyTable()
-                                        ->GetNPCObject(nLow, 0, 1);
-                                CSWCCreature* pCreature =
-                                    pClient->GetCreatureByGameObjectID(
-                                        pClient->ServerToClientObjectId(
-                                            oidNPC));
-                                if (pCreature != 0)
-                                {
-                                    {
-                                        CResRef* pPortrait = &pCreature->GetPortrait(1);
-                                        m_btnChange2.m_cBorder.m_cParams.SetFillImage(
-                                            *pPortrait, 0);
-                                    }
-                                    {
-                                        CResRef* pPortrait = &pCreature->GetPortrait(1);
-                                        m_btnChange2.m_cHilite.m_cParams.SetFillImage(
-                                            *pPortrait, 0);
-                                    }
-                                    m_btnChange2.m_nIndex = nLow;
-                                    bFound = 1;
-                                }
-                            }
-                        }
-                    }
-                }
-
-            }
-        }
-    }
-}
 // PC 0x00714560
 CSWSItem* CSWGuiInGameEquip::CopyItem(unsigned long oidItem)
 {
@@ -884,6 +673,8 @@ void CSWGuiContainer::Update(float fElapsed)  // PC 0x00718DB0
 CSWGuiStoreItemEntry::CSWGuiStoreItemEntry()
 {
     m_oidItem = OBJECT_INVALID;
+    m_n3B0 = -1;
+    m_n3B4 = 0;
 }
 #ifndef _XBOX
 CSWGuiInGameEquip::CSWGuiInGameEquip(CSWGuiManager* pManager)  // PC 0x0071A1B0
@@ -891,7 +682,6 @@ CSWGuiInGameEquip::CSWGuiInGameEquip(CSWGuiManager* pManager)  // PC 0x0071A1B0
 {
     m_pCreature = NULL;
     m_bDescriptionShown = 0;
-    m_nCharacter = -1;
     StartLoadFromLayout("equip");
     CExoString sButtonPrefix("BTN_");
     CExoString sLabelPrefix("LBL_");
@@ -914,25 +704,16 @@ CSWGuiInGameEquip::CSWGuiInGameEquip(CSWGuiManager* pManager)  // PC 0x0071A1B0
     InitControl(m_lblAtkr, "LBL_ATKR", 1);
     InitControl(m_lblTohitr, "LBL_TOHITR", 1);
     InitControl(m_lblDef, "LBL_DEF", 1);
-    InitControl(m_lblVitality, "LBL_VITALITY", 1);
     InitControl(m_lbItems, "LB_ITEMS", 1);
     InitControl(m_lbDesc, "LB_DESC", 1);
-    InitControl(m_lblPortrait, "LBL_PORTRAIT", 1);
     InitControl(m_lblAttackInfo, "LBL_ATTACK_INFO", 1);
     InitControl(m_lblDefInfo, "LBL_DEF_INFO", 1);
-    InitControl(m_lblTxtbar, "LBL_TXTBAR", 1);
-    InitControl(m_lblPortBord, "LBL_PORT_BORD", 1);
     InitControl(m_lblTohit, "LBL_TOHIT", 1);
     InitControl(m_lblDamage, "LBL_DAMAGE", 1);
     InitControl(m_lblSlotname, "LBL_SLOTNAME", 1);
     InitControl(m_lblTitle, "LBL_TITLE", 1);
-    InitControl(m_lblSelecttitle, "LBL_SELECTTITLE", 1);
     InitControl(m_btnEquip, "BTN_EQUIP", 1);
     InitControl(m_btnBack, "BTN_BACK", 1);
-    InitControl(m_btnChange1, "BTN_CHANGE1", 1);
-    InitControl(m_btnChange2, "BTN_CHANGE2", 1);
-    InitControl(m_btnCharleft, "BTN_CHARLEFT", 1);
-    InitControl(m_btnCharright, "BTN_CHARRIGHT", 1);
     InitControl(m_lblCantequip, "LBL_CANTEQUIP", 1);
     StopLoadFromLayout();
     m_lblAtkl.m_cText.m_cParams.SetText("");
@@ -949,26 +730,7 @@ CSWGuiInGameEquip::CSWGuiInGameEquip(CSWGuiManager* pManager)  // PC 0x0071A1B0
     m_btnBack.SetFocusable(0);
     m_btnBack.AddEvent(GUIEVENT_ACTIVATE, this,
                       (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
-    m_btnChange1.SetFocusable(0);
-    m_btnChange1.AddEvent(GUIEVENT_ACTIVATE, this,
-                        (CSWGuiHandler)&CSWGuiInGameEquip::OnChangeCharacter);
-    m_btnChange2.SetFocusable(0);
-    m_btnChange2.AddEvent(GUIEVENT_ACTIVATE, this,
-                        (CSWGuiHandler)&CSWGuiInGameEquip::OnChangeCharacter);
     m_btnEquip.SetShown(0);
-    m_btnChange1.SetToolTip(CSWGuiInGameCharacter::STRREF_CHANGE_CHARACTER,
-                          GUIEVENT_NEXT_CHARACTER);
-#ifndef _XBOX
-    m_btnChange2.m_nToolTipStrRef = CSWGuiInGameCharacter::STRREF_CHANGE_CHARACTER;
-#endif
-    m_btnCharleft.SetFocusable(0);
-    m_btnCharleft.AddEvent(GUIEVENT_ACTIVATE, this,
-                          (CSWGuiHandler)&CSWGuiInGameEquip::OnSwitchRight);
-    m_btnCharright.SetFocusable(0);
-    m_btnCharright.AddEvent(GUIEVENT_ACTIVATE, this,
-                           (CSWGuiHandler)&CSWGuiInGameEquip::OnSwitchLeft);
-    m_btnCharright.m_cBorder.m_cParams.m_fRotation = 180.0f;
-    m_btnCharright.m_cHilite.m_cParams.m_fRotation = 180.0f;
     m_lbItems.SetEnabled(0);
     m_lblCantequip.SetShown(0);
     CSWGuiPanel* pPanel = this;
@@ -1018,12 +780,9 @@ void CSWGuiInGameEquip::OnPanelAdded()
     CSWCCreature* pCreature;
 
     m_nCharacter = -1;
-    m_btnChange1.m_nIndex = -2;
-    m_btnChange2.m_nIndex = -2;
     pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
     pCreature = pParty->GetPlayerCharacter();
     SetCharacter(pCreature);
-    UpdatePortraits(1);
     OnEnterSlot(m_pActiveControl);
 #ifndef _XBOX
     CSWGuiPanel::OnPanelAdded();
@@ -1107,18 +866,6 @@ void CSWGuiInGameEquip::SetCharacter(CSWCCreature* pCreature)  // PC 0x00715DA0
                     GetIcon(nSlot), 0);
             }
         }
-        else
-        {
-            CResRef cPortrait("");
-            m_lblPortrait.m_cBorder.m_cParams.SetFillImage(cPortrait, 0);
-        }
-    }
-
-    if (m_pCreature)
-    {
-        CResRef* pPortrait = &m_pCreature->GetPortrait(1);
-        m_lblPortrait.m_cBorder.m_cParams.SetFillImage(
-            *pPortrait, 0);
     }
 }
 #endif
@@ -1263,7 +1010,6 @@ void CSWGuiInGameEquip::ShowCantEquipMessage(int bShow, unsigned long nStrRef)
     m_lblDef.SetShown(bEnabled);
     m_lblTohitl.SetShown(bEnabled);
     m_lblTohitr.SetShown(bEnabled);
-    m_lblVitality.SetShown(bEnabled);
     m_lblAttackInfo.SetShown(bEnabled);
     m_lblDefInfo.SetShown(bEnabled);
     m_lblTohit.SetShown(bEnabled);
@@ -1371,9 +1117,6 @@ void CSWGuiInGameEquip::OnSelectSlot(CSWGuiControl* pControl)
             m_lbItems.SetSelectedControl(1, 0);
         }
         m_bDescriptionShown = 1;
-        m_lblSelecttitle.m_cText.m_cParams.SetText(
-            g_pAppManager->GetClientExoApp()->GetGUIString(
-                STRREF_SELECT_ITEM_TO_EQUIP));
         g_pAppManager->GetClientExoApp()->ShowTutorialWindow(
             11, OBJECT_INVALID, OBJECT_INVALID, 0);
         m_lbItems.SetEnabled(1);
@@ -1383,7 +1126,6 @@ void CSWGuiInGameEquip::OnSelectSlot(CSWGuiControl* pControl)
 void CSWGuiInGameEquip::ShowDescription(int bShow)
 {
     ShowCantEquipMessage(0, -1);
-    UpdatePortraits(!bShow);
     if (bShow)
     {
         m_lbDesc.SetShown(1);
@@ -1394,9 +1136,6 @@ void CSWGuiInGameEquip::ShowDescription(int bShow)
             m_aSlotButtons[i].SetShown(0);
             m_aSlotLabels[i].SetShown(0);
         }
-        m_lblTxtbar.SetShown(0);
-        m_lblPortBord.SetShown(0);
-        m_lblPortrait.SetShown(0);
         m_lblSlotname.SetShown(0);
         m_btnEquip.SetShown(1);
         for (int i = 0; i < m_lbItems.m_lItems.num; i++)
@@ -1414,9 +1153,6 @@ void CSWGuiInGameEquip::ShowDescription(int bShow)
             m_aSlotButtons[i].SetShown(1);
             m_aSlotLabels[i].SetShown(1);
         }
-        m_lblTxtbar.SetShown(1);
-        m_lblPortBord.SetShown(1);
-        m_lblPortrait.SetShown(1);
         m_lblSlotname.SetShown(1);
         m_btnEquip.SetShown(0);
         for (int i = 0; i < m_lbItems.m_lItems.num; i++)
@@ -1426,152 +1162,6 @@ void CSWGuiInGameEquip::ShowDescription(int bShow)
     }
 }
 
-void CSWGuiInGameEquip::UpdatePortraits(int bShow)
-{
-    if (!bShow)
-    {
-        m_btnChange1.SetShown(0);
-        m_btnChange2.SetShown(0);
-        m_btnCharleft.SetShown(0);
-        m_btnCharright.SetShown(0);
-        return;
-    }
-
-    if (g_pAppManager->GetServerExoApp()->GetServerInfo()->m_bPartyPicking)
-    {
-        int bFound1 = 0;
-        int bFound2 = 0;
-        char nStart = (char)((char)(int)m_btnChange1.GetUserData() == CHARACTER_UNSET
-            ? m_nCharacter + 1 : (int)m_btnChange1.GetUserData());
-        int nCharacter;
-        for (nCharacter = nStart;
-             nCharacter < CSWPartyTable::MAX_NPCS && !bFound2;
-             ++nCharacter)
-        {
-            if (nCharacter != m_nCharacter &&
-                g_pAppManager->GetServerExoApp()->GetPartyTable()
-                    ->GetIsNPCAvailable(nCharacter))
-            {
-                CSWCCreature* pCreature =
-                    g_pAppManager->GetClientExoApp()->GetCreatureByGameObjectID(
-                        g_pAppManager->GetClientExoApp()->ServerToClientObjectId(
-                            g_pAppManager->GetServerExoApp()->GetPartyTable()
-                                ->GetNPCObject(nCharacter, 0, 1)));
-                if (pCreature)
-                {
-                    if (bFound1)
-                    {
-                        CResRef* pPortrait = &pCreature->GetPortrait(1);
-                        m_btnChange2.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
-                        pPortrait = &pCreature->GetPortrait(1);
-                        m_btnChange2.m_cHilite.m_cParams.SetFillImage(*pPortrait, 0);
-                        m_btnChange2.m_nIndex = nCharacter;
-                        bFound2 = 1;
-                    }
-                    else
-                    {
-                        CResRef* pPortrait = &pCreature->GetPortrait(1);
-                        m_btnChange1.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
-                        pPortrait = &pCreature->GetPortrait(1);
-                        m_btnChange1.m_cHilite.m_cParams.SetFillImage(*pPortrait, 0);
-                        m_btnChange1.m_nIndex = nCharacter;
-                        bFound1 = 1;
-                    }
-                }
-            }
-        }
-        if (m_nCharacter != CHARACTER_PLAYER && !bFound2)
-        {
-            if (!bFound1)
-            {
-                CResRef* pPortrait = &g_pAppManager->GetClientExoApp()->GetPlayerCreature()->GetPortrait(1);
-                m_btnChange1.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
-                pPortrait = &g_pAppManager->GetClientExoApp()->GetPlayerCreature()->GetPortrait(1);
-                m_btnChange1.m_cHilite.m_cParams.SetFillImage(*pPortrait, 0);
-                m_btnChange1.m_nIndex = CHARACTER_PLAYER;
-                bFound1 = 1;
-            }
-            else
-            {
-                CResRef* pPortrait = &g_pAppManager->GetClientExoApp()->GetPlayerCreature()->GetPortrait(1);
-                m_btnChange2.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
-                pPortrait = &g_pAppManager->GetClientExoApp()->GetPlayerCreature()->GetPortrait(1);
-                m_btnChange2.m_cHilite.m_cParams.SetFillImage(*pPortrait, 0);
-                m_btnChange2.m_nIndex = CHARACTER_PLAYER;
-                bFound2 = 1;
-            }
-        }
-        if (!bFound2)
-        {
-            for (nCharacter = 0; nCharacter < nStart && !bFound2; ++nCharacter)
-            {
-                if (nCharacter != m_nCharacter &&
-                    g_pAppManager->GetServerExoApp()->GetPartyTable()
-                        ->GetIsNPCAvailable(nCharacter))
-                {
-                    CSWCCreature* pCreature =
-                        g_pAppManager->GetClientExoApp()->GetCreatureByGameObjectID(
-                            g_pAppManager->GetClientExoApp()->ServerToClientObjectId(
-                                g_pAppManager->GetServerExoApp()->GetPartyTable()
-                                    ->GetNPCObject(nCharacter, 0, 1)));
-                    if (pCreature)
-                    {
-                        if (bFound1)
-                        {
-                            CResRef* pPortrait = &pCreature->GetPortrait(1);
-                            m_btnChange2.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
-                            pPortrait = &pCreature->GetPortrait(1);
-                            m_btnChange2.m_cHilite.m_cParams.SetFillImage(*pPortrait, 0);
-                            m_btnChange2.m_nIndex = nCharacter;
-                            bFound2 = 1;
-                        }
-                        else
-                        {
-                            CResRef* pPortrait = &pCreature->GetPortrait(1);
-                            m_btnChange1.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
-                            pPortrait = &pCreature->GetPortrait(1);
-                            m_btnChange1.m_cHilite.m_cParams.SetFillImage(*pPortrait, 0);
-                            m_btnChange1.m_nIndex = nCharacter;
-                            bFound1 = 1;
-                        }
-                    }
-                }
-            }
-        }
-        m_btnChange1.SetShown(bFound1);
-        m_btnChange2.SetShown(bFound2);
-        m_btnCharleft.SetShown(g_pAppManager->GetServerExoApp()->GetPartyTable()->GetNumNPCAvailable() > 2);
-        m_btnCharright.SetShown(g_pAppManager->GetServerExoApp()->GetPartyTable()->GetNumNPCAvailable() > 2);
-    }
-    else
-    {
-        CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
-        if (pParty->GetNumCharacters() > 1)
-        {
-            m_btnChange1.SetShown(1);
-            CResRef* pPortrait = &pParty->GetCharacter(1)->GetPortrait(1);
-            m_btnChange1.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
-            pPortrait = &pParty->GetCharacter(1)->GetPortrait(1);
-            m_btnChange1.m_cHilite.m_cParams.SetFillImage(*pPortrait, 0);
-        }
-        else
-        {
-            m_btnChange1.SetShown(0);
-        }
-        if (pParty->GetNumCharacters() > 2)
-        {
-            m_btnChange2.SetShown(1);
-            CResRef* pPortrait = &pParty->GetCharacter(2)->GetPortrait(1);
-            m_btnChange2.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
-            pPortrait = &pParty->GetCharacter(2)->GetPortrait(1);
-            m_btnChange2.m_cHilite.m_cParams.SetFillImage(*pPortrait, 0);
-        }
-        else
-        {
-            m_btnChange2.SetShown(0);
-        }
-    }
-}
 // PC 0x00717D30
 void CSWGuiInGameEquip::OnItemSelected(CSWGuiControl* pControl)
 {
@@ -1758,7 +1348,6 @@ void CSWGuiInGameEquip::CloseDescription()
     SetActiveControl(m_pDescribedControl, 0);
     OnEnterSlot(m_pActiveControl);
 
-    m_lblSelecttitle.m_cText.m_cParams.SetText("");
     m_lbItems.SetEnabled(0);
 }
 // PC 0x00716A80
@@ -2170,16 +1759,6 @@ void CSWGuiInGameEquip::UpdateInventory()  // PC 0x00717070
 
     CExoString sDefense(m_pCreature->GetServerCreature()->GetArmorClass());
     m_lblDef.m_cText.m_cParams.SetText(sDefense);
-    CExoString sVitality;
-    sVitality.Format("%d/%d", m_pCreature->GetServerCreature()->GetCurrentHitPoints(0),
-                     m_pCreature->GetServerCreature()->GetMaxHitPoints(1));
-    m_lblVitality.m_cText.m_cParams.SetText(sVitality);
-    if (m_lblVitality.m_cText.GetIdealHeight() > m_lblVitality.m_cText.GetFontHeight())
-    {
-        sVitality.Format("%d/ %d", m_pCreature->GetStats()->GetCurrentHitPoints(),
-                         m_pCreature->GetStats()->GetMaxHitPoints());
-        m_lblVitality.m_cText.m_cParams.SetText(sVitality);
-    }
 
     if (m_nPendingSlot)
     {
@@ -2238,7 +1817,6 @@ void CSWGuiInGameEquip::UpdateInventory()  // PC 0x00717070
                     m_lblTohitl.m_cText.m_cParams.SetText(sPending);
                 }
                 m_lblDef.m_cText.m_cParams.SetText(sPending);
-                m_lblVitality.m_cText.m_cParams.SetText(sPending);
                 break;
             }
         }
@@ -2347,46 +1925,10 @@ void CSWGuiInGameEquip::HandleInputEvent(int nEvent, int nState)
             if (!m_bDescriptionShown)
             {
                 m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
-                CSWServerInfo* pInfo =
-                    (CSWServerInfo*)g_pAppManager->m_pServerExoApp->GetServerInfo();
-                if (pInfo->m_bPartyPicking)
-                {
-                    int bFound = 0;
-                    for (int nCharacter = m_nCharacter + 1;
-                         nCharacter < CSWPartyTable::MAX_NPCS && !bFound;
-                         ++nCharacter)
-                    {
-                        if (g_pAppManager->m_pServerExoApp->GetPartyTable()
-                                ->GetIsNPCAvailable(nCharacter))
-                        {
-                            CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
-                            unsigned long oidNPC =
-                                g_pAppManager->m_pServerExoApp->GetPartyTable()
-                                    ->GetNPCObject(nCharacter, 0, 1);
-                            CSWCCreature* pCreature = pClient->GetCreatureByGameObjectID(
-                                pClient->ServerToClientObjectId(oidNPC));
-                            if (pCreature != 0)
-                            {
-                                SetCharacter(pCreature);
-                                m_nCharacter = nCharacter;
-                                bFound = 1;
-                            }
-                        }
-                    }
-                    if (!bFound)
-                    {
-                        m_nCharacter = -1;
-                        SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()
-                                         ->GetPlayerCharacter());
-                    }
-                }
-                else
-                {
-                    g_pAppManager->m_pClientExoApp
-                        ->ChangeCharacterToNextLivingPartyMember(0, 0, 1);
-                    SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()
-                                     ->GetPlayerCharacter());
-                }
+                g_pAppManager->m_pClientExoApp
+                    ->ChangeCharacterToNextLivingPartyMember(0, 0, 1);
+                SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()
+                                 ->GetPlayerCharacter());
                 for (int nSlot = 0; nSlot < NUM_EQUIPMENT_SLOTS; ++nSlot)
                 {
                     if (SLOT_INFO[nSlot].nSlot == m_nSelectedSlot)
@@ -2396,7 +1938,6 @@ void CSWGuiInGameEquip::HandleInputEvent(int nEvent, int nState)
                     }
                 }
                 OnEnterSlot(m_pActiveControl);
-                UpdatePortraits(1);
             }
 
         case GUIEVENT_SCROLL_DOWN:
@@ -2417,75 +1958,6 @@ void CSWGuiInGameEquip::HandleInputEvent(int nEvent, int nState)
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 
-void CSWGuiInGameEquip::OnChangeCharacter(CSWGuiControl* pControl)
-{
-    int nChange = 1;
-    if (pControl->m_bSelected != 0)
-    {
-        CSWServerInfo* pInfo =
-            (CSWServerInfo*)g_pAppManager->m_pServerExoApp->GetServerInfo();
-        if (pInfo->m_bPartyPicking)
-        {
-            char nCharacter = pControl->m_nIndex;
-            CSWCCreature* pCreature;
-            if (nCharacter == -1)
-            {
-                pCreature = g_pAppManager->m_pClientExoApp->GetPlayerCreature();
-            }
-            else
-            {
-                CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
-                unsigned long oidNPC =
-                    g_pAppManager->m_pServerExoApp->GetPartyTable()
-                        ->GetNPCObject(nCharacter, 0, 1);
-                pCreature = pClient->GetCreatureByGameObjectID(
-                    pClient->ServerToClientObjectId(oidNPC));
-            }
-            if (pCreature)
-            {
-                if (m_btnCharright.m_bEnabled)
-                {
-                    if (pControl == &m_btnChange1)
-                    {
-                        m_btnChange1.m_nIndex = m_btnChange2.m_nIndex;
-                    }
-                }
-                else
-                {
-                    m_btnChange1.m_nIndex = -2;
-                }
-                m_nCharacter = nCharacter;
-                SetCharacter(pCreature);
-            }
-        }
-        else
-        {
-            if (pControl == &m_btnChange2)
-            {
-                nChange = 2;
-            }
-            if (!g_pAppManager->m_pClientExoApp
-                    ->ChangeCharacterToNextLivingPartyMember(0, 0, nChange))
-            {
-                return;
-            }
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
-            CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
-            CSWCCreature* pCreature = pParty->GetPlayerCharacter();
-            SetCharacter(pCreature);
-        }
-        for (int nSlot = 0; nSlot < NUM_EQUIPMENT_SLOTS; ++nSlot)
-        {
-            if (SLOT_INFO[nSlot].nSlot == m_nSelectedSlot)
-            {
-                SetActiveControl(&m_aSlotButtons[nSlot], 0);
-                break;
-            }
-        }
-        OnEnterSlot(m_pActiveControl);
-        UpdatePortraits(1);
-    }
-}
 #endif
 static inline CServerExoApp* GetServerExoApp()
 {

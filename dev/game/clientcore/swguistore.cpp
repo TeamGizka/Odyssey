@@ -446,9 +446,9 @@ void CSWGuiStore::ShowSellGUI()
     pActiveList = &m_lbxInventoryItems;
     pActiveList->m_bEnabled = 1;
     m_lbxStoreItems.m_bEnabled = 0;
-    m_lblUnknown1C0.m_cText.m_cParams.SetStrRef(32130);
+    m_lblUnknown1C0.m_cText.m_cParams.SetStrRef(125553);
 #ifndef _XBOX
-    m_btnAccept.m_cText.m_cParams.SetStrRef(32130);
+    m_btnAccept.m_cText.m_cParams.SetStrRef(125553);
 #endif
 #ifndef _XBOX
     m_btnAccept.AddEvent(
@@ -720,9 +720,9 @@ void CSWGuiStore::ShowBuyGUI()
     m_lbxInventoryItems.m_bEnabled = 0;
     pActiveList->m_bEnabled = 1;
 #endif
-    m_lblUnknown1C0.m_cText.m_cParams.SetStrRef(32132);
+    m_lblUnknown1C0.m_cText.m_cParams.SetStrRef(125552);
 #ifndef _XBOX
-    m_btnAccept.m_cText.m_cParams.SetStrRef(32132);
+    m_btnAccept.m_cText.m_cParams.SetStrRef(125552);
 #endif
 #ifndef _XBOX
     m_btnAccept.AddEvent(

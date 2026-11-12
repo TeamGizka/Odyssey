@@ -167,8 +167,11 @@ void LightManager::UpdateLights()
 
     for (int i = 0; i < m_lstLights.m_nCount; i++)
     {
-        m_lstLights[i]->GetWorld(m_lstLights[i]->m_vWorldPosition,
-                                 qOrientation);
+        if (m_lstLights[i]->m_pAurObject)
+        {
+            m_lstLights[i]->GetWorld(m_lstLights[i]->m_vWorldPosition,
+                                     qOrientation);
+        }
     }
 }
 // PC 0x004CF5F0

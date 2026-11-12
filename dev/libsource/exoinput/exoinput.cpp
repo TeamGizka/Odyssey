@@ -125,6 +125,7 @@ const int CExoInput::KEYBOARD_SLASH = 105;
 const int CExoInput::KEYBOARD_MULTIPLY = 106;
 const int CExoInput::KEYBOARD_NUMPADCOMMA = 107;
 const int CExoInput::KEYBOARD_DIVIDE = 108;
+const int CExoInput::KEYBOARD_OEM_102 = 109;
 const int CExoInput::JOYSTICK_XAXIS = 110;
 const int CExoInput::JOYSTICK_YAXIS = 111;
 const int CExoInput::JOYSTICK_HAT = 112;

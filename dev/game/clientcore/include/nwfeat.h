@@ -300,6 +300,13 @@ public:
     unsigned short GetPrereqFeat2() { return m_nPrereqFeat2; }
     unsigned short m_lstOrPrereqFeats[MAX_OR_PREREQ_FEATS];
     unsigned short m_nRequiredSkill;
+    unsigned char m_bHandmaiden;
+    unsigned char m_bBaoDur;
+    unsigned char m_bHanharr;
+    unsigned char m_bHK47;
+    unsigned char m_bG0T0;
+    unsigned char m_bAtton;
+    unsigned char m_bKreia;
 };
 
 class CFeatUseListEntry

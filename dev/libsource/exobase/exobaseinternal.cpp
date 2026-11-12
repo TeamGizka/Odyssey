@@ -81,11 +81,7 @@ void GetGameVersionInfo()  // PC 0x00632460
 // PC 0x00632620
 void CExoBaseInternal::CreateResourceExtensionTable()
 {
-#ifdef _XBOX
     m_nResourceTypeCount = 87;
-#else
-    m_nResourceTypeCount = 88;
-#endif
     m_pResourceTypes = new unsigned short[m_nResourceTypeCount];
     m_pResourceExtensions = new CExoString[m_nResourceTypeCount];
 
@@ -261,15 +257,8 @@ void CExoBaseInternal::CreateResourceExtensionTable()
     m_pResourceExtensions[84] = "xmv";
     m_pResourceTypes[85] = 3011;
     m_pResourceExtensions[85] = "xbx";
-#ifdef _XBOX
     m_pResourceTypes[86] = 65535;
     m_pResourceExtensions[86] = "";
-#else
-    m_pResourceTypes[86] = 14;
-    m_pResourceExtensions[86] = "log";
-    m_pResourceTypes[87] = 65535;
-    m_pResourceExtensions[87] = "";
-#endif
 }
 #ifndef _XBOX
 void CExoBaseInternal::AddAlias(const CExoString& sFile,  // PC 0x00633040
@@ -341,11 +330,7 @@ const CExoString& CExoBaseInternal::GetResourceExtension(
         if (m_pResourceTypes[i] == resourceType)
             return m_pResourceExtensions[i];
     }
-#ifdef _XBOX
     return m_pResourceExtensions[86];
-#else
-    return m_pResourceExtensions[87];
-#endif
 }
 // PC 0x00633330
 unsigned short CExoBaseInternal::GetResTypeFromExtension(
@@ -356,11 +341,7 @@ unsigned short CExoBaseInternal::GetResTypeFromExtension(
         if (m_pResourceExtensions[i].CompareNoCase(extension))
             return m_pResourceTypes[i];
     }
-#ifdef _XBOX
     return m_pResourceTypes[86];
-#else
-    return m_pResourceTypes[87];
-#endif
 }
 #ifndef _XBOX
 void CExoBaseInternal::LoadAliases(const CExoString& sFile)  // PC 0x00633380

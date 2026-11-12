@@ -124,7 +124,7 @@ class CSWGuiPazaakStart : public CSWGuiPanel
 {
 public:
 
-    enum { ChosenCardCount = 10 };
+    enum { ChosenCardCount = 10, AvailCardCount = 24 };
     CSWGuiPazaakStart(CSWGuiManager* pManager, int nWager, int nSideDeck,
                       int bTutorial, unsigned long oidOpponent);
     virtual ~CSWGuiPazaakStart();
@@ -151,15 +151,13 @@ public:
     void HandleAcceptButton(CSWGuiControl* pControl);
 
     CSWGuiLabel m_lblTitle;
-    CSWGuiPazaakCard m_cAvail[18];
-    CSWGuiLabel m_lblAvailCount[18];
+    CSWGuiPazaakCard m_cAvail[AvailCardCount];
+    CSWGuiLabel m_lblAvailCount[AvailCardCount];
     CSWGuiPazaakCard m_cChosen[ChosenCardCount];
 
 #ifdef _XBOX
     CSWGuiLabel m_lblYbutton;
-#endif
     CSWGuiActivatedButton m_btnMove;
-#ifdef _XBOX
     CSWGuiLabel m_lblAbutton;
 #endif
     CSWGuiActivatedButton m_btnAtext;
@@ -169,9 +167,12 @@ public:
     CSWGuiLabel m_lblLtext;
 #ifdef _XBOX
     CSWGuiLabel m_lblRbutton;
+#else
+    CSWGuiLabel m_lblHelp;
+    CSWGuiButton m_btnClearCards;
 #endif
     CSWGuiLabel m_lblRtext;
-    int m_anAvailCount[18];
+    int m_anAvailCount[AvailCardCount];
     CPazaakCard m_aChosen[ChosenCardCount];
     CSWGuiPanel* m_pWagerPopup;
 #ifdef _XBOX
@@ -249,8 +250,12 @@ public:
 
 #ifndef _XBOX
     CSWGuiButton m_btnFlip[4];
+    CSWGuiButton m_btnChange[4];
+    CSWGuiButton m_btnForfeitGame;
     CSWGuiLabel m_lblFlipIcon;
     CSWGuiLabel m_lblFlipLegend;
+    CSWGuiLabel m_lblChangeIcon;
+    CSWGuiLabel m_lblChangeLegend;
 #else
     CSWGuiActivatedButton m_lblXbutton;
 #endif
@@ -288,6 +293,7 @@ public:
     int m_nPlayedCard;
     int m_nHandAction;
 #endif
+    int m_n9664;
 };
 
 class CSWGuiWagerPopup : public CSWGuiPanel

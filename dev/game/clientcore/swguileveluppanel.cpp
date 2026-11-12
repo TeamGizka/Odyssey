@@ -354,6 +354,10 @@ CSWGuiLevelUpPanel::CSWGuiLevelUpPanel(CSWGuiManager* pManager,
     CExoString sName;
     int nNumber;
 
+#ifndef _XBOX
+    m_n1C68 = 0;
+    m_n1C6C = 0;
+#endif
     m_pManager = g_pAppManager->GetClientExoApp()->GetSWGuiManager();
     m_pCreature =
         g_pAppManager->GetClientExoApp()->GetCreatureByGameObjectID(nCreature);

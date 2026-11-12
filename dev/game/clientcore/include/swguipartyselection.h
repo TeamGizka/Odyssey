@@ -29,6 +29,7 @@ class CSWGuiPartySelectionData
 public:
     ~CSWGuiPartySelectionData();
 
+    int m_n00;
     CSWGuiPartySelectionButton m_btnNPC;
     CSWGuiLabel m_lblNotAvailable;
     CSWGuiLabel m_lblCharacter;
@@ -38,6 +39,7 @@ public:
     unsigned long m_nFlagsUnused : 29;
     int m_nPartyIndex;
     int m_nNPC;
+    int m_n474;
 };
 
 class CSWGuiPartySelection : public CSWGuiPanel
@@ -110,6 +112,8 @@ public:
     CSWGuiControl* m_pSelectedControl;
     CSWGuiLabel m_alblBar[5];
     CSWGuiLabel m_lblNameBack;
+    int m_n50AC;
+    unsigned long m_n50B0;
 #endif
 };
 

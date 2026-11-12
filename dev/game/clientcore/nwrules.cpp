@@ -13,7 +13,7 @@
 
 static const int RULES_SPECIAL_RANGE = 5;
 static const int RULES_SPECIAL_RANGE_ROW = 19;
-static const int RULES_MAX_LEVEL = 20;
+static const int RULES_MAX_LEVEL = 50;
 
 #define RULES_RANGES_TABLE "Ranges"
 #define RULES_EXPERIENCE_TABLE "EXPTABLE"

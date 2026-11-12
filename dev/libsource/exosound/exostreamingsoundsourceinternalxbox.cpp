@@ -426,7 +426,7 @@ int CExoStreamingSoundSourceInternal::GetHasStartedStreaming()
     return 0;
 }
 
-CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(CExoSoundInternal* pSoundInternal)
+CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(CExoSoundInternal* pSoundInternal, int n4)
 {
     m_pSoundInternal = pSoundInternal;
     m_b3D = 0;

@@ -96,11 +96,17 @@ public:
     unsigned char m_aUnmapped19BE[2];
     unsigned long m_bIsPC : 1;
     int m_nSelectedPower;
+#ifndef _XBOX
+    unsigned long m_bShowGrantedTutorial : 1;
+#endif
     CExoString m_sSelectText;
     CExoString m_sDeselectText;
     CExoArrayList<unsigned long> m_lGranted;
     CExoArrayList<unsigned long> m_lAvailable;
     CExoArrayList<unsigned long> m_lChosen;
+#ifndef _XBOX
+    CExoArrayList<unsigned long> m_l1BEC;
+#endif
     CSWGuiSkillFlowChart m_cChart;
 #ifndef _XBOX
     unsigned char m_nPowerState;

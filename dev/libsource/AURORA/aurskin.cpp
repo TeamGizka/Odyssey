@@ -21,6 +21,7 @@ inline Vector Material::GetBumpMapSpecularColor()
 #pragma inline_recursion(on)
 #pragma inline_depth(10)
 
+float g_fLuminanceScale = 0.65f;
 int usebumpdiffuse = 1;
 int usebumpspecular = 1;
 int use3boneskinning = 0;

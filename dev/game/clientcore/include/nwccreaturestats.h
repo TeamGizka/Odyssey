@@ -313,7 +313,7 @@ public:
     short m_nForcePointsBase;
     short m_nCurrentForcePoints;
     short m_nForcePointBonus;
-    CCombatInformation* m_p130;
+    CSWCCreature* m_p130;
 };
 
 class CSWCLevelUpStats : public CSWCCreatureStats

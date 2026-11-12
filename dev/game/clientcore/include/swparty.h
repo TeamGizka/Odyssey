@@ -86,11 +86,11 @@ public:
         m_fOffsetScale = 1.0f;
         m_oidCombatTarget = OBJECT_INVALID;
 
-        m_nCombatMessage = 48208;
+        m_nCombatMessage = 111303;
     }
     void SetCombatMessage(unsigned long nMessage);
 
-    enum { COMBAT_MESSAGE_ENGAGED = 0xBC50,
+    enum { COMBAT_MESSAGE_ENGAGED = 111303,
            COMBAT_MESSAGE_CLOSING_TO_ATTACK = 0xA5ED,
            COMBAT_MESSAGE_MOVING_CANCELS_COMBAT = 42476 };
 };

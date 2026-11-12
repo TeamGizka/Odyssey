@@ -15,6 +15,7 @@ class CGuiInGameDialogMessage;
 class CSWGuiLabel_vtbl;
 #include "math3d.h"
 #include "swguicustompanel.h"
+#include "swguimaininterfacepc2.h"
 
 class CSWGuiControllerLossBox : public CSWGuiMessageBox
 {
@@ -49,6 +50,23 @@ public:
     CSWGuiLabel m_lblLeftArrow;
     CSWGuiLabel m_lblRightArrow;
 #endif
+    CSWGuiLabel m_lblTopClass1;
+    CSWGuiLabel m_lblTopClass2;
+    CSWGuiLabel m_lblTopClass1Level;
+    CSWGuiLabel m_lblTopClass2Level;
+    CSWGuiLabel m_lblCharName;
+    CSWGuiMainInterfaceChar m_cChar2350;
+    CSWGuiLabel m_lblChar2;
+    CSWGuiLabel m_lblLevelUp2;
+    CSWGuiLabel m_lblBack2;
+    CSWGuiButton m_btnChange2;
+    CSWGuiLabel m_lblChar3;
+    CSWGuiLabel m_lblLevelUp3;
+    CSWGuiLabel m_lblBack3;
+    CSWGuiButton m_btnChange3;
+    CSWGuiLabel m_lblSecTitle;
+    int m_n3DCC;
+    int m_n3DD0;
     virtual void HandleInputEvent(int, int);
     void SetActiveControlID(int nControl, int bActive);
     void OnShoulderLeft(CSWGuiControl* pControl);
@@ -71,6 +89,9 @@ public:
 
     CSWGuiListBox m_lbMessages;
     CSWGuiListBox m_lbDialog;
+    CSWGuiListBox m_lbCombat;
+    CSWGuiListBox m_lbEffectsGood;
+    CSWGuiListBox m_lbEffectsBad;
     CSWGuiLabel m_lblTitle;
 #ifdef _XBOX
     CSWGuiLabel m_lblStart; CSWGuiLabel m_lblExit;
@@ -78,9 +99,18 @@ public:
 #endif
     CSWGuiLabelHilight* m_pMessageLabels;
     CSWGuiLabelHilight* m_pDialogLabels;
+    CSWGuiLabelHilight* m_pCombatLabels;
+    CSWGuiLabel m_lblEffectsGood;
+    CSWGuiLabel m_lblEffectsBad;
 #ifndef _XBOX
-    CSWGuiButton m_btnSwitch; CSWGuiButton m_btnBack;
+    CSWGuiButton m_btnBack;
 #endif
+    CSWGuiLabel m_alblBar[6];
+    CSWGuiButton m_btnDialog;
+    CSWGuiButton m_btnFeedback;
+    CSWGuiButton m_btnCombat;
+    CSWGuiButton m_btnEffects;
+    CSWGuiLabel m_lblFilter;
     void ToggleMessages();
     void ShowDialogMessages();
 
@@ -114,6 +144,7 @@ public:
     CStatusSummary m_cStatusSummary;
     unsigned int m_bWasPaused : 1;
     unsigned int m_nStatusFlagsUnused : 31;
+    int m_n94;
 #ifdef _XBOX
     CSWGuiLabel m_lblA; CSWGuiLabel m_lblOk;
 #else
@@ -186,9 +217,6 @@ public:
     void SetDescription(const CExoString& sText);
     int DisplayPowers();
 #ifndef _XBOX
-    void UpdatePortraits();
-    void OnSwitchLeft(CSWGuiControl* pControl);
-    void OnSwitchRight(CSWGuiControl* pControl);
     void SetButtonColor(CSWGuiControl* pControl);
 #endif
     void OnEnterPower(unsigned long nPower);
@@ -209,13 +237,12 @@ public:
     void OnSkillsButtonPressed(CSWGuiControl* pControl);
 #endif
     void SetCharacter(CSWCCreature* pCreature);
-#ifndef _XBOX
-    void OnChangeCharacter(CSWGuiControl* pControl);
-#endif
 
     CExoArrayList<CSWGuiSkillStruct> m_lstSkills;
     CSWGuiInGameSkillEntry m_aSkillEntries[10];
+#ifdef _XBOX
     CSWGuiLabel m_lblPortrait;
+#endif
     CSWGuiLabel m_lblDescription;
     CSWGuiLabel m_lblSkillRank;
     CSWGuiLabel m_lblRankValue;
@@ -242,15 +269,16 @@ public:
     CSWGuiButton m_btnFeats;
     CSWGuiButton m_btnPowers;
     CSWGuiButton m_btnSkills;
+    CSWGuiLabel m_alblBar[7];
+    CSWGuiLabel m_lblFilter;
+    CSWGuiLabel m_lblAbilities;
+    CSWGuiListBox m_lbDescFeats;
+    CSWGuiLabel m_lbl3F74;
 #endif
     CSWGuiListBox m_lbAbility;
     CSWGuiListBox m_lbDescription;
 #ifndef _XBOX
     CSWGuiButton m_btnExit;
-    CSWGuiButton m_btnChange1;
-    CSWGuiButton m_btnChange2;
-    CSWGuiButton m_btnCharLeft;
-    CSWGuiButton m_btnCharRight;
 #endif
     unsigned char m_nSelectedSkill;
     signed char m_nCharacterIndex;
@@ -286,14 +314,9 @@ public:
     virtual void OnPanelRemoved();
 
     int CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature, int nSlot);
-    void UpdatePortraits();
     void PopulateItemListBox();
     void SetNextFilter();
-    void UpdatePlayerStats();
     void OnControlSelected(CSWGuiControl* pControl);
-    void OnChangeCharacter(CSWGuiControl* pControl);
-    void OnSwitchRight(CSWGuiControl* pControl);
-    void OnSwitchLeft(CSWGuiControl* pControl);
     void OnControlEntered(CSWGuiControl* pControl);
     void CreateItemEntry(CSWCCreature* pCreature, int& nItem,
                         CExoArrayList<CSWGuiControl*>& lControls,
@@ -312,24 +335,22 @@ public:
     CSWGuiLabel m_lblCreditsValue;
     CSWGuiListBox m_lbxItems;
     CSWGuiListBox m_lbxDescription;
-    CSWGuiLabel m_lblBgPort;
-    CSWGuiLabel m_lblBgStats;
-    CSWGuiLabel m_lblPort;
-    CSWGuiLabel m_lblVit;
-    CSWGuiLabel m_lblDef;
     CSWGuiButton m_btnExit;
     CSWGuiButton m_btnUseItem;
-    CSWGuiButton m_btnQuestItems;
-    CSWGuiButton m_btnChange1;
-    CSWGuiButton m_btnChange2;
-    CSWGuiButton m_btnSwitchRight;
-    CSWGuiButton m_btnSwitchLeft;
+    CSWGuiLabel m_alblBar[6];
+    CSWGuiLabel m_lblFilter;
+    CSWGuiButton m_btnAll;
+    CSWGuiButton m_btnDatapads;
+    CSWGuiButton m_btnWeapons;
+    CSWGuiButton m_btnArmor;
+    CSWGuiButton m_btnUseable;
+    CSWGuiButton m_btnMisc;
+    CSWGuiButton m_btnQuests;
     CExoArrayList<CSWGuiControl*> m_aItemEntries;
     CExoArrayList<unsigned long> m_aNewItems;
     unsigned long m_oidSelectedItem;
     short m_nSavedTopItem;
     short m_nSavedSelected;
-    char m_nCharacter;
     unsigned long m_bUpdateItems : 1;
 
     unsigned long m_bRestoreSelection : 1;
@@ -406,11 +427,14 @@ public:
     CSWGuiLabel m_lblQuestItems;
     CSWGuiLabel m_lblRAnalog;
 #else
-    CSWGuiButton m_btnQuestItems;
     CSWGuiButton m_btnSwapText;
-    CSWGuiButton m_btnSort;
     CSWGuiButton m_btnExit;
+    CSWGuiButton m_btnFilterTime;
+    CSWGuiButton m_btnFilterName;
+    CSWGuiButton m_btnFilterPlanet;
+    CSWGuiButton m_btnMessages;
 #endif
+    CSWGuiLabel m_alblBar[5];
     CSWGuiQuestItem* m_pQuestItemPanel;
     CSWGuiControl* m_pUnknownFB8;
     CExoArrayList<int> m_aNewQuests;

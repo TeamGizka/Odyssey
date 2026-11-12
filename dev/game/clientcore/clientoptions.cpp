@@ -292,7 +292,7 @@ void CClientOptions::SetDefaultAutopauseOptions()
 {
     m_bAutopauseEndOfCombatRound = 0;
     m_bAutopauseEnemySighted = 1;
-    m_bAutopauseMineSighted = 1;
+    m_bAutopauseMineSighted = 0;
     m_bAutopausePartyKilled = 1;
     m_bAutopauseActionMenu = 0;
     m_bAutopauseNewTargetSelected = 1;
@@ -396,7 +396,7 @@ void CClientOptions::SetEnableHardwareMouseCursor(int bEnabled)
         }
     }
 }
-// PC 0x0066D470
+// PC 0x0066D430
 void CClientOptions::SetShadows(unsigned long nShadows)
 {
     m_nShadows = nShadows;
@@ -418,7 +418,7 @@ void CClientOptions::SetSoftShadows(unsigned long nSoftShadows)
     }
     AurDisableSoftShadows();
 }
-// PC 0x0066D430
+// PC 0x0066D470
 void CClientOptions::SetGrass(unsigned long nGrass)
 {
     m_nGrass = nGrass;
@@ -628,6 +628,12 @@ CClientOptions::CClientOptions()  // PC 0x0066D8A0
 #endif
     }
     m_bEnableTooltips = 1;
+    m_n14 = 0;
+    m_n15 = 0;
+    m_n16 = 0;
+    m_n18 = 0;
+    m_n1A = 0;
+    m_n1B = 0;
     m_bMouseTeleporting = 1;
     SetDefaultOptions();
 }

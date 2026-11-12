@@ -40,10 +40,11 @@ inline Vector CExoSoundInternal::GetListenerOrientation()
 }
 // PC 0x00627C10
 CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(
-    CExoSoundInternal* pSoundInternal)
+    CExoSoundInternal* pSoundInternal, int n4)
 {
     int nSourceId;
 
+    m_n4 = n4;
     m_pSoundInternal = pSoundInternal;
     m_bLooping = 0;
     m_hStream = NULL;
@@ -63,11 +64,19 @@ CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(
     m_fMaxDistance = 0.0f;
     m_fVolume = -1.0f;
     m_nPriorityGroup = CExoSoundPriorityGroup::MUSIC_GROUP;
-    m_nPriorityVolume =
-        m_pSoundInternal->m_pPriorityGroups[m_nPriorityGroup].m_nVolume;
+    CExoSoundPriorityGroup* pGroup = m_pSoundInternal->GetPriorityGroup(m_nPriorityGroup);
+    if (pGroup != NULL)
+    {
+        m_nPriorityVolume = pGroup->m_nVolume;
+    }
+    else
+    {
+        m_nPriorityVolume = 127;
+    }
     m_vObstructionListenerPosition = Vector();
     m_nObstructionTime = 0;
     m_fOcclusion = 0.0f;
+    m_n88 = 0;
 }
 // PC 0x00627D20
 CExoStreamingSoundSourceInternal::~CExoStreamingSoundSourceInternal()
@@ -545,8 +554,8 @@ int CExoStreamingSoundSourceInternal::Play(const CResRef& resRef,
         m_nPausePosition = 0;
         AIL_stream_ms_position(m_hStream, &nDuration, NULL);
         CExoSoundPriorityGroup* pGroup =
-            &m_pSoundInternal->m_pPriorityGroups[m_nPriorityGroup];
-        if (pGroup->m_nPlaying >= pGroup->m_nMaxPlaying)
+            m_pSoundInternal->GetPriorityGroup(m_nPriorityGroup);
+        if (pGroup != NULL && pGroup->m_nPlaying >= pGroup->m_nMaxPlaying)
         {
             if (pGroup->m_bInterrupt == 0)
             {
@@ -583,8 +592,7 @@ void CExoStreamingSoundSourceInternal::SetPriorityGroup(unsigned char nGroup)
 {
     float fMaxDistance;
     float fMinDistance;
-    CExoSoundPriorityGroup* pGroup =
-        &m_pSoundInternal->m_pPriorityGroups[nGroup];
+    CExoSoundPriorityGroup* pGroup = m_pSoundInternal->GetPriorityGroup(nGroup);
 
     if (pGroup != NULL)
     {
@@ -592,15 +600,18 @@ void CExoStreamingSoundSourceInternal::SetPriorityGroup(unsigned char nGroup)
     }
     else
     {
-        pGroup = &m_pSoundInternal->m_pPriorityGroups[m_nPriorityGroup];
+        pGroup = m_pSoundInternal->GetPriorityGroup(m_nPriorityGroup);
     }
 
-    m_nPriorityVolume = pGroup->m_nVolume;
-    SetVolume(m_nVolume, 0, 1.0f);
-    fMinDistance = pGroup->m_fMinVolumeDist;
-    fMaxDistance = pGroup->m_fMaxVolumeDist;
-    m_fMinDistance = fMaxDistance;
-    m_fMaxDistance = fMinDistance;
+    if (pGroup != NULL)
+    {
+        m_nPriorityVolume = pGroup->m_nVolume;
+        SetVolume(m_nVolume, 0, 1.0f);
+        fMinDistance = pGroup->m_fMinVolumeDist;
+        fMaxDistance = pGroup->m_fMaxVolumeDist;
+        m_fMinDistance = fMaxDistance;
+        m_fMaxDistance = fMinDistance;
+    }
 }
 // PC 0x006290C0
 void CExoStreamingSoundSourceInternal::Resume()

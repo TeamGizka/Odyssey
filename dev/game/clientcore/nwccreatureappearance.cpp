@@ -955,7 +955,7 @@ void CSWCCreatureAppearance::GetBTypeModelAndTextureResRef(
 {
     char sModelColumn[] = "ModelA";
     char sTextureColumn[] = "TEXA";
-    int nBodyVariation = max(1, min(10, pAppearance->m_nBodyVariation));
+    int nBodyVariation = max(1, min(14, pAppearance->m_nBodyVariation));
     int nTextureVar = max(1, pAppearance->m_nTextureVar);
 
     if (pAppearance->m_bUseBodyVariation)

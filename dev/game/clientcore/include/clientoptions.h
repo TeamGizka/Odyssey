@@ -256,9 +256,9 @@ public:
     unsigned char m_nBrightness;
     float m_fGammaMin;
     float m_fGammaMax;
-    unsigned long m_nGrass;
-    unsigned long m_nSoftShadows;
     unsigned long m_nShadows;
+    unsigned long m_nSoftShadows;
+    unsigned long m_nGrass;
     unsigned long m_nFrameBuffer;
     unsigned long m_nAnisotropy;
     int m_nShaderLevel;

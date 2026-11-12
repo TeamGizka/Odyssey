@@ -86,6 +86,7 @@ CSWCCreatureStats::CSWCCreatureStats()
     m_nWillSave = 0;
     m_nReflexSave = 0;
     m_nGoodEvilAlignment = NEUTRAL_GOOD_EVIL_ALIGNMENT;
+    m_n82 = -1;
     m_nUnknown60 = 0;
     m_nUnknown64 = 0;
     m_nAppearance = m_nRace;
@@ -1282,8 +1283,8 @@ void CSWCLevelUpStats::CalcNumberFeats(unsigned char& nGeneral,
     CSWClass* pClass = &g_pRules->m_pClasses[GetClassLeveledUpIn()];
     unsigned char nLevel = GetClassLevel(m_nClassCount - 1);
 
-    nGeneral = nLevel - 1 < 20 ? pClass->m_aFeatGain[nLevel - 1] : 0;
-    nBonus = nLevel - 1 < 20 ? pClass->m_aBonusFeatGain[nLevel - 1] : 0;
+    nGeneral = nLevel - 1 < 50 ? pClass->m_aFeatGain[nLevel - 1] : 0;
+    nBonus = nLevel - 1 < 50 ? pClass->m_aBonusFeatGain[nLevel - 1] : 0;
 }
 // PC 0x006FD1E0
 unsigned char CSWCLevelUpStats::ComputeNumberKnownSpellsLeft()

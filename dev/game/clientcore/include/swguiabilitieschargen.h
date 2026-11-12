@@ -112,7 +112,6 @@ public:
     CSWGuiLabel m_lblRemainingBox;
     CSWGuiLabel m_lblRemainingSelections;
     CSWGuiLabel m_lblSelectionsRemaining;
-    CSWGuiLabel m_lblDescriptionHeader;
     CSWGuiLabel m_lblCost;
     CSWGuiLabel m_lblCostPoints;
     CSWGuiLabel m_lblDescription;
@@ -124,8 +123,6 @@ public:
     CSWGuiLabel m_lblBack;
     CSWGuiLabel m_lblRecommended;
 #endif
-    CSWGuiLabel m_lblAbilityMod;
-    CSWGuiLabel m_lblModifier;
 #ifdef _XBOX
     CSWGuiLabel m_lblRanalog;
 #endif
@@ -141,6 +138,8 @@ public:
     CSWGuiButton m_btnRecommended;
     CSWGuiButton m_btnPlus[6];
     CSWGuiButton m_btnMinus[6];
+    CSWGuiLabel m_alblBar[4];
+    CSWGuiLabel m_alblBonus[6];
 #endif
     unsigned long m_aDescriptionStrRef[6];
 #ifdef _XBOX
@@ -152,6 +151,15 @@ public:
     int m_aMinimumScore[6];
     int m_nSelected;
     int m_bLevelUp;
+#ifndef _XBOX
+    CSWGuiLabel m_lblPortrait;
+    Vector m_v49CC;
+    Vector m_v49D8;
+    Vector m_v49E4;
+    Vector m_v49F0;
+    Vector m_v49FC;
+    Vector m_v4A08;
+#endif
 };
 
 #endif

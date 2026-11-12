@@ -27,6 +27,7 @@ public:
     float m_fQuadSize;
     Vector m_vDiffuse;
     Vector m_vAmbient;
+    Vector m_vEmissive;
     float m_afProbability[NUM_GRASS_PROBABILITIES];
     char m_bInUse;
     CAurGrassInfo();

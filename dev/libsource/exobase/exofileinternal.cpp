@@ -115,19 +115,14 @@ CExoFileInternal::CExoFileInternal(const CExoString& path,
                                    unsigned short resourceType,
                                    const CExoString& mode)
 {
-#ifdef _XBOX
     CExoString sFileName;
 
     m_pFile = NULL;
     sFileName =
         g_pExoBase->m_pExoAliasList->ResolveFileName(path, resourceType);
     m_pFile = fopen(sFileName.CStr(), mode.CStr());
-#else
-    m_pFile = NULL;
-    m_sMode = mode;
-    m_sFileName =
-        g_pExoBase->m_pExoAliasList->ResolveFileName(path, resourceType);
-    m_pFile = fopen(m_sFileName.CStr(), mode.CStr());
+#ifndef _XBOX
+    m_sFileName = sFileName;
 #endif
 }
 // PC 0x00637320
@@ -190,55 +185,25 @@ unsigned long CExoFileInternal::Read(void* data, unsigned long size,
     }
     return 0;
 #else
-    int nAttempt = 0;
     if (m_pFile != NULL)
     {
-        int bRecovered = 0;
-        long lOffset = ftell(m_pFile);
-        unsigned long nBytesRead = size * fread(data, size, count, m_pFile);
-        unsigned long nExpected = size * count;
-        while (nBytesRead != count * size && ferror(m_pFile) && nAttempt < 10)
+        unsigned long nRead = fread(data, size, count, m_pFile);
+        if (nRead != count)
         {
-            bRecovered = 1;
-            g_sErrorString.Format(
-                "%sFAILED READ (%s) - ATTEMPT %d - Asked for %d "
-                "bytes got %d bytes\n",
-                m_sFileName.CStr(), g_sErrorString.CStr(), nAttempt, nExpected,
-                nBytesRead);
-            Sleep(500);
-            if (m_pFile != NULL)
+            if (ferror(m_pFile))
             {
-                fclose(m_pFile);
+                EXOLOG("Error reading %s\n", m_sFileName.CStr());
+                clearerr(m_pFile);
+                return 0;
             }
-            else
+            if (feof(m_pFile))
             {
-                g_sErrorString.Format("%sFile handle was null\n",
-                                      g_sErrorString.CStr(), nAttempt);
+                EXOLOG("Unexpected end of file reading %s\n", m_sFileName.CStr());
+                clearerr(m_pFile);
+                return 0;
             }
-            m_pFile = fopen(m_sFileName.CStr(), m_sMode.CStr());
-            if (m_pFile != NULL)
-            {
-                fseek(m_pFile, lOffset, SEEK_SET);
-                nBytesRead = size * fread(data, size, count, m_pFile);
-            }
-            else
-            {
-                g_sErrorString.Format("%sFile handle failed to reopen\n",
-                                      g_sErrorString.CStr(), nAttempt);
-            }
-            ++nAttempt;
         }
-        if (nBytesRead != nExpected)
-        {
-            g_sErrorString.Format("%sFile write failed.  Giving up\n",
-                                  g_sErrorString.CStr());
-        }
-        else if (bRecovered)
-        {
-            g_sErrorString.Format("%sFile write recovered.\n",
-                                  g_sErrorString.CStr());
-        }
-        return nBytesRead;
+        return size * nRead;
     }
     return 0;
 #endif
@@ -262,64 +227,6 @@ unsigned long CExoFileInternal::Write(const char* text)
     if (m_pFile != NULL)
     {
         return fwrite(text, 1, strlen(text), m_pFile);
-    }
-    return 0;
-}
-#else
-unsigned long CExoFileInternal::Write(const void* data, unsigned long size,
-                                      unsigned long count)
-{
-    int nAttempt = 0;
-    if (m_pFile != NULL)
-    {
-        long lOffset;
-        int bRecovered = 0;
-        lOffset = ftell(m_pFile);
-        unsigned long nBytesWritten = size * fwrite(data, size, count, m_pFile);
-        unsigned long nExpected = size * count;
-        while (nBytesWritten != count * size && ferror(m_pFile) &&
-               nAttempt < 10)
-        {
-            bRecovered = 1;
-            g_sErrorString.Format(
-                "%sFAILED WRITE (%s) - ATTEMPT %d - Tried to write %d bytes at "
-                "position %d, actually wrote %d bytes\n",
-                m_sFileName.CStr(), g_sErrorString.CStr(), nAttempt, nExpected,
-                lOffset, nBytesWritten);
-            Sleep(500);
-            if (m_pFile != NULL)
-            {
-                fclose(m_pFile);
-            }
-            else
-            {
-                g_sErrorString.Format("%sFile handle was null\n",
-                                      g_sErrorString.CStr());
-            }
-            m_pFile = fopen(m_sFileName.CStr(), m_sMode.CStr());
-            if (m_pFile != NULL)
-            {
-                fseek(m_pFile, lOffset, SEEK_SET);
-                nBytesWritten = size * fwrite(data, size, count, m_pFile);
-            }
-            else
-            {
-                g_sErrorString.Format("%sFile handle failed to reopen\n",
-                                      g_sErrorString.CStr());
-            }
-            ++nAttempt;
-        }
-        if (nBytesWritten != nExpected)
-        {
-            g_sErrorString.Format("%sFile write failed.  Giving up\n",
-                                  g_sErrorString.CStr());
-        }
-        else if (bRecovered)
-        {
-            g_sErrorString.Format("%sFile write recovered.\n",
-                                  g_sErrorString.CStr());
-        }
-        return nBytesWritten;
     }
     return 0;
 }

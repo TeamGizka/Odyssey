@@ -162,7 +162,7 @@ int CExoSoundSource::SetFixedVariance(float fVariance)
     }
 }
 // PC 0x006216A0
-CExoStreamingSoundSource::CExoStreamingSoundSource()
+CExoStreamingSoundSource::CExoStreamingSoundSource(int n4)
 {
     if (g_bDisableSound != 0)
     {
@@ -171,7 +171,7 @@ CExoStreamingSoundSource::CExoStreamingSoundSource()
     else
     {
         m_pInternal =
-            new CExoStreamingSoundSourceInternal(g_pExoSound->m_pInternal);
+            new CExoStreamingSoundSourceInternal(g_pExoSound->m_pInternal, n4);
     }
 }
 // PC 0x00621730
@@ -1148,11 +1148,6 @@ inline void CExoSoundInternal::SetDesiredAmbientScale(float fScale)
 inline int CExoSoundInternal::GetSoundMode()
 {
     return m_anSoundMode[m_nSoundMode];
-}
-// PC 0x00622320
-inline CExoSoundPriorityGroup* CExoSoundInternal::GetPriorityGroup(unsigned char nGroup)
-{
-    return m_pPriorityGroups + nGroup;
 }
 
 #ifndef _XBOX

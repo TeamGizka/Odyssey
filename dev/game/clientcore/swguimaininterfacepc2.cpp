@@ -168,7 +168,7 @@ void CSWGuiMainInterfaceChar::Adjust(float fElapsed)
     int nOffsetY =
         (int)((m_nEndY - m_nStartY) * fRemaining + m_nStartY - cExtent.m_nTop);
 
-    for (nIndex = 0; nIndex < 6; nIndex++)
+    for (nIndex = 0; nIndex <= LABEL_CHAR; nIndex++)
     {
         cExtent = m_aLabels[nIndex].m_cExtent;
         cExtent.m_nLeft += nOffsetX;
@@ -194,7 +194,7 @@ void CSWGuiMainInterfaceChar::Adjust(float fElapsed)
 // PC 0x006DD9B0
 void CSWGuiMainInterfaceChar::DrawStack(float fElapsed, int bLarge, int bBuff)
 {
-    CSWGuiExtent cViewport = m_aLabels[5].m_cExtent;
+    CSWGuiExtent cViewport = m_aLabels[LABEL_CHAR].m_cExtent;
     AurGUIStartLayer();
     if (AurGUISetupViewport(cViewport.m_nLeft, cViewport.m_nTop,
                             cViewport.m_nWidth, cViewport.m_nHeight,
@@ -1892,7 +1892,7 @@ void CSWGuiMainInterface::PopulateMenus()  // PC 0x006E3530
         {
             pTargetObject = pTarget->AsSWCObject();
         }
-        for (int nMenu = 0; nMenu < 6; nMenu++)
+        for (int nMenu = 0; nMenu < 7; nMenu++)
         {
             for (int nAction = 0; nAction < m_aPersonalActionLists[nMenu].num;
                  nAction++)
@@ -1904,7 +1904,7 @@ void CSWGuiMainInterface::PopulateMenus()  // PC 0x006E3530
         }
         m_cTargetActionMenu.PopulateMenus(pCreature, bDisabled, pTargetObject);
 
-        for (int nMenu = 0; nMenu < 4; nMenu++)
+        for (int nMenu = 0; nMenu < 6; nMenu++)
         {
             int bFound = 0;
             int nAction;
@@ -2209,7 +2209,7 @@ void CSWGuiMainInterface::SetCombatMessage(unsigned long nMessage)
         m_lblCmbtmodemsg.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_ORANGE);
         break;
 #ifndef _XBOX
-    case 48208:
+    case 111303:
         m_lblCmbtmodemsg.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_RED);
         break;
 #endif
@@ -3396,7 +3396,7 @@ void CSWGuiMainInterface::OnTargetActionFocus(CSWGuiControl* pControl)  // PC 0x
 {
     if (pControl->m_bSelected != 0)
     {
-        m_cTargetActionMenu.m_nSelectedAction = pControl->m_nIndex - 4;
+        m_cTargetActionMenu.m_nSelectedAction = pControl->m_nIndex - 6;
     }
 }
 #endif
@@ -3414,7 +3414,7 @@ void CSWGuiMainInterface::OnTargetUpArrowPressed(CSWGuiControl* pControl)
         }
         g_pAppManager->m_pClientExoApp->ShowTutorialWindow(5, OBJECT_INVALID,
                                                            OBJECT_INVALID, 0);
-        m_cTargetActionMenu.SelectPrevAction(nIndex - 4);
+        m_cTargetActionMenu.SelectPrevAction(nIndex - 6);
     }
 }
 #endif
@@ -3432,7 +3432,7 @@ void CSWGuiMainInterface::OnTargetDownArrowPressed(CSWGuiControl* pControl)
         }
         g_pAppManager->m_pClientExoApp->ShowTutorialWindow(5, OBJECT_INVALID,
                                                            OBJECT_INVALID, 0);
-        m_cTargetActionMenu.SelectNextAction(nIndex - 4);
+        m_cTargetActionMenu.SelectNextAction(nIndex - 6);
     }
 }
 #endif
@@ -3571,13 +3571,13 @@ void CSWGuiMainInterface::OnDefaultActionLeft(CSWGuiControl* pControl)  // PC 0x
     if (pControl->m_bSelected != 0)
     {
         int nIndex = pControl->m_nIndex;
-        if (nIndex >= 0 && nIndex < 4)
+        if (nIndex >= 0 && nIndex < 6)
         {
             DoPersonalAction(nIndex, 0);
             return;
         }
 
-        DoTargetAction(nIndex - 4, 1);
+        DoTargetAction(nIndex - 6, 1);
     }
 }
 #endif
@@ -3936,7 +3936,7 @@ void CSWGuiMainInterface::ClearAllActions()  // PC 0x006DEEA0
 #ifndef _XBOX
 void CSWGuiMainInterface::SelectNextPersonalAction(int nMenu)  // PC 0x006E2BC0
 {
-    if (nMenu >= 0 && nMenu < 4 &&
+    if (nMenu >= 0 && nMenu < 6 &&
         m_aPersonalActionLists[nMenu].num != 0)
     {
         CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
@@ -3981,7 +3981,7 @@ void CSWGuiMainInterface::SelectNextPersonalAction(int nMenu)  // PC 0x006E2BC0
 #ifndef _XBOX
 void CSWGuiMainInterface::SelectPrevPersonalAction(int nMenu)
 {
-    if (nMenu >= 0 && nMenu < 4 &&
+    if (nMenu >= 0 && nMenu < 6 &&
         m_aPersonalActionLists[nMenu].num != 0)
     {
         CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();

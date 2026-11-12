@@ -83,7 +83,7 @@ public:
     };
     CSWCCreature* m_pCreature;
 
-    enum { NUM_EQUIPMENT_SLOTS = 9 };
+    enum { NUM_EQUIPMENT_SLOTS = 11 };
 
     enum { INVALID_SLOT_ITEM_INDEX = 10 };
 
@@ -94,39 +94,40 @@ public:
     enum { ARMOUR_ITEM_INDEX = 5 };
     CSWGuiButton m_aSlotButtons[NUM_EQUIPMENT_SLOTS];
     CSWGuiLabel m_aSlotLabels[NUM_EQUIPMENT_SLOTS];
+    int m_an2274[NUM_EQUIPMENT_SLOTS];
     CExoArrayList<CSWGuiInGameItemEntry*> m_lItemEntries;
 
     CSWGuiLabel m_lblAtkl;
     CSWGuiLabel m_lblTohitl;
     CSWGuiLabel m_lblAtkr;
     CSWGuiLabel m_lblTohitr;
-    CSWGuiLabel m_lblDef;
-    CSWGuiLabel m_lblVitality;
     CSWGuiLabel m_cDescriptionText;
 
-    CSWGuiLabel m_lblPortrait;
     CSWGuiLabel m_lblAttackInfo;
     CSWGuiLabel m_lblDefInfo;
-    CSWGuiLabel m_lblTxtbar;
-    CSWGuiLabel m_lblPortBord;
+    CSWGuiLabel m_lblDefText;
     CSWGuiLabel m_lblTohit;
     CSWGuiLabel m_lblDamage;
     CSWGuiLabel m_lblSlotname;
     CSWGuiLabel m_lblTitle;
-    CSWGuiLabel m_lblSelecttitle;
+    CSWGuiLabel m_lblAtkl2;
+    CSWGuiLabel m_lblTohitl2;
+    CSWGuiLabel m_lblAtkr2;
+    CSWGuiLabel m_lblTohitr2;
     CSWGuiListBox m_lbItems;
     CSWGuiListBox m_lbDesc;
     CSWGuiButton m_btnEquip;
     CSWGuiButton m_btnBack;
-    CSWGuiButton m_btnChange1;
-    CSWGuiButton m_btnChange2;
-    CSWGuiButton m_btnCharleft;
-    CSWGuiButton m_btnCharright;
     CSWGuiLabel m_lblCantequip;
+    CSWGuiLabel m_alblBar[5];
+    CSWGuiLabel m_lblBack1;
+    CSWGuiLabel m_lblAttackMod;
+    CSWGuiLabel m_lblDamText;
+    CSWGuiLabel m_lblDef;
+    CSWGuiLabel m_lblDefBack;
+    CSWGuiButton m_btnSwapWeapons;
     unsigned int m_bDescriptionShown : 1;
     unsigned int : 31;
-    char m_nCharacter;
-    char gap_4275[3];
 
     int m_nSelectedSlot;
 
@@ -138,6 +139,11 @@ public:
     CSWSItem* m_pDescribedCopy;
     unsigned long m_oidCompared;
     CSWSItem* m_pComparedCopy;
+    float m_f50E4;
+    int m_n50E8;
+    int m_nCharacter;
+    CSWGuiButton m_btnPrevNpc;
+    CSWGuiButton m_btnNextNpc;
     CExoString GetIcon(int);
     void SetDescription(CExoString const&);
     int EquipItem(unsigned long, int, int);
@@ -147,9 +153,6 @@ public:
 
     enum { CHARACTER_UNSET = -2, CHARACTER_PLAYER = -1 };
 
-    void UpdatePortraits(int bShow);
-    void OnSwitchRight(CSWGuiControl*);
-    void OnSwitchLeft(CSWGuiControl*);
     CSWSItem* CopyItem(unsigned long);
     int ItemExists(unsigned long);
 
@@ -167,7 +170,6 @@ public:
 
     void UpdateInventory();
     virtual void HandleInputEvent(int, int);
-    void OnChangeCharacter(CSWGuiControl*);
     CSWGuiInGameEquip(CSWGuiManager*);
     virtual void Draw(float);
     virtual void OnPanelAdded();
@@ -261,6 +263,9 @@ public:
     CSWGuiBorder m_cIconHilite;
     CSWGuiBorder m_cCountBorder;
     CSWGuiText m_cCountText;
+    int m_n3AC;
+    int m_n3B0;
+    int m_n3B4;
     virtual void Initialize(CSWGuiText&, CSWGuiBorder&, CSWGuiBorder&, int);
     CSWGuiStoreItemEntry();
     void SetItem(unsigned long, int);

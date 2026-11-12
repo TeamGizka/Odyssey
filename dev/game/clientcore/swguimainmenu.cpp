@@ -1,5 +1,6 @@
 #include "swguimainmenu.h"
 #include "aurcamera.h"
+#include "nwccreature.h"
 #include "partytables.h"
 #include "appmanager.h"
 #include "clientexoapp.h"
@@ -327,6 +328,13 @@ void CSWGuiMainMenu::OnQuitButtonPressed(CSWGuiControl* pControl)
 // PC 0x006D1740
 CSWGuiMainMenu::~CSWGuiMainMenu()
 {
+#ifndef _XBOX
+    if (m_pCreature != NULL)
+    {
+        delete m_pCreature;
+        m_pCreature = NULL;
+    }
+#endif
     m_lbModules.ClearItems();
 #ifdef _XBOX
     if (g_pExoResMan->Exists("MAINMENU", RESTYPE_RIM, (unsigned long*)0))
@@ -722,8 +730,10 @@ CSWGuiMainMenu::CSWGuiMainMenu(CSWGuiManager* pManager)
     g_pExoResMan->CleanDirectory("REBOOTDATA:", 0, 0);
     g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
 #ifndef _XBOX
+    m_pCreature = NULL;
     m_bReady = 0;
     m_nDrawCount = 0;
+    m_n1900 = 0;
 #endif
 }
 

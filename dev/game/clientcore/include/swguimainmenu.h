@@ -6,6 +6,7 @@
 #include "swgui.h"
 class CSWGuiControl;
 class CSWGuiManager;
+class CSWCCreature;
 
 class CSWGuiMainMenu : public CSWGuiPanel
 {
@@ -87,6 +88,8 @@ public:
     CSWGuiButton m_btnWarp;
     int m_bReady;
     int m_nDrawCount;
+    CSWCCreature* m_pCreature;
+    int m_n1900;
 #endif
 };
 

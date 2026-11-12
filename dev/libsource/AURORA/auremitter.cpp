@@ -3455,6 +3455,7 @@ PartEmitter::PartEmitter(MdlNode* pNode)
     m_pWindManager = 0;
     m_pHitInfo = new CHitInfo(1, ~CHitInfo::HIT_TRIGGER, 0);
     totalemitters++;
+    m_bWeather = false;
 }
 
 #define AUREMITTER_DEBUG_CONTROL_POINTS 0

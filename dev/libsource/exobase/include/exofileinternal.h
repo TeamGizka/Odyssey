@@ -39,11 +39,8 @@ public:
     FILE* m_pFile;
 #ifndef _XBOX
     CExoString m_sFileName;
-    CExoString m_sMode;
 #endif
 };
-
-#ifdef _XBOX
 
 inline unsigned long CExoFileInternal::Write(const void* data,
                                              unsigned long size,
@@ -55,7 +52,6 @@ inline unsigned long CExoFileInternal::Write(const void* data,
     }
     return 0;
 }
-#endif
 
 class CExoAliasListInternal
 {

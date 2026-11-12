@@ -74,9 +74,7 @@ public:
     unsigned char m_nParentType;
     unsigned long m_bRandomName : 1;
     unsigned long m_nNameFlagsUnused : 31;
-#ifdef _XBOX
     CExoString m_sName;
-#endif
     CSWNameGen m_cNameGen;
 };
 

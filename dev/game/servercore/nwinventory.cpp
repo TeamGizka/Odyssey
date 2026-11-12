@@ -25,7 +25,7 @@ int CSWInventory::GetItemInInventory(CSWSItem* pItem)
         oidItem = pItem->m_nId;
     }
 
-    for (int i = 0; i < 18; i++)
+    for (int i = 0; i < TOTAL_SLOT_COUNT; i++)
     {
         if (m_oidSlot[i] == oidItem)
         {
@@ -45,11 +45,11 @@ unsigned long CSWInventory::GetSlotFromItem(CSWSItem* pItem)
         oidItem = pItem->m_nId;
     }
 
-    for (int i = 0; i < 18; i++)
+    for (int i = 0; i < TOTAL_SLOT_COUNT; i++)
     {
         if (m_oidSlot[i] == oidItem)
         {
-            return 1 << i;
+            return (i < 11) ? (1 << i) : (1 << (i + 3));
         }
     }
 
@@ -91,6 +91,8 @@ unsigned long* CSWInventory::GetSlotPointer(unsigned long nSlot)
     case INVENTORY_SLOT_CREATUREWEAPON2: return &m_oidSlot[12];
     case INVENTORY_SLOT_CREATUREWEAPON3: return &m_oidSlot[13];
     case INVENTORY_SLOT_CREATUREARMOUR: return &m_oidSlot[14];
+    case INVENTORY_SLOT_RIGHTHAND2: return &m_oidSlot[15];
+    case INVENTORY_SLOT_LEFTHAND2: return &m_oidSlot[16];
     default: return NULL;
     }
 }
@@ -104,7 +106,7 @@ int CSWInventory::RemoveItem(CSWSItem* pItem)
         oidItem = pItem->m_nId;
     }
 
-    for (int i = 0; i < 18; i++)
+    for (int i = 0; i < TOTAL_SLOT_COUNT; i++)
     {
         if (m_oidSlot[i] == oidItem)
         {
