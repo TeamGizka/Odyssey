@@ -1825,11 +1825,7 @@ inline void GetViewport(GLint* pViewport)
     glGetIntegerv(GL_VIEWPORT, pViewport);
 }
 #endif
-#ifdef _XBOX
 void AurSnapshot(char* sFileName)
-#else
-void AurSnapshot(char* sFileName, bool bScreenSize)
-#endif
 {
     static int k;
     char sBuffer[64];

@@ -1814,6 +1814,8 @@ void Gob::Animate(float fTimeStep)  // PC 0x004B75D0
             return;
         bAnimateHierarchy = false;
     }
+    if (m_n1F8)
+        bAnimateHierarchy = false;
     int nRun = m_lOutOfOrderAnimations.m_nCount;
     m_bFirstAnimate = false;
     if (nRun > 0)

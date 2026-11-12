@@ -190,7 +190,7 @@ int AurAddDrawableSquare(float* pVertices, unsigned long nColor,
 #define AurAddDrawableSquare(pVertices, nColor) \
     AurAddDrawableSquare(pVertices, nColor, __FILE__, __LINE__)
 void AurRemoveDrawableSquare(unsigned long nSquare);
-void AurSnapshot(char* sFileName, bool bScreenSize);
+void AurSnapshot(char* sFileName);
 int AurQueryMaximumAnisotropy();
 void AurEnableShadows();
 int AurDisableShadows();

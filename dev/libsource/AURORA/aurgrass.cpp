@@ -482,7 +482,8 @@ void CAurTriangleBin::AddTriangle(const MaxFace& face, PartTriMesh* pTriMesh,
 
     float fArea = magnitude(cross(v1 - v0, v2 - v1)) * 0.5f;
     int nTriangles;
-    roundToInt(nTriangles, fArea * g_GrassInfo[face.m_nSurfaceType].m_fDensity);
+    float fTriangles = fArea * g_GrassInfo[face.m_nSurfaceType].m_fDensity;
+    roundToInt(nTriangles, fTriangles);
     if (nTriangles != 0)
     {
         if (pNode->m_bLightMapped && enablelightmap)

@@ -8958,12 +8958,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
     g_SndUpdateTime = (int)(g_endtime - g_starttime) * 0.001f;
     if (m_bScreenShot && g_bEnableScreenCapture)
     {
-#ifndef _XBOX
-        bool bShowGui = GetClientOptions()->m_bGUIsInScreenShot != 0;
-#endif
-#ifndef _XBOX
-        AurSnapshot(m_szScreenShot, bShowGui);
-#endif
+        AurSnapshot(m_szScreenShot);
         m_bScreenShot = 0;
     }
     if (bAreaReady)

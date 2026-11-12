@@ -54,7 +54,7 @@ public:
         return m_fX == 0.0f && m_fY == 0.0f && m_fZ == 0.0f;
     }
 
-    Vector& operator+=(const Vector& other)
+    __forceinline Vector& operator+=(const Vector& other)
     {
         m_fX += other.m_fX;
         m_fY += other.m_fY;
@@ -62,7 +62,7 @@ public:
         return *this;
     }
 
-    Vector& operator-=(const Vector& other)
+    __forceinline Vector& operator-=(const Vector& other)
     {
         m_fX -= other.m_fX;
         m_fY -= other.m_fY;
