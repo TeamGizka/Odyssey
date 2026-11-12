@@ -516,10 +516,10 @@ void CSWGuiDeathDisplay::OnLoadGamePressed(CSWGuiControl* pControl)
 {
     if (m_fFadeTime > 0.0)
         return;
-    g_pAppManager->m_pClientExoApp->SetGameOver(0);
+    g_pAppManager->GetClientExoApp()->SetGameOver(0);
     g_pAppManager->m_pClientExoApp->SetEndGamePending(0, 0.0f, 1);
     g_pAppManager->m_pClientExoApp->SaveOptions();
-    CSWGuiSaveLoad* pSaveLoad = new CSWGuiSaveLoad(m_pManager, 0, 0, 1);
+    CSWGuiSaveLoad* pSaveLoad = new CSWGuiSaveLoad(GetManager(), 0, 0, 1);
     pSaveLoad->SetEndGameMode();
     if (pSaveLoad->m_lEntries.num > 0)
     {
@@ -536,10 +536,10 @@ void CSWGuiDeathDisplay::OnLastSavePressed(CSWGuiControl* pControl)
 {
     if (m_fFadeTime > 0.0)
         return;
-    g_pAppManager->m_pClientExoApp->SetGameOver(0);
+    g_pAppManager->GetClientExoApp()->SetGameOver(0);
     g_pAppManager->m_pClientExoApp->SetEndGamePending(0, 0.0f, 1);
     g_pAppManager->m_pClientExoApp->SaveOptions();
-    CSWGuiSaveLoad* pSaveLoad = new CSWGuiSaveLoad(m_pManager, 0, 0, 1);
+    CSWGuiSaveLoad* pSaveLoad = new CSWGuiSaveLoad(GetManager(), 0, 0, 1);
     pSaveLoad->SetEndGameMode();
     if (pSaveLoad->m_lEntries.num > 0)
     {

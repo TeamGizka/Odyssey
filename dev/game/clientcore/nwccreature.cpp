@@ -1720,7 +1720,7 @@ CSWCCreature::CSWCCreature()
 #ifndef _XBOX
     m_fFreeLookTurn = 0.0f;
 #endif
-    m_n464 = CGameObjectArray::INVALIDOBJID;
+    m_n464 = -1;
     m_n468 = 0;
 }
 // PC 0x00664960
