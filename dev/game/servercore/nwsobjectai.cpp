@@ -2286,7 +2286,7 @@ int CSWSObject::AIActionDoorSaber(CSWSObjectActionNode* pNode)
                             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                         Vector vOrientation;
                         AsSWSCreature()->AddMoveToPointActionToFront(pNode->m_nGroupId,
-                            vPosition, pTarget->m_oidArea, oidTarget, 1, fRange, 0.0f,
+                            vPosition, pTarget->GetAreaId(), oidTarget, 1, fRange, 0.0f,
                             0, 0, 0, 0, 0, 0, vOrientation, 0, 0, 0);
                         return ACTION_COMPLETE;
                     }
@@ -2357,7 +2357,7 @@ int CSWSObject::AIActionDoorSaber(CSWSObjectActionNode* pNode)
                     if (AsSWSCreature() != NULL)
                     {
                         pTarget->AsSWSDoor()->m_bLocked = 0;
-                        pTarget->AsSWSDoor()->OpenDoor(GetId());
+                        pTarget->AsSWSDoor()->OpenDoor(m_nId);
                         g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                             0, 0, GetId(), oidTarget, CServerAIMaster::EVENT_UNLOCK_OBJECT, NULL);
                         if (AsSWSCreature() != NULL && rand() % 100 < 20)

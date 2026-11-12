@@ -673,8 +673,8 @@ int CSWSEffectListHandler::OnApplyAbilityDecrease(CSWSObject* pObject,
         {
             pStats = pCreature->m_pStats;
         }
-        pCreator = g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
-            pEffect->m_oidCreator);
+        pCreator = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
+            pEffect->GetCreator());
         if (pStats->GetEffectImmunity(IMMUNITY_TYPE_ABILITY_DECREASE, pCreator) != 0)
         {
             return 1;
@@ -687,10 +687,11 @@ int CSWSEffectListHandler::OnApplyAbilityDecrease(CSWSObject* pObject,
         {
             return 1;
         }
-        if (nValue >= 1 && pCreature->m_bPlotObject == 0)
+        if (nValue < 1 || pCreature->m_bPlotObject != 0)
         {
-            return 0;
+            return 1;
         }
+        return 0;
     }
     return 1;
 }
@@ -2793,14 +2794,13 @@ int CSWSEffectListHandler::OnApplyPoison(CSWSObject* pObject,
         {
             if (!bLoadingModule)
             {
-                int nName;
                 CSWSCreature* pCreator = g_pAppManager->GetServerExoApp()
-                    ->GetCreatureByGameObjectID(pEffect->GetCreator());
+                    ->GetCreatureByGameObjectID(pEffect->m_oidCreator);
                 if (pCreature->m_pStats->GetEffectImmunity(
                         CSWSCreatureStats::IMMUNITY_TYPE_POISON, pCreator) != 0)
                 {
                     CSWCCMessageData* pMessageData = new CSWCCMessageData;
-                    pMessageData->SetObjectID(0, pObject->GetId());
+                    pMessageData->SetObjectID(0, pObject->m_nId);
                     pMessageData->SetInteger(0, 0);
                     pMessageData->SetInteger(1, 0);
                     pMessageData->SetInteger(2, DAMAGE_FLAG_POISON);
@@ -2858,6 +2858,7 @@ int CSWSEffectListHandler::OnApplyPoison(CSWSObject* pObject,
                             CServerAIMaster::EVENT_REMOVE_EFFECT, pEffect);
                         return 0;
                     }
+                    int nName;
                     pPoison->GetINTEntry(nPoison, "Name", &nName);
                     CSWCCMessageData* pPoisonMessageData = new CSWCCMessageData;
                     pPoisonMessageData->SetInteger(0, nName);

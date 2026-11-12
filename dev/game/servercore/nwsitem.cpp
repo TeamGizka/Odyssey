@@ -959,7 +959,7 @@ void CSWSItem::AddFeatRequirements(CExoString& sString)
                 {
                     if (!bHeadingAdded)
                     {
-                        sString = sString + g_pAppManager->GetClientExoApp()->GetGUIString(
+                        sString = sString + g_pAppManager->m_pClientExoApp->GetGUIString(
                             CClientExoApp::GUI_STRREF_FEATS_REQUIRED) + ":\n";
                         bHeadingAdded = 1;
                     }
@@ -970,7 +970,7 @@ void CSWSItem::AddFeatRequirements(CExoString& sString)
                         EXOXBOXASSERT(pArraysForFeat->m_pFeat);
                         C2DA* pFeatTable = pArraysForFeat->m_pFeat;
 #else
-                        C2DA* pFeatTable = g_pRules->Get2DArrays()->m_pFeat;
+                        C2DA* pFeatTable = g_pRules->m_p2DArrays->m_pFeat;
 #endif
                         pFeatTable->GetINTEntry(nFeat, sColumn, &nName);
                     }
@@ -1102,7 +1102,7 @@ void CSWSItem::AddPCRequirements(CExoString& sString)
                 nPC = pProperty->m_nSubtype;
                 if (!bHeadingAdded)
                 {
-                    sString = sString + g_pAppManager->GetClientExoApp()->GetGUIString(
+                    sString = sString + g_pAppManager->m_pClientExoApp->GetGUIString(
                         GUI_STRREF_PC_REQUIRED) + ":\n";
                     bHeadingAdded = 1;
                 }
