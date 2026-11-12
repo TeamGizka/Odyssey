@@ -13,6 +13,7 @@ class Vector;
 #include "math3d.h"
 #include "nwsvartable.h"
 #include "partytables.h"
+#include "gameobjectarray.h"
 
 class CWorldTimer;
 class CGameObjectArray;
@@ -265,6 +266,7 @@ public:
     void ClearAreaCache();
     int ShrinkLineByCreatures(const Vector& vStart, const Vector& vEnd,
                               Vector& vResult);
+    unsigned __int64 GetSystemTimeAsDWORD64();
     void SetMoveToWorldTime(unsigned long nCalendarDay, unsigned char nHour,
                            unsigned char nMinute, unsigned char nSecond,
                            unsigned short nMillisecond, unsigned short nYear,
@@ -392,6 +394,13 @@ public:
 #ifndef _XBOX
 #pragma pack(pop)
 #endif
+
+inline CGameObject* CServerExoAppInternal::GetGameObject(unsigned long oidObject)
+{
+    CGameObject* pObject = NULL;
+    m_pObjectArray->GetGameObject(oidObject, &pObject);
+    return pObject;
+}
 
 class CStatusSummary
 {

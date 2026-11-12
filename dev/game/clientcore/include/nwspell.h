@@ -51,7 +51,9 @@ public:
         FORCE_POWER_LIGHT_SABER_THROW_ADVANCED = 4,
         FORCE_POWER_AFFECT_MIND = 6,
         FORCE_POWER_DOMINATE = 14,
-        FORCE_POWER_LIGHT_SABER_THROW = 49
+        FORCE_POWER_LIGHT_SABER_THROW = 49,
+        FORCE_POWER_162 = 162,
+        FORCE_POWER_163 = 163
     };
 
     static const unsigned char USER_TYPE_FORCE_POWER = 1;

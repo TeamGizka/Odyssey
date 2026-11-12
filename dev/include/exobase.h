@@ -612,6 +612,8 @@ public:
             if ((*this)[nIndex] == value)
                 break;
         }
+        if (nIndex == num)
+            return;
         num--;
         for (; nIndex < num; nIndex++)
         {

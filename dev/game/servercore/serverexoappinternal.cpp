@@ -52,7 +52,13 @@ inline int CStatusSummary::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
     pRes->WriteFieldBYTE(&stStruct, m_bLevelUpSound, "LEVELUPSOUND");
     pRes->WriteFieldBYTE(&stStruct, m_bNewQuestSound, "NEWQUESTSOUND");
     pRes->WriteFieldBYTE(&stStruct, m_bCompleteSound, "COMPLETESOUND");
-    return pRes->WriteFieldINT(&stStruct, m_nSuppressed, "SUPPRESSED");
+    pRes->WriteFieldBYTE(&stStruct, m_bDarkAlignSound, "DARKALIGNSOUND");
+    pRes->WriteFieldBYTE(&stStruct, m_bLightAlignSound, "LIGHTALIGNSOUND");
+    pRes->WriteFieldINT(&stStruct, m_nSuppressed, "SUPPRESSED");
+    pRes->WriteFieldINT(&stStruct, m_nInfluenceGain, "INFGAIN");
+    pRes->WriteFieldINT(&stStruct, m_nInfluenceLost, "INFLOST");
+    pRes->WriteFieldINT(&stStruct, m_nMaxForcePointsGain, "MAXFPGAIN");
+    return pRes->WriteFieldINT(&stStruct, m_nMaxForcePointsLost, "MAXFPLOST");
 }
 
 #include "serverexoapp.h"
@@ -606,6 +612,17 @@ void CServerExoAppInternal::StallEventSaveGame()  // PC 0x004ED2D0
     pGFF->WriteFieldBYTE(&stSaveInfo, bCheatUsed, "CHEATUSED");
     pGFF->WriteFieldCExoString(&stSaveInfo, m_sSaveGameName, "SAVEGAMENAME");
 #endif
+    {
+        SYSTEMTIME stLocalTime;
+        FILETIME ftTimeStamp;
+        GetLocalTime(&stLocalTime);
+        SystemTimeToFileTime(&stLocalTime, &ftTimeStamp);
+        pGFF->WriteFieldDWORD64(&stSaveInfo,
+            ((unsigned __int64)ftTimeStamp.dwHighDateTime << 32) | ftTimeStamp.dwLowDateTime,
+            "TIMESTAMP");
+    }
+    pGFF->WriteFieldCExoString(&stSaveInfo, m_partyTable.GetPCName(), "PCNAME");
+    pGFF->WriteFieldDWORD(&stSaveInfo, m_partyTable.m_n248, "SAVENUMBER");
     pGFF->WriteFieldBYTE(&stSaveInfo,
         g_pAppManager->GetClientExoApp()->GetGamePlayHint(), "GAMEPLAYHINT");
     pGFF->WriteFieldBYTE(&stSaveInfo,
@@ -1996,6 +2013,11 @@ void CServerExoAppInternal::TempDeathUpdate()
     {
         return;
     }
+    int nModalPanels = g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_lModalPanels.num;
+    if (nModalPanels > 0)
+    {
+        return;
+    }
 
     unsigned long nTime = (unsigned long)(
         g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
@@ -2215,14 +2237,9 @@ CExoString CServerExoAppInternal::GetModuleName()
 {
     if (GetModule() != NULL)
     {
-#ifdef _XBOX
-
         CExoString sModuleName;
         sModuleName = m_pServerInfo->m_sModuleList;
         return sModuleName;
-#else
-        return m_pServerInfo->m_sModuleName;
-#endif
     }
     return CExoString();
 }
@@ -2266,7 +2283,8 @@ int CServerExoAppInternal::CopyModuleToCurrentGame(
 
     if (nResult == 0)
     {
-        return nResult;
+        GetLastError();
+        return 0;
     }
 
     if ((GetFileAttributes(sDestination.CStr()) &
@@ -2459,17 +2477,6 @@ void CServerExoAppInternal::UpdateClientGameObjects(int bFlag)
     }
 }
 
-CGameObject* CServerExoAppInternal::GetGameObject(unsigned long oidObject)
-{
-    CGameObject* pObject = NULL;
-
-    if (m_pObjectArray->GetGameObject(oidObject, &pObject) ==
-        CGameObjectArray::SUCCESS)
-    {
-        return pObject;
-    }
-    return NULL;
-}
 // PC 0x004EAA90
 CSWSItem* CServerExoAppInternal::GetItemByGameObjectID(unsigned long oidObject)
 {
@@ -2708,13 +2715,6 @@ void CServerExoAppInternal::StopServices()
     EXOLOG("[%s] Server Shutting Down\n", sTimestamp.CStr());
     Shutdown(0, 0);
 
-#ifdef _XBOX
-    if (m_pVirtualMachineCommands != NULL)
-    {
-        delete m_pVirtualMachineCommands;
-        m_pVirtualMachineCommands = NULL;
-    }
-#endif
     if (m_pObjectArray != NULL)
     {
         delete m_pObjectArray;
@@ -2724,6 +2724,11 @@ void CServerExoAppInternal::StopServices()
     {
         delete m_pServerAIMaster;
         m_pServerAIMaster = NULL;
+    }
+    if (m_pVirtualMachineCommands != NULL)
+    {
+        delete m_pVirtualMachineCommands;
+        m_pVirtualMachineCommands = NULL;
     }
     if (m_pSWSMessage != NULL)
     {
@@ -2747,13 +2752,6 @@ void CServerExoAppInternal::StopServices()
         delete g_pVirtualMachine;
         g_pVirtualMachine = NULL;
     }
-#ifndef _XBOX
-    if (m_pVirtualMachineCommands != NULL)
-    {
-        delete m_pVirtualMachineCommands;
-        m_pVirtualMachineCommands = NULL;
-    }
-#endif
     if (g_pScriptCompiler != NULL)
     {
         delete g_pScriptCompiler;
@@ -2944,6 +2942,50 @@ int CServerExoAppInternal::LoadModule(const CExoString& sModule,
 
         if (nModuleType == RESTYPE_INVALID)
         {
+            CExoString sDirectory;
+            for (int nContentPackage = 1; nContentPackage < CTlkTable::NUM_CONTENT_PKGS;
+                 ++nContentPackage)
+            {
+                sDirectory.Format("LIVE%d", nContentPackage);
+                if (g_pExoBase->m_pExoAliasList->GetAliasPath(sDirectory, 0).GetLength())
+                {
+                    sDirectory = sDirectory + ":MODULES";
+                    g_pExoResMan->AddResourceDirectory(sDirectory);
+                    if (g_pExoResMan->Exists(sModule, RESTYPE_MOD, (unsigned long*)NULL))
+                    {
+                        sSourcePath = sDirectory + "\\";
+                        sSourcePath = sSourcePath + sModule;
+                        sResourceName = sSourcePath;
+                        sSourcePath = g_pExoBase->m_pExoAliasList->ResolveFileName(
+                            sSourcePath, RESTYPE_MOD);
+                        sDestinationPath = g_pExoBase->m_pExoAliasList->ResolveFileName(
+                            sDestinationPath, RESTYPE_MOD);
+                        nModuleType = RESTYPE_MOD;
+                        SetEstimatedSaveSize(sResourceName, RESTYPE_MOD);
+                    }
+                    else if (g_pExoResMan->Exists(sModule, RESTYPE_RIM, (unsigned long*)NULL))
+                    {
+                        sSourcePath = sDirectory + "\\";
+                        sSourcePath = sSourcePath + sModule;
+                        sResourceName = sSourcePath;
+                        sSourcePath = g_pExoBase->m_pExoAliasList->ResolveFileName(
+                            sSourcePath, RESTYPE_RIM);
+                        sDestinationPath = g_pExoBase->m_pExoAliasList->ResolveFileName(
+                            sDestinationPath, RESTYPE_RIM);
+                        nModuleType = RESTYPE_RIM;
+                        SetEstimatedSaveSize(sResourceName, RESTYPE_RIM);
+                    }
+                    g_pExoResMan->RemoveResourceDirectory(sDirectory);
+                    if (nModuleType != RESTYPE_INVALID)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (nModuleType == RESTYPE_INVALID)
+        {
             g_pExoResMan->AddResourceDirectory("MODULES:");
             if (g_pExoResMan->Exists(sModule, RESTYPE_MOD, (unsigned long*)NULL))
             {
@@ -2970,51 +3012,6 @@ int CServerExoAppInternal::LoadModule(const CExoString& sModule,
                 SetEstimatedSaveSize(sResourceName, RESTYPE_RIM);
             }
             g_pExoResMan->RemoveResourceDirectory("MODULES:");
-        }
-
-        if (nModuleType == RESTYPE_INVALID)
-        {
-            CExoString sDirectory;
-            for (int nContentPackage = 1; nContentPackage < CTlkTable::NUM_CONTENT_PKGS;
-                 ++nContentPackage)
-            {
-                sDirectory.Format("LIVE%d", nContentPackage);
-                if (g_pExoBase->m_pExoAliasList->GetAliasPath(sDirectory, 0).GetLength())
-                {
-                    sDirectory = sDirectory + ":MODULES";
-                    g_pExoResMan->AddResourceDirectory(sDirectory);
-                    if (g_pExoResMan->Exists(sModule, RESTYPE_MOD, (unsigned long*)NULL))
-                    {
-                        sSourcePath = sDirectory + "\\";
-                        sSourcePath = sSourcePath + sModule;
-                        sResourceName = sSourcePath;
-                        sSourcePath = g_pExoBase->m_pExoAliasList->ResolveFileName(
-                            sSourcePath, RESTYPE_MOD);
-                        sDestinationPath = g_pExoBase->m_pExoAliasList->ResolveFileName(
-                            sDestinationPath, RESTYPE_MOD);
-                        nModuleType = RESTYPE_MOD;
-                        SetEstimatedSaveSize(sResourceName, RESTYPE_MOD);
-                    }
-                    else if (nModuleType == RESTYPE_INVALID &&
-                             g_pExoResMan->Exists(sModule, RESTYPE_RIM, (unsigned long*)NULL))
-                    {
-                        sSourcePath = sDirectory + "\\";
-                        sSourcePath = sSourcePath + sModule;
-                        sResourceName = sSourcePath;
-                        sSourcePath = g_pExoBase->m_pExoAliasList->ResolveFileName(
-                            sSourcePath, RESTYPE_RIM);
-                        sDestinationPath = g_pExoBase->m_pExoAliasList->ResolveFileName(
-                            sDestinationPath, RESTYPE_RIM);
-                        nModuleType = RESTYPE_RIM;
-                        SetEstimatedSaveSize(sResourceName, RESTYPE_RIM);
-                    }
-                    g_pExoResMan->RemoveResourceDirectory(sDirectory);
-                    if (nModuleType != RESTYPE_INVALID)
-                    {
-                        break;
-                    }
-                }
-            }
         }
 
         if (nModuleType == RESTYPE_INVALID)
@@ -3507,6 +3504,12 @@ int CServerExoAppInternal::MainLoop()
             g_pAppManager->GetClientExoApp()->GetInGameGui()
                 ->m_bControllerPauseActive == 0)
         {
+            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
+                "000_Human_Conf_Active", 0);
+            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
+                "000_Beast_Conf_Active", 0);
+            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
+                "000_Droid_Conf_Active", 0);
             unsigned long nCalendarDay, nTimeOfDay;
             unsigned long nHour, nMinute, nSecond, nMillisecond;
             unsigned long nYear, nMonth, nDay, nModuleTime;
@@ -3533,7 +3536,22 @@ int CServerExoAppInternal::MainLoop()
             g_pAppManager->GetServerExoApp()->GetPlayerCreature()->GetArea() != NULL &&
             !g_pAppManager->GetClientExoApp()->GetAreaNotReadyToDisplay())
         {
+            int bPartyAlive = 0;
             if (m_bAutoSavePending == 1)
+            {
+                for (int nMember = 0; nMember < CSWParty::MAX_MEMBERS; nMember++)
+                {
+                    CSWCCreature* pCharacter =
+                        g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nMember);
+                    if (pCharacter != NULL &&
+                        pCharacter->GetServerCreature()->GetCurrentHitPoints(0) > 1)
+                    {
+                        bPartyAlive = 1;
+                        break;
+                    }
+                }
+            }
+            if (bPartyAlive)
             {
                 if (HasEnoughDiskSpaceForSaveGame() &&
                     m_nServerMode == SERVER_MODE_RUNNING)
@@ -3603,7 +3621,7 @@ int CServerExoAppInternal::MainLoop()
                 CExoString sModule(pStats->m_sUnknown24);
                 CSWSModule* pModule = GetModule();
                 int bLoadingSaveGame = 0;
-                if (g_pAppManager->GetClientExoApp()->GetLoadingSaveGame() == 1)
+                if (m_bLoadFromSaveGame)
                     bLoadingSaveGame = 1;
                 if (pStats->m_nProgressTotal == 0)
                 {
@@ -3615,6 +3633,7 @@ int CServerExoAppInternal::MainLoop()
                         DealWithLoadGameError(LOAD_GAME_ERROR_COPY_MODULE);
                     else
                     {
+                        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_n1024 = 0;
                         pModule = new CSWSModule(sModuleName, 0,
                             (unsigned short)nType == RESTYPE_SAV ||
                             (unsigned short)nType == RESTYPE_RSV);
@@ -3633,6 +3652,7 @@ int CServerExoAppInternal::MainLoop()
                 else if (pStats->m_nProgressTotal != pStats->m_nProgress)
                 {
                     m_partyTable.ClearMembers();
+                    m_partyTable.ClearPuppets();
                     int nLoadProgress = pStats->m_nProgressTotal;
                     int nLoadStep = pStats->m_nProgress;
                     unsigned long nError = pModule->LoadModuleInProgress(
@@ -4162,6 +4182,14 @@ int CServerExoAppInternal::ShrinkLineByCreatures(const Vector& vStart,
     EXOXBOXASSERT(GetModule()->GetArea());
     return GetModule()->GetArea()->ShrinkLineByCreatures(vStart, vEnd, vResult);
 }
+unsigned __int64 CServerExoAppInternal::GetSystemTimeAsDWORD64()
+{
+    SYSTEMTIME stLocalTime;
+    FILETIME ftTime;
+    GetLocalTime(&stLocalTime);
+    SystemTimeToFileTime(&stLocalTime, &ftTime);
+    return ((unsigned __int64)ftTime.dwHighDateTime << 32) | ftTime.dwLowDateTime;
+}
 
 #ifndef _XBOX
 // PC 0x004F1110
@@ -4251,6 +4279,17 @@ void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, C2DA* p2DA)
 #endif
     pGFF->WriteFieldBYTE(&cRoot, 1, "PCAUTOSAVE");
     pGFF->WriteFieldCExoString(&cRoot, sBMPResRef, "SCREENSHOT");
+    {
+        SYSTEMTIME stLocalTime;
+        FILETIME ftTimeStamp;
+        GetLocalTime(&stLocalTime);
+        SystemTimeToFileTime(&stLocalTime, &ftTimeStamp);
+        pGFF->WriteFieldDWORD64(&cRoot,
+            ((unsigned __int64)ftTimeStamp.dwHighDateTime << 32) | ftTimeStamp.dwLowDateTime,
+            "TIMESTAMP");
+    }
+    pGFF->WriteFieldCExoString(&cRoot, m_partyTable.GetPCName(), "PCNAME");
+    pGFF->WriteFieldDWORD(&cRoot, m_partyTable.m_n248, "SAVENUMBER");
     pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetGamePlayHint(),
                          "GAMEPLAYHINT");
     pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(),

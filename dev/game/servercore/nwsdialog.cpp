@@ -27,6 +27,9 @@
 #include <math.h>
 #include <stdio.h>
 #include "clientoptions.h"
+#include "nwrules.h"
+#include "twodimarrays.h"
+#include "twodimarray.h"
 
 static inline void NwsdialogTrace1();
 // PC 0x005E6980
@@ -68,9 +71,18 @@ inline CSWSDialogBase::CSWSDialogBase()
       m_nFacialAnim(0)
 {
 }
+// PC 0x005E57C0
+CSWSDialogActiveEntry::CSWSDialogActiveEntry()
+    : m_nIndex(0)
+{
+}
+// PC 0x005E5820
+CSWSDialogActiveEntry::~CSWSDialogActiveEntry()
+{
+}
 // PC 0x005E6960
 inline CSWSDialogLinkEntry::CSWSDialogLinkEntry()
-    : m_nIndex(LINK_INDEX_NONE), m_bDisplayInactive(0)
+    : m_bDisplayInactive(0)
 {
 }
 // PC 0x005E5870
@@ -108,11 +120,20 @@ void CSWSDialog::Cleanup()
 {
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
     CGameObject* pOwner = pServer->GetGameObject(m_oidDialogOwner);
-    if (pOwner != NULL && pOwner->AsSWSObject() != NULL)
+    if (pOwner != NULL)
     {
-        int nAILevel = m_nOwnerAILevel;
-        pOwner->AsSWSObject()->m_nAILevel = nAILevel;
-        pOwner->AsSWSObject()->StopSoundPlayingInDialog();
+        if (pOwner->AsSWSObject() != NULL)
+        {
+            int nAILevel = m_nOwnerAILevel;
+            pOwner->AsSWSObject()->m_nAILevel = nAILevel;
+            pOwner->AsSWSObject()->StopSoundPlayingInDialog();
+        }
+        int nSavedAILevel = pOwner->AsSWSObject()->m_c7C;
+        if (nSavedAILevel != -1)
+        {
+            pOwner->AsSWSObject()->m_nAILevel = nSavedAILevel;
+            pOwner->AsSWSObject()->m_c7C = 0xFF;
+        }
     }
 
     ClearDialogOwnerInObject(m_oidDialogOwner);
@@ -124,7 +145,20 @@ void CSWSDialog::Cleanup()
     {
         CSWSDialogPlayer* pPlayer = m_lstPlayers.RemoveHead();
         g_pAppManager->m_pClientExoApp->GetInGameGui()->CloseDialog();
-        ClearDialogOwnerInObject(pPlayer->m_oidPlayer);
+        CGameObject* pObject;
+        if (g_pAppManager->m_pServerExoApp->GetObjectArray()->GetGameObject(
+                pPlayer->m_oidPlayer, &pObject) == CGameObjectArray::SUCCESS)
+        {
+            CSWSObject* pServerObject = (CSWSObject*)pObject;
+            if (pServerObject->m_oidDialogOwner == m_oidDialogOwner)
+            {
+                pServerObject->SetDialogOwner(OBJECT_INVALID);
+                if (pServerObject->AsSWSCreature() != NULL)
+                {
+                    pServerObject->AsSWSCreature()->SetActivity(4, 0, 0);
+                }
+            }
+        }
         delete pPlayer;
     }
 
@@ -240,14 +274,31 @@ void CSWSDialog::LoadDialogCamera(CSWSDialogCamera& camera, CResGFF* pGFF,
     }
 }
 // PC 0x005E5B60
-void CSWSDialog::LoadDialogLinkedNode(CSWSDialogLinkEntry& link, CResGFF* pGFF,
+void CSWSDialog::LoadDialogLinkedNode(CSWSDialogActiveEntry& link, CResGFF* pGFF,
                                       CResStruct& resStruct, int& bSuccess,
                                       unsigned long nReplies)
 {
-    CResRef cEmpty = "";
-
     link.m_cActive =
-        pGFF->ReadFieldCResRef(&resStruct, "Active", bSuccess, cEmpty);
+        pGFF->ReadFieldCResRef(&resStruct, "Active", bSuccess, "");
+    link.m_nParam1 = pGFF->ReadFieldINT(&resStruct, "Param1", bSuccess, 0);
+    link.m_nParam2 = pGFF->ReadFieldINT(&resStruct, "Param2", bSuccess, 0);
+    link.m_nParam3 = pGFF->ReadFieldINT(&resStruct, "Param3", bSuccess, 0);
+    link.m_nParam4 = pGFF->ReadFieldINT(&resStruct, "Param4", bSuccess, 0);
+    link.m_nParam5 = pGFF->ReadFieldINT(&resStruct, "Param5", bSuccess, 0);
+    link.m_cActive2 =
+        pGFF->ReadFieldCResRef(&resStruct, "Active2", bSuccess, "");
+    link.m_nParam1b = pGFF->ReadFieldINT(&resStruct, "Param1b", bSuccess, 0);
+    link.m_nParam2b = pGFF->ReadFieldINT(&resStruct, "Param2b", bSuccess, 0);
+    link.m_nParam3b = pGFF->ReadFieldINT(&resStruct, "Param3b", bSuccess, 0);
+    link.m_nParam4b = pGFF->ReadFieldINT(&resStruct, "Param4b", bSuccess, 0);
+    link.m_nParam5b = pGFF->ReadFieldINT(&resStruct, "Param5b", bSuccess, 0);
+    link.m_bNot = pGFF->ReadFieldBYTE(&resStruct, "Not", bSuccess, 0);
+    link.m_bNot2 = pGFF->ReadFieldBYTE(&resStruct, "Not2", bSuccess, 0);
+    link.m_nLogic = pGFF->ReadFieldINT(&resStruct, "Logic", bSuccess, 0);
+    link.m_sParamStrA =
+        pGFF->ReadFieldCExoString(&resStruct, "ParamStrA", bSuccess, "");
+    link.m_sParamStrB =
+        pGFF->ReadFieldCExoString(&resStruct, "ParamStrB", bSuccess, "");
     link.m_nIndex = pGFF->ReadFieldDWORD(&resStruct, "Index", bSuccess, 0);
     if (link.m_nIndex > nReplies)
     {
@@ -307,8 +358,85 @@ int CSWSDialog::GetStartEntryOneLiner(CSWSObject* pOwner,
     unsigned long nStart;
     for (nStart = 0; nStart < (unsigned long)m_nStartingEntries; ++nStart)
     {
-        if (m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_sSpeaker != "" ||
-            !CheckScript(pOwner, m_pStartingEntries[nStart].m_cActive) ||
+        if (m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_sSpeaker != "")
+        {
+            continue;
+        }
+
+        int bActive1;
+        int bHasActive1;
+        if (m_pStartingEntries[nStart].m_cActive == "")
+        {
+            bActive1 = 1;
+            bHasActive1 = 0;
+        }
+        else
+        {
+            bHasActive1 = 1;
+            g_pVirtualMachine->SetScriptParams(
+                m_pStartingEntries[nStart].m_nParam1,
+                m_pStartingEntries[nStart].m_nParam2,
+                m_pStartingEntries[nStart].m_nParam3,
+                m_pStartingEntries[nStart].m_nParam4,
+                m_pStartingEntries[nStart].m_nParam5,
+                m_pStartingEntries[nStart].m_sParamStrA);
+            bActive1 = CheckScript(pOwner, m_pStartingEntries[nStart].m_cActive);
+            if (m_pStartingEntries[nStart].m_bNot)
+            {
+                bActive1 = !bActive1;
+            }
+        }
+
+        int bActive2;
+        int bHasActive2;
+        if (m_pStartingEntries[nStart].m_cActive2 == "")
+        {
+            bActive2 = 1;
+            bHasActive2 = 0;
+        }
+        else
+        {
+            bHasActive2 = 1;
+            g_pVirtualMachine->SetScriptParams(
+                m_pStartingEntries[nStart].m_nParam1b,
+                m_pStartingEntries[nStart].m_nParam2b,
+                m_pStartingEntries[nStart].m_nParam3b,
+                m_pStartingEntries[nStart].m_nParam4b,
+                m_pStartingEntries[nStart].m_nParam5b,
+                m_pStartingEntries[nStart].m_sParamStrB);
+            bActive2 = CheckScript(pOwner, m_pStartingEntries[nStart].m_cActive2);
+            if (m_pStartingEntries[nStart].m_bNot2)
+            {
+                bActive2 = !bActive2;
+            }
+        }
+
+        int bActive;
+        if (!bHasActive1)
+        {
+            if (bHasActive2)
+            {
+                bActive = bActive2;
+            }
+            else
+            {
+                bActive = 1;
+            }
+        }
+        else if (!bHasActive2)
+        {
+            bActive = bActive1;
+        }
+        else if (m_pStartingEntries[nStart].m_nLogic == CSWSDialogActiveEntry::LOGIC_AND)
+        {
+            bActive = bActive1 && bActive2;
+        }
+        else
+        {
+            bActive = bActive1 || bActive2;
+        }
+
+        if (!bActive ||
             m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nReplies != 0)
         {
             continue;
@@ -456,9 +584,36 @@ void CSWSDialog::InitializePsuedoRandomCameraAngles(CResGFF* pResGFF)
         } while (nIndex < sResRef.GetLength());
     }
 
-    m_nPseudoRandomCameraAngle = nHash % 19;
+    m_nPseudoRandomCameraAngle = nHash % PSEUDO_RANDOM_CAMERA_COUNT;
     m_nPseudoRandomCameraStep = nHash % 5 + 1;
     m_bPseudoRandomCameraDirection = nHash & 1;
+}
+// PC 0x005E66A0
+void CSWSDialog::InitializePseudoRandomAlienVOVariation(CResGFF* pResGFF)
+{
+    CResRef cResRef;
+    CExoString sResRef;
+    unsigned short nType;
+    unsigned int nHash = 0;
+
+    pResGFF->GetResRef(cResRef, nType);
+    cResRef.CopyToString(sResRef);
+
+    int nIndex = 0;
+    if (sResRef.GetLength() > 0)
+    {
+        do
+        {
+            int nCharacter = (char)sResRef[nIndex];
+            int nPower = (unsigned __int64)pow(10.0, (double)nIndex) + 1;
+            nHash += nPower * nCharacter;
+            ++nIndex;
+        } while (nIndex < sResRef.GetLength());
+    }
+
+    m_nPseudoRandomAlienVO = nHash % PSEUDO_RANDOM_ALIEN_VO_COUNT;
+    m_nPseudoRandomAlienVOStep = nHash % 5 + 1;
+    m_bPseudoRandomAlienVODirection = nHash & 1;
 }
 // PC 0x005E67A0
 CExoString CSWSDialog::GetExoStringFromLocString(CExoLocString& locString,
@@ -468,7 +623,7 @@ CExoString CSWSDialog::GetExoStringFromLocString(CExoLocString& locString,
         g_pAppManager->m_pServerExoApp->GetPlayerCreatureId();
     CExoString sString;
 
-    locString.GetString(g_pAppManager->m_pClientExoApp->GetClientLanguage(),
+    locString.GetString(g_pAppManager->GetClientExoApp()->GetClientLanguage(),
                         &sString, nGender);
     return sString;
 }
@@ -518,6 +673,33 @@ void CSWSDialog::LoadDialogBase(CSWSDialogBase& dialogBase, CResGFF* pGFF,
         dialogBase.m_cScript = pGFF->ReadFieldCResRef(
             &resStruct, "Script", bFieldSuccess, cEmpty);
     }
+    dialogBase.m_nActionParam1 = pGFF->ReadFieldINT(&resStruct, "ActionParam1", bFieldSuccess, 0);
+    dialogBase.m_nActionParam2 = pGFF->ReadFieldINT(&resStruct, "ActionParam2", bFieldSuccess, 0);
+    dialogBase.m_nActionParam3 = pGFF->ReadFieldINT(&resStruct, "ActionParam3", bFieldSuccess, 0);
+    dialogBase.m_nActionParam4 = pGFF->ReadFieldINT(&resStruct, "ActionParam4", bFieldSuccess, 0);
+    dialogBase.m_nActionParam5 = pGFF->ReadFieldINT(&resStruct, "ActionParam5", bFieldSuccess, 0);
+    {
+        CResRef cEmpty = "";
+        dialogBase.m_cScript2 = pGFF->ReadFieldCResRef(
+            &resStruct, "Script2", bFieldSuccess, cEmpty);
+    }
+    dialogBase.m_nActionParam1b = pGFF->ReadFieldINT(&resStruct, "ActionParam1b", bFieldSuccess, 0);
+    dialogBase.m_nActionParam2b = pGFF->ReadFieldINT(&resStruct, "ActionParam2b", bFieldSuccess, 0);
+    dialogBase.m_nActionParam3b = pGFF->ReadFieldINT(&resStruct, "ActionParam3b", bFieldSuccess, 0);
+    dialogBase.m_nActionParam4b = pGFF->ReadFieldINT(&resStruct, "ActionParam4b", bFieldSuccess, 0);
+    dialogBase.m_nActionParam5b = pGFF->ReadFieldINT(&resStruct, "ActionParam5b", bFieldSuccess, 0);
+    {
+        CExoString sEmpty = "";
+        dialogBase.m_sActionParamStrA = pGFF->ReadFieldCExoString(
+            &resStruct, "ActionParamStrA", bFieldSuccess, sEmpty);
+    }
+    {
+        CExoString sEmpty = "";
+        dialogBase.m_sActionParamStrB = pGFF->ReadFieldCExoString(
+            &resStruct, "ActionParamStrB", bFieldSuccess, sEmpty);
+    }
+    dialogBase.m_bNodeUnskippable = pGFF->ReadFieldINT(
+        &resStruct, "NodeUnskippable", bFieldSuccess, 0);
     {
         CExoString sEmpty = "";
         dialogBase.m_sSpeaker = pGFF->ReadFieldCExoString(
@@ -550,16 +732,43 @@ void CSWSDialog::LoadDialogBase(CSWSDialogBase& dialogBase, CResGFF* pGFF,
     dialogBase.m_fFadeLength = pGFF->ReadFieldFLOAT(
         &resStruct, "FadeLength", bFieldSuccess, 0.0f);
     dialogBase.m_nSoundDelay = CSWSDialogBase::DELAY_DEFAULT;
-    {
-        CResRef cEmpty = "";
-        dialogBase.m_cSoundResRef = pGFF->ReadFieldCResRef(
-            &resStruct, "Sound", bFieldSuccess, cEmpty);
-    }
+    dialogBase.m_cSoundResRef = "";
     CResRef cVOResRef = pGFF->ReadFieldCResRef(
         &resStruct, "VO_ResRef", bFieldSuccess, "");
     dialogBase.m_bSoundExists = pGFF->ReadFieldBYTE(
         &resStruct, "SoundExists", bFieldSuccess,
         CSWSDialogBase::SOUND_EXISTS_UNCHECKED);
+    if (!dialogBase.m_cSoundResRef.IsValid())
+    {
+        dialogBase.m_nAlienRaceNode = pGFF->ReadFieldINT(
+            &resStruct, "AlienRaceNode", bFieldSuccess, 0);
+        dialogBase.m_nEmotion = pGFF->ReadFieldINT(
+            &resStruct, "Emotion", bFieldSuccess, 0);
+        dialogBase.m_nFacialAnim = pGFF->ReadFieldINT(
+            &resStruct, "FacialAnim", bFieldSuccess, 0);
+        int nAlienRace;
+        if (dialogBase.m_sSpeaker == "" && dialogBase.m_nAlienRaceNode <= 0)
+            nAlienRace = m_nAlienRaceOwner;
+        else
+            nAlienRace = dialogBase.m_nAlienRaceNode;
+        if (nAlienRace > 0)
+        {
+            int nRace = nAlienRace;
+            CExoString sEmotion;
+            CExoString sAlienVO;
+            int bFound = g_pRules->m_p2DArrays->m_pEmotion->GetCExoStringEntry(
+                dialogBase.m_nEmotion, CExoString("LABEL"), &sEmotion);
+            if (bFound &&
+                g_pRules->m_p2DArrays->m_pAlienVO->GetCExoStringEntry(
+                    nRace, sEmotion, &sAlienVO))
+            {
+                dialogBase.m_cSoundResRef = sAlienVO;
+                if (dialogBase.m_cSoundResRef.IsValid())
+                    dialogBase.m_bSoundExists |= CSWSDialogBase::SOUND_EXISTS_PRESENT |
+                                                 CSWSDialogBase::SOUND_EXISTS_SKIP;
+            }
+        }
+    }
     if (!dialogBase.m_cSoundResRef.IsValid())
     {
         dialogBase.m_cSoundResRef = cVOResRef;
@@ -981,7 +1190,7 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject* pOwner,
                 {
                     SetDialogDelay(pOwner, m_pReplies[nReplyIndex].m_lsText,
                         (unsigned long)m_pReplies[nReplyIndex].m_lsText.GetSpokenTimeEstimate(
-                            g_pAppManager->GetServerExoApp()->GetPlayerLanguage(m_oidCurrentPlayer),
+                            g_pAppManager->GetClientExoApp()->GetClientLanguage(),
                             m_nCurrentPlayerGender), m_pReplies[nReplyIndex].m_nEntries != 0, 1);
                 }
                 else
@@ -1010,16 +1219,107 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject* pOwner,
             pOwner->m_nWaitFlags = 0;
         }
     }
+    g_pVirtualMachine->SetScriptParams(
+        m_pReplies[nReplyIndex].m_nActionParam1,
+        m_pReplies[nReplyIndex].m_nActionParam2,
+        m_pReplies[nReplyIndex].m_nActionParam3,
+        m_pReplies[nReplyIndex].m_nActionParam4,
+        m_pReplies[nReplyIndex].m_nActionParam5,
+        m_pReplies[nReplyIndex].m_sActionParamStrA);
     RunScript(pOwner, m_pReplies[nReplyIndex].m_cScript);
+    g_pVirtualMachine->SetScriptParams(
+        m_pReplies[nReplyIndex].m_nActionParam1b,
+        m_pReplies[nReplyIndex].m_nActionParam2b,
+        m_pReplies[nReplyIndex].m_nActionParam3b,
+        m_pReplies[nReplyIndex].m_nActionParam4b,
+        m_pReplies[nReplyIndex].m_nActionParam5b,
+        m_pReplies[nReplyIndex].m_sActionParamStrB);
+    RunScript(pOwner, m_pReplies[nReplyIndex].m_cScript2);
     unsigned long nNextEntry;
     for (nNextEntry = 0;
          nNextEntry < (unsigned long)m_pReplies[nReplyIndex].m_nEntries;
          ++nNextEntry)
     {
-        if ((m_pEntries[m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nIndex].m_sSpeaker != "" &&
-             pOwner->m_sTag.CompareNoCase(m_pEntries[m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nIndex].m_sSpeaker) == 0 &&
-             !GetSpeaker(pOwner, m_pEntries[m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nIndex].m_sSpeaker)) ||
-            !CheckScript(pOwner, m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_cActive))
+        if (m_pEntries[m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nIndex].m_sSpeaker != "" &&
+            pOwner->m_sTag.CompareNoCase(m_pEntries[m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nIndex].m_sSpeaker) == 0 &&
+            !GetSpeaker(pOwner, m_pEntries[m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nIndex].m_sSpeaker))
+        {
+            continue;
+        }
+
+        int bActive1;
+        int bHasActive1;
+        if (m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_cActive == "")
+        {
+            bActive1 = 1;
+            bHasActive1 = 0;
+        }
+        else
+        {
+            bHasActive1 = 1;
+            g_pVirtualMachine->SetScriptParams(
+                m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nParam1,
+                m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nParam2,
+                m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nParam3,
+                m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nParam4,
+                m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nParam5,
+                m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_sParamStrA);
+            bActive1 = CheckScript(pOwner, m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_cActive);
+            if (m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_bNot)
+            {
+                bActive1 = !bActive1;
+            }
+        }
+
+        int bActive2;
+        int bHasActive2;
+        if (m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_cActive2 == "")
+        {
+            bActive2 = 1;
+            bHasActive2 = 0;
+        }
+        else
+        {
+            bHasActive2 = 1;
+            g_pVirtualMachine->SetScriptParams(
+                m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nParam1b,
+                m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nParam2b,
+                m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nParam3b,
+                m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nParam4b,
+                m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nParam5b,
+                m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_sParamStrB);
+            bActive2 = CheckScript(pOwner, m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_cActive2);
+            if (m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_bNot2)
+            {
+                bActive2 = !bActive2;
+            }
+        }
+
+        int bActive;
+        if (!bHasActive1)
+        {
+            if (bHasActive2)
+            {
+                bActive = bActive2;
+            }
+            else
+            {
+                bActive = 1;
+            }
+        }
+        else if (!bHasActive2)
+        {
+            bActive = bActive1;
+        }
+        else if (m_pReplies[nReplyIndex].m_pEntries[nNextEntry].m_nLogic == CSWSDialogActiveEntry::LOGIC_AND)
+        {
+            bActive = bActive1 && bActive2;
+        }
+        else
+        {
+            bActive = bActive1 || bActive2;
+        }
+        if (!bActive)
         {
             continue;
         }
@@ -1092,6 +1392,7 @@ CSWSDialog::CSWSDialog()
     m_n40 = 0;
     m_n44 = 0;
     m_n3C = 0;
+    m_n64 = 0;
     m_nPseudoRandomCameraAngle = 0;
     m_nPseudoRandomCameraStep = 1;
     m_bPseudoRandomCameraDirection = 0;
@@ -1114,11 +1415,36 @@ CSWSDialog::CSWSDialog()
     m_nPseudoRandomCameraAngles[16] = CAMERA_ANGLE_FIRST;
     m_nPseudoRandomCameraAngles[17] = CAMERA_ANGLE_FIRST;
     m_nPseudoRandomCameraAngles[18] = CAMERA_ANGLE_FIRST;
+    m_nPseudoRandomAlienVO = 0;
+    m_nPseudoRandomAlienVOStep = 1;
+    m_bPseudoRandomAlienVODirection = 0;
+    m_nPseudoRandomAlienVOVariations[0] = 1;
+    m_nPseudoRandomAlienVOVariations[1] = 1;
+    m_nPseudoRandomAlienVOVariations[2] = 2;
+    m_nPseudoRandomAlienVOVariations[3] = 3;
+    m_nPseudoRandomAlienVOVariations[4] = 1;
+    m_nPseudoRandomAlienVOVariations[5] = 2;
+    m_nPseudoRandomAlienVOVariations[6] = 1;
+    m_nPseudoRandomAlienVOVariations[7] = 2;
+    m_nPseudoRandomAlienVOVariations[8] = 2;
+    m_nPseudoRandomAlienVOVariations[9] = 3;
+    m_nPseudoRandomAlienVOVariations[10] = 3;
+    m_nPseudoRandomAlienVOVariations[11] = 3;
+    m_nPseudoRandomAlienVOVariations[12] = 1;
+    m_nPseudoRandomAlienVOVariations[13] = 3;
+    m_nPseudoRandomAlienVOVariations[14] = 2;
+    m_nPseudoRandomAlienVOVariations[15] = 1;
+    m_nPseudoRandomAlienVOVariations[16] = 3;
+    m_nPseudoRandomAlienVOVariations[17] = 2;
+    m_nPseudoRandomAlienVOVariations[18] = 2;
     m_nF4 = 0;
     m_nF8 = 0;
     m_cAmbientTrack = "";
     m_n10C = 0;
     m_n110 = 0;
+    m_n170 = 0;
+    m_nAlienRaceOwner = 0;
+    m_n178 = 0;
     m_nAnimationRetryDelay = 0;
     m_nLastEntryDay = 0;
     m_nLastEntryTime = 0;
@@ -1133,6 +1459,7 @@ int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
     InitializePsuedoRandomCameraAngles(pGFF);
     m_nF4 = 1;
     m_nF8 = 1;
+    InitializePseudoRandomAlienVOVariation(pGFF);
     Cleanup();
     pGFF->GetTopLevelStruct(&resTop);
 
@@ -1149,6 +1476,7 @@ int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
     m_n44 = pGFF->ReadFieldBYTE(&resTop, "UnequipHItem", bFieldSuccess, 0);
     int bAnimatedCut = pGFF->ReadFieldBYTE(&resTop, "AnimatedCut", bFieldSuccess, 0);
     int bOldHitCheck = pGFF->ReadFieldBYTE(&resTop, "OldHitCheck", bFieldSuccess, 0);
+    m_nAlienRaceOwner = pGFF->ReadFieldINT(&resTop, "AlienRaceOwner", bFieldSuccess, 0);
     g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nC0 = bAnimatedCut;
     g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nDialogCameraType = bOldHitCheck;
     if (nConversationType == 2)
@@ -1157,12 +1485,16 @@ int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
     }
     else if (nConversationType == CONVERSATION_TYPE_COMPUTER)
     {
+        m_n170 = nConversationType;
         g_pAppManager->GetClientExoApp()->GetInGameGui()->SetConversationType(CONVERSATION_TYPE_COMPUTER, nComputerType);
     }
     if (nConversationType != CONVERSATION_TYPE_COMPUTER)
     {
         g_pAppManager->GetClientExoApp()->GetInGameGui()->SetConversationType(CONVERSATION_TYPE_CINEMATIC, 0);
-        g_pAppManager->GetServerExoApp()->GetPartyTable()->UnstealthParty(1);
+        if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_n102C == 0)
+        {
+            g_pAppManager->GetServerExoApp()->GetPartyTable()->UnstealthParty(1);
+        }
     }
     if (bAnimatedCut)
     {
@@ -1225,15 +1557,7 @@ int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
             for (nLink = 0; bSuccess && nLink < (unsigned long)m_pReplies[nNode].m_nEntries; ++nLink)
             {
                 pGFF->GetListElement(&resLink, &resLinks, nLink);
-                unsigned long nEntries = m_nEntries;
-                CSWSDialogActiveEntry& link = m_pReplies[nNode].m_pEntries[nLink];
-                CResRef cEmpty = "";
-                link.m_cActive = pGFF->ReadFieldCResRef(&resLink, "Active", bSuccess, cEmpty);
-                link.m_nIndex = pGFF->ReadFieldDWORD(&resLink, "Index", bSuccess, 0);
-                if (link.m_nIndex > nEntries)
-                {
-                    bSuccess = 0;
-                }
+                LoadDialogLinkedNode(m_pReplies[nNode].m_pEntries[nLink], pGFF, resLink, bSuccess, m_nEntries);
             }
         }
         if (!bSuccess)
@@ -1259,15 +1583,7 @@ int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
     for (nNode = 0; bSuccess && nNode < (unsigned long)m_nStartingEntries; ++nNode)
     {
         pGFF->GetListElement(&resLink, &resLinks, nNode);
-        unsigned long nEntries = m_nEntries;
-        CSWSDialogActiveEntry& link = m_pStartingEntries[nNode];
-        CResRef cEmpty = "";
-        link.m_cActive = pGFF->ReadFieldCResRef(&resLink, "Active", bSuccess, cEmpty);
-        link.m_nIndex = pGFF->ReadFieldDWORD(&resLink, "Index", bSuccess, 0);
-        if (link.m_nIndex > nEntries)
-        {
-            bSuccess = 0;
-        }
+        LoadDialogLinkedNode(m_pStartingEntries[nNode], pGFF, resLink, bSuccess, m_nEntries);
     }
     if (!bSuccess)
     {
@@ -1300,17 +1616,109 @@ int CSWSDialog::GetStartEntry(CSWSObject* pOwner)
     unsigned long nStart;
     for (nStart = 0; nStart < (unsigned long)m_nStartingEntries; ++nStart)
     {
-        if ((m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_sSpeaker != "" &&
-             pOwner->m_sTag.CompareNoCase(m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_sSpeaker) == 0 &&
-             !GetSpeaker(pOwner, m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_sSpeaker)) ||
-            !CheckScript(pOwner, m_pStartingEntries[nStart].m_cActive))
+        if (m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_sSpeaker != "" &&
+            pOwner->m_sTag.CompareNoCase(m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_sSpeaker) == 0 &&
+            !GetSpeaker(pOwner, m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_sSpeaker))
         {
             continue;
         }
-        if (m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nReplies == 0 && m_n110 == 0)
+
+        int bActive1;
+        int bHasActive1;
+        if (m_pStartingEntries[nStart].m_cActive == "")
+        {
+            bActive1 = 1;
+            bHasActive1 = 0;
+        }
+        else
+        {
+            bHasActive1 = 1;
+            g_pVirtualMachine->SetScriptParams(
+                m_pStartingEntries[nStart].m_nParam1,
+                m_pStartingEntries[nStart].m_nParam2,
+                m_pStartingEntries[nStart].m_nParam3,
+                m_pStartingEntries[nStart].m_nParam4,
+                m_pStartingEntries[nStart].m_nParam5,
+                m_pStartingEntries[nStart].m_sParamStrA);
+            bActive1 = CheckScript(pOwner, m_pStartingEntries[nStart].m_cActive);
+            if (m_pStartingEntries[nStart].m_bNot)
+            {
+                bActive1 = !bActive1;
+            }
+        }
+
+        int bActive2;
+        int bHasActive2;
+        if (m_pStartingEntries[nStart].m_cActive2 == "")
+        {
+            bActive2 = 1;
+            bHasActive2 = 0;
+        }
+        else
+        {
+            bHasActive2 = 1;
+            g_pVirtualMachine->SetScriptParams(
+                m_pStartingEntries[nStart].m_nParam1b,
+                m_pStartingEntries[nStart].m_nParam2b,
+                m_pStartingEntries[nStart].m_nParam3b,
+                m_pStartingEntries[nStart].m_nParam4b,
+                m_pStartingEntries[nStart].m_nParam5b,
+                m_pStartingEntries[nStart].m_sParamStrB);
+            bActive2 = CheckScript(pOwner, m_pStartingEntries[nStart].m_cActive2);
+            if (m_pStartingEntries[nStart].m_bNot2)
+            {
+                bActive2 = !bActive2;
+            }
+        }
+
+        int bActive;
+        if (!bHasActive1)
+        {
+            if (bHasActive2)
+            {
+                bActive = bActive2;
+            }
+            else
+            {
+                bActive = 1;
+            }
+        }
+        else if (!bHasActive2)
+        {
+            bActive = bActive1;
+        }
+        else if (m_pStartingEntries[nStart].m_nLogic == CSWSDialogActiveEntry::LOGIC_AND)
+        {
+            bActive = bActive1 && bActive2;
+        }
+        else
+        {
+            bActive = bActive1 || bActive2;
+        }
+
+        if (!bActive)
+        {
+            continue;
+        }
+        if (m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nReplies == 0 && m_n110 == 0 && m_n170 == 0)
         {
             BarkOneLine(m_pStartingEntries[nStart].m_nIndex);
+            g_pVirtualMachine->SetScriptParams(
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam1,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam2,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam3,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam4,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam5,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_sActionParamStrA);
             RunScript(pOwner, m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_cScript);
+            g_pVirtualMachine->SetScriptParams(
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam1b,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam2b,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam3b,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam4b,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam5b,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_sActionParamStrB);
+            RunScript(pOwner, m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_cScript2);
             while (!m_lstPlayers.IsEmpty())
             {
                 delete m_lstPlayers.RemoveHead();
@@ -1319,11 +1727,41 @@ int CSWSDialog::GetStartEntry(CSWSObject* pOwner)
         }
         else if (m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nReplies == 1 &&
                  m_pReplies[m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_pReplies[0].m_nIndex].m_nEntries == 0 &&
-                 m_n110 == 0)
+                 m_n110 == 0 && m_n170 == 0)
         {
             BarkOneLine(m_pStartingEntries[nStart].m_nIndex);
+            g_pVirtualMachine->SetScriptParams(
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam1,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam2,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam3,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam4,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam5,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_sActionParamStrA);
             RunScript(pOwner, m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_cScript);
+            g_pVirtualMachine->SetScriptParams(
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam1b,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam2b,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam3b,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam4b,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_nActionParam5b,
+                m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_sActionParamStrB);
+            RunScript(pOwner, m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_cScript2);
+            g_pVirtualMachine->SetScriptParams(
+                m_pReplies[m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_pReplies[0].m_nIndex].m_nActionParam1,
+                m_pReplies[m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_pReplies[0].m_nIndex].m_nActionParam2,
+                m_pReplies[m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_pReplies[0].m_nIndex].m_nActionParam3,
+                m_pReplies[m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_pReplies[0].m_nIndex].m_nActionParam4,
+                m_pReplies[m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_pReplies[0].m_nIndex].m_nActionParam5,
+                m_pReplies[m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_pReplies[0].m_nIndex].m_sActionParamStrA);
             RunScript(pOwner, m_pReplies[m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_pReplies[0].m_nIndex].m_cScript);
+            g_pVirtualMachine->SetScriptParams(
+                m_pReplies[m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_pReplies[0].m_nIndex].m_nActionParam1b,
+                m_pReplies[m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_pReplies[0].m_nIndex].m_nActionParam2b,
+                m_pReplies[m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_pReplies[0].m_nIndex].m_nActionParam3b,
+                m_pReplies[m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_pReplies[0].m_nIndex].m_nActionParam4b,
+                m_pReplies[m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_pReplies[0].m_nIndex].m_nActionParam5b,
+                m_pReplies[m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_pReplies[0].m_nIndex].m_sActionParamStrB);
+            RunScript(pOwner, m_pReplies[m_pEntries[m_pStartingEntries[nStart].m_nIndex].m_pReplies[0].m_nIndex].m_cScript2);
             while (!m_lstPlayers.IsEmpty())
             {
                 delete m_lstPlayers.RemoveHead();
@@ -1343,7 +1781,7 @@ void CSWSDialog::BarkOneLine(int nEntry)
         g_pAppManager->GetServerExoApp()->GetPlayerCreatureId();
 
     m_pEntries[nEntry].m_lsText.GetString(
-        g_pAppManager->GetServerExoApp()->GetPlayerLanguage(oidPlayer),
+        g_pAppManager->GetClientExoApp()->GetClientLanguage(),
         &sText, m_nCurrentPlayerGender);
     cSound = m_pEntries[nEntry].m_cSoundResRef;
 
@@ -1363,6 +1801,12 @@ void CSWSDialog::BarkOneLine(int nEntry)
         unsigned long nStrRef = m_pEntries[nEntry].m_lsText.m_dwStringRef;
         g_pTlkTable->Fetch(nStrRef, strRes, CTlkTable::GENDER_MALE);
         cSound = strRes.m_resSound;
+    }
+    else if (m_pEntries[nEntry].m_bSoundExists & CSWSDialogBase::SOUND_EXISTS_SKIP)
+    {
+        CExoString sVariation;
+        sVariation.Format("%d", rand() % 3 + 1);
+        cSound += sVariation;
     }
 
     if (sText.CompareNoCase("") == 0)
@@ -1384,10 +1828,8 @@ void CSWSDialog::BarkOneLine(int nEntry)
             unsigned long oidClient =
                 g_pAppManager->GetClientExoApp()->ServerToClientObjectId(
                     oidSpeaker);
-            int bIgnoreRange = g_pAppManager->GetServerExoApp()
-                                   ->GetIgnoreConversationStartRange();
             g_pAppManager->GetClientExoApp()->BarkString(oidClient, sText,
-                                                         cSound, bIgnoreRange);
+                                                         cSound, 0);
 
             if (g_bLogConversations && oidPlayer != OBJECT_INVALID)
             {
@@ -1399,7 +1841,7 @@ void CSWSDialog::BarkOneLine(int nEntry)
                     CSWCCreature* pCreature = pObject->AsSWCCreature();
                     if (pCreature != NULL)
                     {
-                        sName = pCreature->GetStats()->GetFullName();
+                        sName = pCreature->GetStats()->m_sFirstName;
                         g_pAppManager->GetClientExoApp()->GetInGameGui()
                             ->AppendToMsgBuffer(sName + ": " + sText, 1, 0);
                     }
@@ -1650,6 +2092,10 @@ int CSWSDialog::SendDialogEntryNode(
         if (pClientObject == NULL || pClientObject->AsSWCObject() == NULL)
         {
             nResult = DIALOG_RESULT_WAIT;
+            CExoString sMessage("Waiting on listening object to spawn clientside: ");
+            CExoString sTag(g_pAppManager->GetServerExoApp()
+                ->GetGameObject(oidListener)->AsSWSObject()->GetTag().CStr());
+            sMessage = sMessage + sTag;
             return 1;
         }
         nResult = DIALOG_RESULT_READY;
@@ -1779,6 +2225,16 @@ int CSWSDialog::SendDialogEntryNode(
             entry.m_nCameraAngle = nCameraAngle;
     }
     m_nF4 = 0;
+    int nAlienVOVariation = m_nPseudoRandomAlienVOVariations[m_nPseudoRandomAlienVO];
+    if (m_bPseudoRandomAlienVODirection)
+        m_nPseudoRandomAlienVO += m_nPseudoRandomAlienVOStep;
+    else
+        m_nPseudoRandomAlienVO -= m_nPseudoRandomAlienVOStep;
+    if (m_nPseudoRandomAlienVO >= PSEUDO_RANDOM_ALIEN_VO_COUNT)
+        m_nPseudoRandomAlienVO = 0;
+    if (m_nPseudoRandomAlienVO < 0)
+        m_nPseudoRandomAlienVO = PSEUDO_RANDOM_ALIEN_VO_COUNT - 1;
+    entry.m_nAlienVOVariation = nAlienVOVariation;
     CExoString sText = GetExoStringFromLocString(entry.m_lsText, nGender);
     if (m_n40)
     {
@@ -1863,7 +2319,79 @@ int CSWSDialog::SendDialogReplies(CSWSObject* pOwner, unsigned long nPlayerId)
         unsigned long nReply = 0;
         for (; nReply < (unsigned long)m_pEntries[m_nCurrentEntry].m_nReplies; ++nReply)
         {
-            if (CheckScript(pOwner, m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_cActive))
+            int bActive1;
+            int bHasActive1;
+            if (m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_cActive == "")
+            {
+                bActive1 = 1;
+                bHasActive1 = 0;
+            }
+            else
+            {
+                bHasActive1 = 1;
+                g_pVirtualMachine->SetScriptParams(
+                    m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_nParam1,
+                    m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_nParam2,
+                    m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_nParam3,
+                    m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_nParam4,
+                    m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_nParam5,
+                    m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_sParamStrA);
+                bActive1 = CheckScript(pOwner, m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_cActive);
+                if (m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_bNot)
+                {
+                    bActive1 = !bActive1;
+                }
+            }
+
+            int bActive2;
+            int bHasActive2;
+            if (m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_cActive2 == "")
+            {
+                bActive2 = 1;
+                bHasActive2 = 0;
+            }
+            else
+            {
+                bHasActive2 = 1;
+                g_pVirtualMachine->SetScriptParams(
+                    m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_nParam1b,
+                    m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_nParam2b,
+                    m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_nParam3b,
+                    m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_nParam4b,
+                    m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_nParam5b,
+                    m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_sParamStrB);
+                bActive2 = CheckScript(pOwner, m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_cActive2);
+                if (m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_bNot2)
+                {
+                    bActive2 = !bActive2;
+                }
+            }
+
+            int bActive;
+            if (!bHasActive1)
+            {
+                if (bHasActive2)
+                {
+                    bActive = bActive2;
+                }
+                else
+                {
+                    bActive = 1;
+                }
+            }
+            else if (!bHasActive2)
+            {
+                bActive = bActive1;
+            }
+            else if (m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_nLogic == CSWSDialogActiveEntry::LOGIC_AND)
+            {
+                bActive = bActive1 && bActive2;
+            }
+            else
+            {
+                bActive = bActive1 || bActive2;
+            }
+            if (bActive)
             {
                 if (m_bMultiPCDialogViewOnly != 0 && bFirstPlayer == 0)
                 {
@@ -1999,7 +2527,7 @@ int CSWSDialog::SendDialogReplyNode(unsigned long nPlayerId, unsigned long oidPl
         CExoString sText;
         CSWSDialogReply& cReply = pReplies[i];
         cReply.m_lsText.GetString(
-            g_pAppManager->GetServerExoApp()->GetPlayerLanguage(nPlayerId),
+            g_pAppManager->GetClientExoApp()->GetClientLanguage(),
             &sText, nGender);
         if (sText == "")
             bEmpty = 1;
@@ -2333,6 +2861,7 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
         }
         else
             pSpeaker = pOwner;
+        m_n64 = m_pEntries[m_nCurrentEntry].m_bNodeUnskippable;
         int bResult = SendDialogEntryNode(nPlayerId, pOwner->GetId(),
             pSpeaker->GetId(), oidListener, m_oidCurrentPlayer,
             m_nCurrentPlayerGender, pOwner, m_pEntries[m_nCurrentEntry], nResult);
@@ -2368,12 +2897,8 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
             if (pListener != NULL)
                 oidListener = pListener->GetId();
         }
-        m_bRepliesSent = 0;
     }
-    else
-    {
-        m_bRepliesSent = 0;
-    }
+    m_bRepliesSent = 0;
     if (m_lstPlayers.GetHeadPos() != NULL)
     {
         pPosition = m_lstPlayers.GetHeadPos();
@@ -2401,11 +2926,21 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
     }
     GiveDialogPlotXP(m_pEntries[nEntry].m_nPlotIndex,
                      m_pEntries[nEntry].m_fPlotXPPercentage);
+    unsigned char nSoundExists = m_pEntries[nEntry].m_bSoundExists;
     CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
+    if ((nSoundExists & CSWSDialogBase::SOUND_EXISTS_SKIP) &&
+        !(nSoundExists & CSWSDialogBase::SOUND_EXISTS_VARIATION))
+    {
+        CExoString sVariation;
+        sVariation.Format("%d", m_pEntries[nEntry].m_nAlienVOVariation);
+        m_pEntries[nEntry].m_cSoundResRef += sVariation;
+        m_pEntries[nEntry].m_bSoundExists |= CSWSDialogBase::SOUND_EXISTS_VARIATION;
+    }
     int bShowText = m_pEntries[nEntry].m_bSoundActive;
-    int bSound = pClient->GetInGameGui()->HandleDialogSound(
+    pClient->GetInGameGui()->HandleDialogSound(
         pClient->ServerToClientObjectId(pSpeaker->GetId()),
         m_pEntries[nEntry].m_cSoundResRef);
+    int bSound;
     if (g_pAppManager->GetClientExoApp()->GetModuleResourceLoaded(
             CClientExoApp::MODULE_RESOURCE_VOICE) == 1)
     {
@@ -2416,32 +2951,49 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
                 bSoundExists = 1;
             bSound = bSoundExists;
         }
+        else
+        {
+            bSound = 0;
+        }
     }
     else
     {
-        if (!g_bDisableSound)
+        if (g_bDisableSound)
+        {
+            bSound = 0;
+        }
+        else
         {
             bSound = 1;
             CExoString sSound;
             m_pEntries[nEntry].m_cSoundResRef.CopyToString(sSound);
-            if ((sSound[0] == 'n' || sSound[0] == 'N') &&
-                sSound.GetLength() == 16 && sSound[1] != '_')
+            unsigned long nLength = sSound.GetLength();
+            if (nLength > 0)
             {
-                char sModule[8];
-                char sSection[8];
-                int i;
-                for (i = 0; i < 5; ++i)
-                    sModule[i] = sSound[i + 1];
-                sModule[i] = 0;
-                for (i = 0; i < 6; ++i)
-                    sSection[i] = sSound[i + 6];
-                sSection[i] = 0;
-                sSound.Format("HD0:STREAMWAVES\\%s\\%s\\%s",
-                    sModule, sSection, sSound.CStr());
+                char szPrefix[4];
+                char szSubDir[16];
+                unsigned long i;
+                for (i = 0; i < 3; ++i)
+                    szPrefix[i] = sSound[i];
+                szPrefix[i] = 0;
+                int nPrefix = atoi(szPrefix);
+                if (_stricmp(szPrefix, "gbl") != 0 && _stricmp(szPrefix, "avo") != 0 &&
+                    _stricmp(szPrefix, "000") != 0 && nPrefix <= 0)
+                {
+                    sSound.Format("HD0:STREAMVOICE\\%s", sSound.CStr());
+                }
+                else
+                {
+                    for (; i < nLength - 3; ++i)
+                        szSubDir[i - 3] = sSound[i];
+                    szSubDir[i - 3] = 0;
+                    sSound.Format("HD0:STREAMVOICE\\%s\\%s\\%s",
+                        szPrefix, szSubDir, sSound.CStr());
+                }
             }
             else
             {
-                sSound.Format("HD0:STREAMWAVES\\%s", sSound.CStr());
+                sSound = "HD0:STREAMVOICE\\";
             }
             CExoString sFileName;
             sFileName = g_pExoBase->m_pExoAliasList->ResolveFileName(sSound, RESTYPE_BMU);
@@ -2451,10 +3003,10 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
                 sFileName = g_pExoBase->m_pExoAliasList->ResolveFileName(sSound, RESTYPE_WAV);
                 pFile = fopen(sFileName.CStr(), "r");
             }
-            if (pFile == NULL)
-                bSound = 0;
-            else
+            if (pFile != NULL)
                 fclose(pFile);
+            else
+                bSound = 0;
         }
         if (!bSound && !g_pAppManager->GetClientExoApp()->GetClientOptions()->m_bSubtitles &&
             !bShowText)
@@ -2482,7 +3034,7 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
         {
             SetDialogDelay(pOwner, m_pEntries[nEntry].m_lsText,
                 (unsigned long)m_pEntries[nEntry].m_lsText.GetSpokenTimeEstimate(
-                    g_pAppManager->GetServerExoApp()->GetPlayerLanguage(m_oidCurrentPlayer),
+                    g_pAppManager->GetClientExoApp()->GetClientLanguage(),
                     m_nCurrentPlayerGender), m_pEntries[nEntry].m_nReplies != 0, 0);
         }
         else
@@ -2497,13 +3049,41 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
     }
     unsigned long nWaitFlags = m_pEntries[nEntry].m_nWaitFlags;
     pOwner->m_nWaitFlags = nWaitFlags;
+    g_pVirtualMachine->SetScriptParams(
+        m_pEntries[nEntry].m_nActionParam1,
+        m_pEntries[nEntry].m_nActionParam2,
+        m_pEntries[nEntry].m_nActionParam3,
+        m_pEntries[nEntry].m_nActionParam4,
+        m_pEntries[nEntry].m_nActionParam5,
+        m_pEntries[nEntry].m_sActionParamStrA);
     RunScript(pOwner, m_pEntries[nEntry].m_cScript);
+    g_pVirtualMachine->SetScriptParams(
+        m_pEntries[nEntry].m_nActionParam1b,
+        m_pEntries[nEntry].m_nActionParam2b,
+        m_pEntries[nEntry].m_nActionParam3b,
+        m_pEntries[nEntry].m_nActionParam4b,
+        m_pEntries[nEntry].m_nActionParam5b,
+        m_pEntries[nEntry].m_sActionParamStrB);
+    RunScript(pOwner, m_pEntries[nEntry].m_cScript2);
+    m_n64 = m_pEntries[nEntry].m_bNodeUnskippable;
     m_nCurrentEntry = nEntry;
     return pOwner->SendDialogReplies();
 }
 // PC 0x005ECD70
 inline CSWSDialog::~CSWSDialog()
 {
+    if (m_n178 != NULL)
+    {
+        if (m_n178->GetAnimationBase()->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN) != NULL)
+        {
+            m_n178->GetAnimationBase()->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN)->StopOutOfOrderAnimation("emotions");
+        }
+        if (m_n178->GetAnimationBase()->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD) != NULL)
+        {
+            m_n178->GetAnimationBase()->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD)->StopOutOfOrderAnimation("emotions");
+        }
+        m_n178 = NULL;
+    }
     ReEquipItemsForDialog();
     ReEquipHItemForDialog();
     Cleanup();

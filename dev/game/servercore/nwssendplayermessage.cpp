@@ -60,8 +60,7 @@ void CSWSMessage::AddDoorAppearanceToMessage(CSWSDoor* pDoor)
 // PC 0x0058B830
 void CSWSMessage::AddPlaceableAppearanceToMessage(CSWSPlaceable* pPlaceable)
 {
-    unsigned char nAppearance = pPlaceable->m_nAppearance;
-    WriteBYTE(nAppearance, 8);
+    WriteINT(pPlaceable->m_nAppearance, 32);
     int nAnimation = pPlaceable->m_nAnimation;
     WriteWORD(nAnimation, 16);
     int bPlot = pPlaceable->m_bPlotObject;
@@ -74,6 +73,8 @@ void CSWSMessage::AddPlaceableAppearanceToMessage(CSWSPlaceable* pPlaceable)
     WriteBOOL(bLockable);
     int bLocked = pPlaceable->m_bLocked;
     WriteBOOL(bLocked);
+    int bNotBlastable = pPlaceable->m_bNotBlastable;
+    WriteBOOL(bNotBlastable);
     int bUnknown = pPlaceable->m_n32C;
     WriteBOOL(bUnknown);
 
@@ -1093,6 +1094,8 @@ void CSWSMessage::TestPlayerUpdateDifferences(CSWSPlayer* pPlayer,
             nUpdateMask |= PLAYER_UPDATE_GUI_FEATS;
 
         if (pCreature->GetGold() != pPlayerLastUpdate->m_nGold ||
+            pCreature->GetComponent() != pPlayerLastUpdate->m_nComponent ||
+            pCreature->GetChemical() != pPlayerLastUpdate->m_nChemical ||
             pPlayerLastUpdate->m_nArmorClass != pCreature->GetArmorClass() ||
             pPlayerLastUpdate->m_nEncumbranceState != pCreature->m_nEncumbranceState ||
             pCreature->m_bComputeWeightCarried == 1 ||
@@ -1169,6 +1172,8 @@ void CSWSMessage::WriteGameObjUpdate_PlayerUpdate(CSWSPlayer* pPlayer,
         {
             WriteSHORT(pCreature->GetArmorClass(), 16);
             WriteDWORD(pCreature->GetGold(), 32);
+            WriteINT(pCreature->GetComponent(), 32);
+            WriteINT(pCreature->GetChemical(), 32);
             WriteINT(pCreature->GetEncumbranceState(), 32);
             WriteBOOL(pCreature->GetStats()->CanLevelUp());
             WriteDWORD(pCreature->GetStats()->GetExperience(), 32);
@@ -1734,7 +1739,10 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
             pCreature->m_pStats->m_nSubraceIndex != pLastUpdateObject->m_nSubraceIndex ||
             pCreature->m_pStats->m_nGender != pLastUpdateObject->m_nGender ||
             pCreature->m_pStats->m_nGoodEvilAlignment != pLastUpdateObject->m_nGoodEvilAlignment ||
-            pCreature->m_nF4 != pLastUpdateObject->m_nObjectF4)
+            pCreature->m_pStats->m_n18C != pLastUpdateObject->m_n11A ||
+            pCreature->m_nF4 != pLastUpdateObject->m_nObjectF4 ||
+            pCreature->m_n1110 != pLastUpdateObject->m_n11C ||
+            pCreature->m_sTag != pLastUpdateObject->m_s120)
         {
             nUpdateMask |= OBJECT_UPDATE_CHARACTER_DETAILS;
         }
@@ -1758,7 +1766,7 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
                 }
             }
             if (pCreature->m_bUpdateMovingOrientation == 1 &&
-                pLastUpdateObject->m_vOrientation * pCreature->m_vOrientation < OBJECT_UPDATE_ORIENTATION_COSINE)
+                pCreature->m_vOrientation * pLastUpdateObject->m_vOrientation < OBJECT_UPDATE_ORIENTATION_COSINE)
                 nUpdateMask |= OBJECT_UPDATE_LOCATION | OBJECT_UPDATE_ORIENTATION;
         }
         else
@@ -2373,7 +2381,7 @@ int CSWSMessage::SendServerToPlayerArea_ClientArea(
                 }
             }
         }
-        if (nImage == 0)
+        if (nImage == 0 && nRows > CTwoDimArrays::AREA_TRANSITION_FIRST_IMAGE)
         {
             nImage = rand() % (nRows - CTwoDimArrays::AREA_TRANSITION_FIRST_IMAGE) +
                      CTwoDimArrays::AREA_TRANSITION_FIRST_IMAGE;
@@ -2851,7 +2859,8 @@ int CSWSMessage::TestObjectVisible(CSWSObject* pObject,
                 bVisible = 0;
                 if (bInArea == 0)
                 {
-                    if (fCheckDistance * fCheckDistance >= fDistanceSquared &&
+                    if ((fCheckDistance * fCheckDistance >= fDistanceSquared ||
+                         pObject->m_n260 != 0) &&
                         pObject->AsSWSCreature()->GetInvisible(
                             pPlayerObject->AsSWSCreature()) == 0)
                     {
@@ -2871,7 +2880,8 @@ int CSWSMessage::TestObjectVisible(CSWSObject* pObject,
             }
         }
     }
-    else if (fCheckDistance * fCheckDistance >= fDistanceSquared)
+    else if (fCheckDistance * fCheckDistance >= fDistanceSquared ||
+             pObject->m_n260 != 0)
     {
         if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_TRIGGER)
         {
@@ -3666,7 +3676,13 @@ CSWSPlayerLUOSortedObjectList* CSWSMessage::SortObjectsForGameObjectUpdate(
                             pPlayerObject->AsSWSCreature()->GetSpotCheckDistance() :
                             pPlayerObject->AsSWSCreature()->GetListenCheckDistance();
                     }
+                    int nOverride = 0;
+                    if (pObject->AsSWSObject() != NULL)
+                    {
+                        nOverride = pObject->AsSWSObject()->m_n260;
+                    }
                     if (fDistanceSquared < fVisibleDistance * fVisibleDistance ||
+                        nOverride != 0 ||
                         pPlayer->GetLastUpdateObject(pPlayerObject->GetId()) != NULL)
                         bInclude = 1;
                     unsigned long nCategory = SelectCategoryForGameObject(pObject, pPlayerObject);
@@ -4109,7 +4125,7 @@ int CSWSMessage::SendServerToPlayerExamineGui_MineData(
     WriteBOOL(bRecoverable);
     if (pGameObject->m_nObjectType == CGameObject::OBJECT_TYPE_TRIGGER)
     {
-        nDisarmDC = pGameObject->AsSWSTrigger()->m_nTrapDisarmDC;
+        nDisarmDC = pGameObject->AsSWSTrigger()->GetDisarmDC();
         CSWSTrigger* pTrigger = pGameObject->AsSWSTrigger();
         WriteBYTE(pTrigger->m_nTrapType, 8);
         if (pGameObject->AsSWSTrigger()->m_bTrapDisarmable &&
@@ -4131,7 +4147,7 @@ int CSWSMessage::SendServerToPlayerExamineGui_MineData(
     }
     else if (pGameObject->m_nObjectType == CGameObject::OBJECT_TYPE_DOOR)
     {
-        nDisarmDC = pGameObject->AsSWSDoor()->m_nDisarmDC;
+        nDisarmDC = pGameObject->AsSWSDoor()->GetDisarmDC();
         CSWSDoor* pDoor = pGameObject->AsSWSDoor();
         WriteBYTE(pDoor->m_nTrapType, 8);
         if (pGameObject->AsSWSDoor()->m_bTrapDisarmable &&
@@ -4153,7 +4169,7 @@ int CSWSMessage::SendServerToPlayerExamineGui_MineData(
     }
     else if (pGameObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
     {
-        nDisarmDC = pGameObject->AsSWSPlaceable()->m_nDisarmDC;
+        nDisarmDC = pGameObject->AsSWSPlaceable()->GetDisarmDC();
         CSWSPlaceable* pPlaceable = pGameObject->AsSWSPlaceable();
         WriteBYTE(pPlaceable->m_nTrapType, 8);
         if (pGameObject->AsSWSPlaceable()->m_bTrapDisarmable &&
@@ -5183,7 +5199,7 @@ int CSWSMessage::SendServerToPlayerCCMessage(unsigned long nPlayerId,
             pMessage, nMessageSize);
 
     case CC_MESSAGE_SPELL_DATA:
-        CreateWriteMessage(28, RECIPIENT_UNSPECIFIED, 1);
+        CreateWriteMessage(36, RECIPIENT_UNSPECIFIED, 1);
         WriteOBJECTIDServer(pMessageData->GetObjectID(0));
         WriteOBJECTIDServer(pMessageData->GetObjectID(2));
         WriteINT(pMessageData->GetInteger(0), 32);
@@ -5204,6 +5220,8 @@ int CSWSMessage::SendServerToPlayerCCMessage(unsigned long nPlayerId,
         WriteINT(pMessageData->GetInteger(1), 32);
         WriteINT(pMessageData->GetInteger(2), 32);
         WriteINT(pMessageData->GetInteger(3), 32);
+        WriteINT(pMessageData->GetInteger(4), 32);
+        WriteINT(pMessageData->GetInteger(5), 32);
         if (!GetWriteMessage(&pMessage, &nMessageSize))
         {
             return 0;
@@ -5290,7 +5308,9 @@ int CSWSMessage::SendServerToPlayerCCMessage(unsigned long nPlayerId,
             pMessageData->GetInteger(FEEDBACK_INTEGER_MESSAGE) == CSWSCreature::FEEDBACK_FORCE_POINTS_REGAINED ||
             pMessageData->GetInteger(FEEDBACK_INTEGER_MESSAGE) == CSWSCreature::FEEDBACK_EXPERIENCE_POINTS_GAINED ||
             pMessageData->GetInteger(FEEDBACK_INTEGER_MESSAGE) == CSWSCreature::FEEDBACK_EXPERIENCE_POINTS_LOST ||
-            pMessageData->GetInteger(FEEDBACK_INTEGER_MESSAGE) == CSWSCreature::FEEDBACK_FORCE_POWER_NAME)
+            pMessageData->GetInteger(FEEDBACK_INTEGER_MESSAGE) == CSWSCreature::FEEDBACK_FORCE_POWER_NAME ||
+            pMessageData->GetInteger(FEEDBACK_INTEGER_MESSAGE) == CSWSCreature::FEEDBACK_COMPONENTS_ADDED ||
+            pMessageData->GetInteger(FEEDBACK_INTEGER_MESSAGE) == CSWSCreature::FEEDBACK_CHEMICALS_ADDED)
         {
             WriteINT(pMessageData->GetInteger(0), 32);
         }
@@ -5481,7 +5501,7 @@ int CSWSMessage::SendServerToPlayerCCMessage(unsigned long nPlayerId,
             pMessage, nMessageSize);
 
     case CC_MESSAGE_ATTACK_BREAKDOWN:
-        CreateWriteMessage(84, RECIPIENT_UNSPECIFIED, 1);
+        CreateWriteMessage(124, RECIPIENT_UNSPECIFIED, 1);
         WriteINT(pMessageData->GetInteger(0), 32);
         WriteINT(pMessageData->GetInteger(1), 32);
         WriteINT(pMessageData->GetInteger(2), 32);
@@ -5502,9 +5522,18 @@ int CSWSMessage::SendServerToPlayerCCMessage(unsigned long nPlayerId,
         WriteINT(pMessageData->GetInteger(17), 32);
         WriteINT(pMessageData->GetInteger(18), 32);
         WriteINT(pMessageData->GetInteger(19), 32);
-        WriteDWORD(pMessageData->GetInteger(20), 32);
+        WriteINT(pMessageData->GetInteger(20), 32);
+        WriteINT(pMessageData->GetInteger(21), 32);
+        WriteINT(pMessageData->GetInteger(22), 32);
+        WriteINT(pMessageData->GetInteger(23), 32);
+        WriteINT(pMessageData->GetInteger(24), 32);
+        WriteINT(pMessageData->GetInteger(25), 32);
+        WriteINT(pMessageData->GetInteger(26), 32);
+        WriteINT(pMessageData->GetInteger(27), 32);
+        WriteINT(pMessageData->GetInteger(28), 32);
+        WriteINT(pMessageData->GetInteger(29), 32);
+        WriteDWORD(pMessageData->GetInteger(30), 32);
         break;
-
     case CC_MESSAGE_THREAT_BREAKDOWN:
         CreateWriteMessage(32, RECIPIENT_UNSPECIFIED, 1);
         WriteINT(pMessageData->GetInteger(0), 32);
@@ -5530,13 +5559,16 @@ int CSWSMessage::SendServerToPlayerCCMessage(unsigned long nPlayerId,
         break;
 
     case CC_MESSAGE_DAMAGE_BREAKDOWN:
-        CreateWriteMessage(112, RECIPIENT_UNSPECIFIED, 1);
+        CreateWriteMessage(124, RECIPIENT_UNSPECIFIED, 1);
         {
             int i;
             for (i = 0; i < 15; ++i)
             {
                 WriteINT(pMessageData->GetInteger(i), 32);
             }
+            WriteINT(pMessageData->GetInteger(i++), 32);
+            WriteINT(pMessageData->GetInteger(i++), 32);
+            WriteINT(pMessageData->GetInteger(i++), 32);
             WriteINT(pMessageData->GetInteger(i++), 32);
             WriteINT(pMessageData->GetInteger(i++), 32);
             WriteINT(pMessageData->GetInteger(i++), 32);
@@ -5554,7 +5586,6 @@ int CSWSMessage::SendServerToPlayerCCMessage(unsigned long nPlayerId,
         break;
 
     case CC_MESSAGE_EFFECT_APPLICATION_BREAKDOWN:
-    case CC_MESSAGE_DEFLECT_BREAKDOWN:
         CreateWriteMessage(40, RECIPIENT_UNSPECIFIED, 1);
         WriteOBJECTIDServer(pMessageData->GetObjectID(0));
         WriteDWORD(pMessageData->GetInteger(0), 32);
@@ -5568,6 +5599,27 @@ int CSWSMessage::SendServerToPlayerCCMessage(unsigned long nPlayerId,
         WriteDWORD(pMessageData->GetInteger(8), 32);
         break;
 
+    case CC_MESSAGE_DEFLECT_BREAKDOWN:
+        CreateWriteMessage(72, RECIPIENT_UNSPECIFIED, 1);
+        WriteOBJECTIDServer(pMessageData->GetObjectID(0));
+        WriteDWORD(pMessageData->GetInteger(0), 32);
+        WriteDWORD(pMessageData->GetInteger(1), 32);
+        WriteDWORD(pMessageData->GetInteger(2), 32);
+        WriteDWORD(pMessageData->GetInteger(3), 32);
+        WriteDWORD(pMessageData->GetInteger(4), 32);
+        WriteDWORD(pMessageData->GetInteger(5), 32);
+        WriteDWORD(pMessageData->GetInteger(6), 32);
+        WriteDWORD(pMessageData->GetInteger(7), 32);
+        WriteDWORD(pMessageData->GetInteger(8), 32);
+        WriteDWORD(pMessageData->GetInteger(9), 32);
+        WriteDWORD(pMessageData->GetInteger(10), 32);
+        WriteDWORD(pMessageData->GetInteger(11), 32);
+        WriteDWORD(pMessageData->GetInteger(12), 32);
+        WriteDWORD(pMessageData->GetInteger(13), 32);
+        WriteDWORD(pMessageData->GetInteger(14), 32);
+        WriteDWORD(pMessageData->GetInteger(15), 32);
+        WriteDWORD(pMessageData->GetInteger(16), 32);
+        break;
     case CC_MESSAGE_POISONED:
         CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
         WriteOBJECTIDServer(pMessageData->GetObjectID(0));
@@ -6740,6 +6792,7 @@ CLastUpdateObject* CSWSMessage::CreateNewLastUpdateObject(CSWSPlayer* pPlayer,
         WriteBOOL(pObject->AsSWSDoor()->m_bLocked);
         WriteBOOL(pObject->AsSWSDoor()->m_bLockable);
         WriteBOOL(pObject->m_bPlotObject);
+        WriteBOOL(pObject->AsSWSDoor()->m_bNotBlastable);
         WriteBOOL(pObject->AsSWSDoor()->GetIsLinked());
         WriteCExoLocStringServer(
             pObject->AsSWSDoor()->GetTransitionDestination(), 0);
@@ -6790,7 +6843,20 @@ CLastUpdateObject* CSWSMessage::CreateNewLastUpdateObject(CSWSPlayer* pPlayer,
 void CSWSMessage::WriteGameObjUpdate_MajorGUIPanels(CSWSPlayer* pPlayer)
 {
     CExoArrayList<unsigned long> lstEquipmentSlots;
-    CSWSObject* pObject = pPlayer->GetGameObject();
+    CGameObject* pGameObject;
+    int nOverride = g_pAppManager->m_pClientExoApp->GetInGameGui()
+                        ->GetTopMenuOverrideCharacter();
+    if (nOverride != -1)
+    {
+        pGameObject = g_pAppManager->m_pServerExoApp->GetGameObject(
+            g_pAppManager->m_pServerExoApp->GetPartyTable()->GetNPCObject(
+                nOverride, 0, 1));
+    }
+    else
+    {
+        pGameObject = pPlayer->GetGameObject();
+    }
+    CSWSObject* pObject = (CSWSObject*)pGameObject;
     if (pObject != NULL && pObject->AsSWSCreature() != NULL)
     {
         CSWSPlayerLastUpdateObject* pPlayerUpdate = pPlayer->m_pLastUpdateObject;
@@ -6849,25 +6915,6 @@ void CSWSMessage::WriteGameObjUpdate_MajorGUIPanels(CSWSPlayer* pPlayer)
             }
             else
             {
-#ifndef _XBOX
-                int bNPCInventory = 0;
-                unsigned long oidPlayerObject = pPlayer->m_oidNWSObject;
-                CSWSObject* pPlayerObject = pObject;
-                if (g_pAppManager->m_pServerExoApp->GetServerInfo()->m_bPartyPicking && g_pAppManager->m_pClientExoApp->GetInGameGui()->GetPartyAccessPanelUp(1))
-                {
-                    int nNPC = g_pAppManager->m_pClientExoApp->GetInGameGui()->GetCurrentEquipScreenNPC(); unsigned long oidNPC = g_pAppManager->m_pServerExoApp->GetPartyTable()->GetNPCObject(nNPC, 0, 1);
-                    pObject = g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(oidNPC);
-                    if (pObject != NULL)
-                    {
-                        bNPCInventory = 1;
-                        pPlayer->m_oidNWSObject = oidNPC;
-                    }
-                    else
-                    {
-                        pObject = pPlayerObject;
-                    }
-                }
-#endif
                 for (int nSlot = 0; nSlot < CSWInventory::TOTAL_SLOT_COUNT; nSlot++)
                 {
                     if (ComputeInventoryUpdateRequired(pPlayer, nSlot) == 1)
@@ -6900,11 +6947,6 @@ void CSWSMessage::WriteGameObjUpdate_MajorGUIPanels(CSWSPlayer* pPlayer)
                     AddItemAppearanceToMessage(pItem);
                     AddActiveItemPropertiesToMessage(pItem, pObject->AsSWSCreature());
                 }
-#ifndef _XBOX
-                if (bNPCInventory)
-                {   pPlayer->m_oidNWSObject = oidPlayerObject;
-                    pObject = pPlayerObject; }
-#endif
             }
             CItemRepository* pRepository = pObject->AsSWSCreature()->GetItemRepository(1);
             CSWSPlayerLUOInventory* pLastUpdate = pPlayer->GetInventoryGUIInfo()->m_pLastUpdateObject;
@@ -6929,6 +6971,8 @@ void CSWSMessage::StoreValuesInLastPlayerUpdateObject(CSWSPlayer* pPlayer,
             pPlayerLastUpdate->m_bCanLevelUp = pCreature->GetStats()->CanLevelUp();
             pPlayerLastUpdate->m_nLevel = pCreature->GetStats()->GetLevel(0);
             pPlayerLastUpdate->m_nExperience = pCreature->GetStats()->m_nExperience;
+            pPlayerLastUpdate->m_nComponent = pCreature->GetComponent();
+            pPlayerLastUpdate->m_nChemical = pCreature->GetChemical();
             pCreature->m_bComputeWeightCarried = 0;
         }
         if (nUpdateMask & PLAYER_UPDATE_GUI_SKILLS)
@@ -7571,6 +7615,9 @@ void CSWSMessage::WriteGameObjUpdate_UpdateObject(CSWSPlayer* pPlayer,
         WriteBYTE(pCreature->m_pStats->m_nSubraceIndex, 8);
         WriteBYTE(pCreature->m_pStats->m_nGender, 8);
         WriteSHORT(pCreature->m_pStats->m_nGoodEvilAlignment, 16);
+        WriteWORD(pCreature->m_pStats->m_n18C, 16);
+        WriteINT(pCreature->m_n1110, 32);
+        WriteCExoString(pCreature->m_sTag, 32);
         WriteBOOL(pObject->m_nF4);
         WriteBYTE(pCreature->m_pStats->m_nClassCount, 8);
         for (int i = 0; i < pCreature->m_pStats->m_nClassCount; i++)
@@ -7757,6 +7804,9 @@ void CSWSMessage::UpdateLastUpdateObject(
             pLastUpdateObject->m_nSubraceIndex = pCreature->m_pStats->m_nSubraceIndex;
             pLastUpdateObject->m_nGender = pCreature->m_pStats->m_nGender;
             pLastUpdateObject->m_nGoodEvilAlignment = pCreature->m_pStats->m_nGoodEvilAlignment;
+            pLastUpdateObject->m_n11A = pCreature->m_pStats->m_n18C;
+            pLastUpdateObject->m_n11C = pCreature->m_n1110;
+            pLastUpdateObject->m_s120 = pCreature->m_sTag;
             pLastUpdateObject->m_nObjectF4 = pCreature->m_nF4;
             for (int i = 0; i < pCreature->m_pStats->GetNumClasses(); i++)
             {

@@ -6312,7 +6312,7 @@ void CSWSCreature::RecomputeAmbientAnimationState()
         SetAmbientAnimationState(AMBIENT_STATE_8);
     else if (m_bDebilitated == CSWSEffectListHandler::STATE_HOLD)
         SetAmbientAnimationState(AMBIENT_STATE_12);
-    else if (m_bDebilitated == CSWSEffectListHandler::STATE_VARIANT_14)
+    else if (m_bDebilitated == CSWSEffectListHandler::STATE_KNOCKDOWN)
         SetAmbientAnimationState(AMBIENT_STATE_15);
     else if (m_bDebilitated == CSWSEffectListHandler::STATE_VARIANT_15)
         SetAmbientAnimationState(AMBIENT_STATE_16);

@@ -122,7 +122,7 @@ public:
 
     enum EffectImmunitySelector
     {
-        IMMUNITY_TYPE_POISON = 2,
+        IMMUNITY_TYPE_MIND_SPELLS = 1, IMMUNITY_TYPE_POISON = 2,
 
         IMMUNITY_TYPE_FEAR = 4, IMMUNITY_TYPE_PARALYSIS = 6,
         IMMUNITY_TYPE_BLINDNESS = 7, IMMUNITY_TYPE_DEAFNESS = 8,
@@ -136,7 +136,9 @@ public:
 
         IMMUNITY_TYPE_NEGATIVE_LEVEL = 29,
 
-        IMMUNITY_TYPE_DEATH = 32
+        IMMUNITY_TYPE_DEATH = 32,
+
+        IMMUNITY_TYPE_33 = 33
     };
 
     enum SimpleGoodEvilAlignment

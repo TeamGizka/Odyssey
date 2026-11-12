@@ -41,7 +41,7 @@ void CSWSAreaMap::Initialize(int bEnabled, int nMapWidth, unsigned long nNorthAx
             nMapWidth = 88;
         }
         m_nWidth = nMapWidth;
-        int nMapHeight = (int)(nMapWidth * 0.58181816f);
+        int nMapHeight = (int)(nMapWidth * 0.5f);
         m_nHeight = nMapHeight;
         if (nMapHeight < 1)
         {

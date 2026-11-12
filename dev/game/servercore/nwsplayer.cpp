@@ -594,6 +594,18 @@ int CSWSPlayer::LoadLocalCharacter()
     int nResult = LoadCreatureData(LOCAL_CHARACTER_RESREF,
                                    (CSWSCreature*)pCreature);
     ((CSWSCreature*)pCreature)->SetInParty(1, 1);
+
+    int nLevel = 0;
+    for (int nClass = 0;
+         nClass < ((CSWSCreature*)pCreature)->m_pStats->m_nClassCount; nClass++)
+    {
+        nLevel += ((CSWSCreature*)pCreature)->m_pStats->GetClassLevel(nClass, 0);
+    }
+    g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
+        "G_PC_LEVEL", nLevel);
+    g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
+        "G_PC_Align_Val",
+        ((CSWSCreature*)pCreature)->m_pStats->m_nGoodEvilAlignment);
     if (nResult != 0)
     {
         SetGameObject((CSWSObject*)NULL);

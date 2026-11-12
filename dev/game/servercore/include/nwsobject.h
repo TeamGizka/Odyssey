@@ -888,7 +888,7 @@ public:
     int m_nCameraAnimState;
     int m_n74;
     int m_nAILevel;
-    char m_c7C;
+    unsigned char m_c7C;
     char m_aUnmapped7D[0x3];
     char m_aUnmapped7C[0x4];
     unsigned short m_nCurrentAction;
@@ -1245,6 +1245,7 @@ struct CEffectIconObject
     int m_bGood;
     unsigned short m_nPriority;
     int m_nGood;
+    int m_n20;
 };
 
 
@@ -2537,6 +2538,7 @@ public:
         FEEDBACK_UNKNOWN_226 = 226,
         FEEDBACK_ITEM_GENDER_RESTRICTION = 229,
         FEEDBACK_ITEM_PC_RESTRICTION = 230,
+        FEEDBACK_UNKNOWN_231 = 231,
         FEEDBACK_ITEM_ATTRIBUTE_RESTRICTION = 232,
         FEEDBACK_COMPONENTS_ADDED = 233,
         FEEDBACK_CHEMICALS_ADDED = 234,

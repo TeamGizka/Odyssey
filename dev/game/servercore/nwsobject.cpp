@@ -1704,7 +1704,17 @@ int CSWSObject::RemoveEffectById(unsigned __int64 nEffectId)
             if (pAIMaster->OnEffectRemoved(this, pEffect) ==
                 CSWSEffectListHandler::DELETE_EFFECT)
             {
-                m_lstEffects.Remove(pEffect);
+                int nIndex;
+                for (nIndex = 0; nIndex < m_lstEffects.num; nIndex++)
+                {
+                    if (m_lstEffects[nIndex] == pEffect)
+                        break;
+                }
+                m_lstEffects.num--;
+                for (; nIndex < m_lstEffects.num; nIndex++)
+                {
+                    m_lstEffects.element[nIndex] = m_lstEffects.element[nIndex + 1];
+                }
                 if (m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
                 {
                     UpdateEffectPtrs();

@@ -17,6 +17,7 @@ public:
                              int* panEnvAudio, float* pafEnvAudioVolume);
     void SetNoWalkMesh(int bNoWalkMesh);
     int GetNoWalkMesh();
+    CResRef GetResRef() { return m_cResRef; }
 
     Vector m_vPosition;
     Quaternion m_qOrientation;

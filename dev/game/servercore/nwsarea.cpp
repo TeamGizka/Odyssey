@@ -252,6 +252,24 @@ int CSWSArea::AIUpdate()
                     bWeatherChanged = 1;
                 }
             }
+            else if (m_nChanceLightning > 0)
+            {
+                if (nRoll < m_nChanceLightning)
+                {
+                    if (m_bWeatherStarted == 0)
+                    {
+                        m_nCurrentWeather = WEATHER_RAIN;
+                        m_bWeatherStarted = 1;
+                        bWeatherChanged = 1;
+                    }
+                }
+                else if (m_bWeatherStarted != 0)
+                {
+                    m_nCurrentWeather = WEATHER_RAIN;
+                    m_bWeatherStarted = 0;
+                    bWeatherChanged = 1;
+                }
+            }
             if (bWeatherChanged != 0)
                 SetCurrentWeather(m_nCurrentWeather, m_bWeatherStarted);
             m_nWeatherCheckTimer = WEATHER_CHECK_INTERVAL;
@@ -434,6 +452,7 @@ CSWSArea::CSWSArea(const CResRef& cResRef, int nAreaId, unsigned long oidArea)
     m_nActiveWeather = WEATHER_CLEAR;
     m_bHeaderLoaded = 0;
     m_bUnescapable = 0;
+    m_bDisableTransit = 0;
     m_nPlayerRestrictMode = 0;
     m_nPathPointCount = 0;
     m_pPathPoints = NULL;
@@ -448,6 +467,9 @@ CSWSArea::CSWSArea(const CResRef& cResRef, int nAreaId, unsigned long oidArea)
     m_pfRoomAudio = NULL;
     m_nRoomAudioCount = 0;
     m_nRoomAudioEntryCount = 0;
+    m_pnRoomForceRating = NULL;
+    m_pbRoomDisableWeather = NULL;
+    m_pnRoomAudioIndex = NULL;
     m_nStealthXPMax = 0;
     m_nStealthXPCurrent = 0;
     m_nStealthXPLoss = 0;
@@ -498,6 +520,21 @@ CSWSArea::~CSWSArea()
     {
         delete[] m_pfRoomAudio;
         m_pfRoomAudio = NULL;
+    }
+    if (m_pnRoomForceRating != NULL)
+    {
+        delete[] m_pnRoomForceRating;
+        m_pnRoomForceRating = NULL;
+    }
+    if (m_pbRoomDisableWeather != NULL)
+    {
+        delete[] m_pbRoomDisableWeather;
+        m_pbRoomDisableWeather = NULL;
+    }
+    if (m_pnRoomAudioIndex != NULL)
+    {
+        delete[] m_pnRoomAudioIndex;
+        m_pnRoomAudioIndex = NULL;
     }
     if (m_pClientArea != NULL)
     {
@@ -761,6 +798,7 @@ int CSWSArea::LoadAreaHeader(CResStruct* pStruct)
         g_pAppManager->GetServerExoApp()->GetPartyTable()->SetPartyFollowState(0);
     int nUnescapableDefault = m_bUnescapable;
     m_bUnescapable = m_pRes->ReadFieldBYTE(pStruct, "Unescapable", bFieldRead, nUnescapableDefault);
+    m_bDisableTransit = m_pRes->ReadFieldBYTE(pStruct, "DisableTransit", bFieldRead, 0);
     int nRestrictDefault = m_nPlayerRestrictMode;
     SetPlayerRestrictMode(m_pRes->ReadFieldBYTE(pStruct, "RestrictMode", bFieldRead, nRestrictDefault));
     m_nChanceRain = m_pRes->ReadFieldINT(pStruct, "ChanceRain", bFieldRead, 0);
@@ -812,6 +850,7 @@ int CSWSArea::LoadAreaHeader(CResStruct* pStruct)
     m_nLoadScreenID = m_pRes->ReadFieldWORD(pStruct, "LoadScreenID", bFieldRead, 0);
     m_nGrassDiffuse = m_pRes->ReadFieldDWORD(pStruct, "Grass_Diffuse", bFieldRead, 0);
     m_nGrassAmbient = m_pRes->ReadFieldDWORD(pStruct, "Grass_Ambient", bFieldRead, 0);
+    m_nGrassEmissive = m_pRes->ReadFieldDWORD(pStruct, "Grass_Emissive", bFieldRead, 0);
     m_fGrassDensity = m_pRes->ReadFieldFLOAT(pStruct, "Grass_Density", bFieldRead, 0.0f);
     m_fGrassQuadSize = m_pRes->ReadFieldFLOAT(pStruct, "Grass_QuadSize", bFieldRead, 0.0f);
     m_cGrassTexName = m_pRes->ReadFieldCResRef(pStruct, "Grass_TexName", bFieldRead, "");
@@ -832,6 +871,8 @@ int CSWSArea::LoadAreaHeader(CResStruct* pStruct)
         m_psRoomAudio[i] = m_pRes->ReadFieldCExoString(&cElement, "RoomName", bFieldRead, "");
         m_pnRoomAudio[i] = m_pRes->ReadFieldINT(&cElement, "EnvAudio", bFieldRead, 0);
         m_pfRoomAudio[i] = m_pRes->ReadFieldFLOAT(&cElement, "AmbientScale", bFieldRead, 0.0f);
+        m_pnRoomForceRating[i] = m_pRes->ReadFieldINT(&cElement, "ForceRating", bFieldRead, 0);
+        m_pbRoomDisableWeather[i] = m_pRes->ReadFieldBYTE(&cElement, "DisableWeather", bFieldRead, 0);
         CResList cPartSounds;
         CResStruct cPart;
         if (m_pRes->GetList(&cPartSounds, &cElement, "PartSounds"))
@@ -904,6 +945,45 @@ int CSWSArea::LoadAreaHeader(CResStruct* pStruct)
     m_nStealthXPLoss = m_pRes->ReadFieldDWORD(pStruct, "StealthXPLoss", bFieldRead, nStealthXPLossDefault);
     int nStealthXPEnabledDefault = m_bStealthXPEnabled;
     m_bStealthXPEnabled = m_pRes->ReadFieldBYTE(pStruct, "StealthXPEnabled", bFieldRead, nStealthXPEnabledDefault);
+    m_nDirtyARGB[0] = m_pRes->ReadFieldINT(pStruct, "DirtyARGBOne", bFieldRead, 0);
+    m_nDirtySize[0] = m_pRes->ReadFieldINT(pStruct, "DirtySizeOne", bFieldRead, 16);
+    int nDirtyFormulaOne = m_pRes->ReadFieldINT(pStruct, "DirtyFormulaOne", bFieldRead, 1);
+    if (nDirtyFormulaOne == 1)
+    {
+        nDirtyFormulaOne = 0;
+    }
+    else if (nDirtyFormulaOne == 0)
+    {
+        nDirtyFormulaOne = 1;
+    }
+    m_nDirtyFormula[0] = nDirtyFormulaOne;
+    m_nDirtyFunc[0] = m_pRes->ReadFieldINT(pStruct, "DirtyFuncOne", bFieldRead, 0);
+    m_nDirtyARGB[1] = m_pRes->ReadFieldINT(pStruct, "DirtyARGBTwo", bFieldRead, 0);
+    m_nDirtySize[1] = m_pRes->ReadFieldINT(pStruct, "DirtySizeTwo", bFieldRead, 16);
+    int nDirtyFormulaTwo = m_pRes->ReadFieldINT(pStruct, "DirtyFormulaTwo", bFieldRead, 1);
+    if (nDirtyFormulaTwo == 1)
+    {
+        nDirtyFormulaTwo = 0;
+    }
+    else if (nDirtyFormulaTwo == 0)
+    {
+        nDirtyFormulaTwo = 1;
+    }
+    m_nDirtyFormula[1] = nDirtyFormulaTwo;
+    m_nDirtyFunc[1] = m_pRes->ReadFieldINT(pStruct, "DirtyFuncTwo", bFieldRead, 0);
+    m_nDirtyARGB[2] = m_pRes->ReadFieldINT(pStruct, "DirtyARGBThree", bFieldRead, 0);
+    m_nDirtySize[2] = m_pRes->ReadFieldINT(pStruct, "DirtySizeThree", bFieldRead, 16);
+    int nDirtyFormulaThree = m_pRes->ReadFieldINT(pStruct, "DirtyFormulaThree", bFieldRead, 1);
+    if (nDirtyFormulaThree == 1)
+    {
+        nDirtyFormulaThree = 0;
+    }
+    else if (nDirtyFormulaThree == 0)
+    {
+        nDirtyFormulaThree = 1;
+    }
+    m_nDirtyFormula[2] = nDirtyFormulaThree;
+    m_nDirtyFunc[2] = m_pRes->ReadFieldINT(pStruct, "DirtyFuncThree", bFieldRead, 0);
     m_bTransitionPending = m_pRes->ReadFieldBYTE(pStruct, "TransPending", bFieldRead, m_bTransitionPending);
     m_nNextTransitionPendingId = m_pRes->ReadFieldBYTE(pStruct, "TransPendNextID", bFieldRead, m_nNextTransitionPendingId);
     m_nCurrentTransitionPendingId = m_pRes->ReadFieldBYTE(pStruct, "TransPendCurrID", bFieldRead, m_nCurrentTransitionPendingId);
@@ -1510,6 +1590,8 @@ int CSWSArea::SaveProperties(CResGFF* pRes, CResStruct* pStruct)
                             0x64);
     m_pAmbientSound->Save(pRes, (CResStruct*)&pStruct);
     pRes->WriteFieldBYTE((CResStruct*)&pStruct, m_bUnescapable, "Unescapable");
+    pRes->WriteFieldBYTE((CResStruct*)&pStruct, m_bDisableTransit,
+                         "DisableTransit");
     pRes->WriteFieldBYTE((CResStruct*)&pStruct, m_nPlayerRestrictMode,
                          "RestrictMode");
     pRes->WriteFieldDWORD((CResStruct*)&pStruct, m_nStealthXPMax,
@@ -1780,6 +1862,10 @@ int CSWSArea::LoadPlaceables(CResGFF* pRes, CResStruct* pStruct,
                     delete pPlaceable;
                     continue;
                 }
+                pPlaceable->m_bUseTweakColor = pRes->ReadFieldBYTE(
+                    &cStruct, "UseTweakColor", bSuccess, 0);
+                pPlaceable->m_nTweakColor = pRes->ReadFieldDWORD(
+                    &cStruct, "TweakColor", bSuccess, 0);
             }
             else if (pPlaceable->LoadPlaceable(pRes, &cStruct, 0) == 0)
             {
@@ -1881,6 +1967,7 @@ int CSWSArea::PackAreaIntoMessage(int nPlayerId, int nAreaId, int nFlags,
     pMessage->WriteFLOAT(m_fGrassQuadSize, 1.0f, 32);
     pMessage->WriteDWORD(m_nGrassDiffuse, 32);
     pMessage->WriteDWORD(m_nGrassAmbient, 32);
+    pMessage->WriteDWORD(m_nGrassEmissive, 32);
     for (i = 0; i < 4; i++)
         pMessage->WriteFLOAT(m_fGrassProbability[i], 1.0f, 32);
     pMessage->WriteBYTE(m_nChanceLightning, 8);
@@ -1895,6 +1982,7 @@ int CSWSArea::PackAreaIntoMessage(int nPlayerId, int nAreaId, int nFlags,
         pMessage->WriteBYTE(m_nWeatherOverride, 8);
         pMessage->WriteBOOL(1);
     }
+    pMessage->WriteBYTE(m_nChanceRain, 8);
     pMessage->WriteFLOAT(m_fAlphaTest, 1.0f, 32);
     pMessage->WriteINT(m_nRoomAudioCount, 32);
     for (i = 0; i < m_nRoomAudioCount; i++)
@@ -2410,7 +2498,7 @@ void CSWSArea::SaveCreatures(CResGFF* pRes, CResStruct* pStruct,
                 ((CSWSObject*)pGameObject)->AsSWSCreature();
 
             EXOXBOXASSERT(pCreature);
-            if (pCreature->m_bInParty == 0)
+            if (pCreature->m_bInParty == 0 && pCreature->m_n11FC == 0)
             {
                 pRes->AddListElement(&cStruct, &cList, 4);
                 pRes->WriteFieldDWORD(&cStruct, pCreature->m_nId,
@@ -2977,7 +3065,6 @@ int CSWSArea::NoNonWalkPolysDetailed(
     int bCheckTransparentDoors, CWalkHitInfo* pWalkHitInfo, int bCheckDoors)
 {
     int bClear = 1;
-    equal(vEnd, vStart);
     if (m_nBoundingBoxCount > 0)
     {
         Vector vMinLine, vMaxLine;
@@ -3070,11 +3157,26 @@ void CSWSArea::InitializeRoomAudioParams(int nRoomCount)
         m_pfRoomAudio = NULL;
     }
 
+    if (m_pnRoomForceRating != NULL)
+    {
+        delete[] m_pnRoomForceRating;
+        m_pnRoomForceRating = NULL;
+    }
+
+    if (m_pbRoomDisableWeather != NULL)
+    {
+        delete[] m_pbRoomDisableWeather;
+        m_pbRoomDisableWeather = NULL;
+    }
+
     if (nRoomCount != 0)
     {
         m_psRoomAudio = new CExoString[nRoomCount];
         m_pnRoomAudio = new int[nRoomCount];
         m_pfRoomAudio = new float[nRoomCount];
+        m_pnRoomForceRating = new int[nRoomCount];
+        m_pbRoomDisableWeather = new unsigned char[nRoomCount];
+        m_pnRoomAudioIndex = new unsigned char[nRoomCount];
     }
 }
 // PC 0x004E1A90
@@ -3588,6 +3690,18 @@ int CSWSArea::LoadArea(int bLoadingGame)
     m_pRes->GetTopLevelStruct(&cTopLevelStruct);
     LoadAreaHeader(&cTopLevelStruct);
     LoadRoomInfo(&cTopLevelStruct);
+    for (int nRoom = 0; nRoom < m_nRoomCount; nRoom++)
+    {
+        for (int nAudio = 0; nAudio < m_nRoomAudioCount; nAudio++)
+        {
+            if (m_psRoomAudio[nAudio].CompareNoCase(
+                    m_pRooms[nRoom].GetResRef().GetResRefStr()))
+            {
+                m_pnRoomAudioIndex[nRoom] = (unsigned char)nAudio;
+                break;
+            }
+        }
+    }
     LoadGIT(bLoadingGame);
     LoadPathPoints(&cTopLevelStruct);
     m_pRes->Release();

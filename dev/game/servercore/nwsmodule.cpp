@@ -1431,8 +1431,7 @@ int CSWSModule::SavePlayers(CResGFF* pRes, CResStruct* pStruct,
     int nPlayer;
 
     pRes->AddList(&cPlayerList, pStruct, "Mod_PlayerList");
-    int nNumPlayers = lstPlayers.num;
-    for (int i = 0; i < nNumPlayers; i++)
+    for (int i = 0; i < lstPlayers.num; i++)
     {
         if (pObjectArray->GetGameObject(lstPlayers[i], &pObject) ==
             CGameObjectArray::SUCCESS)
@@ -1473,72 +1472,20 @@ int CSWSModule::SavePlayers(CResGFF* pRes, CResStruct* pStruct,
                 pCreature->DumpToLog();
             }
         }
-        nNumPlayers = lstPlayers.num;
     }
 
     CResGFF* pModule;
     pModule = (CResGFF*)g_pExoResMan->GetResObject("Module", RESTYPE_IFO);
     CExoString sPlayerName;
     CResStruct cModuleStruct;
-    CResList cOldPlayerList;
-    CResStruct cOldPlayerStruct;
-    int bSuccess;
-    if (pModule == NULL)
-        return 0;
-    pModule->Demand();
-    pModule->GetTopLevelStruct(&cModuleStruct);
-    if (!pModule->GetList(&cOldPlayerList, &cModuleStruct, "Mod_PlayerList"))
+    if (pModule != NULL)
     {
+        pModule->Demand();
+        pModule->GetTopLevelStruct(&cModuleStruct);
         pModule->Release();
         g_pExoResMan->ReleaseResObject(pModule);
-        return 0;
     }
-    for (nPlayer = 0; nPlayer < m_lstPlayers.Count(); nPlayer++)
-    {
-        int bSaved = 0;
-        for (int nSaved = 0; nSaved < lstSavedPlayers.num; nSaved++)
-        {
-            if (lstSavedPlayers[nSaved] == nPlayer)
-            {
-                bSaved = 1;
-                break;
-            }
-        }
-        if (!bSaved)
-        {
-            if (!pModule->GetListElement(&cOldPlayerStruct, &cOldPlayerList, nPlayer))
-            {
-                g_pExoResMan->ReleaseResObject(pModule);
-                return 0;
-            }
-            unsigned long oidPlayer = pModule->ReadFieldDWORD(&cOldPlayerStruct,
-                "ObjectId", bSuccess, OBJECT_INVALID);
-            sPlayerName = pModule->ReadFieldCExoString(&cOldPlayerStruct,
-                "Mod_CommntyName", bSuccess, -1);
-            if (!lstPlayers.Contains(oidPlayer) && oidPlayer != OBJECT_INVALID)
-            {
-                CSWSPlayer* pPlayer = new CSWSPlayer(oidPlayer);
-                pPlayer->LoadCharacterFromIFO(nPlayer, 1, 0);
-                CSWSCreature* pCreature = (CSWSCreature*)pPlayer->GetGameObject();
-                pRes->AddListElement(&cPlayerStruct, &cPlayerList, GFF_STRUCT_PLAYER);
-                pRes->WriteFieldCExoString(&cPlayerStruct, sPlayerName, "Mod_CommntyName");
-                int bIsPrimaryPlayer = pPlayer->m_bIsAllowedToSave;
-                pRes->WriteFieldBYTE(&cPlayerStruct,
-                    bIsPrimaryPlayer, "Mod_IsPrimaryPlr");
-                pRes->WriteFieldCExoLocString(&cPlayerStruct,
-                    pCreature->GetStats()->m_lsFirstName, "Mod_FirstName");
-                pRes->WriteFieldCExoLocString(&cPlayerStruct,
-                    pCreature->GetStats()->m_lsLastName, "Mod_LastName");
-                pRes->WriteFieldDWORD(&cPlayerStruct, pCreature->GetId(), "ObjectId");
-                pCreature->SaveCreature(pRes, &cPlayerStruct);
-                pCreature->RemoveFromArea(0);
-                delete pPlayer;
-            }
-        }
-    }
-    pModule->Release();
-    g_pExoResMan->ReleaseResObject(pModule);
-    return 1;
+    return 0;
 }
 // PC 0x00506EF0
 int CSWSModule::GetPlayerIndexInPlayerList(CSWSPlayer* pPlayer)
@@ -2215,12 +2162,7 @@ int CSWSModule::LoadModuleStart(const CExoString& sModule, int bLoadModuleTime)
         "Mod_Creator_ID", bSuccess, 0);
     m_pModuleInfo->m_nVersion = m_pRes->ReadFieldDWORD(&cModuleStruct,
         "Mod_Version", bSuccess, 0);
-#ifdef _XBOX
-
     g_pAppManager->GetServerExoApp()->GetServerInfo()->m_sModuleList = sModule;
-#else
-    g_pAppManager->GetServerExoApp()->GetServerInfo()->SetModuleName(sModule);
-#endif
     m_lsName = m_pRes->ReadFieldCExoLocString(&cModuleStruct,
         "Mod_Name", bSuccess, CExoLocString());
     m_sDescription = m_pRes->ReadFieldCExoLocString(&cModuleStruct,
@@ -2593,14 +2535,7 @@ void CSWSModule::AddModuleResources(const CExoString& sModuleName)  // PC 0x0050
         g_pAppManager->m_pClientExoApp->GetLoadStep(1);
 
     g_pExoResMan->FindModuleDownloadedPkg(sModuleName);
-    int nProgressIncrement = (nProgressEnd - nProgress) / 7;
-#ifdef _XBOX
-    g_pExoResMan->AddEncapsulatedResourceFile(
-        g_pExoResMan->CacheResource("HD0:players", XB7_RESTYPE_ERF), CExoResMan::PRIORITY_MODULE);
-#else
-    g_pExoResMan->AddEncapsulatedResourceFile(
-        "HD0:players", CExoResMan::PRIORITY_MODULE);
-#endif
+    int nProgressIncrement = (nProgressEnd - nProgress) / 15;
     nProgress += nProgressIncrement;
     g_pAppManager->m_pClientExoApp->SetLoadBarProgress(nProgress, 1);
     UpdateScreen(0.033333335f, 0, 0);
@@ -2622,8 +2557,7 @@ void CSWSModule::AddModuleResources(const CExoString& sModuleName)  // PC 0x0050
 #ifdef _XBOX
         if (g_pExoResMan->Exists(cModuleResRef, RESTYPE_SAV, (unsigned long*)NULL))
 #else
-        CExoResMan* pResMan = g_pExoResMan;
-        if (pResMan->Exists(cModuleResRef, RESTYPE_SAV, (unsigned long*)NULL))
+        if (g_pExoResMan->Exists(cModuleResRef, RESTYPE_SAV, (unsigned long*)NULL))
 #endif
         {
             m_bIsSaveGame = 1;
@@ -2651,8 +2585,7 @@ void CSWSModule::AddModuleResources(const CExoString& sModuleName)  // PC 0x0050
 #ifdef _XBOX
     g_pExoResMan->AddResourceImageFilesAsync(sResourceName, 1, bIsSaveGame);
 #else
-    CExoResMan* pResMan = g_pExoResMan;
-    pResMan->AddResourceImageFilesAsync(sResourceName, 1, bIsSaveGame);
+    g_pExoResMan->AddResourceImageFilesAsync(sResourceName, 1, bIsSaveGame);
 #endif
 
     while (g_pExoResMan->m_nAsyncState == CExoResMan::ASYNC_LOAD_REQUESTED)
@@ -2710,19 +2643,39 @@ void CSWSModule::RemoveModuleResources(const CExoString& sModuleName)
         g_pExoResMan->RemoveEncapsulatedResourceFile(
             CExoString("MODULES:") + sResourceName);
     }
-    else if (g_pExoResMan->Exists(sResourceName + CExoString("_s"),
-                                 RESTYPE_RIM, (unsigned long*)NULL))
+    else
     {
-        if (nDownloadedPackage == 0)
+        if (g_pExoResMan->Exists(sResourceName + CExoString("_dlg"),
+                                RESTYPE_ERF, (unsigned long*)NULL))
         {
-            g_pExoResMan->RemoveResourceImageFile(
-                CExoString("MODULES:") + sResourceName + CExoString("_s"));
+            if (nDownloadedPackage == 0)
+            {
+                g_pExoResMan->RemoveEncapsulatedResourceFile(
+                    CExoString("MODULES:") + sResourceName + CExoString("_dlg"));
+            }
+            else
+            {
+                CExoString sDirectory;
+                sDirectory.Format("LIVE%d:MODULES\\", nDownloadedPackage);
+                g_pExoResMan->RemoveEncapsulatedResourceFile(
+                    sDirectory + sResourceName + CExoString("_dlg"));
+            }
         }
-        else
+        if (g_pExoResMan->Exists(sResourceName + CExoString("_s"),
+                                RESTYPE_RIM, (unsigned long*)NULL))
         {
-            CExoString sDirectory;
-            sDirectory.Format("LIVE%d:MODULES\\", nDownloadedPackage);
-            g_pExoResMan->RemoveResourceImageFile(sDirectory + sResourceName);
+            if (nDownloadedPackage == 0)
+            {
+                g_pExoResMan->RemoveResourceImageFile(
+                    CExoString("MODULES:") + sResourceName + CExoString("_s"));
+            }
+            else
+            {
+                CExoString sDirectory;
+                sDirectory.Format("LIVE%d:MODULES\\", nDownloadedPackage);
+                g_pExoResMan->RemoveResourceImageFile(
+                    sDirectory + sResourceName + CExoString("_s"));
+            }
         }
     }
     g_pExoResMan->RemoveResourceDirectory("MODULES:");

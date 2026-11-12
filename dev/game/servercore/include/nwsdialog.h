@@ -11,6 +11,7 @@ class CResStruct;
 #include "math3d.h"
 
 class CSWSObject;
+class CSWCObject;
 class CSWSDialogPlayer
 {
 public:
@@ -34,21 +35,38 @@ public:
 class CSWSDialogActiveEntry
 {
 public:
-    CSWSDialogActiveEntry() : m_nIndex(0) {}
+    CSWSDialogActiveEntry();
+    ~CSWSDialogActiveEntry();
+
+    enum { LOGIC_AND = 0, LOGIC_OR = 1 };
 
     CResRef m_cActive;
     unsigned long m_nIndex;
+    int m_nParam1;
+    int m_nParam2;
+    int m_nParam3;
+    int m_nParam4;
+    int m_nParam5;
+    CResRef m_cActive2;
+    int m_nParam1b;
+    int m_nParam2b;
+    int m_nParam3b;
+    int m_nParam4b;
+    int m_nParam5b;
+    unsigned char m_bNot;
+    unsigned char m_bNot2;
+    int m_nLogic;
+    CExoString m_sParamStrA;
+    CExoString m_sParamStrB;
 };
 
-class CSWSDialogLinkEntry
+class CSWSDialogLinkEntry : public CSWSDialogActiveEntry
 {
 public:
     CSWSDialogLinkEntry();
 
     enum { LINK_INDEX_NONE = 0 };
 
-    CResRef m_cActive;
-    unsigned long m_nIndex;
     int m_bDisplayInactive;
 };
 
@@ -67,7 +85,7 @@ public:
     ~CSWSDialogBase();
     CSWSDialogBase& operator=(const CSWSDialogBase& dialogBase);
 
-    enum SoundExistsFlags { SOUND_EXISTS_PRESENT = 1, SOUND_EXISTS_SKIP = 2 };
+    enum SoundExistsFlags { SOUND_EXISTS_PRESENT = 1, SOUND_EXISTS_SKIP = 2, SOUND_EXISTS_VARIATION = 4 };
 
     CExoString m_sSpeaker;
     CExoLocString m_lsText;
@@ -135,7 +153,7 @@ public:
     short m_nCameraAnimation;
     float m_fCameraFieldOfView;
     int m_nCameraVideoEffect;
-    int m_n24;
+    int m_nAlienVOVariation;
 };
 
 class CSWSDialogNode : public CSWSDialogBase, public CSWSDialogCamera
@@ -169,7 +187,8 @@ class CSWSDialog
 {
 public:
 
-    enum { PSEUDO_RANDOM_CAMERA_COUNT = 41 };
+    enum { PSEUDO_RANDOM_CAMERA_COUNT = 19 };
+    enum { PSEUDO_RANDOM_ALIEN_VO_COUNT = 19 };
     enum DialogCameraAngle
     {
         CAMERA_ANGLE_FIRST = 1,
@@ -214,13 +233,14 @@ public:
                        int& bSuccess);
     void LoadDialogCamera(CSWSDialogCamera& camera, CResGFF* pGFF,
                           CResStruct& resStruct, int& bSuccess);
-    void LoadDialogLinkedNode(CSWSDialogLinkEntry& link, CResGFF* pGFF,
+    void LoadDialogLinkedNode(CSWSDialogActiveEntry& link, CResGFF* pGFF,
                               CResStruct& resStruct, int& bSuccess,
                               unsigned long nReplies);
     int LoadDialog(CResGFF* pGFF, int bLoadReplies);
     void ClearAllPlayerHostileActions();
     void RunScript(CSWSObject* pObject, const CResRef& cScript);
     void InitializePsuedoRandomCameraAngles(CResGFF* pResGFF);
+    void InitializePseudoRandomAlienVOVariation(CResGFF* pResGFF);
     int SendDialogModels(CSWSObject* pOwner, unsigned long oidPlayer);
     int SendDialogEntryNode(unsigned long nPlayerId, unsigned long oidTarget,
                             unsigned long oidSpeaker, unsigned long oidListener,
@@ -280,14 +300,18 @@ public:
     int m_nPseudoRandomCameraStep;
     int m_bPseudoRandomCameraDirection;
     int m_nPseudoRandomCameraAngles[PSEUDO_RANDOM_CAMERA_COUNT];
+    int m_nPseudoRandomAlienVO;
+    int m_nPseudoRandomAlienVOStep;
+    int m_bPseudoRandomAlienVODirection;
+    int m_nPseudoRandomAlienVOVariations[PSEUDO_RANDOM_ALIEN_VO_COUNT];
     int m_nF4;
     int m_nF8;
     CResRef m_cAmbientTrack;
     int m_n10C;
     int m_n110;
     int m_n170;
-    int m_n174;
-    int m_n178;
+    int m_nAlienRaceOwner;
+    CSWCObject* m_n178;
     CExoLinkedList<unsigned long> m_lstUnequippedItems;
     CExoLinkedList<unsigned long> m_lstUnequippedHeadItems;
     int m_nOwnerAILevel;

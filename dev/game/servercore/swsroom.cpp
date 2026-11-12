@@ -58,7 +58,7 @@ int CSWSRoom::LoadWalkMesh(int nType)
     return m_pWalkMesh->LoadMesh(nType);
 }
 // PC 0x0055B0E0
-int CSWSRoom::CheckAABBWalkable(Vector vMin, Vector vMax,
+int CSWSRoom::CheckAABBWalkable(const Vector& vMin, const Vector& vMax,
                                 CSWRoomSurfaceMeshHitInfo& hitInfo)
 {
     int bResult = 0;

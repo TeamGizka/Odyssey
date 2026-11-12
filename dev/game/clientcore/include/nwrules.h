@@ -222,7 +222,7 @@ public:
         SKILL_MAX_SKILLS = 8
     };
 
-    enum { MAX_TRAP_DISARM_DC = 35 };
+    enum { MAX_TRAP_DISARM_DC = 65 };
 
     enum DifficultyOption
     {

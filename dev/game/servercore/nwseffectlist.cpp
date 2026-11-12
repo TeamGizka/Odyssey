@@ -92,6 +92,7 @@ const int CSWSEffectListHandler::EFFECT_POISON = 35;
 const int CSWSEffectListHandler::EFFECT_ABILITY_INCREASE = 36;
 const int CSWSEffectListHandler::EFFECT_ABILITY_DECREASE = 37;
 const int CSWSEffectListHandler::EFFECT_DAMAGE = 38;
+const float CSWSEffectListHandler::PLACEABLE_AUTO_OPEN_DISTANCE = 3.0f;
 const int CSWSEffectListHandler::EFFECT_HEAL = 39;
 const int CSWSEffectListHandler::EFFECT_LINK = 40;
 const int CSWSEffectListHandler::EFFECT_HASTE_INTERNAL = 41;
@@ -1463,13 +1464,12 @@ int CSWSEffectListHandler::OnApplyKnockdown(CSWSObject* pObject,
                 CSWSCreature::FEEDBACK_KNOCKDOWN_IMMUNITY, pMessageData);
             return 1;
         }
-        if (pCreature->m_bPlotObject != 0)
+        if (pCreature->m_bPlotObject != 0 ||
+            pCreature->m_bDebilitated == STATE_KNOCKDOWN)
         {
             return 1;
         }
-        if (!(pCreature->GetDead() != 0 ||
-              pCreature->GetIsPCDying() != 0 ||
-              pCreature->GetDeadTemp() != 0))
+        if (pCreature->GetDead() == 0 && pCreature->GetDeadTemp() == 0)
         {
             pCreature->m_pcCombatRound->SetRoundPaused(1, oidCreator);
             pCreature->m_pcCombatRound->SetPauseTimer(0, 1);
@@ -1501,6 +1501,12 @@ int CSWSEffectListHandler::OnApplyKnockdown(CSWSObject* pObject,
             {
                 pCreature->SetAnimation(ANIMATION_KNOCKDOWN_FRONT);
             }
+            CGameEffect* pStateEffect = new CGameEffect(pEffect);
+            pStateEffect->m_nType = EFFECT_SETSTATE;
+            pStateEffect->m_nSubType = CGameEffect::DURATION_TYPE_TEMPORARY |
+                (pStateEffect->m_nSubType & ~CGameEffect::DURATION_MASK);
+            pStateEffect->SetInteger(0, STATE_KNOCKDOWN);
+            pCreature->ApplyEffect(pStateEffect, 0, 0);
         }
     }
     return 0;
@@ -1770,6 +1776,8 @@ int CSWSEffectListHandler::OnApplySetStateInternal(CSWSObject* pObject,
         switch (nState)
         {
         case STATE_STUN:
+        case STATE_VARIANT_18:
+        case STATE_VARIANT_19:
             pAIStateEffect = new CGameEffect(pEffect);
             pAIStateEffect->m_nType = EFFECT_SET_AI_STATE;
             pAIStateEffect->SetInteger(0, SETSTATE_AI_NO_MOVEMENT);
@@ -1850,11 +1858,19 @@ int CSWSEffectListHandler::OnApplySetStateInternal(CSWSObject* pObject,
             pCreature->ApplyEffect(pAIStateEffect, bLoadingModule, 0);
             pCreature->RecomputeAmbientAnimationState();
             break;
+        case STATE_KNOCKDOWN:
+        case STATE_VARIANT_15:
+        case STATE_VARIANT_17:
+            pAIStateEffect = new CGameEffect(pEffect);
+            pAIStateEffect->m_nType = EFFECT_SET_AI_STATE;
+            pAIStateEffect->SetInteger(0, SETSTATE_AI_NO_MOVEMENT);
+            pCreature->ApplyEffect(pAIStateEffect, bLoadingModule, 0);
+            pCreature->RecomputeAmbientAnimationState();
+            break;
         }
     }
-    unsigned long oidCreator = pEffect->m_oidCreator;
     CSWSCreature* pCreator = g_pAppManager->GetServerExoApp()
-        ->GetCreatureByGameObjectID(oidCreator);
+        ->GetCreatureByGameObjectID(pEffect->m_oidCreator);
     if (bActionsCleared == 0 && pCreator != NULL)
     {
         CSWSCombatAttackData* pAttack = pCreator->m_pcCombatRound->GetAttack(
@@ -1924,7 +1940,7 @@ int CSWSEffectListHandler::OnApplyMovementSpeedIncrease(CSWSObject* pObject,
             pEffect->SetInteger(0, pEffect->GetInteger(0) + 100);
         }
         fFactor = pEffect->GetInteger(0) * 0.01f;
-        pCreature->SetMovementRateFactor(pCreature->GetMovementRateFactor() *
+        pCreature->SetMovementRateFactor(pCreature->GetMovementRateFactor(0) *
                                          fFactor);
     }
     return 0;
@@ -1949,7 +1965,7 @@ int CSWSEffectListHandler::OnApplyMovementSpeedDecrease(CSWSObject* pObject,
             return 1;
         }
         fFactor = 1.0f - pEffect->GetInteger(0) * 0.01f;
-        pCreature->SetMovementRateFactor(pCreature->GetMovementRateFactor() *
+        pCreature->SetMovementRateFactor(pCreature->GetMovementRateFactor(0) *
                                          fFactor);
     }
     return 0;
@@ -2479,6 +2495,7 @@ int CSWSEffectListHandler::OnApplyDamage(CSWSObject* pObject,
 
                 if (nDamage > 0)
                 {
+                    pCreature->RemoveMindTrickEffects();
                     CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
                     if (pClient->GetPlayerCreatureId() ==
                         pClient->ServerToClientObjectId(oidCreator))
@@ -2706,10 +2723,19 @@ int CSWSEffectListHandler::OnApplyDamage(CSWSObject* pObject,
                             if (poidOpener != NULL)
                             {
                                 *poidOpener = g_pAppManager->GetServerExoApp()->GetPlayerCreatureId();
-                                g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                                    0, 0, *poidOpener, pObject->GetId(), CServerAIMaster::EVENT_PLAY_ANIMATION, (void*)PLACEABLE_ANIMATION_OPEN);
-                                g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                                    0, 1000, *poidOpener, pObject->GetId(), CServerAIMaster::EVENT_OPEN_OBJECT, poidOpener);
+                                CSWSObject* pPlayer = (CSWSObject*)g_pAppManager->GetServerExoApp()->GetGameObject(*poidOpener);
+                                if (pPlayer != NULL)
+                                {
+                                    Vector vPlayerPosition = pPlayer->m_vPosition;
+                                    Vector vPosition = pObject->m_vPosition;
+                                    if (magnitude(vPosition - vPlayerPosition) < PLACEABLE_AUTO_OPEN_DISTANCE)
+                                    {
+                                        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                                            0, 0, *poidOpener, pObject->GetId(), CServerAIMaster::EVENT_PLAY_ANIMATION, (void*)PLACEABLE_ANIMATION_OPEN);
+                                        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                                            0, 1000, *poidOpener, pObject->GetId(), CServerAIMaster::EVENT_OPEN_OBJECT, poidOpener);
+                                    }
+                                }
                             }
                             else
                                 pObject->AsSWSPlaceable()->OpenInventory(
@@ -2748,11 +2774,8 @@ int CSWSEffectListHandler::OnApplyPoison(CSWSObject* pObject,
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     if (pCreature != NULL)
     {
-        if (pCreature->m_bPlotObject != 0)
-        {
-            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime( 0, 0, pEffect->GetCreator(), pCreature->GetId(), CServerAIMaster::EVENT_REMOVE_EFFECT, pEffect);
-        }
-        else if (pCreature->GetDead() != 0 || pCreature->GetDeadTemp() != 0 || pCreature->GetPoisoned() == 1)
+        if (pCreature->m_bPlotObject != 0 || pCreature->GetDead() != 0 ||
+            pCreature->GetDeadTemp() != 0 || pCreature->GetPoisoned() == 1)
         {
             g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                 0, 0, pEffect->GetCreator(), pCreature->GetId(),
@@ -2811,6 +2834,17 @@ int CSWSEffectListHandler::OnApplyPoison(CSWSObject* pObject,
                             nDcSave, CSWSCreature::SAVING_THROW_TYPE_POISON,
                             pEffect->GetCreator(), 1, 0, 0) != 0)
                     {
+                        if (pEffect->m_nSpellId == SPELL_ID_7 ||
+                            pEffect->m_nSpellId == SPELL_ID_38)
+                        {
+                            CGameEffect* pResistedEffect = new CGameEffect(1);
+                            if (pResistedEffect != NULL)
+                            {
+                                pResistedEffect->m_nType = EFFECT_FORCERESISTED;
+                                pResistedEffect->SetObjectID(0, pEffect->GetCreator());
+                                pCreature->ApplyEffect(pResistedEffect, 0, 0);
+                            }
+                        }
                         g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                             0, 0, pEffect->GetCreator(), pCreature->GetId(),
                             CServerAIMaster::EVENT_REMOVE_EFFECT, pEffect);
@@ -4301,7 +4335,7 @@ int CSWSEffectListHandler::OnApplyHealForcePoints(CSWSObject* pObject,
         {
             nForcePoints = pCreature->GetMaxForcePoints();
         }
-        pCreature->m_pStats->m_nCurrentForcePoints = nForcePoints;
+        pCreature->GetStats()->m_nCurrentForcePoints = nForcePoints;
         CSWCCMessageData* pMessageData = new CSWCCMessageData;
         pMessageData->SetObjectID(0, pCreature->m_nId);
         pMessageData->SetInteger(0, nHeal);
@@ -4409,7 +4443,11 @@ int CSWSEffectListHandler::OnApplyLightsaberThrow(CSWSObject* pObject,
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     if (pCreature != NULL)
     {
-        pCreature->m_bLightsaberThrow = 1;
+        if (!pCreature->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_162, 0) &&
+            !pCreature->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_163, 0))
+        {
+            pCreature->m_bLightsaberThrow = 1;
+        }
         CSWInventory* pInventory = pCreature->m_pInventory;
         if (pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND) != NULL)
         {
@@ -4792,18 +4830,22 @@ int CSWSEffectListHandler::OnApplyPureGoodPowers(CSWSObject* pObject,
             for (nClassIndex = 0; nClassIndex < pStats->m_nClassCount; nClassIndex++)
             {
                 nClass = pStats->GetClass(nClassIndex);
-                if (nClass == CSWClass::CCLASS_JEDICONSULAR)
+                if (nClass == CSWClass::CCLASS_JEDICONSULAR ||
+                    nClass == CSWClass::CCLASS_JEDIMASTER ||
+                    nClass == CSWClass::CCLASS_SITHLORD)
                 {
                     int nOldForcePoints = pCreature->GetMaxForcePoints();
                     pBonusEffect = new CGameEffect(pEffect);
                     pBonusEffect->m_nType = EFFECT_ABILITY_INCREASE;
-                    pBonusEffect->SetInteger(0, CSWRules::ABILITY_CHARISMA);
+                    pBonusEffect->SetInteger(0, CSWRules::ABILITY_WISDOM);
                     pBonusEffect->SetInteger(1, PURE_GOOD_ABILITY_BONUS);
                     pCreature->CSWSObject::ApplyEffect(pBonusEffect, 0, 0);
                     int nNewForcePoints = pCreature->GetMaxForcePoints();
                     pStats->m_nCurrentForcePoints += nNewForcePoints - nOldForcePoints;
                 }
-                else if (nClass == CSWClass::CCLASS_JEDIGUARDIAN)
+                else if (nClass == CSWClass::CCLASS_JEDIGUARDIAN ||
+                         nClass == CSWClass::CCLASS_JEDIWEAPONMASTER ||
+                         nClass == CSWClass::CCLASS_SITHMARAUDER)
                 {
                     pBonusEffect = new CGameEffect(pEffect);
                     pBonusEffect->m_nType = EFFECT_ABILITY_INCREASE;
@@ -4811,7 +4853,9 @@ int CSWSEffectListHandler::OnApplyPureGoodPowers(CSWSObject* pObject,
                     pBonusEffect->SetInteger(1, PURE_GOOD_ABILITY_BONUS);
                     pCreature->CSWSObject::ApplyEffect(pBonusEffect, 0, 0);
                 }
-                else if (nClass == CSWClass::CCLASS_JEDISENTINEL)
+                else if (nClass == CSWClass::CCLASS_JEDISENTINEL ||
+                         nClass == CSWClass::CCLASS_JEDIWATCHMAN ||
+                         nClass == CSWClass::CCLASS_SITHASSASSIN)
                 {
                     short nOldHitPoints = pCreature->GetMaxHitPoints(0);
                     pBonusEffect = new CGameEffect(pEffect);
@@ -4865,11 +4909,15 @@ int CSWSEffectListHandler::OnApplyPureEvilPowers(CSWSObject* pObject,
             for (nClassIndex = 0; nClassIndex < pStats->m_nClassCount; nClassIndex++)
             {
                 nClass = pStats->GetClass(nClassIndex);
-                if (nClass == CSWClass::CCLASS_JEDICONSULAR)
+                if (nClass == CSWClass::CCLASS_JEDICONSULAR ||
+                    nClass == CSWClass::CCLASS_SITHLORD ||
+                    nClass == CSWClass::CCLASS_JEDIMASTER)
                 {
                     pStats->m_nCurrentForcePoints += PURE_EVIL_FORCE_POINT_BONUS;
                 }
-                else if (nClass == CSWClass::CCLASS_JEDIGUARDIAN)
+                else if (nClass == CSWClass::CCLASS_JEDIGUARDIAN ||
+                         nClass == CSWClass::CCLASS_SITHMARAUDER ||
+                         nClass == CSWClass::CCLASS_JEDIWEAPONMASTER)
                 {
                     pBonusEffect = new CGameEffect(pEffect);
                     pBonusEffect->m_nType = EFFECT_DAMAGE_INCREASE;
@@ -4886,12 +4934,14 @@ int CSWSEffectListHandler::OnApplyPureEvilPowers(CSWSObject* pObject,
                     pBonusEffect->SetInteger(5, DAMAGE_EFFECT_WEAPON_SECOND);
                     pCreature->CSWSObject::ApplyEffect(pBonusEffect, 0, 0);
                 }
-                else if (nClass == CSWClass::CCLASS_JEDISENTINEL)
+                else if (nClass == CSWClass::CCLASS_JEDISENTINEL ||
+                         nClass == CSWClass::CCLASS_SITHASSASSIN ||
+                         nClass == CSWClass::CCLASS_JEDIWATCHMAN)
                 {
                     pBonusEffect = new CGameEffect(pEffect);
-                    pBonusEffect->m_nType = EFFECT_IMMUNITY;
-                    pBonusEffect->SetInteger(0, CSWSCreatureStats::IMMUNITY_TYPE_POISON);
-                    pBonusEffect->SetInteger(1, (unsigned char)g_pRules->m_nNumRaces);
+                    pBonusEffect->m_nType = EFFECT_ABILITY_INCREASE;
+                    pBonusEffect->SetInteger(0, CSWRules::ABILITY_DEXTERITY);
+                    pBonusEffect->SetInteger(1, PURE_EVIL_ABILITY_BONUS);
                     pCreature->CSWSObject::ApplyEffect(pBonusEffect, 0, 0);
                 }
             }
@@ -4979,6 +5029,7 @@ int CSWSEffectListHandler::OnApplyHeal(CSWSObject* pObject,
 {
     CSWSCreature* pCreature;
     int nHeal;
+    int bNoFeedback = pEffect->GetInteger(HEAL_INTEGER_NO_FEEDBACK);
 
     if (pObject->AsSWSCreature() != NULL)
     {
@@ -5023,22 +5074,25 @@ int CSWSEffectListHandler::OnApplyHeal(CSWSObject* pObject,
                 }
                 pCreature->SetCurrentHitPoints(
                     pCreature->GetCurrentHitPoints(1) + nHeal);
-                CSWCCMessageData* pData = new CSWCCMessageData;
-                CSWCCMessageData* pCreatorData = new CSWCCMessageData;
-                pData->SetObjectID(0, pCreature->GetId());
-                pData->SetInteger(0, nHeal);
-                pData->CopyTo(pCreatorData);
-                pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_HEALED, pData);
-                unsigned long oidCreator = pEffect->m_oidCreator;
-                CSWSCreature* pCreator = g_pAppManager->GetServerExoApp()->
-                    GetCreatureByGameObjectID(oidCreator);
-                if (pCreator != NULL && pCreator != pCreature)
+                if (bNoFeedback == 0)
                 {
-                    pCreator->SendFeedbackMessage(CSWSCreature::FEEDBACK_HEALED, pCreatorData);
-                }
-                else
-                {
-                    delete pCreatorData;
+                    CSWCCMessageData* pData = new CSWCCMessageData;
+                    CSWCCMessageData* pCreatorData = new CSWCCMessageData;
+                    pData->SetObjectID(0, pCreature->GetId());
+                    pData->SetInteger(0, nHeal);
+                    pData->CopyTo(pCreatorData);
+                    pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_HEALED, pData);
+                    unsigned long oidCreator = pEffect->m_oidCreator;
+                    CSWSCreature* pCreator = g_pAppManager->GetServerExoApp()->
+                        GetCreatureByGameObjectID(oidCreator);
+                    if (pCreator != NULL && pCreator != pCreature)
+                    {
+                        pCreator->SendFeedbackMessage(CSWSCreature::FEEDBACK_HEALED, pCreatorData);
+                    }
+                    else
+                    {
+                        delete pCreatorData;
+                    }
                 }
                 int nIndex = 0;
                 while (nIndex < pCreature->m_lstEffects.num &&
@@ -5129,8 +5183,10 @@ int CSWSEffectListHandler::OnApplyDeath(CSWSObject* pObject,
                     oidCreator, CServerAIMaster::REPUTATION_ACTION_DEATH);
             int bDestroy = pEffect->GetInteger(0);
             pEffect->GetInteger(1);
+            int bNoFadeAway = pEffect->GetInteger(DEATH_INTEGER_NO_FADE_AWAY);
             pCreature->m_n154 = oidCreator;
-            pCreature->ApplyDeathExperience();
+            if (!bNoFadeAway)
+                pCreature->ApplyDeathExperience();
             if (!pCreature->GetInParty())
             {
                 unsigned long oidCreature = pCreature->GetId();
@@ -5201,10 +5257,13 @@ int CSWSEffectListHandler::OnApplyDeath(CSWSObject* pObject,
             if (!pCreature->GetDeadTemp())
             {
                 if (!bDestroy)
-                    g_pAppManager->GetServerExoApp()->GetServerAIMaster()
-                        ->AddEventDeltaTime(0, (unsigned long)fDestroyObjectDelay,
-                            pEffect->GetCreator(), pObject->GetId(),
-                            CServerAIMaster::EVENT_DESTROY_OBJECT, NULL);
+                {
+                    if (!bNoFadeAway)
+                        g_pAppManager->GetServerExoApp()->GetServerAIMaster()
+                            ->AddEventDeltaTime(0, (unsigned long)fDestroyObjectDelay,
+                                pEffect->GetCreator(), pObject->GetId(),
+                                CServerAIMaster::EVENT_DESTROY_OBJECT, NULL);
+                }
                 else
                 {
                     CGameEffect* pVisualEffect = new CGameEffect(1);
@@ -5214,10 +5273,11 @@ int CSWSEffectListHandler::OnApplyDeath(CSWSObject* pObject,
                         CGameEffect::DURATION_TYPE_INSTANTANEOUS;
                     pVisualEffect->SetInteger(0, VFX_DEATH_DESTRUCTION);
                     pCreature->AsSWSCreature()->ApplyEffect(pVisualEffect, bLoadingModule, 0);
-                    g_pAppManager->GetServerExoApp()->GetServerAIMaster()
-                        ->AddEventDeltaTime(0, (unsigned long)fDestroyObjectDelay,
-                            pEffect->GetCreator(), pObject->GetId(),
-                            CServerAIMaster::EVENT_DESTROY_OBJECT, NULL);
+                    if (!bNoFadeAway)
+                        g_pAppManager->GetServerExoApp()->GetServerAIMaster()
+                            ->AddEventDeltaTime(0, (unsigned long)fDestroyObjectDelay,
+                                pEffect->GetCreator(), pObject->GetId(),
+                                CServerAIMaster::EVENT_DESTROY_OBJECT, NULL);
                     if (pCreature->m_oidSpawnedBy != OBJECT_INVALID)
                     {
                         CSWSEncounter* pEncounter = g_pAppManager->GetServerExoApp()
@@ -5391,6 +5451,7 @@ int CSWSEffectListHandler::OnRemoveACIncrease(CSWSObject* pObject,
     int nAlignmentGroup2;
     int nIndex;
     int nMaximum;
+    int nDamageFlags;
 
     if (pObject->AsSWSCreature() != NULL)
     {
@@ -5402,6 +5463,7 @@ int CSWSEffectListHandler::OnRemoveACIncrease(CSWSObject* pObject,
             nRace = pEffect->GetInteger(AC_INTEGER_RACIAL_GROUP);
             nAlignmentGroup1 = pEffect->GetInteger(AC_INTEGER_ALIGNMENT_GROUP1);
             nAlignmentGroup2 = pEffect->GetInteger(AC_INTEGER_ALIGNMENT_GROUP2);
+            nDamageFlags = pEffect->GetInteger(AC_INTEGER_DAMAGE_FLAGS);
             pEffects = &pCreature->m_lstEffects;
             nIndex = pCreature->m_pStats->m_nACEffectIndex;
             if (nRace == (unsigned char)g_pRules->m_nNumRaces &&
@@ -5409,7 +5471,9 @@ int CSWSEffectListHandler::OnRemoveACIncrease(CSWSObject* pObject,
             {
                 if (nType == AC_DODGE_BONUS)
                 {
-                    pCreature->m_pStats->m_nACDodgeBonus -= nBonus;
+                    if (nDamageFlags == DAMAGE_FLAG_PHYSICAL ||
+                        nDamageFlags == AC_VS_DAMAGE_TYPE_ALL)
+                        pCreature->m_pStats->m_nACDodgeBonus -= nBonus;
                 }
                 else
                 {
@@ -5806,6 +5870,30 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
                     return 1;
                 }
             }
+            else if (nState == STATE_VARIANT_18)
+            {
+                if (bIgnoreImmunity == 0 &&
+                    pStats->GetEffectImmunity(
+                        CSWSCreatureStats::IMMUNITY_TYPE_MIND_SPELLS, pCreator) != 0)
+                {
+                    pMessageData = new CSWCCMessageData;
+                    pMessageData->SetObjectID(0, pObject->GetId());
+                    if (pCreator != NULL)
+                    {
+                        pCreatorMessageData = new CSWCCMessageData;
+                        pMessageData->CopyTo(pCreatorMessageData);
+                        pCreator->SendFeedbackMessage(
+                            CSWSCreature::FEEDBACK_MIND_SPELLS_IMMUNITY, pCreatorMessageData);
+                        if (pAttack != NULL)
+                        {
+                            pAttack->m_Extra4.m_bStateImmune = 1;
+                        }
+                    }
+                    pObject->AsSWSCreature()->SendFeedbackMessage(
+                        CSWSCreature::FEEDBACK_MIND_SPELLS_IMMUNITY, pMessageData);
+                    return 1;
+                }
+            }
             else if (nState == STATE_STUN)
             {
                 if (bIgnoreImmunity == 0 &&
@@ -5855,10 +5943,34 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
                     return 1;
                 }
             }
+            else if (nState == STATE_VARIANT_16)
+            {
+                if (pStats->GetEffectImmunity(
+                    CSWSCreatureStats::IMMUNITY_TYPE_33, pCreator) == 1)
+                {
+                    pMessageData = new CSWCCMessageData;
+                    pMessageData->SetObjectID(0, pObject->GetId());
+                    if (pCreator != NULL)
+                    {
+                        pCreatorMessageData = new CSWCCMessageData;
+                        pMessageData->CopyTo(pCreatorMessageData);
+                        pCreator->SendFeedbackMessage(
+                            CSWSCreature::FEEDBACK_UNKNOWN_231, pCreatorMessageData);
+                        if (pAttack != NULL)
+                        {
+                            pAttack->m_Extra4.m_bStateImmune = 1;
+                        }
+                    }
+                    pObject->AsSWSCreature()->SendFeedbackMessage(
+                        CSWSCreature::FEEDBACK_UNKNOWN_231, pMessageData);
+                    return 1;
+                }
+            }
             else if (nState == STATE_FEAR)
             {
                 if (pStats->GetEffectImmunity(
-                    CSWSCreatureStats::IMMUNITY_TYPE_FEAR, pCreator) != 0)
+                        CSWSCreatureStats::IMMUNITY_TYPE_FEAR, pCreator) != 0 ||
+                    pStats->HasFeat(CSWFeat::FEAT_UNKNOWN_200) != 0)
                 {
                     pMessageData = new CSWCCMessageData;
                     pMessageData->SetObjectID(0, pObject->GetId());
@@ -5881,7 +5993,8 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
             else if (nState == STATE_HORRIFIED)
             {
                 if (bIgnoreImmunity == 0 &&
-                    pStats->HasFeat(CSWFeat::FEAT_FORCE_IMMUNITY_FEAR) != 0)
+                    (pStats->HasFeat(CSWFeat::FEAT_FORCE_IMMUNITY_FEAR) != 0 ||
+                     pStats->HasFeat(CSWFeat::FEAT_UNKNOWN_200) != 0))
                 {
                     pMessageData = new CSWCCMessageData;
                     pMessageData->SetObjectID(0, pObject->GetId());
@@ -5898,6 +6011,30 @@ int CSWSEffectListHandler::OnApplySetState(CSWSObject* pObject,
                     }
                     pObject->AsSWSCreature()->SendFeedbackMessage(
                         CSWSCreature::FEEDBACK_HORRIFIED_IMMUNITY, pMessageData);
+                    return 1;
+                }
+            }
+            else if (nState == STATE_KNOCKDOWN)
+            {
+                if (bIgnoreImmunity == 0 &&
+                    pStats->GetEffectImmunity(
+                        CSWSCreatureStats::IMMUNITY_TYPE_KNOCKDOWN, pCreator) != 0)
+                {
+                    pMessageData = new CSWCCMessageData;
+                    pMessageData->SetObjectID(0, pObject->GetId());
+                    if (pCreator != NULL)
+                    {
+                        pCreatorMessageData = new CSWCCMessageData;
+                        pMessageData->CopyTo(pCreatorMessageData);
+                        pCreator->SendFeedbackMessage(
+                            CSWSCreature::FEEDBACK_KNOCKDOWN_IMMUNITY, pCreatorMessageData);
+                        if (pAttack != NULL)
+                        {
+                            pAttack->m_Extra4.m_bStateImmune = 1;
+                        }
+                    }
+                    pObject->AsSWSCreature()->SendFeedbackMessage(
+                        CSWSCreature::FEEDBACK_KNOCKDOWN_IMMUNITY, pMessageData);
                     return 1;
                 }
             }
@@ -7484,6 +7621,7 @@ int CSWSEffectListHandler::OnApplyEffectIcon(CSWSObject* pObject,
         CExoString sIconResRef;
         int nPriority;
         int nGood;
+        int nNameStrRef;
         if (!g_pRules->Get2DArrays()->GetEffectIcon()->GetCExoStringEntry(
                 nIcon, "IconResRef", &sIconResRef))
         {
@@ -7491,7 +7629,19 @@ int CSWSEffectListHandler::OnApplyEffectIcon(CSWSObject* pObject,
             return 1;
         }
         if (!g_pRules->Get2DArrays()->GetEffectIcon()->GetINTEntry(
+                nIcon, "Good", &nGood))
+        {
+            delete pIcon;
+            return 1;
+        }
+        if (!g_pRules->Get2DArrays()->GetEffectIcon()->GetINTEntry(
                 nIcon, "Priority", &nPriority))
+        {
+            delete pIcon;
+            return 1;
+        }
+        if (!g_pRules->Get2DArrays()->GetEffectIcon()->GetINTEntry(
+                nIcon, "NameStrRef", &nNameStrRef))
         {
             delete pIcon;
             return 1;
@@ -7503,6 +7653,7 @@ int CSWSEffectListHandler::OnApplyEffectIcon(CSWSObject* pObject,
         pIcon->m_sIconResRef = sIconResRef;
         pIcon->m_bGood = (nGood != 0);
         pIcon->m_nPriority = (unsigned short)nPriority;
+        pIcon->m_n20 = nNameStrRef;
         for (i = 0; i < pIcons->num; ++i)
         {
             if ((*pIcons)[i]->m_nPriority > nPriority)

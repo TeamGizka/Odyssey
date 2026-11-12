@@ -555,107 +555,82 @@ void CSWSEncounter::BuildInitialSpawnList(CEncounterListEntry* pEntries,
                                          int& nCount)
 {
     NWSENCOUNTER_TRACE();
-    float fMargin = (m_fSpawnPool - m_fSpawnPoolActive) /
-                    ENCOUNTER_SPAWN_POOL_ALLOWANCE_DIVISOR;
-    float fRemaining = m_fSpawnPool - m_fSpawnPoolActive;
-    int nIndex = 0;
-    CEncounterListEntry cEntry;
-
-    while (nIndex < m_nSpawnEntryCount)
+    int nToSpawn = m_nRecommendedCreatures +
+                   rand() % (m_nMaxCreatures - m_nRecommendedCreatures + 1);
+    if (nToSpawn > 0)
     {
-        if (!(nCount < m_nMaxCreatures - m_nNumberSpawned &&
-              fRemaining > 0.0f))
+        CEncounterListEntry cEntry;
+        int bAllSingleSpawn = 1;
+        int nIndex;
+
+        for (nIndex = 0; nIndex < m_nSpawnEntryCount; nIndex++)
         {
-            break;
-        }
-        cEntry = m_pSpawnEntries[nIndex];
-        if (cEntry.m_bSingleSpawn == 1 && cEntry.m_bSpawned == 0)
-        {
-            pEntries[nCount].m_cResRef = cEntry.m_cResRef;
-            pEntries[nCount].m_fSpawnPoolCost = cEntry.m_fSpawnPoolCost;
-            pEntries[nCount++].m_fChallengeRating = cEntry.m_fChallengeRating;
-            cEntry.m_bSpawned = 1;
-            nIndex++;
-            continue;
-        }
-        if (cEntry.m_fChallengeRating != 0.0f &&
-                 !(cEntry.m_fSpawnPoolCost > fRemaining + fMargin))
-        {
-            if (cEntry.m_fChallengeRating ==
-                m_pSpawnEntries[nIndex + 1].m_fChallengeRating)
+            cEntry = m_pSpawnEntries[nIndex];
+            if (cEntry.m_bSingleSpawn == 0)
             {
-                int nRange = 1;
-                int nSingles = 1;
-                int nLast = nIndex + 1;
-                int nUsed = 0;
-                cEntry.m_bSelected = 0;
-                for (; nLast < m_nSpawnEntryCount; nLast++)
-                {
-                    if (m_pSpawnEntries[nLast].m_fChallengeRating !=
-                        m_pSpawnEntries[nIndex].m_fChallengeRating)
-                    {
-                        nLast--;
-                        break;
-                    }
-                    m_pSpawnEntries[nLast].m_bSelected = 0;
-                    if (m_pSpawnEntries[nLast].m_bSingleSpawn)
-                    {
-                        nSingles++;
-                    }
-                    nRange++;
-                }
-                int nPicked = -1;
-                while (m_pSpawnEntries[nPicked].m_fSpawnPoolCost <=
-                           (fRemaining + fMargin) &&
-                       nCount < m_nMaxCreatures - m_nNumberSpawned)
-                {
-                    nPicked = nIndex + rand() % nRange;
-                    if (m_pSpawnEntries[nPicked].m_bSingleSpawn == 0 ||
-                        m_pSpawnEntries[nPicked].m_bSpawned == 0)
-                    {
-                        pEntries[nCount].m_cResRef = m_pSpawnEntries[nPicked].m_cResRef;
-                        pEntries[nCount].m_fSpawnPoolCost =
-                            m_pSpawnEntries[nPicked].m_fSpawnPoolCost;
-                        pEntries[nCount++].m_fChallengeRating =
-                            m_pSpawnEntries[nPicked].m_fChallengeRating;
-                        m_pSpawnEntries[nPicked].m_bSpawned = 1;
-                        fRemaining -= m_pSpawnEntries[nPicked].m_fSpawnPoolCost;
-                    }
-                    if (m_pSpawnEntries[nPicked].m_bSelected == 0)
-                    {
-                        m_pSpawnEntries[nPicked].m_bSelected = 1;
-                        nUsed++;
-                    }
-                    if (nRange == nSingles && nUsed == nRange)
-                    {
-                        break;
-                    }
-                }
-                nIndex = nLast + 1;
-                continue;
+                bAllSingleSpawn = 0;
             }
-            else
+            else if (cEntry.m_bSingleSpawn == 1 && cEntry.m_bSpawned == 0)
             {
-                while (cEntry.m_fSpawnPoolCost <= fRemaining + fMargin &&
-                       nCount < m_nMaxCreatures - m_nNumberSpawned &&
-                       (cEntry.m_bSingleSpawn == 0 || cEntry.m_bSpawned == 0))
+                pEntries[nCount].m_cResRef = cEntry.m_cResRef;
+                pEntries[nCount].m_fSpawnPoolCost = cEntry.m_fSpawnPoolCost;
+                pEntries[nCount++].m_fChallengeRating = cEntry.m_fChallengeRating;
+                nToSpawn--;
+                cEntry.m_bSpawned = 1;
+            }
+            if (nToSpawn == 0)
+            {
+                return;
+            }
+        }
+        if (bAllSingleSpawn)
+        {
+            return;
+        }
+
+        for (nIndex = 0; nIndex < m_nSpawnEntryCount; nIndex++)
+        {
+            cEntry = m_pSpawnEntries[nIndex];
+            if (cEntry.m_bSingleSpawn == 0)
+            {
+                for (int nGuaranteed = 0; nGuaranteed < cEntry.m_nGuaranteedCount;
+                     nGuaranteed++)
                 {
                     pEntries[nCount].m_cResRef = cEntry.m_cResRef;
                     pEntries[nCount].m_fSpawnPoolCost = cEntry.m_fSpawnPoolCost;
                     pEntries[nCount++].m_fChallengeRating = cEntry.m_fChallengeRating;
-                    fRemaining -= cEntry.m_fSpawnPoolCost;
-                    cEntry.m_bSpawned = 1;
+                    if (--nToSpawn == 0)
+                    {
+                        return;
+                    }
                 }
             }
         }
-        nIndex++;
+
+        CEncounterListEntry* pMultiSpawn =
+            new CEncounterListEntry[m_nSpawnEntryCount];
+        int nMultiSpawn = 0;
+        for (nIndex = 0; nIndex < m_nSpawnEntryCount; nIndex++)
+        {
+            if (m_pSpawnEntries[nIndex].m_bSingleSpawn == 0)
+            {
+                pMultiSpawn[nMultiSpawn++] = m_pSpawnEntries[nIndex];
+            }
+        }
+        for (; nToSpawn > 0; nToSpawn--)
+        {
+            cEntry = pMultiSpawn[rand() % nMultiSpawn];
+            pEntries[nCount].m_cResRef = cEntry.m_cResRef;
+            pEntries[nCount].m_fSpawnPoolCost = cEntry.m_fSpawnPoolCost;
+            pEntries[nCount++].m_fChallengeRating = cEntry.m_fChallengeRating;
+        }
+        delete[] pMultiSpawn;
     }
 }
 // PC 0x0056C810
 int CSWSEncounter::SaveEncounter(CResGFF* pRes, CResStruct* pStruct)
 {
     CResStruct* pTopStruct;
-    Vector vVertex;
     CResList lstList;
     int nIndex;
 
@@ -706,7 +681,7 @@ int CSWSEncounter::SaveEncounter(CResGFF* pRes, CResStruct* pStruct)
         pRes->AddList(&lstList, pTopStruct, "Geometry");
         for (nIndex = 0; nIndex < m_nActivateAreaVertexDataSize; nIndex++)
         {
-            vVertex = m_pActivateAreaVertices[nIndex];
+            Vector vVertex = m_pActivateAreaVertices[nIndex];
             vVertex -= m_vPosition;
             pRes->AddListElement((CResStruct*)&pStruct, &lstList, nIndex);
             pRes->WriteFieldFLOAT((CResStruct*)&pStruct, vVertex.m_fX, "X");
@@ -729,6 +704,9 @@ int CSWSEncounter::SaveEncounter(CResGFF* pRes, CResStruct* pStruct)
             pRes->WriteFieldBYTE((CResStruct*)&pStruct,
                                  m_pSpawnEntries[nIndex].m_bSingleSpawn,
                                  "SingleSpawn");
+            pRes->WriteFieldINT((CResStruct*)&pStruct,
+                                m_pSpawnEntries[nIndex].m_nGuaranteedCount,
+                                "GuaranteedCount");
         }
     }
     if (m_nSpawnPointCount > 0)
@@ -963,9 +941,10 @@ int CSWSEncounter::ReadEncounterFromGff(CResGFF* pRes, CResStruct* pStruct,
                 CResRef cDefault("");
                 m_pSpawnEntries[nCreature].m_cResRef = pRes->ReadFieldCResRef(&stCreature, "ResRef", bSuccess, cDefault);
                 m_pSpawnEntries[nCreature].m_fChallengeRating = pRes->ReadFieldFLOAT(&stCreature, "CR", bSuccess, 0.0f);
-                m_pSpawnEntries[nCreature].m_fSpawnPoolCost = CalculatePointsFromCR(m_pSpawnEntries[nCreature].m_fChallengeRating);
+                m_pSpawnEntries[nCreature].m_fSpawnPoolCost = 0.0f;
                 m_pSpawnEntries[nCreature].m_bSingleSpawn = pRes->ReadFieldBYTE(&stCreature, "SingleSpawn", bSuccess, 0);
                 m_pSpawnEntries[nCreature].m_bSpawned = 0;
+                m_pSpawnEntries[nCreature].m_nGuaranteedCount = pRes->ReadFieldINT(&stCreature, "GuaranteedCount", bSuccess, 0);
             }
         }
     }
@@ -984,6 +963,7 @@ int CSWSEncounter::ReadEncounterFromGff(CResGFF* pRes, CResStruct* pStruct,
                 cTemp.m_cResRef = m_pSpawnEntries[nSortIndex].m_cResRef;
                 cTemp.m_fSpawnPoolCost = m_pSpawnEntries[nSortIndex].m_fSpawnPoolCost;
                 cTemp.m_bSingleSpawn = m_pSpawnEntries[nSortIndex].m_bSingleSpawn;
+                cTemp.m_nGuaranteedCount = m_pSpawnEntries[nSortIndex].m_nGuaranteedCount;
 
                 m_pSpawnEntries[nSortIndex].m_fChallengeRating = m_pSpawnEntries[nSortIndex + 1].m_fChallengeRating;
                 m_pSpawnEntries[nSortIndex].m_cResRef = m_pSpawnEntries[nSortIndex + 1].m_cResRef;
@@ -991,6 +971,7 @@ int CSWSEncounter::ReadEncounterFromGff(CResGFF* pRes, CResStruct* pStruct,
                 m_pSpawnEntries[nSortIndex].m_bSingleSpawn = m_pSpawnEntries[nSortIndex + 1].m_bSingleSpawn;
                 m_pSpawnEntries[nSortIndex].m_bSelected = 0;
                 m_pSpawnEntries[nSortIndex].m_bSpawned = 0;
+                m_pSpawnEntries[nSortIndex].m_nGuaranteedCount = m_pSpawnEntries[nSortIndex + 1].m_nGuaranteedCount;
 
                 m_pSpawnEntries[nSortIndex + 1].m_fChallengeRating = cTemp.m_fChallengeRating;
                 m_pSpawnEntries[nSortIndex + 1].m_cResRef = cTemp.m_cResRef;
@@ -998,6 +979,7 @@ int CSWSEncounter::ReadEncounterFromGff(CResGFF* pRes, CResStruct* pStruct,
                 m_pSpawnEntries[nSortIndex + 1].m_bSingleSpawn = cTemp.m_bSingleSpawn;
                 m_pSpawnEntries[nSortIndex + 1].m_bSelected = 0;
                 m_pSpawnEntries[nSortIndex + 1].m_bSpawned = 0;
+                m_pSpawnEntries[nSortIndex + 1].m_nGuaranteedCount = cTemp.m_nGuaranteedCount;
             }
         }
     }
@@ -1174,6 +1156,9 @@ CSWSEncounter::CSWSEncounter(unsigned long oidEncounter)
     m_nRecommendedCreatures = 2;
     m_nRespawns = 0;
     m_bPlayerOnly = 0;
+    m_nSpawnsAtCurrentPoint = 0;
+    m_nSpawnsPerPoint = 0;
+    m_nCurrentSpawnPoint = 0;
 }
 // PC 0x0056E8F0
 CSWSEncounter::~CSWSEncounter()
@@ -1245,28 +1230,6 @@ void CSWSEncounter::BuildSpawnList()
     int nCount = 0;
 
     BuildInitialSpawnList(pEntries, nCount);
-    if (nCount < m_nRecommendedCreatures - m_nNumberSpawned &&
-        m_fSpawnPool > m_fMinSpawnPoolCost)
-    {
-        int nIndex;
-        do
-        {
-            nIndex = nCount - 1;
-            while (nIndex >= 0 && nCount < m_nRecommendedCreatures - m_nNumberSpawned)
-            {
-                AddCreaturesToSpawnList(pEntries, nCount, nIndex, pEntries[nIndex]);
-                nIndex--;
-            }
-        } while (nIndex >= 0 && nCount < m_nRecommendedCreatures - m_nNumberSpawned);
-    }
-    if (nCount < m_nRecommendedCreatures - m_nNumberSpawned)
-    {
-        PadOutCreatureCount(pEntries, nCount);
-    }
-    if (m_fSpawnPool < m_fMinSpawnPoolCost)
-    {
-        m_fSpawnPool = 0.0f;
-    }
     if (nCount != 0)
     {
         for (int nIndex = 0; nIndex < nCount; nIndex++)
@@ -1275,6 +1238,10 @@ void CSWSEncounter::BuildSpawnList()
             pEntry->m_cResRef = pEntries[nIndex].m_cResRef;
             pEntry->m_fChallengeRating = pEntries[nIndex].m_fChallengeRating;
             m_lstSpawnList.Add(pEntry);
+        }
+        if (m_nSpawnPointCount > 0)
+        {
+            m_nSpawnsPerPoint = m_lstSpawnList.num / m_nSpawnPointCount;
         }
         delete[] pEntries;
     }
@@ -1305,6 +1272,7 @@ int CSWSEncounter::LoadEncounter(CResGFF* pRes, CResStruct* pStruct)
                 cTemp.m_cResRef = m_pSpawnEntries[nIndex].m_cResRef;
                 cTemp.m_fSpawnPoolCost = m_pSpawnEntries[nIndex].m_fSpawnPoolCost;
                 cTemp.m_bSingleSpawn = m_pSpawnEntries[nIndex].m_bSingleSpawn;
+                cTemp.m_nGuaranteedCount = m_pSpawnEntries[nIndex].m_nGuaranteedCount;
 
                 m_pSpawnEntries[nIndex].m_fChallengeRating =
                     m_pSpawnEntries[nIndex + 1].m_fChallengeRating;
@@ -1316,6 +1284,8 @@ int CSWSEncounter::LoadEncounter(CResGFF* pRes, CResStruct* pStruct)
                     m_pSpawnEntries[nIndex + 1].m_bSingleSpawn;
                 m_pSpawnEntries[nIndex].m_bSelected = 0;
                 m_pSpawnEntries[nIndex].m_bSpawned = 0;
+                m_pSpawnEntries[nIndex].m_nGuaranteedCount =
+                    m_pSpawnEntries[nIndex + 1].m_nGuaranteedCount;
 
                 m_pSpawnEntries[nIndex + 1].m_fChallengeRating =
                     cTemp.m_fChallengeRating;
@@ -1326,6 +1296,8 @@ int CSWSEncounter::LoadEncounter(CResGFF* pRes, CResStruct* pStruct)
                     cTemp.m_bSingleSpawn;
                 m_pSpawnEntries[nIndex + 1].m_bSelected = 0;
                 m_pSpawnEntries[nIndex + 1].m_bSpawned = 0;
+                m_pSpawnEntries[nIndex + 1].m_nGuaranteedCount =
+                    cTemp.m_nGuaranteedCount;
             }
         }
     }
@@ -1421,8 +1393,7 @@ void CSWSEncounter::AIUpdate()
                 m_nCurrentSpawns++;
                 m_nLastSpawnDay = 0;
                 m_nLastSpawnTime = 0;
-                m_bActive = 1;
-                SpawnIfAppropriate(OBJECT_INVALID, -1.0f);
+                SetActive(1);
                 m_fSpawnPool = 0.0f;
                 m_fSpawnPoolActive = 0.0f;
             }
@@ -1496,12 +1467,8 @@ void CSWSEncounter::SpawnIfAppropriate(unsigned long oidObject,
         UpdateActivateAreaList(oidObject);
         if (m_bSpawnTriggered == 1)
         {
-            CalculateSpawnPool(fChallengeRating);
-            if (m_fSpawnPool > 0.0f)
-            {
-                BuildSpawnList();
-                m_bStarted = 1;
-            }
+            BuildSpawnList();
+            m_bStarted = 1;
         }
     }
 }
@@ -1514,17 +1481,8 @@ void CSWSEncounter::RemoveFromActiveCreatureCount(float fChallengeRating,
 
     if (m_nNumberSpawned != 0)
     {
-        m_fSpawnPoolActive -= CalculatePointsFromCR(fChallengeRating);
         m_nNumberSpawned--;
-        if (m_fSpawnPoolActive < 0.0f)
-        {
-            m_fSpawnPoolActive = 0.0f;
-        }
-        if (bAddToPool == 1)
-        {
-            m_fSpawnPool += CalculatePointsFromCR(fChallengeRating);
-        }
-        else if (m_nNumberSpawned == 0)
+        if (bAddToPool != 1 && m_nNumberSpawned == 0)
         {
             CScriptEvent* pEvent = new CScriptEvent;
 
@@ -1647,38 +1605,39 @@ void CSWSEncounter::SpawnCreatureFromSpawnList()
     if (pArea == NULL)
         return;
 
-    int nSpawnPoint = 0;
     int bUseSpawnPoint = 0;
     Vector vSpawnPoint;
     Vector vOrientation(1.0f, 0.0f, 0.0f);
     if (m_nSpawnPointCount > 0)
     {
         bUseSpawnPoint = 1;
-        float fFarthestDistance = 0.0f;
         unsigned long oidEntered = m_oidLastEntered;
         CSWSCreature* pEntered =
             g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
                 oidEntered);
+        if (m_nSpawnsPerPoint == 0)
+        {
+            m_nSpawnsPerPoint = m_lstSpawnList.num / m_nSpawnPointCount;
+        }
+        if (m_nSpawnsAtCurrentPoint == m_nSpawnsPerPoint)
+        {
+            m_nCurrentSpawnPoint++;
+            m_nSpawnsAtCurrentPoint = 0;
+            if (m_nCurrentSpawnPoint >= m_nSpawnPointCount)
+            {
+                m_nCurrentSpawnPoint = 0;
+            }
+        }
         if (pEntered != NULL)
         {
-            Vector vEnteredPosition = pEntered->m_vPosition;
-            for (int i = 0; i < m_nSpawnPointCount; i++)
-            {
-                Vector vDifference = m_pSpawnPoints[i].m_vPosition -
-                                     vEnteredPosition;
-                float fDistanceSquared = vDifference * vDifference;
-                if (fDistanceSquared > fFarthestDistance * fFarthestDistance)
-                {
-                    fFarthestDistance = (float)sqrt(fDistanceSquared);
-                    nSpawnPoint = i;
-                }
-            }
-            vSpawnPoint = m_pSpawnPoints[nSpawnPoint].m_vPosition;
+            vSpawnPoint = m_pSpawnPoints[m_nCurrentSpawnPoint].m_vPosition;
             float fAngle = ENCOUNTER_SPAWN_ORIENTATION_OFFSET -
-                           m_pSpawnPoints[nSpawnPoint].m_fOrientation;
+                           m_pSpawnPoints[m_nCurrentSpawnPoint].m_fOrientation;
 
-            normalize(Vector((float)cos(fAngle), (float)sin(fAngle), 0.0f));
+            vOrientation =
+                normalize(Vector((float)cos(fAngle), (float)sin(fAngle), 0.0f));
         }
+        m_nSpawnsAtCurrentPoint++;
     }
 
     Vector vLocation;
@@ -1816,14 +1775,16 @@ static inline void NwsencounterTrace1()
 // PC 0x0056E580
 void CSWSEncounter::SetActive(int bActive)
 {
-    int nActive;
-
-    nActive = bActive;
     m_bActive = bActive;
-    if (bActive != 0)
+    if (bActive != 0 && m_bStarted != 1)
     {
-        SpawnIfAppropriate(OBJECT_INVALID, -1.0f);
-        return;
+        m_bSpawnTriggered = 0;
+        UpdateActivateAreaList(OBJECT_INVALID);
+        if (m_bSpawnTriggered == 1)
+        {
+            BuildSpawnList();
+            m_bStarted = 1;
+        }
     }
 }
 

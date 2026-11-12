@@ -110,6 +110,7 @@ public:
         ITEM_PROPERTY_USE_LIMITATION_GENDER = 60,
         ITEM_PROPERTY_USE_LIMITATION_SUBRACE = 61,
         ITEM_PROPERTY_USE_LIMITATION_PC = 62,
+        ITEM_PROPERTY_MAX_DEXTERITY_BONUS = 68,
         ITEM_PROPERTY_USE_LIMITATION_ATTRIBUTE = 69
     };
 
@@ -230,6 +231,7 @@ public:
     void CloseInventory(unsigned long oidCloser, int bUpdatePlayer);
     void CloseItemForAllPlayers();
     CExoString GetPropertyDescription();
+    CExoString GetPropertiesOnlyDescription();
     int GetCost();
     unsigned char GetMinEquipLevel();
     CSWCItem* GetClientItem();
@@ -257,6 +259,7 @@ public:
            GUI_STRREF_CONSTITUTION = 117593, GUI_STRREF_INTELLIGENCE = 117594,
            GUI_STRREF_WISDOM = 117595, GUI_STRREF_CHARISMA = 117596 };
     enum { ATTRIBUTE_REQUIREMENT_COST_TABLE = 26 };
+    enum { TLK_STRREF_ATTACK_MODIFIER_SUFFIX = 114160 };
     enum { GUI_STRREF_CNPC_REQUIRED = 130590, GUI_STRREF_CNPC_REQUIREMENT = 102045 };
     CSWItemProperty* GetActiveProperty(int nIndex);
     void DecrementUses(int nPropertyIndex, unsigned long oidUser);
@@ -298,7 +301,8 @@ public:
                             unsigned short nCostValue,
                             unsigned char nParam1Value,
                             CExoString& sProperty, CExoString& sSubtype,
-                            CExoString& sCost, CExoString& sParam1);
+                            CExoString& sCost, CExoString& sParam1,
+                            int bPropertiesOnly = 0);
 
     unsigned char m_nUsableActivePropertyMask;
     unsigned char m_aActivePropertyUsesLeft[8];

@@ -20,7 +20,7 @@ public:
     float ComputeHeight(Vector vPosition, int nFace);
     float ComputeHeight(int nFace, Vector vPosition);
     int LoadWalkMesh(int nType);
-    int CheckAABBWalkable(Vector vMin, Vector vMax,
+    int CheckAABBWalkable(const Vector& vMin, const Vector& vMax,
                           CSWRoomSurfaceMeshHitInfo& hitInfo);
     int CheckAABBAll(Vector vMin, Vector vMax,
                      CSWRoomSurfaceMeshHitInfo& hitInfo);

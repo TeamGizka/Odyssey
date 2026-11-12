@@ -25,6 +25,7 @@
 #include "clientoptions.h"
 #include "nwcitem.h"
 #include "partytables.h"
+#include "exotlktable.h"
 
 static inline void NwsitemTrace1();
 #define NWSITEM_TRACE() NwsitemTrace1()
@@ -498,8 +499,8 @@ int CItemRepository::GetMatchingItemCount(CSWSItem* pItem)
     int bFound = 0;
     for (nIndex = 0; nIndex < m_lstItems.num; nIndex++)
     {
-        pMatch = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(
-            m_lstItems[nIndex]);
+        unsigned long oidItem = m_lstItems[nIndex];
+        pMatch = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
         if (pMatch != NULL && pMatch->m_nBaseItem == pItem->m_nBaseItem &&
             pMatch->m_nModelVariation == pItem->m_nModelVariation &&
             pItem->CompareItem(pMatch) != 0)
@@ -511,10 +512,13 @@ int CItemRepository::GetMatchingItemCount(CSWSItem* pItem)
     int nCount = 0;
     if (bFound != 0)
     {
-        nCount = -1;
-        if (pMatch->m_bInfinite == 0)
+        if (pMatch->m_bInfinite != 0)
         {
-            return pMatch->m_nStackSize;
+            nCount = -1;
+        }
+        else
+        {
+            nCount = pMatch->m_nStackSize;
         }
     }
     return nCount;
@@ -1102,16 +1106,7 @@ void CSWSItem::AddPCRequirements(CExoString& sString)
                         GUI_STRREF_PC_REQUIRED) + ":\n";
                     bHeadingAdded = 1;
                 }
-                if (nPC != 0)
-                {
-                    {
-                        CExoString sColumn("NAME");
-                        C2DA* pPCTable = g_pRules->Get2DArrays()->m_pIPRPPC;
-                        pPCTable->GetINTEntry(nPC, sColumn, &nName);
-                    }
-                    sPC = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
-                }
-                else
+                if (nPC == 0)
                 {
                     CSWPartyTable* pPartyTable =
                         g_pAppManager->GetServerExoApp()->GetPartyTable();
@@ -1119,6 +1114,15 @@ void CSWSItem::AddPCRequirements(CExoString& sString)
                     {
                         sPC = pPartyTable->GetPCName();
                     }
+                }
+                else
+                {
+                    {
+                        CExoString sColumn("NAME");
+                        C2DA* pPCTable = g_pRules->Get2DArrays()->m_pIPRPPC;
+                        pPCTable->GetINTEntry(nPC, sColumn, &nName);
+                    }
+                    sPC = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
                 }
                 sString = sString + sPC + "\n";
             }
@@ -1205,10 +1209,12 @@ void CSWSItem::AddDamageProperties(CExoString& sString)
     int nMinDamage, nMaxDamage;
     int i;
     CSWItemProperty* pProperty;
-    sString = sString + g_pAppManager->GetClientExoApp()->GetGUIString(
-        CClientExoApp::GUI_STRREF_DAMAGE) + ": ";
     if (GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_NO_DAMAGE, 0))
-        sString = sString + "0\n";
+    {
+        sString = sString + g_pAppManager->GetClientExoApp()->GetGUIString(
+            CClientExoApp::GUI_STRREF_DAMAGE) + ": ";
+        sString = sString + "1\n";
+    }
     else
     {
         int nNumDice = g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType())->m_nNumDice;
@@ -1218,8 +1224,6 @@ void CSWSItem::AddDamageProperties(CExoString& sString)
         CExoString sDamageType;
         unsigned long nDamageFlags = GetDamageFlags();
         GetDamageTypeString(nDamageFlags, sDamageType);
-        if (sDamageType != "")
-            sString = sString + sDamageType + ", ";
         if (GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_DECREASED_DAMAGE, 0) ||
             GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ENHANCEMENT_BONUS, 0) ||
             GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_DAMAGE_BONUS, 0))
@@ -1255,8 +1259,26 @@ void CSWSItem::AddDamageProperties(CExoString& sString)
                 }
             }
         }
-        sDamage.Format("%d-%d\n\n", nMinimum, nMaximum);
-        sString = sString + sDamage.CStr();
+        if (nMinimum <= 0)
+            nMinimum = 1;
+        if (nMaximum != 0)
+        {
+            sString = sString + g_pAppManager->GetClientExoApp()->GetGUIString(
+                CClientExoApp::GUI_STRREF_DAMAGE) + ": ";
+            if (GetBaseItemType() == 45)
+            {
+                if (sDamageType != "")
+                    sString = sString + sDamageType + " ";
+                sString = sString + "+" + CExoString(nMaximum) + "\n\n";
+            }
+            else
+            {
+                if (sDamageType != "")
+                    sString = sString + sDamageType + ", ";
+                sDamage.Format("%d-%d\n\n", nMinimum, nMaximum);
+                sString = sString + sDamage.CStr();
+            }
+        }
     }
 
     CExoString sBonus;
@@ -1304,7 +1326,7 @@ void CSWSItem::AddDamageProperties(CExoString& sString)
             else sCost.Format("+%d-%d", nMinimum, nMaximum);
             sString = sString + sParam1 + ": " + sCost + " " +
                 g_pAppManager->GetClientExoApp()->GetGUIString(GUI_STRREF_VERSUS) +
-                " " + sSubtype + "\n\n";
+                " " + sSubtype + "\n";
         }
     }
     {
@@ -1379,8 +1401,8 @@ void CSWSItem::AddDamageProperties(CExoString& sString)
         }
     }
     int bHeadingAdded = 0;
-    nMinimum = 0;
     nMaximum = 0;
+    nMinimum = 0;
     if (GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_DAMAGE_BONUS, 0))
     {
         for (i = 0; i < m_nPassiveProperties; i++)
@@ -1506,6 +1528,22 @@ int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
                 *ppItem = NULL;
                 return 1;
             }
+            else if ((*ppItem)->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_CHEMICALS)
+            {
+                int nChemicals = (*ppItem)->m_nStackSize;
+                pOwner->AsSWSCreature()->AddChemical(nChemicals, 1);
+                delete *ppItem;
+                *ppItem = NULL;
+                return 1;
+            }
+            else if ((*ppItem)->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_COMPONENTS)
+            {
+                int nComponents = (*ppItem)->m_nStackSize;
+                pOwner->AsSWSCreature()->AddComponent(nComponents, 1);
+                delete *ppItem;
+                *ppItem = NULL;
+                return 1;
+            }
             else if ((*ppItem)->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_PAZAAK_CARD)
             {
                 pOwner->AsSWSCreature()->AddPazaakCard(*ppItem);
@@ -1619,7 +1657,6 @@ int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
                                         bUpdatePossessor, OBJECT_INVALID);
                     if (bNewItem)
                     {
-                        (*ppItem)->m_bNewItem = 1;
                         m_nNewItems++;
                     }
                     return 1;
@@ -2161,27 +2198,43 @@ void CSWSItem::AddAttackModifierProperties(CExoString& sString)
                 (pProperty->m_nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
                  ((1 << pProperty->m_nUpgradeType) & m_nUpgrades) != 0))
             {
-                if (pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ENHANCEMENT_BONUS)
-                    nAttackModifier += pProperty->m_nCostValue;
-                else if (pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ATTACK_BONUS)
+                if (pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ENHANCEMENT_BONUS ||
+                    pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ATTACK_BONUS)
                     nAttackModifier += pProperty->m_nCostValue;
                 if (pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ATTACK_PENALTY ||
                     pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_DECREASED_ATTACK_MODIFIER)
                     nAttackModifier -= pProperty->m_nCostValue;
             }
         }
-        if (nAttackModifier < 0)
+    }
+    CExoString sSuffix = g_pTlkTable->GetSimpleString(TLK_STRREF_ATTACK_MODIFIER_SUFFIX);
+    if (nAttackModifier < 0)
+    {
+        if (GetBaseItemType() == 45)
         {
-            sAttackModifier.Format("%s: -%d\n", g_pAppManager->GetClientExoApp()->GetGUIString(
-                GUI_STRREF_ITEM_ATTACK_MODIFIER).CStr(), nAttackModifier);
-            sString = sString + sAttackModifier;
+            sAttackModifier.Format("%s: %d%s\n", g_pAppManager->GetClientExoApp()->GetGUIString(
+                GUI_STRREF_ITEM_ATTACK_MODIFIER).CStr(), nAttackModifier, sSuffix);
         }
-        else if (nAttackModifier > 0)
+        else
+        {
+            sAttackModifier.Format("%s: %d\n", g_pAppManager->GetClientExoApp()->GetGUIString(
+                GUI_STRREF_ITEM_ATTACK_MODIFIER).CStr(), nAttackModifier);
+        }
+        sString = sString + sAttackModifier;
+    }
+    else if (nAttackModifier > 0)
+    {
+        if (GetBaseItemType() == 45)
+        {
+            sAttackModifier.Format("%s: +%d%s\n", g_pAppManager->GetClientExoApp()->GetGUIString(
+                GUI_STRREF_ITEM_ATTACK_MODIFIER).CStr(), nAttackModifier, sSuffix);
+        }
+        else
         {
             sAttackModifier.Format("%s: +%d\n", g_pAppManager->GetClientExoApp()->GetGUIString(
                 GUI_STRREF_ITEM_ATTACK_MODIFIER).CStr(), nAttackModifier);
-            sString = sString + sAttackModifier;
         }
+        sString = sString + sAttackModifier;
     }
     if (GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ENHANCEMENT_BONUS_VS_ALIGNMENT_GROUP, 0) ||
         GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ENHANCEMENT_BONUS_VS_RACIAL_GROUP, 0) ||
@@ -2295,8 +2348,6 @@ void CSWSItem::AddCriticalThreatProperties(CExoString& sString)
                 switch (pProperty->GetPropertyType())
                 {
                 case CSWItemProperty::ITEM_PROPERTY_MASSIVE_CRITICALS:
-                    if (!GetExistsHigherValuedProperty(pProperty->GetPropertyType(),
-                                                      pProperty->GetSubtype(), pProperty->GetCostValue()))
                     {
                         int nMinDamage;
                         int nMaxDamage;
@@ -2416,6 +2467,20 @@ void CSWSItem::AddOnHitProperties(CExoString& sString)
                         sString = sString + ", " + sCost + "\n\n";
                         break;
                     }
+                    case CSWItemProperty::ON_HIT_KNOCKDOWN:
+                    {
+                        sString = sString + g_pAppManager->GetClientExoApp()->GetGUIString(GUI_STRREF_ITEM_ON_HIT) + ": " + sSubtype + " ";
+                        unsigned char nParam1Value = pProperty->m_nParam1Value;
+                        unsigned short nCostValue = pProperty->m_nCostValue;
+                        GetPropertyChanceDurationDC(nCostValue,
+                            nParam1Value, nEffectChance, nDurationRounds, nDcSave);
+                        nDurationRounds *= 3;
+                        sDetails.Format("%s %d\n",
+                            g_pAppManager->GetClientExoApp()->GetGUIString(GUI_STRREF_DC).CStr(),
+                            nDurationRounds);
+                        sString = sString + sDetails + "\n";
+                        break;
+                    }
                     }
                 }
             }
@@ -2428,11 +2493,10 @@ void CSWSItem::AddDefenceProperties(CExoString& sString)
     CExoString sBonus;
     int nDefenceBonus = GetBaseItem()->m_nBaseAC;
     CSWItemProperty* pProperty;
-    int nProperty;
 
     if (GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_AC_BONUS, 0))
     {
-        for (nProperty = 0; nProperty < m_nPassiveProperties; nProperty++)
+        for (int nProperty = 0; nProperty < m_nPassiveProperties; nProperty++)
         {
             pProperty = GetPassiveProperty(nProperty);
             if (pProperty != NULL &&
@@ -2475,6 +2539,25 @@ void CSWSItem::AddDefenceProperties(CExoString& sString)
     if (nItemType != CSWBaseItem::ITEM_TYPE_NO_DEX_LIMIT_DISPLAY)
     {
         unsigned char nDexBonus = GetBaseItem()->m_nDexBonus;
+        int nDexIncrease = 0;
+        if (GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_MAX_DEXTERITY_BONUS, 0))
+        {
+            for (int nProperty = 0; nProperty < m_nPassiveProperties; nProperty++)
+            {
+                pProperty = GetPassiveProperty(nProperty);
+                if (pProperty != NULL &&
+                    (pProperty->m_nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
+                     ((1 << pProperty->m_nUpgradeType) & m_nUpgrades) != 0) &&
+                    pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_MAX_DEXTERITY_BONUS)
+                {
+                    nDexIncrease += pProperty->m_nCostValue;
+                }
+            }
+        }
+        if (nDexBonus == CSWBaseItem::DEX_BONUS_UNLIMITED && nDexIncrease != 0)
+            nDexBonus = nDexIncrease;
+        else
+            nDexBonus += nDexIncrease;
         if (nDexBonus != CSWBaseItem::DEX_BONUS_UNLIMITED)
         {
             CExoString sNewLine("\n\n");
@@ -2495,7 +2578,7 @@ void CSWSItem::AddDefenceProperties(CExoString& sString)
         GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_IMMUNITY_DAMAGE_TYPE, 0) ||
         GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_DAMAGE_RESISTANCE, 0))
     {
-        for (nProperty = 0; nProperty < m_nPassiveProperties; nProperty++)
+        for (int nProperty = 0; nProperty < m_nPassiveProperties; nProperty++)
         {
             pProperty = GetPassiveProperty(nProperty);
             if (pProperty != NULL &&
@@ -2544,7 +2627,7 @@ void CSWSItem::AddMiscellaneousProperties(CExoString& sString)
     CExoString sDetails;
     char szCost[32];
     int nCost;
-    int nMaxUses;
+    int nMaxUses = 0;
     int nProperty;
     unsigned short nSubtype;
     unsigned short nCostValue;
@@ -2760,9 +2843,7 @@ void CSWSItem::AddMiscellaneousProperties(CExoString& sString)
                         GetPropertyStrings(nPropertyType, nSubtype,
                             nCostValue, CSWItemProperty::PARAM1_VALUE_NONE,
                             sProperty, sSubtype, sCost, sParam1);
-                        sscanf(sCost.CStr(), "%s -%d", szCost, &nCost);
-                        sDetails.Format("-%d", nCost);
-                        sString = sString + sSubtype + " " + sDetails;
+                        sString = sString + sSubtype + " " + sCost;
                         nCount++;
                     }
                     break;
@@ -2770,6 +2851,48 @@ void CSWSItem::AddMiscellaneousProperties(CExoString& sString)
             }
         }
         sString = sString + "\n\n";
+    }
+
+    if (GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_BLASTER_BOLT_DEFLECT_INCREASE, 0) ||
+        GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_BLASTER_BOLT_DEFLECT_DECREASE, 0))
+    {
+        int bHeadingAdded = 0;
+        int nDeflection = 0;
+        for (nProperty = 0; nProperty < m_nPassiveProperties; nProperty++)
+        {
+            CSWItemProperty* pProperty = GetPassiveProperty(nProperty);
+            if ((pProperty->m_nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
+                 ((UPGRADE_PROPERTY_MASK << pProperty->m_nUpgradeType) & m_nUpgrades) != 0) &&
+                (pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_BLASTER_BOLT_DEFLECT_INCREASE ||
+                 pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_BLASTER_BOLT_DEFLECT_DECREASE))
+            {
+                nCostValue = pProperty->m_nCostValue;
+                nSubtype = pProperty->m_nSubtype;
+                GetPropertyStrings(pProperty->m_nPropertyType, nSubtype,
+                    nCostValue, CSWItemProperty::PARAM1_VALUE_NONE,
+                    sProperty, sSubtype, sCost, sParam1);
+                if (!bHeadingAdded)
+                {
+                    bHeadingAdded = 1;
+                    CExoString sLeft;
+                    CExoString sRight;
+                    int nColon = sProperty.Find(':', 0);
+                    if (nColon != -1)
+                    {
+                        sLeft = sProperty.Left(nColon);
+                        sProperty = CExoString(sLeft) + ": ";
+                        sString = sString + sProperty + " ";
+                    }
+                }
+                if (pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_BLASTER_BOLT_DEFLECT_INCREASE)
+                    nDeflection += pProperty->m_nCostValue;
+                else
+                    nDeflection -= pProperty->m_nCostValue;
+            }
+        }
+        if (nDeflection > 0)
+            sString = sString + "+";
+        sString = sString + CExoString(nDeflection) + "\n\n";
     }
 
     for (nProperty = 0; nProperty < m_nPassiveProperties; nProperty++)
@@ -2836,9 +2959,7 @@ void CSWSItem::AddMiscellaneousProperties(CExoString& sString)
                     {
                         GetPropertyStrings(nPropertyType, nSubtype, nCostValue,
                             CSWItemProperty::PARAM1_VALUE_NONE, sProperty, sSubtype, sCost, sParam1);
-                        sscanf(sCost.CStr(), "%s -%d", szCost, &nCost);
-                        sDetails.Format("-%d", nCost);
-                        sString = sString + sSubtype + ": " + sDetails + "\n\n";
+                        sString = sString + sSubtype + ": " + sCost + "\n\n";
                     }
                 }
                 break;
@@ -2849,51 +2970,6 @@ void CSWSItem::AddMiscellaneousProperties(CExoString& sString)
                     CSWItemProperty::COST_VALUE_NONE, CSWItemProperty::PARAM1_VALUE_NONE,
                     sProperty, sSubtype, sCost, sParam1);
                 sString = sString + sProperty + "\n\n";
-                break;
-            case CSWItemProperty::ITEM_PROPERTY_BLASTER_BOLT_DEFLECT_INCREASE:
-                nCostValue = pProperty->m_nCostValue;
-                nSubtype = pProperty->m_nSubtype;
-                if (!GetExistsHigherValuedProperty(nPropertyType, nSubtype, nCostValue))
-                {
-                    GetPropertyStrings(nPropertyType, CSWItemProperty::SUBTYPE_NONE,
-                        pProperty->m_nCostValue, CSWItemProperty::PARAM1_VALUE_NONE,
-                        sProperty, sSubtype, sCost, sParam1);
-                    sDetails.Format("%d", pProperty->m_nCostValue);
-                    CExoString sLeft;
-                    CExoString sRight;
-                    int nColon = sProperty.Find(':', 0);
-                    if (nColon != -1)
-                    {
-                        sLeft = sProperty.Left(nColon);
-                        sRight = sProperty.Right(sProperty.GetLength() - nColon - 1);
-                        sProperty = CExoString(sLeft) + ": ";
-                    }
-                    sString = sString + sProperty + "+" + sDetails + "\n\n";
-                }
-                break;
-            case CSWItemProperty::ITEM_PROPERTY_BLASTER_BOLT_DEFLECT_DECREASE:
-                {
-                    nCostValue = pProperty->m_nCostValue;
-                    nSubtype = pProperty->m_nSubtype;
-                    if (!GetExistsHigherValuedProperty(nPropertyType, nSubtype, nCostValue))
-                    {
-                        GetPropertyStrings(nPropertyType, CSWItemProperty::SUBTYPE_NONE,
-                            nCostValue, CSWItemProperty::PARAM1_VALUE_NONE,
-                            sProperty, sSubtype, sCost, sParam1);
-                        CExoString sLeft;
-                        CExoString sRight;
-                        int nColon = sProperty.Find(':', 0);
-                        if (nColon != -1)
-                        {
-                            sLeft = sProperty.Left(nColon);
-                            sRight = sProperty.Right(sProperty.GetLength() - nColon - 1);
-                            sProperty = CExoString(sLeft) + ": ";
-                        }
-                        sscanf(sCost.CStr(), "%s -%d", szCost, &nCost);
-                        sDetails.Format("%d", nCost);
-                        sString = sString + sProperty + " -" + sDetails + "\n\n";
-                    }
-                }
                 break;
             case CSWItemProperty::ITEM_PROPERTY_DAMAGE_VULNERABILITY:
                 nCostValue = pProperty->m_nCostValue;
@@ -3425,13 +3501,13 @@ unsigned long CSWSItem::GetDamageFlags()
     pBaseItem = g_pRules->m_pBaseItems->GetBaseItem(nBaseItem);
     if (pBaseItem == NULL)
     {
-        return 1;
+        return DAMAGE_TYPE_BLUDGEONING;
     }
 
     nDamageFlags = pBaseItem->m_nDamageFlags;
     if (nDamageFlags == 0)
     {
-        return 1;
+        return DAMAGE_TYPE_BLUDGEONING;
     }
 
     return nDamageFlags;
@@ -3685,7 +3761,8 @@ void CSWSItem::GetPropertyStrings(unsigned short nPropertyType,
                                  unsigned short nCostValue,
                                  unsigned char nParam1Value,
                                  CExoString& sProperty, CExoString& sSubtype,
-                                 CExoString& sCost, CExoString& sParam1)
+                                 CExoString& sCost, CExoString& sParam1,
+                                 int bPropertiesOnly)
 {
     int nName = -1;
     bool bFailed;
@@ -3697,7 +3774,38 @@ void CSWSItem::GetPropertyStrings(unsigned short nPropertyType,
     if (bFailed)
         return;
 
-    sProperty = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
+    if (bPropertiesOnly)
+    {
+        switch (nName)
+        {
+        case 659:
+        case 678:
+        case 680:
+        case 705:
+        case 48014:
+            nName = -1;
+            break;
+        case 662:
+            nName = 129935;
+            break;
+        case 672:
+            nName = 129931;
+            break;
+        case 673:
+            nName = 129933;
+            break;
+        case 675:
+            nName = 686;
+            break;
+        case 700:
+            nName = 129930;
+            break;
+        }
+    }
+    if (nName != -1)
+    {
+        sProperty = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
+    }
 
     CExoString sSubTypeResRef;
     CExoString sCostTableResRef;
@@ -3716,6 +3824,28 @@ void CSWSItem::GetPropertyStrings(unsigned short nPropertyType,
         if (pSubtypeTable->Load2DArray() == 0)
             return;
         pSubtypeTable->GetINTEntry(nSubtype, "Name", &nName);
+        if (bPropertiesOnly)
+        {
+            switch (nName)
+            {
+            case 0:
+            case 727:
+            case 728:
+                nName = -1;
+                break;
+            case 729:
+            case 730:
+            case 796:
+            case 797:
+                nName = -1;
+                sProperty = "";
+                return;
+            case 731:
+            case 798:
+                nName = 38552;
+                break;
+            }
+        }
         sSubtype = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
         delete pSubtypeTable;
     }
@@ -3731,7 +3861,10 @@ void CSWSItem::GetPropertyStrings(unsigned short nPropertyType,
         {
             C2DA* pCostTable = g_pRules->Get2DArrays()->GetIPRPCostTable(nTable);
             pCostTable->GetINTEntry(nCostValue, "Name", &nName);
-            sCost = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
+            if (nName > 0)
+            {
+                sCost = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
+            }
         }
     }
 
@@ -3930,9 +4063,9 @@ void CSWSItem::AddUpgrade(CSWSItem* pUpgrade, unsigned long nSlot)
 {
     if (pUpgrade != NULL)
     {
-        int nOldProperties = m_nPassiveProperties;
-        int nNewProperties = nOldProperties + pUpgrade->m_nPassiveProperties;
         int nUpgradeProperties = pUpgrade->m_nPassiveProperties;
+        int nOldProperties = m_nPassiveProperties;
+        int nNewProperties = nOldProperties + nUpgradeProperties;
         CSWItemProperty* pOldProperties = new CSWItemProperty[nNewProperties];
         memcpy(pOldProperties, m_pPassiveProperties,
                nOldProperties * sizeof(CSWItemProperty));
@@ -3982,6 +4115,87 @@ void CSWSItem::RemoveUpgrade(CSWSItem* pUpgrade, unsigned long nSlot)
                nNewProperties * sizeof(CSWItemProperty));
     }
     delete[] pNewProperties;
+}
+// PC 0x0055E270
+CExoString CSWSItem::GetPropertiesOnlyDescription()
+{
+    CExoString sDescription;
+    int nLines = 0;
+    for (int nProperty = 0; nProperty < m_nPassiveProperties && nLines < 5;
+         nProperty++)
+    {
+        CSWItemProperty* pProperty = GetPassiveProperty(nProperty);
+        if (pProperty != NULL)
+        {
+            CExoString sProperty;
+            CExoString sSubtype;
+            CExoString sCost;
+            CExoString sParam1;
+            CExoString sParam1Value;
+            unsigned short nCostValue = pProperty->m_nCostValue;
+            unsigned short nSubtype = pProperty->m_nSubtype;
+            unsigned short nPropertyType = pProperty->m_nPropertyType;
+            GetPropertyStrings(nPropertyType, nSubtype, nCostValue,
+                               CSWItemProperty::PARAM1_VALUE_NONE, sProperty,
+                               sSubtype, sCost, sParam1, 1);
+            if (sProperty.m_sString != NULL && sProperty.m_sString[0] != 0)
+            {
+                sDescription = sDescription + sProperty;
+            }
+            if (sCost.m_sString != NULL)
+            {
+                if (sCost.m_sString[0] != 0 && sProperty.m_sString != NULL &&
+                    sProperty.m_sString[0] != 0)
+                {
+                    if (sProperty[strlen(sProperty.m_sString) - 1] == '+')
+                    {
+                        sDescription = sDescription + sCost;
+                    }
+                    else
+                    {
+                        sDescription = sDescription + ": " + sCost;
+                    }
+                }
+                if (sCost.m_sString != NULL && sCost.m_sString[0] != 0 &&
+                    (sProperty.m_sString == NULL || sProperty.m_sString[0] == 0))
+                {
+                    sDescription = sDescription + sCost;
+                }
+            }
+            if (sProperty.m_sString != NULL && sProperty.m_sString[0] != 0 &&
+                sCost.m_sString != NULL && sCost.m_sString[0] != 0 &&
+                sSubtype.m_sString != NULL && sSubtype.m_sString[0] != 0)
+            {
+                sDescription = sDescription + ", " + sSubtype;
+            }
+            if (sProperty.m_sString != NULL && sProperty.m_sString[0] != 0 &&
+                (sCost.m_sString == NULL || sCost.m_sString[0] == 0) &&
+                sSubtype.m_sString != NULL && sSubtype.m_sString[0] != 0)
+            {
+                sDescription = sDescription + ": " + sSubtype;
+            }
+            if ((sProperty.m_sString == NULL || sProperty.m_sString[0] == 0) &&
+                sCost.m_sString != NULL && sCost.m_sString[0] != 0 &&
+                sSubtype.m_sString != NULL && sSubtype.m_sString[0] != 0)
+            {
+                sDescription = sDescription + " " + sSubtype;
+            }
+            if ((sProperty.m_sString == NULL || sProperty.m_sString[0] == 0) &&
+                (sCost.m_sString == NULL || sCost.m_sString[0] == 0) &&
+                sSubtype.m_sString != NULL && sSubtype.m_sString[0] != 0)
+            {
+                sDescription = sDescription + sSubtype;
+            }
+            if ((sProperty.m_sString != NULL && sProperty.m_sString[0] != 0) ||
+                (sCost.m_sString != NULL && sCost.m_sString[0] != 0) ||
+                (sSubtype.m_sString != NULL && sSubtype.m_sString[0] != 0))
+            {
+                sDescription = sDescription + "\n";
+                nLines++;
+            }
+        }
+    }
+    return sDescription;
 }
 // PC 0x00569620
 CSWSItem::~CSWSItem()
@@ -4107,7 +4321,7 @@ void CSWSItem::LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct)
     m_nStackSize = pRes->ReadFieldWORD(pStruct, "StackSize", bSuccess, GetStackSize());
     SetStolen(pRes->ReadFieldBYTE(pStruct, "Stolen", bSuccess, m_bStolen));
     m_nUpgrades = pRes->ReadFieldDWORD(pStruct, "Upgrades", bSuccess, GetUpgrades());
-    m_n2F0 = pRes->ReadFieldBYTE(pStruct, "UpgradeLevel", bSuccess, m_nUpgrades);
+    m_n2F0 = pRes->ReadFieldBYTE(pStruct, "UpgradeLevel", bSuccess, GetUpgrades());
     m_an2F4[0] = pRes->ReadFieldINT(pStruct, "UpgradeSlot0", bSuccess, -1);
     m_an2F4[1] = pRes->ReadFieldINT(pStruct, "UpgradeSlot1", bSuccess, -1);
     m_an2F4[2] = pRes->ReadFieldINT(pStruct, "UpgradeSlot2", bSuccess, -1);
@@ -4203,6 +4417,8 @@ void CSWSItem::LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct)
                     GetActiveProperty(nActiveProperty)->m_nUsesPerDay = nUsesPerDay;
                     unsigned char nUpgradeType = pRes->ReadFieldBYTE(&propertyStruct, "UpgradeType", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
                     GetActiveProperty(nActiveProperty)->m_nUpgradeType = nUpgradeType;
+                    unsigned short nPropUpgrade = pRes->ReadFieldWORD(&propertyStruct, "PropUpgrade", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
+                    GetActiveProperty(nActiveProperty)->m_n12 = nPropUpgrade;
                     nActiveProperty++;
                     break;
                 }
@@ -4251,6 +4467,8 @@ void CSWSItem::LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct)
                     GetPassiveProperty(nPassiveProperty)->m_nUsesPerDay = nUsesPerDay;
                     unsigned char nUpgradeType = pRes->ReadFieldBYTE(&propertyStruct, "UpgradeType", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
                     GetPassiveProperty(nPassiveProperty)->m_nUpgradeType = nUpgradeType;
+                    unsigned short nPropUpgrade = pRes->ReadFieldWORD(&propertyStruct, "PropUpgrade", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
+                    GetPassiveProperty(nPassiveProperty)->m_n12 = nPropUpgrade;
                     nPassiveProperty++;
                     break;
                 }

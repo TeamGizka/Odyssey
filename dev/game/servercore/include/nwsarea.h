@@ -306,7 +306,7 @@ public:
         DIRECT_LINE_BLOCKED_CREATURE = -3
     };
     float ComputeHeight(const Vector& vPosition, int nRoomIndex,
-                        CSWSRoom** ppRoom, int* pnFace = NULL);
+                        CSWSRoom** ppRoom, int* pnRoomIndex = NULL);
     class CSWSRoom* GetRoom(const Vector& vPosition, int* pnFace,
                             int* pnRoomIndex = NULL);
     class CSWSRoom* GetRoom(int nRoomIndex);
@@ -536,7 +536,7 @@ public:
     int m_nRoomAudioEntryCount;
     int* m_pnRoomForceRating;
     unsigned char* m_pbRoomDisableWeather;
-    unsigned char* m_p29C;
+    unsigned char* m_pnRoomAudioIndex;
     CExoArrayList<CExoString> m_lstRoomAudioNames;
     CExoArrayList<int> m_lstRoomAudioLooping;
     CExoArrayList<CExoString> m_lstRoomAudioModelParts;

@@ -13,6 +13,15 @@ const unsigned char CSWClass::CCLASS_JEDICONSULAR = 4;
 const unsigned char CSWClass::CCLASS_JEDISENTINEL = 5;
 const unsigned char CSWClass::CCLASS_COMBATDROID = 6;
 const unsigned char CSWClass::CCLASS_EXPERTDROID = 7;
+const unsigned char CSWClass::CCLASS_MINION = 8;
+const unsigned char CSWClass::CCLASS_TECHSPECIALIST = 9;
+const unsigned char CSWClass::CCLASS_BOUNTYHUNTER = 10;
+const unsigned char CSWClass::CCLASS_JEDIWEAPONMASTER = 11;
+const unsigned char CSWClass::CCLASS_JEDIMASTER = 12;
+const unsigned char CSWClass::CCLASS_JEDIWATCHMAN = 13;
+const unsigned char CSWClass::CCLASS_SITHMARAUDER = 14;
+const unsigned char CSWClass::CCLASS_SITHLORD = 15;
+const unsigned char CSWClass::CCLASS_SITHASSASSIN = 16;
 // PC 0x0060CD40
 CSWClass::CSWClass()
 {

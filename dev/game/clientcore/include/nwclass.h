@@ -66,6 +66,15 @@ struct CSWClass
     static const unsigned char CCLASS_JEDISENTINEL;
     static const unsigned char CCLASS_COMBATDROID;
     static const unsigned char CCLASS_EXPERTDROID;
+    static const unsigned char CCLASS_MINION;
+    static const unsigned char CCLASS_TECHSPECIALIST;
+    static const unsigned char CCLASS_BOUNTYHUNTER;
+    static const unsigned char CCLASS_JEDIWEAPONMASTER;
+    static const unsigned char CCLASS_JEDIMASTER;
+    static const unsigned char CCLASS_JEDIWATCHMAN;
+    static const unsigned char CCLASS_SITHMARAUDER;
+    static const unsigned char CCLASS_SITHLORD;
+    static const unsigned char CCLASS_SITHASSASSIN;
 
     static const unsigned char SPELL_GAIN_INVALID = 0xFF;
 

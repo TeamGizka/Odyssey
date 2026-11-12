@@ -113,6 +113,7 @@ public:
         FEAT_MASTER_DUELING = 115
     };
 
+    enum { FEAT_UNKNOWN_200 = 200 };
     enum { FEAT_MENTOR = 202 };
     enum
     {

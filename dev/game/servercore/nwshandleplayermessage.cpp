@@ -14,11 +14,16 @@
 #include "nwscombatround.h"
 #include "nwupdatestats.h"
 #include "nwsscriptevent.h"
+
+#define FORFEIT_NO_FORCE_POWERS 1
+#define USER_DEFINED_EVENT_FORFEIT_VIOLATION 4001
+
 #include "nwseffect.h"
 #include "nwseffectlist.h"
 #include "serveraimaster.h"
 #include "nwsmodule.h"
 #include "nwsparty.h"
+#include "partytables.h"
 #include "worldtimer.h"
 #include "nwscript.h"
 #include "nwcreaturelevelstats.h"
@@ -239,7 +244,7 @@ int CSWSMessage::HandlePlayerToServerCheatMessage(CSWSPlayer* pPlayer,
         if (pPlayer->GetGameObject() != NULL)
         {
             CSWSCreatureStats* pStats = pPlayer->GetGameObject()->AsSWSCreature()->GetStats();
-            if (pStats->GetLevel(0) < 20)
+            if (pStats->GetLevel(0) < 50)
             {
                 pPlayer->GetGameObject()->AsSWSCreature()->GetStats()->SetExperience(
                     pPlayer->GetGameObject()->AsSWSCreature()->GetStats()->GetExpNeededForLevelUp(), 1);
@@ -1369,6 +1374,11 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
         if (MessageReadOverflow(1) || MessageReadUnderflow(1))
             return 0;
         pCreature = pPlayer->GetGameObject()->AsSWSCreature();
+        unsigned long nEquipSlot = nSlot;
+        if (nSlot == INVENTORY_SLOT_LEFTHAND2)
+            nSlot = INVENTORY_SLOT_LEFTHAND2 | INVENTORY_SLOT_LEFTHAND;
+        else if (nSlot == INVENTORY_SLOT_RIGHTHAND2)
+            nSlot = INVENTORY_SLOT_RIGHTHAND2 | INVENTORY_SLOT_RIGHTHAND;
         if (pCreature != NULL &&
             g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
                 oidItem, &pGameObject) == CGameObjectArray::SUCCESS &&
@@ -1380,7 +1390,7 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
                 pCreature->ClearAllActions(1);
                 pCreature->m_pcCombatRound->RemoveAllActions();
                 pCreature->AddEquipItemActions(pGameObject->AsSWSItem(),
-                                               nSlot, 0, 1, 0, 1, 0);
+                                               nEquipSlot, 1, 1, 0, 1, 0);
                 unsigned long oidAttack = pCreature->m_pcCombatRound->m_oidUnknown9CC;
                 if (oidAttack != OBJECT_INVALID)
                     pCreature->AddAttackActions(oidAttack, 0, 0, 0, 0, 0, 0,
@@ -1390,7 +1400,7 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
         }
         CSWSMessage* pMessage = g_pAppManager->m_pServerExoApp->GetSWSMessage();
         pMessage->SendServerToPlayerInventory_EquipCancel(
-            pPlayer->m_nPlayerId, oidItem, nSlot);
+            pPlayer->m_nPlayerId, oidItem, nEquipSlot);
         return 0;
     }
     case 11:
@@ -1541,7 +1551,7 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
         {
             pCreature->ClearAllActions(1);
             pCreature->m_pcCombatRound->RemoveAllActions();
-            pCreature->AddUnequipActions(pGameObject->AsSWSItem(), oidRepository, 0, 1, 0);
+            pCreature->AddUnequipActions(pGameObject->AsSWSItem(), oidRepository, 1, 1, 0);
             unsigned long oidAttack = pCreature->m_pcCombatRound->m_oidUnknown9CC;
             if (oidAttack != OBJECT_INVALID)
                 pCreature->AddAttackActions(oidAttack, 0, 0, 0, 0, 0, 0,
@@ -1986,6 +1996,30 @@ int CSWSMessage::HandlePlayerToServerInputMessage(CSWSPlayer* pPlayer,
             return 0;
         pCreature->AddAttackActions(oidTarget, nAction, 1, 0, 0, 0, 0,
                                     1, 10009, 1500, 1, 0, 0, 4, 0);
+        if (pCreature->m_bInParty)
+        {
+            CGameObject* pTarget =
+                g_pAppManager->GetServerExoApp()->GetGameObject(oidTarget);
+            int bTargetCreature = 0;
+            if (pTarget != NULL && pTarget->AsSWSCreature() != NULL)
+                bTargetCreature = 1;
+            int nMembers = g_pAppManager->GetClientExoApp()->GetSWParty()->GetNumCharacters();
+            if (!g_pAppManager->GetServerExoApp()->GetPartyTable()->m_bSoloMode &&
+                bTargetCreature)
+            {
+                for (int nMember = 1; nMember < nMembers; ++nMember)
+                {
+                    CSWSCreature* pMember = g_pAppManager->GetClientExoApp()
+                        ->GetSWParty()->GetCharacter(nMember)->GetServerCreature();
+                    if (pMember->m_oidAttemptedAttackTarget == OBJECT_INVALID)
+                    {
+                        pMember->AddAttackActions(oidTarget, 0, 0, 0, 1, 1, 1,
+                                                  1, 10009, 1500, 1, 0, 0, 4, 0);
+                        pMember->m_oidAttemptedMoveToTarget = oidTarget;
+                    }
+                }
+            }
+        }
         if (pCreature->m_oidAttemptedAttackTarget != oidTarget)
             pCreature->m_oidAttemptedMoveToTarget = oidTarget;
         return 1;
@@ -2164,7 +2198,7 @@ int CSWSMessage::HandlePlayerToServerInputMessage(CSWSPlayer* pPlayer,
             if (pTarget->AsSWSDoor() && pTarget->AsSWSDoor()->m_bLocked)
                 pCreature->AddUnlockObjectAction(oidTarget, oidKey, 0);
             if (pTarget->AsSWSPlaceable() && pTarget->AsSWSPlaceable()->m_bLocked)
-                pCreature->AddUnlockObjectAction(oidTarget, OBJECT_INVALID, 0);
+                pCreature->AddUnlockObjectAction(oidTarget, oidKey, 0);
         }
         return 1;
     }
@@ -2303,6 +2337,27 @@ int CSWSMessage::HandlePlayerToServerInputMessage(CSWSPlayer* pPlayer,
                     bItemSpell, vTarget, oidTarget, 1, bTargetLocation, 1, 0, 0, 0,
                     CSWSCreature::SPELL_ACTION_OPTION10_UNSET,
                     CSWSCreature::SPELL_ACTION_OPTION11_UNSET, 0);
+                if (pCreature->m_bInParty)
+                {
+                    CSWPartyTable* pPartyTable =
+                        g_pAppManager->GetServerExoApp()->GetPartyTable();
+                    if (pPartyTable != NULL &&
+                        (pPartyTable->m_nForfeitConditions & FORFEIT_NO_FORCE_POWERS))
+                    {
+                        pPartyTable->m_nForfeitViolation = 1;
+                        CSWSArea* pArea = pCreature->GetArea();
+                        if (pArea != NULL)
+                        {
+                            CScriptEvent* pEvent = new CScriptEvent;
+                            pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_USER_DEFINED_EVENT;
+                            pEvent->SetInteger(0, USER_DEFINED_EVENT_FORFEIT_VIOLATION);
+                            g_pAppManager->GetServerExoApp()->GetServerAIMaster()
+                                ->AddEventDeltaTime(0, 0, pArea->m_nId, pArea->m_nId,
+                                                    CServerAIMaster::EVENT_SIGNAL_EVENT,
+                                                    pEvent);
+                        }
+                    }
+                }
             }
         }
         return 0;
@@ -2519,6 +2574,46 @@ int CSWSMessage::HandlePlayerToServerInputMessage(CSWSPlayer* pPlayer,
         }
         return 0;
     }
+    case 37:
+    {
+        CGameObject* pObject = NULL;
+        unsigned long oidDoor = ReadOBJECTIDServer();
+        if (MessageReadOverflow(1) || MessageReadUnderflow(1) || !pCreature ||
+            !pCreature->m_bCommandable)
+            return 0;
+        pCreature->ActionManager(2);
+        if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
+                oidDoor, &pObject) != CGameObjectArray::SUCCESS)
+            return 1;
+        CSWSDoor* pDoor = pObject->AsSWSDoor();
+        if (pDoor == NULL)
+            return 0;
+        if (pDoor->m_bLocked)
+            pCreature->AddDoorSaberAction(oidDoor);
+        return 1;
+    }
+    case 38:
+    {
+        ReadOBJECTIDServer();
+        int bInstant = ReadBOOL();
+        if (MessageReadOverflow(1))
+            return 0;
+        if (MessageReadUnderflow(1))
+            return 0;
+        CSWSCreature* pSwitcher = pPlayer->GetGameObject()->AsSWSCreature();
+        if (pSwitcher == NULL)
+            return 0;
+        return pSwitcher->AddSwitchWeaponsAction(bInstant);
+    }
+    case 39:
+    {
+        char nStance = ReadCHAR(8);
+        unsigned long oidTarget = ReadOBJECTIDServer();
+        if (MessageReadOverflow(1) || MessageReadUnderflow(1))
+            return 0;
+        pCreature->AddStanceActions(nStance, oidTarget, 1, 0, 0, 0);
+        return 1;
+    }
     default:
         break;
     }
@@ -2544,6 +2639,15 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
         unsigned long oidCreature = pPlayer->m_oidPCObject;
         CSWSCreature* pCreature =
             g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCreature);
+        if (g_pAppManager->GetServerExoApp()->GetServerInfo()->m_nXboxUnmapped0D0 == 1)
+        {
+            if (pCreature != NULL)
+            {
+                CSWCCMessageData* pData = new CSWCCMessageData;
+                pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_UNKNOWN_196, NULL);
+            }
+            break;
+        }
         CSWSPlayer* pClient =
             g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidCreature);
         if (pCreature != NULL && pClient != NULL)
@@ -2580,6 +2684,12 @@ int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
     {
         unsigned long oidCreature = ReadOBJECTIDServer();
         CSWSCreature* pCreature = pPlayer->GetGameObject()->AsSWSCreature();
+        if (g_pAppManager->GetServerExoApp()->GetServerInfo()->m_nXboxUnmapped0D0 == 1)
+        {
+            CSWCCMessageData* pData = new CSWCCMessageData;
+            pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_UNKNOWN_197, NULL);
+            break;
+        }
         CSWSCreature* pTarget = g_pAppManager->GetServerExoApp()->
             GetCreatureByGameObjectID(oidCreature);
         CSWSPlayer* pClient = g_pAppManager->GetServerExoApp()->
@@ -3056,6 +3166,23 @@ int CSWSMessage::HandlePlayerToServerLevelUpMessage(CSWSPlayer* pPlayer,
         if (pCreature->m_pStats->CanLevelUp() != 0)
         {
             pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_LEVEL_UP, NULL);
+        }
+        if (pCreature->m_n1200 != 0)
+        {
+            for (int nNPC = 0; nNPC < CSWPartyTable::MAX_NPCS; nNPC++)
+            {
+                unsigned long oidNPC = g_pAppManager->GetServerExoApp()
+                    ->GetPartyTable()->GetPUPObject(nNPC, 0, 1);
+                if (oidNPC != OBJECT_INVALID)
+                {
+                    CSWSCreature* pNPC = g_pAppManager->GetServerExoApp()
+                        ->GetCreatureByGameObjectID(oidNPC);
+                    if (pNPC != NULL)
+                    {
+                        pNPC->HandleAlignmentInfluence();
+                    }
+                }
+            }
         }
     }
     return nResult;

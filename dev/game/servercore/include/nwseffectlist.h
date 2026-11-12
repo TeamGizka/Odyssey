@@ -54,7 +54,8 @@ public:
 
         STATE_FORCE_JUMP_TARGET = 13,
 
-        STATE_VARIANT_14 = 14, STATE_VARIANT_15 = 15, STATE_VARIANT_16 = 16
+        STATE_KNOCKDOWN = 14, STATE_VARIANT_16 = 16, STATE_VARIANT_18 = 18,
+        STATE_VARIANT_15 = 15, STATE_VARIANT_17 = 17, STATE_VARIANT_19 = 19
     };
     enum VisualEffectSelector
     {
@@ -108,7 +109,7 @@ public:
 
         ICON_ABILITY_DECREASE = 28,
 
-        ICON_PURE_EVIL_POWERS = 61,
+        ICON_PURE_EVIL_POWERS = 62,
 
         ICON_PURE_GOOD_POWERS = 60
     };
@@ -138,12 +139,16 @@ public:
 
 
     enum HealSelector { HEAL_FORCE_POINTS = 54 };
+    enum HealIntegerParameter { HEAL_INTEGER_NO_FEEDBACK = 2 };
+    enum DeathIntegerParameter { DEATH_INTEGER_NO_FADE_AWAY = 2 };
+    static const float PLACEABLE_AUTO_OPEN_DISTANCE;
     int OnApplyHeal(CSWSObject* pObject, CGameEffect* pEffect,
                     int bLoadingModule);
 
     enum PureEvilBonus
     {
-        PURE_EVIL_FORCE_POINT_BONUS = 50, PURE_EVIL_DAMAGE_BONUS = 8
+        PURE_EVIL_FORCE_POINT_BONUS = 50, PURE_EVIL_DAMAGE_BONUS = 8,
+        PURE_EVIL_ABILITY_BONUS = 3
     };
 
 
@@ -154,6 +159,7 @@ public:
     enum TrueSeeingScanLimit { TRUESEEING_LINKED_EFFECT_LIMIT = 75 };
 
     enum PureGoodBonus { PURE_GOOD_ABILITY_BONUS = 3 };
+    enum PoisonResistedSpell { SPELL_ID_7 = 7, SPELL_ID_38 = 38 };
 
 
     enum EntanglePenalty

@@ -295,7 +295,7 @@ int CSWSStore::LoadStore(CResGFF* pRes, CResStruct* pStruct, int bFromTemplate)
     return 1;
 }
 // PC 0x00571670
-int CSWSStore::AcquireItem(CSWSItem* pItem)
+int CSWSStore::AcquireItem(CSWSItem* pItem, int bAppend)
 {
     NWSSTORE_TRACE();
     if (pItem == NULL || pItem->m_bPlotObject != 0)
@@ -341,13 +341,19 @@ int CSWSStore::AcquireItem(CSWSItem* pItem)
     else
     {
         pItem->SetPossessor(m_nId, 1, 1, OBJECT_INVALID);
-        return AddItemToInventory(&pItem);
+        return AddItemToInventory(&pItem, bAppend);
     }
 }
 // PC 0x005710F0
-int CSWSStore::AddItemToInventory(CSWSItem** ppItem)
+int CSWSStore::AddItemToInventory(CSWSItem** ppItem, int bAppend)
 {
     NwsstoreTrace1();
+    if (bAppend)
+    {
+        m_pItemRepository->AddItem(ppItem, 1, 0, 1);
+        return 1;
+    }
+
     unsigned long nCost = (*ppItem)->GetCost();
     CSWSItem* pItem = m_pItemRepository->ItemListGetItem(0);
 

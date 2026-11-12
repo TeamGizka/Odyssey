@@ -50,19 +50,38 @@ CSWSRoom* CSWSArea::GetRoom(const Vector& vPosition, int* pnFace,
 
     if (pnFace != NULL) { *pnFace = -1; }
 
-    for (int nRoom = 0; nRoom < m_nRoomCount; nRoom++)
+    int nLastRoom = -1;
+    if (pnRoomIndex != NULL && (nLastRoom = *pnRoomIndex) >= 0 &&
+        nLastRoom < m_nRoomCount &&
+        m_pRooms[nLastRoom].CheckAABBWalkable(vTop, vBottom, hitInfo))
     {
-#ifdef _XBOX
-        if (DumpRoomBBox) { g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory); g_pExoBase->m_pExoDebug->FlushScriptLogFile(); }
-#endif
-        if (m_pRooms[nRoom].CheckAABBWalkable(vTop, vBottom, hitInfo))
+        pRoom = &m_pRooms[nLastRoom];
+        if (pnFace != NULL)
         {
-            pRoom = &m_pRooms[nRoom];
-            if (pnFace != NULL)
+            *pnFace = hitInfo.m_nField0C;
+        }
+    }
+    else
+    {
+        for (int nRoom = 0; nRoom < m_nRoomCount; nRoom++)
+        {
+#ifdef _XBOX
+            if (DumpRoomBBox) { g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory); g_pExoBase->m_pExoDebug->FlushScriptLogFile(); }
+#endif
+            if (nRoom != nLastRoom &&
+                m_pRooms[nRoom].CheckAABBWalkable(vTop, vBottom, hitInfo))
             {
-                *pnFace = hitInfo.m_nField0C;
+                pRoom = &m_pRooms[nRoom];
+                if (pnFace != NULL)
+                {
+                    *pnFace = hitInfo.m_nField0C;
+                }
+                if (pnRoomIndex != NULL)
+                {
+                    *pnRoomIndex = nRoom;
+                }
+                break;
             }
-            break;
         }
     }
     return pRoom;
@@ -111,7 +130,7 @@ int CSWSArea::GetRoomForceRating(const Vector& vPosition)
         return 0;
     }
     int nRoom = GetRoomIndex(vPosition, 0);
-    return m_pnRoomForceRating[m_p29C[nRoom]];
+    return m_pnRoomForceRating[m_pnRoomAudioIndex[nRoom]];
 }
 // PC 0x004FC420
 unsigned char CSWSArea::GetRoomDisableWeather(const Vector& vPosition)
@@ -121,7 +140,7 @@ unsigned char CSWSArea::GetRoomDisableWeather(const Vector& vPosition)
         return 0;
     }
     int nRoom = GetRoomIndex(vPosition, 0);
-    return m_pbRoomDisableWeather[m_p29C[nRoom]];
+    return m_pbRoomDisableWeather[m_pnRoomAudioIndex[nRoom]];
 }
 // PC 0x004FC460
 float CSWSArea::ComputePathDistance(int nPoints, float* pfPoints)
@@ -335,7 +354,9 @@ int CSWSArea::NoNoneWalkPolysInStaticObject(
 // PC 0x004FCAB0
 void CSWSArea::PathPointDFSTransTableInitialize()
 {
-    if (m_pPathPointTransTable == NULL)
+    if (m_pPathPointTransTable == NULL ||
+        IsBadWritePtr(m_pPathPointTransTable,
+                      512 * sizeof(CSWSAreaPathPointTransEntry)))
     {
         m_pPathPointTransTable = new CSWSAreaPathPointTransEntry[512];
     }
@@ -446,11 +467,11 @@ int CSWSArea::SetHitInfoForCreature(const Vector& vCenter, float fRadius,
 }
 // PC 0x004FCF90
 float CSWSArea::ComputeHeight(const Vector& vPosition, int bUseFace,
-                              CSWSRoom** ppRoom, int* pnFace)
+                              CSWSRoom** ppRoom, int* pnRoomIndex)
 {
     float fHeight = 0.0f;
     int nFace;
-    CSWSRoom* pRoom = GetRoom(vPosition, &nFace);
+    CSWSRoom* pRoom = GetRoom(vPosition, &nFace, pnRoomIndex);
 
     if (ppRoom != NULL)
     {
@@ -636,7 +657,6 @@ int CSWSArea::TestDirectLine(const Vector& vStart, const Vector& vEnd,
                 }
                 else
                 {
-                    equal(vClippedStart, vClippedEnd);
 #ifdef _XBOX
                     CSWSRoom* pNextRoom = &m_pRooms[nRoom]; CResRef cNextRoom = pNextRoom->m_cResRef; CResRef cRoom = pRoom->m_cResRef;
                     if (cRoom != cNextRoom) {}
@@ -1253,8 +1273,109 @@ int CSWSArea::ComputeSafeLocation(const Vector& vPosition, float fRadius,
     float fX;
     float fY;
     float fMaxHeight;
-    for (float fDistance = AREA_SAFE_LOCATION_INITIAL_RADIUS;
-         fDistance < fRadius; fDistance += fStep)
+    if (fRadius > 0.0f)
+    {
+        for (float fDistance = AREA_SAFE_LOCATION_INITIAL_RADIUS;
+             fDistance < fRadius; fDistance += fStep)
+        {
+            float fMinX = vPosition.m_fX - fDistance;
+            float fMaxX = fDistance + vPosition.m_fX;
+            float fMinY = vPosition.m_fY - fDistance;
+            float fMaxY = fDistance + vPosition.m_fY;
+            for (fX = fMinX; fX <= fMaxX; fX += fStep)
+            {
+                for (fY = fMinY; fY <= fMaxY; fY += fMaxY - fMinY)
+                {
+                    vTest.m_fX = fX;
+                    vTest.m_fY = fY;
+                    vTest.m_fZ = ComputeHeight(vTest, 0, NULL);
+                    if (TestSafeLocationPoint(vTest, pPathfind) == 1)
+                    {
+                        if (vTest.m_fZ < vPosition.m_fZ)
+                        {
+                            fMinHeight = vTest.m_fZ;
+                            fMaxHeight = vPosition.m_fZ;
+                        }
+                        else
+                        {
+                            fMaxHeight = vTest.m_fZ;
+                            fMinHeight = vPosition.m_fZ;
+                        }
+                        fMinHeight -= AREA_SAFE_LOCATION_VERTICAL_RADIUS;
+                        fMaxHeight += pPathfind->m_fHalfStep;
+                        if (bCheckLine)
+                        {
+                            float fWidth = pPathfind->m_fStepScale;
+                            float fHeight = pPathfind->m_fHalfStep;
+                            int nResult = TestDirectLine(vTest, vPosition, fWidth,
+                                                         fHeight, 0, NULL);
+                            if (nResult != DIRECT_LINE_CLEAR &&
+                                nResult != DIRECT_LINE_BLOCKED_CREATURE)
+                            {
+                                continue;
+                            }
+                            if (!NoNonWalkPolysInDoors(vTest, vPosition, fMinHeight,
+                                    fMaxHeight, fStep, OBJECT_INVALID, oidHit, NULL, 1, 0))
+                            {
+                                continue;
+                            }
+                        }
+                        *pSafePosition = vTest;
+                        return 1;
+                    }
+                }
+            }
+            for (fX = fMinX; fX <= fMaxX; fX += fMaxX - fMinX)
+            {
+                for (fY = fMinY + fStep; fY <= fMaxY - fStep; fY += fStep)
+                {
+                    vTest.m_fX = fX;
+                    vTest.m_fY = fY;
+                    vTest.m_fZ = ComputeHeight(vTest, 0, NULL);
+                    if (TestSafeLocationPoint(vTest, pPathfind) == 1)
+                    {
+                        if (vTest.m_fZ < vPosition.m_fZ)
+                        {
+                            fMinHeight = vTest.m_fZ;
+                            fMaxHeight = vPosition.m_fZ;
+                        }
+                        else
+                        {
+                            fMaxHeight = vTest.m_fZ;
+                            fMinHeight = vPosition.m_fZ;
+                        }
+                        float fHeight = pPathfind->m_fHalfStep;
+                        if (bCheckLine)
+                        {
+                            float fWidth = pPathfind->m_fStepScale;
+                            float fLineHeight = pPathfind->m_fHalfStep;
+                            if (!TestDirectLine(vTest, vPosition, fWidth,
+                                                fLineHeight, 0, NULL))
+                            {
+                                continue;
+                            }
+                            fMinHeight -= AREA_SAFE_LOCATION_VERTICAL_RADIUS;
+                            fMaxHeight += fHeight;
+                            if (!NoNonWalkPolysInDoors(vTest, vPosition,
+                                    fMinHeight, fMaxHeight, fStep,
+                                    OBJECT_INVALID, oidHit, NULL, 1, 0))
+                            {
+                                continue;
+                            }
+                        }
+                        *pSafePosition = vTest;
+                        return 1;
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+
+    float fMaxDistance = fRadius * -1.0f;
+    if (fMaxDistance < fStep)
+        fMaxDistance = fStep;
+    for (float fDistance = fStep; fDistance <= fMaxDistance; fDistance += fStep)
     {
         float fMinX = vPosition.m_fX - fDistance;
         float fMaxX = fDistance + vPosition.m_fX;

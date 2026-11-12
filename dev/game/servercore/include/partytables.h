@@ -42,7 +42,7 @@ public:
     int GetPUPID(unsigned long oidObject);
     void ClearPuppets();
     int ClearPuppet(int nPUP);
-    CExoString GetPCName() { return m_sPCName; }
+    CExoString GetPCName();
     CExoString GetPCFirstName();
     CExoString GetPCLastName();
     unsigned long GetNextPC();

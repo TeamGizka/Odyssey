@@ -255,7 +255,7 @@ CSWSCreature* CSWPartyTable::GetPUPOwner(int nPUP)
         {
             unsigned long oidNPC = GetNPCObject(m_anMembers[i], 0, 1);
             CSWSCreature* pCreature =
-                g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(oidNPC);
+                g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidNPC);
             if (pCreature != NULL && pCreature->m_n11F8 == nPUP)
             {
                 return pCreature;
@@ -1599,6 +1599,11 @@ int CSWPartyTable::ResetCurrentSessionStartTime()
         ftNow.dwLowDateTime | ((__int64)ftNow.dwHighDateTime << 32);
     return ftNow.dwLowDateTime;
 }
+// PC 0x004EA0C0
+CExoString CSWPartyTable::GetPCName()
+{
+    return m_sPCName;
+}
 // PC 0x0057A3B0
 CExoString CSWPartyTable::GetPCFirstName()
 {
@@ -2467,7 +2472,7 @@ int CSWPartyTable::SwitchPlayerCharacter(int nNPC)
         }
 
         CSWSCreature* pOldPlayer =
-            g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
+            g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
                 m_aoidNPC[m_nControlledNPC]);
         pOldPlayer->GetStats()->m_bIsPC = 0;
         pOldPlayer->m_nAreaWaitState = 0;
@@ -2640,7 +2645,7 @@ int CSWPartyTable::KillNPCObject(int nNPC, int bFade)
     }
 
     CSWSCreature* pCreature =
-        g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
+        g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
             m_aoidNPC[nNPC]);
     m_aoidNPC[nNPC] = OBJECT_INVALID;
     if (pCreature != NULL)
