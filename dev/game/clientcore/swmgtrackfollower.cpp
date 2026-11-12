@@ -543,6 +543,7 @@ Gob* CSWTrackFollower::GetModel(int nIndex)
 
 void OnReportKey(CAurObject* pObject, char* sEvent, void* pUserData)
 {
+#ifdef _XBOX
     CSWMiniGame* pMiniGame = g_pAppManager->m_pClientExoApp->GetMiniGame();
     if (pMiniGame->m_bUseInertia)
     {
@@ -569,6 +570,7 @@ void OnReportKey(CAurObject* pObject, char* sEvent, void* pUserData)
             pPlayer->m_lstOrientationKeys.Add(key);
         }
     }
+#endif
 }
 
 void CSWTrackFollower::UpdateGunBanks()
@@ -1278,18 +1280,6 @@ CExoString CSWMGObstacle::GetName()
     return CExoString("");
 }
 
-#ifndef _XBOX
-template <> void CExoArrayList<CSWMGGunBank*>::Remove(CSWMGGunBank* value)  // PC 0x004E3B70
-{
-    int nIndex;
-    for (nIndex = 0; nIndex < num; nIndex++)
-    {
-        if ((*this)[nIndex] == value)
-            break;
-    }
-    DelIndex(nIndex);
-}
-#endif
 // PC 0x006C3D10
 CSWMiniPlayer::CSWMiniPlayer(CSWMiniGame* pMiniGame)
     : CSWTrackFollower(pMiniGame, SWMG_OBJECT_PLAYER)

@@ -159,7 +159,7 @@ void CSWGuiTitleMusic::OnNextPicked(CSWGuiControl* pControl)
 // PC 0x0074C850
 void CSWGuiTitleMusic::Draw(float fElapsed)
 {
-    if (m_bPlaying && !m_bLooping && m_pStreamingSound->GetPlayFailed())
+    if (m_bPlaying && !m_bLooping && m_pStreamingSound->IsDone())
     {
         OnNextPicked(NULL);
     }
@@ -204,7 +204,7 @@ void CSWGuiTitleMusic::PopulateSongList()
                           (CSWGuiHandler)&CSWGuiTitleMusic::OnPlayPicked);
         pButton->AddEvent(GUIEVENT_MOUSE_ENTER, this,
                           (CSWGuiHandler)&CSWGuiTitleMusic::OnSongPicked);
-        pButton->m_bFocusable = 0;
+        pButton->SetFocusable(0);
         aControls.Add(pButton);
     }
     m_lbMusic.AddControls(aControls, 1, 0, 0);
@@ -235,27 +235,27 @@ CSWGuiTitleMusic::CSWGuiTitleMusic(CSWGuiManager* pManager)
 
     m_btnPlay.AddEvent(GUIEVENT_ACTIVATE, this,
                        (CSWGuiHandler)&CSWGuiTitleMusic::OnPlayPicked);
-    m_btnPlay.m_bFocusable = 0;
+    m_btnPlay.SetFocusable(0);
     m_btnPlay.m_nClickSound = CSWGuiControl::GUISOUND_NONE;
     m_btnPlay.m_nFocusSound = CSWGuiControl::GUISOUND_NONE;
     m_btnLoop.AddEvent(GUIEVENT_ACTIVATE, this,
                        (CSWGuiHandler)&CSWGuiTitleMusic::OnLoopPicked);
-    m_btnLoop.m_bFocusable = 0;
+    m_btnLoop.SetFocusable(0);
     m_btnLoop.m_nClickSound = CSWGuiControl::GUISOUND_NONE;
     m_btnLoop.m_nFocusSound = CSWGuiControl::GUISOUND_NONE;
     m_btnStop.AddEvent(GUIEVENT_ACTIVATE, this,
                        (CSWGuiHandler)&CSWGuiTitleMusic::OnStopPicked);
-    m_btnStop.m_bFocusable = 0;
+    m_btnStop.SetFocusable(0);
     m_btnStop.m_nClickSound = CSWGuiControl::GUISOUND_NONE;
     m_btnStop.m_nFocusSound = CSWGuiControl::GUISOUND_NONE;
     m_btnNext.AddEvent(GUIEVENT_ACTIVATE, this,
                        (CSWGuiHandler)&CSWGuiTitleMusic::OnNextPicked);
-    m_btnNext.m_bFocusable = 0;
+    m_btnNext.SetFocusable(0);
     m_btnNext.m_nClickSound = CSWGuiControl::GUISOUND_NONE;
     m_btnNext.m_nFocusSound = CSWGuiControl::GUISOUND_NONE;
     m_btnBack.AddEvent(GUIEVENT_ACTIVATE, this,
                        (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
-    m_btnBack.m_bFocusable = 0;
+    m_btnBack.SetFocusable(0);
     m_btnBack.m_nClickSound = CSWGuiControl::GUISOUND_NONE;
     m_btnBack.m_nFocusSound = CSWGuiControl::GUISOUND_NONE;
 

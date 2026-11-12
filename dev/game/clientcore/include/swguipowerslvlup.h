@@ -56,6 +56,7 @@ public:
     void OnPowerPicked(unsigned long nPower);
 #ifndef _XBOX
     void OnDoubleClick(CSWGuiControl* pControl);
+    void ShowGranted(CSWGuiControl* pControl);
 #endif
 
     CSWCCreature* m_pCreature;

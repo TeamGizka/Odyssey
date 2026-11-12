@@ -5,6 +5,7 @@
 #include "nwccreaturestats.h"
 #include "nwspell.h"
 #include "guiingame.h"
+#include "swguiingametutorialbox.h"
 #include "swguiingame.h"
 #include "swguileveluppanel.h"
 #include "swguipowerslvlup.h"
@@ -99,15 +100,41 @@ CSWGuiPowersLevelUp::~CSWGuiPowersLevelUp()
     m_lbDescription.ClearItems();
     m_lbPowers.ClearItems();
 }
-
+// PC 0x007622D0
 void CSWGuiPowersLevelUp::OnPanelAdded()
 {
-#ifndef _XBOX
-    CSWGuiPanel::OnPanelAdded();
-#endif
+#ifdef _XBOX
     g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0x13, OBJECT_INVALID,
                                                        OBJECT_INVALID, 0);
+#else
+    CSWGuiPanel::OnPanelAdded();
+    if (m_bShowGrantedTutorial)
+    {
+        if (g_pAppManager->m_pClientExoApp->ShowTutorialWindow(
+                0x13, OBJECT_INVALID, OBJECT_INVALID, 0))
+        {
+            CGuiInGame* pGui =
+                g_pAppManager->m_pClientExoApp->GetInGameGui();
+            pGui->m_pTutorialBox->SetCallback(
+                this, (CSWGuiHandler)&CSWGuiPowersLevelUp::ShowGranted, NULL);
+        }
+        else
+        {
+            CGuiInGame* pGui =
+                g_pAppManager->m_pClientExoApp->GetInGameGui();
+            m_pManager->AddPanel(pGui->m_pSkillInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+        }
+    }
+#endif
 }
+#ifndef _XBOX
+// PC 0x00761FF0
+void CSWGuiPowersLevelUp::ShowGranted(CSWGuiControl* pControl)
+{
+    CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
+    m_pManager->AddPanel(pGui->m_pSkillInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+}
+#endif
 // PC 0x00762020
 void CSWGuiPowersLevelUp::HandleCancelButton()
 {
