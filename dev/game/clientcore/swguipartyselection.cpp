@@ -13,6 +13,7 @@
 #include "nwscript.h"
 #include "swguipartyselection.h"
 #include "guiingame.h"
+#include "nwmessage.h"
 #include "nwccreature.h"
 #include "nwccreaturestats.h"
 #include "nwccreatureappearance.h"

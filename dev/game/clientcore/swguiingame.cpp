@@ -481,8 +481,7 @@ CSWGuiToolTipPanel::CSWGuiToolTipPanel(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
     SwguiingameTrace2();
-    CResRef cLayout("tooltip8X6_p");
-    StartLoadFromLayout(cLayout);
+    StartLoadFromLayout("tooltip8X6_p");
     InitControl(m_lblToolTip, "tooltip", 1);
     StopLoadFromLayout();
 }
