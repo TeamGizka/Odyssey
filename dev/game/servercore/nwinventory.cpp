@@ -1,6 +1,7 @@
 #include "appmanager.h"
 #include "serverexoapp.h"
 #include "nwitem.h"
+#include "nwrules.h"
 #include "gameobjectarray.h"
 #include "nwsitem.h"
 // PC 0x005ECEC0
@@ -14,6 +15,76 @@ CSWInventory::CSWInventory()
 
 CSWInventory::~CSWInventory()
 {
+}
+// PC 0x005ECEE0
+unsigned long CSWInventory::FindSlot(unsigned long nBaseItem)
+{
+    unsigned long nSlots = g_pRules->m_pBaseItems->GetBaseItem(nBaseItem)->m_nEquipableSlots;
+    if (nSlots & INVENTORY_SLOT_HEAD)
+    {
+        return INVENTORY_SLOT_HEAD;
+    }
+    if (nSlots & INVENTORY_SLOT_ARMOUR)
+    {
+        return INVENTORY_SLOT_ARMOUR;
+    }
+    if (nSlots & INVENTORY_SLOT_BOOTS)
+    {
+        return INVENTORY_SLOT_BOOTS;
+    }
+    if (nSlots & INVENTORY_SLOT_HANDS)
+    {
+        return INVENTORY_SLOT_HANDS;
+    }
+    if (nSlots & INVENTORY_SLOT_RIGHTHAND)
+    {
+        return INVENTORY_SLOT_RIGHTHAND;
+    }
+    if (nSlots & INVENTORY_SLOT_LEFTHAND)
+    {
+        return INVENTORY_SLOT_LEFTHAND;
+    }
+    if (nSlots & INVENTORY_SLOT_LEFTRING)
+    {
+        return INVENTORY_SLOT_LEFTRING;
+    }
+    if (nSlots & INVENTORY_SLOT_RIGHTRING)
+    {
+        return INVENTORY_SLOT_RIGHTRING;
+    }
+    if (nSlots & INVENTORY_SLOT_NECK)
+    {
+        return INVENTORY_SLOT_NECK;
+    }
+    if (nSlots & INVENTORY_SLOT_BELT)
+    {
+        return INVENTORY_SLOT_BELT;
+    }
+    if (nSlots & INVENTORY_SLOT_ARMS)
+    {
+        return INVENTORY_SLOT_ARMS;
+    }
+    if (nSlots & INVENTORY_SLOT_CREATUREWEAPON1)
+    {
+        return INVENTORY_SLOT_CREATUREWEAPON1;
+    }
+    if (nSlots & INVENTORY_SLOT_CREATUREWEAPON2)
+    {
+        return INVENTORY_SLOT_CREATUREWEAPON2;
+    }
+    if (nSlots & INVENTORY_SLOT_CREATUREWEAPON3)
+    {
+        return INVENTORY_SLOT_CREATUREWEAPON3;
+    }
+    if (nSlots & INVENTORY_SLOT_CREATUREARMOUR)
+    {
+        return INVENTORY_SLOT_CREATUREARMOUR;
+    }
+    if (nSlots & INVENTORY_SLOT_RIGHTHAND2)
+    {
+        return INVENTORY_SLOT_RIGHTHAND2;
+    }
+    return nSlots & INVENTORY_SLOT_LEFTHAND2;
 }
 // PC 0x005ECFD0
 int CSWInventory::GetItemInInventory(CSWSItem* pItem)

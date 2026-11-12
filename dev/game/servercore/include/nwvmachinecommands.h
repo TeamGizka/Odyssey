@@ -1428,6 +1428,9 @@ public:
     int ExecuteCommandSetCreatureAILevel(int nCommand, int nArgs);
     int ExecuteCommandChangeObjectAppearance(int nCommand, int nArgs);
     int ExecuteCommandResetCreatureAILevel(int nCommand, int nArgs);
+    int ExecuteCommandCreatureFlourishWeapon(int nCommand, int nArgs);
+    int ExecuteCommandPlayOverlayAnimation(int nCommand, int nArgs);
+    int ExecuteCommandEnableRendering(int nCommand, int nArgs);
     int ExecuteCommandEffectBlind(int nCommand, int nArgs);
     int ExecuteCommandEffectCrush(int nCommand, int nArgs);
     int ExecuteCommandEffectFactionModifier(int nCommand, int nArgs);
@@ -1572,6 +1575,7 @@ public:
     int ExecuteCommandSWMG_SetLateralAccelPerSec(int nCommand, int nArgs);
     int ExecuteCommandSWMG_GetLateralAccelPerSec(int nCommand, int nArgs);
     int ExecuteCommandSWMG_GetSwoopUpgrade(int nCommand, int nArgs);
+    int ExecuteCommandSWMG_GetTrackPosition(int nCommand, int nArgs);
     int ExecuteCommandSWMG_SetJumpSpeed(int nCommand, int nArgs);
     int ExecuteCommandSWMG_PlayerApplyForce(int nCommand, int nArgs);
     void InitializeSWMGCommands();

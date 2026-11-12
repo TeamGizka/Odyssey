@@ -64,6 +64,7 @@ public:
             return NULL;
         return &m_sScripts[nScript];
     }
+    void SetScript(int nScript, const CExoString& sScript) { m_sScripts[nScript] = sScript; }
 
     enum AnimationState
     {

@@ -486,6 +486,7 @@ CSWSTrigger::CSWSTrigger(unsigned long oidId)
     m_nFaction = 0;
     m_nTrapDetectDC = 0;
     m_nTrapDisarmDC = 0;
+    m_nOwnerDemolitionsSkill = 0;
 
     for (int i = 0; i < 7; i++)
     {

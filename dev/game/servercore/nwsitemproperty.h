@@ -137,6 +137,14 @@ public:
     int ApplyDisguise(CSWSItem* pItem, CSWItemProperty* pProperty,
                       CSWSCreature* pCreature, unsigned long nIndex,
                       int bLoading);
+    int ApplyDampenSound(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading);
+    int RemoveDampenSound(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex);
+    int ApplyDoorCutting(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading);
+    int ApplyDoorSabering(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading);
+    int ApplySniperBonus(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading);
+    int ApplyRapidShotBonus(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading);
+    int ApplyMaxDexBonus(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading);
+    int RemoveMaxDexBonus(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex);
     int RemoveEnhancementBonus(CSWSItem* pItem, CSWItemProperty* pProperty,
                                CSWSCreature* pCreature, unsigned long nIndex);
     int RemoveEnhancementPenalty(CSWSItem* pItem, CSWItemProperty* pProperty,

@@ -391,6 +391,7 @@ public:
 
     virtual ~CSWInventory();
 
+    unsigned long FindSlot(unsigned long nBaseItem);
     int GetItemInInventory(CSWSItem* pItem);
     unsigned long GetSlotFromItem(CSWSItem* pItem);
     unsigned long* GetSlotPointer(unsigned long nSlot);

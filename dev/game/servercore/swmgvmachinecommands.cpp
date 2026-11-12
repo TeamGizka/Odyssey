@@ -78,6 +78,20 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetSwoopUpgrade(int nCommand, 
     }
     return g_pVirtualMachine->StackPushInteger(nUpgrade) != 0 ? 0 : -2000;
 }
+// PC 0x006193D0
+int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetTrackPosition(int nCommand, int nArgs)
+{
+    unsigned long oidFollower;
+    Vector vPosition(0.0f, 0.0f, 0.0f);
+
+    if (g_pVirtualMachine->StackPopObject(&oidFollower) != 0)
+    {
+        CSWMiniGameObject* pObject = (CSWMiniGameObject*)g_pAppManager->GetClientExoApp()->GetMGOArray()->GetMiniGameObject(oidFollower, SWMG_OBJECT_ANY);
+        CSWTrackFollower* pFollower = pObject->AsFollower();
+        vPosition = pFollower->m_pTrack->GetPosition();
+    }
+    return g_pVirtualMachine->StackPushVector(vPosition) != 0 ? 0 : -2000;
+}
 // PC 0x00619550
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetJumpSpeed(int nCommand, int nArgs)
 {
@@ -1668,6 +1682,8 @@ void CSWVirtualMachineCommands::InitializeSWMGCommands()
         &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetLateralAccelPerSec;
     m_pCommands[COMMAND_SWMG_GET_SWOOP_UPGRADE] =
         &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetSwoopUpgrade;
+    m_pCommands[COMMAND_SWMG_GET_TRACK_POSITION] =
+        &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetTrackPosition;
     m_pCommands[COMMAND_SWMG_SET_JUMP_SPEED] =
         &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetJumpSpeed;
     m_pCommands[COMMAND_SWMG_PLAYER_APPLY_FORCE] =

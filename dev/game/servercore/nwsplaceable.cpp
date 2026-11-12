@@ -60,7 +60,12 @@ CSWSPlaceable::CSWSPlaceable(unsigned long oidSelf)
     m_bTrapDetectable = 1;
     m_bTrapDisarmable = 1;
     m_bTrapOneShot = 1;
+    m_nOpenLockDiff = 1;
     m_nOpenLockDC = 0;
+    m_nOpenLockDiffMod = 0;
+    m_nOwnerDemolitionsSkill = 0;
+    m_bUseTweakColor = 0;
+    m_nTweakColor = 0;
     m_nTrapType = -1;
     m_bGroundPile = 0;
     m_bDieWhenEmpty = 0;
@@ -85,6 +90,7 @@ CSWSPlaceable::CSWSPlaceable(unsigned long oidSelf)
     m_oidBodyBagCreature = OBJECT_INVALID;
     m_bIsCorpse = 0;
     m_bInventoryOpening = 0;
+    m_pTrapTrigger = NULL;
 }
 // PC 0x0058A6B0
 int CSWSPlaceable::LoadFromTemplate(const CResRef& cResRef, int bLoadState)
@@ -639,7 +645,7 @@ void CSWSPlaceable::AddToArea(CSWSArea* pArea, const Vector& vPosition,
         int nHostile;
         {
             CExoString sColumn("PreciseUse");
-            unsigned char nAppearance = m_nAppearance;
+            unsigned long nAppearance = m_nAppearance;
             CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
             C2DA* pPlaceables = p2DArrays->m_pPlaceables;
             pPlaceables->GetINTEntry(nAppearance, sColumn, &nPreciseUse);
@@ -648,7 +654,7 @@ void CSWSPlaceable::AddToArea(CSWSArea* pArea, const Vector& vPosition,
         m_bPreciseUse = bPreciseUse;
         {
             CExoString sColumn("Hostile");
-            unsigned char nAppearance = m_nAppearance;
+            unsigned long nAppearance = m_nAppearance;
             CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
             C2DA* pPlaceables = p2DArrays->m_pPlaceables;
             pPlaceables->GetINTEntry(nAppearance, sColumn, &nHostile);
@@ -657,7 +663,7 @@ void CSWSPlaceable::AddToArea(CSWSArea* pArea, const Vector& vPosition,
         m_bHostile = bHostile;
         {
             CExoString sColumn("ModelName");
-            unsigned char nAppearance = m_nAppearance;
+            unsigned long nAppearance = m_nAppearance;
             CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
             C2DA* pPlaceables = p2DArrays->m_pPlaceables;
             pPlaceables->GetCExoStringEntry(nAppearance, sColumn, &sModelName);
@@ -766,8 +772,23 @@ int CSWSPlaceable::AcquireItem(CSWSItem** ppItem, unsigned long oidPossessor,
     CItemRepository* pRepository = m_pcItemRepository;
     unsigned long oidPreviousPossessor = OBJECT_INVALID;
 
-    if ((*ppItem)->m_oidPossessor != oidPossessor)
-        return 0;
+    unsigned long oidItemPossessor = (*ppItem)->m_oidPossessor;
+    if (oidItemPossessor != oidPossessor)
+    {
+        CGameObject* pItemPossessor =
+            g_pAppManager->m_pServerExoApp->GetGameObject(oidItemPossessor);
+        CGameObject* pNewPossessor =
+            g_pAppManager->m_pServerExoApp->GetGameObject(oidPossessor);
+        if (pItemPossessor == NULL ||
+            pItemPossessor->AsSWSCreature() == NULL ||
+            !pItemPossessor->AsSWSCreature()->GetInParty() ||
+            pNewPossessor == NULL ||
+            pNewPossessor->AsSWSCreature() == NULL ||
+            !pNewPossessor->AsSWSCreature()->GetInParty())
+        {
+            return 0;
+        }
+    }
 
     if (pObjectArray->GetGameObject(oidPossessor, &pPossessor) ==
             CGameObjectArray::SUCCESS && pPossessor != NULL)
@@ -1012,7 +1033,7 @@ void CSWSPlaceable::SetLightIsOn(int bLightIsOn)  // PC 0x005879B0
         bool bFailed;
         {
             CExoString sColumn("LightColor");
-            unsigned char nAppearance = m_nAppearance;
+            unsigned long nAppearance = m_nAppearance;
             CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
             C2DA* pPlaceables = p2DArrays->m_pPlaceables;
             bFailed = !pPlaceables->GetINTEntry(nAppearance, sColumn, &nLightColor);
@@ -1031,7 +1052,7 @@ int CSWSPlaceable::GetLightIsOn()  // PC 0x00587A60
     bool bFailed;
     {
         CExoString sColumn("LightColor");
-        unsigned char nAppearance = m_nAppearance;
+        unsigned long nAppearance = m_nAppearance;
         CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
         C2DA* pPlaceables = p2DArrays->m_pPlaceables;
         bFailed = !pPlaceables->GetINTEntry(nAppearance, sColumn, &nLightColor);
@@ -1139,16 +1160,21 @@ void CSWSPlaceable::OpenInventory(unsigned long oidOpener, int bAnimate)
             GetServerExoApp()->GetSWSMessage()
                 ->SendServerToPlayerGuiContainerObject_Open(
                     pPlayer, oidObject, bHasItems);
+
+            CScriptEvent* pEvent = new CScriptEvent;
+            pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_OPEN;
+            GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                0, 0, oidOpener, GetId(), CServerAIMaster::EVENT_SIGNAL_EVENT,
+                pEvent);
+
+            if (bAnimate != 0)
+                SetAnimation(PLACEABLE_ANIMATION_OPEN);
+            m_bOpen = 1;
         }
-
-        CScriptEvent* pEvent = new CScriptEvent;
-        pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_OPEN;
-        GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-            0, 0, oidOpener, GetId(), CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
-
-        if (bAnimate != 0)
-            SetAnimation(PLACEABLE_ANIMATION_OPEN);
-        m_bOpen = 1;
+        else
+        {
+            SetAnimation(PLACEABLE_ANIMATION_CLOSED);
+        }
     }
 }
 // PC 0x0058A060

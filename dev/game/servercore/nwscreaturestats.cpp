@@ -1857,8 +1857,86 @@ void CSWSCreatureStats::GetTotalDamageRange(CSWSCreature* pCreature,
 
         if (pItem->GetBaseItem()->m_nRangedWeapon <= 0)
         {
-            nMinDamage += m_nStrengthModifier;
-            nMaxDamage += m_nStrengthModifier;
+            int nStrengthBonus;
+            if (bOffHand)
+            {
+                nStrengthBonus = (int)(m_nStrengthModifier * 0.5f);
+            }
+            else if (pCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_LEFTHAND) != NULL)
+            {
+                nStrengthBonus = m_nStrengthModifier;
+            }
+            else if (pItem->GetBaseItem()->m_nWeaponWield == CSWBaseItem::WIELD_DOUBLE_WEAPON ||
+                     pItem->GetBaseItem()->m_nWeaponWield == CSWBaseItem::WEAPON_WIELD_ONE_HANDED_2)
+            {
+                nStrengthBonus = m_nStrengthModifier > 0 ? (int)(m_nStrengthModifier * 1.5f) : m_nStrengthModifier;
+            }
+            else
+            {
+                nStrengthBonus = m_nStrengthModifier;
+            }
+            nMinDamage += nStrengthBonus;
+            nMaxDamage += nStrengthBonus;
+
+            if (HasFeat(155) || HasFeat(174))
+            {
+                nMinDamage += 6;
+                nMaxDamage += 6;
+            }
+            else if (HasFeat(154) || HasFeat(173))
+            {
+                nMinDamage += 4;
+                nMaxDamage += 4;
+            }
+            else if (HasFeat(153) || HasFeat(172))
+            {
+                nMinDamage += 2;
+                nMaxDamage += 2;
+            }
+        }
+        else
+        {
+            if (HasFeat(155))
+            {
+                nMinDamage += 6;
+                nMaxDamage += 6;
+            }
+            else if (HasFeat(154))
+            {
+                nMinDamage += 4;
+                nMaxDamage += 4;
+            }
+            else if (HasFeat(153))
+            {
+                nMinDamage += 2;
+                nMaxDamage += 2;
+            }
+
+            if (HasFeat(244))
+            {
+                nMinDamage += 8;
+                nMaxDamage += 8;
+            }
+            else if (HasFeat(243))
+            {
+                nMinDamage += 6;
+                nMaxDamage += 6;
+            }
+            else if (HasFeat(242))
+            {
+                nMinDamage += 4;
+                nMaxDamage += 4;
+            }
+            else if (HasFeat(241))
+            {
+                nMinDamage += 2;
+                nMaxDamage += 2;
+            }
+            else if (HasFeat(240))
+            {
+                nMinDamage += 1;
+                nMaxDamage += 1;
+            }
         }
 
         if (GetWeaponSpecialization(pItem))
@@ -1877,6 +1955,63 @@ void CSWSCreatureStats::GetTotalDamageRange(CSWSCreature* pCreature,
         {
             nMinDamage += m_nStrengthModifier;
             nMaxDamage += m_nStrengthModifier;
+        }
+
+        if (HasFeat(211))
+        {
+            nMinDamage += 3;
+            nMaxDamage += 12;
+        }
+        else if (HasFeat(210))
+        {
+            nMinDamage += 2;
+            nMaxDamage += 8;
+        }
+        else if (HasFeat(209))
+        {
+            nMinDamage += 1;
+            nMaxDamage += 4;
+        }
+
+        if (HasFeat(219))
+        {
+            nMinDamage += 8;
+            nMaxDamage += 32;
+        }
+        else if (HasFeat(218))
+        {
+            nMinDamage += 7;
+            nMaxDamage += 28;
+        }
+        else if (HasFeat(217))
+        {
+            nMinDamage += 6;
+            nMaxDamage += 24;
+        }
+        else if (HasFeat(216))
+        {
+            nMinDamage += 5;
+            nMaxDamage += 20;
+        }
+        else if (HasFeat(215))
+        {
+            nMinDamage += 4;
+            nMaxDamage += 16;
+        }
+        else if (HasFeat(214))
+        {
+            nMinDamage += 3;
+            nMaxDamage += 12;
+        }
+        else if (HasFeat(213))
+        {
+            nMinDamage += 2;
+            nMaxDamage += 8;
+        }
+        else if (HasFeat(212))
+        {
+            nMinDamage += 1;
+            nMaxDamage += 4;
         }
     }
 
@@ -2232,11 +2367,50 @@ unsigned char CSWSCreatureStats::GetBaseReflexSavingThrow()
     return nBonus;
 }
 // PC 0x005F9750
-void CSWSCreatureStats::ModifyAlignment(short nAdjustment)
+void CSWSCreatureStats::ModifyAlignment(short nAdjustment, int bNoPartyUpdate)
 {
-    short nAlignment = max(0, min(100, m_nGoodEvilAlignment + nAdjustment));
+    if (m_pCreature->m_bPlayerCreated)
+    {
+        short nCurrent = m_nGoodEvilAlignment;
+        short nAlignment = max(0, min(100, nCurrent + nAdjustment));
 
-    m_nGoodEvilAlignment = min(100, max(0, nAlignment));
+        m_nGoodEvilAlignment = min(100, max(0, nAlignment));
+
+        if (!bNoPartyUpdate)
+        {
+            {
+                CExoString sVariable("G_PC_Align_Val");
+                g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(sVariable, (char)nAlignment);
+            }
+
+            for (int i = 0; i < 12; i++)
+            {
+                unsigned long oidNPC = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetNPCObject(i, 0, 1);
+                if (oidNPC != OBJECT_INVALID)
+                {
+                    CSWSCreature* pNPC = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidNPC);
+                    if (pNPC != NULL)
+                    {
+                        pNPC->HandleAlignmentInfluence();
+                    }
+                }
+            }
+        }
+    }
+    else if (m_pCreature->m_bInParty)
+    {
+        short nAlignment = max(0, min(100, m_n18C + nAdjustment));
+
+        m_n18C = min(100, max(-1, nAlignment));
+
+        m_pCreature->HandleAlignmentInfluence();
+    }
+    else
+    {
+        short nAlignment = max(0, min(100, m_nGoodEvilAlignment + nAdjustment));
+
+        m_nGoodEvilAlignment = min(100, max(0, nAlignment));
+    }
 
     if (m_pCreature != NULL)
     {
@@ -5008,7 +5182,7 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
 
         if (pClass->m_bSpellCaster)
         {
-            nLeft = ComputeNumberKnownSpellsLeft(nMultiClass);
+            nLeft = ComputeNumberKnownSpellsLeft(nMultiClass, 1);
             int nNumSpells = g_pRules->m_pSpellArray->GetNumSpells();
             nRecommended = 1;
             lstSpells.RemoveAll(0);
@@ -5122,6 +5296,40 @@ unsigned short CSWSCreatureStats::GetFeat(unsigned short nIndex)
     }
 
     return m_lstFeats[nIndex];
+}
+// PC 0x005EF6C0
+int CSWSCreatureStats::HasClassSkillFeat(unsigned short nSkill)
+{
+    unsigned short nFeat = 0xFFFF;
+    switch (nSkill)
+    {
+    case CSWSkill::SKILL_AWARENESS:
+        nFeat = CSWFeat::FEAT_CLASS_SKILL_AWARENESS;
+        break;
+    case CSWSkill::SKILL_COMPUTER_USE:
+        nFeat = CSWFeat::FEAT_CLASS_SKILL_COMPUTER_USE;
+        break;
+    case CSWSkill::SKILL_DEMOLITIONS:
+        nFeat = CSWFeat::FEAT_CLASS_SKILL_DEMOLITIONS;
+        break;
+    case CSWSkill::SKILL_REPAIR:
+        nFeat = CSWFeat::FEAT_CLASS_SKILL_REPAIR;
+        break;
+    case CSWSkill::SKILL_SECURITY:
+        nFeat = CSWFeat::FEAT_CLASS_SKILL_SECURITY;
+        break;
+    case CSWSkill::SKILL_STEALTH:
+        nFeat = CSWFeat::FEAT_CLASS_SKILL_STEALTH;
+        break;
+    case CSWSkill::SKILL_TREAT_INJURY:
+        nFeat = CSWFeat::FEAT_CLASS_SKILL_TREAT_INJURY;
+        break;
+    }
+    if (nFeat != -1)
+    {
+        return HasFeat(nFeat);
+    }
+    return 0;
 }
 // PC 0x005EF740
 unsigned short CSWSCreatureStats::GetBonusFeat(unsigned short nIndex)
@@ -5469,14 +5677,50 @@ int CSWSCreatureStats::HasSpell(unsigned char nSpellLevel,
             int nRoomForceRating = 0;
             if (pArea != NULL)
                 nRoomForceRating = pArea->GetRoomForceRating(m_pCreature->m_vPosition);
-            int bAdjust = m_pCreature->m_bInParty;
-            short nAlignment = m_nGoodEvilAlignment;
-            int nForcePoints = pSpell->GetAdjustedForcePoints(nAlignment, bAdjust, nRoomForceRating,
-                m_pCreature->m_n1110, m_nCharismaModifier);
-            short nForcePointsLeft = m_nCurrentForcePoints + m_nTemporaryForcePoints;
-            if (nForcePoints <= nForcePointsLeft)
+            int nForceBodyLevel = -1;
+            CExoArrayList<CGameEffect*>* pEffects = &m_pCreature->m_lstEffects;
+            for (int i = 0; i < pEffects->num; i++)
             {
-                bResult = 1;
+                CGameEffect* pEffect = (*pEffects)[i];
+                if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
+                {
+                    nForceBodyLevel = pEffect->GetInteger(0);
+                    break;
+                }
+            }
+            if (nForceBodyLevel != -1)
+            {
+                int nPercent = 0;
+                int nFullCost = pSpell->GetAdjustedForcePoints(GetGoodEvilAlignment(),
+                    m_pCreature->GetInParty(), nRoomForceRating, m_pCreature->GetForm(), m_pCreature->GetStats()->GetCHAMod());
+                switch (nForceBodyLevel)
+                {
+                case 0:
+                    nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_0;
+                    break;
+                case 1:
+                    nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_1;
+                    break;
+                case 2:
+                    nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
+                    break;
+                }
+                int nHitPointCost = nFullCost * nPercent / 100;
+                if (nHitPointCost <= (short)(m_nCurrentForcePoints + m_nTemporaryForcePoints) &&
+                    m_pCreature->GetCurrentHitPoints(0) - nHitPointCost > 1)
+                {
+                    bResult = 1;
+                }
+            }
+            else
+            {
+                int nForcePoints = pSpell->GetAdjustedForcePoints(GetGoodEvilAlignment(),
+                    m_pCreature->GetInParty(), nRoomForceRating, m_pCreature->GetForm(), GetCHAMod());
+                short nForcePointsLeft = m_nCurrentForcePoints + m_nTemporaryForcePoints;
+                if (nForcePoints <= nForcePointsLeft)
+                {
+                    bResult = 1;
+                }
             }
         }
     }
@@ -5936,17 +6180,17 @@ bool CSWSCreatureStats::GetSpellUsesLeft(
     int nRoomForceRating = 0;
     if (pArea != NULL)
         nRoomForceRating = pArea->GetRoomForceRating(m_pCreature->m_vPosition);
-    char nCharismaModifier = m_pCreature->m_pStats->m_nCharismaModifier;
-    short nAlignment = m_nGoodEvilAlignment;
     bool bUsesLeft = 0;
-    unsigned long nForcePoints = pSpell->GetAdjustedForcePoints(nAlignment,
-        m_pCreature->m_bInParty, nRoomForceRating, m_pCreature->m_n1110, nCharismaModifier);
+    unsigned long nForcePoints = pSpell->GetAdjustedForcePoints(GetGoodEvilAlignment(),
+        m_pCreature->GetInParty(), nRoomForceRating, m_pCreature->GetForm(), m_pCreature->GetStats()->GetCHAMod());
     int nForceBodyLevel = -1;
-    for (int i = 0; i < m_pCreature->m_lstEffects.num; i++)
+    CExoArrayList<CGameEffect*>* pEffects = &m_pCreature->m_lstEffects;
+    for (int i = 0; i < pEffects->num; i++)
     {
-        if (m_pCreature->m_lstEffects[i]->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
+        CGameEffect* pEffect = (*pEffects)[i];
+        if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
         {
-            nForceBodyLevel = m_pCreature->m_lstEffects[i]->GetInteger(0);
+            nForceBodyLevel = pEffect->GetInteger(0);
             break;
         }
     }
@@ -5965,15 +6209,14 @@ bool CSWSCreatureStats::GetSpellUsesLeft(
             nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
             break;
         }
-        int nHitPointCost = nForcePoints * nPercent / 100;
+        int nHitPointCost = (int)(nForcePoints * nPercent) / 100;
         if (nForcePoints - nHitPointCost <= (short)(m_nCurrentForcePoints + m_nTemporaryForcePoints) &&
             m_pCreature->GetCurrentHitPoints(0) - nHitPointCost >= 1)
         {
             bUsesLeft = 1;
         }
-        return bUsesLeft;
     }
-    if (nForcePoints <= (short)(m_nCurrentForcePoints + m_nTemporaryForcePoints))
+    else if (nForcePoints <= (short)(m_nCurrentForcePoints + m_nTemporaryForcePoints))
     {
         bUsesLeft = 1;
     }
@@ -5992,27 +6235,22 @@ int CSWSCreatureStats::UnReadySpell(unsigned long nSpell)
         if (pArea != NULL)
             nRoomForceRating = pArea->GetRoomForceRating(m_pCreature->m_vPosition);
         int nForceBodyLevel = -1;
-        for (int i = 0; i < m_pCreature->m_lstEffects.num; i++)
+        CExoArrayList<CGameEffect*>* pEffects = &m_pCreature->m_lstEffects;
+        for (int i = 0; i < pEffects->num; i++)
         {
-            if (m_pCreature->m_lstEffects[i]->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
+            CGameEffect* pEffect = (*pEffects)[i];
+            if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
             {
-                nForceBodyLevel = m_pCreature->m_lstEffects[i]->GetInteger(0);
+                nForceBodyLevel = pEffect->GetInteger(0);
                 break;
             }
         }
         int nForcePoints;
-        if (nForceBodyLevel == -1)
+        if (nForceBodyLevel != -1)
         {
-            char nCharismaModifier = m_pCreature->m_pStats->m_nCharismaModifier;
-            nForcePoints = pSpell->GetAdjustedForcePoints(m_nGoodEvilAlignment,
-                m_pCreature->m_bInParty, nRoomForceRating, m_pCreature->m_n1110, nCharismaModifier);
-        }
-        else
-        {
-            char nCharismaModifier = m_pCreature->m_pStats->m_nCharismaModifier;
             int nPercent = 0;
-            int nFullCost = pSpell->GetAdjustedForcePoints(m_nGoodEvilAlignment,
-                m_pCreature->m_bInParty, nRoomForceRating, m_pCreature->m_n1110, nCharismaModifier);
+            int nFullCost = pSpell->GetAdjustedForcePoints(GetGoodEvilAlignment(),
+                m_pCreature->GetInParty(), nRoomForceRating, m_pCreature->GetForm(), m_pCreature->GetStats()->GetCHAMod());
             switch (nForceBodyLevel)
             {
             case 0:
@@ -6025,8 +6263,13 @@ int CSWSCreatureStats::UnReadySpell(unsigned long nSpell)
                 nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
                 break;
             }
-            nForcePoints = nPercent * nFullCost / 100;
-            nHitPointCost = nForcePoints;
+            nHitPointCost = nFullCost * nPercent / 100;
+            nForcePoints = nHitPointCost;
+        }
+        else
+        {
+            nForcePoints = pSpell->GetAdjustedForcePoints(GetGoodEvilAlignment(),
+                m_pCreature->GetInParty(), nRoomForceRating, m_pCreature->GetForm(), m_pCreature->GetStats()->GetCHAMod());
         }
         int nTemporaryForcePoints = m_nTemporaryForcePoints;
         if (nTemporaryForcePoints >= nForcePoints)
@@ -6034,8 +6277,8 @@ int CSWSCreatureStats::UnReadySpell(unsigned long nSpell)
             m_nTemporaryForcePoints = nTemporaryForcePoints - nForcePoints;
             return 1;
         }
-        m_nCurrentForcePoints += nTemporaryForcePoints - nForcePoints;
         m_nTemporaryForcePoints = 0;
+        m_nCurrentForcePoints += nTemporaryForcePoints - nForcePoints;
         if (m_nCurrentForcePoints < 0)
         {
             m_nCurrentForcePoints = 0;
@@ -6053,7 +6296,7 @@ int CSWSCreatureStats::UnReadySpell(unsigned long nSpell)
         {
             m_pCreature->SetCurrentHitPoints(0);
         }
-        return 1;
+        bSuccess = 1;
     }
     return bSuccess;
 }
@@ -6176,32 +6419,37 @@ char CSWSCreatureStats::GetTotalCHABonus()
     return nResult;
 }
 // PC 0x005EE090
-unsigned char CSWSCreatureStats::ComputeNumberKnownSpellsLeft(unsigned char nClass)
+unsigned char CSWSCreatureStats::ComputeNumberKnownSpellsLeft(unsigned char nClass, int bNextLevel)
 {
-    CSWClass* pClass = &g_pRules->m_pClasses[GetClass(nClass)];
     unsigned char nClassType = GetClass(nClass);
-
-    if (!pClass)
+    CSWClass* pClass = &g_pRules->m_pClasses[nClassType];
+    if (pClass == NULL)
     {
         return 0;
     }
-    else if (!CSWClass::IsJedi((int)nClassType))
+    if (nClassType != CSWClass::CCLASS_JEDICONSULAR &&
+        nClassType != CSWClass::CCLASS_JEDIGUARDIAN &&
+        nClassType != CSWClass::CCLASS_JEDISENTINEL &&
+        nClassType != CSWClass::CCLASS_JEDIWATCHMAN &&
+        nClassType != CSWClass::CCLASS_JEDIWEAPONMASTER &&
+        nClassType != CSWClass::CCLASS_JEDIMASTER &&
+        nClassType != CSWClass::CCLASS_SITHASSASSIN &&
+        nClassType != CSWClass::CCLASS_SITHMARAUDER &&
+        nClassType != CSWClass::CCLASS_SITHLORD)
     {
         return 0;
     }
-    else
+    unsigned char nLevel = GetClassLevel(nClass, 0);
+    if (bNextLevel)
     {
-        unsigned char nSpells;
-        if (GetClassLevel(nClass, 0) == 1)
-        {
-            nSpells = 2;
-        }
-        else
-        {
-            nSpells = 1;
-        }
-        return nSpells;
+        nLevel++;
     }
+    unsigned char nSpells = pClass->GetSpellGain(nLevel, 0);
+    if (nSpells == CSWClass::SPELL_GAIN_INVALID)
+    {
+        return 0;
+    }
+    return nSpells;
 }
 // PC 0x005EE180
 int CSWSCreatureStats::GetForceResistance()
@@ -6520,7 +6768,13 @@ int CSWSCreatureStats::GetIsJedi()
         int nClass = GetClass((unsigned char)nClassIndex);
         if (nClass == CSWClass::CCLASS_JEDIGUARDIAN ||
             nClass == CSWClass::CCLASS_JEDICONSULAR ||
-            nClass == CSWClass::CCLASS_JEDISENTINEL)
+            nClass == CSWClass::CCLASS_JEDISENTINEL ||
+            nClass == CSWClass::CCLASS_JEDIWATCHMAN ||
+            nClass == CSWClass::CCLASS_JEDIMASTER ||
+            nClass == CSWClass::CCLASS_JEDIWEAPONMASTER ||
+            nClass == CSWClass::CCLASS_SITHLORD ||
+            nClass == CSWClass::CCLASS_SITHASSASSIN ||
+            nClass == CSWClass::CCLASS_SITHMARAUDER)
         {
             return 1;
         }

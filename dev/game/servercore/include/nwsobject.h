@@ -2632,6 +2632,7 @@ public:
 
 
     int GetInParty() { return m_bInParty; }
+    int GetForm() { return m_n1110; }
     void SetInParty(int bInParty, int bFlag);
     int LoadCreature(CResGFF* pRes, CResStruct* pStruct, int nAreaId);
     int LoadFromTemplate(const CResRef& cResRef, int bFlag);

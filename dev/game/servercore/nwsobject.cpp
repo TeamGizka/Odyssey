@@ -971,10 +971,11 @@ CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
     m_bCommandable = 1;
     m_bListening = 0;
     m_sTag = "";
+    m_nEC = 1;
+    m_nF0 = 1;
+    m_c7C = -1;
     m_c1D5 = -1;
     m_c1D4 = -1;
-    m_nEC = 1;
-    m_nF0 = 0;
     m_nF4 = 0;
     m_fSyncHeight = 1.0f;
     m_nAILevel = -1;
@@ -994,6 +995,7 @@ CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
     m_n1DC = -1;
     m_n1E0 = 0;
     m_n1D8 = OBJECT_INVALID;
+    m_n208 = 0;
     m_oidInventoryDisturbItem = OBJECT_INVALID;
     m_n178 = 0;
     m_nSavingThrowSpellId = -1;
@@ -1018,6 +1020,7 @@ CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
     m_nDialogReplyState = 0;
     m_nClientState = 0;
     m_aDirtyFlags[0] = 0;
+    m_bNotBlastable = 0;
     m_bMin1HP = 0;
     m_bDeleteNoFade = 0;
     m_bKeepCorpse = 0;
@@ -1031,10 +1034,16 @@ CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
     m_n64 = 0;
     m_bPartyInteract = 0;
     m_bDialogFaceSpeaker = 1;
+    m_n24C = 0;
+    m_c250 = 3;
+    m_c251 = 0;
+    m_n254 = 0;
+    m_n258 = 0;
     m_pClientObject = NULL;
     m_bDialogSoundStopped = 0;
     pServerApp = g_pAppManager->m_pServerExoApp;
     pServerApp->GetWorldTimer()->GetWorldTime(&m_nC4, &m_nC8);
+    m_n260 = 0;
 }
 
 void CSWSObject::CopyScriptVars(CSWSScriptVarTable* pVarTable)

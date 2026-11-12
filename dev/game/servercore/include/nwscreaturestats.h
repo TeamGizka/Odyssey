@@ -180,7 +180,7 @@ public:
     int GetFavoredEnemyBonus(CSWSCreature* pCreature);
     unsigned char GetSpellsPerDayLeft(unsigned char nMultiClass,
                                       unsigned char nSpellLevel);
-    unsigned char ComputeNumberKnownSpellsLeft(unsigned char nClass);
+    unsigned char ComputeNumberKnownSpellsLeft(unsigned char nClass, int bNextLevel);
     unsigned short GetNumberKnownSpells(unsigned char nClass,
                                         unsigned char nSpellLevel);
     int GetKnownSpell(unsigned char nClass, unsigned char nSpellLevel,
@@ -239,6 +239,7 @@ public:
     unsigned char GetSpellGainWithBonus(unsigned char nMultiClass,
                                        unsigned char nSpellLevel);
     int HasFeat(unsigned short nFeat);
+    int HasClassSkillFeat(unsigned short nSkill);
     int FeatAcquired(unsigned short nFeat, CExoArrayList<unsigned short>* pList);
     int FeatRequirementsMet(unsigned short nFeat, CExoArrayList<unsigned short>* pList,
                             int bNextLevel);
@@ -308,7 +309,7 @@ public:
     void UpdateCombatInformation();
     void UpdateLastStatsObject(unsigned __int64 nUpdateMask,
                                CSWCreatureStatsUpdate* pLastStats);
-    void ModifyAlignment(short nAdjustment);
+    void ModifyAlignment(short nAdjustment, int bNoPartyUpdate = 0);
     void ClearFeats();
     void SetSTRBase(unsigned char nScore);
     void SetDEXBase(unsigned char nScore);
@@ -593,6 +594,7 @@ public:
     char m_nShieldCheckPenalty;
     CResRef m_cPortrait;
     short m_nGoodEvilAlignment;
+    short GetGoodEvilAlignment() { return m_nGoodEvilAlignment; }
     void SetGoodEvilAlignment(short nAlignment)
     {
         int nValue;

@@ -911,10 +911,15 @@ CSWSDoor::CSWSDoor(unsigned long oidSelf)
     m_nOpenState = CSWSDoor::OPEN_STATE_CLOSED;
     m_nTargetOpenState = 0;
     m_bAnimatable = 1;
+    m_nOpenLockDiffMod = 0;
+    m_nOwnerDemolitionsSkill = 0;
+    m_bUseTweakColor = 0;
+    m_nTweakColor = 0;
     m_nLastUpdateSeconds = 0;
     m_nLastUpdateMilliseconds = 0;
     m_IsLinked = 0;
     m_oidLinkedObject = OBJECT_INVALID;
+    m_nOpenLockDiff = 1;
     m_apCollisionMesh[CSWDoorSurfaceMesh::DOOR_STATE_CLOSED] = NULL;
     m_apCollisionMesh[CSWDoorSurfaceMesh::DOOR_STATE_OPEN1] = NULL;
     m_apCollisionMesh[CSWDoorSurfaceMesh::DOOR_STATE_OPEN2] = NULL;
@@ -922,6 +927,7 @@ CSWSDoor::CSWSDoor(unsigned long oidSelf)
     m_nLoadScreenId = 0;
     m_bStatic = 0;
     m_bPreciseUse = 0;
+    m_pTrapTrigger = NULL;
 }
 // PC 0x0057FB60
 void CSWSDoor::SetOpenState(unsigned char nOpenState, int bImmediate)

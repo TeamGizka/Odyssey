@@ -1549,6 +1549,80 @@ int CSWSItemPropertyHandler::ApplyDisguise(CSWSItem* pItem,
 
     return 0;
 }
+// PC 0x0053BD10
+int CSWSItemPropertyHandler::ApplyDampenSound(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading)
+{
+    pCreature->SetSilentMove(1);
+
+    return 0;
+}
+// PC 0x0053BD20
+int CSWSItemPropertyHandler::RemoveDampenSound(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex)
+{
+    pCreature->SetSilentMove(0);
+
+    return 0;
+}
+// PC 0x0053BD30
+int CSWSItemPropertyHandler::ApplyDoorCutting(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading)
+{
+    if (pItem != NULL)
+    {
+        pItem->m_n2DC = 1;
+    }
+
+    return 0;
+}
+// PC 0x0053BD50
+int CSWSItemPropertyHandler::ApplyDoorSabering(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading)
+{
+    if (pItem != NULL)
+    {
+        pItem->m_n2E0 = 1;
+    }
+
+    return 0;
+}
+// PC 0x0053BD70
+int CSWSItemPropertyHandler::ApplySniperBonus(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading)
+{
+    if (pItem != NULL)
+    {
+        pItem->m_n2E8 = 1;
+    }
+
+    return 0;
+}
+// PC 0x0053BD90
+int CSWSItemPropertyHandler::ApplyRapidShotBonus(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading)
+{
+    if (pItem != NULL)
+    {
+        pItem->m_n2E4 = 1;
+    }
+
+    return 0;
+}
+// PC 0x0053BDB0
+int CSWSItemPropertyHandler::ApplyMaxDexBonus(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading)
+{
+    if (pItem != NULL)
+    {
+        pItem->m_n2EC += pProperty->m_nCostValue;
+    }
+
+    return 0;
+}
+// PC 0x0053BDD0
+int CSWSItemPropertyHandler::RemoveMaxDexBonus(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex)
+{
+    if (pItem != NULL)
+    {
+        pItem->m_n2EC -= pProperty->m_nCostValue;
+    }
+
+    return 0;
+}
 // PC 0x0053BDF0
 int CSWSItemPropertyHandler::RemoveEnhancementBonus(CSWSItem* pItem,
                                                        CSWItemProperty* pProperty,
@@ -3825,4 +3899,12 @@ void CSWSItemPropertyHandler::InitializeItemProperties()
         &CSWSItemPropertyHandler::RemoveBlasterBoltDeflectionDecrease;
     m_pApplyItemProperty[59] = &CSWSItemPropertyHandler::ApplyDisguise;
     m_pRemoveItemProperty[59] = &CSWSItemPropertyHandler::RemoveDisguise;
+    m_pApplyItemProperty[63] = &CSWSItemPropertyHandler::ApplyDampenSound;
+    m_pRemoveItemProperty[63] = &CSWSItemPropertyHandler::RemoveDampenSound;
+    m_pApplyItemProperty[64] = &CSWSItemPropertyHandler::ApplyDoorCutting;
+    m_pApplyItemProperty[65] = &CSWSItemPropertyHandler::ApplyDoorSabering;
+    m_pApplyItemProperty[66] = &CSWSItemPropertyHandler::ApplySniperBonus;
+    m_pApplyItemProperty[67] = &CSWSItemPropertyHandler::ApplyRapidShotBonus;
+    m_pApplyItemProperty[68] = &CSWSItemPropertyHandler::ApplyMaxDexBonus;
+    m_pRemoveItemProperty[68] = &CSWSItemPropertyHandler::RemoveMaxDexBonus;
 }
