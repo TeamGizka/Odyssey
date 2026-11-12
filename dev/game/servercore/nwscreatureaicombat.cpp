@@ -1312,17 +1312,8 @@ void CSWSCreature::ApplyOnHitKnockdown(CSWSObject* pObject,
     }
 }
 
-void CSWSCreature::ResolveSituationalModifiers(CSWSCreature* pTarget)
+inline void CSWSCreature::ResolveSituationalModifiers(CSWSCreature* pTarget)
 {
-    if (pTarget != NULL)
-    {
-        if (pTarget->IsDebilitated() &&
-            pTarget->GetStats()->GetLevel(0) <= 4 && !pTarget->m_bInParty)
-        {
-            m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack)
-                ->m_bCoupDeGrace = 1;
-        }
-    }
 }
 // PC 0x006098A0
 unsigned long CSWSCreature::GetFirstAttacker()
@@ -1465,11 +1456,35 @@ void CSWSCreature::ResolveRangedSpecialAttack(CSWSObject* pTarget,
         }
     }
 }
+enum
+{
+    FEAT_UNARMED_FORCE_PUSH_1 = 209,
+    FEAT_UNARMED_FORCE_PUSH_2 = 210,
+    FEAT_UNARMED_FORCE_PUSH_3 = 211,
+    FEAT_SHIELD_BREAKER = 220,
+    FEAT_UNARMED_DAMAGE_1 = 221,
+    FEAT_UNARMED_DAMAGE_2 = 222,
+    FEAT_UNARMED_DAMAGE_3 = 223,
+    UNARMED_DAMAGE_DIE = 6,
+    UNARMED_DAMAGE_FLAGS = 7,
+    UNARMED_SLOW_PERCENT = 50,
+    UNARMED_SLOW_CHANCE_1 = 10,
+    UNARMED_SLOW_CHANCE_2 = 15,
+    UNARMED_SLOW_CHANCE_3 = 20,
+    UNARMED_FORCE_PUSH_CHANCE_1 = 10,
+    UNARMED_FORCE_PUSH_CHANCE_2 = 15,
+    UNARMED_FORCE_PUSH_CHANCE_3 = 20,
+    UNARMED_SAVE_BASE_DC = 15,
+    VISUAL_EFFECT_SHIELD_BREAKER = 8001,
+    MELEE_KILL_COUNT_LIMIT = 6
+};
 // PC 0x0060A060
 void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
-                                           CSWSObject* pTarget, int nImpactTime)
+                                           CSWSObject* pTarget, int nImpactTime,
+                                           int* pbStateApplied)
 {
-    CGameEffect* pEffect = NULL;
+    int nIndex = 0;
+    *pbStateApplied = 0;
     if (pTarget != NULL && nAttack == 0)
     {
         int nCurrentAttack = m_pcCombatRound->m_nCurrentAttack;
@@ -1477,100 +1492,231 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
 
         CServerAIMaster* pAIMaster =
             g_pAppManager->GetServerExoApp()->GetServerAIMaster();
-        if (GetStats()->GetFeatRemainingUses(pAttack->m_nAttackType) <= 0)
+        if (pAttack->m_nWeaponAttackType == CSWSCombatRound::WEAPON_ATTACK_UNARMED ||
+            pAttack->m_nWeaponAttackType == CSWSCombatRound::WEAPON_ATTACK_EXTRA_UNARMED)
         {
-            pAttack->m_nAttackType = 0;
-        }
-        switch (pAttack->m_nAttackType)
-        {
-        case CSWFeat::FEAT_CRITICAL_STRIKE:
-        case CSWFeat::FEAT_IMPROVED_CRITICAL_STRIKE:
-        case CSWFeat::FEAT_MASTER_CRITICAL_STRIKE:
+            int nUnarmedLevel = 0;
+            if (m_pStats->HasFeat(FEAT_UNARMED_DAMAGE_3))
+                nUnarmedLevel = 3;
+            else if (m_pStats->HasFeat(FEAT_UNARMED_DAMAGE_2))
+                nUnarmedLevel = 2;
+            else if (m_pStats->HasFeat(FEAT_UNARMED_DAMAGE_1))
+                nUnarmedLevel = 1;
+            if (nUnarmedLevel != 0 &&
+                IsAttackResultHit(pAttack->m_nAttackResult) &&
+                pTarget->AsSWSCreature() != NULL)
             {
-                pEffect = new CGameEffect(1);
-                pEffect->m_nType = CSWSEffectListHandler::EFFECT_AC_DECREASE;
-                pEffect->m_nSubType =
-                    (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
-                    CGameEffect::DURATION_TYPE_TEMPORARY;
-                pEffect->m_fDuration = 3.0f;
-                pEffect->SetCreator(GetId());
-                pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_TYPE,
-                                    CSWSEffectListHandler::AC_DODGE);
-                pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_BONUS,
-                                    CSWFeat::CRITICAL_STRIKE_AC_PENALTY);
-                pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_RACIAL_GROUP,
-                                    g_pRules->m_nNumRaces);
-                pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_DAMAGE_FLAGS,
-                                    CSWSEffectListHandler::DAMAGE_FLAG_PHYSICAL);
-                ApplyEffect(pEffect, 0, 0);
-                if (IsAttackResultHit(pAttack->m_nAttackResult) &&
-                    pTarget->AsSWSCreature() != NULL)
+                int nDamage = g_pRules->RollDice(nUnarmedLevel, UNARMED_DAMAGE_DIE);
+                CGameEffect* pDamage = new CGameEffect(1);
+                pDamage->m_nType = CSWSEffectListHandler::EFFECT_DAMAGE;
+                pDamage->m_nSubType = (pDamage->m_nSubType & ~CGameEffect::DURATION_MASK) |
+                                     CGameEffect::DURATION_TYPE_INSTANTANEOUS;
+                pDamage->SetCreator(GetId());
+                pDamage->SetNumIntegers(CSWSEffectListHandler::APPLIED_DAMAGE_INTEGER_COUNT);
+                do
                 {
-                    CGameEffect* pStunEffect = new CGameEffect(1);
-                    pStunEffect->m_nType = CSWSEffectListHandler::EFFECT_SETSTATE;
-                    pStunEffect->SetInteger(0, CSWSEffectListHandler::STATE_STUN);
-                    pStunEffect->m_nSubType =
-                        (pStunEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
-                        CGameEffect::DURATION_TYPE_TEMPORARY;
-                    pStunEffect->m_fDuration = 6.0f;
-                    pStunEffect->SetCreator(GetId());
-                    CSWSCreature* pCreature = pTarget->AsSWSCreature();
-                    int nDC = m_pStats->GetLevel(0) + m_pStats->GetSTRMod();
-                    if (pCreature->m_pStats->GetEffectLinkImmunity(pStunEffect) == 0)
+                    pDamage->SetInteger(nIndex++, -1);
+                } while (nIndex < CSWSEffectListHandler::APPLIED_DAMAGE_TYPE_COUNT);
+                pDamage->SetInteger(7, nDamage);
+                pDamage->SetInteger(CSWSEffectListHandler::APPLIED_DAMAGE_BASE, nDamage);
+                pDamage->SetInteger(CSWSEffectListHandler::APPLIED_DAMAGE_ANIMATION_DELAY, 0);
+                pDamage->SetInteger(CSWSEffectListHandler::APPLIED_DAMAGE_FLAGS,
+                                    Log_Base2(UNARMED_DAMAGE_FLAGS));
+                pDamage->SetInteger(CSWSEffectListHandler::APPLIED_DAMAGE_MELEE, 1);
+                pDamage->SetInteger(CSWSEffectListHandler::APPLIED_DAMAGE_RANGED, 1);
+                pDamage->SetInteger(CSWSEffectListHandler::APPLIED_DAMAGE_COMBAT, 0);
+                pAttack->m_lstEffects.Add(pDamage);
+
+                CGameEffect* pSlowEffect = new CGameEffect(1);
+                pSlowEffect->m_nType = CSWSEffectListHandler::EFFECT_MOVEMENT_SPEED_DECREASE;
+                pSlowEffect->m_nSubType =
+                    (pSlowEffect->m_nSubType & ~CGameEffect::SUBTYPE_MASK) |
+                    SUBTYPE_MAGICAL;
+                pSlowEffect->SetInteger(0, UNARMED_SLOW_PERCENT);
+                pSlowEffect->SetCreator(GetId());
+                pSlowEffect->m_fDuration = 6.0f;
+                pSlowEffect->m_nSubType =
+                    (pSlowEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
+                    DURATION_TYPE_TEMPORARY;
+                CSWSCreature* pCreature = pTarget->AsSWSCreature();
+                int nDC = m_pStats->GetLevel(0) + UNARMED_SAVE_BASE_DC;
+                if (pCreature->m_pStats->GetEffectLinkImmunity(pSlowEffect) == 0)
+                {
+                    int nRoll = rand() % 100;
+                    int bSlow = 0;
+                    switch (nUnarmedLevel)
                     {
-                        if (pCreature->SavingThrowRoll(SAVING_THROW_FORT, nDC, 0,
+                    case 1:
+                        bSlow = nRoll < UNARMED_SLOW_CHANCE_1;
+                        break;
+                    case 2:
+                        bSlow = nRoll < UNARMED_SLOW_CHANCE_2;
+                        break;
+                    case 3:
+                        bSlow = nRoll < UNARMED_SLOW_CHANCE_3;
+                        break;
+                    }
+                    if (bSlow && pCreature->SavingThrowRoll(SAVING_THROW_FORT, nDC, 0,
+                                                           GetId(), 1, 0, 1) == 0)
+                    {
+                        pAttack->m_lstEffects.Add(pSlowEffect);
+                    }
+                    else
+                    {
+                        delete pSlowEffect;
+                    }
+                }
+                else
+                {
+                    delete pSlowEffect;
+                }
+            }
+        }
+        int nACPenalty = 0;
+        if (pAttack->m_nAttackType != 0)
+        {
+            if (GetStats()->GetFeatRemainingUses(pAttack->m_nAttackType) <= 0)
+            {
+                pAttack->m_nAttackType = 0;
+            }
+            switch (pAttack->m_nAttackType)
+            {
+            case CSWFeat::FEAT_CRITICAL_STRIKE:
+            case CSWFeat::FEAT_IMPROVED_CRITICAL_STRIKE:
+            case CSWFeat::FEAT_MASTER_CRITICAL_STRIKE:
+                {
+                    CGameEffect* pEffect = new CGameEffect(1);
+                    pEffect->m_nType = CSWSEffectListHandler::EFFECT_AC_DECREASE;
+                    pEffect->m_fDuration = 3.0f;
+                    pEffect->m_nSubType =
+                        (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
+                        CGameEffect::DURATION_TYPE_TEMPORARY;
+                    pEffect->SetCreator(GetId());
+                    pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_TYPE,
+                                        CSWSEffectListHandler::AC_DODGE);
+                    pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_BONUS,
+                                        CSWFeat::CRITICAL_STRIKE_AC_PENALTY);
+                    pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_RACIAL_GROUP,
+                                        g_pRules->m_nNumRaces);
+                    pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_DAMAGE_FLAGS,
+                                        CSWSEffectListHandler::DAMAGE_FLAG_PHYSICAL);
+                    ApplyEffect(pEffect, 0, 0);
+                    if (IsAttackResultHit(pAttack->m_nAttackResult) &&
+                        pTarget->AsSWSCreature() != NULL)
+                    {
+                        CGameEffect* pStunEffect = new CGameEffect(1);
+                        pStunEffect->m_nType = CSWSEffectListHandler::EFFECT_SETSTATE;
+                        pStunEffect->SetInteger(0, CSWSEffectListHandler::STATE_STUN);
+                        pStunEffect->m_nSubType =
+                            (pStunEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
+                            CGameEffect::DURATION_TYPE_TEMPORARY;
+                        pStunEffect->m_fDuration = 6.0f;
+                        pStunEffect->SetCreator(GetId());
+                        CSWSCreature* pCreature = pTarget->AsSWSCreature();
+                        int nDC = m_pStats->GetLevel(0) + m_pStats->GetSTRMod();
+                        if (pCreature->m_pStats->GetEffectLinkImmunity(pStunEffect) == 0 &&
+                            pCreature->SavingThrowRoll(SAVING_THROW_FORT, nDC, 0,
                                                       GetId(), 1, 0, 1) == 0)
                         {
                             pAttack->m_lstEffects.Add(pStunEffect);
                             pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_STUN;
+                            *pbStateApplied = 1;
                         }
                         else
                         {
                             delete pStunEffect;
                         }
+                        pAttack->m_Extra4.m_nUnknown14 = 1;
                     }
-                    else
-                    {
-                        delete pStunEffect;
-                    }
-                    pAttack->m_Extra4.m_nUnknown14 = 1;
+                    break;
                 }
-                break;
-            }
-        case CSWFeat::FEAT_FLURRY:
-        case CSWFeat::FEAT_WHIRLWIND_ATTACK:
-        case CSWFeat::FEAT_IMPROVED_FLURRY:
-            {
-                int nACPenalty = 0;
-                switch (pAttack->m_nAttackType)
+            case CSWFeat::FEAT_FLURRY:
+            case CSWFeat::FEAT_WHIRLWIND_ATTACK:
+            case CSWFeat::FEAT_IMPROVED_FLURRY:
                 {
-                case CSWFeat::FEAT_FLURRY:
-                    nACPenalty = CSWFeat::FLURRY_AC_PENALTY;
-                    break;
-                case CSWFeat::FEAT_WHIRLWIND_ATTACK:
-                    nACPenalty = CSWFeat::WHIRLWIND_ATTACK_AC_PENALTY;
-                    break;
-                case CSWFeat::FEAT_IMPROVED_FLURRY:
-                    nACPenalty = CSWFeat::IMPROVED_FLURRY_AC_PENALTY;
+                    switch (pAttack->m_nAttackType)
+                    {
+                    case CSWFeat::FEAT_FLURRY:
+                        nACPenalty = CSWFeat::FLURRY_AC_PENALTY;
+                        break;
+                    case CSWFeat::FEAT_WHIRLWIND_ATTACK:
+                        nACPenalty = CSWFeat::WHIRLWIND_ATTACK_AC_PENALTY;
+                        break;
+                    case CSWFeat::FEAT_IMPROVED_FLURRY:
+                        nACPenalty = CSWFeat::IMPROVED_FLURRY_AC_PENALTY;
+                        break;
+                    }
+                    CGameEffect* pEffect = new CGameEffect(1);
+                    pEffect->m_nType = CSWSEffectListHandler::EFFECT_AC_DECREASE;
+                    pEffect->m_fDuration = 3.0f;
+                    pEffect->m_nSubType =
+                        (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
+                        CGameEffect::DURATION_TYPE_TEMPORARY;
+                    pEffect->SetCreator(GetId());
+                    pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_TYPE,
+                                        CSWSEffectListHandler::AC_DODGE);
+                    pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_BONUS,
+                                        nACPenalty);
+                    pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_RACIAL_GROUP,
+                                        g_pRules->m_nNumRaces);
+                    pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_DAMAGE_FLAGS,
+                                        CSWSEffectListHandler::DAMAGE_FLAG_PHYSICAL);
+                    ApplyEffect(pEffect, 0, 0);
                     break;
                 }
-                pEffect = new CGameEffect(1);
-                pEffect->m_nType = CSWSEffectListHandler::EFFECT_AC_DECREASE;
-                pEffect->m_nSubType =
-                    (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
-                    CGameEffect::DURATION_TYPE_TEMPORARY;
-                pEffect->m_fDuration = 3.0f;
-                pEffect->SetCreator(GetId());
-                pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_TYPE,
-                                    CSWSEffectListHandler::AC_DODGE);
-                pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_BONUS,
-                                    nACPenalty);
-                pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_RACIAL_GROUP,
-                                    g_pRules->m_nNumRaces);
-                pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_DAMAGE_FLAGS,
-                                    CSWSEffectListHandler::DAMAGE_FLAG_PHYSICAL);
-                ApplyEffect(pEffect, 0, 0);
-                break;
+            case CSWFeat::FEAT_IMPROVED_POWER_ATTACK:
+            case CSWFeat::FEAT_POWER_ATTACK:
+            case CSWFeat::FEAT_MASTER_POWER_ATTACK:
+                {
+                    if (IsAttackResultHit(pAttack->m_nAttackResult) &&
+                        pTarget->AsSWSCreature() != NULL &&
+                        pAttack->m_nAttackResult == ATTACK_RESULT_CRITICAL_HIT)
+                    {
+                        CGameEffect* pPushEffect = new CGameEffect(1);
+                        pPushEffect->m_nType = CSWSEffectListHandler::EFFECT_FORCEPUSHED;
+                        pPushEffect->m_fDuration = 0.1f;
+                        pPushEffect->m_nSubType =
+                            (pPushEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
+                            CGameEffect::DURATION_TYPE_TEMPORARY;
+                        pPushEffect->SetCreator(GetId());
+                        CSWSCreature* pCreature = pTarget->AsSWSCreature();
+                        int nDC = m_pStats->GetLevel(0) + m_pStats->GetSTRMod() * 2;
+                        if (pCreature->m_pStats->GetEffectLinkImmunity(pPushEffect) == 0 &&
+                            pCreature->SavingThrowRoll(SAVING_THROW_FORT, nDC, 0,
+                                                      GetId(), 1, 0, 1) == 0)
+                        {
+                            pAttack->m_lstEffects.Add(pPushEffect);
+                            pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_KNOCKDOWN;
+                            *pbStateApplied = 1;
+                        }
+                        else
+                        {
+                            delete pPushEffect;
+                        }
+                        pAttack->m_Extra4.m_nUnknown14 = 1;
+                    }
+                    break;
+                }
+            case FEAT_SHIELD_BREAKER:
+                {
+                    if (IsAttackResultHit(pAttack->m_nAttackResult) &&
+                        pTarget->AsSWSCreature() != NULL)
+                    {
+                        CGameEffect* pVisualEffect = new CGameEffect(1);
+                        pVisualEffect->m_nType = CSWSEffectListHandler::EFFECT_VISUALEFFECT;
+                        pVisualEffect->m_nSubType =
+                            (pVisualEffect->m_nSubType & ~CGameEffect::SUBTYPE_MASK) |
+                            SUBTYPE_MAGICAL;
+                        pVisualEffect->SetInteger(0, VISUAL_EFFECT_SHIELD_BREAKER);
+                        pVisualEffect->SetCreator(GetId());
+                        pAttack->m_lstEffects.Add(pVisualEffect);
+                        CGameEffect* pShieldEffect = new CGameEffect(1);
+                        pShieldEffect->m_nType = CSWSEffectListHandler::EFFECT_DESTROYSHIELDS;
+                        pShieldEffect->SetCreator(GetId());
+                        pAttack->m_lstEffects.Add(pShieldEffect);
+                    }
+                    break;
+                }
             }
         }
     }
@@ -2022,6 +2168,7 @@ void CSWSCreature::ResolveMeleeAttack(CSWSObject* pTarget, int nAttacks,
         return;
     }
 
+    int nTotalDamage = 0;
     CSWSCombatAttackData* pAttack =
         m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack);
     unsigned char nTotalAttacks = m_pcCombatRound->GetTotalAttacks();
@@ -2038,17 +2185,72 @@ void CSWSCreature::ResolveMeleeAttack(CSWSObject* pTarget, int nAttacks,
             GetClientMeleeAnimation(pTarget->GetId(), GetAnimation(), pAttack->m_nAttackType,
                                     bUseAttackResult, nAttackResult);
         int nImpactTime = GetWeaponImpactTime(nMeleeAnimation, nAttack);
-        if (pAttack->m_nAttackType != 0)
+        int bStateApplied = 0;
+        ResolveMeleeSpecialAttack(nAttack, nAttacks, pTarget, nImpactTime, &bStateApplied);
+        if (IsAttackResultHit(pAttack->m_nAttackResult) &&
+            pTarget->AsSWSCreature() != NULL && !bStateApplied)
         {
-            ResolveMeleeSpecialAttack(nAttack, nAttacks, pTarget, nImpactTime);
+            if ((pAttack->m_nWeaponAttackType == CSWSCombatRound::WEAPON_ATTACK_UNARMED ||
+                 pAttack->m_nWeaponAttackType == CSWSCombatRound::WEAPON_ATTACK_EXTRA_UNARMED) &&
+                nAttack == 0)
+            {
+                int nChance;
+                int bHasFeat = 1;
+                if (m_pStats->HasFeat(FEAT_UNARMED_FORCE_PUSH_3))
+                    nChance = UNARMED_FORCE_PUSH_CHANCE_3;
+                else if (m_pStats->HasFeat(FEAT_UNARMED_FORCE_PUSH_2))
+                    nChance = UNARMED_FORCE_PUSH_CHANCE_2;
+                else if (m_pStats->HasFeat(FEAT_UNARMED_FORCE_PUSH_1))
+                    nChance = UNARMED_FORCE_PUSH_CHANCE_1;
+                else
+                    bHasFeat = 0;
+                if (bHasFeat)
+                {
+                    CGameEffect* pPushEffect = new CGameEffect(1);
+                    pPushEffect->m_nType = CSWSEffectListHandler::EFFECT_FORCEPUSHED;
+                    pPushEffect->m_fDuration = 0.1f;
+                    pPushEffect->m_nSubType =
+                        (pPushEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
+                        CGameEffect::DURATION_TYPE_TEMPORARY;
+                    pPushEffect->SetCreator(GetId());
+                    CSWSCreature* pCreature = pTarget->AsSWSCreature();
+                    int nDC = m_pStats->GetLevel(0) + UNARMED_SAVE_BASE_DC;
+                    if (pCreature->m_pStats->GetEffectLinkImmunity(pPushEffect) == 0 &&
+                        pCreature->SavingThrowRoll(SAVING_THROW_FORT, nDC, 0,
+                                                  GetId(), 1, 0, 1) == 0 &&
+                        rand() % 100 < nChance)
+                    {
+                        pAttack->m_lstEffects.Add(pPushEffect);
+                        pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_KNOCKDOWN;
+                    }
+                    else
+                    {
+                        delete pPushEffect;
+                    }
+                    pAttack->m_Extra4.m_nUnknown14 = 1;
+                }
+            }
         }
         if (IsAttackResultHit(pAttack->m_nAttackResult))
         {
             ResolveDamage(pTarget, bUseAttackResult, nDamage);
+            CSWSCombatAttackData* pDamageAttack =
+                m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack);
+            if (pDamageAttack->GetBaseDamage() > 0)
+            {
+                nTotalDamage += pDamageAttack->GetBaseDamage();
+            }
             ResolvePostMeleeDamage(pTarget->AsSWSCreature());
         }
         pAttack->ResolveAttackToMeleeSubAttack(nAttack, nImpactTime);
         SetAttackResult(pAttack->m_nAttackResult);
+    }
+    if (nTotalDamage >= pTarget->GetCurrentHitPoints(0))
+    {
+        if (m_pStats->m_c120 != -1 && m_pStats->m_c120 < MELEE_KILL_COUNT_LIMIT)
+        {
+            m_pStats->m_c120++;
+        }
     }
     m_nLastSpecialAttack = pAttack->m_nAttackType;
     ResolveMeleeAnimations(nAttack, nAttacks, pTarget, nAnimation,

@@ -82,7 +82,7 @@ CObjectTableManager* CAppManager::GetObjectTableManager(unsigned long nTable)
 #ifndef _XBOX
 void CAppManager::DoSaveGameScreenShot(const CExoString& sName)  // PC 0x00401080
 {
-    AurSaveGameSnapshot((char*)sName.CStr(), 256, true, true);
+    AurSaveGameSnapshot((char*)sName.CStr(), 256, true);
 }
 #endif
 void CAppManager::AllocLargeTempBuffer()  // PC 0x004010A0

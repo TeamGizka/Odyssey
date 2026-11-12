@@ -1976,7 +1976,7 @@ const char* savegamesnapshot(char* sCommand)
 #ifdef _XBOX
     AurSaveGameSnapshot(sName, nSize, true);
 #else
-    AurSaveGameSnapshot(sName, nSize, false, true);
+    AurSaveGameSnapshot(sName, nSize, false);
 #endif
     return "Attempted to save save game file";
 }
@@ -3605,7 +3605,7 @@ void AurSaveGameSnapshot(char* sFileName, int nSize, bool bSquare)
     pTexture->Release();
 }
 #else
-void AurSaveGameSnapshot(char* sFileName, int nSize, bool bSquare, bool bCrop)  // PC 0x004226E0
+void AurSaveGameSnapshot(char* sFileName, int nSize, bool bSquare)  // PC 0x004226E0
 {
     static int k;
     char sBuffer[64];

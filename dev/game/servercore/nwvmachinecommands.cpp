@@ -1098,7 +1098,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetBonusForcePoints(int nCommand, i
         CSWSCreature* pCreature = pGameObject->AsSWSCreature();
         if (pCreature != NULL)
         {
-            if (pCreature->m_n1200 != 0 && pCreature->m_n11F4 != nBonus)
+            if (pCreature->m_bPlayerCreated != 0 && pCreature->m_n11F4 != nBonus)
             {
                 if (pCreature->m_n11F4 < nBonus)
                 {
@@ -1135,7 +1135,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddBonusForcePoints(int nCommand, i
         if (pCreature != NULL)
         {
             pCreature->m_n11F4 += nBonus;
-            if (pCreature->m_n1200 != 0)
+            if (pCreature->m_bPlayerCreated != 0)
             {
                 if (nBonus < 0)
                 {
@@ -1864,7 +1864,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsPlayerMadeCharacter(int nComma
     int bPlayerMade = 0;
     if (pGameObject != NULL && pGameObject->AsSWSCreature() != NULL)
     {
-        bPlayerMade = pGameObject->AsSWSCreature()->m_n1200;
+        bPlayerMade = pGameObject->AsSWSCreature()->m_bPlayerCreated;
     }
     return g_pVirtualMachine->StackPushInteger(bPlayerMade) != 0 ? 0 : -2000;
 }
@@ -3311,7 +3311,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddMultiClass(int nCommand,
     pServerExoApp = g_pAppManager->m_pServerExoApp;
     pCreature = pServerExoApp->GetCreatureByGameObjectID(oidCreature);
     nExperience = pCreature->m_pStats->m_nExperience;
-    if (pCreature->m_n1200 != 0)
+    if (pCreature->m_bPlayerCreated != 0)
     {
         nExperienceToNextLevel = pCreature->m_pStats->GetExpNeededForLevelUp() - nExperience;
         pCreature->m_pStats->AddClass((unsigned char)nClass, 0);
@@ -3457,7 +3457,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int n
         {
             nAdjustment = min(nShift, 50 - nOldAlignment);
         }
-        if (pCreature->m_n1200 != 0 && bDontModifyNPCs == 0)
+        if (pCreature->m_bPlayerCreated != 0 && bDontModifyNPCs == 0)
         {
             if (nAdjustment < 0)
             {
@@ -3501,7 +3501,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int n
         break;
     case CSWSCreatureStats::ALIGNMENT_GOOD:
         nAdjustment = nShift;
-        if (pCreature->m_n1200 != 0 && bDontModifyNPCs == 0)
+        if (pCreature->m_bPlayerCreated != 0 && bDontModifyNPCs == 0)
         {
             sTotal = "G_PC_Light_Total";
             g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
@@ -3523,7 +3523,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int n
         break;
     case CSWSCreatureStats::ALIGNMENT_EVIL:
         nAdjustment = -nShift;
-        if (pCreature->m_n1200 != 0 && bDontModifyNPCs == 0)
+        if (pCreature->m_bPlayerCreated != 0 && bDontModifyNPCs == 0)
         {
             sTotal = "G_PC_Dark_Total";
             g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
@@ -17681,7 +17681,7 @@ int CSWVirtualMachineCommands::ExecuteCommandShowLevelUpGUI(int nCommand,
     nResult = g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowLevelUpGUI(1);
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C73B0
+// PC 0x005C7280
 int CSWVirtualMachineCommands::ExecuteCommandShowPartySelection(int nCommand,
                                                                 int nArgs)
 {
@@ -17710,19 +17710,48 @@ int CSWVirtualMachineCommands::ExecuteCommandShowPartySelection(int nCommand,
                                                       nResult2);
     return 0;
 }
-// PC 0x005CCB10
+// PC 0x005C73B0
 int CSWVirtualMachineCommands::ExecuteCommandShowUpgradeScreen(int nCommand,
                                                                int nArgs)
 {
     unsigned long oidItem;
-    CClientExoApp* pClientExoApp;
+    unsigned long oidCharacter = OBJECT_INVALID;
+    int bDisableItemCreation = 0;
+    int bDisableUpgrade = 0;
+    CExoString sOverride2DA;
 
     if (g_pVirtualMachine->StackPopObject(&oidItem) == 0)
     {
         return -2001;
     }
-    pClientExoApp = g_pAppManager->m_pClientExoApp;
-    pClientExoApp->GetInGameGui()->ShowUpgradeScreen(oidItem);
+    if (nArgs >= 2)
+    {
+        if (g_pVirtualMachine->StackPopObject(&oidCharacter) == 0)
+        {
+            return -2001;
+        }
+        if (nArgs > 2)
+        {
+            if (g_pVirtualMachine->StackPopInteger(&bDisableItemCreation) == 0)
+            {
+                return -2001;
+            }
+            if (g_pVirtualMachine->StackPopInteger(&bDisableUpgrade) == 0)
+            {
+                return -2001;
+            }
+        }
+    }
+    if (nArgs > 4)
+    {
+        if (g_pVirtualMachine->StackPopString(&sOverride2DA) == 0)
+        {
+            return -2001;
+        }
+    }
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowUpgradeScreen(
+        oidItem, oidCharacter, bDisableItemCreation, bDisableUpgrade,
+        sOverride2DA);
     return 0;
 }
 // PC 0x005C74F0

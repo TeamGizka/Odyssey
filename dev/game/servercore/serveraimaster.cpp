@@ -14,6 +14,8 @@
 #include "nwsforcedaction.h"
 #include "serverexoappinternal.h"
 #include "worldtimer.h"
+#include "nwrules.h"
+#include "twodimarrays.h"
 #include "serveraimaster.h"
 
 static inline void ServeraimasterTrace2();
@@ -768,6 +770,99 @@ BOOL CServerAIMaster::LoadEventQueue(CResGFF* pRes, CResStruct* pStruct)
     }
 
     return TRUE;
+}
+// PC 0x004DE310
+void CServerAIMaster::LoadReputationAdjustments()
+{
+    CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+    C2DA* pRepAdjustments = p2DArrays->m_pRepAdjustments;
+    if (pRepAdjustments != NULL)
+    {
+        for (int nRow = 0; nRow < 4; nRow++)
+        {
+            int nPersonalRep;
+            int nFactionRep;
+            int nWitnessFriendA;
+            int nWitnessFriendB;
+            int nWitnessFriendC;
+            int nWitnessNeutralA;
+            int nWitnessNeutralB;
+            int nWitnessNeutralC;
+            int nWitnessEnemyA;
+            int nWitnessEnemyB;
+            int nWitnessEnemyC;
+            pRepAdjustments->GetINTEntry(nRow, "PERSONALREP", &nPersonalRep);
+            pRepAdjustments->GetINTEntry(nRow, "FACTIONREP", &nFactionRep);
+            pRepAdjustments->GetINTEntry(nRow, "WITFRIA", &nWitnessFriendA);
+            pRepAdjustments->GetINTEntry(nRow, "WITFRIB", &nWitnessFriendB);
+            pRepAdjustments->GetINTEntry(nRow, "WITFRIC", &nWitnessFriendC);
+            pRepAdjustments->GetINTEntry(nRow, "WITNEUA", &nWitnessNeutralA);
+            pRepAdjustments->GetINTEntry(nRow, "WITNEUB", &nWitnessNeutralB);
+            pRepAdjustments->GetINTEntry(nRow, "WITNEUC", &nWitnessNeutralC);
+            pRepAdjustments->GetINTEntry(nRow, "WITENEA", &nWitnessEnemyA);
+            pRepAdjustments->GetINTEntry(nRow, "WITENEB", &nWitnessEnemyB);
+            pRepAdjustments->GetINTEntry(nRow, "WITENEC", &nWitnessEnemyC);
+            switch (nRow)
+            {
+            case 0:
+                m_pUnused80 = new CExoArrayList<unsigned long>;
+                m_pUnused80->Add(nPersonalRep);
+                m_pUnused80->Add(nFactionRep);
+                m_pUnused80->Add(nWitnessFriendA);
+                m_pUnused80->Add(nWitnessFriendB);
+                m_pUnused80->Add(nWitnessFriendC);
+                m_pUnused80->Add(nWitnessNeutralA);
+                m_pUnused80->Add(nWitnessNeutralB);
+                m_pUnused80->Add(nWitnessNeutralC);
+                m_pUnused80->Add(nWitnessEnemyA);
+                m_pUnused80->Add(nWitnessEnemyB);
+                m_pUnused80->Add(nWitnessEnemyC);
+                break;
+            case 1:
+                m_pUnused84 = new CExoArrayList<unsigned long>;
+                m_pUnused84->Add(nPersonalRep);
+                m_pUnused84->Add(nFactionRep);
+                m_pUnused84->Add(nWitnessFriendA);
+                m_pUnused84->Add(nWitnessFriendB);
+                m_pUnused84->Add(nWitnessFriendC);
+                m_pUnused84->Add(nWitnessNeutralA);
+                m_pUnused84->Add(nWitnessNeutralB);
+                m_pUnused84->Add(nWitnessNeutralC);
+                m_pUnused84->Add(nWitnessEnemyA);
+                m_pUnused84->Add(nWitnessEnemyB);
+                m_pUnused84->Add(nWitnessEnemyC);
+                break;
+            case 2:
+                m_pUnused88 = new CExoArrayList<unsigned long>;
+                m_pUnused88->Add(nPersonalRep);
+                m_pUnused88->Add(nFactionRep);
+                m_pUnused88->Add(nWitnessFriendA);
+                m_pUnused88->Add(nWitnessFriendB);
+                m_pUnused88->Add(nWitnessFriendC);
+                m_pUnused88->Add(nWitnessNeutralA);
+                m_pUnused88->Add(nWitnessNeutralB);
+                m_pUnused88->Add(nWitnessNeutralC);
+                m_pUnused88->Add(nWitnessEnemyA);
+                m_pUnused88->Add(nWitnessEnemyB);
+                m_pUnused88->Add(nWitnessEnemyC);
+                break;
+            case 3:
+                m_pUnused8C = new CExoArrayList<unsigned long>;
+                m_pUnused8C->Add(nPersonalRep);
+                m_pUnused8C->Add(nFactionRep);
+                m_pUnused8C->Add(nWitnessFriendA);
+                m_pUnused8C->Add(nWitnessFriendB);
+                m_pUnused8C->Add(nWitnessFriendC);
+                m_pUnused8C->Add(nWitnessNeutralA);
+                m_pUnused8C->Add(nWitnessNeutralB);
+                m_pUnused8C->Add(nWitnessNeutralC);
+                m_pUnused8C->Add(nWitnessEnemyA);
+                m_pUnused8C->Add(nWitnessEnemyB);
+                m_pUnused8C->Add(nWitnessEnemyC);
+                break;
+            }
+        }
+    }
 }
 // PC 0x004DDAF0
 BOOL CServerAIEventNode::LoadNode(CResGFF* pRes, CResStruct* pStruct)

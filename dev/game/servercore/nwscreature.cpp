@@ -383,7 +383,7 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     m_n11F4 = 0;
     m_n10B4 = 0;
     m_n10B8 = 0;
-    m_n1200 = 0;
+    m_bPlayerCreated = 0;
     m_n1204 = 0;
     m_v1208 = Vector(0.0f, 0.0f, 0.0f);
     m_v1214 = Vector(0.0f, 0.0f, 0.0f);
@@ -2856,44 +2856,8 @@ void CSWSCreature::AIUpdate()
 
     if (GetDead() == 0 && GetDeadTemp() == 0 && m_bInParty != 0)
     {
-        int bRegenerate = m_bCombatState == 0 || m_nItemUseState == COMBAT_STATE_EQUIPMENT;
-        float fHealthRate = 0.0f;
-#ifdef _XBOX
-        CTwoDimArrays* pArraysForRegeneration = g_pRules->m_p2DArrays;
-        EXOXBOXASSERT(pArraysForRegeneration->m_pRegeneration);
-        pArraysForRegeneration->m_pRegeneration->GetFLOATEntry(bRegenerate,
-#else
-        g_pRules->m_p2DArrays->m_pRegeneration->GetFLOATEntry(bRegenerate,
-#endif
-            CTwoDimArrays::COL2DA_REGENERATION_HEALTHREGEN, &fHealthRate);
-        float fHealthRegen = max(NWSCREATURE_REGEN_MINIMUM,
-                                 GetMaxHitPoints(1) * (fHealthRate * NWSCREATURE_REGEN_PERCENT_SCALE));
-        float fHealthGain = fHealthRegen * (m_nElapsedTime * NWSCREATURE_SECONDS_PER_MILLISECOND);
-        CSWSCreatureStats* pHealthStats = m_pStats;
-        float fHitPoints = (short)GetCurrentHitPoints(1) +
-            (short)pHealthStats->AdjustHPAccumulatorBy(fHealthGain);
-        SetCurrentHitPoints((int)min(GetMaxHitPoints(1), fHitPoints));
-        short nTemporaryForcePoints = m_pStats->m_nTemporaryForcePoints;
-        int nMaxForce = nTemporaryForcePoints + (short)GetMaxForcePoints();
-        if ((short)GetMaxForcePoints() > 0)
-        {
-            float fForceRate = 0.0f;
-            g_pRules->m_p2DArrays->m_pRegeneration->GetFLOATEntry(bRegenerate,
-                CTwoDimArrays::COL2DA_REGENERATION_FORCEREGEN, &fForceRate);
-            float fForceRegen = max(NWSCREATURE_REGEN_MINIMUM,
-                                    nMaxForce * (fForceRate * NWSCREATURE_REGEN_PERCENT_SCALE));
-            float fForceGain = fForceRegen * (m_nElapsedTime * NWSCREATURE_SECONDS_PER_MILLISECOND);
-            int nForce = (short)(m_pStats->m_nCurrentForcePoints + m_pStats->m_nTemporaryForcePoints) +
-                (short)m_pStats->AdjustFPAccumulatorBy(fForceGain);
-            if (ZeroForce != 0)
-            {
-                ZeroForce = 0;
-                nForce = 0;
-            }
-            if (nMaxForce < nForce)
-                nForce = nMaxForce;
-            m_pStats->m_nCurrentForcePoints = nForce;
-        }
+        HandleHPRegeneration();
+        HandleFPRegeneration();
     }
     if (RenderHP != 0)
     {
@@ -3011,6 +2975,108 @@ void CSWSCreature::AIUpdate()
             GetArea()->SetCurrentStealthXP(nExperience);
         }
         m_nAttackedPartyLeaderState = 0;
+    }
+}
+// PC 0x00520250
+void CSWSCreature::HandleFPRegeneration()
+{
+    CSWSArea* pArea = GetArea();
+    if (pArea != NULL)
+    {
+        int nMaxForcePoints = GetMaxForcePoints();
+        if (nMaxForcePoints > 0)
+        {
+            int nMaxForce = m_pStats->m_nTemporaryForcePoints + nMaxForcePoints;
+            int nRoomForceRating = pArea->GetRoomForceRating(m_vPosition);
+            C2DA* pRegeneration = g_pRules->Get2DArrays()->m_pRegeneration;
+            CExoString sValue("VALUE");
+            float fTimePerFP = 0.0f;
+            float fFPBase = 0.0f;
+            float fWisModBonus = 0.0f;
+
+            pRegeneration->GetFLOATEntry("FPRegenTime", sValue, &fTimePerFP);
+            if (GetCombatState() == 0 || m_nItemUseState == COMBAT_STATE_EQUIPMENT)
+            {
+                pRegeneration->GetFLOATEntry("OutOfCombatFPBase", sValue, &fFPBase);
+            }
+            else if (m_n1110 == CSWSpell::FORM_SABER_VI_NIMAN && IsWieldingLightsaber())
+            {
+                pRegeneration->GetFLOATEntry("OutOfCombatFPBase", sValue, &fFPBase);
+                fFPBase *= 0.3f;
+            }
+            else if (m_n1110 == CSWSpell::FORM_FORCE_III_AFFINITY)
+            {
+                pRegeneration->GetFLOATEntry("OutOfCombatFPBase", sValue, &fFPBase);
+                fFPBase *= 0.6f;
+            }
+            else
+            {
+                pRegeneration->GetFLOATEntry("InCombatFPBase", sValue, &fFPBase);
+            }
+            pRegeneration->GetFLOATEntry("WisModBonus", sValue, &fWisModBonus);
+
+            unsigned char nAlignmentBand;
+            if (m_pStats->m_nGoodEvilAlignment <= 40)
+            {
+                nAlignmentBand = 3;
+            }
+            else
+            {
+                nAlignmentBand = (m_pStats->m_nGoodEvilAlignment >= 60) + 1;
+            }
+
+            fFPBase += m_pStats->m_nWisdomModifier * fWisModBonus;
+            if (m_pStats->HasFeat(CSWFeat::FEAT_REGENERATE_FORCE_POINTS))
+            {
+                fFPBase += 0.25f;
+            }
+
+            for (int nEffect = 0; nEffect < m_lstEffects.num; nEffect++)
+            {
+                if (m_lstEffects[nEffect]->m_nType == CSWSEffectListHandler::EFFECT_FPREGENMODIFIER)
+                {
+                    fFPBase += m_lstEffects[nEffect]->GetInteger(0) * 0.01f;
+                }
+            }
+
+            if (m_n1110 == CSWSpell::FORM_FORCE_I_FOCUS)
+            {
+                fFPBase += 0.5f;
+            }
+
+            float fRoomBonus = nRoomForceRating * fFPBase * 0.01f;
+            if (nAlignmentBand == 2)
+            {
+                fFPBase += fRoomBonus;
+            }
+            else if (nAlignmentBand == 3)
+            {
+                fFPBase -= fRoomBonus;
+            }
+
+            if (0.0001f > fTimePerFP)
+            {
+                fTimePerFP = 0.0001f;
+            }
+
+            float fPerSecond = fFPBase / fTimePerFP * nMaxForce;
+            float fAdjustment = fPerSecond * (m_nElapsedTime * 0.001f);
+            if (fAdjustment != 0.0)
+            {
+                CSWSCreatureStats* pStats = m_pStats;
+                int nForce = (short)pStats->AdjustFPAccumulatorBy(fAdjustment) +
+                    (short)(pStats->m_nTemporaryForcePoints + pStats->m_nCurrentForcePoints);
+                if (nForce < 0)
+                {
+                    nForce = 0;
+                }
+                if (nMaxForce < nForce)
+                {
+                    nForce = nMaxForce;
+                }
+                m_pStats->m_nCurrentForcePoints = nForce;
+            }
+        }
     }
 }
 // PC 0x00520620
@@ -3832,7 +3898,7 @@ void CSWSCreature::HandleAlignmentInfluence()
             continue;
         }
         CSWSCreature* pPC = pCharacter->GetServerCreature();
-        if (pPC == NULL || pPC->m_n1200 == 0)
+        if (pPC == NULL || pPC->m_bPlayerCreated == 0)
         {
             continue;
         }
@@ -6630,7 +6696,7 @@ int CSWSCreature::LoadCreature(CResGFF* pRes, CResStruct* pStruct, int nAreaId)
     m_nF4 = pRes->ReadFieldBYTE(pStruct, "DeadSelectable", bSuccess, 1);
     m_n11F4 = pRes->ReadFieldINT(pStruct, "BonusForcePoints", bSuccess, 7);
     m_n11F8 = pRes->ReadFieldINT(pStruct, "AssignedPup", bSuccess, -1);
-    m_n1200 = pRes->ReadFieldINT(pStruct, "PlayerCreated", bSuccess, 0);
+    m_bPlayerCreated = pRes->ReadFieldINT(pStruct, "PlayerCreated", bSuccess, 0);
 
     unsigned char nAmbientState =
         pRes->ReadFieldBYTE(pStruct, "AmbientAnimState", bSuccess, 0);
@@ -6810,7 +6876,7 @@ int CSWSCreature::SaveCreature(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldINT(pStruct, m_nUnknown22C, "JoiningXP");
     pRes->WriteFieldINT(pStruct, m_n11F4, "BonusForcePoints");
     pRes->WriteFieldINT(pStruct, m_n11F8, "AssignedPup");
-    pRes->WriteFieldINT(pStruct, m_n1200, "PlayerCreated");
+    pRes->WriteFieldINT(pStruct, m_bPlayerCreated, "PlayerCreated");
     SetInParty(bWasInParty, 1);
 
     SaveFollowInfo(pRes, pStruct);
@@ -12140,7 +12206,7 @@ void CSWSCreature::ReceiveExperience(int nExperience)  // PC 0x00510130
         }
         m_sTag.CStr();
         GetStats()->AddExperience((unsigned long)ceil(nExperience * fPercent));
-        if (m_n1200 != 0)
+        if (m_bPlayerCreated != 0)
         {
             char nPotentialLevel = GetStats()->GetPotentialLevel();
             g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(

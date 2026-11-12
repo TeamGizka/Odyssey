@@ -533,7 +533,7 @@ public:
     unsigned char m_nAttacksPerRound;
     unsigned char m_aUnmapped115[3];
     CCombatInformation* m_pCombatInformation;
-    unsigned char m_c120;
+    char m_c120;
     unsigned char m_aUnmapped121A[3];
     int m_n124;
     unsigned char m_nArcaneSpellFailure;

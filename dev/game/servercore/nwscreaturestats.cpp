@@ -2558,7 +2558,7 @@ void CSWSCreatureStats::SetExperience(unsigned long nExperience, int bUseThresho
                 {
                     GetCreature()->SendFeedbackMessage(CSWSCreature::FEEDBACK_LEVEL_UP, NULL);
                 }
-                if (m_pCreature->m_n1200 &&
+                if (m_pCreature->m_bPlayerCreated &&
                     g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nGlobalDialogState == 0)
                 {
                     char bFired = 0;

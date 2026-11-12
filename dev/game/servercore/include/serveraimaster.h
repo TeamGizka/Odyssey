@@ -162,6 +162,7 @@ public:
     BOOL EventPending(unsigned long nCalendarDay,
                       unsigned long nTimeOfDay);
     void UpdateState();
+    void LoadReputationAdjustments();
     int OnEffectApplied(CSWSObject* pObject, CGameEffect* pEffect,
                         int bLoadingModule);
     int OnEffectRemoved(CSWSObject* pObject, CGameEffect* pEffect);

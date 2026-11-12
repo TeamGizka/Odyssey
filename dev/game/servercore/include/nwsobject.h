@@ -1747,7 +1747,8 @@ public:
     void ResolveSneakAttack(CSWSCreature* pTarget);
     int GetClientRangedAnimation(int nAttackType, int nOption1, int nOption2);
     void ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
-                                   CSWSObject* pTarget, int nImpactTime);
+                                   CSWSObject* pTarget, int nImpactTime,
+                                   int* pbStateApplied);
     void ResolveDamage(CSWSObject* pTarget, int bUseDamage, int nDamage);
     void ResolveMeleeAnimations(int nAttackNumber, int nTotalAttacks,
                                 CSWSObject* pTarget, int nAnimationLength,
@@ -2313,7 +2314,7 @@ public:
     int m_n11F4;
     int m_n11F8;
     int m_n11FC;
-    int m_n1200;
+    int m_bPlayerCreated;
     int m_n1204;
     Vector m_v1208;
     Vector m_v1214;

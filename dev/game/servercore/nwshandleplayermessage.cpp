@@ -3167,7 +3167,7 @@ int CSWSMessage::HandlePlayerToServerLevelUpMessage(CSWSPlayer* pPlayer,
         {
             pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_LEVEL_UP, NULL);
         }
-        if (pCreature->m_n1200 != 0)
+        if (pCreature->m_bPlayerCreated != 0)
         {
             for (int nNPC = 0; nNPC < CSWPartyTable::MAX_NPCS; nNPC++)
             {

@@ -892,6 +892,8 @@ int CSWSModule::LoadModuleFinish()
     pExoApp = g_pAppManager->m_pServerExoApp;
     pExoApp->GetServerAIMaster()->AddEventDeltaTime(
         0, 0, m_nId, m_nId, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+    g_pAppManager->m_pServerExoApp->GetServerAIMaster()->
+        LoadReputationAdjustments();
     m_pRes->Release();
     m_n1D8 = 1;
     if (g_nSetMovieFrameRate != 0)

@@ -59,7 +59,7 @@ void AurTextureBindTID(unsigned int nTextureID, bool bCubeMap);
 short AurTextureCalculateHashID(char* sName, short nNumTXI, int* pTXI);
 void InsertionSortTexture(CAurTextureBasic** ppTextures, int nCount);
 
-void AurSaveGameSnapshot(char* sFileName, int nSize, bool bSquare, bool bCrop);
+void AurSaveGameSnapshot(char* sFileName, int nSize, bool bSquare);
 class TextureController;
 
 void AurTextureClearAll();

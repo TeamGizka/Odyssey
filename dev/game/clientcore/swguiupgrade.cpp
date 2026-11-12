@@ -771,7 +771,7 @@ void CSWGuiUpgradeSelection::PopulateItemList()
     SetDescription("");
     unsigned long oidPC = pServer->GetPlayerList()->GetHead()->AsSWSPlayer()->m_oidPCObject;
     CSWSCreature* pCreature = pServer->GetCreatureByGameObjectID(oidPC);
-    if (pCreature->m_n1200 != 0)
+    if (pCreature->m_bPlayerCreated != 0)
     {
         GetPlayerItems(pCreature, aItems, pTable);
         for (unsigned int i = 0; i < CSWPartyTable::MAX_NPCS; i++)

@@ -1408,10 +1408,22 @@ int CSWSCreature::AIActionCheckMoveAwayFromObject(CSWSObjectActionNode* pAction)
     }
     return CSWSObject::ACTION_COMPLETE;
 }
+enum
+{
+    SET_MINE_DIFFICULTY_EASY = 0,
+    SET_MINE_DIFFICULTY_HARD = 2,
+    SET_MINE_DIFFICULTY_DC_MODIFIER = 5,
+    SET_MINE_STRENGTH_MINOR = 0,
+    SET_MINE_STRENGTH_AVERAGE = 3,
+    SET_MINE_STRENGTH_DEADLY = 9,
+    SET_MINE_STRENGTH_DEVASTATING = 12,
+    SET_MINE_TRIGGER_DELAY = 3000
+};
 // PC 0x0054F440
 int CSWSCreature::AIActionSetMine(CSWSObjectActionNode* pAction)
 {
     CExoString sTrapScript;
+    CSWSTrigger* pTrigger = NULL;
     Vector vTarget;
     Vector vMoveTo;
     int nDetectDCMod;
@@ -1503,18 +1515,27 @@ int CSWSCreature::AIActionSetMine(CSWSObjectActionNode* pAction)
                 oidTarget, TRUE, fRange, 0.0f, FALSE, 0, FALSE, FALSE, FALSE, FALSE,
                 vOrientation, 0, 0, FALSE);
         }
+        m_bUnlockObjectFacingSet = TRUE;
+        return ACTION_COMPLETE;
+    }
+
+    if (!m_bUnlockObjectFacingSet)
+    {
+        AddActionToFront(ACTION_SET_MINE, pAction->m_nGroupId,
+            ACTION_PARAM_OBJECT, &oidItem, ACTION_PARAM_OBJECT, &oidTarget,
+            ACTION_PARAM_FLOAT, &fX, ACTION_PARAM_FLOAT, &fY, ACTION_PARAM_FLOAT, &fZ,
+            0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL);
+        AddActionToFront(ACTION_CHANGE_FACING_OBJECT, pAction->m_nGroupId,
+            ACTION_PARAM_OBJECT, &oidTarget, 0, NULL, 0, NULL, 0, NULL, 0, NULL,
+            0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL);
+        m_bUnlockObjectFacingSet = TRUE;
         return ACTION_COMPLETE;
     }
 
     if (!m_bMineActionStarted)
     {
         m_bMineActionStarted = TRUE;
-        int nAnimation;
-        if (pTarget != NULL && (pTarget->m_nObjectType == CGameObject::OBJECT_TYPE_DOOR ||
-                               pTarget->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE))
-            nAnimation = CREATURE_ANIMATION_LOOPING_GET_MID;
-        else
-            nAnimation = CREATURE_ANIMATION_MINE_ARM;
+        int nAnimation = CREATURE_ANIMATION_MINE_ARM;
         int bWait = TRUE;
         float fSpeed = 1.0f;
         float fDuration = 2.0f;
@@ -1531,24 +1552,66 @@ int CSWSCreature::AIActionSetMine(CSWSObjectActionNode* pAction)
     }
 
     int nTrapType = pItem->GetActiveProperty(0)->m_nSubtype;
+    int nMineStrength = SET_MINE_STRENGTH_MINOR;
+    switch (nTrapType)
+    {
+    case 3:
+    case 6:
+    case 14:
+        nMineStrength = SET_MINE_STRENGTH_MINOR;
+        break;
+    case 4:
+    case 7:
+    case 15:
+        nMineStrength = SET_MINE_STRENGTH_AVERAGE;
+        break;
+    case 5:
+    case 8:
+    case 16:
+    case 19:
+    case 21:
+    case 25:
+        nMineStrength = SET_MINE_STRENGTH_DEADLY;
+        break;
+    case 20:
+    case 22:
+    case 26:
+        nMineStrength = SET_MINE_STRENGTH_DEVASTATING;
+        break;
+    }
     int nSetDC;
     g_pRules->Get2DArrays()->GetTraps()->GetINTEntry(nTrapType, "SetDC", &nSetDC);
+    int nDifficultyModifier = 0;
+    switch (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nDifficulty)
+    {
+    case SET_MINE_DIFFICULTY_EASY:
+        nDifficultyModifier = -SET_MINE_DIFFICULTY_DC_MODIFIER;
+        break;
+    case SET_MINE_DIFFICULTY_HARD:
+        nDifficultyModifier = SET_MINE_DIFFICULTY_DC_MODIFIER;
+        break;
+    }
+    nSetDC += nDifficultyModifier;
     if (nSetDC < 1)
         nSetDC = 1;
     int nSkill = m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, FALSE);
     int bTakeTwenty = FALSE;
-    if (m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, TRUE) >= SET_MINE_SYNERGY_RANK)
-        nSkill += SET_MINE_SYNERGY_BONUS;
     int nRoll;
-    if (m_bCombatState)
+    if (m_bCombatState && pTarget == NULL)
         nRoll = rand() % 20 + 1;
     else
     {
         nRoll = 20;
         bTakeTwenty = TRUE;
     }
-    int nTotal = nRoll + nSkill;
-    if (nTotal >= nSetDC || (!bTakeTwenty && nTotal < nSetDC - SET_MINE_CRITICAL_FAILURE_MARGIN))
+    nRoll += nSkill;
+    int bCriticalFailure = FALSE;
+    int bSuccess = FALSE;
+    if (nRoll >= nSetDC)
+        bSuccess = TRUE;
+    else if (!bTakeTwenty && nRoll < nSetDC - SET_MINE_CRITICAL_FAILURE_MARGIN)
+        bCriticalFailure = TRUE;
+    if (bSuccess || bCriticalFailure)
     {
         g_pRules->Get2DArrays()->GetTraps()->GetINTEntry(nTrapType, "DetectDCMod", &nDetectDCMod);
         g_pRules->Get2DArrays()->GetTraps()->GetINTEntry(nTrapType, "DisarmDCMod", &nDisarmDCMod);
@@ -1556,53 +1619,125 @@ int CSWSCreature::AIActionSetMine(CSWSObjectActionNode* pAction)
         if (pTarget != NULL && pTarget->m_nObjectType == CGameObject::OBJECT_TYPE_DOOR)
         {
             CSWSDoor* pDoor = pTarget->AsSWSDoor();
-            pDoor->m_bTrapFlag = TRUE;
-            pDoor->m_nTrapType = nTrapType;
-            pDoor->m_asScripts[CSWSDoor::SCRIPT_ON_TRAP_TRIGGERED] = sTrapScript;
-            pDoor->SetDetectDC(nSkill + nRoll + nDetectDCMod);
-            pDoor->SetDisarmDC(nSkill + nRoll + nDisarmDCMod);
-            pDoor->m_bTrapDetectable = TRUE;
-            pDoor->m_bTrapDisarmable = TRUE;
-            pDoor->m_bTrapOneShot = TRUE;
-            unsigned long oidDoor = pDoor->GetId();
-            CSWSArea* pArea = GetArea();
-            pArea->m_lstTrapObjectIds.Add(oidDoor);
+            if (!pDoor->m_bTrapFlag)
+            {
+                pDoor->m_bTrapFlag = TRUE;
+                pDoor->m_nTrapType = nTrapType;
+                pDoor->m_asScripts[CSWSDoor::SCRIPT_ON_TRAP_TRIGGERED] = sTrapScript;
+                pDoor->SetDetectDC(nDetectDCMod + nRoll);
+                pDoor->SetDisarmDC(nRoll + nDisarmDCMod);
+                pDoor->m_bTrapDetectable = TRUE;
+                pDoor->m_bTrapDisarmable = FALSE;
+                pDoor->m_bTrapOneShot = TRUE;
+                pDoor->m_nOwnerDemolitionsSkill =
+                    m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, FALSE);
+                unsigned long oidDoor = pDoor->GetId();
+                CSWSArea* pArea = GetArea();
+                pArea->m_lstTrapObjectIds.Add(oidDoor);
+
+                pTrigger = new CSWSTrigger(OBJECT_INVALID);
+                pTrigger->SetCreator(GetId());
+                pTrigger->m_nTrapType = nTrapType;
+                pTrigger->m_bMineTrigger = TRUE;
+                pTrigger->SetPosition(pDoor->m_vPosition, TRUE, TRUE, FALSE);
+                pTrigger->m_nFaction = GetFactionId();
+                pTrigger->m_bTrapDisarmable = FALSE;
+                pTrigger->m_bTrapDetectable = FALSE;
+                pTrigger->m_bPartyInteract = FALSE;
+                int nTrapName = 0;
+                g_pRules->Get2DArrays()->GetTraps()->GetINTEntry(nTrapType, "TrapName", &nTrapName);
+                pTrigger->m_lsName.m_dwStringRef = nTrapName;
+                unsigned long oidTrigger = pTrigger->GetId();
+                CSWSArea* pTriggerArea = GetArea();
+                pTriggerArea->m_lstTrapObjectIds.Add(oidTrigger);
+                CSWSArea* pGeometryArea = GetArea();
+                pTrigger->CreateNewGeometry(2.0f, vTarget, pGeometryArea);
+                pTrigger->AddToArea(GetArea(), pDoor->m_vPosition.m_fX,
+                    pDoor->m_vPosition.m_fY, pDoor->m_vPosition.m_fZ, TRUE);
+                pDoor->m_pTrapTrigger = pTrigger;
+                if (!bCriticalFailure)
+                {
+                    CScriptEvent* pEvent = new CScriptEvent;
+                    pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_MINE_TRIGGERED;
+                    pEvent->SetInteger(0, TRUE);
+                    pEvent->SetInteger(1, FALSE);
+                    pEvent->SetInteger(2, TRUE);
+                    pEvent->SetInteger(3, nMineStrength);
+                    g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                        0, SET_MINE_TRIGGER_DELAY, GetId(), oidTarget,
+                        CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+                }
+            }
         }
         else if (pTarget != NULL && pTarget->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
         {
             CSWSPlaceable* pPlaceable = pTarget->AsSWSPlaceable();
-            pPlaceable->m_nTrapFlag = TRUE;
-            pPlaceable->m_nTrapType = nTrapType;
-            pPlaceable->m_sScripts[CSWSPlaceable::SCRIPT_ONTRAPTRIGGERED] = sTrapScript;
+            if (!pPlaceable->m_nTrapFlag)
+            {
+                pPlaceable->m_nTrapType = nTrapType;
+                pPlaceable->m_nTrapFlag = TRUE;
+                pPlaceable->m_sScripts[CSWSPlaceable::SCRIPT_ONTRAPTRIGGERED] = sTrapScript;
+                pPlaceable->m_nTrapDetectDC = nDetectDCMod + nRoll;
+                pPlaceable->m_nDisarmDC = nRoll + nDisarmDCMod;
+                pPlaceable->m_bTrapDetectable = TRUE;
+                pPlaceable->m_bTrapDisarmable = FALSE;
+                pPlaceable->m_bTrapOneShot = TRUE;
+                pPlaceable->m_nOwnerDemolitionsSkill =
+                    m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, FALSE);
+                unsigned long oidPlaceable = pPlaceable->GetId();
+                CSWSArea* pArea = GetArea();
+                pArea->m_lstTrapObjectIds.Add(oidPlaceable);
 
-            unsigned char nDetectDC = nSkill + nRoll + nDetectDCMod;
-            pPlaceable->m_nTrapDetectDC = nDetectDC;
-            unsigned char nDisarmDC = nSkill + nRoll + nDisarmDCMod;
-            pPlaceable->m_nDisarmDC = nDisarmDC;
-            pPlaceable->m_bTrapDetectable = TRUE;
-            pPlaceable->m_bTrapDisarmable = TRUE;
-            pPlaceable->m_bTrapOneShot = TRUE;
-            unsigned long oidPlaceable = pPlaceable->GetId();
-            CSWSArea* pArea = GetArea();
-            pArea->m_lstTrapObjectIds.Add(oidPlaceable);
+                pTrigger = new CSWSTrigger(OBJECT_INVALID);
+                pTrigger->SetCreator(GetId());
+                pTrigger->m_nTrapType = nTrapType;
+                pTrigger->m_bMineTrigger = TRUE;
+                pTrigger->SetPosition(pPlaceable->m_vPosition, TRUE, TRUE, FALSE);
+                pTrigger->m_nFaction = GetFactionId();
+                pTrigger->m_bTrapDisarmable = FALSE;
+                pTrigger->m_bTrapDetectable = FALSE;
+                pTrigger->m_bPartyInteract = FALSE;
+                int nTrapName = 0;
+                g_pRules->Get2DArrays()->GetTraps()->GetINTEntry(nTrapType, "TrapName", &nTrapName);
+                unsigned long oidTrigger = pTrigger->GetId();
+                pTrigger->m_lsName.m_dwStringRef = nTrapName;
+                CSWSArea* pTriggerArea = GetArea();
+                pTriggerArea->m_lstTrapObjectIds.Add(oidTrigger);
+                CSWSArea* pGeometryArea = GetArea();
+                pTrigger->CreateNewGeometry(2.0f, vTarget, pGeometryArea);
+                pTrigger->AddToArea(GetArea(), pPlaceable->m_vPosition.m_fX,
+                    pPlaceable->m_vPosition.m_fY, pPlaceable->m_vPosition.m_fZ, TRUE);
+                pPlaceable->m_pTrapTrigger = pTrigger;
+                if (!bCriticalFailure)
+                {
+                    CScriptEvent* pEvent = new CScriptEvent;
+                    pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_MINE_TRIGGERED;
+                    pEvent->SetInteger(0, TRUE);
+                    pEvent->SetInteger(1, FALSE);
+                    pEvent->SetInteger(2, TRUE);
+                    pEvent->SetInteger(3, nMineStrength);
+                    g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                        0, SET_MINE_TRIGGER_DELAY, GetId(), oidTarget,
+                        CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+                }
+            }
         }
         else
         {
-            CSWSTrigger* pTrigger = new CSWSTrigger(OBJECT_INVALID);
+            pTrigger = new CSWSTrigger(OBJECT_INVALID);
             pTrigger->SetCreator(GetId());
             pTrigger->m_nTrapType = nTrapType;
             pTrigger->m_asScripts[CSWSTrigger::SCRIPT_ONTRAPTRIGGERED] = sTrapScript;
-
-            int nDetectDC = nDetectDCMod + nRoll + nSkill;
-            pTrigger->m_nTrapDetectDC = nDetectDC;
-            int nDisarmDC = nDisarmDCMod + nRoll + nSkill;
-            pTrigger->m_nTrapDisarmDC = nDisarmDC;
+            pTrigger->m_nTrapDetectDC = nDetectDCMod + nRoll;
+            pTrigger->m_nTrapDisarmDC = nRoll + nDisarmDCMod;
             pTrigger->m_bMineTrigger = TRUE;
             pTrigger->m_bTrapDetectable = TRUE;
             pTrigger->m_bTrapDisarmable = TRUE;
             pTrigger->SetPosition(m_vPosition, TRUE, TRUE, FALSE);
 
             pTrigger->m_nFaction = GetFactionId();
+            pTrigger->m_nOwnerDemolitionsSkill =
+                m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, FALSE);
             int nTrapName = 0;
             g_pRules->Get2DArrays()->GetTraps()->GetINTEntry(nTrapType, "TrapName", &nTrapName);
             pTrigger->m_lsName.m_dwStringRef = nTrapName;
@@ -1626,46 +1761,53 @@ int CSWSCreature::AIActionSetMine(CSWSObjectActionNode* pAction)
                     0, 0, GetId(), pItem->GetId(), CServerAIMaster::EVENT_DESTROY_OBJECT, NULL);
             }
         }
-    }
+        CScriptEvent* pLoseEvent = new CScriptEvent;
+        pLoseEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_LOSE_ITEM;
+        pLoseEvent->SetObjectID(0, pItem->GetId());
+        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+            0, 0, GetId(), g_pAppManager->GetServerExoApp()->GetModule()->GetId(),
+            CServerAIMaster::EVENT_SIGNAL_EVENT, pLoseEvent);
 
-    if (!bTakeTwenty && nTotal < nSetDC - SET_MINE_CRITICAL_FAILURE_MARGIN && pTarget != NULL)
-    {
-        if (pTarget->AsSWSTrigger() != NULL)
+        if (bCriticalFailure)
         {
-            pTarget->AsSWSTrigger()->m_bMineTrigger = TRUE;
-            CScriptEvent* pEvent = new CScriptEvent;
-            pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_OBJECT_ENTER;
-            pEvent->SetObjectID(0, GetId());
-            pEvent->SetInteger(0, TRUE);
-            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                0, 0, GetId(), oidTarget, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
-        }
-        else if (pTarget->AsSWSPlaceable() != NULL || pTarget->AsSWSDoor() != NULL)
-        {
-            CScriptEvent* pEvent = new CScriptEvent;
-            pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_MINE_TRIGGERED;
-            pEvent->SetInteger(0, TRUE);
-            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                0, 0, GetId(), oidTarget, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+            if (pTarget == NULL && pTrigger != NULL)
+            {
+                pTrigger->m_bMineTrigger = TRUE;
+                CScriptEvent* pEvent = new CScriptEvent;
+                pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_OBJECT_ENTER;
+                pEvent->SetObjectID(0, GetId());
+                pEvent->SetInteger(0, TRUE);
+                pEvent->SetInteger(1, TRUE);
+                pEvent->SetInteger(2, TRUE);
+                g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                    0, 0, GetId(), pTrigger->GetId(), CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+            }
+            else if (pTarget->AsSWSPlaceable() != NULL || pTarget->AsSWSDoor() != NULL)
+            {
+                CScriptEvent* pEvent = new CScriptEvent;
+                pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_MINE_TRIGGERED;
+                pEvent->SetInteger(0, TRUE);
+                g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                    0, 0, GetId(), oidTarget, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+            }
         }
     }
 
     CSWCCMessageData* pData = new CSWCCMessageData;
-    pData->SetObjectID(0, GetId());
+    pData->SetObjectID(CSWCCMessageData::SKILL_DATA_CREATURE, GetId());
+    if (pTarget != NULL && (pTarget->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE ||
+                           pTarget->m_nObjectType == CGameObject::OBJECT_TYPE_DOOR))
+        pData->SetObjectID(CSWCCMessageData::SKILL_DATA_TARGET, pTarget->m_nId);
     pData->SetInteger(CSWCCMessageData::SKILL_DATA_NAME, CSWCCMessageData::SKILL_DATA_SET_STRREF);
-    pData->SetInteger(CSWCCMessageData::SKILL_DATA_ROLL, nRoll);
+    pData->SetInteger(CSWCCMessageData::SKILL_DATA_ROLL, nRoll - nSkill);
     pData->SetInteger(CSWCCMessageData::SKILL_DATA_RANK, nSkill);
     pData->SetInteger(CSWCCMessageData::SKILL_DATA_DC, nSetDC);
     pData->SetInteger(CSWCCMessageData::SKILL_DATA_TAKE_20, bTakeTwenty);
-    int bSuccess = FALSE;
-    if (nTotal >= nSetDC)
-    {
+    if (bSuccess)
         pData->SetInteger(CSWCCMessageData::SKILL_DATA_RESULT, CSWCCMessageData::SKILL_RESULT_SUCCESS);
-        bSuccess = TRUE;
-    }
     else if (bTakeTwenty)
         pData->SetInteger(CSWCCMessageData::SKILL_DATA_RESULT, CSWCCMessageData::SKILL_RESULT_RETRY);
-    else if (nTotal < nSetDC - SET_MINE_CRITICAL_FAILURE_MARGIN)
+    else if (bCriticalFailure)
         pData->SetInteger(CSWCCMessageData::SKILL_DATA_RESULT, CSWCCMessageData::SKILL_RESULT_CRITICAL_FAILURE);
     else
         pData->SetInteger(CSWCCMessageData::SKILL_DATA_RESULT, CSWCCMessageData::SKILL_RESULT_FAILED);
@@ -1676,6 +1818,7 @@ int CSWSCreature::AIActionSetMine(CSWSObjectActionNode* pAction)
     RemoveCombatInvisibilityEffects();
     StopGuiTimingBar();
     m_bMineActionStarted = FALSE;
+    m_bUnlockObjectFacingSet = FALSE;
     return ACTION_COMPLETE;
 }
 // PC 0x00550620
@@ -5293,7 +5436,7 @@ int CSWSCreature::CheckItemPCRestrictions(CSWSItem* pItem)
                     int nSubtype = pRestriction->m_nSubtype;
                     if (nSubtype == 0)
                     {
-                        if (m_n1200 != 0)
+                        if (m_bPlayerCreated != 0)
                         {
                             bAllowed = 1;
                         }

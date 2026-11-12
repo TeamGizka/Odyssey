@@ -128,7 +128,7 @@ void CSWGuiStatusSummary::HandleLevelUpDLG()
 {
     CSWSCreature* pCreature = (CSWSCreature*)g_pAppManager->m_pServerExoApp->GetGameObject(
         g_pAppManager->m_pServerExoApp->GetFirstPCObject());
-    if (pCreature != 0 && pCreature->m_n1200 != 0 && pCreature->m_pStats->CanLevelUp())
+    if (pCreature != 0 && pCreature->m_bPlayerCreated != 0 && pCreature->m_pStats->CanLevelUp())
     {
         char bFired = 0;
         g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->GetValueNumber(

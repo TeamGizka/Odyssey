@@ -161,8 +161,6 @@ int CTwoDimArrays::COL2DA_DIALOGANIMATIONS_OVERLAY = -1;
 int CTwoDimArrays::COL2DA_FOOTSTEPSOUNDS_ROLLING = -1;
 int CTwoDimArrays::COL2DA_FOOTSTEPSOUNDS_PITCHOFFSET = -1;
 int CTwoDimArrays::COL2DA_WEAPONSOUNDS_PITCHOFFSET = -1;
-int CTwoDimArrays::COL2DA_REGENERATION_HEALTHREGEN = -1;
-int CTwoDimArrays::COL2DA_REGENERATION_FORCEREGEN = -1;
 int CTwoDimArrays::COL2DA_SURFACEMATERIAL_NAME = -1;
 int CTwoDimArrays::COL2DA_VISUALEFFECT_IMP_HEADCON_NODE = -1;
 int CTwoDimArrays::COL2DA_VISUALEFFECT_IMP_IMPACT_NODE = -1;
@@ -907,14 +905,6 @@ int CTwoDimArrays::Load2DArrays_Regeneration()
     if (m_pRegeneration == 0 || m_pRegeneration->Load2DArray() == 0)
     {
         return 0;
-    }
-
-    COL2DA_REGENERATION_FORCEREGEN =
-        m_pRegeneration->GetColumnIndex("ForceRegen");
-    {
-        CExoString sColumn("HealthRegen");
-        C2DA* p2DA = m_pRegeneration;
-        COL2DA_REGENERATION_HEALTHREGEN = p2DA->GetColumnIndex(sColumn);
     }
     return 1;
 }
