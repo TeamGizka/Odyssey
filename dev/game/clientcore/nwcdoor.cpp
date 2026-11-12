@@ -592,8 +592,8 @@ void CSWCDoor::UpdateAreaTransitionDisplay()  // PC 0x006DC590
 #else
     if (pGui->m_bCameraRelativeAreaTransition)
     {
-        vDirection = g_pAppManager->m_pClientExoApp->GetModuleCamera()
-                         ->GetOrientation().ydir();
+        CAurCamera* pCamera = g_pAppManager->m_pClientExoApp->GetModuleCamera();
+        vDirection = pCamera->GetOrientation().ydir();
         vDirection.m_fZ = 0.0f;
         vDirection = normalize(vDirection);
     }

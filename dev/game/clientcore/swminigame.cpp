@@ -1023,8 +1023,7 @@ void CSWMiniGame::DoHitCheck()
             }
             else
             {
-                int nEnemy = m_lstEnemyIds.num - 1;
-                while (nEnemy >= 0)
+                for (int nEnemy = m_lstEnemyIds.num - 1; nEnemy >= 0; --nEnemy)
                 {
                     CSWTrackFollower* pEnemy =
                         (CSWTrackFollower*)pArray->GetMiniGameObject(
@@ -1043,7 +1042,6 @@ void CSWMiniGame::DoHitCheck()
                     {
                         m_lstEnemyIds.DelIndex(nEnemy);
                     }
-                    --nEnemy;
                 }
 
                 if (!bHit)

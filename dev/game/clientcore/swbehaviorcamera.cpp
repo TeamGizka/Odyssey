@@ -1031,7 +1031,8 @@ Vector CSWCameraOnAStick::Control_HitCheckCamera(Vector vPosition)
         int bHitLeft = pSceneLeft->HitCheck(
             vStart, vProbeLeft, &vHitLeft, &hitInfo) != 0;
 
-        Vector vVertical = Vector(0.0f, 0.0f, 1.0f) * CameraPersonalSpace;
+        Vector vUp(0.0f, 0.0f, 1.0f);
+        Vector vVertical = vUp * CameraPersonalSpace;
         Vector vProbeUp = vPosition + vVertical;
         hitInfo.ClearOutput();
         hitInfo.m_bResult2 = 1;
@@ -1069,8 +1070,9 @@ Vector CSWCameraOnAStick::Control_HitCheckCamera(Vector vPosition)
             }
             Vector vCorrection = fDistance * normalize(vDelta);
             vSafe -= vCorrection;
+            Gob* pTarget = static_cast<Gob*>(m_pTarget.m_pObject);
             vCorrection =
-                normalize(static_cast<Gob*>(m_pTarget.m_pObject)->GetOrientation().zdir()) *
+                normalize(pTarget->GetOrientation().zdir()) *
                 ((fDistance / fTargetDistance) *
                  (CameraPersonalSpace + CAMERA_COLLISION_LIFT_CLEARANCE));
             vSafe += vCorrection;

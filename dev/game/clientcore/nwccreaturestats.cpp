@@ -2535,7 +2535,7 @@ void CSWCCreatureStats::GetMenuInfo(
                     if (nSpellId < CSWSpell::FORM_SABER_I_SHII_CHO ||
                         nSpellId > CSWSpell::FORM_FORCE_IV_MASTERY)
                     {
-                        continue;
+                        bAvailable = 0;
                     }
                 }
                 else
@@ -2543,7 +2543,7 @@ void CSWCCreatureStats::GetMenuInfo(
                     if (nSpellId >= CSWSpell::FORM_SABER_I_SHII_CHO &&
                         nSpellId <= CSWSpell::FORM_FORCE_IV_MASTERY)
                     {
-                        continue;
+                        bAvailable = 0;
                     }
                 }
                 if (bAvailable)

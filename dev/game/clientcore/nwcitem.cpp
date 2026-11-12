@@ -452,11 +452,13 @@ void CSWCItem::UpdateOrientation(const Vector& vNormal)
     qOrientation = YawPitchRoll(Yaw(m_vOrientation), fPitch, fRoll);
     if (enableitemgroundalignment != 0)
     {
-        qOrientation = RotationArc(Vector(0.0f, 0.0f, 1.0f), vNormal) * qOrientation;
+        Vector vUp(0.0f, 0.0f, 1.0f);
+        qOrientation = RotationArc(vUp, vNormal) * qOrientation;
     }
-    if (m_pAnimBase != NULL)
+    CSWCAnimBase* pAnimBase = m_pAnimBase;
+    if (pAnimBase != NULL)
     {
-        m_pAnimBase->SetOrientation(qOrientation);
+        pAnimBase->SetOrientation(qOrientation);
     }
 }
 // PC 0x006DB7A0

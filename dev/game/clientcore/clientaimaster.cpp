@@ -86,9 +86,9 @@ int CClientAIMaster::UpdateState()
     int nCount = m_aiList.m_nCount;
 
     g_starttime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
-    if (pObject != NULL && nCount > 0)
+    if (pObject != NULL)
     {
-        do
+        while (nCount > 0)
         {
             if (pObject != NULL)
             {
@@ -96,7 +96,7 @@ int CClientAIMaster::UpdateState()
             }
             pObject = m_aiList.GetNextObject();
             nCount--;
-        } while (nCount != 0);
+        }
     }
     g_endtime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
     g_AIObjectTime = (float)(int)(g_endtime - g_starttime) * 0.001f;

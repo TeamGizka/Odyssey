@@ -70,7 +70,7 @@ public:
         return *this;
     }
 
-    Vector& operator*=(float fScale)
+    __forceinline Vector& operator*=(float fScale)
     {
         m_fX *= fScale;
         m_fY *= fScale;

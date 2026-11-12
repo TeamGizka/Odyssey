@@ -8170,7 +8170,8 @@ int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
                 {
                     int nRows = pStoryHints->GetNumRows() + 1;
                     CExoString sAreaNumber("AreaNumber");
-                    for (int nTry = 0; nTry <= nRows; ++nTry)
+                    int nTry = 0;
+                    do
                     {
                         if (!pStoryHints->GetINTEntry(m_anStoryHint[nArea], sAreaNumber, &nHint))
                         {
@@ -8182,13 +8183,13 @@ int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
                         }
                         else
                         {
-                            unsigned char bFound =
-                                pStoryHints->GetINTEntry(m_anStoryHint[nArea], "StoryHint", &nHint) != 0;
-                            nStrRef = bFound ? nHint : 0;
+                            unsigned char bNoHint =
+                                pStoryHints->GetINTEntry(m_anStoryHint[nArea], "StoryHint", &nHint) == 0;
+                            nStrRef = bNoHint ? 0 : nHint;
                             ++m_anStoryHint[nArea];
                             break;
                         }
-                    }
+                    } while (++nTry <= nRows);
                     pStoryHints->Unload2DArray();
                     delete pStoryHints;
                     return nStrRef;

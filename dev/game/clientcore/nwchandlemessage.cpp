@@ -8502,9 +8502,9 @@ int CSWCMessage::HandleServerToPlayerCheat_DoNasty()
         Quaternion qRoot;
         Vector vRoot;
         pCreature->m_pBloodEffect->GetPartLocalPosition("root", &vRoot, &qRoot);
+        Vector vAxis(1.0f, 0.0f, 0.0f);
         pCreature->m_pBloodEffect->SetPartLocalPosition("root", vRoot,
-            qRoot * Quaternion(Vector(1.0f, 0.0f, 0.0f),
-                               SWCCREATURE_NASTY_ROOT_ROTATION));
+            qRoot * Quaternion(vAxis, SWCCREATURE_NASTY_ROOT_ROTATION));
         pCreature->m_pBloodEffect->GetPartPosition("root", &vRoot, &qRoot);
         vRoot.m_fZ += SWCCREATURE_NASTY_EFFECT_HEIGHT;
         vRoot += pCreature->m_vPosition;
