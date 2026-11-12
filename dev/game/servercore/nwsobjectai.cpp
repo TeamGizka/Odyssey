@@ -1204,11 +1204,12 @@ int CSWSObject::AIActionSwitchWeapons(CSWSObjectActionNode* pNode)
         CSWSItem* pLeft2 = pCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_LEFTHAND2);
         pCreature->ClearAllActions(1);
         pCreature->m_pcCombatRound->RemoveAllActions();
-        int bInstant = 1;
+        int bHasAlternateWeapons = 1;
         if (pRight2 == NULL && pLeft2 == NULL)
         {
-            bInstant = 0;
+            bHasAlternateWeapons = 0;
         }
+        int bInstant = bHasAlternateWeapons;
         if (g_pAppManager->m_pClientExoApp->GetPlayerMovementInput())
         {
             bInstant = 1;
