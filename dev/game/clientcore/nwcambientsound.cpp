@@ -121,14 +121,14 @@ void CSWCAmbientSound::Thunder(int bRolling)
     }
     if (bRolling)
     {
-        if (rand() % 2 == 0)
+        if (rand() % 2)
         {
-            CResRef cSound(THUNDER_ROLLING1);
+            CResRef cSound(THUNDER_ROLLING2);
             g_pExoSound->PlayOneShotSound(
                 cSound, CExoSound::PRIORITY_GROUP_POWERED_ITEM, 0, 0, 0.0f, 0.0f);
             return;
         }
-        CResRef cSound(THUNDER_ROLLING2);
+        CResRef cSound(THUNDER_ROLLING1);
         g_pExoSound->PlayOneShotSound(
             cSound, CExoSound::PRIORITY_GROUP_POWERED_ITEM, 0, 0, 0.0f, 0.0f);
     }
