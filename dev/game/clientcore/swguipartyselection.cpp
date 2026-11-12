@@ -590,9 +590,9 @@ void CSWGuiPartySelection::AcceptParty(int bCancelled)
             {
                 for (int nMember = 0; nMember < CSWPartyTable::MAX_NPCS; ++nMember)
                 {
-                    if (m_aPartyMembers[nMember].m_nPartyIndex != -1 &&
-                        m_aPartyMembers[nMember].m_nPartyIndex >
-                            m_aPartyMembers[nNPC].m_nPartyIndex)
+                    int nPartyIndex = m_aPartyMembers[nMember].m_nPartyIndex;
+                    if (nPartyIndex != -1 &&
+                        nPartyIndex > m_aPartyMembers[nNPC].m_nPartyIndex)
                         --m_aPartyMembers[nMember].m_nPartyIndex;
                 }
                 pClientCreature->SetInParty(0);

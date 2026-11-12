@@ -3177,8 +3177,9 @@ void CGuiInGame::UpdateShotCamera(unsigned long nShot, int nCamera,
                             fPullBackRange = 0.0f;
                         if (fPullBackRange < 0.001 && fPullBackRange > -0.001)
                             fPullBackRange = 0.0f;
+                        unsigned long oidCreature = m_oidDialogObject1;
                         CSWCCreature* pCreature =
-                            g_pAppManager->GetClientExoApp()->GetCreatureByGameObjectID(m_oidDialogObject1);
+                            g_pAppManager->GetClientExoApp()->GetCreatureByGameObjectID(oidCreature);
                         if (pCreature != 0 && pCreature->GetAppearance()->m_nAppearance == CCAppearanceInfo::APPEARANCE_GRAN_01)
                             fPullBackRange += DIALOG_CAMERA_GRAN_PULLBACK_OFFSET;
                         if (fPullBackRange == 0.0f)
