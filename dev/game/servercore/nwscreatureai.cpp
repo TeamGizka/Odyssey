@@ -5687,6 +5687,35 @@ int CSWSCreature::AIActionSurrenderToEnemies(CSWSObjectActionNode*)
     SurrenderToEnemies(0);
     return CSWSObject::ACTION_COMPLETE;
 }
+
+void CSWSCreature::PossessCreature(unsigned long oidCreature)
+{
+    if (oidCreature != OBJECT_INVALID)
+    {
+        CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidCreature);
+        if (pPlayer != NULL && pPlayer->m_pLastUpdateObject != NULL)
+        {
+            pPlayer->m_pLastUpdateObject->ClearVisibilityList();
+        }
+        if (pPlayer != NULL && pPlayer->m_pLastUpdateObject != NULL)
+        {
+            pPlayer->m_pLastUpdateObject->ClearActionQueue();
+        }
+    }
+}
+
+void CSWSCreature::UnpossessCreature()
+{
+    CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(GetId());
+    if (pPlayer != NULL && pPlayer->m_pLastUpdateObject != NULL)
+    {
+        pPlayer->m_pLastUpdateObject->ClearVisibilityList();
+    }
+    if (pPlayer != NULL && pPlayer->m_pLastUpdateObject != NULL)
+    {
+        pPlayer->m_pLastUpdateObject->ClearActionQueue();
+    }
+}
 // PC 0x00551220
 int CSWSCreature::CanUseItem(CSWSItem* pItem, int bUnknown,
                              int bCheckFullHealth)

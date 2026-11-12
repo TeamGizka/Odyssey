@@ -1778,6 +1778,8 @@ public:
     int AIActionFollowOwner(CSWSObjectActionNode* pNode);
     int AIActionStanceTotalDefense(CSWSObjectActionNode* pNode);
     int AIActionStanceMeditative(CSWSObjectActionNode* pNode);
+    void PossessCreature(unsigned long oidCreature);
+    void UnpossessCreature();
 
 
     enum { ENCOUNTER_CREATURE_DESTROY_DELAY = 5000 };

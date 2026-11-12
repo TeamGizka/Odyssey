@@ -237,7 +237,7 @@ extern "C"
     AurWglGetExtensionsStringProc wglGetExtensionsStringARB;
     AurWglSwapIntervalProc wglSwapIntervalEXT;
 
-    HDC(WINAPI* wglGetCurrentReadDCARB)(void);
+    PROC glUnusedExtension59;
     PROC glUnusedExtension132;
     PROC glUnusedExtension62;
 }
