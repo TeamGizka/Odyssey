@@ -8019,7 +8019,8 @@ int CClientExoAppInternal::ChangeCharacterToNextLivingPartyMember(
         while (nScanned != nPartyMembers && nTries > 0)
         {
             ChangeCharacter(CSWParty::LEADER_NEXT, 0);
-            pCharacter = m_pSWParty->GetPlayerCharacter();
+            CSWParty* pParty = m_pSWParty;
+            pCharacter = pParty->GetPlayerCharacter();
             if (pCharacter != NULL)
             {
                 int bDead = pCharacter->GetServerCreature()->GetDead();
