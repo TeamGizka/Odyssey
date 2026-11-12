@@ -24,11 +24,9 @@ import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# The Miles library swkotor2.exe was linked with exports three names more than mss32.dll 6.5h: the hints of its
-# imports are the 6.5h export index plus 2 after _AIL_enumerate_3D_providers@12 and plus 3 after
-# _AIL_set_sample_file@12. The names themselves never reach the executable; these three are names a later Miles
-# release exports in those places.
-MILES_ADDED = ['_AIL_enumerate_MP3_frames@4', '_AIL_file_type_named@12', '_AIL_set_sample_info@8']
+# The Miles 6.6g library swkotor2.exe was linked with exports three names more than mss32.dll 6.5h, which the
+# game ships: two added in 6.6g and one added in 6.6f (the export table of mss32.dll 6.6g).
+MILES_ADDED = ['_AIL_find_3D_provider@8', '_AIL_find_filter@8', '_AIL_set_sample_info@8']
 
 
 # The DLLs of the Steam release (binkw32.dll 1.6b of 2003-12-10, Mss32.dll 6.5h).
