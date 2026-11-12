@@ -5947,17 +5947,53 @@ bool CSWSCreatureStats::GetSpellUsesLeft(
     int nRoomForceRating = 0;
     if (pArea != NULL)
         nRoomForceRating = pArea->GetRoomForceRating(m_pCreature->m_vPosition);
-    int bAdjust = m_pCreature->m_bInParty;
+    char nCharismaModifier = m_pCreature->m_pStats->m_nCharismaModifier;
     short nAlignment = m_nGoodEvilAlignment;
-    unsigned long nForcePoints = pSpell->GetAdjustedForcePoints(nAlignment, bAdjust, nRoomForceRating,
-                m_pCreature->m_n1110, m_nCharismaModifier);
-    short nForcePointsLeft = m_nCurrentForcePoints + m_nTemporaryForcePoints;
-    bool bUsesLeft = nForcePointsLeft >= nForcePoints;
+    bool bUsesLeft = 0;
+    unsigned long nForcePoints = pSpell->GetAdjustedForcePoints(nAlignment,
+        m_pCreature->m_bInParty, nRoomForceRating, m_pCreature->m_n1110, nCharismaModifier);
+    int nForceBodyLevel = -1;
+    for (int i = 0; i < m_pCreature->m_lstEffects.num; i++)
+    {
+        if (m_pCreature->m_lstEffects[i]->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
+        {
+            nForceBodyLevel = m_pCreature->m_lstEffects[i]->GetInteger(0);
+            break;
+        }
+    }
+    if (nForceBodyLevel != -1)
+    {
+        int nPercent = 0;
+        switch (nForceBodyLevel)
+        {
+        case 0:
+            nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_0;
+            break;
+        case 1:
+            nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_1;
+            break;
+        case 2:
+            nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
+            break;
+        }
+        int nHitPointCost = nForcePoints * nPercent / 100;
+        if (nForcePoints - nHitPointCost <= (short)(m_nCurrentForcePoints + m_nTemporaryForcePoints) &&
+            m_pCreature->GetCurrentHitPoints(0) - nHitPointCost >= 1)
+        {
+            bUsesLeft = 1;
+        }
+        return bUsesLeft;
+    }
+    if (nForcePoints <= (short)(m_nCurrentForcePoints + m_nTemporaryForcePoints))
+    {
+        bUsesLeft = 1;
+    }
     return bUsesLeft;
 }
 // PC 0x005EF360
 int CSWSCreatureStats::UnReadySpell(unsigned long nSpell)
 {
+    int nHitPointCost = 0;
     int bSuccess = 0;
     CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
     if (pSpell != NULL)
@@ -5966,23 +6002,69 @@ int CSWSCreatureStats::UnReadySpell(unsigned long nSpell)
         int nRoomForceRating = 0;
         if (pArea != NULL)
             nRoomForceRating = pArea->GetRoomForceRating(m_pCreature->m_vPosition);
-        int bAdjust = m_pCreature->m_bInParty;
-        short nAlignment = m_nGoodEvilAlignment;
-        int nForcePoints = pSpell->GetAdjustedForcePoints(
-            nAlignment, bAdjust, nRoomForceRating, m_pCreature->m_n1110, m_nCharismaModifier);
+        int nForceBodyLevel = -1;
+        for (int i = 0; i < m_pCreature->m_lstEffects.num; i++)
+        {
+            if (m_pCreature->m_lstEffects[i]->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
+            {
+                nForceBodyLevel = m_pCreature->m_lstEffects[i]->GetInteger(0);
+                break;
+            }
+        }
+        int nForcePoints;
+        if (nForceBodyLevel == -1)
+        {
+            char nCharismaModifier = m_pCreature->m_pStats->m_nCharismaModifier;
+            nForcePoints = pSpell->GetAdjustedForcePoints(m_nGoodEvilAlignment,
+                m_pCreature->m_bInParty, nRoomForceRating, m_pCreature->m_n1110, nCharismaModifier);
+        }
+        else
+        {
+            char nCharismaModifier = m_pCreature->m_pStats->m_nCharismaModifier;
+            int nPercent = 0;
+            int nFullCost = pSpell->GetAdjustedForcePoints(m_nGoodEvilAlignment,
+                m_pCreature->m_bInParty, nRoomForceRating, m_pCreature->m_n1110, nCharismaModifier);
+            switch (nForceBodyLevel)
+            {
+            case 0:
+                nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_0;
+                break;
+            case 1:
+                nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_1;
+                break;
+            case 2:
+                nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
+                break;
+            }
+            nForcePoints = nPercent * nFullCost / 100;
+            nHitPointCost = nForcePoints;
+        }
         int nTemporaryForcePoints = m_nTemporaryForcePoints;
         if (nTemporaryForcePoints >= nForcePoints)
         {
             m_nTemporaryForcePoints = nTemporaryForcePoints - nForcePoints;
             return 1;
         }
-        m_nTemporaryForcePoints = 0;
         m_nCurrentForcePoints += nTemporaryForcePoints - nForcePoints;
+        m_nTemporaryForcePoints = 0;
         if (m_nCurrentForcePoints < 0)
         {
             m_nCurrentForcePoints = 0;
         }
-        bSuccess = 1;
+        int nTemporaryHitPoints = (short)m_pCreature->m_nTemporaryHitPoints;
+        if (nTemporaryHitPoints >= nHitPointCost)
+        {
+            m_pCreature->m_nTemporaryHitPoints = nTemporaryHitPoints - nHitPointCost;
+            return 1;
+        }
+        m_pCreature->m_nTemporaryHitPoints = 0;
+        m_pCreature->SetCurrentHitPoints(nTemporaryHitPoints - nHitPointCost +
+                                         m_pCreature->GetCurrentHitPoints(1));
+        if (m_pCreature->GetCurrentHitPoints(0) < 0)
+        {
+            m_pCreature->SetCurrentHitPoints(0);
+        }
+        return 1;
     }
     return bSuccess;
 }

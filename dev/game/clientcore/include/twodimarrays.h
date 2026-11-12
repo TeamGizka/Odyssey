@@ -345,6 +345,17 @@ public:
     int Load2DArrays_EffectIcon();
     int Load2DArrays_RemoveFXOnDeath();
     int Load2DArrays_TexPacks();
+    int Load2DArrays_Subrace();
+    int Load2DArrays_IPRPPC();
+    int Load2DArrays_Influence();
+    int Load2DArrays_ItemCreate();
+    int Load2DArrays_ChemicalCreate();
+    int Load2DArrays_SwoopUpgrade();
+    int Load2DArrays_Music();
+    int Load2DArrays_AlienVO();
+    int Load2DArrays_Emotion();
+    int Load2DArrays_AutoBalance();
+    int Load2DArrays_AIScripts();
     int LoadIPRPCostTables();
     int UnLoadIPRPCostTables();
 

@@ -68,7 +68,14 @@ public:
 
     enum { ALIGNMENT_ROW_NEUTRAL = 5 };
 
-    enum { FORM_FORCE_II_POTENCY = 266, FORM_FORCE_IV_MASTERY = 268 };
+    enum
+    {
+        FORM_FORCE_II_POTENCY = 266,
+        FORM_FORCE_IV_MASTERY = 268,
+        FORCE_BODY_COST_PERCENT_0 = 50,
+        FORCE_BODY_COST_PERCENT_1 = 40,
+        FORCE_BODY_COST_PERCENT_2 = 30
+    };
 
     int m_n00;
     CExoString m_sLabel;

@@ -100,384 +100,7 @@ CTwoDimArrays::CTwoDimArrays()
 
 CTwoDimArrays::~CTwoDimArrays()
 {
-    if (m_pRemoveFXOnDeath != 0)
-    {
-        delete m_pRemoveFXOnDeath;
-    }
-    m_pRemoveFXOnDeath = 0;
-    if (m_pEffectIcon != 0)
-    {
-        delete m_pEffectIcon;
-    }
-    m_pEffectIcon = 0;
-    if (m_pAppearance != 0)
-    {
-        delete m_pAppearance;
-    }
-    m_pAppearance = 0;
-    if (m_pGender != 0)
-    {
-        delete m_pGender;
-    }
-    m_pGender = 0;
-    if (m_pSurfaceMaterial != 0)
-    {
-        delete m_pSurfaceMaterial;
-    }
-    m_pSurfaceMaterial = 0;
-    if (m_pStateScripts != 0)
-    {
-        delete m_pStateScripts;
-    }
-    m_pStateScripts = 0;
-    if (m_pVisualEffect != 0)
-    {
-        delete m_pVisualEffect;
-    }
-    m_pVisualEffect = 0;
-    if (m_pAreaTransition != 0)
-    {
-        delete m_pAreaTransition;
-    }
-    m_pAreaTransition = 0;
-    if (m_pTraps != 0)
-    {
-        delete m_pTraps;
-    }
-    m_pTraps = 0;
-    if (m_pVisualEffectsPersistent != 0)
-    {
-        delete m_pVisualEffectsPersistent;
-    }
-    m_pVisualEffectsPersistent = 0;
-    if (m_pCreatureSpeed != 0)
-    {
-        delete m_pCreatureSpeed;
-    }
-    m_pCreatureSpeed = 0;
-    if (m_pDoorTypes != 0)
-    {
-        delete m_pDoorTypes;
-    }
-    m_pDoorTypes = 0;
-    if (m_pPlaceables != 0)
-    {
-        delete m_pPlaceables;
-    }
-    m_pPlaceables = 0;
-    if (m_pGenericDoors != 0)
-    {
-        delete m_pGenericDoors;
-    }
-    m_pGenericDoors = 0;
-    if (m_pPoison != 0)
-    {
-        delete m_pPoison;
-    }
-    m_pPoison = 0;
-    if (m_pDisease != 0)
-    {
-        delete m_pDisease;
-    }
-    m_pDisease = 0;
-    if (m_pRepAdjustments != 0)
-    {
-        delete m_pRepAdjustments;
-    }
-    m_pRepAdjustments = 0;
-    if (m_pFractionalCR != 0)
-    {
-        delete m_pFractionalCR;
-    }
-    m_pFractionalCR = 0;
-    if (m_pEncounterDifficulty != 0)
-    {
-        delete m_pEncounterDifficulty;
-    }
-    m_pEncounterDifficulty = 0;
-    if (m_pExcitedDuration != 0)
-    {
-        delete m_pExcitedDuration;
-    }
-    m_pExcitedDuration = 0;
-    if (m_pRegeneration != 0)
-    {
-        delete m_pRegeneration;
-    }
-    m_pRegeneration = 0;
-    if (m_pLightColor != 0)
-    {
-        delete m_pLightColor;
-    }
-    m_pLightColor = 0;
-    if (m_pIPRPMelee != 0)
-    {
-        delete m_pIPRPMelee;
-    }
-    m_pIPRPMelee = 0;
-    if (m_pXpBase != 0)
-    {
-        delete m_pXpBase;
-    }
-    m_pXpBase = 0;
-    if (m_pCursor != 0)
-    {
-        delete m_pCursor;
-    }
-    m_pCursor = 0;
-    if (m_pIPRPMonsterDamage != 0)
-    {
-        delete m_pIPRPMonsterDamage;
-    }
-    m_pIPRPMonsterDamage = 0;
-    if (m_pIPRPDamage != 0)
-    {
-        delete m_pIPRPDamage;
-    }
-    m_pIPRPDamage = 0;
-    if (m_pIPRPBonusCost != 0)
-    {
-        delete m_pIPRPBonusCost;
-    }
-    m_pIPRPBonusCost = 0;
-    if (m_pIPRPSRCost != 0)
-    {
-        delete m_pIPRPSRCost;
-    }
-    m_pIPRPSRCost = 0;
-    if (m_pIPRPNeg5Cost != 0)
-    {
-        delete m_pIPRPNeg5Cost;
-    }
-    m_pIPRPNeg5Cost = 0;
-    if (m_pRanges != 0)
-    {
-        delete m_pRanges;
-    }
-    m_pRanges = 0;
-    if (m_pItemPropDef != 0)
-    {
-        delete m_pItemPropDef;
-    }
-    m_pItemPropDef = 0;
-    delete[] m_ppIPRPCostTables;
-    m_ppIPRPCostTables = 0;
-    m_nIPRPCostTableCount = 0;
-    delete[] m_ppIPRPParamTables;
-    m_ppIPRPParamTables = 0;
-    m_nIPRPParamTableCount = 0;
-    if (m_pAmbientMusic != 0)
-    {
-        delete m_pAmbientMusic;
-    }
-    m_pAmbientMusic = 0;
-    if (m_pAmbientSound != 0)
-    {
-        delete m_pAmbientSound;
-    }
-    m_pAmbientSound = 0;
-    if (m_pFootstepSounds != 0)
-    {
-        delete m_pFootstepSounds;
-    }
-    m_pFootstepSounds = 0;
-    if (m_pAppearanceSounds != 0)
-    {
-        delete m_pAppearanceSounds;
-    }
-    m_pAppearanceSounds = 0;
-    if (m_pWeaponSounds != 0)
-    {
-        delete m_pWeaponSounds;
-    }
-    m_pWeaponSounds = 0;
-    if (m_pAmmunitionTypes != 0)
-    {
-        delete m_pAmmunitionTypes;
-    }
-    m_pAmmunitionTypes = 0;
-#ifndef _XBOX
-    if (m_pKeymap != 0)
-    {
-        delete m_pKeymap;
-    }
-    m_pKeymap = 0;
-    if (m_pBindableKey != 0)
-    {
-        delete m_pBindableKey;
-    }
-    m_pBindableKey = 0;
-#endif
-    if (m_pOnHit != 0)
-    {
-        delete m_pOnHit;
-    }
-    m_pOnHit = 0;
-    if (m_pOnHitDuration != 0)
-    {
-        delete m_pOnHitDuration;
-    }
-    m_pOnHitDuration = 0;
-    if (m_pDamageHitVisual != 0)
-    {
-        delete m_pDamageHitVisual;
-    }
-    m_pDamageHitVisual = 0;
-    if (m_pPlaceableSounds != 0)
-    {
-        delete m_pPlaceableSounds;
-    }
-    m_pPlaceableSounds = 0;
-    if (m_pBodyBag != 0)
-    {
-        delete m_pBodyBag;
-    }
-    m_pBodyBag = 0;
-    if (m_pPortrait != 0)
-    {
-        delete m_pPortrait;
-    }
-    m_pPortrait = 0;
-    if (m_pForcePointAdjust != 0)
-    {
-        delete m_pForcePointAdjust;
-    }
-    m_pForcePointAdjust = 0;
-    if (m_pGameEffects != 0)
-    {
-        delete m_pGameEffects;
-    }
-    m_pGameEffects = 0;
-    if (m_pCameraStyle != 0)
-    {
-        delete m_pCameraStyle;
-    }
-    m_pCameraStyle = 0;
-    if (m_pRepute != 0)
-    {
-        delete m_pRepute;
-    }
-    m_pRepute = 0;
-    if (m_pWeaponDischarge != 0)
-    {
-        delete m_pWeaponDischarge;
-    }
-    m_pWeaponDischarge = 0;
-    if (m_pDroidDischarge != 0)
-    {
-        delete m_pDroidDischarge;
-    }
-    m_pDroidDischarge = 0;
-    if (m_pPlotXP != 0)
-    {
-        delete m_pPlotXP;
-    }
-    m_pPlotXP = 0;
-    if (m_pAnimations != 0)
-    {
-        delete m_pAnimations;
-    }
-    m_pAnimations = 0;
-    if (m_pCombatAnimations != 0)
-    {
-        delete m_pCombatAnimations;
-    }
-    m_pCombatAnimations = 0;
-    if (m_pDialogAnimations != 0)
-    {
-        delete m_pDialogAnimations;
-    }
-    m_pDialogAnimations = 0;
-    if (m_pNPC != 0)
-    {
-        delete m_pNPC;
-    }
-    m_pNPC = 0;
-    if (m_pSpells != 0)
-    {
-        delete m_pSpells;
-    }
-    m_pSpells = 0;
-    if (m_pFeat != 0)
-    {
-        delete m_pFeat;
-    }
-    m_pFeat = 0;
-    if (m_pFormations != 0)
-    {
-        delete m_pFormations;
-    }
-    m_pFormations = 0;
-    if (m_pGrenadeSound != 0)
-    {
-        delete m_pGrenadeSound;
-    }
-    m_pGrenadeSound = 0;
-    if (m_pJournal != 0)
-    {
-        delete m_pJournal;
-    }
-    m_pJournal = 0;
-    if (m_pFeedBackText != 0)
-    {
-        delete m_pFeedBackText;
-    }
-    m_pFeedBackText = 0;
-    if (m_pForceShields != 0)
-    {
-        delete m_pForceShields;
-    }
-    m_pForceShields = 0;
-    if (m_pHeads != 0)
-    {
-        delete m_pHeads;
-    }
-    m_pHeads = 0;
-    if (m_pItemValues != 0)
-    {
-        delete m_pItemValues;
-    }
-    m_pItemValues = 0;
-    if (m_pVideoEffects != 0)
-    {
-        delete m_pVideoEffects;
-    }
-    m_pVideoEffects = 0;
-    if (m_pTutorial != 0)
-    {
-        delete m_pTutorial;
-    }
-    m_pTutorial = 0;
-#ifndef _XBOX
-    if (m_pDifficultyOptions != 0)
-    {
-        delete m_pDifficultyOptions;
-    }
-    m_pDifficultyOptions = 0;
-    if (m_pGamma != 0)
-    {
-        delete m_pGamma;
-    }
-    m_pGamma = 0;
-#endif
-    if (m_pMovies2DA != 0)
-    {
-        delete m_pMovies2DA;
-    }
-    m_pMovies2DA = 0;
-#ifndef _XBOX
-    if (m_pTexPacks != 0)
-    {
-        delete m_pTexPacks;
-    }
-    m_pTexPacks = 0;
-#else
-    if (m_pMinGlobalRim != 0)
-    {
-        delete m_pMinGlobalRim;
-    }
-    m_pMinGlobalRim = 0;
-#endif
+    UnLoad2DArrays();
 }
 
 int CTwoDimArrays::COL2DA_APPEARANCETABLE_ABORTONPARRY = -1;
@@ -1636,6 +1259,116 @@ int CTwoDimArrays::Load2DArrays_TexPacks()  // PC 0x00612FD0
     return 1;
 }
 #endif
+// PC 0x00613150
+int CTwoDimArrays::Load2DArrays_Subrace()
+{
+    m_pSubrace = new C2DA("Subrace", 0);
+    if (m_pSubrace == 0 || m_pSubrace->Load2DArray() == 0)
+    {
+        return 0;
+    }
+    return 1;
+}
+// PC 0x006131F0
+int CTwoDimArrays::Load2DArrays_IPRPPC()
+{
+    m_pIPRPPC = new C2DA("IPRP_PC", 0);
+    if (m_pIPRPPC == 0 || m_pIPRPPC->Load2DArray() == 0)
+    {
+        return 0;
+    }
+    return 1;
+}
+// PC 0x00613290
+int CTwoDimArrays::Load2DArrays_Influence()
+{
+    m_pInfluence = new C2DA("Influence", 0);
+    if (m_pInfluence == 0 || m_pInfluence->Load2DArray() == 0)
+    {
+        return 0;
+    }
+    return 1;
+}
+// PC 0x00613330
+int CTwoDimArrays::Load2DArrays_ItemCreate()
+{
+    m_pItemCreate = new C2DA("ItemCreate", 0);
+    if (m_pItemCreate == 0 || m_pItemCreate->Load2DArray() == 0)
+    {
+        return 0;
+    }
+    return 1;
+}
+// PC 0x006133D0
+int CTwoDimArrays::Load2DArrays_ChemicalCreate()
+{
+    m_pChemicalCreate = new C2DA("ChemicalCreate", 0);
+    if (m_pChemicalCreate == 0 || m_pChemicalCreate->Load2DArray() == 0)
+    {
+        return 0;
+    }
+    return 1;
+}
+// PC 0x00613470
+int CTwoDimArrays::Load2DArrays_SwoopUpgrade()
+{
+    m_pSwoopUpgrade = new C2DA("SwoopUpgrade", 0);
+    if (m_pSwoopUpgrade == 0 || m_pSwoopUpgrade->Load2DArray() == 0)
+    {
+        return 0;
+    }
+    return 1;
+}
+// PC 0x00613510
+int CTwoDimArrays::Load2DArrays_Music()
+{
+    m_pMusic = new C2DA("MusicTable", 0);
+    if (m_pMusic == 0 || m_pMusic->Load2DArray() == 0)
+    {
+        return 0;
+    }
+    return 1;
+}
+// PC 0x006135B0
+int CTwoDimArrays::Load2DArrays_AlienVO()
+{
+    m_pAlienVO = new C2DA("AlienVO", 0);
+    if (m_pAlienVO == 0 || m_pAlienVO->Load2DArray() == 0)
+    {
+        return 0;
+    }
+    return 1;
+}
+// PC 0x00613650
+int CTwoDimArrays::Load2DArrays_Emotion()
+{
+    m_pEmotion = new C2DA("Emotion", 0);
+    if (m_pEmotion == 0 || m_pEmotion->Load2DArray() == 0)
+    {
+        return 0;
+    }
+    return 1;
+}
+// PC 0x006136F0
+int CTwoDimArrays::Load2DArrays_AutoBalance()
+{
+    m_pAutoBalance = new C2DA("AutoBalance", 0);
+    if (m_pAutoBalance == 0 || m_pAutoBalance->Load2DArray() == 0)
+    {
+        return 0;
+    }
+    return 1;
+}
+// PC 0x00613790
+int CTwoDimArrays::Load2DArrays_AIScripts()
+{
+    m_pAIScripts = new C2DA("aiscripts", 0);
+    if (m_pAIScripts == 0 || m_pAIScripts->Load2DArray() == 0)
+    {
+        return 0;
+    }
+    return 1;
+}
 // PC 0x00613830
 int CTwoDimArrays::LoadIPRPCostTables()
 {
@@ -1850,6 +1583,8 @@ int CTwoDimArrays::Load2DArrays()
             return 0;
         if (Load2DArrays_Gamma() == 0)
             return 0;
+        if (Load2DArrays_AIScripts() == 0)
+            return 0;
     }
 
     if (g_nClientServerMode != 1)
@@ -1893,8 +1628,6 @@ int CTwoDimArrays::Load2DArrays()
         if (Load2DArrays_BodyBag() == 0)
             return 0;
         if (Load2DArrays_ForceAdjust() == 0)
-            return 0;
-        if (Load2DArrays_GameEffects() == 0)
             return 0;
         if (Load2DArrays_GameEffects() == 0)
             return 0;
@@ -1942,6 +1675,26 @@ int CTwoDimArrays::Load2DArrays()
         if (Load2DArrays_TexPacks() == 0)
             return 0;
 #endif
+        if (Load2DArrays_Subrace() == 0)
+            return 0;
+        if (Load2DArrays_IPRPPC() == 0)
+            return 0;
+        if (Load2DArrays_Influence() == 0)
+            return 0;
+        if (Load2DArrays_ItemCreate() == 0)
+            return 0;
+        if (Load2DArrays_ChemicalCreate() == 0)
+            return 0;
+        if (Load2DArrays_SwoopUpgrade() == 0)
+            return 0;
+        if (Load2DArrays_Music() == 0)
+            return 0;
+        if (Load2DArrays_AlienVO() == 0)
+            return 0;
+        if (Load2DArrays_Emotion() == 0)
+            return 0;
+        if (Load2DArrays_AutoBalance() == 0)
+            return 0;
     }
 
     return 1;
@@ -1951,135 +1704,513 @@ int CTwoDimArrays::UnLoad2DArrays()
 {
     UnLoadIPRPCostTables();
     UnLoadIPRPParamTables();
-#ifdef _XBOX
-    if (m_pMinGlobalRim != 0)
-        m_pMinGlobalRim->Unload2DArray();
-#endif
-    if (m_pRemoveFXOnDeath != 0)
-        m_pRemoveFXOnDeath->Unload2DArray();
-    if (m_pEffectIcon != 0)
-        m_pEffectIcon->Unload2DArray();
     if (m_pAppearance != 0)
+    {
         m_pAppearance->Unload2DArray();
+        delete m_pAppearance;
+        m_pAppearance = 0;
+    }
     if (m_pGender != 0)
+    {
         m_pGender->Unload2DArray();
+        delete m_pGender;
+        m_pGender = 0;
+    }
     if (m_pSurfaceMaterial != 0)
+    {
         m_pSurfaceMaterial->Unload2DArray();
-    if (m_pStateScripts != 0)
-        m_pStateScripts->Unload2DArray();
+        delete m_pSurfaceMaterial;
+        m_pSurfaceMaterial = 0;
+    }
     if (m_pVisualEffect != 0)
+    {
         m_pVisualEffect->Unload2DArray();
-    if (m_pAreaTransition != 0)
-        m_pAreaTransition->Unload2DArray();
-    if (m_pTraps != 0)
-        m_pTraps->Unload2DArray();
+        delete m_pVisualEffect;
+        m_pVisualEffect = 0;
+    }
     if (m_pVisualEffectsPersistent != 0)
+    {
         m_pVisualEffectsPersistent->Unload2DArray();
+        delete m_pVisualEffectsPersistent;
+        m_pVisualEffectsPersistent = 0;
+    }
     if (m_pCreatureSpeed != 0)
+    {
         m_pCreatureSpeed->Unload2DArray();
+        delete m_pCreatureSpeed;
+        m_pCreatureSpeed = 0;
+    }
     if (m_pDoorTypes != 0)
+    {
         m_pDoorTypes->Unload2DArray();
-    if (m_pPlaceables != 0)
-        m_pPlaceables->Unload2DArray();
+        delete m_pDoorTypes;
+        m_pDoorTypes = 0;
+    }
     if (m_pGenericDoors != 0)
+    {
         m_pGenericDoors->Unload2DArray();
-    if (m_pPoison != 0)
-        m_pPoison->Unload2DArray();
-    if (m_pDisease != 0)
-        m_pDisease->Unload2DArray();
-    if (m_pRepAdjustments != 0)
-        m_pRepAdjustments->Unload2DArray();
-    if (m_pFractionalCR != 0)
-        m_pFractionalCR->Unload2DArray();
-    if (m_pEncounterDifficulty != 0)
-        m_pEncounterDifficulty->Unload2DArray();
-    if (m_pExcitedDuration != 0)
-        m_pExcitedDuration->Unload2DArray();
-    if (m_pRegeneration != 0)
-        m_pRegeneration->Unload2DArray();
-    if (m_pLightColor != 0)
-        m_pLightColor->Unload2DArray();
+        delete m_pGenericDoors;
+        m_pGenericDoors = 0;
+    }
+    if (m_pPlaceables != 0)
+    {
+        m_pPlaceables->Unload2DArray();
+        delete m_pPlaceables;
+        m_pPlaceables = 0;
+    }
+    if (m_pAreaTransition != 0)
+    {
+        m_pAreaTransition->Unload2DArray();
+        delete m_pAreaTransition;
+        m_pAreaTransition = 0;
+    }
     if (m_pIPRPMelee != 0)
+    {
         m_pIPRPMelee->Unload2DArray();
+        delete m_pIPRPMelee;
+        m_pIPRPMelee = 0;
+    }
     if (m_pItemPropDef != 0)
+    {
         m_pItemPropDef->Unload2DArray();
-    if (m_pXpBase != 0)
-        m_pXpBase->Unload2DArray();
-    if (m_pCursor != 0)
-        m_pCursor->Unload2DArray();
-    if (m_pIPRPMonsterDamage != 0)
-        m_pIPRPMonsterDamage->Unload2DArray();
+        delete m_pItemPropDef;
+        m_pItemPropDef = 0;
+    }
+    if (m_pPortrait != 0)
+    {
+        m_pPortrait->Unload2DArray();
+        delete m_pPortrait;
+        m_pPortrait = 0;
+    }
     if (m_pIPRPDamage != 0)
+    {
         m_pIPRPDamage->Unload2DArray();
-    if (m_pIPRPBonusCost != 0)
-        m_pIPRPBonusCost->Unload2DArray();
-    if (m_pIPRPSRCost != 0)
-        m_pIPRPSRCost->Unload2DArray();
-    if (m_pIPRPNeg5Cost != 0)
-        m_pIPRPNeg5Cost->Unload2DArray();
+        delete m_pIPRPDamage;
+        m_pIPRPDamage = 0;
+    }
+    if (m_pTraps != 0)
+    {
+        m_pTraps->Unload2DArray();
+        delete m_pTraps;
+        m_pTraps = 0;
+    }
+    if (m_pLightColor != 0)
+    {
+        m_pLightColor->Unload2DArray();
+        delete m_pLightColor;
+        m_pLightColor = 0;
+    }
+    if (m_pCursor != 0)
+    {
+        m_pCursor->Unload2DArray();
+        delete m_pCursor;
+        m_pCursor = 0;
+    }
     if (m_pAmbientMusic != 0)
+    {
         m_pAmbientMusic->Unload2DArray();
+        delete m_pAmbientMusic;
+        m_pAmbientMusic = 0;
+    }
     if (m_pAmbientSound != 0)
-        m_pAmbientMusic->Unload2DArray();
+    {
+        m_pAmbientSound->Unload2DArray();
+        delete m_pAmbientSound;
+        m_pAmbientSound = 0;
+    }
     if (m_pFootstepSounds != 0)
+    {
         m_pFootstepSounds->Unload2DArray();
+        delete m_pFootstepSounds;
+        m_pFootstepSounds = 0;
+    }
     if (m_pAppearanceSounds != 0)
+    {
         m_pAppearanceSounds->Unload2DArray();
+        delete m_pAppearanceSounds;
+        m_pAppearanceSounds = 0;
+    }
     if (m_pWeaponSounds != 0)
+    {
         m_pWeaponSounds->Unload2DArray();
+        delete m_pWeaponSounds;
+        m_pWeaponSounds = 0;
+    }
     if (m_pAmmunitionTypes != 0)
+    {
         m_pAmmunitionTypes->Unload2DArray();
+        delete m_pAmmunitionTypes;
+        m_pAmmunitionTypes = 0;
+    }
 #ifndef _XBOX
     if (m_pKeymap != 0)
+    {
         m_pKeymap->Unload2DArray();
+        delete m_pKeymap;
+        m_pKeymap = 0;
+    }
     if (m_pBindableKey != 0)
+    {
         m_pBindableKey->Unload2DArray();
+        delete m_pBindableKey;
+        m_pBindableKey = 0;
+    }
 #endif
-    if (m_pOnHit != 0)
-        m_pOnHit->Unload2DArray();
-    if (m_pOnHitDuration != 0)
-        m_pOnHitDuration->Unload2DArray();
-    if (m_pDamageHitVisual != 0)
-        m_pDamageHitVisual->Unload2DArray();
     if (m_pPlaceableSounds != 0)
+    {
         m_pPlaceableSounds->Unload2DArray();
-    if (m_pBodyBag != 0)
-        m_pBodyBag->Unload2DArray();
-    if (m_pPortrait != 0)
-        m_pPortrait->Unload2DArray();
+        delete m_pPlaceableSounds;
+        m_pPlaceableSounds = 0;
+    }
     if (m_pCameraStyle != 0)
+    {
         m_pCameraStyle->Unload2DArray();
-    if (m_pRepute != 0)
-        m_pRepute->Unload2DArray();
-    if (m_pPlotXP != 0)
-        m_pPlotXP->Unload2DArray();
-    if (m_pNPC != 0)
-        m_pNPC->Unload2DArray();
-    if (m_pSpells != 0)
-        m_pSpells->Unload2DArray();
-    if (m_pFeat != 0)
-        m_pFeat->Unload2DArray();
-    if (m_pFormations != 0)
-        m_pFormations->Unload2DArray();
-    if (m_pGrenadeSound != 0)
-        m_pGrenadeSound->Unload2DArray();
-    if (m_pJournal != 0)
-        m_pJournal->Unload2DArray();
-    if (m_pFeedBackText != 0)
-        m_pFeedBackText->Unload2DArray();
-    if (m_pItemValues != 0)
-        m_pItemValues->Unload2DArray();
-    if (m_pVideoEffects != 0)
-        m_pVideoEffects->Unload2DArray();
+        delete m_pCameraStyle;
+        m_pCameraStyle = 0;
+    }
     if (m_pTutorial != 0)
+    {
         m_pTutorial->Unload2DArray();
+        delete m_pTutorial;
+        m_pTutorial = 0;
+    }
     if (m_pDifficultyOptions != 0)
+    {
         m_pDifficultyOptions->Unload2DArray();
+        delete m_pDifficultyOptions;
+        m_pDifficultyOptions = 0;
+    }
     if (m_pGamma != 0)
+    {
         m_pGamma->Unload2DArray();
-#ifndef _XBOX
-    if (m_pTexPacks != 0)
-        m_pTexPacks->Unload2DArray();
+        delete m_pGamma;
+        m_pGamma = 0;
+    }
+    if (m_pStateScripts != 0)
+    {
+        m_pStateScripts->Unload2DArray();
+        delete m_pStateScripts;
+        m_pStateScripts = 0;
+    }
+    if (m_pPoison != 0)
+    {
+        m_pPoison->Unload2DArray();
+        delete m_pPoison;
+        m_pPoison = 0;
+    }
+    if (m_pDisease != 0)
+    {
+        m_pDisease->Unload2DArray();
+        delete m_pDisease;
+        m_pDisease = 0;
+    }
+    if (m_pRepAdjustments != 0)
+    {
+        m_pRepAdjustments->Unload2DArray();
+        delete m_pRepAdjustments;
+        m_pRepAdjustments = 0;
+    }
+    if (m_pFractionalCR != 0)
+    {
+        m_pFractionalCR->Unload2DArray();
+        delete m_pFractionalCR;
+        m_pFractionalCR = 0;
+    }
+    if (m_pEncounterDifficulty != 0)
+    {
+        m_pEncounterDifficulty->Unload2DArray();
+        delete m_pEncounterDifficulty;
+        m_pEncounterDifficulty = 0;
+    }
+    if (m_pExcitedDuration != 0)
+    {
+        m_pExcitedDuration->Unload2DArray();
+        delete m_pExcitedDuration;
+        m_pExcitedDuration = 0;
+    }
+    if (m_pRegeneration != 0)
+    {
+        m_pRegeneration->Unload2DArray();
+        delete m_pRegeneration;
+        m_pRegeneration = 0;
+    }
+    if (m_pXpBase != 0)
+    {
+        m_pXpBase->Unload2DArray();
+        delete m_pXpBase;
+        m_pXpBase = 0;
+    }
+    if (m_pIPRPMonsterDamage != 0)
+    {
+        m_pIPRPMonsterDamage->Unload2DArray();
+        delete m_pIPRPMonsterDamage;
+        m_pIPRPMonsterDamage = 0;
+    }
+    if (m_pIPRPBonusCost != 0)
+    {
+        m_pIPRPBonusCost->Unload2DArray();
+        delete m_pIPRPBonusCost;
+        m_pIPRPBonusCost = 0;
+    }
+    if (m_pIPRPSRCost != 0)
+    {
+        m_pIPRPSRCost->Unload2DArray();
+        delete m_pIPRPSRCost;
+        m_pIPRPSRCost = 0;
+    }
+    if (m_pIPRPNeg5Cost != 0)
+    {
+        m_pIPRPNeg5Cost->Unload2DArray();
+        delete m_pIPRPNeg5Cost;
+        m_pIPRPNeg5Cost = 0;
+    }
+    if (m_pRanges != 0)
+    {
+        m_pRanges->Unload2DArray();
+        delete m_pRanges;
+        m_pRanges = 0;
+    }
+    if (m_pOnHit != 0)
+    {
+        m_pOnHit->Unload2DArray();
+        delete m_pOnHit;
+        m_pOnHit = 0;
+    }
+    if (m_pOnHitDuration != 0)
+    {
+        m_pOnHitDuration->Unload2DArray();
+        delete m_pOnHitDuration;
+        m_pOnHitDuration = 0;
+    }
+    if (m_pDamageHitVisual != 0)
+    {
+        m_pDamageHitVisual->Unload2DArray();
+        delete m_pDamageHitVisual;
+        m_pDamageHitVisual = 0;
+    }
+    if (m_pAnimations != 0)
+    {
+        m_pAnimations->Unload2DArray();
+        delete m_pAnimations;
+        m_pAnimations = 0;
+    }
+    if (m_pBodyBag != 0)
+    {
+        m_pBodyBag->Unload2DArray();
+        delete m_pBodyBag;
+        m_pBodyBag = 0;
+    }
+    if (m_pForcePointAdjust != 0)
+    {
+        m_pForcePointAdjust->Unload2DArray();
+        delete m_pForcePointAdjust;
+        m_pForcePointAdjust = 0;
+    }
+    if (m_pGameEffects != 0)
+    {
+        m_pGameEffects->Unload2DArray();
+        delete m_pGameEffects;
+        m_pGameEffects = 0;
+    }
+    if (m_pRepute != 0)
+    {
+        m_pRepute->Unload2DArray();
+        delete m_pRepute;
+        m_pRepute = 0;
+    }
+    if (m_pWeaponDischarge != 0)
+    {
+        m_pWeaponDischarge->Unload2DArray();
+        delete m_pWeaponDischarge;
+        m_pWeaponDischarge = 0;
+    }
+    if (m_pDroidDischarge != 0)
+    {
+        m_pDroidDischarge->Unload2DArray();
+        delete m_pDroidDischarge;
+        m_pDroidDischarge = 0;
+    }
+    if (m_pPlotXP != 0)
+    {
+        m_pPlotXP->Unload2DArray();
+        delete m_pPlotXP;
+        m_pPlotXP = 0;
+    }
+    if (m_pCombatAnimations != 0)
+    {
+        m_pCombatAnimations->Unload2DArray();
+        delete m_pCombatAnimations;
+        m_pCombatAnimations = 0;
+    }
+    if (m_pDialogAnimations != 0)
+    {
+        m_pDialogAnimations->Unload2DArray();
+        delete m_pDialogAnimations;
+        m_pDialogAnimations = 0;
+    }
+    if (m_pNPC != 0)
+    {
+        m_pNPC->Unload2DArray();
+        delete m_pNPC;
+        m_pNPC = 0;
+    }
+    if (m_pSpells != 0)
+    {
+        m_pSpells->Unload2DArray();
+        delete m_pSpells;
+        m_pSpells = 0;
+    }
+    if (m_pFeat != 0)
+    {
+        m_pFeat->Unload2DArray();
+        delete m_pFeat;
+        m_pFeat = 0;
+    }
+    if (m_pFormations != 0)
+    {
+        m_pFormations->Unload2DArray();
+        delete m_pFormations;
+        m_pFormations = 0;
+    }
+    if (m_pGrenadeSound != 0)
+    {
+        m_pGrenadeSound->Unload2DArray();
+        delete m_pGrenadeSound;
+        m_pGrenadeSound = 0;
+    }
+    if (m_pJournal != 0)
+    {
+        m_pJournal->Unload2DArray();
+        delete m_pJournal;
+        m_pJournal = 0;
+    }
+    if (m_pFeedBackText != 0)
+    {
+        m_pFeedBackText->Unload2DArray();
+        delete m_pFeedBackText;
+        m_pFeedBackText = 0;
+    }
+    if (m_pForceShields != 0)
+    {
+        m_pForceShields->Unload2DArray();
+        delete m_pForceShields;
+        m_pForceShields = 0;
+    }
+    if (m_pHeads != 0)
+    {
+        m_pHeads->Unload2DArray();
+        delete m_pHeads;
+        m_pHeads = 0;
+    }
+#ifdef _XBOX
+    if (m_pMinGlobalRim != 0)
+    {
+        m_pMinGlobalRim->Unload2DArray();
+        delete m_pMinGlobalRim;
+        m_pMinGlobalRim = 0;
+    }
 #endif
+    if (m_pItemValues != 0)
+    {
+        m_pItemValues->Unload2DArray();
+        delete m_pItemValues;
+        m_pItemValues = 0;
+    }
+    if (m_pVideoEffects != 0)
+    {
+        m_pVideoEffects->Unload2DArray();
+        delete m_pVideoEffects;
+        m_pVideoEffects = 0;
+    }
+    if (m_pMovies2DA != 0)
+    {
+        m_pMovies2DA->Unload2DArray();
+        delete m_pMovies2DA;
+        m_pMovies2DA = 0;
+    }
+    if (m_pEffectIcon != 0)
+    {
+        m_pEffectIcon->Unload2DArray();
+        delete m_pEffectIcon;
+        m_pEffectIcon = 0;
+    }
+    if (m_pRemoveFXOnDeath != 0)
+    {
+        m_pRemoveFXOnDeath->Unload2DArray();
+        delete m_pRemoveFXOnDeath;
+        m_pRemoveFXOnDeath = 0;
+    }
+    if (m_pTexPacks != 0)
+    {
+        m_pTexPacks->Unload2DArray();
+        delete m_pTexPacks;
+        m_pTexPacks = 0;
+    }
+    if (m_pSubrace != 0)
+    {
+        m_pSubrace->Unload2DArray();
+        delete m_pSubrace;
+        m_pSubrace = 0;
+    }
+    if (m_pIPRPPC != 0)
+    {
+        m_pIPRPPC->Unload2DArray();
+        delete m_pIPRPPC;
+        m_pIPRPPC = 0;
+    }
+    if (m_pInfluence != 0)
+    {
+        m_pInfluence->Unload2DArray();
+        delete m_pInfluence;
+        m_pInfluence = 0;
+    }
+    if (m_pItemCreate != 0)
+    {
+        m_pItemCreate->Unload2DArray();
+        delete m_pItemCreate;
+        m_pItemCreate = 0;
+    }
+    if (m_pChemicalCreate != 0)
+    {
+        m_pChemicalCreate->Unload2DArray();
+        delete m_pChemicalCreate;
+        m_pChemicalCreate = 0;
+    }
+    if (m_pSwoopUpgrade != 0)
+    {
+        m_pSwoopUpgrade->Unload2DArray();
+        delete m_pSwoopUpgrade;
+        m_pSwoopUpgrade = 0;
+    }
+    if (m_pMusic != 0)
+    {
+        m_pMusic->Unload2DArray();
+        delete m_pMusic;
+        m_pMusic = 0;
+    }
+    if (m_pAlienVO != 0)
+    {
+        m_pAlienVO->Unload2DArray();
+        delete m_pAlienVO;
+        m_pAlienVO = 0;
+    }
+    if (m_pEmotion != 0)
+    {
+        m_pEmotion->Unload2DArray();
+        delete m_pEmotion;
+        m_pEmotion = 0;
+    }
+    if (m_pAutoBalance != 0)
+    {
+        m_pAutoBalance->Unload2DArray();
+        delete m_pAutoBalance;
+        m_pAutoBalance = 0;
+    }
+    if (m_pAIScripts != 0)
+    {
+        m_pAIScripts->Unload2DArray();
+        delete m_pAIScripts;
+        m_pAIScripts = 0;
+    }
     return 1;
 }

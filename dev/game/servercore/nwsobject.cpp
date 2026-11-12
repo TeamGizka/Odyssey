@@ -40,10 +40,6 @@
 #include "clientexoappinternal.h"
 #include "nwclass.h"
 
-static const int FORCE_BODY_COST_PERCENT_0 = 50;
-static const int FORCE_BODY_COST_PERCENT_1 = 40;
-static const int FORCE_BODY_COST_PERCENT_2 = 30;
-
 static inline void NwsobjectTrace2();
 static inline void NwsobjectTrace1();
 
@@ -3041,13 +3037,13 @@ void CSWSObject::SpellCastAndImpact(
                     switch (nForceBodyLevel)
                     {
                     case 0:
-                        nPercent = FORCE_BODY_COST_PERCENT_0;
+                        nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_0;
                         break;
                     case 1:
-                        nPercent = FORCE_BODY_COST_PERCENT_1;
+                        nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_1;
                         break;
                     case 2:
-                        nPercent = FORCE_BODY_COST_PERCENT_2;
+                        nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
                         break;
                     }
                     nForceCost = nPercent * nFullCost / 100;
