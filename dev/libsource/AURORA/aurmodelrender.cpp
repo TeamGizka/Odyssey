@@ -3260,7 +3260,8 @@ void RenderLightMappedBumpDiffuse(VertexPrimitiveFlat* pPrimitive)
         Quaternion qOrientation;
         Vector vPosition;
         pPart->GetWorld(vPosition, qOrientation);
-        Vector vEye = -qOrientation * (CurrentCamera->m_vPosition - vPosition);
+        Vector vEye = CurrentCamera->m_vPosition - vPosition;
+        vEye = -qOrientation * vEye;
         for (int nLight = 0; nLight < lstLights.m_nCount; ++nLight)
         {
             currentscene->m_pLightManager->DisableBumpMapLights();
