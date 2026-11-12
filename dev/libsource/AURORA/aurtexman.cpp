@@ -906,6 +906,20 @@ inline HeatDistortTextureController::HeatDistortTextureController(CAurTexture* p
     m_fAngle = 0.0f;
 }
 #endif
+// PC 0x00420C60
+inline DirtyTextureController::~DirtyTextureController()
+{
+    delete[] m_pDirtyImage;
+}
+
+inline DirtyTextureController::DirtyTextureController(CAurTexture* pTexture, int nDirtyIndex)
+    : TextureController(pTexture)
+{
+    m_pDirtyImage = NULL;
+    m_nDirtyFrame = 0;
+    m_nDirtyIndex = nDirtyIndex;
+    m_nBlendMode = 0;
+}
 // PC 0x00420AA0
 short AurTextureCalculateHashID(char* sName, short nNumTXI, int* pTXI)
 {
@@ -1399,9 +1413,14 @@ void CAurTextureBasic::ConstructImage()  // PC 0x00421180
         {
             m_nWidth = m_nDefaultWidth;
             m_nHeight = m_nDefaultHeight;
+            int nDepth = m_nDepth;
+            if (nDepth == 0)
+            {
+                nDepth = 1;
+            }
             m_nBPP = 4;
-            m_pImage = new unsigned char[4 * m_nWidth * m_nHeight];
-            memset(m_pImage, 0x7F, m_nWidth * m_nHeight * m_nBPP);
+            m_pImage = new unsigned char[4 * m_nWidth * m_nHeight * nDepth];
+            memset(m_pImage, 0x7F, m_nWidth * nDepth * m_nHeight * m_nBPP);
         }
         else
         {
@@ -1905,7 +1924,7 @@ template <> inline void List<Vector>::Add(Vector item)
 
 #include "aurcamera.h"
 // PC 0x00421C90
-void AurTextureBindTID(unsigned int nTextureID, bool bCubeMap)
+void AurTextureBindTID(unsigned int nTextureID, bool bCubeMap, bool b3D)
 {
     bool bBound = false;
     if (AurCubeMapAvailable())
@@ -1920,6 +1939,14 @@ void AurTextureBindTID(unsigned int nTextureID, bool bCubeMap)
             GLRender_Disable(ENABLE_TEXTURE_CUBE_MAP);
         }
     }
+    if (b3D)
+    {
+        GLRender_Enable(ENABLE_TEXTURE_3D);
+    }
+    else
+    {
+        GLRender_Disable(ENABLE_TEXTURE_3D);
+    }
     if (nTextureID <= 1 || alwaysbind >= 0)
     {
         if (bBound)
@@ -1929,7 +1956,14 @@ void AurTextureBindTID(unsigned int nTextureID, bool bCubeMap)
         }
         else
         {
-            GLRender::BindTexture(ENABLE_TEXTURE_2D, nTextureID);
+            if (b3D)
+            {
+                GLRender::BindTexture(ENABLE_TEXTURE_3D, nTextureID);
+            }
+            else
+            {
+                GLRender::BindTexture(ENABLE_TEXTURE_2D, nTextureID);
+            }
             countbinds++;
         }
     }
@@ -2147,6 +2181,24 @@ void CAurTextureBasic::ParseField(char* sField)
             delete m_pController;
             m_pController = NULL;
         }
+        if (strcmp(sProcedureType, "dirty") == 0)
+        {
+            m_pController =
+                (TextureController*)new DirtyTextureController(this, 0);
+            m_b3D = true;
+        }
+        if (strcmp(sProcedureType, "dirty2") == 0)
+        {
+            m_pController =
+                (TextureController*)new DirtyTextureController(this, 1);
+            m_b3D = true;
+        }
+        if (strcmp(sProcedureType, "dirty3") == 0)
+        {
+            m_pController =
+                (TextureController*)new DirtyTextureController(this, 2);
+            m_b3D = true;
+        }
         if (strcmp(sProcedureType, "water") == 0)
         {
             m_pController =
@@ -2344,12 +2396,12 @@ void CAurTexture::Bind()
 {
     if (bindzero)
     {
-        AurTextureBindTID(0, false);
+        AurTextureBindTID(0, false, false);
         return;
     }
     if (IsNull())
     {
-        AurTextureBindTID(0, false);
+        AurTextureBindTID(0, false, false);
         return;
     }
     CAurTextureBasic* pBasic = AsCAurTextureBasic();
@@ -2365,7 +2417,7 @@ void CAurTexture::Bind()
 
         if (nCurrentTID != GLRender::GetCurrentStageTID())
         {
-            AurTextureBindTID(nCurrentTID, pBasic->IsCubeMap());
+            AurTextureBindTID(nCurrentTID, pBasic->IsCubeMap(), false);
             TextureController* pController = AurTextureGetController(pBasic);
             if (pController != NULL)
             {
@@ -2376,7 +2428,14 @@ void CAurTexture::Bind()
             }
         }
 #else
-        AurTextureBindTID(nCurrentTID, pBasic->IsCubeMap());
+        if (GetDepth())
+        {
+            AurTextureBindTID(nCurrentTID, false, true);
+        }
+        else
+        {
+            AurTextureBindTID(nCurrentTID, pBasic->IsCubeMap(), false);
+        }
         CAurTextureBasic* pReferenced =
             pBasic->GetReferencedTexture()->AsCAurTextureBasic();
         TextureController* pController = pReferenced->m_pController;
@@ -2392,7 +2451,7 @@ void CAurTexture::Bind()
     }
     else
     {
-        AurTextureBindTID(0, false);
+        AurTextureBindTID(0, false, false);
     }
 }
 // PC 0x00422CC0
@@ -3227,9 +3286,10 @@ int CAurTextureBasic::glImage(bool bMipMaps)
         GLRender_GenTextures(m_nNumX * m_nNumY, (GLuint*)m_pTextureIDs);
         m_nTIDIndex = m_pTextureIDs[0];
     }
+    bool b3D = m_b3D;
     for (int i = 0; i < m_nNumX * m_nNumY; i++)
     {
-        AurTextureBindTID(m_pTextureIDs[i], m_bCubeMap);
+        AurTextureBindTID(m_pTextureIDs[i], m_bCubeMap, b3D);
         if (m_bCubeMap)
         {
             if (IsProcessed())
@@ -3273,6 +3333,10 @@ int CAurTextureBasic::glImage(bool bMipMaps)
     if (m_bCubeMap && AurCubeMapAvailable())
     {
         GLRender_Disable(ENABLE_TEXTURE_CUBE_MAP);
+    }
+    if (b3D)
+    {
+        GLRender_Disable(ENABLE_TEXTURE_3D);
     }
     return m_nTIDIndex;
 }
@@ -3882,7 +3946,7 @@ CAurTextureBasic::CAurTextureBasic(char* sName, char* sExtra)
 #endif
     AddToOrderedLists();
     countbasictextures++;
-    m_bF0 = 0;
+    m_b3D = 0;
     m_nMemorySize = -1;
     m_bMemoryDirty = 1;
 }

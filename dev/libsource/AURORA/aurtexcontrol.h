@@ -263,12 +263,15 @@ public:
 class DirtyTextureController : public TextureController
 {
 public:
-    DirtyTextureController(CAurTexture* pTexture);
+    DirtyTextureController(CAurTexture* pTexture, int nDirtyIndex);
     virtual ~DirtyTextureController();
     virtual void Control();
     virtual void Init();
-    virtual char IsLinear();
-    void Init(int nWidth, int nHeight, int nBlendMode, int nCoordSpace);
+    virtual char IsLinear()
+    {
+        return 0;
+    }
+    virtual void Init(int nARGB, int nSize, int nFormula, int nFunc);
     void MakePerlinTexture(unsigned char* pImage, int nSize);
 
     unsigned char* m_pDirtyImage;

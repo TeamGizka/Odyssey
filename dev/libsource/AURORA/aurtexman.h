@@ -55,7 +55,7 @@ void AurTextureForceControllerUpdate();
 CAurTexture* AurTextureGet(char* sName, CAurTexture* pReference, char* sExtra,
                            int* pTXI, int nNumTXI);
 char* AurTextureFind(char* sName, char* sExtra, int* pTXI, int nNumTXI);
-void AurTextureBindTID(unsigned int nTextureID, bool bCubeMap);
+void AurTextureBindTID(unsigned int nTextureID, bool bCubeMap, bool b3D);
 short AurTextureCalculateHashID(char* sName, short nNumTXI, int* pTXI);
 void InsertionSortTexture(CAurTextureBasic** ppTextures, int nCount);
 
@@ -278,7 +278,7 @@ public:
     char m_bTxiLoaded;
     char m_bControllerDirty;
     int m_nMemorySize;
-    char m_bF0;
+    bool m_b3D;
 
 #ifdef _XBOX
 

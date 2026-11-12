@@ -547,6 +547,7 @@ extern "C" void(WINAPI* glFinalCombinerInputNV)(unsigned int, unsigned int,
 
 #define GL_REFLECTION_MAP_ARB 0x8512
 #define GL_TEXTURE_CUBE_MAP_ARB 0x8513
+#define GL_TEXTURE_3D 0x806F
 #define GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB 0x8515
 #define GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB 0x8516
 #define GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB 0x8517
@@ -620,7 +621,8 @@ enum AuroraEnableEnums
     FOG_START = 15,
     FOG_END = 16,
     FOG_DENSITY = 17,
-    FOG_COLOR = 18
+    FOG_COLOR = 18,
+    ENABLE_TEXTURE_3D = 19
 };
 }
 
@@ -637,6 +639,7 @@ using Aurora::ENABLE_TEXTURE_GEN_R;
 using Aurora::ENABLE_VERTEX_PROGRAM;
 using Aurora::ENABLE_STENCIL_TEST;
 using Aurora::ENABLE_TEXTURE_CUBE_MAP;
+using Aurora::ENABLE_TEXTURE_3D;
 using Aurora::ENABLE_NORMALIZE;
 
 using Aurora::FOG_START;

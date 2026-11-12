@@ -58,12 +58,12 @@ CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(
     m_nVolume = CExoSound::CMAX_VOLUME;
     nSourceId = pSoundInternal->m_nNextSourceId;
     pSoundInternal->m_nNextSourceId = nSourceId + 1;
-    m_bReverbEnabled = 1;
-    m_bReverbChanged = 1;
     m_nSourceId = nSourceId;
     m_b3D = 0;
     m_fMinDistance = 0.0f;
     m_fMaxDistance = 0.0f;
+    m_bReverbEnabled = 1;
+    m_bReverbChanged = 1;
     m_fVolume = -1.0f;
     m_nPriorityGroup = CExoSoundPriorityGroup::MUSIC_GROUP;
     CExoSoundPriorityGroup* pPriorityGroup =

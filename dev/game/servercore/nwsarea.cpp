@@ -38,6 +38,7 @@
 #include "nwccreature.h"
 #include "nwscreature.h"
 #include "pathfindinfo.h"
+#include "aurtexcontrol.h"
 #include <float.h>
 #include "worldtimer.h"
 
@@ -3269,6 +3270,24 @@ void CSWSArea::SetPlayerRestrictMode(int nRestrictMode)
         g_pAppManager->m_pServerExoApp->GetPartyTable()->UnstealthParty(1);
     }
     m_nPlayerRestrictMode = nRestrictMode;
+}
+// PC 0x004E1C50
+void DirtyTextureController::Init()
+{
+    if (g_pAppManager->m_pServerExoApp != NULL &&
+        g_pAppManager->m_pServerExoApp->GetModule() != NULL)
+    {
+        int nSize = g_pAppManager->m_pServerExoApp->GetModule()->GetArea()->GetDirtySize(m_nDirtyIndex);
+        int nARGB = g_pAppManager->m_pServerExoApp->GetModule()->GetArea()->GetDirtyARGB(m_nDirtyIndex);
+        int nFormula = g_pAppManager->m_pServerExoApp->GetModule()->GetArea()->GetDirtyFormula(m_nDirtyIndex);
+        int nFunc = g_pAppManager->m_pServerExoApp->GetModule()->GetArea()->GetDirtyFunc(m_nDirtyIndex);
+        if (nSize != 0)
+        {
+            Init(nARGB, nSize, nFormula, nFunc);
+            return;
+        }
+    }
+    Init(0, 16, 0, 0);
 }
 // PC 0x004E3840
 void CSWSArea::ClearObjects()

@@ -10,7 +10,6 @@
 #define GL_SUB_ATI 0x8965
 #define GL_LERP_ATI 0x8969
 #define GL_CON_7_ATI 0x8948
-#define GL_TEXTURE_3D 0x806F
 #define GL_TEXTURE_WRAP_R 0x8072
 
 unsigned int lightmapFragmentShaderID = 0;

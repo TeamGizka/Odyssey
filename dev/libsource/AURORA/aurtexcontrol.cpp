@@ -510,8 +510,8 @@ void RandomTextureController::Init()
 void DirtyTextureController::MakePerlinTexture(unsigned char* pImage, int nRange)
 {
     int nWidth = m_pTexture->GetWidth();
-    int nSize = m_pTexture->GetHeight();
     int nImageSize = 4;
+    int nSize = m_pTexture->GetHeight();
     float fScale = 1.0f;
     int nLevels = 1;
     int i;
@@ -1177,11 +1177,11 @@ void RandomTextureController::Control()
     }
 }
 // PC 0x004787B0
-void DirtyTextureController::Init(int nColor, int nSize, int nBlendMode, int nNoiseType)
+void DirtyTextureController::Init(int nARGB, int nSize, int nFormula, int nFunc)
 {
     int nBPP = m_pTexture->GetBPP();
     m_nDirtyFrame = 0;
-    m_nBlendMode = nBlendMode;
+    m_nBlendMode = nFormula;
     unsigned char* pNoiseX = new unsigned char[nSize * nSize];
     unsigned char* pNoiseY = new unsigned char[nSize * nSize];
     unsigned char* pNoiseZ = new unsigned char[nSize * nSize];
@@ -1191,10 +1191,10 @@ void DirtyTextureController::Init(int nColor, int nSize, int nBlendMode, int nNo
     m_pTexture->SetWidth(nSize);
     int nWidth = m_pTexture->GetWidth();
     int nHeight = m_pTexture->GetHeight();
-    int nRed = (nColor >> 16) & 0xff;
-    int nGreen = (nColor >> 8) & 0xff;
-    int nBlue = nColor & 0xff;
-    int nAlpha = nColor >> 24;
+    int nAlpha = nARGB >> 24;
+    int nRed = (nARGB >> 16) & 0xff;
+    int nGreen = (nARGB >> 8) & 0xff;
+    int nBlue = nARGB & 0xff;
     m_pTexture->SetDepth(m_pTexture->GetHeight());
 
     int nOffset = 0;
@@ -1202,7 +1202,7 @@ void DirtyTextureController::Init(int nColor, int nSize, int nBlendMode, int nNo
     nRange = nRange > nGreen ? nRange : nGreen;
     nRange = nRange > nBlue ? nRange : nBlue;
 
-    if (nNoiseType == 1)
+    if (nFunc == 1)
     {
         MakePerlinTexture(pNoiseX, nRange);
         MakePerlinTexture(pNoiseY, nRange);
@@ -1215,7 +1215,7 @@ void DirtyTextureController::Init(int nColor, int nSize, int nBlendMode, int nNo
         {
             for (int j = 0; j < nWidth; j++)
             {
-                if (nNoiseType == 1)
+                if (nFunc == 1)
                 {
                     int nValue = pNoiseY[k * nHeight + j] + pNoiseX[k * nHeight + i] +
                                  pNoiseZ[i * nWidth + j];
@@ -1239,22 +1239,22 @@ void DirtyTextureController::Init(int nColor, int nSize, int nBlendMode, int nNo
                 else
                 {
                     int nValue = (unsigned char)rand();
-                    if (nAlpha)
-                        m_pDirtyImage[nOffset + 3] = nValue % nAlpha;
-                    else
+                    if (nAlpha == 0)
                         m_pDirtyImage[nOffset + 3] = 0;
-                    if (nRed)
-                        m_pDirtyImage[nOffset] = nValue % nRed;
                     else
+                        m_pDirtyImage[nOffset + 3] = nValue % nAlpha;
+                    if (nRed == 0)
                         m_pDirtyImage[nOffset] = 0;
-                    if (nGreen)
-                        m_pDirtyImage[nOffset + 1] = nValue % nGreen;
                     else
+                        m_pDirtyImage[nOffset] = nValue % nRed;
+                    if (nGreen == 0)
                         m_pDirtyImage[nOffset + 1] = 0;
-                    if (nBlue)
-                        m_pDirtyImage[nOffset + 2] = nValue % nBlue;
                     else
+                        m_pDirtyImage[nOffset + 1] = nValue % nGreen;
+                    if (nBlue == 0)
                         m_pDirtyImage[nOffset + 2] = 0;
+                    else
+                        m_pDirtyImage[nOffset + 2] = nValue % nBlue;
                 }
                 nOffset += 4;
             }

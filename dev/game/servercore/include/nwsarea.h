@@ -365,6 +365,10 @@ public:
 
     int GetPlayerRestrictMode() { return m_nPlayerRestrictMode; }
     void SetPlayerRestrictMode(int nRestrictMode);
+    unsigned long GetDirtyARGB(int nIndex) { return m_nDirtyARGB[nIndex]; }
+    int GetDirtySize(int nIndex) { return m_nDirtySize[nIndex]; }
+    int GetDirtyFormula(int nIndex) { return m_nDirtyFormula[nIndex]; }
+    int GetDirtyFunc(int nIndex) { return m_nDirtyFunc[nIndex]; }
     int GetFirstObjectIndiceByX(int* pnIndex, float fX);
     int UpdatePositionInObjectsArray(CGameObject* pObject);
     int GetFirstObjectInArea(unsigned long& oidObject);

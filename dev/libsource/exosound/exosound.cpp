@@ -446,7 +446,7 @@ void CExoSound::SetDialogVolume(float fVolume)
     pInternal = m_pInternal;
     if (pInternal != NULL)
     {
-        pInternal->SetDialogVolume(max(0.0f, min(fVolume, 1.0f)), 0);
+        pInternal->SetDialogVolume(max(0.01f, min(fVolume, 1.0f)), 0);
         m_pInternal->ApplyNewVolume(0);
     }
 }

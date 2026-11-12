@@ -151,10 +151,7 @@ public:
     virtual void GetForceGlowColor(float& fRed, float& fGreen, float& fBlue,
                                    float& fAlpha)  // PC 0x0045CCF0
     {
-        fRed = 0.0f;
-        fGreen = 0.0f;
-        fBlue = 0.0f;
-        fAlpha = 0.0f;
+        fRed = fGreen = fBlue = fAlpha = 0.0f;
     }
     virtual void EnableForceGlow(bool bEnable)  // PC 0x005EE1C0
     {
