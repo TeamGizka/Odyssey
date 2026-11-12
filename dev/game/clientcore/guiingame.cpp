@@ -6623,28 +6623,30 @@ int CGuiInGame::UnpackQuickSaveGame(unsigned long nSaveGame,
         rename(sFuturePath.CStr(), sCurrentPath.CStr());
         return 1;
     }
-
-    CExoString sDirectory;
-    CExoString sSavePath;
-    if (nSaveGame != SAVEGAME_UNNUMBERED)
-    {
-        sDirectory.Format("%06d - %s", nSaveGame, sSaveName.CStr());
-    }
     else
     {
-        sDirectory = sSaveName;
-    }
-    sSavePath = "SAVES:";
-    sSavePath = sSavePath + sDirectory;
+        CExoString sDirectory;
+        CExoString sSavePath;
+        if (nSaveGame != SAVEGAME_UNNUMBERED)
+        {
+            sDirectory.Format("%06d - %s", nSaveGame, sSaveName.CStr());
+        }
+        else
+        {
+            sDirectory = sSaveName;
+        }
+        sSavePath = "SAVES:";
+        sSavePath = sSavePath + sDirectory;
 #ifdef _XBOX
-    g_pAppManager->m_pClientExoApp->HideLoadScreen(0);
+        g_pAppManager->m_pClientExoApp->HideLoadScreen(0);
 #else
-    g_pAppManager->m_pClientExoApp->HideLoadScreen(0, 1);
+        g_pAppManager->m_pClientExoApp->HideLoadScreen(0, 1);
 #endif
-    CExoFile cFile(sSavePath + "\\" + "CORRUPT", 0, "wb+");
-    cFile.Write("CORRUPT");
-    cFile.Flush();
-    return 0;
+        CExoFile cFile(sSavePath + "\\" + "CORRUPT", 0, "wb+");
+        cFile.Write("CORRUPT");
+        cFile.Flush();
+        return 0;
+    }
 }
 // PC 0x00684F40
 int CGuiInGame::CopyQuickSaveGameToFutureGame(unsigned long nSaveGame,
@@ -7155,15 +7157,11 @@ int CGuiInGame::HandleDialogReplies(
             sReply = psText[nReply];
             if (!sReply.IsEmpty())
             {
-                unsigned long oidPC = g_pAppManager->m_pServerExoApp->GetPlayerCreatureId();
-                CSWSPlayer* pPlayer = g_pAppManager->m_pServerExoApp->GetClientObjectByObjectId(oidPC);
-
-
+                unsigned long oidPC = g_pAppManager->GetServerExoApp()->GetPlayerCreatureId();
+                CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidPC);
                 unsigned long oidServer = pPlayer->m_oidPCObject;
-                CClientExoApp* pConversionApp = g_pAppManager->m_pClientExoApp;
-                unsigned long oidClient = pConversionApp->ServerToClientObjectId(oidServer);
-                CClientExoApp* pObjectApp = g_pAppManager->m_pClientExoApp;
-                CSWCObject* pObject = pObjectApp->GetGameObject(oidClient);
+                unsigned long oidClient = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(oidServer);
+                CSWCObject* pObject = g_pAppManager->GetClientExoApp()->GetGameObject(oidClient);
                 g_pSWTlkTable->ParseStr(sReply, (CGameObject*)pObject,
                                        nReply > nEntries, 0);
                 while (sReply.GetLength() > 0 && sReply[0] == ' ')
