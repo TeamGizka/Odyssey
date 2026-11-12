@@ -625,6 +625,7 @@ void CSWGuiInGameCharacter::SetStats()
 void CSWGuiInGameCharacter::Draw(float fElapsed)
 {
     SetStats();
+    m_sldAlign.SetCurValue(m_sldAlign.m_nCurValue);
     return CSWGuiPanel::Draw(fElapsed);
 }
 // PC 0x0071C780

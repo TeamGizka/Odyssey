@@ -4301,6 +4301,10 @@ void CGuiInGame::ShutDown()
         }
         for (int nScreen = 0; nScreen < IN_GAME_SCREEN_COUNT; ++nScreen)
         {
+            if (nScreen == SCREEN_EQUIP)
+            {
+                ((CSWGuiInGameEquip*)m_apScreenPanels[SCREEN_EQUIP])->ShutdownCleanup();
+            }
             if (m_apScreenPanels[nScreen] != 0)
             {
                 delete m_apScreenPanels[nScreen];
