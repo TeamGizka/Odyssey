@@ -1001,6 +1001,16 @@ void CSWSCombatAttackData::ClearAttackData()
     m_Extra1.m_nEffectAttackBonus = 0;
     m_Extra1.m_nUnknown18 = 0;
     m_Extra1.m_nUnknown1C = 0;
+    m_Extra1.m_nUnknown20 = 0;
+    m_Extra1.m_nUnknown21 = 0;
+    m_Extra1.m_nUnknown22 = 0;
+    m_Extra1.m_nUnknown23 = 0;
+    m_Extra1.m_nUnknown24 = 0;
+    m_Extra1.m_nUnknown25 = 0;
+    m_Extra1.m_nUnknown26 = 0;
+    m_Extra1.m_nUnknown27 = 0;
+    m_Extra1.m_nUnknown28 = 0;
+    m_Extra1.m_nUnknown2C = 0;
     m_Extra2.m_nUnknown0 = 0;
     m_Extra2.m_nUnknown4 = 0;
     m_Extra2.m_nUnknown8 = 0;
@@ -1028,6 +1038,8 @@ void CSWSCombatAttackData::ClearAttackData()
     m_DamageBreakdown.m_nUnknown9 = 0;
     m_DamageBreakdown.m_nUnknownA = 0;
     m_DamageBreakdown.m_nEffectDamageBonus = 0;
+    m_DamageBreakdown.m_nUnknownC = 0x102;
+    m_DamageBreakdown.m_nUnknown10 = 0;
     for (int nDamage = 0; nDamage < 15; nDamage++)
     {
         m_DamageBreakdown.m_nUnknownDamage[nDamage] = -1;
@@ -1044,15 +1056,7 @@ void CSWSCombatAttackData::ClearAttackData()
     m_Extra4.m_nSavingThrowResult = 0xFF;
     m_Extra4.m_bStateImmune = 0;
     m_Extra4.m_nUnknown14 = 0;
-    m_Extra5.m_nUnknown0 = 0;
-    m_Extra5.m_nUnknown1 = 0;
-    m_Extra5.m_nUnknown2 = 0;
-    m_Extra5.m_nUnknown3 = 0;
-    m_Extra5.m_nUnknown4 = 0;
-    m_Extra5.m_nUnknown5 = 0;
-    m_Extra5.m_nUnknown6 = 0;
-    m_Extra5.m_nUnknown7 = 0;
-    m_Extra5.m_nUnknown8 = 0;
+    m_Extra5.Clear();
 }
 // PC 0x00528670
 void CSWSCombatAttackData::RemoveTopSubAttack()
@@ -1061,6 +1065,41 @@ void CSWSCombatAttackData::RemoveTopSubAttack()
     {
         m_lstSubAttacks.DelIndex(0);
     }
+}
+// PC 0x005281D0
+void CSWSCombatAttackExtra1::Clear()
+{
+    m_nUnknown0 = 0;
+    m_nUnknown1 = 0;
+    m_nUnknown2 = 0;
+    m_nStrengthModifier = 0;
+    m_nDexterityModifier = 0;
+    m_nUnknown5 = 0;
+    m_nSpecialAttackBonus = 0;
+    m_nBaseAttackBonus = 0;
+    m_nOffHand = 0;
+    m_nTwoWeaponPenalty = 0;
+    m_nWeaponSizeBonus = 0;
+    m_nTwoWeaponFeatBonus = 0;
+    m_nTwoWeaponFeat = 0;
+    m_nDuelingBonus = 0;
+    m_nDuelingFeat = 0;
+    m_nGoodAimBonus = 0;
+    m_nOffensiveTrainingBonus = 0;
+    m_nWeaponFocusBonus = 0;
+    m_nEffectAttackBonus = 0;
+    m_nUnknown18 = 0;
+    m_nUnknown1C = 0;
+    m_nUnknown20 = 0;
+    m_nUnknown21 = 0;
+    m_nUnknown22 = 0;
+    m_nUnknown23 = 0;
+    m_nUnknown24 = 0;
+    m_nUnknown25 = 0;
+    m_nUnknown26 = 0;
+    m_nUnknown27 = 0;
+    m_nUnknown28 = 0;
+    m_nUnknown2C = 0;
 }
 // PC 0x00528690
 CSWSCombatSubAttack::CSWSCombatSubAttack()

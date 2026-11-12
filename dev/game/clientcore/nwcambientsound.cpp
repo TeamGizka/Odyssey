@@ -222,11 +222,13 @@ void CSWCAmbientSound::PlayMusic(int bPlay)
     }
 }
 // PC 0x006E7980
-void CSWCAmbientSound::SetMusicDayTrack(int nTrack)
+void CSWCAmbientSound::SetMusicDayTrack(int nTrack,
+                                        int bStreamingMusicForMovie)
 {
     CExoString sPlayingFile;
 
     m_pMusicSource->GetFilePlaying().CopyToString(sPlayingFile);
+    m_pMusicSource->SetStreamingMusicForMovie(bStreamingMusicForMovie);
     if (m_pMusicSource->IsPlaying() != 0 &&
         sPlayingFile.CompareNoCase(m_MusicDay.m_sSound) != 0)
     {
@@ -238,11 +240,13 @@ void CSWCAmbientSound::SetMusicDayTrack(int nTrack)
     m_nTimeRemaining = 1;
 }
 // PC 0x006E7A50
-void CSWCAmbientSound::SetMusicNightTrack(int nTrack)
+void CSWCAmbientSound::SetMusicNightTrack(int nTrack,
+                                        int bStreamingMusicForMovie)
 {
     CExoString sPlayingFile;
 
     m_pMusicSource->GetFilePlaying().CopyToString(sPlayingFile);
+    m_pMusicSource->SetStreamingMusicForMovie(bStreamingMusicForMovie);
     if (m_pMusicSource->IsPlaying() != 0 &&
         sPlayingFile.CompareNoCase(m_MusicNight.m_sSound) != 0)
     {

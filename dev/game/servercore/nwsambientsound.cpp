@@ -147,7 +147,8 @@ void CSWSAmbientSound::SetMusicDelay(int nDelay)
     }
 }
 // PC 0x00574670
-void CSWSAmbientSound::SetMusicDayTrack(int nTrack)
+void CSWSAmbientSound::SetMusicDayTrack(int nTrack,
+                                        int bStreamingMusicForMovie)
 {
     int i;
     int nPlayerCount;
@@ -158,11 +159,12 @@ void CSWSAmbientSound::SetMusicDayTrack(int nTrack)
     for (i = 0; i < nPlayerCount; i++)
     {
         pMessage->SendServerToPlayerAmbientMusicChangeTrack(
-            lstPlayers[i], 1, nTrack);
+            lstPlayers[i], 1, nTrack, bStreamingMusicForMovie);
     }
 }
 // PC 0x00574720
-void CSWSAmbientSound::SetMusicNightTrack(int nTrack)
+void CSWSAmbientSound::SetMusicNightTrack(int nTrack,
+                                          int bStreamingMusicForMovie)
 {
     int i;
     int nPlayerCount;
@@ -176,7 +178,7 @@ void CSWSAmbientSound::SetMusicNightTrack(int nTrack)
         for (i = 0; i < nPlayerCount; i++)
         {
             pMessage->SendServerToPlayerAmbientMusicChangeTrack(
-                lstPlayers[i], 0, nTrack);
+                lstPlayers[i], 0, nTrack, bStreamingMusicForMovie);
         }
     }
 }

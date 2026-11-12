@@ -121,6 +121,7 @@ public:
     void OnVideoChange();
     int IsOnActiveExclusionList(unsigned long oidObject);
     int GetMoveToModulePending();
+    unsigned __int64 GetSystemTimeAsDWORD64();
     CExoString GetMoveToModuleString();
     int ExportAllPlayers();
     CSWSPlayer* GetClientObjectByObjectId(unsigned long oidObject);

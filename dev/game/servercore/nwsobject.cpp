@@ -182,7 +182,8 @@ int CLoopingVisualEffect::GetIsBeam(unsigned short nVisualEffectId)
            nVisualEffectId == 2051 || nVisualEffectId == 2052 ||
            nVisualEffectId == 2053 || nVisualEffectId == 4037 ||
            nVisualEffectId == 2029 || nVisualEffectId == 2061 ||
-           nVisualEffectId == 2065 || nVisualEffectId == 2066;
+           nVisualEffectId == 2065 || nVisualEffectId == 2066 ||
+           nVisualEffectId == 2068 || nVisualEffectId == 2069;
 }
 // PC 0x004F46E0
 int CLoopingVisualEffect::GetIsBeam()
@@ -2574,7 +2575,8 @@ int CSWSObject::IsDialogDelay()
         bDelay |= IsFadingInDialog();
     }
 
-    if (m_nDialogReplyState != 0 && m_pDialog->m_n3C != 0)
+    if (m_nDialogReplyState != 0 && m_pDialog->m_n3C != 0 &&
+        m_pDialog->m_n64 == 0)
     {
         StopSoundPlayingInDialog();
         g_pAppManager->GetServerExoApp()->GetWorldTimer()->AddWorldTimes(
@@ -3445,7 +3447,8 @@ unsigned long CSWSObject::GetNearestObjectByName(const CExoString& sName,
         {
             Vector vDifference = vObjectPosition - vPosition;
             float fDistanceSquared = vDifference * vDifference;
-            if (!bDistanceLimit || fDistanceSquared <= fNearestDistance)
+            if (!bDistanceLimit || fDistanceSquared <= fNearestDistance ||
+                pObject->m_n260 != 0)
             {
                 oidNearest = pObject->GetId();
                 bDistanceLimit = 1;

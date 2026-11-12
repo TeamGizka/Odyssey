@@ -15260,7 +15260,7 @@ int CSWVirtualMachineCommands::ExecuteCommandMusicBackground(int nCommand,
     unsigned long oidResult;
     CServerExoApp* pServerExoApp;
     CSWSArea* pArea;
-    int nResult2;
+    int bStreamingMusicForMovie;
 
     nResult = 0;
     if (g_pVirtualMachine->StackPopObject(&oidResult) == 0)
@@ -15270,6 +15270,14 @@ int CSWVirtualMachineCommands::ExecuteCommandMusicBackground(int nCommand,
     if (nArgs > 1)
     {
         if (g_pVirtualMachine->StackPopInteger(&nResult) == 0)
+        {
+            return -2001;
+        }
+    }
+    bStreamingMusicForMovie = 0;
+    if (nArgs > 2)
+    {
+        if (g_pVirtualMachine->StackPopInteger(&bStreamingMusicForMovie) == 0)
         {
             return -2001;
         }
@@ -15284,27 +15292,24 @@ int CSWVirtualMachineCommands::ExecuteCommandMusicBackground(int nCommand,
     {
     case 425:
         pArea->m_pAmbientSound->PlayMusic(1);
-        nResult2 = 0;
-        break;
+        return 0;
     case 426:
         pArea->m_pAmbientSound->PlayMusic(0);
-        nResult2 = 0;
-        break;
+        return 0;
     case 427:
         pArea->m_pAmbientSound->SetMusicDelay(nResult);
-        nResult2 = 0;
-        break;
+        return 0;
     case 428:
-        pArea->m_pAmbientSound->SetMusicDayTrack(nResult);
-        nResult2 = 0;
-        break;
+        pArea->m_pAmbientSound->SetMusicDayTrack(nResult,
+                                                 bStreamingMusicForMovie);
+        return 0;
     case 429:
-        pArea->m_pAmbientSound->SetMusicNightTrack(nResult);
+        pArea->m_pAmbientSound->SetMusicNightTrack(nResult,
+                                                   bStreamingMusicForMovie);
         return 0;
     default:
         return 0;
     }
-    return nResult2;
 }
 // PC 0x005C35E0
 int CSWVirtualMachineCommands::ExecuteCommandMusicBattle(int nCommand,

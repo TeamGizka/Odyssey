@@ -129,28 +129,10 @@ struct CSWSCombatAttackExtra1
 {
     CSWSCombatAttackExtra1()
     {
-        m_nUnknown0 = 0;
-        m_nUnknown1 = 0;
-        m_nUnknown2 = 0;
-        m_nStrengthModifier = 0;
-        m_nDexterityModifier = 0;
-        m_nUnknown5 = 0;
-        m_nSpecialAttackBonus = 0;
-        m_nBaseAttackBonus = 0;
-        m_nOffHand = 0;
-        m_nTwoWeaponPenalty = 0;
-        m_nWeaponSizeBonus = 0;
-        m_nTwoWeaponFeatBonus = 0;
-        m_nTwoWeaponFeat = 0;
-        m_nDuelingBonus = 0;
-        m_nDuelingFeat = 0;
-        m_nGoodAimBonus = 0;
-        m_nOffensiveTrainingBonus = 0;
-        m_nWeaponFocusBonus = 0;
-        m_nEffectAttackBonus = 0;
-        m_nUnknown18 = 0;
-        m_nUnknown1C = 0;
+        Clear();
     }
+
+    void Clear();
 
     unsigned char m_nUnknown0;
     unsigned char m_nUnknown1;
@@ -204,6 +186,8 @@ struct CSWSCombatAttackExtra3
         m_nUnknown9 = 0;
         m_nUnknownA = 0;
         m_nEffectDamageBonus = 0;
+        m_nUnknownC = 0x102;
+        m_nUnknown10 = 0;
         for (int i = 0; i < 15; i++)
         {
             m_nUnknownDamage[i] = -1;
@@ -265,6 +249,11 @@ struct CSWSCombatAttackExtra5
 {
     CSWSCombatAttackExtra5()
     {
+        Clear();
+    }
+
+    void Clear()
+    {
         m_nUnknown0 = 0;
         m_nUnknown1 = 0;
         m_nUnknown2 = 0;
@@ -274,6 +263,14 @@ struct CSWSCombatAttackExtra5
         m_nUnknown6 = 0;
         m_nUnknown7 = 0;
         m_nUnknown8 = 0;
+        m_nUnknown14 = 0;
+        m_nUnknown15 = 0;
+        m_nUnknown18 = 0;
+        m_nUnknown1C = 0;
+        m_nUnknown20 = 0;
+        m_nUnknown21 = 0;
+        m_nUnknown22 = 0;
+        m_nUnknown23 = 0;
     }
 
     unsigned char m_nUnknown0;

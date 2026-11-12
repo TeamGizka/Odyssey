@@ -503,7 +503,7 @@ void CServerExoApp::SetMoveToModulePending(int bPending)
 {
     m_pcExoAppInternal->m_bMoveToModulePending = bPending;
 }
-
+// PC 0x004DBEB0
 int CServerExoApp::GetMoveToModulePending()
 {
     return m_pcExoAppInternal->m_bMoveToModulePending;
@@ -690,6 +690,11 @@ int CServerExoApp::TestDirectLine(unsigned long oidObject,
         return pArea->TestDirectLine(vStart, vEnd, fDistance, fWidth, nFlags,
                                      pWalkHitInfo);
     }
+    if (g_pAppManager->m_pClientExoApp->GetMiniGame() != NULL)
+    {
+        return pArea->TestDirectLine(vStart, vEnd, fDistance, fWidth, nFlags,
+                                     pWalkHitInfo);
+    }
 
     return 0;
 }
@@ -718,7 +723,7 @@ void CServerExoApp::ClearAllActions(unsigned long oidObject)
         pCreature->ClearAllActions(1);
         pCreature->m_pcCombatRound->RemoveAllActions();
         pCreature->m_pcCombatRound->m_oidUnknown9CC = 2130706432;
-        pCreature->m_oidAttemptedAttackTarget = 2130706432;
+        pCreature->SetAttemptedAttackTarget(2130706432);
         pCreature->m_oidAttackTarget = 2130706432;
         pCreature->m_oidAttemptedSpellTarget = 2130706432;
         pCreature->m_oidSpellTarget = 2130706432;
@@ -820,6 +825,11 @@ void CServerExoApp::SetSaveGameName(const CExoString& sName)
 #ifndef _XBOX
     m_pcExoAppInternal->m_sSaveGameName = sName;
 #endif
+}
+// PC 0x004DC7F0
+unsigned __int64 CServerExoApp::GetSystemTimeAsDWORD64()
+{
+    return m_pcExoAppInternal->GetSystemTimeAsDWORD64();
 }
 // PC 0x0062B870
 void CServerExoApp::Uninitialize()

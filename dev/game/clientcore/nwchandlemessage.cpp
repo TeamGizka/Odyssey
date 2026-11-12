@@ -10111,6 +10111,7 @@ int CSWCMessage::HandleServerToPlayerAmbientMusicChangeTrack()
 {
     int bDay;
     int nTrack;
+    int bStreamingMusicForMovie;
     CSWCModule* pModule;
     CSWCArea* pArea;
 
@@ -10120,6 +10121,7 @@ int CSWCMessage::HandleServerToPlayerAmbientMusicChangeTrack()
     }
     bDay = ReadBOOL();
     nTrack = ReadINT(32);
+    bStreamingMusicForMovie = ReadBOOL();
     if (MessageReadOverflow(1) || MessageReadUnderflow(1) != 0)
     {
         return 0;
@@ -10128,11 +10130,12 @@ int CSWCMessage::HandleServerToPlayerAmbientMusicChangeTrack()
     pArea = pModule->m_pInfo;
     if (bDay)
     {
-        pArea->m_pAmbientSound->SetMusicDayTrack(nTrack);
+        pArea->m_pAmbientSound->SetMusicDayTrack(nTrack, 0);
     }
     else
     {
-        pArea->m_pAmbientSound->SetMusicNightTrack(nTrack);
+        pArea->m_pAmbientSound->SetMusicNightTrack(nTrack,
+                                                   bStreamingMusicForMovie);
     }
     return 1;
 }

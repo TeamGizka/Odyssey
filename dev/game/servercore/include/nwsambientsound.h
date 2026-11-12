@@ -15,8 +15,8 @@ public:
 
     virtual void PlayMusic(int bPlay);
     virtual void SetMusicDelay(int nDelay);
-    virtual void SetMusicDayTrack(int nTrack);
-    virtual void SetMusicNightTrack(int nTrack);
+    virtual void SetMusicDayTrack(int nTrack, int bStreamingMusicForMovie);
+    virtual void SetMusicNightTrack(int nTrack, int bStreamingMusicForMovie);
     virtual void PlayBattleMusic(int bPlay);
     virtual void SetBattleMusicTrack(int nTrack);
     virtual void PlayAmbientSound(int bPlay);
