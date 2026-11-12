@@ -262,20 +262,11 @@ CAurBehavior::CAurBehavior(CAurObject* pObject)
     m_pObject = pObject;
 }
 
-#ifdef _XBOX
+// PC 0x004CC320
 void CAurBehavior::AddDependency(CAurObject* pObject)
 {
     m_lstDependencies.Add(new SafePointer<CAurObject>(pObject));
 }
-#else
-int CAurBehavior::AddDependency(CAurObject* pObject)  // PC 0x004CC320
-{
-    SafePointer<CAurObject>* pDependency = new SafePointer<CAurObject>(pObject);
-    List<SafePointer<CAurObject>*>& lstDependencies = m_lstDependencies;
-    lstDependencies.Add(pDependency);
-    return lstDependencies.m_nCount;
-}
-#endif
 // PC 0x004CCDC0
 CAurBehavior::~CAurBehavior()
 {

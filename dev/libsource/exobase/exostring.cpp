@@ -215,26 +215,6 @@ char CExoString::operator[](int nIndex) const
 
     return 0;
 }
-// PC 0x00401690
-int CExoString::AsINT() const
-{
-    if (m_sString != NULL)
-    {
-        return atoi(m_sString);
-    }
-
-    return 0;
-}
-// PC 0x0041D1D0
-float CExoString::AsFLOAT() const
-{
-    if (m_sString != NULL)
-    {
-        return atof(m_sString);
-    }
-
-    return 0.0f;
-}
 // PC 0x006307C0
 char* CExoString::CStr() const
 {
@@ -291,16 +271,6 @@ void CExoString::Format(char* szFormat, ...)
     strncpy(m_sString, CExoStringFormatBuffer, nLength);
     m_sString[nLength] = 0;
 }
-// PC 0x00406290
-int CExoString::GetLength() const
-{
-    if (m_sString != NULL)
-    {
-        return strlen(m_sString);
-    }
-
-    return 0;
-}
 // PC 0x006308E0
 void CExoString::Insert(const CExoString& sString, int nPosition)
 {
@@ -332,16 +302,6 @@ void CExoString::Insert(const CExoString& sString, int nPosition)
             delete[] szOld;
         }
     }
-}
-// PC 0x004062B0
-BOOL CExoString::IsEmpty() const
-{
-    if (m_sString == NULL || m_sString[0] == 0)
-    {
-        return TRUE;
-    }
-
-    return FALSE;
 }
 // PC 0x006309D0
 BOOL CExoString::CompareNoCase(const char* szString) const

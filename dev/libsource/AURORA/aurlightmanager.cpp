@@ -167,7 +167,7 @@ void LightManager::UpdateLights()
 
     for (int i = 0; i < m_lstLights.m_nCount; i++)
     {
-        if (m_lstLights[i]->m_pAurObject)
+        if (m_lstLights[i]->m_pAurObject != 0)
         {
             m_lstLights[i]->GetWorld(m_lstLights[i]->m_vWorldPosition,
                                      qOrientation);
@@ -1147,41 +1147,35 @@ void LightManager::SetUpVertexProgramLightShaderConstants(int nLights,
                 1.0f, 1.0f, 1.0f, 1.0f);
         }
 
-        List<PartLight*> lstLights;
+        List<PartLight*>* pLights;
         if (bWorldSpace)
-            lstLights = m_lstFadingDynamicLights;
+            pLights = &m_lstFadingDynamicLights;
         else
-            lstLights = m_lstEnabledLights;
+            pLights = &m_lstEnabledLights;
         int nUsed = 0;
-        for (int i = 0; i < lstLights.m_nCount; i++)
+        for (int i = 0; i < pLights->m_nCount; i++)
         {
             if (nUsed >= (m_lstExcludedShaderLights.m_nCount > 0
                           ? nLights - 1 : nLights))
                 break;
-            if (m_bBumpMapLightsDisabled && m_lstBumpMapLights.Contains(lstLights[i]))
+            PartLight* pLight = (*pLights)[i];
+            if (m_bBumpMapLightsDisabled && m_lstBumpMapLights.Contains(pLight))
                 continue;
-            if (m_lstExcludedShaderLights.Contains(lstLights[i]))
+            if (m_lstExcludedShaderLights.Contains(pLight))
                 continue;
             nUsed++;
             Vector vAmbient;
             Vector vDiffuse;
-            float fMultiplier = bWorldSpace ? 1.0f : lstLights[i]->m_fMultiplier;
-#ifdef _XBOX
-            if (lstLights[i]->m_bAmbientOnly)
-                vAmbient = lstLights[i]->m_vColor * fMultiplier;
+            float fMultiplier = bWorldSpace ? 1.0f : pLight->m_fMultiplier;
+            if (pLight->m_bAmbientOnly)
+                vAmbient = pLight->m_vColor * fMultiplier;
             else
-                vDiffuse = lstLights[i]->m_vColor * fMultiplier;
-#else
-            if (lstLights[i]->m_bAmbientOnly)
-                vAmbient = fMultiplier * lstLights[i]->m_vColor;
-            else
-                vDiffuse = fMultiplier * lstLights[i]->m_vColor;
-#endif
+                vDiffuse = pLight->m_vColor * fMultiplier;
 
             AurSetVertexProgramParameter4f(nParameter--,
-                lstLights[i]->m_vWorldPosition.m_fX,
-                lstLights[i]->m_vWorldPosition.m_fY,
-                lstLights[i]->m_vWorldPosition.m_fZ, 0.0f);
+                pLight->m_vWorldPosition.m_fX,
+                pLight->m_vWorldPosition.m_fY,
+                pLight->m_vWorldPosition.m_fZ, 0.0f);
             AurSetVertexProgramParameter4f(nParameter--,
                 vAmbient.m_fX, vAmbient.m_fY, vAmbient.m_fZ, 1.0f);
             AurSetVertexProgramParameter4f(nParameter--,
@@ -1193,7 +1187,7 @@ void LightManager::SetUpVertexProgramLightShaderConstants(int nLights,
             GLRender_SetVertexProgramParameter4f(nParameter, 1.0f, 0.0f,
                 AUR_LIGHT_ATTENUATION_SCALE / (fRadius * fRadius + fRadius * fRadius), 1.0f);
 #else
-            float fRadius = lstLights[i]->m_fRadius;
+            float fRadius = pLight->m_fRadius;
             float fAttenuation = AUR_LIGHT_ATTENUATION_SCALE /
                 (fRadius * fRadius + fRadius * fRadius);
             GLRender_SetVertexProgramParameter4f(nParameter, 1.0f, 0.0f, fAttenuation, 1.0f);

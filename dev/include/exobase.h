@@ -7,6 +7,9 @@
 #include "platform.h"
 #endif
 
+#include <stdlib.h>
+#include <string.h>
+
 extern char g_szEmptyString[];
 
 
@@ -54,13 +57,45 @@ public:
     char operator[](int nIndex) const;
     CExoString operator+(const CExoString& sString) const;
 
-    int AsINT() const;
-    float AsFLOAT() const;
+    int AsINT() const
+    {
+        if (m_sString != NULL)
+        {
+            return atoi(m_sString);
+        }
+
+        return 0;
+    }
+    float AsFLOAT() const
+    {
+        if (m_sString != NULL)
+        {
+            return atof(m_sString);
+        }
+
+        return 0.0f;
+    }
     char* CStr() const;
     void Format(char* szFormat, ...);
-    int GetLength() const;
+    int GetLength() const
+    {
+        if (m_sString != NULL)
+        {
+            return strlen(m_sString);
+        }
+
+        return 0;
+    }
     void Insert(const CExoString& sString, int nPosition);
-    BOOL IsEmpty() const;
+    BOOL IsEmpty() const
+    {
+        if (m_sString == NULL || m_sString[0] == 0)
+        {
+            return TRUE;
+        }
+
+        return FALSE;
+    }
     BOOL CompareNoCase(const char* szString) const;
     BOOL CompareNoCase(const CExoString& sString) const;
     BOOL ComparePrefixNoCase(const CExoString& sString, int nSize) const;
@@ -365,8 +400,8 @@ public:
     int m_bEnabled;
 };
 
-void* ExoMalloc(unsigned long nSize);
-void ExoFree(void* pMemory);
+void* EXOMALLOC(unsigned long nSize, const char* szFile, int nLine);
+void EXOFREE(void* pMemory, const char* szFile, int nLine);
 
 
 
@@ -907,7 +942,7 @@ public:
     CExoFile* m_pAuxiliaryLogFileTwo;
     CExoFile* m_pAuxiliaryLogFileThree;
     CExoFile* m_pAuxiliaryLogFileFour;
-    CExoFile* m_p1C;
+    CExoFile* m_pAuxiliaryLogFileFive;
 };
 
 class CExoString;
@@ -1122,7 +1157,8 @@ public:
     void ReInitialize(int nEAXMode, int bA3D);
     int GetEAX();
     int GetSoundMode();
-    void SetSoundMode(int nMode);
+    void SetSoundMode(int nMode, int bMovie = 0);
+    void ResumeAllStreamingMusicForMovie();
     void Render();
     void SetListenerOrientation(const Vector& vOrientation, const Vector& vUp);
     void SetListenerPosition(const Vector& vPosition);
@@ -1188,10 +1224,11 @@ public:
         PRIORITY_GROUP_DIALOG_VOICE = 9
     };
 
-    CExoStreamingSoundSource(int n4 = 0);
+    CExoStreamingSoundSource(int bReservedStream = 0);
     ~CExoStreamingSoundSource();
 
     int IsPlaying();
+    int IsDone();
     int GetHasStartedStreaming();
     int GetPlayFailed();
     int GetLooping();
@@ -1202,8 +1239,9 @@ public:
     void SetLooping(int bLooping);
     void SetVolume(unsigned char nVolume);
     unsigned char GetVolume();
-    void Stop();
+    void Stop(int bCloseStream = 0);
     void FadeAndStop(unsigned long nFadeTime);
+    void SetStreamingMusicForMovie(int bStreamingMusicForMovie);
     void SetPriorityGroup(unsigned char nGroup);
     unsigned char GetPriorityGroup();
     void SetReverbEnabled(int bEnabled);

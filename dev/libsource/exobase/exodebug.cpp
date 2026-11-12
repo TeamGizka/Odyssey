@@ -5,12 +5,13 @@
 #include <stdarg.h>
 #endif
 
-void* ExoMalloc(unsigned long nSize)
+// PC 0x006356C0
+void* EXOMALLOC(unsigned long nSize, const char* szFile, int nLine)
 {
     return malloc(nSize);
 }
-
-void ExoFree(void* pMemory)
+// PC 0x006356D0
+void EXOFREE(void* pMemory, const char* szFile, int nLine)
 {
     free(pMemory);
 }

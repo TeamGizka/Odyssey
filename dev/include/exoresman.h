@@ -913,7 +913,7 @@ public:
     {
         m_pRes = NULL;
         m_nResId = 0;
-        m_s1C = "";
+        m_sDirectory = "";
     }
 
     CResRef m_resRef;
@@ -924,7 +924,7 @@ public:
     unsigned long m_nResId;
     unsigned short m_nReserved;
     unsigned short m_nType;
-    CExoString m_s1C;
+    CExoString m_sDirectory;
 };
 
 class CExoPackedFile;
@@ -1010,7 +1010,7 @@ public:
     unsigned long Hash(const CResRef& resRef, unsigned short nType);
     CKeyTableEntry* AllocateTable(unsigned long nSize);
     CKeyTableEntry* AddKey(const CResRef& resRef, unsigned short nType,
-                           unsigned long nResId, int);
+                           unsigned long nResId, int, CExoString sDirectory);
     CKeyTableEntry* FindKey(const CResRef& resRef, unsigned short nType);
     CExoStringList* GetKeysOfType(unsigned short nType);
     void DestroyTable();

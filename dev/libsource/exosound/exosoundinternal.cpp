@@ -14,6 +14,8 @@ static inline void ExoSoundTrace();
 
 int g_bDisableSound;
 int g_bSoundPaused;
+int g_totalStreamingHandlesAvailable;
+int g_generalStreamingHandlesAvailable;
 
 
 #ifndef _XBOX
@@ -1710,6 +1712,56 @@ int CExoSoundInternal::ResumeAllSounds()
     }
     return 1;
 }
+// PC 0x00624180
+void CExoSoundInternal::PauseAllButStreamingMusicForMovie()
+{
+    CExoLinkedListNode* pPosition;
+    CExoStreamingSoundSourceInternal* pStream;
+    CExoSoundSourceInternal* pSource;
+    void* pData;
+
+    pPosition = m_lstStreaming.GetHeadPos();
+    pData = m_lstStreaming.GetHead();
+    pStream = (CExoStreamingSoundSourceInternal*)pData;
+    while (pPosition != NULL)
+    {
+        if (GetPauseable(pStream) != 0 &&
+            pStream->m_bStreamingMusicForMovie == 0)
+        {
+            pStream->Pause();
+        }
+        pStream = m_lstStreaming.GetNext(pPosition);
+    }
+    pPosition = m_lstPlaying.GetHeadPos();
+    pData = m_lstPlaying.GetHead();
+    pSource = (CExoSoundSourceInternal*)pData;
+    while (pPosition != NULL)
+    {
+        if (pSource->IsPaused() == 0 && GetPauseable(pSource) != 0)
+        {
+            pSource->Pause();
+        }
+        pSource = m_lstPlaying.GetNext(pPosition);
+    }
+}
+// PC 0x006242A0
+void CExoSoundInternal::ResumeAllStreamingMusicForMovie()
+{
+    CExoLinkedListNode* pPosition;
+    CExoStreamingSoundSourceInternal* pStream;
+
+    g_bSoundPaused = 0;
+    pPosition = m_lstStreaming.GetHeadPos();
+    pStream = m_lstStreaming.GetHead();
+    while (pPosition != NULL)
+    {
+        if (pStream->m_bStreamingMusicForMovie != 0)
+        {
+            pStream->Resume();
+        }
+        pStream = m_lstStreaming.GetNext(pPosition);
+    }
+}
 
 #ifndef _XBOX
 int CExoSoundInternal::AddToStreamingList(  // PC 0x006242F0
@@ -1785,14 +1837,21 @@ int CExoSoundInternal::AddToStreamingList(  // PC 0x006242F0
 #endif
 
 #ifndef _XBOX
-void CExoSoundInternal::SetSoundMode(int nMode)  // PC 0x00624400
+void CExoSoundInternal::SetSoundMode(int nMode, int bMovie)  // PC 0x00624400
 {
     if (nMode == CExoSound::CEXOSOUND_MODE_LOSTFOCUS ||
         nMode == CExoSound::CEXOSOUND_MODE_GAINFOCUS)
     {
         if (nMode == CExoSound::CEXOSOUND_MODE_LOSTFOCUS)
         {
-            PauseAllSounds(1);
+            if (bMovie)
+            {
+                PauseAllButStreamingMusicForMovie();
+            }
+            else
+            {
+                PauseAllSounds(1);
+            }
             m_bPaused = 1;
         }
         else
@@ -1803,7 +1862,7 @@ void CExoSoundInternal::SetSoundMode(int nMode)  // PC 0x00624400
             if (m_nSoundMode != 0)
             {
                 m_nSoundMode--;
-                SetSoundMode(nMode);
+                SetSoundMode(nMode, 0);
             }
         }
     }
@@ -1854,7 +1913,14 @@ void CExoSoundInternal::SetSoundMode(int nMode)  // PC 0x00624400
             nMode == CExoSound::CEXOSOUND_MODE_PAUSE_ALL ||
             nMode == CExoSound::CEXOSOUND_MODE_PAUSE_ALL_BUT_MUSIC)
         {
-            PauseAllSounds(0);
+            if (bMovie)
+            {
+                PauseAllButStreamingMusicForMovie();
+            }
+            else
+            {
+                PauseAllSounds(0);
+            }
         }
     }
 }

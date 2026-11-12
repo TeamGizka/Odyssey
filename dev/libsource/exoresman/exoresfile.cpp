@@ -532,7 +532,15 @@ int CExoResFile::LoadHeader(unsigned char nType)
 #endif
         m_nFileSize = m_pFile->GetSize();
         m_pHeader = new CExoResFileHeader;
-        m_pFile->Read(m_pHeader, sizeof(CExoResFileHeader), 1);
+
+        if (m_pFile->Read(m_pHeader, sizeof(CExoResFileHeader), 1) !=
+            sizeof(CExoResFileHeader))
+        {
+            delete m_pHeader;
+            m_pHeader = NULL;
+            DeleteRefCount();
+            return 0;
+        }
 
         if (*(unsigned long*)m_pHeader->szFileType != 0x46464942)
         {
@@ -1160,7 +1168,7 @@ void CExoResourceImageFile::ReadResourceAsync(unsigned long nId, void* pBuffer,
 // PC 0x0040F2C0
 CKeyTableEntry* CExoKeyTable::AddKey(const CResRef& resRef,
                                      unsigned short nType, unsigned long nResId,
-                                     int)
+                                     int, CExoString sDirectory)
 {
     int nCollisions = 0;
     int bFound = 0;
@@ -1205,6 +1213,7 @@ CKeyTableEntry* CExoKeyTable::AddKey(const CResRef& resRef,
                     (nKeyTableId << 14);
                 m_pKeyTable[i].m_resRef = resRef;
                 m_pKeyTable[i].m_nType = nType;
+                m_pKeyTable[i].m_sDirectory = sDirectory;
                 m_nCollisions++;
                 bFound = 1;
             }
@@ -1251,7 +1260,7 @@ CKeyTableEntry* CExoKeyTable::AllocateTable(unsigned long nSize)
             pEntry->m_nResId = 0xFFFFFFFF;
             pEntry->m_nReserved = 0;
             pEntry->m_nType = 0xFFFF;
-            pEntry->m_s1C = "";
+            pEntry->m_sDirectory = "";
         }
     }
 
@@ -1402,18 +1411,38 @@ int CExoKeyTable::AddDirectoryContents(int bFlag)
 {
     CExoString sFile;
     CExoArrayList<CExoString> lstFiles;
+    CExoArrayList<CExoString> lstSubDirectories;
+    CExoArrayList<CExoArrayList<CExoString> > lstSubDirectoryFiles;
+    int nSubDirectories = 0;
+    int nSubDirectoryFiles = 0;
     CResRef resRef;
+
+    CExoString sOverride("OVERRIDE");
+    if (m_sResourceName.ComparePrefixNoCase(sOverride, sOverride.GetLength()))
+    {
+        g_pExoBase->GetDirectoryList(&lstSubDirectories, m_sResourceName,
+                                     RESTYPE_INVALID, 1, 0);
+        nSubDirectories = lstSubDirectories.num;
+    }
+
+    CExoString sDirectory;
+    int n;
+    for (n = 0; n < nSubDirectories; n++)
+    {
+        sDirectory = CExoString("OVERRIDE:") + lstSubDirectories[n];
+
+        CExoArrayList<CExoString> lstSubFiles;
+        g_pExoBase->GetDirectoryList(&lstSubFiles, sDirectory, RESTYPE_INVALID,
+                                     0, 0);
+        lstSubDirectoryFiles.Add(lstSubFiles);
+        nSubDirectoryFiles += lstSubDirectoryFiles[n].num;
+    }
 
     g_pExoBase->GetDirectoryList(&lstFiles, m_sResourceName, RESTYPE_INVALID, 0, 0);
 
     int nFiles = lstFiles.num;
 
-    EXOXBOXASSERT(m_pKeyTable == NULL);
-#ifdef _XBOX
-    m_nTableSize = 2 * nFiles + 1;
-#else
-    m_nTableSize = 2 * lstFiles.num + 1;
-#endif
+    m_nTableSize = 2 * (nFiles + nSubDirectoryFiles) + 1;
     m_pKeyTable = AllocateTable(m_nTableSize);
 
     if (m_pKeyTable == NULL)
@@ -1435,7 +1464,31 @@ int CExoKeyTable::AddDirectoryContents(int bFlag)
             {
                 unsigned long nResId = (m_nId | 0xFFFFFC00) << 20;
 
-                AddKey(resRef, nType, nResId, bFlag);
+                AddKey(resRef, nType, nResId, bFlag, CExoString(""));
+            }
+        }
+    }
+
+    for (n = 0; n < nSubDirectories; n++)
+    {
+        sDirectory = lstSubDirectories[n];
+
+        for (int j = 0; j < lstSubDirectoryFiles[n].num; j++)
+        {
+            sFile = lstSubDirectoryFiles[n][j];
+
+            unsigned short nType = g_pExoResMan->GetResTypeFromFile(sFile);
+
+            if (nType != 0xFFFF)
+            {
+                g_pExoResMan->GetResRefFromFile(resRef, sFile);
+
+                if (resRef != "")
+                {
+                    unsigned long nResId = (m_nId | 0xFFFFFC00) << 20;
+
+                    AddKey(resRef, nType, nResId, bFlag, sDirectory);
+                }
             }
         }
     }
@@ -1622,7 +1675,7 @@ int CExoKeyTable::AddEncapsulatedContents(int bFlag)
         resRef = sKey.szResRef;
         sKey.nResId =
             (sKey.nResId & 0xFFFFF) | (((m_nId & 0x3FF) | 0xFFFFF800) << 20);
-        AddKey(resRef, sKey.nResType, sKey.nResId, bFlag);
+        AddKey(resRef, sKey.nResType, sKey.nResId, bFlag, CExoString(""));
     }
 
     delete pFile;
@@ -1714,7 +1767,7 @@ int CExoKeyTable::AddResourceImageContents(int bFlag)
         resRef = (unsigned char*)sEntry.m_szResRef;
         sEntry.m_nId =
             (sEntry.m_nId & 0xFFFFF) | (((m_nId & 0x3FF) | 0x400) << 20);
-        AddKey(resRef, sEntry.m_nType, sEntry.m_nId, bFlag);
+        AddKey(resRef, sEntry.m_nType, sEntry.m_nId, bFlag, CExoString(""));
     }
 
     return 1;
@@ -1784,7 +1837,7 @@ int CExoKeyTable::AddKeyTableContents(int bFlag)
     }
 
     nFileTableSize = sHeader.nKeyTableOffset - sHeader.nBifTableOffset;
-    pFileTable = (unsigned char*)ExoMalloc(nFileTableSize);
+    pFileTable = (unsigned char*)EXOMALLOC(nFileTableSize, "exoresfile.cpp", 991);
 
     if (pFileTable == NULL)
     {
@@ -1814,7 +1867,7 @@ int CExoKeyTable::AddKeyTableContents(int bFlag)
     {
         delete[] m_pKeyTable;
         m_pKeyTable = NULL;
-        ExoFree(pFileTable);
+        EXOFREE(pFileTable, "exoresfile.cpp", 1055);
         delete pFile;
         return 0;
     }
@@ -1831,7 +1884,7 @@ int CExoKeyTable::AddKeyTableContents(int bFlag)
             m_pPackedFiles = NULL;
             delete[] m_pKeyTable;
             m_pKeyTable = NULL;
-            ExoFree(pFileTable);
+            EXOFREE(pFileTable, "exoresfile.cpp", 1081);
             delete pFile;
             return 0;
         }
@@ -1849,7 +1902,7 @@ int CExoKeyTable::AddKeyTableContents(int bFlag)
             m_pPackedFiles = NULL;
             delete[] m_pKeyTable;
             m_pKeyTable = NULL;
-            ExoFree(pFileTable);
+            EXOFREE(pFileTable, "exoresfile.cpp", 1119);
             delete pFile;
             return 0;
         }
@@ -1874,7 +1927,7 @@ int CExoKeyTable::AddKeyTableContents(int bFlag)
         {
             if (sFileName.SubString(0, 4).LowerCase() != "live")
             {
-                ExoFree(pFileTable);
+                EXOFREE(pFileTable, __FILE__, __LINE__);
                 delete pFile;
                 return 0;
             }
@@ -1903,11 +1956,11 @@ int CExoKeyTable::AddKeyTableContents(int bFlag)
         pFile->Read(&sKey.nId, 4, 1);
         resRef = sKey.szResRef;
         sKey.nId &= 0x3FFFFFFF;
-        AddKey(resRef, sKey.nType, sKey.nId, bFlag);
+        AddKey(resRef, sKey.nType, sKey.nId, bFlag, CExoString(""));
     }
 
     delete pFile;
-    ExoFree(pFileTable);
+    EXOFREE(pFileTable, "exoresfile.cpp", 1213);
 
     return 1;
 }

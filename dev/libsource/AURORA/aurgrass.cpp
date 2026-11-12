@@ -519,8 +519,6 @@ CAurTriangleBin::~CAurTriangleBin()
         m_pCurrentVertices = 0;
         delete[] m_pVertices;
         m_pVertices = 0;
-        m_nVertexOffset = 0;
-        m_nIndexOffset = 0;
 #endif
         m_nFlags ^= HAS_VERTEX_DATA;
     }
@@ -548,8 +546,6 @@ void CAurTriangleBin::DestroyGrassPolys()
 #else
             delete[] m_pCurrentVertices;
             m_pCurrentVertices = 0;
-            m_nVertexOffset = 0;
-            m_nIndexOffset = 0;
             delete[] m_pVertices;
             m_pVertices = 0;
 #endif

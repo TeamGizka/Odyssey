@@ -50,7 +50,7 @@ public:
                           CExoFile* pFile);
     int GetActive();
     void SetActive(int bActive);
-    void SetMousePos(int nX, int nY);
+    void SetMousePos(int nX, int nY, bool bKeepWarpState);
     CExoArrayList<CExoInputEvent> GetEvents(int& nEvents, int nEventClass);
     void SetCaptureKeyboardKeys(int bCapture);
 

@@ -28,46 +28,11 @@ float SphereAbovePlane(const Vector& vCenter, float fRadius, const Plane& plane)
            vCenter.m_fZ * plane.m_vNormal.m_fZ + plane.m_fDistance - fRadius;
 }
 
-Vector& Vector::operator+=(const Vector& other)
-{
-    m_fX += other.m_fX;
-    m_fY += other.m_fY;
-    m_fZ += other.m_fZ;
-    return *this;
-}
-
 static inline float interpolateLinear(float fStart, float fEnd, float fPosition)
 {
     return fStart * (1.0f - fPosition) + fEnd * fPosition;
 }
 
-Vector& Vector::operator-=(const Vector& other)
-{
-    m_fX -= other.m_fX;
-    m_fY -= other.m_fY;
-    m_fZ -= other.m_fZ;
-    return *this;
-}
-
-Vector& Vector::operator*=(float fScale)
-{
-    m_fX *= fScale;
-    m_fY *= fScale;
-    m_fZ *= fScale;
-    return *this;
-}
-
-Vector& Vector::operator/=(float fScale)
-{
-    if (fScale != 0.0f)
-    {
-        float fReciprocal = 1.0f / fScale;
-        m_fX *= fReciprocal;
-        m_fY *= fReciprocal;
-        m_fZ *= fReciprocal;
-    }
-    return *this;
-}
 // PC 0x004D69D0
 float PlaneHeightAtPoint(const Vector& vNormal, float fDistance,
                          const Vector& vPoint)

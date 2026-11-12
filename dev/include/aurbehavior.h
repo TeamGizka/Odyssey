@@ -41,11 +41,7 @@ public:
         return 0;
     }
 
-#ifdef _XBOX
     void AddDependency(CAurObject* pObject);
-#else
-    int AddDependency(CAurObject* pObject);
-#endif
     void RemoveDependency(CAurObject* pObject);
 
     List<SafePointer<CAurObject>*> m_lstDependencies;

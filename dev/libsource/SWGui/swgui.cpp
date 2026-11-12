@@ -1281,7 +1281,7 @@ void CSWGuiManager::MoveMouseToPosition(int nX, int nY)  // PC 0x0040D060
     m_nMouseX = nX;
     m_nMouseY = nY;
 #ifndef _XBOX
-    g_pExoInput->SetMousePos(nX, g_nScreenHeight - nY - 1);
+    g_pExoInput->SetMousePos(nX, g_nScreenHeight - nY - 1, false);
 #endif
     HandleMouseMove(nX, nY);
 }
@@ -1296,7 +1296,7 @@ void CSWGuiManager::RestoreOldMousePosition()  // PC 0x0040D0A0
         m_nMouseY = m_nOldMouseY;
 #ifndef _XBOX
         g_pExoInput->SetMousePos(m_nOldMouseX,
-                                 g_nScreenHeight - m_nOldMouseY - 1);
+                                 g_nScreenHeight - m_nOldMouseY - 1, false);
 #endif
         g_pAppManager->m_pClientExoApp->m_pcExoAppInternal
             ->RestoreMousePositionTo(m_nMouseX, m_nMouseY);

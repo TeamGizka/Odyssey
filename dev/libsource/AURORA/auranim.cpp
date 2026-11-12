@@ -245,7 +245,8 @@ void PartLightsaber::Animate(float fTimeStep)
     Vector vPosition;
     Quaternion qOrientation;
     GetWorld(vPosition, qOrientation);
-    if (!equal(vPosition, m_vLastPosition))
+    if (!equal(vPosition, m_vLastPosition) ||
+        m_afSegmentAge[m_nFirstSegment] > 60.0f)
     {
         if (magnitude(vPosition - m_vLastPosition) > 1.0f)
         {

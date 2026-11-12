@@ -58,6 +58,20 @@ extern "C" AurGlMultiTexCoord2fProc glMultiTexCoord2fARB;
 extern int usebumpdecaltexture;
 int AurVertexProgramsAvailable();
 extern "C" AurWglGetExtensionsStringProc wglGetExtensionsStringARB;
+#define GL_CON_7_ATI 0x8948
+#define GL_BLUE_BIT_ATI 0x4
+#define GL_CND_ATI 0x896A
+extern bool g_ForceSight;
+int g_Letterbox_top = 0;
+int g_Letterbox_bottom = 0;
+bool g_bLetterBoxMode = 0;
+typedef void (WINAPI* PFNGLTEXIMAGE3DPROC) (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const GLvoid *pixels);
+typedef void (WINAPI* PFNGLTEXSUBIMAGE3DPROC) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid *pixels);
+extern "C"
+{
+    PFNGLTEXIMAGE3DPROC glTexImage3D;
+    PFNGLTEXSUBIMAGE3DPROC glTexSubImage3D;
+}
 float largest_supported_anisotropy = 0.0f;
 int GLRender::cm_nAnisotropy = 0;
 bool GLRender::cm_bPBuffersAllocated = 0;
@@ -74,6 +88,12 @@ bool GLRender::m_bSpeedBlurEnabled = 0;
 bool GLRender::m_bSaturationEnabled = 0;
 bool GLRender::m_bScanNoiseEnabled = 0;
 bool GLRender::m_bFilmNoiseEnabled = 0;
+CAurTexture* GLRender::m_pDreamDistortTexture = 0;
+bool GLRender::m_bDreamDistortEnabled = 0;
+bool GLRender::m_bDreamDistortLetterbox = 0;
+short GLRender::m_FuryLevel = 0;
+CAurTexture* GLRender::m_pFuryTexture = 0;
+CAurTexture* GLRender::m_pDirtyTexture[3];
 float GLRender::m_fSaturation = 0;
 float GLRender::m_fAccumulationRatio = 0.98f;
 int g_nAliasingMode = 0;
@@ -259,6 +279,7 @@ unsigned int GLRender::cm_nFilmNoiseShaderATI = 0;
 unsigned int GLRender::cm_nForceDistortionShaderATI = 0;
 unsigned int GLRender::cm_nSoftShadowShaderATI = 0;
 unsigned int GLRender::cm_nOverbrightenShaderATI = 0;
+unsigned int GLRender::cm_nDreamDistortShaderATI = 0;
 float aquadraticterm = 0.5f;
 
 float quadricshift = 0.05f;
@@ -280,6 +301,7 @@ float basesize64 = 64.0f;
 float basesize128 = 128.0f;
 
 int renderregular = 1;
+float distortionalpha = 0.85f;
 
 bool CheckExtension(char* sExtension, unsigned char const* sExtensions);
 extern unsigned int GL_STENCIL_TWO_SIDED_BIT;
@@ -1957,6 +1979,11 @@ PBUFFERARB* GLRender::CreatePBuffer(int nWidth, int nHeight)
     return wglCreatePBufferARB(hDC, nPixelFormat, nWidth, nHeight,
                                nPbufferAttributes);
 }
+// PC 0x00428820
+void GLRender::SetDirtyTexture(int nIndex, CAurTexture* pTexture)
+{
+    m_pDirtyTexture[nIndex] = pTexture;
+}
 // PC 0x00428830
 void GLRender::SetFilmNoiseTexture(CAurTexture* pTexture)
 {
@@ -2347,6 +2374,21 @@ void GLRender::InitializeFrameBufferModificationFragmentShadersATI()
     glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_2_ATI, 0, 0, GL_REG_2_ATI, 0, 0, GL_CON_2_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
     glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 0, 0, GL_REG_3_ATI, 0, 0, GL_CON_3_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
     glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_PRIMARY_COLOR_ARB, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+    cm_nDreamDistortShaderATI = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(cm_nDreamDistortShaderATI);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glPassTexCoordATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glPassTexCoordATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_4_ATI, GL_RED_BIT_ATI, 0, GL_REG_0_ATI, 0, GL_BIAS_BIT_ATI | GL_2X_BIT_ATI, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_4_ATI, GL_GREEN_BIT_ATI, 0, GL_REG_0_ATI, 0, GL_BIAS_BIT_ATI | GL_2X_BIT_ATI, GL_REG_2_ATI, 0, 0);
+    glSampleMapATI(GL_REG_2_ATI, GL_REG_4_ATI, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_3_ATI, GL_TEXTURE3_ARB, GL_SWIZZLE_STR_ATI);
+    glAlphaFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, GL_REG_3_ATI, GL_ALPHA, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp3ATI(GL_CND_ATI, GL_REG_1_ATI, 0, GL_ONE, GL_ALPHA, 0, GL_ZERO, 0, 0, GL_REG_0_ATI, GL_ALPHA, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, GL_RED_BIT_ATI | GL_GREEN_BIT_ATI | GL_BLUE_BIT_ATI, 0, GL_REG_2_ATI, 0, 0, GL_REG_1_ATI, GL_ALPHA, 0, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_REG_3_ATI, GL_ALPHA, 0);
     glEndFragmentShaderATI();
     glDisable(GL_FRAGMENT_SHADER_ATI);
 }
@@ -3018,6 +3060,20 @@ void GLRender::FrameBufferModificationPixelShadersATI(unsigned long nMode,
         glSetFragmentShaderConstantATI(GL_CON_2_ATI, c2define);
         break;
     }
+    case FRAMEBUFFER_SHADER_DREAM_DISTORTION:
+    {
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glEnable(GL_TEXTURE_2D);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glActiveTextureARB(GL_TEXTURE3_ARB);
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_FRAGMENT_SHADER_ATI);
+        float c7define[4] = { 0.0f, 0.0f, 0.0f, 0.5f };
+        glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+        glBindFragmentShaderATI(cm_nDreamDistortShaderATI);
+        break;
+    }
     }
 }
 // PC 0x0042BDD0
@@ -3382,6 +3438,48 @@ void GLRender::FrameBufferModificationPixelShaders(unsigned long nMode,
         glFinalCombinerInputNV(GL_VARIABLE_G_NV, GL_PRIMARY_COLOR_ARB, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
         break;
     }
+    case FRAMEBUFFER_SHADER_DREAM_DISTORTION:
+    {
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glEnable(GL_TEXTURE_SHADER_NV);
+        glEnable(GL_TEXTURE_2D);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_TEXTURE_2D);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glEnable(GL_TEXTURE_SHADER_NV);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DOT_PRODUCT_NV);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_RGBA_UNSIGNED_DOT_PRODUCT_MAPPING_NV, GL_EXPAND_NORMAL_NV);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glEnable(GL_TEXTURE_SHADER_NV);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_PREVIOUS_TEXTURE_INPUT_NV, GL_TEXTURE0_ARB);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_DOT_PRODUCT_TEXTURE_2D_NV);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_RGBA_UNSIGNED_DOT_PRODUCT_MAPPING_NV, GL_EXPAND_NORMAL_NV);
+        glActiveTextureARB(GL_TEXTURE3_ARB);
+        glEnable(GL_TEXTURE_SHADER_NV);
+        glEnable(GL_TEXTURE_2D);
+        glTexEnvi(GL_TEXTURE_SHADER_NV, GL_SHADER_OPERATION_NV, GL_TEXTURE_2D);
+        glEnable(GL_REGISTER_COMBINERS_NV);
+        glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 1);
+        glEnable(GL_PER_STAGE_CONSTANTS_NV);
+        float c0define[4] = { 0.0f, 0.0f, 0.0f, 0.5f };
+        glCombinerStageParameterfvNV(GL_COMBINER0_NV, GL_CONSTANT_COLOR0_NV, c0define);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_A_NV, GL_TEXTURE2_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_C_NV, GL_TEXTURE3_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_RGB, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_INVERT_NV, GL_RGB);
+        glCombinerOutputNV(GL_COMBINER0_NV, GL_RGB, GL_DISCARD_NV, GL_DISCARD_NV, GL_SPARE0_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_A_NV, GL_TEXTURE3_ARB, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_B_NV, 0, GL_UNSIGNED_INVERT_NV, GL_ALPHA);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_C_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        glCombinerInputNV(GL_COMBINER0_NV, GL_ALPHA, GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        glCombinerOutputNV(GL_COMBINER0_NV, GL_ALPHA, GL_SPARE0_NV, GL_DISCARD_NV, GL_DISCARD_NV, 0, 0, GL_FALSE, GL_FALSE, GL_FALSE);
+        glFinalCombinerInputNV(GL_VARIABLE_A_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_D_NV, 0, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
+        glFinalCombinerInputNV(GL_VARIABLE_G_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA);
+        break;
+    }
     }
 }
 // PC 0x0042DA50
@@ -3562,7 +3660,10 @@ void GLRender::BloomFilterATI(HDC hDC, HGLRC hContext, float fWidth,
             else if (nStage == 1)
                 glSetFragmentShaderConstantATI(GL_CON_1_ATI, color);
             else if (nStage == 2)
+            {
+                color[0] = color[1] = color[2] = color[3] = 0.0f;
                 glSetFragmentShaderConstantATI(GL_CON_2_ATI, color);
+            }
             else
                 glSetFragmentShaderConstantATI(GL_CON_3_ATI, color);
         }
@@ -4472,6 +4573,415 @@ int GLRender::InitializeAntiAliasing()
     ReleaseDC(hWindow, hDC);
     return DestroyWindow(hWindow);
 }
+// PC 0x00430940
+void GLRender::EnableDreamDistortion(bool bLetterbox)
+{
+    m_bDreamDistortEnabled = true;
+    m_bDreamDistortLetterbox = bLetterbox;
+}
+// PC 0x00430960
+void GLRender::DisableDreamDistortion()
+{
+    m_bDreamDistortEnabled = false;
+}
+// PC 0x00430970
+void GLRender::EnableFury(short nLevel)
+{
+    if (nLevel > 3)
+        nLevel = 3;
+    else if (nLevel < 0)
+        nLevel = 0;
+    if (nLevel != 0)
+    {
+        if (m_FuryLevel != nLevel)
+        {
+            if (m_pFuryTexture != 0)
+            {
+                SetCurrentStageTID(3, 0);
+                AurTextureRelease(m_pFuryTexture);
+            }
+            switch (nLevel)
+            {
+                case 2:
+                    m_pFuryTexture = AurTextureGetReference("fx_Fury02", 0);
+                    break;
+                case 3:
+                    m_pFuryTexture = AurTextureGetReference("fx_Fury03", 0);
+                    break;
+                default:
+                    m_pFuryTexture = AurTextureGetReference("fx_Fury01", 0);
+                    break;
+            }
+            m_FuryLevel = nLevel;
+        }
+    }
+    else
+    {
+        if (m_pFuryTexture != 0)
+        {
+            SetActiveTexture(3);
+            glDisable(enableTranslationTable[ENABLE_TEXTURE_2D]);
+            SetActiveTexture(0);
+            AurTextureRelease(m_pFuryTexture);
+            m_pFuryTexture = 0;
+        }
+        m_FuryLevel = 0;
+    }
+}
+// PC 0x00430A60
+void GLRender::RenderDreamDistortion(unsigned long nTexture)
+{
+    glDisable(GL_DEPTH_TEST);
+    glEnable(enableTranslationTable[ENABLE_ALPHA_TEST]);
+    glEnable(enableTranslationTable[ENABLE_BLEND]);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    cm_pForceDistortionTexture->Bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    cm_uiCurrentStage = 1;
+    if (AurMultiTextureAvailable())
+    {
+        glActiveTextureARB(cm_uiCurrentStage + GL_TEXTURE0_ARB);
+    }
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, cm_nAccumulationBlur);
+    wglBindTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glEnable(GL_TEXTURE_2D);
+    m_pDreamDistortTexture->Bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DREAM_DISTORTION,
+                                        0, 0, 0, 0);
+    glDisable(GL_LIGHTING);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, distortionalpha);
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glMultiTexCoord3fARB(GL_TEXTURE1_ARB, 0.15625f, 0.0f,
+                             (i == 0 || i == 1) ? 0.0f : 1.0f);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glMultiTexCoord3fARB(GL_TEXTURE2_ARB, 0.0f, 0.15625f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        glActiveTextureARB(GL_TEXTURE3_ARB);
+        glMultiTexCoord2fARB(GL_TEXTURE3_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        if (g_bLetterBoxMode)
+        {
+            glVertex3f((i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f,
+                       (i == 0 || i == 3) ? (float)g_Letterbox_bottom + 25.0f
+                                          : (float)g_Letterbox_top - 25.0f,
+                       0.0f);
+        }
+        else
+        {
+            float y = (i == 0 || i == 3) ? (float)g_nScreenHeight + 25.0f : -25.0f;
+            float x = (i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f;
+            glVertex3f(x, y, 0.0f);
+        }
+    }
+    glEnd();
+    glFlush();
+    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    wglReleaseTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
+    glDisable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+}
+// PC 0x00430EB0
+void GLRender::RenderDreamDistortionATI(unsigned long nTexture)
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, (double)g_nScreenWidth, 0.0, (double)g_nScreenHeight, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glViewport(0, 0, g_nScreenWidth, g_nScreenHeight);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(enableTranslationTable[ENABLE_ALPHA_TEST]);
+    glEnable(enableTranslationTable[ENABLE_BLEND]);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    cm_pForceDistortionTexture->Bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    cm_uiCurrentStage = 1;
+    if (AurMultiTextureAvailable())
+    {
+        glActiveTextureARB(cm_uiCurrentStage + GL_TEXTURE0_ARB);
+    }
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, cm_nAccumulationBlur);
+    wglBindTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glEnable(GL_TEXTURE_2D);
+    m_pDreamDistortTexture->Bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glEnable(GL_FRAGMENT_SHADER_ATI);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE1_ARB);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_FRAGMENT_SHADER_ATI);
+    float c7define[4] = { 0.0f, 0.0f, 0.0f, 0.5f };
+    glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+    glBindFragmentShaderATI(cm_nDreamDistortShaderATI);
+    glDisable(GL_LIGHTING);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, distortionalpha);
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glMultiTexCoord3fARB(GL_TEXTURE1_ARB, 0.15625f, 0.0f,
+                             (i == 0 || i == 1) ? 0.0f : 1.0f);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glMultiTexCoord3fARB(GL_TEXTURE2_ARB, 0.0f, 0.15625f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        glActiveTextureARB(GL_TEXTURE3_ARB);
+        glMultiTexCoord2fARB(GL_TEXTURE3_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        if (g_bLetterBoxMode)
+        {
+            glVertex3f((i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f,
+                       (i == 0 || i == 3) ? (float)g_Letterbox_bottom + 25.0f
+                                          : (float)g_Letterbox_top - 25.0f,
+                       0.0f);
+        }
+        else
+        {
+            float y = (i == 0 || i == 3) ? (float)g_nScreenHeight + 25.0f : -25.0f;
+            float x = (i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f;
+            glVertex3f(x, y, 0.0f);
+        }
+    }
+    glEnd();
+    glActiveTextureARB(GL_TEXTURE1_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    wglReleaseTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glDisable(GL_FRAGMENT_SHADER_ATI);
+    glFlush();
+}
+// PC 0x00431400
+void GLRender::RenderFury(unsigned long nTexture)
+{
+    glDisable(GL_DEPTH_TEST);
+    glEnable(enableTranslationTable[ENABLE_ALPHA_TEST]);
+    glEnable(enableTranslationTable[ENABLE_BLEND]);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    cm_pForceDistortionTexture->Bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    cm_uiCurrentStage = 1;
+    if (AurMultiTextureAvailable())
+    {
+        glActiveTextureARB(cm_uiCurrentStage + GL_TEXTURE0_ARB);
+    }
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, cm_nAccumulationBlur);
+    wglBindTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glEnable(GL_TEXTURE_2D);
+    m_pFuryTexture->Bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DREAM_DISTORTION,
+                                        0, 0, 0, 0);
+    glDisable(GL_LIGHTING);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, distortionalpha);
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glMultiTexCoord3fARB(GL_TEXTURE1_ARB, 0.15625f, 0.0f,
+                             (i == 0 || i == 1) ? 0.0f : 1.0f);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glMultiTexCoord3fARB(GL_TEXTURE2_ARB, 0.0f, 0.15625f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        glActiveTextureARB(GL_TEXTURE3_ARB);
+        glMultiTexCoord2fARB(GL_TEXTURE3_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        if (g_bLetterBoxMode)
+        {
+            glVertex3f((i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f,
+                       (i == 0 || i == 3) ? (float)g_Letterbox_bottom + 25.0f
+                                          : (float)g_Letterbox_top - 25.0f,
+                       0.0f);
+        }
+        else
+        {
+            float y = (i == 0 || i == 3) ? (float)g_nScreenHeight + 25.0f : -25.0f;
+            float x = (i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f;
+            glVertex3f(x, y, 0.0f);
+        }
+    }
+    glEnd();
+    glFlush();
+    FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    wglReleaseTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
+    glDisable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+}
+// PC 0x00431850
+void GLRender::RenderFuryATI(unsigned long nTexture)
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, (double)g_nScreenWidth, 0.0, (double)g_nScreenHeight, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glViewport(0, 0, g_nScreenWidth, g_nScreenHeight);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(enableTranslationTable[ENABLE_ALPHA_TEST]);
+    glEnable(enableTranslationTable[ENABLE_BLEND]);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    cm_pForceDistortionTexture->Bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    cm_uiCurrentStage = 1;
+    if (AurMultiTextureAvailable())
+    {
+        glActiveTextureARB(cm_uiCurrentStage + GL_TEXTURE0_ARB);
+    }
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, cm_nAccumulationBlur);
+    wglBindTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glEnable(GL_TEXTURE_2D);
+    m_pFuryTexture->Bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glEnable(GL_FRAGMENT_SHADER_ATI);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE1_ARB);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_FRAGMENT_SHADER_ATI);
+    float c7define[4] = { 0.0f, 0.0f, 0.0f, 0.5f };
+    glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+    glBindFragmentShaderATI(cm_nDreamDistortShaderATI);
+    glDisable(GL_LIGHTING);
+    glBegin(GL_QUADS);
+    for (int i = 0; i < 4; ++i)
+    {
+        glColor4f(1.0f, 1.0f, 1.0f, distortionalpha);
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glMultiTexCoord2fARB(GL_TEXTURE0_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        glActiveTextureARB(GL_TEXTURE1_ARB);
+        glMultiTexCoord3fARB(GL_TEXTURE1_ARB, 0.15625f, 0.0f,
+                             (i == 0 || i == 1) ? 0.0f : 1.0f);
+        glActiveTextureARB(GL_TEXTURE2_ARB);
+        glMultiTexCoord3fARB(GL_TEXTURE2_ARB, 0.0f, 0.15625f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        glActiveTextureARB(GL_TEXTURE3_ARB);
+        glMultiTexCoord2fARB(GL_TEXTURE3_ARB, (i == 0 || i == 1) ? 0.0f : 1.0f,
+                             (i == 0 || i == 3) ? 1.0f : 0.0f);
+        if (g_bLetterBoxMode)
+        {
+            glVertex3f((i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f,
+                       (i == 0 || i == 3) ? (float)g_Letterbox_bottom + 25.0f
+                                          : (float)g_Letterbox_top - 25.0f,
+                       0.0f);
+        }
+        else
+        {
+            float y = (i == 0 || i == 3) ? (float)g_nScreenHeight + 25.0f : -25.0f;
+            float x = (i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f;
+            glVertex3f(x, y, 0.0f);
+        }
+    }
+    glEnd();
+    glActiveTextureARB(GL_TEXTURE1_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE2_ARB);
+    wglReleaseTexImageARB(cm_hAccumulationPBuffer, WGL_FRONT_LEFT_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE3_ARB);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glDisable(GL_FRAGMENT_SHADER_ATI);
+    glFlush();
+}
 // PC 0x00448F80
 template <> inline List<unsigned long>::~List()
 {
@@ -4785,6 +5295,10 @@ void GLRender::InitExtensions()
         wglGetProcAddress("glActiveTextureARB");
     glClientActiveTextureARB = (PFNGLCLIENTACTIVETEXTUREARBPROC)
         wglGetProcAddress("glClientActiveTextureARB");
+    glTexImage3D = (PFNGLTEXIMAGE3DPROC)
+        wglGetProcAddress("glTexImage3D");
+    glTexSubImage3D = (PFNGLTEXSUBIMAGE3DPROC)
+        wglGetProcAddress("glTexSubImage3D");
     glBindBufferARB = (PFNGLBINDBUFFERARBPROC)
         wglGetProcAddress("glBindBufferARB");
     glDeleteBuffersARB = (PFNGLDELETEBUFFERSARBPROC)
@@ -5255,7 +5769,7 @@ void GLRender::FrameBufferModifications(unsigned long nFlags)
             glDepthMask(GL_FALSE);
             glDisable(enableTranslationTable[ENABLE_BLEND]);
             if (visualizepass6 && m_bSpeedBlurEnabled &&
-                (nFlags & FRAMEBUFFER_SPEED_BLUR) &&
+                (nFlags & FRAMEBUFFER_SPEED_BLUR) && !g_ForceSight &&
                 !cm_bFirstFrameBufferFrame && c_bPreviousFrameWasSpeed == true)
             {
                 glEnable(GL_TEXTURE_RECTANGLE_NV);
@@ -5268,7 +5782,7 @@ void GLRender::FrameBufferModifications(unsigned long nFlags)
                 RenderAccumulationBlur(cm_nTargetTexture);
             }
             if (visualizepass6 && m_bSpeedBlurEnabled &&
-                (nFlags & FRAMEBUFFER_SPEED_BLUR))
+                (nFlags & FRAMEBUFFER_SPEED_BLUR) && !g_ForceSight)
             {
                 glActiveTextureARB(GL_TEXTURE0_ARB);
                 glEnable(GL_TEXTURE_RECTANGLE_NV);
@@ -5345,6 +5859,34 @@ void GLRender::FrameBufferModifications(unsigned long nFlags)
                 glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                 RenderOverlayFilmNoise(cm_nTargetTexture, false);
             }
+            if (m_bDreamDistortEnabled)
+            {
+                glActiveTextureARB(GL_TEXTURE0_ARB);
+                glEnable(GL_TEXTURE_RECTANGLE_NV);
+                glBindTexture(GL_TEXTURE_RECTANGLE_NV, cm_nTargetTexture);
+                glCopyTexSubImage2D(GL_TEXTURE_RECTANGLE_NV, 0, 0, 0, 0, 0,
+                                   g_nScreenWidth, g_nScreenHeight);
+                glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
+                glDisable(GL_TEXTURE_RECTANGLE_NV);
+                glFlush();
+                SetActiveTexture(0);
+                RenderFrameToTexture(cm_nTargetTexture);
+                RenderDreamDistortion(cm_nTargetTexture);
+            }
+            if (m_FuryLevel != 0)
+            {
+                glActiveTextureARB(GL_TEXTURE0_ARB);
+                glEnable(GL_TEXTURE_RECTANGLE_NV);
+                glBindTexture(GL_TEXTURE_RECTANGLE_NV, cm_nTargetTexture);
+                glCopyTexSubImage2D(GL_TEXTURE_RECTANGLE_NV, 0, 0, 0, 0, 0,
+                                   g_nScreenWidth, g_nScreenHeight);
+                glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
+                glDisable(GL_TEXTURE_RECTANGLE_NV);
+                glFlush();
+                SetActiveTexture(0);
+                RenderFrameToTexture(cm_nTargetTexture);
+                RenderFury(cm_nTargetTexture);
+            }
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glEnable(enableTranslationTable[ENABLE_ALPHA_TEST]);
             glEnable(enableTranslationTable[ENABLE_DEPTH_TEST]);
@@ -5376,7 +5918,7 @@ void GLRender::FrameBufferModificationsATI(unsigned long nFlags)
     glPushMatrix();
     glLoadIdentity();
     if (visualizepass6 && m_bSpeedBlurEnabled &&
-        (nFlags & FRAMEBUFFER_SPEED_BLUR) &&
+        (nFlags & FRAMEBUFFER_SPEED_BLUR) && !g_ForceSight &&
         !cm_bFirstFrameBufferFrame && c_bPreviousFrameWasSpeed == true)
     {
         glEnable(GL_TEXTURE_2D);
@@ -5389,7 +5931,7 @@ void GLRender::FrameBufferModificationsATI(unsigned long nFlags)
         RenderAccumulationBlurATI(cm_nTargetTexture);
     }
     if (visualizepass6 && m_bSpeedBlurEnabled &&
-        (nFlags & FRAMEBUFFER_SPEED_BLUR))
+        (nFlags & FRAMEBUFFER_SPEED_BLUR) && !g_ForceSight)
     {
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, cm_nTargetTexture);
@@ -5463,6 +6005,32 @@ void GLRender::FrameBufferModificationsATI(unsigned long nFlags)
                            cm_nScreenWidthPow2, cm_nScreenHeightPow2);
         glFlush();
         RenderOverlayFilmNoiseATI(cm_nTargetTexture, false);
+    }
+    if (m_bDreamDistortEnabled)
+    {
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, cm_nTargetTexture);
+        glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0,
+                           cm_nScreenWidthPow2, cm_nScreenHeightPow2);
+        glDisable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glFlush();
+        SetActiveTexture(0);
+        RenderFrameToTextureATI(cm_nTargetTexture);
+        RenderDreamDistortionATI(cm_nTargetTexture);
+    }
+    if (m_FuryLevel != 0)
+    {
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, cm_nTargetTexture);
+        glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0,
+                           cm_nScreenWidthPow2, cm_nScreenHeightPow2);
+        glDisable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glFlush();
+        SetActiveTexture(0);
+        RenderFrameToTextureATI(cm_nTargetTexture);
+        RenderFuryATI(cm_nTargetTexture);
     }
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(enableTranslationTable[ENABLE_ALPHA_TEST]);
@@ -6919,6 +7487,8 @@ void GLRender::Shutdown(int bReleaseRenderer)
         cm_nForceDistortionShaderATI = 0;
         glDeleteFragmentShaderATI(cm_nOverbrightenShaderATI);
         cm_nOverbrightenShaderATI = 0;
+        glDeleteFragmentShaderATI(cm_nDreamDistortShaderATI);
+        cm_nDreamDistortShaderATI = 0;
     }
     ReleaseDC(g_hRenderWnd, m_hDC);
     if (bReleaseRenderer)
@@ -7116,8 +7686,8 @@ void GLRender::RenderForceDistortionATI(unsigned long nTexture)
         float fScreenT = (i == 0 || i == 3) ? fMaxT : 0.0f;
         float fScreenS = (i == 0 || i == 1) ? 0.0f : fMaxS;
         glMultiTexCoord2fARB(GL_TEXTURE2_ARB, fScreenS, fScreenT);
-        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
-        float x = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
+        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight + 25.0f : -25.0f;
+        float x = (i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth + 25.0f;
         glVertex3f(x, y, 0.0f);
     }
     glEnd();
@@ -7195,9 +7765,9 @@ void GLRender::RenderForceDistortion(unsigned long nTexture)
         float fScreenT = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
         float fScreenS = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
         glMultiTexCoord2fARB(GL_TEXTURE2_ARB, fScreenS, fScreenT);
-        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight : 0.0f;
-        float x = (i == 0 || i == 1) ? 0.0f : (float)g_nScreenWidth;
-        glVertex3f(x, y, 0.0f);
+        float y = (i == 0 || i == 3) ? (float)g_nScreenHeight + 25.0f : -25.0f;
+        float x = (i == 0 || i == 1) ? -25.0f : (float)g_nScreenWidth;
+        glVertex3f(x + 25.0f, y, 0.0f);
     }
     glEnd();
     glDisable(enableTranslationTable[ENABLE_STENCIL_TEST]);

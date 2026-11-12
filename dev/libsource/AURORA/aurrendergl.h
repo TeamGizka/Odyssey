@@ -960,7 +960,8 @@ public:
 
         FRAMEBUFFER_SHADER_ACCUMULATION_BLUR = 0x128,
 
-        FRAMEBUFFER_SHADER_FORCE_DISTORTION = 0x64
+        FRAMEBUFFER_SHADER_FORCE_DISTORTION = 0x64,
+        FRAMEBUFFER_SHADER_DREAM_DISTORTION = 0x1024
     };
     static void FrameBufferModificationPixelShadersATI(unsigned long nMode,
                                                        unsigned long nTexture0,
@@ -1018,6 +1019,7 @@ public:
     static unsigned int cm_nGreenTexture;
     static unsigned int cm_nBlueTexture;
     static unsigned int cm_nOverbrightenShaderATI;
+    static unsigned int cm_nDreamDistortShaderATI;
     static unsigned int cm_nSaturationShaderATI;
     static unsigned int cm_nPerPixelFlareShaderATI;
     static unsigned int cm_nDecalShaderATI;
@@ -1115,6 +1117,20 @@ public:
         int nRowCount, float fScale, int bUpdate, bool bNormalMap);
     static int SetUpImposters(int nType, float* pfValues);
     static void SetFilmNoiseTexture(CAurTexture* pTexture);
+    static void SetDirtyTexture(int nIndex, CAurTexture* pTexture);
+    static void EnableDreamDistortion(bool bLetterbox);
+    static void DisableDreamDistortion();
+    static void EnableFury(short nLevel);
+    static void RenderDreamDistortion(unsigned long nTexture);
+    static void RenderDreamDistortionATI(unsigned long nTexture);
+    static void RenderFury(unsigned long nTexture);
+    static void RenderFuryATI(unsigned long nTexture);
+    static CAurTexture* m_pDreamDistortTexture;
+    static bool m_bDreamDistortEnabled;
+    static bool m_bDreamDistortLetterbox;
+    static short m_FuryLevel;
+    static CAurTexture* m_pFuryTexture;
+    static CAurTexture* m_pDirtyTexture[3];
     static int InitRenderSystem();
     static int GetFogArraysInfoRef();
     static void SetViewTransform(Vector& vPosition, Quaternion& qOrientation);
@@ -1562,7 +1578,6 @@ public:
     VertexProgram(char* sProgram, unsigned long* pnProgram);
     ~VertexProgram();
 
-    void FindNumberOfAllowedLights();
     void Enable(Part* pPart, bool bEnableLights);
 
     void ShutDown();

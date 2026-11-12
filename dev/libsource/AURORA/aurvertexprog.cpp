@@ -52,30 +52,6 @@ unsigned long* cPhongFlatVPDeclaration = 0;
 unsigned long* cShadowTriMeshVariantVPDeclaration = 0;
 unsigned long* cSkinShadowVPDeclaration = 0;
 #endif
-void VertexProgram::FindNumberOfAllowedLights()
-{
-    int nInstructions;
-    int nAllowedLights;
-    int i;
-
-    nInstructions = 0;
-    for (i = 0; i < (int)strlen(m_sProgram); i++)
-    {
-        if (m_sProgram[i] == ';')
-        {
-            nInstructions++;
-        }
-    }
-
-    nAllowedLights = (114 - nInstructions) / 14;
-    m_nAllowedLights = nAllowedLights;
-    if (nAllowedLights > 3)
-    {
-        nAllowedLights = 3;
-    }
-
-    m_nAllowedLights = nAllowedLights;
-}
 // PC 0x004CEB30
 void AurVertexProgramMakeCurrent()
 {
@@ -161,7 +137,7 @@ void VertexProgram::Enable(Part* pPart, bool bEnableLights)
 #else
     unsigned int nProgram;
 
-    if (sLastProgram == m_sProgram &&
+    if (m_nGLProgram != 0 && sLastProgram == m_sProgram &&
         !LightManager::cm_bLightManagerUpdated &&
         bLastEnableLights == bEnableLights && AurNonRadeon8500Validate())
     {
@@ -287,11 +263,9 @@ void VertexProgramManager::AddVertexProgram(VertexProgram* pProgram)
 VertexProgram::VertexProgram(char* sProgram, unsigned long* pnProgram)
 {
     m_sProgram = sProgram;
-    m_pProgram = pnProgram;
     m_nGLProgram = 0;
-    m_nAllowedLights = 0;
     m_nLastUpdateFrame = -1;
-    FindNumberOfAllowedLights();
+    m_pProgram = pnProgram;
 #ifdef _XBOX
     m_bLoaded = 0;
 #else

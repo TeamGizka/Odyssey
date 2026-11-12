@@ -46,21 +46,29 @@ unsigned char AurBumpMapCardValidate();
 
 VertexProgram* GetSkinVP()
 {
-    static VertexProgram* pSkinVP = new VertexProgram(
-        usearbvertexprograms ?
-        szSkinVPARB
-        :
-        cSkinVP,
-        cSkinVPDeclaration);
+    static VertexProgram* pSkinVP = 0;
+    if (!pSkinVP)
+    {
+        pSkinVP = new VertexProgram(
+            usearbvertexprograms ?
+            szSkinVPARB
+            :
+            cSkinVP,
+            cSkinVPDeclaration);
+    }
 
     return pSkinVP;
 }
 // PC 0x004A0790
 VertexProgram* GetSkinSphereMapVP()
 {
-    static VertexProgram* pSkinVP = new VertexProgram(
-        cSkinSphereMapVP,
-        cSkinSphereMapVPDeclaration);
+    static VertexProgram* pSkinVP = 0;
+    if (!pSkinVP)
+    {
+        pSkinVP = new VertexProgram(
+            cSkinSphereMapVP,
+            cSkinSphereMapVPDeclaration);
+    }
 
     return pSkinVP;
 }

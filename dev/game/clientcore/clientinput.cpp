@@ -2225,7 +2225,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
 #ifndef _XBOX
                 if (!GetPausedByCombat())
                     g_pExoInput->SetMousePos(m_pSWGuiManager->m_nWidth / 2,
-                                            m_pSWGuiManager->m_nHeight / 2);
+                                            m_pSWGuiManager->m_nHeight / 2, false);
 #endif
             }
             break;

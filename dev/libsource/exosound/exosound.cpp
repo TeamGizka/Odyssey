@@ -162,7 +162,7 @@ int CExoSoundSource::SetFixedVariance(float fVariance)
     }
 }
 // PC 0x006216A0
-CExoStreamingSoundSource::CExoStreamingSoundSource(int n4)
+CExoStreamingSoundSource::CExoStreamingSoundSource(int bReservedStream)
 {
     if (g_bDisableSound != 0)
     {
@@ -170,8 +170,8 @@ CExoStreamingSoundSource::CExoStreamingSoundSource(int n4)
     }
     else
     {
-        m_pInternal =
-            new CExoStreamingSoundSourceInternal(g_pExoSound->m_pInternal, n4);
+        m_pInternal = new CExoStreamingSoundSourceInternal(
+            g_pExoSound->m_pInternal, bReservedStream);
     }
 }
 // PC 0x00621730
@@ -190,6 +190,21 @@ int CExoStreamingSoundSource::IsPlaying()
     }
 }
 // PC 0x00621740
+int CExoStreamingSoundSource::IsDone()
+{
+    CExoStreamingSoundSourceInternal* pInternal;
+
+    pInternal = m_pInternal;
+    if (pInternal != NULL)
+    {
+        return pInternal->IsDone();
+    }
+    else
+    {
+        return 0;
+    }
+}
+// PC 0x00621750
 int CExoStreamingSoundSource::GetPlayFailed()
 {
     CExoStreamingSoundSourceInternal* pInternal;
@@ -281,15 +296,15 @@ unsigned char CExoStreamingSoundSource::GetVolume()
     }
     return 0;
 }
-// PC 0x00621AD0
-void CExoStreamingSoundSource::Stop()
+// PC 0x006217D0
+void CExoStreamingSoundSource::Stop(int bCloseStream)
 {
     CExoStreamingSoundSourceInternal* pInternal;
 
     pInternal = m_pInternal;
     if (pInternal != NULL)
     {
-        pInternal->Stop();
+        pInternal->Stop(bCloseStream);
     }
 }
 // PC 0x006217E0
@@ -604,14 +619,25 @@ void CExoSound::SetEnvironmentEffectLevel(float fLevel)
 }
 
 #endif
-void CExoSound::SetSoundMode(int nMode)  // PC 0x00621AE0
+// PC 0x00621AD0
+void CExoSound::ResumeAllStreamingMusicForMovie()
 {
     CExoSoundInternal* pInternal;
 
     pInternal = m_pInternal;
     if (pInternal != NULL)
     {
-        pInternal->SetSoundMode(nMode);
+        pInternal->ResumeAllStreamingMusicForMovie();
+    }
+}
+void CExoSound::SetSoundMode(int nMode, int bMovie)  // PC 0x00621AE0
+{
+    CExoSoundInternal* pInternal;
+
+    pInternal = m_pInternal;
+    if (pInternal != NULL)
+    {
+        pInternal->SetSoundMode(nMode, bMovie);
     }
 }
 
@@ -782,6 +808,16 @@ void CExoStreamingSoundSource::SetPosition(const Vector& vPosition)
     if (pInternal != NULL)
     {
         pInternal->SetPosition(vPosition);
+    }
+}
+// PC 0x00621F40
+void CExoStreamingSoundSource::SetStreamingMusicForMovie(
+    int bStreamingMusicForMovie)
+{
+    CExoStreamingSoundSourceInternal* pInternal = m_pInternal;
+    if (pInternal != NULL)
+    {
+        pInternal->m_bStreamingMusicForMovie = bStreamingMusicForMovie;
     }
 }
 // PC 0x00621F60

@@ -512,12 +512,13 @@ void PartEmitter::updateParticleFrame(float fTimeStep)
 
     nRange++;
 
-    if (static_cast<MdlNodeEmitter*>(m_pNode)->IsRandomOrder())
+    MdlNodeEmitter* pNode = static_cast<MdlNodeEmitter*>(m_pNode);
+    if (pNode->IsRandomOrder())
     {
         bRandomOrder = true;
     }
 
-    if (static_cast<MdlNodeEmitter*>(m_pNode)->IsRandom())
+    if (pNode->IsRandom())
     {
         bRandom = true;
     }
@@ -565,6 +566,10 @@ void PartEmitter::updateParticleFrame(float fTimeStep)
                     }
                     else
                     {
+                        if (pNode->m_nLoop && pParticle->m_nFrame < nFirst)
+                        {
+                            pParticle->m_nFrame = nLast;
+                        }
                         pParticle->m_nFrame = max(nFirst, pParticle->m_nFrame);
                     }
                 }
@@ -584,6 +589,10 @@ void PartEmitter::updateParticleFrame(float fTimeStep)
                     }
                     else
                     {
+                        if (pNode->m_nLoop && pParticle->m_nFrame > nLast)
+                        {
+                            pParticle->m_nFrame = nFirst;
+                        }
                         pParticle->m_nFrame = min(nLast, pParticle->m_nFrame);
                     }
                 }

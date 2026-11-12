@@ -10,6 +10,8 @@
 #include "math3d.h"
 #include "mss.h"
 
+bool g_bVODebugEnabled;
+
 static inline void ExostreamingsoundsourceinternalTrace1();
 // PC 0x004015A0
 void CExoStreamingSoundSourceInternal::DoObstructionWork()
@@ -40,13 +42,13 @@ inline Vector CExoSoundInternal::GetListenerOrientation()
 }
 // PC 0x00627C10
 CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(
-    CExoSoundInternal* pSoundInternal, int n4)
+    CExoSoundInternal* pSoundInternal, int bReservedStream)
 {
     int nSourceId;
 
-    m_n4 = n4;
-    m_pSoundInternal = pSoundInternal;
+    m_bReservedStream = bReservedStream;
     m_bLooping = 0;
+    m_pSoundInternal = pSoundInternal;
     m_hStream = NULL;
     m_nPausePosition = 0;
     m_nFadeDuration = 0;
@@ -64,19 +66,20 @@ CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(
     m_fMaxDistance = 0.0f;
     m_fVolume = -1.0f;
     m_nPriorityGroup = CExoSoundPriorityGroup::MUSIC_GROUP;
-    CExoSoundPriorityGroup* pGroup = m_pSoundInternal->GetPriorityGroup(m_nPriorityGroup);
-    if (pGroup != NULL)
+    CExoSoundPriorityGroup* pPriorityGroup =
+        m_pSoundInternal->GetPriorityGroup(m_nPriorityGroup);
+    if (pPriorityGroup != NULL)
     {
-        m_nPriorityVolume = pGroup->m_nVolume;
+        m_nPriorityVolume = pPriorityGroup->m_nVolume;
     }
     else
     {
-        m_nPriorityVolume = 127;
+        m_nPriorityVolume = 0x7F;
     }
     m_vObstructionListenerPosition = Vector();
     m_nObstructionTime = 0;
     m_fOcclusion = 0.0f;
-    m_n88 = 0;
+    m_bStreamingMusicForMovie = 0;
 }
 // PC 0x00627D20
 CExoStreamingSoundSourceInternal::~CExoStreamingSoundSourceInternal()
@@ -110,6 +113,11 @@ void CExoStreamingSoundSourceInternal::InitializeSource()
 {
     ExostreamingsoundsourceinternalTrace1();
     char szHeader[5];
+    if (m_hStream == NULL && m_bReservedStream == 0 &&
+        g_generalStreamingHandlesAvailable <= 0)
+    {
+        return;
+    }
     if (g_bModifiedSound != 0)
     {
         CExoSoundInternal* pSound = m_pSoundInternal;
@@ -144,8 +152,7 @@ void CExoStreamingSoundSourceInternal::InitializeSource()
                     int nRiffSize;
                     fread(&nRiffSize, 4, 1, m_pFile);
                     int nHeaderSize = nRiffSize + 8;
-                    fseek(m_pFile, 0, SEEK_END);
-                    nSize = ftell(m_pFile);
+                    nSize = _filelength(m_pFile->_file);
                     if (nHeaderSize != nSize)
                     {
                         fseek(m_pFile, nHeaderSize, SEEK_SET);
@@ -166,9 +173,7 @@ void CExoStreamingSoundSourceInternal::InitializeSource()
                 {
                     return;
                 }
-                fseek(m_pFile, 0, SEEK_END);
-                nSize = ftell(m_pFile);
-                fseek(m_pFile, 0, SEEK_SET);
+                nSize = _filelength(m_pFile->_file);
             }
             int nFile = m_pFile->_file;
             intptr_t nHandle = _get_osfhandle(nFile);
@@ -180,6 +185,14 @@ void CExoStreamingSoundSourceInternal::InitializeSource()
                 sStream = sStream + ".mp3";
             }
             m_hStream = AIL_open_stream(hDig, sStream.CStr(), 0);
+            if (m_hStream != NULL)
+            {
+                g_totalStreamingHandlesAvailable--;
+                if (m_bReservedStream == 0)
+                {
+                    g_generalStreamingHandlesAvailable--;
+                }
+            }
         }
         else
         {
@@ -200,14 +213,12 @@ void CExoStreamingSoundSourceInternal::InitializeSource()
                     m_pFile = NULL;
                     return;
                 }
-                fseek(m_pFile, 0, SEEK_END);
-                nSize = ftell(m_pFile) - LEGACY_WAVE_HEADER_SIZE;
+                nSize = _filelength(m_pFile->_file) - LEGACY_WAVE_HEADER_SIZE;
                 fseek(m_pFile, LEGACY_WAVE_HEADER_SIZE, SEEK_SET);
             }
             else
             {
-                fseek(m_pFile, 0, SEEK_END);
-                nSize = ftell(m_pFile);
+                nSize = _filelength(m_pFile->_file);
                 fseek(m_pFile, 0, SEEK_SET);
             }
             int nFile = m_pFile->_file;
@@ -220,6 +231,14 @@ void CExoStreamingSoundSourceInternal::InitializeSource()
                 sStream = sStream + ".wav";
             }
             m_hStream = AIL_open_stream(hDig, sStream.CStr(), 0);
+            if (m_hStream != NULL)
+            {
+                g_totalStreamingHandlesAvailable--;
+                if (m_bReservedStream == 0)
+                {
+                    g_generalStreamingHandlesAvailable--;
+                }
+            }
         }
     }
     else
@@ -237,9 +256,7 @@ void CExoStreamingSoundSourceInternal::InitializeSource()
             {
                 return;
             }
-            fseek(m_pFile, 0, SEEK_END);
-            int nSize = ftell(m_pFile);
-            fseek(m_pFile, 0, SEEK_SET);
+            int nSize = _filelength(m_pFile->_file);
             int nFile = m_pFile->_file;
             intptr_t nHandle = _get_osfhandle(nFile);
             CExoString sStream;
@@ -250,22 +267,75 @@ void CExoStreamingSoundSourceInternal::InitializeSource()
                 sStream = sStream + ".mp3";
             }
             m_hStream = AIL_open_stream(hDig, sStream.CStr(), 0);
+            if (m_hStream != NULL)
+            {
+                g_totalStreamingHandlesAvailable--;
+                if (m_bReservedStream == 0)
+                {
+                    g_generalStreamingHandlesAvailable--;
+                }
+            }
         }
         else
         {
             AIL_quick_handles(&hDig, NULL, NULL);
             m_hStream = AIL_open_stream(hDig, m_sFileName.CStr(), 0);
+            if (m_hStream != NULL)
+            {
+                g_totalStreamingHandlesAvailable--;
+                if (m_bReservedStream == 0)
+                {
+                    g_generalStreamingHandlesAvailable--;
+                }
+            }
         }
     }
     }
 }
-// PC 0x00628550
+// PC 0x006283D0
 int CExoStreamingSoundSourceInternal::IsPlaying()
 {
     ExostreamingsoundsourceinternalTrace1();
+    char szResRef[17];
     if (m_pSoundInternal->m_bInitialized != 0 && m_hStream != NULL)
     {
+        if (g_bVODebugEnabled)
+        {
+            m_resRef.CopyToString(szResRef);
+            int nStatus = AIL_stream_status(m_hStream);
+            if (_strnicmp(szResRef, "al_", 3) != 0 &&
+                _strnicmp(szResRef, "as_", 3) != 0 &&
+                _strnicmp(szResRef, "mus_", 4) != 0 &&
+                _strnicmp(szResRef, "amb_", 4) != 0 &&
+                _strnicmp(szResRef, "bed_", 4) != 0)
+            {
+                EXOLOG("VO stream %s status %d", szResRef, nStatus);
+            }
+            return nStatus == SMP_PLAYING;
+        }
         return AIL_stream_status(m_hStream) - SMP_PLAYING == 0;
+    }
+    if (g_bVODebugEnabled)
+    {
+        m_resRef.CopyToString(szResRef);
+        if (_strnicmp(szResRef, "al_", 3) != 0 &&
+            _strnicmp(szResRef, "as_", 3) != 0 &&
+            _strnicmp(szResRef, "mus_", 4) != 0 &&
+            _strnicmp(szResRef, "amb_", 4) != 0 &&
+            _strnicmp(szResRef, "bed_", 4) != 0)
+        {
+            EXOLOG("VO stream %s not playing, sound mode %d", szResRef,
+                   g_pExoSound->GetSoundMode());
+        }
+    }
+    return 0;
+}
+// PC 0x00628550
+int CExoStreamingSoundSourceInternal::IsDone()
+{
+    if (m_pSoundInternal->m_bInitialized != 0 && m_hStream != NULL)
+    {
+        return AIL_stream_status(m_hStream) - SMP_DONE == 0;
     }
     return 0;
 }
@@ -294,7 +364,7 @@ int CExoStreamingSoundSourceInternal::IsScalable()
     return m_nPriorityGroup == 4 || m_nPriorityGroup == 21;
 }
 // PC 0x006285B0
-void CExoStreamingSoundSourceInternal::Stop()
+void CExoStreamingSoundSourceInternal::Stop(int bCloseStream)
 {
     ExostreamingsoundsourceinternalTrace1();
     CExoSoundInternal* pSound;
@@ -314,6 +384,16 @@ void CExoStreamingSoundSourceInternal::Stop()
     else
     {
         pSound->RemoveFromNonPlayingStreamingLoopingList(this);
+    }
+    if (m_hStream != NULL && bCloseStream)
+    {
+        AIL_close_stream(m_hStream);
+        m_hStream = NULL;
+        g_totalStreamingHandlesAvailable++;
+        if (m_bReservedStream == 0)
+        {
+            g_generalStreamingHandlesAvailable++;
+        }
     }
 }
 // PC 0x00628620

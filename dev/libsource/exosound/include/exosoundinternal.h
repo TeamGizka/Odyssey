@@ -405,12 +405,14 @@ public:
     int PauseAllSounds(int);
 #endif
     int ResumeAllSounds();
+    void PauseAllButStreamingMusicForMovie();
+    void ResumeAllStreamingMusicForMovie();
 #ifdef _XBOX
     void AddToStreamingList(CExoStreamingSoundSourceInternal*);
 #else
     int AddToStreamingList(CExoStreamingSoundSourceInternal*);
 #endif
-    void SetSoundMode(int);
+    void SetSoundMode(int nMode, int bMovie = 0);
     CExoSoundInternal();
 
     void OcclusionRender(unsigned long);
@@ -474,7 +476,7 @@ public:
     int IsScalable();
     void Pause();
     void Resume();
-    void ShutDownSource(int bDestroying = 0);
+    void ShutDownSource(bool bForce = false);
     void Stop();
     void SetPosition(Vector const&);
     void Set3D(int);
@@ -814,7 +816,7 @@ public:
     enum { LEGACY_WAVE_HEADER_SIZE = 470 };
 
     HSTREAM m_hStream;
-    int m_n4;
+    int m_bReservedStream;
     int m_bLooping;
     unsigned char m_nPriorityGroup;
     CResRef m_resRef;
@@ -844,7 +846,7 @@ public:
     Vector m_vObstructionListenerPosition;
     unsigned long m_nObstructionTime;
     float m_fOcclusion;
-    int m_n88;
+    int m_bStreamingMusicForMovie;
     int SetReverbEnabled(int bEnabled);
 
 
@@ -860,14 +862,16 @@ public:
     unsigned long GetFadeDuration() { return m_nFadeDuration; }  // PC 0x007846A0
     unsigned long GetFadeStartTime();
     unsigned char GetVolume();
-    CExoStreamingSoundSourceInternal(CExoSoundInternal* pSoundInternal, int n4);
+    CExoStreamingSoundSourceInternal(CExoSoundInternal* pSoundInternal,
+                                     int bReservedStream);
     ~CExoStreamingSoundSourceInternal();
     void InitializeSource();
     int GetPlayFailed();
     int IsPlaying();
+    int IsDone();
     void SetLooping(int);
     int IsScalable();
-    void Stop();
+    void Stop(int bCloseStream = 0);
     void Pause();
     void FadeAndStop(unsigned long);
     int GetWithinRangeOfListener();
@@ -881,6 +885,9 @@ public:
 #endif
 
 extern int g_bSoundPaused;
+extern int g_totalStreamingHandlesAvailable;
+extern int g_generalStreamingHandlesAvailable;
+extern bool g_bVODebugEnabled;
 
 
 

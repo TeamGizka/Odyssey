@@ -121,9 +121,7 @@ CExoFileInternal::CExoFileInternal(const CExoString& path,
     sFileName =
         g_pExoBase->m_pExoAliasList->ResolveFileName(path, resourceType);
     m_pFile = fopen(sFileName.CStr(), mode.CStr());
-#ifndef _XBOX
     m_sFileName = sFileName;
-#endif
 }
 // PC 0x00637320
 CExoFileInternal::~CExoFileInternal()
@@ -167,6 +165,21 @@ unsigned long CExoFileInternal::Read(CExoString* text, unsigned long count)
     {
         char* pBuffer = new char[count + 1];
         unsigned long nBytesRead = fread(pBuffer, 1, count, m_pFile);
+        if (nBytesRead != count)
+        {
+            if (ferror(m_pFile))
+            {
+                EXOLOG("CExoFile: read error in %s", m_sFileName.CStr());
+                clearerr(m_pFile);
+                return 0;
+            }
+            if (feof(m_pFile))
+            {
+                EXOLOG("CExoFile: unexpected end of %s", m_sFileName.CStr());
+                clearerr(m_pFile);
+                return 0;
+            }
+        }
         pBuffer[nBytesRead] = 0;
         *text = pBuffer;
         operator delete(pBuffer);
@@ -178,13 +191,6 @@ unsigned long CExoFileInternal::Read(CExoString* text, unsigned long count)
 unsigned long CExoFileInternal::Read(void* data, unsigned long size,
                                      unsigned long count)
 {
-#ifdef _XBOX
-    if (m_pFile != NULL)
-    {
-        return size * fread(data, size, count, m_pFile);
-    }
-    return 0;
-#else
     if (m_pFile != NULL)
     {
         unsigned long nRead = fread(data, size, count, m_pFile);
@@ -192,13 +198,13 @@ unsigned long CExoFileInternal::Read(void* data, unsigned long size,
         {
             if (ferror(m_pFile))
             {
-                EXOLOG("Error reading %s\n", m_sFileName.CStr());
+                EXOLOG("CExoFile: read error in %s", m_sFileName.CStr());
                 clearerr(m_pFile);
                 return 0;
             }
             if (feof(m_pFile))
             {
-                EXOLOG("Unexpected end of file reading %s\n", m_sFileName.CStr());
+                EXOLOG("CExoFile: unexpected end of %s", m_sFileName.CStr());
                 clearerr(m_pFile);
                 return 0;
             }
@@ -206,7 +212,6 @@ unsigned long CExoFileInternal::Read(void* data, unsigned long size,
         return size * nRead;
     }
     return 0;
-#endif
 }
 // PC 0x006374F0
 void CExoFileInternal::ReadAsync(void* data, unsigned long size,
@@ -220,8 +225,7 @@ int CExoFileInternal::ReadAsyncComplete()
     return g_AsyncFileThread.m_bComplete;
 }
 
-#ifdef _XBOX
-
+// PC 0x00637560
 unsigned long CExoFileInternal::Write(const char* text)
 {
     if (m_pFile != NULL)
@@ -230,7 +234,6 @@ unsigned long CExoFileInternal::Write(const char* text)
     }
     return 0;
 }
-#endif
 // PC 0x006375A0
 DWORD WINAPI AsyncReadThreadProc(LPVOID lpParameter)
 {

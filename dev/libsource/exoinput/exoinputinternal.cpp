@@ -1325,14 +1325,17 @@ CExoString CExoInputInternal::GetDisplayCharacterForKey(int nKey)
         m_aControlMap[nKey]);
 }
 // PC 0x0062CC20
-void CExoInputInternal::SetMousePos(int nX, int nY)
+void CExoInputInternal::SetMousePos(int nX, int nY, bool bKeepWarpState)
 {
     POINT pt;
     pt.x = nX;
     pt.y = g_nScreenHeight - nY - 1;
     ClientToScreen(g_hRenderWnd, &pt);
     SetCursorPos(pt.x, pt.y);
-    m_bMouseWarped = 1;
+    if (!bKeepWarpState)
+    {
+        m_bMouseWarped = 1;
+    }
     for (int i = 0; i < m_lstOutput.num; i++)
     {
         CExoInputEvent* pEvent = &m_lstOutput[i];

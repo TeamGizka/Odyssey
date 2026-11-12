@@ -24,18 +24,6 @@ void GetGameVersionInfo()  // PC 0x00632460
         GetFileVersionInfo(szFileName, dwHandle, nSize, pData);
 
         bResult =
-            VerQueryValue(pData, "\\StringFileInfo\\040904B0\\PrivateBuild",
-                          &pBuffer, &nLength);
-        if (bResult)
-        {
-            g_sBuildNumber = CExoString((char*)pBuffer);
-        }
-        else
-        {
-            g_sBuildNumber = "";
-        }
-
-        bResult =
             VerQueryValue(pData, "\\StringFileInfo\\040904B0\\ProductVersion",
                           &pBuffer, &nLength);
         if (bResult)
@@ -503,9 +491,17 @@ void CExoBaseInternal::LoadAliases(const CExoString& sFile)  // PC 0x00633380
     }
 
     {
-        CExoString sUnused("d:\\streamwaves");
-        CExoString sDefault(".\\streamwaves");
-        CExoString sAlias("STREAMWAVES");
+        CExoString sUnused("d:\\streamvoice");
+        CExoString sDefault(".\\streamvoice");
+        CExoString sAlias("STREAMVOICE");
+
+        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+    }
+
+    {
+        CExoString sUnused("d:\\supermodels");
+        CExoString sDefault(".\\supermodels");
+        CExoString sAlias("SUPERMODELS");
 
         AddAlias(sAliasFile, sAlias, sDefault, sUnused);
     }
@@ -602,6 +598,14 @@ void CExoBaseInternal::LoadAliases(const CExoString& sFile)  // PC 0x00633380
         CExoString sUnused("d:\\rebootdata");
         CExoString sDefault(".\\rebootdata");
         CExoString sAlias("REBOOTDATA");
+
+        AddAlias(sAliasFile, sAlias, sDefault, sUnused);
+    }
+
+    {
+        CExoString sUnused("z:\\cache");
+        CExoString sDefault(".\\");
+        CExoString sAlias("CACHE");
 
         AddAlias(sAliasFile, sAlias, sDefault, sUnused);
     }

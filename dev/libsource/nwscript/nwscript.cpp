@@ -12,12 +12,25 @@ CVirtualMachine::CVirtualMachine()
     m_pVirtualMachineInternal = new CVirtualMachineInternal;
 }
 
+// PC 0x0061CB30
 CVirtualMachine::~CVirtualMachine()
 {
     if (m_pVirtualMachineInternal != NULL)
     {
         delete m_pVirtualMachineInternal;
     }
+}
+// PC 0x0061CB90
+void CVirtualMachine::SetScriptParams(int nParam1, int nParam2, int nParam3,
+                                      int nParam4, int nParam5,
+                                      CExoString sParam)
+{
+    m_nScriptParameters[0] = nParam1;
+    m_nScriptParameters[1] = nParam2;
+    m_nScriptParameters[2] = nParam3;
+    m_nScriptParameters[3] = nParam4;
+    m_nScriptParameters[4] = nParam5;
+    m_sScriptStringParameter[0] = sParam;
 }
 // PC 0x0061CC00
 int CVirtualMachine::RunScript(CExoString* psScript, unsigned long nObjectId, int nInstructionLimit)

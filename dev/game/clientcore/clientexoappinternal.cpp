@@ -1953,7 +1953,7 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x006440C0
 #endif
         if (g_pExoInput != NULL)
         {
-            g_pExoInput->SetMousePos(g_nScreenWidth / 2, g_nScreenHeight / 2);
+            g_pExoInput->SetMousePos(g_nScreenWidth / 2, g_nScreenHeight / 2, false);
             if (g_pExoInput->GetMouseMode() == CExoInput::MOUSE_MODE_SOFTWARE)
                 m_pSWGuiManager->ActivateSoftwareMouse();
         }

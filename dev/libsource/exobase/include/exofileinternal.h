@@ -37,9 +37,7 @@ public:
     int SeekEnd();
 
     FILE* m_pFile;
-#ifndef _XBOX
     CExoString m_sFileName;
-#endif
 };
 
 inline unsigned long CExoFileInternal::Write(const void* data,
@@ -52,6 +50,7 @@ inline unsigned long CExoFileInternal::Write(const void* data,
     }
     return 0;
 }
+
 
 class CExoAliasListInternal
 {

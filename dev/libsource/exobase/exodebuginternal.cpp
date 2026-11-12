@@ -117,8 +117,8 @@ void CExoDebugInternal::Warning(int line, char* file, const char* message)
     if (message)
     {
         sComment = message;
-        int nLength = sComment.GetLength();
-        while (nLength != 0)
+        int nLength;
+        while ((nLength = sComment.GetLength()) != 0)
         {
             if (nLength <= 50)
             {
@@ -132,17 +132,17 @@ void CExoDebugInternal::Warning(int line, char* file, const char* message)
                 const char* szBreak;
 
                 szBreak = strrchr(sLine.CStr(), ' ');
-                if (szBreak)
+                if (szBreak && szBreak != sLine.CStr())
                 {
                     nBreak = szBreak - sLine.CStr();
                 }
                 szBreak = strrchr(sLine.CStr(), '\t');
-                if (szBreak)
+                if (szBreak && szBreak != sLine.CStr())
                 {
                     nBreak = szBreak - sLine.CStr();
                 }
                 szBreak = strrchr(sLine.CStr(), '\r');
-                if (szBreak)
+                if (szBreak && szBreak != sLine.CStr())
                 {
                     nBreak = szBreak - sLine.CStr();
                 }
@@ -157,7 +157,6 @@ void CExoDebugInternal::Warning(int line, char* file, const char* message)
 #else
             sLine.CStr();
 #endif
-            nLength = sComment.GetLength();
         }
     }
 
@@ -231,10 +230,10 @@ void CExoDebugInternal::CloseLogFiles()
             delete m_pScriptLogFile;
             m_pScriptLogFile = NULL;
         }
-        if (m_p1C)
+        if (m_pAuxiliaryLogFileFive)
         {
-            delete m_p1C;
-            m_p1C = NULL;
+            delete m_pAuxiliaryLogFileFive;
+            m_pAuxiliaryLogFileFive = NULL;
         }
         m_bLogFilesOpen = 0;
     }

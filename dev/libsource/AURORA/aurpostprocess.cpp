@@ -109,7 +109,6 @@ void MdlNodeTriMesh::BuildNeighborLists()
                 }
             }
         }
-#ifdef _XBOX
         if (stricmp(m_pModel->m_sName, "P_HK47") == 0)
         {
             int nOpenEdges = 0;
@@ -125,7 +124,6 @@ void MdlNodeTriMesh::BuildNeighborLists()
             else if (nOpenEdges == 3)
                 countcrappyfaces3++;
         }
-#endif
     }
 }
 // PC 0x0044A060
@@ -149,7 +147,7 @@ void MdlNodeTriMesh::ComputeLocalSurfaceArea(List<MaxFace>& lFaces, float& fArea
         Vector vEdge2 = vVertex2 - vVertex0;
         Vector vNormal = cross(vEdge2, vEdge1);
         float fFaceArea = magnitude(vNormal);
-        fFaceArea *= 0.5f;
+        fFaceArea *= 0.58181816f;
         fArea += fFaceArea;
     }
     nPool = m_pModel->AsModel()->m_nVertexPool;

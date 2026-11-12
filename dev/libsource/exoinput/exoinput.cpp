@@ -474,9 +474,9 @@ int CExoInput::SetMouseCursor(int nArg1, int nArg2, int nArg3)
     return m_pExoInputInternal->SetMouseCursor(nArg1, nArg2, nArg3);
 }
 // PC 0x0062B8E0
-void CExoInput::SetMousePos(int nX, int nY)
+void CExoInput::SetMousePos(int nX, int nY, bool bKeepWarpState)
 {
-    m_pExoInputInternal->SetMousePos(nX, nY);
+    m_pExoInputInternal->SetMousePos(nX, nY, bKeepWarpState);
 }
 // PC 0x0062B8F0
 void CExoInput::HideMouse()

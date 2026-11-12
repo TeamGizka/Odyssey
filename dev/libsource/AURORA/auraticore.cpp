@@ -7,6 +7,10 @@
 #include "aurtexman.h"
 #include "../math3d/math3d.h"
 
+#define GL_SUB_ATI 0x8965
+#define GL_LERP_ATI 0x8969
+#define GL_CON_7_ATI 0x8948
+
 unsigned int lightmapFragmentShaderID = 0;
 unsigned int envmapFragmentShaderID = 0;
 unsigned int envmapFogFragmentShaderID = 0;
@@ -16,6 +20,63 @@ unsigned int envmapLightmapFragmentShaderID = 0;
 unsigned int bumpyshinyFragmentShaderID = 0;
 unsigned int fogFragmentShaderID = 0;
 unsigned int standardFogFragmentShaderID = 0;
+unsigned int modulateFragmentShaderID = 0;
+unsigned int NoiseSubtractFragmentShaderID = 0;
+unsigned int NoiseAddFragmentShaderID = 0;
+unsigned int NoiseModulateFragmentShaderID = 0;
+unsigned int NoiseEMSubtractFragmentShaderID = 0;
+unsigned int NoiseEMAddFragmentShaderID = 0;
+unsigned int NoiseEMModulateFragmentShaderID = 0;
+unsigned int NoiseLMSubtractFragmentShaderID = 0;
+unsigned int NoiseLMAddFragmentShaderID = 0;
+unsigned int NoiseLMModulateFragmentShaderID = 0;
+unsigned int NoiseEMLMSubtractFragmentShaderID = 0;
+unsigned int NoiseEMLMAddFragmentShaderID = 0;
+unsigned int NoiseEMLMModulateFragmentShaderID = 0;
+unsigned int FGlowFragmentShaderID = 0;
+unsigned int FGlowLMFragmentShaderID = 0;
+unsigned int FGlowEMFragmentShaderID = 0;
+unsigned int FGlowEMLMFragmentShaderID = 0;
+unsigned int FGlowBumpyShinyFragmentShaderID = 0;
+unsigned int FGlowBumpmapFragmentShaderID = 0;
+unsigned int DesatFragmentShaderID = 0;
+unsigned int DesatLMFragmentShaderID = 0;
+unsigned int DesatEMFragmentShaderID = 0;
+unsigned int DesatEMLMFragmentShaderID = 0;
+unsigned int DesatBumpyShinyFragmentShaderID = 0;
+unsigned int DesatBumpmapFragmentShaderID = 0;
+unsigned int DesatNoiseSubFragmentShaderID = 0;
+unsigned int DesatNoiseSubEMFragmentShaderID = 0;
+unsigned int DesatNoiseSubLMFragmentShaderID = 0;
+unsigned int DesatNoiseSubEMLMFragmentShaderID = 0;
+unsigned int DesatNoiseAddFragmentShaderID = 0;
+unsigned int DesatNoiseAddEMFragmentShaderID = 0;
+unsigned int DesatNoiseAddLMFragmentShaderID = 0;
+unsigned int DesatNoiseAddEMLMFragmentShaderID = 0;
+unsigned int DesatNoiseModFragmentShaderID = 0;
+unsigned int DesatNoiseModEMFragmentShaderID = 0;
+unsigned int DesatNoiseModLMFragmentShaderID = 0;
+unsigned int DesatNoiseModEMLMFragmentShaderID = 0;
+unsigned int HoloFragmentShaderID = 0;
+unsigned int HoloDesatFragmentShaderID = 0;
+unsigned int IllumFragmentShaderID = 0;
+unsigned int IllumEnvFragmentShaderID = 0;
+unsigned int IllumNoiseSubtractFragmentShaderID = 0;
+unsigned int IllumNoiseAddFragmentShaderID = 0;
+unsigned int IllumNoiseModulateFragmentShaderID = 0;
+unsigned int IllumNoiseEMSubtractFragmentShaderID = 0;
+unsigned int IllumNoiseEMAddFragmentShaderID = 0;
+unsigned int IllumNoiseEMModulateFragmentShaderID = 0;
+unsigned int IllumDesatFragmentShaderID = 0;
+unsigned int IllumDesatEMFragmentShaderID = 0;
+unsigned int IllumDesatBumpyShinyFragmentShaderID = 0;
+unsigned int IllumDesatBumpmapFragmentShaderID = 0;
+unsigned int IllumDesatNoiseSubFragmentShaderID = 0;
+unsigned int IllumDesatNoiseSubEMFragmentShaderID = 0;
+unsigned int IllumDesatNoiseAddFragmentShaderID = 0;
+unsigned int IllumDesatNoiseAddEMFragmentShaderID = 0;
+unsigned int IllumDesatNoiseModFragmentShaderID = 0;
+unsigned int IllumDesatNoiseModEMFragmentShaderID = 0;
 
 unsigned int envmapCubeFragmentShaderID = 0;
 unsigned int envmapFogCubeFragmentShaderID = 0;
@@ -31,6 +92,7 @@ int I_vLightRadius = 0;
 char* szBumpyShinyVPARB = 0;
 char* szBumpyShinySkinVPARB = 0;
 unsigned long* szNormalmapVPARBDeclaration = 0;
+bool g_ForceSight = 0;
 
 enum
 {
@@ -84,8 +146,8 @@ void GLRender::InitializeATIFragmentShaders()
     glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
     glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
     glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0);
-    glColorFragmentOp3ATI(35177, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_REG_0_ATI, 0, 0,
-                          GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, GL_ALPHA, GL_COMP_BIT_ATI, GL_REG_1_ATI, 0, 0,
+                          GL_REG_0_ATI, 0, 0);
     glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_CON_0_ATI, 0, 0);
     glEndFragmentShaderATI();
 
@@ -219,9 +281,793 @@ void GLRender::InitializeATIFragmentShaders()
     glBeginFragmentShaderATI();
     glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
     glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_0_ATI, 0, 0);
-    glAlphaFragmentOp2ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_0_ATI, 0, 0);
     glColorFragmentOp3ATI(35177, GL_REG_0_ATI, 7, 0, GL_SECONDARY_INTERPOLATOR_ATI, GL_RED, 0, GL_CON_1_ATI, 0, 0,
                           GL_REG_0_ATI, 0, 0);
+    glEndFragmentShaderATI();
+
+    modulateFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(modulateFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_PRIMARY_COLOR_ARB, 0, 0);
+    glEndFragmentShaderATI();
+
+    NoiseSubtractFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(NoiseSubtractFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_SUB_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, 0, 0);
+    glEndFragmentShaderATI();
+
+    NoiseAddFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(NoiseAddFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, 0, 0);
+    glEndFragmentShaderATI();
+
+    NoiseModulateFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(NoiseModulateFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, 0, 0);
+    glEndFragmentShaderATI();
+
+    NoiseEMSubtractFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(NoiseEMSubtractFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_2_ATI, 0, 4);
+    glAlphaFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_PRIMARY_COLOR_ARB, GL_ALPHA, 0, GL_REG_2_ATI, GL_ALPHA, 4);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, GL_REG_3_ATI, GL_ALPHA, 0, GL_REG_0_ATI, GL_ALPHA, 2);
+    glEndFragmentShaderATI();
+
+    NoiseEMAddFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(NoiseEMAddFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_2_ATI, 0, 0);
+    glAlphaFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_PRIMARY_COLOR_ARB, GL_ALPHA, 0, GL_REG_2_ATI, GL_ALPHA, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, GL_REG_3_ATI, GL_ALPHA, 0, GL_REG_0_ATI, GL_ALPHA, 2);
+    glEndFragmentShaderATI();
+
+    NoiseEMModulateFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(NoiseEMModulateFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_ONE, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    NoiseLMSubtractFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(NoiseLMSubtractFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_SUB_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_4_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_4_ATI, 0, 0);
+    glEndFragmentShaderATI();
+
+    NoiseLMAddFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(NoiseLMAddFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_4_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_4_ATI, 0, 0);
+    glEndFragmentShaderATI();
+
+    NoiseLMModulateFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(NoiseLMModulateFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_4_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_4_ATI, 0, 0);
+    glEndFragmentShaderATI();
+
+    NoiseEMLMSubtractFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(NoiseEMLMSubtractFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_3_ATI, GL_TEXTURE3_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_4_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_0_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_SUB_ATI, GL_REG_4_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_REG_3_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_ONE, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    NoiseEMLMAddFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(NoiseEMLMAddFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_3_ATI, GL_TEXTURE3_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_4_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_0_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_4_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_REG_3_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_ONE, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    NoiseEMLMModulateFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(NoiseEMLMModulateFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_3_ATI, GL_TEXTURE3_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_4_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_0_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_4_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_REG_3_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_ONE, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    FGlowFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(FGlowFragmentShaderID);
+    glBeginFragmentShaderATI();
+    {
+        float c7define[4] = { 0.3f, 0.59f, 0.11f, 0.8f };
+        glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+    }
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_1_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_1_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_1_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_CON_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_CON_1_ATI, 0, 0, GL_CON_1_ATI, GL_ALPHA, 0, GL_REG_1_ATI, 0, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_1_ATI, GL_ALPHA, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    FGlowLMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(FGlowLMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    {
+        float c7define[4] = { 0.3f, 0.59f, 0.11f, 0.8f };
+        glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+    }
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_2_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_2_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_2_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_CON_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_CON_1_ATI, 0, 0, GL_CON_1_ATI, GL_ALPHA, 0, GL_REG_2_ATI, 0, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_2_ATI, GL_ALPHA, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    FGlowEMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(FGlowEMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    {
+        float c7define[4] = { 0.3f, 0.59f, 0.11f, 0.8f };
+        glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+    }
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_2_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_0_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_2_ATI, 0, GL_ONE, GL_ALPHA, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_2_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_CON_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_CON_1_ATI, 0, 0, GL_CON_1_ATI, GL_ALPHA, 0, GL_REG_2_ATI, 0, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_2_ATI, GL_ALPHA, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    FGlowEMLMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(FGlowEMLMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    {
+        float c7define[4] = { 0.3f, 0.59f, 0.11f, 0.8f };
+        glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+    }
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_3_ATI, 0, GL_ONE, GL_ALPHA, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_3_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_2_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_CON_1_ATI, 0, 0, GL_CON_1_ATI, GL_ALPHA, 0, GL_REG_2_ATI, 0, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_2_ATI, GL_ALPHA, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    FGlowBumpyShinyFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(FGlowBumpyShinyFragmentShaderID);
+    glBeginFragmentShaderATI();
+    {
+        float c7define[4] = { 0.3f, 0.59f, 0.11f, 0.8f };
+        glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+    }
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_3_ATI, GL_TEXTURE3_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_4_ATI, GL_TEXTURE4_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_5_ATI, 1, 0, GL_REG_1_ATI, 0, 9, GL_REG_0_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_5_ATI, 2, 0, GL_REG_2_ATI, 0, 9, GL_REG_0_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_5_ATI, 4, 0, GL_REG_3_ATI, 0, 9, GL_REG_0_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 0, 1, GL_REG_5_ATI, 0, 0, GL_REG_4_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 0, 0, GL_REG_5_ATI, 0, 0, GL_REG_3_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 0, 0, GL_REG_5_ATI, 0, 0, GL_REG_5_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 0, 0, GL_REG_4_ATI, 0, 13, GL_REG_2_ATI, 0, 0, GL_REG_3_ATI, 0, 0);
+    glSampleMapATI(GL_REG_5_ATI, GL_REG_3_ATI, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 7, 0, GL_REG_5_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_2_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_CON_1_ATI, 0, 0, GL_CON_1_ATI, GL_ALPHA, 0, GL_REG_2_ATI, 0, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_3_ATI, GL_ALPHA, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    FGlowBumpmapFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(FGlowBumpmapFragmentShaderID);
+    glBeginFragmentShaderATI();
+    {
+        float c7define[4] = { 0.3f, 0.59f, 0.11f, 0.8f };
+        glSetFragmentShaderConstantATI(GL_CON_7_ATI, c7define);
+    }
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_3_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_4_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_4_ATI, 0, GL_REG_3_ATI, GL_ALPHA, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_2_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_CON_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_CON_1_ATI, 0, 0, GL_CON_1_ATI, GL_ALPHA, 0, GL_REG_2_ATI, 0, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_2_ATI, GL_ALPHA, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    DesatFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(DesatFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_1_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_1_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_PRIMARY_COLOR_ARB, GL_ALPHA, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_1_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_1_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    DesatLMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(DesatLMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_2_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_2_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_2_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_2_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_PRIMARY_COLOR_ARB, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    DesatEMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(DesatEMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_2_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_2_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_2_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    DesatEMLMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(DesatEMLMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_3_ATI, 0, GL_ONE, GL_ALPHA, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_3_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    DesatBumpmapFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(DesatBumpmapFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE3_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_1_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_1_ATI, 0, GL_CON_0_ATI, GL_ALPHA, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_1_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    DesatBumpyShinyFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(DesatBumpyShinyFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_3_ATI, GL_TEXTURE3_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_4_ATI, GL_TEXTURE4_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_5_ATI, 1, 0, GL_REG_1_ATI, 0, 9, GL_REG_0_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_5_ATI, 2, 0, GL_REG_2_ATI, 0, 9, GL_REG_0_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_5_ATI, 4, 0, GL_REG_3_ATI, 0, 9, GL_REG_0_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 0, 1, GL_REG_5_ATI, 0, 0, GL_REG_4_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 0, 0, GL_REG_5_ATI, 0, 0, GL_REG_3_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 0, 0, GL_REG_5_ATI, 0, 0, GL_REG_5_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 0, 0, GL_REG_4_ATI, 0, 13, GL_REG_2_ATI, 0, 0, GL_REG_3_ATI, 0, 0);
+    glSampleMapATI(GL_REG_5_ATI, GL_REG_3_ATI, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_0_ATI, 0, 0, GL_REG_5_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_REG_5_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    DesatNoiseSubFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(DesatNoiseSubFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_SUB_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    DesatNoiseSubEMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(DesatNoiseSubEMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_2_ATI, 0, 4);
+    glAlphaFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_PRIMARY_COLOR_ARB, GL_ALPHA, 0, GL_REG_2_ATI, GL_ALPHA, 4);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, GL_REG_3_ATI, GL_ALPHA, 0, GL_REG_0_ATI, GL_ALPHA, 2);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    DesatNoiseSubLMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(DesatNoiseSubLMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_SUB_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_4_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_ONE, GL_ALPHA, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_4_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    DesatNoiseSubEMLMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(DesatNoiseSubEMLMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_3_ATI, GL_TEXTURE3_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_4_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_0_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_SUB_ATI, GL_REG_4_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_REG_3_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_ONE, GL_ALPHA, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    DesatNoiseAddFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(DesatNoiseAddFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    DesatNoiseAddEMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(DesatNoiseAddEMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_2_ATI, 0, 0);
+    glAlphaFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_PRIMARY_COLOR_ARB, GL_ALPHA, 0, GL_REG_2_ATI, GL_ALPHA, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, GL_REG_3_ATI, GL_ALPHA, 0, GL_REG_0_ATI, GL_ALPHA, 2);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    DesatNoiseAddLMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(DesatNoiseAddLMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_4_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_PRIMARY_COLOR_ARB, GL_ALPHA, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_4_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    DesatNoiseAddEMLMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(DesatNoiseAddEMLMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_3_ATI, GL_TEXTURE3_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_4_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_0_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_4_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_REG_3_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_ONE, GL_ALPHA, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    DesatNoiseModFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(DesatNoiseModFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    DesatNoiseModEMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(DesatNoiseModEMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_ONE, GL_ALPHA, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    DesatNoiseModLMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(DesatNoiseModLMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_4_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_PRIMARY_COLOR_ARB, GL_ALPHA, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_4_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_5_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_5_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    DesatNoiseModEMLMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(DesatNoiseModEMLMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_3_ATI, GL_TEXTURE3_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_4_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_0_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_4_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_REG_3_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_4_ATI, 0, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_ONE, GL_ALPHA, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    HoloFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(HoloFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_REG_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    HoloDesatFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(HoloDesatFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_1_ATI, GL_ALPHA, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    IllumFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(IllumFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_1_ATI, 7, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_CON_1_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glEndFragmentShaderATI();
+
+    IllumEnvFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(IllumEnvFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_2_ATI, 7, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_CON_1_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_LERP_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_CON_1_ATI, 0, 0);
+    glEndFragmentShaderATI();
+
+    IllumNoiseSubtractFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(IllumNoiseSubtractFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_2_ATI, 7, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_CON_1_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_SUB_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, 0, 0);
+    glEndFragmentShaderATI();
+
+    IllumNoiseAddFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(IllumNoiseAddFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_2_ATI, 7, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_CON_1_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, 0, 0);
+    glEndFragmentShaderATI();
+
+    IllumNoiseModulateFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(IllumNoiseModulateFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_2_ATI, 7, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_CON_1_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, 0, 0);
+    glEndFragmentShaderATI();
+
+    IllumNoiseEMSubtractFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(IllumNoiseEMSubtractFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_3_ATI, 7, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_CON_1_ATI, 0, 9);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_3_ATI, 0, 0, GL_REG_2_ATI, 0, 4);
+    glAlphaFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_PRIMARY_COLOR_ARB, GL_ALPHA, 0, GL_REG_2_ATI, GL_ALPHA, 4);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, GL_REG_3_ATI, GL_ALPHA, 0, GL_REG_0_ATI, GL_ALPHA, 2);
+    glEndFragmentShaderATI();
+
+    IllumNoiseEMAddFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(IllumNoiseEMAddFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_3_ATI, 7, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_CON_1_ATI, 0, 9);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_3_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glAlphaFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_PRIMARY_COLOR_ARB, GL_ALPHA, 0, GL_REG_2_ATI, GL_ALPHA, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, GL_REG_3_ATI, GL_ALPHA, 0, GL_REG_0_ATI, GL_ALPHA, 2);
+    glEndFragmentShaderATI();
+
+    IllumNoiseEMModulateFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(IllumNoiseEMModulateFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_3_ATI, 7, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_CON_1_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_3_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_ONE, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    IllumDesatFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(IllumDesatFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_1_ATI, 7, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_CON_1_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_1_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_1_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_PRIMARY_COLOR_ARB, GL_ALPHA, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_1_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_1_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    IllumDesatEMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(IllumDesatEMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_2_ATI, 7, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_CON_1_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_2_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_2_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_2_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    IllumDesatBumpmapFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(IllumDesatBumpmapFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE3_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_1_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_1_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_1_ATI, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_1_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    IllumDesatBumpyShinyFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(IllumDesatBumpyShinyFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_3_ATI, GL_TEXTURE3_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_4_ATI, GL_TEXTURE4_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_5_ATI, 1, 0, GL_REG_1_ATI, 0, 9, GL_REG_0_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_5_ATI, 2, 0, GL_REG_2_ATI, 0, 9, GL_REG_0_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_5_ATI, 4, 0, GL_REG_3_ATI, 0, 9, GL_REG_0_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 0, 1, GL_REG_5_ATI, 0, 0, GL_REG_4_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 0, 0, GL_REG_5_ATI, 0, 0, GL_REG_3_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 0, 0, GL_REG_5_ATI, 0, 0, GL_REG_5_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 0, 0, GL_REG_4_ATI, 0, 13, GL_REG_2_ATI, 0, 0, GL_REG_3_ATI, 0, 0);
+    glSampleMapATI(GL_REG_5_ATI, GL_REG_3_ATI, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_5_ATI, 7, 0, GL_REG_5_ATI, 0, 0, GL_CON_1_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_0_ATI, 0, 0, GL_REG_5_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_REG_5_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    IllumDesatNoiseSubFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(IllumDesatNoiseSubFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_2_ATI, 7, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_CON_1_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_SUB_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_2_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_2_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    IllumDesatNoiseSubEMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(IllumDesatNoiseSubEMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_3_ATI, 7, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_CON_1_ATI, 0, 9);
+    glAlphaFragmentOp2ATI(GL_ADD_ATI, GL_REG_3_ATI, 0, GL_PRIMARY_COLOR_ARB, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_3_ATI, 0, 0, GL_REG_2_ATI, 0, 4);
+    glAlphaFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_REG_3_ATI, GL_ALPHA, 0, GL_REG_2_ATI, GL_ALPHA, 4);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, GL_REG_3_ATI, GL_ALPHA, 0, GL_REG_0_ATI, GL_ALPHA, 2);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    IllumDesatNoiseAddFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(IllumDesatNoiseAddFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_2_ATI, 7, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_CON_1_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    IllumDesatNoiseAddEMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(IllumDesatNoiseAddEMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_3_ATI, 7, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_CON_1_ATI, 0, 9);
+    glAlphaFragmentOp2ATI(GL_ADD_ATI, GL_REG_3_ATI, 0, GL_PRIMARY_COLOR_ARB, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_3_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glAlphaFragmentOp3ATI(GL_MAD_ATI, GL_REG_3_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_REG_3_ATI, GL_ALPHA, 0, GL_REG_2_ATI, GL_ALPHA, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, 0, GL_REG_3_ATI, GL_ALPHA, 0, GL_REG_0_ATI, GL_ALPHA, 2);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    IllumDesatNoiseModFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(IllumDesatNoiseModFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_2_ATI, 7, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_CON_1_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_1_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
+    glEndFragmentShaderATI();
+
+    IllumDesatNoiseModEMFragmentShaderID = glGenFragmentShadersATI(1);
+    glBindFragmentShaderATI(IllumDesatNoiseModEMFragmentShaderID);
+    glBeginFragmentShaderATI();
+    glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_1_ATI, GL_TEXTURE1_ARB, GL_SWIZZLE_STR_ATI);
+    glSampleMapATI(GL_REG_2_ATI, GL_TEXTURE2_ARB, GL_SWIZZLE_STR_ATI);
+    glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_3_ATI, 7, 0, GL_PRIMARY_COLOR_ARB, 0, 0, GL_CON_1_ATI, 0, 9);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_REG_3_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_3_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_REG_2_ATI, 0, 0);
+    glColorFragmentOp3ATI(GL_MAD_ATI, GL_REG_0_ATI, 7, 0, GL_REG_1_ATI, 0, 0, GL_REG_0_ATI, GL_ALPHA, 2, GL_REG_3_ATI, 0, 0);
+    glAlphaFragmentOp1ATI(GL_MOV_ATI, GL_REG_0_ATI, 0, GL_ONE, GL_ALPHA, 0);
+    glColorFragmentOp2ATI(GL_DOT3_ATI, GL_REG_3_ATI, 7, 0, GL_REG_0_ATI, 0, 0, GL_CON_7_ATI, 0, 0);
+    glColorFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 7, 0, GL_REG_3_ATI, 0, 0, GL_CON_7_ATI, GL_ALPHA, 0);
+    glAlphaFragmentOp2ATI(GL_MUL_ATI, GL_REG_0_ATI, 0, GL_REG_0_ATI, GL_ALPHA, 0, GL_CON_1_ATI, GL_ALPHA, 0);
     glEndFragmentShaderATI();
     glDisable(GL_FRAGMENT_SHADER_ATI);
 }

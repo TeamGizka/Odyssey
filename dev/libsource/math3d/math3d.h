@@ -54,10 +54,42 @@ public:
         return m_fX == 0.0f && m_fY == 0.0f && m_fZ == 0.0f;
     }
 
-    Vector& operator+=(const Vector& other);
-    Vector& operator-=(const Vector& other);
-    Vector& operator*=(float fScale);
-    Vector& operator/=(float fScale);
+    Vector& operator+=(const Vector& other)
+    {
+        m_fX += other.m_fX;
+        m_fY += other.m_fY;
+        m_fZ += other.m_fZ;
+        return *this;
+    }
+
+    Vector& operator-=(const Vector& other)
+    {
+        m_fX -= other.m_fX;
+        m_fY -= other.m_fY;
+        m_fZ -= other.m_fZ;
+        return *this;
+    }
+
+    Vector& operator*=(float fScale)
+    {
+        m_fX *= fScale;
+        m_fY *= fScale;
+        m_fZ *= fScale;
+        return *this;
+    }
+
+    Vector& operator/=(float fScale)
+    {
+        if (fScale != 0.0f)
+        {
+            float fReciprocal = 1.0f / fScale;
+            m_fX *= fReciprocal;
+            m_fY *= fReciprocal;
+            m_fZ *= fReciprocal;
+        }
+        return *this;
+    }
+
     void Normalize();
 
 

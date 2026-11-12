@@ -74,6 +74,11 @@ unsigned long CExoFile::Write(const void* data, unsigned long size,
 {
     return m_pInternal->Write(data, size, count);
 }
+// PC 0x006322D0
+unsigned long CExoFile::Write(const char* text)
+{
+    return m_pInternal->Write(text);
+}
 // PC 0x006322E0
 CExoAliasList::~CExoAliasList()
 {
@@ -102,11 +107,6 @@ int CExoFile::Flush()
 {
     return m_pInternal->Flush();
 }
-
-unsigned long CExoFile::Write(const char* text)
-{
-    return m_pInternal->Write(text);
-}
 // PC 0x006323A0
 unsigned long CExoFile::Write(const CExoString& text)
 {
@@ -127,13 +127,6 @@ int CExoFile::SeekEnd()
 {
     return m_pInternal->SeekEnd();
 }
-
-#ifndef _XBOX
-inline unsigned long CExoFileInternal::Write(const char* text)
-{
-    return Write(text, 1, strlen(text));
-}
-#endif
 
 inline unsigned long CExoFileInternal::Write(const CExoString& text)
 {

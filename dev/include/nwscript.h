@@ -379,6 +379,8 @@ public:
     int LoadScriptSituation(void** ppScript, CResGFF* pGFF,
                             CResStruct* pStruct);
     void DeleteScriptSituation(void* pScript);
+    void SetScriptParams(int nParam1, int nParam2, int nParam3, int nParam4,
+                         int nParam5, CExoString sParam);
 
     int m_nScriptParameters[5];
     CExoString m_sScriptStringParameter[1];

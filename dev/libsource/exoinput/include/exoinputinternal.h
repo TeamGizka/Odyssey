@@ -144,7 +144,7 @@ public:
     int GetActive();
     void SetActive(int bActive);
 #ifndef _XBOX
-    void SetMousePos(int nX, int nY);
+    void SetMousePos(int nX, int nY, bool bKeepWarpState);
 #endif
     CExoArrayList<CExoInputEvent> GetEvents(int& nEvents, int nEventClass);
 #ifndef _XBOX

@@ -338,7 +338,7 @@ void CExoSoundSourceInternal::Resume()  // PC 0x006277E0
 
 #ifdef _XBOX
 
-void CExoSoundSourceInternal::ShutDownSource(int bDestroying)
+void CExoSoundSourceInternal::ShutDownSource(bool bForce)
 {
     int bReleaseDemand = 1;
 
@@ -407,7 +407,7 @@ void CExoSoundSourceInternal::ShutDownSource(int bDestroying)
     }
 }
 #else
-void CExoSoundSourceInternal::ShutDownSource(int bDestroying)  // PC 0x00627150
+void CExoSoundSourceInternal::ShutDownSource(bool bForce)  // PC 0x00627150
 {
     EXOSOUNDSOURCE_TRACE();
     if (m_nListType == 1)
@@ -427,7 +427,7 @@ void CExoSoundSourceInternal::ShutDownSource(int bDestroying)  // PC 0x00627150
     {
         if (m_p3DVoice != 0 && m_p3DVoice->m_hSample != 0)
         {
-            if (m_p3DVoice->m_pSource == this)
+            if (this == m_p3DVoice->m_pSource)
             {
                 AIL_end_3D_sample(m_p3DVoice->m_hSample);
                 m_p3DVoice->m_pSource = 0;
@@ -436,7 +436,7 @@ void CExoSoundSourceInternal::ShutDownSource(int bDestroying)  // PC 0x00627150
         }
         else if (m_p2DVoice != 0 && m_p2DVoice->m_hSample != 0)
         {
-            if (m_p2DVoice->m_pSource == this)
+            if (this == m_p2DVoice->m_pSource)
             {
                 AIL_end_sample(m_p2DVoice->m_hSample);
                 m_p2DVoice->m_pSource = 0;
