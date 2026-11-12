@@ -1563,7 +1563,8 @@ void CSWGuiSaveLoad::PopulateGameList()  // PC 0x0070C600
     {
         for (int i = 0; i < lControls.num; i++)
         {
-            unsigned long nSlot = ((CSWGuiSaveLoadEntry*)lControls[i])->m_nSaveGame;
+            CSWGuiSaveLoadEntry* pEntry = (CSWGuiSaveLoadEntry*)lControls[i];
+            unsigned long nSlot = pEntry->m_nSaveGame;
             if (nSlot == nNextSlot)
             {
                 nNextSlot++;
@@ -1614,7 +1615,7 @@ void CSWGuiSaveLoad::PopulateGameList()  // PC 0x0070C600
     {
         if (!m_bExitToMainMenu && g_pAppManager->m_pServerExoApp->GetPartyTable() != 0)
         {
-            CExoString sPCName = g_pAppManager->m_pServerExoApp->GetPartyTable()->GetPCName();
+            CExoString sPCName = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetPCName();
             if (!m_lFilterNames.Contains(sPCName))
             {
                 m_lFilterNames.Insert(sPCName, 0);

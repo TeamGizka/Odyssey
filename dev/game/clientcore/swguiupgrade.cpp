@@ -121,7 +121,8 @@ void CSWGuiUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
         }
         pOldItem = 0;
     }
-    CSWSItem* pItem = pServer->GetItemByGameObjectID(pEntry->m_oidItem);
+    unsigned long oidItem = pEntry->m_oidItem;
+    CSWSItem* pItem = pServer->GetItemByGameObjectID(oidItem);
     if (pItem != 0)
     {
         int nIndex = m_aItemsTaken.IndexOf(pItem);
@@ -1699,7 +1700,7 @@ void CSWGuiUpgrade::OnPanelAdded()
 
     CExoString sName;
     CExoLocString& sLocName = m_pSelectedItem->m_sLocalizedName;
-    sLocName.GetString(g_pAppManager->m_pClientExoApp->GetClientLanguage(), &sName, 0);
+    sLocName.GetString(g_pAppManager->GetClientExoApp()->GetClientLanguage(), &sName, 0);
     int nTag = sName.Find('<', 0);
     int nToken = sName.Find('{', 0);
     if (nTag != -1 || nToken != -1)
@@ -1814,7 +1815,8 @@ void CSWGuiUpgrade::OnPanelAdded()
                 m_apItemEntries[nSlot] = new CSWSItem(OBJECT_INVALID);
                 CResRef cTemplate(sTemplate);
                 m_apItemEntries[nSlot]->LoadFromTemplate(cTemplate);
-                m_apItemEntries[nSlot]->m_anUpgradeSlot[nSlot] = i;
+                CSWSItem* pUpgradeItem = m_apItemEntries[nSlot];
+                pUpgradeItem->m_anUpgradeSlot[nSlot] = i;
             }
             else if (m_nItemListMode == ITEMLIST_LIGHTSABER &&
                      nSlot == UPGRADE_SLOT_POWER_CRYSTAL_1 &&
@@ -1823,7 +1825,8 @@ void CSWGuiUpgrade::OnPanelAdded()
                 m_apItemEntries[UPGRADE_SLOT_POWER_CRYSTAL_2] = new CSWSItem(OBJECT_INVALID);
                 CResRef cTemplate(sTemplate);
                 m_apItemEntries[UPGRADE_SLOT_POWER_CRYSTAL_2]->LoadFromTemplate(cTemplate);
-                m_apItemEntries[UPGRADE_SLOT_POWER_CRYSTAL_2]->m_anUpgradeSlot[UPGRADE_SLOT_POWER_CRYSTAL_2] = i;
+                CSWSItem* pUpgradeItem = m_apItemEntries[UPGRADE_SLOT_POWER_CRYSTAL_2];
+                pUpgradeItem->m_anUpgradeSlot[UPGRADE_SLOT_POWER_CRYSTAL_2] = i;
             }
             else
             {
@@ -1833,7 +1836,8 @@ void CSWGuiUpgrade::OnPanelAdded()
                 {
                     CGameObject* pObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidItem);
                     CSWSItem* pItem = pObject != 0 ? pObject->AsSWSItem() : 0;
-                    if (pObject->AsSWSItem()->m_nUpgradeLevel <= m_pSelectedItem->m_nUpgradeLevel)
+                    int nUpgradeLevel = pObject->AsSWSItem()->m_nUpgradeLevel;
+                    if (nUpgradeLevel <= m_pSelectedItem->m_nUpgradeLevel)
                     {
                         pLabels[nSlot].m_cBorder.m_cParams.m_fHilightAlpha = 1.0f;
                         abAvailable[nSlot] = 1;
@@ -3179,7 +3183,8 @@ void CSWGuiCreateItem::ShowBuyGUI()
 
     m_bBuyMode = 1;
     pActiveList = &m_lbxStoreItems;
-    m_lbxInventoryItems.m_bEnabled = 0;
+    CSWGuiListBox* pInactiveList = &m_lbxInventoryItems;
+    pInactiveList->m_bEnabled = 0;
     pActiveList->m_bEnabled = 1;
     m_lblRelatedSkill.SetEnabledFlag(1);
     m_lblRelatedSkill.m_cText.m_cParams.SetText("");
@@ -3204,6 +3209,7 @@ void CSWGuiCreateItem::ShowBuyGUI()
 // PC 0x007280D0
 void CSWGuiCreateItem::BuyItem(CSWSItem* pItem)
 {
+    CSWSItem* pNewItem;
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
     CSWSCreature* pCreature = pServer->GetPlayerCreature();
 
@@ -3212,9 +3218,9 @@ void CSWGuiCreateItem::BuyItem(CSWSItem* pItem)
         m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_BUY_ITEM);
         m_nComponents -= GetItemBuyValue(pItem);
         pCreature->SetComponent(m_nComponents);
-        CSWSItem* pNewItem = new CSWSItem(OBJECT_INVALID);
+        pNewItem = new CSWSItem(OBJECT_INVALID);
         pNewItem->CopyItem(pItem);
-        pCreature->AcquireItem(&pNewItem, m_pStore->m_nId, OBJECT_INVALID, 1);
+        pCreature->AcquireItem(&pNewItem, m_pStore->GetId(), OBJECT_INVALID, 1);
         int nSelectedItem = m_lbxStoreItems.m_nSelectedItem;
         if (nSelectedItem >= m_lbxStoreItems.m_lItems.num)
             nSelectedItem = m_lbxStoreItems.m_lItems.num - 1;
@@ -3358,7 +3364,7 @@ void CSWGuiCreateItem::PopulateStoreItemListBox()
         if (pItem != 0 && pItem->m_bPlotObject == 0)
         {
             CExoString sTag(pItem->m_sTag.CStr());
-            CreateItemEntry(nEntryIndex, lControls, pItem->GetId(), 0, sTag);
+            CreateItemEntry(nEntryIndex, lControls, pItem->m_nId, 0, sTag);
         }
     }
 
@@ -3671,20 +3677,20 @@ int CSWGuiCreateItem::CreateItemEntry(int& nEntries,
         if (bInventory)
         {
             CSWGuiButton* pProto = m_lbxInventoryItems.m_pProtoItem->AsButton();
+            int nWidth = m_lbxInventoryItems.m_cItemExtent.m_nWidth -
+                         2 * m_lbxInventoryItems.m_nPadding;
             pNewEntry->Initialize(pProto->m_cText, pProto->m_cBorder,
-                               pProto->m_cHilite,
-                               m_lbxInventoryItems.m_cItemExtent.m_nWidth -
-                                   2 * m_lbxInventoryItems.m_nPadding);
+                               pProto->m_cHilite, nWidth);
             pNewEntry->AddEvent(GUIEVENT_ACTIVATE, this,
                             (CSWGuiHandler)&CSWGuiCreateItem::OnControlInvAButton);
         }
         else
         {
             CSWGuiButton* pProto = m_lbxStoreItems.m_pProtoItem->AsButton();
+            int nWidth = m_lbxStoreItems.m_cItemExtent.m_nWidth -
+                         2 * m_lbxStoreItems.m_nPadding;
             pNewEntry->Initialize(pProto->m_cText, pProto->m_cBorder,
-                               pProto->m_cHilite,
-                               m_lbxStoreItems.m_cItemExtent.m_nWidth -
-                                   2 * m_lbxStoreItems.m_nPadding);
+                               pProto->m_cHilite, nWidth);
             pNewEntry->AddEvent(GUIEVENT_ACTIVATE, this,
                             (CSWGuiHandler)&CSWGuiCreateItem::OnControlStoreAButton);
         }
@@ -3981,6 +3987,7 @@ void CSWGuiCreateMedicalItem::HandleInputEvent(int nEvent, int nState)
 // PC 0x007284B0
 void CSWGuiCreateMedicalItem::BuyItem(CSWSItem* pItem)
 {
+    CSWSItem* pNewItem;
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
     CSWSCreature* pCreature = pServer->GetPlayerCreature();
 
@@ -3989,9 +3996,9 @@ void CSWGuiCreateMedicalItem::BuyItem(CSWSItem* pItem)
         m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_BUY_ITEM);
         m_nChemicals -= GetItemBuyValue(pItem);
         pCreature->SetChemical(m_nChemicals);
-        CSWSItem* pNewItem = new CSWSItem(OBJECT_INVALID);
+        pNewItem = new CSWSItem(OBJECT_INVALID);
         pNewItem->CopyItem(pItem);
-        pCreature->AcquireItem(&pNewItem, m_pStore->m_nId, OBJECT_INVALID, 1);
+        pCreature->AcquireItem(&pNewItem, m_pStore->GetId(), OBJECT_INVALID, 1);
         int nSelectedItem = m_lbxStoreItems.m_nSelectedItem;
         if (nSelectedItem >= m_lbxStoreItems.m_lItems.num)
             nSelectedItem = m_lbxStoreItems.m_lItems.num - 1;
@@ -4405,11 +4412,9 @@ void CSWGuiCreateMedicalItem::OnControlInvAButton(CSWGuiControl* pControl)
     {
         if (pControl->m_nEvent == CSWGuiControl::EVENT_CONFIRM)
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-        unsigned long oidItem =
-            static_cast<CSWGuiStoreItemEntry*>(pControl)->m_oidItem;
         CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
-        CSWSItem* pItem = pServer->GetItemByGameObjectID(
-            pServer->ClientToServerObjectId(oidItem));
+        CSWSItem* pItem = pServer->GetItemByGameObjectID(pServer->ClientToServerObjectId(
+            static_cast<CSWGuiStoreItemEntry*>(pControl)->m_oidItem));
         if (pItem != 0)
         {
             CServerExoApp* pCreatureServer = g_pAppManager->m_pServerExoApp;
@@ -4521,10 +4526,10 @@ int CSWGuiCreateMedicalItem::CreateItemEntry(int& nEntries,
         if (bInventory)
         {
             CSWGuiButton* pProto = m_lbxInventoryItems.m_pProtoItem->AsButton();
+            int nWidth = m_lbxInventoryItems.m_cItemExtent.m_nWidth -
+                         2 * m_lbxInventoryItems.m_nPadding;
             pNewEntry->Initialize(pProto->m_cText, pProto->m_cBorder,
-                               pProto->m_cHilite,
-                               m_lbxInventoryItems.m_cItemExtent.m_nWidth -
-                                   2 * m_lbxInventoryItems.m_nPadding);
+                               pProto->m_cHilite, nWidth);
             pNewEntry->AddEvent(GUIEVENT_ACTIVATE, this,
                             (CSWGuiHandler)&CSWGuiCreateMedicalItem::OnControlInvAButton);
             pNewEntry->AddEvent(CSWGuiControl::EVENT_CONFIRM, this,
@@ -4533,10 +4538,10 @@ int CSWGuiCreateMedicalItem::CreateItemEntry(int& nEntries,
         else
         {
             CSWGuiButton* pProto = m_lbxStoreItems.m_pProtoItem->AsButton();
+            int nWidth = m_lbxStoreItems.m_cItemExtent.m_nWidth -
+                         2 * m_lbxStoreItems.m_nPadding;
             pNewEntry->Initialize(pProto->m_cText, pProto->m_cBorder,
-                               pProto->m_cHilite,
-                               m_lbxStoreItems.m_cItemExtent.m_nWidth -
-                                   2 * m_lbxStoreItems.m_nPadding);
+                               pProto->m_cHilite, nWidth);
             pNewEntry->AddEvent(GUIEVENT_ACTIVATE, this,
                             (CSWGuiHandler)&CSWGuiCreateMedicalItem::OnControlStoreAButton);
             pNewEntry->AddEvent(CSWGuiControl::EVENT_CONFIRM, this,
@@ -4617,7 +4622,7 @@ void CSWGuiCreateMedicalItem::PopulateStoreItemListBox()
         if (pItem != 0 && pItem->m_bPlotObject == 0)
         {
             CExoString sTag(pItem->m_sTag.CStr());
-            CreateItemEntry(nEntryIndex, lControls, pItem->GetId(), 0, sTag);
+            CreateItemEntry(nEntryIndex, lControls, pItem->m_nId, 0, sTag);
         }
     }
 
@@ -5365,7 +5370,8 @@ void CSWGuiSwoopUpgrade::OnPanelAdded()
             {
                 m_apItemEntries[nSlot] = new CSWSItem(OBJECT_INVALID);
                 m_apItemEntries[nSlot]->LoadFromTemplate(sTemplate);
-                m_apItemEntries[nSlot]->m_anUpgradeSlot[nSlot] = nRow;
+                CSWSItem* pUpgradeItem = m_apItemEntries[nSlot];
+                pUpgradeItem->m_anUpgradeSlot[nSlot] = nRow;
                 m_an43CC[nSlot] = nRow;
             }
             else if (g_pAppManager->m_pServerExoApp->GetPartyTable()->GetPartyItems()->FindItemWithTag(
@@ -5420,7 +5426,8 @@ void CSWGuiSwoopUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
         if (nSlot != CSWGuiUpgrade::UPGRADE_SLOT_COLOR_CRYSTAL ||
             m_nItemListMode != CSWGuiUpgrade::ITEMLIST_LIGHTSABER)
         {
-            pOldItem->m_anUpgradeSlot[nSlot] = -1;
+            CSWSItem* pUpgradeItem = pOldItem;
+            pUpgradeItem->m_anUpgradeSlot[nSlot] = -1;
         }
         pOldItem = 0;
     }

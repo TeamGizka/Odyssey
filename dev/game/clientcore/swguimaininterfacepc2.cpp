@@ -3477,8 +3477,8 @@ void CSWGuiMainInterface::UpdateAndDrawFogOfWar(CSWGuiExtent const& cExtent)  //
         unsigned long* pMapData = pMap->GetMapData(nMapSize, nMapWidth, nMapHeight);
         if (pMapData != NULL)
         {
-            float fScaleX = (float)CSWSAreaMap::MAP_PIXEL_WIDTH / nMapWidth;
-            float fScaleY = (float)CSWSAreaMap::MAP_PIXEL_HEIGHT / nMapHeight;
+            float fScaleX = (float)m_nMapWidth / nMapWidth;
+            float fScaleY = (float)m_nMapHeight / nMapHeight;
             float fDotWidth = fScaleX * FOG_POINT_SPAN;
             float fDotHeight = fScaleY * FOG_POINT_SPAN;
             float fInverseX = 1.0f / fScaleX;
