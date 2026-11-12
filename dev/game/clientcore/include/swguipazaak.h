@@ -63,7 +63,15 @@ enum
     STRREF_PAZAAK_HELP_MATCH = 38648,
     STRREF_PAZAAK_MATCH_OVER = 38649,
     STRREF_PAZAAK_QUIT_FORFEIT = 42424,
-    STRREF_PAZAAK_CONFIRM_FORFEIT = 42425
+    STRREF_PAZAAK_CONFIRM_FORFEIT = 42425,
+    STRREF_PAZAAK_HELP_CARD_PLUS = 128418,
+    STRREF_PAZAAK_HELP_CARD_MINUS = 128419,
+    STRREF_PAZAAK_HELP_CARD_PLUS_MINUS = 128420,
+    STRREF_PAZAAK_HELP_CARD_PLUS_MINUS_1_2 = 128421,
+    STRREF_PAZAAK_HELP_CARD_DOUBLE = 128422,
+    STRREF_PAZAAK_HELP_CARD_TIEBREAKER = 128423,
+    STRREF_PAZAAK_HELP_CARD_FLIP_2_4 = 128424,
+    STRREF_PAZAAK_HELP_CARD_FLIP_3_6 = 128425
 };
 
 class CSWGuiPazaakCard : public CSWGuiButton
@@ -195,6 +203,10 @@ public:
 #endif
     void HandleMoveCard(CSWGuiControl* pControl); void HandleStartDialog(CSWGuiControl* pControl);
     void HandleAcceptButton(CSWGuiControl* pControl);
+#ifndef _XBOX
+    void UpdateHelpText(int nCardType);
+    void ClearSideDeck(CSWGuiControl* pControl);
+#endif
 
     CSWGuiLabel m_lblTitle;
     CSWGuiPazaakCard m_cAvail[AvailCardCount];

@@ -87,6 +87,9 @@ public:
     void OnShoulderLeft(CSWGuiControl* pControl);
     void OnShoulderRight(CSWGuiControl* pControl);
     virtual void Update(float);
+#ifndef _XBOX
+    virtual void Draw(float fElapsed);
+#endif
     void OnEquipButtonPressed(CSWGuiControl* pControl);
     void OnInvButtonPressed(CSWGuiControl* pControl);
     void OnCharButtonPressed(CSWGuiControl* pControl);

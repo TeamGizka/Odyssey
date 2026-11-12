@@ -10,6 +10,8 @@ public:
 
 #ifndef _XBOX
     virtual void Draw(float fElapsed);
+    virtual void OnPanelAdded();
+    virtual void OnPanelRemoved();
 #endif
 
     void SetImage(const CResRef& cImage);

@@ -19,10 +19,6 @@ CSWGuiLegalScreen::CSWGuiLegalScreen(CSWGuiManager* pManager,
     m_nMinShowTime = nMinShowTime;
 }
 
-CSWGuiLegalScreen::~CSWGuiLegalScreen()
-{
-}
-
 void CSWGuiLegalScreen::SetImage(const CResRef& cImage)
 {
     float fAlpha = m_fAlpha;

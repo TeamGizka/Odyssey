@@ -1304,7 +1304,7 @@ CSWGuiPazaakStart::CSWGuiPazaakStart(CSWGuiManager* pManager, int nWager,
         InitControl(m_cChosen[i].m_lblCard, szChosenLabel, 1);
         m_cChosen[i].m_nID = i;
         m_cChosen[i].AddEvent(
-            GUIEVENT_MOUSE_ENTER, this, (CSWGuiHandler)&CSWGuiPazaakStart::OnAvailCardEntered);
+            GUIEVENT_MOUSE_ENTER, this, (CSWGuiHandler)&CSWGuiPazaakStart::OnChosenCardEntered);
 #ifndef _XBOX
         m_cChosen[i].AddEvent(
             CSWGuiPazaakCard::EVENT_CARD_DROP, this,
@@ -1355,6 +1355,10 @@ CSWGuiPazaakStart::CSWGuiPazaakStart(CSWGuiManager* pManager, int nWager,
 #ifndef _XBOX
     m_btnAtext.AddEvent(GUIEVENT_ACTIVATE, this,
                          (CSWGuiHandler)&CSWGuiPazaakStart::HandleAcceptButton);
+    m_btnAtext.SetFocusable(0);
+    m_btnClearCards.AddEvent(GUIEVENT_ACTIVATE, this,
+                             (CSWGuiHandler)&CSWGuiPazaakStart::ClearSideDeck);
+    m_btnClearCards.SetFocusable(0);
 #endif
 #ifndef _XBOX
     m_nBackground = PC_BACKGROUND_SUFFIX_PAZAAK;
@@ -1612,15 +1616,70 @@ void CSWGuiPazaakStart::ShowDisabledButtons()  // PC 0x006D4C50
 }
 #endif
 
+#ifndef _XBOX
+// PC 0x006D4CE0
+void CSWGuiPazaakStart::UpdateHelpText(int nCardType)
+{
+    unsigned long nStrRef = 0xFFFFFFFF;
+    if (nCardType != -1)
+    {
+        if (nCardType >= 0 && nCardType < CPazaakCard::CARD_TYPE_NEGATIVE_BASE)
+            nStrRef = STRREF_PAZAAK_HELP_CARD_PLUS;
+        else if (nCardType >= CPazaakCard::CARD_TYPE_NEGATIVE_BASE &&
+                 nCardType < CPazaakCard::CARD_TYPE_FLIPPABLE_BASE)
+            nStrRef = STRREF_PAZAAK_HELP_CARD_MINUS;
+        else if (nCardType >= CPazaakCard::CARD_TYPE_FLIPPABLE_BASE &&
+                 nCardType < CPazaakCard::CARD_TYPE_TIEBREAKER)
+            nStrRef = STRREF_PAZAAK_HELP_CARD_PLUS_MINUS;
+        else if (nCardType == CPazaakCard::CARD_TYPE_TIEBREAKER)
+            nStrRef = STRREF_PAZAAK_HELP_CARD_TIEBREAKER;
+        else if (nCardType == CPazaakCard::CARD_TYPE_DOUBLE)
+            nStrRef = STRREF_PAZAAK_HELP_CARD_DOUBLE;
+        else if (nCardType == CPazaakCard::CARD_TYPE_FLIP_2_4)
+            nStrRef = STRREF_PAZAAK_HELP_CARD_FLIP_2_4;
+        else if (nCardType == CPazaakCard::CARD_TYPE_FLIP_3_6)
+            nStrRef = STRREF_PAZAAK_HELP_CARD_FLIP_3_6;
+        else if (nCardType == CPazaakCard::CARD_TYPE_PLUS_MINUS_1_2)
+            nStrRef = STRREF_PAZAAK_HELP_CARD_PLUS_MINUS_1_2;
+    }
+    CSWGuiControl* pControl = m_pActiveControl;
+    int nID = pControl->m_nID;
+    int bAvail = (nID >= 0 && nID < AvailCardCount) ? (pControl == &m_cAvail[nID]) : 0;
+    if (bAvail && m_anAvailCount[nCardType] == -1)
+        nStrRef = 0xFFFFFFFF;
+    int bChosen = (nID >= 0 && nID < ChosenCardCount) ? (pControl == &m_cChosen[nID]) : 0;
+    if (!bChosen && nStrRef != 0xFFFFFFFF)
+        m_lblHelp.m_cText.m_cParams.SetStrRef(nStrRef);
+    else
+        m_lblHelp.m_cText.m_cParams.SetText("");
+}
+#endif
+// PC 0x006D4E50
 void CSWGuiPazaakStart::OnChosenCardEntered(CSWGuiControl* pControl)
 {
+#ifndef _XBOX
+    UpdateHelpText(pControl->m_nID);
+#endif
     ShowDisabledButtons();
 }
-
+// PC 0x006D4E50
 void CSWGuiPazaakStart::OnAvailCardEntered(CSWGuiControl* pControl)
 {
+#ifndef _XBOX
+    UpdateHelpText(pControl->m_nID);
+#endif
     ShowDisabledButtons();
 }
+#ifndef _XBOX
+// PC 0x006D6600
+void CSWGuiPazaakStart::ClearSideDeck(CSWGuiControl* pControl)
+{
+    for (int i = 0; i < ChosenCardCount; i++)
+    {
+        RemoveChosenCard(i);
+    }
+}
+#endif
 
 #ifndef _XBOX
 void CSWGuiPazaakStart::HandleAvailCardDrop(CSWGuiControl* pControl)  // PC 0x006D64F0

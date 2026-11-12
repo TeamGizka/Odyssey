@@ -217,6 +217,146 @@ void CSWGuiInGameMenu::SetActiveControlID(int nControl, int bActive)
     if (nControl >= 0 && nControl < m_lControls.num)
         SetActiveControl(m_lControls.element[nControl], bActive);
 }
+#ifndef _XBOX
+// PC 0x00676B00
+void CSWGuiInGameMenu::Draw(float fElapsed)
+{
+    CSWCCreature* pCreature;
+    if (m_nTopMenuOverrideCharacter != -1)
+    {
+        CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
+        pCreature = pClient->GetCreatureByGameObjectID(pClient->ServerToClientObjectId(
+            g_pAppManager->m_pServerExoApp->GetPartyTable()->GetNPCObject(m_nTopMenuOverrideCharacter, 0, 1)));
+        if (pCreature == NULL)
+        {
+            return;
+        }
+    }
+    else
+    {
+        pCreature = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
+    }
+    CSWSCreature* pServer = pCreature->GetServerCreature();
+    CSWSCreatureStats* pStats = pServer->GetStats();
+    m_cChar2350.SetPortrait(pCreature->GetPortrait(1));
+    m_cChar2350.SetHealth(pServer->GetCurrentHitPoints(0), pServer->GetMaxHitPoints(1),
+                          pServer->m_nPoisonState);
+    int nMaxForce = pServer->GetMaxForcePoints();
+    m_cChar2350.SetForce(pStats->GetCurrentForcePoints(), nMaxForce);
+    int nState = 0;
+    int nBuffCount = 0;
+    int nDebuffCount = 0;
+    if (pServer->GetDead() || pServer->GetDeadTemp())
+    {
+        nState = CSWGuiMainInterfaceChar::PORTRAIT_DEAD;
+    }
+    else if (pServer->GetStats()->CanLevelUp())
+    {
+        nState = CSWGuiMainInterfaceChar::PORTRAIT_LEVEL_UP;
+    }
+    else if (pServer->IsDebilitated(0))
+    {
+        nState = CSWGuiMainInterfaceChar::PORTRAIT_DEBILITATED;
+    }
+    else
+    {
+        int nIcon = 0;
+        int nEffectCount = pServer->GetEffectIconCount();
+        if (nEffectCount > 0)
+        {
+            do
+            {
+                CEffectIconObject* pIcon = pServer->m_lstEffectIcons.element[nIcon];
+                if (pIcon->m_bGood)
+                    nBuffCount++;
+                else
+                    nDebuffCount++;
+                ++nIcon;
+            } while (nIcon < nEffectCount);
+        }
+    }
+    CExoString sName = pCreature->GetName();
+    int nTag = sName.Find('<', 0);
+    int nToken = sName.Find('{', 0);
+    if (nTag != -1 || nToken != -1)
+    {
+        g_pSWTlkTable->ParseStr(sName, (CGameObject*)pCreature, 0, 1);
+    }
+    m_lblCharName.m_cText.m_cParams.SetText(sName);
+    if (pStats->m_nClassCount == 1)
+    {
+        m_lblTopClass1.m_cText.m_cParams.SetText(g_pAppManager->m_pClientExoApp->GetGUIString(
+            g_pRules->m_pClasses[pStats->GetClass(0)].m_nNameStrRef));
+        m_lblTopClass1Level.m_cText.m_cParams.SetText(pStats->GetClassLevel(0, 0));
+        m_lblTopClass2.m_cText.m_cParams.SetText("");
+        m_lblTopClass2Level.m_cText.m_cParams.SetText("");
+    }
+    else
+    {
+        m_lblTopClass1.m_cText.m_cParams.SetText(g_pAppManager->m_pClientExoApp->GetGUIString(
+            g_pRules->m_pClasses[pStats->GetClass(0)].m_nNameStrRef));
+        m_lblTopClass1Level.m_cText.m_cParams.SetText(pStats->GetClassLevel(0, 0));
+        m_lblTopClass2.m_cText.m_cParams.SetText(g_pAppManager->m_pClientExoApp->GetGUIString(
+            g_pRules->m_pClasses[pStats->GetClass(1)].m_nNameStrRef));
+        m_lblTopClass2Level.m_cText.m_cParams.SetText(pStats->GetClassLevel(1, 0));
+    }
+    m_cChar2350.Show(1, nState, nBuffCount, nDebuffCount);
+    CSWGuiPanel::Draw(fElapsed);
+    m_cChar2350.DrawEffects(fElapsed, 1);
+    int nCharacters = g_pAppManager->m_pClientExoApp->GetSWParty()->GetNumCharacters();
+    if (nCharacters == 1 || nCharacters == 0)
+    {
+        m_lblChar2.SetEnabledFlag(0);
+        m_lblBack2.SetEnabledFlag(0);
+        m_lblLevelUp2.SetEnabledFlag(0);
+        m_btnChange2.SetEnabledFlag(0);
+        m_lblChar3.SetEnabledFlag(0);
+        m_lblBack3.SetEnabledFlag(0);
+        m_lblLevelUp3.SetEnabledFlag(0);
+        m_btnChange3.SetEnabledFlag(0);
+    }
+    else if (nCharacters == 2)
+    {
+        CSWCCreature* pMember = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(1);
+        CSWSCreature* pMemberServer = pMember->GetServerCreature();
+        m_lblChar2.m_cBorder.m_cParams.SetFillImage(pMember->GetPortrait(1), 0);
+        m_lblChar2.SetEnabledFlag(1);
+        m_lblBack2.SetEnabledFlag(1);
+        if (pMemberServer->GetStats()->CanLevelUp())
+            m_lblLevelUp2.SetEnabledFlag(1);
+        else
+            m_lblLevelUp2.SetEnabledFlag(0);
+        m_btnChange2.SetEnabledFlag(1);
+        m_lblChar3.SetEnabledFlag(0);
+        m_lblBack3.SetEnabledFlag(0);
+        m_lblLevelUp3.SetEnabledFlag(0);
+        m_btnChange3.SetEnabledFlag(0);
+    }
+    else if (nCharacters == 3)
+    {
+        CSWCCreature* pMember = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(1);
+        CSWSCreature* pMemberServer = pMember->GetServerCreature();
+        m_lblChar2.m_cBorder.m_cParams.SetFillImage(pMember->GetPortrait(1), 0);
+        m_lblChar2.SetEnabledFlag(1);
+        m_lblBack2.SetEnabledFlag(1);
+        if (pMemberServer->GetStats()->CanLevelUp())
+            m_lblLevelUp2.SetEnabledFlag(1);
+        else
+            m_lblLevelUp2.SetEnabledFlag(0);
+        m_btnChange2.SetEnabledFlag(1);
+        pMember = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(2);
+        pMemberServer = pMember->GetServerCreature();
+        m_lblChar3.m_cBorder.m_cParams.SetFillImage(pMember->GetPortrait(1), 0);
+        m_lblChar3.SetEnabledFlag(1);
+        m_lblBack3.SetEnabledFlag(1);
+        if (pMemberServer->GetStats()->CanLevelUp())
+            m_lblLevelUp3.SetEnabledFlag(1);
+        else
+            m_lblLevelUp3.SetEnabledFlag(0);
+        m_btnChange3.SetEnabledFlag(1);
+    }
+}
+#endif
 // PC 0x00675430
 void CSWGuiInGameMenu::OnShoulderLeft(CSWGuiControl* pControl)
 {

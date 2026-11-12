@@ -8,6 +8,21 @@
 #include "clientexoappinternal.h"
 
 static inline void SwguiloadscreenTrace1();
+#ifndef _XBOX
+// PC 0x006D0250
+void CSWGuiLoadScreen::OnPanelAdded()
+{
+    m_lblLogo.m_cBorder.m_cParams.SetFillImage(m_res5A0, 0);
+    CSWGuiPanel::OnPanelAdded();
+}
+// PC 0x006D0270
+void CSWGuiLoadScreen::OnPanelRemoved()
+{
+    CResRef cNoLogo("");
+    m_lblLogo.m_cBorder.m_cParams.SetFillImage(cNoLogo, 0);
+    CSWGuiPanel::OnPanelRemoved();
+}
+#endif
 // PC 0x006D03F0
 void CSWGuiLoadScreen::SetImage(const CResRef& cImage)
 {

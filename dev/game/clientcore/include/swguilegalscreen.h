@@ -7,7 +7,6 @@ class CSWGuiLegalScreen : public CSWGuiPanel
 {
 public:
     CSWGuiLegalScreen(CSWGuiManager* pManager, unsigned long nMinShowTime);
-    virtual ~CSWGuiLegalScreen();
 
     void SetImage(const CResRef& cImage);
 

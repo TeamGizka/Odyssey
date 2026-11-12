@@ -6625,7 +6625,7 @@ int CSWCMessage::HandleServerToPlayerInventory(unsigned char nMinor)
                         {
                             CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
                             pCreature = ((CSWSCreature*)pServerExoApp->GetGameObject(
-                                pServerExoApp->GetPartyTable()->GetPUPObject(nOverrideCharacter, 0, 1)))
+                                pServerExoApp->GetPartyTable()->GetNPCObject(nOverrideCharacter, 0, 1)))
                                 ->GetClientCreature();
                         }
                         else
@@ -7523,7 +7523,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()  // PC 0x006A47F0
         {
             CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
             pCreature = ((CSWSCreature*)pServerExoApp->GetGameObject(
-                pServerExoApp->GetPartyTable()->GetPUPObject(nOverrideCharacter, 0, 1)))
+                pServerExoApp->GetPartyTable()->GetNPCObject(nOverrideCharacter, 0, 1)))
                 ->GetClientCreature();
         }
         else
