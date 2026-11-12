@@ -200,6 +200,7 @@ public:
     void SetEndGamePending(int bPending, float fDelay, int nC);
     void EnableVideoEffect(int nEffect);
     void DisableVideoEffect();
+    int GetVideoEffectType();
     CSWParty* GetSWParty();
     int GetPlayerMovementInput();
     CSWCCreature* GetPlayerCreature();
@@ -472,6 +473,8 @@ public:
     void ResumeAllStreamingMusicForMovie();
     int GetSoundPausedByCombat();
     void SetSoundPausedByCombat(int nPaused);
+    void ClearMainMenuPointer();
+    void EnableMainMenuIdleTimer();
     int DontUseThisSetPlayerCreature(unsigned long oidObject);
     void HandleExitGameButton();
     void RemoveMoveToModuleMovies();

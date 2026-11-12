@@ -5606,7 +5606,16 @@ void CClientExoAppInternal::HideLoadScreen(int bFade, int bStopLoadMusic,
         if (!bFade && bUpdateScreen)
 #endif
         {
+#ifndef _XBOX
+            float afClearColor[4];
+            AurGetClearColor(afClearColor);
+            AurSetClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+#endif
             UpdateScreen(1.0f / 30.0f, 0, 0);
+#ifndef _XBOX
+            AurSetClearColor(afClearColor[0], afClearColor[1], afClearColor[2],
+                             afClearColor[3]);
+#endif
         }
     }
 }
@@ -7528,6 +7537,10 @@ void CClientExoAppInternal::EnableVideoEffect(int nEffect)
     Vector vModulation;
     int nEnableSaturation = 0;
     int nEnableScanNoise = 0;
+    int nEnableClairvoyance = 0;
+    int nEnableForceSight = 0;
+    int nEnableClairvoyanceFull = 0;
+    int nEnableFury = 0;
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
     EXOXBOXASSERT(p2DArrays->m_pVideoEffects);
     C2DA* pVideoEffects = p2DArrays->m_pVideoEffects;
@@ -7552,16 +7565,57 @@ void CClientExoAppInternal::EnableVideoEffect(int nEffect)
             if (nEnableSaturation)
             {
                 m_nVideoEffect = nEffect;
-                pVideoEffects->GetFLOATEntry(nEffect, "ModulationRed",
+                pVideoEffects->GetFLOATEntry(nEffect, "ModulationRed_PC",
                                              &vModulation.m_fX);
-                pVideoEffects->GetFLOATEntry(nEffect, "ModulationGreen",
+                pVideoEffects->GetFLOATEntry(nEffect, "ModulationGreen_PC",
                                              &vModulation.m_fY);
-                pVideoEffects->GetFLOATEntry(nEffect, "ModulationBlue",
+                pVideoEffects->GetFLOATEntry(nEffect, "ModulationBlue_PC",
                                              &vModulation.m_fZ);
-                pVideoEffects->GetFLOATEntry(nEffect, "Saturation",
+                pVideoEffects->GetFLOATEntry(nEffect, "Saturation_PC",
                                              &fSaturation);
                 AurEnableSaturation();
                 AurSetSaturationParams(vModulation, fSaturation);
+            }
+        }
+        bReadEntry = pVideoEffects->GetINTEntry(nEffect, "EnableClairvoyance",
+                                               &nEnableClairvoyance);
+        if (bReadEntry)
+        {
+            if (nEnableClairvoyance)
+            {
+                m_nVideoEffect = nEffect;
+                AurEnableClairvoyance(true);
+            }
+        }
+        bReadEntry = pVideoEffects->GetINTEntry(nEffect, "EnableForceSight",
+                                               &nEnableForceSight);
+        if (bReadEntry)
+        {
+            if (nEnableForceSight)
+            {
+                m_nVideoEffect = nEffect;
+                AurEnableForceSight();
+            }
+        }
+        bReadEntry = pVideoEffects->GetINTEntry(nEffect,
+                                               "EnableClairvoyanceFull",
+                                               &nEnableClairvoyanceFull);
+        if (bReadEntry)
+        {
+            if (nEnableClairvoyanceFull)
+            {
+                m_nVideoEffect = nEffect;
+                AurEnableClairvoyance(false);
+            }
+        }
+        bReadEntry = pVideoEffects->GetINTEntry(nEffect, "EnableFury",
+                                               &nEnableFury);
+        if (bReadEntry)
+        {
+            if (nEnableFury)
+            {
+                m_nVideoEffect = nEffect;
+                AurEnableForceFury(nEnableFury);
             }
         }
     }
@@ -7572,6 +7626,9 @@ void CClientExoAppInternal::DisableVideoEffect()
     m_nVideoEffect = -2;
     AurDisableSaturation();
     AurDisableScanNoise();
+    AurDisableClairvoyance();
+    AurDisableForceSight();
+    AurEnableForceFury(0);
 }
 // PC 0x0063F630
 void CClientExoAppInternal::DelayNextEnemyAutoPause()

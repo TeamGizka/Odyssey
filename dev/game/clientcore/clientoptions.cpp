@@ -39,6 +39,10 @@ void CClientOptions::SetCameraMode(unsigned char nMode)
     {
         m_nCameraStyle = nMode;
     }
+    if (nMode == CAMERA_MODE_DIALOG)
+    {
+        g_ForceSight = false;
+    }
 }
 // PC 0x0066A6E0
 void CClientOptions::SetFullScreenEnabled(int bEnabled)
@@ -67,6 +71,7 @@ int CClientOptions::SaveOptions()
 {
     CExoIni cIni;
     int i;
+    int bPlayerCreated = 0;
     CExoString sValue;
     sValue.Format("%d", m_bCombatMovement);
     cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
@@ -121,8 +126,8 @@ int CClientOptions::SaveOptions()
     sValue.Format("%d", m_bHideInGameGUI);
     cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",
                        "Hide InGame GUI");
-    CExoString sGlobal("GBL_MAIN_SITH_LORD");
     char nGlobalValue = 0;
+    CExoString sGlobal("GBL_MAIN_SITH_LORD");
     if (g_pAppManager->m_pServerExoApp != NULL)
     {
         g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
@@ -168,7 +173,15 @@ int CClientOptions::SaveOptions()
     {
         CSWCCreature* pPlayer =
             g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter();
-        if (pPlayer != NULL && m_bGameCompleted > 2)
+        if (pPlayer != NULL)
+        {
+            CSWSCreature* pServerCreature = pPlayer->GetServerCreature();
+            if (pServerCreature != NULL && pServerCreature->m_bPlayerCreated)
+            {
+                bPlayerCreated = 1;
+            }
+        }
+        if (pPlayer != NULL && (m_bGameCompleted > 2 || bPlayerCreated))
         {
             sValue.Format("%d", pPlayer->GetStats()->m_nGender);
             cIni.WriteIniEntry(sValue, ".\\swkotor2.ini", "Game Options",

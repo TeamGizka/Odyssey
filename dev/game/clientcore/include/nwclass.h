@@ -54,7 +54,21 @@ struct CSWClass
     {
         CLASS_INDEX_SOLDIER = 0,
         CLASS_INDEX_SCOUT = 1,
-        CLASS_INDEX_SCOUNDREL = 2
+        CLASS_INDEX_SCOUNDREL = 2,
+        CLASS_INDEX_JEDIGUARDIAN = 3,
+        CLASS_INDEX_JEDICONSULAR = 4,
+        CLASS_INDEX_JEDISENTINEL = 5,
+        CLASS_INDEX_COMBATDROID = 6,
+        CLASS_INDEX_EXPERTDROID = 7,
+        CLASS_INDEX_MINION = 8,
+        CLASS_INDEX_TECHSPECIALIST = 9,
+        CLASS_INDEX_BOUNTYHUNTER = 10,
+        CLASS_INDEX_JEDIWEAPONMASTER = 11,
+        CLASS_INDEX_JEDIMASTER = 12,
+        CLASS_INDEX_JEDIWATCHMAN = 13,
+        CLASS_INDEX_SITHMARAUDER = 14,
+        CLASS_INDEX_SITHLORD = 15,
+        CLASS_INDEX_SITHASSASSIN = 16
     };
     static const unsigned char CCLASS_SCOUNDREL;
     static const unsigned char CCLASS_SOLDIER;
@@ -121,6 +135,7 @@ struct CSWClass
     int IsBonusFeat(unsigned short nFeat);
     int IsNormalFeat(unsigned short nFeat);
     int IsGrantedFeat(unsigned short nFeat, unsigned char& nLevel);
+    int IsPCGrantedFeat(unsigned short nFeat);
     int IsFeatUseable(unsigned short nFeat);
     int GetRecommendedFeat(int nIndex);
     int GetRecommendedSkill(int nIndex);

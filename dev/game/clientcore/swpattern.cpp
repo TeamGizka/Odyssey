@@ -1,4 +1,10 @@
 #include "swpattern.h"
+// PC 0x006E91E0
+CSWRumbleMotorData::~CSWRumbleMotorData()
+{
+    delete m_pfMagnitudes;
+    delete m_pfTimes;
+}
 // PC 0x006E9200
 float CSWRumbleMotorData::GetMagnitude(float fTime, int bLoop)
 {
@@ -55,16 +61,16 @@ float CSWRumbleMotorData::GetMagnitude(float fTime, int bLoop)
 int CSWRumblePattern::GetMagnitudes(float fTime, float& fLeftMagnitude,
                                     float& fRightMagnitude)
 {
-    fLeftMagnitude = m_aMotorData[0].GetMagnitude(fTime, m_bLoop);
-    fRightMagnitude = m_aMotorData[1].GetMagnitude(fTime, m_bLoop);
+    fLeftMagnitude = m_LeftMotor.GetMagnitude(fTime, m_bLoop);
+    fRightMagnitude = m_RightMotor.GetMagnitude(fTime, m_bLoop);
 
     if (m_bLoop == 0)
     {
-        if (!(fTime < m_aMotorData[0].GetSampleTime(
-                          m_aMotorData[0].m_nNumSamplePoints - 1)))
+        if (!(fTime < m_LeftMotor.GetSampleTime(
+                          m_LeftMotor.m_nNumSamplePoints - 1)))
         {
-            if (!(fTime < m_aMotorData[1].GetSampleTime(
-                              m_aMotorData[1].m_nNumSamplePoints - 1)))
+            if (!(fTime < m_RightMotor.GetSampleTime(
+                              m_RightMotor.m_nNumSamplePoints - 1)))
             {
                 return 0;
             }
@@ -112,28 +118,28 @@ void CSWRumblePattern::LoadPattern(int nRow, C2DA* p2DA)
             CExoString sSamples("LSamples");
             p2DA->GetINTEntry(nRow, sSamples, &nSamples);
         }
-        m_aMotorData[0].SetNumSamplePoints(nSamples);
-        for (i = 0; i < m_aMotorData[0].m_nNumSamplePoints; i++)
+        m_LeftMotor.SetNumSamplePoints(nSamples);
+        for (i = 0; i < m_LeftMotor.m_nNumSamplePoints; i++)
         {
             sColumn.Format("LMagnitude%d", i + 1);
             p2DA->GetFLOATEntry(nRow, sColumn, &fMagnitude);
             sColumn.Format("LTime%d", i + 1);
             p2DA->GetFLOATEntry(nRow, sColumn, &fTime);
-            m_aMotorData[0].SetSamplePoint(i, fMagnitude, fTime);
+            m_LeftMotor.SetSamplePoint(i, fMagnitude, fTime);
         }
 
         {
             CExoString sSamples("RSamples");
             p2DA->GetINTEntry(nRow, sSamples, &nSamples);
         }
-        m_aMotorData[1].SetNumSamplePoints(nSamples);
-        for (i = 0; i < m_aMotorData[1].m_nNumSamplePoints; i++)
+        m_RightMotor.SetNumSamplePoints(nSamples);
+        for (i = 0; i < m_RightMotor.m_nNumSamplePoints; i++)
         {
             sColumn.Format("RMagnitude%d", i + 1);
             p2DA->GetFLOATEntry(nRow, sColumn, &fMagnitude);
             sColumn.Format("RTime%d", i + 1);
             p2DA->GetFLOATEntry(nRow, sColumn, &fTime);
-            m_aMotorData[1].SetSamplePoint(i, fMagnitude, fTime);
+            m_RightMotor.SetSamplePoint(i, fMagnitude, fTime);
         }
     }
 }

@@ -577,7 +577,7 @@ public:
     void SelectPrevPersonalAction(int);
     void UpdateStickyTarget();
     void SetupPauseGuiExtent(CSWGuiExtent*);
-    void PopulateMenus();
+    void PopulateMenus(int bUnknown);
     void UpdateActionQueue();
     void UpdateIndicator(float);
     void DrawMap(float);

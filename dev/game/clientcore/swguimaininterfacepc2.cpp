@@ -1702,7 +1702,7 @@ void CSWGuiMainInterface::UpdateActionDescription()  // PC 0x006E0D90
 #endif
 
 #ifdef _XBOX
-void CSWGuiMainInterface::PopulateMenus()
+void CSWGuiMainInterface::PopulateMenus(int bUnknown)
 {
     CSWCCreature* pCreature =
         g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
@@ -1866,7 +1866,7 @@ void CSWGuiMainInterface::PopulateMenus()
     }
 }
 #else
-void CSWGuiMainInterface::PopulateMenus()  // PC 0x006E3530
+void CSWGuiMainInterface::PopulateMenus(int bUnknown)  // PC 0x006E3530
 {
     CSWCCreature* pCreature =
         g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
@@ -3141,7 +3141,7 @@ void CSWGuiMainInterface::Draw(float fElapsed)
     UpdateIndicator(fIndicatorElapsed);
     m_cTargetActionMenu.Update(fElapsed);
 #endif
-    PopulateMenus();
+    PopulateMenus(1);
     for (int nStatus = 0; nStatus < GUI_STATUS_COUNT; ++nStatus)
     {
         float fStatusElapsed = m_pManager->m_fGuiScale;

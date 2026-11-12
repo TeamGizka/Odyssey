@@ -62,6 +62,7 @@ public:
                           CExoArrayList<CSWGuiInterfaceAction>& lstActions);
     CSWSPlaceable* GetServerPlaceable();
     void SetAppearance(int nAppearance);
+    int GetAppearance() { return m_nAppearance; }
     void AnimationUpdate();
     void HilightPlaceable(int bHilight);
 

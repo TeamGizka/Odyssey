@@ -440,7 +440,7 @@ void addlightside(int nAmount)
             if (pCreature != NULL)
             {
                 short nShift = max(-100, min(100, nAmount));
-                pCreature->m_pStats->ModifyAlignment(nShift);
+                pCreature->m_pStats->ModifyAlignment(nShift, 0);
             }
         }
     }
@@ -458,7 +458,7 @@ void adddarkside(int nAmount)
             if (pCreature != NULL)
             {
                 short nShift = min(100, max(-100, -nAmount));
-                pCreature->m_pStats->ModifyAlignment(nShift);
+                pCreature->m_pStats->ModifyAlignment(nShift, 0);
             }
         }
     }

@@ -29,7 +29,6 @@ CCombatInformationNode::CCombatInformationNode()
 // PC 0x005D7E20
 CCombatInformation::~CCombatInformation()
 {
-    m_nUnarmedDamageDie = 3;
     m_nNumAttacks = 0;
     m_nOnHandAttackMod = 0;
     m_nOnHandDamageMod = 0;
@@ -40,6 +39,7 @@ CCombatInformation::~CCombatInformation()
     m_nArcaneSpellFailure = 0;
     m_nArmorCheckPenalty = 0;
     m_nUnarmedDamageDice = 1;
+    m_nUnarmedDamageDie = 4;
     m_nOnHandCriticalRange = 0;
     m_nOnHandCriticalMultiplier = 0;
     m_nOffHandCriticalRange = 0;
@@ -439,10 +439,9 @@ void CSWRules::LoadClassInfo()
         m_pClasses[i].SetCharisma(nValue);
 
         CExoString sColumn;
-        for (int nLevel = 1; nLevel <= 20; nLevel++)
+        for (int nLevel = 1; nLevel <= 50; nLevel++)
         {
-            sColumn.Format("EffCRLvl%02d", nLevel);
-            p2DA->GetINTEntry(i, sColumn.CStr(), &nValue);
+            nValue = 1;
             m_pClasses[i].SetEffectiveCRLevel(nLevel, nValue);
         }
     }
@@ -689,10 +688,9 @@ CSWFeat* CSWRules::GetFeat(unsigned short nFeat)
 {
     if (nFeat < m_nNumFeats)
     {
-        CSWFeat* pFeat = &m_pFeats[nFeat];
-        if (pFeat->m_bAvailable)
+        if (m_pFeats[nFeat].m_bAvailable)
         {
-            return pFeat;
+            return &m_pFeats[nFeat];
         }
     }
     return 0;
@@ -964,7 +962,7 @@ CCombatInformation::CCombatInformation()
     m_nArcaneSpellFailure = 0;
     m_nArmorCheckPenalty = 0;
     m_nUnarmedDamageDice = 1;
-    m_nUnarmedDamageDie = 3;
+    m_nUnarmedDamageDie = 4;
     m_nOnHandCriticalRange = 0;
     m_nOnHandCriticalMultiplier = 2;
     m_nOffHandCriticalRange = 0;

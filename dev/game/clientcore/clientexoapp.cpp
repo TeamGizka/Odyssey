@@ -4,6 +4,7 @@
 #include "clientexoappinternal.h"
 #include "nwcmodule.h"
 #include "serverexoapp.h"
+#include "swguimainmenu.h"
 #include "swplayercontrol.h"
 
 extern const int CLIENTEXOAPP_UNREFERENCED_128 = 128;
@@ -1007,6 +1008,11 @@ void CClientExoApp::DisableVideoEffect()
 {
     m_pcExoAppInternal->DisableVideoEffect();
 }
+// PC 0x00639180
+int CClientExoApp::GetVideoEffectType()
+{
+    return m_pcExoAppInternal->m_nVideoEffect;
+}
 // PC 0x00639190
 void CClientExoApp::DelayNextEnemyAutoPause()
 {
@@ -1345,6 +1351,22 @@ void CClientExoApp::SetSoundPausedByCombat(int nPaused)
     m_pcExoAppInternal->m_nSoundPausedByCombat = nPaused;
 }
 #endif
+// PC 0x006395B0
+void CClientExoApp::ClearMainMenuPointer()
+{
+    if (m_pcExoAppInternal != NULL)
+    {
+        m_pcExoAppInternal->m_pMainMenu = NULL;
+    }
+}
+// PC 0x006395D0
+void CClientExoApp::EnableMainMenuIdleTimer()
+{
+    if (m_pcExoAppInternal != NULL && m_pcExoAppInternal->m_pMainMenu != NULL)
+    {
+        m_pcExoAppInternal->m_pMainMenu->m_n1900 = 0;
+    }
+}
 int CClientExoApp::DontUseThisSetPlayerCreature(unsigned long oidObject)
 {
     return m_pcExoAppInternal->DontUseThisSetPlayerCreature(oidObject);

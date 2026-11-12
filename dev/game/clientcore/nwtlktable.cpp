@@ -16,6 +16,9 @@
 #include "exoinput.h"
 #include "exoinputinternal.h"
 #include "swguiinOPTKeyMapping.h"
+#include "serverexoapp.h"
+#include "partytables.h"
+#include "nwsvartable.h"
 // PC 0x0069F0D0
 unsigned char CSWTlkTable::GetObjectGender()
 {
@@ -23,7 +26,12 @@ unsigned char CSWTlkTable::GetObjectGender()
         m_pObject->AsSWCCreature() != 0 &&
         m_pObject->AsSWCCreature()->m_pStats != 0)
     {
-        return m_pObject->AsSWCCreature()->m_pStats->m_nGender;
+        unsigned char nGender = m_pObject->AsSWCCreature()->m_pStats->m_nGender;
+        if (nGender > CTlkTable::GENDER_FEMALE)
+        {
+            nGender = CTlkTable::GENDER_MALE;
+        }
+        return nGender;
     }
     return CTlkTable::GENDER_MALE;
 }
@@ -52,6 +60,7 @@ void CSWTlkTable::GetTokenValue(const CTlkTableToken& token, CExoString& sValue)
     case CTlkTableToken::ALIGNMENT_NAME:
     case CTlkTableToken::ALIGNMENT_NAME_LOWER:
     case CTlkTableToken::ALIGNMENT_STRING:
+    case CTlkTableToken::PLAYER_NAME:
         if (m_pObject == 0)
         {
             sValue = g_pAppManager->GetClientExoApp()->GetGUIString(token.m_nTokenValue);
@@ -70,13 +79,14 @@ void CSWTlkTable::GetTokenValue(const CTlkTableToken& token, CExoString& sValue)
                     switch (token.m_nType)
                     {
                     case CTlkTableToken::FULL_NAME:
-                        sValue = m_pObject->AsSWCCreature()->GetStats()->GetFullName();
+                    case CTlkTableToken::PLAYER_NAME:
+                        sValue = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetPCName();
                         break;
                     case CTlkTableToken::FIRST_NAME:
-                        sValue = m_pObject->AsSWCCreature()->GetStats()->m_sFirstName;
+                        sValue = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetPCFirstName();
                         break;
                     case CTlkTableToken::LAST_NAME:
-                        sValue = m_pObject->AsSWCCreature()->GetStats()->m_sLastName;
+                        sValue = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetPCLastName();
                         break;
                     case CTlkTableToken::RACE_NAME:
                         {
@@ -128,6 +138,10 @@ void CSWTlkTable::GetTokenValue(const CTlkTableToken& token, CExoString& sValue)
                         break;
                     }
                     m_nCurGender = nGender;
+                    if (nGender > CTlkTable::GENDER_FEMALE)
+                    {
+                        m_nCurGender = CTlkTable::GENDER_MALE;
+                    }
                 }
             }
             else
@@ -169,28 +183,27 @@ void CSWTlkTable::GetTokenValue(const CTlkTableToken& token, CExoString& sValue)
         break;
     case CTlkTableToken::PARSE_BEGIN:
         m_bParsing = m_bFlag;
+    case CTlkTableToken::PARSE_EMPTY:
         sValue = "";
         break;
     case CTlkTableToken::PARSE_SKIP:
         m_bParsing = m_bFlag;
-    case CTlkTableToken::PARSE_EMPTY:
         sValue = "";
         break;
     case CTlkTableToken::PARSE_END:
         sValue = "";
         m_bParsing = 0;
         break;
-    case CTlkTableToken::PLAYER_NAME:
-        {
-            CSWCPlayer* pPlayer = g_pAppManager->GetClientExoApp()->GetPlayerByPlayerID(m_nPlayerId);
-            if (pPlayer == 0)
-                sValue = g_pAppManager->GetClientExoApp()->GetGUIString(token.m_nTokenValue);
-            else
-                sValue = pPlayer->m_sPlayerName;
-        }
-        break;
     case CTlkTableToken::CHARACTER:
         sValue.Format("%c", token.m_nTokenValue);
+        break;
+    case CTlkTableToken::BOUNTY:
+        {
+            CExoString sBounty("300NAR_Bounty");
+            char nBounty = 0;
+            g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(sBounty, nBounty);
+            sValue.Format("%d", nBounty * 500);
+        }
         break;
     case CTlkTableToken::INPUT_CONTROL:
         {
@@ -242,5 +255,14 @@ void CSWTlkTable::GetTokenValue(const CTlkTableToken& token, CExoString& sValue)
             sValue = g_pTlkTable->GetSimpleString(nStrRef);
         }
         break;
+    }
+
+    while (sValue.GetLength() > 0 && sValue[0] == ' ')
+    {
+        sValue = sValue.Right(sValue.GetLength() - 1);
+    }
+    while (sValue.GetLength() > 0 && sValue[sValue.GetLength() - 1] == ' ')
+    {
+        sValue = sValue.Left(sValue.GetLength() - 1);
     }
 }

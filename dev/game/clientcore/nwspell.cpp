@@ -69,30 +69,30 @@ unsigned char CSWSpell::GetSpellLevel(unsigned char nClass)
 {
     switch (nClass)
     {
-    case 0:
-    case 1:
-    case 2:
+    case CSWClass::CLASS_INDEX_SOLDIER:
+    case CSWClass::CLASS_INDEX_SCOUT:
+    case CSWClass::CLASS_INDEX_SCOUNDREL:
         return -1;
-    case 3:
+    case CSWClass::CLASS_INDEX_JEDIGUARDIAN:
         return m_nGuardianLevel;
-    case 4:
+    case CSWClass::CLASS_INDEX_JEDICONSULAR:
         return m_nConsularLevel;
-    case 5:
+    case CSWClass::CLASS_INDEX_JEDISENTINEL:
         return m_nSentinelLevel;
-    case 9:
-    case 10:
+    case CSWClass::CLASS_INDEX_TECHSPECIALIST:
+    case CSWClass::CLASS_INDEX_BOUNTYHUNTER:
         return -1;
-    case 11:
+    case CSWClass::CLASS_INDEX_JEDIWEAPONMASTER:
         return m_nWeaponMasterLevel;
-    case 12:
+    case CSWClass::CLASS_INDEX_JEDIMASTER:
         return m_nJediMasterLevel;
-    case 13:
+    case CSWClass::CLASS_INDEX_JEDIWATCHMAN:
         return m_nWatchmanLevel;
-    case 14:
+    case CSWClass::CLASS_INDEX_SITHMARAUDER:
         return m_nMarauderLevel;
-    case 15:
+    case CSWClass::CLASS_INDEX_SITHLORD:
         return m_nSithLordLevel;
-    case 16:
+    case CSWClass::CLASS_INDEX_SITHASSASSIN:
         return m_nAssassinLevel;
     default:
         return m_nInnateLevel;
@@ -176,6 +176,7 @@ void CSWSpellArray::Load()
     for (int i = 0; i < m_nNumSpells; i++)
     {
         int nValue;
+        { CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_n00 = i; }
         p2DA->GetINTEntry(i, "Category", &nValue);
         { int nCategory = nValue; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nCategory = nCategory; }
         p2DA->GetINTEntry(i, "MaxCR", &nValue);
@@ -605,7 +606,8 @@ int CSWSpell::GetAdjustedForcePoints(unsigned long nLevel, int bAdjust, int nRoo
     {
     case FORM_FORCE_II_POTENCY:
     case FORM_FORCE_IV_MASTERY:
-        return (int)(nForcePoints * FORM_FORCE_COST_MULTIPLIER);
+        nForcePoints = (int)(nForcePoints * FORM_FORCE_COST_MULTIPLIER);
+        break;
     }
     return nForcePoints;
 }

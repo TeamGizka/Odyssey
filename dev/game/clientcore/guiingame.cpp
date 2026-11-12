@@ -2507,7 +2507,7 @@ void CGuiInGame::RePopulateMainInterface()
 {
     if (m_pMainInterface != 0)
     {
-        m_pMainInterface->PopulateMenus();
+        m_pMainInterface->PopulateMenus(1);
     }
 }
 // PC 0x00681BE0

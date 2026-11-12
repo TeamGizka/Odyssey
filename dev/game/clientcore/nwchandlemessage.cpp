@@ -1029,7 +1029,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             g_pTlkTable->SetCustomToken(0, sObjectName);
         else
         {
-            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(649);
             g_pTlkTable->SetCustomToken(0, sObjectName);
         }
         g_pTlkTable->SetCustomToken(1, sText);
@@ -1067,7 +1067,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             g_pTlkTable->SetCustomToken(0, sObjectName);
         else
         {
-            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(649);
             g_pTlkTable->SetCustomToken(0, sObjectName);
         }
         g_pTlkTable->SetCustomToken(1, CExoString(nTotal));
@@ -1247,19 +1247,19 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 g_pTlkTable->SetCustomToken(0, sAttacker);
             else
             {
-                sUnknownAttacker = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+                sUnknownAttacker = g_pAppManager->GetClientExoApp()->GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sUnknownAttacker);
             }
             g_pTlkTable->SetCustomToken(1, sObjectName);
         }
         else
         {
-            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(649);
             if (g_pAppManager->GetClientExoApp()->GetObjectName(oidAttacker, sAttacker))
                 g_pTlkTable->SetCustomToken(0, sAttacker);
             else
             {
-                sUnknownAttacker = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+                sUnknownAttacker = g_pAppManager->GetClientExoApp()->GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sUnknownAttacker);
             }
             g_pTlkTable->SetCustomToken(1, cString.m_sString);
@@ -1497,19 +1497,19 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 g_pTlkTable->SetCustomToken(0, sAttacker);
             else
             {
-                sUnknownAttacker = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+                sUnknownAttacker = g_pAppManager->GetClientExoApp()->GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sUnknownAttacker);
             }
         }
         else
         {
             CAppManager* pAppManager = g_pAppManager;
-            sObjectName = pAppManager->m_pClientExoApp->GetGUIString(0);
+            sObjectName = pAppManager->m_pClientExoApp->GetGUIString(649);
             if (g_pAppManager->GetClientExoApp()->GetObjectName(oidAttacker, sAttacker))
                 g_pTlkTable->SetCustomToken(0, sAttacker);
             else
             {
-                sUnknownAttacker = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+                sUnknownAttacker = g_pAppManager->GetClientExoApp()->GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sUnknownAttacker);
             }
         }
@@ -1636,19 +1636,19 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 g_pTlkTable->SetCustomToken(0, sAttacker);
             else
             {
-                sUnknownAttacker = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+                sUnknownAttacker = g_pAppManager->GetClientExoApp()->GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sUnknownAttacker);
             }
         }
         else
         {
             CAppManager* pAppManager = g_pAppManager;
-            sObjectName = pAppManager->m_pClientExoApp->GetGUIString(0);
+            sObjectName = pAppManager->m_pClientExoApp->GetGUIString(649);
             if (g_pAppManager->GetClientExoApp()->GetObjectName(oidAttacker, sAttacker))
                 g_pTlkTable->SetCustomToken(0, sAttacker);
             else
             {
-                sUnknownAttacker = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+                sUnknownAttacker = g_pAppManager->GetClientExoApp()->GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sUnknownAttacker);
             }
         }
@@ -1705,7 +1705,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             g_pTlkTable->SetCustomToken(0, sObjectName);
         else
         {
-            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(649);
             g_pTlkTable->SetCustomToken(0, sObjectName);
         }
         if (nResult == 0)
@@ -1739,7 +1739,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             g_pTlkTable->SetCustomToken(0, sObjectName);
         else
         {
-            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(649);
             g_pTlkTable->SetCustomToken(0, sObjectName);
         }
         g_pTlkTable->SetCustomToken(1, CExoString(nRoll));
@@ -1748,7 +1748,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             g_pTlkTable->SetCustomToken(3, sObjectName);
         else
         {
-            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(649);
             g_pTlkTable->SetCustomToken(3, sObjectName);
         }
         g_pTlkTable->SetCustomToken(4, CExoString(nResult));
@@ -1789,7 +1789,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             g_pTlkTable->SetCustomToken(0, sCreature);
         else
         {
-            sCreature = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+            sCreature = g_pAppManager->GetClientExoApp()->GetGUIString(649);
             g_pTlkTable->SetCustomToken(0, sCreature);
         }
         switch (nSave)
@@ -1827,14 +1827,14 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             g_pTlkTable->SetCustomToken(0, sObject);
         else
         {
-            sObject = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+            sObject = g_pAppManager->GetClientExoApp()->GetGUIString(649);
             g_pTlkTable->SetCustomToken(0, sObject);
         }
         if (g_pAppManager->GetClientExoApp()->GetObjectName(oidKiller, sKiller))
             g_pTlkTable->SetCustomToken(1, sKiller);
         else
         {
-            sKiller = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+            sKiller = g_pAppManager->GetClientExoApp()->GetGUIString(649);
             g_pTlkTable->SetCustomToken(1, sKiller);
         }
         g_pTlkTable->SetCustomToken(2, CExoString(nExperience));
@@ -1870,7 +1870,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                     g_pTlkTable->SetCustomToken(0, sObjectName);
                 else
                 {
-                    sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+                    sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(649);
                     g_pTlkTable->SetCustomToken(0, sObjectName);
                 }
                 int nAltMessage = pSpell->m_nAltMessage;
@@ -1886,7 +1886,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                     g_pTlkTable->SetCustomToken(0, sObjectName);
                 else
                 {
-                    sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+                    sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(649);
                     g_pTlkTable->SetCustomToken(0, sObjectName);
                 }
                 g_pTlkTable->SetCustomToken(1, sSpell);
@@ -1965,7 +1965,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+                sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             g_pTlkTable->SetCustomToken(1, sResult);
@@ -2095,19 +2095,19 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 g_pTlkTable->SetCustomToken(0, sAttacker);
             else
             {
-                sUnknownAttacker = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+                sUnknownAttacker = g_pAppManager->GetClientExoApp()->GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sUnknownAttacker);
             }
         }
         else
         {
             CAppManager* pAppManager = g_pAppManager;
-            sObjectName = pAppManager->m_pClientExoApp->GetGUIString(0);
+            sObjectName = pAppManager->m_pClientExoApp->GetGUIString(649);
             if (g_pAppManager->GetClientExoApp()->GetObjectName(oidAttacker, sAttacker))
                 g_pTlkTable->SetCustomToken(0, sAttacker);
             else
             {
-                sUnknownAttacker = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+                sUnknownAttacker = g_pAppManager->GetClientExoApp()->GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sUnknownAttacker);
             }
         }
@@ -2143,7 +2143,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             g_pTlkTable->SetCustomToken(0, sObjectName);
         else
         {
-            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(649);
             g_pTlkTable->SetCustomToken(0, sObjectName);
         }
         g_pTlkTable->SetCustomToken(1, CExoString(nTotal));
@@ -2623,7 +2623,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             g_pTlkTable->SetCustomToken(0, sObjectName);
         else
         {
-            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(649);
             g_pTlkTable->SetCustomToken(0, sObjectName);
         }
         sMessage = g_pSWTlkTable->Fetch(0, NULL, 0, 0) +
@@ -2804,7 +2804,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             g_pTlkTable->SetCustomToken(0, sObjectName);
         else
         {
-            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(649);
             g_pTlkTable->SetCustomToken(0, sObjectName);
         }
         if (nResult == 1 || nResult == 2 || nResult == 3)
@@ -2816,7 +2816,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             g_pTlkTable->SetCustomToken(2, sObjectName);
         else
         {
-            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(649);
             g_pTlkTable->SetCustomToken(2, sObjectName);
         }
         sMessage = g_pSWTlkTable->Fetch(42042, NULL, 0, 0) + ". ";
@@ -2858,7 +2858,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+                sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             unsigned long nEffectString = 0;
@@ -2911,14 +2911,14 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         int nModifier7 = ReadINT(32);
         int bAutomaticHit = ReadINT(32);
         int bAutomaticMiss = ReadINT(32);
-        int nModifier8 = ReadINT(32);
+        int nDualStrikeBonus = ReadINT(32);
         int nFeat3 = ReadINT(32);
         int nFeatBonus3 = ReadINT(32);
         int nSpell1 = ReadINT(32);
         int nSpellBonus1 = ReadINT(32);
         int nSpell2 = ReadINT(32);
         int nSpellBonus2 = ReadINT(32);
-        int nModifier9 = ReadINT(32);
+        int nCharismaModifier = ReadINT(32);
         int nSpell3 = ReadINT(32);
         int nSpellBonus3 = ReadINT(32);
         int nHandString = (bOffHand != 0) + 42314;
@@ -2972,9 +2972,9 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 g_pTlkTable->SetCustomToken(0, nModifier4);
                 sMessage = sMessage + g_pSWTlkTable->Fetch(42317, NULL, 0, 0);
             }
-            if (nModifier8)
+            if (nDualStrikeBonus)
             {
-                g_pTlkTable->SetCustomToken(0, nModifier8);
+                g_pTlkTable->SetCustomToken(0, nDualStrikeBonus);
                 sMessage = sMessage + g_pSWTlkTable->Fetch(48201, NULL, 0, 0);
             }
             if (nFeatBonus3)
@@ -3001,9 +3001,9 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 g_pTlkTable->SetCustomToken(1, nSpellBonus2);
                 sMessage = sMessage + g_pSWTlkTable->Fetch(42318, NULL, 0, 0);
             }
-            if (nModifier9)
+            if (nCharismaModifier)
             {
-                g_pTlkTable->SetCustomToken(0, nModifier9);
+                g_pTlkTable->SetCustomToken(0, nCharismaModifier);
                 sMessage = sMessage + g_pSWTlkTable->Fetch(126694, NULL, 0, 0);
             }
             if (nSpellBonus3)
@@ -3156,7 +3156,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         ReadINT(32);
         int nSpellReduction = ReadINT(32);
         int nSpell = ReadINT(32);
-        int nModifier6 = ReadINT(32);
+        int nMiscEffectDamage = ReadINT(32);
         for (i = 0; i < 14; ++i)
         {
             unsigned long nString;
@@ -3222,10 +3222,10 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 g_pTlkTable->SetCustomToken(0, nModifier2);
                 sDetails = sDetails + " + " + g_pSWTlkTable->Fetch(42155, NULL, 0, 0);
             }
-            if (nModifier6)
+            if (nMiscEffectDamage)
             {
                 STR_RES cModifier;
-                g_pTlkTable->SetCustomToken(0, nModifier6);
+                g_pTlkTable->SetCustomToken(0, nMiscEffectDamage);
                 sDetails = sDetails + " + " + g_pSWTlkTable->Fetch(113780, NULL, 0, 0);
             }
             if (nModifier3 > 0)
@@ -3286,7 +3286,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             g_pTlkTable->SetCustomToken(0, sObjectName);
         else
         {
-            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(649);
             g_pTlkTable->SetCustomToken(0, sObjectName);
         }
         unsigned long nResultString;
@@ -3386,7 +3386,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+                sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             g_pTlkTable->SetCustomToken(1, nRoll);
@@ -3403,7 +3403,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             g_pTlkTable->SetCustomToken(0, sObjectName);
         else
         {
-            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(0);
+            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(649);
             g_pTlkTable->SetCustomToken(0, sObjectName);
         }
         int nPoison = ReadINT(32);

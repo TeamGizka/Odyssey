@@ -9,6 +9,7 @@ public:
     int m_nNumSamplePoints;
     int m_nCurrentSamplePoint;
 
+    ~CSWRumbleMotorData();
     float GetMagnitude(float fTime, int bLoop);
 
     float GetSampleTime(int nSample)
@@ -36,7 +37,8 @@ public:
 class CSWRumblePattern
 {
 public:
-    CSWRumbleMotorData m_aMotorData[2];
+    CSWRumbleMotorData m_LeftMotor;
+    CSWRumbleMotorData m_RightMotor;
     int m_bLoop;
 
     int GetMagnitudes(float fTime, float& fLeftMagnitude,

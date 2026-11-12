@@ -231,6 +231,7 @@ void AurSetClearColor(float fRed, float fGreen, float fBlue, float fAlpha);
 void AurGetClearColor(float* pColor);
 
 extern unsigned char g_nBitsPerPixel;
+extern bool g_ForceSight;
 extern int g_nDesiredFullScreenRefreshRate;
 
 class CAuroraModel;

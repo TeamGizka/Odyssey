@@ -592,6 +592,18 @@ int CSWClass::IsGrantedFeat(unsigned short nFeat, unsigned char& nLevel)
     }
     return 0;
 }
+// PC 0x0060E6A0
+int CSWClass::IsPCGrantedFeat(unsigned short nFeat)
+{
+    for (unsigned short i = 0; i < m_nNumFeats; i++)
+    {
+        if (m_pFeats[i].m_nFeat == nFeat)
+        {
+            return m_pFeats[i].m_nPCGrantedLevel == 1;
+        }
+    }
+    return 0;
+}
 // PC 0x0060E700
 int CSWClass::IsFeatUseable(unsigned short nFeat)
 {

@@ -632,6 +632,11 @@ void CClientExoAppInternal::PerformLButtonUpAction()  // PC 0x00670A20
 #endif
 
 #ifndef _XBOX
+inline CSWGuiMainInterface* CGuiInGame::GetMainInterface()
+{
+    return m_pMainInterface;
+}
+
 void CClientExoAppInternal::HandleMouseClickInWorld()  // PC 0x00670840
 {
     CLIENTINPUT_TRACE();
@@ -669,7 +674,9 @@ void CClientExoAppInternal::HandleMouseClickInWorld()  // PC 0x00670840
             if (m_oidMouseOverTarget != OBJECT_INVALID)
                 SetLastTarget(m_oidMouseOverTarget, 0);
             if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMainInterface != NULL)
-                g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMainInterface->PopulateMenus();
+            {
+                g_pAppManager->m_pClientExoApp->GetInGameGui()->GetMainInterface()->PopulateMenus(1);
+            }
         }
     }
 }
@@ -746,9 +753,16 @@ void CClientExoAppInternal::GetDefaultActions()  // PC 0x00670B10
                                 unsigned long nStrRef = CClientExoApp::GUI_STRING_OPEN;
                                 int bUseSearch;
                                 int bRead = g_pRules->Get2DArrays()->m_pPlaceables->GetINTEntry(
-                                    pTarget->AsSWCPlaceable()->m_nAppearance,
+                                    pTarget->AsSWCPlaceable()->GetAppearance(),
                                     "UseSearch", &bUseSearch);
-                                if (bRead ? bUseSearch : pPlaceable->m_bIsBodyBag)
+                                if (bRead)
+                                {
+                                    if (bUseSearch)
+                                    {
+                                        nStrRef = CClientExoApp::GUI_STRING_SEARCH;
+                                    }
+                                }
+                                else if (pPlaceable->m_bIsBodyBag)
                                 {
                                     nStrRef = CClientExoApp::GUI_STRING_SEARCH;
                                 }
@@ -1243,7 +1257,7 @@ int CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // PC 0x006
         break;
     case INPUT_EVENT_SWAP_WEAPONS:
         if (nValue != 0)
-            g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->OnSwapWeaponsPressed(NULL);
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->GetMainInterface()->OnSwapWeaponsPressed(NULL);
         break;
     case INPUT_EVENT_FIRE_SECONDARY:
     case INPUT_EVENT_MINIGAME_FIRE:
@@ -1436,9 +1450,13 @@ int CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // PC 0x006
             CSWMiniGame* pMiniGame = g_pAppManager->GetClientExoApp()->GetMiniGame();
             if (pMiniGame != NULL && g_pAppManager->GetClientExoApp()->GetPausedByCombat())
             {
-                if (pMiniGame->m_nAttachType == CSWMiniGame::ATTACH_PLAYER_MODEL)
+                int nAttachType = pMiniGame->m_nAttachType;
+                if (nAttachType == CSWMiniGame::ATTACH_PLAYER_MODEL)
                 {
-                    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueBoolean(CExoString("GBL_QUIT_SWOOP"), 1);
+                    {
+                        CExoString sQuitSwoop("GBL_QUIT_SWOOP");
+                        g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueBoolean(sQuitSwoop, nAttachType);
+                    }
                     g_pAppManager->GetClientExoApp()->SetPausedByCombat(0, PAUSE_REASON_INPUT, 0);
                     g_pAppManager->GetClientExoApp()->SetAutoPaused(0, 0);
                 }
@@ -1620,10 +1638,6 @@ inline CClientOptions* CClientExoAppInternal::GetClientOptions()
     return m_pClientOptions;
 }
 
-inline CSWGuiMainInterface* CGuiInGame::GetMainInterface()
-{
-    return m_pMainInterface;
-}
 #ifndef _XBOX
 void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
 {
@@ -1745,6 +1759,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
             CExoInputEventDesc* pDesc = aEvents[i].m_pDesc;
             int nEvent = pDesc->m_nEvent;
             int nValue = aEvents[i].m_nValue;
+            CGuiInGame* pGuiInGame = g_pAppManager->GetClientExoApp()->GetInGameGui();
             int bGuiEvent = 0;
             int bGameEvent = 0;
             if (nEvent >= 39 && nEvent <= 64)
@@ -1937,7 +1952,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
                     vToPlayer = vPlayer - vCamera;
                     vToObject = vObject - vCamera;
                     vDelta = vObject - vPlayer;
-                    float fRange = pHitObject->AsSWCObject()->IsHostile() ? HOSTILE_TARGET_RANGE : TARGET_RANGE;
+                    float fRange = pHitObject->IsHostile() ? HOSTILE_TARGET_RANGE : TARGET_RANGE;
                     int bTooFar = vDelta.m_fX * vDelta.m_fX + vDelta.m_fY * vDelta.m_fY > fRange * fRange;
                     if (vToObject.m_fX * vToPlayer.m_fX + vToObject.m_fY * vToPlayer.m_fY >= 0.0f &&
                         !bTooFar)
@@ -2110,6 +2125,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
         {
             fUpDown = g_pExoInput->PollInput(7, INPUT_CLASS_GAME);
             fLeftRight = g_pExoInput->PollInput(8, INPUT_CLASS_GAME);
+            g_pExoInput->PollInput(13, INPUT_CLASS_GAME);
             if (fUpDown == 0.0f && fLeftRight == 0.0f)
             {
                 fLeftRight = min(1.0f, max(-1.0f, g_pExoInput->PollInput(281, 0)));
@@ -2288,6 +2304,11 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
                     fLeftRight = g_pExoInput->PollInput(281, INPUT_CLASS_GAME);
                     fUpDown = g_pExoInput->PollInput(280, INPUT_CLASS_GAME);
                 }
+                if (g_pAppManager->GetClientExoApp()->GetInGameGui()->GetGlobalFadeActive())
+                {
+                    fUpDown = 0.0f;
+                    fLeftRight = 0.0f;
+                }
                 float fTilt = g_pExoInput->PollInput(12, INPUT_CLASS_GAME);
                 float fTurn = g_pExoInput->PollInput(13, INPUT_CLASS_GAME);
                 CSWCameraNavigate* pCamera = (CSWCameraNavigate*)
@@ -2337,14 +2358,19 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
         {
         case CSWMiniGame::ATTACH_PLAYER_MODEL:
             {
-                float fX = min(1.0f, max(-1.0f,
-                    g_pExoInput->PollInput(283, INPUT_CLASS_MINIGAME) + g_pExoInput->PollInput(286, INPUT_CLASS_MINIGAME)));
-                Vector vAxis;
-                if ((void*)pMiniGame == (void*)this)
-                    vAxis.m_fX = fX;
-                else
-                    vAxis.m_fX = fX;
+                float fX = g_pExoInput->PollInput(23, INPUT_CLASS_MINIGAME) / g_fMouseSensitivity;
+                fX = min(1.0f, max(-1.0f, fX));
+                if (fX == 0.0)
+                    fX = min(1.0f, max(-1.0f,
+                        g_pExoInput->PollInput(283, INPUT_CLASS_MINIGAME) + g_pExoInput->PollInput(286, INPUT_CLASS_MINIGAME)));
+                Vector vAxis(fX, 0.0f, 0.0f);
                 pMiniGame->UpdateAxis(vAxis, fTimeStep);
+                pMiniGame->UpdateMouse(fX, 0.0f, fTimeStep);
+#ifndef _XBOX
+                if (!GetPausedByCombat() && g_pAppManager->GetClientExoApp()->GetInputClass())
+                    g_pExoInput->SetMousePos(m_pSWGuiManager->m_nWidth / 2,
+                                            m_pSWGuiManager->m_nHeight / 2, true);
+#endif
             }
             break;
         case CSWMiniGame::ATTACH_CAMERA_HOOK:
@@ -2366,9 +2392,9 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
                     fY = -fY;
                 pMiniGame->UpdateMouse(fX, fY, fTimeStep);
 #ifndef _XBOX
-                if (!GetPausedByCombat())
+                if (!GetPausedByCombat() && g_pAppManager->GetClientExoApp()->GetInputClass())
                     g_pExoInput->SetMousePos(m_pSWGuiManager->m_nWidth / 2,
-                                            m_pSWGuiManager->m_nHeight / 2, false);
+                                            m_pSWGuiManager->m_nHeight / 2, true);
 #endif
             }
             break;

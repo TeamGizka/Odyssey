@@ -62,7 +62,7 @@ public:
         YEAR = 15, HOUR = 16, MONTH = 17, TIME_OF_DAY = 18,
         PARSE_BEGIN = 19, PARSE_SKIP = 20, PARSE_EMPTY = 21,
         PARSE_END = 22, PLAYER_NAME = 23, CHARACTER = 24,
-        INPUT_CONTROL = 25, MOUSE_BUTTON = 26
+        INPUT_CONTROL = 25, MOUSE_BUTTON = 26, BOUNTY = 27
     };
     unsigned long m_nHash;
     CExoString m_sToken;
