@@ -12,6 +12,7 @@ class CSWClass;
 class CSWRace;
 class CSWSkill;
 class CSWBaseItemArray;
+class CSWSpell;
 class CSWSpellArray;
 class CTwoDimArrays;
 
@@ -254,6 +255,7 @@ public:
     unsigned short RollDice(unsigned char nDice, unsigned char nDie);
     unsigned char GetMetaMagicLevelCost(unsigned char nMetaMagic);
     CSWFeat* GetFeat(unsigned short nFeat);
+    CSWSpell* GetSpell(int nSpell);
     int GetDifficultyOption(int nOption, int nDifficulty);
     void LoadDifficultyInfo();
     int GetWeightedDamageAmount(int nMinimum, int nMaximum, int nCritical,

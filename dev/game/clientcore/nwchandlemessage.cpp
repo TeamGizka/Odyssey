@@ -1214,7 +1214,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             }
         }
         sMessage = sMessage + ")";
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
         return 1;
     }
     case CC_MESSAGE_DAMAGE:
@@ -1408,7 +1408,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             }
         }
         sMessage = sMessage + ")";
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
         int bDetails = ReadBOOL();
         if (MessageReadOverflow(1))
             return 0;
@@ -1418,7 +1418,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             sDetails = ReadCExoString(32);
             if (MessageReadOverflow(1))
                 return 0;
-            g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sDetails, 0x80, 0);
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sDetails, 0x80, 0);
         }
         return 1;
     }
@@ -1713,7 +1713,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         else if (nResult == 1)
         {
             sMessage = g_pSWTlkTable->Fetch(38598, NULL, 0, 0);
-            g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
             return 1;
         }
         else
@@ -1723,7 +1723,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         else
             g_pTlkTable->SetCustomToken(1, "");
         sMessage = g_pSWTlkTable->Fetch(38597, NULL, 0, 0);
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
         return 1;
     }
     case CC_MESSAGE_SPELL_RESISTANCE_CHECK:
@@ -1753,7 +1753,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         }
         g_pTlkTable->SetCustomToken(4, CExoString(nResult));
         sMessage = g_pSWTlkTable->Fetch(42019, NULL, 0, 0);
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
         return 1;
     }
     case CC_MESSAGE_SAVING_THROW:
@@ -1809,7 +1809,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         g_pTlkTable->SetCustomToken(5, sModifiers);
         g_pTlkTable->SetCustomToken(6, nDifficulty);
         sMessage = g_pSWTlkTable->Fetch(1406, NULL, 0, 0);
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
         return 1;
     }
     case CC_MESSAGE_DEATH:
@@ -1839,7 +1839,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         }
         g_pTlkTable->SetCustomToken(2, CExoString(nExperience));
         sMessage = g_pSWTlkTable->Fetch(1407, NULL, 0, 0);
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
         return 1;
     }
     case CC_MESSAGE_SPELL_DATA:
@@ -1857,9 +1857,11 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         int nBaseCost = ReadINT(32);
         int nCost = ReadINT(32);
         ReadINT(32);
+        int nHitPointCost = ReadINT(32);
+        ReadINT(32);
         if (MessageReadOverflow(1))
             return 1;
-        CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
+        CSWSpell* pSpell = g_pRules->GetSpell(nSpell);
         if (pSpell != NULL)
         {
             if (pSpell->m_nAltMessage)
@@ -1898,13 +1900,25 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                     sCost.Format(" %d (%d + %d ", nCost, nBaseCost, nModifier);
                 else
                     sCost.Format(" %d (%d - %d ", nCost, nBaseCost, abs(nModifier));
+                if (nHitPointCost)
+                    sMessage = sMessage + " " +
+                        g_pTlkTable->GetSimpleString(42006) + sCost +
+                        g_pTlkTable->GetSimpleString(131356) + ")";
+                else
+                    sMessage = sMessage + " " +
+                        g_pTlkTable->GetSimpleString(42006) + sCost +
+                        g_pTlkTable->GetSimpleString(42008) + ")";
+            }
+            if (nHitPointCost)
+            {
+                CExoString sHitPointCost;
+                sHitPointCost.Format(" %d ", nHitPointCost);
                 sMessage = sMessage + " " +
-                    g_pTlkTable->GetSimpleString(42006) + sCost +
-                    g_pTlkTable->GetSimpleString(42008) + ")";
+                    g_pTlkTable->GetSimpleString(48451) + sHitPointCost;
             }
         }
         g_pAppManager->GetClientExoApp()->GetObjectName(oidTarget, sObjectName);
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 1);
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 1);
         return 1;
     }
     case CC_MESSAGE_SKILL:
@@ -1974,7 +1988,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             case 0:
                 switch (nSkillString)
                 {
-                case 329: case 1529: case 1531:
+                case 329: case 1529: case 1530: case 1531:
                     sMessage.Format("%s *%s*", sSkill.CStr(), sResult.CStr());
                     if (sMessage.GetLength() > 20)
                         sMessage.Format("*%s*", sResult.CStr());
@@ -1996,7 +2010,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             case 3:
                 switch (nSkillString)
                 {
-                case 329: case 1529: case 1531:
+                case 329: case 1529: case 1530: case 1531:
                 {
                     CExoString sFailure = g_pAppManager->GetClientExoApp()->GetGUIString(1519);
                     sMessage.Format("%s *%s*", sSkill.CStr(), sFailure.CStr());
@@ -2106,7 +2120,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         g_pTlkTable->SetCustomToken(7, CExoString(nTotal));
         g_pTlkTable->SetCustomToken(8, "");
         sMessage = g_pSWTlkTable->Fetch(1405, NULL, 0, 0);
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
         return 1;
     }
     case CC_MESSAGE_INITIATIVE:
@@ -2138,7 +2152,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         g_pTlkTable->SetCustomToken(4, CExoString(nModifier));
         g_pTlkTable->SetCustomToken(5, CExoString(nTotal));
         sMessage = g_pSWTlkTable->Fetch(1412, NULL, 0, 0);
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
         return 1;
     }
     case CC_MESSAGE_FEEDBACK:
@@ -2487,6 +2501,8 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         }
         case CSWSCreature::FEEDBACK_GOLD_ADDED:
         case CSWSCreature::FEEDBACK_GOLD_REMOVED:
+        case CSWSCreature::FEEDBACK_COMPONENTS_ADDED:
+        case CSWSCreature::FEEDBACK_CHEMICALS_ADDED:
         {
             int nValue0 = ReadINT(32);
             if (MessageReadOverflow(1))
@@ -2619,11 +2635,11 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 return 0;
             if (i > 0)
                 sMessage = sMessage + ", ";
-            CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
+            CSWSpell* pSpell = g_pRules->GetSpell(nSpell);
             unsigned long nNameStrRef = pSpell->m_nNameStrRef;
             sMessage = sMessage + g_pAppManager->GetClientExoApp()->GetGUIString(nNameStrRef);
         }
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
         return 1;
     }
     case CC_MESSAGE_STEALTH_DETECTION:
@@ -2761,7 +2777,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 sCost.Format(" %d (%d - %d ", nCost, nBaseCost, abs(nModifier));
             sMessage = g_pTlkTable->GetSimpleString(42006) + sCost +
                 g_pTlkTable->GetSimpleString(42008) + ")";
-            g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
         }
         return 1;
     }
@@ -2848,7 +2864,8 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             unsigned long nEffectString = 0;
             switch (nEffect)
             {
-            case 1: nEffectString = bEffectResult ? 42072 : 42031; break;
+            case 1:
+            case 16: nEffectString = bEffectResult ? 42072 : 42031; break;
             case 4: nEffectString = bEffectResult ? 42073 : 42032; break;
             case 7: nEffectString = bEffectResult ? 42074 : 42033; break;
             case 9: nEffectString = bEffectResult ? 42075 : 42034; break;
@@ -2858,12 +2875,16 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             case 6: nEffectString = bEffectResult ? 42079 : 42038; break;
             case 10: nEffectString = bEffectResult ? 42080 : 42039; break;
             case 8: nEffectString = bEffectResult ? 42081 : 42040; break;
+            case 14: nEffectString = bEffectResult ? 48177 : 48178; break;
+            case 15: nEffectString = bEffectResult ? 48542 : 48541; break;
+            case 18: nEffectString = bEffectResult ? 113791 : 113790; break;
+            case 19: nEffectString = bEffectResult ? 124291 : 124290; break;
             }
             sAttack = g_pAppManager->GetClientExoApp()->GetGUIString(nEffectString);
             g_pTlkTable->SetCustomToken(1, sAttack);
             sMessage = sMessage + g_pSWTlkTable->Fetch(42030, NULL, 0, 0);
         }
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 1);
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 1);
         return 1;
     }
     case CC_MESSAGE_ATTACK_BREAKDOWN:
@@ -2890,6 +2911,16 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         int nModifier7 = ReadINT(32);
         int bAutomaticHit = ReadINT(32);
         int bAutomaticMiss = ReadINT(32);
+        int nModifier8 = ReadINT(32);
+        int nFeat3 = ReadINT(32);
+        int nFeatBonus3 = ReadINT(32);
+        int nSpell1 = ReadINT(32);
+        int nSpellBonus1 = ReadINT(32);
+        int nSpell2 = ReadINT(32);
+        int nSpellBonus2 = ReadINT(32);
+        int nModifier9 = ReadINT(32);
+        int nSpell3 = ReadINT(32);
+        int nSpellBonus3 = ReadINT(32);
         int nHandString = (bOffHand != 0) + 42314;
         sHand = g_pSWTlkTable->Fetch(nHandString, NULL, 0, 0);
         g_pTlkTable->SetCustomToken(0, sHand);
@@ -2941,6 +2972,48 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 g_pTlkTable->SetCustomToken(0, nModifier4);
                 sMessage = sMessage + g_pSWTlkTable->Fetch(42317, NULL, 0, 0);
             }
+            if (nModifier8)
+            {
+                g_pTlkTable->SetCustomToken(0, nModifier8);
+                sMessage = sMessage + g_pSWTlkTable->Fetch(48201, NULL, 0, 0);
+            }
+            if (nFeatBonus3)
+            {
+                CSWFeat* pFeat = g_pRules->GetFeat(nFeat3);
+                unsigned long nStrRef = pFeat->m_nNameStrRef;
+                g_pTlkTable->SetCustomToken(0, g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef));
+                g_pTlkTable->SetCustomToken(1, nFeatBonus3);
+                sMessage = sMessage + g_pSWTlkTable->Fetch(42318, NULL, 0, 0);
+            }
+            if (nSpellBonus1)
+            {
+                CSWSpell* pSpell = g_pRules->GetSpell(nSpell1);
+                unsigned long nStrRef = pSpell->m_nNameStrRef;
+                g_pTlkTable->SetCustomToken(0, g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef));
+                g_pTlkTable->SetCustomToken(1, nSpellBonus1);
+                sMessage = sMessage + g_pSWTlkTable->Fetch(42318, NULL, 0, 0);
+            }
+            if (nSpellBonus2)
+            {
+                CSWSpell* pSpell = g_pRules->GetSpell(nSpell2);
+                unsigned long nStrRef = pSpell->m_nNameStrRef;
+                g_pTlkTable->SetCustomToken(0, g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef));
+                g_pTlkTable->SetCustomToken(1, nSpellBonus2);
+                sMessage = sMessage + g_pSWTlkTable->Fetch(42318, NULL, 0, 0);
+            }
+            if (nModifier9)
+            {
+                g_pTlkTable->SetCustomToken(0, nModifier9);
+                sMessage = sMessage + g_pSWTlkTable->Fetch(126694, NULL, 0, 0);
+            }
+            if (nSpellBonus3)
+            {
+                CSWSpell* pSpell = g_pRules->GetSpell(nSpell3);
+                unsigned long nStrRef = pSpell->m_nNameStrRef;
+                g_pTlkTable->SetCustomToken(0, g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef));
+                g_pTlkTable->SetCustomToken(1, nSpellBonus3);
+                sMessage = sMessage + g_pSWTlkTable->Fetch(42318, NULL, 0, 0);
+            }
 
             CExoString sUnusedString;
             int nAbilityBonus;
@@ -2971,7 +3044,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 sMessage = sMessage + g_pSWTlkTable->Fetch(42332, NULL, 0, 0);
             }
         }
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
         break;
     }
     case CC_MESSAGE_THREAT_BREAKDOWN:
@@ -2993,7 +3066,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             g_pTlkTable->SetCustomToken(3, CExoString(nThreat));
             g_pTlkTable->SetCustomToken(4, CExoString(nCritical));
             sMessage = g_pSWTlkTable->Fetch(42148, NULL, 0, 0);
-            g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
         }
         break;
     }
@@ -3047,7 +3120,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             g_pTlkTable->SetCustomToken(0, nModifier6);
             sMessage = sMessage + g_pSWTlkTable->Fetch(42427, NULL, 0, 0);
         }
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
         break;
     }
     case CC_MESSAGE_DAMAGE_BREAKDOWN:
@@ -3081,6 +3154,9 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         ReadINT(32);
         ReadINT(32);
         ReadINT(32);
+        int nSpellReduction = ReadINT(32);
+        int nSpell = ReadINT(32);
+        int nModifier6 = ReadINT(32);
         for (i = 0; i < 14; ++i)
         {
             unsigned long nString;
@@ -3146,6 +3222,12 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 g_pTlkTable->SetCustomToken(0, nModifier2);
                 sDetails = sDetails + " + " + g_pSWTlkTable->Fetch(42155, NULL, 0, 0);
             }
+            if (nModifier6)
+            {
+                STR_RES cModifier;
+                g_pTlkTable->SetCustomToken(0, nModifier6);
+                sDetails = sDetails + " + " + g_pSWTlkTable->Fetch(113780, NULL, 0, 0);
+            }
             if (nModifier3 > 0)
             {
                 STR_RES cModifier;
@@ -3164,6 +3246,12 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 g_pTlkTable->SetCustomToken(0, nReduction2);
                 sDetails = sDetails + " - " + g_pSWTlkTable->Fetch(42434, NULL, 0, 0);
             }
+            if (nSpellReduction)
+            {
+                g_pTlkTable->SetCustomToken(0, g_pRules->m_pSpellArray->GetSpell(nSpell)->GetSpellNameText());
+                g_pTlkTable->SetCustomToken(1, nSpellReduction);
+                sDetails = sDetails + " - " + g_pSWTlkTable->Fetch(49125, NULL, 0, 0);
+            }
             CExoString sTotal;
             if (nModifier5 > 0)
             {
@@ -3174,7 +3262,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             g_pTlkTable->SetCustomToken(0, sTotal);
             g_pTlkTable->SetCustomToken(1, sDetails);
             sMessage = g_pSWTlkTable->Fetch(42150, NULL, 0, 0);
-            g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
         }
         break;
     }
@@ -3214,7 +3302,8 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         {
             switch (nEffect)
             {
-            case 1: nEffectString = 42031; break;
+            case 1:
+            case 16: nEffectString = 42031; break;
             case 4: nEffectString = 42032; break;
             case 7: nEffectString = 42033; break;
             case 9: nEffectString = 42034; break;
@@ -3224,12 +3313,16 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             case 6: nEffectString = 42038; break;
             case 10: nEffectString = 42039; break;
             case 8: nEffectString = 42040; break;
+            case 14: nEffectString = 48178; break;
+            case 15: nEffectString = 48541; break;
+            case 18: nEffectString = 113790; break;
+            case 19: nEffectString = 124290; break;
             }
             CExoString sEffect = g_pSWTlkTable->Fetch(nEffectString, NULL, 0, 0);
             g_pTlkTable->SetCustomToken(1, sEffect);
         }
         sMessage = sPrefix + g_pSWTlkTable->Fetch(nResultString, NULL, 0, 0);
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
         break;
     }
     case CC_MESSAGE_DEFLECT_BREAKDOWN:
@@ -3244,6 +3337,14 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         int nModifier1 = ReadINT(32);
         int nModifier2 = ReadINT(32);
         int nModifier3 = ReadINT(32);
+        int nSpellBonus1 = ReadINT(32);
+        int nSpell1 = ReadINT(32);
+        int nSpellBonus2 = ReadINT(32);
+        int nSpell2 = ReadINT(32);
+        int nFeatBonus2 = ReadINT(32);
+        int nFeat2 = ReadINT(32);
+        int nFeatBonus3 = ReadINT(32);
+        int nFeat3 = ReadINT(32);
         if (nRoll)
         {
             CExoString sDetails;
@@ -3252,6 +3353,30 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             {
                 g_pTlkTable->SetCustomToken(0, g_pRules->GetFeat(nFeat)->GetNameText());
                 g_pTlkTable->SetCustomToken(1, nFeatBonus);
+                sDetails = sDetails + g_pSWTlkTable->Fetch(42318, NULL, 0, 0);
+            }
+            if (nFeatBonus2)
+            {
+                g_pTlkTable->SetCustomToken(0, g_pRules->GetFeat(nFeat2)->GetNameText());
+                g_pTlkTable->SetCustomToken(1, nFeatBonus2);
+                sDetails = sDetails + g_pSWTlkTable->Fetch(42318, NULL, 0, 0);
+            }
+            if (nFeatBonus3)
+            {
+                g_pTlkTable->SetCustomToken(0, g_pRules->GetFeat(nFeat3)->GetNameText());
+                g_pTlkTable->SetCustomToken(1, nFeatBonus3);
+                sDetails = sDetails + g_pSWTlkTable->Fetch(42318, NULL, 0, 0);
+            }
+            if (nSpellBonus1)
+            {
+                g_pTlkTable->SetCustomToken(0, g_pRules->GetSpell(nSpell1)->GetSpellNameText());
+                g_pTlkTable->SetCustomToken(1, nSpellBonus1);
+                sDetails = sDetails + g_pSWTlkTable->Fetch(42318, NULL, 0, 0);
+            }
+            if (nSpellBonus2)
+            {
+                g_pTlkTable->SetCustomToken(0, g_pRules->GetSpell(nSpell2)->GetSpellNameText());
+                g_pTlkTable->SetCustomToken(1, nSpellBonus2);
                 sDetails = sDetails + g_pSWTlkTable->Fetch(42318, NULL, 0, 0);
             }
             GetSingleCustomTokenStringPart(nModifier1, 42419, sDetails);
@@ -3268,7 +3393,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             g_pTlkTable->SetCustomToken(2, sDetails);
             g_pTlkTable->SetCustomToken(3, nDifficulty);
             sMessage = g_pSWTlkTable->Fetch(42417, NULL, 0, 0);
-            g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
         }
         break;
     }
@@ -3284,7 +3409,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         int nPoison = ReadINT(32);
         g_pTlkTable->SetCustomToken(1, g_pTlkTable->GetSimpleString(nPoison));
         sMessage = g_pSWTlkTable->Fetch(47873, NULL, 0, 0);
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
         break;
     }
     }
@@ -4170,7 +4295,7 @@ int CSWCMessage::HandleServerToPlayerDebugInfo_Creature(unsigned long oidObject)
     int nAILevel = ReadINT(32);
     float fChallengeRating = ReadFLOAT(1.0f, 32);
     sAreaTag = ReadCExoString(32);
-    unsigned long nEquipmentMask = ReadDWORD(32);
+    unsigned long nEquipmentMask = ReadINT(32);
     int nEquippedItems = 0;
     unsigned long i;
     for (i = 0; i < CSWInventory::TOTAL_SLOT_COUNT; i++)
@@ -4181,7 +4306,7 @@ int CSWCMessage::HandleServerToPlayerDebugInfo_Creature(unsigned long oidObject)
             nEquippedItems++;
         }
     }
-    unsigned long nRepositoryItems = ReadDWORD(32);
+    unsigned long nRepositoryItems = ReadINT(32);
     CExoString* psRepositoryItems = NULL;
     if (nRepositoryItems > 0)
     {
@@ -4210,14 +4335,14 @@ int CSWCMessage::HandleServerToPlayerDebugInfo_Creature(unsigned long oidObject)
     pGui->AppendToMsgBuffer("******************",
         CGuiInGame::MESSAGE_MASK_DEBUG_INFO, 0);
     sMessage = "FirstName: ";
-    sMessage = sMessage + pStats->m_sFirstName;
+    sMessage = sMessage + pStats->GetFirstName();
     sMessage = sMessage + "    LastName: ";
-    sMessage = sMessage + pStats->m_sLastName;
+    sMessage = sMessage + pStats->GetLastName();
     sMessage = sMessage + "    Tag: ";
     sMessage = sMessage + sTag;
     pGui->AppendToMsgBuffer(sMessage, CGuiInGame::MESSAGE_MASK_DEBUG_INFO, 0);
-    EXOLOG("FirstName: %s\n", pStats->m_sFirstName.CStr());
-    EXOLOG("LastName: %s\n", pStats->m_sLastName.CStr());
+    EXOLOG("FirstName: %s\n", pStats->GetFirstName().CStr());
+    EXOLOG("LastName: %s\n", pStats->GetLastName().CStr());
     EXOLOG("Tag: %s\n", sTag.CStr());
 
     sMessage = "Conversation File: ";
@@ -4865,6 +4990,12 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
                 !nWayPointSequence || pCreature->m_nUnknown1EF == nWayPointSequence)
             {
                 pCreature->SetWayPoints(0, NULL);
+                for (int i = 0; i < nWayPointCount; ++i)
+                {
+                    ReadFLOAT(1.0f, 32);
+                    ReadFLOAT(1.0f, 32);
+                    ReadFLOAT(1.0f, 32);
+                }
                 nWayPointCount = 0;
             }
         }
@@ -5122,6 +5253,12 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
             pUpdatedCreature->GetStats()->m_nForcePointBonus = nBonus;
             pUpdatedCreature->GetStats()->m_nCurrentForcePoints = nCurrent;
             pUpdatedCreature->GetStats()->m_nMaxForcePoints = nMax;
+            Gob* pModel = pUpdatedCreature->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 0);
+            if (pModel != NULL)
+                pModel->SetForcePoints(nMax);
+            pModel = pUpdatedCreature->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD, 0);
+            if (pModel != NULL)
+                pModel->SetForcePoints(nMax);
         }
     }
     if (nUpdateMask & CREATURE_UPDATE_NAMES)
@@ -5408,17 +5545,82 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
         unsigned char nUnknown = ReadBYTE(8);
         unsigned char nGender = ReadBYTE(8);
         short nAlignment = ReadSHORT(16);
+        short nBaseCNPCAlignment = ReadSHORT(16);
+        int nD8 = ReadINT(32);
+        CExoString s84 = ReadCExoString(32);
         int bDeadSelectable = ReadBOOL();
         unsigned char nClasses = ReadBYTE(8);
         if (MessageReadOverflow(1))
             return 0;
         if (pCreature != NULL)
         {
+            pStats->m_s84 = s84;
             pStats->m_nRace = nRace;
             pStats->m_sSubRace = sSubRace;
             pStats->m_nSubraceIndex = nUnknown;
             pStats->m_nGender = nGender;
             pCreature->SetAlignmentGoodEvil(nAlignment);
+            float fRed;
+            float fGreen;
+            float fBlue;
+            float fAlpha;
+            if (nAlignment > 60)
+            {
+                fAlpha = (nAlignment - 60) * 0.025f;
+                fBlue = 1.0f;
+                fRed = fAlpha * 0.01f + (1.0f - fAlpha) * 0.65f;
+                fGreen = fAlpha * 0.05f + (1.0f - fAlpha) * 0.65f;
+            }
+            else if (nAlignment > 40)
+            {
+                if (nAlignment >= 50)
+                {
+                    float fScale = 1.0f - (nAlignment - 50) * 0.1f;
+                    fBlue = 0.9f;
+                    fRed = fGreen = fScale + (1.0f - fScale) * 0.65f;
+                    fAlpha = fScale * 0.5f;
+                }
+                else
+                {
+                    float fScale = (nAlignment - 40) * 0.1f;
+                    fRed = 1.0f;
+                    fBlue = fGreen = fScale + (1.0f - fScale) * 0.65f;
+                    fAlpha = fScale * 0.5f;
+                }
+            }
+            else
+            {
+                fAlpha = (40 - nAlignment) * 0.025f;
+                fRed = 1.0f;
+                fGreen = fAlpha * 0.05f + (1.0f - fAlpha) * 0.65f;
+                fBlue = fAlpha * 0.01f + (1.0f - fAlpha) * 0.65f;
+            }
+            Gob* pModel = pCreature->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 0);
+            if (pModel != NULL)
+            {
+                pModel->SetAlignmentValue(nAlignment);
+                pModel->SetForceGlowColor(fRed, fGreen, fBlue, fAlpha);
+                if (nRace != CSWRace::CRACE_DROID)
+                    pModel->EnableForceGlow(1);
+                else
+                    pModel->EnableForceGlow(0);
+                pModel->SetNonForceBlending(1);
+            }
+            pModel = pCreature->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD, 0);
+            if (pModel != NULL)
+            {
+                pModel->SetAlignmentValue(nAlignment);
+                pModel->SetForceGlowColor(fRed, fGreen, fBlue, fAlpha);
+                if (nRace != CSWRace::CRACE_DROID)
+                    pModel->EnableForceGlow(1);
+                else
+                    pModel->EnableForceGlow(0);
+                pModel->SetNonForceBlending(1);
+            }
+            pCreature->SetBaseCNPCAlignment(nBaseCNPCAlignment);
+            CSWCAnimBase* pAnimBase = pCreature->GetAnimationBase();
+            if (pAnimBase != NULL)
+                pAnimBase->m_nD8 = nD8;
             pCreature->UpdateFloatyText();
             pCreature->m_bDeadSelectable = bDeadSelectable;
             if (bDeadSelectable == 1)

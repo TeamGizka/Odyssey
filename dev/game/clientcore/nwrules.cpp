@@ -697,6 +697,11 @@ CSWFeat* CSWRules::GetFeat(unsigned short nFeat)
     }
     return 0;
 }
+// PC 0x004F4460
+CSWSpell* CSWRules::GetSpell(int nSpell)
+{
+    return m_pSpellArray->GetSpell(nSpell);
+}
 // PC 0x005D7C50
 int CSWRules::GetDifficultyOption(int nOption, int nDifficulty)
 {
