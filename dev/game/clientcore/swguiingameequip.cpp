@@ -86,10 +86,12 @@ void CSWGuiInGameEquip::UpdateSlotLocks()
         unsigned short nAppearance = m_pCreature->m_pAppearance->m_nAppearance;
         int nSlotsLocked = 0;
         if (!g_pRules->Get2DArrays()->m_pAppearance->GetINTEntry(
-                nAppearance, CExoString("EquipSlotsLocked"), &nSlotsLocked))
+                nAppearance, "EquipSlotsLocked", &nSlotsLocked))
         {
             nSlotsLocked = 0;
         }
+        m_an2274[LEFTHAND_ITEM_INDEX] = nSlotsLocked & INVENTORY_SLOT_LEFTHAND;
+        m_an2274[RIGHTHAND_ITEM_INDEX] = nSlotsLocked & INVENTORY_SLOT_RIGHTHAND;
         m_an2274[2] = nSlotsLocked & INVENTORY_SLOT_HEAD;
         m_an2274[3] = nSlotsLocked & INVENTORY_SLOT_RIGHTRING;
         m_an2274[4] = nSlotsLocked & INVENTORY_SLOT_NECK;
@@ -97,8 +99,6 @@ void CSWGuiInGameEquip::UpdateSlotLocks()
         m_an2274[6] = nSlotsLocked & INVENTORY_SLOT_HANDS;
         m_an2274[7] = nSlotsLocked & INVENTORY_SLOT_BELT;
         m_an2274[8] = nSlotsLocked & INVENTORY_SLOT_ARMS;
-        m_an2274[LEFTHAND_ITEM_INDEX] = nSlotsLocked & INVENTORY_SLOT_LEFTHAND;
-        m_an2274[RIGHTHAND_ITEM_INDEX] = nSlotsLocked & INVENTORY_SLOT_RIGHTHAND;
         m_an2274[LEFTHAND2_ITEM_INDEX] = nSlotsLocked & INVENTORY_SLOT_LEFTHAND2;
         m_an2274[RIGHTHAND2_ITEM_INDEX] = nSlotsLocked & INVENTORY_SLOT_RIGHTHAND2;
         if (m_an2274[LEFTHAND_ITEM_INDEX])
@@ -1014,29 +1014,40 @@ void CSWGuiStoreItemEntry::SetItem(unsigned long oidItem, int bUpdate, int nChar
             cIcon = pItem->GetIcon();
             CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
             pItem->m_sLocalizedName.GetString(pClient->GetClientLanguage(), &sName, 0);
+            if (sName.Find('<', 0) != -1 || sName.Find('{', 0) != -1)
+            {
+                g_pSWTlkTable->ParseStr(
+                    sName,
+                    (CGameObject*)g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter(),
+                    0, 1);
+            }
+            if (m_nCharacter != CHARACTER_NONE)
+                sName = sName + " (" +
+                    g_pAppManager->GetClientExoApp()->GetGUIString(
+                        CSWGuiInGameItemEntry::STRREF_EQUIPPED) + ")";
             m_cText.m_cParams.SetText(sName);
             int nCount = pItem->m_nStackSize;
             if (nCount > 1)
             {
                 if (nCount >= 100)
                 {
-                    m_cIconBorder.m_cParams.SetFillImage("lbl_hex_7", 0);
-                    m_cIconHilite.m_cParams.SetFillImage("lbl_hex_7", 0);
+                    m_cIconBorder.m_cParams.SetFillImage("UIBIT_EQP_ITM3", 0);
+                    m_cIconHilite.m_cParams.SetFillImage("UIBIT_EQP_ITM3", 0);
                 }
                 else
                 {
-                    m_cIconBorder.m_cParams.SetFillImage("lbl_hex_6", 0);
-                    m_cIconHilite.m_cParams.SetFillImage("lbl_hex_6", 0);
+                    m_cIconBorder.m_cParams.SetFillImage("UIBIT_EQP_ITM2", 0);
+                    m_cIconHilite.m_cParams.SetFillImage("UIBIT_EQP_ITM2", 0);
                 }
                 sCount.Format("%d", nCount);
             }
             else
             {
-                m_cIconBorder.m_cParams.SetFillImage("lbl_hex_3", 0);
-                m_cIconHilite.m_cParams.SetFillImage("lbl_hex_3", 0);
+                m_cIconBorder.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
+                m_cIconHilite.m_cParams.SetFillImage("UIBIT_EQP_ITM1", 0);
             }
             m_cCountText.m_cParams = CSWGuiTextParams(
-                sCount, "fnt_d16x16", CGuiInGame::COLOR_BLUE,
+                sCount, "fnt_d16x16", m_cText.m_cParams.m_vColor,
                 CSWGuiTextParams::ALIGNMENT_ITEM_COUNT, 1.0f);
         }
         else
@@ -1110,7 +1121,7 @@ void CSWGuiInGameEquip::OnPrevNPCClicked(CSWGuiControl* pControl)
         {
             CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
             pCreature = pClient->GetCreatureByGameObjectID(pClient->ServerToClientObjectId(
-                pPartyTable->GetPUPObject(m_nCharacter, 0, 1)));
+                pPartyTable->GetNPCObject(m_nCharacter, 0, 1)));
             if (pCreature != NULL)
             {
                 bFound = 1;
@@ -2401,13 +2412,13 @@ void CSWGuiInGameEquip::UpdateInventory()  // PC 0x00717070
 
     if (m_n50E8)
     {
-        m_lblDef.m_cText.m_cParams.SetText(
-            CExoString(m_pCreature->GetStats()->GetArmorClass(1)));
+        CExoString sDefense(m_pCreature->GetStats()->GetArmorClass(1));
+        m_lblDef.m_cText.m_cParams.SetText(sDefense);
     }
     else
     {
-        m_lblDef.m_cText.m_cParams.SetText(
-            CExoString(m_pCreature->GetStats()->GetArmorClass(1)));
+        CExoString sDefense(m_pCreature->GetStats()->GetArmorClass(1));
+        m_lblDef.m_cText.m_cParams.SetText(sDefense);
     }
 
     CExoString sVitality;

@@ -403,6 +403,13 @@ unsigned long CSWGuiUpgradeItemSelect::GetUpgradeItemProperty()
     }
     return 0;
 }
+#ifndef _XBOX
+// PC 0x00723CD0
+void CSWSItem::ClearUpgradeActive(unsigned char nUpgradeType)
+{
+    m_nUpgrades &= ~(UPGRADE_PROPERTY_MASK << nUpgradeType);
+}
+#endif
 // PC 0x00727F30
 CSWUpgradeItemEntry::CSWUpgradeItemEntry()
 {
@@ -507,6 +514,9 @@ CSWGuiUpgradeItemSelect::CSWGuiUpgradeItemSelect(CSWGuiManager* pManager)
     m_nC84 = 0;
 #ifndef _XBOX
     SetActiveControl(&m_lbItems, 0);
+    m_bDualWield = 0;
+    m_bSecondWeaponSet = 0;
+    m_oidOtherWeapon = OBJECT_INVALID;
 #endif
 }
 // PC 0x0072C990
@@ -531,7 +541,7 @@ void CSWGuiUpgradeItemSelect::BuildUpgradeList()
         if (pParty->GetIsNPCAvailable(i) && pParty->GetNPCSelectability(i))
         {
             pCreature = pServer->GetCreatureByGameObjectID(
-                pParty->GetPUPObject(i, 0, 1));
+                pParty->GetNPCObject(i, 0, 1));
             if (pCreature != 0)
                 BuildItemList(pCreature, aItems, pTable);
         }
@@ -863,7 +873,7 @@ void CSWGuiUpgradeSelection::PopulateItemList()
             if (pParty->GetIsNPCAvailable(i))
             {
                 pCreature = pServer->GetCreatureByGameObjectID(
-                    pParty->GetPUPObject(i, 0, 0));
+                    pParty->GetNPCObject(i, 0, 0));
                 if (pCreature != 0)
                     GetPlayerItems(pCreature, aItems, pTable);
             }
@@ -929,12 +939,13 @@ void CSWGuiUpgradeSelection::PopulateItemList()
 // PC 0x00727010
 void CSWGuiUpgradeSelection::OnItemEntered(CSWGuiControl* pControl)
 {
-    if (pControl->m_bSelected != 0)
+    int nSelected = pControl->m_bSelected;
+    if (nSelected != 0)
     {
         CSWUpgradeItemEntry* pEntry = (CSWUpgradeItemEntry*)pControl;
         if (pEntry->m_oidItem != OBJECT_INVALID)
         {
-            CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(pEntry->m_oidItem);
+            CSWSItem* pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(pEntry->m_oidItem);
             CExoString sDescription;
             sDescription = pItem->GetPropertyDescription();
             if (sDescription != "")
@@ -943,7 +954,7 @@ void CSWGuiUpgradeSelection::OnItemEntered(CSWGuiControl* pControl)
             }
             else
             {
-                SetDescription(g_pAppManager->m_pClientExoApp->GetGUIString(CSWGuiUpgrade::STRREF_NO_DESCRIPTION));
+                SetDescription(g_pAppManager->GetClientExoApp()->GetGUIString(CSWGuiUpgrade::STRREF_NO_DESCRIPTION));
             }
         }
         else
@@ -1462,6 +1473,9 @@ CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x00730C60
     }
 #endif
     StopLoadFromLayout();
+#ifndef _XBOX
+    m_lbItems.SetSelectOnLeftClick(1);
+#endif
     m_cSlotName.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_UPGRADE_BORDER;
 #ifdef _XBOX
     m_cLightsaberSlotName.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
@@ -1817,7 +1831,7 @@ void CSWGuiUpgrade::OnPanelAdded()
                     ->GetPartyItems()->FindItemWithTag(m_asUpgradeTemplates[nSlot]);
                 if (oidItem != OBJECT_INVALID)
                 {
-                    CGameObject* pObject = g_pAppManager->m_pServerExoApp->GetGameObject(oidItem);
+                    CGameObject* pObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidItem);
                     CSWSItem* pItem = pObject != 0 ? pObject->AsSWSItem() : 0;
                     if (pObject->AsSWSItem()->m_nUpgradeLevel <= m_pSelectedItem->m_nUpgradeLevel)
                     {
@@ -2228,8 +2242,12 @@ void CSWGuiUpgrade::OnSlotSelected(CSWGuiControl* pControl)
             CSWSItem*& pOldItem = m_apItemEntries[nSlot];
             if (pOldItem != 0)
             {
+#ifdef _XBOX
                 m_pSelectedItem->m_nUpgrades &=
                     ~(CSWSItem::UPGRADE_PROPERTY_MASK << (unsigned char)m_anUpgradeProperties[nSlot]);
+#else
+                m_pSelectedItem->ClearUpgradeActive((unsigned char)m_anUpgradeProperties[nSlot]);
+#endif
                 int nIndex = m_aItemsAdded.IndexOf(pOldItem);
                 if (nIndex != -1)
                 {
@@ -2246,7 +2264,7 @@ void CSWGuiUpgrade::OnSlotSelected(CSWGuiControl* pControl)
             else
             {
                 unsigned long oidItem = pRepository->FindItemWithTag(m_asUpgradeTemplates[nSlot]);
-                CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidItem);
+                CSWSItem* pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
                 if (pItem == 0 ||
                     (unsigned long)pItem->m_nUpgradeLevel >= (unsigned long)m_pSelectedItem->m_nUpgradeLevel)
                     return;
@@ -2816,7 +2834,7 @@ unsigned long CSWGuiCreateItem::GetItemBuyValue(CSWSItem* pItem)
 {
     if (pItem == 0)
         return 0;
-    return max(1u, pItem->GetCost() / 20u);
+    return max(1u, pItem->GetCost() / COMPONENT_VALUE_DIVISOR);
 }
 // PC 0x00728220
 void CSWGuiCreateItem::BuyItemCallback(CSWGuiControl* pControl)
@@ -3442,7 +3460,7 @@ void CSWGuiCreateItem::OnControlStoreAButton(CSWGuiControl* pControl)
             pMessageBox->SetCallback(0, 0, 0);
             pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
                                           CGuiInGame::COLOR_NEW_HIGHLIGHT);
-            pMessageBox->SetMessage(116292);
+            pMessageBox->SetMessage(STRREF_SKILL_TOO_LOW);
             g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(
                 pMessageBox, 1, 1);
             return;
@@ -3462,17 +3480,17 @@ void CSWGuiCreateItem::OnControlStoreAButton(CSWGuiControl* pControl)
                 if (pCreature != 0)
                 {
                     CSWSCreatureStats* pStats = pCreature->m_pStats;
-                    nConfirmationValue = pStats->GetLevel(0) * 50;
+                    nConfirmationValue = pStats->GetLevel(0) * CONFIRM_VALUE_PER_LEVEL;
                 }
                 else
-                    nConfirmationValue = 50;
+                    nConfirmationValue = CONFIRM_VALUE_PER_LEVEL;
                 if (GetItemBuyValue(pItem) > nConfirmationValue)
                 {
                     CSWGuiMessageBox* pMessageBox =
                         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
                     CExoString sMessage;
                     g_pTlkTable->SetCustomToken(0, CExoString(nConfirmationValue));
-                    sMessage = g_pSWTlkTable->Fetch(124113, 0, 0, 0);
+                    sMessage = g_pSWTlkTable->Fetch(STRREF_CONFIRM_CREATE_COST, 0, 0, 0);
                     pMessageBox->SetAllowCancel(1);
                     pMessageBox->SetMessage(sMessage);
                     pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
@@ -3491,7 +3509,7 @@ void CSWGuiCreateItem::OnControlStoreAButton(CSWGuiControl* pControl)
                     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
                 CExoString sMessage;
                 pMessageBox->SetAllowCancel(0);
-                pMessageBox->SetMessage(116297);
+                pMessageBox->SetMessage(STRREF_NOT_ENOUGH_COMPONENTS);
                 pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
                                               CGuiInGame::COLOR_NEW_HIGHLIGHT);
                 pMessageBox->SetCallback(0, 0, 0);
@@ -3515,14 +3533,14 @@ void CSWGuiCreateItem::OnControlInvAButton(CSWGuiControl* pControl)
             pServer->ClientToServerObjectId(oidItem));
         if (pItem != 0)
         {
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < CSWGuiUpgrade::NUM_UPGRADE_SLOTS; i++)
             {
                 if (pItem->m_anUpgradeSlot[i] >= 0)
                 {
                     CSWGuiMessageBox* pMessageBox =
                         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
                     pMessageBox->SetAllowCancel(0);
-                    pMessageBox->SetMessage(124119);
+                    pMessageBox->SetMessage(STRREF_REMOVE_UPGRADES_FIRST);
                     pMessageBox->SetCallback(0, 0, 0);
                     pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
                                                   CGuiInGame::COLOR_NEW_HIGHLIGHT);
@@ -3534,21 +3552,21 @@ void CSWGuiCreateItem::OnControlInvAButton(CSWGuiControl* pControl)
             CServerExoApp* pCreatureServer = g_pAppManager->m_pServerExoApp;
             CSWSCreature* pCreature = pCreatureServer->GetPlayerCreature();
             unsigned int nConfirmationValue;
-            if (pCreature != 0 && pCreature->m_pStats->GetLevel(0) * 50 <= 250)
+            if (pCreature != 0 && pCreature->m_pStats->GetLevel(0) * CONFIRM_VALUE_PER_LEVEL <= MAX_BREAKDOWN_CONFIRM_VALUE)
             {
                 CSWSCreatureStats* pStats = pCreature->GetStats();
-                nConfirmationValue = pStats->GetLevel(0) * 50;
+                nConfirmationValue = pStats->GetLevel(0) * CONFIRM_VALUE_PER_LEVEL;
             }
             else
-                nConfirmationValue = 250;
-            if (max(1u, pItem->GetCost() / 20u) * m_fRepairFactor >
+                nConfirmationValue = MAX_BREAKDOWN_CONFIRM_VALUE;
+            if (max(1u, pItem->GetCost() / COMPONENT_VALUE_DIVISOR) * m_fRepairFactor >
                 nConfirmationValue)
             {
                 CSWGuiMessageBox* pMessageBox =
                     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
                 CExoString sMessage;
                 g_pTlkTable->SetCustomToken(0, CExoString(nConfirmationValue));
-                sMessage = g_pSWTlkTable->Fetch(124115, 0, 0, 0);
+                sMessage = g_pSWTlkTable->Fetch(STRREF_CONFIRM_BREAKDOWN_VALUE, 0, 0, 0);
                 pMessageBox->SetAllowCancel(1);
                 pMessageBox->SetMessage(sMessage);
                 pMessageBox->SetCallback(this,
@@ -3872,7 +3890,7 @@ void CSWGuiCreateItem::OnControlEntered(CSWGuiControl* pControl)
                     return;
                 if (!pTable->GetINTEntry(nRow, "skill", &nSkill))
                     return;
-                CExoString sRequired = g_pTlkTable->GetSimpleString(115429);
+                CExoString sRequired = g_pTlkTable->GetSimpleString(STRREF_SKILL_REQUIRED_TO_CREATE);
                 CExoString sSkillText;
                 CExoString sSkill(nSkill);
                 sSkillText = g_pRules->m_pSkills[(unsigned short)nBaseSkill].GetNameText() +
@@ -3930,7 +3948,7 @@ unsigned long CSWGuiCreateMedicalItem::GetItemBuyValue(CSWSItem* pItem)
 {
     if (pItem == 0)
         return 0;
-    return max(1u, pItem->GetCost() / 2u);
+    return max(1u, pItem->GetCost() / CHEMICAL_VALUE_DIVISOR);
 }
 // PC 0x007283A0
 void CSWGuiCreateMedicalItem::HandleInputEvent(int nEvent, int nState)
@@ -4133,7 +4151,7 @@ void CSWGuiCreateMedicalItem::OnControlStoreAButton(CSWGuiControl* pControl)
             pMessageBox->SetCallback(0, 0, 0);
             pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
                                           CGuiInGame::COLOR_NEW_HIGHLIGHT);
-            pMessageBox->SetMessage(116292);
+            pMessageBox->SetMessage(STRREF_SKILL_TOO_LOW);
             g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(
                 pMessageBox, 1, 1);
         }
@@ -4154,17 +4172,17 @@ void CSWGuiCreateMedicalItem::OnControlStoreAButton(CSWGuiControl* pControl)
                     if (pCreature != 0)
                     {
                         CSWSCreatureStats* pStats = pCreature->m_pStats;
-                        nConfirmationValue = pStats->GetLevel(0) * 50;
+                        nConfirmationValue = pStats->GetLevel(0) * CONFIRM_VALUE_PER_LEVEL;
                     }
                     else
-                        nConfirmationValue = 50;
+                        nConfirmationValue = CONFIRM_VALUE_PER_LEVEL;
                     if (GetItemBuyValue(pItem) > nConfirmationValue)
                     {
                         CSWGuiMessageBox* pMessageBox =
                             g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
                         CExoString sMessage;
                         g_pTlkTable->SetCustomToken(0, CExoString(nConfirmationValue));
-                        sMessage = g_pSWTlkTable->Fetch(124114, 0, 0, 0);
+                        sMessage = g_pSWTlkTable->Fetch(STRREF_CONFIRM_CREATE_COST, 0, 0, 0);
                         pMessageBox->SetAllowCancel(1);
                         pMessageBox->SetMessage(sMessage);
                         pMessageBox->SetCallback(this,
@@ -4184,7 +4202,7 @@ void CSWGuiCreateMedicalItem::OnControlStoreAButton(CSWGuiControl* pControl)
                         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
                     pMessageBox->SetAllowCancel(0);
                     pMessageBox->SetCallback(0, 0, 0);
-                    pMessageBox->SetMessage(116298);
+                    pMessageBox->SetMessage(STRREF_NOT_ENOUGH_CHEMICALS);
                     pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
                                                   CGuiInGame::COLOR_NEW_HIGHLIGHT);
                     g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(
@@ -4292,7 +4310,7 @@ void CSWGuiCreateMedicalItem::OnControlEntered(CSWGuiControl* pControl)
                     return;
                 if (!pTable->GetINTEntry(nRow, "skillLevel", &nSkill))
                     return;
-                CExoString sRequired = g_pTlkTable->GetSimpleString(115429);
+                CExoString sRequired = g_pTlkTable->GetSimpleString(STRREF_SKILL_REQUIRED_TO_CREATE);
                 CExoString sSkillText;
                 CExoString sSkill(nSkill);
                 {
@@ -4397,21 +4415,21 @@ void CSWGuiCreateMedicalItem::OnControlInvAButton(CSWGuiControl* pControl)
             CServerExoApp* pCreatureServer = g_pAppManager->m_pServerExoApp;
             CSWSCreature* pCreature = pCreatureServer->GetPlayerCreature();
             unsigned int nConfirmationValue;
-            if (pCreature != 0 && pCreature->m_pStats->GetLevel(0) * 50 <= 250)
+            if (pCreature != 0 && pCreature->m_pStats->GetLevel(0) * CONFIRM_VALUE_PER_LEVEL <= MAX_BREAKDOWN_CONFIRM_VALUE)
             {
                 CSWSCreatureStats* pStats = pCreature->GetStats();
-                nConfirmationValue = pStats->GetLevel(0) * 50;
+                nConfirmationValue = pStats->GetLevel(0) * CONFIRM_VALUE_PER_LEVEL;
             }
             else
-                nConfirmationValue = 250;
-            if (max(1u, pItem->GetCost() / 2u) * m_fRepairFactor >
+                nConfirmationValue = MAX_BREAKDOWN_CONFIRM_VALUE;
+            if (max(1u, pItem->GetCost() / CHEMICAL_VALUE_DIVISOR) * m_fRepairFactor >
                 nConfirmationValue)
             {
                 CSWGuiMessageBox* pMessageBox =
                     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
                 CExoString sMessage;
                 g_pTlkTable->SetCustomToken(0, CExoString(nConfirmationValue));
-                sMessage = g_pSWTlkTable->Fetch(124116, 0, 0, 0);
+                sMessage = g_pSWTlkTable->Fetch(STRREF_CONFIRM_BREAKDOWN_VALUE, 0, 0, 0);
                 pMessageBox->SetAllowCancel(1);
                 pMessageBox->SetMessage(sMessage);
                 pMessageBox->SetCallback(this,
@@ -5171,20 +5189,19 @@ void CSWGuiSwoopUpgrade::OnEnterSlot(CSWGuiControl* pControl)
             }
             m_cSlotName.m_cText.m_cParams.SetText(sName);
             m_cProperty.m_cText.m_cParams.SetText(sName);
-            CExoString& sTag = m_apItemEntries[nSlot]->GetTag();
             int nDescStrRef = 0;
+            CExoString& sTag = m_apItemEntries[nSlot]->GetTag();
             CExoString sTemplate;
             for (int i = 0; i < m_pUpgradeTable->m_nNumRows; i++)
             {
-                m_pUpgradeTable->GetCExoStringEntry(i, CExoString("template"), &sTemplate);
+                m_pUpgradeTable->GetCExoStringEntry(i, "template", &sTemplate);
                 if (sTag.LowerCase() == sTemplate.LowerCase())
                 {
                     int nLevel;
-                    m_pUpgradeTable->GetINTEntry(i, CExoString("level"), &nLevel);
-                    m_pUpgradeTable->GetINTEntry(i, CExoString("desc_strref"), &nDescStrRef);
+                    m_pUpgradeTable->GetINTEntry(i, "level", &nLevel);
+                    m_pUpgradeTable->GetINTEntry(i, "desc_strref", &nDescStrRef);
                     CExoString sDescription = g_pTlkTable->GetSimpleString(nDescStrRef);
-                    m_cProperty.m_cText.m_cParams.SetText(sDescription + CExoString(" ") +
-                                                          CExoString(nLevel));
+                    m_cProperty.m_cText.m_cParams.SetText(sDescription + " " + nLevel);
                 }
             }
         }
@@ -5193,7 +5210,7 @@ void CSWGuiSwoopUpgrade::OnEnterSlot(CSWGuiControl* pControl)
             m_cProperty.m_cText.m_cParams.SetStrRef(nStrRef);
             m_cSlotName.m_cText.m_cParams.SetStrRef(nStrRef);
         }
-        m_cUpgradeCount.m_cText.m_cParams.SetText(CExoString(nCount));
+        m_cUpgradeCount.m_cText.m_cParams.SetText(nCount);
         m_cUpgrades.m_cText.m_cParams.SetStrRef(CSWGuiUpgrade::STRREF_UPGRADES);
         if (nCount == 0 && m_apItemEntries[nSlot] == 0)
         {
@@ -5327,11 +5344,11 @@ void CSWGuiSwoopUpgrade::OnPanelAdded()
     int nLevel;
     for (int nRow = 0; nRow < m_pUpgradeTable->m_nNumRows; nRow++)
     {
-        m_pUpgradeTable->GetINTEntry(nRow, CExoString("group"), &nGroup);
-        m_pUpgradeTable->GetCExoStringEntry(nRow, CExoString("template"), &sTemplate);
-        m_pUpgradeTable->GetINTEntry(nRow, CExoString("level"), &nLevel);
+        m_pUpgradeTable->GetINTEntry(nRow, "group", &nGroup);
+        m_pUpgradeTable->GetCExoStringEntry(nRow, "template", &sTemplate);
+        m_pUpgradeTable->GetINTEntry(nRow, "level", &nLevel);
         int nSlot;
-        for (nSlot = 0; nSlot < NUM_SWOOP_SLOTS; nSlot++)
+        for (nSlot = 0; nSlot < NUM_SWOOP_UPGRADE_SLOTS; nSlot++)
         {
             if (nLevel != 0 && m_apItemEntries[nSlot] == 0 &&
                 nGroup == SWOOP_SLOT_INFO[nSlot].nProperty)
@@ -5339,7 +5356,7 @@ void CSWGuiSwoopUpgrade::OnPanelAdded()
                 break;
             }
         }
-        if (nSlot < 3)
+        if (nSlot < NUM_SWOOP_UPGRADE_SLOTS)
         {
             m_asUpgradeTemplates[nSlot] = sTemplate.LowerCase();
             m_aUpgradeLabels3[nSlot].m_cBorder.m_cParams.m_fHilightAlpha = 1.0f;
@@ -5347,7 +5364,7 @@ void CSWGuiSwoopUpgrade::OnPanelAdded()
             if (g_pAppManager->m_pServerExoApp->GetPartyTable()->GetSwoopUpgrade(nSlot) == nRow)
             {
                 m_apItemEntries[nSlot] = new CSWSItem(OBJECT_INVALID);
-                m_apItemEntries[nSlot]->LoadFromTemplate(CResRef(sTemplate));
+                m_apItemEntries[nSlot]->LoadFromTemplate(sTemplate);
                 m_apItemEntries[nSlot]->m_anUpgradeSlot[nSlot] = nRow;
                 m_an43CC[nSlot] = nRow;
             }

@@ -181,9 +181,12 @@ public:
     int m_nSaveGame;
     int GetSaveGame() { return m_nSaveGame; }
     unsigned long m_nTimePlayed;
+    unsigned long GetTimePlayed() { return m_nTimePlayed; }
 
     int m_nSaveSpaceNeeded;
+    int GetSaveSpaceNeeded() { return m_nSaveSpaceNeeded; }
     unsigned char m_nGameplayHint;
+    unsigned char GetGameplayHint() { return m_nGameplayHint; }
 #ifndef _XBOX
     enum { STORY_HINT_AREAS = 10, SAVE_ENTRY_HEIGHT = 36 };
     unsigned char m_anStoryHint[STORY_HINT_AREAS];
@@ -206,8 +209,10 @@ public:
     CResRef m_aPortraits[3];
 #ifndef _XBOX
     unsigned __int64 m_nTimeStamp;
+    unsigned __int64 GetTimeStamp() { return m_nTimeStamp; }
     CExoString m_sPCName;
     int m_nSaveNumber;
+    int GetSaveNumber() { return m_nSaveNumber; }
     CExoString GetPCName() { return m_sPCName; }
 #endif
 

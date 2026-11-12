@@ -347,7 +347,20 @@ public:
 class CSWGuiCreateItem : public CSWGuiPanel
 {
 public:
-    enum { STRREF_INFINITE = 41951 };
+    enum
+    {
+        STRREF_INFINITE = 41951,
+        STRREF_SKILL_REQUIRED_TO_CREATE = 115429,
+        STRREF_SKILL_TOO_LOW = 116292,
+        STRREF_NOT_ENOUGH_COMPONENTS = 116297,
+        STRREF_CONFIRM_CREATE_COST = 124113,
+        STRREF_CONFIRM_BREAKDOWN_VALUE = 124115,
+        STRREF_REMOVE_UPGRADES_FIRST = 124119,
+        CONFIRM_VALUE_PER_LEVEL = 50,
+        MAX_BREAKDOWN_CONFIRM_VALUE = 250
+    };
+
+    static const unsigned long COMPONENT_VALUE_DIVISOR = 20;
 
     int m_n68;
     CExoArrayList<CSWGuiStoreItemEntry*> m_lStoreEntries;
@@ -433,7 +446,19 @@ public:
 class CSWGuiCreateMedicalItem : public CSWGuiPanel
 {
 public:
-    enum { STRREF_INFINITE = 41951 };
+    enum
+    {
+        STRREF_INFINITE = 41951,
+        STRREF_SKILL_REQUIRED_TO_CREATE = 115429,
+        STRREF_SKILL_TOO_LOW = 116292,
+        STRREF_NOT_ENOUGH_CHEMICALS = 116298,
+        STRREF_CONFIRM_CREATE_COST = 124114,
+        STRREF_CONFIRM_BREAKDOWN_VALUE = 124116,
+        CONFIRM_VALUE_PER_LEVEL = 50,
+        MAX_BREAKDOWN_CONFIRM_VALUE = 250
+    };
+
+    static const unsigned long CHEMICAL_VALUE_DIVISOR = 2;
 
     int m_n68;
     CExoArrayList<CSWGuiStoreItemEntry*> m_lStoreEntries;

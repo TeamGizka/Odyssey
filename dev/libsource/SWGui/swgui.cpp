@@ -39,7 +39,7 @@ char* g_asMouseCursorNames[] = {
     "gui_mp_arwalk15",
 };
 
-Vector CSWGuiManager::DISABLED_TEXT(0.0f, 0.33f, 0.49f);
+Vector CSWGuiManager::DISABLED_TEXT(0.13f, 0.9f, 0.7f);
 Vector CSWGuiManager::COLOR_YELLOW(0.98f, 1.0f, 0.0f);
 
 void AurGUIStartLayer();

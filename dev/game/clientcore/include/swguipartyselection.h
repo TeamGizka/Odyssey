@@ -113,12 +113,14 @@ public:
     void OnToggled(CSWGuiControl* pControl);
     void OnDone(CSWGuiControl* pControl);
     void OnEnter(CSWGuiControl* pControl);
+#ifdef _XBOX
     // PC 0x005EE1C0
     void OnExit(CSWGuiControl*)
     {
     }
-#ifdef _XBOX
     void OnDoneEnter(CSWGuiControl* pControl);
+#else
+    void OnExit(CSWGuiControl* pControl);
 #endif
 
     int m_nInputClass;

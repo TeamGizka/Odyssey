@@ -392,8 +392,8 @@ void CSWGuiPartySelection::OnPanelAdded()
     CSWParty* pParty = pClient->GetSWParty();
     CSWPartyTable* pPartyTable = pServer->GetPartyTable();
     int nFirstAvailable = -1;
-    CSWSArea* pArea = pServer->GetCreatureByGameObjectID(pServer->GetPlayerCreatureId())->GetArea();
-    m_bCanChangeParty = pArea->m_bUnescapable == 0 || m_bPlaySound != 0;
+    int bUnescapable = pServer->GetCreatureByGameObjectID(pServer->GetPlayerCreatureId())->GetArea()->m_bUnescapable;
+    m_bCanChangeParty = bUnescapable == 0 || m_bPlaySound != 0;
     m_nCannotChangeStrRef = STRREF_CANNOT_CHANGE_PARTY;
     CSWSCreature* pPC = (CSWSCreature*)g_pAppManager->m_pServerExoApp->GetGameObject(
         g_pAppManager->m_pServerExoApp->GetFirstPCObject());
@@ -430,7 +430,10 @@ void CSWGuiPartySelection::OnPanelAdded()
     if (m_bForcedNPC != 0)
         m_nSelectedCount = 0;
     else
-        m_nSelectedCount = pPartyTable->m_nNumMembers;
+    {
+        int nMembers = pPartyTable->m_nNumMembers;
+        m_nSelectedCount = nMembers;
+    }
     pPartyTable->AddGameInProgress();
     UpdateVisibleCharacters();
     for (int nPuppet = 0; nPuppet < 3; ++nPuppet)
@@ -524,6 +527,19 @@ void CSWGuiPartySelection::OnPanelAdded()
     g_pAppManager->m_pClientExoApp->GetInGameGui()->EnableCharacterChangeButtons(0);
 }
 #endif
+#ifndef _XBOX
+// PC 0x0071E000
+void CSWGuiPartySelection::OnExit(CSWGuiControl* pControl)
+{
+    CSWGuiPartySelectionData* pData =
+        (CSWGuiPartySelectionData*)pControl->GetUserData();
+    if (pData->m_pCreature != 0)
+    {
+        delete pData->m_pCreature;
+        pData->m_pCreature = 0;
+    }
+}
+#endif
 // PC 0x0071E020
 void CSWGuiPartySelection::UpdateCount()
 {
@@ -564,7 +580,7 @@ void CSWGuiPartySelection::AcceptParty(int bCancelled)
                 {
                     if (pTable->GetIsMember(nMember))
                         m_aPartyMembers[nMember].m_nPartyIndex = pParty->GetIndex(
-                            g_pAppManager->m_pClientExoApp->ServerToClientObjectId(pTable->GetPUPObject(nMember, 0, 0)));
+                            g_pAppManager->m_pClientExoApp->ServerToClientObjectId(pTable->GetNPCObject(nMember, 0, 0)));
                 }
                 bFirstRemoval = 0;
             }

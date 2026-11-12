@@ -256,9 +256,9 @@ void CSWGuiInGameAbilities::OnEnterPower(unsigned long nPower)
     }
     char nCharismaModifier =
         m_pCreature->GetServerCreature()->m_pStats->m_nCharismaModifier;
+    int nForm = m_pCreature->GetServerCreature()->GetForm();
     int nCost = pSpell->GetAdjustedForcePoints(
-        nAlignment * 10, 1, nRoomForceRating,
-        m_pCreature->GetServerCreature()->m_n1110, nCharismaModifier);
+        nAlignment * 10, 1, nRoomForceRating, nForm, nCharismaModifier);
     int nAdjust = nCost - pSpell->GetForcePoints();
 
     if (nAdjust < 0)

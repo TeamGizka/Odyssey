@@ -435,6 +435,9 @@ public:
     using CSWGuiLabel::Initialize;
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
+#ifndef _XBOX
+    virtual void SetActive(int bActive);
+#endif
     virtual void Load(CResGFF* pGFF, CResStruct& cStruct);
     // PC 0x00698BD0
     virtual CSWGuiLabelHilight* AsLabelHilight()

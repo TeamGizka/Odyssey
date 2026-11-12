@@ -51,23 +51,19 @@ void CSWGuiQuickOrCustomPanel::SetDescription(unsigned long nStrRef)
     STR_RES strRes;
     CSWGuiControl* pLabel;
     CSWGuiListBox* pList;
-    int nLength;
-    CSWGuiText* pText;
 
     g_pTlkTable->Fetch(nStrRef, strRes, CTlkTable::GENDER_MALE);
     m_cDescription.m_cText.m_cParams.SetText(strRes.m_sString);
     pList = &m_cDescriptionList;
     pList->ClearItems();
     CSWGuiExtent extent = m_cDescription.m_cExtent;
-    nLength = strRes.m_sString.GetLength();
-    pText = &m_cDescription.m_cText;
-    if (nLength > 0)
+    if (strRes.m_sString.GetLength() > 0)
     {
-        extent.m_nHeight = pText->GetIdealHeight();
+        extent.m_nHeight = m_cDescription.m_cText.GetIdealHeight();
     }
     else
     {
-        extent.m_nHeight = pText->GetFontHeight();
+        extent.m_nHeight = m_cDescription.m_cText.GetFontHeight();
     }
     m_cDescription.SetExtent(extent);
     pLabel = &m_cDescription;
@@ -84,7 +80,11 @@ CSWGuiQuickOrCustomPanel::CSWGuiQuickOrCustomPanel(CSWGuiManager* pManager,
     : CSWGuiPanel(pManager)
 {
     m_pCreature = pCreature;
-    StartLoadFromLayout("QORCPNL_p");
+#ifdef _XBOX
+    StartLoadFromLayout("QORCPNL");
+#else
+    StartLoadFromLayout("QORCPNL_p", 0, 1);
+#endif
     InitControl(m_cQuickButton, "QUICK_CHAR_BTN", 1);
     InitControl(m_cCustomButton, "CUST_CHAR_BTN", 1);
     InitControl(m_cDescriptionList, "LB_DESC", 1);
@@ -131,8 +131,10 @@ CSWGuiQuickOrCustomPanel::CSWGuiQuickOrCustomPanel(CSWGuiManager* pManager,
                     (PFNGUIEVENT)&CSWGuiPanel::OnBButtonPressed);
 #endif
     SetActiveControl(&m_cQuickButton, 0);
+#ifdef _XBOX
     m_bCenterHorizontal = 1;
     m_bCenterVertical = 1;
+#endif
 }
 // PC 0x00761A00
 void CSWGuiQuickOrCustomPanel::HandleInputEvent(int nEvent, int nState)

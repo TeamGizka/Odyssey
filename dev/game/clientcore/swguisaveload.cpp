@@ -651,7 +651,7 @@ void CSWGuiSaveLoad::WriteGame(const CExoString& sSaveName)
 #ifdef _XBOX
     g_pAppManager->GetClientExoApp()->SendSaveGameRequest(pEntry->m_nSaveGame, sGameName);
 #else
-    g_pAppManager->GetClientExoApp()->SendSaveGameRequest(pEntry->m_nSaveGame, sGameName,
+    g_pAppManager->GetClientExoApp()->SendSaveGameRequest(pEntry->GetSaveGame(), sGameName,
                                                           sSaveName);
 #endif
     m_bDeferredRemoval = 0;
@@ -1264,16 +1264,16 @@ CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry(CSWGuiSaveLoadEntry* pEntry)
     CSWGuiExtent cExtent;
     cExtent.m_nHeight = SAVE_ENTRY_HEIGHT;
     Initialize(cExtent, pEntry);
-    m_nGameplayHint = pEntry->m_nGameplayHint;
+    m_nGameplayHint = pEntry->GetGameplayHint();
     for (int nArea = 0; nArea < STORY_HINT_AREAS; nArea++)
         m_anStoryHint[nArea] = pEntry->GetStoryHint(nArea);
     m_bDataLoaded = pEntry->m_bDataLoaded;
     m_bRebootAutoSave = pEntry->m_bRebootAutoSave;
     m_bPCAutoSave = pEntry->m_bPCAutoSave;
-    m_nSaveGame = pEntry->m_nSaveGame;
-    m_nTimePlayed = pEntry->m_nTimePlayed;
+    m_nSaveGame = pEntry->GetSaveGame();
+    m_nTimePlayed = pEntry->GetTimePlayed();
     m_bNewSlot = pEntry->m_bNewSlot;
-    m_nSaveSpaceNeeded = pEntry->m_nSaveSpaceNeeded;
+    m_nSaveSpaceNeeded = pEntry->GetSaveSpaceNeeded();
     m_bBadSave = pEntry->m_bBadSave;
     m_bEmptySlot = pEntry->m_bEmptySlot;
     m_bCheatUsed = pEntry->m_bCheatUsed;
@@ -1288,12 +1288,12 @@ CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry(CSWGuiSaveLoadEntry* pEntry)
     m_aPortraits[0] = pEntry->GetPortrait(0);
     m_aPortraits[1] = pEntry->GetPortrait(1);
     m_aPortraits[2] = pEntry->GetPortrait(2);
-    m_nTimeStamp = pEntry->m_nTimeStamp;
+    m_nTimeStamp = pEntry->GetTimeStamp();
     m_sPCName = pEntry->GetPCName();
-    m_nSaveNumber = pEntry->m_nSaveNumber;
+    m_nSaveNumber = pEntry->GetSaveNumber();
 
-    CSWGuiObject* pObject = 0;
     CSWGuiHandler pHandler = 0;
+    CSWGuiObject* pObject = 0;
     pEntry->GetEvent(GUIEVENT_ACTIVATE, &pObject, &pHandler);
     if (pHandler != 0 && pObject != 0)
         AddEvent(GUIEVENT_ACTIVATE, pObject, pHandler);

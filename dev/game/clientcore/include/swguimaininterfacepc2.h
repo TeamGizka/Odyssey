@@ -4,6 +4,7 @@
 #include "swguicontrol.h"
 #include "swgui.h"
 #include "swguiingamecharacter.h"
+#include "guiingame.h"
 class CResRef;
 class CSWCCreature;
 class CSWCObject;
@@ -297,7 +298,20 @@ public:
         m_bToolTipDirty = 1;
     }
 #endif
-    void SetHealth(int nCurHealth, int nMaxHealth, int bAlive);
+    void SetHealth(int nCurHealth, int nMaxHealth, int bAlive)
+    {
+        m_aBars[0].SetMaxValue(nMaxHealth);
+        m_aBars[0].SetCurValue(nCurHealth);
+#ifdef _XBOX
+        m_aBars[0].m_cFill.m_cParams.SetFillImage(bAlive != 0 ? "lbl_healthp" : "lbl_health", 0);
+#else
+        m_aBars[0].m_cFill.m_cParams.SetColor(bAlive != 0 ? CGuiInGame::COLOR_GREEN
+                                                          : CGuiInGame::COLOR_RED);
+        m_nMaxHealth = nMaxHealth;
+        m_nCurHealth = nCurHealth;
+        m_bToolTipDirty = 1;
+#endif
+    }
     void Show(int, unsigned char, unsigned char, unsigned char);
     void Initialize(CSWGuiMainInterface*, int);
     CSWGuiMainInterfaceChar();

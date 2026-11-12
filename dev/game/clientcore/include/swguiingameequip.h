@@ -300,8 +300,9 @@ public:
     int m_n3B0;
     int m_n3B4;
     virtual void Initialize(CSWGuiText&, CSWGuiBorder&, CSWGuiBorder&, int);
+    enum { CHARACTER_NONE = -1 };
     CSWGuiStoreItemEntry();
-    void SetItem(unsigned long, int, int nCharacter = -1);
+    void SetItem(unsigned long, int, int nCharacter = CHARACTER_NONE);
     void SetColors(Vector, Vector, Vector, Vector);
 };
 

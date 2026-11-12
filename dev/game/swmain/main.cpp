@@ -893,10 +893,10 @@ void UpdateScreen(float fElapsed, int bRunWorld, int bSkipRender)  // PC 0x00401
 #endif
 
 #ifndef _XBOX
-void DeactivateRenderWindow()  // PC 0x00401DB0
+void DeactivateRenderWindow(int bMovie)  // PC 0x00401DB0
 {
     if (g_pExoSound != NULL)
-        g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_LOSTFOCUS);
+        g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_LOSTFOCUS, bMovie);
     if (g_bRenderWindowActive != 0)
     {
         if (g_pAppManager->m_pServerExoApp != NULL)
@@ -1283,7 +1283,7 @@ LRESULT CALLBACK WinMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,  // PC 0
                 }
                 if (hWnd == g_hRenderWnd)
                 {
-                    DeactivateRenderWindow();
+                    DeactivateRenderWindow(0);
                     g_nWindowDeactivationTickCount = GetTickCount();
                 }
                 if (g_bActivationDueToAnyMovie == 0)
@@ -1927,7 +1927,7 @@ void ReInitAurora(unsigned long nWidth, unsigned long nHeight,  // PC 0x00403840
         if (nMouseMode != 0xFF)
             g_pExoInput->SetMouseMode(nMouseMode);
 
-        DeactivateRenderWindow();
+        DeactivateRenderWindow(0);
         if (g_pAppManager->m_pClientExoApp->IsClientInitialized() != 0)
             g_pAppManager->m_pClientExoApp->SetEventDescriptions();
         ActivateRenderWindow();

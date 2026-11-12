@@ -398,25 +398,6 @@ template <> void CExoArrayList<CSWGuiFloatyText*>::DelIndex(int nIndex)
     }
 }
 
-inline void CSWGuiMainInterfaceChar::SetHealth(int nCurHealth, int nMaxHealth, int bAlive)
-{
-    m_aBars[0].SetMaxValue(nMaxHealth);
-    m_aBars[0].SetCurValue(nCurHealth);
-
-#ifdef _XBOX
-    m_aBars[0].m_cFill.m_cParams.SetFillImage(bAlive != 0 ? "lbl_healthp" : "lbl_health", 0);
-#else
-    m_aBars[0].m_cFill.m_cParams.SetColor(bAlive != 0 ? CGuiInGame::COLOR_GREEN
-                                                      : CGuiInGame::COLOR_RED);
-#endif
-
-#ifndef _XBOX
-    m_nMaxHealth = nMaxHealth;
-    m_nCurHealth = nCurHealth;
-    m_bToolTipDirty = 1;
-#endif
-}
-
 #ifndef _XBOX
 inline int CSWGuiMainInterfaceAction::GetActive()  // PC 0x006DCFF0
 {
@@ -2394,7 +2375,7 @@ void CSWGuiMainInterface::UpdatePortraits()
             else if (pServer->GetStats()->CanLevelUp())
             {
                 if (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_bAutoLevelUpNPCs &&
-                    pCreature->m_nId != g_pAppManager->GetClientExoApp()->GetPlayerCreature()->m_nId &&
+                    pCreature->GetId() != g_pAppManager->GetClientExoApp()->GetPlayerCreature()->m_nId &&
                     !pServer->m_bPlayerCreated)
                 {
                     pServer->GetStats()->AutoLevelup(1);
@@ -3278,7 +3259,8 @@ void CSWGuiMainInterface::Draw(float fElapsed)
             m_bSelectingUseItemTarget = 0;
         }
     }
-    if (m_bSelectingUseItemTarget)
+    int bSelectingUseItemTarget = m_bSelectingUseItemTarget;
+    if (bSelectingUseItemTarget)
     {
         m_fFormMessageTime = 0.0f;
         m_nFormMessage = 0;
@@ -4468,12 +4450,12 @@ void CSWGuiMainInterface::UpdateStickyTarget()  // PC 0x006DEEF0
         }
         else
         {
-            if (fDistanceSquared >= STICKY_RETICLE_FAR_RANGE * STICKY_RETICLE_FAR_RANGE)
+            if (fDistanceSquared >= STICKY_RETICLE_OBJECT_FAR_RANGE * STICKY_RETICLE_OBJECT_FAR_RANGE)
                 nSize = STICKY_RETICLE_OBJECT_MIN_SIZE;
             else if (fDistanceSquared > STICKY_RETICLE_NEAR_RANGE * STICKY_RETICLE_NEAR_RANGE)
             {
                 double fScale = (sqrt(fDistanceSquared) - STICKY_RETICLE_NEAR_RANGE) /
-                                (STICKY_RETICLE_FAR_RANGE - STICKY_RETICLE_NEAR_RANGE);
+                                (STICKY_RETICLE_OBJECT_FAR_RANGE - STICKY_RETICLE_NEAR_RANGE);
                 nSize = STICKY_RETICLE_MAX_SIZE - (int)(fScale * (STICKY_RETICLE_MAX_SIZE - STICKY_RETICLE_OBJECT_MIN_SIZE));
             }
             if (pTarget->AsSWCDoor() != NULL && pTarget->AsSWCDoor()->m_bTrapDetected && pTarget->AsSWCDoor()->m_bTrap)

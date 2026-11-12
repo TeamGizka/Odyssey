@@ -16,6 +16,7 @@ template void CExoArrayList<CSWGuiControl*>::Allocate(int);
 #include "clientexoappinternal.h"
 #include "exoinputinternal.h"
 #include "clientexoapp.h"
+#include "guiingame.h"
 #include "nwrules.h"
 #include "twodimarrays.h"
 #include "aurora.h"
@@ -2764,6 +2765,24 @@ void CSWGuiLabelHilight::Initialize(const CSWGuiExtent& cExtent,
     Initialize(cExtent, pProto->m_cText.m_cParams, pProto->m_cBorder.m_cParams,
                pProto->m_cHilite.m_cParams);
 }
+#ifndef _XBOX
+// PC 0x00418530
+void CSWGuiLabelHilight::SetActive(int bActive)
+{
+    CSWGuiControl::SetActive(bActive);
+    CSWGuiTextParams* pText = &m_cText.m_cParams;
+    if (bActive)
+    {
+        pText->m_bHilightText = 1;
+        pText->SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+    }
+    else
+    {
+        pText->m_bHilightText = 0;
+        pText->RestoreDefaultColor();
+    }
+}
+#endif
 // PC 0x00418570
 void CSWGuiButton::Initialize(const CSWGuiExtent& cExtent, CSWGuiButton* pProto)
 {
@@ -2797,7 +2816,7 @@ void CSWGuiButton::SetActive(int bActive)
     if (bActive)
     {
         pText->m_bHilightText = 1;
-        pText->SetColor(CSWGuiManager::COLOR_YELLOW);
+        pText->SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
     }
     else
     {

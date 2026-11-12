@@ -356,6 +356,7 @@ public:
         return nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
             ((UPGRADE_PROPERTY_MASK << nUpgradeType) & m_nUpgrades) != 0;
     }
+    void ClearUpgradeActive(unsigned char nUpgradeType);
 
     int GetStackSize() { return m_nStackSize; }
     int m_nStackSize;

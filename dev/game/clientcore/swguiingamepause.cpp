@@ -3,9 +3,11 @@
 #include "exotlktable.h"
 #include "appmanager.h"
 #include "clientexoapp.h"
+#include "serverexoapp.h"
 #include "guiingame.h"
 #include "swguiingamepause.h"
 #include "swminigame.h"
+#include "nwsvartable.h"
 #ifndef _XBOX
 void CSWGuiInGamePause::Draw(float fElapsed)
 {
@@ -165,6 +167,31 @@ void CSWGuiInGamePause::OnUnpauseButtonPressed(CSWGuiControl* pControl)  // PC 0
         }
     }
 }
+#ifndef _XBOX
+// PC 0x00720B40
+void CSWGuiInGamePause::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState != 0 && nEvent == GUIEVENT_ACTIVATE)
+    {
+        CSWMiniGame* pMiniGame = g_pAppManager->GetClientExoApp()->GetMiniGame();
+        if (pMiniGame != 0)
+        {
+            int nAttachType = pMiniGame->m_nAttachType;
+            if (nAttachType == CSWMiniGame::ATTACH_PLAYER_MODEL)
+            {
+                {
+                    CExoString sQuitSwoop("GBL_QUIT_SWOOP");
+                    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueBoolean(sQuitSwoop, 1);
+                }
+                g_pAppManager->GetClientExoApp()->SetPausedByCombat(0, 4, 0);
+                g_pAppManager->GetClientExoApp()->SetAutoPaused(0, 0);
+                m_pManager->RemovePanel(this);
+            }
+        }
+    }
+    CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
+#endif
 // PC 0x00720C20
 CSWGuiInGamePause::CSWGuiInGamePause(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
