@@ -1488,11 +1488,11 @@ void CSWCCreature::SetStealthState(int nState, int bSuppressAnimation)
     {
         return;
     }
-    int nNPC = pServerCreature->m_n11F8;
-    if (bStateChanged && nNPC != -1)
+    int nPUP = pServerCreature->m_n11F8;
+    if (bStateChanged && nPUP != -1)
     {
         CGameObject* pObject = g_pAppManager->m_pServerExoApp->GetGameObject(
-            g_pAppManager->GetServerExoApp()->GetPartyTable()->GetNPCObject(nNPC, 0, 1));
+            g_pAppManager->GetServerExoApp()->GetPartyTable()->GetPUPObject(nPUP, 0, 1));
         if (pObject != NULL)
         {
             CSWCCreature* pNPC = ((CSWSCreature*)pObject)->GetClientCreature();
@@ -7093,7 +7093,8 @@ void CSWCCreature::ActionMenuSelectBehavior(unsigned long nAction, CSWCCreature*
                 nTutorial = TUTORIAL_BEHAVIOR_STATIONARY;
                 break;
             case ACTION_BEHAVIOR_SUPPORT:
-                if (CSWClass::IsJedi(GetStats()->GetClass(GetStats()->m_nClassCount - 1)))
+                int nClass = GetStats()->GetClass(GetStats()->m_nClassCount - 1);
+                if (CSWClass::IsJedi(nClass))
                 {
                     nStrRef = STRREF_BEHAVIOR_JEDI_SUPPORT;
                     nTutorial = TUTORIAL_BEHAVIOR_JEDI_SUPPORT;

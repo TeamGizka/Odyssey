@@ -638,7 +638,8 @@ void CClientExoAppInternal::SetEventDescriptions()
     C2DA* pKeymap;
     if ((pKeymap = g_pRules->Get2DArrays()->m_pKeymap) != NULL)
     {
-        sLanguage = CExoString("Language") + m_nClientLanguage;
+        int nLanguage = m_nClientLanguage;
+        sLanguage = CExoString("Language") + nLanguage;
         int nAction = INPUT_ACTION_FIRST;
         while (1)
         {
@@ -1482,8 +1483,8 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)
     {
         m_pModule->TurnCamera((CameraHorzAxisFlip ? 1 : -1) *
                              (fMouseX * fMouseSensitivity), fDeltaTime);
-        float fTilt = fMouseY * fMouseSensitivity * 0.1f;
-        m_pModule->TiltCamera(fTilt * (CameraHorzAxisFlip ? 1 : -1));
+        int nFlip = CameraHorzAxisFlip ? 1 : -1;
+        m_pModule->TiltCamera(nFlip * (fMouseY * fMouseSensitivity * 0.1f));
     }
 
     if (m_fCameraZoom != 0.0f)

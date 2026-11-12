@@ -50,7 +50,8 @@ void CSWGuiFade::Draw(float fElapsed)
                                           1000);
     unsigned long nDelta = nTime - m_nFadeTime;
     m_nFadeTime = nTime;
-    float fDelta = (float)nDelta * 0.001f;
+    float fDelta = (float)nDelta;
+    fDelta *= 0.001f;
 
     if (g_pAppManager->m_pClientExoApp->GetInGameGui() &&
         g_pAppManager->m_pClientExoApp->GetInGameGui()->GetFadeOverridePanelVisible())

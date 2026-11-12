@@ -342,7 +342,7 @@ public:
     CGameObject* GetGameObject(unsigned long oidObject)
     {
         CGameObject* pGameObject = NULL;
-        m_pGameObjectArray->GetGameObject(oidObject, &pGameObject);
+        GetGameObjectArray()->GetGameObject(oidObject, &pGameObject);
         return pGameObject;
     }
 
@@ -418,7 +418,7 @@ public:
 
     int GetPlayerMovementInput();
     CAurCamera* GetModuleCamera();
-    CGameObjectArray* GetGameObjectArray();
+    CGameObjectArray* GetGameObjectArray() { return m_pGameObjectArray; }
     CSWCPlayer* GetPlayerByGameObjectID(unsigned long oidObject);
     CSWCItem* GetItemByGameObjectID(unsigned long nId);
     CSWCCreature* GetCreatureByGameObjectID(unsigned long nId);
@@ -528,7 +528,7 @@ public:
         INPUT_MOUSE_X = 65, INPUT_MOUSE_Y = 66,
         INPUT_MOUSE_BUTTON0 = 67, INPUT_MOUSE_BUTTON1 = 68,
         INPUT_MOUSE_BUTTON2 = 69, INPUT_MOUSE_Z = 70,
-        INPUT_ACTION_FIRST = 200, INPUT_ACTION_LAST = 265,
+        INPUT_ACTION_FIRST = 200, INPUT_ACTION_LAST = 269,
         INPUT_PAIRED_ACTION_FIRST = 280, INPUT_PAIRED_ACTION_LAST = 286
     };
     void ShutDownToMainMenu();
