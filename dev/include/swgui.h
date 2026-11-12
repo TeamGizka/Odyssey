@@ -553,7 +553,8 @@ public:
         DISABLED_REASON_RANGE = 4,
 
         DISABLED_REASON_FULL_HEALTH = 5,
-        DISABLED_REASON_DEAD = 6
+        DISABLED_REASON_DEAD = 6,
+        DISABLED_REASON_HIT_POINTS = 7
     };
 
     enum { STRREF_ATTACK = 375 };

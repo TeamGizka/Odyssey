@@ -40,12 +40,7 @@ public:
     int GetNumberKnownSpells(unsigned char nLevel) { return m_lstKnownSpells[nLevel].num; }
     unsigned long GetKnownSpell(unsigned char nLevel, unsigned char nIndex);
     void AddKnownSpell(unsigned char nLevel, unsigned long nSpell);
-    float GetMinSpellRange(const CExoString& sRange);
     void RemoveKnownSpell(unsigned char nLevel, unsigned long nSpell);
-    void GetMenuInfo(CExoArrayList<CSWGuiInterfaceAction>& lstActions,
-                     unsigned long nType, unsigned long nForcePoints,
-                     unsigned long nLevel, int nExclusion,
-                     unsigned long nItemMask, float fDistance);
 
     CExoArrayList<unsigned long> m_lstKnownSpells[SPELL_LEVEL_COUNT];
     CExoArrayList<unsigned long> m_lstUnknown0C[1];
@@ -186,6 +181,10 @@ public:
     static int CheckCustomPortrait(CResRef* pResRef, int bFemale);
     CExoString GetFirstName();
     CExoString GetLastName();
+    CExoString GetTag()
+    {
+        return m_sTag;
+    }
     void ClearKnownSpells(unsigned char nClass);
     void RemoveKnownSpell(unsigned char nClass, unsigned long nSpell);
     CExoString GetRaceString();
@@ -216,8 +215,12 @@ public:
     CExoString GetAlignmentString(int nAlignment);
     CResRef GetPortrait(int bAlternate);
     void GetMenuInfo(CExoArrayList<CSWGuiInterfaceAction>& lstActions,
-                     unsigned long nTarget, unsigned long nAction, int nFlag,
-                     unsigned long nObject, float fDistance);
+                     unsigned long nType, unsigned long nForcePoints,
+                     int nExclusion, unsigned long nItemMask, float fDistance,
+                     int nRoomForceRating, int nForceBodyLevel, int nHitPoints,
+                     int bForms, int nForm, int bBeastTarget,
+                     char nCharismaModifier);
+    float GetMinSpellRange(const CExoString& sRange);
     void ClearKnownSpells();
     void AddKnownSpell(unsigned char nClass, unsigned long nSpell);
     char GetSTRMod();
@@ -284,7 +287,7 @@ public:
 
     short m_nGoodEvilAlignment;
     short m_n82;
-    CExoString m_s84;
+    CExoString m_sTag;
     char* m_pSkillRanksTotal;
     char* m_pSkillRanks;
     unsigned short m_nAppearance;
@@ -352,7 +355,8 @@ public:
                                          CExoArrayList<unsigned short>* pList,
                                          int bNormal, int bBonus);
     void AddDefaultPackageSkills(int nClass, int bAllSkills);
-    void AddGrantedFeats(CExoArrayList<unsigned long>* pList);
+    void AddGrantedFeats(CExoArrayList<unsigned long>* pList, bool bPCGranted = false);
+    void AddGrantedPowers(CExoArrayList<unsigned long>* pList);
     int GetSkillPointCostForSkillRank(unsigned short nSkill, int bIncrease);
     int GetBaseAttackBonus();
     void SetSkillRankBase(unsigned short nSkill, char nRank);

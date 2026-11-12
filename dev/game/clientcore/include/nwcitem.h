@@ -41,7 +41,7 @@ public:
     void ComputeZValue(Vector* pPosition, float fHeight, Vector* pNormal);
     void UpdateOrientation(const Vector& vOrientation);
 
-    int SetEquippedBy(CSWCCreature* pCreature);
+    void SetEquippedBy(CSWCCreature* pCreature);
     CSWCCreature* GetEquippedBy();
     int GetArmorClass() { return m_nArmorClass; }
     int GetNumActiveProperties() { return m_nNumActiveProperties; }

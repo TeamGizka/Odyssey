@@ -142,19 +142,38 @@ int CSWCItem::LoadModel(const CResRef& cModel, unsigned char nModel,
     return 1;
 }
 // PC 0x0069CE80
-int CSWCItem::SetEquippedBy(CSWCCreature* pCreature)
+void CSWCItem::SetEquippedBy(CSWCCreature* pCreature)
 {
-    int nEquippedBy = (int)pCreature;
+    Gob* pModel = GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
     if (pCreature != NULL)
     {
-        nEquippedBy = (int)pCreature->m_nId;
-        m_oidEquippedBy = nEquippedBy;
+        m_oidEquippedBy = pCreature->m_nId;
+        CSWSCreature* pServerCreature = pCreature->GetServerCreature();
+        if (pServerCreature != NULL)
+        {
+            if (pModel != NULL)
+            {
+                if (pServerCreature->m_n24C)
+                    pModel->EnableHologram(1);
+                else
+                    pModel->EnableHologram(0);
+                if (pServerCreature->m_n254)
+                    pModel->EnableRendering(0);
+                else
+                    pModel->EnableRendering(1);
+            }
+            return;
+        }
     }
     else
     {
         m_oidEquippedBy = 2130706432;
     }
-    return nEquippedBy;
+    if (pModel != NULL)
+    {
+        pModel->EnableHologram(0);
+        pModel->EnableRendering(1);
+    }
 }
 // PC 0x0069CF30
 CSWCCreature* CSWCItem::GetEquippedBy()

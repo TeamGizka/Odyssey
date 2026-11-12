@@ -335,8 +335,9 @@ public:
         PERSONAL_ACTION_USABLE_ITEMS_1 = 1,
         PERSONAL_ACTION_USABLE_ITEMS_2 = 2,
         PERSONAL_ACTION_USABLE_ITEMS_3 = 3,
-        PERSONAL_ACTION_STANCES = 4,
-        PERSONAL_ACTION_BEHAVIORS = 5
+        PERSONAL_ACTION_BEHAVIORS = 4,
+        PERSONAL_ACTION_STANCES = 5,
+        SUBRACE_BEAST = 2
     };
     enum UsableItemActionMask
     {
@@ -368,6 +369,7 @@ public:
     void ActionSwapImplant(int nAction);
     void ActionMenuSelectBehavior(unsigned long nAction, CSWCCreature* pInstigator);
     void GetBehaviors(CExoArrayList<CSWGuiInterfaceAction>& lstActions);
+    void GetStances(CExoArrayList<CSWGuiInterfaceAction>& lstActions, int nMenu);
     void GetWookieeRage(CExoArrayList<CSWGuiInterfaceAction>& lstActions);
     void GetSwappableImplants(CExoArrayList<CSWGuiInterfaceAction>& lstActions);
     void GetDroidConfusion(CExoArrayList<CSWGuiInterfaceAction>& lstActions, CSWCObject* pTarget);

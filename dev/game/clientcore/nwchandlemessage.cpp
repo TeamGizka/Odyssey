@@ -5547,14 +5547,14 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
         short nAlignment = ReadSHORT(16);
         short nBaseCNPCAlignment = ReadSHORT(16);
         int nD8 = ReadINT(32);
-        CExoString s84 = ReadCExoString(32);
+        CExoString sTag = ReadCExoString(32);
         int bDeadSelectable = ReadBOOL();
         unsigned char nClasses = ReadBYTE(8);
         if (MessageReadOverflow(1))
             return 0;
         if (pCreature != NULL)
         {
-            pStats->m_s84 = s84;
+            pStats->m_sTag = sTag;
             pStats->m_nRace = nRace;
             pStats->m_sSubRace = sSubRace;
             pStats->m_nSubraceIndex = nUnknown;

@@ -24,7 +24,7 @@ class CSWCPlaceable : public CSWCObject
 public:
 
     enum { LOAD_MODEL_FLAGS_PLACEABLE = 0x0a,
-           STRREF_CANNOT_SET_MINES = 47861, STRREF_SET_MINE = 48180, TUTORIAL_SET_MINE = 2 };
+           STRREF_CANNOT_SET_MINES = 47861, STRREF_LOCK = 48180, TUTORIAL_SET_MINE = 2 };
 #ifndef _XBOX
 #endif
 

@@ -75,6 +75,7 @@ int CSWCCreatureAppearance::CreateHead(unsigned char nType, CCAppearanceInfo* pA
     CExoString sEntry;
     int bEnvMap;
     char sHeadNumber[4];
+    int bAltTexture = 0;
 
     if (pAppearance->m_nHead == 0 &&
         pAppearance->m_nUnmapped10 == CGameObjectArray::INVALIDOBJID)
@@ -141,7 +142,22 @@ int CSWCCreatureAppearance::CreateHead(unsigned char nType, CCAppearanceInfo* pA
             return 0;
         }
         cHeadModel = sHEAD;
-        cHeadTexture = sHEAD;
+        CExoString sAltTexture;
+        {
+            CExoString sColumn("ALTTEXTURE");
+            CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+            C2DA* pHeads2DA = p2DArrays->m_pHeads;
+            pHeads2DA->GetCExoStringEntry(nHead, sColumn, &sAltTexture);
+        }
+        if (sAltTexture.GetLength() > 0)
+        {
+            cHeadTexture = sAltTexture;
+            bAltTexture = 1;
+        }
+        else
+        {
+            cHeadTexture = sHEAD;
+        }
     }
     else
     {
@@ -178,6 +194,15 @@ int CSWCCreatureAppearance::CreateHead(unsigned char nType, CCAppearanceInfo* pA
         m_nUnknown34 == pAppearance->m_nUnknown34 &&
         m_nUnknown30 == pAppearance->m_nUnknown30)
     {
+        if (bAltTexture)
+        {
+            if (g_pExoResMan->Exists(cHeadTexture, RESTYPE_TGA, (unsigned long*)0) ||
+                g_pExoResMan->Exists(cHeadTexture, RESTYPE_TPC, (unsigned long*)0))
+            {
+                m_pCreature->ReplaceTexture(CSWCAnimBase::MODEL_SLOT_HEAD, "",
+                                            cHeadTexture, 1);
+            }
+        }
         if (bEnvMap)
         {
             m_pCreature->SetEnvMap(CSWCAnimBase::MODEL_SLOT_HEAD, 1, 1, cEnvMap);
@@ -502,11 +527,19 @@ void CSWCCreatureAppearance::SetAppearanceAlignment(short nAlignment)
     }
 
     CExoString sHeadTexture;
-    CExoString sBodyTexture;
+    CExoString sBodyTextureA;
     int bHeadTexture = 0;
-    int bBodyTexture = 0;
+    int bBodyTextureA = 0;
+    int bBodyTextureB = 0;
+    int bBodyTextureI = 0;
+    int bBodyTextureL = 0;
+    int bBodyTextureN = 0;
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
     C2DA* pAppearance2DA = p2DArrays->m_pAppearance;
+    CExoString sBodyTextureB;
+    CExoString sBodyTextureI;
+    CExoString sBodyTextureL;
+    CExoString sBodyTextureN;
 
     if (pAppearance2DA == 0)
     {
@@ -521,15 +554,11 @@ void CSWCCreatureAppearance::SetAppearanceAlignment(short nAlignment)
         nHead = m_nUnknown34;
         m_nUnknown40 = 1;
     }
-    else if (m_nUnknown30 != 0)
-    {
-        pAppearance2DA->GetINTEntry(m_nAppearance,
-            CTwoDimArrays::COL2DA_APPEARANCETABLE_BACKUPHEAD, &nHead);
-    }
     else
     {
         pAppearance2DA->GetINTEntry(m_nAppearance,
-            CTwoDimArrays::COL2DA_APPEARANCETABLE_NORMALHEAD, &nHead);
+            m_nUnknown30 == 0 ? CTwoDimArrays::COL2DA_APPEARANCETABLE_NORMALHEAD :
+                                CTwoDimArrays::COL2DA_APPEARANCETABLE_BACKUPHEAD, &nHead);
     }
 
     if (nAlignment <= 10)
@@ -565,15 +594,70 @@ void CSWCCreatureAppearance::SetAppearanceAlignment(short nAlignment)
         bHeadTexture = pHeads->GetCExoStringEntry(nHead, sColumn, &sHeadTexture);
     }
 
-    if (m_bUseBodyVariation == 0 && nAlignment <= 30)
+    if (m_bUseBodyVariation == 0)
     {
-        CExoString sColumn("TEXAEVIL");
-        CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
-        C2DA* pAppearance2DA = p2DArrays->m_pAppearance;
+        if (nAlignment <= 40)
+        {
+            CExoString sColumn("TEXAEVIL");
+            CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+            C2DA* pAppearance2DA = p2DArrays->m_pAppearance;
 
-        bBodyTexture = pAppearance2DA->GetCExoStringEntry(m_nAppearance,
-                                                          sColumn,
-                                                          &sBodyTexture);
+            bBodyTextureA = pAppearance2DA->GetCExoStringEntry(m_nAppearance,
+                                                               sColumn,
+                                                               &sBodyTextureA);
+        }
+    }
+    else if (m_nBodyVariation == BODY_VARIATION_B)
+    {
+        if (nAlignment <= 40)
+        {
+            CExoString sColumn("TEXBEVIL");
+            CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+            C2DA* pAppearance2DA = p2DArrays->m_pAppearance;
+
+            bBodyTextureB = pAppearance2DA->GetCExoStringEntry(m_nAppearance,
+                                                               sColumn,
+                                                               &sBodyTextureB);
+        }
+    }
+    else if (m_nBodyVariation == BODY_VARIATION_I)
+    {
+        if (nAlignment <= 40)
+        {
+            CExoString sColumn("TEXIEVIL");
+            CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+            C2DA* pAppearance2DA = p2DArrays->m_pAppearance;
+
+            bBodyTextureI = pAppearance2DA->GetCExoStringEntry(m_nAppearance,
+                                                               sColumn,
+                                                               &sBodyTextureI);
+        }
+    }
+    else if (m_nBodyVariation == BODY_VARIATION_L)
+    {
+        if (nAlignment <= 40)
+        {
+            CExoString sColumn("TEXLEVIL");
+            CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+            C2DA* pAppearance2DA = p2DArrays->m_pAppearance;
+
+            bBodyTextureL = pAppearance2DA->GetCExoStringEntry(m_nAppearance,
+                                                               sColumn,
+                                                               &sBodyTextureL);
+        }
+    }
+    else if (m_nBodyVariation == BODY_VARIATION_N)
+    {
+        if (nAlignment <= 40)
+        {
+            CExoString sColumn("TEXMEVIL");
+            CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+            C2DA* pAppearance2DA = p2DArrays->m_pAppearance;
+
+            bBodyTextureN = pAppearance2DA->GetCExoStringEntry(m_nAppearance,
+                                                               sColumn,
+                                                               &sBodyTextureN);
+        }
     }
 
     if (bHeadTexture)
@@ -589,22 +673,98 @@ void CSWCCreatureAppearance::SetAppearanceAlignment(short nAlignment)
     }
     else
     {
-        m_pCreature->RestoreTexture(CSWCAnimBase::MODEL_SLOT_HEAD);
+        CExoString sAltTexture;
+        {
+            CExoString sColumn("ALTTEXTURE");
+            CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+            C2DA* pHeads = p2DArrays->m_pHeads;
+
+            pHeads->GetCExoStringEntry(nHead, sColumn, &sAltTexture);
+        }
+        if (sAltTexture.GetLength() > 0)
+        {
+            m_pCreature->ReplaceTexture(CSWCAnimBase::MODEL_SLOT_HEAD, "",
+                                        sAltTexture, 1);
+        }
+        else
+        {
+            m_pCreature->RestoreTexture(CSWCAnimBase::MODEL_SLOT_HEAD);
+        }
     }
 
-    if (bBodyTexture)
+    if (bBodyTextureA)
     {
         char sBuffer[32];
 
-        sprintf(sBuffer, "%s01", sBodyTexture.CStr());
-        sBodyTexture = sBuffer;
-        if (g_pExoResMan->Exists(sBodyTexture, RESTYPE_TGA,
+        sprintf(sBuffer, "%s01", sBodyTextureA.CStr());
+        sBodyTextureA = sBuffer;
+        if (g_pExoResMan->Exists(sBodyTextureA, RESTYPE_TGA,
                                  (unsigned long*)0) ||
-            g_pExoResMan->Exists(sBodyTexture, RESTYPE_TPC,
+            g_pExoResMan->Exists(sBodyTextureA, RESTYPE_TPC,
                                  (unsigned long*)0))
         {
             m_pCreature->ReplaceTexture(CSWCAnimBase::MODEL_SLOT_MAIN, "",
-                                        sBodyTexture, 1);
+                                        sBodyTextureA, 1);
+        }
+    }
+    else if (bBodyTextureB)
+    {
+        char sBuffer[32];
+
+        sprintf(sBuffer, "%s01", sBodyTextureB.CStr());
+        sBodyTextureB = sBuffer;
+        if (g_pExoResMan->Exists(sBodyTextureB, RESTYPE_TGA,
+                                 (unsigned long*)0) ||
+            g_pExoResMan->Exists(sBodyTextureB, RESTYPE_TPC,
+                                 (unsigned long*)0))
+        {
+            m_pCreature->ReplaceTexture(CSWCAnimBase::MODEL_SLOT_MAIN, "",
+                                        sBodyTextureB, 1);
+        }
+    }
+    else if (bBodyTextureI)
+    {
+        char sBuffer[32];
+
+        sprintf(sBuffer, "%s01", sBodyTextureI.CStr());
+        sBodyTextureI = sBuffer;
+        if (g_pExoResMan->Exists(sBodyTextureI, RESTYPE_TGA,
+                                 (unsigned long*)0) ||
+            g_pExoResMan->Exists(sBodyTextureI, RESTYPE_TPC,
+                                 (unsigned long*)0))
+        {
+            m_pCreature->ReplaceTexture(CSWCAnimBase::MODEL_SLOT_MAIN, "",
+                                        sBodyTextureI, 1);
+        }
+    }
+    else if (bBodyTextureL)
+    {
+        char sBuffer[32];
+
+        sprintf(sBuffer, "%s01", sBodyTextureL.CStr());
+        sBodyTextureL = sBuffer;
+        if (g_pExoResMan->Exists(sBodyTextureL, RESTYPE_TGA,
+                                 (unsigned long*)0) ||
+            g_pExoResMan->Exists(sBodyTextureL, RESTYPE_TPC,
+                                 (unsigned long*)0))
+        {
+            m_pCreature->ReplaceTexture(CSWCAnimBase::MODEL_SLOT_MAIN, "",
+                                        sBodyTextureL, 1);
+        }
+    }
+    else if (bBodyTextureN)
+    {
+        char sBuffer[32];
+
+        sprintf(sBuffer, "%s01", sBodyTextureN.CStr());
+        sBodyTextureN = sBuffer;
+        if (g_pExoResMan->Exists(sBodyTextureN, RESTYPE_TGA,
+                                 (unsigned long*)0) ||
+            g_pExoResMan->Exists(sBodyTextureN, RESTYPE_TPC,
+                                 (unsigned long*)0))
+        {
+            m_pCreature->ReplaceTexture(CSWCAnimBase::MODEL_SLOT_MAIN, "",
+                                        sBodyTextureN, 1);
         }
     }
     else

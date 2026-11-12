@@ -26,19 +26,6 @@
 static inline void NwccreaturestatsTrace3();
 static inline void NwccreaturestatsTrace2();
 static inline void NwccreaturestatsTrace1();
-// PC 0x006FF6F0
-void CSWCCreatureStats::GetMenuInfo(
-    CExoArrayList<CSWGuiInterfaceAction>& lstActions, unsigned long nTarget,
-    unsigned long nAction, int nFlag, unsigned long nObject, float fDistance)
-{
-    CExoArrayList<unsigned long> lstSpells;
-    for (unsigned char i = 0; i < m_nClassCount; i++)
-    {
-        short nLevel = m_nGoodEvilAlignment;
-        m_aClassInfo[i].GetMenuInfo(lstActions, nTarget, nAction, nLevel, nFlag,
-                                    nObject, fDistance);
-    }
-}
 // PC 0x00700340
 CSWCCreatureStats::CSWCCreatureStats(CSWCCreature* pCreature)
 {
@@ -147,7 +134,7 @@ CExoString CSWCCreatureStats::GetRaceString()
 short CSWCCreatureStats::GetArmorClass(int nType)
 {
     short nWisdomBonus = 0;
-    if (nType == ARMOR_CLASS_TYPE_1 && HasSpell(0, CSWSpell::FORCE_POWER_UNKNOWN_179))
+    if (nType == ARMOR_CLASS_TYPE_1 && HasSpell(0, CSWSpell::FORCE_POWER_BATTLE_PRECOGNITION))
     {
         CSWSCreature* pServerCreature = m_pCreature->GetServerCreature();
         if (pServerCreature != NULL)
@@ -228,7 +215,7 @@ int CSWCCreatureStats::GetCanUseSkill(unsigned short nSkill)
         (HasSpell(0, CSWSpell::FORCE_POWER_FORCE_CAMOUFLAGE) ||
          HasSpell(0, CSWSpell::FORCE_POWER_IMPROVED_FORCE_CAMOUFLAGE) ||
          HasSpell(0, CSWSpell::FORCE_POWER_MASTER_FORCE_CAMOUFLAGE) ||
-         HasFeat(CSWFeat::FEAT_UNKNOWN_201)))
+         HasFeat(CSWFeat::FEAT_PERSONAL_CLOAKING_SHIELD)))
     {
         return 1;
     }
@@ -490,7 +477,7 @@ CExoString CSWCCreatureStats::GetLastName()
     return sLastName;
 }
 // PC 0x006FBC90
-float CSWCCreatureStats_ClassInfo::GetMinSpellRange(const CExoString& sRange)
+float CSWCCreatureStats::GetMinSpellRange(const CExoString& sRange)
 {
     float fRange;
     if (sRange == "T" || sRange == "P")
@@ -1641,7 +1628,8 @@ int CSWCLevelUpStats::FeatRequirementsMet(unsigned short nFeat,
         }
     }
 
-    if (pFeat->m_nMinCharLevel > GetLevel())
+    unsigned char nMinCharLevel = pFeat->m_nMinCharLevel;
+    if (nMinCharLevel > GetLevel())
     {
         return 0;
     }
@@ -1677,6 +1665,154 @@ int CSWCLevelUpStats::FeatRequirementsMet(unsigned short nFeat,
     }
     return 1;
 }
+// PC 0x006FEEC0
+void CSWCLevelUpStats::AddGrantedPowers(CExoArrayList<unsigned long>* pList)
+{
+    unsigned char nClassLevel = GetClassLevel(m_nClassCount - 1);
+    unsigned char nJediLevel = 0;
+    for (int i = 0; i < m_nClassCount; i++)
+    {
+        if (CSWClass::IsJedi(GetClass(i)))
+        {
+            nJediLevel += GetClassLevel(i);
+        }
+    }
+    for (unsigned char j = 0; j < m_nClassCount; j++)
+    {
+        unsigned long nSpell = CSWSpell::SPELL_INVALID;
+        switch (GetClass(j))
+        {
+        case CLASS_TYPE_JEDIGUARDIAN:
+            switch (nJediLevel)
+            {
+            case 11:
+                nSpell = CSWSpell::FORM_SABER_I_SHII_CHO;
+                break;
+            case 12:
+                nSpell = CSWSpell::FORM_SABER_II_MAKASHI;
+                break;
+            case 13:
+                nSpell = CSWSpell::FORM_SABER_III_SORESU;
+                break;
+            case 14:
+                nSpell = CSWSpell::FORM_FORCE_I_FOCUS;
+                break;
+            }
+            break;
+        case CLASS_TYPE_JEDICONSULAR:
+            switch (nJediLevel)
+            {
+            case 11:
+                nSpell = CSWSpell::FORM_SABER_I_SHII_CHO;
+                break;
+            case 12:
+                nSpell = CSWSpell::FORM_FORCE_I_FOCUS;
+                break;
+            case 13:
+                nSpell = CSWSpell::FORM_SABER_II_MAKASHI;
+                break;
+            case 14:
+                nSpell = CSWSpell::FORM_SABER_III_SORESU;
+                break;
+            }
+            break;
+        case CLASS_TYPE_JEDISENTINEL:
+            switch (nJediLevel)
+            {
+            case 11:
+                nSpell = CSWSpell::FORM_SABER_I_SHII_CHO;
+                break;
+            case 12:
+                nSpell = CSWSpell::FORM_SABER_III_SORESU;
+                break;
+            case 13:
+                nSpell = CSWSpell::FORM_FORCE_I_FOCUS;
+                break;
+            case 14:
+                nSpell = CSWSpell::FORM_SABER_II_MAKASHI;
+                break;
+            }
+            break;
+        case CLASS_TYPE_JEDIWATCHMAN:
+        case CLASS_TYPE_SITHASSASSIN:
+            switch (nClassLevel)
+            {
+            case 1:
+                nSpell = CSWSpell::FORCE_POWER_FORCE_CAMOUFLAGE;
+                break;
+            case 7:
+                nSpell = CSWSpell::FORCE_POWER_IMPROVED_FORCE_CAMOUFLAGE;
+                break;
+            case 13:
+                nSpell = CSWSpell::FORCE_POWER_MASTER_FORCE_CAMOUFLAGE;
+                break;
+            }
+            break;
+        case CLASS_TYPE_SITHLORD:
+            switch (nClassLevel)
+            {
+            case 1:
+                nSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_I;
+                break;
+            case 5:
+                nSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_II;
+                break;
+            case 9:
+                nSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_III;
+                break;
+            case 13:
+                nSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_IV;
+                break;
+            case 17:
+                nSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_V;
+                break;
+            }
+            break;
+        case CLASS_TYPE_JEDIMASTER:
+            switch (nClassLevel)
+            {
+            case 1:
+                nSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_I;
+                break;
+            case 5:
+                nSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_II;
+                break;
+            case 9:
+                nSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_III;
+                break;
+            case 13:
+                nSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_IV;
+                break;
+            case 17:
+                nSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_V;
+                break;
+            }
+            break;
+        case CLASS_TYPE_SITHMARAUDER:
+            switch (nClassLevel)
+            {
+            case 1:
+                nSpell = CSWSpell::FORCE_POWER_FURY;
+                break;
+            case 5:
+                nSpell = CSWSpell::FORCE_POWER_IMPROVED_FURY;
+                break;
+            case 9:
+                nSpell = CSWSpell::FORCE_POWER_MASTER_FURY;
+                break;
+            }
+            break;
+        }
+        if (nSpell != CSWSpell::SPELL_INVALID)
+        {
+            AddKnownSpell(m_nClassCount - 1, nSpell);
+            if (pList != NULL)
+            {
+                pList->Add(nSpell);
+            }
+        }
+    }
+}
 // PC 0x006FF2A0
 int CSWCLevelUpStats::CanChooseFeat(unsigned short nFeat, unsigned char nNormal,
                                   unsigned char nBonus,
@@ -1684,12 +1820,24 @@ int CSWCLevelUpStats::CanChooseFeat(unsigned short nFeat, unsigned char nNormal,
 {
     int bNormal = 0;
     int bBonus = 0;
+    if (nFeat == CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS || nFeat == CSWFeat::FEAT_MINE_IMMUNITY)
+    {
+        return 0;
+    }
     CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
     if (pFeat == NULL)
     {
         return 0;
     }
     if (nNormal == 0 && nBonus == 0)
+    {
+        return 0;
+    }
+    if (GetTag().CompareNoCase("baodur") && pFeat->m_bBaoDur == 0xff)
+    {
+        return 0;
+    }
+    if (GetTag().CompareNoCase("kreia") && pFeat->m_bKreia == 0xff)
     {
         return 0;
     }
@@ -1867,13 +2015,27 @@ int CSWCLevelUpStats::HasFeatPrereq(CSWFeat* pFeat,
     return 1;
 }
 // PC 0x006FDC60
-void CSWCLevelUpStats::AddGrantedFeats(CExoArrayList<unsigned long>* pList)
+void CSWCLevelUpStats::AddGrantedFeats(CExoArrayList<unsigned long>* pList,
+                                       bool bPCGranted)
 {
-    NwccreaturestatsTrace2();
+    int nTotalLevel = 0;
+    for (int nClass = 0; nClass < m_nClassCount; nClass++)
+    {
+        nTotalLevel += GetClassLevel(nClass);
+    }
+    int nJediLevel = 0;
+    for (int nJediClass = 0; nJediClass < m_nClassCount; nJediClass++)
+    {
+        if (CSWClass::IsJedi(GetClass(nJediClass)))
+        {
+            nJediLevel += GetClassLevel(nJediClass);
+        }
+    }
     CSWRace* pRace = &g_pRules->m_pRaces[m_nRace];
     for (int i = 0; i < g_pRules->m_nNumFeats; i++)
     {
-        if (g_pRules->GetFeat(i) != NULL)
+        CSWFeat* pFeat = g_pRules->GetFeat(i);
+        if (pFeat != NULL)
         {
             if (GetLevel() == 1 && m_nExperience == 0 &&
                 pRace->IsFirstLevelGrantedFeat(i))
@@ -1889,16 +2051,139 @@ void CSWCLevelUpStats::AddGrantedFeats(CExoArrayList<unsigned long>* pList)
                 CSWClass* pClass =
                     &g_pRules->m_pClasses[GetClassLeveledUpIn()];
                 unsigned char nGrantedLevel;
-                if (pClass != NULL &&
-                    pClass->IsGrantedFeat(i, nGrantedLevel) &&
-                    nGrantedLevel == GetClassLevel(m_nClassCount - 1))
+                if (pClass != NULL)
                 {
-                    m_lstFeats.AddUnique(i);
-                    if (pList != NULL)
+                    if (pClass->IsGrantedFeat(i, nGrantedLevel))
                     {
-                        pList->Add(i);
+                        if (i >= CSWFeat::FEAT_UNARMED_SPECIALIST_I &&
+                            i <= CSWFeat::FEAT_UNARMED_SPECIALIST_VIII)
+                        {
+                            if (CSWClass::IsJedi(GetClassLeveledUpIn()) &&
+                                nGrantedLevel == nJediLevel)
+                            {
+                                m_lstFeats.AddUnique(i);
+                                if (pList != NULL)
+                                {
+                                    pList->Add(i);
+                                }
+                            }
+                        }
+                        else if (nGrantedLevel ==
+                                 GetClassLevel(m_nClassCount - 1))
+                        {
+                            if (GetTag().CompareNoCase("baodur") &&
+                                pFeat->m_bBaoDur == 0xff)
+                            {
+                                continue;
+                            }
+                            if (GetTag().CompareNoCase("kreia") &&
+                                pFeat->m_bKreia == 0xff)
+                            {
+                                continue;
+                            }
+                            m_lstFeats.AddUnique(i);
+                            if (i != CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS &&
+                                i != CSWFeat::FEAT_MINE_IMMUNITY)
+                            {
+                                if (pList != NULL)
+                                {
+                                    pList->Add(i);
+                                }
+                            }
+                        }
+                    }
+                    else if (pClass->IsPCGrantedFeat(i) && bPCGranted)
+                    {
+                        m_lstFeats.AddUnique(i);
+                        if (pList != NULL)
+                        {
+                            pList->Add(i);
+                        }
+                    }
+                    else if (GetTag().CompareNoCase("handmaiden"))
+                    {
+                        if (pFeat->m_bHandmaiden > 0 &&
+                            pFeat->m_bHandmaiden == nTotalLevel)
+                        {
+                            m_lstFeats.AddUnique(i);
+                            if (pList != NULL)
+                            {
+                                pList->Add(i);
+                            }
+                        }
+                    }
+                    else if (GetTag().CompareNoCase("baodur"))
+                    {
+                        if (pFeat->m_bBaoDur > 0 &&
+                            pFeat->m_bBaoDur == nTotalLevel)
+                        {
+                            m_lstFeats.AddUnique(i);
+                            if (pList != NULL)
+                            {
+                                pList->Add(i);
+                            }
+                        }
+                    }
+                    else if (GetTag().CompareNoCase("hanharr"))
+                    {
+                        if (pFeat->m_bHanharr > 0 &&
+                            pFeat->m_bHanharr == nTotalLevel)
+                        {
+                            m_lstFeats.AddUnique(i);
+                            if (pList != NULL)
+                            {
+                                pList->Add(i);
+                            }
+                        }
+                    }
+                    else if (GetTag().CompareNoCase("hk47"))
+                    {
+                        if (pFeat->m_bHK47 > 0 &&
+                            pFeat->m_bHK47 == nTotalLevel)
+                        {
+                            m_lstFeats.AddUnique(i);
+                            if (pList != NULL)
+                            {
+                                pList->Add(i);
+                            }
+                        }
+                    }
+                    else if (GetTag().CompareNoCase("g0t0"))
+                    {
+                        if (pFeat->m_bG0T0 > 0 &&
+                            pFeat->m_bG0T0 == nTotalLevel)
+                        {
+                            m_lstFeats.AddUnique(i);
+                            if (pList != NULL)
+                            {
+                                pList->Add(i);
+                            }
+                        }
+                    }
+                    else if (GetTag().CompareNoCase("atton"))
+                    {
+                        if (pFeat->m_bAtton > 0 &&
+                            pFeat->m_bAtton == nTotalLevel)
+                        {
+                            m_lstFeats.AddUnique(i);
+                            if (pList != NULL)
+                            {
+                                pList->Add(i);
+                            }
+                        }
                     }
                 }
+            }
+        }
+    }
+    if (bPCGranted)
+    {
+        if (!HasFeat(CSWFeat::FEAT_WAR_VETERAN))
+        {
+            m_lstFeats.AddUnique(CSWFeat::FEAT_WAR_VETERAN);
+            if (pList != NULL)
+            {
+                pList->Add(CSWFeat::FEAT_WAR_VETERAN);
             }
         }
     }
@@ -1911,7 +2196,7 @@ void CSWCLevelUpStats::ClearPackage()
     UpdateAbilityModifiedSkillRanks();
     ClearFeats();
     ClearKnownSpells();
-    AddGrantedFeats(NULL);
+    AddGrantedFeats(NULL, false);
     while (m_lstInventoryRes.num != 0)
     {
         m_lstInventoryRes.DelIndex(m_lstInventoryRes.num - 1);
@@ -2152,59 +2437,169 @@ unsigned char CSWCLevelUpStats::AddDefaultPackageFeats(
     return nFeatsLeft;
 }
 
-void CSWCCreatureStats_ClassInfo::GetMenuInfo(
+// PC 0x006FF6F0
+void CSWCCreatureStats::GetMenuInfo(
     CExoArrayList<CSWGuiInterfaceAction>& lstActions, unsigned long nType,
-    unsigned long nForcePoints, unsigned long nLevel, int nExclusion,
-    unsigned long nItemMask, float fDistance)
+    unsigned long nForcePoints, int nExclusion, unsigned long nItemMask,
+    float fDistance, int nRoomForceRating, int nForceBodyLevel, int nHitPoints,
+    int bForms, int nForm, int bBeastTarget, char nCharismaModifier)
 {
-    CExoArrayList<CSWSpell*> lstSpells;
-    CExoArrayList<short> lstPriorities;
-    CExoArrayList<short> lstSlots;
-    CExoArrayList<unsigned long> lstSpellIds;
-
     if (g_pAppManager->m_pServerExoApp->GetModule()->GetArea()->GetPlayerRestrictMode() == 0)
     {
-        for (int i = 0; i < GetNumberKnownSpells(0); i++)
+        CExoArrayList<unsigned long> lstKnownSpells;
+        for (int nClass = 0; nClass < m_nClassCount; nClass++)
         {
-            unsigned long nSpellId = m_lstKnownSpells[0][i];
-            CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpellId);
-            if (pSpell != NULL && (pSpell->m_nExclusion & nExclusion) == 0)
+            int nBase = lstKnownSpells.num;
+            lstKnownSpells.SetSize(nBase + m_aClassInfo[nClass].GetNumberKnownSpells(0));
+            for (int nKnown = 0; nKnown < m_aClassInfo[nClass].GetNumberKnownSpells(0); nKnown++)
             {
-                unsigned char nCount = pSpell->m_nSubRadialSpellCount;
-                for (int j = 0; j < nCount; j++)
+                lstKnownSpells[nBase + nKnown] = m_aClassInfo[nClass].m_lstKnownSpells[0][nKnown];
+            }
+        }
+
+        CExoArrayList<CSWSpell*> lstSpells;
+        CExoArrayList<short> lstPriorities;
+        CExoArrayList<short> lstSlots;
+        CExoArrayList<unsigned long> lstSpellIds;
+        int nAlignment = m_nGoodEvilAlignment;
+
+        for (int i = 0; i < lstKnownSpells.num; i++)
+        {
+            unsigned long nSpellId = lstKnownSpells[i];
+            CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpellId);
+            if (pSpell != NULL)
+            {
+                int bAvailable = 1;
+                if (pSpell->m_nExclusion & nExclusion)
                 {
-                    short nPriority = pSpell->GetPriority(j);
-                    short nSlot = pSpell->GetSlot(j);
-                    if (pSpell->GetSubRadialSpell(j) / 1000 == nType)
+                    bAvailable = 0;
+                }
+                if ((nSpellId == CSWSpell::FORCE_POWER_MIND_TRICK ||
+                     nSpellId == CSWSpell::FORCE_POWER_CONFUSION) &&
+                    bBeastTarget)
+                {
+                    bAvailable = 0;
+                }
+                if ((nSpellId == CSWSpell::FORCE_POWER_BEAST_TRICK ||
+                     nSpellId == CSWSpell::FORCE_POWER_BEAST_CONFUSION) &&
+                    !bBeastTarget)
+                {
+                    bAvailable = 0;
+                }
+                char nActive;
+                if (nSpellId == CSWSpell::FORCE_POWER_CONFUSION)
+                {
+                    g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->GetValueNumber(
+                        "000_Human_Conf_Active", nActive);
+                    if (nActive > 0)
                     {
-                        int bInserted = 0;
-                        for (int k = 0; k < lstSpells.num && !bInserted; k++)
+                        bAvailable = 0;
+                    }
+                }
+                else if (nSpellId == CSWSpell::FORCE_POWER_BEAST_CONFUSION)
+                {
+                    g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->GetValueNumber(
+                        "000_Beast_Conf_Active", nActive);
+                    if (nActive > 0)
+                    {
+                        bAvailable = 0;
+                    }
+                }
+                else if (nSpellId == CSWSpell::FORCE_POWER_DROID_CONFUSION)
+                {
+                    g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->GetValueNumber(
+                        "000_Droid_Conf_Active", nActive);
+                    if (nActive > 0)
+                    {
+                        bAvailable = 0;
+                    }
+                }
+                else if (nSpellId >= CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_I &&
+                         nSpellId <= CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_VI)
+                {
+                    if (nAlignment > 40)
+                    {
+                        bAvailable = 0;
+                    }
+                }
+                else if (nSpellId >= CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_I &&
+                         nSpellId <= CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_VI)
+                {
+                    if (nAlignment < 60)
+                    {
+                        bAvailable = 0;
+                    }
+                }
+                if (bForms)
+                {
+                    if (nSpellId < CSWSpell::FORM_SABER_I_SHII_CHO ||
+                        nSpellId > CSWSpell::FORM_FORCE_IV_MASTERY)
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (nSpellId >= CSWSpell::FORM_SABER_I_SHII_CHO &&
+                        nSpellId <= CSWSpell::FORM_FORCE_IV_MASTERY)
+                    {
+                        continue;
+                    }
+                }
+                if (bAvailable)
+                {
+                    unsigned char nCount = pSpell->m_nSubRadialSpellCount;
+                    for (int j = 0; j < nCount; j++)
+                    {
+                        short nPriority = pSpell->GetPriority(j);
+                        short nSlot = pSpell->GetSlot(j);
+                        if (pSpell->GetSubRadialSpell(j) / 1000 == nType)
                         {
-                            if (lstSlots[k] == nSlot)
+                            int bInserted = 0;
+                            for (int k = 0; k < lstSpells.num && !bInserted; k++)
                             {
-                                bInserted = 1;
-                                if (lstPriorities[k] < nPriority)
+                                if (nSlot == 17 && lstSlots[k] == 16)
                                 {
                                     lstPriorities[k] = nPriority;
                                     lstSpells[k] = pSpell;
                                     lstSpellIds[k] = nSpellId;
+                                    bInserted = 1;
+                                    lstSlots[k] = 17;
+                                }
+                                else if (nSlot == 21 && lstSlots[k] == 20)
+                                {
+                                    lstPriorities[k] = nPriority;
+                                    lstSpells[k] = pSpell;
+                                    lstSpellIds[k] = nSpellId;
+                                    bInserted = 1;
+                                    lstSlots[k] = 21;
+                                }
+                                else if (lstSlots[k] == nSlot)
+                                {
+                                    bInserted = 1;
+                                    if (lstPriorities[k] < nPriority)
+                                    {
+                                        lstPriorities[k] = nPriority;
+                                        lstSpells[k] = pSpell;
+                                        lstSpellIds[k] = nSpellId;
+                                    }
+                                }
+                                if (lstSlots[k] > nSlot)
+                                {
+                                    bInserted = 1;
+                                    lstPriorities.Insert(nPriority, k);
+                                    lstSlots.Insert(nSlot, k);
+                                    lstSpells.Insert(pSpell, k);
+                                    lstSpellIds.Insert(nSpellId, k);
                                 }
                             }
-                            else if (lstSlots[k] > nSlot)
+                            if (!bInserted)
                             {
-                                bInserted = 1;
-                                lstPriorities.Insert(nPriority, k);
-                                lstSlots.Insert(nSlot, k);
-                                lstSpells.Insert(pSpell, k);
-                                lstSpellIds.Insert(nSpellId, k);
+                                lstSpells.Add(pSpell);
+                                lstPriorities.Add(nPriority);
+                                lstSlots.Add(nSlot);
+                                lstSpellIds.Add(nSpellId);
                             }
-                        }
-                        if (!bInserted)
-                        {
-                            lstSpells.Add(pSpell);
-                            lstPriorities.Add(nPriority);
-                            lstSlots.Add(nSlot);
-                            lstSpellIds.Add(nSpellId);
                         }
                     }
                 }
@@ -2223,7 +2618,37 @@ void CSWCCreatureStats_ClassInfo::GetMenuInfo(
                 lstSpellIds[iSpell] | CSWGuiInterfaceAction::SPELL_ACTION_MASK;
             lstActions[nAction].m_resIcon = pSpell->m_resIcon;
             lstActions[nAction].m_nDisabledReason = CSWGuiInterfaceAction::DISABLED_REASON_NONE;
-            if (pSpell->GetAdjustedForcePoints(nLevel, 1, 0, 0, 0) > nForcePoints)
+            if (nForceBodyLevel != -1)
+            {
+                int nPercent = 0;
+                int nCost = pSpell->GetAdjustedForcePoints(nAlignment, 1, nRoomForceRating,
+                                                           nForm, nCharismaModifier);
+                switch (nForceBodyLevel)
+                {
+                case 0:
+                    nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_0;
+                    break;
+                case 1:
+                    nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_1;
+                    break;
+                case 2:
+                    nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
+                    break;
+                }
+                int nHitPointCost = nCost * nPercent / 100;
+                if (nCost - nHitPointCost > nForcePoints)
+                {
+                    bEnabled = 0;
+                    lstActions[nAction].m_nDisabledReason = CSWGuiInterfaceAction::DISABLED_REASON_FORCE_POINTS;
+                }
+                else if (nHitPoints - nHitPointCost < 1)
+                {
+                    bEnabled = 0;
+                    lstActions[nAction].m_nDisabledReason = CSWGuiInterfaceAction::DISABLED_REASON_HIT_POINTS;
+                }
+            }
+            else if (pSpell->GetAdjustedForcePoints(nAlignment, 1, nRoomForceRating, nForm,
+                                                    nCharismaModifier) > nForcePoints)
             {
                 bEnabled = 0;
                 lstActions[nAction].m_nDisabledReason = CSWGuiInterfaceAction::DISABLED_REASON_FORCE_POINTS;

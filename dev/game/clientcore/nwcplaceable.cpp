@@ -755,7 +755,7 @@ void CSWCPlaceable::GetPlaceableInterfaceMines(CSWCCreature* pCreature,
     CExoString sName;
     CExoString sCount;
     CExoString sSetMine;
-    sSetMine.Format(" (%s)", pClientExoApp->GetGUIString(STRREF_SET_MINE));
+    sSetMine.Format(" (%s)", pClientExoApp->GetGUIString(STRREF_LOCK));
     for (unsigned long i = 0; i < pRepository->m_lstItems.num; ++i)
     {
         CSWSItem* pItem = pRepository->ItemListGetItem(i);

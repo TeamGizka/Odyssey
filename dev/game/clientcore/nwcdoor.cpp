@@ -356,6 +356,7 @@ int CSWCDoor::LoadModel(const CResRef& cModel, unsigned char nModel,
         pModel->SetExternalDataType(CGameObject::OBJECT_TYPE_DOOR);
         pModel->RegisterCallBack(MoveNextDoorState, "", this,
                                  MODEL_CALLBACK_DELAY, 0);
+        pModel->SetNonForceBlending(1);
     }
     cModel.CopyToString(m_sModel);
     return 1;
@@ -423,7 +424,7 @@ void CSWCDoor::GetDoorInterfaceMines(CSWCCreature* pCreature,
     CExoString sName;
     CExoString sCount;
     CExoString sSetMine;
-    sSetMine.Format(" (%s)", pClientExoApp->GetGUIString(STRREF_SET_MINE));
+    sSetMine.Format(" (%s)", pClientExoApp->GetGUIString(STRREF_DOOR));
     for (unsigned long i = 0; i < pRepository->m_lstItems.num; ++i)
     {
         CSWSItem* pItem = pRepository->ItemListGetItem(i);

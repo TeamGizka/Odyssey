@@ -23,7 +23,24 @@
 #include "../../libsource/AURORA/aurpointer.h"
 #include "guiingame.h"
 #include "nwsarea.h"
+#include "nwscreature.h"
+#include "nwscreaturestats.h"
+#include "nwstrigger.h"
+#include "nwseffect.h"
+#include "nwseffectlist.h"
+#include "nwspell.h"
 #include <float.h>
+inline CSWSTrigger* CSWCTrigger::GetServerTrigger()
+{
+    CSWSObject* pServerObject;
+    if (GetServerObject() != 0)
+    {
+        pServerObject = GetServerObject();
+        return pServerObject->AsSWSTrigger();
+    }
+    return 0;
+}
+
 // PC 0x006EA790
 int CSWCTrigger::LoadModel(const CResRef& cModel, unsigned char nModel,
                            unsigned char nFlags)
@@ -280,6 +297,51 @@ unsigned char CSWCTrigger::GetCenter(Vector& vCenter)
     }
     return nResult;
 }
+// PC 0x006EADC0
+int CSWCTrigger::GetMineStrength(int nTrapType)
+{
+    if (nTrapType == TRAP_FLASH_STUN_MINOR ||
+        nTrapType == TRAP_FRAGMENTATION_MINE_MINOR ||
+        nTrapType == TRAP_PLASMA_MINOR ||
+        nTrapType == TRAP_POISON_GAS_MINOR ||
+        nTrapType == TRAP_SONIC_MINOR)
+    {
+        return MINE_STRENGTH_MINOR;
+    }
+    if (nTrapType == TRAP_FLASH_STUN_AVERAGE ||
+        nTrapType == TRAP_FRAGMENTATION_MINE_AVERAGE ||
+        nTrapType == TRAP_PLASMA_AVERAGE ||
+        nTrapType == TRAP_POISON_GAS_AVERAGE ||
+        nTrapType == TRAP_SONIC_AVERAGE)
+    {
+        return MINE_STRENGTH_AVERAGE;
+    }
+    if (nTrapType == TRAP_FLASH_STUN_STRONG ||
+        nTrapType == TRAP_FRAGMENTATION_MINE_STRONG ||
+        nTrapType == TRAP_PLASMA_STRONG ||
+        nTrapType == TRAP_POISON_GAS_STRONG ||
+        nTrapType == TRAP_SONIC_STRONG)
+    {
+        return MINE_STRENGTH_STRONG;
+    }
+    if (nTrapType == TRAP_FLASH_STUN_DEADLY ||
+        nTrapType == TRAP_FRAGMENTATION_MINE_DEADLY ||
+        nTrapType == TRAP_PLASMA_DEADLY ||
+        nTrapType == TRAP_POISON_GAS_DEADLY ||
+        nTrapType == TRAP_SONIC_DEADLY)
+    {
+        return MINE_STRENGTH_DEADLY;
+    }
+    if (nTrapType == TRAP_FLASH_STUN_DEVASTATING ||
+        nTrapType == TRAP_FRAGMENTATION_MINE_DEVASTATING ||
+        nTrapType == TRAP_PLASMA_DEVASTATING ||
+        nTrapType == TRAP_POISON_GAS_DEVASTATING ||
+        nTrapType == TRAP_SONIC_DEVASTATING)
+    {
+        return MINE_STRENGTH_DEVASTATING;
+    }
+    return MINE_STRENGTH_NONE;
+}
 // PC 0x006EAE80
 void CSWCTrigger::ActionMenuDisableMine(unsigned long nAction,
                                         CSWCCreature* pCreature)
@@ -470,6 +532,85 @@ void CSWCTrigger::SpecialDisplayTrigger(int bDisplay)
     float fFade = m_fHighlightFade;
     AurPartTriggerSetHighlight(m_pPartTrigger, true, fFade, true);
 }
+// PC 0x006EB570
+void CSWCTrigger::GetMineForcePowers(CSWCCreature* pCreature, int nSpell,
+                                     CExoArrayList<CSWGuiInterfaceAction>& lstActions)
+{
+    int bEnabled = 1;
+    CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
+    CSWSCreature* pServerCreature = pCreature->GetServerCreature();
+    if (pSpell != NULL && pServerCreature != NULL)
+    {
+        CSWSArea* pArea = pServerCreature->GetArea();
+        int nRoomForceRating = 0;
+        if (pArea != NULL)
+            nRoomForceRating = pArea->GetRoomForceRating(pServerCreature->m_vPosition);
+        int nAlignment = pCreature->m_pStats->m_nGoodEvilAlignment;
+        int nAction = lstActions.num;
+        int nForceBodyLevel = 0;
+        for (int i = 0; i < pServerCreature->m_lstEffects.num; i++)
+        {
+            CGameEffect* pEffect = pServerCreature->m_lstEffects[i];
+            if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
+            {
+                nForceBodyLevel = pEffect->GetInteger(0);
+                break;
+            }
+        }
+        int nCharismaModifier = pServerCreature->m_pStats->m_nCharismaModifier;
+        int nForm = pServerCreature->m_n1110;
+        int nHitPoints = pServerCreature->GetCurrentHitPoints(0);
+        unsigned long nForcePoints = (short)(pServerCreature->m_pStats->m_nCurrentForcePoints +
+            pServerCreature->m_pStats->m_nTemporaryForcePoints);
+        lstActions.SetSize(nAction + 1);
+        lstActions[nAction].m_sName =
+            g_pAppManager->GetClientExoApp()->GetGUIString(pSpell->GetNameStrRef());
+        lstActions[nAction].m_resIcon = pSpell->m_resIcon;
+        lstActions[nAction].m_nDisabledReason = CSWGuiInterfaceAction::DISABLED_REASON_NONE;
+        lstActions[nAction].m_nAction = nSpell | CSWGuiInterfaceAction::SPELL_ACTION_MASK;
+        lstActions[nAction].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ForceMenuHostileAction;
+        lstActions[nAction].m_oidTarget = m_nId;
+        if (nForceBodyLevel != -1)
+        {
+            int nPercent = 0;
+            int nCost = pSpell->GetAdjustedForcePoints(nAlignment, 1, nRoomForceRating, nForm,
+                                                       nCharismaModifier);
+            switch (nForceBodyLevel)
+            {
+            case 0:
+                nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_0;
+                break;
+            case 1:
+                nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_1;
+                break;
+            case 2:
+                nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
+                break;
+            }
+            int nHitPointCost = nCost * nPercent / 100;
+            if (nCost - nHitPointCost > nForcePoints)
+            {
+                bEnabled = 0;
+                lstActions[nAction].m_nDisabledReason =
+                    CSWGuiInterfaceAction::DISABLED_REASON_FORCE_POINTS;
+            }
+            else if (nHitPoints - nHitPointCost < 1)
+            {
+                bEnabled = 0;
+                lstActions[nAction].m_nDisabledReason =
+                    CSWGuiInterfaceAction::DISABLED_REASON_HIT_POINTS;
+            }
+        }
+        else if (pSpell->GetAdjustedForcePoints(nAlignment, 1, nRoomForceRating, nForm,
+                                                nCharismaModifier) > nForcePoints)
+        {
+            bEnabled = 0;
+            lstActions[nAction].m_nDisabledReason =
+                CSWGuiInterfaceAction::DISABLED_REASON_FORCE_POINTS;
+        }
+        lstActions[nAction].m_bEnabled = bEnabled;
+    }
+}
 // PC 0x006EB890
 void CSWCTrigger::GetTargetActions(CSWCCreature* pCreature, int nMenu,
                                    CExoArrayList<CSWGuiInterfaceAction>& lstActions)
@@ -511,6 +652,30 @@ void CSWCTrigger::GetTargetActions(CSWCCreature* pCreature, int nMenu,
 #endif
             lstActions[nAction].m_nAction = 1026;
             lstActions[nAction].m_resIcon = "i_recovermine";
+        }
+        break;
+    case TARGET_ACTION_MENU_MINES:
+        {
+            int nStrength = GetMineStrength(GetServerTrigger()->m_nTrapType);
+            int bAdded = 0;
+            if (nStrength >= MINE_STRENGTH_MINOR && nStrength <= MINE_STRENGTH_STRONG &&
+                pCreature->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_DROID_DESTROY))
+            {
+                bAdded = 1;
+                GetMineForcePowers(pCreature, CSWSpell::FORCE_POWER_DROID_DESTROY, lstActions);
+            }
+            if (nStrength >= MINE_STRENGTH_MINOR && nStrength <= MINE_STRENGTH_AVERAGE &&
+                !bAdded &&
+                pCreature->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_DROID_DISABLE))
+            {
+                bAdded = 1;
+                GetMineForcePowers(pCreature, CSWSpell::FORCE_POWER_DROID_DISABLE, lstActions);
+            }
+            if (nStrength == MINE_STRENGTH_MINOR && !bAdded &&
+                pCreature->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_DROID_STUN))
+            {
+                GetMineForcePowers(pCreature, CSWSpell::FORCE_POWER_DROID_STUN, lstActions);
+            }
         }
         break;
     }

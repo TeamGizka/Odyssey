@@ -93,6 +93,23 @@ const int CSWCCreature::MODE_SWCOMBAT = 2;
 
 float g_fEmoteIconHeight = 2.56f;
 
+short g_aMeleeCriticalWield2[3] = { 113, 392, 393 };
+short g_aMeleeFlurryWield2[3] = { 114, 394, 395 };
+short g_aMeleePowerWield2[3] = { 115, 396, 397 };
+short g_aMeleeNormalWield2[5] = { 122, 123, 410, 411, 412 };
+short g_aMeleeCriticalWield3[3] = { 154, 413, 414 };
+short g_aMeleeFlurryWield3[3] = { 155, 415, 416 };
+short g_aMeleePowerWield3[3] = { 156, 417, 418 };
+short g_aMeleeNormalWield3[5] = { 163, 164, 431, 432, 433 };
+short g_aMeleeCriticalDual2[3] = { 195, 434, 435 };
+short g_aMeleeFlurryDual2[3] = { 196, 436, 437 };
+short g_aMeleePowerDual2[3] = { 197, 438, 439 };
+short g_aMeleeNormalDual2[5] = { 204, 205, 452, 453, 454 };
+short g_aMeleeCriticalUnarmed[3] = { 494, 495, 496 };
+short g_aMeleeFlurryUnarmed[3] = { 497, 498, 499 };
+short g_aMeleePowerUnarmed[3] = { 500, 501, 502 };
+short g_aMeleeNormalUnarmed[5] = { 521, 522, 523, 524, 525 };
+
 const char* CSWCCreature::CCREATURE_EMOTE_ICON[13] =
 {
     "IR_CHEER", "IR_SALUTE", "IR_LAUGH", "IR_GOODBYE", "IR_GREET",
@@ -1360,7 +1377,7 @@ void CSWCCreature::UpdateWeaponClass()
     GetAnimationBase()->m_nD0 = bLightsaber;
     if (GetServerCreature() != NULL && GetServerCreature()->GetStats() != NULL)
     {
-        if (GetServerCreature()->GetStats()->HasFeat(CSWFeat::FEAT_UNKNOWN_207))
+        if (GetServerCreature()->GetStats()->HasFeat(CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS))
             GetAnimationBase()->m_nD4 = 1;
         else
             GetAnimationBase()->m_nD4 = 0;
@@ -2699,7 +2716,7 @@ unsigned short CSWCCreature::ResolveReactionAnimation(unsigned short nAnimation,
                                                       int nWieldClass)
 {
     if (nWieldClass == CSWCAnimBase::WIELD_CLASS_UNARMED &&
-        GetServerCreature()->GetStats()->HasFeat(CSWFeat::FEAT_UNKNOWN_207))
+        GetServerCreature()->GetStats()->HasFeat(CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS))
     {
         nWieldClass = CSWCAnimBase::WIELD_CLASS_UNARMED_207;
     }
@@ -2938,19 +2955,23 @@ int nWieldClass)
             nAttackType == CSWFeat::FEAT_CRITICAL_STRIKE;
         if (bCriticalStrike)
         {
+            int nVariant = rand() % 3;
             switch (nWieldClass)
             {
             case CSWCAnimBase::WIELD_CLASS_1:
                 nAttackAnimation = MELEE_ANIMATION_CRITICAL_WIELD_1;
                 break;
             case CSWCAnimBase::WIELD_CLASS_2:
-                nAttackAnimation = MELEE_ANIMATION_CRITICAL_WIELD_2;
+                nAttackAnimation = g_aMeleeCriticalWield2[nVariant];
                 break;
             case CSWCAnimBase::WIELD_CLASS_3:
-                nAttackAnimation = MELEE_ANIMATION_CRITICAL_WIELD_3;
+                nAttackAnimation = g_aMeleeCriticalWield3[nVariant];
                 break;
             case CSWCAnimBase::WIELD_CLASS_DUAL_2:
-                nAttackAnimation = MELEE_ANIMATION_CRITICAL_DUAL_2;
+                nAttackAnimation = g_aMeleeCriticalDual2[nVariant];
+                break;
+            case CSWCAnimBase::WIELD_CLASS_UNARMED:
+                nAttackAnimation = g_aMeleeCriticalUnarmed[nVariant];
                 break;
             }
         }
@@ -2961,19 +2982,23 @@ int nWieldClass)
                 nAttackType == CSWFeat::FEAT_FLURRY;
             if (bFlurry)
             {
+                int nVariant = rand() % 3;
                 switch (nWieldClass)
                 {
                 case CSWCAnimBase::WIELD_CLASS_1:
                     nAttackAnimation = MELEE_ANIMATION_FLURRY_WIELD_1;
                     break;
                 case CSWCAnimBase::WIELD_CLASS_2:
-                    nAttackAnimation = MELEE_ANIMATION_FLURRY_WIELD_2;
+                    nAttackAnimation = g_aMeleeFlurryWield2[nVariant];
                     break;
                 case CSWCAnimBase::WIELD_CLASS_3:
-                    nAttackAnimation = MELEE_ANIMATION_FLURRY_WIELD_3;
+                    nAttackAnimation = g_aMeleeFlurryWield3[nVariant];
                     break;
                 case CSWCAnimBase::WIELD_CLASS_DUAL_2:
-                    nAttackAnimation = MELEE_ANIMATION_FLURRY_DUAL_2;
+                    nAttackAnimation = g_aMeleeFlurryDual2[nVariant];
+                    break;
+                case CSWCAnimBase::WIELD_CLASS_UNARMED:
+                    nAttackAnimation = g_aMeleeFlurryUnarmed[nVariant];
                     break;
                 }
             }
@@ -2984,37 +3009,49 @@ int nWieldClass)
                     nAttackType == CSWFeat::FEAT_POWER_ATTACK;
                 if (bPowerAttack)
                 {
+                    int nVariant = rand() % 3;
                     switch (nWieldClass)
                     {
                     case CSWCAnimBase::WIELD_CLASS_1:
                         nAttackAnimation = MELEE_ANIMATION_POWER_WIELD_1;
                         break;
                     case CSWCAnimBase::WIELD_CLASS_2:
-                        nAttackAnimation = MELEE_ANIMATION_POWER_WIELD_2;
+                        nAttackAnimation = g_aMeleePowerWield2[nVariant];
                         break;
                     case CSWCAnimBase::WIELD_CLASS_3:
-                        nAttackAnimation = MELEE_ANIMATION_POWER_WIELD_3;
+                        nAttackAnimation = g_aMeleePowerWield3[nVariant];
                         break;
                     case CSWCAnimBase::WIELD_CLASS_DUAL_2:
-                        nAttackAnimation = MELEE_ANIMATION_POWER_DUAL_2;
+                        nAttackAnimation = g_aMeleePowerDual2[nVariant];
+                        break;
+                    case CSWCAnimBase::WIELD_CLASS_UNARMED:
+                        nAttackAnimation = g_aMeleePowerUnarmed[nVariant];
                         break;
                     }
                 }
-                else if (nAttackType == CSWFeat::FEAT_FORCE_JUMP_MASTERY ||
-                    nAttackType == CSWFeat::FEAT_FORCE_JUMP_ADVANCED ||
-                    nAttackType == CSWFeat::FEAT_FORCE_JUMP)
+                else
                 {
-                    switch (nWieldClass)
+                    int bUnknown = nAttackType == -1 || nAttackType == CSWFeat::FEAT_SHIELD_BREAKER;
+                    if (bUnknown)
                     {
-                    case CSWCAnimBase::WIELD_CLASS_2:
-                        nAttackAnimation = MELEE_ANIMATION_JUMP_WIELD_2;
-                        break;
-                    case CSWCAnimBase::WIELD_CLASS_3:
-                        nAttackAnimation = MELEE_ANIMATION_JUMP_WIELD_3;
-                        break;
-                    case CSWCAnimBase::WIELD_CLASS_DUAL_2:
-                        nAttackAnimation = MELEE_ANIMATION_JUMP_DUAL_2;
-                        break;
+                        nAttackAnimation = MELEE_ANIMATION_SHIELD_BREAKER;
+                    }
+                    else if (nAttackType == CSWFeat::FEAT_FORCE_JUMP_MASTERY ||
+                        nAttackType == CSWFeat::FEAT_FORCE_JUMP_ADVANCED ||
+                        nAttackType == CSWFeat::FEAT_FORCE_JUMP)
+                    {
+                        switch (nWieldClass)
+                        {
+                        case CSWCAnimBase::WIELD_CLASS_2:
+                            nAttackAnimation = MELEE_ANIMATION_JUMP_WIELD_2;
+                            break;
+                        case CSWCAnimBase::WIELD_CLASS_3:
+                            nAttackAnimation = MELEE_ANIMATION_JUMP_WIELD_3;
+                            break;
+                        case CSWCAnimBase::WIELD_CLASS_DUAL_2:
+                            nAttackAnimation = MELEE_ANIMATION_JUMP_DUAL_2;
+                            break;
+                        }
                     }
                 }
             }
@@ -3052,7 +3089,10 @@ int nWieldClass)
                         nAttackAnimation = MELEE_ANIMATION_COMBAT_DUAL_2 + nAttackIndex;
                         break;
                     case CSWCAnimBase::WIELD_CLASS_UNARMED:
-                        nAttackAnimation = MELEE_ANIMATION_COMBAT_UNARMED + nAttackIndex;
+                        if (GetServerCreature()->GetStats()->HasFeat(CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS))
+                            nAttackAnimation = MELEE_ANIMATION_COMBAT_COMPLEX_UNARMED + nAttackIndex;
+                        else
+                            nAttackAnimation = MELEE_ANIMATION_COMBAT_UNARMED + nAttackIndex;
                         break;
                     }
                 }
@@ -3074,7 +3114,20 @@ int nWieldClass)
                     nAttackAnimation = MELEE_ANIMATION_NONCOMBAT_WIELD_1 + nAttackIndex % 2;
                     break;
                 case CSWCAnimBase::WIELD_CLASS_UNARMED:
-                    nAttackAnimation = MELEE_ANIMATION_NONCOMBAT_UNARMED + nAttackIndex % 2;
+                    if (GetServerCreature()->GetStats()->HasFeat(CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS))
+                    {
+                        int nCount = 2;
+                        if (m_pStats->GetLevel() >= 10)
+                            nCount = 5;
+                        else if (m_pStats->GetLevel() >= 7)
+                            nCount = 4;
+                        else if (m_pStats->GetLevel() >= 4)
+                            nCount = 3;
+                        nAttackAnimation =
+                            MELEE_ANIMATION_NONCOMBAT_COMPLEX_UNARMED + nAttackIndex % nCount;
+                    }
+                    else
+                        nAttackAnimation = MELEE_ANIMATION_NONCOMBAT_UNARMED + nAttackIndex % 2;
                     break;
                 }
             }
@@ -3088,22 +3141,26 @@ int nWieldClass)
             }
             else
             {
+                int nVariant = rand() % 5;
                 switch (nWieldClass)
                 {
                 case CSWCAnimBase::WIELD_CLASS_1:
                     nAttackAnimation = MELEE_ANIMATION_NORMAL_WIELD_1 + nAttackIndex;
                     break;
                 case CSWCAnimBase::WIELD_CLASS_2:
-                    nAttackAnimation = MELEE_ANIMATION_NORMAL_WIELD_2 + nAttackIndex;
+                    nAttackAnimation = g_aMeleeNormalWield2[nVariant];
                     break;
                 case CSWCAnimBase::WIELD_CLASS_3:
-                    nAttackAnimation = MELEE_ANIMATION_NORMAL_WIELD_3 + nAttackIndex;
+                    nAttackAnimation = g_aMeleeNormalWield3[nVariant];
                     break;
                 case CSWCAnimBase::WIELD_CLASS_DUAL_2:
-                    nAttackAnimation = MELEE_ANIMATION_NORMAL_DUAL_2 + nAttackIndex;
+                    nAttackAnimation = g_aMeleeNormalDual2[nVariant];
                     break;
                 case CSWCAnimBase::WIELD_CLASS_UNARMED:
-                    nAttackAnimation = MELEE_ANIMATION_NORMAL_UNARMED + nAttackIndex;
+                    if (GetServerCreature()->GetStats()->HasFeat(CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS))
+                        nAttackAnimation = g_aMeleeNormalUnarmed[nVariant];
+                    else
+                        nAttackAnimation = MELEE_ANIMATION_NORMAL_UNARMED + nAttackIndex;
                     break;
                 }
             }
@@ -4435,17 +4492,17 @@ void CSWCCreature::GetWookieeRage(CExoArrayList<CSWGuiInterfaceAction>& lstActio
     CSWFeat* pFeat;
     if (GetStats()->HasFeat(CSWFeat::FEAT_WOOKIEE_RAGE_III))
     {
-        nSpell = CSWSpell::FORCE_POWER_UNKNOWN_273;
+        nSpell = CSWSpell::SPELL_WOOKIEE_RAGE_III;
         pFeat = g_pRules->GetFeat(CSWFeat::FEAT_WOOKIEE_RAGE_III);
     }
     else if (GetStats()->HasFeat(CSWFeat::FEAT_WOOKIEE_RAGE_II))
     {
-        nSpell = CSWSpell::FORCE_POWER_UNKNOWN_272;
+        nSpell = CSWSpell::SPELL_WOOKIEE_RAGE_II;
         pFeat = g_pRules->GetFeat(CSWFeat::FEAT_WOOKIEE_RAGE_II);
     }
     else if (GetStats()->HasFeat(CSWFeat::FEAT_WOOKIEE_RAGE_I))
     {
-        nSpell = CSWSpell::FORCE_POWER_UNKNOWN_271;
+        nSpell = CSWSpell::SPELL_WOOKIEE_RAGE_I;
         pFeat = g_pRules->GetFeat(CSWFeat::FEAT_WOOKIEE_RAGE_I);
     }
     else
@@ -4477,15 +4534,15 @@ void CSWCCreature::GetDroidConfusion(CExoArrayList<CSWGuiInterfaceAction>& lstAc
     }
     unsigned long nSpell;
     CSWFeat* pFeat;
-    if (GetStats()->HasFeat(CSWFeat::FEAT_IMPROVED_DROID_CONFUSION) && !nConfusionActive)
+    if (GetStats()->HasFeat(CSWFeat::FEAT_DROID_CONFUSION) && !nConfusionActive)
     {
-        nSpell = CSWSpell::FORCE_POWER_UNKNOWN_269;
-        pFeat = g_pRules->GetFeat(CSWFeat::FEAT_IMPROVED_DROID_CONFUSION);
-    }
-    else if (GetStats()->HasFeat(CSWFeat::FEAT_DROID_CONFUSION))
-    {
-        nSpell = CSWSpell::FORCE_POWER_UNKNOWN_201;
+        nSpell = CSWSpell::FORCE_POWER_DROID_CONFUSION;
         pFeat = g_pRules->GetFeat(CSWFeat::FEAT_DROID_CONFUSION);
+    }
+    else if (GetStats()->HasFeat(CSWFeat::FEAT_DROID_TRICK))
+    {
+        nSpell = CSWSpell::FORCE_POWER_DROID_TRICK;
+        pFeat = g_pRules->GetFeat(CSWFeat::FEAT_DROID_TRICK);
     }
     else
     {
@@ -4508,6 +4565,7 @@ void CSWCCreature::GetHostileForcePowers(
     CSWCObject* pTarget, CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
     int nExclusion = 0;
+    int bBeastTarget = 0;
     CSWSCreature* pServerCreature = GetServerCreature();
     if (pServerCreature != NULL &&
         pServerCreature->GetArea()->GetPlayerRestrictMode() == 0)
@@ -4517,7 +4575,11 @@ void CSWCCreature::GetHostileForcePowers(
             if (pTarget->AsSWCCreature()->GetStats()->m_nRace == CSWRace::CRACE_DROID)
                 nExclusion = CSWRace::CRACE_DROID_MASK;
             else if (pTarget->AsSWCCreature()->GetStats()->m_nRace == CSWRace::CRACE_HUMAN)
+            {
                 nExclusion = CSWRace::CRACE_HUMAN_MASK;
+                if (pTarget->AsSWCCreature()->GetStats()->m_nSubraceIndex == SUBRACE_BEAST)
+                    bBeastTarget = 1;
+            }
         }
         else
             nExclusion = CSWRace::CRACE_PLACEABLE_MASK;
@@ -4530,6 +4592,13 @@ void CSWCCreature::GetHostileForcePowers(
             nForcePoints = (short)(pServerCreature->m_pStats->m_nCurrentForcePoints +
                 pServerCreature->m_pStats->m_nTemporaryForcePoints);
 
+        if ((m_pStats->HasFeat(CSWFeat::FEAT_DROID_TRICK) ||
+             m_pStats->HasFeat(CSWFeat::FEAT_DROID_CONFUSION)) &&
+            (nExclusion & CSWRace::CRACE_DROID_MASK))
+        {
+            GetDroidConfusion(lstActions, pTarget);
+        }
+
         int nFirstAction = lstActions.num;
         if (GetStats()->m_nRace == CSWRace::CRACE_DROID)
             GetEquipmentForcePowers(lstActions, CSWSpell::SUBRADIAL_TYPE_HOSTILE_FORCE_POWER,
@@ -4537,8 +4606,26 @@ void CSWCCreature::GetHostileForcePowers(
         else
         {
             Vector vDistance = pTarget->m_vPosition - m_vPosition;
+            CSWSArea* pArea = GetServerCreature()->GetArea();
+            int nRoomForceRating = 0;
+            if (pArea != NULL)
+                nRoomForceRating = pArea->GetRoomForceRating(GetServerCreature()->m_vPosition);
+            int nForceBodyLevel = -1;
+            for (int j = 0; j < pServerCreature->m_lstEffects.num; j++)
+            {
+                CGameEffect* pEffect = pServerCreature->m_lstEffects[j];
+                if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
+                {
+                    nForceBodyLevel = pEffect->GetInteger(0);
+                    break;
+                }
+            }
+            int nHitPoints = pServerCreature->GetCurrentHitPoints(0);
+            char nCharismaModifier = pServerCreature->m_pStats->m_nCharismaModifier;
             GetStats()->GetMenuInfo(lstActions, CSWSpell::SUBRADIAL_TYPE_HOSTILE_FORCE_POWER,
-                nForcePoints, nExclusion, nItemMask, vDistance * vDistance);
+                nForcePoints, nExclusion, nItemMask, vDistance * vDistance,
+                nRoomForceRating, nForceBodyLevel, nHitPoints, 0, pServerCreature->m_n1110,
+                bBeastTarget, nCharismaModifier);
         }
         for (int i = nFirstAction; i < lstActions.num; ++i)
         {
@@ -4549,6 +4636,21 @@ void CSWCCreature::GetHostileForcePowers(
             lstActions[i].m_oidTarget = pTarget->GetId();
 #endif
         }
+    }
+}
+// PC 0x00665900
+void CSWCCreature::GetStances(CExoArrayList<CSWGuiInterfaceAction>& lstActions, int nMenu)
+{
+    int nFirstAction = lstActions.num;
+    CExoString sName;
+    m_pStats->GetMenuInfo(lstActions, CSWSpell::SUBRADIAL_TYPE_SELF_FORCE_POWER, 0, 0, 0,
+        SWCCREATURE_SELF_FORCE_POWER_DISTANCE_SQUARED, 0, -1, 0, 1, 0, 0, 0);
+    for (int i = nFirstAction; i < lstActions.num; ++i)
+    {
+        lstActions.element[i].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ActionMenuForm;
+        lstActions.element[i].m_oidTarget = GetId();
+        lstActions.element[i].m_nAction &= ~CSWGuiInterfaceAction::SPELL_ACTION_MASK;
+        lstActions.element[i].m_n38 = 1;
     }
 }
 // PC 0x00667810
@@ -5632,11 +5734,11 @@ void CSWCCreature::ForceMenuAction(unsigned long nAction,
                 pStats->GetClass(nClass) == CLASS_TYPE_SITHLORD)
                 break;
         }
-        if (nAction == CSWSpell::FORCE_POWER_UNKNOWN_271 ||
-            nAction == CSWSpell::FORCE_POWER_UNKNOWN_272 ||
-            nAction == CSWSpell::FORCE_POWER_UNKNOWN_273 ||
-            nAction == CSWSpell::FORCE_POWER_UNKNOWN_269 ||
-            nAction == CSWSpell::FORCE_POWER_UNKNOWN_201)
+        if (nAction == CSWSpell::SPELL_WOOKIEE_RAGE_I ||
+            nAction == CSWSpell::SPELL_WOOKIEE_RAGE_II ||
+            nAction == CSWSpell::SPELL_WOOKIEE_RAGE_III ||
+            nAction == CSWSpell::FORCE_POWER_DROID_CONFUSION ||
+            nAction == CSWSpell::FORCE_POWER_DROID_TRICK)
         {
             Vector vTarget;
             unsigned long oidCreature = m_nId;
@@ -5943,7 +6045,8 @@ void CSWCCreature::DriveAnimationUpdate()
 
     float fDriveSpeed = m_pAppearance->m_fDriveMaxSpeed;
     CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
-    if (m_bRunning && m_fSWAnimationSpeed > m_pAppearance->m_fDriveAnimWalk)
+    if (m_bRunning && m_pAppearance->m_fDriveAnimWalk < m_fSWAnimationSpeed &&
+        !m_pStats->HasFeat(CSWFeat::FEAT_STEALTH_RUN))
         m_fSWAnimationSpeed = m_pAppearance->m_fDriveAnimWalk;
 
     if (m_fSWAnimationSpeed > 0.0f && m_fSWTargetAnimationSpeed > 0.0f)
@@ -5978,7 +6081,8 @@ void CSWCCreature::DriveAnimationUpdate()
                  this != g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0)))
                 nAnimation = CREATURE_ANIMATION_INJURED_RUN;
             else
-                nAnimation = m_bRunning ? CREATURE_ANIMATION_SPECIAL_WALK : CREATURE_ANIMATION_RUN;
+                nAnimation = m_bRunning && !m_pStats->HasFeat(CSWFeat::FEAT_STEALTH_RUN) ?
+                    CREATURE_ANIMATION_SPECIAL_WALK : CREATURE_ANIMATION_RUN;
             m_bDriveRunning = 1;
             fDriveSpeed = m_pAppearance->m_fDriveAnimRun;
             fAnimationSpeed = m_fSWAnimationSpeed /
@@ -5992,7 +6096,8 @@ void CSWCCreature::DriveAnimationUpdate()
                  this != g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0)))
                 nAnimation = CREATURE_ANIMATION_INJURED_WALK;
             else
-                nAnimation = m_bRunning ? CREATURE_ANIMATION_SPECIAL_WALK : CREATURE_ANIMATION_WALK;
+                nAnimation = m_bRunning && !m_pStats->HasFeat(CSWFeat::FEAT_STEALTH_RUN) ?
+                    CREATURE_ANIMATION_SPECIAL_WALK : CREATURE_ANIMATION_WALK;
             m_bDriveRunning = 0;
             fDriveSpeed = m_pAppearance->m_fDriveAnimWalk;
             fAnimationSpeed = m_fSWAnimationSpeed /
@@ -6112,7 +6217,7 @@ void CSWCCreature::FollowAnimationUpdate()
                      this != g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0)))
                     nAnimation = CREATURE_ANIMATION_INJURED_RUN;
                 else
-                    nAnimation = (m_bRunning && !m_pStats->HasFeat(CSWFeat::FEAT_UNKNOWN_197)) ?
+                    nAnimation = (m_bRunning && !m_pStats->HasFeat(CSWFeat::FEAT_STEALTH_RUN)) ?
                         CREATURE_ANIMATION_SPECIAL_WALK : CREATURE_ANIMATION_RUN;
                 fAnimationMoveSpeed = fRunDistance / (GetAnimationLength(nAnimation) * 0.001f);
             }
@@ -6124,7 +6229,7 @@ void CSWCCreature::FollowAnimationUpdate()
                      this != g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0)))
                     nAnimation = CREATURE_ANIMATION_INJURED_WALK;
                 else
-                    nAnimation = (m_bRunning && !m_pStats->HasFeat(CSWFeat::FEAT_UNKNOWN_197)) ?
+                    nAnimation = (m_bRunning && !m_pStats->HasFeat(CSWFeat::FEAT_STEALTH_RUN)) ?
                         CREATURE_ANIMATION_SPECIAL_WALK : CREATURE_ANIMATION_WALK;
                 fAnimationMoveSpeed = fWalkDistance / (GetAnimationLength(nAnimation) * 0.001f);
             }
@@ -6181,6 +6286,16 @@ void CSWCCreature::ForceMenuHostileAction(unsigned long nAction,
 void CSWCCreature::GetSelfForcePowers(
     CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
+    if (m_pStats->HasFeat(CSWFeat::FEAT_IMPLANT_SWITCHING))
+    {
+        GetSwappableImplants(lstActions);
+    }
+    if (m_pStats->HasFeat(CSWFeat::FEAT_WOOKIEE_RAGE_I) ||
+        m_pStats->HasFeat(CSWFeat::FEAT_WOOKIEE_RAGE_II) ||
+        m_pStats->HasFeat(CSWFeat::FEAT_WOOKIEE_RAGE_III))
+    {
+        GetWookieeRage(lstActions);
+    }
     unsigned long nForcePoints = 0;
     unsigned long nItemMask = 0;
     CSWSCreature* pServerCreature = GetServerCreature();
@@ -6195,15 +6310,39 @@ void CSWCCreature::GetSelfForcePowers(
     }
 
     int nFirstAction = lstActions.num;
-    m_pStats->GetMenuInfo(lstActions, CSWSpell::SUBRADIAL_TYPE_SELF_FORCE_POWER,
-        nForcePoints, 0, nItemMask, SWCCREATURE_SELF_FORCE_POWER_DISTANCE_SQUARED);
-    for (int i = nFirstAction; i < lstActions.num; ++i)
+    CSWSArea* pArea = GetServerCreature()->GetArea();
+    int nRoomForceRating = 0;
+    if (pArea != NULL)
+        nRoomForceRating = pArea->GetRoomForceRating(GetServerCreature()->m_vPosition);
+    int nHitPoints = 0;
+    int nForm = 0;
+    int nForceBodyLevel = -1;
+    char nCharismaModifier = 0;
+    if (pServerCreature != NULL)
     {
-        lstActions.element[i].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ForceMenuAction;
+        for (int i = 0; i < pServerCreature->m_lstEffects.num; i++)
+        {
+            CGameEffect* pEffect = pServerCreature->m_lstEffects[i];
+            if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
+            {
+                nForceBodyLevel = pEffect->GetInteger(0);
+                break;
+            }
+        }
+        nHitPoints = pServerCreature->GetCurrentHitPoints(0);
+        nCharismaModifier = pServerCreature->m_pStats->m_nCharismaModifier;
+        nForm = pServerCreature->m_n1110;
+    }
+    m_pStats->GetMenuInfo(lstActions, CSWSpell::SUBRADIAL_TYPE_SELF_FORCE_POWER,
+        nForcePoints, 0, nItemMask, SWCCREATURE_SELF_FORCE_POWER_DISTANCE_SQUARED,
+        nRoomForceRating, nForceBodyLevel, nHitPoints, 0, nForm, 0, nCharismaModifier);
+    for (int j = nFirstAction; j < lstActions.num; ++j)
+    {
+        lstActions.element[j].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ForceMenuAction;
 #ifdef _XBOX
-        lstActions.element[i].m_oidTarget = (unsigned long)this;
+        lstActions.element[j].m_oidTarget = (unsigned long)this;
 #else
-        lstActions.element[i].m_oidTarget = m_nId;
+        lstActions.element[j].m_oidTarget = m_nId;
 #endif
     }
 }
@@ -7263,7 +7402,7 @@ void CSWCCreature::UnRegisterCallbacks()
 // PC 0x0065C9B0
 float CSWCCreature::GetDriveAcceleration()
 {
-    if (m_bRunning && !m_pStats->HasFeat(CSWFeat::FEAT_UNKNOWN_197))
+    if (m_bRunning && !m_pStats->HasFeat(CSWFeat::FEAT_STEALTH_RUN))
         return SWCCREATURE_RUNNING_DRIVE_ACCELERATION;
     return m_pAppearance->m_fDriveAcceleration;
 }
@@ -7491,7 +7630,7 @@ int CSWCCreature::IsStealthCapable()
             bHasStealthDevice |=
                 pItem->GetBaseItem()->GetItemType() == CSWBaseItem::ITEM_TYPE_STEALTH_DEVICE;
         }
-        if (GetServerCreature()->GetStats()->HasFeat(CSWFeat::FEAT_UNKNOWN_201))
+        if (GetServerCreature()->GetStats()->HasFeat(CSWFeat::FEAT_PERSONAL_CLOAKING_SHIELD))
             bHasStealthDevice |= 1;
         if (GetServerCreature()->GetStats()->HasSpell(0, CSWSpell::FORCE_POWER_FORCE_CAMOUFLAGE, 0) ||
             GetServerCreature()->GetStats()->HasSpell(0, CSWSpell::FORCE_POWER_IMPROVED_FORCE_CAMOUFLAGE, 0) ||
@@ -7637,7 +7776,7 @@ void CSWCCreature::GetCombatFeatsSkills(
             nFeat = CheckFeat(CSWFeat::FEAT_MASTER_POWER_ATTACK,
                 CSWFeat::FEAT_IMPROVED_POWER_ATTACK, CSWFeat::FEAT_POWER_ATTACK);
             EnableFeatForMenu(nFeat, lstActions, (PFNMENUACTION)&CSWCCreature::ActionMenuUseAttackFeat, pTarget);
-            nFeat = CheckFeat(CSWFeat::FEAT_UNKNOWN_220, -1, -1);
+            nFeat = CheckFeat(CSWFeat::FEAT_SHIELD_BREAKER, -1, -1);
             EnableFeatForMenu(nFeat, lstActions, (PFNMENUACTION)&CSWCCreature::ActionMenuUseAttackFeat, pTarget);
         }
     }
@@ -7768,6 +7907,9 @@ void CSWCCreature::GetPersonalActions(
         return;
     case PERSONAL_ACTION_USABLE_ITEMS_2:
         GetUsableItems(lstActions, USABLE_ITEM_ACTION_MASK_4);
+        return;
+    case PERSONAL_ACTION_STANCES:
+        GetStances(lstActions, nMenu);
         return;
     case PERSONAL_ACTION_BEHAVIORS:
         GetBehaviors(lstActions);
@@ -8436,6 +8578,63 @@ int CSWCCreature::LoadModel(const CResRef& cModel, unsigned char nModel,
                 m_fHeadHitHeight = vPosition.m_fZ - vPosition.m_fZ * 0.125f;
             else
                 m_fHeadHitHeight = 2.1f;
+        }
+        CSWSCreature* pServerCreature = GetServerCreature();
+        if (pServerCreature != NULL && pServerCreature->m_n24C)
+            pModel->EnableHologram(1);
+        if (pServerCreature != NULL && pServerCreature->m_n254)
+            pModel->EnableRendering(0);
+        else
+            pModel->EnableRendering(1);
+        if (pServerCreature != NULL && pServerCreature->m_n254)
+            pModel->EnableRendering(0);
+
+        short nAlignment = m_pStats->m_nGoodEvilAlignment;
+        pModel->SetAlignmentValue(nAlignment);
+        float fRed;
+        float fGreen;
+        float fBlue;
+        float fIntensity;
+        if (nAlignment > 60)
+        {
+            fIntensity = (nAlignment - 60) * 0.025f;
+            fBlue = 1.0f;
+            fRed = fIntensity * 0.01f + (1.0f - fIntensity) * 0.65f;
+            fGreen = fIntensity * 0.05f + (1.0f - fIntensity) * 0.65f;
+        }
+        else if (nAlignment > 40)
+        {
+            if (nAlignment >= 50)
+            {
+                fIntensity = (50 - nAlignment) * 0.1f;
+                fBlue = 0.9f;
+                fGreen = fRed = (1.0f - fIntensity) * 0.65f + fIntensity;
+            }
+            else
+            {
+                fIntensity = (nAlignment - 40) * 0.1f;
+                fRed = 1.0f;
+                fBlue = fGreen = (1.0f - fIntensity) * 0.65f + fIntensity;
+            }
+        }
+        else
+        {
+            fIntensity = (40 - nAlignment) * 0.025f;
+            fRed = 1.0f;
+            fGreen = fIntensity * 0.05f + (1.0f - fIntensity) * 0.65f;
+            fBlue = fIntensity * 0.01f + (1.0f - fIntensity) * 0.65f;
+        }
+        pModel->SetForceGlowColor(fRed, fGreen, fBlue, fIntensity);
+        if (m_pStats->m_nRace != CSWRace::CRACE_DROID)
+            pModel->EnableForceGlow(1);
+        else
+            pModel->EnableForceGlow(0);
+        pModel->SetNonForceBlending(1);
+        pServerCreature = GetServerCreature();
+        if (pServerCreature != NULL)
+        {
+            short nMaxForcePoints = pServerCreature->GetMaxForcePoints();
+            pModel->SetForcePoints(nMaxForcePoints);
         }
     }
     return 1;

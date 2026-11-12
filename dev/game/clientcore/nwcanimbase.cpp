@@ -927,6 +927,26 @@ int CSWCAnimBase::SetAnimationInternal(CAurObject* pObject,
         }
         switch (nAnimation)
         {
+        case 10029:
+        case 10030:
+        case 10034:
+        case 10038:
+        case 10039:
+        case 10040:
+        case 10041:
+        case 10042:
+        case 10070:
+        case 10071:
+        case 10129:
+        case 10130:
+        case 10136:
+        case 10154:
+        case 10155:
+        case 10302:
+        case 10417:
+            SetOverlayAnimation(pObject, nAnimation, 1);
+            bResult = 1;
+            break;
         case 10003:
         case 10081:
         case 10083:
@@ -946,25 +966,6 @@ int CSWCAnimBase::SetAnimationInternal(CAurObject* pObject,
         default:
             static_cast<Gob*>(pObject)->PlayAnimation(sName.CStr(), fSpeed,
                                                       nFlags, fBlend);
-            bResult = 1;
-            break;
-        case 10029:
-        case 10030:
-        case 10034:
-        case 10038:
-        case 10039:
-        case 10040:
-        case 10041:
-        case 10042:
-        case 10070:
-        case 10071:
-        case 10129:
-        case 10130:
-        case 10136:
-        case 10154:
-        case 10155:
-        case 10302:
-            SetOverlayAnimation(pObject, nAnimation, 1);
             bResult = 1;
             break;
         }
