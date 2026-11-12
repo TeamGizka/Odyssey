@@ -169,7 +169,7 @@ void CSWGuiTitleMusic::Draw(float fElapsed)
 // PC 0x0074C970
 void CSWGuiTitleMusic::PopulateSongList()
 {
-    C2DA* pMusic = g_pRules->m_p2DArrays->m_pMusic;
+    C2DA* pMusic = g_pRules->Get2DArrays()->m_pMusic;
     int nRows = pMusic->m_nNumRows;
     CMusicItemInfo cInfo;
     for (int nRow = 0; nRow < nRows; nRow++)
@@ -197,7 +197,8 @@ void CSWGuiTitleMusic::PopulateSongList()
         CSWGuiButton* pButton = new CSWGuiButton();
         pButton->Initialize(cExtent, (CSWGuiButton*)pProto);
         pButton->m_cText.m_cParams.SetStrRef(m_lMusic[nSong].m_nStrRef);
-        pButton->m_nIndex = (int)&m_lMusic[nSong];
+        int nIndex = (int)&m_lMusic[nSong];
+        pButton->m_nIndex = nIndex;
         cExtent.m_nHeight = 36;
         pButton->SetExtent(cExtent);
         pButton->AddEvent(GUIEVENT_ACTIVATE, this,

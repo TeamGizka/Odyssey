@@ -1259,7 +1259,8 @@ CSWGuiPazaakStart::CSWGuiPazaakStart(CSWGuiManager* pManager, int nWager,
     m_cTutorial.m_bEnabled = bTutorial;
     m_pPazaak = new CSWPazaak;
     m_pPazaak->m_nWager = nWager;
-    m_pPazaak->m_oidOpponent = oidOpponent;
+    CSWPazaak* pPazaak = m_pPazaak;
+    pPazaak->m_oidOpponent = oidOpponent;
     if (nWager > 0)
     {
         CSWPazaak& cPazaak = *m_pPazaak;
@@ -1268,7 +1269,7 @@ CSWGuiPazaakStart::CSWGuiPazaakStart(CSWGuiManager* pManager, int nWager,
     }
     CPazaakCard aSideDeck[10];
     m_pPazaak->LoadInitialSideDeck(nSideDeck, aSideDeck);
-    CSWPazaak* pPazaak = m_pPazaak;
+    pPazaak = m_pPazaak;
     pPazaak->m_cOpponent.ChooseSidedeck(aSideDeck);
 
 #ifdef _XBOX

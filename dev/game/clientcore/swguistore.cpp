@@ -787,7 +787,7 @@ CSWGuiStore::CSWGuiStore(CSWGuiManager* pManager)
 
     for (int i = 0; i < STORE_FILTER_COUNT; i++)
     {
-        m_abtnFilter[i].m_bFocusable = 0;
+        m_abtnFilter[i].SetFocusable(0);
         m_abtnFilter[i].m_nIndex = i;
         m_abtnFilter[i].AddEvent(CSWGuiControl::EVENT_SELECT, this,
                                  (CSWGuiHandler)&CSWGuiStore::OnFilterPressed);
