@@ -19,6 +19,14 @@
 #include <math.h>
 #include "nwsplayer.h"
 #include "swguimaininterfacepc2.h"
+#include "nwseffect.h"
+#include "nwseffectlist.h"
+#include "aurora.h"
+
+#define VIDEO_EFFECT_FORCESIGHT 4
+#define VIDEO_EFFECT_FURY_1 7
+#define VIDEO_EFFECT_FURY_2 8
+#define VIDEO_EFFECT_FURY_3 9
 
 int g_nPartyUnused = 0;
 
@@ -742,6 +750,45 @@ int CSWParty::IsPartyTogether()
 
     return 1;
 }
+// PC 0x0068ADE0
+int CSWParty::IsPartyInCombat()
+{
+    CSWSCreature* pLeader;
+    CSWSCreature* pMember;
+    int nIndex;
+
+    pLeader = g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
+        g_pAppManager->m_pServerExoApp->ClientToServerObjectId(
+            g_pAppManager->m_pClientExoApp->GetPlayerCreatureId()));
+    if (pLeader == NULL)
+    {
+        return 0;
+    }
+
+    if (pLeader->GetCombatState() && pLeader->GetItemUseState() == 1)
+    {
+        return 1;
+    }
+
+    nIndex = 0;
+    if (m_nCharacters > 0)
+    {
+        CSWPartyMemberData* pMemberData = m_aPartyMemberData;
+        for (; nIndex < m_nCharacters; ++nIndex, ++pMemberData)
+        {
+            pMember = g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
+                g_pAppManager->m_pServerExoApp->ClientToServerObjectId(
+                    pMemberData->m_oidCreature));
+            if (pMember != NULL && pMember->GetCombatState() &&
+                pMember->GetItemUseState() == 1)
+            {
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
 // PC 0x0068AEA0
 CSWCCreature* CSWParty::GetPlayerCharacter()
 {
@@ -774,6 +821,66 @@ void CSWPartyFollowDataArray::SmoothFollowPath()
     if (pLeader == NULL)
     {
         return;
+    }
+
+    CResRef cMemberAreaResRef;
+    CWalkHitInfo cMemberWalkHitInfo;
+    unsigned long oidServerMember1 =
+        g_pAppManager->GetServerExoApp()->ClientToServerObjectId(oidLeader);
+    CSWSCreature* pMember1 =
+        g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidServerLeader);
+    unsigned long oidServerMember2 =
+        g_pAppManager->GetServerExoApp()->ClientToServerObjectId(oidLeader);
+    CSWSCreature* pMember2 =
+        g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidServerLeader);
+    if (pMember1 != NULL)
+    {
+        CPathfindInformation* pPathfind = pLeader->GetPathfindInformation();
+        float fDistance = pPathfind->m_fStepScale;
+        float fWidth = pPathfind->m_fHalfStep;
+        int nResult = g_pAppManager->GetServerExoApp()->TestDirectLine(
+            oidLeader, cMemberAreaResRef, pMember1->m_vPosition,
+            m_aPathData[nEndIndex].m_vPosition, fDistance, fWidth, 1,
+            &cMemberWalkHitInfo);
+        unsigned long oidBlocker =
+            g_pAppManager->GetClientExoApp()->ServerToClientObjectId(
+                cMemberWalkHitInfo.m_oidBlocker);
+        if (nResult == CSWSArea::DIRECT_LINE_BLOCKED_CREATURE)
+        {
+            if (m_pParty->IsPartyMember(oidBlocker))
+            {
+                nResult = CSWSArea::DIRECT_LINE_CLEAR;
+            }
+        }
+        if (nResult == CSWSArea::DIRECT_LINE_CLEAR)
+        {
+            m_pParty->m_aPartyMemberData[1].m_nFormationPathIndex = nEndIndex;
+        }
+    }
+
+    if (pMember2 != NULL)
+    {
+        CPathfindInformation* pPathfind = pLeader->GetPathfindInformation();
+        float fDistance = pPathfind->m_fStepScale;
+        float fWidth = pPathfind->m_fHalfStep;
+        int nResult = g_pAppManager->GetServerExoApp()->TestDirectLine(
+            oidLeader, cMemberAreaResRef, pMember2->m_vPosition,
+            m_aPathData[nEndIndex].m_vPosition, fDistance, fWidth, 1,
+            &cMemberWalkHitInfo);
+        unsigned long oidBlocker =
+            g_pAppManager->GetClientExoApp()->ServerToClientObjectId(
+                cMemberWalkHitInfo.m_oidBlocker);
+        if (nResult == CSWSArea::DIRECT_LINE_BLOCKED_CREATURE)
+        {
+            if (m_pParty->IsPartyMember(oidBlocker))
+            {
+                nResult = CSWSArea::DIRECT_LINE_CLEAR;
+            }
+        }
+        if (nResult == CSWSArea::DIRECT_LINE_CLEAR)
+        {
+            m_pParty->m_aPartyMemberData[2].m_nFormationPathIndex = nEndIndex;
+        }
     }
 
 #ifdef _XBOX
@@ -1337,6 +1444,66 @@ void CSWParty::Update(float fTime)
 {
     Vector vLeaderFollowPosition = m_vLeaderFollowPosition;
     CSWCCreature* pLeader = GetCharacter(0);
+    int nDialogState =
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nGlobalDialogState;
+    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+    if (pLeader != NULL && pServerExoApp != NULL && nDialogState == 0)
+    {
+        CSWSCreature* pServerLeader = pServerExoApp->GetCreatureByGameObjectID(
+            pServerExoApp->ClientToServerObjectId(pLeader->m_nId));
+        int bFury = 0;
+        int bForceSight = 0;
+        for (int nEffect = 0; nEffect < pServerLeader->m_lstEffects.num; ++nEffect)
+        {
+            CGameEffect* pEffect = pServerLeader->m_lstEffects.element[nEffect];
+            if (pEffect->GetEffectType() == CSWSEffectListHandler::EFFECT_FURY)
+            {
+                bFury = 1;
+            }
+            else if (pEffect->GetEffectType() ==
+                     CSWSEffectListHandler::EFFECT_FORCESIGHT)
+            {
+                bForceSight = 1;
+                break;
+            }
+        }
+
+        if (AurIsSpeedBlurEnabled() && !bForceSight)
+        {
+            g_pAppManager->m_pClientExoApp->DisableVideoEffect();
+        }
+        else if (bFury || bForceSight)
+        {
+            if (bForceSight)
+            {
+                g_pAppManager->m_pClientExoApp->EnableVideoEffect(
+                    VIDEO_EFFECT_FORCESIGHT);
+            }
+            else
+            {
+                g_pAppManager->m_pClientExoApp->EnableVideoEffect(
+                    pServerLeader->m_pStats->m_n124);
+            }
+        }
+        else if (g_pAppManager->m_pClientExoApp->GetVideoEffectType() == VIDEO_EFFECT_FORCESIGHT ||
+                 g_pAppManager->m_pClientExoApp->GetVideoEffectType() == VIDEO_EFFECT_FURY_1 ||
+                 g_pAppManager->m_pClientExoApp->GetVideoEffectType() == VIDEO_EFFECT_FURY_2 ||
+                 g_pAppManager->m_pClientExoApp->GetVideoEffectType() == VIDEO_EFFECT_FURY_3)
+        {
+            g_pAppManager->m_pClientExoApp->DisableVideoEffect();
+        }
+    }
+    else if (nDialogState != 0)
+    {
+        if (g_pAppManager->m_pClientExoApp->GetVideoEffectType() == VIDEO_EFFECT_FORCESIGHT ||
+            g_pAppManager->m_pClientExoApp->GetVideoEffectType() == VIDEO_EFFECT_FURY_1 ||
+            g_pAppManager->m_pClientExoApp->GetVideoEffectType() == VIDEO_EFFECT_FURY_2 ||
+            g_pAppManager->m_pClientExoApp->GetVideoEffectType() == VIDEO_EFFECT_FURY_3)
+        {
+            g_pAppManager->m_pClientExoApp->DisableVideoEffect();
+        }
+    }
+
     if (pLeader != NULL)
     {
         Quaternion qLeaderFacing(zaxis,

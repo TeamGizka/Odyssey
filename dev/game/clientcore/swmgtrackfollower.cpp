@@ -14,6 +14,9 @@
 #include <stdio.h>
 #include <string.h>
 
+float ClosestDistanceBetweenSegments(const Vector& vStart1, const Vector& vEnd1,
+                                     const Vector& vStart2, const Vector& vEnd2);
+
 static inline void SwmgtrackfollowerTrace4();
 static inline void SwmgtrackfollowerTrace3();
 static inline void SwmgtrackfollowerTrace2();
@@ -77,6 +80,21 @@ void CSWTrackFollower::LoadScripts(CResGFF* pGFF, CResStruct* pStruct,
         CResRef resDefault("");
         SetScriptName(9, pGFF->ReadFieldCResRef(&structScripts, "OnTrackLoop",
                                                 bSuccess, resDefault));
+    }
+    {
+        CResRef resDefault("");
+        SetScriptName(10, pGFF->ReadFieldCResRef(&structScripts, "OnAccelerate",
+                                                 bSuccess, resDefault));
+    }
+    {
+        CResRef resDefault("");
+        SetScriptName(11, pGFF->ReadFieldCResRef(&structScripts, "OnBrake",
+                                                 bSuccess, resDefault));
+    }
+    {
+        CResRef resDefault("");
+        SetScriptName(12, pGFF->ReadFieldCResRef(&structScripts, "OnHitWorld",
+                                                 bSuccess, resDefault));
     }
 }
 // PC 0x006C1A90
@@ -324,6 +342,11 @@ Vector CSWMiniPlayer::DoInertia(const Vector& vPrevious,
 // PC 0x006C1F50
 void CSWMiniPlayer::AdjustPosition(int nPosition, int bRelative)
 {
+    if (m_pMiniGame->m_nAttachType == CSWMiniGame::ATTACH_PLAYER_MODEL &&
+        m_pMiniGame->m_fLateralAccel == 0.0f)
+    {
+        return;
+    }
     if (bRelative)
     {
         m_nBankPosition += nPosition;
@@ -974,6 +997,10 @@ void CSWTrackFollower::OnHitObstacle(int nReserved)
             return;
         }
     }
+    if (m_pMiniGame->m_nAttachType == CSWMiniGame::ATTACH_PLAYER_MODEL)
+    {
+        return;
+    }
     nModels = m_lstModels.num;
     for (i = 0; i < nModels; i++)
     {
@@ -1013,9 +1040,16 @@ int CSWTrackFollower::DoObstacleHitCheck(CSWMGObstacle* pObstacle)
                                      &DefaultHitInfo))
     {
         m_nLastObstacleHit = pObstacle->m_nObjectId;
-        OnHitObstacle(0);
         pObstacle->m_nLastFollowerHit = m_nObjectId;
-        pObstacle->OnHitFollower(0);
+        CResRef resScript = pObstacle->GetScriptName(2);
+        if (resScript.IsValid())
+        {
+            pObstacle->OnHitFollower(0);
+        }
+        else
+        {
+            OnHitObstacle(0);
+        }
         return 1;
     }
     return 0;
@@ -1169,7 +1203,9 @@ Vector CSWTrackFollower::GetPosition()
 void CSWMiniPlayer::Control(float fTime, CSWMGPhysicsState& stateCurrent,
                            CSWMGPhysicsState& statePrevious)
 {
-    Vector vOffset = stateCurrent.m_vRate - statePrevious.m_vRate;
+    Vector vDelta = stateCurrent.m_vRate - statePrevious.m_vRate;
+    CSWMiniGame* pMiniGame = m_pMiniGame;
+    Vector vOffset = vDelta;
 
     if (!m_bSpeedOverride && bDoAcceleration &&
         m_fTrackSpeed != m_fMaximumSpeed)
@@ -1181,135 +1217,18 @@ void CSWMiniPlayer::Control(float fTime, CSWMGPhysicsState& stateCurrent,
         SetSpeed(m_fTrackSpeed);
     }
 
+    if (pMiniGame->m_nAttachType == CSWMiniGame::ATTACH_PLAYER_MODEL)
+    {
+        float fJumpSpeed = pMiniGame->m_fJumpSpeed;
+        vOffset.m_fZ = fTime * fJumpSpeed + vDelta.m_fZ;
+        pMiniGame->m_fJumpSpeed = fJumpSpeed - fTime * 45.8f;
+    }
+
     m_bSpeedOverride = 0;
     if (fSpeed != fLastSpeedSet)
     {
         SetSpeed(fSpeed);
         fLastSpeedSet = fSpeed;
-    }
-
-    if (m_pMiniGame->m_bUseInertia)
-    {
-        Vector vPrevious = m_vInitialHook;
-        int nPositionKeys = m_lstPositionKeys.num;
-        int nOrientationKeys = m_lstOrientationKeys.num;
-
-        if (m_bTrackPlaying)
-        {
-            if (nPositionKeys || nOrientationKeys)
-            {
-                float fPositionBase = 0.0f;
-                float fOrientationBase = 0.0f;
-                float fPreviousTime = 0.0f;
-                int nPosition = 0;
-                int nOrientation = 0;
-                int nMergedKeys = 0;
-                Vector vTrackPosition = m_pTrack->GetPosition();
-                Quaternion qTrackOrientation = m_pTrack->GetOrientation();
-                --nPositionKeys;
-                --nOrientationKeys;
-
-                for (; nPosition < nPositionKeys &&
-                       nOrientation < nOrientationKeys;)
-                {
-                    SWMGKeyInfo* pPosition = &m_lstPositionKeys[nPosition];
-                    float fPositionTime = fPositionBase + pPosition->m_fTime;
-                    SWMGKeyInfo* pOrientation = &m_lstOrientationKeys[nOrientation];
-                    float fOrientationTime = fOrientationBase + pOrientation->m_fTime;
-
-                    if (fPositionTime <= fOrientationTime)
-                    {
-                        if (fPositionTime == fPreviousTime && nMergedKeys)
-                        {
-                            m_lstKeyAddresses[nMergedKeys - 1] = pPosition;
-                            fPositionBase = fPositionTime;
-                        }
-                        else
-                        {
-                            pPosition->m_fTime = fPositionTime - fPreviousTime;
-                            m_lstKeyAddresses[nMergedKeys] = pPosition;
-                            nMergedKeys++;
-                            fPreviousTime = fPositionTime;
-                        }
-                        ++nPosition;
-                    }
-                    else
-                    {
-                        if (fOrientationTime == fPreviousTime && nMergedKeys)
-                        {
-                            m_lstKeyAddresses[nMergedKeys - 1] = pOrientation;
-                            fOrientationBase = fOrientationTime;
-                        }
-                        else
-                        {
-                            pOrientation->m_fTime = fOrientationTime - fPreviousTime;
-                            m_lstKeyAddresses[nMergedKeys] = pOrientation;
-                            nMergedKeys++;
-                            fPreviousTime = fOrientationTime;
-                        }
-                        ++nOrientation;
-                    }
-                }
-
-                for (; nPosition < nPositionKeys; ++nPosition)
-                {
-                    SWMGKeyInfo* pKey = &m_lstPositionKeys[nPosition];
-                    float fKeyTime = fPositionBase + pKey->m_fTime;
-                    if (fKeyTime == fPreviousTime && nMergedKeys)
-                    {
-                        fPositionBase = fKeyTime;
-                        m_lstKeyAddresses[nMergedKeys - 1] = pKey;
-                    }
-                    else
-                    {
-                        pKey->m_fTime = fKeyTime - fPreviousTime;
-                        m_lstKeyAddresses[nMergedKeys] = pKey;
-                        nMergedKeys++;
-                        fPreviousTime = fKeyTime;
-                    }
-                }
-
-                for (; nOrientation < nOrientationKeys; ++nOrientation)
-                {
-                    SWMGKeyInfo* pKey = &m_lstOrientationKeys[nOrientation];
-                    float fKeyTime = fOrientationBase + pKey->m_fTime;
-                    if (fKeyTime == fPreviousTime && nMergedKeys)
-                    {
-                        fOrientationBase = fKeyTime;
-                        m_lstKeyAddresses[nMergedKeys - 1] = pKey;
-                    }
-                    else
-                    {
-                        pKey->m_fTime = fKeyTime - fPreviousTime;
-                        m_lstKeyAddresses[nMergedKeys] = pKey;
-                        nMergedKeys++;
-                        fPreviousTime = fKeyTime;
-                    }
-                }
-
-                for (int i = 0; i < nMergedKeys; ++i)
-                {
-                    SWMGKeyInfo* pKey = m_lstKeyAddresses[i];
-                    if (pKey->m_bOrientation)
-                        m_qInitialHook = pKey->m_qOrientation * qTrackOrientation;
-                    if (pKey->m_bPosition)
-                        m_vInitialHook = vTrackPosition + qTrackOrientation * pKey->m_vPosition;
-                    if (pKey->m_fTime != 0.0f)
-                        stateCurrent.m_vValue += DoInertia(vPrevious, m_vInitialHook,
-                                                          m_qInitialHook, pKey->m_fTime);
-                    vPrevious = m_vInitialHook;
-                }
-            }
-
-            m_pTrack->GetPart("modelhook")->GetWorld(m_vInitialHook, m_qInitialHook);
-            if (nPositionKeys || nOrientationKeys)
-                fTime = min(m_lstPositionKeys[nPositionKeys].m_fTime,
-                            m_lstOrientationKeys[nOrientationKeys].m_fTime);
-            stateCurrent.m_vValue += DoInertia(vPrevious, m_vInitialHook,
-                                              m_qInitialHook, fTime);
-        }
-        m_lstPositionKeys.num = 0;
-        m_lstOrientationKeys.num = 0;
     }
 
     m_vOffset += vOffset;
@@ -1417,10 +1336,7 @@ int CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>& lstEnemyIds,
         Vector vPush;
         Vector vEnemyPosition;
         Vector vEnemyPrevious;
-        Vector vRelativePosition;
-        Vector vRelativePrevious;
-        float fPlaneDistance = 0.0f - vPlane * vPosition;
-        Vector vSphereCenter;
+        CHitInfo cHitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
 
         for (int i = nEnemies - 1; i >= 0; i--)
         {
@@ -1430,17 +1346,16 @@ int CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>& lstEnemyIds,
             {
                 if (pEnemy->m_bTrigger || m_pMiniGame->m_bDoBumping)
                 {
-                    if (pEnemy->m_lstModels.num <= 0 || pEnemy->GetModel(0) == 0)
+                    if (pEnemy->m_lstModels.num <= 0 ||
+                        pEnemy->m_lstModels.element[0].m_pModel == 0)
                     {
                         break;
                     }
                     vEnemyPosition = pEnemy->GetModel(0)->GetPosition();
                     vEnemyPrevious = pEnemy->GetModel(0)->GetPreviousPosition();
-                    float fEnemyRadius = pEnemy->m_fSphereRadius;
-                    vRelativePosition = vPosition - vEnemyPosition;
-                    vRelativePrevious = vPrevious - vEnemyPrevious;
-                    if (SphereIntersect(vRelativePrevious, vRelativePosition, vSphereCenter,
-                                        fEnemyRadius + m_fSphereRadius))
+                    float fRadius = pEnemy->m_fSphereRadius + m_fSphereRadius;
+                    if (ClosestDistanceBetweenSegments(vPrevious, vPosition, vEnemyPrevious,
+                                                       vEnemyPosition) < fRadius)
                     {
                         if (pEnemy->m_bTrigger)
                         {
@@ -1454,10 +1369,8 @@ int CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>& lstEnemyIds,
                         }
                         else
                         {
-                            vEnemyPosition = planeproject(vPlane, fPlaneDistance,
-                                                          vEnemyPosition);
                             vPush += normalize(vPosition - vEnemyPosition)
-                                     * (fEnemyRadius + m_fSphereRadius + 0.1f)
+                                     * (fRadius + 1.1f)
                                      + vEnemyPosition - vPosition;
                             if (bRunScripts)
                             {
@@ -1492,19 +1405,17 @@ int CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>& lstEnemyIds,
         if (nHits)
         {
             vPush /= (float)nHits;
-            Vector vOffset;
-            vOffset = vPush + m_vOffset;
-            KeepInTunnel(vOffset);
-            vPush = vOffset + vPosition - m_vOffset;
-            m_vOffset = vOffset;
-            for (int j = 0; j < nModels; j++)
+            vPush = vPush + m_vOffset;
+            KeepInTunnel(vPush);
+            Vector vNewPosition = vPush + vPosition - m_vOffset;
+            m_vOffset = vPush;
+            for (int j = 0; j < nModels - 1; j++)
             {
-                m_lstModels.element[j].m_pModel->SetPosition(vPush);
+                m_lstModels.element[j].m_pModel->SetPosition(vNewPosition);
             }
-            if (m_fInvincibilityRemaining == 0.0f)
+            if (m_fInvincibilityRemaining <= 0.0f)
             {
-                SetSpeed(m_fMinimumSpeed);
-                m_fInvincibilityRemaining = m_fInvincePeriod;
+                m_fInvincibilityRemaining = m_fInvincePeriod * 2.0f;
                 if (bRunScripts)
                 {
                     Hit();
@@ -1921,10 +1832,7 @@ int CSWMiniPlayer::Load(CResGFF* pGFF, CResStruct* pStruct)
 
     float fMinimumSpeed = pGFF->ReadFieldFLOAT(pStruct, "Minimum_Speed",
                                                bSuccess, -1.0f);
-    if (fMinimumSpeed >= 0.0f)
-    {
-        m_fMinimumSpeed = fMinimumSpeed;
-    }
+    m_fMinimumSpeed = fMinimumSpeed;
     float fMaximumSpeed = pGFF->ReadFieldFLOAT(pStruct, "Maximum_Speed",
                                                bSuccess, 100.0f);
     if (fMaximumSpeed >= 0.0f)
@@ -1935,19 +1843,15 @@ int CSWMiniPlayer::Load(CResGFF* pGFF, CResStruct* pStruct)
                                             -1.0f);
     if (fAccelSecs == 0.0f)
     {
-        float fAPS = fMaximumSpeed - fMinimumSpeed;
-        if (fAPS >= 0.0f)
-        {
-            m_fAPS = fAPS;
-        }
+        m_fAPS = fMaximumSpeed - fMinimumSpeed;
     }
     else if (fAccelSecs > 0.0f)
     {
-        float fAPS = (fMaximumSpeed - fMinimumSpeed) / fAccelSecs;
-        if (fAPS >= 0.0f)
-        {
-            m_fAPS = fAPS;
-        }
+        m_fAPS = (fMaximumSpeed - fMinimumSpeed) / fAccelSecs;
+    }
+    else
+    {
+        m_fAPS = -1.0f;
     }
 
     m_vTunnelMinimum = Vector(

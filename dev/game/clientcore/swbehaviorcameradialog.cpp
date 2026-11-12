@@ -38,6 +38,12 @@ void CSWBehaviorCameraDialog::SetShot(int nShot, Vector vPosition,
         m_qCameraOrientation = qOrientation;
     }
 }
+// PC 0x0070FED0
+void CSWBehaviorCameraDialog::ApplyCameraShot()
+{
+    ((Gob*)m_pObject)->SetPosition(m_vCameraPosition);
+    ((Gob*)m_pObject)->SetOrientation(m_qCameraOrientation);
+}
 // PC 0x0070FF30
 int CSWBehaviorCameraDialog::GetLineOfActionSide(unsigned long oidFirst,
                                                  unsigned long oidSecond)

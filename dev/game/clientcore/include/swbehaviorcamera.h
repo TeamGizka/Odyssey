@@ -217,12 +217,12 @@ public:
     float m_fTilt;
     float m_fDesiredPitch;
     float m_fTurnAcceleration;
-    CSWRK4Acceleration m_integrator110;
-    int m_n158;
+    CSWRK4Acceleration m_integratorTilt;
+    float m_fTiltAcceleration;
     int m_n15C;
-    float m_f160;
-    float m_f164;
-    float m_f168;
+    float m_fTiltRate;
+    float m_fLookDown;
+    float m_fLookUp;
 #endif
     float m_fDistance;
     float m_fSpeed;

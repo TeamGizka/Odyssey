@@ -162,12 +162,25 @@ void FireGunCallback(CAurObject* pObject, char* sEvent, void* pData)
                     Quaternion(Vector(1.0f, 0.0f, 0.0f), HALF_PI);
             }
             pBullet->PlayAnimation("ready", 1.0f, 0, 0);
+            CSWMiniPlayer* pPlayer =
+                g_pAppManager->GetClientExoApp()->GetMiniGame()->m_pPlayer;
+            if (pBank->GetFollower()->m_pTrack == pPlayer->m_pTrack)
+            {
+                pBank->SetBulletSpeed(pPlayer->GetTrackSpeed() +
+                                      pBank->m_bullet.m_fSpeed);
+                qOrientation = pPlayer->GetModel(0)->GetOrientation();
+            }
             pBullet->AttachToScene(static_cast<Scene*>(pGun->GetScene()));
             pBullet->SetPosition(vPosition);
             pBullet->SetOrientation(qOrientation);
             pBullet->SetBehavior(new CSWMGBehaviorBullet(pBullet, pBank->GetFollower(),
                                                         pBank->m_bullet));
             pBank->GetFollower()->GetMiniGame()->AddBullet(pBullet);
+            if (pBank->GetFollower()->m_pTrack == pPlayer->m_pTrack)
+            {
+                pBank->SetBulletSpeed(pBank->m_bullet.m_fSpeed -
+                                      pPlayer->GetTrackSpeed());
+            }
         }
         else
         {

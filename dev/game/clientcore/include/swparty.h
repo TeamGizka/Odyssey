@@ -169,6 +169,7 @@ public:
     float GetFollowRange();
     int PartyHasRace(unsigned short nRace);
     int IsPartyTogether();
+    int IsPartyInCombat();
     void SetLeader(int nIndex);
     void RecaulateFollowPoint();
     Vector GetWorldFormationPosition(const Vector& vPosition,

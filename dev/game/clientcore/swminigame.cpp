@@ -6,8 +6,12 @@
 
 #include "swplayercontrol.h"
 #include "nwcarea.h"
+#include "nwcmodule.h"
 #include "appmanager.h"
 #include "clientexoapp.h"
+#include "serverexoapp.h"
+#include "partytables.h"
+#include "twodimarray.h"
 #include "aurcamera.h"
 #include "nwcanimbase.h"
 #include "exobase.h"
@@ -15,6 +19,14 @@
 #include "aurmodel.h"
 #include "swcroom.h"
 #include "aurscene.h"
+#include "nwcplaceable.h"
+#include "nwsobject.h"
+#include "nwsmodule.h"
+#include "nwsarea.h"
+#include "nwsscriptevent.h"
+#include "serveraimaster.h"
+
+int SceneHitCheck(CAurScene* pScene, Vector vStart, Vector vEnd, Vector* pHit, CHitInfo* pHitInfo);
 
 static inline void SwminigameTrace1();
 
@@ -150,6 +162,14 @@ void CSWMiniGame::AxisAcceleration(const Vector& vAxis, float fScale)
                        GetAcceleration(state, vAxis)) * fScale;
     m_NextState = m_CurrentState + k1 / 6.0f + k2 / 3.0f +
                   k3 / 3.0f + k4 / 6.0f;
+    if (m_nAttachType == ATTACH_PLAYER_MODEL)
+    {
+        m_NextState.m_vValue.m_fZ = m_CurrentState.m_vValue.m_fZ - fScale * 9.8f;
+        if (m_NextState.m_vRate.m_fZ <= 0.0f)
+        {
+            m_NextState.m_vValue.m_fZ = 0.0f;
+        }
+    }
     m_vPosition = vAxis;
 }
 // PC 0x006C5BB0
@@ -359,6 +379,9 @@ void CSWMiniGame::Go()
         g_pAppManager->GetClientExoApp()->GetMGOArray();
     if (m_pPlayer != NULL)
     {
+        int nSwoop1 = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetSwoopUpgrade(0);
+        int nSwoop2 = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetSwoopUpgrade(1);
+        int nSwoop3 = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetSwoopUpgrade(2);
         m_pPlayer->Go();
     }
     for (int i = m_lstEnemyIds.num - 1; i >= 0; --i)
@@ -410,6 +433,19 @@ CSWMiniEnemy* CSWMiniGame::RemoveEnemy(CSWMiniEnemy* pEnemy)
     }
     m_lstEnemyIds.DelIndex(nIndex);
     return pEnemy;
+}
+// PC 0x006C6240
+CSWMGObstacle* CSWMiniGame::RemoveObstacle(CSWMGObstacle* pObstacle)
+{
+    unsigned long nObjectId = pObstacle->m_nObjectId;
+    int nIndex = m_lstObstacleIds.IndexOf(nObjectId);
+    if (nIndex == -1)
+    {
+        return NULL;
+    }
+    m_lstObstacleIds.DelIndex(nIndex);
+    pObstacle->m_pModel->AttachToScene(NULL);
+    return pObstacle;
 }
 // PC 0x006C62B0
 SWMGTrackInfo* CSWMiniGame::GetProtoTrack(int nIndex)
@@ -612,6 +648,26 @@ int CSWMiniGame::SetMouseAxisY(int nAxis)
     }
     return m_nMouseAxisY;
 }
+// PC 0x006C68A0
+void CSWMiniGame::SetCurPos(Vector vPosition)
+{
+    Vector vTrackPosition = m_pPlayer->m_pTrack->GetPosition();
+    m_pPlayer->m_pTrack->GetPart("modelhook");
+    m_pPlayer->m_pTrack->PlayAnimation(NULL, 0.0f, 2, 0.0f);
+    m_pPlayer->m_pTrack->PlayAnimation("track", 0.0f, 2, 0.0f);
+    m_CurrentState.m_vValue.m_fX = 0.0f;
+    m_CurrentState.m_vRate.m_fX = 0.0f;
+    m_NextState.m_vRate.m_fX = 0.0f;
+    m_CurrentState.m_vRate.m_fY = 0.0f;
+    m_NextState.m_vRate.m_fY = 0.0f;
+    m_vPosition.m_fX = 0.0f;
+    m_vPosition.m_fY = 0.0f;
+    m_NextState.m_vValue.m_fX = 0.0f;
+    m_CurrentState.m_vValue.m_fY = 0.0f;
+    m_fLateralAccel = 0.0f;
+    m_pPlayer->SetOffset(Vector(0.0f, 0.0f, 0.0f));
+    SetCamera(m_pCam);
+}
 // PC 0x00410CD0
 template <> void CExoArrayList<SWMGExplodeBullet*>::Add(SWMGExplodeBullet* value)
 {
@@ -640,7 +696,20 @@ CSWMiniGame::CSWMiniGame(CSWCArea* pArea)
     m_pCurrentRoom = NULL;
     m_pImpactSound = new CExoStreamingSoundSource(1);
     m_pImpactSound->SetLooping(1);
+    m_fF0 = 1.0f;
+    m_fF4 = 1.0f;
+    m_fF8 = 1.0f;
     SetResRef(pArea->m_cAreaResRef, 0);
+    m_pFC = new C2DA("swoopupgrade", 0);
+    m_pFC->Load2DArray();
+    for (int i = 0; i < 6; i++)
+    {
+        int nValue = 0;
+        int nLevel = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetSwoopUpgrade(i);
+        m_pFC->GetINTEntry(nLevel, "level", &nValue);
+        m_anSwoopUpgrades[i] = nValue;
+    }
+    m_fJumpSpeed = 0.0f;
 }
 // PC 0x006C6C40
 CSWMiniEnemy* CSWMiniGame::AddEnemy(CExoArrayList<CResRef>& lstModels,
@@ -728,9 +797,9 @@ CSWMGObstacle* CSWMiniGame::AddObstacle(const CResRef& cResRef,
                                         const Vector& vPosition)
 {
     char sModel[20];
+    CSWMGObstacle* pObstacle = NULL;
     cResRef.CopyToString(sModel);
     Gob* pModel = static_cast<Gob*>(NewCAurObject(sModel, "", 0, 0));
-    CSWMGObstacle* pObstacle;
     if (pModel != NULL)
     {
         pModel->SetPosition(vPosition);
@@ -942,6 +1011,7 @@ void CSWMiniGame::DoHitCheck()
         g_pAppManager->GetClientExoApp()->GetMGOArray();
     for (int nBullet = nBullets - 1; nBullet >= 0; --nBullet)
     {
+        int bHit = 0;
         CAurObject* pBullet = *m_lstBullets.element[nBullet];
         if (pBullet != NULL)
         {
@@ -949,51 +1019,156 @@ void CSWMiniGame::DoHitCheck()
             {
                 delete m_lstBullets.element[nBullet];
                 m_lstBullets.DelIndex(nBullet);
-                continue;
+                bHit = 1;
             }
-
-            int nEnemy = m_lstEnemyIds.num - 1;
-            while (nEnemy >= 0)
+            else
             {
-                CSWTrackFollower* pEnemy =
-                    (CSWTrackFollower*)pArray->GetMiniGameObject(
-                        m_lstEnemyIds.element[nEnemy], SWMG_OBJECT_ENEMY);
-                if (pEnemy != NULL)
+                int nEnemy = m_lstEnemyIds.num - 1;
+                while (nEnemy >= 0)
                 {
-                    if (pEnemy->DoBulletHitCheck(pBullet))
+                    CSWTrackFollower* pEnemy =
+                        (CSWTrackFollower*)pArray->GetMiniGameObject(
+                            m_lstEnemyIds.element[nEnemy], SWMG_OBJECT_ENEMY);
+                    if (pEnemy != NULL)
                     {
-                        delete m_lstBullets.element[nBullet];
-                        m_lstBullets.DelIndex(nBullet);
-                        goto NextBullet;
+                        if (pEnemy->DoBulletHitCheck(pBullet))
+                        {
+                            delete m_lstBullets.element[nBullet];
+                            m_lstBullets.DelIndex(nBullet);
+                            bHit = 1;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        m_lstEnemyIds.DelIndex(nEnemy);
+                    }
+                    --nEnemy;
+                }
+
+                if (!bHit)
+                for (int nObstacle = m_lstObstacleIds.num - 1; nObstacle >= 0;
+                     --nObstacle)
+                {
+                    CSWMGObstacle* pObstacle =
+                        (CSWMGObstacle*)pArray->GetMiniGameObject(
+                            m_lstObstacleIds.element[nObstacle],
+                            SWMG_OBJECT_OBSTACLE);
+                    if (pObstacle != NULL)
+                    {
+                        if (HitCheckBullet(pBullet, pObstacle->m_pModel,
+                                           pObstacle))
+                        {
+                            pObstacle->OnHitBullet(0);
+                            delete m_lstBullets.element[nBullet];
+                            m_lstBullets.DelIndex(nBullet);
+                            bHit = 1;
+                            pObstacle->m_pModel->DisableAlwaysRender();
+                            delete pObstacle;
+                            m_lstObstacleIds.DelIndex(nObstacle);
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        m_lstObstacleIds.DelIndex(nObstacle);
                     }
                 }
-                else
-                {
-                    m_lstEnemyIds.DelIndex(nEnemy);
-                }
-                --nEnemy;
             }
 
-            for (int nObstacle = m_lstObstacleIds.num - 1; nObstacle >= 0;
-                 --nObstacle)
+            int nCompare = g_pAppManager->GetClientExoApp()->GetModule()
+                ->GetModuleTitle().CompareNoCase("107PER");
+            if (nCompare && !bHit)
             {
-                CSWMGObstacle* pObstacle =
-                    (CSWMGObstacle*)pArray->GetMiniGameObject(
-                        m_lstObstacleIds.element[nObstacle],
-                        SWMG_OBJECT_OBSTACLE);
-                if (pObstacle != NULL)
+                if (m_nAttachType == ATTACH_CAMERA_HOOK)
                 {
-                    if (HitCheckBullet(pBullet, pObstacle->m_pModel,
-                                       pObstacle))
+                    Vector vPosition = pBullet->GetPosition();
+                    Vector vPrevious = pBullet->GetPreviousPosition();
+                    Vector vHit(0.0f, 0.0f, 0.0f);
+                    CHitInfo cHitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
+                    if (vPrevious.m_fX != 0.0 || vPrevious.m_fY != 0.0 ||
+                        vPrevious.m_fZ != 0.0)
                     {
-                        delete m_lstBullets.element[nBullet];
-                        m_lstBullets.DelIndex(nBullet);
-                        break;
+                        cHitInfo.m_nType = 1;
+                        CAurScene* pScene = g_pAppManager->GetClientExoApp()
+                            ->GetModule()->GetArea()->m_pScene;
+                        if (SceneHitCheck(pScene, vPosition, vPrevious, &vHit,
+                                          &cHitInfo))
+                        {
+                            delete pBullet;
+                            delete m_lstBullets.element[nBullet];
+                            m_lstBullets.DelIndex(nBullet);
+                            bHit = 1;
+                        }
                     }
                 }
-                else
+
+                if (!bHit && m_nAttachType == ATTACH_CAMERA_HOOK)
                 {
-                    m_lstObstacleIds.DelIndex(nObstacle);
+                    g_pAppManager->GetClientExoApp()->GetGameObjectArray();
+                    CSWSArea* pArea =
+                        g_pAppManager->GetServerExoApp()->GetModule()->GetArea();
+                    unsigned long oidObject;
+                    for (int bMore = pArea->GetFirstObjectInArea(oidObject);
+                         bMore; bMore = pArea->GetNextObjectInArea(oidObject))
+                    {
+                        CSWMGBehaviorBullet* pBehavior =
+                            (CSWMGBehaviorBullet*)pBullet->GetBehavior(
+                                AUR_BEHAVIOR_BULLET);
+                        if (pBehavior == NULL)
+                            break;
+
+                        unsigned long oidClient = g_pAppManager->GetClientExoApp()
+                            ->ServerToClientObjectId(oidObject);
+                        CSWCObject* pObject =
+                            g_pAppManager->GetClientExoApp()->GetGameObject(
+                                oidClient);
+                        if (pObject != NULL &&
+                            (pObject->AsSWCCreature() != NULL ||
+                             pObject->AsSWCPlaceable() != NULL))
+                        {
+                            Gob* pModel;
+                            if (pObject->AsSWCCreature() != NULL)
+                            {
+                                CSWSCreature* pServerCreature =
+                                    pObject->AsSWCCreature()->GetServerCreature();
+                                if (pServerCreature != NULL &&
+                                    pServerCreature->GetInParty())
+                                {
+                                    continue;
+                                }
+                                pModel = pObject->AsSWCCreature()->GetModel(0xff, 1);
+                            }
+                            else
+                            {
+                                pModel = pObject->AsSWCPlaceable()->GetModel(0xff, 1);
+                            }
+
+                            if (pModel != NULL)
+                            {
+                                CHitInfo cHitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
+                                cHitInfo.m_nMask = 1;
+                                if (pModel->HitCheck(pBullet->GetPreviousPosition(),
+                                                     pBullet->GetPosition(), NULL,
+                                                     &cHitInfo))
+                                {
+                                    CScriptEvent* pEvent = new CScriptEvent;
+                                    pEvent->m_nType =
+                                        CSWSSCRIPTEVENT_EVENTTYPE_ON_USER_DEFINED_EVENT;
+                                    pEvent->SetInteger(0, pBehavior->m_bullet.m_nDamage);
+                                    g_pAppManager->GetServerExoApp()
+                                        ->GetServerAIMaster()->AddEventDeltaTime(
+                                            0, 0, oidObject, oidObject,
+                                            CServerAIMaster::EVENT_SIGNAL_EVENT,
+                                            pEvent);
+                                    delete pBullet;
+                                    delete m_lstBullets.element[nBullet];
+                                    m_lstBullets.DelIndex(nBullet);
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -1002,8 +1177,6 @@ void CSWMiniGame::DoHitCheck()
             delete m_lstBullets.element[nBullet];
             m_lstBullets.DelIndex(nBullet);
         }
-NextBullet:
-        ;
     }
 
     for (int nObstacle = m_lstObstacleIds.num - 1; nObstacle >= 0; --nObstacle)
@@ -1045,7 +1218,7 @@ int CSWMiniGame::HitCheckBullet(CAurObject* pBullet, CAurObject* pTarget,
     if (pBehavior == NULL)
         return 0;
 
-    CAurPart* pPart = pTarget->GetPart("hitbullet");
+    CAurPart* pPart = pTarget->GetPart("root");
     if (pPart == NULL)
         return 0;
 
@@ -1058,19 +1231,27 @@ int CSWMiniGame::HitCheckBullet(CAurObject* pBullet, CAurObject* pTarget,
         pHit->m_vSoundPosition = DefaultHitInfo.m_vOutputPosition;
         pHit->OnHitBullet(0);
 
-        if (pBullet->PlayAnimation("explode", 1.0f, 3, 0.0f))
+        if (!g_pAppManager->GetClientExoApp()->GetModule()->GetModuleTitle().CompareNoCase("505OND") &&
+            !g_pAppManager->GetClientExoApp()->GetModule()->GetModuleTitle().CompareNoCase("module000"))
         {
-            SWMGExplodeBullet* pEffect = new SWMGExplodeBullet;
-            pEffect->m_pObject = pBullet;
-            pEffect->m_qOrientation = pointto(DefaultHitInfo.m_vOutputNormal);
-            pEffect->m_qOrientation = Quaternion(Vector(1.0f, 0.0f, 0.0f),
-                                                 1.5707963267948966f) *
-                                      pEffect->m_qOrientation;
-            pEffect->m_vPosition = DefaultHitInfo.m_vOutputPosition;
-            pBullet->SetBehavior(NULL);
-            pBullet->RegisterCallBack(BulletDie, "doneexplode", NULL,
-                                      AUR_CALLBACK_LONG_DELAY, false);
-            m_lstEffects.Add(pEffect);
+            if (pBullet->PlayAnimation("explode", 1.0f, 3, 0.0f))
+            {
+                SWMGExplodeBullet* pEffect = new SWMGExplodeBullet;
+                pEffect->m_pObject = pBullet;
+                pEffect->m_qOrientation = pointto(DefaultHitInfo.m_vOutputNormal);
+                pEffect->m_qOrientation = Quaternion(Vector(1.0f, 0.0f, 0.0f),
+                                                     1.5707963267948966f) *
+                                          pEffect->m_qOrientation;
+                pEffect->m_vPosition = DefaultHitInfo.m_vOutputPosition;
+                pBullet->SetBehavior(NULL);
+                pBullet->RegisterCallBack(BulletDie, "doneexplode", NULL,
+                                          AUR_CALLBACK_LONG_DELAY, false);
+                m_lstEffects.Add(pEffect);
+            }
+            else
+            {
+                delete pBullet;
+            }
         }
         else
         {
@@ -1136,7 +1317,7 @@ void CSWMiniGame::Update(float fTimeStep)
         m_lstEffects.DelIndex(nEffect);
     }
 
-    if (m_pPlayer->m_bTrackPlaying)
+    if (m_pPlayer != NULL && m_pPlayer->m_bTrackPlaying)
     {
         DoHitCheck();
     }

@@ -4,7 +4,7 @@
 class CExoLinkedListInternal;
 #include "exobase.h"
 #include "nwseffectlist.h"
-#include "nwsitemproperty.h"
+#include "../nwsitemproperty.h"
 #include "nwscript.h"
 #include "math3d.h"
 

@@ -67,6 +67,7 @@ public:
     CSWBehaviorCameraDialog(CAurObject* pObject, int nDialogType);
     void SetShot(int nShot, Vector vPosition, Quaternion qOrientation,
                  float fCameraYaw);
+    void ApplyCameraShot();
     int GetLineOfActionSide(unsigned long oidFirst, unsigned long oidSecond);
     void GetCameraParameters(unsigned long nShot, unsigned long nSide,
                             Vector vFirst, Vector vSecond, Vector& vPosition,

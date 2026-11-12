@@ -67,7 +67,7 @@ CSWMiniGameObject* CSWMiniGameObjectArray::GetMiniGameObjectByName(const CExoStr
     for (nObject = 0; nObject < 255; nObject++)
     {
         if (m_apObjects[nObject] != 0 &&
-            sName == m_apObjects[nObject]->GetName())
+            stricmp(sName.CStr(), m_apObjects[nObject]->GetName().CStr()) == 0)
         {
             return m_apObjects[nObject];
         }

@@ -112,6 +112,11 @@ public:
     void SaveJournal(CResGFF* pRes, CResStruct* pStruct);
     void LoadJournal(CResGFF* pRes, CResStruct* pStruct);
 
+    int GetSwoopUpgrade(int nSlot)
+    {
+        return (&m_nSwoop1)[nSlot];
+    }
+
     int m_nNumMembers;
     int m_nNumPuppets;
     int m_anMembers[2];

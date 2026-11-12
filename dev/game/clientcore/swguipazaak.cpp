@@ -45,9 +45,9 @@ void CSWGuiPazaakCard::HandleInputEvent(int nEvent, int nState)
 #endif
 }
 // PC 0x006D2F50
-inline int CSWPazaak::DrawPlayerCard()
+inline void CSWPazaak::DrawPlayerCard()
 {
-    return m_cPlayer.AddGameCard(DrawCard());
+    m_cPlayer.AddGameCard(DrawCard());
 }
 // PC 0x006D2F90
 inline int CSWPazaak::PlayOpponentTurn()

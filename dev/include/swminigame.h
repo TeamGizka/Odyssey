@@ -242,6 +242,7 @@ public:
     CSWMiniEnemy* RemoveEnemy(CSWMiniEnemy* pEnemy);
     SWMGTrackInfo* GetProtoTrack(int nIndex);
     SWMGTrackInfo* GetProtoTrack(const CResRef& cResRef);
+    CSWMGObstacle* RemoveObstacle(CSWMGObstacle* pObstacle);
     CSWMGObstacle* GetObstacle(int nIndex);
     CAurCamera* SetCamera(CAurCamera* pCamera);
     CSWMiniPlayer* SetPlayer(CSWMiniPlayer* pPlayer);
@@ -254,6 +255,7 @@ public:
                              unsigned char bCameraRotate);
     int SetMouseAxisX(int nAxis);
     int SetMouseAxisY(int nAxis);
+    void SetCurPos(Vector vPosition);
     CSWMiniEnemy* AddEnemy(CExoArrayList<CResRef>& lstModels,
                            CExoArrayList<unsigned char>& lstRotating,
                            const CResRef& cTrack);
@@ -538,6 +540,10 @@ public:
     float GetSpeed()
     {
         return m_fSphereRadius;
+    }
+    float GetTrackSpeed()
+    {
+        return m_fTrackSpeed;
     }
     // PC 0x006C8CF0
     void SetBullet(CSWMGBullet* pBullet)

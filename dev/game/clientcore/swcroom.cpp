@@ -43,6 +43,7 @@ void CSWCRoom::PlayAnimation(unsigned short nAnimation)
         {
             sAnimation.Format("scriptloop%d", nAnimation);
         }
+        m_pRoomGob->PlayAnimation("null", 1.0f, 8, 0.0f);
         m_pRoomGob->PlayAnimation(sAnimation.CStr(), 1.0f, 8, 0.0f);
     }
 }

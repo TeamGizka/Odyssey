@@ -25,6 +25,8 @@ static inline void SwbehaviorcameraTrace3();
 static inline void SwbehaviorcameraTrace2();
 static inline void SwbehaviorcameraTrace1();
 
+#define SW_CAMERA_QA_REPORT
+
 float CameraPersonalSpace = 0.35f;
 float CameraLookUp = 30.0f;
 float CameraLookDown = 30.0f;
@@ -75,8 +77,7 @@ void CSWCameraOnAStick::Message(char* sMessage)
 // PC 0x0068DC00
 Vector CSWCameraOnAStick::Control_ComputeDesiredPosition(Vector vPosition)
 {
-    float fDistance = m_fDistance;
-    Vector vOffset(fDistance * 0.0f, fDistance, fDistance * 0.0f);
+    Vector vOffset = m_fDistance * Vector(0.0f, 1.0f, 0.0f);
     vOffset = m_qLastOrientation * vOffset;
     Vector vDesiredPosition = vPosition - vOffset;
     return vDesiredPosition;
@@ -206,9 +207,9 @@ void CSWCameraOnAStick::SetCameraStyle(int nStyle)
             p2DA->GetFLOATEntry(m_nStyle, "DISTANCE", &m_fDistance);
             p2DA->GetFLOATEntry(m_nStyle, "SPEED", &m_fSpeed);
             p2DA->GetFLOATEntry(m_nStyle, "PITCH", &m_fPresetPitch);
-            p2DA->GetFLOATEntry(m_nStyle, "HEIGHT", &m_fHeight);
             p2DA->GetFLOATEntry(m_nStyle, "TILTUP", &CameraLookUp);
             p2DA->GetFLOATEntry(m_nStyle, "TILTDOWN", &CameraLookDown);
+            p2DA->GetFLOATEntry(m_nStyle, "HEIGHT", &m_fHeight);
             p2DA->GetFLOATEntry(m_nStyle, "TILTSPEED", &m_fTiltSpeed);
             p2DA->GetFLOATEntry(m_nStyle, "ROTATION", &CameraRotate);
             float fViewAngle;
@@ -403,6 +404,13 @@ int CSWCameraNavigate::Control(float fTimeStep)
             static_cast<Gob*>(m_pObject)->SetPosition(
                 vMovement + static_cast<Gob*>(m_pObject)->GetPosition());
         }
+        if (RenderQA && m_pObject)
+        {
+            SW_CAMERA_QA_REPORT("Camera position (%f, %f, %f)",
+                static_cast<Gob*>(m_pObject)->GetPosition().m_fX,
+                static_cast<Gob*>(m_pObject)->GetPosition().m_fY,
+                static_cast<Gob*>(m_pObject)->GetPosition().m_fZ);
+        }
         return 1;
     }
 
@@ -433,6 +441,13 @@ int CSWCameraNavigate::Control(float fTimeStep)
     }
     static_cast<Gob*>(m_pObject)->SetOrientation(YawPitchRoll(
         fYaw, fPitch, Roll(static_cast<Gob*>(m_pObject)->GetOrientation())));
+    if (RenderQA && m_pObject)
+    {
+        SW_CAMERA_QA_REPORT("Camera position (%f, %f, %f)",
+            static_cast<Gob*>(m_pObject)->GetPosition().m_fX,
+            static_cast<Gob*>(m_pObject)->GetPosition().m_fY,
+            static_cast<Gob*>(m_pObject)->GetPosition().m_fZ);
+    }
     return 1;
 }
 // PC 0x0068F530
@@ -637,26 +652,36 @@ Quaternion CSWCameraOnAStick::Control_SetCameraOrientation(float fTimeStep)
         pTarget->GetPosition() - static_cast<Gob*>(m_pObject)->GetPosition();
     vDirection.m_fZ = 0.0f;
     float fPitch = Pitch(static_cast<Gob*>(m_pObject)->GetOrientation());
-    if (fabs(m_fTilt) > 1.0f)
+    m_fLookUp = CameraLookUp;
+    m_fLookDown = CameraLookDown;
+    m_fTiltRate = 100.0f;
+    int bToggle = g_bMouseCameraRotateToggle;
+    if (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_bMouseLook)
     {
-        m_fTilt = m_fTilt * 0.013333334f;
+        bToggle = (bToggle == 0);
     }
-    if (m_fTilt > 0.0f)
+    if (m_fTilt != 0.0f && bToggle)
     {
-        m_fDesiredPitch =
-            min(CameraLookUp + m_fPresetPitch,
-                m_fTiltSpeed * m_fTilt * fTimeStep + m_fDesiredPitch);
+        m_fDesiredPitch += m_fTilt * (fTimeStep * m_fTiltRate);
+        m_integratorTilt.m_NewState.m_vRate = Vector();
+        m_integratorTilt.m_NewState.m_vValue = Vector();
+        m_integratorTilt.m_OldState.m_vRate = Vector();
+        m_integratorTilt.m_OldState.m_vValue = Vector();
     }
-    if (m_fTilt < 0.0f)
+    else
     {
-        m_fDesiredPitch =
-            max(m_fPresetPitch - CameraLookDown,
-                m_fTiltSpeed * m_fTilt * fTimeStep + m_fDesiredPitch);
+        m_fDesiredPitch += m_integratorTilt
+                               .Update(Vector(0.0f, m_fTiltAcceleration, 0.0f),
+                                       fTimeStep, 1, 0, 0, 0)
+                               .m_vRate.m_fY;
+        m_fTiltAcceleration = 0;
     }
-    float fDelta = (m_fDesiredPitch - fPitch) * fTimeStep * 0.5f;
-    m_fTilt = 0.0f;
+    m_fDesiredPitch =
+        (m_fDesiredPitch < -m_fLookUp) ? -m_fLookUp : m_fDesiredPitch;
+    m_fDesiredPitch =
+        (m_fDesiredPitch > m_fLookDown) ? m_fLookDown : m_fDesiredPitch;
     return YawPitchRoll(Yaw(normalize(vDirection)) + m_fShakeYaw,
-                        m_fDesiredPitch - fDelta + m_fShakePitch, 0.0f);
+                        m_fDesiredPitch + m_fShakePitch + 90.0f, 0.0f);
 }
 // PC 0x00690480
 Vector CSWCameraOnAStick::Control_ComputeNewCameraPosition(
@@ -835,7 +860,7 @@ CSWCameraOnAStick::CSWCameraOnAStick(CAurObject* pObject, CAurObject* pTarget)
     m_fTurn = 0.0f;
 #ifndef _XBOX
     m_fTurnAcceleration = 0.0f;
-    m_n158 = 0;
+    m_fTiltAcceleration = 0;
 #endif
 
     Quaternion qTarget =
@@ -916,9 +941,9 @@ CSWCameraOnAStick::CSWCameraOnAStick(CCameraSettings& settings)
     m_nStyle = CAMERA_STYLE_UNINITIALIZED;
     SetCameraStyle(settings.m_nStyle);
 #ifndef _XBOX
-    m_integrator110.m_fMaximumVelocity = 200.0f;
-    m_integrator110.m_fMaximumAcceleration = 500.0f;
-    m_n158 = 0;
+    m_integratorTilt.m_fMaximumVelocity = 200.0f;
+    m_integratorTilt.m_fMaximumAcceleration = 500.0f;
+    m_fTiltAcceleration = 0;
 #endif
     AddDependency(m_pTarget.m_pObject);
 
@@ -1229,7 +1254,6 @@ int CSWCameraDeath::Control(float fTimeStep)
     return 1;
 }
 
-#define SW_CAMERA_QA_REPORT
 // PC 0x006929A0
 int CSWCameraOnAStick::Control(float fTimeStep)
 {

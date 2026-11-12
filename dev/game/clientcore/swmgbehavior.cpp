@@ -103,12 +103,13 @@ int CSWMGBehaviorTrack::Control(float fTimeStep)
     {
         return 0;
     }
+    Gob* pGob = (Gob*)m_pObject;
     if (m_pModel.m_pObject == NULL)
     {
-        ((Gob*)m_pObject)->SetBehavior(NULL);
+        pGob->SetBehavior(NULL);
         return 0;
     }
-    Quaternion qOrientation = ((Gob*)m_pObject)->GetOrientation();
+    Quaternion qOrientation = pGob->GetOrientation();
     Vector vOffset =
         -qOrientation *
         (qOrientation * ((Gob*)m_pObject)->GetPosition() + m_vTarget);
