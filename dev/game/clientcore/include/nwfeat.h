@@ -355,6 +355,41 @@ public:
         m_nRequiredSkill = nSkill;
     }
 
+    void SetHandmaiden(unsigned char nLevel)
+    {
+        m_bHandmaiden = nLevel;
+    }
+
+    void SetBaoDur(unsigned char nLevel)
+    {
+        m_bBaoDur = nLevel;
+    }
+
+    void SetHanharr(unsigned char nLevel)
+    {
+        m_bHanharr = nLevel;
+    }
+
+    void SetHK47(unsigned char nLevel)
+    {
+        m_bHK47 = nLevel;
+    }
+
+    void SetG0T0(unsigned char nLevel)
+    {
+        m_bG0T0 = nLevel;
+    }
+
+    void SetAtton(unsigned char nLevel)
+    {
+        m_bAtton = nLevel;
+    }
+
+    void SetKreia(unsigned char nLevel)
+    {
+        m_bKreia = nLevel;
+    }
+
     long m_nSuccessor;
     long m_nSpellId;
     unsigned long m_nNameStrRef;

@@ -537,14 +537,14 @@ void CSWCCreatureAppearance::SetAppearanceAlignment(short nAlignment)
 
     CExoString sHeadTexture;
     CExoString sBodyTextureA;
+    CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+    C2DA* pAppearance2DA = p2DArrays->m_pAppearance;
     int bHeadTexture = 0;
     int bBodyTextureA = 0;
     int bBodyTextureB = 0;
     int bBodyTextureI = 0;
     int bBodyTextureL = 0;
     int bBodyTextureN = 0;
-    CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
-    C2DA* pAppearance2DA = p2DArrays->m_pAppearance;
     CExoString sBodyTextureB;
     CExoString sBodyTextureI;
     CExoString sBodyTextureL;
@@ -565,9 +565,16 @@ void CSWCCreatureAppearance::SetAppearanceAlignment(short nAlignment)
     }
     else
     {
-        pAppearance2DA->GetINTEntry(m_nAppearance,
-            m_nUnknown30 ? CTwoDimArrays::COL2DA_APPEARANCETABLE_BACKUPHEAD :
-                           CTwoDimArrays::COL2DA_APPEARANCETABLE_NORMALHEAD, &nHead);
+        if (m_nUnknown30)
+        {
+            pAppearance2DA->GetINTEntry(m_nAppearance,
+                CTwoDimArrays::COL2DA_APPEARANCETABLE_BACKUPHEAD, &nHead);
+        }
+        else
+        {
+            pAppearance2DA->GetINTEntry(m_nAppearance,
+                CTwoDimArrays::COL2DA_APPEARANCETABLE_NORMALHEAD, &nHead);
+        }
     }
 
     if (nAlignment <= 10)

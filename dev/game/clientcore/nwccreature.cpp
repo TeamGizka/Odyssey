@@ -6945,7 +6945,7 @@ void CSWCCreature::PartyMenuUseItemSelect(unsigned long oidItem, CSWCCreature* p
     unsigned long oidServerItem =
         g_pAppManager->m_pServerExoApp->ClientToServerObjectId(oidItem);
     if (g_pAppManager->GetClientExoApp()->GetSWParty()->m_nCharacters == 1 ||
-        g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidServerItem)->GetBaseItem()->m_nItemType ==
+        g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidServerItem)->GetBaseItem()->m_nItemType ==
             CSWBaseItem::ITEM_TYPE_SQUAD_MEDPAC)
     {
         CSWCCreature* pMember;
@@ -6954,8 +6954,8 @@ void CSWCCreature::PartyMenuUseItemSelect(unsigned long oidItem, CSWCCreature* p
         else
             pMember = g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0);
         CSWSCreature* pServerCreature = pMember->GetServerCreature();
-        if (pServerCreature->CanUseItem(
-                g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidServerItem), 0))
+        CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidServerItem);
+        if (pServerCreature->CanUseItem(pItem, 0))
         {
             unsigned long oidCreature = m_nId;
             CSWCMessage* pMessage = g_pAppManager->GetClientExoApp()->GetSWCMessage();
@@ -6977,14 +6977,14 @@ void CSWCCreature::PartyMenuUseItemSelect(unsigned long oidItem, CSWCCreature* p
         g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_bSelectingUseItemTarget = 0;
         CSWSCreature* pServerCreature =
             g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nTargetMember)->GetServerCreature();
-        if (pServerCreature->CanUseItem(
-                g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidServerItem), 0))
+        CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidServerItem);
+        if (pServerCreature->CanUseItem(pItem, 0))
         {
             PerformUseItem(oidItem, 0, oidTarget,
                 g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nTargetMember)->m_vPosition);
         }
     }
-    else if (g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidServerItem)->GetBaseItem()->m_nItemType ==
+    else if (g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidServerItem)->GetBaseItem()->m_nItemType ==
              CSWBaseItem::ITEM_TYPE_EQUIPPED_ACTIVATION_20)
     {
         PerformUseItem(oidItem, 0, m_nId, m_vPosition);

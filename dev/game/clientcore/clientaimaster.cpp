@@ -77,7 +77,8 @@ CSWCObject* CClientAIList::GetNextObject()
     CGameObject* pGameObject =
         g_pAppManager->m_pClientExoApp->m_pcExoAppInternal->GetGameObject(
             (unsigned long)m_lstObjects.GetAtPos(m_pCurrent));
-    return pGameObject != NULL ? pGameObject->AsSWCObject() : NULL;
+    CSWCObject* pObject = pGameObject != NULL ? pGameObject->AsSWCObject() : NULL;
+    return pObject;
 }
 // PC 0x006508C0
 int CClientAIMaster::UpdateState()
