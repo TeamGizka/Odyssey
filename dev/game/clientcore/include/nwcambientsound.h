@@ -36,6 +36,10 @@ public:
     static const int BATTLE_DELAY;
     static const int MUSIC_FADE_DURATION;
     static const int TRUNCATED_FADE_DURATION;
+    static const CExoString THUNDER1;
+    static const CExoString THUNDER2;
+    static const CExoString THUNDER_ROLLING1;
+    static const CExoString THUNDER_ROLLING2;
     CSWCAmbientSound(CSWCArea* pArea);
     ~CSWCAmbientSound();
 
@@ -63,6 +67,7 @@ public:
     void SetAmbientDayVolume(int nVolume);
     void SetAmbientNightVolume(int nVolume);
 
+    void Thunder(int bRolling);
     void UpdateTimeOfDay();
 
     void ReadInfo(int bMusic, int nRow, CSWCAmbientSoundTrack* pTrack);

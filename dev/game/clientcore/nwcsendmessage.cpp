@@ -583,6 +583,8 @@ int CSWCMessage::SendPlayerToServerInventory_Equip(unsigned long oidItem,
     }
     return SendPlayerToServerMessage(12, 1, pBuffer, nSize);
 }
+extern int g_bDemoMode;
+
 // PC 0x006CD740
 int CSWCMessage::SendPlayerToServerLogin_LoginLocalCharacter(
     unsigned char* pData, unsigned long nSize, int bNewCharacter)
@@ -622,7 +624,7 @@ int CSWCMessage::SendPlayerToServerLogin_LoginLocalCharacter(
     CExoFile* pFile;
 
     cResRef.CopyToString(sFileName);
-    if (sFileName.CompareNoCase("test") != 0)
+    if (sFileName.CompareNoCase("test") != 0 || g_bDemoMode)
     {
         sFileName = CExoString("LOCALVAULT:") + sFileName;
     }

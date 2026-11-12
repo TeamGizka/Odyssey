@@ -2343,8 +2343,15 @@ void CSWCVisualEffectOnObject::ReAttachVisualEffect()
     {
         return;
     }
-    CAurObject* pTargetModel =
-        pObject->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1);
+    CAurObject* pTargetModel;
+    if (m_nF8)
+    {
+        pTargetModel = pObject->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD, 1);
+    }
+    else
+    {
+        pTargetModel = pObject->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1);
+    }
     if (pTargetModel == 0)
     {
         return;

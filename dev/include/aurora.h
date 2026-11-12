@@ -232,6 +232,7 @@ void AurGetClearColor(float* pColor);
 
 extern unsigned char g_nBitsPerPixel;
 extern bool g_ForceSight;
+extern CAurCamera* g_pWeatherCamera;
 extern int g_nDesiredFullScreenRefreshRate;
 
 class CAuroraModel;

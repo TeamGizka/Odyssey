@@ -1146,6 +1146,7 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
 {
     unsigned short nClientAnimation = nAnimation;
     unsigned char nWieldClass = m_nWieldClass;
+    int bComplexUnarmed = m_nD4;
 
     if (m_nAnimSet == 1)
     {
@@ -1158,7 +1159,7 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
                 if ((unsigned char)m_nPoweredAnimations > 0)
                 {
                     nClientAnimation = 338;
-                break;
+                    break;
                 }
             }
             else if (nWieldClass == 4)
@@ -1166,7 +1167,7 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
                 if ((unsigned char)m_nPoweredAnimations > 0)
                 {
                     nClientAnimation = 339;
-                break;
+                    break;
                 }
             }
             else if (nWieldClass == 3)
@@ -1174,7 +1175,7 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
                 if ((unsigned char)m_nPoweredAnimations > 0)
                 {
                     nClientAnimation = 341;
-                break;
+                    break;
                 }
             }
             else if (nWieldClass == 7)
@@ -1188,7 +1189,7 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
                 break;
             }
             nClientAnimation = 0;
-                break;
+            break;
         case 10004:
             if (m_bRunLooksAwful)
             {
@@ -1200,7 +1201,7 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
                 if ((unsigned char)m_nPoweredAnimations > 0)
                 {
                     nClientAnimation = 345;
-                break;
+                    break;
                 }
             }
             else if (nWieldClass == 4)
@@ -1208,7 +1209,7 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
                 if ((unsigned char)m_nPoweredAnimations > 0)
                 {
                     nClientAnimation = 3;
-                break;
+                    break;
                 }
             }
             else if (nWieldClass == 3)
@@ -1216,7 +1217,7 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
                 if ((unsigned char)m_nPoweredAnimations > 0)
                 {
                     nClientAnimation = 343;
-                break;
+                    break;
                 }
             }
             else if (nWieldClass == 7)
@@ -1230,114 +1231,120 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
                 break;
             }
             nClientAnimation = 2;
-                break;
-        case 10015:
-            nClientAnimation = 62;
-                break;
-        case 10016:
-            nClientAnimation = 64;
-                break;
-        case 10006:
-            nClientAnimation = 81;
-                break;
-        case 10008:
-            nClientAnimation = 83;
-                break;
-        case 10017:
-            nClientAnimation = 63;
-                break;
-        case 10018:
-            nClientAnimation = 65;
-                break;
-        case 10019:
-            nClientAnimation = 67;
-                break;
-        case 10012:
-            nClientAnimation = 301;
-                break;
-        case 10011:
-            nClientAnimation = 302;
-                break;
-        case 10023:
-            nClientAnimation = 77;
-                break;
+            break;
         case 10052:
             nClientAnimation = 7;
-                break;
+            break;
         case 10055:
             nClientAnimation = 12;
-                break;
+            break;
         case 10056:
             nClientAnimation = 13;
-                break;
+            break;
         case 10057:
             nClientAnimation = 14;
-                break;
+            break;
         case 10058:
             nClientAnimation = 15;
-                break;
+            break;
         case 10054:
             nClientAnimation = 10;
-                break;
+            break;
         case 10053:
             nClientAnimation = 11;
-                break;
+            break;
+        case 10021:
+            nClientAnimation = 310;
+            break;
+        case 10022:
+            nClientAnimation = 333;
+            break;
+        case 10015:
+            nClientAnimation = 62;
+            break;
+        case 10016:
+            nClientAnimation = 64;
+            break;
         case 10028:
             nClientAnimation = 33;
-                break;
+            break;
         case 10044:
             nClientAnimation = 17;
-                break;
+            break;
         case 10032:
         case 10033:
             nClientAnimation = 24;
-                break;
+            break;
         case 10035:
             nClientAnimation = 19;
-                break;
+            break;
+        case 10023:
+            nClientAnimation = 77;
+            break;
         case 10059:
             nClientAnimation = 40;
-                break;
+            break;
         case 10060:
             nClientAnimation = 41;
-                break;
+            break;
+        case 10006:
+            nClientAnimation = 81;
+            break;
+        case 10008:
+            nClientAnimation = 83;
+            break;
+        case 10017:
+            nClientAnimation = 63;
+            break;
+        case 10018:
+            nClientAnimation = 65;
+            break;
+        case 10019:
+            nClientAnimation = 67;
+            break;
         case 10061:
             nClientAnimation = 70;
-                break;
+            break;
+        case 10012:
+            nClientAnimation = 301;
+            break;
+        case 10011:
+            nClientAnimation = 302;
+            break;
         case 10039:
             nClientAnimation = 27;
-                break;
+            break;
         case 10040:
             nClientAnimation = 26;
-                break;
+            break;
         case 10041:
             nClientAnimation = 29;
-                break;
+            break;
         case 10042:
             nClientAnimation = 28;
-                break;
+            break;
         case 10038:
             nClientAnimation = 25;
-                break;
+            break;
         case 10070:
             nClientAnimation = 37;
-                break;
+            break;
         case 10029:
             nClientAnimation = 31;
-                break;
+            break;
         case 10030:
             nClientAnimation = 18;
-                break;
+            break;
         case 10034:
             nClientAnimation = 16;
-                break;
+            break;
         case 10014:
         case 10077:
             nClientAnimation = 303;
-                break;
+            break;
         case 10093:
             nClientAnimation = 1;
-                break;
+            break;
         case 10094:
             if (m_bRunLooksAwful)
             {
@@ -1352,71 +1359,88 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
             break;
         case 10133:
             nClientAnimation = 5;
-                break;
+            break;
+        case CREATURE_ANIMATION_COMBAT_IDLE:
+        case 10149:
+            nClientAnimation = 6;
+            break;
         case 10092:
             nClientAnimation = 8;
-                break;
+            break;
+        case 10150:
+            nClientAnimation = 72;
+            break;
         case 10129:
             nClientAnimation = 57;
-                break;
+            break;
         case 10130:
             nClientAnimation = 58;
-                break;
+            break;
+        case 10162:
+            nClientAnimation = 69;
+            break;
         case 10117:
             nClientAnimation = 75;
-                break;
+            break;
         case 10120:
             nClientAnimation = 32;
-                break;
+            break;
         case 10121:
             nClientAnimation = 44;
-                break;
+            break;
         case 10122:
             nClientAnimation = 53;
-                break;
+            break;
         case 10123:
             nClientAnimation = 54;
-                break;
+            break;
         case 10125:
             nClientAnimation = 43;
-                break;
+            break;
         case 10126:
             nClientAnimation = 68;
-                break;
+            break;
         case 10127:
         case 10136:
             nClientAnimation = 38;
-                break;
+            break;
         case 10118:
             nClientAnimation = 270;
-                break;
+            break;
         case 10124:
             nClientAnimation = 74;
-                break;
+            break;
         case 10128:
         case 10134:
             nClientAnimation = 47;
-                break;
+            break;
         case 10131:
         case 10135:
             nClientAnimation = 48;
-                break;
+            break;
         case 10132:
         case 10141:
+        case 10165:
             nClientAnimation = 51;
-                break;
+            break;
         case 10140:
             nClientAnimation = 52;
-                break;
+            break;
         case 10137:
             nClientAnimation = 76;
-                break;
+            break;
         case 10138:
             nClientAnimation = 78;
-                break;
+            break;
         case 10139:
             nClientAnimation = 79;
-                break;
+            break;
+        case 10151:
+            nClientAnimation = 359;
+            break;
+        case 10152:
+            nClientAnimation = 360;
+            break;
         case 10001:
         case 10148:
             switch (nWieldClass)
@@ -1440,7 +1464,7 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
                 nClientAnimation = 237;
                 break;
             case 8:
-                nClientAnimation = 249;
+                nClientAnimation = bComplexUnarmed ? 535 : 249;
                 break;
             case 7:
             case 9:
@@ -1448,44 +1472,37 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
                 break;
             }
             break;
+        case 10156:
+            nClientAnimation = 375;
+            break;
+        case 10221:
+            nClientAnimation = 80;
+            break;
         case 10009:
         case 10109:
             nClientAnimation = 300;
-                break;
-        case 10142:
-            nClientAnimation = 346;
-                break;
-        case 10145:
-            nClientAnimation = 355;
-                break;
-        case 10147:
-            nClientAnimation = 357;
-                break;
-        case CREATURE_ANIMATION_COMBAT_IDLE:
-        case 10149:
-            nClientAnimation = 6;
-                break;
-        case 10150:
-            nClientAnimation = 72;
-                break;
-        case 10162:
-            nClientAnimation = 69;
-                break;
-        case 10151:
-            nClientAnimation = 359;
-                break;
-        case 10152:
-            nClientAnimation = 360;
-                break;
-        case 10156:
-            nClientAnimation = 375;
-                break;
+            break;
+        case 10005:
+        case 10007:
+        case 10219:
+        case 10220:
+            nClientAnimation = 85;
+            break;
         case 10154:
             nClientAnimation = 370;
-                break;
+            break;
         case 10155:
             nClientAnimation = 371;
-                break;
+            break;
+        case 10142:
+            nClientAnimation = 346;
+            break;
+        case 10145:
+            nClientAnimation = 355;
+            break;
+        case 10147:
+            nClientAnimation = 357;
+            break;
         case 10157:
             switch (nWieldClass)
             {
@@ -1497,6 +1514,18 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
                 break;
             case 4:
                 nClientAnimation = 376;
+                break;
+            case 5:
+                nClientAnimation = 473;
+                break;
+            case 6:
+                nClientAnimation = 474;
+                break;
+            case 7:
+                nClientAnimation = 475;
+                break;
+            case 9:
+                nClientAnimation = 476;
                 break;
             }
             break;
@@ -1512,39 +1541,76 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
             case 4:
                 nClientAnimation = 214;
                 break;
+            case 5:
+                nClientAnimation = 222;
+                break;
+            case 6:
+                nClientAnimation = 236;
+                break;
+            case 7:
+            case 9:
+                nClientAnimation = 244;
+                break;
             }
             break;
         case 10159:
             nClientAnimation = 34;
-                break;
+            break;
         case 10160:
             nClientAnimation = 35;
-                break;
+            break;
         case 10161:
             nClientAnimation = 71;
-                break;
+            break;
         case 10163:
             nClientAnimation = 384;
-                break;
+            break;
         case 10164:
             nClientAnimation = 385;
-                break;
-        case 10219:
-        case 10220:
-            nClientAnimation = 85;
-                break;
-        case 10221:
-            nClientAnimation = 80;
-                break;
+            break;
         case 10222:
             nClientAnimation = 82;
+            break;
+        case 10302:
+            switch (nWieldClass)
+            {
+            case 2:
+                nClientAnimation = 124;
                 break;
+            case 4:
+                nClientAnimation = 165;
+                break;
+            case 3:
+                nClientAnimation = 206;
+                break;
+            case 5:
+                nClientAnimation = 220;
+                break;
+            case 6:
+                nClientAnimation = 234;
+                break;
+            case 8:
+                nClientAnimation = bComplexUnarmed ? 526 : 280;
+                break;
+            case 7:
+            case 9:
+                nClientAnimation = 242;
+                break;
+            }
+            break;
         case 10223:
             nClientAnimation = 381;
-                break;
+            break;
         case 10224:
             nClientAnimation = 382;
-                break;
+            break;
+        case 10400:
+        case 10402:
+            nClientAnimation = 84;
+            break;
+        case 10401:
+            nClientAnimation = 115;
+            break;
         case 10246:
             switch (nWieldClass)
             {
@@ -1567,7 +1633,7 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
                 nClientAnimation = 236;
                 break;
             case 8:
-                nClientAnimation = 373;
+                nClientAnimation = bComplexUnarmed ? 534 : 373;
                 break;
             case 7:
             case 9:
@@ -1579,82 +1645,174 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
             switch (nWieldClass)
             {
             case 2:
-                nClientAnimation = 109;
+                nClientAnimation = m_nD0 ? 109 : 455;
                 break;
             case 3:
-                nClientAnimation = 151;
+                nClientAnimation = m_nD0 ? 150 : 455;
                 break;
             case 4:
-                nClientAnimation = 192;
+                nClientAnimation = m_nD0 ? 191 : 455;
+                break;
+            case 8:
+                nClientAnimation = bComplexUnarmed ? 492 : 455;
+                break;
+            default:
+                nClientAnimation = 455;
+                break;
+            }
+            break;
+        case 10301:
+            switch (nWieldClass)
+            {
+            case 2:
+                nClientAnimation = m_nD0 ? 110 : 455;
+                break;
+            case 3:
+                nClientAnimation = m_nD0 ? 151 : 455;
+                break;
+            case 4:
+                nClientAnimation = m_nD0 ? 192 : 455;
+                break;
+            case 8:
+                nClientAnimation = bComplexUnarmed ? 493 : 455;
+                break;
+            default:
+                nClientAnimation = 455;
                 break;
             }
             break;
         case 10237:
         case 10238:
             nClientAnimation = 23;
-                break;
+            break;
         case 10271:
             nClientAnimation = 383;
-                break;
-        case 10301:
+            break;
+        case 10403:
+            nClientAnimation = 462;
+            break;
+        case 10404:
+            nClientAnimation = 463;
+            break;
+        case 10405:
+            nClientAnimation = 464;
+            break;
+        case 10406:
+            nClientAnimation = 465;
+            break;
+        case 10407:
+            nClientAnimation = 466;
+            break;
+        case 10408:
+            nClientAnimation = 467;
+            break;
+        case 10409:
+            nClientAnimation = 468;
+            break;
+        case 10410:
+            nClientAnimation = 469;
+            break;
+        case 10411:
+            nClientAnimation = 470;
+            break;
+        case 10412:
+            nClientAnimation = 471;
+            break;
+        case 10413:
+            nClientAnimation = 472;
+            break;
+        case 10414:
+            nClientAnimation = 461;
+            break;
+        case 10415:
+            nClientAnimation = 459;
+            break;
+        case 10416:
+            nClientAnimation = 460;
+            break;
+        case 10417:
+            nClientAnimation = 536;
+            break;
+        case 10418:
+            nClientAnimation = 457;
+            break;
+        case 10419:
+            nClientAnimation = 458;
+            break;
+        case 10424:
+            nClientAnimation = 316;
+            break;
+        case 10425:
+            nClientAnimation = 317;
+            break;
+        case 10426:
+            nClientAnimation = 318;
+            break;
+        case 10427:
+            nClientAnimation = 319;
+            break;
+        case 10428:
+            nClientAnimation = 320;
+            break;
+        case 10429:
             switch (nWieldClass)
             {
-            case 2:
-                nClientAnimation = 110;
+            case 4:
+                nClientAnimation = 391;
                 break;
             case 3:
-                nClientAnimation = 151;
+                nClientAnimation = 390;
                 break;
-            case 4:
-                nClientAnimation = 192;
+            case 2:
+                nClientAnimation = 389;
                 break;
             }
             break;
-        case 10401:
-            nClientAnimation = 115;
-                break;
-        case 10400:
-            nClientAnimation = 84;
+        case 10499:
+            nClientAnimation = 557;
             break;
-        case 10402:
-            nClientAnimation = 84;
+        case 10500:
+            nClientAnimation = 558;
             break;
-        case 10302:
-            switch (nWieldClass)
-            {
-            case 2:
-                nClientAnimation = 124;
-                break;
-            case 4:
-                nClientAnimation = 165;
-                break;
-            case 3:
-                nClientAnimation = 206;
-                break;
-            case 5:
-                nClientAnimation = 220;
-                break;
-            case 6:
-                nClientAnimation = 234;
-                break;
-            case 8:
-                nClientAnimation = 280;
-                break;
-            case 7:
-            case 9:
-                nClientAnimation = 242;
-                break;
-            }
+        case 10501:
+            nClientAnimation = 560;
+            break;
+        case 10503:
+            nClientAnimation = 561;
+            break;
+        case 10504:
+            nClientAnimation = 562;
+            break;
+        case 10505:
+            nClientAnimation = 563;
+            break;
+        case 10506:
+            nClientAnimation = 564;
+            break;
+        case 10507:
+            nClientAnimation = 565;
+            break;
+        case 10508:
+            nClientAnimation = 566;
+            break;
+        case 10509:
+            nClientAnimation = 567;
+            break;
+        case 10510:
+            nClientAnimation = 568;
+            break;
+        case 10511:
+            nClientAnimation = 569;
             break;
         case 11000:
             nClientAnimation = 66;
-                break;
+            break;
         case 11001:
-            nClientAnimation = 392;
-                break;
+            nClientAnimation = 537;
+            break;
         case 11002:
-            nClientAnimation = 393;
-                break;
+            nClientAnimation = 538;
+            break;
         }
     }
     else
@@ -1663,24 +1821,24 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
         {
         case 10028:
             nClientAnimation = 263;
-                break;
+            break;
         case 10023:
             nClientAnimation = 268;
-                break;
+            break;
         case 10038:
         case 10039:
         case 10040:
         case 10041:
         case 10042:
             nClientAnimation = 261;
-                break;
+            break;
         case 10015:
         case 10016:
             nClientAnimation = 379;
-                break;
+            break;
         case 10044:
             nClientAnimation = 260;
-                break;
+            break;
         case 10004:
         case 10094:
             if (m_bRunLooksAwful)
@@ -1696,37 +1854,37 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
             break;
         case 10093:
             nClientAnimation = 254;
-                break;
+            break;
         case 10052:
             nClientAnimation = 257;
-                break;
+            break;
         case 10054:
             nClientAnimation = 259;
-                break;
+            break;
         case 10053:
             nClientAnimation = 258;
-                break;
+            break;
         case 10117:
             nClientAnimation = 266;
-                break;
+            break;
         case 10002:
         case 10003:
         case 10084:
         case 10133:
             nClientAnimation = 253;
-                break;
+            break;
         case 10137:
             nClientAnimation = 267;
-                break;
+            break;
         case 10138:
             nClientAnimation = 269;
-                break;
+            break;
         case 10074:
             nClientAnimation = 299;
-                break;
+            break;
         case 10147:
             nClientAnimation = 358;
-                break;
+            break;
         case CREATURE_ANIMATION_COMBAT_IDLE:
         case 10055:
         case 10056:
@@ -1735,49 +1893,49 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
         case 10092:
         case 10149:
             nClientAnimation = 256;
-                break;
+            break;
         case 10150:
             nClientAnimation = 264;
-                break;
+            break;
         case 10001:
         case 10148:
             nClientAnimation = 278;
-                break;
+            break;
         case 10006:
         case 10008:
         case 10156:
             nClientAnimation = 275;
-                break;
+            break;
         case 10154:
             nClientAnimation = 372;
-                break;
+            break;
         case 10152:
             nClientAnimation = 369;
-                break;
+            break;
         case 10219:
         case 10220:
             nClientAnimation = 272;
-                break;
+            break;
         case 10155:
         case 10030:
             nClientAnimation = 18;
-                break;
+            break;
         case 10009:
         case 10109:
             nClientAnimation = 300;
-                break;
+            break;
         case 10142:
             nClientAnimation = 346;
-                break;
+            break;
         case 10118:
             nClientAnimation = 270;
-                break;
+            break;
         case 10124:
             nClientAnimation = 74;
-                break;
+            break;
         case 10125:
             nClientAnimation = 43;
-                break;
+            break;
         case 10014:
             nClientAnimation = 280;
             break;
@@ -1786,10 +1944,16 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
             break;
         case 10012:
             nClientAnimation = 301;
-                break;
+            break;
         case 10011:
             nClientAnimation = 302;
-                break;
+            break;
+        case 10021:
+            nClientAnimation = 310;
+            break;
+        case 10022:
+            nClientAnimation = 333;
+            break;
         case 10246:
             switch (nWieldClass)
             {
@@ -1822,27 +1986,30 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
         case 10221:
         case 10222:
             nClientAnimation = 274;
-                break;
+            break;
         case 10223:
         case 10224:
             nClientAnimation = 273;
-                break;
+            break;
         case 10401:
             nClientAnimation = 115;
-                break;
-        case 11001:
-            nClientAnimation = 392;
-                break;
-        case 11000:
-            nClientAnimation = 380;
-                break;
+            break;
+        case 10416:
+            nClientAnimation = 460;
+            break;
         case 10400:
         case 10402:
             nClientAnimation = 271;
-                break;
+            break;
+        case 11000:
+            nClientAnimation = 380;
+            break;
         case 11002:
-            nClientAnimation = 393;
-                break;
+            nClientAnimation = 538;
+            break;
+        case 11001:
+            nClientAnimation = 537;
+            break;
         case 10302:
             nClientAnimation = 280;
             break;

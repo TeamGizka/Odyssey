@@ -1438,8 +1438,8 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)
 #ifndef _XBOX
     g_pExoInput->GetMouseDelta(&fMouseX, &fMouseY);
 #endif
-    m_pModule->TiltCamera((CameraVertAxisFlip ? 1 : -1) *
-                         (fMouseY * fMouseSensitivity));
+    if (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_bReverseIngame)
+        fMouseY *= -1.0f;
 
     float fTurn = min(1.0f, max(-1.0f, g_pExoInput->PollInput(CAMERA_TURN_INPUT, 0)));
     int nWidth = g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nWidth;
@@ -1448,6 +1448,11 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)
 #ifndef _XBOX
     int bLeft = g_pGuiMan->m_nMouseX <= nBorder;
     int bRight = g_pGuiMan->m_nMouseX >= nWidth - nBorder;
+    int nHeight = g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nHeight;
+    int nBorderY = max(CAMERA_EDGE_MIN_PIXELS,
+                       (int)(nHeight * ScreenFramePercentage));
+    int bTop = g_pGuiMan->m_nMouseY <= nBorderY;
+    int bBottom = g_pGuiMan->m_nMouseY >= nHeight - nBorderY;
 #endif
     int bMouseTurn = g_bMouseCameraRotateToggle;
     if (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_bMouseLook)
@@ -1457,19 +1462,29 @@ void CClientExoAppInternal::UpdateCamera(float fDeltaTime)
         m_pModule->AcclTurnCamera((CameraHorzAxisFlip ? 1 : -1) * (0.0f - fTurn),
                                  fDeltaTime);
 #ifndef _XBOX
-    else if ((bLeft || bRight) && !bMouseTurn &&
+    else if ((bLeft || bRight || bTop || bBottom) && !bMouseTurn &&
              g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nCameraMode !=
                  CClientOptions::CAMERA_MODE_WORLD_CLICK_DISABLED)
-        m_pModule->AcclTurnCamera((bLeft ? 1 : -1) *
-                                 (CameraHorzAxisFlip ? 1 : -1), fDeltaTime);
+    {
+        if (bLeft || bRight)
+            m_pModule->AcclTurnCamera((bLeft ? 1 : -1) *
+                                     (CameraHorzAxisFlip ? 1 : -1), fDeltaTime);
+        if (bTop || bBottom)
+            m_pModule->AcclTiltCamera((bTop ? 1 : -1) *
+                                     (CameraVertAxisFlip ? 1 : -1));
+    }
 #endif
     else if (!bMouseTurn &&
              g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nCameraMode !=
                  CClientOptions::CAMERA_MODE_WORLD_CLICK_DISABLED)
         m_pModule->TurnCamera(0.0f, fDeltaTime);
     else
+    {
         m_pModule->TurnCamera((CameraHorzAxisFlip ? 1 : -1) *
                              (fMouseX * fMouseSensitivity), fDeltaTime);
+        float fTilt = fMouseY * fMouseSensitivity * 0.1f;
+        m_pModule->TiltCamera(fTilt * (CameraHorzAxisFlip ? 1 : -1));
+    }
 
     if (m_fCameraZoom != 0.0f)
     {
@@ -1995,10 +2010,11 @@ void CClientExoAppInternal::SetHitcheckIgnoreList(List<CAurObject*>* pIgnoreList
 
                     if (pCreature != NULL)
                     {
-                        if (pCreature->GetAppearance() != NULL)
+                        CSWCCreatureAppearance* pAppearance = pCreature->GetAppearance();
+                        if (pAppearance != NULL)
                         {
                             pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
-                                pCreature->GetAppearance()->m_nUnmapped10);
+                                pAppearance->m_nUnmapped10);
                             if (pItem != NULL &&
                                 pItem->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1) != NULL)
                             {
@@ -2007,6 +2023,23 @@ void CClientExoAppInternal::SetHitcheckIgnoreList(List<CAurObject*>* pIgnoreList
                             if (pCreature->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD, 1) != NULL)
                             {
                                 pIgnoreList->Add(pCreature->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD, 1));
+                            }
+                            if (pAppearance->m_nUnmapped10 == CGameObjectArray::INVALIDOBJID)
+                            {
+                                if (pCreature->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD, 1) != NULL)
+                                {
+                                    pIgnoreList->Add(pCreature->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD, 1));
+                                }
+                            }
+                            else
+                            {
+                                pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+                                    pAppearance->m_nUnmapped10);
+                                if (pItem != NULL &&
+                                    pItem->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1) != NULL)
+                                {
+                                    pIgnoreList->Add(pItem->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1));
+                                }
                             }
                         }
 
@@ -2327,7 +2360,7 @@ int CClientExoAppInternal::GetObjectName(unsigned long oidObject, CExoString& sN
     {
         if (pObject->AsSWCPlaceable()->GetName() == "")
         {
-            unsigned char nAppearance = pObject->AsSWCPlaceable()->m_nAppearance;
+            int nAppearance = pObject->AsSWCPlaceable()->m_nAppearance;
             g_pRules->Get2DArrays()->m_pPlaceables->GetINTEntry(
                 nAppearance,
                 CTwoDimArrays::COL2DA_PLACEABLES_STRREF, &nStrRef);
@@ -2745,7 +2778,10 @@ void CClientExoAppInternal::ShowObject(CSWCObject* pObject, int bLookAt,
                 {
                     if (pServer->AsSWSCreature()->GetStats()->HasSpell(0, i, 1) &&
                         g_pRules->m_pSpellArray->GetSpell(i) != NULL)
-                        g_pRules->m_pSpellArray->GetSpell(i)->m_sLabel.CStr();
+                    {
+                        CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(i);
+                        pSpell->m_sLabel.CStr();
+                    }
                 }
                 for (int i = 0; i < g_pRules->m_nNumFeats; i++)
                 {
@@ -2798,7 +2834,7 @@ void CClientExoAppInternal::DoPassiveSelection(float fDeltaTime)
                     aNearest[i] = ServerToClientObjectId(aNearest[i]);
                     m_aNearestObjects[i].m_oidObject = aNearest[i];
                     m_aNearestObjects[i].m_nCanSee = CNearestStruct::CAN_SEE_UNKNOWN;
-                    if (!bHostileCreature || bNoEnemy || bNoMine)
+                    if (!bHostileCreature)
                     {
                         CGameObject* pObject = GetGameObject(m_aNearestObjects[i].m_oidObject);
                         if (pObject != NULL)
@@ -2937,13 +2973,14 @@ void CClientExoAppInternal::DoPassiveSelection(float fDeltaTime)
                     {
                         int nIndex = aNearest.IndexOf((unsigned long)m_nLastTarget);
                         int bCanSee;
-                        if (nIndex != -1 &&
-                            m_aNearestObjects[nIndex].m_nCanSee == CNearestStruct::CAN_SEE_UNKNOWN)
-                            m_aNearestObjects[nIndex].m_nCanSee = pPlayer->CanSee(pObject->AsSWCObject());
                         if (nIndex == -1)
                             bCanSee = pPlayer->CanSee(pObject->AsSWCObject());
                         else
+                        {
+                            if (m_aNearestObjects[nIndex].m_nCanSee == CNearestStruct::CAN_SEE_UNKNOWN)
+                                m_aNearestObjects[nIndex].m_nCanSee = pPlayer->CanSee(pObject->AsSWCObject());
                             bCanSee = m_aNearestObjects[nIndex].m_nCanSee;
+                        }
                         if (bCanSee)
                         {
                             m_fTargetInvisibleTime = 0.0f;
@@ -3948,6 +3985,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
 {
     unsigned long oidObject;
     CExoString sObjectName;
+    int bCombatMessage = 0;
     CExoString sFeedback("");
     CGuiInGame* pGuiInGame = m_pGuiInGame;
     CSWCCreature* pCreature = GetPlayerCreature();
@@ -3978,6 +4016,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         case CSWSCreature::FEEDBACK_UNKNOWN_223:
         {
             sFeedback = GetGUIString(0);
+            bCombatMessage = 1;
             break;
         }
         case CSWSCreature::FEEDBACK_OBJECT_ITEM_TEXT:
@@ -3987,7 +4026,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             g_pTlkTable->SetCustomToken(1, pMessageData->GetString(0));
@@ -4001,7 +4040,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             g_pTlkTable->SetCustomToken(1, pMessageData->GetString(0));
@@ -4016,7 +4055,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(1, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(1, sObjectName);
             }
             g_pTlkTable->SetCustomToken(0, CExoString(nValue2));
@@ -4030,7 +4069,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -4048,7 +4087,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -4131,7 +4170,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             int nValue2 = pMessageData->GetInteger(0);
@@ -4141,12 +4180,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_FORCE_POINTS_REGAINED:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             int nValue2 = pMessageData->GetInteger(0);
@@ -4314,7 +4354,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             }
             else
             {
-                sObjectName = sFeedback = GetGUIString(0);
+                sObjectName = sFeedback = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -4414,6 +4454,21 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = GetGUIString(0);
             break;
         }
+        case CSWSCreature::FEEDBACK_ITEM_GENDER_RESTRICTION:
+        {
+            sFeedback = GetGUIString(47993);
+            break;
+        }
+        case CSWSCreature::FEEDBACK_ITEM_ATTRIBUTE_RESTRICTION:
+        {
+            sFeedback = GetGUIString(117590);
+            break;
+        }
+        case CSWSCreature::FEEDBACK_ITEM_CNPC_RESTRICTION:
+        {
+            sFeedback = GetGUIString(130591);
+            break;
+        }
         case CSWSCreature::FEEDBACK_WEAPON_EQUIPPED_ONE_HANDED:
         {
             sFeedback = GetGUIString(0x5C5u);
@@ -4497,6 +4552,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         case CSWSCreature::FEEDBACK_DAMAGE_IMMUNITY:
         {
             CExoString sDamage;
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             int nDamage = pMessageData->GetInteger(0);
             unsigned short nDamageType = (unsigned short)pMessageData->GetInteger(1);
@@ -4566,7 +4622,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             g_pTlkTable->SetCustomToken(1, sDamage);
@@ -4581,7 +4637,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             g_pTlkTable->SetCustomToken(1, CExoString(nValue2));
@@ -4597,7 +4653,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             g_pTlkTable->SetCustomToken(1, CExoString(nValue2));
@@ -4613,7 +4669,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             g_pTlkTable->SetCustomToken(1, CExoString(nValue2));
@@ -4629,7 +4685,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             g_pTlkTable->SetCustomToken(1, CExoString(nValue2));
@@ -4647,7 +4703,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             unsigned long nStrRef = 0;
@@ -4669,13 +4725,14 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_SPELL_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(pMessageData->GetInteger(0));
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             g_pTlkTable->SetCustomToken(1, pSpell->GetSpellNameText());
@@ -4690,7 +4747,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             g_pSWTlkTable->SetCustomToken(1, CExoString(nValue2));
@@ -4706,7 +4763,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             g_pSWTlkTable->SetCustomToken(1, CExoString(nValue2));
@@ -4731,7 +4788,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0x592u, NULL, 0, 0);
@@ -4744,7 +4801,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -4764,7 +4821,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             }
             else
             {
-            sObjectName = GetGUIString(0);
+            sObjectName = GetGUIString(649);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
             break;
@@ -4776,7 +4833,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -4789,7 +4846,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -4802,7 +4859,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -4815,7 +4872,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0x591u, NULL, 0, 0);
@@ -4828,7 +4885,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -4841,7 +4898,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -4854,7 +4911,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -4867,7 +4924,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -4880,7 +4937,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -4893,7 +4950,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0x590u, NULL, 0, 0);
@@ -4921,7 +4978,7 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -5034,6 +5091,20 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
             sFeedback = g_pSWTlkTable->Fetch(0x5D5u, NULL, 0, 0);
             break;
         }
+        case CSWSCreature::FEEDBACK_COMPONENTS_ADDED:
+        {
+            int nValue = pMessageData->GetInteger(0);
+            g_pTlkTable->SetCustomToken(0, CExoString(nValue));
+            sFeedback = g_pSWTlkTable->Fetch(128117, NULL, 0, 0);
+            break;
+        }
+        case CSWSCreature::FEEDBACK_CHEMICALS_ADDED:
+        {
+            int nValue = pMessageData->GetInteger(0);
+            g_pTlkTable->SetCustomToken(0, CExoString(nValue));
+            sFeedback = g_pSWTlkTable->Fetch(128118, NULL, 0, 0);
+            break;
+        }
         case CSWSCreature::FEEDBACK_GOLD_REMOVED:
         {
             int nValue = pMessageData->GetInteger(0);
@@ -5069,12 +5140,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_DISEASE_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0x5C7u, NULL, 0, 0);
@@ -5082,12 +5154,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_CRITICAL_HITS_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0x5C8u, NULL, 0, 0);
@@ -5095,12 +5168,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_DEATH_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -5108,12 +5182,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_FEAR_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0x5C9u, NULL, 0, 0);
@@ -5121,12 +5196,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_HORRIFIED_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0xA623u, NULL, 0, 0);
@@ -5134,12 +5210,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_KNOCKDOWN_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0x5CAu, NULL, 0, 0);
@@ -5147,12 +5224,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_PARALYSIS_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0x5CBu, NULL, 0, 0);
@@ -5160,12 +5238,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_NEGATIVE_LEVEL_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0x5CCu, NULL, 0, 0);
@@ -5173,12 +5252,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_MIND_SPELLS_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0x5CDu, NULL, 0, 0);
@@ -5186,12 +5266,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_POISON_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0x5CEu, NULL, 0, 0);
@@ -5199,12 +5280,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_SNEAK_ATTACK_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0x5CFu, NULL, 0, 0);
@@ -5212,12 +5294,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_SLEEP_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0x5D0u, NULL, 0, 0);
@@ -5225,12 +5308,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_DAZED_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -5238,12 +5322,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_CONFUSED_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0x5D1u, NULL, 0, 0);
@@ -5251,12 +5336,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_STUN_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0x5D2u, NULL, 0, 0);
@@ -5264,12 +5350,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_BLINDNESS_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -5277,12 +5364,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_DEAFNESS_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -5290,12 +5378,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_CURSED_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -5303,12 +5392,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_ENTANGLE_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0x5D3u, NULL, 0, 0);
@@ -5316,12 +5406,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_SILENCE_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0, NULL, 0, 0);
@@ -5329,12 +5420,13 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
         }
         case CSWSCreature::FEEDBACK_SLOW_IMMUNITY:
         {
+            bCombatMessage = 1;
             oidObject = pMessageData->GetObjectID(0);
             if (GetObjectName(oidObject, sObjectName))
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             else
             {
-                sObjectName = GetGUIString(0);
+                sObjectName = GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sObjectName);
             }
             sFeedback = g_pSWTlkTable->Fetch(0x5D4u, NULL, 0, 0);
@@ -5466,7 +5558,10 @@ void CClientExoAppInternal::AddFeedbackMessage(unsigned short nType,
     if (!sFeedback.IsEmpty())
     {
         sFeedback = sMessage + sFeedback;
-        pGuiInGame->AppendToMsgBuffer(sFeedback, 0x80, 0);
+        if (bCombatMessage)
+            pGuiInGame->AppendToCombatBuffer(sFeedback, 0x80, 0);
+        else
+            pGuiInGame->AppendToMsgBuffer(sFeedback, 0x80, 0);
     }
 FeedbackDone:
     delete pMessageData;
@@ -5882,7 +5977,8 @@ int CClientExoAppInternal::PlayMoviesInExoArrayList(
     }
 
     g_pExoInput->ClearEvents();
-    g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL);
+    g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL,
+                              nSoundModeFlags);
     HideMouse(8);
     ChangeResolutionForMovie();
     m_pMoviePlayer->ShowFadePanel();
@@ -6782,10 +6878,7 @@ int CClientExoAppInternal::IsSoundPlayingInDialog()
 
     if (m_pGuiInGame->m_bDialogSoundQueried != 0)
     {
-        unsigned long oidSoundObject = m_pGuiInGame->m_oidDialogSoundObject;
-        CGameObjectArray* pObjectArray = m_pGameObjectArray;
-        CGameObject* pGameObject = NULL;
-        pObjectArray->GetGameObject(oidSoundObject, &pGameObject);
+        CGameObject* pGameObject = GetGameObject(m_pGuiInGame->m_oidDialogSoundObject);
 
         if (pGameObject != NULL && pGameObject->AsSWCObject() != NULL &&
             m_pGuiInGame->m_pDialogSound != NULL)
@@ -6793,13 +6886,14 @@ int CClientExoAppInternal::IsSoundPlayingInDialog()
             if (g_bDebugDialogSound)
             {
                 char szSound[17];
-                m_pGuiInGame->m_pDialogSound->GetFilePlaying().CopyToString(
-                    szSound);
+                CExoStreamingSoundSource* pDialogSound =
+                    m_pGuiInGame->m_pDialogSound;
+                pDialogSound->GetFilePlaying().CopyToString(szSound);
                 EXOLOG("IsSoundPlayingInDialog: %s mode %d\n", szSound,
                        g_pExoSound->GetSoundMode());
             }
 
-            return m_pGuiInGame->m_pDialogSound->IsPlaying();
+            bPlaying = m_pGuiInGame->m_pDialogSound->IsPlaying();
         }
     }
     else
@@ -6807,10 +6901,10 @@ int CClientExoAppInternal::IsSoundPlayingInDialog()
         if (g_bDebugDialogSound)
         {
             char szSound[17];
-            CExoStreamingSoundSource* pDialogSound =
-                m_pGuiInGame->m_pDialogSound;
-            if (pDialogSound != NULL)
+            if (m_pGuiInGame->m_pDialogSound != NULL)
             {
+                CExoStreamingSoundSource* pDialogSound =
+                    m_pGuiInGame->m_pDialogSound;
                 pDialogSound->GetFilePlaying().CopyToString(szSound);
             }
             EXOLOG("IsSoundPlayingInDialog: %s mode %d\n", szSound,
@@ -8429,7 +8523,12 @@ void CClientExoAppInternal::BeginIntro()  // PC 0x0064EDA0
     {
         AddMovieToMovieQueue("leclogo", 1);
         AddMovieToMovieQueue("obsidianent", 1);
-        PlayMovieQueue(1);
+        int nMovie;
+        CExoArrayList<int>* pFlags = &m_aMovieQueueFlags;
+        CExoArrayList<CExoString>* pMovies = &m_aMovieQueue;
+        PlayMoviesInExoArrayList(*pMovies, nMovie, 0, 1, pFlags, 0);
+        pMovies->num = 0;
+        pFlags->num = 0;
 
         if (m_pLegalScreen == NULL)
         {
@@ -8498,6 +8597,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
 #ifdef _XBOX
             WaitForMovie();
 #else
+            WaitForMovie(1);
             if (IsMoviePlaying() != 0 ||
                 g_bRenderWindowActive)
                 HideLoadScreen(1, 1, 1);
@@ -8510,7 +8610,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
             RestoreResolutionFromMovie();
             m_pMoviePlayer->HideFadePanel();
 #endif
-            if (g_bRenderWindowActive)
+            if (g_bRenderWindowActive || m_pModule->GetMiniGame())
             {
 #ifdef _XBOX
                 HideLoadScreen(1);
@@ -8555,12 +8655,6 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
                     m_pGuiInGame->SetGlobalUnpauseableState(0);
                     g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
                 }
-                if (m_nInputClass == INPUT_CLASS_MINIGAME && GetPlayerCreature() != NULL)
-                {
-                    GetPlayerCreature()->AttachToScene(NULL);
-                    m_oidReattachedCreature = GetPlayerCreature()->GetId();
-                    SetPlayerCreature(OBJECT_INVALID);
-                }
                 bAreaReady = 1;
                 DumpLogCounters(NULL);
             }
@@ -8587,7 +8681,6 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
              g_pAppManager->m_pReentrantServerStats->m_nOperation == CSWReentrantServerStats::OPERATION_LOAD_GAME))
         {
             m_nAreaNotReadyToDisplay = 1;
-            UpdateScreen(1.0f / 30.0f, 0, 1);
             if (g_pAppManager->m_pReentrantServerStats->m_nUnknown56 == 4)
             {
                 DeltaT = (int)m_pWorldTimer->GetSnapshotTimeDifference() / 1000000.0f;
@@ -8608,10 +8701,8 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
     {
         if (m_fEndGamePendingDelay > 0.0f)
         {
-            if (m_pSWGuiManager->PanelExists(m_pGuiInGame->m_pMessageBox) ||
-                !m_nEndGamePendingUnknown)
-                m_fEndGamePendingDelay -= DeltaT;
-            else
+            if (!m_pSWGuiManager->PanelExists(m_pGuiInGame->GetMessageBox()) &&
+                m_nEndGamePendingUnknown)
             {
                 CGuiInGame* pGui = m_pGuiInGame;
                 pGui->DisplayDeathMessage();
@@ -8620,6 +8711,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
         else if (!m_nGameOver)
         {
 #ifndef _XBOX
+            m_pGuiInGame->RemoveDeathMessage(true);
             m_pGuiInGame->HideSWInGameGui(0);
 #endif
             if (g_pAppManager->GetServerExoApp() != NULL)
@@ -8687,7 +8779,14 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
                     if (pAnimation != NULL)
                     {
                         if (printanimqueue)
-                            (pAnimation->sAnimation.GetLength() > 0 ? pAnimation->sAnimation : sAnimation).CStr();
+                        {
+                            CExoString sText;
+                            if (pAnimation->sAnimation.GetLength() > 0)
+                                sText.Format("Playing next anim in queue: %s", pAnimation->sAnimation.CStr());
+                            else
+                                sText.Format("Playing next anim in queue: %s", sAnimation.CStr());
+                            AurPostString(sText.CStr(), 0, g_nAnimQueueSize + a++ % 5, g_fAnimQueueTime);
+                        }
                         if (pAnimation->sAnimation.GetLength() > 0)
                         {
                             if (fLength > 0.0f)
@@ -8799,7 +8898,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
         DoPassiveSelection(DeltaT);
         UpdateCombatMode();
     }
-    UpdateHostileHilite((__int64)g_pAppManager->GetClientExoApp()->GetExoAppInternal()->m_pPauseTimer->GetSnapshotTimeDifference() / 1000000.0f);
+    UpdateHostileHilite((__int64)g_pAppManager->m_pClientExoApp->m_pcExoAppInternal->m_pPauseTimer->GetSnapshotTimeDifference() / 1000000.0f);
     g_starttime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
     if (m_pGuiInGame->GetPendingStatusSummary() && m_nInputClass == INPUT_CLASS_GAME &&
         !m_nAreaNotReadyToDisplay && !m_pGuiInGame->m_bHoldWorldFadeInForDialog &&
@@ -8822,8 +8921,10 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
     else if (m_fStatusSummaryDelay != 0.0f)
         m_fStatusSummaryDelay = 0.0f;
     m_pSWGuiManager->Update(DeltaT);
+    bool bForceSight = g_ForceSight;
+    g_ForceSight = false;
     m_pSWGuiManager->SetGuiScale(DeltaT);
-    DeltaT = (__int64)g_pAppManager->GetClientExoApp()->GetExoAppInternal()->m_pPauseTimer->GetSnapshotTimeDifference() / 1000000.0f;
+    DeltaT = (__int64)g_pAppManager->m_pClientExoApp->m_pcExoAppInternal->m_pPauseTimer->GetSnapshotTimeDifference() / 1000000.0f;
     if (m_fMouseHideTime > 0.0f)
     {
         m_fMouseHideTime -= DeltaT;
@@ -8834,11 +8935,15 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
     if (!m_pSWGuiManager->PanelExists(m_pGuiInGame->GetMainInterface()))
         m_pGuiInGame->RePopulateMainInterface();
     DeltaT = m_pSWGuiManager->m_fGuiScale;
+    g_ForceSight = bForceSight;
     g_endtime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
     g_GuiUpdateTime = (int)(g_endtime - g_starttime) * 0.001f;
     g_starttime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
     UpdateRumble(DeltaT);
-    m_pGuiInGame->UpdateControllerPauseState();
+    if ((g_pAppManager->GetServerExoApp() != NULL &&
+         !g_pAppManager->GetServerExoApp()->GetMoveToModulePending()) ||
+        g_pAppManager->GetServerExoApp() == NULL)
+        m_pGuiInGame->UpdateControllerPauseState();
     if (m_nAttackMashTutorialTimer > 0)
     {
         unsigned long nElapsed = (unsigned long)(DeltaT * 1000.0f);
@@ -8871,6 +8976,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
 #ifdef _XBOX
             SetAutoPaused(1, CClientExoApp::AUTOPAUSE_ENEMY_SIGHTED);
 #else
+            SetAutoPaused(1, 1);
             SetAutoPaused(1, m_nDelayedAutoPauseType);
             m_nDelayedAutoPauseType = AUTO_PAUSE_TYPE_UNSET;
 #endif
@@ -8903,27 +9009,6 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
         m_pGuiInGame->ShowTutorialWindow(m_nTutorialReason, m_nTutorialX, m_nTutorialY, m_nTutorialZ);
         m_nTutorialReason = TUTORIAL_REASON_UNSET;
     }
-#ifndef _XBOX
-    if (!g_sErrorString.IsEmpty())
-    {
-        CExoFile cErrorFile("HD0:FILEERROR", 14, "a");
-        if (cErrorFile.FileOpened())
-        {
-            if (cErrorFile.GetSize() == 0)
-            {
-                cErrorFile.Write("Star Wars Knights of the Old Republic Patch 2 Error Logging File\n");
-                cErrorFile.Write("This file has been generated to help provide information on read/write irregularities\n");
-            }
-            char szDate[9];
-            _strdate(szDate);
-            g_sErrorString.Format("\n%s\n%s", szDate, g_sErrorString.CStr());
-            cErrorFile.Write(g_sErrorString);
-            g_sErrorString = "";
-        }
-        else
-            g_sErrorString.Format("%sERROR - Failed to open error file\n");
-    }
-#endif
     return m_bExitGame && m_bExitGamePending;
 }
 #endif

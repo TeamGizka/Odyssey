@@ -201,7 +201,7 @@ void CSWGuiQuickPanel::DoQuickStats()
     m_pCreature->GetStats()->SetINTBase(pClass->GetIntelligence());
     m_pCreature->GetStats()->SetCHABase(pClass->GetCharisma());
     CExoArrayList<unsigned short> lstFeats;
-    m_pCreature->GetStats()->AddGrantedFeats(0);
+    m_pCreature->GetStats()->AddGrantedFeats(0, true);
     m_pCreature->GetStats()->AddDefaultPackageFeats(nClass, &lstFeats, 1, 1);
     for (int i = 0; i < lstFeats.num; i++)
     {

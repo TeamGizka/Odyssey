@@ -24,6 +24,10 @@ const unsigned long CSWCAmbientSound::BATTLE_FADE_DURATION = 800;
 const int CSWCAmbientSound::AMBIENT_FADE_DURATION = 6000;
 const int CSWCAmbientSound::TRUNCATED_FADE_DURATION = 1000;
 const int CSWCAmbientSound::STREAM_DOESNT_EXIST_DELAY = 10000;
+const CExoString CSWCAmbientSound::THUNDER1("as_wt_thundercl1");
+const CExoString CSWCAmbientSound::THUNDER2("as_wt_thundercl2");
+const CExoString CSWCAmbientSound::THUNDER_ROLLING1("as_wt_thunderds1");
+const CExoString CSWCAmbientSound::THUNDER_ROLLING2("as_wt_thunderds2");
 // PC 0x006E6780
 inline CSWCAmbientSoundTrack::CSWCAmbientSoundTrack()
 {
@@ -108,6 +112,40 @@ void CSWCAmbientSound::SetAmbientNightVolume(int nVolume)
         m_nAmbientNightVolume = nVolume;
     }
 }
+// PC 0x006E6A40
+void CSWCAmbientSound::Thunder(int bRolling)
+{
+    if (!m_bAmbientPlaying)
+    {
+        return;
+    }
+    if (bRolling)
+    {
+        if (rand() % 2 == 0)
+        {
+            CResRef cSound(THUNDER_ROLLING1);
+            g_pExoSound->PlayOneShotSound(
+                cSound, CExoSound::PRIORITY_GROUP_POWERED_ITEM, 0, 0, 0.0f, 0.0f);
+            return;
+        }
+        CResRef cSound(THUNDER_ROLLING2);
+        g_pExoSound->PlayOneShotSound(
+            cSound, CExoSound::PRIORITY_GROUP_POWERED_ITEM, 0, 0, 0.0f, 0.0f);
+    }
+    else
+    {
+        if (rand() % 2)
+        {
+            CResRef cSound(THUNDER2);
+            g_pExoSound->PlayOneShotSound(
+                cSound, CExoSound::PRIORITY_GROUP_POWERED_ITEM, 0, 0, 0.0f, 0.0f);
+            return;
+        }
+        CResRef cSound(THUNDER1);
+        g_pExoSound->PlayOneShotSound(
+            cSound, CExoSound::PRIORITY_GROUP_POWERED_ITEM, 0, 0, 0.0f, 0.0f);
+    }
+}
 // PC 0x006E6B10
 void CSWCAmbientSound::UpdateTimeOfDay()
 {
@@ -184,9 +222,8 @@ void CSWCAmbientSound::PlayMusic(int bPlay)
                     CExoStreamingSoundSource::PRIORITY_GROUP_MUSIC);
 #ifndef _XBOX
                 CExoString& sMusic = m_bDaytime ? m_MusicDay.m_sSound : m_MusicNight.m_sSound;
-                CResRef cMusic(sMusic);
                 CExoStreamingSoundSource* pSource =
-                    g_pAppManager->GetClientExoApp()->AquireLoadMusic(cMusic);
+                    g_pAppManager->GetClientExoApp()->AquireLoadMusic(sMusic);
                 if (pSource != 0)
                 {
                     delete m_pMusicSource;
@@ -271,6 +308,7 @@ void CSWCAmbientSound::PlayBattleMusic(int bPlay)
     {
         if (m_bBattleMusic != 0)
         {
+            m_pMusicSource->SetLooping(0);
             m_pMusicSource->FadeAndStop(BATTLE_FADE_DURATION);
             if (m_bStarted != 0)
             {
@@ -544,10 +582,13 @@ void CSWCAmbientSound::PlayStinger(CSWCAmbientSoundTrack* pTrack)
             m_pStingerSource = new CExoStreamingSoundSource(1);
             m_pStingerSource->SetPriorityGroup(
                 CExoStreamingSoundSource::PRIORITY_GROUP_STINGER);
-            if (!m_pStingerSource->Play(cStinger, RESTYPE_WAV, 0, 0, 0))
+            if (!m_pStingerSource->Play(cStinger, RESTYPE_BMU, 0, 1, 0))
             {
-                delete m_pStingerSource;
-                m_pStingerSource = NULL;
+                if (!m_pStingerSource->Play(cStinger, RESTYPE_WAV, 0, 0, 0))
+                {
+                    delete m_pStingerSource;
+                    m_pStingerSource = NULL;
+                }
             }
         }
     }
@@ -754,8 +795,8 @@ CSWCAmbientSound::CSWCAmbientSound(CSWCArea* pArea)
 {
     m_nTimeRemaining = 0;
     m_MusicDelay = 30000;
-    m_pMusicSource = new CExoStreamingSoundSource;
-    m_pAmbientSource = new CExoStreamingSoundSource;
+    m_pMusicSource = new CExoStreamingSoundSource(1);
+    m_pAmbientSource = new CExoStreamingSoundSource(1);
     m_pMusicSource->SetLooping(0);
     m_pAmbientSource->SetLooping(1);
     m_pAmbientSource->SetPriorityGroup(SOUND_PRIORITY_GROUP_AMBIENT);
@@ -768,6 +809,7 @@ CSWCAmbientSound::CSWCAmbientSound(CSWCArea* pArea)
     m_nMusicPlayingType = MUSIC_PLAYING_NONE;
     m_pStingerSource = NULL;
     m_bAmbientFallback = 0;
+    m_bBattleMusic = 0;
 }
 // PC 0x006E7570
 CSWCAmbientSound::~CSWCAmbientSound()

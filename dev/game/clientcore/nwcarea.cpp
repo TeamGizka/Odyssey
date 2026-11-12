@@ -36,6 +36,7 @@
 #include "nwmessage.h"
 #include "aurgrass.h"
 #include "aurtexman.h"
+#include "auremitter.h"
 #include "nwrules.h"
 
 const int CSWCArea::MAX_INTERTILE_PATH_DEPTH = 5;
@@ -65,6 +66,7 @@ extern int countpart;
 
 float darkvaluemultiplier = 0.35f;
 float lightvaluemultiplier = 0.5f;
+float g_fWeatherRadius = 4.5f;
 // PC 0x00650B80
 void PlayRoomSoundEvent(CAurObject* pObject, char* sEvent, void* pData)
 {
@@ -182,13 +184,18 @@ int CSWCArea::SetWeather(unsigned char nWeather, float fStrength)
             case WEATHER_CLEAR:
                 break;
             case WEATHER_RAIN:
-                for (unsigned char i = 0; i < 6; i++)
+                if (m_nChanceRain > 0)
                 {
-                    m_apWeatherEffects[i] = static_cast<Gob*>(
-                        NewCAurObject(sRainModel, sWeatherObject, NULL, NULL));
-                    if (m_apWeatherEffects[i] == NULL)
+                    for (unsigned char i = 0; i < 6; i++)
                     {
-                        return FALSE;
+                        m_apWeatherEffects[i] = static_cast<Gob*>(
+                            NewCAurObject(sRainModel, sWeatherObject, NULL,
+                                          NULL));
+                        if (m_apWeatherEffects[i] == NULL)
+                        {
+                            return FALSE;
+                        }
+                        m_apWeatherEffects[i]->SetEmitterAsWeather(true);
                     }
                 }
                 break;
@@ -201,6 +208,7 @@ int CSWCArea::SetWeather(unsigned char nWeather, float fStrength)
                     {
                         return FALSE;
                     }
+                    m_apWeatherEffects[i]->SetEmitterAsWeather(true);
                 }
                 break;
             default:
@@ -1039,6 +1047,7 @@ int CSWCArea::LoadArea(CAurCamera* pCamera, CGuiAreaLoadscreen* pLoadScreen,
     m_nWind = pMessage->ReadBYTE(8);
     unsigned char nWeather = pMessage->ReadBYTE(8);
     int bWeather = pMessage->ReadBOOL();
+    unsigned char nChanceRain = pMessage->ReadBYTE(8);
     m_fAlphaTest = pMessage->ReadFLOAT(1.0f, 32);
 
     CExoString* pasRoomNames = NULL;
@@ -1082,6 +1091,7 @@ int CSWCArea::LoadArea(CAurCamera* pCamera, CGuiAreaLoadscreen* pLoadScreen,
         StartWeather(nWeather);
     else
         StartWeather(WEATHER_CLEAR);
+    m_nChanceRain = nChanceRain;
     m_pScene = NewCAurScene("mainscene");
     if (m_pScene == NULL)
         return FALSE;
@@ -1260,14 +1270,14 @@ int CSWCArea::LoadArea(CAurCamera* pCamera, CGuiAreaLoadscreen* pLoadScreen,
         pSound->AddToArea(this, pObjects);
     }
     unsigned long oidPlaceable;
-    unsigned char nAppearance;
+    int nAppearance;
     Vector vPlaceablePosition;
     Vector vPlaceableOrientation;
     unsigned short nLights = pMessage->ReadWORD(16);
     for (i = 0; i < nLights; i++)
     {
         oidPlaceable = pMessage->ReadOBJECTIDClient();
-        nAppearance = pMessage->ReadBYTE(8);
+        nAppearance = pMessage->ReadINT(32);
         vPlaceablePosition.m_fX = pMessage->ReadFLOAT(1.0f, 32);
         vPlaceablePosition.m_fY = pMessage->ReadFLOAT(1.0f, 32);
         vPlaceablePosition.m_fZ = pMessage->ReadFLOAT(1.0f, 32);
@@ -1279,7 +1289,7 @@ int CSWCArea::LoadArea(CAurCamera* pCamera, CGuiAreaLoadscreen* pLoadScreen,
     for (i = 0; i < nStatics; i++)
     {
         oidPlaceable = pMessage->ReadOBJECTIDClient();
-        nAppearance = pMessage->ReadBYTE(8);
+        nAppearance = pMessage->ReadINT(32);
         vPlaceablePosition.m_fX = pMessage->ReadFLOAT(1.0f, 32);
         vPlaceablePosition.m_fY = pMessage->ReadFLOAT(1.0f, 32);
         vPlaceablePosition.m_fZ = pMessage->ReadFLOAT(1.0f, 32);
@@ -1539,46 +1549,77 @@ void CSWCArea::Update(float fTimeDelta)
 
     CSWCCreature* pPlayer = g_pAppManager->GetClientExoApp()->GetPlayerCreature();
     CAurCamera* pCamera = g_pAppManager->GetClientExoApp()->GetModuleCamera();
+    g_pWeatherCamera = pCamera;
     if (pPlayer != NULL && pCamera != NULL)
     {
-        Vector vPosition = pPlayer->m_vPosition;
-        vPosition.m_fZ += 15.0f;
+        Vector vPosition;
         Vector vDirection;
-        Vector vRight;
-        vDirection = pCamera->GetOrientation().zdir();
-        vDirection.m_fZ = 0.0f;
-        vDirection = normalize(vDirection);
-        vRight = cross(vDirection, Vector(0.0f, 0.0f, 1.0f));
-        vRight = normalize(vRight) * 10.0f;
-        Vector vForward = vDirection * 10.0f;
-        vRight.m_fZ = 0.0f;
-        vForward.m_fZ = 0.0f;
-        vPosition -= vRight;
-
-        for (short j = 0, nEffect = 0; j < 2; j++)
+        Vector vPlayerPosition = pPlayer->m_vPosition;
+        unsigned char bDisableWeather = FALSE;
+        CSWSArea* pServerArea = GetServerArea();
+        if (pServerArea != NULL)
         {
-            for (short i = 0; i < 3; i++, nEffect++)
+            unsigned char bWeatherActive = FALSE;
+            for (short i = 0; i < 6; i++)
             {
-                if (m_apWeatherEffects[nEffect] != NULL)
+                if (m_apWeatherEffects[i] != NULL)
                 {
-                    m_apWeatherEffects[nEffect]->SetOrientation(
-                        YawPitchRoll(Yaw(vDirection), 0.0f, 0.0f));
-                    if (i == 1 && j == 0)
-                    {
-                        m_apWeatherEffects[nEffect]->SetPosition(
-                            vPosition + vRight * i + vForward * j);
-                    }
-                    else
-                    {
-                        m_apWeatherEffects[nEffect]->SetPosition(
-                            vPosition + vRight * i + vForward * j -
-                            Vector(0.0f, 0.0f, 5.0f));
-                    }
+                    bWeatherActive = TRUE;
+                    break;
                 }
+            }
+            bDisableWeather = pServerArea->GetRoomDisableWeather(vPlayerPosition);
+            if (bDisableWeather)
+            {
+                if (bWeatherActive)
+                {
+                    SetWeather(WEATHER_CLEAR, 0.0f);
+                }
+            }
+            else if (!bWeatherActive)
+            {
+                SetWeather(m_nNewWeatherType, m_fWeatherStrength);
             }
         }
 
-        if (m_pLightningEffect != NULL)
+        vPosition = pCamera->GetPosition();
+        vPosition.m_fZ = vPlayerPosition.m_fZ + 15.0f;
+        vDirection = pCamera->GetOrientation().zdir();
+        vDirection.m_fZ = 0.0f;
+        vDirection = normalize(vDirection);
+        Vector vRight = cross(vDirection, Vector(0.0f, 0.0f, 1.0f));
+        Vector vForward = vDirection;
+        vRight.m_fZ = 0.0f;
+        vForward.m_fZ = 0.0f;
+
+        static float offset_pattern[6][3] =
+        {
+            { 0.0f, g_fWeatherRadius, 0.0f },
+            { -sin(PI / 3.0f) * g_fWeatherRadius,
+              cos(PI / 3.0f) * g_fWeatherRadius, 5.0f },
+            { -sin(PI / 3.0f) * g_fWeatherRadius,
+              -cos(PI / 3.0f) * g_fWeatherRadius, 5.0f },
+            { 0.0f, -g_fWeatherRadius, 0.0f },
+            { sin(PI / 3.0f) * g_fWeatherRadius,
+              -cos(PI / 3.0f) * g_fWeatherRadius, 5.0f },
+            { sin(PI / 3.0f) * g_fWeatherRadius,
+              cos(PI / 3.0f) * g_fWeatherRadius, 5.0f }
+        };
+
+        for (short i = 0; i < 6; i++)
+        {
+            if (m_apWeatherEffects[i] != NULL)
+            {
+                m_apWeatherEffects[i]->SetOrientation(
+                    YawPitchRoll(Yaw(vDirection), 0.0f, 0.0f));
+                m_apWeatherEffects[i]->SetPosition(
+                    vPosition + vRight * offset_pattern[i][0] +
+                    vForward * offset_pattern[i][1] +
+                    Vector(0.0f, 0.0f, offset_pattern[i][2]));
+            }
+        }
+
+        if (m_pLightningEffect != NULL && !bDisableWeather)
         {
             int bStartFlash = TRUE;
             if (m_fLightningFlashTime != 0.0f)
@@ -1610,41 +1651,49 @@ void CSWCArea::Update(float fTimeDelta)
             {
                 m_fLightningTimer =
                     (rand() % LIGHTNING_DELAY_RANGE) / 1000.0f + 5.0f;
-                if (rand() % 100 < m_nChanceLightning && rand() % 2)
+                if (rand() % 100 < m_nChanceLightning)
                 {
-                    char szAnimation[16];
-                    float fAnimationTime;
-                    float fAnimationLength;
-                    vPosition = pPlayer->m_vPosition;
-                    vPosition.m_fZ += 10.0f;
                     if (rand() % 2)
                     {
-                        vPosition.m_fX += (rand() % 100) / 10.0f;
+                        char szAnimation[16];
+                        float fAnimationTime;
+                        float fAnimationLength;
+                        vPosition = pPlayer->m_vPosition;
+                        vPosition.m_fZ += 10.0f;
+                        if (rand() % 2)
+                        {
+                            vPosition.m_fX += (rand() % 100) / 10.0f;
+                        }
+                        else
+                        {
+                            vPosition.m_fX -= (rand() % 100) / 10.0f;
+                        }
+                        if (rand() % 2)
+                        {
+                            vPosition.m_fY += (rand() % 100) / 10.0f;
+                        }
+                        else
+                        {
+                            vPosition.m_fY -= (rand() % 100) / 10.0f;
+                        }
+                        m_pLightningEffect->AttachToScene((Scene*)m_pScene);
+                        m_pLightningEffect->SetPosition(vPosition);
+                        sprintf(szAnimation, "flash0%i", rand() % 3 + 1);
+                        m_pLightningEffect->GetAnimation(szAnimation,
+                                                         &fAnimationTime,
+                                                         &fAnimationLength);
+                        m_fLightningFlashTime = fAnimationLength;
+                        m_pLightningEffect->PlayAnimation(szAnimation, 1.0f,
+                                                          0x43, 0.0f);
+                        g_fOldShadowAlpha = shadowalpha;
+                        shadowalpha *= 0.4f;
+                        m_pAmbientSound->Thunder(FALSE);
+                        g_pAppManager->GetClientExoApp()->GetInGameGui();
                     }
                     else
                     {
-                        vPosition.m_fX -= (rand() % 100) / 10.0f;
+                        m_pAmbientSound->Thunder(TRUE);
                     }
-                    if (rand() % 2)
-                    {
-                        vPosition.m_fY += (rand() % 100) / 10.0f;
-                    }
-                    else
-                    {
-                        vPosition.m_fY -= (rand() % 100) / 10.0f;
-                    }
-                    m_pLightningEffect->AttachToScene((Scene*)m_pScene);
-                    m_pLightningEffect->SetPosition(vPosition);
-                    sprintf(szAnimation, "flash0%i", rand() % 3 + 1);
-                    m_pLightningEffect->GetAnimation(szAnimation,
-                                                     &fAnimationTime,
-                                                     &fAnimationLength);
-                    m_fLightningFlashTime = fAnimationLength;
-                    m_pLightningEffect->PlayAnimation(szAnimation, 1.0f, 3,
-                                                      0.0f);
-                    g_fOldShadowAlpha = shadowalpha;
-                    shadowalpha *= 0.4f;
-                    g_pAppManager->GetClientExoApp()->GetInGameGui();
                 }
             }
         }
@@ -1719,6 +1768,31 @@ void CSWCArea::Update(float fTimeDelta)
     if (m_pMiniGame != NULL)
     {
         m_pMiniGame->Update(fTimeDelta);
+    }
+
+    for (int i = m_lstToBeDeletedEmitters.m_nCount - 1; i >= 0; i--)
+    {
+        CAurObject* pEmitter = m_lstToBeDeletedEmitters[i];
+        if (pEmitter != NULL)
+        {
+            PartEmitter* pPart =
+                (PartEmitter*)pEmitter->GetPart("OmenEmitter01");
+            if (pPart != NULL)
+            {
+                if (pPart->m_lstActive.m_nCount == 0)
+                {
+                    pEmitter->AttachToScene(NULL);
+                    delete pEmitter;
+                    m_lstToBeDeletedEmitters.DelIndex(i);
+                }
+            }
+            else
+            {
+                pEmitter->AttachToScene(NULL);
+                delete pEmitter;
+                m_lstToBeDeletedEmitters.DelIndex(i);
+            }
+        }
     }
 }
 
@@ -1935,7 +2009,7 @@ void CSWCArea::ClearAllMapPins()
 }
 // PC 0x00652EA0
 int CSWCArea::AddPlaceableObjectLight(unsigned long oidPlaceable,
-                                      unsigned char nAppearance,
+                                      int nAppearance,
                                       Vector vPosition)
 {
     Quaternion qOrientation;
@@ -2051,7 +2125,7 @@ int CSWCArea::AddPlaceableObjectLight(unsigned long oidPlaceable,
 }
 // PC 0x00653330
 int CSWCArea::AddPlaceableObjectStatic(unsigned long oidPlaceable,
-                                      unsigned char nAppearance,
+                                      int nAppearance,
                                       Vector vPosition, Vector vOrientation)
 {
     CGameObjectArray* pGameObjectArray =

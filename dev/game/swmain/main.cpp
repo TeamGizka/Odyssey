@@ -96,6 +96,7 @@ CVirtualMachine* g_pVirtualMachine = NULL;
 CScriptCompiler* g_pScriptCompiler = NULL;
 CTlkTable* g_pTlkTable = NULL;
 CSWTlkTable* g_pSWTlkTable = NULL;
+int g_bDemoMode = 0;
 
 static int InitCounterStepBeforeBuildStrings()
 {

@@ -81,9 +81,9 @@ public:
     void UpdateSoundObjectsTimeOfDay();
     Gob* GetPlaceableObjectLight(unsigned long oidPlaceable);
     int AddPlaceableObjectLight(unsigned long oidPlaceable,
-                                unsigned char nAppearance, Vector vPosition);
+                                int nAppearance, Vector vPosition);
     int AddPlaceableObjectStatic(unsigned long oidPlaceable,
-                                 unsigned char nAppearance, Vector vPosition,
+                                 int nAppearance, Vector vPosition,
                                  Vector vOrientation);
     void ClearAllMapPins();
     void UpdateDayNightCycle(float fTimeStep);
