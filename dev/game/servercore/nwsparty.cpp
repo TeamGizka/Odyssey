@@ -469,8 +469,6 @@ int CSWSFaction::GetMostFrequentClass()
     int nClass;
     CSWSCreature* pCreature;
     CSWSCreature* pOther;
-    CSWSCreatureStats* pStats;
-    CSWSCreatureStats* pOtherStats;
     CServerExoApp* pExoApp;
 
     i = 0;
@@ -483,10 +481,9 @@ int CSWSFaction::GetMostFrequentClass()
         pCreature = pExoApp->GetCreatureByGameObjectID(m_lstMembers[i]);
         if (pCreature != NULL)
         {
-            pStats = pCreature->m_pStats;
-            for (j = 0; j < pStats->m_nClassCount; ++j)
+            for (j = 0; j < pCreature->m_pStats->m_nClassCount; ++j)
             {
-                nClass = (unsigned char)pStats->GetClass(j);
+                nClass = (unsigned char)pCreature->m_pStats->GetClass(j);
                 for (k = 0; k < m_lstMembers.num; ++k)
                 {
                     pExoApp = g_pAppManager->m_pServerExoApp;
@@ -494,15 +491,13 @@ int CSWSFaction::GetMostFrequentClass()
                         m_lstMembers[k]);
                     if (pOther != NULL)
                     {
-                        pOtherStats = pOther->m_pStats;
-                        for (m = 0; m < pOtherStats->m_nClassCount; ++m)
+                        for (m = 0; m < pOther->m_pStats->m_nClassCount; ++m)
                         {
-                            if ((unsigned char)pOtherStats->GetClass(m) ==
+                            if ((unsigned char)pOther->m_pStats->GetClass(m) ==
                                 nClass)
                             {
                                 ++nCount;
                             }
-                            pOtherStats = pOther->m_pStats;
                         }
                     }
                 }
@@ -511,7 +506,6 @@ int CSWSFaction::GetMostFrequentClass()
                     nBestCount = nCount;
                     nBestClass = nClass;
                 }
-                pStats = pCreature->m_pStats;
             }
         }
     }

@@ -3039,7 +3039,10 @@ void CSWSObject::SpellCastAndImpact(
                 CSWSArea* pArea = AsSWSCreature()->GetArea();
                 int nRoomForceRating = 0;
                 if (pArea != NULL)
-                    nRoomForceRating = pArea->GetRoomForceRating(AsSWSCreature()->m_vPosition);
+                {
+                    CSWSCreature* pCreature = AsSWSCreature();
+                    nRoomForceRating = pArea->GetRoomForceRating(pCreature->m_vPosition);
+                }
                 int nForceBodyLevel = -1;
                 CSWSCreature* pCaster = AsSWSCreature();
                 for (int i = 0; i < pCaster->m_lstEffects.num; i++)
@@ -3082,7 +3085,8 @@ void CSWSObject::SpellCastAndImpact(
                 int nForcePoints = AsSWSCreature()->GetStats()->GetCurrentForcePoints();
                 pData->SetInteger(3, nForcePoints);
                 pData->SetInteger(4, nForceBodyCost);
-                pData->SetInteger(5, AsSWSCreature()->GetCurrentHitPoints(0));
+                int nHitPoints = AsSWSCreature()->GetCurrentHitPoints(0);
+                pData->SetInteger(5, nHitPoints);
                 BroadcastSpellData(pSpell, pData);
                 delete pData;
             }

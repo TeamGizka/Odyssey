@@ -2151,21 +2151,29 @@ int CSWVirtualMachineCommands::ExecuteCommandSpawnMine(int nCommand, int nArgs)
         delete pLocation;
         return -2001;
     }
-    C2DA* pTraps = g_pRules->m_p2DArrays->m_pTraps;
+    C2DA* pTraps = g_pRules->Get2DArrays()->m_pTraps;
     CExoString sTrapScript;
     CSWSCreature* pCreature = NULL;
     int nFaction;
     int nDetectDCMod;
     int nDisarmDCMod;
     CGameObject* pCreator = g_pAppManager->GetServerExoApp()->GetGameObject(oidCreator);
-    if (pCreator != NULL && pCreator->AsSWSCreature() != NULL)
+    if (pCreator != NULL)
     {
-        pCreature = pCreator->AsSWSCreature();
-        nFaction = pCreature->m_pStats->m_nFactionId;
-    }
-    else if (pCreator != NULL && pCreator->AsSWSPlaceable() != NULL)
-    {
-        nFaction = pCreator->AsSWSPlaceable()->m_nFaction;
+        if (pCreator->AsSWSCreature() != NULL)
+        {
+            pCreature = pCreator->AsSWSCreature();
+            nFaction = pCreature->GetFactionId();
+        }
+        else if (pCreator->AsSWSPlaceable() != NULL)
+        {
+            CSWSPlaceable* pPlaceable = pCreator->AsSWSPlaceable();
+            nFaction = pPlaceable->GetFactionId();
+        }
+        else
+        {
+            nFaction = 1;
+        }
     }
     else
     {
@@ -2178,8 +2186,10 @@ int CSWVirtualMachineCommands::ExecuteCommandSpawnMine(int nCommand, int nArgs)
     pTrigger->SetCreator(oidCreator);
     pTrigger->m_nTrapType = (unsigned char)nMineType;
     pTrigger->m_asScripts[CSWSTrigger::SCRIPT_ONTRAPTRIGGERED] = sTrapScript;
-    pTrigger->m_nTrapDetectDC = nDetectDCMod + nDetectDC;
-    pTrigger->m_nTrapDisarmDC = nDisarmDC + nDisarmDCMod;
+    int nTrapDetectDC = nDetectDCMod + nDetectDC;
+    pTrigger->m_nTrapDetectDC = nTrapDetectDC;
+    int nTrapDisarmDC = nDisarmDC + nDisarmDCMod;
+    pTrigger->m_nTrapDisarmDC = nTrapDisarmDC;
     pTrigger->m_bMineTrigger = 1;
     pTrigger->m_bTrapDetectable = 1;
     pTrigger->m_bTrapDisarmable = 1;
@@ -2187,7 +2197,8 @@ int CSWVirtualMachineCommands::ExecuteCommandSpawnMine(int nCommand, int nArgs)
     pTrigger->m_nFaction = nFaction;
     if (pCreature != NULL)
     {
-        pTrigger->m_nOwnerDemolitionsSkill = pCreature->GetStats()->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, 0);
+        int nSkillRank = pCreature->GetStats()->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, 0);
+        pTrigger->m_nOwnerDemolitionsSkill = nSkillRank;
     }
     int nTrapName = 0;
     pTraps->GetINTEntry(nMineType, "TrapName", &nTrapName);
@@ -2195,7 +2206,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSpawnMine(int nCommand, int nArgs)
     CSWSArea* pArea = g_pAppManager->GetServerExoApp()->GetModule()->GetArea();
     pTrigger->CreateNewGeometry(2.0f, pLocation->m_vPosition, pArea);
     pTrigger->AddToArea(pArea, pLocation->m_vPosition.m_fX, pLocation->m_vPosition.m_fY, pLocation->m_vPosition.m_fZ, 1);
-    pArea->m_lstTrapObjectIds.Add(pTrigger->m_nId);
+    pArea->m_lstTrapObjectIds.Add(pTrigger->GetId());
     delete pLocation;
     return 0;
 }
@@ -15716,11 +15727,11 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayAnimation(int nCommand, int nAr
     int nDialogState = g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nGlobalDialogState;
     if (nDialogState != 0)
     {
-        CClientExoApp* pClientExoApp = g_pAppManager->GetClientExoApp();
-        unsigned long oidServer = m_oidObject;
-        unsigned long oidClient = pClientExoApp->ServerToClientObjectId(oidServer);
-        unsigned long oidDialog1 = g_pAppManager->GetClientExoApp()->GetInGameGui()->m_oidDialogObject1;
-        unsigned long oidDialog2 = g_pAppManager->GetClientExoApp()->GetInGameGui()->m_oidDialogObject2;
+        unsigned long oidClient = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(m_oidObject);
+        CGuiInGame* pInGameGui = g_pAppManager->GetClientExoApp()->GetInGameGui();
+        unsigned long oidDialog1 = pInGameGui->m_oidDialogObject1;
+        pInGameGui = g_pAppManager->GetClientExoApp()->GetInGameGui();
+        unsigned long oidDialog2 = pInGameGui->m_oidDialogObject2;
         if (oidClient == oidDialog1)
         {
             CSWCObject* pClientObject = g_pAppManager->GetClientExoApp()->GetGameObject(oidDialog1);

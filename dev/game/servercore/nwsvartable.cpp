@@ -205,7 +205,8 @@ CScriptLocation CSWSScriptVarTable::GetLocation(const CExoString& sName)
 #ifndef _XBOX
 void CSWSScriptVarTable::SetInt(const CExoString& sName, int nValue, int nFlag)  // PC 0x005A01F0
 {
-    MatchIndex(sName, SCRIPTVAR_TYPE_INT, 1)->m_nValue = nValue;
+    CSWSScriptVar* pVar = MatchIndex(sName, SCRIPTVAR_TYPE_INT, 1);
+    pVar->m_nValue = nValue;
 
     if (m_pCreature != NULL)
     {

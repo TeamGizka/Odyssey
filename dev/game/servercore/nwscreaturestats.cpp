@@ -4663,7 +4663,8 @@ int CSWSCreatureStats::GetCreatureTalentRandomKnownPower(
                 if (nSelection == TALENT_SELECTION_RANDOM)
                 {
                     pTalents->Add(nSpell);
-                    pClasses->Add((unsigned char)nClassIndex);
+                    unsigned char nClass = (unsigned char)nClassIndex;
+                    pClasses->Add(nClass);
                     pSpell->m_sLabel.CStr();
                 }
                 else if (pSpell->m_nMaxCR > TALENT_INITIAL_MAX_CR)
@@ -4673,13 +4674,15 @@ int CSWSCreatureStats::GetCreatureTalentRandomKnownPower(
                     pTalents = new CExoArrayList<int>(0);
                     pClasses = new CExoArrayList<unsigned char>(0);
                     pTalents->Add(nSpell);
-                    pClasses->Add((unsigned char)nClassIndex);
+                    unsigned char nClass = (unsigned char)nClassIndex;
+                    pClasses->Add(nClass);
                     pSpell->m_sLabel.CStr();
                 }
                 else if (pSpell->m_nMaxCR == TALENT_INITIAL_MAX_CR)
                 {
                     pTalents->Add(nSpell);
-                    pClasses->Add((unsigned char)nClassIndex);
+                    unsigned char nClass = (unsigned char)nClassIndex;
+                    pClasses->Add(nClass);
                     pSpell->m_sLabel.CStr();
                 }
             }
@@ -5608,8 +5611,9 @@ void CSWSCreatureStats::SaveStats(CResGFF* pRes, CResStruct* pStruct)
     SaveClassInfo(pRes, pStruct);
 
     CExoString sWeaponName;
+    CCombatInformation* pLeftInformation = m_pCombatInformation;
     CSWSItem* pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(
-        m_pCombatInformation->GetLeftEquipment());
+        pLeftInformation->GetLeftEquipment());
     if (pItem)
     {
         CExoString* psLeftString = &m_pCombatInformation->m_sLeftString;
@@ -6821,25 +6825,22 @@ int CSWSCreatureStats::ResolveSpecialAttackAttackBonus(CSWSCreature* pTarget)
 
     switch (pAttack->m_nAttackType)
     {
-    case 11:
+    case CSWFeat::FEAT_FLURRY:
         nBonus = -4;
         break;
-    case 91:
+    case CSWFeat::FEAT_IMPROVED_FLURRY:
         nBonus = -2;
         break;
-    case 20:
-    case 31:
-    case 77:
+    case CSWFeat::FEAT_IMPROVED_SNIPER_SHOT:
+    case CSWFeat::FEAT_SNIPER_SHOT:
+    case CSWFeat::FEAT_MASTER_SNIPER_SHOT:
         pWeapon = m_pCreature->m_pcCombatRound->GetCurrentAttackWeapon(0);
         if (pWeapon != NULL && pWeapon->m_n2E8)
         {
             nBonus = 4;
         }
         break;
-    case 103:
-        nBonus = 4;
-        break;
-    case 30:
+    case CSWFeat::FEAT_RAPID_SHOT:
         nBonus = -4;
         pWeapon = m_pCreature->m_pcCombatRound->GetCurrentAttackWeapon(0);
         if (pWeapon != NULL && pWeapon->m_n2E4)
@@ -6847,15 +6848,19 @@ int CSWSCreatureStats::ResolveSpecialAttackAttackBonus(CSWSCreature* pTarget)
             nBonus = -3;
         }
         break;
-    case 17:
-    case 18:
-    case 28:
-    case 29:
-    case 82:
-    case 83:
+    case CSWFeat::FEAT_IMPROVED_POWER_ATTACK:
+    case CSWFeat::FEAT_IMPROVED_POWER_BLAST:
         nBonus = -3;
         break;
-    case 92:
+    case CSWFeat::FEAT_POWER_ATTACK:
+    case CSWFeat::FEAT_POWER_BLAST:
+        nBonus = -3;
+        break;
+    case CSWFeat::FEAT_MASTER_POWER_BLAST:
+    case CSWFeat::FEAT_MASTER_POWER_ATTACK:
+        nBonus = -3;
+        break;
+    case CSWFeat::FEAT_IMPROVED_RAPID_SHOT:
         nBonus = -2;
         pWeapon = m_pCreature->m_pcCombatRound->GetCurrentAttackWeapon(0);
         if (pWeapon != NULL && pWeapon->m_n2E4)
@@ -6863,7 +6868,7 @@ int CSWSCreatureStats::ResolveSpecialAttackAttackBonus(CSWSCreature* pTarget)
             nBonus = -1;
         }
         break;
-    case 26:
+    case CSWFeat::FEAT_MULTI_SHOT:
         nBonus = -1;
         pWeapon = m_pCreature->m_pcCombatRound->GetCurrentAttackWeapon(0);
         if (pWeapon != NULL && pWeapon->m_n2E4)
@@ -6871,12 +6876,17 @@ int CSWSCreatureStats::ResolveSpecialAttackAttackBonus(CSWSCreature* pTarget)
             nBonus = 0;
         }
         break;
-    case 53:
-    case 101:
+    case CSWFeat::FEAT_WHIRLWIND_ATTACK:
         nBonus = 0;
         break;
-    case 102:
+    case CSWFeat::FEAT_FORCE_JUMP:
+        nBonus = 0;
+        break;
+    case CSWFeat::FEAT_FORCE_JUMP_ADVANCED:
         nBonus = 2;
+        break;
+    case CSWFeat::FEAT_FORCE_JUMP_MASTERY:
+        nBonus = 4;
         break;
     }
 

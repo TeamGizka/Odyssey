@@ -3223,29 +3223,29 @@ int CSWSCreature::EquipItem(unsigned long nSlot, CSWSItem* pItem,
         short nAlignment = GetStats()->m_nGoodEvilAlignment;
         if (m_sTag.CompareNoCase("handmaiden"))
         {
-            if (nBodyVariation == 2)
+            if (nBodyVariation == CCAppearanceInfo::HANDMAIDEN_BODY_VARIATION_ROBED)
             {
-                if (nAlignment <= 40)
+                if (nAlignment <= CCAppearanceInfo::HANDMAIDEN_ALIGNMENT_DARK)
                 {
-                    if (GetStats()->m_nAppearance != 669)
+                    if (GetStats()->m_nAppearance != CCAppearanceInfo::APPEARANCE_HANDMAIDEN_ROBED_DARK)
                     {
-                        Disguise(669, NULL, FALSE, TRUE);
+                        Disguise(CCAppearanceInfo::APPEARANCE_HANDMAIDEN_ROBED_DARK, NULL, FALSE, TRUE);
                     }
                 }
-                else if (GetStats()->m_nAppearance != 454)
+                else if (GetStats()->m_nAppearance != CCAppearanceInfo::APPEARANCE_HANDMAIDEN_ROBED_LIGHT)
                 {
-                    Disguise(454, NULL, FALSE, TRUE);
+                    Disguise(CCAppearanceInfo::APPEARANCE_HANDMAIDEN_ROBED_LIGHT, NULL, FALSE, TRUE);
                 }
                 return TRUE;
             }
-            if (GetStats()->GetAppearanceType() != 638)
+            if (GetStats()->GetAppearanceType() != CCAppearanceInfo::APPEARANCE_HANDMAIDEN_DEFAULT)
             {
-                Disguise(638, NULL, FALSE, TRUE);
+                Disguise(CCAppearanceInfo::APPEARANCE_HANDMAIDEN_DEFAULT, NULL, FALSE, TRUE);
             }
         }
 
         char sModelColumn[] = "ModelA";
-        int nVariation = max(1, min(12, nBodyVariation));
+        int nVariation = max(1, min(CCAppearanceInfo::BODY_VARIATION_L, nBodyVariation));
         sModelColumn[5] = 'A' + nVariation - 1;
 
         CExoString sEntry;
@@ -4238,12 +4238,13 @@ float CSWSCreature::MaxAttackRange(unsigned long oidTarget, int nAttackType,
     float fRange = 0.0f;
     CSWSItem* pItem = m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
 
-    int bRanged = 0;
+    int bMelee = 1;
     if (pItem != NULL)
     {
-        bRanged = pItem->GetBaseItem()->m_nRangedWeapon > 0;
+        int bRanged = pItem->GetBaseItem()->m_nRangedWeapon > 0;
         if (bRanged > 0)
         {
+            bMelee = 0;
             if (bOffHand)
             {
                 return 20.0f;
@@ -4262,7 +4263,7 @@ float CSWSCreature::MaxAttackRange(unsigned long oidTarget, int nAttackType,
         }
     }
 
-    if (bRanged <= 0)
+    if (bMelee)
     {
         if (nAttackType != 0)
         {
@@ -6666,12 +6667,14 @@ int CSWSCreature::ToggleMode(unsigned char nMode)
 // PC 0x00521A00
 void CSWSCreature::UpdateAttributesOnEffect(CGameEffect* pEffect)
 {
-    if (pEffect == NULL ||
-        (pEffect->GetEffectType() != CSWSEffectListHandler::EFFECT_ABILITY_INCREASE &&
-         pEffect->GetEffectType() != CSWSEffectListHandler::EFFECT_ABILITY_DECREASE))
-        return;
+    int nAbility = -1;
+    if (pEffect != NULL &&
+        (pEffect->GetEffectType() == CSWSEffectListHandler::EFFECT_ABILITY_INCREASE ||
+         pEffect->GetEffectType() == CSWSEffectListHandler::EFFECT_ABILITY_DECREASE))
+    {
+        nAbility = pEffect->GetInteger(0);
+    }
 
-    int nAbility = pEffect->GetInteger(0);
     if (nAbility == ABILITY_STRENGTH)
     {
         m_pStats->UpdateSTRModifier();
@@ -11168,9 +11171,6 @@ void CSWSCreature::ForceEquipClothing()
             pRepository->RemoveItem(pItem);
         }
         EquipItem(INVENTORY_SLOT_ARMOUR, pItem, TRUE, FALSE, FALSE);
-        m_bForceEquipClothing = FALSE;
-        return;
-
 Done:
         m_bForceEquipClothing = FALSE;
     }

@@ -357,23 +357,17 @@ int CSWSStore::AddItemToInventory(CSWSItem** ppItem, int bAppend)
     unsigned long nCost = (*ppItem)->GetCost();
     CSWSItem* pItem = m_pItemRepository->ItemListGetItem(0);
 
-    if (pItem == NULL)
-    {
-        m_pItemRepository->AddItem(ppItem, 1, 0, 1);
-        return 1;
-    }
-
-    if (pItem->GetCost() <= nCost)
+    int bAddToEnd = (pItem == NULL || pItem->GetCost() <= nCost);
+    if (bAddToEnd)
     {
         m_pItemRepository->AddItem(ppItem, 1, 0, 1);
         return 1;
     }
     else
     {
-        int nIndex = m_pItemRepository->m_lstItems.num;
-        while (1)
+        for (int nIndex = m_pItemRepository->m_lstItems.num - 1; ; nIndex--)
         {
-            pItem = m_pItemRepository->ItemListGetItem(--nIndex);
+            pItem = m_pItemRepository->ItemListGetItem(nIndex);
             if (pItem != NULL)
             {
                 if (pItem->m_nId == (*ppItem)->m_nId)

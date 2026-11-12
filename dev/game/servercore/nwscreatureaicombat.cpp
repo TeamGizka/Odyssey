@@ -3038,12 +3038,12 @@ int CSWSCreature::AIActionCombat(CSWSObjectActionNode* pNode)
             return ACTION_IN_PROGRESS;
 
         unsigned short nAnimation = pAction->m_nAnimation;
-        unsigned long oidTarget = pAction->m_oidTarget;
         int nAnimationTime = pAction->m_nAnimationTime;
         int nAttacks = pAction->m_nNumAttacks;
         unsigned char nActionType = pAction->m_nActionType;
         unsigned short nSpecialAttack = pAction->m_nSpecialAttack;
         int bCutsceneAttack = pAction->m_bCutsceneAttack;
+        unsigned long oidTarget = pAction->m_oidTarget;
 
         GetCombatRound()->SetCurrentCombatRoundAction(pAction);
         GetCombatRound()->SetCurrentAction(nActionType);
@@ -3510,7 +3510,7 @@ Vector CSWSCreature::ResolveProjectileMissLocation(CSWSObject* pTarget)
         Vector vMiss = pTarget->m_vPosition + vSide * fMissRadius;
         float fHeightRange = (vDelta * vDelta) * 1.5f / 100.0f;
         float fRandomHeight = (float)(rand() % 1000) / 1000.0f;
-        float fHeightOffset = 1.5f - fHeightRange / 1.5f;
+        float fHeightOffset = 1.5f - (fHeightRange / 1.5f);
         fHeightOffset += fRandomHeight * fHeightRange * 0.75f;
         vMiss.m_fZ += fHeightOffset;
 
@@ -4179,9 +4179,9 @@ int CSWSCreature::IsProjectileParryable(CSWSObject* pTarget, int bRangedAttack,
                 if (bShieldHit)
                 {
                     bResult = 1;
-                    nShield = pCreature->GetClientCreature()->GetForceShield();
                 }
             }
+            nShield = pCreature->GetClientCreature()->GetForceShield();
         }
         int bDeflection = pCreature->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_FORCE_REPULSION, 0);
         int bRedirection = pCreature->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_FORCE_REDIRECTION, 0);
