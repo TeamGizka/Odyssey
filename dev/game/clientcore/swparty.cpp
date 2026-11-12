@@ -726,7 +726,11 @@ int CSWParty::IsPartyTogether()
 
     pLeader = g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
         g_pAppManager->m_pServerExoApp->GetFirstPCObject());
-    if (pLeader == NULL || pLeader->GetCurrentHitPoints(0) <= 0)
+    if (pLeader == NULL)
+    {
+        return 0;
+    }
+    if (pLeader->GetCurrentHitPoints(0) <= 0)
     {
         return 0;
     }

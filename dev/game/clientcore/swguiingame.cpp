@@ -2263,6 +2263,10 @@ CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager)
     m_nOpenSound = 15;
 }
 #ifndef _XBOX
+static inline void SetBorderFillImage(CSWGuiBorderParams& cParams, const CResRef& cImage, int bTile)
+{
+    cParams.SetFillImage(cImage, bTile);
+}
 // PC 0x00677700
 CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager, int nStyle)
     : CSWGuiPanel(pManager)
@@ -2278,7 +2282,7 @@ CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager, int nStyle)
     m_bHasIcon = 0;
     m_n9BC = nStyle;
     StartLoadFromLayout("datapad_p");
-    m_pBorder->m_cParams.SetFillImage("", 0);
+    SetBorderFillImage(m_pBorder->m_cParams, "", 0);
     InitControl(m_btnOk, "BTN_OK", 1);
     InitControl(m_btnCancel, "BTN_CANCEL", 1);
     InitControl(m_lbMessage, "LB_MESSAGE", 1);

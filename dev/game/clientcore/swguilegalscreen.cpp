@@ -81,8 +81,8 @@ void CSWDemoScreen::HandleInputEvent(int nEvent, int nState)
     if (g_pExoBase->m_pExoTimers->GetLowResolutionTimer() >= m_nShowTime + m_nMinShowTime)
     {
         m_bShowing = 0;
-        g_pAppManager->m_pClientExoApp->GetInGameGui()->StartGlobalFade(1, 0.0f, 1.0f, Vector(0.0f, 0.0f, 0.0f));
-        g_pAppManager->m_pClientExoApp->GetInGameGui()->HideDemoScreen();
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->StartGlobalFade(1, 0.0f, 1.0f, Vector(0.0f, 0.0f, 0.0f));
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->HideDemoScreen();
     }
 }
 
@@ -94,8 +94,8 @@ void CSWDemoScreen::Update(float fElapsed)
         m_bDeferredRemoval = 0;
         m_nExitState = EXITSTATE_DELETE;
         m_bShowing = 0;
-        g_pAppManager->m_pClientExoApp->GetInGameGui()->StartGlobalFade(1, 0.0f, 1.0f, Vector(0.0f, 0.0f, 0.0f));
-        g_pAppManager->m_pClientExoApp->GetInGameGui()->HideDemoScreen();
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->StartGlobalFade(1, 0.0f, 1.0f, Vector(0.0f, 0.0f, 0.0f));
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->HideDemoScreen();
     }
 }
 

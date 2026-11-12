@@ -1492,7 +1492,7 @@ void CSWCCreature::SetStealthState(int nState, int bSuppressAnimation)
     if (bStateChanged && nNPC != -1)
     {
         CGameObject* pObject = g_pAppManager->m_pServerExoApp->GetGameObject(
-            g_pAppManager->m_pServerExoApp->GetPartyTable()->GetNPCObject(nNPC, 0, 1));
+            g_pAppManager->GetServerExoApp()->GetPartyTable()->GetNPCObject(nNPC, 0, 1));
         if (pObject != NULL)
         {
             CSWCCreature* pNPC = ((CSWSCreature*)pObject)->GetClientCreature();
@@ -6380,6 +6380,7 @@ void CSWCCreature::ActionSwapImplant(int nAction)
         sPreviousImplant, nImplant);
     char nNewImplant;
     unsigned long nStrRef;
+    int bValid = 1;
     switch (nAction)
     {
     case ACTION_SWAP_IMPLANT_REGEN:
@@ -6399,16 +6400,20 @@ void CSWCCreature::ActionSwapImplant(int nAction)
         nStrRef = STRREF_IMPLANT_AGI;
         break;
     default:
-        return;
+        bValid = 0;
+        break;
     }
-    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(
-        sCurrentImplant, nNewImplant);
-    CExoString sScript("a_swapimplant");
-    g_pVirtualMachine->RunScript(&sScript, GetServerCreature()->m_nId, 1);
-    CSWGuiMainInterface* pMainInterface =
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface;
-    pMainInterface->m_nFormMessage = nStrRef;
-    pMainInterface->m_fFormMessageTime = SWCCREATURE_FORM_MESSAGE_DURATION;
+    if (bValid)
+    {
+        g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(
+            sCurrentImplant, nNewImplant);
+        CExoString sScript("a_swapimplant");
+        g_pVirtualMachine->RunScript(&sScript, GetServerCreature()->GetId(), 1);
+        CGuiInGame* pGui = g_pAppManager->GetClientExoApp()->GetInGameGui();
+        CSWGuiMainInterface* pMainInterface = pGui->m_pMainInterface;
+        pMainInterface->m_nFormMessage = nStrRef;
+        pMainInterface->m_fFormMessageTime = SWCCREATURE_FORM_MESSAGE_DURATION;
+    }
 }
 // PC 0x006635D0
 void CSWCCreature::ActionMenuSwapImplantRegen(unsigned long nAction, CSWCCreature* pInstigator)
@@ -7129,7 +7134,7 @@ void CSWCCreature::ActionMenuSwitchWeapons(unsigned long nAction,
     {
         bSecondSet = 1;
     }
-    CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+    CSWCMessage* pMessage = g_pAppManager->GetClientExoApp()->GetSWCMessage();
     pMessage->SendPlayerToServerInput_SwitchWeapons(m_nId, bSecondSet);
     m_n464 = SWITCH_WEAPONS_DELAY;
 }

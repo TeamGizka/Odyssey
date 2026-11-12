@@ -83,9 +83,9 @@ void CSWGuiInGameEquip::UpdateSlotLocks()
 {
     if (m_pCreature != NULL)
     {
-        unsigned short nAppearance = m_pCreature->m_pAppearance->m_nAppearance;
+        unsigned short nAppearance = m_pCreature->GetAppearance()->m_nAppearance;
         int nSlotsLocked = 0;
-        if (!g_pRules->Get2DArrays()->m_pAppearance->GetINTEntry(
+        if (!g_pRules->Get2DArrays()->GetAppearance()->GetINTEntry(
                 nAppearance, "EquipSlotsLocked", &nSlotsLocked))
         {
             nSlotsLocked = 0;

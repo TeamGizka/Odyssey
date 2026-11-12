@@ -1996,7 +1996,7 @@ void CSWCObject::MenuActionUseSecuritySpike(unsigned long oidItem, CSWCCreature*
         pCreature->ClearAllActions();
     }
     CSWCMessage* pMessage = g_pAppManager->GetClientExoApp()->GetSWCMessage();
-    pMessage->SendPlayerToServerInput_UnlockObject(m_nId, oidItem & ~OBJECT_LISTTYPE_MASK);
+    pMessage->SendPlayerToServerInput_UnlockObject(GetId(), oidItem & ~OBJECT_LISTTYPE_MASK);
 }
 #endif
 // PC 0x006940C0
@@ -2055,7 +2055,7 @@ int CSWCObject::DisableBumpedOutShell()
 void CSWCObject::ClearAllActions()
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
-    unsigned long nServerId = pServerExoApp->ClientToServerObjectId(m_nId);
+    unsigned long nServerId = pServerExoApp->ClientToServerObjectId(GetId());
     pServerExoApp->ClearAllActions(nServerId);
 }
 // PC 0x00694220

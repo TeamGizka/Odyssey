@@ -269,7 +269,7 @@ void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)
 #else
 void CSWGuiInGameCharacter::HandleInputEvent(int nEvent, int nState)  // PC 0x0071DC70
 {
-    g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
+    g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0);
     if (nState != 0)
     {
         CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;

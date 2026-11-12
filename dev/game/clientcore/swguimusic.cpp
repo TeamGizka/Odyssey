@@ -308,6 +308,6 @@ CSWGuiTitleMusic::~CSWGuiTitleMusic()
     m_lMusic.RemoveAll();
     float fVolume = (float)m_nVolume / m_sldVolume.GetMaxValue();
     g_pExoSound->SetMusicVolume(fVolume, 0);
-    g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nMusicVolume =
-        (unsigned char)m_nVolume;
+    unsigned char nVolume = (unsigned char)m_nVolume;
+    g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nMusicVolume = nVolume;
 }
