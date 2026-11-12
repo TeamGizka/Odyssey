@@ -29,7 +29,7 @@ class CSWGuiPartySelectionData
 public:
     ~CSWGuiPartySelectionData();
 
-    int m_n00;
+    CSWGuiObject* m_p00;
     CSWGuiPartySelectionButton m_btnNPC;
     CSWGuiLabel m_lblNotAvailable;
     CSWGuiLabel m_lblCharacter;
@@ -39,7 +39,7 @@ public:
     unsigned long m_nFlagsUnused : 29;
     int m_nPartyIndex;
     int m_nNPC;
-    int m_n474;
+    int m_bHidden;
 };
 
 class CSWGuiPartySelection : public CSWGuiPanel
@@ -49,7 +49,38 @@ public:
 
     enum { MAX_SELECTED_NPCS = 2 };
 
-    enum { STRREF_LEVEL = 32154 };
+    enum
+    {
+        NPC_ATTON = 0,
+        NPC_BAO_DUR = 1,
+        NPC_CANDEROUS = 2,
+        NPC_G0T0 = 3,
+        NPC_HANDMAIDEN = 4,
+        NPC_HK_47 = 5,
+        NPC_KREIA = 6,
+        NPC_MIRA = 7,
+        NPC_T3_M4 = 8,
+        NPC_VISAS = 9,
+        NPC_HANHARR = 10,
+        NPC_DISCIPLE = 11
+    };
+
+    enum
+    {
+        STRREF_AVAILABLE_SLOTS = 1564,
+        STRREF_LEVEL = 32154,
+        STRREF_CONFIRM_PARTY = 38328,
+        STRREF_CONFIRM_SMALL_PARTY = 38329,
+        STRREF_ADD = 38455,
+        STRREF_REMOVE = 38456,
+        STRREF_UNABLE_TO_JOIN = 42376,
+        STRREF_CANNOT_CANCEL = 42405,
+        STRREF_MUST_BE_MEMBER = 42406,
+        STRREF_UNABLE_TO_LEAVE = 108425,
+        STRREF_CANNOT_CHANGE_PARTY = 108426,
+        STRREF_CANNOT_CHANGE_COMBAT = 126692,
+        STRREF_CANNOT_CHANGE_UNCONSCIOUS = 126693
+    };
 #ifdef _XBOX
 
     enum { RESTYPE_TXB = 3006 };
@@ -71,7 +102,10 @@ public:
 
     void SetForcedNPC(int nFirstNPC, int nSecondNPC);
     void UpdateCount();
-    void AcceptParty();
+#ifndef _XBOX
+    void UpdateVisibleCharacters();
+#endif
+    void AcceptParty(int bCancelled);
     void ConfirmPartySelection(CSWGuiControl* pControl);
     void SetAddRemoveLabel(int bAdd);
     void OnToggled(CSWGuiControl* pControl);
@@ -112,8 +146,8 @@ public:
     CSWGuiControl* m_pSelectedControl;
     CSWGuiLabel m_alblBar[5];
     CSWGuiLabel m_lblNameBack;
-    int m_n50AC;
-    unsigned long m_n50B0;
+    int m_bCanChangeParty;
+    unsigned long m_nCannotChangeStrRef;
 #endif
 };
 
