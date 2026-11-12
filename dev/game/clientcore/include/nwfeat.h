@@ -114,6 +114,19 @@ public:
     };
 
     enum { FEAT_MENTOR = 202 };
+    enum
+    {
+        FEAT_DAMAGE_REDUCTION_1 = 150,
+        FEAT_DAMAGE_REDUCTION_2 = 151,
+        FEAT_DAMAGE_REDUCTION_3 = 152,
+        FEAT_DAMAGE_REDUCTION_1B = 169,
+        FEAT_DAMAGE_REDUCTION_2B = 170,
+        FEAT_DAMAGE_REDUCTION_3B = 171,
+        FEAT_WOOKIE_ENDURANCE_2 = 224,
+        FEAT_WOOKIE_ENDURANCE_3 = 225,
+        FEAT_MINE_IMMUNITY = 238,
+        FEAT_PARTY_MINE_IMMUNITY = 239
+    };
 
     static const unsigned short FEAT_INVALID = 0xFFFF;
 

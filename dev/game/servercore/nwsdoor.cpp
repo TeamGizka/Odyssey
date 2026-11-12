@@ -34,6 +34,9 @@
 #include "nwportrait.h"
 #include "clientexoapp.h"
 #include "clientoptions.h"
+#include "nwstrigger.h"
+#include "exotlktable.h"
+#include "nwtlktable.h"
 
 static inline void NwsdoorTrace2();
 static inline void NwsdoorTrace1();
@@ -74,6 +77,13 @@ void CSWSDoor::AIUpdate()
     {
         if (m_nLastUpdateMilliseconds != 0 && GetDead() == 0)
         {
+            if (m_c251 == 0)
+            {
+                char nPCLevel = 0;
+                g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(
+                    "G_PC_LEVEL", nPCLevel);
+                m_c251 = nPCLevel;
+            }
             g_pVirtualMachine->RunScript(&m_asScripts[5], m_nId, 1);
         }
         m_nLastUpdateSeconds = nNowDay;
@@ -215,10 +225,13 @@ int CSWSDoor::SaveDoor(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldSHORT(pStruct, m_nMaxHitPoints, "HP");
     pRes->WriteFieldSHORT(pStruct, GetCurrentHitPoints(0), "CurrentHP");
     pRes->WriteFieldBYTE(pStruct, m_bPlotObject, "Plot");
+    pRes->WriteFieldBYTE(pStruct, m_bNotBlastable, "NotBlastable");
     pRes->WriteFieldBYTE(pStruct, m_bMin1HP, "Min1HP");
     pRes->WriteFieldCExoString(pStruct, m_sKeyName, "KeyName");
     pRes->WriteFieldBYTE(pStruct, m_bKeyRequired, "KeyRequired");
     pRes->WriteFieldBYTE(pStruct, m_nOpenLockDC, "OpenLockDC");
+    pRes->WriteFieldBYTE(pStruct, m_nOpenLockDiff, "OpenLockDiff");
+    pRes->WriteFieldCHAR(pStruct, m_nOpenLockDiffMod, "OpenLockDiffMod");
     pRes->WriteFieldBYTE(pStruct, m_nCloseLockDC, "CloseLockDC");
     pRes->WriteFieldBYTE(pStruct, m_nSecretDoorDC, "SecretDoorDC");
     pRes->WriteFieldCExoString(pStruct, m_sTag, "Tag");
@@ -295,8 +308,9 @@ int CSWSDoor::SaveDoor(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldBYTE(pStruct, m_nTrapType, "TrapType");
     pRes->WriteFieldBYTE(pStruct, m_bTrapDisarmable, "TrapDisarmable");
     pRes->WriteFieldBYTE(pStruct, m_bTrapDetectable, "TrapDetectable");
-    pRes->WriteFieldBYTE(pStruct, m_nDisarmDC, "DisarmDC");
-    pRes->WriteFieldBYTE(pStruct, m_nTrapDetectDC, "TrapDetectDC");
+    pRes->WriteFieldBYTE(pStruct, GetDisarmDC(), "DisarmDC");
+    pRes->WriteFieldBYTE(pStruct, GetDetectDC(), "TrapDetectDC");
+    pRes->WriteFieldINT(pStruct, m_nOwnerDemolitionsSkill, "OwnerDemolitionsSkill");
     pRes->WriteFieldBYTE(pStruct, m_bTrapFlag, "TrapFlag");
     pRes->WriteFieldBYTE(pStruct, m_bTrapOneShot, "TrapOneShot");
     pRes->WriteFieldBYTE(pStruct, m_bLocked, "Locked");
@@ -306,6 +320,9 @@ int CSWSDoor::SaveDoor(CResGFF* pRes, CResStruct* pStruct)
     CResRef cModule((char*)m_sLinkedToModule.CStr());
     pRes->WriteFieldCResRef(pStruct, cModule, "LinkedToModule");
     pRes->WriteFieldWORD(pStruct, m_nLoadScreenId, "LoadScreenID");
+    pRes->WriteFieldBYTE(pStruct, m_bUseTweakColor, "UseTweakColor");
+    pRes->WriteFieldDWORD(pStruct, m_nTweakColor, "TweakColor");
+    pRes->WriteFieldBYTE(pStruct, m_c251, "PCLevelAtSpawn");
     pRes->WriteFieldCExoLocString(pStruct, *GetFirstName(), "LocName");
     pRes->WriteFieldCExoLocString(pStruct, m_locDescription, "Description");
     pRes->WriteFieldBYTE(pStruct, m_bStatic, "Static");
@@ -550,6 +567,10 @@ int CSWSDoor::LoadDoor(CResGFF* pRes, CResStruct* pStruct, int bLoadTemplate)
         m_bStatic = bStatic;
     }
     {
+        int nDefault = m_bNotBlastable;
+        m_bNotBlastable = pRes->ReadFieldBYTE(pStruct, "NotBlastable", bSuccess, nDefault);
+    }
+    {
         int nDefault = m_bMin1HP;
         m_bMin1HP = pRes->ReadFieldBYTE(pStruct, "Min1HP", bSuccess, nDefault);
     }
@@ -558,9 +579,14 @@ int CSWSDoor::LoadDoor(CResGFF* pRes, CResStruct* pStruct, int bLoadTemplate)
         int nDefault = m_bKeyRequired;
         m_bKeyRequired = pRes->ReadFieldBYTE(pStruct, "KeyRequired", bSuccess, nDefault);
     }
+    m_nOpenLockDC = pRes->ReadFieldBYTE(pStruct, "OpenLockDC", bSuccess, 0);
     {
-        unsigned char nDefault = m_nOpenLockDC;
-        m_nOpenLockDC = pRes->ReadFieldBYTE(pStruct, "OpenLockDC", bSuccess, nDefault);
+        unsigned char nDefault = m_nOpenLockDiff;
+        m_nOpenLockDiff = pRes->ReadFieldBYTE(pStruct, "OpenLockDiff", bSuccess, nDefault);
+    }
+    {
+        char nDefault = m_nOpenLockDiffMod;
+        m_nOpenLockDiffMod = pRes->ReadFieldCHAR(pStruct, "OpenLockDiffMod", bSuccess, nDefault);
     }
     {
         unsigned char nDefault = m_nCloseLockDC;
@@ -717,6 +743,7 @@ int CSWSDoor::LoadDoor(CResGFF* pRes, CResStruct* pStruct, int bLoadTemplate)
         unsigned char nDefault = m_nTrapDetectDC;
         m_nTrapDetectDC = pRes->ReadFieldBYTE(pStruct, "TrapDetectDC", bSuccess, nDefault);
     }
+    m_nOwnerDemolitionsSkill = pRes->ReadFieldINT(pStruct, "OwnerDemolitionsSkill", bSuccess, 0);
     {
         int nDefault = m_bTrapFlag;
         m_bTrapFlag = pRes->ReadFieldBYTE(pStruct, "TrapFlag", bSuccess, nDefault);
@@ -735,6 +762,9 @@ int CSWSDoor::LoadDoor(CResGFF* pRes, CResStruct* pStruct, int bLoadTemplate)
     }
     m_IsLinked = pRes->ReadFieldBYTE(pStruct, "LinkedToFlags", bSuccess, 0);
     m_sLinkedTo = pRes->ReadFieldCExoString(pStruct, "LinkedTo", bSuccess, "");
+    m_bUseTweakColor = pRes->ReadFieldBYTE(pStruct, "UseTweakColor", bSuccess, 0);
+    m_nTweakColor = pRes->ReadFieldDWORD(pStruct, "TweakColor", bSuccess, 0);
+    m_c251 = pRes->ReadFieldBYTE(pStruct, "PCLevelAtSpawn", bSuccess, 0);
     m_locTransitionDestination = pRes->ReadFieldCExoLocString(pStruct, "TransitionDestination", bSuccess, m_locTransitionDestination);
     CResRef cModule;
     cModule = pRes->ReadFieldCResRef(pStruct, "LinkedToModule", bSuccess, "");
@@ -1402,33 +1432,102 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
         case CSWSSCRIPTEVENT_EVENTTYPE_ON_MINE_TRIGGERED:
             {
                 int bForce = pEvent->GetInteger(0);
-                CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaller);
-                if ((pCreature == NULL || !pCreature->m_pStats->GetEffectImmunity(
-                         CSWSEffectListHandler::IMMUNITY_TYPE_MINE, NULL)) &&
-                    (bForce || (GetReputation(oidCaller, 0) < MIN_FRIENDLY_REPUTATION &&
-                                m_nFactionId != pCreature->m_pStats->m_nFactionId)) && m_bTrapFlag)
+                int bTriggered = pEvent->GetInteger(1);
+                int bBlastAttempt = pEvent->GetInteger(2);
+                if (pEvent->GetInteger(4) != 0)
                 {
-                    if (pCreature != NULL)
-                        pCreature->SendFeedbackMessage(FEEDBACK_TRAP_TRIGGERED, NULL);
-                    m_oidLastTriggeredBy = oidCaller;
-                    g_pVirtualMachine->RunScript(&m_asScripts[SCRIPT_ON_TRAP_TRIGGERED], m_nId, 1);
-                    if (m_bTrapOneShot)
+                    m_bLocked = 0;
+                    OpenDoor(m_nId);
+                }
+                else if (bBlastAttempt == 0 || bTriggered != 0)
+                {
+                    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaller);
+                    if ((pCreature == NULL || !pCreature->m_pStats->GetEffectImmunity(
+                             CSWSEffectListHandler::IMMUNITY_TYPE_MINE, NULL)) &&
+                        (bForce || (GetReputation(oidCaller, 0) < MIN_FRIENDLY_REPUTATION &&
+                                    m_nFactionId != pCreature->m_pStats->m_nFactionId)) && m_bTrapFlag)
                     {
-                        m_bTrapFlag = 0;
-                        if (GetArea() != NULL && &GetArea()->m_lstTrapObjectIds != NULL)
+                        if (pCreature != NULL)
+                            pCreature->SendFeedbackMessage(FEEDBACK_TRAP_TRIGGERED, NULL);
+                        m_oidLastTriggeredBy = oidCaller;
+                        g_pVirtualMachine->RunScript(&m_asScripts[SCRIPT_ON_TRAP_TRIGGERED], m_nId, 1);
+                        if (m_bTrapOneShot)
                         {
-                            unsigned long oidDoor = m_nId;
-                            CSWSArea* pArea = GetArea();
-                            if (pArea->m_lstTrapObjectIds.Contains(oidDoor) == 1)
+                            m_bTrapFlag = 0;
+                            if (GetArea() != NULL)
                             {
-                                unsigned long oidObject = m_nId;
-                                CSWSArea* pTrapArea = GetArea();
-                                pTrapArea->m_lstTrapObjectIds.Remove(oidObject);
+                                unsigned long oidDoor = m_nId;
+                                if (GetArea()->m_lstTrapObjectIds.Contains(oidDoor))
+                                {
+                                    unsigned long oidObject = m_nId;
+                                    GetArea()->m_lstTrapObjectIds.Remove(oidObject);
+                                }
                             }
+                        }
+                        if (m_lstTrapDetectedBy.num > 0)
+                            m_lstTrapDetectedBy.SetSize(0);
+                        CSWSTrigger* pTrapTrigger = m_pTrapTrigger;
+                        if (pTrapTrigger != NULL)
+                        {
+                            pTrapTrigger->SetFadeOutTime(1);
+                            pTrapTrigger->RemoveFromArea();
+                            delete pTrapTrigger;
+                        }
+                    }
+                }
+                else if (m_bTrapFlag)
+                {
+                    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaller);
+                    int nRoll = pCreature->m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, 0) / 2 + 20 +
+                                pEvent->GetInteger(3);
+                    int bSuccess = 0;
+                    if (nRoll >= GetOpenLockDC())
+                    {
+                        bSuccess = 1;
+                        CScriptEvent* pOpenEvent = new CScriptEvent;
+                        pOpenEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_MINE_TRIGGERED;
+                        pOpenEvent->SetInteger(4, 1);
+                        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                            0, 1000, oidCaller, m_nId, CServerAIMaster::EVENT_SIGNAL_EVENT, pOpenEvent);
+                        CScriptEvent* pUnlockEvent = new CScriptEvent;
+                        pUnlockEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_UNLOCKED;
+                        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                            0, 0, pCreature->m_nId, m_nId, CServerAIMaster::EVENT_SIGNAL_EVENT, pUnlockEvent);
+                    }
+                    CExoString sResult;
+                    if (bSuccess)
+                        sResult = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_BLAST_SUCCESS);
+                    else
+                        sResult = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_BLAST_FAILURE);
+                    g_pTlkTable->SetCustomToken(1, sResult);
+                    g_pTlkTable->SetCustomToken(2, CExoString(nRoll));
+                    g_pTlkTable->SetCustomToken(3, CExoString("20"));
+                    g_pTlkTable->SetCustomToken(4, CExoString(
+                        pCreature->m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, 0)));
+                    g_pTlkTable->SetCustomToken(5, CExoString(pEvent->GetInteger(3)));
+                    g_pTlkTable->SetCustomToken(6, CExoString(GetOpenLockDC()));
+                    CExoString sMessage = g_pSWTlkTable->Fetch(STRREF_BLAST_FEEDBACK, NULL, 0, 0);
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(sMessage, 0x80, 0);
+                    m_oidLastTriggeredBy = oidCaller;
+                    m_bTrapFlag = 0;
+                    if (GetArea() != NULL)
+                    {
+                        unsigned long oidDoor = m_nId;
+                        if (GetArea()->m_lstTrapObjectIds.Contains(oidDoor))
+                        {
+                            unsigned long oidObject = m_nId;
+                            GetArea()->m_lstTrapObjectIds.Remove(oidObject);
                         }
                     }
                     if (m_lstTrapDetectedBy.num > 0)
                         m_lstTrapDetectedBy.SetSize(0);
+                    CSWSTrigger* pTrapTrigger = m_pTrapTrigger;
+                    if (pTrapTrigger != NULL)
+                    {
+                        pTrapTrigger->SetFadeOutTime(1);
+                        pTrapTrigger->RemoveFromArea();
+                        delete pTrapTrigger;
+                    }
                 }
                 break;
             }
@@ -1606,39 +1705,45 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
 int CSWSDoor::LoadDoorExternal(CResGFF* pRes, CResStruct* pStruct,
                               int bLoadTemplate)
 {
-    int bSuccess = 1;
+    int bSuccess;
+    int bResult = 1;
 
     if (bLoadTemplate != 0)
     {
         CResRef cTemplate = pRes->ReadFieldCResRef(
-            pStruct, "TemplateResRef", bLoadTemplate, "");
-        if (bLoadTemplate == 0 || LoadFromTemplate(cTemplate) == 0)
+            pStruct, "TemplateResRef", bSuccess, "");
+        if (bSuccess == 0 || LoadFromTemplate(cTemplate) == 0)
         {
             return 0;
         }
         m_locTransitionDestination = pRes->ReadFieldCExoLocString(
-            pStruct, "TransitionDestination", bLoadTemplate,
+            pStruct, "TransitionDestination", bSuccess,
             m_locTransitionDestination);
         m_sLinkedTo = pRes->ReadFieldCExoString(
-            pStruct, "LinkedTo", bLoadTemplate, "");
+            pStruct, "LinkedTo", bSuccess, "");
         m_IsLinked = pRes->ReadFieldBYTE(
-            pStruct, "LinkedToFlags", bLoadTemplate, 0);
-        CExoString sModule;
+            pStruct, "LinkedToFlags", bSuccess, 0);
+        CExoString sString;
         CResRef cModule = pRes->ReadFieldCResRef(
-            pStruct, "LinkedToModule", bLoadTemplate, "");
-        cModule.CopyToString(sModule);
-        m_sLinkedToModule = sModule;
+            pStruct, "LinkedToModule", bSuccess, "");
+        cModule.CopyToString(sString);
+        m_sLinkedToModule = sString;
+        m_bUseTweakColor = pRes->ReadFieldBYTE(pStruct, "UseTweakColor", bSuccess, 0);
+        m_nTweakColor = pRes->ReadFieldDWORD(pStruct, "TweakColor", bSuccess, 0);
+        sString = pRes->ReadFieldCExoString(pStruct, "Tag", bSuccess, "");
+        if (bSuccess != 0)
+            SetTag(sString);
     }
     else
     {
-        bSuccess = LoadDoor(pRes, pStruct, 0);
+        bResult = LoadDoor(pRes, pStruct, 0);
     }
-    if (bSuccess != 0)
+    if (bResult != 0)
     {
         CServerExoApp* pServerApp = g_pAppManager->m_pServerExoApp;
         pServerApp->GetModule()->AddObjectToLookupTable(m_sTag, m_nId);
     }
-    return bSuccess;
+    return bResult;
 }
 
 #include "nwportrait.h"

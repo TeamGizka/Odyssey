@@ -6,6 +6,7 @@ class CResList;
 class CResRef;
 class CResStruct;
 class CSWSArea;
+class CSWCTrigger;
 
 #include "nwsobject.h"
 
@@ -90,6 +91,7 @@ public:
     void LoadTriggerGeometry(CResGFF*, CResList&);
     void CreateNewGeometry(float, Vector const&, CSWSArea*);
     int GetCanFireMineOnObject(unsigned long, int);
+    CSWCTrigger* GetClientTrigger();
     void OnEnterMine(int);
     void SetCreator(unsigned long);
     int GetClosestPointWithinTrigger(Vector const&, Vector*);
@@ -128,7 +130,7 @@ public:
     unsigned char m_nTrapType;
     int m_nTrapDetectDC;
     int m_nTrapDisarmDC;
-    int m_n320;
+    int m_nOwnerDemolitionsSkill;
     float m_fHighlightHeight;
     unsigned long m_oidCreator;
     float m_fBoundingMinX;

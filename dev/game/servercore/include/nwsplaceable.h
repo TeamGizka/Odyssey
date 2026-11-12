@@ -10,6 +10,7 @@ class CSWCPlaceable;
 class CSWSArea;
 class CSWSItem;
 class CSWSObjectActionNode;
+class CSWSTrigger;
 class CWalkHitInfo;
 class Quaternion;
 class Vector;
@@ -148,8 +149,7 @@ public:
     int AcquireItemsFromObject(unsigned long oidSource, int bDropableOnly);
 
     CExoLocString m_lsLocName;
-    unsigned char m_nAppearance;
-    char m_aUnmapped231[0x3];
+    unsigned long m_nAppearance;
     CExoLocString m_lsDescription;
     int m_nFaction;
     CResRef m_cConversation;
@@ -237,7 +237,7 @@ public:
     int m_bIsCorpse;
 
     int m_bInventoryOpening;
-    int m_n4AC;
+    CSWSTrigger* m_pTrapTrigger;
 };
 
 #endif

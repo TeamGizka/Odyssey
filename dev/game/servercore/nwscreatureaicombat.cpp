@@ -879,7 +879,7 @@ void CSWSCreature::ApplyOnHitConfusion(CSWSObject* pObject, int nDuration)
                 pEffect->m_nSubType =
                     (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
                     CGameEffect::DURATION_TYPE_TEMPORARY;
-                pEffect->m_fDuration = nDuration * SW_COMBAT_ROUND_SECONDS;
+                pEffect->m_fDuration = nDuration * (SW_COMBAT_ROUND_SECONDS / 2.0f);
                 pEffect->m_nSubType =
                     (pEffect->m_nSubType & ~SUBTYPE_SUPERNATURAL) |
                     SUBTYPE_MAGICAL;
@@ -924,7 +924,7 @@ void CSWSCreature::ApplyOnHitFear(CSWSObject* pObject, int nDuration)
                 pEffect->m_nSubType =
                     (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
                     CGameEffect::DURATION_TYPE_TEMPORARY;
-                pEffect->m_fDuration = nDuration * SW_COMBAT_ROUND_SECONDS;
+                pEffect->m_fDuration = nDuration * (SW_COMBAT_ROUND_SECONDS / 2.0f);
                 pEffect->m_nSubType =
                     (pEffect->m_nSubType & ~SUBTYPE_SUPERNATURAL) |
                     SUBTYPE_MAGICAL;
@@ -979,7 +979,7 @@ void CSWSCreature::ApplyOnHitHold(CSWSObject* pObject, int nDuration)
                     pEffect->m_nSubType =
                         (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
                         CGameEffect::DURATION_TYPE_TEMPORARY;
-                    pEffect->m_fDuration = nDuration * SW_COMBAT_ROUND_SECONDS;
+                    pEffect->m_fDuration = nDuration * (SW_COMBAT_ROUND_SECONDS / 2.0f);
                     pEffect->m_nSubType =
                         (pEffect->m_nSubType & ~SUBTYPE_SUPERNATURAL) |
                         SUBTYPE_MAGICAL;
@@ -1038,7 +1038,7 @@ void CSWSCreature::ApplyOnHitSleep(CSWSObject* pObject, int nDuration)
                     pEffect->m_nSubType =
                         (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
                         CGameEffect::DURATION_TYPE_TEMPORARY;
-                    pEffect->m_fDuration = nDuration * SW_COMBAT_ROUND_SECONDS;
+                    pEffect->m_fDuration = nDuration * (SW_COMBAT_ROUND_SECONDS / 2.0f);
                     pEffect->m_nSubType =
                         (pEffect->m_nSubType & ~SUBTYPE_SUPERNATURAL) |
                         SUBTYPE_MAGICAL;
@@ -1084,7 +1084,7 @@ void CSWSCreature::ApplyOnHitSlow(CSWSObject* pObject, int nDuration)
                 pEffect->m_nSubType =
                     (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
                     CGameEffect::DURATION_TYPE_TEMPORARY;
-                pEffect->m_fDuration = nDuration * SW_COMBAT_ROUND_SECONDS;
+                pEffect->m_fDuration = nDuration * (SW_COMBAT_ROUND_SECONDS / 2.0f);
                 pEffect->m_nSubType =
                     (pEffect->m_nSubType & ~SUBTYPE_SUPERNATURAL) |
                     SUBTYPE_MAGICAL;
@@ -1129,7 +1129,7 @@ void CSWSCreature::ApplyOnHitStun(CSWSObject* pObject, int nDuration)
                 pEffect->m_nSubType =
                     (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
                     CGameEffect::DURATION_TYPE_TEMPORARY;
-                pEffect->m_fDuration = nDuration * SW_COMBAT_ROUND_SECONDS;
+                pEffect->m_fDuration = nDuration * (SW_COMBAT_ROUND_SECONDS / 2.0f);
                 pEffect->m_nSubType =
                     (pEffect->m_nSubType & ~SUBTYPE_SUPERNATURAL) |
                     SUBTYPE_MAGICAL;

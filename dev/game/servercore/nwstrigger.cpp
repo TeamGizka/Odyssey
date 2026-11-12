@@ -31,6 +31,9 @@
 #include "nwsplayer.h"
 #include "serverexoappinternal.h"
 #include "clientoptions.h"
+#include "nwctrigger.h"
+#include "nwccreature.h"
+#include "nwfeat.h"
 
 static inline void NwstriggerTrace2();
 static inline void NwstriggerTrace1();
@@ -133,7 +136,25 @@ int CSWSTrigger::GetCanFireMineOnObject(unsigned long oidObject, int bForce)
         if (pCreature->m_pStats->GetEffectImmunity(
                 CSWSEffectListHandler::IMMUNITY_TYPE_MINE, NULL))
         {
-            return 0;
+            bCanFire = 0;
+        }
+        if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_MINE_IMMUNITY))
+        {
+            bCanFire = 0;
+        }
+        if (pCreature->m_bInParty != 0)
+        {
+            CSWCCreature* pLeader =
+                g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0);
+            if (pLeader != NULL)
+            {
+                CSWSCreature* pServerLeader = pLeader->GetServerCreature();
+                if (pServerLeader != NULL &&
+                    pServerLeader->GetStats()->HasFeat(CSWFeat::FEAT_PARTY_MINE_IMMUNITY))
+                {
+                    return 0;
+                }
+            }
         }
     }
     return bCanFire;
@@ -193,6 +214,14 @@ void CSWSTrigger::OnEnterMine(int bForce)
             }
         }
     }
+}
+// PC 0x00584B20
+CSWCTrigger* CSWSTrigger::GetClientTrigger()
+{
+    if (GetClientObject() != NULL)
+        return GetClientObject()->AsSWCTrigger();
+
+    return NULL;
 }
 // PC 0x00584B40
 void CSWSTrigger::SetCreator(unsigned long oidCreator)
@@ -903,6 +932,7 @@ int CSWSTrigger::LoadTrigger(CResGFF* pRes, CResStruct* pStruct)
     int bTrapDetectable = pRes->ReadFieldBYTE(pStruct, "TrapDetectable",
                                               bSuccess, 0);
     m_bTrapDetectable = bTrapDetectable;
+    m_nOwnerDemolitionsSkill = pRes->ReadFieldINT(pStruct, "OwnerDemolitionsSkill", bSuccess, 0);
 
     int nDCMod;
     if (g_pRules->Get2DArrays()->m_pTraps->GetINTEntry(
@@ -1066,6 +1096,7 @@ int CSWSTrigger::SaveTrigger(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldCExoString(pStruct, m_sKeyName, "KeyName");
     pRes->WriteFieldBYTE(pStruct, m_bTrapDisarmable, "TrapDisarmable");
     pRes->WriteFieldBYTE(pStruct, m_bTrapDetectable, "TrapDetectable");
+    pRes->WriteFieldINT(pStruct, m_nOwnerDemolitionsSkill, "OwnerDemolitionsSkill");
     if ((unsigned short)GetPortraitId() == 0xFFFF)
     {
         pRes->WriteFieldCResRef(pStruct, GetPortrait(), "Portrait");

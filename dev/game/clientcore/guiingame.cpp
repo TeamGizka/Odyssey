@@ -2746,6 +2746,13 @@ void CGuiInGame::HideDemoScreen()
         m_pDemoScreen = NULL;
     }
 }
+// PC 0x00682DA0
+int CGuiInGame::GetTopMenuOverrideCharacter()
+{
+    if (m_pInGameMenu != NULL)
+        return m_pInGameMenu->m_nTopMenuOverrideCharacter;
+    return -1;
+}
 // PC 0x00682DC0
 int CGuiInGame::GetPartyAccessPanelUp(int bAny)
 {

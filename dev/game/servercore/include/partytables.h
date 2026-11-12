@@ -20,7 +20,7 @@ public:
 
     enum { GALAXY_MAP_NUM_POINTS = 16, GALAXY_MAP_SELECTABLE_SHIFT = 16 };
 
-    static const int PARTY_XP_ROW = 9;
+    static const int PARTY_XP_ROW = 13;
 
     CSWPartyTable();
     ~CSWPartyTable();

@@ -103,6 +103,26 @@ int CSWSArea::GetRoomIndex(const Vector& vPosition, int bAllMaterials)
     }
     return nResult;
 }
+// PC 0x004FC3E0
+int CSWSArea::GetRoomForceRating(const Vector& vPosition)
+{
+    if (m_pnRoomForceRating == NULL)
+    {
+        return 0;
+    }
+    int nRoom = GetRoomIndex(vPosition, 0);
+    return m_pnRoomForceRating[m_p29C[nRoom]];
+}
+// PC 0x004FC420
+unsigned char CSWSArea::GetRoomDisableWeather(const Vector& vPosition)
+{
+    if (m_pbRoomDisableWeather == NULL)
+    {
+        return 0;
+    }
+    int nRoom = GetRoomIndex(vPosition, 0);
+    return m_pbRoomDisableWeather[m_p29C[nRoom]];
+}
 // PC 0x004FC460
 float CSWSArea::ComputePathDistance(int nPoints, float* pfPoints)
 {

@@ -291,6 +291,8 @@ public:
     void PathPointDFSTransTablePut(float fX, float fY, float fScore,
                                    float fTieBreak);
     int GetRoomIndex(const Vector& vPosition, int nFlags);
+    int GetRoomForceRating(const Vector& vPosition);
+    unsigned char GetRoomDisableWeather(const Vector& vPosition);
     int TestDirectLine(const Vector& vStart, const Vector& vEnd,
                        const float& fDistance, float fWidth, int nFlags,
                        CWalkHitInfo* pWalkHitInfo);

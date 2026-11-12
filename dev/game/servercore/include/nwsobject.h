@@ -606,6 +606,7 @@ public:
 
     int GetPlotObject() { return m_bPlotObject; }
     int GetMin1HP() { return m_bMin1HP; }
+    int GetNotBlastable() { return m_bNotBlastable; }
     int GetPartyInteract() { return m_bPartyInteract; }
 
 
@@ -1994,7 +1995,8 @@ public:
         AMBIENT_STATE_5 = 5, AMBIENT_STATE_6 = 6, AMBIENT_STATE_7 = 7,
         AMBIENT_STATE_8 = 8, AMBIENT_STATE_9 = 9, AMBIENT_STATE_10 = 10,
         AMBIENT_STATE_11 = 11, AMBIENT_STATE_12 = 12,
-        AMBIENT_STATE_13 = 13, AMBIENT_STATE_14 = 14
+        AMBIENT_STATE_13 = 13, AMBIENT_STATE_14 = 14,
+        AMBIENT_STATE_15 = 15, AMBIENT_STATE_16 = 16, AMBIENT_STATE_17 = 17
     };
     char m_aUnmapped4C5[3];
 
@@ -2738,7 +2740,7 @@ public:
     enum { REST_CANCEL_ACTION = 20 };
     void CancelRest(unsigned short nFeedback);
     void Rest(int bFlag);
-    int OnEndDialog(CSWSObject* pObject);
+    void OnEndDialog(CSWSObject* pObject);
     void GetSpikeDetails(CExoArrayList<CSWGuiInterfaceAction>& lstActions,
                          unsigned char nSpikeType);
     void SetLastInstantEquip(unsigned long nSlot, int nValue);

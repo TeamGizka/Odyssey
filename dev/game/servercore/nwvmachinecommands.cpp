@@ -203,7 +203,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectCrush(int nCommand, int nArgs
     CGameEffect* pGameEffect;
 
     pGameEffect = new CGameEffect(1);
-    pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_KNOCKDOWN;
+    pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_SETSTATE;
     pGameEffect->SetInteger(0, 15);
     if (g_pVirtualMachine->StackPushEngineStructure(0, pGameEffect) == 0)
     {
@@ -458,7 +458,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetOwnerDemolitionsSkill(int nComma
             }
             else if (pObject->AsSWSTrigger() != NULL)
             {
-                nSkill = pObject->AsSWSTrigger()->m_n320;
+                nSkill = pObject->AsSWSTrigger()->m_nOwnerDemolitionsSkill;
             }
         }
     }
@@ -766,7 +766,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSpellFormMask(int nCommand, int 
     CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
     if (pSpell != NULL)
     {
-        nMask = pSpell->m_n1A0;
+        nMask = pSpell->m_nFormMask;
     }
     return g_pVirtualMachine->StackPushInteger(nMask) != 0 ? 0 : -2000;
 }
@@ -2104,7 +2104,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSpawnMine(int nCommand, int nArgs)
     pTrigger->m_nFaction = nFaction;
     if (pCreature != NULL)
     {
-        pTrigger->m_n320 = pCreature->m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, 0);
+        pTrigger->m_nOwnerDemolitionsSkill = pCreature->m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, 0);
     }
     int nTrapName = 0;
     pTraps->GetINTEntry(nMineType, CExoString("TrapName"), &nTrapName);
@@ -2521,8 +2521,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionFollowObject(
                         g_pAppManager->GetClientExoApp()->GetSWParty();
                     vDestination = pParty->m_aPartyMemberData[nIndex].m_vFormationOffset;
                     pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
-                    vDestination += Vector(0.0f,
-                        -pParty->m_fFormationRange[pParty->m_nFormation], 0.0f);
+                    vDestination.m_fY -= pParty->m_fFormationRange[pParty->m_nFormation];
                 }
             }
         }
@@ -2984,16 +2983,26 @@ int CSWVirtualMachineCommands::ExecuteCommandActionStartConversation(
     {
         return ERROR_STACK_PUSH;
     }
-    if (bUseLeader == 0)
+    int nBarkX = -1;
+    int nBarkY = -1;
+    int bDontClearAllActions;
+    if ((nArgs >= 14 &&
+         (g_pVirtualMachine->StackPopInteger(&nBarkX) == 0 ||
+          g_pVirtualMachine->StackPopInteger(&nBarkY) == 0)) ||
+        ((bDontClearAllActions = 0), nArgs >= 15) &&
+         g_pVirtualMachine->StackPopInteger(&bDontClearAllActions) == 0)
     {
-        g_pAppManager->GetClientExoApp()->GetInGameGui()
-            ->m_bUsePartyCharacterForDialog = 0;
+        return ERROR_STACK_POP;
     }
-    else
+    CSWGuiBarkBubble* pBarkBubble =
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pBarkBubble;
+    if (pBarkBubble != NULL)
     {
-        g_pAppManager->GetClientExoApp()->GetInGameGui()
-            ->m_bUsePartyCharacterForDialog = 1;
+        pBarkBubble->m_nBarkX = nBarkX;
+        pBarkBubble->m_nBarkY = nBarkY;
     }
+    g_pAppManager->GetClientExoApp()->GetInGameGui()
+        ->m_bUsePartyCharacterForDialog = bUseLeader != 0;
 
     CSWCCreature* pCharacter =
         g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0);
@@ -3011,23 +3020,80 @@ int CSWVirtualMachineCommands::ExecuteCommandActionStartConversation(
         }
     }
 
+    int bPartyDead = 1;
+    for (int nMember = 0; nMember < 3; ++nMember)
+    {
+        CSWCCreature* pMember =
+            g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nMember);
+        if (pMember == NULL)
+        {
+            if (nMember == 0)
+            {
+                bPartyDead = 0;
+                break;
+            }
+        }
+        else
+        {
+            CSWSCreature* pServerMember = pMember->GetServerCreature();
+            if (pServerMember != NULL && pServerMember->GetCurrentHitPoints(0) > 0)
+            {
+                bPartyDead = 0;
+                break;
+            }
+        }
+    }
+
     if (g_pAppManager->GetClientExoApp()->GetInGameGui()
                 ->m_nGlobalDialogState == 0 &&
-        m_nCommandContext == 1)
+        bPartyDead == 0 && m_nCommandContext == 1)
     {
         if ((unsigned char)pObjectArray->GetGameObject(
                 m_oidObject, (CGameObject**)&pObject) ==
                 CGameObjectArray::SUCCESS &&
             pObject->m_bCommandable != 0)
         {
-            if (pObject->m_nAILevel == CServerAIMaster::AI_LEVEL_EMPTY_AREA_CREATURE)
+            for (int nMember = 0; nMember < 3; ++nMember)
             {
+                CSWCCreature* pMember =
+                    g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nMember);
+                if (pMember != NULL)
+                {
+                    CSWSCreature* pServerMember = pMember->GetServerCreature();
+                    if (pServerMember != NULL &&
+                        pServerMember->GetCurrentHitPoints(0) < 1)
+                    {
+                        CGameEffect* pEffect = new CGameEffect(1);
+                        pEffect->m_nType = CSWSEffectListHandler::EFFECT_RESURRECTION;
+                        pEffect->m_nSubType =
+                            (pEffect->m_nSubType & ~CGameEffect::SUBTYPE_MASK) |
+                            SUBTYPE_MAGICAL;
+                        pEffect->SetInteger(0, 2);
+                        if (g_pAppManager->GetServerExoApp()->GetGameObject(m_oidObject) != NULL)
+                        {
+                            pEffect->SetCreator(m_oidObject);
+                        }
+                        pEffect->m_nSubType =
+                            (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
+                            CGameEffect::DURATION_TYPE_INSTANTANEOUS;
+                        pServerMember->AsSWSObject()->ApplyEffect(pEffect, 0, 1);
+                    }
+                }
+            }
+            unsigned char nAILevel = (unsigned char)pObject->m_nAILevel;
+            if (nAILevel < 3)
+            {
+                pObject->m_c7C = nAILevel;
                 g_pAppManager->GetServerExoApp()->GetServerAIMaster()
-                    ->SetAILevel(pObject, CServerAIMaster::AI_LEVEL_DIALOG);
+                    ->SetAILevel(pObject, 3);
             }
             g_pAppManager->GetClientExoApp()->GetInGameGui()
                 ->SetGlobalDialogState(1);
             unsigned long oidDialogOwner = OBJECT_INVALID;
+            if (bDontClearAllActions == 0)
+            {
+                pObject->ClearAllActions(1);
+            }
             pObject->AddAction(CSWSObject::ACTION_START_CONVERSATION,
                 CSWSObject::ACTION_GROUP_NEW,
                 CSWSObject::ACTION_PARAM_OBJECT, &oidObjectToConverse,
@@ -3354,9 +3420,16 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int n
     unsigned long oidSubject;
     int nAlignment;
     int nShift;
+    int bDontModifyNPCs;
     if (g_pVirtualMachine->StackPopObject(&oidSubject) == 0 ||
         g_pVirtualMachine->StackPopInteger(&nAlignment) == 0 ||
         g_pVirtualMachine->StackPopInteger(&nShift) == 0)
+    {
+        return ERROR_STACK_POP;
+    }
+    short nAdjustment = 0;
+    bDontModifyNPCs = 0;
+    if (nArgs >= 4 && g_pVirtualMachine->StackPopInteger(&bDontModifyNPCs) == 0)
     {
         return ERROR_STACK_POP;
     }
@@ -3369,9 +3442,9 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int n
     }
 
     CSWSCreatureStats* pStats = pCreature->m_pStats;
-    pStats->GetSimpleAlignmentGoodEvil();
     short nOldAlignment = pStats->m_nGoodEvilAlignment;
-    short nAdjustment = 0;
+    CExoString sTotal;
+    char nTotal;
     switch (nAlignment)
     {
     case CSWSCreatureStats::ALIGNMENT_NEUTRAL:
@@ -3384,40 +3457,122 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int n
         {
             nAdjustment = min(nShift, 50 - nOldAlignment);
         }
+        if (pCreature->m_n1200 != 0 && bDontModifyNPCs == 0)
+        {
+            if (nAdjustment < 0)
+            {
+                sTotal = "G_PC_Dark_Total";
+                g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+                    ->GetValueNumber(sTotal, nTotal);
+                if (nTotal != SWVARTABLE_LOCAL_NUMBER_MAX)
+                {
+                    if (nTotal - nAdjustment <= SWVARTABLE_LOCAL_NUMBER_MAX)
+                    {
+                        nTotal = nTotal - nAdjustment;
+                    }
+                    else
+                    {
+                        nTotal = SWVARTABLE_LOCAL_NUMBER_MAX;
+                    }
+                    g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+                        ->SetValueNumber(sTotal, nTotal);
+                }
+            }
+            else if (nAdjustment > 0)
+            {
+                sTotal = "G_PC_Light_Total";
+                g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+                    ->GetValueNumber(sTotal, nTotal);
+                if (nTotal != SWVARTABLE_LOCAL_NUMBER_MAX)
+                {
+                    if (nAdjustment + nTotal <= SWVARTABLE_LOCAL_NUMBER_MAX)
+                    {
+                        nTotal = nAdjustment + nTotal;
+                    }
+                    else
+                    {
+                        nTotal = SWVARTABLE_LOCAL_NUMBER_MAX;
+                    }
+                    g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+                        ->SetValueNumber(sTotal, nTotal);
+                }
+            }
+        }
         break;
     case CSWSCreatureStats::ALIGNMENT_GOOD:
         nAdjustment = nShift;
+        if (pCreature->m_n1200 != 0 && bDontModifyNPCs == 0)
+        {
+            sTotal = "G_PC_Light_Total";
+            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+                ->GetValueNumber(sTotal, nTotal);
+            if (nTotal != SWVARTABLE_LOCAL_NUMBER_MAX)
+            {
+                if (nAdjustment + nTotal <= SWVARTABLE_LOCAL_NUMBER_MAX)
+                {
+                    nTotal = nAdjustment + nTotal;
+                }
+                else
+                {
+                    nTotal = SWVARTABLE_LOCAL_NUMBER_MAX;
+                }
+                g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+                    ->SetValueNumber(sTotal, nTotal);
+            }
+        }
         break;
     case CSWSCreatureStats::ALIGNMENT_EVIL:
         nAdjustment = -nShift;
+        if (pCreature->m_n1200 != 0 && bDontModifyNPCs == 0)
+        {
+            sTotal = "G_PC_Dark_Total";
+            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+                ->GetValueNumber(sTotal, nTotal);
+            if (nTotal != SWVARTABLE_LOCAL_NUMBER_MAX)
+            {
+                if (nTotal - nAdjustment <= SWVARTABLE_LOCAL_NUMBER_MAX)
+                {
+                    nTotal = nTotal - nAdjustment;
+                }
+                else
+                {
+                    nTotal = SWVARTABLE_LOCAL_NUMBER_MAX;
+                }
+                g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+                    ->SetValueNumber(sTotal, nTotal);
+            }
+        }
         break;
     }
     pStats->ModifyAlignment(nAdjustment);
 
-    CSWCCMessageData* pMessageData = new CSWCCMessageData;
-    if (nAlignment != CSWSCreatureStats::ALIGNMENT_NEUTRAL)
+    if (bDontModifyNPCs == 0)
     {
-        pMessageData->SetInteger(0, nAlignment);
-        pMessageData->SetInteger(1, nShift);
-    }
-    else
-    {
-        if (nOldAlignment > 50)
+        CSWCCMessageData* pMessageData = new CSWCCMessageData;
+        if (nAlignment != CSWSCreatureStats::ALIGNMENT_NEUTRAL)
         {
-            pMessageData->SetInteger(0, CSWSCreatureStats::ALIGNMENT_EVIL);
+            pMessageData->SetInteger(0, nAlignment);
+            pMessageData->SetInteger(1, nShift);
         }
         else
         {
-            pMessageData->SetInteger(0, CSWSCreatureStats::ALIGNMENT_GOOD);
+            if (nOldAlignment > 50)
+            {
+                pMessageData->SetInteger(0, CSWSCreatureStats::ALIGNMENT_EVIL);
+            }
+            else
+            {
+                pMessageData->SetInteger(0, CSWSCreatureStats::ALIGNMENT_GOOD);
+            }
+            pMessageData->SetInteger(1, abs(nShift));
         }
-        pMessageData->SetInteger(1, abs(nShift));
-    }
-    pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_ALIGNMENT_SHIFT, pMessageData);
-    if (nAdjustment != 0 && pCreature->m_bInParty != 0)
-    {
-        CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
-        pClientExoApp->GetInGameGui()->UpdateStatus(
-            GUI_STATUS_DARK_SHIFT, nAdjustment);
+        pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_ALIGNMENT_SHIFT, pMessageData);
+        if (nAdjustment != 0 && pCreature->m_bInParty != 0)
+        {
+            CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+            pClientExoApp->GetInGameGui()->UpdateStatus(
+                GUI_STATUS_DARK_SHIFT, nAdjustment);
+        }
     }
     return 0;
 }
@@ -4281,12 +4436,14 @@ int CSWVirtualMachineCommands::ExecuteCommandCreateItemOnObject(int nCommand,
         return ERROR_STACK_POP;
     }
     int nStackSize = 1;
-    if (nArgs >= 3)
+    if (nArgs >= 3 && g_pVirtualMachine->StackPopInteger(&nStackSize) == 0)
     {
-        if (g_pVirtualMachine->StackPopInteger(&nStackSize) == 0)
-        {
-            return ERROR_STACK_POP;
-        }
+        return ERROR_STACK_POP;
+    }
+    int bHideMessage = 0;
+    if (nArgs >= 4 && g_pVirtualMachine->StackPopInteger(&bHideMessage) == 0)
+    {
+        return ERROR_STACK_POP;
     }
 
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -4313,12 +4470,19 @@ int CSWVirtualMachineCommands::ExecuteCommandCreateItemOnObject(int nCommand,
                 pItem->m_nStackSize = (unsigned short)nStackSize;
                 if (pTarget->AsSWSCreature() != NULL)
                 {
+                    CExoLocString sName;
+                    if (pItem != NULL)
+                    {
+                        sName = pItem->m_sLocalizedName;
+                    }
                     pTarget->AsSWSCreature()->AcquireItem(
                         &pItem, OBJECT_INVALID, OBJECT_INVALID, 1);
 
-                    if (pTarget->AsSWSCreature()->m_bInParty != 0)
+                    if (pTarget->AsSWSCreature()->m_bInParty != 0 && bHideMessage == 0)
                     {
-                        g_pAppManager->m_pClientExoApp->GetInGameGui()
+                        g_pAppManager->GetClientExoApp()->GetInGameGui()
+                            ->AddItemReceived(sName);
+                        g_pAppManager->GetClientExoApp()->GetInGameGui()
                             ->UpdateStatus(GUI_STATUS_ITEM_RECEIVED, 0);
                     }
                 }
@@ -5174,23 +5338,17 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectComplex(int nCommand, int nAr
         {
             int bSpectacularDeath = 0;
             int bDisplayFeedback = 1;
-            if (nArgs >= 1)
+            int bNoFadeAway = 0;
+            if ((nArgs >= 1 && g_pVirtualMachine->StackPopInteger(&bSpectacularDeath) == 0) ||
+                (nArgs >= 2 && g_pVirtualMachine->StackPopInteger(&bDisplayFeedback) == 0) ||
+                (nArgs >= 3 && g_pVirtualMachine->StackPopInteger(&bNoFadeAway) == 0))
             {
-                if (g_pVirtualMachine->StackPopInteger(&bSpectacularDeath) == 0)
-                {
-                    return ERROR_STACK_POP;
-                }
-            }
-            if (nArgs >= 2)
-            {
-                if (g_pVirtualMachine->StackPopInteger(&bDisplayFeedback) == 0)
-                {
-                    return ERROR_STACK_POP;
-                }
+                return ERROR_STACK_POP;
             }
             pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_DEATH;
             pGameEffect->SetInteger(0, bSpectacularDeath);
             pGameEffect->SetInteger(1, bDisplayFeedback);
+            pGameEffect->SetInteger(2, bNoFadeAway);
         }
         break;
     case COMMAND_EFFECT_KNOCKDOWN:
@@ -5315,6 +5473,18 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectComplex(int nCommand, int nAr
         pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_SETSTATE;
         pGameEffect->SetInteger(0, CSWSEffectListHandler::STATE_STUN);
         pGameEffect->SetInteger(1, 1);
+        break;
+    case COMMAND_EFFECT_DROID_CONFUSED:
+        pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_SETSTATE;
+        pGameEffect->SetInteger(0, CSWSEffectListHandler::STATE_VARIANT_16);
+        break;
+    case COMMAND_EFFECT_MIND_TRICK:
+        pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_SETSTATE;
+        pGameEffect->SetInteger(0, CSWSEffectListHandler::STATE_MIND_TRICK_18);
+        break;
+    case COMMAND_EFFECT_DROID_SCRAMBLE:
+        pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_SETSTATE;
+        pGameEffect->SetInteger(0, CSWSEffectListHandler::STATE_MIND_TRICK_19);
         break;
     }
     pGameEffect->m_nSubType =
@@ -7506,6 +7676,8 @@ int CSWVirtualMachineCommands::ExecuteCommandBarkString(int nCommand, int nArgs)
 
     unsigned long oidCreature;
     int nStrRef;
+    int nBarkX;
+    int nBarkY;
     CClientExoApp* pClientExoApp;
     int nDialogState;
 
@@ -7516,6 +7688,21 @@ int CSWVirtualMachineCommands::ExecuteCommandBarkString(int nCommand, int nArgs)
     if (g_pVirtualMachine->StackPopInteger(&nStrRef) == 0)
     {
         return ERROR_STACK_POP;
+    }
+    nBarkY = -1;
+    nBarkX = -1;
+    if (nArgs >= 3 &&
+        (g_pVirtualMachine->StackPopInteger(&nBarkX) == 0 ||
+         g_pVirtualMachine->StackPopInteger(&nBarkY) == 0))
+    {
+        return ERROR_STACK_POP;
+    }
+    CSWGuiBarkBubble* pBarkBubble =
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pBarkBubble;
+    if (pBarkBubble != NULL)
+    {
+        pBarkBubble->m_nBarkX = nBarkX;
+        pBarkBubble->m_nBarkY = nBarkY;
     }
     nDialogState = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nGlobalDialogState;
     if (nDialogState == 0)
@@ -8456,7 +8643,6 @@ int CSWVirtualMachineCommands::ExecuteCommandGetClassInformation(int nCommand,
             if (nClassPosition >= 1 &&
                 nClassPosition <= pCreature->m_pStats->m_nClassCount)
             {
-                pCreature->m_pStats->GetClass(nClassPosition - 1);
                 if (pCreature->m_pStats->GetClass(nClassPosition - 1) <=
                     MAX_SCRIPT_CLASS_TYPE)
                 {
@@ -8693,7 +8879,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetDamageDealtByType(int nCommand,
         return -2001;
     }
     if (pObject != NULL && nDamageType > 0 &&
-        nDamageType < CSWSEffectListHandler::DAMAGE_FLAG_SONIC)
+        nDamageType < CSWSEffectListHandler::DAMAGE_FLAG_BASE_DAMAGE)
     {
         cResult = pObject->m_nObjectType;
         if (cResult == 5 || cResult == 9 || cResult == 10)
@@ -12990,7 +13176,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetPCLevellingUp(int nCommand,
 int CSWVirtualMachineCommands::ExecuteCommandGetPCSpeaker(int nCommand,
                                                           int nArgs)
 {
-    unsigned long oidPCSpeaker = CGameObjectArray::INVALIDOBJID;
+    unsigned long oidPCSpeaker = OBJECT_INVALID;
     CSWCCreature* pCharacter = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
     if (pCharacter != NULL)
     {
@@ -15059,8 +15245,6 @@ int CSWVirtualMachineCommands::ExecuteCommandMoveToPoint(int nCommand,
                         pArea->GetId(), oidTarget, bRun,
                         0.0f, fTimeout, 0, 0, 0, 0, 0, 0, Vector(), 0, 0, 0);
                 }
-
-                return 0;
             }
         }
     }
@@ -15360,6 +15544,11 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayAnimation(int nCommand, int nAr
     {
         if (pObject->AsSWSCreature() != NULL)
         {
+            if (nAnimation > CREATURE_ANIMATION_COMBAT_IDLE)
+            {
+                nAnimation -= CREATURE_ANIMATION_COMBAT_IDLE;
+            }
+            else
             switch (nAnimation)
             {
             case ANIMATION_LOOPING_PAUSE:
@@ -15420,6 +15609,8 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayAnimation(int nCommand, int nAr
                 nAnimation = CREATURE_ANIMATION_LOOPING_HORROR;
                 break;
             case ANIMATION_LOOPING_READY:
+                nAnimation = CREATURE_ANIMATION_PAUSE_READY;
+                break;
             case ANIMATION_LOOPING_DEACTIVATE:
                 nAnimation = CREATURE_ANIMATION_LOOPING_DEACTIVATE;
                 break;
@@ -15458,6 +15649,48 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayAnimation(int nCommand, int nAr
                 break;
             case ANIMATION_LOOPING_KNEEL_TALK_SAD:
                 nAnimation = CREATURE_ANIMATION_LOOPING_KNEEL_TALK_SAD;
+                break;
+            case ANIMATION_LOOPING_CHECK_BODY:
+                nAnimation = CREATURE_ANIMATION_LOOPING_CHECK_BODY;
+                break;
+            case ANIMATION_LOOPING_UNLOCK_DOOR:
+                nAnimation = CREATURE_ANIMATION_LOCKPICK_DOOR;
+                break;
+            case ANIMATION_LOOPING_SIT_AND_MEDITATE:
+                nAnimation = CREATURE_ANIMATION_LOOPING_SIT_AND_MEDITATE;
+                break;
+            case ANIMATION_LOOPING_SIT_CHAIR:
+                nAnimation = CREATURE_ANIMATION_LOOPING_SIT_CHAIR;
+                break;
+            case ANIMATION_LOOPING_SIT_CHAIR_DRINK:
+                nAnimation = CREATURE_ANIMATION_LOOPING_SIT_CHAIR_DRINK;
+                break;
+            case ANIMATION_LOOPING_SIT_CHAIR_PAZAK:
+                nAnimation = CREATURE_ANIMATION_LOOPING_SIT_CHAIR_PAZAK;
+                break;
+            case ANIMATION_LOOPING_SIT_CHAIR_COMP1:
+                nAnimation = CREATURE_ANIMATION_LOOPING_SIT_CHAIR_COMP1;
+                break;
+            case ANIMATION_LOOPING_SIT_CHAIR_COMP2:
+                nAnimation = CREATURE_ANIMATION_LOOPING_SIT_CHAIR_COMP2;
+                break;
+            case ANIMATION_LOOPING_RAGE:
+            case ANIMATION_FIREFORGET_SCREAM:
+                nAnimation = CREATURE_ANIMATION_LOOPING_RAGE;
+                break;
+            case ANIMATION_LOOPING_DIVE_ROLL:
+                break;
+            case ANIMATION_LOOPING_CLOSED:
+                nAnimation = CREATURE_ANIMATION_LOOPING_CLOSED;
+                break;
+            case ANIMATION_LOOPING_STEALTH:
+                nAnimation = CREATURE_ANIMATION_SPECIAL_WALK;
+                break;
+            case ANIMATION_LOOPING_CHOKE_WORKING:
+                nAnimation = CREATURE_ANIMATION_FIREFORGET_CHOKE;
+                break;
+            case ANIMATION_LOOPING_MEDITATE_STAND:
+                nAnimation = CREATURE_ANIMATION_LOOPING_MEDITATE_STAND;
                 break;
             case ANIMATION_FIREFORGET_HEAD_TURN_LEFT:
                 nAnimation = CREATURE_ANIMATION_FIREFORGET_HEAD_TURN_LEFT;
@@ -15513,9 +15746,6 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayAnimation(int nCommand, int nAr
             case ANIMATION_FIREFORGET_ACTIVATE:
                 nAnimation = CREATURE_ANIMATION_FIREFORGET_ACTIVATE;
                 break;
-            case ANIMATION_FIREFORGET_CHOKE:
-                nAnimation = CREATURE_ANIMATION_FIREFORGET_CHOKE;
-                break;
             case ANIMATION_FIREFORGET_THROW_HIGH:
                 nAnimation = CREATURE_ANIMATION_FIREFORGET_THROW_HIGH;
                 break;
@@ -15527,6 +15757,12 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayAnimation(int nCommand, int nAr
                 break;
             case ANIMATION_FIREFORGET_TREAT_INJURED:
                 nAnimation = CREATURE_ANIMATION_FIREFORGET_TREAT_INJURED;
+                break;
+            case ANIMATION_FIREFORGET_FORCE_CAST:
+                nAnimation = CREATURE_ANIMATION_SPELLCAST_1;
+                break;
+            case ANIMATION_FIREFORGET_OPEN:
+                nAnimation = CREATURE_ANIMATION_FIREFORGET_OPEN;
                 break;
             default:
                 nAnimation = CREATURE_ANIMATION_COMBAT_IDLE;
@@ -15584,18 +15820,10 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayAnimation(int nCommand, int nAr
                 break;
             }
         }
-        if (fSeconds < 0.0f)
+        if (fSeconds >= 0.0f)
         {
-            if (nScriptAnimation >= ANIMATION_LOOPING_PAUSE &&
-                nScriptAnimation <= ANIMATION_LOOPING_KNEEL_TALK_SAD)
-            {
-                CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(m_oidObject);
-                if (pGameObject != NULL && pGameObject->AsSWSObject() != NULL)
-                    pGameObject->AsSWSObject()->SetAnimation(nAnimation);
-            }
-        }
-        else if (pObject->AsSWSObject()->m_bCommandable != 0)
-        {
+          if (pObject->AsSWSObject()->m_bCommandable != 0)
+          {
             bPlay = 1;
             if (nCommand == COMMAND_PLAY_ANIMATION)
             {
@@ -15620,6 +15848,15 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayAnimation(int nCommand, int nAr
                     0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL,
                     0, NULL, 0, NULL, 0, NULL);
             }
+          }
+        }
+        else if ((nScriptAnimation >= ANIMATION_LOOPING_PAUSE &&
+                  nScriptAnimation <= ANIMATION_LOOPING_MEDITATE_STAND) ||
+                 nScriptAnimation > CREATURE_ANIMATION_COMBAT_IDLE)
+        {
+            CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(m_oidObject);
+            if (pGameObject != NULL && pGameObject->AsSWSObject() != NULL)
+                pGameObject->AsSWSObject()->SetAnimation(nAnimation);
         }
     }
     return 0;
@@ -20308,11 +20545,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsLiveContentAvailable(
     }
     else
     {
-#ifndef _XBOX
-        if (nPackage == LIVE_CONTENT_PKG1) { bAvailable = TRUE; } else if (nPackage >= LIVE_CONTENT_PKG2 && nPackage <= LIVE_CONTENT_PKG6)
-#else
         if (nPackage < LIVE_CONTENT_PKG1 || nPackage > LIVE_CONTENT_PKG6) bAvailable = FALSE; else
-#endif
         {
             sAlias.Format("LIVE%d", nPackage);
             bAvailable = g_pExoBase->m_pExoAliasList->GetAliasPath(sAlias, 0)

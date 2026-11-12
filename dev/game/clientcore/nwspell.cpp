@@ -6,6 +6,9 @@
 #include "twodimarrays.h"
 #include "nwrules.h"
 
+static const float FORCE_COST_REDUCTION_STEP = 0.05f;
+static const float FORM_FORCE_COST_MULTIPLIER = 1.2f;
+
 const int CSWSpell::USERTYPE_NONE = 0;
 const int CSWSpell::USERTYPE_FORCEPOWER = 1;
 const int CSWSpell::USERTYPE_MONSTERPOWER = 2;
@@ -49,7 +52,7 @@ CSWSpell::CSWSpell()
     m_nForbidItemMask = 0;
     m_nRequireItemMask = 0;
     m_nItemTargeting = 0;
-    m_n1A0 = 0;
+    m_nFormMask = 0;
     m_nCatchTime = 0;
     m_nCatchAnim = 0;
 }
@@ -76,6 +79,21 @@ unsigned char CSWSpell::GetSpellLevel(unsigned char nClass)
         return m_nConsularLevel;
     case 5:
         return m_nSentinelLevel;
+    case 9:
+    case 10:
+        return -1;
+    case 11:
+        return m_nWeaponMasterLevel;
+    case 12:
+        return m_nJediMasterLevel;
+    case 13:
+        return m_nWatchmanLevel;
+    case 14:
+        return m_nMarauderLevel;
+    case 15:
+        return m_nSithLordLevel;
+    case 16:
+        return m_nAssassinLevel;
     default:
         return m_nInnateLevel;
     }
@@ -204,6 +222,12 @@ void CSWSpellArray::Load()
         { unsigned char nConsularLevel = -1; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nConsularLevel = nConsularLevel; }
         { unsigned char nSentinelLevel = -1; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nSentinelLevel = nSentinelLevel; }
         { unsigned char nInnateLevel = -1; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nInnateLevel = nInnateLevel; }
+        { unsigned char nWeaponMasterLevel = -1; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nWeaponMasterLevel = nWeaponMasterLevel; }
+        { unsigned char nJediMasterLevel = -1; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nJediMasterLevel = nJediMasterLevel; }
+        { unsigned char nWatchmanLevel = -1; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nWatchmanLevel = nWatchmanLevel; }
+        { unsigned char nMarauderLevel = -1; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nMarauderLevel = nMarauderLevel; }
+        { unsigned char nSithLordLevel = -1; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nSithLordLevel = nSithLordLevel; }
+        { unsigned char nAssassinLevel = -1; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nAssassinLevel = nAssassinLevel; }
         if (p2DA->GetINTEntry(i, "Guardian", &nValue))
         {
             { unsigned char nGuardianLevel = nValue; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nGuardianLevel = nGuardianLevel; }
@@ -219,6 +243,30 @@ void CSWSpellArray::Load()
         if (p2DA->GetINTEntry(i, "Inate", &nValue))
         {
             { unsigned char nInnateLevel = nValue; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nInnateLevel = nInnateLevel; }
+        }
+        if (p2DA->GetINTEntry(i, "WeapMstr", &nValue))
+        {
+            { unsigned char nWeaponMasterLevel = nValue; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nWeaponMasterLevel = nWeaponMasterLevel; }
+        }
+        if (p2DA->GetINTEntry(i, "JediMaster", &nValue))
+        {
+            { unsigned char nJediMasterLevel = nValue; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nJediMasterLevel = nJediMasterLevel; }
+        }
+        if (p2DA->GetINTEntry(i, "Watchman", &nValue))
+        {
+            { unsigned char nWatchmanLevel = nValue; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nWatchmanLevel = nWatchmanLevel; }
+        }
+        if (p2DA->GetINTEntry(i, "Marauder", &nValue))
+        {
+            { unsigned char nMarauderLevel = nValue; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nMarauderLevel = nMarauderLevel; }
+        }
+        if (p2DA->GetINTEntry(i, "SithLord", &nValue))
+        {
+            { unsigned char nSithLordLevel = nValue; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nSithLordLevel = nSithLordLevel; }
+        }
+        if (p2DA->GetINTEntry(i, "Assassin", &nValue))
+        {
+            { unsigned char nAssassinLevel = nValue; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nAssassinLevel = nAssassinLevel; }
         }
         p2DA->GetINTEntry(i, "ConjTime", &nValue);
         { int nConjureTime = nValue; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nConjureTime = nConjureTime; }
@@ -274,6 +322,18 @@ void CSWSpellArray::Load()
         else if (sValue == "monster")
         {
             nType = 9;
+        }
+        else if (sValue == "fury")
+        {
+            nType = 10;
+        }
+        else if (sValue == "monsterfury")
+        {
+            nType = 12;
+        }
+        else if (sValue == "crush")
+        {
+            nType = 11;
         }
         else
         {
@@ -462,6 +522,8 @@ void CSWSpellArray::Load()
         {
             { unsigned char nItemTargeting = 0; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nItemTargeting = nItemTargeting; }
         }
+        p2DA->GetINTEntry(i, "FormMask", &nValue);
+        { int nFormMask = nValue; CSWSpell* pSpell = &m_pSpells[i]; pSpell->m_nFormMask = nFormMask; }
     }
     delete p2DA;
 }
@@ -494,40 +556,58 @@ void CSWSpell::SetMasterSpells(const CExoString& sSpells)
     }
 }
 // PC 0x005E2310
-int CSWSpell::GetAdjustedForcePoints(unsigned long nLevel, int bAdjust)
+int CSWSpell::GetAdjustedForcePoints(unsigned long nLevel, int bAdjust, int nRoomForceRating,
+                                     int nForm, char nCharismaModifier)
 {
     int nForcePoints = m_nForcePoints;
+    if (nForcePoints == 0)
+    {
+        return 0;
+    }
     unsigned long nRow = nLevel / 10;
     if (bAdjust)
     {
         float fMultiplier = 1.0f;
         if (m_cGoodEvil == 'G')
         {
-#ifdef _XBOX
-            CTwoDimArrays* pXbox2DArrays = g_pRules->m_p2DArrays;
-            EXOXBOXASSERT(pXbox2DArrays->m_pForcePointAdjust);
-            pXbox2DArrays->m_pForcePointAdjust->GetFLOATEntry(
-                nRow, CTwoDimArrays::COL2DA_FORCEADJUST_GOODCOST, &fMultiplier);
-#else
             g_pRules->m_p2DArrays->m_pForcePointAdjust->GetFLOATEntry(
                 nRow, CTwoDimArrays::COL2DA_FORCEADJUST_GOODCOST, &fMultiplier);
-#endif
         }
         else if (m_cGoodEvil == 'E')
         {
-#ifdef _XBOX
-            CTwoDimArrays* pXbox2DArrays = g_pRules->m_p2DArrays;
-            EXOXBOXASSERT(pXbox2DArrays->m_pForcePointAdjust);
-            pXbox2DArrays->m_pForcePointAdjust->GetFLOATEntry(
-                nRow, CTwoDimArrays::COL2DA_FORCEADJUST_EVILCOST, &fMultiplier);
-#else
             g_pRules->m_p2DArrays->m_pForcePointAdjust->GetFLOATEntry(
                 nRow, CTwoDimArrays::COL2DA_FORCEADJUST_EVILCOST, &fMultiplier);
-#endif
         }
-        return (int)(nForcePoints * fMultiplier);
+        if (fMultiplier > 1.0f && nCharismaModifier > 0)
+        {
+            fMultiplier = fMultiplier - nCharismaModifier * FORCE_COST_REDUCTION_STEP;
+            if (fMultiplier < 1.0f)
+            {
+                fMultiplier = 1.0f;
+            }
+        }
+        nForcePoints = (int)(nForcePoints * fMultiplier);
     }
-    return m_nForcePoints;
+    int nRoomAdjust = nRoomForceRating / 20;
+    if (nRow > ALIGNMENT_ROW_NEUTRAL)
+    {
+        nForcePoints -= nRoomAdjust;
+    }
+    else if (nRow < ALIGNMENT_ROW_NEUTRAL)
+    {
+        nForcePoints += nRoomAdjust;
+    }
+    if (nForcePoints < 1)
+    {
+        nForcePoints = 1;
+    }
+    switch (nForm)
+    {
+    case FORM_FORCE_II_POTENCY:
+    case FORM_FORCE_IV_MASTERY:
+        return (int)(nForcePoints * FORM_FORCE_COST_MULTIPLIER);
+    }
+    return nForcePoints;
 }
 // PC 0x005E2460
 CExoString CSWSpell::GetSpellNameText()

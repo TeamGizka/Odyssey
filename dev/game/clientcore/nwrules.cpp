@@ -811,6 +811,34 @@ void CSWRules::LoadFeatInfo()
             {
                 m_pFeats[i].SetSuccessor(nValue);
             }
+            if (p2DA->GetINTEntry(i, "HANDMAIDEN", &nValue))
+            {
+                m_pFeats[i].m_bHandmaiden = nValue;
+            }
+            if (p2DA->GetINTEntry(i, "BAODUR", &nValue))
+            {
+                m_pFeats[i].m_bBaoDur = nValue;
+            }
+            if (p2DA->GetINTEntry(i, "HANHARR", &nValue))
+            {
+                m_pFeats[i].m_bHanharr = nValue;
+            }
+            if (p2DA->GetINTEntry(i, "HK47", &nValue))
+            {
+                m_pFeats[i].m_bHK47 = nValue;
+            }
+            if (p2DA->GetINTEntry(i, "G0T0", &nValue))
+            {
+                m_pFeats[i].m_bG0T0 = nValue;
+            }
+            if (p2DA->GetINTEntry(i, "ATTON", &nValue))
+            {
+                m_pFeats[i].m_bAtton = nValue;
+            }
+            if (p2DA->GetINTEntry(i, "KREIA", &nValue))
+            {
+                m_pFeats[i].m_bKreia = nValue;
+            }
 
             p2DA->GetINTEntry(i, "GainMultiple", &nValue);
             m_pFeats[i].SetGainMultiple(nValue == 1);

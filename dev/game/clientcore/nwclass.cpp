@@ -230,13 +230,12 @@ void CSWClass::LoadFeatsTable(const CExoString& sTable, CSWRules* pRules)
         m_pFeats[i].m_nFeat = 0;
         m_pFeats[i].m_nGrantedLevel = 0;
         m_pFeats[i].m_nList = CSWClassFeat::LIST_GRANTED;
-        m_pFeats[i].m_n04 = 0;
+        m_pFeats[i].m_nPCGrantedLevel = 0;
         m_pFeats[nFeat].m_nFeat = 0;
         m_pFeats[nFeat].m_nGrantedLevel = 0;
         m_pFeats[nFeat].m_nList = CSWClassFeat::LIST_GRANTED;
-        m_pFeats[nFeat].m_n04 = 0;
-        m_pFeats[nFeat].m_nFeat = i;
-        if (pRules->GetFeat(m_pFeats[nFeat].m_nFeat) != 0)
+        m_pFeats[nFeat].m_nPCGrantedLevel = 0;
+        if (pRules->GetFeat(i) != 0)
         {
             p2DA->GetINTEntry(i, sTable + "_List", &nValue);
             switch ((unsigned char)nValue)
@@ -257,8 +256,11 @@ void CSWClass::LoadFeatsTable(const CExoString& sTable, CSWRules* pRules)
                 case CSWClassFeat::FEAT_TABLE_UNAVAILABLE:
                     continue;
             }
+            m_pFeats[nFeat].m_nFeat = i;
             p2DA->GetINTEntry(i, sTable + "_Granted", &nValue);
             m_pFeats[nFeat].m_nGrantedLevel = nValue;
+            p2DA->GetINTEntry(i, sTable + "_PC_Granted", &nValue);
+            m_pFeats[nFeat].m_nPCGrantedLevel = nValue;
             p2DA->GetINTEntry(i, sTable + "_Recom", &nValue);
             m_pFeats[nFeat].m_nRecommended = nValue;
             nFeat++;

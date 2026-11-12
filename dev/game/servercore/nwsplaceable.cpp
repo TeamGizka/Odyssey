@@ -26,6 +26,8 @@
 #include "nwsscriptevent.h"
 #include "nwsmodule.h"
 #include "nwccreature.h"
+#include "nwstrigger.h"
+#include "nwctrigger.h"
 #include "nwspell.h"
 #include "nwitem.h"
 #include "nwcanimbase.h"
@@ -159,10 +161,13 @@ int CSWSPlaceable::LoadPlaceable(CResGFF* pRes, CResStruct* pStruct, int bLoadSt
     int bInvulnerable = pRes->ReadFieldBYTE(pStruct, "Invulnerable", bSuccess, GetPlotObject());
     if (!bSuccess)
         bInvulnerable = pRes->ReadFieldBYTE(pStruct, "Plot", bSuccess, GetPlotObject());
+    m_bNotBlastable = pRes->ReadFieldBYTE(pStruct, "NotBlastable", bSuccess, GetNotBlastable());
     m_bMin1HP = pRes->ReadFieldBYTE(pStruct, "Min1HP", bSuccess, GetMin1HP());
     int bPartyInteract = pRes->ReadFieldBYTE(pStruct, "PartyInteract", bSuccess, 0);
     m_bPartyInteract = bPartyInteract;
     m_nOpenLockDC = pRes->ReadFieldBYTE(pStruct, "OpenLockDC", bSuccess, 0);
+    m_nOpenLockDiff = pRes->ReadFieldBYTE(pStruct, "OpenLockDiff", bSuccess, 0);
+    m_nOpenLockDiffMod = pRes->ReadFieldCHAR(pStruct, "OpenLockDiffMod", bSuccess, 0);
     m_sKeyName = pRes->ReadFieldCExoString(pStruct, "KeyName", bSuccess, "");
     int bTrapDisarmable = pRes->ReadFieldBYTE(pStruct, "TrapDisarmable", bSuccess, 0);
     m_bTrapDisarmable = bTrapDisarmable;
@@ -170,6 +175,7 @@ int CSWSPlaceable::LoadPlaceable(CResGFF* pRes, CResStruct* pStruct, int bLoadSt
     m_bTrapDetectable = bTrapDetectable;
     m_nDisarmDC = pRes->ReadFieldBYTE(pStruct, "DisarmDC", bSuccess, 0);
     m_nTrapDetectDC = pRes->ReadFieldBYTE(pStruct, "TrapDetectDC", bSuccess, 0);
+    m_nOwnerDemolitionsSkill = pRes->ReadFieldINT(pStruct, "OwnerDemolitionsSkill", bSuccess, 0);
     int nTrapFlag = pRes->ReadFieldBYTE(pStruct, "TrapFlag", bSuccess, 0);
     m_nTrapFlag = nTrapFlag;
     int bTrapOneShot = pRes->ReadFieldBYTE(pStruct, "TrapOneShot", bSuccess, 0);
@@ -188,6 +194,8 @@ int CSWSPlaceable::LoadPlaceable(CResGFF* pRes, CResStruct* pStruct, int bLoadSt
     m_bStatic = bStatic;
     m_bPlotObject = bStatic == 1 ? 1 : bInvulnerable;
     m_nAppearance = pRes->ReadFieldDWORD(pStruct, "Appearance", bSuccess, 0);
+    m_bUseTweakColor = pRes->ReadFieldBYTE(pStruct, "UseTweakColor", bSuccess, 0);
+    m_nTweakColor = pRes->ReadFieldDWORD(pStruct, "TweakColor", bSuccess, 0);
     int nHitPoints = pRes->ReadFieldSHORT(pStruct, "HP", bSuccess, 0);
     m_nMaxHitPoints = nHitPoints;
     SetCurrentHitPoints(pRes->ReadFieldSHORT(pStruct, "CurrentHP", bSuccess, 0));
@@ -255,9 +263,12 @@ int CSWSPlaceable::LoadPlaceable(CResGFF* pRes, CResStruct* pStruct, int bLoadSt
         g_pRules->Get2DArrays()->m_pTraps->GetCExoStringEntry(GetTrapType(), "MineScript", &sMineScript);
         m_sScripts[SCRIPT_ONTRAPTRIGGERED] = sMineScript;
     }
+    pRes->ReadFieldCResRef(pStruct, "OnFailToOpen", bSuccess, "").CopyToString(sScript);
+    m_sScripts[SCRIPT_ONFAILTOOPEN] = sScript;
     int bIsBodyBag = pRes->ReadFieldBYTE(pStruct, "IsBodyBag", bSuccess, GetIsBodyBag());
     m_bIsBodyBag = bIsBodyBag;
     m_bIsCorpse = pRes->ReadFieldBYTE(pStruct, "IsCorpse", bSuccess, GetIsCorpse());
+    m_c251 = pRes->ReadFieldBYTE(pStruct, "PCLevelAtSpawn", bSuccess, m_c251);
     m_bOpen = pRes->ReadFieldBYTE(pStruct, "Open", bSuccess, 0);
     if (m_bOpen)
         SetAnimation(PLACEABLE_ANIMATION_OPEN);
@@ -354,6 +365,8 @@ int CSWSPlaceable::LoadBodyBag(unsigned char nAppearance)
     m_nTrapType = 0;
     m_bPlotObject = 0;
     m_nOpenLockDC = BODY_BAG_OPEN_LOCK_DC;
+    m_nOpenLockDiff = 1;
+    m_nOpenLockDiffMod = 0;
     {
         CExoString sEmpty("");
         m_sKeyName = sEmpty;
@@ -476,20 +489,26 @@ int CSWSPlaceable::SavePlaceable(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldBYTE(pStruct, m_bAutoRemoveKey, "AutoRemoveKey");
     pRes->WriteFieldDWORD(pStruct, m_nFaction, "Faction");
     pRes->WriteFieldBYTE(pStruct, m_bPlotObject, "Plot");
+    pRes->WriteFieldBYTE(pStruct, m_bNotBlastable, "NotBlastable");
     pRes->WriteFieldBYTE(pStruct, m_bMin1HP, "Min1HP");
     pRes->WriteFieldBYTE(pStruct, m_nOpenLockDC, "OpenLockDC");
+    pRes->WriteFieldBYTE(pStruct, m_nOpenLockDiff, "OpenLockDiff");
+    pRes->WriteFieldCHAR(pStruct, m_nOpenLockDiffMod, "OpenLockDiffMod");
     pRes->WriteFieldCExoString(pStruct, m_sKeyName, "KeyName");
     pRes->WriteFieldBYTE(pStruct, m_bTrapDisarmable, "TrapDisarmable");
     pRes->WriteFieldBYTE(pStruct, m_bTrapDetectable, "TrapDetectable");
-    pRes->WriteFieldBYTE(pStruct, m_nDisarmDC, "DisarmDC");
-    pRes->WriteFieldBYTE(pStruct, m_nTrapDetectDC, "TrapDetectDC");
+    pRes->WriteFieldBYTE(pStruct, GetDisarmDC(), "DisarmDC");
+    pRes->WriteFieldBYTE(pStruct, GetDetectDC(), "TrapDetectDC");
     pRes->WriteFieldBYTE(pStruct, m_nTrapFlag, "TrapFlag");
     pRes->WriteFieldBYTE(pStruct, m_bTrapOneShot, "TrapOneShot");
     pRes->WriteFieldBYTE(pStruct, m_nTrapType, "TrapType");
+    pRes->WriteFieldINT(pStruct, m_nOwnerDemolitionsSkill, "OwnerDemolitionsSkill");
     pRes->WriteFieldBYTE(pStruct, m_bUseable, "Useable");
     pRes->WriteFieldBYTE(pStruct, m_bStatic, "Static");
     pRes->WriteFieldBYTE(pStruct, m_bGroundPile, "GroundPile");
     pRes->WriteFieldDWORD(pStruct, m_nAppearance, "Appearance");
+    pRes->WriteFieldBYTE(pStruct, m_bUseTweakColor, "UseTweakColor");
+    pRes->WriteFieldDWORD(pStruct, m_nTweakColor, "TweakColor");
     pRes->WriteFieldSHORT(pStruct, m_nMaxHitPoints, "HP");
     pRes->WriteFieldSHORT(pStruct, GetCurrentHitPoints(1), "CurrentHP");
     pRes->WriteFieldBYTE(pStruct, m_nHardness, "Hardness");
@@ -576,6 +595,10 @@ int CSWSPlaceable::SavePlaceable(CResGFF* pRes, CResStruct* pStruct)
         CResRef cScript(m_sScripts[SCRIPT_ONTRAPTRIGGERED]);
         pRes->WriteFieldCResRef(pStruct, cScript, "OnTrapTriggered");
     }
+    {
+        CResRef cScript(m_sScripts[SCRIPT_ONFAILTOOPEN]);
+        pRes->WriteFieldCResRef(pStruct, cScript, "OnFailToOpen");
+    }
     pRes->WriteFieldINT(pStruct, m_nAnimation, "Animation");
     if ((unsigned int)m_pcItemRepository->GetNumItems() > 0)
     {
@@ -598,6 +621,7 @@ int CSWSPlaceable::SavePlaceable(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldBYTE(pStruct, m_bIsBodyBag, "IsBodyBag");
     pRes->WriteFieldBYTE(pStruct, m_bIsBodyBagVisible, "IsBodyBagVisible");
     pRes->WriteFieldBYTE(pStruct, m_bIsCorpse, "IsCorpse");
+    pRes->WriteFieldBYTE(pStruct, m_c251, "PCLevelAtSpawn");
     return 1;
 }
 // PC 0x00589C60
@@ -698,9 +722,23 @@ void CSWSPlaceable::AIUpdate()
     if (nDifferenceTime >= HEARTBEAT_INTERVAL)
     {
         if (m_nHeartbeatTime != 0 && GetDead() == 0)
+        {
+            if (m_c251 == 0)
+            {
+                char nPCLevel = 0;
+                g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(
+                    "G_PC_LEVEL", nPCLevel);
+                m_c251 = nPCLevel;
+            }
             g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ONHEARTBEAT], m_nId, 1);
+        }
         m_nHeartbeatDay = nCalendarDay;
         m_nHeartbeatTime = nTimeOfDay;
+    }
+    else if (m_nHeartbeatTime == 0 && GetDead() == 0)
+    {
+        g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ONHEARTBEAT], m_nId, 1);
+        m_nHeartbeatTime = 1;
     }
     UpdateEffectList(nCalendarDay, nTimeOfDay);
     RunActions(nCalendarDay, nTimeOfDay, nTimer);
@@ -1129,6 +1167,29 @@ void CSWSPlaceable::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
                     unsigned int nItemCount = m_pcItemRepository->m_lstItems.num;
                     CSWSItem* pItem = m_pcItemRepository->ItemListGetItem(nItemCount - 1);
                     m_pcItemRepository->RemoveItem(pItem);
+                    if (pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_DATAPAD)
+                    {
+                        if (m_sTag.CompareNoCase("lockertsfinv"))
+                        {
+                            pItem->m_lVarTable.SetLocalBoolean(94, 1);
+                        }
+                        else if (pItem->m_lVarTable.GetLocalBoolean(94) == 0)
+                        {
+                            pItem->m_lVarTable.SetLocalBoolean(94, 1);
+                            CExoString sText;
+                            pItem->m_sDescIdentified.GetString(0, &sText, 0);
+                            CSWGuiMessageBox* pDatapad =
+                                g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pA4;
+                            pDatapad->SetAllowCancel(0);
+                            pDatapad->m_lblMessage.m_cText.m_cParams.SetAlignment(9);
+                            CResRef cFont("fnt_d16x16");
+                            pDatapad->m_lblMessage.m_cText.m_cParams.SetFont(cFont);
+                            pDatapad->SetMessage(sText);
+                            pDatapad->SetCallback(NULL, NULL, NULL);
+                            g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(pDatapad, 1, 1);
+                            g_pAppManager->GetClientExoApp()->SetPausedByCombat(1, 12, 0);
+                        }
+                    }
                     pCreature->GetItemRepository(1)->AddItem(&pItem, 1, 1, 1);
                     if (pItem != NULL)
                         pItem->SetPossessor(oidCloser, 1, 1, OBJECT_INVALID);
@@ -1379,39 +1440,95 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
         case CSWSSCRIPTEVENT_EVENTTYPE_ON_MINE_TRIGGERED:
             {
                 int nTriggerFlag = pScriptEvent->GetInteger(0);
-                CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaller);
-                if ((pCreature != NULL &&
-                     pCreature->m_pStats->GetEffectImmunity(CSWSEffectListHandler::IMMUNITY_TYPE_MINE, NULL) != 0) ||
-                    (nTriggerFlag == 0 &&
-                     (GetReputation(oidCaller, 0) >= MIN_FRIENDLY_REPUTATION || m_nFaction == pCreature->m_pStats->m_nFactionId)) ||
-                    m_nTrapFlag == 0)
+                int bTriggered = pScriptEvent->GetInteger(1);
+                if (pScriptEvent->GetInteger(2) == 0 || bTriggered != 0)
                 {
+                    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaller);
+                    if ((pCreature != NULL &&
+                         pCreature->m_pStats->GetEffectImmunity(CSWSEffectListHandler::IMMUNITY_TYPE_MINE, NULL) != 0) ||
+                        (nTriggerFlag == 0 &&
+                         (GetReputation(oidCaller, 0) >= MIN_FRIENDLY_REPUTATION || m_nFaction == pCreature->m_pStats->m_nFactionId)) ||
+                        m_nTrapFlag == 0)
+                    {
+                        break;
+                    }
+                    if (pCreature != NULL)
+                    {
+                        pCreature->SendFeedbackMessage(FEEDBACK_TRAP_TRIGGERED, NULL);
+                    }
+                    m_oidLastTriggeredBy = oidCaller;
+                    g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ONTRAPTRIGGERED], GetId(), 1);
+                    if (m_bTrapOneShot != 0)
+                    {
+                        m_nTrapFlag = 0;
+                        if (GetArea() != NULL && &GetArea()->m_lstTrapObjectIds != NULL)
+                        {
+                            unsigned long oidPlaceable = GetId();
+                            CSWSArea* pArea = GetArea();
+                            if (pArea->m_lstTrapObjectIds.Contains(oidPlaceable) == 1)
+                            {
+                                unsigned long oidObject = GetId();
+                                CSWSArea* pTrapArea = GetArea();
+                                pTrapArea->m_lstTrapObjectIds.Remove(oidObject);
+                            }
+                        }
+                        CSWSTrigger* pTrapTrigger = m_pTrapTrigger;
+                        if (pTrapTrigger != NULL)
+                        {
+                            pTrapTrigger->SetFadeOutTime(1);
+                            pTrapTrigger->RemoveFromArea();
+                            delete pTrapTrigger;
+                        }
+                    }
+                    if (m_lstTrapDetectedBy.num > 0)
+                    {
+                        m_lstTrapDetectedBy.SetSize(0);
+                    }
                     break;
                 }
-                if (pCreature != NULL)
+                CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaller);
+                if (m_nTrapFlag == 0)
+                    break;
+                int nRoll = pCreature->m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, 0) / 20 + 20 +
+                            pScriptEvent->GetInteger(3);
+                if (nRoll >= GetOpenLockDC())
                 {
-                    pCreature->SendFeedbackMessage(FEEDBACK_TRAP_TRIGGERED, NULL);
+                    m_bLocked = 0;
+                    CScriptEvent* pUnlockEvent = new CScriptEvent;
+                    pUnlockEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_UNLOCKED;
+                    g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                        0, 0, pCreature->m_nId, m_nId, CServerAIMaster::EVENT_SIGNAL_EVENT, pUnlockEvent);
                 }
+                pCreature->SendFeedbackMessage(FEEDBACK_TRAP_TRIGGERED, NULL);
                 m_oidLastTriggeredBy = oidCaller;
-                g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ONTRAPTRIGGERED], GetId(), 1);
-                if (m_bTrapOneShot != 0)
+                m_nTrapFlag = 0;
+                if (GetArea() != NULL)
                 {
-                    m_nTrapFlag = 0;
-                    if (GetArea() != NULL && &GetArea()->m_lstTrapObjectIds != NULL)
+                    unsigned long oidPlaceable = GetId();
+                    if (GetArea()->m_lstTrapObjectIds.Contains(oidPlaceable) == 1)
                     {
-                        unsigned long oidPlaceable = GetId();
-                        CSWSArea* pArea = GetArea();
-                        if (pArea->m_lstTrapObjectIds.Contains(oidPlaceable) == 1)
-                        {
-                            unsigned long oidObject = GetId();
-                            CSWSArea* pTrapArea = GetArea();
-                            pTrapArea->m_lstTrapObjectIds.Remove(oidObject);
-                        }
+                        unsigned long oidObject = GetId();
+                        GetArea()->m_lstTrapObjectIds.Remove(oidObject);
                     }
                 }
                 if (m_lstTrapDetectedBy.num > 0)
                 {
                     m_lstTrapDetectedBy.SetSize(0);
+                }
+                CSWSTrigger* pTrapTrigger = m_pTrapTrigger;
+                if (pTrapTrigger != NULL)
+                {
+                    unsigned char nTrapType = pTrapTrigger->m_nTrapType;
+                    if (nTrapType >= 3 && nTrapType <= 5)
+                    {
+                        CSWCTrigger* pClientTrigger = pTrapTrigger->GetClientTrigger();
+                        Vector vPosition = pClientTrigger->m_vPosition;
+                        vPosition.m_fZ -= 2.0f;
+                        pClientTrigger->SetPosition(vPosition);
+                    }
+                    pTrapTrigger->SetFadeOutTime(1);
+                    pTrapTrigger->RemoveFromArea();
+                    delete pTrapTrigger;
                 }
                 break;
             }

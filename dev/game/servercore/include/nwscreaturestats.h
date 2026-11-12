@@ -238,9 +238,10 @@ public:
                                        unsigned char nSpellLevel);
     int HasFeat(unsigned short nFeat);
     int FeatAcquired(unsigned short nFeat, CExoArrayList<unsigned short>* pList);
-    int FeatRequirementsMet(unsigned short nFeat, CExoArrayList<unsigned short>* pList);
+    int FeatRequirementsMet(unsigned short nFeat, CExoArrayList<unsigned short>* pList,
+                            int bNextLevel);
     int HasFeatPrereq(CSWFeat* pFeat, CExoArrayList<unsigned short>* pList);
-    int HasSpellPrereq(CSWSpell* pSpell, CExoArrayList<unsigned long>* pList);
+    int HasSpellPrereq(CSWSpell* pSpell, CExoArrayList<unsigned long>* pList, int bNextLevel);
     int HasSpell(unsigned char nSpellLevel, unsigned long nSpell,
                  int bCheckForcePoints);
     int GetHasPowerFromItem(int nPower);
@@ -270,7 +271,7 @@ public:
     void SetNormalBonusFlags(unsigned short nFeat, int& bNormal, int& bBonus);
     int CanChooseFeat(unsigned short nFeat, unsigned char nNormal,
                       unsigned char nBonus,
-                      CExoArrayList<unsigned short>* pList);
+                      CExoArrayList<unsigned short>* pList, int bNextLevel);
     void CalcLevelUpNumberFeats(unsigned char nClass,
                                unsigned char& nNormalFeats,
                                unsigned char& nBonusFeats);
@@ -448,7 +449,7 @@ public:
                               int nUnknown2, int nUnknown3, int nUnknown4,
                               int nInvalidTalent);
     int CanChooseSpell(unsigned long nSpell, unsigned char nMultiClass,
-                       CExoArrayList<unsigned long>* pSpellList);
+                       CExoArrayList<unsigned long>* pSpellList, int bNextLevel);
     int CheckInclusionMatch(int nType, int nRow, int nExclusion);
 
     CExoArrayList<unsigned short> m_lstFeats;

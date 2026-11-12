@@ -28,7 +28,7 @@ struct CSWClassFeat
     unsigned short m_nFeat;
     unsigned char m_nGrantedLevel;
     unsigned char m_nList;
-    unsigned char m_n04;
+    unsigned char m_nPCGrantedLevel;
     int m_nRecommended;
 };
 

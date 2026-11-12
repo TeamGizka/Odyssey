@@ -40,6 +40,10 @@
 #include "clientexoappinternal.h"
 #include "nwclass.h"
 
+static const int FORCE_BODY_COST_PERCENT_0 = 50;
+static const int FORCE_BODY_COST_PERCENT_1 = 40;
+static const int FORCE_BODY_COST_PERCENT_2 = 30;
+
 static inline void NwsobjectTrace2();
 static inline void NwsobjectTrace1();
 
@@ -1390,7 +1394,21 @@ int CSWSObject::DoDamageResistance(CSWSCreature* pAttacker, int nDamage,
     if (nResistance != 0)
     {
         int nLimit = m_lstEffects[nBestEffect]->GetInteger(CSWSEffectListHandler::RESISTANCE_INTEGER_LIMIT);
-        int nScaledDamage = nDamage * (bVulnerable + 1);
+        int nMultiplier = 1;
+        if (bVulnerable)
+            nMultiplier = 2;
+        if (pAttacker != NULL &&
+            m_lstEffects[nBestEffect]->GetInteger(CSWSEffectListHandler::RESISTANCE_INTEGER_POWER_ATTACK_VULNERABLE) == 1)
+        {
+            unsigned char nAttack = pAttacker->m_pcCombatRound->m_nCurrentAttack;
+            if (pAttacker->m_pcCombatRound->GetAttack(nAttack)->m_nAttackType == CSWFeat::FEAT_POWER_ATTACK ||
+                pAttacker->m_pcCombatRound->GetAttack(nAttack)->m_nAttackType == CSWFeat::FEAT_IMPROVED_POWER_ATTACK ||
+                pAttacker->m_pcCombatRound->GetAttack(nAttack)->m_nAttackType == CSWFeat::FEAT_MASTER_POWER_ATTACK)
+            {
+                nMultiplier++;
+            }
+        }
+        int nScaledDamage = nDamage * nMultiplier;
         if (nLimit != 0)
         {
             if (nLimit - nScaledDamage > 0)
@@ -1482,31 +1500,62 @@ int CSWSObject::DoDamageResistance(CSWSCreature* pAttacker, int nDamage,
             }
         }
     }
-    if (AsSWSCreature() != NULL)
+    if (AsSWSCreature() == NULL)
+        return nDamage - nResistance > 0 ? nDamage - nResistance : 0;
+    CSWSCreature* pCreature = AsSWSCreature();
+    if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_DAMAGE_REDUCTION_3) ||
+        pCreature->m_pStats->HasFeat(CSWFeat::FEAT_DAMAGE_REDUCTION_3B))
     {
-        CSWSCreature* pCreature = AsSWSCreature();
-        if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_IMPROVED_TOUGHNESS))
+        nDamage += (int)(nDamage * -0.15f);
+    }
+    else if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_DAMAGE_REDUCTION_2) ||
+             pCreature->m_pStats->HasFeat(CSWFeat::FEAT_DAMAGE_REDUCTION_2B))
+    {
+        nDamage += (int)(nDamage * -0.1f);
+    }
+    else if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_DAMAGE_REDUCTION_1) ||
+             pCreature->m_pStats->HasFeat(CSWFeat::FEAT_DAMAGE_REDUCTION_1B))
+    {
+        nDamage += (int)(nDamage * -0.05f);
+    }
+    if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_IMPROVED_TOUGHNESS))
+    {
+        int nToughness = (int)(nDamage * 0.1f);
+        if (nToughness < 2)
+            nToughness = 2;
+        nDamage -= nToughness;
+        if (bRemainingDamage)
         {
-            nDamage -= 2;
-            if (bRemainingDamage)
-            {
-                CSWSCombatAttackData* pAttack = pAttacker->m_pcCombatRound->GetAttack(pAttacker->m_pcCombatRound->m_nCurrentAttack);
-                pAttack->m_DamageBreakdown.m_nUnknown9 = nDamage;
-                pAttack->m_DamageBreakdown.m_nUnknown6 = CSWSCombatAttackExtra3::DAMAGE_ABSORPTION_ACTIVE;
-                pAttack->m_DamageBreakdown.m_nUnknown8 = nDamageType;
-            }
+            CSWSCombatAttackData* pAttack = pAttacker->m_pcCombatRound->GetAttack(pAttacker->m_pcCombatRound->m_nCurrentAttack);
+            pAttack->m_DamageBreakdown.m_nUnknown9 = nDamage;
+            pAttack->m_DamageBreakdown.m_nUnknown6 = nToughness;
+            pAttack->m_DamageBreakdown.m_nUnknown8 = nDamageType;
         }
-        if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_WOOKIE_ENDURANCE))
-        {
-            nDamage -= 2;
-            if (bRemainingDamage)
-            {
-                CSWSCombatAttackData* pAttack = pAttacker->m_pcCombatRound->GetAttack(pAttacker->m_pcCombatRound->m_nCurrentAttack);
-                pAttack->m_DamageBreakdown.m_nUnknownA = nDamage;
-                pAttack->m_DamageBreakdown.m_nUnknown7 = CSWSCombatAttackExtra3::DAMAGE_ABSORPTION_ACTIVE;
-                pAttack->m_DamageBreakdown.m_nUnknown8 = nDamageType;
-            }
-        }
+    }
+    int nEndurance = 0;
+    if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_WOOKIE_ENDURANCE_3))
+    {
+        nEndurance = 8;
+        if (nDamage - 8 > 0)
+            nEndurance = 10 * (nDamage - 8) / 100 + 8;
+    }
+    else if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_WOOKIE_ENDURANCE_2))
+    {
+        nEndurance = 5;
+        if (nDamage - 5 > 0)
+            nEndurance = 5 * (nDamage - 5) / 100 + 5;
+    }
+    else if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_WOOKIE_ENDURANCE))
+    {
+        nEndurance = 2;
+    }
+    nDamage -= nEndurance;
+    if (nEndurance > 0 && bRemainingDamage)
+    {
+        CSWSCombatAttackData* pAttack = pAttacker->m_pcCombatRound->GetAttack(pAttacker->m_pcCombatRound->m_nCurrentAttack);
+        pAttack->m_DamageBreakdown.m_nUnknownA = nDamage;
+        pAttack->m_DamageBreakdown.m_nUnknown7 = nEndurance;
+        pAttack->m_DamageBreakdown.m_nUnknown8 = nDamageType;
     }
     return nDamage - nResistance > 0 ? nDamage - nResistance : 0;
 }
@@ -2952,6 +3001,8 @@ void CSWSObject::SpellCastAndImpact(
             SPELL_PROJECTILE_TYPE_CUSTOM_PATH : SPELL_PROJECTILE_TYPE_NORMAL;
         if (!m_bSafeProjectileBroadcast)
         {
+            int nForceCost = 0;
+            int nForceBodyCost = 0;
             if (!bInstantSpell && AsSWSCreature() != NULL)
             {
                 CSWCCMessageData* pData = new CSWCCMessageData;
@@ -2961,10 +3012,52 @@ void CSWSObject::SpellCastAndImpact(
                 pData->SetInteger(0, nSpellId);
                 pData->SetInteger(1, pSpell->m_nForcePoints);
                 short nAlignment = AsSWSCreature()->GetStats()->m_nGoodEvilAlignment;
-                pData->SetInteger(2, pSpell->GetAdjustedForcePoints(
-                    nAlignment, AsSWSCreature()->GetInParty()));
+                CSWSArea* pArea = AsSWSCreature()->GetArea();
+                int nRoomForceRating = 0;
+                if (pArea != NULL)
+                    nRoomForceRating = pArea->GetRoomForceRating(AsSWSCreature()->m_vPosition);
+                int nForceBodyLevel = -1;
+                CSWSCreature* pCaster = AsSWSCreature();
+                for (int i = 0; i < pCaster->m_lstEffects.num; i++)
+                {
+                    if (pCaster->m_lstEffects[i]->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
+                    {
+                        nForceBodyLevel = pCaster->m_lstEffects[i]->GetInteger(0);
+                        break;
+                    }
+                }
+                if (nForceBodyLevel == -1)
+                {
+                    nForceCost = pSpell->GetAdjustedForcePoints(nAlignment,
+                        AsSWSCreature()->GetInParty(), nRoomForceRating,
+                        AsSWSCreature()->m_n1110, AsSWSCreature()->GetStats()->m_nCharismaModifier);
+                }
+                else
+                {
+                    int nPercent = 0;
+                    int nFullCost = pSpell->GetAdjustedForcePoints(nAlignment,
+                        AsSWSCreature()->GetInParty(), nRoomForceRating,
+                        AsSWSCreature()->m_n1110, AsSWSCreature()->GetStats()->m_nCharismaModifier);
+                    switch (nForceBodyLevel)
+                    {
+                    case 0:
+                        nPercent = FORCE_BODY_COST_PERCENT_0;
+                        break;
+                    case 1:
+                        nPercent = FORCE_BODY_COST_PERCENT_1;
+                        break;
+                    case 2:
+                        nPercent = FORCE_BODY_COST_PERCENT_2;
+                        break;
+                    }
+                    nForceCost = nPercent * nFullCost / 100;
+                    nForceBodyCost = nForceCost;
+                }
+                pData->SetInteger(2, nForceCost);
                 int nForcePoints = AsSWSCreature()->GetStats()->GetCurrentForcePoints();
                 pData->SetInteger(3, nForcePoints);
+                pData->SetInteger(4, nForceBodyCost);
+                pData->SetInteger(5, AsSWSCreature()->GetCurrentHitPoints(0));
                 BroadcastSpellData(pSpell, pData);
                 delete pData;
             }
@@ -2987,6 +3080,7 @@ void CSWSObject::SpellCastAndImpact(
             pScriptData->m_vTargetPosition = vTargetPosition;
             pScriptData->m_oidCaster = m_nId;
             pScriptData->m_oidItem = oidItem;
+            pScriptData->m_nFinalForceCost = nForceCost;
             if (GetArea() != NULL)
                 pScriptData->m_oidArea = GetArea()->GetId();
             else

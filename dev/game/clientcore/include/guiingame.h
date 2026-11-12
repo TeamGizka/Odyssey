@@ -727,6 +727,8 @@ public:
     int m_bSoundStarted;
     unsigned int m_bForceVisible : 1;
     unsigned int : 31;
+    int m_nBarkX;
+    int m_nBarkY;
     CSWGuiBarkBubble(CSWGuiManager*);
     virtual ~CSWGuiBarkBubble();
     void SetBark(unsigned long, CExoString const&, CResRef const&, int);

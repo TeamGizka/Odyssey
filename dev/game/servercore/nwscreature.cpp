@@ -169,6 +169,9 @@ int CSWSCreature::LearnScroll(unsigned long oidItem)
 CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     : CSWSObject(CGameObject::OBJECT_TYPE_CREATURE, oidCreature, bFlag)
 {
+    m_n11C0 = -1;
+    m_n11F8 = -1;
+    m_n11FC = 0;
     m_bInParty = 0;
     m_nSoundSetFile = -1;
     m_pStats = new CSWSCreatureStats(this);
@@ -219,12 +222,13 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     m_nDisarmable = 1;
     m_nDetectMode = 0;
     m_nStealthMode = 0;
+    m_nUnknown4D8 = 0;
     m_nActiveCombatMode = 0;
     m_nDesiredCombatMode = 0;
     m_nCombatStateTimer = 0;
+    m_n528 = 0;
     m_nActionQueueUpdateDay = 0;
     m_nActionQueueUpdateTime = 0;
-    m_nUnknown4D8 = 0;
     m_bResolveInitiative = 1;
     m_oidDisappearTarget = OBJECT_INVALID;
     m_vDisappearPosition = Vector();
@@ -263,6 +267,8 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     m_nPoisonState = 0;
     m_bDiseased = 0;
     m_nPoisonEffectID = -1;
+    m_c110C = 0xFF;
+    m_n1110 = 0;
     m_bHasLegs = 1;
     m_bHasArms = 1;
     m_nCreatureSize = 0;
@@ -279,6 +285,7 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     m_bDropAnimationPlayed = 0;
     m_bPickupAnimationPlayed = 0;
     m_nUnknown990 = 0;
+    m_n10B0 = 0;
     m_nLastStealthRollDay = 0;
     m_nLastStealthRollTime = 0;
     m_nMoveSilentlyCheckRoll = rand() % 10 + 1;
@@ -310,6 +317,7 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     m_nLastCombatFeatUsed = 0;
     m_nUnknown560 = 0;
     m_bLastForcePowerSuccessful = -1;
+    m_n5AC = OBJECT_INVALID;
     m_nUnknown8E8 = 0;
     m_nSpecialWalkAnimation = 0;
     m_bInvitedToParty = 0;
@@ -319,6 +327,8 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     m_pJournal = NULL;
     m_lScriptVars.m_pCreature = this;
     m_nGold = 0;
+    m_n1104 = 0;
+    m_n1108 = 0;
     m_pInvitationsOffered = NULL;
     m_pInvitationsIgnored = NULL;
     m_nAreaWaitState = 0;
@@ -369,6 +379,14 @@ CSWSCreature::CSWSCreature(unsigned long oidCreature, int bFlag)
     m_nStealthModeValue = 0;
     m_nItemUseState = 0;
     m_bDisableInjuredAnim = 0;
+    m_n11F0 = 0;
+    m_n11F4 = 0;
+    m_n10B4 = 0;
+    m_n10B8 = 0;
+    m_n1200 = 0;
+    m_n1204 = 0;
+    m_v1208 = Vector(0.0f, 0.0f, 0.0f);
+    m_v1214 = Vector(0.0f, 0.0f, 0.0f);
 }
 // PC 0x0051A4A0
 CSWSCreature::~CSWSCreature()
@@ -760,10 +778,9 @@ void CSWSCreature::SpawnInHeartbeatPerception(int bForce)
     int bCreationScriptFired = m_bCreationScriptFired;
     if (bCreationScriptFired == 0)
     {
+        HandleAutoBalancing();
         CExoString& sSpawn = m_sScripts[SCRIPT_SPAWN];
         g_pVirtualMachine->RunScript(&sSpawn, m_nId, 1);
-        if (m_oidSpawnedBy == OBJECT_INVALID && m_bInParty == 0)
-            m_bCreationScriptFired = 1;
     }
     if ((bForce == 1 && nElapsedTime >= m_nHeartbeatInterval) || m_bCreationScriptFired == 0)
     {
@@ -775,19 +792,26 @@ void CSWSCreature::SpawnInHeartbeatPerception(int bForce)
             if ((m_bCreationScriptFired == 0 || m_nLastHeartbeatTime != 0) &&
                 GetDead() == 0 && GetIsPCDying() == 0)
             {
+                int nDebilitated = m_bDebilitated;
+                if (nDebilitated == CSWSEffectListHandler::STATE_CONFUSION ||
+                    nDebilitated == CSWSEffectListHandler::STATE_VARIANT_16)
+                {
+                    m_bCommandable = 0;
+                }
                 CExoString& sHeartbeat = m_sScripts[CREATURE_SCRIPT_HEARTBEAT];
                 g_pVirtualMachine->RunScript(&sHeartbeat, m_nId, 1);
                 unsigned char nStateScript = 0;
                 switch (m_bDebilitated)
                 {
-                case CSWSEffectListHandler::STATE_CONFUSION:
-                    nStateScript = CREATURE_STATE_SCRIPT_CONFUSION;
+                case CREATURE_STATE_SCRIPT_STATE_11:
+                    nStateScript = CREATURE_STATE_SCRIPT_OTHER;
                     break;
                 case CSWSEffectListHandler::STATE_FEAR:
                     nStateScript = CREATURE_STATE_SCRIPT_FEAR;
                     break;
-                case CREATURE_STATE_SCRIPT_STATE_11:
-                    nStateScript = CREATURE_STATE_SCRIPT_OTHER;
+                case CSWSEffectListHandler::STATE_CONFUSION:
+                case CSWSEffectListHandler::STATE_VARIANT_16:
+                    nStateScript = CREATURE_STATE_SCRIPT_CONFUSION;
                     break;
                 }
                 if (nStateScript != 0)
@@ -835,7 +859,8 @@ void CSWSCreature::SpawnInHeartbeatPerception(int bForce)
             }
             m_nLastPerceptionDay = nDay;
             m_nLastPerceptionTime = nTime;
-            if (GetArea() != NULL && GetArea()->m_nPlayersInArea == 0 && m_nAILevel != CServerAIMaster::AI_LEVEL_EMPTY_AREA_CREATURE)
+            CSWSArea* pArea = GetArea();
+            if (pArea != NULL && pArea->m_nPlayersInArea == 0 && m_nAILevel != CServerAIMaster::AI_LEVEL_EMPTY_AREA_CREATURE)
                 pAIMaster->SetAILevel(this, CServerAIMaster::AI_LEVEL_EMPTY_AREA_CREATURE);
         }
     }
@@ -1149,19 +1174,18 @@ int CSWSCreature::AddHealActions(unsigned long oidTarget, unsigned long oidItem,
 // PC 0x00511940
 void CSWSCreature::HandleHPRegeneration()
 {
-    short nCurrentHitPoints = GetCurrentHitPoints(1);
-    if (GetMaxHitPoints(1) != nCurrentHitPoints &&
-        g_pAppManager->m_pServerExoApp->GetPartyTable()->m_bDisableRegen == 0)
+    if (GetMaxHitPoints(1) != GetCurrentHitPoints(1) &&
+        g_pAppManager->GetServerExoApp()->GetPartyTable()->m_bDisableRegen == 0)
     {
         float fHPBase = 0.0f;
         float fTimePerHP = 0.0f;
         float fConModBonus = 0.0f;
         float fSkillRankBonus = 0.0f;
-        C2DA* pRegeneration = g_pRules->m_p2DArrays->m_pRegeneration;
+        C2DA* pRegeneration = g_pRules->Get2DArrays()->m_pRegeneration;
         CExoString sValue("VALUE");
 
         pRegeneration->GetFLOATEntry("TimePerHP", sValue, &fTimePerHP);
-        if (m_bCombatState == 0 || m_nItemUseState == COMBAT_STATE_EQUIPMENT)
+        if (GetCombatState() == 0 || m_nItemUseState == COMBAT_STATE_EQUIPMENT)
         {
             pRegeneration->GetFLOATEntry("OutOfCombatHPBase", sValue, &fHPBase);
         }
@@ -1173,20 +1197,18 @@ void CSWSCreature::HandleHPRegeneration()
         pRegeneration->GetFLOATEntry("SkillRankBons", sValue, &fSkillRankBonus);
 
         fHPBase += m_pStats->m_nConstitutionModifier * fConModBonus;
-        int nSkillRank;
         if (m_pStats->m_nRace == CSWRace::CRACE_DROID)
         {
-            nSkillRank = m_pStats->GetSkillRank(CSWRules::SKILL_REPAIR, NULL, 0);
+            fHPBase += m_pStats->GetSkillRank(CSWRules::SKILL_REPAIR, NULL, 0) * fSkillRankBonus;
         }
         else
         {
-            nSkillRank = m_pStats->GetSkillRank(CSWRules::SKILL_TREAT_INJURY, NULL, 0);
+            fHPBase += m_pStats->GetSkillRank(CSWRules::SKILL_TREAT_INJURY, NULL, 0) * fSkillRankBonus;
         }
-        fHPBase += nSkillRank * fSkillRankBonus;
 
         if (m_pStats->HasFeat(196))
         {
-            fHPBase += 0.58181818f;
+            fHPBase += 0.5f;
         }
 
         for (int nEffect = 0; nEffect < m_lstEffects.num; nEffect++)
@@ -1199,12 +1221,12 @@ void CSWSCreature::HandleHPRegeneration()
             }
         }
 
-        if (fTimePerHP < 0.0001f)
+        if (0.0001f > fTimePerHP)
         {
             fTimePerHP = 0.0001f;
         }
         float fRate = 1.0f / fTimePerHP;
-        if (fRate < 0.0001f)
+        if (0.0001f > fRate)
         {
             fRate = 0.0001f;
         }
@@ -1260,8 +1282,7 @@ void CSWSCreature::SplitItem(CSWSItem* pItem, int nCount)  // PC 0x005121F0
     CItemRepository* pRepository = GetItemRepository(TRUE);
     if (pItem->m_oidPossessor != m_nId)
     {
-        CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
-        CGameObject* pPossessor = pServer->GetGameObject(pItem->m_oidPossessor);
+        CGameObject* pPossessor = g_pAppManager->m_pServerExoApp->GetGameObject(pItem->m_oidPossessor);
         if (pPossessor->AsSWSItem() == NULL)
         {
             return;
@@ -1299,7 +1320,7 @@ int CSWSCreature::EvaluateLock(CSWSObject* pObject, int bLocked)
         {
             return FALSE;
         }
-        unsigned long oidKey = GetItemRepository(TRUE)->FindItemWithTag(pDoor->m_sKeyName);
+        unsigned long oidKey = GetItemRepository(TRUE)->FindItemWithTag(pDoor->m_sKeyName.LowerCase());
         CSWSItem* pKey = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidKey);
         if (pKey != NULL)
         {
@@ -1393,6 +1414,9 @@ void CSWSCreature::SetAnimation(int nRequestedAnimation)
         case AMBIENT_STATE_8: nAnimation = CREATURE_ANIMATION_AMBIENT_8; break;
         case AMBIENT_STATE_11: nAnimation = CREATURE_ANIMATION_AMBIENT_11; break;
         case AMBIENT_STATE_12: nAnimation = CREATURE_ANIMATION_AMBIENT_12; break;
+        case AMBIENT_STATE_15: nAnimation = CREATURE_ANIMATION_LOOPING_PRONE; break;
+        case AMBIENT_STATE_16: nAnimation = 10416; break;
+        case AMBIENT_STATE_17: nAnimation = 10418; break;
         default:
             nAnimation = int(m_bCombatState != 0) + CREATURE_ANIMATION_COMBAT_IDLE;
             break;
@@ -1401,12 +1425,20 @@ void CSWSCreature::SetAnimation(int nRequestedAnimation)
     else if (nAnimation == CREATURE_ANIMATION_DEFAULT)
         nAnimation = CREATURE_ANIMATION_COMBAT_IDLE;
 
-    if (g_pAppManager->GetServerExoApp()->IsInjured(GetId()) &&
-        (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nCameraMode !=
-             CClientOptions::CAMERA_MODE_WORLD_CLICK_DISABLED ||
-         (g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0) != NULL &&
-          g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetId()) !=
-              g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0)->GetObjectId())))
+    int bInjured = FALSE;
+    if (g_pAppManager->GetServerExoApp()->IsInjured(GetId()))
+    {
+        CSWCCreature* pCharacter = g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0);
+        if (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nCameraMode !=
+                CClientOptions::CAMERA_MODE_WORLD_CLICK_DISABLED ||
+            (pCharacter != NULL &&
+             g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetId()) !=
+                 pCharacter->GetObjectId()))
+        {
+            bInjured = TRUE;
+        }
+    }
+    if (bInjured)
     {
         if (nAnimation == CREATURE_ANIMATION_WALK)
             nAnimation = CREATURE_ANIMATION_INJURED_WALK;
@@ -1415,7 +1447,7 @@ void CSWSCreature::SetAnimation(int nRequestedAnimation)
     }
     else if ((nAnimation == CREATURE_ANIMATION_WALK ||
               nAnimation == CREATURE_ANIMATION_RUN) &&
-             (m_nActivity & ACTIVITY_STEALTH))
+             (m_nActivity & ACTIVITY_STEALTH) && !m_pStats->HasFeat(197))
         nAnimation = CREATURE_ANIMATION_STEALTH_WALK;
 
     if ((!GetDead() && !GetDeadTemp()) ||
@@ -2144,25 +2176,19 @@ int CSWSCreature::AddMineActions(unsigned long oidMine, unsigned char nAction,
     CGameObject* pMine = g_pAppManager->GetServerExoApp()->GetGameObject(oidMine);
     if (pMine == NULL)
         return FALSE;
-    if (nAction == ACTION_DISARM_MINE || nAction == ACTION_RECOVER_MINE)
-    {
-        if (pMine->m_nObjectType == CGameObject::OBJECT_TYPE_TRIGGER &&
-            !pMine->AsSWSTrigger()->m_bTrapDisarmable &&
-            pMine->AsSWSTrigger()->GetTrapFlag() == TRUE)
-            return FALSE;
-        if (pMine->m_nObjectType == CGameObject::OBJECT_TYPE_DOOR &&
-            !pMine->AsSWSDoor()->GetDisarmable() &&
-            pMine->AsSWSDoor()->GetTrapped() == TRUE)
-            return FALSE;
-        if (pMine->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE &&
-            !pMine->AsSWSPlaceable()->m_bTrapDisarmable &&
-            pMine->AsSWSPlaceable()->GetTrapFlag() == TRUE)
-            return FALSE;
-    }
-    int bCanUseSkill = m_pStats->GetCanUseSkill(CSWRules::SKILL_DEMOLITIONS);
-    if (nAction == ACTION_SET_MINE && !bCanUseSkill)
+    CGameObject* pTarget = g_pAppManager->GetServerExoApp()->GetGameObject(oidTarget);
+    if ((nAction == ACTION_DISARM_MINE || nAction == ACTION_RECOVER_MINE) &&
+        ((pMine->m_nObjectType == CGameObject::OBJECT_TYPE_TRIGGER &&
+          !pMine->AsSWSTrigger()->m_bTrapDisarmable &&
+          pMine->AsSWSTrigger()->GetTrapFlag() == TRUE) ||
+         (pMine->m_nObjectType == CGameObject::OBJECT_TYPE_DOOR &&
+          !pMine->AsSWSDoor()->GetDisarmable() &&
+          pMine->AsSWSDoor()->GetTrapped() == TRUE) ||
+         (pMine->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE &&
+          !pMine->AsSWSPlaceable()->m_bTrapDisarmable &&
+          pMine->AsSWSPlaceable()->GetTrapFlag() == TRUE)))
         return FALSE;
-    else if (nAction != ACTION_SET_MINE && !bCanUseSkill)
+    if (!m_pStats->GetCanUseSkill(CSWRules::SKILL_DEMOLITIONS))
         return FALSE;
     if (nAction == ACTION_SET_MINE)
     {
@@ -2246,6 +2272,48 @@ void CSWSCreature::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
 
     if (pArea != NULL)
     {
+        CExoString sModuleName = g_pAppManager->GetServerExoApp()->GetModuleName();
+        if (sModuleName.CompareNoCase("261tel"))
+        {
+            if (m_pStats->m_nRace != CSWRace::CRACE_DROID)
+            {
+                int bFound = FALSE;
+                for (int nEffect = 0; nEffect < m_lstEffects.num; nEffect++)
+                {
+                    CGameEffect* pEffect = m_lstEffects[nEffect];
+                    if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_VISUALEFFECT &&
+                        pEffect->GetInteger(0) == 7003)
+                    {
+                        bFound = TRUE;
+                        break;
+                    }
+                }
+                if (!bFound)
+                {
+                    CGameEffect* pVisualEffect = new CGameEffect(TRUE);
+                    pVisualEffect->m_nType = CSWSEffectListHandler::EFFECT_VISUALEFFECT;
+                    pVisualEffect->m_nSubType = CGameEffect::DURATION_TYPE_PERMANENT |
+                        (pVisualEffect->m_nSubType & ~CGameEffect::DURATION_MASK);
+                    pVisualEffect->SetCreator(GetId());
+                    pVisualEffect->SetInteger(0, 7003);
+                    ApplyEffect(pVisualEffect, FALSE, FALSE);
+                }
+            }
+        }
+        else if (m_pStats->m_nRace != CSWRace::CRACE_DROID)
+        {
+            for (int nEffect = 0; nEffect < m_lstEffects.num; nEffect++)
+            {
+                CGameEffect* pEffect = m_lstEffects[nEffect];
+                if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_VISUALEFFECT &&
+                    pEffect->GetInteger(0) == 7003)
+                {
+                    RemoveEffectById(pEffect->m_nID);
+                    break;
+                }
+            }
+        }
+
         if (GetArea() != pArea && pArea->GetId() != m_oidDisappearTarget &&
             pPlayer != NULL)
         {
@@ -3092,6 +3160,7 @@ int CSWSCreature::ClearAction(CSWSObjectActionNode* pNode, int bRemove)
         SetAnimation(ANIMATION_IDLE);
         StopGuiTimingBar();
         m_bMineActionStarted = 0;
+        m_bUnlockObjectFacingSet = 0;
     }
     else if (pNode->m_nActionType == ACTION_PICK_POCKET)
     {
@@ -3109,6 +3178,28 @@ int CSWSCreature::ClearAction(CSWSObjectActionNode* pNode, int bRemove)
         SetAnimation(ANIMATION_IDLE);
         m_bUnlockObjectAnimationPlayed = 0;
         StopGuiTimingBar();
+    }
+    else if (pNode->m_nActionType == ACTION_DOOR_SABER)
+    {
+        SetAnimation(ANIMATION_IDLE);
+        m_n10B0 = 0;
+        StopGuiTimingBar();
+    }
+    else if (pNode->m_nActionType == ACTION_SWITCH_WEAPONS)
+    {
+        SetAnimation(ANIMATION_IDLE);
+    }
+    else if (pNode->m_nActionType == ACTION_STANCE_TOTAL_DEFENSE)
+    {
+        m_c110C = 0xFF;
+        SetAnimation(ANIMATION_COMBAT_READY);
+        ProcessPendingCombatActions();
+    }
+    else if (pNode->m_nActionType == ACTION_STANCE_MEDITATIVE)
+    {
+        m_c110C = 0xFF;
+        RecomputeAmbientAnimationState();
+        SetAnimation(ANIMATION_IDLE);
     }
     else if (pNode->m_nActionType == ACTION_LOCK_OBJECT)
     {
@@ -3134,6 +3225,12 @@ int CSWSCreature::ClearAction(CSWSObjectActionNode* pNode, int bRemove)
 #endif
             }
         }
+    }
+    else if (pNode->m_nActionType == ACTION_FOLLOW_OWNER)
+    {
+        m_pPathfindInformation->m_oidPathfindTargetCreature = OBJECT_INVALID;
+        m_pPathfindInformation->m_oidUseTarget = OBJECT_INVALID;
+        m_nAnimationState = ANIMATION_STATE_WALK;
     }
     else if (pNode->m_nActionType == ACTION_DIALOG_OBJECT)
     {
@@ -3697,7 +3794,7 @@ void CSWSCreature::HandleAlignmentInfluence()
         return;
     }
 
-    C2DA* pInfluence = g_pRules->m_p2DArrays->m_pInfluence;
+    C2DA* pInfluence = g_pRules->Get2DArrays()->m_pInfluence;
     if (pInfluence == NULL)
     {
         return;
@@ -3722,7 +3819,7 @@ void CSWSCreature::HandleAlignmentInfluence()
     char nPCAlignment = 0;
     char nCharismaBonus = 0;
     float fMultiplier = 1.0f;
-    g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->GetValueNumber(
+    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(
         "G_PC_Align_Val", nPCAlignment);
     short nBaseAlignment = m_pStats->m_n18C;
 
@@ -3742,10 +3839,11 @@ void CSWSCreature::HandleAlignmentInfluence()
 
         nCharismaBonus = pPC->m_pStats->m_nCharismaModifier * 3;
         char nLevelBonus = 0;
-        unsigned char nClass;
+        CSWSCreatureStats* pStats;
+        unsigned char nClass = 2;
         if (pPC->m_pStats->HasFeat(149))
         {
-            CSWSCreatureStats* pStats = pPC->m_pStats;
+            pStats = pPC->m_pStats;
             if (pStats->m_nGoodEvilAlignment <= 40)
             {
                 for (nClass = 0; nClass < 2; nClass++)
@@ -3753,17 +3851,6 @@ void CSWSCreature::HandleAlignmentInfluence()
                     if (nClass < pStats->m_nClassCount &&
                         pStats->m_aClassInfo[nClass].m_nClass == 15)
                     {
-                        int nLevel = pStats->GetClassLevel(nClass, 0);
-                        if (nLevel >= 19)
-                            nLevelBonus = 5;
-                        else if (nLevel >= 15)
-                            nLevelBonus = 4;
-                        else if (nLevel >= 11)
-                            nLevelBonus = 3;
-                        else if (nLevel >= 7)
-                            nLevelBonus = 2;
-                        else if (nLevel >= 1)
-                            nLevelBonus = 1;
                         break;
                     }
                 }
@@ -3771,7 +3858,7 @@ void CSWSCreature::HandleAlignmentInfluence()
         }
         else if (pPC->m_pStats->HasFeat(167))
         {
-            CSWSCreatureStats* pStats = pPC->m_pStats;
+            pStats = pPC->m_pStats;
             if (pStats->m_nGoodEvilAlignment >= 60)
             {
                 for (nClass = 0; nClass < 2; nClass++)
@@ -3779,21 +3866,24 @@ void CSWSCreature::HandleAlignmentInfluence()
                     if (nClass < pStats->m_nClassCount &&
                         pStats->m_aClassInfo[nClass].m_nClass == 12)
                     {
-                        int nLevel = pStats->GetClassLevel(nClass, 0);
-                        if (nLevel >= 19)
-                            nLevelBonus = 5;
-                        else if (nLevel >= 15)
-                            nLevelBonus = 4;
-                        else if (nLevel >= 11)
-                            nLevelBonus = 3;
-                        else if (nLevel >= 7)
-                            nLevelBonus = 2;
-                        else if (nLevel >= 1)
-                            nLevelBonus = 1;
                         break;
                     }
                 }
             }
+        }
+        if (nClass < 2)
+        {
+            int nLevel = pStats->GetClassLevel(nClass, 0);
+            if (nLevel >= 19)
+                nLevelBonus = 5;
+            else if (nLevel >= 15)
+                nLevelBonus = 4;
+            else if (nLevel >= 11)
+                nLevelBonus = 3;
+            else if (nLevel >= 7)
+                nLevelBonus = 2;
+            else if (nLevel >= 1)
+                nLevelBonus = 1;
         }
         fMultiplier = nLevelBonus * 0.2f + 1.0f;
         break;
@@ -3887,6 +3977,7 @@ float CSWSCreature::MaxCleaveRange(unsigned long oidTarget, int nAttackType,
 float CSWSCreature::MaxAttackRange(unsigned long oidTarget, int nAttackType,
                                    int bOffHand)
 {
+    float fRange = 0.0f;
     CSWSItem* pItem = m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
 
     if (pItem != NULL)
@@ -3899,13 +3990,25 @@ float CSWSCreature::MaxAttackRange(unsigned long oidTarget, int nAttackType,
                 return 20.0f;
             }
 
-            float fRange = pItem->GetBaseItem()->m_fMaxAttackRange;
+            fRange = pItem->GetBaseItem()->m_fMaxAttackRange;
             if (fRange == 0.0f)
             {
-                return 30.0f;
+                fRange = 30.0f;
+            }
+            char nRank = m_pStats->GetSkillRank(3, NULL, 0);
+            if (nRank > 0)
+            {
+                return nRank + fRange;
             }
             return fRange;
         }
+    }
+
+    if (nAttackType != 0)
+    {
+        Vector vPosition;
+        GetUseRange(oidTarget, vPosition, fRange, 0);
+        return fRange + 0.1f;
     }
 
     return DesiredAttackRange(oidTarget, nAttackType) + 0.5f;
@@ -3924,8 +4027,7 @@ float CSWSCreature::DesiredAttackRange(unsigned long oidTarget, int nAttackType)
             CSWSCreature* pCreature = pObject->AsSWSCreature();
             if (nAttackType != 0)
             {
-                float fTargetPersonalSpace = pCreature->m_pPathfindInformation->m_fStepScaleY;
-                fRange = fTargetPersonalSpace + m_pPathfindInformation->m_fStepScaleY + 0.7f;
+                fRange = 1.4f;
             }
             else
             {
@@ -4158,6 +4260,14 @@ void CSWSCreature::ComputeAIStateOnAction(int nAction, unsigned long oidTarget)
             m_oidAITarget = OBJECT_INVALID;
         }
     }
+    else if (nAction == ACTION_DOOR_SABER)
+    {
+        if (m_nAIState < 10)
+        {
+            m_nAIState = 32;
+            m_oidAITarget = OBJECT_INVALID;
+        }
+    }
 
     if (nAction == ACTION_PHYSICAL_ATTACKS)
     {
@@ -4177,6 +4287,22 @@ void CSWSCreature::ComputeAIStateOnAction(int nAction, unsigned long oidTarget)
         if (m_nAIState == 0 || m_nAIState == 1)
         {
             m_nAIState = 2;
+            m_oidAITarget = OBJECT_INVALID;
+        }
+    }
+    else if (nAction == ACTION_STANCE_TOTAL_DEFENSE)
+    {
+        if (m_nAIState == 0 || m_nAIState == 1)
+        {
+            m_nAIState = 33;
+            m_oidAITarget = OBJECT_INVALID;
+        }
+    }
+    else if (nAction == ACTION_STANCE_MEDITATIVE)
+    {
+        if (m_nAIState == 0)
+        {
+            m_nAIState = 33;
             m_oidAITarget = OBJECT_INVALID;
         }
     }
@@ -4530,7 +4656,33 @@ float CSWSCreature::CalculateDeathExperience()
         }
 
         int nChallengeRating = (int)m_pStats->m_fChallengeRating;
+        int nAutoBalance = m_c250;
+        if (m_bInParty == 0 && nAutoBalance != 0)
+        {
+            int nCRMod;
+            {
+                CExoString sColumn("CRMod");
+                C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
+                pAutoBalance->GetINTEntry(nAutoBalance, sColumn, &nCRMod);
+            }
+            char nPCLevel = m_c251;
+            if ((unsigned char)nPCLevel < 1)
+            {
+                nPCLevel = 1;
+            }
+            nChallengeRating = nCRMod + nPCLevel;
+            if (nChallengeRating < 0)
+            {
+                nChallengeRating = 0;
+            }
+        }
+        int nRow = min(nLevel - 1, 30);
         float fExperience = 0.0f;
+        int nColumn = nChallengeRating + 1;
+        if (nColumn > 31)
+        {
+            nColumn = 31;
+        }
 #ifdef _XBOX
         CTwoDimArrays* pArraysForXpBase = g_pRules->Get2DArrays();
         EXOXBOXASSERT(pArraysForXpBase->m_pXpBase);
@@ -4538,7 +4690,7 @@ float CSWSCreature::CalculateDeathExperience()
 #else
         g_pRules->Get2DArrays()->m_pXpBase->GetFLOATEntry(
 #endif
-            nLevel - 1, nChallengeRating + 1, &fExperience);
+            nRow, nColumn, &fExperience);
         float fPercentXP = 0.0f;
         {
             CExoString sColumn("PercentXP");
@@ -4574,7 +4726,7 @@ float CSWSCreature::GetWalkRate()
     unsigned long oidClient = g_pAppManager->m_pClientExoApp->ServerToClientObjectId(oidServer);
     CSWCCreature* pCreature = g_pAppManager->m_pClientExoApp->GetCreatureByGameObjectID(oidClient);
     CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
-    if ((m_nActivity & ACTIVITY_STEALTH) != 0 && pCreature != NULL)
+    if ((m_nActivity & ACTIVITY_STEALTH) != 0 && !m_pStats->HasFeat(197) && pCreature != NULL)
     {
         return pCreature->m_pAppearance->m_fDriveAnimWalk * 1000.0f;
     }
@@ -5210,6 +5362,7 @@ int CSWSCreature::UseFeat(unsigned short nFeat, unsigned short nAction,
         case CSWFeat::FEAT_MASTER_POWER_ATTACK:
         case CSWFeat::FEAT_IMPROVED_FLURRY:
         case CSWFeat::FEAT_IMPROVED_RAPID_SHOT:
+        case 220:
             m_pcCombatRound->AddAttackAction(oidTarget, 0, nSelectedFeat,
                                              CSWSCombatRound::FEAT_ATTACK_TIME, 1);
             bUsed = 1;
@@ -5326,7 +5479,7 @@ void CSWSCreature::SetAttemptedAttackTarget(unsigned long oidTarget)
 // PC 0x0050DAF0
 short CSWSCreature::GetArmorClass()
 {
-    short nArmorClass = SW_BASE_ARMOR_CLASS;
+    short nArmorClass = 0;
     for (int nClass = 0; nClass < m_pStats->m_nClassCount; ++nClass)
     {
         unsigned char nClassType = m_pStats->GetClass(nClass);
@@ -5335,10 +5488,28 @@ short CSWSCreature::GetArmorClass()
         nArmorClass += (short)pClass->GetArmorBonus(pStats->GetClassLevel(nClass, 0));
     }
 
+    if (m_bInParty == 0)
+    {
+        int nAutoBalance = m_c250;
+        if (nAutoBalance != 0)
+        {
+            C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
+            float fArmorMult;
+            pAutoBalance->GetFLOATEntry(nAutoBalance, "ArmorMult", &fArmorMult);
+            char nLevel = m_c251;
+            if (nLevel < 1)
+            {
+                nLevel = 1;
+            }
+            nArmorClass += (short)(nLevel * fArmorMult);
+        }
+    }
+
     CSWSCreatureStats* pStats = m_pStats;
     nArmorClass += (short)(char)(pStats->m_nACArmorBonus - pStats->m_nACArmorPenalty + pStats->m_nACArmorBase)
                 + (short)(char)(pStats->m_nACShieldBonus - pStats->m_nACShieldPenalty + pStats->m_nACShieldBase)
-                + (short)(char)(pStats->m_nACDeflectionBonus - pStats->m_nACDeflectionPenalty);
+                + (short)(char)(pStats->m_nACDeflectionBonus - pStats->m_nACDeflectionPenalty)
+                + SW_BASE_ARMOR_CLASS;
     int nDodgeBonus = min(SW_MAX_AC_DODGE_BONUS,
                           pStats->m_nACDodgeBonus - pStats->m_nACDodgePenalty);
     nArmorClass += (short)(char)(pStats->GetACNaturalBase() + pStats->m_nACNaturalBonus - pStats->m_nACNaturalPenalty)
@@ -5358,7 +5529,8 @@ short CSWSCreature::GetMaxHitPoints(int bIncludeFeats)
     if (GetStats()->m_bIsPC == 1 &&
         g_pAppManager->GetServerExoApp()->GetPartyTable()->m_nControlledNPC == -1)
     {
-        for (int nLevel = 0; nLevel < GetStats()->GetLevel(0); ++nLevel)
+        int nLevels = GetStats()->GetLevel(0);
+        for (int nLevel = 0; nLevel < nLevels; ++nLevel)
         {
             CSWLevelStats* pLevelStats = GetStats()->GetLevelStats(nLevel);
             int nHitPoints = GetStats()->GetCONMod() +
@@ -5373,7 +5545,10 @@ short CSWSCreature::GetMaxHitPoints(int bIncludeFeats)
             }
             nBonus += nHitPoints;
         }
-        return nBonus;
+        short nMaxHitPoints = nBonus;
+        if (GetStats()->HasFeat(206))
+            nMaxHitPoints += 25;
+        return nMaxHitPoints;
     }
     else
     {
@@ -5384,7 +5559,13 @@ short CSWSCreature::GetMaxHitPoints(int bIncludeFeats)
             else if (GetStats()->HasFeat(CSWFeat::FEAT_TOUGHNESS))
                 nBonus = 1;
         }
-        if (GetStats()->HasFeat(CSWFeat::FEAT_WOOKIE_ENDURANCE))
+        if (GetStats()->HasFeat(206))
+            nBonus += 25;
+        if (GetStats()->HasFeat(225))
+            nBonus += 4;
+        else if (GetStats()->HasFeat(224))
+            nBonus += 3;
+        else if (GetStats()->HasFeat(CSWFeat::FEAT_WOOKIE_ENDURANCE))
             nBonus += 2;
         if (CSWSObject::GetMaxHitPoints(0) +
             GetStats()->GetCONMod() * GetStats()->GetLevel(0) <
@@ -5854,12 +6035,13 @@ int CSWSCreature::DoSpotDetection(CSWSCreature* pCreature, int bInvisible)
 {
     int bDetected = TRUE;
     int nCheck = 0;
-    int nSpotRank = 0;
+    int nSpotRank;
     int nHideRank = 0;
     int nObserverStationary = 0;
     int nTargetStationary = 0;
     int nDistancePenalty = 0;
     int nBehindPenalty = 0;
+    int nRunPenalty = 0;
     int nCombatPenalty = 0;
     Vector vPosition = m_vPosition;
     Vector vTarget = pCreature->m_vPosition;
@@ -5871,7 +6053,7 @@ int CSWSCreature::DoSpotDetection(CSWSCreature* pCreature, int bInvisible)
         return 0;
     Vector vDelta = vPosition - vTarget;
     float fRange = GetSpotCheckDistance();
-    if (vDelta * vDelta > fRange * fRange)
+    if (vDelta * vDelta > fRange * fRange && pCreature->m_n260 == 0)
         return 0;
     unsigned char nVisionFlags = m_nVisionFlags;
     if (nVisionFlags & VISION_TRUESEEING)
@@ -5883,28 +6065,38 @@ int CSWSCreature::DoSpotDetection(CSWSCreature* pCreature, int bInvisible)
 
     if (pCreature->m_nStealthMode == 1)
     {
-        nCheck -= pCreature->GetStats()->GetSkillRank(
-            CSWSkill::SKILL_STEALTH, AsSWSObject(), 0);
-        nCheck -= pCreature->m_nHideCheckRoll;
         nHideRank = pCreature->GetStats()->GetSkillRank(
             CSWSkill::SKILL_STEALTH, AsSWSObject(), 0);
+        nCheck -= nHideRank;
+        nCheck -= pCreature->m_nHideCheckRoll;
     }
     if (GetDetectMode() == 1 || GetDetectMode() == 2)
     {
-        nCheck += GetStats()->GetSkillRank(CSWSkill::SKILL_AWARENESS,
-                                          pCreature->AsSWSObject(), 0);
         nSpotRank = GetStats()->GetSkillRank(CSWSkill::SKILL_AWARENESS,
                                             pCreature->AsSWSObject(), 0);
     }
     else
     {
-        nCheck += GetStats()->GetSkillRank(CSWSkill::SKILL_AWARENESS,
-                                          pCreature->AsSWSObject(), 0) / 2;
         nSpotRank = GetStats()->GetSkillRank(CSWSkill::SKILL_AWARENESS,
                                             pCreature->AsSWSObject(), 0) / 2;
     }
+    nCheck += nSpotRank;
     nCheck += m_nSpotCheckRoll;
-    GetClientCreature();
+    CSWCCreature* pClientCreature = GetClientCreature();
+    if (GetStats()->m_bIsPC && pClientCreature != NULL &&
+        pClientCreature->m_nMode == CSWCCreature::MODE_SWDRIVE)
+    {
+        if (pClientCreature->m_bDriveRunning)
+        {
+            nCheck -= 5;
+            nRunPenalty = -5;
+        }
+    }
+    else if (m_bRun)
+    {
+        nCheck -= 5;
+        nRunPenalty = -5;
+    }
     CSWSPlayer* pClient = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(GetId());
     CSWSPlayer* pTargetClient = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(pCreature->GetId());
     if (pClient == NULL && pTargetClient != NULL)
@@ -5914,10 +6106,20 @@ int CSWSCreature::DoSpotDetection(CSWSCreature* pCreature, int bInvisible)
             vDirection = normalize(vDirection);
         else
             vDirection = m_vOrientation;
-        if (vDirection * normalize(m_vOrientation) <= -0.707f)
+        float fAngle = acos(vDirection * normalize(m_vOrientation));
+        float fHalfAngle = GetStats()->m_f84 * 0.5f;
+        float fMinAngle = 180.0f - fHalfAngle;
+        float fMaxAngle = fHalfAngle + 180.0f;
+        if (fMinAngle < 0.0f)
+            fMinAngle = 0.0f;
+        if (fMaxAngle > 360.0f)
+            fMaxAngle = 360.0f;
+        fMinAngle *= DEG_TO_RAD;
+        fMaxAngle *= DEG_TO_RAD;
+        if (fAngle >= fMinAngle && fAngle <= fMaxAngle)
         {
-            nCheck -= 5;
-            nBehindPenalty = -5;
+            nCheck -= 10;
+            nBehindPenalty = -10;
         }
     }
     if (m_bCombatState)
@@ -5960,7 +6162,7 @@ int CSWSCreature::DoSpotDetection(CSWSCreature* pCreature, int bInvisible)
         pData->SetInteger(6, nTargetStationary);
         pData->SetInteger(7, nDistancePenalty);
         pData->SetInteger(8, nBehindPenalty);
-        pData->SetInteger(9, 0);
+        pData->SetInteger(9, nRunPenalty);
         pData->SetInteger(10, nCombatPenalty);
         if (g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(GetId()) != NULL)
             BroadcastStealthDetectionData(pData);
@@ -6090,7 +6292,9 @@ void CSWSCreature::RecomputeAmbientAnimationState()
     }
     else if (m_bDebilitated == CSWSEffectListHandler::STATE_SLEEP)
         SetAmbientAnimationState(AMBIENT_STATE_11);
-    else if (m_bDebilitated == CSWSEffectListHandler::STATE_STUN)
+    else if (m_bDebilitated == CSWSEffectListHandler::STATE_STUN ||
+             m_bDebilitated == CSWSEffectListHandler::STATE_MIND_TRICK_18 ||
+             m_bDebilitated == CSWSEffectListHandler::STATE_MIND_TRICK_19)
         SetAmbientAnimationState(AMBIENT_STATE_2);
     else if (m_bDebilitated == CSWSEffectListHandler::STATE_CHOKE)
         SetAmbientAnimationState(AMBIENT_STATE_5);
@@ -6108,6 +6312,10 @@ void CSWSCreature::RecomputeAmbientAnimationState()
         SetAmbientAnimationState(AMBIENT_STATE_8);
     else if (m_bDebilitated == CSWSEffectListHandler::STATE_HOLD)
         SetAmbientAnimationState(AMBIENT_STATE_12);
+    else if (m_bDebilitated == CSWSEffectListHandler::STATE_VARIANT_14)
+        SetAmbientAnimationState(AMBIENT_STATE_15);
+    else if (m_bDebilitated == CSWSEffectListHandler::STATE_VARIANT_15)
+        SetAmbientAnimationState(AMBIENT_STATE_16);
     else
         SetAmbientAnimationState(AMBIENT_STATE_NORMAL);
 
@@ -6420,6 +6628,9 @@ int CSWSCreature::LoadCreature(CResGFF* pRes, CResStruct* pStruct, int nAreaId)
     m_nEC = pRes->ReadFieldBYTE(pStruct, "IsDestroyable", bSuccess, 1);
     m_nF0 = pRes->ReadFieldBYTE(pStruct, "IsRaiseable", bSuccess, 1);
     m_nF4 = pRes->ReadFieldBYTE(pStruct, "DeadSelectable", bSuccess, 1);
+    m_n11F4 = pRes->ReadFieldINT(pStruct, "BonusForcePoints", bSuccess, 7);
+    m_n11F8 = pRes->ReadFieldINT(pStruct, "AssignedPup", bSuccess, -1);
+    m_n1200 = pRes->ReadFieldINT(pStruct, "PlayerCreated", bSuccess, 0);
 
     unsigned char nAmbientState =
         pRes->ReadFieldBYTE(pStruct, "AmbientAnimState", bSuccess, 0);
@@ -6454,6 +6665,7 @@ int CSWSCreature::LoadCreature(CResGFF* pRes, CResStruct* pStruct, int nAreaId)
 
     m_bListening = pRes->ReadFieldBYTE(pStruct, "Listening", bSuccess, 0);
     LoadListenData(pRes, pStruct);
+    m_n260 = pRes->ReadFieldBYTE(pStruct, "ForceAlwaysUpdate", bSuccess, 0);
     PostProcess();
     LoadFollowInfo(pRes, pStruct);
     LoadObjectState(pRes, pStruct);
@@ -6588,6 +6800,7 @@ int CSWSCreature::SaveCreature(CResGFF* pRes, CResStruct* pStruct)
         pRes->WriteFieldWORD(pStruct, m_nPMAppearance, "PM_Appearance");
     pRes->WriteFieldBYTE(pStruct, m_bListening, "Listening");
     SaveListenData(pRes, pStruct);
+    pRes->WriteFieldBYTE(pStruct, m_n260, "ForceAlwaysUpdate");
     pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fX, "XPosition");
     pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fY, "YPosition");
     pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fZ, "ZPosition");
@@ -6595,6 +6808,9 @@ int CSWSCreature::SaveCreature(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldFLOAT(pStruct, m_vOrientation.m_fY, "YOrientation");
     pRes->WriteFieldFLOAT(pStruct, m_vOrientation.m_fZ, "ZOrientation");
     pRes->WriteFieldINT(pStruct, m_nUnknown22C, "JoiningXP");
+    pRes->WriteFieldINT(pStruct, m_n11F4, "BonusForcePoints");
+    pRes->WriteFieldINT(pStruct, m_n11F8, "AssignedPup");
+    pRes->WriteFieldINT(pStruct, m_n1200, "PlayerCreated");
     SetInParty(bWasInParty, 1);
 
     SaveFollowInfo(pRes, pStruct);
@@ -6661,9 +6877,10 @@ int CSWSCreature::DoListenDetection(CSWSCreature* pCreature, int bInvisible)
         return 0;
     unsigned long oidHit1;
     unsigned long oidHit2;
-    GetArea()->ClearLineOfSight(vPosition, vTarget, &vHit1, &oidHit1,
+    CSWSArea* pArea = GetArea();
+    pArea->ClearLineOfSight(vPosition, vTarget, &vHit1, &oidHit1,
                                 OBJECT_INVALID, OBJECT_INVALID, 0, 0);
-    GetArea()->ClearLineOfSight(vTarget, vPosition, &vHit2, &oidHit2,
+    pArea->ClearLineOfSight(vTarget, vPosition, &vHit2, &oidHit2,
                                 OBJECT_INVALID, OBJECT_INVALID, 0, 0);
     float fObstruction;
     if (oidHit1 == oidHit2)
@@ -6692,14 +6909,14 @@ int CSWSCreature::DoListenDetection(CSWSCreature* pCreature, int bInvisible)
     }
     if (fObstruction > 0.0f)
     {
-        if ((GetArea()->m_nFlags & 1) || (GetArea()->m_nFlags & 2))
+        if ((pArea->m_nFlags & 1) || (pArea->m_nFlags & 2))
         {
-            CPathfindInformation* pInfo = GetArea()->m_pAreaPathfindInformation;
+            CPathfindInformation* pInfo = pArea->m_pAreaPathfindInformation;
             pInfo->SetEndX(m_vPosition.m_fX);
             pInfo->SetEndY(m_vPosition.m_fY);
             pInfo->SetStartX(pCreature->m_vPosition.m_fX);
             pInfo->SetStartY(pCreature->m_vPosition.m_fY);
-            if (GetArea()->PlotSoundPath(pInfo) == 1)
+            if (pArea->PlotSoundPath(pInfo) == 1)
                 nCheck = -2;
             else
                 return 0;
@@ -6723,8 +6940,16 @@ int CSWSCreature::DoListenDetection(CSWSCreature* pCreature, int bInvisible)
         nCheck += GetStats()->GetSkillRank(CSWSkill::SKILL_AWARENESS,
                                           pCreature->AsSWSObject(), 0) / 2;
     unsigned char nListenRoll = m_nListenCheckRoll;
-    nCheck += GetArea()->m_nModListenCheck + nListenRoll;
-    GetClientCreature();
+    nCheck += pArea->m_nModListenCheck + nListenRoll;
+    CSWCCreature* pClientCreature = GetClientCreature();
+    if (GetStats()->m_bIsPC && pClientCreature != NULL &&
+        pClientCreature->m_nMode == CSWCCreature::MODE_SWDRIVE)
+    {
+        if (pClientCreature->m_bDriveRunning)
+            nCheck -= 5;
+    }
+    else if (m_bRun)
+        nCheck -= 5;
     if (m_bCombatState)
         nCheck -= 10;
     if (pCreature->AnimationStationary(pCreature->GetAnimation()))
@@ -9906,6 +10131,18 @@ void CSWSCreature::ClearHostileActionsVersus(CSWSCreature* pCreature)
 // PC 0x00518170
 int CSWSCreature::GetIsCreatureBumpable(CSWSCreature* pCreature)
 {
+    if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nGlobalDialogState != 0)
+        return 0;
+
+    CSWCCreature* pCharacter = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
+    if (pCharacter == NULL)
+        return 0;
+
+    unsigned long oidCharacter = pCharacter->m_nId;
+    if (g_pAppManager->m_pClientExoApp->ServerToClientObjectId(m_nId) == oidCharacter &&
+        (pCreature->m_bInParty || pCreature->m_n11FC))
+        return 1;
+
     if (bDisableBumping)
         return 0;
 
@@ -9915,7 +10152,7 @@ int CSWSCreature::GetIsCreatureBumpable(CSWSCreature* pCreature)
     {
         CExoLinkedList<CSWSObjectActionNode>* pActions = &pCreature->m_lstActions;
         CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
-        CSWSCreature* pPlayer = pServer->GetPlayerCreature();
+        CSWSCreature* pPlayer = pServer->GetCreatureByGameObjectID(pServer->GetPlayerCreatureId());
         if (pPlayer != this && pPlayer == pCreature)
             bBumpable = 0;
         else if (pPlayer == this && pPlayer != pCreature)
@@ -9985,7 +10222,24 @@ int CSWSCreature::BumpFriends(CSWSCreature* pCreature, const Vector& vStart,
             oidHit, NULL, 1, 0) == 1;
         if (bSafe && bClear)
         {
-            pCreature->SetPosition(vBumpPosition, 1, 1, 0);
+            CSWSObjectActionNode* pAction = pCreature->m_lstActions.GetHead();
+            CExoLinkedListNode* pPos = pCreature->m_lstActions.GetHeadPos();
+            while (pAction != NULL)
+            {
+                if (pAction->m_nActionType == ACTION_MOVE_TO_POINT ||
+                    pAction->m_nActionType == ACTION_CHECK_MOVE_TO_OBJECT_RADIUS)
+                {
+                    break;
+                }
+                pAction = pCreature->m_lstActions.GetNext(pPos);
+            }
+            if (pAction == NULL)
+            {
+                pCreature->ClearAllActions(1);
+                pCreature->AddMoveToPointActionToFront(ACTION_GROUP_NEW, vBumpPosition,
+                    pCreature->GetArea()->GetId(), OBJECT_INVALID, 1, 0, 0.0f, 0, 0, 0, 0, 0, 0,
+                    Vector(), 0, 0, 0);
+            }
             sDebug.Format("Bumped %x ends up at %f,%f\n", pCreature->GetId(),
                           vBumpPosition.m_fX, vBumpPosition.m_fY);
             EXOLOG(sDebug.CStr());
@@ -10408,7 +10662,6 @@ void CSWSCreature::ProcessPendingCombatActions()
 // PC 0x00519630
 int CSWSCreature::IsPartyVisible()
 {
-    g_pAppManager->m_pClientExoApp->GetSWParty();
     for (int nNode = 0; nNode < m_lstVisibilityList.num; nNode++)
     {
         CSWVisibilityNode* pNode = m_lstVisibilityList[nNode];
@@ -10848,8 +11101,20 @@ int CSWSCreature::RunUnequip(unsigned long oidItem, unsigned long oidTarget,
                             int bMerge, CSWSItem** ppItem, int bInstant,
                             int bUnknown3)
 {
-    CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()
-        ->GetClientObjectByObjectId(GetId());
+    CSWSPlayer* pPlayer;
+    if (g_pAppManager->m_pClientExoApp->GetInGameGui() != NULL &&
+        g_pAppManager->m_pClientExoApp->GetInGameGui()
+                ->GetTopMenuOverrideCharacter() != -1)
+    {
+        pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(
+            g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
+                g_pAppManager->GetServerExoApp()->GetPlayerCreatureId())->m_nId);
+    }
+    else
+    {
+        pPlayer = g_pAppManager->GetServerExoApp()
+            ->GetClientObjectByObjectId(GetId());
+    }
     CSWSMessage* pMessage = g_pAppManager->GetServerExoApp()->GetSWSMessage();
     if (ppItem != NULL)
         *ppItem = NULL;
@@ -10876,7 +11141,28 @@ int CSWSCreature::RunUnequip(unsigned long oidItem, unsigned long oidTarget,
             return FALSE;
         }
 
-        unsigned char nCanUnequip = CanUnEquipWeapon(pItem);
+        unsigned char nCanUnequip;
+        CSWSItem* pRightItem = m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
+        CSWSItem* pLeftItem = m_pInventory->GetItemInSlot(INVENTORY_SLOT_LEFTHAND);
+        if ((pRightItem == NULL || pRightItem->m_nId != pItem->m_nId) &&
+            (pLeftItem == NULL || pLeftItem->m_nId != pItem->m_nId))
+        {
+            pRightItem = m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND2);
+            pLeftItem = m_pInventory->GetItemInSlot(INVENTORY_SLOT_LEFTHAND2);
+            if ((pRightItem != NULL && pRightItem->m_nId == pItem->m_nId) ||
+                (pLeftItem != NULL && pLeftItem->m_nId == pItem->m_nId))
+            {
+                nCanUnequip = CanUnEquipWeapon2(pItem);
+            }
+            else
+            {
+                nCanUnequip = CanUnEquipWeapon(pItem);
+            }
+        }
+        else
+        {
+            nCanUnequip = CanUnEquipWeapon(pItem);
+        }
         if (nCanUnequip == 1)
         {
             SetLastInstantEquip(m_pInventory->GetSlotFromItem(pItem), bInstant);
@@ -10893,22 +11179,29 @@ int CSWSCreature::RunUnequip(unsigned long oidItem, unsigned long oidTarget,
             if (pPlayer != NULL && pMessage != NULL)
             {
                 pMessage->SendServerToPlayerInventory_Unequip(
-                    pPlayer->m_nPlayerId, oidItem, bInstant);
+                    pPlayer->m_nPlayerId, oidItem, bInstant, bUnknown3);
                 return TRUE;
             }
         }
-        else if (nCanUnequip == 2)
+        else if (nCanUnequip == 2 || nCanUnequip == 3)
         {
             SetLastInstantEquip(m_pInventory->GetSlotFromItem(pItem), bInstant);
             UnequipItem(pItem);
             if (!pRepository->AddItem(&pItem, bMerge, FALSE, FALSE))
                 pItem->AddToArea(GetArea(), m_vPosition.m_fX, m_vPosition.m_fY,
                                  m_vPosition.m_fZ + 0.2f, TRUE);
-            CSWSItem* pLeftHand = m_pInventory->GetItemInSlot(INVENTORY_SLOT_LEFTHAND);
+            CSWSItem* pLeftHand;
+            if (nCanUnequip == 3)
+                pLeftHand = m_pInventory->GetItemInSlot(INVENTORY_SLOT_LEFTHAND2);
+            else
+                pLeftHand = m_pInventory->GetItemInSlot(INVENTORY_SLOT_LEFTHAND);
             if (pLeftHand != NULL)
             {
                 UnequipItem(pLeftHand);
-                EquipItem(INVENTORY_SLOT_RIGHTHAND, pLeftHand, TRUE, FALSE, FALSE);
+                if (nCanUnequip == 3)
+                    EquipItem(INVENTORY_SLOT_RIGHTHAND2, pLeftHand, TRUE, FALSE, FALSE);
+                else
+                    EquipItem(INVENTORY_SLOT_RIGHTHAND, pLeftHand, TRUE, FALSE, FALSE);
             }
             if (ppItem != NULL)
                 *ppItem = pItem;
@@ -10919,9 +11212,9 @@ int CSWSCreature::RunUnequip(unsigned long oidItem, unsigned long oidTarget,
             if (pPlayer != NULL && pMessage != NULL)
             {
                 pMessage->SendServerToPlayerInventory_Unequip(
-                    pPlayer->m_nPlayerId, pLeftHand->GetId(), bInstant);
+                    pPlayer->m_nPlayerId, pLeftHand->GetId(), bInstant, bUnknown3);
                 pMessage->SendServerToPlayerInventory_Unequip(
-                    pPlayer->m_nPlayerId, pItem->GetId(), bInstant);
+                    pPlayer->m_nPlayerId, pItem->GetId(), bInstant, bUnknown3);
                 return TRUE;
             }
         }
@@ -11332,7 +11625,7 @@ int CSWSCreature::GetUseRange(unsigned long oidObject, Vector& vPosition,
             else
             {
                 pTrigger->CalculateNearestPoint(m_vPosition, &vPosition);
-                fRange += 0.58181818f;
+                fRange += 0.5f;
             }
         }
         return 1;
@@ -11570,7 +11863,7 @@ unsigned char CSWSCreature::GetBodyBagAppearance()
             bFailed = !pTable->GetINTEntry(nBodyBag, sColumn, &nAppearance);
         }
         if (bFailed)
-            nAppearance = CTwoDimArrays::BODY_BAG_DEFAULT_APPEARANCE;
+            return CTwoDimArrays::BODY_BAG_DEFAULT_APPEARANCE;
     }
     return nAppearance;
 }
@@ -11673,17 +11966,21 @@ int CSWSCreature::CalculateSpellSaveDC(int nSpellId)
     nCharismaModifier = m_pStats->m_nCharismaModifier;
     nWisdomModifier = m_pStats->m_nWisdomModifier;
     nDC = nWisdomModifier + m_pStats->GetLevel(1) + nCharismaModifier + 5;
+    if (nSpellId == 159 || nSpellId == 160 || nSpellId == 161)
+    {
+        nDC += 5;
+    }
     if (m_pStats->HasFeat(CSWFeat::FEAT_FORCE_FOCUS_MASTERY))
     {
         nDC += 4;
     }
     else if (m_pStats->HasFeat(CSWFeat::FEAT_FORCE_FOCUS_ADVANCED))
     {
-        nDC += 2;
+        nDC += 3;
     }
     else if (m_pStats->HasFeat(CSWFeat::FEAT_FORCE_FOCUS_SENSE))
     {
-        nDC += 1;
+        nDC += 2;
     }
     return nDC;
 }
@@ -11695,22 +11992,11 @@ int CSWSCreature::UpdateSpecialAttacks()
 #ifndef _XBOX
 CItemRepository* CSWSCreature::GetItemRepository(int bParty)  // PC 0x0050FFD0
 {
-    if (bParty)
+    int nOverride =
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->GetTopMenuOverrideCharacter();
+    if ((m_bInParty != 0 && bParty) || nOverride != -1)
     {
-        if (m_bInParty != 0)
-        {
-            return g_pAppManager->m_pServerExoApp->GetPartyTable()
-                ->GetPartyItems();
-        }
-
-        if (g_pAppManager->m_pServerExoApp->GetServerInfo()->m_bPartyPicking &&
-            g_pAppManager->m_pServerExoApp->GetPartyTable()->GetIsAvailable(GetId()) &&
-            g_pAppManager->m_pClientExoApp->GetInGameGui()
-                ->GetPartyAccessPanelUp(0))
-        {
-            return g_pAppManager->m_pServerExoApp->GetPartyTable()
-                ->GetPartyItems();
-        }
+        return g_pAppManager->m_pServerExoApp->GetPartyTable()->GetPartyItems();
     }
 
     return m_pcItemRepository;
@@ -11732,20 +12018,32 @@ void CSWSCreature::SetIsPuppet(int bIsPuppet)
     {
         if (m_nAILevel != CServerAIMaster::AI_LEVEL_PARTY_CREATURE)
         {
-            g_pAppManager->m_pServerExoApp->GetServerAIMaster()->SetAILevel(
+            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->SetAILevel(
                 this, CServerAIMaster::AI_LEVEL_PARTY_CREATURE);
         }
     }
     else if (m_nAILevel != CServerAIMaster::AI_LEVEL_NONPARTY_CREATURE)
     {
-        g_pAppManager->m_pServerExoApp->GetServerAIMaster()->SetAILevel(
+        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->SetAILevel(
             this, CServerAIMaster::AI_LEVEL_NONPARTY_CREATURE);
     }
 }
 // PC 0x00510090
-int CSWSCreature::OnEndDialog(CSWSObject* pObject)
+void CSWSCreature::OnEndDialog(CSWSObject* pObject)
 {
-    return g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_END_DIALOGUE], m_nId, 1);
+    g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_END_DIALOGUE], m_nId, 1);
+    if (m_n1204)
+    {
+        m_n1204 = 0;
+        if (equal(m_v1208, m_vPosition))
+        {
+            SetOrientation(m_v1214);
+            if (GetClientObject() != NULL && GetClientObject()->AsSWCCreature() != NULL)
+            {
+                GetClientObject()->AsSWCCreature()->SetOrientation(m_v1214);
+            }
+        }
+    }
 }
 #ifndef _XBOX
 
@@ -11755,14 +12053,14 @@ void CSWSCreature::GetSpikeDetails(CExoArrayList<CSWGuiInterfaceAction>& lstActi
     CItemRepository* pRepository = GetItemRepository(1);
     CExoString sName;
     int nLanguage = g_pAppManager->m_pClientExoApp->GetClientLanguage();
+    int nAction = lstActions.num;
 
     if (pRepository == NULL)
     {
         return;
     }
 
-    int nAction = lstActions.num;
-    for (int i = 0; i < pRepository->GetNumItems(); i++)
+    for (unsigned long i = 0; i < pRepository->m_lstItems.num; i++)
     {
         CSWSItem* pItem = pRepository->ItemListGetItem(i);
         if (pItem != NULL &&
@@ -11772,7 +12070,27 @@ void CSWSCreature::GetSpikeDetails(CExoArrayList<CSWGuiInterfaceAction>& lstActi
         }
 
         CSWItemProperty* pProperty;
-        if (nSpikeType == 0)
+        if (nSpikeType == 1)
+        {
+            if (pItem->GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_SECURITY_SPIKE, 0) &&
+                pItem->GetPropertyByType(&pProperty, CSWItemProperty::ITEM_PROPERTY_SECURITY_SPIKE, 0) &&
+                pProperty != NULL)
+            {
+                lstActions.SetSize(nAction + 1);
+                pItem->m_sLocalizedName.GetString(nLanguage, &sName, 0);
+                lstActions[nAction].m_sName = sName;
+                lstActions[nAction].m_nAction = pItem->GetId() | OBJECT_LISTTYPE_MASK;
+                lstActions[nAction].m_resIcon = pItem->GetIcon();
+                int nStackSize = pItem->m_nStackSize;
+                if (nStackSize <= pItem->m_nCharges)
+                {
+                    nStackSize = pItem->m_nCharges;
+                }
+                lstActions[nAction].m_nStackSize = nStackSize;
+                nAction++;
+            }
+        }
+        else if (nSpikeType == 0)
         {
             if (pItem->GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_COMPUTER_SPIKE, 0) &&
                 pItem->GetPropertyByType(&pProperty, CSWItemProperty::ITEM_PROPERTY_COMPUTER_SPIKE, 0) &&
@@ -11786,28 +12104,6 @@ void CSWSCreature::GetSpikeDetails(CExoArrayList<CSWGuiInterfaceAction>& lstActi
                 nAction++;
             }
         }
-        else if (nSpikeType == 1)
-        {
-            if (pItem->GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_SECURITY_SPIKE, 0) &&
-                pItem->GetPropertyByType(&pProperty, CSWItemProperty::ITEM_PROPERTY_SECURITY_SPIKE, 0) &&
-                pProperty != NULL)
-            {
-                lstActions.SetSize(nAction + 1);
-                pItem->m_sLocalizedName.GetString(nLanguage, &sName, 0);
-                lstActions[nAction].m_sName = sName;
-                lstActions[nAction].m_nAction = pItem->GetId() | OBJECT_LISTTYPE_MASK;
-                lstActions[nAction].m_resIcon = pItem->GetIcon();
-#ifndef _XBOX
-                int nStackSize = pItem->m_nStackSize;
-                if (nStackSize <= pItem->m_nCharges)
-                {
-                    nStackSize = pItem->m_nCharges;
-                }
-                lstActions[nAction].m_nStackSize = nStackSize;
-#endif
-                nAction++;
-            }
-        }
     }
 }
 #endif
@@ -11816,32 +12112,41 @@ void CSWSCreature::ReceiveExperience(int nExperience)  // PC 0x00510130
     int nPercentXP = 100;
     int nPartyPercentXP = 100;
     float fPercent = 1.0f;
-    CSWPartyTable* pParty = g_pAppManager->GetServerExoApp()->GetPartyTable();
-#ifdef _XBOX
-    CTwoDimArrays* pArraysForNPC = g_pRules->Get2DArrays();
-    EXOXBOXASSERT(pArraysForNPC->m_pNPC);
-    C2DA* pNPCTable = pArraysForNPC->m_pNPC;
-#else
-    C2DA* pNPCTable = g_pRules->Get2DArrays()->m_pNPC;
-#endif
-    if (pParty != NULL)
+    if (m_sTag.CompareNoCase("204_b4d4") == 0 && m_sTag.CompareNoCase("remote") == 0)
     {
-        int nNPC = pParty->GetNPCID(GetId());
-        if (nNPC != -1 && pNPCTable != NULL)
+        CSWPartyTable* pParty = g_pAppManager->GetServerExoApp()->GetPartyTable();
+#ifdef _XBOX
+        CTwoDimArrays* pArraysForNPC = g_pRules->Get2DArrays();
+        EXOXBOXASSERT(pArraysForNPC->m_pNPC);
+        C2DA* pNPCTable = pArraysForNPC->m_pNPC;
+#else
+        C2DA* pNPCTable = g_pRules->Get2DArrays()->m_pNPC;
+#endif
+        if (pParty != NULL)
         {
-            pNPCTable->GetINTEntry(nNPC, "PercentXP", &nPercentXP);
-            m_sTag.CStr();
-            fPercent = nPercentXP * 0.01f;
+            int nNPC = pParty->GetNPCID(GetId());
+            if (nNPC != -1 && pNPCTable != NULL)
+            {
+                pNPCTable->GetINTEntry(nNPC, "PercentXP", &nPercentXP);
+                m_sTag.CStr();
+                fPercent = nPercentXP * 0.01f;
+            }
+            {
+                CExoString sColumn("PercentXP");
+                pNPCTable->GetINTEntry(CSWPartyTable::PARTY_XP_ROW, sColumn,
+                                      &nPartyPercentXP);
+            }
+            fPercent = (nPartyPercentXP / 100.0f) * fPercent;
         }
+        m_sTag.CStr();
+        GetStats()->AddExperience((unsigned long)ceil(nExperience * fPercent));
+        if (m_n1200 != 0)
         {
-            CExoString sColumn("PercentXP");
-            pNPCTable->GetINTEntry(CSWPartyTable::PARTY_XP_ROW, sColumn,
-                                  &nPartyPercentXP);
+            char nPotentialLevel = GetStats()->GetPotentialLevel();
+            g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(
+                "G_PC_LEVEL", nPotentialLevel);
         }
-        fPercent = (nPartyPercentXP / 100.0f) * fPercent;
     }
-    m_sTag.CStr();
-    GetStats()->AddExperience((unsigned long)ceil(nExperience * fPercent));
 }
 // PC 0x00510310
 int CSWSCreature::GetForceItemMask()
@@ -11851,7 +12156,7 @@ int CSWSCreature::GetForceItemMask()
     CSWSItem* pItem;
 
     nMask = 0;
-    for (nSlot = 0; nSlot < 18; nSlot++)
+    for (nSlot = 0; nSlot < 20; nSlot++)
     {
         pItem = m_pInventory->GetItemInSlot(nSlot);
         if (pItem != NULL)
@@ -11898,8 +12203,34 @@ CSWCCreature* CSWSCreature::GetClientCreature()
 // PC 0x005103D0
 void CSWSCreature::AddPazaakCard(CSWSItem* pItem)
 {
-    int nCard = ((unsigned char)pItem->m_nModelVariation + 11) %
-        CSWPartyTable::PAZAAK_CARD_COUNT;
+    int nCard;
+    int nVariation = (unsigned char)pItem->m_nModelVariation;
+    if (nVariation > 0 && nVariation <= 18)
+    {
+        nCard = (nVariation + 11) % 18;
+    }
+    else
+    {
+        nCard = 0;
+        switch (nVariation)
+        {
+        case 19:
+            nCard = 22;
+            break;
+        case 20:
+            nCard = 19;
+            break;
+        case 21:
+            nCard = 18;
+            break;
+        case 22:
+            nCard = 20;
+            break;
+        case 23:
+            nCard = 21;
+            break;
+        }
+    }
     CSWPartyTable* pPartyTable =
         g_pAppManager->GetServerExoApp()->GetPartyTable();
     int nStackSize = pItem->m_nStackSize;
@@ -12014,16 +12345,35 @@ void CSWSCreature::InstantUseItem(unsigned long oidItem)
         if (pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM)
         {
             Vector vTarget;
+            unsigned short nSpell = pProperty->m_nSubtype;
 
             ((CSWSObject*)this)
-                ->SpellCastAndImpact(pProperty->m_nSubtype, vTarget, m_nId,
+                ->SpellCastAndImpact(nSpell, vTarget, m_nId,
                                      0, oidItem, 0, 0, 0, 0);
             pItem->DecrementUses(nProperty, m_nId);
             if (m_bCombatState != 0)
             {
                 m_nUseItemTimer = 3000;
             }
-            return;
+            break;
+        }
+    }
+
+    if (m_bInParty)
+    {
+        CSWPartyTable* pPartyTable = g_pAppManager->m_pServerExoApp->GetPartyTable();
+        if (pPartyTable != NULL && (pPartyTable->m_nForfeitConditions & 2))
+        {
+            pPartyTable->m_nForfeitViolation = 2;
+            CSWSArea* pArea = GetArea();
+            if (pArea != NULL)
+            {
+                CScriptEvent* pEvent = new CScriptEvent;
+                pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_USER_DEFINED_EVENT;
+                pEvent->SetInteger(0, 4001);
+                g_pAppManager->m_pServerExoApp->GetServerAIMaster()->AddEventDeltaTime(
+                    0, 0, pArea->m_nId, pArea->m_nId, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+            }
         }
     }
 }
@@ -12060,11 +12410,11 @@ void CSWSCreature::HandleAutoBalancing()
     unsigned char nAutoBalance = m_c250;
     if (nAutoBalance != 0 && m_bInParty == 0)
     {
-        C2DA* pAutoBalance = g_pRules->m_p2DArrays->m_pAutoBalance;
+        C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
         char nPCLevel;
-        g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->GetValueNumber(
+        g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(
             "G_PC_LEVEL", nPCLevel);
-        short nBaseMaxHitPoints = m_nMaxHitPoints;
+        int nBaseMaxHitPoints = CSWSObject::GetMaxHitPoints(0);
         m_c251 = nPCLevel;
 
         float fVPMult;
@@ -12081,7 +12431,7 @@ void CSWSCreature::ResetHeartbeatTimer()
 {
     unsigned long nDay;
     unsigned long nTime;
-    g_pAppManager->m_pServerExoApp->GetActiveTimer(m_nId)->GetWorldTime(&nDay, &nTime);
+    g_pAppManager->GetServerExoApp()->GetActiveTimer(GetId())->GetWorldTime(&nDay, &nTime);
     m_nLastHeartbeatDay = nDay;
     m_nLastHeartbeatTime = nTime;
 }

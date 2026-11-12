@@ -758,30 +758,41 @@ int CSWSObject::AIActionGiveItem(CSWSObjectActionNode* pNode)
 
     if (pTarget->m_nObjectType == SW_OBJECT_TYPE_CREATURE)
     {
-        unsigned long oidPossessor = pItem->m_oidPossessor;
-        pTarget->AsSWSCreature()->AcquireItem(&pItem, oidPossessor,
-                                             OBJECT_INVALID, bDisplayFeedback);
-        if (bAddToQueue && pTarget->AsSWSCreature()->m_bInParty)
         {
-            g_pAppManager->GetClientExoApp()->GetInGameGui()
-                ->UpdateStatus(GUI_STATUS_ITEM_RECEIVED, 0);
-            return ACTION_COMPLETE;
+            CExoLocString sName;
+            if (pItem != NULL)
+            {
+                sName = pItem->m_sLocalizedName;
+            }
+            unsigned long oidPossessor = pItem->m_oidPossessor;
+            pTarget->AsSWSCreature()->AcquireItem(&pItem, oidPossessor,
+                                                 OBJECT_INVALID, bDisplayFeedback);
+            if (bAddToQueue && pTarget->AsSWSCreature()->m_bInParty)
+            {
+                g_pAppManager->GetClientExoApp()->GetInGameGui()->AddItemReceived(sName);
+                g_pAppManager->GetClientExoApp()->GetInGameGui()
+                    ->UpdateStatus(GUI_STATUS_ITEM_RECEIVED, 0);
+            }
         }
     }
     else if (pTarget->m_nObjectType == SW_OBJECT_TYPE_PLACEABLE)
     {
-        unsigned long oidPossessor = pItem->m_oidPossessor;
-        pTarget->AsSWSPlaceable()->AcquireItem(&pItem, oidPossessor,
-                                              bDisplayFeedback);
+        {
+            unsigned long oidPossessor = pItem->m_oidPossessor;
+            pTarget->AsSWSPlaceable()->AcquireItem(&pItem, oidPossessor,
+                                                  bDisplayFeedback);
+        }
     }
     else if (pTarget->m_nObjectType == SW_OBJECT_TYPE_ITEM)
     {
-        int nBaseItem = pTarget->AsSWSItem()->m_nBaseItem;
-        if (g_pRules->m_pBaseItems->GetBaseItem(nBaseItem)->m_bIsContainer == 1)
         {
-            unsigned long oidPossessor = pItem->m_oidPossessor;
-            pTarget->AsSWSItem()->AcquireItem(&pItem, oidPossessor,
-                                             bDisplayFeedback);
+            int nBaseItem = pTarget->AsSWSItem()->m_nBaseItem;
+            if (g_pRules->m_pBaseItems->GetBaseItem(nBaseItem)->m_bIsContainer == 1)
+            {
+                unsigned long oidPossessor = pItem->m_oidPossessor;
+                pTarget->AsSWSItem()->AcquireItem(&pItem, oidPossessor,
+                                                 bDisplayFeedback);
+            }
         }
     }
     return ACTION_COMPLETE;
@@ -1586,6 +1597,9 @@ int CSWSObject::AIActionPlayAnimation(CSWSObjectActionNode* pNode)
             case CREATURE_ANIMATION_MINE_DISARM_4:
                 nSoundDelay = 750;
                 break;
+            case CREATURE_ANIMATION_DOOR_SABER:
+                nSoundDelay = 0;
+                break;
             default:
                 bSoundPlayed = 1;
                 pNode->m_apParam[4] = (void*)bSoundPlayed;
@@ -1668,6 +1682,9 @@ int CSWSObject::AIActionPlayAnimation(CSWSObjectActionNode* pNode)
             break;
         case CREATURE_ANIMATION_MINE_ARM:
             sSound = "gui_minearm";
+            break;
+        case CREATURE_ANIMATION_DOOR_SABER:
+            sSound = "gui_doorsaber";
             break;
         default:
             bPlaySound = 0;
@@ -2095,7 +2112,10 @@ int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
                 nSkill += nBonus;
                 if (pTarget->AsSWSDoor() != NULL)
                 {
-                    nDC = pTarget->AsSWSDoor()->m_nOpenLockDC < 1 ? 1 : pTarget->AsSWSDoor()->m_nOpenLockDC;
+                    if (pTarget->AsSWSDoor()->GetOpenLockDC() != 0)
+                        nDC = pTarget->AsSWSDoor()->GetOpenLockDC();
+                    else
+                        nDC = 1;
                     if (nRoll + nSkill >= nDC)
                     {
                         pTarget->AsSWSDoor()->m_bLocked = 0;
@@ -2105,7 +2125,10 @@ int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
                 }
                 else if (pTarget->AsSWSPlaceable() != NULL)
                 {
-                    nDC = pTarget->AsSWSPlaceable()->m_nOpenLockDC < 1 ? 1 : pTarget->AsSWSPlaceable()->m_nOpenLockDC;
+                    if (pTarget->AsSWSPlaceable()->GetOpenLockDC() != 0)
+                        nDC = pTarget->AsSWSPlaceable()->GetOpenLockDC();
+                    else
+                        nDC = 1;
                     if (nRoll + nSkill >= nDC)
                     {
                         pTarget->AsSWSPlaceable()->m_bLocked = 0;
@@ -2125,11 +2148,33 @@ int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
             {
                 g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                     0, 0, GetId(), oidTarget, CServerAIMaster::EVENT_UNLOCK_OBJECT, NULL);
-                if (AsSWSCreature() != NULL)
+                CScriptEvent* pUnlockEvent = new CScriptEvent;
+                pUnlockEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_UNLOCKED;
+                g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                    0, 0, GetId(), pTarget->GetId(), CServerAIMaster::EVENT_SIGNAL_EVENT, pUnlockEvent);
+                if (AsSWSCreature() != NULL && rand() % 100 < 20)
                     AsSWSCreature()->BroadcastVoiceChat(CSWSCreature::VOICE_CHAT_PICK_LOCK_SUCCESS);
+                if (AsSWSCreature() != NULL && AsSWSCreature()->GetInParty())
+                {
+                    CSWSCreature* pPlayer = g_pAppManager->GetServerExoApp()->GetPlayerCreature();
+                    int nExperience;
+                    if (nDC < pPlayer->m_pStats->GetLevel(0) + 20)
+                        nExperience = 5 * pPlayer->m_pStats->GetLevel(0);
+                    else
+                        nExperience = 10 * pPlayer->m_pStats->GetLevel(0);
+                    g_pAppManager->GetServerExoApp()->GetPartyTable()->DistributeExperience(nExperience, 1);
+                }
             }
-            else if (AsSWSCreature() != NULL)
-                AsSWSCreature()->BroadcastVoiceChat(CSWSCreature::VOICE_CHAT_PICK_LOCK_FAILED);
+            else
+            {
+                if (AsSWSCreature() != NULL)
+                    AsSWSCreature()->BroadcastVoiceChat(CSWSCreature::VOICE_CHAT_PICK_LOCK_FAILED);
+                CScriptEvent* pFailEvent = new CScriptEvent;
+                pFailEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_FAIL_TO_OPEN;
+                pFailEvent->SetInteger(0, 1);
+                g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventAbsoluteTime(
+                    0, 0, GetId(), oidTarget, CServerAIMaster::EVENT_SIGNAL_EVENT, pFailEvent);
+            }
 
             if (AsSWSCreature() != NULL)
             {

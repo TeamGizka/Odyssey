@@ -2097,7 +2097,7 @@ void CSWCCreatureStats_ClassInfo::GetMenuInfo(
                 lstSpellIds[iSpell] | CSWGuiInterfaceAction::SPELL_ACTION_MASK;
             lstActions[nAction].m_resIcon = pSpell->m_resIcon;
             lstActions[nAction].m_nDisabledReason = CSWGuiInterfaceAction::DISABLED_REASON_NONE;
-            if (pSpell->GetAdjustedForcePoints(nLevel, 1) > nForcePoints)
+            if (pSpell->GetAdjustedForcePoints(nLevel, 1, 0, 0, 0) > nForcePoints)
             {
                 bEnabled = 0;
                 lstActions[nAction].m_nDisabledReason = CSWGuiInterfaceAction::DISABLED_REASON_FORCE_POINTS;

@@ -66,7 +66,7 @@ public:
     CSWGuiButton m_btnChange3;
     CSWGuiLabel m_lblSecTitle;
     int m_n3DCC;
-    int m_n3DD0;
+    int m_nTopMenuOverrideCharacter;
     virtual void HandleInputEvent(int, int);
     void SetActiveControlID(int nControl, int bActive);
     void OnShoulderLeft(CSWGuiControl* pControl);

@@ -66,6 +66,10 @@ public:
 
     enum { SPELL_KNOCK = 93 };
 
+    enum { ALIGNMENT_ROW_NEUTRAL = 5 };
+
+    enum { FORM_FORCE_II_POTENCY = 266, FORM_FORCE_IV_MASTERY = 268 };
+
     int m_n00;
     CExoString m_sLabel;
     unsigned long m_nNameStrRef;
@@ -79,12 +83,12 @@ public:
     unsigned char m_nConsularLevel;
     unsigned char m_nSentinelLevel;
     unsigned char m_nInnateLevel;
-    unsigned char m_n44;
-    unsigned char m_n45;
-    unsigned char m_n46;
-    unsigned char m_n47;
-    unsigned char m_n48;
-    unsigned char m_n49;
+    unsigned char m_nWeaponMasterLevel;
+    unsigned char m_nJediMasterLevel;
+    unsigned char m_nWatchmanLevel;
+    unsigned char m_nMarauderLevel;
+    unsigned char m_nSithLordLevel;
+    unsigned char m_nAssassinLevel;
     unsigned char GetInnateLevel();
     unsigned char GetUserType();
     int m_nConjureTime;
@@ -131,7 +135,7 @@ public:
     int m_nExclusion;
     int m_nForbidItemMask;
     int m_nRequireItemMask;
-    int m_n1A0;
+    int m_nFormMask;
     unsigned char m_nItemTargeting;
 
     CSWSpell();
@@ -170,7 +174,8 @@ public:
 
     void SetPrerequisites(const CExoString& sPrerequisites);
     void SetMasterSpells(const CExoString& sMasterSpells);
-    int GetAdjustedForcePoints(unsigned long nLevel, int bAdjust);
+    int GetAdjustedForcePoints(unsigned long nLevel, int bAdjust, int nRoomForceRating,
+                               int nForm, char nCharismaModifier);
 
     unsigned long GetNameStrRef() { return m_nNameStrRef; }
     unsigned long GetDescriptionStrRef() { return m_nDescriptionStrRef; }

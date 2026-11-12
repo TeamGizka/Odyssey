@@ -10,6 +10,7 @@ class CResGFF;
 class CResStruct;
 class CSWCollisionMesh;
 class CSWSArea;
+class CSWSTrigger;
 class CWalkHitInfo;
 class Quaternion;
 class Vector;
@@ -72,6 +73,9 @@ public:
     unsigned char GetFlagged() { return m_bTrapFlagged; }
 
     int GetTrapped() { return m_bTrapFlag; }
+    static const unsigned long STRREF_BLAST_FAILURE = 128533;
+    static const unsigned long STRREF_BLAST_SUCCESS = 128534;
+    static const unsigned long STRREF_BLAST_FEEDBACK = 128535;
     int GetDisarmable() { return m_bTrapDisarmable; }
     CExoArrayList<unsigned long>* GetCreatureList() { return &m_lstTrapDetectedBy; }
     CExoLocString& GetTransitionDestination()
@@ -178,7 +182,7 @@ public:
 
     int m_bPreciseUse;
     CExoLocString m_locTransitionDestination;
-    int m_n420;
+    CSWSTrigger* m_pTrapTrigger;
 
     int GetMeshOutline(Vector, Vector, Vector&, Vector&, Vector&, Vector&);
     int SaveDoor(CResGFF*, CResStruct*);

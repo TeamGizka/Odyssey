@@ -39,6 +39,8 @@ CSWGuiBarkBubble::CSWGuiBarkBubble(CSWGuiManager* pManager)
     m_bSoundStarted = 0;
     m_bForceVisible = 0;
     m_nStartTime = 0;
+    m_nBarkX = -1;
+    m_nBarkY = -1;
 }
 // PC 0x00712CC0
 CSWGuiBarkBubble::~CSWGuiBarkBubble()
