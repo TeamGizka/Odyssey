@@ -336,6 +336,10 @@ int CSWSMessage::HandlePlayerToServerCheatMessage(CSWSPlayer* pPlayer,
                 0, NULL, 0, NULL);
             return 1;
         }
+        CExoString sMessage;
+        sMessage.Format("Area %s not valid.", sAreaName.CStr());
+        SendServerToPlayerChatMessage(5, OBJECT_INVALID, sMessage,
+            pPlayer->GetPlayerId(), "");
         return 0;
     }
     if (nMinor == 25)
@@ -368,8 +372,7 @@ int CSWSMessage::HandlePlayerToServerCheatMessage(CSWSPlayer* pPlayer,
                 pCreature->GetPathfindInformation(), 1, &vPosition))
         {
             Vector vDifference = vPosition - pCreature->m_vPosition;
-            if (vDifference.m_fY * vDifference.m_fY + vDifference.m_fZ * vDifference.m_fZ +
-                    vDifference.m_fX * vDifference.m_fX > 0.01f)
+            if (vDifference * vDifference > 0.01f)
             {
                 pCreature->ClearAllActions(1);
                 pCreature->AddAction(CSWSObject::ACTION_JUMP_TO_POINT,
