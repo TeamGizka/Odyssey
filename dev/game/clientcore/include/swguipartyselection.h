@@ -3,6 +3,8 @@
 
 #include "swgui.h"
 
+class CSWCCreature;
+
 #ifdef _XBOX
 
 typedef CSWGuiButtonToggle CSWGuiPartySelectionButton;
@@ -29,7 +31,7 @@ class CSWGuiPartySelectionData
 public:
     ~CSWGuiPartySelectionData();
 
-    CSWGuiObject* m_p00;
+    CSWCCreature* m_pCreature;
     CSWGuiPartySelectionButton m_btnNPC;
     CSWGuiLabel m_lblNotAvailable;
     CSWGuiLabel m_lblCharacter;
@@ -143,7 +145,7 @@ public:
 #ifndef _XBOX
     CSWGuiButton m_btnBack;
     CSWGuiButton m_btnAccept;
-    CSWGuiControl* m_pSelectedControl;
+    CSWGuiPartySelectionData* m_pSelectedData;
     CSWGuiLabel m_alblBar[5];
     CSWGuiLabel m_lblNameBack;
     int m_bCanChangeParty;

@@ -177,6 +177,32 @@ public:
     int CalculateAttackModifier();
 
     void SetGender(unsigned char nGender) { m_nGender = nGender; }
+    void SetGoodEvilAlignment(short nAlignment)
+    {
+        int nValue;
+        if (nAlignment >= 0)
+        {
+            nValue = nAlignment;
+            if (nValue > 100)
+                nValue = 100;
+        }
+        else
+            nValue = 0;
+        m_nGoodEvilAlignment = nValue;
+    }
+    void SetBaseCNPCAlignment(short nAlignment)
+    {
+        int nValue;
+        if (nAlignment >= -1)
+        {
+            nValue = nAlignment;
+            if (nValue > 100)
+                nValue = 100;
+        }
+        else
+            nValue = -1;
+        m_nBaseCNPCAlignment = nValue;
+    }
     void SetPortraitId(unsigned short nPortraitId);
     static int CheckCustomPortrait(CResRef* pResRef, int bFemale);
     CExoString GetFirstName();

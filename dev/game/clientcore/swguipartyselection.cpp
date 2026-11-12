@@ -14,6 +14,12 @@
 #include "swguipartyselection.h"
 #include "guiingame.h"
 #include "nwccreature.h"
+#include "nwccreaturestats.h"
+#include "nwccreatureappearance.h"
+#include "swmain.h"
+#include "aurcamera.h"
+#include "aurscene.h"
+#include "math3d.h"
 // PC 0x0071E140
 void CSWGuiPartySelection::SetForcedNPC(int nFirstNPC, int nSecondNPC)
 {
@@ -89,10 +95,10 @@ void CSWGuiPartySelection::OnPanelRemoved()
         {
             pPartyTable->KillNPCObject(nNPC, 1);
         }
-        if (m_aPartyMembers[nNPC].m_p00 != 0)
+        if (m_aPartyMembers[nNPC].m_pCreature != 0)
         {
-            delete m_aPartyMembers[nNPC].m_p00;
-            m_aPartyMembers[nNPC].m_p00 = 0;
+            delete m_aPartyMembers[nNPC].m_pCreature;
+            m_aPartyMembers[nNPC].m_pCreature = 0;
         }
     }
     g_pAppManager->m_pClientExoApp->GetInGameGui()->EnableCharacterChangeButtons(1);
@@ -106,7 +112,14 @@ CSWGuiPartySelection::CSWGuiPartySelection(CSWGuiManager* pManager)
 {
     CExoString sName;
     m_bForcedNPC = 0;
+#ifdef _XBOX
     StartLoadFromLayout("partyselection");
+#else
+    {
+        CResRef cLayout("partyselect_p");
+        StartLoadFromLayout(cLayout);
+    }
+#endif
     for (int nNPC = 0; nNPC < 12; ++nNPC)
     {
         sName.Format("LBL_NA%d", nNPC);
@@ -120,8 +133,10 @@ CSWGuiPartySelection::CSWGuiPartySelection(CSWGuiManager* pManager)
 #endif
         m_aPartyMembers[nNPC].m_btnNPC.AddEvent(CSWGuiControl::EVENT_SELECT, this,
             (CSWGuiEventHandler)&CSWGuiPartySelection::OnToggled);
+#ifdef _XBOX
         m_aPartyMembers[nNPC].m_btnNPC.AddEvent(CSWGuiControl::EVENT_CONFIRM, this,
             (CSWGuiEventHandler)&CSWGuiPartySelection::OnToggled);
+#endif
         m_aPartyMembers[nNPC].m_btnNPC.AddEvent(CSWGuiControl::EVENT_ENTER, this,
             (CSWGuiEventHandler)&CSWGuiPartySelection::OnEnter);
         m_aPartyMembers[nNPC].m_btnNPC.AddEvent(CSWGuiControl::EVENT_EXIT, this,
@@ -131,7 +146,11 @@ CSWGuiPartySelection::CSWGuiPartySelection(CSWGuiManager* pManager)
 #else
         m_aPartyMembers[nNPC].m_btnNPC.SetPartyData(&m_aPartyMembers[nNPC]);
 #endif
+#ifdef _XBOX
         m_aPartyMembers[nNPC].m_btnNPC.m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+#else
+        m_aPartyMembers[nNPC].m_btnNPC.m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+#endif
         m_aPartyMembers[nNPC].m_btnNPC.m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
 #ifdef _XBOX
         m_aPartyMembers[nNPC].m_btnNPC.m_cToggleBorder.m_cParams.m_vColor = CGuiInGame::COLOR_GREEN;
@@ -140,7 +159,7 @@ CSWGuiPartySelection::CSWGuiPartySelection(CSWGuiManager* pManager)
 #endif
         m_aPartyMembers[nNPC].m_bForced = 0;
         m_aPartyMembers[nNPC].m_nNPC = nNPC;
-        m_aPartyMembers[nNPC].m_p00 = 0;
+        m_aPartyMembers[nNPC].m_pCreature = 0;
         m_aPartyMembers[nNPC].m_bHidden = 0;
     }
     InitControl(m_lblCount, "LBL_COUNT", 1);
@@ -158,12 +177,33 @@ CSWGuiPartySelection::CSWGuiPartySelection(CSWGuiManager* pManager)
 #endif
     InitControl(m_aLabels[LABEL_AVAILABLE], "LBL_AVAILABLE", 1);
     InitControl(m_aLabels[LABEL_BEVEL_L], "LBL_BEVEL_L", 1);
+#ifdef _XBOX
     InitControl(m_aLabels[LABEL_BEVEL_R], "LBL_BEVEL_R", 1);
+#endif
     InitControl(m_aLabels[LABEL_BEVEL_M], "LBL_BEVEL_M", 1);
     InitControl(m_btnDone, "BTN_DONE", 1);
 #ifndef _XBOX
     InitControl(m_btnBack, "BTN_BACK", 1);
     InitControl(m_btnAccept, "BTN_ACCEPT", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    InitControl(m_alblBar[3], "LBL_BAR4", 1);
+    InitControl(m_alblBar[4], "LBL_BAR5", 1);
+    InitControl(m_lblNameBack, "LBL_NAMEBACK", 1);
+    CAurCamera* pCamera = m_lbl3D.m_cScene.m_pCamera;
+    CAurScene* pScene = m_lbl3D.m_cScene.m_pScene;
+    if (g_bDo3DGUIs != 0)
+    {
+        pScene->SpawnRoom("gui3D_room", Vector(), Quaternion(0, 0, 0, 1));
+        CAurObject* pLight = m_lbl3D.m_cScene.AddModel("charrec_light", -1);
+        if (pLight != 0)
+        {
+            pCamera->AttachToObject(pLight, "camerahook", Gob::ATTACH_TRANSLATE);
+            pCamera->SetViewAngle(22.726f);
+        }
+        m_lbl3D.SetShown(0);
+    }
 #endif
     StopLoadFromLayout();
     m_aLabels[LABEL_BEVEL_R].m_cBorder.m_cParams.m_fRotation = 180.0f;
@@ -174,9 +214,9 @@ CSWGuiPartySelection::CSWGuiPartySelection(CSWGuiManager* pManager)
 #endif
     m_btnDone.AddEvent(CSWGuiControl::EVENT_SELECT, this,
         (CSWGuiEventHandler)&CSWGuiPartySelection::OnDone);
+#ifdef _XBOX
     m_btnDone.AddEvent(CSWGuiControl::EVENT_CONFIRM, this,
         (CSWGuiEventHandler)&CSWGuiPartySelection::OnDone);
-#ifdef _XBOX
     m_btnDone.AddEvent(CSWGuiControl::EVENT_ENTER, this,
         (CSWGuiEventHandler)&CSWGuiPartySelection::OnDoneEnter);
 #else
@@ -186,7 +226,7 @@ CSWGuiPartySelection::CSWGuiPartySelection(CSWGuiManager* pManager)
     m_btnAccept.SetFocusable(0);
     m_btnAccept.AddEvent(CSWGuiControl::EVENT_SELECT, this,
         (CSWGuiEventHandler)&CSWGuiPartySelection::OnToggled);
-    m_pSelectedControl = 0;
+    m_pSelectedData = 0;
     m_btnDone.SetFocusable(0);
     m_bCanChangeParty = 1;
 #endif
@@ -670,7 +710,7 @@ void CSWGuiPartySelection::OnToggled(CSWGuiControl* pControl)
 #else
         if (pControl == &m_btnAccept)
         {
-            pData = (CSWGuiPartySelectionData*)m_pSelectedControl;
+            pData = m_pSelectedData;
             if (pData == 0)
             {
                 return;
@@ -809,6 +849,7 @@ void CSWGuiPartySelection::ConfirmPartySelection(CSWGuiControl*)
     }
 }
 // PC 0x0071F1C0
+#ifdef _XBOX
 void CSWGuiPartySelection::OnEnter(CSWGuiControl* pControl)
 {
     CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
@@ -859,12 +900,7 @@ void CSWGuiPartySelection::OnEnter(CSWGuiControl* pControl)
             else
                 m_aLabels[LABEL_ADD_REMOVE].m_cText.m_cParams.SetColor(
                     CGuiInGame::DISABLED_TEXT);
-#ifdef _XBOX
             SetAddRemoveLabel(((CSWGuiPartySelectionButton*)pControl)->m_bToggled == 0);
-#else
-            int bSelected = ((CSWGuiPartySelectionButton*)pControl)->m_bPartySelected;
-            SetAddRemoveLabel(bSelected == 0);
-#endif
         }
         else
         {
@@ -877,12 +913,6 @@ void CSWGuiPartySelection::OnEnter(CSWGuiControl* pControl)
                 CGuiInGame::DISABLED_TEXT);
             SetAddRemoveLabel(1);
         }
-#ifndef _XBOX
-        if (m_pSelectedControl != 0)
-            m_pSelectedControl->SetActive(0);
-        m_pSelectedControl = &pData->m_btnNPC;
-        m_pSelectedControl->SetActive(1);
-#endif
     }
     else
     {
@@ -892,15 +922,106 @@ void CSWGuiPartySelection::OnEnter(CSWGuiControl* pControl)
         m_aLabels[LABEL_ADD_REMOVE].m_cText.m_cParams.SetColor(
             CGuiInGame::DISABLED_TEXT);
         SetAddRemoveLabel(1);
-#ifndef _XBOX
-        if (m_pSelectedControl != 0)
-        {
-            m_pSelectedControl->SetActive(0);
-            m_pSelectedControl = 0;
-        }
-#endif
     }
 }
+#else
+void CSWGuiPartySelection::OnEnter(CSWGuiControl* pControl)
+{
+    CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
+    CSWPartyTable* pPartyTable = pServer->GetPartyTable();
+    CSWGuiPartySelectionData* pData =
+        (CSWGuiPartySelectionData*)pControl->GetUserData();
+    if (pPartyTable->GetIsNPCAvailable(pData->m_nNPC))
+    {
+        CSWSCreature* pCreature = pServer->GetCreatureByGameObjectID(
+            pPartyTable->GetNPCObject(pData->m_nNPC, 0, 1));
+        if (pData->m_pCreature == 0)
+            pData->m_pCreature = new CSWCCreature();
+        if (pCreature != 0)
+        {
+            CSWSCreatureStats* pStats = pCreature->GetStats();
+            CSWCLevelUpStats* pPreviewStats = pData->m_pCreature->GetStats();
+            pPreviewStats->SetGender(pStats->m_nGender);
+            pPreviewStats->SetGoodEvilAlignment(pCreature->GetStats()->m_nGoodEvilAlignment);
+            pPreviewStats->SetBaseCNPCAlignment(pCreature->GetStats()->m_n18C);
+            for (int nClass = 0; nClass < pStats->GetNumClasses(); ++nClass)
+                pPreviewStats->SetClass(nClass, pStats->GetClass(nClass));
+            if (g_bDo3DGUIs != 0)
+            {
+                CCAppearanceInfo aAppearance = *pData->m_pCreature->GetAppearance();
+                aAppearance.m_nGender = pCreature->m_cAppearanceInfo.m_nAppearancePart1;
+                aAppearance.m_nAppearance = pCreature->m_cAppearanceInfo.m_nAppearance;
+                if (aAppearance.m_nAppearance == CCAppearanceInfo::APPEARANCE_HANDMAIDEN_DEFAULT)
+                    aAppearance.m_nAppearance = CCAppearanceInfo::APPEARANCE_HANDMAIDEN_ROBED_LIGHT;
+                aAppearance.m_bUseBodyVariation = 1;
+                aAppearance.m_nBodyVariation = CCAppearanceInfo::BODY_VARIATION_B;
+                aAppearance.m_nTextureVar = 1;
+                pData->m_pCreature->SetPortraitId(pCreature->GetPortraitId());
+                pData->m_pCreature->SetAppearance(&aAppearance,
+                    CSWCCreature::APPEARANCE_PART_BODY | CSWCCreature::APPEARANCE_PART_HEAD, 1);
+                CAurScene* pScene = m_lbl3D.m_cScene.m_pScene;
+                pData->m_pCreature->AttachToScene(pScene);
+                pData->m_pCreature->Setup3DScene(m_lbl3D, 0, pCreature, 1);
+            }
+            CExoString sLevel;
+            sLevel.Format("%s %d %s",
+                g_pTlkTable->GetSimpleString(STRREF_LEVEL).CStr(),
+                pCreature->GetStats()->GetLevel(0),
+                pCreature->GetStats()->GetClassString(
+                    pCreature->GetStats()->GetNumClasses() - 1).CStr());
+            m_lblNPCName.m_cText.m_cParams.SetText(
+                pCreature->GetStats()->GetFullName());
+            m_lblNPCLevel.m_cText.m_cParams.SetText(sLevel);
+            m_lbl3D.SetShown(1);
+            m_lblNPCName.SetShown(1);
+            m_lblNPCLevel.SetShown(1);
+            if (m_nSelectedCount < MAX_SELECTED_NPCS && pData->m_bSelectable != 0)
+                m_aLabels[LABEL_ADD_REMOVE].m_cText.m_cParams.SetColor(
+                    CGuiInGame::COLOR_BLUE);
+            else
+                m_aLabels[LABEL_ADD_REMOVE].m_cText.m_cParams.SetColor(
+                    CGuiInGame::DISABLED_TEXT);
+            int bSelected = ((CSWGuiPartySelectionButton*)pControl)->m_bPartySelected;
+            SetAddRemoveLabel(bSelected == 0);
+        }
+        else
+        {
+            m_lblNPCName.m_cText.m_cParams.SetText("I am broken");
+            m_lblNPCLevel.m_cText.m_cParams.SetText("So very very broken");
+            m_lblNPCName.SetShown(1);
+            m_lblNPCLevel.SetShown(1);
+            m_lbl3D.SetShown(0);
+            m_aLabels[LABEL_ADD_REMOVE].m_cText.m_cParams.SetColor(
+                CGuiInGame::DISABLED_TEXT);
+            SetAddRemoveLabel(1);
+        }
+        if (m_pSelectedData != 0 && m_pSelectedData != pData)
+        {
+            if (m_pSelectedData->m_pCreature != 0)
+                m_pSelectedData->m_pCreature->AttachToScene(0);
+            m_pSelectedData->m_btnNPC.SetActive(0);
+        }
+        m_pSelectedData = pData;
+        pData->m_btnNPC.SetActive(1);
+    }
+    else
+    {
+        m_lbl3D.SetShown(0);
+        m_lblNPCName.SetShown(0);
+        m_lblNPCLevel.SetShown(0);
+        m_aLabels[LABEL_ADD_REMOVE].m_cText.m_cParams.SetColor(
+            CGuiInGame::DISABLED_TEXT);
+        SetAddRemoveLabel(1);
+        if (m_pSelectedData != 0)
+        {
+            if (m_pSelectedData->m_pCreature != 0)
+                m_pSelectedData->m_pCreature->AttachToScene(0);
+            m_pSelectedData->m_btnNPC.SetActive(0);
+            m_pSelectedData = 0;
+        }
+    }
+}
+#endif
 
 #ifndef _XBOX
 // PC 0x0071EA40
