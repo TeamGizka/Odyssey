@@ -380,6 +380,7 @@ public:
     C2DA* GetStateScripts() { EXOXBOXASSERT(m_pStateScripts); return m_pStateScripts; }
     C2DA* GetFormations() { EXOXBOXASSERT(m_pFormations); return m_pFormations; }
     C2DA* GetTraps() { return m_pTraps; }
+    C2DA* GetIPRPPC() { return m_pIPRPPC; }
 
     C2DA* GetSpells() { EXOXBOXASSERT(m_pSpells); return m_pSpells; }
 

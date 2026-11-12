@@ -1687,7 +1687,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
     nAttackBonus += nTargetingBonus;
     if (g_bEnableCombatDebugging)
     {
-        if (nWeaponFocusBonus != 0)
+        if (nWeaponFocusBonus != 0 || nLightsaberBonus != 0)
         {
             CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
             CExoString sBonus;
@@ -3583,7 +3583,7 @@ char CSWSCreatureStats::GetSkillRank(unsigned char nSkill, CSWSObject* pTarget,
         }
 
         int nCapped = 0;
-        nRank += m_pCreature->GetTotalEffectBonus(5, pTarget, nCapped, 0, 0, 0,
+        nRank += GetCreature()->GetTotalEffectBonus(5, pTarget, nCapped, 0, 0, 0,
                                                   0, nSkill, 0xFF, 0);
 
         int nKeyAbility = g_pRules->m_pSkills[nSkill].m_nKeyAbility;
@@ -3622,7 +3622,7 @@ char CSWSCreatureStats::GetSkillRank(unsigned char nSkill, CSWSObject* pTarget,
 
         if (g_pRules->m_pSkills[nSkill].m_bArmorCheckPenalty)
         {
-            nRank += (char)(m_nShieldCheckPenalty + m_nArmorCheckPenalty);
+            nRank += (char)(m_nArmorCheckPenalty + m_nShieldCheckPenalty);
         }
 
         unsigned long oidDialogOwner = m_pCreature->m_oidDialogOwner;
@@ -4947,12 +4947,16 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
 {
     int bSuccess;
     CExoLocString lsName;
+    CExoString sName;
+    int nLanguage = g_pAppManager->GetClientExoApp()->GetClientLanguage();
     lsName = pRes->ReadFieldCExoLocString(pStruct, "FirstName", bSuccess,
                                          CExoLocString());
     m_lsFirstName = lsName;
+    lsName.GetString(nLanguage, &sName, 0);
     lsName = pRes->ReadFieldCExoLocString(pStruct, "LastName", bSuccess,
                                          CExoLocString());
     m_lsLastName = lsName;
+    lsName.GetString(nLanguage, &sName, 0);
     m_lsDescription = pRes->ReadFieldCExoLocString(pStruct, "Description",
                                                  bSuccess, m_lsDescription);
     m_bIsPC = pRes->ReadFieldBYTE(pStruct, "IsPC", bSuccess, GetIsPC());
@@ -5008,8 +5012,14 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
     GetCreature()->m_nSoundSetFile = pRes->ReadFieldWORD(pStruct, "SoundSetFile",
         bSuccess, GetCreature()->GetSoundSetFile());
     if (!GetCreature()->m_bInParty)
+    {
         GetCreature()->SetGold(pRes->ReadFieldDWORD(pStruct, "Gold", bSuccess,
                                                  GetCreature()->GetGold()));
+        GetCreature()->SetComponent(pRes->ReadFieldDWORD(pStruct, "ItemComponent",
+            bSuccess, GetCreature()->GetComponent()));
+        GetCreature()->SetChemical(pRes->ReadFieldDWORD(pStruct, "Chemicals",
+            bSuccess, GetCreature()->GetChemical()));
+    }
     int bInvulnerable = pRes->ReadFieldBYTE(pStruct, "Invulnerable", bSuccess,
                                            GetCreature()->GetPlotObject());
     if (!bSuccess)
@@ -5025,6 +5035,26 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
     int bReorienting = !pRes->ReadFieldBYTE(pStruct, "NotReorienting", bSuccess,
                                             !GetCreature()->m_bDialogFaceSpeaker);
     GetCreature()->m_bDialogFaceSpeaker = bReorienting;
+    int bHologram = GetCreature()->m_n24C;
+    bHologram = pRes->ReadFieldBYTE(pStruct, "Hologram", bSuccess, bHologram);
+    GetCreature()->m_n24C = bHologram;
+    unsigned char bIgnoreCrePath = GetCreature()->m_c26A;
+    bIgnoreCrePath = pRes->ReadFieldBYTE(pStruct, "IgnoreCrePath", bSuccess,
+                                         bIgnoreCrePath);
+    GetCreature()->m_c26A = bIgnoreCrePath != 0;
+    unsigned char nMultiplierSet = pRes->ReadFieldBYTE(pStruct, "MultiplierSet",
+        bSuccess, GetCreature()->m_c250);
+    GetCreature()->m_c250 = nMultiplierSet;
+    unsigned char nPCLevelAtSpawn = GetCreature()->m_c251;
+    nPCLevelAtSpawn = pRes->ReadFieldBYTE(pStruct, "PCLevelAtSpawn", bSuccess,
+                                          nPCLevelAtSpawn);
+    GetCreature()->m_c251 = nPCLevelAtSpawn;
+    int bWillNotRender = GetCreature()->m_n254;
+    bWillNotRender = pRes->ReadFieldBYTE(pStruct, "WillNotRender", bSuccess, bWillNotRender);
+    GetCreature()->m_n254 = bWillNotRender;
+    int bConfused = GetCreature()->m_n258;
+    bConfused = pRes->ReadFieldBYTE(pStruct, "Confused", bSuccess, bConfused);
+    GetCreature()->m_n258 = bConfused;
     int bDisarmable = pRes->ReadFieldBYTE(pStruct, "Disarmable", bSuccess,
                                           GetCreature()->GetDisarmable());
     GetCreature()->m_nDisarmable = bDisarmable;
@@ -5044,6 +5074,13 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
     short nGoodEvil = m_nGoodEvilAlignment;
     nGoodEvil = pRes->ReadFieldBYTE(pStruct, "GoodEvil", bSuccess, nGoodEvil);
     m_nGoodEvilAlignment = min(100, max(0, nGoodEvil));
+    char nBaseAlignment = pRes->ReadFieldCHAR(pStruct, "BaseCNPCAlignment", bSuccess, -1);
+    if (nBaseAlignment == -1)
+        nBaseAlignment = (char)m_nGoodEvilAlignment;
+    short nBaseGoodEvil = nBaseAlignment;
+    m_n18C = min(100, max(-1, nBaseGoodEvil));
+    m_c120 = pRes->ReadFieldCHAR(pStruct, "FuryDamageBonus", bSuccess, -1);
+    GetCreature()->m_n1110 = pRes->ReadFieldDWORD(pStruct, "CurrentForm", bSuccess, 0);
     unsigned char nSkinColor = m_nSkinColor;
     m_nSkinColor = pRes->ReadFieldBYTE(pStruct, "Color_Skin", bSuccess, nSkinColor);
     unsigned char nHairColor = m_nHairColor;
@@ -5071,6 +5108,8 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
     m_nWings = 0;
     int nFactionId = m_nFactionId;
     m_nFactionId = pRes->ReadFieldWORD(pStruct, "FactionID", bSuccess, nFactionId);
+    float fBlindSpot = m_f84;
+    m_f84 = pRes->ReadFieldFLOAT(pStruct, "BlindSpot", bSuccess, fBlindSpot);
     m_fChallengeRating = pRes->ReadFieldFLOAT(pStruct, "ChallengeRating",
                                              bSuccess, GetChallengeRating());
     m_nAIState = pRes->ReadFieldINT(pStruct, "AIState", bSuccess, m_nAIState);
@@ -5294,6 +5333,9 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
                                              nCurrentHitPoints);
     int nDefaultForce = GetCreature()->GetStats()->m_nForcePoints;
     short nCurrentForce = pRes->ReadFieldSHORT(pStruct, "CurrentForce", bSuccess, nDefaultForce);
+    GetCreature()->m_n11F4 = pRes->ReadFieldINT(pStruct, "BonusForcePoints", bSuccess, 0);
+    GetCreature()->m_bPlayerCreated = pRes->ReadFieldINT(pStruct, "PlayerCreated", bSuccess, 0);
+    GetCreature()->m_n11F8 = pRes->ReadFieldINT(pStruct, "AssignedPup", bSuccess, -1);
     if (GetIsPC())
     {
         short nBaseHitPoints = GetCreature()->m_nMaxHitPoints;
@@ -5309,21 +5351,11 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
             GetCreature()->SetCurrentHitPoints(GetLevel(0));
         else
             GetCreature()->SetCurrentHitPoints(nCurrentHitPoints + GetCONMod() * GetLevel(0));
-        char nWIS = GetWISMod();
-        char nCHA = GetCHAMod();
         int nForce = nCurrentForce;
-        if (nForce + (nWIS + nCHA) * GetLevel(0) < GetLevel(0))
-        {
-            pStats = GetCreature()->GetStats();
-            nDefaultForce = GetLevel(0);
-            pStats->m_nCurrentForcePoints = nDefaultForce;
-        }
+        if (nForce + GetWISMod() * GetLevel(0) < GetLevel(0))
+            GetCreature()->GetStats()->SetCurrentForcePoints(GetLevel(0));
         else
-        {
-            pStats = GetCreature()->GetStats();
-            nDefaultForce = nForce + (GetWISMod() + GetCHAMod()) * GetLevel(0);
-            pStats->m_nCurrentForcePoints = nDefaultForce;
-        }
+            GetCreature()->GetStats()->SetCurrentForcePoints(nForce + GetWISMod() * GetLevel(0));
         if (nCurrentHitPoints < nHitPoints)
         {
             if (nHitPoints + GetCONMod() * GetLevel(0) <= GetLevel(0))
@@ -5342,27 +5374,27 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
                                                  GetCONMod() * GetLevel(0));
         }
         m_nCurrentForcePoints =
-            (nForce + GetForcePointAbilityMod() * GetLevel(0) < GetLevel(0)) ? GetLevel(0) :
-            nForce + GetForcePointAbilityMod() * GetLevel(0);
+            (nForce + GetWISMod() * GetLevel(0) < GetLevel(0)) ? GetLevel(0) :
+            nForce + GetWISMod() * GetLevel(0);
         if (nCurrentForce < nForcePoints)
         {
             int nFP = nForcePoints;
-            if (nFP + GetForcePointAbilityMod() * GetLevel(0) <= GetLevel(0))
+            if (nFP + GetWISMod() * GetLevel(0) <= GetLevel(0))
             {
                 nFP = nForce - nFP + GetLevel(0);
                 m_nCurrentForcePoints = nFP;
             }
             else
             {
-                nFP = nForce + GetForcePointAbilityMod() * GetLevel(0);
+                nFP = nForce + GetWISMod() * GetLevel(0);
                 m_nCurrentForcePoints = nFP;
             }
         }
         else
         {
             m_nCurrentForcePoints =
-                (nForcePoints + GetForcePointAbilityMod() * GetLevel(0) <= GetLevel(0)) ? GetLevel(0) :
-                nForce + GetForcePointAbilityMod() * GetLevel(0);
+                (nForcePoints + GetWISMod() * GetLevel(0) <= GetLevel(0)) ? GetLevel(0) :
+                nForce + GetWISMod() * GetLevel(0);
         }
     }
     short nOldMaxHitPoints = GetCreature()->GetMaxHitPoints(1);
@@ -5505,6 +5537,8 @@ void CSWSCreatureStats::SaveStats(CResGFF* pRes, CResStruct* pStruct)
     char nReflexSaveBonus = m_nReflexSaveBonus;
     pRes->WriteFieldSHORT(pStruct, nReflexSaveBonus, "refbonus");
     pRes->WriteFieldDWORD(pStruct, m_pCreature->GetGold(), "Gold");
+    pRes->WriteFieldDWORD(pStruct, m_pCreature->GetComponent(), "ItemComponent");
+    pRes->WriteFieldDWORD(pStruct, m_pCreature->GetChemical(), "Chemicals");
     pRes->WriteFieldCHAR(pStruct, GetReflexSavingThrow(0), "RefSaveThrow");
     pRes->WriteFieldCHAR(pStruct, GetWillSavingThrow(0), "WillSaveThrow");
     pRes->WriteFieldCHAR(pStruct, GetFortSavingThrow(0), "FortSaveThrow");
@@ -5532,6 +5566,17 @@ void CSWSCreatureStats::SaveStats(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldBYTE(pStruct, bPartyInteract, "PartyInteract");
     int bReorienting = GetCreature()->m_bDialogFaceSpeaker;
     pRes->WriteFieldBYTE(pStruct, !bReorienting, "NotReorienting");
+    int bHologram = GetCreature()->m_n24C;
+    pRes->WriteFieldBYTE(pStruct, bHologram, "Hologram");
+    unsigned char bIgnoreCrePath = GetCreature()->m_c26A;
+    pRes->WriteFieldBYTE(pStruct, bIgnoreCrePath, "IgnoreCrePath");
+    pRes->WriteFieldBYTE(pStruct, (int)GetCreature()->m_c250, "MultiplierSet");
+    unsigned char nPCLevelAtSpawn = GetCreature()->m_c251;
+    pRes->WriteFieldBYTE(pStruct, nPCLevelAtSpawn, "PCLevelAtSpawn");
+    int bWillNotRender = GetCreature()->m_n254;
+    pRes->WriteFieldBYTE(pStruct, bWillNotRender, "WillNotRender");
+    int bConfused = GetCreature()->m_n258;
+    pRes->WriteFieldBYTE(pStruct, bConfused, "Confused");
     unsigned char nBodyBag = GetCreature()->m_nBodyBag;
     pRes->WriteFieldBYTE(pStruct, nBodyBag, "BodyBag");
     short nBaseHitPoints = GetCreature()->CSWSObject::GetMaxHitPoints(1);
@@ -5548,6 +5593,12 @@ void CSWSCreatureStats::SaveStats(CResGFF* pRes, CResStruct* pStruct)
     short nMaxForcePoints = m_pCreature->GetMaxForcePoints();
     unsigned short nCurrentForcePoints = nForcePoints + pStats->m_nCurrentForcePoints;
     pRes->WriteFieldSHORT(pStruct, nCurrentForcePoints - nMaxForcePoints, "CurrentForce");
+    int nBonusForcePoints = GetCreature()->m_n11F4;
+    pRes->WriteFieldINT(pStruct, nBonusForcePoints, "BonusForcePoints");
+    int nAssignedPup = GetCreature()->m_n11F8;
+    pRes->WriteFieldINT(pStruct, nAssignedPup, "AssignedPup");
+    int bPlayerCreated = GetCreature()->m_bPlayerCreated;
+    pRes->WriteFieldINT(pStruct, bPlayerCreated, "PlayerCreated");
     pRes->WriteFieldSHORT(pStruct, m_pCreature->GetMaxForcePoints(), "MaxForcePoints");
     pRes->WriteFieldDWORD(pStruct, GetExperience(), "Experience");
     int nMovementRate = m_nMovementRate;
@@ -5558,6 +5609,12 @@ void CSWSCreatureStats::SaveStats(CResGFF* pRes, CResStruct* pStruct)
         pRes->WriteFieldWORD(pStruct, m_pCreature->GetPortraitId(), "PortraitId");
     short nGoodEvil = m_nGoodEvilAlignment;
     pRes->WriteFieldBYTE(pStruct, nGoodEvil, "GoodEvil");
+    short nBaseGoodEvil = m_n18C;
+    pRes->WriteFieldCHAR(pStruct, nBaseGoodEvil, "BaseCNPCAlignment");
+    char nFuryDamageBonus = m_c120;
+    pRes->WriteFieldCHAR(pStruct, nFuryDamageBonus, "FuryDamageBonus");
+    int nCurrentForm = GetCreature()->m_n1110;
+    pRes->WriteFieldDWORD(pStruct, nCurrentForm, "CurrentForm");
     unsigned char nSkinColor = m_nSkinColor;
     pRes->WriteFieldBYTE(pStruct, nSkinColor, "Color_Skin");
     unsigned char nHairColor = m_nHairColor;
@@ -5581,6 +5638,8 @@ void CSWSCreatureStats::SaveStats(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldBYTE(pStruct, nWings, "Wings");
     int nFactionId = m_nFactionId;
     pRes->WriteFieldWORD(pStruct, nFactionId, "FactionID");
+    float fBlindSpot = m_f84;
+    pRes->WriteFieldFLOAT(pStruct, fBlindSpot, "BlindSpot");
     pRes->WriteFieldFLOAT(pStruct, GetChallengeRating(), "ChallengeRating");
     pRes->WriteFieldINT(pStruct, m_nAIState, "AIState");
     SaveClassInfo(pRes, pStruct);
@@ -5695,7 +5754,7 @@ int CSWSCreatureStats::CanChooseFeat(unsigned short nFeat, unsigned char nNormal
 {
     int bNormal = 0;
     int bBonus = 0;
-    if (nFeat == 207 || nFeat == 238)
+    if (nFeat == CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS || nFeat == CSWFeat::FEAT_MINE_IMMUNITY)
     {
         return 0;
     }
@@ -5708,8 +5767,11 @@ int CSWSCreatureStats::CanChooseFeat(unsigned short nFeat, unsigned char nNormal
     {
         return 0;
     }
-    if ((m_pCreature->m_sTag.CompareNoCase("baodur") && pFeat->m_bBaoDur == 0xFF) ||
-        (m_pCreature->m_sTag.CompareNoCase("kreia") && pFeat->m_bKreia == 0xFF))
+    if (m_pCreature->m_sTag.CompareNoCase("baodur") && pFeat->m_bBaoDur == 0xFF)
+    {
+        return 0;
+    }
+    if (m_pCreature->m_sTag.CompareNoCase("kreia") && pFeat->m_bKreia == 0xFF)
     {
         return 0;
     }
@@ -6468,6 +6530,8 @@ int CSWSCreatureStats::GetEffectLinkImmunity(CGameEffect* pEffect)
                             nFeedback = CSWSCreature::FEEDBACK_CRITICAL_HITS_IMMUNITY;
                         else if (nImmunity == CSWSEffectListHandler::IMMUNITY_TYPE_DEATH_MAGIC)
                             nFeedback = CSWSCreature::FEEDBACK_DEATH_IMMUNITY;
+                        else if (nImmunity == CSWSEffectListHandler::IMMUNITY_TYPE_DROID_CONFUSED)
+                            nFeedback = CSWSCreature::FEEDBACK_CONFUSED_IMMUNITY;
                         else
                             return bImmune;
 
@@ -7751,7 +7815,7 @@ unsigned char CSWSCreatureStats::GetLevel(int bExcludeNegativeLevels)
     }
 
     CSWSCreature* pCreature = m_pCreature;
-    if (pCreature != NULL && pCreature->m_pStats->m_bIsPC == 0 && pCreature->m_bInParty == 0 &&
+    if (pCreature != NULL && !pCreature->GetStats()->GetIsPC() && !pCreature->m_bInParty &&
         pCreature->m_c250 != 0)
     {
         int nAutoBalance = pCreature->m_c250;

@@ -123,6 +123,7 @@ inline int KOTOR_AUTOSAVE_PARAMS::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
 static inline void ServerExoAppInternalTrace2();
 static inline void ServerExoAppTrace(CServerExoApp*);
 #define SERVEREXOAPPINTERNAL_HOOK() ServerExoAppInternalTrace2()
+#define STRREF_AUTO_SAVE_NAME 1593
 
 inline void ServerExoAppInternalReserve(CExoArrayList<unsigned long>* pIds, int nSize, CExoString* pStrings,
     CExoLinkedList<CSWSClient>* pClients, CExoLinkedList<unsigned long>* pExclusions)
@@ -626,7 +627,25 @@ void CServerExoAppInternal::StallEventSaveGame()  // PC 0x004ED2D0
     pGFF->WriteFieldBYTE(&stSaveInfo,
         g_pAppManager->GetClientExoApp()->GetGamePlayHint(), "GAMEPLAYHINT");
     pGFF->WriteFieldBYTE(&stSaveInfo,
-        g_pAppManager->GetClientExoApp()->GetStoryHint(), "STORYHINT");
+        g_pAppManager->GetClientExoApp()->GetStoryHint(0), "STORYHINT0");
+    pGFF->WriteFieldBYTE(&stSaveInfo,
+        g_pAppManager->GetClientExoApp()->GetStoryHint(1), "STORYHINT1");
+    pGFF->WriteFieldBYTE(&stSaveInfo,
+        g_pAppManager->GetClientExoApp()->GetStoryHint(2), "STORYHINT2");
+    pGFF->WriteFieldBYTE(&stSaveInfo,
+        g_pAppManager->GetClientExoApp()->GetStoryHint(3), "STORYHINT3");
+    pGFF->WriteFieldBYTE(&stSaveInfo,
+        g_pAppManager->GetClientExoApp()->GetStoryHint(4), "STORYHINT4");
+    pGFF->WriteFieldBYTE(&stSaveInfo,
+        g_pAppManager->GetClientExoApp()->GetStoryHint(5), "STORYHINT5");
+    pGFF->WriteFieldBYTE(&stSaveInfo,
+        g_pAppManager->GetClientExoApp()->GetStoryHint(6), "STORYHINT6");
+    pGFF->WriteFieldBYTE(&stSaveInfo,
+        g_pAppManager->GetClientExoApp()->GetStoryHint(7), "STORYHINT7");
+    pGFF->WriteFieldBYTE(&stSaveInfo,
+        g_pAppManager->GetClientExoApp()->GetStoryHint(8), "STORYHINT8");
+    pGFF->WriteFieldBYTE(&stSaveInfo,
+        g_pAppManager->GetClientExoApp()->GetStoryHint(9), "STORYHINT9");
 
     pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
     unsigned char nLiveContent = 0;
@@ -2963,7 +2982,8 @@ int CServerExoAppInternal::LoadModule(const CExoString& sModule,
                         nModuleType = RESTYPE_MOD;
                         SetEstimatedSaveSize(sResourceName, RESTYPE_MOD);
                     }
-                    else if (g_pExoResMan->Exists(sModule, RESTYPE_RIM, (unsigned long*)NULL))
+                    if (nModuleType == RESTYPE_INVALID &&
+                        g_pExoResMan->Exists(sModule, RESTYPE_RIM, (unsigned long*)NULL))
                     {
                         sSourcePath = sDirectory + "\\";
                         sSourcePath = sSourcePath + sModule;
@@ -3563,7 +3583,7 @@ int CServerExoAppInternal::MainLoop()
                     CExoString sSaveRoot("U:\\");
                     WCHAR wszSaveName[256];
                     char szSavePath[256];
-                    mbstowcs(wszSaveName, g_pTlkTable->GetSimpleString(1593).CStr(), 255);
+                    mbstowcs(wszSaveName, g_pTlkTable->GetSimpleString(STRREF_AUTO_SAVE_NAME).CStr(), 255);
                     XCreateSaveGame(sSaveRoot.CStr(), wszSaveName, OPEN_ALWAYS, 1, szSavePath, 254);
                     {
                         CExoString sAlias("SAVES");
@@ -4292,8 +4312,26 @@ void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, C2DA* p2DA)
     pGFF->WriteFieldDWORD(&cRoot, m_partyTable.m_n248, "SAVENUMBER");
     pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetGamePlayHint(),
                          "GAMEPLAYHINT");
-    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(),
-                         "STORYHINT");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(0),
+                         "STORYHINT0");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(1),
+                         "STORYHINT1");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(2),
+                         "STORYHINT2");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(3),
+                         "STORYHINT3");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(4),
+                         "STORYHINT4");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(5),
+                         "STORYHINT5");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(6),
+                         "STORYHINT6");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(7),
+                         "STORYHINT7");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(8),
+                         "STORYHINT8");
+    pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(9),
+                         "STORYHINT9");
 
     KOTOR_AUTOSAVE_PARAMS cParams;
     cParams.m_sLoadMusic =
@@ -4747,7 +4785,7 @@ void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, KOTOR_LAUNCH
     CExoString sSaveRoot("U:\\");
     WCHAR wszSaveName[256];
     char szSavePath[256];
-    mbstowcs(wszSaveName, g_pTlkTable->GetSimpleString(1593).CStr(), 255);
+    mbstowcs(wszSaveName, g_pTlkTable->GetSimpleString(STRREF_AUTO_SAVE_NAME).CStr(), 255);
     XCreateSaveGame(sSaveRoot.CStr(), wszSaveName, OPEN_ALWAYS, 1, szSavePath, 254);
     {
         CExoString sAlias("SAVES");

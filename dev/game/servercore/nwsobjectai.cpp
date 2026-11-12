@@ -2316,9 +2316,9 @@ int CSWSObject::AIActionDoorSaber(CSWSObjectActionNode* pNode)
                     }
                 }
 
-                if (AsSWSCreature() != NULL && !AsSWSCreature()->m_bUnlockObjectAnimationPlayed)
+                if (AsSWSCreature() != NULL && !AsSWSCreature()->m_bDoorSaberAnimationPlayed)
                 {
-                    AsSWSCreature()->m_bUnlockObjectAnimationPlayed = 1;
+                    AsSWSCreature()->m_bDoorSaberAnimationPlayed = 1;
                     SetLockOrientationToObject(oidTarget);
                     int nAnimation = CSWSCreature::ANIMATION_DOOR_SABER;
                     int bLoopAnimation = 1;
@@ -2348,7 +2348,7 @@ int CSWSObject::AIActionDoorSaber(CSWSObjectActionNode* pNode)
                         g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                             0, 0, GetId(), oidTarget, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
                         AsSWSCreature()->StopGuiTimingBar();
-                        AsSWSCreature()->m_bUnlockObjectAnimationPlayed = 0;
+                        AsSWSCreature()->m_bDoorSaberAnimationPlayed = 0;
                         AsSWSCreature()->m_bUnlockObjectFacingSet = 0;
                         return ACTION_FAILED;
                     }
@@ -2361,7 +2361,7 @@ int CSWSObject::AIActionDoorSaber(CSWSObjectActionNode* pNode)
                         {
                             AsSWSCreature()->SendFeedbackMessage(CSWSCreature::FEEDBACK_OBJECT_ALREADY_UNLOCKED, NULL);
                             AsSWSCreature()->StopGuiTimingBar();
-                            AsSWSCreature()->m_bUnlockObjectAnimationPlayed = 0;
+                            AsSWSCreature()->m_bDoorSaberAnimationPlayed = 0;
                             AsSWSCreature()->m_bUnlockObjectFacingSet = 0;
                         }
                         return ACTION_FAILED;
@@ -2381,7 +2381,7 @@ int CSWSObject::AIActionDoorSaber(CSWSObjectActionNode* pNode)
                 if (AsSWSCreature() != NULL)
                 {
                     AsSWSCreature()->StopGuiTimingBar();
-                    AsSWSCreature()->m_bUnlockObjectAnimationPlayed = 0;
+                    AsSWSCreature()->m_bDoorSaberAnimationPlayed = 0;
                     AsSWSCreature()->m_bUnlockObjectFacingSet = 0;
                 }
                 return ACTION_COMPLETE;
@@ -2391,7 +2391,7 @@ int CSWSObject::AIActionDoorSaber(CSWSObjectActionNode* pNode)
     if (AsSWSCreature() != NULL)
     {
         AsSWSCreature()->StopGuiTimingBar();
-        AsSWSCreature()->m_bUnlockObjectAnimationPlayed = 0;
+        AsSWSCreature()->m_bDoorSaberAnimationPlayed = 0;
         AsSWSCreature()->m_bUnlockObjectFacingSet = 0;
     }
     return ACTION_FAILED;

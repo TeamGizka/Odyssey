@@ -992,6 +992,7 @@ public:
 
     int m_bOpenDoorStarted;
     int m_nDialogReplyState;
+    int GetClientState() { return m_nClientState; }
     int m_nClientState;
     unsigned long m_aDirtyFlags[1];
     int m_bNotBlastable;
@@ -1332,7 +1333,7 @@ public:
     CSWSCreature(unsigned long oidCreature, int bFlag);
     ~CSWSCreature();
     short GetArmorClass();
-    unsigned char GetBodyBagAppearance();
+    int GetBodyBagAppearance();
     virtual CSWSCreature* AsSWSCreature() { return this; }  // PC 0x00698BD0
     virtual void AIUpdate();
     void SpawnInHeartbeatPerception(int bForce);
@@ -2015,7 +2016,7 @@ public:
 
 
     unsigned long m_oidCounterSpellTarget;
-    unsigned char m_nUnknown4D8;
+    unsigned char m_nSilentMove;
     unsigned char m_c519;
     char m_aUnmapped51A[2];
     int m_bResolveInitiative;
@@ -2151,7 +2152,7 @@ public:
     int m_nUnknown99C;
     int m_nUnknown9A0;
     int m_bUnlockObjectFacingSet;
-    int m_n10B0;
+    int m_bDoorSaberAnimationPlayed;
     int m_n10B4;
     int m_n10B8;
     unsigned long m_anSkillCooldowns[8];
@@ -2279,7 +2280,7 @@ public:
         ANIMATION_STATE_WALK = 1,
         ANIMATION_STATE_FORCE_PUSH = 4,
         ANIMATION_STATE_FORCE_JUMP = 5,
-        ANIMATION_STATE_FORCE_JUMP_TARGET = 6
+        ANIMATION_STATE_FORCE_JUMP_TARGET = 6, ANIMATION_STATE_HOLD = 7
     };
     int m_nAnimationState;
 

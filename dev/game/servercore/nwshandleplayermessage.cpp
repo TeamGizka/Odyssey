@@ -37,6 +37,7 @@
 #include "nwrules.h"
 #include "nwspell.h"
 #include "clientexoapp.h"
+#include "guiingame.h"
 #include "swparty.h"
 #include "exotlktable.h"
 #include <math.h>
@@ -406,6 +407,36 @@ int CSWSMessage::HandlePlayerToServerCheatMessage(CSWSPlayer* pPlayer,
         pEffect->SetInteger(1, 1);
         pObject->AsSWSObject()->ApplyEffect(pEffect, 0, 0);
         return 1;
+    }
+    if (nMinor == 4)
+    {
+        int bResult = 0;
+        if (g_pAppManager->GetServerExoApp() != NULL && g_pAppManager->m_pClientExoApp != NULL &&
+            g_pAppManager->m_pClientExoApp->GetSWParty() != NULL)
+        {
+            int nMembers = g_pAppManager->m_pClientExoApp->GetSWParty()->m_nCharacters;
+            CSWCCreature* pCharacter = g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter();
+            if (pCharacter != NULL)
+            {
+                CSWSCreature* pServerCreature = pCharacter->GetServerCreature();
+                if (pServerCreature != NULL)
+                {
+                    int bPlot = pServerCreature->m_bPlotObject == 0;
+                    for (int nMember = 0; nMember < nMembers; ++nMember)
+                    {
+                        pCharacter = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(nMember);
+                        if (pCharacter != NULL)
+                        {
+                            pServerCreature = pCharacter->GetServerCreature();
+                            if (pServerCreature != NULL)
+                                pServerCreature->m_bPlotObject = bPlot;
+                        }
+                    }
+                    bResult = 1;
+                }
+            }
+        }
+        return bResult;
     }
     if (nMinor == 9)
     {
@@ -1373,7 +1404,20 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
         unsigned long nSlot = ReadDWORD(32);
         if (MessageReadOverflow(1) || MessageReadUnderflow(1))
             return 0;
-        pCreature = pPlayer->GetGameObject()->AsSWSCreature();
+        int nOverrideCharacter = g_pAppManager->m_pClientExoApp->GetInGameGui()
+                                     ->GetTopMenuOverrideCharacter();
+        if (nOverrideCharacter == -1)
+        {
+            pCreature = pPlayer->GetGameObject()->AsSWSCreature();
+        }
+        else
+        {
+            CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+            pCreature = (CSWSCreature*)pServerExoApp->GetGameObject(
+                pServerExoApp->GetPartyTable()->GetNPCObject(nOverrideCharacter, 0, 1));
+            if (pCreature == NULL)
+                return 0;
+        }
         unsigned long nEquipSlot = nSlot;
         if (nSlot == INVENTORY_SLOT_LEFTHAND2)
             nSlot = INVENTORY_SLOT_LEFTHAND2 | INVENTORY_SLOT_LEFTHAND;
@@ -1393,7 +1437,7 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
                                                nEquipSlot, 1, 1, 0, 1, 0);
                 unsigned long oidAttack = pCreature->m_pcCombatRound->m_oidUnknown9CC;
                 if (oidAttack != OBJECT_INVALID)
-                    pCreature->AddAttackActions(oidAttack, 0, 0, 0, 0, 0, 0,
+                    pCreature->AddAttackActions(oidAttack, 0, 0, 0, 0, 0, 1,
                                                 1, 10009, 1500, 1, 0, 0, 4, 0);
                 return 1;
             }
@@ -1543,7 +1587,20 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
         unsigned long oidRepository = ReadOBJECTIDServer();
         if (MessageReadOverflow(1) || MessageReadUnderflow(1))
             return 0;
-        pCreature = pPlayer->GetGameObject()->AsSWSCreature();
+        int nOverrideCharacter = g_pAppManager->m_pClientExoApp->GetInGameGui()
+                                     ->GetTopMenuOverrideCharacter();
+        if (nOverrideCharacter == -1)
+        {
+            pCreature = pPlayer->GetGameObject()->AsSWSCreature();
+        }
+        else
+        {
+            CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+            pCreature = (CSWSCreature*)pServerExoApp->GetGameObject(
+                pServerExoApp->GetPartyTable()->GetNPCObject(nOverrideCharacter, 0, 1));
+            if (pCreature == NULL)
+                return 0;
+        }
         if (pCreature != NULL &&
             g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
                 oidItem, &pGameObject) == CGameObjectArray::SUCCESS &&
@@ -1554,7 +1611,7 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
             pCreature->AddUnequipActions(pGameObject->AsSWSItem(), oidRepository, 1, 1, 0);
             unsigned long oidAttack = pCreature->m_pcCombatRound->m_oidUnknown9CC;
             if (oidAttack != OBJECT_INVALID)
-                pCreature->AddAttackActions(oidAttack, 0, 0, 0, 0, 0, 0,
+                pCreature->AddAttackActions(oidAttack, 0, 0, 0, 0, 0, 1,
                                             1, 10009, 1500, 1, 0, 0, 4, 0);
             return 1;
         }
@@ -2583,13 +2640,14 @@ int CSWSMessage::HandlePlayerToServerInputMessage(CSWSPlayer* pPlayer,
             return 0;
         pCreature->ActionManager(2);
         if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
-                oidDoor, &pObject) != CGameObjectArray::SUCCESS)
-            return 1;
-        CSWSDoor* pDoor = pObject->AsSWSDoor();
-        if (pDoor == NULL)
-            return 0;
-        if (pDoor->m_bLocked)
-            pCreature->AddDoorSaberAction(oidDoor);
+                oidDoor, &pObject) == CGameObjectArray::SUCCESS)
+        {
+            CSWSDoor* pDoor = pObject->AsSWSDoor();
+            if (pDoor == NULL)
+                return 0;
+            if (pDoor->m_bLocked)
+                pCreature->AddDoorSaberAction(oidDoor);
+        }
         return 1;
     }
     case 38:

@@ -773,7 +773,7 @@ public:
     static const int IMMUNITY_TYPE_FEAR;
     static const int IMMUNITY_TYPE_MINE;
     static const int IMMUNITY_TYPE_PARALYSIS;
-
+    static const int IMMUNITY_TYPE_DROID_CONFUSED;
 
     static const int IMMUNITY_TYPE_BLINDNESS;
     static const int IMMUNITY_TYPE_DEAFNESS;

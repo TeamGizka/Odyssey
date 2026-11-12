@@ -22,6 +22,11 @@
 #include <float.h>
 #include <string.h>
 
+#define AREA_DIRECT_LINE_MAX_ROOM_STEPS 100
+#define AREA_PATH_POINT_BLOCKER_POST_COLUMN 7
+#define AREA_PATH_POINT_BLOCKER_POST_ROW 15
+#define AREA_PATH_POINT_BLOCKER_POST_DURATION 5.0f
+
 int nPathfindUnused1 = 0;
 int DumpRoomBBox = 0;
 int RenderTest = 0;
@@ -610,6 +615,7 @@ int CSWSArea::TestDirectLine(const Vector& vStart, const Vector& vEnd,
     float fMaxHeight = 0.0f;
     int nEdge;
     unsigned long oidHit;
+    int nSteps = 0;
     while (nResult == DIRECT_LINE_CLEAR && !bFinished)
     {
         if (pRoom != NULL)
@@ -623,54 +629,62 @@ int CSWSArea::TestDirectLine(const Vector& vStart, const Vector& vEnd,
                 bRoomClear = pRoom->NoNonWalkPolysOnRoom(vClippedStart, vClippedEnd,
                     fMinHeight, fMaxHeight, fRadius, pWalkHitInfo);
             }
-            if (!bRoomClear)
+            if (bRoomClear)
             {
-                nResult = DIRECT_LINE_BLOCKED_ROOM;
-                break;
-            }
-            unsigned long oidObject = m_pPathfindInformation->m_nField_BC;
-            float fObjectMinHeight = fMinHeight - AREA_DIRECT_LINE_OBJECT_HEIGHT_RANGE;
-            float fObjectMaxHeight = fMaxHeight + AREA_DIRECT_LINE_OBJECT_HEIGHT_RANGE;
-            if (!NoNonWalkPolysDetailed(vClippedStart, vClippedEnd, fObjectMinHeight, fObjectMaxHeight, fRadius, oidObject, oidHit, 0, NULL, 0, pWalkHitInfo, 0))
-            {
-                nResult = DIRECT_LINE_BLOCKED_OBJECT;
-                break;
-            }
-            if (m_pPathfindInformation == NULL || (!m_pPathfindInformation->m_nField_210 && (!(fRadius > 0.0f) || !NoCreaturesOnLine(vClippedStart, vClippedEnd, m_pPathfindInformation, 1, 0, NULL, 1, pWalkHitInfo))))
-            {
-                nResult = DIRECT_LINE_BLOCKED_CREATURE;
-                break;
-            }
-            if (vEnd.m_fX - EPSILON <= vClippedEnd.m_fX &&
-                EPSILON + vEnd.m_fX >= vClippedEnd.m_fX &&
-                vEnd.m_fY - EPSILON <= vClippedEnd.m_fY &&
-                EPSILON + vEnd.m_fY >= vClippedEnd.m_fY)
-            {
-                bFinished = 1;
-            }
-            else if (!bFinished)
-            {
-                int nRoom = pRoom->GetAdjacentRoom(nEdge);
-                if (nRoom == -1 || m_pRooms[nRoom].m_bNoWalkMesh)
+                unsigned long oidObject = m_pPathfindInformation->m_nField_BC;
+                float fObjectMinHeight = fMinHeight - AREA_DIRECT_LINE_OBJECT_HEIGHT_RANGE;
+                float fObjectMaxHeight = fMaxHeight + AREA_DIRECT_LINE_OBJECT_HEIGHT_RANGE;
+                if (NoNonWalkPolysDetailed(vClippedStart, vClippedEnd, fObjectMinHeight, fObjectMaxHeight, fRadius, oidObject, oidHit, 0, NULL, 0, pWalkHitInfo, 0))
                 {
-                    nResult = DIRECT_LINE_NO_ROOM;
+                    if (m_pPathfindInformation != NULL && (m_pPathfindInformation->m_nField_210 || (fRadius > 0.0f && NoCreaturesOnLine(vClippedStart, vClippedEnd, m_pPathfindInformation, 1, 0, NULL, 1, pWalkHitInfo))))
+                    {
+                        if (vEnd.m_fX - EPSILON <= vClippedEnd.m_fX &&
+                            EPSILON + vEnd.m_fX >= vClippedEnd.m_fX &&
+                            vEnd.m_fY - EPSILON <= vClippedEnd.m_fY &&
+                            EPSILON + vEnd.m_fY >= vClippedEnd.m_fY)
+                        {
+                            bFinished = 1;
+                        }
+                        else
+                        {
+                            int nRoom = pRoom->GetAdjacentRoom(nEdge);
+                            if (nRoom == -1 || m_pRooms[nRoom].m_bNoWalkMesh)
+                            {
+                                nResult = DIRECT_LINE_NO_ROOM;
+                            }
+                            else
+                            {
+                                equal(vClippedStart, vClippedEnd);
+                                pRoom = &m_pRooms[nRoom];
+                                vFrom = vClippedEnd;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        nResult = DIRECT_LINE_BLOCKED_CREATURE;
+                    }
                 }
                 else
                 {
-#ifdef _XBOX
-                    CSWSRoom* pNextRoom = &m_pRooms[nRoom]; CResRef cNextRoom = pNextRoom->m_cResRef; CResRef cRoom = pRoom->m_cResRef;
-                    if (cRoom != cNextRoom) {}
-#endif
-                    pRoom = &m_pRooms[nRoom];
-                    vFrom = vClippedEnd;
+                    nResult = DIRECT_LINE_BLOCKED_OBJECT;
                 }
+            }
+            else
+            {
+                nResult = DIRECT_LINE_BLOCKED_ROOM;
             }
         }
         else
         {
             return DIRECT_LINE_NO_ROOM;
         }
-
+        if (nSteps >= AREA_DIRECT_LINE_MAX_ROOM_STEPS)
+        {
+            nResult = DIRECT_LINE_NO_ROOM;
+            break;
+        }
+        nSteps++;
     }
 
     if (!RenderTest)
@@ -988,7 +1002,15 @@ int CSWSArea::PathPointDFSGenerateSuccessors(
                 CSWSDoor* pDoor = pObject->AsSWSDoor();
                 int bPlaceable = 0;
                 if (pPlaceable != NULL)
+                {
+                    char szBlocker[256];
+                    Vector vPosition = pPlaceable->m_vPosition;
+                    sprintf(szBlocker, "\"%s\" at ( %.1f, %.1f, %.1f )", pPlaceable->m_sTag.CStr(),
+                            vPosition.m_fX, vPosition.m_fY, vPosition.m_fZ);
+                    AurPostString(szBlocker, AREA_PATH_POINT_BLOCKER_POST_COLUMN, AREA_PATH_POINT_BLOCKER_POST_ROW,
+                                  AREA_PATH_POINT_BLOCKER_POST_DURATION);
                     bPlaceable = 1;
+                }
                 if ((pDoor != NULL && pDoor->m_bStatic) || bPlaceable)
                     continue;
             }
@@ -2260,6 +2282,11 @@ int CSWSArea::PathPointDFSearch(int nDepth, float fCost, float fRemaining,
     {
         if (fCost > fOldCost || fOldRemaining >= fRemaining)
             return 0;
+        if (nDepth > PATH_POINT_DFS_MAX_REVISIT_DEPTH)
+        {
+            m_bPathPointDFSAborted = 1;
+            return 0;
+        }
     }
     if (++m_nPathPointDFSExpansions >= PATH_POINT_DFS_MAX_EXPANSIONS)
         m_bPathPointDFSAborted = 1;
@@ -2840,6 +2867,8 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
         else
         {
             m_pPathPointTransTable = (CSWSAreaPathPointTransEntry*)pPathfind->m_pPathPointTransTable;
+            if (m_pPathPointTransTable == NULL)
+                PathPointDFSTransTableInitialize();
             fBound = pPathfind->m_fPathPointSearchBound;
             fBound += fIncrement;
         }
@@ -3123,8 +3152,6 @@ int CSWSArea::NoCreaturesOnLine(const Vector& vStart, const Vector& vEnd,
         fScale = (float)sqrt(1.0f / (fSlope * fSlope + 1.0f));
     }
 
-    Vector vLineStart = vStart;
-    Vector vLineEnd = vEnd;
     int nIndex;
     int nLast = m_lstObjectIds.num - 1;
     if (GetFirstObjectIndiceByX(&nIndex, fMaxX + AREA_CREATURE_LINE_SEARCH_MARGIN))
@@ -3136,6 +3163,8 @@ int CSWSArea::NoCreaturesOnLine(const Vector& vStart, const Vector& vEnd,
     {
         nFirst = nIndex;
     }
+    float fMaxYBound = fMaxY + AREA_CREATURE_LINE_SEARCH_MARGIN;
+    float fMinYBound = fMinY - AREA_CREATURE_LINE_SEARCH_MARGIN;
     for (; nFirst <= nLast; nFirst++)
     {
         unsigned long oidOther = m_lstObjectIds[nFirst];
@@ -3143,15 +3172,15 @@ int CSWSArea::NoCreaturesOnLine(const Vector& vStart, const Vector& vEnd,
             oidOther);
         if (pOther != NULL && oidOther != oidCreature && oidOther != oidTarget &&
             oidOther != oidIgnore && !pOther->GetDead() && !pOther->GetDeadTemp() &&
-            (!bBumpCreatures || !pCreature->GetIsCreatureBumpable(pOther)))
+            (!bBumpCreatures || !pCreature->GetIsCreatureBumpable(pOther)) &&
+            !pOther->m_c26A && !pPathfind->m_nField_210)
         {
             float fRadius = pOther->m_pPathfindInformation->GetCreaturePersonalSpace() +
                             fPersonalSpace;
             Vector vCenter = pOther->m_vPosition;
             vCenter.m_fZ = 0.0f;
-            Vector vDirection = vLineStart - vLineEnd;
-            vDirection.m_fZ = 0.0f;
-            magnitude(vDirection);
+            if (vCenter.m_fY > fMaxYBound || vCenter.m_fY < fMinYBound)
+                continue;
             if (fDeltaX == 0.0f)
             {
                 if (vCenter.m_fY <= fMinY)

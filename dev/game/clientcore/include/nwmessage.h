@@ -448,7 +448,17 @@ public:
         ATTACK_DETAIL3 = 17,
         ATTACK_MODIFIER11 = 18,
         ATTACK_DEFENSE_ROLL = 19,
-        ATTACK_DEFENSE_MODIFIER = 20
+        ATTACK_DEFENSE_MODIFIER = 20,
+        ATTACK_MODIFIER12 = 21,
+        ATTACK_DETAIL4 = 22,
+        ATTACK_MODIFIER13 = 23,
+        ATTACK_DETAIL5 = 24,
+        ATTACK_MODIFIER14 = 25,
+        ATTACK_DETAIL6 = 26,
+        ATTACK_MODIFIER15 = 27,
+        ATTACK_MODIFIER16 = 28,
+        ATTACK_DETAIL7 = 29,
+        ATTACK_MODIFIER17 = 30
     };
     enum ThreatBreakdownInteger
     {
@@ -494,7 +504,15 @@ public:
         DEFLECT_DETAIL5 = 5,
         DEFLECT_DETAIL6 = 6,
         DEFLECT_DETAIL7 = 7,
-        DEFLECT_DETAIL8 = 8
+        DEFLECT_DETAIL8 = 8,
+        DEFLECT_DETAIL9 = 9,
+        DEFLECT_DETAIL10 = 10,
+        DEFLECT_DETAIL11 = 11,
+        DEFLECT_DETAIL12 = 12,
+        DEFLECT_DETAIL13 = 13,
+        DEFLECT_DETAIL14 = 14,
+        DEFLECT_DETAIL15 = 15,
+        DEFLECT_DETAIL16 = 16
     };
 
     enum BreakdownObjectID { BREAKDOWN_REACT_OBJECT = 0 };

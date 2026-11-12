@@ -1107,7 +1107,7 @@ int CSWCollisionMesh::SaveBinaryMesh(const CExoString& sFileName)
     }
     _CSWWalkMeshHeader header;
     memset(&header, 0, sizeof(header));
-    strcpy(header.m_sVersion, "BWM V1.0");
+    strncpy(header.m_sVersion, "BWM V1.0", sizeof(header.m_sVersion));
     header.m_nType = m_nType;
     header.m_avRelativeUsePoints[0] = m_avUsePoints[0];
     header.m_avRelativeUsePoints[1] = m_avUsePoints[1];

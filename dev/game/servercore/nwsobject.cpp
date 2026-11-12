@@ -3037,24 +3037,19 @@ void CSWSObject::SpellCastAndImpact(
                 CSWSCreature* pCaster = AsSWSCreature();
                 for (int i = 0; i < pCaster->m_lstEffects.num; i++)
                 {
-                    if (pCaster->m_lstEffects[i]->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
+                    CGameEffect* pEffect = pCaster->m_lstEffects[i];
+                    if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
                     {
-                        nForceBodyLevel = pCaster->m_lstEffects[i]->GetInteger(0);
+                        nForceBodyLevel = pEffect->GetInteger(0);
                         break;
                     }
                 }
-                if (nForceBodyLevel == -1)
-                {
-                    nForceCost = pSpell->GetAdjustedForcePoints(nAlignment,
-                        AsSWSCreature()->GetInParty(), nRoomForceRating,
-                        AsSWSCreature()->m_n1110, AsSWSCreature()->GetStats()->m_nCharismaModifier);
-                }
-                else
+                if (nForceBodyLevel != -1)
                 {
                     int nPercent = 0;
                     int nFullCost = pSpell->GetAdjustedForcePoints(nAlignment,
                         AsSWSCreature()->GetInParty(), nRoomForceRating,
-                        AsSWSCreature()->m_n1110, AsSWSCreature()->GetStats()->m_nCharismaModifier);
+                        AsSWSCreature()->GetForm(), AsSWSCreature()->GetStats()->GetCHAMod());
                     switch (nForceBodyLevel)
                     {
                     case 0:
@@ -3069,6 +3064,12 @@ void CSWSObject::SpellCastAndImpact(
                     }
                     nForceCost = nPercent * nFullCost / 100;
                     nForceBodyCost = nForceCost;
+                }
+                else
+                {
+                    nForceCost = pSpell->GetAdjustedForcePoints(nAlignment,
+                        AsSWSCreature()->GetInParty(), nRoomForceRating,
+                        AsSWSCreature()->GetForm(), AsSWSCreature()->GetStats()->GetCHAMod());
                 }
                 pData->SetInteger(2, nForceCost);
                 int nForcePoints = AsSWSCreature()->GetStats()->GetCurrentForcePoints();
@@ -3129,7 +3130,7 @@ unsigned long CSWSObject::SpawnBodyBag()
         return OBJECT_INVALID;
 
     int bCorpse = 0;
-    unsigned char nAppearance;
+    int nAppearance;
     if (pCreature != NULL)
     {
         nAppearance = pCreature->GetBodyBagAppearance();

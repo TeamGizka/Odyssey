@@ -257,6 +257,7 @@ const int CSWSEffectListHandler::IMMUNITY_TYPE_NEGATIVE_LEVEL = 29;
 const int CSWSEffectListHandler::IMMUNITY_TYPE_BACKSTAB = 30;
 const int CSWSEffectListHandler::IMMUNITY_TYPE_CRITICAL_HITS = 31;
 const int CSWSEffectListHandler::IMMUNITY_TYPE_DEATH_MAGIC = 32;
+const int CSWSEffectListHandler::IMMUNITY_TYPE_DROID_CONFUSED = 33;
 const int CSWSEffectListHandler::IMMUNITY_TYPE_MAX = 34;
 const int CSWSEffectListHandler::VISION_EFFECT_TYPE_BLINDVISION = 0;
 const int CSWSEffectListHandler::VISION_EFFECT_TYPE_LOWLIGHTVISION = 1;

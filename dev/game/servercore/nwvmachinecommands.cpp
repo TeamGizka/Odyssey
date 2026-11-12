@@ -405,7 +405,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetChemical(int nCommand, int nArgs
         CSWSPlaceable* pPlaceable = g_pAppManager->GetServerExoApp()->GetPlaceableByGameObjectID(oidObject);
         if (pPlaceable != NULL && pPlaceable->m_pcItemRepository != NULL)
         {
-            unsigned long oidItem = pPlaceable->m_pcItemRepository->FindItemWithBaseItemType(BASE_ITEM_REPEATING_BLASTER, 0);
+            unsigned long oidItem = pPlaceable->m_pcItemRepository->FindItemWithBaseItemType(CSWBaseItem::ITEM_TYPE_CREDITS, 0);
             CSWSItem* pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
             if (pItem != NULL)
             {
@@ -626,8 +626,8 @@ int CSWVirtualMachineCommands::ExecuteCommandGetObjectPersonalSpace(int nCommand
 // PC 0x005BF6F0
 int CSWVirtualMachineCommands::ExecuteCommandInfluence(int nCommand, int nArgs)
 {
-    int nValue = 0;
     int nNPC;
+    int nValue = 0;
 
     if (g_pVirtualMachine->StackPopInteger(&nNPC) == 0)
     {
@@ -638,7 +638,10 @@ int CSWVirtualMachineCommands::ExecuteCommandInfluence(int nCommand, int nArgs)
     {
         if (nCommand == COMMAND_GET_INFLUENCE)
         {
-            return g_pVirtualMachine->StackPushInteger(nValue) != 0 ? 0 : -2000;
+            if (g_pVirtualMachine->StackPushInteger(nValue) == 0)
+            {
+                return -2000;
+            }
         }
         return 0;
     }
@@ -648,7 +651,11 @@ int CSWVirtualMachineCommands::ExecuteCommandInfluence(int nCommand, int nArgs)
     {
     case COMMAND_GET_INFLUENCE:
         nValue = pPartyTable->GetInfluence(nNPC);
-        return g_pVirtualMachine->StackPushInteger(nValue) != 0 ? 0 : -2000;
+        if (g_pVirtualMachine->StackPushInteger(nValue) == 0)
+        {
+            return -2000;
+        }
+        break;
     case COMMAND_SET_INFLUENCE:
     {
         int nOldInfluence = pPartyTable->GetInfluence(nNPC);
@@ -669,7 +676,14 @@ int CSWVirtualMachineCommands::ExecuteCommandInfluence(int nCommand, int nArgs)
         {
             return 0;
         }
-        g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateStatus(nOldInfluence < nValue ? 9 : 10, nNPC);
+        if (nOldInfluence < nValue)
+        {
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(9, nNPC);
+        }
+        else
+        {
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(10, nNPC);
+        }
         if (pCreature != NULL)
         {
             pCreature->HandleAlignmentInfluence();
@@ -702,7 +716,14 @@ int CSWVirtualMachineCommands::ExecuteCommandInfluence(int nCommand, int nArgs)
         {
             return 0;
         }
-        g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateStatus(nValue > 0 ? 9 : 10, nNPC);
+        if (nValue > 0)
+        {
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(9, nNPC);
+        }
+        else
+        {
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(10, nNPC);
+        }
         if (pCreature != NULL)
         {
             pCreature->HandleAlignmentInfluence();
@@ -2583,7 +2604,8 @@ int CSWVirtualMachineCommands::ExecuteCommandActionFollowObject(
                         g_pAppManager->GetClientExoApp()->GetSWParty();
                     vDestination = pParty->m_aPartyMemberData[nIndex].m_vFormationOffset;
                     pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
-                    vDestination.m_fY -= pParty->m_fFormationRange[pParty->m_nFormation];
+                    vDestination += Vector(0.0f,
+                        -pParty->m_fFormationRange[pParty->m_nFormation], 0.0f);
                 }
             }
         }
@@ -3599,9 +3621,9 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int n
             if (nAdjustment < 0)
             {
                 sTotal = "G_PC_Dark_Total";
-                g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+                g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
                     ->GetValueNumber(sTotal, nTotal);
-                if (nTotal != SWVARTABLE_LOCAL_NUMBER_MAX)
+                if (nTotal < SWVARTABLE_LOCAL_NUMBER_MAX)
                 {
                     if (nTotal - nAdjustment <= SWVARTABLE_LOCAL_NUMBER_MAX)
                     {
@@ -3611,16 +3633,16 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int n
                     {
                         nTotal = SWVARTABLE_LOCAL_NUMBER_MAX;
                     }
-                    g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+                    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
                         ->SetValueNumber(sTotal, nTotal);
                 }
             }
             else if (nAdjustment > 0)
             {
                 sTotal = "G_PC_Light_Total";
-                g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+                g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
                     ->GetValueNumber(sTotal, nTotal);
-                if (nTotal != SWVARTABLE_LOCAL_NUMBER_MAX)
+                if (nTotal < SWVARTABLE_LOCAL_NUMBER_MAX)
                 {
                     if (nAdjustment + nTotal <= SWVARTABLE_LOCAL_NUMBER_MAX)
                     {
@@ -3630,7 +3652,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int n
                     {
                         nTotal = SWVARTABLE_LOCAL_NUMBER_MAX;
                     }
-                    g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+                    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
                         ->SetValueNumber(sTotal, nTotal);
                 }
             }
@@ -3641,9 +3663,9 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int n
         if (pCreature->m_bPlayerCreated != 0 && bDontModifyNPCs == 0)
         {
             sTotal = "G_PC_Light_Total";
-            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+            g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
                 ->GetValueNumber(sTotal, nTotal);
-            if (nTotal != SWVARTABLE_LOCAL_NUMBER_MAX)
+            if (nTotal < SWVARTABLE_LOCAL_NUMBER_MAX)
             {
                 if (nAdjustment + nTotal <= SWVARTABLE_LOCAL_NUMBER_MAX)
                 {
@@ -3653,7 +3675,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int n
                 {
                     nTotal = SWVARTABLE_LOCAL_NUMBER_MAX;
                 }
-                g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+                g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
                     ->SetValueNumber(sTotal, nTotal);
             }
         }
@@ -3663,9 +3685,9 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int n
         if (pCreature->m_bPlayerCreated != 0 && bDontModifyNPCs == 0)
         {
             sTotal = "G_PC_Dark_Total";
-            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+            g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
                 ->GetValueNumber(sTotal, nTotal);
-            if (nTotal != SWVARTABLE_LOCAL_NUMBER_MAX)
+            if (nTotal < SWVARTABLE_LOCAL_NUMBER_MAX)
             {
                 if (nTotal - nAdjustment <= SWVARTABLE_LOCAL_NUMBER_MAX)
                 {
@@ -3675,13 +3697,13 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int n
                 {
                     nTotal = SWVARTABLE_LOCAL_NUMBER_MAX;
                 }
-                g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()
+                g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
                     ->SetValueNumber(sTotal, nTotal);
             }
         }
         break;
     }
-    pStats->ModifyAlignment(nAdjustment);
+    pStats->ModifyAlignment(nAdjustment, bDontModifyNPCs);
 
     if (bDontModifyNPCs == 0)
     {
@@ -5520,6 +5542,9 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectComplex(int nCommand, int nAr
         pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_SETSTATE;
         pGameEffect->SetInteger(0, CSWSEffectListHandler::STATE_STUN);
         break;
+    case COMMAND_EFFECT_HASTE:
+        pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_HASTE;
+        break;
     case COMMAND_EFFECT_REGENERATE:
         {
             int nAmount;
@@ -5552,10 +5577,10 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectComplex(int nCommand, int nAr
             pGameEffect->SetInteger(0, bReturn);
         }
         break;
-    case COMMAND_EFFECT_HASTE:
-        pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_HASTE;
-        break;
     int nInteger2;
+    case COMMAND_EFFECT_TIME_STOP:
+        pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_TIMESTOP;
+        break;
     case COMMAND_EFFECT_DISPEL_MAGIC_BEST:
         {
             int nCasterLevel;
@@ -5602,8 +5627,17 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectComplex(int nCommand, int nAr
     case COMMAND_EFFECT_FORCE_FIZZLE:
         pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_FORCEFIZZLE;
         break;
-    case COMMAND_EFFECT_TIME_STOP:
-        pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_TIMESTOP;
+    case COMMAND_EFFECT_DROID_CONFUSED:
+        pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_SETSTATE;
+        pGameEffect->SetInteger(0, CSWSEffectListHandler::STATE_VARIANT_16);
+        break;
+    case COMMAND_EFFECT_MIND_TRICK:
+        pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_SETSTATE;
+        pGameEffect->SetInteger(0, CSWSEffectListHandler::STATE_MIND_TRICK_18);
+        break;
+    case COMMAND_EFFECT_DROID_SCRAMBLE:
+        pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_SETSTATE;
+        pGameEffect->SetInteger(0, CSWSEffectListHandler::STATE_MIND_TRICK_19);
         break;
     case COMMAND_EFFECT_CUTSCENE_HORRIFIED:
         pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_SETSTATE;
@@ -5619,18 +5653,6 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectComplex(int nCommand, int nAr
         pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_SETSTATE;
         pGameEffect->SetInteger(0, CSWSEffectListHandler::STATE_STUN);
         pGameEffect->SetInteger(1, 1);
-        break;
-    case COMMAND_EFFECT_DROID_CONFUSED:
-        pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_SETSTATE;
-        pGameEffect->SetInteger(0, CSWSEffectListHandler::STATE_VARIANT_16);
-        break;
-    case COMMAND_EFFECT_MIND_TRICK:
-        pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_SETSTATE;
-        pGameEffect->SetInteger(0, CSWSEffectListHandler::STATE_MIND_TRICK_18);
-        break;
-    case COMMAND_EFFECT_DROID_SCRAMBLE:
-        pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_SETSTATE;
-        pGameEffect->SetInteger(0, CSWSEffectListHandler::STATE_MIND_TRICK_19);
         break;
     }
     pGameEffect->m_nSubType =
@@ -10653,7 +10675,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetGold(int nCommand, int nArgs)
             pRepository = pPlaceable->m_pcItemRepository;
             if (pRepository != NULL)
             {
-                oidItem = pRepository->FindItemWithBaseItemType(BASE_ITEM_REPEATING_BLASTER, 0);
+                oidItem = pRepository->FindItemWithBaseItemType(CSWBaseItem::ITEM_TYPE_CREDITS, 0);
                 pServerExoApp = g_pAppManager->m_pServerExoApp;
                 pItem = pServerExoApp->GetItemByGameObjectID(oidItem);
                 if (pItem != NULL)
@@ -17887,8 +17909,8 @@ int CSWVirtualMachineCommands::ExecuteCommandShowPartySelection(int nCommand,
 {
     CExoString sExitScript;
     int nUnknown = 0;
-    int nForceNPC2 = -1;
     int nForceNPC1 = -1;
+    int nForceNPC2 = -1;
 
     if (g_pVirtualMachine->StackPopString(&sExitScript) == 0)
     {
@@ -17915,7 +17937,7 @@ int CSWVirtualMachineCommands::ExecuteCommandShowPartySelection(int nCommand,
             return -2001;
         }
     }
-    g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowPartySelection(sExitScript, 1, nForceNPC1,
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowPartySelection(sExitScript, 1, nForceNPC1,
                                                                        nForceNPC2, nUnknown);
     return 0;
 }

@@ -582,6 +582,7 @@ int CSWSModule::PlotPathInArea(CPathfindInformation* pPathfind,
                     pPoints[3] = vBest.m_fY;
                     pPathfind->m_pWayPoints = pPoints;
                     nResult = CSWSObject::ACTION_COMPLETE;
+                    pPathfind->m_nField_1E0 = CPathfindInformation::PATH_POINT_STARTPOINTS;
                 }
             }
         }

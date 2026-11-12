@@ -2138,8 +2138,8 @@ int CSWSArea::PackAreaIntoMessage(int nPlayerId, int nAreaId, int nFlags,
         {
             vPosition = pPlaceable->m_vPosition;
             pMessage->WriteOBJECTIDServer(pPlaceable->GetId());
-            unsigned char nAppearance = pPlaceable->m_nAppearance;
-            pMessage->WriteBYTE(nAppearance, 8);
+            unsigned long nAppearance = pPlaceable->m_nAppearance;
+            pMessage->WriteDWORD(nAppearance, 32);
             pMessage->WriteFLOAT(vPosition.m_fX, 1.0f, 32);
             pMessage->WriteFLOAT(vPosition.m_fY, 1.0f, 32);
             pMessage->WriteFLOAT(vPosition.m_fZ, 1.0f, 32);
@@ -2155,8 +2155,8 @@ int CSWSArea::PackAreaIntoMessage(int nPlayerId, int nAreaId, int nFlags,
             vPosition = pPlaceable->m_vPosition;
             Vector vOrientation = pPlaceable->m_vOrientation;
             pMessage->WriteOBJECTIDServer(pPlaceable->GetId());
-            unsigned char nAppearance = pPlaceable->m_nAppearance;
-            pMessage->WriteBYTE(nAppearance, 8);
+            unsigned long nAppearance = pPlaceable->m_nAppearance;
+            pMessage->WriteDWORD(nAppearance, 32);
             pMessage->WriteFLOAT(vPosition.m_fX, 1.0f, 32);
             pMessage->WriteFLOAT(vPosition.m_fY, 1.0f, 32);
             pMessage->WriteFLOAT(vPosition.m_fZ, 1.0f, 32);

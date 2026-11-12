@@ -166,7 +166,7 @@ public:
     enum { WEAPON_SPECIALIZATION_DAMAGE_BONUS = 2 };
     // PC 0x005ED200
     CSWSCreature* GetCreature() { return m_pCreature; }
-
+    void SetCurrentForcePoints(int nForcePoints) { m_nCurrentForcePoints = nForcePoints; }
     short GetCurrentForcePoints()
     {
         return m_nCurrentForcePoints + m_nTemporaryForcePoints;

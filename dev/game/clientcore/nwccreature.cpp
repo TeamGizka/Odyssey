@@ -8054,7 +8054,7 @@ void CSWCCreature::PlayFootstep()
             {
                 nFootstepType = CTwoDimArrays::FOOTSTEP_TYPE_STEALTH;
                 CSWSCreature* pServerCreature = GetServerCreature();
-                if (pServerCreature != NULL && pServerCreature->m_nUnknown4D8 > 0)
+                if (pServerCreature != NULL && pServerCreature->m_nSilentMove > 0)
                     bSilentMove = 1;
             }
             int nMaterial = pArea->GetSurfaceMaterial(m_vPosition);

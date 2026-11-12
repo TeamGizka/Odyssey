@@ -183,7 +183,9 @@ unsigned char CSWSDoor::GetDetectDC()
             break;
     }
     nDC += nModifier;
-    return nDC < 1 ? 1 : nDC;
+    if (nDC < 1)
+        nDC = 1;
+    return nDC;
 }
 // PC 0x0057F5E0
 unsigned char CSWSDoor::GetDisarmDC()
@@ -735,14 +737,8 @@ int CSWSDoor::LoadDoor(CResGFF* pRes, CResStruct* pStruct, int bLoadTemplate)
         int nDefault = m_bTrapDetectable;
         m_bTrapDetectable = pRes->ReadFieldBYTE(pStruct, "TrapDetectable", bSuccess, nDefault);
     }
-    {
-        unsigned char nDefault = m_nDisarmDC;
-        m_nDisarmDC = pRes->ReadFieldBYTE(pStruct, "DisarmDC", bSuccess, nDefault);
-    }
-    {
-        unsigned char nDefault = m_nTrapDetectDC;
-        m_nTrapDetectDC = pRes->ReadFieldBYTE(pStruct, "TrapDetectDC", bSuccess, nDefault);
-    }
+    m_nDisarmDC = pRes->ReadFieldBYTE(pStruct, "DisarmDC", bSuccess, GetDisarmDC());
+    m_nTrapDetectDC = pRes->ReadFieldBYTE(pStruct, "TrapDetectDC", bSuccess, GetDetectDC());
     m_nOwnerDemolitionsSkill = pRes->ReadFieldINT(pStruct, "OwnerDemolitionsSkill", bSuccess, 0);
     {
         int nDefault = m_bTrapFlag;
@@ -1398,7 +1394,7 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                         }
                         m_lstActions.GetNext(pPosition);
                     }
-                    if (!bFound)
+                    if (!bFound && !pEvent->GetInteger(0))
                     {
                         CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaller);
                         if (pCreature != NULL)
@@ -1463,10 +1459,12 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                             if (GetArea() != NULL)
                             {
                                 unsigned long oidDoor = m_nId;
-                                if (GetArea()->m_lstTrapObjectIds.Contains(oidDoor))
+                                CSWSArea* pArea = GetArea();
+                                if (pArea->m_lstTrapObjectIds.Contains(oidDoor))
                                 {
                                     unsigned long oidObject = m_nId;
-                                    GetArea()->m_lstTrapObjectIds.Remove(oidObject);
+                                    CSWSArea* pTrapArea = GetArea();
+                                    pTrapArea->m_lstTrapObjectIds.Remove(oidObject);
                                 }
                             }
                         }
@@ -1484,8 +1482,8 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                 else if (m_bTrapFlag)
                 {
                     CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaller);
-                    int nRoll = pCreature->m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, 0) / 2 + 20 +
-                                pEvent->GetInteger(3);
+                    int nRoll = pCreature->m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, 0) / 2 + TRAP_RECOVER_ROLL_BASE;
+                    nRoll += pEvent->GetInteger(3);
                     int bSuccess = 0;
                     if (nRoll >= GetOpenLockDC())
                     {
@@ -1519,10 +1517,12 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                     if (GetArea() != NULL)
                     {
                         unsigned long oidDoor = m_nId;
-                        if (GetArea()->m_lstTrapObjectIds.Contains(oidDoor))
+                        CSWSArea* pArea = GetArea();
+                        if (pArea->m_lstTrapObjectIds.Contains(oidDoor))
                         {
                             unsigned long oidObject = m_nId;
-                            GetArea()->m_lstTrapObjectIds.Remove(oidObject);
+                            CSWSArea* pTrapArea = GetArea();
+                            pTrapArea->m_lstTrapObjectIds.Remove(oidObject);
                         }
                     }
                     if (m_lstTrapDetectedBy.num > 0)

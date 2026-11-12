@@ -118,6 +118,7 @@ public:
     enum
     {
         FEAT_STEALTH_RUN = 197,
+        FEAT_SURVIVAL = 199,
         FEAT_PERSONAL_CLOAKING_SHIELD = 201,
         FEAT_IMPLANT_SWITCHING = 203,
         FEAT_COMPLEX_UNARMED_ANIMS = 207,

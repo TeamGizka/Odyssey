@@ -56,7 +56,7 @@ public:
         DOOR_LINK_WAYPOINT = 2
     };
 
-    enum { TRAP_TYPE_NONE = -1 };
+    enum { TRAP_TYPE_NONE = -1, TRAP_RECOVER_ROLL_BASE = 20 };
 
     CSWSDoor(unsigned long oidSelf);
 

@@ -132,7 +132,7 @@ public:
     int AIActionCastSpell(CSWSObjectActionNode* pNode);
     void SetLightIsOn(int bLightIsOn);
     int GetLightIsOn();
-    unsigned char GetBodyBagAppearance();
+    int GetBodyBagAppearance();
     int NoNonWalkPolys(const Vector& vStart, const Vector& vEnd,
                        const float& fDistance, const float& fWidth,
                        const float& fHeight, CWalkHitInfo* pWalkHitInfo);
@@ -140,7 +140,7 @@ public:
     void OnEndDialog(CSWSObject* pObject);
     int GetItemCount(int bDropableOnly);
     int LoadPlaceable(CResGFF* pRes, CResStruct* pStruct, int bLoadState);
-    int LoadBodyBag(unsigned char nAppearance);
+    int LoadBodyBag(int nAppearance);
     int SavePlaceable(CResGFF* pRes, CResStruct* pStruct);
     void AddToArea(CSWSArea* pArea, const Vector& vPosition, int bLoadingGame);
     void OpenInventory(unsigned long oidOpener, int bAnimate);

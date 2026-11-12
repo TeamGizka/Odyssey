@@ -274,7 +274,10 @@ int CSWSPlaceable::LoadPlaceable(CResGFF* pRes, CResStruct* pStruct, int bLoadSt
     int bIsBodyBag = pRes->ReadFieldBYTE(pStruct, "IsBodyBag", bSuccess, GetIsBodyBag());
     m_bIsBodyBag = bIsBodyBag;
     m_bIsCorpse = pRes->ReadFieldBYTE(pStruct, "IsCorpse", bSuccess, GetIsCorpse());
-    m_c251 = pRes->ReadFieldBYTE(pStruct, "PCLevelAtSpawn", bSuccess, m_c251);
+    {
+        unsigned char nDefault = m_c251;
+        m_c251 = pRes->ReadFieldBYTE(pStruct, "PCLevelAtSpawn", bSuccess, nDefault);
+    }
     m_bOpen = pRes->ReadFieldBYTE(pStruct, "Open", bSuccess, 0);
     if (m_bOpen)
         SetAnimation(PLACEABLE_ANIMATION_OPEN);
@@ -339,7 +342,7 @@ int CSWSPlaceable::LoadPlaceable(CResGFF* pRes, CResStruct* pStruct, int bLoadSt
     return 1;
 }
 // PC 0x00588EE0
-int CSWSPlaceable::LoadBodyBag(unsigned char nAppearance)
+int CSWSPlaceable::LoadBodyBag(int nAppearance)
 {
     CExoLocString lsName;
     CExoString sScript;
@@ -1004,6 +1007,7 @@ int CSWSPlaceable::AIActionCastSpell(CSWSObjectActionNode* pNode)
     m_nLastSpellId = nSpellId;
     m_oidSpellTargetObject = oidTarget;
     m_bSafeProjectileBroadcast = 0;
+    m_n208 = 0;
     CalculateLastSpellProjectileTime(nProjectilePathType);
     if (bFake)
     {
@@ -1063,7 +1067,7 @@ int CSWSPlaceable::GetLightIsOn()  // PC 0x00587A60
     return m_bLightIsOn;
 }
 // PC 0x00587B00
-unsigned char CSWSPlaceable::GetBodyBagAppearance()
+int CSWSPlaceable::GetBodyBagAppearance()
 {
     int nAppearance;
     bool bFailed;
@@ -1084,7 +1088,7 @@ unsigned char CSWSPlaceable::GetBodyBagAppearance()
             bFailed = !pAppearance->GetINTEntry(m_nAppearance, sColumn, &nBodyBag);
         }
         if (bFailed)
-            nBodyBag = 0;
+            nBodyBag = CTwoDimArrays::BODY_BAG_DEFAULT_ROW;
 
         {
             CExoString sColumn("Appearance");
@@ -1094,10 +1098,10 @@ unsigned char CSWSPlaceable::GetBodyBagAppearance()
             bFailed = !pBodyBag->GetINTEntry(nBodyBag, sColumn, &nAppearance);
         }
         if (bFailed)
-            nAppearance = 3;
+            nAppearance = CTwoDimArrays::BODY_BAG_DEFAULT_APPEARANCE;
     }
 
-    return nAppearance;
+    return (unsigned char)nAppearance;
 }
 // PC 0x00587C70
 int CSWSPlaceable::NoNonWalkPolys(const Vector& vStart, const Vector& vEnd,
@@ -1421,6 +1425,10 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
 
         switch (pScriptEvent->m_nType)
         {
+        case CSWSSCRIPTEVENT_EVENTTYPE_ON_FAIL_TO_OPEN:
+            m_oidLastTriggeredBy = oidCaller;
+            g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ONFAILTOOPEN], GetId(), 1);
+            break;
         case CSWSSCRIPTEVENT_EVENTTYPE_ON_OPEN:
             m_oidLastOpenedBy = oidCaller;
             g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ONOPEN], GetId(), 1);
@@ -1487,11 +1495,11 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
                     if (m_bTrapOneShot != 0)
                     {
                         m_nTrapFlag = 0;
-                        if (GetArea() != NULL && &GetArea()->m_lstTrapObjectIds != NULL)
+                        if (GetArea() != NULL)
                         {
                             unsigned long oidPlaceable = GetId();
                             CSWSArea* pArea = GetArea();
-                            if (pArea->m_lstTrapObjectIds.Contains(oidPlaceable) == 1)
+                            if (pArea->m_lstTrapObjectIds.Contains(oidPlaceable))
                             {
                                 unsigned long oidObject = GetId();
                                 CSWSArea* pTrapArea = GetArea();
@@ -1515,8 +1523,8 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
                 CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaller);
                 if (m_nTrapFlag == 0)
                     break;
-                int nRoll = pCreature->m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, 0) / 20 + 20 +
-                            pScriptEvent->GetInteger(3);
+                int nRoll = pCreature->m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, 0) / 20 + 20;
+                nRoll += pScriptEvent->GetInteger(3);
                 if (nRoll >= GetOpenLockDC())
                 {
                     m_bLocked = 0;
@@ -1531,10 +1539,12 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
                 if (GetArea() != NULL)
                 {
                     unsigned long oidPlaceable = GetId();
-                    if (GetArea()->m_lstTrapObjectIds.Contains(oidPlaceable) == 1)
+                    CSWSArea* pArea = GetArea();
+                    if (pArea->m_lstTrapObjectIds.Contains(oidPlaceable))
                     {
                         unsigned long oidObject = GetId();
-                        GetArea()->m_lstTrapObjectIds.Remove(oidObject);
+                        CSWSArea* pTrapArea = GetArea();
+                        pTrapArea->m_lstTrapObjectIds.Remove(oidObject);
                     }
                 }
                 if (m_lstTrapDetectedBy.num > 0)
@@ -1672,6 +1682,7 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
             m_nLastSpellId = pSpellData->m_nSpellId;
             m_oidSpellTargetObject = pSpellData->m_oidTarget;
             SetSpellTargetPosition(pSpellData->m_vTargetPosition);
+            m_n208 = pSpellData->m_nFinalForceCost;
             if (pSpellData->m_oidTarget != OBJECT_INVALID)
             {
                 CGameObject* pTarget;
@@ -1680,7 +1691,8 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
                         CGameObjectArray::SUCCESS &&
                     pTarget->m_nObjectType > CGameObject::OBJECT_TYPE_AREA)
                 {
-                    if (GetArea() == ((CSWSObject*)pTarget)->GetArea())
+                    CSWSArea* pArea = ((CSWSObject*)pTarget)->GetArea();
+                    if (GetArea() == pArea)
                     {
                         SetSpellTargetPosition(((CSWSObject*)pTarget)->m_vPosition);
                     }
