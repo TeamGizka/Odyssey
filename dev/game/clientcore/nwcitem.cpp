@@ -162,17 +162,21 @@ void CSWCItem::SetEquippedBy(CSWCCreature* pCreature)
                 else
                     pModel->EnableRendering(1);
             }
-            return;
+        }
+        else if (pModel != NULL)
+        {
+            pModel->EnableHologram(0);
+            pModel->EnableRendering(1);
         }
     }
     else
     {
         m_oidEquippedBy = 2130706432;
-    }
-    if (pModel != NULL)
-    {
-        pModel->EnableHologram(0);
-        pModel->EnableRendering(1);
+        if (pModel != NULL)
+        {
+            pModel->EnableHologram(0);
+            pModel->EnableRendering(1);
+        }
     }
 }
 // PC 0x0069CF30

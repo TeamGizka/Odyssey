@@ -980,13 +980,26 @@ void CSWCCreature::SaveCharGenCreature()
     CResStruct topStruct;
     pGFF->CreateGFFFile(&topStruct, "BIC ", "V2.0");
 
-    locString.AddString(0, GetStats()->m_sFirstName, 0);
+    CExoString sName = GetStats()->GetFirstName() + " " + GetStats()->GetLastName();
+    while (!sName.IsEmpty() && sName[sName.GetLength() - 1] == ' ')
+        sName = sName.SubString(0, sName.GetLength() - 1);
+    locString.AddString(0, sName, 0);
     pGFF->WriteFieldCExoLocString(&topStruct, locString, "FirstName");
-    locString.AddString(0, GetStats()->m_sLastName, 0);
+    sName = "";
+    locString.AddString(0, sName, 0);
     pGFF->WriteFieldCExoLocString(&topStruct, locString, "LastName");
     locString.AddString(0, GetStats()->m_sDescription, 0);
     pGFF->WriteFieldCExoLocString(&topStruct, locString, "Description");
     pGFF->WriteFieldDWORD(&topStruct, GetGold(), "Gold");
+    pGFF->WriteFieldINT(&topStruct, 1, "PlayerCreated");
+    {
+        int nItemComponent = m_nItemComponent;
+        pGFF->WriteFieldDWORD(&topStruct, nItemComponent, "ItemComponent");
+    }
+    {
+        int nChemicals = m_nChemicals;
+        pGFF->WriteFieldDWORD(&topStruct, nChemicals, "Chemicals");
+    }
     {
         CResRef resConversation = GetStats()->m_cConversation;
         pGFF->WriteFieldCResRef(&topStruct, resConversation, "Conversation");
@@ -1138,6 +1151,10 @@ void CSWCCreature::SaveCharGenCreature()
     {
         int nGoodEvil = GetStats()->m_nGoodEvilAlignment;
         pGFF->WriteFieldBYTE(&topStruct, nGoodEvil, "GoodEvil");
+    }
+    {
+        int nBaseAlignment = GetStats()->m_nBaseCNPCAlignment;
+        pGFF->WriteFieldCHAR(&topStruct, nBaseAlignment, "BaseCNPCAlignment");
     }
     {
         unsigned char nValue = GetStats()->m_nColorSkin;
@@ -1655,8 +1672,8 @@ CSWCCreature::CSWCCreature()
     m_nUnknown308 = 200000;
     m_pPartyStatus = NULL;
     m_nGold = 0;
-    m_n148 = 0;
-    m_n14C = 0;
+    m_nItemComponent = 0;
+    m_nChemicals = 0;
     m_oidUnknown2C8 = CGameObjectArray::INVALIDOBJID;
     m_nWeaponOverlayTimer = SWCCREATURE_WEAPON_OVERLAY_INTERVAL;
     m_nWeaponCheckTimer = 6000;
@@ -2332,7 +2349,7 @@ CExoString CSWCCreature::GetSaveCreatureFilename(const CExoString& sFirstName,
     int nSuffix = 1;
     CExoString sSuffix;
 
-    sBaseName = m_pStats->GetFirstName() + m_pStats->GetLastName();
+    sBaseName = GetStats()->GetFirstName() + GetStats()->GetLastName();
     sBaseName = sBaseName.SubString(0, 16);
     sBaseName.StripNonAlphaNumeric(1, 0, 0);
     if (sBaseName[0] == 0)
@@ -3494,7 +3511,7 @@ void CSWCCreature::SetName(const CExoString& sFirstName,
     CExoString sBubbleText;
     m_pStats->SetName(sFirstName, sLastName);
     sBubbleText = "[";
-    sBubbleText = sBubbleText + m_pStats->m_sFirstName + "]";
+    sBubbleText = sBubbleText + GetStats()->m_sFirstName + "]";
     SetPopUpBubbleDefaultText(sBubbleText);
     SetPopUpBubbleDefaultCreatureID(GetObjectId());
 }
@@ -4757,9 +4774,8 @@ void CSWCCreature::CreateUsableItemEntry(  // PC 0x00667B60
         lstActions.SetSize(nNum + 1);
         lstActions[nEntry].m_sName = sName;
         lstActions[nEntry].m_nAction = pItem->GetId() | OBJECT_LISTTYPE_MASK;
-        lstActions[nEntry].m_pfnAction = nActionMask == 1 ?
-            static_cast<PFNMENUACTION>(&CSWCCreature::PartyMenuUseItemSelect) :
-            static_cast<PFNMENUACTION>(&CSWCCreature::PartyMenuUseItem);
+        lstActions[nEntry].m_pfnAction = (PFNMENUACTION)(nActionMask == 1 ?
+            &CSWCCreature::PartyMenuUseItemSelect : &CSWCCreature::PartyMenuUseItem);
         lstActions[nEntry].m_oidTarget = GetObjectId();
         lstActions[nEntry].m_resIcon = pItem->GetIcon();
 
@@ -4825,7 +4841,7 @@ void CSWCCreature::CreateHostileItemEntry(
         lstActions[nEntry].m_nAction = pItem->GetId() | OBJECT_LISTTYPE_MASK;
         lstActions[nEntry].m_pfnAction =
             static_cast<PFNMENUACTION>(&CSWCCreature::PartyMenuUseHostileItem);
-        lstActions[nEntry].m_oidTarget = pTarget->m_nId;
+        lstActions[nEntry].m_oidTarget = pTarget->GetId();
         lstActions[nEntry].m_resIcon = pItem->GetIcon();
         int nStackSize = pItem->m_nStackSize;
         lstActions[nEntry].m_nStackSize = nStackSize;
@@ -5880,7 +5896,7 @@ int CSWCCreature::SetPrecalculatedPosition(const Vector& vPosition)
     if (IsDriveAnimationBlocked())
         return 1;
 
-    float fDistance = GetServerCreature()->GetPathfindInformation()->m_fStepScale;
+    float fDistance = pServerCreature->GetPathfindInformation()->m_fStepScale;
     CSWCModule* pModule = g_pAppManager->GetClientExoApp()->GetModule();
     Vector vDirection = normalize(vPosition - m_vPosition);
     int nResult = CSWSArea::DIRECT_LINE_BLOCKED_ROOM;
@@ -5937,10 +5953,10 @@ int CSWCCreature::SetPrecalculatedPosition(const Vector& vPosition)
                     nResult = pModule->GetArea()->TestDirectLine(GetObjectId(), m_vPosition,
                         vNewPosition, fDistance, pPathfind->GetHalfStep(), 1, &cHit);
                     if (nResult == CSWSArea::DIRECT_LINE_BLOCKED_CREATURE &&
-                        !GetServerCreature()->GetArea()->TestSafeLocationPoint(m_vPosition, pPathfind))
+                        !pServerCreature->GetArea()->TestSafeLocationPoint(m_vPosition, pPathfind))
                     {
-                        GetServerCreature()->GetArea()->ComputeSafeLocation(
-                            m_vPosition, 1.0f, pPathfind, 1, &m_vPosition);
+                        pServerCreature->GetArea()->ComputeSafeLocation(
+                            m_vPosition, -1.01f, pPathfind, 1, &m_vPosition);
                         nResult = pModule->GetArea()->TestDirectLine(GetObjectId(), m_vPosition,
                             vNewPosition, fDistance, pPathfind->GetHalfStep(), 1, &cHit);
                     }
@@ -6612,9 +6628,8 @@ int CSWCCreature::IsLeaderUsableItem(CSWSItem* pItem, int nSlot,  // PC 0x006639
                     }
                 }
                 CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(pProperty->m_nSubtype);
-                if (pSpell != NULL && pSpell->m_nItemTargeting == CSWSpell::ITEM_TARGETING_PERSONAL)
-                    return pCreature->CanUseItem(pItem, 1);
-                return 0;
+                bUsable = pSpell != NULL &&
+                          pSpell->m_nItemTargeting == CSWSpell::ITEM_TARGETING_PERSONAL;
             }
         }
         return bUsable ? pCreature->CanUseItem(pItem, 1) : 0;
@@ -6723,7 +6738,7 @@ void CSWCCreature::SetBaseCNPCAlignment(short nAlignment)
         {
             nValue = -1;
         }
-        m_pStats->m_n82 = nValue;
+        m_pStats->m_nBaseCNPCAlignment = nValue;
     }
 }
 // PC 0x0065B9C0
@@ -8034,8 +8049,14 @@ void CSWCCreature::PlayFootstep()
                 nFootstepType, CTwoDimArrays::COL2DA_FOOTSTEPSOUNDS_ROLLING,
                 &sSound))
         {
+            int bSilentMove = 0;
             if (m_nStealthState == 1)
+            {
                 nFootstepType = CTwoDimArrays::FOOTSTEP_TYPE_STEALTH;
+                CSWSCreature* pServerCreature = GetServerCreature();
+                if (pServerCreature != NULL && pServerCreature->m_nUnknown4D8 > 0)
+                    bSilentMove = 1;
+            }
             int nMaterial = pArea->GetSurfaceMaterial(m_vPosition);
             g_pRules->Get2DArrays()->GetSurfaceMaterial()->GetCExoStringEntry(
                 nMaterial, CTwoDimArrays::COL2DA_SURFACEMATERIAL_NAME,
@@ -8075,9 +8096,12 @@ void CSWCCreature::PlayFootstep()
             if (fDistance > fMinDistance + 2.0f)
                 return;
             {
-                CResRef cSound((char*)sSound.CStr());
-                g_pExoSound->Play3DOneShotSound(cSound, m_vPosition, 0.0f,
-                    nPriorityGroup, 0, 0, 0.0f, fPitchOffset);
+                if (!bSilentMove)
+                {
+                    CResRef cSound((char*)sSound.CStr());
+                    g_pExoSound->Play3DOneShotSound(cSound, m_vPosition, 0.0f,
+                        nPriorityGroup, 0, 0, 0.0f, fPitchOffset);
+                }
                 if (nFootstepType != CTwoDimArrays::FOOTSTEP_TYPE_NO_VISUAL_6 &&
                     nFootstepType != CTwoDimArrays::FOOTSTEP_TYPE_NO_VISUAL_7)
                 {
@@ -8308,6 +8332,15 @@ void CSWCCreature::RegisterCallbacks()
 // PC 0x006699F0
 void CSWCCreature::AIUpdate()
 {
+    unsigned long nTimer = g_pExoBase->m_pExoTimers->GetLowResolutionTimer();
+    if (m_n464 != -1)
+    {
+        m_n464 += m_n468 - nTimer;
+        if (m_n464 < 0)
+            m_n464 = 0;
+    }
+    m_n468 = nTimer;
+
     CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
     unsigned long nTime, nDay, nDeltaTime, nDeltaDay;
     pClient->GetActiveTimer(GetId())->GetWorldTime(&nDay, &nTime);
@@ -8368,7 +8401,8 @@ void CSWCCreature::AIUpdate()
 
     UpdatePopUpBubble();
 
-    if (m_nMode == 1 && !IsDriveAnimationBlocked())
+    if (!g_pAppManager->GetClientExoApp()->GetInGameGui()->m_bShotCameraInitialized &&
+        m_nMode == 1 && !IsDriveAnimationBlocked())
     {
         CClientExoApp* pDriveClient = g_pAppManager->GetClientExoApp();
         if (!pDriveClient->GetInGameGui()->IsInDialog(pDriveClient->GetPlayerCreatureId()))
@@ -8438,6 +8472,23 @@ void CSWCCreature::AIUpdate()
 
     HandleConjuringCreature();
     UpdateVisualEffectsList();
+    if (m_nCombatState == COMBAT_STATE_ACTIVE)
+    {
+        CSWSCreature* pServerCreature = GetServerCreature();
+        if (pServerCreature != NULL && pServerCreature->GetCurrentHitPoints(0) > 0)
+        {
+            CSWInventory* pInventory = pServerCreature->m_pInventory;
+            if (pInventory != NULL)
+            {
+                CSWSItem* pRightItem = pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
+                CSWSItem* pLeftItem = pInventory->GetItemInSlot(INVENTORY_SLOT_LEFTHAND);
+                if (pRightItem != NULL)
+                    pRightItem->PowerItem(1, 0, 1);
+                if (pLeftItem != NULL)
+                    pLeftItem->PowerItem(1, 0, 1);
+            }
+        }
+    }
     g_pAppManager->GetClientExoApp()->GetActiveTimer(GetId())->GetWorldTime(&nDay, &nTime);
     m_nLastUpdateDay = nDay;
     m_nLastUpdateTime = nTime;

@@ -266,6 +266,15 @@ int CSWCCreatureAppearance::CreateHead(unsigned char nType, CCAppearanceInfo* pA
         m_pCreature->GetAnimationBase()->SetHeadItem(pAppearance->m_nUnmapped10);
     }
     m_nUnmapped10 = pAppearance->m_nUnmapped10;
+    if (bAltTexture)
+    {
+        if (g_pExoResMan->Exists(cHeadTexture, RESTYPE_TGA, (unsigned long*)0) ||
+            g_pExoResMan->Exists(cHeadTexture, RESTYPE_TPC, (unsigned long*)0))
+        {
+            m_pCreature->ReplaceTexture(CSWCAnimBase::MODEL_SLOT_HEAD, "",
+                                        cHeadTexture, 1);
+        }
+    }
     if (g_pAppManager->m_pClientExoApp->GetPlayerCreature() == m_pCreature)
     {
         m_pCreature->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD, 1)->SetCanDownSample(0);
@@ -557,8 +566,8 @@ void CSWCCreatureAppearance::SetAppearanceAlignment(short nAlignment)
     else
     {
         pAppearance2DA->GetINTEntry(m_nAppearance,
-            m_nUnknown30 == 0 ? CTwoDimArrays::COL2DA_APPEARANCETABLE_NORMALHEAD :
-                                CTwoDimArrays::COL2DA_APPEARANCETABLE_BACKUPHEAD, &nHead);
+            m_nUnknown30 ? CTwoDimArrays::COL2DA_APPEARANCETABLE_BACKUPHEAD :
+                           CTwoDimArrays::COL2DA_APPEARANCETABLE_NORMALHEAD, &nHead);
     }
 
     if (nAlignment <= 10)

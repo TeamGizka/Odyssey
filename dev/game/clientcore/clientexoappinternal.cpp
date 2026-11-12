@@ -1912,7 +1912,7 @@ int CClientExoAppInternal::StartServices(int bPlayLoadMusic,  // PC 0x006440C0
         if (hFind != INVALID_HANDLE_VALUE)
         {
             g_pExoResMan->AddEncapsulatedResourceFile(
-                g_pExoResMan->CacheResource("HD0:guilocal", RESTYPE_ERF), 0);
+                g_pExoResMan->CacheResource("HD0:guilocal", RESTYPE_ERF), 2);
         }
         FindClose(hFind);
 
@@ -7581,8 +7581,8 @@ void CClientExoAppInternal::SetAutoPaused(int bAuto, unsigned char nPauseType)
                 m_fEnemyAutoPauseTimer = 1.0f;
                 m_fEnemyAutoPauseDelay = 0.0f;
 #else
-                m_fEnemyAutoPauseDelay = 0.0f;
                 m_fEnemyAutoPauseTimer = 1.0f;
+                m_fEnemyAutoPauseDelay = 0.0f;
                 m_nDelayedAutoPauseType = nPauseType;
 #endif
                 return;
@@ -8070,13 +8070,15 @@ void CClientExoAppInternal::UpdateLoadingScreenHint()
         unsigned long nLastTime = m_nLoadScreenStartTime;
         if (nLastTime == 0)
             nLastTime = nTime;
+        unsigned long nElapsed = nTime - nLastTime;
         m_nLoadScreenStartTime = nTime;
-        m_nLoadScreenHintUpdateTimer += nTime - nLastTime;
+        nTime = m_nLoadScreenHintUpdateTimer;
+        m_nLoadScreenHintUpdateTimer = nTime + nElapsed;
         if (m_nLoadScreenHintUpdateTimer >= LOAD_SCREEN_HINT_INTERVAL)
         {
             m_nLoadScreenHintUpdateTimer = 0;
-            if (g_pAppManager->m_pServerExoApp == NULL ||
-                g_pAppManager->m_pServerExoApp->GetModuleName().GetLength() <= 0)
+            if (g_pAppManager->GetServerExoApp() == NULL ||
+                g_pAppManager->GetServerExoApp()->GetModuleName().GetLength() <= 0)
             {
                 SetLoadScreenHint(GetNextLoadScreenHintSTRREF(
                     CExoString(""), LOAD_SCREEN_HINT_GAMEPLAY));
@@ -8701,7 +8703,7 @@ int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30
     {
         if (m_fEndGamePendingDelay > 0.0f)
         {
-            if (!m_pSWGuiManager->PanelExists(m_pGuiInGame->GetMessageBox()) &&
+            if (!m_pSWGuiManager->PanelExists(m_pGuiInGame->GetDeathDisplay()) &&
                 m_nEndGamePendingUnknown)
             {
                 CGuiInGame* pGui = m_pGuiInGame;

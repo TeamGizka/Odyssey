@@ -380,7 +380,7 @@ void CSWCDoor::MenuActionSetDoorMine(unsigned long oidItem, CSWCCreature* pCreat
         return;
     }
     oidItem &= ~OBJECT_LISTTYPE_MASK;
-    if (g_pAppManager->m_pClientExoApp->ShowTutorialWindow(TUTORIAL_SET_MINE, m_nId, oidItem, 0) == 0)
+    if (g_pAppManager->GetClientExoApp()->ShowTutorialWindow(TUTORIAL_SET_MINE, m_nId, oidItem, 0) == 0)
     {
         pCreature->PerformUseItem(oidItem, 0, m_nId, m_vPosition);
     }
@@ -479,6 +479,7 @@ void CSWCDoor::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 0x006
     int nRestrictMode = m_pArea->GetServerArea()->m_nPlayerRestrictMode;
     int nAction = lstActions.num;
     CExoString sAction;
+    int bSaber = 0;
 
     switch (nMenu)
     {
@@ -487,10 +488,9 @@ void CSWCDoor::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 0x006
             GetCurrentAnimation() != DOOR_ANIMATION_OPEN2 &&
             !m_bStatic)
         {
-            int bSaber = 0;
             if (m_bLockable && !m_bLocked)
             {
-                CSWSItem* pWeapon = pCreature->GetServerCreature()->m_pInventory->GetItemInSlot(
+                CSWSItem* pWeapon = pCreature->GetServerCreature()->GetInventory()->GetItemInSlot(
                     INVENTORY_SLOT_RIGHTHAND);
                 int bSaberWeapon = 0;
                 if (pWeapon != NULL)

@@ -8830,8 +8830,8 @@ int CSWCMessage::HandleServerToPlayerUpdate_PlayerInfo()
     {
         short nDefense = ReadSHORT(16);
         unsigned long nGold = ReadDWORD(32);
-        int n148 = ReadINT(32);
-        int n14C = ReadINT(32);
+        int nItemComponent = ReadINT(32);
+        int nChemicals = ReadINT(32);
         int nUnknown1B4 = ReadINT(32);
         int bLevelUp = ReadBOOL();
         unsigned long nExperience = ReadDWORD(32);
@@ -8844,8 +8844,8 @@ int CSWCMessage::HandleServerToPlayerUpdate_PlayerInfo()
             pCreature->GetStats()->m_nExperience = nExperience;
             pCreature->GetStats()->m_nDefenseBase = nDefense;
             pCreature->m_nGold = nGold;
-            pCreature->m_n148 = n148;
-            pCreature->m_n14C = n14C;
+            pCreature->m_nItemComponent = nItemComponent;
+            pCreature->m_nChemicals = nChemicals;
             pCreature->m_nUnknown1B4 = nUnknown1B4;
         }
         g_pAppManager->m_pClientExoApp->GetPlayerCreatureId();

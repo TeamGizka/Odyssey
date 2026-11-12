@@ -384,6 +384,10 @@ public:
     {
         return m_pMessageBox;
     }
+    CSWGuiDeathDisplay* GetDeathDisplay()
+    {
+        return m_pDeathDisplay;
+    }
     CSWGuiMainInterface* GetMainInterface();
 #ifndef _XBOX
     int SetGlobalUnpauseableState(int bUnpauseable);

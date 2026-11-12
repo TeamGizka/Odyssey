@@ -75,7 +75,7 @@ CSWCCreatureStats::CSWCCreatureStats(CSWCCreature* pCreature)
     m_nWillSave = 0;
     m_nReflexSave = 0;
     m_nGoodEvilAlignment = NEUTRAL_GOOD_EVIL_ALIGNMENT;
-    m_n82 = -1;
+    m_nBaseCNPCAlignment = -1;
     m_nUnknown60 = 0;
     m_nUnknown64 = 0;
     m_nAppearance = m_nRace;
@@ -902,12 +902,16 @@ unsigned char CSWCCreatureStats::GetLevel()
             {
                 C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
                 float fLevelMult;
-                pAutoBalance->GetFLOATEntry(nAutoBalanceRow, CExoString("LevelMult"), &fLevelMult);
+                {
+                    CExoString sColumn("LevelMult");
+                    pAutoBalance->GetFLOATEntry(nAutoBalanceRow, sColumn, &fLevelMult);
+                }
                 char nPCLevel = pServerCreature->m_c251;
                 if (nPCLevel == 0)
                 {
+                    CExoString sVariable("G_PC_LEVEL");
                     g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(
-                        CExoString("G_PC_LEVEL"), nPCLevel);
+                        sVariable, nPCLevel);
                 }
                 if (nPCLevel < 1)
                 {
@@ -1467,12 +1471,8 @@ void CSWCLevelUpStats::AddDefaultPackageSkills(int nClass, int bAllSkills)
             if (!bAllSkills)
             {
                 CSWSkill* pSkill = &g_pRules->m_pSkills[(unsigned short)nSkill];
-                int bDroidException = 0;
-                if (nSkill == CSWSkill::SKILL_STEALTH &&
-                    m_pCreature->GetServerCreature()->GetTag().CompareNoCase("g0t0"))
-                {
-                    bDroidException = 1;
-                }
+                int bDroidException = nSkill == CSWSkill::SKILL_STEALTH &&
+                    m_pCreature->GetServerCreature()->GetTag().CompareNoCase("g0t0");
                 if (!pSkill->m_bNPCCanUse)
                 {
                     continue;

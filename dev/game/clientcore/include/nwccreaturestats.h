@@ -286,7 +286,7 @@ public:
     CSWPortrait m_cPortrait;
 
     short m_nGoodEvilAlignment;
-    short m_n82;
+    short m_nBaseCNPCAlignment;
     CExoString m_sTag;
     char* m_pSkillRanksTotal;
     char* m_pSkillRanks;

@@ -677,8 +677,8 @@ public:
 
     int m_bCombatReady;
     unsigned long m_nGold;
-    int m_n148;
-    int m_n14C;
+    int m_nItemComponent;
+    int m_nChemicals;
 #ifdef _XBOX
     float m_fUnknown148;
 #else
