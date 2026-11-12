@@ -657,11 +657,11 @@ void CompressQuaternionKey(List<AurGenericKey>& keys)
     {
         AurGenericKey key;
         key.m_fTime = keys[i].m_fTime;
+        key.m_nValues = AurGenericKey::COMPRESSED_QUATERNION_FIELD_COUNT;
         q.m_fX = keys[i].m_afValues[0];
         q.m_fY = keys[i].m_afValues[1];
         q.m_fZ = keys[i].m_afValues[2];
         q.m_fW = keys[i].m_afValues[3];
-        key.m_nValues = AurGenericKey::COMPRESSED_QUATERNION_FIELD_COUNT;
         if (q.m_fW < 0.0f)
             q = q * -1.0f;
 

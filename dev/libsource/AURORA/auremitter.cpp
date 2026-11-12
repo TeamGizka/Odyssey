@@ -1433,14 +1433,16 @@ void LightningEmitter::UpdateBranches()  // PC 0x004BC730
         m_nBranches = rand() % (pNode->m_nNumBranches + 1);
         for (int i = 0; i < m_nBranches; i++)
         {
-            float fScale = (rand() % 80) / 100.0f + 0.1f;
+            int nRandom = rand() % 80;
+            float fScale = nRandom / 100.0f + 0.1f;
             m_lstBranches[i]->m_fXSizeStart = fScale * m_fXSizeStart;
             m_lstBranches[i]->m_fXSizeMid = fScale * m_fXSizeMid;
             m_lstBranches[i]->m_fXSizeEnd = fScale * m_fXSizeEnd;
             m_lstBranches[i]->m_fYSizeStart = fScale * m_fYSizeStart;
             m_lstBranches[i]->m_fYSizeMid = fScale * m_fYSizeMid;
             m_lstBranches[i]->m_fYSizeEnd = fScale * m_fYSizeEnd;
-            m_lstBranchIndices[i] = (int)(m_lstActive.m_nCount * fScale);
+            int nIndex = (int)(m_lstActive.m_nCount * fScale);
+            m_lstBranchIndices[i] = nIndex;
             m_lstBranches[i]->m_vOrigin = m_lstBranches[i]->m_lstReserved210[0] =
                 m_lstActive[m_lstBranchIndices[i]]->m_vPosition;
             Vector vTangent;
@@ -1461,10 +1463,12 @@ void LightningEmitter::UpdateBranches()  // PC 0x004BC730
             }
             else
             {
-                Vector vDirection = m_lstActive[m_lstActive.m_nCount - 1]->m_vPosition -
-                    m_lstActive[0]->m_vPosition;
+                Particle* pFirst = m_lstActive[0];
+                Particle* pLast = m_lstActive[m_lstActive.m_nCount - 1];
+                Vector vDirection = pLast->m_vPosition - pFirst->m_vPosition;
                 float fLength = magnitude(vDirection) * 0.5f;
-                float fDistance = ((rand() % 75) / 100.0f + 0.25f) * fLength;
+                float fSpread = (rand() % 75) / 100.0f + 0.25f;
+                float fDistance = fSpread * fLength;
                 if (fDistance != 0.0f)
                 {
                     Vector vOffset = YawPitchRoll(0.0f, rand() % 360, 0.0f) *

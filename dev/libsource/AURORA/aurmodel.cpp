@@ -3335,18 +3335,22 @@ void Gob::ReattachReference(CAurObject* pObject, char* sPart)
     {
         Part* pPart = lstParts[0];
         PartReference* pReference = pPart->AsPartReference();
-        if (pReference &&
-            (pReference->m_pNode->m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_REFERENCE)) ==
-                (MDL_NODE_HEADER | MDL_NODE_REFERENCE) &&
-            ((MdlNodeReference*)pReference->m_pNode)->m_bReattachable &&
-            pReference->m_pReferenceObject)
+        if (pReference)
         {
-            if (pObject)
-                pReference->m_pReferenceObject->AttachToObject(pObject, sPart, ATTACH_NORMAL);
-            if (!pObject)
-                pReference->m_pReferenceObject->AttachToObject(this, pReference->Name(), ATTACH_NORMAL);
-            m_qOrientation = RotationArc(m_qOrientation.zdir(),
-                pReference->m_pReferenceObject->GetPosition() - m_vPosition) * m_qOrientation;
+            MdlNodeReference* pNode = (MdlNodeReference*)pReference->m_pNode;
+            if ((pNode->m_nNodeType & (MDL_NODE_HEADER | MDL_NODE_REFERENCE)) ==
+                    (MDL_NODE_HEADER | MDL_NODE_REFERENCE) &&
+                pNode->m_bReattachable &&
+                pReference->m_pReferenceObject)
+            {
+                if (pObject)
+                    pReference->m_pReferenceObject->AttachToObject(pObject, sPart, ATTACH_NORMAL);
+                if (!pObject)
+                    pReference->m_pReferenceObject->AttachToObject(this, pReference->Name(), ATTACH_NORMAL);
+                CAurObject* pReferenceObject = pReference->m_pReferenceObject;
+                m_qOrientation = RotationArc(m_qOrientation.zdir(),
+                    pReferenceObject->GetPosition() - m_vPosition) * m_qOrientation;
+            }
         }
         lstParts.DelIndex(0);
         for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)

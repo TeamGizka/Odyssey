@@ -524,9 +524,10 @@ void DirtyTextureController::MakePerlinTexture(unsigned char* pImage, int nRange
     }
 
     ppImages = new unsigned char*[nLevels];
-    for (i = 0; i < nLevels; i++, nImageSize *= 2)
+    for (i = 0; i < nLevels; i++)
     {
         ppImages[i] = ImageBuildParameterPerlin(nImageSize, fScale, nRange, 0);
+        nImageSize *= 2;
         fScale *= DIRTY_PERLIN_PERSISTENCE;
     }
 

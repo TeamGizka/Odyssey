@@ -812,8 +812,8 @@ void NewController::Control(Part* pPart, MdlNode* pNode, float fTime,
     {
         Quaternion value;
         Quaternion* pValue = (Quaternion*)((char*)pPart + m_nOffset);
-        Quaternion value_old = *pValue;
         Quaternion value0;
+        Quaternion value_old = *pValue;
         GetQuaternionValue(fPreviousTime, pNode, value);
         if (fTime < ANIMATION_TRANSITION_TIME_LIMIT)
         {
