@@ -553,10 +553,10 @@ enum
 int CSWSCreature::ResolveDefensiveEffects(CSWSObject* pTarget, int bRangedAttack)
 {
     int bResult = 0;
-    CSWSCombatAttackData* pAttack =
-        m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack);
     int nShield = 0;
     int bCanReflect = 1;
+    CSWSCombatAttackData* pAttack =
+        m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack);
     if (IsProjectileParryable(pTarget, bRangedAttack, 0, nShield, bCanReflect, -1) &&
         pTarget->AsSWSCreature() != NULL)
     {
@@ -667,7 +667,7 @@ int CSWSCreature::ResolveDefensiveEffects(CSWSObject* pTarget, int bRangedAttack
                 pAttack->m_Extra5.m_nUnknown23 = -2;
                 nRoll -= 2;
             }
-            nRoll += pCreature->m_pStats->GetBaseAttackBonus();
+            nRoll += pCreature->GetStats()->GetBaseAttackBonus();
             pAttack->m_Extra5.m_nUnknown6 = pCreature->m_pStats->GetBaseAttackBonus();
             CSWSCreatureStats* pStats = pCreature->m_pStats;
             nRoll += (char)(pStats->m_nArmorCheckPenalty + pStats->m_nShieldCheckPenalty);
@@ -1609,13 +1609,12 @@ void CSWSCreature::ResolveRangedSpecialAttack(CSWSObject* pTarget,
                         {
                             pAttack->m_lstEffects.Add(pPushEffect);
                             pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_KNOCKDOWN;
-                            pAttack->m_Extra4.m_nUnknown14 = 1;
                         }
                         else
                         {
                             delete pPushEffect;
-                            pAttack->m_Extra4.m_nUnknown14 = 1;
                         }
+                        pAttack->m_Extra4.m_nUnknown14 = 1;
                     }
                     break;
                 }
@@ -1868,18 +1867,17 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                         int nDC = m_pStats->GetLevel(0) + m_pStats->GetSTRMod();
                         if (pCreature->m_pStats->GetEffectLinkImmunity(pStunEffect) == 0 &&
                             pCreature->SavingThrowRoll(SAVING_THROW_FORT, nDC, 0,
-                                                      GetId(), 1, 0, 1) == 0)
+                                                      m_nId, 1, 0, 1) == 0)
                         {
                             pAttack->m_lstEffects.Add(pStunEffect);
                             pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_STUN;
                             *pbStateApplied = 1;
-                            pAttack->m_Extra4.m_nUnknown14 = 1;
                         }
                         else
                         {
                             delete pStunEffect;
-                            pAttack->m_Extra4.m_nUnknown14 = 1;
                         }
+                        pAttack->m_Extra4.m_nUnknown14 = 1;
                     }
                     break;
                 }
@@ -1941,13 +1939,12 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                             pAttack->m_lstEffects.Add(pPushEffect);
                             pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_KNOCKDOWN;
                             *pbStateApplied = 1;
-                            pAttack->m_Extra4.m_nUnknown14 = 1;
                         }
                         else
                         {
                             delete pPushEffect;
-                            pAttack->m_Extra4.m_nUnknown14 = 1;
                         }
+                        pAttack->m_Extra4.m_nUnknown14 = 1;
                     }
                     break;
                 }
@@ -2460,7 +2457,7 @@ void CSWSCreature::ResolveMeleeAttack(CSWSObject* pTarget, int nAttacks,
     for (nAttack = 0; nAttack < nTotalAttacks; nAttack++)
     {
         pAttack->m_oidReactObject = pTarget->m_nId;
-        pAttack->m_nWeaponAttackType = m_pcCombatRound->GetWeaponAttackType();
+        pAttack->m_nWeaponAttackType = GetCombatRound()->GetWeaponAttackType();
         m_pcCombatRound->SetOffHandAttack(
             nAttack >= (unsigned char)m_pcCombatRound->m_nOnHandAttacks);
         ResolveSituationalModifiers(pTarget->AsSWSCreature());
@@ -3113,7 +3110,10 @@ int CSWSCreature::AIActionCombat(CSWSObjectActionNode* pNode)
                 pAction->m_nUnknown4C, pAction->m_nUnknown50,
                 pAction->m_nEquipFlags, pAction->m_nSpecialAttack,
                 pAction->m_nUnknown60, 1);
-            break;
+            if (GetCombatRound()->m_pCurrentAction != NULL)
+                delete GetCombatRound()->m_pCurrentAction;
+            GetCombatRound()->SetCurrentCombatRoundAction(NULL);
+            return ACTION_IN_DELAY;
         case CSWSCombatRoundAction::ACTION_ITEM_CAST_SPELL:
         {
             CGameObject* pTarget = g_pAppManager->GetServerExoApp()->
@@ -3152,7 +3152,10 @@ int CSWSCreature::AIActionCombat(CSWSObjectActionNode* pNode)
                 pAction->m_nUnknown68, pAction->m_nUnknown6C,
                 pAction->m_vTarget, pAction->m_oidSpellTarget,
                 pAction->m_nAttackFlags, pAction->m_nUnknown48, 1, 1);
-            break;
+            if (GetCombatRound()->m_pCurrentAction != NULL)
+                delete GetCombatRound()->m_pCurrentAction;
+            GetCombatRound()->SetCurrentCombatRoundAction(NULL);
+            return ACTION_IN_DELAY;
         }
         case CSWSCombatRoundAction::ACTION_CUTSCENE_MOVE:
         {
@@ -3180,7 +3183,10 @@ int CSWSCreature::AIActionCombat(CSWSObjectActionNode* pNode)
                     pObject->m_vPosition, oidArea, pAction->m_oidTarget,
                     pAction->m_nEquipFlags, 0.2f, 0.1f, 0, 0, 0, 0, 0, 0,
                     vOrientation, 0, 0, 0);
-                break;
+                if (GetCombatRound()->m_pCurrentAction != NULL)
+                    delete GetCombatRound()->m_pCurrentAction;
+                GetCombatRound()->SetCurrentCombatRoundAction(NULL);
+                return ACTION_IN_DELAY;
             }
 MoveToPoint:
             {
@@ -3200,8 +3206,11 @@ MoveToPoint:
                     pAction->m_vTarget, oidArea, OBJECT_INVALID,
                     pAction->m_nEquipFlags, 0.2f, 0.1f, 0, 0, 0, 0, 0, 0,
                     vOrientation, 0, 0, 0);
+                if (GetCombatRound()->m_pCurrentAction != NULL)
+                    delete GetCombatRound()->m_pCurrentAction;
+                GetCombatRound()->SetCurrentCombatRoundAction(NULL);
+                return ACTION_IN_DELAY;
             }
-            break;
         }
         case CSWSCombatRoundAction::ACTION_STANCE:
             AddStanceActions(nAttacks, oidTarget, 0, 0, 1, 1);
@@ -3209,10 +3218,6 @@ MoveToPoint:
         default:
             return ACTION_IN_PROGRESS;
         }
-        if (GetCombatRound()->m_pCurrentAction != NULL)
-            delete GetCombatRound()->m_pCurrentAction;
-        GetCombatRound()->m_pCurrentAction = NULL;
-        return ACTION_IN_DELAY;
     }
 
     GetCombatRound()->GetActionPending();
@@ -3888,7 +3893,7 @@ void CSWSCreature::ResolveMeleeAnimations(int nAttackNumber, int nTotalAttacks,
         return;
     }
     if ((pCreature->m_pcCombatRound->CheckActionLengthAtTime(
-                  GetId(), nAnimationLength, 0) ||
+                  m_nId, nAnimationLength, 0) ||
               bTimeAnimation) &&
              m_pcCombatRound->m_bEngaged)
     {
@@ -4785,16 +4790,16 @@ void CSWSCreature::SetAttackSummaryFeedbackEffectData(int nState, unsigned long 
                 pAttack->m_Extra4.m_bStateImmune = 1;
             break;
         }
-        case CSWSEffectListHandler::STATE_HORRIFIED:
-        {
-            if (pTarget->m_pStats->HasFeat(CSWFeat::FEAT_MANDALORIAN_COURAGE))
-                pAttack->m_Extra4.m_bStateImmune = 1;
-            break;
-        }
         case CSWSEffectListHandler::STATE_KNOCKDOWN:
         {
             CSWSCreatureStats* pStats = pTarget->m_pStats;
             if (pStats->GetEffectImmunity(CSWSEffectListHandler::IMMUNITY_TYPE_KNOCKDOWN, this))
+                pAttack->m_Extra4.m_bStateImmune = 1;
+            break;
+        }
+        case CSWSEffectListHandler::STATE_HORRIFIED:
+        {
+            if (pTarget->m_pStats->HasFeat(CSWFeat::FEAT_MANDALORIAN_COURAGE))
                 pAttack->m_Extra4.m_bStateImmune = 1;
             break;
         }

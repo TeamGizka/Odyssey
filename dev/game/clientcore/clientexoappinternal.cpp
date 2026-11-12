@@ -6883,7 +6883,7 @@ int CClientExoAppInternal::IsSoundPlayingInDialog()
         if (pGameObject != NULL && pGameObject->AsSWCObject() != NULL &&
             m_pGuiInGame->m_pDialogSound != NULL)
         {
-            if (g_bDebugDialogSound)
+            if (g_bVODebugEnabled)
             {
                 char szSound[17];
                 CExoStreamingSoundSource* pDialogSound =
@@ -6898,7 +6898,7 @@ int CClientExoAppInternal::IsSoundPlayingInDialog()
     }
     else
     {
-        if (g_bDebugDialogSound)
+        if (g_bVODebugEnabled)
         {
             char szSound[17];
             if (m_pGuiInGame->m_pDialogSound != NULL)

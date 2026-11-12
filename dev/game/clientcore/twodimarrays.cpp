@@ -251,7 +251,7 @@ int CTwoDimArrays::Load2DArrays_Appearance()  // PC 0x0060ED00
         COL2DA_APPEARANCETABLE_DRIVEACCl = p2DA->GetColumnIndex(sColumn);
     }
     {
-        CExoString sColumn("DriveAnimRun");
+        CExoString sColumn("DriveAnimRun_PC");
         C2DA* p2DA = m_pAppearance;
         COL2DA_APPEARANCETABLE_DRIVEANIMRUN = p2DA->GetColumnIndex(sColumn);
     }

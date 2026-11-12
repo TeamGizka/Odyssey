@@ -646,7 +646,7 @@ int CSWVirtualMachineCommands::ExecuteCommandInfluence(int nCommand, int nArgs)
         return 0;
     }
     CSWSCreature* pCreature = g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
-        pPartyTable->GetPUPObject(nNPC, 0, 1));
+        pPartyTable->GetNPCObject(nNPC, 0, 1));
     switch (nCommand)
     {
     case COMMAND_GET_INFLUENCE:
@@ -1682,7 +1682,7 @@ int CSWVirtualMachineCommands::ExecuteCommandRemoveNPCFromPartyToBase(int nComma
     }
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
     CSWPartyTable* pPartyTable = pServerExoApp->GetPartyTable();
-    unsigned long oidNPC = pPartyTable->GetPUPObject(nNPC, 0, 1);
+    unsigned long oidNPC = pPartyTable->GetNPCObject(nNPC, 0, 1);
     if (pPartyTable->RemoveMember(nNPC) != 0)
     {
         CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
@@ -3628,13 +3628,15 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int n
                     if (nTotal - nAdjustment <= SWVARTABLE_LOCAL_NUMBER_MAX)
                     {
                         nTotal = nTotal - nAdjustment;
+                        g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
+                            ->SetValueNumber(sTotal, nTotal);
                     }
                     else
                     {
                         nTotal = SWVARTABLE_LOCAL_NUMBER_MAX;
+                        g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
+                            ->SetValueNumber(sTotal, nTotal);
                     }
-                    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
-                        ->SetValueNumber(sTotal, nTotal);
                 }
             }
             else if (nAdjustment > 0)
@@ -3647,13 +3649,15 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int n
                     if (nAdjustment + nTotal <= SWVARTABLE_LOCAL_NUMBER_MAX)
                     {
                         nTotal = nAdjustment + nTotal;
+                        g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
+                            ->SetValueNumber(sTotal, nTotal);
                     }
                     else
                     {
                         nTotal = SWVARTABLE_LOCAL_NUMBER_MAX;
+                        g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
+                            ->SetValueNumber(sTotal, nTotal);
                     }
-                    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
-                        ->SetValueNumber(sTotal, nTotal);
                 }
             }
         }
@@ -3670,13 +3674,15 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int n
                 if (nAdjustment + nTotal <= SWVARTABLE_LOCAL_NUMBER_MAX)
                 {
                     nTotal = nAdjustment + nTotal;
+                    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
+                        ->SetValueNumber(sTotal, nTotal);
                 }
                 else
                 {
                     nTotal = SWVARTABLE_LOCAL_NUMBER_MAX;
+                    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
+                        ->SetValueNumber(sTotal, nTotal);
                 }
-                g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
-                    ->SetValueNumber(sTotal, nTotal);
             }
         }
         break;
@@ -3692,13 +3698,15 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int n
                 if (nTotal - nAdjustment <= SWVARTABLE_LOCAL_NUMBER_MAX)
                 {
                     nTotal = nTotal - nAdjustment;
+                    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
+                        ->SetValueNumber(sTotal, nTotal);
                 }
                 else
                 {
                     nTotal = SWVARTABLE_LOCAL_NUMBER_MAX;
+                    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
+                        ->SetValueNumber(sTotal, nTotal);
                 }
-                g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()
-                    ->SetValueNumber(sTotal, nTotal);
             }
         }
         break;
@@ -15708,7 +15716,9 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayAnimation(int nCommand, int nAr
     int nDialogState = g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nGlobalDialogState;
     if (nDialogState != 0)
     {
-        unsigned long oidClient = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(m_oidObject);
+        CClientExoApp* pClientExoApp = g_pAppManager->GetClientExoApp();
+        unsigned long oidServer = m_oidObject;
+        unsigned long oidClient = pClientExoApp->ServerToClientObjectId(oidServer);
         unsigned long oidDialog1 = g_pAppManager->GetClientExoApp()->GetInGameGui()->m_oidDialogObject1;
         unsigned long oidDialog2 = g_pAppManager->GetClientExoApp()->GetInGameGui()->m_oidDialogObject2;
         if (oidClient == oidDialog1)

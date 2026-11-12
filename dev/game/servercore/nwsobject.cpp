@@ -1548,18 +1548,20 @@ int CSWSObject::DoDamageResistance(CSWSCreature* pAttacker, int nDamage,
         nEndurance = 8;
         if (nDamage - 8 > 0)
             nEndurance = 10 * (nDamage - 8) / 100 + 8;
+        nDamage -= nEndurance;
     }
     else if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_WOOKIE_ENDURANCE_2))
     {
         nEndurance = 5;
         if (nDamage - 5 > 0)
             nEndurance = 5 * (nDamage - 5) / 100 + 5;
+        nDamage -= nEndurance;
     }
     else if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_WOOKIE_ENDURANCE))
     {
         nEndurance = 2;
+        nDamage -= nEndurance;
     }
-    nDamage -= nEndurance;
     if (nEndurance > 0 && bRemainingDamage)
     {
         CSWSCombatAttackData* pAttack = pAttacker->m_pcCombatRound->GetAttack(pAttacker->m_pcCombatRound->m_nCurrentAttack);

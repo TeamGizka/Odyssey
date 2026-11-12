@@ -87,7 +87,6 @@ CExoBase* g_pExoBase = NULL;
 CExoInput* g_pExoInput = NULL;
 CExoResMan* g_pExoResMan = NULL;
 CExoSound* g_pExoSound = NULL;
-unsigned char g_bDebugDialogSound;
 CAuroraInterface* g_pAuroraInterface = NULL;
 CSWGuiManager* g_pGuiMan = NULL;
 CAurInternalGL* g_pAurora = NULL;

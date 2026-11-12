@@ -9277,15 +9277,15 @@ case EFFECT_BONUS_DAMAGE:
             }
         }
     }
-    nTotalPenalty = nEffectDamagePenalty + nTotalPenalty;
     nTotalBonus += nEffectDamageBonus;
+    int nPenaltyTotal = nEffectDamagePenalty + nTotalPenalty;
     if (pnDamageBonus != NULL)
         *pnDamageBonus = nEffectDamageBonus - nEffectDamagePenalty;
     if (nTotalBonus > EFFECT_BONUS_LIMIT)
         nTotalBonus = EFFECT_BONUS_LIMIT;
-    if (nTotalPenalty > EFFECT_BONUS_LIMIT)
-        nTotalPenalty = EFFECT_BONUS_LIMIT;
-    return nTotalBonus - nTotalPenalty;
+    if (nPenaltyTotal > EFFECT_BONUS_LIMIT)
+        nPenaltyTotal = EFFECT_BONUS_LIMIT;
+    return nTotalBonus - nPenaltyTotal;
 }
 
 case EFFECT_BONUS_SAVING_THROW:

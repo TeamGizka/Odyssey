@@ -6,8 +6,8 @@
 #include "twodimarrays.h"
 #include "nwrules.h"
 
-static const float FORCE_COST_REDUCTION_STEP = 0.05f;
-static const float FORM_FORCE_COST_MULTIPLIER = 1.2f;
+#define FORCE_COST_REDUCTION_STEP 0.05f
+#define FORM_FORCE_COST_MULTIPLIER 1.2f
 
 const int CSWSpell::USERTYPE_NONE = 0;
 const int CSWSpell::USERTYPE_FORCEPOWER = 1;

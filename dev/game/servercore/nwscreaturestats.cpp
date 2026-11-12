@@ -5730,11 +5730,11 @@ int CSWSCreatureStats::CanChooseFeat(unsigned short nFeat, unsigned char nNormal
     {
         return 0;
     }
-    if (m_pCreature->m_sTag.CompareNoCase("baodur") && pFeat->m_bBaoDur == 0xFF)
+    if (m_pCreature->m_sTag.CompareNoCase("baodur") && (char)pFeat->m_bBaoDur == -1)
     {
         return 0;
     }
-    if (m_pCreature->m_sTag.CompareNoCase("kreia") && pFeat->m_bKreia == 0xFF)
+    if (m_pCreature->m_sTag.CompareNoCase("kreia") && (char)pFeat->m_bKreia == -1)
     {
         return 0;
     }

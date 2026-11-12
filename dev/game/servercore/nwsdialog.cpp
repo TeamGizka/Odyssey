@@ -2912,7 +2912,7 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
         m_pEntries[nEntry].m_cSoundResRef += sVariation;
         m_pEntries[nEntry].m_bSoundExists |= CSWSDialogBase::SOUND_EXISTS_VARIATION;
     }
-    if (g_bDebugDialogSound)
+    if (g_bVODebugEnabled)
     {
         EXOLOG("SendDialogEntry: sound mode %d\n", g_pExoSound->GetSoundMode());
     }
@@ -2920,11 +2920,11 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
     {
         g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
     }
-    if (g_bDebugDialogSound)
+    if (g_bVODebugEnabled)
     {
         EXOLOG("SendDialogEntry: sound mode %d\n", g_pExoSound->GetSoundMode());
     }
-    if (g_bDebugDialogSound)
+    if (g_bVODebugEnabled)
     {
         char szSound[17];
         m_pEntries[nEntry].m_cSoundResRef.CopyToString(szSound);
