@@ -90,6 +90,7 @@ public:
     int GetGroundPile() { return m_bGroundPile; }
     int GetIsBodyBag() { return m_bIsBodyBag; }
     int GetIsCorpse() { return m_bIsCorpse; }
+    int GetMeshBoundingBox(Vector& vMin, Vector& vMax) { return m_cSurfaceMesh.GetMeshBoundingBox(vMin, vMax); }
     void SetLocked(int bLocked) { m_bLocked = bLocked; }
     virtual ~CSWSPlaceable();
     virtual CSWSPlaceable* AsSWSPlaceable()  // PC 0x00698BD0

@@ -577,8 +577,7 @@ void CSWSArea::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                         {
                             Vector vMinimum;
                             Vector vMaximum;
-                            pPlaceable->m_cSurfaceMesh.GetMeshBoundingBox(
-                                vMinimum, vMaximum);
+                            pPlaceable->GetMeshBoundingBox(vMinimum, vMaximum);
                             BudgeCreatures(vPosition, vMinimum, vMaximum,
                                            OBJECT_INVALID, 0);
                         }
