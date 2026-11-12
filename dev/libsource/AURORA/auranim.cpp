@@ -320,7 +320,8 @@ void LookAtAnimation::Control()
         Deactivate();
     if (m_pTarget != 0)
     {
-        if (magnitude(m_pGob->m_vPosition - ((Gob*)m_pTarget.m_pObject)->m_vPosition) > m_fMaxDistance)
+        Gob* pTarget = (Gob*)m_pTarget.m_pObject;
+        if (magnitude(m_pGob->m_vPosition - pTarget->m_vPosition) > m_fMaxDistance)
             Deactivate();
     }
     if (!m_bDeactivated)

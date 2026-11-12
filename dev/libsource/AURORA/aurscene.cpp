@@ -3595,15 +3595,15 @@ void Scene::DoGobBuckets()
             Gob* pGob = gobbucket.m_pList[i];
             if (g_ForceSight)
             {
-                Model::Classification classification = pGob->m_pModel->m_Classification;
+                Model* pModel = pGob->m_pModel;
                 if (nPass == 0)
                 {
-                    if (bool(classification.m_bCharacter) || bool(classification.m_bDoor))
+                    if (bool(pModel->m_Classification.m_bCharacter) || bool(pModel->m_Classification.m_bDoor))
                         continue;
                 }
                 else
                 {
-                    if (!bool(classification.m_bCharacter) && !bool(classification.m_bDoor))
+                    if (!bool(pModel->m_Classification.m_bCharacter) && !bool(pModel->m_Classification.m_bDoor))
                         continue;
                 }
             }

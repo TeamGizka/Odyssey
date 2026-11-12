@@ -295,8 +295,8 @@ void Camera::RenderScene()
         {
             GLRender::SetViewPort((double)(m_fViewAngle), (double)(fAspect),
                                   (double)(m_fNearClip), (double)(m_fFarClip));
-            float fLeft = -tan(DegToRad(m_fViewAngle * 0.5f)) * fAspect;
-            float fRight = tan(DegToRad(m_fViewAngle * 0.5f)) * fAspect;
+            float fLeft = -(float)tan(DegToRad(m_fViewAngle * 0.5f)) * fAspect;
+            float fRight = (float)tan(DegToRad(m_fViewAngle * 0.5f)) * fAspect;
             float fBottom = -tan(DegToRad(m_fViewAngle * 0.5f));
             float fTop = tan(DegToRad(m_fViewAngle * 0.5f));
             m_lstViewVolume[VIEW_PLANE_LEFT] = Plane(
@@ -338,12 +338,11 @@ void Camera::RenderScene()
         {
             m_lstViewVolume[i].m_vNormal =
                 m_qOrientation * m_lstViewVolume[i].m_vNormal;
-            float fDistance =
+            m_lstViewVolume[i].m_fDistance =
                 (m_lstViewVolume[i].m_fDistance) -
                 (m_lstViewVolume[i].m_vNormal.m_fZ * m_vPosition.m_fZ) -
                 (m_lstViewVolume[i].m_vNormal.m_fY * m_vPosition.m_fY) -
                 (m_lstViewVolume[i].m_vNormal.m_fX * m_vPosition.m_fX);
-            m_lstViewVolume[i].m_fDistance = fDistance;
         }
         frustumn = m_lstViewVolume[frustumpick].m_vNormal;
         frustumd = m_lstViewVolume[frustumpick].m_fDistance;
@@ -419,8 +418,8 @@ Vector Camera::MouseDir(int nX, int nY)
     }
 
     float fTan = tan(m_fViewAngle * 0.5f * DEG_TO_RAD);
-    float fX = ((nX - aViewport[0]) - aViewport[2] * 0.5f) * fTan /
-               (aViewport[3] * 0.5f);
+    float fX = ((nX - aViewport[0]) - aViewport[2] * 0.5f) * fTan;
+    fX /= aViewport[3] * 0.5f;
     float fY = ((nY - aViewport[1]) - aViewport[3] * 0.5f) * fTan /
                (aViewport[3] * 0.5f);
     Vector vDirection(fX, fY, -1.0f);
@@ -599,15 +598,14 @@ int Camera::SceneBoundaryCheck(const Vector& vStart, const Vector& vEnd,
 
     for (int i = 0; i < VIEW_SIDE_PLANE_COUNT; ++i)
     {
-        Vector vDirection;
-        vDirection = cross(
+        Vector vDirection = cross(
             m_lstViewVolume.m_pList[i + VIEW_PLANE_LEFT].m_vNormal,
             m_lstViewVolume.m_pList[aAdjacent[i]].m_vNormal);
-        Vector& vIntersection = aIntersections[i];
-        vIntersection = planelineintersection(
+        aIntersections[i] = planelineintersection(
             planeHorizontal.m_vNormal, planeHorizontal.m_fDistance,
             m_vPosition, vDirection + m_vPosition);
-        float fHeight = aIntersections[i] * plane.m_vNormal + plane.m_fDistance;
+        float fHeight = aIntersections[i] * plane.m_vNormal;
+        fHeight += plane.m_fDistance;
         if (fHeight > fHighest)
         {
             fHighest = fHeight;
@@ -628,8 +626,8 @@ int Camera::SceneBoundaryCheck(const Vector& vStart, const Vector& vEnd,
     planeHit.m_fDistance = (0.0f - vNormal * vStart);
     *pHit = planelineintersection(planeHit.m_vNormal, planeHit.m_fDistance,
                                  m_vPosition,
-                                 m_vPosition +
-                                     m_lstViewVolume.m_pList[VIEW_PLANE_FAR].m_vNormal);
+                                 m_lstViewVolume.m_pList[VIEW_PLANE_FAR].m_vNormal +
+                                     m_vPosition);
     return 1;
 }
 // PC 0x00473490
