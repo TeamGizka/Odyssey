@@ -52,7 +52,9 @@ public:
         STATE_VARIANT_12 = 12,
 
 
-        STATE_FORCE_JUMP_TARGET = 13
+        STATE_FORCE_JUMP_TARGET = 13,
+
+        STATE_VARIANT_16 = 16
     };
     enum VisualEffectSelector
     {
@@ -176,6 +178,8 @@ public:
 
     enum SetStatePenalty { SETSTATE_SAVING_THROW_PENALTY = 2 };
 
+    enum { STATE_MIND_TRICK_18 = 18, STATE_MIND_TRICK_19 = 19 };
+
 
     enum ArcaneSpellFailurePenalty
     {
@@ -189,6 +193,22 @@ public:
     };
     int OnApplyPureEvilPowers(CSWSObject* pObject, CGameEffect* pEffect,
                              int bLoadingModule);
+    int OnApplyForceBody(CSWSObject* pObject, CGameEffect* pEffect,
+                         int bLoadingModule);
+    int OnApplyFury(CSWSObject* pObject, CGameEffect* pEffect,
+                    int bLoadingModule);
+    int OnApplyFPRegenModifier(CSWSObject* pObject, CGameEffect* pEffect,
+                               int bLoadingModule);
+    int OnApplyVPRegenModifier(CSWSObject* pObject, CGameEffect* pEffect,
+                               int bLoadingModule);
+    int OnApplyForceSight(CSWSObject* pObject, CGameEffect* pEffect,
+                          int bLoadingModule);
+    int OnApplyFactionModifier(CSWSObject* pObject, CGameEffect* pEffect,
+                               int bLoadingModule);
+    int OnApplyDestroyShields(CSWSObject* pObject, CGameEffect* pEffect,
+                              int bLoadingModule);
+    int OnApplyAssassinate(CSWSObject* pObject, CGameEffect* pEffect,
+                           int bLoadingModule);
     int OnApplyPureGoodPowers(CSWSObject* pObject, CGameEffect* pEffect,
                              int bLoadingModule);
     int IsEffectToIgnoreOnDeath(CGameEffect* pEffect);
@@ -211,6 +231,14 @@ public:
 
     static const int EFFECT_RACIAL_TYPE;
     static const int EFFECT_PUREEVILPOWERS;
+    static const int EFFECT_FORCEBODY;
+    static const int EFFECT_FURY;
+    static const int EFFECT_FPREGENMODIFIER;
+    static const int EFFECT_VPREGENMODIFIER;
+    static const int EFFECT_FORCESIGHT;
+    static const int EFFECT_FACTIONMODIFIER;
+    static const int EFFECT_DESTROYSHIELDS;
+    static const int EFFECT_ASSASSINATE;
     static const int EFFECT_SETSTATE_INTERNAL;
 
     typedef int (CSWSEffectListHandler::*EffectAppliedHandler)(
@@ -509,6 +537,12 @@ public:
     int OnRemoveMovementSpeedDecrease(CSWSObject* pObject, CGameEffect* pEffect);
     int OnRemovePsychicStatic(CSWSObject* pObject, CGameEffect* pEffect);
     int OnRemovePureEvilPowers(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnRemoveForceBody(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnRemoveFury(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnRemoveFPRegenModifier(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnRemoveVPRegenModifier(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnRemoveForceSight(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnRemoveFactionModifier(CSWSObject* pObject, CGameEffect* pEffect);
     int OnRemovePureGoodPowers(CSWSObject* pObject, CGameEffect* pEffect);
     int OnRemoveRacialType(CSWSObject* pObject, CGameEffect* pEffect);
     int OnRemoveSavingThrowDecrease(CSWSObject* pObject, CGameEffect* pEffect);
@@ -580,6 +614,8 @@ public:
 
         AC_INTEGER_DAMAGE_FLAGS = 5
     };
+
+    enum { AC_VS_DAMAGE_TYPE_ALL = 0x2007 };
 
 
     enum ACTypeSelector

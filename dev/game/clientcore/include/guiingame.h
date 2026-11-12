@@ -131,6 +131,7 @@ public:
     ~CGuiInGame();
     void DoQuickLoad();
     void ClearMapDisplays();
+    int GetTopMenuOverrideCharacter();
 
     enum { MESSAGE_BUFFER_CAPACITY = 64 };
 
@@ -398,6 +399,8 @@ public:
     static const unsigned long MESSAGE_MASK_DEBUG_INFO = 0x10000000;
     void AppendToMsgBuffer(const CExoString& sMessage, unsigned long nType,
                            unsigned char nColor);
+    void AppendToCombatBuffer(const CExoString& sMessage, unsigned long nType,
+                              unsigned char nColor);
     void AppendToDialogBuffer(const CExoString& sSpeaker,
                               const CExoString& sMessage);
     void AppendToDialogBuffer(const CExoString& sMessage,
@@ -700,6 +703,7 @@ public:
     int IsFadingInDialog();
 #ifndef _XBOX
     void AddItemReceived(const CExoLocString& sName) { m_a1030.Add(sName); }
+    void SetKeepStealthInDialog(int bKeep) { m_n102C = bKeep; }
 #endif
 };
 

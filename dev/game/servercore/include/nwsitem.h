@@ -106,7 +106,11 @@ public:
         ITEM_PROPERTY_COMPUTER_SPIKE = 53,
         ITEM_PROPERTY_REGENERATION_FORCE_POINTS = 54,
         ITEM_PROPERTY_BLASTER_BOLT_DEFLECT_INCREASE = 55,
-        ITEM_PROPERTY_BLASTER_BOLT_DEFLECT_DECREASE = 56
+        ITEM_PROPERTY_BLASTER_BOLT_DEFLECT_DECREASE = 56,
+        ITEM_PROPERTY_USE_LIMITATION_GENDER = 60,
+        ITEM_PROPERTY_USE_LIMITATION_SUBRACE = 61,
+        ITEM_PROPERTY_USE_LIMITATION_PC = 62,
+        ITEM_PROPERTY_USE_LIMITATION_ATTRIBUTE = 69
     };
 
     enum OnHitSubtype
@@ -121,7 +125,8 @@ public:
         ON_HIT_POISON = 7,
         ON_HIT_SLAY_RACIAL_GROUP = 8,
         ON_HIT_SLAY_ALIGNMENT_GROUP = 9,
-        ON_HIT_INSTANT_DEATH = 10
+        ON_HIT_INSTANT_DEATH = 10,
+        ON_HIT_KNOCKDOWN = 11
     };
 
     enum
@@ -165,7 +170,7 @@ public:
     int m_bUseable;
     unsigned char m_nUsesPerDay;
     unsigned char m_nUpgradeType;
-    unsigned char m_aUnmapped12[2];
+    unsigned short m_n12;
 
     unsigned long m_nLastUseDay;
     unsigned long m_nLastUseTime;
@@ -239,6 +244,20 @@ public:
     void AddAttackBonusStrings(int nPropertyType, CExoString& sString);
     void AddDefenceProperties(CExoString& sString);
     void AddMiscellaneousProperties(CExoString& sString);
+    void AddGenderRequirements(CExoString& sString);
+    void AddSubraceRequirements(CExoString& sString);
+    void AddPCRequirements(CExoString& sString);
+    void AddAttributeRequirements(CExoString& sString);
+    void AddCNPCRequirements(CExoString& sString);
+    enum { GUI_STRREF_GENDER_REQUIRED = 47995 };
+    enum { GUI_STRREF_SUBRACE_REQUIRED = 48013 };
+    enum { GUI_STRREF_PC_REQUIRED = 48026 };
+    enum { GUI_STRREF_ATTRIBUTE_REQUIRED = 117597 };
+    enum { GUI_STRREF_STRENGTH = 117591, GUI_STRREF_DEXTERITY = 117592,
+           GUI_STRREF_CONSTITUTION = 117593, GUI_STRREF_INTELLIGENCE = 117594,
+           GUI_STRREF_WISDOM = 117595, GUI_STRREF_CHARISMA = 117596 };
+    enum { ATTRIBUTE_REQUIREMENT_COST_TABLE = 26 };
+    enum { GUI_STRREF_CNPC_REQUIRED = 130590, GUI_STRREF_CNPC_REQUIREMENT = 102045 };
     CSWItemProperty* GetActiveProperty(int nIndex);
     void DecrementUses(int nPropertyIndex, unsigned long oidUser);
     CSWItemProperty* GetPassiveProperty(int nIndex);
@@ -256,6 +275,8 @@ public:
     int LoadFromTemplate(const CResRef& cResRef);
     void LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct);
     unsigned char GetUpgradableType(C2DA* pTable);
+    void AddUpgrade(CSWSItem* pUpgrade, unsigned long nSlot);
+    void RemoveUpgrade(CSWSItem* pUpgrade, unsigned long nSlot);
     void RemoveFromArea();
     int AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
                   int bLoadingGame);
@@ -400,6 +421,7 @@ public:
     CExoArrayList<unsigned long> m_lstItems;
     int FindItemWithBaseItemType(unsigned char nItemType, int nIndex);
     int FindItemWithTag(const CExoString& sTag);
+    int GetMatchingItemCount(CSWSItem* pItem);
 };
 
 #endif

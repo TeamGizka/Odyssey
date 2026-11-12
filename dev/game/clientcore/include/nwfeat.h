@@ -113,6 +113,8 @@ public:
         FEAT_MASTER_DUELING = 115
     };
 
+    enum { FEAT_MENTOR = 202 };
+
     static const unsigned short FEAT_INVALID = 0xFFFF;
 
     CSWFeat();

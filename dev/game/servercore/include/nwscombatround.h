@@ -32,6 +32,8 @@ public:
 
     enum { ACTION_PAUSE = 3, ACTION_CUTSCENE_MOVE = 12 };
 
+    enum { ACTION_STANCE = 13, ACTION_SWITCH_WEAPONS = 14 };
+
     CSWSCombatRoundAction();
     ~CSWSCombatRoundAction();
 
@@ -468,6 +470,7 @@ public:
     }
     unsigned char GetCurrentAction();
     void SetCurrentAction(unsigned char nAction);
+    void SetCurrentCombatRoundAction(CSWSCombatRoundAction* pAction);
     CSWSCombatAttackData* GetAttack(int nAttack);
     unsigned char GetCurrentAttack() { return m_nCurrentAttack; }
     int ResolveChoreographedState(unsigned long oidTarget);
@@ -475,6 +478,12 @@ public:
     int ResolveMasterState(unsigned long oidTarget, int& bMaster);
     int HasCreatureWeapons();
     int GetTotalAttacks();
+    void SetBonusEffectAttacks(int nAttacks);
+    int GetActualBonusEffectAttacks();
+    int GetFunctionalBonusEffectAttacks()
+    {
+        return m_nEffectAttacks > 2 ? 2 : m_nEffectAttacks;
+    }
     void DecrementRoundLength(int nAmount, int bClamp);
     int GetActionPending();
     int GetSpellActionPending();
@@ -495,6 +504,9 @@ public:
     void AddSWItemSpellAction(unsigned long oidCreator, int nArg2, int nArg3,
                               Vector vTarget, unsigned long oidItem, int nArg6,
                               int nAttackFlags);
+    void AddStanceAction(int nNumAttacks, unsigned long oidTarget,
+                         int nAttackFlags);
+    void AddSwitchWeaponsAction();
     void AddCutsceneMoveActions(unsigned long oidTarget, Vector vTarget,
                                 int nArg3);
     void RemoveSpellAction();

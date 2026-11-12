@@ -2428,7 +2428,8 @@ int CSWSMessage::SendServerToPlayerArea_VisualEffect(CSWSPlayer* pPlayer,
 // PC 0x00592030
 int CSWSMessage::SendServerToPlayerArea_Weather(CSWSPlayer* pPlayer,
                                                 unsigned char nWeather,
-                                                int bEnabled)
+                                                int bEnabled,
+                                                unsigned char nUnknown)
 {
     unsigned long nPlayerId;
     unsigned long nMessageSize;
@@ -2437,6 +2438,7 @@ int CSWSMessage::SendServerToPlayerArea_Weather(CSWSPlayer* pPlayer,
     CreateWriteMessage(5, RECIPIENT_UNSPECIFIED, 1);
     WriteBYTE(nWeather, 8);
     WriteBOOL(bEnabled);
+    WriteBYTE(nUnknown, 8);
     if (GetWriteMessage(&pMessage, &nMessageSize) == 0)
     {
         return 0;
@@ -4480,7 +4482,7 @@ int CSWSMessage::SendServerToPlayerInventory_PickupCancel(
 // PC 0x00594C00
 int CSWSMessage::SendServerToPlayerInventory_Unequip(unsigned long nPlayerId,
                                                      unsigned long oidObject,
-                                                     int bFlag)
+                                                     int bFlag, int bUnknown)
 {
     int nResult;
     unsigned long nMessageSize;
@@ -4489,6 +4491,7 @@ int CSWSMessage::SendServerToPlayerInventory_Unequip(unsigned long nPlayerId,
     CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
     WriteOBJECTIDServer(oidObject);
     WriteBOOL(bFlag);
+    WriteBOOL(bUnknown);
     nResult = GetWriteMessage(&pMessage, &nMessageSize);
     if (nResult == 0)
     {
@@ -6297,14 +6300,15 @@ int CSWSMessage::SendServerToPlayerAmbientMusicSetDelay(unsigned long nPlayerId,
 }
 // PC 0x0058FC00
 int CSWSMessage::SendServerToPlayerAmbientMusicChangeTrack(
-    unsigned long nPlayerId, int bDay, int nTrack)
+    unsigned long nPlayerId, int bDay, int nTrack, int bUnknown)
 {
     int nResult;
     unsigned long nMessageSize;
     unsigned char* pMessage;
-    CreateWriteMessage(8, RECIPIENT_UNSPECIFIED, 1);
+    CreateWriteMessage(12, RECIPIENT_UNSPECIFIED, 1);
     WriteBOOL(bDay);
     WriteINT(nTrack, 32);
+    WriteBOOL(bUnknown);
     nResult = GetWriteMessage(&pMessage, &nMessageSize);
     if (nResult == 0)
     {
@@ -8072,6 +8076,10 @@ void CSWSMessage::ComputeGameObjectUpdateForObject(CSWSPlayer* pPlayer,
     {
         CSWSObject* pObject = pGameObject->AsSWSObject();
         int bVisible = TestObjectVisible(pObject, pPlayerObject);
+        if (pObject->m_n260 != 0)
+        {
+            bVisible = 1;
+        }
         pObject->m_nClientState = bVisible;
         if (bVisible == 1)
         {

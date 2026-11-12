@@ -94,6 +94,70 @@ int CSWSDoor::GetDead()
         return CSWSObject::GetDead();
     }
 }
+// PC 0x0057F4A0
+unsigned char CSWSDoor::GetOpenLockDC()
+{
+    unsigned char nDC;
+    unsigned char nPercent;
+    char nModifier = 0;
+    if (m_nOpenLockDiff == 4)
+    {
+        char nFixedModifier;
+        switch (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nDifficulty)
+        {
+            case 0:
+                nFixedModifier = -5;
+                break;
+            case 1:
+                nFixedModifier = 0;
+                break;
+            case 2:
+                nFixedModifier = 5;
+                break;
+            default:
+                nFixedModifier = 0;
+                break;
+        }
+        nDC = m_nOpenLockDC;
+        if (nDC + nFixedModifier > 0)
+        {
+            return nDC + nFixedModifier;
+        }
+        return 0;
+    }
+    switch (m_nOpenLockDiff)
+    {
+        case 0:
+            nPercent = 0;
+            break;
+        case 1:
+            nPercent = 30;
+            break;
+        case 2:
+            nPercent = 70;
+            break;
+        case 3:
+            nPercent = 100;
+            break;
+        default:
+            nPercent = 30;
+            break;
+    }
+    switch (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nDifficulty)
+    {
+        case 0:
+            nModifier = -5;
+            break;
+        case 1:
+            nModifier = 0;
+            break;
+        case 2:
+            nModifier = 5;
+            break;
+    }
+    nDC = (m_c251 + 7) * (nPercent / 100) + m_nOpenLockDiffMod + nModifier + 21;
+    return nDC;
+}
 // PC 0x0057F590
 unsigned char CSWSDoor::GetDetectDC()
 {

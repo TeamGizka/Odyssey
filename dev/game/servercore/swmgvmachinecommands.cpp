@@ -66,6 +66,48 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastEvent(int nCommand,
     }
     return 0;
 }
+// PC 0x00619380
+int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetSwoopUpgrade(int nCommand, int nArgs)
+{
+    int nSlot;
+    int nUpgrade = 0;
+
+    if (g_pVirtualMachine->StackPopInteger(&nSlot) != 0)
+    {
+        nUpgrade = g_pAppManager->GetClientExoApp()->GetMiniGame()->m_anSwoopUpgrades[nSlot];
+    }
+    return g_pVirtualMachine->StackPushInteger(nUpgrade) != 0 ? 0 : -2000;
+}
+// PC 0x00619550
+int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetJumpSpeed(int nCommand, int nArgs)
+{
+    float fSpeed;
+
+    if (g_pVirtualMachine->StackPopFloat(&fSpeed) != 0)
+    {
+        g_pAppManager->GetClientExoApp()->GetMiniGame()->m_fJumpSpeed = fSpeed;
+    }
+    return 0;
+}
+// PC 0x00619590
+int CSWVirtualMachineCommands::ExecuteCommandSWMG_PlayerApplyForce(int nCommand, int nArgs)
+{
+    Vector vForce(0.0f, 0.0f, 0.0f);
+
+    if (g_pVirtualMachine->StackPopVector(&vForce) != 0)
+    {
+        CSWMiniGame* pMiniGame = g_pAppManager->GetClientExoApp()->GetMiniGame();
+        pMiniGame->m_fJumpSpeed = vForce.m_fZ;
+        CSWMGPhysicsState cCurrent = pMiniGame->m_CurrentState;
+        CSWMGPhysicsState cNext = pMiniGame->m_NextState;
+        cCurrent.m_vValue.m_fX = vForce.m_fX;
+        cNext.m_vValue.m_fX = vForce.m_fX;
+        pMiniGame->m_NextState = cNext;
+        pMiniGame->m_CurrentState = cCurrent;
+        pMiniGame->m_fLateralAccel = vForce.m_fX;
+    }
+    return 0;
+}
 // PC 0x00619640
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastEventModelName(
     int nCommand, int nArgs)
@@ -1624,4 +1666,10 @@ void CSWVirtualMachineCommands::InitializeSWMGCommands()
         &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLateralAccelPerSec;
     m_pCommands[520] =
         &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetLateralAccelPerSec;
+    m_pCommands[COMMAND_SWMG_GET_SWOOP_UPGRADE] =
+        &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetSwoopUpgrade;
+    m_pCommands[COMMAND_SWMG_SET_JUMP_SPEED] =
+        &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetJumpSpeed;
+    m_pCommands[COMMAND_SWMG_PLAYER_APPLY_FORCE] =
+        &CSWVirtualMachineCommands::ExecuteCommandSWMG_PlayerApplyForce;
 }

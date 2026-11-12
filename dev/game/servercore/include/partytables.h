@@ -30,6 +30,34 @@ public:
     CSWSJournal* GetPartyJournal();
     void ClearInventory();
     int GetIsNPCAvailable(int nNPC);
+    CExoString GetPupFilename(int nPUP);
+    int GetIsPUPAvailable(int nPUP);
+    void SetDisableMap(int bDisable) { m_bDisableMap = bDisable; }
+    void SetDisableRegen(int bDisable) { m_bDisableRegen = bDisable; }
+    int GetInfluence(int nNPC);
+    int SetInfluence(int nNPC, int nInfluence);
+    int SetPUPObject(int nPUP, unsigned long oidPUP);
+    int GetIsPuppet(int nPUP);
+    int KillPUPObject(int nPUP, int bFade);
+    int GetPUPID(unsigned long oidObject);
+    void ClearPuppets();
+    int ClearPuppet(int nPUP);
+    CExoString GetPCName() { return m_sPCName; }
+    CExoString GetPCFirstName();
+    CExoString GetPCLastName();
+    unsigned long GetNextPC();
+    void SaveMemberByObject(int nNPC, unsigned long oidMember);
+    void SavePuppet(int nPUP, int bClearActions);
+    void SavePuppetByObject(int nPUP, unsigned long oidPuppet);
+    int AddPuppet(int nPUP, unsigned long oidPuppet);
+    int AddPUP(int nPUP, CSWSCreature* pCreature);
+    int AddPUP(int nPUP, const CExoString& sTemplate);
+    unsigned long GetPUPObject(int nPUP, int bLoad, int bResurrect);
+    int SpawnPUP(int nPUP, int bUsePosition, const Vector& vPosition,
+                 const Vector& vOrientation, int bResurrect);
+    CSWSCreature* GetPUPOwner(int nPUP);
+    int RemovePuppet(int nPUP);
+    int AssignPUP(int nPUP, int nNPC);
     int GetActiveNPC();
     unsigned char GetNumNPCAvailable();
     int SetNPCObject(int nNPC, unsigned long oidNPC);

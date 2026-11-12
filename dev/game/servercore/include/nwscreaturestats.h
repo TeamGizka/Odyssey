@@ -183,7 +183,14 @@ public:
                                         unsigned char nSpellLevel);
     int GetKnownSpell(unsigned char nClass, unsigned char nSpellLevel,
                       unsigned char nSpellIndex);
-    unsigned char GetClass(unsigned char nClass);
+    unsigned char GetClass(unsigned char nClass)
+    {
+        if (nClass >= m_nClassCount)
+        {
+            return 0xFF;
+        }
+        return m_aClassInfo[nClass].m_nClass;
+    }
     unsigned char GetClassLeveledUpIn()
     {
         return GetClass(m_nClassCount - 1);
@@ -283,6 +290,7 @@ public:
 
     void LevelUp(CSWLevelStats* pLevelStats, int bStoreLevelStats);
     int CanLevelUp();
+    unsigned char GetPotentialLevel();
     unsigned long GetExpNeededForLevelUp();
     void UpdateCombatInformation();
     void UpdateLastStatsObject(unsigned __int64 nUpdateMask,
@@ -575,14 +583,14 @@ public:
     void SetGoodEvilAlignment(short nAlignment)
     {
         int nValue;
-        if (nAlignment < 0)
-            nValue = 0;
-        else
+        if (nAlignment >= 0)
         {
             nValue = nAlignment;
             if (nValue > 100)
                 nValue = 100;
         }
+        else
+            nValue = 0;
         m_nGoodEvilAlignment = nValue;
     }
     short m_n18C;

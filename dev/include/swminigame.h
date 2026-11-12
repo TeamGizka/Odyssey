@@ -302,8 +302,8 @@ public:
     float m_fF4;
     float m_fF8;
     C2DA* m_pFC;
-    int m_an100[6];
-    int m_n118;
+    int m_anSwoopUpgrades[6];
+    float m_fJumpSpeed;
 };
 
 #include <aurpointer.h>

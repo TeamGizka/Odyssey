@@ -1091,7 +1091,9 @@ void CServerAIMaster::UpdateState()
                      (pAction->m_nActionType ==
                           CSWSObject::ACTION_MOVE_TO_POINT ||
                       pAction->m_nActionType ==
-                          CSWSObject::ACTION_FOLLOW_LEADER)) ||
+                          CSWSObject::ACTION_FOLLOW_LEADER ||
+                      pAction->m_nActionType ==
+                          CSWSObject::ACTION_FOLLOW_OWNER)) ||
                     pObject->AsSWSCreature()->m_nAnimationState ==
                         CSWSCreature::ANIMATION_STATE_FORCE_PUSH ||
                     pObject->AsSWSCreature()->m_nAnimationState ==

@@ -1249,6 +1249,78 @@ unsigned char CSWSCreature::CanEquipWeapon(CSWSItem* pItem,
     }
     return 0;
 }
+// PC 0x00544C50
+unsigned char CSWSCreature::CanEquipWeapon2(CSWSItem* pItem,
+                                          unsigned long* pnSlot,
+                                          int bFeedback, int bUnknown)
+{
+    CSWSItem* pRightItem;
+    CSWSItem* pLeftItem;
+    CSWBaseItem* pRightBaseItem = NULL;
+    CSWBaseItem* pLeftBaseItem = NULL;
+    CSWBaseItem* pBaseItem;
+
+    if (*pnSlot == INVENTORY_SLOT_RIGHTHAND2 ||
+        *pnSlot == INVENTORY_SLOT_LEFTHAND2)
+    {
+        pRightItem = m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND2);
+        pLeftItem = m_pInventory->GetItemInSlot(INVENTORY_SLOT_LEFTHAND2);
+        if (pRightItem != NULL)
+            pRightBaseItem = g_pRules->m_pBaseItems->GetBaseItem(
+                pRightItem->GetBaseItemType());
+        if (pLeftItem != NULL)
+            pLeftBaseItem = g_pRules->m_pBaseItems->GetBaseItem(
+                pLeftItem->GetBaseItemType());
+
+        if (pItem != NULL)
+        {
+            pBaseItem = g_pRules->m_pBaseItems->GetBaseItem(
+                pItem->GetBaseItemType());
+            if (pRightItem == NULL && pLeftItem == NULL)
+            {
+                if (*pnSlot == INVENTORY_SLOT_LEFTHAND2)
+                    *pnSlot = INVENTORY_SLOT_RIGHTHAND2;
+                return 1;
+            }
+            else if (pRightItem != NULL && pLeftItem == NULL)
+            {
+                if (pBaseItem->GetIsTwoHanded() == 1)
+                {
+                    *pnSlot = INVENTORY_SLOT_RIGHTHAND2;
+                    return 4;
+                }
+                if ((pRightBaseItem->m_nRangedWeapon > 0) ==
+                    (pBaseItem->m_nRangedWeapon > 0))
+                {
+                    if (pRightBaseItem->GetIsOneHanded() == 1)
+                    {
+                        if (*pnSlot == INVENTORY_SLOT_LEFTHAND2)
+                            return 1;
+                        return 2;
+                    }
+                    *pnSlot = INVENTORY_SLOT_RIGHTHAND2;
+                    return 2;
+                }
+                *pnSlot = INVENTORY_SLOT_RIGHTHAND2;
+                return 2;
+            }
+            else if (pRightItem != NULL && pLeftItem != NULL)
+            {
+                if (pBaseItem->GetIsTwoHanded() == 1)
+                {
+                    *pnSlot = INVENTORY_SLOT_RIGHTHAND2;
+                    return 4;
+                }
+                if ((pRightBaseItem->m_nRangedWeapon > 0) ==
+                    (pBaseItem->m_nRangedWeapon > 0))
+                    return 2;
+                *pnSlot = INVENTORY_SLOT_RIGHTHAND2;
+                return 4;
+            }
+        }
+    }
+    return 0;
+}
 // PC 0x0054AD10
 int CSWSCreature::AIActionCheckMoveAwayFromObject(CSWSObjectActionNode* pAction)
 {
@@ -1627,7 +1699,6 @@ unsigned char CSWSCreature::CanEquipItem(CSWSItem* pItem,
         }
     }
 
-    int bCanEquip = FALSE;
     unsigned char nResult;
     if (!pItem->m_bNonEquippable && CheckProficiencies(pItem, *pnSlot))
     {
@@ -1647,7 +1718,7 @@ unsigned char CSWSCreature::CanEquipItem(CSWSItem* pItem,
             }
             return 0;
         }
-        else if (!CheckItemRaceRestrictions(pItem))
+        else if (!CheckItemRaceRestrictions(pItem, 1))
         {
             if (bCheckRestrictions == 1 && bFeedback == 1)
             {
@@ -1663,31 +1734,79 @@ unsigned char CSWSCreature::CanEquipItem(CSWSItem* pItem,
             }
             return 0;
         }
+        else if (!CheckItemGenderRestrictions(pItem))
+        {
+            if (bCheckRestrictions == 1 && bFeedback == 1)
+            {
+                SendFeedbackMessage(FEEDBACK_ITEM_GENDER_RESTRICTION, NULL);
+            }
+            return 0;
+        }
+        else if (!CheckItemPCRestrictions(pItem))
+        {
+            if (bCheckRestrictions == 1 && bFeedback == 1)
+            {
+                SendFeedbackMessage(FEEDBACK_ITEM_PC_RESTRICTION, NULL);
+            }
+            return 0;
+        }
+        else if (!CheckItemAttributeRestrictions(pItem))
+        {
+            if (bCheckRestrictions == 1 && bFeedback == 1)
+            {
+                SendFeedbackMessage(FEEDBACK_ITEM_ATTRIBUTE_RESTRICTION, NULL);
+            }
+            return 0;
+        }
+        else if (!CheckItemCNPCRestrictions(pItem))
+        {
+            if (bCheckRestrictions == 1 && bFeedback == 1)
+            {
+                SendFeedbackMessage(FEEDBACK_ITEM_CNPC_RESTRICTION, NULL);
+            }
+            return 0;
+        }
         else
         {
-            if (*pnSlot == INVENTORY_SLOT_RIGHTHAND ||
-                *pnSlot == INVENTORY_SLOT_LEFTHAND)
+            switch (*pnSlot)
             {
+            case INVENTORY_SLOT_RIGHTHAND:
+            case INVENTORY_SLOT_LEFTHAND:
                 nResult = CanEquipWeapon(pItem, pnSlot, bCheckRestrictions, bFeedback);
-            }
-            else
-            {
+                break;
+            case INVENTORY_SLOT_RIGHTHAND2:
+            case INVENTORY_SLOT_LEFTHAND2:
+                nResult = CanEquipWeapon2(pItem, pnSlot, bCheckRestrictions, bFeedback);
+                break;
+            default:
                 nResult = CanEquipMiscellaneous(pItem, pnSlot,
                                                bCheckRestrictions, bFeedback);
+                break;
             }
+            unsigned long nSlot = *pnSlot;
+            if (nSlot == INVENTORY_SLOT_RIGHTHAND2)
+            {
+                *pnSlot = INVENTORY_SLOT_RIGHTHAND2 | INVENTORY_SLOT_RIGHTHAND;
+            }
+            else if (nSlot == INVENTORY_SLOT_LEFTHAND2)
+            {
+                *pnSlot = INVENTORY_SLOT_LEFTHAND2 | INVENTORY_SLOT_LEFTHAND;
+            }
+            int bCanEquip = FALSE;
             CSWBaseItem* pBaseItem =
                 g_pRules->GetBaseItemArray()->GetBaseItem(pItem->GetBaseItemType());
             if (pBaseItem != NULL)
             {
                 bCanEquip = (pBaseItem->GetEquipableSlots() & *pnSlot) != 0;
             }
+            *pnSlot = nSlot;
+            if (bCanEquip != FALSE)
+            {
+                return nResult;
+            }
         }
     }
-    if (bCanEquip == FALSE)
-    {
-        return 0;
-    }
-    return nResult;
+    return 0;
 }
 // PC 0x0054AFD0
 unsigned char CSWSCreature::CanEquipMiscellaneous(CSWSItem* pItem,
@@ -1780,7 +1899,7 @@ int CSWSCreature::AcquireItem(CSWSItem** ppItem, unsigned long oidCaller,
     {
         if (pPossessor->m_nObjectType == SW_OBJECT_TYPE_CREATURE)
         {
-            pPossessor->AsSWSCreature()->RemoveItem(*ppItem, 1, 1, NULL);
+            pPossessor->AsSWSCreature()->RemoveItem(*ppItem, 0, 1, NULL);
         }
         else if (pPossessor->m_nObjectType == SW_OBJECT_TYPE_PLACEABLE)
         {
@@ -3047,7 +3166,8 @@ void CSWSCreature::UpdateVisibleList(unsigned char nUpdateType)
                         {
                             Vector vDifference = pCreature->m_vPosition - m_vPosition;
                             if (GetVisibleListElement(oidCreature) != NULL ||
-                                vDifference * vDifference <= fDistanceSquared)
+                                vDifference * vDifference <= fDistanceSquared ||
+                                pCreature->m_n260)
                             {
                                 DoPerceptionUpdateOnCreature(pCreature);
                             }
@@ -3103,7 +3223,8 @@ void CSWSCreature::UpdateVisibleList(unsigned char nUpdateType)
 
                         Vector vDifference = pCreature->m_vPosition - m_vPosition;
                         if (GetVisibleListElement(oidCreature) == NULL &&
-                            vDifference * vDifference <= fDistanceSquared &&
+                            (vDifference * vDifference <= fDistanceSquared ||
+                             pCreature->m_n260) &&
                             (nUpdateType == VISIBLE_LIST_UPDATE_ALL ||
                              (nUpdateType == VISIBLE_LIST_UPDATE_NONPARTY &&
                               pCreature->m_bInParty == 0)))
@@ -3380,7 +3501,25 @@ int CSWSCreature::RemoveItem(CSWSItem* pItem, int bUnknown1, int bUnknown2,
         }
     }
 
+    int bInRepository = 0;
     if (pItem->m_oidPossessor == m_nId)
+    {
+        bInRepository = 1;
+    }
+    else
+    {
+        CGameObject* pPossessor =
+            g_pAppManager->m_pServerExoApp->GetGameObject(pItem->m_oidPossessor);
+        CGameObject* pSelf = g_pAppManager->m_pServerExoApp->GetGameObject(m_nId);
+        if (pPossessor != NULL && pPossessor->AsSWSCreature() != NULL &&
+            pPossessor->AsSWSCreature()->GetInParty() &&
+            pSelf != NULL && pSelf->AsSWSCreature() != NULL &&
+            pSelf->AsSWSCreature()->GetInParty())
+        {
+            bInRepository = 1;
+        }
+    }
+    if (bInRepository)
     {
         if (GetItemRepository(1)->GetItemInRepository(pItem, 0) == 1)
         {
@@ -3480,13 +3619,57 @@ int CSWSCreature::AIActionPartyFollowLeader(CSWSObjectActionNode*)
             return CSWSObject::ACTION_IN_PROGRESS;
         }
 
-        if (g_pAppManager->m_pServerExoApp->GetPlayerCreatureId() != GetId())
+        unsigned long oidLeader = g_pAppManager->m_pClientExoApp->GetSWParty()
+                                      ->m_aPartyMemberData[0].m_oidCreature;
+        if (g_pAppManager->m_pServerExoApp->ClientToServerObjectId(oidLeader) != GetId())
         {
             m_nAnimationState = 3;
             return CSWSObject::ACTION_IN_PROGRESS;
         }
     }
 
+    return CSWSObject::ACTION_FAILED;
+}
+// PC 0x005451E0
+int CSWSCreature::AIActionFollowOwner(CSWSObjectActionNode* pNode)
+{
+    if (m_n11FC != 0 && !GetDead() && !GetDeadTemp() &&
+        (m_nAIStateFlags & AI_STATE_CAN_MOVE) != 0)
+    {
+        if (GetArea() == NULL)
+        {
+            return CSWSObject::ACTION_IN_PROGRESS;
+        }
+        float fFollowDistance = *(float*)&pNode->m_apParam[0];
+        CSWPartyTable* pPartyTable = g_pAppManager->m_pServerExoApp->GetPartyTable();
+        if (pPartyTable == NULL)
+        {
+            return CSWSObject::ACTION_IN_PROGRESS;
+        }
+        CSWSCreature* pOwner = pPartyTable->GetPUPOwner(pPartyTable->GetPUPID(GetId()));
+        if (pOwner == NULL)
+        {
+            return CSWSObject::ACTION_IN_PROGRESS;
+        }
+        Vector vOwner = pOwner->m_vPosition;
+        Vector vPosition = m_vPosition;
+        Vector vDistance;
+        vDistance.m_fX = vOwner.m_fX - vPosition.m_fX;
+        vDistance.m_fY = vOwner.m_fY - vPosition.m_fY;
+        vDistance.m_fZ = 0.0f;
+        if (magnitude(vDistance) < fFollowDistance)
+        {
+            return CSWSObject::ACTION_IN_PROGRESS;
+        }
+        vPosition = pOwner->m_vPosition;
+        AddMoveToPointAction(ACTION_GROUP_NEW, vPosition, pOwner->GetArea()->GetId(),
+            pOwner->GetId(), 1, fFollowDistance, 0.0f, 0, 0, 0, 0, 0, 0,
+            Vector(), 0, 0, 0);
+        AddAction(ACTION_FOLLOW_OWNER, ACTION_GROUP_NEW, ACTION_PARAM_FLOAT,
+            &fFollowDistance, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL,
+            0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL);
+        return CSWSObject::ACTION_COMPLETE;
+    }
     return CSWSObject::ACTION_FAILED;
 }
 // PC 0x005453D0
@@ -4585,6 +4768,35 @@ unsigned char CSWSCreature::CanUnEquipWeapon(CSWSItem* pItem)
 
     return 1;
 }
+// PC 0x005488D0
+unsigned char CSWSCreature::CanUnEquipWeapon2(CSWSItem* pItem)
+{
+    CSWSItem* pRightItem;
+    CSWSItem* pLeftItem;
+    CSWSPlayer* pPlayer;
+
+    pRightItem = m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND2);
+    pLeftItem = m_pInventory->GetItemInSlot(INVENTORY_SLOT_LEFTHAND2);
+
+    if (pRightItem != NULL && pRightItem->m_nId == pItem->m_nId &&
+        pLeftItem != NULL &&
+        g_pRules->m_pBaseItems->GetBaseItem(pLeftItem->GetBaseItemType())
+                ->m_nWeaponType != 0)
+    {
+        pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(
+            m_nId);
+        if (pPlayer != NULL)
+        {
+            pPlayer->m_pInventoryGUI->m_pLastUpdateObject->m_oidSlot[15] =
+                OBJECT_INVALID;
+            pPlayer->m_pInventoryGUI->m_pLastUpdateObject->m_oidSlot[16] =
+                OBJECT_INVALID;
+        }
+        return 3;
+    }
+
+    return 1;
+}
 // PC 0x00548960
 int CSWSCreature::AIActionUnequipItem(CSWSObjectActionNode* pAction)
 {
@@ -4599,10 +4811,12 @@ int CSWSCreature::AIActionUnequipItem(CSWSObjectActionNode* pAction)
     oidItem = (unsigned long)pAction->m_apParam[0];
     oidTarget = (unsigned long)pAction->m_apParam[1];
     bUnknown = (int)pAction->m_apParam[2];
+    int nArg6 = (int)pAction->m_apParam[3];
+    int bMerge = (int)pAction->m_apParam[4];
 
     if (!GetDead() && !GetIsPCDying() && !GetDeadTemp())
     {
-        if (RunUnequip(oidItem, oidTarget, 1, NULL, bUnknown) == 1)
+        if (RunUnequip(oidItem, oidTarget, bMerge, NULL, bUnknown, nArg6) == 1)
         {
             return CSWSObject::ACTION_COMPLETE;
         }
@@ -4858,6 +5072,90 @@ int CSWSCreature::AIActionCounterSpell(CSWSObjectActionNode* pAction)
     }
     return ACTION_IN_PROGRESS;
 }
+// PC 0x00549080
+int CSWSCreature::AIActionStanceTotalDefense(CSWSObjectActionNode* pNode)
+{
+    m_nAttackMovementTimer = ATTACK_MOVEMENT_TIMEOUT;
+    if (GetInParty())
+    {
+        CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
+        int nMember = pClient->GetSWParty()->GetIndex(pClient->ServerToClientObjectId(GetId()));
+        if (nMember >= 0)
+        {
+            CSWParty* pParty = pClient->GetSWParty();
+            pParty->m_aPartyMemberData[nMember].SetCombatMessage(
+                CSWPartyMemberData::COMBAT_MESSAGE_ENGAGED);
+        }
+    }
+    int bDeadTemp = GetDeadTemp();
+    if (GetDead() || bDeadTemp || m_pcCombatRound == NULL)
+    {
+        CancelAllCombatModes(1);
+        return CSWSObject::ACTION_FAILED;
+    }
+    if (g_pAppManager->GetServerExoApp()->GetPauseState(
+            CServerExoAppInternal::PAUSE_TYPE_COMBAT_MASK) ||
+        m_pcCombatRound->m_bRoundPaused)
+    {
+        return CSWSObject::ACTION_IN_PROGRESS;
+    }
+    unsigned long oidTarget = (unsigned long)pNode->m_apParam[0];
+    if (m_n10B4 == 0 && m_n10B8 == 0)
+    {
+        SetAnimation(CREATURE_ANIMATION_COMBAT_READY);
+        SetAttemptedAttackTarget(oidTarget);
+        SetLockOrientationToObject(oidTarget, 0);
+        ActivityManager(ACTIVITY_ACTION_COUNTERSPELL);
+    }
+    if (m_c110C != 0)
+    {
+        m_c110C = 0;
+    }
+    if (!m_pcCombatRound->m_bRoundStarted)
+    {
+        int bEngaged = GetCombatRound()->ResolveEngagedState(oidTarget);
+        int bMaster = GetCombatRound()->ResolveMasterState(oidTarget, bEngaged);
+        if (bEngaged)
+        {
+            if (bMaster)
+            {
+                g_pAppManager->GetServerExoApp()->GetWorldTimer()->GetWorldTime(
+                    (unsigned long*)&m_n10B4, (unsigned long*)&m_n10B8);
+                GetCombatRound()->StartCombatRound(oidTarget, bEngaged, bMaster, 0, 0);
+                CSWSCreature* pTarget =
+                    g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidTarget);
+                if (pTarget != NULL)
+                {
+                    pTarget->m_pcCombatRound->StartCombatRound(GetId(), bEngaged, 0, 0, 0);
+                    pTarget->m_bResolveInitiative = 1;
+                }
+            }
+        }
+        else
+        {
+            g_pAppManager->GetServerExoApp()->GetWorldTimer()->GetWorldTime(
+                (unsigned long*)&m_n10B4, (unsigned long*)&m_n10B8);
+            GetCombatRound()->StartCombatRound(oidTarget, bEngaged, bMaster, 0, 0);
+        }
+    }
+    if (!m_pcCombatRound->m_bRoundStarted)
+    {
+        return CSWSObject::ACTION_IN_PROGRESS;
+    }
+    unsigned long nDay, nTime;
+    g_pAppManager->GetServerExoApp()->GetWorldTimer()->GetWorldTime(&nDay, &nTime);
+    unsigned long nElapsedDays, nElapsedTime;
+    g_pAppManager->GetServerExoApp()->GetWorldTimer()->SubtractWorldTimes(
+        nDay, nTime, m_n10B4, m_n10B8, &nElapsedDays, &nElapsedTime);
+    if (nElapsedTime >= 1500)
+    {
+        m_n10B8 = 0;
+        m_c110C = -1;
+        m_n10B4 = 0;
+        return CSWSObject::ACTION_COMPLETE;
+    }
+    return CSWSObject::ACTION_IN_PROGRESS;
+}
 // PC 0x00549350
 int CSWSCreature::CheckItemAlignmentRestrictions(CSWSItem* pItem)
 {
@@ -4871,7 +5169,7 @@ int CSWSCreature::CheckItemAlignmentRestrictions(CSWSItem* pItem)
         return 1;
     }
 
-    short nAlignment = m_pStats->GetSimpleAlignmentGoodEvil();
+    short nAlignment = m_pStats->m_nGoodEvilAlignment;
     for (int i = 0; i < pItem->m_nPassiveProperties; i++)
     {
         CSWItemProperty* pProperty = pItem->GetPassiveProperty(i);
@@ -4879,14 +5177,37 @@ int CSWSCreature::CheckItemAlignmentRestrictions(CSWSItem* pItem)
             (pItem->m_nUpgrades & (1 << pProperty->m_nUpgradeType)))
         {
             if (pItem->GetPassiveProperty(i)->m_nPropertyType ==
-                    CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_ALIGNMENT_GROUP &&
-                pItem->GetPassiveProperty(i)->m_nSubtype != nAlignment)
+                CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_ALIGNMENT_GROUP)
             {
-                return 0;
+                switch (pItem->GetPassiveProperty(i)->m_nSubtype)
+                {
+                case 0:
+                    return 1;
+                case 1:
+                    if (nAlignment < 60 && nAlignment > 40)
+                        return 1;
+                    break;
+                case 2:
+                    if (nAlignment >= 60)
+                        return 1;
+                    break;
+                case 3:
+                    if (nAlignment <= 40)
+                        return 1;
+                    break;
+                case 4:
+                    if (nAlignment == 0)
+                        return 1;
+                    break;
+                case 5:
+                    if (nAlignment == 100)
+                        return 1;
+                    break;
+                }
             }
         }
     }
-    return 1;
+    return 0;
 }
 // PC 0x00549630
 int CSWSCreature::CheckItemFeatRestrictions(CSWSItem* pItem)
@@ -4914,6 +5235,155 @@ int CSWSCreature::CheckItemFeatRestrictions(CSWSItem* pItem)
                     return 0;
                 }
             }
+        }
+    }
+    return 1;
+}
+// PC 0x005496E0
+int CSWSCreature::CheckItemGenderRestrictions(CSWSItem* pItem)
+{
+    if (!pItem->GetPropertyByTypeExists(
+            CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_GENDER, 0))
+    {
+        return 1;
+    }
+
+    for (int i = 0; i < pItem->m_nPassiveProperties; i++)
+    {
+        CSWItemProperty* pProperty = pItem->GetPassiveProperty(i);
+        if (pProperty->m_nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
+            (pItem->m_nUpgrades & (1 << pProperty->m_nUpgradeType)))
+        {
+            if (pItem->GetPassiveProperty(i)->m_nPropertyType ==
+                CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_GENDER)
+            {
+                int nGender = pItem->GetPassiveProperty(i)->m_nSubtype;
+                int nMyGender = GetGender();
+                if (nGender != nMyGender &&
+                    ((nGender != 0 && nGender != 1) || nMyGender != 2))
+                {
+                    return 0;
+                }
+            }
+        }
+    }
+    return 1;
+}
+// PC 0x00549790
+int CSWSCreature::CheckItemPCRestrictions(CSWSItem* pItem)
+{
+    CExoString sExpectedTag;
+
+    if (pItem->GetPropertyByTypeExists(
+            CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_PC, 0))
+    {
+        unsigned char bAllowed = 0;
+        int nRestrictions = 0;
+        for (int i = 0; i < pItem->m_nPassiveProperties; i++)
+        {
+            CSWItemProperty* pProperty = pItem->GetPassiveProperty(i);
+            if (pProperty->m_nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
+                (pItem->m_nUpgrades & (1 << pProperty->m_nUpgradeType)))
+            {
+                if (pItem->GetPassiveProperty(i)->m_nPropertyType ==
+                    CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_PC)
+                {
+                    nRestrictions++;
+                    CSWItemProperty* pRestriction = pItem->GetPassiveProperty(i);
+                    int nSubtype = pRestriction->m_nSubtype;
+                    if (nSubtype == 0)
+                    {
+                        if (m_n1200 != 0)
+                        {
+                            bAllowed = 1;
+                        }
+                    }
+                    else
+                    {
+                        g_pRules->Get2DArrays()->m_pIPRPPC->GetCExoStringEntry(
+                            nSubtype, CExoString("ExpectedTag"), &sExpectedTag);
+                        if (stricmp(sExpectedTag.CStr(), m_sTag.CStr()) == 0)
+                        {
+                            bAllowed = 1;
+                        }
+                    }
+                }
+            }
+        }
+        if (nRestrictions > 0 && !bAllowed)
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+// PC 0x00549930
+int CSWSCreature::CheckItemAttributeRestrictions(CSWSItem* pItem)
+{
+    if (pItem->GetPropertyByTypeExists(
+            CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_ATTRIBUTE, 0))
+    {
+        for (int i = 0; i < pItem->m_nPassiveProperties; i++)
+        {
+            CSWItemProperty* pProperty = pItem->GetPassiveProperty(i);
+            if (pProperty->m_nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
+                (pItem->m_nUpgrades & (1 << pProperty->m_nUpgradeType)))
+            {
+                if (pItem->GetPassiveProperty(i)->m_nPropertyType ==
+                    CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_ATTRIBUTE)
+                {
+                    int nAbility = pItem->GetPassiveProperty(i)->m_nSubtype;
+                    int nRequired;
+                    int nScore;
+                    {
+                        CExoString sColumn("Value");
+                        unsigned short nCostValue =
+                            pItem->GetPassiveProperty(i)->m_nCostValue;
+                        g_pRules->Get2DArrays()->GetIPRPCostTable(26)->GetINTEntry(
+                            nCostValue, sColumn, &nRequired);
+                    }
+                    switch (nAbility)
+                    {
+                    case CSWRules::ABILITY_STRENGTH:
+                        nScore = m_pStats->m_nStrengthBase;
+                        break;
+                    case CSWRules::ABILITY_DEXTERITY:
+                        nScore = m_pStats->m_nDexterityBase;
+                        break;
+                    case CSWRules::ABILITY_CONSTITUTION:
+                        nScore = m_pStats->m_nConstitutionBase;
+                        break;
+                    case CSWRules::ABILITY_INTELLIGENCE:
+                        nScore = m_pStats->m_nConstitutionBase;
+                        break;
+                    case CSWRules::ABILITY_WISDOM:
+                        nScore = m_pStats->m_nWisdomBase;
+                        break;
+                    case CSWRules::ABILITY_CHARISMA:
+                        nScore = m_pStats->m_nCharismaBase;
+                        break;
+                    }
+                    if (nScore < nRequired)
+                    {
+                        return 0;
+                    }
+                }
+            }
+        }
+    }
+    return 1;
+}
+// PC 0x00549AF0
+int CSWSCreature::CheckItemCNPCRestrictions(CSWSItem* pItem)
+{
+    if (m_sTag.CompareNoCase("baodur"))
+    {
+        int nBaseItem = pItem->m_nBaseItem;
+        if (nBaseItem == 35 || nBaseItem == 36 || nBaseItem == 37 ||
+            nBaseItem == 97 || nBaseItem == 98 || nBaseItem == 99 ||
+            nBaseItem == 100 || nBaseItem == 102)
+        {
+            return 0;
         }
     }
     return 1;
@@ -4977,6 +5447,29 @@ void CSWSCreature::UnsummonMyself()
     g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
         0, 0, m_nId, m_nId, CServerAIMaster::EVENT_DESTROY_OBJECT, NULL);
 }
+// PC 0x0054D7B0
+int CSWSCreature::AIActionStanceMeditative(CSWSObjectActionNode* pNode)
+{
+    int bDeadTemp = GetDeadTemp();
+    if (GetDead() || bDeadTemp)
+    {
+        return CSWSObject::ACTION_FAILED;
+    }
+    ActivityManager(ACTIVITY_ACTION_OBJECT_INTERACTION);
+    if (m_c110C != 1)
+    {
+        m_c110C = 1;
+        RecomputeAmbientAnimationState();
+        return CSWSObject::ACTION_IN_PROGRESS;
+    }
+    if (m_lstActions.Count() > 1)
+    {
+        m_c110C = -1;
+        RecomputeAmbientAnimationState();
+        return CSWSObject::ACTION_COMPLETE;
+    }
+    return CSWSObject::ACTION_IN_PROGRESS;
+}
 // PC 0x0054D850
 int CSWSCreature::CheckItemClassRestrictions(CSWSItem* pItem)
 {
@@ -4985,9 +5478,7 @@ int CSWSCreature::CheckItemClassRestrictions(CSWSItem* pItem)
     {
         return 1;
     }
-    CSWSCreatureStats* pStats = m_pStats;
-    if (CheckUseMagicDeviceSkill(pItem, 0) == 1 ||
-        pStats->HasFeat(CSWFeat::FEAT_PROFICIENCY_ALL))
+    if (m_pStats->HasFeat(CSWFeat::FEAT_PROFICIENCY_ALL))
     {
         return 1;
     }
@@ -5044,7 +5535,8 @@ int CSWSCreature::AIActionSurrenderToEnemies(CSWSObjectActionNode*)
     return CSWSObject::ACTION_COMPLETE;
 }
 // PC 0x00551220
-int CSWSCreature::CanUseItem(CSWSItem* pItem, int bUnknown)
+int CSWSCreature::CanUseItem(CSWSItem* pItem, int bUnknown,
+                             int bCheckFullHealth)
 {
     int bCanUse = TRUE;
     if (pItem == NULL)
@@ -5059,13 +5551,40 @@ int CSWSCreature::CanUseItem(CSWSItem* pItem, int bUnknown)
     {
         bCanUse = FALSE;
     }
-    else if (!CheckItemRaceRestrictions(pItem))
+    else if (!CheckItemRaceRestrictions(pItem, bCheckFullHealth))
     {
         bCanUse = FALSE;
     }
-    else if (!CheckItemFeatRestrictions(pItem))
+    else
     {
-        bCanUse = FALSE;
+        int nItemType = pItem->GetBaseItem()->m_nItemType;
+        if (bCheckFullHealth &&
+            (nItemType == CSWBaseItem::ITEM_TYPE_REPAIR_KIT ||
+             nItemType == CSWBaseItem::ITEM_TYPE_MEDPAC) &&
+            GetCurrentHitPoints(0) == GetMaxHitPoints(1))
+        {
+            bCanUse = FALSE;
+        }
+        else if (!CheckItemFeatRestrictions(pItem))
+        {
+            bCanUse = FALSE;
+        }
+        else if (!CheckItemGenderRestrictions(pItem))
+        {
+            bCanUse = FALSE;
+        }
+        else if (!CheckItemPCRestrictions(pItem))
+        {
+            bCanUse = FALSE;
+        }
+        else if (!CheckItemAttributeRestrictions(pItem))
+        {
+            bCanUse = FALSE;
+        }
+        else if (!CheckItemCNPCRestrictions(pItem))
+        {
+            bCanUse = FALSE;
+        }
     }
     if (m_nAreaWaitState == 1)
     {
@@ -5105,7 +5624,7 @@ int CSWSCreature::CanUseItem(CSWSItem* pItem, int bUnknown)
     return bCanUse;
 }
 // PC 0x00549450
-int CSWSCreature::CheckItemRaceRestrictions(CSWSItem* pItem)
+int CSWSCreature::CheckItemRaceRestrictions(CSWSItem* pItem, int bEnforceRace)
 {
     int bCheckDroidOrHuman = 1;
     if (pItem->GetPropertyByTypeExists(
@@ -5129,13 +5648,13 @@ int CSWSCreature::CheckItemRaceRestrictions(CSWSItem* pItem)
         case 1:
             if (m_pStats->m_nRace != CSWRace::CRACE_HUMAN)
             {
-                return 0;
+                return bEnforceRace == 0;
             }
             break;
         case 2:
             if (m_pStats->m_nRace != CSWRace::CRACE_DROID)
             {
-                return 0;
+                return bEnforceRace == 0;
             }
             break;
         default:
@@ -5150,11 +5669,9 @@ int CSWSCreature::CheckItemRaceRestrictions(CSWSItem* pItem)
     }
 
     if (!pItem->GetPropertyByTypeExists(
-            CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_RACIAL_TYPE, 0))
-    {
-        return 1;
-    }
-    if (CheckUseMagicDeviceSkill(pItem, 1) == 1)
+            CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_RACIAL_TYPE, 0) &&
+        !pItem->GetPropertyByTypeExists(
+            CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_SUBRACE, 0))
     {
         return 1;
     }
@@ -5176,6 +5693,27 @@ int CSWSCreature::CheckItemRaceRestrictions(CSWSItem* pItem)
                 if (nRace == pItem->GetPassiveProperty(i)->m_nSubtype)
                 {
                     return 1;
+                }
+            }
+        }
+        pProperty = pItem->GetPassiveProperty(i);
+        if (pProperty->m_nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
+            (pItem->m_nUpgrades & (1 << pProperty->m_nUpgradeType)))
+        {
+            if (pItem->GetPassiveProperty(i)->m_nPropertyType ==
+                CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_SUBRACE)
+            {
+                unsigned short nSubraceRestriction =
+                    pItem->GetPassiveProperty(i)->m_nSubtype;
+                EXOLOG("Checking for property %d, subtype %d\n",
+                       CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_SUBRACE, nSubraceRestriction);
+                if (m_pStats->m_nRace != CSWRace::CRACE_DROID)
+                {
+                    unsigned char nSubrace = m_pStats->m_nSubraceIndex;
+                    if (nSubrace == pItem->GetPassiveProperty(i)->m_nSubtype)
+                    {
+                        return 1;
+                    }
                 }
             }
         }

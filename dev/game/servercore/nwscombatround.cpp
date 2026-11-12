@@ -136,6 +136,7 @@ CSWSCombatRound::CSWSCombatRound(CSWSCreature* pCreature)
     m_bEngaged = 0;
     m_bMaster = 0;
     m_pCurrentAction = NULL;
+    m_cB1C = 0;
     m_oidUnknown9CC = OBJECT_INVALID;
     m_nUnknown9D4 = 0;
     m_nCurrentActionType = 0;
@@ -353,9 +354,9 @@ void CSWSCombatRound::EndCombatRound(int bNotify)
     unsigned long oidTarget = m_pBaseCreature->m_oidAttemptedAttackTarget;
     CGameObject* pTarget = g_pAppManager->GetServerExoApp()->GetGameObject(oidTarget);
     if (pTarget == NULL)
-        m_pBaseCreature->m_oidAttemptedAttackTarget = OBJECT_INVALID;
+        m_pBaseCreature->SetAttemptedAttackTarget(OBJECT_INVALID);
     else if (pTarget->AsSWSObject() != NULL && pTarget->AsSWSObject()->GetDead())
-        m_pBaseCreature->m_oidAttemptedAttackTarget = OBJECT_INVALID;
+        m_pBaseCreature->SetAttemptedAttackTarget(OBJECT_INVALID);
 
     oidTarget = m_pBaseCreature->m_oidAttemptedSpellTarget;
     pTarget = g_pAppManager->GetServerExoApp()->GetGameObject(oidTarget);
@@ -1280,7 +1281,7 @@ void CSWSCombatRound::AddCutsceneAttackAction(unsigned long oidTarget,
 
     if (m_pBaseCreature->m_oidAttemptedAttackTarget == OBJECT_INVALID)
     {
-        m_pBaseCreature->m_oidAttemptedAttackTarget = oidTarget;
+        m_pBaseCreature->SetAttemptedAttackTarget(oidTarget);
     }
 }
 // PC 0x00528CD0
@@ -1298,7 +1299,13 @@ void CSWSCombatRound::AddAttackAction(unsigned long oidTarget,
 
         int bValidTarget = 1;
         if (pGameObject->AsSWSDoor() != NULL &&
-            pGameObject->AsSWSDoor()->m_nOpenState != CSWSDoor::OPEN_STATE_CLOSED)
+            (pGameObject->AsSWSDoor()->m_nOpenState != CSWSDoor::OPEN_STATE_CLOSED ||
+             pGameObject->AsSWSDoor()->GetCurrentHitPoints(0) < 1))
+        {
+            bValidTarget = 0;
+        }
+        if (pGameObject->AsSWSPlaceable() != NULL &&
+            pGameObject->AsSWSPlaceable()->GetCurrentHitPoints(0) < 1)
         {
             bValidTarget = 0;
         }
@@ -1325,10 +1332,24 @@ void CSWSCombatRound::AddAttackAction(unsigned long oidTarget,
 
             if (m_pBaseCreature->m_oidAttemptedAttackTarget == OBJECT_INVALID)
             {
-                m_pBaseCreature->m_oidAttemptedAttackTarget = oidTarget;
+                m_pBaseCreature->SetAttemptedAttackTarget(oidTarget);
             }
         }
     }
+}
+// PC 0x00528E20
+void CSWSCombatRound::AddStanceAction(int nNumAttacks, unsigned long oidTarget,
+                                      int nAttackFlags)
+{
+    CSWSCombatRoundAction* pAction = new CSWSCombatRoundAction;
+
+    pAction->m_nAttackFlags = nAttackFlags;
+    pAction->m_nActionType = CSWSCombatRoundAction::ACTION_STANCE;
+    pAction->m_nAnimation = 10001;
+    pAction->m_nAnimationTime = g_nCombatStretch + 3000;
+    pAction->m_nNumAttacks = nNumAttacks;
+    pAction->m_oidTarget = oidTarget;
+    AddAction(pAction, ACTION_POSITION_BY_TIME);
 }
 // PC 0x00528E90
 void CSWSCombatRound::AddSWSpellAction(unsigned long oidCreator, int nArg2,
@@ -1365,6 +1386,16 @@ void CSWSCombatRound::AddSWSpellAction(unsigned long oidCreator, int nArg2,
     }
 
     AddAction(pAction, -1);
+}
+// PC 0x00528F70
+void CSWSCombatRound::AddSwitchWeaponsAction()
+{
+    CSWSCombatRoundAction* pAction = new CSWSCombatRoundAction;
+
+    pAction->m_nActionType = CSWSCombatRoundAction::ACTION_SWITCH_WEAPONS;
+    pAction->m_nAnimationTime = 1000;
+    pAction->m_nEquipFlags = 0;
+    AddAction(pAction, ACTION_POSITION_BY_TIME);
 }
 // PC 0x00528FC0
 void CSWSCombatRound::AddSWItemSpellAction(unsigned long oidCreator, int nArg2,
@@ -1491,7 +1522,7 @@ int CSWSCombatRound::GetWeaponAttackType()
     int bOffHand = m_bOffHandAttack;
     int bExtraAttack;
 
-    if (m_nAdditAttacks != 0 || m_nEffectAttacks != 0)
+    if (m_nAdditAttacks != 0 || GetFunctionalBonusEffectAttacks() != 0)
     {
         bExtraAttack = (m_nCurrentAttack + 1) > m_nOnHandAttacks;
     }
@@ -1822,8 +1853,8 @@ int CSWSCombatRound::GetOffHandAttack()
 // PC 0x00528B60
 int CSWSCombatRound::CalculateOnHandAttacks(unsigned short nFeat)
 {
-    m_nOnHandAttacks =
-        m_nEffectAttacks + m_pBaseCreature->m_pStats->GetAttacksPerRound();
+    m_nOnHandAttacks = m_pBaseCreature->m_pStats->GetAttacksPerRound();
+    m_nOnHandAttacks += GetFunctionalBonusEffectAttacks();
 
     if (nFeat == 11)
     {
@@ -1846,6 +1877,12 @@ int CSWSCombatRound::CalculateOnHandAttacks(unsigned short nFeat)
         m_nOnHandAttacks++;
     }
     else if (nFeat == 26)
+    {
+        m_nOnHandAttacks++;
+    }
+
+    if (m_pBaseCreature->IsWieldingLightsaber() &&
+        m_pBaseCreature->m_n1110 == 264)
     {
         m_nOnHandAttacks++;
     }
@@ -1952,6 +1989,23 @@ int CSWSCombatRound::ResolveChoreographedState(unsigned long oidTarget)
                         bResult = TRUE;
                     }
                 }
+            }
+        }
+    }
+    else if (m_pBaseCreature->m_pStats->HasFeat(207))
+    {
+        CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+        CGameObject* pObject = pServer->GetGameObject(oidTarget);
+        if (pObject != NULL && pObject->AsSWSCreature() != NULL)
+        {
+            CSWSCreature* pTarget = pObject->AsSWSCreature();
+            if (pTarget->m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND) != NULL)
+            {
+                bResult = FALSE;
+            }
+            else if (pTarget->m_pStats->HasFeat(207))
+            {
+                bResult = TRUE;
             }
         }
     }
@@ -2080,6 +2134,16 @@ int CSWSCombatRound::HasCreatureWeapons()
 int CSWSCombatRound::GetTotalAttacks()
 {
     return m_nOnHandAttacks + m_nOffHandAttacks;
+}
+// PC 0x005281B0
+void CSWSCombatRound::SetBonusEffectAttacks(int nAttacks)
+{
+    m_nEffectAttacks = nAttacks;
+}
+// PC 0x005281C0
+int CSWSCombatRound::GetActualBonusEffectAttacks()
+{
+    return m_nEffectAttacks;
 }
 // PC 0x00528230
 void CSWSCombatSubAttackThreat::Clear()

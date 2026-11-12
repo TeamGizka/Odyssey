@@ -2799,6 +2799,25 @@ void CGuiInGame::AppendToMsgBuffer(const CExoString& sMessage,
         m_pMessageBuffer[m_MessageBufferSize++].m_nColor = nColor;
     }
 }
+// PC 0x0067CC10
+void CGuiInGame::AppendToCombatBuffer(const CExoString& sMessage,
+                                      unsigned long nType, unsigned char nColor)
+{
+    if (sMessage != "")
+    {
+        if (m_nCombatBufferSize >= 64)
+        {
+            m_nCombatBufferSize = 63;
+            for (unsigned long i = 0; i < m_nCombatBufferSize; i++)
+            {
+                m_pCombatBuffer[i] = m_pCombatBuffer[i + 1];
+            }
+        }
+        m_pCombatBuffer[m_nCombatBufferSize].m_sMessage = sMessage;
+        m_pCombatBuffer[m_nCombatBufferSize].m_nType = nType;
+        m_pCombatBuffer[m_nCombatBufferSize++].m_nColor = nColor;
+    }
+}
 // PC 0x00685C90
 void CGuiInGame::AppendToDialogBuffer(const CExoString& sMessage,
                                       unsigned long oidSpeaker)

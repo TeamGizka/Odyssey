@@ -62,7 +62,10 @@ inline CSWSDialogBase::CSWSDialogBase()
       m_nQuestEntry(0),
       m_nAnimationCount(0),
       m_pAnimations(NULL),
-      m_bSoundExists(0)
+      m_bSoundExists(0),
+      m_nAlienRaceNode(0),
+      m_nEmotion(4),
+      m_nFacialAnim(0)
 {
 }
 // PC 0x005E6960
@@ -393,6 +396,20 @@ inline CSWSDialogBase& CSWSDialogBase::operator=(const CSWSDialogBase& dialogBas
     m_sSpeaker = dialogBase.m_sSpeaker;
     m_lsText = dialogBase.m_lsText;
     m_cScript = dialogBase.m_cScript;
+    m_nActionParam1 = dialogBase.m_nActionParam1;
+    m_nActionParam2 = dialogBase.m_nActionParam2;
+    m_nActionParam3 = dialogBase.m_nActionParam3;
+    m_nActionParam4 = dialogBase.m_nActionParam4;
+    m_nActionParam5 = dialogBase.m_nActionParam5;
+    m_cScript2 = dialogBase.m_cScript2;
+    m_nActionParam1b = dialogBase.m_nActionParam1b;
+    m_nActionParam2b = dialogBase.m_nActionParam2b;
+    m_nActionParam3b = dialogBase.m_nActionParam3b;
+    m_nActionParam4b = dialogBase.m_nActionParam4b;
+    m_nActionParam5b = dialogBase.m_nActionParam5b;
+    m_sActionParamStrA = dialogBase.m_sActionParamStrA;
+    m_sActionParamStrB = dialogBase.m_sActionParamStrB;
+    m_bNodeUnskippable = dialogBase.m_bNodeUnskippable;
     m_nWaitFlags = dialogBase.m_nWaitFlags;
     m_nDelay = dialogBase.m_nDelay;
     m_nSoundDelay = dialogBase.m_nSoundDelay;
@@ -411,6 +428,9 @@ inline CSWSDialogBase& CSWSDialogBase::operator=(const CSWSDialogBase& dialogBas
     m_fFadeLength = dialogBase.m_fFadeLength;
     m_fFadeDelay = dialogBase.m_fFadeDelay;
     m_bSoundExists = dialogBase.m_bSoundExists;
+    m_nAlienRaceNode = dialogBase.m_nAlienRaceNode;
+    m_nEmotion = dialogBase.m_nEmotion;
+    m_nFacialAnim = dialogBase.m_nFacialAnim;
     return *this;
 }
 // PC 0x005E65A0
@@ -447,10 +467,9 @@ CExoString CSWSDialog::GetExoStringFromLocString(CExoLocString& locString,
     unsigned long oidPlayer =
         g_pAppManager->m_pServerExoApp->GetPlayerCreatureId();
     CExoString sString;
-    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
 
-    locString.GetString(pServer->GetPlayerLanguage(oidPlayer), &sString,
-                        nGender);
+    locString.GetString(g_pAppManager->m_pClientExoApp->GetClientLanguage(),
+                        &sString, nGender);
     return sString;
 }
 // PC 0x005E6840
@@ -708,8 +727,9 @@ CSWSObject* CSWSDialog::GetSpeaker(CSWSObject* pOwner, const CExoString& sSpeake
     CSWSArea* pSpeakerArea = pSpeaker->GetArea();
     CSWSArea* pOwnerArea = pOwner->GetArea();
     if (pSpeakerArea != pOwnerArea ||
-        vDistance * vDistance > CSWSArea::MAX_OBJECT_CONVERSATION_DISTANCE *
-                                CSWSArea::MAX_OBJECT_CONVERSATION_DISTANCE)
+        (vDistance * vDistance > CSWSArea::MAX_OBJECT_CONVERSATION_DISTANCE *
+                                 CSWSArea::MAX_OBJECT_CONVERSATION_DISTANCE &&
+         pSpeaker->m_n260 == 0))
     {
         if (pSpeaker->m_oidDialogOwner == m_oidDialogOwner)
         {

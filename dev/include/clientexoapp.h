@@ -201,6 +201,7 @@ public:
     void EnableVideoEffect(int nEffect);
     void DisableVideoEffect();
     CSWParty* GetSWParty();
+    int GetPlayerMovementInput();
     CSWCCreature* GetPlayerCreature();
     unsigned long GetPlayerCreatureId();
 

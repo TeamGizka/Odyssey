@@ -304,8 +304,9 @@ public:
         DIRECT_LINE_BLOCKED_CREATURE = -3
     };
     float ComputeHeight(const Vector& vPosition, int nRoomIndex,
-                        CSWSRoom** ppRoom);
-    class CSWSRoom* GetRoom(const Vector& vPosition, int* pnFace);
+                        CSWSRoom** ppRoom, int* pnFace = NULL);
+    class CSWSRoom* GetRoom(const Vector& vPosition, int* pnFace,
+                            int* pnRoomIndex = NULL);
     class CSWSRoom* GetRoom(int nRoomIndex);
     int ComputeSafeLocation(const Vector& vPosition, float fRadius,
                             CPathfindInformation* pPathfind, int bFlag,

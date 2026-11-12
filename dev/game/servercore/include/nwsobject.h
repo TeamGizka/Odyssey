@@ -449,7 +449,12 @@ public:
 
         ACTION_CHECK_FORCE_FOLLOW_OBJECT = 58,
         ACTION_HEAL = 56,
-        ACTION_COMBAT = 63
+        ACTION_COMBAT = 63,
+        ACTION_DOOR_SABER = 67,
+        ACTION_STANCE_TOTAL_DEFENSE = 68,
+        ACTION_STANCE_MEDITATIVE = 69,
+        ACTION_FOLLOW_OWNER = 70,
+        ACTION_SWITCH_WEAPONS = 71
     };
 
 
@@ -711,6 +716,8 @@ public:
                                 unsigned char nBeamFlag);
     int AddOpenDoorAction(unsigned long oidDoor, int bSuccess);
     int AddCloseDoorAction(unsigned long oidDoor, int bSuccess);
+    int AddDoorSaberAction(unsigned long oidDoor);
+    int AddSwitchWeaponsAction(int bInstant);
     void TestActionList();
     void AddAction(
         unsigned long nActionType, unsigned short nGroupId,
@@ -754,6 +761,7 @@ public:
     int AIActionSpeakStrRef(CSWSObjectActionNode* pNode);
     int AIActionPlayAnimation(CSWSObjectActionNode* pNode);
     int AIActionUnlockObject(CSWSObjectActionNode* pNode);
+    int AIActionDoorSaber(CSWSObjectActionNode* pNode);
     int AIActionLockObject(CSWSObjectActionNode* pNode);
     int DoSpellLevelAbsorption(CSWSObject* pCaster);
     enum { SPELL_RESISTANCE_RESISTED = 1 };
@@ -767,6 +775,7 @@ public:
     int AIActionDialogObject(CSWSObjectActionNode* pNode);
     int AIActionResumeDialog(CSWSObjectActionNode* pNode);
     int AIActionWait(CSWSObjectActionNode* pNode);
+    int AIActionSwitchWeapons(CSWSObjectActionNode* pNode);
     int AIActionTakeItem(CSWSObjectActionNode* pNode);
     int AIActionGiveItem(CSWSObjectActionNode* pNode);
     int AIActionCloseDoor(CSWSObjectActionNode* pNode);
@@ -1325,6 +1334,12 @@ public:
     virtual CSWSCreature* AsSWSCreature() { return this; }  // PC 0x00698BD0
     virtual void AIUpdate();
     void SpawnInHeartbeatPerception(int bForce);
+    void ResetHeartbeatTimer();
+    void HandleHPRegeneration();
+    void HandleFPRegeneration();
+    void HandleAlignmentInfluence();
+    void HandleAutoBalancing();
+    void SetIsPuppet(int bIsPuppet);
     void UpdateMineCheck();
     virtual int ClearAction(CSWSObjectActionNode* pNode, int bRemove);
     virtual void EventHandler(unsigned long nEventId, unsigned long oidCaller,
@@ -1368,7 +1383,7 @@ public:
     void ClearActivities(int nActivity);
     int GetActivity(int nActivity);
     int GetLastInstantEquip(unsigned long nSlot);
-    float GetMovementRateFactor();
+    float GetMovementRateFactor(int bIncludeFeats = 1);
     void SetMovementRateFactor(float fMovementRateFactor);
     void PacifyCreature();
     void PacifyCreature(unsigned long oidCreature);
@@ -1474,6 +1489,7 @@ public:
         CSWPartyMemberData* pMember, CSWPartyFollowDataArray* pPaths,
         float& fDistance, int bRun);
     unsigned char CanUnEquipWeapon(CSWSItem* pItem);
+    unsigned char CanUnEquipWeapon2(CSWSItem* pItem);
     void SetLockOrientationToObject(unsigned long oidTarget, int bUnknown);
     void SetAnimation(int nAnimation);
     void SetCombatMode(unsigned char nMode, int bUpdate);
@@ -1483,6 +1499,7 @@ public:
                        int nUnknown);
     float ComputeSpellRange(CExoString sRange, unsigned long oidTarget);
     int AddPathfindingWaitActionToFront(unsigned short nGroupId);
+    void SetSilentMove(int bSilentMove);
     void RemoveSpellActionFromRound();
     int UpdateSpecialAttacks();
     void ComputeAIState();
@@ -1515,7 +1532,8 @@ public:
 
     int ResolveDefensiveEffects(CSWSObject* pTarget, int bTouchAttack);
     int IsProjectileParryable(CSWSObject* pTarget, int bCheckWeapon,
-                             int bCheckShield, int& nForceShield, int nWeaponHand);
+                             int bCheckShield, int& nForceShield,
+                             int& bCanReflect, int nWeaponHand);
 
 
     CPathfindInformation* GetPathfindInformation() { return m_pPathfindInformation; }
@@ -1606,7 +1624,8 @@ public:
     int GetTotalEffectBonus(unsigned char nEffectType, CSWSObject* pObject,
                             int& nCapped, int nA, int nB,
                             unsigned char nSavingThrow, unsigned char nC,
-                            unsigned char nD, unsigned char nE, int nF);
+                            unsigned char nD, unsigned char nE, int nF,
+                            int* pnDamageBonus = NULL);
     int IsCreature();
     CItemRepository* GetItemRepository(int bParty);
     int GetItemCount(int bDropableOnly, int bRepositoryOnly, int bNonPlotOnly);
@@ -1658,6 +1677,8 @@ public:
         const Vector& vOrientation, unsigned long nUnknown4,
         unsigned long nUnknown5, int bUnknown6);
     int IsLightsaberEquipped();
+    int IsWieldingLightsaber();
+    int ConvertGrenadeSpellID(int nSpellID);
     int ResolveMoveToForceJump(CSWSObject* pTarget, unsigned short& nFeat);
     int HasTargetBeenDetected(unsigned long oidTarget, int bCheckHidden);
     void InitializeNewAttackTarget(unsigned long oidTarget,
@@ -1693,6 +1714,8 @@ public:
                                    CSWItemProperty* pItemProperty);
     void ApplyOnHitInstantDeath(CSWSObject* pObject,
                                 CSWItemProperty* pItemProperty);
+    void ApplyOnHitKnockdown(CSWSObject* pObject,
+                             CSWItemProperty* pItemProperty);
     Vector ResolveProjectileMissLocation(CSWSObject* pTarget);
     void ResolveRangedMiss(CSWSObject* pTarget);
     int CalculateProjectileTimeToTarget(const Vector& vTarget, int bFast);
@@ -1748,6 +1771,9 @@ public:
     int AIActionCheckMoveAwayFromLocation(CSWSObjectActionNode* pAction);
     int AIActionCheckMoveToFollowRadius(CSWSObjectActionNode* pAction);
     int AIActionPartyFollowLeader(CSWSObjectActionNode* pAction);
+    int AIActionFollowOwner(CSWSObjectActionNode* pNode);
+    int AIActionStanceTotalDefense(CSWSObjectActionNode* pNode);
+    int AIActionStanceMeditative(CSWSObjectActionNode* pNode);
 
 
     enum { ENCOUNTER_CREATURE_DESTROY_DELAY = 5000 };
@@ -1780,6 +1806,7 @@ public:
     unsigned long GetNextAttacker();
     void ClearAttackerList();
     int IsDebilitated(int bCheckMeditation = 1);
+    int IsInTotalDefense();
     void CancelAllCombatModes(int nUnknown);
     void CreateNewAttackActions(int bFindNewTarget, int bCheckCleaveRange,
                                 unsigned long oidKilledCreature);
@@ -1787,8 +1814,16 @@ public:
                                   unsigned long oidExclude);
 
     unsigned long GetAttemptedAttackTarget() { return m_oidAttemptedAttackTarget; }
+    void SetAttemptedAttackTarget(unsigned long oidTarget);
     unsigned long GetAttemptedSpellTarget() { return m_oidAttemptedSpellTarget; }
-    int GetDeadTemp();
+    int GetDeadTemp()
+    {
+        if (m_bInParty != 0)
+        {
+            return GetCurrentHitPoints(0) <= 0;
+        }
+        return 0;
+    }
     int ApplyPoisonDamage(int nPoison, CGameEffect* pEffect, int nSave, float fDamage);
     int ApplyDiseasePayload(CGameEffect* pEffect, unsigned long nDay,
                             unsigned long nTime);
@@ -1800,16 +1835,23 @@ public:
     int CheckProficiencies(CSWSItem* pItem, unsigned long nSlot);
     int CheckItemAlignmentRestrictions(CSWSItem* pItem);
     int CheckItemClassRestrictions(CSWSItem* pItem);
-    int CheckItemRaceRestrictions(CSWSItem* pItem);
+    int CheckItemRaceRestrictions(CSWSItem* pItem, int bEnforceRace);
     int CheckItemFeatRestrictions(CSWSItem* pItem);
+    int CheckItemGenderRestrictions(CSWSItem* pItem);
+    int CheckItemPCRestrictions(CSWSItem* pItem);
+    int CheckItemAttributeRestrictions(CSWSItem* pItem);
+    int CheckItemCNPCRestrictions(CSWSItem* pItem);
     int CheckUseMagicDeviceSkill(CSWSItem* pItem, int nRestrictionType);
     int RunEquip(unsigned long oidItem, unsigned long nInventorySlot, int nFlags);
     int RunUnequip(unsigned long oidItem, unsigned long oidTarget,
-                   int bUnknown1, CSWSItem** ppItem, int bUnknown2);
+                   int bUnknown1, CSWSItem** ppItem, int bUnknown2,
+                   int bUnknown3 = 0);
     int RemoveItem(CSWSItem* pItem, int bUnknown1, int bUnknown2,
                    CSWSItem** ppItem);
     unsigned char CanEquipMiscellaneous(CSWSItem* pItem, unsigned long* pnSlot,
                                         int bFeedback, int bUnknown);
+    unsigned char CanEquipWeapon2(CSWSItem* pItem, unsigned long* pnSlot,
+                                  int bFeedback, int bUnknown);
     unsigned char CanEquipWeapon(CSWSItem* pItem, unsigned long* pnSlot,
                                  int bFeedback, int bUnknown);
     int AIActionSurrenderToEnemies(CSWSObjectActionNode* pAction);
@@ -2275,7 +2317,7 @@ public:
     void AddPazaakCard(CSWSItem* pItem);
     int RemovePazaakCard(CSWSItem* pItem);
     CSWCCreature* GetClientCreature();
-    int CanUseItem(CSWSItem* pItem, int bUnknown);
+    int CanUseItem(CSWSItem* pItem, int bUnknown, int bCheckFullHealth = 1);
 
     static const int MAX_GOLD = 999999999;
     enum FeedbackMessage
@@ -2491,9 +2533,19 @@ public:
         FEEDBACK_UNKNOWN_224 = 224,
         FEEDBACK_UNKNOWN_225 = 225,
         FEEDBACK_UNKNOWN_226 = 226,
+        FEEDBACK_ITEM_GENDER_RESTRICTION = 229,
+        FEEDBACK_ITEM_PC_RESTRICTION = 230,
+        FEEDBACK_ITEM_ATTRIBUTE_RESTRICTION = 232,
+        FEEDBACK_COMPONENTS_ADDED = 233,
+        FEEDBACK_CHEMICALS_ADDED = 234,
+        FEEDBACK_ITEM_CNPC_RESTRICTION = 235,
     };
 
     int GetGold();
+    int GetComponent();
+    void SetComponent(int nComponent);
+    int GetChemical();
+    void SetChemical(int nChemical);
 
     enum
     {
@@ -2502,6 +2554,11 @@ public:
         GUI_TIMING_UNLOCK_OBJECT = 7, GUI_TIMING_LOCK = 8,
         UNLOCK_OBJECT_DURATION = 1500, LOCK_ACTION_TIME_MS = 1500,
         UNLOCK_OBJECT_IMPOSSIBLE_DC = 60, ATTACK_MOVEMENT_TIMEOUT = 3000
+    };
+    enum
+    {
+        GUI_TIMING_DOOR_SABER = 9, DOOR_SABER_DURATION = 2000,
+        ANIMATION_DOOR_SABER = 10429
     };
     void SetGold(int nGold);
     int DecrementSpellReadyCount(unsigned long nSpell, unsigned char nClass,
@@ -2608,6 +2665,8 @@ public:
                           int nArg4, int nArg5, int nArg6 = 0,
                           int nArg7 = 0);
     void AddGold(int nGold, int bFeedback);
+    void AddComponent(int nComponent, int bFeedback);
+    void AddChemical(int nChemical, int bFeedback);
     void RemoveGold(int nGold, int bFeedback);
 
 
@@ -2624,12 +2683,15 @@ public:
                          int nArg4, int nArg5, int nArg6, int nArg7, int nArg8,
                          int nArg9, int nArg10, int nArg11, int nArg12,
                          int nArg13, int nArg14, int nArg15);
+    int AddStanceActions(int nStance, unsigned long oidTarget, int nArg3,
+                         int nArg4, int nArg5, int nArg6);
     void AdjustReputation(int nFaction, int nAdjustment);
     void SetFormation(unsigned long oidLeader, int nFormation, int nPosition);
     int GetUserActionsPending();
 
     int GetBlind();
-    int Disguise(int nAppearance, CGameEffect* pEffect, int bKeepPosition);
+    int Disguise(int nAppearance, CGameEffect* pEffect, int bKeepPosition,
+                 int bPermanent = 0);
     int UnDisguise(CGameEffect* pEffect);
     void UpdatePersonalSpace();
     void UpdateAppearanceDependantInfo(int bUpdateModel);
@@ -2641,6 +2703,8 @@ public:
     void RemovePureEvilPowers();
     void AddPureGoodPowers();
     void AddPureEvilPowers();
+    CResRef GetPortraitBasedOnAlignment();
+    void RemoveMindTrickEffects();
     int HasEffect(int nEffectType);
     void RemoveCombatInvisibilityEffects();
     int GetForceItemMask();

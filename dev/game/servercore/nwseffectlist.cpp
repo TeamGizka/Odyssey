@@ -39,6 +39,8 @@
 #include "factionmanager.h"
 #include "nwsparty.h"
 #include "nwsencounter.h"
+#include "nwstrigger.h"
+#include "nwsvartable.h"
 #include "clientoptions.h"
 #include "guiingame.h"
 
@@ -160,6 +162,14 @@ const int CSWSEffectListHandler::EFFECT_FORCEFIZZLE = 106;
 const int CSWSEffectListHandler::EFFECT_FORCESHIELD = 107;
 const int CSWSEffectListHandler::EFFECT_PUREGOODPOWERS = 108;
 const int CSWSEffectListHandler::EFFECT_PUREEVILPOWERS = 109;
+const int CSWSEffectListHandler::EFFECT_FORCEBODY = 110;
+const int CSWSEffectListHandler::EFFECT_FURY = 111;
+const int CSWSEffectListHandler::EFFECT_FPREGENMODIFIER = 112;
+const int CSWSEffectListHandler::EFFECT_VPREGENMODIFIER = 113;
+const int CSWSEffectListHandler::EFFECT_FORCESIGHT = 114;
+const int CSWSEffectListHandler::EFFECT_FACTIONMODIFIER = 115;
+const int CSWSEffectListHandler::EFFECT_DESTROYSHIELDS = 116;
+const int CSWSEffectListHandler::EFFECT_ASSASSINATE = 117;
 #ifdef _XBOX
 const int CSWSEffectListHandler::MAX_EFFECTS = 108;
 #else
@@ -296,6 +306,237 @@ int CSWSEffectListHandler::OnEffectRemoved(CSWSObject* pObject,
     {
         return (this->*m_pEffectRemoved[nEffectType])(pObject, pEffect);
     }
+    return 1;
+}
+// PC 0x0052B6F0
+int CSWSEffectListHandler::OnApplyFury(CSWSObject* pObject,
+                                       CGameEffect* pEffect, int bLoadingModule)
+{
+    if (pObject == NULL || pObject->AsSWSCreature() == NULL)
+    {
+        return 0;
+    }
+    CSWSCreature* pCreature = pObject->AsSWSCreature();
+    pCreature->m_pStats->m_c120 = 0;
+    switch (pEffect->m_nSpellId)
+    {
+    case 164:
+    case 271:
+        pCreature->m_pStats->m_n124 = 7;
+        break;
+    case 165:
+    case 272:
+        pCreature->m_pStats->m_n124 = 8;
+        break;
+    case 166:
+    case 273:
+        pCreature->m_pStats->m_n124 = 9;
+        break;
+    }
+    return 0;
+}
+// PC 0x0052B800
+int CSWSEffectListHandler::OnApplyFactionModifier(CSWSObject* pObject,
+                                                  CGameEffect* pEffect,
+                                                  int bLoadingModule)
+{
+    if (pObject == NULL)
+    {
+        return 1;
+    }
+    if (bLoadingModule == 0)
+    {
+        int nOldFaction;
+        g_pAppManager->m_pServerExoApp->GetFactionOfObject(pObject->m_nId,
+                                                           &nOldFaction);
+        if (nOldFaction < 1 && nOldFaction > 6)
+        {
+            nOldFaction = -1;
+        }
+        pEffect->SetInteger(1, nOldFaction);
+        int nFaction = pEffect->GetInteger(0);
+        CFactionManager* pFactionManager =
+            g_pAppManager->m_pServerExoApp->GetFactionManager();
+        if (pFactionManager == NULL)
+        {
+            return 1;
+        }
+        if (pFactionManager->GetIsNPCFaction(nFaction) == 0 ||
+            (pObject->AsSWSCreature() != NULL &&
+             pObject->AsSWSCreature()->m_pStats->m_bIsPC != 0))
+        {
+            return 1;
+        }
+        pObject->m_n258 = 1;
+        if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
+        {
+            pObject->AsSWSPlaceable()->m_nFaction = nFaction;
+            return 0;
+        }
+        if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_TRIGGER)
+        {
+            pObject->AsSWSTrigger()->m_nFaction = nFaction;
+            return 0;
+        }
+        pFactionManager->GetFaction(nFaction)->AddMember(pObject->GetId(), 0);
+        pObject->ClearAllActions(1);
+        if (pObject->AsSWSCreature() != NULL)
+        {
+            CSWSCreature* pCreature = pObject->AsSWSCreature();
+            int bDeadTemp = pCreature->GetDeadTemp();
+            if (pObject->GetDead() == 0 && bDeadTemp == 0)
+            {
+                pCreature->ClearVisibleList();
+                pCreature->UpdateVisibleList(0);
+            }
+        }
+    }
+    return 0;
+}
+// PC 0x0052B960
+int CSWSEffectListHandler::OnRemoveFactionModifier(CSWSObject* pObject,
+                                                   CGameEffect* pEffect)
+{
+    switch (pEffect->m_nSpellId)
+    {
+    case 200:
+        g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
+            "000_Human_Conf_Active", 0);
+        break;
+    case 184:
+        g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
+            "000_Beast_Conf_Active", 0);
+        break;
+    case 269:
+        g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
+            "000_Droid_Conf_Active", 0);
+        break;
+    }
+    CFactionManager* pFactionManager =
+        g_pAppManager->m_pServerExoApp->GetFactionManager();
+    if (pFactionManager != NULL)
+    {
+        pObject->m_n258 = 0;
+        int nFaction = pEffect->GetInteger(1);
+        if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
+        {
+            pObject->AsSWSPlaceable()->m_nFaction = nFaction;
+        }
+        else if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_TRIGGER)
+        {
+            pObject->AsSWSTrigger()->m_nFaction = nFaction;
+        }
+        else
+        {
+            pFactionManager->GetFaction(nFaction)->AddMember(pObject->GetId(), 0);
+            pObject->ClearAllActions(1);
+            if (pObject->AsSWSCreature() != NULL)
+            {
+                CSWSCreature* pCreature = pObject->AsSWSCreature();
+                int bDeadTemp = pCreature->GetDeadTemp();
+                if (pObject->GetDead() == 0 && bDeadTemp == 0)
+                {
+                    pCreature->ClearVisibleList();
+                    pCreature->UpdateVisibleList(0);
+                }
+            }
+        }
+    }
+    return 1;
+}
+// PC 0x0052BB20
+int CSWSEffectListHandler::OnApplyAssassinate(CSWSObject* pObject,
+                                              CGameEffect* pEffect,
+                                              int bLoadingModule)
+{
+    if (pObject == NULL || pObject->AsSWSCreature() == NULL)
+    {
+        return 1;
+    }
+    CSWSCreature* pCreature = pObject->AsSWSCreature();
+    int nDamage;
+    switch (pEffect->GetInteger(0))
+    {
+    case 1:
+        nDamage = pCreature->GetCurrentHitPoints(0) / 4;
+        break;
+    case 2:
+        nDamage = pCreature->GetCurrentHitPoints(0) / 3;
+        break;
+    case 3:
+        nDamage = pCreature->GetCurrentHitPoints(0) / 2;
+        break;
+    default:
+        return 1;
+    }
+    if (nDamage > 0)
+    {
+        CGameEffect* pDamageEffect = new CGameEffect(1);
+        pDamageEffect->m_nType = EFFECT_DAMAGE;
+        pDamageEffect->m_nSubType =
+            (pDamageEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
+            CGameEffect::DURATION_TYPE_INSTANTANEOUS;
+        pDamageEffect->SetCreator(pEffect->m_oidCreator);
+        pDamageEffect->SetNumIntegers(APPLIED_DAMAGE_INTEGER_COUNT);
+        for (int nDamageType = 0; nDamageType < APPLIED_DAMAGE_TYPE_COUNT;
+             ++nDamageType)
+        {
+            pDamageEffect->SetInteger(nDamageType, -1);
+        }
+        pDamageEffect->SetInteger(4, nDamage);
+        pDamageEffect->SetInteger(APPLIED_DAMAGE_BASE, nDamage);
+        pDamageEffect->SetInteger(APPLIED_DAMAGE_ANIMATION_DELAY, 0);
+        pDamageEffect->SetInteger(APPLIED_DAMAGE_FLAGS,
+                                  Log_Base2(DAMAGE_FLAG_SLASHING));
+        pDamageEffect->SetInteger(APPLIED_DAMAGE_MELEE, 1);
+        pDamageEffect->SetInteger(APPLIED_DAMAGE_RANGED, 1);
+        pDamageEffect->SetInteger(APPLIED_DAMAGE_COMBAT, 0);
+        pObject->ApplyEffect(pDamageEffect, 0, 1);
+    }
+    return 1;
+}
+int CSWSEffectListHandler::OnApplyForceBody(CSWSObject* pObject,
+                                            CGameEffect* pEffect,
+                                            int bLoadingModule)
+{
+    return 0;
+}
+int CSWSEffectListHandler::OnRemoveForceBody(CSWSObject* pObject,
+                                             CGameEffect* pEffect)
+{
+    return 1;
+}
+int CSWSEffectListHandler::OnApplyFPRegenModifier(CSWSObject* pObject,
+                                                  CGameEffect* pEffect,
+                                                  int bLoadingModule)
+{
+    return 0;
+}
+int CSWSEffectListHandler::OnRemoveFPRegenModifier(CSWSObject* pObject,
+                                                   CGameEffect* pEffect)
+{
+    return 1;
+}
+int CSWSEffectListHandler::OnApplyVPRegenModifier(CSWSObject* pObject,
+                                                  CGameEffect* pEffect,
+                                                  int bLoadingModule)
+{
+    return 0;
+}
+int CSWSEffectListHandler::OnRemoveVPRegenModifier(CSWSObject* pObject,
+                                                   CGameEffect* pEffect)
+{
+    return 1;
+}
+int CSWSEffectListHandler::OnApplyForceSight(CSWSObject* pObject,
+                                             CGameEffect* pEffect,
+                                             int bLoadingModule)
+{
+    return 0;
+}
+int CSWSEffectListHandler::OnRemoveForceSight(CSWSObject* pObject,
+                                              CGameEffect* pEffect)
+{
     return 1;
 }
 // PC 0x0052BCF0
@@ -689,6 +930,7 @@ int CSWSEffectListHandler::OnApplyACIncrease(CSWSObject* pObject,
     int nRace;
     int nAlignmentGroup1;
     int nAlignmentGroup2;
+    int nDamageFlags;
 
     if (pObject->AsSWSCreature() != NULL)
     {
@@ -701,7 +943,7 @@ int CSWSEffectListHandler::OnApplyACIncrease(CSWSObject* pObject,
             nAlignmentGroup1 = pEffect->GetInteger(AC_INTEGER_ALIGNMENT_GROUP1);
             nAlignmentGroup2 = pEffect->GetInteger(AC_INTEGER_ALIGNMENT_GROUP2);
 
-            pEffect->GetInteger(AC_INTEGER_DAMAGE_FLAGS);
+            nDamageFlags = pEffect->GetInteger(AC_INTEGER_DAMAGE_FLAGS);
             if (nBonus < 1)
                 return 1;
             if (nRace == g_pRules->m_nNumRaces &&
@@ -710,7 +952,9 @@ int CSWSEffectListHandler::OnApplyACIncrease(CSWSObject* pObject,
                 switch (nType)
                 {
                 case AC_DODGE_BONUS:
-                    pCreature->m_pStats->m_nACDodgeBonus += nBonus;
+                    if (nDamageFlags == DAMAGE_FLAG_PHYSICAL ||
+                        nDamageFlags == AC_VS_DAMAGE_TYPE_ALL)
+                        pCreature->m_pStats->m_nACDodgeBonus += nBonus;
                     break;
                 case AC_NATURAL_BONUS:
                     if (pCreature->m_pStats->m_nACNaturalBonus > 0)
@@ -1643,6 +1887,12 @@ int CSWSEffectListHandler::OnRemoveSetStateInternal(CSWSObject* pObject,  // PC 
         case 8:
         case 9:
         case 10:
+        case 14:
+        case 15:
+        case 16:
+        case 17:
+        case 18:
+        case 19:
             g_pVirtualMachine->RunScript(&pCreature->m_sScripts[CSWSCreature::SCRIPT_END_ROUND],
                                          pCreature->m_nId, 1);
         case 12:
@@ -1881,7 +2131,8 @@ int CSWSEffectListHandler::OnApplyBeam(CSWSObject* pObject,
 
     if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE ||
         pObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE ||
-        pObject->m_nObjectType == CGameObject::OBJECT_TYPE_DOOR)
+        pObject->m_nObjectType == CGameObject::OBJECT_TYPE_DOOR ||
+        pObject->m_nObjectType == CGameObject::OBJECT_TYPE_TRIGGER)
     {
         pBeamEffect = new CGameEffect(pEffect);
         pBeamEffect->m_nType = EFFECT_VISUALEFFECT;
@@ -2071,10 +2322,63 @@ int CSWSEffectListHandler::OnApplyForceShield(CSWSObject* pObject,
         pResistanceEffect->SetInteger(1, nResistance);
         pResistanceEffect->SetInteger(2, nAmount);
         pResistanceEffect->SetInteger(3, nVulnerFlags);
+        pResistanceEffect->SetInteger(4, 1);
         pObject->ApplyEffect(pVisualEffect, 0, 0);
         pObject->ApplyEffect(pResistanceEffect, 0, 0);
     }
     return 0;
+}
+// PC 0x005334E0
+int CSWSEffectListHandler::OnRemoveFury(CSWSObject* pObject,
+                                        CGameEffect* pEffect)
+{
+    if (pObject != NULL && pObject->AsSWSCreature() != NULL)
+    {
+        CSWSCreature* pCreature = pObject->AsSWSCreature();
+        int bOtherFury = 0;
+        for (int nEffect = 0; nEffect < pCreature->m_lstEffects.num;
+             nEffect++)
+        {
+            CGameEffect* pOther = pCreature->m_lstEffects[nEffect];
+            if (pOther->m_nType == EFFECT_FURY && pOther != pEffect)
+            {
+                bOtherFury = 1;
+            }
+        }
+        if (bOtherFury == 0)
+        {
+            pCreature->m_pStats->m_c120 = -1;
+            pCreature->m_pStats->m_n124 = 0;
+        }
+    }
+    return 1;
+}
+// PC 0x00533560
+int CSWSEffectListHandler::OnApplyDestroyShields(CSWSObject* pObject,
+                                                 CGameEffect* pEffect,
+                                                 int bLoadingModule)
+{
+    if (pObject->m_lstEffects.num > 0)
+    {
+        int nEffect = pObject->AsSWSCreature() != NULL
+                          ? pObject->AsSWSCreature()
+                                ->m_pStats->m_nDamageResistanceEffectIndex
+                          : 0;
+        for (; nEffect < pObject->m_lstEffects.num; nEffect++)
+        {
+            CGameEffect* pShield = pObject->m_lstEffects[nEffect];
+            if (pShield->m_nType > EFFECT_DAMAGE_RESISTANCE)
+            {
+                break;
+            }
+            if (pShield->m_nType == EFFECT_DAMAGE_RESISTANCE &&
+                pShield->GetInteger(4) == 1)
+            {
+                pObject->RemoveEffectById(pShield->m_nID);
+            }
+        }
+    }
+    return 1;
 }
 // PC 0x005335F0
 int CSWSEffectListHandler::OnApplyDamage(CSWSObject* pObject,
@@ -2722,29 +3026,14 @@ int CSWSEffectListHandler::OnApplyModifyNumAttacks(CSWSObject* pObject,
 {
     CSWSCreature* pCreature;
     CSWSCombatRound* pCombatRound;
-    int nCurrent;
-    int nEffectAttacks;
 
     pCreature = pObject->AsSWSCreature();
     if (pCreature != NULL)
     {
         pCombatRound = pCreature->m_pcCombatRound;
-        nCurrent = pCombatRound->m_nEffectAttacks;
-        if (nCurrent > 2)
-        {
-            return 1;
-        }
-        nEffectAttacks = nCurrent + pEffect->GetInteger(0);
-        pCombatRound->m_nEffectAttacks = nEffectAttacks;
-        if (nEffectAttacks > 2)
-        {
-            nEffectAttacks = 2;
-        }
-        pCombatRound->m_nEffectAttacks = nEffectAttacks;
-        pCombatRound->m_nEffectAttacks =
-            (pCombatRound->m_nEffectAttacks < 0)
-                ? 0
-                : pCombatRound->m_nEffectAttacks;
+        pCombatRound->SetBonusEffectAttacks(
+            pCombatRound->GetActualBonusEffectAttacks() +
+            pEffect->GetInteger(0));
     }
     return 0;
 }
@@ -2754,26 +3043,14 @@ int CSWSEffectListHandler::OnRemoveModifyNumAttacks(CSWSObject* pObject,
 {
     CSWSCreature* pCreature;
     CSWSCombatRound* pCombatRound;
-    int nCurrent;
 
     pCreature = pObject->AsSWSCreature();
     if (pCreature != NULL)
     {
-#ifdef _XBOX
-        nCurrent = pCreature->m_pcCombatRound->m_nEffectAttacks;
-        EXOXBOXASSERT(nCurrent - pEffect->GetInteger(0) >= 0);
-#endif
         pCombatRound = pCreature->m_pcCombatRound;
-        nCurrent = pCombatRound->m_nEffectAttacks;
-        pCombatRound->m_nEffectAttacks = nCurrent - pEffect->GetInteger(0);
-        pCombatRound->m_nEffectAttacks =
-            (pCombatRound->m_nEffectAttacks > 2)
-                ? 2
-                : pCombatRound->m_nEffectAttacks;
-        pCombatRound->m_nEffectAttacks =
-            (pCombatRound->m_nEffectAttacks < 0)
-                ? 0
-                : pCombatRound->m_nEffectAttacks;
+        pCombatRound->SetBonusEffectAttacks(
+            pCombatRound->GetActualBonusEffectAttacks() -
+            pEffect->GetInteger(0));
     }
     return 1;
 }
@@ -4014,20 +4291,22 @@ int CSWSEffectListHandler::OnApplyHealForcePoints(CSWSObject* pObject,
     CSWSCreature* pCreature;
     int nForcePoints;
     int nHeal;
-    short nCurrent;
 
     pCreature = pObject->AsSWSCreature();
     if (pCreature != NULL && pCreature->m_pStats != NULL)
     {
         nHeal = pEffect->GetInteger(0);
-        nCurrent = pCreature->m_pStats->m_nTemporaryForcePoints +
-                   pCreature->m_pStats->m_nCurrentForcePoints;
-        nForcePoints = nHeal + nCurrent;
+        nForcePoints = nHeal + pCreature->m_pStats->GetCurrentForcePoints();
         if (nForcePoints > pCreature->GetMaxForcePoints())
         {
             nForcePoints = pCreature->GetMaxForcePoints();
         }
         pCreature->m_pStats->m_nCurrentForcePoints = nForcePoints;
+        CSWCCMessageData* pMessageData = new CSWCCMessageData;
+        pMessageData->SetObjectID(0, pCreature->m_nId);
+        pMessageData->SetInteger(0, nHeal);
+        pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_FORCE_POINTS_REGAINED,
+                                       pMessageData);
     }
     return 1;
 }
@@ -5052,7 +5331,20 @@ int CSWSEffectListHandler::OnApplyResurrection(CSWSObject* pObject,
         pCreature = pObject->AsSWSCreature();
         if (pCreature->GetCurrentHitPoints(0) < 1)
         {
-            pCreature->SetCurrentHitPoints(1);
+            int nPercent = pEffect->GetInteger(0);
+            if (nPercent > 0)
+            {
+                int nHitPoints = nPercent * pCreature->GetMaxHitPoints(1) / 100;
+                if (nHitPoints == 0)
+                {
+                    nHitPoints = 1;
+                }
+                pCreature->SetCurrentHitPoints(nHitPoints);
+            }
+            else
+            {
+                pCreature->SetCurrentHitPoints(1);
+            }
         }
         pCreature->ClearAllActions(1);
         pCreature->m_bListening = 1;
@@ -5060,9 +5352,8 @@ int CSWSEffectListHandler::OnApplyResurrection(CSWSObject* pObject,
         pCreature->m_bCommandable = 1;
         pCreature->RecomputeAmbientAnimationState();
 
-        unsigned long oidObject = pObject->m_nId;
         pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(
-            oidObject);
+            pObject->m_nId);
         if (pPlayer != NULL)
         {
             CSWSMessage* pMessage =
@@ -5070,12 +5361,13 @@ int CSWSEffectListHandler::OnApplyResurrection(CSWSObject* pObject,
             pMessage->SendServerToPlayerDestroyDeathGUI(pPlayer->m_nPlayerId);
         }
 
-        for (nIndex = 0; nIndex < pCreature->m_lstEffects.num &&
-                         pCreature->m_lstEffects[nIndex]->m_nType <=
-                             EFFECT_HITPOINTCHANGEWHENDYING;
-             nIndex++)
+        for (nIndex = 0; nIndex < pCreature->m_lstEffects.num; nIndex++)
         {
             pAppliedEffect = pCreature->m_lstEffects[nIndex];
+            if (pAppliedEffect->m_nType > EFFECT_HITPOINTCHANGEWHENDYING)
+            {
+                break;
+            }
             if (pAppliedEffect->m_nType == EFFECT_HITPOINTCHANGEWHENDYING &&
                 (pAppliedEffect->m_nSubType & CGameEffect::DURATION_MASK) ==
                     CGameEffect::DURATION_TYPE_TEMPORARY)
@@ -7427,6 +7719,20 @@ void CSWSEffectListHandler::InitializeEffects()
 #ifndef _XBOX
     m_pEffectApplied[EFFECT_PUREGOODPOWERS] = &CSWSEffectListHandler::OnApplyPureGoodPowers; m_pEffectRemoved[EFFECT_PUREGOODPOWERS] = &CSWSEffectListHandler::OnRemovePureGoodPowers;
     m_pEffectApplied[EFFECT_PUREEVILPOWERS] = &CSWSEffectListHandler::OnApplyPureEvilPowers; m_pEffectRemoved[EFFECT_PUREEVILPOWERS] = &CSWSEffectListHandler::OnRemovePureEvilPowers;
+    m_pEffectApplied[EFFECT_FORCEBODY] = &CSWSEffectListHandler::OnApplyForceBody;
+    m_pEffectRemoved[EFFECT_FORCEBODY] = &CSWSEffectListHandler::OnRemoveForceBody;
+    m_pEffectApplied[EFFECT_FURY] = &CSWSEffectListHandler::OnApplyFury;
+    m_pEffectRemoved[EFFECT_FURY] = &CSWSEffectListHandler::OnRemoveFury;
+    m_pEffectApplied[EFFECT_FPREGENMODIFIER] = &CSWSEffectListHandler::OnApplyFPRegenModifier;
+    m_pEffectRemoved[EFFECT_FPREGENMODIFIER] = &CSWSEffectListHandler::OnRemoveFPRegenModifier;
+    m_pEffectApplied[EFFECT_VPREGENMODIFIER] = &CSWSEffectListHandler::OnApplyVPRegenModifier;
+    m_pEffectRemoved[EFFECT_VPREGENMODIFIER] = &CSWSEffectListHandler::OnRemoveVPRegenModifier;
+    m_pEffectApplied[EFFECT_FORCESIGHT] = &CSWSEffectListHandler::OnApplyForceSight;
+    m_pEffectRemoved[EFFECT_FORCESIGHT] = &CSWSEffectListHandler::OnRemoveForceSight;
+    m_pEffectApplied[EFFECT_FACTIONMODIFIER] = &CSWSEffectListHandler::OnApplyFactionModifier;
+    m_pEffectRemoved[EFFECT_FACTIONMODIFIER] = &CSWSEffectListHandler::OnRemoveFactionModifier;
+    m_pEffectApplied[EFFECT_DESTROYSHIELDS] = &CSWSEffectListHandler::OnApplyDestroyShields;
+    m_pEffectApplied[EFFECT_ASSASSINATE] = &CSWSEffectListHandler::OnApplyAssassinate;
 #endif
 }
 // PC 0x00531890

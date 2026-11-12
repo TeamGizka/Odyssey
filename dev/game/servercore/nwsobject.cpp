@@ -887,6 +887,58 @@ int CSWSObject::AddLockObjectAction(unsigned long oidObject)
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     return 1;
 }
+// PC 0x004F9A70
+int CSWSObject::AddDoorSaberAction(unsigned long oidDoor)
+{
+    if (m_bCommandable == 0)
+    {
+        return 0;
+    }
+
+    AddAction(ACTION_DOOR_SABER, 0xffff, 3, &oidDoor, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    return 1;
+}
+// PC 0x004F9AD0
+int CSWSObject::AddSwitchWeaponsAction(int bInstant)
+{
+    if (m_bCommandable == 0)
+    {
+        return 0;
+    }
+
+    CSWSCreature* pCreature = AsSWSCreature();
+    if (pCreature == NULL)
+    {
+        return 0;
+    }
+
+    if (bInstant == 0)
+    {
+        if (pCreature->m_bCombatState != 1 &&
+            pCreature->m_pcCombatRound->GetActionPending() == 0)
+        {
+            pCreature->ActionManager(4);
+        }
+        if (pCreature->m_lstActions.GetHead() != NULL)
+        {
+            pCreature->m_pcCombatRound->AddSwitchWeaponsAction();
+            if (GetNodeById(ACTION_COMBAT) == NULL)
+            {
+                int bCombat = 1;
+                AddAction(ACTION_COMBAT, ACTION_GROUP_NEW, 1, &bCombat, 0, 0,
+                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                          0, 0, 0, 0);
+            }
+            return 1;
+        }
+    }
+
+    ClearAllActions(1);
+    AddAction(ACTION_SWITCH_WEAPONS, ACTION_GROUP_NEW, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    return 1;
+}
 // PC 0x004F9BF0
 CSWSObject::CSWSObject(unsigned char nObjectType, unsigned long oidObject,
                        int bFlag)

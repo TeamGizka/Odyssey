@@ -87,6 +87,2035 @@ int CSWVirtualMachineCommands::ExecuteCommandSetAssociateListenPatterns(int, int
 {
     return 0;
 }
+// PC 0x005AF400
+int CSWVirtualMachineCommands::ExecuteCommandSetCreatureAILevel(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    int nAILevel;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&nAILevel) == 0)
+    {
+        return -2001;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidCreature);
+    if (pGameObject != NULL && pGameObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
+    {
+        CSWSCreature* pCreature = pGameObject->AsSWSCreature();
+        if (pCreature != NULL)
+        {
+            pCreature->m_c7C = (char)pCreature->m_nAILevel;
+            int nLevel;
+            switch (nAILevel)
+            {
+                case 0:
+                    nLevel = 0;
+                    break;
+                case 1:
+                    nLevel = 1;
+                    break;
+                case 2:
+                    nLevel = 2;
+                    break;
+                case 4:
+                    nLevel = 4;
+                    break;
+                default:
+                    nLevel = 3;
+                    break;
+            }
+            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->SetAILevel(pCreature, nLevel);
+        }
+    }
+    return 0;
+}
+// PC 0x005AF4D0
+int CSWVirtualMachineCommands::ExecuteCommandChangeObjectAppearance(int nCommand, int nArgs)
+{
+    unsigned long oidObject;
+    int nAppearance;
+
+    if (g_pVirtualMachine->StackPopObject(&oidObject) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&nAppearance) == 0)
+    {
+        return -2001;
+    }
+    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetGameObject(oidObject)->AsSWSCreature();
+    if (pCreature != NULL)
+    {
+        pCreature->Disguise(nAppearance, NULL, 0, 1);
+    }
+    return 0;
+}
+// PC 0x005AF540
+int CSWVirtualMachineCommands::ExecuteCommandResetCreatureAILevel(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidCreature);
+    if (pGameObject != NULL && pGameObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
+    {
+        CSWSCreature* pCreature = pGameObject->AsSWSCreature();
+        if (pCreature != NULL)
+        {
+            unsigned char nAILevel = pCreature->m_c7C;
+            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->SetAILevel(pCreature, nAILevel);
+        }
+    }
+    return 0;
+}
+// PC 0x005B3270
+int CSWVirtualMachineCommands::ExecuteCommandEffectBlind(int nCommand, int nArgs)
+{
+    CGameEffect* pGameEffect;
+    CGameObject* pGameObject;
+
+    pGameEffect = new CGameEffect(1);
+    pGameEffect->SetCreator(m_oidObject);
+    pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_BLINDNESS;
+    pGameEffect->SetInteger(0, 16);
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObject, &pGameObject) ==
+            CGameObjectArray::SUCCESS &&
+        pGameObject != NULL)
+    {
+        pGameEffect->SetCreator(m_oidObject);
+    }
+    if (g_pVirtualMachine->StackPushEngineStructure(0, pGameEffect) == 0)
+    {
+        return -2000;
+    }
+    delete pGameEffect;
+    return 0;
+}
+// PC 0x005B3370
+int CSWVirtualMachineCommands::ExecuteCommandEffectCrush(int nCommand, int nArgs)
+{
+    CGameEffect* pGameEffect;
+
+    pGameEffect = new CGameEffect(1);
+    pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_KNOCKDOWN;
+    pGameEffect->SetInteger(0, 15);
+    if (g_pVirtualMachine->StackPushEngineStructure(0, pGameEffect) == 0)
+    {
+        return -2000;
+    }
+    delete pGameEffect;
+    return 0;
+}
+// PC 0x005B49D0
+int CSWVirtualMachineCommands::ExecuteCommandEffectFactionModifier(int nCommand, int nArgs)
+{
+    int nFaction;
+    CGameEffect* pGameEffect;
+    CGameObject* pGameObject;
+
+    if (g_pVirtualMachine->StackPopInteger(&nFaction) == 0)
+    {
+        return -2001;
+    }
+    pGameEffect = new CGameEffect(1);
+    pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_FACTIONMODIFIER;
+    pGameEffect->SetInteger(0, nFaction);
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObject, &pGameObject) ==
+            CGameObjectArray::SUCCESS &&
+        pGameObject != NULL)
+    {
+        pGameEffect->SetCreator(m_oidObject);
+    }
+    if (g_pVirtualMachine->StackPushEngineStructure(0, pGameEffect) == 0)
+    {
+        return -2000;
+    }
+    delete pGameEffect;
+    return 0;
+}
+// PC 0x005B4AF0
+int CSWVirtualMachineCommands::ExecuteCommandEffectForceBody(int nCommand, int nArgs)
+{
+    int nBonus;
+    CGameEffect* pGameEffect;
+    CGameObject* pGameObject;
+
+    if (g_pVirtualMachine->StackPopInteger(&nBonus) == 0)
+    {
+        return -2001;
+    }
+    pGameEffect = new CGameEffect(1);
+    pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_FORCEBODY;
+    pGameEffect->SetInteger(0, nBonus);
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObject, &pGameObject) ==
+            CGameObjectArray::SUCCESS &&
+        pGameObject != NULL)
+    {
+        pGameEffect->SetCreator(m_oidObject);
+    }
+    if (g_pVirtualMachine->StackPushEngineStructure(0, pGameEffect) == 0)
+    {
+        return -2000;
+    }
+    delete pGameEffect;
+    return 0;
+}
+// PC 0x005B4C10
+int CSWVirtualMachineCommands::ExecuteCommandEffectForceSight(int nCommand, int nArgs)
+{
+    CGameEffect* pGameEffect;
+    CGameObject* pGameObject;
+
+    pGameEffect = new CGameEffect(1);
+    pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_FORCESIGHT;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObject, &pGameObject) ==
+            CGameObjectArray::SUCCESS &&
+        pGameObject != NULL)
+    {
+        pGameEffect->SetCreator(m_oidObject);
+    }
+    if (g_pVirtualMachine->StackPushEngineStructure(0, pGameEffect) == 0)
+    {
+        return -2000;
+    }
+    delete pGameEffect;
+    return 0;
+}
+// PC 0x005B4D00
+int CSWVirtualMachineCommands::ExecuteCommandEffectFPRegenModifier(int nCommand, int nArgs)
+{
+    int nPercent;
+    CGameEffect* pGameEffect;
+    CGameObject* pGameObject;
+
+    if (g_pVirtualMachine->StackPopInteger(&nPercent) == 0)
+    {
+        return -2001;
+    }
+    pGameEffect = new CGameEffect(1);
+    pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_FPREGENMODIFIER;
+    pGameEffect->SetInteger(0, nPercent);
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObject, &pGameObject) ==
+            CGameObjectArray::SUCCESS &&
+        pGameObject != NULL)
+    {
+        pGameEffect->SetCreator(m_oidObject);
+    }
+    if (g_pVirtualMachine->StackPushEngineStructure(0, pGameEffect) == 0)
+    {
+        return -2000;
+    }
+    delete pGameEffect;
+    return 0;
+}
+// PC 0x005B4E20
+int CSWVirtualMachineCommands::ExecuteCommandEffectVPRegenModifier(int nCommand, int nArgs)
+{
+    int nPercent;
+    CGameEffect* pGameEffect;
+    CGameObject* pGameObject;
+
+    if (g_pVirtualMachine->StackPopInteger(&nPercent) == 0)
+    {
+        return -2001;
+    }
+    pGameEffect = new CGameEffect(1);
+    pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_VPREGENMODIFIER;
+    pGameEffect->SetInteger(0, nPercent);
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObject, &pGameObject) ==
+            CGameObjectArray::SUCCESS &&
+        pGameObject != NULL)
+    {
+        pGameEffect->SetCreator(m_oidObject);
+    }
+    if (g_pVirtualMachine->StackPushEngineStructure(0, pGameEffect) == 0)
+    {
+        return -2000;
+    }
+    delete pGameEffect;
+    return 0;
+}
+// PC 0x005B4F40
+int CSWVirtualMachineCommands::ExecuteCommandEffectFury(int nCommand, int nArgs)
+{
+    CGameEffect* pGameEffect;
+    CGameObject* pGameObject;
+
+    pGameEffect = new CGameEffect(1);
+    pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_FURY;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObject, &pGameObject) ==
+            CGameObjectArray::SUCCESS &&
+        pGameObject != NULL)
+    {
+        pGameEffect->SetCreator(m_oidObject);
+    }
+    if (g_pVirtualMachine->StackPushEngineStructure(0, pGameEffect) == 0)
+    {
+        return -2000;
+    }
+    delete pGameEffect;
+    return 0;
+}
+// PC 0x005B8980
+int CSWVirtualMachineCommands::ExecuteCommandForceHeartbeat(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    CGameObject* pGameObject;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidCreature, &pGameObject) ==
+            CGameObjectArray::SUCCESS &&
+        pGameObject->AsSWSCreature() != NULL)
+    {
+        g_pVirtualMachine->RunScript(&pGameObject->AsSWSCreature()->m_sScripts[CSWSCreature::SCRIPT_HEARTBEAT],
+                                     pGameObject->GetId(), 1);
+        pGameObject->AsSWSCreature()->ResetHeartbeatTimer();
+    }
+    return 0;
+}
+// PC 0x005BB9D0
+int CSWVirtualMachineCommands::ExecuteCommandGetChemical(int nCommand, int nArgs)
+{
+    unsigned long oidObject;
+    int nChemicals;
+
+    if (g_pVirtualMachine->StackPopObject(&oidObject) == 0)
+    {
+        return -2001;
+    }
+    nChemicals = 0;
+    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidObject);
+    if (pCreature != NULL)
+    {
+        nChemicals = pCreature->GetChemical();
+    }
+    else
+    {
+        CSWSPlaceable* pPlaceable = g_pAppManager->GetServerExoApp()->GetPlaceableByGameObjectID(oidObject);
+        if (pPlaceable != NULL && pPlaceable->m_pcItemRepository != NULL)
+        {
+            CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(
+                pPlaceable->m_pcItemRepository->FindItemWithBaseItemType(23, 0));
+            if (pItem != NULL)
+            {
+                nChemicals = pItem->m_nStackSize;
+            }
+        }
+    }
+    return g_pVirtualMachine->StackPushInteger(nChemicals) != 0 ? 0 : -2000;
+}
+// PC 0x005BBA80
+int CSWVirtualMachineCommands::ExecuteCommandGetChemicalPieceValue(int nCommand, int nArgs)
+{
+    unsigned long oidItem;
+    CGameObject* pGameObject;
+    int nValue = 0;
+
+    if (g_pVirtualMachine->StackPopObject(&oidItem) == 0)
+    {
+        return -2001;
+    }
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidItem, &pGameObject) ==
+            CGameObjectArray::SUCCESS &&
+        pGameObject->AsSWSItem() != NULL)
+    {
+        nValue = (unsigned int)pGameObject->AsSWSItem()->GetCost() / 20;
+    }
+    return g_pVirtualMachine->StackPushInteger(nValue) != 0 ? 0 : -2000;
+}
+// PC 0x005BF260
+int CSWVirtualMachineCommands::ExecuteCommandGetOwnerDemolitionsSkill(int nCommand, int nArgs)
+{
+    unsigned long oidObject;
+    int nSkill = 0;
+
+    if (g_pVirtualMachine->StackPopObject(&oidObject) == 0)
+    {
+        return -2001;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidObject);
+    if (pGameObject != NULL && pGameObject->AsSWSObject() != NULL)
+    {
+        CSWSObject* pObject = pGameObject->AsSWSObject();
+        if (pObject != NULL)
+        {
+            if (pObject->AsSWSDoor() != NULL)
+            {
+                nSkill = pObject->AsSWSDoor()->m_nOwnerDemolitionsSkill;
+            }
+            else if (pObject->AsSWSPlaceable() != NULL)
+            {
+                nSkill = pObject->AsSWSPlaceable()->m_nOwnerDemolitionsSkill;
+            }
+            else if (pObject->AsSWSTrigger() != NULL)
+            {
+                nSkill = pObject->AsSWSTrigger()->m_n320;
+            }
+        }
+    }
+    return g_pVirtualMachine->StackPushInteger(nSkill) != 0 ? 0 : -2000;
+}
+// PC 0x005BF320
+int CSWVirtualMachineCommands::ExecuteCommandGetLastForfeitViolation(int nCommand, int nArgs)
+{
+    CSWPartyTable* pPartyTable = g_pAppManager->GetServerExoApp()->GetPartyTable();
+    return g_pVirtualMachine->StackPushInteger(pPartyTable != NULL ? pPartyTable->m_nForfeitViolation : 0) != 0
+               ? 0
+               : -2000;
+}
+// PC 0x005BF360
+int CSWVirtualMachineCommands::ExecuteCommandAdjustCreatureAttributes(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    int nAttribute;
+    int nAmount;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&nAttribute) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&nAmount) == 0)
+    {
+        return -2001;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidCreature);
+    if (pGameObject == NULL || pGameObject->m_nObjectType != CGameObject::OBJECT_TYPE_CREATURE)
+    {
+        return 0;
+    }
+    CSWSCreature* pCreature = pGameObject->AsSWSCreature();
+    if (pCreature == NULL)
+    {
+        return 0;
+    }
+    CSWSCreatureStats* pStats = pCreature->m_pStats;
+    if (pStats == NULL)
+    {
+        return 0;
+    }
+    switch (nAttribute)
+    {
+        case 0:
+            pStats->SetSTRBase(pStats->m_nStrengthBase + nAmount);
+            break;
+        case 1:
+            pStats->SetDEXBase(pStats->m_nDexterityBase + nAmount);
+            break;
+        case 2:
+            pStats->SetCONBase(pStats->m_nConstitutionBase + nAmount, 1);
+            break;
+        case 3:
+            pStats->SetINTBase(pStats->m_nIntelligenceBase + nAmount);
+            break;
+        case 4:
+            pStats->SetWISBase(pStats->m_nWisdomBase + nAmount);
+            break;
+        case 5:
+            pStats->SetCHABase(pStats->m_nCharismaBase + nAmount);
+            break;
+    }
+    return 0;
+}
+// PC 0x005BF4D0
+int CSWVirtualMachineCommands::ExecuteCommandAdjustCreatureSkills(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    int nSkill;
+    int nAmount;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&nSkill) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&nAmount) == 0)
+    {
+        return -2001;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidCreature);
+    if (pGameObject != NULL && pGameObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
+    {
+        CSWSCreature* pCreature = pGameObject->AsSWSCreature();
+        if (pCreature != NULL && pCreature->m_pStats != NULL)
+        {
+            pCreature->m_pStats->SetSkillRank(nSkill, (unsigned char)nAmount + pCreature->m_pStats->GetSkillRank(nSkill, NULL, 1));
+        }
+    }
+    return 0;
+}
+// PC 0x005BF590
+int CSWVirtualMachineCommands::ExecuteCommandModifyBaseSavingThrow(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    int nAmount;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&nAmount) == 0)
+    {
+        return -2001;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidCreature);
+    if (pGameObject != NULL && pGameObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
+    {
+        CSWSCreature* pCreature = pGameObject->AsSWSCreature();
+        if (pCreature != NULL)
+        {
+            CSWSCreatureStats* pStats = pCreature->m_pStats;
+            if (pStats != NULL)
+            {
+                switch (nCommand)
+                {
+                    case COMMAND_MODIFY_REFLEX_SAVING_THROW_BASE:
+                        pStats->m_nReflexSaveBonus += nAmount;
+                        break;
+                    case COMMAND_MODIFY_FORTITUDE_SAVING_THROW_BASE:
+                        pStats->m_nFortSaveBonus += nAmount;
+                        break;
+                    case COMMAND_MODIFY_WILL_SAVING_THROW_BASE:
+                        pStats->m_nWillSaveBonus += nAmount;
+                        break;
+                }
+            }
+        }
+    }
+    return 0;
+}
+// PC 0x005BF660
+int CSWVirtualMachineCommands::ExecuteCommandGetObjectPersonalSpace(int nCommand, int nArgs)
+{
+    unsigned long oidObject;
+    float fPersonalSpace;
+
+    if (g_pVirtualMachine->StackPopObject(&oidObject) == 0)
+    {
+        return -2001;
+    }
+    fPersonalSpace = 0.0f;
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidObject);
+    if (pGameObject != NULL && pGameObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
+    {
+        fPersonalSpace = pGameObject->AsSWSCreature()->m_pPathfindInformation->m_fStepScaleY;
+    }
+    return g_pVirtualMachine->StackPushFloat(fPersonalSpace) != 0 ? 0 : -2000;
+}
+// PC 0x005BF6F0
+int CSWVirtualMachineCommands::ExecuteCommandInfluence(int nCommand, int nArgs)
+{
+    int nValue = 0;
+    int nNPC;
+
+    if (g_pVirtualMachine->StackPopInteger(&nNPC) == 0)
+    {
+        return -2001;
+    }
+    CSWPartyTable* pPartyTable = g_pAppManager->m_pServerExoApp->GetPartyTable();
+    if (pPartyTable == NULL)
+    {
+        if (nCommand == COMMAND_GET_INFLUENCE)
+        {
+            return g_pVirtualMachine->StackPushInteger(nValue) != 0 ? 0 : -2000;
+        }
+        return 0;
+    }
+    CSWSCreature* pCreature = g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
+        pPartyTable->GetPUPObject(nNPC, 0, 1));
+    switch (nCommand)
+    {
+    case COMMAND_GET_INFLUENCE:
+        nValue = pPartyTable->GetInfluence(nNPC);
+        return g_pVirtualMachine->StackPushInteger(nValue) != 0 ? 0 : -2000;
+    case COMMAND_SET_INFLUENCE:
+    {
+        int nOldInfluence = pPartyTable->GetInfluence(nNPC);
+        if (g_pVirtualMachine->StackPopInteger(&nValue) == 0)
+        {
+            return -2001;
+        }
+        if (nValue < 0)
+        {
+            nValue = 0;
+        }
+        else if (nValue > 100)
+        {
+            nValue = 100;
+        }
+        pPartyTable->SetInfluence(nNPC, nValue);
+        if (nOldInfluence == nValue)
+        {
+            return 0;
+        }
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateStatus(nOldInfluence < nValue ? 9 : 10, nNPC);
+        if (pCreature != NULL)
+        {
+            pCreature->HandleAlignmentInfluence();
+        }
+        return 0;
+    }
+    case COMMAND_MODIFY_INFLUENCE:
+    {
+        int nInfluence = pPartyTable->GetInfluence(nNPC);
+        if (g_pVirtualMachine->StackPopInteger(&nValue) == 0)
+        {
+            return -2001;
+        }
+        if (nInfluence == -1)
+        {
+            pPartyTable->SetInfluence(nNPC, 50);
+            nInfluence = 50;
+        }
+        int nNewInfluence = nInfluence + nValue;
+        if (nNewInfluence < 0)
+        {
+            nNewInfluence = 0;
+        }
+        else if (nNewInfluence > 100)
+        {
+            nNewInfluence = 100;
+        }
+        pPartyTable->SetInfluence(nNPC, nNewInfluence);
+        if (nInfluence == nNewInfluence)
+        {
+            return 0;
+        }
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateStatus(nValue > 0 ? 9 : 10, nNPC);
+        if (pCreature != NULL)
+        {
+            pCreature->HandleAlignmentInfluence();
+        }
+        break;
+    }
+    }
+    return 0;
+}
+// PC 0x005C0340
+int CSWVirtualMachineCommands::ExecuteCommandGetSpellForcePointCost(int nCommand, int nArgs)
+{
+    int nCost = 0;
+    CGameObject* pGameObject;
+
+    if (m_nCommandContext == COMMAND_CONTEXT_SERVER &&
+        g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObject, &pGameObject) ==
+            CGameObjectArray::SUCCESS)
+    {
+        CSWSObject* pObject = pGameObject->AsSWSObject();
+        if (pObject != NULL && (pObject->AsSWSCreature() != NULL || pObject->AsSWSPlaceable() != NULL))
+        {
+            nCost = pObject->m_n208;
+        }
+    }
+    return g_pVirtualMachine->StackPushInteger(nCost) != 0 ? 0 : -2000;
+}
+// PC 0x005C03C0
+int CSWVirtualMachineCommands::ExecuteCommandGrantAbility(int nCommand, int nArgs)
+{
+    int nAbility;
+    unsigned long oidCreature;
+
+    if (g_pVirtualMachine->StackPopInteger(&nAbility) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCreature);
+    if (pCreature != NULL)
+    {
+        switch (nCommand)
+        {
+        case COMMAND_GRANT_FEAT:
+            pCreature->m_pStats->AddFeat(nAbility);
+            break;
+        case COMMAND_GRANT_SPELL:
+            pCreature->m_pStats->AddKnownSpell(pCreature->m_pStats->m_nClassCount - 1, nAbility);
+            break;
+        }
+    }
+    return 0;
+}
+// PC 0x005C0460
+int CSWVirtualMachineCommands::ExecuteCommandGetSpellFormMask(int nCommand, int nArgs)
+{
+    int nSpell;
+    int nMask = 0;
+
+    if (g_pVirtualMachine->StackPopInteger(&nSpell) == 0)
+    {
+        return -2001;
+    }
+    CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
+    if (pSpell != NULL)
+    {
+        nMask = pSpell->m_n1A0;
+    }
+    return g_pVirtualMachine->StackPushInteger(nMask) != 0 ? 0 : -2000;
+}
+// PC 0x005C04D0
+int CSWVirtualMachineCommands::ExecuteCommandGetSpellBaseForcePointCost(int nCommand, int nArgs)
+{
+    int nSpell;
+    int nCost = 0;
+
+    if (g_pVirtualMachine->StackPopInteger(&nSpell) == 0)
+    {
+        return -2001;
+    }
+    CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
+    if (pSpell != NULL)
+    {
+        nCost = pSpell->m_nForcePoints;
+    }
+    return g_pVirtualMachine->StackPushInteger(nCost) != 0 ? 0 : -2000;
+}
+// PC 0x005C24F0
+int CSWVirtualMachineCommands::ExecuteCommandIsStealthed(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    int bStealthed = 0;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCreature);
+    if (pCreature != NULL)
+    {
+        bStealthed = pCreature->GetActivity(1);
+    }
+    return g_pVirtualMachine->StackPushInteger(bStealthed) != 0 ? 0 : -2000;
+}
+// PC 0x005C2560
+int CSWVirtualMachineCommands::ExecuteCommandIsMeditating(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    int bMeditating = 0;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCreature);
+    if (pCreature != NULL)
+    {
+        if (pCreature->m_c110C == 1)
+        {
+            bMeditating = 1;
+        }
+    }
+    return g_pVirtualMachine->StackPushInteger(bMeditating) != 0 ? 0 : -2000;
+}
+// PC 0x005C25D0
+int CSWVirtualMachineCommands::ExecuteCommandIsInTotalDefense(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    int bTotalDefense = 0;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCreature);
+    if (pCreature != NULL)
+    {
+        if (pCreature->IsInTotalDefense())
+        {
+            bTotalDefense = 1;
+        }
+    }
+    return g_pVirtualMachine->StackPushInteger(bTotalDefense) != 0 ? 0 : -2000;
+}
+// PC 0x005C2640
+int CSWVirtualMachineCommands::ExecuteCommandIsFormActive(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    int nForm;
+    int bActive = 0;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0 ||
+        g_pVirtualMachine->StackPopInteger(&nForm) == 0)
+    {
+        return -2001;
+    }
+    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCreature);
+    if (pCreature != NULL && pCreature->m_n1110 == nForm &&
+        (nForm < 258 || nForm > 264 || pCreature->IsWieldingLightsaber() != 0))
+    {
+        bActive = 1;
+    }
+    return g_pVirtualMachine->StackPushInteger(bActive) != 0 ? 0 : -2000;
+}
+// PC 0x005C3690
+int CSWVirtualMachineCommands::ExecuteCommandModifyGlobal(int nCommand, int nArgs)
+{
+    CExoString sIdentifier;
+    int nAmount;
+    char nValue;
+
+    if (g_pVirtualMachine->StackPopString(&sIdentifier) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&nAmount) == 0)
+    {
+        return -2001;
+    }
+    switch (nCommand)
+    {
+    case COMMAND_INCREMENT_GLOBAL_NUMBER:
+        g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(sIdentifier, nValue);
+        if (nAmount + nValue > 127)
+        {
+            g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(sIdentifier, 127);
+        }
+        else
+        {
+            g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(sIdentifier, nValue + nAmount);
+        }
+        break;
+    case COMMAND_DECREMENT_GLOBAL_NUMBER:
+        g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(sIdentifier, nValue);
+        if (nValue - nAmount < -128)
+        {
+            g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(sIdentifier, -128);
+        }
+        else
+        {
+            g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(sIdentifier, nValue - nAmount);
+        }
+        break;
+    }
+    return 0;
+}
+// PC 0x005C5470
+int CSWVirtualMachineCommands::ExecuteCommandRemoveHeartbeat(int nCommand, int nArgs)
+{
+    unsigned long oidPlaceable;
+
+    if (g_pVirtualMachine->StackPopObject(&oidPlaceable) == 0)
+    {
+        return -2001;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidPlaceable);
+    if (pGameObject != NULL && pGameObject->AsSWSPlaceable() != NULL)
+    {
+        pGameObject->AsSWSPlaceable()->m_sScripts[CSWSPlaceable::SCRIPT_ONHEARTBEAT] = CExoString("");
+    }
+    return 0;
+}
+// PC 0x005C6090
+int CSWVirtualMachineCommands::ExecuteCommandSetCurrentForm(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    int nForm;
+    CGameObject* pGameObject;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&nForm) == 0)
+    {
+        return -2001;
+    }
+    g_pAppManager->m_pServerExoApp->GetObjectArray()->GetGameObject(oidCreature, &pGameObject);
+    if (pGameObject != NULL)
+    {
+        CSWSCreature* pCreature = pGameObject->AsSWSCreature();
+        if (pCreature != NULL && pCreature->m_pStats->HasSpell(0, nForm, 0) != 0)
+        {
+            pCreature->m_n1110 = nForm;
+        }
+    }
+    return 0;
+}
+// PC 0x005C8490
+int CSWVirtualMachineCommands::ExecuteCommandSetForfeitConditions(int nCommand, int nArgs)
+{
+    int nConditions = 0;
+
+    if (g_pVirtualMachine->StackPopInteger(&nConditions) == 0)
+    {
+        return -2001;
+    }
+    CSWPartyTable* pPartyTable = g_pAppManager->GetServerExoApp()->GetPartyTable();
+    if (pPartyTable != NULL)
+    {
+        pPartyTable->m_nForfeitConditions = nConditions;
+    }
+    return 0;
+}
+// PC 0x005CBF80
+int CSWVirtualMachineCommands::ExecuteCommandGetScriptParameter(int nCommand, int nArgs)
+{
+    int nIndex;
+    int nValue;
+
+    if (g_pVirtualMachine->StackPopInteger(&nIndex) == 0)
+    {
+        return -2001;
+    }
+    if (nIndex < 1 || nIndex > 5)
+    {
+        nValue = 0;
+    }
+    else
+    {
+        nValue = g_pVirtualMachine->m_nScriptParameters[nIndex - 1];
+    }
+    return g_pVirtualMachine->StackPushInteger(nValue) != 0 ? 0 : -2000;
+}
+// PC 0x005CBFE0
+int CSWVirtualMachineCommands::ExecuteCommandGetScriptStringParameter(int nCommand, int nArgs)
+{
+    CExoString sParameter(g_pVirtualMachine->m_sScriptStringParameter[0]);
+    if (g_pVirtualMachine->StackPushString(sParameter) == 0)
+    {
+        return -2000;
+    }
+    return 0;
+}
+// PC 0x005CC070
+int CSWVirtualMachineCommands::ExecuteCommandSetFadeUntilScript(int nCommand, int nArgs)
+{
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->m_n1024 = 1;
+    return 0;
+}
+// PC 0x005CC100
+int CSWVirtualMachineCommands::ExecuteCommandSetFakeCombatState(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    int bEnable;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&bEnable) == 0)
+    {
+        return -2001;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidCreature);
+    if (pGameObject != NULL && pGameObject->AsSWSCreature() != NULL)
+    {
+        CSWSCreature* pCreature = (CSWSCreature*)pGameObject;
+        if (bEnable != 0)
+        {
+            if (pCreature->m_bCombatState == 0 || pCreature->GetItemUseState() != 1)
+            {
+                pCreature->SetCombatState(1, 2, 1);
+            }
+        }
+        else if (pCreature->GetItemUseState() == 2)
+        {
+            pCreature->SetCombatState(0, 2);
+        }
+    }
+    return 0;
+}
+// PC 0x005CC1B0
+int CSWVirtualMachineCommands::ExecuteCommandSetOrientOnClick(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    int bOrient;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&bOrient) == 0)
+    {
+        return -2001;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidCreature);
+    if (pGameObject != NULL && pGameObject->AsSWSCreature() != NULL)
+    {
+        ((CSWSCreature*)pGameObject)->m_bDialogFaceSpeaker = bOrient;
+    }
+    return 0;
+}
+// PC 0x005CC220
+int CSWVirtualMachineCommands::ExecuteCommandGetRacialSubType(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    CGameObject* pGameObject;
+    int nSubType = 0;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidCreature, &pGameObject) ==
+        CGameObjectArray::SUCCESS)
+    {
+        if (pGameObject->m_nObjectType == SW_OBJECT_TYPE_CREATURE)
+        {
+            nSubType = pGameObject->AsSWSCreature()->m_pStats->m_nSubraceIndex;
+        }
+        else
+        {
+            nSubType = -1;
+        }
+    }
+    return g_pVirtualMachine->StackPushInteger(nSubType) != 0 ? 0 : -2000;
+}
+// PC 0x005CC2B0
+int CSWVirtualMachineCommands::ExecuteCommandSetBonusForcePoints(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    int nBonus;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2000;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&nBonus) == 0)
+    {
+        return -2000;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidCreature);
+    if (pGameObject != NULL)
+    {
+        CSWSCreature* pCreature = pGameObject->AsSWSCreature();
+        if (pCreature != NULL)
+        {
+            if (pCreature->m_n1200 != 0 && pCreature->m_n11F4 != nBonus)
+            {
+                if (pCreature->m_n11F4 < nBonus)
+                {
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(11, nBonus);
+                }
+                else
+                {
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(12, nBonus);
+                }
+            }
+            pCreature->m_n11F4 = nBonus;
+        }
+    }
+    return 0;
+}
+// PC 0x005CC360
+int CSWVirtualMachineCommands::ExecuteCommandAddBonusForcePoints(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    int nBonus;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2000;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&nBonus) == 0)
+    {
+        return -2000;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidCreature);
+    if (pGameObject != NULL)
+    {
+        CSWSCreature* pCreature = pGameObject->AsSWSCreature();
+        if (pCreature != NULL)
+        {
+            pCreature->m_n11F4 += nBonus;
+            if (pCreature->m_n1200 != 0)
+            {
+                if (nBonus < 0)
+                {
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(12, nBonus);
+                }
+                else
+                {
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateStatus(11, nBonus);
+                }
+            }
+        }
+    }
+    return 0;
+}
+// PC 0x005CC420
+int CSWVirtualMachineCommands::ExecuteCommandGetBonusForcePoints(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    int nBonus;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2000;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidCreature);
+    CSWSCreature* pCreature;
+    if (pGameObject != NULL && (pCreature = pGameObject->AsSWSCreature()) != NULL)
+    {
+        nBonus = pCreature->m_n11F4;
+    }
+    return g_pVirtualMachine->StackPushInteger(nBonus) != 0 ? 0 : -2000;
+}
+// PC 0x005CC610
+int CSWVirtualMachineCommands::ExecuteCommandSetHealTarget(int nCommand, int nArgs)
+{
+    unsigned long oidHealer;
+    unsigned long oidTarget;
+
+    if (g_pVirtualMachine->StackPopObject(&oidHealer) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopObject(&oidTarget) == 0)
+    {
+        return -2001;
+    }
+    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidHealer);
+    if (pCreature != NULL)
+    {
+        pCreature->m_n5AC = oidTarget;
+    }
+    return 0;
+}
+// PC 0x005CC670
+int CSWVirtualMachineCommands::ExecuteCommandGetHealTarget(int nCommand, int nArgs)
+{
+    unsigned long oidHealer;
+
+    if (g_pVirtualMachine->StackPopObject(&oidHealer) == 0)
+    {
+        return -2001;
+    }
+    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidHealer);
+    unsigned long oidTarget = OBJECT_INVALID;
+    if (pCreature != NULL)
+    {
+        oidTarget = pCreature->m_n5AC;
+    }
+    return g_pVirtualMachine->StackPushObject(oidTarget) != 0 ? 0 : -2000;
+}
+// PC 0x005CC6D0
+int CSWVirtualMachineCommands::ExecuteCommandGetRandomDestination(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    int nRadius = 0;
+    Vector vStart(0.0f, 0.0f, 0.0f);
+    Vector vDirection(0.0f, 0.0f, 0.0f);
+    CSWSArea* pArea;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&nRadius) == 0)
+    {
+        return -2001;
+    }
+    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCreature);
+    if (pCreature == NULL || (pArea = pCreature->GetArea()) == NULL)
+    {
+        return g_pVirtualMachine->StackPushVector(vStart) != 0 ? 0 : -2000;
+    }
+    vStart = pCreature->m_vPosition;
+    Vector vDestination = vStart;
+    vDestination.m_fZ = 0.0f;
+    vDestination.m_fX += (float)(rand() % (2 * nRadius) - nRadius);
+    vDestination.m_fY += (float)(rand() % (2 * nRadius) - nRadius);
+    vDestination.m_fZ = pArea->ComputeHeight(vDestination, 1, NULL);
+    vDirection = vDestination - vStart;
+    float fDistance = magnitude(vDirection);
+    float fMaxDistance = fDistance;
+    vDirection = normalize(vDirection);
+    pArea->m_pPathfindInformation = pCreature->m_pPathfindInformation;
+    int nTries = 20;
+    if (pArea->TestDirectLine(vStart, vDestination, pCreature->m_pPathfindInformation->m_fStepScale,
+                              pCreature->m_pPathfindInformation->m_fHalfStep, 0, NULL) != 1)
+    {
+        while (1)
+        {
+            fDistance *= 0.75;
+            if (fDistance < 2.5f)
+            {
+                switch (rand() % 3)
+                {
+                case 0:
+                    vDirection = -vDirection;
+                    break;
+                case 1:
+                    vDirection = Vector(vDirection.m_fZ * 0.0f - vDirection.m_fY,
+                                        vDirection.m_fX - vDirection.m_fZ * 0.0f,
+                                        vDirection.m_fY * 0.0f - vDirection.m_fX * 0.0f);
+                    break;
+                case 2:
+                    vDirection = -Vector(vDirection.m_fZ * 0.0f - vDirection.m_fY,
+                                         vDirection.m_fX - vDirection.m_fZ * 0.0f,
+                                         vDirection.m_fY * 0.0f - vDirection.m_fX * 0.0f);
+                    break;
+                }
+                fDistance = fMaxDistance;
+            }
+            vDestination = vStart + vDirection * fDistance;
+            if (fDistance < 1.0f || nTries-- < 0)
+            {
+                vDestination = vStart;
+                break;
+            }
+            if (pArea->TestDirectLine(vStart, vDestination, pCreature->m_pPathfindInformation->m_fStepScale,
+                                      pCreature->m_pPathfindInformation->m_fHalfStep, 0, NULL) == 1)
+            {
+                break;
+            }
+        }
+    }
+    return g_pVirtualMachine->StackPushVector(vDestination) != 0 ? 0 : -2000;
+}
+// PC 0x005CCB10
+int CSWVirtualMachineCommands::ExecuteCommandSetKeepStealthInDialog(int nCommand, int nArgs)
+{
+    int bKeepStealth = 0;
+
+    if (g_pVirtualMachine->StackPopInteger(&bKeepStealth) == 0)
+    {
+        return -2001;
+    }
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->SetKeepStealthInDialog(bKeepStealth);
+    return 0;
+}
+// PC 0x005CCB60
+int CSWVirtualMachineCommands::ExecuteCommandHasLineOfSight(int nCommand, int nArgs)
+{
+    Vector vSource(0.0f, 0.0f, 0.0f);
+    Vector vTarget(0.0f, 0.0f, 0.0f);
+    unsigned long oidSource;
+    unsigned long oidTarget;
+    CGameObject* pGameObject;
+
+    if (g_pVirtualMachine->StackPopVector(&vSource) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopVector(&vTarget) == 0)
+    {
+        return -2001;
+    }
+    if (m_nCommandContext == 0)
+    {
+        return g_pVirtualMachine->StackPushInteger(0) != 0 ? 0 : -2000;
+    }
+    if (g_pVirtualMachine->StackPopObject(&oidSource) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopObject(&oidTarget) == 0)
+    {
+        return -2001;
+    }
+    pGameObject = NULL;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObject, &pGameObject) !=
+        CGameObjectArray::SUCCESS)
+    {
+        return g_pVirtualMachine->StackPushInteger(0) != 0 ? 0 : -2000;
+    }
+    CSWSArea* pArea = NULL;
+    if (pGameObject->AsSWSArea() != NULL)
+    {
+        pArea = pGameObject->AsSWSArea();
+    }
+    else if (pGameObject->AsSWSCreature() != NULL)
+    {
+        pArea = pGameObject->AsSWSCreature()->GetArea();
+    }
+    else if (pGameObject->AsSWSDoor() != NULL)
+    {
+        pArea = pGameObject->AsSWSDoor()->GetArea();
+    }
+    else if (pGameObject->AsSWSPlaceable() != NULL)
+    {
+        pArea = pGameObject->AsSWSPlaceable()->GetArea();
+    }
+    if (pArea == NULL)
+    {
+        if (g_pVirtualMachine->StackPushInteger(0) == 0)
+        {
+            return -2000;
+        }
+    }
+    unsigned long oidHit = OBJECT_INVALID;
+    Vector vHit(0.0f, 0.0f, 0.0f);
+    return g_pVirtualMachine->StackPushInteger(
+               pArea->ClearLineOfSight(vSource, vTarget, &vHit, &oidHit, oidSource, oidTarget, 0, 0)) != 0
+               ? 0
+               : -2000;
+}
+// PC 0x005CCD20
+int CSWVirtualMachineCommands::ExecuteCommandShowDemoScreen(int nCommand, int nArgs)
+{
+    CExoString sImage;
+    int nMinShowTime;
+    int nStrRef;
+    int nLeft;
+    int nTop;
+
+    if (g_pVirtualMachine->StackPopString(&sImage) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&nMinShowTime) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&nStrRef) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&nLeft) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&nTop) == 0)
+    {
+        return -2001;
+    }
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowDemoScreen(sImage, nMinShowTime, nStrRef, nLeft, nTop);
+    return 0;
+}
+// PC 0x005CCE40
+int CSWVirtualMachineCommands::ExecuteCommandIsRunning(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    int bRunning = 0;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCreature);
+    if (pCreature != NULL)
+    {
+        CSWCCreature* pClientCreature = pCreature->GetClientCreature();
+        if (pClientCreature != NULL)
+        {
+            bRunning = pClientCreature->m_bDriveRunning;
+        }
+    }
+    return g_pVirtualMachine->StackPushInteger(bRunning) != 0 ? 0 : -2000;
+}
+// PC 0x005CCEB0
+int CSWVirtualMachineCommands::ExecuteCommandAddAvailablePUPByTemplate(int nCommand, int nArgs)
+{
+    CExoString sTemplate;
+    int nPUP;
+    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+
+    if (g_pVirtualMachine->StackPopInteger(&nPUP) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopString(&sTemplate) == 0)
+    {
+        return -2001;
+    }
+    return g_pVirtualMachine->StackPushInteger(pServerExoApp->GetPartyTable()->AddPUP(nPUP, sTemplate)) != 0
+               ? 0
+               : -2000;
+}
+// PC 0x005CCFA0
+int CSWVirtualMachineCommands::ExecuteCommandAddAvailablePUPByObject(int nCommand, int nArgs)
+{
+    int nPUP;
+    unsigned long oidPuppet;
+    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+
+    if (g_pVirtualMachine->StackPopInteger(&nPUP) == 0 ||
+        g_pVirtualMachine->StackPopObject(&oidPuppet) == 0)
+    {
+        return -2001;
+    }
+    return g_pVirtualMachine->StackPushInteger(pServerExoApp->GetPartyTable()->AddPUP(
+               nPUP, pServerExoApp->GetCreatureByGameObjectID(oidPuppet))) != 0
+               ? 0
+               : -2000;
+}
+// PC 0x005CD030
+int CSWVirtualMachineCommands::ExecuteCommandAssignPUP(int nCommand, int nArgs)
+{
+    int nPUP;
+    int nNPC;
+
+    if (g_pVirtualMachine->StackPopInteger(&nPUP) == 0 ||
+        g_pVirtualMachine->StackPopInteger(&nNPC) == 0)
+    {
+        return -2001;
+    }
+    return g_pVirtualMachine->StackPushInteger(
+               g_pAppManager->GetServerExoApp()->GetPartyTable()->AssignPUP(nPUP, nNPC)) != 0
+               ? 0
+               : -2000;
+}
+// PC 0x005CD0B0
+int CSWVirtualMachineCommands::ExecuteCommandSpawnAvailablePUP(int nCommand, int nArgs)
+{
+    int nPUP;
+    CScriptLocation* pLocation;
+
+    if (g_pVirtualMachine->StackPopInteger(&nPUP) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopEngineStructure(STRUCTURE_LOCATION, (void**)&pLocation) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPushObject(g_pAppManager->GetServerExoApp()->GetPartyTable()->SpawnPUP(
+            nPUP, 1, pLocation->m_vPosition, pLocation->m_vOrientation, 1)) == 0)
+    {
+        return -2000;
+    }
+    delete pLocation;
+    return 0;
+}
+// PC 0x005CD150
+int CSWVirtualMachineCommands::ExecuteCommandAddPartyPuppet(int nCommand, int nArgs)
+{
+    int nPUP;
+    unsigned long oidPuppet;
+
+    if (g_pVirtualMachine->StackPopInteger(&nPUP) == 0 ||
+        g_pVirtualMachine->StackPopObject(&oidPuppet) == 0)
+    {
+        return -2001;
+    }
+    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+    int bResult = pServerExoApp->GetPartyTable()->AddPuppet(nPUP, oidPuppet);
+    if (bResult != 0)
+    {
+        CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+        CSWCCreature* pClientCreature =
+            pClientExoApp->GetCreatureByGameObjectID(pClientExoApp->ServerToClientObjectId(oidPuppet));
+        CSWSCreature* pCreature = pServerExoApp->GetCreatureByGameObjectID(oidPuppet);
+        if (pClientCreature != NULL)
+        {
+            pClientCreature->m_n46C = 1;
+        }
+        if (pCreature != NULL)
+        {
+            pCreature->SetIsPuppet(1);
+        }
+    }
+    return g_pVirtualMachine->StackPushInteger(bResult) != 0 ? 0 : -2000;
+}
+// PC 0x005CD220
+int CSWVirtualMachineCommands::ExecuteCommandGetPUPOwner(int nCommand, int nArgs)
+{
+    unsigned long oidPuppet;
+
+    if (g_pVirtualMachine->StackPopObject(&oidPuppet) == 0)
+    {
+        return -2001;
+    }
+    int nPUP = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetPUPID(oidPuppet);
+    CSWSCreature* pOwner = g_pAppManager->GetServerExoApp()->GetPartyTable()->GetPUPOwner(nPUP);
+    unsigned long oidOwner = OBJECT_INVALID;
+    if (pOwner != NULL)
+    {
+        oidOwner = pOwner->GetId();
+    }
+    return g_pVirtualMachine->StackPushObject(oidOwner) != 0 ? 0 : -2000;
+}
+// PC 0x005CD2A0
+int CSWVirtualMachineCommands::ExecuteCommandGetIsPuppet(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCreature);
+    int bPuppet = 0;
+    if (pCreature != NULL)
+    {
+        bPuppet = pCreature->m_n11FC;
+    }
+    return g_pVirtualMachine->StackPushInteger(bPuppet) != 0 ? 0 : -2000;
+}
+// PC 0x005CD300
+int CSWVirtualMachineCommands::ExecuteCommandActionFollowOwner(int nCommand, int nArgs)
+{
+    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(m_oidObject);
+    float fRange = 0.0f;
+
+    if (g_pVirtualMachine->StackPopFloat(&fRange) == 0)
+    {
+        return -2001;
+    }
+    if (pCreature != NULL && pCreature->m_n11FC != 0 && pCreature->m_bCommandable == 1)
+    {
+        pCreature->AddAction(CSWSObject::ACTION_FOLLOW_OWNER, CSWSObject::ACTION_GROUP_NEW,
+                             CSWSObject::ACTION_PARAM_FLOAT, &fRange, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0,
+                             NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL);
+    }
+    return 0;
+}
+// PC 0x005CD3B0
+int CSWVirtualMachineCommands::ExecuteCommandGetIsPartyLeader(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+    int bLeader = 0;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    CSWCCreature* pCharacter = g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0);
+    if (pCharacter != NULL)
+    {
+        if (oidCreature == g_pAppManager->GetServerExoApp()->ClientToServerObjectId(pCharacter->GetId()))
+        {
+            bLeader = 1;
+        }
+    }
+    return g_pVirtualMachine->StackPushInteger(bLeader) != 0 ? 0 : -2000;
+}
+// PC 0x005CD490
+int CSWVirtualMachineCommands::ExecuteCommandRemoveNPCFromPartyToBase(int nCommand, int nArgs)
+{
+    int nNPC;
+
+    if (g_pVirtualMachine->StackPopInteger(&nNPC) == 0)
+    {
+        return -2001;
+    }
+    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+    CSWPartyTable* pPartyTable = pServerExoApp->GetPartyTable();
+    unsigned long oidNPC = pPartyTable->GetPUPObject(nNPC, 0, 1);
+    if (pPartyTable->RemoveMember(nNPC) != 0)
+    {
+        CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+        CSWCCreature* pClientCreature =
+            pClientExoApp->GetCreatureByGameObjectID(pClientExoApp->ServerToClientObjectId(oidNPC));
+        CSWSCreature* pCreature = pServerExoApp->GetCreatureByGameObjectID(oidNPC);
+        if (pClientCreature != NULL)
+        {
+            pClientCreature->SetInParty(0);
+        }
+        if (pCreature != NULL)
+        {
+            pCreature->SetInParty(0, 1);
+        }
+    }
+    return g_pVirtualMachine->StackPushInteger(pPartyTable->KillNPCObject(nNPC, 1)) != 0 ? 0 : -2000;
+}
+// PC 0x005CD560
+int CSWVirtualMachineCommands::ExecuteCommandGetIsXBox(int nCommand, int nArgs)
+{
+    return g_pVirtualMachine->StackPushInteger(0) != 0 ? 0 : -2000;
+}
+// PC 0x005CD580
+int CSWVirtualMachineCommands::ExecuteCommandActionSwitchWeapons(int nCommand, int nArgs)
+{
+    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(m_oidObject);
+    if (pCreature != NULL)
+    {
+        pCreature->AddAction(CSWSObject::ACTION_SWITCH_WEAPONS, CSWSObject::ACTION_GROUP_NEW, 0, NULL, 0, NULL,
+                             0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0,
+                             NULL, 0, NULL);
+    }
+    return 0;
+}
+// PC 0x005CD5E0
+int CSWVirtualMachineCommands::ExecuteCommandUnlockAllMusic(int nCommand, int nArgs)
+{
+    CExoIni cIni;
+    cIni.WriteIniEntry(CExoString(2047), ".\\swkotor2.ini", "Game Options", "UnlockedPlanetSongs");
+    return 0;
+}
+// PC 0x005CD6D0
+int CSWVirtualMachineCommands::ExecuteCommandDisableMap(int nCommand, int nArgs)
+{
+    int bDisable = 0;
+
+    if (g_pVirtualMachine->StackPopInteger(&bDisable) == 0)
+    {
+        return -2001;
+    }
+    g_pAppManager->GetServerExoApp()->GetPartyTable()->SetDisableMap(bDisable);
+    return 0;
+}
+// PC 0x005CD720
+int CSWVirtualMachineCommands::ExecuteCommandDetonateMine(int nCommand, int nArgs)
+{
+    unsigned long oidMine = OBJECT_INVALID;
+
+    if (g_pVirtualMachine->StackPopObject(&oidMine) == 0)
+    {
+        return -2001;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidMine);
+    if (pGameObject->AsSWSTrigger() != NULL)
+    {
+        pGameObject->AsSWSTrigger()->SetFadeOutTime(1);
+        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(0, 0, m_oidObject, oidMine, CServerAIMaster::EVENT_DESTROY_OBJECT, NULL);
+    }
+    return 0;
+}
+// PC 0x005CD7B0
+int CSWVirtualMachineCommands::ExecuteCommandDisableHealthRegen(int nCommand, int nArgs)
+{
+    int bDisable = 0;
+
+    if (g_pVirtualMachine->StackPopInteger(&bDisable) == 0)
+    {
+        return -2001;
+    }
+    g_pAppManager->GetServerExoApp()->GetPartyTable()->SetDisableRegen(bDisable);
+    return 0;
+}
+// PC 0x005CD800
+int CSWVirtualMachineCommands::ExecuteCommandSetDisableTransit(int nCommand, int nArgs)
+{
+    int bDisable = 0;
+
+    if (g_pVirtualMachine->StackPopInteger(&bDisable) == 0)
+    {
+        return -2001;
+    }
+    CSWSModule* pModule = g_pAppManager->GetServerExoApp()->GetModule();
+    if (pModule != NULL)
+    {
+        CSWSArea* pArea = pModule->GetArea();
+        if (pArea != NULL)
+        {
+            pArea->m_bDisableTransit = bDisable;
+        }
+    }
+    return 0;
+}
+// PC 0x005CD860
+int CSWVirtualMachineCommands::ExecuteCommandSetInputClass(int nCommand, int nArgs)
+{
+    int nClass = 0;
+
+    if (g_pVirtualMachine->StackPopInteger(&nClass) == 0)
+    {
+        return -2001;
+    }
+    if (nClass >= 0 && nClass < 6)
+    {
+        g_pAppManager->GetClientExoApp()->SetInputClass(nClass, 1);
+    }
+    return 0;
+}
+// PC 0x005CD8B0
+int CSWVirtualMachineCommands::ExecuteCommandForceAlwaysUpdate(int nCommand, int nArgs)
+{
+    unsigned long oidObject;
+    int bAlwaysUpdate = 0;
+
+    oidObject = OBJECT_INVALID;
+    if (g_pVirtualMachine->StackPopObject(&oidObject) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&bAlwaysUpdate) == 0)
+    {
+        return -2001;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidObject);
+    if (pGameObject != NULL)
+    {
+        ((CSWSObject*)pGameObject)->m_n260 = bAlwaysUpdate;
+    }
+    return 0;
+}
+// PC 0x005CD920
+int CSWVirtualMachineCommands::ExecuteCommandEnableRain(int nCommand, int nArgs)
+{
+    int bEnable = 0;
+
+    if (g_pVirtualMachine->StackPopInteger(&bEnable) == 0)
+    {
+        return -2001;
+    }
+    float fStrength = 100.0f;
+    if (bEnable == 0)
+    {
+        fStrength = 0.0f;
+    }
+    if (g_pAppManager->GetClientExoApp()->GetModule()->m_pInfo != NULL)
+    {
+        g_pAppManager->GetClientExoApp()->GetModule()->GetArea()->SetWeather(1, fStrength);
+    }
+    return 0;
+}
+// PC 0x005CD9A0
+int CSWVirtualMachineCommands::ExecuteCommandDisplayMessageBox(int nCommand, int nArgs)
+{
+    int nStrRef = -1;
+
+    if (g_pVirtualMachine->StackPopInteger(&nStrRef) == 0)
+    {
+        return -2001;
+    }
+    CExoString sIcon;
+    if (nArgs >= 2 && g_pVirtualMachine->StackPopString(&sIcon) == 0)
+    {
+        return -2001;
+    }
+    CSWGuiMessageBox* pMessageBox = g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMessageBox;
+    if (pMessageBox != NULL)
+    {
+        pMessageBox->SetAllowCancel(0);
+        pMessageBox->SetCallback(NULL, NULL, NULL);
+        pMessageBox->SetIcon(sIcon);
+        pMessageBox->SetMessage((unsigned long)nStrRef);
+        pMessageBox->m_n9C4 = 1;
+        g_pAppManager->GetClientExoApp()->SetPausedByCombat(1, 12, 0);
+        g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(pMessageBox, 1, 0);
+    }
+    return 0;
+}
+// PC 0x005CDAE0
+int CSWVirtualMachineCommands::ExecuteCommandDisplayDatapad(int nCommand, int nArgs)
+{
+    unsigned long oidItem;
+
+    if (g_pVirtualMachine->StackPopObject(&oidItem) == 0)
+    {
+        return -2001;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidItem);
+    if (pGameObject != NULL)
+    {
+        CSWSItem* pItem = (CSWSItem*)pGameObject;
+        if (pItem != NULL)
+        {
+            CSWGuiMessageBox* pDatapad = g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pA4;
+            pItem->m_lVarTable.SetLocalBoolean(94, 1);
+            CExoString sText;
+            pItem->m_sDescIdentified.GetString(0, &sText, 0);
+            pDatapad->SetAllowCancel(0);
+            pDatapad->m_lblMessage.m_cText.m_cParams.SetAlignment(9);
+            pDatapad->m_lblMessage.m_cText.m_cParams.SetFont(CResRef("fnt_d16x16"));
+            pDatapad->SetMessage(sText);
+            pDatapad->SetCallback(NULL, NULL, NULL);
+            g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(pDatapad, 1, 1);
+            g_pAppManager->GetClientExoApp()->SetPausedByCombat(1, 12, 0);
+        }
+    }
+    return 0;
+}
+// PC 0x005CDC40
+int CSWVirtualMachineCommands::ExecuteCommandSaveNPCByObject(int nCommand, int nArgs)
+{
+    int nNPC = -1;
+    unsigned long oidNPC = OBJECT_INVALID;
+
+    if (g_pVirtualMachine->StackPopInteger(&nNPC) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopObject(&oidNPC) == 0)
+    {
+        return -2001;
+    }
+    g_pAppManager->GetServerExoApp()->GetPartyTable()->SaveMemberByObject(nNPC, oidNPC);
+    return 0;
+}
+// PC 0x005CDCB0
+int CSWVirtualMachineCommands::ExecuteCommandSavePUPByObject(int nCommand, int nArgs)
+{
+    int nPUP = -1;
+    unsigned long oidPUP = OBJECT_INVALID;
+
+    if (g_pVirtualMachine->StackPopInteger(&nPUP) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopObject(&oidPUP) == 0)
+    {
+        return -2001;
+    }
+    g_pAppManager->GetServerExoApp()->GetPartyTable()->SavePuppetByObject(nPUP, oidPUP);
+    return 0;
+}
+// PC 0x005CDD20
+int CSWVirtualMachineCommands::ExecuteCommandGetIsPlayerMadeCharacter(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidCreature);
+    int bPlayerMade = 0;
+    if (pGameObject != NULL && pGameObject->AsSWSCreature() != NULL)
+    {
+        bPlayerMade = pGameObject->AsSWSCreature()->m_n1200;
+    }
+    return g_pVirtualMachine->StackPushInteger(bPlayerMade) != 0 ? 0 : -2000;
+}
+// PC 0x005CDDA0
+int CSWVirtualMachineCommands::ExecuteCommandRebuildPartyTable(int nCommand, int nArgs)
+{
+    CSWPartyTable* pPartyTable = g_pAppManager->GetServerExoApp()->GetPartyTable();
+    if (pPartyTable != NULL)
+    {
+        CSWSModule* pModule = g_pAppManager->GetServerExoApp()->GetModule();
+        if (pModule != NULL)
+        {
+            unsigned long oidNPC;
+            oidNPC = pModule->FindObjectByTagOrdinal("atton", 0);
+            if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(0) != 0)
+            {
+                pPartyTable->SetNPCObject(0, oidNPC);
+            }
+            oidNPC = pModule->FindObjectByTagOrdinal("baodur", 0);
+            if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(1) != 0)
+            {
+                pPartyTable->SetNPCObject(1, oidNPC);
+            }
+            oidNPC = pModule->FindObjectByTagOrdinal("mand", 0);
+            if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(2) != 0)
+            {
+                pPartyTable->SetNPCObject(2, oidNPC);
+            }
+            oidNPC = pModule->FindObjectByTagOrdinal("g0t0", 0);
+            if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(3) != 0)
+            {
+                pPartyTable->SetNPCObject(3, oidNPC);
+            }
+            oidNPC = pModule->FindObjectByTagOrdinal("handmaiden", 0);
+            if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(4) != 0)
+            {
+                pPartyTable->SetNPCObject(4, oidNPC);
+            }
+            oidNPC = pModule->FindObjectByTagOrdinal("hk47", 0);
+            if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(5) != 0)
+            {
+                pPartyTable->SetNPCObject(5, oidNPC);
+            }
+            oidNPC = pModule->FindObjectByTagOrdinal("kreia", 0);
+            if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(6) != 0)
+            {
+                pPartyTable->SetNPCObject(6, oidNPC);
+            }
+            oidNPC = pModule->FindObjectByTagOrdinal("mira", 0);
+            if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(7) != 0)
+            {
+                pPartyTable->SetNPCObject(7, oidNPC);
+            }
+            oidNPC = pModule->FindObjectByTagOrdinal("t3m4", 0);
+            if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(8) != 0)
+            {
+                pPartyTable->SetNPCObject(8, oidNPC);
+            }
+            oidNPC = pModule->FindObjectByTagOrdinal("visasmarr", 0);
+            if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(9) != 0)
+            {
+                pPartyTable->SetNPCObject(9, oidNPC);
+            }
+            oidNPC = pModule->FindObjectByTagOrdinal("hanharr", 0);
+            if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(10) != 0)
+            {
+                pPartyTable->SetNPCObject(10, oidNPC);
+            }
+            oidNPC = pModule->FindObjectByTagOrdinal("disciple", 0);
+            if (oidNPC != OBJECT_INVALID && pPartyTable->GetIsNPCAvailable(11) != 0)
+            {
+                pPartyTable->SetNPCObject(11, oidNPC);
+            }
+            unsigned long oidRemote = pModule->FindObjectByTagOrdinal("remote", 0);
+            if (oidRemote != OBJECT_INVALID && pPartyTable->GetIsPUPAvailable(0) != 0)
+            {
+                pPartyTable->SetPUPObject(0, oidRemote);
+            }
+        }
+    }
+    return 0;
+}
+// PC 0x005D0EA0
+int CSWVirtualMachineCommands::ExecuteCommandRemoveEffectByID(int nCommand, int nArgs)
+{
+    unsigned long oidObject;
+    int nEffectID;
+
+    if (g_pVirtualMachine->StackPopObject(&oidObject) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopInteger(&nEffectID) == 0)
+    {
+        return -2001;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidObject);
+    if (pGameObject != NULL && pGameObject->AsSWSObject() != NULL)
+    {
+        CExoArrayList<CGameEffect*>* pEffects = &pGameObject->AsSWSObject()->m_lstEffects;
+        if (pEffects != NULL && pEffects->num > 0)
+        {
+            for (unsigned long nEffect = 0; nEffect < pEffects->num; ++nEffect)
+            {
+                if ((*pEffects)[nEffect]->GetInteger(0) == nEffectID)
+                {
+                    CGameEffect* pRemoveEffect = (*pEffects)[nEffect];
+                    pRemoveEffect->m_bExposed = 0;
+                    if (pRemoveEffect != NULL)
+                    {
+                        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                            0, 0, m_oidObject, oidObject, CServerAIMaster::EVENT_REMOVE_EFFECT, pRemoveEffect);
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
+// PC 0x005D0F90
+int CSWVirtualMachineCommands::ExecuteCommandRemoveEffectByExactMatch(int nCommand, int nArgs)
+{
+    unsigned long oidObject;
+    CGameEffect* pEffect = NULL;
+
+    if (g_pVirtualMachine->StackPopObject(&oidObject) == 0)
+    {
+        return -2001;
+    }
+    if (g_pVirtualMachine->StackPopEngineStructure(STRUCTURE_EFFECT, (void**)&pEffect) == 0)
+    {
+        return -2001;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidObject);
+    if (pGameObject != NULL && pGameObject->AsSWSObject() != NULL)
+    {
+        CExoArrayList<CGameEffect*>* pEffects = &pGameObject->AsSWSObject()->m_lstEffects;
+        if (pEffects != NULL && pEffects->num > 0)
+        {
+            for (unsigned long nEffect = 0; nEffect < pEffects->num; ++nEffect)
+            {
+                if ((*pEffects)[nEffect]->m_nType == pEffect->m_nType &&
+                    (*pEffects)[nEffect]->GetInteger(0) == pEffect->GetInteger(0) &&
+                    (*pEffects)[nEffect]->GetInteger(1) == pEffect->GetInteger(1))
+                {
+                    CGameEffect* pRemoveEffect = (*pEffects)[nEffect];
+                    pRemoveEffect->m_bExposed = 0;
+                    if (pRemoveEffect != NULL)
+                    {
+                        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                            0, 0, m_oidObject, oidObject, CServerAIMaster::EVENT_REMOVE_EFFECT, pRemoveEffect);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    delete pEffect;
+    return 0;
+}
+// PC 0x005D16E0
+int CSWVirtualMachineCommands::ExecuteCommandGetCombatActionPending(int nCommand, int nArgs)
+{
+    unsigned long oidCreature;
+
+    if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
+    {
+        return -2001;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidCreature);
+    int bPending = 0;
+    if (pGameObject != NULL && pGameObject->AsSWSCreature() != NULL)
+    {
+        CSWSCreature* pCreature = pGameObject->AsSWSCreature();
+        if (pCreature != NULL)
+        {
+            CExoLinkedList<CSWSObjectActionNode>* pActions = &pCreature->m_lstActions;
+            if (pActions != NULL)
+            {
+                bPending = pActions->GetHead() != NULL;
+            }
+        }
+    }
+    return g_pVirtualMachine->StackPushInteger(bPending) != 0 ? 0 : -2000;
+}
+// PC 0x005D2B20
+int CSWVirtualMachineCommands::ExecuteCommandSpawnMine(int nCommand, int nArgs)
+{
+    int nMineType;
+    CScriptLocation* pLocation = NULL;
+    int nDetectDC;
+    int nDisarmDC;
+    unsigned long oidCreator;
+
+    if (g_pVirtualMachine->StackPopInteger(&nMineType) == 0 ||
+        g_pVirtualMachine->StackPopEngineStructure(STRUCTURE_LOCATION, (void**)&pLocation) == 0 ||
+        g_pVirtualMachine->StackPopInteger(&nDetectDC) == 0 ||
+        g_pVirtualMachine->StackPopInteger(&nDisarmDC) == 0 ||
+        g_pVirtualMachine->StackPopObject(&oidCreator) == 0)
+    {
+        delete pLocation;
+        return -2001;
+    }
+    C2DA* pTraps = g_pRules->m_p2DArrays->m_pTraps;
+    CExoString sTrapScript;
+    CSWSCreature* pCreature = NULL;
+    int nFaction;
+    int nDetectDCMod;
+    int nDisarmDCMod;
+    CGameObject* pCreator = g_pAppManager->GetServerExoApp()->GetGameObject(oidCreator);
+    if (pCreator != NULL && pCreator->AsSWSCreature() != NULL)
+    {
+        pCreature = pCreator->AsSWSCreature();
+        nFaction = pCreature->m_pStats->m_nFactionId;
+    }
+    else if (pCreator != NULL && pCreator->AsSWSPlaceable() != NULL)
+    {
+        nFaction = pCreator->AsSWSPlaceable()->m_nFaction;
+    }
+    else
+    {
+        nFaction = 1;
+    }
+    pTraps->GetINTEntry(nMineType, CExoString("DetectDCMod"), &nDetectDCMod);
+    pTraps->GetINTEntry(nMineType, CExoString("DisarmDCMod"), &nDisarmDCMod);
+    pTraps->GetCExoStringEntry(nMineType, CExoString("TrapScript"), &sTrapScript);
+    CSWSTrigger* pTrigger = new CSWSTrigger(OBJECT_INVALID);
+    pTrigger->SetCreator(oidCreator);
+    pTrigger->m_nTrapType = (unsigned char)nMineType;
+    pTrigger->m_asScripts[CSWSTrigger::SCRIPT_ONTRAPTRIGGERED] = sTrapScript;
+    pTrigger->m_nTrapDetectDC = nDetectDCMod + nDetectDC;
+    pTrigger->m_nTrapDisarmDC = nDisarmDC + nDisarmDCMod;
+    pTrigger->m_bMineTrigger = 1;
+    pTrigger->m_bTrapDetectable = 1;
+    pTrigger->m_bTrapDisarmable = 1;
+    pTrigger->SetPosition(pLocation->m_vPosition, 1, 1, 0);
+    pTrigger->m_nFaction = nFaction;
+    if (pCreature != NULL)
+    {
+        pTrigger->m_n320 = pCreature->m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, 0);
+    }
+    int nTrapName = 0;
+    pTraps->GetINTEntry(nMineType, CExoString("TrapName"), &nTrapName);
+    pTrigger->m_lsName.m_dwStringRef = nTrapName;
+    CSWSArea* pArea = g_pAppManager->GetServerExoApp()->GetModule()->GetArea();
+    pTrigger->CreateNewGeometry(2.0f, pLocation->m_vPosition, pArea);
+    pTrigger->AddToArea(pArea, pLocation->m_vPosition.m_fX, pLocation->m_vPosition.m_fY, pLocation->m_vPosition.m_fZ, 1);
+    pArea->m_lstTrapObjectIds.Add(pTrigger->m_nId);
+    delete pLocation;
+    return 0;
+}
 // PC 0x006049D0
 void CSWVirtualMachineCommands::ReportError(CExoString&, int)
 {
@@ -1215,16 +3244,27 @@ int CSWVirtualMachineCommands::ExecuteCommandAddMultiClass(int nCommand,
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
     pCreature = pServerExoApp->GetCreatureByGameObjectID(oidCreature);
-    if (pCreature != NULL)
+    nExperience = pCreature->m_pStats->m_nExperience;
+    if (pCreature->m_n1200 != 0)
     {
-        nExperience = pCreature->m_pStats->m_nExperience;
-        nExperienceToNextLevel =
-            pCreature->m_pStats->CalculateExpNeededForNextLevel() - nExperience;
+        nExperienceToNextLevel = pCreature->m_pStats->GetExpNeededForLevelUp() - nExperience;
         pCreature->m_pStats->AddClass((unsigned char)nClass, 0);
         if (g_pAppManager->m_pServerExoApp->GetPartyTable() != NULL)
         {
             g_pAppManager->m_pServerExoApp->GetPartyTable()
                 ->DistributeExperience(nExperienceToNextLevel, 1);
+        }
+    }
+    else
+    {
+        nExperienceToNextLevel = pCreature->m_pStats->GetExpNeededForLevelUp() - nExperience;
+        pCreature->m_pStats->AddClass((unsigned char)nClass, 0);
+        pCreature->m_pStats->AddExperience(nExperienceToNextLevel);
+        pCreature->m_nUnknown22C += nExperienceToNextLevel;
+        if (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_bAutoLevelUpNPCs &&
+            pCreature->m_pStats->CanLevelUp() != 0)
+        {
+            pCreature->m_pStats->AutoLevelup(1);
         }
     }
     return 0;
@@ -2525,6 +4565,11 @@ int CSWVirtualMachineCommands::ExecuteCommandDestroyObject(int nCommand, int nAr
     {
         return ERROR_STACK_POP;
     }
+    int bNoDrop = 0;
+    if (nArgs >= 5 && g_pVirtualMachine->StackPopInteger(&bNoDrop) == 0)
+    {
+        return ERROR_STACK_POP;
+    }
 
     CSWCCreature* pCharacter =
         g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
@@ -2563,9 +4608,11 @@ int CSWVirtualMachineCommands::ExecuteCommandDestroyObject(int nCommand, int nAr
     }
     pServerExoApp->GetPartyTable()->ClearMember(
         pServerExoApp->GetPartyTable()->GetNPCID(oidDestroy));
+    pServerExoApp->GetPartyTable()->ClearPuppet(
+        pServerExoApp->GetPartyTable()->GetPUPID(oidDestroy));
     pServerExoApp->GetServerAIMaster()->AddEventDeltaTime(
         0, (int)(fDelay * 1000.0f), m_oidObject, oidDestroy,
-        CServerAIMaster::EVENT_DESTROY_OBJECT, (void*)1);
+        CServerAIMaster::EVENT_DESTROY_OBJECT, (void*)(bNoDrop == 0));
     return 0;
 }
 // PC 0x005B1FF0
@@ -4156,12 +6203,18 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectResurrection(int nCommand,
     CGameEffect* pGameEffect;
     CServerExoApp* pServerExoApp;
     CGameObject* pGameObject;
+    int nHitPointPercent;
 
+    if (g_pVirtualMachine->StackPopInteger(&nHitPointPercent) == 0)
+    {
+        return -2001;
+    }
     pGameEffect = new CGameEffect(1);
     pGameEffect->m_nType = CSWSEffectListHandler::EFFECT_RESURRECTION;
     pGameEffect->m_nSubType =
         (pGameEffect->m_nSubType & ~CGameEffect::SUBTYPE_MASK) |
         SUBTYPE_MAGICAL;
+    pGameEffect->SetInteger(0, nHitPointPercent);
     pServerExoApp = g_pAppManager->m_pServerExoApp;
     if ((unsigned char)((CGameObjectArray*)pServerExoApp->GetObjectArray())
                 ->GetGameObject(m_oidObject, &pGameObject) ==
@@ -8796,14 +10849,14 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsDoorActionPossible(int nComman
                     {
                         if (pDoor->m_bLocked != 0 && pDoor->m_bKeyRequired == 0 &&
                             nSkillRank > 0 &&
-                            nSkillRank + CSWSCreatureStats::SKILL_CHECK_TAKE_20 >= pDoor->m_nOpenLockDC)
+                            nSkillRank + CSWSCreatureStats::SKILL_CHECK_TAKE_20 >= pDoor->GetOpenLockDC())
                         {
                             bResult = 1;
                         }
                     }
                     else if (pPlaceable != NULL && pPlaceable->m_bLocked != 0 &&
                              pPlaceable->m_bKeyRequired == 0 && nSkillRank > 0 &&
-                             nSkillRank + CSWSCreatureStats::SKILL_CHECK_TAKE_20 >= pPlaceable->m_nOpenLockDC)
+                             nSkillRank + CSWSCreatureStats::SKILL_CHECK_TAKE_20 >= pPlaceable->GetOpenLockDC())
                     {
                         bResult = 1;
                     }
@@ -8934,16 +10987,30 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsInCombat(int nCommand,
     CServerExoApp* pServerExoApp;
     CSWSCreature* pCreature;
 
+    int bOnlyCountReal;
+
     bInCombat = 0;
     if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
     {
         return -2001;
+    }
+    bOnlyCountReal = 0;
+    if (nArgs >= 2)
+    {
+        if (g_pVirtualMachine->StackPopInteger(&bOnlyCountReal) == 0)
+        {
+            return -2001;
+        }
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
     pCreature = pServerExoApp->GetCreatureByGameObjectID(oidCreature);
     if (pCreature != NULL)
     {
         bInCombat = pCreature->m_bCombatState;
+        if (bInCombat != 0 && bOnlyCountReal != 0 && pCreature->GetItemUseState() != 1)
+        {
+            bInCombat = 0;
+        }
     }
     return g_pVirtualMachine->StackPushInteger(bInCombat) != 0 ? 0 : -2000;
 }
@@ -10322,9 +12389,9 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLockInfo(int nCommand, int nArgs
         if (pGameObject != NULL)
         {
             if (pGameObject->m_nObjectType == CGameObject::OBJECT_TYPE_DOOR)
-                nUnlockDC = pGameObject->AsSWSDoor()->m_nOpenLockDC;
+                nUnlockDC = pGameObject->AsSWSDoor()->GetOpenLockDC();
             else if (pGameObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
-                nUnlockDC = pGameObject->AsSWSPlaceable()->m_nOpenLockDC;
+                nUnlockDC = pGameObject->AsSWSPlaceable()->GetOpenLockDC();
         }
         if (g_pVirtualMachine->StackPushInteger(nUnlockDC) == 0)
             return ERROR_STACK_PUSH;
@@ -10464,12 +12531,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetModuleName(int nCommand, int nAr
     switch (nCommand)
     {
     case COMMAND_GET_MODULE_NAME:
-        {
-            CExoLocString lsName(g_pAppManager->m_pServerExoApp->GetModule()->m_lsName);
-            int nLanguage = g_pAppManager->m_pServerExoApp->GetModuleLanguage();
-            lsName.GetStringLoc(nLanguage,
-                                &sResult, 0);
-        }
+        sResult = g_pAppManager->m_pServerExoApp->GetModuleName();
         break;
     case COMMAND_GET_MODULE_FILE_NAME:
         {
@@ -10896,14 +12958,16 @@ int CSWVirtualMachineCommands::ExecuteCommandGetPC(int nCommand, int nArgs)
 {
     unsigned long oidPlayer;
 
-    oidPlayer = CGameObjectArray::INVALIDOBJID;
+    oidPlayer = OBJECT_INVALID;
     if (nCommand == 548)
     {
+        g_pAppManager->m_pServerExoApp->GetPartyTable()->m_n254 = 0;
+        g_pAppManager->m_pClientExoApp->GetSWParty();
         oidPlayer = g_pAppManager->m_pServerExoApp->GetFirstPCObject();
     }
     else if (nCommand == 549)
     {
-        oidPlayer = g_pAppManager->m_pServerExoApp->GetNextPCObject();
+        oidPlayer = g_pAppManager->m_pServerExoApp->GetPartyTable()->GetNextPC();
     }
     return g_pVirtualMachine->StackPushObject(oidPlayer) != 0 ? 0 : -2000;
 }
@@ -10926,17 +12990,13 @@ int CSWVirtualMachineCommands::ExecuteCommandGetPCLevellingUp(int nCommand,
 int CSWVirtualMachineCommands::ExecuteCommandGetPCSpeaker(int nCommand,
                                                           int nArgs)
 {
-    CServerExoApp* pServerExoApp;
-    unsigned long oidResult;
-    CSWSPlayer* pPlayer;
-    unsigned long oidPushed;
-
-    pServerExoApp = g_pAppManager->m_pServerExoApp;
-    oidResult = pServerExoApp->GetPlayerCreatureId();
-    pServerExoApp = g_pAppManager->m_pServerExoApp;
-    pPlayer = pServerExoApp->GetClientObjectByObjectId(oidResult);
-    oidPushed = pPlayer->m_oidPCObject;
-    return g_pVirtualMachine->StackPushObject(oidPushed) != 0 ? 0 : -2000;
+    unsigned long oidPCSpeaker = CGameObjectArray::INVALIDOBJID;
+    CSWCCreature* pCharacter = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
+    if (pCharacter != NULL)
+    {
+        oidPCSpeaker = g_pAppManager->GetServerExoApp()->ClientToServerObjectId(pCharacter->GetId());
+    }
+    return g_pVirtualMachine->StackPushObject(oidPCSpeaker) != 0 ? 0 : -2000;
 }
 // PC 0x005BFA60
 int CSWVirtualMachineCommands::ExecuteCommandGetPlaceableIllumination(
@@ -12498,6 +14558,10 @@ int CSWVirtualMachineCommands::ExecuteCommandIsNPCPartyMember(int nCommand,
     }
     pServerExoApp = g_pAppManager->m_pServerExoApp;
     nResult2 = pServerExoApp->GetPartyTable()->GetIsMember(nNPC);
+    if (nResult2 == 0)
+    {
+        nResult2 = g_pAppManager->m_pServerExoApp->GetPartyTable()->m_nControlledNPC == nNPC;
+    }
     return g_pVirtualMachine->StackPushInteger(nResult2) != 0 ? 0 : -2000;
 }
 // PC 0x005C2420
@@ -12522,21 +14586,22 @@ int CSWVirtualMachineCommands::ExecuteCommandIsObjectPartyMember(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C2560
+// PC 0x005C2480
 int CSWVirtualMachineCommands::ExecuteCommandIsPC(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
-    CServerExoApp* pServerExoApp;
-    CSWSPlayer* pPlayer;
-    int nResult;
+    CSWSCreature* pCreature;
+    int nResult = 0;
 
     if (g_pVirtualMachine->StackPopObject(&oidCreature) == 0)
     {
         return -2001;
     }
-    pServerExoApp = g_pAppManager->m_pServerExoApp;
-    pPlayer = pServerExoApp->GetClientObjectByObjectId(oidCreature);
-    nResult = (pPlayer != NULL);
+    pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCreature);
+    if (pCreature != NULL && pCreature->GetStats() != NULL)
+    {
+        nResult = pCreature->GetStats()->GetIsPC();
+    }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
 // PC 0x005C26E0
@@ -13605,7 +15670,15 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayMovie(int nCommand, int nArgs)
 
     g_pExoInput->ClearEvents();
     g_pAppManager->m_pClientExoApp->ResetDriveAcceleration();
-    g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL);
+    int bKeepMusic = 0;
+    if (g_pVirtualMachine->StackPopInteger(&bKeepMusic) == 0)
+    {
+        return ERROR_STACK_POP;
+    }
+    if (bKeepMusic == 0)
+    {
+        g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL);
+    }
 #ifdef _XBOX
     g_pAppManager->m_pClientExoApp->HideLoadScreen(0);
 #else
@@ -18001,21 +20074,6 @@ int CSWVirtualMachineCommands::ExecuteCommandShowTutorialWindow(int nCommand,
         return -2001;
     }
 
-    switch (nTutorial)
-    {
-    case 0:
-        nTutorial = 9;
-        break;
-    case 1:
-        nTutorial = 40;
-        break;
-#ifndef _XBOX
-    case 2: nTutorial = 42; break;
-#endif
-    default:
-        return 0;
-    }
-
     g_pAppManager->m_pClientExoApp->ShowTutorialWindow(nTutorial, OBJECT_INVALID,
                                                        OBJECT_INVALID, 0);
     return 0;
@@ -18432,9 +20490,6 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCheatCode(int nCommand,
                                                            int nArgs)
 {
     int nResult;
-#ifndef _XBOX
-    int nCheatCode = 0;
-#endif
 
     if (g_pVirtualMachine->StackPopInteger(&nResult) == 0)
     {
@@ -18443,12 +20498,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCheatCode(int nCommand,
 #ifdef _XBOX
     return g_pVirtualMachine->StackPushInteger(g_pExoInput->GetCheatCombo(nResult)) != 0 ? 0 : -2000;
 #else
-    if (nResult == 0)
-    {
-        nCheatCode = g_pAppManager->m_pClientExoApp->GetInGameGui()
-                         ->m_bDanceDanceMalak;
-    }
-    return g_pVirtualMachine->StackPushInteger(nCheatCode) != 0 ? 0 : -2000;
+    return g_pVirtualMachine->StackPushInteger(0) != 0 ? 0 : -2000;
 #endif
 }
 // PC 0x005CBC90
@@ -18664,18 +20714,6 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCurrentAction(int nCommand,
             {
                 nAction = ACTION_QUEUEEMPTY;
             }
-        }
-    }
-    if (RenderPartyFollow != 0)
-    {
-        pServerExoApp = g_pAppManager->m_pServerExoApp;
-        CSWSCreature* pCreature =
-            pServerExoApp->GetCreatureByGameObjectID(m_oidObject);
-        if (pCreature != NULL && pCreature->m_bInParty != 0 &&
-            pCreature->m_bCommandable == 1)
-        {
-
-            EXOLOG("%s: current action %d\n", pCreature->m_sTag.CStr(), nAction);
         }
     }
     return g_pVirtualMachine->StackPushInteger(nAction) != 0 ? 0 : ERROR_STACK_PUSH;
@@ -20406,6 +22444,7 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_ACTION_EQUIP_MOST_DAMAGING_RANGED] = &CSWVirtualMachineCommands::ExecuteCommandActionEquipMostDamagingRanged;
     m_pCommands[COMMAND_ACTION_EQUIP_MOST_EFFECTIVE_ARMOR] = &CSWVirtualMachineCommands::ExecuteCommandActionEquipMostEffectiveArmor;
     m_pCommands[COMMAND_ACTION_FOLLOW_LEADER] = &CSWVirtualMachineCommands::ExecuteCommandActionFollowLeader;
+    m_pCommands[COMMAND_ACTION_FOLLOW_OWNER] = &CSWVirtualMachineCommands::ExecuteCommandActionFollowOwner;
     m_pCommands[COMMAND_ACTION_FORCE_FOLLOW_OBJECT] = &CSWVirtualMachineCommands::ExecuteCommandActionFollowObject;
     m_pCommands[COMMAND_ACTION_FORCE_MOVE_TO_LOCATION] = &CSWVirtualMachineCommands::ExecuteCommandMoveToPoint;
     m_pCommands[COMMAND_ACTION_FORCE_MOVE_TO_OBJECT] = &CSWVirtualMachineCommands::ExecuteCommandMoveToObject;
@@ -20429,6 +22468,7 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_ACTION_SPEAK_STRING_BY_STR_REF] = &CSWVirtualMachineCommands::ExecuteCommandSpeakStrRef;
     m_pCommands[COMMAND_ACTION_START_CONVERSATION] = &CSWVirtualMachineCommands::ExecuteCommandActionStartConversation;
     m_pCommands[COMMAND_ACTION_SURRENDER_TO_ENEMIES] = &CSWVirtualMachineCommands::ExecuteCommandSurrenderToEnemies;
+    m_pCommands[COMMAND_ACTION_SWITCH_WEAPONS] = &CSWVirtualMachineCommands::ExecuteCommandActionSwitchWeapons;
     m_pCommands[COMMAND_ACTION_TAKE_ITEM] = &CSWVirtualMachineCommands::ExecuteCommandActionExchangeItem;
     m_pCommands[COMMAND_ACTION_UNEQUIP_ITEM] = &CSWVirtualMachineCommands::ExecuteCommandUnequipItem;
     m_pCommands[COMMAND_ACTION_UNLOCK_OBJECT] = &CSWVirtualMachineCommands::ExecuteCommandActionLockActions;
@@ -20438,11 +22478,14 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_ACTION_USE_TALENT_ON_OBJECT] = &CSWVirtualMachineCommands::ExecuteCommandActionUseTalent;
     m_pCommands[COMMAND_ADD_AVAILABLE_NPC_BY_OBJECT] = &CSWVirtualMachineCommands::ExecuteCommandAddAvailableNPCByObject;
     m_pCommands[COMMAND_ADD_AVAILABLE_NPC_BY_TEMPLATE] = &CSWVirtualMachineCommands::ExecuteCommandAddAvailableNPCByTemplate;
+    m_pCommands[COMMAND_ADD_AVAILABLE_PUP_BY_TEMPLATE] = &CSWVirtualMachineCommands::ExecuteCommandAddAvailablePUPByTemplate;
+    m_pCommands[COMMAND_ADD_AVAILABLE_PUP_BY_OBJECT] = &CSWVirtualMachineCommands::ExecuteCommandAddAvailablePUPByObject;
     m_pCommands[COMMAND_ADD_JOURNAL_QUEST_ENTRY] = &CSWVirtualMachineCommands::ExecuteCommandAddJournalQuestEntry;
     m_pCommands[COMMAND_ADD_JOURNAL_WORLD_ENTRY] = &CSWVirtualMachineCommands::ExecuteCommandAddJournalWorldEntry;
     m_pCommands[COMMAND_ADD_JOURNAL_WORLD_ENTRY_STRREF] = &CSWVirtualMachineCommands::ExecuteCommandAddJournalWorldEntryStrref;
     m_pCommands[COMMAND_ADD_MULTI_CLASS] = &CSWVirtualMachineCommands::ExecuteCommandAddMultiClass;
     m_pCommands[COMMAND_ADD_PARTY_MEMBER] = &CSWVirtualMachineCommands::ExecuteCommandAddPartyMember;
+    m_pCommands[COMMAND_ADD_PARTY_PUPPET] = &CSWVirtualMachineCommands::ExecuteCommandAddPartyPuppet;
     m_pCommands[COMMAND_ADD_TO_PARTY] = &CSWVirtualMachineCommands::ExecuteCommandAddToParty;
     m_pCommands[COMMAND_ADJUST_ALIGNMENT] = &CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment;
     m_pCommands[COMMAND_ADJUST_REPUTATION] = &CSWVirtualMachineCommands::ExecuteCommandAdjustReputation;
@@ -20457,6 +22500,7 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_APPLY_EFFECT_TO_OBJECT] = &CSWVirtualMachineCommands::ExecuteCommandApplyEffectOnObject;
     m_pCommands[COMMAND_ASIN] = &CSWVirtualMachineCommands::ExecuteCommandMath;
     m_pCommands[COMMAND_ASSIGN_COMMAND] = &CSWVirtualMachineCommands::ExecuteCommandAssignCommand;
+    m_pCommands[COMMAND_ASSIGN_PUP] = &CSWVirtualMachineCommands::ExecuteCommandAssignPUP;
     m_pCommands[COMMAND_EFFECT_ASSURED_HIT] = &CSWVirtualMachineCommands::ExecuteCommandEffectComplex;
     m_pCommands[COMMAND_EFFECT_ASSURED_DEFLECTION] = &CSWVirtualMachineCommands::ExecuteCommandEffectComplex;
     m_pCommands[COMMAND_ATAN] = &CSWVirtualMachineCommands::ExecuteCommandMath;
@@ -20492,12 +22536,18 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_DELETE_JOURNAL_WORLD_ENTRY] = &CSWVirtualMachineCommands::ExecuteCommandDeleteJournalWorldEntry;
     m_pCommands[COMMAND_DELETE_JOURNAL_WORLD_ENTRY_STRREF] = &CSWVirtualMachineCommands::ExecuteCommandDeleteJournalWorldEntryStrref;
     m_pCommands[COMMAND_DESTROY_OBJECT] = &CSWVirtualMachineCommands::ExecuteCommandDestroyObject;
+    m_pCommands[COMMAND_DETONATE_MINE] = &CSWVirtualMachineCommands::ExecuteCommandDetonateMine;
+    m_pCommands[COMMAND_DISABLE_MAP] = &CSWVirtualMachineCommands::ExecuteCommandDisableMap;
+    m_pCommands[COMMAND_DISABLE_HEALTH_REGEN] = &CSWVirtualMachineCommands::ExecuteCommandDisableHealthRegen;
     m_pCommands[COMMAND_DISABLE_VIDEO_EFFECT] = &CSWVirtualMachineCommands::ExecuteCommandDisableVideoEffect;
     m_pCommands[COMMAND_DISPLAY_FEED_BACK_TEXT] = &CSWVirtualMachineCommands::ExecuteCommandDisplayFeedBackText;
+    m_pCommands[COMMAND_DISPLAY_MESSAGE_BOX] = &CSWVirtualMachineCommands::ExecuteCommandDisplayMessageBox;
+    m_pCommands[COMMAND_DISPLAY_DATAPAD] = &CSWVirtualMachineCommands::ExecuteCommandDisplayDatapad;
     m_pCommands[COMMAND_DO_DOOR_ACTION] = &CSWVirtualMachineCommands::ExecuteCommandDoDoorAction;
     m_pCommands[COMMAND_DO_PLACEABLE_OBJECT_ACTION] = &CSWVirtualMachineCommands::ExecuteCommandDoDoorAction;
     m_pCommands[COMMAND_DO_SINGLE_PLAYER_AUTO_SAVE] = &CSWVirtualMachineCommands::ExecuteCommandDoSinglePlayerAutoSave;
     m_pCommands[COMMAND_DUPLICATE_HEAD_APPEARANCE] = &CSWVirtualMachineCommands::ExecuteCommandDuplicateHeadAppearance;
+    m_pCommands[COMMAND_DECREMENT_GLOBAL_NUMBER] = &CSWVirtualMachineCommands::ExecuteCommandModifyGlobal;
     m_pCommands[COMMAND_EFFECT_CUTSCENE_HORRIFIED] = &CSWVirtualMachineCommands::ExecuteCommandEffectComplex;
     m_pCommands[COMMAND_EFFECT_CUTSCENE_PARALYZE] = &CSWVirtualMachineCommands::ExecuteCommandEffectComplex;
     m_pCommands[COMMAND_EFFECT_CUTSCENE_STUNNED] = &CSWVirtualMachineCommands::ExecuteCommandEffectComplex;
@@ -20524,6 +22574,8 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_EFFECT_ATTACK_DECREASE] = &CSWVirtualMachineCommands::ExecuteCommandEffectAttackDecrease;
     m_pCommands[COMMAND_EFFECT_ATTACK_INCREASE] = &CSWVirtualMachineCommands::ExecuteCommandEffectAttackIncrease;
     m_pCommands[COMMAND_EFFECT_BEAM] = &CSWVirtualMachineCommands::ExecuteCommandEffectBeam;
+    m_pCommands[COMMAND_EFFECT_BLIND] = &CSWVirtualMachineCommands::ExecuteCommandEffectBlind;
+    m_pCommands[COMMAND_EFFECT_CRUSH] = &CSWVirtualMachineCommands::ExecuteCommandEffectCrush;
     m_pCommands[COMMAND_EFFECT_CONCEALMENT] = &CSWVirtualMachineCommands::ExecuteCommandEffectConcealment;
     m_pCommands[COMMAND_EFFECT_CONFUSED] = &CSWVirtualMachineCommands::ExecuteCommandEffectComplex;
     m_pCommands[COMMAND_EFFECT_DAMAGE] = &CSWVirtualMachineCommands::ExecuteCommandEffectDamage;
@@ -20538,14 +22590,20 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_EFFECT_DISGUISE] = &CSWVirtualMachineCommands::ExecuteCommandEffectComplex;
     m_pCommands[COMMAND_EFFECT_DISPEL_MAGIC_ALL] = &CSWVirtualMachineCommands::ExecuteCommandEffectComplex;
     m_pCommands[COMMAND_EFFECT_DISPEL_MAGIC_BEST] = &CSWVirtualMachineCommands::ExecuteCommandEffectComplex;
+    m_pCommands[COMMAND_EFFECT_DROID_CONFUSED] = &CSWVirtualMachineCommands::ExecuteCommandEffectComplex;
     m_pCommands[COMMAND_EFFECT_ENTANGLE] = &CSWVirtualMachineCommands::ExecuteCommandEffectComplex;
+    m_pCommands[COMMAND_EFFECT_FACTION_MODIFIER] = &CSWVirtualMachineCommands::ExecuteCommandEffectFactionModifier;
+    m_pCommands[COMMAND_EFFECT_FORCE_BODY] = &CSWVirtualMachineCommands::ExecuteCommandEffectForceBody;
+    m_pCommands[COMMAND_EFFECT_FORCE_SIGHT] = &CSWVirtualMachineCommands::ExecuteCommandEffectForceSight;
     m_pCommands[COMMAND_EFFECT_FORCE_DRAIN] = &CSWVirtualMachineCommands::ExecuteCommandEffectForceDrain;
     m_pCommands[COMMAND_EFFECT_FORCE_FIZZLE] = &CSWVirtualMachineCommands::ExecuteCommandEffectComplex;
     m_pCommands[COMMAND_EFFECT_FORCE_RESISTANCE_DECREASE] = &CSWVirtualMachineCommands::ExecuteCommandEffectForceResistanceDecrease;
     m_pCommands[COMMAND_EFFECT_FORCE_RESISTANCE_INCREASE] = &CSWVirtualMachineCommands::ExecuteCommandEffectForceResistanceIncrease;
     m_pCommands[COMMAND_EFFECT_FORCE_RESISTED] = &CSWVirtualMachineCommands::ExecuteCommandEffectComplex;
     m_pCommands[COMMAND_EFFECT_FORCE_SHIELD] = &CSWVirtualMachineCommands::ExecuteCommandEffectForceShield;
+    m_pCommands[COMMAND_EFFECT_FP_REGEN_MODIFIER] = &CSWVirtualMachineCommands::ExecuteCommandEffectFPRegenModifier;
     m_pCommands[COMMAND_EFFECT_FRIGHTENED] = &CSWVirtualMachineCommands::ExecuteCommandEffectComplex;
+    m_pCommands[COMMAND_EFFECT_FURY] = &CSWVirtualMachineCommands::ExecuteCommandEffectFury;
     m_pCommands[COMMAND_EFFECT_HASTE] = &CSWVirtualMachineCommands::ExecuteCommandEffectComplex;
     m_pCommands[COMMAND_EFFECT_HEAL] = &CSWVirtualMachineCommands::ExecuteCommandEffectHeal;
     m_pCommands[COMMAND_EFFECT_HIT_POINT_CHANGE_WHEN_DYING] = &CSWVirtualMachineCommands::ExecuteCommandEffectHitPointChangeWhenDying;
@@ -20575,6 +22633,9 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_EFFECT_TIME_STOP] = &CSWVirtualMachineCommands::ExecuteCommandEffectComplex;
     m_pCommands[COMMAND_EFFECT_TRUE_SEEING] = &CSWVirtualMachineCommands::ExecuteCommandEffectTrueSeeing;
     m_pCommands[COMMAND_EFFECT_VISUAL_EFFECT] = &CSWVirtualMachineCommands::ExecuteCommandEffectVisualEffect;
+    m_pCommands[COMMAND_EFFECT_VP_REGEN_MODIFIER] = &CSWVirtualMachineCommands::ExecuteCommandEffectVPRegenModifier;
+    m_pCommands[COMMAND_EFFECT_MIND_TRICK] = &CSWVirtualMachineCommands::ExecuteCommandEffectComplex;
+    m_pCommands[COMMAND_EFFECT_DROID_SCRAMBLE] = &CSWVirtualMachineCommands::ExecuteCommandEffectComplex;
     m_pCommands[COMMAND_ENABLE_VIDEO_EFFECT] = &CSWVirtualMachineCommands::ExecuteCommandEnableVideoEffect;
     m_pCommands[COMMAND_END_GAME] = &CSWVirtualMachineCommands::ExecuteCommandEndGame;
     m_pCommands[COMMAND_EVENT_ACTIVATE_ITEM] = &CSWVirtualMachineCommands::ExecuteCommandEventActivateItem;
@@ -20594,6 +22655,8 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_FLOAT_TO_INT] = &CSWVirtualMachineCommands::ExecuteCommandFloatToInt;
     m_pCommands[COMMAND_FLOAT_TO_STRING] = &CSWVirtualMachineCommands::ExecuteCommandFloatToString;
     m_pCommands[COMMAND_FORTITUDE_SAVE] = &CSWVirtualMachineCommands::ExecuteCommandSavingThrow;
+    m_pCommands[COMMAND_FORCE_HEARTBEAT] = &CSWVirtualMachineCommands::ExecuteCommandForceHeartbeat;
+    m_pCommands[COMMAND_SET_FORCE_ALWAYS_UPDATE] = &CSWVirtualMachineCommands::ExecuteCommandForceAlwaysUpdate;
     m_pCommands[COMMAND_GET_ABILITY_MODIFIER] = &CSWVirtualMachineCommands::ExecuteCommandGetAbilityModifier;
     m_pCommands[COMMAND_GET_ABILITY_SCORE] = &CSWVirtualMachineCommands::ExecuteCommandGetAbilityScore;
     m_pCommands[COMMAND_GET_AC] = &CSWVirtualMachineCommands::ExecuteCommandGetAC;
@@ -20679,6 +22742,10 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_GET_GOING_TO_BE_ATTACKED_BY] = &CSWVirtualMachineCommands::ExecuteCommandGetGoingToBeAttackedBy;
     m_pCommands[COMMAND_GET_GOLD] = &CSWVirtualMachineCommands::ExecuteCommandGetGold;
     m_pCommands[COMMAND_GET_GOLD_PIECE_VALUE] = &CSWVirtualMachineCommands::ExecuteCommandGetGoldPieceValue;
+    m_pCommands[COMMAND_GET_ITEM_COMPONENT] = &CSWVirtualMachineCommands::ExecuteCommandGetGold;
+    m_pCommands[COMMAND_GET_ITEM_COMPONENT_PIECE_VALUE] = &CSWVirtualMachineCommands::ExecuteCommandGetGoldPieceValue;
+    m_pCommands[COMMAND_GET_CHEMICALS] = &CSWVirtualMachineCommands::ExecuteCommandGetChemical;
+    m_pCommands[COMMAND_GET_CHEMICAL_PIECE_VALUE] = &CSWVirtualMachineCommands::ExecuteCommandGetChemicalPieceValue;
     m_pCommands[COMMAND_GET_GOOD_EVIL_VALUE] = &CSWVirtualMachineCommands::ExecuteCommandGetAlignment;
     m_pCommands[COMMAND_GET_HAS_FEAT] = &CSWVirtualMachineCommands::ExecuteCommandGetHasFeat;
     m_pCommands[COMMAND_GET_HAS_FEAT_EFFECT] = &CSWVirtualMachineCommands::ExecuteCommandGetHasFeatEffect;
@@ -20686,6 +22753,7 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_GET_HAS_SKILL] = &CSWVirtualMachineCommands::ExecuteCommandGetHasSkill;
     m_pCommands[COMMAND_GET_HAS_SPELL] = &CSWVirtualMachineCommands::ExecuteCommandGetHasSpell;
     m_pCommands[COMMAND_GET_HAS_SPELL_EFFECT] = &CSWVirtualMachineCommands::ExecuteCommandGetHasSpellEffect;
+    m_pCommands[COMMAND_GET_HEAL_TARGET] = &CSWVirtualMachineCommands::ExecuteCommandGetHealTarget;
     m_pCommands[COMMAND_GET_HIT_DICE] = &CSWVirtualMachineCommands::ExecuteCommandGetHitDice;
     m_pCommands[COMMAND_GET_IDENTIFIED] = &CSWVirtualMachineCommands::ExecuteCommandGetIdentified;
     m_pCommands[COMMAND_GET_ID_FROM_TALENT] = &CSWVirtualMachineCommands::ExecuteCommandTalentAccess;
@@ -20713,9 +22781,13 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_GET_IS_OPEN] = &CSWVirtualMachineCommands::ExecuteCommandGetIsOpen;
     m_pCommands[COMMAND_GET_IS_PLACEABLE_OBJECT_ACTION_POSSIBLE] = &CSWVirtualMachineCommands::ExecuteCommandGetIsDoorActionPossible;
     m_pCommands[COMMAND_GET_IS_POISONED] = &CSWVirtualMachineCommands::ExecuteCommandGetIsPoisoned;
+    m_pCommands[COMMAND_GET_IS_PUPPET] = &CSWVirtualMachineCommands::ExecuteCommandGetIsPuppet;
+    m_pCommands[COMMAND_GET_IS_XBOX] = &CSWVirtualMachineCommands::ExecuteCommandGetIsXBox;
     m_pCommands[COMMAND_GET_IS_PLAYABLE_RACIAL_TYPE] = &CSWVirtualMachineCommands::ExecuteCommandGetIsRacialTypePlayable;
     m_pCommands[COMMAND_GET_IS_TALENT_VALID] = &CSWVirtualMachineCommands::ExecuteCommandGetIsTalentValid;
     m_pCommands[COMMAND_GET_IS_TRAPPED] = &CSWVirtualMachineCommands::ExecuteCommandGetIsMined;
+    m_pCommands[COMMAND_GET_IS_PARTY_LEADER] = &CSWVirtualMachineCommands::ExecuteCommandGetIsPartyLeader;
+    m_pCommands[COMMAND_GET_PARTY_LEADER] = &CSWVirtualMachineCommands::ExecuteCommandGetPCSpeaker;
     m_pCommands[COMMAND_GET_IS_WEAPON_EFFECTIVE] = &CSWVirtualMachineCommands::ExecuteCommandGetIsWeaponEffective;
     m_pCommands[COMMAND_GET_ITEM_ACTIVATED] = &CSWVirtualMachineCommands::ExecuteCommandItemActivated;
     m_pCommands[COMMAND_GET_ITEM_ACTIVATED_TARGET_LOCATION] = &CSWVirtualMachineCommands::ExecuteCommandItemActivated;
@@ -20818,6 +22890,10 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_GET_OBJECT_HEARD] = &CSWVirtualMachineCommands::ExecuteCommandGetObjectVisibility;
     m_pCommands[COMMAND_GET_OBJECT_SEEN] = &CSWVirtualMachineCommands::ExecuteCommandGetObjectVisibility;
     m_pCommands[COMMAND_GET_OBJECT_TYPE] = &CSWVirtualMachineCommands::ExecuteCommandGetObjectType;
+    m_pCommands[COMMAND_GET_OWNER_DEMOLITIONS_SKILL] = &CSWVirtualMachineCommands::ExecuteCommandGetOwnerDemolitionsSkill;
+    m_pCommands[COMMAND_GET_INFLUENCE] = &CSWVirtualMachineCommands::ExecuteCommandInfluence;
+    m_pCommands[COMMAND_SET_INFLUENCE] = &CSWVirtualMachineCommands::ExecuteCommandInfluence;
+    m_pCommands[COMMAND_MODIFY_INFLUENCE] = &CSWVirtualMachineCommands::ExecuteCommandInfluence;
     m_pCommands[COMMAND_GET_PARTY_AI_STYLE] = &CSWVirtualMachineCommands::ExecuteCommandGetPartyAIStyle;
     m_pCommands[COMMAND_GET_PARTY_MEMBER_BY_INDEX] = &CSWVirtualMachineCommands::ExecuteCommandGetPartyMemberByIndex;
     m_pCommands[COMMAND_GET_PARTY_MEMBER_COUNT] = &CSWVirtualMachineCommands::ExecuteCommandGetPartyMemberCount;
@@ -20831,14 +22907,38 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_GET_POSITION] = &CSWVirtualMachineCommands::ExecuteCommandGetPosition;
     m_pCommands[COMMAND_GET_POSITION_FROM_LOCATION] = &CSWVirtualMachineCommands::ExecuteCommandLocationAccess;
     m_pCommands[COMMAND_GET_RACIAL_TYPE] = &CSWVirtualMachineCommands::ExecuteCommandGetRacialType;
+    m_pCommands[COMMAND_GET_RACIAL_SUB_TYPE] = &CSWVirtualMachineCommands::ExecuteCommandGetRacialSubType;
+    m_pCommands[COMMAND_GET_RANDOM_DESTINATION] = &CSWVirtualMachineCommands::ExecuteCommandGetRandomDestination;
     m_pCommands[COMMAND_GET_REFLEX_ADJUSTED_DAMAGE] = &CSWVirtualMachineCommands::ExecuteCommandGetReflexAdjustedDamage;
     m_pCommands[COMMAND_GET_REFLEX_SAVING_THROW] = &CSWVirtualMachineCommands::ExecuteCommandGetReflexSavingThrow;
     m_pCommands[COMMAND_GET_REPUTATION] = &CSWVirtualMachineCommands::ExecuteCommandGetReputation;
     m_pCommands[COMMAND_GET_PLAYER_RESTRICT_MODE] = &CSWVirtualMachineCommands::ExecuteCommandGetRestrictMode;
+    m_pCommands[COMMAND_GET_SCRIPT_PARAMETER] = &CSWVirtualMachineCommands::ExecuteCommandGetScriptParameter;
+    m_pCommands[COMMAND_SET_FADE_UNTIL_SCRIPT] = &CSWVirtualMachineCommands::ExecuteCommandSetFadeUntilScript;
+    m_pCommands[COMMAND_GET_COMBAT_ACTIONS_PENDING] = &CSWVirtualMachineCommands::ExecuteCommandGetCombatActionPending;
     m_pCommands[COMMAND_GET_SELECTED_PLANET] = &CSWVirtualMachineCommands::ExecuteCommandGetGalaxyMapSelectedPlanet;
     m_pCommands[COMMAND_GET_SKILL_RANK] = &CSWVirtualMachineCommands::ExecuteCommandGetSkillRank;
     m_pCommands[COMMAND_GET_SOLO_MODE] = &CSWVirtualMachineCommands::ExecuteCommandGetSoloMode;
     m_pCommands[COMMAND_GET_SPELL_CAST_ITEM] = &CSWVirtualMachineCommands::ExecuteCommandGetSpellCasterItem;
+    m_pCommands[COMMAND_GET_SPELL_FORCE_POINT_COST] = &CSWVirtualMachineCommands::ExecuteCommandGetSpellForcePointCost;
+    m_pCommands[COMMAND_GET_FEAT_ACQUIRED] = &CSWVirtualMachineCommands::ExecuteCommandGetHasFeat;
+    m_pCommands[COMMAND_GET_SPELL_ACQUIRED] = &CSWVirtualMachineCommands::ExecuteCommandGetHasSpell;
+    m_pCommands[COMMAND_GRANT_FEAT] = &CSWVirtualMachineCommands::ExecuteCommandGrantAbility;
+    m_pCommands[COMMAND_GRANT_SPELL] = &CSWVirtualMachineCommands::ExecuteCommandGrantAbility;
+    m_pCommands[COMMAND_GET_SPELL_FORM_MASK] = &CSWVirtualMachineCommands::ExecuteCommandGetSpellFormMask;
+    m_pCommands[COMMAND_GET_SPELL_BASE_FORCE_POINT_COST] = &CSWVirtualMachineCommands::ExecuteCommandGetSpellBaseForcePointCost;
+    m_pCommands[COMMAND_GET_LAST_FORFEIT_VIOLATION] = &CSWVirtualMachineCommands::ExecuteCommandGetLastForfeitViolation;
+    m_pCommands[COMMAND_GET_SCRIPT_STRING_PARAMETER] = &CSWVirtualMachineCommands::ExecuteCommandGetScriptStringParameter;
+    m_pCommands[COMMAND_GET_SKILL_RANK_BASE] = &CSWVirtualMachineCommands::ExecuteCommandGetSkillRank;
+    m_pCommands[COMMAND_MODIFY_REFLEX_SAVING_THROW_BASE] = &CSWVirtualMachineCommands::ExecuteCommandModifyBaseSavingThrow;
+    m_pCommands[COMMAND_MODIFY_FORTITUDE_SAVING_THROW_BASE] = &CSWVirtualMachineCommands::ExecuteCommandModifyBaseSavingThrow;
+    m_pCommands[COMMAND_MODIFY_WILL_SAVING_THROW_BASE] = &CSWVirtualMachineCommands::ExecuteCommandModifyBaseSavingThrow;
+    m_pCommands[COMMAND_GET_OBJECT_PERSONAL_SPACE] = &CSWVirtualMachineCommands::ExecuteCommandGetObjectPersonalSpace;
+    m_pCommands[COMMAND_ADJUST_CREATURE_ATTRIBUTES] = &CSWVirtualMachineCommands::ExecuteCommandAdjustCreatureAttributes;
+    m_pCommands[COMMAND_SET_CREATURE_AI_LEVEL] = &CSWVirtualMachineCommands::ExecuteCommandSetCreatureAILevel;
+    m_pCommands[COMMAND_RESET_CREATURE_AI_LEVEL] = &CSWVirtualMachineCommands::ExecuteCommandResetCreatureAILevel;
+    m_pCommands[COMMAND_CHANGE_OBJECT_APPEARANCE] = &CSWVirtualMachineCommands::ExecuteCommandChangeObjectAppearance;
+    m_pCommands[COMMAND_ADJUST_CREATURE_SKILLS] = &CSWVirtualMachineCommands::ExecuteCommandAdjustCreatureSkills;
     m_pCommands[COMMAND_GET_SPELL_ID] = &CSWVirtualMachineCommands::ExecuteCommandGetSpellId;
     m_pCommands[COMMAND_GET_SPELL_SAVE_DC] = &CSWVirtualMachineCommands::ExecuteCommandGetSpellSaveDC;
     m_pCommands[COMMAND_GET_SPELL_TARGET_LOCATION] = &CSWVirtualMachineCommands::ExecuteCommandGetSpellTargetLoc;
@@ -20875,6 +22975,7 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_GET_TRAP_FLAGGED] = &CSWVirtualMachineCommands::ExecuteCommandGetMineInfo;
     m_pCommands[COMMAND_GET_TRAP_KEY_TAG] = &CSWVirtualMachineCommands::ExecuteCommandGetMineInfo;
     m_pCommands[COMMAND_GET_TRAP_ONE_SHOT] = &CSWVirtualMachineCommands::ExecuteCommandGetMineInfo;
+    m_pCommands[COMMAND_GET_PUP_OWNER] = &CSWVirtualMachineCommands::ExecuteCommandGetPUPOwner;
     m_pCommands[COMMAND_GET_TYPE_FROM_TALENT] = &CSWVirtualMachineCommands::ExecuteCommandTalentAccess;
     m_pCommands[COMMAND_GET_USER_ACTIONS_PENDING] = &CSWVirtualMachineCommands::ExecuteCommandGetUserActionsPending;
     m_pCommands[COMMAND_GET_USER_DEFINED_EVENT_NUMBER] = &CSWVirtualMachineCommands::ExecuteCommandGetUserDefinedEventNumber;
@@ -20887,6 +22988,7 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_GIVE_ITEM] = &CSWVirtualMachineCommands::ExecuteCommandGiveItem;
     m_pCommands[COMMAND_GIVE_PLOT_XP] = &CSWVirtualMachineCommands::ExecuteCommandGivePlotXP;
     m_pCommands[COMMAND_GIVE_XP_TO_CREATURE] = &CSWVirtualMachineCommands::ExecuteCommandGiveXPToCreature;
+    m_pCommands[COMMAND_HAS_LINE_OF_SIGHT] = &CSWVirtualMachineCommands::ExecuteCommandHasLineOfSight;
     m_pCommands[COMMAND_HOURS_TO_SECONDS] = &CSWVirtualMachineCommands::ExecuteCommandTimeConversions;
     m_pCommands[COMMAND_HOLD_WORLD_FADE_IN_FOR_DIALOG] = &CSWVirtualMachineCommands::ExecuteCommandHoldWorldFadeInForDialog;
     m_pCommands[COMMAND_INSERT_STRING] = &CSWVirtualMachineCommands::ExecuteCommandInsertString;
@@ -20901,6 +23003,12 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_IS_NPC_PARTY_MEMBER] = &CSWVirtualMachineCommands::ExecuteCommandIsNPCPartyMember;
     m_pCommands[COMMAND_IS_OBJECT_PARTY_MEMBER] = &CSWVirtualMachineCommands::ExecuteCommandIsObjectPartyMember;
     m_pCommands[COMMAND_GET_IS_PC] = &CSWVirtualMachineCommands::ExecuteCommandIsPC;
+    m_pCommands[COMMAND_IS_RUNNING] = &CSWVirtualMachineCommands::ExecuteCommandIsRunning;
+    m_pCommands[COMMAND_INCREMENT_GLOBAL_NUMBER] = &CSWVirtualMachineCommands::ExecuteCommandModifyGlobal;
+    m_pCommands[COMMAND_IS_STEALTHED] = &CSWVirtualMachineCommands::ExecuteCommandIsStealthed;
+    m_pCommands[COMMAND_IS_MEDITATING] = &CSWVirtualMachineCommands::ExecuteCommandIsMeditating;
+    m_pCommands[COMMAND_IS_IN_TOTAL_DEFENSE] = &CSWVirtualMachineCommands::ExecuteCommandIsInTotalDefense;
+    m_pCommands[COMMAND_IS_FORM_ACTIVE] = &CSWVirtualMachineCommands::ExecuteCommandIsFormActive;
     m_pCommands[COMMAND_JUMP_TO_LOCATION] = &CSWVirtualMachineCommands::ExecuteCommandActionJumpToPoint;
     m_pCommands[COMMAND_JUMP_TO_OBJECT] = &CSWVirtualMachineCommands::ExecuteCommandActionJumpToObject;
     m_pCommands[COMMAND_LOCATION] = &CSWVirtualMachineCommands::ExecuteCommandLocation;
@@ -20939,17 +23047,24 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_QUEUE_MOVIE] = &CSWVirtualMachineCommands::ExecuteCommandQueueMovie;
     m_pCommands[COMMAND_RANDOM] = &CSWVirtualMachineCommands::ExecuteCommandRandom;
     m_pCommands[COMMAND_RANDOM_NAME] = &CSWVirtualMachineCommands::ExecuteCommandRandomName;
+    m_pCommands[COMMAND_REBUILD_PARTY_TABLE] = &CSWVirtualMachineCommands::ExecuteCommandRebuildPartyTable;
     m_pCommands[COMMAND_REFLEX_SAVE] = &CSWVirtualMachineCommands::ExecuteCommandSavingThrow;
     m_pCommands[COMMAND_REMOVE_AVAILABLE_NPC] = &CSWVirtualMachineCommands::ExecuteCommandRemoveAvailableNPC;
     m_pCommands[COMMAND_REMOVE_EFFECT] = &CSWVirtualMachineCommands::ExecuteCommandRemoveEffect;
+    m_pCommands[COMMAND_REMOVE_EFFECT_BY_ID] = &CSWVirtualMachineCommands::ExecuteCommandRemoveEffectByID;
+    m_pCommands[COMMAND_REMOVE_EFFECT_BY_EXACT_MATCH] = &CSWVirtualMachineCommands::ExecuteCommandRemoveEffectByExactMatch;
     m_pCommands[COMMAND_REMOVE_FROM_PARTY] = &CSWVirtualMachineCommands::ExecuteCommandRemoveFromParty;
+    m_pCommands[COMMAND_REMOVE_HEARTBEAT] = &CSWVirtualMachineCommands::ExecuteCommandRemoveHeartbeat;
     m_pCommands[COMMAND_REMOVE_JOURNAL_QUEST_ENTRY] = &CSWVirtualMachineCommands::ExecuteCommandRemoveJournalQuestEntry;
+    m_pCommands[COMMAND_REMOVE_NPC_FROM_PARTY_TO_BASE] = &CSWVirtualMachineCommands::ExecuteCommandRemoveNPCFromPartyToBase;
     m_pCommands[COMMAND_REMOVE_PARTY_MEMBER] = &CSWVirtualMachineCommands::ExecuteCommandRemovePartyMember;
     m_pCommands[COMMAND_RESET_DIALOG_STATE] = &CSWVirtualMachineCommands::ExecuteCommandResetDialogState;
     m_pCommands[COMMAND_RESIST_SPELL] = &CSWVirtualMachineCommands::ExecuteCommandResistSpell;
     m_pCommands[COMMAND_REVEAL_MAP] = &CSWVirtualMachineCommands::ExecuteCommandRevealMap;
     m_pCommands[COMMAND_ROUNDS_TO_SECONDS] = &CSWVirtualMachineCommands::ExecuteCommandTimeConversions;
     m_pCommands[COMMAND_SAVE_NPC_STATE] = &CSWVirtualMachineCommands::ExecuteCommandSaveNPCState;
+    m_pCommands[COMMAND_SAVE_NPC_BY_OBJECT] = &CSWVirtualMachineCommands::ExecuteCommandSaveNPCByObject;
+    m_pCommands[COMMAND_SAVE_PUP_BY_OBJECT] = &CSWVirtualMachineCommands::ExecuteCommandSavePUPByObject;
     m_pCommands[COMMAND_SEND_MESSAGE_TO_PC] = &CSWVirtualMachineCommands::ExecuteCommandSendMessageToPC;
     m_pCommands[COMMAND_SET_AREA_FOG_COLOR] = &CSWVirtualMachineCommands::ExecuteCommandSetAreaFogColor;
     m_pCommands[COMMAND_SET_AREA_TRANSITION_BMP] = &CSWVirtualMachineCommands::ExecuteCommandSetAreaTransitionBMP;
@@ -20959,7 +23074,9 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_SET_BUTTON_MASH_CHECK] = &CSWVirtualMachineCommands::ExecuteCommandSetButtonMashCheck;
     m_pCommands[COMMAND_SET_CAMERA_FACING] = &CSWVirtualMachineCommands::ExecuteCommandSetCameraLocation;
     m_pCommands[COMMAND_SET_CAMERA_MODE] = &CSWVirtualMachineCommands::ExecuteCommandSetCameraMode;
+    m_pCommands[COMMAND_SET_FAKE_COMBAT_STATE] = &CSWVirtualMachineCommands::ExecuteCommandSetFakeCombatState;
     m_pCommands[COMMAND_SET_COMMANDABLE] = &CSWVirtualMachineCommands::ExecuteCommandSetCommandable;
+    m_pCommands[COMMAND_SET_CURRENT_FORM] = &CSWVirtualMachineCommands::ExecuteCommandSetCurrentForm;
     m_pCommands[COMMAND_SET_CURRENT_STEALTH_XP] = &CSWVirtualMachineCommands::ExecuteCommandSetCurrentStealthXP;
     m_pCommands[COMMAND_SET_CUSTOM_TOKEN] = &CSWVirtualMachineCommands::ExecuteCommandSetCustomToken;
     m_pCommands[COMMAND_SET_DIALOG_PLACEABLE_CAMERA] = &CSWVirtualMachineCommands::ExecuteCommandSetDialogPlaceableCamera;
@@ -20979,11 +23096,14 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_SET_GLOBAL_NUMBER] = &CSWVirtualMachineCommands::ExecuteCommandSetGlobalNumber;
     m_pCommands[COMMAND_SET_GLOBAL_STRING] = &CSWVirtualMachineCommands::ExecuteCommandSetGlobalString;
     m_pCommands[COMMAND_SET_GOOD_EVIL_VALUE] = &CSWVirtualMachineCommands::ExecuteCommandSetGoodEvilValue;
+    m_pCommands[COMMAND_SET_HEAL_TARGET] = &CSWVirtualMachineCommands::ExecuteCommandSetHealTarget;
     m_pCommands[COMMAND_SET_IDENTIFIED] = &CSWVirtualMachineCommands::ExecuteCommandSetIdentified;
+    m_pCommands[COMMAND_SET_INPUT_CLASS] = &CSWVirtualMachineCommands::ExecuteCommandSetInputClass;
     m_pCommands[COMMAND_SET_IS_DESTROYABLE] = &CSWVirtualMachineCommands::ExecuteCommandSetIsDestroyable;
     m_pCommands[COMMAND_SET_ITEM_NON_EQUIPPABLE] = &CSWVirtualMachineCommands::ExecuteCommandSetItemNonEquippable;
     m_pCommands[COMMAND_SET_ITEM_STACK_SIZE] = &CSWVirtualMachineCommands::ExecuteCommandSetItemStackSize;
     m_pCommands[COMMAND_SET_JOURNAL_QUEST_ENTRY_PICTURE] = &CSWVirtualMachineCommands::ExecuteCommandSetJournalQuestEntryPicture;
+    m_pCommands[COMMAND_SET_KEEP_STEALTH_IN_DIALOG] = &CSWVirtualMachineCommands::ExecuteCommandSetKeepStealthInDialog;
     m_pCommands[COMMAND_SET_LIGHTSABER_POWERED] = &CSWVirtualMachineCommands::ExecuteCommandSetLightsaberPowered;
     m_pCommands[COMMAND_SET_LISTENING] = &CSWVirtualMachineCommands::ExecuteCommandSetListening;
     m_pCommands[COMMAND_SET_LISTEN_PATTERN] = &CSWVirtualMachineCommands::ExecuteCommandSetListenString;
@@ -21013,8 +23133,10 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_SWMG_SET_SPEED_BLUR_EFFECT] = &CSWVirtualMachineCommands::ExecuteCommandSetSpeedBlurEffect;
     m_pCommands[COMMAND_SET_TIME] = &CSWVirtualMachineCommands::ExecuteCommandSetTime;
     m_pCommands[COMMAND_SET_TUTORIAL_WINDOWS_ENABLED] = &CSWVirtualMachineCommands::ExecuteCommandSetTutorialWindowsEnabled;
+    m_pCommands[COMMAND_ENABLE_RAIN] = &CSWVirtualMachineCommands::ExecuteCommandEnableRain;
     m_pCommands[COMMAND_SET_XP] = &CSWVirtualMachineCommands::ExecuteCommandSetXP;
     m_pCommands[COMMAND_SHIP_BUILD] = &CSWVirtualMachineCommands::ExecuteCommandShipBuild;
+    m_pCommands[COMMAND_SHOW_DEMO_SCREEN] = &CSWVirtualMachineCommands::ExecuteCommandShowDemoScreen;
     m_pCommands[COMMAND_SHOW_GALAXY_MAP_GUI] = &CSWVirtualMachineCommands::ExecuteCommandShowGalaxyMapGui;
     m_pCommands[COMMAND_SHOW_LEVEL_UP_GUI] = &CSWVirtualMachineCommands::ExecuteCommandShowLevelUpGUI;
     m_pCommands[COMMAND_SHOW_PARTY_SELECTION_GUI] = &CSWVirtualMachineCommands::ExecuteCommandShowPartySelection;
@@ -21033,6 +23155,7 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_SOUND_OBJECT_STOP] = &CSWVirtualMachineCommands::ExecuteCommandSoundObjectStop;
     m_pCommands[COMMAND_SOUND_OBJECT_FADE_AND_STOP] = &CSWVirtualMachineCommands::ExecuteCommandSoundObjectFadeAndStop;
     m_pCommands[COMMAND_SPAWN_AVAILABLE_NPC] = &CSWVirtualMachineCommands::ExecuteCommandSpawnAvailableNPC;
+    m_pCommands[COMMAND_SPAWN_AVAILABLE_PUP] = &CSWVirtualMachineCommands::ExecuteCommandSpawnAvailablePUP;
     m_pCommands[COMMAND_SPEAK_ONE_LINER_CONVERSATION] = &CSWVirtualMachineCommands::ExecuteCommandSpeakOneLinerConversation;
     m_pCommands[COMMAND_SPEAK_STRING] = &CSWVirtualMachineCommands::ExecuteCommandSpeakString;
     m_pCommands[COMMAND_SQRT] = &CSWVirtualMachineCommands::ExecuteCommandMath;
@@ -21049,6 +23172,13 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_SURRENDER_RETAIN_BUFFS] = &CSWVirtualMachineCommands::ExecuteCommandSurrenderToEnemies;
     m_pCommands[COMMAND_SURRENDER_TO_ENEMIES] = &CSWVirtualMachineCommands::ExecuteCommandSurrenderToEnemies;
     m_pCommands[COMMAND_SWITCH_PLAYER_CREATURE] = &CSWVirtualMachineCommands::ExecuteCommandSwitchPlayerCreature;
+    m_pCommands[COMMAND_SPAWN_MINE] = &CSWVirtualMachineCommands::ExecuteCommandSpawnMine;
+    m_pCommands[COMMAND_SET_FORFEIT_CONDITIONS] = &CSWVirtualMachineCommands::ExecuteCommandSetForfeitConditions;
+    m_pCommands[COMMAND_SET_ORIENT_ON_CLICK] = &CSWVirtualMachineCommands::ExecuteCommandSetOrientOnClick;
+    m_pCommands[COMMAND_SET_DISABLE_TRANSIT] = &CSWVirtualMachineCommands::ExecuteCommandSetDisableTransit;
+    m_pCommands[COMMAND_SET_BONUS_FORCE_POINTS] = &CSWVirtualMachineCommands::ExecuteCommandSetBonusForcePoints;
+    m_pCommands[COMMAND_ADD_BONUS_FORCE_POINTS] = &CSWVirtualMachineCommands::ExecuteCommandAddBonusForcePoints;
+    m_pCommands[COMMAND_GET_BONUS_FORCE_POINTS] = &CSWVirtualMachineCommands::ExecuteCommandGetBonusForcePoints;
     m_pCommands[COMMAND_TAKE_GOLD_FROM_CREATURE] = &CSWVirtualMachineCommands::ExecuteCommandTakeGoldFromCreature;
     m_pCommands[COMMAND_TALENT_FEAT] = &CSWVirtualMachineCommands::ExecuteCommandTalent;
     m_pCommands[COMMAND_TALENT_SKILL] = &CSWVirtualMachineCommands::ExecuteCommandTalent;
@@ -21058,6 +23188,7 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_TOUCH_ATTACK_MELEE] = &CSWVirtualMachineCommands::ExecuteCommandDoTouchAttack;
     m_pCommands[COMMAND_TOUCH_ATTACK_RANGED] = &CSWVirtualMachineCommands::ExecuteCommandDoTouchAttack;
     m_pCommands[COMMAND_TURNS_TO_SECONDS] = &CSWVirtualMachineCommands::ExecuteCommandTimeConversions;
+    m_pCommands[COMMAND_UNLOCK_ALL_SONGS] = &CSWVirtualMachineCommands::ExecuteCommandUnlockAllMusic;
     m_pCommands[COMMAND_VECTOR] = &CSWVirtualMachineCommands::ExecuteCommandVector;
     m_pCommands[COMMAND_VECTOR_MAGNITUDE] = &CSWVirtualMachineCommands::ExecuteCommandVectorMagnitude;
     m_pCommands[COMMAND_VECTOR_NORMALIZE] = &CSWVirtualMachineCommands::ExecuteCommandVectorNormalize;
@@ -21069,6 +23200,7 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_WILL_SAVE] = &CSWVirtualMachineCommands::ExecuteCommandSavingThrow;
     m_pCommands[COMMAND_YARDS_TO_METERS] = &CSWVirtualMachineCommands::ExecuteCommandDistanceConversions;
     m_pCommands[COMMAND_YAVIN_HACK_CLOSE_DOOR] = &CSWVirtualMachineCommands::ExecuteCommandYavinHackCloseDoor;
+    m_pCommands[COMMAND_GET_IS_PLAYER_MADE_CHARACTER] = &CSWVirtualMachineCommands::ExecuteCommandGetIsPlayerMadeCharacter;
 
     InitializeSWMGCommands();
 }

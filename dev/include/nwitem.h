@@ -79,6 +79,7 @@ public:
     {
 
         ITEM_TYPE_CREDITS = 23,
+        ITEM_TYPE_DATAPAD = 24,
         ITEM_TYPE_PAZAAK_CARD = 42,
 
         ITEM_TYPE_EQUIPPED_ACTIVATION_12 = 12,
@@ -96,6 +97,7 @@ public:
         ITEM_TYPE_BLASTER_RIFLE = 4,
 
         ITEM_TYPE_HOSTILE_USABLE = 6,
+        ITEM_TYPE_HOSTILE_USABLE_49 = 49,
 
         ITEM_TYPE_MEDPAC = 26,
 
@@ -113,7 +115,10 @@ public:
         ITEM_TYPE_REPAIR_KIT = 45,
 
         ITEM_TYPE_NO_PROPERTY_DESCRIPTION = 46,
-        ITEM_TYPE_SQUAD_MEDPAC = 47
+        ITEM_TYPE_SQUAD_MEDPAC = 47,
+
+        ITEM_TYPE_GRENADE_MODIFIER_48 = 48,
+        ITEM_TYPE_NO_PROPERTY_DESCRIPTION_49 = 49
     };
 
     enum { ITEM_TYPE_TORCH = 29 };
@@ -234,6 +239,7 @@ public:
     void SetIsContainer(int value) { m_bIsContainer = value; }
     void SetWeaponWield(char value) { m_nWeaponWield = value; }
     void SetWeaponType(unsigned char value) { m_nWeaponType = value; }
+    unsigned char GetWeaponType() { return m_nWeaponType; }
     void SetDamageFlags(int value) { m_nDamageFlags = value; }
     void SetWeaponSize(unsigned char value) { m_nWeaponSize = value; }
 

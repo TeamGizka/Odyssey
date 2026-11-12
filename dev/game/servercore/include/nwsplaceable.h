@@ -77,6 +77,7 @@ public:
     int GetFactionId() { return m_nFaction; }
     void SetFactionId(int nFaction) { m_nFaction = nFaction; }
     unsigned char GetTrapType() { return m_nTrapType; }
+    unsigned char GetOpenLockDC();
     unsigned char GetDetectDC();
     unsigned char GetDisarmDC();
     void SetFlagged(unsigned char bFlagged) { m_bTrapFlagged = bFlagged; }

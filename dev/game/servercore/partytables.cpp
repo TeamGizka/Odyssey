@@ -27,6 +27,9 @@
 #include <math.h>
 #include "partytables.h"
 #include "swmain.h"
+#include "factionmanager.h"
+#include "nwfeat.h"
+#include "serveraimaster.h"
 
 extern __int64 g_nCurrentSessionStartFILETIME;
 
@@ -44,6 +47,14 @@ int CSWPartyTable::SpawnNPC(int nNPC, int bUsePosition, const Vector& vPosition,
     CSWSCreature* pCreature = pServerExoApp->GetCreatureByGameObjectID(oidNPC);
     if (pCreature != NULL)
     {
+        CServerExoApp* pPlayerServerExoApp = g_pAppManager->m_pServerExoApp;
+        CSWSCreature* pPlayer = pPlayerServerExoApp->GetCreatureByGameObjectID(
+            pPlayerServerExoApp->GetPlayerCreatureId());
+        if (pPlayer != NULL && pPlayer->GetFaction() != NULL)
+        {
+            pPlayer->GetFaction()->AddMember(pCreature->GetId(), 0);
+        }
+
         int nOldValue = pCreature->m_bCommandable;
         pCreature->m_bCommandable = 1;
         pCreature->ClearAllActions(1);
@@ -100,8 +111,47 @@ int CSWPartyTable::SpawnNPC(int nNPC, int bUsePosition, const Vector& vPosition,
                 pCreature->m_pStats->AutoLevelup(1);
             }
         }
+        pCreature->HandleAlignmentInfluence();
     }
     return oidNPC;
+}
+// PC 0x0057CB00
+int CSWPartyTable::SpawnPUP(int nPUP, int bUsePosition, const Vector& vPosition,
+                            const Vector& vOrientation, int bResurrect)
+{
+    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+    unsigned long oidPUP = GetPUPObject(nPUP, 1, bResurrect);
+    CSWSCreature* pCreature = pServerExoApp->GetCreatureByGameObjectID(oidPUP);
+    if (pCreature != NULL)
+    {
+        int nOldValue = pCreature->m_bCommandable;
+        pCreature->m_bCommandable = 1;
+        pCreature->ClearAllActions(1);
+        pCreature->m_bCommandable = nOldValue;
+
+        CSWSArea* pArea = pServerExoApp->GetModule()->GetArea();
+        Vector vSpawn;
+        Vector vSafe;
+        Vector vFacing;
+        if (bUsePosition != 0)
+        {
+            vSpawn = vPosition;
+            vFacing = vOrientation;
+        }
+        else
+        {
+            vSpawn = pCreature->m_vPosition;
+            vFacing = pCreature->m_vOrientation;
+        }
+        if (pArea->GetRoom(vSpawn, NULL) != NULL)
+        {
+            pArea->ComputeSafeLocation(
+                vSpawn, 20.0f, pCreature->GetPathfindInformation(), 1, &vSafe);
+        }
+        pCreature->AddToArea(pArea, vSafe.m_fX, vSafe.m_fY, vSafe.m_fZ, 1, 0);
+        pCreature->SetOrientation(vFacing);
+    }
+    return oidPUP;
 }
 // PC 0x0057CC50
 void CSWPartyTable::DistributeExperience(int nExperience, int bFeedback)
@@ -110,6 +160,38 @@ void CSWPartyTable::DistributeExperience(int nExperience, int bFeedback)
     {
         int nXPPool = m_nXPPool;
         m_nXPPool = nXPPool + nExperience;
+        for (int nMember = 0; nMember < m_nNumMembers; nMember++)
+        {
+            CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+            CSWSCreature* pCreature = pServerExoApp->GetCreatureByGameObjectID(
+                m_aoidNPC[m_anMembers[nMember]]);
+            if (pCreature != NULL &&
+                pCreature->m_pStats->HasFeat(CSWFeat::FEAT_MENTOR) != 0)
+            {
+                int nLevel = pCreature->m_pStats->GetLevel(0);
+                if (nLevel > 0)
+                {
+                    float fBonus;
+                    if (nLevel >= 13)
+                    {
+                        fBonus = 0.07f;
+                    }
+                    else if (nLevel >= 7)
+                    {
+                        fBonus = 0.05f;
+                    }
+                    else
+                    {
+                        fBonus = 0.03f;
+                    }
+                    if (fBonus > 0.0)
+                    {
+                        nExperience += (int)ceil(nExperience * fBonus);
+                    }
+                }
+                break;
+            }
+        }
         for (int i = 0; i < m_nNumMembers; i++)
         {
             CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -159,6 +241,37 @@ void CSWPartyTable::SetSoloMode(int bSoloMode, int bUnstealth)
     }
     m_bSoloMode = bSoloMode;
 }
+// PC 0x0057CE90
+CSWSCreature* CSWPartyTable::GetPUPOwner(int nPUP)
+{
+    if (nPUP < 0 || nPUP >= 3)
+    {
+        return NULL;
+    }
+
+    for (int i = 0; i < 2; i++)
+    {
+        if (m_anMembers[i] != -1)
+        {
+            unsigned long oidNPC = GetNPCObject(m_anMembers[i], 0, 1);
+            CSWSCreature* pCreature =
+                g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(oidNPC);
+            if (pCreature != NULL && pCreature->m_n11F8 == nPUP)
+            {
+                return pCreature;
+            }
+        }
+    }
+
+    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+    CSWSCreature* pPlayer = pServerExoApp->GetCreatureByGameObjectID(
+        pServerExoApp->GetPlayerCreatureId());
+    if (pPlayer != NULL && pPlayer->m_n11F8 == nPUP)
+    {
+        return pPlayer;
+    }
+    return NULL;
+}
 // PC 0x0057CF10
 void CSWPartyTable::UpdateMembers(int bClearActions)
 {
@@ -166,11 +279,51 @@ void CSWPartyTable::UpdateMembers(int bClearActions)
     {
         SaveMember(i, bClearActions);
     }
+    for (int j = 0; j < 3; j++)
+    {
+        SavePuppet(j, bClearActions);
+    }
+}
+// PC 0x0057CF50
+int CSWPartyTable::RemovePuppet(int nPUP)
+{
+    if (nPUP < 0 || nPUP >= 3 || m_abPuppetAvailable[nPUP] == 0)
+    {
+        return 0;
+    }
+
+    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+    unsigned long oidPUP = GetPUPObject(nPUP, 0, 1);
+    CSWSCreature* pCreature = pServerExoApp->GetCreatureByGameObjectID(oidPUP);
+    if (pCreature != NULL)
+    {
+        pCreature->ClearAllEffects(0);
+        pCreature->SetIsPuppet(0);
+        if (pCreature->GetClientCreature() != NULL)
+        {
+            pCreature->SetIsPuppet(0);
+        }
+        SavePuppet(nPUP, 0);
+    }
+
+    for (int i = 0; i < m_nNumPuppets; i++)
+    {
+        if (nPUP == m_anPuppets[i])
+        {
+            for (int j = i + 1; j < m_nNumPuppets; j++)
+            {
+                m_anPuppets[j - 1] = m_anPuppets[j];
+            }
+            m_nNumPuppets--;
+            return 1;
+        }
+    }
+    return 0;
 }
 #ifndef _XBOX
 int CSWPartyTable::RemoveMember(int nNPC)  // PC 0x0057EB80
 {
-    if (m_nControlledNPC != -1 || m_nNumMembers <= 0 || nNPC < 0 || nNPC >= 12 ||
+    if (m_nNumMembers <= 0 || nNPC < 0 || nNPC >= 12 ||
         m_abNPCAvailable[nNPC] == 0)
     {
         return 0;
@@ -182,6 +335,13 @@ int CSWPartyTable::RemoveMember(int nNPC)  // PC 0x0057EB80
     if (pCreature != NULL)
     {
         pCreature->ClearAllEffects(0);
+        int nPUP = pCreature->m_n11F8;
+        if (nPUP != -1 && GetIsPuppet(nPUP) != 0)
+        {
+            RemovePuppet(nPUP);
+            KillPUPObject(nPUP, 1);
+        }
+        SaveMember(nNPC, 0);
     }
 
     for (int i = 0; i < m_nNumMembers; i++)
@@ -204,7 +364,7 @@ int CSWPartyTable::RemoveMember(int nNPC)  // PC 0x0057EB80
 #endif
 int CSWPartyTable::AddMember(int nNPC, unsigned long oidMember)  // PC 0x0057D020
 {
-    if (m_nControlledNPC == -1 && m_nNumMembers != 2 && nNPC >= 0 && nNPC < 12 &&
+    if (m_nNumMembers != 2 && nNPC >= 0 && nNPC < 12 &&
         m_abNPCAvailable[nNPC] != 0 &&
         g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(oidMember) !=
             NULL)
@@ -255,6 +415,13 @@ int CSWPartyTable::AddMember(int nNPC, unsigned long oidMember)  // PC 0x0057D02
             }
         }
         m_nNumMembers++;
+        pCreature->HandleAlignmentInfluence();
+        int nPUP = pCreature->m_n11F8;
+        if (nPUP != -1)
+        {
+            AddPuppet(nPUP, SpawnPUP(nPUP, 1, pCreature->m_vPosition,
+                                     pCreature->m_vOrientation, 1));
+        }
         return 1;
     }
     return 0;
@@ -272,33 +439,51 @@ void CSWPartyTable::CreateParty()
         CResStruct stTop;
         CResStruct stItem;
         CResList lstItemList;
-        if (m_nControlledNPC == -1)
-        {
-            for (unsigned int nMember = 0; nMember < m_nNumMembers; nMember++)
-            {
-                Vector vOrientation;
-                Vector vPosition;
-                unsigned long oidNPC = SpawnNPC(
-                    m_anMembers[nMember], 0, vPosition, vOrientation,
-                    !g_pAppManager->m_pServerExoApp->GetLoadFromSaveGame());
-                CSWCCreature* pClientCreature =
-                    pClientExoApp->GetCreatureByGameObjectID(
-                        pClientExoApp->ServerToClientObjectId(oidNPC));
-                CSWSCreature* pCreature =
-                    pServerExoApp->GetCreatureByGameObjectID(oidNPC);
-                if (pClientCreature != NULL)
-                {
-                    pClientCreature->SetInParty(1);
-                }
-                if (pCreature != NULL)
-                {
-                    pCreature->SetInParty(1, 1);
-                }
-            }
-        }
-        else
+        int bLoadFromSaveGame =
+            g_pAppManager->m_pServerExoApp->GetLoadFromSaveGame();
+        if (m_nControlledNPC != -1)
         {
             m_aoidNPC[m_nControlledNPC] = pServerExoApp->GetPlayerCreatureId();
+        }
+        for (unsigned int nMember = 0; nMember < m_nNumMembers; nMember++)
+        {
+            Vector vOrientation;
+            Vector vPosition;
+            unsigned long oidNPC = SpawnNPC(m_anMembers[nMember], 0, vPosition,
+                                            vOrientation, !bLoadFromSaveGame);
+            CSWCCreature* pClientCreature =
+                pClientExoApp->GetCreatureByGameObjectID(
+                    pClientExoApp->ServerToClientObjectId(oidNPC));
+            CSWSCreature* pCreature =
+                pServerExoApp->GetCreatureByGameObjectID(oidNPC);
+            if (pClientCreature != NULL)
+            {
+                pClientCreature->SetInParty(1);
+            }
+            if (pCreature != NULL)
+            {
+                pCreature->SetInParty(1, 1);
+            }
+        }
+        for (unsigned int nPuppet = 0; nPuppet < m_nNumPuppets; nPuppet++)
+        {
+            Vector vOrientation;
+            Vector vPosition;
+            unsigned long oidPuppet = SpawnPUP(m_anPuppets[nPuppet], 0, vPosition,
+                                               vOrientation, !bLoadFromSaveGame);
+            CSWCCreature* pClientCreature =
+                pClientExoApp->GetCreatureByGameObjectID(
+                    pClientExoApp->ServerToClientObjectId(oidPuppet));
+            CSWSCreature* pCreature =
+                pServerExoApp->GetCreatureByGameObjectID(oidPuppet);
+            if (pClientCreature != NULL)
+            {
+                pClientCreature->m_n46C = 1;
+            }
+            if (pCreature != NULL)
+            {
+                pCreature->SetIsPuppet(1);
+            }
         }
 
         CResGFF* pGFF = new CResGFF(0, "INV ", "INVENTORY");
@@ -344,10 +529,28 @@ void CSWPartyTable::CreateParty()
         }
         RemoveGameInProgress();
 
-        CSWSCreature* pPlayer = pServerExoApp->GetPlayerCreature();
+        CSWSCreature* pPlayer = pServerExoApp->GetCreatureByGameObjectID(
+            pServerExoApp->GetPlayerCreatureId());
         if (pPlayer != NULL)
         {
             TransferInventory(pPlayer);
+            if (m_sPCName == "")
+            {
+                CExoString sFirstName;
+                CExoString sLastName;
+                CExoString sFullName;
+                pPlayer->GetFirstName()->GetString(0, &sFirstName, 0);
+                pPlayer->GetLastName().GetString(0, &sLastName, 0);
+                if (sLastName.m_sString != NULL && (int)strlen(sLastName.m_sString) > 0)
+                {
+                    sFullName = sFirstName + " " + sLastName;
+                }
+                else
+                {
+                    sFullName = sFirstName;
+                }
+                m_sPCName = sFullName;
+            }
         }
         for (int j = 0; j < 12; j++)
         {
@@ -359,7 +562,8 @@ void CSWPartyTable::CreateParty()
             }
         }
 
-        pPlayer = pServerExoApp->GetPlayerCreature();
+        pPlayer = pServerExoApp->GetCreatureByGameObjectID(
+            pServerExoApp->GetPlayerCreatureId());
         if (pPlayer != NULL)
         {
             pPlayer->ForceEquipClothing();
@@ -388,6 +592,7 @@ void CSWPartyTable::PositionParty()
     if (m_bSkipPartyPositioning == 0)
     {
         Vector vPosition;
+        pParty->ResetAllFollowData(pPlayer->m_vPosition, Yaw(vFacing), 0);
         int nMember = 0;
         if (m_nNumMembers > 0)
         {
@@ -422,10 +627,53 @@ void CSWPartyTable::PositionParty()
                 pNPC++;
             } while (nMember < m_nNumMembers);
         }
+        for (int nPuppet = 0; nPuppet < m_nNumPuppets; nPuppet++)
+        {
+            CSWSCreature* pOwner = GetPUPOwner(m_anPuppets[nPuppet]);
+            if (pOwner != NULL)
+            {
+                CSWSCreature* pPuppet = pServerExoApp->GetCreatureByGameObjectID(
+                    m_aoidPuppet[m_anPuppets[nPuppet]]);
+                if (pPuppet != NULL)
+                {
+                    pServerExoApp->ComputeSafeLocation(
+                        pOwner->m_vPosition, 10.0f,
+                        m_aoidPuppet[m_anPuppets[nPuppet]], 0, &vPosition);
+                    pPuppet->SetPosition(vPosition, 1, 1, 0);
+                    pPuppet->SetOrientation(pOwner->m_vOrientation);
+                }
+            }
+        }
         UnstealthParty(0);
         m_bSoloMode = 0;
     }
     m_bSkipPartyPositioning = 0;
+}
+// PC 0x0057DBE0
+int CSWPartyTable::AssignPUP(int nPUP, int nNPC)
+{
+    if (nPUP < 0 || nPUP >= 3)
+    {
+        return 0;
+    }
+    if (nNPC < 0 || nNPC >= 12 || m_abNPCAvailable[nNPC] == 0)
+    {
+        return 0;
+    }
+    if (GetIsPUPAvailable(nPUP) == 0)
+    {
+        return 0;
+    }
+
+    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+    CSWSCreature* pCreature =
+        pServerExoApp->GetCreatureByGameObjectID(GetNPCObject(nNPC, 0, 1));
+    if (pCreature == NULL)
+    {
+        return 0;
+    }
+    pCreature->m_n11F8 = nPUP;
+    return 1;
 }
 // PC 0x0057DC50
 int CSWPartyTable::LoadTableInfo()
@@ -437,12 +685,22 @@ int CSWPartyTable::LoadTableInfo()
         CResStruct stTop;
         CResStruct stEntry;
         CResList lstItems;
-        unsigned char aTutorialDefault[6];
+        unsigned char aTutorialDefault[33];
 
         ClearTable();
         pGFF->GetTopLevelStruct(&stTop);
         pGFF->GetList(&lstItems, &stTop, "PT_MEMBERS");
+        CExoString sDefaultName("");
+        m_sPCName =
+            pGFF->ReadFieldCExoString(&stTop, "PT_PCNAME", bSuccess, sDefaultName);
         m_nGold = pGFF->ReadFieldDWORD(&stTop, "PT_GOLD", bSuccess, 0);
+        m_nItemComponent =
+            pGFF->ReadFieldDWORD(&stTop, "PT_ITEM_COMPONENT", bSuccess, 0);
+        m_nItemChemical =
+            pGFF->ReadFieldDWORD(&stTop, "PT_ITEM_CHEMICAL", bSuccess, 0);
+        m_nSwoop1 = pGFF->ReadFieldDWORD(&stTop, "PT_SWOOP1", bSuccess, 0);
+        m_nSwoop2 = pGFF->ReadFieldDWORD(&stTop, "PT_SWOOP2", bSuccess, 0);
+        m_nSwoop3 = pGFF->ReadFieldDWORD(&stTop, "PT_SWOOP3", bSuccess, 0);
         m_nXPPool = pGFF->ReadFieldINT(&stTop, "PT_XP_POOL", bSuccess, 0);
         bSuccess = 1;
         m_nPlayedSeconds =
@@ -488,23 +746,75 @@ int CSWPartyTable::LoadTableInfo()
             }
         }
 
-        pGFF->GetList(&lstItems, &stTop, "PT_AVAIL_NPCS");
-        int nNumNPCs;
-        if (pGFF->GetListCount(&lstItems) < MAX_NPCS)
+        pGFF->GetList(&lstItems, &stTop, "PT_PUPPETS");
+        int nNumPuppets = pGFF->ReadFieldBYTE(&stTop, "PT_NUM_PUPPETS", bSuccess, 0);
+        m_nNumPuppets = nNumPuppets;
+        if (m_nNumPuppets < 0)
         {
-            nNumNPCs = pGFF->GetListCount(&lstItems);
+            m_nNumPuppets = 0;
+        }
+        else if (pGFF->GetListCount(&lstItems) < (unsigned long)m_nNumPuppets)
+        {
+            m_nNumPuppets = pGFF->GetListCount(&lstItems);
+        }
+        for (int nPuppet = 0; nPuppet < m_nNumPuppets; nPuppet++)
+        {
+            pGFF->GetListElement(&stEntry, &lstItems, nPuppet);
+            m_anPuppets[nPuppet] =
+                pGFF->ReadFieldINT(&stEntry, "PT_PUPPET_ID", bSuccess, -1);
+        }
+
+        pGFF->GetList(&lstItems, &stTop, "PT_AVAIL_PUPS");
+        int nCount;
+        if (pGFF->GetListCount(&lstItems) < MAX_PUPPETS)
+        {
+            nCount = pGFF->GetListCount(&lstItems);
         }
         else
         {
-            nNumNPCs = MAX_NPCS;
+            nCount = MAX_PUPPETS;
         }
-        for (int nNPC = 0; nNPC < nNumNPCs; nNPC++)
+        for (int nPUP = 0; nPUP < nCount; nPUP++)
+        {
+            pGFF->GetListElement(&stEntry, &lstItems, nPUP);
+            m_abPuppetAvailable[nPUP] =
+                pGFF->ReadFieldBYTE(&stEntry, "PT_PUP_AVAIL", bSuccess, 0);
+            m_anPuppetSelectability[nPUP] =
+                pGFF->ReadFieldBYTE(&stEntry, "PT_PUP_SELECT", bSuccess, 0);
+        }
+
+        pGFF->GetList(&lstItems, &stTop, "PT_AVAIL_NPCS");
+        if (pGFF->GetListCount(&lstItems) < MAX_NPCS)
+        {
+            nCount = pGFF->GetListCount(&lstItems);
+        }
+        else
+        {
+            nCount = MAX_NPCS;
+        }
+        for (int nNPC = 0; nNPC < nCount; nNPC++)
         {
             pGFF->GetListElement(&stEntry, &lstItems, nNPC);
             m_abNPCAvailable[nNPC] =
                 pGFF->ReadFieldBYTE(&stEntry, "PT_NPC_AVAIL", bSuccess, 0);
             m_anNPCSelectability[nNPC] =
                 pGFF->ReadFieldBYTE(&stEntry, "PT_NPC_SELECT", bSuccess, 0);
+        }
+
+        pGFF->GetList(&lstItems, &stTop, "PT_INFLUENCE");
+        if (pGFF->GetListCount(&lstItems) < MAX_NPCS)
+        {
+            nCount = pGFF->GetListCount(&lstItems);
+        }
+        else
+        {
+            nCount = MAX_NPCS;
+        }
+        for (int nInfluence = 0; nInfluence < nCount; nInfluence++)
+        {
+            pGFF->GetListElement(&stEntry, &lstItems, nInfluence);
+            m_anNPCInfluence[nInfluence] =
+                pGFF->ReadFieldINT(&stEntry, "PT_NPC_INFLUENCE", bSuccess, -1);
         }
         m_nAIState = pGFF->ReadFieldINT(&stTop, "PT_AISTATE", bSuccess, 0);
         m_nFollowState =
@@ -558,6 +868,8 @@ int CSWPartyTable::LoadTableInfo()
         int nLastPanelDefault = g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nLastGuiPanel;
         g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nLastGuiPanel =
             pGFF->ReadFieldINT(&stTop, "PT_LAST_GUI_PNL", bSuccess, nLastPanelDefault);
+        m_nForfeitViolation = pGFF->ReadFieldINT(&stTop, "FORFEITVIOL", bSuccess, 0);
+        m_nForfeitConditions = pGFF->ReadFieldINT(&stTop, "FORFEITCONDS", bSuccess, 0);
 
         CExoString sMessage;
         pGFF->GetList(&lstItems, &stTop, "PT_FB_MSG_LIST");
@@ -586,6 +898,20 @@ int CSWPartyTable::LoadTableInfo()
                 ->AppendToDialogBuffer(sMessage, sSpeaker);
         }
 
+        pGFF->GetList(&lstItems, &stTop, "PT_COM_MSG_LIST");
+        for (int nCombat = 0; nCombat < (int)pGFF->GetListCount(&lstItems);
+             nCombat++)
+        {
+            pGFF->GetListElement(&stEntry, &lstItems, nCombat);
+            sMessage = pGFF->ReadFieldCExoString(&stEntry, "PT_COM_MSG_MSG", bSuccess, "");
+            unsigned long nType = pGFF->ReadFieldDWORD(
+                &stEntry, "PT_COM_MSG_TYPE", bSuccess, 0x10000000);
+            unsigned char nColor =
+                pGFF->ReadFieldBYTE(&stEntry, "PT_COM_MSG_COOR", bSuccess, 0);
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(
+                sMessage, nType, nColor);
+        }
+
         pGFF->GetList(&lstItems, &stTop, "PT_COST_MULT_LIST");
         for (int nBaseItem = 0;
              nBaseItem < g_pRules->m_pBaseItems->m_nNumBaseItems; nBaseItem++)
@@ -596,6 +922,12 @@ int CSWPartyTable::LoadTableInfo()
                 pGFF->ReadFieldFLOAT(&stEntry, "PT_COST_MULT_VALUE", bSuccess,
                                      1.0f);
         }
+        m_bDisableMap = pGFF->ReadFieldINT(&stTop, "PT_DISABLEMAP", bSuccess, 0);
+        m_bDisableRegen = pGFF->ReadFieldINT(&stTop, "PT_DISABLEREGEN", bSuccess, 0);
+
+        CStatusSummary cSummary;
+        cSummary.LoadFromGFF(pGFF, stTop);
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->SetStatusSummary(cSummary);
 
         LoadJournal(pGFF, &stTop);
         delete pGFF;
@@ -604,7 +936,7 @@ int CSWPartyTable::LoadTableInfo()
 #ifdef _XBOX
     HandleLoadError(0xA3A8);
 #else
-    HandleLoadError(0xBC4E);
+    HandleLoadError(0xBE76);
 #endif
     if (pGFF != NULL)
     {
@@ -617,10 +949,7 @@ void CSWPartyTable::Save(const CExoString& sAlias, int bSaveMembers)
 {
     if (bSaveMembers != 0)
     {
-        for (int i = 0; i < 12; i++)
-        {
-            SaveMember(i, 0);
-        }
+        UpdateMembers(0);
         UpdateInventory(0);
     }
     SaveTableInfo(sAlias);
@@ -630,6 +959,8 @@ void CSWPartyTable::ClearTable()
 {
 #ifndef _XBOX
     m_nGold = 0;
+    m_nItemChemical = 0;
+    m_nItemComponent = 0;
     m_nGameInProgress = 0;
     m_nControlledNPC = -1;
     m_nXPPool = 0;
@@ -638,6 +969,7 @@ void CSWPartyTable::ClearTable()
     m_nReturnTitleStrref = 42120;
     m_nPlayedSeconds = 0;
     m_bSkipPartyPositioning = 0;
+    m_n254 = 0;
 
     for (int i = 0; i < 16; i++)
     {
@@ -659,6 +991,7 @@ void CSWPartyTable::ClearTable()
 #endif
 
     m_nNumMembers = 0;
+    m_nNumPuppets = 0;
     m_nAIState = 0;
     m_nFollowState = 0;
     m_nLeader = -1;
@@ -669,6 +1002,17 @@ void CSWPartyTable::ClearTable()
         m_abNPCAvailable[i] = 0;
         m_anNPCSelectability[i] = 1;
         m_aoidNPC[i] = OBJECT_INVALID;
+        m_anNPCInfluence[i] = -1;
+    }
+    for (int i = 0; i < 3; i++)
+    {
+        m_abPuppetAvailable[i] = 0;
+        m_anPuppetSelectability[i] = 1;
+        m_aoidPuppet[i] = OBJECT_INVALID;
+    }
+    for (int i = 0; i < 3; i++)
+    {
+        m_anPuppets[i] = -1;
     }
 
 #ifdef _XBOX
@@ -681,12 +1025,11 @@ void CSWPartyTable::ClearTable()
         m_anPazaakCards[i] = 0;
     }
 #else
-    m_anPazaakCards[0] = 2;
-    m_anPazaakCards[1] = 2;
-    m_anPazaakCards[2] = 2;
-    m_anPazaakCards[3] = 2;
-    m_anPazaakCards[4] = 2;
-    for (int i = 5; i < 18; i++)
+    for (int i = 0; i < 10; i++)
+    {
+        m_anPazaakCards[i] = 1;
+    }
+    for (int i = 10; i < 23; i++)
     {
         m_anPazaakCards[i] = 0;
     }
@@ -701,6 +1044,11 @@ void CSWPartyTable::ClearTable()
         delete m_pPartyJournal;
         m_pPartyJournal = NULL;
     }
+    m_n248 = 0;
+    m_nForfeitViolation = 0;
+    m_nForfeitConditions = 0;
+    m_bDisableMap = 0;
+    m_bDisableRegen = 0;
 }
 // PC 0x00579780
 CItemRepository* CSWPartyTable::GetPartyItems()
@@ -775,6 +1123,13 @@ CExoString CSWPartyTable::GetFilename(int nNPC)
     sFilename.Format("AVAILNPC%d", nNPC);
     return sFilename;
 }
+// PC 0x00579AF0
+CExoString CSWPartyTable::GetPupFilename(int nPUP)
+{
+    CExoString sFilename;
+    sFilename.Format("AVAILPUP%d", nPUP);
+    return sFilename;
+}
 // PC 0x00579B80
 int CSWPartyTable::GetIsNPCAvailable(int nNPC)
 {
@@ -783,6 +1138,33 @@ int CSWPartyTable::GetIsNPCAvailable(int nNPC)
         return m_abNPCAvailable[nNPC];
     }
     return 0;
+}
+// PC 0x00579BA0
+int CSWPartyTable::GetIsPUPAvailable(int nPUP)
+{
+    if (nPUP >= 0 && nPUP < 3)
+    {
+        return m_abPuppetAvailable[nPUP];
+    }
+    return 0;
+}
+// PC 0x00579BC0
+int CSWPartyTable::GetInfluence(int nNPC)
+{
+    if (nNPC >= 0 && nNPC < 12)
+    {
+        return m_anNPCInfluence[nNPC];
+    }
+    return 0;
+}
+// PC 0x00579BE0
+int CSWPartyTable::SetInfluence(int nNPC, int nInfluence)
+{
+    if (nNPC >= 0 && nNPC < 12)
+    {
+        m_anNPCInfluence[nNPC] = nInfluence;
+    }
+    return nNPC;
 }
 
 unsigned char CSWPartyTable::GetNumNPCAvailable()
@@ -808,12 +1190,33 @@ int CSWPartyTable::SetNPCObject(int nNPC, unsigned long oidNPC)
     }
     return nNPC;
 }
+// PC 0x00579C20
+int CSWPartyTable::SetPUPObject(int nPUP, unsigned long oidPUP)
+{
+    if (nPUP >= 0 && nPUP < 3 && m_abPuppetAvailable[nPUP] != 0)
+    {
+        m_aoidPuppet[nPUP] = oidPUP;
+    }
+    return nPUP;
+}
 // PC 0x00579C50
 int CSWPartyTable::GetIsMember(int nNPC)
 {
     for (int i = 0; i < m_nNumMembers; i++)
     {
         if (nNPC == m_anMembers[i])
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+// PC 0x00579C80
+int CSWPartyTable::GetIsPuppet(int nPUP)
+{
+    for (int i = 0; i < m_nNumPuppets; i++)
+    {
+        if (nPUP == m_anPuppets[i])
         {
             return 1;
         }
@@ -905,6 +1308,41 @@ int CSWPartyTable::KillNPCObject(int nNPC, int bFade)  // PC 0x00579D80
     return 1;
 }
 #endif
+// PC 0x00579E10
+int CSWPartyTable::KillPUPObject(int nPUP, int bFade)
+{
+    if (nPUP < 0 || nPUP >= 3)
+    {
+        return 0;
+    }
+    if (GetIsPuppet(nPUP) != 0)
+    {
+        return 0;
+    }
+
+    CSWSCreature* pCreature =
+        g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
+            m_aoidPuppet[nPUP]);
+    m_aoidPuppet[nPUP] = OBJECT_INVALID;
+    if (pCreature == NULL)
+    {
+        return 0;
+    }
+
+    if (bFade != 0)
+    {
+        CSWCCreature* pClientCreature = pCreature->GetClientCreature();
+        if (pClientCreature != NULL)
+        {
+            pClientCreature->SetFadeState(CSWCObject::FADE_STATE_HIDDEN);
+            pClientCreature->SetDesiredFadeState(CSWCObject::FADE_STATE_HIDDEN, 1, 0, 0);
+            pClientCreature->m_bFadeLocked = 1;
+        }
+    }
+
+    delete pCreature;
+    return 1;
+}
 int CSWPartyTable::GetNPCID(unsigned long oidObject)  // PC 0x00579EB0
 {
     if (oidObject == OBJECT_INVALID)
@@ -915,6 +1353,23 @@ int CSWPartyTable::GetNPCID(unsigned long oidObject)  // PC 0x00579EB0
     for (int i = 0; i < 12; i++)
     {
         if (m_aoidNPC[i] == oidObject)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+// PC 0x00579EE0
+int CSWPartyTable::GetPUPID(unsigned long oidObject)
+{
+    if (oidObject == OBJECT_INVALID)
+    {
+        return -1;
+    }
+
+    for (int i = 0; i < 3; i++)
+    {
+        if (m_aoidPuppet[i] == oidObject)
         {
             return i;
         }
@@ -948,6 +1403,23 @@ int CSWPartyTable::ClearMembers()
         m_aoidNPC[i] = OBJECT_INVALID;
     }
     return OBJECT_INVALID;
+}
+// PC 0x0057A030
+void CSWPartyTable::ClearPuppets()
+{
+    for (int i = 0; i < 3; i++)
+    {
+        m_aoidPuppet[i] = OBJECT_INVALID;
+    }
+}
+// PC 0x0057A050
+int CSWPartyTable::ClearPuppet(int nPUP)
+{
+    if (nPUP >= 0 && nPUP < 3)
+    {
+        m_aoidPuppet[nPUP] = OBJECT_INVALID;
+    }
+    return nPUP;
 }
 // PC 0x0057A070
 int CSWPartyTable::ClearMember(int nNPC)
@@ -1045,8 +1517,7 @@ int CSWPartyTable::GetPlanetAvailable(unsigned long nPlanet)
 // PC 0x0057A1F0
 int CSWPartyTable::SetSelectedPlanet(int nPlanet)
 {
-    if (nPlanet >= 0 && nPlanet < 16 && m_abPlanetAvailable[nPlanet] != 0 &&
-        m_abPlanetSelectable[nPlanet] != 0)
+    if (nPlanet >= 0 && nPlanet < 16 && m_abPlanetAvailable[nPlanet] != 0)
     {
         m_nSelectedPlanet = nPlanet;
     }
@@ -1127,6 +1598,53 @@ int CSWPartyTable::ResetCurrentSessionStartTime()
     g_nCurrentSessionStartFILETIME =
         ftNow.dwLowDateTime | ((__int64)ftNow.dwHighDateTime << 32);
     return ftNow.dwLowDateTime;
+}
+// PC 0x0057A3B0
+CExoString CSWPartyTable::GetPCFirstName()
+{
+    CExoString sName = m_sPCName;
+    if (m_sPCName.m_sString != NULL && (int)strlen(m_sPCName.m_sString) > 0)
+    {
+        int nSpace = m_sPCName.Find(' ', 0);
+        if (nSpace != -1)
+        {
+            sName = m_sPCName.SubString(0, nSpace);
+        }
+    }
+    return sName;
+}
+// PC 0x0057A480
+CExoString CSWPartyTable::GetPCLastName()
+{
+    CExoString sName = m_sPCName;
+    if (m_sPCName.m_sString != NULL && (int)strlen(m_sPCName.m_sString) > 0)
+    {
+        int nSpace = m_sPCName.Find(' ', 0);
+        if (nSpace != -1)
+        {
+            sName = m_sPCName.SubString(nSpace + 1, -1);
+        }
+    }
+    if (sName.m_sString != NULL && (int)strlen(sName.m_sString) >= 1)
+    {
+        return sName;
+    }
+    return GetPCName();
+}
+// PC 0x0057A580
+unsigned long CSWPartyTable::GetNextPC()
+{
+    if (m_n254 < 2)
+    {
+        int nNPC = m_anMembers[m_n254];
+        if (nNPC >= 0 && nNPC < 12)
+        {
+            unsigned long oidPC = m_aoidNPC[nNPC];
+            m_n254++;
+            return oidPC;
+        }
+    }
+    return OBJECT_INVALID;
 }
 // PC 0x0057A5B0
 CSWPartyTable::CSWPartyTable()
@@ -1230,6 +1748,93 @@ void CSWPartyTable::SaveMember(int nNPC, int bClearActions)
         }
     }
 }
+// PC 0x0057A950
+void CSWPartyTable::SaveMemberByObject(int nNPC, unsigned long oidMember)
+{
+    if (nNPC >= 0 && nNPC < 12)
+    {
+        CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+        CSWSCreature* pCreature =
+            pServerExoApp->GetCreatureByGameObjectID(oidMember);
+        if (pCreature != NULL)
+        {
+            pCreature->ClearAllActions(1);
+
+            CExoString sFilename = GetFilename(nNPC);
+            CResGFF* pGFF = NULL;
+            pGFF = new CResGFF;
+            CResStruct stTop;
+            pGFF->CreateGFFFile(&stTop, "UTC ", "V2.0");
+            pCreature->SaveCreature(pGFF, &stTop);
+
+            CExoString sPath = CExoString("GAMEINPROGRESS:") + sFilename;
+            {
+                CExoString sFile(sPath.CStr());
+                pGFF->WriteGFFFile(sFile, RESTYPE_UTC);
+            }
+            delete pGFF;
+        }
+    }
+}
+// PC 0x0057AB00
+void CSWPartyTable::SavePuppet(int nPUP, int bClearActions)
+{
+    if (nPUP >= 0 && nPUP < 3)
+    {
+        CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+        CSWSCreature* pCreature =
+            pServerExoApp->GetCreatureByGameObjectID(m_aoidPuppet[nPUP]);
+        if (pCreature != NULL)
+        {
+            if (bClearActions != 0)
+            {
+                pCreature->ClearAllActions(1);
+            }
+
+            CExoString sFilename = GetPupFilename(nPUP);
+            CResGFF* pGFF = NULL;
+            pGFF = new CResGFF;
+            CResStruct stTop;
+            pGFF->CreateGFFFile(&stTop, "UTC ", "V2.0");
+            pCreature->SaveCreature(pGFF, &stTop);
+
+            CExoString sPath = CExoString("GAMEINPROGRESS:") + sFilename;
+            {
+                CExoString sFile(sPath.CStr());
+                pGFF->WriteGFFFile(sFile, RESTYPE_UTC);
+            }
+            delete pGFF;
+        }
+    }
+}
+// PC 0x0057ACB0
+void CSWPartyTable::SavePuppetByObject(int nPUP, unsigned long oidPuppet)
+{
+    if (nPUP >= 0 && nPUP < 3)
+    {
+        CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+        CSWSCreature* pCreature =
+            pServerExoApp->GetCreatureByGameObjectID(oidPuppet);
+        if (pCreature != NULL)
+        {
+            pCreature->ClearAllActions(1);
+
+            CExoString sFilename = GetPupFilename(nPUP);
+            CResGFF* pGFF = NULL;
+            pGFF = new CResGFF;
+            CResStruct stTop;
+            pGFF->CreateGFFFile(&stTop, "UTC ", "V2.0");
+            pCreature->SaveCreature(pGFF, &stTop);
+
+            CExoString sPath = CExoString("GAMEINPROGRESS:") + sFilename;
+            {
+                CExoString sFile(sPath.CStr());
+                pGFF->WriteGFFFile(sFile, RESTYPE_UTC);
+            }
+            delete pGFF;
+        }
+    }
+}
 // PC 0x0057AE60
 void CSWPartyTable::UpdateInventory(int bClearItems)
 {
@@ -1271,6 +1876,8 @@ void CSWPartyTable::TransferInventory(CSWSCreature* pCreature)
         int nOldValue = pCreature->m_bInParty;
         pCreature->SetInParty(0, 0);
         m_nGold += pCreature->GetGold();
+        m_nItemComponent += pCreature->GetComponent();
+        m_nItemChemical += pCreature->GetChemical();
         CItemRepository* pItems = pCreature->GetItemRepository(1);
         pCreature->SetInParty(nOldValue, 0);
 
@@ -1291,6 +1898,52 @@ void CSWPartyTable::TransferInventory(CSWSCreature* pCreature)
         }
         pItems->ClearItems();
     }
+}
+// PC 0x0057B160
+int CSWPartyTable::AddPuppet(int nPUP, unsigned long oidPuppet)
+{
+    if (m_nNumPuppets != 2 && nPUP >= 0 && nPUP < 3 &&
+        m_abPuppetAvailable[nPUP] != 0 &&
+        g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(oidPuppet) !=
+            NULL)
+    {
+        for (int i = 0; i < m_nNumPuppets; i++)
+        {
+            if (nPUP == m_anPuppets[i])
+            {
+                return 0;
+            }
+        }
+        for (int j = 0; j < 3; j++)
+        {
+            if (j != nPUP && m_aoidPuppet[j] == oidPuppet)
+            {
+                return 0;
+            }
+        }
+
+        m_anPuppets[m_nNumPuppets] = nPUP;
+        m_aoidPuppet[nPUP] = oidPuppet;
+
+        CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+        CSWCCreature* pClientCreature =
+            pClientExoApp->GetCreatureByGameObjectID(
+                pClientExoApp->ServerToClientObjectId(oidPuppet));
+        CSWSCreature* pCreature =
+            g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
+                oidPuppet);
+        if (pClientCreature != NULL)
+        {
+            pClientCreature->m_n46C = 1;
+        }
+        if (pCreature != NULL)
+        {
+            pCreature->SetIsPuppet(1);
+        }
+        m_nNumPuppets++;
+        return 1;
+    }
+    return 0;
 }
 #ifndef _XBOX
 int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x0057B260
@@ -1336,13 +1989,14 @@ int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x0057B260
             nNextLevelXP += 1000;
         } while (nLevel <= pCreature->GetStats()->GetLevel(0));
     }
+    pCreature->m_nUnknown22C = 0;
     if (nBaseXP <= nPoolXP)
     {
-        pCreature->m_nUnknown22C = 0;
+        pCreature->ReceiveExperience(nPoolXP);
     }
     else
     {
-        pCreature->m_nUnknown22C = nBaseXP - nPoolXP;
+        pCreature->ReceiveExperience(nBaseXP - nPoolXP);
     }
 
     CServerExoApp* pServerExoApp = g_pAppManager->GetServerExoApp();
@@ -1353,6 +2007,7 @@ int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x0057B260
         pPlayer->GetFaction()->AddMember(pCreature->GetId(), 0);
     }
     pCreature->GetStats()->SetMovementRate(0);
+    pCreature->HandleAlignmentInfluence();
 
     CExoString sPath;
     sPath.Format("GAMEINPROGRESS:%s", GetFilename(nNPC));
@@ -1360,9 +2015,42 @@ int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x0057B260
     CResStruct stTop;
     pGFF->CreateGFFFile(&stTop, "UTC ", "V2.0");
     pCreature->SaveCreature(pGFF, &stTop);
-    return pGFF->WriteGFFFile(sPath.CStr(), RESTYPE_UTC);
+    int bResult = pGFF->WriteGFFFile(sPath.CStr(), RESTYPE_UTC);
+    delete pGFF;
+    return bResult;
 }
 #endif
+// PC 0x0057B560
+int CSWPartyTable::AddPUP(int nPUP, CSWSCreature* pCreature)
+{
+    if (nPUP < 0 || nPUP >= 3)
+    {
+        return 0;
+    }
+    if (pCreature == NULL || m_abPuppetAvailable[nPUP] != 0)
+    {
+        return 0;
+    }
+
+    m_abPuppetAvailable[nPUP] = 1;
+
+    CServerExoApp* pServerExoApp = g_pAppManager->GetServerExoApp();
+    pServerExoApp->GetCreatureByGameObjectID(
+        pServerExoApp->GetPlayerCreatureId());
+    g_pAppManager->GetServerExoApp()->GetFactionManager()->GetFaction(
+        STANDARD_FACTION_PARTYPUPPET)->AddMember(pCreature->GetId(), 0);
+    pCreature->GetStats()->SetMovementRate(6);
+
+    CExoString sPath;
+    sPath.Format("GAMEINPROGRESS:%s", GetPupFilename(nPUP));
+    CResGFF* pGFF = new CResGFF;
+    CResStruct stTop;
+    pGFF->CreateGFFFile(&stTop, "UTC ", "V2.0");
+    pCreature->SaveCreature(pGFF, &stTop);
+    int bResult = pGFF->WriteGFFFile(sPath.CStr(), RESTYPE_UTC);
+    delete pGFF;
+    return bResult;
+}
 int CSWPartyTable::AddNPC(int nNPC, const CExoString& sTemplate)  // PC 0x0057B760
 {
     if (nNPC < 0 || nNPC >= 12 || m_abNPCAvailable[nNPC] != 0)
@@ -1379,6 +2067,26 @@ int CSWPartyTable::AddNPC(int nNPC, const CExoString& sTemplate)  // PC 0x0057B7
     }
 
     int nResult = AddNPC(nNPC, pCreature);
+    delete (CSWSObject*)pCreature;
+    return nResult;
+}
+// PC 0x0057B840
+int CSWPartyTable::AddPUP(int nPUP, const CExoString& sTemplate)
+{
+    if (nPUP < 0 || nPUP >= 3 || m_abPuppetAvailable[nPUP] != 0)
+    {
+        return 0;
+    }
+
+    CSWSCreature* pCreature = new CSWSCreature(OBJECT_INVALID, 0);
+    CResRef cResRef(sTemplate);
+    if (pCreature->LoadFromTemplate(cResRef, 0) == 0)
+    {
+        delete (CSWSObject*)pCreature;
+        return 0;
+    }
+
+    int nResult = AddPUP(nPUP, pCreature);
     delete (CSWSObject*)pCreature;
     return nResult;
 }
@@ -1403,7 +2111,7 @@ int CSWPartyTable::RemoveNPC(int nNPC)
     m_abNPCAvailable[nNPC] = 0;
     return 1;
 }
-// PC 0x0057BB30
+// PC 0x0057B950
 unsigned long CSWPartyTable::GetNPCObject(int nNPC, int bLoad, int bResurrect)
 {
     if (nNPC >= 0 && nNPC < 12 && m_abNPCAvailable[nNPC] != 0)
@@ -1435,6 +2143,46 @@ unsigned long CSWPartyTable::GetNPCObject(int nNPC, int bLoad, int bResurrect)
                 pCreature->ApplyEffect(pEffect, 0, 0);
             }
             m_aoidNPC[nNPC] = pCreature->m_nId;
+            CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+            pServerExoApp->GetServerAIMaster()->SetAILevel(
+                pCreature->AsSWSObject(), 3);
+            return pCreature->m_nId;
+        }
+    }
+    return OBJECT_INVALID;
+}
+// PC 0x0057BB30
+unsigned long CSWPartyTable::GetPUPObject(int nPUP, int bLoad, int bResurrect)
+{
+    if (nPUP >= 0 && nPUP < 3 && m_abPuppetAvailable[nPUP] != 0)
+    {
+        if (m_aoidPuppet[nPUP] != OBJECT_INVALID)
+        {
+            return m_aoidPuppet[nPUP];
+        }
+        if (bLoad != 0)
+        {
+            CSWSCreature* pCreature = new CSWSCreature(OBJECT_INVALID, 0);
+            AddGameInProgress();
+            bool bFailed = pCreature->LoadFromTemplate(GetPupFilename(nPUP), 0) == 0;
+            if (bFailed)
+            {
+                delete pCreature;
+                return OBJECT_INVALID;
+            }
+            RemoveGameInProgress();
+
+            if (bResurrect != 0 && pCreature->GetCurrentHitPoints(0) <= 0)
+            {
+                pCreature->m_nF0 = 1;
+                CGameEffect* pEffect = new CGameEffect(1);
+                pEffect->m_nType = CSWSEffectListHandler::EFFECT_RESURRECTION;
+                pEffect->m_nSubType =
+                    CGameEffect::DURATION_TYPE_INSTANTANEOUS |
+                    (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK);
+                pCreature->ApplyEffect(pEffect, 0, 0);
+            }
+            m_aoidPuppet[nPUP] = pCreature->m_nId;
             return pCreature->m_nId;
         }
     }
@@ -1460,7 +2208,13 @@ void CSWPartyTable::SaveTableInfo(const CExoString& sAlias)
         m_nPlayedSeconds = GetTotalPlayedSeconds();
         ResetCurrentSessionStartTime();
 
+        pGFF->WriteFieldCExoString(&stTop, m_sPCName, "PT_PCNAME");
         pGFF->WriteFieldDWORD(&stTop, m_nGold, "PT_GOLD");
+        pGFF->WriteFieldDWORD(&stTop, m_nItemComponent, "PT_ITEM_COMPONENT");
+        pGFF->WriteFieldDWORD(&stTop, m_nItemChemical, "PT_ITEM_CHEMICAL");
+        pGFF->WriteFieldDWORD(&stTop, m_nSwoop1, "PT_SWOOP1");
+        pGFF->WriteFieldDWORD(&stTop, m_nSwoop2, "PT_SWOOP2");
+        pGFF->WriteFieldDWORD(&stTop, m_nSwoop3, "PT_SWOOP3");
         pGFF->WriteFieldINT(&stTop, m_nXPPool, "PT_XP_POOL");
         pGFF->WriteFieldDWORD(&stTop, m_nPlayedSeconds, "PT_PLAYEDSECONDS");
         pGFF->WriteFieldINT(&stTop, m_nControlledNPC, "PT_CONTROLLED_NPC");
@@ -1481,6 +2235,24 @@ void CSWPartyTable::SaveTableInfo(const CExoString& sAlias)
             pGFF->WriteFieldBYTE(&stEntry, bLeader, "PT_IS_LEADER");
         }
 
+        pGFF->WriteFieldBYTE(&stTop, m_nNumPuppets, "PT_NUM_PUPPETS");
+        pGFF->AddList(&lstItems, &stTop, "PT_PUPPETS");
+        for (int nPuppet = 0; nPuppet < m_nNumPuppets; nPuppet++)
+        {
+            pGFF->AddListElement(&stEntry, &lstItems, 0);
+            pGFF->WriteFieldINT(&stEntry, m_anPuppets[nPuppet], "PT_PUPPET_ID");
+        }
+
+        pGFF->AddList(&lstItems, &stTop, "PT_AVAIL_PUPS");
+        for (int nPUP = 0; nPUP < MAX_PUPPETS; nPUP++)
+        {
+            pGFF->AddListElement(&stEntry, &lstItems, 0);
+            pGFF->WriteFieldBYTE(&stEntry, m_abPuppetAvailable[nPUP],
+                                 "PT_PUP_AVAIL");
+            pGFF->WriteFieldBYTE(&stEntry, m_anPuppetSelectability[nPUP],
+                                 "PT_PUP_SELECT");
+        }
+
         pGFF->AddList(&lstItems, &stTop, "PT_AVAIL_NPCS");
         for (int nNPC = 0; nNPC < MAX_NPCS; nNPC++)
         {
@@ -1489,6 +2261,14 @@ void CSWPartyTable::SaveTableInfo(const CExoString& sAlias)
                                  "PT_NPC_AVAIL");
             pGFF->WriteFieldBYTE(&stEntry, m_anNPCSelectability[nNPC],
                                  "PT_NPC_SELECT");
+        }
+
+        pGFF->AddList(&lstItems, &stTop, "PT_INFLUENCE");
+        for (int nInfluence = 0; nInfluence < MAX_NPCS; nInfluence++)
+        {
+            pGFF->AddListElement(&stEntry, &lstItems, 0);
+            pGFF->WriteFieldINT(&stEntry, m_anNPCInfluence[nInfluence],
+                                "PT_NPC_INFLUENCE");
         }
         pGFF->WriteFieldINT(&stTop, m_nAIState, "PT_AISTATE");
         pGFF->WriteFieldINT(&stTop, m_nFollowState, "PT_FOLLOWSTATE");
@@ -1538,14 +2318,15 @@ void CSWPartyTable::SaveTableInfo(const CExoString& sAlias)
         int nLastGuiPanel =
             g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nLastGuiPanel;
         pGFF->WriteFieldINT(&stTop, nLastGuiPanel, "PT_LAST_GUI_PNL");
+        pGFF->WriteFieldINT(&stTop, m_nForfeitViolation, "FORFEITVIOL");
+        pGFF->WriteFieldINT(&stTop, m_nForfeitConditions, "FORFEITCONDS");
 
         pGFF->AddList(&lstItems, &stTop, "PT_FB_MSG_LIST");
         SFeedbackMessage* pMessages =
             g_pAppManager->GetClientExoApp()->GetInGameGui()->GetMessageBuffer();
-        for (int nMessage = 0;
-             nMessage < g_pAppManager->GetClientExoApp()->GetInGameGui()
-                            ->GetMessageBufferSize();
-             nMessage++)
+        int nMessages =
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->GetMessageBufferSize();
+        for (int nMessage = 0; nMessage < nMessages; nMessage++)
         {
             pGFF->AddListElement(&stEntry, &lstItems, 0);
             pGFF->WriteFieldCExoString(&stEntry, pMessages[nMessage].m_sMessage,
@@ -1559,16 +2340,31 @@ void CSWPartyTable::SaveTableInfo(const CExoString& sAlias)
         pGFF->AddList(&lstItems, &stTop, "PT_DLG_MSG_LIST");
         CGuiInGameDialogMessage* pDialog =
             g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pDialogBuffer;
-        for (int nDialog = 0;
-             nDialog < (int)g_pAppManager->GetClientExoApp()->GetInGameGui()
-                           ->m_nDialogBufferSize;
-             nDialog++, pDialog++)
+        int nDialogs =
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nDialogBufferSize;
+        for (int nDialog = 0; nDialog < nDialogs; nDialog++, pDialog++)
         {
             pGFF->AddListElement(&stEntry, &lstItems, 0);
             pGFF->WriteFieldCExoString(&stEntry, pDialog->m_sSpeaker,
                                        "PT_DLG_MSG_SPKR");
             pGFF->WriteFieldCExoString(&stEntry, pDialog->m_sMessage,
                                        "PT_DLG_MSG_MSG");
+        }
+
+        pGFF->AddList(&lstItems, &stTop, "PT_COM_MSG_LIST");
+        CGuiInGameMessage* pCombat =
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pCombatBuffer;
+        int nCombats =
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nCombatBufferSize;
+        for (int nCombat = 0; nCombat < nCombats; nCombat++)
+        {
+            pGFF->AddListElement(&stEntry, &lstItems, 0);
+            pGFF->WriteFieldCExoString(&stEntry, pCombat[nCombat].m_sMessage,
+                                       "PT_COM_MSG_MSG");
+            pGFF->WriteFieldDWORD(&stEntry, pCombat[nCombat].m_nType,
+                                  "PT_COM_MSG_TYPE");
+            pGFF->WriteFieldBYTE(&stEntry, pCombat[nCombat].m_nColor,
+                                 "PT_COM_MSG_COOR");
         }
 
         pGFF->AddList(&lstItems, &stTop, "PT_COST_MULT_LIST");
@@ -1580,6 +2376,12 @@ void CSWPartyTable::SaveTableInfo(const CExoString& sAlias)
                 g_pRules->m_pBaseItems->GetBaseItem(nBaseItem)->m_fCostMultiplier;
             pGFF->WriteFieldFLOAT(&stEntry, fCostMultiplier, "PT_COST_MULT_VALUE");
         }
+        pGFF->WriteFieldINT(&stTop, m_bDisableMap, "PT_DISABLEMAP");
+        pGFF->WriteFieldINT(&stTop, m_bDisableRegen, "PT_DISABLEREGEN");
+
+        CStatusSummary cSummary;
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->GetStatusSummary(cSummary);
+        cSummary.SaveToGFF(pGFF, stTop);
 
         SaveJournal(pGFF, &stTop);
         pGFF->WriteGFFFile(sFile, 0);
@@ -1664,7 +2466,9 @@ int CSWPartyTable::SwitchPlayerCharacter(int nNPC)
             return 1;
         }
 
-        CSWSCreature* pOldPlayer = pServerExoApp->GetPlayerCreature();
+        CSWSCreature* pOldPlayer =
+            g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
+                m_aoidNPC[m_nControlledNPC]);
         pOldPlayer->GetStats()->m_bIsPC = 0;
         pOldPlayer->m_nAreaWaitState = 0;
         SaveMember(m_nControlledNPC, 0);
@@ -1754,6 +2558,7 @@ int CSWPartyTable::SwitchPlayerCharacter(int nNPC)
         pTarget->SetInParty(1, 1);
         pTarget->GetStats()->m_bIsPC = 1;
         pTarget->m_nAreaWaitState = 1;
+        m_nLeader = -1;
         CItemRepository* pItems = pTarget->GetItemRepository(1);
         if (pItems != NULL)
         {

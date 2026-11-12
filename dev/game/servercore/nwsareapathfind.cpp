@@ -40,7 +40,8 @@ int CSWSArea::PlotSoundPath(CPathfindInformation* pPathfindInformation)
     return 1;
 }
 // PC 0x004FC180
-CSWSRoom* CSWSArea::GetRoom(const Vector& vPosition, int* pnFace)
+CSWSRoom* CSWSArea::GetRoom(const Vector& vPosition, int* pnFace,
+                            int* pnRoomIndex)
 {
     Vector vTop(vPosition.m_fX, vPosition.m_fY, vPosition.m_fZ + 1000.0f);
     Vector vBottom(vPosition.m_fX, vPosition.m_fY, vPosition.m_fZ - 1000.0f);
@@ -425,7 +426,7 @@ int CSWSArea::SetHitInfoForCreature(const Vector& vCenter, float fRadius,
 }
 // PC 0x004FCF90
 float CSWSArea::ComputeHeight(const Vector& vPosition, int bUseFace,
-                              CSWSRoom** ppRoom)
+                              CSWSRoom** ppRoom, int* pnFace)
 {
     float fHeight = 0.0f;
     int nFace;

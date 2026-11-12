@@ -799,13 +799,115 @@ public:
         COMMAND_SET_MUSIC_VOLUME = 765,
         COMMAND_CREATE_ITEM_ON_FLOOR = 766,
         COMMAND_SET_AVAILABLE_NPC_ID = 767,
-        COMMAND_IS_MOVIE_PLAYING = 768,
-        COMMAND_QUEUE_MOVIE = 769,
-        COMMAND_PLAY_MOVIE_QUEUE = 770,
-        COMMAND_YAVIN_HACK_CLOSE_DOOR = 771,
+        COMMAND_GET_SCRIPT_PARAMETER = 768,
+        COMMAND_SET_FADE_UNTIL_SCRIPT = 769,
+        COMMAND_EFFECT_FORCE_BODY = 770,
+        COMMAND_GET_ITEM_COMPONENT = 771,
+        COMMAND_GET_ITEM_COMPONENT_PIECE_VALUE = 772,
+        COMMAND_SHOW_CHEMICAL_UPGRADE_SCREEN = 773,
+        COMMAND_GET_CHEMICALS = 774,
+        COMMAND_GET_CHEMICAL_PIECE_VALUE = 775,
+        COMMAND_GET_SPELL_FORCE_POINT_COST = 776,
+        COMMAND_EFFECT_FURY = 777,
+        COMMAND_EFFECT_BLIND = 778,
+        COMMAND_EFFECT_FP_REGEN_MODIFIER = 779,
+        COMMAND_EFFECT_VP_REGEN_MODIFIER = 780,
+        COMMAND_EFFECT_CRUSH = 781,
+        COMMAND_SWMG_GET_SWOOP_UPGRADE = 782,
         COMMAND_GET_FEAT_ACQUIRED = 783,
         COMMAND_GET_SPELL_ACQUIRED = 784,
+        COMMAND_SHOW_SWOOP_UPGRADE_SCREEN = 785,
+        COMMAND_GRANT_FEAT = 786,
+        COMMAND_GRANT_SPELL = 787,
+        COMMAND_SPAWN_MINE = 788,
+        COMMAND_SWMG_GET_TRACK_POSITION = 789,
+        COMMAND_SWMG_SET_FOLLOWER_POSITION = 790,
+        COMMAND_SET_FAKE_COMBAT_STATE = 791,
+        COMMAND_SWMG_DESTROY_MINI_GAME_OBJECT = 792,
+        COMMAND_GET_OWNER_DEMOLITIONS_SKILL = 793,
+        COMMAND_SET_ORIENT_ON_CLICK = 794,
+        COMMAND_GET_INFLUENCE = 795,
+        COMMAND_SET_INFLUENCE = 796,
+        COMMAND_MODIFY_INFLUENCE = 797,
+        COMMAND_GET_RACIAL_SUB_TYPE = 798,
+        COMMAND_INCREMENT_GLOBAL_NUMBER = 799,
+        COMMAND_DECREMENT_GLOBAL_NUMBER = 800,
+        COMMAND_SET_BONUS_FORCE_POINTS = 801,
+        COMMAND_ADD_BONUS_FORCE_POINTS = 802,
+        COMMAND_GET_BONUS_FORCE_POINTS = 803,
+        COMMAND_SWMG_SET_JUMP_SPEED = 804,
+        COMMAND_IS_MOVIE_PLAYING = 805,
+        COMMAND_QUEUE_MOVIE = 806,
+        COMMAND_PLAY_MOVIE_QUEUE = 807,
+        COMMAND_YAVIN_HACK_CLOSE_DOOR = 808,
+        COMMAND_EFFECT_DROID_CONFUSED = 809,
+        COMMAND_IS_STEALTHED = 810,
+        COMMAND_IS_MEDITATING = 811,
+        COMMAND_IS_IN_TOTAL_DEFENSE = 812,
+        COMMAND_SET_HEAL_TARGET = 813,
+        COMMAND_GET_HEAL_TARGET = 814,
+        COMMAND_GET_RANDOM_DESTINATION = 815,
+        COMMAND_IS_FORM_ACTIVE = 816,
+        COMMAND_GET_SPELL_FORM_MASK = 817,
+        COMMAND_GET_SPELL_BASE_FORCE_POINT_COST = 818,
+        COMMAND_SET_KEEP_STEALTH_IN_DIALOG = 819,
+        COMMAND_HAS_LINE_OF_SIGHT = 820,
+        COMMAND_SHOW_DEMO_SCREEN = 821,
+        COMMAND_FORCE_HEARTBEAT = 822,
+        COMMAND_EFFECT_FORCE_SIGHT = 823,
+        COMMAND_IS_RUNNING = 824,
+        COMMAND_SWMG_PLAYER_APPLY_FORCE = 825,
+        COMMAND_SET_FORFEIT_CONDITIONS = 826,
+        COMMAND_GET_LAST_FORFEIT_VIOLATION = 827,
+        COMMAND_MODIFY_REFLEX_SAVING_THROW_BASE = 828,
+        COMMAND_MODIFY_FORTITUDE_SAVING_THROW_BASE = 829,
+        COMMAND_MODIFY_WILL_SAVING_THROW_BASE = 830,
+        COMMAND_GET_SCRIPT_STRING_PARAMETER = 831,
+        COMMAND_GET_OBJECT_PERSONAL_SPACE = 832,
+        COMMAND_ADJUST_CREATURE_ATTRIBUTES = 833,
+        COMMAND_SET_CREATURE_AI_LEVEL = 834,
+        COMMAND_RESET_CREATURE_AI_LEVEL = 835,
+        COMMAND_ADD_AVAILABLE_PUP_BY_TEMPLATE = 836,
+        COMMAND_ADD_AVAILABLE_PUP_BY_OBJECT = 837,
+        COMMAND_ASSIGN_PUP = 838,
+        COMMAND_SPAWN_AVAILABLE_PUP = 839,
+        COMMAND_ADD_PARTY_PUPPET = 840,
+        COMMAND_GET_PUP_OWNER = 841,
+        COMMAND_GET_IS_PUPPET = 842,
+        COMMAND_ACTION_FOLLOW_OWNER = 843,
+        COMMAND_GET_IS_PARTY_LEADER = 844,
+        COMMAND_GET_PARTY_LEADER = 845,
+        COMMAND_REMOVE_NPC_FROM_PARTY_TO_BASE = 846,
+        COMMAND_CREATURE_FLOURISH_WEAPON = 847,
+        COMMAND_EFFECT_MIND_TRICK = 848,
+        COMMAND_EFFECT_FACTION_MODIFIER = 849,
+        COMMAND_CHANGE_OBJECT_APPEARANCE = 850,
+        COMMAND_GET_IS_XBOX = 851,
+        COMMAND_EFFECT_DROID_SCRAMBLE = 852,
+        COMMAND_ACTION_SWITCH_WEAPONS = 853,
+        COMMAND_PLAY_OVERLAY_ANIMATION = 854,
+        COMMAND_UNLOCK_ALL_SONGS = 855,
+        COMMAND_DISABLE_MAP = 856,
+        COMMAND_DETONATE_MINE = 857,
+        COMMAND_DISABLE_HEALTH_REGEN = 858,
+        COMMAND_SET_CURRENT_FORM = 859,
+        COMMAND_SET_DISABLE_TRANSIT = 860,
+        COMMAND_SET_INPUT_CLASS = 861,
+        COMMAND_SET_FORCE_ALWAYS_UPDATE = 862,
+        COMMAND_ENABLE_RAIN = 863,
+        COMMAND_DISPLAY_MESSAGE_BOX = 864,
+        COMMAND_DISPLAY_DATAPAD = 865,
+        COMMAND_REMOVE_HEARTBEAT = 866,
+        COMMAND_REMOVE_EFFECT_BY_ID = 867,
+        COMMAND_REMOVE_EFFECT_BY_EXACT_MATCH = 868,
+        COMMAND_ADJUST_CREATURE_SKILLS = 869,
         COMMAND_GET_SKILL_RANK_BASE = 870,
+        COMMAND_ENABLE_RENDERING = 871,
+        COMMAND_GET_COMBAT_ACTIONS_PENDING = 872,
+        COMMAND_SAVE_NPC_BY_OBJECT = 873,
+        COMMAND_SAVE_PUP_BY_OBJECT = 874,
+        COMMAND_GET_IS_PLAYER_MADE_CHARACTER = 875,
+        COMMAND_REBUILD_PARTY_TABLE = 876,
     };
 
     static const int COMMAND_COUNT = 877;
@@ -1323,6 +1425,85 @@ public:
     int ExecuteCommandQueueMovie(int nCommand, int nArgs);
     int ExecuteCommandPlayMovieQueue(int nCommand, int nArgs);
     int ExecuteCommandYavinHackCloseDoor(int nCommand, int nArgs);
+    int ExecuteCommandSetCreatureAILevel(int nCommand, int nArgs);
+    int ExecuteCommandChangeObjectAppearance(int nCommand, int nArgs);
+    int ExecuteCommandResetCreatureAILevel(int nCommand, int nArgs);
+    int ExecuteCommandEffectBlind(int nCommand, int nArgs);
+    int ExecuteCommandEffectCrush(int nCommand, int nArgs);
+    int ExecuteCommandEffectFactionModifier(int nCommand, int nArgs);
+    int ExecuteCommandEffectForceBody(int nCommand, int nArgs);
+    int ExecuteCommandEffectForceSight(int nCommand, int nArgs);
+    int ExecuteCommandEffectFPRegenModifier(int nCommand, int nArgs);
+    int ExecuteCommandEffectVPRegenModifier(int nCommand, int nArgs);
+    int ExecuteCommandEffectFury(int nCommand, int nArgs);
+    int ExecuteCommandForceHeartbeat(int nCommand, int nArgs);
+    int ExecuteCommandGetChemical(int nCommand, int nArgs);
+    int ExecuteCommandGetChemicalPieceValue(int nCommand, int nArgs);
+    int ExecuteCommandGetOwnerDemolitionsSkill(int nCommand, int nArgs);
+    int ExecuteCommandGetLastForfeitViolation(int nCommand, int nArgs);
+    int ExecuteCommandAdjustCreatureAttributes(int nCommand, int nArgs);
+    int ExecuteCommandAdjustCreatureSkills(int nCommand, int nArgs);
+    int ExecuteCommandModifyBaseSavingThrow(int nCommand, int nArgs);
+    int ExecuteCommandGetObjectPersonalSpace(int nCommand, int nArgs);
+    int ExecuteCommandInfluence(int nCommand, int nArgs);
+    int ExecuteCommandGetSpellForcePointCost(int nCommand, int nArgs);
+    int ExecuteCommandGrantAbility(int nCommand, int nArgs);
+    int ExecuteCommandGetSpellFormMask(int nCommand, int nArgs);
+    int ExecuteCommandGetSpellBaseForcePointCost(int nCommand, int nArgs);
+    int ExecuteCommandIsStealthed(int nCommand, int nArgs);
+    int ExecuteCommandIsMeditating(int nCommand, int nArgs);
+    int ExecuteCommandIsInTotalDefense(int nCommand, int nArgs);
+    int ExecuteCommandIsFormActive(int nCommand, int nArgs);
+    int ExecuteCommandModifyGlobal(int nCommand, int nArgs);
+    int ExecuteCommandRemoveHeartbeat(int nCommand, int nArgs);
+    int ExecuteCommandSetCurrentForm(int nCommand, int nArgs);
+    int ExecuteCommandSetForfeitConditions(int nCommand, int nArgs);
+    int ExecuteCommandGetScriptParameter(int nCommand, int nArgs);
+    int ExecuteCommandGetScriptStringParameter(int nCommand, int nArgs);
+    int ExecuteCommandSetFadeUntilScript(int nCommand, int nArgs);
+    int ExecuteCommandSetFakeCombatState(int nCommand, int nArgs);
+    int ExecuteCommandSetOrientOnClick(int nCommand, int nArgs);
+    int ExecuteCommandGetRacialSubType(int nCommand, int nArgs);
+    int ExecuteCommandSetBonusForcePoints(int nCommand, int nArgs);
+    int ExecuteCommandAddBonusForcePoints(int nCommand, int nArgs);
+    int ExecuteCommandGetBonusForcePoints(int nCommand, int nArgs);
+    int ExecuteCommandSetHealTarget(int nCommand, int nArgs);
+    int ExecuteCommandGetHealTarget(int nCommand, int nArgs);
+    int ExecuteCommandGetRandomDestination(int nCommand, int nArgs);
+    int ExecuteCommandSetKeepStealthInDialog(int nCommand, int nArgs);
+    int ExecuteCommandHasLineOfSight(int nCommand, int nArgs);
+    int ExecuteCommandShowDemoScreen(int nCommand, int nArgs);
+    int ExecuteCommandIsRunning(int nCommand, int nArgs);
+    int ExecuteCommandAddAvailablePUPByTemplate(int nCommand, int nArgs);
+    int ExecuteCommandAddAvailablePUPByObject(int nCommand, int nArgs);
+    int ExecuteCommandAssignPUP(int nCommand, int nArgs);
+    int ExecuteCommandSpawnAvailablePUP(int nCommand, int nArgs);
+    int ExecuteCommandAddPartyPuppet(int nCommand, int nArgs);
+    int ExecuteCommandGetPUPOwner(int nCommand, int nArgs);
+    int ExecuteCommandGetIsPuppet(int nCommand, int nArgs);
+    int ExecuteCommandActionFollowOwner(int nCommand, int nArgs);
+    int ExecuteCommandGetIsPartyLeader(int nCommand, int nArgs);
+    int ExecuteCommandRemoveNPCFromPartyToBase(int nCommand, int nArgs);
+    int ExecuteCommandGetIsXBox(int nCommand, int nArgs);
+    int ExecuteCommandActionSwitchWeapons(int nCommand, int nArgs);
+    int ExecuteCommandUnlockAllMusic(int nCommand, int nArgs);
+    int ExecuteCommandDisableMap(int nCommand, int nArgs);
+    int ExecuteCommandDetonateMine(int nCommand, int nArgs);
+    int ExecuteCommandDisableHealthRegen(int nCommand, int nArgs);
+    int ExecuteCommandSetDisableTransit(int nCommand, int nArgs);
+    int ExecuteCommandSetInputClass(int nCommand, int nArgs);
+    int ExecuteCommandForceAlwaysUpdate(int nCommand, int nArgs);
+    int ExecuteCommandEnableRain(int nCommand, int nArgs);
+    int ExecuteCommandDisplayMessageBox(int nCommand, int nArgs);
+    int ExecuteCommandDisplayDatapad(int nCommand, int nArgs);
+    int ExecuteCommandSaveNPCByObject(int nCommand, int nArgs);
+    int ExecuteCommandSavePUPByObject(int nCommand, int nArgs);
+    int ExecuteCommandGetIsPlayerMadeCharacter(int nCommand, int nArgs);
+    int ExecuteCommandRebuildPartyTable(int nCommand, int nArgs);
+    int ExecuteCommandRemoveEffectByID(int nCommand, int nArgs);
+    int ExecuteCommandRemoveEffectByExactMatch(int nCommand, int nArgs);
+    int ExecuteCommandGetCombatActionPending(int nCommand, int nArgs);
+    int ExecuteCommandSpawnMine(int nCommand, int nArgs);
     int ExecuteCommandAddJournalQuestEntry(int nCommand, int nArgs);
     int ExecuteCommandAddJournalWorldEntry(int nCommand, int nArgs);
     int ExecuteCommandAddJournalWorldEntryStrref(int nCommand, int nArgs);
@@ -1390,6 +1571,9 @@ public:
     int ExecuteCommandSWMG_SetSoundProperty(int nCommand, int nArgs);
     int ExecuteCommandSWMG_SetLateralAccelPerSec(int nCommand, int nArgs);
     int ExecuteCommandSWMG_GetLateralAccelPerSec(int nCommand, int nArgs);
+    int ExecuteCommandSWMG_GetSwoopUpgrade(int nCommand, int nArgs);
+    int ExecuteCommandSWMG_SetJumpSpeed(int nCommand, int nArgs);
+    int ExecuteCommandSWMG_PlayerApplyForce(int nCommand, int nArgs);
     void InitializeSWMGCommands();
     int ExecuteCommandExploreAreaForPlayer(int nCommand, int nArgs);
     int ExecuteCommandGetLastAssociateCommand(int nCommand, int nArgs);

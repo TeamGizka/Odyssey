@@ -39,6 +39,15 @@
 
 int g_nCombatAttackRoll = 0;
 int g_bDisableDamage = 0;
+// PC 0x00603280
+void CSWSCombatRound::SetCurrentCombatRoundAction(CSWSCombatRoundAction* pAction)
+{
+    m_pCurrentAction = pAction;
+    if (pAction != NULL)
+    {
+        m_cB1C = pAction->m_nActionType;
+    }
+}
 // PC 0x006032A0
 int CSWSCreature::IsCreature()
 {
@@ -64,12 +73,31 @@ int CSWSCreature::IsDebilitated(int bCheckMeditation)
 {
     int bDebilitated = 0;
 
-    if (m_bDebilitated != 0 || GetDeadTemp() != 0)
+    if ((m_bDebilitated > 0 &&
+         m_bDebilitated != CSWSEffectListHandler::STATE_CONFUSION &&
+         m_bDebilitated != CSWSEffectListHandler::STATE_VARIANT_16) ||
+        GetDeadTemp() != 0)
     {
         bDebilitated = 1;
     }
 
+    if (bCheckMeditation != 0 && m_c110C == 1)
+    {
+        return 1;
+    }
+
     return bDebilitated;
+}
+// PC 0x006033C0
+int CSWSCreature::IsInTotalDefense()
+{
+    CSWSCombatRound* pCombatRound = m_pcCombatRound;
+    if (m_c110C == 0 ||
+        (pCombatRound != NULL && pCombatRound->m_cB1C == 13))
+    {
+        return 1;
+    }
+    return 0;
 }
 // PC 0x006033F0
 void CSWSCreature::CancelAllCombatModes(int)
@@ -116,7 +144,7 @@ void CSWSCreature::InitializeNewAttackTarget(unsigned long oidTarget,
 
     SetLockOrientationToObject(oidTarget, 0);
     m_nUnknown84 = oidTarget;
-    m_oidAttemptedAttackTarget = oidTarget;
+    SetAttemptedAttackTarget(oidTarget);
     m_pcCombatRound->UpdateAttackTargetForAllActions(oidTarget);
     m_bNewAttackTarget = 1;
 }
@@ -485,7 +513,8 @@ int CSWSCreature::ResolveDefensiveEffects(CSWSObject* pTarget, int bRangedAttack
     CSWSCombatAttackData* pAttack =
         m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack);
     int nShield = 0;
-    if (IsProjectileParryable(pTarget, bRangedAttack, 0, nShield, -1) &&
+    int bCanReflect = 1;
+    if (IsProjectileParryable(pTarget, bRangedAttack, 0, nShield, bCanReflect, -1) &&
         pTarget->AsSWSCreature() != NULL)
     {
         CSWSCreature* pCreature = pTarget->AsSWSCreature();
@@ -545,7 +574,8 @@ int CSWSCreature::ResolveDefensiveEffects(CSWSObject* pTarget, int bRangedAttack
             if (nRoll >= nAttackRoll)
             {
                 bResult = 1;
-                if ((nRoll >= nAttackRoll + 6 && bRangedAttack) || nRoll >= nAttackRoll + 6)
+                if (((nRoll >= nAttackRoll + 6 && bRangedAttack) || nRoll >= nAttackRoll + 6) &&
+                    bCanReflect)
                     nResult = CSWSCombatAttackData::ATTACK_RESULT_REFLECTED;
                 else
                     nResult = CSWSCombatAttackData::ATTACK_RESULT_DEFLECTED;
@@ -1260,6 +1290,27 @@ void CSWSCreature::ApplyOnHitInstantDeath(CSWSObject* pObject,  // PC 0x006096A0
         pAttack->m_lstEffects.Add(pDeathEffect);
     }
 }
+// PC 0x006097A0
+void CSWSCreature::ApplyOnHitKnockdown(CSWSObject* pObject,
+                                       CSWItemProperty* pItemProperty)
+{
+    CGameEffect* pEffect = new CGameEffect(1);
+
+    if (pEffect != NULL)
+    {
+        pEffect->m_nType = CSWSEffectListHandler::EFFECT_FORCEPUSHED;
+        pEffect->m_nSubType = (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
+                              CGameEffect::DURATION_TYPE_TEMPORARY;
+        pEffect->m_nSubType = (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
+                              CGameEffect::DURATION_TYPE_TEMPORARY;
+        pEffect->m_fDuration = 0.1f;
+        pEffect->SetCreator(m_nId);
+
+        CSWSCombatAttackData* pAttack =
+            m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack);
+        pAttack->m_lstEffects.Add(pEffect);
+    }
+}
 
 void CSWSCreature::ResolveSituationalModifiers(CSWSCreature* pTarget)
 {
@@ -1721,18 +1772,18 @@ void CSWSCreature::ResolveOnHitEffect(CSWSObject* pTarget, int bOffHand,
                         pDurationEffect = &CSWSCreature::ApplyOnHitSlow;
                         break;
                     case CSWItemProperty::ON_HIT_ABILITY_DAMAGE:
+                        nEffectChance = 100;
                         bSavingThrow = 1;
                         nSaveType = SAVING_THROW_REFLEX;
                         nSaveSubtype = SAVING_THROW_TYPE_NONE;
                         pPropertyEffect = &CSWSCreature::ApplyOnHitAbilityDamage;
-                        nEffectChance = 100;
                         break;
                     case CSWItemProperty::ON_HIT_POISON:
+                        nEffectChance = 100;
                         bSavingThrow = 0;
                         nSaveType = SAVING_THROW_FORT;
                         nSaveSubtype = SAVING_THROW_TYPE_POISON;
                         pPropertyEffect = &CSWSCreature::ApplyOnHitPoison;
-                        nEffectChance = 100;
                         break;
                     case CSWItemProperty::ON_HIT_SLAY_RACIAL_GROUP:
                         bSavingThrow = 1;
@@ -1747,8 +1798,15 @@ void CSWSCreature::ResolveOnHitEffect(CSWSObject* pTarget, int bOffHand,
                         pPropertyEffect = &CSWSCreature::ApplyOnHitSlayAlignmentGroup;
                         break;
                     case CSWItemProperty::ON_HIT_INSTANT_DEATH:
-                        pPropertyEffect = &CSWSCreature::ApplyOnHitInstantDeath;
                         nEffectChance = 100;
+                        pPropertyEffect = &CSWSCreature::ApplyOnHitInstantDeath;
+                        break;
+                    case CSWItemProperty::ON_HIT_KNOCKDOWN:
+                        nEffectChance = 100;
+                        bSavingThrow = 1;
+                        nSaveType = SAVING_THROW_FORT;
+                        nSaveSubtype = SAVING_THROW_TYPE_NONE;
+                        pPropertyEffect = &CSWSCreature::ApplyOnHitKnockdown;
                         break;
                     default:
                         continue;
@@ -2368,7 +2426,7 @@ int CSWSCreature::AIActionPhysicalAttacks(CSWSObjectActionNode* pAction)
                 m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack)->m_nAttackType =
                     (unsigned short)nFeat;
             SetAnimation(nAnimation);
-            m_oidAttemptedAttackTarget = oidTarget;
+            SetAttemptedAttackTarget(oidTarget);
             m_pcCombatRound->SetRoundPaused(1, GetId());
             m_pcCombatRound->SetPauseTimer(nAnimationTime, 0);
             m_pcCombatRound->IncrementNumActionsTaken(1);
@@ -2449,13 +2507,22 @@ int CSWSCreature::AIActionCombat(CSWSObjectActionNode* pNode)
         unsigned short nSpecialAttack = pAction->m_nSpecialAttack;
         int bCutsceneAttack = pAction->m_bCutsceneAttack;
 
-        GetCombatRound()->m_pCurrentAction = pAction;
+        GetCombatRound()->SetCurrentCombatRoundAction(pAction);
         GetCombatRound()->SetCurrentAction(nActionType);
-        if (nActionType != CSWSCombatRoundAction::ACTION_ITEM_CAST_SPELL)
+        if (nActionType != CSWSCombatRoundAction::ACTION_ITEM_CAST_SPELL &&
+            nActionType != CSWSCombatRoundAction::ACTION_STANCE &&
+            pAction->m_nSpellId != 181 && pAction->m_nSpellId != 200 &&
+            pAction->m_nSpellId != 182 && pAction->m_nSpellId != 184 &&
+            pAction->m_nSpellId != 201 && pAction->m_nSpellId != 269)
+        {
             SetActivity(ACTIVITY_STEALTH, 0, 0);
+        }
 
         switch (nActionType)
         {
+        case CSWSCombatRoundAction::ACTION_SWITCH_WEAPONS:
+            AsSWSObject()->AddSwitchWeaponsAction(1);
+            return ACTION_IN_DELAY;
         case CSWSCombatRoundAction::ACTION_ATTACK:
         case CSWSCombatRoundAction::ACTION_SPECIAL_ATTACK:
         {
@@ -2502,10 +2569,7 @@ int CSWSCreature::AIActionCombat(CSWSObjectActionNode* pNode)
                 pAction->m_nUnknown4C, pAction->m_nUnknown50,
                 pAction->m_nEquipFlags, pAction->m_nSpecialAttack,
                 pAction->m_nUnknown60, 1);
-            if (GetCombatRound()->m_pCurrentAction != NULL)
-                delete GetCombatRound()->m_pCurrentAction;
-            GetCombatRound()->m_pCurrentAction = NULL;
-            return ACTION_IN_DELAY;
+            break;
         case CSWSCombatRoundAction::ACTION_ITEM_CAST_SPELL:
         {
             CGameObject* pTarget = g_pAppManager->GetServerExoApp()->
@@ -2527,10 +2591,16 @@ int CSWSCreature::AIActionCombat(CSWSObjectActionNode* pNode)
                     int nForceHostile = 0;
                     g_pRules->Get2DArrays()->GetSpells()->GetINTEntry(
                         nSpell, "FORCEHOSTILE", &nForceHostile);
+                    int nGrenadeSpell = ConvertGrenadeSpellID(nSpell);
+                    if (nGrenadeSpell != nSpell)
+                        nSpell = nGrenadeSpell;
                     CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
                     if (pSpell != NULL && pSpell->m_bHostileSetting)
                         SetActivity(ACTIVITY_STEALTH, 0, 0);
-                    if (nForceHostile <= 0 && pAction->m_oidSpellTarget != GetId())
+                    if (nForceHostile <= 0 && pAction->m_oidSpellTarget != GetId() &&
+                        pSpell->m_bHostileSetting &&
+                        pItem->GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_HOSTILE_USABLE_49 &&
+                        pItem->GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_HOSTILE_USABLE)
                         pAction->m_oidSpellTarget = OBJECT_INVALID;
                 }
             }
@@ -2538,10 +2608,7 @@ int CSWSCreature::AIActionCombat(CSWSObjectActionNode* pNode)
                 pAction->m_nUnknown68, pAction->m_nUnknown6C,
                 pAction->m_vTarget, pAction->m_oidSpellTarget,
                 pAction->m_nAttackFlags, pAction->m_nUnknown48, 1, 1);
-            if (GetCombatRound()->m_pCurrentAction != NULL)
-                delete GetCombatRound()->m_pCurrentAction;
-            GetCombatRound()->m_pCurrentAction = NULL;
-            return ACTION_IN_DELAY;
+            break;
         }
         case CSWSCombatRoundAction::ACTION_CUTSCENE_MOVE:
         {
@@ -2569,13 +2636,7 @@ int CSWSCreature::AIActionCombat(CSWSObjectActionNode* pNode)
                     pObject->m_vPosition, oidArea, pAction->m_oidTarget,
                     pAction->m_nEquipFlags, 0.2f, 0.1f, 0, 0, 0, 0, 0, 0,
                     vOrientation, 0, 0, 0);
-                if (GetCombatRound()->m_pCurrentAction != NULL)
-                {
-                    delete GetCombatRound()->m_pCurrentAction;
-                    GetCombatRound()->m_pCurrentAction = NULL;
-                    return ACTION_IN_DELAY;
-                }
-                goto Done;
+                break;
             }
 MoveToPoint:
             {
@@ -2595,16 +2656,19 @@ MoveToPoint:
                     pAction->m_vTarget, oidArea, OBJECT_INVALID,
                     pAction->m_nEquipFlags, 0.2f, 0.1f, 0, 0, 0, 0, 0, 0,
                     vOrientation, 0, 0, 0);
-                if (GetCombatRound()->m_pCurrentAction != NULL)
-                    delete GetCombatRound()->m_pCurrentAction;
             }
-Done:
-            GetCombatRound()->m_pCurrentAction = NULL;
-            return ACTION_IN_DELAY;
+            break;
         }
+        case CSWSCombatRoundAction::ACTION_STANCE:
+            AddStanceActions(nAttacks, oidTarget, 0, 0, 1, 1);
+            return ACTION_IN_DELAY;
         default:
             return ACTION_IN_PROGRESS;
         }
+        if (GetCombatRound()->m_pCurrentAction != NULL)
+            delete GetCombatRound()->m_pCurrentAction;
+        GetCombatRound()->m_pCurrentAction = NULL;
+        return ACTION_IN_DELAY;
     }
 
     GetCombatRound()->GetActionPending();
@@ -2618,6 +2682,7 @@ void CSWSCreature::CreateNewAttackActions(int bFindNewTarget,
                                          unsigned long oidKilledCreature)
 {
     int bValidTarget = 0;
+    int bFindTarget = 0;
     unsigned long oidTarget;
     if (bCheckCleaveRange)
     {
@@ -2646,7 +2711,10 @@ void CSWSCreature::CreateNewAttackActions(int bFindNewTarget,
                         if (GetReputation(oidTarget, 0) >
                             CSWSObject::MAX_HOSTILE_REPUTATION)
                         {
-                            bValidTarget = 0;
+                            if (oidTarget == GetId())
+                            {
+                                bFindTarget = 1;
+                            }
                         }
                         else if (bCheckCleaveRange)
                         {
@@ -2677,6 +2745,12 @@ void CSWSCreature::CreateNewAttackActions(int bFindNewTarget,
     if ((oidTarget == OBJECT_INVALID &&
          m_pcCombatRound->m_pScheduledActions->GetHeadPos() == NULL) ||
         bFindNewTarget)
+    {
+        bValidTarget = 1;
+        bFindTarget = 1;
+    }
+
+    if (bFindTarget)
     {
         CSWSCreature* pKilledCreature =
             g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
@@ -2713,16 +2787,22 @@ void CSWSCreature::CreateNewAttackActions(int bFindNewTarget,
             return;
         }
     }
-    else if (!bValidTarget)
-    {
-        return;
-    }
 
-    m_pcCombatRound->AddAttackAction(oidTarget, 0, 0,
-                                    CSWSCombatRound::ATTACK_ACTION_TIME, 1);
-    if (m_oidAttemptedMoveToTarget == oidTarget)
+    if (bValidTarget)
     {
-        m_oidAttemptedMoveToTarget = OBJECT_INVALID;
+        if (m_pcCombatRound->m_cB1C == 13)
+        {
+            m_pcCombatRound->AddStanceAction(0, oidTarget, 0);
+        }
+        else
+        {
+            m_pcCombatRound->AddAttackAction(oidTarget, 0, 0,
+                                            CSWSCombatRound::ATTACK_ACTION_TIME, 1);
+            if (m_oidAttemptedMoveToTarget == oidTarget)
+            {
+                m_oidAttemptedMoveToTarget = OBJECT_INVALID;
+            }
+        }
     }
 }
 // PC 0x006058B0
@@ -3431,9 +3511,10 @@ int CSWSCreature::CalculateMaxElementalDamage(CSWSObject* pObject, int)
 // PC 0x00606620
 int CSWSCreature::IsProjectileParryable(CSWSObject* pTarget, int bRangedAttack,
                                        int bCheckShield, int& nShield,
-                                       int nWeaponHand)
+                                       int& bCanReflect, int nWeaponHand)
 {
     int bResult = 0;
+    bCanReflect = 1;
     CSWSCombatAttackData* pAttack =
         m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack);
     if (pTarget->AsSWSCreature() != NULL && pAttack->m_bRangedAttack)
@@ -3442,21 +3523,35 @@ int CSWSCreature::IsProjectileParryable(CSWSObject* pTarget, int bRangedAttack,
         if ((pCreature->m_pStats->HasFeat(CSWFeat::FEAT_JEDI_DEFENSE) ||
              pCreature->m_pStats->HasFeat(CSWFeat::FEAT_ADVANCED_JEDI_DEFENSE) ||
              pCreature->m_pStats->HasFeat(CSWFeat::FEAT_MASTER_JEDI_DEFENSE)) &&
-            !pCreature->IsDebilitated())
+            !pCreature->IsDebilitated() &&
+            pCreature->GetClientCreature() != NULL &&
+            pCreature->IsLightsaberEquipped() &&
+            !pCreature->m_bLightsaberThrow)
         {
-            if (pCreature->GetClientCreature() != NULL &&
-                pCreature->IsLightsaberEquipped() &&
-                !pCreature->m_bLightsaberThrow)
+            unsigned long nSlot = 0;
+            if (nWeaponHand == -1)
             {
-                CSWCCreature* pClientCreature = pCreature->GetClientCreature();
-                Vector vOrientation = pClientCreature->m_vOrientation;
+                if (pAttack->m_nWeaponAttackType == 1)
+                    nWeaponHand = 0;
+                else if (pAttack->m_nWeaponAttackType == 2)
+                    nWeaponHand = 1;
+            }
+            if (nWeaponHand == 0)
+                nSlot = INVENTORY_SLOT_RIGHTHAND;
+            else if (nWeaponHand == 1)
+                nSlot = INVENTORY_SLOT_LEFTHAND;
+            CSWSItem* pWeapon = m_pInventory->GetItemInSlot(nSlot);
+            if (pWeapon != NULL &&
+                (pWeapon->GetBaseItem()->m_nDamageFlags & DAMAGE_TYPE_BLASTER))
+            {
+                Vector vOrientation = pCreature->GetClientCreature()->m_vOrientation;
                 if (vOrientation * m_vOrientation <= 0.0f)
                     bResult = 1;
             }
         }
-        else if (bCheckShield && bRangedAttack &&
-                 pCreature->GetClientCreature() != NULL &&
-                 pCreature->GetClientCreature()->GetForceShield())
+        if (!bResult && bCheckShield && bRangedAttack &&
+            pCreature->GetClientCreature() != NULL &&
+            pCreature->GetClientCreature()->GetForceShield())
         {
             unsigned long nSlot = 0;
             if (nWeaponHand == 0)
@@ -3476,19 +3571,36 @@ int CSWSCreature::IsProjectileParryable(CSWSObject* pTarget, int bRangedAttack,
                     pTable->GetINTEntry(nAmmunitionType, sColumn, &bShieldHit);
                 }
                 if (bShieldHit)
+                {
                     bResult = 1;
+                    nShield = pCreature->GetClientCreature()->GetForceShield();
+                }
             }
-            nShield = pCreature->GetClientCreature()->GetForceShield();
+        }
+        int bDeflection = pCreature->m_pStats->HasSpell(0, 162, 0);
+        int bRedirection = pCreature->m_pStats->HasSpell(0, 163, 0);
+        if (!bResult && (bDeflection || bRedirection) &&
+            !pCreature->IsDebilitated() && !pCreature->m_bLightsaberThrow)
+        {
+            Vector vOrientation = pCreature->GetClientCreature()->m_vOrientation;
+            if (vOrientation * m_vOrientation <= 0.0f)
+            {
+                bResult = 1;
+                if (bDeflection && !bRedirection)
+                    bCanReflect = 0;
+            }
         }
     }
     return bResult;
 }
-
+// PC 0x00608220
 int CSWSCreature::ResolveRangedMissToParry(CSWSObject* pTarget, int bCheckWeapon,
                                            int nWeaponHand)
 {
     int nShield = 0;
-    int bParried = IsProjectileParryable(pTarget, bCheckWeapon, 1, nShield, nWeaponHand);
+    int bCanReflect;
+    int bParried = IsProjectileParryable(pTarget, bCheckWeapon, 1, nShield,
+                                         bCanReflect, nWeaponHand);
     if (bParried)
     {
         CSWSCombatAttackData* pCurrentAttack =

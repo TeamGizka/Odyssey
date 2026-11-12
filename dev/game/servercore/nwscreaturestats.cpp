@@ -2681,6 +2681,20 @@ void CSWSCreatureStats::ClearFeats()
         }
     }
 }
+// PC 0x005EEF00
+unsigned char CSWSCreatureStats::GetPotentialLevel()
+{
+    unsigned char nLevel = GetLevel(0);
+    if (m_bIsPC == 1)
+    {
+        while (m_nExperience >= g_pRules->m_anExperience[nLevel] &&
+               nLevel < g_pAppManager->m_pServerExoApp->GetServerInfo()->m_nMaxLevel)
+        {
+            nLevel++;
+        }
+    }
+    return nLevel;
+}
 // PC 0x005EEF60
 int CSWSCreatureStats::HasFeat(unsigned short nFeat)
 {
@@ -5182,15 +5196,6 @@ void CSWSCreatureStats::SetNormalBonusFlags(unsigned short nFeat,
             }
         }
     }
-}
-// PC 0x004F4470
-unsigned char CSWSCreatureStats::GetClass(unsigned char nClass)
-{
-    if (nClass >= m_nClassCount)
-    {
-        return 0xFF;
-    }
-    return m_aClassInfo[nClass].m_nClass;
 }
 // PC 0x005ED5E0
 int CSWSCreatureStats::ResolveSpecialAttackAttackBonus(CSWSCreature* pTarget)

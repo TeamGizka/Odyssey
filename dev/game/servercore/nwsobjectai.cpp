@@ -27,6 +27,7 @@
 #include "nwrules.h"
 #include "swparty.h"
 #include "nwccreature.h"
+#include "nwcitem.h"
 #include "nwsscriptevent.h"
 #include "nwseffect.h"
 #include "nwseffectlist.h"
@@ -80,6 +81,11 @@ unsigned long CSWSObject::GetAcceptableAction(unsigned long nActionType)
     case 56:
     case 61:
     case 63:
+    case 67:
+    case 68:
+    case 69:
+    case 70:
+    case 71:
     {
         nResult = 1;
         break;
@@ -160,8 +166,18 @@ unsigned short CSWSObject::GetAQActionIDByID(unsigned short nActionType,
         return ::ACTION_FOLLOW;
     case ACTION_FOLLOW_LEADER:
         return ::ACTION_FOLLOWLEADER;
+    case ACTION_FOLLOW_OWNER:
+        return ::ACTION_FOLLOWOWNER;
     case ACTION_WAIT:
         return ::ACTION_WAIT;
+    case ACTION_DOOR_SABER:
+        return ::ACTION_DOORSABER;
+    case ACTION_SWITCH_WEAPONS:
+        return ::ACTION_SWITCHWEAPONS;
+    case ACTION_STANCE_TOTAL_DEFENSE:
+        return ::ACTION_TOTALDEFENSE;
+    case ACTION_STANCE_MEDITATIVE:
+        return ::ACTION_MEDITATIVE;
     default:
         return ::ACTION_INVALID;
     }
@@ -1140,6 +1156,72 @@ int CSWSObject::AIActionLockObject(CSWSObjectActionNode* pNode)
     }
     return ACTION_FAILED;
 }
+// PC 0x005DD170
+int CSWSObject::AIActionSwitchWeapons(CSWSObjectActionNode* pNode)
+{
+    CSWSCreature* pCreature = AsSWSCreature();
+    ClearAllActions(1);
+    if (pCreature != NULL)
+    {
+        CSWSItem* pRight = pCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
+        CSWSItem* pLeft = pCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_LEFTHAND);
+        CSWSItem* pRight2 = pCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND2);
+        CSWSItem* pLeft2 = pCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_LEFTHAND2);
+        pCreature->ClearAllActions(1);
+        pCreature->m_pcCombatRound->RemoveAllActions();
+        int bInstant = 1;
+        if (pRight2 == NULL && pLeft2 == NULL)
+        {
+            bInstant = 0;
+        }
+        if (g_pAppManager->m_pClientExoApp->GetPlayerMovementInput())
+        {
+            bInstant = 1;
+        }
+        if (pLeft2 != NULL)
+        {
+            pCreature->RunUnequip(pLeft2->m_nId, CGameObjectArray::INVALIDOBJID, 0, NULL, 0, bInstant);
+        }
+        if (pRight2 != NULL)
+        {
+            pCreature->RunUnequip(pRight2->m_nId, CGameObjectArray::INVALIDOBJID, 0, NULL, 0, bInstant);
+        }
+        if (pLeft != NULL)
+        {
+            pCreature->RunUnequip(pLeft->m_nId, CGameObjectArray::INVALIDOBJID, 0, NULL, 0, bInstant);
+        }
+        if (pRight != NULL)
+        {
+            pCreature->RunUnequip(pRight->m_nId, CGameObjectArray::INVALIDOBJID, 0, NULL, 0, bInstant);
+        }
+        if (pRight2 != NULL)
+        {
+            pCreature->RunEquip(pRight2->m_nId, INVENTORY_SLOT_RIGHTHAND, 0);
+        }
+        if (pLeft2 != NULL)
+        {
+            pCreature->RunEquip(pLeft2->m_nId, INVENTORY_SLOT_LEFTHAND, 0);
+        }
+        if (pRight != NULL)
+        {
+            pCreature->RunEquip(pRight->m_nId, INVENTORY_SLOT_RIGHTHAND2, 0);
+        }
+        if (pLeft != NULL)
+        {
+            pCreature->RunEquip(pLeft->m_nId, INVENTORY_SLOT_LEFTHAND2, 0);
+        }
+        if (pCreature->m_bCombatState && pCreature->m_nItemUseState == 1)
+        {
+            unsigned long oidTarget = pCreature->m_pcCombatRound->m_oidUnknown9CC;
+            if (oidTarget != OBJECT_INVALID)
+            {
+                pCreature->AddAttackActions(oidTarget, 0, 0, 0, 0, 0, 0, 1, 10009,
+                                            1500, 1, 0, 0, 4, 0);
+            }
+        }
+    }
+    return ACTION_COMPLETE;
+}
 // PC 0x005DD350
 int CSWSObject::AIActionSetCommandable(CSWSObjectActionNode* pNode)
 {
@@ -2104,6 +2186,148 @@ int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
     }
     return ACTION_FAILED;
 }
+// PC 0x005DF660
+int CSWSObject::AIActionDoorSaber(CSWSObjectActionNode* pNode)
+{
+    int nDeadTemp = 0;
+    if (AsSWSCreature() != NULL)
+        nDeadTemp = AsSWSCreature()->GetDeadTemp();
+
+    if (!GetDead() && !GetIsPCDying() && !nDeadTemp)
+    {
+        if (AsSWSCreature() != NULL)
+            AsSWSCreature()->ActivityManager(CSWSCreature::ACTIVITY_ACTION_OBJECT_INTERACTION);
+
+        unsigned long oidTarget = (unsigned long)pNode->m_apParam[0];
+        CGameObject* pObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidTarget);
+        if (pObject != NULL)
+        {
+            CSWSObject* pTarget = pObject->AsSWSObject();
+            if (pTarget != NULL)
+            {
+                CSWSItem* pItem = AsSWSCreature()->GetInventory()->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
+                if (pItem != NULL && pItem->GetBaseItem() != NULL &&
+                    pItem->GetBaseItem()->m_bPoweredItem)
+                    pItem->GetClientItem()->PowerItem(1, 0, 1, 0);
+                pItem = AsSWSCreature()->GetInventory()->GetItemInSlot(INVENTORY_SLOT_LEFTHAND);
+                if (pItem != NULL && pItem->GetBaseItem() != NULL &&
+                    pItem->GetBaseItem()->m_bPoweredItem)
+                    pItem->GetClientItem()->PowerItem(1, 0, 1, 0);
+                AsSWSCreature()->SetCombatState(1, CSWSCreature::COMBAT_STATE_EQUIPMENT);
+
+                if (AsSWSCreature() != NULL)
+                {
+                    Vector vPosition;
+                    float fRange = 0.0f;
+                    if (!AsSWSCreature()->GetIsInUseRange(oidTarget, 0.0f, 0, 1))
+                    {
+                        AsSWSCreature()->GetUseRange(oidTarget, vPosition, fRange, 0, 1);
+                        AddActionToFront(ACTION_DOOR_SABER, pNode->m_nGroupId,
+                            ACTION_PARAM_OBJECT, &oidTarget,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                        AddActionToFront(ACTION_CHANGE_FACING_OBJECT, pNode->m_nGroupId,
+                            ACTION_PARAM_OBJECT, &oidTarget,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                        Vector vOrientation;
+                        AsSWSCreature()->AddMoveToPointActionToFront(pNode->m_nGroupId,
+                            vPosition, pTarget->m_oidArea, oidTarget, 1, fRange, 0.0f,
+                            0, 0, 0, 0, 0, 0, vOrientation, 0, 0, 0);
+                        return ACTION_COMPLETE;
+                    }
+                    if (!AsSWSCreature()->m_bUnlockObjectFacingSet)
+                    {
+                        AsSWSCreature()->m_bUnlockObjectFacingSet = 1;
+                        AsSWSCreature()->GetUseRange(oidTarget, vPosition, fRange, 0);
+                        AddActionToFront(ACTION_DOOR_SABER, pNode->m_nGroupId,
+                            ACTION_PARAM_OBJECT, &oidTarget,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                        AddActionToFront(ACTION_CHANGE_FACING_OBJECT, pNode->m_nGroupId,
+                            ACTION_PARAM_OBJECT, &oidTarget,
+                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                        return ACTION_COMPLETE;
+                    }
+                }
+
+                if (AsSWSCreature() != NULL && !AsSWSCreature()->m_bUnlockObjectAnimationPlayed)
+                {
+                    AsSWSCreature()->m_bUnlockObjectAnimationPlayed = 1;
+                    SetLockOrientationToObject(oidTarget);
+                    int nAnimation = CSWSCreature::ANIMATION_DOOR_SABER;
+                    int bLoopAnimation = 1;
+                    float fSpeed = 1.0f;
+                    float fDuration = 2.0f;
+                    AddActionToFront(ACTION_DOOR_SABER, pNode->m_nGroupId,
+                        ACTION_PARAM_OBJECT, &oidTarget,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                    AddActionToFront(ACTION_PLAY_ANIMATION, pNode->m_nGroupId,
+                        ACTION_PARAM_INTEGER, &nAnimation, ACTION_PARAM_FLOAT, &fSpeed,
+                        ACTION_PARAM_FLOAT, &fDuration, ACTION_PARAM_INTEGER, &bLoopAnimation,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                    AsSWSCreature()->StartGuiTimingBar(CSWSCreature::DOOR_SABER_DURATION,
+                                                     CSWSCreature::GUI_TIMING_DOOR_SABER);
+                    return ACTION_COMPLETE;
+                }
+
+                CSWSDoor* pDoor = pTarget->AsSWSDoor();
+                if (pDoor != NULL && pDoor->m_bTrapFlag && AsSWSCreature() != NULL &&
+                    pDoor->GetReputation(GetId(), 0) < MIN_FRIENDLY_REPUTATION)
+                {
+                    int nFaction = pDoor->m_nFactionId;
+                    if (nFaction != AsSWSCreature()->GetFactionId())
+                    {
+                        CScriptEvent* pEvent = new CScriptEvent;
+                        pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_MINE_TRIGGERED;
+                        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                            0, 0, GetId(), oidTarget, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+                        AsSWSCreature()->StopGuiTimingBar();
+                        AsSWSCreature()->m_bUnlockObjectAnimationPlayed = 0;
+                        AsSWSCreature()->m_bUnlockObjectFacingSet = 0;
+                        return ACTION_FAILED;
+                    }
+                }
+                if (AsSWSCreature() == NULL || AsSWSCreature()->GetIsInUseRange(oidTarget, 0.0f, 0, 1))
+                {
+                    if (pDoor != NULL && !pDoor->m_bLocked)
+                    {
+                        if (AsSWSCreature() != NULL)
+                        {
+                            AsSWSCreature()->SendFeedbackMessage(CSWSCreature::FEEDBACK_OBJECT_ALREADY_UNLOCKED, NULL);
+                            AsSWSCreature()->StopGuiTimingBar();
+                            AsSWSCreature()->m_bUnlockObjectAnimationPlayed = 0;
+                            AsSWSCreature()->m_bUnlockObjectFacingSet = 0;
+                        }
+                        return ACTION_FAILED;
+                    }
+                    if (AsSWSCreature() != NULL)
+                    {
+                        pTarget->AsSWSDoor()->m_bLocked = 0;
+                        pTarget->AsSWSDoor()->OpenDoor(GetId());
+                        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                            0, 0, GetId(), oidTarget, CServerAIMaster::EVENT_UNLOCK_OBJECT, NULL);
+                        if (AsSWSCreature() != NULL && rand() % 100 < 20)
+                            AsSWSCreature()->BroadcastVoiceChat(CSWSCreature::VOICE_CHAT_PICK_LOCK_SUCCESS);
+                    }
+                    else if (AsSWSCreature() != NULL)
+                        AsSWSCreature()->BroadcastVoiceChat(CSWSCreature::VOICE_CHAT_PICK_LOCK_FAILED);
+                }
+                if (AsSWSCreature() != NULL)
+                {
+                    AsSWSCreature()->StopGuiTimingBar();
+                    AsSWSCreature()->m_bUnlockObjectAnimationPlayed = 0;
+                    AsSWSCreature()->m_bUnlockObjectFacingSet = 0;
+                }
+                return ACTION_COMPLETE;
+            }
+        }
+    }
+    if (AsSWSCreature() != NULL)
+    {
+        AsSWSCreature()->StopGuiTimingBar();
+        AsSWSCreature()->m_bUnlockObjectAnimationPlayed = 0;
+        AsSWSCreature()->m_bUnlockObjectFacingSet = 0;
+    }
+    return ACTION_FAILED;
+}
 // PC 0x005DFD00
 int CSWSObject::AIActionUseObject(CSWSObjectActionNode* pNode)
 {
@@ -2478,9 +2702,16 @@ void CSWSObject::RunActions(unsigned long nDay, unsigned long nTime,
             case ACTION_FOLLOW_LEADER:
                 if (g_pAppManager->GetClientExoApp()->GetPlayerCreatureId() == OBJECT_INVALID)
                     nResult = ACTION_IN_PROGRESS;
+                else if (AsSWSCreature() != NULL && AsSWSCreature()->GetIsPCDying())
+                    nResult = ACTION_IN_PROGRESS;
                 else if (nObjectType == SW_OBJECT_TYPE_CREATURE &&
                          AsSWSCreature() != NULL && AsSWSCreature()->GetInParty())
                     nResult = AsSWSCreature()->AIActionPartyFollowLeader(pNode);
+                break;
+            case ACTION_FOLLOW_OWNER:
+                if (nObjectType == SW_OBJECT_TYPE_CREATURE &&
+                    AsSWSCreature() != NULL && AsSWSCreature()->m_n11FC)
+                    nResult = AsSWSCreature()->AIActionFollowOwner(pNode);
                 break;
             case ACTION_RANDOM_WALK:
                 if (nObjectType == SW_OBJECT_TYPE_CREATURE)
@@ -2730,6 +2961,20 @@ void CSWSObject::RunActions(unsigned long nDay, unsigned long nTime,
                 if (nObjectType == SW_OBJECT_TYPE_CREATURE)
                     nResult = AsSWSCreature()->AIActionSurrenderToEnemies(pNode);
                 break;
+            case ACTION_DOOR_SABER:
+                nResult = AIActionDoorSaber(pNode);
+                break;
+            case ACTION_SWITCH_WEAPONS:
+                nResult = AIActionSwitchWeapons(pNode);
+                break;
+            case ACTION_STANCE_TOTAL_DEFENSE:
+                if (nObjectType == SW_OBJECT_TYPE_CREATURE)
+                    nResult = AsSWSCreature()->AIActionStanceTotalDefense(pNode);
+                break;
+            case ACTION_STANCE_MEDITATIVE:
+                if (nObjectType == SW_OBJECT_TYPE_CREATURE)
+                    nResult = AsSWSCreature()->AIActionStanceMeditative(pNode);
+                break;
 #ifdef _XBOX
             default:
                 EXOXBOXASSERT(0);
@@ -2780,7 +3025,7 @@ void CSWSObject::RunActions(unsigned long nDay, unsigned long nTime,
         {
             CSWSCreature* pCreature = AsSWSCreature();
             if (pCreature->m_oidAttemptedAttackTarget != OBJECT_INVALID)
-                pCreature->m_oidAttemptedAttackTarget = OBJECT_INVALID;
+                pCreature->SetAttemptedAttackTarget(OBJECT_INVALID);
             if (pCreature->m_oidAttackTarget != OBJECT_INVALID)
                 pCreature->m_oidAttackTarget = OBJECT_INVALID;
             if (pCreature->m_oidAttemptedSpellTarget != OBJECT_INVALID)

@@ -1005,6 +1005,19 @@ void CClientExoApp::LookUpAndPerformRumbleWithCutOff(int nEntry,
     m_pcExoAppInternal->LookUpAndPerformRumbleWithCutOff(nEntry, nTable,
                                                          vPosition);
 }
+#include "swplayercontrol.h"
+// PC 0x006391D0
+int CClientExoApp::GetPlayerMovementInput()
+{
+    CClientExoAppInternal* pInternal = m_pcExoAppInternal;
+    if (pInternal->m_pPlayerControl != 0 &&
+        (pInternal->m_pPlayerControl->GetLeftRight() != 0.0f ||
+         pInternal->m_pPlayerControl->GetUpDown() != 0.0f))
+    {
+        return 1;
+    }
+    return 0;
+}
 // PC 0x00639220
 int CClientExoApp::SaveOptions()
 {

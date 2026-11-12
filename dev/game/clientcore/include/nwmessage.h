@@ -929,7 +929,8 @@ public:
     int SendServerToPlayerAmbientMusicSetDelay(unsigned long nPlayerId,
                                                int nDelay);
     int SendServerToPlayerAmbientMusicChangeTrack(unsigned long nPlayerId,
-                                                  int bDay, int nTrack);
+                                                  int bDay, int nTrack,
+                                                  int bUnknown = 0);
     int SendServerToPlayerAmbientBattleMusicPlay(unsigned long nPlayerId,
                                                  int bPlay);
     int SendServerToPlayerAmbientBattleMusicChange(unsigned long nPlayerId,
@@ -971,7 +972,8 @@ public:
     int SendServerToPlayerInventory_PickupCancel(unsigned long nPlayerId,
                                                  unsigned long oidObject);
     int SendServerToPlayerInventory_Unequip(unsigned long nPlayerId,
-                                            unsigned long oidObject, int bFlag);
+                                            unsigned long oidObject, int bFlag,
+                                            int bUnknown = 0);
     int SendServerToPlayerInventory_UnequipCancel(unsigned long nPlayerId,
                                                   unsigned long oidObject);
     int ComputeGameObjectUpdateForCategory(unsigned long nCategory,
@@ -1305,7 +1307,8 @@ public:
     int SendServerToPlayerModule_ExportReply(CSWSPlayer* pPlayer);
     int SendServerToPlayerModule_EndStartNewModule(int bSuccess);
     int SendServerToPlayerArea_Weather(CSWSPlayer* pPlayer,
-                                       unsigned char nWeather, int bEnabled);
+                                       unsigned char nWeather, int bEnabled,
+                                       unsigned char nUnknown = 0);
     int SendServerToPlayerPopUpGUIPanel(unsigned long oidPC, int nGUIPanel,
                                         int bRespawnButtonEnabled,
                                         int bWaitForHelpButtonEnabled,
