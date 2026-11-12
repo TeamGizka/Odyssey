@@ -116,6 +116,10 @@ public:
     {
         return m_anSwoopUpgrade[nSlot];
     }
+    void SetSwoopUpgrade(int nSlot, int nUpgrade)
+    {
+        m_anSwoopUpgrade[nSlot] = nUpgrade;
+    }
 
     int m_nNumMembers;
     int m_nNumPuppets;

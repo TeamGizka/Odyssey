@@ -655,14 +655,6 @@ void CSWGuiPowersLevelUp::DeterminePower(unsigned long nPower,
     }
 }
 
-#ifdef _XBOX
-
-inline int CSWGuiListBox::IsOversized()
-{
-    return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
-           m_lItems.num > 0 && !m_bHideScrollIcon;
-}
-#endif
 // PC 0x007624F0
 void CSWGuiPowersLevelUp::SetDescription(unsigned long nStrRef)
 {

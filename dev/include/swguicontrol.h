@@ -755,6 +755,12 @@ public:
     CSWGuiControl* m_pHoverControl;
 #endif
 };
+// PC 0x00419D90
+inline int CSWGuiListBox::IsOversized()
+{
+    return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
+           m_lItems.num > 0 && !m_bHideScrollIcon;
+}
 
 class CSWGuiSlider : public CSWGuiNavigable
 {

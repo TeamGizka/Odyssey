@@ -1989,11 +1989,6 @@ static inline void SwguiingameequipTrace1()
 #ifdef _XBOX
 #include "exoinput.h"
 
-inline int CSWGuiListBox::IsOversized()
-{
-    return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
-           m_lItems.num > 0 && !m_bHideScrollIcon;
-}
 
 CSWGuiInGameEquip::CSWGuiInGameEquip(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)

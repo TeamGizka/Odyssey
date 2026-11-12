@@ -692,14 +692,6 @@ void CSWGuiSkillsCharGen::OnRecommendButton()
     m_pCreature->GetStats()->UpdateAbilityModifiedSkillRanks();
 }
 
-#ifdef _XBOX
-
-inline int CSWGuiListBox::IsOversized()
-{
-    return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
-           m_lItems.num > 0 && !m_bHideScrollIcon;
-}
-#endif
 // PC 0x00765E00
 void CSWGuiSkillsCharGen::SetDescription(const CExoString& sDescription)
 {

@@ -31,6 +31,12 @@ public:
 
     static const unsigned long STRREF_UPGRADES = 42026;
 
+    static const unsigned long STRREF_EQUIP = 31387;
+
+    static const unsigned long STRREF_UNEQUIP = 36840;
+
+    static const unsigned long STRREF_ASSEMBLE = 42021;
+
     static const unsigned long STRREF_UPGRADE_PREVENTS_REEQUIP = 42489;
 
     enum UpgradeSlot
@@ -150,6 +156,82 @@ public:
         unsigned long nStrRef;
     };
     static const SlotInfo SLOT_INFO[NUM_ITEMLIST_MODES][NUM_UPGRADE_SLOTS];
+};
+
+class CSWGuiSwoopUpgrade : public CSWGuiPanel
+{
+public:
+
+    enum
+    {
+        NUM_SWOOP_SLOTS = 6
+    };
+
+    CSWGuiButton m_aUpgradeButtons4[4];
+    CSWGuiButton m_aUpgradeButtons3[NUM_SWOOP_SLOTS];
+    CSWGuiLabel m_aUpgradeLabels4[4];
+    CSWGuiLabel m_aUpgradeLabels3[NUM_SWOOP_SLOTS];
+    CSWGuiListBox m_lbItems;
+    CSWGuiListBox m_lbDesc;
+    CSWGuiListBox m_lbDescLs;
+    CSWGuiLabel m_cTitle;
+    CSWGuiLabel m_cDescription;
+    CSWGuiLabel m_cLabel2AB8;
+    CSWGuiLabel m_cDescriptionBackground;
+    CSWGuiLabel m_cLightsaberDescriptionBackground;
+    CSWGuiLabel m_cProperty;
+    CSWGuiLabel m_cSlotName;
+    CSWGuiLabel m_cLightsaberSlotName;
+    CSWGuiLabel m_cUpgrades;
+    CSWGuiLabel m_cUpgradeCount;
+    CSWGuiLabel m_lblA;
+    CSWGuiLabel m_lblB;
+    CSWGuiLabel m_lblAAction;
+    CSWGuiLabel m_lblBack;
+    CSWGuiLabel m_lblRanalog;
+    CSWGuiLabel m_lblRanalogLs;
+    CSWGuiButton m_cAssemble;
+    CSWGuiButton m_btnOk;
+    CSWGuiButton m_btnBack;
+    CSWGui3DSceneView m_3dModel;
+    CSWGui3DSceneView m_3dModelLs;
+    unsigned long m_bItemListShown : 1;
+    unsigned long m_nPanelFlagsUnused : 31;
+    unsigned char m_nItemListMode;
+    char gap_4345[7];
+    CSWSItem* m_pSelectedItem;
+    CSWSItem* m_pSelectedItemCopy;
+    CExoArrayList<CSWSItem*> m_aItemsTaken;
+    CExoArrayList<CSWSItem*> m_aItemsAdded;
+    CSWSItem* m_apItemEntries[NUM_SWOOP_SLOTS];
+    CExoString m_asUpgradeTemplates[NUM_SWOOP_SLOTS];
+    int m_anUpgradeProperties[NUM_SWOOP_SLOTS];
+    int m_an43CC[NUM_SWOOP_SLOTS];
+    C2DA* m_pUpgradeTableEx;
+    C2DA* m_pCrystalTable;
+    C2DA* m_pUpgradeTable;
+    CSWGuiControl* m_pItemListControl;
+    int m_n43F4;
+
+    void ShowItems(int);
+    virtual void OnPanelRemoved();
+    void UpdateItems();
+    void OnEnterSlot(CSWGuiControl*);
+    void OnEnterAssemble(CSWGuiControl*);
+    virtual void HandleInputEvent(int, int);
+    void OnAssemble(CSWGuiControl*);
+    ~CSWGuiSwoopUpgrade();
+    virtual void OnPanelAdded();
+    void SetDescription(CExoString const&);
+    void CancelPanel();
+    void OnControlEntered(CSWGuiControl*);
+    void OnUpgradeSelected(CSWGuiControl*);
+    void CloseItems(CSWGuiControl*);
+    CSWUpgradeItemEntry* CreateItemEntry(unsigned long, int);
+    void OnSlotSelected(CSWGuiControl*);
+    CSWGuiSwoopUpgrade(CSWGuiManager*);
+
+    static const CSWGuiUpgrade::SlotInfo SWOOP_SLOT_INFO[NUM_SWOOP_SLOTS];
 };
 
 class CSWGuiUpgradeItemSelect : public CSWGuiPanel

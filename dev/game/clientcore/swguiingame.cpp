@@ -740,12 +740,6 @@ void CSWGuiMessageBox::AddMessageLabel()
     pList->AddControls(&pControl, 1, 0, 0, 0);
     pList->SetSelectedControl(&m_lblMessage, 0);
 }
-// PC 0x00419D90
-inline int CSWGuiListBox::IsOversized()
-{
-    return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
-           m_lItems.num > 0 && !m_bHideScrollIcon;
-}
 // PC 0x00677AA0
 void CSWGuiMessageBox::FixMessageLabel()
 {

@@ -289,14 +289,6 @@ void CSWGuiInGameAbilities::CreatePowerList()
     }
 }
 
-#ifdef _XBOX
-
-inline int CSWGuiListBox::IsOversized()
-{
-    return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
-           m_lItems.num > 0 && !m_bHideScrollIcon;
-}
-#endif
 // PC 0x007365F0
 void CSWGuiInGameAbilities::UpdateDescriptionListBox(int bShow)
 {

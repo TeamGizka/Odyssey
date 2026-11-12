@@ -1003,11 +1003,6 @@ int CSWGuiInGameInventory::CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature,
     return bResult;
 }
 
-inline int CSWGuiListBox::IsOversized()
-{
-    return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
-           m_lItems.num > 0 && !m_bHideScrollIcon;
-}
 
 void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
 {

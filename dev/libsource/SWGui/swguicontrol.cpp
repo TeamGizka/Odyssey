@@ -1129,13 +1129,6 @@ void CSWGuiListBox::OrganizeUnequal()  // PC 0x00419830
     m_cScrollBar.SetCurValue(m_nTopVisibleItem);
 }
 #endif
-// PC 0x00419D90
-inline int CSWGuiListBox::IsOversized()
-{
-    SwguicontrolTrace1();
-    return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
-           m_lItems.num > 0 && !m_bHideScrollIcon;
-}
 #ifndef _XBOX
 void CSWGuiListBox::OrganizeOversized()  // PC 0x00419BE0
 {

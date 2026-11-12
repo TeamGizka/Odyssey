@@ -190,6 +190,7 @@ CGuiInGame::CGuiInGame()
     m_pDialog = 0;
     m_MessageBufferSize = 0;
     m_nDialogBufferSize = 0;
+    m_nCombatBufferSize = 0;
     m_bItemCreateMenuAvailable = 0;
     m_bReplyPending = 0;
     m_LevelUpMode = 0;
@@ -204,8 +205,8 @@ CGuiInGame::CGuiInGame()
     m_pBarkBubble = 0;
     m_pExamineBox = 0;
     m_pContainer = 0;
-    m_pItemCreateMenu = 0;
     m_pLoadModuleDebugMenu = 0;
+    m_pItemCreateMenu = 0;
     m_pPowersFeatsSkillsDebugMenu = 0;
     m_pSubItemCreateMenu = 0;
     m_pCameraDialog = 0;
@@ -214,9 +215,13 @@ CGuiInGame::CGuiInGame()
     m_pPartySelectionPanel = 0;
     m_pStorePanel = 0;
     m_pUpgradeScreen = 0;
+    m_pChemicalUpgradeScreen = 0;
+    m_pSwoopUpgradeScreen = 0;
     m_pMainInterface = 0;
     m_pAreaTransition = 0;
     m_pMessageBox = 0;
+    m_pA4 = 0;
+    m_pDeathDisplay = 0;
     m_pSkillInfoBox = 0;
     m_pControllerLossBox = 0;
     m_pStatusSummary = 0;
@@ -390,7 +395,7 @@ int CGuiInGame::CloseDialog()
         m_bUsePartyCharacterForDialog = 0;
         if (m_oidPostDialogCharacterSwitch != OBJECT_INVALID)
         {
-            if (m_pGuiManager->PanelExists(m_pPartySelectionPanel) == 0)
+            if (m_pGuiManager->PanelExists(m_apScreenPanels[IN_GAME_SCREEN_PARTY_SELECTION]) == 0)
             {
                 for (int nCharacter = 0;
                      nCharacter < g_pAppManager->GetClientExoApp()->GetSWParty()->m_nCharacters;
@@ -479,7 +484,10 @@ int CGuiInGame::CloseDialog()
 #ifdef _XBOX
             g_pAppManager->GetClientExoApp()->SetInputClass(INPUT_CLASS_GAME);
 #else
-            g_pAppManager->GetClientExoApp()->SetInputClass(INPUT_CLASS_GAME, 1);
+            if (g_pAppManager->GetClientExoApp()->GetMiniGame() != 0)
+                g_pAppManager->GetClientExoApp()->SetInputClass(INPUT_CLASS_MINIGAME, 1);
+            else
+                g_pAppManager->GetClientExoApp()->SetInputClass(INPUT_CLASS_GAME, 1);
 #endif
             g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
         }
@@ -2768,6 +2776,14 @@ void CGuiInGame::RemoveDeathMessage(bool bLoading)
         m_pDeathDisplay->m_nExitState = 2;
         m_pDeathDisplay->m_bDeferredRemoval = 0;
         m_pDeathDisplay = NULL;
+    }
+}
+// PC 0x00682D40
+void CGuiInGame::EnableCharacterChangeButtons(int bEnable)
+{
+    if (m_pInGameMenu != 0)
+    {
+        m_pInGameMenu->m_n3DCC = bEnable == 0;
     }
 }
 // PC 0x00682DA0
@@ -5633,6 +5649,60 @@ void CGuiInGame::HideChemicalUpgradeScreen()
                 pChemicalUpgradeScreen->m_bDeferredRemoval = 0;
                 pChemicalUpgradeScreen->m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
                 m_pChemicalUpgradeScreen = 0;
+            }
+        }
+    }
+}
+// PC 0x00681290
+void CGuiInGame::ShowSwoopUpgradeScreen(unsigned long oidItem)
+{
+    GUIINGAME_TRACE();
+    if (m_bItemCreateMenuAvailable != 0)
+    {
+        if (m_pGuiManager != 0)
+        {
+            if (m_pSwoopUpgradeScreen == 0)
+            {
+                if (oidItem != OBJECT_INVALID &&
+                    g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem) == 0)
+                {
+                    return;
+                }
+                g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL_BUT_MUSIC);
+                if (m_bPaused == 0)
+                {
+                    g_pAppManager->m_pClientExoApp->GetSWCMessage()->
+                        SendPlayerToServerInput_TogglePauseRequest();
+                }
+                m_pSwoopUpgradeScreen = new CSWGuiSwoopUpgrade(m_pGuiManager);
+                m_pGuiManager->AddPanel(m_pSwoopUpgradeScreen,
+                                        CSWGuiManager::PANEL_MODE_MODAL, 1);
+                g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GUI, 1);
+            }
+        }
+    }
+}
+// PC 0x00681390
+void CGuiInGame::HideSwoopUpgradeScreen()
+{
+    GUIINGAME_TRACE();
+    if (m_bItemCreateMenuAvailable != 0)
+    {
+        if (m_pGuiManager != 0)
+        {
+            if (m_pSwoopUpgradeScreen != 0)
+            {
+                if (m_bPaused == 0)
+                {
+                    g_pAppManager->m_pClientExoApp->GetSWCMessage()->
+                        SendPlayerToServerInput_TogglePauseRequest();
+                }
+                g_pAppManager->m_pClientExoApp->SetInputClass(INPUT_CLASS_GAME, 1);
+                g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
+                CSWGuiSwoopUpgrade* pSwoopUpgradeScreen = m_pSwoopUpgradeScreen;
+                pSwoopUpgradeScreen->m_bDeferredRemoval = 0;
+                pSwoopUpgradeScreen->m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
+                m_pSwoopUpgradeScreen = 0;
             }
         }
     }

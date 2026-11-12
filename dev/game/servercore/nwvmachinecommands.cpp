@@ -1029,6 +1029,12 @@ int CSWVirtualMachineCommands::ExecuteCommandShowChemicalUpgradeScreen(int nComm
     g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowChemicalUpgradeScreen(oidCharacter);
     return 0;
 }
+// PC 0x005CC0E0
+int CSWVirtualMachineCommands::ExecuteCommandShowSwoopUpgradeScreen(int nCommand, int nArgs)
+{
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowSwoopUpgradeScreen(OBJECT_INVALID);
+    return 0;
+}
 // PC 0x005CC100
 int CSWVirtualMachineCommands::ExecuteCommandSetFakeCombatState(int nCommand, int nArgs)
 {
@@ -23762,6 +23768,7 @@ void CSWVirtualMachineCommands::InitializeCommands()
     m_pCommands[COMMAND_SHOW_TUTORIAL_WINDOW] = &CSWVirtualMachineCommands::ExecuteCommandShowTutorialWindow;
     m_pCommands[COMMAND_SHOW_UPGRADE_SCREEN] = &CSWVirtualMachineCommands::ExecuteCommandShowUpgradeScreen;
     m_pCommands[COMMAND_SHOW_CHEMICAL_UPGRADE_SCREEN] = &CSWVirtualMachineCommands::ExecuteCommandShowChemicalUpgradeScreen;
+    m_pCommands[COMMAND_SHOW_SWOOP_UPGRADE_SCREEN] = &CSWVirtualMachineCommands::ExecuteCommandShowSwoopUpgradeScreen;
     m_pCommands[COMMAND_SIGNAL_EVENT] = &CSWVirtualMachineCommands::ExecuteCommandSignalEvent;
     m_pCommands[COMMAND_SIN] = &CSWVirtualMachineCommands::ExecuteCommandMath;
     m_pCommands[COMMAND_SOUND_OBJECT_GET_FIXED_VARIANCE] = &CSWVirtualMachineCommands::ExecuteCommandSoundObjectGetFixedVariance;

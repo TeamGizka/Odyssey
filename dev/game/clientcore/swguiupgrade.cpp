@@ -244,6 +244,14 @@ const CSWGuiUpgrade::SlotInfo
       { -1, "", 0 }, { -1, "", 0 },
       { -1, "", 0 }, { -1, "", 0 } }
 };
+
+const CSWGuiUpgrade::SlotInfo
+    CSWGuiSwoopUpgrade::SWOOP_SLOT_INFO[NUM_SWOOP_SLOTS] =
+{
+    { 0, "i_powerc", 48553 }, { 1, "i_colorc", 48554 },
+    { 2, "i_powerc", 48555 }, { -1, "i_powerc", 0 },
+    { -1, "i_powerc", 0 }, { -1, "i_powerc", 0 }
+};
 // PC 0x00724610
 void CSWGuiUpgrade::OnPanelRemoved()
 {
@@ -1078,14 +1086,6 @@ void CSWGuiUpgradeItemSelect::OnControlEntered(CSWGuiControl* pControl)
     }
 }
 
-#ifdef _XBOX
-
-inline int CSWGuiListBox::IsOversized()
-{
-    return m_nContentHeight + m_nPadding > m_cItemExtent.m_nHeight &&
-           m_lItems.num > 0 && !m_bHideScrollIcon;
-}
-#endif
 // PC 0x00723FD0
 void CSWGuiUpgradeItemSelect::SetDescription(const CExoString& sDescription)
 {
@@ -2383,7 +2383,7 @@ void CSWGuiUpgrade::OnEnterSlot(CSWGuiControl* pControl)
 void CSWGuiUpgrade::OnEnterAssemble(CSWGuiControl* pControl)
 {
     m_lblAAction.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
-    m_lblAAction.m_cText.m_cParams.SetStrRef(42021);
+    m_lblAAction.m_cText.m_cParams.SetStrRef(STRREF_ASSEMBLE);
     m_cSlotName.m_cText.m_cParams.SetText("");
     m_cLightsaberSlotName.m_cText.m_cParams.SetText("");
     m_cUpgradeCount.m_cText.m_cParams.SetText("");
@@ -4598,4 +4598,738 @@ void CSWGuiCreateMedicalItem::OnPanelAdded()
     PopulateStore();
     CSWGuiPanel::OnPanelAdded();
     ShowBuyGUI();
+}
+// PC 0x00730070
+CSWGuiSwoopUpgrade::CSWGuiSwoopUpgrade(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+    CExoString sControl;
+    m_pUpgradeTable = new C2DA("swoopupgrade", 0);
+    m_pUpgradeTable->Load2DArray();
+    {
+        CResRef cLayout("swoopup_p");
+        StartLoadFromLayout(cLayout);
+    }
+    InitControl(m_cTitle, "LBL_TITLE", 1);
+    InitControl(m_lbItems, "LB_ITEMS", 1);
+    InitControl(m_lbDesc, "LB_DESC", 1);
+    m_lbDesc.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    InitControl(m_lbDescLs, "LB_DESC", 1);
+    m_lbDesc.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    InitControl(m_cDescriptionBackground, "LBL_DESCBG", 1);
+    InitControl(m_cLightsaberDescriptionBackground, "LBL_DESCBG_LS", 1);
+    InitControl(m_3dModel, "3D_MODEL", 1);
+    InitControl(m_3dModelLs, "3D_MODEL_LS", 1);
+    InitControl(m_cSlotName, "LBL_SLOTNAME", 1);
+    InitControl(m_cLightsaberSlotName, "LBL_SLOTNAME", 1);
+    InitControl(m_cUpgrades, "LBL_UPGRADES", 1);
+    InitControl(m_cUpgradeCount, "LBL_UPGRADE_COUNT", 1);
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblAAction, "LBL_A_ACTION", 1);
+    InitControl(m_lblBack, "LBL_BACK", 1);
+    InitControl(m_cProperty, "LBL_PROPERTY", 1);
+    InitControl(m_lblRanalog, "LBL_RANALOG", 1);
+    InitControl(m_lblRanalogLs, "LBL_RANALOG_LS", 1);
+    InitControl(m_cAssemble, "BTN_ASSEMBLE", 1);
+    InitControl(m_btnBack, "BTN_BACK", 1);
+    m_btnBack.AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiSwoopUpgrade::CloseItems);
+    m_cAssemble.m_nClickSound = CSWGuiManager::GUISOUND_ASSEMBLE;
+    m_cAssemble.AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiSwoopUpgrade::OnAssemble);
+    m_cAssemble.AddEvent(GUIEVENT_ACCEPT, this, (CSWGuiHandler)&CSWGuiSwoopUpgrade::OnAssemble);
+    m_cAssemble.AddEvent(GUIEVENT_MOUSE_ENTER, this,
+                        (CSWGuiHandler)&CSWGuiSwoopUpgrade::OnEnterAssemble);
+    m_cAssemble.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+    m_cAssemble.m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+    m_cAssemble.m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
+    for (int i = 0; i < NUM_SWOOP_SLOTS; i++)
+    {
+        sControl.Format("LBL_UPGRADE3%d", i + 1);
+        InitControl(m_aUpgradeLabels3[i], sControl, 1);
+        sControl.Format("BTN_UPGRADE3%d", i + 1);
+        InitControl(m_aUpgradeButtons3[i], sControl, 1);
+        m_aUpgradeButtons3[i].AddEvent(GUIEVENT_ACTIVATE, this,
+                                      (CSWGuiHandler)&CSWGuiSwoopUpgrade::OnSlotSelected);
+        m_aUpgradeButtons3[i].AddEvent(GUIEVENT_ACCEPT, this,
+                                      (CSWGuiHandler)&CSWGuiSwoopUpgrade::OnSlotSelected);
+        m_aUpgradeButtons3[i].AddEvent(GUIEVENT_MOUSE_ENTER, this,
+                                      (CSWGuiHandler)&CSWGuiSwoopUpgrade::OnEnterSlot);
+        m_aUpgradeButtons3[i].m_nIndex = i;
+        m_aUpgradeButtons3[i].m_cHilite.m_cParams.SetPulsingAlpha(1, 0, 1);
+    }
+    StopLoadFromLayout();
+    m_cSlotName.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+    m_cLightsaberSlotName.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+    m_cUpgradeCount.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+    m_cUpgrades.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+    m_cProperty.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+    m_lbItems.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+    if (m_lbDescLs.m_pProtoItem != NULL)
+    {
+        m_cDescription.Initialize(m_lbDescLs.m_pProtoItem->m_cExtent, (CSWGuiLabel*)m_lbDescLs.m_pProtoItem, 1.0f);
+    }
+    CSWGuiButton* pProto = (CSWGuiButton*)m_lbItems.m_pProtoItem;
+    if (pProto != NULL)
+    {
+        pProto->m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+        pProto->m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+        pProto->m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
+    }
+    m_bItemListShown = 0;
+    m_nItemListMode = 0;
+    m_pSelectedItem = 0;
+    m_pSelectedItemCopy = 0;
+    for (int j = 0; j < NUM_SWOOP_SLOTS; j++)
+    {
+        m_apItemEntries[j] = 0;
+        m_an43CC[j] = 0;
+    }
+    if (g_bDo3DGUIs != 0)
+    {
+        CSWGuiScene* pScene = &m_3dModel.m_cScene;
+        pScene->m_pScene->SpawnRoom("gui3D_room", Vector(), Quaternion(0, 0, 0, 1));
+        pScene->AddModel("upgitem_light", -1);
+        pScene = &m_3dModelLs.m_cScene;
+        pScene->m_pScene->SpawnRoom("gui3D_room", Vector(), Quaternion(0, 0, 0, 1));
+        pScene->AddModel("upgitem_light", -1);
+    }
+}
+// PC 0x00726660
+void CSWGuiSwoopUpgrade::OnPanelRemoved()
+{
+    CSWSItem* pItem;
+    int i;
+    m_nItemListMode = 0;
+    m_pSelectedItem = 0;
+    pItem = m_pSelectedItemCopy;
+    if (pItem != 0)
+    {
+        delete pItem;
+        m_pSelectedItemCopy = 0;
+    }
+    for (i = 0; i < NUM_SWOOP_SLOTS; i++)
+    {
+        if (m_apItemEntries[i] != 0)
+        {
+            delete m_apItemEntries[i];
+            m_apItemEntries[i] = 0;
+        }
+    }
+    m_aItemsTaken.num = 0; m_aItemsAdded.num = 0;
+    CSWGuiPanel::OnPanelRemoved();
+}
+// PC 0x007266C0
+void CSWGuiSwoopUpgrade::UpdateItems()
+{
+    CResRef cIcon;
+    CExoString sDescription;
+    for (int i = 0; i < NUM_SWOOP_SLOTS; i++)
+    {
+        if (m_apItemEntries[i] != 0)
+        {
+            CSWBaseItem* pBaseItem = g_pRules->m_pBaseItems->GetBaseItem(
+                m_apItemEntries[i]->GetBaseItemType());
+            cIcon = m_apItemEntries[i]->GetIcon();
+        }
+        else
+        {
+            cIcon = SWOOP_SLOT_INFO[i].pszIcon;
+        }
+        m_aUpgradeLabels3[i].m_cBorder.m_cParams.SetFillImage(cIcon, 0);
+    }
+}
+// PC 0x00726C90
+void CSWGuiSwoopUpgrade::OnEnterAssemble(CSWGuiControl* pControl)
+{
+    m_lblAAction.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+    m_lblAAction.m_cText.m_cParams.SetStrRef(CSWGuiUpgrade::STRREF_ASSEMBLE);
+    m_cSlotName.m_cText.m_cParams.SetText("");
+    m_cLightsaberSlotName.m_cText.m_cParams.SetText("");
+    m_cUpgradeCount.m_cText.m_cParams.SetText("");
+    m_cProperty.m_cText.m_cParams.SetText("");
+    m_cUpgrades.m_cText.m_cParams.SetText("");
+}
+// PC 0x00726DF0
+void CSWGuiSwoopUpgrade::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case GUIEVENT_SCROLL_DOWN:
+            if (m_nItemListMode == 1)
+            {
+                m_lbDescLs.HandleInputEvent(GUIEVENT_DOWN, 1);
+            }
+            else
+            {
+                m_lbDesc.HandleInputEvent(GUIEVENT_DOWN, 1);
+            }
+            break;
+        case GUIEVENT_SCROLL_UP:
+            if (m_nItemListMode == 1)
+            {
+                m_lbDescLs.HandleInputEvent(GUIEVENT_UP, 1);
+            }
+            else
+            {
+                m_lbDesc.HandleInputEvent(GUIEVENT_UP, 1);
+            }
+            break;
+        }
+    }
+    CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
+// PC 0x00726E60
+void CSWGuiSwoopUpgrade::OnAssemble(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        if (pControl->m_nEvent == 45)
+        {
+            m_pManager->PlayGuiSound((char)pControl->m_nClickSound);
+        }
+        for (int i = 0; i < NUM_SWOOP_SLOTS; i++)
+        {
+            if (m_an43CC[i] != 0)
+            {
+                g_pAppManager->m_pServerExoApp->GetPartyTable()->SetSwoopUpgrade(i, m_an43CC[i]);
+            }
+        }
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->HideSwoopUpgradeScreen();
+    }
+}
+// PC 0x0072C410
+void CSWGuiSwoopUpgrade::CloseItems(CSWGuiControl* pControl)
+{
+    m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+    if (m_bItemListShown)
+    {
+        ShowItems(0);
+        m_bItemListShown = 0;
+        SetActiveControl(m_pItemListControl, 0);
+        UpdateItems();
+        OnEnterSlot(m_pActiveControl);
+    }
+    else
+    {
+        CancelPanel();
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->HideSwoopUpgradeScreen();
+    }
+}
+
+// PC 0x007263D0
+void CSWGuiSwoopUpgrade::ShowItems(int bShow)
+{
+    if (bShow)
+    {
+        m_3dModel.SetShown(0);
+        m_3dModelLs.SetShown(0);
+        m_cSlotName.SetShown(0);
+        m_cLightsaberSlotName.SetShown(0);
+        m_cUpgradeCount.SetShown(0);
+        m_cUpgrades.SetShown(0);
+        m_cProperty.SetShown(0);
+        m_cAssemble.SetShown(0);
+        for (int i = 0; i < NUM_SWOOP_SLOTS; i++)
+        {
+            m_aUpgradeButtons3[i].SetShown(0);
+            m_aUpgradeLabels3[i].SetShown(0);
+        }
+        m_lbItems.SetShown(1);
+        return;
+    }
+
+    if (m_nItemListMode == 1)
+    {
+        m_3dModel.SetShown(0);
+        m_cSlotName.SetShown(0);
+        m_cUpgradeCount.SetShown(0);
+        m_cUpgrades.SetShown(0);
+        m_cProperty.SetShown(0);
+        m_cDescriptionBackground.SetShown(0);
+        m_lbDesc.SetShown(0);
+        m_lblRanalog.SetShown(0);
+        m_3dModelLs.SetShown(1);
+        m_cLightsaberSlotName.SetShown(1);
+        m_cAssemble.SetShown(1);
+        m_cLightsaberDescriptionBackground.SetShown(1);
+        m_lbDescLs.SetShown(1);
+        m_lblRanalogLs.SetShown(1);
+        m_cAssemble.SetMoveToControl(0, &m_aUpgradeButtons3[1]);
+        m_cAssemble.SetMoveToControl(2, &m_aUpgradeButtons3[4]);
+        for (int i = 0; i < NUM_SWOOP_SLOTS; i++)
+        {
+            m_aUpgradeButtons3[i].SetShown(1);
+            m_aUpgradeLabels3[i].SetShown(1);
+        }
+    }
+    else
+    {
+        m_3dModel.SetShown(1);
+        m_cSlotName.SetShown(1);
+        m_cUpgradeCount.SetShown(0);
+        m_cUpgrades.SetShown(0);
+        m_cProperty.SetShown(1);
+        m_cAssemble.SetShown(1);
+        m_cDescriptionBackground.SetShown(1);
+        m_lbDesc.SetShown(1);
+        m_lblRanalog.SetShown(1);
+        m_3dModelLs.SetShown(0);
+        m_cLightsaberSlotName.SetShown(0);
+        m_cLightsaberDescriptionBackground.SetShown(0);
+        m_lbDescLs.SetShown(0);
+        m_lblRanalogLs.SetShown(0);
+        m_cAssemble.SetMoveToControl(0, &m_aUpgradeButtons3[1]);
+        m_cAssemble.SetMoveToControl(2, &m_aUpgradeButtons3[1]);
+        for (int i = 0; i < NUM_SWOOP_SLOTS; i++)
+        {
+            m_aUpgradeButtons3[i].SetShown(i < 3);
+            m_aUpgradeLabels3[i].SetShown(i < 3);
+        }
+    }
+    m_lbItems.SetShown(0);
+}
+// PC 0x007267A0
+void CSWGuiSwoopUpgrade::OnEnterSlot(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        int nSlot = pControl->m_nIndex;
+        unsigned long nStrRef = SWOOP_SLOT_INFO[nSlot].nStrRef;
+        int nCount = 0;
+        CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
+        CSWSItem* pItem = pServer->GetItemByGameObjectID(
+            pServer->GetPartyTable()->GetPartyItems()->FindItemWithTag(
+                m_asUpgradeTemplates[nSlot]));
+        if (pItem != 0)
+        {
+            nCount = pItem->m_nStackSize;
+        }
+        if (m_apItemEntries[nSlot] != 0)
+        {
+            CExoString sName;
+            CExoLocString sItemName = m_apItemEntries[nSlot]->m_sLocalizedName;
+            sItemName.GetString(g_pAppManager->GetClientExoApp()->GetClientLanguage(),
+                                &sName, 0);
+            int nTag = sName.Find('<', 0);
+            int nToken = sName.Find('{', 0);
+            if (nTag != -1 || nToken != -1)
+            {
+                CSWCCreature* pPlayerCharacter =
+                    g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
+                g_pSWTlkTable->ParseStr(sName, pPlayerCharacter, 1, 1);
+            }
+            m_cSlotName.m_cText.m_cParams.SetText(sName);
+            m_cProperty.m_cText.m_cParams.SetText(sName);
+            CExoString& sTag = m_apItemEntries[nSlot]->GetTag();
+            int nDescStrRef = 0;
+            CExoString sTemplate;
+            for (int i = 0; i < m_pUpgradeTable->m_nNumRows; i++)
+            {
+                m_pUpgradeTable->GetCExoStringEntry(i, CExoString("template"), &sTemplate);
+                if (sTag.LowerCase() == sTemplate.LowerCase())
+                {
+                    int nLevel;
+                    m_pUpgradeTable->GetINTEntry(i, CExoString("level"), &nLevel);
+                    m_pUpgradeTable->GetINTEntry(i, CExoString("desc_strref"), &nDescStrRef);
+                    CExoString sDescription = g_pTlkTable->GetSimpleString(nDescStrRef);
+                    m_cProperty.m_cText.m_cParams.SetText(sDescription + CExoString(" ") +
+                                                          CExoString(nLevel));
+                }
+            }
+        }
+        else
+        {
+            m_cProperty.m_cText.m_cParams.SetStrRef(nStrRef);
+            m_cSlotName.m_cText.m_cParams.SetStrRef(nStrRef);
+        }
+        m_cUpgradeCount.m_cText.m_cParams.SetText(CExoString(nCount));
+        m_cUpgrades.m_cText.m_cParams.SetStrRef(CSWGuiUpgrade::STRREF_UPGRADES);
+        if (nCount == 0 && m_apItemEntries[nSlot] == 0)
+        {
+            m_lblAAction.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
+            m_lblAAction.m_cText.m_cParams.SetStrRef(CSWGuiUpgrade::STRREF_EQUIP);
+        }
+        else
+        {
+            m_lblAAction.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_BLUE);
+            m_lblAAction.m_cText.m_cParams.SetStrRef(m_apItemEntries[nSlot] != 0 ? CSWGuiUpgrade::STRREF_UNEQUIP : CSWGuiUpgrade::STRREF_EQUIP);
+        }
+    }
+}
+
+// PC 0x00728D40
+void CSWGuiSwoopUpgrade::SetDescription(const CExoString& sDescription)
+{
+    CSWGuiListBox* pListBox;
+    CSWGuiLabel* pRanalog;
+    int nHeight;
+    CSWGuiControl* pControl;
+
+    m_cDescription.m_cText.m_cParams.SetText(sDescription);
+    pListBox = &m_lbDesc;
+    pRanalog = &m_lblRanalog;
+    if (m_nItemListMode == 1)
+    {
+        pListBox = &m_lbDescLs;
+        pRanalog = &m_lblRanalogLs;
+    }
+    pListBox->ClearItems();
+    CSWGuiExtent cExtent = m_cDescription.m_cExtent;
+    if (sDescription.GetLength() > 0)
+    {
+        nHeight = m_cDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        nHeight = m_cDescription.m_cText.GetFontHeight();
+    }
+    cExtent.m_nHeight = nHeight;
+    m_cDescription.SetExtent(cExtent);
+    pControl = &m_cDescription;
+    pListBox->AddControls(&pControl, 1, 0, 0, 0);
+    pListBox->SetSelectedControl(&m_cDescription, 0);
+    pRanalog->SetEnabledFlag(pListBox->IsOversized());
+}
+// PC 0x00728E70
+void CSWGuiSwoopUpgrade::CancelPanel()
+{
+    CSWSItem* pItem;
+    CItemRepository* pPartyItems;
+    int i;
+
+    pPartyItems = g_pAppManager->m_pServerExoApp->GetPartyTable()->GetPartyItems();
+    for (i = 0; i < m_aItemsAdded.num; i++)
+    {
+        pItem = m_aItemsAdded[i];
+        for (int j = 0; j < NUM_SWOOP_SLOTS; j++)
+        {
+            if (pItem == m_apItemEntries[j])
+            {
+                m_apItemEntries[j] = 0;
+                break;
+            }
+        }
+        pPartyItems->AddItem(&pItem, 1, 0, 0);
+    }
+    for (i = 0; i < m_aItemsTaken.num; i++)
+    {
+        pItem = m_aItemsTaken[i];
+        if (pItem->m_nStackSize > 1)
+        {
+            pItem->m_nStackSize--;
+        }
+        else
+        {
+            pPartyItems->RemoveItem(pItem);
+            delete pItem;
+        }
+    }
+}
+// PC 0x0072C000
+void CSWGuiSwoopUpgrade::OnControlEntered(CSWGuiControl* pControl)
+{
+    int nSelected = pControl->m_bSelected;
+    if (nSelected != 0)
+    {
+        CSWUpgradeItemEntry* pEntry = (CSWUpgradeItemEntry*)pControl;
+        if (pEntry->m_oidItem != OBJECT_INVALID)
+        {
+            CSWSItem* pItem = g_pAppManager->GetServerExoApp()
+                ->GetItemByGameObjectID(pEntry->m_oidItem);
+            CExoString sDescription;
+            CExoLocString& sItemDescription = pItem->m_sDescIdentified;
+            sItemDescription.GetString(g_pAppManager->GetClientExoApp()->GetClientLanguage(),
+                                       &sDescription, 0);
+            if (sDescription != "")
+                SetDescription(sDescription);
+            else
+                SetDescription(g_pAppManager->GetClientExoApp()->GetGUIString(
+                    CSWGuiUpgrade::STRREF_NO_DESCRIPTION));
+        }
+        else
+            SetDescription("");
+    }
+}
+
+// PC 0x00728780
+CSWGuiSwoopUpgrade::~CSWGuiSwoopUpgrade()
+{
+    m_lbItems.ClearItems();
+    m_lbDesc.ClearItems();
+    if (m_pUpgradeTable != 0)
+    {
+        delete m_pUpgradeTable;
+        m_pUpgradeTable = 0;
+    }
+}
+// PC 0x00728A40
+void CSWGuiSwoopUpgrade::OnPanelAdded()
+{
+    m_pSelectedItemCopy = new CSWSItem(OBJECT_INVALID);
+    m_pSelectedItemCopy->CopyItem(m_pSelectedItem);
+    m_aUpgradeButtons3[0].SetMoveToControl(0, &m_aUpgradeButtons3[0]);
+    m_aUpgradeButtons3[1].SetMoveToControl(0, &m_aUpgradeButtons3[1]);
+    m_aUpgradeButtons3[2].SetMoveToControl(0, &m_aUpgradeButtons3[2]);
+    ShowItems(0);
+    CExoString sTemplate;
+    int nGroup;
+    int nLevel;
+    for (int nRow = 0; nRow < m_pUpgradeTable->m_nNumRows; nRow++)
+    {
+        m_pUpgradeTable->GetINTEntry(nRow, CExoString("group"), &nGroup);
+        m_pUpgradeTable->GetCExoStringEntry(nRow, CExoString("template"), &sTemplate);
+        m_pUpgradeTable->GetINTEntry(nRow, CExoString("level"), &nLevel);
+        int nSlot;
+        for (nSlot = 0; nSlot < NUM_SWOOP_SLOTS; nSlot++)
+        {
+            if (nLevel != 0 && m_apItemEntries[nSlot] == 0 &&
+                nGroup == SWOOP_SLOT_INFO[nSlot].nProperty)
+            {
+                break;
+            }
+        }
+        if (nSlot < 3)
+        {
+            m_asUpgradeTemplates[nSlot] = sTemplate.LowerCase();
+            m_aUpgradeLabels3[nSlot].m_cBorder.m_cParams.m_fHilightAlpha = 1.0f;
+            m_anUpgradeProperties[nSlot] = nRow;
+            if (g_pAppManager->m_pServerExoApp->GetPartyTable()->GetSwoopUpgrade(nSlot) == nRow)
+            {
+                m_apItemEntries[nSlot] = new CSWSItem(OBJECT_INVALID);
+                m_apItemEntries[nSlot]->LoadFromTemplate(CResRef(sTemplate));
+                m_apItemEntries[nSlot]->m_an2F4[nSlot] = nRow;
+                m_an43CC[nSlot] = nRow;
+            }
+            else if (g_pAppManager->m_pServerExoApp->GetPartyTable()->GetPartyItems()->FindItemWithTag(
+                         m_asUpgradeTemplates[nSlot]) == OBJECT_INVALID)
+            {
+                m_aUpgradeLabels3[nSlot].m_cBorder.m_cParams.m_fHilightAlpha = 0.25f;
+            }
+        }
+    }
+    UpdateItems();
+    SetActiveControl(&m_cAssemble, 0);
+    CSWGuiPanel::OnPanelAdded();
+}
+
+// PC 0x0072C130
+void CSWGuiSwoopUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
+{
+    if (!pControl->m_bSelected)
+        return;
+    if (pControl->GetEvent() == GUIEVENT_ACCEPT)
+        m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+    CSWUpgradeItemEntry* pEntry = (CSWUpgradeItemEntry*)pControl;
+    CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
+    CItemRepository* pRepository = pServer->GetPartyTable()->GetPartyItems();
+    int nSlot = m_pItemListControl->m_nIndex;
+    {
+        int nUpgradeIndex = pEntry->m_nUpgradeIndex;
+        if (nUpgradeIndex == -1 &&
+            pEntry->m_oidItem != OBJECT_INVALID)
+            goto Exit;
+    }
+
+    {
+    CSWSItem*& pOldItem = m_apItemEntries[nSlot];
+    if (pOldItem != 0)
+    {
+        pOldItem->SetPossessor(pServer->GetPlayerCreatureId(),
+                                            0, 0, OBJECT_INVALID);
+        int nIndex = m_aItemsAdded.IndexOf(pOldItem);
+        if (nIndex != -1)
+        {
+            m_aItemsAdded.DelIndex(nIndex);
+            pRepository->AddItem(&pOldItem, 1, 0, 0);
+        }
+        else
+        {
+            pRepository->AddItem(&pOldItem, 1, 0, 0);
+            m_aItemsTaken.Add(pOldItem);
+        }
+        if (nSlot != CSWGuiUpgrade::UPGRADE_SLOT_COLOR_CRYSTAL ||
+            m_nItemListMode != CSWGuiUpgrade::ITEMLIST_LIGHTSABER)
+        {
+            pOldItem->m_an2F4[nSlot] = -1;
+        }
+        pOldItem = 0;
+    }
+    CSWSItem* pItem = pServer->GetItemByGameObjectID(pEntry->m_oidItem);
+    if (pItem != 0)
+    {
+        int nIndex = m_aItemsTaken.IndexOf(pItem);
+        if (nIndex != -1)
+        {
+            m_aItemsTaken.DelIndex(nIndex);
+            if (pItem->m_nStackSize > 1)
+                pItem = pItem->SplitItem(1);
+            else
+                pRepository->RemoveItem(pItem);
+        }
+        else
+        {
+            if (pItem->m_nStackSize > 1)
+                pItem = pItem->SplitItem(1);
+            else
+                pRepository->RemoveItem(pItem);
+            m_aItemsAdded.Add(pItem);
+        }
+        int nRows = m_pUpgradeTable->GetNumRows();
+        int nUpgradeRow = 0;
+        for (int nRow = 0; nRow < nRows; nRow++)
+        {
+            CExoString sTemplate;
+            m_pUpgradeTable->GetCExoStringEntry(nRow, "template", &sTemplate);
+            if (_stricmp(pItem->m_sTag.CStr(), sTemplate.CStr()) == 0)
+            {
+                nUpgradeRow = nRow;
+                break;
+            }
+        }
+        m_an43CC[nSlot] = nUpgradeRow;
+        m_apItemEntries[nSlot] = pItem;
+        m_anUpgradeProperties[nSlot] = pEntry->m_nUpgradeIndex;
+    }
+    }
+Exit:
+    ShowItems(0);
+    m_bItemListShown = 0;
+    SetActiveControl(m_pItemListControl, 0);
+    UpdateItems();
+    OnEnterSlot(m_pActiveControl);
+}
+// PC 0x0072C490
+CSWUpgradeItemEntry* CSWGuiSwoopUpgrade::CreateItemEntry(unsigned long oidItem, int nUpgradeIndex)
+{
+    int nWidth = m_lbItems.m_cItemExtent.m_nWidth -
+                 2 * m_lbItems.m_nPadding;
+    CSWGuiButton* pProto = (CSWGuiButton*)m_lbItems.m_pProtoItem;
+    CSWUpgradeItemEntry* pEntry = new CSWUpgradeItemEntry;
+
+    pEntry->Initialize(pProto->m_cText, pProto->m_cBorder, pProto->m_cHilite, nWidth, 0);
+    pEntry->AddEvent(CSWGuiControl::EVENT_ENTER, this, (CSWGuiHandler)&CSWGuiSwoopUpgrade::OnControlEntered);
+    pEntry->AddEvent(CSWGuiControl::EVENT_SELECT, this, (CSWGuiHandler)&CSWGuiSwoopUpgrade::OnUpgradeSelected);
+    pEntry->AddEvent(CSWGuiControl::EVENT_CONFIRM, this, (CSWGuiHandler)&CSWGuiSwoopUpgrade::OnUpgradeSelected);
+    pEntry->SetItem(oidItem, 0, OBJECT_INVALID, 0);
+    pEntry->m_nUpgradeIndex = nUpgradeIndex;
+    return pEntry;
+}
+
+// PC 0x0072D950
+void CSWGuiSwoopUpgrade::OnSlotSelected(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        if (pControl->GetEvent() == GUIEVENT_ACCEPT)
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+
+        int nSlot = pControl->m_nIndex;
+        CItemRepository* pRepository = g_pAppManager->GetServerExoApp()
+            ->GetPartyTable()->GetPartyItems();
+        if (m_nItemListMode == 1)
+        {
+            CExoArrayList<CSWGuiControl*> aControls;
+            int nGroup = (nSlot == 0 || nSlot == 2) ? 0 : nSlot - 2;
+            if (nSlot == 1)
+            {
+                CExoString sTemplate;
+                aControls.Add(CreateItemEntry(m_apItemEntries[1]->GetId(), -1));
+                for (int i = 0; i < m_pCrystalTable->GetNumRows(); i++)
+                {
+                    m_pCrystalTable->GetCExoStringEntry(i, "Template", &sTemplate);
+                    sTemplate = sTemplate.LowerCase();
+                    if (sTemplate != m_apItemEntries[1]->m_sTag)
+                    {
+                        unsigned long oidItem = pRepository->FindItemWithTag(sTemplate);
+                        if (oidItem != OBJECT_INVALID)
+                            aControls.Add(CreateItemEntry(oidItem, i));
+                    }
+                }
+            }
+            else if (nSlot < 3)
+            {
+                CExoString sTemplate;
+                int nOtherSlot = nSlot == 0 ? 2 : 0;
+                aControls.Add(CreateItemEntry(OBJECT_INVALID, -1));
+                if (m_apItemEntries[nSlot] != 0)
+                    aControls.Add(CreateItemEntry(m_apItemEntries[nSlot]->GetId(), -1));
+                for (int i = 0; i < m_pUpgradeTable->GetNumRows(); i++)
+                {
+                    int nUpgradeGroup;
+                    m_pUpgradeTable->GetINTEntry(i, "group", &nUpgradeGroup);
+                    if (nUpgradeGroup == nSlot)
+                    {
+                        m_pUpgradeTable->GetCExoStringEntry(i, "template", &sTemplate);
+                        unsigned long oidItem = pRepository->FindItemWithTag(sTemplate.LowerCase());
+                        if (oidItem != OBJECT_INVALID &&
+                            (m_apItemEntries[nOtherSlot] == 0 || i != m_anUpgradeProperties[nOtherSlot]) &&
+                            (m_apItemEntries[nSlot] == 0 || i != m_anUpgradeProperties[nSlot]))
+                            aControls.Add(CreateItemEntry(oidItem, i));
+                    }
+                }
+            }
+            else
+            {
+                CExoString sTemplate;
+                int nOtherSlot = nSlot == 0 ? 2 : 0;
+                aControls.Add(CreateItemEntry(OBJECT_INVALID, -1));
+                if (m_apItemEntries[nSlot] != 0)
+                    aControls.Add(CreateItemEntry(m_apItemEntries[nSlot]->GetId(), -1));
+                for (int i = 0; i < m_pUpgradeTableEx->GetNumRows(); i++)
+                {
+                    int nUpgradeGroup;
+                    m_pUpgradeTableEx->GetINTEntry(i, "group", &nUpgradeGroup);
+                    if (nUpgradeGroup == nGroup)
+                    {
+                        m_pUpgradeTableEx->GetCExoStringEntry(i, "template", &sTemplate);
+                        unsigned long oidItem = pRepository->FindItemWithTag(sTemplate.LowerCase());
+                        if (oidItem != OBJECT_INVALID &&
+                            (m_apItemEntries[nOtherSlot] == 0 || i != m_anUpgradeProperties[nOtherSlot]) &&
+                            (m_apItemEntries[nSlot] == 0 || i != m_anUpgradeProperties[nSlot]))
+                            aControls.Add(CreateItemEntry(oidItem, i));
+                    }
+                }
+            }
+            m_lbItems.AddControls(aControls, 1, 0, 0);
+            ShowItems(1);
+            SetActiveControl(&m_lbItems, 0);
+            m_pItemListControl = pControl;
+            m_bItemListShown = 1;
+        }
+        else
+        {
+            CExoArrayList<CSWGuiControl*> aControls;
+            {
+            CExoString sTemplate;
+            int nOtherSlot = nSlot == 0 ? 2 : 0;
+            aControls.Add(CreateItemEntry(OBJECT_INVALID, -1));
+            if (m_apItemEntries[nSlot] != 0)
+                aControls.Add(CreateItemEntry(m_apItemEntries[nSlot]->GetId(), -1));
+            for (int i = 0; i < m_pUpgradeTable->GetNumRows(); i++)
+            {
+                int nUpgradeGroup;
+                m_pUpgradeTable->GetINTEntry(i, "group", &nUpgradeGroup);
+                if (nUpgradeGroup == nSlot)
+                {
+                    m_pUpgradeTable->GetCExoStringEntry(i, "template", &sTemplate);
+                    unsigned long oidItem = pRepository->FindItemWithTag(sTemplate.LowerCase());
+                    if (oidItem != OBJECT_INVALID &&
+                        (m_apItemEntries[nOtherSlot] == 0 || i != m_anUpgradeProperties[nOtherSlot]) &&
+                        (m_apItemEntries[nSlot] == 0 || i != m_anUpgradeProperties[nSlot]))
+                    {
+                        g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
+                        aControls.Add(CreateItemEntry(oidItem, i));
+                    }
+                }
+            }
+            }
+            m_lbItems.AddControls(aControls, 1, 0, 0);
+            ShowItems(1);
+            SetActiveControl(&m_lbItems, 0);
+            m_pItemListControl = pControl;
+            m_bItemListShown = 1;
+        }
+    }
 }

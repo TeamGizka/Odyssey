@@ -301,8 +301,9 @@ public:
     void HideUpgradeScreen();
     void ShowChemicalUpgradeScreen(unsigned long oidCharacter);
     void HideChemicalUpgradeScreen();
-    void ShowSwoopUpgradeScreen(unsigned long nUpgrade);
+    void ShowSwoopUpgradeScreen(unsigned long oidItem);
     void HideSwoopUpgradeScreen();
+    void EnableCharacterChangeButtons(int bEnable);
     void DisplayDeathMessage();
     void RemoveDeathMessage(bool bLoading);
     void RemoveGUIPopUps();
