@@ -142,9 +142,13 @@ void CSWGuiLevelUpCharGen::SetNameString(const CExoString& sName)
 #ifdef _XBOX
     CExoString sLevel(m_pCreature->m_pStats->GetLevel() + 1);
 #else
-    CExoString sLevel =
-        g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_LEVEL_LABEL);
-    sLevel = sLevel + CExoString(m_pCreature->m_pStats->GetLevel() + 1);
+    CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
+    CExoString sLevel = pApp->GetGUIString(STRREF_LEVEL_LABEL);
+    {
+        int nLevel = m_pCreature->m_pStats->GetLevel() + 1;
+        CExoString sNumber(nLevel);
+        sLevel = sLevel + sNumber;
+    }
 #endif
     m_lblName.m_cText.m_cParams.SetText(m_sName);
     m_lblClass.m_cText.m_cParams.SetText(m_sClass);
@@ -229,7 +233,8 @@ void CSWGuiLevelUpCharGen::AbilitiesChanged()
         pCreature->GetStats()->m_nCurrentHitPoints =
             m_pCreature->GetStats()->GetCurrentHitPoints() + nHitPoints;
 
-        if (CSWClass::IsJedi((int)nClass))
+        int bJedi = CSWClass::IsJedi(nClass);
+        if (bJedi)
         {
             char nForceDie = g_pRules->m_pClasses[nClass].m_nForceDie;
             pStats = pCreature->GetStats();
@@ -430,19 +435,28 @@ int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
     pNewStats->SetName(sName, "");
 #endif
     pNewStats->m_cPortrait.CResRef::operator=(pOldStats->GetPortrait(0));
-    pNewStats->m_nExperience = pOldStats->m_nExperience;
-    pNewStats->m_nStartingPackage = pOldStats->m_nStartingPackage;
-    pNewStats->m_nGender = pOldStats->m_nGender;
+    unsigned long nExperience = pOldStats->m_nExperience;
+    pNewStats->m_nExperience = nExperience;
+    unsigned char nPackage = pOldStats->m_nStartingPackage;
+    pNewStats->m_nStartingPackage = nPackage;
+    unsigned char nGender = pOldStats->m_nGender;
+    pNewStats->m_nGender = nGender;
     pNewStats->m_nGoodEvilAlignment = pOldStats->GetAlignment();
 #ifndef _XBOX
     pNewStats->SetBaseCNPCAlignment(pOldStats->m_nBaseCNPCAlignment);
 #endif
-    pNewStats->SetSTRBase(pOldStats->m_aAbilities[0]);
-    pNewStats->SetDEXBase(pOldStats->m_aAbilities[1], 1);
-    pNewStats->SetCONBase(pOldStats->m_aAbilities[2]);
-    pNewStats->SetINTBase(pOldStats->m_aAbilities[3]);
-    pNewStats->SetWISBase(pOldStats->m_aAbilities[4]);
-    pNewStats->SetCHABase(pOldStats->m_aAbilities[5]);
+    unsigned char nStrength = pOldStats->m_aAbilities[0];
+    pNewStats->SetSTRBase(nStrength);
+    unsigned char nDexterity = pOldStats->m_aAbilities[1];
+    pNewStats->SetDEXBase(nDexterity, 1);
+    unsigned char nConstitution = pOldStats->m_aAbilities[2];
+    pNewStats->SetCONBase(nConstitution);
+    unsigned char nIntelligence = pOldStats->m_aAbilities[3];
+    pNewStats->SetINTBase(nIntelligence);
+    unsigned char nWisdom = pOldStats->m_aAbilities[4];
+    pNewStats->SetWISBase(nWisdom);
+    unsigned char nCharisma = pOldStats->m_aAbilities[5];
+    pNewStats->SetCHABase(nCharisma);
 #ifdef _XBOX
     pNewStats->m_nHitPointsBase = pOldStats->m_nHitPointsBase;
     pNewStats->m_nCurrentHitPoints = pOldStats->m_nCurrentHitPoints;
@@ -474,9 +488,11 @@ int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
         }
     }
 
-    pNewStats->m_nRace = pOldStats->m_nRace;
+    unsigned short nRace = pOldStats->m_nRace;
+    pNewStats->m_nRace = nRace;
     pNewStats->m_sSubRace = pOldStats->m_sSubRace;
-    pNewStats->m_nSubraceIndex = pOldStats->m_nSubraceIndex;
+    unsigned char nSubraceIndex = pOldStats->m_nSubraceIndex;
+    pNewStats->m_nSubraceIndex = nSubraceIndex;
     pNewStats->SetFortSavingThrow();
     pNewStats->SetWillSavingThrow();
     pNewStats->SetReflexSavingThrow();
@@ -501,7 +517,8 @@ int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
         unsigned short nFeat = pOldStats->GetFeat(nIndex);
         pNewStats->m_lstFeats.AddUnique(nFeat);
     }
-    pNewStats->m_nCreationStage = pOldStats->m_nCreationStage;
+    unsigned char nCreationStage = pOldStats->m_nCreationStage;
+    pNewStats->m_nCreationStage = nCreationStage;
     pNewStats->m_nDefenseBase = pOldStats->GetArmorClass(0);
     pNewStats->m_nDefenseBase = pOldStats->GetArmorClass(0);
     return 1;
