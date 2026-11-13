@@ -609,7 +609,8 @@ void CSWGuiInGameInventory::CreateItemEntry(
 
     if (pCreature->IsLeaderUsableItem(pItem, bSquadItem, 0xFF) != 0)
     {
-        int nItemType = pItem->GetBaseItem()->m_nItemType;
+        CSWBaseItem* pBaseItem = pItem->GetBaseItem();
+        int nItemType = pBaseItem->m_nItemType;
         if ((nItemType == CSWBaseItem::ITEM_TYPE_REPAIR_KIT ||
              nItemType == CSWBaseItem::ITEM_TYPE_MEDPAC) &&
             pCreature->m_pStats->GetCurrentHitPoints() >=

@@ -1644,11 +1644,12 @@ void CSWGuiPazaakStart::UpdateHelpText(int nCardType)
             nStrRef = STRREF_PAZAAK_HELP_CARD_PLUS_MINUS_1_2;
     }
     CSWGuiControl* pControl = m_pActiveControl;
-    int nID = pControl->m_nID;
-    int bAvail = (nID >= 0 && nID < AvailCardCount) ? (pControl == &m_cAvail[nID]) : 0;
+    int bAvail = (pControl->m_nID >= 0 && pControl->m_nID < AvailCardCount)
+                     ? (pControl == &m_cAvail[pControl->m_nID]) : 0;
     if (bAvail && m_anAvailCount[nCardType] == -1)
         nStrRef = 0xFFFFFFFF;
-    int bChosen = (nID >= 0 && nID < ChosenCardCount) ? (pControl == &m_cChosen[nID]) : 0;
+    int bChosen = (pControl->m_nID >= 0 && pControl->m_nID < ChosenCardCount)
+                      ? (pControl == &m_cChosen[pControl->m_nID]) : 0;
     if (!bChosen && nStrRef != 0xFFFFFFFF)
         m_lblHelp.m_cText.m_cParams.SetStrRef(nStrRef);
     else
