@@ -2010,6 +2010,184 @@ void CSWSItem::AddGenderRequirements(CExoString& sString)
         }
     }
 }
+
+// PC 0x0056A6F0 GOG 0x0056A820
+void CSWSItem::LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct)
+{
+    int bSuccess;
+    m_nBaseItem = pRes->ReadFieldINT(pStruct, "BaseItem", bSuccess, GetBaseItemType());
+    InitRepository(GetId());
+    SetTag(pRes->ReadFieldCExoString(pStruct, "Tag", bSuccess, m_sTag));
+    SetIdentified(pRes->ReadFieldBYTE(pStruct, "Identified", bSuccess, 1));
+    m_sDescription = pRes->ReadFieldCExoLocString(pStruct, "Description", bSuccess, m_sDescIdentified);
+    m_sDescIdentified = pRes->ReadFieldCExoLocString(pStruct, "DescIdentified", bSuccess, m_sDescription);
+    m_sLocalizedName = pRes->ReadFieldCExoLocString(pStruct, "LocalizedName", bSuccess, m_sLocalizedName);
+    m_nStackSize = pRes->ReadFieldWORD(pStruct, "StackSize", bSuccess, GetStackSize());
+    SetStolen(pRes->ReadFieldBYTE(pStruct, "Stolen", bSuccess, m_bStolen));
+    m_nUpgrades = pRes->ReadFieldDWORD(pStruct, "Upgrades", bSuccess, GetUpgrades());
+    m_nUpgradeLevel = pRes->ReadFieldBYTE(pStruct, "UpgradeLevel", bSuccess, GetUpgrades());
+    m_anUpgradeSlot[0] = pRes->ReadFieldINT(pStruct, "UpgradeSlot0", bSuccess, -1);
+    m_anUpgradeSlot[1] = pRes->ReadFieldINT(pStruct, "UpgradeSlot1", bSuccess, -1);
+    m_anUpgradeSlot[2] = pRes->ReadFieldINT(pStruct, "UpgradeSlot2", bSuccess, -1);
+    m_anUpgradeSlot[3] = pRes->ReadFieldINT(pStruct, "UpgradeSlot3", bSuccess, -1);
+    m_anUpgradeSlot[4] = pRes->ReadFieldINT(pStruct, "UpgradeSlot4", bSuccess, -1);
+    m_anUpgradeSlot[5] = pRes->ReadFieldINT(pStruct, "UpgradeSlot5", bSuccess, -1);
+    SetDropable(pRes->ReadFieldBYTE(pStruct, "Dropable", bSuccess, 0));
+    SetPickpocketable(pRes->ReadFieldBYTE(pStruct, "Pickpocketable", bSuccess, 0));
+    SetNonEquippable(pRes->ReadFieldBYTE(pStruct, "NonEquippable", bSuccess, m_bNonEquippable));
+    unsigned char nModelVariation = m_nModelVariation;
+    nModelVariation = pRes->ReadFieldBYTE(pStruct, "ModelVariation", bSuccess, nModelVariation);
+    if (!bSuccess)
+    {
+        nModelVariation = pRes->ReadFieldBYTE(pStruct, "ModelPart1", bSuccess, nModelVariation);
+        if (nModelVariation == 0)
+            nModelVariation = 1;
+    }
+    m_nModelVariation = nModelVariation;
+    switch (g_pRules->GetBaseItemArray()->GetBaseItem(GetBaseItemType())->m_bUnknown18)
+    {
+    case BASEITEM_MODEL_TYPE_BODY_VARIATION:
+        m_nBodyVariation = g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType())->m_nBodyVar;
+        m_nTextureVar = pRes->ReadFieldBYTE(pStruct, "TextureVar", bSuccess, 1);
+        break;
+    }
+    int nCharges = pRes->ReadFieldBYTE(pStruct, "Charges", bSuccess, DEFAULT_CHARGES);
+    m_nCharges = nCharges;
+    m_nMaxCharges = pRes->ReadFieldBYTE(pStruct, "MaxCharges", bSuccess, nCharges);
+    SetNewItem(pRes->ReadFieldBYTE(pStruct, "NewItem", bSuccess, m_bNewItem));
+    int bDeleting = pRes->ReadFieldBYTE(pStruct, "DELETING", bSuccess, m_bDeleting);
+    m_bDeleting = bDeleting;
+    m_nAddCost = pRes->ReadFieldDWORD(pStruct, "AddCost", bSuccess, m_nAddCost);
+    if (g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType())->m_bIsContainer)
+        ReadContainerItemsFromGff(pRes, pStruct);
+    m_bPlotObject = pRes->ReadFieldBYTE(pStruct, "Plot", bSuccess, GetPlotObject());
+
+    CResList lstProperties;
+    CResStruct propertyStruct;
+    if (pRes->GetList(&lstProperties, pStruct, "PropertiesList") == 1 &&
+        pRes->GetListCount(&lstProperties) > 0)
+    {
+        int nNumProperties = pRes->GetListCount(&lstProperties);
+        int nProperty;
+        int nActiveProperties;
+        for (nProperty = 0, nActiveProperties = 0; nProperty < nNumProperties; nProperty++)
+        {
+            pRes->GetListElement(&propertyStruct, &lstProperties, nProperty);
+            if (pRes->GetFieldCount(&propertyStruct) != 0)
+            {
+                unsigned short nPropertyType = pRes->ReadFieldWORD(&propertyStruct, "PropertyName", bSuccess, 0);
+                if (bSuccess && ActiveProperty(nPropertyType))
+                    nActiveProperties++;
+            }
+        }
+        SetNumActiveProperties(nActiveProperties);
+
+        int nActiveProperty = 0;
+        for (nProperty = 0; nProperty < nNumProperties; nProperty++)
+        {
+            pRes->GetListElement(&propertyStruct, &lstProperties, nProperty);
+            if (pRes->GetFieldCount(&propertyStruct) != 0)
+            {
+                unsigned short nPropertyType = pRes->ReadFieldWORD(&propertyStruct, "PropertyName", bSuccess, 0);
+                switch (nPropertyType)
+                {
+                case CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM:
+                case CSWItemProperty::ITEM_PROPERTY_SECURITY_SPIKE:
+                case CSWItemProperty::ITEM_PROPERTY_TRAP:
+                case CSWItemProperty::ITEM_PROPERTY_COMPUTER_SPIKE:
+                    if (bSuccess)
+                        GetActiveProperty(nActiveProperty)->m_nPropertyType = nPropertyType;
+                    unsigned short nSubtype = pRes->ReadFieldWORD(&propertyStruct, "Subtype", bSuccess, 0);
+                    if (bSuccess)
+                        GetActiveProperty(nActiveProperty)->m_nSubtype = nSubtype;
+                    unsigned char nCostTable = pRes->ReadFieldBYTE(&propertyStruct, "CostTable", bSuccess, 0);
+                    if (bSuccess)
+                        GetActiveProperty(nActiveProperty)->m_nCostTable = nCostTable;
+                    unsigned short nCostValue = pRes->ReadFieldWORD(&propertyStruct, "CostValue", bSuccess, 0);
+                    if (bSuccess)
+                        GetActiveProperty(nActiveProperty)->m_nCostValue = nCostValue;
+                    unsigned char nParam1 = pRes->ReadFieldBYTE(&propertyStruct, "Param1", bSuccess, 0);
+                    if (bSuccess)
+                        GetActiveProperty(nActiveProperty)->m_nParam1 = nParam1;
+                    unsigned char nParam1Value = pRes->ReadFieldBYTE(&propertyStruct, "Param1Value", bSuccess, 0);
+                    if (bSuccess)
+                        GetActiveProperty(nActiveProperty)->m_nParam1Value = nParam1Value;
+                    unsigned char nChanceAppear = pRes->ReadFieldBYTE(&propertyStruct, "ChanceAppear", bSuccess, 0);
+                    if (bSuccess)
+                        GetActiveProperty(nActiveProperty)->m_nChanceAppear = nChanceAppear;
+                    unsigned char bUseable = pRes->ReadFieldBYTE(&propertyStruct, "Useable", bSuccess, 1);
+                    GetActiveProperty(nActiveProperty)->m_bUseable = bUseable;
+                    unsigned char nUsesPerDay = pRes->ReadFieldBYTE(&propertyStruct, "UsesPerDay", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
+                    GetActiveProperty(nActiveProperty)->m_nUsesPerDay = nUsesPerDay;
+                    unsigned char nUpgradeType = pRes->ReadFieldBYTE(&propertyStruct, "UpgradeType", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
+                    GetActiveProperty(nActiveProperty)->m_nUpgradeType = nUpgradeType;
+                    unsigned short nPropUpgrade = pRes->ReadFieldWORD(&propertyStruct, "PropUpgrade", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
+                    GetActiveProperty(nActiveProperty)->m_n12 = nPropUpgrade;
+                    nActiveProperty++;
+                    break;
+                }
+            }
+        }
+        SetNumPassiveProperties(nNumProperties - m_nActiveProperties);
+
+        int nPassiveProperty = 0;
+        for (nProperty = 0; nProperty < nNumProperties; nProperty++)
+        {
+            pRes->GetListElement(&propertyStruct, &lstProperties, nProperty);
+            if (pRes->GetFieldCount(&propertyStruct) != 0)
+            {
+                unsigned short nPropertyType = pRes->ReadFieldWORD(&propertyStruct, "PropertyName", bSuccess, 0);
+                switch (nPropertyType)
+                {
+                case CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM:
+                case CSWItemProperty::ITEM_PROPERTY_SECURITY_SPIKE:
+                case CSWItemProperty::ITEM_PROPERTY_TRAP:
+                case CSWItemProperty::ITEM_PROPERTY_COMPUTER_SPIKE:
+                    break;
+                default:
+                    if (bSuccess)
+                        GetPassiveProperty(nPassiveProperty)->m_nPropertyType = nPropertyType;
+                    unsigned short nSubtype = pRes->ReadFieldWORD(&propertyStruct, "Subtype", bSuccess, 0);
+                    if (bSuccess)
+                        GetPassiveProperty(nPassiveProperty)->m_nSubtype = nSubtype;
+                    unsigned char nCostTable = pRes->ReadFieldBYTE(&propertyStruct, "CostTable", bSuccess, 0);
+                    if (bSuccess)
+                        GetPassiveProperty(nPassiveProperty)->m_nCostTable = nCostTable;
+                    unsigned short nCostValue = pRes->ReadFieldWORD(&propertyStruct, "CostValue", bSuccess, 0);
+                    if (bSuccess)
+                        GetPassiveProperty(nPassiveProperty)->m_nCostValue = nCostValue;
+                    unsigned char nParam1 = pRes->ReadFieldBYTE(&propertyStruct, "Param1", bSuccess, 0);
+                    if (bSuccess)
+                        GetPassiveProperty(nPassiveProperty)->m_nParam1 = nParam1;
+                    unsigned char nParam1Value = pRes->ReadFieldBYTE(&propertyStruct, "Param1Value", bSuccess, 0);
+                    if (bSuccess)
+                        GetPassiveProperty(nPassiveProperty)->m_nParam1Value = nParam1Value;
+                    unsigned char nChanceAppear = pRes->ReadFieldBYTE(&propertyStruct, "ChanceAppear", bSuccess, 0);
+                    if (bSuccess)
+                        GetPassiveProperty(nPassiveProperty)->m_nChanceAppear = nChanceAppear;
+                    unsigned char bUseable = pRes->ReadFieldBYTE(&propertyStruct, "Useable", bSuccess, 0);
+                    GetPassiveProperty(nPassiveProperty)->m_bUseable = bUseable;
+                    unsigned char nUsesPerDay = pRes->ReadFieldBYTE(&propertyStruct, "UsesPerDay", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
+                    GetPassiveProperty(nPassiveProperty)->m_nUsesPerDay = nUsesPerDay;
+                    unsigned char nUpgradeType = pRes->ReadFieldBYTE(&propertyStruct, "UpgradeType", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
+                    GetPassiveProperty(nPassiveProperty)->m_nUpgradeType = nUpgradeType;
+                    unsigned short nPropUpgrade = pRes->ReadFieldWORD(&propertyStruct, "PropUpgrade", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
+                    GetPassiveProperty(nPassiveProperty)->m_n12 = nPropUpgrade;
+                    nPassiveProperty++;
+                    break;
+                }
+            }
+        }
+    }
+    RestoreUsedActiveProperties(1);
+    UpdateUsedActiveProperties();
+    if (m_nActiveProperties == 0 && m_nPassiveProperties == 0)
+        m_bIdentified = 1;
+    m_nBaseAC = ComputeArmorClass();
+    g_pAppManager->GetServerExoApp()->GetModule()->AddObjectToLookupTable(m_sTag, GetId());
+    float fWeight = (float)(GetBaseItem()->m_nTenthLBS * 1.0f);
+    m_nWeight = (int)fWeight;
+}
 // PC 0x00560460 GOG 0x005605D0
 void CSWSItem::AddSubraceRequirements(CExoString& sString)
 {
@@ -3344,89 +3522,6 @@ int CSWSItem::SaveContainerItems(CResGFF* pRes, CResStruct* pStruct)
 
     return 1;
 }
-// PC 0x005678C0 GOG 0x005679F0
-void CSWSItem::UpdateUsedActiveProperties()
-{
-    NWSITEM_TRACE();
-    unsigned char aUsesLeft[MAX_TRACKED_ACTIVE_PROPERTIES];
-    int nProperty;
-    unsigned char nUsableMask = 0;
-    for (nProperty = 0; nProperty < MAX_TRACKED_ACTIVE_PROPERTIES; nProperty++)
-        aUsesLeft[nProperty] = 0;
-
-    for (nProperty = 0; nProperty < m_nActiveProperties; nProperty++)
-    {
-        CSWItemProperty* pItemProperty = GetActiveProperty(nProperty);
-        if (pItemProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM)
-        {
-            switch (pItemProperty->m_nCostValue)
-            {
-            case CSWItemProperty::ACTIVATE_ITEM_SINGLE_USE:
-                if ((unsigned char)pItemProperty->m_bUseable != 0)
-                {
-                    if (nProperty < MAX_TRACKED_ACTIVE_PROPERTIES)
-                        aUsesLeft[nProperty] = GetUsedActivePropertyUsesLeft(nProperty);
-                    nUsableMask |= ACTIVE_PROPERTY_MASK << nProperty;
-                }
-                break;
-            case CSWItemProperty::ACTIVATE_ITEM_5_CHARGES:
-            case CSWItemProperty::ACTIVATE_ITEM_4_CHARGES:
-            case CSWItemProperty::ACTIVATE_ITEM_3_CHARGES:
-            case CSWItemProperty::ACTIVATE_ITEM_2_CHARGES:
-            case CSWItemProperty::ACTIVATE_ITEM_1_CHARGE:
-                if (m_nCharges > 0)
-                {
-                    if (nProperty < MAX_TRACKED_ACTIVE_PROPERTIES)
-                        aUsesLeft[nProperty] = GetUsedActivePropertyUsesLeft(nProperty);
-                    nUsableMask |= ACTIVE_PROPERTY_MASK << nProperty;
-                }
-                break;
-            case CSWItemProperty::ACTIVATE_ITEM_1_USE_PER_DAY:
-            case CSWItemProperty::ACTIVATE_ITEM_2_USES_PER_DAY:
-            case CSWItemProperty::ACTIVATE_ITEM_3_USES_PER_DAY:
-            case CSWItemProperty::ACTIVATE_ITEM_4_USES_PER_DAY:
-            case CSWItemProperty::ACTIVATE_ITEM_5_USES_PER_DAY:
-                if (pItemProperty->m_nUsesPerDay > 0)
-                {
-                    if (nProperty < MAX_TRACKED_ACTIVE_PROPERTIES)
-                        aUsesLeft[nProperty] = GetUsedActivePropertyUsesLeft(nProperty);
-                    nUsableMask |= ACTIVE_PROPERTY_MASK << nProperty;
-                }
-                break;
-            case CSWItemProperty::ACTIVATE_ITEM_UNLIMITED:
-            case CSWItemProperty::ACTIVATE_ITEM_UNLIMITED_ALT:
-            case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_1_MINUTE:
-            case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_2_MINUTES:
-            case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_3_MINUTES:
-            case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_4_MINUTES:
-            case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_5_MINUTES:
-                nUsableMask |= ACTIVE_PROPERTY_MASK << nProperty;
-                break;
-            }
-        }
-    }
-
-    unsigned char nChangedMask = 0;
-    for (nProperty = 0; nProperty < MAX_TRACKED_ACTIVE_PROPERTIES; nProperty++)
-    {
-        if (aUsesLeft[nProperty] != m_aActivePropertyUsesLeft[nProperty])
-            nChangedMask |= ACTIVE_PROPERTY_MASK << nProperty;
-    }
-
-    if (nUsableMask != m_nUsableActivePropertyMask || nChangedMask != 0)
-    {
-        m_nUsableActivePropertyMask = nUsableMask;
-        for (nProperty = 0; nProperty < MAX_TRACKED_ACTIVE_PROPERTIES; nProperty++)
-            m_aActivePropertyUsesLeft[nProperty] = aUsesLeft[nProperty];
-
-        CSWSMessage* pMessage = g_pAppManager->GetServerExoApp()->GetSWSMessage();
-        CSWSPlayer* pPlayer = g_pAppManager->m_pServerExoApp->GetClientObjectByObjectId(m_oidPossessor);
-        if (pPlayer != NULL)
-            pMessage->SendServerToPlayerUpdateActiveItemProperties(
-                pPlayer, GetId(), m_nUsableActivePropertyMask,
-                nChangedMask, m_aActivePropertyUsesLeft);
-    }
-}
 // PC 0x00567B10 GOG 0x00567C40
 CItemRepository::CItemRepository(unsigned long oidOwner, int bFlag)
     : m_lstItems(0)
@@ -4136,6 +4231,90 @@ void CSWSItem::AddProperty(unsigned short nPropertyType, unsigned short nSubtype
     }
     aStrings.Add(sProperty);
 }
+
+// PC 0x005678C0 GOG 0x005679F0
+void CSWSItem::UpdateUsedActiveProperties()
+{
+    NWSITEM_TRACE();
+    unsigned char aUsesLeft[MAX_TRACKED_ACTIVE_PROPERTIES];
+    int nProperty;
+    unsigned char nUsableMask = 0;
+    for (nProperty = 0; nProperty < MAX_TRACKED_ACTIVE_PROPERTIES; nProperty++)
+        aUsesLeft[nProperty] = 0;
+
+    for (nProperty = 0; nProperty < m_nActiveProperties; nProperty++)
+    {
+        CSWItemProperty* pItemProperty = GetActiveProperty(nProperty);
+        if (pItemProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM)
+        {
+            switch (pItemProperty->m_nCostValue)
+            {
+            case CSWItemProperty::ACTIVATE_ITEM_SINGLE_USE:
+                if ((unsigned char)pItemProperty->m_bUseable != 0)
+                {
+                    if (nProperty < MAX_TRACKED_ACTIVE_PROPERTIES)
+                        aUsesLeft[nProperty] = GetUsedActivePropertyUsesLeft(nProperty);
+                    nUsableMask |= ACTIVE_PROPERTY_MASK << nProperty;
+                }
+                break;
+            case CSWItemProperty::ACTIVATE_ITEM_5_CHARGES:
+            case CSWItemProperty::ACTIVATE_ITEM_4_CHARGES:
+            case CSWItemProperty::ACTIVATE_ITEM_3_CHARGES:
+            case CSWItemProperty::ACTIVATE_ITEM_2_CHARGES:
+            case CSWItemProperty::ACTIVATE_ITEM_1_CHARGE:
+                if (m_nCharges > 0)
+                {
+                    if (nProperty < MAX_TRACKED_ACTIVE_PROPERTIES)
+                        aUsesLeft[nProperty] = GetUsedActivePropertyUsesLeft(nProperty);
+                    nUsableMask |= ACTIVE_PROPERTY_MASK << nProperty;
+                }
+                break;
+            case CSWItemProperty::ACTIVATE_ITEM_1_USE_PER_DAY:
+            case CSWItemProperty::ACTIVATE_ITEM_2_USES_PER_DAY:
+            case CSWItemProperty::ACTIVATE_ITEM_3_USES_PER_DAY:
+            case CSWItemProperty::ACTIVATE_ITEM_4_USES_PER_DAY:
+            case CSWItemProperty::ACTIVATE_ITEM_5_USES_PER_DAY:
+                if (pItemProperty->m_nUsesPerDay > 0)
+                {
+                    if (nProperty < MAX_TRACKED_ACTIVE_PROPERTIES)
+                        aUsesLeft[nProperty] = GetUsedActivePropertyUsesLeft(nProperty);
+                    nUsableMask |= ACTIVE_PROPERTY_MASK << nProperty;
+                }
+                break;
+            case CSWItemProperty::ACTIVATE_ITEM_UNLIMITED:
+            case CSWItemProperty::ACTIVATE_ITEM_UNLIMITED_ALT:
+            case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_1_MINUTE:
+            case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_2_MINUTES:
+            case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_3_MINUTES:
+            case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_4_MINUTES:
+            case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_5_MINUTES:
+                nUsableMask |= ACTIVE_PROPERTY_MASK << nProperty;
+                break;
+            }
+        }
+    }
+
+    unsigned char nChangedMask = 0;
+    for (nProperty = 0; nProperty < MAX_TRACKED_ACTIVE_PROPERTIES; nProperty++)
+    {
+        if (aUsesLeft[nProperty] != m_aActivePropertyUsesLeft[nProperty])
+            nChangedMask |= ACTIVE_PROPERTY_MASK << nProperty;
+    }
+
+    if (nUsableMask != m_nUsableActivePropertyMask || nChangedMask != 0)
+    {
+        m_nUsableActivePropertyMask = nUsableMask;
+        for (nProperty = 0; nProperty < MAX_TRACKED_ACTIVE_PROPERTIES; nProperty++)
+            m_aActivePropertyUsesLeft[nProperty] = aUsesLeft[nProperty];
+
+        CSWSMessage* pMessage = g_pAppManager->GetServerExoApp()->GetSWSMessage();
+        CSWSPlayer* pPlayer = g_pAppManager->m_pServerExoApp->GetClientObjectByObjectId(m_oidPossessor);
+        if (pPlayer != NULL)
+            pMessage->SendServerToPlayerUpdateActiveItemProperties(
+                pPlayer, GetId(), m_nUsableActivePropertyMask,
+                nChangedMask, m_aActivePropertyUsesLeft);
+    }
+}
 // PC 0x00569240 GOG 0x00569370
 void CSWSItem::AddAttackModifierProperties(CExoString& sString)
 {
@@ -4530,183 +4709,6 @@ inline void CSWSItem::SetPickpocketable(int bPickpocketable) { m_bPickpocketable
 inline void CSWSItem::SetNonEquippable(int bNonEquippable) { m_bNonEquippable = bNonEquippable; }
 inline void CSWSItem::SetNewItem(int bNewItem) { m_bNewItem = bNewItem; }
 inline int CSWSItem::GetUpgrades() { return m_nUpgrades; }
-// PC 0x0056A6F0 GOG 0x0056A820
-void CSWSItem::LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct)
-{
-    int bSuccess;
-    m_nBaseItem = pRes->ReadFieldINT(pStruct, "BaseItem", bSuccess, GetBaseItemType());
-    InitRepository(GetId());
-    SetTag(pRes->ReadFieldCExoString(pStruct, "Tag", bSuccess, m_sTag));
-    SetIdentified(pRes->ReadFieldBYTE(pStruct, "Identified", bSuccess, 1));
-    m_sDescription = pRes->ReadFieldCExoLocString(pStruct, "Description", bSuccess, m_sDescIdentified);
-    m_sDescIdentified = pRes->ReadFieldCExoLocString(pStruct, "DescIdentified", bSuccess, m_sDescription);
-    m_sLocalizedName = pRes->ReadFieldCExoLocString(pStruct, "LocalizedName", bSuccess, m_sLocalizedName);
-    m_nStackSize = pRes->ReadFieldWORD(pStruct, "StackSize", bSuccess, GetStackSize());
-    SetStolen(pRes->ReadFieldBYTE(pStruct, "Stolen", bSuccess, m_bStolen));
-    m_nUpgrades = pRes->ReadFieldDWORD(pStruct, "Upgrades", bSuccess, GetUpgrades());
-    m_nUpgradeLevel = pRes->ReadFieldBYTE(pStruct, "UpgradeLevel", bSuccess, GetUpgrades());
-    m_anUpgradeSlot[0] = pRes->ReadFieldINT(pStruct, "UpgradeSlot0", bSuccess, -1);
-    m_anUpgradeSlot[1] = pRes->ReadFieldINT(pStruct, "UpgradeSlot1", bSuccess, -1);
-    m_anUpgradeSlot[2] = pRes->ReadFieldINT(pStruct, "UpgradeSlot2", bSuccess, -1);
-    m_anUpgradeSlot[3] = pRes->ReadFieldINT(pStruct, "UpgradeSlot3", bSuccess, -1);
-    m_anUpgradeSlot[4] = pRes->ReadFieldINT(pStruct, "UpgradeSlot4", bSuccess, -1);
-    m_anUpgradeSlot[5] = pRes->ReadFieldINT(pStruct, "UpgradeSlot5", bSuccess, -1);
-    SetDropable(pRes->ReadFieldBYTE(pStruct, "Dropable", bSuccess, 0));
-    SetPickpocketable(pRes->ReadFieldBYTE(pStruct, "Pickpocketable", bSuccess, 0));
-    SetNonEquippable(pRes->ReadFieldBYTE(pStruct, "NonEquippable", bSuccess, m_bNonEquippable));
-    unsigned char nModelVariation = m_nModelVariation;
-    nModelVariation = pRes->ReadFieldBYTE(pStruct, "ModelVariation", bSuccess, nModelVariation);
-    if (!bSuccess)
-    {
-        nModelVariation = pRes->ReadFieldBYTE(pStruct, "ModelPart1", bSuccess, nModelVariation);
-        if (nModelVariation == 0)
-            nModelVariation = 1;
-    }
-    m_nModelVariation = nModelVariation;
-    switch (g_pRules->GetBaseItemArray()->GetBaseItem(GetBaseItemType())->m_bUnknown18)
-    {
-    case BASEITEM_MODEL_TYPE_BODY_VARIATION:
-        m_nBodyVariation = g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType())->m_nBodyVar;
-        m_nTextureVar = pRes->ReadFieldBYTE(pStruct, "TextureVar", bSuccess, 1);
-        break;
-    }
-    int nCharges = pRes->ReadFieldBYTE(pStruct, "Charges", bSuccess, DEFAULT_CHARGES);
-    m_nCharges = nCharges;
-    m_nMaxCharges = pRes->ReadFieldBYTE(pStruct, "MaxCharges", bSuccess, nCharges);
-    SetNewItem(pRes->ReadFieldBYTE(pStruct, "NewItem", bSuccess, m_bNewItem));
-    int bDeleting = pRes->ReadFieldBYTE(pStruct, "DELETING", bSuccess, m_bDeleting);
-    m_bDeleting = bDeleting;
-    m_nAddCost = pRes->ReadFieldDWORD(pStruct, "AddCost", bSuccess, m_nAddCost);
-    if (g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType())->m_bIsContainer)
-        ReadContainerItemsFromGff(pRes, pStruct);
-    m_bPlotObject = pRes->ReadFieldBYTE(pStruct, "Plot", bSuccess, GetPlotObject());
-
-    CResList lstProperties;
-    CResStruct propertyStruct;
-    if (pRes->GetList(&lstProperties, pStruct, "PropertiesList") == 1 &&
-        pRes->GetListCount(&lstProperties) > 0)
-    {
-        int nNumProperties = pRes->GetListCount(&lstProperties);
-        int nProperty;
-        int nActiveProperties;
-        for (nProperty = 0, nActiveProperties = 0; nProperty < nNumProperties; nProperty++)
-        {
-            pRes->GetListElement(&propertyStruct, &lstProperties, nProperty);
-            if (pRes->GetFieldCount(&propertyStruct) != 0)
-            {
-                unsigned short nPropertyType = pRes->ReadFieldWORD(&propertyStruct, "PropertyName", bSuccess, 0);
-                if (bSuccess && ActiveProperty(nPropertyType))
-                    nActiveProperties++;
-            }
-        }
-        SetNumActiveProperties(nActiveProperties);
-
-        int nActiveProperty = 0;
-        for (nProperty = 0; nProperty < nNumProperties; nProperty++)
-        {
-            pRes->GetListElement(&propertyStruct, &lstProperties, nProperty);
-            if (pRes->GetFieldCount(&propertyStruct) != 0)
-            {
-                unsigned short nPropertyType = pRes->ReadFieldWORD(&propertyStruct, "PropertyName", bSuccess, 0);
-                switch (nPropertyType)
-                {
-                case CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM:
-                case CSWItemProperty::ITEM_PROPERTY_SECURITY_SPIKE:
-                case CSWItemProperty::ITEM_PROPERTY_TRAP:
-                case CSWItemProperty::ITEM_PROPERTY_COMPUTER_SPIKE:
-                    if (bSuccess)
-                        GetActiveProperty(nActiveProperty)->m_nPropertyType = nPropertyType;
-                    unsigned short nSubtype = pRes->ReadFieldWORD(&propertyStruct, "Subtype", bSuccess, 0);
-                    if (bSuccess)
-                        GetActiveProperty(nActiveProperty)->m_nSubtype = nSubtype;
-                    unsigned char nCostTable = pRes->ReadFieldBYTE(&propertyStruct, "CostTable", bSuccess, 0);
-                    if (bSuccess)
-                        GetActiveProperty(nActiveProperty)->m_nCostTable = nCostTable;
-                    unsigned short nCostValue = pRes->ReadFieldWORD(&propertyStruct, "CostValue", bSuccess, 0);
-                    if (bSuccess)
-                        GetActiveProperty(nActiveProperty)->m_nCostValue = nCostValue;
-                    unsigned char nParam1 = pRes->ReadFieldBYTE(&propertyStruct, "Param1", bSuccess, 0);
-                    if (bSuccess)
-                        GetActiveProperty(nActiveProperty)->m_nParam1 = nParam1;
-                    unsigned char nParam1Value = pRes->ReadFieldBYTE(&propertyStruct, "Param1Value", bSuccess, 0);
-                    if (bSuccess)
-                        GetActiveProperty(nActiveProperty)->m_nParam1Value = nParam1Value;
-                    unsigned char nChanceAppear = pRes->ReadFieldBYTE(&propertyStruct, "ChanceAppear", bSuccess, 0);
-                    if (bSuccess)
-                        GetActiveProperty(nActiveProperty)->m_nChanceAppear = nChanceAppear;
-                    unsigned char bUseable = pRes->ReadFieldBYTE(&propertyStruct, "Useable", bSuccess, 1);
-                    GetActiveProperty(nActiveProperty)->m_bUseable = bUseable;
-                    unsigned char nUsesPerDay = pRes->ReadFieldBYTE(&propertyStruct, "UsesPerDay", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
-                    GetActiveProperty(nActiveProperty)->m_nUsesPerDay = nUsesPerDay;
-                    unsigned char nUpgradeType = pRes->ReadFieldBYTE(&propertyStruct, "UpgradeType", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
-                    GetActiveProperty(nActiveProperty)->m_nUpgradeType = nUpgradeType;
-                    unsigned short nPropUpgrade = pRes->ReadFieldWORD(&propertyStruct, "PropUpgrade", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
-                    GetActiveProperty(nActiveProperty)->m_n12 = nPropUpgrade;
-                    nActiveProperty++;
-                    break;
-                }
-            }
-        }
-        SetNumPassiveProperties(nNumProperties - m_nActiveProperties);
-
-        int nPassiveProperty = 0;
-        for (nProperty = 0; nProperty < nNumProperties; nProperty++)
-        {
-            pRes->GetListElement(&propertyStruct, &lstProperties, nProperty);
-            if (pRes->GetFieldCount(&propertyStruct) != 0)
-            {
-                unsigned short nPropertyType = pRes->ReadFieldWORD(&propertyStruct, "PropertyName", bSuccess, 0);
-                switch (nPropertyType)
-                {
-                case CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM:
-                case CSWItemProperty::ITEM_PROPERTY_SECURITY_SPIKE:
-                case CSWItemProperty::ITEM_PROPERTY_TRAP:
-                case CSWItemProperty::ITEM_PROPERTY_COMPUTER_SPIKE:
-                    break;
-                default:
-                    if (bSuccess)
-                        GetPassiveProperty(nPassiveProperty)->m_nPropertyType = nPropertyType;
-                    unsigned short nSubtype = pRes->ReadFieldWORD(&propertyStruct, "Subtype", bSuccess, 0);
-                    if (bSuccess)
-                        GetPassiveProperty(nPassiveProperty)->m_nSubtype = nSubtype;
-                    unsigned char nCostTable = pRes->ReadFieldBYTE(&propertyStruct, "CostTable", bSuccess, 0);
-                    if (bSuccess)
-                        GetPassiveProperty(nPassiveProperty)->m_nCostTable = nCostTable;
-                    unsigned short nCostValue = pRes->ReadFieldWORD(&propertyStruct, "CostValue", bSuccess, 0);
-                    if (bSuccess)
-                        GetPassiveProperty(nPassiveProperty)->m_nCostValue = nCostValue;
-                    unsigned char nParam1 = pRes->ReadFieldBYTE(&propertyStruct, "Param1", bSuccess, 0);
-                    if (bSuccess)
-                        GetPassiveProperty(nPassiveProperty)->m_nParam1 = nParam1;
-                    unsigned char nParam1Value = pRes->ReadFieldBYTE(&propertyStruct, "Param1Value", bSuccess, 0);
-                    if (bSuccess)
-                        GetPassiveProperty(nPassiveProperty)->m_nParam1Value = nParam1Value;
-                    unsigned char nChanceAppear = pRes->ReadFieldBYTE(&propertyStruct, "ChanceAppear", bSuccess, 0);
-                    if (bSuccess)
-                        GetPassiveProperty(nPassiveProperty)->m_nChanceAppear = nChanceAppear;
-                    unsigned char bUseable = pRes->ReadFieldBYTE(&propertyStruct, "Useable", bSuccess, 0);
-                    GetPassiveProperty(nPassiveProperty)->m_bUseable = bUseable;
-                    unsigned char nUsesPerDay = pRes->ReadFieldBYTE(&propertyStruct, "UsesPerDay", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
-                    GetPassiveProperty(nPassiveProperty)->m_nUsesPerDay = nUsesPerDay;
-                    unsigned char nUpgradeType = pRes->ReadFieldBYTE(&propertyStruct, "UpgradeType", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
-                    GetPassiveProperty(nPassiveProperty)->m_nUpgradeType = nUpgradeType;
-                    unsigned short nPropUpgrade = pRes->ReadFieldWORD(&propertyStruct, "PropUpgrade", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
-                    GetPassiveProperty(nPassiveProperty)->m_n12 = nPropUpgrade;
-                    nPassiveProperty++;
-                    break;
-                }
-            }
-        }
-    }
-    RestoreUsedActiveProperties(1);
-    UpdateUsedActiveProperties();
-    if (m_nActiveProperties == 0 && m_nPassiveProperties == 0)
-        m_bIdentified = 1;
-    m_nBaseAC = ComputeArmorClass();
-    g_pAppManager->GetServerExoApp()->GetModule()->AddObjectToLookupTable(m_sTag, GetId());
-    float fWeight = (float)(GetBaseItem()->m_nTenthLBS * 1.0f);
-    m_nWeight = (int)fWeight;
-}
 // PC 0x0056B400 GOG 0x0056B530
 int CSWSItem::LoadFromTemplate(const CResRef& cResRef)
 {

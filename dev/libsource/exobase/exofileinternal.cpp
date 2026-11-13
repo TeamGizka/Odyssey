@@ -10,6 +10,24 @@
 
 DWORD WINAPI AsyncReadThreadProc(LPVOID lpParameter);
 
+
+// PC 0x00637370 GOG 0x00637270
+unsigned long CExoFileInternal::GetSize()
+{
+    if (m_pFile != NULL)
+    {
+        fflush(m_pFile);
+        long lOffset = ftell(m_pFile);
+        if (lOffset >= 0)
+        {
+            fseek(m_pFile, 0, SEEK_END);
+            unsigned long nSize = ftell(m_pFile);
+            fseek(m_pFile, lOffset, SEEK_SET);
+            return nSize;
+        }
+    }
+    return (unsigned long)-1;
+}
 static CExoFileThread g_AsyncFileThread;
 // PC 0x00636F60 GOG 0x00636E60
 CExoFileThread::~CExoFileThread()
@@ -168,23 +186,6 @@ unsigned long CExoFileInternal::GetOffset()
         return ftell(m_pFile);
     }
     return 0;
-}
-// PC 0x00637370 GOG 0x00637270
-unsigned long CExoFileInternal::GetSize()
-{
-    if (m_pFile != NULL)
-    {
-        fflush(m_pFile);
-        long lOffset = ftell(m_pFile);
-        if (lOffset >= 0)
-        {
-            fseek(m_pFile, 0, SEEK_END);
-            unsigned long nSize = ftell(m_pFile);
-            fseek(m_pFile, lOffset, SEEK_SET);
-            return nSize;
-        }
-    }
-    return (unsigned long)-1;
 }
 // PC 0x00637470 GOG 0x00637370
 unsigned long CExoFileInternal::Read(void* data, unsigned long size,

@@ -85,6 +85,13 @@ void CSWRoomSurfaceMesh::SetOrientation(const Quaternion& qOrientation)
 {
     m_qOrientation = qOrientation;
 }
+
+// PC 0x00575340 GOG 0x00575D50
+CSWRoomSurfaceMeshHitInfo::CSWRoomSurfaceMeshHitInfo(unsigned long nMask)
+{
+    RoomSurfaceMeshTrace1();
+    ClearAll(nMask);
+}
 // PC 0x00574CA0 GOG 0x00575190
 inline CSWRoomSurfaceMeshAABBNode::CSWRoomSurfaceMeshAABBNode()
 {
@@ -219,12 +226,6 @@ void CSWRoomSurfaceMesh::GetTriangleVertices(int nUnused, int nTriangle,
         *pnSecond = m_pFaces[nVertexOffset + 1];
         *pnThird = m_pFaces[nVertexOffset + 2];
     }
-}
-// PC 0x00575340 GOG 0x00575D50
-CSWRoomSurfaceMeshHitInfo::CSWRoomSurfaceMeshHitInfo(unsigned long nMask)
-{
-    RoomSurfaceMeshTrace1();
-    ClearAll(nMask);
 }
 // PC 0x00575390 GOG 0x00575230
 int CSWRoomSurfaceMesh::LoadMeshBinary(CResBWM* pMesh)
@@ -618,6 +619,171 @@ int CSWRoomSurfaceMesh::CheckAABBNode(int nNode, const Vector& vStart, Vector& v
             return CheckAABBNode(m_lstAABBNodes[nNode].m_nRightChild, vStart, vEnd, hitInfo) + CheckAABBNode(m_lstAABBNodes[nNode].m_nLeftChild, vStart, vEnd, hitInfo);
         }
     }
+}
+
+// PC 0x00578C90 GOG 0x00578D10
+int CSWRoomSurfaceMesh::ClippedLineSegmentWalkable(
+    const Vector& vStart, const Vector& vEnd, Vector& vClippedStart,
+    Vector& vClippedEnd, float& fMinHeight, float& fMaxHeight, int& nFace)
+{
+    if (!ComputeClippedLineSegment(vStart, vEnd, vClippedStart,
+                                   vClippedEnd, nFace))
+    {
+        return 0;
+    }
+
+    int nTriangles = 0;
+    Vector avVertices[3];
+    Vector vPosition = vStart;
+    Vector vEndPosition = vEnd;
+    Vector vDirection = vEnd - vStart;
+    Vector vHit;
+    Vector vNormal;
+    int anVertices[3];
+    int anAdjacent[3];
+    float afX[3], afY[3], afZ[3];
+    int abInside[3];
+    int nTriangle = FindTriangle(vPosition, 1, vDirection);
+    if (nTriangle == -1)
+    {
+        return 0;
+    }
+    if (nTriangle >= 0)
+    {
+        GetTriangleVertices(0, nTriangle, &anVertices[0], &anVertices[1],
+                            &anVertices[2]);
+        for (int i = 0; i < 3; ++i)
+        {
+            GetVertex(anVertices[i], &avVertices[i]);
+        }
+        {
+            Vector vTop = vPosition;
+            Vector vBottom = vPosition;
+            vTop.m_fZ = SWROOMSURFACEMESH_HEIGHT_PROBE;
+            vBottom.m_fZ = -SWROOMSURFACEMESH_HEIGHT_PROBE;
+            if (polyhit(avVertices, 3, vTop, vBottom, &vHit, &vNormal))
+            {
+                vPosition.m_fZ = vHit.m_fZ;
+                vClippedStart.m_fZ = vHit.m_fZ;
+            }
+        }
+        while (nTriangle >= 0 &&
+               nTriangles < SWROOMSURFACEMESH_MAX_WALK_TRIANGLES)
+        {
+            ++nTriangles;
+            GetTriangleVertices(0, nTriangle, &anVertices[0], &anVertices[1],
+                                &anVertices[2]);
+            GetTriangleAdjacency(0, nTriangle, &anAdjacent[0], &anAdjacent[1],
+                                 &anAdjacent[2]);
+            for (int i = 0; i < 3; ++i)
+            {
+                GetVertex(anVertices[i], &afX[i], &afY[i], &afZ[i]);
+                GetVertex(anVertices[i], &avVertices[i]);
+            }
+            if (nTriangles == 1)
+            {
+                fMaxHeight = vPosition.m_fZ;
+                fMinHeight = vPosition.m_fZ;
+            }
+            else if (vPosition.m_fZ >= fMaxHeight)
+            {
+                fMaxHeight = vPosition.m_fZ;
+            }
+            else if (vPosition.m_fZ <= fMinHeight)
+            {
+                fMinHeight = vPosition.m_fZ;
+            }
+            int nInside = 0;
+            for (int i = 0; i < 3; ++i)
+            {
+                int nNext = (i + 1) % 3;
+                if ((afY[i] - afY[nNext]) * (vEnd.m_fX - afX[i]) +
+                    (afX[nNext] - afX[i]) * (vEnd.m_fY - afY[i]) >= 0.0)
+                {
+                    abInside[i] = 1;
+                    ++nInside;
+                }
+                else
+                {
+                    abInside[i] = 0;
+                }
+            }
+            if (nInside == 0)
+            {
+                return 0;
+            }
+            if (nInside == 3)
+            {
+                Vector vTop = vEndPosition;
+                Vector vBottom = vEndPosition;
+                vTop.m_fZ = SWROOMSURFACEMESH_HEIGHT_PROBE;
+                vBottom.m_fZ = -SWROOMSURFACEMESH_HEIGHT_PROBE;
+                if (polyhit(avVertices, 3, vTop, vBottom, &vHit, &vNormal))
+                {
+                    vEndPosition.m_fZ = vHit.m_fZ;
+                    vClippedEnd.m_fZ = vHit.m_fZ;
+                }
+                if (vEndPosition.m_fZ >= fMaxHeight)
+                    fMaxHeight = vEndPosition.m_fZ;
+                else if (vEndPosition.m_fZ <= fMinHeight)
+                    fMinHeight = vEndPosition.m_fZ;
+                return 1;
+            }
+            if (nInside == 2)
+            {
+                Vector vCrossing;
+                for (int i = 2; i >= 0; --i)
+                {
+                    int nNext = (i + 1) % 3;
+                    if (!abInside[i])
+                    {
+                        if (!IntersectLineSegments2d(vPosition, vEndPosition,
+                            avVertices[i], avVertices[nNext], vCrossing))
+                            return 0;
+                        nTriangle = anAdjacent[i];
+                        vPosition = vCrossing;
+                    }
+                }
+            }
+            else if (nInside == 1)
+            {
+                int bFound = 0;
+                Vector vCrossing;
+                for (int i = 2; i >= 0 && !bFound; --i)
+                {
+                    int nNext = (i + 1) % 3;
+                    if (!abInside[i] &&
+                        IntersectLineSegments2d(vPosition, vEndPosition,
+                            avVertices[i], avVertices[nNext], vCrossing) == 1)
+                    {
+                        bFound = 1;
+                        nTriangle = anAdjacent[i];
+                        vPosition = vCrossing;
+                    }
+                }
+                if (!bFound)
+                    return 0;
+            }
+        }
+        if (nTriangles >= SWROOMSURFACEMESH_MAX_WALK_TRIANGLES)
+        {
+            CExoString sResRef; m_cResRef.CopyToString(sResRef);
+            EXOLOG("ERROR!\n This tile is crapped out.  %s\n ERROR!\n", sResRef.CStr()); EXOLOG("ERROR!\n This tile is crapped out.  %s\n ERROR!\n", sResRef.CStr());
+#ifdef _XBOX
+            g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory); g_pExoBase->m_pExoDebug->FlushScriptLogFile();
+#endif
+            return 0;
+        }
+    }
+    if (nTriangle == -1)
+    {
+        if (vPosition.m_fZ >= fMaxHeight)
+            fMaxHeight = vPosition.m_fZ;
+        else if (vPosition.m_fZ <= fMinHeight)
+            fMinHeight = vPosition.m_fZ;
+        return 1;
+    }
+    return 0;
 }
 // PC 0x00576330 GOG 0x005761F0
 int CSWRoomSurfaceMesh::FindTriangle(const Vector& vPosition, int bWalkable,
@@ -1358,170 +1524,6 @@ int CSWRoomSurfaceMesh::ComputeClippedLineSegment(
     vClippedStart = m_lstCrossings[0];
     vClippedEnd = m_lstCrossings[1];
     return 1;
-}
-// PC 0x00578C90 GOG 0x00578D10
-int CSWRoomSurfaceMesh::ClippedLineSegmentWalkable(
-    const Vector& vStart, const Vector& vEnd, Vector& vClippedStart,
-    Vector& vClippedEnd, float& fMinHeight, float& fMaxHeight, int& nFace)
-{
-    if (!ComputeClippedLineSegment(vStart, vEnd, vClippedStart,
-                                   vClippedEnd, nFace))
-    {
-        return 0;
-    }
-
-    int nTriangles = 0;
-    Vector avVertices[3];
-    Vector vPosition = vStart;
-    Vector vEndPosition = vEnd;
-    Vector vDirection = vEnd - vStart;
-    Vector vHit;
-    Vector vNormal;
-    int anVertices[3];
-    int anAdjacent[3];
-    float afX[3], afY[3], afZ[3];
-    int abInside[3];
-    int nTriangle = FindTriangle(vPosition, 1, vDirection);
-    if (nTriangle == -1)
-    {
-        return 0;
-    }
-    if (nTriangle >= 0)
-    {
-        GetTriangleVertices(0, nTriangle, &anVertices[0], &anVertices[1],
-                            &anVertices[2]);
-        for (int i = 0; i < 3; ++i)
-        {
-            GetVertex(anVertices[i], &avVertices[i]);
-        }
-        {
-            Vector vTop = vPosition;
-            Vector vBottom = vPosition;
-            vTop.m_fZ = SWROOMSURFACEMESH_HEIGHT_PROBE;
-            vBottom.m_fZ = -SWROOMSURFACEMESH_HEIGHT_PROBE;
-            if (polyhit(avVertices, 3, vTop, vBottom, &vHit, &vNormal))
-            {
-                vPosition.m_fZ = vHit.m_fZ;
-                vClippedStart.m_fZ = vHit.m_fZ;
-            }
-        }
-        while (nTriangle >= 0 &&
-               nTriangles < SWROOMSURFACEMESH_MAX_WALK_TRIANGLES)
-        {
-            ++nTriangles;
-            GetTriangleVertices(0, nTriangle, &anVertices[0], &anVertices[1],
-                                &anVertices[2]);
-            GetTriangleAdjacency(0, nTriangle, &anAdjacent[0], &anAdjacent[1],
-                                 &anAdjacent[2]);
-            for (int i = 0; i < 3; ++i)
-            {
-                GetVertex(anVertices[i], &afX[i], &afY[i], &afZ[i]);
-                GetVertex(anVertices[i], &avVertices[i]);
-            }
-            if (nTriangles == 1)
-            {
-                fMaxHeight = vPosition.m_fZ;
-                fMinHeight = vPosition.m_fZ;
-            }
-            else if (vPosition.m_fZ >= fMaxHeight)
-            {
-                fMaxHeight = vPosition.m_fZ;
-            }
-            else if (vPosition.m_fZ <= fMinHeight)
-            {
-                fMinHeight = vPosition.m_fZ;
-            }
-            int nInside = 0;
-            for (int i = 0; i < 3; ++i)
-            {
-                int nNext = (i + 1) % 3;
-                if ((afY[i] - afY[nNext]) * (vEnd.m_fX - afX[i]) +
-                    (afX[nNext] - afX[i]) * (vEnd.m_fY - afY[i]) >= 0.0)
-                {
-                    abInside[i] = 1;
-                    ++nInside;
-                }
-                else
-                {
-                    abInside[i] = 0;
-                }
-            }
-            if (nInside == 0)
-            {
-                return 0;
-            }
-            if (nInside == 3)
-            {
-                Vector vTop = vEndPosition;
-                Vector vBottom = vEndPosition;
-                vTop.m_fZ = SWROOMSURFACEMESH_HEIGHT_PROBE;
-                vBottom.m_fZ = -SWROOMSURFACEMESH_HEIGHT_PROBE;
-                if (polyhit(avVertices, 3, vTop, vBottom, &vHit, &vNormal))
-                {
-                    vEndPosition.m_fZ = vHit.m_fZ;
-                    vClippedEnd.m_fZ = vHit.m_fZ;
-                }
-                if (vEndPosition.m_fZ >= fMaxHeight)
-                    fMaxHeight = vEndPosition.m_fZ;
-                else if (vEndPosition.m_fZ <= fMinHeight)
-                    fMinHeight = vEndPosition.m_fZ;
-                return 1;
-            }
-            if (nInside == 2)
-            {
-                Vector vCrossing;
-                for (int i = 2; i >= 0; --i)
-                {
-                    int nNext = (i + 1) % 3;
-                    if (!abInside[i])
-                    {
-                        if (!IntersectLineSegments2d(vPosition, vEndPosition,
-                            avVertices[i], avVertices[nNext], vCrossing))
-                            return 0;
-                        nTriangle = anAdjacent[i];
-                        vPosition = vCrossing;
-                    }
-                }
-            }
-            else if (nInside == 1)
-            {
-                int bFound = 0;
-                Vector vCrossing;
-                for (int i = 2; i >= 0 && !bFound; --i)
-                {
-                    int nNext = (i + 1) % 3;
-                    if (!abInside[i] &&
-                        IntersectLineSegments2d(vPosition, vEndPosition,
-                            avVertices[i], avVertices[nNext], vCrossing) == 1)
-                    {
-                        bFound = 1;
-                        nTriangle = anAdjacent[i];
-                        vPosition = vCrossing;
-                    }
-                }
-                if (!bFound)
-                    return 0;
-            }
-        }
-        if (nTriangles >= SWROOMSURFACEMESH_MAX_WALK_TRIANGLES)
-        {
-            CExoString sResRef; m_cResRef.CopyToString(sResRef);
-            EXOLOG("ERROR!\n This tile is crapped out.  %s\n ERROR!\n", sResRef.CStr()); EXOLOG("ERROR!\n This tile is crapped out.  %s\n ERROR!\n", sResRef.CStr());
-#ifdef _XBOX
-            g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory); g_pExoBase->m_pExoDebug->FlushScriptLogFile();
-#endif
-            return 0;
-        }
-    }
-    if (nTriangle == -1)
-    {
-        if (vPosition.m_fZ >= fMaxHeight)
-            fMaxHeight = vPosition.m_fZ;
-        else if (vPosition.m_fZ <= fMinHeight)
-            fMinHeight = vPosition.m_fZ;
-        return 1;
-    }
-    return 0;
 }
 
 #ifdef _XBOX
