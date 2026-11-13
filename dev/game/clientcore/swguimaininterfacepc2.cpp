@@ -128,10 +128,6 @@ CSWGuiMainInterfaceAction::~CSWGuiMainInterfaceAction()
 {
 }
 #else
-CSWGuiMainInterfaceAction::~CSWGuiMainInterfaceAction()  // PC 0x006DF7D0 GOG 0x006E18F0
-{
-    Swguimaininterfacepc2Trace1();
-}
 #endif
 
 void CSWGuiMainInterfaceStatus::ShiftControl(int nOffset)
@@ -2093,6 +2089,11 @@ void CSWGuiMainInterfaceAction::Show(int bEmpty, int bEnabled)  // PC 0x006DF6B0
 
     m_CSWGuiButton_388.SetEnabledFlag(bEnabled);
     m_CSWGuiButton_54C.SetEnabledFlag(bEnabled);
+}
+
+CSWGuiMainInterfaceAction::~CSWGuiMainInterfaceAction()  // PC 0x006DF7D0 GOG 0x006E18F0
+{
+    Swguimaininterfacepc2Trace1();
 }
 #endif
 

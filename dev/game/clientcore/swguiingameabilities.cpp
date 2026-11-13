@@ -150,12 +150,6 @@ CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)  // PC 0x0
 }
 #endif
 
-void CSWGuiInGameAbilities::SetDescription(const CExoString& sText)
-{
-    m_lblDescription.m_cText.m_cParams.SetText(sText);
-    UpdateDescriptionListBox(sText.GetLength() > 0);
-}
-
 void CSWGuiInGameAbilities::CreateFeatList()
 {
     if (m_pCreature != NULL)
@@ -229,11 +223,18 @@ void CSWGuiInGameAbilities::UpdateDescriptionListBox(int bShow)
 // PC 0x007366A0 GOG 0x007363C0
 void CSWGuiInGameAbilities::SetDescription(unsigned long nStrRef)
 {
+    SWGUIINGAMEABILITIES_TRACE();
     STR_RES strDescription;
 
     g_pTlkTable->Fetch(nStrRef, strDescription, CTlkTable::GENDER_MALE);
     m_lblDescription.m_cText.m_cParams.SetText(strDescription.m_sString);
     UpdateDescriptionListBox(strDescription.m_sString.GetLength() > 0);
+}
+
+void CSWGuiInGameAbilities::SetDescription(const CExoString& sText)
+{
+    m_lblDescription.m_cText.m_cParams.SetText(sText);
+    UpdateDescriptionListBox(sText.GetLength() > 0);
 }
 
 int CSWGuiInGameAbilities::DisplayPowers()
@@ -451,7 +452,6 @@ void CSWGuiInGameAbilities::OnEnterSkill(CSWGuiControl* pControl)
 // PC 0x00737110 GOG 0x00736E70
 void CSWGuiInGameAbilities::OnEnterFeat(unsigned short nFeat)
 {
-    SWGUIINGAMEABILITIES_TRACE();
     CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
 
     SetDescription(pFeat->GetDescriptionText());

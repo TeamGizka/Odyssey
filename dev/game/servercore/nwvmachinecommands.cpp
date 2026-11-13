@@ -8170,18 +8170,14 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFortitudeSavingThrow(int nComman
                ? 0
                : ERROR_STACK_PUSH;
 }
-// PC 0x005BB500 GOG 0x005BB570
-int CSWVirtualMachineCommands::ExecuteCommandGetGalaxyMapSelectedPlanet(
-    int nCommand, int nArgs)
-{
-    CServerExoApp* pServerExoApp;
-    CSWPartyTable* pSWPartyTable;
-    int nResult;
 
-    pServerExoApp = g_pAppManager->m_pServerExoApp;
-    pSWPartyTable = pServerExoApp->GetPartyTable();
-    nResult = pSWPartyTable->m_nSelectedPlanet;
-    return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
+// PC 0x005CA3A0 GOG 0x005CA410
+int CSWVirtualMachineCommands::ExecuteCommandGetGameDifficulty(int nCommand,
+                                                                int nArgs)
+{
+    return g_pVirtualMachine->StackPushInteger(
+               g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nDifficulty) != 0
+               ? 0 : -2000;
 }
 // PC 0x005BB530 GOG 0x005BB5A0
 int CSWVirtualMachineCommands::ExecuteCommandGetGlobalLocation(int nCommand,
@@ -18183,13 +18179,19 @@ int CSWVirtualMachineCommands::ExecuteCommandGetGalaxyMapPlanetSelectable(
     nResult = pServerExoApp->GetPartyTable()->GetPlanetSelectable(oidResult);
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005CA3A0 GOG 0x005CA410
-int CSWVirtualMachineCommands::ExecuteCommandGetGameDifficulty(int nCommand,
-                                                                int nArgs)
+
+// PC 0x005BB500 GOG 0x005BB570
+int CSWVirtualMachineCommands::ExecuteCommandGetGalaxyMapSelectedPlanet(
+    int nCommand, int nArgs)
 {
-    return g_pVirtualMachine->StackPushInteger(
-               g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nDifficulty) != 0
-               ? 0 : -2000;
+    CServerExoApp* pServerExoApp;
+    CSWPartyTable* pSWPartyTable;
+    int nResult;
+
+    pServerExoApp = g_pAppManager->m_pServerExoApp;
+    pSWPartyTable = pServerExoApp->GetPartyTable();
+    nResult = pSWPartyTable->m_nSelectedPlanet;
+    return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
 // PC 0x005CA3D0 GOG 0x005CA440
 int CSWVirtualMachineCommands::ExecuteCommandSetItemNonEquippable(int nCommand,

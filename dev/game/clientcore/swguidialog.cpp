@@ -26,22 +26,6 @@ static inline void SwguidialogTrace1();
 #include "nwrules.h"
 
 #include "nwskill.h"
-// PC 0x007088F0 GOG 0x00708630
-void CSWGuiDialogComputer::OnPanelAdded()
-{
-    m_pSound->Play();
-#ifndef _XBOX
-    CSWGuiPanel::OnPanelAdded();
-#endif
-}
-// PC 0x0070A8A0 GOG 0x0070A5E0
-void CSWGuiDialogComputer::OnPanelRemoved()
-{
-    m_pSound->Stop();
-#ifndef _XBOX
-    CSWGuiPanel::OnPanelRemoved();
-#endif
-}
 
 static void SwguidialogTrace3(CSWGuiDialog* pDialog)
 {
@@ -581,6 +565,24 @@ void CSWGuiDialogComputer::HandleInputEvent(int nEvent, int nState)
         }
     }
     return CSWGuiDialog::HandleInputEvent(nEvent, nState);
+}
+
+// PC 0x007088F0 GOG 0x00708630
+void CSWGuiDialogComputer::OnPanelAdded()
+{
+    m_pSound->Play();
+#ifndef _XBOX
+    CSWGuiPanel::OnPanelAdded();
+#endif
+}
+
+// PC 0x0070A8A0 GOG 0x0070A5E0
+void CSWGuiDialogComputer::OnPanelRemoved()
+{
+    m_pSound->Stop();
+#ifndef _XBOX
+    CSWGuiPanel::OnPanelRemoved();
+#endif
 }
 // PC 0x0070E120 GOG 0x0070D240
 CExoString CSWGuiDialogComputer::GetFullScreenBG()

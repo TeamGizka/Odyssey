@@ -291,17 +291,6 @@ void CExoResFile::AddRefCount()
     m_nRefCount++;
 }
 // PC 0x0040F030 GOG 0x0040DE60
-void CExoEncapsulatedFile::AddRefCount()
-{
-    if (m_nRefCount <= 0)
-    {
-        m_nRefCount = 0;
-        OpenFile();
-    }
-
-    m_nRefCount++;
-}
-// PC 0x0040F030 GOG 0x0040DE60
 void CExoResourceImageFile::AddRefCount()
 {
     if (m_nRefCount <= 0)
@@ -314,17 +303,6 @@ void CExoResourceImageFile::AddRefCount()
 }
 // PC 0x0040E3C0 GOG 0x0040DE80
 void CExoResFile::AddAsyncRefCount()
-{
-    if (m_nAsyncRefCount <= 0)
-    {
-        m_nAsyncRefCount = 0;
-        OpenAsyncFile();
-    }
-
-    m_nAsyncRefCount++;
-}
-// PC 0x0040E3C0 GOG 0x0040DE80
-void CExoEncapsulatedFile::AddAsyncRefCount()
 {
     if (m_nAsyncRefCount <= 0)
     {
@@ -391,40 +369,8 @@ void CExoResFile::DeleteRefCount()
         m_nRefCount = nRefCount;
     }
 }
-// PC 0x0040E4B0 GOG 0x0040DF70
-void CExoEncapsulatedFile::DeleteRefCount()
-{
-    int nRefCount = m_nRefCount;
-
-    if (nRefCount <= 1)
-    {
-        m_nRefCount = 0;
-        CloseFile();
-    }
-    else
-    {
-        nRefCount--;
-        m_nRefCount = nRefCount;
-    }
-}
 // PC 0x0040E4D0 GOG 0x0040DF90
 void CExoResFile::DeleteAsyncRefCount()
-{
-    int nRefCount = m_nAsyncRefCount;
-
-    if (nRefCount <= 1)
-    {
-        m_nAsyncRefCount = 0;
-        CloseAsyncFile();
-    }
-    else
-    {
-        nRefCount--;
-        m_nAsyncRefCount = nRefCount;
-    }
-}
-// PC 0x0040E4D0 GOG 0x0040DF90
-void CExoEncapsulatedFile::DeleteAsyncRefCount()
 {
     int nRefCount = m_nAsyncRefCount;
 
@@ -638,6 +584,18 @@ void CExoResFile::ReadResourceAsync(unsigned long nId, void* pBuffer,
         }
     }
 }
+
+// PC 0x0040E3C0 GOG 0x0040DE80
+void CExoEncapsulatedFile::AddAsyncRefCount()
+{
+    if (m_nAsyncRefCount <= 0)
+    {
+        m_nAsyncRefCount = 0;
+        OpenAsyncFile();
+    }
+
+    m_nAsyncRefCount++;
+}
 // PC 0x0040E3E0 GOG 0x0040E430
 int CExoEncapsulatedFile::CloseFile()
 {
@@ -693,6 +651,40 @@ int CExoEncapsulatedFile::UnloadHeader()
     }
 
     return 1;
+}
+
+// PC 0x0040E4B0 GOG 0x0040DF70
+void CExoEncapsulatedFile::DeleteRefCount()
+{
+    int nRefCount = m_nRefCount;
+
+    if (nRefCount <= 1)
+    {
+        m_nRefCount = 0;
+        CloseFile();
+    }
+    else
+    {
+        nRefCount--;
+        m_nRefCount = nRefCount;
+    }
+}
+
+// PC 0x0040E4D0 GOG 0x0040DF90
+void CExoEncapsulatedFile::DeleteAsyncRefCount()
+{
+    int nRefCount = m_nAsyncRefCount;
+
+    if (nRefCount <= 1)
+    {
+        m_nAsyncRefCount = 0;
+        CloseAsyncFile();
+    }
+    else
+    {
+        nRefCount--;
+        m_nAsyncRefCount = nRefCount;
+    }
 }
 // PC 0x0040E4F0 GOG 0x0040E4C0
 unsigned long CExoEncapsulatedFile::GetResourceSize(unsigned long nId)
@@ -1025,6 +1017,18 @@ void CExoEncapsulatedFile::ReadResourceAsync(unsigned long nId, void* pBuffer,
             }
         }
     }
+}
+
+// PC 0x0040F030 GOG 0x0040DE60
+void CExoEncapsulatedFile::AddRefCount()
+{
+    if (m_nRefCount <= 0)
+    {
+        m_nRefCount = 0;
+        OpenFile();
+    }
+
+    m_nRefCount++;
 }
 
 #ifdef _XBOX

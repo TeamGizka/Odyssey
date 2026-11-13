@@ -38,49 +38,6 @@ static inline void SetBorderFillImage(CSWGuiBorderParams& cParams, const CResRef
 {
     cParams.SetFillImage(cImage, bTile);
 }
-// PC 0x00677700 GOG 0x006774A0
-CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager, int nStyle)
-    : CSWGuiPanel(pManager)
-{
-    if (nStyle == 0)
-    {
-        CSWGuiMessageBox::CSWGuiMessageBox(pManager);
-        return;
-    }
-    m_bAllowCancel = 1;
-    m_bShowButtons = 1;
-    m_bHideButtons = 0;
-    m_bHasIcon = 0;
-    m_n9BC = nStyle;
-    StartLoadFromLayout("datapad_p");
-    SetBorderFillImage(m_pBorder->m_cParams, "", 0);
-    InitControl(m_btnOk, "BTN_OK", 1);
-    InitControl(m_btnCancel, "BTN_CANCEL", 1);
-    InitControl(m_lbMessage, "LB_MESSAGE", 1);
-    StopLoadFromLayout();
-    m_lbMessage.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
-    m_btnOk.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-                     (CSWGuiHandler)&CSWGuiMessageBox::OnOkButtonPressed);
-    m_btnCancel.AddEvent(CSWGuiControl::EVENT_SELECT, this,
-                         (CSWGuiHandler)&CSWGuiMessageBox::OnCancelButtonPressed);
-    CSWGuiLabel* pIcon = &m_lblIcon;
-    pIcon->SetExtent(CSWGuiExtent(0, 10, 32, 32));
-    pIcon->m_bEnabled = 0;
-    AddControl(pIcon);
-    CSWGuiLabel* pProto = (CSWGuiLabel*)m_lbMessage.m_pProtoItem;
-    if (pProto)
-        m_lblMessage.Initialize(pProto->m_cExtent, pProto, 1.0f);
-    CenterPanel();
-    m_cPanelExtent = m_cExtent;
-    m_cMessageExtent = m_lbMessage.m_cExtent;
-    m_bAccepted = 0;
-    m_pCallback = 0;
-    m_pCallbackObject = 0;
-    m_pCallbackControl = 0;
-    m_nPreviousInputClass = 0;
-    m_nOpenSound = 15;
-    m_bFocusOk = 0;
-}
 #endif
 
 void CSWGuiMessageBox::DisplayDeathMessage()
@@ -1340,6 +1297,52 @@ CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager)
     m_n9C4 = 0;
     m_nOpenSound = 15;
 }
+
+#ifndef _XBOX
+// PC 0x00677700 GOG 0x006774A0
+CSWGuiMessageBox::CSWGuiMessageBox(CSWGuiManager* pManager, int nStyle)
+    : CSWGuiPanel(pManager)
+{
+    if (nStyle == 0)
+    {
+        CSWGuiMessageBox::CSWGuiMessageBox(pManager);
+        return;
+    }
+    m_bAllowCancel = 1;
+    m_bShowButtons = 1;
+    m_bHideButtons = 0;
+    m_bHasIcon = 0;
+    m_n9BC = nStyle;
+    StartLoadFromLayout("datapad_p");
+    SetBorderFillImage(m_pBorder->m_cParams, "", 0);
+    InitControl(m_btnOk, "BTN_OK", 1);
+    InitControl(m_btnCancel, "BTN_CANCEL", 1);
+    InitControl(m_lbMessage, "LB_MESSAGE", 1);
+    StopLoadFromLayout();
+    m_lbMessage.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    m_btnOk.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                     (CSWGuiHandler)&CSWGuiMessageBox::OnOkButtonPressed);
+    m_btnCancel.AddEvent(CSWGuiControl::EVENT_SELECT, this,
+                         (CSWGuiHandler)&CSWGuiMessageBox::OnCancelButtonPressed);
+    CSWGuiLabel* pIcon = &m_lblIcon;
+    pIcon->SetExtent(CSWGuiExtent(0, 10, 32, 32));
+    pIcon->m_bEnabled = 0;
+    AddControl(pIcon);
+    CSWGuiLabel* pProto = (CSWGuiLabel*)m_lbMessage.m_pProtoItem;
+    if (pProto)
+        m_lblMessage.Initialize(pProto->m_cExtent, pProto, 1.0f);
+    CenterPanel();
+    m_cPanelExtent = m_cExtent;
+    m_cMessageExtent = m_lbMessage.m_cExtent;
+    m_bAccepted = 0;
+    m_pCallback = 0;
+    m_pCallbackObject = 0;
+    m_pCallbackControl = 0;
+    m_nPreviousInputClass = 0;
+    m_nOpenSound = 15;
+    m_bFocusOk = 0;
+}
+#endif
 // PC 0x00677A20 GOG 0x006777C0
 void CSWGuiMessageBox::SetAllowCancel(int bAllowCancel)
 {

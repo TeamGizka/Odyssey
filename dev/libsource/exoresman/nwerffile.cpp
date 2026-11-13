@@ -523,6 +523,7 @@ int CERFKey::Write(CExoFile& file)
 // PC 0x0062A780 GOG 0x0062A650
 int CERFRes::CopyToFile(CExoFile* pIn, CExoFile* pOut, void* pBuffer)
 {
+    NWERFFILE_TRACE();
     pIn->Seek(m_nOffset, 0);
 
     CAppManager* pApp = g_pAppManager;
