@@ -5856,7 +5856,8 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
         pLevelStats->m_nClass = nClass;
         if (nLevel % 4 == 0)
         {
-            pLevelStats->m_nAbilityIncrease = pClass->m_nPrimaryAbility;
+            unsigned char nAbility = pClass->m_nPrimaryAbility;
+            pLevelStats->m_nAbilityIncrease = nAbility;
         }
         pLevelStats->m_nHitDie = pClass->GetHitDie();
         pLevelStats->m_nForceDie = pClass->GetForceDie();
@@ -6074,7 +6075,7 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
             lstSpells.RemoveAll(0);
             for (unsigned char nIndex = 0; nIndex < GetNumClasses(); ++nIndex)
             {
-                unsigned long nSpell;
+                unsigned long nSpell = -1;
                 switch (GetClass(nIndex))
                 {
                 case CLASS_TYPE_JEDIGUARDIAN:
@@ -6083,17 +6084,15 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
                     case 11:
                         nSpell = CSWSpell::FORM_SABER_I_SHII_CHO;
                         break;
+                    case 12:
+                        nSpell = CSWSpell::FORM_SABER_II_MAKASHI;
+                        break;
                     case 13:
                         nSpell = CSWSpell::FORM_SABER_III_SORESU;
                         break;
                     case 14:
                         nSpell = CSWSpell::FORM_FORCE_I_FOCUS;
                         break;
-                    case 12:
-                        nSpell = CSWSpell::FORM_SABER_II_MAKASHI;
-                        break;
-                    default:
-                        continue;
                     }
                     break;
                 case CLASS_TYPE_JEDICONSULAR:
@@ -6102,17 +6101,15 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
                     case 11:
                         nSpell = CSWSpell::FORM_SABER_I_SHII_CHO;
                         break;
-                    case 14:
-                        nSpell = CSWSpell::FORM_SABER_III_SORESU;
-                        break;
                     case 12:
                         nSpell = CSWSpell::FORM_FORCE_I_FOCUS;
                         break;
                     case 13:
                         nSpell = CSWSpell::FORM_SABER_II_MAKASHI;
                         break;
-                    default:
-                        continue;
+                    case 14:
+                        nSpell = CSWSpell::FORM_SABER_III_SORESU;
+                        break;
                     }
                     break;
                 case CLASS_TYPE_JEDISENTINEL:
@@ -6130,8 +6127,6 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
                     case 14:
                         nSpell = CSWSpell::FORM_SABER_II_MAKASHI;
                         break;
-                    default:
-                        continue;
                     }
                     break;
                 case CLASS_TYPE_JEDIWATCHMAN:
@@ -6147,8 +6142,6 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
                     case 13:
                         nSpell = CSWSpell::FORCE_POWER_MASTER_FORCE_CAMOUFLAGE;
                         break;
-                    default:
-                        continue;
                     }
                     break;
                 case CLASS_TYPE_SITHLORD:
@@ -6169,8 +6162,6 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
                     case 17:
                         nSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_V;
                         break;
-                    default:
-                        continue;
                     }
                     break;
                 case CLASS_TYPE_JEDIMASTER:
@@ -6191,8 +6182,6 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
                     case 17:
                         nSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_V;
                         break;
-                    default:
-                        continue;
                     }
                     break;
                 case CLASS_TYPE_SITHMARAUDER:
@@ -6207,16 +6196,15 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
                     case 9:
                         nSpell = CSWSpell::FORCE_POWER_MASTER_FURY;
                         break;
-                    default:
-                        continue;
                     }
                     break;
-                default:
-                    continue;
                 }
-                pLevelStats->m_lstSpellsAdded[0].Add(nSpell);
-                lstSpells.Add(nSpell);
-                ++nSpellsLeft;
+                if (nSpell != -1)
+                {
+                    pLevelStats->m_lstSpellsAdded[0].Add(nSpell);
+                    lstSpells.Add(nSpell);
+                    ++nSpellsLeft;
+                }
             }
             while (nPointsLeft > 0)
             {
