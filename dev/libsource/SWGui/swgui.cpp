@@ -2048,10 +2048,10 @@ void CSWGuiPanel::InitControl(CSWGuiControl& cControl, const CExoString& sName,
     CSWGuiExtent cExtent = cControl.m_cExtent;
     float fScaleX = 1.0f;
     float fScaleY = 1.0f;
-    if (bScale && g_pAppManager->m_pClientExoApp->GetSWGuiManager() != NULL)
+    if (bScale && g_pAppManager->GetClientExoApp()->GetSWGuiManager() != NULL)
     {
-        fScaleX = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
-        fScaleY = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
+        fScaleX = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
+        fScaleY = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
     }
     cExtent.m_nHeight = (int)(cExtent.m_nHeight * fScaleY);
     cExtent.m_nWidth = (int)(cExtent.m_nWidth * fScaleX);
