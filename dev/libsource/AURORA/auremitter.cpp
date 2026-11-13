@@ -1225,9 +1225,10 @@ void PartEmitter::RenderMotionBlurred()  // PC 0x004BB630
             {
                 vColor = Interpolate(m_vColorStart, m_vColorEnd, fFrameTime);
                 fStart = 1.0f - fFrameTime;
-                fAlpha = fFrameTime * m_fAlphaEnd + fStart * m_fAlphaStart;
-                fWidth = fFrameTime * m_fXSizeEnd;
-                fWidth += fStart * m_fXSizeStart;
+                fAlpha = fStart * m_fAlphaStart;
+                fAlpha += fFrameTime * m_fAlphaEnd;
+                fWidth = fStart * m_fXSizeStart;
+                fWidth += fFrameTime * m_fXSizeEnd;
                 fWidth *= 0.5f;
                 if (m_fYSizeStart == 0.0f && m_fYSizeEnd == 0.0f)
                     fHeight = fWidth;
@@ -1316,13 +1317,8 @@ void PartEmitter::RenderMotionBlurred()  // PC 0x004BB630
             else if (fAlpha > 1.0f) fAlpha = 1.0f;
             fWidth = m_fXSizeStart * 0.5f;
 
-            if (m_fYSizeStart == 0.0f)
-            {
-                if (m_fYSizeEnd == 0.0f)
-                    fHeight = fWidth;
-                else
-                    fHeight = m_fYSizeStart * 0.5f;
-            }
+            if (m_fYSizeStart == 0.0f && m_fYSizeEnd == 0.0f)
+                fHeight = fWidth;
             else
                 fHeight = m_fYSizeStart * 0.5f;
         }
