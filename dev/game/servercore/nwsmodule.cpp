@@ -1197,6 +1197,12 @@ void CSWSModule::SaveModuleStart(CExoString& sPath, CExoString& sName)
         m_pERFStruct = NULL;
     }
 }
+inline BOOL IsModuleCustomToken(unsigned long nIndex)
+{
+    CTlkTable* pTlkTable = g_pTlkTable;
+    unsigned long nToken = pTlkTable->m_pCustomTokens[nIndex].m_nToken;
+    return nToken > CTlkTable::CUSTOMTOKEN_RESERVED_END;
+}
 // PC 0x005081E0
 int CSWSModule::SaveModuleIFOStart(CResGFF* pRes, CResStruct* pStruct)
 {
@@ -1363,11 +1369,11 @@ int CSWSModule::SaveModuleIFOStart(CResGFF* pRes, CResStruct* pStruct)
     pRes->AddList(&cList, pStruct, "Mod_Tokens");
     for (unsigned long i = 0; i < g_pTlkTable->m_nCustomTokenCount; i++)
     {
-        if (g_pTlkTable->m_pCustomTokens[i].m_nToken >
-            CTlkTable::CUSTOMTOKEN_RESERVED_END)
+        if (IsModuleCustomToken(i))
         {
             pRes->AddListElement(&cElement, &cList, GFF_STRUCT_TOKEN);
-            pRes->WriteFieldDWORD(&cElement, g_pTlkTable->m_pCustomTokens[i].m_nToken,
+            unsigned long nToken = g_pTlkTable->m_pCustomTokens[i].m_nToken;
+            pRes->WriteFieldDWORD(&cElement, nToken,
                                  "Mod_TokensNumber");
             pRes->WriteFieldCExoString(&cElement, g_pTlkTable->m_pCustomTokens[i].m_sValue,
                                       "Mod_TokensValue");

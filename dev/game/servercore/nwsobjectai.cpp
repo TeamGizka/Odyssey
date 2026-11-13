@@ -257,6 +257,11 @@ unsigned short CSWSObject::GetIDByAQActionID(unsigned short nAQActionID)
         return ACTION_TYPE_INVALID;
     }
 }
+#define NWSOBJECTAI_DEBUG_LINE_LOW 0.01f
+#define NWSOBJECTAI_DEBUG_LINE_HIGH 1.0f
+static inline void NwsobjectaiDebugLine(const Vector&, const Vector&, int)
+{
+}
 // PC 0x005DAFA0
 int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
 {
@@ -449,6 +454,10 @@ int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
                             Vector vDelta = vLeaderPosition - pMember->m_vPosition;
                             if (vDelta * vDelta >= DIALOG_FOLLOWER_RELOCATE_DISTANCE_SQUARED)
                             {
+                                NwsobjectaiDebugLine(vLeaderPosition + Vector(0.0f, 0.0f, NWSOBJECTAI_DEBUG_LINE_LOW),
+                                                     pMember->m_vPosition + Vector(0.0f, 0.0f, NWSOBJECTAI_DEBUG_LINE_LOW), 0);
+                                NwsobjectaiDebugLine(vLeaderPosition + Vector(0.0f, 0.0f, NWSOBJECTAI_DEBUG_LINE_HIGH),
+                                                     pMember->m_vPosition + Vector(0.0f, 0.0f, NWSOBJECTAI_DEBUG_LINE_HIGH), 1);
                                 CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
                                 Vector vOffset = pParty->m_aPartyMemberData[nMember].m_vFormationOffset;
                                 Vector vFollow = pParty->m_aPartyMemberData[nMember].m_vFormationPosition;
@@ -944,7 +953,7 @@ int CSWSObject::AIActionLockObject(CSWSObjectActionNode* pNode)
             AsSWSCreature()->ActivityManager(CSWSCreature::ACTIVITY_ACTION_OBJECT_INTERACTION);
 
         unsigned long oidObject = (unsigned long)pNode->m_apParam[0];
-        CGameObject* pGameObject = g_pAppManager->m_pServerExoApp->GetGameObject(oidObject);
+        CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidObject);
         CSWSObject* pObject = pGameObject->AsSWSObject();
         if (pObject == NULL)
         {
@@ -1128,7 +1137,10 @@ int CSWSObject::AIActionLockObject(CSWSObjectActionNode* pNode)
                     if (pObject->AsSWSDoor()->m_nCloseLockDC < 1)
                         nDC = 1;
                     else
-                        nDC = pObject->AsSWSDoor()->m_nCloseLockDC;
+                    {
+                        unsigned char nCloseLockDC = pObject->AsSWSDoor()->m_nCloseLockDC;
+                        nDC = nCloseLockDC;
+                    }
                     if (nRoll + nSkillRank >= nDC)
                     {
                         pObject->AsSWSDoor()->m_bLocked = 1;
@@ -1140,7 +1152,10 @@ int CSWSObject::AIActionLockObject(CSWSObjectActionNode* pNode)
                     if (pObject->AsSWSPlaceable()->m_nCloseLockDC < 1)
                         nDC = 1;
                     else
-                        nDC = pObject->AsSWSPlaceable()->m_nCloseLockDC;
+                    {
+                        unsigned char nCloseLockDC = pObject->AsSWSPlaceable()->m_nCloseLockDC;
+                        nDC = nCloseLockDC;
+                    }
                     if (nRoll + nSkillRank >= nDC)
                     {
                         pObject->AsSWSPlaceable()->m_bLocked = 1;

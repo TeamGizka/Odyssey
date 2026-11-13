@@ -2168,6 +2168,7 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
     nNumDice = nDie = 0;
     int nAttack = GetCreature()->GetCombatRound()->GetCurrentAttack();
     short nDamage = 0;
+    short nMaximum;
     int nDifficulty = 100;
     CSWSCombatAttackData* pAttack = GetCreature()->GetCombatRound()->GetAttack(nAttack);
     CSWItemProperty* pProperty;
@@ -2223,7 +2224,7 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
                             pTable->GetINTEntry(nRow, sColumn, &nDie);
                         }
 #endif
-                        short nMaximum = nNumDice * nDie;
+                        nMaximum = nNumDice * nDie;
                         C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
                         float fDamageMult = 0.0f;
                         int nAutoBalance = GetCreature()->m_c250;
@@ -2266,7 +2267,7 @@ int CSWSCreatureStats::GetDamageRoll(CSWSObject* pTarget, int bOffHand,
             {
                 nNumDice = g_pRules->m_pBaseItems->GetBaseItem(pWeapon->GetBaseItemType())->GetNumDice();
                 nDie = g_pRules->m_pBaseItems->GetBaseItem(pWeapon->GetBaseItemType())->GetDieToRoll();
-                short nMaximum = nNumDice * nDie;
+                nMaximum = nNumDice * nDie;
                 C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
                 float fDamageMult;
                 int nAutoBalance = GetCreature()->m_c250;
@@ -5008,9 +5009,10 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
     unsigned char bIgnoreCrePath = GetCreature()->m_c26A;
     bIgnoreCrePath = pRes->ReadFieldBYTE(pStruct, "IgnoreCrePath", bSuccess,
                                          bIgnoreCrePath);
-    GetCreature()->m_c26A = bIgnoreCrePath != 0;
+    unsigned char bIgnore = bIgnoreCrePath != 0;
+    GetCreature()->m_c26A = bIgnore;
     unsigned char nMultiplierSet = pRes->ReadFieldBYTE(pStruct, "MultiplierSet",
-        bSuccess, m_pCreature->m_c250);
+        bSuccess, GetCreature()->m_c250);
     GetCreature()->m_c250 = nMultiplierSet;
     unsigned char nPCLevelAtSpawn = GetCreature()->m_c251;
     nPCLevelAtSpawn = pRes->ReadFieldBYTE(pStruct, "PCLevelAtSpawn", bSuccess,
@@ -5018,7 +5020,7 @@ int CSWSCreatureStats::ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct,
     GetCreature()->m_c251 = nPCLevelAtSpawn;
     int bWillNotRender = GetCreature()->m_n254;
     bWillNotRender = pRes->ReadFieldBYTE(pStruct, "WillNotRender", bSuccess, bWillNotRender);
-    m_pCreature->m_n254 = bWillNotRender;
+    GetCreature()->m_n254 = bWillNotRender;
     int bConfused = GetCreature()->m_n258;
     bConfused = pRes->ReadFieldBYTE(pStruct, "Confused", bSuccess, bConfused);
     GetCreature()->m_n258 = bConfused;
@@ -7280,7 +7282,6 @@ bool CSWSCreatureStats::GetSpellUsesLeft(
 // PC 0x005EF360
 int CSWSCreatureStats::UnReadySpell(unsigned long nSpell)
 {
-    int nHitPointCost = 0;
     int bSuccess = 0;
     CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
     if (pSpell != NULL)
@@ -7289,6 +7290,7 @@ int CSWSCreatureStats::UnReadySpell(unsigned long nSpell)
         int nRoomForceRating = 0;
         if (pArea != NULL)
             nRoomForceRating = pArea->GetRoomForceRating(m_pCreature->m_vPosition);
+        int nHitPointCost = 0;
         int nForceBodyLevel = -1;
         CExoArrayList<CGameEffect*>* pEffects = &m_pCreature->m_lstEffects;
         for (int i = 0; i < pEffects->num; i++)
@@ -7318,8 +7320,8 @@ int CSWSCreatureStats::UnReadySpell(unsigned long nSpell)
                 nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
                 break;
             }
-            nHitPointCost = nFullCost * nPercent / 100;
-            nForcePoints = nHitPointCost;
+            nForcePoints = nFullCost * nPercent / 100;
+            nHitPointCost = nForcePoints;
         }
         else
         {
