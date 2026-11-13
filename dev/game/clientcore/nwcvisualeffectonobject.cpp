@@ -1961,8 +1961,8 @@ void CSWCVisualEffectOnObject::ApplyFOV(unsigned short nVisualEffect)
 void CSWCVisualEffectOnObject::ApplyModelAttachment(
     unsigned short nVisualEffect)
 {
-    unsigned short nAttachment = nVisualEffect - VFX_MODEL_ATTACHMENT_BEGIN;
-    switch (nAttachment)
+    nVisualEffect -= VFX_MODEL_ATTACHMENT_BEGIN;
+    switch (nVisualEffect)
     {
     case MODEL_ATTACHMENT_MEDAL:
         m_sBeamSourceNode = "medalhook";
@@ -1979,14 +1979,9 @@ void CSWCVisualEffectOnObject::ApplyModelAttachment(
     }
     if (m_pEffectModel != 0)
     {
-        if (nAttachment != MODEL_ATTACHMENT_MTHMST)
+        switch (nVisualEffect)
         {
-            CSWCObject* pObject = GetTargetCSWCObject();
-            static_cast<Gob*>(m_pEffectModel)->AttachToObject(
-                pObject->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1),
-                (char*)m_sBeamSourceNode.CStr(), 0);
-        }
-        else
+        case MODEL_ATTACHMENT_MTHMST:
         {
             Gob* pModel = GetTargetCSWCObject()->GetModel(CSWCAnimBase::MODEL_SLOT_HEAD, 1);
             if (pModel != 0)
@@ -2000,6 +1995,16 @@ void CSWCVisualEffectOnObject::ApplyModelAttachment(
             static_cast<Gob*>(m_pEffectModel)->AttachToObject(
                 pModel, (char*)m_sBeamSourceNode.CStr(), 0);
             m_pEffectModel->PlayAnimation("impact", 1.0f, 4, 0);
+            break;
+        }
+        default:
+        {
+            CSWCObject* pObject = GetTargetCSWCObject();
+            static_cast<Gob*>(m_pEffectModel)->AttachToObject(
+                pObject->GetModel(CSWCAnimBase::MODEL_SLOT_MAIN, 1),
+                (char*)m_sBeamSourceNode.CStr(), 0);
+            break;
+        }
         }
     }
 }

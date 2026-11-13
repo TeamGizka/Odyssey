@@ -518,7 +518,7 @@ void CSWCDoor::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 0x006
             }
             if (m_bLocked || nRestrictMode || !m_bLockable || bSaber)
             {
-                break;
+                return;
             }
             lstActions.SetSize(nAction + 1);
             lstActions[nAction].m_sName =

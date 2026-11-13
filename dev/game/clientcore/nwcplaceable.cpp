@@ -867,11 +867,13 @@ void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 
         }
         break;
     case TARGET_ACTION_MENU_SKILLS:
+    {
         if (pPlaceable == NULL)
         {
             break;
         }
-        if (pPlaceable->m_bHasInventory && m_bLocked &&
+        int bHasInventory = pPlaceable->m_bHasInventory;
+        if (bHasInventory && m_bLocked &&
             pCreature->m_pStats->GetCanUseSkill(CSWRules::SKILL_SECURITY))
         {
             lstActions.SetSize(nAction + 1);
@@ -893,6 +895,7 @@ void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 
             GetUseItems(pCreature, lstActions);
         }
         break;
+    }
     case TARGET_ACTION_MENU_MINES:
         if (m_bLocked)
         {
