@@ -1,9 +1,8 @@
 """Extract the cursors and the icon of swkotor2.exe into dev/game/swmain/res/.
 
-icon101.ico is compiled by dev/game/swmain/swmain.rc; cursors.res, the cursors as compiled resources (their
-directories are not what a resource compiler writes for .cur files), is added to the linked executable by the release
-step (cmake/release/release_resources.py). Neither is distributed
-with the source. Run once, with your own copy of the game executable (the Steam release, file version 2.2.0.0):
+dev/game/swmain/swmain.rc compiles icon101.ico and the cursors cursor1.cur ... cursor92.cur. Neither is distributed
+with the source. Run once, with your own copy of the game executable (the GOG release, file version 2.1.0.0, or the
+Steam release, 2.2.0.0; both hold the same images):
 
     python scripts/extract_res.py "C:/path/to/swkotor2.exe"
 
@@ -71,15 +70,8 @@ class Image:
         return table
 
 
-def _res_entry(kind, ident, lang, flags, data):
-    """One record of a .res file: header (numeric type and name) and data, padded to a DWORD boundary."""
-    header = struct.pack('<IIHHHHIHHII', len(data), 32, 0xFFFF, kind, 0xFFFF, ident, 0, flags, lang, 0, 0)
-    return header + data + bytes(-len(data) % 4)
-
-
 def build_files(image):
-    """The icon group as an .ico file and the cursors, images and directories as they are in the executable, as a
-    compiled resource file: {filename: bytes}."""
+    """The icon group as an .ico file and each cursor group as a .cur file: {filename: bytes}."""
     table = image.resources()
     files = {}
     for (ident, lang), data in table.get(RT_GROUP_ICON, {}).items():
@@ -94,14 +86,24 @@ def build_files(image):
             body += blob
             offset += len(blob)
         files['icon%s.ico' % ident] = struct.pack('<HHH', 0, kind, count) + directory + body
-    res = _res_entry(0, 0, 0, 0, b'')[:32]
-    for (ident, lang), data in sorted(table.get(RT_GROUP_CURSOR, {}).items()):
+    for (ident, lang), data in table.get(RT_GROUP_CURSOR, {}).items():
         count = struct.unpack_from('<H', data, 4)[0]
+        directory = b''
+        body = b''
+        offset = 6 + 16 * count
         for i in range(count):
             image_id = struct.unpack_from('<H', data, 6 + 14 * i + 12)[0]
-            res += _res_entry(RT_CURSOR, image_id, lang, 0x1010, table[RT_CURSOR][(image_id, lang)])
-        res += _res_entry(RT_GROUP_CURSOR, ident, lang, 0x1030, data)
-    files['cursors.res'] = res
+            blob = table[RT_CURSOR][(image_id, lang)]
+            hotspot_x, hotspot_y = struct.unpack_from('<HH', blob, 0)
+            bitmap = blob[4:]
+            width, double_height = struct.unpack_from('<ii', bitmap, 4)
+            bits = struct.unpack_from('<H', bitmap, 14)[0]
+            colors = 1 << bits if bits < 8 else 0
+            directory += struct.pack('<BBBBHHII', width & 0xFF, double_height // 2 & 0xFF, colors, 0,
+                                     hotspot_x, hotspot_y, len(bitmap), offset)
+            body += bitmap
+            offset += len(bitmap)
+        files['cursor%s.cur' % ident] = struct.pack('<HHH', 0, 2, count) + directory + body
     return files
 
 
