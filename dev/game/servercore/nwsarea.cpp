@@ -798,7 +798,8 @@ int CSWSArea::LoadAreaHeader(CResStruct* pStruct)
         g_pAppManager->GetServerExoApp()->GetPartyTable()->SetPartyFollowState(0);
     int nUnescapableDefault = m_bUnescapable;
     m_bUnescapable = m_pRes->ReadFieldBYTE(pStruct, "Unescapable", bFieldRead, nUnescapableDefault);
-    m_bDisableTransit = m_pRes->ReadFieldBYTE(pStruct, "DisableTransit", bFieldRead, 0);
+    int bDisableTransit = m_pRes->ReadFieldBYTE(pStruct, "DisableTransit", bFieldRead, 0);
+    m_bDisableTransit = bDisableTransit;
     int nRestrictDefault = m_nPlayerRestrictMode;
     SetPlayerRestrictMode(m_pRes->ReadFieldBYTE(pStruct, "RestrictMode", bFieldRead, nRestrictDefault));
     m_nChanceRain = m_pRes->ReadFieldINT(pStruct, "ChanceRain", bFieldRead, 0);
