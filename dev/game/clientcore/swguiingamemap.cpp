@@ -197,7 +197,7 @@ void CSWGuiInGameMap::SetMapNote(const CExoString& sNote)
     }
     else
     {
-        sText = sNote;
+        sText = g_pTlkTable->GetSimpleString(STRREF_MAP_NOTE) + ": " + sNote;
         m_lblTitle.m_cText.m_cParams.SetText(sText);
     }
 }

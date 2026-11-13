@@ -709,6 +709,7 @@ CSWMiniGame::CSWMiniGame(CSWCArea* pArea)
         m_pFC->GetINTEntry(nLevel, "level", &nValue);
         m_anSwoopUpgrades[i] = nValue;
     }
+    m_fJumpSpeed = 0.0f;
 }
 // PC 0x006C6C40 GOG 0x006C6940
 CSWMiniEnemy* CSWMiniGame::AddEnemy(CExoArrayList<CResRef>& lstModels,

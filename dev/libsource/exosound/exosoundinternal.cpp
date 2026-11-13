@@ -2508,8 +2508,6 @@ int CExoSoundInternal::Initialize(unsigned char n2DVoices,  // PC 0x00626790 GOG
                     m_p3DVoices[nVoice].m_hSample = NULL;
                 }
             }
-            delete[] m_p3DVoices;
-            m_p3DVoices = NULL;
         }
         if (m_p2DVoices != NULL)
         {
@@ -2522,8 +2520,6 @@ int CExoSoundInternal::Initialize(unsigned char n2DVoices,  // PC 0x00626790 GOG
                     m_p2DVoices[nVoice].m_hSample = NULL;
                 }
             }
-            delete[] m_p2DVoices;
-            m_p2DVoices = NULL;
         }
         AIL_close_3D_provider(m_h3DProvider);
         m_h3DProvider = NULL;
@@ -2583,10 +2579,16 @@ int CExoSoundInternal::Initialize(unsigned char n2DVoices,  // PC 0x00626790 GOG
     {
         m_n3DVoices = n3DVoices < MAX_VOICES ? n3DVoices : MAX_VOICES;
         m_n3DVoices = m_n3DVoices > MIN_3D_VOICES ? m_n3DVoices : MIN_3D_VOICES;
-        m_p3DVoices = new C3DVoice[m_n3DVoices];
+        if (m_p3DVoices == NULL)
+        {
+            m_p3DVoices = new C3DVoice[MAX_VOICES];
+        }
         m_n2DVoices = n2DVoices < MAX_VOICES ? n2DVoices : MAX_VOICES;
         m_n2DVoices = m_n2DVoices > MIN_2D_VOICES ? m_n2DVoices : MIN_2D_VOICES;
-        m_p2DVoices = new C2DVoice[m_n2DVoices];
+        if (m_p2DVoices == NULL)
+        {
+            m_p2DVoices = new C2DVoice[MAX_VOICES];
+        }
         AIL_quick_handles(&hDriver, NULL, NULL);
         int n3DVoice = 0;
         for (int nVoice = 0;
@@ -2653,6 +2655,8 @@ int CExoSoundInternal::Initialize(unsigned char n2DVoices,  // PC 0x00626790 GOG
     m_h3DProvider = NULL;
     m_bInitialized = 0;
     m_s3DProviderName = "";
+    m_nEAX = 0;
+    m_bHardware = 0;
     return 0;
 }
 #endif

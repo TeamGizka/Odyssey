@@ -1624,17 +1624,36 @@ CExoString CSWGuiSaveLoadEntry::FormatTimeToString()
     CExoString sMinute;
     CExoString sSecond;
     CExoString sMonth;
-    sMonth.Format("%.2d", sSystemTime.wMonth);
+    switch (sSystemTime.wMonth)
+    {
+        case 1: sMonth = "Jan"; break;
+        case 2: sMonth = "Feb"; break;
+        case 3: sMonth = "Mar"; break;
+        case 4: sMonth = "Apr"; break;
+        case 5: sMonth = "May"; break;
+        case 6: sMonth = "Jun"; break;
+        case 7: sMonth = "Jul"; break;
+        case 8: sMonth = "Aug"; break;
+        case 9: sMonth = "Sep"; break;
+        case 10: sMonth = "Oct"; break;
+        case 11: sMonth = "Nov"; break;
+        case 12: sMonth = "Dec"; break;
+        default: sMonth.Format("%.2d", sSystemTime.wMonth); break;
+    }
     sYear.Format("%.4d", sSystemTime.wYear);
     sDay.Format("%.2d", sSystemTime.wDay);
     sHour.Format("%.2d", sSystemTime.wHour);
     sMinute.Format("%.2d", sSystemTime.wMinute);
     sSecond.Format("%.2d", sSystemTime.wSecond);
 
-    CExoString sTimeStamp;
-    sTimeStamp = sTimeStamp + sHour + ":" + sMinute + ":" + sSecond;
-    sTimeStamp = sTimeStamp + " - ";
-    sTimeStamp = sTimeStamp + sDay + ", " + sMonth + ", " + sYear;
+    CExoString sTimeStamp = g_pTlkTable->GetSimpleString(STRREF_TIME_STAMP);
+    g_pTlkTable->SetCustomToken(STAMP_TOKEN_MONTH, sMonth);
+    g_pTlkTable->SetCustomToken(STAMP_TOKEN_DAY, sDay);
+    g_pTlkTable->SetCustomToken(STAMP_TOKEN_YEAR, sYear);
+    g_pTlkTable->SetCustomToken(STAMP_TOKEN_HOUR, sHour);
+    g_pTlkTable->SetCustomToken(STAMP_TOKEN_MINUTE, sMinute);
+    g_pTlkTable->SetCustomToken(STAMP_TOKEN_SECOND, sSecond);
+    g_pTlkTable->ParseStr(sTimeStamp);
     return sTimeStamp;
 }
 #endif
@@ -1657,9 +1676,9 @@ void CSWGuiSaveLoad::HandleInputEvent(int nEvent, int nState)
             else
             {
                 g_pAppManager->m_pClientExoApp->SetEndGamePending(1, 0.0f, 1);
-                m_pManager->RemovePanel(this);
                 m_bDeferredRemoval = 0;
                 m_nExitState = EXITSTATE_DELETE;
+                return;
             }
 #else
             ExitPanel();

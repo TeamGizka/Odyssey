@@ -2340,7 +2340,7 @@ void RenderEMBM(VertexPrimitiveFlat* pPrimitive)  // PC 0x00488800 GOG 0x004888C
                 }
                 else
                 {
-                    if (pGob && pGob->IsIlluminationEnable())
+                    if (pGob && pGob->IsIlluminationEnable() && AurNV1xLevelShadersAvailable())
                     {
                         float afColor[4];
                         afColor[0] = 0.0f;
@@ -2763,7 +2763,7 @@ void RenderFlatVP(VertexPrimitive* pPrimitive, PartTriMesh* pPart)  // PC 0x0048
     }
     else
     {
-        if (pGob && pGob->IsIlluminationEnable())
+        if (pGob && pGob->IsIlluminationEnable() && AurNV1xLevelShadersAvailable())
         {
             float afColor[4];
             afColor[0] = 0.0f;
@@ -4342,7 +4342,7 @@ void PartTriMesh::Draw(bool bRenderChildren)  // PC 0x00493A30 GOG 0x00493B00
             }
             else
             {
-                if (m_pAurObject && m_pAurObject->IsIlluminationEnable())
+                if (m_pAurObject && m_pAurObject->IsIlluminationEnable() && AurNV1xLevelShadersAvailable())
                 {
                     float afColor[4];
                     afColor[0] = 0.0f;

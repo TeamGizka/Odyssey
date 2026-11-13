@@ -962,7 +962,7 @@ void CSWGuiPartySelection::OnPanelAdded()
             if (pCreature != 0)
             {
                 pPartyTable->SaveMember(nNPC, 0);
-                cPortrait = pCreature->GetPortrait();
+                cPortrait = pCreature->GetPortraitBasedOnAlignment();
                 m_aPartyMembers[nNPC].m_bSpawned = 1;
             }
             else

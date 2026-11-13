@@ -1928,7 +1928,8 @@ int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
                             ACTION_PARAM_FLOAT, &vPosition.m_fX, ACTION_PARAM_FLOAT, &vPosition.m_fY,
                             ACTION_PARAM_FLOAT, &vPosition.m_fZ,
                             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                    AsSWSCreature()->BroadcastVoiceChat(CSWSCreature::VOICE_CHAT_PICK_LOCK);
+                    if (rand() % 100 < 20)
+                        AsSWSCreature()->BroadcastVoiceChat(CSWSCreature::VOICE_CHAT_PICK_LOCK);
                     return ACTION_COMPLETE;
                 }
             }
@@ -2174,7 +2175,7 @@ int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
                 pUnlockEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_UNLOCKED;
                 g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                     0, 0, GetId(), pTarget->GetId(), CServerAIMaster::EVENT_SIGNAL_EVENT, pUnlockEvent);
-                if (AsSWSCreature() != NULL)
+                if (AsSWSCreature() != NULL && rand() % 100 < 20)
                     AsSWSCreature()->BroadcastVoiceChat(CSWSCreature::VOICE_CHAT_PICK_LOCK_SUCCESS);
                 if (AsSWSCreature() != NULL && AsSWSCreature()->GetInParty())
                 {
@@ -2371,7 +2372,7 @@ int CSWSObject::AIActionDoorSaber(CSWSObjectActionNode* pNode)
                         pTarget->AsSWSDoor()->OpenDoor(GetId());
                         g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                             0, 0, GetId(), oidTarget, CServerAIMaster::EVENT_UNLOCK_OBJECT, NULL);
-                        if (AsSWSCreature() != NULL)
+                        if (AsSWSCreature() != NULL && rand() % 100 < 20)
                             AsSWSCreature()->BroadcastVoiceChat(CSWSCreature::VOICE_CHAT_PICK_LOCK_SUCCESS);
                     }
                     else if (AsSWSCreature() != NULL)

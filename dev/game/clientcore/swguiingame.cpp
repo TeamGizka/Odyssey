@@ -2175,8 +2175,7 @@ void CSWGuiDeathDisplay::OnLoadGamePressed(CSWGuiControl* pControl)
     }
     else
     {
-        pSaveLoad->m_bDeferredRemoval = 0;
-        pSaveLoad->m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
+        delete pSaveLoad;
     }
 }
 // PC 0x00679C50 GOG 0x00679A00
@@ -2193,14 +2192,12 @@ void CSWGuiDeathDisplay::OnLastSavePressed(CSWGuiControl* pControl)
     {
         if (pSaveLoad->LaunchMostRecentSave())
         {
-            pSaveLoad->m_bDeferredRemoval = 0;
-            pSaveLoad->m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
+            delete pSaveLoad;
             g_pAppManager->m_pClientExoApp->GetInGameGui()->RemoveDeathMessage(0);
         }
         else
         {
-            pSaveLoad->m_bDeferredRemoval = 0;
-            pSaveLoad->m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
+            delete pSaveLoad;
             CSWGuiMessageBox* pMessageBox =
                 g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
             pMessageBox->SetAllowCancel(0);
@@ -2211,8 +2208,7 @@ void CSWGuiDeathDisplay::OnLastSavePressed(CSWGuiControl* pControl)
     }
     else
     {
-        pSaveLoad->m_bDeferredRemoval = 0;
-        pSaveLoad->m_nExitState = CSWGuiPanel::EXITSTATE_DELETE;
+        delete pSaveLoad;
     }
 }
 // PC 0x00679F60 GOG 0x00679D30

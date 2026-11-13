@@ -7362,6 +7362,17 @@ void CSWCCreature::Setup3DScene(CSWGui3DSceneView& cView,
         if (fLength != Gob::ANIMATION_LENGTH_NOT_FOUND)
             pModel->PlayAnimation(sAlignmentAnimation.CStr(), 1.0f,
                                   Gob::ANIMATION_FLAG_OUT_OF_PLACE, 0.0f);
+        else if (sAnimation.CompareNoCase("pause1"))
+        {
+            if (nAlignment < CSWCCreatureStats::GOOD_EVIL_NEUTRAL_MIN)
+                sAlignmentAnimation = "evil";
+            else if (nAlignment >= CSWCCreatureStats::GOOD_EVIL_LIGHT_SIDE_MIN)
+                sAlignmentAnimation = "good";
+            else
+                sAlignmentAnimation = "neutral";
+            pModel->PlayAnimation(sAlignmentAnimation.CStr(), 1.0f,
+                                  Gob::ANIMATION_FLAG_OUT_OF_PLACE, 0.0f);
+        }
         else
             pModel->PlayAnimation(sAnimation.CStr(), 1.0f,
                                   Gob::ANIMATION_FLAG_OUT_OF_PLACE, 0.0f);

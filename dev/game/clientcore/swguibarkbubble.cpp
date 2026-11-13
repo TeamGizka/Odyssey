@@ -19,6 +19,7 @@
 #include "nwcarea.h"
 #include "nwsarea.h"
 
+#define BARK_MIN_SOUND_HEIGHT 0.5f
 #define BARK_MAX_TIME_STEP 1.5f
 
 static inline void SwguibarkbubbleTrace1();
@@ -115,6 +116,18 @@ void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
                                ->GetGameObject(oidSpeaker)
                                ->AsSWCObject()
                                ->m_vPosition;
+        CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
+        if (pModule != NULL && pModule->GetArea() != NULL)
+        {
+            CSWSArea* pServerArea = pModule->GetArea()->GetServerArea();
+            if (pServerArea != NULL)
+            {
+                float fHeight = g_pAppManager->GetServerExoApp()->ComputeHeight(
+                    pServerArea->GetResRef(), vPosition, 0);
+                if (vPosition.m_fZ - fHeight < BARK_MIN_SOUND_HEIGHT)
+                    vPosition.m_fZ = fHeight + BARK_MIN_SOUND_HEIGHT;
+            }
+        }
         m_pSoundSource->Set3D(1);
         m_pSoundSource->SetReverbEnabled(0);
         m_pSoundSource->SetPosition(vPosition);
