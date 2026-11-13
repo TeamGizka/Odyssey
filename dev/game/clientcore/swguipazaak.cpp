@@ -446,25 +446,21 @@ void CSWGuiPazaakCard::SetCard(CPazaakCard cCard)
         {
             if (cCard.m_bFlipped != 0)
             {
-                CExoString sText(s_pszCardLabels[cCard.m_nType - 6]);
-                m_lblCard.m_cText.m_cParams.SetText(sText);
+                m_lblCard.m_cText.m_cParams.SetText(s_pszCardLabels[cCard.m_nType - 6]);
             }
             else
             {
-                CExoString sText(s_pszCardLabels[cCard.m_nType - 12]);
-                m_lblCard.m_cText.m_cParams.SetText(sText);
+                m_lblCard.m_cText.m_cParams.SetText(s_pszCardLabels[cCard.m_nType - 12]);
             }
         }
         else
         {
-            CExoString sText(s_pszCardLabels[cCard.m_nType]);
-            m_lblCard.m_cText.m_cParams.SetText(sText);
+            m_lblCard.m_cText.m_cParams.SetText(s_pszCardLabels[cCard.m_nType]);
         }
     }
     else
     {
-        CExoString sText("");
-        m_lblCard.m_cText.m_cParams.SetText(sText);
+        m_lblCard.m_cText.m_cParams.SetText("");
     }
 
     CResRef cImage;

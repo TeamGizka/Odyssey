@@ -451,19 +451,19 @@ void CSWGuiInGameCharacter::SetStats()
     SetModText(m_lblConMod, pServerStats->GetCONMod());
     SetLabelBonusPenaltyColour(m_lblCon, nStat - nBase);
     SetLabelBonusPenaltyColour(m_lblConMod, nStat - nBase);
-    nBase = pServerStats->m_nDexterityBase;
-    nStat = pServerStats->GetDEXStat();
-    m_lblDex.m_cText.m_cParams.SetText(nStat);
+    int nDexBase = pServerStats->m_nDexterityBase;
+    unsigned char nDexStat = pServerStats->GetDEXStat();
+    m_lblDex.m_cText.m_cParams.SetText(nDexStat);
     SetModText(m_lblDexMod, pServerStats->GetDEXMod(1));
-    SetLabelBonusPenaltyColour(m_lblDex, nStat - nBase);
-    if (nStat == nBase)
+    SetLabelBonusPenaltyColour(m_lblDex, nDexStat - nDexBase);
+    if (nDexStat == nDexBase)
     {
         SetLabelBonusPenaltyColour(
             m_lblDexMod, pServerStats->GetDEXMod(1) - pServerStats->GetDEXMod(0));
     }
     else
     {
-        SetLabelBonusPenaltyColour(m_lblDexMod, nStat - nBase);
+        SetLabelBonusPenaltyColour(m_lblDexMod, nDexStat - nDexBase);
     }
     int nCapped = 0;
     m_lblFortitudeStat.m_cText.m_cParams.SetText(

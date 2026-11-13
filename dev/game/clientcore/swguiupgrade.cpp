@@ -2862,7 +2862,7 @@ void CSWGuiCreateItem::OnControlEntered(CSWGuiControl* pControl)
                 int nValue = (int)(GetItemBuyValue(pItem) * fRepairFactor);
                 if (nValue <= 0)
                     nValue = 1;
-                m_lblCostValue.m_cText.m_cParams.SetText(CExoString(nValue));
+                m_lblCostValue.m_cText.m_cParams.SetText(nValue);
             }
 
             if (m_lbxStoreItems.m_bEnabled && pRepository != 0)

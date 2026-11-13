@@ -543,7 +543,7 @@ TokenDone:
         if (nStart < nPos && !m_bParsing)
         {
             pText += nStart;
-            sParsed = sParsed + CExoString(pText);
+            sParsed = sParsed + pText;
         }
         sText = sParsed;
     }

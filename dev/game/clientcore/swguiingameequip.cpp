@@ -2979,7 +2979,7 @@ void CSWGuiInGameEquip::UpdateInventory()  // PC 0x00717070 GOG 0x00716D60
         if (m_pCreature != NULL)
         {
             oidItem = m_pCreature->GetEquippedItemID(SLOT_INFO[nSlot].nSlot);
-            pClientItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(oidItem);
+            pClientItem = g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(oidItem);
             if (pClientItem != NULL)
                 pItem = pClientItem->GetServerItem();
         }

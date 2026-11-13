@@ -578,7 +578,8 @@ void CSWGuiSkillFlowChart::CreatePowerChart(CSWSCreatureStats* pStats,
         }
         else
         {
-            if (pStats->m_pCreature->m_bPlayerCreated && !bAllPowers && bAvailable &&
+            CSWSCreature* pCreature = pStats->m_pCreature;
+            if (pCreature->m_bPlayerCreated && !bAllPowers && bAvailable &&
                 !pStats->HasSpell(0, aPowers[i], 0) &&
                 (aPowers[i] == FORCE_POWER_FORCE_CRUSH ||
                  aPowers[i] == FORCE_POWER_PRECOGNITION ||
