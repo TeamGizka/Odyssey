@@ -198,7 +198,8 @@ void CSWGuiInGameMap::OnPanelAdded()
 
     int nMapMode;
 #ifndef _XBOX
-    if (pServer->GetPartyTable()->m_bDisableMap)
+    CSWPartyTable* pPartyTable = pServer->GetPartyTable();
+    if (pPartyTable->m_bDisableMap)
     {
         CResRef cMapImage("LBL_STATIC");
         m_imgMap.m_cParams.SetImage(cMapImage, 0);

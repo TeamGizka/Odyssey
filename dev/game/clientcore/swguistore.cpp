@@ -555,7 +555,7 @@ void CSWGuiStore::SellItem(CSWSItem* pItem)
 void CSWGuiStore::PopulateInventoryItemListBox()
 {
     CSWSCreature* pCreature =
-        g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(m_nCreatureId);
+        g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(m_nCreatureId);
     if (pCreature == NULL)
     {
         return;
@@ -565,13 +565,12 @@ void CSWGuiStore::PopulateInventoryItemListBox()
     CExoArrayList<CSWGuiControl*> lControls;
     int nEntryIndex = 0;
     int bCreateItem = 0;
-    unsigned long nItemCount = 0;
 
     CSWCCreature* pCharacter =
-        g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
+        g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0);
     if (pCharacter != NULL)
     {
-        for (unsigned long nSlot = 0; nSlot < NUM_INVENTORY_SLOTS; ++nSlot)
+        for (int nSlot = 0; nSlot < NUM_INVENTORY_SLOTS; ++nSlot)
         {
             unsigned long nSlotMask = 1 << nSlot;
             if (nSlotMask == INVENTORY_SLOT_CREATUREWEAPON1 ||
@@ -581,7 +580,7 @@ void CSWGuiStore::PopulateInventoryItemListBox()
             {
                 continue;
             }
-            CSWCItem* pClientItem = g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(
+            CSWCItem* pClientItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
                 pCharacter->GetEquippedItemID(nSlotMask));
             if (pClientItem != NULL)
             {
@@ -594,6 +593,7 @@ void CSWGuiStore::PopulateInventoryItemListBox()
         }
     }
 
+    unsigned long nItemCount = 0;
     unsigned long i;
     for (i = 0; i < pRepository->GetNumItems(); i++)
     {

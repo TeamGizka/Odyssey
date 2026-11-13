@@ -666,8 +666,9 @@ void CSWGuiContainer::SetContainer(unsigned long oidContainer, int nType)
     bUseSearch = pPlaceable->m_bIsBodyBag;
     if (!bUseSearch)
     {
-        g_pRules->Get2DArrays()->m_pPlaceables->GetINTEntry(
-            pPlaceable->m_nAppearance, CExoString("UseSearch"), &bUseSearch);
+        CExoString sColumn("UseSearch");
+        unsigned long nAppearance = pPlaceable->m_nAppearance;
+        g_pRules->Get2DArrays()->m_pPlaceables->GetINTEntry(nAppearance, sColumn, &bUseSearch);
     }
     unsigned long nStrRef;
     if (!m_nContainerType && !bUseSearch)
