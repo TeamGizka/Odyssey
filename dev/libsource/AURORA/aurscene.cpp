@@ -527,6 +527,21 @@ inline void SetFogMode(int nFogMode)
 {
     GLRender_SetFogMode(nFogMode);
 }
+
+inline void SetFogModef(Aurora::AuroraEnableEnums nMode, float fValue)
+{
+    GLRender_SetFogModef(nMode, fValue);
+}
+
+inline void SetFogModev(Aurora::AuroraEnableEnums nMode, Vector& vValue)
+{
+    GLRender_SetFogModev(nMode, vValue);
+}
+
+inline int IsEnabled(Aurora::AuroraEnableEnums nCap)
+{
+    return GLRender_IsEnabled(nCap);
+}
 // PC 0x00468240 GOG 0x00468300
 void Scene::RenderGobFirst(CAurObject* pObject)
 {
@@ -1096,19 +1111,19 @@ void Scene::DoFadeBuckets()
                         float fFade = pTriMesh->m_pTileData->m_fFadeAlpha *
                             pTriMesh->m_pTileData->m_fFadeAlpha;
                         Vector vFogColor = fFade * m_vFogColor;
-                        GLRender::SetFogModev(FOG_COLOR, vFogColor);
-                        GLRender::SetFogModef(FOG_DENSITY, (m_fFogDensity + m_fFogDensity));
-                        GLRender::SetFogModef(FOG_START,
+                        SetFogModev(FOG_COLOR, vFogColor);
+                        SetFogModef(FOG_DENSITY, (m_fFogDensity + m_fFogDensity));
+                        SetFogModef(FOG_START,
                             (pTriMesh->m_pTileData->m_fFadeAlpha * m_fFogNear));
-                        GLRender::SetFogModef(FOG_END,
+                        SetFogModef(FOG_END,
                             (pTriMesh->m_pTileData->m_fFadeAlpha * m_fFogFar) + 0.1f);
                         pTriMesh->Draw(false);
                         if (!m_bFog)
                             GLRender_Disable(ENABLE_FOG);
-                        GLRender::SetFogModef(FOG_DENSITY, m_fFogDensity);
-                        GLRender::SetFogModef(FOG_START, m_fFogNear);
-                        GLRender::SetFogModef(FOG_END, m_fFogFar);
-                        GLRender::SetFogModev(FOG_COLOR, m_vFogColor);
+                        SetFogModef(FOG_DENSITY, m_fFogDensity);
+                        SetFogModef(FOG_START, m_fFogNear);
+                        SetFogModef(FOG_END, m_fFogFar);
+                        SetFogModev(FOG_COLOR, m_vFogColor);
                     }
                     else
                         pTriMesh->Draw(false);
@@ -1137,19 +1152,19 @@ void Scene::DoFadeBuckets()
                 float fFade = pTriMesh->m_pTileData->m_fFadeAlpha *
                     pTriMesh->m_pTileData->m_fFadeAlpha;
                 Vector vFogColor = fFade * m_vFogColor;
-                GLRender::SetFogModev(FOG_COLOR, vFogColor);
-                GLRender::SetFogModef(FOG_DENSITY, (m_fFogDensity + m_fFogDensity));
-                GLRender::SetFogModef(FOG_START,
+                SetFogModev(FOG_COLOR, vFogColor);
+                SetFogModef(FOG_DENSITY, (m_fFogDensity + m_fFogDensity));
+                SetFogModef(FOG_START,
                     (pTriMesh->m_pTileData->m_fFadeAlpha * m_fFogNear));
-                GLRender::SetFogModef(FOG_END,
+                SetFogModef(FOG_END,
                     (pTriMesh->m_pTileData->m_fFadeAlpha * m_fFogFar) + 0.1f);
                 pTriMesh->Draw(false);
                 if (!m_bFog)
                     GLRender_Disable(ENABLE_FOG);
-                GLRender::SetFogModef(FOG_DENSITY, m_fFogDensity);
-                GLRender::SetFogModef(FOG_START, m_fFogNear);
-                GLRender::SetFogModef(FOG_END, m_fFogFar);
-                GLRender::SetFogModev(FOG_COLOR, m_vFogColor);
+                SetFogModef(FOG_DENSITY, m_fFogDensity);
+                SetFogModef(FOG_START, m_fFogNear);
+                SetFogModef(FOG_END, m_fFogFar);
+                SetFogModev(FOG_COLOR, m_vFogColor);
             }
             else
                 pTriMesh->Draw(false);
@@ -1858,7 +1873,7 @@ void Scene::DoBinBucket()
         return;
     }
 
-    int bAlphaTestEnabled = GLRender_IsEnabled(ENABLE_ALPHA_TEST);
+    int bAlphaTestEnabled = IsEnabled(ENABLE_ALPHA_TEST);
     if (!bAlphaTestEnabled)
     {
         GLRender_Enable(ENABLE_ALPHA_TEST);
