@@ -2285,7 +2285,7 @@ void RenderFlatDecal(VertexPrimitiveFlat* pPrimitive)
     GLRender_EnableClientState(CLIENT_STATE_COLOR);
 }
 
-void RenderEMBM(VertexPrimitiveFlat* pPrimitive)
+void RenderEMBM(VertexPrimitiveFlat* pPrimitive)  // PC 0x00488800 GOG 0x004888C0
 {
     if (!enablerenderembm)
         return;
@@ -2340,7 +2340,7 @@ void RenderEMBM(VertexPrimitiveFlat* pPrimitive)
                 }
                 else
                 {
-                    if (pGob && pGob->IsIlluminationEnable() && AurNV1xLevelShadersAvailable())
+                    if (pGob && pGob->IsIlluminationEnable())
                     {
                         float afColor[4];
                         afColor[0] = 0.0f;
@@ -2744,7 +2744,7 @@ int PartTriMesh::GetRenderPath()
     return nPath;
 }
 
-void RenderFlatVP(VertexPrimitive* pPrimitive, PartTriMesh* pPart)
+void RenderFlatVP(VertexPrimitive* pPrimitive, PartTriMesh* pPart)  // PC 0x00489490 GOG 0x00489540
 {
     GLRender_Enable(ENABLE_VERTEX_PROGRAM);
     static VertexProgram* standardvp =
@@ -2763,7 +2763,7 @@ void RenderFlatVP(VertexPrimitive* pPrimitive, PartTriMesh* pPart)
     }
     else
     {
-        if (pGob && pGob->IsIlluminationEnable() && AurNV1xLevelShadersAvailable())
+        if (pGob && pGob->IsIlluminationEnable())
         {
             float afColor[4];
             afColor[0] = 0.0f;
@@ -4252,7 +4252,7 @@ void PartTriMesh::Draw(bool bMotionBlurred)
     RestoreModelviewMatrix();
 }
 #else
-void PartTriMesh::Draw(bool bRenderChildren)  // PC 0x00493A30
+void PartTriMesh::Draw(bool bRenderChildren)  // PC 0x00493A30 GOG 0x00493B00
 {
     if (rendertrimesh == 0 && AsPartDanglyMesh() == 0 && m_pAurObject != 0)
     {
@@ -4342,7 +4342,7 @@ void PartTriMesh::Draw(bool bRenderChildren)  // PC 0x00493A30
             }
             else
             {
-                if (m_pAurObject && m_pAurObject->IsIlluminationEnable() && AurNV1xLevelShadersAvailable())
+                if (m_pAurObject && m_pAurObject->IsIlluminationEnable())
                 {
                     float afColor[4];
                     afColor[0] = 0.0f;

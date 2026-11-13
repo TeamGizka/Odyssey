@@ -1852,7 +1852,7 @@ int CSWSObject::AIActionOpenDoor(CSWSObjectActionNode* pNode)  // PC 0x005DE080
     return ACTION_FAILED;
 }
 #endif
-// PC 0x005DE5D0
+// PC 0x005DE5D0 GOG 0x005DE640
 int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
 {
     int bSuccess = 0;
@@ -1928,8 +1928,7 @@ int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
                             ACTION_PARAM_FLOAT, &vPosition.m_fX, ACTION_PARAM_FLOAT, &vPosition.m_fY,
                             ACTION_PARAM_FLOAT, &vPosition.m_fZ,
                             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                    if (rand() % 100 < 20)
-                        AsSWSCreature()->BroadcastVoiceChat(CSWSCreature::VOICE_CHAT_PICK_LOCK);
+                    AsSWSCreature()->BroadcastVoiceChat(CSWSCreature::VOICE_CHAT_PICK_LOCK);
                     return ACTION_COMPLETE;
                 }
             }
@@ -2175,7 +2174,7 @@ int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
                 pUnlockEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_UNLOCKED;
                 g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                     0, 0, GetId(), pTarget->GetId(), CServerAIMaster::EVENT_SIGNAL_EVENT, pUnlockEvent);
-                if (AsSWSCreature() != NULL && rand() % 100 < 20)
+                if (AsSWSCreature() != NULL)
                     AsSWSCreature()->BroadcastVoiceChat(CSWSCreature::VOICE_CHAT_PICK_LOCK_SUCCESS);
                 if (AsSWSCreature() != NULL && AsSWSCreature()->GetInParty())
                 {
@@ -2254,7 +2253,7 @@ int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
     }
     return ACTION_FAILED;
 }
-// PC 0x005DF660
+// PC 0x005DF660 GOG 0x005DF6A0
 int CSWSObject::AIActionDoorSaber(CSWSObjectActionNode* pNode)
 {
     int nDeadTemp = 0;
@@ -2372,7 +2371,7 @@ int CSWSObject::AIActionDoorSaber(CSWSObjectActionNode* pNode)
                         pTarget->AsSWSDoor()->OpenDoor(GetId());
                         g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                             0, 0, GetId(), oidTarget, CServerAIMaster::EVENT_UNLOCK_OBJECT, NULL);
-                        if (AsSWSCreature() != NULL && rand() % 100 < 20)
+                        if (AsSWSCreature() != NULL)
                             AsSWSCreature()->BroadcastVoiceChat(CSWSCreature::VOICE_CHAT_PICK_LOCK_SUCCESS);
                     }
                     else if (AsSWSCreature() != NULL)
