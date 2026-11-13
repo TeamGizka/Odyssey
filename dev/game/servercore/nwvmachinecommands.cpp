@@ -20435,6 +20435,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDisplayMessageBox(int nCommand, int
     }
     return 0;
 }
+#define DATAPAD_READ_BOOLEAN 94
 // PC 0x005CDAE0
 int CSWVirtualMachineCommands::ExecuteCommandDisplayDatapad(int nCommand, int nArgs)
 {
@@ -20451,7 +20452,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDisplayDatapad(int nCommand, int nA
         if (pItem != NULL)
         {
             CSWGuiMessageBox* pDatapad = g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pA4;
-            pItem->m_lVarTable.SetLocalBoolean(94, 1);
+            pItem->m_lVarTable.SetLocalBoolean(DATAPAD_READ_BOOLEAN, 1);
             CExoString sText;
             CExoLocString* pDescription = &pItem->m_sDescIdentified;
             pDescription->GetString(0, &sText, 0);

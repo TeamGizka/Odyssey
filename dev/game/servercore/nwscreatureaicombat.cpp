@@ -44,7 +44,7 @@
 int g_nCombatAttackRoll = 0;
 int g_bDisableDamage = 0;
 // PC 0x00603280
-void CSWSCombatRound::SetCurrentCombatRoundAction(CSWSCombatRoundAction* pAction)
+inline void CSWSCombatRound::SetCurrentCombatRoundAction(CSWSCombatRoundAction* pAction)
 {
     m_pCurrentAction = pAction;
     if (pAction != NULL)
@@ -1613,19 +1613,24 @@ void CSWSCreature::ResolveRangedSpecialAttack(CSWSObject* pTarget,
                         CSWSCreature* pCreature = pTarget->AsSWSCreature();
                         CSWSCreatureStats* pStats = m_pStats;
                         int nDC = pStats->GetLevel(0) + pStats->GetDEXMod(0) * 2;
-                        if (pCreature->GetStats()->GetEffectLinkImmunity(pPushEffect) == 0 &&
-                            pCreature->SavingThrowRoll(SAVING_THROW_FORT, nDC, 0,
-                                                      GetId(), 1, 0, 1) == 0)
+                        if (pCreature->GetStats()->GetEffectLinkImmunity(pPushEffect) == 0)
                         {
-                            pAttack->m_lstEffects.Add(pPushEffect);
-                            pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_KNOCKDOWN;
-                            pAttack->m_Extra4.m_nUnknown14 = 1;
+                            if (pCreature->SavingThrowRoll(SAVING_THROW_FORT, nDC, 0,
+                                                          GetId(), 1, 0, 1) == 0)
+                            {
+                                pAttack->m_lstEffects.Add(pPushEffect);
+                                pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_KNOCKDOWN;
+                            }
+                            else
+                            {
+                                delete pPushEffect;
+                            }
                         }
                         else
                         {
                             delete pPushEffect;
-                            pAttack->m_Extra4.m_nUnknown14 = 1;
                         }
+                        pAttack->m_Extra4.m_nUnknown14 = 1;
                     }
                     break;
                 }
