@@ -403,11 +403,6 @@ inline void SetBlendFunc(unsigned int nSource, unsigned int nDestination)
     glBlendFunc(nSource, nDestination);
 }
 
-inline void DrawIndexedPrimitive(unsigned int nMode, int nCount, const void* pIndices)
-{
-    glDrawElements(nMode, nCount, GL_UNSIGNED_SHORT, pIndices);
-}
-
 inline void MultMatrix(const float* pMatrix)
 {
     glMultMatrixf(pMatrix);
@@ -456,6 +451,21 @@ void (*GLRender::pfuncEnablePixelShaders)(int nShader, CAurTexture* pTexture0,
                                          CAurTexture* pTexture3);
 unsigned short GLRender::m_UsedVertices[GLRender::MAX_SHADOW_VERTICES];
 
+inline void Translate(float fX, float fY, float fZ)
+{
+    glTranslatef(fX, fY, fZ);
+}
+
+inline void Rotate(float fAngle, float fX, float fY, float fZ)
+{
+    glRotatef(fAngle, fX, fY, fZ);
+}
+
+inline void SetDepthMask(unsigned char bWrite)
+{
+    glDepthMask(bWrite);
+}
+
 int GLRender::GetAvailableTextureMemory()
 {
     unsigned char data[256 * 256 * 4];
@@ -492,155 +502,11 @@ int GLRender::GetAvailableTextureMemory()
     return nCount * 256 * 256 * 4;
 }
 
-inline void Translate(float fX, float fY, float fZ)
-{
-    glTranslatef(fX, fY, fZ);
-}
-
-inline void Rotate(float fAngle, float fX, float fY, float fZ)
-{
-    glRotatef(fAngle, fX, fY, fZ);
-}
-
-inline void SetDepthMask(unsigned char bWrite)
-{
-    glDepthMask(bWrite);
-}
-
-int GLRender::SetSpecularMode(int bSeparateSpecular)
-{
-    if (bSeparateSpecular)
-    {
-        if (!CheckExtension("GL_EXT_separate_specular_color",
-                            glGetString(GL_EXTENSIONS)))
-        {
-            return 0;
-        }
-        glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT,
-                      GL_SEPARATE_SPECULAR_COLOR_EXT);
-        return 1;
-    }
-    glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT, GL_SINGLE_COLOR_EXT);
-    return 1;
-}
-
 extern unsigned int g_rgbaPauseOverlayColor;
 
 inline void SetStencilFunc(unsigned int nFunc, int nRef, unsigned int nMask)
 {
     glStencilFunc(nFunc, nRef, nMask);
-}
-
-inline void DrawPrimitive(unsigned int nMode, int nFirst, int nCount)
-{
-    glDrawArrays(nMode, nFirst, nCount);
-}
-
-void BeginImposterRender(unsigned long nRecord)
-{
-    ImposterManager::Record* pRecord = &manRefImposter.m_pImposters[nRecord];
-    if (!wglMakeCurrent(pRecord->m_hBufferDC, pRecord->m_hContext))
-        gluErrorString(glGetError());
-
-    glViewport(0, 0, 256, 256);
-    glClearColor(0.5f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(45.0, 1.0, 0.01, 100.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    gluLookAt(0.0, 0.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-    gluErrorString(glGetError());
-}
-
-void EndImposterRender(unsigned long nRecord)
-{
-    gluErrorString(glGetError());
-    GLRender::SetActiveTexture(0);
-    ImposterManager::Record* pRecord = &manRefImposter.m_pImposters[nRecord];
-    glBindTexture(GL_TEXTURE_2D, pRecord->m_nTexture);
-    GLRender::cm_nGLCurrentTID[GLRender::cm_uiCurrentStage] = 0;
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glFinish();
-    glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, 128, 128, 0);
-    gluErrorString(glGetError());
-    wglMakeCurrent(GLRender::m_hDC, GLRender::m_hGLRC);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, pRecord->m_nTexture);
-    GLRender::cm_nGLCurrentTID[GLRender::cm_uiCurrentStage] = 0;
-    glNormal3f(0.0f, 0.0f, 1.0f);
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(4.0f, 0.0f, 0.0f);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(4.0f, 4.0f, 0.0f);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(0.0f, 4.0f, 0.0f);
-    glEnd();
-}
-
-void GLRender::RenderBox(Vector& vMinimum, Vector& vMaximum)
-{
-    glColor3f(0.0f, 0.0f, 0.0f);
-    glBegin(GL_QUADS);
-    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
-    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
-    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
-    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
-
-    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
-    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
-    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
-    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
-
-    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
-    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
-    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
-    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
-
-    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
-    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
-    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
-    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
-
-    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
-    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
-    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
-    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
-
-    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
-    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
-    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
-    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
-    glEnd();
-}
-
-void GLRender::RenderPausePlane()
-{
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
-    gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glBegin(GL_QUADS);
-    glColor4ubv((GLubyte*)&g_rgbaPauseOverlayColor);
-    glVertex2f(-1.0f, 1.0f);
-    glVertex2f(-1.0f, -1.0f);
-    glVertex2f(1.0f, -1.0f);
-    glVertex2f(1.0f, 1.0f);
-    glEnd();
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_TEXTURE_2D);
-    glEnable(GL_LIGHTING);
 }
 
 static Vector* AllocateVectorArray(int nCount)
@@ -769,17 +635,6 @@ void GLRender::BloomFilterFromTexture(HDC hDC, HGLRC hContext, float fWidth,
     glActiveTextureARB(GL_TEXTURE0_ARB);
     glFlush();
 }
-
-void GLRender::SetUpSoftShadowsARB()
-{
-    glEnable(GL_TEXTURE_RECTANGLE_NV);
-    glBindTexture(GL_TEXTURE_RECTANGLE_NV, cm_nBufferRegionTexture);
-    glCopyTexSubImage2D(GL_TEXTURE_RECTANGLE_NV, 0, 0, 0, 0, 0, g_nScreenWidth, g_nScreenHeight);
-    glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
-    glDisable(GL_TEXTURE_RECTANGLE_NV);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-}
 // PC 0x00448F80 GOG 0x00431EB0
 template <> inline List<unsigned long>::~List()
 {
@@ -791,37 +646,6 @@ template <> inline List<unsigned long>::~List()
 
 inline RequestPoolManager::RequestPoolManager() : m_lstFreePools(0), m_lstPoolLocks(0)
 {
-}
-
-void GLRender::RenderObjectsVTC(Aurora::AuroraPrimitiveTypes nPrimitive,
-                                unsigned long nPool, int nVertices)
-{
-    if (AurVertexBufferObjectARBAvailable())
-    {
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, manRef->GetPool(nPool));
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        glEnableClientState(GL_COLOR_ARRAY);
-        glVertexPointer(3, GL_FLOAT, sizeof(RenderVertexVTC), 0);
-        glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(RenderVertexVTC), (const GLvoid*)12);
-        glTexCoordPointer(2, GL_FLOAT, sizeof(RenderVertexVTC), (const GLvoid*)16);
-        glDrawArrays(primTypeTranslationTable[nPrimitive], 0, nVertices);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-        glDisableClientState(GL_COLOR_ARRAY);
-    }
-    else
-    {
-        glBegin(primTypeTranslationTable[nPrimitive]);
-        RenderVertexVTC* pVertices =
-            (RenderVertexVTC*)manRef->GetPool(nPool);
-        for (int i = 0; i < nVertices; ++i)
-        {
-            glColor4ubv(pVertices[i].color);
-            glTexCoord2f(pVertices[i].u, pVertices[i].v);
-            glVertex3fv(pVertices[i].position);
-        }
-        glEnd();
-    }
 }
 
 void SpitLetters(char* szString)
@@ -6314,6 +6138,70 @@ void GLRender::RenderObjectsVCUP(Aurora::AuroraPrimitiveTypes nPrimitive,
         glEnd();
     }
 }
+
+void GLRender::RenderPausePlane()
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glBegin(GL_QUADS);
+    glColor4ubv((GLubyte*)&g_rgbaPauseOverlayColor);
+    glVertex2f(-1.0f, 1.0f);
+    glVertex2f(-1.0f, -1.0f);
+    glVertex2f(1.0f, -1.0f);
+    glVertex2f(1.0f, 1.0f);
+    glEnd();
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHTING);
+}
+
+inline void DrawPrimitive(unsigned int nMode, int nFirst, int nCount)
+{
+    glDrawArrays(nMode, nFirst, nCount);
+}
+
+inline void DrawIndexedPrimitive(unsigned int nMode, int nCount, const void* pIndices)
+{
+    glDrawElements(nMode, nCount, GL_UNSIGNED_SHORT, pIndices);
+}
+
+void GLRender::RenderObjectsVTC(Aurora::AuroraPrimitiveTypes nPrimitive,
+                                unsigned long nPool, int nVertices)
+{
+    if (AurVertexBufferObjectARBAvailable())
+    {
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, manRef->GetPool(nPool));
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+        glVertexPointer(3, GL_FLOAT, sizeof(RenderVertexVTC), 0);
+        glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(RenderVertexVTC), (const GLvoid*)12);
+        glTexCoordPointer(2, GL_FLOAT, sizeof(RenderVertexVTC), (const GLvoid*)16);
+        glDrawArrays(primTypeTranslationTable[nPrimitive], 0, nVertices);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glDisableClientState(GL_COLOR_ARRAY);
+    }
+    else
+    {
+        glBegin(primTypeTranslationTable[nPrimitive]);
+        RenderVertexVTC* pVertices =
+            (RenderVertexVTC*)manRef->GetPool(nPool);
+        for (int i = 0; i < nVertices; ++i)
+        {
+            glColor4ubv(pVertices[i].color);
+            glTexCoord2f(pVertices[i].u, pVertices[i].v);
+            glVertex3fv(pVertices[i].position);
+        }
+        glEnd();
+    }
+}
 // PC 0x004259B0 GOG 0x00425AC0
 void GLRender::MakeLookUpTexture(float fGamma)
 {
@@ -6344,6 +6232,23 @@ void GLRender::MakeLookUpTexture(float fGamma)
                         GL_LINEAR_MIPMAP_LINEAR);
         delete[] pPixels;
     }
+}
+
+int GLRender::SetSpecularMode(int bSeparateSpecular)
+{
+    if (bSeparateSpecular)
+    {
+        if (!CheckExtension("GL_EXT_separate_specular_color",
+                            glGetString(GL_EXTENSIONS)))
+        {
+            return 0;
+        }
+        glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT,
+                      GL_SEPARATE_SPECULAR_COLOR_EXT);
+        return 1;
+    }
+    glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT, GL_SINGLE_COLOR_EXT);
+    return 1;
 }
 // PC 0x00425B10 GOG 0x00425C20
 unsigned long GLRender::RequestPool(Aurora::AuroraBufferRequestType nType,
@@ -7262,6 +7167,54 @@ void ImposterManager::AllocateImposter(unsigned long nRecord, int nVertices,
     pRecord->m_pBuffer = pBuffer;
     wglMakeCurrent(hOldDC, hOldContext);
 }
+
+void BeginImposterRender(unsigned long nRecord)
+{
+    ImposterManager::Record* pRecord = &manRefImposter.m_pImposters[nRecord];
+    if (!wglMakeCurrent(pRecord->m_hBufferDC, pRecord->m_hContext))
+        gluErrorString(glGetError());
+
+    glViewport(0, 0, 256, 256);
+    glClearColor(0.5f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, 1.0, 0.01, 100.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(0.0, 0.0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    gluErrorString(glGetError());
+}
+
+void EndImposterRender(unsigned long nRecord)
+{
+    gluErrorString(glGetError());
+    GLRender::SetActiveTexture(0);
+    ImposterManager::Record* pRecord = &manRefImposter.m_pImposters[nRecord];
+    glBindTexture(GL_TEXTURE_2D, pRecord->m_nTexture);
+    GLRender::cm_nGLCurrentTID[GLRender::cm_uiCurrentStage] = 0;
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glFinish();
+    glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, 128, 128, 0);
+    gluErrorString(glGetError());
+    wglMakeCurrent(GLRender::m_hDC, GLRender::m_hGLRC);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, pRecord->m_nTexture);
+    GLRender::cm_nGLCurrentTID[GLRender::cm_uiCurrentStage] = 0;
+    glNormal3f(0.0f, 0.0f, 1.0f);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3f(0.0f, 0.0f, 0.0f);
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3f(4.0f, 0.0f, 0.0f);
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3f(4.0f, 4.0f, 0.0f);
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3f(0.0f, 4.0f, 0.0f);
+    glEnd();
+}
 // PC 0x00427840 GOG 0x00427950
 int GLRender::InitRenderSystem()
 {
@@ -7474,6 +7427,42 @@ void GLRender::Shutdown(int bReleaseRenderer)
         delete manRef;
         manRef = 0;
     }
+}
+
+void GLRender::RenderBox(Vector& vMinimum, Vector& vMaximum)
+{
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glBegin(GL_QUADS);
+    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
+    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
+    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
+    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
+
+    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
+    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
+    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
+    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
+
+    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
+    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
+    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
+    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
+
+    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
+    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
+    glVertex3f(vMinimum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
+    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
+
+    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
+    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
+    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
+    glVertex3f(vMinimum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
+
+    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
+    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
+    glVertex3f(vMaximum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
+    glVertex3f(vMaximum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
+    glEnd();
 }
 // PC 0x00427E20 GOG 0x00427F30
 int GLRender::GetFogArraysInfoRef()
@@ -9784,6 +9773,17 @@ void GLRender::RenderOverlayConvolution(unsigned long nTexture)
     glBindTexture(GL_TEXTURE_2D, 0);
     wglReleaseTexImageARB(cm_hConvolutionPBuffer[displaylayer], WGL_FRONT_LEFT_ARB);
     FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
+}
+
+void GLRender::SetUpSoftShadowsARB()
+{
+    glEnable(GL_TEXTURE_RECTANGLE_NV);
+    glBindTexture(GL_TEXTURE_RECTANGLE_NV, cm_nBufferRegionTexture);
+    glCopyTexSubImage2D(GL_TEXTURE_RECTANGLE_NV, 0, 0, 0, 0, 0, g_nScreenWidth, g_nScreenHeight);
+    glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
+    glDisable(GL_TEXTURE_RECTANGLE_NV);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 // PC 0x0042F840 GOG 0x0042F950
 void GLRender::SetUpSoftShadowsATI()
