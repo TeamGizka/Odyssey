@@ -99,7 +99,6 @@ int g_bLoggedIn = 0;
 
 int g_nClientUnused1 = 0;
 int g_bEnableScreenCapture = 1;
-int g_bShowIndicator = 1;
 int g_bUseJoystick = 1;
 static int printanimqueue = 1;
 
@@ -115,6 +114,7 @@ float g_GuiUpdateTime = 0;
 float g_SndUpdateTime = 0;
 int SlowGame = 0;
 int CameraVertAxisFlip = 1;
+int g_bShowIndicator = 1;
 int CameraHorzAxisFlip = 0;
 unsigned long LockRenderDev = 0;
 

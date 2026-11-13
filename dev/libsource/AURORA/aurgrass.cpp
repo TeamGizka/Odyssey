@@ -23,6 +23,7 @@ int enablegrasswind = 1;
 float grassstiffness = 1.0f;
 
 int enablepointwind = 1;
+int dowindstuff = 1;
 
 List<CAurGrassInfo> g_GrassInfo;
 // PC 0x004D2EA0

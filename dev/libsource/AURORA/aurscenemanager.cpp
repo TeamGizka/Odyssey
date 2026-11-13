@@ -36,6 +36,7 @@ int countculledbeams = 0;
 int countbackshadows = 0;
 int countculledgobs = 0;
 CHitInfo* CurrentHitInfo = 0;
+int checkprimitive = 1;
 int hitcheck_static_bsp_parts = 1;
 int hitcheck_static_trimesh_parts = 0;
 int hack_nobsp_hit_ground_zero = 0;

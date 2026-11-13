@@ -526,12 +526,6 @@ int GLRender::SetSpecularMode(int bSeparateSpecular)
 
 extern unsigned int g_rgbaPauseOverlayColor;
 
-const char* GLStats(char* sBuffer)
-{
-    sprintf(sBuffer, "faces[%d]", countfaces);
-    return sBuffer;
-}
-
 inline void SetStencilFunc(unsigned int nFunc, int nRef, unsigned int nMask)
 {
     glStencilFunc(nFunc, nRef, nMask);
@@ -989,6 +983,12 @@ inline void GLRender::DisableCombiners(CAurTexture* pTexture)
         glActiveTextureARB(GLRender::cm_uiCurrentStage + 33984);
     }
     glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+const char* GLStats(char* sBuffer)
+{
+    sprintf(sBuffer, "faces[%d]", countfaces);
+    return sBuffer;
 }
 // PC 0x00425650
 inline void GLRender::SetCombinerConstant0(Vector& vColor, float fAlpha)

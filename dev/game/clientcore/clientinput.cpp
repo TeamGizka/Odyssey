@@ -48,8 +48,6 @@
 #define HOSTILE_TARGET_RANGE 30.0f
 #define TARGET_RANGE 10.0f
 
-float g_fFreeLookUp = 30.0f;
-float g_fFreeLookDown = 30.0f;
 
 static inline void ClientInputTrace();
 #define CLIENTINPUT_TRACE() ClientInputTrace()
@@ -2142,7 +2140,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
             float fMouseX, fMouseY;
             g_pExoInput->GetMouseDelta(&fMouseX, &fMouseY);
             if (bRotate && !g_bLeftMouseDown &&
-                (fMouseY > MOUSE_LOOK_THRESHOLD || fMouseY < -MOUSE_LOOK_THRESHOLD || g_fFreeLookUp > 0.0f) &&
+                (fMouseY > MOUSE_LOOK_THRESHOLD || fMouseY < -MOUSE_LOOK_THRESHOLD || CameraLookUp > 0.0f) &&
                 (fMouseX < MOUSE_LOOK_THRESHOLD || fMouseX > -MOUSE_LOOK_THRESHOLD))
             {
                 CSWCameraOnAStick* pCamera = (CSWCameraOnAStick*)
@@ -2151,8 +2149,8 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
                 if (pCamera != NULL)
                 {
                     C2DA* pCameraStyle = g_pRules->Get2DArrays()->m_pCameraStyle;
-                    pCameraStyle->GetFLOATEntry(0, CExoString("FL_LOOKUP"), &g_fFreeLookUp);
-                    pCameraStyle->GetFLOATEntry(0, CExoString("FL_LOOKDOWN"), &g_fFreeLookDown);
+                    pCameraStyle->GetFLOATEntry(0, CExoString("FL_LOOKUP"), &CameraLookUp);
+                    pCameraStyle->GetFLOATEntry(0, CExoString("FL_LOOKDOWN"), &CameraLookDown);
                     pCamera->m_fDefaultTiltSpeed = pCamera->m_fTiltSpeed;
                     pCamera->m_fTiltSpeed = FREE_LOOK_TILT_SPEED;
                 }
@@ -2167,19 +2165,19 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
                 CSWCameraOnAStick* pCamera = (CSWCameraOnAStick*)
                     g_pAppManager->GetClientExoApp()->GetModule()->
                         GetCamera()->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK);
-                if (g_fFreeLookUp > fTiltUp)
+                if (CameraLookUp > fTiltUp)
                 {
-                    g_fFreeLookUp -= FREE_LOOK_RETURN_STEP;
-                    if (g_fFreeLookUp < fTiltUp)
-                        g_fFreeLookUp = fTiltUp;
+                    CameraLookUp -= FREE_LOOK_RETURN_STEP;
+                    if (CameraLookUp < fTiltUp)
+                        CameraLookUp = fTiltUp;
                 }
                 else if (pCamera != NULL)
                     pCamera->m_fTiltSpeed = pCamera->m_fDefaultTiltSpeed;
-                if (g_fFreeLookDown > fTiltDown)
+                if (CameraLookDown > fTiltDown)
                 {
-                    g_fFreeLookDown -= FREE_LOOK_RETURN_STEP;
-                    if (g_fFreeLookDown < fTiltDown)
-                        g_fFreeLookDown = fTiltDown;
+                    CameraLookDown -= FREE_LOOK_RETURN_STEP;
+                    if (CameraLookDown < fTiltDown)
+                        CameraLookDown = fTiltDown;
                 }
                 else if (pCamera != NULL)
                     pCamera->m_fTiltSpeed = fTiltSpeed;
@@ -2189,19 +2187,19 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
                 CSWCameraOnAStick* pCamera = (CSWCameraOnAStick*)
                     g_pAppManager->GetClientExoApp()->GetModule()->
                         GetCamera()->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK);
-                if (g_fFreeLookUp > 0.0f)
+                if (CameraLookUp > 0.0f)
                 {
-                    g_fFreeLookUp -= FREE_LOOK_RETURN_STEP;
-                    if (g_fFreeLookUp < 0.0f)
-                        g_fFreeLookUp = 0.0f;
+                    CameraLookUp -= FREE_LOOK_RETURN_STEP;
+                    if (CameraLookUp < 0.0f)
+                        CameraLookUp = 0.0f;
                 }
                 else if (pCamera != NULL)
                     pCamera->m_fTiltSpeed = pCamera->m_fDefaultTiltSpeed;
-                if (g_fFreeLookDown > 0.0f)
+                if (CameraLookDown > 0.0f)
                 {
-                    g_fFreeLookDown -= FREE_LOOK_RETURN_STEP;
-                    if (g_fFreeLookDown < 0.0f)
-                        g_fFreeLookDown = 0.0f;
+                    CameraLookDown -= FREE_LOOK_RETURN_STEP;
+                    if (CameraLookDown < 0.0f)
+                        CameraLookDown = 0.0f;
                 }
                 else if (pCamera != NULL)
                     pCamera->m_fTiltSpeed = pCamera->m_fDefaultTiltSpeed;

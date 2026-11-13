@@ -94,6 +94,7 @@ int g_bCreateAllGUIs = 0;
 #else
 int g_bCreateAllGUIs = 1;
 #endif
+int g_bEnableDebugMenu = 1;
 int g_bModifiedSound = 1;
 int bDisableLetterbox = 0;
 
