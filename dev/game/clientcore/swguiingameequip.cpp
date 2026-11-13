@@ -1377,9 +1377,9 @@ void CSWGuiInGameEquip::OnSelectSlot(CSWGuiControl* pControl)
 void CSWGuiInGameEquip::ShowDescription(int bShow)
 {
     ShowCantEquipMessage(0, -1);
+    UpdatePortraits(!bShow);
     if (bShow)
     {
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowGameMenuChangeButtons(0);
         m_lbDesc.SetShown(1);
         m_btnBack.m_cText.m_cParams.SetText(
             g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CANCEL));
@@ -1422,7 +1422,6 @@ void CSWGuiInGameEquip::ShowDescription(int bShow)
     }
     else
     {
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowGameMenuChangeButtons(1);
         m_lbDesc.SetShown(0);
         m_btnBack.m_cText.m_cParams.SetText(
             g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CLOSE));
@@ -1463,6 +1462,16 @@ void CSWGuiInGameEquip::ShowDescription(int bShow)
             m_lbItems.GetControl(i)->AsButton()->m_cBorder.m_cParams.m_fHilightAlpha = 0.0f;
         }
     }
+}
+
+void CSWGuiInGameEquip::UpdatePortraits(int bShow)
+{
+    if (!bShow)
+    {
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowGameMenuChangeButtons(0);
+        return;
+    }
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowGameMenuChangeButtons(1);
 }
 
 // PC 0x007162B0
@@ -2936,7 +2945,7 @@ void CSWGuiInGameEquip::OnPanelAdded()
         m_btnSwapWeapons.SetShown(1);
     }
     SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter());
-    g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowGameMenuChangeButtons(1);
+    UpdatePortraits(1);
     OnEnterSlot(m_pActiveControl);
     CSWGuiPanel::OnPanelAdded();
 }
@@ -3359,7 +3368,7 @@ void CSWGuiInGameEquip::HandleInputEvent(int nEvent, int nState)
                         }
                     }
                     OnEnterSlot(m_pActiveControl);
-                    g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowGameMenuChangeButtons(1);
+                    UpdatePortraits(1);
                 }
             }
             break;

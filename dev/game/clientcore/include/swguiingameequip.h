@@ -158,6 +158,7 @@ public:
     int EquipItem(CSWSItem*, int, int);
     void UnequipItem(unsigned long, int);
     void ShowCantEquipMessage(int bShow, unsigned long nStrRef);
+    void UpdatePortraits(int bShow);
 
     enum { CHARACTER_UNSET = -2, CHARACTER_PLAYER = -1 };
 
