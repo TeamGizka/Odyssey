@@ -602,8 +602,8 @@ void CSWGuiInGameMap::HandleInputEvent(int nEvent, int nState)
             }
             else
             {
-                CSWGuiMessageBox* pMessageBox =
-                    g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+                CGuiInGame* pInGameGui = g_pAppManager->GetClientExoApp()->GetInGameGui();
+                CSWGuiMessageBox* pMessageBox = pInGameGui->m_pMessageBox;
                 pMessageBox->SetAllowCancel(0);
                 pMessageBox->SetMessage(m_nMessageStrRef);
                 pMessageBox->SetCallback(0, 0, 0);

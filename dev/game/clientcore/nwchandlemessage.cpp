@@ -6647,7 +6647,8 @@ int CSWCMessage::HandleServerToPlayerInventory(unsigned char nMinor)
                         {
                             pCreature = g_pAppManager->m_pClientExoApp->GetPlayerCreature();
                         }
-                        if (pCreature->GetEquippedItemID(pItem->m_nEquipSlot) == pItem->m_nId)
+                        int nEquipSlot = pItem->m_nEquipSlot;
+                        if (pCreature->GetEquippedItemID(nEquipSlot) == pItem->m_nId)
                         {
                             if (pItem->m_nEquipSlot != INVENTORY_SLOT_HEAD ||
                                 (g_pGuiMan != NULL &&

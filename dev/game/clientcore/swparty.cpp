@@ -1475,7 +1475,8 @@ void CSWParty::Update(float fTime)
         for (int nEffect = 0; nEffect < pServerLeader->m_lstEffects.num; ++nEffect)
         {
             CGameEffect* pEffect = pServerLeader->m_lstEffects.element[nEffect];
-            if (pEffect->GetEffectType() == CSWSEffectListHandler::EFFECT_FURY)
+            int nType = pEffect->GetEffectType();
+            if (nType == CSWSEffectListHandler::EFFECT_FURY)
             {
                 bFury = 1;
             }

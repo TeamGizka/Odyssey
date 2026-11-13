@@ -474,20 +474,19 @@ CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
     UpdateScreen(0.033333335f, 0, 0);
     for (int i = 0; i < 6; i++)
     {
-        CSWGuiClassSelChar* pCharacter = &m_aCharacters[i];
 #ifdef _XBOX
         sControl.Format("3D_MODEL%d", i + 1);
-        CSWGui3DSceneView* pView = &pCharacter->m_viewModel;
+        CSWGui3DSceneView* pView = &m_aCharacters[i].m_viewModel;
         InitControl(*pView, sControl, 1);
         sControl.Format("BTN_SEL%d", i + 1);
-        CSWGuiButton* pButton = &pCharacter->m_btnSelect;
+        CSWGuiButton* pButton = &m_aCharacters[i].m_btnSelect;
         InitControl(*pButton, sControl, 1);
 #else
         sControl.Format("BTN_SEL%d", i + 1);
-        CSWGuiButton* pButton = &pCharacter->m_btnSelect;
+        CSWGuiButton* pButton = &m_aCharacters[i].m_btnSelect;
         InitControl(*pButton, sControl, 1);
         sControl.Format("3D_MODEL%d", i + 1);
-        CSWGui3DSceneView* pView = &pCharacter->m_viewModel;
+        CSWGui3DSceneView* pView = &m_aCharacters[i].m_viewModel;
         InitControl(*pView, sControl, 1);
 #endif
         pButton->m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
@@ -582,8 +581,8 @@ CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
             pCreature->SetPosition(vOrigin);
             pCreature->CGPauseCycle(0.0f, 1);
         }
-        pCharacter->m_pCreature = pCreature;
-        pCharacter->m_fTransitionTime = CLASSSELECTION_TRANSITION_IDLE;
+        m_aCharacters[i].m_pCreature = pCreature;
+        m_aCharacters[i].m_fTransitionTime = CLASSSELECTION_TRANSITION_IDLE;
         fProgress = (float)++nProgress / LOAD_STEPS;
         g_pAppManager->GetClientExoApp()->SetLoadBarProgress(
             (int)(fProgress * 100.0f), 1);

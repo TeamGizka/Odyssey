@@ -1824,9 +1824,6 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
         case 10014:
             nClientAnimation = 280;
             break;
-        case 10077:
-            nClientAnimation = 280;
-            break;
         case 10012:
             nClientAnimation = 301;
             break;
@@ -1896,6 +1893,9 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
             nClientAnimation = 537;
             break;
         case 10302:
+            nClientAnimation = 280;
+            break;
+        case 10077:
             nClientAnimation = 280;
             break;
         }

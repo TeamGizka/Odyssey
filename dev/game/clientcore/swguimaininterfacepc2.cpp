@@ -1285,8 +1285,8 @@ void CSWGuiMainInterface::GetActionIcon(
                 }
                 break;
             }
-            break;
         }
+        break;
     case CSWSObject::ACTION_COMBAT:
         if (pCombatAction != NULL)
         {

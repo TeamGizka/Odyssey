@@ -2590,6 +2590,7 @@ void CSWCCreatureStats::GetMenuInfo(
                                         lstSpells[k] = pSpell;
                                         lstSpellIds[k] = nSpellId;
                                     }
+                                    continue;
                                 }
                                 if (lstSlots[k] > nSlot)
                                 {

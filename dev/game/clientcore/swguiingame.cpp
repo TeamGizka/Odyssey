@@ -1587,23 +1587,22 @@ void CSWGuiMessageBox::FixMessageLabel()
     cControl = m_lblIcon.m_cExtent;
     cControl.m_nLeft = nCenter - cControl.m_nWidth / 2;
     m_lblIcon.SetExtent(cControl);
-    CSWGuiExtent* pOkExtent = &m_btnOk.m_cExtent;
     if (m_n9BC != 0)
     {
-        cControl.m_nLeft = cPanel.m_nWidth / 2 - 60;
         cControl.m_nTop = 245;
-        cControl.m_nWidth = 120;
         cControl.m_nHeight = 28;
+        cControl.m_nWidth = 120;
+        cControl.m_nLeft = cPanel.m_nWidth / 2 - cControl.m_nWidth / 2;
     }
     else
     {
-        cControl = *pOkExtent;
+        cControl = m_btnOk.m_cExtent;
         cControl.m_nTop = m_lbMessage.m_cExtent.m_nHeight + m_lbMessage.m_cExtent.m_nTop + 4;
         cControl.m_nLeft = nCenter - cControl.m_nWidth / 2;
     }
     m_btnOk.SetExtent(cControl);
     cControl = m_btnCancel.m_cExtent;
-    cControl.m_nTop = pOkExtent->m_nHeight + pOkExtent->m_nTop + 2;
+    cControl.m_nTop = m_btnOk.m_cExtent.m_nHeight + m_btnOk.m_cExtent.m_nTop + 2;
     cControl.m_nLeft = nCenter - cControl.m_nWidth / 2;
     m_btnCancel.SetExtent(cControl);
     CenterPanel();
