@@ -1023,7 +1023,8 @@ void CSWMiniGame::DoHitCheck()
             }
             else
             {
-                for (int nEnemy = m_lstEnemyIds.num - 1; nEnemy >= 0; --nEnemy)
+                int nEnemies = m_lstEnemyIds.num;
+                for (int nEnemy = nEnemies - 1; nEnemy >= 0; --nEnemy)
                 {
                     CSWTrackFollower* pEnemy =
                         (CSWTrackFollower*)pArray->GetMiniGameObject(
@@ -1045,31 +1046,34 @@ void CSWMiniGame::DoHitCheck()
                 }
 
                 if (!bHit)
-                for (int nObstacle = m_lstObstacleIds.num - 1; nObstacle >= 0;
-                     --nObstacle)
                 {
-                    CSWMGObstacle* pObstacle =
-                        (CSWMGObstacle*)pArray->GetMiniGameObject(
-                            m_lstObstacleIds.element[nObstacle],
-                            SWMG_OBJECT_OBSTACLE);
-                    if (pObstacle != NULL)
+                    int nObstacles = m_lstObstacleIds.num;
+                    for (int nObstacle = nObstacles - 1; nObstacle >= 0 && !bHit;
+                         --nObstacle)
                     {
-                        if (HitCheckBullet(pBullet, pObstacle->m_pModel,
-                                           pObstacle))
+                        CSWMGObstacle* pObstacle =
+                            (CSWMGObstacle*)pArray->GetMiniGameObject(
+                                m_lstObstacleIds.element[nObstacle],
+                                SWMG_OBJECT_OBSTACLE);
+                        if (pObstacle != NULL)
                         {
-                            pObstacle->OnHitBullet(0);
-                            delete m_lstBullets.element[nBullet];
-                            m_lstBullets.DelIndex(nBullet);
-                            bHit = 1;
-                            pObstacle->m_pModel->DisableAlwaysRender();
-                            delete pObstacle;
-                            m_lstObstacleIds.DelIndex(nObstacle);
-                            break;
+                            if (HitCheckBullet(pBullet, pObstacle->m_pModel,
+                                               pObstacle))
+                            {
+                                pObstacle->OnHitBullet(0);
+                                delete m_lstBullets.element[nBullet];
+                                m_lstBullets.DelIndex(nBullet);
+                                bHit = 1;
+                                pObstacle->m_pModel->DisableAlwaysRender();
+                                delete pObstacle;
+                                m_lstObstacleIds.DelIndex(nObstacle);
+                                break;
+                            }
                         }
-                    }
-                    else
-                    {
-                        m_lstObstacleIds.DelIndex(nObstacle);
+                        else
+                        {
+                            m_lstObstacleIds.DelIndex(nObstacle);
+                        }
                     }
                 }
             }
@@ -1107,8 +1111,8 @@ void CSWMiniGame::DoHitCheck()
                     CSWSArea* pArea =
                         g_pAppManager->GetServerExoApp()->GetModule()->GetArea();
                     unsigned long oidObject;
-                    for (int bMore = pArea->GetFirstObjectInArea(oidObject);
-                         bMore; bMore = pArea->GetNextObjectInArea(oidObject))
+                    int bMore = pArea->GetFirstObjectInArea(oidObject);
+                    while (bMore)
                     {
                         CSWMGBehaviorBullet* pBehavior =
                             (CSWMGBehaviorBullet*)pBullet->GetBehavior(
@@ -1125,17 +1129,22 @@ void CSWMiniGame::DoHitCheck()
                             (pObject->AsSWCCreature() != NULL ||
                              pObject->AsSWCPlaceable() != NULL))
                         {
-                            Gob* pModel;
+                            Gob* pModel = NULL;
                             if (pObject->AsSWCCreature() != NULL)
                             {
                                 CSWSCreature* pServerCreature =
                                     pObject->AsSWCCreature()->GetServerCreature();
-                                if (pServerCreature != NULL &&
-                                    pServerCreature->GetInParty())
+                                if (pServerCreature != NULL)
                                 {
-                                    continue;
+                                    if (!pServerCreature->GetInParty())
+                                    {
+                                        pModel = pObject->AsSWCCreature()->GetModel(0xff, 1);
+                                    }
                                 }
-                                pModel = pObject->AsSWCCreature()->GetModel(0xff, 1);
+                                else
+                                {
+                                    pModel = pObject->AsSWCCreature()->GetModel(0xff, 1);
+                                }
                             }
                             else
                             {
@@ -1166,6 +1175,7 @@ void CSWMiniGame::DoHitCheck()
                                 }
                             }
                         }
+                        bMore = pArea->GetNextObjectInArea(oidObject);
                     }
                 }
             }
