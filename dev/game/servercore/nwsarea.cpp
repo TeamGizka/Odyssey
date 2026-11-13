@@ -946,8 +946,9 @@ int CSWSArea::LoadAreaHeader(CResStruct* pStruct)
     m_nStealthXPLoss = m_pRes->ReadFieldDWORD(pStruct, "StealthXPLoss", bFieldRead, nStealthXPLossDefault);
     int nStealthXPEnabledDefault = m_bStealthXPEnabled;
     m_bStealthXPEnabled = m_pRes->ReadFieldBYTE(pStruct, "StealthXPEnabled", bFieldRead, nStealthXPEnabledDefault);
-    m_nDirtyARGB[0] = m_pRes->ReadFieldINT(pStruct, "DirtyARGBOne", bFieldRead, 0);
-    m_nDirtySize[0] = m_pRes->ReadFieldINT(pStruct, "DirtySizeOne", bFieldRead, 16);
+    int nIndex = 0;
+    m_nDirtyARGB[nIndex] = m_pRes->ReadFieldINT(pStruct, "DirtyARGBOne", bFieldRead, 0);
+    m_nDirtySize[nIndex] = m_pRes->ReadFieldINT(pStruct, "DirtySizeOne", bFieldRead, 16);
     int nDirtyFormulaOne = m_pRes->ReadFieldINT(pStruct, "DirtyFormulaOne", bFieldRead, 1);
     if (nDirtyFormulaOne == 1)
     {
@@ -957,10 +958,11 @@ int CSWSArea::LoadAreaHeader(CResStruct* pStruct)
     {
         nDirtyFormulaOne = 1;
     }
-    m_nDirtyFormula[0] = nDirtyFormulaOne;
-    m_nDirtyFunc[0] = m_pRes->ReadFieldINT(pStruct, "DirtyFuncOne", bFieldRead, 0);
-    m_nDirtyARGB[1] = m_pRes->ReadFieldINT(pStruct, "DirtyARGBTwo", bFieldRead, 0);
-    m_nDirtySize[1] = m_pRes->ReadFieldINT(pStruct, "DirtySizeTwo", bFieldRead, 16);
+    m_nDirtyFormula[nIndex] = nDirtyFormulaOne;
+    m_nDirtyFunc[nIndex] = m_pRes->ReadFieldINT(pStruct, "DirtyFuncOne", bFieldRead, 0);
+    nIndex = 1;
+    m_nDirtyARGB[nIndex] = m_pRes->ReadFieldINT(pStruct, "DirtyARGBTwo", bFieldRead, 0);
+    m_nDirtySize[nIndex] = m_pRes->ReadFieldINT(pStruct, "DirtySizeTwo", bFieldRead, 16);
     int nDirtyFormulaTwo = m_pRes->ReadFieldINT(pStruct, "DirtyFormulaTwo", bFieldRead, 1);
     if (nDirtyFormulaTwo == 1)
     {
@@ -970,10 +972,11 @@ int CSWSArea::LoadAreaHeader(CResStruct* pStruct)
     {
         nDirtyFormulaTwo = 1;
     }
-    m_nDirtyFormula[1] = nDirtyFormulaTwo;
-    m_nDirtyFunc[1] = m_pRes->ReadFieldINT(pStruct, "DirtyFuncTwo", bFieldRead, 0);
-    m_nDirtyARGB[2] = m_pRes->ReadFieldINT(pStruct, "DirtyARGBThree", bFieldRead, 0);
-    m_nDirtySize[2] = m_pRes->ReadFieldINT(pStruct, "DirtySizeThree", bFieldRead, 16);
+    m_nDirtyFormula[nIndex] = nDirtyFormulaTwo;
+    m_nDirtyFunc[nIndex] = m_pRes->ReadFieldINT(pStruct, "DirtyFuncTwo", bFieldRead, 0);
+    nIndex = 2;
+    m_nDirtyARGB[nIndex] = m_pRes->ReadFieldINT(pStruct, "DirtyARGBThree", bFieldRead, 0);
+    m_nDirtySize[nIndex] = m_pRes->ReadFieldINT(pStruct, "DirtySizeThree", bFieldRead, 16);
     int nDirtyFormulaThree = m_pRes->ReadFieldINT(pStruct, "DirtyFormulaThree", bFieldRead, 1);
     if (nDirtyFormulaThree == 1)
     {
@@ -983,8 +986,8 @@ int CSWSArea::LoadAreaHeader(CResStruct* pStruct)
     {
         nDirtyFormulaThree = 1;
     }
-    m_nDirtyFormula[2] = nDirtyFormulaThree;
-    m_nDirtyFunc[2] = m_pRes->ReadFieldINT(pStruct, "DirtyFuncThree", bFieldRead, 0);
+    m_nDirtyFormula[nIndex] = nDirtyFormulaThree;
+    m_nDirtyFunc[nIndex] = m_pRes->ReadFieldINT(pStruct, "DirtyFuncThree", bFieldRead, 0);
     m_bTransitionPending = m_pRes->ReadFieldBYTE(pStruct, "TransPending", bFieldRead, m_bTransitionPending);
     m_nNextTransitionPendingId = m_pRes->ReadFieldBYTE(pStruct, "TransPendNextID", bFieldRead, m_nNextTransitionPendingId);
     m_nCurrentTransitionPendingId = m_pRes->ReadFieldBYTE(pStruct, "TransPendCurrID", bFieldRead, m_nCurrentTransitionPendingId);
