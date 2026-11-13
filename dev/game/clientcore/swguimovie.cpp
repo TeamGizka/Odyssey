@@ -145,9 +145,10 @@ void CSWGuiTitleMovies::PopulateMovies()
     g_pExoBase->GetDirectoryList(&lMovies, "MOVIES:", RESTYPE_BIK, 0, 0);
 #endif
     CExoString sAlias;
-    for (int nPackage = 1; nPackage < CTlkTable::NUM_CONTENT_PKGS; nPackage++)
+    int i;
+    for (i = 1; i < CTlkTable::NUM_CONTENT_PKGS; i++)
     {
-        sAlias.Format("live%d", nPackage);
+        sAlias.Format("live%d", i);
         if (g_pExoBase->m_pExoAliasList->GetAliasPath(sAlias, 0).GetLength() > 0)
         {
             sAlias = sAlias + ":movies";
@@ -167,9 +168,9 @@ void CSWGuiTitleMovies::PopulateMovies()
     int nUnlocked = 0;
 #endif
 
-    for (int nMovie = 0; nMovie < nMovies; nMovie++)
+    for (i = 0; i < nMovies; i++)
     {
-        sMovie = lMovies[nMovie];
+        sMovie = lMovies[i];
         sMovie = sMovie.SubString(0, sMovie.GetLength() - 4);
         int nAlwaysShow;
         {

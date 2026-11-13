@@ -2510,8 +2510,10 @@ void CSWGuiUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
         if (nSlot != UPGRADE_SLOT_COLOR_CRYSTAL || m_nItemListMode != ITEMLIST_LIGHTSABER)
         {
             m_pSelectedItem->RemoveUpgrade(pOldItem, nSlot);
-            m_pSelectedItem->m_anUpgradeSlot[nSlot] = -1;
-            pOldItem->m_anUpgradeSlot[nSlot] = -1;
+            CSWSItem* pSelected = m_pSelectedItem;
+            pSelected->m_anUpgradeSlot[nSlot] = -1;
+            CSWSItem* pOld = pOldItem;
+            pOld->m_anUpgradeSlot[nSlot] = -1;
         }
         pOldItem = 0;
     }
@@ -5116,6 +5118,11 @@ CSWGuiUpgradeItemSelect::CSWGuiUpgradeItemSelect(CSWGuiManager* pManager)
 void CSWGuiCreateItem::SetItemList()
 {
     C2DA* pTable;
+    int nGroup;
+    int nSkill;
+    int nLevelRequired;
+    int nAlignmentRequired;
+    int nBaseSkill;
 
     CItemRepository* pRepository = m_pStore->m_pItemRepository;
     CSWSCreature* pCreature =
@@ -5146,12 +5153,6 @@ void CSWGuiCreateItem::SetItemList()
     int nAlignment = pCreature->m_pStats->GetSimpleAlignmentGoodEvil();
     for (int nRow = 0; nRow < pTable->m_nNumRows; nRow++)
     {
-        int nGroup;
-        int nSkill;
-        int nLevelRequired;
-        int nAlignmentRequired;
-        int nBaseSkill;
-
         if (!pTable->GetINTEntry(nRow, "group", &nGroup))
             return;
         if (!pTable->GetINTEntry(nRow, "skill", &nSkill))

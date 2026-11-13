@@ -2083,8 +2083,8 @@ void PartSkin::DrawBumpedOutShellVP()  // PC 0x004AA490
         while (pPart->m_pParent != 0)
         {
             pPart = pPart->m_pParent;
-            vTranslation = vTranslation + qRotation *
-                (-pPart->m_qOrientation * -pPart->m_vPosition);
+            Vector vLocal = -pPart->m_qOrientation * -pPart->m_vPosition;
+            vTranslation = vTranslation + qRotation * vLocal;
             qRotation = qRotation * -pPart->m_qOrientation;
         }
         GatherBones(pPart, tbones, qbones, vTranslation, qRotation);

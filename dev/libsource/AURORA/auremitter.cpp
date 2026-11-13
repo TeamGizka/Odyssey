@@ -1523,11 +1523,7 @@ void PartEmitter::moveParticleStandard(float fTimeStep)
 {
     MdlNodeEmitter* pNode = static_cast<MdlNodeEmitter*>(m_pNode);
     Vector vPosition;
-#ifdef _XBOX
     int bInheriting = pNode->IsInheriting();
-#else
-    int bInheriting = pNode->m_EmitterFlags.m_bInheriting;
-#endif
     Vector vWind;
 #ifdef _XBOX
     unsigned char bBouncing = pNode->IsBouncing();
@@ -1552,7 +1548,7 @@ void PartEmitter::moveParticleStandard(float fTimeStep)
         }
         else
         {
-            vPosition = pParticle->m_vPosition;
+            vPosition = Vector(pParticle->m_vPosition);
         }
 
         if (pNode->IsInheritingLocal() &&
