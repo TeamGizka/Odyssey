@@ -399,20 +399,17 @@ int CSWSDialog::GetStartEntryOneLiner(CSWSObject* pOwner,
         }
 
         int bActive;
-        if (!bHasActive1)
+        if (!bHasActive1 && !bHasActive2)
         {
-            if (bHasActive2)
-            {
-                bActive = bActive2;
-            }
-            else
-            {
-                bActive = 1;
-            }
+            bActive = 1;
         }
         else if (!bHasActive2)
         {
             bActive = bActive1;
+        }
+        else if (!bHasActive1)
+        {
+            bActive = bActive2;
         }
         else if (m_pStartingEntries[nStart].m_nLogic == CSWSDialogActiveEntry::LOGIC_AND)
         {
@@ -2344,20 +2341,17 @@ int CSWSDialog::SendDialogReplies(CSWSObject* pOwner, unsigned long nPlayerId)
             }
 
             int bActive;
-            if (!bHasActive1)
+            if (!bHasActive1 && !bHasActive2)
             {
-                if (bHasActive2)
-                {
-                    bActive = bActive2;
-                }
-                else
-                {
-                    bActive = 1;
-                }
+                bActive = 1;
             }
             else if (!bHasActive2)
             {
                 bActive = bActive1;
+            }
+            else if (!bHasActive1)
+            {
+                bActive = bActive2;
             }
             else if (m_pEntries[m_nCurrentEntry].m_pReplies[nReply].m_nLogic == CSWSDialogActiveEntry::LOGIC_AND)
             {
