@@ -730,7 +730,8 @@ void CSWGuiAbilitiesCharGen::OnRecommendButton()
     if (m_bLevelUp != 0)
     {
         unsigned char nLevel = m_pCreature->m_pStats->GetNumClasses() - 1;
-        pClass = &g_pRules->m_pClasses[m_pCreature->m_pStats->GetClass(nLevel)];
+        unsigned char nClass = m_pCreature->m_pStats->GetClass(nLevel);
+        pClass = &g_pRules->m_pClasses[nClass];
         switch (pClass->m_nPrimaryAbility)
         {
         case 0:
@@ -756,7 +757,8 @@ void CSWGuiAbilitiesCharGen::OnRecommendButton()
     else
     {
         unsigned char nLevel = m_pCreature->m_pStats->GetNumClasses() - 1;
-        pClass = &g_pRules->m_pClasses[m_pCreature->m_pStats->GetClass(nLevel)];
+        unsigned char nClass = m_pCreature->m_pStats->GetClass(nLevel);
+        pClass = &g_pRules->m_pClasses[nClass];
         m_aScore[0] = pClass->GetStrength();
         m_aScore[1] = pClass->GetDexterity();
         m_aScore[2] = pClass->GetConstitution();

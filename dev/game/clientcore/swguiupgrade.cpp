@@ -4412,9 +4412,11 @@ void CSWGuiCreateMedicalItem::OnControlInvAButton(CSWGuiControl* pControl)
     {
         if (pControl->m_nEvent == CSWGuiControl::EVENT_CONFIRM)
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+        unsigned long oidItem =
+            static_cast<CSWGuiStoreItemEntry*>(pControl)->m_oidItem;
         CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
-        CSWSItem* pItem = pServer->GetItemByGameObjectID(pServer->ClientToServerObjectId(
-            static_cast<CSWGuiStoreItemEntry*>(pControl)->m_oidItem));
+        CSWSItem* pItem = pServer->GetItemByGameObjectID(
+            pServer->ClientToServerObjectId(oidItem));
         if (pItem != 0)
         {
             CServerExoApp* pCreatureServer = g_pAppManager->m_pServerExoApp;
@@ -4430,8 +4432,8 @@ void CSWGuiCreateMedicalItem::OnControlInvAButton(CSWGuiControl* pControl)
             if (max(1u, pItem->GetCost() / CHEMICAL_VALUE_DIVISOR) * m_fRepairFactor >
                 nConfirmationValue)
             {
-                CSWGuiMessageBox* pMessageBox =
-                    g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+                CGuiInGame* pInGameGui = g_pAppManager->GetClientExoApp()->GetInGameGui();
+                CSWGuiMessageBox* pMessageBox = pInGameGui->m_pMessageBox;
                 CExoString sMessage;
                 g_pTlkTable->SetCustomToken(0, CExoString(nConfirmationValue));
                 sMessage = g_pSWTlkTable->Fetch(STRREF_CONFIRM_BREAKDOWN_VALUE, 0, 0, 0);
@@ -4441,7 +4443,7 @@ void CSWGuiCreateMedicalItem::OnControlInvAButton(CSWGuiControl* pControl)
                     (CSWGuiHandler)&CSWGuiCreateMedicalItem::SellItemCallback, pControl);
                 pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
                                               CGuiInGame::COLOR_NEW_HIGHLIGHT);
-                g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(
+                g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(
                     pMessageBox, 1, 1);
             }
             else
