@@ -312,11 +312,11 @@ int CExoStreamingSoundSourceInternal::IsPlaying()
         {
             m_resRef.CopyToString(szResRef);
             int nStatus = AIL_stream_status(m_hStream);
-            if (_strnicmp(szResRef, "al_", 3) != 0 &&
-                _strnicmp(szResRef, "as_", 3) != 0 &&
-                _strnicmp(szResRef, "mus_", 4) != 0 &&
-                _strnicmp(szResRef, "amb_", 4) != 0 &&
-                _strnicmp(szResRef, "bed_", 4) != 0)
+            if (strnicmp(szResRef, "al_", 3) != 0 &&
+                strnicmp(szResRef, "as_", 3) != 0 &&
+                strnicmp(szResRef, "mus_", 4) != 0 &&
+                strnicmp(szResRef, "amb_", 4) != 0 &&
+                strnicmp(szResRef, "bed_", 4) != 0)
             {
                 EXOLOG("VO stream %s status %d", szResRef, nStatus);
             }
@@ -327,11 +327,11 @@ int CExoStreamingSoundSourceInternal::IsPlaying()
     if (g_bVODebugEnabled)
     {
         m_resRef.CopyToString(szResRef);
-        if (_strnicmp(szResRef, "al_", 3) != 0 &&
-            _strnicmp(szResRef, "as_", 3) != 0 &&
-            _strnicmp(szResRef, "mus_", 4) != 0 &&
-            _strnicmp(szResRef, "amb_", 4) != 0 &&
-            _strnicmp(szResRef, "bed_", 4) != 0)
+        if (strnicmp(szResRef, "al_", 3) != 0 &&
+            strnicmp(szResRef, "as_", 3) != 0 &&
+            strnicmp(szResRef, "mus_", 4) != 0 &&
+            strnicmp(szResRef, "amb_", 4) != 0 &&
+            strnicmp(szResRef, "bed_", 4) != 0)
         {
             EXOLOG("VO stream %s not playing, sound mode %d", szResRef,
                    g_pExoSound->GetSoundMode());
