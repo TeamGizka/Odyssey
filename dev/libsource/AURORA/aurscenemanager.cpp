@@ -684,6 +684,51 @@ void LightBins(BSPNode* pNode, void* pData)
         pNodeData->m_lstBins[i]->ReloadColor();
     }
 }
+// PC 0x00481F20
+static void ConstructCameraFadePlane(Scene* pScene)
+{
+    AurscenemanagerTrace2();
+    CAurBehaviorCameraFollow* pFollow = 0;
+    if (CurrentCamera && CurrentCamera->m_pBehavior)
+    {
+        pFollow = CurrentCamera->m_pBehavior->AsBehaviorCameraFollow();
+    }
+    if (pFollow == 0)
+    {
+        pScene->m_nCameraFadeState = Scene::FADING_OFF;
+        return;
+    }
+
+    Vector vTarget = pFollow->GetTargetWorldPosition();
+    Vector vCamera = CurrentCamera->GetPosition();
+    Vector vForward = vTarget - vCamera;
+    Vector vDirection = normalize(vForward);
+    float fHorizontal = sqrt(vDirection.m_fX * vDirection.m_fX +
+                             vDirection.m_fY * vDirection.m_fY);
+    if (fHorizontal < AUR_MINIMUM_FADE_HORIZONTAL)
+    {
+        pScene->m_nCameraFadeState = Scene::FADING_OFF;
+    }
+    else
+    {
+        vDirection.m_fZ = 0.0f;
+        vForward.m_fZ = 0.0f;
+        static Vector vertZ(0.0f, 0.0f, 1.0f);
+        Vector vRight = Vector(-vDirection.m_fY, vDirection.m_fX, 0.0f) * fadeWidth;
+        Vector vLeft = -vRight;
+        Vector vEdge = vForward * (1.0f - wedgeCloseFactor) - vRight;
+        Vector vNormalRight = normalize(cross(vertZ, vEdge));
+        Plane planeRight(vNormalRight, -(vNormalRight * (vRight + vCamera)));
+        vEdge = vForward * (1.0f - wedgeCloseFactor) - vLeft;
+        Vector vNormalLeft = normalize(cross(vEdge, vertZ));
+        Plane planeLeft(vNormalLeft, -(vNormalLeft * (vLeft + vCamera)));
+        vDirection = vDirection * (1.0f / fHorizontal);
+        pScene->m_nCameraFadeState = Scene::FADING_ON;
+        CurrentCamera->m_planeFadePerpendicular = Plane(vDirection,
+            -((vTarget - vForward * perpCloseFactor) * vDirection));
+        CurrentCamera->SetFadePlanes(planeRight, planeLeft);
+    }
+}
 // PC 0x00482330
 void AurProcessActiveBins()
 {
@@ -1066,51 +1111,6 @@ void DeleteNonGobParts(BSPNode* pNode, void* pData)
     }
 
     delete pNodeData;
-}
-// PC 0x00481F20
-static void ConstructCameraFadePlane(Scene* pScene)
-{
-    AURSCENEMANAGER_TRACE();
-    CAurBehaviorCameraFollow* pFollow = 0;
-    if (CurrentCamera && CurrentCamera->m_pBehavior)
-    {
-        pFollow = CurrentCamera->m_pBehavior->AsBehaviorCameraFollow();
-    }
-    if (pFollow == 0)
-    {
-        pScene->m_nCameraFadeState = Scene::FADING_OFF;
-        return;
-    }
-
-    Vector vTarget = pFollow->GetTargetWorldPosition();
-    Vector vCamera = CurrentCamera->GetPosition();
-    Vector vForward = vTarget - vCamera;
-    Vector vDirection = normalize(vForward);
-    float fHorizontal = sqrt(vDirection.m_fX * vDirection.m_fX +
-                             vDirection.m_fY * vDirection.m_fY);
-    if (fHorizontal < AUR_MINIMUM_FADE_HORIZONTAL)
-    {
-        pScene->m_nCameraFadeState = Scene::FADING_OFF;
-    }
-    else
-    {
-        vDirection.m_fZ = 0.0f;
-        vForward.m_fZ = 0.0f;
-        static Vector vertZ(0.0f, 0.0f, 1.0f);
-        Vector vRight = Vector(-vDirection.m_fY, vDirection.m_fX, 0.0f) * fadeWidth;
-        Vector vLeft = -vRight;
-        Vector vEdge = vForward * (1.0f - wedgeCloseFactor) - vRight;
-        Vector vNormalRight = normalize(cross(vertZ, vEdge));
-        Plane planeRight(vNormalRight, -(vNormalRight * (vRight + vCamera)));
-        vEdge = vForward * (1.0f - wedgeCloseFactor) - vLeft;
-        Vector vNormalLeft = normalize(cross(vEdge, vertZ));
-        Plane planeLeft(vNormalLeft, -(vNormalLeft * (vLeft + vCamera)));
-        vDirection = vDirection * (1.0f / fHorizontal);
-        pScene->m_nCameraFadeState = Scene::FADING_ON;
-        CurrentCamera->m_planeFadePerpendicular = Plane(vDirection,
-            -((vTarget - vForward * perpCloseFactor) * vDirection));
-        CurrentCamera->SetFadePlanes(planeRight, planeLeft);
-    }
 }
 // PC 0x00483080
 void UpdateStaticLighting(Scene* pScene, PartLight* pLight)
