@@ -3081,3 +3081,5 @@ CSWSDialogAnimation::CSWSDialogAnimation()
 static inline void NwsdialogTrace1()
 {
 }
+
+char sOut[255] = "                                                  ";
