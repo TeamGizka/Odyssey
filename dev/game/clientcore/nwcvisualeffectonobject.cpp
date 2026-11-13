@@ -2414,7 +2414,8 @@ void CSWCVisualEffectOnObject::ReAttachVisualEffect()
             sAttachNode = "talkdummy";
         }
         CAurObject* pHeadModel;
-        if (pObject->GetAnimationBase() != 0 &&
+        CSWCAnimBase* pAnimBase = pObject->GetAnimationBase();
+        if (pAnimBase != 0 &&
             pObject->GetAnimationBase()->m_nAnimationType ==
                 CSWCAnimBase::ANIMATION_TYPE_BTYPE)
         {
