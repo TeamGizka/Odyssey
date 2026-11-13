@@ -98,6 +98,9 @@ void FreeFileNames(CExoString* pNames)
     delete [] pNames;
 }
 
+static unsigned long s_nFilesWritten = 0;
+static unsigned long s_nBytesWritten = 0;
+
 // PC 0x004010C0
 CSWReentrantServerStats::CSWReentrantServerStats()
 {
