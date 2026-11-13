@@ -349,8 +349,8 @@ void LookAtAnimation::Control()
         qLook = qArc * qLocal;
         float fYaw = Yaw(qLook);
         vDirection = normalize(vDirection);
-        float fPitch = (float)asin(vDirection.m_fZ);
-        fPitch = Pitch(Quaternion(Vector(1.0f, 0.0f, 0.0f), fPitch));
+        float fAngle = (float)asin(vDirection.m_fZ);
+        float fPitch = Pitch(Quaternion(Vector(1.0f, 0.0f, 0.0f), fAngle));
         fYaw = min(max(fYaw, -m_fYawLimit), m_fYawLimit);
         fPitch = min(max(fPitch, -m_fPitchLimit), m_fPitchLimit);
         qLook = YawPitchRoll(fYaw, 0.0f, 0.0f) * YawPitchRoll(0.0f, fPitch, 0.0f);
@@ -371,15 +371,14 @@ void LookAtAnimation::Control()
         m_pStartOrientation[1] = qLocal.m_fY;
         m_pStartOrientation[2] = qLocal.m_fZ;
         m_pStartOrientation[3] = qLocal.m_fW;
-        m_pEndOrientation[0] = qLocal.m_fX;
-        m_pEndOrientation[1] = qLocal.m_fY;
-        m_pEndOrientation[2] = qLocal.m_fZ;
-        m_pEndOrientation[3] = qLocal.m_fW;
+        m_pEndOrientation[0] = m_pEndOrientation[1] = m_pEndOrientation[2] = 0.0f;
+        m_pEndOrientation[3] = 1.0f;
         m_pOutOfOrderRun->m_fPreviousTime = 0.0f;
         m_pOutOfOrderRun->m_fTime = 0.0f;
         m_pOutOfOrderRun->m_fBlendWeight = 1.0f;
         m_pOutOfOrderRun->m_nFlags = AnimRun::FLAG_SUPPRESS_KEY_REPORTS | AnimRun::FLAG_CURRENT_ANIMATION_PENDING;
-        ((Animation*)m_pTree)->m_fLength = 0.0f;
+        m_pOutOfOrderRun->m_bDone = 0;
+        ((Animation*)m_pTree)->m_fLength = 0.25f;
     }
 }
 // PC 0x004B2B20 GOG 0x004B2C30
