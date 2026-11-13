@@ -7,6 +7,7 @@ set(MILES_DIR "${THIRDPARTY}/Miles/6.5h")
 set(MILES_LIB_DIR "${THIRDPARTY}/Miles/6.6g")
 set(BINK_DIR "${THIRDPARTY}/Bink/1.5v")
 set(BINK_LIB_DIR "${THIRDPARTY}/Bink/1.6b")
+set(DX81_DIR "${THIRDPARTY}/DirectX/8.1")
 
 # Include directories shared by every project.
 add_library(kotor_includes INTERFACE)

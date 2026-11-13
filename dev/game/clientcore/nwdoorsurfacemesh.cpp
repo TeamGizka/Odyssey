@@ -21,11 +21,6 @@ CSWDoorSurfaceMesh::CSWDoorSurfaceMesh()
 CSWDoorSurfaceMesh::~CSWDoorSurfaceMesh()
 {
 }
-
-int LoadDoorWalkMesh(CSWDoorSurfaceMesh* pMesh, CResDWK* pRes)
-{
-    return pMesh->LoadMeshText(pRes->GetDWKDataPtr(), pRes->GetDWKSize());
-}
 // PC 0x00616280
 void CSWDoorSurfaceMesh::SetDoorType(int nType)
 {
