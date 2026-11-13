@@ -597,13 +597,13 @@ void CSWGuiPanel::StartLoadFromLayout(const CResRef& cLayout, int bScalePosition
         float fScaleY;
         if (g_pAppManager->m_pClientExoApp->GetSWGuiManager() != NULL)
         {
-            fScaleX = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
-            fScaleY = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
+            fScaleX = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nWidth / ((float)g_nGUIWidth);
+            fScaleY = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nHeight / ((float)g_nGUIHeight);
         }
         else
         {
-            fScaleX = (float)g_nScreenWidth / (float)g_nGUIWidth;
-            fScaleY = (float)g_nScreenHeight / (float)g_nGUIHeight;
+            fScaleX = (float)g_nScreenWidth / ((float)g_nGUIWidth);
+            fScaleY = (float)g_nScreenHeight / ((float)g_nGUIHeight);
         }
         if (bScaleSize)
         {

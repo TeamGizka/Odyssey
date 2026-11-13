@@ -33,6 +33,7 @@
 
 bool g_bVODebugEnabled;
 static inline void NwsdialogTrace1();
+static inline C2DA* NwsdialogEmotionTable();
 // PC 0x005E6980 GOG 0x005E69B0
 inline CSWSDialogNode::CSWSDialogNode()
 {
@@ -605,21 +606,19 @@ void CSWSDialog::LoadDialogBase(CSWSDialogBase& dialogBase, CResGFF* pGFF,
             &resStruct, "Emotion", bFieldSuccess, 0);
         dialogBase.m_nFacialAnim = pGFF->ReadFieldINT(
             &resStruct, "FacialAnim", bFieldSuccess, 0);
-        int nAlienRace;
-        if (dialogBase.m_sSpeaker == "" && dialogBase.m_nAlienRaceNode <= 0)
+        int bNoSpeaker = dialogBase.m_sSpeaker == "";
+        int nAlienRace = dialogBase.m_nAlienRaceNode;
+        if (bNoSpeaker && nAlienRace <= 0)
             nAlienRace = m_nAlienRaceOwner;
-        else
-            nAlienRace = dialogBase.m_nAlienRaceNode;
         if (nAlienRace > 0)
         {
-            int nRace = nAlienRace;
             CExoString sEmotion;
             CExoString sAlienVO;
-            int bFound = g_pRules->m_p2DArrays->m_pEmotion->GetCExoStringEntry(
-                dialogBase.m_nEmotion, CExoString("LABEL"), &sEmotion);
+            int bFound = NwsdialogEmotionTable()->GetCExoStringEntry(
+                dialogBase.m_nEmotion, "LABEL", &sEmotion);
             if (bFound &&
-                g_pRules->m_p2DArrays->m_pAlienVO->GetCExoStringEntry(
-                    nRace, sEmotion, &sAlienVO))
+                g_pRules->Get2DArrays()->m_pAlienVO->GetCExoStringEntry(
+                    nAlienRace, sEmotion, &sAlienVO))
             {
                 dialogBase.m_cSoundResRef = sAlienVO;
                 if (dialogBase.m_cSoundResRef.IsValid())
@@ -3081,6 +3080,11 @@ CSWSDialogAnimation::CSWSDialogAnimation()
 }
 static inline void NwsdialogTrace1()
 {
+}
+
+static inline C2DA* NwsdialogEmotionTable()
+{
+    return g_pRules->Get2DArrays()->m_pEmotion;
 }
 
 char sOut[255] = "                                                  ";
