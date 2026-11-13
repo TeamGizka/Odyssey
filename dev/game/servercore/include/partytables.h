@@ -81,6 +81,7 @@ public:
     int SetPlanetAvailable(unsigned long nPlanet, int bAvailable);
     int GetPlanetAvailable(unsigned long nPlanet);
     int SetSelectedPlanet(int nPlanet);
+    int GetSelectedPlanet() { return m_nSelectedPlanet; }
     void AutoLevelUpNPCs();
     int KillNPCObject(int nNPC, int bFade);
     int RemoveMember(int nNPC);

@@ -1216,11 +1216,10 @@ void CSWGuiInGameGalaxyMap::HandleInputEvent(int nEvent, int nState)
                     pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
                                                   CGuiInGame::COLOR_NEW_HIGHLIGHT);
                     pMessageBox->SetMessage(STRREF_ALREADY_AT_LOCATION);
-                    g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(
+                    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(
                         pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
-                    return;
                 }
-                if (pPartyTable->GetPlanetSelectable(pPartyTable->m_nSelectedPlanet))
+                else if (pPartyTable->GetPlanetSelectable(pPartyTable->m_nSelectedPlanet))
                 {
                     if (g_pVirtualMachine != 0)
                     {
@@ -1238,8 +1237,8 @@ void CSWGuiInGameGalaxyMap::HandleInputEvent(int nEvent, int nState)
                     if (pPartyTable->m_nSelectedPlanet != -1)
                     {
                         int nReason = -1;
-                        if (g_pRules->Get2DArrays()->m_pJournal->GetINTEntry(
-                                pPartyTable->m_nSelectedPlanet, "LockedOutReason", &nReason))
+                        if (g_pRules->Get2DArrays()->GetJournal()->GetINTEntry(
+                                pPartyTable->GetSelectedPlanet(), "LockedOutReason", &nReason))
                         {
                             CSWGuiMessageBox* pMessageBox =
                                 g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
@@ -1248,9 +1247,8 @@ void CSWGuiInGameGalaxyMap::HandleInputEvent(int nEvent, int nState)
                             pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
                                                           CGuiInGame::COLOR_NEW_HIGHLIGHT);
                             pMessageBox->SetMessage(nReason);
-                            g_pAppManager->m_pClientExoApp->GetSWGuiManager()->AddPanel(
+                            g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(
                                 pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
-                            return;
                         }
                     }
                 }

@@ -375,6 +375,7 @@ public:
     C2DA* GetDialogAnimations() { return m_pDialogAnimations; }
 
     C2DA* GetAppearance() { return m_pAppearance; }
+    C2DA* GetJournal() { return m_pJournal; }
 
     C2DA* GetEffectIcon() { EXOXBOXASSERT(m_pEffectIcon); return m_pEffectIcon; }
     C2DA* GetStateScripts() { EXOXBOXASSERT(m_pStateScripts); return m_pStateScripts; }
