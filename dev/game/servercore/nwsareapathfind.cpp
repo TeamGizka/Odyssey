@@ -3166,7 +3166,7 @@ int CSWSArea::NoCreaturesOnLine(const Vector& vStart, const Vector& vEnd,
     }
     float fMaxYBound = fMaxY + AREA_CREATURE_LINE_SEARCH_MARGIN;
     float fMinYBound = fMinY - AREA_CREATURE_LINE_SEARCH_MARGIN;
-    for (; nFirst <= nLast; nFirst++)
+    while (nFirst <= nLast)
     {
         unsigned long oidOther = m_lstObjectIds[nFirst];
         CSWSCreature* pOther = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
@@ -3181,7 +3181,10 @@ int CSWSArea::NoCreaturesOnLine(const Vector& vStart, const Vector& vEnd,
             Vector vCenter = pOther->m_vPosition;
             vCenter.m_fZ = 0.0f;
             if (vCenter.m_fY > fMaxYBound || vCenter.m_fY < fMinYBound)
+            {
+                nFirst++;
                 continue;
+            }
             if (fDeltaX == 0.0f)
             {
                 if (vCenter.m_fY <= fMinY)
@@ -3251,6 +3254,7 @@ int CSWSArea::NoCreaturesOnLine(const Vector& vStart, const Vector& vEnd,
                 }
             }
         }
+        nFirst++;
     }
     if (poidOverlap != NULL)
     {
