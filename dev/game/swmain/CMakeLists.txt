@@ -374,5 +374,6 @@ kotor_archive(clientcore2
 target_link_libraries(swmain PRIVATE
   opengl32.lib glu32.lib version.lib imm32.lib kernel32.lib user32.lib gdi32.lib ole32.lib lib_exomovieplayer
   lib_exoresman lib_aurorainterface lib_namegen lib_AURORA lib_math3d lib_worldtimer lib_servercore lib_pathfindinfo
-  lib_nwscript lib_netlayer lib_exosound lib_exoresfmt lib_exoinput "${MILES_LIB_DIR}/lib/mss32.lib" lib_exobase
-  lib_clientcore NvTriStrip lib_clientcore2 "${DX81_DIR}/lib/dinput8.lib" "${BINK_LIB_DIR}/lib/binkw32.lib" winmm.lib)
+  lib_nwscript lib_netlayer lib_exosound lib_exoresfmt lib_exoinput lib_exobase
+  lib_clientcore NvTriStrip lib_clientcore2 "${DX81_DIR}/lib/dinput8.lib" "${MILES_LIB_DIR}/lib/mss32.lib"
+  "${BINK_LIB_DIR}/lib/binkw32.lib" winmm.lib)
