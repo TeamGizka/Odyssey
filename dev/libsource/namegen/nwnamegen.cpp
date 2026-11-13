@@ -388,7 +388,7 @@ CExoString CSWNameGen::GetRandomName(unsigned short nRace,
     }
 
     if (m_bNameTableLoaded && m_nRace == nRace &&
-        m_nGender == (nNameType & 0xFB))
+        m_nGender == (nNameType & ~4))
     {
         return CExoString("");
     }
@@ -407,6 +407,6 @@ CExoString CSWNameGen::GetRandomName(unsigned short nRace,
     }
 
     m_nRace = nRace;
-    m_nGender = nNameType & 0xFB;
+    m_nGender = nNameType & ~4;
     return GetRandomName(nLength);
 }
