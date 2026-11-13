@@ -818,10 +818,11 @@ unsigned char CSWCCreatureStats::GetLevel()
     if (m_pCreature != NULL)
     {
         CSWSCreature* pServerCreature = m_pCreature->GetServerCreature();
-        if (pServerCreature != NULL && !pServerCreature->m_pStats->GetIsPC() &&
+        if (pServerCreature != NULL && !pServerCreature->GetStats()->GetIsPC() &&
             !pServerCreature->m_bInParty && pServerCreature->m_c250 != 0)
         {
             int nAutoBalanceRow = pServerCreature->m_c250;
+            unsigned char nBalancedLevel;
             if (nAutoBalanceRow != 0)
             {
                 C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
@@ -841,13 +842,18 @@ unsigned char CSWCCreatureStats::GetLevel()
                 {
                     nPCLevel = 1;
                 }
-                int nBalancedLevel = (int)(nPCLevel * fLevelMult) + nLevel - 1;
-                if (nBalancedLevel < 0)
+                int nNewLevel = (int)(nPCLevel * fLevelMult) + nLevel - 1;
+                if (nNewLevel < 0)
                 {
-                    nBalancedLevel = 1;
+                    nNewLevel = 1;
                 }
-                return nBalancedLevel;
+                nBalancedLevel = nNewLevel;
             }
+            else
+            {
+                nBalancedLevel = nLevel;
+            }
+            return nBalancedLevel;
         }
     }
     return nLevel;
