@@ -224,9 +224,10 @@ void CSWGuiInGameMenu::Draw(float fElapsed)
     CSWCCreature* pCreature;
     if (m_nTopMenuOverrideCharacter != -1)
     {
+        CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
         CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
         pCreature = pClient->GetCreatureByGameObjectID(pClient->ServerToClientObjectId(
-            g_pAppManager->m_pServerExoApp->GetPartyTable()->GetNPCObject(m_nTopMenuOverrideCharacter, 0, 1)));
+            pServerExoApp->GetPartyTable()->GetNPCObject(m_nTopMenuOverrideCharacter, 0, 1)));
         if (pCreature == NULL)
         {
             return;
@@ -239,8 +240,8 @@ void CSWGuiInGameMenu::Draw(float fElapsed)
     CSWSCreature* pServer = pCreature->GetServerCreature();
     CSWSCreatureStats* pStats = pServer->GetStats();
     m_cChar2350.SetPortrait(pCreature->GetPortrait(1));
-    m_cChar2350.SetHealth(pServer->GetCurrentHitPoints(0), pServer->GetMaxHitPoints(1),
-                          pServer->m_nPoisonState);
+    int nPoisonState = pServer->m_nPoisonState;
+    m_cChar2350.SetHealth(pServer->GetCurrentHitPoints(0), pServer->GetMaxHitPoints(1), nPoisonState);
     int nMaxForce = pServer->GetMaxForcePoints();
     m_cChar2350.SetForce(pStats->GetCurrentForcePoints(), nMaxForce);
     int nState = 0;

@@ -222,7 +222,7 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
         m_lblMinus[i].SetEnabledFlag(0);
         m_lblMinus[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
 #endif
-        int nMaxRank = m_pCreature->GetStats()->GetLevel() + CSWCLevelUpStats::SKILL_RANK_LEVEL_BONUS;
+        int nMaxRank = GetCreature()->GetStats()->GetLevel() + CSWCLevelUpStats::SKILL_RANK_LEVEL_BONUS;
         if (!IsClassSkill(i))
         {
             nMaxRank /= 2;
@@ -236,7 +236,8 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
 #else
         if (m_bLevelUp)
         {
-            m_btnMinus[i].SetEnabledFlag(m_pCreature->GetStats()->GetSkillRank(i) != m_aStartRank[i]);
+            int nRank = m_pCreature->GetStats()->GetSkillRank(i);
+            m_btnMinus[i].SetEnabledFlag(nRank != m_aStartRank[i]);
         }
         else
         {
