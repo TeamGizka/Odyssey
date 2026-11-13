@@ -847,7 +847,7 @@ void CSWGuiSaveLoadEntry::LoadData(const CExoString& sSaveDirectory)
     m_nSaveNumber = pGFF->ReadFieldDWORD(&cStruct, "SAVENUMBER", bSuccess, 0);
     unsigned char nDefault = m_nGameplayHint;
     m_nGameplayHint = pGFF->ReadFieldBYTE(&cStruct, "GAMEPLAYHINT", bSuccess, nDefault);
-    nDefault = m_anStoryHint[0];
+    nDefault = GetStoryHint(0);
     m_anStoryHint[0] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT0", bSuccess, nDefault);
     nDefault = m_anStoryHint[1];
     m_anStoryHint[1] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT1", bSuccess, nDefault);
