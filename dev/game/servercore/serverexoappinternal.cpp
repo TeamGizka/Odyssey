@@ -1058,12 +1058,14 @@ void CServerExoAppInternal::StallEventSaveGame()  // PC 0x004ED2D0 GOG 0x004EB75
         FILETIME ftTimeStamp;
         GetLocalTime(&stLocalTime);
         SystemTimeToFileTime(&stLocalTime, &ftTimeStamp);
-        pGFF->WriteFieldDWORD64(&stSaveInfo,
-            ((unsigned __int64)ftTimeStamp.dwHighDateTime << 32) | ftTimeStamp.dwLowDateTime,
-            "TIMESTAMP");
+        unsigned __int64 nTimeStamp = ftTimeStamp.dwHighDateTime;
+        nTimeStamp <<= 32;
+        nTimeStamp |= ftTimeStamp.dwLowDateTime;
+        pGFF->WriteFieldDWORD64(&stSaveInfo, nTimeStamp, "TIMESTAMP");
     }
     pGFF->WriteFieldCExoString(&stSaveInfo, m_partyTable.GetPCName(), "PCNAME");
-    pGFF->WriteFieldDWORD(&stSaveInfo, m_partyTable.m_n248, "SAVENUMBER");
+    int nSaveNumber = m_partyTable.m_n248;
+    pGFF->WriteFieldDWORD(&stSaveInfo, nSaveNumber, "SAVENUMBER");
     pGFF->WriteFieldBYTE(&stSaveInfo,
         g_pAppManager->GetClientExoApp()->GetGamePlayHint(), "GAMEPLAYHINT");
     pGFF->WriteFieldBYTE(&stSaveInfo,
@@ -1145,7 +1147,7 @@ void CServerExoAppInternal::StallEventSaveGame()  // PC 0x004ED2D0 GOG 0x004EB75
 #ifdef _XBOX
     g_pAppManager->GetClientExoApp()->HideLoadScreen(0);
 #else
-    g_pAppManager->GetClientExoApp()->HideLoadScreen(0, 0);
+    g_pAppManager->GetClientExoApp()->HideLoadScreen(0, 1, 0);
 #endif
     if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pPartySelection == 0)
     {
@@ -2226,12 +2228,14 @@ void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, C2DA* p2DA)
         FILETIME ftTimeStamp;
         GetLocalTime(&stLocalTime);
         SystemTimeToFileTime(&stLocalTime, &ftTimeStamp);
-        pGFF->WriteFieldDWORD64(&cRoot,
-            ((unsigned __int64)ftTimeStamp.dwHighDateTime << 32) | ftTimeStamp.dwLowDateTime,
-            "TIMESTAMP");
+        unsigned __int64 nTimeStamp = ftTimeStamp.dwHighDateTime;
+        nTimeStamp <<= 32;
+        nTimeStamp |= ftTimeStamp.dwLowDateTime;
+        pGFF->WriteFieldDWORD64(&cRoot, nTimeStamp, "TIMESTAMP");
     }
     pGFF->WriteFieldCExoString(&cRoot, m_partyTable.GetPCName(), "PCNAME");
-    pGFF->WriteFieldDWORD(&cRoot, m_partyTable.m_n248, "SAVENUMBER");
+    int nSaveNumber = m_partyTable.m_n248;
+    pGFF->WriteFieldDWORD(&cRoot, nSaveNumber, "SAVENUMBER");
     pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetGamePlayHint(),
                          "GAMEPLAYHINT");
     pGFF->WriteFieldBYTE(&cRoot, g_pAppManager->GetClientExoApp()->GetStoryHint(0),

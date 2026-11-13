@@ -6856,6 +6856,10 @@ void CClientExoAppInternal::BarkString(unsigned long oidObject,
 
     m_pGuiInGame->ShowBarkBubble(OBJECT_INVALID, sText, cSound, nFlags);
 }
+inline CExoStreamingSoundSource* ClientExoAppInternalGetDialogSound(CGuiInGame* pGuiInGame)
+{
+    return pGuiInGame->m_pDialogSound;
+}
 // PC 0x0063E050 GOG 0x0063DF50
 int CClientExoAppInternal::IsSoundPlayingInDialog()
 {
@@ -6888,9 +6892,7 @@ int CClientExoAppInternal::IsSoundPlayingInDialog()
             char szSound[17];
             if (m_pGuiInGame->m_pDialogSound != NULL)
             {
-                CExoStreamingSoundSource* pDialogSound =
-                    m_pGuiInGame->m_pDialogSound;
-                pDialogSound->GetFilePlaying().CopyToString(szSound);
+                ClientExoAppInternalGetDialogSound(m_pGuiInGame)->GetFilePlaying().CopyToString(szSound);
             }
             EXOLOG("IsSoundPlayingInDialog: %s mode %d\n", szSound,
                    g_pExoSound->GetSoundMode());
