@@ -1480,8 +1480,7 @@ int CSWSCreature::AIActionSetMine(CSWSObjectActionNode* pAction)
 
     ActivityManager(ACTIVITY_ACTION_OBJECT_INTERACTION);
 
-    void* pItemParam = pAction > NULL ? pAction->m_apParam[0] : pAction->m_apParam[0];
-    unsigned long oidItem = (unsigned long)pItemParam;
+    unsigned long oidItem = (unsigned long)pAction->m_apParam[0];
     unsigned long oidTarget = (unsigned long)pAction->m_apParam[1];
     float fX, fY, fZ;
     memcpy(&fX, &pAction->m_apParam[2], sizeof(float));
@@ -1648,10 +1647,10 @@ int CSWSCreature::AIActionSetMine(CSWSObjectActionNode* pAction)
     int nRoll;
     if (!m_bCombatState || pTarget != NULL)
     {
-        bTakeTwenty = TRUE;
         nRoll = 20;
+        bTakeTwenty = TRUE;
     }
-    else
+    if (!bTakeTwenty)
         nRoll = rand() % 20 + 1;
     nRoll += nSkill;
     int bCriticalFailure = FALSE;
@@ -1678,8 +1677,8 @@ int CSWSCreature::AIActionSetMine(CSWSObjectActionNode* pAction)
                 pDoor->m_bTrapDetectable = TRUE;
                 pDoor->m_bTrapDisarmable = FALSE;
                 pDoor->m_bTrapOneShot = TRUE;
-                pDoor->m_nOwnerDemolitionsSkill =
-                    m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, FALSE);
+                int nOwnerSkill = m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, FALSE);
+                pDoor->m_nOwnerDemolitionsSkill = nOwnerSkill;
                 unsigned long oidDoor = pDoor->GetId();
                 CSWSArea* pArea = GetArea();
                 pArea->m_lstTrapObjectIds.Add(oidDoor);
@@ -1726,13 +1725,15 @@ int CSWSCreature::AIActionSetMine(CSWSObjectActionNode* pAction)
                 pPlaceable->m_nTrapType = nTrapType;
                 pPlaceable->m_nTrapFlag = TRUE;
                 pPlaceable->m_sScripts[CSWSPlaceable::SCRIPT_ONTRAPTRIGGERED] = sTrapScript;
-                pPlaceable->m_nTrapDetectDC = nDetectDCMod + nRoll;
-                pPlaceable->m_nDisarmDC = nRoll + nDisarmDCMod;
+                unsigned char nDetectDC = nDetectDCMod + nRoll;
+                pPlaceable->m_nTrapDetectDC = nDetectDC;
+                unsigned char nDisarmDC = nRoll + nDisarmDCMod;
+                pPlaceable->m_nDisarmDC = nDisarmDC;
                 pPlaceable->m_bTrapDetectable = TRUE;
                 pPlaceable->m_bTrapDisarmable = FALSE;
                 pPlaceable->m_bTrapOneShot = TRUE;
-                pPlaceable->m_nOwnerDemolitionsSkill =
-                    m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, FALSE);
+                int nOwnerSkill = m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, FALSE);
+                pPlaceable->m_nOwnerDemolitionsSkill = nOwnerSkill;
                 unsigned long oidPlaceable = pPlaceable->GetId();
                 CSWSArea* pArea = GetArea();
                 pArea->m_lstTrapObjectIds.Add(oidPlaceable);
@@ -1748,8 +1749,8 @@ int CSWSCreature::AIActionSetMine(CSWSObjectActionNode* pAction)
                 pTrigger->m_bPartyInteract = FALSE;
                 int nTrapName = 0;
                 g_pRules->Get2DArrays()->GetTraps()->GetINTEntry(nTrapType, "TrapName", &nTrapName);
-                unsigned long oidTrigger = pTrigger->GetId();
                 pTrigger->m_lsName.m_dwStringRef = nTrapName;
+                unsigned long oidTrigger = pTrigger->GetId();
                 CSWSArea* pTriggerArea = GetArea();
                 pTriggerArea->m_lstTrapObjectIds.Add(oidTrigger);
                 CSWSArea* pGeometryArea = GetArea();
@@ -1777,16 +1778,18 @@ int CSWSCreature::AIActionSetMine(CSWSObjectActionNode* pAction)
             pTrigger->SetCreator(GetId());
             pTrigger->m_nTrapType = nTrapType;
             pTrigger->m_asScripts[CSWSTrigger::SCRIPT_ONTRAPTRIGGERED] = sTrapScript;
-            pTrigger->m_nTrapDetectDC = nDetectDCMod + nRoll;
-            pTrigger->m_nTrapDisarmDC = nRoll + nDisarmDCMod;
+            int nDetectDC = nDetectDCMod + nRoll;
+            pTrigger->m_nTrapDetectDC = nDetectDC;
+            int nDisarmDC = nRoll + nDisarmDCMod;
+            pTrigger->m_nTrapDisarmDC = nDisarmDC;
             pTrigger->m_bMineTrigger = TRUE;
             pTrigger->m_bTrapDetectable = TRUE;
             pTrigger->m_bTrapDisarmable = TRUE;
             pTrigger->SetPosition(m_vPosition, TRUE, TRUE, FALSE);
 
             pTrigger->m_nFaction = GetFactionId();
-            pTrigger->m_nOwnerDemolitionsSkill =
-                m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, FALSE);
+            int nOwnerSkill = m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, FALSE);
+            pTrigger->m_nOwnerDemolitionsSkill = nOwnerSkill;
             int nTrapName = 0;
             g_pRules->Get2DArrays()->GetTraps()->GetINTEntry(nTrapType, "TrapName", &nTrapName);
             pTrigger->m_lsName.m_dwStringRef = nTrapName;
@@ -1846,7 +1849,7 @@ int CSWSCreature::AIActionSetMine(CSWSObjectActionNode* pAction)
     pData->SetObjectID(CSWCCMessageData::SKILL_DATA_CREATURE, GetId());
     if (pTarget != NULL && (pTarget->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE ||
                            pTarget->m_nObjectType == CGameObject::OBJECT_TYPE_DOOR))
-        pData->SetObjectID(CSWCCMessageData::SKILL_DATA_TARGET, pTarget->m_nId);
+        pData->SetObjectID(CSWCCMessageData::SKILL_DATA_TARGET, pTarget->GetId());
     pData->SetInteger(CSWCCMessageData::SKILL_DATA_NAME, CSWCCMessageData::SKILL_DATA_SET_STRREF);
     pData->SetInteger(CSWCCMessageData::SKILL_DATA_ROLL, nRoll - nSkill);
     pData->SetInteger(CSWCCMessageData::SKILL_DATA_RANK, nSkill);
@@ -5783,8 +5786,8 @@ int CSWSCreature::CheckItemClassRestrictions(CSWSItem* pItem)
             if (pItem->GetPassiveProperty(i)->m_nPropertyType ==
                 CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_CLASS)
             {
-                int nClassRestriction =
-                    pItem->GetPassiveProperty(i)->m_nSubtype;
+                pProperty = pItem->GetPassiveProperty(i);
+                unsigned short nClassRestriction = pProperty->m_nSubtype;
                 EXOLOG("Checking for property %d, subtype %d\n",
                        CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_CLASS, nClassRestriction);
                 for (int nClass = 0; nClass < m_pStats->m_nClassCount; nClass++)
@@ -6088,6 +6091,7 @@ CAvoidCreature::CAvoidCreature()
     m_nUnused = 0;
     Reset();
 }
+static inline int CastSpellRequireItemMask(CSWSpell* pSpell) { return pSpell->m_nRequireItemMask; }
 // PC 0x0054A110 GOG 0x0054A230
 int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
 {
@@ -6154,13 +6158,13 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
     }
     int nForceItemMask = GetForceItemMask();
     if ((nForceItemMask & pSpell->m_nForbidItemMask) ||
-        (nForceItemMask & pSpell->m_nRequireItemMask) != pSpell->m_nRequireItemMask)
+        (nForceItemMask & CastSpellRequireItemMask(pSpell)) != pSpell->m_nRequireItemMask)
     {
         RemoveSpellActionFromRound();
         ProcessPendingCombatActions();
         return ACTION_FAILED;
     }
-    if (nFeat != -1 && m_pStats->GetFeatRemainingUses(nFeat) <= 0)
+    if (nFeat != -1 && GetStats()->GetFeatRemainingUses(nFeat) <= 0)
     {
         RemoveSpellActionFromRound();
         ProcessPendingCombatActions();
@@ -6216,9 +6220,9 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
     {
         int bEngaged = m_pcCombatRound->ResolveEngagedState(oidTarget);
         int bMaster = GetCombatRound()->ResolveMasterState(oidTarget, bEngaged);
-        GetCombatRound()->StartCombatRound(oidTarget, bEngaged, bMaster, 0, 0);
+        m_pcCombatRound->StartCombatRound(oidTarget, bEngaged, bMaster, 0, 0);
         GetCombatRound()->SetSpellCastRound(nSpellId, bFake);
-        GetCombatRound()->SetRoundPaused(1, GetId());
+        m_pcCombatRound->SetRoundPaused(1, GetId());
         GetCombatRound()->SetPauseTimer(nCastTime + nCatchTime + nConjureTime, 0);
         int nRoundTime = nCastTime + nCatchTime + nConjureTime;
         GetCombatRound()->DecrementRoundLength(nRoundTime, 0);
@@ -6229,7 +6233,7 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
             pCreature->GetCombatRound()->StartCombatRound(GetId(), bEngaged, !bMaster, 0, 0);
             pCreature->m_pcCombatRound->SetRoundPaused(1, pCreature->GetId());
             pCreature->m_pcCombatRound->SetPauseTimer(nRoundTime, 0);
-            pCreature->m_pcCombatRound->DecrementRoundLength(nRoundTime, 0);
+            pCreature->GetCombatRound()->DecrementRoundLength(nRoundTime, 0);
         }
         if (!bFake)
             BroadcastSpellCast(nSpellId, nMetamagic, nMultiClass, nFeat, oidTarget);
@@ -6237,7 +6241,7 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
     else if (!m_pcCombatRound->m_bRoundPaused && m_pcCombatRound->m_nNumActionsTaken < 1)
     {
         m_pcCombatRound->SetSpellCastRound(nSpellId, bFake);
-        m_pcCombatRound->SetRoundPaused(1, GetId());
+        GetCombatRound()->SetRoundPaused(1, GetId());
         GetCombatRound()->SetPauseTimer(nCastTime + nCatchTime + nConjureTime, 0);
         int nRoundTime = nCastTime + nCatchTime + nConjureTime;
         GetCombatRound()->DecrementRoundLength(nRoundTime, 0);
@@ -6307,7 +6311,7 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
                 else
                 {
                     if (nSpellLevel == 0)
-                        pSpell->GetSpellLevel(m_pStats->GetClass(nMultiClass));
+                        pSpell->GetSpellLevel(GetStats()->GetClass(nMultiClass));
                     g_pRules->GetMetaMagicLevelCost(nMetamagic);
                 }
                 m_bIgnoreSpellReadyCount = 1;
@@ -6381,7 +6385,7 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
         {
             if (bFake)
             {
-                CGameObject* pObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidTarget);
+                CGameObject* pObject = g_pAppManager->m_pServerExoApp->GetGameObject(oidTarget);
                 CSWSObject* pServerObject;
                 if (pObject != NULL && (pServerObject = pObject->AsSWSObject()) != NULL)
                     BroadcastSafeProjectile(GetId(), oidTarget, m_vPosition, pServerObject->m_vPosition,
@@ -6393,7 +6397,7 @@ int CSWSCreature::AIActionCastSpell(CSWSObjectActionNode* pAction)
             }
             else
             {
-                m_pcCombatRound->IncrementNumActionsTaken(1);
+                m_pcCombatRound->m_nNumActionsTaken = m_pcCombatRound->GetNumActionsTaken() + 1;
                 SpellCastAndImpact(nSpellId, vTarget, oidTarget, nMultiClass,
                     OBJECT_INVALID, 0, 0, nProjectilePath, bInstant);
             }
