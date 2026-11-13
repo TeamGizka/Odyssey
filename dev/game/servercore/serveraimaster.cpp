@@ -66,89 +66,118 @@ void CServerAIMaster::SetExoAppInternal(CServerExoAppInternal* pExoAppInternal)
 }
 
 
-// PC 0x006009E0
-void CServerAIMaster::AdjustTargetAndWitnessReputations(
-    unsigned long oidTarget, unsigned long oidActor, int nAction)
-{
-}
-// PC 0x004DD340
-int CServerAIMaster::OnEffectApplied(CSWSObject* pObject, CGameEffect* pEffect,
-                                     int bLoadingModule)
-{
-    return m_pEffectHandler->OnEffectApplied(pObject, pEffect, bLoadingModule);
-}
-// PC 0x004DD350
-int CServerAIMaster::OnEffectRemoved(CSWSObject* pObject, CGameEffect* pEffect)
-{
-    return m_pEffectHandler->OnEffectRemoved(pObject, pEffect);
-}
-// PC 0x004DD360
-int CServerAIMaster::OnItemPropertyApplied(CSWSItem* pItem,
-                                           CSWItemProperty* pProperty,
-                                           CSWSCreature* pCreature,
-                                           unsigned long nIndex, int bLoading)
-{
-    return m_pItemPropertyHandler->OnItemPropertyApplied(
-        pItem, pProperty, pCreature, nIndex, bLoading);
-}
-// PC 0x004DD370
-int CServerAIMaster::OnItemPropertyRemoved(CSWSItem* pItem,
-                                           CSWItemProperty* pProperty,
-                                           CSWSCreature* pCreature,
-                                           unsigned long nIndex)
-{
-    return m_pItemPropertyHandler->OnItemPropertyRemoved(pItem, pProperty,
-                                                         pCreature, nIndex);
-}
-// PC 0x004DD570
-BOOL CServerAIList::RemoveObject(unsigned long oidObject)
-{
-    if (Contains(oidObject) != 0)
-    {
-        int nIndex = IndexOf(oidObject);
 
-        if (nIndex != -1)
-        {
-            DelIndex(nIndex);
-        }
+
+CSWSObject* CServerAIList::GetObjectAtPosition(int nPosition)
+{
+    if (num == 0)
+    {
+        return NULL;
+    }
+
+    unsigned long oidObject = element[nPosition];
+    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+    CGameObject* pGameObject = pServerExoApp->GetGameObject(oidObject);
+
+    if (pGameObject != NULL &&
+        pGameObject->m_nObjectType > CGameObject::OBJECT_TYPE_AREA)
+    {
+        return (CSWSObject*)pGameObject;
+    }
+
+    return NULL;
+}
+
+CSWSObject* CServerAIList::GetNextObject()
+{
+    if (num == 0)
+    {
+        return NULL;
+    }
+
+    m_nCurrent++;
+
+    if (m_nCurrent >= num)
+    {
+        m_nCurrent = 0;
+    }
+
+    unsigned long oidObject = element[m_nCurrent];
+    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+    CGameObject* pGameObject = pServerExoApp->GetGameObject(oidObject);
+
+    if (pGameObject != NULL &&
+        pGameObject->m_nObjectType > CGameObject::OBJECT_TYPE_AREA)
+    {
+        return (CSWSObject*)pGameObject;
+    }
+
+    return NULL;
+}
+
+BOOL CServerAIMaster::GetPendingEvent(unsigned long* pnCalendarDay,
+                                      unsigned long* pnTimeOfDay,
+                                      unsigned long* poidCaller,
+                                      unsigned long* poidObject,
+                                      unsigned long* pnEventId,
+                                      void** ppEventData)
+{
+    if (m_lstEvents.IsEmpty())
+    {
+        return FALSE;
+    }
+
+    CServerAIEventNode* pNode = m_lstEvents.RemoveHead();
+    *pnCalendarDay = pNode->m_nCalendarDay;
+    *pnTimeOfDay = pNode->m_nTimeOfDay;
+    *poidCaller = pNode->m_oidCaller;
+    *poidObject = pNode->m_oidObject;
+    *pnEventId = pNode->m_nEventId;
+    *ppEventData = pNode->m_pEventData;
+    pNode->m_pEventData = NULL;
+    delete pNode;
+    return TRUE;
+}
+
+BOOL CServerAIMaster::EventPending(unsigned long nCalendarDay,
+                                   unsigned long nTimeOfDay)
+{
+    if (m_lstEvents.IsEmpty())
+    {
+        return FALSE;
+    }
+
+    CServerAIEventNode* pNode = m_lstEvents.GetHead();
+
+    if (m_pExoAppInternal->GetWorldTimer()->CompareWorldTimes(
+            pNode->m_nCalendarDay, pNode->m_nTimeOfDay, nCalendarDay,
+            nTimeOfDay) > 0)
+    {
+        return FALSE;
     }
 
     return TRUE;
 }
-// PC 0x004DDFE0
-CServerAIMaster::CServerAIMaster()
+
+static inline void ServeraimasterTrace2()
 {
-    m_pEffectHandler = new CSWSEffectListHandler;
-    m_pEffectHandler->InitializeEffects();
-    m_pItemPropertyHandler = new CSWSItemPropertyHandler;
-    m_pItemPropertyHandler->InitializeItemProperties();
-    m_pUnused80 = NULL;
-    m_pUnused84 = NULL;
-    m_pUnused88 = NULL;
-    m_pUnused8C = NULL;
-}
-// PC 0x004DD5D0
-BOOL CServerAIMaster::RemoveObject(CSWSObject* pObject)
-{
-    int nAILevel = pObject->m_nAILevel;
-
-    if (nAILevel <= 4 && nAILevel >= 0)
-    {
-        BOOL bRemoved = m_aAILists[nAILevel].RemoveObject(pObject->m_nId);
-
-        if (bRemoved == TRUE)
-        {
-            pObject->m_nAILevel = -1;
-        }
-
-        return bRemoved;
-    }
-
-    return FALSE;
+    ServeraimasterTrace1();
 }
 
-void LogEventAddGetObject(unsigned long oidObject, CExoString& sName,
-                          CExoString& sType);
+static inline void ServeraimasterTrace1()
+{
+}
+// PC 0x004DD400
+BOOL CServerAIBodyBagInfo::LoadBodyBag(CResGFF* pRes, CResStruct* pStruct)
+{
+    int bSuccess;
+
+    m_nBodyBagId = pRes->ReadFieldDWORD(pStruct, "BodyBagId", bSuccess, 0);
+    m_vPosition.m_fX = pRes->ReadFieldFLOAT(pStruct, "PositionX", bSuccess, 0.0f);
+    m_vPosition.m_fY = pRes->ReadFieldFLOAT(pStruct, "PositionY", bSuccess, 0.0f);
+    m_vPosition.m_fZ = pRes->ReadFieldFLOAT(pStruct, "PositionZ", bSuccess, 0.0f);
+    return TRUE;
+}
 
 // PC 0x004DC9A0
 void LogEventAddGetObject(unsigned long oidObject, CExoString& sName,
@@ -494,63 +523,72 @@ static void LogEventAdd(unsigned long oidCaller, unsigned long oidObject,
                     sScriptEventName.CStr());
     sMessage.CStr();
 }
-// PC 0x004DE0B0
-BOOL CServerAIMaster::AddObject(CSWSObject* pObject, int nAILevel)
+// PC 0x004DD340
+int CServerAIMaster::OnEffectApplied(CSWSObject* pObject, CGameEffect* pEffect,
+                                     int bLoadingModule)
 {
-    ServeraimasterTrace2();
-    if (nAILevel > 4 || nAILevel < 0 || pObject == NULL)
+    return m_pEffectHandler->OnEffectApplied(pObject, pEffect, bLoadingModule);
+}
+// PC 0x004DD350
+int CServerAIMaster::OnEffectRemoved(CSWSObject* pObject, CGameEffect* pEffect)
+{
+    return m_pEffectHandler->OnEffectRemoved(pObject, pEffect);
+}
+// PC 0x004DD360
+int CServerAIMaster::OnItemPropertyApplied(CSWSItem* pItem,
+                                           CSWItemProperty* pProperty,
+                                           CSWSCreature* pCreature,
+                                           unsigned long nIndex, int bLoading)
+{
+    return m_pItemPropertyHandler->OnItemPropertyApplied(
+        pItem, pProperty, pCreature, nIndex, bLoading);
+}
+// PC 0x004DD370
+int CServerAIMaster::OnItemPropertyRemoved(CSWSItem* pItem,
+                                           CSWItemProperty* pProperty,
+                                           CSWSCreature* pCreature,
+                                           unsigned long nIndex)
+{
+    return m_pItemPropertyHandler->OnItemPropertyRemoved(pItem, pProperty,
+                                                         pCreature, nIndex);
+}
+// PC 0x004DD570
+BOOL CServerAIList::RemoveObject(unsigned long oidObject)
+{
+    if (Contains(oidObject) != 0)
     {
-        return FALSE;
+        int nIndex = IndexOf(oidObject);
+
+        if (nIndex != -1)
+        {
+            DelIndex(nIndex);
+        }
     }
 
-    if (pObject->m_nAILevel != -1)
-    {
-        RemoveObject(pObject);
-    }
-
-    m_aAILists[nAILevel].AddUnique(pObject->m_nId);
-    pObject->m_nAILevel = nAILevel;
     return TRUE;
 }
-// PC 0x004DE100
-BOOL CServerAIMaster::SetAILevel(CSWSObject* pObject, int nAILevel)
+// PC 0x004DD5D0
+BOOL CServerAIMaster::RemoveObject(CSWSObject* pObject)
 {
-    if (pObject->m_nAILevel == nAILevel)
-    {
-        return TRUE;
-    }
+    int nAILevel = pObject->m_nAILevel;
 
     if (nAILevel <= 4 && nAILevel >= 0)
     {
-        return AddObject(pObject, nAILevel);
+        BOOL bRemoved = m_aAILists[nAILevel].RemoveObject(pObject->m_nId);
+
+        if (bRemoved == TRUE)
+        {
+            pObject->m_nAILevel = -1;
+        }
+
+        return bRemoved;
     }
 
     return FALSE;
 }
-// PC 0x004DE130
-BOOL CServerAIMaster::AddEventDeltaTime(
-    unsigned long nDayDelta, unsigned long nTimeDelta, unsigned long oidCaller,
-    unsigned long oidObject, unsigned long nEventId, void* pEventData)
-{
-    unsigned long nNowTime;
-    unsigned long nNowDay;
-    unsigned long nEventTime;
-    unsigned long nEventDay;
 
-    g_pAppManager->m_pServerExoApp->GetActivePauseState();
-    m_pExoAppInternal->m_pWorldTimer->GetWorldTime(&nNowDay, &nNowTime);
-
-    CWorldTimer* pWorldTimer = m_pExoAppInternal->m_pWorldTimer;
-    if (pWorldTimer->AddWorldTimes(nNowDay, nNowTime, nDayDelta, nTimeDelta,
-                                   &nEventDay, &nEventTime) == 0)
-    {
-        return AddEventAbsoluteTime(nEventDay, nEventTime, oidCaller, oidObject,
-                           nEventId, pEventData);
-    }
-
-    delete pEventData;
-    return FALSE;
-}
+void LogEventAddGetObject(unsigned long oidObject, CExoString& sName,
+                          CExoString& sType);
 // PC 0x004DD610
 BOOL CServerAIMaster::AddEventAbsoluteTime(unsigned long nCalendarDay,
                                   unsigned long nTimeOfDay,
@@ -595,30 +633,6 @@ BOOL CServerAIMaster::AddEventAbsoluteTime(unsigned long nCalendarDay,
     if (!bInserted)
     {
         m_lstEvents.AddTail(pNode);
-    }
-
-    return TRUE;
-}
-// PC 0x004DE1D0
-BOOL CServerAIMaster::SaveEventQueue(CResGFF* pRes, CResStruct* pStruct)
-{
-    CResList lstEvents;
-    CResStruct sEvent;
-
-    pRes->AddList(&lstEvents, pStruct, "EventQueue");
-
-    if ((unsigned long)m_lstEvents.Count() > 0)
-    {
-        CExoLinkedListNode* pPos = m_lstEvents.GetHeadPos();
-
-        while (pPos != NULL)
-        {
-            CServerAIEventNode* pNode = m_lstEvents.GetAtPos(pPos);
-
-            pRes->AddListElement(&sEvent, &lstEvents, 0xABCD);
-            pNode->SaveNode(pRes, &sEvent);
-            m_lstEvents.GetNext(pPos);
-        }
     }
 
     return TRUE;
@@ -739,130 +753,6 @@ BOOL CServerAIEventNode::SaveNode(CResGFF* pRes, CResStruct* pStruct)
 #endif
     }
     return TRUE;
-}
-// PC 0x004DE260
-BOOL CServerAIMaster::LoadEventQueue(CResGFF* pRes, CResStruct* pStruct)
-{
-    CResList lstEvents;
-    CResStruct sEvent;
-
-    if (pRes->GetList(&lstEvents, pStruct, "EventQueue") != 0)
-    {
-        for (unsigned int i = 0; i < pRes->GetListCount(&lstEvents); i++)
-        {
-#ifdef _XBOX
-            CServerAIEventNode* pNode = new CServerAIEventNode();
-#else
-            CServerAIEventNode* pNode = new CServerAIEventNode;
-#endif
-
-            pRes->GetListElement(&sEvent, &lstEvents, i);
-
-            if (pNode->LoadNode(pRes, &sEvent) != 0)
-            {
-                m_lstEvents.AddTail(pNode);
-            }
-            else
-            {
-                delete pNode;
-            }
-        }
-    }
-
-    return TRUE;
-}
-// PC 0x004DE310
-void CServerAIMaster::LoadReputationAdjustments()
-{
-    CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
-    C2DA* pRepAdjustments = p2DArrays->m_pRepAdjustments;
-    if (pRepAdjustments != NULL)
-    {
-        for (int nRow = 0; nRow < 4; nRow++)
-        {
-            int nPersonalRep;
-            int nFactionRep;
-            int nWitnessFriendA;
-            int nWitnessFriendB;
-            int nWitnessFriendC;
-            int nWitnessNeutralA;
-            int nWitnessNeutralB;
-            int nWitnessNeutralC;
-            int nWitnessEnemyA;
-            int nWitnessEnemyB;
-            int nWitnessEnemyC;
-            pRepAdjustments->GetINTEntry(nRow, "PERSONALREP", &nPersonalRep);
-            pRepAdjustments->GetINTEntry(nRow, "FACTIONREP", &nFactionRep);
-            pRepAdjustments->GetINTEntry(nRow, "WITFRIA", &nWitnessFriendA);
-            pRepAdjustments->GetINTEntry(nRow, "WITFRIB", &nWitnessFriendB);
-            pRepAdjustments->GetINTEntry(nRow, "WITFRIC", &nWitnessFriendC);
-            pRepAdjustments->GetINTEntry(nRow, "WITNEUA", &nWitnessNeutralA);
-            pRepAdjustments->GetINTEntry(nRow, "WITNEUB", &nWitnessNeutralB);
-            pRepAdjustments->GetINTEntry(nRow, "WITNEUC", &nWitnessNeutralC);
-            pRepAdjustments->GetINTEntry(nRow, "WITENEA", &nWitnessEnemyA);
-            pRepAdjustments->GetINTEntry(nRow, "WITENEB", &nWitnessEnemyB);
-            pRepAdjustments->GetINTEntry(nRow, "WITENEC", &nWitnessEnemyC);
-            switch (nRow)
-            {
-            case 0:
-                m_pUnused80 = new CExoArrayList<unsigned long>;
-                m_pUnused80->Add(nPersonalRep);
-                m_pUnused80->Add(nFactionRep);
-                m_pUnused80->Add(nWitnessFriendA);
-                m_pUnused80->Add(nWitnessFriendB);
-                m_pUnused80->Add(nWitnessFriendC);
-                m_pUnused80->Add(nWitnessNeutralA);
-                m_pUnused80->Add(nWitnessNeutralB);
-                m_pUnused80->Add(nWitnessNeutralC);
-                m_pUnused80->Add(nWitnessEnemyA);
-                m_pUnused80->Add(nWitnessEnemyB);
-                m_pUnused80->Add(nWitnessEnemyC);
-                break;
-            case 1:
-                m_pUnused84 = new CExoArrayList<unsigned long>;
-                m_pUnused84->Add(nPersonalRep);
-                m_pUnused84->Add(nFactionRep);
-                m_pUnused84->Add(nWitnessFriendA);
-                m_pUnused84->Add(nWitnessFriendB);
-                m_pUnused84->Add(nWitnessFriendC);
-                m_pUnused84->Add(nWitnessNeutralA);
-                m_pUnused84->Add(nWitnessNeutralB);
-                m_pUnused84->Add(nWitnessNeutralC);
-                m_pUnused84->Add(nWitnessEnemyA);
-                m_pUnused84->Add(nWitnessEnemyB);
-                m_pUnused84->Add(nWitnessEnemyC);
-                break;
-            case 2:
-                m_pUnused88 = new CExoArrayList<unsigned long>;
-                m_pUnused88->Add(nPersonalRep);
-                m_pUnused88->Add(nFactionRep);
-                m_pUnused88->Add(nWitnessFriendA);
-                m_pUnused88->Add(nWitnessFriendB);
-                m_pUnused88->Add(nWitnessFriendC);
-                m_pUnused88->Add(nWitnessNeutralA);
-                m_pUnused88->Add(nWitnessNeutralB);
-                m_pUnused88->Add(nWitnessNeutralC);
-                m_pUnused88->Add(nWitnessEnemyA);
-                m_pUnused88->Add(nWitnessEnemyB);
-                m_pUnused88->Add(nWitnessEnemyC);
-                break;
-            case 3:
-                m_pUnused8C = new CExoArrayList<unsigned long>;
-                m_pUnused8C->Add(nPersonalRep);
-                m_pUnused8C->Add(nFactionRep);
-                m_pUnused8C->Add(nWitnessFriendA);
-                m_pUnused8C->Add(nWitnessFriendB);
-                m_pUnused8C->Add(nWitnessFriendC);
-                m_pUnused8C->Add(nWitnessNeutralA);
-                m_pUnused8C->Add(nWitnessNeutralB);
-                m_pUnused8C->Add(nWitnessNeutralC);
-                m_pUnused8C->Add(nWitnessEnemyA);
-                m_pUnused8C->Add(nWitnessEnemyB);
-                m_pUnused8C->Add(nWitnessEnemyC);
-                break;
-            }
-        }
-    }
 }
 // PC 0x004DDAF0
 BOOL CServerAIEventNode::LoadNode(CResGFF* pRes, CResStruct* pStruct)
@@ -1012,6 +902,232 @@ BOOL CServerAIEventNode::LoadNode(CResGFF* pRes, CResStruct* pStruct)
 
     return TRUE;
 }
+// PC 0x004DDFE0
+CServerAIMaster::CServerAIMaster()
+{
+    m_pEffectHandler = new CSWSEffectListHandler;
+    m_pEffectHandler->InitializeEffects();
+    m_pItemPropertyHandler = new CSWSItemPropertyHandler;
+    m_pItemPropertyHandler->InitializeItemProperties();
+    m_pUnused80 = NULL;
+    m_pUnused84 = NULL;
+    m_pUnused88 = NULL;
+    m_pUnused8C = NULL;
+}
+// PC 0x004DD3A0
+BOOL CServerAIBodyBagInfo::SaveBodyBag(CResGFF* pRes, CResStruct* pStruct)
+{
+    pRes->WriteFieldDWORD(pStruct, m_nBodyBagId, "BodyBagId");
+    pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fX, "PositionX");
+    pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fY, "PositionY");
+    pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fZ, "PositionZ");
+    return TRUE;
+}
+// PC 0x004DE0B0
+BOOL CServerAIMaster::AddObject(CSWSObject* pObject, int nAILevel)
+{
+    ServeraimasterTrace2();
+    if (nAILevel > 4 || nAILevel < 0 || pObject == NULL)
+    {
+        return FALSE;
+    }
+
+    if (pObject->m_nAILevel != -1)
+    {
+        RemoveObject(pObject);
+    }
+
+    m_aAILists[nAILevel].AddUnique(pObject->m_nId);
+    pObject->m_nAILevel = nAILevel;
+    return TRUE;
+}
+// PC 0x004DE100
+BOOL CServerAIMaster::SetAILevel(CSWSObject* pObject, int nAILevel)
+{
+    if (pObject->m_nAILevel == nAILevel)
+    {
+        return TRUE;
+    }
+
+    if (nAILevel <= 4 && nAILevel >= 0)
+    {
+        return AddObject(pObject, nAILevel);
+    }
+
+    return FALSE;
+}
+// PC 0x004DE130
+BOOL CServerAIMaster::AddEventDeltaTime(
+    unsigned long nDayDelta, unsigned long nTimeDelta, unsigned long oidCaller,
+    unsigned long oidObject, unsigned long nEventId, void* pEventData)
+{
+    unsigned long nNowTime;
+    unsigned long nNowDay;
+    unsigned long nEventTime;
+    unsigned long nEventDay;
+
+    g_pAppManager->m_pServerExoApp->GetActivePauseState();
+    m_pExoAppInternal->m_pWorldTimer->GetWorldTime(&nNowDay, &nNowTime);
+
+    CWorldTimer* pWorldTimer = m_pExoAppInternal->m_pWorldTimer;
+    if (pWorldTimer->AddWorldTimes(nNowDay, nNowTime, nDayDelta, nTimeDelta,
+                                   &nEventDay, &nEventTime) == 0)
+    {
+        return AddEventAbsoluteTime(nEventDay, nEventTime, oidCaller, oidObject,
+                           nEventId, pEventData);
+    }
+
+    delete pEventData;
+    return FALSE;
+}
+// PC 0x004DE1D0
+BOOL CServerAIMaster::SaveEventQueue(CResGFF* pRes, CResStruct* pStruct)
+{
+    CResList lstEvents;
+    CResStruct sEvent;
+
+    pRes->AddList(&lstEvents, pStruct, "EventQueue");
+
+    if ((unsigned long)m_lstEvents.Count() > 0)
+    {
+        CExoLinkedListNode* pPos = m_lstEvents.GetHeadPos();
+
+        while (pPos != NULL)
+        {
+            CServerAIEventNode* pNode = m_lstEvents.GetAtPos(pPos);
+
+            pRes->AddListElement(&sEvent, &lstEvents, 0xABCD);
+            pNode->SaveNode(pRes, &sEvent);
+            m_lstEvents.GetNext(pPos);
+        }
+    }
+
+    return TRUE;
+}
+// PC 0x004DE260
+BOOL CServerAIMaster::LoadEventQueue(CResGFF* pRes, CResStruct* pStruct)
+{
+    CResList lstEvents;
+    CResStruct sEvent;
+
+    if (pRes->GetList(&lstEvents, pStruct, "EventQueue") != 0)
+    {
+        for (unsigned int i = 0; i < pRes->GetListCount(&lstEvents); i++)
+        {
+#ifdef _XBOX
+            CServerAIEventNode* pNode = new CServerAIEventNode();
+#else
+            CServerAIEventNode* pNode = new CServerAIEventNode;
+#endif
+
+            pRes->GetListElement(&sEvent, &lstEvents, i);
+
+            if (pNode->LoadNode(pRes, &sEvent) != 0)
+            {
+                m_lstEvents.AddTail(pNode);
+            }
+            else
+            {
+                delete pNode;
+            }
+        }
+    }
+
+    return TRUE;
+}
+// PC 0x004DE310
+void CServerAIMaster::LoadReputationAdjustments()
+{
+    CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+    C2DA* pRepAdjustments = p2DArrays->m_pRepAdjustments;
+    if (pRepAdjustments != NULL)
+    {
+        for (int nRow = 0; nRow < 4; nRow++)
+        {
+            int nPersonalRep;
+            int nFactionRep;
+            int nWitnessFriendA;
+            int nWitnessFriendB;
+            int nWitnessFriendC;
+            int nWitnessNeutralA;
+            int nWitnessNeutralB;
+            int nWitnessNeutralC;
+            int nWitnessEnemyA;
+            int nWitnessEnemyB;
+            int nWitnessEnemyC;
+            pRepAdjustments->GetINTEntry(nRow, "PERSONALREP", &nPersonalRep);
+            pRepAdjustments->GetINTEntry(nRow, "FACTIONREP", &nFactionRep);
+            pRepAdjustments->GetINTEntry(nRow, "WITFRIA", &nWitnessFriendA);
+            pRepAdjustments->GetINTEntry(nRow, "WITFRIB", &nWitnessFriendB);
+            pRepAdjustments->GetINTEntry(nRow, "WITFRIC", &nWitnessFriendC);
+            pRepAdjustments->GetINTEntry(nRow, "WITNEUA", &nWitnessNeutralA);
+            pRepAdjustments->GetINTEntry(nRow, "WITNEUB", &nWitnessNeutralB);
+            pRepAdjustments->GetINTEntry(nRow, "WITNEUC", &nWitnessNeutralC);
+            pRepAdjustments->GetINTEntry(nRow, "WITENEA", &nWitnessEnemyA);
+            pRepAdjustments->GetINTEntry(nRow, "WITENEB", &nWitnessEnemyB);
+            pRepAdjustments->GetINTEntry(nRow, "WITENEC", &nWitnessEnemyC);
+            switch (nRow)
+            {
+            case 0:
+                m_pUnused80 = new CExoArrayList<unsigned long>;
+                m_pUnused80->Add(nPersonalRep);
+                m_pUnused80->Add(nFactionRep);
+                m_pUnused80->Add(nWitnessFriendA);
+                m_pUnused80->Add(nWitnessFriendB);
+                m_pUnused80->Add(nWitnessFriendC);
+                m_pUnused80->Add(nWitnessNeutralA);
+                m_pUnused80->Add(nWitnessNeutralB);
+                m_pUnused80->Add(nWitnessNeutralC);
+                m_pUnused80->Add(nWitnessEnemyA);
+                m_pUnused80->Add(nWitnessEnemyB);
+                m_pUnused80->Add(nWitnessEnemyC);
+                break;
+            case 1:
+                m_pUnused84 = new CExoArrayList<unsigned long>;
+                m_pUnused84->Add(nPersonalRep);
+                m_pUnused84->Add(nFactionRep);
+                m_pUnused84->Add(nWitnessFriendA);
+                m_pUnused84->Add(nWitnessFriendB);
+                m_pUnused84->Add(nWitnessFriendC);
+                m_pUnused84->Add(nWitnessNeutralA);
+                m_pUnused84->Add(nWitnessNeutralB);
+                m_pUnused84->Add(nWitnessNeutralC);
+                m_pUnused84->Add(nWitnessEnemyA);
+                m_pUnused84->Add(nWitnessEnemyB);
+                m_pUnused84->Add(nWitnessEnemyC);
+                break;
+            case 2:
+                m_pUnused88 = new CExoArrayList<unsigned long>;
+                m_pUnused88->Add(nPersonalRep);
+                m_pUnused88->Add(nFactionRep);
+                m_pUnused88->Add(nWitnessFriendA);
+                m_pUnused88->Add(nWitnessFriendB);
+                m_pUnused88->Add(nWitnessFriendC);
+                m_pUnused88->Add(nWitnessNeutralA);
+                m_pUnused88->Add(nWitnessNeutralB);
+                m_pUnused88->Add(nWitnessNeutralC);
+                m_pUnused88->Add(nWitnessEnemyA);
+                m_pUnused88->Add(nWitnessEnemyB);
+                m_pUnused88->Add(nWitnessEnemyC);
+                break;
+            case 3:
+                m_pUnused8C = new CExoArrayList<unsigned long>;
+                m_pUnused8C->Add(nPersonalRep);
+                m_pUnused8C->Add(nFactionRep);
+                m_pUnused8C->Add(nWitnessFriendA);
+                m_pUnused8C->Add(nWitnessFriendB);
+                m_pUnused8C->Add(nWitnessFriendC);
+                m_pUnused8C->Add(nWitnessNeutralA);
+                m_pUnused8C->Add(nWitnessNeutralB);
+                m_pUnused8C->Add(nWitnessNeutralC);
+                m_pUnused8C->Add(nWitnessEnemyA);
+                m_pUnused8C->Add(nWitnessEnemyB);
+                m_pUnused8C->Add(nWitnessEnemyC);
+                break;
+            }
+        }
+    }
+}
 #ifndef _XBOX
 void CServerAIMaster::DeleteEventData(unsigned long nEventId, void* pEventData)  // PC 0x004DEF60
 {
@@ -1042,99 +1158,57 @@ void CServerAIMaster::DeleteEventData(unsigned long nEventId, void* pEventData) 
 }
 #endif
 
+#ifdef _XBOX
 
 
-
-CSWSObject* CServerAIList::GetObjectAtPosition(int nPosition)
+void CServerAIMaster::DeleteEventData(unsigned long nEventId, void* pEventData)
 {
-    if (num == 0)
+    if (pEventData != NULL)
     {
-        return NULL;
+        switch (nEventId)
+        {
+        case EVENT_BROADCAST_SAFE_PROJECTILE:
+            delete (CSWSCombatAttackData*)pEventData;
+            return;
+        case EVENT_FEEDBACK_MESSAGE:
+            delete (CSWCCMessageData*)pEventData;
+            return;
+        case EVENT_SPELL_IMPACT:
+        case EVENT_ITEM_ON_HIT_SPELL_IMPACT:
+            delete (CSWSSpellScriptData*)pEventData;
+            return;
+        case EVENT_TIMED_EVENT:
+            g_pVirtualMachine->DeleteScriptSituation(pEventData);
+            return;
+        case EVENT_SIGNAL_EVENT:
+        case EVENT_SUMMON_CREATURE:
+        case EVENT_AREA_TRANSITION:
+            delete (CScriptEvent*)pEventData;
+            return;
+        case EVENT_ENTERED_TRIGGER:
+        case EVENT_LEFT_TRIGGER:
+        case EVENT_REMOVE_FROM_AREA:
+        case EVENT_APPLY_EFFECT:
+        case EVENT_CLOSE_OBJECT:
+        case EVENT_OPEN_OBJECT:
+        case EVENT_PLAY_ANIMATION:
+        case EVENT_DESTROY_OBJECT:
+        case EVENT_UNLOCK_OBJECT:
+        case EVENT_LOCK_OBJECT:
+        case EVENT_REMOVE_EFFECT:
+        case EVENT_ON_MELEE_ATTACKED:
+        case EVENT_DECREMENT_STACKSIZE:
+        case EVENT_SPAWN_BODY_BAG:
+        case EVENT_FORCED_ACTION:
+        case EVENT_BROADCAST_AOO:
+        case EVENT_ABILITY_EFFECT_APPLIED:
+        case EVENT_ACQUIRE_ITEM:
+        case EVENT_CONTROLLER_RUMBLE:
+            return;
+        }
     }
-
-    unsigned long oidObject = element[nPosition];
-    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
-    CGameObject* pGameObject = pServerExoApp->GetGameObject(oidObject);
-
-    if (pGameObject != NULL &&
-        pGameObject->m_nObjectType > CGameObject::OBJECT_TYPE_AREA)
-    {
-        return (CSWSObject*)pGameObject;
-    }
-
-    return NULL;
 }
-
-CSWSObject* CServerAIList::GetNextObject()
-{
-    if (num == 0)
-    {
-        return NULL;
-    }
-
-    m_nCurrent++;
-
-    if (m_nCurrent >= num)
-    {
-        m_nCurrent = 0;
-    }
-
-    unsigned long oidObject = element[m_nCurrent];
-    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
-    CGameObject* pGameObject = pServerExoApp->GetGameObject(oidObject);
-
-    if (pGameObject != NULL &&
-        pGameObject->m_nObjectType > CGameObject::OBJECT_TYPE_AREA)
-    {
-        return (CSWSObject*)pGameObject;
-    }
-
-    return NULL;
-}
-
-BOOL CServerAIMaster::GetPendingEvent(unsigned long* pnCalendarDay,
-                                      unsigned long* pnTimeOfDay,
-                                      unsigned long* poidCaller,
-                                      unsigned long* poidObject,
-                                      unsigned long* pnEventId,
-                                      void** ppEventData)
-{
-    if (m_lstEvents.IsEmpty())
-    {
-        return FALSE;
-    }
-
-    CServerAIEventNode* pNode = m_lstEvents.RemoveHead();
-    *pnCalendarDay = pNode->m_nCalendarDay;
-    *pnTimeOfDay = pNode->m_nTimeOfDay;
-    *poidCaller = pNode->m_oidCaller;
-    *poidObject = pNode->m_oidObject;
-    *pnEventId = pNode->m_nEventId;
-    *ppEventData = pNode->m_pEventData;
-    pNode->m_pEventData = NULL;
-    delete pNode;
-    return TRUE;
-}
-
-BOOL CServerAIMaster::EventPending(unsigned long nCalendarDay,
-                                   unsigned long nTimeOfDay)
-{
-    if (m_lstEvents.IsEmpty())
-    {
-        return FALSE;
-    }
-
-    CServerAIEventNode* pNode = m_lstEvents.GetHead();
-
-    if (m_pExoAppInternal->GetWorldTimer()->CompareWorldTimes(
-            pNode->m_nCalendarDay, pNode->m_nTimeOfDay, nCalendarDay,
-            nTimeOfDay) > 0)
-    {
-        return FALSE;
-    }
-
-    return TRUE;
-}
+#endif
 // PC 0x004DF020
 void CServerAIMaster::UpdateState()
 {
@@ -1415,84 +1489,10 @@ CServerAIMaster::~CServerAIMaster()
         m_pUnused8C = NULL;
     }
 }
-// PC 0x004DD3A0
-BOOL CServerAIBodyBagInfo::SaveBodyBag(CResGFF* pRes, CResStruct* pStruct)
-{
-    pRes->WriteFieldDWORD(pStruct, m_nBodyBagId, "BodyBagId");
-    pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fX, "PositionX");
-    pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fY, "PositionY");
-    pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fZ, "PositionZ");
-    return TRUE;
-}
-// PC 0x004DD400
-BOOL CServerAIBodyBagInfo::LoadBodyBag(CResGFF* pRes, CResStruct* pStruct)
-{
-    int bSuccess;
 
-    m_nBodyBagId = pRes->ReadFieldDWORD(pStruct, "BodyBagId", bSuccess, 0);
-    m_vPosition.m_fX = pRes->ReadFieldFLOAT(pStruct, "PositionX", bSuccess, 0.0f);
-    m_vPosition.m_fY = pRes->ReadFieldFLOAT(pStruct, "PositionY", bSuccess, 0.0f);
-    m_vPosition.m_fZ = pRes->ReadFieldFLOAT(pStruct, "PositionZ", bSuccess, 0.0f);
-    return TRUE;
-}
 
-static inline void ServeraimasterTrace2()
-{
-    ServeraimasterTrace1();
-}
-
-static inline void ServeraimasterTrace1()
+// PC 0x006009E0
+void CServerAIMaster::AdjustTargetAndWitnessReputations(
+    unsigned long oidTarget, unsigned long oidActor, int nAction)
 {
 }
-
-#ifdef _XBOX
-
-
-void CServerAIMaster::DeleteEventData(unsigned long nEventId, void* pEventData)
-{
-    if (pEventData != NULL)
-    {
-        switch (nEventId)
-        {
-        case EVENT_BROADCAST_SAFE_PROJECTILE:
-            delete (CSWSCombatAttackData*)pEventData;
-            return;
-        case EVENT_FEEDBACK_MESSAGE:
-            delete (CSWCCMessageData*)pEventData;
-            return;
-        case EVENT_SPELL_IMPACT:
-        case EVENT_ITEM_ON_HIT_SPELL_IMPACT:
-            delete (CSWSSpellScriptData*)pEventData;
-            return;
-        case EVENT_TIMED_EVENT:
-            g_pVirtualMachine->DeleteScriptSituation(pEventData);
-            return;
-        case EVENT_SIGNAL_EVENT:
-        case EVENT_SUMMON_CREATURE:
-        case EVENT_AREA_TRANSITION:
-            delete (CScriptEvent*)pEventData;
-            return;
-        case EVENT_ENTERED_TRIGGER:
-        case EVENT_LEFT_TRIGGER:
-        case EVENT_REMOVE_FROM_AREA:
-        case EVENT_APPLY_EFFECT:
-        case EVENT_CLOSE_OBJECT:
-        case EVENT_OPEN_OBJECT:
-        case EVENT_PLAY_ANIMATION:
-        case EVENT_DESTROY_OBJECT:
-        case EVENT_UNLOCK_OBJECT:
-        case EVENT_LOCK_OBJECT:
-        case EVENT_REMOVE_EFFECT:
-        case EVENT_ON_MELEE_ATTACKED:
-        case EVENT_DECREMENT_STACKSIZE:
-        case EVENT_SPAWN_BODY_BAG:
-        case EVENT_FORCED_ACTION:
-        case EVENT_BROADCAST_AOO:
-        case EVENT_ABILITY_EFFECT_APPLIED:
-        case EVENT_ACQUIRE_ITEM:
-        case EVENT_CONTROLLER_RUMBLE:
-            return;
-        }
-    }
-}
-#endif

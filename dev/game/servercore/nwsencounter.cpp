@@ -20,106 +20,6 @@
 
 static inline void NwsencounterTrace1();
 #define NWSENCOUNTER_TRACE() NwsencounterTrace1()
-// PC 0x0056B6C0
-CEncounterSpawnPoint::CEncounterSpawnPoint()
-    : m_fOrientation(0.0f)
-{
-}
-// PC 0x0056B6D0
-int CSWSEncounter::LineSegmentIntersectActivateArea(const Vector& vStart,
-                                                   const Vector& vEnd)
-{
-    CSWSArea* pArea = GetArea();
-    int nIndex;
-    float fX;
-    float fY;
-
-    if (pArea != NULL)
-    {
-        for (nIndex = 0; nIndex < m_nActivateAreaVertexCount; nIndex++)
-        {
-            int nFirst = m_pActivateAreaIndices[nIndex];
-            int nSecond = m_pActivateAreaIndices[
-                nIndex != m_nActivateAreaVertexCount - 1 ? nIndex + 1 : 0];
-
-            if (pArea->IntersectLineSegments(
-                    vStart.m_fX, vStart.m_fY, vEnd.m_fX, vEnd.m_fY,
-                    m_pActivateAreaVertices[nFirst].m_fX,
-                    m_pActivateAreaVertices[nFirst].m_fY,
-                    m_pActivateAreaVertices[nSecond].m_fX,
-                    m_pActivateAreaVertices[nSecond].m_fY, &fX, &fY) == 1)
-            {
-                return 1;
-            }
-        }
-    }
-    return 0;
-}
-#ifndef _XBOX
-int CSWSEncounter::GetInActivateArea(const Vector& vPosition)  // PC 0x0056B790
-{
-    int nIntersections = 0;
-    int nVertexCount = m_nActivateAreaVertexCount;
-
-    for (int nIndex = 0; nIndex < nVertexCount; nIndex++)
-    {
-        int nFirst = m_pActivateAreaIndices[nIndex];
-        int nSecond = m_pActivateAreaIndices[
-            nIndex != nVertexCount - 1 ? nIndex + 1 : 0];
-        Vector* pSecond = &m_pActivateAreaVertices[nSecond];
-        Vector* pFirst = &m_pActivateAreaVertices[nFirst];
-
-        if (pSecond->m_fX != pFirst->m_fX)
-        {
-            float fY = pFirst->m_fY;
-            float fX = vPosition.m_fX;
-            float fDeltaY = pSecond->m_fY - fY;
-            float fDeltaX = pSecond->m_fX - pFirst->m_fX;
-            fY = fY -
-                (pFirst->m_fX - vPosition.m_fX) * (fDeltaY / fDeltaX);
-
-            if (fY > vPosition.m_fY)
-            {
-                if (fabs(fDeltaY) > fabs(fDeltaX))
-                {
-                    if (pSecond->m_fY > pFirst->m_fY)
-                    {
-                        if (fY >= pFirst->m_fY && fY < pSecond->m_fY)
-                            nIntersections++;
-                    }
-                    else if (pFirst->m_fY > pSecond->m_fY &&
-                             fY > pSecond->m_fY && fY <= pFirst->m_fY)
-                    {
-                        nIntersections++;
-                    }
-                }
-                else
-                {
-                    if (pSecond->m_fX > pFirst->m_fX)
-                    {
-                        if (fX >= pFirst->m_fX && fX < pSecond->m_fX)
-                            nIntersections++;
-                    }
-                    else if (pFirst->m_fX > pSecond->m_fX &&
-                             fX > pSecond->m_fX && fX <= pFirst->m_fX)
-                    {
-                        nIntersections++;
-                    }
-                }
-            }
-        }
-
-        if (pSecond->m_fX == vPosition.m_fX &&
-            (pSecond->m_fY > vPosition.m_fY ||
-             pFirst->m_fY >= vPosition.m_fY))
-        {
-            nIntersections++;
-        }
-    }
-
-    return nIntersections % 2 == 1;
-}
-#endif
 CEncounterListEntry& CEncounterListEntry::operator=(
     const CEncounterListEntry& other)
 {
@@ -131,253 +31,6 @@ CEncounterListEntry& CEncounterListEntry::operator=(
     m_bSingleSpawn = other.m_bSingleSpawn;
     m_nGuaranteedCount = other.m_nGuaranteedCount;
     return *this;
-}
-// PC 0x0056B950
-int CSWSEncounter::GetInActivateAreaList(unsigned long oidObject)
-{
-    int nIndex;
-
-    for (nIndex = 0; nIndex < m_nActivateAreaListSize; nIndex++)
-    {
-        if (m_pActivateAreaList[nIndex] == oidObject)
-        {
-            return 1;
-        }
-    }
-    return 0;
-}
-// PC 0x0056B990
-void CSWSEncounter::AddToActivateAreaList(unsigned long oidObject)
-{
-    int nIndex;
-    unsigned long* pOldList;
-    unsigned long* pNewList;
-
-    for (nIndex = 0; nIndex < m_nActivateAreaListSize; nIndex++)
-    {
-        if (m_pActivateAreaList[nIndex] == oidObject)
-        {
-            return;
-        }
-    }
-    if (m_nActivateAreaListSize < m_nAreaListMaxSize)
-    {
-        m_pActivateAreaList[m_nActivateAreaListSize] = oidObject;
-        m_nActivateAreaListSize++;
-    }
-    else
-    {
-        pOldList = m_pActivateAreaList;
-        m_nAreaListMaxSize += 16;
-        pNewList = new unsigned long[m_nAreaListMaxSize];
-        for (nIndex = 0; nIndex <= m_nActivateAreaListSize; nIndex++)
-        {
-            pNewList[nIndex] = pOldList[nIndex];
-        }
-        pNewList[m_nActivateAreaListSize++] = oidObject;
-        m_pActivateAreaList = pNewList;
-        delete[] pOldList;
-    }
-}
-// PC 0x0056BA70
-int CSWSEncounter::RemoveFromActivateAreaList(unsigned long oidObject)
-{
-    int nRemoved;
-    int nIndex;
-
-    nRemoved = 0;
-    for (nIndex = 0; nIndex < m_nActivateAreaListSize; nIndex++)
-    {
-        if (m_pActivateAreaList[nIndex] == oidObject)
-        {
-            nRemoved++;
-        }
-        else if (nRemoved != 0)
-        {
-            m_pActivateAreaList[nIndex - nRemoved] =
-                m_pActivateAreaList[nIndex];
-        }
-    }
-    m_nActivateAreaListSize -= nRemoved;
-    return nIndex;
-}
-// PC 0x0056BC40
-int CSWSEncounter::LoadEncounterGeometry(CResGFF* pRes, CResList& lstGeometry)
-{
-    CResStruct cStruct;
-    int bSuccess;
-    int nIndex;
-    int bFirst;
-
-    m_nActivateAreaVertexDataSize = pRes->GetListCount(&lstGeometry);
-    m_nActivateAreaVertexCount = m_nActivateAreaVertexDataSize;
-    if (m_pActivateAreaVertices != NULL)
-    {
-        delete m_pActivateAreaVertices;
-    }
-    if (m_nActivateAreaVertexDataSize == 0)
-    {
-        CExoString sError;
-
-        sError.Format("Problem loading encounter with tag '%s'.  It has "
-                      "geometry, but no vertices.  Skipping.",
-                      m_sTag.CStr());
-        return 0;
-    }
-    m_pActivateAreaVertices = new Vector[m_nActivateAreaVertexDataSize];
-    if (m_pActivateAreaIndices != NULL)
-    {
-        delete m_pActivateAreaIndices;
-    }
-    m_pActivateAreaIndices = new unsigned long[m_nActivateAreaVertexCount];
-    bFirst = 1;
-    for (nIndex = 0; nIndex < m_nActivateAreaVertexDataSize; nIndex++)
-    {
-        if (pRes->GetListElement(&cStruct, &lstGeometry, nIndex) != 0)
-        {
-            m_pActivateAreaVertices[nIndex].m_fX =
-                pRes->ReadFieldFLOAT(&cStruct, "X", bSuccess, 0.0f) +
-                m_vPosition.m_fX;
-            m_pActivateAreaVertices[nIndex].m_fY =
-                pRes->ReadFieldFLOAT(&cStruct, "Y", bSuccess, 0.0f) +
-                m_vPosition.m_fY;
-            m_pActivateAreaVertices[nIndex].m_fZ =
-                pRes->ReadFieldFLOAT(&cStruct, "Z", bSuccess, 0.0f) +
-                m_vPosition.m_fZ;
-            m_pActivateAreaIndices[nIndex] = nIndex;
-            if (bFirst != 0)
-            {
-                m_fMinX = m_pActivateAreaVertices[nIndex].m_fX;
-                m_fMaxX = m_pActivateAreaVertices[nIndex].m_fX;
-                m_fMinY = m_pActivateAreaVertices[nIndex].m_fY;
-                m_fMaxY = m_pActivateAreaVertices[nIndex].m_fY;
-                bFirst = 0;
-            }
-            else
-            {
-                if (m_pActivateAreaVertices[nIndex].m_fX < m_fMinX)
-                {
-                    m_fMinX = m_pActivateAreaVertices[nIndex].m_fX;
-                }
-                if (m_pActivateAreaVertices[nIndex].m_fX > m_fMaxX)
-                {
-                    m_fMaxX = m_pActivateAreaVertices[nIndex].m_fX;
-                }
-                if (m_pActivateAreaVertices[nIndex].m_fY < m_fMinY)
-                {
-                    m_fMinY = m_pActivateAreaVertices[nIndex].m_fY;
-                }
-                if (m_pActivateAreaVertices[nIndex].m_fY > m_fMaxY)
-                {
-                    m_fMaxY = m_pActivateAreaVertices[nIndex].m_fY;
-                }
-            }
-        }
-    }
-    return 1;
-}
-// PC 0x0056BAD0
-void CSWSEncounter::LoadEncounterSpawnPoints(CResGFF* pRes,
-                                             CResList& lstSpawnPoints)
-{
-    CResStruct cStruct;
-    int bSuccess;
-    int nIndex;
-
-    m_nSpawnPointCount = pRes->GetListCount(&lstSpawnPoints);
-    if (m_nSpawnPointCount > 0)
-    {
-        if (m_pSpawnPoints != NULL)
-        {
-            delete m_pSpawnPoints;
-        }
-        m_pSpawnPoints = new CEncounterSpawnPoint[m_nSpawnPointCount];
-        for (nIndex = 0; nIndex < m_nSpawnPointCount; nIndex++)
-        {
-            if (pRes->GetListElement(&cStruct, &lstSpawnPoints, nIndex) != 0)
-            {
-                m_pSpawnPoints[nIndex].m_vPosition.m_fX =
-                    pRes->ReadFieldFLOAT(&cStruct, "X", bSuccess, 0.0f);
-                m_pSpawnPoints[nIndex].m_vPosition.m_fY =
-                    pRes->ReadFieldFLOAT(&cStruct, "Y", bSuccess, 0.0f);
-                m_pSpawnPoints[nIndex].m_vPosition.m_fZ =
-                    pRes->ReadFieldFLOAT(&cStruct, "Z", bSuccess, 0.0f);
-                m_pSpawnPoints[nIndex].m_fOrientation = pRes->ReadFieldFLOAT(
-                    &cStruct, "Orientation", bSuccess, 0.0f);
-            }
-        }
-    }
-}
-// PC 0x0056BEE0
-void CSWSEncounter::ReadEncounterScriptsFromGff(CResGFF* pRes,
-                                               CResStruct* pStruct)
-{
-    NWSENCOUNTER_TRACE();
-    int bSuccess;
-
-    {
-        CResRef cDefault(m_asScripts[0]);
-        CExoString sScript((char*)pRes->ReadFieldCResRef(
-            pStruct, "OnEntered", bSuccess, cDefault).GetResRef());
-
-        m_asScripts[0] = sScript;
-    }
-    {
-        CResRef cDefault(m_asScripts[1]);
-        CExoString sScript((char*)pRes->ReadFieldCResRef(
-            pStruct, "OnExit", bSuccess, cDefault).GetResRef());
-
-        m_asScripts[1] = sScript;
-    }
-    {
-        CResRef cDefault(m_asScripts[2]);
-        CExoString sScript((char*)pRes->ReadFieldCResRef(
-            pStruct, "OnHeartbeat", bSuccess, cDefault).GetResRef());
-
-        m_asScripts[2] = sScript;
-    }
-    {
-        CResRef cDefault(m_asScripts[3]);
-        CExoString sScript((char*)pRes->ReadFieldCResRef(
-            pStruct, "OnExhausted", bSuccess, cDefault).GetResRef());
-
-        m_asScripts[3] = sScript;
-    }
-    {
-        CResRef cDefault(m_asScripts[4]);
-        CExoString sScript((char*)pRes->ReadFieldCResRef(
-            pStruct, "OnUserDefined", bSuccess, cDefault).GetResRef());
-
-        m_asScripts[4] = sScript;
-    }
-}
-// PC 0x0056C120
-void CSWSEncounter::SetDifficulty(int nDifficulty)
-{
-    NWSENCOUNTER_TRACE();
-    float fDifficulty = 0.0f;
-#ifdef _XBOX
-    CTwoDimArrays* pArraysForEncounterDifficulty = g_pRules->m_p2DArrays;
-    EXOXBOXASSERT(pArraysForEncounterDifficulty->m_pEncounterDifficulty);
-    C2DA* pDifficulty = pArraysForEncounterDifficulty->m_pEncounterDifficulty;
-#else
-    C2DA* pDifficulty = g_pRules->m_p2DArrays->m_pEncounterDifficulty;
-#endif
-
-    if (pDifficulty != NULL)
-    {
-        CTwoDimArrays* pTables = g_pRules->m_p2DArrays;
-        EXOXBOXASSERT(pTables->m_pEncounterDifficulty);
-        C2DA* pTable = pTables->m_pEncounterDifficulty;
-        int nRows = pTable->m_nNumRows;
-
-        if (nDifficulty >= nRows || nDifficulty < 0)
-        {
-            return;
-        }
-        pDifficulty->GetFLOATEntry(nDifficulty, "VALUE", &fDifficulty);
-    }
-    m_nDifficulty = (int)fDifficulty;
 }
 
 void CSWSEncounter::PadOutCreatureCount(CEncounterListEntry* pEntries,
@@ -478,6 +131,582 @@ void CSWSEncounter::PadOutCreatureCount(CEncounterListEntry* pEntries,
         }
     }
     return;
+}
+
+void CSWSEncounter::AddCreaturesToSpawnList(CEncounterListEntry* pEntries,
+                                          int& nCount, int nIndex,
+                                          CEncounterListEntry cEntry)
+{
+    float fPoints = CalculatePointsFromCR(cEntry.m_fChallengeRating);
+
+    if (fPoints != m_fMinSpawnPoolCost)
+    {
+        if (nCount == 1)
+        {
+            nCount = 0;
+        }
+        else
+        {
+            int nRemoved = 0;
+            for (int i = 0; i < nCount; i++)
+            {
+                if (i == nIndex)
+                {
+                    nRemoved++;
+                }
+                else if (nRemoved != 0)
+                {
+                    pEntries[i - nRemoved] = pEntries[i];
+                }
+            }
+            nCount -= nRemoved;
+        }
+
+        float fMaxCost = fPoints - ENCOUNTER_SPAWN_COST_TOLERANCE;
+        for (int i = 0; i < m_nSpawnEntryCount; i++)
+        {
+            if (nCount > m_nRecommendedCreatures - m_nNumberSpawned)
+            {
+                break;
+            }
+            while (m_pSpawnEntries[i].m_fSpawnPoolCost <= fPoints &&
+                   m_pSpawnEntries[i].m_fSpawnPoolCost <= fMaxCost &&
+                   nCount < m_nMaxCreatures &&
+                   (!m_pSpawnEntries[i].m_bSingleSpawn ||
+                    !m_pSpawnEntries[i].m_bSpawned))
+            {
+                pEntries[nCount].m_cResRef = m_pSpawnEntries[i].m_cResRef;
+                pEntries[nCount].m_fSpawnPoolCost =
+                    m_pSpawnEntries[i].m_fSpawnPoolCost;
+                pEntries[nCount].m_fChallengeRating =
+                    m_pSpawnEntries[i].m_fChallengeRating;
+                m_pSpawnEntries[i].m_bSpawned = 1;
+                nCount++;
+                fPoints -= m_pSpawnEntries[i].m_fSpawnPoolCost;
+            }
+        }
+    }
+}
+
+void CSWSEncounter::CalculateSpawnPool(float fChallengeRating)
+{
+    if (fChallengeRating == -1.0f)
+    {
+        TallyEnemyRadiusPoints();
+    }
+    else
+    {
+        m_fAreaPoints = CalculatePointsFromCR(fChallengeRating);
+    }
+    if (m_fAreaPoints != 0.0f)
+    {
+        m_nSpawnLevel =
+            m_nDifficulty + (int)(log(m_fAreaPoints * 0.25) / log(1.5) + 0.5);
+        m_fSpawnPool += CalculatePointsFromCR((float)(m_nSpawnLevel - 1));
+    }
+}
+
+float CSWSEncounter::CalculatePointsFromCR(float fChallengeRating)
+{
+    if (fChallengeRating > 0.0f && fChallengeRating < 1.0f)
+    {
+        if (fChallengeRating >= m_plstFractionalCR->element[0])
+        {
+            return 1.0f;
+        }
+        if (fChallengeRating >= m_plstFractionalCR->element[1])
+        {
+            return (float)pow(1.5, -1.0);
+        }
+        if (fChallengeRating >= m_plstFractionalCR->element[2])
+        {
+            return (float)pow(1.5, -2.0);
+        }
+        if (fChallengeRating >= m_plstFractionalCR->element[3])
+        {
+            return (float)pow(1.5, -3.0);
+        }
+        return (float)pow(1.5, -4.0);
+    }
+    if (fChallengeRating >= 0.0f && fChallengeRating <= 50.0f)
+    {
+        return m_sPowerLookup[(int)fChallengeRating];
+    }
+    return (float)pow(1.5f, fChallengeRating);
+}
+
+void CSWSEncounter::TallyEnemyRadiusPoints()
+{
+    CSWSArea* pArea = GetArea();
+    int nIndex;
+    int nLevel;
+    Vector vOrigin;
+    Vector vPosition;
+
+    if (pArea != NULL)
+    {
+        m_fAreaPoints = 0.0f;
+        CSWSCreature* pCreature =
+            g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
+                m_oidLastEntered);
+        if (pCreature != NULL)
+        {
+            vOrigin = pCreature->m_vPosition;
+            if (pArea->GetFirstObjectIndiceByX(
+                    &nIndex, vOrigin.m_fX - ENCOUNTER_ENEMY_SEARCH_RADIUS))
+            {
+                while (nIndex < pArea->m_lstObjectIds.num)
+                {
+                    unsigned long oidCreature = pArea->m_lstObjectIds[nIndex];
+                    pCreature =
+                        g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCreature);
+                    if (pCreature == NULL)
+                    {
+                        nIndex++;
+                        continue;
+                    }
+                    vPosition = pCreature->m_vPosition;
+                    if (vPosition.m_fX > vOrigin.m_fX + ENCOUNTER_ENEMY_SEARCH_RADIUS)
+                    {
+                        break;
+                    }
+                    if (!(pCreature->GetAIStateReputation(GetId()) ==
+                            CSWSObject::AI_STATE_REPUTATION_ENEMY &&
+                        pCreature->GetDead() != 1 &&
+                        pCreature->GetIsPCDying() != 1 &&
+                        vPosition.m_fY >= vOrigin.m_fY - ENCOUNTER_ENEMY_SEARCH_RADIUS &&
+                        vPosition.m_fY <= vOrigin.m_fY + ENCOUNTER_ENEMY_SEARCH_RADIUS))
+                    {
+                        nIndex++;
+                        continue;
+                    }
+                    nLevel = pCreature->m_pStats->GetLevel(0);
+                    if (pCreature->m_nAreaWaitState == 0)
+                    {
+                        nLevel /= 2;
+                    }
+                    m_fAreaPoints += CalculatePointsFromCR((float)nLevel);
+                    nIndex++;
+                }
+            }
+        }
+    }
+}
+
+static inline void NwsencounterTrace1()
+{
+}
+// PC 0x0056B6C0
+CEncounterSpawnPoint::CEncounterSpawnPoint()
+    : m_fOrientation(0.0f)
+{
+}
+// PC 0x0056B6D0
+int CSWSEncounter::LineSegmentIntersectActivateArea(const Vector& vStart,
+                                                   const Vector& vEnd)
+{
+    CSWSArea* pArea = GetArea();
+    int nIndex;
+    float fX;
+    float fY;
+
+    if (pArea != NULL)
+    {
+        for (nIndex = 0; nIndex < m_nActivateAreaVertexCount; nIndex++)
+        {
+            int nFirst = m_pActivateAreaIndices[nIndex];
+            int nSecond = m_pActivateAreaIndices[
+                nIndex != m_nActivateAreaVertexCount - 1 ? nIndex + 1 : 0];
+
+            if (pArea->IntersectLineSegments(
+                    vStart.m_fX, vStart.m_fY, vEnd.m_fX, vEnd.m_fY,
+                    m_pActivateAreaVertices[nFirst].m_fX,
+                    m_pActivateAreaVertices[nFirst].m_fY,
+                    m_pActivateAreaVertices[nSecond].m_fX,
+                    m_pActivateAreaVertices[nSecond].m_fY, &fX, &fY) == 1)
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+#ifndef _XBOX
+int CSWSEncounter::GetInActivateArea(const Vector& vPosition)  // PC 0x0056B790
+{
+    int nIntersections = 0;
+    int nVertexCount = m_nActivateAreaVertexCount;
+
+    for (int nIndex = 0; nIndex < nVertexCount; nIndex++)
+    {
+        int nFirst = m_pActivateAreaIndices[nIndex];
+        int nSecond = m_pActivateAreaIndices[
+            nIndex != nVertexCount - 1 ? nIndex + 1 : 0];
+        Vector* pSecond = &m_pActivateAreaVertices[nSecond];
+        Vector* pFirst = &m_pActivateAreaVertices[nFirst];
+
+        if (pSecond->m_fX != pFirst->m_fX)
+        {
+            float fY = pFirst->m_fY;
+            float fX = vPosition.m_fX;
+            float fDeltaY = pSecond->m_fY - fY;
+            float fDeltaX = pSecond->m_fX - pFirst->m_fX;
+            fY = fY -
+                (pFirst->m_fX - vPosition.m_fX) * (fDeltaY / fDeltaX);
+
+            if (fY > vPosition.m_fY)
+            {
+                if (fabs(fDeltaY) > fabs(fDeltaX))
+                {
+                    if (pSecond->m_fY > pFirst->m_fY)
+                    {
+                        if (fY >= pFirst->m_fY && fY < pSecond->m_fY)
+                            nIntersections++;
+                    }
+                    else if (pFirst->m_fY > pSecond->m_fY &&
+                             fY > pSecond->m_fY && fY <= pFirst->m_fY)
+                    {
+                        nIntersections++;
+                    }
+                }
+                else
+                {
+                    if (pSecond->m_fX > pFirst->m_fX)
+                    {
+                        if (fX >= pFirst->m_fX && fX < pSecond->m_fX)
+                            nIntersections++;
+                    }
+                    else if (pFirst->m_fX > pSecond->m_fX &&
+                             fX > pSecond->m_fX && fX <= pFirst->m_fX)
+                    {
+                        nIntersections++;
+                    }
+                }
+            }
+        }
+
+        if (pSecond->m_fX == vPosition.m_fX &&
+            (pSecond->m_fY > vPosition.m_fY ||
+             pFirst->m_fY >= vPosition.m_fY))
+        {
+            nIntersections++;
+        }
+    }
+
+    return nIntersections % 2 == 1;
+}
+#endif
+
+#ifdef _XBOX
+
+int CSWSEncounter::GetInActivateArea(const Vector& vPosition)
+{
+    int nIntersections = 0;
+    int nIndex = 0;
+    int nLast = m_nActivateAreaVertexCount - 1;
+
+    for (nIndex = 0; nIndex < m_nActivateAreaVertexCount; nIndex++)
+    {
+        int nFirst = m_pActivateAreaIndices[nIndex];
+        int nSecond = m_pActivateAreaIndices[nIndex != nLast ? nIndex + 1 : 0];
+
+        if (m_pActivateAreaVertices[nSecond].m_fX != m_pActivateAreaVertices[nFirst].m_fX)
+        {
+            float fY = m_pActivateAreaVertices[nFirst].m_fY;
+            fY = fY - (m_pActivateAreaVertices[nFirst].m_fX - vPosition.m_fX) *
+                ((m_pActivateAreaVertices[nSecond].m_fY - fY) /
+                 (m_pActivateAreaVertices[nSecond].m_fX - m_pActivateAreaVertices[nFirst].m_fX));
+
+            if (fY > vPosition.m_fY)
+            {
+                float fX = vPosition.m_fX;
+                if (fabs(m_pActivateAreaVertices[nSecond].m_fY - m_pActivateAreaVertices[nFirst].m_fY) >
+                    fabs(m_pActivateAreaVertices[nSecond].m_fX - m_pActivateAreaVertices[nFirst].m_fX))
+                {
+                    if (m_pActivateAreaVertices[nSecond].m_fY > m_pActivateAreaVertices[nFirst].m_fY)
+                    {
+                        if (fY >= m_pActivateAreaVertices[nFirst].m_fY && fY < m_pActivateAreaVertices[nSecond].m_fY)
+                            nIntersections++;
+                    }
+                    else if (m_pActivateAreaVertices[nFirst].m_fY > m_pActivateAreaVertices[nSecond].m_fY &&
+                             fY > m_pActivateAreaVertices[nSecond].m_fY && fY <= m_pActivateAreaVertices[nFirst].m_fY)
+                    {
+                        nIntersections++;
+                    }
+                }
+                else
+                {
+                    if (m_pActivateAreaVertices[nSecond].m_fX > m_pActivateAreaVertices[nFirst].m_fX)
+                    {
+                        if (fX >= m_pActivateAreaVertices[nFirst].m_fX && fX < m_pActivateAreaVertices[nSecond].m_fX)
+                            nIntersections++;
+                    }
+                    else if (m_pActivateAreaVertices[nFirst].m_fX > m_pActivateAreaVertices[nSecond].m_fX &&
+                             fX > m_pActivateAreaVertices[nSecond].m_fX && fX <= m_pActivateAreaVertices[nFirst].m_fX)
+                    {
+                        nIntersections++;
+                    }
+                }
+            }
+        }
+
+        if (m_pActivateAreaVertices[nSecond].m_fX == vPosition.m_fX &&
+            (m_pActivateAreaVertices[nSecond].m_fY > vPosition.m_fY ||
+             m_pActivateAreaVertices[nFirst].m_fY >= vPosition.m_fY))
+        {
+            nIntersections++;
+        }
+    }
+
+    return nIntersections % 2 == 1;
+}
+#endif
+// PC 0x0056B950
+int CSWSEncounter::GetInActivateAreaList(unsigned long oidObject)
+{
+    int nIndex;
+
+    for (nIndex = 0; nIndex < m_nActivateAreaListSize; nIndex++)
+    {
+        if (m_pActivateAreaList[nIndex] == oidObject)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+// PC 0x0056B990
+void CSWSEncounter::AddToActivateAreaList(unsigned long oidObject)
+{
+    int nIndex;
+    unsigned long* pOldList;
+    unsigned long* pNewList;
+
+    for (nIndex = 0; nIndex < m_nActivateAreaListSize; nIndex++)
+    {
+        if (m_pActivateAreaList[nIndex] == oidObject)
+        {
+            return;
+        }
+    }
+    if (m_nActivateAreaListSize < m_nAreaListMaxSize)
+    {
+        m_pActivateAreaList[m_nActivateAreaListSize] = oidObject;
+        m_nActivateAreaListSize++;
+    }
+    else
+    {
+        pOldList = m_pActivateAreaList;
+        m_nAreaListMaxSize += 16;
+        pNewList = new unsigned long[m_nAreaListMaxSize];
+        for (nIndex = 0; nIndex <= m_nActivateAreaListSize; nIndex++)
+        {
+            pNewList[nIndex] = pOldList[nIndex];
+        }
+        pNewList[m_nActivateAreaListSize++] = oidObject;
+        m_pActivateAreaList = pNewList;
+        delete[] pOldList;
+    }
+}
+// PC 0x0056BA70
+int CSWSEncounter::RemoveFromActivateAreaList(unsigned long oidObject)
+{
+    int nRemoved;
+    int nIndex;
+
+    nRemoved = 0;
+    for (nIndex = 0; nIndex < m_nActivateAreaListSize; nIndex++)
+    {
+        if (m_pActivateAreaList[nIndex] == oidObject)
+        {
+            nRemoved++;
+        }
+        else if (nRemoved != 0)
+        {
+            m_pActivateAreaList[nIndex - nRemoved] =
+                m_pActivateAreaList[nIndex];
+        }
+    }
+    m_nActivateAreaListSize -= nRemoved;
+    return nIndex;
+}
+// PC 0x0056BAD0
+void CSWSEncounter::LoadEncounterSpawnPoints(CResGFF* pRes,
+                                             CResList& lstSpawnPoints)
+{
+    CResStruct cStruct;
+    int bSuccess;
+    int nIndex;
+
+    m_nSpawnPointCount = pRes->GetListCount(&lstSpawnPoints);
+    if (m_nSpawnPointCount > 0)
+    {
+        if (m_pSpawnPoints != NULL)
+        {
+            delete m_pSpawnPoints;
+        }
+        m_pSpawnPoints = new CEncounterSpawnPoint[m_nSpawnPointCount];
+        for (nIndex = 0; nIndex < m_nSpawnPointCount; nIndex++)
+        {
+            if (pRes->GetListElement(&cStruct, &lstSpawnPoints, nIndex) != 0)
+            {
+                m_pSpawnPoints[nIndex].m_vPosition.m_fX =
+                    pRes->ReadFieldFLOAT(&cStruct, "X", bSuccess, 0.0f);
+                m_pSpawnPoints[nIndex].m_vPosition.m_fY =
+                    pRes->ReadFieldFLOAT(&cStruct, "Y", bSuccess, 0.0f);
+                m_pSpawnPoints[nIndex].m_vPosition.m_fZ =
+                    pRes->ReadFieldFLOAT(&cStruct, "Z", bSuccess, 0.0f);
+                m_pSpawnPoints[nIndex].m_fOrientation = pRes->ReadFieldFLOAT(
+                    &cStruct, "Orientation", bSuccess, 0.0f);
+            }
+        }
+    }
+}
+// PC 0x0056BC40
+int CSWSEncounter::LoadEncounterGeometry(CResGFF* pRes, CResList& lstGeometry)
+{
+    CResStruct cStruct;
+    int bSuccess;
+    int nIndex;
+    int bFirst;
+
+    m_nActivateAreaVertexDataSize = pRes->GetListCount(&lstGeometry);
+    m_nActivateAreaVertexCount = m_nActivateAreaVertexDataSize;
+    if (m_pActivateAreaVertices != NULL)
+    {
+        delete m_pActivateAreaVertices;
+    }
+    if (m_nActivateAreaVertexDataSize == 0)
+    {
+        CExoString sError;
+
+        sError.Format("Problem loading encounter with tag '%s'.  It has "
+                      "geometry, but no vertices.  Skipping.",
+                      m_sTag.CStr());
+        return 0;
+    }
+    m_pActivateAreaVertices = new Vector[m_nActivateAreaVertexDataSize];
+    if (m_pActivateAreaIndices != NULL)
+    {
+        delete m_pActivateAreaIndices;
+    }
+    m_pActivateAreaIndices = new unsigned long[m_nActivateAreaVertexCount];
+    bFirst = 1;
+    for (nIndex = 0; nIndex < m_nActivateAreaVertexDataSize; nIndex++)
+    {
+        if (pRes->GetListElement(&cStruct, &lstGeometry, nIndex) != 0)
+        {
+            m_pActivateAreaVertices[nIndex].m_fX =
+                pRes->ReadFieldFLOAT(&cStruct, "X", bSuccess, 0.0f) +
+                m_vPosition.m_fX;
+            m_pActivateAreaVertices[nIndex].m_fY =
+                pRes->ReadFieldFLOAT(&cStruct, "Y", bSuccess, 0.0f) +
+                m_vPosition.m_fY;
+            m_pActivateAreaVertices[nIndex].m_fZ =
+                pRes->ReadFieldFLOAT(&cStruct, "Z", bSuccess, 0.0f) +
+                m_vPosition.m_fZ;
+            m_pActivateAreaIndices[nIndex] = nIndex;
+            if (bFirst != 0)
+            {
+                m_fMinX = m_pActivateAreaVertices[nIndex].m_fX;
+                m_fMaxX = m_pActivateAreaVertices[nIndex].m_fX;
+                m_fMinY = m_pActivateAreaVertices[nIndex].m_fY;
+                m_fMaxY = m_pActivateAreaVertices[nIndex].m_fY;
+                bFirst = 0;
+            }
+            else
+            {
+                if (m_pActivateAreaVertices[nIndex].m_fX < m_fMinX)
+                {
+                    m_fMinX = m_pActivateAreaVertices[nIndex].m_fX;
+                }
+                if (m_pActivateAreaVertices[nIndex].m_fX > m_fMaxX)
+                {
+                    m_fMaxX = m_pActivateAreaVertices[nIndex].m_fX;
+                }
+                if (m_pActivateAreaVertices[nIndex].m_fY < m_fMinY)
+                {
+                    m_fMinY = m_pActivateAreaVertices[nIndex].m_fY;
+                }
+                if (m_pActivateAreaVertices[nIndex].m_fY > m_fMaxY)
+                {
+                    m_fMaxY = m_pActivateAreaVertices[nIndex].m_fY;
+                }
+            }
+        }
+    }
+    return 1;
+}
+// PC 0x0056BEE0
+void CSWSEncounter::ReadEncounterScriptsFromGff(CResGFF* pRes,
+                                               CResStruct* pStruct)
+{
+    NWSENCOUNTER_TRACE();
+    int bSuccess;
+
+    {
+        CResRef cDefault(m_asScripts[0]);
+        CExoString sScript((char*)pRes->ReadFieldCResRef(
+            pStruct, "OnEntered", bSuccess, cDefault).GetResRef());
+
+        m_asScripts[0] = sScript;
+    }
+    {
+        CResRef cDefault(m_asScripts[1]);
+        CExoString sScript((char*)pRes->ReadFieldCResRef(
+            pStruct, "OnExit", bSuccess, cDefault).GetResRef());
+
+        m_asScripts[1] = sScript;
+    }
+    {
+        CResRef cDefault(m_asScripts[2]);
+        CExoString sScript((char*)pRes->ReadFieldCResRef(
+            pStruct, "OnHeartbeat", bSuccess, cDefault).GetResRef());
+
+        m_asScripts[2] = sScript;
+    }
+    {
+        CResRef cDefault(m_asScripts[3]);
+        CExoString sScript((char*)pRes->ReadFieldCResRef(
+            pStruct, "OnExhausted", bSuccess, cDefault).GetResRef());
+
+        m_asScripts[3] = sScript;
+    }
+    {
+        CResRef cDefault(m_asScripts[4]);
+        CExoString sScript((char*)pRes->ReadFieldCResRef(
+            pStruct, "OnUserDefined", bSuccess, cDefault).GetResRef());
+
+        m_asScripts[4] = sScript;
+    }
+}
+// PC 0x0056C120
+void CSWSEncounter::SetDifficulty(int nDifficulty)
+{
+    NWSENCOUNTER_TRACE();
+    float fDifficulty = 0.0f;
+#ifdef _XBOX
+    CTwoDimArrays* pArraysForEncounterDifficulty = g_pRules->m_p2DArrays;
+    EXOXBOXASSERT(pArraysForEncounterDifficulty->m_pEncounterDifficulty);
+    C2DA* pDifficulty = pArraysForEncounterDifficulty->m_pEncounterDifficulty;
+#else
+    C2DA* pDifficulty = g_pRules->m_p2DArrays->m_pEncounterDifficulty;
+#endif
+
+    if (pDifficulty != NULL)
+    {
+        CTwoDimArrays* pTables = g_pRules->m_p2DArrays;
+        EXOXBOXASSERT(pTables->m_pEncounterDifficulty);
+        C2DA* pTable = pTables->m_pEncounterDifficulty;
+        int nRows = pTable->m_nNumRows;
+
+        if (nDifficulty >= nRows || nDifficulty < 0)
+        {
+            return;
+        }
+        pDifficulty->GetFLOATEntry(nDifficulty, "VALUE", &fDifficulty);
+    }
+    m_nDifficulty = (int)fDifficulty;
 }
 // PC 0x0056C1D0
 void CSWSEncounter::UpdateActivateAreaList(unsigned long oidObject)
@@ -772,59 +1001,164 @@ int CSWSEncounter::SaveEncounter(CResGFF* pRes, CResStruct* pStruct)
     }
     return 1;
 }
-
-void CSWSEncounter::AddCreaturesToSpawnList(CEncounterListEntry* pEntries,
-                                          int& nCount, int nIndex,
-                                          CEncounterListEntry cEntry)
+// PC 0x0056CEC0
+void CSWSEncounter::SpawnCreatureFromSpawnList()
 {
-    float fPoints = CalculatePointsFromCR(cEntry.m_fChallengeRating);
+    if (m_lstSpawnList.num == 0)
+        return;
 
-    if (fPoints != m_fMinSpawnPoolCost)
+    CSWSArea* pArea = GetArea();
+    if (pArea == NULL)
+        return;
+
+    int bUseSpawnPoint = 0;
+    Vector vSpawnPoint;
+    Vector vOrientation(1.0f, 0.0f, 0.0f);
+    if (m_nSpawnPointCount > 0)
     {
-        if (nCount == 1)
+        bUseSpawnPoint = 1;
+        unsigned long oidEntered = m_oidLastEntered;
+        CSWSCreature* pEntered =
+            g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
+                oidEntered);
+        if (m_nSpawnsPerPoint == 0)
         {
-            nCount = 0;
+            m_nSpawnsPerPoint = m_lstSpawnList.num / m_nSpawnPointCount;
+        }
+        if (m_nSpawnsAtCurrentPoint == m_nSpawnsPerPoint)
+        {
+            m_nCurrentSpawnPoint++;
+            m_nSpawnsAtCurrentPoint = 0;
+            if (m_nCurrentSpawnPoint >= m_nSpawnPointCount)
+            {
+                m_nCurrentSpawnPoint = 0;
+            }
+        }
+        if (pEntered != NULL)
+        {
+            vSpawnPoint = m_pSpawnPoints[m_nCurrentSpawnPoint].m_vPosition;
+            float fAngle = ENCOUNTER_SPAWN_ORIENTATION_OFFSET -
+                           m_pSpawnPoints[m_nCurrentSpawnPoint].m_fOrientation;
+
+            vOrientation =
+                normalize(Vector((float)cos(fAngle), (float)sin(fAngle), 0.0f));
+        }
+        m_nSpawnsAtCurrentPoint++;
+    }
+
+    Vector vLocation;
+    CSWSCreature* pCreature = new CSWSCreature(OBJECT_INVALID, 0);
+    if (!pCreature->LoadFromTemplate(m_lstSpawnList[0]->m_cResRef, 0))
+    {
+        delete pCreature;
+        return;
+    }
+    pCreature->m_oidSpawnedBy = GetId();
+    pCreature->m_nAreaWaitState = 0;
+
+    int bFoundLocation = 0;
+    float fX, fY, fZ;
+    if (bUseSpawnPoint)
+    {
+        if (pArea->ComputeSafeLocation(vSpawnPoint,
+                ENCOUNTER_SAFE_SPAWN_RADIUS, pCreature->GetPathfindInformation(),
+                0, &vLocation) == 1)
+        {
+            fX = vLocation.m_fX;
+            fY = vLocation.m_fY;
+            fZ = pArea->ComputeHeight(vLocation, 1, NULL);
+            CExoString sResRef;
+            m_lstSpawnList[0]->m_cResRef.CopyToString(sResRef);
+            sResRef.CStr();
+            bFoundLocation = 1;
         }
         else
         {
-            int nRemoved = 0;
-            for (int i = 0; i < nCount; i++)
-            {
-                if (i == nIndex)
-                {
-                    nRemoved++;
-                }
-                else if (nRemoved != 0)
-                {
-                    pEntries[i - nRemoved] = pEntries[i];
-                }
-            }
-            nCount -= nRemoved;
+            CExoString sResRef;
+            m_lstSpawnList[0]->m_cResRef.CopyToString(sResRef);
+            sResRef.CStr();
         }
-
-        float fMaxCost = fPoints - ENCOUNTER_SPAWN_COST_TOLERANCE;
-        for (int i = 0; i < m_nSpawnEntryCount; i++)
+    }
+    if (!bUseSpawnPoint || !bFoundLocation)
+    {
+        if (pArea->ComputeNonVisibleLocation(m_vPosition,
+                pCreature->GetPathfindInformation(), 0, &vLocation,
+                ENCOUNTER_NON_VISIBLE_SPAWN_RADIUS) == 1)
         {
-            if (nCount > m_nRecommendedCreatures - m_nNumberSpawned)
-            {
-                break;
-            }
-            while (m_pSpawnEntries[i].m_fSpawnPoolCost <= fPoints &&
-                   m_pSpawnEntries[i].m_fSpawnPoolCost <= fMaxCost &&
-                   nCount < m_nMaxCreatures &&
-                   (!m_pSpawnEntries[i].m_bSingleSpawn ||
-                    !m_pSpawnEntries[i].m_bSpawned))
-            {
-                pEntries[nCount].m_cResRef = m_pSpawnEntries[i].m_cResRef;
-                pEntries[nCount].m_fSpawnPoolCost =
-                    m_pSpawnEntries[i].m_fSpawnPoolCost;
-                pEntries[nCount].m_fChallengeRating =
-                    m_pSpawnEntries[i].m_fChallengeRating;
-                m_pSpawnEntries[i].m_bSpawned = 1;
-                nCount++;
-                fPoints -= m_pSpawnEntries[i].m_fSpawnPoolCost;
-            }
+            fX = vLocation.m_fX;
+            fY = vLocation.m_fY;
+            fZ = pArea->ComputeHeight(vLocation, 1, NULL);
+            CExoString sResRef;
+            m_lstSpawnList[0]->m_cResRef.CopyToString(sResRef);
+            sResRef.CStr();
+            bFoundLocation = 1;
         }
+        else if (vLocation.m_fX == AREA_NON_VISIBLE_INVALID_COORDINATE &&
+                 vLocation.m_fY == AREA_NON_VISIBLE_INVALID_COORDINATE &&
+                 vLocation.m_fZ == AREA_NON_VISIBLE_INVALID_COORDINATE)
+        {
+            CExoString sResRef;
+            m_lstSpawnList[0]->m_cResRef.CopyToString(sResRef);
+            sResRef.CStr();
+        }
+        else
+        {
+            fX = vLocation.m_fX;
+            fY = vLocation.m_fY;
+            fZ = pArea->ComputeHeight(vLocation, 1, NULL);
+            CExoString sResRef;
+            m_lstSpawnList[0]->m_cResRef.CopyToString(sResRef);
+            sResRef.CStr();
+            bFoundLocation = 1;
+        }
+    }
+    if (bFoundLocation)
+    {
+        pCreature->AddToArea(pArea, fX, fY, fZ, 0, 0);
+        if (pArea->m_nPlayersInArea > 0)
+            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->SetAILevel(
+                pCreature, CServerAIMaster::AI_LEVEL_OCCUPIED_AREA_CREATURE);
+        else
+            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->SetAILevel(
+                pCreature, CServerAIMaster::AI_LEVEL_EMPTY_AREA_CREATURE);
+        if (bUseSpawnPoint)
+            pCreature->SetOrientation(vOrientation);
+        m_nNumberSpawned++;
+        m_fSpawnPoolActive += m_lstSpawnList[0]->m_fSpawnPoolCost;
+        m_fSpawnPool -= m_lstSpawnList[0]->m_fSpawnPoolCost;
+        if (m_fSpawnPool < 0.0f)
+            m_fSpawnPool = 0.0f;
+        m_lstSpawnList.DelIndex(0);
+    }
+    else
+    {
+        delete pCreature;
+        CExoString sResRef;
+        m_lstSpawnList[0]->m_cResRef.CopyToString(sResRef);
+        sResRef.CStr();
+    }
+}
+// PC 0x0056D490
+void CSWSEncounter::BuildSpawnList()
+{
+    CEncounterListEntry* pEntries = new CEncounterListEntry[m_nMaxCreatures];
+    int nCount = 0;
+
+    BuildInitialSpawnList(pEntries, nCount);
+    if (nCount != 0)
+    {
+        for (int nIndex = 0; nIndex < nCount; nIndex++)
+        {
+            CEncounterListEntry* pEntry = new CEncounterListEntry;
+            pEntry->m_cResRef = pEntries[nIndex].m_cResRef;
+            pEntry->m_fChallengeRating = pEntries[nIndex].m_fChallengeRating;
+            m_lstSpawnList.Add(pEntry);
+        }
+        if (m_nSpawnPointCount > 0)
+        {
+            m_nSpawnsPerPoint = m_lstSpawnList.num / m_nSpawnPointCount;
+        }
+        delete[] pEntries;
     }
 }
 // PC 0x0056D640
@@ -1062,22 +1396,19 @@ int CSWSEncounter::ReadEncounterFromGff(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-
-void CSWSEncounter::CalculateSpawnPool(float fChallengeRating)
+// PC 0x0056E420
+void CSWSEncounter::SpawnIfAppropriate(unsigned long oidObject,
+                                       float fChallengeRating)
 {
-    if (fChallengeRating == -1.0f)
+    if (m_bActive != 0 && m_bStarted != 1)
     {
-        TallyEnemyRadiusPoints();
-    }
-    else
-    {
-        m_fAreaPoints = CalculatePointsFromCR(fChallengeRating);
-    }
-    if (m_fAreaPoints != 0.0f)
-    {
-        m_nSpawnLevel =
-            m_nDifficulty + (int)(log(m_fAreaPoints * 0.25) / log(1.5) + 0.5);
-        m_fSpawnPool += CalculatePointsFromCR((float)(m_nSpawnLevel - 1));
+        m_bSpawnTriggered = 0;
+        UpdateActivateAreaList(oidObject);
+        if (m_bSpawnTriggered == 1)
+        {
+            BuildSpawnList();
+            m_bStarted = 1;
+        }
     }
 }
 // PC 0x0056E470
@@ -1100,6 +1431,21 @@ void CSWSEncounter::LoadFractionalCRData()
             float fMin;
             pFractionalCR->GetFLOATEntry(nRow, "Min", &fMin);
             m_plstFractionalCR->Add(fMin);
+        }
+    }
+}
+// PC 0x0056E580
+void CSWSEncounter::SetActive(int bActive)
+{
+    m_bActive = bActive;
+    if (bActive != 0 && m_bStarted != 1)
+    {
+        m_bSpawnTriggered = 0;
+        UpdateActivateAreaList(OBJECT_INVALID);
+        if (m_bSpawnTriggered == 1)
+        {
+            BuildSpawnList();
+            m_bStarted = 1;
         }
     }
 }
@@ -1210,148 +1556,42 @@ CSWSEncounter::~CSWSEncounter()
         delete m_plstFractionalCR;
     }
 }
-// PC 0x0056EDD0
-void CSWSEncounter::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
-                              int nFlags)
+// PC 0x0056D3B0
+void CSWSEncounter::ClearSpawnList()
 {
-    RemoveFromArea();
-    if (pArea != NULL)
-    {
-        SetArea(pArea);
-        Vector vPosition(fX, fY, fZ);
-
-        SetPosition(vPosition, 0, 1, 0);
-        GetArea()->AddObjectToArea(m_nId, nFlags);
-        CSWSArea* pCurrentArea = GetArea();
-
-        pCurrentArea->m_lstTriggerIds.Add(m_nId);
-    }
-}
-// PC 0x0056D490
-void CSWSEncounter::BuildSpawnList()
-{
-    CEncounterListEntry* pEntries = new CEncounterListEntry[m_nMaxCreatures];
-    int nCount = 0;
-
-    BuildInitialSpawnList(pEntries, nCount);
-    if (nCount != 0)
-    {
-        for (int nIndex = 0; nIndex < nCount; nIndex++)
-        {
-            CEncounterListEntry* pEntry = new CEncounterListEntry;
-            pEntry->m_cResRef = pEntries[nIndex].m_cResRef;
-            pEntry->m_fChallengeRating = pEntries[nIndex].m_fChallengeRating;
-            m_lstSpawnList.Add(pEntry);
-        }
-        if (m_nSpawnPointCount > 0)
-        {
-            m_nSpawnsPerPoint = m_lstSpawnList.num / m_nSpawnPointCount;
-        }
-        delete[] pEntries;
-    }
-}
-// PC 0x0056EFB0
-int CSWSEncounter::LoadEncounter(CResGFF* pRes, CResStruct* pStruct)
-{
-    if (!ReadEncounterFromGff(pRes, pStruct, 0, NULL))
-    {
-        return 0;
-    }
-
-    ReadEncounterScriptsFromGff(pRes, pStruct);
-
-    CEncounterListEntry cTemp;
-    int nPass;
     int nIndex;
+    CEncounterListEntry* pEntry;
 
-    for (nPass = 0; nPass < m_nSpawnEntryCount; nPass++)
+    if (m_lstSpawnList.num > 0)
     {
-        for (nIndex = 0; nIndex < m_nSpawnEntryCount - 1; nIndex++)
+        for (nIndex = m_lstSpawnList.num - 1; nIndex >= 0; nIndex--)
         {
-            if (m_pSpawnEntries[nIndex].m_fChallengeRating <
-                m_pSpawnEntries[nIndex + 1].m_fChallengeRating)
+            pEntry = m_lstSpawnList.element[nIndex];
+            m_lstSpawnList.DelIndex(nIndex);
+            if (pEntry != NULL)
             {
-                cTemp.m_fChallengeRating =
-                    m_pSpawnEntries[nIndex].m_fChallengeRating;
-                cTemp.m_cResRef = m_pSpawnEntries[nIndex].m_cResRef;
-                cTemp.m_fSpawnPoolCost = m_pSpawnEntries[nIndex].m_fSpawnPoolCost;
-                cTemp.m_bSingleSpawn = m_pSpawnEntries[nIndex].m_bSingleSpawn;
-                cTemp.m_nGuaranteedCount = m_pSpawnEntries[nIndex].m_nGuaranteedCount;
-
-                m_pSpawnEntries[nIndex].m_fChallengeRating =
-                    m_pSpawnEntries[nIndex + 1].m_fChallengeRating;
-                m_pSpawnEntries[nIndex].m_cResRef =
-                    m_pSpawnEntries[nIndex + 1].m_cResRef;
-                m_pSpawnEntries[nIndex].m_fSpawnPoolCost =
-                    m_pSpawnEntries[nIndex + 1].m_fSpawnPoolCost;
-                m_pSpawnEntries[nIndex].m_bSingleSpawn =
-                    m_pSpawnEntries[nIndex + 1].m_bSingleSpawn;
-                m_pSpawnEntries[nIndex].m_bSelected = 0;
-                m_pSpawnEntries[nIndex].m_bSpawned = 0;
-                m_pSpawnEntries[nIndex].m_nGuaranteedCount =
-                    m_pSpawnEntries[nIndex + 1].m_nGuaranteedCount;
-
-                m_pSpawnEntries[nIndex + 1].m_fChallengeRating =
-                    cTemp.m_fChallengeRating;
-                m_pSpawnEntries[nIndex + 1].m_cResRef = cTemp.m_cResRef;
-                m_pSpawnEntries[nIndex + 1].m_fSpawnPoolCost =
-                    cTemp.m_fSpawnPoolCost;
-                m_pSpawnEntries[nIndex + 1].m_bSingleSpawn =
-                    cTemp.m_bSingleSpawn;
-                m_pSpawnEntries[nIndex + 1].m_bSelected = 0;
-                m_pSpawnEntries[nIndex + 1].m_bSpawned = 0;
-                m_pSpawnEntries[nIndex + 1].m_nGuaranteedCount =
-                    cTemp.m_nGuaranteedCount;
+                delete pEntry;
             }
         }
     }
-
-    CExoString sResRef;
-    for (nIndex = 0; nIndex < m_nSpawnEntryCount; nIndex++)
-    {
-        m_pSpawnEntries[nIndex].m_cResRef.CopyToString(sResRef);
-        sResRef.CStr();
-    }
-
-    if (m_nSpawnEntryCount > 0)
-    {
-        m_fMinSpawnPoolCost =
-            m_pSpawnEntries[m_nSpawnEntryCount - 1].m_fSpawnPoolCost;
-    }
-
-    return 1;
 }
-// PC 0x0056F240
-int CSWSEncounter::LoadFromTemplate(const CResRef& cResRef, int bLoadPosition,
-                                    Vector* pvPosition)
+// PC 0x0056D420
+void CSWSEncounter::RemoveFromArea()
 {
-    CResGFF* pRes = new CResGFF(2040, "UTE ", cResRef);
-
-    if (pRes->m_bLoaded == 0)
+    if (GetArea() != NULL)
     {
-        delete pRes;
-        CExoString sMessage;
-        CExoString sResRef;
-        cResRef.CopyToString(sResRef);
-        sMessage.Format("Encounter template %s doesn't exist.\n",
-                        sResRef.CStr());
-        return 0;
+        GetArea()->RemoveObjectFromArea(m_nId);
+        GetArea()->RemoveSubArea(this);
     }
 
-    CResStruct stTop;
-    pRes->GetTopLevelStruct(&stTop);
-    if (bLoadPosition != 0)
-    {
-        ReadEncounterFromGff(pRes, &stTop, bLoadPosition, pvPosition);
-    }
-    else
-    {
-        ReadEncounterFromGff(pRes, &stTop, 0, NULL);
-    }
-    ReadEncounterScriptsFromGff(pRes, &stTop);
-    delete pRes;
-    return 1;
+    SetArea(NULL);
+
+    Vector vPosition;
+
+    SetPosition(vPosition, 1, 1, 0);
 }
+
+CExoArrayList<float> CSWSEncounter::m_sPowerLookup;
 // PC 0x0056EA80
 void CSWSEncounter::AIUpdate()
 {
@@ -1462,19 +1702,21 @@ void CSWSEncounter::EventHandler(unsigned long nEventId,
         delete pEvent;
     }
 }
-// PC 0x0056E420
-void CSWSEncounter::SpawnIfAppropriate(unsigned long oidObject,
-                                       float fChallengeRating)
+// PC 0x0056EDD0
+void CSWSEncounter::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
+                              int nFlags)
 {
-    if (m_bActive != 0 && m_bStarted != 1)
+    RemoveFromArea();
+    if (pArea != NULL)
     {
-        m_bSpawnTriggered = 0;
-        UpdateActivateAreaList(oidObject);
-        if (m_bSpawnTriggered == 1)
-        {
-            BuildSpawnList();
-            m_bStarted = 1;
-        }
+        SetArea(pArea);
+        Vector vPosition(fX, fY, fZ);
+
+        SetPosition(vPosition, 0, 1, 0);
+        GetArea()->AddObjectToArea(m_nId, nFlags);
+        CSWSArea* pCurrentArea = GetArea();
+
+        pCurrentArea->m_lstTriggerIds.Add(m_nId);
     }
 }
 // PC 0x0056EE80
@@ -1513,347 +1755,105 @@ void CSWSEncounter::RemoveFromActiveCreatureCount(float fChallengeRating,
         }
     }
 }
-
-float CSWSEncounter::CalculatePointsFromCR(float fChallengeRating)
+// PC 0x0056EFB0
+int CSWSEncounter::LoadEncounter(CResGFF* pRes, CResStruct* pStruct)
 {
-    if (fChallengeRating > 0.0f && fChallengeRating < 1.0f)
+    if (!ReadEncounterFromGff(pRes, pStruct, 0, NULL))
     {
-        if (fChallengeRating >= m_plstFractionalCR->element[0])
-        {
-            return 1.0f;
-        }
-        if (fChallengeRating >= m_plstFractionalCR->element[1])
-        {
-            return (float)pow(1.5, -1.0);
-        }
-        if (fChallengeRating >= m_plstFractionalCR->element[2])
-        {
-            return (float)pow(1.5, -2.0);
-        }
-        if (fChallengeRating >= m_plstFractionalCR->element[3])
-        {
-            return (float)pow(1.5, -3.0);
-        }
-        return (float)pow(1.5, -4.0);
+        return 0;
     }
-    if (fChallengeRating >= 0.0f && fChallengeRating <= 50.0f)
-    {
-        return m_sPowerLookup[(int)fChallengeRating];
-    }
-    return (float)pow(1.5f, fChallengeRating);
-}
 
-void CSWSEncounter::TallyEnemyRadiusPoints()
-{
-    CSWSArea* pArea = GetArea();
+    ReadEncounterScriptsFromGff(pRes, pStruct);
+
+    CEncounterListEntry cTemp;
+    int nPass;
     int nIndex;
-    int nLevel;
-    Vector vOrigin;
-    Vector vPosition;
 
-    if (pArea != NULL)
+    for (nPass = 0; nPass < m_nSpawnEntryCount; nPass++)
     {
-        m_fAreaPoints = 0.0f;
-        CSWSCreature* pCreature =
-            g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
-                m_oidLastEntered);
-        if (pCreature != NULL)
+        for (nIndex = 0; nIndex < m_nSpawnEntryCount - 1; nIndex++)
         {
-            vOrigin = pCreature->m_vPosition;
-            if (pArea->GetFirstObjectIndiceByX(
-                    &nIndex, vOrigin.m_fX - ENCOUNTER_ENEMY_SEARCH_RADIUS))
+            if (m_pSpawnEntries[nIndex].m_fChallengeRating <
+                m_pSpawnEntries[nIndex + 1].m_fChallengeRating)
             {
-                while (nIndex < pArea->m_lstObjectIds.num)
-                {
-                    unsigned long oidCreature = pArea->m_lstObjectIds[nIndex];
-                    pCreature =
-                        g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCreature);
-                    if (pCreature == NULL)
-                    {
-                        nIndex++;
-                        continue;
-                    }
-                    vPosition = pCreature->m_vPosition;
-                    if (vPosition.m_fX > vOrigin.m_fX + ENCOUNTER_ENEMY_SEARCH_RADIUS)
-                    {
-                        break;
-                    }
-                    if (!(pCreature->GetAIStateReputation(GetId()) ==
-                            CSWSObject::AI_STATE_REPUTATION_ENEMY &&
-                        pCreature->GetDead() != 1 &&
-                        pCreature->GetIsPCDying() != 1 &&
-                        vPosition.m_fY >= vOrigin.m_fY - ENCOUNTER_ENEMY_SEARCH_RADIUS &&
-                        vPosition.m_fY <= vOrigin.m_fY + ENCOUNTER_ENEMY_SEARCH_RADIUS))
-                    {
-                        nIndex++;
-                        continue;
-                    }
-                    nLevel = pCreature->m_pStats->GetLevel(0);
-                    if (pCreature->m_nAreaWaitState == 0)
-                    {
-                        nLevel /= 2;
-                    }
-                    m_fAreaPoints += CalculatePointsFromCR((float)nLevel);
-                    nIndex++;
-                }
+                cTemp.m_fChallengeRating =
+                    m_pSpawnEntries[nIndex].m_fChallengeRating;
+                cTemp.m_cResRef = m_pSpawnEntries[nIndex].m_cResRef;
+                cTemp.m_fSpawnPoolCost = m_pSpawnEntries[nIndex].m_fSpawnPoolCost;
+                cTemp.m_bSingleSpawn = m_pSpawnEntries[nIndex].m_bSingleSpawn;
+                cTemp.m_nGuaranteedCount = m_pSpawnEntries[nIndex].m_nGuaranteedCount;
+
+                m_pSpawnEntries[nIndex].m_fChallengeRating =
+                    m_pSpawnEntries[nIndex + 1].m_fChallengeRating;
+                m_pSpawnEntries[nIndex].m_cResRef =
+                    m_pSpawnEntries[nIndex + 1].m_cResRef;
+                m_pSpawnEntries[nIndex].m_fSpawnPoolCost =
+                    m_pSpawnEntries[nIndex + 1].m_fSpawnPoolCost;
+                m_pSpawnEntries[nIndex].m_bSingleSpawn =
+                    m_pSpawnEntries[nIndex + 1].m_bSingleSpawn;
+                m_pSpawnEntries[nIndex].m_bSelected = 0;
+                m_pSpawnEntries[nIndex].m_bSpawned = 0;
+                m_pSpawnEntries[nIndex].m_nGuaranteedCount =
+                    m_pSpawnEntries[nIndex + 1].m_nGuaranteedCount;
+
+                m_pSpawnEntries[nIndex + 1].m_fChallengeRating =
+                    cTemp.m_fChallengeRating;
+                m_pSpawnEntries[nIndex + 1].m_cResRef = cTemp.m_cResRef;
+                m_pSpawnEntries[nIndex + 1].m_fSpawnPoolCost =
+                    cTemp.m_fSpawnPoolCost;
+                m_pSpawnEntries[nIndex + 1].m_bSingleSpawn =
+                    cTemp.m_bSingleSpawn;
+                m_pSpawnEntries[nIndex + 1].m_bSelected = 0;
+                m_pSpawnEntries[nIndex + 1].m_bSpawned = 0;
+                m_pSpawnEntries[nIndex + 1].m_nGuaranteedCount =
+                    cTemp.m_nGuaranteedCount;
             }
         }
     }
+
+    CExoString sResRef;
+    for (nIndex = 0; nIndex < m_nSpawnEntryCount; nIndex++)
+    {
+        m_pSpawnEntries[nIndex].m_cResRef.CopyToString(sResRef);
+        sResRef.CStr();
+    }
+
+    if (m_nSpawnEntryCount > 0)
+    {
+        m_fMinSpawnPoolCost =
+            m_pSpawnEntries[m_nSpawnEntryCount - 1].m_fSpawnPoolCost;
+    }
+
+    return 1;
 }
-// PC 0x0056CEC0
-void CSWSEncounter::SpawnCreatureFromSpawnList()
+// PC 0x0056F240
+int CSWSEncounter::LoadFromTemplate(const CResRef& cResRef, int bLoadPosition,
+                                    Vector* pvPosition)
 {
-    if (m_lstSpawnList.num == 0)
-        return;
+    CResGFF* pRes = new CResGFF(2040, "UTE ", cResRef);
 
-    CSWSArea* pArea = GetArea();
-    if (pArea == NULL)
-        return;
-
-    int bUseSpawnPoint = 0;
-    Vector vSpawnPoint;
-    Vector vOrientation(1.0f, 0.0f, 0.0f);
-    if (m_nSpawnPointCount > 0)
+    if (pRes->m_bLoaded == 0)
     {
-        bUseSpawnPoint = 1;
-        unsigned long oidEntered = m_oidLastEntered;
-        CSWSCreature* pEntered =
-            g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
-                oidEntered);
-        if (m_nSpawnsPerPoint == 0)
-        {
-            m_nSpawnsPerPoint = m_lstSpawnList.num / m_nSpawnPointCount;
-        }
-        if (m_nSpawnsAtCurrentPoint == m_nSpawnsPerPoint)
-        {
-            m_nCurrentSpawnPoint++;
-            m_nSpawnsAtCurrentPoint = 0;
-            if (m_nCurrentSpawnPoint >= m_nSpawnPointCount)
-            {
-                m_nCurrentSpawnPoint = 0;
-            }
-        }
-        if (pEntered != NULL)
-        {
-            vSpawnPoint = m_pSpawnPoints[m_nCurrentSpawnPoint].m_vPosition;
-            float fAngle = ENCOUNTER_SPAWN_ORIENTATION_OFFSET -
-                           m_pSpawnPoints[m_nCurrentSpawnPoint].m_fOrientation;
-
-            vOrientation =
-                normalize(Vector((float)cos(fAngle), (float)sin(fAngle), 0.0f));
-        }
-        m_nSpawnsAtCurrentPoint++;
+        delete pRes;
+        CExoString sMessage;
+        CExoString sResRef;
+        cResRef.CopyToString(sResRef);
+        sMessage.Format("Encounter template %s doesn't exist.\n",
+                        sResRef.CStr());
+        return 0;
     }
 
-    Vector vLocation;
-    CSWSCreature* pCreature = new CSWSCreature(OBJECT_INVALID, 0);
-    if (!pCreature->LoadFromTemplate(m_lstSpawnList[0]->m_cResRef, 0))
+    CResStruct stTop;
+    pRes->GetTopLevelStruct(&stTop);
+    if (bLoadPosition != 0)
     {
-        delete pCreature;
-        return;
-    }
-    pCreature->m_oidSpawnedBy = GetId();
-    pCreature->m_nAreaWaitState = 0;
-
-    int bFoundLocation = 0;
-    float fX, fY, fZ;
-    if (bUseSpawnPoint)
-    {
-        if (pArea->ComputeSafeLocation(vSpawnPoint,
-                ENCOUNTER_SAFE_SPAWN_RADIUS, pCreature->GetPathfindInformation(),
-                0, &vLocation) == 1)
-        {
-            fX = vLocation.m_fX;
-            fY = vLocation.m_fY;
-            fZ = pArea->ComputeHeight(vLocation, 1, NULL);
-            CExoString sResRef;
-            m_lstSpawnList[0]->m_cResRef.CopyToString(sResRef);
-            sResRef.CStr();
-            bFoundLocation = 1;
-        }
-        else
-        {
-            CExoString sResRef;
-            m_lstSpawnList[0]->m_cResRef.CopyToString(sResRef);
-            sResRef.CStr();
-        }
-    }
-    if (!bUseSpawnPoint || !bFoundLocation)
-    {
-        if (pArea->ComputeNonVisibleLocation(m_vPosition,
-                pCreature->GetPathfindInformation(), 0, &vLocation,
-                ENCOUNTER_NON_VISIBLE_SPAWN_RADIUS) == 1)
-        {
-            fX = vLocation.m_fX;
-            fY = vLocation.m_fY;
-            fZ = pArea->ComputeHeight(vLocation, 1, NULL);
-            CExoString sResRef;
-            m_lstSpawnList[0]->m_cResRef.CopyToString(sResRef);
-            sResRef.CStr();
-            bFoundLocation = 1;
-        }
-        else if (vLocation.m_fX == AREA_NON_VISIBLE_INVALID_COORDINATE &&
-                 vLocation.m_fY == AREA_NON_VISIBLE_INVALID_COORDINATE &&
-                 vLocation.m_fZ == AREA_NON_VISIBLE_INVALID_COORDINATE)
-        {
-            CExoString sResRef;
-            m_lstSpawnList[0]->m_cResRef.CopyToString(sResRef);
-            sResRef.CStr();
-        }
-        else
-        {
-            fX = vLocation.m_fX;
-            fY = vLocation.m_fY;
-            fZ = pArea->ComputeHeight(vLocation, 1, NULL);
-            CExoString sResRef;
-            m_lstSpawnList[0]->m_cResRef.CopyToString(sResRef);
-            sResRef.CStr();
-            bFoundLocation = 1;
-        }
-    }
-    if (bFoundLocation)
-    {
-        pCreature->AddToArea(pArea, fX, fY, fZ, 0, 0);
-        if (pArea->m_nPlayersInArea > 0)
-            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->SetAILevel(
-                pCreature, CServerAIMaster::AI_LEVEL_OCCUPIED_AREA_CREATURE);
-        else
-            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->SetAILevel(
-                pCreature, CServerAIMaster::AI_LEVEL_EMPTY_AREA_CREATURE);
-        if (bUseSpawnPoint)
-            pCreature->SetOrientation(vOrientation);
-        m_nNumberSpawned++;
-        m_fSpawnPoolActive += m_lstSpawnList[0]->m_fSpawnPoolCost;
-        m_fSpawnPool -= m_lstSpawnList[0]->m_fSpawnPoolCost;
-        if (m_fSpawnPool < 0.0f)
-            m_fSpawnPool = 0.0f;
-        m_lstSpawnList.DelIndex(0);
+        ReadEncounterFromGff(pRes, &stTop, bLoadPosition, pvPosition);
     }
     else
     {
-        delete pCreature;
-        CExoString sResRef;
-        m_lstSpawnList[0]->m_cResRef.CopyToString(sResRef);
-        sResRef.CStr();
+        ReadEncounterFromGff(pRes, &stTop, 0, NULL);
     }
+    ReadEncounterScriptsFromGff(pRes, &stTop);
+    delete pRes;
+    return 1;
 }
-// PC 0x0056D3B0
-void CSWSEncounter::ClearSpawnList()
-{
-    int nIndex;
-    CEncounterListEntry* pEntry;
-
-    if (m_lstSpawnList.num > 0)
-    {
-        for (nIndex = m_lstSpawnList.num - 1; nIndex >= 0; nIndex--)
-        {
-            pEntry = m_lstSpawnList.element[nIndex];
-            m_lstSpawnList.DelIndex(nIndex);
-            if (pEntry != NULL)
-            {
-                delete pEntry;
-            }
-        }
-    }
-}
-// PC 0x0056D420
-void CSWSEncounter::RemoveFromArea()
-{
-    if (GetArea() != NULL)
-    {
-        GetArea()->RemoveObjectFromArea(m_nId);
-        GetArea()->RemoveSubArea(this);
-    }
-
-    SetArea(NULL);
-
-    Vector vPosition;
-
-    SetPosition(vPosition, 1, 1, 0);
-}
-
-CExoArrayList<float> CSWSEncounter::m_sPowerLookup;
-
-static inline void NwsencounterTrace1()
-{
-}
-// PC 0x0056E580
-void CSWSEncounter::SetActive(int bActive)
-{
-    m_bActive = bActive;
-    if (bActive != 0 && m_bStarted != 1)
-    {
-        m_bSpawnTriggered = 0;
-        UpdateActivateAreaList(OBJECT_INVALID);
-        if (m_bSpawnTriggered == 1)
-        {
-            BuildSpawnList();
-            m_bStarted = 1;
-        }
-    }
-}
-
-#ifdef _XBOX
-
-int CSWSEncounter::GetInActivateArea(const Vector& vPosition)
-{
-    int nIntersections = 0;
-    int nIndex = 0;
-    int nLast = m_nActivateAreaVertexCount - 1;
-
-    for (nIndex = 0; nIndex < m_nActivateAreaVertexCount; nIndex++)
-    {
-        int nFirst = m_pActivateAreaIndices[nIndex];
-        int nSecond = m_pActivateAreaIndices[nIndex != nLast ? nIndex + 1 : 0];
-
-        if (m_pActivateAreaVertices[nSecond].m_fX != m_pActivateAreaVertices[nFirst].m_fX)
-        {
-            float fY = m_pActivateAreaVertices[nFirst].m_fY;
-            fY = fY - (m_pActivateAreaVertices[nFirst].m_fX - vPosition.m_fX) *
-                ((m_pActivateAreaVertices[nSecond].m_fY - fY) /
-                 (m_pActivateAreaVertices[nSecond].m_fX - m_pActivateAreaVertices[nFirst].m_fX));
-
-            if (fY > vPosition.m_fY)
-            {
-                float fX = vPosition.m_fX;
-                if (fabs(m_pActivateAreaVertices[nSecond].m_fY - m_pActivateAreaVertices[nFirst].m_fY) >
-                    fabs(m_pActivateAreaVertices[nSecond].m_fX - m_pActivateAreaVertices[nFirst].m_fX))
-                {
-                    if (m_pActivateAreaVertices[nSecond].m_fY > m_pActivateAreaVertices[nFirst].m_fY)
-                    {
-                        if (fY >= m_pActivateAreaVertices[nFirst].m_fY && fY < m_pActivateAreaVertices[nSecond].m_fY)
-                            nIntersections++;
-                    }
-                    else if (m_pActivateAreaVertices[nFirst].m_fY > m_pActivateAreaVertices[nSecond].m_fY &&
-                             fY > m_pActivateAreaVertices[nSecond].m_fY && fY <= m_pActivateAreaVertices[nFirst].m_fY)
-                    {
-                        nIntersections++;
-                    }
-                }
-                else
-                {
-                    if (m_pActivateAreaVertices[nSecond].m_fX > m_pActivateAreaVertices[nFirst].m_fX)
-                    {
-                        if (fX >= m_pActivateAreaVertices[nFirst].m_fX && fX < m_pActivateAreaVertices[nSecond].m_fX)
-                            nIntersections++;
-                    }
-                    else if (m_pActivateAreaVertices[nFirst].m_fX > m_pActivateAreaVertices[nSecond].m_fX &&
-                             fX > m_pActivateAreaVertices[nSecond].m_fX && fX <= m_pActivateAreaVertices[nFirst].m_fX)
-                    {
-                        nIntersections++;
-                    }
-                }
-            }
-        }
-
-        if (m_pActivateAreaVertices[nSecond].m_fX == vPosition.m_fX &&
-            (m_pActivateAreaVertices[nSecond].m_fY > vPosition.m_fY ||
-             m_pActivateAreaVertices[nFirst].m_fY >= vPosition.m_fY))
-        {
-            nIntersections++;
-        }
-    }
-
-    return nIntersections % 2 == 1;
-}
-#endif

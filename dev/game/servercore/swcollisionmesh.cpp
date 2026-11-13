@@ -7,6 +7,170 @@
 #include "ResBWM.h"
 #include "exoresman.h"
 #include "SWCollisionMesh.h"
+
+inline void CSWCollisionMesh::GetFaceVertex(int nIndex, int nCorner,
+                                            Vector& vVertex)
+{
+    int* pFaces = m_pFaces;
+    if (pFaces[nIndex + nCorner] >= 0)
+        vVertex = m_pVertices[pFaces[nIndex + nCorner]];
+}
+
+#ifdef _XBOX
+#include "nwsarea.h"
+#include "swsroom.h"
+#include "nwdoorsurfacemesh.h"
+#include "aurconsole.h"
+
+int ConvertRoomWalkMeshes(const CResRef& cLayout, const CExoString& sDirectory)
+{
+    CExoString sLayout;
+    CExoString sPath;
+    char szLayout[17];
+    cLayout.CopyToString(szLayout);
+    sPath = sDirectory;
+    if (sPath.Right(1) != "\\")
+    {
+        sPath = sPath + "\\";
+    }
+    CLYT* pLayout = new CLYT;
+    if (pLayout->LoadLayout(cLayout))
+    {
+        int nRooms = pLayout->GetRoomCount();
+        CSWSRoom* pRooms = CSWSArea::LoadRooms(pLayout);
+        for (int nRoom = 0; nRoom < nRooms; nRoom++)
+        {
+            CExoString sFile;
+            CExoString sRoom;
+            pLayout->GetRoomName(nRoom).CopyToString(sRoom);
+            sFile.Format("%s%s.WOK", sPath.CStr(), sRoom.CStr());
+            if (!pRooms[nRoom].m_pWalkMesh->SaveBinaryMesh(sFile))
+            {
+                delete[] pRooms;
+                pLayout->UnloadLayout();
+                delete pLayout;
+                return 0;
+            }
+        }
+        delete[] pRooms;
+        pLayout->UnloadLayout();
+        delete pLayout;
+        return 1;
+    }
+    pLayout->UnloadLayout();
+    delete pLayout;
+    return 0;
+}
+
+static char* ConvertRooms(char* szArgs)
+{
+    CExoString sLayout;
+    CExoString sArgs(szArgs);
+    int nSpace = sArgs.Find(' ', 0);
+    sLayout = sArgs.Left(nSpace);
+    sArgs = sArgs.Right(sArgs.GetLength() - nSpace - 1);
+    if (ConvertRoomWalkMeshes(CResRef(sLayout), sArgs) == 1)
+    {
+        return "SUSSESS";
+    }
+    return "FAILURE";
+}
+
+int ConvertDoorWalkMeshes(const CResRef& cDoor, const CExoString& sDirectory)
+{
+    CExoString sFile;
+    CExoString sDoor;
+    CExoString sPath;
+    cDoor.CopyToString(sDoor);
+    sPath = sDirectory;
+    if (sPath.Right(1) != "\\")
+    {
+        sPath = sPath + "\\";
+    }
+    int bResult = 1;
+    for (int nState = CSWDoorSurfaceMesh::DOOR_STATE_CLOSED; nState <= CSWDoorSurfaceMesh::DOOR_STATE_OPEN2; nState++)
+    {
+        CSWDoorSurfaceMesh* pMesh = new CSWDoorSurfaceMesh;
+        pMesh->SetDoorType(nState);
+        pMesh->m_cResRef = cDoor;
+        int nLoaded = pMesh->LoadMesh(1);
+        if (nLoaded <= 0)
+        {
+            bResult = nLoaded;
+        }
+        pMesh->ComputeMeshNormals();
+        sFile.Format("%s%s%d.DWK", sPath.CStr(), sDoor.CStr(), nState);
+        if (!pMesh->SaveBinaryMesh(sFile))
+        {
+            delete pMesh;
+            return 0;
+        }
+        delete pMesh;
+    }
+    return bResult;
+}
+
+static char* ConvertDoor(char* szArgs)
+{
+    CExoString sDoor;
+    CExoString sArgs(szArgs);
+    int nSpace = sArgs.Find(' ', 0);
+    sDoor = sArgs.Left(nSpace);
+    sArgs = sArgs.Right(sArgs.GetLength() - nSpace - 1);
+    if (ConvertDoorWalkMeshes(CResRef(sDoor), sArgs) == 1)
+    {
+        return "SUSSESS";
+    }
+    return "FAILURE";
+}
+
+int ConvertPlaceableWalkMesh(const CResRef& cPlaceable, const CExoString& sDirectory)
+{
+    CExoString sFile;
+    CExoString sPlaceable;
+    CExoString sPath;
+    cPlaceable.CopyToString(sPlaceable);
+    sPath = sDirectory;
+    if (sPath.Right(1) != "\\")
+    {
+        sPath = sPath + "\\";
+    }
+    CSWPlaceableSurfaceMesh* pMesh = new CSWPlaceableSurfaceMesh;
+    pMesh->m_cResRef = cPlaceable;
+    if (pMesh->LoadMesh(1) <= 0)
+    {
+        return -1;
+    }
+    sFile.Format("%s%s.PWK", sPath.CStr(), sPlaceable.CStr());
+    if (!pMesh->SaveBinaryMesh(sFile))
+    {
+        delete pMesh;
+        return 0;
+    }
+    delete pMesh;
+    return 1;
+}
+
+static char* ConvertPlaceable(char* szArgs)
+{
+    CExoString sPlaceable;
+    CExoString sArgs(szArgs);
+    int nSpace = sArgs.Find(' ', 0);
+    sPlaceable = sArgs.Left(nSpace);
+    sArgs = sArgs.Right(sArgs.GetLength() - nSpace - 1);
+    if (ConvertPlaceableWalkMesh(CResRef(sPlaceable), sArgs) == 1)
+    {
+        return "SUSSESS";
+    }
+    return "FAILURE";
+}
+
+ConsoleFunc ConVrendercollisionboxes("rendercollisionboxes", &rendercollisionboxes);
+ConsoleFunc ConVWalkTestMaterial("WalkTestMaterial", &WalkTestMaterial);
+ConsoleFunc ConFConvertDoor("ConvertDoor", ConvertDoor);
+ConsoleFunc ConFConvertPlaceable("ConvertPlaceable", ConvertPlaceable);
+ConsoleFunc ConFConvertRooms("ConvertRooms", ConvertRooms);
+#endif
 // PC 0x00556FF0
 CSWCollisionMesh::~CSWCollisionMesh()
 {
@@ -39,6 +203,22 @@ CSWCollisionMesh::~CSWCollisionMesh()
         m_pFaceNormals = NULL;
         delete m_pFaceDistances;
         m_pFaceDistances = NULL;
+    }
+}
+// PC 0x005570B0
+void CSWCollisionMesh::ComputeMeshNormals()
+{
+    if (m_bBinary == 0)
+    {
+        for (int i = 0; i < m_nFaceCount; i++)
+        {
+            Vector vFirst = m_pVertices[m_pFaces[3 * i]];
+            Vector vSecond = m_pVertices[m_pFaces[3 * i + 1]];
+            Vector vThird = m_pVertices[m_pFaces[3 * i + 2]];
+            Vector vNormal = NormalOf(vFirst, vSecond, vThird);
+            m_pFaceNormals[i] = vNormal;
+            m_pFaceDistances[i] = -(vNormal * vFirst);
+        }
     }
 }
 // PC 0x005571B0
@@ -105,6 +285,51 @@ int CSWCollisionMesh::LoadMesh(int nType)
     }
     return nResult;
 }
+// PC 0x005573D0
+int CSWCollisionMesh::LoadMeshBinary(CResBWM* pMesh)
+{
+    m_bBinary = 1;
+    m_nType = pMesh->m_pBWMHeader ? pMesh->m_pBWMHeader->m_nType : 0;
+    m_avUsePoints[0] = pMesh->m_pBWMHeader
+                           ? pMesh->m_pBWMHeader->m_avRelativeUsePoints[0]
+                           : Vector(0.0f, 0.0f, 0.0f);
+    m_avUsePoints[1] = pMesh->m_pBWMHeader
+                           ? pMesh->m_pBWMHeader->m_avRelativeUsePoints[1]
+                           : Vector(0.0f, 0.0f, 0.0f);
+    m_nVertexCount =
+        pMesh->m_pBWMHeader ? pMesh->m_pBWMHeader->m_nVertexCount : 0;
+    m_vPosition = pMesh->m_pBWMHeader ? pMesh->m_pBWMHeader->m_vPosition
+                                      : Vector(0.0f, 0.0f, 0.0f);
+    m_pVertices = pMesh->m_pBWMHeader
+                      ? (Vector*)(pMesh->m_pBWMData +
+                                  pMesh->m_pBWMHeader->m_nVertexOffset)
+                      : NULL;
+    m_nFaceCount = pMesh->m_pBWMHeader ? pMesh->m_pBWMHeader->m_nFaceCount : 0;
+    m_nAdjacencyCount =
+        pMesh->m_pBWMHeader ? pMesh->m_pBWMHeader->m_nAdjacencyCount : 0;
+    m_pFaces = pMesh->m_pBWMHeader
+                   ? (int*)(pMesh->m_pBWMData +
+                            pMesh->m_pBWMHeader->m_nFaceOffset)
+                   : NULL;
+    m_pFaceMaterials = pMesh->m_pBWMHeader
+                           ? (int*)(pMesh->m_pBWMData +
+                                    pMesh->m_pBWMHeader->m_nMaterialOffset)
+                           : NULL;
+    m_pFaceNormals = pMesh->m_pBWMHeader
+                         ? (Vector*)(pMesh->m_pBWMData +
+                                     pMesh->m_pBWMHeader->m_nNormalOffset)
+                         : NULL;
+    m_pFaceDistances = pMesh->m_pBWMHeader
+                           ? (float*)(pMesh->m_pBWMData +
+                                      pMesh->m_pBWMHeader->m_nDistanceOffset)
+                           : NULL;
+    return 1;
+}
+
+static int WalkTestMaterial = 1;
+static int rendercollisionboxes = 0;
+
+int bDumpData = 0;
 // PC 0x00557560
 int CSWCollisionMesh::LoadMeshText(unsigned char* pData, unsigned long nSize)
 {
@@ -134,6 +359,19 @@ int CSWCollisionMesh::LoadMeshString(unsigned char** ppData,
     }
     pBuffer[nIndex] = 0;
     return 1;
+}
+// PC 0x00557610
+void CSWCollisionMesh::TransformToWorld(const Vector& vPosition)
+{
+    if (m_bBinary == 0)
+    {
+        m_vWorldPosition = vPosition;
+        m_nType = 1;
+        for (int i = 0; i < m_nVertexCount; i++)
+        {
+            m_pVertices[i] = m_pVertices[i] + m_vPosition + m_vWorldPosition;
+        }
+    }
 }
 // PC 0x005576B0
 void CSWCollisionMesh::SetTriangleCount(int nCount)
@@ -197,22 +435,6 @@ CSWCollisionMesh::CSWCollisionMesh(unsigned short nTextResType,
     m_pFaceMaterials = NULL;
     m_pFaceNormals = NULL;
     m_pFaceDistances = NULL;
-}
-// PC 0x005570B0
-void CSWCollisionMesh::ComputeMeshNormals()
-{
-    if (m_bBinary == 0)
-    {
-        for (int i = 0; i < m_nFaceCount; i++)
-        {
-            Vector vFirst = m_pVertices[m_pFaces[3 * i]];
-            Vector vSecond = m_pVertices[m_pFaces[3 * i + 1]];
-            Vector vThird = m_pVertices[m_pFaces[3 * i + 2]];
-            Vector vNormal = NormalOf(vFirst, vSecond, vThird);
-            m_pFaceNormals[i] = vNormal;
-            m_pFaceDistances[i] = -(vNormal * vFirst);
-        }
-    }
 }
 // PC 0x00557D20
 int CSWCollisionMesh::GetMeshBoundingBox(Vector& vMin, Vector& vMax)
@@ -346,58 +568,53 @@ void CSWCollisionMesh::GetVertex(int nVertex, Vector* pvVertex)
         *pvVertex = LocalToWorld(m_pVertices[nVertex]);
     }
 }
-// PC 0x005573D0
-int CSWCollisionMesh::LoadMeshBinary(CResBWM* pMesh)
+// PC 0x00558130
+int CSWCollisionMesh::SaveBinaryMesh(const CExoString& sFileName)
 {
-    m_bBinary = 1;
-    m_nType = pMesh->m_pBWMHeader ? pMesh->m_pBWMHeader->m_nType : 0;
-    m_avUsePoints[0] = pMesh->m_pBWMHeader
-                           ? pMesh->m_pBWMHeader->m_avRelativeUsePoints[0]
-                           : Vector(0.0f, 0.0f, 0.0f);
-    m_avUsePoints[1] = pMesh->m_pBWMHeader
-                           ? pMesh->m_pBWMHeader->m_avRelativeUsePoints[1]
-                           : Vector(0.0f, 0.0f, 0.0f);
-    m_nVertexCount =
-        pMesh->m_pBWMHeader ? pMesh->m_pBWMHeader->m_nVertexCount : 0;
-    m_vPosition = pMesh->m_pBWMHeader ? pMesh->m_pBWMHeader->m_vPosition
-                                      : Vector(0.0f, 0.0f, 0.0f);
-    m_pVertices = pMesh->m_pBWMHeader
-                      ? (Vector*)(pMesh->m_pBWMData +
-                                  pMesh->m_pBWMHeader->m_nVertexOffset)
-                      : NULL;
-    m_nFaceCount = pMesh->m_pBWMHeader ? pMesh->m_pBWMHeader->m_nFaceCount : 0;
-    m_nAdjacencyCount =
-        pMesh->m_pBWMHeader ? pMesh->m_pBWMHeader->m_nAdjacencyCount : 0;
-    m_pFaces = pMesh->m_pBWMHeader
-                   ? (int*)(pMesh->m_pBWMData +
-                            pMesh->m_pBWMHeader->m_nFaceOffset)
-                   : NULL;
-    m_pFaceMaterials = pMesh->m_pBWMHeader
-                           ? (int*)(pMesh->m_pBWMData +
-                                    pMesh->m_pBWMHeader->m_nMaterialOffset)
-                           : NULL;
-    m_pFaceNormals = pMesh->m_pBWMHeader
-                         ? (Vector*)(pMesh->m_pBWMData +
-                                     pMesh->m_pBWMHeader->m_nNormalOffset)
-                         : NULL;
-    m_pFaceDistances = pMesh->m_pBWMHeader
-                           ? (float*)(pMesh->m_pBWMData +
-                                      pMesh->m_pBWMHeader->m_nDistanceOffset)
-                           : NULL;
+    if (m_bBinary != 0)
+    {
+        return -1;
+    }
+    FILE* pFile = fopen(sFileName.CStr(), "r");
+    if (pFile != NULL)
+    {
+        CExoString sError;
+        sError.Format("ERROR: opening a Binary walkmesh file for writeing that "
+                      "already exists (File: %s)",
+                      sFileName.CStr());
+        fclose(pFile);
+        return -1;
+    }
+    pFile = fopen(sFileName.CStr(), "wb+");
+    if (pFile == NULL)
+    {
+        return 0;
+    }
+    _CSWWalkMeshHeader header;
+    memset(&header, 0, sizeof(header));
+    strncpy(header.m_sVersion, "BWM V1.0", sizeof(header.m_sVersion));
+    header.m_nType = m_nType;
+    header.m_avRelativeUsePoints[0] = m_avUsePoints[0];
+    header.m_avRelativeUsePoints[1] = m_avUsePoints[1];
+    header.m_vPosition = m_vPosition;
+    header.m_nVertexCount = m_nVertexCount;
+    header.m_nFaceCount = m_nFaceCount;
+    header.m_nAdjacencyCount = m_nAdjacencyCount;
+    fwrite(&header, sizeof(header), 1, pFile);
+    header.m_nVertexOffset = ftell(pFile);
+    fwrite(m_pVertices, 12, m_nVertexCount, pFile);
+    header.m_nFaceOffset = ftell(pFile);
+    fwrite(m_pFaces, 4, 3 * m_nFaceCount, pFile);
+    header.m_nMaterialOffset = ftell(pFile);
+    fwrite(m_pFaceMaterials, 4, m_nFaceCount, pFile);
+    header.m_nNormalOffset = ftell(pFile);
+    fwrite(m_pFaceNormals, 12, m_nFaceCount, pFile);
+    header.m_nDistanceOffset = ftell(pFile);
+    fwrite(m_pFaceDistances, 4, m_nFaceCount, pFile);
+    fseek(pFile, 0, SEEK_SET);
+    fwrite(&header, sizeof(header), 1, pFile);
+    fclose(pFile);
     return 1;
-}
-
-static int WalkTestMaterial = 1;
-static int rendercollisionboxes = 0;
-
-int bDumpData = 0;
-
-inline void CSWCollisionMesh::GetFaceVertex(int nIndex, int nCorner,
-                                            Vector& vVertex)
-{
-    int* pFaces = m_pFaces;
-    if (pFaces[nIndex + nCorner] >= 0)
-        vVertex = m_pVertices[pFaces[nIndex + nCorner]];
 }
 // PC 0x00558390
 int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
@@ -1025,19 +1242,6 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
         return 0;
     }
 }
-// PC 0x00557610
-void CSWCollisionMesh::TransformToWorld(const Vector& vPosition)
-{
-    if (m_bBinary == 0)
-    {
-        m_vWorldPosition = vPosition;
-        m_nType = 1;
-        for (int i = 0; i < m_nVertexCount; i++)
-        {
-            m_pVertices[i] = m_pVertices[i] + m_vPosition + m_vWorldPosition;
-        }
-    }
-}
 // PC 0x0055AF60
 int CSWCollisionMesh::RenderMesh(int nFlag, unsigned long nColor,
                                  unsigned long nMask)
@@ -1084,207 +1288,3 @@ int CSWCollisionMesh::RenderMesh(int nFlag, unsigned long nColor,
     }
     return nFaceCount;
 }
-// PC 0x00558130
-int CSWCollisionMesh::SaveBinaryMesh(const CExoString& sFileName)
-{
-    if (m_bBinary != 0)
-    {
-        return -1;
-    }
-    FILE* pFile = fopen(sFileName.CStr(), "r");
-    if (pFile != NULL)
-    {
-        CExoString sError;
-        sError.Format("ERROR: opening a Binary walkmesh file for writeing that "
-                      "already exists (File: %s)",
-                      sFileName.CStr());
-        fclose(pFile);
-        return -1;
-    }
-    pFile = fopen(sFileName.CStr(), "wb+");
-    if (pFile == NULL)
-    {
-        return 0;
-    }
-    _CSWWalkMeshHeader header;
-    memset(&header, 0, sizeof(header));
-    strncpy(header.m_sVersion, "BWM V1.0", sizeof(header.m_sVersion));
-    header.m_nType = m_nType;
-    header.m_avRelativeUsePoints[0] = m_avUsePoints[0];
-    header.m_avRelativeUsePoints[1] = m_avUsePoints[1];
-    header.m_vPosition = m_vPosition;
-    header.m_nVertexCount = m_nVertexCount;
-    header.m_nFaceCount = m_nFaceCount;
-    header.m_nAdjacencyCount = m_nAdjacencyCount;
-    fwrite(&header, sizeof(header), 1, pFile);
-    header.m_nVertexOffset = ftell(pFile);
-    fwrite(m_pVertices, 12, m_nVertexCount, pFile);
-    header.m_nFaceOffset = ftell(pFile);
-    fwrite(m_pFaces, 4, 3 * m_nFaceCount, pFile);
-    header.m_nMaterialOffset = ftell(pFile);
-    fwrite(m_pFaceMaterials, 4, m_nFaceCount, pFile);
-    header.m_nNormalOffset = ftell(pFile);
-    fwrite(m_pFaceNormals, 12, m_nFaceCount, pFile);
-    header.m_nDistanceOffset = ftell(pFile);
-    fwrite(m_pFaceDistances, 4, m_nFaceCount, pFile);
-    fseek(pFile, 0, SEEK_SET);
-    fwrite(&header, sizeof(header), 1, pFile);
-    fclose(pFile);
-    return 1;
-}
-
-#ifdef _XBOX
-#include "nwsarea.h"
-#include "swsroom.h"
-#include "nwdoorsurfacemesh.h"
-#include "aurconsole.h"
-
-int ConvertRoomWalkMeshes(const CResRef& cLayout, const CExoString& sDirectory)
-{
-    CExoString sLayout;
-    CExoString sPath;
-    char szLayout[17];
-    cLayout.CopyToString(szLayout);
-    sPath = sDirectory;
-    if (sPath.Right(1) != "\\")
-    {
-        sPath = sPath + "\\";
-    }
-    CLYT* pLayout = new CLYT;
-    if (pLayout->LoadLayout(cLayout))
-    {
-        int nRooms = pLayout->GetRoomCount();
-        CSWSRoom* pRooms = CSWSArea::LoadRooms(pLayout);
-        for (int nRoom = 0; nRoom < nRooms; nRoom++)
-        {
-            CExoString sFile;
-            CExoString sRoom;
-            pLayout->GetRoomName(nRoom).CopyToString(sRoom);
-            sFile.Format("%s%s.WOK", sPath.CStr(), sRoom.CStr());
-            if (!pRooms[nRoom].m_pWalkMesh->SaveBinaryMesh(sFile))
-            {
-                delete[] pRooms;
-                pLayout->UnloadLayout();
-                delete pLayout;
-                return 0;
-            }
-        }
-        delete[] pRooms;
-        pLayout->UnloadLayout();
-        delete pLayout;
-        return 1;
-    }
-    pLayout->UnloadLayout();
-    delete pLayout;
-    return 0;
-}
-
-static char* ConvertRooms(char* szArgs)
-{
-    CExoString sLayout;
-    CExoString sArgs(szArgs);
-    int nSpace = sArgs.Find(' ', 0);
-    sLayout = sArgs.Left(nSpace);
-    sArgs = sArgs.Right(sArgs.GetLength() - nSpace - 1);
-    if (ConvertRoomWalkMeshes(CResRef(sLayout), sArgs) == 1)
-    {
-        return "SUSSESS";
-    }
-    return "FAILURE";
-}
-
-int ConvertDoorWalkMeshes(const CResRef& cDoor, const CExoString& sDirectory)
-{
-    CExoString sFile;
-    CExoString sDoor;
-    CExoString sPath;
-    cDoor.CopyToString(sDoor);
-    sPath = sDirectory;
-    if (sPath.Right(1) != "\\")
-    {
-        sPath = sPath + "\\";
-    }
-    int bResult = 1;
-    for (int nState = CSWDoorSurfaceMesh::DOOR_STATE_CLOSED; nState <= CSWDoorSurfaceMesh::DOOR_STATE_OPEN2; nState++)
-    {
-        CSWDoorSurfaceMesh* pMesh = new CSWDoorSurfaceMesh;
-        pMesh->SetDoorType(nState);
-        pMesh->m_cResRef = cDoor;
-        int nLoaded = pMesh->LoadMesh(1);
-        if (nLoaded <= 0)
-        {
-            bResult = nLoaded;
-        }
-        pMesh->ComputeMeshNormals();
-        sFile.Format("%s%s%d.DWK", sPath.CStr(), sDoor.CStr(), nState);
-        if (!pMesh->SaveBinaryMesh(sFile))
-        {
-            delete pMesh;
-            return 0;
-        }
-        delete pMesh;
-    }
-    return bResult;
-}
-
-static char* ConvertDoor(char* szArgs)
-{
-    CExoString sDoor;
-    CExoString sArgs(szArgs);
-    int nSpace = sArgs.Find(' ', 0);
-    sDoor = sArgs.Left(nSpace);
-    sArgs = sArgs.Right(sArgs.GetLength() - nSpace - 1);
-    if (ConvertDoorWalkMeshes(CResRef(sDoor), sArgs) == 1)
-    {
-        return "SUSSESS";
-    }
-    return "FAILURE";
-}
-
-int ConvertPlaceableWalkMesh(const CResRef& cPlaceable, const CExoString& sDirectory)
-{
-    CExoString sFile;
-    CExoString sPlaceable;
-    CExoString sPath;
-    cPlaceable.CopyToString(sPlaceable);
-    sPath = sDirectory;
-    if (sPath.Right(1) != "\\")
-    {
-        sPath = sPath + "\\";
-    }
-    CSWPlaceableSurfaceMesh* pMesh = new CSWPlaceableSurfaceMesh;
-    pMesh->m_cResRef = cPlaceable;
-    if (pMesh->LoadMesh(1) <= 0)
-    {
-        return -1;
-    }
-    sFile.Format("%s%s.PWK", sPath.CStr(), sPlaceable.CStr());
-    if (!pMesh->SaveBinaryMesh(sFile))
-    {
-        delete pMesh;
-        return 0;
-    }
-    delete pMesh;
-    return 1;
-}
-
-static char* ConvertPlaceable(char* szArgs)
-{
-    CExoString sPlaceable;
-    CExoString sArgs(szArgs);
-    int nSpace = sArgs.Find(' ', 0);
-    sPlaceable = sArgs.Left(nSpace);
-    sArgs = sArgs.Right(sArgs.GetLength() - nSpace - 1);
-    if (ConvertPlaceableWalkMesh(CResRef(sPlaceable), sArgs) == 1)
-    {
-        return "SUSSESS";
-    }
-    return "FAILURE";
-}
-
-ConsoleFunc ConVrendercollisionboxes("rendercollisionboxes", &rendercollisionboxes);
-ConsoleFunc ConVWalkTestMaterial("WalkTestMaterial", &WalkTestMaterial);
-ConsoleFunc ConFConvertDoor("ConvertDoor", ConvertDoor);
-ConsoleFunc ConFConvertPlaceable("ConvertPlaceable", ConvertPlaceable);
-ConsoleFunc ConFConvertRooms("ConvertRooms", ConvertRooms);
-#endif

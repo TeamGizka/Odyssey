@@ -78,84 +78,6 @@ extern int cullfoggeometry;
 extern int countculledgobs;
 extern int countculledshadows;
 extern int countculledbeams;
-// PC 0x004808F0
-int AurClearActiveBins()
-{
-    g_pActiveBins.m_nCount = 0;
-    g_pOldActiveBins.m_nCount = 0;
-    return 0;
-}
-// PC 0x00480990
-int PartOutside(PartTriMesh* pTriMesh, List<Plane>& lstPlanes)
-{
-    static int lastClipped = 0;
-
-    for (int i = 0; i < lstPlanes.m_nCount; i++)
-    {
-        int nPlane = (i + lastClipped) % lstPlanes.m_nCount;
-        if (BoxAbovePlane(pTriMesh->m_vMinimum, pTriMesh->m_vMaximum,
-                          lstPlanes[nPlane]) > 0.0f)
-        {
-            lastClipped = (lastClipped + i) % lstPlanes.m_nCount;
-            return 1;
-        }
-    }
-
-    return 0;
-}
-// PC 0x00480A10
-int PartOutside(PartEmitter* pEmitter, List<Plane>& lstPlanes)
-{
-    Vector vPosition;
-    Quaternion qOrientation;
-
-    pEmitter->GetWorld(vPosition, qOrientation);
-
-    for (int i = 0; i < lstPlanes.m_nCount; i++)
-    {
-        if (SphereAbovePlane(vPosition, pEmitter->m_fRadius,
-                             lstPlanes[i]) > 0.0f)
-        {
-            return 1;
-        }
-    }
-
-    return 0;
-}
-// PC 0x00480AC0
-int PartOutside(PartProjection* pProjection, List<Plane>& lstPlanes)
-{
-    static int lastClipped = 0;
-
-    for (int i = 0; i < lstPlanes.m_nCount; i++)
-    {
-        int nPlane = (i + lastClipped) % lstPlanes.m_nCount;
-        if (BoxAbovePlane(pProjection->m_vMinimum, pProjection->m_vMaximum,
-                          lstPlanes[nPlane]) > 0.0f)
-        {
-            lastClipped = i;
-            return 1;
-        }
-    }
-
-    return 0;
-}
-// PC 0x00480B30
-int PartOutside(PartTrigger* pTrigger, List<Plane>& lstPlanes)
-{
-    static int lastClipped = 0;
-    for (int i = 0; i < lstPlanes.m_nCount; i++)
-    {
-        int nPlane = (i + lastClipped) % lstPlanes.m_nCount;
-        if (BoxAbovePlane(pTrigger->m_vMinimum, pTrigger->m_vMaximum,
-                          lstPlanes[nPlane]) > 0.0f)
-        {
-            lastClipped = i;
-            return 1;
-        }
-    }
-    return 0;
-}
 
 char* GetToken(char** psLine)
 {
@@ -241,6 +163,175 @@ List<PartEmitter*>& nodedata::GetMovingEmitters()
     return m_lstMovingEmitters;
 }
 #endif
+// PC 0x00551580
+template <> inline List<CAurRoom*>& List<CAurRoom*>::operator=(List<CAurRoom*>& other)
+{
+    AURSCENEMANAGER_TRACE();
+    m_nCount = 0;
+    for (int i = 0; i < other.m_nCount; i++)
+    {
+        Add(other.m_pList[i]);
+    }
+    return *this;
+}
+
+#ifdef _XBOX
+
+void nodedata::AddMovingLight(PartLight* pLight)
+{
+    m_lstMovingLights.Add(pLight);
+}
+#endif
+
+static inline void AurscenemanagerTrace3()
+{
+    AurscenemanagerTrace2();
+}
+
+static inline void AurscenemanagerTrace2()
+{
+    AurscenemanagerTrace1();
+}
+
+static inline void AurscenemanagerTrace1()
+{
+}
+
+#ifdef _XBOX
+
+static void AddVisibleTriMeshes(nodedata* pNodeData, List<Plane>& planes)
+{
+    for (int i = 0; i < pNodeData->m_lstTriMeshes.m_nCount; i++)
+    {
+        PartTriMesh* pTriMesh = pNodeData->m_lstTriMeshes[i];
+        if (!PartOutside(pTriMesh, planes))
+        {
+            AddPartToMeshBuckets(pTriMesh);
+        }
+    }
+}
+#endif
+
+#ifdef _XBOX
+Scene* FindScene(char* sName);
+
+char* setbsphere(char* sArguments)
+{
+    char* sToken = GetToken(&sArguments);
+    if (!sToken)
+        return "0";
+    Model* pModel = FindModel(sToken);
+    sToken = GetToken(&sArguments);
+    if (!sToken)
+        return "0";
+    pModel->m_fRadius = (float)atof(sToken);
+    return "1";
+}
+
+char* setfadetoalways(char* sArguments)
+{
+    FindScene("mainscene");
+    Scene::geomFadeEnabled = CAurScene::ALWAYS_FADE;
+    return "SUCCESS";
+}
+#endif
+// PC 0x004808F0
+int AurClearActiveBins()
+{
+    g_pActiveBins.m_nCount = 0;
+    g_pOldActiveBins.m_nCount = 0;
+    return 0;
+}
+// PC 0x00480940
+static int NodeHasAABB(BSPNode* pNode, void* pData)
+{
+    if (pNode == 0)
+    {
+        return 0;
+    }
+    return pNode->m_pData->m_pAABB == pData;
+}
+// PC 0x00480960
+TileData* SceneBSPGetTileData(Scene* pScene, const Vector& vPosition)
+{
+    if (pScene->m_pBSPRoot == 0)
+    {
+        return 0;
+    }
+    return BSPFitSphere(pScene->m_pBSPRoot, vPosition, 0.0f)
+        ->m_pData->m_pTileData;
+}
+// PC 0x00480990
+int PartOutside(PartTriMesh* pTriMesh, List<Plane>& lstPlanes)
+{
+    static int lastClipped = 0;
+
+    for (int i = 0; i < lstPlanes.m_nCount; i++)
+    {
+        int nPlane = (i + lastClipped) % lstPlanes.m_nCount;
+        if (BoxAbovePlane(pTriMesh->m_vMinimum, pTriMesh->m_vMaximum,
+                          lstPlanes[nPlane]) > 0.0f)
+        {
+            lastClipped = (lastClipped + i) % lstPlanes.m_nCount;
+            return 1;
+        }
+    }
+
+    return 0;
+}
+// PC 0x00480A10
+int PartOutside(PartEmitter* pEmitter, List<Plane>& lstPlanes)
+{
+    Vector vPosition;
+    Quaternion qOrientation;
+
+    pEmitter->GetWorld(vPosition, qOrientation);
+
+    for (int i = 0; i < lstPlanes.m_nCount; i++)
+    {
+        if (SphereAbovePlane(vPosition, pEmitter->m_fRadius,
+                             lstPlanes[i]) > 0.0f)
+        {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+// PC 0x00480AC0
+int PartOutside(PartProjection* pProjection, List<Plane>& lstPlanes)
+{
+    static int lastClipped = 0;
+
+    for (int i = 0; i < lstPlanes.m_nCount; i++)
+    {
+        int nPlane = (i + lastClipped) % lstPlanes.m_nCount;
+        if (BoxAbovePlane(pProjection->m_vMinimum, pProjection->m_vMaximum,
+                          lstPlanes[nPlane]) > 0.0f)
+        {
+            lastClipped = i;
+            return 1;
+        }
+    }
+
+    return 0;
+}
+// PC 0x00480B30
+int PartOutside(PartTrigger* pTrigger, List<Plane>& lstPlanes)
+{
+    static int lastClipped = 0;
+    for (int i = 0; i < lstPlanes.m_nCount; i++)
+    {
+        int nPlane = (i + lastClipped) % lstPlanes.m_nCount;
+        if (BoxAbovePlane(pTrigger->m_vMinimum, pTrigger->m_vMaximum,
+                          lstPlanes[nPlane]) > 0.0f)
+        {
+            lastClipped = i;
+            return 1;
+        }
+    }
+    return 0;
+}
 // PC 0x00480BA0
 int GobOutside(Gob* pGob, List<Plane>& lstPlanes)
 {
@@ -593,70 +684,6 @@ void LightBins(BSPNode* pNode, void* pData)
         pNodeData->m_lstBins[i]->ReloadColor();
     }
 }
-// PC 0x00480940
-static int NodeHasAABB(BSPNode* pNode, void* pData)
-{
-    if (pNode == 0)
-    {
-        return 0;
-    }
-    return pNode->m_pData->m_pAABB == pData;
-}
-// PC 0x00480960
-TileData* SceneBSPGetTileData(Scene* pScene, const Vector& vPosition)
-{
-    if (pScene->m_pBSPRoot == 0)
-    {
-        return 0;
-    }
-    return BSPFitSphere(pScene->m_pBSPRoot, vPosition, 0.0f)
-        ->m_pData->m_pTileData;
-}
-// PC 0x00481F20
-static void ConstructCameraFadePlane(Scene* pScene)
-{
-    AURSCENEMANAGER_TRACE();
-    CAurBehaviorCameraFollow* pFollow = 0;
-    if (CurrentCamera && CurrentCamera->m_pBehavior)
-    {
-        pFollow = CurrentCamera->m_pBehavior->AsBehaviorCameraFollow();
-    }
-    if (pFollow == 0)
-    {
-        pScene->m_nCameraFadeState = Scene::FADING_OFF;
-        return;
-    }
-
-    Vector vTarget = pFollow->GetTargetWorldPosition();
-    Vector vCamera = CurrentCamera->GetPosition();
-    Vector vForward = vTarget - vCamera;
-    Vector vDirection = normalize(vForward);
-    float fHorizontal = sqrt(vDirection.m_fX * vDirection.m_fX +
-                             vDirection.m_fY * vDirection.m_fY);
-    if (fHorizontal < AUR_MINIMUM_FADE_HORIZONTAL)
-    {
-        pScene->m_nCameraFadeState = Scene::FADING_OFF;
-    }
-    else
-    {
-        vDirection.m_fZ = 0.0f;
-        vForward.m_fZ = 0.0f;
-        static Vector vertZ(0.0f, 0.0f, 1.0f);
-        Vector vRight = Vector(-vDirection.m_fY, vDirection.m_fX, 0.0f) * fadeWidth;
-        Vector vLeft = -vRight;
-        Vector vEdge = vForward * (1.0f - wedgeCloseFactor) - vRight;
-        Vector vNormalRight = normalize(cross(vertZ, vEdge));
-        Plane planeRight(vNormalRight, -(vNormalRight * (vRight + vCamera)));
-        vEdge = vForward * (1.0f - wedgeCloseFactor) - vLeft;
-        Vector vNormalLeft = normalize(cross(vEdge, vertZ));
-        Plane planeLeft(vNormalLeft, -(vNormalLeft * (vLeft + vCamera)));
-        vDirection = vDirection * (1.0f / fHorizontal);
-        pScene->m_nCameraFadeState = Scene::FADING_ON;
-        CurrentCamera->m_planeFadePerpendicular = Plane(vDirection,
-            -((vTarget - vForward * perpCloseFactor) * vDirection));
-        CurrentCamera->SetFadePlanes(planeRight, planeLeft);
-    }
-}
 // PC 0x00482330
 void AurProcessActiveBins()
 {
@@ -699,35 +726,6 @@ void ClearSceneRooms(Scene* pScene)
         pNodeData->m_lstMovingEmitters.m_nCount = 0;
 #endif
     }
-}
-// PC 0x00551580
-template <> inline List<CAurRoom*>& List<CAurRoom*>::operator=(List<CAurRoom*>& other)
-{
-    AURSCENEMANAGER_TRACE();
-    m_nCount = 0;
-    for (int i = 0; i < other.m_nCount; i++)
-    {
-        Add(other.m_pList[i]);
-    }
-    return *this;
-}
-// PC 0x004838E0
-void nodedata::AddMovingObject(Gob* pGob)
-{
-    m_lstMovingObjects.Add(pGob);
-}
-
-#ifdef _XBOX
-
-void nodedata::AddMovingLight(PartLight* pLight)
-{
-    m_lstMovingLights.Add(pLight);
-}
-#endif
-// PC 0x00483920
-void nodedata::AddMovingEmitter(PartEmitter* pEmitter)
-{
-    m_lstMovingEmitters.Add(pEmitter);
 }
 // PC 0x00482450
 void AddPartToMeshBuckets(PartTriMesh* pTriMesh)
@@ -1069,6 +1067,51 @@ void DeleteNonGobParts(BSPNode* pNode, void* pData)
 
     delete pNodeData;
 }
+// PC 0x00481F20
+static void ConstructCameraFadePlane(Scene* pScene)
+{
+    AURSCENEMANAGER_TRACE();
+    CAurBehaviorCameraFollow* pFollow = 0;
+    if (CurrentCamera && CurrentCamera->m_pBehavior)
+    {
+        pFollow = CurrentCamera->m_pBehavior->AsBehaviorCameraFollow();
+    }
+    if (pFollow == 0)
+    {
+        pScene->m_nCameraFadeState = Scene::FADING_OFF;
+        return;
+    }
+
+    Vector vTarget = pFollow->GetTargetWorldPosition();
+    Vector vCamera = CurrentCamera->GetPosition();
+    Vector vForward = vTarget - vCamera;
+    Vector vDirection = normalize(vForward);
+    float fHorizontal = sqrt(vDirection.m_fX * vDirection.m_fX +
+                             vDirection.m_fY * vDirection.m_fY);
+    if (fHorizontal < AUR_MINIMUM_FADE_HORIZONTAL)
+    {
+        pScene->m_nCameraFadeState = Scene::FADING_OFF;
+    }
+    else
+    {
+        vDirection.m_fZ = 0.0f;
+        vForward.m_fZ = 0.0f;
+        static Vector vertZ(0.0f, 0.0f, 1.0f);
+        Vector vRight = Vector(-vDirection.m_fY, vDirection.m_fX, 0.0f) * fadeWidth;
+        Vector vLeft = -vRight;
+        Vector vEdge = vForward * (1.0f - wedgeCloseFactor) - vRight;
+        Vector vNormalRight = normalize(cross(vertZ, vEdge));
+        Plane planeRight(vNormalRight, -(vNormalRight * (vRight + vCamera)));
+        vEdge = vForward * (1.0f - wedgeCloseFactor) - vLeft;
+        Vector vNormalLeft = normalize(cross(vEdge, vertZ));
+        Plane planeLeft(vNormalLeft, -(vNormalLeft * (vLeft + vCamera)));
+        vDirection = vDirection * (1.0f / fHorizontal);
+        pScene->m_nCameraFadeState = Scene::FADING_ON;
+        CurrentCamera->m_planeFadePerpendicular = Plane(vDirection,
+            -((vTarget - vForward * perpCloseFactor) * vDirection));
+        CurrentCamera->SetFadePlanes(planeRight, planeLeft);
+    }
+}
 // PC 0x00483080
 void UpdateStaticLighting(Scene* pScene, PartLight* pLight)
 {
@@ -1121,125 +1164,51 @@ void CollectBins(BSPNode* pNode, const Vector& vPosition, float fRangeSquared)
 #endif
     }
 }
-// PC 0x00484BC0
-void AddLightToRooms(Scene* pScene, PartLight* pLight)
+// PC 0x00483250
+void LightManager::CollectLightsForGivenRoom(CAurRoom* pRoom)
 {
-    int nRooms = 0;
-    for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
+    m_lstNearbyLights.m_nCount = 0;
+    m_lstLensFlareLights.m_nCount = 0;
+    List<CAurRoom*> lstRooms;
+    if (pRoom != 0)
     {
-        CAurRoom* pRoom = pScene->m_lstRooms.m_pList[i];
-        if (pLight->m_vWorldPosition.m_fX >= pRoom->m_vMinimum.m_fX &&
-            pLight->m_vWorldPosition.m_fY >= pRoom->m_vMinimum.m_fY &&
-            pLight->m_vWorldPosition.m_fX <= pRoom->m_vMaximum.m_fX &&
-            pLight->m_vWorldPosition.m_fY <= pRoom->m_vMaximum.m_fY)
-        {
-#ifdef _XBOX
-            pRoom->m_pData->AddMovingLight(pLight);
-#else
-            pRoom->m_pData->m_lstMovingLights.Add(pLight);
-#endif
-            nRooms++;
-        }
-    }
-    if (nRooms == 0)
-    {
-        for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
-        {
-#ifdef _XBOX
-            pScene->m_lstRooms.m_pList[i]->m_pData->AddMovingLight(pLight);
-#else
-            pScene->m_lstRooms.m_pList[i]->m_pData->m_lstMovingLights.Add(pLight);
-#endif
-        }
-    }
-}
-// PC 0x00484D30
-void AddEmitterToRooms(Scene* pScene, PartEmitter* pEmitter)
-{
-    if (pEmitter->m_pAurObject == 0)
-    {
-        return;
-    }
-    Vector& vPrevious = pEmitter->m_pAurObject->m_vPreviousPosition;
-    Vector& vCurrent = pEmitter->m_pAurObject->m_vPosition;
-    if (equal(vCurrent, vPrevious) &&
-        pEmitter->m_pAurObject->m_lstRoomData.m_nCount > 0)
-    {
-        pEmitter->m_pAurObject->m_lstRoomData[0]->AddMovingEmitter(pEmitter);
-        return;
-    }
-
-    Vector& vPosition = pEmitter->m_pAurObject->m_vPosition;
-    int nRooms = 0;
-    int bAddToAll = TRUE;
-    int i = 0;
-    while (i < pScene->m_lstRooms.m_nCount)
-    {
-        CAurRoom* pRoom = pScene->m_lstRooms.m_pList[i];
-        if (vPosition.m_fX >= pRoom->m_vMinimum.m_fX &&
-            vPosition.m_fY >= pRoom->m_vMinimum.m_fY &&
-            vPosition.m_fX <= pRoom->m_vMaximum.m_fX &&
-            vPosition.m_fY <= pRoom->m_vMaximum.m_fY)
-        {
-            pRoom->m_pData->AddMovingEmitter(pEmitter);
-            nRooms++;
-        }
-        i++;
-    }
-    if (nRooms == 0 && bAddToAll)
-    {
-        for (i = 0; i < pScene->m_lstRooms.m_nCount && bAddToAll; i++)
-        {
-            pScene->m_lstRooms.m_pList[i]->m_pData->AddMovingEmitter(pEmitter);
-        }
-    }
-}
-
-static const int AUR_ROOM_INDEX_ALL = 999;
-// PC 0x00484E30
-void AddObjectToRooms(Scene* pScene, Gob* pGob)
-{
-    int nRooms = 0;
-    Vector vPosition;
-    Model* pModel = pGob->m_pModel;
-    if (pModel && char(pModel->m_Classification.m_bCharacter))
-    {
-        vPosition = pGob->m_vPosition;
+        lstRooms = pRoom->m_lstVisibleRooms;
+        lstRooms.Add(pRoom);
     }
     else
     {
-        Quaternion& qOrientation = pGob->m_qOrientation;
-        vPosition = pGob->m_vPosition + qOrientation *
-            ((pGob->m_vBoundingBoxMinimum + pGob->m_vBoundingBoxMaximum) / 2.0f);
+        lstRooms = currentscene->m_lstRooms;
     }
 
-    if (!(pModel ? char(pModel->m_Classification.m_bAllRooms) : char(0)))
+    for (int i = 0; i < lstRooms.m_nCount; i++)
     {
-        for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
+        CAurRoom* pCurrentRoom = lstRooms[i];
+        nodedata* pNodeData = pCurrentRoom->m_pData;
+        for (int j = 0; j < pNodeData->m_lstLights.m_nCount; j++)
         {
-            CAurRoom* pRoom = pScene->m_lstRooms.m_pList[i];
-            if (vPosition.m_fX >= pRoom->m_vMinimum.m_fX &&
-                vPosition.m_fY >= pRoom->m_vMinimum.m_fY &&
-                vPosition.m_fX <= pRoom->m_vMaximum.m_fX &&
-                vPosition.m_fY <= pRoom->m_vMaximum.m_fY)
+            PartLight* pLight = pNodeData->m_lstLights[j];
+            if (((MdlNodeLight*)pLight->m_pNode)->m_lstFlareColorShifts.m_nCount > 0)
             {
-                pRoom->m_pData->AddMovingObject(pGob);
-                nRooms++;
-                crap = i;
+                m_lstLensFlareLights.AddUnique(pLight);
+            }
+            if (!pLight->m_vColor.IsZero())
+            {
+                m_lstNearbyLights.Add(pLight);
             }
         }
-    }
-    if (nRooms == 0)
-    {
-        for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
+
+        for (int k = 0; k < pNodeData->m_lstMovingLights.m_nCount; k++)
         {
-#ifdef _XBOX
-            pScene->m_lstRooms.m_pList[i]->m_pData->AddMovingObject(pGob);
-#else
-            pScene->m_lstRooms.m_pList[i]->m_pData->m_lstMovingObjects.Add(pGob);
-#endif
+            PartLight* pLight = pNodeData->m_lstMovingLights[k];
+            if (((MdlNodeLight*)pLight->m_pNode)->m_lstFlareColorShifts.m_nCount > 0)
+            {
+                m_lstLensFlareLights.AddUnique(pLight);
+            }
+            if (!pLight->m_vColor.IsZero())
+            {
+                m_lstNearbyLights.AddUnique(pLight);
+            }
         }
-        crap = AUR_ROOM_INDEX_ALL;
     }
 }
 // PC 0x00483670
@@ -1321,6 +1290,16 @@ void SceneRemovePartFromRooms(Scene* pScene, Part* pPart)
             }
         }
     }
+}
+// PC 0x004838E0
+void nodedata::AddMovingObject(Gob* pGob)
+{
+    m_lstMovingObjects.Add(pGob);
+}
+// PC 0x00483920
+void nodedata::AddMovingEmitter(PartEmitter* pEmitter)
+{
+    m_lstMovingEmitters.Add(pEmitter);
 }
 // PC 0x00483A00
 void SceneBSPRemoveTiledata(Scene* pScene, const Vector& vPosition)
@@ -1578,52 +1557,220 @@ void AnimateStaticLight(CAurObject* pObject, char* sEvent, void* pData)
     AurscenemanagerTrace3();
     UpdateStaticLighting(((Gob*)pObject)->m_pScene, (PartLight*)pData);
 }
-// PC 0x00483250
-void LightManager::CollectLightsForGivenRoom(CAurRoom* pRoom)
+// PC 0x00484BC0
+void AddLightToRooms(Scene* pScene, PartLight* pLight)
 {
-    m_lstNearbyLights.m_nCount = 0;
-    m_lstLensFlareLights.m_nCount = 0;
-    List<CAurRoom*> lstRooms;
-    if (pRoom != 0)
+    int nRooms = 0;
+    for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
     {
-        lstRooms = pRoom->m_lstVisibleRooms;
-        lstRooms.Add(pRoom);
+        CAurRoom* pRoom = pScene->m_lstRooms.m_pList[i];
+        if (pLight->m_vWorldPosition.m_fX >= pRoom->m_vMinimum.m_fX &&
+            pLight->m_vWorldPosition.m_fY >= pRoom->m_vMinimum.m_fY &&
+            pLight->m_vWorldPosition.m_fX <= pRoom->m_vMaximum.m_fX &&
+            pLight->m_vWorldPosition.m_fY <= pRoom->m_vMaximum.m_fY)
+        {
+#ifdef _XBOX
+            pRoom->m_pData->AddMovingLight(pLight);
+#else
+            pRoom->m_pData->m_lstMovingLights.Add(pLight);
+#endif
+            nRooms++;
+        }
+    }
+    if (nRooms == 0)
+    {
+        for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
+        {
+#ifdef _XBOX
+            pScene->m_lstRooms.m_pList[i]->m_pData->AddMovingLight(pLight);
+#else
+            pScene->m_lstRooms.m_pList[i]->m_pData->m_lstMovingLights.Add(pLight);
+#endif
+        }
+    }
+}
+// PC 0x00484D30
+void AddEmitterToRooms(Scene* pScene, PartEmitter* pEmitter)
+{
+    if (pEmitter->m_pAurObject == 0)
+    {
+        return;
+    }
+    Vector& vPrevious = pEmitter->m_pAurObject->m_vPreviousPosition;
+    Vector& vCurrent = pEmitter->m_pAurObject->m_vPosition;
+    if (equal(vCurrent, vPrevious) &&
+        pEmitter->m_pAurObject->m_lstRoomData.m_nCount > 0)
+    {
+        pEmitter->m_pAurObject->m_lstRoomData[0]->AddMovingEmitter(pEmitter);
+        return;
+    }
+
+    Vector& vPosition = pEmitter->m_pAurObject->m_vPosition;
+    int nRooms = 0;
+    int bAddToAll = TRUE;
+    int i = 0;
+    while (i < pScene->m_lstRooms.m_nCount)
+    {
+        CAurRoom* pRoom = pScene->m_lstRooms.m_pList[i];
+        if (vPosition.m_fX >= pRoom->m_vMinimum.m_fX &&
+            vPosition.m_fY >= pRoom->m_vMinimum.m_fY &&
+            vPosition.m_fX <= pRoom->m_vMaximum.m_fX &&
+            vPosition.m_fY <= pRoom->m_vMaximum.m_fY)
+        {
+            pRoom->m_pData->AddMovingEmitter(pEmitter);
+            nRooms++;
+        }
+        i++;
+    }
+    if (nRooms == 0 && bAddToAll)
+    {
+        for (i = 0; i < pScene->m_lstRooms.m_nCount && bAddToAll; i++)
+        {
+            pScene->m_lstRooms.m_pList[i]->m_pData->AddMovingEmitter(pEmitter);
+        }
+    }
+}
+
+static const int AUR_ROOM_INDEX_ALL = 999;
+// PC 0x00484E30
+void AddObjectToRooms(Scene* pScene, Gob* pGob)
+{
+    int nRooms = 0;
+    Vector vPosition;
+    Model* pModel = pGob->m_pModel;
+    if (pModel && char(pModel->m_Classification.m_bCharacter))
+    {
+        vPosition = pGob->m_vPosition;
     }
     else
     {
-        lstRooms = currentscene->m_lstRooms;
+        Quaternion& qOrientation = pGob->m_qOrientation;
+        vPosition = pGob->m_vPosition + qOrientation *
+            ((pGob->m_vBoundingBoxMinimum + pGob->m_vBoundingBoxMaximum) / 2.0f);
     }
 
-    for (int i = 0; i < lstRooms.m_nCount; i++)
+    if (!(pModel ? char(pModel->m_Classification.m_bAllRooms) : char(0)))
     {
-        CAurRoom* pCurrentRoom = lstRooms[i];
-        nodedata* pNodeData = pCurrentRoom->m_pData;
-        for (int j = 0; j < pNodeData->m_lstLights.m_nCount; j++)
+        for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
         {
-            PartLight* pLight = pNodeData->m_lstLights[j];
-            if (((MdlNodeLight*)pLight->m_pNode)->m_lstFlareColorShifts.m_nCount > 0)
+            CAurRoom* pRoom = pScene->m_lstRooms.m_pList[i];
+            if (vPosition.m_fX >= pRoom->m_vMinimum.m_fX &&
+                vPosition.m_fY >= pRoom->m_vMinimum.m_fY &&
+                vPosition.m_fX <= pRoom->m_vMaximum.m_fX &&
+                vPosition.m_fY <= pRoom->m_vMaximum.m_fY)
             {
-                m_lstLensFlareLights.AddUnique(pLight);
-            }
-            if (!pLight->m_vColor.IsZero())
-            {
-                m_lstNearbyLights.Add(pLight);
-            }
-        }
-
-        for (int k = 0; k < pNodeData->m_lstMovingLights.m_nCount; k++)
-        {
-            PartLight* pLight = pNodeData->m_lstMovingLights[k];
-            if (((MdlNodeLight*)pLight->m_pNode)->m_lstFlareColorShifts.m_nCount > 0)
-            {
-                m_lstLensFlareLights.AddUnique(pLight);
-            }
-            if (!pLight->m_vColor.IsZero())
-            {
-                m_lstNearbyLights.AddUnique(pLight);
+                pRoom->m_pData->AddMovingObject(pGob);
+                nRooms++;
+                crap = i;
             }
         }
     }
+    if (nRooms == 0)
+    {
+        for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
+        {
+#ifdef _XBOX
+            pScene->m_lstRooms.m_pList[i]->m_pData->AddMovingObject(pGob);
+#else
+            pScene->m_lstRooms.m_pList[i]->m_pData->m_lstMovingObjects.Add(pGob);
+#endif
+        }
+        crap = AUR_ROOM_INDEX_ALL;
+    }
+}
+// PC 0x004851C0
+int SceneBSPAddPart(Scene* pScene, Part* pPart, Model* pModel)
+{
+    if (pScene->m_pBSPRoot == 0)
+    {
+        return 0;
+    }
+
+    Vector vPosition;
+    Quaternion qOrientation;
+    pPart->GetWorld(vPosition, qOrientation);
+
+    PartLight* pLight = pPart->AsPartLight();
+    PartAABB* pAABB;
+    PartTriMesh* pTriMesh;
+    PartProjection* pProjection;
+    PartEmitter* pEmitter;
+    PartTrigger* pTrigger;
+
+    if (pLight != 0)
+    {
+        BSPNode* pNode = BSPFitSphere(pScene->m_pBSPRoot, vPosition,
+                                          pLight->m_fRadius);
+        if (!pNode->m_pData->m_lstLights.Contains(pLight))
+        {
+            pNode->m_pData->m_lstLights.Add(pLight);
+        }
+        pScene->m_pLightManager->AddLight(pLight);
+    }
+    else if ((pAABB = pPart->AsPartAABB()) != 0)
+    {
+        BSPFitSphere(pScene->m_pBSPRoot, vPosition, 0.0f)->m_pData->m_pAABB = pAABB;
+    }
+    else if ((pTriMesh = pPart->AsPartTriMesh()) != 0)
+    {
+        Vector vMinimum = pTriMesh->m_vMinimum;
+        Vector vMaximum = pTriMesh->m_vMaximum;
+        BSPNode* pNode = BSPFitBox(pScene->m_pBSPRoot, vMinimum, vMaximum);
+        pNode->m_pData->m_lstTriMeshes.Add(pTriMesh);
+    }
+    else if ((pProjection = pPart->AsPartProjection()) != 0)
+    {
+        Vector vMinimum = pProjection->m_vMinimum;
+        Vector vMaximum = pProjection->m_vMaximum;
+        nodedata* pNodeData = BSPFitBox(pScene->m_pBSPRoot, vMinimum, vMaximum)->m_pData;
+        if (pProjection->AsPartShadow())
+        {
+            pNodeData->m_lstShadowProjections.Add(pProjection->AsPartShadow());
+        }
+        else
+        {
+            pNodeData->m_lstBeamProjections.Add(pProjection->AsPartBeam());
+        }
+    }
+    else if ((pEmitter = pPart->AsPartEmitter()) != 0)
+    {
+        nodedata* pNodeData = BSPFitSphere(pScene->m_pBSPRoot, vPosition,
+                                          pEmitter->m_fRadius)->m_pData;
+        if (!pNodeData->m_lstEmitters.Contains(pEmitter))
+        {
+            pNodeData->m_lstEmitters.Add(pEmitter);
+        }
+        if (pEmitter->m_pNode->AsMdlNodeEmitter()->IsAffectedByWind() &&
+            pScene->m_pWindManager)
+        {
+            pEmitter->m_pWindManager = pScene->m_pWindManager;
+            pScene->m_pWindManager->RegisterWindyEmitter(pEmitter);
+        }
+    }
+    else if ((pTrigger = pPart->AsPartTrigger()) != 0)
+    {
+        Vector vMinimum = pTrigger->m_vMinimum;
+        Vector vMaximum = pTrigger->m_vMaximum;
+        nodedata* pNodeData = BSPFitBox(pScene->m_pBSPRoot, vMinimum, vMaximum)->m_pData;
+        if (!pNodeData->m_lstTriggers.Contains(pTrigger))
+        {
+            pNodeData->m_lstTriggers.Add(pTrigger);
+        }
+    }
+    else
+    {
+        nodedata* pNodeData = BSPFitSphere(pScene->m_pBSPRoot, vPosition, 0.0f)->m_pData;
+        if (!pNodeData->m_lstOthers.Contains(pPart))
+        {
+            pNodeData->m_lstOthers.Add(pPart);
+        }
+    }
+
+    if (pModel)
+    {
+        pModel->AddRef(pModel);
+    }
+    return 1;
 }
 // PC 0x004854F0
 void ManageSceneBSP(Scene* pScene)
@@ -1815,150 +1962,3 @@ void SceneBSPAddTileData(Scene* pScene, TileData* pTileData, Vector vPosition)
         SceneBSPAddPart(pScene, pPart, pPart->m_pNode->m_pModel->AsModel());
     }
 }
-// PC 0x004851C0
-int SceneBSPAddPart(Scene* pScene, Part* pPart, Model* pModel)
-{
-    if (pScene->m_pBSPRoot == 0)
-    {
-        return 0;
-    }
-
-    Vector vPosition;
-    Quaternion qOrientation;
-    pPart->GetWorld(vPosition, qOrientation);
-
-    PartLight* pLight = pPart->AsPartLight();
-    PartAABB* pAABB;
-    PartTriMesh* pTriMesh;
-    PartProjection* pProjection;
-    PartEmitter* pEmitter;
-    PartTrigger* pTrigger;
-
-    if (pLight != 0)
-    {
-        BSPNode* pNode = BSPFitSphere(pScene->m_pBSPRoot, vPosition,
-                                          pLight->m_fRadius);
-        if (!pNode->m_pData->m_lstLights.Contains(pLight))
-        {
-            pNode->m_pData->m_lstLights.Add(pLight);
-        }
-        pScene->m_pLightManager->AddLight(pLight);
-    }
-    else if ((pAABB = pPart->AsPartAABB()) != 0)
-    {
-        BSPFitSphere(pScene->m_pBSPRoot, vPosition, 0.0f)->m_pData->m_pAABB = pAABB;
-    }
-    else if ((pTriMesh = pPart->AsPartTriMesh()) != 0)
-    {
-        Vector vMinimum = pTriMesh->m_vMinimum;
-        Vector vMaximum = pTriMesh->m_vMaximum;
-        BSPNode* pNode = BSPFitBox(pScene->m_pBSPRoot, vMinimum, vMaximum);
-        pNode->m_pData->m_lstTriMeshes.Add(pTriMesh);
-    }
-    else if ((pProjection = pPart->AsPartProjection()) != 0)
-    {
-        Vector vMinimum = pProjection->m_vMinimum;
-        Vector vMaximum = pProjection->m_vMaximum;
-        nodedata* pNodeData = BSPFitBox(pScene->m_pBSPRoot, vMinimum, vMaximum)->m_pData;
-        if (pProjection->AsPartShadow())
-        {
-            pNodeData->m_lstShadowProjections.Add(pProjection->AsPartShadow());
-        }
-        else
-        {
-            pNodeData->m_lstBeamProjections.Add(pProjection->AsPartBeam());
-        }
-    }
-    else if ((pEmitter = pPart->AsPartEmitter()) != 0)
-    {
-        nodedata* pNodeData = BSPFitSphere(pScene->m_pBSPRoot, vPosition,
-                                          pEmitter->m_fRadius)->m_pData;
-        if (!pNodeData->m_lstEmitters.Contains(pEmitter))
-        {
-            pNodeData->m_lstEmitters.Add(pEmitter);
-        }
-        if (pEmitter->m_pNode->AsMdlNodeEmitter()->IsAffectedByWind() &&
-            pScene->m_pWindManager)
-        {
-            pEmitter->m_pWindManager = pScene->m_pWindManager;
-            pScene->m_pWindManager->RegisterWindyEmitter(pEmitter);
-        }
-    }
-    else if ((pTrigger = pPart->AsPartTrigger()) != 0)
-    {
-        Vector vMinimum = pTrigger->m_vMinimum;
-        Vector vMaximum = pTrigger->m_vMaximum;
-        nodedata* pNodeData = BSPFitBox(pScene->m_pBSPRoot, vMinimum, vMaximum)->m_pData;
-        if (!pNodeData->m_lstTriggers.Contains(pTrigger))
-        {
-            pNodeData->m_lstTriggers.Add(pTrigger);
-        }
-    }
-    else
-    {
-        nodedata* pNodeData = BSPFitSphere(pScene->m_pBSPRoot, vPosition, 0.0f)->m_pData;
-        if (!pNodeData->m_lstOthers.Contains(pPart))
-        {
-            pNodeData->m_lstOthers.Add(pPart);
-        }
-    }
-
-    if (pModel)
-    {
-        pModel->AddRef(pModel);
-    }
-    return 1;
-}
-
-static inline void AurscenemanagerTrace3()
-{
-    AurscenemanagerTrace2();
-}
-
-static inline void AurscenemanagerTrace2()
-{
-    AurscenemanagerTrace1();
-}
-
-static inline void AurscenemanagerTrace1()
-{
-}
-
-#ifdef _XBOX
-
-static void AddVisibleTriMeshes(nodedata* pNodeData, List<Plane>& planes)
-{
-    for (int i = 0; i < pNodeData->m_lstTriMeshes.m_nCount; i++)
-    {
-        PartTriMesh* pTriMesh = pNodeData->m_lstTriMeshes[i];
-        if (!PartOutside(pTriMesh, planes))
-        {
-            AddPartToMeshBuckets(pTriMesh);
-        }
-    }
-}
-#endif
-
-#ifdef _XBOX
-Scene* FindScene(char* sName);
-
-char* setbsphere(char* sArguments)
-{
-    char* sToken = GetToken(&sArguments);
-    if (!sToken)
-        return "0";
-    Model* pModel = FindModel(sToken);
-    sToken = GetToken(&sArguments);
-    if (!sToken)
-        return "0";
-    pModel->m_fRadius = (float)atof(sToken);
-    return "1";
-}
-
-char* setfadetoalways(char* sArguments)
-{
-    FindScene("mainscene");
-    Scene::geomFadeEnabled = CAurScene::ALWAYS_FADE;
-    return "SUCCESS";
-}
-#endif

@@ -31,6 +31,23 @@ CSWSCombatRoundAction::~CSWSCombatRoundAction()
 CSWSCombatSubAttack::~CSWSCombatSubAttack()
 {
 }
+
+unsigned short CSWSCombatRound::GetNewAttackID()
+{
+    if (m_nAttackId == ATTACK_ID_WRAP)
+        m_nAttackId = 0;
+    return m_nAttackId++;
+}
+
+void CSWSCombatRound::InsertSpecialAttack(unsigned short nAttack, int nIndex)
+{
+    m_lstSpecialAttacks.Add(nAttack);
+    m_lstSpecialAttackIds.Add(GetNewAttackID());
+}
+
+static inline void NwscombatroundTrace1()
+{
+}
 // PC 0x0052AD20
 CSWSCombatAttackData::CSWSCombatAttackData()
 {
@@ -142,19 +159,6 @@ CSWSCombatRound::CSWSCombatRound(CSWSCreature* pCreature)
     m_nCurrentActionType = 0;
     m_nAttackGroup = 255;
     memset(m_Attacks, 0, sizeof(m_Attacks));
-}
-
-unsigned short CSWSCombatRound::GetNewAttackID()
-{
-    if (m_nAttackId == ATTACK_ID_WRAP)
-        m_nAttackId = 0;
-    return m_nAttackId++;
-}
-
-void CSWSCombatRound::InsertSpecialAttack(unsigned short nAttack, int nIndex)
-{
-    m_lstSpecialAttacks.Add(nAttack);
-    m_lstSpecialAttackIds.Add(GetNewAttackID());
 }
 // PC 0x0052B370
 CSWSCombatRound::~CSWSCombatRound()
@@ -1065,41 +1069,6 @@ void CSWSCombatAttackData::RemoveTopSubAttack()
     {
         m_lstSubAttacks.DelIndex(0);
     }
-}
-// PC 0x005281D0
-void CSWSCombatAttackExtra1::Clear()
-{
-    m_nUnknown0 = 0;
-    m_nUnknown1 = 0;
-    m_nUnknown2 = 0;
-    m_nStrengthModifier = 0;
-    m_nDexterityModifier = 0;
-    m_nUnknown5 = 0;
-    m_nSpecialAttackBonus = 0;
-    m_nBaseAttackBonus = 0;
-    m_nOffHand = 0;
-    m_nTwoWeaponPenalty = 0;
-    m_nWeaponSizeBonus = 0;
-    m_nTwoWeaponFeatBonus = 0;
-    m_nTwoWeaponFeat = 0;
-    m_nDuelingBonus = 0;
-    m_nDuelingFeat = 0;
-    m_nGoodAimBonus = 0;
-    m_nOffensiveTrainingBonus = 0;
-    m_nWeaponFocusBonus = 0;
-    m_nEffectAttackBonus = 0;
-    m_nUnknown18 = 0;
-    m_nUnknown1C = 0;
-    m_nUnknown20 = 0;
-    m_nUnknown21 = 0;
-    m_nUnknown22 = 0;
-    m_nUnknown23 = 0;
-    m_nUnknown24 = 0;
-    m_nUnknown25 = 0;
-    m_nUnknown26 = 0;
-    m_nUnknown27 = 0;
-    m_nUnknown28 = 0;
-    m_nUnknown2C = 0;
 }
 // PC 0x00528690
 CSWSCombatSubAttack::CSWSCombatSubAttack()
@@ -2184,6 +2153,41 @@ int CSWSCombatRound::GetActualBonusEffectAttacks()
 {
     return m_nEffectAttacks;
 }
+// PC 0x005281D0
+void CSWSCombatAttackExtra1::Clear()
+{
+    m_nUnknown0 = 0;
+    m_nUnknown1 = 0;
+    m_nUnknown2 = 0;
+    m_nStrengthModifier = 0;
+    m_nDexterityModifier = 0;
+    m_nUnknown5 = 0;
+    m_nSpecialAttackBonus = 0;
+    m_nBaseAttackBonus = 0;
+    m_nOffHand = 0;
+    m_nTwoWeaponPenalty = 0;
+    m_nWeaponSizeBonus = 0;
+    m_nTwoWeaponFeatBonus = 0;
+    m_nTwoWeaponFeat = 0;
+    m_nDuelingBonus = 0;
+    m_nDuelingFeat = 0;
+    m_nGoodAimBonus = 0;
+    m_nOffensiveTrainingBonus = 0;
+    m_nWeaponFocusBonus = 0;
+    m_nEffectAttackBonus = 0;
+    m_nUnknown18 = 0;
+    m_nUnknown1C = 0;
+    m_nUnknown20 = 0;
+    m_nUnknown21 = 0;
+    m_nUnknown22 = 0;
+    m_nUnknown23 = 0;
+    m_nUnknown24 = 0;
+    m_nUnknown25 = 0;
+    m_nUnknown26 = 0;
+    m_nUnknown27 = 0;
+    m_nUnknown28 = 0;
+    m_nUnknown2C = 0;
+}
 // PC 0x00528230
 void CSWSCombatSubAttackThreat::Clear()
 {
@@ -2205,7 +2209,3 @@ template <> void CExoArrayList<CSWSCombatSubAttack>::DelIndex(int nIndex)  // PC
     }
 }
 #endif
-
-static inline void NwscombatroundTrace1()
-{
-}

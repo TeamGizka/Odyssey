@@ -24,57 +24,32 @@ const int CSWGuiKeyMapButton::IC_GUI = 0x04;
 const int CSWGuiKeyMapButton::IC_DIALOG = 0x08;
 const int CSWGuiKeyMapButton::IC_FREELOOK = 0x10;
 const int CSWGuiKeyMapButton::IC_MOVIE = 0x20;
-// PC 0x0075E110
-CExoString CSWGuiKeyMapButton::GetActionId(int nAction, int nType)
-{
-    CExoString sAction;
 
-    if (nType == 0)
-    {
-        CExoString sNumber(nAction);
-        sAction = CExoString("Action") + sNumber;
-    }
-    else if (nType == 1)
-    {
-        sAction.Format("%s%dB", "Action", nAction);
-    }
-    else if (nType == 2)
-    {
-        sAction.Format("%s%dA", "Action", nAction);
-    }
-    return sAction;
-}
-// PC 0x0075EA20
-void CSWGuiKeyMapButton::SetExtent(const CSWGuiExtent& cExtent)
+void CSWGuiKeyMapButton::SetEditing(int bEditing)
 {
-    CSWGuiExtent cLabelExtent = cExtent;
-    cLabelExtent.m_nWidth -= 197;
-    m_cExtent = cLabelExtent;
-    m_cBorder.SetExtent(cLabelExtent);
-    m_cHilite.SetExtent(cLabelExtent);
-    m_cText.SetExtent(CSWGuiExtent::Intersection(
-        m_cBorder.GetInnerExtent(), m_cHilite.GetInnerExtent()));
+    if (bEditing)
+    {
+        m_btnKey.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+    }
+    else
+    {
+        UpdateColor();
+    }
+    m_btnKey.m_cBorder.m_cParams.SetPulsingAlpha(bEditing, bEditing, bEditing);
+}
+// PC 0x005EE1C0
+void CSWGuiKeyMapButton::onControlExit(CSWGuiControl* pControl)
+{
+}
 
-    CSWGuiExtent cKeyExtent = cExtent;
-    cKeyExtent.m_nLeft = cLabelExtent.m_nLeft + cLabelExtent.m_nWidth + 2;
-    cKeyExtent.m_nWidth = 195;
-    m_btnKey.SetExtent(cKeyExtent);
-}
-// PC 0x0075EB20
-void CSWGuiKeyMapButton::Draw(float fElapsed)
+void CSWGuiKeyMapButton::SetEvents()
 {
-    CSWGuiButton::Draw(fElapsed);
-    m_btnKey.Draw(fElapsed);
-}
-// PC 0x0075EB50
-CSWGuiControl* CSWGuiKeyMapButton::HitCheckMouse(int nX, int nY)
-{
-    CSWGuiControl* nResult = CSWGuiButton::HitCheckMouse(nX, nY);
-    if (nResult == 0)
-    {
-        return m_btnKey.HitCheckMouse(nX, nY);
-    }
-    return nResult;
+    AddEvent(CSWGuiControl::EVENT_SELECT, this,
+             (CSWGuiHandler)&CSWGuiKeyMapButton::onEventClicked);
+    AddEvent(CSWGuiControl::EVENT_ENTER, this,
+             (CSWGuiHandler)&CSWGuiKeyMapButton::onControlEntered);
+    AddEvent(CSWGuiControl::EVENT_EXIT, this,
+             (CSWGuiHandler)&CSWGuiKeyMapButton::onControlExit);
 }
 // PC 0x0075DEE0
 void CSWGuiInGameOptKeyMappings::SetCaptureKeyboardKeys(int bCapture)
@@ -115,49 +90,39 @@ void CSWGuiInGameOptKeyMappings::FillListWithEvents()
         }
     }
 }
-
-void CSWGuiKeyMapButton::SetEditing(int bEditing)
+// PC 0x0075FA70
+void CSWGuiInGameOptKeyMappings::Update(float fElapsed)
 {
-    if (bEditing)
+    (void)fElapsed;
+    if (m_bCapturing == 1)
     {
-        m_btnKey.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
-    }
-    else
-    {
-        UpdateColor();
-    }
-    m_btnKey.m_cBorder.m_cParams.SetPulsingAlpha(bEditing, bEditing, bEditing);
-}
-// PC 0x005EE1C0
-void CSWGuiKeyMapButton::onControlExit(CSWGuiControl* pControl)
-{
-}
-// PC 0x0075F5B0
-int CSWGuiInGameOptKeyMappings::UpdateEvent(int nAction, int nType,
-                                            unsigned long nKey,
-                                            unsigned long nFilterFlags)
-{
-    CExoString sKey;
-    sKey.Format("KEY%d", nKey - CExoInput::KEYBOARD_START);
-    int nBindable = 0;
-    bool bBindable;
-    {
-        CExoString sColumn("Bindable");
-        CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
-        C2DA* pTable = p2DArrays->m_pBindableKey;
-        bool bKeyBindable;
-        bBindable = pTable->GetINTEntry(sKey, sColumn, &nBindable) &&
-                    (bKeyBindable = nBindable != 0);
-    }
-    if (bBindable)
-    {
-        if (IsKeyUsedAlready(nKey, nAction, nType, nFilterFlags))
+        int nKey = g_pExoInput->GetLastCapturedKeyboardKey();
+        if (nKey != 0 && m_pCaptureButton != 0)
         {
-            return CSWGuiKeyMapButton::KEY_ALREADYUSED;
+            if (nKey == CExoInput::KEYBOARD_ESC)
+            {
+                SetCaptureEvent(0);
+                m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            }
+            else
+            {
+                switch (m_pCaptureButton->UpdateEvent(nKey))
+                {
+                case CSWGuiKeyMapButton::KEY_GOOD:
+                    SetCaptureKeyboardKeys(0);
+                    m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+                    SetCaptureEvent(0);
+                    break;
+                case CSWGuiKeyMapButton::KEY_ALREADYUSED:
+                    SetCaptureKeyboardKeys(1);
+                    break;
+                case CSWGuiKeyMapButton::KEY_INVALID:
+                    SetCaptureKeyboardKeys(1);
+                    break;
+                }
+            }
         }
-        return CSWGuiKeyMapButton::KEY_GOOD;
     }
-    return CSWGuiKeyMapButton::KEY_INVALID;
 }
 // PC 0x0075F860
 int CSWGuiKeyMapButton::UpdateEvent(unsigned long nKey)
@@ -226,53 +191,6 @@ CSWGuiInGameOptKeyMappings::CSWGuiInGameOptKeyMappings(CSWGuiManager* pManager)
 
     SetActiveControl(&m_lstEvents, 0);
 }
-// PC 0x0075FA70
-void CSWGuiInGameOptKeyMappings::Update(float fElapsed)
-{
-    (void)fElapsed;
-    if (m_bCapturing == 1)
-    {
-        int nKey = g_pExoInput->GetLastCapturedKeyboardKey();
-        if (nKey != 0 && m_pCaptureButton != 0)
-        {
-            if (nKey == CExoInput::KEYBOARD_ESC)
-            {
-                SetCaptureEvent(0);
-                m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            }
-            else
-            {
-                switch (m_pCaptureButton->UpdateEvent(nKey))
-                {
-                case CSWGuiKeyMapButton::KEY_GOOD:
-                    SetCaptureKeyboardKeys(0);
-                    m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-                    SetCaptureEvent(0);
-                    break;
-                case CSWGuiKeyMapButton::KEY_ALREADYUSED:
-                    SetCaptureKeyboardKeys(1);
-                    break;
-                case CSWGuiKeyMapButton::KEY_INVALID:
-                    SetCaptureKeyboardKeys(1);
-                    break;
-                }
-            }
-        }
-    }
-}
-// PC 0x0075EB80
-CSWGuiInGameOptKeyMappings::~CSWGuiInGameOptKeyMappings()
-{
-    m_lstEvents.ClearItems();
-    while (m_aOptions.num != 0)
-    {
-        int nCount = m_aOptions.num;
-        int nIndex = nCount - 1;
-        delete m_aOptions.element[nIndex];
-        m_aOptions.element[nIndex] = 0;
-        m_aOptions.DelIndex(nIndex);
-    }
-}
 // PC 0x0075DF00
 void CSWGuiInGameOptKeyMappings::HandleInputEvent(int nEvent, int nState)
 {
@@ -320,42 +238,6 @@ void CSWGuiInGameOptKeyMappings::FixFilterColors(CSWGuiControl* pControl)
         }
         break;
     }
-}
-// PC 0x0075F3A0
-void CSWGuiInGameOptKeyMappings::FillListBox(int nFilter)
-{
-    CExoArrayList<CSWGuiControl*> aControls;
-
-    for (int i = 0; i < m_aOptions.num; i++)
-    {
-        CSWGuiKeyMapButton* pOption = m_aOptions[i];
-        if (pOption->m_nPage == nFilter)
-        {
-            int nSortPos = pOption->m_nSortPos;
-            int nInsert = -1;
-            for (int j = 0; j < aControls.num; j++)
-            {
-                nInsert = j + 1;
-                if (((CSWGuiKeyMapButton*)aControls[j])->m_nSortPos > nSortPos)
-                {
-                    nInsert = j;
-                    break;
-                }
-            }
-            if (nInsert == -1)
-            {
-                aControls.Add(pOption);
-            }
-            else
-            {
-                aControls.Insert(pOption, nInsert);
-            }
-        }
-    }
-    CSWGuiListBox* pListBox = &m_lstEvents;
-    pListBox->ClearItems();
-    pListBox->AddControls(aControls, 0, 1, 0);
-    pListBox->m_bLooping = 0;
 }
 // PC 0x0075ECE0
 int CSWGuiInGameOptKeyMappings::IsKeyUsedAlready(unsigned long nKey,
@@ -417,27 +299,6 @@ void CSWGuiInGameOptKeyMappings::OnAcceptClick(CSWGuiControl* pControl)
     m_bDeferredRemoval = 0;
     m_nExitState = EXITSTATE_DELETE;
 }
-// PC 0x0075F700
-void CSWGuiInGameOptKeyMappings::OnFilterMove(CSWGuiControl* pControl)
-{
-    m_nFilter = 0;
-    FixFilterColors(0);
-    FillListBox(m_nFilter);
-}
-// PC 0x0075F750
-void CSWGuiInGameOptKeyMappings::OnFilterGame(CSWGuiControl* pControl)
-{
-    m_nFilter = 1;
-    FixFilterColors(0);
-    FillListBox(m_nFilter);
-}
-// PC 0x0075F7A0
-void CSWGuiInGameOptKeyMappings::OnFilterMini(CSWGuiControl* pControl)
-{
-    m_nFilter = 2;
-    FixFilterColors(0);
-    FillListBox(m_nFilter);
-}
 // PC 0x0075EE90
 void CSWGuiInGameOptKeyMappings::SetCaptureEvent(CSWGuiKeyMapButton* pButton)
 {
@@ -458,6 +319,104 @@ void CSWGuiInGameOptKeyMappings::SetCaptureEvent(CSWGuiKeyMapButton* pButton)
         m_lstEvents.SetSelectOnLeftClick(1);
         SetCaptureKeyboardKeys(1);
     }
+}
+// PC 0x0075F010
+void CSWGuiKeyMapButton::onControlEntered(CSWGuiControl* pControl)
+{
+    (void)pControl;
+    m_pParent->SetCaptureEvent(0);
+}
+// PC 0x0075F030
+void CSWGuiKeyMapButton::onEventClicked(CSWGuiControl* pControl)
+{
+    if (m_bUnchangable == 0 && pControl->m_bSelected != 0)
+    {
+        m_pParent->SetCaptureEvent(this);
+    }
+}
+// PC 0x0075F3A0
+void CSWGuiInGameOptKeyMappings::FillListBox(int nFilter)
+{
+    CExoArrayList<CSWGuiControl*> aControls;
+
+    for (int i = 0; i < m_aOptions.num; i++)
+    {
+        CSWGuiKeyMapButton* pOption = m_aOptions[i];
+        if (pOption->m_nPage == nFilter)
+        {
+            int nSortPos = pOption->m_nSortPos;
+            int nInsert = -1;
+            for (int j = 0; j < aControls.num; j++)
+            {
+                nInsert = j + 1;
+                if (((CSWGuiKeyMapButton*)aControls[j])->m_nSortPos > nSortPos)
+                {
+                    nInsert = j;
+                    break;
+                }
+            }
+            if (nInsert == -1)
+            {
+                aControls.Add(pOption);
+            }
+            else
+            {
+                aControls.Insert(pOption, nInsert);
+            }
+        }
+    }
+    CSWGuiListBox* pListBox = &m_lstEvents;
+    pListBox->ClearItems();
+    pListBox->AddControls(aControls, 0, 1, 0);
+    pListBox->m_bLooping = 0;
+}
+// PC 0x0075F5B0
+int CSWGuiInGameOptKeyMappings::UpdateEvent(int nAction, int nType,
+                                            unsigned long nKey,
+                                            unsigned long nFilterFlags)
+{
+    CExoString sKey;
+    sKey.Format("KEY%d", nKey - CExoInput::KEYBOARD_START);
+    int nBindable = 0;
+    bool bBindable;
+    {
+        CExoString sColumn("Bindable");
+        CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+        C2DA* pTable = p2DArrays->m_pBindableKey;
+        bool bKeyBindable;
+        bBindable = pTable->GetINTEntry(sKey, sColumn, &nBindable) &&
+                    (bKeyBindable = nBindable != 0);
+    }
+    if (bBindable)
+    {
+        if (IsKeyUsedAlready(nKey, nAction, nType, nFilterFlags))
+        {
+            return CSWGuiKeyMapButton::KEY_ALREADYUSED;
+        }
+        return CSWGuiKeyMapButton::KEY_GOOD;
+    }
+    return CSWGuiKeyMapButton::KEY_INVALID;
+}
+// PC 0x0075F700
+void CSWGuiInGameOptKeyMappings::OnFilterMove(CSWGuiControl* pControl)
+{
+    m_nFilter = 0;
+    FixFilterColors(0);
+    FillListBox(m_nFilter);
+}
+// PC 0x0075F750
+void CSWGuiInGameOptKeyMappings::OnFilterGame(CSWGuiControl* pControl)
+{
+    m_nFilter = 1;
+    FixFilterColors(0);
+    FillListBox(m_nFilter);
+}
+// PC 0x0075F7A0
+void CSWGuiInGameOptKeyMappings::OnFilterMini(CSWGuiControl* pControl)
+{
+    m_nFilter = 2;
+    FixFilterColors(0);
+    FillListBox(m_nFilter);
 }
 // PC 0x0075EF60
 CSWGuiKeyMapButton::CSWGuiKeyMapButton(CSWGuiInGameOptKeyMappings* pParent)
@@ -490,30 +449,6 @@ void CSWGuiKeyMapButton::UpdateColor()
         m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
         m_btnKey.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
     }
-}
-// PC 0x0075F010
-void CSWGuiKeyMapButton::onControlEntered(CSWGuiControl* pControl)
-{
-    (void)pControl;
-    m_pParent->SetCaptureEvent(0);
-}
-// PC 0x0075F030
-void CSWGuiKeyMapButton::onEventClicked(CSWGuiControl* pControl)
-{
-    if (m_bUnchangable == 0 && pControl->m_bSelected != 0)
-    {
-        m_pParent->SetCaptureEvent(this);
-    }
-}
-
-void CSWGuiKeyMapButton::SetEvents()
-{
-    AddEvent(CSWGuiControl::EVENT_SELECT, this,
-             (CSWGuiHandler)&CSWGuiKeyMapButton::onEventClicked);
-    AddEvent(CSWGuiControl::EVENT_ENTER, this,
-             (CSWGuiHandler)&CSWGuiKeyMapButton::onControlEntered);
-    AddEvent(CSWGuiControl::EVENT_EXIT, this,
-             (CSWGuiHandler)&CSWGuiKeyMapButton::onControlExit);
 }
 // PC 0x0075F080
 CSWGuiKeyMapButton* CSWGuiInGameOptKeyMappings::CreateOption(
@@ -583,6 +518,26 @@ inline void CSWGuiKeyMapButton::SetUnchangable()
     m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_ICON_COLOR;
     m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
     m_cHilite.m_cParams.m_vColor = CGuiInGame::DISABLED_ICON_COLOR;
+}
+// PC 0x0075E110
+CExoString CSWGuiKeyMapButton::GetActionId(int nAction, int nType)
+{
+    CExoString sAction;
+
+    if (nType == 0)
+    {
+        CExoString sNumber(nAction);
+        sAction = CExoString("Action") + sNumber;
+    }
+    else if (nType == 1)
+    {
+        sAction.Format("%s%dB", "Action", nAction);
+    }
+    else if (nType == 2)
+    {
+        sAction.Format("%s%dA", "Action", nAction);
+    }
+    return sAction;
 }
 // PC 0x0075E240
 void CSWGuiKeyMapButton::SetDescription(const CExoString& sDescription)
@@ -767,4 +722,49 @@ void CSWGuiKeyMapButton::PostChangeToEvent()
     sKey.Format("%d", m_nNewKey);
     cIni.WriteIniEntry(sKey, ".\\swkotor2.ini", "Keymapping",
                        GetActionId(m_nAction, m_nType));
+}
+// PC 0x0075EA20
+void CSWGuiKeyMapButton::SetExtent(const CSWGuiExtent& cExtent)
+{
+    CSWGuiExtent cLabelExtent = cExtent;
+    cLabelExtent.m_nWidth -= 197;
+    m_cExtent = cLabelExtent;
+    m_cBorder.SetExtent(cLabelExtent);
+    m_cHilite.SetExtent(cLabelExtent);
+    m_cText.SetExtent(CSWGuiExtent::Intersection(
+        m_cBorder.GetInnerExtent(), m_cHilite.GetInnerExtent()));
+
+    CSWGuiExtent cKeyExtent = cExtent;
+    cKeyExtent.m_nLeft = cLabelExtent.m_nLeft + cLabelExtent.m_nWidth + 2;
+    cKeyExtent.m_nWidth = 195;
+    m_btnKey.SetExtent(cKeyExtent);
+}
+// PC 0x0075EB20
+void CSWGuiKeyMapButton::Draw(float fElapsed)
+{
+    CSWGuiButton::Draw(fElapsed);
+    m_btnKey.Draw(fElapsed);
+}
+// PC 0x0075EB50
+CSWGuiControl* CSWGuiKeyMapButton::HitCheckMouse(int nX, int nY)
+{
+    CSWGuiControl* nResult = CSWGuiButton::HitCheckMouse(nX, nY);
+    if (nResult == 0)
+    {
+        return m_btnKey.HitCheckMouse(nX, nY);
+    }
+    return nResult;
+}
+// PC 0x0075EB80
+CSWGuiInGameOptKeyMappings::~CSWGuiInGameOptKeyMappings()
+{
+    m_lstEvents.ClearItems();
+    while (m_aOptions.num != 0)
+    {
+        int nCount = m_aOptions.num;
+        int nIndex = nCount - 1;
+        delete m_aOptions.element[nIndex];
+        m_aOptions.element[nIndex] = 0;
+        m_aOptions.DelIndex(nIndex);
+    }
 }

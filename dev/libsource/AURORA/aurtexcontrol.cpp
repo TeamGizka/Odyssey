@@ -39,6 +39,75 @@ const float WATER_DAMPING = 0.025f;
 const float WATER_DIRECTION_OFFSET = 0.0f;
 const float WATER_WAVE_HEIGHT_MARGIN = 40.0f;
 const float WATER_SPEED = 1.0f;
+// PC 0x004794F0
+void WaveTextureController::ParseField(char* sField)
+{
+    TextureController::ParseField(sField);
+}
+// PC 0x004015A0
+void CycleTIDTextureController::Init()
+{
+}
+
+#ifdef _XBOX
+
+void HeatDistortTextureController::Init()
+{
+    int nWidth = m_pTexture->GetWidth();
+    int nHeight = m_pTexture->GetHeight();
+    int nBPP = m_pTexture->GetBPP();
+
+    m_fAngle = 0.0f;
+    m_pHeatImage = new unsigned char[nWidth * nHeight * nBPP];
+}
+
+void HeatDistortTextureController::Control()
+{
+    if (m_nLastUpdate != texcurrentframe)
+    {
+        m_nLastUpdate = texcurrentframe;
+        if (m_pHeatImage != NULL)
+        {
+            int nWidth = m_pTexture->GetWidth();
+            int nHeight = m_pTexture->GetHeight();
+            int nPixel = 0;
+            float fScale = TWO_PI / nHeight;
+            float fPhase1 = m_fAngle * 2.67f;
+            float fPhase2 = m_fAngle * 1.98f;
+            float fPhase3 = m_fAngle * 0.9f;
+            int i;
+            int j;
+
+            for (i = 0; i < nHeight; i++)
+            {
+                for (j = 0; j < nWidth; j++)
+                {
+                    float fY = ((float)i + 1.0f) * fScale;
+                    float fWave1 = sineLUT(fY * 2.0f + fPhase1) * 0.021f;
+                    float fWave2 = sineLUT(fY * 3.2f + fPhase2) * 0.0096f;
+                    float fRed = fWave1 + fWave2 + 0.5f;
+                    float fGreen = sineLUT(fY * 1.3f + fPhase3) * 0.05f + 0.5f;
+                    int nRed;
+                    int nGreen;
+
+                    fRed = max(0.0f, min(255.0f, fRed * 255.0f));
+                    fGreen = max(0.0f, min(255.0f, fGreen * 255.0f));
+                    roundToInt(nRed, fRed);
+                    roundToInt(nGreen, fGreen);
+                    m_pHeatImage[nPixel] = 255;
+                    m_pHeatImage[nPixel + 1] = (unsigned char)nGreen;
+                    m_pHeatImage[nPixel + 2] = (unsigned char)nRed;
+                    m_pHeatImage[nPixel + 3] = 255;
+                    nPixel += 4;
+                }
+            }
+            m_pTexture->glImage(true, m_pHeatImage);
+            m_fAngle += DeltaT;
+        }
+    }
+}
+
+#endif
 // PC 0x00478C50
 TextureController::TextureController(CAurTexture* pTexture)
     : m_lstChannelScale(), m_lstChannelTranslate(0)
@@ -456,25 +525,6 @@ void ArturoTextureController::BuildArturoImage()
     memcpy(m_pfArturoPrevious, m_pfArturoCurrent, nPixels * sizeof(float));
     memcpy(m_pfArturoCurrent, m_pfArturoNext, nPixels * sizeof(float));
 }
-// PC 0x00476720
-float FloatInterpolate(float* pfValues, float fX, float fY, int nWidth,
-                       int nHeight)
-{
-    int nColumn, nRow;
-    roundToInt(nColumn, fX - 0.5f);
-    roundToInt(nRow, fY - 0.5f);
-    int nNextColumn = (nColumn + 1) % nWidth;
-    int nNextRow = (nRow + 1) % nHeight;
-    float fColumnWeight = fX - nColumn;
-    float fRowWeight = fY - nRow;
-
-    return (1.0f - fRowWeight) *
-               ((1.0f - fColumnWeight) * pfValues[nRow * nWidth + nColumn] +
-                fColumnWeight * pfValues[nRow * nWidth + nNextColumn]) +
-           fRowWeight *
-               ((1.0f - fColumnWeight) * pfValues[nNextRow * nWidth + nColumn] +
-                fColumnWeight * pfValues[nNextRow * nWidth + nNextColumn]);
-}
 // PC 0x00476520
 void CycleTIDTextureController::Control()
 {
@@ -545,6 +595,25 @@ void DirtyTextureController::MakePerlinTexture(unsigned char* pImage, int nRange
         delete[] ppImages[i];
     }
     delete[] ppImages;
+}
+// PC 0x00476720
+float FloatInterpolate(float* pfValues, float fX, float fY, int nWidth,
+                       int nHeight)
+{
+    int nColumn, nRow;
+    roundToInt(nColumn, fX - 0.5f);
+    roundToInt(nRow, fY - 0.5f);
+    int nNextColumn = (nColumn + 1) % nWidth;
+    int nNextRow = (nRow + 1) % nHeight;
+    float fColumnWeight = fX - nColumn;
+    float fRowWeight = fY - nRow;
+
+    return (1.0f - fRowWeight) *
+               ((1.0f - fColumnWeight) * pfValues[nRow * nWidth + nColumn] +
+                fColumnWeight * pfValues[nRow * nWidth + nNextColumn]) +
+           fRowWeight *
+               ((1.0f - fColumnWeight) * pfValues[nNextRow * nWidth + nColumn] +
+                fColumnWeight * pfValues[nNextRow * nWidth + nNextColumn]);
 }
 // PC 0x004767F0
 void DirtyTextureController::Control()
@@ -1502,11 +1571,6 @@ WaveTextureController::WaveTextureController(CAurTexture* pTexture)
     m_pfWaveImage = 0;
     m_pfOffsetImage = 0;
 }
-// PC 0x004794F0
-void WaveTextureController::ParseField(char* sField)
-{
-    TextureController::ParseField(sField);
-}
 // PC 0x00479500
 ArturoTextureController::ArturoTextureController(CAurTexture* pTexture)
     : TextureController(pTexture)
@@ -1550,10 +1614,6 @@ CycleTIDTextureController::CycleTIDTextureController(CAurTexture* pTexture)
     m_fCycleRate = 1.0f;
 #endif
 }
-// PC 0x004015A0
-void CycleTIDTextureController::Init()
-{
-}
 // PC 0x004796B0
 void CycleTIDTextureController::ParseField(char* sField)
 {
@@ -1565,63 +1625,3 @@ void CycleTIDTextureController::ParseField(char* sField)
     }
     TextureController::ParseField(sField);
 }
-
-#ifdef _XBOX
-
-void HeatDistortTextureController::Init()
-{
-    int nWidth = m_pTexture->GetWidth();
-    int nHeight = m_pTexture->GetHeight();
-    int nBPP = m_pTexture->GetBPP();
-
-    m_fAngle = 0.0f;
-    m_pHeatImage = new unsigned char[nWidth * nHeight * nBPP];
-}
-
-void HeatDistortTextureController::Control()
-{
-    if (m_nLastUpdate != texcurrentframe)
-    {
-        m_nLastUpdate = texcurrentframe;
-        if (m_pHeatImage != NULL)
-        {
-            int nWidth = m_pTexture->GetWidth();
-            int nHeight = m_pTexture->GetHeight();
-            int nPixel = 0;
-            float fScale = TWO_PI / nHeight;
-            float fPhase1 = m_fAngle * 2.67f;
-            float fPhase2 = m_fAngle * 1.98f;
-            float fPhase3 = m_fAngle * 0.9f;
-            int i;
-            int j;
-
-            for (i = 0; i < nHeight; i++)
-            {
-                for (j = 0; j < nWidth; j++)
-                {
-                    float fY = ((float)i + 1.0f) * fScale;
-                    float fWave1 = sineLUT(fY * 2.0f + fPhase1) * 0.021f;
-                    float fWave2 = sineLUT(fY * 3.2f + fPhase2) * 0.0096f;
-                    float fRed = fWave1 + fWave2 + 0.5f;
-                    float fGreen = sineLUT(fY * 1.3f + fPhase3) * 0.05f + 0.5f;
-                    int nRed;
-                    int nGreen;
-
-                    fRed = max(0.0f, min(255.0f, fRed * 255.0f));
-                    fGreen = max(0.0f, min(255.0f, fGreen * 255.0f));
-                    roundToInt(nRed, fRed);
-                    roundToInt(nGreen, fGreen);
-                    m_pHeatImage[nPixel] = 255;
-                    m_pHeatImage[nPixel + 1] = (unsigned char)nGreen;
-                    m_pHeatImage[nPixel + 2] = (unsigned char)nRed;
-                    m_pHeatImage[nPixel + 3] = 255;
-                    nPixel += 4;
-                }
-            }
-            m_pTexture->glImage(true, m_pHeatImage);
-            m_fAngle += DeltaT;
-        }
-    }
-}
-
-#endif

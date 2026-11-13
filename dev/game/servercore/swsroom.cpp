@@ -13,40 +13,6 @@ CSWSRoom::CSWSRoom()
 {
     m_pWalkMesh = new CSWRoomSurfaceMesh;
 }
-// PC 0x0055B260
-int CSWSRoom::GetAdjacentRoom(int nEdge)
-{
-    return m_pWalkMesh->GetAdjacentRoom(nEdge);
-}
-// PC 0x0055B3E0
-float CSWSRoom::ComputeHeight(Vector vPosition, int nFace)
-{
-    float fHeight = 0.0f;
-    if (m_pWalkMesh != NULL)
-    {
-        fHeight = m_pWalkMesh->ComputeHeight(vPosition, nFace);
-    }
-    return fHeight;
-}
-// PC 0x0055B420
-float CSWSRoom::ComputeHeight(int nFace, Vector vPosition)
-{
-    float fHeight = 0.0f;
-    if (m_pWalkMesh != NULL)
-    {
-        fHeight = m_pWalkMesh->ComputeHeight(nFace, vPosition);
-    }
-    return fHeight;
-}
-// PC 0x0055B4B0
-CSWSRoom::~CSWSRoom()
-{
-    if (m_pWalkMesh != NULL)
-    {
-        delete m_pWalkMesh;
-    }
-    m_pWalkMesh = NULL;
-}
 // PC 0x0055B0A0
 int CSWSRoom::LoadWalkMesh(int nType)
 {
@@ -108,6 +74,11 @@ void CSWSRoom::TransformToWorld()
         m_pWalkMesh->TransformToWorld(m_vPosition);
     }
 }
+// PC 0x0055B260
+int CSWSRoom::GetAdjacentRoom(int nEdge)
+{
+    return m_pWalkMesh->GetAdjacentRoom(nEdge);
+}
 // PC 0x0055B270
 int CSWSRoom::WeldRoom(CSWSRoom& other, float fTolerance)
 {
@@ -155,6 +126,26 @@ int CSWSRoom::ClearLineOfSight(Vector vStart, Vector vEnd, Vector* pvHit,
     }
     return bHit == 0;
 }
+// PC 0x0055B3E0
+float CSWSRoom::ComputeHeight(Vector vPosition, int nFace)
+{
+    float fHeight = 0.0f;
+    if (m_pWalkMesh != NULL)
+    {
+        fHeight = m_pWalkMesh->ComputeHeight(vPosition, nFace);
+    }
+    return fHeight;
+}
+// PC 0x0055B420
+float CSWSRoom::ComputeHeight(int nFace, Vector vPosition)
+{
+    float fHeight = 0.0f;
+    if (m_pWalkMesh != NULL)
+    {
+        fHeight = m_pWalkMesh->ComputeHeight(nFace, vPosition);
+    }
+    return fHeight;
+}
 // PC 0x0055B460
 Vector CSWSRoom::GetNormalOfPoint(int nFace)
 {
@@ -168,4 +159,13 @@ Vector CSWSRoom::GetNormalOfPoint(int nFace)
         return Vector(0.0f, 0.0f, 1.0f);
     }
     return Vector(0.0f, 0.0f, 1.0f);
+}
+// PC 0x0055B4B0
+CSWSRoom::~CSWSRoom()
+{
+    if (m_pWalkMesh != NULL)
+    {
+        delete m_pWalkMesh;
+    }
+    m_pWalkMesh = NULL;
 }

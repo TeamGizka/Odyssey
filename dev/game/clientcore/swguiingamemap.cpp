@@ -33,33 +33,14 @@ static inline void SwguiingamemapTrace1();
 
 int g_bEnableFogOfWar = 1;
 int g_bShowFogOfWar = 1;
-// PC 0x006EC5A0
-void CSWGuiInGameMap::OnUpArrowPressed(CSWGuiControl* pControl)
+
+static inline void SwguiingamemapTrace2()
 {
-    HandleInputEvent(GUIEVENT_UP, 1);
+    SwguiingamemapTrace1();
 }
-// PC 0x006EC5B0
-void CSWGuiInGameMap::OnDownArrowPressed(CSWGuiControl* pControl)
+
+static inline void SwguiingamemapTrace1()
 {
-    HandleInputEvent(GUIEVENT_DOWN, 1);
-}
-// PC 0x006EC670
-void CSWGuiInGameGalaxyMap::OnPanelRemoved()
-{
-#ifdef _XBOX
-    CSWGuiLabelHilight* pButton = m_aPlanetButtons;
-#else
-    CSWGuiButton* pButton = m_aPlanetButtons;
-#endif
-    for (int i = 16; i != 0; i--)
-    {
-        pButton->SetActive(0);
-        pButton++;
-    }
-    m_nSelectedPlanet = -1;
-#ifndef _XBOX
-    CSWGuiPanel::OnPanelRemoved();
-#endif
 }
 // PC 0x006EC250
 void CSWGuiInGameMap::Draw(float fElapsed)
@@ -139,6 +120,16 @@ void CSWGuiInGameMap::ReturnToEbonHawk(CSWGuiControl* pControl)
         }
     }
 }
+// PC 0x006EC5A0
+void CSWGuiInGameMap::OnUpArrowPressed(CSWGuiControl* pControl)
+{
+    HandleInputEvent(GUIEVENT_UP, 1);
+}
+// PC 0x006EC5B0
+void CSWGuiInGameMap::OnDownArrowPressed(CSWGuiControl* pControl)
+{
+    HandleInputEvent(GUIEVENT_DOWN, 1);
+}
 // PC 0x006EC5C0
 void CSWGuiInGameMap::OnXButton(CSWGuiControl* pControl)
 {
@@ -168,6 +159,24 @@ void CSWGuiInGameMap::OnXButton(CSWGuiControl* pControl)
         pMessageBox->SetCallback(0, 0, 0);
     }
     m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+}
+// PC 0x006EC670
+void CSWGuiInGameGalaxyMap::OnPanelRemoved()
+{
+#ifdef _XBOX
+    CSWGuiLabelHilight* pButton = m_aPlanetButtons;
+#else
+    CSWGuiButton* pButton = m_aPlanetButtons;
+#endif
+    for (int i = 16; i != 0; i--)
+    {
+        pButton->SetActive(0);
+        pButton++;
+    }
+    m_nSelectedPlanet = -1;
+#ifndef _XBOX
+    CSWGuiPanel::OnPanelRemoved();
+#endif
 }
 // PC 0x006ED0B0
 void CSWGuiInGameMap::OnPanelAdded()
@@ -1473,14 +1482,5 @@ void CSWGuiInGameGalaxyMap::Draw(float fElapsed)
         m_aPlanetButtons[nSelected].SetActive(1);
     }
     return CSWGuiPanel::Draw(fElapsed);
-}
-
-static inline void SwguiingamemapTrace2()
-{
-    SwguiingamemapTrace1();
-}
-
-static inline void SwguiingamemapTrace1()
-{
 }
 

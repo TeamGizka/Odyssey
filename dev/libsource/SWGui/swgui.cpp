@@ -47,6 +47,75 @@ void AurGUIStopLayer();
 int AurGUISetupViewport(int nX, int nY, int nWidth, int nHeight,
                         const Vector& vColor, bool bScissor, float fAlpha);
 void AurGUICloseViewport();
+
+#include "swguiingame.h"
+#include "nwccreature.h"
+#include "nwcanimbase.h"
+
+#include "exobase.h"
+#include "exoresman.h"
+#include "exoinput.h"
+#include "exobase.h"
+#include "resgff.h"
+#include "twodimarray.h"
+#include "appmanager.h"
+#include "clientexoapp.h"
+#include "clientexoappinternal.h"
+#include "clientoptions.h"
+#include "aurora.h"
+#include "aurcamera.h"
+#include <string.h>
+
+CExoString CSWGuiManager::GetScreenResolutionString(unsigned long nWidth,
+                                                    unsigned long nHeight)
+{
+    if (nWidth == 1024)
+    {
+        if (nHeight == 768)
+        {
+            return CExoString("1024x768");
+        }
+    }
+    else if (nWidth == 1280)
+    {
+        if (nHeight == 960)
+        {
+            return CExoString("1280x960");
+        }
+        if (nHeight == 1024)
+        {
+            return CExoString("1280x1024");
+        }
+    }
+    else if (nWidth == 1600 && nHeight == 1200)
+    {
+        return CExoString("1600x1200");
+    }
+    return CExoString("800x600");
+}
+
+
+inline CAurCamera* CSWGuiScene::GetCamera()
+{
+    return m_pCamera;
+}
+
+static inline const Vector& SafeRegionWhite(Vector& vColor)
+{
+    vColor.m_fX = 1.0f;
+    vColor.m_fY = 1.0f;
+    vColor.m_fZ = 1.0f;
+    return vColor;
+}
+
+static inline void SwguiTrace2()
+{
+    SwguiTrace1();
+}
+
+static inline void SwguiTrace1()
+{
+}
 // PC 0x0040A0D0
 int CSWGuiExtent::Load(CResGFF* pGFF, CResStruct& cStruct)
 {
@@ -73,24 +142,6 @@ void CSWGuiPanel::HandleInputEvent(int nEvent, int nState)
         m_pActiveControl->HandleInputEvent(nEvent, nState);
     }
 }
-
-#include "swguiingame.h"
-#include "nwccreature.h"
-#include "nwcanimbase.h"
-
-#include "exobase.h"
-#include "exoresman.h"
-#include "exoinput.h"
-#include "exobase.h"
-#include "resgff.h"
-#include "twodimarray.h"
-#include "appmanager.h"
-#include "clientexoapp.h"
-#include "clientexoappinternal.h"
-#include "clientoptions.h"
-#include "aurora.h"
-#include "aurcamera.h"
-#include <string.h>
 // PC 0x0040BE30
 CSWGuiManager::CSWGuiManager()
     : m_lPanels(0),
@@ -213,47 +264,6 @@ void CSWGuiManager::GetSafeMargin(int& nX, int& nY)
 {
     nX = SAFE_MARGIN_X;
     nY = SAFE_MARGIN_Y;
-}
-// PC 0x0040B000
-int CSWGuiManager::LoadGuiSounds()
-{
-    C2DA* p2DA = new C2DA("guisounds", 0);
-
-    if (p2DA == NULL)
-    {
-        return 0;
-    }
-    if (p2DA->Load2DArray() == 0)
-    {
-        delete p2DA;
-        return 0;
-    }
-    if (p2DA->m_nNumRows > 0)
-    {
-        CExoString sSoundResRef;
-
-        int nNumRows = p2DA->m_nNumRows;
-        m_nGuiSounds = nNumRows;
-        m_apGuiSounds = new CExoSoundSource*[m_nGuiSounds];
-        if (m_apGuiSounds != NULL)
-        {
-            for (int i = 0; i < m_nGuiSounds; i++)
-            {
-                if (p2DA->GetCExoStringEntry(i, "SoundResRef",
-                                             &sSoundResRef))
-                {
-                    m_apGuiSounds[i] =
-                        new CExoSoundSource(sSoundResRef);
-                    if (m_apGuiSounds[i] != NULL)
-                    {
-                        m_apGuiSounds[i]->SetPriorityGroup(CExoSound::PRIORITY_GROUP_GUI);
-                    }
-                }
-            }
-        }
-    }
-    delete p2DA;
-    return 1;
 }
 // PC 0x0040A320
 void CSWGuiManager::UnloadGuiSounds()
@@ -433,34 +443,6 @@ void CSWGuiManager::StoreCurrentMousePosition()  // PC 0x0040A620
     m_nOldMouseY = m_nMouseY;
 }
 #endif
-
-CExoString CSWGuiManager::GetScreenResolutionString(unsigned long nWidth,
-                                                    unsigned long nHeight)
-{
-    if (nWidth == 1024)
-    {
-        if (nHeight == 768)
-        {
-            return CExoString("1024x768");
-        }
-    }
-    else if (nWidth == 1280)
-    {
-        if (nHeight == 960)
-        {
-            return CExoString("1280x960");
-        }
-        if (nHeight == 1024)
-        {
-            return CExoString("1280x1024");
-        }
-    }
-    else if (nWidth == 1600 && nHeight == 1200)
-    {
-        return CExoString("1600x1200");
-    }
-    return CExoString("800x600");
-}
 // PC 0x0040A630
 CSWGuiExtent CSWGuiExtent::Intersection(const CSWGuiExtent& extentFirst,
                                         const CSWGuiExtent& extentSecond)
@@ -974,6 +956,47 @@ void CSWGuiManager::DetermineNeedToDraw()
         }
     }
 }
+// PC 0x0040B000
+int CSWGuiManager::LoadGuiSounds()
+{
+    C2DA* p2DA = new C2DA("guisounds", 0);
+
+    if (p2DA == NULL)
+    {
+        return 0;
+    }
+    if (p2DA->Load2DArray() == 0)
+    {
+        delete p2DA;
+        return 0;
+    }
+    if (p2DA->m_nNumRows > 0)
+    {
+        CExoString sSoundResRef;
+
+        int nNumRows = p2DA->m_nNumRows;
+        m_nGuiSounds = nNumRows;
+        m_apGuiSounds = new CExoSoundSource*[m_nGuiSounds];
+        if (m_apGuiSounds != NULL)
+        {
+            for (int i = 0; i < m_nGuiSounds; i++)
+            {
+                if (p2DA->GetCExoStringEntry(i, "SoundResRef",
+                                             &sSoundResRef))
+                {
+                    m_apGuiSounds[i] =
+                        new CExoSoundSource(sSoundResRef);
+                    if (m_apGuiSounds[i] != NULL)
+                    {
+                        m_apGuiSounds[i]->SetPriorityGroup(CExoSound::PRIORITY_GROUP_GUI);
+                    }
+                }
+            }
+        }
+    }
+    delete p2DA;
+    return 1;
+}
 // PC 0x0040B1D0
 int CSWGuiManager::IsOnTop(CSWGuiPanel* pPanel)
 {
@@ -997,12 +1020,6 @@ int CSWGuiManager::IsOnTop(CSWGuiPanel* pPanel)
         nIndex--;
     }
     return 0;
-}
-
-
-inline CAurCamera* CSWGuiScene::GetCamera()
-{
-    return m_pCamera;
 }
 
 #ifndef _XBOX
@@ -1148,14 +1165,6 @@ void CSWGuiManager::SetSize(int nWidth, int nHeight)  // PC 0x0040C1D0
     }
 }
 #endif
-
-static inline const Vector& SafeRegionWhite(Vector& vColor)
-{
-    vColor.m_fX = 1.0f;
-    vColor.m_fY = 1.0f;
-    vColor.m_fZ = 1.0f;
-    return vColor;
-}
 // PC 0x0040C220
 void CSWGuiManager::DrawSafeRegion(float fElapsed)
 {
@@ -2527,15 +2536,6 @@ CSWGuiPanel::~CSWGuiPanel()
     {
         pManager->RemovePanel(this);
     }
-}
-
-static inline void SwguiTrace2()
-{
-    SwguiTrace1();
-}
-
-static inline void SwguiTrace1()
-{
 }
 
 #ifdef _XBOX

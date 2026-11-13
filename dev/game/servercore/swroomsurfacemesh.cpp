@@ -20,76 +20,64 @@ static inline void RoomSurfaceMeshTrace1();
 int g_bRenderClipWalkable = 0;
 
 float checkaabbtime;
-// PC 0x00575630
-int CSWRoomSurfaceMesh::CheckAABBNode(int nNode, const Vector& vStart, Vector& vEnd,
-                                     CSWRoomSurfaceMeshHitInfo& hitInfo)
-{
-    const Vector& vMinimum = m_lstAABBNodes[nNode].m_vMin;
-    const Vector& vMaximum = m_lstAABBNodes[nNode].m_vMax;
-#ifdef _XBOX
-    extern int DumpRoomBBox; if (DumpRoomBBox) { g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory); g_pExoBase->m_pExoDebug->FlushScriptLogFile(); }
-#endif
-    if (!BoxIntersect(vStart, vEnd, vMinimum, vMaximum))
-    {
-        return 0;
-    }
-
-    if (m_lstAABBNodes[nNode].m_nTriangle != -1)
-    {
-        int nTriangle = m_lstAABBNodes[nNode].m_nTriangle;
-        int nMaterialMask = 1 << m_pFaceMaterials[nTriangle];
-        int nHits = 0;
-        if (!(hitInfo.m_nField00 & nMaterialMask))
-        {
-            return 0;
-        }
-
-        Vector avVertices[3];
-        Vector vNormal;
-        for (int i = 0; i < 3; ++i)
-        {
-            avVertices[i] = m_pVertices[m_pFaces[nTriangle * 3 + i]];
-        }
-
-        if (polyhit(avVertices, 3, vStart, vEnd, &vEnd, &vNormal))
-        {
-            hitInfo.m_nField0C = nTriangle;
-            nHits = 1;
-            hitInfo.m_nField1C = nMaterialMask;
-        }
-        return nHits;
-    }
-    else
-    {
-        if (m_lstAABBNodes[nNode].m_nTraversalMask & hitInfo.m_nField04)
-        {
-            return CheckAABBNode(m_lstAABBNodes[nNode].m_nLeftChild, vStart, vEnd, hitInfo) + CheckAABBNode(m_lstAABBNodes[nNode].m_nRightChild, vStart, vEnd, hitInfo);
-        }
-        else
-        {
-            return CheckAABBNode(m_lstAABBNodes[nNode].m_nRightChild, vStart, vEnd, hitInfo) + CheckAABBNode(m_lstAABBNodes[nNode].m_nLeftChild, vStart, vEnd, hitInfo);
-        }
-    }
-}
-// PC 0x00575800
-void CSWRoomSurfaceMesh::TransformAABBToWorld(int nNode, const Vector& vOffset)
-{
-    while (nNode != -1)
-    {
-        m_lstAABBNodes[nNode].m_vMax =
-            m_lstAABBNodes[nNode].m_vMax + m_vPosition + vOffset;
-        m_lstAABBNodes[nNode].m_vMin =
-            m_lstAABBNodes[nNode].m_vMin + m_vPosition + vOffset;
-        TransformAABBToWorld(m_lstAABBNodes[nNode].m_nLeftChild,
-                             vOffset);
-        nNode = m_lstAABBNodes[nNode].m_nRightChild;
-    }
-}
 __int64 QueryTimerFrequency()
 {
     LARGE_INTEGER nFrequency;
     QueryPerformanceFrequency(&nFrequency);
     return nFrequency.QuadPart;
+}
+
+inline CSWRoomSurfaceExternalEdge::CSWRoomSurfaceExternalEdge()
+{
+    m_nEdge = -1;
+    m_nAdjacentRoom = -1;
+    SWROOMSURFACEMESH_TRACE();
+}
+
+inline void AddExternalEdge(
+    CExoStaticArrayList<CSWRoomSurfaceExternalEdge>& lstEdges,
+    CSWRoomSurfaceExternalEdge edge)
+{
+    if (lstEdges.m_bStatic == 0)
+    {
+        lstEdges.CExoArrayList<CSWRoomSurfaceExternalEdge>::Add(edge);
+    }
+}
+
+int CSWRoomSurfaceMesh::SetEdgeVertex(int nEdge, Vector& vVertex)
+{
+    if (nEdge < m_lstExternalEdges.num)
+    {
+        m_pVertices[m_pFaces[m_lstExternalEdges[nEdge].m_nEdge]] = vVertex;
+        return 1;
+    }
+    return 0;
+}
+
+#ifndef _XBOX
+template <> CExoArrayList<CSWRoomSurfaceMeshAABBNode>::~CExoArrayList()
+{
+    delete[] element;
+    element = NULL;
+}
+#endif
+
+static inline void RoomSurfaceMeshTrace1()
+{
+}
+// PC 0x00574C80
+void CSWRoomSurfaceMesh::SetOrientation(const Quaternion& qOrientation)
+{
+    m_qOrientation = qOrientation;
+}
+// PC 0x00574CA0
+inline CSWRoomSurfaceMeshAABBNode::CSWRoomSurfaceMeshAABBNode()
+{
+    m_nLeftChild = -1;
+    m_nRightChild = -1;
+    m_nTriangle = -1;
+    m_nNodeType = 4;
+    m_nTraversalMask = 0;
 }
 // PC 0x00574CD0
 static __int64 QueryTimer()
@@ -99,6 +87,24 @@ static __int64 QueryTimer()
 
     QueryPerformanceCounter(&nCount);
     return 1000000 * nCount.QuadPart / performanceFrequency;
+}
+// PC 0x00574D50
+int CSWRoomSurfaceMeshHitInfo::ClearOutput()
+{
+    m_nField08 = 0;
+    m_nField1C = 0;
+    m_vHitPosition = Vector(0.0f, 0.0f, 0.0f);
+    return 0;
+}
+// PC 0x00574D80
+void CSWRoomSurfaceMeshHitInfo::ClearAll(unsigned long nMask)
+{
+    m_nField0C = -1;
+    m_nField00 = nMask;
+    m_nField04 = 0;
+    m_nField08 = 0;
+    m_nField1C = 0;
+    m_vHitPosition = Vector(0.0f, 0.0f, 0.0f);
 }
 // PC 0x00574DC0
 void CSWRoomSurfaceMesh::ComputeTriangleAdjacency()
@@ -199,54 +205,11 @@ void CSWRoomSurfaceMesh::GetTriangleVertices(int nUnused, int nTriangle,
         *pnThird = m_pFaces[nVertexOffset + 2];
     }
 }
-// PC 0x00574C80
-void CSWRoomSurfaceMesh::SetOrientation(const Quaternion& qOrientation)
+// PC 0x00575340
+CSWRoomSurfaceMeshHitInfo::CSWRoomSurfaceMeshHitInfo(unsigned long nMask)
 {
-    m_qOrientation = qOrientation;
-}
-
-inline CSWRoomSurfaceExternalEdge::CSWRoomSurfaceExternalEdge()
-{
-    m_nEdge = -1;
-    m_nAdjacentRoom = -1;
-    SWROOMSURFACEMESH_TRACE();
-}
-
-inline void AddExternalEdge(
-    CExoStaticArrayList<CSWRoomSurfaceExternalEdge>& lstEdges,
-    CSWRoomSurfaceExternalEdge edge)
-{
-    if (lstEdges.m_bStatic == 0)
-    {
-        lstEdges.CExoArrayList<CSWRoomSurfaceExternalEdge>::Add(edge);
-    }
-}
-// PC 0x00574CA0
-inline CSWRoomSurfaceMeshAABBNode::CSWRoomSurfaceMeshAABBNode()
-{
-    m_nLeftChild = -1;
-    m_nRightChild = -1;
-    m_nTriangle = -1;
-    m_nNodeType = 4;
-    m_nTraversalMask = 0;
-}
-// PC 0x00574D50
-int CSWRoomSurfaceMeshHitInfo::ClearOutput()
-{
-    m_nField08 = 0;
-    m_nField1C = 0;
-    m_vHitPosition = Vector(0.0f, 0.0f, 0.0f);
-    return 0;
-}
-// PC 0x00574D80
-void CSWRoomSurfaceMeshHitInfo::ClearAll(unsigned long nMask)
-{
-    m_nField0C = -1;
-    m_nField00 = nMask;
-    m_nField04 = 0;
-    m_nField08 = 0;
-    m_nField1C = 0;
-    m_vHitPosition = Vector(0.0f, 0.0f, 0.0f);
+    RoomSurfaceMeshTrace1();
+    ClearAll(nMask);
 }
 // PC 0x00575390
 int CSWRoomSurfaceMesh::LoadMeshBinary(CResBWM* pMesh)
@@ -312,6 +275,53 @@ int CSWRoomSurfaceMesh::LoadMeshBinary(CResBWM* pMesh)
 
     return 1;
 }
+// PC 0x005754B0
+int CSWRoomSurfaceMesh::SaveBinaryMesh(const CExoString& sFileName)
+{
+    SWROOMSURFACEMESH_TRACE();
+    int nResult = CSWCollisionMesh::SaveBinaryMesh(sFileName);
+
+    if (nResult == 1)
+    {
+        FILE* pFile = fopen(sFileName.CStr(), "rb+");
+        _CSWWalkMeshHeader header;
+
+        fread(&header, sizeof(header), 1, pFile);
+        fseek(pFile, 0, SEEK_END);
+        header.m_nAABBNodeCount = m_lstAABBNodes.num;
+        header.m_nAABBNodeOffset = ftell(pFile);
+        header.m_nAABBRootNode = m_nAABBRootNode;
+        fwrite(m_lstAABBNodes.element, 44, header.m_nAABBNodeCount, pFile);
+        header.m_nAdjacencyOffset = ftell(pFile);
+        fwrite(m_pTriangleAdjacency, 4, 3 * header.m_nAdjacencyCount, pFile);
+        header.m_nEdgeCount = m_lstExternalEdges.num;
+        header.m_nEdgeOffset = ftell(pFile);
+        fwrite(m_lstExternalEdges.element, 8, header.m_nEdgeCount, pFile);
+        header.m_nPerimeterCount = m_lstPerimeters.num;
+        header.m_nPerimeterOffset = ftell(pFile);
+        fwrite(m_lstPerimeters.element, 4, header.m_nPerimeterCount, pFile);
+        fseek(pFile, 0, SEEK_SET);
+        fwrite(&header, sizeof(header), 1, pFile);
+        fclose(pFile);
+        return 1;
+    }
+
+    return nResult;
+}
+// PC 0x00575800
+void CSWRoomSurfaceMesh::TransformAABBToWorld(int nNode, const Vector& vOffset)
+{
+    while (nNode != -1)
+    {
+        m_lstAABBNodes[nNode].m_vMax =
+            m_lstAABBNodes[nNode].m_vMax + m_vPosition + vOffset;
+        m_lstAABBNodes[nNode].m_vMin =
+            m_lstAABBNodes[nNode].m_vMin + m_vPosition + vOffset;
+        TransformAABBToWorld(m_lstAABBNodes[nNode].m_nLeftChild,
+                             vOffset);
+        nNode = m_lstAABBNodes[nNode].m_nRightChild;
+    }
+}
 // PC 0x005758F0
 int CSWRoomSurfaceMesh::GetEdgeVertex(int nEdge, Vector& vVertex)
 {
@@ -344,16 +354,6 @@ int CSWRoomSurfaceMesh::GetEdgeVertices(int nEdge, Vector& vFirst,
 
     vFirst = Vector(0.0f, 0.0f, 0.0f);
     vSecond = Vector(0.0f, 0.0f, 0.0f);
-    return 0;
-}
-
-int CSWRoomSurfaceMesh::SetEdgeVertex(int nEdge, Vector& vVertex)
-{
-    if (nEdge < m_lstExternalEdges.num)
-    {
-        m_pVertices[m_pFaces[m_lstExternalEdges[nEdge].m_nEdge]] = vVertex;
-        return 1;
-    }
     return 0;
 }
 // PC 0x00575A60
@@ -470,6 +470,455 @@ int CSWRoomSurfaceMesh::GetAdjacentRoom(int nEdge)
 {
     return m_lstExternalEdges[nEdge].m_nAdjacentRoom;
 }
+// PC 0x00576040
+int CSWRoomSurfaceMesh::CheckAABBLineOfSight(Vector vStart, Vector vEnd,
+                                             CSWRoomSurfaceMeshHitInfo& hitInfo)
+{
+    if (m_lstAABBNodes.num == 0)
+    {
+        return 0;
+    }
+
+    hitInfo.m_nField00 = m_nLOSMaterialMask;
+    if (CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo) > 0)
+    {
+        hitInfo.m_nField08 = 1;
+        hitInfo.m_vHitPosition = vEnd;
+    }
+
+    return hitInfo.m_nField08;
+}
+// PC 0x005760A0
+int CSWRoomSurfaceMesh::CheckAABBWalkable(Vector vStart, Vector vEnd,
+                                          CSWRoomSurfaceMeshHitInfo& hitInfo)
+{
+    if (m_lstAABBNodes.num == 0)
+    {
+        return 0;
+    }
+
+    hitInfo.m_nField00 = m_nWalkCheckMaterialMask;
+
+    int nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
+
+    if (hitInfo.m_nField0C == -1)
+    {
+        Vector vOffset = normalize(Vector(1.0f, 1.0f, 0.0f));
+
+        vOffset *= 0.001f;
+        vStart += vOffset;
+        vEnd += vOffset;
+        nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
+    }
+
+    if (nHits > 0)
+    {
+        hitInfo.m_nField08 = 1;
+        hitInfo.m_vHitPosition = vEnd;
+    }
+
+    return hitInfo.m_nField08;
+}
+// PC 0x005761D0
+int CSWRoomSurfaceMesh::CheckAABBAll(Vector vStart, Vector vEnd,
+                                     CSWRoomSurfaceMeshHitInfo& hitInfo)
+{
+    if (m_lstAABBNodes.num == 0)
+    {
+        return 0;
+    }
+
+    __int64 nStartTime = QueryTimer();
+
+    hitInfo.m_nField00 = m_nAllMaterialsMask;
+
+    int nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
+
+    if (hitInfo.m_nField0C == -1)
+    {
+        Vector vOffset = normalize(Vector(1.0f, 1.0f, 0.0f));
+
+        vOffset *= 0.001f;
+        vStart += vOffset;
+        vEnd += vOffset;
+        nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
+    }
+
+    if (nHits > 0)
+    {
+        hitInfo.m_nField08 = 1;
+        hitInfo.m_vHitPosition = vEnd;
+    }
+
+    checkaabbtime = (float)(QueryTimer() - nStartTime);
+    return hitInfo.m_nField08;
+}
+// PC 0x00575630
+int CSWRoomSurfaceMesh::CheckAABBNode(int nNode, const Vector& vStart, Vector& vEnd,
+                                     CSWRoomSurfaceMeshHitInfo& hitInfo)
+{
+    const Vector& vMinimum = m_lstAABBNodes[nNode].m_vMin;
+    const Vector& vMaximum = m_lstAABBNodes[nNode].m_vMax;
+#ifdef _XBOX
+    extern int DumpRoomBBox; if (DumpRoomBBox) { g_pExoBase->m_pExoDebug->WriteToScriptLogFile(g_pExoBase->m_pExoDebug->m_sLogDirectory); g_pExoBase->m_pExoDebug->FlushScriptLogFile(); }
+#endif
+    if (!BoxIntersect(vStart, vEnd, vMinimum, vMaximum))
+    {
+        return 0;
+    }
+
+    if (m_lstAABBNodes[nNode].m_nTriangle != -1)
+    {
+        int nTriangle = m_lstAABBNodes[nNode].m_nTriangle;
+        int nMaterialMask = 1 << m_pFaceMaterials[nTriangle];
+        int nHits = 0;
+        if (!(hitInfo.m_nField00 & nMaterialMask))
+        {
+            return 0;
+        }
+
+        Vector avVertices[3];
+        Vector vNormal;
+        for (int i = 0; i < 3; ++i)
+        {
+            avVertices[i] = m_pVertices[m_pFaces[nTriangle * 3 + i]];
+        }
+
+        if (polyhit(avVertices, 3, vStart, vEnd, &vEnd, &vNormal))
+        {
+            hitInfo.m_nField0C = nTriangle;
+            nHits = 1;
+            hitInfo.m_nField1C = nMaterialMask;
+        }
+        return nHits;
+    }
+    else
+    {
+        if (m_lstAABBNodes[nNode].m_nTraversalMask & hitInfo.m_nField04)
+        {
+            return CheckAABBNode(m_lstAABBNodes[nNode].m_nLeftChild, vStart, vEnd, hitInfo) + CheckAABBNode(m_lstAABBNodes[nNode].m_nRightChild, vStart, vEnd, hitInfo);
+        }
+        else
+        {
+            return CheckAABBNode(m_lstAABBNodes[nNode].m_nRightChild, vStart, vEnd, hitInfo) + CheckAABBNode(m_lstAABBNodes[nNode].m_nLeftChild, vStart, vEnd, hitInfo);
+        }
+    }
+}
+// PC 0x00576330
+int CSWRoomSurfaceMesh::FindTriangle(const Vector& vPosition, int bWalkable,
+                                     Vector vDirection)
+{
+    Vector vLocal = WorldToLocal(vPosition);
+    Vector vTop(vLocal.m_fX, vLocal.m_fY, 1000.0f);
+    Vector vBottom(vLocal.m_fX, vLocal.m_fY, -1000.0f);
+    CSWRoomSurfaceMeshHitInfo hitInfo(0xFFFFFFFF);
+
+    if (bWalkable != 0)
+    {
+        CheckAABBWalkable(vTop, vBottom, hitInfo);
+    }
+    else
+    {
+        CheckAABBAll(vTop, vBottom, hitInfo);
+    }
+
+    if (hitInfo.m_nField0C == -1)
+    {
+        Vector vOffset = normalize(vDirection);
+
+        vOffset *= 0.001f;
+        vTop += vOffset;
+        vBottom += vOffset;
+        if (bWalkable != 0)
+        {
+            CheckAABBWalkable(vTop, vBottom, hitInfo);
+        }
+        else
+        {
+            CheckAABBAll(vTop, vBottom, hitInfo);
+        }
+    }
+
+    return hitInfo.m_nField0C;
+}
+// PC 0x00576580
+int CSWRoomSurfaceMesh::GetSurfaceMaterial(Vector vPosition)
+{
+    Vector vLocal = WorldToLocal(vPosition);
+    CSWRoomSurfaceMeshHitInfo hitInfo(0xFFFFFFFF);
+    Vector vStart(vLocal.m_fX, vLocal.m_fY, 1000.0f);
+    Vector vEnd(vLocal.m_fX, vLocal.m_fY, -1000.0f);
+
+    CheckAABBAll(vStart, vEnd, hitInfo);
+    if (hitInfo.m_nField0C == -1)
+    {
+        return 0;
+    }
+
+    return m_pFaceMaterials[hitInfo.m_nField0C];
+}
+// PC 0x00576660
+int CSWRoomSurfaceMesh::GetSurfaceMaterialWalkCheckOnly(Vector vPosition)
+{
+    Vector vLocal = WorldToLocal(vPosition);
+    CSWRoomSurfaceMeshHitInfo hitInfo(0xFFFFFFFF);
+    Vector vStart(vLocal.m_fX, vLocal.m_fY, 1000.0f);
+    Vector vEnd(vLocal.m_fX, vLocal.m_fY, -1000.0f);
+
+    CheckAABBWalkable(vStart, vEnd, hitInfo);
+    if (hitInfo.m_nField0C == -1)
+    {
+        return 0;
+    }
+
+    return m_pFaceMaterials[hitInfo.m_nField0C];
+}
+// PC 0x00576990
+void CSWRoomSurfaceMesh::TransformToWorld(const Vector& vPosition)
+{
+    if (m_bBinary == 0)
+    {
+        CSWCollisionMesh::TransformToWorld(vPosition);
+        if (m_lstAABBNodes.num != 0)
+        {
+            TransformAABBToWorld(m_nAABBRootNode, vPosition);
+        }
+    }
+}
+// PC 0x005769D0
+float CSWRoomSurfaceMesh::ComputeHeight(Vector vPosition, int bWalkable)
+{
+    int nFace = FindTriangle(vPosition, bWalkable, Vector(1.0f, 1.0f, 0.0f));
+
+    if (nFace == -1)
+    {
+        return -9.0f;
+    }
+
+    Vector vPoint(vPosition.m_fX, vPosition.m_fY, -9.0f);
+
+    return PlaneHeightAtPoint(m_pFaceNormals[nFace], m_pFaceDistances[nFace],
+                              vPoint);
+}
+// PC 0x00576A70
+CSWRoomSurfaceMesh::~CSWRoomSurfaceMesh()
+{
+    if (m_bBinary != 0)
+    {
+        m_pTriangleAdjacency = NULL;
+        m_lstAABBNodes.element = NULL;
+        m_lstAABBNodes.num = 0;
+        m_lstAABBNodes.array_size = 0;
+        m_lstAABBNodes.m_bStatic = 0;
+        m_lstExternalEdges.element = NULL;
+        m_lstExternalEdges.num = 0;
+        m_lstExternalEdges.array_size = 0;
+        m_lstExternalEdges.m_bStatic = 0;
+        m_lstPerimeters.m_bStatic = 0;
+        m_lstPerimeters.element = NULL;
+        m_lstPerimeters.array_size = 0;
+        m_lstPerimeters.num = 0;
+    }
+    else
+    {
+        int*& pAdjacency = m_pTriangleAdjacency;
+        delete[] pAdjacency;
+        pAdjacency = NULL;
+        if (m_lstExternalEdges.m_bStatic == 0)
+        {
+            m_lstExternalEdges.SetSize(0);
+        }
+        if (m_lstPerimeters.m_bStatic == 0)
+        {
+            m_lstPerimeters.SetSize(0);
+        }
+    }
+}
+// PC 0x00576C50
+void CSWRoomSurfaceMesh::ComputeRoomBorder()
+{
+    if (m_nAdjacencyCount == 0)
+        return;
+
+    CExoArrayList<CSWRoomSurfaceExternalEdge*> lstEdges;
+    CExoArrayList<CSWRoomSurfaceExternalEdge*> lstOrderedEdges;
+    int nEdge;
+    for (nEdge = 0; nEdge < m_nAdjacencyCount * 3; nEdge++)
+    {
+        if (m_pTriangleAdjacency[nEdge] == -1)
+        {
+            lstEdges.Add(new CSWRoomSurfaceExternalEdge(nEdge));
+        }
+    }
+
+    int* pnEdges = new int[lstEdges.num];
+    for (int i = 0; i < lstEdges.num; i++)
+    {
+        pnEdges[i] = lstEdges[i]->m_nEdge;
+    }
+
+    int nProcessed = 0;
+    while (nProcessed < lstEdges.num)
+    {
+        int nIndex = 0;
+        while (pnEdges[nIndex] == -1)
+            nIndex++;
+
+        lstOrderedEdges.Add(lstEdges[nIndex]);
+        nProcessed++;
+        pnEdges[nIndex] = -1;
+        nEdge = lstEdges[nIndex]->m_nEdge;
+        int nStartVertex = m_pFaces[nEdge];
+        int nNextVertex;
+        int bComplete = 0;
+        while (!bComplete)
+        {
+            nNextVertex = m_pFaces[nEdge % 3 != 2 ? nEdge + 1 : nEdge - 2];
+            for (nIndex = 0; nIndex < lstEdges.num; nIndex++)
+            {
+                if (pnEdges[nIndex] != -1 &&
+                    nNextVertex == m_pFaces[lstEdges[nIndex]->m_nEdge])
+                {
+                    lstOrderedEdges.Add(lstEdges[nIndex]);
+                    nEdge = lstEdges[nIndex]->m_nEdge;
+                    pnEdges[nIndex] = -1;
+                    nProcessed++;
+                    if (nStartVertex == m_pFaces[nEdge % 3 != 2 ? nEdge + 1 : nEdge - 2])
+                    {
+                        bComplete = 1;
+                        m_lstPerimeters.Add(nProcessed);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    for (int j = 0; j < lstOrderedEdges.num; j++)
+    {
+        AddExternalEdge(m_lstExternalEdges, *lstOrderedEdges[j]);
+        delete lstOrderedEdges[j];
+    }
+    delete[] pnEdges;
+}
+// PC 0x005770A0
+int CSWRoomSurfaceMesh::IsPointInPolygon(const Vector& vStart,
+                                         const Vector& vEnd, int& nFace)
+{
+    m_lstCrossings.num = 0;
+    m_lstCrossingFaces.num = 0;
+    int nCrossings = 0;
+    EXOXBOXASSERT(vEnd.m_fX != vStart.m_fX || vEnd.m_fY != vStart.m_fY);
+    Vector vDirection = normalize(Vector(vEnd.m_fX - vStart.m_fX,
+                                         vEnd.m_fY - vStart.m_fY, 0.0f));
+    Vector vNormal(-vDirection.m_fY, vDirection.m_fX, 0.0f);
+    float fStartDistance = vDirection * vStart;
+    float fStartSide = vNormal * vStart;
+    float fPreviousSide = fStartSide;
+    int bFoundFace = 0;
+    int nFirst = 0;
+
+    for (int nPerimeter = 0; nPerimeter < m_lstPerimeters.num; nPerimeter++)
+    {
+        int nLast = m_lstPerimeters[nPerimeter];
+        for (int nEdge = nFirst; nEdge < nLast; nEdge++)
+        {
+            const Vector& vPrevious =
+                m_pVertices[m_pFaces[m_lstExternalEdges[
+                    (nEdge - 1 < nFirst) ? nLast - 1 : nEdge - 1].m_nEdge]];
+            const Vector& vCurrent =
+                m_pVertices[m_pFaces[m_lstExternalEdges[nEdge].m_nEdge]];
+            int nNext = (nEdge + 1 == nLast) ? nFirst : nEdge + 1;
+            const Vector& vNext =
+                m_pVertices[m_pFaces[m_lstExternalEdges[nNext].m_nEdge]];
+            float fDistance = vDirection * vCurrent;
+            float fCurrentSide = vNormal * vCurrent;
+            float fNextSide = vNormal * vNext;
+
+            if ((fCurrentSide < fStartSide && fStartSide < fNextSide) ||
+                (fNextSide < fStartSide && fStartSide < fCurrentSide))
+            {
+                float fFraction =
+                    (fStartSide - fNextSide) / (fCurrentSide - fNextSide);
+                Vector vCrossing =
+                    fFraction * vCurrent + (1.0f - fFraction) * vNext;
+                if (vCrossing * vDirection >= fStartDistance)
+                {
+                    AddCrossing(vStart, vDirection, vCrossing,
+                                nCrossings, nEdge);
+                    if (!bFoundFace)
+                    {
+                        nFace = nEdge;
+                        bFoundFace = 1;
+                    }
+                }
+            }
+
+            if (fCurrentSide == fStartSide && fDistance >= fStartDistance)
+            {
+                float fPreviousVertexSide = vNormal * vPrevious;
+                if (fPreviousVertexSide != fCurrentSide ||
+                    fCurrentSide != fNextSide)
+                {
+                    if (fPreviousSide == fStartSide)
+                    {
+                        if (fPreviousVertexSide != fStartSide)
+                            fPreviousSide = fPreviousVertexSide;
+                    }
+                    else
+                    {
+                        int bSameSide =
+                            (fPreviousSide < fStartSide && fNextSide < fStartSide) ||
+                            (fPreviousSide > fStartSide && fNextSide > fStartSide);
+                        fPreviousSide = fStartSide;
+                        if (!bSameSide)
+                            continue;
+                    }
+                    AddCrossing(vStart, vDirection, vCurrent,
+                                nCrossings, nEdge);
+                    if (!bFoundFace)
+                    {
+                        nFace = nEdge;
+                        bFoundFace = 1;
+                    }
+                    if (fDistance != fStartDistance &&
+                        ((fPreviousVertexSide < fStartSide && fNextSide < fStartSide) ||
+                         (fPreviousVertexSide > fStartSide && fNextSide > fStartSide)))
+                    {
+                        AddCrossing(vStart, vDirection, vCurrent,
+                                    nCrossings, nEdge);
+                        if (!bFoundFace)
+                        {
+                            nFace = nEdge;
+                            bFoundFace = 1;
+                        }
+                    }
+                }
+            }
+        }
+        nFirst = nLast;
+    }
+    if (nCrossings > 1)
+        nFace = m_lstCrossingFaces[0];
+    return nCrossings;
+}
+// PC 0x00576740
+void CSWRoomSurfaceMesh::AddCrossing(const Vector& vStart,
+                                    const Vector& vDirection,
+                                    const Vector& vCrossing,
+                                    int& nCrossings, int nFace)
+{
+    int nIndex = 0;
+    int nCount = m_lstCrossings.num;
+    for (; nIndex < nCount; nIndex++)
+    {
+        if ((((vDirection * vCrossing))) < vDirection * m_lstCrossings[nIndex])
+            break;
+    }
+    m_lstCrossings.Insert(vCrossing, nIndex);
+    m_lstCrossingFaces.Insert(nFace, nIndex);
+    nCrossings++;
+}
 // PC 0x00577550
 CSWRoomSurfaceMesh::CSWRoomSurfaceMesh()
     : CSWCollisionMesh(RESTYPE_MDL, RESTYPE_WOK)
@@ -528,14 +977,6 @@ CSWRoomSurfaceMesh::CSWRoomSurfaceMesh()
         m_nAllMaterialsMask += 1 << nMaterial;
     }
 }
-
-#ifndef _XBOX
-template <> CExoArrayList<CSWRoomSurfaceMeshAABBNode>::~CExoArrayList()
-{
-    delete[] element;
-    element = NULL;
-}
-#endif
 // PC 0x005777E0
 int CSWRoomSurfaceMesh::LoadMeshText(unsigned char* pData,
                                      unsigned long nDataSize)
@@ -848,325 +1289,6 @@ int CSWRoomSurfaceMesh::LoadMeshText(unsigned char* pData,
     }
     return 1;
 }
-// PC 0x00575340
-CSWRoomSurfaceMeshHitInfo::CSWRoomSurfaceMeshHitInfo(unsigned long nMask)
-{
-    RoomSurfaceMeshTrace1();
-    ClearAll(nMask);
-}
-// PC 0x005754B0
-int CSWRoomSurfaceMesh::SaveBinaryMesh(const CExoString& sFileName)
-{
-    SWROOMSURFACEMESH_TRACE();
-    int nResult = CSWCollisionMesh::SaveBinaryMesh(sFileName);
-
-    if (nResult == 1)
-    {
-        FILE* pFile = fopen(sFileName.CStr(), "rb+");
-        _CSWWalkMeshHeader header;
-
-        fread(&header, sizeof(header), 1, pFile);
-        fseek(pFile, 0, SEEK_END);
-        header.m_nAABBNodeCount = m_lstAABBNodes.num;
-        header.m_nAABBNodeOffset = ftell(pFile);
-        header.m_nAABBRootNode = m_nAABBRootNode;
-        fwrite(m_lstAABBNodes.element, 44, header.m_nAABBNodeCount, pFile);
-        header.m_nAdjacencyOffset = ftell(pFile);
-        fwrite(m_pTriangleAdjacency, 4, 3 * header.m_nAdjacencyCount, pFile);
-        header.m_nEdgeCount = m_lstExternalEdges.num;
-        header.m_nEdgeOffset = ftell(pFile);
-        fwrite(m_lstExternalEdges.element, 8, header.m_nEdgeCount, pFile);
-        header.m_nPerimeterCount = m_lstPerimeters.num;
-        header.m_nPerimeterOffset = ftell(pFile);
-        fwrite(m_lstPerimeters.element, 4, header.m_nPerimeterCount, pFile);
-        fseek(pFile, 0, SEEK_SET);
-        fwrite(&header, sizeof(header), 1, pFile);
-        fclose(pFile);
-        return 1;
-    }
-
-    return nResult;
-}
-// PC 0x00576040
-int CSWRoomSurfaceMesh::CheckAABBLineOfSight(Vector vStart, Vector vEnd,
-                                             CSWRoomSurfaceMeshHitInfo& hitInfo)
-{
-    if (m_lstAABBNodes.num == 0)
-    {
-        return 0;
-    }
-
-    hitInfo.m_nField00 = m_nLOSMaterialMask;
-    if (CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo) > 0)
-    {
-        hitInfo.m_nField08 = 1;
-        hitInfo.m_vHitPosition = vEnd;
-    }
-
-    return hitInfo.m_nField08;
-}
-// PC 0x005760A0
-int CSWRoomSurfaceMesh::CheckAABBWalkable(Vector vStart, Vector vEnd,
-                                          CSWRoomSurfaceMeshHitInfo& hitInfo)
-{
-    if (m_lstAABBNodes.num == 0)
-    {
-        return 0;
-    }
-
-    hitInfo.m_nField00 = m_nWalkCheckMaterialMask;
-
-    int nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
-
-    if (hitInfo.m_nField0C == -1)
-    {
-        Vector vOffset = normalize(Vector(1.0f, 1.0f, 0.0f));
-
-        vOffset *= 0.001f;
-        vStart += vOffset;
-        vEnd += vOffset;
-        nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
-    }
-
-    if (nHits > 0)
-    {
-        hitInfo.m_nField08 = 1;
-        hitInfo.m_vHitPosition = vEnd;
-    }
-
-    return hitInfo.m_nField08;
-}
-// PC 0x005761D0
-int CSWRoomSurfaceMesh::CheckAABBAll(Vector vStart, Vector vEnd,
-                                     CSWRoomSurfaceMeshHitInfo& hitInfo)
-{
-    if (m_lstAABBNodes.num == 0)
-    {
-        return 0;
-    }
-
-    __int64 nStartTime = QueryTimer();
-
-    hitInfo.m_nField00 = m_nAllMaterialsMask;
-
-    int nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
-
-    if (hitInfo.m_nField0C == -1)
-    {
-        Vector vOffset = normalize(Vector(1.0f, 1.0f, 0.0f));
-
-        vOffset *= 0.001f;
-        vStart += vOffset;
-        vEnd += vOffset;
-        nHits = CheckAABBNode(m_nAABBRootNode, vStart, vEnd, hitInfo);
-    }
-
-    if (nHits > 0)
-    {
-        hitInfo.m_nField08 = 1;
-        hitInfo.m_vHitPosition = vEnd;
-    }
-
-    checkaabbtime = (float)(QueryTimer() - nStartTime);
-    return hitInfo.m_nField08;
-}
-// PC 0x00576330
-int CSWRoomSurfaceMesh::FindTriangle(const Vector& vPosition, int bWalkable,
-                                     Vector vDirection)
-{
-    Vector vLocal = WorldToLocal(vPosition);
-    Vector vTop(vLocal.m_fX, vLocal.m_fY, 1000.0f);
-    Vector vBottom(vLocal.m_fX, vLocal.m_fY, -1000.0f);
-    CSWRoomSurfaceMeshHitInfo hitInfo(0xFFFFFFFF);
-
-    if (bWalkable != 0)
-    {
-        CheckAABBWalkable(vTop, vBottom, hitInfo);
-    }
-    else
-    {
-        CheckAABBAll(vTop, vBottom, hitInfo);
-    }
-
-    if (hitInfo.m_nField0C == -1)
-    {
-        Vector vOffset = normalize(vDirection);
-
-        vOffset *= 0.001f;
-        vTop += vOffset;
-        vBottom += vOffset;
-        if (bWalkable != 0)
-        {
-            CheckAABBWalkable(vTop, vBottom, hitInfo);
-        }
-        else
-        {
-            CheckAABBAll(vTop, vBottom, hitInfo);
-        }
-    }
-
-    return hitInfo.m_nField0C;
-}
-// PC 0x00576580
-int CSWRoomSurfaceMesh::GetSurfaceMaterial(Vector vPosition)
-{
-    Vector vLocal = WorldToLocal(vPosition);
-    CSWRoomSurfaceMeshHitInfo hitInfo(0xFFFFFFFF);
-    Vector vStart(vLocal.m_fX, vLocal.m_fY, 1000.0f);
-    Vector vEnd(vLocal.m_fX, vLocal.m_fY, -1000.0f);
-
-    CheckAABBAll(vStart, vEnd, hitInfo);
-    if (hitInfo.m_nField0C == -1)
-    {
-        return 0;
-    }
-
-    return m_pFaceMaterials[hitInfo.m_nField0C];
-}
-// PC 0x00576660
-int CSWRoomSurfaceMesh::GetSurfaceMaterialWalkCheckOnly(Vector vPosition)
-{
-    Vector vLocal = WorldToLocal(vPosition);
-    CSWRoomSurfaceMeshHitInfo hitInfo(0xFFFFFFFF);
-    Vector vStart(vLocal.m_fX, vLocal.m_fY, 1000.0f);
-    Vector vEnd(vLocal.m_fX, vLocal.m_fY, -1000.0f);
-
-    CheckAABBWalkable(vStart, vEnd, hitInfo);
-    if (hitInfo.m_nField0C == -1)
-    {
-        return 0;
-    }
-
-    return m_pFaceMaterials[hitInfo.m_nField0C];
-}
-// PC 0x00576990
-void CSWRoomSurfaceMesh::TransformToWorld(const Vector& vPosition)
-{
-    if (m_bBinary == 0)
-    {
-        CSWCollisionMesh::TransformToWorld(vPosition);
-        if (m_lstAABBNodes.num != 0)
-        {
-            TransformAABBToWorld(m_nAABBRootNode, vPosition);
-        }
-    }
-}
-// PC 0x005769D0
-float CSWRoomSurfaceMesh::ComputeHeight(Vector vPosition, int bWalkable)
-{
-    int nFace = FindTriangle(vPosition, bWalkable, Vector(1.0f, 1.0f, 0.0f));
-
-    if (nFace == -1)
-    {
-        return -9.0f;
-    }
-
-    Vector vPoint(vPosition.m_fX, vPosition.m_fY, -9.0f);
-
-    return PlaneHeightAtPoint(m_pFaceNormals[nFace], m_pFaceDistances[nFace],
-                              vPoint);
-}
-// PC 0x00576A70
-CSWRoomSurfaceMesh::~CSWRoomSurfaceMesh()
-{
-    if (m_bBinary != 0)
-    {
-        m_pTriangleAdjacency = NULL;
-        m_lstAABBNodes.element = NULL;
-        m_lstAABBNodes.num = 0;
-        m_lstAABBNodes.array_size = 0;
-        m_lstAABBNodes.m_bStatic = 0;
-        m_lstExternalEdges.element = NULL;
-        m_lstExternalEdges.num = 0;
-        m_lstExternalEdges.array_size = 0;
-        m_lstExternalEdges.m_bStatic = 0;
-        m_lstPerimeters.m_bStatic = 0;
-        m_lstPerimeters.element = NULL;
-        m_lstPerimeters.array_size = 0;
-        m_lstPerimeters.num = 0;
-    }
-    else
-    {
-        int*& pAdjacency = m_pTriangleAdjacency;
-        delete[] pAdjacency;
-        pAdjacency = NULL;
-        if (m_lstExternalEdges.m_bStatic == 0)
-        {
-            m_lstExternalEdges.SetSize(0);
-        }
-        if (m_lstPerimeters.m_bStatic == 0)
-        {
-            m_lstPerimeters.SetSize(0);
-        }
-    }
-}
-// PC 0x00576C50
-void CSWRoomSurfaceMesh::ComputeRoomBorder()
-{
-    if (m_nAdjacencyCount == 0)
-        return;
-
-    CExoArrayList<CSWRoomSurfaceExternalEdge*> lstEdges;
-    CExoArrayList<CSWRoomSurfaceExternalEdge*> lstOrderedEdges;
-    int nEdge;
-    for (nEdge = 0; nEdge < m_nAdjacencyCount * 3; nEdge++)
-    {
-        if (m_pTriangleAdjacency[nEdge] == -1)
-        {
-            lstEdges.Add(new CSWRoomSurfaceExternalEdge(nEdge));
-        }
-    }
-
-    int* pnEdges = new int[lstEdges.num];
-    for (int i = 0; i < lstEdges.num; i++)
-    {
-        pnEdges[i] = lstEdges[i]->m_nEdge;
-    }
-
-    int nProcessed = 0;
-    while (nProcessed < lstEdges.num)
-    {
-        int nIndex = 0;
-        while (pnEdges[nIndex] == -1)
-            nIndex++;
-
-        lstOrderedEdges.Add(lstEdges[nIndex]);
-        nProcessed++;
-        pnEdges[nIndex] = -1;
-        nEdge = lstEdges[nIndex]->m_nEdge;
-        int nStartVertex = m_pFaces[nEdge];
-        int nNextVertex;
-        int bComplete = 0;
-        while (!bComplete)
-        {
-            nNextVertex = m_pFaces[nEdge % 3 != 2 ? nEdge + 1 : nEdge - 2];
-            for (nIndex = 0; nIndex < lstEdges.num; nIndex++)
-            {
-                if (pnEdges[nIndex] != -1 &&
-                    nNextVertex == m_pFaces[lstEdges[nIndex]->m_nEdge])
-                {
-                    lstOrderedEdges.Add(lstEdges[nIndex]);
-                    nEdge = lstEdges[nIndex]->m_nEdge;
-                    pnEdges[nIndex] = -1;
-                    nProcessed++;
-                    if (nStartVertex == m_pFaces[nEdge % 3 != 2 ? nEdge + 1 : nEdge - 2])
-                    {
-                        bComplete = 1;
-                        m_lstPerimeters.Add(nProcessed);
-                    }
-                    break;
-                }
-            }
-        }
-    }
-
-    for (int j = 0; j < lstOrderedEdges.num; j++)
-    {
-        AddExternalEdge(m_lstExternalEdges, *lstOrderedEdges[j]);
-        delete lstOrderedEdges[j];
-    }
-    delete[] pnEdges;
-}
 // PC 0x005788A0
 int CSWRoomSurfaceMesh::ComputeClippedLineSegment(
     Vector vStart, Vector vEnd, Vector& vClippedStart, Vector& vClippedEnd,
@@ -1236,107 +1358,6 @@ int CSWRoomSurfaceMesh::ComputeClippedLineSegment(
     vClippedStart = m_lstCrossings[0];
     vClippedEnd = m_lstCrossings[1];
     return 1;
-}
-// PC 0x005770A0
-int CSWRoomSurfaceMesh::IsPointInPolygon(const Vector& vStart,
-                                         const Vector& vEnd, int& nFace)
-{
-    m_lstCrossings.num = 0;
-    m_lstCrossingFaces.num = 0;
-    int nCrossings = 0;
-    EXOXBOXASSERT(vEnd.m_fX != vStart.m_fX || vEnd.m_fY != vStart.m_fY);
-    Vector vDirection = normalize(Vector(vEnd.m_fX - vStart.m_fX,
-                                         vEnd.m_fY - vStart.m_fY, 0.0f));
-    Vector vNormal(-vDirection.m_fY, vDirection.m_fX, 0.0f);
-    float fStartDistance = vDirection * vStart;
-    float fStartSide = vNormal * vStart;
-    float fPreviousSide = fStartSide;
-    int bFoundFace = 0;
-    int nFirst = 0;
-
-    for (int nPerimeter = 0; nPerimeter < m_lstPerimeters.num; nPerimeter++)
-    {
-        int nLast = m_lstPerimeters[nPerimeter];
-        for (int nEdge = nFirst; nEdge < nLast; nEdge++)
-        {
-            const Vector& vPrevious =
-                m_pVertices[m_pFaces[m_lstExternalEdges[
-                    (nEdge - 1 < nFirst) ? nLast - 1 : nEdge - 1].m_nEdge]];
-            const Vector& vCurrent =
-                m_pVertices[m_pFaces[m_lstExternalEdges[nEdge].m_nEdge]];
-            int nNext = (nEdge + 1 == nLast) ? nFirst : nEdge + 1;
-            const Vector& vNext =
-                m_pVertices[m_pFaces[m_lstExternalEdges[nNext].m_nEdge]];
-            float fDistance = vDirection * vCurrent;
-            float fCurrentSide = vNormal * vCurrent;
-            float fNextSide = vNormal * vNext;
-
-            if ((fCurrentSide < fStartSide && fStartSide < fNextSide) ||
-                (fNextSide < fStartSide && fStartSide < fCurrentSide))
-            {
-                float fFraction =
-                    (fStartSide - fNextSide) / (fCurrentSide - fNextSide);
-                Vector vCrossing =
-                    fFraction * vCurrent + (1.0f - fFraction) * vNext;
-                if (vCrossing * vDirection >= fStartDistance)
-                {
-                    AddCrossing(vStart, vDirection, vCrossing,
-                                nCrossings, nEdge);
-                    if (!bFoundFace)
-                    {
-                        nFace = nEdge;
-                        bFoundFace = 1;
-                    }
-                }
-            }
-
-            if (fCurrentSide == fStartSide && fDistance >= fStartDistance)
-            {
-                float fPreviousVertexSide = vNormal * vPrevious;
-                if (fPreviousVertexSide != fCurrentSide ||
-                    fCurrentSide != fNextSide)
-                {
-                    if (fPreviousSide == fStartSide)
-                    {
-                        if (fPreviousVertexSide != fStartSide)
-                            fPreviousSide = fPreviousVertexSide;
-                    }
-                    else
-                    {
-                        int bSameSide =
-                            (fPreviousSide < fStartSide && fNextSide < fStartSide) ||
-                            (fPreviousSide > fStartSide && fNextSide > fStartSide);
-                        fPreviousSide = fStartSide;
-                        if (!bSameSide)
-                            continue;
-                    }
-                    AddCrossing(vStart, vDirection, vCurrent,
-                                nCrossings, nEdge);
-                    if (!bFoundFace)
-                    {
-                        nFace = nEdge;
-                        bFoundFace = 1;
-                    }
-                    if (fDistance != fStartDistance &&
-                        ((fPreviousVertexSide < fStartSide && fNextSide < fStartSide) ||
-                         (fPreviousVertexSide > fStartSide && fNextSide > fStartSide)))
-                    {
-                        AddCrossing(vStart, vDirection, vCurrent,
-                                    nCrossings, nEdge);
-                        if (!bFoundFace)
-                        {
-                            nFace = nEdge;
-                            bFoundFace = 1;
-                        }
-                    }
-                }
-            }
-        }
-        nFirst = nLast;
-    }
-    if (nCrossings > 1)
-        nFace = m_lstCrossingFaces[0];
-    return nCrossings;
 }
 // PC 0x00578C90
 int CSWRoomSurfaceMesh::ClippedLineSegmentWalkable(
@@ -1501,27 +1522,6 @@ int CSWRoomSurfaceMesh::ClippedLineSegmentWalkable(
         return 1;
     }
     return 0;
-}
-// PC 0x00576740
-void CSWRoomSurfaceMesh::AddCrossing(const Vector& vStart,
-                                    const Vector& vDirection,
-                                    const Vector& vCrossing,
-                                    int& nCrossings, int nFace)
-{
-    int nIndex = 0;
-    int nCount = m_lstCrossings.num;
-    for (; nIndex < nCount; nIndex++)
-    {
-        if ((((vDirection * vCrossing))) < vDirection * m_lstCrossings[nIndex])
-            break;
-    }
-    m_lstCrossings.Insert(vCrossing, nIndex);
-    m_lstCrossingFaces.Insert(nFace, nIndex);
-    nCrossings++;
-}
-
-static inline void RoomSurfaceMeshTrace1()
-{
 }
 
 #ifdef _XBOX

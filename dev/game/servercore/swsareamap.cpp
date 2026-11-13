@@ -95,6 +95,30 @@ void CSWSAreaMap::Initialize(int bEnabled, int nMapWidth, unsigned long nNorthAx
 #endif
     }
 }
+// PC 0x00573C20
+void CSWSAreaMap::LoadSavedAreaMapData(unsigned long* pData,
+                                       unsigned long nSize, int nWidth,
+                                       int nHeight)
+{
+    if (m_nExploredSize > 0 && nWidth == m_nWidth && nHeight == m_nHeight &&
+        nSize == m_nExploredSize)
+    {
+        memcpy(m_pnExplored, pData, nSize * 4);
+    }
+}
+// PC 0x00573C60
+unsigned long* CSWSAreaMap::GetMapData(unsigned long& nSize, int& nWidth,
+                                       int& nHeight)
+{
+    if (m_nExploredSize <= 0)
+    {
+        return NULL;
+    }
+    nSize = m_nExploredSize;
+    nWidth = m_nWidth;
+    nHeight = m_nHeight;
+    return m_pnExplored;
+}
 // PC 0x00573C90
 int CSWSAreaMap::GetMapPixelFromWorldCoord(Vector vPosition, int& nMapX,
                                            int& nMapY)
@@ -156,55 +180,6 @@ int CSWSAreaMap::GetGridPixelFromMapPixel(int nMapX, int nMapY, int& nGridX,
     nGridX = -1;
     nGridY = -1;
     return 0;
-}
-// PC 0x00574040
-void CSWSAreaMap::SetEntireMapExplored()
-{
-    if (m_pnExplored != NULL)
-    {
-        memset(m_pnExplored, 0xFF, m_nExploredSize * 4);
-    }
-}
-// PC 0x00573C20
-void CSWSAreaMap::LoadSavedAreaMapData(unsigned long* pData,
-                                       unsigned long nSize, int nWidth,
-                                       int nHeight)
-{
-    if (m_nExploredSize > 0 && nWidth == m_nWidth && nHeight == m_nHeight &&
-        nSize == m_nExploredSize)
-    {
-        memcpy(m_pnExplored, pData, nSize * 4);
-    }
-}
-// PC 0x00574060
-void CSWSAreaMap::SetMapPointExplored(int nMapX, int nMapY)
-{
-    if (nMapX <= 588 && nMapX >= 0 && nMapY <= 294 && nMapY >= 0)
-    {
-        int nGridX = 0;
-        int nGridY = 0;
-        if (GetGridPixelFromMapPixel(nMapX, nMapY, nGridX, nGridY))
-        {
-            int nIndex = nGridX + nGridY * (m_nWidth + 1);
-            if (nIndex / 32 <= (int)m_nExploredSize)
-            {
-                m_pnExplored[nIndex / 32] |= 1 << (nIndex % 32);
-            }
-        }
-    }
-}
-// PC 0x00573C60
-unsigned long* CSWSAreaMap::GetMapData(unsigned long& nSize, int& nWidth,
-                                       int& nHeight)
-{
-    if (m_nExploredSize <= 0)
-    {
-        return NULL;
-    }
-    nSize = m_nExploredSize;
-    nWidth = m_nWidth;
-    nHeight = m_nHeight;
-    return m_pnExplored;
 }
 // PC 0x00573E30
 void CSWSAreaMap::SetPartyMemberWorldLocation(int nMember, Vector vPosition)
@@ -295,6 +270,31 @@ int CSWSAreaMap::IsWorldPointExplored(Vector vPosition)
     else
     {
         return 1;
+    }
+}
+// PC 0x00574040
+void CSWSAreaMap::SetEntireMapExplored()
+{
+    if (m_pnExplored != NULL)
+    {
+        memset(m_pnExplored, 0xFF, m_nExploredSize * 4);
+    }
+}
+// PC 0x00574060
+void CSWSAreaMap::SetMapPointExplored(int nMapX, int nMapY)
+{
+    if (nMapX <= 588 && nMapX >= 0 && nMapY <= 294 && nMapY >= 0)
+    {
+        int nGridX = 0;
+        int nGridY = 0;
+        if (GetGridPixelFromMapPixel(nMapX, nMapY, nGridX, nGridY))
+        {
+            int nIndex = nGridX + nGridY * (m_nWidth + 1);
+            if (nIndex / 32 <= (int)m_nExploredSize)
+            {
+                m_pnExplored[nIndex / 32] |= 1 << (nIndex % 32);
+            }
+        }
     }
 }
 // PC 0x005740F0

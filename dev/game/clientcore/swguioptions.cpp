@@ -41,48 +41,197 @@ void CSWGuiOptionsMouse::OnExitSlider(CSWGuiControl* pControl)
     pParams->m_bPulsing = 0;
 }
 
-#ifndef _XBOX
-int CSWGuiOptionsGraphicsAdvanced::OnFrameBuffer(CSWGuiControl* pControl)  // PC 0x0074E750
+void CSWGuiOptionsMain::ClosePanel()
 {
-    int bFrameBuffer = (m_bFrameBuffer == 0);
-    m_bChanged = 1;
-    m_bFrameBuffer = bFrameBuffer;
-    return bFrameBuffer;
+    g_pAppManager->m_pClientExoApp->SaveOptions();
 }
-// PC 0x0074E840
-void CSWGuiOptionsGraphicsAdvanced::OnSoftShadows(CSWGuiControl* pControl)
+
+#ifndef _XBOX
+void CSWGuiOptionsFeedback::SetActiveButton(int nOption)
 {
-    if (pControl->m_bSelected != 0)
+    if (nOption >= 0 && nOption < OPTION_COUNT)
     {
-        int bSoftShadows = m_bSoftShadows;
-        m_bChanged = 1;
-        m_bSoftShadows = (bSoftShadows == 0);
+        m_lbOptions.SetActiveControl(m_lbOptions.GetControl(nOption), 0);
     }
 }
-// PC 0x0074E870
-int CSWGuiOptionsGraphicsAdvanced::OnVSync(CSWGuiControl* pControl)
+#endif
+
+#ifdef _XBOX
+
+void CSWGuiOptionsMain::OnDownload(CSWGuiControl* pControl)
 {
-    int bVSync = (m_bVSync == 0);
-    m_bVSync = bVSync;
-    return bVSync;
+    LAUNCH_DATA cLaunchData;
+
+    g_pAppManager->m_pClientExoApp->BusyWaitMenuMusic();
+    memset(&cLaunchData, 0, sizeof(cLaunchData));
+    XLaunchNewImage("d:\\downloader.xbe", &cLaunchData);
 }
-// PC 0x0074EBA0
-void CSWGuiOptionsGraphicsAdvanced::OnDiscardChanges(CSWGuiControl* pControl)
+
+CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
 {
-    m_bDiscard = 1;
-    OnBButtonPressed(pControl);
+    StartLoadFromLayout("optionsmain");
+    InitControl(m_btnOptions[0], "BTN_GAMEPLAY", 1);
+    InitControl(m_btnOptions[1], "BTN_FEEDBACK", 1);
+    InitControl(m_btnOptions[2], "BTN_AUTOPAUSE", 1);
+    InitControl(m_btnOptions[3], "BTN_GRAPHICSSOUND", 1);
+    InitControl(m_btnOptions[4], "BTN_DOWNLOAD", 1);
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblSelect, "LBL_SELECT", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblBack, "LBL_BACK", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    StopLoadFromLayout();
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    m_btnOptions[0].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGameplayOpt);
+    m_btnOptions[1].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnFeedbackOpt);
+    m_btnOptions[2].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnAutopauseOpt);
+    m_btnOptions[3].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnSoundOpt);
+    m_btnOptions[4].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnDownload);
+    m_btnOptions[0].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGameplayOpt);
+    m_btnOptions[1].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnFeedbackOpt);
+    m_btnOptions[2].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnAutopauseOpt);
+    m_btnOptions[3].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnSoundOpt);
+    m_btnOptions[4].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnDownload);
+    for (int i = 0; i < NUM_OPTIONS; i++)
+    {
+        m_btnOptions[i].AddEvent(
+            0, this, (CSWGuiHandler)&CSWGuiOptionsMain::OnEnterSlot);
+        m_btnOptions[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+        m_btnOptions[i].m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+        m_btnOptions[i].m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
+    }
+    CSWGuiPanel* pPanel = this; pPanel->SetActiveControl(&m_btnOptions[0], 0);
+}
+#else
+CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)  // PC 0x00754360
+    : CSWGuiPanel(pManager)
+{
+#ifdef _XBOX
+    StartLoadFromLayout("optionsmain");
+    InitControl(m_btnOptions[0], "BTN_GAMEPLAY", 1);
+    InitControl(m_btnOptions[1], "BTN_FEEDBACK", 1);
+    InitControl(m_btnOptions[2], "BTN_AUTOPAUSE", 1);
+    InitControl(m_btnOptions[3], "BTN_GRAPHICSSOUND", 1);
+    InitControl(m_btnOptions[4], "BTN_DOWNLOAD", 1);
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblSelect, "LBL_SELECT", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblBack, "LBL_BACK", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    StopLoadFromLayout();
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    m_btnOptions[0].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGameplayOpt);
+    m_btnOptions[1].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnFeedbackOpt);
+    m_btnOptions[2].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnAutopauseOpt);
+    m_btnOptions[3].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnSoundOpt);
+    m_btnOptions[4].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnDownloadOpt);
+    m_btnOptions[0].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGameplayOpt);
+    m_btnOptions[1].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnFeedbackOpt);
+    m_btnOptions[2].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnAutopauseOpt);
+    m_btnOptions[3].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnSoundOpt);
+    m_btnOptions[4].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnDownloadOpt);
+    for (int i = 0; i < 5; i++)
+    {
+        m_btnOptions[i].AddEvent(
+            0, this, (CSWGuiHandler)&CSWGuiOptionsMain::OnEnterSlot);
+        m_btnOptions[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
+        m_btnOptions[i].m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
+        m_btnOptions[i].m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
+    }
+    CSWGuiPanel* pPanel = this;
+    pPanel->SetActiveControl(&m_btnOptions[0], 0);
+#else
+    StartLoadFromLayout("optionsmain_p");
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    InitControl(m_btnOptions[0], "BTN_GAMEPLAY", 1);
+    InitControl(m_btnOptions[1], "BTN_FEEDBACK", 1);
+    InitControl(m_btnOptions[2], "BTN_AUTOPAUSE", 1);
+    InitControl(m_btnOptions[3], "BTN_GRAPHICS", 1);
+    InitControl(m_btnOptions[4], "BTN_SOUND", 1);
+    m_btnOptions[0].m_nIndex = STRREF_GAMEPLAY_DESCRIPTION;
+    m_btnOptions[1].m_nIndex = STRREF_FEEDBACK_DESCRIPTION;
+    m_btnOptions[2].m_nIndex = STRREF_AUTOPAUSE_DESCRIPTION;
+    m_btnOptions[3].m_nIndex = STRREF_GRAPHICS_DESCRIPTION;
+    m_btnOptions[4].m_nIndex = STRREF_SOUND_DESCRIPTION;
+    InitControl(m_btnBack, "BTN_BACK", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    StopLoadFromLayout();
+    CSWGuiButton* pBack = &m_btnBack;
+    pBack->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
+    pBack->m_bFocusable = 0;
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    m_btnOptions[0].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGameplayOpt);
+    m_btnOptions[1].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnFeedbackOpt);
+    m_btnOptions[2].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnAutopauseOpt);
+    m_btnOptions[3].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGraphicsOpt);
+    m_btnOptions[4].AddEvent(39, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnSoundOpt);
+    m_btnOptions[0].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGameplayOpt);
+    m_btnOptions[1].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnFeedbackOpt);
+    m_btnOptions[2].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnAutopauseOpt);
+    m_btnOptions[3].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGraphicsOpt);
+    m_btnOptions[4].AddEvent(45, this,
+                             (CSWGuiHandler)&CSWGuiOptionsMain::OnSoundOpt);
+    for (int i = 0; i < 6; i++)
+    {
+        m_btnOptions[i].AddEvent(
+            0, this, (CSWGuiHandler)&CSWGuiOptionsMain::OnEnterSlot);
+        m_btnOptions[i].m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
+    }
+    CSWGuiPanel* pPanel = this;
+    pPanel->SetActiveControl(&m_btnOptions[0], 0);
+#endif
 }
 #endif
-// PC 0x0074EEF0
-void CSWGuiOptionsSound::HandleInputEvent(int nEvent, int nState)
+// PC 0x00759190
+void CSWGuiOptionsMouse::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
     {
         switch (nEvent)
         {
-        case 45:
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            break;
         case 40:
         case 46:
             m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
@@ -90,108 +239,54 @@ void CSWGuiOptionsSound::HandleInputEvent(int nEvent, int nState)
             m_bDeferredRemoval = 0;
             m_nExitState = EXITSTATE_DELETE;
             break;
-#ifndef _XBOX
+        case 45:
+            if (m_pActiveControl != 0 &&
+                m_pActiveControl->AsButtonToggle() != 0)
+            {
+                m_pManager->PlayGuiSound(3);
+                CSWGuiButtonToggle* pToggle =
+                    m_pActiveControl->AsButtonToggle();
+                m_pActiveControl->AsButtonToggle()->SetToggled(
+                    !pToggle->m_bToggled);
+            }
+            break;
         case 57:
             m_lbDescription.HandleInputEvent(GUIEVENT_UP, 1);
             break;
         case 58:
             m_lbDescription.HandleInputEvent(GUIEVENT_DOWN, 1);
             break;
-#endif
         }
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0074F0D0
-void CSWGuiOptionsSound::SetDescription(unsigned long nStrRef)
-{
+
 #ifdef _XBOX
-    CSWGuiTextParams* pParams = &m_lblDescription.m_cText.m_cParams;
-    pParams->SetStrRef(nStrRef);
-    CExoString sText(pParams->m_sText);
-    CSWGuiListBox* pListBox = &m_lbDescription;
-    pListBox->ClearItems();
-    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
-    if (sText.GetLength() > 0)
+
+void CSWGuiOptionsFeedback::OnRumble(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
     {
-        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+        int bRumble = (g_pAppManager->m_pClientExoApp->GetClientOptions()
+                           ->m_bFloatingNumbers == 0);
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->m_bFloatingNumbers = bRumble;
     }
-    else
-    {
-        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
-    }
-    m_lblDescription.SetExtent(cExtent);
-    CSWGuiControl* pControl = &m_lblDescription;
-    pListBox->AddControls(&pControl, 1, 0, 0, 0);
-    pListBox->SetSelectedControl(&m_lblDescription, 0);
-    int bShowScrollIcon = pListBox->m_nContentHeight + pListBox->m_nPadding >
-                              pListBox->m_cItemExtent.m_nHeight &&
-                          pListBox->m_lItems.num > 0 &&
-                          pListBox->m_bHideScrollIcon == 0;
-    m_lblRAnalog.m_bEnabled = bShowScrollIcon;
-#else
-    m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
-    CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
-    m_lbDescription.ClearItems();
-    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
-    if (sText.GetLength() > 0)
-    {
-        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
-    }
-    else
-    {
-        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
-    }
-    m_lblDescription.SetExtent(cExtent);
-    CSWGuiControl* pControl = &m_lblDescription;
-    m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
-    m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
-#endif
 }
-// PC 0x0074F2C0
-void CSWGuiOptionsSoundAdvanced::SetEAXText()
+
+void CSWGuiOptionsSound::OnMoveGammaSlider(CSWGuiControl* pControl)
 {
-    CExoString sText;
-    switch (m_nEAXMode)
-    {
-    case 0:
-        m_btnEAX.m_cText.m_cParams.SetStrRef(STRREF_EAX_DISABLED);
-        break;
-    case 2:
-        m_btnEAX.m_cText.m_cParams.SetStrRef(STRREF_EAX_2);
-        break;
-    case 3:
-        m_btnEAX.m_cText.m_cParams.SetStrRef(STRREF_EAX_3);
-        break;
-    default:
-        m_btnEAX.m_cText.m_cParams.SetStrRef(STRREF_EAX);
-        break;
-    }
-    CSWGuiButton* pLeft = &m_btnEAXLeft;
-    pLeft->m_bEnabled = 1;
-    CSWGuiButton* pRight = &m_btnEAXRight;
-    pRight->m_bEnabled = 1;
-    int nBest;
-#ifdef _XBOX
-    nBest = 3;
-#else
-    if (g_pExoSound->GetBestEAXAvailable() > 3)
-    {
-        nBest = 3;
-    }
-    else
-    {
-        nBest = g_pExoSound->GetBestEAXAvailable();
-    }
+    int nValue = pControl->AsSlider()->m_nCurValue;
+    g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nBrightness = nValue;
+    g_pAurora->ResetGammaRamp(
+        g_pAppManager->GetClientExoApp()->GetClientOptions()->GetGammaSetting(), 0);
+}
 #endif
-    if (m_nEAXMode == 0)
-    {
-        pLeft->m_bEnabled = 0;
-    }
-    if (m_nEAXMode == nBest)
-    {
-        pRight->m_bEnabled = 0;
-    }
+// PC 0x00750940
+void CSWGuiOptionsMouse::OnEnterRevMouseButtons(CSWGuiControl* pControl)
+{
+    SetDescription(48722);
 }
 // PC 0x0074F3A0
 void CSWGuiOptionsSoundAdvanced::SetDescription(unsigned long nStrRef)
@@ -298,26 +393,6 @@ void CSWGuiOptionsCheckbox::Load(CResGFF* pGFF, CResStruct& cStruct)
     m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
     m_cToggleHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
 }
-// PC 0x0074E890
-void CSWGuiOptionsMouse::SetDescription(unsigned long nStrRef)
-{
-    m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
-    CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
-    m_lbDescription.ClearItems();
-    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
-    if (sText.GetLength() > 0)
-    {
-        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
-    }
-    else
-    {
-        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
-    }
-    m_lblDescription.SetExtent(cExtent);
-    CSWGuiControl* pControl = &m_lblDescription;
-    m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
-    m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
-}
 // PC 0x0074F970
 void CSWGuiOptionsMouse::OnEnterSlider(CSWGuiControl* pControl)
 {
@@ -347,11 +422,6 @@ void CSWGuiOptionsMain::OnAutopauseOpt(CSWGuiControl* pControl)
         CSWGuiInGameAutoPause* pPanel = new CSWGuiInGameAutoPause(GetManager());
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
-}
-
-void CSWGuiOptionsMain::ClosePanel()
-{
-    g_pAppManager->m_pClientExoApp->SaveOptions();
 }
 // PC 0x0074D7F0
 void CSWGuiOptionsMain::SetDescription(unsigned long nStrRef)
@@ -1230,6 +1300,169 @@ void CSWGuiOptionsResolution::OnResolutionChosen(CSWGuiControl* pControl)  // PC
 }
 #endif
 #endif  // PC 0x0074EFE0
+// PC 0x00752430
+CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+#ifdef _XBOX
+    StartLoadFromLayout("optfeedback");
+    InitControl(m_aCheckboxes[0], "CB_HIDE", 1);
+    InitControl(m_aCheckboxes[1], "CB_TUTORIAL", 1);
+    InitControl(m_aCheckboxes[2], "CB_SUBTITLES", 1);
+    InitControl(m_aCheckboxes[3], "CB_MINIMAP", 1);
+    InitControl(m_aCheckboxes[4], "CB_RUMBLE", 1);
+    InitControl(m_aCheckboxes[5], "CB_FLOATY", 1);
+    InitControl(m_aCheckboxes[6], "CB_SUMMARY", 1);
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblSelect, "LBL_SELECT", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblBack, "LBL_BACK", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    StopLoadFromLayout();
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    m_aCheckboxes[0].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnHide);
+    m_aCheckboxes[1].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnTutorial);
+    m_aCheckboxes[2].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSubtitles);
+    m_aCheckboxes[3].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnMiniMap);
+    m_aCheckboxes[4].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnRumble);
+    m_aCheckboxes[5].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnFloaty);
+    m_aCheckboxes[6].AddEvent(39, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSummary);
+    m_aCheckboxes[0].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnHide);
+    m_aCheckboxes[1].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnTutorial);
+    m_aCheckboxes[2].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSubtitles);
+    m_aCheckboxes[3].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnMiniMap);
+    m_aCheckboxes[4].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnRumble);
+    m_aCheckboxes[5].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnFloaty);
+    m_aCheckboxes[6].AddEvent(45, this,
+                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSummary);
+    for (int i = 0; i < 7; i++)
+    {
+        m_aCheckboxes[i].AddEvent(
+            0, this, (CSWGuiHandler)&CSWGuiOptionsFeedback::OnEnterSlot);
+    }
+    CSWGuiPanel* pPanel = this;
+    pPanel->SetActiveControl(&m_aCheckboxes[0], 0);
+    CClientOptions* pOptions =
+        g_pAppManager->m_pClientExoApp->GetClientOptions();
+    if (pOptions != 0)
+    {
+        unsigned int bHide = pOptions->m_bHideUnequippable;
+        CSWGuiButtonToggle* pToggle0 = m_aCheckboxes[0].AsButtonToggle();
+        pToggle0->m_bToggled = bHide;
+        unsigned int bTutorial = pOptions->m_bTutorialPopups;
+        CSWGuiButtonToggle* pToggle1 = m_aCheckboxes[1].AsButtonToggle();
+        pToggle1->m_bToggled = bTutorial;
+        unsigned int bSubtitles = pOptions->m_bSubtitles;
+        CSWGuiButtonToggle* pToggle2 = m_aCheckboxes[2].AsButtonToggle();
+        pToggle2->m_bToggled = bSubtitles;
+        unsigned int bMiniMap = pOptions->m_bMiniMap;
+        CSWGuiButtonToggle* pToggle3 = m_aCheckboxes[3].AsButtonToggle();
+        pToggle3->m_bToggled = bMiniMap;
+        unsigned int bFloaty = pOptions->m_nXboxUnmappedBit26;
+        CSWGuiButtonToggle* pToggle5 = m_aCheckboxes[5].AsButtonToggle();
+        pToggle5->m_bToggled = bFloaty;
+        unsigned int bRumble = pOptions->m_bFloatingNumbers;
+        CSWGuiButtonToggle* pToggle4 = m_aCheckboxes[4].AsButtonToggle();
+        pToggle4->m_bToggled = bRumble;
+        unsigned int bSummary = pOptions->m_bStatusSummary;
+        CSWGuiButtonToggle* pToggle6 = m_aCheckboxes[6].AsButtonToggle();
+        pToggle6->m_bToggled = bSummary;
+    }
+#else
+    StartLoadFromLayout("optfeedback_p");
+    InitControl(m_lbOptions, "LB_OPTIONS", 1);
+    InitControl(m_lblTitle, "LBL_TITLE", 1);
+    InitControl(m_lbDescription, "LB_DESC", 1);
+    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+    InitControl(m_btnBack, "BTN_BACK", 1);
+    InitControl(m_btnDefault, "BTN_DEFAULT", 1);
+    InitControl(m_alblBar[0], "LBL_BAR1", 1);
+    InitControl(m_alblBar[1], "LBL_BAR2", 1);
+    InitControl(m_alblBar[2], "LBL_BAR3", 1);
+    StopLoadFromLayout();
+    PopulateOptionsListbox();
+    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
+    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
+    CSWGuiButton* pDefault = &m_btnDefault;
+    pDefault->AddEvent(39, this,
+                       (CSWGuiHandler)&CSWGuiOptionsFeedback::OnDefault);
+    pDefault->m_bFocusable = 0;
+    pDefault->AddEvent(45, this,
+                       (CSWGuiHandler)&CSWGuiOptionsFeedback::OnDefault);
+    CSWGuiButton* pBack = &m_btnBack;
+    pBack->m_bFocusable = 0;
+    pBack->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
+    SetActiveControl(&m_lbOptions, 0);
+    SetActiveButton(OPTION_HIDE_UNEQUIPPABLE);
+    SetUpOptions();
+#endif
+}
+// PC 0x0074E890
+void CSWGuiOptionsMouse::SetDescription(unsigned long nStrRef)
+{
+    m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
+    CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
+    m_lbDescription.ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sText.GetLength() > 0)
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    m_lblDescription.SetExtent(cExtent);
+    CSWGuiControl* pControl = &m_lblDescription;
+    m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
+    m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
+}
+// PC 0x0074EEF0
+void CSWGuiOptionsSound::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case 45:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            break;
+        case 40:
+        case 46:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            m_pManager->PopModalPanel();
+            m_bDeferredRemoval = 0;
+            m_nExitState = EXITSTATE_DELETE;
+            break;
+#ifndef _XBOX
+        case 57:
+            m_lbDescription.HandleInputEvent(GUIEVENT_UP, 1);
+            break;
+        case 58:
+            m_lbDescription.HandleInputEvent(GUIEVENT_DOWN, 1);
+            break;
+#endif
+        }
+    }
+    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
 
 void CSWGuiOptionsSound::OnMoveVolumeSlider(CSWGuiControl* pControl)
 {
@@ -1301,6 +1534,52 @@ void CSWGuiOptionsSound::OnEnterSlider(CSWGuiControl* pControl)
 #endif
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
     pParams->m_bPulsing = 1;
+}
+// PC 0x0074F0D0
+void CSWGuiOptionsSound::SetDescription(unsigned long nStrRef)
+{
+#ifdef _XBOX
+    CSWGuiTextParams* pParams = &m_lblDescription.m_cText.m_cParams;
+    pParams->SetStrRef(nStrRef);
+    CExoString sText(pParams->m_sText);
+    CSWGuiListBox* pListBox = &m_lbDescription;
+    pListBox->ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sText.GetLength() > 0)
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    m_lblDescription.SetExtent(cExtent);
+    CSWGuiControl* pControl = &m_lblDescription;
+    pListBox->AddControls(&pControl, 1, 0, 0, 0);
+    pListBox->SetSelectedControl(&m_lblDescription, 0);
+    int bShowScrollIcon = pListBox->m_nContentHeight + pListBox->m_nPadding >
+                              pListBox->m_cItemExtent.m_nHeight &&
+                          pListBox->m_lItems.num > 0 &&
+                          pListBox->m_bHideScrollIcon == 0;
+    m_lblRAnalog.m_bEnabled = bShowScrollIcon;
+#else
+    m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
+    CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
+    m_lbDescription.ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sText.GetLength() > 0)
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    m_lblDescription.SetExtent(cExtent);
+    CSWGuiControl* pControl = &m_lblDescription;
+    m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
+    m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
+#endif
 }
 // PC 0x007504A0
 void CSWGuiOptionsSound::OnDefault(CSWGuiControl* pControl)
@@ -1498,18 +1777,6 @@ void CSWGuiOptionsSoundAdvanced::OnForceSoftware(CSWGuiControl* pControl)
         m_bChanged = 1;
     }
 }
-// PC 0x00751E50
-void CSWGuiOptionsSoundAdvanced::OnDefault(CSWGuiControl* pControl)
-{
-    if (pControl->m_bSelected != 0)
-    {
-        CClientOptions* pOptions =
-            g_pAppManager->m_pClientExoApp->GetClientOptions();
-        pOptions->SetDefaultAdvancedSoundOptions();
-        SetUpOptions();
-        m_bChanged = 1;
-    }
-}
 // PC 0x007508C0
 void CSWGuiOptionsSoundAdvanced::SetUpOptions()
 {
@@ -1526,6 +1793,51 @@ void CSWGuiOptionsSoundAdvanced::SetUpOptions()
         EnableEAXControls(pOptions->m_nEAXFlags == 0);
     }
     m_bChanged = 0;
+}
+// PC 0x0074F2C0
+void CSWGuiOptionsSoundAdvanced::SetEAXText()
+{
+    CExoString sText;
+    switch (m_nEAXMode)
+    {
+    case 0:
+        m_btnEAX.m_cText.m_cParams.SetStrRef(STRREF_EAX_DISABLED);
+        break;
+    case 2:
+        m_btnEAX.m_cText.m_cParams.SetStrRef(STRREF_EAX_2);
+        break;
+    case 3:
+        m_btnEAX.m_cText.m_cParams.SetStrRef(STRREF_EAX_3);
+        break;
+    default:
+        m_btnEAX.m_cText.m_cParams.SetStrRef(STRREF_EAX);
+        break;
+    }
+    CSWGuiButton* pLeft = &m_btnEAXLeft;
+    pLeft->m_bEnabled = 1;
+    CSWGuiButton* pRight = &m_btnEAXRight;
+    pRight->m_bEnabled = 1;
+    int nBest;
+#ifdef _XBOX
+    nBest = 3;
+#else
+    if (g_pExoSound->GetBestEAXAvailable() > 3)
+    {
+        nBest = 3;
+    }
+    else
+    {
+        nBest = g_pExoSound->GetBestEAXAvailable();
+    }
+#endif
+    if (m_nEAXMode == 0)
+    {
+        pLeft->m_bEnabled = 0;
+    }
+    if (m_nEAXMode == nBest)
+    {
+        pRight->m_bEnabled = 0;
+    }
 }
 // PC 0x0074F780
 void CSWGuiOptionsMouse::OnRevMouseButtons(CSWGuiControl* pControl)
@@ -1549,11 +1861,6 @@ void CSWGuiOptionsMouse::OnRevMouseButtons(CSWGuiControl* pControl)
         cIni.WriteIniEntry(sValue, sFile, sSection, sKey);
     }
 }
-// PC 0x00750940
-void CSWGuiOptionsMouse::OnEnterRevMouseButtons(CSWGuiControl* pControl)
-{
-    SetDescription(48722);
-}
 // PC 0x00750950
 void CSWGuiOptionsMouse::OnDefault(CSWGuiControl* pControl)
 {
@@ -1565,133 +1872,6 @@ void CSWGuiOptionsMouse::OnDefault(CSWGuiControl* pControl)
         SetUpOptions();
     }
 }
-// PC 0x00752430
-CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
-    : CSWGuiPanel(pManager)
-{
-#ifdef _XBOX
-    StartLoadFromLayout("optfeedback");
-    InitControl(m_aCheckboxes[0], "CB_HIDE", 1);
-    InitControl(m_aCheckboxes[1], "CB_TUTORIAL", 1);
-    InitControl(m_aCheckboxes[2], "CB_SUBTITLES", 1);
-    InitControl(m_aCheckboxes[3], "CB_MINIMAP", 1);
-    InitControl(m_aCheckboxes[4], "CB_RUMBLE", 1);
-    InitControl(m_aCheckboxes[5], "CB_FLOATY", 1);
-    InitControl(m_aCheckboxes[6], "CB_SUMMARY", 1);
-    InitControl(m_lblA, "LBL_A", 1);
-    InitControl(m_lblSelect, "LBL_SELECT", 1);
-    InitControl(m_lblB, "LBL_B", 1);
-    InitControl(m_lblBack, "LBL_BACK", 1);
-    InitControl(m_lblTitle, "LBL_TITLE", 1);
-    InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
-    InitControl(m_lbDescription, "LB_DESC", 1);
-    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
-    StopLoadFromLayout();
-    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
-    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
-    m_aCheckboxes[0].AddEvent(39, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnHide);
-    m_aCheckboxes[1].AddEvent(39, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnTutorial);
-    m_aCheckboxes[2].AddEvent(39, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSubtitles);
-    m_aCheckboxes[3].AddEvent(39, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnMiniMap);
-    m_aCheckboxes[4].AddEvent(39, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnRumble);
-    m_aCheckboxes[5].AddEvent(39, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnFloaty);
-    m_aCheckboxes[6].AddEvent(39, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSummary);
-    m_aCheckboxes[0].AddEvent(45, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnHide);
-    m_aCheckboxes[1].AddEvent(45, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnTutorial);
-    m_aCheckboxes[2].AddEvent(45, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSubtitles);
-    m_aCheckboxes[3].AddEvent(45, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnMiniMap);
-    m_aCheckboxes[4].AddEvent(45, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnRumble);
-    m_aCheckboxes[5].AddEvent(45, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnFloaty);
-    m_aCheckboxes[6].AddEvent(45, this,
-                              (CSWGuiHandler)&CSWGuiOptionsFeedback::OnSummary);
-    for (int i = 0; i < 7; i++)
-    {
-        m_aCheckboxes[i].AddEvent(
-            0, this, (CSWGuiHandler)&CSWGuiOptionsFeedback::OnEnterSlot);
-    }
-    CSWGuiPanel* pPanel = this;
-    pPanel->SetActiveControl(&m_aCheckboxes[0], 0);
-    CClientOptions* pOptions =
-        g_pAppManager->m_pClientExoApp->GetClientOptions();
-    if (pOptions != 0)
-    {
-        unsigned int bHide = pOptions->m_bHideUnequippable;
-        CSWGuiButtonToggle* pToggle0 = m_aCheckboxes[0].AsButtonToggle();
-        pToggle0->m_bToggled = bHide;
-        unsigned int bTutorial = pOptions->m_bTutorialPopups;
-        CSWGuiButtonToggle* pToggle1 = m_aCheckboxes[1].AsButtonToggle();
-        pToggle1->m_bToggled = bTutorial;
-        unsigned int bSubtitles = pOptions->m_bSubtitles;
-        CSWGuiButtonToggle* pToggle2 = m_aCheckboxes[2].AsButtonToggle();
-        pToggle2->m_bToggled = bSubtitles;
-        unsigned int bMiniMap = pOptions->m_bMiniMap;
-        CSWGuiButtonToggle* pToggle3 = m_aCheckboxes[3].AsButtonToggle();
-        pToggle3->m_bToggled = bMiniMap;
-        unsigned int bFloaty = pOptions->m_nXboxUnmappedBit26;
-        CSWGuiButtonToggle* pToggle5 = m_aCheckboxes[5].AsButtonToggle();
-        pToggle5->m_bToggled = bFloaty;
-        unsigned int bRumble = pOptions->m_bFloatingNumbers;
-        CSWGuiButtonToggle* pToggle4 = m_aCheckboxes[4].AsButtonToggle();
-        pToggle4->m_bToggled = bRumble;
-        unsigned int bSummary = pOptions->m_bStatusSummary;
-        CSWGuiButtonToggle* pToggle6 = m_aCheckboxes[6].AsButtonToggle();
-        pToggle6->m_bToggled = bSummary;
-    }
-#else
-    StartLoadFromLayout("optfeedback_p");
-    InitControl(m_lbOptions, "LB_OPTIONS", 1);
-    InitControl(m_lblTitle, "LBL_TITLE", 1);
-    InitControl(m_lbDescription, "LB_DESC", 1);
-    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
-    InitControl(m_btnBack, "BTN_BACK", 1);
-    InitControl(m_btnDefault, "BTN_DEFAULT", 1);
-    InitControl(m_alblBar[0], "LBL_BAR1", 1);
-    InitControl(m_alblBar[1], "LBL_BAR2", 1);
-    InitControl(m_alblBar[2], "LBL_BAR3", 1);
-    StopLoadFromLayout();
-    PopulateOptionsListbox();
-    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
-    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
-    CSWGuiButton* pDefault = &m_btnDefault;
-    pDefault->AddEvent(39, this,
-                       (CSWGuiHandler)&CSWGuiOptionsFeedback::OnDefault);
-    pDefault->m_bFocusable = 0;
-    pDefault->AddEvent(45, this,
-                       (CSWGuiHandler)&CSWGuiOptionsFeedback::OnDefault);
-    CSWGuiButton* pBack = &m_btnBack;
-    pBack->m_bFocusable = 0;
-    pBack->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
-    SetActiveControl(&m_lbOptions, 0);
-    SetActiveButton(OPTION_HIDE_UNEQUIPPABLE);
-    SetUpOptions();
-#endif
-}
-
-#ifndef _XBOX
-void CSWGuiOptionsGraphics::OnAdvanced(CSWGuiControl* pControl)  // PC 0x00752780
-{
-    int bSelected = pControl->m_bSelected;
-    if (bSelected != 0)
-    {
-        CSWGuiOptionsGraphicsAdvanced* pPanel =
-            new CSWGuiOptionsGraphicsAdvanced(GetManager(), this);
-        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
-    }
-}
-#endif
 // PC 0x00752800
 void CSWGuiOptionsSound::OnAdvanced(CSWGuiControl* pControl)
 {
@@ -1909,6 +2089,19 @@ void CSWGuiOptionsFeedback::PopulateOptionsListbox()  // PC 0x007509A0
 #endif
 
 #ifndef _XBOX
+void CSWGuiOptionsGraphics::OnAdvanced(CSWGuiControl* pControl)  // PC 0x00752780
+{
+    int bSelected = pControl->m_bSelected;
+    if (bSelected != 0)
+    {
+        CSWGuiOptionsGraphicsAdvanced* pPanel =
+            new CSWGuiOptionsGraphicsAdvanced(GetManager(), this);
+        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
+    }
+}
+#endif
+
+#ifndef _XBOX
 void CSWGuiOptionsGraphics::OnResolution(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -2109,6 +2302,18 @@ CSWGuiOptionsSoundAdvanced::CSWGuiOptionsSoundAdvanced(CSWGuiManager* pManager)
     SetActiveControl(&m_cbForceSoftware, 0);
     m_bDiscard = 0;
 }
+// PC 0x00751E50
+void CSWGuiOptionsSoundAdvanced::OnDefault(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        CClientOptions* pOptions =
+            g_pAppManager->m_pClientExoApp->GetClientOptions();
+        pOptions->SetDefaultAdvancedSoundOptions();
+        SetUpOptions();
+        m_bChanged = 1;
+    }
+}
 // PC 0x00751E90
 CSWGuiOptionsMouse::CSWGuiOptionsMouse(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -2220,6 +2425,49 @@ void CSWGuiOptionsFeedback::OnEnterSlot(CSWGuiControl* pControl)
     SetDescription(pControl->m_nIndex);
 #endif
 }
+// PC 0x007538F0
+void CSWGuiOptionsMain::OnSoundOpt(CSWGuiControl* pControl)
+{
+    int bSelected = pControl->m_bSelected;
+    if (bSelected != 0)
+    {
+        CSWGuiOptionsSound* pPanel = new CSWGuiOptionsSound(GetManager());
+        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
+    }
+}
+
+#ifndef _XBOX
+int CSWGuiOptionsGraphicsAdvanced::OnFrameBuffer(CSWGuiControl* pControl)  // PC 0x0074E750
+{
+    int bFrameBuffer = (m_bFrameBuffer == 0);
+    m_bChanged = 1;
+    m_bFrameBuffer = bFrameBuffer;
+    return bFrameBuffer;
+}
+// PC 0x0074E840
+void CSWGuiOptionsGraphicsAdvanced::OnSoftShadows(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        int bSoftShadows = m_bSoftShadows;
+        m_bChanged = 1;
+        m_bSoftShadows = (bSoftShadows == 0);
+    }
+}
+// PC 0x0074E870
+int CSWGuiOptionsGraphicsAdvanced::OnVSync(CSWGuiControl* pControl)
+{
+    int bVSync = (m_bVSync == 0);
+    m_bVSync = bVSync;
+    return bVSync;
+}
+// PC 0x0074EBA0
+void CSWGuiOptionsGraphicsAdvanced::OnDiscardChanges(CSWGuiControl* pControl)
+{
+    m_bDiscard = 1;
+    OnBButtonPressed(pControl);
+}
+#endif
 
 #ifndef _XBOX
 void CSWGuiOptionsGraphics::OnEnterSlot(CSWGuiControl* pControl)  // PC 0x0074FC20
@@ -2489,16 +2737,6 @@ void CSWGuiOptionsMain::OnFeedbackOpt(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-
-#ifndef _XBOX
-void CSWGuiOptionsFeedback::SetActiveButton(int nOption)
-{
-    if (nOption >= 0 && nOption < OPTION_COUNT)
-    {
-        m_lbOptions.SetActiveControl(m_lbOptions.GetControl(nOption), 0);
-    }
-}
-#endif
 
 #ifndef _XBOX
 CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager, int bInGame)  // PC 0x00752FE0
@@ -2827,243 +3065,5 @@ void CSWGuiOptionsMain::OnGraphicsOpt(CSWGuiControl* pControl)  // PC 0x007542E0
         CSWGuiOptionsGraphics* pPanel = new CSWGuiOptionsGraphics(GetManager(), 0);
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
-}
-#endif
-// PC 0x007538F0
-void CSWGuiOptionsMain::OnSoundOpt(CSWGuiControl* pControl)
-{
-    int bSelected = pControl->m_bSelected;
-    if (bSelected != 0)
-    {
-        CSWGuiOptionsSound* pPanel = new CSWGuiOptionsSound(GetManager());
-        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
-    }
-}
-
-#ifdef _XBOX
-
-void CSWGuiOptionsMain::OnDownload(CSWGuiControl* pControl)
-{
-    LAUNCH_DATA cLaunchData;
-
-    g_pAppManager->m_pClientExoApp->BusyWaitMenuMusic();
-    memset(&cLaunchData, 0, sizeof(cLaunchData));
-    XLaunchNewImage("d:\\downloader.xbe", &cLaunchData);
-}
-
-CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)
-    : CSWGuiPanel(pManager)
-{
-    StartLoadFromLayout("optionsmain");
-    InitControl(m_btnOptions[0], "BTN_GAMEPLAY", 1);
-    InitControl(m_btnOptions[1], "BTN_FEEDBACK", 1);
-    InitControl(m_btnOptions[2], "BTN_AUTOPAUSE", 1);
-    InitControl(m_btnOptions[3], "BTN_GRAPHICSSOUND", 1);
-    InitControl(m_btnOptions[4], "BTN_DOWNLOAD", 1);
-    InitControl(m_lblA, "LBL_A", 1);
-    InitControl(m_lblSelect, "LBL_SELECT", 1);
-    InitControl(m_lblB, "LBL_B", 1);
-    InitControl(m_lblBack, "LBL_BACK", 1);
-    InitControl(m_lblTitle, "LBL_TITLE", 1);
-    InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
-    InitControl(m_lbDescription, "LB_DESC", 1);
-    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
-    StopLoadFromLayout();
-    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
-    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
-    m_btnOptions[0].AddEvent(39, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGameplayOpt);
-    m_btnOptions[1].AddEvent(39, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnFeedbackOpt);
-    m_btnOptions[2].AddEvent(39, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnAutopauseOpt);
-    m_btnOptions[3].AddEvent(39, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnSoundOpt);
-    m_btnOptions[4].AddEvent(39, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnDownload);
-    m_btnOptions[0].AddEvent(45, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGameplayOpt);
-    m_btnOptions[1].AddEvent(45, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnFeedbackOpt);
-    m_btnOptions[2].AddEvent(45, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnAutopauseOpt);
-    m_btnOptions[3].AddEvent(45, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnSoundOpt);
-    m_btnOptions[4].AddEvent(45, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnDownload);
-    for (int i = 0; i < NUM_OPTIONS; i++)
-    {
-        m_btnOptions[i].AddEvent(
-            0, this, (CSWGuiHandler)&CSWGuiOptionsMain::OnEnterSlot);
-        m_btnOptions[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
-        m_btnOptions[i].m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
-        m_btnOptions[i].m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
-    }
-    CSWGuiPanel* pPanel = this; pPanel->SetActiveControl(&m_btnOptions[0], 0);
-}
-#else
-CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)  // PC 0x00754360
-    : CSWGuiPanel(pManager)
-{
-#ifdef _XBOX
-    StartLoadFromLayout("optionsmain");
-    InitControl(m_btnOptions[0], "BTN_GAMEPLAY", 1);
-    InitControl(m_btnOptions[1], "BTN_FEEDBACK", 1);
-    InitControl(m_btnOptions[2], "BTN_AUTOPAUSE", 1);
-    InitControl(m_btnOptions[3], "BTN_GRAPHICSSOUND", 1);
-    InitControl(m_btnOptions[4], "BTN_DOWNLOAD", 1);
-    InitControl(m_lblA, "LBL_A", 1);
-    InitControl(m_lblSelect, "LBL_SELECT", 1);
-    InitControl(m_lblB, "LBL_B", 1);
-    InitControl(m_lblBack, "LBL_BACK", 1);
-    InitControl(m_lblTitle, "LBL_TITLE", 1);
-    InitControl(m_lblRAnalog, "LBL_RANALOG", 1);
-    InitControl(m_lbDescription, "LB_DESC", 1);
-    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
-    StopLoadFromLayout();
-    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
-    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
-    m_btnOptions[0].AddEvent(39, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGameplayOpt);
-    m_btnOptions[1].AddEvent(39, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnFeedbackOpt);
-    m_btnOptions[2].AddEvent(39, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnAutopauseOpt);
-    m_btnOptions[3].AddEvent(39, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnSoundOpt);
-    m_btnOptions[4].AddEvent(39, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnDownloadOpt);
-    m_btnOptions[0].AddEvent(45, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGameplayOpt);
-    m_btnOptions[1].AddEvent(45, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnFeedbackOpt);
-    m_btnOptions[2].AddEvent(45, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnAutopauseOpt);
-    m_btnOptions[3].AddEvent(45, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnSoundOpt);
-    m_btnOptions[4].AddEvent(45, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnDownloadOpt);
-    for (int i = 0; i < 5; i++)
-    {
-        m_btnOptions[i].AddEvent(
-            0, this, (CSWGuiHandler)&CSWGuiOptionsMain::OnEnterSlot);
-        m_btnOptions[i].m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_BLUE;
-        m_btnOptions[i].m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_YELLOW;
-        m_btnOptions[i].m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
-    }
-    CSWGuiPanel* pPanel = this;
-    pPanel->SetActiveControl(&m_btnOptions[0], 0);
-#else
-    StartLoadFromLayout("optionsmain_p");
-    InitControl(m_lblTitle, "LBL_TITLE", 1);
-    InitControl(m_lbDescription, "LB_DESC", 1);
-    InitControl(m_btnOptions[0], "BTN_GAMEPLAY", 1);
-    InitControl(m_btnOptions[1], "BTN_FEEDBACK", 1);
-    InitControl(m_btnOptions[2], "BTN_AUTOPAUSE", 1);
-    InitControl(m_btnOptions[3], "BTN_GRAPHICS", 1);
-    InitControl(m_btnOptions[4], "BTN_SOUND", 1);
-    m_btnOptions[0].m_nIndex = STRREF_GAMEPLAY_DESCRIPTION;
-    m_btnOptions[1].m_nIndex = STRREF_FEEDBACK_DESCRIPTION;
-    m_btnOptions[2].m_nIndex = STRREF_AUTOPAUSE_DESCRIPTION;
-    m_btnOptions[3].m_nIndex = STRREF_GRAPHICS_DESCRIPTION;
-    m_btnOptions[4].m_nIndex = STRREF_SOUND_DESCRIPTION;
-    InitControl(m_btnBack, "BTN_BACK", 1);
-    InitControl(m_alblBar[0], "LBL_BAR1", 1);
-    InitControl(m_alblBar[1], "LBL_BAR2", 1);
-    InitControl(m_alblBar[2], "LBL_BAR3", 1);
-    m_lbDescription.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
-    StopLoadFromLayout();
-    CSWGuiButton* pBack = &m_btnBack;
-    pBack->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
-    pBack->m_bFocusable = 0;
-    CSWGuiLabel* pProtoLabel = (CSWGuiLabel*)m_lbDescription.m_pProtoItem;
-    m_lblDescription.Initialize(pProtoLabel->m_cExtent, pProtoLabel, 1.0f);
-    m_btnOptions[0].AddEvent(39, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGameplayOpt);
-    m_btnOptions[1].AddEvent(39, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnFeedbackOpt);
-    m_btnOptions[2].AddEvent(39, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnAutopauseOpt);
-    m_btnOptions[3].AddEvent(39, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGraphicsOpt);
-    m_btnOptions[4].AddEvent(39, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnSoundOpt);
-    m_btnOptions[0].AddEvent(45, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGameplayOpt);
-    m_btnOptions[1].AddEvent(45, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnFeedbackOpt);
-    m_btnOptions[2].AddEvent(45, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnAutopauseOpt);
-    m_btnOptions[3].AddEvent(45, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnGraphicsOpt);
-    m_btnOptions[4].AddEvent(45, this,
-                             (CSWGuiHandler)&CSWGuiOptionsMain::OnSoundOpt);
-    for (int i = 0; i < 6; i++)
-    {
-        m_btnOptions[i].AddEvent(
-            0, this, (CSWGuiHandler)&CSWGuiOptionsMain::OnEnterSlot);
-        m_btnOptions[i].m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
-    }
-    CSWGuiPanel* pPanel = this;
-    pPanel->SetActiveControl(&m_btnOptions[0], 0);
-#endif
-}
-#endif
-// PC 0x00759190
-void CSWGuiOptionsMouse::HandleInputEvent(int nEvent, int nState)
-{
-    if (nState != 0)
-    {
-        switch (nEvent)
-        {
-        case 40:
-        case 46:
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            m_pManager->PopModalPanel();
-            m_bDeferredRemoval = 0;
-            m_nExitState = EXITSTATE_DELETE;
-            break;
-        case 45:
-            if (m_pActiveControl != 0 &&
-                m_pActiveControl->AsButtonToggle() != 0)
-            {
-                m_pManager->PlayGuiSound(3);
-                CSWGuiButtonToggle* pToggle =
-                    m_pActiveControl->AsButtonToggle();
-                m_pActiveControl->AsButtonToggle()->SetToggled(
-                    !pToggle->m_bToggled);
-            }
-            break;
-        case 57:
-            m_lbDescription.HandleInputEvent(GUIEVENT_UP, 1);
-            break;
-        case 58:
-            m_lbDescription.HandleInputEvent(GUIEVENT_DOWN, 1);
-            break;
-        }
-    }
-    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
-}
-
-#ifdef _XBOX
-
-void CSWGuiOptionsFeedback::OnRumble(CSWGuiControl* pControl)
-{
-    if (pControl->m_bSelected != 0)
-    {
-        int bRumble = (g_pAppManager->m_pClientExoApp->GetClientOptions()
-                           ->m_bFloatingNumbers == 0);
-        CClientOptions* pOptions =
-            g_pAppManager->m_pClientExoApp->GetClientOptions();
-        pOptions->m_bFloatingNumbers = bRumble;
-    }
-}
-
-void CSWGuiOptionsSound::OnMoveGammaSlider(CSWGuiControl* pControl)
-{
-    int nValue = pControl->AsSlider()->m_nCurValue;
-    g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nBrightness = nValue;
-    g_pAurora->ResetGammaRamp(
-        g_pAppManager->GetClientExoApp()->GetClientOptions()->GetGammaSetting(), 0);
 }
 #endif

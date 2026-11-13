@@ -21,69 +21,6 @@
 static inline void SwguiingameabilitiesTrace2();
 static inline void SwguiingameabilitiesTrace1();
 #define SWGUIINGAMEABILITIES_TRACE() SwguiingameabilitiesTrace2()
-// PC 0x00736580
-void CSWGuiInGameAbilities::OnPanelRemoved()
-{
-    m_lbAbility.ClearItems();
-    m_cPowerChart.ClearChart();
-    m_cFeatChart.ClearChart();
-}
-// PC 0x00736790
-void CSWGuiInGameSkillEntry::SetExtent(const CSWGuiExtent& cExtent)
-{
-    if (cExtent.m_nWidth > 42)
-    {
-        m_cExtent = cExtent;
-        CSWGuiExtent cIcon;
-        cIcon.m_nLeft = m_cExtent.m_nLeft;
-        cIcon.m_nTop = m_cExtent.m_nTop;
-        cIcon.m_nWidth = 42;
-        cIcon.m_nHeight = 42;
-        m_cNormal.SetExtent(cIcon);
-        m_cHilite.SetExtent(cIcon);
-        CSWGuiExtent cSelection;
-        cSelection.m_nLeft = m_cExtent.m_nLeft + 7;
-        cSelection.m_nTop = m_cExtent.m_nTop + 7;
-        cSelection.m_nWidth = 27;
-        cSelection.m_nHeight = 27;
-        m_cSelection.SetExtent(cSelection);
-
-        cIcon.m_nLeft += 42;
-        cIcon.m_nWidth = m_cExtent.m_nWidth - 42;
-        CSWGuiLabel::m_cBorder.SetExtent(cIcon);
-        CSWGuiLabelHilight::m_cHilite.SetExtent(cIcon);
-        m_cText.SetExtent(CSWGuiExtent::Intersection(
-            CSWGuiLabel::m_cBorder.GetInnerExtent(),
-            CSWGuiLabelHilight::m_cHilite.GetInnerExtent()));
-    }
-}
-// PC 0x007368C0
-void CSWGuiInGameSkillEntry::Draw(float fElapsed)
-{
-    if (m_bActive)
-    {
-        CSWGuiLabelHilight::m_cHilite.Draw(fElapsed);
-        m_cHilite.Draw(fElapsed);
-    }
-    else
-    {
-        CSWGuiLabel::m_cBorder.Draw(fElapsed);
-        m_cNormal.Draw(fElapsed);
-    }
-    m_cSelection.Draw(fElapsed);
-    m_cText.Draw(fElapsed);
-}
-// PC 0x00736BE0
-inline int CSWGuiSkillFlowChart::GetSelected()
-{
-    if (m_cFlows.num > 0)
-    {
-        return static_cast<CSWGuiSkillFlow*>(m_cFlows.element[m_nSelectedRow])
-            ->m_aSkills[m_nSelectedCol]
-            .m_nSkill;
-    }
-    return -1;
-}
 
 #ifdef _XBOX
 CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)
@@ -212,101 +149,38 @@ CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)  // PC 0x0
     m_pCreature = NULL;
 }
 #endif
-// PC 0x00736C80
-CSWGuiInGameAbilities::~CSWGuiInGameAbilities()
+
+void CSWGuiInGameAbilities::SetDescription(const CExoString& sText)
 {
-    m_lbDescription.ClearItems();
-#ifndef _XBOX
-    m_lbDescFeats.ClearItems();
-#endif
-    m_lbAbility.ClearItems();
+    m_lblDescription.m_cText.m_cParams.SetText(sText);
+    UpdateDescriptionListBox(sText.GetLength() > 0);
 }
-// PC 0x00737300
-void CSWGuiInGameAbilities::OnEnterPower(unsigned long nPower)
+
+void CSWGuiInGameAbilities::CreateFeatList()
 {
-    CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nPower);
-    if (pSpell == NULL)
+    if (m_pCreature != NULL)
     {
-        return;
+        CSWSCreature* pServerCreature = m_pCreature->GetServerCreature();
+        m_cFeatChart.CreateFeatChart(pServerCreature->m_pStats);
+        m_cFeatChart.SetSkillStatusAll(CSWGuiSkillFlow::STATUS_YELLOW);
+        m_cFeatChart.SetTopLeft();
     }
-    char cGoodEvil = pSpell->m_cGoodEvil;
-    unsigned char nAlignment =
-        m_pCreature->GetServerCreature()->GetStats()->m_nGoodEvilAlignment / 10;
-    CExoString sColumn;
-    CExoString sBonus;
-    CExoString sBonusValue;
-    Vector vColor;
-    Vector vNeutral = CGuiInGame::COLOR_NEW_TEXT;
+}
 
-    if (cGoodEvil == 'E')
-    {
-        sColumn = "EvilCost";
-    }
-    else if (cGoodEvil == 'G')
-    {
-        sColumn = "GoodCost";
-    }
+static inline void SwguiingameabilitiesTrace2()
+{
+    SwguiingameabilitiesTrace1();
+}
 
-    int nRoomForceRating = 0;
-    CSWSArea* pArea = m_pCreature->GetServerCreature()->GetArea();
-    if (pArea != NULL)
-    {
-        nRoomForceRating = pArea->GetRoomForceRating(
-            m_pCreature->GetServerCreature()->m_vPosition);
-    }
-    char nCharismaModifier =
-        m_pCreature->GetServerCreature()->GetStats()->m_nCharismaModifier;
-    int nForm = m_pCreature->GetServerCreature()->GetForm();
-    int nCost = pSpell->GetAdjustedForcePoints(
-        nAlignment * 10, 1, nRoomForceRating, nForm, nCharismaModifier);
-    int nAdjust = nCost - pSpell->GetForcePoints();
-
-    if (nAdjust < 0)
-    {
-        sBonusValue.Format("%d", nAdjust);
-        vColor = CGuiInGame::COLOR_NEW_BONUS;
-        sBonus = g_pTlkTable->GetSimpleString(STRREF_ADJUSTMENT);
-    }
-    else if (nAdjust > 0)
-    {
-        sBonusValue.Format("+%d", nAdjust);
-        vColor = CGuiInGame::COLOR_RED;
-        sBonus = g_pTlkTable->GetSimpleString(STRREF_ADJUSTMENT);
-    }
-    else
-    {
-        sBonusValue.Format("%d", nAdjust);
-        vColor = vNeutral;
-        sBonus = g_pTlkTable->GetSimpleString(STRREF_ADJUSTMENT);
-    }
-
-    m_lblBonusValue.m_cText.m_cParams.SetText(sBonusValue);
-    m_lblBonusValue.m_cText.m_cParams.SetColor(vColor);
-    m_lblBonus.m_cText.m_cParams.SetText(sBonus);
-    m_lblRankValue.m_cText.m_cParams.SetText(pSpell->GetForcePoints());
-    m_lblTotalValue.m_cText.m_cParams.SetText(
-        CExoString(pSpell->GetForcePoints() + nAdjust));
-    if ((nPower == CSWSpell::FORCE_POWER_FORCE_CRUSH ||
-         nPower == CSWSpell::FORCE_POWER_PRECOGNITION ||
-         nPower == CSWSpell::FORCE_POWER_BATTLE_PRECOGNITION ||
-         nPower == CSWSpell::FORCE_POWER_FORCE_ENLIGHTENMENT ||
-         nPower == CSWSpell::FORCE_POWER_BEAST_TRICK ||
-         nPower == CSWSpell::FORCE_POWER_BREATH_CONTROL ||
-         nPower == CSWSpell::FORCE_POWER_FORCE_SIGHT) &&
-        !m_pCreature->GetServerCreature()->GetStats()->HasSpell(0, nPower, 0))
-    {
-        m_lblName.m_cText.m_cParams.SetStrRef(STRREF_UNKNOWN_FORCE_POWER);
-        SetDescription(STRREF_UNKNOWN_FORCE_POWER_DESC);
-        m_lblBonusValue.m_cText.m_cParams.SetText("--");
-        m_lblBonusValue.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
-        m_lblRankValue.m_cText.m_cParams.SetText("--");
-        m_lblTotalValue.m_cText.m_cParams.SetText("--");
-    }
-    else
-    {
-        m_lblName.m_cText.m_cParams.SetStrRef(pSpell->GetNameStrRef());
-        SetDescription(pSpell->GetDescriptionStrRef());
-    }
+static inline void SwguiingameabilitiesTrace1()
+{
+}
+// PC 0x00736580
+void CSWGuiInGameAbilities::OnPanelRemoved()
+{
+    m_lbAbility.ClearItems();
+    m_cPowerChart.ClearChart();
+    m_cFeatChart.ClearChart();
 }
 // PC 0x007365B0
 void CSWGuiInGameAbilities::CreatePowerList()
@@ -386,6 +260,51 @@ void CSWGuiInGameAbilities::SetButtonColor(CSWGuiControl* pControl)  // PC 0x007
     }
 }
 #endif
+// PC 0x00736790
+void CSWGuiInGameSkillEntry::SetExtent(const CSWGuiExtent& cExtent)
+{
+    if (cExtent.m_nWidth > 42)
+    {
+        m_cExtent = cExtent;
+        CSWGuiExtent cIcon;
+        cIcon.m_nLeft = m_cExtent.m_nLeft;
+        cIcon.m_nTop = m_cExtent.m_nTop;
+        cIcon.m_nWidth = 42;
+        cIcon.m_nHeight = 42;
+        m_cNormal.SetExtent(cIcon);
+        m_cHilite.SetExtent(cIcon);
+        CSWGuiExtent cSelection;
+        cSelection.m_nLeft = m_cExtent.m_nLeft + 7;
+        cSelection.m_nTop = m_cExtent.m_nTop + 7;
+        cSelection.m_nWidth = 27;
+        cSelection.m_nHeight = 27;
+        m_cSelection.SetExtent(cSelection);
+
+        cIcon.m_nLeft += 42;
+        cIcon.m_nWidth = m_cExtent.m_nWidth - 42;
+        CSWGuiLabel::m_cBorder.SetExtent(cIcon);
+        CSWGuiLabelHilight::m_cHilite.SetExtent(cIcon);
+        m_cText.SetExtent(CSWGuiExtent::Intersection(
+            CSWGuiLabel::m_cBorder.GetInnerExtent(),
+            CSWGuiLabelHilight::m_cHilite.GetInnerExtent()));
+    }
+}
+// PC 0x007368C0
+void CSWGuiInGameSkillEntry::Draw(float fElapsed)
+{
+    if (m_bActive)
+    {
+        CSWGuiLabelHilight::m_cHilite.Draw(fElapsed);
+        m_cHilite.Draw(fElapsed);
+    }
+    else
+    {
+        CSWGuiLabel::m_cBorder.Draw(fElapsed);
+        m_cNormal.Draw(fElapsed);
+    }
+    m_cSelection.Draw(fElapsed);
+    m_cText.Draw(fElapsed);
+}
 // PC 0x00736920
 void CSWGuiInGameSkillEntry::Initialize(CSWGuiText& cText,
                                         CSWGuiBorder& cBorder,
@@ -474,6 +393,26 @@ void CSWGuiInGameSkillEntry::SetSkill(unsigned long nSkill,
     pParams->SetFillImage(cIcon, 0);
     m_cText.m_cParams.SetStrRef(nStrRef);
 }
+// PC 0x00736BE0
+inline int CSWGuiSkillFlowChart::GetSelected()
+{
+    if (m_cFlows.num > 0)
+    {
+        return static_cast<CSWGuiSkillFlow*>(m_cFlows.element[m_nSelectedRow])
+            ->m_aSkills[m_nSelectedCol]
+            .m_nSkill;
+    }
+    return -1;
+}
+// PC 0x00736C80
+CSWGuiInGameAbilities::~CSWGuiInGameAbilities()
+{
+    m_lbDescription.ClearItems();
+#ifndef _XBOX
+    m_lbDescFeats.ClearItems();
+#endif
+    m_lbAbility.ClearItems();
+}
 // PC 0x00736E90
 void CSWGuiInGameAbilities::OnEnterSkill(CSWGuiControl* pControl)
 {
@@ -518,11 +457,92 @@ void CSWGuiInGameAbilities::OnEnterFeat(unsigned short nFeat)
     SetDescription(pFeat->GetDescriptionText());
     m_lblName.m_cText.m_cParams.SetStrRef(pFeat->m_nNameStrRef);
 }
-
-void CSWGuiInGameAbilities::SetDescription(const CExoString& sText)
+// PC 0x00737300
+void CSWGuiInGameAbilities::OnEnterPower(unsigned long nPower)
 {
-    m_lblDescription.m_cText.m_cParams.SetText(sText);
-    UpdateDescriptionListBox(sText.GetLength() > 0);
+    CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nPower);
+    if (pSpell == NULL)
+    {
+        return;
+    }
+    char cGoodEvil = pSpell->m_cGoodEvil;
+    unsigned char nAlignment =
+        m_pCreature->GetServerCreature()->GetStats()->m_nGoodEvilAlignment / 10;
+    CExoString sColumn;
+    CExoString sBonus;
+    CExoString sBonusValue;
+    Vector vColor;
+    Vector vNeutral = CGuiInGame::COLOR_NEW_TEXT;
+
+    if (cGoodEvil == 'E')
+    {
+        sColumn = "EvilCost";
+    }
+    else if (cGoodEvil == 'G')
+    {
+        sColumn = "GoodCost";
+    }
+
+    int nRoomForceRating = 0;
+    CSWSArea* pArea = m_pCreature->GetServerCreature()->GetArea();
+    if (pArea != NULL)
+    {
+        nRoomForceRating = pArea->GetRoomForceRating(
+            m_pCreature->GetServerCreature()->m_vPosition);
+    }
+    char nCharismaModifier =
+        m_pCreature->GetServerCreature()->GetStats()->m_nCharismaModifier;
+    int nForm = m_pCreature->GetServerCreature()->GetForm();
+    int nCost = pSpell->GetAdjustedForcePoints(
+        nAlignment * 10, 1, nRoomForceRating, nForm, nCharismaModifier);
+    int nAdjust = nCost - pSpell->GetForcePoints();
+
+    if (nAdjust < 0)
+    {
+        sBonusValue.Format("%d", nAdjust);
+        vColor = CGuiInGame::COLOR_NEW_BONUS;
+        sBonus = g_pTlkTable->GetSimpleString(STRREF_ADJUSTMENT);
+    }
+    else if (nAdjust > 0)
+    {
+        sBonusValue.Format("+%d", nAdjust);
+        vColor = CGuiInGame::COLOR_RED;
+        sBonus = g_pTlkTable->GetSimpleString(STRREF_ADJUSTMENT);
+    }
+    else
+    {
+        sBonusValue.Format("%d", nAdjust);
+        vColor = vNeutral;
+        sBonus = g_pTlkTable->GetSimpleString(STRREF_ADJUSTMENT);
+    }
+
+    m_lblBonusValue.m_cText.m_cParams.SetText(sBonusValue);
+    m_lblBonusValue.m_cText.m_cParams.SetColor(vColor);
+    m_lblBonus.m_cText.m_cParams.SetText(sBonus);
+    m_lblRankValue.m_cText.m_cParams.SetText(pSpell->GetForcePoints());
+    m_lblTotalValue.m_cText.m_cParams.SetText(
+        CExoString(pSpell->GetForcePoints() + nAdjust));
+    if ((nPower == CSWSpell::FORCE_POWER_FORCE_CRUSH ||
+         nPower == CSWSpell::FORCE_POWER_PRECOGNITION ||
+         nPower == CSWSpell::FORCE_POWER_BATTLE_PRECOGNITION ||
+         nPower == CSWSpell::FORCE_POWER_FORCE_ENLIGHTENMENT ||
+         nPower == CSWSpell::FORCE_POWER_BEAST_TRICK ||
+         nPower == CSWSpell::FORCE_POWER_BREATH_CONTROL ||
+         nPower == CSWSpell::FORCE_POWER_FORCE_SIGHT) &&
+        !m_pCreature->GetServerCreature()->GetStats()->HasSpell(0, nPower, 0))
+    {
+        m_lblName.m_cText.m_cParams.SetStrRef(STRREF_UNKNOWN_FORCE_POWER);
+        SetDescription(STRREF_UNKNOWN_FORCE_POWER_DESC);
+        m_lblBonusValue.m_cText.m_cParams.SetText("--");
+        m_lblBonusValue.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_TEXT);
+        m_lblRankValue.m_cText.m_cParams.SetText("--");
+        m_lblTotalValue.m_cText.m_cParams.SetText("--");
+    }
+    else
+    {
+        m_lblName.m_cText.m_cParams.SetStrRef(pSpell->GetNameStrRef());
+        SetDescription(pSpell->GetDescriptionStrRef());
+    }
 }
 
 #ifndef _XBOX
@@ -778,17 +798,67 @@ void CSWGuiInGameAbilities::OnSkillsButtonPressed(CSWGuiControl* pControl)  // P
     UpdateView();
 }
 #endif
-
-void CSWGuiInGameAbilities::CreateFeatList()
+// PC 0x00738780
+void CSWGuiInGameAbilities::SetCharacter(CSWCCreature* pCreature)
 {
-    if (m_pCreature != NULL)
+    m_pCreature = pCreature;
+    if (pCreature != NULL)
     {
-        CSWSCreature* pServerCreature = m_pCreature->GetServerCreature();
-        m_cFeatChart.CreateFeatChart(pServerCreature->m_pStats);
-        m_cFeatChart.SetSkillStatusAll(CSWGuiSkillFlow::STATUS_YELLOW);
-        m_cFeatChart.SetTopLeft();
+        m_lbAbility.ClearItems();
+        CreateFeatList();
+        CreateSkillList();
+        unsigned char nClass = m_pCreature->m_pStats->GetClass(
+            m_pCreature->m_pStats->GetNumClasses() - 1);
+        if (CSWClass::IsJedi((int)nClass) != 0)
+        {
+            CreatePowerList();
+#ifdef _XBOX
+            m_lblPowers.SetEnabledFlag(1);
+#else
+            m_btnPowers.SetEnabledFlag(1);
+#endif
+            UpdateView();
+            return;
+        }
+        else
+        {
+#ifdef _XBOX
+            m_lblPowers.SetEnabledFlag(0);
+#else
+            m_btnPowers.SetEnabledFlag(0);
+#endif
+            if (g_pAppManager->m_pClientExoApp->GetInGameGui()
+                    ->m_nAbilityMode == 1)
+            {
+                g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode =
+                    0;
+            }
+        }
+        UpdateView();
     }
 }
+
+#ifdef _XBOX
+void CSWGuiInGameAbilities::OnPanelAdded()
+{
+    SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0));
+    m_lblBlack.SetEnabledFlag(g_pAppManager->m_pClientExoApp->GetSWParty()->GetNumCharacters() > 1);
+}
+#else
+void CSWGuiInGameAbilities::OnPanelAdded()  // PC 0x00738870
+{
+    SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0));
+    m_btnExit.HandleMouseOver(0);
+    CSWGuiPanel::OnPanelAdded();
+}
+#endif
+#ifndef _XBOX
+// PC 0x007388B0
+void CSWGuiInGameAbilities::UpdateCharacter()
+{
+    SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0));
+}
+#endif
 
 #ifdef _XBOX
 void CSWGuiInGameAbilities::HandleInputEvent(int nEvent, int nState)
@@ -943,73 +1013,3 @@ void CSWGuiInGameAbilities::HandleInputEvent(int nEvent, int nState)  // PC 0x00
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 #endif
-// PC 0x00738780
-void CSWGuiInGameAbilities::SetCharacter(CSWCCreature* pCreature)
-{
-    m_pCreature = pCreature;
-    if (pCreature != NULL)
-    {
-        m_lbAbility.ClearItems();
-        CreateFeatList();
-        CreateSkillList();
-        unsigned char nClass = m_pCreature->m_pStats->GetClass(
-            m_pCreature->m_pStats->GetNumClasses() - 1);
-        if (CSWClass::IsJedi((int)nClass) != 0)
-        {
-            CreatePowerList();
-#ifdef _XBOX
-            m_lblPowers.SetEnabledFlag(1);
-#else
-            m_btnPowers.SetEnabledFlag(1);
-#endif
-            UpdateView();
-            return;
-        }
-        else
-        {
-#ifdef _XBOX
-            m_lblPowers.SetEnabledFlag(0);
-#else
-            m_btnPowers.SetEnabledFlag(0);
-#endif
-            if (g_pAppManager->m_pClientExoApp->GetInGameGui()
-                    ->m_nAbilityMode == 1)
-            {
-                g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode =
-                    0;
-            }
-        }
-        UpdateView();
-    }
-}
-
-#ifdef _XBOX
-void CSWGuiInGameAbilities::OnPanelAdded()
-{
-    SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0));
-    m_lblBlack.SetEnabledFlag(g_pAppManager->m_pClientExoApp->GetSWParty()->GetNumCharacters() > 1);
-}
-#else
-void CSWGuiInGameAbilities::OnPanelAdded()  // PC 0x00738870
-{
-    SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0));
-    m_btnExit.HandleMouseOver(0);
-    CSWGuiPanel::OnPanelAdded();
-}
-#endif
-#ifndef _XBOX
-// PC 0x007388B0
-void CSWGuiInGameAbilities::UpdateCharacter()
-{
-    SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0));
-}
-#endif
-
-static inline void SwguiingameabilitiesTrace2()
-{
-    SwguiingameabilitiesTrace1();
-}
-
-static inline void SwguiingameabilitiesTrace1()
-{
-}

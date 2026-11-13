@@ -13,26 +13,21 @@ static inline void SwguiskillflowchartTrace3();
 static inline void SwguiskillflowchartTrace2();
 static inline void SwguiskillflowchartTrace1();
 #define SWGUISKILLFLOWCHART_TRACE() SwguiskillflowchartTrace1()
-// PC 0x0073AE40
-void CSWGuiSkillFlow::Draw(float fElapsed)
-{
-    int i;
 
-    for (i = 0; i < 3; i++)
-    {
-        if (m_aSkills[i].m_nSkill != -1)
-        {
-            m_aSkills[i].m_cRightImage.Draw(fElapsed);
-            m_aSkills[i].m_cLeftImage.Draw(fElapsed);
-        }
-    }
-    for (i = 0; i < 2; i++)
-    {
-        if (m_aSkills[i + 1].m_nSkill != -1)
-        {
-            m_aArrows[i].Draw(fElapsed);
-        }
-    }
+#include "nwspell.h"
+
+static inline void SwguiskillflowchartTrace3()
+{
+    SwguiskillflowchartTrace2();
+}
+
+static inline void SwguiskillflowchartTrace2()
+{
+    SwguiskillflowchartTrace1();
+}
+
+static inline void SwguiskillflowchartTrace1()
+{
 }
 // PC 0x0073B1B0
 CSWGuiSkillFlow::CSWGuiSkillFlow()
@@ -118,6 +113,27 @@ void CSWGuiSkillFlow::SetExtent(const CSWGuiExtent& cExtent)
             m_aSkills[i].m_cRightImage.m_cExtent);
     }
     m_cExtent = cFlowExtent;
+}
+// PC 0x0073AE40
+void CSWGuiSkillFlow::Draw(float fElapsed)
+{
+    int i;
+
+    for (i = 0; i < 3; i++)
+    {
+        if (m_aSkills[i].m_nSkill != -1)
+        {
+            m_aSkills[i].m_cRightImage.Draw(fElapsed);
+            m_aSkills[i].m_cLeftImage.Draw(fElapsed);
+        }
+    }
+    for (i = 0; i < 2; i++)
+    {
+        if (m_aSkills[i + 1].m_nSkill != -1)
+        {
+            m_aArrows[i].Draw(fElapsed);
+        }
+    }
 }
 // PC 0x0073B2E0
 void CSWGuiSkillFlow::SetSkillSelected(unsigned char nSkill, int bSelected)
@@ -239,57 +255,6 @@ void CSWGuiSkillFlowChart::AddPowerSet(unsigned long nPower1,
     }
     m_cFlows.Add(pFlow);
 }
-// PC 0x0073C440
-void CSWGuiSkillFlowChart::BuildSortedFeatList(
-    CExoArrayList<unsigned short>& cFeats)
-{
-    CExoArrayList<unsigned short>* pCachedFeats =
-        &g_pAppManager->m_pClientExoApp->GetInGameGui()->m_a103C;
-    if (pCachedFeats != NULL && pCachedFeats->num > 0)
-    {
-        cFeats = *pCachedFeats;
-        return;
-    }
-    for (int nFeat = 0; nFeat < g_pRules->m_nNumFeats; nFeat++)
-    {
-        CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
-        if (nFeat != CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS &&
-            nFeat != CSWFeat::FEAT_MINE_IMMUNITY &&
-            pFeat != NULL && pFeat->m_nNameStrRef != 0)
-        {
-            int nDepth = pFeat->m_nPrereqFeat1 == CSWFeat::FEAT_INVALID ? 0 :
-                (pFeat->m_nPrereqFeat2 == CSWFeat::FEAT_INVALID ? 1 : 2);
-            int nIndex;
-            for (nIndex = 0; ; nIndex++)
-            {
-                if (nIndex < cFeats.num)
-                {
-                    CSWFeat* pListedFeat = g_pRules->GetFeat(cFeats[nIndex]);
-                    if (pListedFeat != NULL)
-                    {
-                        int nListedDepth =
-                            pListedFeat->m_nPrereqFeat1 == CSWFeat::FEAT_INVALID ? 0 :
-                            (pListedFeat->m_nPrereqFeat2 == CSWFeat::FEAT_INVALID ? 1 : 2);
-                        if (nListedDepth > nDepth)
-                        {
-                            cFeats.Insert(nFeat, nIndex);
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    cFeats.Add(nFeat);
-                    break;
-                }
-            }
-        }
-    }
-    CGuiInGame* pInGameGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
-    pInGameGui->m_a103C = cFeats;
-}
-
-#include "nwspell.h"
 // PC 0x0073BB10
 void CSWGuiSkillFlowChart::AddFeatSet(unsigned long nFeat1,
                                      unsigned long nFeat2,
@@ -317,125 +282,6 @@ void CSWGuiSkillFlowChart::AddFeatSet(unsigned long nFeat1,
         pFlow->SetExtent(cExtent);
     }
     m_cFlows.Add(pFlow);
-}
-// PC 0x0073B370
-void CSWGuiSkillFlowChart::SetSelectedSkill(unsigned long nSkill)
-{
-    int i;
-    int nIndex;
-    int j;
-
-    for (i = 0; i < m_cFlows.num; i++)
-    {
-        nIndex = -1;
-        for (j = 0; j < 3; j++)
-        {
-            if (static_cast<CSWGuiSkillFlow*>(m_cFlows[i])
-                    ->m_aSkills[j]
-                    .m_nSkill == nSkill)
-            {
-                nIndex = j;
-                break;
-            }
-        }
-        if (nIndex != -1)
-        {
-            if (m_nSelectedCol != nIndex || m_nSelectedRow != i)
-            {
-                static_cast<CSWGuiSkillFlow*>(m_cFlows[m_nSelectedRow])
-                    ->SetSkillSelected(m_nSelectedCol, 0);
-                m_nSelectedCol = nIndex;
-                m_nSelectedRow = i;
-            }
-            static_cast<CSWGuiSkillFlow*>(m_cFlows[m_nSelectedRow])
-                ->SetSkillSelected(m_nSelectedCol, 1);
-            return;
-        }
-    }
-}
-// PC 0x0073B520
-int CSWGuiSkillFlowChart::SetTopLeft()
-{
-    CSWGuiSkillFlow* pFlow;
-
-    if (m_nSelectedCol != 0 || m_nSelectedRow != 0)
-    {
-        if (m_nSelectedRow < m_cFlows.num)
-        {
-            static_cast<CSWGuiSkillFlow*>(m_cFlows[m_nSelectedRow])
-                ->SetSkillSelected(m_nSelectedCol, 0);
-        }
-        m_nSelectedRow = 0;
-        m_nSelectedCol = 0;
-    }
-    if (m_cFlows.num > 0)
-    {
-        pFlow = static_cast<CSWGuiSkillFlow*>(m_cFlows[0]);
-        if (!pFlow->m_aSkills[0].m_bSelected)
-        {
-            pFlow->m_aSkills[0].m_bSelected = 1;
-            pFlow->SetSkillStatus(0, pFlow->m_aSkills[0].m_nStatus);
-        }
-        return static_cast<CSWGuiSkillFlow*>(m_cFlows[0])
-            ->m_aSkills[0]
-            .m_nSkill;
-    }
-    return -1;
-}
-// PC 0x0073B590
-int CSWGuiSkillFlowChart::HandleInput(int nEvent)
-{
-    int nOldRow = m_nSelectedRow;
-    int nOldCol = m_nSelectedCol;
-
-    switch (nEvent)
-    {
-    case GUIEVENT_DOWN:
-    case GUIEVENT_DOWN_ALTERNATE:
-        if (m_nSelectedRow == m_cFlows.num - 1)
-            m_nSelectedRow = 0;
-        else
-            ++m_nSelectedRow;
-        while (m_cFlows[m_nSelectedRow]->m_aSkills[m_nSelectedCol].m_nSkill == CSWGuiSkillFlow::SKILL_INVALID)
-            --m_nSelectedCol;
-        break;
-
-    case GUIEVENT_UP:
-    case GUIEVENT_UP_ALTERNATE:
-        if (m_nSelectedRow > 0)
-            --m_nSelectedRow;
-        else
-            m_nSelectedRow = m_cFlows.num - 1;
-        while (m_cFlows[m_nSelectedRow]->m_aSkills[m_nSelectedCol].m_nSkill == CSWGuiSkillFlow::SKILL_INVALID)
-            --m_nSelectedCol;
-        break;
-
-    case GUIEVENT_RIGHT:
-    case GUIEVENT_RIGHT_ALTERNATE:
-        if (m_nSelectedCol < 2 &&
-            m_cFlows[m_nSelectedRow]->m_aSkills[(unsigned char)(m_nSelectedCol + 1)].m_nSkill != CSWGuiSkillFlow::SKILL_INVALID)
-        {
-            g_pAppManager->GetClientExoApp()->GetSWGuiManager()->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
-            ++m_nSelectedCol;
-        }
-        break;
-
-    case GUIEVENT_LEFT:
-    case GUIEVENT_LEFT_ALTERNATE:
-        if (m_nSelectedCol > 0)
-        {
-            g_pAppManager->GetClientExoApp()->GetSWGuiManager()->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
-            --m_nSelectedCol;
-        }
-        break;
-    }
-
-    if (nOldRow != m_nSelectedRow || nOldCol != m_nSelectedCol)
-    {
-        m_cFlows[nOldRow]->SetSkillSelected(nOldCol, 0);
-        m_cFlows[m_nSelectedRow]->SetSkillSelected(m_nSelectedCol, 1);
-    }
-    return m_cFlows[m_nSelectedRow]->m_aSkills[m_nSelectedCol].m_nSkill;
 }
 // PC 0x0073CD10
 CSWGuiSkillInfoBox::CSWGuiSkillInfoBox(CSWGuiManager* pManager)
@@ -573,6 +419,41 @@ int CSWGuiSkillFlowChart::ClearChart()
     }
     m_cFlows.num = 0;
     return nResult;
+}
+// PC 0x0073B370
+void CSWGuiSkillFlowChart::SetSelectedSkill(unsigned long nSkill)
+{
+    int i;
+    int nIndex;
+    int j;
+
+    for (i = 0; i < m_cFlows.num; i++)
+    {
+        nIndex = -1;
+        for (j = 0; j < 3; j++)
+        {
+            if (static_cast<CSWGuiSkillFlow*>(m_cFlows[i])
+                    ->m_aSkills[j]
+                    .m_nSkill == nSkill)
+            {
+                nIndex = j;
+                break;
+            }
+        }
+        if (nIndex != -1)
+        {
+            if (m_nSelectedCol != nIndex || m_nSelectedRow != i)
+            {
+                static_cast<CSWGuiSkillFlow*>(m_cFlows[m_nSelectedRow])
+                    ->SetSkillSelected(m_nSelectedCol, 0);
+                m_nSelectedCol = nIndex;
+                m_nSelectedRow = i;
+            }
+            static_cast<CSWGuiSkillFlow*>(m_cFlows[m_nSelectedRow])
+                ->SetSkillSelected(m_nSelectedCol, 1);
+            return;
+        }
+    }
 }
 // PC 0x0073B480
 void CSWGuiSkillFlowChart::SetSkillStatus(unsigned long nSkill,
@@ -712,6 +593,55 @@ void CSWGuiSkillFlowChart::CreatePowerChart(CSWSCreatureStats* pStats,
             }
         }
     }
+}
+// PC 0x0073C440
+void CSWGuiSkillFlowChart::BuildSortedFeatList(
+    CExoArrayList<unsigned short>& cFeats)
+{
+    CExoArrayList<unsigned short>* pCachedFeats =
+        &g_pAppManager->m_pClientExoApp->GetInGameGui()->m_a103C;
+    if (pCachedFeats != NULL && pCachedFeats->num > 0)
+    {
+        cFeats = *pCachedFeats;
+        return;
+    }
+    for (int nFeat = 0; nFeat < g_pRules->m_nNumFeats; nFeat++)
+    {
+        CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
+        if (nFeat != CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS &&
+            nFeat != CSWFeat::FEAT_MINE_IMMUNITY &&
+            pFeat != NULL && pFeat->m_nNameStrRef != 0)
+        {
+            int nDepth = pFeat->m_nPrereqFeat1 == CSWFeat::FEAT_INVALID ? 0 :
+                (pFeat->m_nPrereqFeat2 == CSWFeat::FEAT_INVALID ? 1 : 2);
+            int nIndex;
+            for (nIndex = 0; ; nIndex++)
+            {
+                if (nIndex < cFeats.num)
+                {
+                    CSWFeat* pListedFeat = g_pRules->GetFeat(cFeats[nIndex]);
+                    if (pListedFeat != NULL)
+                    {
+                        int nListedDepth =
+                            pListedFeat->m_nPrereqFeat1 == CSWFeat::FEAT_INVALID ? 0 :
+                            (pListedFeat->m_nPrereqFeat2 == CSWFeat::FEAT_INVALID ? 1 : 2);
+                        if (nListedDepth > nDepth)
+                        {
+                            cFeats.Insert(nFeat, nIndex);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    cFeats.Add(nFeat);
+                    break;
+                }
+            }
+        }
+    }
+    CGuiInGame* pInGameGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
+    pInGameGui->m_a103C = cFeats;
 }
 // PC 0x0073C580
 void CSWGuiSkillFlowChart::CreateFeatChart(CSWSCreatureStats* pStats)
@@ -979,6 +909,90 @@ int CSWGuiSkillFlowChart::SetSkillStatusAll(unsigned char nStatus)
     }
     return nResult;
 }
+// PC 0x0073B520
+int CSWGuiSkillFlowChart::SetTopLeft()
+{
+    CSWGuiSkillFlow* pFlow;
+
+    if (m_nSelectedCol != 0 || m_nSelectedRow != 0)
+    {
+        if (m_nSelectedRow < m_cFlows.num)
+        {
+            static_cast<CSWGuiSkillFlow*>(m_cFlows[m_nSelectedRow])
+                ->SetSkillSelected(m_nSelectedCol, 0);
+        }
+        m_nSelectedRow = 0;
+        m_nSelectedCol = 0;
+    }
+    if (m_cFlows.num > 0)
+    {
+        pFlow = static_cast<CSWGuiSkillFlow*>(m_cFlows[0]);
+        if (!pFlow->m_aSkills[0].m_bSelected)
+        {
+            pFlow->m_aSkills[0].m_bSelected = 1;
+            pFlow->SetSkillStatus(0, pFlow->m_aSkills[0].m_nStatus);
+        }
+        return static_cast<CSWGuiSkillFlow*>(m_cFlows[0])
+            ->m_aSkills[0]
+            .m_nSkill;
+    }
+    return -1;
+}
+// PC 0x0073B590
+int CSWGuiSkillFlowChart::HandleInput(int nEvent)
+{
+    int nOldRow = m_nSelectedRow;
+    int nOldCol = m_nSelectedCol;
+
+    switch (nEvent)
+    {
+    case GUIEVENT_DOWN:
+    case GUIEVENT_DOWN_ALTERNATE:
+        if (m_nSelectedRow == m_cFlows.num - 1)
+            m_nSelectedRow = 0;
+        else
+            ++m_nSelectedRow;
+        while (m_cFlows[m_nSelectedRow]->m_aSkills[m_nSelectedCol].m_nSkill == CSWGuiSkillFlow::SKILL_INVALID)
+            --m_nSelectedCol;
+        break;
+
+    case GUIEVENT_UP:
+    case GUIEVENT_UP_ALTERNATE:
+        if (m_nSelectedRow > 0)
+            --m_nSelectedRow;
+        else
+            m_nSelectedRow = m_cFlows.num - 1;
+        while (m_cFlows[m_nSelectedRow]->m_aSkills[m_nSelectedCol].m_nSkill == CSWGuiSkillFlow::SKILL_INVALID)
+            --m_nSelectedCol;
+        break;
+
+    case GUIEVENT_RIGHT:
+    case GUIEVENT_RIGHT_ALTERNATE:
+        if (m_nSelectedCol < 2 &&
+            m_cFlows[m_nSelectedRow]->m_aSkills[(unsigned char)(m_nSelectedCol + 1)].m_nSkill != CSWGuiSkillFlow::SKILL_INVALID)
+        {
+            g_pAppManager->GetClientExoApp()->GetSWGuiManager()->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
+            ++m_nSelectedCol;
+        }
+        break;
+
+    case GUIEVENT_LEFT:
+    case GUIEVENT_LEFT_ALTERNATE:
+        if (m_nSelectedCol > 0)
+        {
+            g_pAppManager->GetClientExoApp()->GetSWGuiManager()->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
+            --m_nSelectedCol;
+        }
+        break;
+    }
+
+    if (nOldRow != m_nSelectedRow || nOldCol != m_nSelectedCol)
+    {
+        m_cFlows[nOldRow]->SetSkillSelected(nOldCol, 0);
+        m_cFlows[m_nSelectedRow]->SetSkillSelected(m_nSelectedCol, 1);
+    }
+    return m_cFlows[m_nSelectedRow]->m_aSkills[m_nSelectedCol].m_nSkill;
+}
 // PC 0x0073B7B0
 CSWGuiSkillInfoBox::~CSWGuiSkillInfoBox()
 {
@@ -1018,18 +1032,4 @@ void CSWGuiSkillInfoBox::OnPanelRemoved()
 {
     m_pCallback = NULL;
     m_pCallbackObject = NULL;
-}
-
-static inline void SwguiskillflowchartTrace3()
-{
-    SwguiskillflowchartTrace2();
-}
-
-static inline void SwguiskillflowchartTrace2()
-{
-    SwguiskillflowchartTrace1();
-}
-
-static inline void SwguiskillflowchartTrace1()
-{
 }

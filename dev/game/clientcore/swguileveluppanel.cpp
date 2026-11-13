@@ -6,12 +6,192 @@
 #include "clientexoapp.h"
 #include "swguiingame.h"
 #include "nwccreature.h"
+// PC 0x0075D590
+void CSWGuiLevelUpPanel::OnSelectAcceptButton(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        PlayGame();
+    }
+}
+// PC 0x0075CE20
+void CSWGuiLevelUpPanel::OnSelectPowersButton(CSWGuiControl* pControl)
+{
+    CSWGuiPowersLevelUp* pPanel;
+
+    int bSelected = pControl->m_bSelected;
+    if (bSelected != 0)
+    {
+        pPanel =
+            new CSWGuiPowersLevelUp(m_pManager, m_pCreature->GetObjectId());
+        pPanel->m_pParentPanel = this;
+        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
+    }
+}
+// PC 0x0075CEA0
+void CSWGuiLevelUpPanel::OnSelectFeatsButton(CSWGuiControl* pControl)
+{
+    CSWGuiFeatsCharGen* pPanel;
+    unsigned char nGeneralFeats;
+    unsigned char nBonusFeats;
+
+    int bSelected = pControl->m_bSelected;
+    if (bSelected != 0)
+    {
+        nGeneralFeats = 0;
+        nBonusFeats = 0;
+        m_pCreature->GetStats()->CalcNumberFeats(nGeneralFeats, nBonusFeats);
+        pPanel = new CSWGuiFeatsCharGen(m_pManager, m_pCreature, 1,
+                                        nGeneralFeats == 0);
+        pPanel->m_pParentPanel = this;
+        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
+    }
+}
+// PC 0x0075CF50
+void CSWGuiLevelUpPanel::OnSelectSkillsButton(CSWGuiControl* pControl)
+{
+    CSWGuiSkillsCharGen* pPanel;
+
+    int bSelected = pControl->m_bSelected;
+    if (bSelected != 0)
+    {
+        pPanel = new CSWGuiSkillsCharGen(m_pManager, m_pCreature, 1);
+        pPanel->m_pParentPanel = this;
+        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
+    }
+}
+// PC 0x0075CFD0
+void CSWGuiLevelUpPanel::OnSelectAbilitiesButton(CSWGuiControl* pControl)
+{
+    CSWGuiAbilitiesCharGen* pPanel;
+
+    int bSelected = pControl->m_bSelected;
+    if (bSelected != 0)
+    {
+        pPanel = new CSWGuiAbilitiesCharGen(m_pManager, m_pCreature, 1);
+        pPanel->m_pParentPanel = this;
+        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
+    }
+}
 // PC 0x0075D050
 void CSWGuiLevelUpPanel::NewAbilityScores(int nStr, int nDex, int nCon,
                                           int nInt, int nWis, int nCha,
                                           int nPoints)
 {
     m_pParent->NewAbilityScores(nStr, nDex, nCon, nInt, nWis, nCha, nPoints);
+}
+// PC 0x0075D350
+void CSWGuiLevelUpPanel::CancelledByChild()
+{
+    --m_nState;
+    ChangeState(0);
+    m_pParent->SetVisible(1);
+}
+// PC 0x0075D380
+void CSWGuiLevelUpPanel::AbilitySelectionCompleted()
+{
+    m_pParent->SetVisible(1);
+    m_pParent->AbilitiesChanged();
+    ChangeState(0);
+}
+// PC 0x0075D3A0
+void CSWGuiLevelUpPanel::FeatSelectionCompleted()
+{
+    m_pParent->SetVisible(1);
+    ChangeState(0);
+}
+// PC 0x0075D3A0
+void CSWGuiLevelUpPanel::SkillSelectionCompleted()
+{
+    m_pParent->SetVisible(1);
+    ChangeState(0);
+}
+// PC 0x0075D3A0
+void CSWGuiLevelUpPanel::PowersSelectionCompleted()
+{
+    m_pParent->SetVisible(1);
+    ChangeState(0);
+}
+// PC 0x0075D3C0
+void CSWGuiLevelUpPanel::PlayGame()
+{
+    if (m_anStateUsed[STATE_FEATS] == 0)
+    {
+        m_pCreature->m_pStats->AddGrantedFeats(0);
+        m_pParent->SetVisible(1);
+        ChangeState(0);
+    }
+#ifndef _XBOX
+    if (m_anStateUsed[STATE_POWERS] == 0)
+    {
+        m_pCreature->m_pStats->AddGrantedPowers(0);
+        m_pParent->SetVisible(1);
+        ChangeState(0);
+    }
+#endif
+    m_pParent->BeginPlayGame();
+}
+
+#ifndef _XBOX
+void CSWGuiLevelUpPanel::OnCancelPressed(CSWGuiControl* pControl)  // PC 0x0075D430
+{
+    if (m_bCanCancel != 0)
+    {
+        m_pParent->ClearPowers();
+        m_pParent->ClearFeats();
+        m_pParent->ClearSkills();
+        m_pParent->ClearAbilities();
+        m_nState = 0;
+        ChangeState(1);
+    }
+}
+// PC 0x0075D480
+void CSWGuiLevelUpPanel::ShowGrantedPowers(CSWGuiControl* pControl)
+{
+    CExoArrayList<unsigned long> lPowers;
+    m_pCreature->GetStats()->AddGrantedPowers(&lPowers);
+    if (lPowers.num > 0)
+    {
+        CSWGuiSkillInfoBox* pInfoBox =
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pSkillInfoBox;
+        pInfoBox->SetSkillList(lPowers, CSWGuiInGameSkillEntry::ABILITY_POWER);
+        pInfoBox->SetMessage(111635);
+        m_pManager->AddPanel(pInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+    }
+}
+// PC 0x0075D060
+void CSWGuiLevelUpPanel::SetCanCancel(int bCanCancel)
+{
+    m_bCanCancel = bCanCancel;
+    BOOL bEnable = (m_nState != m_nFirstState) || (bCanCancel != 0);
+    m_btnBack.SetEnabled(bEnable);
+    Vector* pColor = &CGuiInGame::COLOR_NEW_TEXT;
+    if (!bEnable)
+    {
+        pColor = &CGuiInGame::DISABLED_TEXT;
+    }
+    m_btnBack.m_cText.m_cParams.SetColor(*pColor);
+    m_btnCancel.SetShown(m_bCanCancel);
+}
+#endif
+// PC 0x0075D530
+void CSWGuiLevelUpPanel::HandleInputEvent(int nEvent, int nState)
+{
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case 40:
+        case 46:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            ChangeState(1);
+            break;
+        case 45:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            break;
+        }
+    }
+    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 // PC 0x0075D0E0
 void CSWGuiLevelUpPanel::ChangeState(int bBack)
@@ -171,229 +351,6 @@ void CSWGuiLevelUpPanel::ChangeState(int bBack)
     m_btnBack.m_cText.m_cParams.SetColor(*pColor);
 #endif
 }
-// PC 0x0075CE20
-void CSWGuiLevelUpPanel::OnSelectPowersButton(CSWGuiControl* pControl)
-{
-    CSWGuiPowersLevelUp* pPanel;
-
-    int bSelected = pControl->m_bSelected;
-    if (bSelected != 0)
-    {
-        pPanel =
-            new CSWGuiPowersLevelUp(m_pManager, m_pCreature->GetObjectId());
-        pPanel->m_pParentPanel = this;
-        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
-    }
-}
-// PC 0x0075CEA0
-void CSWGuiLevelUpPanel::OnSelectFeatsButton(CSWGuiControl* pControl)
-{
-    CSWGuiFeatsCharGen* pPanel;
-    unsigned char nGeneralFeats;
-    unsigned char nBonusFeats;
-
-    int bSelected = pControl->m_bSelected;
-    if (bSelected != 0)
-    {
-        nGeneralFeats = 0;
-        nBonusFeats = 0;
-        m_pCreature->GetStats()->CalcNumberFeats(nGeneralFeats, nBonusFeats);
-        pPanel = new CSWGuiFeatsCharGen(m_pManager, m_pCreature, 1,
-                                        nGeneralFeats == 0);
-        pPanel->m_pParentPanel = this;
-        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
-    }
-}
-// PC 0x0075CF50
-void CSWGuiLevelUpPanel::OnSelectSkillsButton(CSWGuiControl* pControl)
-{
-    CSWGuiSkillsCharGen* pPanel;
-
-    int bSelected = pControl->m_bSelected;
-    if (bSelected != 0)
-    {
-        pPanel = new CSWGuiSkillsCharGen(m_pManager, m_pCreature, 1);
-        pPanel->m_pParentPanel = this;
-        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
-    }
-}
-// PC 0x0075CFD0
-void CSWGuiLevelUpPanel::OnSelectAbilitiesButton(CSWGuiControl* pControl)
-{
-    CSWGuiAbilitiesCharGen* pPanel;
-
-    int bSelected = pControl->m_bSelected;
-    if (bSelected != 0)
-    {
-        pPanel = new CSWGuiAbilitiesCharGen(m_pManager, m_pCreature, 1);
-        pPanel->m_pParentPanel = this;
-        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
-    }
-}
-// PC 0x0075D350
-void CSWGuiLevelUpPanel::CancelledByChild()
-{
-    --m_nState;
-    ChangeState(0);
-    m_pParent->SetVisible(1);
-}
-// PC 0x0075D380
-void CSWGuiLevelUpPanel::AbilitySelectionCompleted()
-{
-    m_pParent->SetVisible(1);
-    m_pParent->AbilitiesChanged();
-    ChangeState(0);
-}
-// PC 0x0075D3A0
-void CSWGuiLevelUpPanel::FeatSelectionCompleted()
-{
-    m_pParent->SetVisible(1);
-    ChangeState(0);
-}
-// PC 0x0075D3A0
-void CSWGuiLevelUpPanel::SkillSelectionCompleted()
-{
-    m_pParent->SetVisible(1);
-    ChangeState(0);
-}
-// PC 0x0075D3A0
-void CSWGuiLevelUpPanel::PowersSelectionCompleted()
-{
-    m_pParent->SetVisible(1);
-    ChangeState(0);
-}
-// PC 0x0075D3C0
-void CSWGuiLevelUpPanel::PlayGame()
-{
-    if (m_anStateUsed[STATE_FEATS] == 0)
-    {
-        m_pCreature->m_pStats->AddGrantedFeats(0);
-        m_pParent->SetVisible(1);
-        ChangeState(0);
-    }
-#ifndef _XBOX
-    if (m_anStateUsed[STATE_POWERS] == 0)
-    {
-        m_pCreature->m_pStats->AddGrantedPowers(0);
-        m_pParent->SetVisible(1);
-        ChangeState(0);
-    }
-#endif
-    m_pParent->BeginPlayGame();
-}
-
-#ifndef _XBOX
-void CSWGuiLevelUpPanel::OnCancelPressed(CSWGuiControl* pControl)  // PC 0x0075D430
-{
-    if (m_bCanCancel != 0)
-    {
-        m_pParent->ClearPowers();
-        m_pParent->ClearFeats();
-        m_pParent->ClearSkills();
-        m_pParent->ClearAbilities();
-        m_nState = 0;
-        ChangeState(1);
-    }
-}
-// PC 0x0075D480
-void CSWGuiLevelUpPanel::ShowGrantedPowers(CSWGuiControl* pControl)
-{
-    CExoArrayList<unsigned long> lPowers;
-    m_pCreature->GetStats()->AddGrantedPowers(&lPowers);
-    if (lPowers.num > 0)
-    {
-        CSWGuiSkillInfoBox* pInfoBox =
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pSkillInfoBox;
-        pInfoBox->SetSkillList(lPowers, CSWGuiInGameSkillEntry::ABILITY_POWER);
-        pInfoBox->SetMessage(111635);
-        m_pManager->AddPanel(pInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
-    }
-}
-// PC 0x0075D060
-void CSWGuiLevelUpPanel::SetCanCancel(int bCanCancel)
-{
-    m_bCanCancel = bCanCancel;
-    BOOL bEnable = (m_nState != m_nFirstState) || (bCanCancel != 0);
-    m_btnBack.SetEnabled(bEnable);
-    Vector* pColor = &CGuiInGame::COLOR_NEW_TEXT;
-    if (!bEnable)
-    {
-        pColor = &CGuiInGame::DISABLED_TEXT;
-    }
-    m_btnBack.m_cText.m_cParams.SetColor(*pColor);
-    m_btnCancel.SetShown(m_bCanCancel);
-}
-#endif
-// PC 0x0075DD30
-void CSWGuiLevelUpPanel::OnPanelAdded()
-{
-    m_nState = -1;
-    ChangeState(0);
-    m_nFirstState = m_nState;
-#ifdef _XBOX
-    m_pParent->SetBackPromptEnabled(m_bCanCancel);
-#else
-    if (m_bCanCancel == 0)
-    {
-        m_btnBack.SetEnabled(0);
-        m_btnBack.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
-        m_btnCancel.m_bEnabled = 0;
-    }
-    CSWGuiPanel::OnPanelAdded();
-    if (m_bShowGrantedFeats != 0)
-    {
-        CExoArrayList<unsigned long> lFeats;
-        m_pCreature->GetStats()->AddGrantedFeats(&lFeats);
-        CSWGuiSkillInfoBox* pInfoBox =
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pSkillInfoBox;
-        pInfoBox->SetSkillList(lFeats, CSWGuiInGameSkillEntry::ABILITY_FEAT);
-        pInfoBox->SetMessage(42258);
-        if (m_bShowGrantedPowers != 0)
-        {
-            pInfoBox->SetCallback(this,
-                                  (CSWGuiHandler)&CSWGuiLevelUpPanel::ShowGrantedPowers);
-        }
-        m_pManager->AddPanel(pInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
-    }
-    if (m_bShowGrantedPowers != 0 && m_bShowGrantedFeats == 0)
-    {
-        CExoArrayList<unsigned long> lPowers;
-        m_pCreature->GetStats()->AddGrantedPowers(&lPowers);
-        CSWGuiSkillInfoBox* pInfoBox =
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pSkillInfoBox;
-        pInfoBox->SetSkillList(lPowers, CSWGuiInGameSkillEntry::ABILITY_POWER);
-        pInfoBox->SetMessage(111635);
-        m_pManager->AddPanel(pInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
-    }
-#endif
-}
-// PC 0x0075D530
-void CSWGuiLevelUpPanel::HandleInputEvent(int nEvent, int nState)
-{
-    if (nState != 0)
-    {
-        switch (nEvent)
-        {
-        case 40:
-        case 46:
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            ChangeState(1);
-            break;
-        case 45:
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            break;
-        }
-    }
-    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
-}
-// PC 0x0075D590
-void CSWGuiLevelUpPanel::OnSelectAcceptButton(CSWGuiControl* pControl)
-{
-    if (pControl->m_bSelected != 0)
-    {
-        PlayGame();
-    }
-}
 // PC 0x0075D5B0
 CSWGuiLevelUpPanel::CSWGuiLevelUpPanel(CSWGuiManager* pManager,
                                        unsigned long nCreature)
@@ -547,6 +504,49 @@ CSWGuiLevelUpPanel::CSWGuiLevelUpPanel(CSWGuiManager* pManager,
     m_btnCancel.SetFocusable(0);
     m_btnCancel.AddEvent(39, this,
                          (PFNGUIEVENT)&CSWGuiLevelUpPanel::OnCancelPressed);
+#endif
+}
+// PC 0x0075DD30
+void CSWGuiLevelUpPanel::OnPanelAdded()
+{
+    m_nState = -1;
+    ChangeState(0);
+    m_nFirstState = m_nState;
+#ifdef _XBOX
+    m_pParent->SetBackPromptEnabled(m_bCanCancel);
+#else
+    if (m_bCanCancel == 0)
+    {
+        m_btnBack.SetEnabled(0);
+        m_btnBack.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
+        m_btnCancel.m_bEnabled = 0;
+    }
+    CSWGuiPanel::OnPanelAdded();
+    if (m_bShowGrantedFeats != 0)
+    {
+        CExoArrayList<unsigned long> lFeats;
+        m_pCreature->GetStats()->AddGrantedFeats(&lFeats);
+        CSWGuiSkillInfoBox* pInfoBox =
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pSkillInfoBox;
+        pInfoBox->SetSkillList(lFeats, CSWGuiInGameSkillEntry::ABILITY_FEAT);
+        pInfoBox->SetMessage(42258);
+        if (m_bShowGrantedPowers != 0)
+        {
+            pInfoBox->SetCallback(this,
+                                  (CSWGuiHandler)&CSWGuiLevelUpPanel::ShowGrantedPowers);
+        }
+        m_pManager->AddPanel(pInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+    }
+    if (m_bShowGrantedPowers != 0 && m_bShowGrantedFeats == 0)
+    {
+        CExoArrayList<unsigned long> lPowers;
+        m_pCreature->GetStats()->AddGrantedPowers(&lPowers);
+        CSWGuiSkillInfoBox* pInfoBox =
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pSkillInfoBox;
+        pInfoBox->SetSkillList(lPowers, CSWGuiInGameSkillEntry::ABILITY_POWER);
+        pInfoBox->SetMessage(111635);
+        m_pManager->AddPanel(pInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+    }
 #endif
 }
 
