@@ -11,8 +11,7 @@ reproduce `swkotor2.exe`.
 dev/          the game: engine libraries (libsource/) and game layers and the executable (game/)
 3rdparty/     where the Miles Sound System, Bink and NvTriStrip SDKs go (not distributed, see below)
 cmake/        toolchain files, platform settings and build helpers
-scripts/      extract_res.py: copies the cursors and icon out of your swkotor2.exe; make_implibs.py: rebuilds the
-              Bink and Miles import libraries from the DLLs the game ships (not used by the build)
+scripts/      extract_res.py: copies the cursors and icon out of your swkotor2.exe
 ```
 
 ## Prerequisites
@@ -31,8 +30,7 @@ scripts/      extract_res.py: copies the cursors and icon out of your swkotor2.e
   This writes `dev/game/swmain/res/` (`icon101.ico`, `cursor1.cur` ... `cursor92.cur`) and checks each file against
   `scripts/extract_res.sha256`.
 - The Bink 1.6b and Miles 6.6g import libraries, copied to `3rdparty/Bink/1.6b/lib/binkw32.lib` and
-  `3rdparty/Miles/6.6g/lib/mss32.lib` (see their README.md and MANIFEST.txt). `scripts/make_implibs.py` is no longer
-  used by the build; it rebuilds approximations of these libraries from the shipped DLLs.
+  `3rdparty/Miles/6.6g/lib/mss32.lib` (see their README.md and MANIFEST.txt).
 
 None of these files are part of the repository. With them in place the build reads nothing else outside the
 repository and the toolchain.
