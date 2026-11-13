@@ -440,9 +440,7 @@ void MdlNode::ProcessSkinSeams()
     Vector vOtherPosition;
     Vector vLocalNormal;
     Vector vNormal;
-#ifdef _XBOX
     Vector vDifference;
-#endif
 
     int nNode;
     for (nNode = 0; nNode < lstNodes.m_nCount; nNode++)
@@ -452,8 +450,7 @@ void MdlNode::ProcessSkinSeams()
         Quaternion qOrientation;
         while (pNode != 0)
         {
-            vTranslation = pNode->m_qOrientation * vTranslation;
-            vTranslation = vTranslation + pNode->m_vPosition;
+            vTranslation = pNode->m_qOrientation * vTranslation + pNode->m_vPosition;
             qOrientation = pNode->m_qOrientation * qOrientation;
             pNode = pNode->m_pParentNode;
         }
@@ -521,11 +518,7 @@ void MdlNode::ProcessSkinSeams()
                         vOtherPosition.m_fY = pOtherPosition->position.m_fY;
                         vOtherPosition.m_fZ = pOtherPosition->position.m_fZ;
                         vOtherPosition = lstOrientations[nOther] * vOtherPosition + lstPositions[nOther];
-#ifdef _XBOX
                         vDifference = vOtherPosition - vPosition;
-#else
-                        Vector vDifference = vOtherPosition - vPosition;
-#endif
                         if ((vDifference.m_fX < 0.0f ? -vDifference.m_fX : vDifference.m_fX) < MDL_SKIN_SEAM_TOLERANCE &&
                             (vDifference.m_fY < 0.0f ? -vDifference.m_fY : vDifference.m_fY) < MDL_SKIN_SEAM_TOLERANCE &&
                             (vDifference.m_fZ < 0.0f ? -vDifference.m_fZ : vDifference.m_fZ) < MDL_SKIN_SEAM_TOLERANCE)
