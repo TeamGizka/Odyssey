@@ -1060,22 +1060,22 @@ void PartTriMesh::Mat()
             Vector vColor = vIllumination;
             if (currentscene && m_pAurObject)
                 vColor = vColor + cmul(currentscene->m_vAmbient, vAmbient);
+            float fRed = vColor.m_fX;
+            float fGreen = vColor.m_fY;
+            float fBlue = vColor.m_fZ;
             AurSetVertexProgramParameter4f(VertexProgram::PARAM_MATERIAL_ILLUMINATION,
-                vColor.m_fX, vColor.m_fY, vColor.m_fZ, 1.0f);
+                fRed, fGreen, fBlue, 1.0f);
             AurSetVertexProgramParameter4f(VertexProgram::PARAM_MATERIAL_DIFFUSE,
                 vDiffuse.m_fX, vDiffuse.m_fY, vDiffuse.m_fZ, fAlpha);
             AurSetVertexProgramParameter4f(VertexProgram::PARAM_MATERIAL_AMBIENT,
                 vAmbient.m_fX, vAmbient.m_fY, vAmbient.m_fZ, 1.0f);
         }
-        GLRender_SetMaterialv(FACING_FRONT,
-                     MATERIAL_AMBIENT,
-                     Homogenize(vAmbient, 1.0f));
-        GLRender_SetMaterialv(FACING_FRONT,
-                     MATERIAL_DIFFUSE,
-                     Homogenize(vDiffuse, fAlpha));
-        GLRender_SetMaterialv(FACING_FRONT,
-                     MATERIAL_EMISSION,
-                     Homogenize(vIllumination, 1.0f));
+        float* pAmbient = Homogenize(vAmbient, 1.0f);
+        GLRender_SetMaterialv(FACING_FRONT, MATERIAL_AMBIENT, pAmbient);
+        float* pDiffuse = Homogenize(vDiffuse, fAlpha);
+        GLRender_SetMaterialv(FACING_FRONT, MATERIAL_DIFFUSE, pDiffuse);
+        float* pEmission = Homogenize(vIllumination, 1.0f);
+        GLRender_SetMaterialv(FACING_FRONT, MATERIAL_EMISSION, pEmission);
 #ifdef _XBOX
         if (m_pAurObject)
         {
