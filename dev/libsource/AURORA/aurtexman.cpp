@@ -4167,7 +4167,8 @@ int AurTextureReplaceTileReferences(CAurScene* pScene, const Vector& vPos,
         return 0;
     }
     CAurTextureBasic* pOld = pFound->AsCAurTextureBasic();
-    if (pOld->m_bDynamic == 0)
+    char bDynamic = pOld->m_bDynamic;
+    if (bDynamic == 0)
     {
 #ifdef _XBOX
         AurTextureSetModeStatic();

@@ -493,8 +493,7 @@ void LightPartTriMesh(PartTriMesh* pPart, List<PartLight*> lstLights, Scene* pSc
     }
     nColorPool = pPart->m_nColorPool;
     GLRender::UnlockPool(nColorPool);
-    nVertexPool = pMesh->m_pModel->AsModel()->m_nVertexPool;
-    GLRender::UnlockPool(nVertexPool);
+    GLRender::UnlockPool(pMesh->m_pModel->AsModel()->m_nVertexPool);
 #ifdef _XBOX
 
     if (checkprimitive)

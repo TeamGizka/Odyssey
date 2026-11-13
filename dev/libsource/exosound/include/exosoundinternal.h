@@ -50,8 +50,10 @@ public:
 
 
 
-    unsigned char GetMaxPlaying();
-    unsigned char GetPlaying();
+    // PC 0x006222F0
+    unsigned char GetMaxPlaying() { return m_nMaxPlaying; }
+    // PC 0x00622300
+    unsigned char GetPlaying() { return m_nPlaying; }
     void SetVolumeDistances(float fMin, float fMax)
     {
         m_fMaxVolumeDist = fMax;

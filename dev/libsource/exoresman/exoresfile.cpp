@@ -1415,7 +1415,7 @@ int CExoKeyTable::AddDirectoryContents(int bFlag)
     CExoArrayList<CExoArrayList<CExoString> > lstSubDirectoryFiles;
     int nSubDirectories = 0;
     int nSubDirectoryFiles = 0;
-    int i = 0;
+    int i;
     int j = 0;
     CResRef resRef;
 
@@ -1452,7 +1452,7 @@ int CExoKeyTable::AddDirectoryContents(int bFlag)
         return 0;
     }
 
-    for (; i < nFiles; i++)
+    for (i = 0; i < nFiles; i++)
     {
         sFile = lstFiles[i];
 

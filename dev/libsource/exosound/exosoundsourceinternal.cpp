@@ -916,7 +916,7 @@ unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)  // PC
     }
     unsigned char nGroup = m_nPriorityGroup;
     CExoSoundPriorityGroup* pGroup = m_pSound->GetPriorityGroup(nGroup);
-    if (pGroup != NULL && pGroup->m_nPlaying >= pGroup->m_nMaxPlaying)
+    if (pGroup != NULL && pGroup->GetPlaying() >= pGroup->GetMaxPlaying())
     {
         if (bNoInterrupt != 0 || pGroup->m_bInterrupt == 0)
         {

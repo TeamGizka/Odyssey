@@ -133,16 +133,6 @@ inline int CExoStreamingSoundSourceInternal::GetResourceType()
 {
     return m_nResourceType;
 }
-// PC 0x006222F0
-inline unsigned char CExoSoundPriorityGroup::GetMaxPlaying()
-{
-    return m_nMaxPlaying;
-}
-// PC 0x00622300
-inline unsigned char CExoSoundPriorityGroup::GetPlaying()
-{
-    return m_nPlaying;
-}
 // PC 0x00622310
 inline float CExoSoundInternal::GetDesiredAmbientScale()
 {
