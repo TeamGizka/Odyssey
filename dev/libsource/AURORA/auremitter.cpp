@@ -2988,7 +2988,6 @@ void LightningEmitter::Update(float fTimeStep)
         }
         if (m_lstReserved270.m_nCount < m_lstActive.m_nCount)
             m_lstReserved270.SetSize(m_lstActive.m_nCount);
-        int nMotionBlurred = MotionBlurred;
         for (int i = 0; i < m_lstActive.m_nCount; i++)
         {
             Particle* pParticle = m_lstActive[i];
@@ -2999,7 +2998,7 @@ void LightningEmitter::Update(float fTimeStep)
                 pParticle->m_fFrameAge = 0;
             }
             pParticle->m_fAge += fTimeStep;
-            if (m_nReserved114 == nMotionBlurred)
+            if (m_nReserved114 == MotionBlurred)
             {
                 float fBlend = (fTimeStep < m_fBlurLength ? fTimeStep : m_fBlurLength) / m_fBlurLength;
                 pParticle->m_vOrigin = fBlend * pParticle->m_vPosition +
@@ -3073,9 +3072,8 @@ void LightningEmitter::Update(float fTimeStep)
                                               (int)(fScale * m_fYSize * 100.0f));
                 bRandomStart = true;
             }
-            Particle* pLastParticle = m_lstActive[m_lstActive.m_nCount - 1];
-            pLastParticle->m_vPosition = m_pTarget->GetPosition();
-            Vector& vEnd = pLastParticle->m_vPosition;
+            Vector& vEnd = m_lstActive[m_lstActive.m_nCount - 1]->m_vPosition;
+            vEnd = m_pTarget->GetPosition();
             if (m_fTargetSize != 0.0f)
             {
                 Vector vOffset;

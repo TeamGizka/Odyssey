@@ -1371,7 +1371,8 @@ static void ProcessParts(BSPNode* pNode, void* pData, List<Plane>& planes)
             pGob->EnableInViewVolume();
             Vector vCenter = pGob->m_vPosition +
                 pGob->m_qOrientation * pGob->m_vMinimumBoundingSphere;
-            pGob->m_fZOrder = magnitude(CurrentCamera->m_vPosition - vCenter);
+            float fDistance = magnitude(CurrentCamera->m_vPosition - vCenter);
+            pGob->m_fZOrder = fDistance;
         }
         else
         {
