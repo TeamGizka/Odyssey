@@ -2961,15 +2961,13 @@ void CClientExoAppInternal::DoPassiveSelection(float fDeltaTime)
                     if (pObject != NULL)
                     {
                         int nIndex = aNearest.IndexOf((unsigned long)m_nLastTarget);
+                        if (nIndex != -1 && m_aNearestObjects[nIndex].m_nCanSee == CNearestStruct::CAN_SEE_UNKNOWN)
+                            m_aNearestObjects[nIndex].m_nCanSee = pPlayer->CanSee(pObject->AsSWCObject());
                         int bCanSee;
                         if (nIndex == -1)
                             bCanSee = pPlayer->CanSee(pObject->AsSWCObject());
                         else
-                        {
-                            if (m_aNearestObjects[nIndex].m_nCanSee == CNearestStruct::CAN_SEE_UNKNOWN)
-                                m_aNearestObjects[nIndex].m_nCanSee = pPlayer->CanSee(pObject->AsSWCObject());
                             bCanSee = m_aNearestObjects[nIndex].m_nCanSee;
-                        }
                         if (bCanSee)
                         {
                             m_fTargetInvisibleTime = 0.0f;
