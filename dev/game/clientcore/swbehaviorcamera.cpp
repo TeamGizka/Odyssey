@@ -776,15 +776,15 @@ Vector CSWCameraOnAStick::Control_ComputeNewCameraPosition(
 // PC 0x006908B0
 void CSWCameraOnAStick::SetLookAtTarget(CSWCObject* pTarget)
 {
-    if (m_pTarget.m_pObject != NULL && pTarget != NULL)
+    if (m_pTarget != NULL && pTarget != NULL)
     {
         m_oidLookAt = pTarget->m_nId;
         m_vLookAtOffset =
-            normalize(static_cast<Gob*>(m_pTarget.m_pObject)->GetPosition() -
+            normalize(static_cast<Gob*>((CAurObject*)m_pTarget)->GetPosition() -
                       pTarget->m_vPosition) *
             m_fDistance;
         m_vLookAtOffset +=
-            static_cast<Gob*>(m_pTarget.m_pObject)->GetPosition();
+            static_cast<Gob*>((CAurObject*)m_pTarget)->GetPosition();
         m_vLookAtOffset.m_fZ = m_fHeight + m_fPitch + m_vLookAtOffset.m_fZ;
     }
 }

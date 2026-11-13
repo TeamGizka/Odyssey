@@ -86,17 +86,19 @@ Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(  // PC 0x0073F9C0
     CSWCCreature* pCreature, CSWCObject* pTarget, float fTimeStep,
     float& fYaw)
 {
-    CAurCamera* pCamera = g_pAppManager->m_pClientExoApp->GetModuleCamera();
+    CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+    CAurCamera* pCamera = pClientExoApp->GetModuleCamera();
     Vector vResult;
     Vector vDirection;
     Vector vPosition = pCreature->m_vPosition;
 
     float fTurn;
+    float fPitch = 0.0f;
+    float fRoll = 0.0f;
     if (m_fTurn == 0.0f)
     {
-        fTurn = m_Acceleration
-                    .Update(Vector(0.0f, m_fTurnAcceleration, 0.0f),
-                            fTimeStep, 1, 0, 0, 0)
+        Vector vAcceleration(0.0f, m_fTurnAcceleration, 0.0f);
+        fTurn = m_Acceleration.Update(vAcceleration, fTimeStep, 1, 0, 0, 0)
                     .m_vRate.m_fY;
     }
     else
@@ -107,7 +109,7 @@ Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(  // PC 0x0073F9C0
     }
 
     Quaternion qOrientation =
-        YawPitchRoll(fTurn, 0.0f, 0.0f) * pCamera->GetOrientation();
+        YawPitchRoll(fTurn, fPitch, fRoll) * pCamera->GetOrientation();
     fYaw = Yaw(qOrientation);
 
     vDirection = Vector(2.0f * (qOrientation.m_fX * qOrientation.m_fY -
