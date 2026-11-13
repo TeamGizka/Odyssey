@@ -404,8 +404,6 @@ void Particle::randomDirection(int nWidth, int nHeight)
             {
                 Vector vDelta = vCameraDirection - vCameraDirection;
                 Vector vYDir = m_qOrientation.ydir();
-                vCameraDirection.m_fZ = 0.0f;
-                vCameraDirection.m_fY = 0.0f;
                 qNewOrientation.m_fW = 0.0f;
                 qNewOrientation.m_fZ = 0.0f;
             }
@@ -2426,8 +2424,9 @@ void PartEmitter::RenderLinked()  // PC 0x004C2590
             if (fLength > EMITTER_LINK_LENGTH_EPSILON)
             {
 
-                fX /= fLength;
-                fY /= fLength;
+                float fInverse = 1.0f / fLength;
+                fX *= fInverse;
+                fY *= fInverse;
                 vSide = vCameraX * fY - vCameraY * fX;
                 vAlong = vCameraX * fX + vCameraY * fY;
             }

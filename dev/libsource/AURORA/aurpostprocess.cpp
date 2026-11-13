@@ -480,15 +480,10 @@ void MdlNode::ProcessSkinSeams()
             RenderVertexV* pPosition = (RenderVertexV*)(pBuffer +
                 lstNodes[nNode]->m_nVertexDataOffset + lstNodes[nNode]->m_nPositionOffset +
                 nVertex * lstNodes[nNode]->m_nVertexStride);
-            Vector& vMeshPosition = lstPositions[nNode];
-#ifdef _XBOX
             vPosition.m_fX = pPosition->position.m_fX;
             vPosition.m_fY = pPosition->position.m_fY;
             vPosition.m_fZ = pPosition->position.m_fZ;
-#else
-            vPosition = pPosition->position;
-#endif
-            vPosition = lstOrientations[nNode] * vPosition + vMeshPosition;
+            vPosition = lstOrientations[nNode] * vPosition + lstPositions[nNode];
             lstNormals.SetSize(0);
             lstNormalNodes.SetSize(0);
             RenderVertexN* pNormal = (RenderVertexN*)(pBuffer +
@@ -503,7 +498,9 @@ void MdlNode::ProcessSkinSeams()
             vLocalNormal.m_fY = (float)((nPackedNormal << 10) >> 21) * (1.0f / 1023.0f);
             vLocalNormal.m_fZ = (float)(nPackedNormal >> 22) * (1.0f / 511.0f);
 #else
-            vLocalNormal = pNormal->normal;
+            vLocalNormal.m_fX = pNormal->normal.m_fX;
+            vLocalNormal.m_fY = pNormal->normal.m_fY;
+            vLocalNormal.m_fZ = pNormal->normal.m_fZ;
 #endif
             vNormal = lstOrientations[nNode] * vLocalNormal;
 
@@ -520,13 +517,9 @@ void MdlNode::ProcessSkinSeams()
                             lstNodes[nOther]->m_nVertexDataOffset +
                             lstNodes[nOther]->m_nPositionOffset +
                             nOtherVertex * lstNodes[nOther]->m_nVertexStride);
-#ifdef _XBOX
                         vOtherPosition.m_fX = pOtherPosition->position.m_fX;
                         vOtherPosition.m_fY = pOtherPosition->position.m_fY;
                         vOtherPosition.m_fZ = pOtherPosition->position.m_fZ;
-#else
-                        vOtherPosition = pOtherPosition->position;
-#endif
                         vOtherPosition = lstOrientations[nOther] * vOtherPosition + lstPositions[nOther];
 #ifdef _XBOX
                         vDifference = vOtherPosition - vPosition;
@@ -550,7 +543,9 @@ void MdlNode::ProcessSkinSeams()
                             vLocalNormal.m_fY = (float)((nPackedNormal << 10) >> 21) * (1.0f / 1023.0f);
                             vLocalNormal.m_fZ = (float)(nPackedNormal >> 22) * (1.0f / 511.0f);
 #else
-                            vLocalNormal = pNormal->normal;
+                            vLocalNormal.m_fX = pNormal->normal.m_fX;
+                            vLocalNormal.m_fY = pNormal->normal.m_fY;
+                            vLocalNormal.m_fZ = pNormal->normal.m_fZ;
 #endif
                             vNormal += lstOrientations[nOther] * vLocalNormal;
                         }
