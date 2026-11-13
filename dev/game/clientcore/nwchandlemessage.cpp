@@ -3744,7 +3744,8 @@ int CSWCMessage::HandleServerToPlayerArea(unsigned char nMinor)
             ClearReadMessage();
             return 0;
         }
-        if (!pArea->LoadArea(pCamera, pLoadScreen, 1))
+        int bLoaded = pArea->LoadArea(pCamera, pLoadScreen, 1);
+        if (!bLoaded)
         {
             ClearReadMessage();
             return 0;

@@ -4676,19 +4676,21 @@ void CSWCCreature::GetBehaviors(CExoArrayList<CSWGuiInterfaceAction>& lstActions
     C2DA* pAIScripts = g_pRules->Get2DArrays()->m_pAIScripts;
     CSWSCreature* pServerCreature = GetServerObject() != NULL
         ? GetServerObject()->AsSWSCreature() : NULL;
-    int nCurrentState = pServerCreature->m_pStats->m_nAIState;
+    CSWSCreatureStats* pServerStats = pServerCreature->m_pStats;
+    int nCurrentState = pServerStats->m_nAIState;
     if (nCurrentState != AI_STATE_AGGRESSIVE && nCurrentState != AI_STATE_RANGED &&
         nCurrentState != AI_STATE_STATIONARY && nCurrentState != AI_STATE_SUPPORT)
     {
-        GetServerCreature()->m_pStats->m_nAIState = AI_STATE_AGGRESSIVE;
+        pServerStats = GetServerCreature()->m_pStats;
+        pServerStats->m_nAIState = AI_STATE_AGGRESSIVE;
     }
     int nEntry = lstActions.num;
     int nNameStrRef = -1;
     int nAIState = -1;
     for (int i = 0; i < pAIScripts->m_nNumRows; i++)
     {
-        pAIScripts->GetINTEntry(i, CExoString("NAME_STRREF"), &nNameStrRef);
-        pAIScripts->GetINTEntry(i, CExoString("AISTATE"), &nAIState);
+        pAIScripts->GetINTEntry(i, "NAME_STRREF", &nNameStrRef);
+        pAIScripts->GetINTEntry(i, "AISTATE", &nAIState);
         if (nAIState != AI_STATE_PASSIVE)
         {
             if (i == AI_SCRIPT_ROW_SUPPORT &&
