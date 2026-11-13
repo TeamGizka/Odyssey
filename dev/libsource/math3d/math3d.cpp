@@ -342,6 +342,7 @@ int equal(const Vector& vFirst, const Vector& vSecond)
 float ClosestDistanceBetweenSegments(const Vector& vFirstStart, const Vector& vFirstEnd,
                                      const Vector& vSecondStart, const Vector& vSecondEnd)
 {
+    float sc = 0.0f;
     Vector u = vFirstEnd - vFirstStart;
     Vector v = vSecondEnd - vSecondStart;
     Vector w = vFirstStart - vSecondStart;
@@ -351,7 +352,7 @@ float ClosestDistanceBetweenSegments(const Vector& vFirstStart, const Vector& vF
     float d = SEGMENT_DOT(u, w);
     float e = SEGMENT_DOT(v, w);
     float D = a * c - b * b;
-    float sc, sN, sD = D;
+    float sN, sD = D;
     float tc, tN, tD = D;
 
     if (D < SEGMENT_SMALL_NUM)
@@ -410,8 +411,9 @@ float ClosestDistanceBetweenSegments(const Vector& vFirstStart, const Vector& vF
     tc = fabs(tN) < SEGMENT_SMALL_NUM_F ? 0.0f : tN / tD;
 
     Vector dP = w + (sc * u) - (tc * v);
-    return SEGMENT_MAX(SEGMENT_ABS(dP.m_fX),
-                       SEGMENT_MAX(SEGMENT_ABS(dP.m_fY), SEGMENT_ABS(dP.m_fZ)));
+    return SEGMENT_MAX(SEGMENT_ABS(dP.m_fY), SEGMENT_ABS(dP.m_fZ)) <= SEGMENT_ABS(dP.m_fX)
+               ? SEGMENT_ABS(dP.m_fX)
+               : SEGMENT_MAX(SEGMENT_ABS(dP.m_fY), SEGMENT_ABS(dP.m_fZ));
 }
 // PC 0x004D7A90
 void MakeMatrix4x4(float* pMatrix, const Vector& vTranslation,

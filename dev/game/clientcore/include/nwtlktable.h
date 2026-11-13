@@ -3,6 +3,8 @@
 
 #include "exobase.h"
 #include "exotlktable.h"
+#include "appmanager.h"
+#include "clientexoapp.h"
 
 class CGameObject;
 
@@ -32,7 +34,14 @@ public:
     unsigned long m_nPlayerId;
     unsigned char GetObjectGender();
     CExoString Fetch(unsigned long nStrRef, CGameObject* pObject, int nGender,
-                     int nFlags);
+                     int nFlags)
+    {
+        m_pObject = pObject;
+        m_nCurGender = GetObjectGender();
+        m_bFlag = nFlags;
+
+        return g_pAppManager->m_pClientExoApp->GetGUIString(nStrRef);
+    }
 
     void ParseStr(CExoString& sText, CGameObject* pObject, int nGender,
                   int nFlags)

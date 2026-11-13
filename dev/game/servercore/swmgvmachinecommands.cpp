@@ -68,113 +68,6 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastEvent(int nCommand,
     }
     return 0;
 }
-// PC 0x00619380
-int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetSwoopUpgrade(int nCommand, int nArgs)
-{
-    int nSlot;
-    int nUpgrade = 0;
-
-    if (g_pVirtualMachine->StackPopInteger(&nSlot) != 0)
-    {
-        int nIndex = nSlot;
-        nUpgrade = g_pAppManager->GetClientExoApp()->GetMiniGame()->m_anSwoopUpgrades[nIndex];
-    }
-    return g_pVirtualMachine->StackPushInteger(nUpgrade) != 0 ? 0 : -2000;
-}
-// PC 0x006193D0
-int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetTrackPosition(int nCommand, int nArgs)
-{
-    unsigned long oidFollower;
-    Vector vPosition(0.0f, 0.0f, 0.0f);
-
-    if (g_pVirtualMachine->StackPopObject(&oidFollower) != 0)
-    {
-        CSWMiniGameObject* pObject = (CSWMiniGameObject*)g_pAppManager->GetClientExoApp()->GetMGOArray()->GetMiniGameObject(oidFollower, SWMG_OBJECT_ANY);
-        CSWTrackFollower* pFollower = pObject->AsFollower();
-        vPosition = pFollower->m_pTrack->GetPosition();
-    }
-    return g_pVirtualMachine->StackPushVector(vPosition) != 0 ? 0 : -2000;
-}
-// PC 0x00619480
-int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerPosition(int nCommand, int nArgs)
-{
-    Vector vPosition(0.0f, 0.0f, 0.0f);
-
-    if (g_pVirtualMachine->StackPopVector(&vPosition) != 0)
-    {
-        g_pAppManager->GetClientExoApp()->GetMiniGame()->SetCurPos(vPosition);
-    }
-    return 0;
-}
-// PC 0x006194F0
-int CSWVirtualMachineCommands::ExecuteCommandSWMG_DestroyMiniGameObject(int nCommand, int nArgs)
-{
-    unsigned long oidObject;
-
-    if (g_pVirtualMachine->StackPopObject(&oidObject) != 0)
-    {
-        CSWMiniGameObject* pObject = (CSWMiniGameObject*)g_pAppManager->GetClientExoApp()->GetMGOArray()->GetMiniGameObject(oidObject, SWMG_OBJECT_ANY);
-        CSWMGObstacle* pObstacle = pObject->AsObstacle();
-        if (pObstacle != NULL)
-        {
-            g_pAppManager->GetClientExoApp()->GetMiniGame()->RemoveObstacle(pObstacle);
-        }
-    }
-    return 0;
-}
-// PC 0x00619550
-int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetJumpSpeed(int nCommand, int nArgs)
-{
-    float fSpeed;
-
-    if (g_pVirtualMachine->StackPopFloat(&fSpeed) != 0)
-    {
-        g_pAppManager->GetClientExoApp()->GetMiniGame()->m_fJumpSpeed = fSpeed;
-    }
-    return 0;
-}
-// PC 0x00619590
-int CSWVirtualMachineCommands::ExecuteCommandSWMG_PlayerApplyForce(int nCommand, int nArgs)
-{
-    Vector vForce(0.0f, 0.0f, 0.0f);
-
-    if (g_pVirtualMachine->StackPopVector(&vForce) != 0)
-    {
-        CSWMiniGame* pMiniGame = g_pAppManager->GetClientExoApp()->GetMiniGame();
-        pMiniGame->m_fJumpSpeed = vForce.m_fZ;
-        CSWMGPhysicsState cCurrent = pMiniGame->m_CurrentState;
-        CSWMGPhysicsState cNext = pMiniGame->m_NextState;
-        cCurrent.m_vValue.m_fX = vForce.m_fX;
-        cNext.m_vValue.m_fX = vForce.m_fX;
-        pMiniGame->m_NextState = cNext;
-        pMiniGame->m_CurrentState = cCurrent;
-        pMiniGame->m_fLateralAccel = vForce.m_fX;
-    }
-    return 0;
-}
-// PC 0x00619640
-int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastEventModelName(
-    int nCommand, int nArgs)
-{
-    CClientExoApp* pApp;
-    CSWMiniGameObject* pObject;
-
-    pApp = g_pAppManager->m_pClientExoApp;
-    pObject = (CSWMiniGameObject*)pApp->GetMGOArray()->GetMiniGameObject(
-        m_oidObject, 0);
-
-    CExoString sModelName;
-    if (pObject != NULL && pObject->m_pModel.m_pObject != NULL)
-    {
-
-        sModelName = static_cast<Gob*>(pObject->m_pModel.m_pObject)->GetModelName();
-    }
-    if (g_pVirtualMachine->StackPushString(sModelName.CStr()) == 0)
-    {
-        return -2000;
-    }
-    return 0;
-}
 // PC 0x006178A0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectByName(int nCommand,
                                                                   int nArgs)
@@ -640,31 +533,6 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayer(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidPlayer) != 0 ? 0 : -2000;
 }
-// PC 0x00619730
-int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetMiniGameCounts(
-    int nCommand, int nArgs)
-{
-    CClientExoApp* pApp;
-    CSWMiniGame* pMiniGame;
-    int nCount;
-
-    pApp = g_pAppManager->m_pClientExoApp;
-    pMiniGame = pApp->GetMiniGame();
-    nCount = 0;
-    if (pMiniGame != NULL)
-    {
-        switch (nCommand)
-        {
-        case 612:
-            nCount = pMiniGame->m_lstEnemyIds.num;
-            break;
-        case 614:
-            nCount = pMiniGame->m_lstObstacleIds.num;
-            break;
-        }
-    }
-    return g_pVirtualMachine->StackPushInteger(nCount) != 0 ? 0 : -2000;
-}
 // PC 0x00618220
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetMiniGameObjects(
     int nCommand, int nArgs)
@@ -699,46 +567,6 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetMiniGameObjects(
         }
     }
     return g_pVirtualMachine->StackPushObject(nObjectId) != 0 ? 0 : -2000;
-}
-// PC 0x00619780
-int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerIntInfo(
-    int nCommand, int nArgs)
-{
-    unsigned long nObjectId;
-    int nValue;
-    CClientExoApp* pApp;
-    CSWTrackFollower* pFollower;
-
-    nValue = 0;
-    if (g_pVirtualMachine->StackPopObject(&nObjectId) == 0)
-    {
-        return -2001;
-    }
-    pApp = g_pAppManager->m_pClientExoApp;
-    pFollower =
-        (CSWTrackFollower*)pApp->GetMGOArray()->GetMiniGameObject(nObjectId, SWMG_OBJECT_FOLLOWER);
-    if (pFollower != NULL)
-    {
-        switch (nCommand)
-        {
-        case 616:
-            nValue = pFollower->m_nHitPoints;
-            break;
-        case 617:
-            nValue = pFollower->m_nMaxHPs;
-            break;
-        case 621:
-            nValue = pFollower->m_nNumLoops;
-            break;
-        case 624:
-            nValue = pFollower->m_lstGunBanks.num;
-            break;
-        case 665:
-            nValue = pFollower->GetIsInvulnerable();
-            break;
-        }
-    }
-    return g_pVirtualMachine->StackPushInteger(nValue) != 0 ? 0 : -2000;
 }
 // PC 0x006182C0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_StartInvulnerability(
@@ -1529,6 +1357,178 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLateralAccelPerSec(
     pApp = g_pAppManager->m_pClientExoApp;
     fAccel = pApp->GetMiniGame()->m_fLateralAccel;
     return g_pVirtualMachine->StackPushFloat(fAccel) != 0 ? 0 : -2000;
+}
+// PC 0x00619380
+int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetSwoopUpgrade(int nCommand, int nArgs)
+{
+    int nSlot;
+    int nUpgrade = 0;
+
+    if (g_pVirtualMachine->StackPopInteger(&nSlot) != 0)
+    {
+        int nIndex = nSlot;
+        nUpgrade = g_pAppManager->GetClientExoApp()->GetMiniGame()->m_anSwoopUpgrades[nIndex];
+    }
+    return g_pVirtualMachine->StackPushInteger(nUpgrade) != 0 ? 0 : -2000;
+}
+// PC 0x006193D0
+int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetTrackPosition(int nCommand, int nArgs)
+{
+    unsigned long oidFollower;
+    Vector vPosition(0.0f, 0.0f, 0.0f);
+
+    if (g_pVirtualMachine->StackPopObject(&oidFollower) != 0)
+    {
+        CSWMiniGameObject* pObject = (CSWMiniGameObject*)g_pAppManager->GetClientExoApp()->GetMGOArray()->GetMiniGameObject(oidFollower, SWMG_OBJECT_ANY);
+        CSWTrackFollower* pFollower = pObject->AsFollower();
+        vPosition = pFollower->m_pTrack->GetPosition();
+    }
+    return g_pVirtualMachine->StackPushVector(vPosition) != 0 ? 0 : -2000;
+}
+// PC 0x00619480
+int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerPosition(int nCommand, int nArgs)
+{
+    Vector vPosition(0.0f, 0.0f, 0.0f);
+
+    if (g_pVirtualMachine->StackPopVector(&vPosition) != 0)
+    {
+        g_pAppManager->GetClientExoApp()->GetMiniGame()->SetCurPos(vPosition);
+    }
+    return 0;
+}
+// PC 0x006194F0
+int CSWVirtualMachineCommands::ExecuteCommandSWMG_DestroyMiniGameObject(int nCommand, int nArgs)
+{
+    unsigned long oidObject;
+
+    if (g_pVirtualMachine->StackPopObject(&oidObject) != 0)
+    {
+        CSWMiniGameObject* pObject = (CSWMiniGameObject*)g_pAppManager->GetClientExoApp()->GetMGOArray()->GetMiniGameObject(oidObject, SWMG_OBJECT_ANY);
+        CSWMGObstacle* pObstacle = pObject->AsObstacle();
+        if (pObstacle != NULL)
+        {
+            g_pAppManager->GetClientExoApp()->GetMiniGame()->RemoveObstacle(pObstacle);
+        }
+    }
+    return 0;
+}
+// PC 0x00619550
+int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetJumpSpeed(int nCommand, int nArgs)
+{
+    float fSpeed;
+
+    if (g_pVirtualMachine->StackPopFloat(&fSpeed) != 0)
+    {
+        g_pAppManager->GetClientExoApp()->GetMiniGame()->m_fJumpSpeed = fSpeed;
+    }
+    return 0;
+}
+// PC 0x00619590
+int CSWVirtualMachineCommands::ExecuteCommandSWMG_PlayerApplyForce(int nCommand, int nArgs)
+{
+    Vector vForce(0.0f, 0.0f, 0.0f);
+
+    if (g_pVirtualMachine->StackPopVector(&vForce) != 0)
+    {
+        CSWMiniGame* pMiniGame = g_pAppManager->GetClientExoApp()->GetMiniGame();
+        pMiniGame->m_fJumpSpeed = vForce.m_fZ;
+        CSWMGPhysicsState cCurrent = pMiniGame->m_CurrentState;
+        CSWMGPhysicsState cNext = pMiniGame->m_NextState;
+        cCurrent.m_vValue.m_fX = vForce.m_fX;
+        cNext.m_vValue.m_fX = vForce.m_fX;
+        pMiniGame->m_NextState = cNext;
+        pMiniGame->m_CurrentState = cCurrent;
+        pMiniGame->m_fLateralAccel = vForce.m_fX;
+    }
+    return 0;
+}
+// PC 0x00619640
+int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastEventModelName(
+    int nCommand, int nArgs)
+{
+    CClientExoApp* pApp;
+    CSWMiniGameObject* pObject;
+
+    pApp = g_pAppManager->m_pClientExoApp;
+    pObject = (CSWMiniGameObject*)pApp->GetMGOArray()->GetMiniGameObject(
+        m_oidObject, 0);
+
+    CExoString sModelName;
+    if (pObject != NULL && pObject->m_pModel.m_pObject != NULL)
+    {
+
+        sModelName = static_cast<Gob*>(pObject->m_pModel.m_pObject)->GetModelName();
+    }
+    if (g_pVirtualMachine->StackPushString(sModelName.CStr()) == 0)
+    {
+        return -2000;
+    }
+    return 0;
+}
+// PC 0x00619730
+int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetMiniGameCounts(
+    int nCommand, int nArgs)
+{
+    CClientExoApp* pApp;
+    CSWMiniGame* pMiniGame;
+    int nCount;
+
+    pApp = g_pAppManager->m_pClientExoApp;
+    pMiniGame = pApp->GetMiniGame();
+    nCount = 0;
+    if (pMiniGame != NULL)
+    {
+        switch (nCommand)
+        {
+        case 612:
+            nCount = pMiniGame->m_lstEnemyIds.num;
+            break;
+        case 614:
+            nCount = pMiniGame->m_lstObstacleIds.num;
+            break;
+        }
+    }
+    return g_pVirtualMachine->StackPushInteger(nCount) != 0 ? 0 : -2000;
+}
+// PC 0x00619780
+int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerIntInfo(
+    int nCommand, int nArgs)
+{
+    unsigned long nObjectId;
+    int nValue;
+    CClientExoApp* pApp;
+    CSWTrackFollower* pFollower;
+
+    nValue = 0;
+    if (g_pVirtualMachine->StackPopObject(&nObjectId) == 0)
+    {
+        return -2001;
+    }
+    pApp = g_pAppManager->m_pClientExoApp;
+    pFollower =
+        (CSWTrackFollower*)pApp->GetMGOArray()->GetMiniGameObject(nObjectId, SWMG_OBJECT_FOLLOWER);
+    if (pFollower != NULL)
+    {
+        switch (nCommand)
+        {
+        case 616:
+            nValue = pFollower->m_nHitPoints;
+            break;
+        case 617:
+            nValue = pFollower->m_nMaxHPs;
+            break;
+        case 621:
+            nValue = pFollower->m_nNumLoops;
+            break;
+        case 624:
+            nValue = pFollower->m_lstGunBanks.num;
+            break;
+        case 665:
+            nValue = pFollower->GetIsInvulnerable();
+            break;
+        }
+    }
+    return g_pVirtualMachine->StackPushInteger(nValue) != 0 ? 0 : -2000;
 }
 // PC 0x00619960
 void CSWVirtualMachineCommands::InitializeSWMGCommands()

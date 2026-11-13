@@ -339,13 +339,6 @@ public:
         SPauseStateFlags m_Flags;
     };
 
-    CGameObject* GetGameObject(unsigned long oidObject)
-    {
-        CGameObject* pGameObject = NULL;
-        GetGameObjectArray()->GetGameObject(oidObject, &pGameObject);
-        return pGameObject;
-    }
-
     void DisableInput();
     void EnableInput();
     int PerformXMouseMoveAction(int nX);
@@ -396,8 +389,8 @@ public:
     void DisplayMainMenu(int bUnknown);
 #ifdef _XBOX
     void DisplayStartScreen();
-    void ShutDownLegalScreen();
 #endif
+    void ShutDownLegalScreen();
     void UnloadModule();
     void CleanUpModuleServices();
     CSWCModule* CreateModule();
@@ -419,6 +412,12 @@ public:
     int GetPlayerMovementInput();
     CAurCamera* GetModuleCamera();
     CGameObjectArray* GetGameObjectArray() { return m_pGameObjectArray; }
+    CGameObject* GetGameObject(unsigned long oidObject)
+    {
+        CGameObject* pGameObject = NULL;
+        GetGameObjectArray()->GetGameObject(oidObject, &pGameObject);
+        return pGameObject;
+    }
     CSWCPlayer* GetPlayerByGameObjectID(unsigned long oidObject);
     CSWCItem* GetItemByGameObjectID(unsigned long nId);
     CSWCCreature* GetCreatureByGameObjectID(unsigned long nId);

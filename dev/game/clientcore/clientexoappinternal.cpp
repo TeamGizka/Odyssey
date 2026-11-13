@@ -199,16 +199,6 @@ CSWCModule* CClientExoAppInternal::GetModule()
 {
     return m_pModule;
 }
-// PC 0x0057F240
-CExoString CSWTlkTable::Fetch(unsigned long nStrRef, CGameObject* pObject,
-                              int nGender, int nFlags)
-{
-    m_pObject = pObject;
-    m_nCurGender = GetObjectGender();
-    m_bFlag = nFlags;
-
-    return g_pAppManager->m_pClientExoApp->GetGUIString(nStrRef);
-}
 // PC 0x006396D0
 CExoString CSWCModule::GetModuleTitle()
 {
@@ -297,8 +287,6 @@ CAurCamera* CClientExoAppInternal::GetModuleCamera()
     return 0;
 }
 
-#ifdef _XBOX
-
 void CClientExoAppInternal::ShutDownLegalScreen()
 {
     if (m_pLegalScreen != NULL)
@@ -312,7 +300,6 @@ void CClientExoAppInternal::ShutDownLegalScreen()
         m_pLegalScreen = NULL;
     }
 }
-#endif
 // PC 0x006399F0
 int CClientExoAppInternal::HandleMessage(unsigned long nPlayerId,
                                          unsigned char* pMessage,
