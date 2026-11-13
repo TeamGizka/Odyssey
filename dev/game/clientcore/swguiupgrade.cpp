@@ -864,7 +864,8 @@ void CSWGuiUpgradeSelection::PopulateItemList()
     C2DA* pTable = new C2DA("upgrade", 0);
     pTable->Load2DArray();
     SetDescription("");
-    unsigned long oidPC = pServer->GetPlayerList()->GetHead()->AsSWSPlayer()->m_oidPCObject;
+    CSWSPlayer* pPlayer = pServer->GetPlayerList()->GetHead()->AsSWSPlayer();
+    unsigned long oidPC = pPlayer->m_oidPCObject;
     CSWSCreature* pCreature = pServer->GetCreatureByGameObjectID(oidPC);
     if (pCreature->m_bPlayerCreated != 0)
     {
@@ -3633,14 +3634,17 @@ void CSWGuiCreateItem::SetItemList()
             return;
         if (!pTable->GetINTEntry(nRow, "base_skill", &nBaseSkill))
             return;
-        if (nSkill <= pCreature->m_pStats->GetSkillRank(nBaseSkill, 0, 0) + 8 &&
+        CSWSCreatureStats* pStats = pCreature->m_pStats;
+        char nRank = pStats->GetSkillRank(nBaseSkill, 0, 0);
+        if (nSkill <= nRank + 8 &&
             nGroup == m_nCreateFilter &&
             (nLevelRequired == 0 || nLevel >= nLevelRequired) &&
             (nAlignmentRequired == 0 || nAlignment == nAlignmentRequired))
         {
             CSWSItem* pItem = new CSWSItem(OBJECT_INVALID);
             pTable->GetCExoStringEntry(nRow, "label", &sLabel);
-            if (pItem->LoadFromTemplate(CResRef(sLabel.CStr())))
+            CResRef cTemplate(sLabel.CStr());
+            if (pItem->LoadFromTemplate(cTemplate))
                 m_pStore->AcquireItem(pItem, 1);
         }
     }
