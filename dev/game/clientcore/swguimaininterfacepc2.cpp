@@ -282,7 +282,8 @@ CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // PC 0x006E5
 
     m_fScaleX = 1.0f;
     m_fScaleY = 1.0f;
-    float fWidthScale = (float)pManager->m_nWidth / (float)g_nGUIWidth;
+    float fWidthScale = (float)pManager->m_nWidth;
+    fWidthScale /= (float)g_nGUIWidth;
     float fHeightScale = (float)pManager->m_nHeight / (float)g_nGUIHeight;
     m_fScaleX = fWidthScale;
     m_fScaleY = fHeightScale;
