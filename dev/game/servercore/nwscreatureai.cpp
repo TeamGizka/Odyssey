@@ -44,6 +44,21 @@
 
 static inline void NwscreatureaiTrace1();
 
+#define NWSCREATUREAI_DEBUG_LINE_HEIGHT 1.0f
+
+static inline void NwscreatureaiDebugLine(const Vector&, const Vector&, int)
+{
+}
+
+#define NWSCREATUREAI_DEBUG_MARKER_SIZE 0.25f
+#define NWSCREATUREAI_DEBUG_MARKER(vPoint) \
+    NwscreatureaiDebugLine((vPoint) + Vector(-NWSCREATUREAI_DEBUG_MARKER_SIZE, 0.0f, 0.0f), (vPoint) + Vector(NWSCREATUREAI_DEBUG_MARKER_SIZE, 0.0f, 0.0f), 0); \
+    NwscreatureaiDebugLine((vPoint) + Vector(0.0f, -NWSCREATUREAI_DEBUG_MARKER_SIZE, 0.0f), (vPoint) + Vector(0.0f, NWSCREATUREAI_DEBUG_MARKER_SIZE, 0.0f), 0); \
+    NwscreatureaiDebugLine((vPoint) + Vector(0.0f, 0.0f, -NWSCREATUREAI_DEBUG_MARKER_SIZE), (vPoint) + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_MARKER_SIZE), 0); \
+    NwscreatureaiDebugLine((vPoint) + Vector(-NWSCREATUREAI_DEBUG_MARKER_SIZE, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), (vPoint) + Vector(NWSCREATUREAI_DEBUG_MARKER_SIZE, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), 0); \
+    NwscreatureaiDebugLine((vPoint) + Vector(0.0f, -NWSCREATUREAI_DEBUG_MARKER_SIZE, NWSCREATUREAI_DEBUG_LINE_HEIGHT), (vPoint) + Vector(0.0f, NWSCREATUREAI_DEBUG_MARKER_SIZE, NWSCREATUREAI_DEBUG_LINE_HEIGHT), 0); \
+    NwscreatureaiDebugLine((vPoint) + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT - NWSCREATUREAI_DEBUG_MARKER_SIZE), (vPoint) + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT + NWSCREATUREAI_DEBUG_MARKER_SIZE), 0);
+
 unsigned long AiTimeSlice = CSWSObject::AI_TIME_SLICE;
 float GrenadeThrowThreshold = 10.0f;
 int bNoForceMoves = 0;
@@ -3203,6 +3218,8 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_FindPath(
         Quaternion(Vector(0.0f, 0.0f, 1.0f), DegToRad(fFacing)) *
             pMember->m_vFormationOffset;
     vOffsetPosition.m_fZ = GetArea()->ComputeHeight(vOffsetPosition, 1, NULL);
+    NwscreatureaiDebugLine(vPathPosition + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT),
+        vOffsetPosition + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), 0);
     pMember->m_vFollowPosition = vPathPosition;
     pMember->m_nFollowPathIndex = nPathIndex;
     m_pPathfindInformation->SetBlockingCreature(OBJECT_INVALID);
@@ -4610,10 +4627,10 @@ int CSWSCreature::AIActionForceFollowObject(CSWSObjectActionNode* pAction)
 
     unsigned long oidTarget;
     int bRun;
+    float fWait = NWSCREATURE_FORCE_FOLLOW_WAIT;
     Vector vOffset;
     int bFollowing;
     Vector vLastPosition;
-    float fWait = NWSCREATURE_FORCE_FOLLOW_WAIT;
 
     EXOXBOXASSERT(pAction->m_nNumParams == 7);
     oidTarget = (unsigned long)pAction->m_apParam[0];
@@ -4630,8 +4647,10 @@ int CSWSCreature::AIActionForceFollowObject(CSWSObjectActionNode* pAction)
         return ACTION_FAILED;
 
     Vector vLeaderPosition = g_pAppManager->GetClientExoApp()->GetSWParty()->m_vLeaderFollowPosition;
+    NWSCREATUREAI_DEBUG_MARKER(vLeaderPosition)
     CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
     Vector vPosition = vLeaderPosition + pParty->m_qLeaderFacing * vOffset;
+    NwscreatureaiDebugLine(vLeaderPosition + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), vPosition + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), 0);
     unsigned long oidArea = pObject->AsSWSObject()->m_oidArea;
     Vector vDelta = vPosition - vLastPosition;
 
