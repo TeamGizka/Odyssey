@@ -119,7 +119,6 @@ CExoString CSWCAnimBaseDoor::GetAnimationName(unsigned short nAnimation)
 unsigned short CSWCAnimBaseDoor::ServerToClientAnimation(
     unsigned short nAnimation)
 {
-    NWCANIMBASEDOOR_TRACE();
     char szBuffer[256];
     unsigned short nClientAnimation = nAnimation;
 

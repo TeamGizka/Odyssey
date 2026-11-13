@@ -164,6 +164,204 @@ CExoSoundSourceInternal::~CExoSoundSourceInternal()  // PC 0x00627440 GOG 0x0062
 {
     ShutDownSource(true);
 }
+
+unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)  // PC 0x006274A0 GOG 0x00627440
+{
+    CExoString sName;
+    AILSOUNDINFO info;
+
+    m_bRetryPlay = 0;
+    m_nOneShotDelay = 0;
+    m_nDelayStart = 0;
+    if (m_pSound->m_bInitialized == 0)
+    {
+        if (m_bPlayWhenFree != 0)
+        {
+            m_bRetryPlay = 1;
+        }
+        return m_nDuration;
+    }
+    int bLooping = m_bLooping;
+    int nLoopCount = bLooping == 0;
+    if (bResume == 0)
+    {
+        m_nRestartPosition = 0;
+    }
+    if (m_p3DVoice != 0 && m_p3DVoice->m_hSample != 0)
+    {
+        AIL_stop_3D_sample(m_p3DVoice->m_hSample);
+        AIL_set_3D_sample_loop_count(m_p3DVoice->m_hSample, nLoopCount);
+        AIL_set_3D_sample_offset(m_p3DVoice->m_hSample, 0);
+        AIL_resume_3D_sample(m_p3DVoice->m_hSample);
+        return m_nDuration;
+    }
+    if (m_p2DVoice != 0 && m_p2DVoice->m_hSample != 0)
+    {
+        AIL_stop_sample(m_p2DVoice->m_hSample);
+        AIL_set_sample_loop_count(m_p2DVoice->m_hSample, nLoopCount);
+        AIL_set_sample_position(m_p2DVoice->m_hSample, 0);
+        AIL_resume_sample(m_p2DVoice->m_hSample);
+        return m_nDuration;
+    }
+    if (m_nDuration == 0 && m_bDemanded == 0)
+    {
+        if (Demand() == 0)
+        {
+            if (m_bPlayWhenFree != 0)
+            {
+                m_bRetryPlay = 1;
+            }
+            return m_nDuration;
+        }
+
+        if (m_pRes != 0)
+        {
+            sName.CStr();
+            m_pRes->GetDemands();
+        }
+        AIL_WAV_info(m_pRes->GetData(), &info);
+        unsigned long nRate = info.rate;
+        unsigned long nChannels = info.channels;
+        double dDuration = 8.0 / (double)(nRate * info.bits);
+        dDuration *= (double)(info.data_len / nChannels);
+        dDuration *= 1000.0;
+        m_nDuration = (unsigned int)dDuration;
+        if (m_b3D != 0 && nChannels != 1)
+        {
+            ReleaseDemand();
+            if (m_bPlayWhenFree != 0)
+            {
+                m_bRetryPlay = 1;
+            }
+            return m_nDuration;
+        }
+        m_nSampleRate = nRate;
+        m_nPitchRate = nRate;
+        if (m_fPitchVariance != 0.0f)
+        {
+            CalculatePitchVarianceFrequency();
+        }
+        if (m_fFixedVariance != 0.0f)
+        {
+            CalculateFixedVarianceFrequency();
+        }
+    }
+    if (GetWithinRangeOfListener() == 0)
+    {
+        ReleaseDemand();
+        if (m_bLooping != 0)
+        {
+            if (m_nListType == LIST_NONE)
+            {
+                m_pSound->AddToNonPlayingLoopingList(this);
+            }
+            return m_nDuration;
+        }
+        if (m_bPlayWhenFree != 0)
+        {
+            m_bRetryPlay = 1;
+        }
+        return m_nDuration;
+    }
+    unsigned char nGroup = m_nPriorityGroup;
+    CExoSoundPriorityGroup* pGroup = m_pSound->GetPriorityGroup(nGroup);
+    if (pGroup != NULL && pGroup->GetPlaying() >= pGroup->GetMaxPlaying())
+    {
+        if (bNoInterrupt != 0 || pGroup->m_bInterrupt == 0)
+        {
+            ReleaseDemand();
+            if (m_bLooping != 0)
+            {
+                if (m_nListType == LIST_NONE)
+                {
+                    m_pSound->AddToNonPlayingLoopingList(this);
+                }
+            }
+            else if (m_bPlayWhenFree != 0)
+            {
+                m_bRetryPlay = 1;
+            }
+            return m_nDuration;
+        }
+        unsigned char nPriorityGroup = m_nPriorityGroup;
+        m_pSound->InterruptPlayingSound(nPriorityGroup);
+    }
+    int b3D = m_b3D;
+    CExoSoundInternal* pSound = m_pSound;
+    if (b3D != 0)
+    {
+        unsigned char nPriorityGroup = m_nPriorityGroup;
+        C3DVoice* p3DVoice =
+            pSound->GetFree3DVoice(nPriorityGroup);
+        if (p3DVoice == 0)
+        {
+            ReleaseDemand();
+            if (m_bLooping != 0)
+            {
+                if (m_nListType == LIST_NONE)
+                {
+                    m_pSound->AddToNonPlayingLoopingList(this);
+                }
+            }
+            else if (m_bPlayWhenFree != 0)
+            {
+                m_bRetryPlay = 1;
+            }
+            return m_nDuration;
+        }
+        if (m_bDemanded == 0 && Demand() == 0)
+        {
+            if (m_bPlayWhenFree != 0)
+            {
+                m_bRetryPlay = 1;
+            }
+            return m_nDuration;
+        }
+        m_pSound->PlaySourceOn3DVoice(this, p3DVoice);
+    }
+    else
+    {
+        unsigned char nPriorityGroup = m_nPriorityGroup;
+        C2DVoice* p2DVoice =
+            pSound->GetFree2DVoice(nPriorityGroup);
+        if (p2DVoice == 0)
+        {
+            ReleaseDemand();
+            if (m_bLooping != 0)
+            {
+                if (m_nListType == LIST_NONE)
+                {
+                    m_pSound->AddToNonPlayingLoopingList(this);
+                }
+            }
+            else if (m_bPlayWhenFree != 0)
+            {
+                m_bRetryPlay = 1;
+            }
+            return m_nDuration;
+        }
+        if (m_bDemanded == 0 && Demand() == 0)
+        {
+            if (m_bPlayWhenFree != 0)
+            {
+                m_bRetryPlay = 1;
+            }
+            return m_nDuration;
+        }
+        m_pSound->PlaySourceOn2DVoice(this, p2DVoice);
+    }
+    if (m_nListType == LIST_NONPLAYING_LOOPING)
+    {
+        m_pSound->RemoveFromNonPlayingLoopingList(this);
+    }
+    m_pSound->AddToPlayingList(this);
+    if (m_pSound->m_bPaused != 0 ||
+        (g_bSoundPaused != 0 && m_pSound->GetPauseable(this) != 0))
+    {
+        Pause();
+    }
+    return m_nDuration;
+}
 #endif
 // PC 0x00626FE0 GOG 0x00626F80
 int CExoSoundSourceInternal::GetWithinRangeOfListener()
@@ -816,203 +1014,6 @@ unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)
     return nDuration;
 }
 #else
-unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)  // PC 0x006274A0 GOG 0x00627440
-{
-    CExoString sName;
-    AILSOUNDINFO info;
-
-    m_bRetryPlay = 0;
-    m_nOneShotDelay = 0;
-    m_nDelayStart = 0;
-    if (m_pSound->m_bInitialized == 0)
-    {
-        if (m_bPlayWhenFree != 0)
-        {
-            m_bRetryPlay = 1;
-        }
-        return m_nDuration;
-    }
-    int bLooping = m_bLooping;
-    int nLoopCount = bLooping == 0;
-    if (bResume == 0)
-    {
-        m_nRestartPosition = 0;
-    }
-    if (m_p3DVoice != 0 && m_p3DVoice->m_hSample != 0)
-    {
-        AIL_stop_3D_sample(m_p3DVoice->m_hSample);
-        AIL_set_3D_sample_loop_count(m_p3DVoice->m_hSample, nLoopCount);
-        AIL_set_3D_sample_offset(m_p3DVoice->m_hSample, 0);
-        AIL_resume_3D_sample(m_p3DVoice->m_hSample);
-        return m_nDuration;
-    }
-    if (m_p2DVoice != 0 && m_p2DVoice->m_hSample != 0)
-    {
-        AIL_stop_sample(m_p2DVoice->m_hSample);
-        AIL_set_sample_loop_count(m_p2DVoice->m_hSample, nLoopCount);
-        AIL_set_sample_position(m_p2DVoice->m_hSample, 0);
-        AIL_resume_sample(m_p2DVoice->m_hSample);
-        return m_nDuration;
-    }
-    if (m_nDuration == 0 && m_bDemanded == 0)
-    {
-        if (Demand() == 0)
-        {
-            if (m_bPlayWhenFree != 0)
-            {
-                m_bRetryPlay = 1;
-            }
-            return m_nDuration;
-        }
-
-        if (m_pRes != 0)
-        {
-            sName.CStr();
-            m_pRes->GetDemands();
-        }
-        AIL_WAV_info(m_pRes->GetData(), &info);
-        unsigned long nRate = info.rate;
-        unsigned long nChannels = info.channels;
-        double dDuration = 8.0 / (double)(nRate * info.bits);
-        dDuration *= (double)(info.data_len / nChannels);
-        dDuration *= 1000.0;
-        m_nDuration = (unsigned int)dDuration;
-        if (m_b3D != 0 && nChannels != 1)
-        {
-            ReleaseDemand();
-            if (m_bPlayWhenFree != 0)
-            {
-                m_bRetryPlay = 1;
-            }
-            return m_nDuration;
-        }
-        m_nSampleRate = nRate;
-        m_nPitchRate = nRate;
-        if (m_fPitchVariance != 0.0f)
-        {
-            CalculatePitchVarianceFrequency();
-        }
-        if (m_fFixedVariance != 0.0f)
-        {
-            CalculateFixedVarianceFrequency();
-        }
-    }
-    if (GetWithinRangeOfListener() == 0)
-    {
-        ReleaseDemand();
-        if (m_bLooping != 0)
-        {
-            if (m_nListType == LIST_NONE)
-            {
-                m_pSound->AddToNonPlayingLoopingList(this);
-            }
-            return m_nDuration;
-        }
-        if (m_bPlayWhenFree != 0)
-        {
-            m_bRetryPlay = 1;
-        }
-        return m_nDuration;
-    }
-    unsigned char nGroup = m_nPriorityGroup;
-    CExoSoundPriorityGroup* pGroup = m_pSound->GetPriorityGroup(nGroup);
-    if (pGroup != NULL && pGroup->GetPlaying() >= pGroup->GetMaxPlaying())
-    {
-        if (bNoInterrupt != 0 || pGroup->m_bInterrupt == 0)
-        {
-            ReleaseDemand();
-            if (m_bLooping != 0)
-            {
-                if (m_nListType == LIST_NONE)
-                {
-                    m_pSound->AddToNonPlayingLoopingList(this);
-                }
-            }
-            else if (m_bPlayWhenFree != 0)
-            {
-                m_bRetryPlay = 1;
-            }
-            return m_nDuration;
-        }
-        unsigned char nPriorityGroup = m_nPriorityGroup;
-        m_pSound->InterruptPlayingSound(nPriorityGroup);
-    }
-    int b3D = m_b3D;
-    CExoSoundInternal* pSound = m_pSound;
-    if (b3D != 0)
-    {
-        unsigned char nPriorityGroup = m_nPriorityGroup;
-        C3DVoice* p3DVoice =
-            pSound->GetFree3DVoice(nPriorityGroup);
-        if (p3DVoice == 0)
-        {
-            ReleaseDemand();
-            if (m_bLooping != 0)
-            {
-                if (m_nListType == LIST_NONE)
-                {
-                    m_pSound->AddToNonPlayingLoopingList(this);
-                }
-            }
-            else if (m_bPlayWhenFree != 0)
-            {
-                m_bRetryPlay = 1;
-            }
-            return m_nDuration;
-        }
-        if (m_bDemanded == 0 && Demand() == 0)
-        {
-            if (m_bPlayWhenFree != 0)
-            {
-                m_bRetryPlay = 1;
-            }
-            return m_nDuration;
-        }
-        m_pSound->PlaySourceOn3DVoice(this, p3DVoice);
-    }
-    else
-    {
-        unsigned char nPriorityGroup = m_nPriorityGroup;
-        C2DVoice* p2DVoice =
-            pSound->GetFree2DVoice(nPriorityGroup);
-        if (p2DVoice == 0)
-        {
-            ReleaseDemand();
-            if (m_bLooping != 0)
-            {
-                if (m_nListType == LIST_NONE)
-                {
-                    m_pSound->AddToNonPlayingLoopingList(this);
-                }
-            }
-            else if (m_bPlayWhenFree != 0)
-            {
-                m_bRetryPlay = 1;
-            }
-            return m_nDuration;
-        }
-        if (m_bDemanded == 0 && Demand() == 0)
-        {
-            if (m_bPlayWhenFree != 0)
-            {
-                m_bRetryPlay = 1;
-            }
-            return m_nDuration;
-        }
-        m_pSound->PlaySourceOn2DVoice(this, p2DVoice);
-    }
-    if (m_nListType == LIST_NONPLAYING_LOOPING)
-    {
-        m_pSound->RemoveFromNonPlayingLoopingList(this);
-    }
-    m_pSound->AddToPlayingList(this);
-    if (m_pSound->m_bPaused != 0 ||
-        (g_bSoundPaused != 0 && m_pSound->GetPauseable(this) != 0))
-    {
-        Pause();
-    }
-    return m_nDuration;
-}
 #endif
 
 #ifdef _XBOX

@@ -16,6 +16,12 @@ static const int RULES_SPECIAL_RANGE_ROW = 19;
 static const int RULES_MAX_LEVEL = 50;
 
 #define RULES_RANGES_TABLE "Ranges"
+
+// PC 0x004F4460 GOG 0x00503C50
+CSWSpell* CSWRules::GetSpell(int nSpell)
+{
+    return m_pSpellArray->GetSpell(nSpell);
+}
 #define RULES_EXPERIENCE_TABLE "EXPTABLE"
 // PC 0x005D6300 GOG 0x005D6370
 CCombatInformationNode::CCombatInformationNode()
@@ -695,11 +701,6 @@ CSWFeat* CSWRules::GetFeat(unsigned short nFeat)
         }
     }
     return 0;
-}
-// PC 0x004F4460 GOG 0x00503C50
-CSWSpell* CSWRules::GetSpell(int nSpell)
-{
-    return m_pSpellArray->GetSpell(nSpell);
 }
 // PC 0x005D7C50 GOG 0x005D7CC0
 int CSWRules::GetDifficultyOption(int nOption, int nDifficulty)

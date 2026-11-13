@@ -61,20 +61,6 @@ int CResRef::operator!=(const CResRef& other) const
 {
     return !(*this == other);
 }
-
-int CResRef::operator!=(const CExoString& sString) const
-{
-    ExoresmanTrace1();
-    sString.IsEmpty();
-
-    const char* pString = sString.CStr();
-    unsigned int nLength = sString.GetLength() + 1;
-    if (nLength > 16)
-    {
-        nLength = 16;
-    }
-    return memcmp(pString, m_resRef, nLength) != 0;
-}
 // PC 0x00698BD0 GOG 0x00698980
 unsigned char* CResRef::GetResRef() const
 {
@@ -3272,6 +3258,20 @@ CExoString CExoResMan::CacheResource(const CExoString& sFileName,
     int nResult;
 
     return CacheResource(sFileName, nType, nResult);
+}
+
+int CResRef::operator!=(const CExoString& sString) const
+{
+    ExoresmanTrace1();
+    sString.IsEmpty();
+
+    const char* pString = sString.CStr();
+    unsigned int nLength = sString.GetLength() + 1;
+    if (nLength > 16)
+    {
+        nLength = 16;
+    }
+    return memcmp(pString, m_resRef, nLength) != 0;
 }
 
 #ifndef _XBOX

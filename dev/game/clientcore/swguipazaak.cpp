@@ -552,6 +552,22 @@ void CSWGuiPazaakCard::DrawDragDrop(int nX, int nY)  // PC 0x006D35C0 GOG 0x006D
 #endif
     }
 }
+#endif
+
+// PC 0x006D3700 GOG 0x006D2C50
+void CSWGuiPazaakCard::HandleInputEvent(int nEvent, int nState)
+{
+#ifndef _XBOX
+    if (nEvent == 39)
+#endif
+    {
+        return CSWGuiNavigable::HandleInputEvent(nEvent, nState);
+    }
+#ifndef _XBOX
+    return CSWGuiButton::HandleInputEvent(nEvent, nState);
+#endif
+}
+#ifndef _XBOX
 // PC 0x006D3720 GOG 0x006D3420
 void CSWGuiPazaakCard::HandleLMouseDown()
 {
@@ -591,19 +607,6 @@ void CSWGuiPazaakCard::HandleLMouseUp()
     CSWGuiControl::HandleLMouseUp();
 }
 #endif
-// PC 0x006D3700 GOG 0x006D2C50
-void CSWGuiPazaakCard::HandleInputEvent(int nEvent, int nState)
-{
-#ifndef _XBOX
-    if (nEvent == 39)
-#endif
-    {
-        return CSWGuiNavigable::HandleInputEvent(nEvent, nState);
-    }
-#ifndef _XBOX
-    return CSWGuiButton::HandleInputEvent(nEvent, nState);
-#endif
-}
 // PC 0x006D37F0 GOG 0x006D34F0
 void CSWGuiTutorial::PlaceRightOf(CSWGuiControl* pControl)
 {

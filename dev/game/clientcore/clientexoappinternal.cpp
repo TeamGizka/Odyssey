@@ -6547,6 +6547,13 @@ CExoStreamingSoundSource* CClientExoAppInternal::AquireLoadMusic(const CResRef& 
     return pLoadMusic;
 }
 
+// PC 0x0063CEA0 GOG 0x0063CDA0
+void CClientExoAppInternal::IndicateObject(CSWCObject* pObject, int nFlags)
+{
+    m_pGuiInGame->SetMainInterfaceTarget(
+        pObject != NULL ? pObject->m_nId : OBJECT_INVALID, nFlags);
+}
+
 #ifndef _XBOX
 void CClientExoAppInternal::HandleExitGameButton(CSWGuiControl* pControl)  // PC 0x0063CED0 GOG 0x0063CDD0
 {
@@ -6812,12 +6819,6 @@ void CClientExoAppInternal::InitializeMoviePlayer()
 #else
     m_pMoviePlayer->Initialize(NULL);
 #endif
-}
-// PC 0x0063CEA0 GOG 0x0063CDA0
-void CClientExoAppInternal::IndicateObject(CSWCObject* pObject, int nFlags)
-{
-    m_pGuiInGame->SetMainInterfaceTarget(
-        pObject != NULL ? pObject->m_nId : OBJECT_INVALID, nFlags);
 }
 // PC 0x0063DFE0 GOG 0x0063DEE0
 void CClientExoAppInternal::BarkString(unsigned long oidObject,

@@ -1330,6 +1330,113 @@ void CSWGuiSaveLoad::WriteGame(const CExoString& sSaveName)
     m_nExitState = EXITSTATE_DELETE;
     GetManager()->PopModalPanel();
 }
+
+#ifndef _XBOX
+// PC 0x007076A0 GOG 0x00707290
+void CSWGuiSaveLoadEntry::LoadData(const CExoString& sSaveDirectory)
+{
+
+    CExoString sLabel;
+    CExoString sDirectory;
+    CExoString sTemp;
+
+    int nSeparator = sSaveDirectory.Find(" - ", 0);
+    m_nSaveGame = sSaveDirectory.Left(nSeparator).AsINT();
+    m_sGameName = sSaveDirectory.Right(sSaveDirectory.GetLength() - nSeparator - 3);
+    sDirectory = CExoString("SAVES:") + sSaveDirectory;
+    g_pExoResMan->AddResourceDirectory(sDirectory);
+
+    CExoString sCorruptFile = g_pExoBase->m_pExoAliasList->ResolveFileName(
+        sDirectory + "\\" + "CORRUPT", 0);
+    CExoFile cCorruptFile(
+        sDirectory + "\\" + "CORRUPT", 0, "rb");
+    if (cCorruptFile.FileOpened())
+    {
+        m_bDataLoaded = 1;
+        m_bBadSave = 1;
+        g_pExoResMan->RemoveResourceDirectory(sDirectory);
+        return;
+    }
+
+    CResGFF* pGFF = new CResGFF(0, "NFO ", "savenfo");
+    CResStruct cStruct;
+    int bSuccess;
+    pGFF->GetTopLevelStruct(&cStruct);
+    m_sAreaName = pGFF->ReadFieldCExoString(&cStruct, "AREANAME", bSuccess, "");
+    m_sLastModule = pGFF->ReadFieldCExoString(&cStruct, "LASTMODULE", bSuccess, "");
+    m_nTimePlayed = pGFF->ReadFieldDWORD(&cStruct, "TIMEPLAYED", bSuccess, 0);
+#ifndef _XBOX
+    m_sSaveGameName = pGFF->ReadFieldCExoString(&cStruct, "SAVEGAMENAME", bSuccess, "");
+    if (!bSuccess)
+    {
+        m_sSaveGameName = CExoString("Old Save Game");
+    }
+#endif
+    m_bCheatUsed = pGFF->ReadFieldBYTE(&cStruct, "CHEATUSED", bSuccess, 0);
+    m_bRebootAutoSave = pGFF->ReadFieldBYTE(&cStruct, "REBOOTAUTOSAVE", bSuccess, 0);
+    m_bPCAutoSave = pGFF->ReadFieldBYTE(&cStruct, "PCAUTOSAVE", bSuccess, 0);
+    m_sScreenshot = pGFF->ReadFieldCExoString(&cStruct, "SCREENSHOT", bSuccess, "");
+    m_nTimeStamp = pGFF->ReadFieldDWORD64(&cStruct, "TIMESTAMP", bSuccess, 0);
+    m_sPCName = pGFF->ReadFieldCExoString(&cStruct, "PCNAME", bSuccess, "");
+    m_nSaveNumber = pGFF->ReadFieldDWORD(&cStruct, "SAVENUMBER", bSuccess, 0);
+    unsigned char nDefault = m_nGameplayHint;
+    m_nGameplayHint = pGFF->ReadFieldBYTE(&cStruct, "GAMEPLAYHINT", bSuccess, nDefault);
+    nDefault = GetStoryHint(0);
+    m_anStoryHint[0] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT0", bSuccess, nDefault);
+    nDefault = m_anStoryHint[1];
+    m_anStoryHint[1] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT1", bSuccess, nDefault);
+    nDefault = m_anStoryHint[2];
+    m_anStoryHint[2] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT2", bSuccess, nDefault);
+    nDefault = m_anStoryHint[3];
+    m_anStoryHint[3] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT3", bSuccess, nDefault);
+    nDefault = m_anStoryHint[4];
+    m_anStoryHint[4] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT4", bSuccess, nDefault);
+    nDefault = m_anStoryHint[5];
+    m_anStoryHint[5] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT5", bSuccess, nDefault);
+    nDefault = m_anStoryHint[6];
+    m_anStoryHint[6] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT6", bSuccess, nDefault);
+    nDefault = m_anStoryHint[7];
+    m_anStoryHint[7] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT7", bSuccess, nDefault);
+    nDefault = m_anStoryHint[8];
+    m_anStoryHint[8] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT8", bSuccess, nDefault);
+    nDefault = m_anStoryHint[9];
+    m_anStoryHint[9] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT9", bSuccess, nDefault);
+    unsigned char nLiveContent = pGFF->ReadFieldBYTE(&cStruct, "LIVECONTENT", bSuccess, 0);
+    if (nLiveContent)
+    {
+        CExoString sAlias;
+        for (int nContent = 1; nContent < CTlkTable::NUM_CONTENT_PKGS; nContent++)
+        {
+            sAlias.Format("LIVE%d", nContent);
+            CExoString sContentName = pGFF->ReadFieldCExoString(
+                &cStruct, (char*)sAlias.CStr(), bSuccess, sAlias);
+            if (g_pExoBase->m_pExoAliasList->GetAliasPath(sAlias, 0).GetLength() == 0 &&
+                (nLiveContent & (1 << (nContent - 1))))
+            {
+                m_bDataLoaded = 1;
+                m_bMissingLiveContent = 1;
+                m_sMissingLiveContent = sContentName;
+                delete pGFF;
+                g_pExoResMan->RemoveResourceDirectory(sDirectory);
+                return;
+            }
+        }
+    }
+
+    for (int nPortrait = 0; nPortrait < 3; nPortrait++)
+    {
+        sLabel.Format("%s%d", "PORTRAIT", nPortrait);
+        m_aPortraits[nPortrait] = pGFF->ReadFieldCResRef(
+            &cStruct, (char*)sLabel.CStr(), bSuccess, "");
+    }
+    delete pGFF;
+    g_pExoResMan->RemoveResourceDirectory(sDirectory);
+    m_bBadSave = 0;
+    m_bMissingLiveContent = 0;
+    m_sMissingLiveContent = "";
+    m_bDataLoaded = 1;
+}
+#endif
 // PC 0x0070C570 GOG 0x0070C2C0
 void CSWGuiSaveLoad::VerifyLoadGame(CSWGuiControl* pControl)
 {
@@ -1777,6 +1884,36 @@ void CSWGuiSaveLoad::PopulateGameLB()
     }
 }
 #endif
+
+void CSWGuiSaveLoad::PromptForSaveName(CSWGuiControl* pControl)  // PC 0x0070AFB0 GOG 0x0070ACF0
+{
+    SwguisaveloadTrace2();
+    CExoString sSaveName;
+
+    if (pControl != NULL)
+    {
+        CSWGuiSaveLoadEntry* pEntry = (CSWGuiSaveLoadEntry*)pControl;
+        if (pEntry->m_bDataLoaded)
+        {
+            CSWGuiMessageBox* pMessageBox =
+                g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+            if (!pMessageBox->m_bAccepted)
+            {
+                return;
+            }
+#ifndef _XBOX
+            sSaveName = pEntry->m_sSaveGameName;
+#endif
+        }
+        else
+        {
+            sSaveName = CExoString("");
+        }
+        CSWGuiSaveNamePanel* pPanel = new CSWGuiSaveNamePanel(m_pManager);
+        pPanel->SetTextAndPointer(this, sSaveName);
+        g_pGuiMan->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+    }
+}
 #ifndef _XBOX
 // PC 0x007088D0 GOG 0x00708610
 void CSWGuiSaveLoad::SetEndGameMode()
@@ -2063,110 +2200,6 @@ void CSWGuiSaveLoad::ShowGame(CSWGuiControl* pControl)
 #endif
     }
 }
-// PC 0x007076A0 GOG 0x00707290
-void CSWGuiSaveLoadEntry::LoadData(const CExoString& sSaveDirectory)
-{
-
-    CExoString sLabel;
-    CExoString sDirectory;
-    CExoString sTemp;
-
-    int nSeparator = sSaveDirectory.Find(" - ", 0);
-    m_nSaveGame = sSaveDirectory.Left(nSeparator).AsINT();
-    m_sGameName = sSaveDirectory.Right(sSaveDirectory.GetLength() - nSeparator - 3);
-    sDirectory = CExoString("SAVES:") + sSaveDirectory;
-    g_pExoResMan->AddResourceDirectory(sDirectory);
-
-    CExoString sCorruptFile = g_pExoBase->m_pExoAliasList->ResolveFileName(
-        sDirectory + "\\" + "CORRUPT", 0);
-    CExoFile cCorruptFile(
-        sDirectory + "\\" + "CORRUPT", 0, "rb");
-    if (cCorruptFile.FileOpened())
-    {
-        m_bDataLoaded = 1;
-        m_bBadSave = 1;
-        g_pExoResMan->RemoveResourceDirectory(sDirectory);
-        return;
-    }
-
-    CResGFF* pGFF = new CResGFF(0, "NFO ", "savenfo");
-    CResStruct cStruct;
-    int bSuccess;
-    pGFF->GetTopLevelStruct(&cStruct);
-    m_sAreaName = pGFF->ReadFieldCExoString(&cStruct, "AREANAME", bSuccess, "");
-    m_sLastModule = pGFF->ReadFieldCExoString(&cStruct, "LASTMODULE", bSuccess, "");
-    m_nTimePlayed = pGFF->ReadFieldDWORD(&cStruct, "TIMEPLAYED", bSuccess, 0);
-#ifndef _XBOX
-    m_sSaveGameName = pGFF->ReadFieldCExoString(&cStruct, "SAVEGAMENAME", bSuccess, "");
-    if (!bSuccess)
-    {
-        m_sSaveGameName = CExoString("Old Save Game");
-    }
-#endif
-    m_bCheatUsed = pGFF->ReadFieldBYTE(&cStruct, "CHEATUSED", bSuccess, 0);
-    m_bRebootAutoSave = pGFF->ReadFieldBYTE(&cStruct, "REBOOTAUTOSAVE", bSuccess, 0);
-    m_bPCAutoSave = pGFF->ReadFieldBYTE(&cStruct, "PCAUTOSAVE", bSuccess, 0);
-    m_sScreenshot = pGFF->ReadFieldCExoString(&cStruct, "SCREENSHOT", bSuccess, "");
-    m_nTimeStamp = pGFF->ReadFieldDWORD64(&cStruct, "TIMESTAMP", bSuccess, 0);
-    m_sPCName = pGFF->ReadFieldCExoString(&cStruct, "PCNAME", bSuccess, "");
-    m_nSaveNumber = pGFF->ReadFieldDWORD(&cStruct, "SAVENUMBER", bSuccess, 0);
-    unsigned char nDefault = m_nGameplayHint;
-    m_nGameplayHint = pGFF->ReadFieldBYTE(&cStruct, "GAMEPLAYHINT", bSuccess, nDefault);
-    nDefault = GetStoryHint(0);
-    m_anStoryHint[0] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT0", bSuccess, nDefault);
-    nDefault = m_anStoryHint[1];
-    m_anStoryHint[1] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT1", bSuccess, nDefault);
-    nDefault = m_anStoryHint[2];
-    m_anStoryHint[2] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT2", bSuccess, nDefault);
-    nDefault = m_anStoryHint[3];
-    m_anStoryHint[3] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT3", bSuccess, nDefault);
-    nDefault = m_anStoryHint[4];
-    m_anStoryHint[4] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT4", bSuccess, nDefault);
-    nDefault = m_anStoryHint[5];
-    m_anStoryHint[5] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT5", bSuccess, nDefault);
-    nDefault = m_anStoryHint[6];
-    m_anStoryHint[6] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT6", bSuccess, nDefault);
-    nDefault = m_anStoryHint[7];
-    m_anStoryHint[7] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT7", bSuccess, nDefault);
-    nDefault = m_anStoryHint[8];
-    m_anStoryHint[8] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT8", bSuccess, nDefault);
-    nDefault = m_anStoryHint[9];
-    m_anStoryHint[9] = pGFF->ReadFieldBYTE(&cStruct, "STORYHINT9", bSuccess, nDefault);
-    unsigned char nLiveContent = pGFF->ReadFieldBYTE(&cStruct, "LIVECONTENT", bSuccess, 0);
-    if (nLiveContent)
-    {
-        CExoString sAlias;
-        for (int nContent = 1; nContent < CTlkTable::NUM_CONTENT_PKGS; nContent++)
-        {
-            sAlias.Format("LIVE%d", nContent);
-            CExoString sContentName = pGFF->ReadFieldCExoString(
-                &cStruct, (char*)sAlias.CStr(), bSuccess, sAlias);
-            if (g_pExoBase->m_pExoAliasList->GetAliasPath(sAlias, 0).GetLength() == 0 &&
-                (nLiveContent & (1 << (nContent - 1))))
-            {
-                m_bDataLoaded = 1;
-                m_bMissingLiveContent = 1;
-                m_sMissingLiveContent = sContentName;
-                delete pGFF;
-                g_pExoResMan->RemoveResourceDirectory(sDirectory);
-                return;
-            }
-        }
-    }
-
-    for (int nPortrait = 0; nPortrait < 3; nPortrait++)
-    {
-        sLabel.Format("%s%d", "PORTRAIT", nPortrait);
-        m_aPortraits[nPortrait] = pGFF->ReadFieldCResRef(
-            &cStruct, (char*)sLabel.CStr(), bSuccess, "");
-    }
-    delete pGFF;
-    g_pExoResMan->RemoveResourceDirectory(sDirectory);
-    m_bBadSave = 0;
-    m_bMissingLiveContent = 0;
-    m_sMissingLiveContent = "";
-    m_bDataLoaded = 1;
-}
 #endif
 // PC 0x0070B130 GOG 0x0070AE70
 CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry()
@@ -2392,35 +2425,6 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)  // PC 0x0070BDB0 GOG 0x0
     }
 }
 #endif
-void CSWGuiSaveLoad::PromptForSaveName(CSWGuiControl* pControl)  // PC 0x0070AFB0 GOG 0x0070ACF0
-{
-    SwguisaveloadTrace2();
-    CExoString sSaveName;
-
-    if (pControl != NULL)
-    {
-        CSWGuiSaveLoadEntry* pEntry = (CSWGuiSaveLoadEntry*)pControl;
-        if (pEntry->m_bDataLoaded)
-        {
-            CSWGuiMessageBox* pMessageBox =
-                g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
-            if (!pMessageBox->m_bAccepted)
-            {
-                return;
-            }
-#ifndef _XBOX
-            sSaveName = pEntry->m_sSaveGameName;
-#endif
-        }
-        else
-        {
-            sSaveName = CExoString("");
-        }
-        CSWGuiSaveNamePanel* pPanel = new CSWGuiSaveNamePanel(m_pManager);
-        pPanel->SetTextAndPointer(this, sSaveName);
-        g_pGuiMan->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
-    }
-}
 void CSWGuiSaveNamePanel::HandleOkButton(CSWGuiControl* pControl)  // PC 0x00708480 GOG 0x00708070
 {
     {

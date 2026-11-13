@@ -18,14 +18,6 @@
 #include "swguilevelupchargen.h"
 #include "nwccreature.h"
 #include "nwseffectlist.h"
-// PC 0x0071B2C0 GOG 0x0071AD50
-void CSWGuiInGameCharacter::OnPanelRemoved()
-{
-    m_pShownCreature = 0;
-#ifndef _XBOX
-    CSWGuiPanel::OnPanelRemoved();
-#endif
-}
 // PC 0x0071B060 GOG 0x0071AD60
 inline void CSWGuiInGameCharacter::SetModText(CSWGuiLabel& lblMod, int nMod)
 {
@@ -718,6 +710,15 @@ void CSWGuiBlackenedLabel::Draw(float fElapsed)
     ++cExtent.m_nLeft;
     m_cText.SetExtent(cExtent);
     CSWGuiLabel::Draw(fElapsed);
+}
+
+// PC 0x0071B2C0 GOG 0x0071AD50
+void CSWGuiInGameCharacter::OnPanelRemoved()
+{
+    m_pShownCreature = 0;
+#ifndef _XBOX
+    CSWGuiPanel::OnPanelRemoved();
+#endif
 }
 // PC 0x0071B2D0 GOG 0x0071B3A0
 void CSWGuiInGameCharacter::AttachModel()

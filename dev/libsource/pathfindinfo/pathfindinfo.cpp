@@ -299,52 +299,6 @@ void CPathfindInformation::ComputeStepTolerance()
         m_nStepTolerance = (int)m_fStartDistance;
     }
 }
-// PC 0x0061B540 GOG 0x0061B520
-int CAvoidCreature::InsertPathSegmentBetween(int nFirstSegment,
-                                             int nLastSegment,
-                                             Vector* pNewPoints, int nNewPoints,
-                                             CPathfindInformation* pInfo)
-{
-    float* pOldPoints = pInfo->m_pWayPoints;
-    int nDst = 0;
-    int nSkip;
-    int nTotal;
-    if (nFirstSegment == nLastSegment)
-    {
-        nTotal = pInfo->m_nWayPointCount + 2 * nNewPoints - 2;
-        nSkip = 1;
-    }
-    else
-    {
-        nTotal = pInfo->m_nWayPointCount +
-                 2 * (nNewPoints + nFirstSegment - nLastSegment);
-        nSkip = 0;
-    }
-
-    float* pPoints = (float*)operator new(4 * nTotal);
-    for (int i = 0; i < nFirstSegment; i++)
-    {
-        pPoints[nDst++] = pOldPoints[2 * i];
-        pPoints[nDst++] = pOldPoints[2 * i + 1];
-    }
-    for (int j = 0; j < nNewPoints; j++)
-    {
-        pPoints[nDst++] = pNewPoints->m_fX;
-        pPoints[nDst++] = pNewPoints->m_fY;
-        pNewPoints++;
-    }
-    for (int k = nSkip + nLastSegment; k < pInfo->m_nWayPointCount / 2; k++)
-    {
-        pPoints[nDst++] = pOldPoints[2 * k];
-        pPoints[nDst++] = pOldPoints[2 * k + 1];
-    }
-    pInfo->m_pWayPoints = 0;
-    pInfo->m_nWayPointCount = 0;
-    delete pOldPoints;
-    pInfo->m_pWayPoints = pPoints;
-    pInfo->m_nWayPointCount = nTotal;
-    return 1;
-}
 // PC 0x0061A280 GOG 0x0061A260
 void CPathfindInformation::Shutdown()
 {
@@ -657,6 +611,53 @@ int CAvoidCreature::SideClearOfObstructions(unsigned long oidCreature,
     default:
         return 0;
     }
+}
+
+// PC 0x0061B540 GOG 0x0061B520
+int CAvoidCreature::InsertPathSegmentBetween(int nFirstSegment,
+                                             int nLastSegment,
+                                             Vector* pNewPoints, int nNewPoints,
+                                             CPathfindInformation* pInfo)
+{
+    float* pOldPoints = pInfo->m_pWayPoints;
+    int nDst = 0;
+    int nSkip;
+    int nTotal;
+    if (nFirstSegment == nLastSegment)
+    {
+        nTotal = pInfo->m_nWayPointCount + 2 * nNewPoints - 2;
+        nSkip = 1;
+    }
+    else
+    {
+        nTotal = pInfo->m_nWayPointCount +
+                 2 * (nNewPoints + nFirstSegment - nLastSegment);
+        nSkip = 0;
+    }
+
+    float* pPoints = (float*)operator new(4 * nTotal);
+    for (int i = 0; i < nFirstSegment; i++)
+    {
+        pPoints[nDst++] = pOldPoints[2 * i];
+        pPoints[nDst++] = pOldPoints[2 * i + 1];
+    }
+    for (int j = 0; j < nNewPoints; j++)
+    {
+        pPoints[nDst++] = pNewPoints->m_fX;
+        pPoints[nDst++] = pNewPoints->m_fY;
+        pNewPoints++;
+    }
+    for (int k = nSkip + nLastSegment; k < pInfo->m_nWayPointCount / 2; k++)
+    {
+        pPoints[nDst++] = pOldPoints[2 * k];
+        pPoints[nDst++] = pOldPoints[2 * k + 1];
+    }
+    pInfo->m_pWayPoints = 0;
+    pInfo->m_nWayPointCount = 0;
+    delete pOldPoints;
+    pInfo->m_pWayPoints = pPoints;
+    pInfo->m_nWayPointCount = nTotal;
+    return 1;
 }
 // PC 0x0061B660 GOG 0x0061B640
 int CAvoidCreature::GetClosestPointTo(Vector& vPoint)

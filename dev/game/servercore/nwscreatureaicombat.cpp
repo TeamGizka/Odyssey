@@ -713,6 +713,30 @@ int CSWSCreature::ResolveDefensiveEffects(CSWSObject* pTarget, int bRangedAttack
     }
     return bResult;
 }
+
+// PC 0x00608220 GOG 0x00608200
+int CSWSCreature::ResolveRangedMissToParry(CSWSObject* pTarget, int bCheckWeapon,
+                                           int nWeaponHand)
+{
+    int nShield = 0;
+    int bCanReflect;
+    int bParried = IsProjectileParryable(pTarget, bCheckWeapon, 1, nShield,
+                                         bCanReflect, nWeaponHand);
+    if (bParried)
+    {
+        CSWSCombatAttackData* pCurrentAttack =
+            m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack);
+        if (nShield)
+        {
+            pCurrentAttack->m_nAttackResult = CSWSCombatAttackData::ATTACK_RESULT_WIDE_MISS;
+        }
+        else
+        {
+            pCurrentAttack->m_nAttackResult = ATTACK_RESULT_PARRIED;
+        }
+    }
+    return bParried;
+}
 // PC 0x00608280 GOG 0x00608260
 void CSWSCreature::ResolveOnHitVisuals(CSWSObject* pTarget)
 {
@@ -4239,29 +4263,6 @@ int CSWSCreature::IsProjectileParryable(CSWSObject* pTarget, int bRangedAttack,
         }
     }
     return bResult;
-}
-// PC 0x00608220 GOG 0x00608200
-int CSWSCreature::ResolveRangedMissToParry(CSWSObject* pTarget, int bCheckWeapon,
-                                           int nWeaponHand)
-{
-    int nShield = 0;
-    int bCanReflect;
-    int bParried = IsProjectileParryable(pTarget, bCheckWeapon, 1, nShield,
-                                         bCanReflect, nWeaponHand);
-    if (bParried)
-    {
-        CSWSCombatAttackData* pCurrentAttack =
-            m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack);
-        if (nShield)
-        {
-            pCurrentAttack->m_nAttackResult = CSWSCombatAttackData::ATTACK_RESULT_WIDE_MISS;
-        }
-        else
-        {
-            pCurrentAttack->m_nAttackResult = ATTACK_RESULT_PARRIED;
-        }
-    }
-    return bParried;
 }
 // PC 0x00606970 GOG 0x00606950
 int CSWSCreature::ResolveMoveToForceJump(CSWSObject* pTarget,

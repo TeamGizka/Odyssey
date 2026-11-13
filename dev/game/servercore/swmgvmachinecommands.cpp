@@ -9,6 +9,17 @@
 #include "serverexoapp.h"
 #include "nwsobject.h"
 #include "nwscreaturestats.h"
+// PC 0x006176B0 GOG 0x00617760
+int CSWTrackFollower::GetIsInvulnerable()
+{
+    return m_fInvincibilityRemaining > 0.0f;
+}
+// PC 0x006176D0 GOG 0x00617780
+void CSWMGGunBank::SetBankModel(const CResRef& sBank)
+{
+    m_resBank = sBank;
+}
+
 // PC 0x006176F0 GOG 0x00617640
 int CSWVirtualMachineCommands::ExecuteCommandAurPostString(int nCommand,
                                                            int nArgs)
@@ -35,16 +46,6 @@ int CSWVirtualMachineCommands::ExecuteCommandAurPostString(int nCommand,
         return -2001;
     }
     return 0;
-}
-// PC 0x006176B0 GOG 0x00617760
-int CSWTrackFollower::GetIsInvulnerable()
-{
-    return m_fInvincibilityRemaining > 0.0f;
-}
-// PC 0x006176D0 GOG 0x00617780
-void CSWMGGunBank::SetBankModel(const CResRef& sBank)
-{
-    m_resBank = sBank;
 }
 // PC 0x006177C0 GOG 0x006177A0
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastEvent(int nCommand,

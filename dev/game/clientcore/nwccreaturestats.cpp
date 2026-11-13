@@ -215,50 +215,6 @@ void CSWCLevelUpStats::SetCHABase(unsigned char nValue)
     m_aAbilities[5] = nValue;
     m_nCharisma = nValue + g_pRules->m_pRaces[m_nRace].m_nCharismaAdjust;
 }
-// PC 0x006FCB70 GOG 0x006FC760
-int CSWCLevelUpStats::GetSkillPointCostForSkillRank(unsigned short nSkill,
-                                                    int bIncrease)
-{
-    int bUseable = 0;
-    int bClassSkill = 0;
-    int nCost = 0;
-
-    CSWSkill* pSkill = &g_pRules->m_pSkills[nSkill];
-    if (pSkill == NULL)
-    {
-        return 0;
-    }
-
-    if (pSkill->m_bAllClassesCanUse)
-    {
-        bUseable = 1;
-    }
-
-    for (int i = 0; i < m_nClassCount; i++)
-    {
-        CSWClass* pClass = &g_pRules->m_pClasses[GetClass(i)];
-        if (pClass != NULL && pClass->IsSkillUseable(nSkill))
-        {
-            bUseable = 1;
-            if (pClass->IsSkillClassSkill(nSkill) || HasClassSkillFeat(nSkill))
-            {
-                bClassSkill = 1;
-                break;
-            }
-        }
-    }
-
-    if (bUseable)
-    {
-        nCost = bClassSkill ? 1 : 2;
-        if (!bIncrease)
-        {
-            nCost = -nCost;
-        }
-    }
-
-    return nCost;
-}
 // PC 0x006FB800 GOG 0x006FB3F0
 int CSWCLevelUpStats::GetBaseAttackBonus()
 {
@@ -1243,6 +1199,51 @@ void CSWCLevelUpStats::AddSkillPointsPerLevel()
                  MIN_SKILL_POINTS_PER_LEVEL);
         }
     }
+}
+
+// PC 0x006FCB70 GOG 0x006FC760
+int CSWCLevelUpStats::GetSkillPointCostForSkillRank(unsigned short nSkill,
+                                                    int bIncrease)
+{
+    int bUseable = 0;
+    int bClassSkill = 0;
+    int nCost = 0;
+
+    CSWSkill* pSkill = &g_pRules->m_pSkills[nSkill];
+    if (pSkill == NULL)
+    {
+        return 0;
+    }
+
+    if (pSkill->m_bAllClassesCanUse)
+    {
+        bUseable = 1;
+    }
+
+    for (int i = 0; i < m_nClassCount; i++)
+    {
+        CSWClass* pClass = &g_pRules->m_pClasses[GetClass(i)];
+        if (pClass != NULL && pClass->IsSkillUseable(nSkill))
+        {
+            bUseable = 1;
+            if (pClass->IsSkillClassSkill(nSkill) || HasClassSkillFeat(nSkill))
+            {
+                bClassSkill = 1;
+                break;
+            }
+        }
+    }
+
+    if (bUseable)
+    {
+        nCost = bClassSkill ? 1 : 2;
+        if (!bIncrease)
+        {
+            nCost = -nCost;
+        }
+    }
+
+    return nCost;
 }
 // PC 0x006FCC70 GOG 0x006FC860
 void CSWCLevelUpStats::SetFortSavingThrow()

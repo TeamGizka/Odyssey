@@ -12,54 +12,6 @@
 #include "swparty.h"
 
 static inline void SwguiingameareatransitionTrace1();
-// PC 0x007346C0 GOG 0x007343D0
-CSWGuiInGameAreaTransition::CSWGuiInGameAreaTransition(CSWGuiManager* pManager)
-    : CSWGuiPanel(pManager)
-{
-#ifndef _XBOX
-    { CResRef cLayout("areatrans_p"); StartLoadFromLayout(cLayout); }
-#else
-    StartLoadFromLayout("areatransition");
-#endif
-    InitControl(m_lblTextBackground, "LBL_TEXTBG", 1);
-    InitControl(m_lblIcon, "LBL_ICON", 1);
-    InitControl(m_lblDescription, "LBL_DESCRIPTION", 1);
-    StopLoadFromLayout();
-    m_v454 = m_lblTextBackground.m_cBorder.m_cParams.m_vColor;
-    m_v460 = m_lblIcon.m_cBorder.m_cParams.m_vColor;
-    m_v46C = m_lblDescription.m_cText.m_cParams.m_vColor;
-
-    CSWGuiExtent cExtent = m_cExtent;
-    m_oidTransitionObject = OBJECT_INVALID;
-    cExtent.m_nLeft =
-        g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nWidth / 2 - AREA_TRANSITION_WIDTH / 2;
-    cExtent.m_nWidth = AREA_TRANSITION_WIDTH;
-    cExtent.m_nHeight = AREA_TRANSITION_HEIGHT;
-    SetExtent(cExtent);
-
-    cExtent = m_lblIcon.m_cExtent;
-    cExtent.m_nHeight = 50;
-    cExtent.m_nWidth = 50;
-    cExtent.m_nTop = 27;
-    cExtent.m_nLeft = 175;
-    m_lblIcon.SetExtent(cExtent);
-
-    cExtent = m_lblDescription.m_cExtent;
-    cExtent.m_nHeight = 20;
-    cExtent.m_nWidth = 348;
-    cExtent.m_nTop = 6;
-    cExtent.m_nLeft = 26;
-    m_lblDescription.SetExtent(cExtent);
-
-    cExtent = m_lblTextBackground.m_cExtent;
-    cExtent.m_nHeight = 32;
-    cExtent.m_nWidth = AREA_TRANSITION_WIDTH;
-    cExtent.m_nTop = 0;
-    cExtent.m_nLeft = 0;
-    m_lblTextBackground.SetExtent(cExtent);
-
-    m_nDefaultTop = m_cExtent.m_nTop;
-}
 // PC 0x00734400 GOG 0x00734110
 void CSWGuiInGameAreaTransition::SetTransitionObject(unsigned long oidObject,
                                                      const Vector& vPosition)
@@ -133,6 +85,55 @@ void CSWGuiInGameAreaTransition::Draw(float fElapsed)
         m_lblDescription.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
     }
     return CSWGuiPanel::Draw(fElapsed);
+}
+
+// PC 0x007346C0 GOG 0x007343D0
+CSWGuiInGameAreaTransition::CSWGuiInGameAreaTransition(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+#ifndef _XBOX
+    { CResRef cLayout("areatrans_p"); StartLoadFromLayout(cLayout); }
+#else
+    StartLoadFromLayout("areatransition");
+#endif
+    InitControl(m_lblTextBackground, "LBL_TEXTBG", 1);
+    InitControl(m_lblIcon, "LBL_ICON", 1);
+    InitControl(m_lblDescription, "LBL_DESCRIPTION", 1);
+    StopLoadFromLayout();
+    m_v454 = m_lblTextBackground.m_cBorder.m_cParams.m_vColor;
+    m_v460 = m_lblIcon.m_cBorder.m_cParams.m_vColor;
+    m_v46C = m_lblDescription.m_cText.m_cParams.m_vColor;
+
+    CSWGuiExtent cExtent = m_cExtent;
+    m_oidTransitionObject = OBJECT_INVALID;
+    cExtent.m_nLeft =
+        g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nWidth / 2 - AREA_TRANSITION_WIDTH / 2;
+    cExtent.m_nWidth = AREA_TRANSITION_WIDTH;
+    cExtent.m_nHeight = AREA_TRANSITION_HEIGHT;
+    SetExtent(cExtent);
+
+    cExtent = m_lblIcon.m_cExtent;
+    cExtent.m_nHeight = 50;
+    cExtent.m_nWidth = 50;
+    cExtent.m_nTop = 27;
+    cExtent.m_nLeft = 175;
+    m_lblIcon.SetExtent(cExtent);
+
+    cExtent = m_lblDescription.m_cExtent;
+    cExtent.m_nHeight = 20;
+    cExtent.m_nWidth = 348;
+    cExtent.m_nTop = 6;
+    cExtent.m_nLeft = 26;
+    m_lblDescription.SetExtent(cExtent);
+
+    cExtent = m_lblTextBackground.m_cExtent;
+    cExtent.m_nHeight = 32;
+    cExtent.m_nWidth = AREA_TRANSITION_WIDTH;
+    cExtent.m_nTop = 0;
+    cExtent.m_nLeft = 0;
+    m_lblTextBackground.SetExtent(cExtent);
+
+    m_nDefaultTop = m_cExtent.m_nTop;
 }
 
 static inline void SwguiingameareatransitionTrace1()

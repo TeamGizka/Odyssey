@@ -7,15 +7,6 @@
 #include "exoresman.h"
 #include "guiingame.h"
 #include "swguifade.h"
-// PC 0x00674F80 GOG 0x00674C90
-int CSWGuiFade::IsFadeDone()
-{
-    if (m_fFadeElapsed == 0.0f)
-    {
-        return 1;
-    }
-    return m_fFadeLength + m_fFadeStart < m_fFadeElapsed;
-}
 // PC 0x00674EF0 GOG 0x00674CC0
 void CSWGuiFade::SetFade(int bFadeIn, float fFadeStart, float fFadeLength,
                          Vector const& vColor)
@@ -40,6 +31,16 @@ void CSWGuiFade::SetFade(int bFadeIn, float fFadeStart, float fFadeLength,
     m_nFadeTime = (__int64)g_pAppManager->m_pClientExoApp->m_pcExoAppInternal
                       ->m_pPauseTimer->GetSnapshotTime() /
                   1000;
+}
+
+// PC 0x00674F80 GOG 0x00674C90
+int CSWGuiFade::IsFadeDone()
+{
+    if (m_fFadeElapsed == 0.0f)
+    {
+        return 1;
+    }
+    return m_fFadeLength + m_fFadeStart < m_fFadeElapsed;
 }
 // PC 0x00674FB0 GOG 0x00674D50
 void CSWGuiFade::Draw(float fElapsed)

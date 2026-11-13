@@ -12,12 +12,6 @@
 #include "swguiingame.h"
 #include "swguiingame.inl"
 #include "swguiingamesolomodequery.h"
-// PC 0x00723AD0 GOG 0x007235B0
-CSWGuiInGameSoloModeQuery::CSWGuiInGameSoloModeQuery(CSWGuiManager* pManager)
-    : CSWGuiMessageBox(pManager)
-{
-    m_nQuery = 0;
-}
 // PC 0x007238A0 GOG 0x00723650
 void CSWGuiInGameSoloModeQuery::Draw(float fElapsed)
 {
@@ -106,4 +100,11 @@ void CSWGuiInGameSoloModeQuery::SetQueryText(int nQuery)
         SetMessage(37889);
     }
     m_nQuery = nQuery;
+}
+
+// PC 0x00723AD0 GOG 0x007235B0
+CSWGuiInGameSoloModeQuery::CSWGuiInGameSoloModeQuery(CSWGuiManager* pManager)
+    : CSWGuiMessageBox(pManager)
+{
+    m_nQuery = 0;
 }

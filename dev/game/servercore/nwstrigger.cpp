@@ -218,6 +218,7 @@ void CSWSTrigger::OnEnterMine(int bForce)
 // PC 0x00584B20 GOG 0x00584BA0
 CSWCTrigger* CSWSTrigger::GetClientTrigger()
 {
+    NWSTRIGGER_TRACE();
     if (GetClientObject() != NULL)
         return GetClientObject()->AsSWCTrigger();
 

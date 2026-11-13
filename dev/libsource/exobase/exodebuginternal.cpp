@@ -69,6 +69,80 @@ void CExoDebugInternal::InitializeWarningFile()
         fclose(pFile);
     }
 }
+// PC 0x00637A50 GOG 0x00637950
+void CExoDebugInternal::GetCurrentTimestamp(CExoString& timestamp)
+{
+    struct _timeb tb;
+    char szTimestamp[20];
+
+    _ftime(&tb);
+    sprintf(szTimestamp, "%.19s", ctime(&tb.time));
+    timestamp.Format(szTimestamp);
+}
+// PC 0x00637A90 GOG 0x00637990
+void CExoDebugInternal::WriteToScriptLogFile(const CExoString& text)
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pScriptLogFile->Write(text);
+    }
+}
+// PC 0x00637AA0 GOG 0x006379A0
+void CExoDebugInternal::FlushScriptLogFile()
+{
+    if (m_bLogFilesOpen)
+    {
+        m_pScriptLogFile->Flush();
+    }
+}
+// PC 0x005EE1C0 GOG 0x005EE1A0
+void CExoDebugInternal::OpenLogFiles(const CExoString& path)
+{
+}
+// PC 0x00637AB0 GOG 0x006379B0
+void CExoDebugInternal::CloseLogFiles()
+{
+    if (m_bLogFilesOpen)
+    {
+        if (m_pLogFile)
+        {
+            delete m_pLogFile;
+            m_pLogFile = NULL;
+        }
+        if (m_pAuxiliaryLogFileOne)
+        {
+            delete m_pAuxiliaryLogFileOne;
+            m_pAuxiliaryLogFileOne = NULL;
+        }
+        if (m_pAuxiliaryLogFileTwo)
+        {
+            delete m_pAuxiliaryLogFileTwo;
+            m_pAuxiliaryLogFileTwo = NULL;
+        }
+        if (m_pAuxiliaryLogFileThree)
+        {
+            delete m_pAuxiliaryLogFileThree;
+            m_pAuxiliaryLogFileThree = NULL;
+        }
+        if (m_pAuxiliaryLogFileFour)
+        {
+            delete m_pAuxiliaryLogFileFour;
+            m_pAuxiliaryLogFileFour = NULL;
+        }
+        if (m_pScriptLogFile)
+        {
+            delete m_pScriptLogFile;
+            m_pScriptLogFile = NULL;
+        }
+        if (m_pAuxiliaryLogFileFive)
+        {
+            delete m_pAuxiliaryLogFileFive;
+            m_pAuxiliaryLogFileFive = NULL;
+        }
+        m_bLogFilesOpen = 0;
+    }
+}
+
 // PC 0x00637B80 GOG 0x00637A70
 void CExoDebugInternal::Warning(int line, char* file, const char* message)
 {
@@ -163,79 +237,6 @@ void CExoDebugInternal::Warning(int line, char* file, const char* message)
     if (pFile)
     {
         fclose(pFile);
-    }
-}
-// PC 0x00637A50 GOG 0x00637950
-void CExoDebugInternal::GetCurrentTimestamp(CExoString& timestamp)
-{
-    struct _timeb tb;
-    char szTimestamp[20];
-
-    _ftime(&tb);
-    sprintf(szTimestamp, "%.19s", ctime(&tb.time));
-    timestamp.Format(szTimestamp);
-}
-// PC 0x00637A90 GOG 0x00637990
-void CExoDebugInternal::WriteToScriptLogFile(const CExoString& text)
-{
-    if (m_bLogFilesOpen)
-    {
-        m_pScriptLogFile->Write(text);
-    }
-}
-// PC 0x00637AA0 GOG 0x006379A0
-void CExoDebugInternal::FlushScriptLogFile()
-{
-    if (m_bLogFilesOpen)
-    {
-        m_pScriptLogFile->Flush();
-    }
-}
-// PC 0x005EE1C0 GOG 0x005EE1A0
-void CExoDebugInternal::OpenLogFiles(const CExoString& path)
-{
-}
-// PC 0x00637AB0 GOG 0x006379B0
-void CExoDebugInternal::CloseLogFiles()
-{
-    if (m_bLogFilesOpen)
-    {
-        if (m_pLogFile)
-        {
-            delete m_pLogFile;
-            m_pLogFile = NULL;
-        }
-        if (m_pAuxiliaryLogFileOne)
-        {
-            delete m_pAuxiliaryLogFileOne;
-            m_pAuxiliaryLogFileOne = NULL;
-        }
-        if (m_pAuxiliaryLogFileTwo)
-        {
-            delete m_pAuxiliaryLogFileTwo;
-            m_pAuxiliaryLogFileTwo = NULL;
-        }
-        if (m_pAuxiliaryLogFileThree)
-        {
-            delete m_pAuxiliaryLogFileThree;
-            m_pAuxiliaryLogFileThree = NULL;
-        }
-        if (m_pAuxiliaryLogFileFour)
-        {
-            delete m_pAuxiliaryLogFileFour;
-            m_pAuxiliaryLogFileFour = NULL;
-        }
-        if (m_pScriptLogFile)
-        {
-            delete m_pScriptLogFile;
-            m_pScriptLogFile = NULL;
-        }
-        if (m_pAuxiliaryLogFileFive)
-        {
-            delete m_pAuxiliaryLogFileFive;
-            m_pAuxiliaryLogFileFive = NULL;
-        }
-        m_bLogFilesOpen = 0;
     }
 }
 // PC 0x00637E60 GOG 0x00637D50

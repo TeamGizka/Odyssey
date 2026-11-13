@@ -8,12 +8,6 @@
 #include "nwccreature.h"
 #include "nwccreaturestats.h"
 #include "nwrace.h"
-// PC 0x0076BF00 GOG 0x0076BCD0
-void CSWGuiNameChargen::SetParentPanel(CSWGuiPanel* pParent, int nParentType)
-{
-    m_pParent = pParent;
-    m_nParentType = nParentType;
-}
 // PC 0x0076BEB0 GOG 0x0076BCF0
 void CSWGuiNameChargen::HandleCancelButton()
 {
@@ -244,6 +238,13 @@ void CSWGuiNameChargen::HandleInputEvent(int nEvent, int bPressed)
         }
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, bPressed);
+}
+
+// PC 0x0076BF00 GOG 0x0076BCD0
+void CSWGuiNameChargen::SetParentPanel(CSWGuiPanel* pParent, int nParentType)
+{
+    m_pParent = pParent;
+    m_nParentType = nParentType;
 }
 // PC 0x0076BF20 GOG 0x0076BD40
 void CSWGuiNameChargen::HandleRandomName()

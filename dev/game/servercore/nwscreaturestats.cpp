@@ -6274,6 +6274,24 @@ unsigned short CSWSCreatureStats::GetNumberKnownSpells(
 
     return m_aClassInfo[nClass].GetNumberKnownSpells(nSpellLevel);
 }
+
+// PC 0x005EF100 GOG 0x005EF0E0
+int CSWSCreatureStats::GetWeaponFinesse(CSWSItem* pItem)
+{
+    if (pItem != NULL && GetDEXMod(0) > m_nStrengthModifier)
+    {
+        if ((pItem->IsLightsaber() && HasFeat(CSWFeat::FEAT_FINESSE_LIGHTSABERS)) ||
+            ((pItem->GetBaseItem()->m_nWeaponWield == CSWBaseItem::WEAPON_WIELD_ONE_HANDED_1 ||
+              pItem->GetBaseItem()->m_nWeaponWield == CSWBaseItem::WEAPON_WIELD_ONE_HANDED_2 ||
+              pItem->GetBaseItem()->m_nWeaponWield == CSWBaseItem::WIELD_DOUBLE_WEAPON) &&
+             HasFeat(CSWFeat::FEAT_FINESSE_MELEE_WEAPONS)))
+        {
+            return 1;
+        }
+    }
+
+    return 0;
+}
 // PC 0x005EF1B0 GOG 0x005EF190
 int CSWSCreatureStats::GetWeaponSpecialization(CSWSItem* pItem)
 {
@@ -6288,6 +6306,148 @@ int CSWSCreatureStats::GetWeaponSpecialization(CSWSItem* pItem)
     }
 
     return 0;
+}
+
+// PC 0x005EF1F0 GOG 0x005EF1D0
+bool CSWSCreatureStats::GetSpellUsesLeft(
+    unsigned long nSpell, unsigned char nMultiClass,
+    unsigned char nSpellLevel, unsigned char nSpellIndex)
+{
+    if (nMultiClass >= m_nClassCount)
+    {
+        return 0;
+    }
+
+    CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
+    if (pSpell == NULL)
+    {
+        return 0;
+    }
+
+    CSWSArea* pArea = m_pCreature->GetArea();
+    int nRoomForceRating = 0;
+    if (pArea != NULL)
+        nRoomForceRating = pArea->GetRoomForceRating(m_pCreature->m_vPosition);
+    bool bUsesLeft = 0;
+    unsigned long nForcePoints = pSpell->GetAdjustedForcePoints(GetGoodEvilAlignment(),
+        m_pCreature->GetInParty(), nRoomForceRating, m_pCreature->GetForm(), m_pCreature->GetStats()->GetCHAMod());
+    int nForceBodyLevel = -1;
+    CExoArrayList<CGameEffect*>* pEffects = &m_pCreature->m_lstEffects;
+    for (int i = 0; i < pEffects->num; i++)
+    {
+        CGameEffect* pEffect = (*pEffects)[i];
+        if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
+        {
+            nForceBodyLevel = pEffect->GetInteger(0);
+            break;
+        }
+    }
+    if (nForceBodyLevel != -1)
+    {
+        int nPercent = 0;
+        switch (nForceBodyLevel)
+        {
+        case 0:
+            nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_0;
+            break;
+        case 1:
+            nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_1;
+            break;
+        case 2:
+            nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
+            break;
+        }
+        int nHitPointCost = (int)(nForcePoints * nPercent) / 100;
+        if (nForcePoints - nHitPointCost <= (short)(m_nCurrentForcePoints + m_nTemporaryForcePoints) &&
+            m_pCreature->GetCurrentHitPoints(0) - nHitPointCost >= 1)
+        {
+            bUsesLeft = 1;
+        }
+    }
+    else if (nForcePoints <= (short)(m_nCurrentForcePoints + m_nTemporaryForcePoints))
+    {
+        bUsesLeft = 1;
+    }
+    return bUsesLeft;
+}
+
+// PC 0x005EF360 GOG 0x005EF340
+int CSWSCreatureStats::UnReadySpell(unsigned long nSpell)
+{
+    int bSuccess = 0;
+    CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
+    if (pSpell != NULL)
+    {
+        CSWSArea* pArea = m_pCreature->GetArea();
+        int nRoomForceRating = 0;
+        if (pArea != NULL)
+            nRoomForceRating = pArea->GetRoomForceRating(m_pCreature->m_vPosition);
+        int nHitPointCost = 0;
+        int nForceBodyLevel = -1;
+        CExoArrayList<CGameEffect*>* pEffects = &m_pCreature->m_lstEffects;
+        for (int i = 0; i < pEffects->num; i++)
+        {
+            CGameEffect* pEffect = (*pEffects)[i];
+            if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
+            {
+                nForceBodyLevel = pEffect->GetInteger(0);
+                break;
+            }
+        }
+        int nForcePoints;
+        if (nForceBodyLevel != -1)
+        {
+            int nPercent = 0;
+            int nFullCost = pSpell->GetAdjustedForcePoints(GetGoodEvilAlignment(),
+                m_pCreature->GetInParty(), nRoomForceRating, m_pCreature->GetForm(), m_pCreature->GetStats()->GetCHAMod());
+            switch (nForceBodyLevel)
+            {
+            case 0:
+                nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_0;
+                break;
+            case 1:
+                nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_1;
+                break;
+            case 2:
+                nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
+                break;
+            }
+            nForcePoints = nFullCost * nPercent / 100;
+            nHitPointCost = nForcePoints;
+        }
+        else
+        {
+            nForcePoints = pSpell->GetAdjustedForcePoints(GetGoodEvilAlignment(),
+                m_pCreature->GetInParty(), nRoomForceRating, m_pCreature->GetForm(), m_pCreature->GetStats()->GetCHAMod());
+        }
+        int nTemporaryForcePoints = m_nTemporaryForcePoints;
+        if (nTemporaryForcePoints >= nForcePoints)
+        {
+            m_nTemporaryForcePoints = nTemporaryForcePoints - nForcePoints;
+            return 1;
+        }
+        m_nTemporaryForcePoints = 0;
+        m_nCurrentForcePoints += nTemporaryForcePoints - nForcePoints;
+        if (m_nCurrentForcePoints < 0)
+        {
+            m_nCurrentForcePoints = 0;
+        }
+        int nTemporaryHitPoints = (short)m_pCreature->m_nTemporaryHitPoints;
+        if (nTemporaryHitPoints >= nHitPointCost)
+        {
+            m_pCreature->m_nTemporaryHitPoints = nTemporaryHitPoints - nHitPointCost;
+            return 1;
+        }
+        m_pCreature->m_nTemporaryHitPoints = 0;
+        m_pCreature->SetCurrentHitPoints(nTemporaryHitPoints - nHitPointCost +
+                                         m_pCreature->GetCurrentHitPoints(1));
+        if (m_pCreature->GetCurrentHitPoints(0) < 0)
+        {
+            m_pCreature->SetCurrentHitPoints(0);
+        }
+        bSuccess = 1;
+    }
+    return bSuccess;
 }
 // PC 0x005EF570 GOG 0x005EF550
 int CSWSCreatureStats::CanLevelUp()
@@ -6571,6 +6731,29 @@ CExoString CSWSCreatureStats::GetFullName()
     CSWSMessage::GetLocStringServer(0xFFFFFFFF, m_lsFirstName, m_lsLastName,
                                     sName, 0);
     return sName;
+}
+
+// PC 0x005ED2A0 GOG 0x005ED280
+int CSWSCreatureStats::GetIsJedi()
+{
+    for (int nClassIndex = 0; nClassIndex < m_nClassCount; nClassIndex++)
+    {
+        int nClass = GetClass((unsigned char)nClassIndex);
+        if (nClass == CSWClass::CCLASS_JEDIGUARDIAN ||
+            nClass == CSWClass::CCLASS_JEDICONSULAR ||
+            nClass == CSWClass::CCLASS_JEDISENTINEL ||
+            nClass == CSWClass::CCLASS_JEDIWATCHMAN ||
+            nClass == CSWClass::CCLASS_JEDIMASTER ||
+            nClass == CSWClass::CCLASS_JEDIWEAPONMASTER ||
+            nClass == CSWClass::CCLASS_SITHLORD ||
+            nClass == CSWClass::CCLASS_SITHASSASSIN ||
+            nClass == CSWClass::CCLASS_SITHMARAUDER)
+        {
+            return 1;
+        }
+    }
+
+    return 0;
 }
 // PC 0x005ED350 GOG 0x005ED330
 unsigned char CSWSCreatureStats::GetAttacksPerRound()
@@ -7203,163 +7386,6 @@ void CSWSCreatureStats::SetSkillRank(unsigned char nSkill, char nRank)
         m_pSkillRanks[nSkill] = nRank;
     }
 }
-// PC 0x005EF100 GOG 0x005EF0E0
-int CSWSCreatureStats::GetWeaponFinesse(CSWSItem* pItem)
-{
-    if (pItem != NULL && GetDEXMod(0) > m_nStrengthModifier)
-    {
-        if ((pItem->IsLightsaber() && HasFeat(CSWFeat::FEAT_FINESSE_LIGHTSABERS)) ||
-            ((pItem->GetBaseItem()->m_nWeaponWield == CSWBaseItem::WEAPON_WIELD_ONE_HANDED_1 ||
-              pItem->GetBaseItem()->m_nWeaponWield == CSWBaseItem::WEAPON_WIELD_ONE_HANDED_2 ||
-              pItem->GetBaseItem()->m_nWeaponWield == CSWBaseItem::WIELD_DOUBLE_WEAPON) &&
-             HasFeat(CSWFeat::FEAT_FINESSE_MELEE_WEAPONS)))
-        {
-            return 1;
-        }
-    }
-
-    return 0;
-}
-// PC 0x005EF1F0 GOG 0x005EF1D0
-bool CSWSCreatureStats::GetSpellUsesLeft(
-    unsigned long nSpell, unsigned char nMultiClass,
-    unsigned char nSpellLevel, unsigned char nSpellIndex)
-{
-    if (nMultiClass >= m_nClassCount)
-    {
-        return 0;
-    }
-
-    CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
-    if (pSpell == NULL)
-    {
-        return 0;
-    }
-
-    CSWSArea* pArea = m_pCreature->GetArea();
-    int nRoomForceRating = 0;
-    if (pArea != NULL)
-        nRoomForceRating = pArea->GetRoomForceRating(m_pCreature->m_vPosition);
-    bool bUsesLeft = 0;
-    unsigned long nForcePoints = pSpell->GetAdjustedForcePoints(GetGoodEvilAlignment(),
-        m_pCreature->GetInParty(), nRoomForceRating, m_pCreature->GetForm(), m_pCreature->GetStats()->GetCHAMod());
-    int nForceBodyLevel = -1;
-    CExoArrayList<CGameEffect*>* pEffects = &m_pCreature->m_lstEffects;
-    for (int i = 0; i < pEffects->num; i++)
-    {
-        CGameEffect* pEffect = (*pEffects)[i];
-        if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
-        {
-            nForceBodyLevel = pEffect->GetInteger(0);
-            break;
-        }
-    }
-    if (nForceBodyLevel != -1)
-    {
-        int nPercent = 0;
-        switch (nForceBodyLevel)
-        {
-        case 0:
-            nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_0;
-            break;
-        case 1:
-            nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_1;
-            break;
-        case 2:
-            nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
-            break;
-        }
-        int nHitPointCost = (int)(nForcePoints * nPercent) / 100;
-        if (nForcePoints - nHitPointCost <= (short)(m_nCurrentForcePoints + m_nTemporaryForcePoints) &&
-            m_pCreature->GetCurrentHitPoints(0) - nHitPointCost >= 1)
-        {
-            bUsesLeft = 1;
-        }
-    }
-    else if (nForcePoints <= (short)(m_nCurrentForcePoints + m_nTemporaryForcePoints))
-    {
-        bUsesLeft = 1;
-    }
-    return bUsesLeft;
-}
-// PC 0x005EF360 GOG 0x005EF340
-int CSWSCreatureStats::UnReadySpell(unsigned long nSpell)
-{
-    int bSuccess = 0;
-    CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
-    if (pSpell != NULL)
-    {
-        CSWSArea* pArea = m_pCreature->GetArea();
-        int nRoomForceRating = 0;
-        if (pArea != NULL)
-            nRoomForceRating = pArea->GetRoomForceRating(m_pCreature->m_vPosition);
-        int nHitPointCost = 0;
-        int nForceBodyLevel = -1;
-        CExoArrayList<CGameEffect*>* pEffects = &m_pCreature->m_lstEffects;
-        for (int i = 0; i < pEffects->num; i++)
-        {
-            CGameEffect* pEffect = (*pEffects)[i];
-            if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
-            {
-                nForceBodyLevel = pEffect->GetInteger(0);
-                break;
-            }
-        }
-        int nForcePoints;
-        if (nForceBodyLevel != -1)
-        {
-            int nPercent = 0;
-            int nFullCost = pSpell->GetAdjustedForcePoints(GetGoodEvilAlignment(),
-                m_pCreature->GetInParty(), nRoomForceRating, m_pCreature->GetForm(), m_pCreature->GetStats()->GetCHAMod());
-            switch (nForceBodyLevel)
-            {
-            case 0:
-                nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_0;
-                break;
-            case 1:
-                nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_1;
-                break;
-            case 2:
-                nPercent = CSWSpell::FORCE_BODY_COST_PERCENT_2;
-                break;
-            }
-            nForcePoints = nFullCost * nPercent / 100;
-            nHitPointCost = nForcePoints;
-        }
-        else
-        {
-            nForcePoints = pSpell->GetAdjustedForcePoints(GetGoodEvilAlignment(),
-                m_pCreature->GetInParty(), nRoomForceRating, m_pCreature->GetForm(), m_pCreature->GetStats()->GetCHAMod());
-        }
-        int nTemporaryForcePoints = m_nTemporaryForcePoints;
-        if (nTemporaryForcePoints >= nForcePoints)
-        {
-            m_nTemporaryForcePoints = nTemporaryForcePoints - nForcePoints;
-            return 1;
-        }
-        m_nTemporaryForcePoints = 0;
-        m_nCurrentForcePoints += nTemporaryForcePoints - nForcePoints;
-        if (m_nCurrentForcePoints < 0)
-        {
-            m_nCurrentForcePoints = 0;
-        }
-        int nTemporaryHitPoints = (short)m_pCreature->m_nTemporaryHitPoints;
-        if (nTemporaryHitPoints >= nHitPointCost)
-        {
-            m_pCreature->m_nTemporaryHitPoints = nTemporaryHitPoints - nHitPointCost;
-            return 1;
-        }
-        m_pCreature->m_nTemporaryHitPoints = 0;
-        m_pCreature->SetCurrentHitPoints(nTemporaryHitPoints - nHitPointCost +
-                                         m_pCreature->GetCurrentHitPoints(1));
-        if (m_pCreature->GetCurrentHitPoints(0) < 0)
-        {
-            m_pCreature->SetCurrentHitPoints(0);
-        }
-        bSuccess = 1;
-    }
-    return bSuccess;
-}
 // PC 0x005EDD10 GOG 0x005EDCF0
 unsigned char CSWSCreatureStats::GetSpellsPerDayLeft(unsigned char nMultiClass,
                                                      unsigned char nSpellLevel)
@@ -7822,28 +7848,6 @@ unsigned char CSWSCreatureStats::GetLevel(int bExcludeNegativeLevels)
     }
 
     return nLevel;
-}
-// PC 0x005ED2A0 GOG 0x005ED280
-int CSWSCreatureStats::GetIsJedi()
-{
-    for (int nClassIndex = 0; nClassIndex < m_nClassCount; nClassIndex++)
-    {
-        int nClass = GetClass((unsigned char)nClassIndex);
-        if (nClass == CSWClass::CCLASS_JEDIGUARDIAN ||
-            nClass == CSWClass::CCLASS_JEDICONSULAR ||
-            nClass == CSWClass::CCLASS_JEDISENTINEL ||
-            nClass == CSWClass::CCLASS_JEDIWATCHMAN ||
-            nClass == CSWClass::CCLASS_JEDIMASTER ||
-            nClass == CSWClass::CCLASS_JEDIWEAPONMASTER ||
-            nClass == CSWClass::CCLASS_SITHLORD ||
-            nClass == CSWClass::CCLASS_SITHASSASSIN ||
-            nClass == CSWClass::CCLASS_SITHMARAUDER)
-        {
-            return 1;
-        }
-    }
-
-    return 0;
 }
 // PC 0x005EE8E0 GOG 0x005EE8C0
 int CSWSCreatureStats::GetBaseAttackBonus()

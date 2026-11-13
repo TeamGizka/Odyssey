@@ -498,11 +498,6 @@ CSWGuiMainInterfaceAction::CSWGuiMainInterfaceAction()
     m_fSlideTimer = 0.0f;
 }
 #else
-CSWGuiMainInterfaceAction::CSWGuiMainInterfaceAction()  // PC 0x006DF630 GOG 0x006E1750
-{
-    m_nFadeSteps = 0;
-    m_bTarget = 0;
-}
 #endif
 
 #ifndef _XBOX
@@ -2025,6 +2020,14 @@ void CSWGuiMainInterface::ResetPartyMemberItemUse()
     m_nUseItemTargetMember = -1;
     m_bSelectingUseItemTarget = 0;
 }
+
+#ifndef _XBOX
+CSWGuiMainInterfaceAction::CSWGuiMainInterfaceAction()  // PC 0x006DF630 GOG 0x006E1750
+{
+    m_nFadeSteps = 0;
+    m_bTarget = 0;
+}
+#endif
 
 #ifdef _XBOX
 void CSWGuiMainInterfaceAction::Show(int bActive, int bEmpty, int bArrow)

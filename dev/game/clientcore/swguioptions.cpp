@@ -861,6 +861,14 @@ void CSWGuiOptionsGraphicsAdvanced::SetAntiAliasText()
     m_bChanged = 1;
 }
 
+int CSWGuiOptionsGraphicsAdvanced::OnFrameBuffer(CSWGuiControl* pControl)  // PC 0x0074E750 GOG 0x0074D530
+{
+    int bFrameBuffer = (m_bFrameBuffer == 0);
+    m_bChanged = 1;
+    m_bFrameBuffer = bFrameBuffer;
+    return bFrameBuffer;
+}
+
 #ifndef _XBOX
 #endif
 // PC 0x0074E770 GOG 0x0074ECF0
@@ -2437,13 +2445,6 @@ void CSWGuiOptionsMain::OnSoundOpt(CSWGuiControl* pControl)
 }
 
 #ifndef _XBOX
-int CSWGuiOptionsGraphicsAdvanced::OnFrameBuffer(CSWGuiControl* pControl)  // PC 0x0074E750 GOG 0x0074D530
-{
-    int bFrameBuffer = (m_bFrameBuffer == 0);
-    m_bChanged = 1;
-    m_bFrameBuffer = bFrameBuffer;
-    return bFrameBuffer;
-}
 // PC 0x0074E840 GOG 0x0074EDC0
 void CSWGuiOptionsGraphicsAdvanced::OnSoftShadows(CSWGuiControl* pControl)
 {

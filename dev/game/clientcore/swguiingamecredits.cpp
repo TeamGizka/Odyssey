@@ -173,39 +173,6 @@ CSWGuiInGameCredits::~CSWGuiInGameCredits()
     g_pAppManager->GetClientExoApp()->SetInputActive(0, 0);
 }
 #else
-CSWGuiInGameCredits::~CSWGuiInGameCredits()  // PC 0x006E87E0 GOG 0x006E82C0
-{
-    delete m_pMusic;
-    if (m_pText != NULL) { delete[] m_pText; }
-
-    CGuiInGame* pInGameGui = g_pAppManager->GetClientExoApp()->GetInGameGui();
-    if (pInGameGui != NULL)
-    {
-        pInGameGui->FadeAndStopDialogAmbientTrack();
-    }
-    g_pAppManager->GetClientExoApp()->StopCreditSequence();
-    g_pAppManager->GetClientExoApp()->SetInputClass(m_nPreviousInputClass, 1);
-    if (pInGameGui != NULL)
-    {
-        pInGameGui->SetGlobalUnpauseableState(0);
-    }
-
-    CClientExoAppInternal* pClientExoAppInternal = g_pAppManager->GetClientExoApp()->m_pcExoAppInternal;
-    if (pClientExoAppInternal->m_bEvilEndingHackInProgress)
-    {
-        g_nScreenWidth = g_nOldScreenWidth;
-        g_nScreenHeight = g_nOldScreenHeight;
-#ifndef _XBOX
-        g_pGuiMan->SetSize(g_nOldWidth, g_nOldHeight);
-#endif
-        pClientExoAppInternal = g_pAppManager->GetClientExoApp()->m_pcExoAppInternal;
-        pClientExoAppInternal->SetEvilEndingHackInProgress(0);
-#ifndef _XBOX
-        RestoreResolutionFromMovie();
-#endif
-    }
-    g_pAppManager->GetClientExoApp()->ShowMouse(128);
-}
 #endif
 // PC 0x006E8600 GOG 0x006E8440
 void CSWGuiInGameCredits::OnPanelAdded()
@@ -296,6 +263,40 @@ void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // PC 0x006E8740 GOG 
             break;
         }
     }
+}
+
+CSWGuiInGameCredits::~CSWGuiInGameCredits()  // PC 0x006E87E0 GOG 0x006E82C0
+{
+    delete m_pMusic;
+    if (m_pText != NULL) { delete[] m_pText; }
+
+    CGuiInGame* pInGameGui = g_pAppManager->GetClientExoApp()->GetInGameGui();
+    if (pInGameGui != NULL)
+    {
+        pInGameGui->FadeAndStopDialogAmbientTrack();
+    }
+    g_pAppManager->GetClientExoApp()->StopCreditSequence();
+    g_pAppManager->GetClientExoApp()->SetInputClass(m_nPreviousInputClass, 1);
+    if (pInGameGui != NULL)
+    {
+        pInGameGui->SetGlobalUnpauseableState(0);
+    }
+
+    CClientExoAppInternal* pClientExoAppInternal = g_pAppManager->GetClientExoApp()->m_pcExoAppInternal;
+    if (pClientExoAppInternal->m_bEvilEndingHackInProgress)
+    {
+        g_nScreenWidth = g_nOldScreenWidth;
+        g_nScreenHeight = g_nOldScreenHeight;
+#ifndef _XBOX
+        g_pGuiMan->SetSize(g_nOldWidth, g_nOldHeight);
+#endif
+        pClientExoAppInternal = g_pAppManager->GetClientExoApp()->m_pcExoAppInternal;
+        pClientExoAppInternal->SetEvilEndingHackInProgress(0);
+#ifndef _XBOX
+        RestoreResolutionFromMovie();
+#endif
+    }
+    g_pAppManager->GetClientExoApp()->ShowMouse(128);
 }
 #endif
 // PC 0x006E8960 GOG 0x006E8580

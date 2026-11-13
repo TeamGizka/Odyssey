@@ -837,6 +837,16 @@ void CAurTexture::FreeImage()
         pTexture->FreeImage();
     }
 }
+
+// PC 0x00420970 GOG 0x00420980
+void CAurTexture::IncrementTIDIndex(int nIndex)
+{
+    CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
+    if (pTexture != NULL)
+    {
+        pTexture->m_nTIDIndex = pTexture->m_pTextureIDs[nIndex];
+    }
+}
 // PC 0x00420BE0 GOG 0x00420BF0
 inline LifeTextureController::~LifeTextureController()
 {
@@ -857,15 +867,6 @@ inline PerlinTextureController::~PerlinTextureController()
 inline PerlinTextureController::PerlinTextureController(CAurTexture* pTexture)
     : TextureController(pTexture)
 {
-}
-// PC 0x00420970 GOG 0x00420980
-void CAurTexture::IncrementTIDIndex(int nIndex)
-{
-    CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
-    if (pTexture != NULL)
-    {
-        pTexture->m_nTIDIndex = pTexture->m_pTextureIDs[nIndex];
-    }
 }
 // PC 0x004209C0 GOG 0x004209D0
 inline RandomTextureController::~RandomTextureController()

@@ -295,11 +295,6 @@ CSWGuiSkillsCharGen::CSWGuiSkillsCharGen(CSWGuiManager* pManager,
     m_lblRemainingSelections.m_cText.m_cParams.SetText(m_nPointsRemaining);
     SetActiveControl(&m_btnPoints[m_nSelected], 0);
 }
-// PC 0x00765F50 GOG 0x00765B10
-CSWGuiSkillsCharGen::~CSWGuiSkillsCharGen()
-{
-    m_lbDescription.ClearItems();
-}
 // PC 0x00765CF0 GOG 0x00765CE0
 void CSWGuiSkillsCharGen::OnPanelAdded()
 {
@@ -879,6 +874,12 @@ int CSWGuiSkillsCharGen::IsClassSkill(unsigned short nSkill)
         }
     }
     return 0;
+}
+
+// PC 0x00765F50 GOG 0x00765B10
+CSWGuiSkillsCharGen::~CSWGuiSkillsCharGen()
+{
+    m_lbDescription.ClearItems();
 }
 
 void CSWGuiSkillsCharGen::CompletePanel()
