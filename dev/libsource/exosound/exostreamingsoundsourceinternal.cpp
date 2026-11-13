@@ -10,7 +10,7 @@
 #include "math3d.h"
 #include "mss.h"
 
-bool g_bVODebugEnabled;
+extern bool g_bVODebugEnabled;
 
 static inline void ExostreamingsoundsourceinternalTrace1();
 // PC 0x004015A0

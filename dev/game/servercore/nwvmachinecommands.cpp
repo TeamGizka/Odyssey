@@ -72,7 +72,6 @@ int bDisableScriptLogging = 1;
 #else
 int bDisableScriptLogging = 0;
 #endif
-int LogCommandExecution = 0;
 int bShipBuild = 0;
 int CSWVirtualMachineCommands::ExecuteCommandExploreAreaForPlayer(int, int)  // PC 0x0040A2D0
 {

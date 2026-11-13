@@ -116,7 +116,6 @@ int doprofile = 0;
 int g_nDanglyMeshAnimationByMod3Counter = 2;
 
 Scene* g_pLastScene = NULL;
-unsigned long g_SceneRender_CurrentTime_ms;
 
 float mintopshadowalpha = 0.0f;
 float shadowcutoffangle = 0.0f;

@@ -31,6 +31,7 @@
 #include "twodimarrays.h"
 #include "twodimarray.h"
 
+bool g_bVODebugEnabled;
 static inline void NwsdialogTrace1();
 // PC 0x005E6980
 inline CSWSDialogNode::CSWSDialogNode()

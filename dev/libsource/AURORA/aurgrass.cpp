@@ -123,6 +123,7 @@ bool AurNV1xLevelShadersAvailable();
 extern unsigned int ATI_FRAGMENT_SHADER_BIT;
 
 int maxgrass = 0;
+int newstuff = 0;
 // PC 0x004D3430
 void CAurTriangleBin::RenderGrassPolys(int nGrassInfo, const Vector& vPosition,
                                       WindManager* pWindManager)

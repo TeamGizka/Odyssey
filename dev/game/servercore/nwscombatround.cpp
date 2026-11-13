@@ -22,6 +22,7 @@
 static inline void NwscombatroundTrace1();
 #define NWSCOMBATROUND_TRACE() NwscombatroundTrace1()
 
+int g_bPauseCombatEndOfRound = 0;
 int g_nCombatStretch = 0;
 // PC 0x004015A0
 CSWSCombatRoundAction::~CSWSCombatRoundAction()

@@ -37,8 +37,6 @@ int bInitnRenderDEFLines = 1;
 int nRenderDEFLines[CSWSArea::PATH_POINT_DFS_RENDER_LINES];
 int nRenderDFSCount = 0;
 
-int nPathfindUnused2 = 0;
-int nPathfindUnused3 = 0;
 // PC 0x00651540
 int CSWSArea::PlotSoundPath(CPathfindInformation* pPathfindInformation)
 {

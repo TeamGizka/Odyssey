@@ -201,6 +201,7 @@ extern int stenciloff;
 extern int enablelighting;
 Vector g_vZero(0.0f, 0.0f, 0.0f);
 Vector g_vOne(1.0f, 1.0f, 1.0f);
+unsigned long g_SceneRender_CurrentTime_ms;
 Vector projectioncolor(1.0f, 1.0f, 1.0f);
 static Vector currentcolor(1.0f, 1.0f, 1.0f);
 class Scene;

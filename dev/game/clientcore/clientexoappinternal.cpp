@@ -113,6 +113,7 @@ float g_RenderUpdateTime = 0;
 float g_GuiUpdateTime = 0;
 float g_SndUpdateTime = 0;
 int SlowGame = 0;
+int g_bCritFileFail = 0;
 int CameraVertAxisFlip = 1;
 int g_bShowIndicator = 1;
 int CameraHorzAxisFlip = 0;

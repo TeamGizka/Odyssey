@@ -16,8 +16,8 @@ static inline void ExoSoundTrace();
 
 int g_bDisableSound;
 int g_bSoundPaused;
-int g_totalStreamingHandlesAvailable;
-int g_generalStreamingHandlesAvailable;
+int g_totalStreamingHandlesAvailable = 0;
+int g_generalStreamingHandlesAvailable = 0;
 
 
 #ifndef _XBOX
