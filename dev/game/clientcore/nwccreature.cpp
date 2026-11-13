@@ -4694,7 +4694,7 @@ void CSWCCreature::GetBehaviors(CExoArrayList<CSWGuiInterfaceAction>& lstActions
         if (nAIState != AI_STATE_PASSIVE)
         {
             if (i == AI_SCRIPT_ROW_SUPPORT &&
-                !CSWClass::IsJedi(GetStats()->GetClass(GetStats()->m_nClassCount - 1)))
+                !CSWClass::IsJedi(GetStats()->GetClass(GetStats()->GetNumClasses() - 1)))
             {
                 nNameStrRef = STRREF_BEHAVIOR_GRENADIER_NAME;
             }
@@ -4719,7 +4719,7 @@ void CSWCCreature::GetBehaviors(CExoArrayList<CSWGuiInterfaceAction>& lstActions
                 break;
             case AI_STATE_SUPPORT:
                 lstActions[nEntry].m_nAction = ACTION_BEHAVIOR_SUPPORT;
-                if (CSWClass::IsJedi(GetStats()->GetClass(GetStats()->m_nClassCount - 1)))
+                if (CSWClass::IsJedi(GetStats()->GetClass(GetStats()->GetNumClasses() - 1)))
                     lstActions[nEntry].m_resIcon = "ib_jedisupport";
                 else
                     lstActions[nEntry].m_resIcon = "ib_grenadier";

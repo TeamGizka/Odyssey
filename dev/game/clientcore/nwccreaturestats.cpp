@@ -2026,7 +2026,7 @@ void CSWCLevelUpStats::AddGrantedFeats(CExoArrayList<unsigned long>* pList,
                                        bool bPCGranted)
 {
     int nTotalLevel = 0;
-    for (int nClass = 0; nClass < m_nClassCount; nClass++)
+    for (int nClass = 0; nClass < GetNumClasses(); nClass++)
     {
         nTotalLevel += GetClassLevel(nClass);
     }
