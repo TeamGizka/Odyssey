@@ -2511,7 +2511,7 @@ void CSWSCreatureStats::GetTotalDamageRange(CSWSCreature* pCreature,
     {
         CSWBaseItem* pBaseItem = g_pRules->m_pBaseItems->GetBaseItem(pItem->GetBaseItemType());
         nMinDamage = pBaseItem->m_nNumDice;
-        pBaseItem = g_pRules->m_pBaseItems->GetBaseItem(pItem->GetBaseItemType());
+        pBaseItem = g_pRules->GetBaseItemArray()->GetBaseItem(pItem->GetBaseItemType());
         nMaxDamage = nMinDamage * pBaseItem->m_nDieToRoll;
 
         if (pItem->GetBaseItem()->m_nRangedWeapon <= 0)
@@ -2528,10 +2528,13 @@ void CSWSCreatureStats::GetTotalDamageRange(CSWSCreature* pCreature,
             else if (pItem->GetBaseItem()->m_nWeaponWield == CSWBaseItem::WIELD_DOUBLE_WEAPON ||
                      pItem->GetBaseItem()->m_nWeaponWield == CSWBaseItem::WEAPON_WIELD_ONE_HANDED_2)
             {
-                nStrengthBonus = m_nStrengthModifier;
                 if (m_nStrengthModifier > 0)
                 {
                     nStrengthBonus = (int)(m_nStrengthModifier * 1.5f);
+                }
+                else
+                {
+                    nStrengthBonus = m_nStrengthModifier;
                 }
             }
             else
