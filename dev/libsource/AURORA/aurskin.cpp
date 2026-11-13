@@ -1773,10 +1773,10 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                         cHoloSkinVPARB, cSkinCubeMapVPDeclaration);
                     static VertexProgram* pHoloSkinSphereMapVP = new VertexProgram(
                         cHoloSkinVPARB, cSkinSphereMapVPDeclaration);
-                    VertexProgram* pHoloProgram = pHoloSkinCubeMapVP;
-                    if (!pEnvMap->IsCubeMap())
-                        pHoloProgram = pHoloSkinSphereMapVP;
-                    pHoloProgram->Enable(pSkin, false);
+                    if (pEnvMap->IsCubeMap())
+                        pHoloSkinCubeMapVP->Enable(pSkin, false);
+                    else
+                        pHoloSkinSphereMapVP->Enable(pSkin, false);
                     if (g_ForceSight)
                     {
                         GLRender_EnablePixelShaders(MODEL_SHADER_HOLO_DESAT, 0, 0, 0, 0);
@@ -1848,10 +1848,13 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     static VertexProgram* skin3bonevp = new VertexProgram(
                         cSkin3BoneVP, cSkin3BoneVPDeclaration);
                     pProgram = skin3bonevp;
+                    pProgram->Enable(pSkin, true);
                 }
                 else
+                {
                     pProgram = GetSkinVP(bHologram);
-                pProgram->Enable(pSkin, true);
+                    pProgram->Enable(pSkin, true);
+                }
                 if (pSkin->m_pMaterial->HasBumpMap() && pTriMesh->HasTangentBases() &&
                         !AurNV2xLevelShadersAvailable())
                 {
