@@ -2,7 +2,6 @@
 #include "aurcamera.h"
 #include "appmanager.h"
 #include "clientexoapp.h"
-#include "guiingame.h"
 #include "exotlktable.h"
 #include "serverexoapp.h"
 #include "nwscript.h"
@@ -25,6 +24,7 @@
 #include "nwcmodule.h"
 #include "nwcarea.h"
 #include "clientoptions.h"
+#include "guiingame.h"
 #include <float.h>
 
 static inline void SwguiingamemapTrace2();

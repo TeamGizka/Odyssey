@@ -1,6 +1,5 @@
 #include "gameobjectarray.h"
 #include "nwscreature.h"
-#include "swgui.h"
 #include "nwsobject.h"
 #include <stdlib.h>
 #include <math.h>
@@ -91,6 +90,7 @@ const float CSWSCreature::XP_CALCULATIONS_PC_BONUS_AMOUNT = 0.1f;
 const float CSWSCreature::XP_CALCULATIONS_HENCHMEN_BONUS_AMOUNT = 0.05f;
 const unsigned char CSWSCreature::XP_CALCULATIONS_MAX_XP_SCALE = 200;
 
+#include "swgui.h"
 #include "swmain.h"
 // PC 0x0050B8C0 GOG 0x0050B920
 int CSWSCreaturePartyFollowInfo::Save(CResGFF* pRes, CResStruct* pStruct)

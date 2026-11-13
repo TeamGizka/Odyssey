@@ -1,3 +1,4 @@
+#include "exobase.h"
 #include "swroomsurfacemesh.h"
 #include <stdio.h>
 #include <string.h>
@@ -6,7 +7,6 @@
 template void CExoArrayList<CSWRoomSurfaceMeshAABBNode>::Allocate(int);
 template void CExoArrayList<CSWRoomSurfaceMeshAABBNode>::Add(CSWRoomSurfaceMeshAABBNode);
 
-#include "exobase.h"
 
 #include "ResBWM.h"
 #include "nwrules.h"

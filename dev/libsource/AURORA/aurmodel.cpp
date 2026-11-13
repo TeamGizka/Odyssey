@@ -1,6 +1,6 @@
+#include "aurmodel.h"
 #include "aurora.h"
 #include "aurtexman.h"
-#include "aurmodel.h"
 
 #include "aurscene.h"
 #include "aurmodel.h"

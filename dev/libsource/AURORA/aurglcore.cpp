@@ -1,3 +1,4 @@
+#include <math.h>
 #include "../math3d/math3d.h"
 #include <new>
 #include <stdio.h>
@@ -11,7 +12,6 @@ static inline void AurGLPoolLists()
     List<char*> lstBackup(0);
     pPools->Remove(0);
 }
-#include <math.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 

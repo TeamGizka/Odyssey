@@ -1,5 +1,4 @@
 #include "aurgui.h"
-#include "exotlktable.h"
 #include "twodimarray.h"
 #include "resgff.h"
 #include "exoinput.h"
@@ -20,6 +19,7 @@ template void CExoArrayList<CSWGuiControl*>::Allocate(int);
 #include "nwrules.h"
 #include "twodimarrays.h"
 #include "aurora.h"
+#include "exotlktable.h"
 #include "aurora.h"
 
 float CSWGuiListBox::m_fArrowAlpha = 1.0f;

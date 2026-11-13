@@ -1,3 +1,4 @@
+#include "swguiclassselection.h"
 #include "exobase.h"
 #include "aurcamera.h"
 #include "exoresman.h"
@@ -21,7 +22,6 @@
 #include "aurscene.h"
 #include "swmain.h"
 #include "nwccreature.h"
-#include "swguiclassselection.h"
 #include "swguimainchargen.h"
 #include "guiingame.h"
 #include <stdlib.h>
