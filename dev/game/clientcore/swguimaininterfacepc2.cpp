@@ -3439,8 +3439,8 @@ void CSWGuiMainInterface::DrawMap(float fElapsed)
             nMapX = (int)((float)m_nMapWidth * nMapX / MINIMAP_SOURCE_WIDTH);
             nMapY = (int)((float)m_nMapHeight * nMapY / MINIMAP_SOURCE_HEIGHT);
 #endif
-            cExtent.m_nLeft = (int)(m_cMapViewport.m_nWidth / 2 - nMapX * fScale);
-            cExtent.m_nTop = (int)(m_cMapViewport.m_nHeight / 2 - nMapY * fScale);
+            cExtent.m_nLeft = (int)((m_cMapViewport.m_nWidth / 2) - (nMapX * fScale));
+            cExtent.m_nTop = (int)((m_cMapViewport.m_nHeight / 2) - (nMapY * fScale));
             m_lblMap.SetExtent(cExtent);
 
 #ifdef _XBOX
