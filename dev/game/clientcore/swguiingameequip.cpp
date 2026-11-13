@@ -1899,8 +1899,6 @@ void CSWGuiInGameEquip::CloseDescription()
 
     m_lbItems.SetEnabled(0);
 }
-// The wield byte is read zero-extended; CSWBaseItem has no accessor for it in nwitem.h (a new header
-// inline shifts symbol ids in every unit that includes it), so the accessor lives here.
 inline unsigned char GetWeaponWield(CSWBaseItem* pBaseItem)
 {
     return pBaseItem->m_nWeaponWield;

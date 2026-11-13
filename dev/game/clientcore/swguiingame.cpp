@@ -218,7 +218,6 @@ void CSWGuiInGameMenu::SetActiveControlID(int nControl, int bActive)
         SetActiveControl(m_lControls.element[nControl], bActive);
 }
 #ifndef _XBOX
-// swguidrawable.cpp defines this overload inline for its own unit; Draw needs it inlined here too.
 inline void CSWGuiBorderParams::SetFillImage(const CResRef& cImage)
 {
     SetFillImage(cImage, 0);
