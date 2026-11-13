@@ -1,1 +1,4 @@
-written by scripts/make_implibs.py from binkw32.dll 1.6b (sha256 d963112ea8545c8aaa6bd48a9d2d229605806ae1bbc03f90b0106db3034466ed)  lib/binkw32.lib
+9ee2752bdd9a48ca12ea11bd122bf13be0d8db76b6ceb36e20e33bd68708c99c  lib/binkw32.lib
+9b291cbd8479bc3ed368f970d2b7e338631ebfeb285605dc3955763f70637f87  include/bink.h
+4423a9f496ade949b18532bc237d1a6c2be1d65f26350cb39d92fefa8566031f  include/rad3d.h
+eebb95c1c5274423adaedc6e708e0b77f3c475b4a0386179c78be95a2c46cbdc  include/radbase.h

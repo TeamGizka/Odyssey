@@ -1,1 +1,1 @@
-written by scripts/make_implibs.py from Mss32.dll 6.5h (sha256 858d6066bab4445f56c2d1713f16bfa742fb43a149c6afcb83460efe5bdec7da)  lib/mss32.lib
+687f7b62359316320978a60b1f7cbfe5827703a66344226aa60f86a2982458a3  lib/mss32.lib
