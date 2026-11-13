@@ -13,6 +13,7 @@ class CFeatUseListEntry;
 class CSWCMapPin;
 class CSWCVisualEffectOnObject;
 class CSWGuiControl;
+class CSWSItem;
 class CSWGuiFloatyText;
 class CSWGuiKeyMapButton;
 struct CSWCPlaceableObjectLight;
@@ -27,6 +28,7 @@ typedef CExoArrayList<unsigned short> CCPchArrayUShort;
 typedef CExoArrayList<CSWGuiKeyMapButton*> CCPchArraySWGuiKeyMapButtonPtr;
 typedef CExoArrayList<CFeatUseListEntry*> CCPchArrayFeatUseListEntryPtr;
 typedef CExoArrayList<CSWGuiFloatyText*> CCPchArraySWGuiFloatyTextPtr;
+typedef CExoArrayList<CSWSItem*> CCPchArraySWSItemPtr;
 
 inline CCPchArraySWGuiControlPtr* CCPchArraySWGuiControlPtr_Construct(int a0) { return new CCPchArraySWGuiControlPtr(a0); }
 inline CCPchArrayResRef* CCPchArrayResRef_Construct(int a0) { return new CCPchArrayResRef(a0); }
@@ -38,6 +40,7 @@ inline void CCPchArraySWCPlaceableObjectLightPtr_Index() { struct CSWCPlaceableO
 inline void CCPchArraySWCMapPinPtr_Index() { class CSWCMapPin * & (CCPchArraySWCMapPinPtr::*p)(int) = &CCPchArraySWCMapPinPtr::operator[]; (void)p; }
 inline void CCPchArrayUShort_AddUnique() { void (CCPchArrayUShort::*p)(unsigned short) = &CCPchArrayUShort::AddUnique; (void)p; }
 inline void CCPchArrayUShort_DelIndex() { void (CCPchArrayUShort::*p)(int) = &CCPchArrayUShort::DelIndex; (void)p; }
+inline void CCPchArraySWSItemPtr_Add() { void (CCPchArraySWSItemPtr::*p)(class CSWSItem*) = &CCPchArraySWSItemPtr::Add; (void)p; }
 inline void CCPchArrayULong_DelIndex() { void (CCPchArrayULong::*p)(int) = &CCPchArrayULong::DelIndex; (void)p; }
 inline void CCPchArrayFeatUseListEntryPtr_DelIndex() { void (CCPchArrayFeatUseListEntryPtr::*p)(int) = &CCPchArrayFeatUseListEntryPtr::DelIndex; (void)p; }
 inline void CCPchArraySWGuiKeyMapButtonPtr_DelIndex() { void (CCPchArraySWGuiKeyMapButtonPtr::*p)(int) = &CCPchArraySWGuiKeyMapButtonPtr::DelIndex; (void)p; }
