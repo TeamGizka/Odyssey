@@ -1693,11 +1693,7 @@ void PartEmitter::moveParticleP2PBezier(float fTimeStep)
     Vector vTarget;
     Vector vNewPosition;
     MdlNodeEmitter* pNode = static_cast<MdlNodeEmitter*>(m_pNode);
-#ifdef _XBOX
     int bInheriting = pNode->IsInheriting();
-#else
-    int bInheriting = pNode->m_EmitterFlags.m_bInheriting;
-#endif
 
     vTarget = m_pTarget->GetPosition();
     if (m_fTargetSize != 0.0f)

@@ -2582,7 +2582,7 @@ void PartEmitter::SetWeather(bool bWeather)
 {
     m_bWeather = bWeather;
 }
-// PC 0x004506B0
+// PC 0x00450140
 void Part::GetWorld(Vector& vPosition, Quaternion& qOrientation)
 {
     Part* pPart = this;
@@ -2614,7 +2614,7 @@ void Part::GetWorld(Vector& vPosition, Quaternion& qOrientation)
     vPosition = pGob->m_vPosition + vPosition;
     qOrientation = pGob->m_qOrientation * qOrientation;
 }
-
+// PC 0x004506B0
 void Part::GetLocal(Vector& vPosition, Quaternion& qOrientation)
 {
     float fScale = 1.0f;

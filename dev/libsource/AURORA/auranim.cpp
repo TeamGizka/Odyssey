@@ -970,6 +970,7 @@ void PartDanglyMesh::Animate(float fTimeStep)
         fTimeStep = DANGLY_MIN_TIME_STEP;
 
     MdlNodeDanglyMesh* pNode = (MdlNodeDanglyMesh*)m_pNode;
+    int i;
     static Vector tempCoord;
     static Vector nodevertex;
     static Vector vertex;
@@ -981,7 +982,7 @@ void PartDanglyMesh::Animate(float fTimeStep)
     VertexPrimitiveDangly* pPrimitive = m_pVertexPrimitive->AsVertexPrimitiveDangly();
     if (magnitude(vWorldPosition - m_vLastPosition) > DANGLY_RESET_DISTANCE)
     {
-        for (int i = 0; i < pNode->m_nVertexCount; ++i)
+        for (i = 0; i < pNode->m_nVertexCount; ++i)
         {
             Vector* pVertex = &m_pVertexPositions[i];
             pVertex->m_fX = pNode->m_pVertexPositions[i].m_fX;
@@ -1002,7 +1003,7 @@ void PartDanglyMesh::Animate(float fTimeStep)
         Quaternion qRotation = -qWorldOrientation * m_qLastOrientation;
         Vector vTranslation = -m_qLastOrientation * (m_vLastPosition - vWorldPosition);
         float fTightness = DANGLY_TIGHTNESS_SCALE * pNode->m_fTightness * fTimeStep;
-        for (int i = 0; i < pNode->m_nVertexCount; ++i)
+        for (i = 0; i < pNode->m_nVertexCount; ++i)
         {
             if (pNode->m_lConstraints.m_pList[i] == 0.0f)
                 continue;
@@ -1055,11 +1056,10 @@ void PartDanglyMesh::Animate(float fTimeStep)
     unsigned char* pBuffer = (unsigned char*)GLRender::LockPool(
         nPool, 0, 0,
         RequestPoolManager::POOL_LOCK_WRITE);
-    for (int i = 0; i < pNode->m_nVertexCount; ++i)
+    for (i = 0; i < pNode->m_nVertexCount; ++i)
     {
-        Vector* pPosition = (Vector*)(pBuffer + pNode->m_nVertexDataOffset +
-            i * pNode->m_nVertexStride + pNode->m_nPositionOffset);
-        *pPosition = m_pVertexPositions[i];
+        *(Vector*)(pBuffer + pNode->m_nVertexDataOffset +
+            i * pNode->m_nVertexStride + pNode->m_nPositionOffset) = m_pVertexPositions[i];
     }
     nPool = m_pNode->m_pModel->AsModel()->m_nVertexPool;
     GLRender::UnlockPool(nPool);

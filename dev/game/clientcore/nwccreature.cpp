@@ -3628,15 +3628,13 @@ int CSWCCreature::SpawnHitVisuals(unsigned char nMode,
 
             Vector vNormal;
             vNormal = normalize(vDirection);
-            float fAngle = (vNormal * m_vOrientation > 1.0f)
-                         ? 1.0f : vNormal * m_vOrientation;
-            fAngle = (float)acos(fAngle);
+            float fAngle = (float)acos(min(1.0f, vNormal * m_vOrientation));
 
             CClientExoApp* pApp = g_pAppManager->GetClientExoApp();
             CSWCItem* pWeapon = pApp->GetItemByGameObjectID(
                 GetAttackingWeapon((unsigned char)pAttackData->m_nImpactY));
             if (pWeapon != NULL)
-                g_pRules->GetBaseItemArray()->GetBaseItem(pWeapon->GetBaseItemType());
+                g_pRules->m_pBaseItems->GetBaseItem(pWeapon->GetBaseItemType());
 
             if (cross(vDirection, normalize(m_vOrientation)).m_fZ >= 0.0f)
                 pVisual->SetOrientation(Quaternion(Vector(0.0f, 0.0f, 1.0f), -fAngle) *
