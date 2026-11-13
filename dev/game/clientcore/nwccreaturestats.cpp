@@ -2039,7 +2039,8 @@ void CSWCLevelUpStats::AddGrantedFeats(CExoArrayList<unsigned long>* pList,
         }
     }
     CSWRace* pRace = &g_pRules->m_pRaces[m_nRace];
-    for (int i = 0; i < g_pRules->m_nNumFeats; i++)
+    unsigned short nNumFeats;
+    for (int i = 0; i < (nNumFeats = g_pRules->m_nNumFeats); i++)
     {
         CSWFeat* pFeat = g_pRules->GetFeat(i);
         if (pFeat != NULL)
@@ -2058,7 +2059,7 @@ void CSWCLevelUpStats::AddGrantedFeats(CExoArrayList<unsigned long>* pList,
                 CSWClass* pClass =
                     &g_pRules->m_pClasses[GetClassLeveledUpIn()];
                 unsigned char nGrantedLevel;
-                if (pClass != NULL)
+                if (pFeat != NULL && pClass != NULL)
                 {
                     if (pClass->IsGrantedFeat(i, nGrantedLevel))
                     {

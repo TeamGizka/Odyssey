@@ -6603,6 +6603,10 @@ int CSWCMessage::HandleServerToPlayerInventory(unsigned char nMinor)
                 bInstant = ReadBOOL();
                 bSuppressDraw = ReadBOOL();
             }
+            else
+            {
+                bSuppressDraw = 0;
+            }
             if (MessageReadOverflow(1) || MessageReadUnderflow(1))
             {
                 return 0;
@@ -6621,13 +6625,20 @@ int CSWCMessage::HandleServerToPlayerInventory(unsigned char nMinor)
                     {
                         CSWCCreature* pCreature;
                         int nOverrideCharacter;
-                        if (g_pAppManager->m_pClientExoApp->GetInGameGui() != NULL &&
-                            (nOverrideCharacter = g_pAppManager->m_pClientExoApp->GetInGameGui()->GetTopMenuOverrideCharacter()) != -1)
+                        if (g_pAppManager->m_pClientExoApp->GetInGameGui() != NULL)
                         {
-                            CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
-                            pCreature = ((CSWSCreature*)pServerExoApp->GetGameObject(
-                                pServerExoApp->GetPartyTable()->GetNPCObject(nOverrideCharacter, 0, 1)))
-                                ->GetClientCreature();
+                            nOverrideCharacter = g_pAppManager->m_pClientExoApp->GetInGameGui()->GetTopMenuOverrideCharacter();
+                            if (nOverrideCharacter != -1)
+                            {
+                                CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+                                pCreature = ((CSWSCreature*)pServerExoApp->GetGameObject(
+                                    pServerExoApp->GetPartyTable()->GetNPCObject(nOverrideCharacter, 0, 1)))
+                                    ->GetClientCreature();
+                            }
+                            else
+                            {
+                                pCreature = g_pAppManager->m_pClientExoApp->GetPlayerCreature();
+                            }
                         }
                         else
                         {

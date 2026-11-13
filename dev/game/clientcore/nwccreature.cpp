@@ -6068,7 +6068,10 @@ void CSWCCreature::DriveAnimationUpdate()
     CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
     if (m_bRunning && m_pAppearance->m_fDriveAnimWalk < m_fSWAnimationSpeed &&
         !m_pStats->HasFeat(CSWFeat::FEAT_STEALTH_RUN))
-        m_fSWAnimationSpeed = m_pAppearance->m_fDriveAnimWalk;
+    {
+        float fWalkSpeed = m_pAppearance->m_fDriveAnimWalk;
+        m_fSWAnimationSpeed = fWalkSpeed;
+    }
 
     if (m_fSWAnimationSpeed > 0.0f && m_fSWTargetAnimationSpeed > 0.0f)
     {
