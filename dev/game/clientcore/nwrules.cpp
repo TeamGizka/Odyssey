@@ -308,7 +308,6 @@ void CSWRules::LoadClassInfo()
 {
     int nStrRef;
     int nDie;
-    int nSkillPointBase;
     int nValue;
 
     C2DA* p2DA = new C2DA("CLASSES", 0);
@@ -322,10 +321,11 @@ void CSWRules::LoadClassInfo()
     {
         CExoString sValue;
         int bFound;
+        short nSkillPointBase;
 
         p2DA->GetINTEntry(i, "Name", &nStrRef);
         m_pClasses[i].SetNameStrRef(nStrRef);
-        p2DA->GetINTEntry(i, "SkillPointBase", &nSkillPointBase);
+        p2DA->GetINTEntry(i, "SkillPointBase", (int*)&nSkillPointBase);
         m_pClasses[i].SetSkillPointBase(nSkillPointBase);
         p2DA->GetINTEntry(i, "Lower", &nStrRef);
         m_pClasses[i].SetNameLowerStrRef(nStrRef);

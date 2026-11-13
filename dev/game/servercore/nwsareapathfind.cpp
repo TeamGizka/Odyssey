@@ -1271,6 +1271,7 @@ int CSWSArea::ComputeSafeLocation(const Vector& vPosition, float fRadius,
     }
 
     unsigned long oidHit;
+    int bClear = 0;
     if (PositionWalkable(vTest))
     {
         float fHeight = pPathfind->m_fHalfStep;
@@ -1279,29 +1280,27 @@ int CSWSArea::ComputeSafeLocation(const Vector& vPosition, float fRadius,
                                      AREA_SAFE_LOCATION_HORIZONTAL_RADIUS, 0.0f);
         Vector vMin = vTest + Vector(-AREA_SAFE_LOCATION_HORIZONTAL_RADIUS,
                                      -AREA_SAFE_LOCATION_HORIZONTAL_RADIUS, 0.0f);
-        if (!NoNonWalkPolysInDoors(vMin, vMax, vTest.m_fZ,
-                fHeight + vTest.m_fZ, fWidth, OBJECT_INVALID, oidHit, NULL, 1, 0))
-        {
-            bCheckLine = 0;
-        }
+        bClear = NoNonWalkPolysInDoors(vMin, vMax, vTest.m_fZ,
+                fHeight + vTest.m_fZ, fWidth, OBJECT_INVALID, oidHit, NULL, 1, 0);
     }
-    else
+    if (!bClear)
     {
         bCheckLine = 0;
     }
 
-    float fX;
-    float fY;
     float fMaxHeight;
+    float fDistance;
     if (fRadius > 0.0f)
     {
-        for (float fDistance = AREA_SAFE_LOCATION_INITIAL_RADIUS;
+        for (fDistance = AREA_SAFE_LOCATION_INITIAL_RADIUS;
              fDistance < fRadius; fDistance += fStep)
         {
             float fMinX = vPosition.m_fX - fDistance;
             float fMaxX = fDistance + vPosition.m_fX;
             float fMinY = vPosition.m_fY - fDistance;
             float fMaxY = fDistance + vPosition.m_fY;
+            float fX;
+            float fY;
             for (fX = fMinX; fX <= fMaxX; fX += fStep)
             {
                 for (fY = fMinY; fY <= fMaxY; fY += fMaxY - fMinY)
@@ -1389,101 +1388,104 @@ int CSWSArea::ComputeSafeLocation(const Vector& vPosition, float fRadius,
                 }
             }
         }
-        return 0;
     }
-
-    float fMaxDistance = fRadius * -1.0f;
-    if (fMaxDistance < fStep)
-        fMaxDistance = fStep;
-    for (float fDistance = fStep; fDistance <= fMaxDistance; fDistance += fStep)
+    else
     {
-        float fMinX = vPosition.m_fX - fDistance;
-        float fMaxX = fDistance + vPosition.m_fX;
-        float fMinY = vPosition.m_fY - fDistance;
-        float fMaxY = fDistance + vPosition.m_fY;
-        for (fX = fMinX; fX <= fMaxX; fX += fStep)
+        fRadius = fRadius * -1.0f;
+        if (fRadius < fStep)
+            fRadius = fStep;
+        for (fDistance = fStep; fDistance <= fRadius; fDistance += fStep)
         {
-            for (fY = fMinY; fY <= fMaxY; fY += fMaxY - fMinY)
+            float fMinX = vPosition.m_fX - fDistance;
+            float fMaxX = fDistance + vPosition.m_fX;
+            float fMinY = vPosition.m_fY - fDistance;
+            float fMaxY = fDistance + vPosition.m_fY;
+            float fX;
+            float fY;
+            for (fX = fMinX; fX <= fMaxX; fX += fStep)
             {
-                vTest.m_fX = fX;
-                vTest.m_fY = fY;
-                vTest.m_fZ = ComputeHeight(vTest, 0, NULL);
-                if (TestSafeLocationPoint(vTest, pPathfind) == 1)
+                for (fY = fMinY; fY <= fMaxY; fY += fMaxY - fMinY)
                 {
-                    if (vTest.m_fZ < vPosition.m_fZ)
+                    vTest.m_fX = fX;
+                    vTest.m_fY = fY;
+                    vTest.m_fZ = ComputeHeight(vTest, 0, NULL);
+                    if (TestSafeLocationPoint(vTest, pPathfind) == 1)
                     {
-                        fMinHeight = vTest.m_fZ;
-                        fMaxHeight = vPosition.m_fZ;
-                    }
-                    else
-                    {
-                        fMaxHeight = vTest.m_fZ;
-                        fMinHeight = vPosition.m_fZ;
-                    }
-                    fMinHeight -= AREA_SAFE_LOCATION_VERTICAL_RADIUS;
-                    fMaxHeight += pPathfind->m_fHalfStep;
-                    if (bCheckLine)
-                    {
-                        float fWidth = pPathfind->m_fStepScale;
-                        float fHeight = pPathfind->m_fHalfStep;
-                        int nResult = TestDirectLine(vTest, vPosition, fWidth,
-                                                     fHeight, 0, NULL);
-                        if (nResult != DIRECT_LINE_CLEAR &&
-                            nResult != DIRECT_LINE_BLOCKED_CREATURE)
+                        if (vTest.m_fZ < vPosition.m_fZ)
                         {
-                            continue;
+                            fMinHeight = vTest.m_fZ;
+                            fMaxHeight = vPosition.m_fZ;
                         }
-                        if (!NoNonWalkPolysInDoors(vTest, vPosition, fMinHeight,
-                                fMaxHeight, fStep, OBJECT_INVALID, oidHit, NULL, 1, 0))
+                        else
                         {
-                            continue;
-                        }
-                    }
-                    *pSafePosition = vTest;
-                    return 1;
-                }
-            }
-        }
-        for (fX = fMinX; fX <= fMaxX; fX += fMaxX - fMinX)
-        {
-            for (fY = fMinY + fStep; fY <= fMaxY - fStep; fY += fStep)
-            {
-                vTest.m_fX = fX;
-                vTest.m_fY = fY;
-                vTest.m_fZ = ComputeHeight(vTest, 0, NULL);
-                if (TestSafeLocationPoint(vTest, pPathfind) == 1)
-                {
-                    if (vTest.m_fZ < vPosition.m_fZ)
-                    {
-                        fMinHeight = vTest.m_fZ;
-                        fMaxHeight = vPosition.m_fZ;
-                    }
-                    else
-                    {
-                        fMaxHeight = vTest.m_fZ;
-                        fMinHeight = vPosition.m_fZ;
-                    }
-                    float fHeight = pPathfind->m_fHalfStep;
-                    if (bCheckLine)
-                    {
-                        float fWidth = pPathfind->m_fStepScale;
-                        float fLineHeight = pPathfind->m_fHalfStep;
-                        if (!TestDirectLine(vTest, vPosition, fWidth,
-                                            fLineHeight, 0, NULL))
-                        {
-                            continue;
+                            fMaxHeight = vTest.m_fZ;
+                            fMinHeight = vPosition.m_fZ;
                         }
                         fMinHeight -= AREA_SAFE_LOCATION_VERTICAL_RADIUS;
-                        fMaxHeight += fHeight;
-                        if (!NoNonWalkPolysInDoors(vTest, vPosition,
-                                fMinHeight, fMaxHeight, fStep,
-                                OBJECT_INVALID, oidHit, NULL, 1, 0))
+                        fMaxHeight += pPathfind->m_fHalfStep;
+                        if (bCheckLine)
                         {
-                            continue;
+                            float fWidth = pPathfind->m_fStepScale;
+                            float fHeight = pPathfind->m_fHalfStep;
+                            int nResult = TestDirectLine(vTest, vPosition, fWidth,
+                                                         fHeight, 0, NULL);
+                            if (nResult != DIRECT_LINE_CLEAR &&
+                                nResult != DIRECT_LINE_BLOCKED_CREATURE)
+                            {
+                                continue;
+                            }
+                            if (!NoNonWalkPolysInDoors(vTest, vPosition, fMinHeight,
+                                    fMaxHeight, fStep, OBJECT_INVALID, oidHit, NULL, 1, 0))
+                            {
+                                continue;
+                            }
                         }
+                        *pSafePosition = vTest;
+                        return 1;
                     }
-                    *pSafePosition = vTest;
-                    return 1;
+                }
+            }
+            for (fX = fMinX; fX <= fMaxX; fX += fMaxX - fMinX)
+            {
+                for (fY = fMinY + fStep; fY <= fMaxY - fStep; fY += fStep)
+                {
+                    vTest.m_fX = fX;
+                    vTest.m_fY = fY;
+                    vTest.m_fZ = ComputeHeight(vTest, 0, NULL);
+                    if (TestSafeLocationPoint(vTest, pPathfind) == 1)
+                    {
+                        if (vTest.m_fZ < vPosition.m_fZ)
+                        {
+                            fMinHeight = vTest.m_fZ;
+                            fMaxHeight = vPosition.m_fZ;
+                        }
+                        else
+                        {
+                            fMaxHeight = vTest.m_fZ;
+                            fMinHeight = vPosition.m_fZ;
+                        }
+                        float fHeight = pPathfind->m_fHalfStep;
+                        if (bCheckLine)
+                        {
+                            float fWidth = pPathfind->m_fStepScale;
+                            float fLineHeight = pPathfind->m_fHalfStep;
+                            if (!TestDirectLine(vTest, vPosition, fWidth,
+                                                fLineHeight, 0, NULL))
+                            {
+                                continue;
+                            }
+                            fMinHeight -= AREA_SAFE_LOCATION_VERTICAL_RADIUS;
+                            fMaxHeight += fHeight;
+                            if (!NoNonWalkPolysInDoors(vTest, vPosition,
+                                    fMinHeight, fMaxHeight, fStep,
+                                    OBJECT_INVALID, oidHit, NULL, 1, 0))
+                            {
+                                continue;
+                            }
+                        }
+                        *pSafePosition = vTest;
+                        return 1;
+                    }
                 }
             }
         }
