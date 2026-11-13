@@ -572,9 +572,9 @@ int CExoStreamingSoundSourceInternal::Play(const CResRef& resRef,
                 }
                 szDirectory[i] = 0;
                 int nDirectory = atoi(szDirectory);
-                if (_stricmp(szDirectory, "gbl") == 0 ||
-                    _stricmp(szDirectory, "avo") == 0 ||
-                    _stricmp(szDirectory, "000") == 0 || nDirectory > 0)
+                if (stricmp(szDirectory, "gbl") == 0 ||
+                    stricmp(szDirectory, "avo") == 0 ||
+                    stricmp(szDirectory, "000") == 0 || nDirectory > 0)
                 {
                     char szSubDirectory[32];
 

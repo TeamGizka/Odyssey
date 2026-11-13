@@ -2943,8 +2943,8 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
                     szPrefix[i] = sSound[i];
                 szPrefix[i] = 0;
                 int nPrefix = atoi(szPrefix);
-                if (_stricmp(szPrefix, "gbl") != 0 && _stricmp(szPrefix, "avo") != 0 &&
-                    _stricmp(szPrefix, "000") != 0 && nPrefix <= 0)
+                if (stricmp(szPrefix, "gbl") != 0 && stricmp(szPrefix, "avo") != 0 &&
+                    stricmp(szPrefix, "000") != 0 && nPrefix <= 0)
                 {
                     sSound.Format("HD0:STREAMVOICE\\%s", sSound.CStr());
                 }

@@ -308,7 +308,7 @@ char* bind(char* sArguments)
             char sFirst[64];
             sFirst[0] = 0;
             sscanf(sArguments, "%s", sFirst);
-            if (!_stricmp(sFirst, "0") || !_stricmp(sFirst, "NULL"))
+            if (!stricmp(sFirst, "0") || !stricmp(sFirst, "NULL"))
             {
                 if (!pBinding)
                     sprintf(sResult, "%s didn't have a binding anyway", sKey);

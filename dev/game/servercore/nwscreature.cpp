@@ -4081,7 +4081,7 @@ void CSWSCreature::HandleAlignmentInfluence()
     for (int i = 0; i < pInfluence->m_nNumRows; i++)
     {
         pInfluence->GetCExoStringEntry(i, "Tag", &sTag);
-        if (_stricmp(sTag.CStr(), m_sTag.CStr()) == 0)
+        if (stricmp(sTag.CStr(), m_sTag.CStr()) == 0)
         {
             nRow = i;
             break;

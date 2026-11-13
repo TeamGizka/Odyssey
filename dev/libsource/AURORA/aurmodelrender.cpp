@@ -4753,7 +4753,7 @@ char* setenvironmentmap(char* sArguments)
         sprintf(sResult, "couldn't find object %s", sName);
         return sResult;
     }
-    if (_stricmp("NULL", sTexture) == 0 || _stricmp("0", sTexture) == 0)
+    if (stricmp("NULL", sTexture) == 0 || stricmp("0", sTexture) == 0)
     {
         pGob->m_pEnvironmentMap = NULL;
         sprintf(sResult, "Setting object %s environmentmap to 0", sName);

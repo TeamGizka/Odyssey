@@ -2544,7 +2544,7 @@ void CSWGuiUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
         {
             CExoString sTemplate;
             m_pUpgradeTable->GetCExoStringEntry(nRow, "Template", &sTemplate);
-            if (_stricmp(pItem->m_sTag.CStr(), sTemplate.CStr()) == 0)
+            if (stricmp(pItem->m_sTag.CStr(), sTemplate.CStr()) == 0)
             {
                 nUpgradeRow = nRow;
                 break;
@@ -3457,7 +3457,7 @@ void CSWGuiSwoopUpgrade::OnUpgradeSelected(CSWGuiControl* pControl)
         {
             CExoString sTemplate;
             m_pUpgradeTable->GetCExoStringEntry(nRow, "template", &sTemplate);
-            if (_stricmp(pItem->m_sTag.CStr(), sTemplate.CStr()) == 0)
+            if (stricmp(pItem->m_sTag.CStr(), sTemplate.CStr()) == 0)
             {
                 nUpgradeRow = nRow;
                 break;
