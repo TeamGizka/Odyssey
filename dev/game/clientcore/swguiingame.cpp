@@ -218,6 +218,11 @@ void CSWGuiInGameMenu::SetActiveControlID(int nControl, int bActive)
         SetActiveControl(m_lControls.element[nControl], bActive);
 }
 #ifndef _XBOX
+// swguidrawable.cpp defines this overload inline for its own unit; Draw needs it inlined here too.
+inline void CSWGuiBorderParams::SetFillImage(const CResRef& cImage)
+{
+    SetFillImage(cImage, 0);
+}
 // PC 0x00676B00
 void CSWGuiInGameMenu::Draw(float fElapsed)
 {
@@ -267,8 +272,7 @@ void CSWGuiInGameMenu::Draw(float fElapsed)
         {
             do
             {
-                CEffectIconObject* pIcon = pServer->m_lstEffectIcons.element[nIcon];
-                if (pIcon->m_bGood)
+                if (pServer->m_lstEffectIcons.element[nIcon]->m_bGood)
                     nBuffCount++;
                 else
                     nDebuffCount++;
@@ -284,21 +288,24 @@ void CSWGuiInGameMenu::Draw(float fElapsed)
         g_pSWTlkTable->ParseStr(sName, (CGameObject*)pCreature, 0, 1);
     }
     m_lblCharName.m_cText.m_cParams.SetText(sName);
-    if (pStats->m_nClassCount == 1)
+    if (pStats->GetNumClasses() == 1)
     {
-        m_lblTopClass1.m_cText.m_cParams.SetText(g_pAppManager->m_pClientExoApp->GetGUIString(
-            g_pRules->m_pClasses[pStats->GetClass(0)].m_nNameStrRef));
+        unsigned long nStrRef = g_pRules->m_pClasses[pStats->GetClass(0)].m_nNameStrRef;
+        m_lblTopClass1.m_cText.m_cParams.SetText(
+            g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef));
         m_lblTopClass1Level.m_cText.m_cParams.SetText(pStats->GetClassLevel(0, 0));
         m_lblTopClass2.m_cText.m_cParams.SetText("");
         m_lblTopClass2Level.m_cText.m_cParams.SetText("");
     }
     else
     {
-        m_lblTopClass1.m_cText.m_cParams.SetText(g_pAppManager->m_pClientExoApp->GetGUIString(
-            g_pRules->m_pClasses[pStats->GetClass(0)].m_nNameStrRef));
+        unsigned long nStrRef = g_pRules->m_pClasses[pStats->GetClass(0)].m_nNameStrRef;
+        m_lblTopClass1.m_cText.m_cParams.SetText(
+            g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef));
         m_lblTopClass1Level.m_cText.m_cParams.SetText(pStats->GetClassLevel(0, 0));
-        m_lblTopClass2.m_cText.m_cParams.SetText(g_pAppManager->m_pClientExoApp->GetGUIString(
-            g_pRules->m_pClasses[pStats->GetClass(1)].m_nNameStrRef));
+        nStrRef = g_pRules->m_pClasses[pStats->GetClass(1)].m_nNameStrRef;
+        m_lblTopClass2.m_cText.m_cParams.SetText(
+            g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef));
         m_lblTopClass2Level.m_cText.m_cParams.SetText(pStats->GetClassLevel(1, 0));
     }
     m_cChar2350.Show(1, nState, nBuffCount, nDebuffCount);
@@ -320,7 +327,7 @@ void CSWGuiInGameMenu::Draw(float fElapsed)
     {
         CSWCCreature* pMember = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(1);
         CSWSCreature* pMemberServer = pMember->GetServerCreature();
-        m_lblChar2.m_cBorder.m_cParams.SetFillImage(pMember->GetPortrait(1), 0);
+        m_lblChar2.m_cBorder.m_cParams.SetFillImage(pMember->GetPortrait(1));
         m_lblChar2.SetEnabledFlag(1);
         m_lblBack2.SetEnabledFlag(1);
         if (pMemberServer->GetStats()->CanLevelUp())
@@ -337,7 +344,7 @@ void CSWGuiInGameMenu::Draw(float fElapsed)
     {
         CSWCCreature* pMember = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(1);
         CSWSCreature* pMemberServer = pMember->GetServerCreature();
-        m_lblChar2.m_cBorder.m_cParams.SetFillImage(pMember->GetPortrait(1), 0);
+        m_lblChar2.m_cBorder.m_cParams.SetFillImage(pMember->GetPortrait(1));
         m_lblChar2.SetEnabledFlag(1);
         m_lblBack2.SetEnabledFlag(1);
         if (pMemberServer->GetStats()->CanLevelUp())
@@ -347,7 +354,7 @@ void CSWGuiInGameMenu::Draw(float fElapsed)
         m_btnChange2.SetEnabledFlag(1);
         pMember = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(2);
         pMemberServer = pMember->GetServerCreature();
-        m_lblChar3.m_cBorder.m_cParams.SetFillImage(pMember->GetPortrait(1), 0);
+        m_lblChar3.m_cBorder.m_cParams.SetFillImage(pMember->GetPortrait(1));
         m_lblChar3.SetEnabledFlag(1);
         m_lblBack3.SetEnabledFlag(1);
         if (pMemberServer->GetStats()->CanLevelUp())

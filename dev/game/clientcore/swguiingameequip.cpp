@@ -1899,6 +1899,12 @@ void CSWGuiInGameEquip::CloseDescription()
 
     m_lbItems.SetEnabled(0);
 }
+// The wield byte is read zero-extended; CSWBaseItem has no accessor for it in nwitem.h (a new header
+// inline shifts symbol ids in every unit that includes it), so the accessor lives here.
+inline unsigned char GetWeaponWield(CSWBaseItem* pBaseItem)
+{
+    return pBaseItem->m_nWeaponWield;
+}
 // PC 0x00716A80
 void CSWGuiInGameEquip::OnEnterSlot(CSWGuiControl* pControl)
 {
@@ -2024,12 +2030,11 @@ void CSWGuiInGameEquip::OnEnterSlot(CSWGuiControl* pControl)
                             pLeft = pClientItem;
                         }
                         if (pRight != NULL && pLeft != NULL &&
-                            (pRight != pClientItem || pItem->GetBaseItem()->m_nWeaponSize !=
+                            (pRight != pClientItem || pItem->GetBaseItem()->GetWeaponSize() !=
                                                        CSWBaseItem::WEAPON_SIZE_TWO_HANDED))
                         {
-                            CSWBaseItem* pRightBase = pRight->GetBaseItem();
-                            int nWield = (unsigned char)pRightBase->m_nWeaponWield;
-                            int nLeftW = (unsigned char)pLeft->GetBaseItem()->m_nWeaponWield;
+                            int nWield = GetWeaponWield(pRight->GetBaseItem());
+                            int nLeftW = GetWeaponWield(pLeft->GetBaseItem());
                             if (nWield != nLeftW ||
                                 (nWield != CSWBaseItem::WEAPON_WIELD_ONE_HANDED_2 &&
                                  nWield != CSWBaseItem::WEAPON_WIELD_ONE_HANDED_4))
@@ -2056,12 +2061,11 @@ void CSWGuiInGameEquip::OnEnterSlot(CSWGuiControl* pControl)
                             pLeft = pClientItem;
                         }
                         if (pRight != NULL && pLeft != NULL &&
-                            (pRight != pClientItem || pItem->GetBaseItem()->m_nWeaponSize !=
+                            (pRight != pClientItem || pItem->GetBaseItem()->GetWeaponSize() !=
                                                        CSWBaseItem::WEAPON_SIZE_TWO_HANDED))
                         {
-                            CSWBaseItem* pRightBase = pRight->GetBaseItem();
-                            int nWield = (unsigned char)pRightBase->m_nWeaponWield;
-                            int nLeftW = (unsigned char)pLeft->GetBaseItem()->m_nWeaponWield;
+                            int nWield = GetWeaponWield(pRight->GetBaseItem());
+                            int nLeftW = GetWeaponWield(pLeft->GetBaseItem());
                             if (nWield != nLeftW ||
                                 (nWield != CSWBaseItem::WEAPON_WIELD_ONE_HANDED_2 &&
                                  nWield != CSWBaseItem::WEAPON_WIELD_ONE_HANDED_4))
