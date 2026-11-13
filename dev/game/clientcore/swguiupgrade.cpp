@@ -3538,7 +3538,8 @@ void CSWGuiCreateItem::OnControlInvAButton(CSWGuiControl* pControl)
         {
             for (int i = 0; i < CSWGuiUpgrade::NUM_UPGRADE_SLOTS; i++)
             {
-                if (pItem->m_anUpgradeSlot[i] >= 0)
+                int nUpgrade = pItem->m_anUpgradeSlot[i];
+                if (nUpgrade >= 0)
                 {
                     CSWGuiMessageBox* pMessageBox =
                         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
