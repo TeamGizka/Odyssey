@@ -1253,6 +1253,7 @@ LRESULT CALLBACK WinMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,  // PC 0
         {
             if (wParam == 0)
             {
+                int bMovie = 0;
                 g_bActivationDueToFullScreenMovie = 0;
                 g_bActivationDueToAnyMovie = 0;
                 int bMinimize = 1;
@@ -1262,7 +1263,8 @@ LRESULT CALLBACK WinMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,  // PC 0
                 {
                     if (g_pAurora != NULL)
                     {
-                        if (g_pAppManager->GetClientExoApp()->IsMoviePlaying() == 1)
+                        bMovie = g_pAppManager->GetClientExoApp()->IsMoviePlaying();
+                        if (bMovie == 1)
                         {
                             if (g_pAurora->FullScreen() != 0)
                                 g_bActivationDueToFullScreenMovie = 1;
@@ -1284,7 +1286,7 @@ LRESULT CALLBACK WinMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,  // PC 0
                 }
                 if (hWnd == g_hRenderWnd)
                 {
-                    DeactivateRenderWindow(0);
+                    DeactivateRenderWindow(bMovie);
                     g_nWindowDeactivationTickCount = GetTickCount();
                 }
                 if (g_bActivationDueToAnyMovie == 0)
@@ -1484,14 +1486,14 @@ LRESULT CALLBACK WinMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,  // PC 0
         {
             MSG cEvent;
 
-            cEvent.message = nMsg;
-            cEvent.wParam = wParam;
             cEvent.lParam =
                 (unsigned short)lParam |
                 ((unsigned short)(g_nScreenHeight -
                                   (unsigned short)((unsigned long)lParam >> 16) -
                                   1)
                  << 16);
+            cEvent.message = nMsg;
+            cEvent.wParam = wParam;
             g_pExoInput->BufferEvent(&cEvent);
         }
         break;

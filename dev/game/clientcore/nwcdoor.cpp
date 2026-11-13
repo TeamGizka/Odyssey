@@ -380,9 +380,9 @@ void CSWCDoor::MenuActionSetDoorMine(unsigned long oidItem, CSWCCreature* pCreat
         return;
     }
     oidItem &= ~OBJECT_LISTTYPE_MASK;
-    if (g_pAppManager->GetClientExoApp()->ShowTutorialWindow(TUTORIAL_SET_MINE, m_nId, oidItem, 0) == 0)
+    if (g_pAppManager->GetClientExoApp()->ShowTutorialWindow(TUTORIAL_SET_MINE, GetId(), oidItem, 0) == 0)
     {
-        pCreature->PerformUseItem(oidItem, 0, m_nId, m_vPosition);
+        pCreature->PerformUseItem(oidItem, 0, GetId(), m_vPosition);
     }
 }
 // PC 0x006DBDD0

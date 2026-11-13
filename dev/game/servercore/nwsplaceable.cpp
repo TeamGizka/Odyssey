@@ -869,7 +869,7 @@ unsigned char CSWSPlaceable::GetDisarmDC()
 // PC 0x00587460
 unsigned char CSWSPlaceable::GetOpenLockDC()
 {
-    unsigned char nDC;
+    unsigned char nDC = 0;
     unsigned char nPercent;
     if (m_nOpenLockDiff == 4)
     {
@@ -889,46 +889,44 @@ unsigned char CSWSPlaceable::GetOpenLockDC()
                 nFixedModifier = 0;
                 break;
         }
-        nDC = m_nOpenLockDC;
-        if (nDC + nFixedModifier >= 0)
+        if (m_nOpenLockDC + nFixedModifier >= 0)
+            nDC = m_nOpenLockDC + nFixedModifier;
+    }
+    else
+    {
+        char nModifier = 0;
+        switch (m_nOpenLockDiff)
         {
-            nDC += nFixedModifier;
-            return nDC;
+            case 0:
+                nPercent = 0;
+                break;
+            case 1:
+                nPercent = 30;
+                break;
+            case 2:
+                nPercent = 70;
+                break;
+            case 3:
+                nPercent = 100;
+                break;
+            default:
+                nPercent = 30;
+                break;
         }
-        return 0;
+        switch (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nDifficulty)
+        {
+            case 0:
+                nModifier = -5;
+                break;
+            case 1:
+                nModifier = 0;
+                break;
+            case 2:
+                nModifier = 5;
+                break;
+        }
+        nDC = (m_c251 + 7) * (nPercent / 100) + m_nOpenLockDiffMod + nModifier + 21;
     }
-    char nModifier = 0;
-    switch (m_nOpenLockDiff)
-    {
-        case 0:
-            nPercent = 0;
-            break;
-        case 1:
-            nPercent = 30;
-            break;
-        case 2:
-            nPercent = 70;
-            break;
-        case 3:
-            nPercent = 100;
-            break;
-        default:
-            nPercent = 30;
-            break;
-    }
-    switch (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nDifficulty)
-    {
-        case 0:
-            nModifier = -5;
-            break;
-        case 1:
-            nModifier = 0;
-            break;
-        case 2:
-            nModifier = 5;
-            break;
-    }
-    nDC = (m_c251 + 7) * (nPercent / 100) + m_nOpenLockDiffMod + nModifier + 21;
     return nDC;
 }
 // PC 0x00587550
