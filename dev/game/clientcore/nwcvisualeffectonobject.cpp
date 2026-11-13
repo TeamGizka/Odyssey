@@ -1393,9 +1393,9 @@ void CSWCVisualEffectOnObject::ApplyLightsaberThrow(unsigned short nVisualEffect
             pProjectile->SetProjectileType(CSWCProjectile::PROJECTILE_PATH_TYPE_HOMING);
             pProjectile->m_nImpactType = CSWCProjectile::PROJECTILE_IMPACT_NONE;
             CSWCModule* pModule = g_pAppManager->GetClientExoApp()->GetModule();
-            if (pModule != 0 && pModule->m_pInfo != 0)
+            if (pModule != 0 && pModule->GetArea() != 0)
             {
-                pProjectile->AttachToScene(pModule->m_pInfo->m_pScene);
+                pProjectile->AttachToScene(pModule->GetArea()->m_pScene);
             }
         }
     }
