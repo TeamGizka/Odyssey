@@ -98,7 +98,7 @@ CSWTlkTable* g_pSWTlkTable = NULL;
 int g_bDemoMode = 0;
 
 static union { int s_nInitCounterStep; };
-CExoString g_sBuildNumber("427");
+CExoString g_sBuildNumber("419b_FIGSU");
 CExoString g_sInstallBuildNumber;
 CExoString g_sVersionNumber;
 CExoString g_sGameName;

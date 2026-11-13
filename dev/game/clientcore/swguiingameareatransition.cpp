@@ -12,7 +12,7 @@
 #include "swparty.h"
 
 static inline void SwguiingameareatransitionTrace1();
-// PC 0x007346C0
+// PC 0x007343D0
 CSWGuiInGameAreaTransition::CSWGuiInGameAreaTransition(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -40,19 +40,19 @@ CSWGuiInGameAreaTransition::CSWGuiInGameAreaTransition(CSWGuiManager* pManager)
     cExtent = m_lblIcon.m_cExtent;
     cExtent.m_nHeight = 50;
     cExtent.m_nWidth = 50;
-    cExtent.m_nTop = 27;
+    cExtent.m_nTop = 50;
     cExtent.m_nLeft = 175;
     m_lblIcon.SetExtent(cExtent);
 
     cExtent = m_lblDescription.m_cExtent;
-    cExtent.m_nHeight = 20;
+    cExtent.m_nHeight = 40;
     cExtent.m_nWidth = 348;
     cExtent.m_nTop = 6;
     cExtent.m_nLeft = 26;
     m_lblDescription.SetExtent(cExtent);
 
     cExtent = m_lblTextBackground.m_cExtent;
-    cExtent.m_nHeight = 32;
+    cExtent.m_nHeight = 54;
     cExtent.m_nWidth = AREA_TRANSITION_WIDTH;
     cExtent.m_nTop = 0;
     cExtent.m_nLeft = 0;

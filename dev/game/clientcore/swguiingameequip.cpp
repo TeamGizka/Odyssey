@@ -1993,7 +1993,7 @@ CSWGuiInGameItemEntry* CSWGuiInGameEquip::AddItemEntryToList(int nItem)
     return pItemEntry;
 }
 #endif
-// PC 0x00714670
+// PC 0x00714360
 void CSWGuiInGameItemEntry::SetExtent(const CSWGuiExtent& cExtent)
 {
     if (cExtent.m_nWidth > SWGUI_ITEM_ICON_SIZE)
@@ -2229,7 +2229,7 @@ void CSWGuiStoreItemEntry::Draw(float fElapsed)
     m_cText.Draw(fElapsed);
     m_cCountText.Draw(fElapsed);
 }
-// PC 0x00714880
+// PC 0x00714570
 void CSWGuiInGameItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
                                        CSWGuiBorder& cHilite, int nWidth,
                                        int bPulsing)
@@ -2269,7 +2269,7 @@ void CSWGuiInGameItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
         cExtent.m_nLeft = 0;
         cExtent.m_nTop = 0;
         cExtent.m_nWidth = nWidth;
-        cExtent.m_nHeight = 36;
+        cExtent.m_nHeight = SWGUI_ITEM_ICON_SIZE;
         SetExtent(cExtent);
     }
     m_bPulsing = bPulsing;
@@ -2481,7 +2481,7 @@ void CSWGuiContainer::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 #endif
 }
-// PC 0x007154E0
+// PC 0x007151D0
 void CSWGuiStoreItemEntry::SetExtent(const CSWGuiExtent& cExtent)
 {
     if (cExtent.m_nWidth > SWGUI_ITEM_ICON_SIZE)
@@ -2515,7 +2515,7 @@ void CSWGuiStoreItemEntry::SetExtent(const CSWGuiExtent& cExtent)
             m_cBorder.GetInnerExtent(), m_cHilite.GetInnerExtent()));
     }
 }
-// PC 0x00715660
+// PC 0x00715350
 void CSWGuiStoreItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
                                     CSWGuiBorder& cHilite, int nWidth)
 {
@@ -2551,7 +2551,7 @@ void CSWGuiStoreItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
         cExtent.m_nLeft = 0;
         cExtent.m_nTop = 0;
         cExtent.m_nWidth = nWidth;
-        cExtent.m_nHeight = 36;
+        cExtent.m_nHeight = SWGUI_ITEM_ICON_SIZE;
         SetExtent(cExtent);
     }
 }

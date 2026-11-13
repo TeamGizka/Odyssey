@@ -543,7 +543,7 @@ class CSWUpgradeItemEntry : public CSWGuiButton
 {
 public:
 
-    static const int ENTRY_HEIGHT = 36;
+    static const int ENTRY_HEIGHT = 49;
     static const int COUNT_HEIGHT = 19;
 
     static const unsigned long STRREF_EQUIPPED = 32346;

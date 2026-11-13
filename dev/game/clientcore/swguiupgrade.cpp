@@ -972,7 +972,7 @@ void CSWGuiUpgrade::OnEnterSlot(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x007254C0
+// PC 0x007251D0
 void CSWUpgradeItemEntry::SetExtent(const CSWGuiExtent& cExtent)
 {
 
@@ -1020,7 +1020,7 @@ void CSWUpgradeItemEntry::Draw(float fElapsed)
     m_cText.Draw(fElapsed);
     m_CSWGuiText_334.Draw(fElapsed);
 }
-// PC 0x007256B0
+// PC 0x007253C0
 void CSWUpgradeItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
                                      CSWGuiBorder& cHilite, int nWidth, int bSlotEntry)
 {
