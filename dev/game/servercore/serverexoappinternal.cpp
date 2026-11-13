@@ -5367,15 +5367,16 @@ int CServerExoAppInternal::MainLoop()
             ExoXboxLaunch(&cParams, g_pAppManager->GetServerExoApp()->GetModuleName().CStr());
         }
 #else
-        if (m_bMoveToModulePending == 1 &&
+        int bMovePending = m_bMoveToModulePending;
+        if (bMovePending == 1 &&
             g_pAppManager->GetClientExoApp()->GetInGameGui()
                 ->m_bControllerPauseActive == 0)
         {
-            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
+            g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(
                 "000_Human_Conf_Active", 0);
-            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
+            g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(
                 "000_Beast_Conf_Active", 0);
-            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
+            g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(
                 "000_Droid_Conf_Active", 0);
             unsigned long nCalendarDay, nTimeOfDay;
             unsigned long nHour, nMinute, nSecond, nMillisecond;
