@@ -3796,9 +3796,10 @@ int CSWSCreatureStats::HasFeat(unsigned short nFeat)
     }
     if (nResult == 0)
     {
-        for (int j = 0; j < m_lstBonusFeats.num; j++)
+        CExoArrayList<unsigned short>* pBonusFeats = &m_lstBonusFeats;
+        for (int j = 0; j < pBonusFeats->num; j++)
         {
-            if (m_lstBonusFeats[j] == nFeat)
+            if ((*pBonusFeats)[j] == nFeat)
             {
                 nResult = 1;
                 break;
