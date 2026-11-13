@@ -133,44 +133,34 @@ inline void ServerExoAppInternalReserve(CExoArrayList<unsigned long>* pIds, int 
     delete pClients;
     delete pExclusions;
 }
-// PC 0x00405980
-template <> inline CExoArrayList<CExoString>::CExoArrayList(int nSize)
+
+static inline CServerExoApp* GetServerExoApp()
 {
-    num = 0;
-    array_size = 0;
-    element = NULL;
-    if (nSize != 0)
-    {
-        Allocate(nSize);
-    }
+    return g_pAppManager->m_pServerExoApp;
 }
 
-inline CVirtualMachineCmdImplementer::CVirtualMachineCmdImplementer()
+static inline CClientExoApp* GetClientExoApp()
 {
+    return g_pAppManager->m_pClientExoApp;
 }
-// PC 0x004EC590
-CSWSPlayer* CServerExoAppInternal::GetClientObjectByObjectId(
-    unsigned long oidObject)
-{
-    CExoLinkedListNode* pNode;
-    CSWSPlayer* pPlayer;
 
-    if (oidObject == OBJECT_INVALID)
-    {
-        return NULL;
-    }
-    pNode = m_pPlayerList->GetHeadPos();
-    while (pNode != NULL)
-    {
-        pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pNode);
-        if (pPlayer != NULL && pPlayer->GetGameObject() != NULL &&
-            pPlayer->GetGameObject()->m_nId == oidObject)
-        {
-            return pPlayer;
-        }
-        m_pPlayerList->GetNext(pNode);
-    }
-    return NULL;
+static inline CSWReentrantServerStats* GetReentrantServerStats()
+{
+    return g_pAppManager->m_pReentrantServerStats;
+}
+
+static inline unsigned __int64 GetHighResolutionTimer()
+{
+    return g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
+}
+
+static inline void ServerExoAppInternalTrace2()
+{
+    ServerExoAppTrace();
+}
+
+static inline void ServerExoAppTrace(CServerExoApp*)
+{
 }
 
 CServerExoAppInternal* CServerExoAppInternal::s_pServerExoAppInternal;
@@ -305,7 +295,317 @@ int UpdateLoadScreen(int nCurrent, int nTotal, int nBase, int nRange);
 static inline CServerExoApp* GetServerExoApp();
 static inline CClientExoApp* GetClientExoApp();
 static inline CSWReentrantServerStats* GetReentrantServerStats();
-static inline unsigned __int64 GetHighResolutionTimer();
+// PC 0x00405980
+template <> inline CExoArrayList<CExoString>::CExoArrayList(int nSize)
+{
+    num = 0;
+    array_size = 0;
+    element = NULL;
+    if (nSize != 0)
+    {
+        Allocate(nSize);
+    }
+}
+
+inline CVirtualMachineCmdImplementer::CVirtualMachineCmdImplementer()
+{
+}
+// PC 0x004EA1C0
+CSWSModule* CServerExoAppInternal::GetModule()
+{
+    unsigned long oidModule;
+    CGameObjectArray* pObjectArray;
+    CGameObject* pObject;
+    CSWSModule* pModule;
+    CGameObject* pFoundObject;
+
+    oidModule = m_oidModule;
+    if (m_oidLastModuleFound != oidModule)
+    {
+#ifdef _XBOX
+        pFoundObject = NULL;
+        EXOXBOXASSERT(m_pObjectArray);
+        m_pObjectArray->GetGameObject(m_oidModule, &pFoundObject);
+#else
+        pObjectArray = m_pObjectArray;
+        pFoundObject = NULL;
+        pObjectArray->GetGameObject(oidModule, &pFoundObject);
+#endif
+        pObject = pFoundObject;
+        if (pFoundObject != NULL)
+        {
+            m_oidLastModuleFound = m_oidModule;
+            pModule = pObject->AsSWSModule();
+            m_pLastModuleFound = pModule;
+            return pModule;
+        }
+        m_oidLastModuleFound = OBJECT_INVALID;
+        m_pLastModuleFound = NULL;
+    }
+    return m_pLastModuleFound;
+}
+// PC 0x004EA230
+void CServerExoAppInternal::ClearLastModuleFound()
+{
+    m_oidLastModuleFound = OBJECT_INVALID;
+    m_pLastModuleFound = NULL;
+}
+// PC 0x004EA250
+CExoString CServerExoAppInternal::GetModuleName()
+{
+    if (GetModule() != NULL)
+    {
+        CExoString sModuleName;
+        sModuleName = m_pServerInfo->m_sModuleName;
+        return sModuleName;
+    }
+    return CExoString();
+}
+// PC 0x004EA300
+int CServerExoAppInternal::SendCharacterQuery(CSWSPlayer* pPlayer)
+{
+    unsigned char nClassCount;
+    int nClasses[2];
+    unsigned char nClassLevels[2];
+    unsigned long nExperience;
+    CSWSMessage* pMessage;
+
+    pMessage = GetServerExoApp()->GetSWSMessage();
+    pPlayer->GetCharacterInfoFromIFO(nClassCount, nClasses, nClassLevels,
+                                    nExperience);
+    pMessage->SendServerToPlayerLogin_CharacterQuery(
+        pPlayer, nClassCount, nClasses, nClassLevels, nExperience);
+    return 1;
+}
+// PC 0x004EA360
+int CServerExoAppInternal::HandleMessage(unsigned long nPlayerId,
+                                         unsigned char* pMessage,
+                                         unsigned long nSize, int bGuaranteed)
+{
+    if (bGuaranteed == 0)
+    {
+        if (*pMessage == 's' &&
+            m_pNetLayer->GetPlayerInfo(nPlayerId)->m_bAuthorized == 1)
+        {
+            m_pSWSMessage->HandleServerAdminToServerMessage(nPlayerId, pMessage,
+                                                            nSize);
+        }
+        if (*pMessage == 'p' &&
+            m_pNetLayer->GetPlayerInfo(nPlayerId)->m_bPlayer == 1)
+        {
+            m_pSWSMessage->HandlePlayerToServerMessage(nPlayerId, pMessage,
+                                                       nSize);
+        }
+        return 1;
+    }
+    return 0;
+}
+// PC 0x004EA3E0
+int CServerExoAppInternal::Initialize()
+{
+    CResRef cResRef("globalcat");
+
+    m_globalVariableTable.ReadCatalogue(cResRef);
+    return 1;
+}
+// PC 0x004EA410
+int CServerExoAppInternal::CopyModuleToCurrentGame(
+    const CExoString& sSource, const CExoString& sDestination,
+    unsigned short nFlags)
+{
+    int nResult = CopyFile(sSource.CStr(), sDestination.CStr(), FALSE);
+
+    if (nResult == 0)
+    {
+        GetLastError();
+        return 0;
+    }
+
+    if ((GetFileAttributes(sDestination.CStr()) &
+         FILE_ATTRIBUTE_READONLY) != 0)
+    {
+        SetFileAttributes(sDestination.CStr(), FILE_ATTRIBUTE_NORMAL);
+    }
+    return 1;
+}
+// PC 0x004EA470
+int UpdateLoadScreen(int nCurrent, int nTotal, int nBase, int nRange)
+{
+#ifdef _XBOX
+    GetClientExoApp()->SetLoadBarProgress(
+        (int)((float)nCurrent / (float)nTotal * (float)nRange) + nBase, 0);
+#else
+    GetClientExoApp()->SetLoadBarProgress(
+        nBase + (unsigned __int64)((double)nCurrent / (double)nTotal *
+                                   (double)nRange),
+        0);
+#endif
+    UpdateScreen(0.033333335f, 0, 0);
+    return 0;
+}
+void CServerExoAppInternal::InitiateModuleForPlayer(void* pData)  // PC 0x004EA4B0
+{
+    CSWSPlayer* pPlayer = (CSWSPlayer*)pData;
+    CSWSCreature* pCreature;
+    CSWSArea* pArea;
+    if (pPlayer->GetGameObject() == NULL)
+    {
+        pCreature = new CSWSCreature(OBJECT_INVALID, 1);
+        unsigned long oidCreature = pCreature->m_nId;
+        pCreature->m_pPathfindInformation->m_oidPathfindCreature = oidCreature;
+        pPlayer->SetGameObject((CSWSObject*)pCreature);
+    }
+    else
+    {
+        pCreature = pPlayer->GetGameObject()->AsSWSCreature();
+    }
+    int bModuleCharacterLoaded = pPlayer->m_bModuleCharacterLoaded;
+    int bPlayerIsNewToModule = (bModuleCharacterLoaded == 0);
+    if (bPlayerIsNewToModule)
+    {
+        Vector vOrientation;
+        pArea = GetModule()->GetArea();
+        pCreature->m_oidDisappearTarget = pArea->GetId();
+        pCreature->m_vDisappearPosition =
+            Vector(GetModule()->m_pEntryInfo->m_fEntryX,
+                   GetModule()->m_pEntryInfo->m_fEntryY,
+                   GetModule()->m_pEntryInfo->m_fEntryZ);
+        pCreature->m_bWorkRemainingCompleteSent = 0;
+        vOrientation.m_fX = GetModule()->m_pEntryInfo->m_fEntryDirX;
+        vOrientation.m_fY = GetModule()->m_pEntryInfo->m_fEntryDirY;
+        vOrientation.m_fZ = 0.0f;
+        pCreature->CSWSObject::SetOrientation(vOrientation);
+    }
+    else
+    {
+        pArea = pCreature->GetArea();
+        if (pArea != NULL)
+        {
+            pCreature->m_oidDisappearTarget = pArea->GetId();
+            pCreature->m_vDisappearPosition = pCreature->m_vPosition;
+            pCreature->m_bWorkRemainingCompleteSent = 0;
+        }
+        else
+        {
+#ifdef _XBOX
+            unsigned long oidArea = pCreature->m_oidDisappearTarget;
+            pArea = g_pAppManager->m_pServerExoApp->GetAreaByGameObjectID(oidArea);
+#else
+            pArea = g_pAppManager->m_pServerExoApp->GetAreaByGameObjectID(
+                pCreature->m_oidDisappearTarget);
+#endif
+        }
+    }
+
+    if (pArea == NULL)
+    {
+        return;
+    }
+    pCreature->SetArea(NULL);
+
+    CSWSMessage* pMessage = g_pAppManager->m_pServerExoApp->GetSWSMessage();
+    if (pMessage == NULL)
+    {
+        return;
+    }
+    pPlayer->SetAreaTransitionBMP(pArea->GetLoadScreenID(), "");
+    pMessage->SendServerToPlayerArea_ClientArea(
+        pPlayer, pArea, pCreature->m_vDisappearPosition.m_fX,
+        pCreature->m_vDisappearPosition.m_fY,
+        pCreature->m_vDisappearPosition.m_fZ, pCreature->m_vOrientation,
+        bPlayerIsNewToModule);
+    pMessage->SendServerToPlayerSetCustomTokenList(pPlayer->m_nPlayerId);
+}
+// PC 0x004EA730
+void CServerExoAppInternal::MovePlayerToArea(void* pData)
+{
+    Vector vSafePosition;
+    Vector vPosition;
+    CSWSPlayer* pPlayer = (CSWSPlayer*)pData;
+
+    if (pPlayer->GetGameObject() != NULL)
+    {
+        CSWSCreature* pCreature = pPlayer->GetGameObject()->AsSWSCreature();
+        if (m_sMoveToModuleStartWaypoint[0])
+        {
+            unsigned long oidWaypoint = GetModule()->GetWaypoint(m_sMoveToModuleStartWaypoint);
+            if (oidWaypoint != OBJECT_INVALID)
+            {
+                CSWSWaypoint* pWaypoint = g_pAppManager->GetServerExoApp()->GetWaypointByGameObjectID(oidWaypoint);
+                if (pWaypoint != NULL)
+                {
+                    pCreature->m_vDisappearPosition = pWaypoint->m_vPosition;
+                    pCreature->SetOrientation(pWaypoint->m_vOrientation);
+                }
+            }
+            m_sMoveToModuleStartWaypoint = "";
+        }
+        vPosition = pCreature->m_vDisappearPosition;
+        CSWSArea* pArea = GetModule()->GetArea();
+        pCreature->m_pPathfindInformation->m_oidPathfindCreature = pCreature->m_nId;
+        if (pArea != NULL)
+        {
+            CPathfindInformation* pPathfind = pCreature->m_pPathfindInformation;
+            if (!pArea->ComputeSafeLocation(vPosition, 20.0f,
+                                            pPathfind, 1,
+                                            &vSafePosition))
+            {
+                vSafePosition = vPosition;
+            }
+            pCreature->UpdateSubareasOnJumpPosition(vSafePosition, pArea->m_nId,
+                                                   !m_bLoadFromSaveGame);
+            pCreature->AddToArea(pArea, vSafePosition.m_fX, vSafePosition.m_fY,
+                                vSafePosition.m_fZ, 0, 0);
+        }
+        pCreature->UpdateVisibleList(0);
+        m_partyTable.PositionParty();
+        m_bLoadFromSaveGame = 0;
+    }
+}
+
+void CServerExoAppInternal::OnCDChange()
+{
+}
+
+void CServerExoAppInternal::OnExit()
+{
+}
+
+void CServerExoAppInternal::OnGainFocus()
+{
+}
+
+void CServerExoAppInternal::OnLostFocus()
+{
+}
+
+void CServerExoAppInternal::OnVideoChange()
+{
+}
+// PC 0x004EC590
+CSWSPlayer* CServerExoAppInternal::GetClientObjectByObjectId(
+    unsigned long oidObject)
+{
+    CExoLinkedListNode* pNode;
+    CSWSPlayer* pPlayer;
+
+    if (oidObject == OBJECT_INVALID)
+    {
+        return NULL;
+    }
+    pNode = m_pPlayerList->GetHeadPos();
+    while (pNode != NULL)
+    {
+        pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pNode);
+        if (pPlayer != NULL && pPlayer->GetGameObject() != NULL &&
+            pPlayer->GetGameObject()->m_nId == oidObject)
+        {
+            return pPlayer;
+        }
+        m_pPlayerList->GetNext(pNode);
+    }
+    return NULL;
+}
 // PC 0x004EC620
 CSWSPlayer* CServerExoAppInternal::GetClientObjectByPlayerId(
     unsigned long nPlayerId, unsigned char nGroup)
@@ -338,6 +638,162 @@ CSWSPlayer* CServerExoAppInternal::GetClientObjectByPlayerId(
     }
     return NULL;
 }
+#ifndef _XBOX
+int CServerExoAppInternal::SaveGame(unsigned long nSlot,  // PC 0x004EC6E0
+                                    const CExoString& sName,
+                                    CSWSPlayer* pPlayer, int bAutoSave)
+{
+    CExoString sDirectory;
+    CExoString sSaveFile;
+    unsigned __int64 nFreeBytes;
+
+    g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL);
+    g_pExoResMan->CreateDirectory2("SAVES:");
+    sDirectory.Format("SAVES:%06d - %s", nSlot, sName.CStr());
+
+    int nResult = g_pExoResMan->GetFreeDiskSpace("SAVES:", &nFreeBytes);
+    if (nResult == 1)
+    {
+        unsigned long nSaveGameSize = m_nEstimatedSaveSize;
+        if (nSaveGameSize >
+            nFreeBytes + (unsigned long)g_pExoBase->GetDirectorySize(sDirectory))
+        {
+            CSWSMessage* pMessage = m_pSWSMessage;
+            pMessage->SendServerToPlayerSaveLoad_Status(
+                pPlayer, CSWSMessage::SAVELOAD_STATUS_SAVE_FAILED,
+                CSWSMessage::SAVELOAD_FAILURE_DISK_SPACE);
+            return 0;
+        }
+    }
+
+    if (g_pExoResMan->CreateDirectory2(sDirectory) == 0 &&
+        g_pExoResMan->CleanDirectory(sDirectory, 0, 0) == 0)
+    {
+        return 0;
+    }
+
+    sSaveFile = sDirectory + "\\" + "SAVEGAME";
+
+    g_pAppManager->m_pReentrantServerStats->StartStallEvent(
+        CSWReentrantServerStats::OPERATION_SAVE_GAME);
+    CSWReentrantServerStats* pDirectoryStats = g_pAppManager->m_pReentrantServerStats;
+    pDirectoryStats->m_sUnknown24 = sDirectory;
+    CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
+    pStats->m_sUnknown32 = sSaveFile;
+    CSWReentrantServerStats* pCompletedStats = g_pAppManager->m_pReentrantServerStats;
+    pCompletedStats->m_nProgress = 0;
+    CSWReentrantServerStats* pProgressStats = g_pAppManager->m_pReentrantServerStats;
+    pProgressStats->m_nProgressTotal = 0;
+    SendStartStallEvent(CSWSMessage::LOADBAR_STALL_EVENT_SAVE_GAME);
+
+    sDirectory = g_pExoBase->m_pExoAliasList->GetAliasPath("SAVES", 0);
+    if (sDirectory != "")
+    {
+        CAurCamera* pModuleCamera =
+            g_pAppManager->GetClientExoApp()->GetModule()->GetCamera();
+        CSWCameraOnAStick* pCamera = (CSWCameraOnAStick*)
+            pModuleCamera->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK);
+        if (pCamera != NULL)
+        {
+            pCamera->SetCameraForScreenShot();
+        }
+        sSaveFile.Format("%s%06d - %s%sScreen", sDirectory.CStr(),
+                         nSlot, sName.CStr(), "\\");
+        g_pAppManager->DoSaveGameScreenShot(sSaveFile);
+    }
+
+    if (nSlot != 0)
+    {
+        g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
+        UpdateScreen(1.0f / 30.0f, 0, 0);
+    }
+    m_nAutoSaveElapsedTime = 0;
+    m_bAutoSaveTimerExpired = 0;
+    return 1;
+}
+// PC 0x004ECF10
+int CServerExoAppInternal::LoadCharacterFinish(CSWSPlayer* pPlayer, int bSuccess)
+{
+    CSWSModule* pModule = g_pAppManager->m_pServerExoApp->GetModule();
+    CScriptEvent* pEnterEvent = new CScriptEvent;
+    CScriptEvent* pDeathEvent = NULL;
+    int nHead;
+
+    char nAreaLoadState = pPlayer->m_nAreaLoadState;
+    if (nAreaLoadState != 1)
+    {
+        pPlayer->m_nAreaLoadState = CSWSPlayer::AREA_LOAD_PENDING;
+        m_pSWSMessage->SendServerToPlayerLogin_Confirm(pPlayer->GetPlayerId());
+        m_pSWSMessage->SendServerToPlayerModule_Info(pPlayer->GetPlayerId());
+    }
+    if (bSuccess != 0 && pPlayer->m_nModulePlayerIndex != -1)
+    {
+        CSWSObject* pObject = pPlayer->GetGameObject();
+        if (pObject != NULL)
+            delete pObject;
+        pPlayer->LoadCharacterFromIFO(pPlayer->m_nModulePlayerIndex, 1, 1);
+    }
+
+    pEnterEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_CLIENT_ENTER;
+    if (pPlayer->GetGameObject() != NULL)
+    {
+        if (pPlayer->GetGameObject()->AsSWSCreature()->GetDead() == 1 ||
+            pPlayer->GetGameObject()->AsSWSCreature()->GetDeadTemp() == 1)
+        {
+            pDeathEvent = new CScriptEvent;
+            pDeathEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_DEATH;
+        }
+        pEnterEvent->SetObjectID(0, pPlayer->GetGameObject()->GetId());
+
+        CSWSMessage* pMessage =
+            g_pAppManager->m_pServerExoApp->GetSWSMessage();
+        CExoLinkedList<CSWSClient>* pPlayers =
+            g_pAppManager->m_pServerExoApp->GetPlayerList();
+        CSWSCreature* pCreature =
+            pPlayer->GetGameObject()->AsSWSCreature();
+        CExoLinkedListNode* pNode = pPlayers->GetHeadPos();
+        while (pNode != NULL)
+        {
+            CSWSPlayer* pOtherPlayer = (CSWSPlayer*)pPlayers->GetAtPos(pNode);
+            if (pOtherPlayer != NULL &&
+                pOtherPlayer->m_nPlayModuleCharacterListState != 0 &&
+                pMessage != NULL)
+                pMessage->SendServerToPlayerPlayModuleCharacterListResponse(
+                    pOtherPlayer->GetPlayerId(), pCreature->GetId(), 1);
+            pPlayers->GetNext(pNode);
+        }
+    }
+    else
+    {
+        pEnterEvent->SetObjectID(0, OBJECT_INVALID);
+    }
+
+    if (pModule != NULL)
+    {
+        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+            0, 0, pPlayer->GetPlayerId(), pModule->GetId(),
+            CServerAIMaster::EVENT_SIGNAL_EVENT, pEnterEvent);
+        if (pDeathEvent != NULL)
+            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                0, 0, pPlayer->GetGameObject()->GetId(), pModule->GetId(),
+                CServerAIMaster::EVENT_SIGNAL_EVENT, pDeathEvent);
+
+        unsigned long oidPC = pPlayer->m_oidPCObject;
+        CSWSCreature* pCreature =
+            g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(oidPC);
+        if (pCreature != NULL)
+        {
+            if (&pCreature->m_cAppearanceInfo != NULL)
+            {
+                g_pRules->Get2DArrays()->GetAppearance()->GetINTEntry(
+                    pCreature->m_cAppearanceInfo.m_nAppearance, "NORMALHEAD", &nHead);
+                pModule->GetArea()->EnforceNoPCHeadCloning(nHead);
+            }
+        }
+    }
+    return 1;
+}
+#endif
 // PC 0x004ECAA0
 int CServerExoAppInternal::StorePlayerCharacters()
 {
@@ -487,6 +943,21 @@ int CServerExoAppInternal::StoreCurrentModule()
     }
     return 1;
 }
+int CServerExoAppInternal::LoadPrimaryPlayer(CSWSPlayer* pPlayer)  // PC 0x004ED220
+{
+    CSWSModule* pModule;
+    int nPrimaryPlayerIndex;
+
+    pModule = g_pAppManager->m_pServerExoApp->GetModule();
+    nPrimaryPlayerIndex = pModule->GetPrimaryPlayerIndex();
+    if (nPrimaryPlayerIndex == -1)
+    {
+        return 0;
+    }
+    pPlayer->m_nModulePlayerIndex = nPrimaryPlayerIndex;
+    LoadCharacterFinish(pPlayer, 1);
+    return 1;
+}
 // PC 0x004ED260
 int CServerExoAppInternal::ExportAllPlayers()
 {
@@ -513,37 +984,6 @@ int CServerExoAppInternal::ExportAllPlayers()
         m_pPlayerList->GetNext(pNode);
     }
     return 1;
-}
-// PC 0x004EA300
-int CServerExoAppInternal::SendCharacterQuery(CSWSPlayer* pPlayer)
-{
-    unsigned char nClassCount;
-    int nClasses[2];
-    unsigned char nClassLevels[2];
-    unsigned long nExperience;
-    CSWSMessage* pMessage;
-
-    pMessage = GetServerExoApp()->GetSWSMessage();
-    pPlayer->GetCharacterInfoFromIFO(nClassCount, nClasses, nClassLevels,
-                                    nExperience);
-    pMessage->SendServerToPlayerLogin_CharacterQuery(
-        pPlayer, nClassCount, nClasses, nClassLevels, nExperience);
-    return 1;
-}
-// PC 0x004EA470
-int UpdateLoadScreen(int nCurrent, int nTotal, int nBase, int nRange)
-{
-#ifdef _XBOX
-    GetClientExoApp()->SetLoadBarProgress(
-        (int)((float)nCurrent / (float)nTotal * (float)nRange) + nBase, 0);
-#else
-    GetClientExoApp()->SetLoadBarProgress(
-        nBase + (unsigned __int64)((double)nCurrent / (double)nTotal *
-                                   (double)nRange),
-        0);
-#endif
-    UpdateScreen(0.033333335f, 0, 0);
-    return 0;
 }
 #ifndef _XBOX
 void CServerExoAppInternal::StallEventSaveGame()  // PC 0x004ED2D0
@@ -739,1206 +1179,6 @@ void CServerExoAppInternal::StallEventSaveGame()  // PC 0x004ED2D0
     }
 }
 #endif
-void CServerExoAppInternal::InitiateModuleForPlayer(void* pData)  // PC 0x004EA4B0
-{
-    CSWSPlayer* pPlayer = (CSWSPlayer*)pData;
-    CSWSCreature* pCreature;
-    CSWSArea* pArea;
-    if (pPlayer->GetGameObject() == NULL)
-    {
-        pCreature = new CSWSCreature(OBJECT_INVALID, 1);
-        unsigned long oidCreature = pCreature->m_nId;
-        pCreature->m_pPathfindInformation->m_oidPathfindCreature = oidCreature;
-        pPlayer->SetGameObject((CSWSObject*)pCreature);
-    }
-    else
-    {
-        pCreature = pPlayer->GetGameObject()->AsSWSCreature();
-    }
-    int bModuleCharacterLoaded = pPlayer->m_bModuleCharacterLoaded;
-    int bPlayerIsNewToModule = (bModuleCharacterLoaded == 0);
-    if (bPlayerIsNewToModule)
-    {
-        Vector vOrientation;
-        pArea = GetModule()->GetArea();
-        pCreature->m_oidDisappearTarget = pArea->GetId();
-        pCreature->m_vDisappearPosition =
-            Vector(GetModule()->m_pEntryInfo->m_fEntryX,
-                   GetModule()->m_pEntryInfo->m_fEntryY,
-                   GetModule()->m_pEntryInfo->m_fEntryZ);
-        pCreature->m_bWorkRemainingCompleteSent = 0;
-        vOrientation.m_fX = GetModule()->m_pEntryInfo->m_fEntryDirX;
-        vOrientation.m_fY = GetModule()->m_pEntryInfo->m_fEntryDirY;
-        vOrientation.m_fZ = 0.0f;
-        pCreature->CSWSObject::SetOrientation(vOrientation);
-    }
-    else
-    {
-        pArea = pCreature->GetArea();
-        if (pArea != NULL)
-        {
-            pCreature->m_oidDisappearTarget = pArea->GetId();
-            pCreature->m_vDisappearPosition = pCreature->m_vPosition;
-            pCreature->m_bWorkRemainingCompleteSent = 0;
-        }
-        else
-        {
-#ifdef _XBOX
-            unsigned long oidArea = pCreature->m_oidDisappearTarget;
-            pArea = g_pAppManager->m_pServerExoApp->GetAreaByGameObjectID(oidArea);
-#else
-            pArea = g_pAppManager->m_pServerExoApp->GetAreaByGameObjectID(
-                pCreature->m_oidDisappearTarget);
-#endif
-        }
-    }
-
-    if (pArea == NULL)
-    {
-        return;
-    }
-    pCreature->SetArea(NULL);
-
-    CSWSMessage* pMessage = g_pAppManager->m_pServerExoApp->GetSWSMessage();
-    if (pMessage == NULL)
-    {
-        return;
-    }
-    pPlayer->SetAreaTransitionBMP(pArea->GetLoadScreenID(), "");
-    pMessage->SendServerToPlayerArea_ClientArea(
-        pPlayer, pArea, pCreature->m_vDisappearPosition.m_fX,
-        pCreature->m_vDisappearPosition.m_fY,
-        pCreature->m_vDisappearPosition.m_fZ, pCreature->m_vOrientation,
-        bPlayerIsNewToModule);
-    pMessage->SendServerToPlayerSetCustomTokenList(pPlayer->m_nPlayerId);
-}
-// PC 0x004EA730
-void CServerExoAppInternal::MovePlayerToArea(void* pData)
-{
-    Vector vSafePosition;
-    Vector vPosition;
-    CSWSPlayer* pPlayer = (CSWSPlayer*)pData;
-
-    if (pPlayer->GetGameObject() != NULL)
-    {
-        CSWSCreature* pCreature = pPlayer->GetGameObject()->AsSWSCreature();
-        if (m_sMoveToModuleStartWaypoint[0])
-        {
-            unsigned long oidWaypoint = GetModule()->GetWaypoint(m_sMoveToModuleStartWaypoint);
-            if (oidWaypoint != OBJECT_INVALID)
-            {
-                CSWSWaypoint* pWaypoint = g_pAppManager->GetServerExoApp()->GetWaypointByGameObjectID(oidWaypoint);
-                if (pWaypoint != NULL)
-                {
-                    pCreature->m_vDisappearPosition = pWaypoint->m_vPosition;
-                    pCreature->SetOrientation(pWaypoint->m_vOrientation);
-                }
-            }
-            m_sMoveToModuleStartWaypoint = "";
-        }
-        vPosition = pCreature->m_vDisappearPosition;
-        CSWSArea* pArea = GetModule()->GetArea();
-        pCreature->m_pPathfindInformation->m_oidPathfindCreature = pCreature->m_nId;
-        if (pArea != NULL)
-        {
-            CPathfindInformation* pPathfind = pCreature->m_pPathfindInformation;
-            if (!pArea->ComputeSafeLocation(vPosition, 20.0f,
-                                            pPathfind, 1,
-                                            &vSafePosition))
-            {
-                vSafePosition = vPosition;
-            }
-            pCreature->UpdateSubareasOnJumpPosition(vSafePosition, pArea->m_nId,
-                                                   !m_bLoadFromSaveGame);
-            pCreature->AddToArea(pArea, vSafePosition.m_fX, vSafePosition.m_fY,
-                                vSafePosition.m_fZ, 0, 0);
-        }
-        pCreature->UpdateVisibleList(0);
-        m_partyTable.PositionParty();
-        m_bLoadFromSaveGame = 0;
-    }
-}
-
-void CServerExoAppInternal::OnCDChange()
-{
-}
-
-void CServerExoAppInternal::OnExit()
-{
-}
-
-void CServerExoAppInternal::OnGainFocus()
-{
-}
-
-void CServerExoAppInternal::OnLostFocus()
-{
-}
-
-void CServerExoAppInternal::OnVideoChange()
-{
-}
-// PC 0x004EA900
-void CServerExoAppInternal::UpdateClientGameObjectsForPlayer(
-    CSWSPlayer* pPlayer, int bFlag, unsigned __int64 nTime)
-{
-    unsigned __int64 nUpdateTime = nTime;
-    CSWSCreature* pCreature;
-    if (bFlag == 1 && nTime == 0)
-    {
-        nUpdateTime = GetHighResolutionTimer();
-    }
-
-    if (pPlayer->m_nAreaLoadState == CSWSPlayer::AREA_LOAD_COMPLETE ||
-        (pPlayer->m_nAreaLoadState == CSWSPlayer::AREA_LOAD_PENDING &&
-         pPlayer->m_n7C == 1 && pPlayer->GetGameObject() != NULL &&
-         (pCreature = pPlayer->GetGameObject()->AsSWSCreature()) != NULL &&
-         pCreature->m_oidDisappearTarget != OBJECT_INVALID))
-    {
-        if (bFlag == 1 || nTime - *(unsigned __int64*)pPlayer->m_anLastGameObjectUpdateTime >=
-                          CSWSPlayer::GAME_OBJECT_UPDATE_INTERVAL)
-        {
-            m_pSWSMessage->SendServerToPlayerGameObjUpdate(pPlayer);
-            if (pPlayer->GetGameObject() != NULL)
-            {
-                unsigned long oidObject = pPlayer->GetGameObject()->m_nId;
-                if (pPlayer->m_oidLastControlledObject != oidObject &&
-                    pPlayer->GetGameObject()->GetArea() != NULL)
-                {
-                    m_pSWSMessage->SendServerToPlayerGameObjUpdate_ObjControl(
-                        pPlayer->m_nPlayerId, oidObject);
-                    pPlayer->m_oidLastControlledObject = oidObject;
-                    *(unsigned __int64*)pPlayer->m_anLastGameObjectUpdateTime = nUpdateTime;
-                }
-            }
-            *(unsigned __int64*)pPlayer->m_anLastGameObjectUpdateTime = nUpdateTime;
-        }
-        if (pPlayer->GetGameObject() != NULL &&
-            pPlayer->GetGameObject()->AsSWSCreature()->GetArea() == NULL &&
-            pPlayer->m_oidLastControlledObject != OBJECT_INVALID)
-        {
-            pPlayer->m_oidLastControlledObject = OBJECT_INVALID;
-            m_pSWSMessage->SendServerToPlayerGameObjUpdate_ObjControl(
-                pPlayer->m_nPlayerId, OBJECT_INVALID);
-            *(unsigned __int64*)pPlayer->m_anLastGameObjectUpdateTime = nUpdateTime;
-        }
-    }
-}
-// PC 0x004EAA70
-int CServerExoAppInternal::ContinueMessageProcessing()
-{
-    return GetReentrantServerStats()->m_bOperationActive == 1;
-}
-// PC 0x004F00E0
-void CServerExoAppInternal::Shutdown(int bExit, int bSave)
-{
-    SERVEREXOAPPINTERNAL_HOOK();
-    int nPVP = m_pServerInfo->m_nPVP;
-    m_lstPendingPlayers.SetSize(0);
-    CExoLinkedListNode* pPosition = m_pPlayerList->GetHeadPos();
-
-    if (nPVP && bExit)
-    {
-        while (pPosition != NULL)
-        {
-            CSWSPlayer* pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pPosition);
-            if (pPlayer != NULL)
-            {
-                m_pSWSMessage->SendServerToPlayerShutDownServer(
-                    pPlayer->m_nPlayerId,
-                    m_nShutdownMessageDelay / SHUTDOWN_MESSAGE_TIME_UNIT);
-                m_lstPendingPlayers.Add(pPlayer->m_nPlayerId);
-            }
-            m_pPlayerList->GetNext(pPosition);
-        }
-    }
-    else
-    {
-        int nAttempts = SHUTDOWN_CLIENT_LOOP_LIMIT;
-        while (pPosition != NULL && --nAttempts > 0)
-        {
-            CSWSPlayer* pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pPosition);
-            if (pPlayer != NULL)
-            {
-                if (bSave)
-                {
-                    m_lstPendingPlayers.Add(pPlayer->m_nPlayerId);
-                    m_pPlayerList->GetNext(pPosition);
-                }
-                else
-                {
-                    pPosition = m_pPlayerList->GetHeadPos();
-                }
-            }
-            else
-            {
-                m_pPlayerList->GetNext(pPosition);
-            }
-        }
-    }
-
-    pPosition = m_pSysAdminList->GetHeadPos();
-    int nAttempts = SHUTDOWN_CLIENT_LOOP_LIMIT;
-    while (pPosition != NULL && --nAttempts > 0)
-    {
-        CSWSClient* pClient = m_pSysAdminList->GetAtPos(pPosition);
-        if (pClient != NULL)
-        {
-            unsigned long nPlayerId = pClient->m_nPlayerId;
-            if (!m_lstPendingPlayers.Contains(nPlayerId))
-            {
-                pPosition = m_pSysAdminList->GetHeadPos();
-            }
-            else
-            {
-                m_pSysAdminList->GetNext(pPosition);
-            }
-        }
-        else
-        {
-            m_pSysAdminList->GetNext(pPosition);
-        }
-    }
-
-    if (nPVP && bExit && m_lstPendingPlayers.num != 0)
-    {
-        m_nShutdownStartTime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
-        m_nShutdownTimeout = SHUTDOWN_REPLY_TIMEOUT;
-    }
-    else
-    {
-        m_nShutdownStartTime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
-        m_nShutdownTimeout = SHUTDOWN_IMMEDIATE_TIMEOUT;
-    }
-}
-// PC 0x004F0360
-CWorldTimer* CServerExoAppInternal::GetActiveTimer(unsigned long oidObject)
-{
-    if (oidObject != OBJECT_INVALID && GetActivePauseState() > 0)
-    {
-        if (GetActivePauseState() == PAUSE_STATE_COMBAT)
-        {
-            if (IsOnActiveExclusionList(oidObject) == 1)
-            {
-                return m_pPauseTimer;
-            }
-        }
-        else if (GetActivePauseState() == PAUSE_STATE_PAUSED)
-        {
-            if (IsOnActiveExclusionList(oidObject) == 1)
-            {
-                return m_pTimestopTimer;
-            }
-        }
-        else
-        {
-            return NULL;
-        }
-    }
-    return m_pWorldTimer;
-}
-// PC 0x004EE580
-int CServerExoAppInternal::GetPlayerLanguage(unsigned long nPlayerId)
-{
-    CExoLinkedListNode* pNode;
-    CSWSPlayer* pPlayer;
-
-    pNode = m_pPlayerList->GetHeadPos();
-    while (pNode != NULL)
-    {
-        pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pNode);
-        if (pPlayer != NULL && pPlayer->m_nPlayerId == nPlayerId)
-        {
-            return pPlayer->m_nLanguage;
-        }
-        m_pPlayerList->GetNext(pNode);
-    }
-    return 0;
-}
-// PC 0x004EB000
-int CServerExoAppInternal::GetFactionOfObject(unsigned long oidObject,
-                                             int* pnFaction)
-{
-    CGameObject* pObject = GetGameObject(oidObject);
-
-    if (pObject != NULL)
-    {
-        if (pObject->AsSWSCreature() != NULL)
-        {
-            *pnFaction = pObject->AsSWSCreature()->m_pStats->m_nFactionId;
-            return 1;
-        }
-        if (pObject->AsSWSDoor() != NULL)
-        {
-            *pnFaction = pObject->AsSWSDoor()->m_nFactionId;
-            return 1;
-        }
-        if (pObject->AsSWSEncounter() != NULL)
-        {
-            *pnFaction = pObject->AsSWSEncounter()->m_nFaction;
-            return 1;
-        }
-        if (pObject->AsSWSPlaceable() != NULL)
-        {
-            *pnFaction = pObject->AsSWSPlaceable()->m_nFaction;
-            return 1;
-        }
-        if (pObject->AsSWSTrigger() != NULL)
-        {
-            *pnFaction = pObject->AsSWSTrigger()->m_nFaction;
-            return 1;
-        }
-    }
-    return 0;
-}
-// PC 0x004EE5F0
-CExoString CServerExoAppInternal::GetPlayerListString()
-{
-    CExoString sList;
-    CExoString sPlayerName;
-    CExoLinkedListNode* pNode;
-    CSWSPlayer* pPlayer;
-    int nCount;
-    CNetLayerPlayerInfo* pPlayerInfo;
-    unsigned long nPlayerId;
-    CServerExoApp* pServer;
-
-    nCount = m_pSysAdminList->Count();
-    sList = sList + "ServerAdmins: " + nCount;
-    pNode = m_pSysAdminList->GetHeadPos();
-    while (pNode != NULL)
-    {
-        pPlayer = (CSWSPlayer*)m_pSysAdminList->GetAtPos(pNode);
-        pServer = g_pAppManager->m_pServerExoApp;
-        nPlayerId = pPlayer->m_nPlayerId;
-        pPlayerInfo = pServer->GetNetLayer()
-            ->GetPlayerInfo(nPlayerId);
-        sPlayerName = pPlayerInfo->m_sPlayerName.CStr();
-        sList = sList + "\n" + sPlayerName;
-        sList = sList + " [ServerAdmin]";
-        m_pSysAdminList->GetNext(pNode);
-    }
-    sList = sList + "\n";
-    nCount = m_pPlayerList->Count();
-    sList = sList + "Players: " + nCount;
-    pNode = m_pPlayerList->GetHeadPos();
-    while (pNode != NULL)
-    {
-        pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pNode);
-        pServer = g_pAppManager->m_pServerExoApp;
-        nPlayerId = pPlayer->m_nPlayerId;
-        pPlayerInfo = pServer->GetNetLayer()
-            ->GetPlayerInfo(nPlayerId);
-        sPlayerName = pPlayerInfo->m_sPlayerName.CStr();
-        sList = sList + "\n" + sPlayerName;
-        sList = sList + " [Player]";
-        m_pPlayerList->GetNext(pNode);
-    }
-    sList = sList + "\n";
-    int nAdminCount = m_pSysAdminList->Count();
-    int nPlayerCount = m_pPlayerList->Count();
-    sList = sList + "Total: " + (nPlayerCount + nAdminCount);
-    return sList;
-}
-// PC 0x004EEB60
-void CServerExoAppInternal::AddToExclusionList(unsigned long oidObject,
-                                              unsigned char nType)
-{
-    CExoLinkedListNode* pNode;
-
-    if (nType == 0)
-    {
-        return;
-    }
-    if ((nType & PAUSE_TYPE_COMBAT_MASK) != 0)
-    {
-        pNode = m_pTimestopExclusionList->GetHeadPos();
-        while (pNode != NULL)
-        {
-            if ((unsigned long)m_pTimestopExclusionList->GetAtPos(pNode) ==
-                oidObject)
-            {
-                return;
-            }
-            m_pTimestopExclusionList->GetNext(pNode);
-        }
-        m_pTimestopExclusionList->AddTail((unsigned long*)oidObject);
-    }
-    else if ((nType & PAUSE_TYPE_PAUSED_MASK) != 0)
-    {
-        pNode = m_pPauseExclusionList->GetHeadPos();
-        while (pNode != NULL)
-        {
-            if ((unsigned long)m_pPauseExclusionList->GetAtPos(pNode) == oidObject)
-            {
-                return;
-            }
-            m_pPauseExclusionList->GetNext(pNode);
-        }
-        m_pPauseExclusionList->AddTail((unsigned long*)oidObject);
-    }
-}
-// PC 0x004EEC30
-void CServerExoAppInternal::RemoveFromExclusionList(unsigned long oidObject,
-                                                   unsigned char nType)
-{
-    CExoLinkedListNode* pNode;
-
-    if (nType == 0)
-    {
-        return;
-    }
-    if ((nType & PAUSE_TYPE_PAUSED_MASK) != 0)
-    {
-        pNode = m_pPauseExclusionList->GetHeadPos();
-        while (pNode != NULL)
-        {
-            if ((unsigned long)m_pPauseExclusionList->GetAtPos(pNode) == oidObject)
-            {
-                m_pPauseExclusionList->Remove(pNode);
-                return;
-            }
-            m_pPauseExclusionList->GetNext(pNode);
-        }
-    }
-    else if ((nType & PAUSE_TYPE_COMBAT_MASK) != 0)
-    {
-        pNode = m_pTimestopExclusionList->GetHeadPos();
-        while (pNode != NULL)
-        {
-            if ((unsigned long)m_pTimestopExclusionList->GetAtPos(pNode) ==
-                oidObject)
-            {
-                m_pTimestopExclusionList->Remove(pNode);
-                return;
-            }
-            m_pTimestopExclusionList->GetNext(pNode);
-        }
-    }
-}
-// PC 0x004EED10
-int CServerExoAppInternal::IsOnActiveExclusionList(unsigned long oidObject)
-{
-    CExoLinkedList<unsigned long>* pList = GetActiveExclusionList();
-    CExoLinkedListNode* pNode;
-
-    if (pList == NULL)
-    {
-        return 1;
-    }
-    pNode = pList->GetHeadPos();
-    while (pNode != NULL)
-    {
-        if ((unsigned long)pList->GetAtPos(pNode) == oidObject)
-        {
-            return 1;
-        }
-        pList->GetNext(pNode);
-    }
-    return 0;
-}
-// PC 0x004EED90
-int CServerExoAppInternal::ResolvePlayerByFirstName(const CExoString& sFirstName)
-{
-    CExoString sPlayerName;
-    CExoLinkedListNode* pNode;
-    CSWSPlayer* pPlayer;
-    CSWSObject* pObject;
-    CSWSCreature* pCreature;
-    unsigned long nPlayerId;
-
-    pNode = m_pPlayerList->GetHeadPos();
-    while (pNode != NULL)
-    {
-        pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pNode);
-        if (pPlayer != NULL)
-        {
-            pObject = pPlayer->GetGameObject();
-            if (pObject != NULL)
-            {
-                pCreature = pObject->AsSWSCreature();
-                if (pCreature != NULL)
-                {
-                    CSWSMessage::GetLocStringServer(
-                        nPlayerId = pPlayer->m_nPlayerId, *pCreature->GetFirstName(),
-                        CExoLocString(), sPlayerName, 0);
-                    if (sPlayerName == sFirstName)
-                    {
-                        return pPlayer->m_nPlayerId;
-                    }
-                }
-            }
-        }
-        m_pPlayerList->GetNext(pNode);
-    }
-    return CGameObjectArray::INVALIDOBJID;
-}
-// PC 0x004EEEE0
-int CServerExoAppInternal::UpdateShutdownTimer(unsigned __int64 nTime)
-{
-    if (m_nShutdownTimeout == 0)
-    {
-        return 0;
-    }
-
-    if (nTime - m_nShutdownStartTime > m_nShutdownTimeout)
-    {
-        m_nShutdownTimeout = 0;
-        return 1;
-    }
-
-    if ((m_nShutdownTimeout > SHUTDOWN_FIRST_WARNING_TIME &&
-         m_nShutdownTimeout - (nTime - m_nShutdownStartTime) < SHUTDOWN_FIRST_WARNING_TIME) ||
-        (m_nShutdownTimeout > SHUTDOWN_SECOND_WARNING_TIME &&
-         m_nShutdownTimeout - (nTime - m_nShutdownStartTime) < SHUTDOWN_SECOND_WARNING_TIME))
-    {
-        for (int nPlayer = 0; nPlayer < m_lstPendingPlayers.num; nPlayer++)
-        {
-            m_pSWSMessage->SendServerToPlayerShutDownServer(
-                m_lstPendingPlayers[nPlayer],
-                (unsigned long)((m_nShutdownTimeout - (nTime - m_nShutdownStartTime)) /
-                                SHUTDOWN_MICROSECONDS_PER_SECOND));
-        }
-    }
-
-    m_nShutdownTimeout -= nTime - m_nShutdownStartTime;
-    m_nShutdownStartTime = nTime;
-    return 0;
-}
-// PC 0x004EF080
-int CServerExoAppInternal::GetFirstPCObject()
-{
-    CSWSPlayer* pPlayer;
-
-    m_pPCListPosition = m_pPlayerList->GetHeadPos();
-    if (m_pPCListPosition != NULL)
-    {
-        pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(m_pPCListPosition);
-        if (pPlayer != NULL)
-        {
-            return pPlayer->m_oidPCObject;
-        }
-    }
-    return CGameObjectArray::INVALIDOBJID;
-}
-
-int CServerExoAppInternal::GetNextPCObject()
-{
-    CSWSPlayer* pPlayer;
-
-    if (m_pPCListPosition != NULL)
-    {
-        pPlayer = (CSWSPlayer*)m_pPlayerList->GetNext(m_pPCListPosition);
-        if (pPlayer != NULL)
-        {
-            return pPlayer->m_oidPCObject;
-        }
-    }
-    return CGameObjectArray::INVALIDOBJID;
-}
-// PC 0x004EB3D0
-int CServerExoAppInternal::GetPlayerCreatureId()
-{
-    CSWSPlayer* pPlayer;
-
-    pPlayer = GetServerExoApp()->GetClientObjectByPlayerId(0, 1);
-    if (pPlayer != NULL && pPlayer->GetGameObject() != NULL)
-    {
-        return pPlayer->GetGameObject()->m_nId;
-    }
-    return OBJECT_INVALID;
-}
-// PC 0x004EF0B0
-int CServerExoAppInternal::IsActionsPending(unsigned long oidObject)
-{
-    unsigned long oidNormalized;
-
-    if (oidObject != OBJECT_INVALID)
-    {
-        oidNormalized = oidObject & ~CGameObjectArray::LISTTYPE_MASK;
-    }
-    else
-    {
-        oidNormalized = OBJECT_INVALID;
-    }
-
-    CSWSCreature* pCreature = GetCreatureByGameObjectID(oidNormalized);
-
-    if (pCreature != NULL)
-    {
-        return pCreature->m_lstActions.GetHeadPos() != NULL;
-    }
-    return 0;
-}
-#ifndef _XBOX
-int CServerExoAppInternal::TestSafeLocation(  // PC 0x004EB560
-    unsigned long oidObject, const Vector& vPosition)
-{
-    CGameObjectArray* pObjectArray = m_pObjectArray;
-    CGameObject* pObject = NULL;
-    CSWSCreature* pCreature;
-
-    if (pObjectArray->GetGameObject(oidObject, &pObject) !=
-        CGameObjectArray::SUCCESS)
-    {
-        return 0;
-    }
-    if (pObject == NULL)
-    {
-        return 0;
-    }
-    if (pObject->m_nObjectType != CGameObject::OBJECT_TYPE_CREATURE)
-    {
-        return 0;
-    }
-    pCreature = pObject->AsSWSCreature();
-    if (pCreature == NULL)
-    {
-        return 0;
-    }
-    CPathfindInformation* pPathfind = pCreature->m_pPathfindInformation;
-    unsigned long oidArea = pCreature->m_oidArea;
-    return GetAreaByGameObjectID(oidArea)
-        ->TestSafeLocationPoint(vPosition, pPathfind);
-}
-// PC 0x004EB5E0
-int CServerExoAppInternal::ComputeSafeLocation(
-    const Vector& vPosition, float fRadius, unsigned long oidObject,
-    int nFlags, Vector* pvSafe)
-{
-    CGameObjectArray* pObjectArray = m_pObjectArray;
-    CGameObject* pObject = NULL;
-    CSWSCreature* pCreature = NULL;
-
-    if (pObjectArray->GetGameObject(oidObject, &pObject) ==
-            CGameObjectArray::SUCCESS &&
-        pObject != NULL &&
-        pObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
-    {
-        pCreature = ((CSWSObject*)pObject)->AsSWSCreature();
-    }
-    if (pCreature == NULL)
-    {
-        return 0;
-    }
-    CPathfindInformation* pPathfind = pCreature->m_pPathfindInformation;
-    return GetAreaByGameObjectID(pCreature->m_oidArea)->ComputeSafeLocation(
-        vPosition, fRadius, pPathfind, nFlags, pvSafe);
-}
-#endif
-void CServerExoAppInternal::UpdateMapData()  // PC 0x004EB670
-{
-    CSWParty* pParty;
-    CSWSModule* pModule;
-    CSWSAreaMap* pAreaMap;
-    CSWCCreature* pCreature;
-    int nMember;
-
-    pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
-    pModule = GetModule();
-    if (pParty != NULL && pModule != NULL)
-    {
-        pAreaMap = pModule->m_pAreaMap;
-        if (pAreaMap != NULL)
-        {
-            for (nMember = 0; nMember < pParty->m_nCharacters; nMember++)
-            {
-                pCreature = pParty->GetCharacter(nMember);
-                if (pCreature != NULL)
-                {
-                    pAreaMap->SetWorldPointExplored(pCreature->m_vPosition, 1);
-                    pAreaMap->SetPartyMemberWorldLocation(
-                        nMember, pCreature->m_vPosition);
-                    pAreaMap->SetPartyMemberWorldOrientation(
-                        nMember, pCreature->m_vOrientation);
-                }
-            }
-        }
-    }
-}
-// PC 0x004EF5C0
-void CServerExoAppInternal::ForceRunAreaOnExitScripts()
-{
-    CExoLinkedListNode* pNode;
-    CSWSPlayer* pPlayer;
-    CSWSObject* pObject;
-    CSWSCreature* pCreature;
-    CSWSArea* pArea;
-
-    pNode = m_pPlayerList->GetHeadPos();
-    while (pNode != NULL)
-    {
-        pPlayer = m_pPlayerList->GetAtPos(pNode)->AsSWSPlayer();
-        if (pPlayer != NULL)
-        {
-            pObject = pPlayer->GetGameObject();
-            if (pObject != NULL)
-            {
-                pCreature = pObject->AsSWSCreature();
-                if (pCreature != NULL)
-                {
-                    pArea = ((CSWSObject*)pCreature)->GetArea();
-                    if (pArea != NULL)
-                    {
-                        pArea->m_oidExitingObject =
-                            ((CSWSObject*)pCreature)->m_nId;
-                        g_pVirtualMachine->RunScript(&pArea->m_sScripts[CSWSArea::SCRIPT_ON_EXIT],
-                                                     pArea->m_nId, 1);
-                    }
-                }
-            }
-        }
-        m_pPlayerList->GetNext(pNode);
-    }
-}
-#ifndef _XBOX
-Vector CServerExoAppInternal::GetNormalOfPoint(const Vector& vPosition)  // PC 0x004EB740
-{
-    CSWSModule* pModule;
-    CSWSRoom* pRoom;
-    int nFace;
-
-    pModule = GetServerExoApp()->GetModule();
-    pRoom = pModule->GetArea()->GetRoom(vPosition, &nFace);
-    if (pRoom != NULL)
-    {
-        return pRoom->GetNormalOfPoint(nFace);
-    }
-    return Vector(0.0f, 0.0f, 1.0f);
-}
-#endif
-int CServerExoAppInternal::AutoSaveOnEnteringModule(const CExoString& sModule,  // PC 0x004EB8D0
-                                                   C2DA* p2DA)
-{
-    CExoString sAutoSaveOnEnter;
-    int bAutoSave;
-
-    if (!p2DA->GetCExoStringEntry(sModule, "AutoSaveOnEnter", &sAutoSaveOnEnter))
-    {
-        m_nAutoSaveElapsedTime = 0;
-        m_bAutoSaveTimerExpired = 0;
-        return 1;
-    }
-
-    if (sAutoSaveOnEnter.CompareNoCase("force"))
-        bAutoSave = 1;
-    else if (sAutoSaveOnEnter.CompareNoCase("no"))
-        bAutoSave = 0;
-    else
-    {
-        if (m_bAutoSaveTimerExpired == 0)
-            return 0;
-
-        if (sAutoSaveOnEnter.CompareNoCase("yes"))
-            bAutoSave = GetClientExoApp()->GetClientOptions()->m_bAutoSave;
-        else
-            bAutoSave = 1;
-    }
-
-    if (bAutoSave != 0)
-    {
-        m_nAutoSaveElapsedTime = 0;
-        m_bAutoSaveTimerExpired = 0;
-    }
-    return bAutoSave;
-}
-// PC 0x004EBD80
-int CServerExoAppInternal::GetModulePreviouslyVisited(const CExoString& sModule)
-{
-    if (sModule.GetLength() < 1)
-    {
-        return 1;
-    }
-
-    CExoString sModuleFile;
-    CExoString sModulePath;
-    unsigned short nModuleType = RESTYPE_INVALID;
-    int bPreviouslyVisited = 0;
-
-    if (IncludeModuleInSave(sModule))
-    {
-        g_pAppManager->GetServerExoApp()->GetPartyTable()->AddGameInProgress();
-        if (g_pExoResMan->Exists(sModule, RESTYPE_RSV, (unsigned long*)NULL))
-        {
-            nModuleType = RESTYPE_RSV;
-            bPreviouslyVisited = 1;
-        }
-        else if (g_pExoResMan->Exists(sModule, RESTYPE_SAV, (unsigned long*)NULL))
-        {
-            nModuleType = RESTYPE_SAV;
-            bPreviouslyVisited = 1;
-        }
-        g_pAppManager->GetServerExoApp()->GetPartyTable()->RemoveGameInProgress();
-    }
-
-    if (nModuleType == RESTYPE_INVALID)
-    {
-        g_pExoResMan->AddResourceDirectory("NWMFILES:");
-        if (g_pExoResMan->Exists(sModule, RESTYPE_NWM, (unsigned long*)NULL))
-        {
-            nModuleType = RESTYPE_NWM;
-            bPreviouslyVisited = 0;
-        }
-        g_pExoResMan->RemoveResourceDirectory("NWMFILES:");
-    }
-
-    if (nModuleType == RESTYPE_INVALID)
-    {
-        g_pExoResMan->AddResourceDirectory("MODULES:");
-        if (g_pExoResMan->Exists(sModule, RESTYPE_MOD, (unsigned long*)NULL))
-        {
-            nModuleType = RESTYPE_MOD;
-            bPreviouslyVisited = 0;
-        }
-        else if (g_pExoResMan->Exists(sModule, RESTYPE_RIM, (unsigned long*)NULL))
-        {
-            nModuleType = RESTYPE_RIM;
-            bPreviouslyVisited = 0;
-        }
-        g_pExoResMan->RemoveResourceDirectory("MODULES:");
-    }
-
-    if (nModuleType == RESTYPE_INVALID)
-    {
-        CExoString sDirectory;
-        for (int nContentPackage = 1; nContentPackage < CTlkTable::NUM_CONTENT_PKGS;
-             ++nContentPackage)
-        {
-            sDirectory.Format("LIVE%d", nContentPackage);
-            if (g_pExoBase->m_pExoAliasList->GetAliasPath(sDirectory, 0).GetLength())
-            {
-                sDirectory = sDirectory + ":MODULES";
-                g_pExoResMan->AddResourceDirectory(sDirectory);
-                if (g_pExoResMan->Exists(sModule, RESTYPE_MOD, (unsigned long*)NULL))
-                {
-                    nModuleType = RESTYPE_MOD;
-                    bPreviouslyVisited = 0;
-                }
-                else if (nModuleType == RESTYPE_INVALID
-                         && g_pExoResMan->Exists(sModule, RESTYPE_RIM,
-                                               (unsigned long*)NULL))
-                {
-                    nModuleType = RESTYPE_RIM;
-                    bPreviouslyVisited = 0;
-                }
-                g_pExoResMan->RemoveResourceDirectory(sDirectory);
-                if (nModuleType != RESTYPE_INVALID)
-                {
-                    break;
-                }
-            }
-        }
-    }
-    g_pExoInput->UnpauseRumble();
-    if (nModuleType == RESTYPE_INVALID)
-    {
-        return 0;
-    }
-    return bPreviouslyVisited;
-}
-// PC 0x004EF6A0
-CServerExoAppInternal::CServerExoAppInternal()
-{
-    unsigned long nOption;
-
-    m_nShutdownTimeout = 0;
-    m_nDebugMode = 0;
-    m_pServerInfo = NULL;
-    m_nServerMode = 0;
-    m_oidModule = CGameObjectArray::INVALIDOBJID;
-    m_pPlayerList = new CExoLinkedList<CSWSClient>;
-    m_pSysAdminList = new CExoLinkedList<CSWSClient>;
-    m_bForceUpdate = 0;
-    m_pSWSMessage = NULL;
-    EXOXBOXASSERT(s_pServerExoAppInternal == NULL);
-    s_pServerExoAppInternal = this;
-
-    m_pServerOptions = new unsigned long[16];
-    for (nOption = 0; nOption < 16; nOption++)
-    {
-        m_pServerOptions[nOption] = CNetLayer::PLAYERID_INVALIDID;
-    }
-
-    m_PauseState.m_nPauseState = 0;
-    m_bDoingStartNewModule = 0;
-    m_bMoveToModulePending = 0;
-    m_sMoveToModule = "";
-    m_bLoadingModule = 0;
-    m_bAutoSavePending = 0;
-    m_bExportAllCharactersPending = 0;
-    m_bNeedCharacterPending = 0;
-    m_pTimestopExclusionList = new CExoLinkedList<unsigned long>;
-    m_pPauseExclusionList = new CExoLinkedList<unsigned long>;
-    m_nEstimatedSaveSize = 0;
-    m_pPCListPosition = NULL;
-    m_sLastConversation = "";
-    m_nActionConversation = 0;
-    m_bIgnoreConversationStartRange = 0;
-    m_bLoadFromSaveGame = 0;
-    m_bButtonMashCheck = 0;
-    m_oidLastModuleFound = OBJECT_INVALID;
-    m_pLastModuleFound = NULL;
-    m_oidAreaCache = OBJECT_INVALID;
-    m_pAreaCache = NULL;
-    m_nMoveToPausedCalendarDay = 0;
-    m_nMoveToPausedTimeOfDay = 0;
-    m_nAutoSaveElapsedTime = 0;
-    m_nAutoSaveCalendarDay = 0;
-    m_nAutoSaveTimeOfDay = 0;
-    m_bAutoSaveTimerExpired = 0;
-    m_nAutoSaveLastTime = 0;
-#ifndef _XBOX
-    m_sSaveGameName = "";
-#endif
-}
-
-void CServerExoAppInternal::SendStartStallEvent(unsigned long nEvent)
-{
-    CSWSMessage* pMessage = GetServerExoApp()->GetSWSMessage();
-    pMessage->SendServerToPlayerLoadBar_StartStallEvent(nEvent);
-}
-#ifndef _XBOX
-int CServerExoAppInternal::SaveGame(unsigned long nSlot,  // PC 0x004EC6E0
-                                    const CExoString& sName,
-                                    CSWSPlayer* pPlayer, int bAutoSave)
-{
-    CExoString sDirectory;
-    CExoString sSaveFile;
-    unsigned __int64 nFreeBytes;
-
-    g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL);
-    g_pExoResMan->CreateDirectory2("SAVES:");
-    sDirectory.Format("SAVES:%06d - %s", nSlot, sName.CStr());
-
-    int nResult = g_pExoResMan->GetFreeDiskSpace("SAVES:", &nFreeBytes);
-    if (nResult == 1)
-    {
-        unsigned long nSaveGameSize = m_nEstimatedSaveSize;
-        if (nSaveGameSize >
-            nFreeBytes + (unsigned long)g_pExoBase->GetDirectorySize(sDirectory))
-        {
-            CSWSMessage* pMessage = m_pSWSMessage;
-            pMessage->SendServerToPlayerSaveLoad_Status(
-                pPlayer, CSWSMessage::SAVELOAD_STATUS_SAVE_FAILED,
-                CSWSMessage::SAVELOAD_FAILURE_DISK_SPACE);
-            return 0;
-        }
-    }
-
-    if (g_pExoResMan->CreateDirectory2(sDirectory) == 0 &&
-        g_pExoResMan->CleanDirectory(sDirectory, 0, 0) == 0)
-    {
-        return 0;
-    }
-
-    sSaveFile = sDirectory + "\\" + "SAVEGAME";
-
-    g_pAppManager->m_pReentrantServerStats->StartStallEvent(
-        CSWReentrantServerStats::OPERATION_SAVE_GAME);
-    CSWReentrantServerStats* pDirectoryStats = g_pAppManager->m_pReentrantServerStats;
-    pDirectoryStats->m_sUnknown24 = sDirectory;
-    CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
-    pStats->m_sUnknown32 = sSaveFile;
-    CSWReentrantServerStats* pCompletedStats = g_pAppManager->m_pReentrantServerStats;
-    pCompletedStats->m_nProgress = 0;
-    CSWReentrantServerStats* pProgressStats = g_pAppManager->m_pReentrantServerStats;
-    pProgressStats->m_nProgressTotal = 0;
-    SendStartStallEvent(CSWSMessage::LOADBAR_STALL_EVENT_SAVE_GAME);
-
-    sDirectory = g_pExoBase->m_pExoAliasList->GetAliasPath("SAVES", 0);
-    if (sDirectory != "")
-    {
-        CAurCamera* pModuleCamera =
-            g_pAppManager->GetClientExoApp()->GetModule()->GetCamera();
-        CSWCameraOnAStick* pCamera = (CSWCameraOnAStick*)
-            pModuleCamera->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK);
-        if (pCamera != NULL)
-        {
-            pCamera->SetCameraForScreenShot();
-        }
-        sSaveFile.Format("%s%06d - %s%sScreen", sDirectory.CStr(),
-                         nSlot, sName.CStr(), "\\");
-        g_pAppManager->DoSaveGameScreenShot(sSaveFile);
-    }
-
-    if (nSlot != 0)
-    {
-        g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
-        UpdateScreen(1.0f / 30.0f, 0, 0);
-    }
-    m_nAutoSaveElapsedTime = 0;
-    m_bAutoSaveTimerExpired = 0;
-    return 1;
-}
-// PC 0x004ECF10
-int CServerExoAppInternal::LoadCharacterFinish(CSWSPlayer* pPlayer, int bSuccess)
-{
-    CSWSModule* pModule = g_pAppManager->m_pServerExoApp->GetModule();
-    CScriptEvent* pEnterEvent = new CScriptEvent;
-    CScriptEvent* pDeathEvent = NULL;
-    int nHead;
-
-    char nAreaLoadState = pPlayer->m_nAreaLoadState;
-    if (nAreaLoadState != 1)
-    {
-        pPlayer->m_nAreaLoadState = CSWSPlayer::AREA_LOAD_PENDING;
-        m_pSWSMessage->SendServerToPlayerLogin_Confirm(pPlayer->GetPlayerId());
-        m_pSWSMessage->SendServerToPlayerModule_Info(pPlayer->GetPlayerId());
-    }
-    if (bSuccess != 0 && pPlayer->m_nModulePlayerIndex != -1)
-    {
-        CSWSObject* pObject = pPlayer->GetGameObject();
-        if (pObject != NULL)
-            delete pObject;
-        pPlayer->LoadCharacterFromIFO(pPlayer->m_nModulePlayerIndex, 1, 1);
-    }
-
-    pEnterEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_CLIENT_ENTER;
-    if (pPlayer->GetGameObject() != NULL)
-    {
-        if (pPlayer->GetGameObject()->AsSWSCreature()->GetDead() == 1 ||
-            pPlayer->GetGameObject()->AsSWSCreature()->GetDeadTemp() == 1)
-        {
-            pDeathEvent = new CScriptEvent;
-            pDeathEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_DEATH;
-        }
-        pEnterEvent->SetObjectID(0, pPlayer->GetGameObject()->GetId());
-
-        CSWSMessage* pMessage =
-            g_pAppManager->m_pServerExoApp->GetSWSMessage();
-        CExoLinkedList<CSWSClient>* pPlayers =
-            g_pAppManager->m_pServerExoApp->GetPlayerList();
-        CSWSCreature* pCreature =
-            pPlayer->GetGameObject()->AsSWSCreature();
-        CExoLinkedListNode* pNode = pPlayers->GetHeadPos();
-        while (pNode != NULL)
-        {
-            CSWSPlayer* pOtherPlayer = (CSWSPlayer*)pPlayers->GetAtPos(pNode);
-            if (pOtherPlayer != NULL &&
-                pOtherPlayer->m_nPlayModuleCharacterListState != 0 &&
-                pMessage != NULL)
-                pMessage->SendServerToPlayerPlayModuleCharacterListResponse(
-                    pOtherPlayer->GetPlayerId(), pCreature->GetId(), 1);
-            pPlayers->GetNext(pNode);
-        }
-    }
-    else
-    {
-        pEnterEvent->SetObjectID(0, OBJECT_INVALID);
-    }
-
-    if (pModule != NULL)
-    {
-        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-            0, 0, pPlayer->GetPlayerId(), pModule->GetId(),
-            CServerAIMaster::EVENT_SIGNAL_EVENT, pEnterEvent);
-        if (pDeathEvent != NULL)
-            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                0, 0, pPlayer->GetGameObject()->GetId(), pModule->GetId(),
-                CServerAIMaster::EVENT_SIGNAL_EVENT, pDeathEvent);
-
-        unsigned long oidPC = pPlayer->m_oidPCObject;
-        CSWSCreature* pCreature =
-            g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(oidPC);
-        if (pCreature != NULL)
-        {
-            if (&pCreature->m_cAppearanceInfo != NULL)
-            {
-                g_pRules->Get2DArrays()->GetAppearance()->GetINTEntry(
-                    pCreature->m_cAppearanceInfo.m_nAppearance, "NORMALHEAD", &nHead);
-                pModule->GetArea()->EnforceNoPCHeadCloning(nHead);
-            }
-        }
-    }
-    return 1;
-}
-#endif
-int CServerExoAppInternal::LoadPrimaryPlayer(CSWSPlayer* pPlayer)  // PC 0x004ED220
-{
-    CSWSModule* pModule;
-    int nPrimaryPlayerIndex;
-
-    pModule = g_pAppManager->m_pServerExoApp->GetModule();
-    nPrimaryPlayerIndex = pModule->GetPrimaryPlayerIndex();
-    if (nPrimaryPlayerIndex == -1)
-    {
-        return 0;
-    }
-    pPlayer->m_nModulePlayerIndex = nPrimaryPlayerIndex;
-    LoadCharacterFinish(pPlayer, 1);
-    return 1;
-}
-// PC 0x004EFDF0
-inline void CServerExoAppInternal::SetEstimatedSaveSize(
-    const CExoString& sModuleName, unsigned short nModuleType)
-{
-#ifdef _XBOX
-    CExoString sModule;
-    sModule = sModuleName;
-    CExoFile cFile(sModule, nModuleType, "rb");
-    if (!cFile.FileOpened())
-    {
-        m_nEstimatedSaveSize = 50000000;
-    }
-    else if (nModuleType == RESTYPE_SAV || nModuleType == RESTYPE_RSV || nModuleType == RESTYPE_RIM)
-    {
-        m_nEstimatedSaveSize = cFile.GetSize() * 3 / 2;
-    }
-    else if (nModuleType == RESTYPE_MOD || nModuleType == RESTYPE_NWM)
-    {
-        m_nEstimatedSaveSize = cFile.GetSize() * 2;
-    }
-#else
-    CExoArrayList<CExoString> lstFiles;
-    CExoString sModule;
-    unsigned long nSaveSize = 0;
-
-    g_pExoBase->GetDirectoryList(&lstFiles, "GAMEINPROGRESS:",
-                                RESTYPE_INVALID, 0, 0);
-    int nFiles = lstFiles.num;
-    if (nFiles == 0)
-    {
-        m_nEstimatedSaveSize = DEFAULT_SAVE_SIZE;
-    }
-    else
-    {
-        CExoString sFileName;
-        CExoString sPath;
-        CExoString sExtension;
-        for (int i = 0; i < nFiles; i++)
-        {
-            sFileName = lstFiles[i];
-            sPath = CExoString("GAMEINPROGRESS:") +
-                    sFileName.Left(sFileName.GetLength() - 4);
-            sExtension = sFileName.Right(3);
-            CExoFile file(sPath, g_pExoBase->GetResTypeFromExtension(sExtension),
-                          "rb");
-            if (!file.FileOpened())
-            {
-                nSaveSize += DEFAULT_MODULE_SAVE_SIZE;
-            }
-            else
-            {
-                nSaveSize += file.GetSize();
-            }
-        }
-
-        if (nModuleType != RESTYPE_RSV && nModuleType != RESTYPE_SAV)
-        {
-            nSaveSize += DEFAULT_MODULE_SAVE_SIZE;
-        }
-        m_nEstimatedSaveSize = nSaveSize * 10 / 9;
-    }
-#endif
-}
-
-inline void CServerExoAppInternal::SendExitingStartNewModuleMessage(
-    int bSuccess)
-{
-    CSWSMessage* pMessage = GetServerExoApp()->GetSWSMessage();
-    pMessage->SendServerToPlayerModule_EndStartNewModule(bSuccess);
-    m_bDoingStartNewModule = 0;
-}
 // PC 0x004EDE30
 int CServerExoAppInternal::RunModule()
 {
@@ -1979,339 +1219,6 @@ int CServerExoAppInternal::RunModule()
         return 1;
     }
     return 0;
-}
-// PC 0x004F03D0
-void CServerExoAppInternal::AddCharListRequest(unsigned long nPlayerId)
-{
-    m_lstCharListRequests.AddUnique(nPlayerId);
-}
-// PC 0x004F03E0
-void CServerExoAppInternal::UpdateSubareasOnMoveTo(unsigned long oidObject,
-                                                   const Vector& vFrom,
-                                                   const Vector& vTo)
-{
-    SERVEREXOAPPINTERNAL_HOOK();
-    unsigned long oidNormalized;
-    CGameObject* pObject;
-    CSWSCreature* pCreature;
-    CSWSArea* pArea;
-
-    pObject = NULL;
-    if (oidObject != OBJECT_INVALID)
-    {
-        oidNormalized = oidObject & ~CGameObjectArray::LISTTYPE_MASK;
-    }
-    else
-    {
-        oidNormalized = OBJECT_INVALID;
-    }
-    m_pObjectArray->GetGameObject(oidNormalized, &pObject);
-    if (pObject != NULL)
-    {
-        pCreature = pObject->AsSWSObject()->AsSWSCreature();
-        if (pCreature != NULL)
-        {
-            pArea = pCreature->GetArea();
-            if (pArea != NULL)
-            {
-                CExoArrayList<unsigned long> lstIntersectList;
-
-                pArea->IntersectingLineSegment(vFrom, vTo, &lstIntersectList);
-                pCreature->UpdateSubareasOnMoveTo(vFrom, vTo, 1,
-                                                  &lstIntersectList, 0);
-            }
-        }
-    }
-}
-// PC 0x004EF130
-void CServerExoAppInternal::TempDeathUpdate()
-{
-    SERVEREXOAPPINTERNAL_HOOK();
-    if (g_pAppManager->GetClientExoApp()->GetGameOver() ||
-        g_pAppManager->GetClientExoApp()->GetAreaNotReadyToDisplay())
-    {
-        return;
-    }
-    int nModalPanels = g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_lModalPanels.num;
-    if (nModalPanels > 0)
-    {
-        return;
-    }
-
-    unsigned long nTime = (unsigned long)(
-        g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
-    unsigned long nElapsed = nTime - m_nLastTempDeathUpdate;
-    m_nLastTempDeathUpdate = nTime;
-    int bAllDead = 1;
-    int bAnyDead = 0;
-    int bSafe = 1;
-    int nCharacters = g_pAppManager->GetClientExoApp()->GetSWParty()->m_nCharacters;
-    CSWSCreature* pCreature;
-    for (int nMember = 0; nMember < nCharacters; ++nMember)
-    {
-        CSWCCreature* pCharacter =
-            g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nMember);
-        if (pCharacter != NULL)
-        {
-            pCreature = pCharacter->GetServerCreature();
-            if (pCreature != NULL && pCreature->GetDeadTemp())
-            {
-                bAnyDead = 1;
-                bAllDead &= 1;
-            }
-            else
-            {
-                bAllDead = 0;
-            }
-        }
-    }
-    if (bAllDead && nCharacters != 0)
-    {
-        RunDeathSequence();
-    }
-    if (bAnyDead)
-    {
-        m_nTempDeathCheckElapsed += nElapsed;
-        if (m_nTempDeathCheckElapsed > TEMP_DEATH_CHECK_INTERVAL)
-        {
-            m_nTempDeathCheckElapsed = 0;
-            CSWSArea* pArea = pCreature->GetArea();
-            CGameObjectArray* pObjectArray =
-                g_pAppManager->GetServerExoApp()->GetObjectArray();
-            if (pArea != NULL && pObjectArray != NULL)
-            {
-                unsigned long oidObject;
-                CGameObject* pObject;
-                pArea->GetFirstObjectInArea(oidObject);
-                do
-                {
-                    pObjectArray->GetGameObject(oidObject, &pObject);
-                    if (pObject != NULL && pObject->AsSWSCreature() != NULL &&
-                        pObject->AsSWSCreature()->m_bInParty == 0)
-                    {
-                        CSWSCreature* pOther = pObject->AsSWSCreature();
-                        if (pOther->GetReputation(pCreature->GetId(), 0) <=
-                                CSWSObject::MAX_HOSTILE_REPUTATION &&
-                            pOther->IsPartyVisible())
-                        {
-                            bSafe = 0;
-                        }
-                    }
-                } while (pArea->GetNextObjectInArea(oidObject) && bSafe);
-            }
-        }
-    }
-    if (bAnyDead && bSafe)
-    {
-        m_nTempDeathRecoveryElapsed += nElapsed;
-    }
-    else
-    {
-        m_nTempDeathRecoveryElapsed = 0;
-    }
-
-    if (m_nTempDeathRecoveryElapsed > TEMP_DEATH_RECOVERY_DELAY)
-    {
-        Vector vLeader = g_pAppManager->GetClientExoApp()->GetSWParty()
-            ->GetCharacter(0)->GetServerCreature()->m_vPosition;
-        for (int nMember = 0; nMember < nCharacters; ++nMember)
-        {
-            CSWSCreature* pMember = g_pAppManager->GetClientExoApp()->GetSWParty()
-                ->GetCharacter(nMember)->GetServerCreature();
-            if (pMember != NULL)
-            {
-                if (pMember->GetDeadTemp())
-                {
-                    Vector vPosition = pMember->m_vPosition;
-                    g_pAppManager->GetServerExoApp()->ComputeSafeLocation(
-                        vPosition, SERVER_TEMP_DEATH_SAFE_RADIUS,
-                        pMember->GetId(), 0, &vPosition);
-                    pMember->SetPosition(vPosition, 1, 1, 0);
-                    CGameEffect* pEffect = new CGameEffect(1);
-                    pEffect->m_nType = CSWSEffectListHandler::EFFECT_RESURRECTION;
-                    pEffect->m_nSubType = CGameEffect::DURATION_TYPE_INSTANTANEOUS |
-                        (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK);
-                    pMember->ApplyEffect(pEffect, 0, 0);
-                    pMember->m_nF0 = 1;
-                }
-                if (g_pAppManager->GetServerExoApp()->GetPartyTable()->m_bSoloMode == 0)
-                {
-                    Vector vDistance = pMember->m_vPosition - vLeader;
-                    if (vDistance * vDistance > SERVER_TEMP_DEATH_MAX_DISTANCE_SQUARED)
-                    {
-#ifdef _XBOX
-                        CSWParty* pMemberParty = g_pAppManager->GetClientExoApp()->GetSWParty();
-                        EXOXBOXASSERT(nMember >= 0 && nMember < 3);
-                        Vector vPosition = pMemberParty
-                            ->m_aPartyMemberData[nMember].m_vFormationPosition;
-#else
-                        Vector vPosition = g_pAppManager->GetClientExoApp()->GetSWParty()
-                            ->m_aPartyMemberData[nMember].m_vFormationPosition;
-#endif
-                        g_pAppManager->GetServerExoApp()->ComputeSafeLocation(
-                            vPosition, SERVER_TEMP_DEATH_SAFE_RADIUS,
-                            pMember->GetId(), 0, &vPosition);
-                        pMember->SetPosition(vPosition, 1, 1, 0);
-                    }
-                }
-            }
-        }
-    }
-}
-// PC 0x0040FAD0
-template <> inline CExoArrayList<CExoString>::CExoArrayList(const CExoArrayList<CExoString>& list)
-{
-    num = 0;
-    array_size = 0;
-    element = NULL;
-    for (int i = 0; i < list.num; i++)
-    {
-        Add(list[i]);
-    }
-}
-
-#ifndef _XBOX
-template <> inline void CExoArrayList<CExoString>::Add(CExoString value)  // PC 0x00405A30
-{
-    if (num == array_size)
-    {
-        Allocate(array_size != 0 ? array_size * 2 : EXOARRAYLIST_INITIAL_ALLOCATION);
-    }
-    element[num++] = value;
-}
-#endif
-// PC 0x004F04C0
-CServerExoAppInternal::~CServerExoAppInternal()
-{
-    if (m_pPlayerList != NULL)
-    {
-        while (!m_pPlayerList->IsEmpty())
-        {
-
-            delete m_pPlayerList->RemoveHead();
-        }
-        delete m_pPlayerList;
-    }
-    if (m_pSysAdminList != NULL)
-    {
-        while (!m_pSysAdminList->IsEmpty())
-        {
-            delete m_pSysAdminList->RemoveHead();
-        }
-        delete m_pSysAdminList;
-    }
-    if (m_pServerOptions != NULL)
-        delete[] m_pServerOptions;
-    delete m_pTimestopExclusionList;
-    m_pTimestopExclusionList = NULL;
-    delete m_pPauseExclusionList;
-    m_pPauseExclusionList = NULL;
-    EXOXBOXASSERT(s_pServerExoAppInternal == this);
-    s_pServerExoAppInternal = NULL;
-    g_pAppManager->GetObjectTableManager(CAppManager::OBJECT_TABLE_SERVER)
-        ->ClearAll();
-}
-// PC 0x004EA1C0
-CSWSModule* CServerExoAppInternal::GetModule()
-{
-    unsigned long oidModule;
-    CGameObjectArray* pObjectArray;
-    CGameObject* pObject;
-    CSWSModule* pModule;
-    CGameObject* pFoundObject;
-
-    oidModule = m_oidModule;
-    if (m_oidLastModuleFound != oidModule)
-    {
-#ifdef _XBOX
-        pFoundObject = NULL;
-        EXOXBOXASSERT(m_pObjectArray);
-        m_pObjectArray->GetGameObject(m_oidModule, &pFoundObject);
-#else
-        pObjectArray = m_pObjectArray;
-        pFoundObject = NULL;
-        pObjectArray->GetGameObject(oidModule, &pFoundObject);
-#endif
-        pObject = pFoundObject;
-        if (pFoundObject != NULL)
-        {
-            m_oidLastModuleFound = m_oidModule;
-            pModule = pObject->AsSWSModule();
-            m_pLastModuleFound = pModule;
-            return pModule;
-        }
-        m_oidLastModuleFound = OBJECT_INVALID;
-        m_pLastModuleFound = NULL;
-    }
-    return m_pLastModuleFound;
-}
-// PC 0x004EA230
-void CServerExoAppInternal::ClearLastModuleFound()
-{
-    m_oidLastModuleFound = OBJECT_INVALID;
-    m_pLastModuleFound = NULL;
-}
-// PC 0x004EA250
-CExoString CServerExoAppInternal::GetModuleName()
-{
-    if (GetModule() != NULL)
-    {
-        CExoString sModuleName;
-        sModuleName = m_pServerInfo->m_sModuleName;
-        return sModuleName;
-    }
-    return CExoString();
-}
-// PC 0x004EA360
-int CServerExoAppInternal::HandleMessage(unsigned long nPlayerId,
-                                         unsigned char* pMessage,
-                                         unsigned long nSize, int bGuaranteed)
-{
-    if (bGuaranteed == 0)
-    {
-        if (*pMessage == 's' &&
-            m_pNetLayer->GetPlayerInfo(nPlayerId)->m_bAuthorized == 1)
-        {
-            m_pSWSMessage->HandleServerAdminToServerMessage(nPlayerId, pMessage,
-                                                            nSize);
-        }
-        if (*pMessage == 'p' &&
-            m_pNetLayer->GetPlayerInfo(nPlayerId)->m_bPlayer == 1)
-        {
-            m_pSWSMessage->HandlePlayerToServerMessage(nPlayerId, pMessage,
-                                                       nSize);
-        }
-        return 1;
-    }
-    return 0;
-}
-// PC 0x004EA3E0
-int CServerExoAppInternal::Initialize()
-{
-    CResRef cResRef("globalcat");
-
-    m_globalVariableTable.ReadCatalogue(cResRef);
-    return 1;
-}
-// PC 0x004EA410
-int CServerExoAppInternal::CopyModuleToCurrentGame(
-    const CExoString& sSource, const CExoString& sDestination,
-    unsigned short nFlags)
-{
-    int nResult = CopyFile(sSource.CStr(), sDestination.CStr(), FALSE);
-
-    if (nResult == 0)
-    {
-        GetLastError();
-        return 0;
-    }
-
-    if ((GetFileAttributes(sDestination.CStr()) &
-         FILE_ATTRIBUTE_READONLY) != 0)
-    {
-        SetFileAttributes(sDestination.CStr(), FILE_ATTRIBUTE_NORMAL);
-    }
-    return 1;
 }
 // PC 0x004F2220
 int CServerExoAppInternal::UnloadModule()
@@ -2479,21 +1386,56 @@ void CServerExoAppInternal::StartServices(int nServices)
     m_nAutoSaveElapsedTime = 0;
     m_bAutoSaveTimerExpired = 0;
 }
-// PC 0x004EE510
-void CServerExoAppInternal::UpdateClientGameObjects(int bFlag)
+// PC 0x004EA900
+void CServerExoAppInternal::UpdateClientGameObjectsForPlayer(
+    CSWSPlayer* pPlayer, int bFlag, unsigned __int64 nTime)
 {
-    unsigned __int64 nTime;
-    CExoLinkedListNode* pNode;
-    CSWSPlayer* pPlayer;
-
-    nTime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
-    pNode = m_pPlayerList->GetHeadPos();
-    while (pNode != NULL)
+    unsigned __int64 nUpdateTime = nTime;
+    CSWSCreature* pCreature;
+    if (bFlag == 1 && nTime == 0)
     {
-        pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pNode);
-        UpdateClientGameObjectsForPlayer(pPlayer, bFlag, nTime);
-        m_pPlayerList->GetNext(pNode);
+        nUpdateTime = GetHighResolutionTimer();
     }
+
+    if (pPlayer->m_nAreaLoadState == CSWSPlayer::AREA_LOAD_COMPLETE ||
+        (pPlayer->m_nAreaLoadState == CSWSPlayer::AREA_LOAD_PENDING &&
+         pPlayer->m_n7C == 1 && pPlayer->GetGameObject() != NULL &&
+         (pCreature = pPlayer->GetGameObject()->AsSWSCreature()) != NULL &&
+         pCreature->m_oidDisappearTarget != OBJECT_INVALID))
+    {
+        if (bFlag == 1 || nTime - *(unsigned __int64*)pPlayer->m_anLastGameObjectUpdateTime >=
+                          CSWSPlayer::GAME_OBJECT_UPDATE_INTERVAL)
+        {
+            m_pSWSMessage->SendServerToPlayerGameObjUpdate(pPlayer);
+            if (pPlayer->GetGameObject() != NULL)
+            {
+                unsigned long oidObject = pPlayer->GetGameObject()->m_nId;
+                if (pPlayer->m_oidLastControlledObject != oidObject &&
+                    pPlayer->GetGameObject()->GetArea() != NULL)
+                {
+                    m_pSWSMessage->SendServerToPlayerGameObjUpdate_ObjControl(
+                        pPlayer->m_nPlayerId, oidObject);
+                    pPlayer->m_oidLastControlledObject = oidObject;
+                    *(unsigned __int64*)pPlayer->m_anLastGameObjectUpdateTime = nUpdateTime;
+                }
+            }
+            *(unsigned __int64*)pPlayer->m_anLastGameObjectUpdateTime = nUpdateTime;
+        }
+        if (pPlayer->GetGameObject() != NULL &&
+            pPlayer->GetGameObject()->AsSWSCreature()->GetArea() == NULL &&
+            pPlayer->m_oidLastControlledObject != OBJECT_INVALID)
+        {
+            pPlayer->m_oidLastControlledObject = OBJECT_INVALID;
+            m_pSWSMessage->SendServerToPlayerGameObjUpdate_ObjControl(
+                pPlayer->m_nPlayerId, OBJECT_INVALID);
+            *(unsigned __int64*)pPlayer->m_anLastGameObjectUpdateTime = nUpdateTime;
+        }
+    }
+}
+// PC 0x004EAA70
+int CServerExoAppInternal::ContinueMessageProcessing()
+{
+    return GetReentrantServerStats()->m_bOperationActive == 1;
 }
 
 // PC 0x004EAA90
@@ -2524,1211 +1466,6 @@ CSWSCreature* CServerExoAppInternal::GetCreatureByGameObjectID(
         return ((CSWSObject*)pObject)->AsSWSCreature();
     }
     return NULL;
-}
-// PC 0x004EF960
-int CServerExoAppInternal::LoadCharacterStart(
-    unsigned char nType, CSWSPlayer* pPlayer, CResRef cResRef,
-    void* pData, unsigned long nSize)
-{
-    SERVEREXOAPPINTERNAL_HOOK();
-    CSWSModule* pModule = g_pAppManager->GetServerExoApp()->GetModule();
-    CExoString sPlayerName;
-    CExoArrayList<CExoString> lstDirectories;
-    CExoString sDirectory;
-
-    if (nType == CSWSMessage::LOGIN_SERVER_CHARACTER)
-    {
-        if (pPlayer->GetGameObject() == NULL)
-        {
-            pPlayer->LoadServerCharacter(cResRef);
-        }
-    }
-    else if (nType == CSWSMessage::LOGIN_MODULE_CHARACTER)
-    {
-        if (pPlayer->GetGameObject() == NULL)
-        {
-            CExoString sPlayerIndex;
-            cResRef.CopyToString(sPlayerIndex);
-            pPlayer->LoadCharacterFromIFO(sPlayerIndex.AsINT(), 0, 1);
-        }
-    }
-    else if (nType == CSWSMessage::LOGIN_SERVER_PLAYER_CHARACTER)
-    {
-        if (pPlayer->GetGameObject() == NULL)
-        {
-            sPlayerName = pPlayer->GetPlayerName();
-            g_pExoBase->GetDirectoryList(&lstDirectories, "SERVERVAULT:",
-                                         RESTYPE_INVALID, 1, 0);
-            if (lstDirectories.Contains(sPlayerName))
-            {
-                sDirectory.Format("SERVERVAULT:%s", sPlayerName.CStr());
-                g_pExoResMan->AddResourceDirectory(sDirectory);
-                pPlayer->LoadServerCharacter(cResRef);
-                pPlayer->m_nCharacterType = CHARACTER_TYPE_SERVER_PLAYER;
-                g_pExoResMan->RemoveResourceDirectory(sDirectory);
-            }
-        }
-    }
-    else if (nType == CSWSMessage::LOGIN_DEFAULT_MODULE_CHARACTER)
-    {
-        pPlayer->LoadCharacterFromIFO(-1, 1, 1);
-        m_partyTable.CreateParty();
-
-    }
-    else
-    {
-        if (pPlayer->GetGameObject() == NULL)
-        {
-            CExoFile* pFile = new CExoFile("TEMP:temp_char", RESTYPE_BIC, "wb");
-            if (pFile == NULL)
-            {
-                return 0;
-            }
-            if (!pFile->FileOpened())
-            {
-                delete pFile;
-                return 0;
-            }
-            pFile->Write(pData, 1, nSize);
-            delete pFile;
-
-            CExoString sTempDirectory = "TEMP:";
-            g_pExoResMan->AddResourceDirectory(sTempDirectory);
-            if (nType == CSWSMessage::LOGIN_LOCAL_CHARACTER ||
-                nType == CSWSMessage::LOGIN_LOCAL_CHARACTER_DATA)
-            {
-                pPlayer->LoadLocalCharacter();
-            }
-            g_pExoResMan->RemoveResourceDirectory(sTempDirectory);
-            g_pExoResMan->CleanDirectory(sTempDirectory, 0, 0);
-            m_partyTable.CreateParty();
-        }
-    }
-
-    if (nType != CSWSMessage::LOGIN_DEFAULT_MODULE_CHARACTER &&
-        pModule->m_bIsSaveGame && nType != CSWSMessage::LOGIN_MODULE_CHARACTER)
-    {
-        int nPlayerIndex = pModule->GetPlayerIndexInPlayerList(pPlayer);
-        if (nPlayerIndex != -1)
-        {
-            pPlayer->m_nModulePlayerIndex = nPlayerIndex;
-            SendCharacterQuery(pPlayer);
-        }
-        else
-        {
-            LoadCharacterFinish(pPlayer, 0);
-        }
-    }
-    else
-    {
-        LoadCharacterFinish(pPlayer, 0);
-    }
-    return 1;
-}
-// PC 0x004F0700
-void CServerExoAppInternal::PlayerListChange(unsigned long nPlayerId,
-                                           int bAdded, int bGuaranteed)
-{
-    CExoString sTimestamp;
-
-    g_pExoBase->m_pExoDebug->GetCurrentTimestamp(sTimestamp);
-    if (bAdded == 1)
-    {
-        CNetLayerPlayerInfo* pPlayerInfo = m_pNetLayer->GetPlayerInfo(nPlayerId);
-        CExoString sPlayerName(pPlayerInfo->m_sPlayerName);
-        EXOLOG("ADDING PLAYER : %d - %s\n", nPlayerId, sPlayerName.CStr());
-        pPlayerInfo = m_pNetLayer->GetPlayerInfo(nPlayerId);
-        if (pPlayerInfo->m_bAuthorized == 1)
-        {
-            CSWSSysAdmin* pAdmin = new CSWSSysAdmin(nPlayerId);
-            pAdmin->m_nLanguage = 0;
-            m_pSysAdminList->AddHead(pAdmin);
-            EXOLOG("%s Joined as Server Admin [%s]\n", sPlayerName.CStr(),
-                   sTimestamp.CStr());
-        }
-        pPlayerInfo = m_pNetLayer->GetPlayerInfo(nPlayerId);
-        if (pPlayerInfo->m_bPlayer == 1)
-        {
-            CSWSPlayer* pPlayer = new CSWSPlayer(nPlayerId);
-            pPlayer->m_nLanguage = 0;
-            m_pPlayerList->AddHead(pPlayer);
-            EXOLOG("%s Joined as Player [%s]\n", sPlayerName.CStr(),
-                   sTimestamp.CStr());
-        }
-        m_pSWSMessage->SendServerToServerAdminPlayerList(
-            CNetLayer::PLAYERID_ALL_SERVERADMINS);
-    }
-    else if (bAdded == 0)
-    {
-        CNetLayerPlayerInfo* pPlayerInfo = m_pNetLayer->GetPlayerInfo(nPlayerId);
-        CExoString sPlayerName(pPlayerInfo->m_sPlayerName);
-        int bShutdown = 0;
-        CExoLinkedListNode* pNode;
-
-        pPlayerInfo = m_pNetLayer->GetPlayerInfo(nPlayerId);
-        if (pPlayerInfo->m_bAuthorized == 1)
-        {
-            pNode = m_pSysAdminList->GetHeadPos();
-            while (pNode != NULL)
-            {
-                CSWSSysAdmin* pAdmin = (CSWSSysAdmin*)m_pSysAdminList->GetAtPos(pNode);
-                if (pAdmin->m_nPlayerId == nPlayerId)
-                {
-                    m_pSysAdminList->Remove(pNode);
-                    delete pAdmin;
-                    break;
-                }
-                m_pSysAdminList->GetNext(pNode);
-            }
-            EXOLOG("%s Left as a Server Admin [%s]\n", sPlayerName.CStr(),
-                   sTimestamp.CStr());
-        }
-        pPlayerInfo = m_pNetLayer->GetPlayerInfo(nPlayerId);
-        if (pPlayerInfo->m_bPlayer == 1)
-        {
-            pNode = m_pPlayerList->GetHeadPos();
-            while (pNode != NULL)
-            {
-                CSWSPlayer* pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pNode);
-                if (pPlayer->m_nPlayerId == nPlayerId)
-                {
-                    if (m_pPCListPosition == pNode)
-                    {
-                        m_pPlayerList->GetNext(m_pPCListPosition);
-                    }
-                    m_pPlayerList->Remove(pNode);
-                    m_pSWSMessage->SendServerToPlayerPlayerList_Delete(
-                        CNetLayer::PLAYERID_ALL_PLAYERS, pPlayer);
-                    bShutdown = pPlayer->m_bIsAllowedToSave;
-                    delete pPlayer;
-                    break;
-                }
-                m_pPlayerList->GetNext(pNode);
-            }
-            g_pAppManager->GetObjectTableManager(CAppManager::OBJECT_TABLE_SERVER)
-                ->RemovePlayer(nPlayerId);
-            EXOLOG("%s Left as a Player [%s]\n", sPlayerName.CStr(),
-                   sTimestamp.CStr());
-            if (bShutdown)
-            {
-                Shutdown(1, 0);
-            }
-        }
-        if (m_lstPendingPlayers.Contains(nPlayerId))
-        {
-            m_lstPendingPlayers.Remove(nPlayerId);
-            if (m_lstPendingPlayers.num == 0)
-            {
-                m_nShutdownTimeout = SHUTDOWN_COMPLETE_TIMEOUT;
-            }
-        }
-    }
-}
-// PC 0x004F0A70
-void CServerExoAppInternal::StopServices()
-{
-    CExoString sTimestamp;
-
-    g_pExoBase->m_pExoDebug->GetCurrentTimestamp(sTimestamp);
-
-    EXOLOG("[%s] Server Shutting Down\n", sTimestamp.CStr());
-    Shutdown(0, 0);
-
-    if (m_pObjectArray != NULL)
-    {
-        delete m_pObjectArray;
-        m_pObjectArray = NULL;
-    }
-    if (m_pServerAIMaster != NULL)
-    {
-        delete m_pServerAIMaster;
-        m_pServerAIMaster = NULL;
-    }
-    if (m_pVirtualMachineCommands != NULL)
-    {
-        delete m_pVirtualMachineCommands;
-        m_pVirtualMachineCommands = NULL;
-    }
-    if (m_pSWSMessage != NULL)
-    {
-        delete m_pSWSMessage;
-        m_pSWSMessage = NULL;
-    }
-    if (m_pServerInfo != NULL)
-    {
-        delete m_pServerInfo;
-        m_pServerInfo = NULL;
-    }
-    if (m_pNetLayer != NULL)
-    {
-        m_pNetLayer->EndServerMode();
-        m_pNetLayer->ShutDown();
-        delete m_pNetLayer;
-        m_pNetLayer = NULL;
-    }
-    if (g_pVirtualMachine != NULL)
-    {
-        delete g_pVirtualMachine;
-        g_pVirtualMachine = NULL;
-    }
-    if (g_pScriptCompiler != NULL)
-    {
-        delete g_pScriptCompiler;
-        g_pScriptCompiler = NULL;
-    }
-
-    g_pExoResMan->NukeDirectory("TEMP:", 1, 1);
-    g_pExoResMan->NukeDirectory("CURRENTGAME:", 1, 1);
-    g_pExoResMan->NukeDirectory("GAMEINPROGRESS:", 1, 1);
-
-    if (g_nClientServerMode == CLIENT_SERVER_MODE_SERVER)
-    {
-        if (g_pRules != NULL)
-        {
-            delete g_pRules;
-            g_pRules = NULL;
-        }
-        g_pExoResMan->RemoveFixedKeyTableFile("HD0:chitin");
-        g_pExoResMan->RemoveResourceDirectory("OVERRIDE:");
-        g_pExoResMan->RemoveResourceDirectory("ERRORTEX:");
-        g_pExoResMan->RemoveResourceDirectory("SERVERVAULT:");
-        if (g_pTlkTable != NULL)
-        {
-            delete g_pTlkTable;
-            g_pTlkTable = NULL;
-        }
-        if (g_pExoResMan != NULL)
-        {
-            delete g_pExoResMan;
-            g_pExoResMan = NULL;
-        }
-    }
-
-    if (m_pWorldTimer != NULL)
-    {
-        delete m_pWorldTimer;
-        m_pWorldTimer = NULL;
-    }
-    if (m_pTimestopTimer != NULL)
-    {
-        delete m_pTimestopTimer;
-        m_pTimestopTimer = NULL;
-    }
-    if (m_pPauseTimer != NULL)
-    {
-        delete m_pPauseTimer;
-        m_pPauseTimer = NULL;
-    }
-    if (m_pFactionManager != NULL)
-    {
-        delete m_pFactionManager;
-        m_pFactionManager = NULL;
-    }
-}
-// PC 0x004F0E30
-void CServerExoAppInternal::ReprocessExclusionListActions(unsigned char nPauseType)
-{
-    CExoLinkedList<unsigned long>* pList;
-    CExoLinkedListNode* pNode;
-    unsigned long nCalendarDay;
-    unsigned long nTimeOfDay;
-    CGameObject* pObject;
-
-    if (nPauseType == PAUSE_TYPE_COMBAT_MASK)
-    {
-        pList = m_pTimestopExclusionList;
-    }
-    else
-    {
-        pList = m_pPauseExclusionList;
-    }
-
-    pNode = pList->GetHeadPos();
-    while (pNode != NULL)
-    {
-        unsigned long oidObject = (unsigned long)pList->GetAtPos(pNode);
-        GetActiveTimer(oidObject)->GetWorldTime(&nCalendarDay, &nTimeOfDay);
-        m_pObjectArray->GetGameObject(oidObject, &pObject);
-        if (pObject != NULL)
-        {
-            pObject->ResetUpdateTimes(nCalendarDay, nTimeOfDay);
-        }
-        pList->GetNext(pNode);
-    }
-}
-// PC 0x004F2590
-#ifdef _XBOX
-int CServerExoAppInternal::LoadModule(CExoString sModule, CSWSPlayer* pPlayer)
-#else
-int CServerExoAppInternal::LoadModule(const CExoString& sModule,
-                                     CSWSPlayer* pPlayer)
-#endif
-{
-    unsigned __int64 nFreeBytes;
-    int nDiskResult;
-    CSWSModule* pModule = GetModule();
-
-    CExoString sSourcePath;
-    CExoString sDestinationPath;
-    {
-        CExoString sModuleName;
-        CExoString sResourceName;
-        CExoString sUnused;
-        unsigned short nModuleType = RESTYPE_INVALID;
-        CExoString sTimestamp;
-
-        g_pExoBase->m_pExoDebug->GetCurrentTimestamp(sTimestamp);
-
-#ifdef _XBOX
-        EXOLOG("[%s] Loading Module: %s\n", sTimestamp.CStr(), sModule.CStr());
-#else
-        EXOLOG("Loading Module: %s [%s]\n", sModule.CStr(), sTimestamp.CStr());
-#endif
-
-        if (m_bLoadingModule != 1)
-        {
-            m_bLoadingModule = 1;
-        }
-        if (pModule != NULL)
-        {
-            UnloadModule();
-        }
-        if (g_pExoResMan->CreateDirectory2("CURRENTGAME:") == 0)
-        {
-            g_pExoResMan->CleanDirectory("CURRENTGAME:", 1, 1);
-        }
-
-        sDestinationPath = "CURRENTGAME:";
-        int nSeparator = sModule.Find("\\", 0);
-        if (nSeparator == -1)
-        {
-            sDestinationPath = sDestinationPath + sModule;
-            sModuleName = sModule;
-        }
-        else
-        {
-            sModuleName = sModule.Right(sModule.GetLength() - nSeparator - 1);
-            sDestinationPath = sDestinationPath + sModuleName;
-        }
-
-        if (IncludeModuleInSave(sModule))
-        {
-            g_pAppManager->GetServerExoApp()->GetPartyTable()->AddGameInProgress();
-            if (g_pExoResMan->Exists(sModule, RESTYPE_RSV, (unsigned long*)NULL))
-            {
-                sSourcePath = "GAMEINPROGRESS:";
-                sSourcePath = sSourcePath + sModule;
-                sResourceName = sSourcePath;
-                sSourcePath = g_pExoBase->m_pExoAliasList->ResolveFileName(
-                    sSourcePath, RESTYPE_RSV);
-                sDestinationPath = g_pExoBase->m_pExoAliasList->ResolveFileName(
-                    sDestinationPath, RESTYPE_RSV);
-                nModuleType = RESTYPE_RSV;
-                SetEstimatedSaveSize(sResourceName, RESTYPE_RSV);
-            }
-            else if (g_pExoResMan->Exists(sModule, RESTYPE_SAV, (unsigned long*)NULL))
-            {
-                sSourcePath = "GAMEINPROGRESS:";
-                sSourcePath = sSourcePath + sModule;
-                sResourceName = sSourcePath;
-                sSourcePath = g_pExoBase->m_pExoAliasList->ResolveFileName(
-                    sSourcePath, RESTYPE_SAV);
-                sDestinationPath = g_pExoBase->m_pExoAliasList->ResolveFileName(
-                    sDestinationPath, RESTYPE_SAV);
-                nModuleType = RESTYPE_SAV;
-                SetEstimatedSaveSize(sResourceName, RESTYPE_SAV);
-            }
-            g_pAppManager->GetServerExoApp()->GetPartyTable()->RemoveGameInProgress();
-        }
-
-        if (nModuleType == RESTYPE_INVALID)
-        {
-            g_pExoResMan->AddResourceDirectory("NWMFILES:");
-            if (g_pExoResMan->Exists(sModule, RESTYPE_NWM, (unsigned long*)NULL))
-            {
-                sSourcePath = "NWMFILES:";
-                sSourcePath = sSourcePath + sModule;
-                sResourceName = sSourcePath;
-                sSourcePath = g_pExoBase->m_pExoAliasList->ResolveFileName(
-                    sSourcePath, RESTYPE_NWM);
-                sDestinationPath = g_pExoBase->m_pExoAliasList->ResolveFileName(
-                    sDestinationPath, RESTYPE_NWM);
-                nModuleType = RESTYPE_NWM;
-                SetEstimatedSaveSize(sResourceName, RESTYPE_NWM);
-            }
-            g_pExoResMan->RemoveResourceDirectory("NWMFILES:");
-        }
-
-        if (nModuleType == RESTYPE_INVALID)
-        {
-            CExoString sDirectory;
-            for (int nContentPackage = 1; nContentPackage < CTlkTable::NUM_CONTENT_PKGS;
-                 ++nContentPackage)
-            {
-                sDirectory.Format("LIVE%d", nContentPackage);
-                if (g_pExoBase->m_pExoAliasList->GetAliasPath(sDirectory, 0).GetLength())
-                {
-                    sDirectory = sDirectory + ":MODULES";
-                    g_pExoResMan->AddResourceDirectory(sDirectory);
-                    if (g_pExoResMan->Exists(sModule, RESTYPE_MOD, (unsigned long*)NULL))
-                    {
-                        sSourcePath = sDirectory + "\\";
-                        sSourcePath = sSourcePath + sModule;
-                        sResourceName = sSourcePath;
-                        sSourcePath = g_pExoBase->m_pExoAliasList->ResolveFileName(
-                            sSourcePath, RESTYPE_MOD);
-                        sDestinationPath = g_pExoBase->m_pExoAliasList->ResolveFileName(
-                            sDestinationPath, RESTYPE_MOD);
-                        nModuleType = RESTYPE_MOD;
-                        SetEstimatedSaveSize(sResourceName, RESTYPE_MOD);
-                    }
-                    if (nModuleType == RESTYPE_INVALID &&
-                        g_pExoResMan->Exists(sModule, RESTYPE_RIM, (unsigned long*)NULL))
-                    {
-                        sSourcePath = sDirectory + "\\";
-                        sSourcePath = sSourcePath + sModule;
-                        sResourceName = sSourcePath;
-                        sSourcePath = g_pExoBase->m_pExoAliasList->ResolveFileName(
-                            sSourcePath, RESTYPE_RIM);
-                        sDestinationPath = g_pExoBase->m_pExoAliasList->ResolveFileName(
-                            sDestinationPath, RESTYPE_RIM);
-                        nModuleType = RESTYPE_RIM;
-                        SetEstimatedSaveSize(sResourceName, RESTYPE_RIM);
-                    }
-                    g_pExoResMan->RemoveResourceDirectory(sDirectory);
-                    if (nModuleType != RESTYPE_INVALID)
-                    {
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (nModuleType == RESTYPE_INVALID)
-        {
-            g_pExoResMan->AddResourceDirectory("MODULES:");
-            if (g_pExoResMan->Exists(sModule, RESTYPE_MOD, (unsigned long*)NULL))
-            {
-                sSourcePath = "MODULES:";
-                sSourcePath = sSourcePath + sModule;
-                sResourceName = sSourcePath;
-                sSourcePath = g_pExoBase->m_pExoAliasList->ResolveFileName(
-                    sSourcePath, RESTYPE_MOD);
-                sDestinationPath = g_pExoBase->m_pExoAliasList->ResolveFileName(
-                    sDestinationPath, RESTYPE_MOD);
-                nModuleType = RESTYPE_MOD;
-                SetEstimatedSaveSize(sResourceName, RESTYPE_MOD);
-            }
-            else if (g_pExoResMan->Exists(sModule, RESTYPE_RIM, (unsigned long*)NULL))
-            {
-                sSourcePath = "MODULES:";
-                sSourcePath = sSourcePath + sModule;
-                sResourceName = sSourcePath;
-                sSourcePath = g_pExoBase->m_pExoAliasList->ResolveFileName(
-                    sSourcePath, RESTYPE_RIM);
-                sDestinationPath = g_pExoBase->m_pExoAliasList->ResolveFileName(
-                    sDestinationPath, RESTYPE_RIM);
-                nModuleType = RESTYPE_RIM;
-                SetEstimatedSaveSize(sResourceName, RESTYPE_RIM);
-            }
-            g_pExoResMan->RemoveResourceDirectory("MODULES:");
-        }
-
-        if (nModuleType == RESTYPE_INVALID)
-        {
-            CSWSMessage* pMessage = m_pSWSMessage;
-            pMessage->SendServerToPlayerSaveLoad_Status(
-                pPlayer, CSWSMessage::SAVELOAD_STATUS_LOAD_FAILED,
-                CSWSMessage::SAVELOAD_FAILURE_MODULE_NOT_FOUND);
-            goto LoadModuleFailed;
-        }
-
-        nDiskResult = g_pExoResMan->GetFreeDiskSpace("CURRENTGAME:", &nFreeBytes);
-        if (nDiskResult == 1)
-        {
-            CExoFile* pFile = new CExoFile(sResourceName, nModuleType, "rb");
-            unsigned __int64 nFileSize = pFile->GetSize();
-            delete pFile;
-            if (nFileSize > nFreeBytes)
-            {
-                CSWSMessage* pMessage = m_pSWSMessage;
-#ifdef _XBOX
-                EXOXBOXASSERT(pMessage->SendServerToPlayerSaveLoad_Status(
-                    pPlayer, CSWSMessage::SAVELOAD_STATUS_LOAD_FAILED,
-                    CSWSMessage::SAVELOAD_FAILURE_DISK_SPACE));
-#else
-                pMessage->SendServerToPlayerSaveLoad_Status(
-                    pPlayer, CSWSMessage::SAVELOAD_STATUS_LOAD_FAILED,
-                    CSWSMessage::SAVELOAD_FAILURE_DISK_SPACE);
-#endif
-                goto LoadModuleFailed;
-            }
-        }
-
-        CSWReentrantServerStats* pModuleNameStats = g_pAppManager->m_pReentrantServerStats;
-        pModuleNameStats->m_sUnknown24 = sModuleName;
-        CSWReentrantServerStats* pSourceStats = g_pAppManager->m_pReentrantServerStats;
-        pSourceStats->m_sUnknown32 = sSourcePath;
-        CSWReentrantServerStats* pDestinationStats = g_pAppManager->m_pReentrantServerStats;
-        pDestinationStats->m_sUnknown40 = sDestinationPath;
-        CSWReentrantServerStats* pTypeStats = g_pAppManager->m_pReentrantServerStats;
-        pTypeStats->m_nResourceType = nModuleType;
-        if (nModuleType == RESTYPE_SAV || nModuleType == RESTYPE_RSV)
-        {
-            g_pAppManager->m_pReentrantServerStats->StartStallEvent(
-                CSWReentrantServerStats::OPERATION_LOAD_GAME);
-            SendStartStallEvent(CSWSMessage::LOADBAR_STALL_EVENT_LOAD_GAME);
-        }
-        else
-        {
-            g_pAppManager->m_pReentrantServerStats->StartStallEvent(
-                CSWReentrantServerStats::OPERATION_LOAD_MODULE);
-            SendStartStallEvent(CSWSMessage::LOADBAR_STALL_EVENT_LOAD_MODULE);
-        }
-        CSWReentrantServerStats* pCompletedStats = g_pAppManager->m_pReentrantServerStats;
-        pCompletedStats->m_nProgress = 0;
-        CSWReentrantServerStats* pProgressStats = g_pAppManager->m_pReentrantServerStats;
-        pProgressStats->m_nProgressTotal = 0;
-        CSWReentrantServerStats* pFinalNameStats = g_pAppManager->m_pReentrantServerStats;
-        pFinalNameStats->m_sUnknown24 = sModuleName;
-    }
-    return 1;
-
-LoadModuleFailed:
-    return 0;
-}
-// PC 0x004F35B0
-void CServerExoAppInternal::DealWithLoadGameError(unsigned long nValue)
-{
-    CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
-
-    UnloadModule();
-    pStats->m_nUnknown56 = nValue;
-    pStats->m_bOperationEndPending = 1;
-    if (g_nClientServerMode == 2)
-    {
-        pStats->m_bOperationEndPending = 0;
-        pStats->m_bOperationActive = 0;
-        pStats->m_nOperation = 0;
-    }
-    m_nServerMode = 0;
-    m_bLoadingModule = 0;
-    g_pAppManager->m_pServerExoApp->GetSWSMessage()
-        ->SendServerToPlayerLoadBar_EndStallEvent(CSWSMessage::LOADBAR_STALL_EVENT_LOAD_MODULE, nValue);
-}
-// PC 0x004F3610
-void CServerExoAppInternal::TogglePauseState(unsigned char nPauseType)
-{
-    SetPauseState(nPauseType, !GetPauseState(nPauseType));
-}
-// PC 0x004F0F20
-void CServerExoAppInternal::SetPauseState(unsigned char nPauseType, int bPause)
-{
-    CSWSMessage* pMessage = m_pSWSMessage;
-    CWorldTimer* pTimer;
-
-    if (GetPauseState(nPauseType) != bPause)
-    {
-        if (bPause == 1)
-        {
-            m_PauseState.m_nPauseState |= nPauseType;
-            m_pWorldTimer->PauseWorldTimer();
-            if (GetActivePauseState() == PAUSE_STATE_COMBAT)
-            {
-                m_pTimestopTimer->PauseWorldTimer();
-            }
-            pMessage->SendServerToPlayerModule_SetPauseState(nPauseType, 1);
-        }
-        else
-        {
-            m_PauseState.m_nPauseState &= ~nPauseType;
-            if (nPauseType == PAUSE_TYPE_COMBAT_MASK)
-            {
-                m_pPauseTimer->PauseWorldTimer();
-                ReprocessExclusionListActions(PAUSE_TYPE_COMBAT_MASK);
-                m_pPauseTimer->ResetTimer(m_pTimestopTimer);
-                m_pPauseTimer->SetSnapshotTime();
-                m_pTimestopTimer->SetSnapshotTime();
-                pTimer = m_pPauseTimer;
-                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
-                pTimer = m_pTimestopTimer;
-                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
-
-                if (GetActivePauseState() != PAUSE_STATE_PAUSED)
-                {
-                    m_pWorldTimer->SetSnapshotTime();
-                    pTimer = m_pWorldTimer;
-                    pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
-                    m_pWorldTimer->UnpauseWorldTimer();
-                }
-                m_pTimestopTimer->UnpauseWorldTimer();
-                m_pPauseTimer->UnpauseWorldTimer();
-            }
-            else if (nPauseType == PAUSE_TYPE_PAUSED_MASK)
-            {
-                m_pTimestopTimer->PauseWorldTimer();
-                m_pPauseTimer->PauseWorldTimer();
-                ReprocessExclusionListActions(PAUSE_TYPE_PAUSED_MASK);
-                m_pTimestopTimer->ResetTimer(m_pWorldTimer);
-                m_pPauseTimer->ResetTimer(m_pWorldTimer);
-                m_pWorldTimer->SetSnapshotTime();
-                m_pTimestopTimer->SetSnapshotTime();
-                m_pPauseTimer->SetSnapshotTime();
-                pTimer = m_pPauseTimer;
-                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
-                pTimer = m_pTimestopTimer;
-                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
-                pTimer = m_pWorldTimer;
-                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
-                m_pWorldTimer->UnpauseWorldTimer();
-                m_pTimestopTimer->UnpauseWorldTimer();
-                m_pPauseTimer->UnpauseWorldTimer();
-            }
-            pMessage->SendServerToPlayerModule_SetPauseState(nPauseType, bPause);
-        }
-    }
-}
-// PC 0x004F3640
-int CServerExoAppInternal::LoadGame(unsigned long nSlot,
-                                    const CExoString& sName,
-                                    const CExoString& sModule,
-                                    CSWSPlayer* pPlayer)
-{
-    CExoString sDirectory;
-    CExoString sGameName;
-
-    CExoString sUnused1;
-    CExoString sUnused2;
-
-#ifdef _XBOX
-    g_pAppManager->m_pClientExoApp->SetLoadBarProgress(50, 1);
-    g_pAppManager->m_pClientExoApp->SetLoadStep(0, 50);
-    g_pAppManager->m_pClientExoApp->SetLoadStep(1, 10);
-    g_pAppManager->m_pClientExoApp->SetLoadStep(2, 13);
-    g_pAppManager->m_pClientExoApp->SetLoadStep(3, 13);
-    g_pAppManager->m_pClientExoApp->SetLoadStep(4, 13);
-#else
-    g_pAppManager->m_pClientExoApp->SetLoadBarProgress(10, 1);
-    g_pAppManager->m_pClientExoApp->SetLoadStep(0, 10);
-    g_pAppManager->m_pClientExoApp->SetLoadStep(1, 20);
-    g_pAppManager->m_pClientExoApp->SetLoadStep(2, 23);
-    g_pAppManager->m_pClientExoApp->SetLoadStep(3, 23);
-    g_pAppManager->m_pClientExoApp->SetLoadStep(4, 23);
-#endif
-
-    if (nSlot != -1)
-    {
-        sGameName.Format("%06d - %s", nSlot, sName.CStr());
-    }
-    else
-    {
-        sGameName = sName;
-    }
-
-    sDirectory = "SAVES:";
-    sDirectory = sDirectory + sGameName;
-    g_pExoResMan->AddResourceDirectory(sDirectory);
-    m_partyTable.LoadTableInfo();
-    m_globalVariableTable.Load();
-    g_pExoResMan->RemoveResourceDirectory(sDirectory);
-
-    m_partyTable.m_bSkipPartyPositioning = 1;
-    m_nAutoSaveElapsedTime = 0;
-    m_bAutoSaveTimerExpired = 0;
-
-    return LoadModule(sModule, pPlayer);
-}
-
-int CServerExoAppInternal::SendEnteringStartNewModuleMessage()
-{
-    GetServerExoApp()->GetSWSMessage()->SendServerToPlayerModule_StartStartNewModule();
-    return 1;
-}
-// PC 0x004F3820
-int CServerExoAppInternal::ExecuteLoadModule(const CExoString& sModule)
-{
-    if (GetModule() != NULL && !GetModule()->GetModuleName().IsEmpty())
-    {
-        DumpLogCounters((char*)GetModule()->GetModuleName().CStr());
-    }
-    else
-    {
-        DumpLogCounters("");
-    }
-
-    SendEnteringStartNewModuleMessage();
-    g_pExoInput->ClearEvents();
-    g_bMouseCameraRotateToggle = 0;
-    g_bLeftMouseDown = 0;
-    g_bShiftActionState = 0;
-    g_pAppManager->m_pClientExoApp->ResetDriveAcceleration();
-
-    g_pAppManager->m_pClientExoApp->GetWorldTimer()->PauseWorldTimer();
-    g_pAppManager->m_pServerExoApp->GetWorldTimer()->PauseWorldTimer();
-    g_pAppManager->m_pClientExoApp->GetWorldTimer()->SetSnapshotTime();
-    g_pAppManager->m_pServerExoApp->GetWorldTimer()->SetSnapshotTime();
-    g_pAppManager->m_pClientExoApp->DisableInput();
-
-    return LoadModule(sModule, NULL);
-}
-// PC 0x004F3920
-int CServerExoAppInternal::StartNewModule(const CExoString& sModule)
-{
-    int bLoadingModule = m_bLoadingModule;
-    if (bLoadingModule == 1)
-    {
-        return 0;
-    }
-
-    g_pAppManager->GetClientExoApp()->SetLoadScreenHint(
-        g_pAppManager->GetClientExoApp()->GetNextLoadScreenHintSTRREF(sModule, 0));
-    g_pAppManager->GetClientExoApp()->SetLoadScreenHintUpdateTimer(0);
-    g_pAppManager->GetClientExoApp()->SetCanSendDialog(0);
-    g_pAppManager->GetClientExoApp()->GetInGameGui()->SetGlobalDialogState(0);
-    g_pAppManager->GetClientExoApp()->GetInGameGui()->CloseDialog();
-    g_pExoSound->StopAllOneShots();
-    g_pAppManager->GetClientExoApp()->PlayLoadModuleMovies();
-
-    g_pExoResMan->AddResourceDirectory("MODULES:");
-
-    if (!g_pExoResMan->Exists(sModule, RESTYPE_MOD,
-                             (unsigned long*)NULL)
-        && !g_pExoResMan->Exists(sModule, RESTYPE_RIM,
-                                (unsigned long*)NULL))
-    {
-        g_pExoResMan->RemoveResourceDirectory("MODULES:");
-        return 0;
-    }
-    g_pExoResMan->RemoveResourceDirectory("MODULES:");
-
-    m_bLoadingModule = 1;
-    m_bDoingStartNewModule = 1;
-    ForceRunAreaOnExitScripts();
-    if (!StorePlayerCharacters())
-    {
-        m_bDoingStartNewModule = 0;
-        return 0;
-    }
-    if (!StoreCurrentModule())
-    {
-        m_bDoingStartNewModule = 0;
-        return 0;
-    }
-
-    C2DA* pModuleSave = new C2DA("modulesave", 0);
-    if (pModuleSave != NULL && !pModuleSave->Load2DArray())
-    {
-        delete pModuleSave;
-        pModuleSave = NULL;
-    }
-    DoModuleEnterSaveCleanup(sModule, pModuleSave);
-    if (GetModule() != NULL
-        && (pModuleSave == NULL || AutoSaveOnEnteringModule(sModule, pModuleSave)))
-    {
-#ifndef _XBOX
-        DoPCAutosave(sModule, pModuleSave);
-#endif
-    }
-    if (pModuleSave != NULL)
-    {
-        delete pModuleSave;
-    }
-    return ExecuteLoadModule(sModule);
-}
-// PC 0x004F3BB0
-int CServerExoAppInternal::MainLoop()
-{
-
-    UpdateAutoSaveTimer();
-    CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
-    int bReentrantOperation = pStats->m_bOperationActive;
-    if (bReentrantOperation == 0)
-    {
-        if (GetActivePauseState() == 0)
-            m_pWorldTimer->SetSnapshotTime();
-        if (GetActivePauseState() != PAUSE_STATE_COMBAT)
-            m_pTimestopTimer->SetSnapshotTime();
-        m_pPauseTimer->SetSnapshotTime();
-        m_pNetLayer->ProcessReceivedFrames(1);
-        m_pNetLayer->UpdateStatusLoop(CNetLayer::APPLICATION_SERVER);
-        TempDeathUpdate();
-        UpdateMapData();
-        if (g_pAppManager->m_pReentrantServerStats->m_bOperationActive == 0 &&
-            m_nServerMode == SERVER_MODE_RUNNING)
-        {
-            m_pServerAIMaster->UpdateState();
-            int bForceUpdate = m_bForceUpdate;
-            UpdateClientGameObjects(bForceUpdate);
-            m_bForceUpdate = 0;
-        }
-#ifdef _XBOX
-        int bTransitionReady = 1;
-        if (m_bMoveToModulePending == 1)
-        {
-            if (m_nAutoSaveCalendarDay == 0)
-            {
-                m_nAutoSaveCalendarDay = 1;
-                bTransitionReady = 0;
-                g_pExoInput->SetActive(0);
-                g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL);
-                m_nAutoSaveTimeOfDay = g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000;
-            }
-            else
-            {
-                bTransitionReady =
-                    (unsigned long)(g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000) -
-                        m_nAutoSaveTimeOfDay > 500;
-                g_pExoInput->UpdateJoysticks();
-                g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateControllerPauseState();
-            }
-        }
-        if (m_bMoveToModulePending == 1 && bTransitionReady == 1 &&
-            g_pAppManager->GetClientExoApp()->GetInGameGui()
-                ->m_bControllerPauseActive == 0)
-        {
-            ForceRunAreaOnExitScripts();
-            if (!StorePlayerCharacters())
-            {
-                m_bDoingStartNewModule = 0;
-                return 0;
-            }
-            if (!StoreCurrentModule())
-            {
-                m_bDoingStartNewModule = 0;
-                return 0;
-            }
-            if (g_pExoResMan->CreateDirectory2("REBOOTDATA:") == 0)
-            {
-                g_pExoResMan->CleanDirectory("REBOOTDATA:", 0, 0);
-            }
-            CExoString sModule(m_sMoveToModule);
-            m_partyTable.Save("REBOOTDATA:", 0);
-            m_globalVariableTable.Save("REBOOTDATA:");
-            KOTOR_LAUNCH_DATA cParams;
-            cParams.m_nModuleTrans = KOTOR_LAUNCH_DATA::MODULETRANS_MODULE;
-            CExoString sStartWaypoint(m_sMoveToModuleStartWaypoint);
-            CExoString sMovie1("");
-            CExoString sMovie2("");
-            CExoString sMovie3("");
-            CExoString sMovie4("");
-            CExoString sMovie5("");
-            CExoString sMovie6("");
-            CExoArrayList<CExoString> lMovies(
-                *g_pAppManager->GetClientExoApp()->GetMoveToModuleMovies());
-            CExoString sLoadScreen("");
-            CExoString sLoadMusic("");
-            int bMinGlobalRim = 0;
-            if (g_pRules->m_p2DArrays->m_pAreaTransition->GetCExoStringEntry(
-                    sModule, "BMPResRef", &sLoadScreen) == 0)
-            {
-                sLoadScreen.Format("load_%s", sModule);
-                if (!g_pExoResMan->Exists(sLoadScreen, RESTYPE_TGA, (unsigned long*)NULL) &&
-                    !g_pExoResMan->Exists(sLoadScreen, RESTYPE_TPC, (unsigned long*)NULL))
-                {
-                    g_pRules->m_p2DArrays->m_pAreaTransition->GetCExoStringEntry(
-                        "DEFAULT", "BMPResRef", &sLoadScreen);
-                }
-            }
-            sLoadMusic = g_pAppManager->GetClientExoApp()->GetLoadMusicByModuleName(sModule);
-            if (lMovies.num > 0)
-                sMovie1 = lMovies.element[0];
-            if (lMovies.num > 1)
-                sMovie2 = lMovies.element[1];
-            if (lMovies.num > 2)
-                sMovie3 = lMovies.element[2];
-            if (lMovies.num > 3)
-                sMovie4 = lMovies.element[3];
-            if (lMovies.num > 4)
-                sMovie5 = lMovies.element[4];
-            if (lMovies.num > 5)
-                sMovie6 = lMovies.element[5];
-            if (IsMoveToModuleMinGlobalRim() == 1)
-            {
-                bMinGlobalRim = 1;
-            }
-            cParams.m_nAutoCalInfo = g_pExoInput->GetAutoCalInfo();
-            cParams.m_nPortBinding = g_pExoInput->GetPortBinding();
-            if (sStartWaypoint == "")
-            {
-                sStartWaypoint = "*";
-            }
-            cParams.m_bRenderQA = RenderQA;
-            cParams.SetModuleName(sModule);
-            cParams.SetLoadScreen(sLoadScreen);
-            cParams.SetLoadMusic(sLoadMusic);
-            cParams.SetStartWaypoint(sStartWaypoint);
-            cParams.SetMovie1(sMovie1);
-            cParams.SetMovie2(sMovie2);
-            cParams.SetMovie3(sMovie3);
-            cParams.SetMovie4(sMovie4);
-            cParams.SetMovie5(sMovie5);
-            cParams.SetMovie6(sMovie6);
-            cParams.m_bMinGlobalRim = bMinGlobalRim;
-            unsigned long nCalendarDay, nTimeOfDay;
-            unsigned long nHour, nMinute, nSecond, nMillisecond;
-            unsigned long nYear, nMonth, nDay, nModuleTime;
-            unsigned char nDawnDusk;
-            g_pAppManager->GetServerExoApp()->GetWorldTimer()
-                ->GetWorldTime(&nCalendarDay, &nTimeOfDay);
-            g_pAppManager->GetServerExoApp()->GetWorldTimer()
-                ->ConvertFromTimeOfDay(nTimeOfDay, &nHour, &nMinute,
-                                      &nSecond, &nMillisecond);
-            GetModule()->GetTime(&nYear, &nMonth, &nDay, &nHour,
-                                 &nDawnDusk, &nModuleTime);
-            cParams.SetTime(nYear, nMonth, nDay, nHour, nMinute, nSecond, nMillisecond);
-            cParams.m_nTimePauseTime = nTimeOfDay;
-            cParams.m_nTimePauseDay = nCalendarDay;
-            KOTOR_LAUNCH_OPTIONS_DATA cOptionsData;
-            g_pAppManager->GetClientExoApp()->GetClientOptions()->GetOptionsData(&cOptionsData);
-            cParams.SetOptionsData(cOptionsData);
-            CStatusSummary cStatusSummary;
-            g_pAppManager->GetClientExoApp()->GetInGameGui()->GetStatusSummary(cStatusSummary);
-            cParams.SetStatusSummary(cStatusSummary);
-            C2DA* pModuleSave = new C2DA(CResRef("modulesave"), 0);
-            if (pModuleSave != NULL && !pModuleSave->Load2DArray())
-            {
-                delete pModuleSave;
-                pModuleSave = NULL;
-            }
-            DoModuleEnterSaveCleanup(sModule, pModuleSave);
-            if (HasEnoughDiskSpaceForSaveGame() && GetModule() != NULL &&
-                (pModuleSave == NULL || AutoSaveOnEnteringModule(sModule, pModuleSave)))
-            {
-                DoPCAutosave(sModule, cParams, pModuleSave);
-            }
-            cParams.m_nHintTimer1 = m_nAutoSaveElapsedTime;
-            cParams.m_nHintTimer2 = m_bAutoSaveTimerExpired;
-            if (sMovie1.GetLength() <= 0 && sMovie2.GetLength() <= 0 &&
-                sMovie3.GetLength() <= 0 && sMovie4.GetLength() <= 0 &&
-                sMovie5.GetLength() <= 0 && sMovie6.GetLength() <= 0)
-            {
-                cParams.m_nLoadScreenHint =
-                    g_pAppManager->GetClientExoApp()->GetNextLoadScreenHintSTRREF(sModule, 0);
-            }
-            else
-            {
-                cParams.m_nLoadScreenHint = 0;
-            }
-            cParams.m_nGamePlayHint = g_pAppManager->GetClientExoApp()->GetGamePlayHint();
-            cParams.m_nStoryHint = g_pAppManager->GetClientExoApp()->GetStoryHint();
-            cParams.m_nLoadScreenHintUpdateTimer = 0;
-            if (pModuleSave != NULL)
-            {
-                delete pModuleSave;
-            }
-            AurPersistDisplay();
-            ExoXboxLaunch(&cParams, g_pAppManager->GetServerExoApp()->GetModuleName().CStr());
-        }
-#else
-        if (m_bMoveToModulePending == 1 &&
-            g_pAppManager->GetClientExoApp()->GetInGameGui()
-                ->m_bControllerPauseActive == 0)
-        {
-            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
-                "000_Human_Conf_Active", 0);
-            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
-                "000_Beast_Conf_Active", 0);
-            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
-                "000_Droid_Conf_Active", 0);
-            unsigned long nCalendarDay, nTimeOfDay;
-            unsigned long nHour, nMinute, nSecond, nMillisecond;
-            unsigned long nYear, nMonth, nDay, nModuleTime;
-            unsigned char nDawnDusk;
-            g_pAppManager->GetServerExoApp()->GetWorldTimer()
-                ->GetWorldTime(&nCalendarDay, &nTimeOfDay);
-            g_pAppManager->GetServerExoApp()->GetWorldTimer()
-                ->ConvertFromTimeOfDay(nTimeOfDay, &nHour, &nMinute,
-                                      &nSecond, &nMillisecond);
-            GetModule()->GetTime(&nYear, &nMonth, &nDay, &nHour,
-                                 &nDawnDusk, &nModuleTime);
-            g_pAppManager->GetServerExoApp()->SetMoveToWorldTime(
-                nYear, nMonth, nDay, nHour, nMinute, nSecond, nMillisecond);
-            g_pAppManager->GetServerExoApp()->SetMoveToPausedTimeOfDay(nTimeOfDay);
-            g_pAppManager->GetServerExoApp()->SetMoveToPausedCalendarDay(nCalendarDay);
-            m_partyTable.UpdateMembers(0);
-            StartNewModule(m_sMoveToModule);
-            m_bMoveToModulePending = 0;
-        }
-#endif
-        pStats = g_pAppManager->m_pReentrantServerStats;
-        if (pStats->m_bOperationActive == 0 &&
-            g_pAppManager->GetServerExoApp()->GetPlayerCreature() != NULL &&
-            g_pAppManager->GetServerExoApp()->GetPlayerCreature()->GetArea() != NULL &&
-            !g_pAppManager->GetClientExoApp()->GetAreaNotReadyToDisplay())
-        {
-            int bPartyAlive = 0;
-            if (m_bAutoSavePending == 1)
-            {
-                for (int nMember = 0; nMember < CSWParty::MAX_MEMBERS; nMember++)
-                {
-                    CSWCCreature* pCharacter =
-                        g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nMember);
-                    if (pCharacter != NULL &&
-                        pCharacter->GetServerCreature()->GetCurrentHitPoints(0) > 1)
-                    {
-                        bPartyAlive = 1;
-                        break;
-                    }
-                }
-            }
-            if (bPartyAlive)
-            {
-                if (HasEnoughDiskSpaceForSaveGame() &&
-                    m_nServerMode == SERVER_MODE_RUNNING)
-                {
-                    CExoString sName;
-                    sName = "AUTOSAVE";
-#ifdef _XBOX
-                    AurReleaseFrameTexture();
-                    CExoString sSaveRoot("U:\\");
-                    WCHAR wszSaveName[256];
-                    char szSavePath[256];
-                    mbstowcs(wszSaveName, g_pTlkTable->GetSimpleString(STRREF_AUTO_SAVE_NAME).CStr(), 255);
-                    XCreateSaveGame(sSaveRoot.CStr(), wszSaveName, OPEN_ALWAYS, 1, szSavePath, 254);
-                    {
-                        CExoString sAlias("SAVES");
-                        g_pExoBase->m_pExoAliasList->ChangePath(sAlias, szSavePath);
-                    }
-                    g_pExoResMan->FileCopy("HD0:AutoSaveImage", "SAVES:SaveImage", 3011, RESTYPE_INVALID);
-                    SaveGame(0, sName, NULL, 1);
-#else
-                    SaveGame(1, sName, NULL, 1);
-#endif
-                }
-                else
-                {
-                    if (g_pAppManager->GetClientExoApp()->GetInGameGui()
-                            ->m_nGlobalDialogState != 0)
-                        g_pAppManager->GetClientExoApp()->GetInGameGui()
-                            ->m_bHoldWorldFadeInForDialog = 1;
-                    else
-                    {
-                        Vector vBlack(0.0f, 0.0f, 0.0f);
-                        g_pAppManager->GetClientExoApp()->GetInGameGui()
-                            ->StartGlobalFade(1, 0.5f, 1.0f, vBlack);
-                    }
-                    g_pAppManager->GetClientExoApp()->SetCanSendDialog(1);
-                    g_pExoInput->EndAttemptedBind();
-                    g_pAppManager->GetClientExoApp()->GetInGameGui()
-                        ->SetGlobalUnpauseableState(0);
-                    g_pAppManager->GetClientExoApp()->GetModule()->m_pInfo->StartSounds();
-                }
-            }
-            m_bAutoSavePending = 0;
-        }
-        if (m_bExportAllCharactersPending == 1)
-        {
-            ExportAllPlayers();
-            m_bExportAllCharactersPending = 0;
-        }
-        if (m_bNeedCharacterPending == 1)
-        {
-            m_pSWSMessage->SendServerToPlayerLogin_NeedCharacter(
-                ((CSWSPlayer*)m_pPlayerList->GetHead())->m_nPlayerId);
-            m_bNeedCharacterPending = 0;
-        }
-    }
-    else
-    {
-        m_pNetLayer->ProcessReceivedFrames(0);
-        m_pNetLayer->UpdateStatusLoop(CNetLayer::APPLICATION_SERVER);
-        CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
-        if (pStats->m_nUnknown56 == 0)
-        {
-            if (pStats->m_nOperation == CSWReentrantServerStats::OPERATION_LOAD_MODULE ||
-                pStats->m_nOperation == CSWReentrantServerStats::OPERATION_LOAD_GAME)
-            {
-                CExoString sModule(pStats->m_sUnknown24);
-                CSWSModule* pModule = GetModule();
-                int bLoadingSaveGame = 0;
-                if (m_bLoadFromSaveGame)
-                    bLoadingSaveGame = 1;
-                if (pStats->m_nProgressTotal == 0)
-                {
-                    CExoString sModuleName(pStats->m_sUnknown24);
-                    CExoString sSource(pStats->m_sUnknown32);
-                    CExoString sDestination(pStats->m_sUnknown40);
-                    unsigned long nType = pStats->m_nResourceType;
-                    if (!CopyModuleToCurrentGame(sSource, sDestination, nType))
-                        DealWithLoadGameError(LOAD_GAME_ERROR_COPY_MODULE);
-                    else
-                    {
-                        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_n1024 = 0;
-                        pModule = new CSWSModule(sModuleName, 0,
-                            (unsigned short)nType == RESTYPE_SAV ||
-                            (unsigned short)nType == RESTYPE_RSV);
-                        m_oidModule = pModule->GetId();
-                        if ((unsigned short)nType == RESTYPE_RSV)
-                        {
-                            pModule->m_bIsNWMFile = 1;
-                            pModule->m_sSaveName = sModuleName;
-                        }
-                        unsigned long nError = pModule->LoadModuleStart(
-                            sModuleName, bLoadingSaveGame);
-                        if (nError != 0)
-                            DealWithLoadGameError(nError);
-                    }
-                }
-                else if (pStats->m_nProgressTotal != pStats->m_nProgress)
-                {
-                    m_partyTable.ClearMembers();
-                    m_partyTable.ClearPuppets();
-                    int nLoadProgress = pStats->m_nProgressTotal;
-                    int nLoadStep = pStats->m_nProgress;
-                    unsigned long nError = pModule->LoadModuleInProgress(
-                        nLoadStep, nLoadProgress);
-                    if (nError != 0)
-                        DealWithLoadGameError(nError);
-                }
-                else if (pStats->m_bOperationEndPending != 1)
-                {
-                    unsigned long nError = pModule->LoadModuleFinish();
-                    if (nError != 0)
-                        DealWithLoadGameError(nError);
-                    pStats->m_bOperationEndPending = 1;
-                    if (g_nClientServerMode == CLIENT_SERVER_MODE_SERVER)
-                    {
-                        pStats->m_bOperationEndPending = 0;
-                        pStats->m_bOperationActive = 0;
-                        pStats->m_nOperation = 0;
-                    }
-                    m_nServerMode = SERVER_MODE_LOADING;
-                    m_bLoadingModule = 0;
-                    g_pAppManager->GetServerExoApp()->GetSWSMessage()
-                        ->SendServerToPlayerLoadBar_EndStallEvent(CSWSMessage::LOADBAR_STALL_EVENT_LOAD_MODULE, 0);
-                    m_pSWSMessage->SendServerToPlayerServerStatus_Status(
-                        CNetLayer::PLAYERID_ALL_PLAYERS);
-                    m_pSWSMessage->SendServerToServerAdminServerStatus(
-                        CNetLayer::PLAYERID_ALL_SERVERADMINS);
-                    if (m_lstCharListRequests.num != 0)
-                    {
-                        for (int nRequest = 0; nRequest < m_lstCharListRequests.num; ++nRequest)
-                        {
-                            CSWSPlayer* pPlayer = GetClientObjectByPlayerId(
-                                m_lstCharListRequests[nRequest], 0);
-                            if (pPlayer != NULL)
-                                m_pSWSMessage->SendServerToPlayerCharList(pPlayer);
-                        }
-                        m_lstCharListRequests.SetSize(0);
-                    }
-                }
-            }
-            else if (pStats->m_nOperation == CSWReentrantServerStats::OPERATION_SAVE_GAME)
-            {
-                StallEventSaveGame();
-                DumpLogCounters("2");
-            }
-        }
-    }
-    if (UpdateShutdownTimer(g_pExoBase->m_pExoTimers->GetHighResolutionTimer()))
-    {
-        if (m_lstPendingPlayers.num != 0)
-            Shutdown(0, 0);
-        else
-            g_pAppManager->DestroyServer();
-    }
-    UpdateMainLoopTimeBudget(g_pExoBase->m_pExoTimers->GetHighResolutionTimer());
-    return 0;
 }
 // PC 0x004EAB30
 CSWSArea* CServerExoAppInternal::GetAreaByGameObjectID(unsigned long oidArea)
@@ -4011,6 +1748,42 @@ void CServerExoAppInternal::DumpServerOptionsToLog()
     g_pExoBase->m_pExoDebug->GetCurrentTimestamp(sTimestamp);
     sTimestamp.CStr();
 }
+// PC 0x004EB000
+int CServerExoAppInternal::GetFactionOfObject(unsigned long oidObject,
+                                             int* pnFaction)
+{
+    CGameObject* pObject = GetGameObject(oidObject);
+
+    if (pObject != NULL)
+    {
+        if (pObject->AsSWSCreature() != NULL)
+        {
+            *pnFaction = pObject->AsSWSCreature()->m_pStats->m_nFactionId;
+            return 1;
+        }
+        if (pObject->AsSWSDoor() != NULL)
+        {
+            *pnFaction = pObject->AsSWSDoor()->m_nFactionId;
+            return 1;
+        }
+        if (pObject->AsSWSEncounter() != NULL)
+        {
+            *pnFaction = pObject->AsSWSEncounter()->m_nFaction;
+            return 1;
+        }
+        if (pObject->AsSWSPlaceable() != NULL)
+        {
+            *pnFaction = pObject->AsSWSPlaceable()->m_nFaction;
+            return 1;
+        }
+        if (pObject->AsSWSTrigger() != NULL)
+        {
+            *pnFaction = pObject->AsSWSTrigger()->m_nFaction;
+            return 1;
+        }
+    }
+    return 0;
+}
 // PC 0x004EB0F0
 void CServerExoAppInternal::UpDatePlayerPosition(
     unsigned long oidObject, const Vector& vPosition,
@@ -4140,6 +1913,18 @@ unsigned long CServerExoAppInternal::ClientToServerObjectId(
     }
     return OBJECT_INVALID;
 }
+// PC 0x004EB3D0
+int CServerExoAppInternal::GetPlayerCreatureId()
+{
+    CSWSPlayer* pPlayer;
+
+    pPlayer = GetServerExoApp()->GetClientObjectByPlayerId(0, 1);
+    if (pPlayer != NULL && pPlayer->GetGameObject() != NULL)
+    {
+        return pPlayer->GetGameObject()->m_nId;
+    }
+    return OBJECT_INVALID;
+}
 // PC 0x004EB410
 void CServerExoAppInternal::SkipPastDialog(unsigned long oidObject)
 {
@@ -4170,6 +1955,108 @@ int CServerExoAppInternal::CreatureAcquireItem(unsigned long oidObject,
         ->AsSWSCreature()
         ->AcquireItem(&pItem, OBJECT_INVALID, OBJECT_INVALID, 1);
 }
+#ifndef _XBOX
+int CServerExoAppInternal::TestSafeLocation(  // PC 0x004EB560
+    unsigned long oidObject, const Vector& vPosition)
+{
+    CGameObjectArray* pObjectArray = m_pObjectArray;
+    CGameObject* pObject = NULL;
+    CSWSCreature* pCreature;
+
+    if (pObjectArray->GetGameObject(oidObject, &pObject) !=
+        CGameObjectArray::SUCCESS)
+    {
+        return 0;
+    }
+    if (pObject == NULL)
+    {
+        return 0;
+    }
+    if (pObject->m_nObjectType != CGameObject::OBJECT_TYPE_CREATURE)
+    {
+        return 0;
+    }
+    pCreature = pObject->AsSWSCreature();
+    if (pCreature == NULL)
+    {
+        return 0;
+    }
+    CPathfindInformation* pPathfind = pCreature->m_pPathfindInformation;
+    unsigned long oidArea = pCreature->m_oidArea;
+    return GetAreaByGameObjectID(oidArea)
+        ->TestSafeLocationPoint(vPosition, pPathfind);
+}
+// PC 0x004EB5E0
+int CServerExoAppInternal::ComputeSafeLocation(
+    const Vector& vPosition, float fRadius, unsigned long oidObject,
+    int nFlags, Vector* pvSafe)
+{
+    CGameObjectArray* pObjectArray = m_pObjectArray;
+    CGameObject* pObject = NULL;
+    CSWSCreature* pCreature = NULL;
+
+    if (pObjectArray->GetGameObject(oidObject, &pObject) ==
+            CGameObjectArray::SUCCESS &&
+        pObject != NULL &&
+        pObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
+    {
+        pCreature = ((CSWSObject*)pObject)->AsSWSCreature();
+    }
+    if (pCreature == NULL)
+    {
+        return 0;
+    }
+    CPathfindInformation* pPathfind = pCreature->m_pPathfindInformation;
+    return GetAreaByGameObjectID(pCreature->m_oidArea)->ComputeSafeLocation(
+        vPosition, fRadius, pPathfind, nFlags, pvSafe);
+}
+#endif
+void CServerExoAppInternal::UpdateMapData()  // PC 0x004EB670
+{
+    CSWParty* pParty;
+    CSWSModule* pModule;
+    CSWSAreaMap* pAreaMap;
+    CSWCCreature* pCreature;
+    int nMember;
+
+    pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
+    pModule = GetModule();
+    if (pParty != NULL && pModule != NULL)
+    {
+        pAreaMap = pModule->m_pAreaMap;
+        if (pAreaMap != NULL)
+        {
+            for (nMember = 0; nMember < pParty->m_nCharacters; nMember++)
+            {
+                pCreature = pParty->GetCharacter(nMember);
+                if (pCreature != NULL)
+                {
+                    pAreaMap->SetWorldPointExplored(pCreature->m_vPosition, 1);
+                    pAreaMap->SetPartyMemberWorldLocation(
+                        nMember, pCreature->m_vPosition);
+                    pAreaMap->SetPartyMemberWorldOrientation(
+                        nMember, pCreature->m_vOrientation);
+                }
+            }
+        }
+    }
+}
+#ifndef _XBOX
+Vector CServerExoAppInternal::GetNormalOfPoint(const Vector& vPosition)  // PC 0x004EB740
+{
+    CSWSModule* pModule;
+    CSWSRoom* pRoom;
+    int nFace;
+
+    pModule = GetServerExoApp()->GetModule();
+    pRoom = pModule->GetArea()->GetRoom(vPosition, &nFace);
+    if (pRoom != NULL)
+    {
+        return pRoom->GetNormalOfPoint(nFace);
+    }
+    return Vector(0.0f, 0.0f, 1.0f);
+}
+#endif
 // PC 0x004EB7B0
 int CServerExoAppInternal::IncludeModuleInSave(const CExoString& sModule)
 {
@@ -4192,6 +2079,41 @@ int CServerExoAppInternal::IncludeModuleInSave(const CExoString& sModule)
     }
     delete p2DA;
     return nIncludeInSave != 0;
+}
+int CServerExoAppInternal::AutoSaveOnEnteringModule(const CExoString& sModule,  // PC 0x004EB8D0
+                                                   C2DA* p2DA)
+{
+    CExoString sAutoSaveOnEnter;
+    int bAutoSave;
+
+    if (!p2DA->GetCExoStringEntry(sModule, "AutoSaveOnEnter", &sAutoSaveOnEnter))
+    {
+        m_nAutoSaveElapsedTime = 0;
+        m_bAutoSaveTimerExpired = 0;
+        return 1;
+    }
+
+    if (sAutoSaveOnEnter.CompareNoCase("force"))
+        bAutoSave = 1;
+    else if (sAutoSaveOnEnter.CompareNoCase("no"))
+        bAutoSave = 0;
+    else
+    {
+        if (m_bAutoSaveTimerExpired == 0)
+            return 0;
+
+        if (sAutoSaveOnEnter.CompareNoCase("yes"))
+            bAutoSave = GetClientExoApp()->GetClientOptions()->m_bAutoSave;
+        else
+            bAutoSave = 1;
+    }
+
+    if (bAutoSave != 0)
+    {
+        m_nAutoSaveElapsedTime = 0;
+        m_bAutoSaveTimerExpired = 0;
+    }
+    return bAutoSave;
 }
 // PC 0x004EBA20
 int CServerExoAppInternal::ShrinkLineByCreatures(const Vector& vStart,
@@ -4481,6 +2403,100 @@ void CServerExoAppInternal::DoModuleEnterSaveCleanup(const CExoString& sModule,
         }
     }
 }
+// PC 0x004EBD80
+int CServerExoAppInternal::GetModulePreviouslyVisited(const CExoString& sModule)
+{
+    if (sModule.GetLength() < 1)
+    {
+        return 1;
+    }
+
+    CExoString sModuleFile;
+    CExoString sModulePath;
+    unsigned short nModuleType = RESTYPE_INVALID;
+    int bPreviouslyVisited = 0;
+
+    if (IncludeModuleInSave(sModule))
+    {
+        g_pAppManager->GetServerExoApp()->GetPartyTable()->AddGameInProgress();
+        if (g_pExoResMan->Exists(sModule, RESTYPE_RSV, (unsigned long*)NULL))
+        {
+            nModuleType = RESTYPE_RSV;
+            bPreviouslyVisited = 1;
+        }
+        else if (g_pExoResMan->Exists(sModule, RESTYPE_SAV, (unsigned long*)NULL))
+        {
+            nModuleType = RESTYPE_SAV;
+            bPreviouslyVisited = 1;
+        }
+        g_pAppManager->GetServerExoApp()->GetPartyTable()->RemoveGameInProgress();
+    }
+
+    if (nModuleType == RESTYPE_INVALID)
+    {
+        g_pExoResMan->AddResourceDirectory("NWMFILES:");
+        if (g_pExoResMan->Exists(sModule, RESTYPE_NWM, (unsigned long*)NULL))
+        {
+            nModuleType = RESTYPE_NWM;
+            bPreviouslyVisited = 0;
+        }
+        g_pExoResMan->RemoveResourceDirectory("NWMFILES:");
+    }
+
+    if (nModuleType == RESTYPE_INVALID)
+    {
+        g_pExoResMan->AddResourceDirectory("MODULES:");
+        if (g_pExoResMan->Exists(sModule, RESTYPE_MOD, (unsigned long*)NULL))
+        {
+            nModuleType = RESTYPE_MOD;
+            bPreviouslyVisited = 0;
+        }
+        else if (g_pExoResMan->Exists(sModule, RESTYPE_RIM, (unsigned long*)NULL))
+        {
+            nModuleType = RESTYPE_RIM;
+            bPreviouslyVisited = 0;
+        }
+        g_pExoResMan->RemoveResourceDirectory("MODULES:");
+    }
+
+    if (nModuleType == RESTYPE_INVALID)
+    {
+        CExoString sDirectory;
+        for (int nContentPackage = 1; nContentPackage < CTlkTable::NUM_CONTENT_PKGS;
+             ++nContentPackage)
+        {
+            sDirectory.Format("LIVE%d", nContentPackage);
+            if (g_pExoBase->m_pExoAliasList->GetAliasPath(sDirectory, 0).GetLength())
+            {
+                sDirectory = sDirectory + ":MODULES";
+                g_pExoResMan->AddResourceDirectory(sDirectory);
+                if (g_pExoResMan->Exists(sModule, RESTYPE_MOD, (unsigned long*)NULL))
+                {
+                    nModuleType = RESTYPE_MOD;
+                    bPreviouslyVisited = 0;
+                }
+                else if (nModuleType == RESTYPE_INVALID
+                         && g_pExoResMan->Exists(sModule, RESTYPE_RIM,
+                                               (unsigned long*)NULL))
+                {
+                    nModuleType = RESTYPE_RIM;
+                    bPreviouslyVisited = 0;
+                }
+                g_pExoResMan->RemoveResourceDirectory(sDirectory);
+                if (nModuleType != RESTYPE_INVALID)
+                {
+                    break;
+                }
+            }
+        }
+    }
+    g_pExoInput->UnpauseRumble();
+    if (nModuleType == RESTYPE_INVALID)
+    {
+        return 0;
+    }
+    return bPreviouslyVisited;
+}
 // PC 0x004EC1E0
 int CServerExoAppInternal::HasEnoughDiskSpaceForSaveGame()
 {
@@ -4626,35 +2642,6 @@ int CServerExoAppInternal::DebugValidatePath_Segment(
 void CServerExoAppInternal::RunDeathSequence()
 {
     g_pAppManager->GetClientExoApp()->RunDeathSequence();
-}
-
-static inline CServerExoApp* GetServerExoApp()
-{
-    return g_pAppManager->m_pServerExoApp;
-}
-
-static inline CClientExoApp* GetClientExoApp()
-{
-    return g_pAppManager->m_pClientExoApp;
-}
-
-static inline CSWReentrantServerStats* GetReentrantServerStats()
-{
-    return g_pAppManager->m_pReentrantServerStats;
-}
-
-static inline unsigned __int64 GetHighResolutionTimer()
-{
-    return g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
-}
-
-static inline void ServerExoAppInternalTrace2()
-{
-    ServerExoAppTrace();
-}
-
-static inline void ServerExoAppTrace(CServerExoApp*)
-{
 }
 
 #ifdef _XBOX
@@ -5578,3 +3565,2015 @@ int CServerExoAppInternal::DebugValidatePath_Segment(
     return bValid;
 }
 #endif
+// PC 0x004EE510
+void CServerExoAppInternal::UpdateClientGameObjects(int bFlag)
+{
+    unsigned __int64 nTime;
+    CExoLinkedListNode* pNode;
+    CSWSPlayer* pPlayer;
+
+    nTime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
+    pNode = m_pPlayerList->GetHeadPos();
+    while (pNode != NULL)
+    {
+        pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pNode);
+        UpdateClientGameObjectsForPlayer(pPlayer, bFlag, nTime);
+        m_pPlayerList->GetNext(pNode);
+    }
+}
+// PC 0x004EE580
+int CServerExoAppInternal::GetPlayerLanguage(unsigned long nPlayerId)
+{
+    CExoLinkedListNode* pNode;
+    CSWSPlayer* pPlayer;
+
+    pNode = m_pPlayerList->GetHeadPos();
+    while (pNode != NULL)
+    {
+        pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pNode);
+        if (pPlayer != NULL && pPlayer->m_nPlayerId == nPlayerId)
+        {
+            return pPlayer->m_nLanguage;
+        }
+        m_pPlayerList->GetNext(pNode);
+    }
+    return 0;
+}
+// PC 0x004EE5F0
+CExoString CServerExoAppInternal::GetPlayerListString()
+{
+    CExoString sList;
+    CExoString sPlayerName;
+    CExoLinkedListNode* pNode;
+    CSWSPlayer* pPlayer;
+    int nCount;
+    CNetLayerPlayerInfo* pPlayerInfo;
+    unsigned long nPlayerId;
+    CServerExoApp* pServer;
+
+    nCount = m_pSysAdminList->Count();
+    sList = sList + "ServerAdmins: " + nCount;
+    pNode = m_pSysAdminList->GetHeadPos();
+    while (pNode != NULL)
+    {
+        pPlayer = (CSWSPlayer*)m_pSysAdminList->GetAtPos(pNode);
+        pServer = g_pAppManager->m_pServerExoApp;
+        nPlayerId = pPlayer->m_nPlayerId;
+        pPlayerInfo = pServer->GetNetLayer()
+            ->GetPlayerInfo(nPlayerId);
+        sPlayerName = pPlayerInfo->m_sPlayerName.CStr();
+        sList = sList + "\n" + sPlayerName;
+        sList = sList + " [ServerAdmin]";
+        m_pSysAdminList->GetNext(pNode);
+    }
+    sList = sList + "\n";
+    nCount = m_pPlayerList->Count();
+    sList = sList + "Players: " + nCount;
+    pNode = m_pPlayerList->GetHeadPos();
+    while (pNode != NULL)
+    {
+        pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pNode);
+        pServer = g_pAppManager->m_pServerExoApp;
+        nPlayerId = pPlayer->m_nPlayerId;
+        pPlayerInfo = pServer->GetNetLayer()
+            ->GetPlayerInfo(nPlayerId);
+        sPlayerName = pPlayerInfo->m_sPlayerName.CStr();
+        sList = sList + "\n" + sPlayerName;
+        sList = sList + " [Player]";
+        m_pPlayerList->GetNext(pNode);
+    }
+    sList = sList + "\n";
+    int nAdminCount = m_pSysAdminList->Count();
+    int nPlayerCount = m_pPlayerList->Count();
+    sList = sList + "Total: " + (nPlayerCount + nAdminCount);
+    return sList;
+}
+// PC 0x004EEB60
+void CServerExoAppInternal::AddToExclusionList(unsigned long oidObject,
+                                              unsigned char nType)
+{
+    CExoLinkedListNode* pNode;
+
+    if (nType == 0)
+    {
+        return;
+    }
+    if ((nType & PAUSE_TYPE_COMBAT_MASK) != 0)
+    {
+        pNode = m_pTimestopExclusionList->GetHeadPos();
+        while (pNode != NULL)
+        {
+            if ((unsigned long)m_pTimestopExclusionList->GetAtPos(pNode) ==
+                oidObject)
+            {
+                return;
+            }
+            m_pTimestopExclusionList->GetNext(pNode);
+        }
+        m_pTimestopExclusionList->AddTail((unsigned long*)oidObject);
+    }
+    else if ((nType & PAUSE_TYPE_PAUSED_MASK) != 0)
+    {
+        pNode = m_pPauseExclusionList->GetHeadPos();
+        while (pNode != NULL)
+        {
+            if ((unsigned long)m_pPauseExclusionList->GetAtPos(pNode) == oidObject)
+            {
+                return;
+            }
+            m_pPauseExclusionList->GetNext(pNode);
+        }
+        m_pPauseExclusionList->AddTail((unsigned long*)oidObject);
+    }
+}
+// PC 0x004EEC30
+void CServerExoAppInternal::RemoveFromExclusionList(unsigned long oidObject,
+                                                   unsigned char nType)
+{
+    CExoLinkedListNode* pNode;
+
+    if (nType == 0)
+    {
+        return;
+    }
+    if ((nType & PAUSE_TYPE_PAUSED_MASK) != 0)
+    {
+        pNode = m_pPauseExclusionList->GetHeadPos();
+        while (pNode != NULL)
+        {
+            if ((unsigned long)m_pPauseExclusionList->GetAtPos(pNode) == oidObject)
+            {
+                m_pPauseExclusionList->Remove(pNode);
+                return;
+            }
+            m_pPauseExclusionList->GetNext(pNode);
+        }
+    }
+    else if ((nType & PAUSE_TYPE_COMBAT_MASK) != 0)
+    {
+        pNode = m_pTimestopExclusionList->GetHeadPos();
+        while (pNode != NULL)
+        {
+            if ((unsigned long)m_pTimestopExclusionList->GetAtPos(pNode) ==
+                oidObject)
+            {
+                m_pTimestopExclusionList->Remove(pNode);
+                return;
+            }
+            m_pTimestopExclusionList->GetNext(pNode);
+        }
+    }
+}
+// PC 0x004EED10
+int CServerExoAppInternal::IsOnActiveExclusionList(unsigned long oidObject)
+{
+    CExoLinkedList<unsigned long>* pList = GetActiveExclusionList();
+    CExoLinkedListNode* pNode;
+
+    if (pList == NULL)
+    {
+        return 1;
+    }
+    pNode = pList->GetHeadPos();
+    while (pNode != NULL)
+    {
+        if ((unsigned long)pList->GetAtPos(pNode) == oidObject)
+        {
+            return 1;
+        }
+        pList->GetNext(pNode);
+    }
+    return 0;
+}
+// PC 0x004EED90
+int CServerExoAppInternal::ResolvePlayerByFirstName(const CExoString& sFirstName)
+{
+    CExoString sPlayerName;
+    CExoLinkedListNode* pNode;
+    CSWSPlayer* pPlayer;
+    CSWSObject* pObject;
+    CSWSCreature* pCreature;
+    unsigned long nPlayerId;
+
+    pNode = m_pPlayerList->GetHeadPos();
+    while (pNode != NULL)
+    {
+        pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pNode);
+        if (pPlayer != NULL)
+        {
+            pObject = pPlayer->GetGameObject();
+            if (pObject != NULL)
+            {
+                pCreature = pObject->AsSWSCreature();
+                if (pCreature != NULL)
+                {
+                    CSWSMessage::GetLocStringServer(
+                        nPlayerId = pPlayer->m_nPlayerId, *pCreature->GetFirstName(),
+                        CExoLocString(), sPlayerName, 0);
+                    if (sPlayerName == sFirstName)
+                    {
+                        return pPlayer->m_nPlayerId;
+                    }
+                }
+            }
+        }
+        m_pPlayerList->GetNext(pNode);
+    }
+    return CGameObjectArray::INVALIDOBJID;
+}
+// PC 0x004EEEE0
+int CServerExoAppInternal::UpdateShutdownTimer(unsigned __int64 nTime)
+{
+    if (m_nShutdownTimeout == 0)
+    {
+        return 0;
+    }
+
+    if (nTime - m_nShutdownStartTime > m_nShutdownTimeout)
+    {
+        m_nShutdownTimeout = 0;
+        return 1;
+    }
+
+    if ((m_nShutdownTimeout > SHUTDOWN_FIRST_WARNING_TIME &&
+         m_nShutdownTimeout - (nTime - m_nShutdownStartTime) < SHUTDOWN_FIRST_WARNING_TIME) ||
+        (m_nShutdownTimeout > SHUTDOWN_SECOND_WARNING_TIME &&
+         m_nShutdownTimeout - (nTime - m_nShutdownStartTime) < SHUTDOWN_SECOND_WARNING_TIME))
+    {
+        for (int nPlayer = 0; nPlayer < m_lstPendingPlayers.num; nPlayer++)
+        {
+            m_pSWSMessage->SendServerToPlayerShutDownServer(
+                m_lstPendingPlayers[nPlayer],
+                (unsigned long)((m_nShutdownTimeout - (nTime - m_nShutdownStartTime)) /
+                                SHUTDOWN_MICROSECONDS_PER_SECOND));
+        }
+    }
+
+    m_nShutdownTimeout -= nTime - m_nShutdownStartTime;
+    m_nShutdownStartTime = nTime;
+    return 0;
+}
+// PC 0x004EF080
+int CServerExoAppInternal::GetFirstPCObject()
+{
+    CSWSPlayer* pPlayer;
+
+    m_pPCListPosition = m_pPlayerList->GetHeadPos();
+    if (m_pPCListPosition != NULL)
+    {
+        pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(m_pPCListPosition);
+        if (pPlayer != NULL)
+        {
+            return pPlayer->m_oidPCObject;
+        }
+    }
+    return CGameObjectArray::INVALIDOBJID;
+}
+
+int CServerExoAppInternal::GetNextPCObject()
+{
+    CSWSPlayer* pPlayer;
+
+    if (m_pPCListPosition != NULL)
+    {
+        pPlayer = (CSWSPlayer*)m_pPlayerList->GetNext(m_pPCListPosition);
+        if (pPlayer != NULL)
+        {
+            return pPlayer->m_oidPCObject;
+        }
+    }
+    return CGameObjectArray::INVALIDOBJID;
+}
+// PC 0x004EF0B0
+int CServerExoAppInternal::IsActionsPending(unsigned long oidObject)
+{
+    unsigned long oidNormalized;
+
+    if (oidObject != OBJECT_INVALID)
+    {
+        oidNormalized = oidObject & ~CGameObjectArray::LISTTYPE_MASK;
+    }
+    else
+    {
+        oidNormalized = OBJECT_INVALID;
+    }
+
+    CSWSCreature* pCreature = GetCreatureByGameObjectID(oidNormalized);
+
+    if (pCreature != NULL)
+    {
+        return pCreature->m_lstActions.GetHeadPos() != NULL;
+    }
+    return 0;
+}
+// PC 0x004EF130
+void CServerExoAppInternal::TempDeathUpdate()
+{
+    SERVEREXOAPPINTERNAL_HOOK();
+    if (g_pAppManager->GetClientExoApp()->GetGameOver() ||
+        g_pAppManager->GetClientExoApp()->GetAreaNotReadyToDisplay())
+    {
+        return;
+    }
+    int nModalPanels = g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_lModalPanels.num;
+    if (nModalPanels > 0)
+    {
+        return;
+    }
+
+    unsigned long nTime = (unsigned long)(
+        g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
+    unsigned long nElapsed = nTime - m_nLastTempDeathUpdate;
+    m_nLastTempDeathUpdate = nTime;
+    int bAllDead = 1;
+    int bAnyDead = 0;
+    int bSafe = 1;
+    int nCharacters = g_pAppManager->GetClientExoApp()->GetSWParty()->m_nCharacters;
+    CSWSCreature* pCreature;
+    for (int nMember = 0; nMember < nCharacters; ++nMember)
+    {
+        CSWCCreature* pCharacter =
+            g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nMember);
+        if (pCharacter != NULL)
+        {
+            pCreature = pCharacter->GetServerCreature();
+            if (pCreature != NULL && pCreature->GetDeadTemp())
+            {
+                bAnyDead = 1;
+                bAllDead &= 1;
+            }
+            else
+            {
+                bAllDead = 0;
+            }
+        }
+    }
+    if (bAllDead && nCharacters != 0)
+    {
+        RunDeathSequence();
+    }
+    if (bAnyDead)
+    {
+        m_nTempDeathCheckElapsed += nElapsed;
+        if (m_nTempDeathCheckElapsed > TEMP_DEATH_CHECK_INTERVAL)
+        {
+            m_nTempDeathCheckElapsed = 0;
+            CSWSArea* pArea = pCreature->GetArea();
+            CGameObjectArray* pObjectArray =
+                g_pAppManager->GetServerExoApp()->GetObjectArray();
+            if (pArea != NULL && pObjectArray != NULL)
+            {
+                unsigned long oidObject;
+                CGameObject* pObject;
+                pArea->GetFirstObjectInArea(oidObject);
+                do
+                {
+                    pObjectArray->GetGameObject(oidObject, &pObject);
+                    if (pObject != NULL && pObject->AsSWSCreature() != NULL &&
+                        pObject->AsSWSCreature()->m_bInParty == 0)
+                    {
+                        CSWSCreature* pOther = pObject->AsSWSCreature();
+                        if (pOther->GetReputation(pCreature->GetId(), 0) <=
+                                CSWSObject::MAX_HOSTILE_REPUTATION &&
+                            pOther->IsPartyVisible())
+                        {
+                            bSafe = 0;
+                        }
+                    }
+                } while (pArea->GetNextObjectInArea(oidObject) && bSafe);
+            }
+        }
+    }
+    if (bAnyDead && bSafe)
+    {
+        m_nTempDeathRecoveryElapsed += nElapsed;
+    }
+    else
+    {
+        m_nTempDeathRecoveryElapsed = 0;
+    }
+
+    if (m_nTempDeathRecoveryElapsed > TEMP_DEATH_RECOVERY_DELAY)
+    {
+        Vector vLeader = g_pAppManager->GetClientExoApp()->GetSWParty()
+            ->GetCharacter(0)->GetServerCreature()->m_vPosition;
+        for (int nMember = 0; nMember < nCharacters; ++nMember)
+        {
+            CSWSCreature* pMember = g_pAppManager->GetClientExoApp()->GetSWParty()
+                ->GetCharacter(nMember)->GetServerCreature();
+            if (pMember != NULL)
+            {
+                if (pMember->GetDeadTemp())
+                {
+                    Vector vPosition = pMember->m_vPosition;
+                    g_pAppManager->GetServerExoApp()->ComputeSafeLocation(
+                        vPosition, SERVER_TEMP_DEATH_SAFE_RADIUS,
+                        pMember->GetId(), 0, &vPosition);
+                    pMember->SetPosition(vPosition, 1, 1, 0);
+                    CGameEffect* pEffect = new CGameEffect(1);
+                    pEffect->m_nType = CSWSEffectListHandler::EFFECT_RESURRECTION;
+                    pEffect->m_nSubType = CGameEffect::DURATION_TYPE_INSTANTANEOUS |
+                        (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK);
+                    pMember->ApplyEffect(pEffect, 0, 0);
+                    pMember->m_nF0 = 1;
+                }
+                if (g_pAppManager->GetServerExoApp()->GetPartyTable()->m_bSoloMode == 0)
+                {
+                    Vector vDistance = pMember->m_vPosition - vLeader;
+                    if (vDistance * vDistance > SERVER_TEMP_DEATH_MAX_DISTANCE_SQUARED)
+                    {
+#ifdef _XBOX
+                        CSWParty* pMemberParty = g_pAppManager->GetClientExoApp()->GetSWParty();
+                        EXOXBOXASSERT(nMember >= 0 && nMember < 3);
+                        Vector vPosition = pMemberParty
+                            ->m_aPartyMemberData[nMember].m_vFormationPosition;
+#else
+                        Vector vPosition = g_pAppManager->GetClientExoApp()->GetSWParty()
+                            ->m_aPartyMemberData[nMember].m_vFormationPosition;
+#endif
+                        g_pAppManager->GetServerExoApp()->ComputeSafeLocation(
+                            vPosition, SERVER_TEMP_DEATH_SAFE_RADIUS,
+                            pMember->GetId(), 0, &vPosition);
+                        pMember->SetPosition(vPosition, 1, 1, 0);
+                    }
+                }
+            }
+        }
+    }
+}
+// PC 0x0040FAD0
+template <> inline CExoArrayList<CExoString>::CExoArrayList(const CExoArrayList<CExoString>& list)
+{
+    num = 0;
+    array_size = 0;
+    element = NULL;
+    for (int i = 0; i < list.num; i++)
+    {
+        Add(list[i]);
+    }
+}
+
+#ifndef _XBOX
+template <> inline void CExoArrayList<CExoString>::Add(CExoString value)  // PC 0x00405A30
+{
+    if (num == array_size)
+    {
+        Allocate(array_size != 0 ? array_size * 2 : EXOARRAYLIST_INITIAL_ALLOCATION);
+    }
+    element[num++] = value;
+}
+#endif
+// PC 0x004EF5C0
+void CServerExoAppInternal::ForceRunAreaOnExitScripts()
+{
+    CExoLinkedListNode* pNode;
+    CSWSPlayer* pPlayer;
+    CSWSObject* pObject;
+    CSWSCreature* pCreature;
+    CSWSArea* pArea;
+
+    pNode = m_pPlayerList->GetHeadPos();
+    while (pNode != NULL)
+    {
+        pPlayer = m_pPlayerList->GetAtPos(pNode)->AsSWSPlayer();
+        if (pPlayer != NULL)
+        {
+            pObject = pPlayer->GetGameObject();
+            if (pObject != NULL)
+            {
+                pCreature = pObject->AsSWSCreature();
+                if (pCreature != NULL)
+                {
+                    pArea = ((CSWSObject*)pCreature)->GetArea();
+                    if (pArea != NULL)
+                    {
+                        pArea->m_oidExitingObject =
+                            ((CSWSObject*)pCreature)->m_nId;
+                        g_pVirtualMachine->RunScript(&pArea->m_sScripts[CSWSArea::SCRIPT_ON_EXIT],
+                                                     pArea->m_nId, 1);
+                    }
+                }
+            }
+        }
+        m_pPlayerList->GetNext(pNode);
+    }
+}
+// PC 0x004EF6A0
+CServerExoAppInternal::CServerExoAppInternal()
+{
+    unsigned long nOption;
+
+    m_nShutdownTimeout = 0;
+    m_nDebugMode = 0;
+    m_pServerInfo = NULL;
+    m_nServerMode = 0;
+    m_oidModule = CGameObjectArray::INVALIDOBJID;
+    m_pPlayerList = new CExoLinkedList<CSWSClient>;
+    m_pSysAdminList = new CExoLinkedList<CSWSClient>;
+    m_bForceUpdate = 0;
+    m_pSWSMessage = NULL;
+    EXOXBOXASSERT(s_pServerExoAppInternal == NULL);
+    s_pServerExoAppInternal = this;
+
+    m_pServerOptions = new unsigned long[16];
+    for (nOption = 0; nOption < 16; nOption++)
+    {
+        m_pServerOptions[nOption] = CNetLayer::PLAYERID_INVALIDID;
+    }
+
+    m_PauseState.m_nPauseState = 0;
+    m_bDoingStartNewModule = 0;
+    m_bMoveToModulePending = 0;
+    m_sMoveToModule = "";
+    m_bLoadingModule = 0;
+    m_bAutoSavePending = 0;
+    m_bExportAllCharactersPending = 0;
+    m_bNeedCharacterPending = 0;
+    m_pTimestopExclusionList = new CExoLinkedList<unsigned long>;
+    m_pPauseExclusionList = new CExoLinkedList<unsigned long>;
+    m_nEstimatedSaveSize = 0;
+    m_pPCListPosition = NULL;
+    m_sLastConversation = "";
+    m_nActionConversation = 0;
+    m_bIgnoreConversationStartRange = 0;
+    m_bLoadFromSaveGame = 0;
+    m_bButtonMashCheck = 0;
+    m_oidLastModuleFound = OBJECT_INVALID;
+    m_pLastModuleFound = NULL;
+    m_oidAreaCache = OBJECT_INVALID;
+    m_pAreaCache = NULL;
+    m_nMoveToPausedCalendarDay = 0;
+    m_nMoveToPausedTimeOfDay = 0;
+    m_nAutoSaveElapsedTime = 0;
+    m_nAutoSaveCalendarDay = 0;
+    m_nAutoSaveTimeOfDay = 0;
+    m_bAutoSaveTimerExpired = 0;
+    m_nAutoSaveLastTime = 0;
+#ifndef _XBOX
+    m_sSaveGameName = "";
+#endif
+}
+
+void CServerExoAppInternal::SendStartStallEvent(unsigned long nEvent)
+{
+    CSWSMessage* pMessage = GetServerExoApp()->GetSWSMessage();
+    pMessage->SendServerToPlayerLoadBar_StartStallEvent(nEvent);
+}
+// PC 0x004EF960
+int CServerExoAppInternal::LoadCharacterStart(
+    unsigned char nType, CSWSPlayer* pPlayer, CResRef cResRef,
+    void* pData, unsigned long nSize)
+{
+    SERVEREXOAPPINTERNAL_HOOK();
+    CSWSModule* pModule = g_pAppManager->GetServerExoApp()->GetModule();
+    CExoString sPlayerName;
+    CExoArrayList<CExoString> lstDirectories;
+    CExoString sDirectory;
+
+    if (nType == CSWSMessage::LOGIN_SERVER_CHARACTER)
+    {
+        if (pPlayer->GetGameObject() == NULL)
+        {
+            pPlayer->LoadServerCharacter(cResRef);
+        }
+    }
+    else if (nType == CSWSMessage::LOGIN_MODULE_CHARACTER)
+    {
+        if (pPlayer->GetGameObject() == NULL)
+        {
+            CExoString sPlayerIndex;
+            cResRef.CopyToString(sPlayerIndex);
+            pPlayer->LoadCharacterFromIFO(sPlayerIndex.AsINT(), 0, 1);
+        }
+    }
+    else if (nType == CSWSMessage::LOGIN_SERVER_PLAYER_CHARACTER)
+    {
+        if (pPlayer->GetGameObject() == NULL)
+        {
+            sPlayerName = pPlayer->GetPlayerName();
+            g_pExoBase->GetDirectoryList(&lstDirectories, "SERVERVAULT:",
+                                         RESTYPE_INVALID, 1, 0);
+            if (lstDirectories.Contains(sPlayerName))
+            {
+                sDirectory.Format("SERVERVAULT:%s", sPlayerName.CStr());
+                g_pExoResMan->AddResourceDirectory(sDirectory);
+                pPlayer->LoadServerCharacter(cResRef);
+                pPlayer->m_nCharacterType = CHARACTER_TYPE_SERVER_PLAYER;
+                g_pExoResMan->RemoveResourceDirectory(sDirectory);
+            }
+        }
+    }
+    else if (nType == CSWSMessage::LOGIN_DEFAULT_MODULE_CHARACTER)
+    {
+        pPlayer->LoadCharacterFromIFO(-1, 1, 1);
+        m_partyTable.CreateParty();
+
+    }
+    else
+    {
+        if (pPlayer->GetGameObject() == NULL)
+        {
+            CExoFile* pFile = new CExoFile("TEMP:temp_char", RESTYPE_BIC, "wb");
+            if (pFile == NULL)
+            {
+                return 0;
+            }
+            if (!pFile->FileOpened())
+            {
+                delete pFile;
+                return 0;
+            }
+            pFile->Write(pData, 1, nSize);
+            delete pFile;
+
+            CExoString sTempDirectory = "TEMP:";
+            g_pExoResMan->AddResourceDirectory(sTempDirectory);
+            if (nType == CSWSMessage::LOGIN_LOCAL_CHARACTER ||
+                nType == CSWSMessage::LOGIN_LOCAL_CHARACTER_DATA)
+            {
+                pPlayer->LoadLocalCharacter();
+            }
+            g_pExoResMan->RemoveResourceDirectory(sTempDirectory);
+            g_pExoResMan->CleanDirectory(sTempDirectory, 0, 0);
+            m_partyTable.CreateParty();
+        }
+    }
+
+    if (nType != CSWSMessage::LOGIN_DEFAULT_MODULE_CHARACTER &&
+        pModule->m_bIsSaveGame && nType != CSWSMessage::LOGIN_MODULE_CHARACTER)
+    {
+        int nPlayerIndex = pModule->GetPlayerIndexInPlayerList(pPlayer);
+        if (nPlayerIndex != -1)
+        {
+            pPlayer->m_nModulePlayerIndex = nPlayerIndex;
+            SendCharacterQuery(pPlayer);
+        }
+        else
+        {
+            LoadCharacterFinish(pPlayer, 0);
+        }
+    }
+    else
+    {
+        LoadCharacterFinish(pPlayer, 0);
+    }
+    return 1;
+}
+// PC 0x004EFDF0
+inline void CServerExoAppInternal::SetEstimatedSaveSize(
+    const CExoString& sModuleName, unsigned short nModuleType)
+{
+#ifdef _XBOX
+    CExoString sModule;
+    sModule = sModuleName;
+    CExoFile cFile(sModule, nModuleType, "rb");
+    if (!cFile.FileOpened())
+    {
+        m_nEstimatedSaveSize = 50000000;
+    }
+    else if (nModuleType == RESTYPE_SAV || nModuleType == RESTYPE_RSV || nModuleType == RESTYPE_RIM)
+    {
+        m_nEstimatedSaveSize = cFile.GetSize() * 3 / 2;
+    }
+    else if (nModuleType == RESTYPE_MOD || nModuleType == RESTYPE_NWM)
+    {
+        m_nEstimatedSaveSize = cFile.GetSize() * 2;
+    }
+#else
+    CExoArrayList<CExoString> lstFiles;
+    CExoString sModule;
+    unsigned long nSaveSize = 0;
+
+    g_pExoBase->GetDirectoryList(&lstFiles, "GAMEINPROGRESS:",
+                                RESTYPE_INVALID, 0, 0);
+    int nFiles = lstFiles.num;
+    if (nFiles == 0)
+    {
+        m_nEstimatedSaveSize = DEFAULT_SAVE_SIZE;
+    }
+    else
+    {
+        CExoString sFileName;
+        CExoString sPath;
+        CExoString sExtension;
+        for (int i = 0; i < nFiles; i++)
+        {
+            sFileName = lstFiles[i];
+            sPath = CExoString("GAMEINPROGRESS:") +
+                    sFileName.Left(sFileName.GetLength() - 4);
+            sExtension = sFileName.Right(3);
+            CExoFile file(sPath, g_pExoBase->GetResTypeFromExtension(sExtension),
+                          "rb");
+            if (!file.FileOpened())
+            {
+                nSaveSize += DEFAULT_MODULE_SAVE_SIZE;
+            }
+            else
+            {
+                nSaveSize += file.GetSize();
+            }
+        }
+
+        if (nModuleType != RESTYPE_RSV && nModuleType != RESTYPE_SAV)
+        {
+            nSaveSize += DEFAULT_MODULE_SAVE_SIZE;
+        }
+        m_nEstimatedSaveSize = nSaveSize * 10 / 9;
+    }
+#endif
+}
+
+inline void CServerExoAppInternal::SendExitingStartNewModuleMessage(
+    int bSuccess)
+{
+    CSWSMessage* pMessage = GetServerExoApp()->GetSWSMessage();
+    pMessage->SendServerToPlayerModule_EndStartNewModule(bSuccess);
+    m_bDoingStartNewModule = 0;
+}
+// PC 0x004F00E0
+void CServerExoAppInternal::Shutdown(int bExit, int bSave)
+{
+    SERVEREXOAPPINTERNAL_HOOK();
+    int nPVP = m_pServerInfo->m_nPVP;
+    m_lstPendingPlayers.SetSize(0);
+    CExoLinkedListNode* pPosition = m_pPlayerList->GetHeadPos();
+
+    if (nPVP && bExit)
+    {
+        while (pPosition != NULL)
+        {
+            CSWSPlayer* pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pPosition);
+            if (pPlayer != NULL)
+            {
+                m_pSWSMessage->SendServerToPlayerShutDownServer(
+                    pPlayer->m_nPlayerId,
+                    m_nShutdownMessageDelay / SHUTDOWN_MESSAGE_TIME_UNIT);
+                m_lstPendingPlayers.Add(pPlayer->m_nPlayerId);
+            }
+            m_pPlayerList->GetNext(pPosition);
+        }
+    }
+    else
+    {
+        int nAttempts = SHUTDOWN_CLIENT_LOOP_LIMIT;
+        while (pPosition != NULL && --nAttempts > 0)
+        {
+            CSWSPlayer* pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pPosition);
+            if (pPlayer != NULL)
+            {
+                if (bSave)
+                {
+                    m_lstPendingPlayers.Add(pPlayer->m_nPlayerId);
+                    m_pPlayerList->GetNext(pPosition);
+                }
+                else
+                {
+                    pPosition = m_pPlayerList->GetHeadPos();
+                }
+            }
+            else
+            {
+                m_pPlayerList->GetNext(pPosition);
+            }
+        }
+    }
+
+    pPosition = m_pSysAdminList->GetHeadPos();
+    int nAttempts = SHUTDOWN_CLIENT_LOOP_LIMIT;
+    while (pPosition != NULL && --nAttempts > 0)
+    {
+        CSWSClient* pClient = m_pSysAdminList->GetAtPos(pPosition);
+        if (pClient != NULL)
+        {
+            unsigned long nPlayerId = pClient->m_nPlayerId;
+            if (!m_lstPendingPlayers.Contains(nPlayerId))
+            {
+                pPosition = m_pSysAdminList->GetHeadPos();
+            }
+            else
+            {
+                m_pSysAdminList->GetNext(pPosition);
+            }
+        }
+        else
+        {
+            m_pSysAdminList->GetNext(pPosition);
+        }
+    }
+
+    if (nPVP && bExit && m_lstPendingPlayers.num != 0)
+    {
+        m_nShutdownStartTime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
+        m_nShutdownTimeout = SHUTDOWN_REPLY_TIMEOUT;
+    }
+    else
+    {
+        m_nShutdownStartTime = g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
+        m_nShutdownTimeout = SHUTDOWN_IMMEDIATE_TIMEOUT;
+    }
+}
+// PC 0x004F0360
+CWorldTimer* CServerExoAppInternal::GetActiveTimer(unsigned long oidObject)
+{
+    if (oidObject != OBJECT_INVALID && GetActivePauseState() > 0)
+    {
+        if (GetActivePauseState() == PAUSE_STATE_COMBAT)
+        {
+            if (IsOnActiveExclusionList(oidObject) == 1)
+            {
+                return m_pPauseTimer;
+            }
+        }
+        else if (GetActivePauseState() == PAUSE_STATE_PAUSED)
+        {
+            if (IsOnActiveExclusionList(oidObject) == 1)
+            {
+                return m_pTimestopTimer;
+            }
+        }
+        else
+        {
+            return NULL;
+        }
+    }
+    return m_pWorldTimer;
+}
+// PC 0x004F03D0
+void CServerExoAppInternal::AddCharListRequest(unsigned long nPlayerId)
+{
+    m_lstCharListRequests.AddUnique(nPlayerId);
+}
+// PC 0x004F03E0
+void CServerExoAppInternal::UpdateSubareasOnMoveTo(unsigned long oidObject,
+                                                   const Vector& vFrom,
+                                                   const Vector& vTo)
+{
+    SERVEREXOAPPINTERNAL_HOOK();
+    unsigned long oidNormalized;
+    CGameObject* pObject;
+    CSWSCreature* pCreature;
+    CSWSArea* pArea;
+
+    pObject = NULL;
+    if (oidObject != OBJECT_INVALID)
+    {
+        oidNormalized = oidObject & ~CGameObjectArray::LISTTYPE_MASK;
+    }
+    else
+    {
+        oidNormalized = OBJECT_INVALID;
+    }
+    m_pObjectArray->GetGameObject(oidNormalized, &pObject);
+    if (pObject != NULL)
+    {
+        pCreature = pObject->AsSWSObject()->AsSWSCreature();
+        if (pCreature != NULL)
+        {
+            pArea = pCreature->GetArea();
+            if (pArea != NULL)
+            {
+                CExoArrayList<unsigned long> lstIntersectList;
+
+                pArea->IntersectingLineSegment(vFrom, vTo, &lstIntersectList);
+                pCreature->UpdateSubareasOnMoveTo(vFrom, vTo, 1,
+                                                  &lstIntersectList, 0);
+            }
+        }
+    }
+}
+// PC 0x004F04C0
+CServerExoAppInternal::~CServerExoAppInternal()
+{
+    if (m_pPlayerList != NULL)
+    {
+        while (!m_pPlayerList->IsEmpty())
+        {
+
+            delete m_pPlayerList->RemoveHead();
+        }
+        delete m_pPlayerList;
+    }
+    if (m_pSysAdminList != NULL)
+    {
+        while (!m_pSysAdminList->IsEmpty())
+        {
+            delete m_pSysAdminList->RemoveHead();
+        }
+        delete m_pSysAdminList;
+    }
+    if (m_pServerOptions != NULL)
+        delete[] m_pServerOptions;
+    delete m_pTimestopExclusionList;
+    m_pTimestopExclusionList = NULL;
+    delete m_pPauseExclusionList;
+    m_pPauseExclusionList = NULL;
+    EXOXBOXASSERT(s_pServerExoAppInternal == this);
+    s_pServerExoAppInternal = NULL;
+    g_pAppManager->GetObjectTableManager(CAppManager::OBJECT_TABLE_SERVER)
+        ->ClearAll();
+}
+// PC 0x004F0700
+void CServerExoAppInternal::PlayerListChange(unsigned long nPlayerId,
+                                           int bAdded, int bGuaranteed)
+{
+    CExoString sTimestamp;
+
+    g_pExoBase->m_pExoDebug->GetCurrentTimestamp(sTimestamp);
+    if (bAdded == 1)
+    {
+        CNetLayerPlayerInfo* pPlayerInfo = m_pNetLayer->GetPlayerInfo(nPlayerId);
+        CExoString sPlayerName(pPlayerInfo->m_sPlayerName);
+        EXOLOG("ADDING PLAYER : %d - %s\n", nPlayerId, sPlayerName.CStr());
+        pPlayerInfo = m_pNetLayer->GetPlayerInfo(nPlayerId);
+        if (pPlayerInfo->m_bAuthorized == 1)
+        {
+            CSWSSysAdmin* pAdmin = new CSWSSysAdmin(nPlayerId);
+            pAdmin->m_nLanguage = 0;
+            m_pSysAdminList->AddHead(pAdmin);
+            EXOLOG("%s Joined as Server Admin [%s]\n", sPlayerName.CStr(),
+                   sTimestamp.CStr());
+        }
+        pPlayerInfo = m_pNetLayer->GetPlayerInfo(nPlayerId);
+        if (pPlayerInfo->m_bPlayer == 1)
+        {
+            CSWSPlayer* pPlayer = new CSWSPlayer(nPlayerId);
+            pPlayer->m_nLanguage = 0;
+            m_pPlayerList->AddHead(pPlayer);
+            EXOLOG("%s Joined as Player [%s]\n", sPlayerName.CStr(),
+                   sTimestamp.CStr());
+        }
+        m_pSWSMessage->SendServerToServerAdminPlayerList(
+            CNetLayer::PLAYERID_ALL_SERVERADMINS);
+    }
+    else if (bAdded == 0)
+    {
+        CNetLayerPlayerInfo* pPlayerInfo = m_pNetLayer->GetPlayerInfo(nPlayerId);
+        CExoString sPlayerName(pPlayerInfo->m_sPlayerName);
+        int bShutdown = 0;
+        CExoLinkedListNode* pNode;
+
+        pPlayerInfo = m_pNetLayer->GetPlayerInfo(nPlayerId);
+        if (pPlayerInfo->m_bAuthorized == 1)
+        {
+            pNode = m_pSysAdminList->GetHeadPos();
+            while (pNode != NULL)
+            {
+                CSWSSysAdmin* pAdmin = (CSWSSysAdmin*)m_pSysAdminList->GetAtPos(pNode);
+                if (pAdmin->m_nPlayerId == nPlayerId)
+                {
+                    m_pSysAdminList->Remove(pNode);
+                    delete pAdmin;
+                    break;
+                }
+                m_pSysAdminList->GetNext(pNode);
+            }
+            EXOLOG("%s Left as a Server Admin [%s]\n", sPlayerName.CStr(),
+                   sTimestamp.CStr());
+        }
+        pPlayerInfo = m_pNetLayer->GetPlayerInfo(nPlayerId);
+        if (pPlayerInfo->m_bPlayer == 1)
+        {
+            pNode = m_pPlayerList->GetHeadPos();
+            while (pNode != NULL)
+            {
+                CSWSPlayer* pPlayer = (CSWSPlayer*)m_pPlayerList->GetAtPos(pNode);
+                if (pPlayer->m_nPlayerId == nPlayerId)
+                {
+                    if (m_pPCListPosition == pNode)
+                    {
+                        m_pPlayerList->GetNext(m_pPCListPosition);
+                    }
+                    m_pPlayerList->Remove(pNode);
+                    m_pSWSMessage->SendServerToPlayerPlayerList_Delete(
+                        CNetLayer::PLAYERID_ALL_PLAYERS, pPlayer);
+                    bShutdown = pPlayer->m_bIsAllowedToSave;
+                    delete pPlayer;
+                    break;
+                }
+                m_pPlayerList->GetNext(pNode);
+            }
+            g_pAppManager->GetObjectTableManager(CAppManager::OBJECT_TABLE_SERVER)
+                ->RemovePlayer(nPlayerId);
+            EXOLOG("%s Left as a Player [%s]\n", sPlayerName.CStr(),
+                   sTimestamp.CStr());
+            if (bShutdown)
+            {
+                Shutdown(1, 0);
+            }
+        }
+        if (m_lstPendingPlayers.Contains(nPlayerId))
+        {
+            m_lstPendingPlayers.Remove(nPlayerId);
+            if (m_lstPendingPlayers.num == 0)
+            {
+                m_nShutdownTimeout = SHUTDOWN_COMPLETE_TIMEOUT;
+            }
+        }
+    }
+}
+// PC 0x004F0A70
+void CServerExoAppInternal::StopServices()
+{
+    CExoString sTimestamp;
+
+    g_pExoBase->m_pExoDebug->GetCurrentTimestamp(sTimestamp);
+
+    EXOLOG("[%s] Server Shutting Down\n", sTimestamp.CStr());
+    Shutdown(0, 0);
+
+    if (m_pObjectArray != NULL)
+    {
+        delete m_pObjectArray;
+        m_pObjectArray = NULL;
+    }
+    if (m_pServerAIMaster != NULL)
+    {
+        delete m_pServerAIMaster;
+        m_pServerAIMaster = NULL;
+    }
+    if (m_pVirtualMachineCommands != NULL)
+    {
+        delete m_pVirtualMachineCommands;
+        m_pVirtualMachineCommands = NULL;
+    }
+    if (m_pSWSMessage != NULL)
+    {
+        delete m_pSWSMessage;
+        m_pSWSMessage = NULL;
+    }
+    if (m_pServerInfo != NULL)
+    {
+        delete m_pServerInfo;
+        m_pServerInfo = NULL;
+    }
+    if (m_pNetLayer != NULL)
+    {
+        m_pNetLayer->EndServerMode();
+        m_pNetLayer->ShutDown();
+        delete m_pNetLayer;
+        m_pNetLayer = NULL;
+    }
+    if (g_pVirtualMachine != NULL)
+    {
+        delete g_pVirtualMachine;
+        g_pVirtualMachine = NULL;
+    }
+    if (g_pScriptCompiler != NULL)
+    {
+        delete g_pScriptCompiler;
+        g_pScriptCompiler = NULL;
+    }
+
+    g_pExoResMan->NukeDirectory("TEMP:", 1, 1);
+    g_pExoResMan->NukeDirectory("CURRENTGAME:", 1, 1);
+    g_pExoResMan->NukeDirectory("GAMEINPROGRESS:", 1, 1);
+
+    if (g_nClientServerMode == CLIENT_SERVER_MODE_SERVER)
+    {
+        if (g_pRules != NULL)
+        {
+            delete g_pRules;
+            g_pRules = NULL;
+        }
+        g_pExoResMan->RemoveFixedKeyTableFile("HD0:chitin");
+        g_pExoResMan->RemoveResourceDirectory("OVERRIDE:");
+        g_pExoResMan->RemoveResourceDirectory("ERRORTEX:");
+        g_pExoResMan->RemoveResourceDirectory("SERVERVAULT:");
+        if (g_pTlkTable != NULL)
+        {
+            delete g_pTlkTable;
+            g_pTlkTable = NULL;
+        }
+        if (g_pExoResMan != NULL)
+        {
+            delete g_pExoResMan;
+            g_pExoResMan = NULL;
+        }
+    }
+
+    if (m_pWorldTimer != NULL)
+    {
+        delete m_pWorldTimer;
+        m_pWorldTimer = NULL;
+    }
+    if (m_pTimestopTimer != NULL)
+    {
+        delete m_pTimestopTimer;
+        m_pTimestopTimer = NULL;
+    }
+    if (m_pPauseTimer != NULL)
+    {
+        delete m_pPauseTimer;
+        m_pPauseTimer = NULL;
+    }
+    if (m_pFactionManager != NULL)
+    {
+        delete m_pFactionManager;
+        m_pFactionManager = NULL;
+    }
+}
+// PC 0x004F0E30
+void CServerExoAppInternal::ReprocessExclusionListActions(unsigned char nPauseType)
+{
+    CExoLinkedList<unsigned long>* pList;
+    CExoLinkedListNode* pNode;
+    unsigned long nCalendarDay;
+    unsigned long nTimeOfDay;
+    CGameObject* pObject;
+
+    if (nPauseType == PAUSE_TYPE_COMBAT_MASK)
+    {
+        pList = m_pTimestopExclusionList;
+    }
+    else
+    {
+        pList = m_pPauseExclusionList;
+    }
+
+    pNode = pList->GetHeadPos();
+    while (pNode != NULL)
+    {
+        unsigned long oidObject = (unsigned long)pList->GetAtPos(pNode);
+        GetActiveTimer(oidObject)->GetWorldTime(&nCalendarDay, &nTimeOfDay);
+        m_pObjectArray->GetGameObject(oidObject, &pObject);
+        if (pObject != NULL)
+        {
+            pObject->ResetUpdateTimes(nCalendarDay, nTimeOfDay);
+        }
+        pList->GetNext(pNode);
+    }
+}
+// PC 0x004F0F20
+void CServerExoAppInternal::SetPauseState(unsigned char nPauseType, int bPause)
+{
+    CSWSMessage* pMessage = m_pSWSMessage;
+    CWorldTimer* pTimer;
+
+    if (GetPauseState(nPauseType) != bPause)
+    {
+        if (bPause == 1)
+        {
+            m_PauseState.m_nPauseState |= nPauseType;
+            m_pWorldTimer->PauseWorldTimer();
+            if (GetActivePauseState() == PAUSE_STATE_COMBAT)
+            {
+                m_pTimestopTimer->PauseWorldTimer();
+            }
+            pMessage->SendServerToPlayerModule_SetPauseState(nPauseType, 1);
+        }
+        else
+        {
+            m_PauseState.m_nPauseState &= ~nPauseType;
+            if (nPauseType == PAUSE_TYPE_COMBAT_MASK)
+            {
+                m_pPauseTimer->PauseWorldTimer();
+                ReprocessExclusionListActions(PAUSE_TYPE_COMBAT_MASK);
+                m_pPauseTimer->ResetTimer(m_pTimestopTimer);
+                m_pPauseTimer->SetSnapshotTime();
+                m_pTimestopTimer->SetSnapshotTime();
+                pTimer = m_pPauseTimer;
+                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
+                pTimer = m_pTimestopTimer;
+                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
+
+                if (GetActivePauseState() != PAUSE_STATE_PAUSED)
+                {
+                    m_pWorldTimer->SetSnapshotTime();
+                    pTimer = m_pWorldTimer;
+                    pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
+                    m_pWorldTimer->UnpauseWorldTimer();
+                }
+                m_pTimestopTimer->UnpauseWorldTimer();
+                m_pPauseTimer->UnpauseWorldTimer();
+            }
+            else if (nPauseType == PAUSE_TYPE_PAUSED_MASK)
+            {
+                m_pTimestopTimer->PauseWorldTimer();
+                m_pPauseTimer->PauseWorldTimer();
+                ReprocessExclusionListActions(PAUSE_TYPE_PAUSED_MASK);
+                m_pTimestopTimer->ResetTimer(m_pWorldTimer);
+                m_pPauseTimer->ResetTimer(m_pWorldTimer);
+                m_pWorldTimer->SetSnapshotTime();
+                m_pTimestopTimer->SetSnapshotTime();
+                m_pPauseTimer->SetSnapshotTime();
+                pTimer = m_pPauseTimer;
+                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
+                pTimer = m_pTimestopTimer;
+                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
+                pTimer = m_pWorldTimer;
+                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
+                m_pWorldTimer->UnpauseWorldTimer();
+                m_pTimestopTimer->UnpauseWorldTimer();
+                m_pPauseTimer->UnpauseWorldTimer();
+            }
+            pMessage->SendServerToPlayerModule_SetPauseState(nPauseType, bPause);
+        }
+    }
+}
+// PC 0x004F2590
+#ifdef _XBOX
+int CServerExoAppInternal::LoadModule(CExoString sModule, CSWSPlayer* pPlayer)
+#else
+int CServerExoAppInternal::LoadModule(const CExoString& sModule,
+                                     CSWSPlayer* pPlayer)
+#endif
+{
+    unsigned __int64 nFreeBytes;
+    int nDiskResult;
+    CSWSModule* pModule = GetModule();
+
+    CExoString sSourcePath;
+    CExoString sDestinationPath;
+    {
+        CExoString sModuleName;
+        CExoString sResourceName;
+        CExoString sUnused;
+        unsigned short nModuleType = RESTYPE_INVALID;
+        CExoString sTimestamp;
+
+        g_pExoBase->m_pExoDebug->GetCurrentTimestamp(sTimestamp);
+
+#ifdef _XBOX
+        EXOLOG("[%s] Loading Module: %s\n", sTimestamp.CStr(), sModule.CStr());
+#else
+        EXOLOG("Loading Module: %s [%s]\n", sModule.CStr(), sTimestamp.CStr());
+#endif
+
+        if (m_bLoadingModule != 1)
+        {
+            m_bLoadingModule = 1;
+        }
+        if (pModule != NULL)
+        {
+            UnloadModule();
+        }
+        if (g_pExoResMan->CreateDirectory2("CURRENTGAME:") == 0)
+        {
+            g_pExoResMan->CleanDirectory("CURRENTGAME:", 1, 1);
+        }
+
+        sDestinationPath = "CURRENTGAME:";
+        int nSeparator = sModule.Find("\\", 0);
+        if (nSeparator == -1)
+        {
+            sDestinationPath = sDestinationPath + sModule;
+            sModuleName = sModule;
+        }
+        else
+        {
+            sModuleName = sModule.Right(sModule.GetLength() - nSeparator - 1);
+            sDestinationPath = sDestinationPath + sModuleName;
+        }
+
+        if (IncludeModuleInSave(sModule))
+        {
+            g_pAppManager->GetServerExoApp()->GetPartyTable()->AddGameInProgress();
+            if (g_pExoResMan->Exists(sModule, RESTYPE_RSV, (unsigned long*)NULL))
+            {
+                sSourcePath = "GAMEINPROGRESS:";
+                sSourcePath = sSourcePath + sModule;
+                sResourceName = sSourcePath;
+                sSourcePath = g_pExoBase->m_pExoAliasList->ResolveFileName(
+                    sSourcePath, RESTYPE_RSV);
+                sDestinationPath = g_pExoBase->m_pExoAliasList->ResolveFileName(
+                    sDestinationPath, RESTYPE_RSV);
+                nModuleType = RESTYPE_RSV;
+                SetEstimatedSaveSize(sResourceName, RESTYPE_RSV);
+            }
+            else if (g_pExoResMan->Exists(sModule, RESTYPE_SAV, (unsigned long*)NULL))
+            {
+                sSourcePath = "GAMEINPROGRESS:";
+                sSourcePath = sSourcePath + sModule;
+                sResourceName = sSourcePath;
+                sSourcePath = g_pExoBase->m_pExoAliasList->ResolveFileName(
+                    sSourcePath, RESTYPE_SAV);
+                sDestinationPath = g_pExoBase->m_pExoAliasList->ResolveFileName(
+                    sDestinationPath, RESTYPE_SAV);
+                nModuleType = RESTYPE_SAV;
+                SetEstimatedSaveSize(sResourceName, RESTYPE_SAV);
+            }
+            g_pAppManager->GetServerExoApp()->GetPartyTable()->RemoveGameInProgress();
+        }
+
+        if (nModuleType == RESTYPE_INVALID)
+        {
+            g_pExoResMan->AddResourceDirectory("NWMFILES:");
+            if (g_pExoResMan->Exists(sModule, RESTYPE_NWM, (unsigned long*)NULL))
+            {
+                sSourcePath = "NWMFILES:";
+                sSourcePath = sSourcePath + sModule;
+                sResourceName = sSourcePath;
+                sSourcePath = g_pExoBase->m_pExoAliasList->ResolveFileName(
+                    sSourcePath, RESTYPE_NWM);
+                sDestinationPath = g_pExoBase->m_pExoAliasList->ResolveFileName(
+                    sDestinationPath, RESTYPE_NWM);
+                nModuleType = RESTYPE_NWM;
+                SetEstimatedSaveSize(sResourceName, RESTYPE_NWM);
+            }
+            g_pExoResMan->RemoveResourceDirectory("NWMFILES:");
+        }
+
+        if (nModuleType == RESTYPE_INVALID)
+        {
+            CExoString sDirectory;
+            for (int nContentPackage = 1; nContentPackage < CTlkTable::NUM_CONTENT_PKGS;
+                 ++nContentPackage)
+            {
+                sDirectory.Format("LIVE%d", nContentPackage);
+                if (g_pExoBase->m_pExoAliasList->GetAliasPath(sDirectory, 0).GetLength())
+                {
+                    sDirectory = sDirectory + ":MODULES";
+                    g_pExoResMan->AddResourceDirectory(sDirectory);
+                    if (g_pExoResMan->Exists(sModule, RESTYPE_MOD, (unsigned long*)NULL))
+                    {
+                        sSourcePath = sDirectory + "\\";
+                        sSourcePath = sSourcePath + sModule;
+                        sResourceName = sSourcePath;
+                        sSourcePath = g_pExoBase->m_pExoAliasList->ResolveFileName(
+                            sSourcePath, RESTYPE_MOD);
+                        sDestinationPath = g_pExoBase->m_pExoAliasList->ResolveFileName(
+                            sDestinationPath, RESTYPE_MOD);
+                        nModuleType = RESTYPE_MOD;
+                        SetEstimatedSaveSize(sResourceName, RESTYPE_MOD);
+                    }
+                    if (nModuleType == RESTYPE_INVALID &&
+                        g_pExoResMan->Exists(sModule, RESTYPE_RIM, (unsigned long*)NULL))
+                    {
+                        sSourcePath = sDirectory + "\\";
+                        sSourcePath = sSourcePath + sModule;
+                        sResourceName = sSourcePath;
+                        sSourcePath = g_pExoBase->m_pExoAliasList->ResolveFileName(
+                            sSourcePath, RESTYPE_RIM);
+                        sDestinationPath = g_pExoBase->m_pExoAliasList->ResolveFileName(
+                            sDestinationPath, RESTYPE_RIM);
+                        nModuleType = RESTYPE_RIM;
+                        SetEstimatedSaveSize(sResourceName, RESTYPE_RIM);
+                    }
+                    g_pExoResMan->RemoveResourceDirectory(sDirectory);
+                    if (nModuleType != RESTYPE_INVALID)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (nModuleType == RESTYPE_INVALID)
+        {
+            g_pExoResMan->AddResourceDirectory("MODULES:");
+            if (g_pExoResMan->Exists(sModule, RESTYPE_MOD, (unsigned long*)NULL))
+            {
+                sSourcePath = "MODULES:";
+                sSourcePath = sSourcePath + sModule;
+                sResourceName = sSourcePath;
+                sSourcePath = g_pExoBase->m_pExoAliasList->ResolveFileName(
+                    sSourcePath, RESTYPE_MOD);
+                sDestinationPath = g_pExoBase->m_pExoAliasList->ResolveFileName(
+                    sDestinationPath, RESTYPE_MOD);
+                nModuleType = RESTYPE_MOD;
+                SetEstimatedSaveSize(sResourceName, RESTYPE_MOD);
+            }
+            else if (g_pExoResMan->Exists(sModule, RESTYPE_RIM, (unsigned long*)NULL))
+            {
+                sSourcePath = "MODULES:";
+                sSourcePath = sSourcePath + sModule;
+                sResourceName = sSourcePath;
+                sSourcePath = g_pExoBase->m_pExoAliasList->ResolveFileName(
+                    sSourcePath, RESTYPE_RIM);
+                sDestinationPath = g_pExoBase->m_pExoAliasList->ResolveFileName(
+                    sDestinationPath, RESTYPE_RIM);
+                nModuleType = RESTYPE_RIM;
+                SetEstimatedSaveSize(sResourceName, RESTYPE_RIM);
+            }
+            g_pExoResMan->RemoveResourceDirectory("MODULES:");
+        }
+
+        if (nModuleType == RESTYPE_INVALID)
+        {
+            CSWSMessage* pMessage = m_pSWSMessage;
+            pMessage->SendServerToPlayerSaveLoad_Status(
+                pPlayer, CSWSMessage::SAVELOAD_STATUS_LOAD_FAILED,
+                CSWSMessage::SAVELOAD_FAILURE_MODULE_NOT_FOUND);
+            goto LoadModuleFailed;
+        }
+
+        nDiskResult = g_pExoResMan->GetFreeDiskSpace("CURRENTGAME:", &nFreeBytes);
+        if (nDiskResult == 1)
+        {
+            CExoFile* pFile = new CExoFile(sResourceName, nModuleType, "rb");
+            unsigned __int64 nFileSize = pFile->GetSize();
+            delete pFile;
+            if (nFileSize > nFreeBytes)
+            {
+                CSWSMessage* pMessage = m_pSWSMessage;
+#ifdef _XBOX
+                EXOXBOXASSERT(pMessage->SendServerToPlayerSaveLoad_Status(
+                    pPlayer, CSWSMessage::SAVELOAD_STATUS_LOAD_FAILED,
+                    CSWSMessage::SAVELOAD_FAILURE_DISK_SPACE));
+#else
+                pMessage->SendServerToPlayerSaveLoad_Status(
+                    pPlayer, CSWSMessage::SAVELOAD_STATUS_LOAD_FAILED,
+                    CSWSMessage::SAVELOAD_FAILURE_DISK_SPACE);
+#endif
+                goto LoadModuleFailed;
+            }
+        }
+
+        CSWReentrantServerStats* pModuleNameStats = g_pAppManager->m_pReentrantServerStats;
+        pModuleNameStats->m_sUnknown24 = sModuleName;
+        CSWReentrantServerStats* pSourceStats = g_pAppManager->m_pReentrantServerStats;
+        pSourceStats->m_sUnknown32 = sSourcePath;
+        CSWReentrantServerStats* pDestinationStats = g_pAppManager->m_pReentrantServerStats;
+        pDestinationStats->m_sUnknown40 = sDestinationPath;
+        CSWReentrantServerStats* pTypeStats = g_pAppManager->m_pReentrantServerStats;
+        pTypeStats->m_nResourceType = nModuleType;
+        if (nModuleType == RESTYPE_SAV || nModuleType == RESTYPE_RSV)
+        {
+            g_pAppManager->m_pReentrantServerStats->StartStallEvent(
+                CSWReentrantServerStats::OPERATION_LOAD_GAME);
+            SendStartStallEvent(CSWSMessage::LOADBAR_STALL_EVENT_LOAD_GAME);
+        }
+        else
+        {
+            g_pAppManager->m_pReentrantServerStats->StartStallEvent(
+                CSWReentrantServerStats::OPERATION_LOAD_MODULE);
+            SendStartStallEvent(CSWSMessage::LOADBAR_STALL_EVENT_LOAD_MODULE);
+        }
+        CSWReentrantServerStats* pCompletedStats = g_pAppManager->m_pReentrantServerStats;
+        pCompletedStats->m_nProgress = 0;
+        CSWReentrantServerStats* pProgressStats = g_pAppManager->m_pReentrantServerStats;
+        pProgressStats->m_nProgressTotal = 0;
+        CSWReentrantServerStats* pFinalNameStats = g_pAppManager->m_pReentrantServerStats;
+        pFinalNameStats->m_sUnknown24 = sModuleName;
+    }
+    return 1;
+
+LoadModuleFailed:
+    return 0;
+}
+// PC 0x004F35B0
+void CServerExoAppInternal::DealWithLoadGameError(unsigned long nValue)
+{
+    CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
+
+    UnloadModule();
+    pStats->m_nUnknown56 = nValue;
+    pStats->m_bOperationEndPending = 1;
+    if (g_nClientServerMode == 2)
+    {
+        pStats->m_bOperationEndPending = 0;
+        pStats->m_bOperationActive = 0;
+        pStats->m_nOperation = 0;
+    }
+    m_nServerMode = 0;
+    m_bLoadingModule = 0;
+    g_pAppManager->m_pServerExoApp->GetSWSMessage()
+        ->SendServerToPlayerLoadBar_EndStallEvent(CSWSMessage::LOADBAR_STALL_EVENT_LOAD_MODULE, nValue);
+}
+// PC 0x004F3610
+void CServerExoAppInternal::TogglePauseState(unsigned char nPauseType)
+{
+    SetPauseState(nPauseType, !GetPauseState(nPauseType));
+}
+// PC 0x004F3640
+int CServerExoAppInternal::LoadGame(unsigned long nSlot,
+                                    const CExoString& sName,
+                                    const CExoString& sModule,
+                                    CSWSPlayer* pPlayer)
+{
+    CExoString sDirectory;
+    CExoString sGameName;
+
+    CExoString sUnused1;
+    CExoString sUnused2;
+
+#ifdef _XBOX
+    g_pAppManager->m_pClientExoApp->SetLoadBarProgress(50, 1);
+    g_pAppManager->m_pClientExoApp->SetLoadStep(0, 50);
+    g_pAppManager->m_pClientExoApp->SetLoadStep(1, 10);
+    g_pAppManager->m_pClientExoApp->SetLoadStep(2, 13);
+    g_pAppManager->m_pClientExoApp->SetLoadStep(3, 13);
+    g_pAppManager->m_pClientExoApp->SetLoadStep(4, 13);
+#else
+    g_pAppManager->m_pClientExoApp->SetLoadBarProgress(10, 1);
+    g_pAppManager->m_pClientExoApp->SetLoadStep(0, 10);
+    g_pAppManager->m_pClientExoApp->SetLoadStep(1, 20);
+    g_pAppManager->m_pClientExoApp->SetLoadStep(2, 23);
+    g_pAppManager->m_pClientExoApp->SetLoadStep(3, 23);
+    g_pAppManager->m_pClientExoApp->SetLoadStep(4, 23);
+#endif
+
+    if (nSlot != -1)
+    {
+        sGameName.Format("%06d - %s", nSlot, sName.CStr());
+    }
+    else
+    {
+        sGameName = sName;
+    }
+
+    sDirectory = "SAVES:";
+    sDirectory = sDirectory + sGameName;
+    g_pExoResMan->AddResourceDirectory(sDirectory);
+    m_partyTable.LoadTableInfo();
+    m_globalVariableTable.Load();
+    g_pExoResMan->RemoveResourceDirectory(sDirectory);
+
+    m_partyTable.m_bSkipPartyPositioning = 1;
+    m_nAutoSaveElapsedTime = 0;
+    m_bAutoSaveTimerExpired = 0;
+
+    return LoadModule(sModule, pPlayer);
+}
+
+int CServerExoAppInternal::SendEnteringStartNewModuleMessage()
+{
+    GetServerExoApp()->GetSWSMessage()->SendServerToPlayerModule_StartStartNewModule();
+    return 1;
+}
+// PC 0x004F3820
+int CServerExoAppInternal::ExecuteLoadModule(const CExoString& sModule)
+{
+    if (GetModule() != NULL && !GetModule()->GetModuleName().IsEmpty())
+    {
+        DumpLogCounters((char*)GetModule()->GetModuleName().CStr());
+    }
+    else
+    {
+        DumpLogCounters("");
+    }
+
+    SendEnteringStartNewModuleMessage();
+    g_pExoInput->ClearEvents();
+    g_bMouseCameraRotateToggle = 0;
+    g_bLeftMouseDown = 0;
+    g_bShiftActionState = 0;
+    g_pAppManager->m_pClientExoApp->ResetDriveAcceleration();
+
+    g_pAppManager->m_pClientExoApp->GetWorldTimer()->PauseWorldTimer();
+    g_pAppManager->m_pServerExoApp->GetWorldTimer()->PauseWorldTimer();
+    g_pAppManager->m_pClientExoApp->GetWorldTimer()->SetSnapshotTime();
+    g_pAppManager->m_pServerExoApp->GetWorldTimer()->SetSnapshotTime();
+    g_pAppManager->m_pClientExoApp->DisableInput();
+
+    return LoadModule(sModule, NULL);
+}
+// PC 0x004F3920
+int CServerExoAppInternal::StartNewModule(const CExoString& sModule)
+{
+    int bLoadingModule = m_bLoadingModule;
+    if (bLoadingModule == 1)
+    {
+        return 0;
+    }
+
+    g_pAppManager->GetClientExoApp()->SetLoadScreenHint(
+        g_pAppManager->GetClientExoApp()->GetNextLoadScreenHintSTRREF(sModule, 0));
+    g_pAppManager->GetClientExoApp()->SetLoadScreenHintUpdateTimer(0);
+    g_pAppManager->GetClientExoApp()->SetCanSendDialog(0);
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->SetGlobalDialogState(0);
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->CloseDialog();
+    g_pExoSound->StopAllOneShots();
+    g_pAppManager->GetClientExoApp()->PlayLoadModuleMovies();
+
+    g_pExoResMan->AddResourceDirectory("MODULES:");
+
+    if (!g_pExoResMan->Exists(sModule, RESTYPE_MOD,
+                             (unsigned long*)NULL)
+        && !g_pExoResMan->Exists(sModule, RESTYPE_RIM,
+                                (unsigned long*)NULL))
+    {
+        g_pExoResMan->RemoveResourceDirectory("MODULES:");
+        return 0;
+    }
+    g_pExoResMan->RemoveResourceDirectory("MODULES:");
+
+    m_bLoadingModule = 1;
+    m_bDoingStartNewModule = 1;
+    ForceRunAreaOnExitScripts();
+    if (!StorePlayerCharacters())
+    {
+        m_bDoingStartNewModule = 0;
+        return 0;
+    }
+    if (!StoreCurrentModule())
+    {
+        m_bDoingStartNewModule = 0;
+        return 0;
+    }
+
+    C2DA* pModuleSave = new C2DA("modulesave", 0);
+    if (pModuleSave != NULL && !pModuleSave->Load2DArray())
+    {
+        delete pModuleSave;
+        pModuleSave = NULL;
+    }
+    DoModuleEnterSaveCleanup(sModule, pModuleSave);
+    if (GetModule() != NULL
+        && (pModuleSave == NULL || AutoSaveOnEnteringModule(sModule, pModuleSave)))
+    {
+#ifndef _XBOX
+        DoPCAutosave(sModule, pModuleSave);
+#endif
+    }
+    if (pModuleSave != NULL)
+    {
+        delete pModuleSave;
+    }
+    return ExecuteLoadModule(sModule);
+}
+// PC 0x004F3BB0
+int CServerExoAppInternal::MainLoop()
+{
+
+    UpdateAutoSaveTimer();
+    CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
+    int bReentrantOperation = pStats->m_bOperationActive;
+    if (bReentrantOperation == 0)
+    {
+        if (GetActivePauseState() == 0)
+            m_pWorldTimer->SetSnapshotTime();
+        if (GetActivePauseState() != PAUSE_STATE_COMBAT)
+            m_pTimestopTimer->SetSnapshotTime();
+        m_pPauseTimer->SetSnapshotTime();
+        m_pNetLayer->ProcessReceivedFrames(1);
+        m_pNetLayer->UpdateStatusLoop(CNetLayer::APPLICATION_SERVER);
+        TempDeathUpdate();
+        UpdateMapData();
+        if (g_pAppManager->m_pReentrantServerStats->m_bOperationActive == 0 &&
+            m_nServerMode == SERVER_MODE_RUNNING)
+        {
+            m_pServerAIMaster->UpdateState();
+            int bForceUpdate = m_bForceUpdate;
+            UpdateClientGameObjects(bForceUpdate);
+            m_bForceUpdate = 0;
+        }
+#ifdef _XBOX
+        int bTransitionReady = 1;
+        if (m_bMoveToModulePending == 1)
+        {
+            if (m_nAutoSaveCalendarDay == 0)
+            {
+                m_nAutoSaveCalendarDay = 1;
+                bTransitionReady = 0;
+                g_pExoInput->SetActive(0);
+                g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL);
+                m_nAutoSaveTimeOfDay = g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000;
+            }
+            else
+            {
+                bTransitionReady =
+                    (unsigned long)(g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000) -
+                        m_nAutoSaveTimeOfDay > 500;
+                g_pExoInput->UpdateJoysticks();
+                g_pAppManager->GetClientExoApp()->GetInGameGui()->UpdateControllerPauseState();
+            }
+        }
+        if (m_bMoveToModulePending == 1 && bTransitionReady == 1 &&
+            g_pAppManager->GetClientExoApp()->GetInGameGui()
+                ->m_bControllerPauseActive == 0)
+        {
+            ForceRunAreaOnExitScripts();
+            if (!StorePlayerCharacters())
+            {
+                m_bDoingStartNewModule = 0;
+                return 0;
+            }
+            if (!StoreCurrentModule())
+            {
+                m_bDoingStartNewModule = 0;
+                return 0;
+            }
+            if (g_pExoResMan->CreateDirectory2("REBOOTDATA:") == 0)
+            {
+                g_pExoResMan->CleanDirectory("REBOOTDATA:", 0, 0);
+            }
+            CExoString sModule(m_sMoveToModule);
+            m_partyTable.Save("REBOOTDATA:", 0);
+            m_globalVariableTable.Save("REBOOTDATA:");
+            KOTOR_LAUNCH_DATA cParams;
+            cParams.m_nModuleTrans = KOTOR_LAUNCH_DATA::MODULETRANS_MODULE;
+            CExoString sStartWaypoint(m_sMoveToModuleStartWaypoint);
+            CExoString sMovie1("");
+            CExoString sMovie2("");
+            CExoString sMovie3("");
+            CExoString sMovie4("");
+            CExoString sMovie5("");
+            CExoString sMovie6("");
+            CExoArrayList<CExoString> lMovies(
+                *g_pAppManager->GetClientExoApp()->GetMoveToModuleMovies());
+            CExoString sLoadScreen("");
+            CExoString sLoadMusic("");
+            int bMinGlobalRim = 0;
+            if (g_pRules->m_p2DArrays->m_pAreaTransition->GetCExoStringEntry(
+                    sModule, "BMPResRef", &sLoadScreen) == 0)
+            {
+                sLoadScreen.Format("load_%s", sModule);
+                if (!g_pExoResMan->Exists(sLoadScreen, RESTYPE_TGA, (unsigned long*)NULL) &&
+                    !g_pExoResMan->Exists(sLoadScreen, RESTYPE_TPC, (unsigned long*)NULL))
+                {
+                    g_pRules->m_p2DArrays->m_pAreaTransition->GetCExoStringEntry(
+                        "DEFAULT", "BMPResRef", &sLoadScreen);
+                }
+            }
+            sLoadMusic = g_pAppManager->GetClientExoApp()->GetLoadMusicByModuleName(sModule);
+            if (lMovies.num > 0)
+                sMovie1 = lMovies.element[0];
+            if (lMovies.num > 1)
+                sMovie2 = lMovies.element[1];
+            if (lMovies.num > 2)
+                sMovie3 = lMovies.element[2];
+            if (lMovies.num > 3)
+                sMovie4 = lMovies.element[3];
+            if (lMovies.num > 4)
+                sMovie5 = lMovies.element[4];
+            if (lMovies.num > 5)
+                sMovie6 = lMovies.element[5];
+            if (IsMoveToModuleMinGlobalRim() == 1)
+            {
+                bMinGlobalRim = 1;
+            }
+            cParams.m_nAutoCalInfo = g_pExoInput->GetAutoCalInfo();
+            cParams.m_nPortBinding = g_pExoInput->GetPortBinding();
+            if (sStartWaypoint == "")
+            {
+                sStartWaypoint = "*";
+            }
+            cParams.m_bRenderQA = RenderQA;
+            cParams.SetModuleName(sModule);
+            cParams.SetLoadScreen(sLoadScreen);
+            cParams.SetLoadMusic(sLoadMusic);
+            cParams.SetStartWaypoint(sStartWaypoint);
+            cParams.SetMovie1(sMovie1);
+            cParams.SetMovie2(sMovie2);
+            cParams.SetMovie3(sMovie3);
+            cParams.SetMovie4(sMovie4);
+            cParams.SetMovie5(sMovie5);
+            cParams.SetMovie6(sMovie6);
+            cParams.m_bMinGlobalRim = bMinGlobalRim;
+            unsigned long nCalendarDay, nTimeOfDay;
+            unsigned long nHour, nMinute, nSecond, nMillisecond;
+            unsigned long nYear, nMonth, nDay, nModuleTime;
+            unsigned char nDawnDusk;
+            g_pAppManager->GetServerExoApp()->GetWorldTimer()
+                ->GetWorldTime(&nCalendarDay, &nTimeOfDay);
+            g_pAppManager->GetServerExoApp()->GetWorldTimer()
+                ->ConvertFromTimeOfDay(nTimeOfDay, &nHour, &nMinute,
+                                      &nSecond, &nMillisecond);
+            GetModule()->GetTime(&nYear, &nMonth, &nDay, &nHour,
+                                 &nDawnDusk, &nModuleTime);
+            cParams.SetTime(nYear, nMonth, nDay, nHour, nMinute, nSecond, nMillisecond);
+            cParams.m_nTimePauseTime = nTimeOfDay;
+            cParams.m_nTimePauseDay = nCalendarDay;
+            KOTOR_LAUNCH_OPTIONS_DATA cOptionsData;
+            g_pAppManager->GetClientExoApp()->GetClientOptions()->GetOptionsData(&cOptionsData);
+            cParams.SetOptionsData(cOptionsData);
+            CStatusSummary cStatusSummary;
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->GetStatusSummary(cStatusSummary);
+            cParams.SetStatusSummary(cStatusSummary);
+            C2DA* pModuleSave = new C2DA(CResRef("modulesave"), 0);
+            if (pModuleSave != NULL && !pModuleSave->Load2DArray())
+            {
+                delete pModuleSave;
+                pModuleSave = NULL;
+            }
+            DoModuleEnterSaveCleanup(sModule, pModuleSave);
+            if (HasEnoughDiskSpaceForSaveGame() && GetModule() != NULL &&
+                (pModuleSave == NULL || AutoSaveOnEnteringModule(sModule, pModuleSave)))
+            {
+                DoPCAutosave(sModule, cParams, pModuleSave);
+            }
+            cParams.m_nHintTimer1 = m_nAutoSaveElapsedTime;
+            cParams.m_nHintTimer2 = m_bAutoSaveTimerExpired;
+            if (sMovie1.GetLength() <= 0 && sMovie2.GetLength() <= 0 &&
+                sMovie3.GetLength() <= 0 && sMovie4.GetLength() <= 0 &&
+                sMovie5.GetLength() <= 0 && sMovie6.GetLength() <= 0)
+            {
+                cParams.m_nLoadScreenHint =
+                    g_pAppManager->GetClientExoApp()->GetNextLoadScreenHintSTRREF(sModule, 0);
+            }
+            else
+            {
+                cParams.m_nLoadScreenHint = 0;
+            }
+            cParams.m_nGamePlayHint = g_pAppManager->GetClientExoApp()->GetGamePlayHint();
+            cParams.m_nStoryHint = g_pAppManager->GetClientExoApp()->GetStoryHint();
+            cParams.m_nLoadScreenHintUpdateTimer = 0;
+            if (pModuleSave != NULL)
+            {
+                delete pModuleSave;
+            }
+            AurPersistDisplay();
+            ExoXboxLaunch(&cParams, g_pAppManager->GetServerExoApp()->GetModuleName().CStr());
+        }
+#else
+        if (m_bMoveToModulePending == 1 &&
+            g_pAppManager->GetClientExoApp()->GetInGameGui()
+                ->m_bControllerPauseActive == 0)
+        {
+            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
+                "000_Human_Conf_Active", 0);
+            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
+                "000_Beast_Conf_Active", 0);
+            g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->SetValueNumber(
+                "000_Droid_Conf_Active", 0);
+            unsigned long nCalendarDay, nTimeOfDay;
+            unsigned long nHour, nMinute, nSecond, nMillisecond;
+            unsigned long nYear, nMonth, nDay, nModuleTime;
+            unsigned char nDawnDusk;
+            g_pAppManager->GetServerExoApp()->GetWorldTimer()
+                ->GetWorldTime(&nCalendarDay, &nTimeOfDay);
+            g_pAppManager->GetServerExoApp()->GetWorldTimer()
+                ->ConvertFromTimeOfDay(nTimeOfDay, &nHour, &nMinute,
+                                      &nSecond, &nMillisecond);
+            GetModule()->GetTime(&nYear, &nMonth, &nDay, &nHour,
+                                 &nDawnDusk, &nModuleTime);
+            g_pAppManager->GetServerExoApp()->SetMoveToWorldTime(
+                nYear, nMonth, nDay, nHour, nMinute, nSecond, nMillisecond);
+            g_pAppManager->GetServerExoApp()->SetMoveToPausedTimeOfDay(nTimeOfDay);
+            g_pAppManager->GetServerExoApp()->SetMoveToPausedCalendarDay(nCalendarDay);
+            m_partyTable.UpdateMembers(0);
+            StartNewModule(m_sMoveToModule);
+            m_bMoveToModulePending = 0;
+        }
+#endif
+        pStats = g_pAppManager->m_pReentrantServerStats;
+        if (pStats->m_bOperationActive == 0 &&
+            g_pAppManager->GetServerExoApp()->GetPlayerCreature() != NULL &&
+            g_pAppManager->GetServerExoApp()->GetPlayerCreature()->GetArea() != NULL &&
+            !g_pAppManager->GetClientExoApp()->GetAreaNotReadyToDisplay())
+        {
+            int bPartyAlive = 0;
+            if (m_bAutoSavePending == 1)
+            {
+                for (int nMember = 0; nMember < CSWParty::MAX_MEMBERS; nMember++)
+                {
+                    CSWCCreature* pCharacter =
+                        g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nMember);
+                    if (pCharacter != NULL &&
+                        pCharacter->GetServerCreature()->GetCurrentHitPoints(0) > 1)
+                    {
+                        bPartyAlive = 1;
+                        break;
+                    }
+                }
+            }
+            if (bPartyAlive)
+            {
+                if (HasEnoughDiskSpaceForSaveGame() &&
+                    m_nServerMode == SERVER_MODE_RUNNING)
+                {
+                    CExoString sName;
+                    sName = "AUTOSAVE";
+#ifdef _XBOX
+                    AurReleaseFrameTexture();
+                    CExoString sSaveRoot("U:\\");
+                    WCHAR wszSaveName[256];
+                    char szSavePath[256];
+                    mbstowcs(wszSaveName, g_pTlkTable->GetSimpleString(STRREF_AUTO_SAVE_NAME).CStr(), 255);
+                    XCreateSaveGame(sSaveRoot.CStr(), wszSaveName, OPEN_ALWAYS, 1, szSavePath, 254);
+                    {
+                        CExoString sAlias("SAVES");
+                        g_pExoBase->m_pExoAliasList->ChangePath(sAlias, szSavePath);
+                    }
+                    g_pExoResMan->FileCopy("HD0:AutoSaveImage", "SAVES:SaveImage", 3011, RESTYPE_INVALID);
+                    SaveGame(0, sName, NULL, 1);
+#else
+                    SaveGame(1, sName, NULL, 1);
+#endif
+                }
+                else
+                {
+                    if (g_pAppManager->GetClientExoApp()->GetInGameGui()
+                            ->m_nGlobalDialogState != 0)
+                        g_pAppManager->GetClientExoApp()->GetInGameGui()
+                            ->m_bHoldWorldFadeInForDialog = 1;
+                    else
+                    {
+                        Vector vBlack(0.0f, 0.0f, 0.0f);
+                        g_pAppManager->GetClientExoApp()->GetInGameGui()
+                            ->StartGlobalFade(1, 0.5f, 1.0f, vBlack);
+                    }
+                    g_pAppManager->GetClientExoApp()->SetCanSendDialog(1);
+                    g_pExoInput->EndAttemptedBind();
+                    g_pAppManager->GetClientExoApp()->GetInGameGui()
+                        ->SetGlobalUnpauseableState(0);
+                    g_pAppManager->GetClientExoApp()->GetModule()->m_pInfo->StartSounds();
+                }
+            }
+            m_bAutoSavePending = 0;
+        }
+        if (m_bExportAllCharactersPending == 1)
+        {
+            ExportAllPlayers();
+            m_bExportAllCharactersPending = 0;
+        }
+        if (m_bNeedCharacterPending == 1)
+        {
+            m_pSWSMessage->SendServerToPlayerLogin_NeedCharacter(
+                ((CSWSPlayer*)m_pPlayerList->GetHead())->m_nPlayerId);
+            m_bNeedCharacterPending = 0;
+        }
+    }
+    else
+    {
+        m_pNetLayer->ProcessReceivedFrames(0);
+        m_pNetLayer->UpdateStatusLoop(CNetLayer::APPLICATION_SERVER);
+        CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
+        if (pStats->m_nUnknown56 == 0)
+        {
+            if (pStats->m_nOperation == CSWReentrantServerStats::OPERATION_LOAD_MODULE ||
+                pStats->m_nOperation == CSWReentrantServerStats::OPERATION_LOAD_GAME)
+            {
+                CExoString sModule(pStats->m_sUnknown24);
+                CSWSModule* pModule = GetModule();
+                int bLoadingSaveGame = 0;
+                if (m_bLoadFromSaveGame)
+                    bLoadingSaveGame = 1;
+                if (pStats->m_nProgressTotal == 0)
+                {
+                    CExoString sModuleName(pStats->m_sUnknown24);
+                    CExoString sSource(pStats->m_sUnknown32);
+                    CExoString sDestination(pStats->m_sUnknown40);
+                    unsigned long nType = pStats->m_nResourceType;
+                    if (!CopyModuleToCurrentGame(sSource, sDestination, nType))
+                        DealWithLoadGameError(LOAD_GAME_ERROR_COPY_MODULE);
+                    else
+                    {
+                        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_n1024 = 0;
+                        pModule = new CSWSModule(sModuleName, 0,
+                            (unsigned short)nType == RESTYPE_SAV ||
+                            (unsigned short)nType == RESTYPE_RSV);
+                        m_oidModule = pModule->GetId();
+                        if ((unsigned short)nType == RESTYPE_RSV)
+                        {
+                            pModule->m_bIsNWMFile = 1;
+                            pModule->m_sSaveName = sModuleName;
+                        }
+                        unsigned long nError = pModule->LoadModuleStart(
+                            sModuleName, bLoadingSaveGame);
+                        if (nError != 0)
+                            DealWithLoadGameError(nError);
+                    }
+                }
+                else if (pStats->m_nProgressTotal != pStats->m_nProgress)
+                {
+                    m_partyTable.ClearMembers();
+                    m_partyTable.ClearPuppets();
+                    int nLoadProgress = pStats->m_nProgressTotal;
+                    int nLoadStep = pStats->m_nProgress;
+                    unsigned long nError = pModule->LoadModuleInProgress(
+                        nLoadStep, nLoadProgress);
+                    if (nError != 0)
+                        DealWithLoadGameError(nError);
+                }
+                else if (pStats->m_bOperationEndPending != 1)
+                {
+                    unsigned long nError = pModule->LoadModuleFinish();
+                    if (nError != 0)
+                        DealWithLoadGameError(nError);
+                    pStats->m_bOperationEndPending = 1;
+                    if (g_nClientServerMode == CLIENT_SERVER_MODE_SERVER)
+                    {
+                        pStats->m_bOperationEndPending = 0;
+                        pStats->m_bOperationActive = 0;
+                        pStats->m_nOperation = 0;
+                    }
+                    m_nServerMode = SERVER_MODE_LOADING;
+                    m_bLoadingModule = 0;
+                    g_pAppManager->GetServerExoApp()->GetSWSMessage()
+                        ->SendServerToPlayerLoadBar_EndStallEvent(CSWSMessage::LOADBAR_STALL_EVENT_LOAD_MODULE, 0);
+                    m_pSWSMessage->SendServerToPlayerServerStatus_Status(
+                        CNetLayer::PLAYERID_ALL_PLAYERS);
+                    m_pSWSMessage->SendServerToServerAdminServerStatus(
+                        CNetLayer::PLAYERID_ALL_SERVERADMINS);
+                    if (m_lstCharListRequests.num != 0)
+                    {
+                        for (int nRequest = 0; nRequest < m_lstCharListRequests.num; ++nRequest)
+                        {
+                            CSWSPlayer* pPlayer = GetClientObjectByPlayerId(
+                                m_lstCharListRequests[nRequest], 0);
+                            if (pPlayer != NULL)
+                                m_pSWSMessage->SendServerToPlayerCharList(pPlayer);
+                        }
+                        m_lstCharListRequests.SetSize(0);
+                    }
+                }
+            }
+            else if (pStats->m_nOperation == CSWReentrantServerStats::OPERATION_SAVE_GAME)
+            {
+                StallEventSaveGame();
+                DumpLogCounters("2");
+            }
+        }
+    }
+    if (UpdateShutdownTimer(g_pExoBase->m_pExoTimers->GetHighResolutionTimer()))
+    {
+        if (m_lstPendingPlayers.num != 0)
+            Shutdown(0, 0);
+        else
+            g_pAppManager->DestroyServer();
+    }
+    UpdateMainLoopTimeBudget(g_pExoBase->m_pExoTimers->GetHighResolutionTimer());
+    return 0;
+}
