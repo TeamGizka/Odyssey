@@ -3432,10 +3432,15 @@ extern int loadimagetime;
 extern int maxdecodetime;
 extern int maxgltime;
 extern float maxdeltat;
+
+inline int AurTextureGetSafePointerCount(CAurTexture* pTexture)
+{
+    return pTexture->m_lstSafePointers.m_nCount;
+}
 // PC 0x00422530 GOG 0x00422550
 void AurTextureRelease(CAurTexture* pTexture)
 {
-    if (pTexture != NULL && pTexture->m_lstSafePointers.m_nCount == 0)
+    if (pTexture != NULL && AurTextureGetSafePointerCount(pTexture) == 0)
     {
         if (pTexture->AsCAurTextureBasic() != NULL)
         {
