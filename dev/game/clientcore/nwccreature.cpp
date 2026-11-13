@@ -6552,6 +6552,9 @@ int CSWCCreature::IsLeaderUsableItem(CSWSItem* pItem, int nSlot,  // PC 0x006639
                        ? ((unsigned char)pProperty->m_bUseable
                           ? pCreature->m_pStats->GetCanUseSkill(CSWSkill::SKILL_DEMOLITIONS) : 0)
                        : 1;
+                if (!bUsable)
+                    return 0;
+                return pCreature->CanUseItem(pItem, 1);
             }
             else
             {
@@ -6579,7 +6582,6 @@ int CSWCCreature::IsLeaderUsableItem(CSWSItem* pItem, int nSlot,  // PC 0x006639
                 CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(pProperty->m_nSubtype);
                 if (pSpell != NULL && pSpell->m_nItemTargeting == CSWSpell::ITEM_TARGETING_PERSONAL)
                     return pCreature->CanUseItem(pItem, 1);
-                return 0;
             }
         }
         else
@@ -6594,6 +6596,9 @@ int CSWCCreature::IsLeaderUsableItem(CSWSItem* pItem, int nSlot,  // PC 0x006639
                        ? ((unsigned char)pProperty->m_bUseable
                           ? pCreature->m_pStats->GetCanUseSkill(CSWSkill::SKILL_DEMOLITIONS) : 0)
                        : 1;
+                if (!bUsable)
+                    return 0;
+                return pCreature->CanUseItem(pItem, 1);
             }
             else
             {
@@ -6636,11 +6641,10 @@ int CSWCCreature::IsLeaderUsableItem(CSWSItem* pItem, int nSlot,  // PC 0x006639
                     }
                 }
                 CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(pProperty->m_nSubtype);
-                bUsable = pSpell != NULL &&
-                          pSpell->m_nItemTargeting == CSWSpell::ITEM_TARGETING_PERSONAL;
+                if (pSpell != NULL && pSpell->m_nItemTargeting == CSWSpell::ITEM_TARGETING_PERSONAL)
+                    return pCreature->CanUseItem(pItem, 1);
             }
         }
-        return bUsable ? pCreature->CanUseItem(pItem, 1) : 0;
     }
     return 0;
 }
