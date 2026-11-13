@@ -17225,7 +17225,7 @@ int CSWVirtualMachineCommands::ExecuteCommandVersusEffect(int nCommand, int nArg
     int bValid = 1;
     if (nCommand == COMMAND_VERSUS_ALIGNMENT_EFFECT)
     {
-        if (nLawChaos <= -1 || nLawChaos >= SWVM_SCRIPT_ALIGNMENT_COUNT)
+        if (nLawChaos <= -1 || nLawChaos >= SCRIPT_ALIGNMENT_COUNT)
         {
             bValid = 0;
         }

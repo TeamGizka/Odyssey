@@ -10,6 +10,8 @@
 #include "math3d.h"
 #include "mss.h"
 
+extern bool g_bVODebugEnabled;
+
 static inline void ExostreamingsoundsourceinternalTrace1();
 // PC 0x004015A0 GOG 0x004015A0
 void CExoStreamingSoundSourceInternal::DoObstructionWork()
@@ -303,9 +305,37 @@ void CExoStreamingSoundSourceInternal::InitializeSource()
 int CExoStreamingSoundSourceInternal::IsPlaying()
 {
     ExostreamingsoundsourceinternalTrace1();
+    char szResRef[17];
     if (m_pSoundInternal->m_bInitialized != 0 && m_hStream != NULL)
     {
+        if (g_bVODebugEnabled)
+        {
+            m_resRef.CopyToString(szResRef);
+            int nStatus = AIL_stream_status(m_hStream);
+            if (_strnicmp(szResRef, "al_", 3) != 0 &&
+                _strnicmp(szResRef, "as_", 3) != 0 &&
+                _strnicmp(szResRef, "mus_", 4) != 0 &&
+                _strnicmp(szResRef, "amb_", 4) != 0 &&
+                _strnicmp(szResRef, "bed_", 4) != 0)
+            {
+                EXOLOG("VO stream %s status %d", szResRef, nStatus);
+            }
+            return nStatus == SMP_PLAYING;
+        }
         return AIL_stream_status(m_hStream) - SMP_PLAYING == 0;
+    }
+    if (g_bVODebugEnabled)
+    {
+        m_resRef.CopyToString(szResRef);
+        if (_strnicmp(szResRef, "al_", 3) != 0 &&
+            _strnicmp(szResRef, "as_", 3) != 0 &&
+            _strnicmp(szResRef, "mus_", 4) != 0 &&
+            _strnicmp(szResRef, "amb_", 4) != 0 &&
+            _strnicmp(szResRef, "bed_", 4) != 0)
+        {
+            EXOLOG("VO stream %s not playing, sound mode %d", szResRef,
+                   g_pExoSound->GetSoundMode());
+        }
     }
     return 0;
 }

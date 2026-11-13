@@ -6865,16 +6865,37 @@ int CClientExoAppInternal::IsSoundPlayingInDialog()
     {
         CGameObject* pGameObject = GetGameObject(m_pGuiInGame->m_oidDialogSoundObject);
 
-        CSWCObject* pObject = NULL;
-        if (pGameObject != NULL)
-            pObject = pGameObject->AsSWCObject();
-        if (pObject != NULL && m_pGuiInGame->m_pDialogSound != NULL)
+        if (pGameObject != NULL && pGameObject->AsSWCObject() != NULL &&
+            m_pGuiInGame->m_pDialogSound != NULL)
         {
+            if (g_bVODebugEnabled)
+            {
+                char szSound[17];
+                CExoStreamingSoundSource* pDialogSound =
+                    m_pGuiInGame->m_pDialogSound;
+                pDialogSound->GetFilePlaying().CopyToString(szSound);
+                EXOLOG("IsSoundPlayingInDialog: %s mode %d\n", szSound,
+                       g_pExoSound->GetSoundMode());
+            }
+
             bPlaying = m_pGuiInGame->m_pDialogSound->IsPlaying();
         }
     }
     else
     {
+        if (g_bVODebugEnabled)
+        {
+            char szSound[17];
+            if (m_pGuiInGame->m_pDialogSound != NULL)
+            {
+                CExoStreamingSoundSource* pDialogSound =
+                    m_pGuiInGame->m_pDialogSound;
+                pDialogSound->GetFilePlaying().CopyToString(szSound);
+            }
+            EXOLOG("IsSoundPlayingInDialog: %s mode %d\n", szSound,
+                   g_pExoSound->GetSoundMode());
+        }
+
         m_pGuiInGame->m_bDialogSoundQueried = 1;
         bPlaying = 1;
     }

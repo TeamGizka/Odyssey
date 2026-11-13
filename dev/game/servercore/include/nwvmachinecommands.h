@@ -22,8 +22,6 @@ class CExoString;
 #define SWVM_SHAPE_CYLINDER_RADIUS_SQUARED 2.25f
 #define SWVM_SHAPE_SPELLCONE_COSINE 0.866f
 
-#define SWVM_SCRIPT_ALIGNMENT_COUNT 4
-
 class CSWVirtualMachineCommands : public CVirtualMachineCmdImplementer
 {
 public:
@@ -37,6 +35,8 @@ public:
     static const int EFFECT_MILLISECONDS_PER_SECOND = 1000;
 
     static const int MAX_SCRIPT_CLASS_TYPE = 32;
+
+    static const int SCRIPT_ALIGNMENT_COUNT = 4;
 
     enum { PERCEPTION_REQUIREMENT_ANY = 2 };
 

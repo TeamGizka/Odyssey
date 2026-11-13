@@ -893,6 +893,7 @@ public:
 extern int g_bSoundPaused;
 extern int g_totalStreamingHandlesAvailable;
 extern int g_generalStreamingHandlesAvailable;
+extern bool g_bVODebugEnabled;
 
 
 

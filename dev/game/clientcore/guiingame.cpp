@@ -5679,8 +5679,22 @@ int CGuiInGame::HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSoun
             CExoStreamingSoundSource::PRIORITY_GROUP_DIALOG_VOICE);
         if (m_pDialogSound->Play(cSound, RESTYPE_MP3, 1, 0, 0) == 0)
         {
+            if (g_bVODebugEnabled)
+            {
+                char szSound[17];
+                cSound.CopyToString(szSound);
+                EXOLOG("HandleDialogSound: no mp3 %s mode %d\n", szSound,
+                       g_pExoSound->GetSoundMode());
+            }
             if (m_pDialogSound->Play(cSound, RESTYPE_WAV, 1, 0, 0) == 0)
             {
+                if (g_bVODebugEnabled)
+                {
+                    char szSound[17];
+                    cSound.CopyToString(szSound);
+                    EXOLOG("HandleDialogSound: no wav %s mode %d\n", szSound,
+                           g_pExoSound->GetSoundMode());
+                }
                 pClientObject->LipSync(cSound);
                 return 0;
             }
