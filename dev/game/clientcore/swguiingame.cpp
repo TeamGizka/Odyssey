@@ -218,10 +218,6 @@ void CSWGuiInGameMenu::SetActiveControlID(int nControl, int bActive)
         SetActiveControl(m_lControls.element[nControl], bActive);
 }
 #ifndef _XBOX
-inline void CSWGuiBorderParams::SetFillImage(const CResRef& cImage)
-{
-    SetFillImage(cImage, 0);
-}
 // PC 0x00676B00
 void CSWGuiInGameMenu::Draw(float fElapsed)
 {

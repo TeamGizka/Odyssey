@@ -47,15 +47,6 @@ inline CSWSDialogReply::CSWSDialogReply()
     m_pEntries = NULL;
     m_nReplyIndex = -1;
 }
-// PC 0x004F60A0
-inline unsigned long CSWSDialog::GetCurrentPlayerId()
-{
-    if (m_lstPlayers.GetHeadPos() != NULL)
-    {
-        return m_oidCurrentPlayer;
-    }
-    return OBJECT_INVALID;
-}
 // PC 0x005E56D0
 inline CSWSDialogBase::CSWSDialogBase()
     : m_nWaitFlags(0),
@@ -117,10 +108,6 @@ void CSWSDialog::ClearDialogOwnerInObject(unsigned long oidObject)
 }
 // PC 0x005E59A0
 CSWSDialogStuntModel::CSWSDialogStuntModel()
-{
-}
-// PC 0x0074C290
-CSWSDialogAnimation::CSWSDialogAnimation()
 {
 }
 // PC 0x005E59F0
@@ -912,6 +899,15 @@ int CSWSDialog::SendDialogModels(CSWSObject* pOwner, unsigned long oidPlayer)
     delete[] pObjectIds;
     delete[] pModels;
     return 1;
+}
+// PC 0x004F60A0
+inline unsigned long CSWSDialog::GetCurrentPlayerId()
+{
+    if (m_lstPlayers.GetHeadPos() != NULL)
+    {
+        return m_oidCurrentPlayer;
+    }
+    return OBJECT_INVALID;
 }
 // PC 0x005E7AF0
 unsigned long CSWSDialog::GetDialogModel(int nStunt, int& bNonDependant)
@@ -3078,6 +3074,10 @@ inline CSWSDialog::~CSWSDialog()
     Cleanup();
 }
 
+// PC 0x0074C290
+CSWSDialogAnimation::CSWSDialogAnimation()
+{
+}
 static inline void NwsdialogTrace1()
 {
 }

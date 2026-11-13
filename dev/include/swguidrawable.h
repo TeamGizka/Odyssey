@@ -165,13 +165,13 @@ public:
                        float fAlpha, const Vector& vColor, int bPulsing, int n8 = 0);
     void SetPulsingAlpha(int bPulsing, int nLow, int nHigh);
     void SetCornerImage(const CResRef& cImage, int bTile);
-    void SetCornerImage(const CResRef& cImage);
+    void SetCornerImage(const CResRef& cImage) { SetCornerImage(cImage, 0); }
     void SetEdgeImage(const CResRef& cImage, int bTile);
-    void SetEdgeImage(const CResRef& cImage);
+    void SetEdgeImage(const CResRef& cImage) { SetEdgeImage(cImage, 0); }
     CSWGuiBorderParams& operator=(const CSWGuiBorderParams& cParams);
     void SetBorder(CSWGuiBorder* pBorder);
     void SetFillImage(const CResRef& cImage, int bTile);
-    void SetFillImage(const CResRef& cImage);
+    void SetFillImage(const CResRef& cImage) { SetFillImage(cImage, 0); }
     int GetBorderDim() const;
 
     int GetInnerOffset() const { return m_nInnerOffset; }

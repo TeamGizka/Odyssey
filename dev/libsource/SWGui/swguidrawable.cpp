@@ -415,20 +415,6 @@ CSWGuiBorderParams::CSWGuiBorderParams(const CResRef& cCorner,
     m_n8 = n8;
 }
 
-inline void CSWGuiBorderParams::SetCornerImage(const CResRef& cImage)
-{
-    SetCornerImage(cImage, 0);
-}
-
-inline void CSWGuiBorderParams::SetEdgeImage(const CResRef& cImage)
-{
-    SetEdgeImage(cImage, 0);
-}
-
-inline void CSWGuiBorderParams::SetFillImage(const CResRef& cImage)
-{
-    SetFillImage(cImage, 0);
-}
 // PC 0x004148F0
 CSWGuiBorderParams& CSWGuiBorderParams::operator=(const CSWGuiBorderParams& cParams)
 {

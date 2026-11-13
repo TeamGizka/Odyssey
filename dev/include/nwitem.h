@@ -240,6 +240,7 @@ public:
     void SetDefaultIcon(const CResRef& value) { m_resDefaultIcon = value; }
     void SetIsContainer(int value) { m_bIsContainer = value; }
     void SetWeaponWield(char value) { m_nWeaponWield = value; }
+    unsigned char GetWeaponWield() { return m_nWeaponWield; }
     void SetWeaponType(unsigned char value) { m_nWeaponType = value; }
     unsigned char GetWeaponType() { return m_nWeaponType; }
     void SetDamageFlags(int value) { m_nDamageFlags = value; }

@@ -52,17 +52,6 @@ inline void CSWSItem::SetNewItem(int bNewItem) { m_bNewItem = bNewItem; }
 inline int CSWSItem::GetUpgrades() { return m_nUpgrades; }
 inline char CSWSItem::GetModelVariation() { return m_nModelVariation; }
 
-// PC 0x0055BFE0
-void CSWSItem::SetNumPassiveProperties(int nNumProperties)
-{
-    m_nPassiveProperties = nNumProperties;
-    if (m_pPassiveProperties != NULL)
-        delete[] m_pPassiveProperties;
-    if (nNumProperties != 0)
-        m_pPassiveProperties = new CSWItemProperty[m_nPassiveProperties];
-    else
-        m_pPassiveProperties = NULL;
-}
 // PC 0x0055B6F0
 CSWSItem::CSWSItem(unsigned long oidItem)
     : CSWSObject(CGameObject::OBJECT_TYPE_ITEM, oidItem, 0)
@@ -106,6 +95,1206 @@ CSWSItem::CSWSItem(unsigned long oidItem)
     m_n2E4 = 0;
     m_n2EC = 0;
     memset(m_anUpgradeSlot, 0, sizeof(m_anUpgradeSlot));
+}
+// PC 0x0055B890
+void CSWSItem::SetPossessor(unsigned long oidPossessor, int bRunScripts,
+                          int bDisplayFeedback, unsigned long oidOldPossessor)
+{
+    unsigned long oidNewCreature = CGameObjectArray::INVALIDOBJID;
+    unsigned long oidOldCreature = CGameObjectArray::INVALIDOBJID;
+    unsigned long oidNewPlaceable = CGameObjectArray::INVALIDOBJID;
+    unsigned long oidOldPlaceable = CGameObjectArray::INVALIDOBJID;
+    unsigned long oidModule = g_pAppManager->GetServerExoApp()->GetModule()->GetId();
+
+    if (m_oidPossessor == oidPossessor)
+    {
+        CScriptEvent* pEvent = new CScriptEvent;
+        pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_ACQUIRE_ITEM;
+        pEvent->SetObjectID(0, GetId());
+        pEvent->SetObjectID(1, oidPossessor);
+        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+            0, 0, GetId(), oidModule, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+        return;
+    }
+
+    int bDifferentOldPossessor = 0;
+    if (oidOldPossessor != CGameObjectArray::INVALIDOBJID)
+    {
+        if (m_oidPossessor != oidOldPossessor)
+            bDifferentOldPossessor = 1;
+        m_oidPossessor = oidOldPossessor;
+    }
+
+    if (m_oidPossessor != CGameObjectArray::INVALIDOBJID)
+    {
+        CGameObject* pObject;
+        if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
+                m_oidPossessor, &pObject) == CGameObjectArray::SUCCESS && pObject != NULL)
+        {
+            if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
+                oidOldCreature = m_oidPossessor;
+            else if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_ITEM)
+            {
+                CSWSItem* pItem = pObject->AsSWSItem();
+                unsigned long oidContainerPossessor = pItem->m_oidPossessor;
+                if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
+                        oidContainerPossessor, &pObject) == CGameObjectArray::SUCCESS &&
+                    pObject != NULL && pObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
+                    oidOldCreature = pItem->m_oidPossessor;
+            }
+            else if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
+                oidOldPlaceable = m_oidPossessor;
+        }
+    }
+    if (oidPossessor != CGameObjectArray::INVALIDOBJID)
+    {
+        CGameObject* pObject;
+        if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
+                oidPossessor, &pObject) == CGameObjectArray::SUCCESS && pObject != NULL)
+        {
+            if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
+                oidNewCreature = oidPossessor;
+            else if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_ITEM)
+            {
+                CSWSItem* pItem = pObject->AsSWSItem();
+                unsigned long oidContainerPossessor = pItem->m_oidPossessor;
+                if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
+                        oidContainerPossessor, &pObject) == CGameObjectArray::SUCCESS &&
+                    pObject != NULL && pObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
+                    oidNewCreature = pItem->m_oidPossessor;
+            }
+            else if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
+                oidNewPlaceable = oidPossessor;
+        }
+    }
+
+    if (!bDifferentOldPossessor && oidOldCreature != oidNewCreature)
+    {
+        if (oidOldCreature != CGameObjectArray::INVALIDOBJID)
+        {
+            if (bRunScripts == 1)
+            {
+                CScriptEvent* pEvent = new CScriptEvent;
+                pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_LOSE_ITEM;
+                pEvent->SetObjectID(0, GetId());
+                g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                    0, 0, GetId(), oidModule, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+            }
+            CSWSCreature* pCreature =
+                g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidOldCreature);
+            if (pCreature != NULL && bDisplayFeedback == 1)
+            {
+                CSWCCMessageData* pData = new CSWCCMessageData;
+                pData->SetObjectID(0, GetId());
+                pData->SetInteger(0, 1);
+                pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_ITEM_LOST, pData);
+            }
+        }
+        if (oidNewCreature != CGameObjectArray::INVALIDOBJID)
+        {
+            CGameObject* pNewObject;
+            if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
+                    oidNewCreature, &pNewObject) == CGameObjectArray::SUCCESS &&
+                pNewObject != NULL && pNewObject->AsSWSCreature()->m_pStats->GetIsPC())
+            {
+                SetDropable(1);
+                m_bPickpocketable = 1;
+            }
+            if (bDisplayFeedback == 1)
+            {
+                CSWSCreature* pCreature =
+                    g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidNewCreature);
+                if (pCreature != NULL)
+                {
+                    CSWCCMessageData* pData = new CSWCCMessageData;
+                    pData->SetObjectID(0, GetId());
+                    pData->SetInteger(0, 1);
+                    pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_ITEM_RECEIVED, pData);
+                }
+            }
+        }
+    }
+    if (oidNewCreature != CGameObjectArray::INVALIDOBJID && bRunScripts == 1)
+    {
+        CScriptEvent* pEvent = new CScriptEvent;
+        pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_ACQUIRE_ITEM;
+        pEvent->SetObjectID(0, GetId());
+        pEvent->SetObjectID(1, oidNewCreature);
+        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+            0, 0, GetId(), oidModule, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+    }
+    if (oidOldPlaceable != CGameObjectArray::INVALIDOBJID)
+    {
+        CSWSPlaceable* pPlaceable =
+            g_pAppManager->GetServerExoApp()->GetPlaceableByGameObjectID(oidOldPlaceable);
+        if (pPlaceable != NULL && pPlaceable->m_bDieWhenEmpty == 0)
+        {
+            unsigned long oidDisturber = CGameObjectArray::INVALIDOBJID;
+            if (oidNewCreature != CGameObjectArray::INVALIDOBJID)
+                oidDisturber = oidNewCreature;
+            else if (oidNewPlaceable != CGameObjectArray::INVALIDOBJID)
+                oidDisturber = oidNewPlaceable;
+            if (oidDisturber != CGameObjectArray::INVALIDOBJID && bRunScripts == 1)
+            {
+                CScriptEvent* pEvent = new CScriptEvent;
+                pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_INVENTORY_DISTURBED;
+                pEvent->SetInteger(0, 1);
+                pEvent->SetObjectID(0, GetId());
+                g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                    0, 0, oidDisturber, oidOldPlaceable, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+            }
+        }
+    }
+    if (oidNewPlaceable != CGameObjectArray::INVALIDOBJID)
+    {
+        CSWSPlaceable* pPlaceable =
+            g_pAppManager->GetServerExoApp()->GetPlaceableByGameObjectID(oidNewPlaceable);
+        if (pPlaceable != NULL && pPlaceable->m_bDieWhenEmpty == 0)
+        {
+            unsigned long oidDisturber = CGameObjectArray::INVALIDOBJID;
+            if (oidOldCreature != CGameObjectArray::INVALIDOBJID)
+                oidDisturber = oidOldCreature;
+            else if (oidOldPlaceable != CGameObjectArray::INVALIDOBJID)
+                oidDisturber = oidOldPlaceable;
+            if (oidDisturber != CGameObjectArray::INVALIDOBJID && bRunScripts == 1)
+            {
+                CScriptEvent* pEvent = new CScriptEvent;
+                pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_INVENTORY_DISTURBED;
+                pEvent->SetInteger(0, 0);
+                pEvent->SetObjectID(0, GetId());
+                g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                    0, 0, oidDisturber, oidNewPlaceable, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+            }
+        }
+    }
+    m_oidPossessor = oidPossessor;
+}
+// PC 0x0055BF20
+void CSWSItem::RemoveFromArea()
+{
+    if (GetArea() != NULL)
+    {
+        GetArea()->RemoveObjectFromArea(m_nId);
+    }
+
+    SetArea(NULL);
+    SetPosition(Vector(), 1, 1, 0);
+}
+
+void CSWSItem::SetNumActiveProperties(int nNumProperties)
+{
+    m_nActiveProperties = nNumProperties;
+    if (m_pActiveProperties != NULL)
+        delete[] m_pActiveProperties;
+    if (nNumProperties != 0)
+        m_pActiveProperties = new CSWItemProperty[m_nActiveProperties];
+    else
+        m_pActiveProperties = NULL;
+}
+// PC 0x0055BF80
+int CSWSItem::ActiveProperty(unsigned short nPropertyType)
+{
+    switch ((unsigned short)nPropertyType)
+    {
+    case 10:
+    case 37:
+    case 46:
+    case 53:
+        return 1;
+    }
+
+    return 0;
+}
+// PC 0x0055BFE0
+void CSWSItem::SetNumPassiveProperties(int nNumProperties)
+{
+    m_nPassiveProperties = nNumProperties;
+    if (m_pPassiveProperties != NULL)
+        delete[] m_pPassiveProperties;
+    if (nNumProperties != 0)
+        m_pPassiveProperties = new CSWItemProperty[m_nPassiveProperties];
+    else
+        m_pPassiveProperties = NULL;
+}
+// PC 0x0055C040
+CSWItemProperty* CSWSItem::GetActiveProperty(int nIndex)
+{
+    if (nIndex < 0 || nIndex >= m_nActiveProperties)
+    {
+        return NULL;
+    }
+
+    return &m_pActiveProperties[nIndex];
+}
+// PC 0x0055C070
+CSWItemProperty* CSWSItem::GetPassiveProperty(int nIndex)
+{
+    if (nIndex < 0 || nIndex >= m_nPassiveProperties)
+    {
+        return NULL;
+    }
+
+    return &m_pPassiveProperties[nIndex];
+}
+// PC 0x0055C0A0
+int CSWSItem::GetPropertyByType(CSWItemProperty** ppProperty,
+                                unsigned short nPropertyType,
+                                unsigned short nSubtype)
+{
+    int nActiveProperties;
+    int nProperty;
+    CSWItemProperty* pItemProperty;
+    int nPassiveProperties;
+
+    nActiveProperties = m_nActiveProperties;
+    for (nProperty = 0; nProperty < nActiveProperties; nProperty++)
+    {
+        pItemProperty = GetActiveProperty(nProperty);
+        if ((pItemProperty->m_nUpgradeType == 0xFF ||
+             ((1 << pItemProperty->m_nUpgradeType) & m_nUpgrades) != 0) &&
+            GetActiveProperty(nProperty)->m_nPropertyType == nPropertyType)
+        {
+            if (nSubtype != 0)
+            {
+                if (GetActiveProperty(nProperty)->m_nSubtype == nSubtype)
+                {
+                    *ppProperty = GetActiveProperty(nProperty);
+                    return 1;
+                }
+            }
+            else
+            {
+                *ppProperty = GetActiveProperty(nProperty);
+                return 1;
+            }
+        }
+        nActiveProperties = m_nActiveProperties;
+    }
+
+    nPassiveProperties = m_nPassiveProperties;
+    for (nProperty = 0; nProperty < nPassiveProperties; nProperty++)
+    {
+        pItemProperty = GetPassiveProperty(nProperty);
+        if ((pItemProperty->m_nUpgradeType == 0xFF ||
+             ((1 << pItemProperty->m_nUpgradeType) & m_nUpgrades) != 0) &&
+            GetPassiveProperty(nProperty)->m_nPropertyType == nPropertyType)
+        {
+            if (nSubtype != 0)
+            {
+                if (GetPassiveProperty(nProperty)->m_nSubtype == nSubtype)
+                {
+                    *ppProperty = GetPassiveProperty(nProperty);
+                    return 1;
+                }
+            }
+            else
+            {
+                *ppProperty = GetPassiveProperty(nProperty);
+                return 1;
+            }
+        }
+        nPassiveProperties = m_nPassiveProperties;
+    }
+
+    return 0;
+}
+// PC 0x0055C290
+void CSWSItem::ApplyItemProperties(CSWSCreature* pCreature,
+                                   unsigned long nSlot, int bLoading)
+{
+    CServerAIMaster* pServerAIMaster;
+    int nPassiveProperties;
+    int nProperty;
+    CSWItemProperty* pItemProperty;
+    unsigned char nUpgradeType;
+
+    pServerAIMaster = g_pAppManager->GetServerExoApp()->GetServerAIMaster();
+    if (pServerAIMaster != NULL)
+    {
+        nPassiveProperties = m_nPassiveProperties;
+        for (nProperty = 0; nProperty < nPassiveProperties; nProperty++)
+        {
+            pItemProperty = GetPassiveProperty(nProperty);
+            nUpgradeType = pItemProperty->m_nUpgradeType;
+            if (nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
+                ((1 << nUpgradeType) & m_nUpgrades) != 0)
+            {
+                pServerAIMaster->OnItemPropertyApplied(
+                    this, pItemProperty, pCreature, nSlot, bLoading);
+            }
+            nPassiveProperties = m_nPassiveProperties;
+        }
+    }
+}
+// PC 0x0055C310
+void CSWSItem::RemoveItemProperties(CSWSCreature* pCreature,
+                                    unsigned long nSlot)
+{
+    CServerAIMaster* pServerAIMaster;
+    int nPassiveProperties;
+    int nProperty;
+    CSWItemProperty* pItemProperty;
+    unsigned char nUpgradeType;
+
+    pServerAIMaster = g_pAppManager->m_pServerExoApp->GetServerAIMaster();
+    if (pServerAIMaster != NULL)
+    {
+        nPassiveProperties = m_nPassiveProperties;
+        for (nProperty = 0; nProperty < nPassiveProperties; nProperty++)
+        {
+            pItemProperty = GetPassiveProperty(nProperty);
+            nUpgradeType = pItemProperty->m_nUpgradeType;
+            if (nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
+                ((1 << nUpgradeType) & m_nUpgrades) != 0)
+            {
+                pServerAIMaster->OnItemPropertyRemoved(
+                    this, pItemProperty, pCreature, nSlot);
+            }
+            nPassiveProperties = m_nPassiveProperties;
+        }
+    }
+    pCreature->RemoveEffectByCreator(m_nId);
+}
+// PC 0x0055C3A0
+int CSWSItem::ComputeArmorClass()
+{
+    if (GetBaseItem()->m_bUnknown18 != 1)
+    {
+        return 0;
+    }
+
+    return GetBaseItem()->m_nBaseAC;
+}
+// PC 0x0055C3D0
+int CSWSItem::CompareItem(CSWSItem* pItem)
+{
+    int nActiveProperty;
+    int nPassiveProperty;
+    int nSecondPassiveProperty;
+    CSWItemProperty* pThisProperty;
+    CSWItemProperty* pOtherProperty;
+
+    if (m_nUpgrades != pItem->m_nUpgrades ||
+        m_nActiveProperties != pItem->m_nActiveProperties ||
+        m_nPassiveProperties != pItem->m_nPassiveProperties ||
+        m_bPlotObject != pItem->m_bPlotObject ||
+        m_nCharges != pItem->m_nCharges || m_nBaseItem != pItem->m_nBaseItem ||
+        m_bStolen != pItem->m_bStolen ||
+        m_nModelVariation != pItem->m_nModelVariation ||
+        m_nBodyVariation != pItem->m_nBodyVariation ||
+        m_nTextureVar != pItem->m_nTextureVar || m_sTag != pItem->m_sTag ||
+        m_sLocalizedName != pItem->m_sLocalizedName)
+    {
+        return 0;
+    }
+
+    for (nActiveProperty = 0; nActiveProperty < m_nActiveProperties;
+         nActiveProperty++)
+    {
+        pThisProperty = GetActiveProperty(nActiveProperty);
+        pOtherProperty = pItem->GetActiveProperty(nActiveProperty);
+        if (pThisProperty->m_nPropertyType != pOtherProperty->m_nPropertyType ||
+            pThisProperty->m_nSubtype != pOtherProperty->m_nSubtype ||
+            pThisProperty->m_nCostTable != pOtherProperty->m_nCostTable ||
+            pThisProperty->m_nCostValue != pOtherProperty->m_nCostValue ||
+            pThisProperty->m_nParam1 != pOtherProperty->m_nParam1 ||
+            pThisProperty->m_nParam1Value != pOtherProperty->m_nParam1Value ||
+            pThisProperty->m_nUsesPerDay != pOtherProperty->m_nUsesPerDay ||
+            pThisProperty->m_nUpgradeType != pOtherProperty->m_nUpgradeType)
+        {
+            return 0;
+        }
+    }
+
+    for (nPassiveProperty = 0; nPassiveProperty < m_nPassiveProperties;
+         nPassiveProperty++)
+    {
+        pThisProperty = GetPassiveProperty(nPassiveProperty);
+        pOtherProperty = pItem->GetPassiveProperty(nPassiveProperty);
+        if (pThisProperty->m_nPropertyType != pOtherProperty->m_nPropertyType ||
+            pThisProperty->m_nSubtype != pOtherProperty->m_nSubtype ||
+            pThisProperty->m_nCostTable != pOtherProperty->m_nCostTable ||
+            pThisProperty->m_nCostValue != pOtherProperty->m_nCostValue ||
+            pThisProperty->m_nParam1 != pOtherProperty->m_nParam1 ||
+            pThisProperty->m_nParam1Value != pOtherProperty->m_nParam1Value ||
+            pThisProperty->m_nUsesPerDay != pOtherProperty->m_nUsesPerDay ||
+            pThisProperty->m_nUpgradeType != pOtherProperty->m_nUpgradeType)
+        {
+            return 0;
+        }
+    }
+
+    for (nSecondPassiveProperty = 0;
+         nSecondPassiveProperty < m_nPassiveProperties;
+         nSecondPassiveProperty++)
+    {
+        pThisProperty = GetPassiveProperty(nSecondPassiveProperty);
+        pOtherProperty = pItem->GetPassiveProperty(nSecondPassiveProperty);
+        if (pThisProperty->m_nPropertyType != pOtherProperty->m_nPropertyType ||
+            pThisProperty->m_nSubtype != pOtherProperty->m_nSubtype ||
+            pThisProperty->m_nCostTable != pOtherProperty->m_nCostTable ||
+            pThisProperty->m_nCostValue != pOtherProperty->m_nCostValue ||
+            pThisProperty->m_nParam1 != pOtherProperty->m_nParam1 ||
+            pThisProperty->m_nParam1Value != pOtherProperty->m_nParam1Value ||
+            pThisProperty->m_nUsesPerDay != pOtherProperty->m_nUsesPerDay ||
+            pThisProperty->m_nUpgradeType != pOtherProperty->m_nUpgradeType)
+        {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+// PC 0x0055C670
+int CSWSItem::MergeItem(CSWSItem* pItem)
+{
+    if (CompareItem(pItem))
+    {
+        CSWBaseItem* pBaseItem =
+            g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType());
+        if (m_nStackSize + pItem->m_nStackSize > pBaseItem->GetMaxStackSize())
+        {
+            int nOldStackSize = m_nStackSize;
+            m_nStackSize = pBaseItem->GetMaxStackSize();
+            pItem->m_nStackSize += nOldStackSize - pBaseItem->GetMaxStackSize();
+            return 0;
+        }
+
+        m_nStackSize += pItem->m_nStackSize;
+        return 1;
+    }
+
+    return 0;
+}
+// PC 0x0055C6E0
+int CSWSItem::GetCost()
+{
+    if (m_bPlotObject == 1)
+    {
+        return 0;
+    }
+
+#ifdef _XBOX
+    if ((unsigned int)(m_nAddCost * GetBaseItem()->m_fCostMultiplier) > 1) return (unsigned int)(m_nAddCost * GetBaseItem()->m_fCostMultiplier);
+#else
+    if ((unsigned int)(GetBaseItem()->m_fCostMultiplier * (double)m_nAddCost) > 1) { return (int)(GetBaseItem()->m_fCostMultiplier * (double)m_nAddCost); }
+#endif
+
+    return 1;
+}
+// PC 0x0055C730
+unsigned long CSWSItem::GetDamageFlags()
+{
+    unsigned long nDamageFlags;
+    int nBaseItem;
+    CSWBaseItem* pBaseItem;
+
+    nBaseItem = m_nBaseItem;
+    pBaseItem = g_pRules->m_pBaseItems->GetBaseItem(nBaseItem);
+    if (pBaseItem == NULL)
+    {
+        return DAMAGE_TYPE_BLUDGEONING;
+    }
+
+    nDamageFlags = pBaseItem->m_nDamageFlags;
+    if (nDamageFlags == 0)
+    {
+        return DAMAGE_TYPE_BLUDGEONING;
+    }
+
+    return nDamageFlags;
+}
+// PC 0x0055C760
+unsigned char CSWSItem::GetMinEquipLevel()
+{
+    CTwoDimArrays* pTables = g_pRules->m_p2DArrays;
+    EXOXBOXASSERT(pTables->m_pItemValues);
+    C2DA* pItemValues = pTables->m_pItemValues;
+    int nLevel;
+    int nMaxSingleItemValue;
+
+    for (nLevel = 0; nLevel < pItemValues->m_nNumRows; nLevel++)
+    {
+        pItemValues->GetINTEntry(nLevel, "MAXSINGLEITEMVALUE",
+                                &nMaxSingleItemValue);
+        if ((unsigned long)GetCost() <= (unsigned long)nMaxSingleItemValue)
+        {
+            break;
+        }
+    }
+
+    unsigned char nRequiredLevel = nLevel;
+    nRequiredLevel++;
+    return nRequiredLevel;
+}
+// PC 0x0055C850
+void CSWSItem::SetIdentified(int bIdentified)
+{
+    m_bIdentified = bIdentified;
+}
+// PC 0x0055C870
+CSWCItem* CSWSItem::GetClientItem()
+{
+    if (GetClientObject() != NULL)
+    {
+        return GetClientObject()->AsSWCItem();
+    }
+
+    return NULL;
+}
+// PC 0x0055C8A0
+unsigned char CSWSItem::GetUpgradableType(C2DA* pTable)
+{
+    unsigned char nType = UPGRADABLE_TYPE_NONE;
+    if (m_nUpgradeLevel > 0)
+    {
+        unsigned char nItemType = GetBaseItem()->m_nItemType;
+        if (nItemType == 0 || nItemType == 1 || nItemType == 2)
+        {
+            nType = UPGRADABLE_TYPE_MELEE;
+        }
+        else if (nItemType == 39 || nItemType == 40 || nItemType == 41)
+        {
+            nType = UPGRADABLE_TYPE_LIGHTSABER;
+        }
+        else if (nItemType == 3 || nItemType == 4 || nItemType == 5)
+        {
+            nType = UPGRADABLE_TYPE_BLASTER;
+        }
+        else if (nItemType >= 31 && nItemType <= 38)
+        {
+            nType = UPGRADABLE_TYPE_ARMOR;
+        }
+    }
+    return nType;
+}
+// PC 0x0055C910
+void CSWSItem::AddCNPCRequirements(CExoString& sString)
+{
+    CSWPartyTable* pPartyTable = g_pAppManager->GetServerExoApp()->GetPartyTable();
+    if (pPartyTable != NULL && pPartyTable->GetInfluence(1) != -1)
+    {
+        int nBaseItem = m_nBaseItem;
+        if (nBaseItem == 35 || nBaseItem == 36 || nBaseItem == 37 ||
+            nBaseItem == 97 || nBaseItem == 98 || nBaseItem == 99 ||
+            nBaseItem == 102)
+        {
+            sString = sString + g_pAppManager->GetClientExoApp()->GetGUIString(
+                GUI_STRREF_CNPC_REQUIRED) + ":\n";
+            sString = sString + g_pAppManager->GetClientExoApp()->GetGUIString(
+                GUI_STRREF_CNPC_REQUIREMENT) + "\n";
+            sString = sString + "\n";
+        }
+    }
+}
+// PC 0x0055CB30
+void CSWSItem::AddRangeProperties(CExoString& sString)
+{
+    CExoString sRange;
+    int bRanged = GetBaseItem()->m_nRangedWeapon > 0;
+    if (bRanged > 0)
+    {
+        int nRange = (int)GetBaseItem()->m_fMaxAttackRange;
+        sRange.Format("%s: %dm\n", g_pAppManager->GetClientExoApp()->GetGUIString(
+            GUI_STRREF_ITEM_RANGE).CStr(), nRange);
+        sString = sString + sRange + "\n";
+    }
+}
+// PC 0x0055CC70
+void CSWSItem::AddWeaponSizeProperties(CExoString& sString)
+{
+    char nWeaponSize = GetBaseItem()->m_nWeaponSize;
+    if (nWeaponSize == 2)
+    {
+        CExoString sNewLine("\n\n");
+        CClientExoApp* pClientExoApp;
+        pClientExoApp = g_pAppManager->m_pClientExoApp;
+        sString = sString + pClientExoApp->GetGUIString(0xA4A1) + sNewLine;
+    }
+}
+// PC 0x0055CD50
+void CSWSItem::GetDamageTypeString(unsigned long nDamageFlags,
+                                   CExoString& sString)
+{
+    CClientExoApp* pClientExoApp;
+    int nDamageTypes;
+
+    nDamageTypes = 0;
+    if ((nDamageFlags & 7) != 0)
+    {
+        pClientExoApp = g_pAppManager->m_pClientExoApp;
+        sString = pClientExoApp->GetGUIString(0x9698);
+        nDamageTypes = 1;
+    }
+
+    if ((nDamageFlags & 8) != 0)
+    {
+        if (nDamageTypes > 0)
+        {
+            sString = sString + ", ";
+        }
+        pClientExoApp = g_pAppManager->m_pClientExoApp;
+        sString = sString + pClientExoApp->GetGUIString(0x9699);
+        nDamageTypes++;
+    }
+
+    if ((nDamageFlags & 0x10) != 0)
+    {
+        if (nDamageTypes > 0)
+        {
+            sString = sString + ", ";
+        }
+        pClientExoApp = g_pAppManager->m_pClientExoApp;
+        sString = sString + pClientExoApp->GetGUIString(0x969A);
+        nDamageTypes++;
+    }
+
+    if ((nDamageFlags & 0x20) != 0)
+    {
+        if (nDamageTypes > 0)
+        {
+            sString = sString + ", ";
+        }
+        pClientExoApp = g_pAppManager->m_pClientExoApp;
+        sString = sString + pClientExoApp->GetGUIString(0x969B);
+        nDamageTypes++;
+    }
+
+    if ((nDamageFlags & 0x40) != 0)
+    {
+        if (nDamageTypes > 0)
+        {
+            sString = sString + ", ";
+        }
+        pClientExoApp = g_pAppManager->m_pClientExoApp;
+        sString = sString + pClientExoApp->GetGUIString(0x969C);
+        nDamageTypes++;
+    }
+
+    if ((nDamageFlags & 0x80) != 0)
+    {
+        if (nDamageTypes > 0)
+        {
+            sString = sString + ", ";
+        }
+        pClientExoApp = g_pAppManager->m_pClientExoApp;
+        sString = sString + pClientExoApp->GetGUIString(0x969D);
+        nDamageTypes++;
+    }
+
+    if ((nDamageFlags & 0x100) != 0)
+    {
+        if (nDamageTypes > 0)
+        {
+            sString = sString + ", ";
+        }
+        pClientExoApp = g_pAppManager->m_pClientExoApp;
+        sString = sString + pClientExoApp->GetGUIString(0x969E);
+        nDamageTypes++;
+    }
+
+    if ((nDamageFlags & 0x200) != 0)
+    {
+        if (nDamageTypes > 0)
+        {
+            sString = sString + ", ";
+        }
+        pClientExoApp = g_pAppManager->m_pClientExoApp;
+        sString = sString + pClientExoApp->GetGUIString(0x969F);
+        nDamageTypes++;
+    }
+
+    if ((nDamageFlags & 0x400) != 0)
+    {
+        if (nDamageTypes > 0)
+        {
+            sString = sString + ", ";
+        }
+        pClientExoApp = g_pAppManager->m_pClientExoApp;
+        sString = sString + pClientExoApp->GetGUIString(0x96A0);
+        nDamageTypes++;
+    }
+
+    if ((nDamageFlags & 0x800) != 0)
+    {
+        if (nDamageTypes > 0)
+        {
+            sString = sString + ", ";
+        }
+        pClientExoApp = g_pAppManager->m_pClientExoApp;
+        sString = sString + pClientExoApp->GetGUIString(0x96A1);
+        nDamageTypes++;
+    }
+
+    if ((nDamageFlags & 0x1000) != 0)
+    {
+        if (nDamageTypes > 0)
+        {
+            sString = sString + ", ";
+        }
+        pClientExoApp = g_pAppManager->m_pClientExoApp;
+        sString = sString + pClientExoApp->GetGUIString(0x96A2);
+        nDamageTypes++;
+    }
+
+    if ((nDamageFlags & 0x2000) != 0)
+    {
+        if (nDamageTypes > 0)
+        {
+            sString = sString + ", ";
+        }
+        pClientExoApp = g_pAppManager->m_pClientExoApp;
+        sString = sString + pClientExoApp->GetGUIString(0xA3AF);
+    }
+}
+// PC 0x0055D580
+void CSWSItem::GetPropertyStrings(unsigned short nPropertyType,
+                                 unsigned short nSubtype,
+                                 unsigned short nCostValue,
+                                 unsigned char nParam1Value,
+                                 CExoString& sProperty, CExoString& sSubtype,
+                                 CExoString& sCost, CExoString& sParam1,
+                                 int bPropertiesOnly)
+{
+    int nName = -1;
+    bool bFailed;
+    {
+        CExoString sColumn("Name");
+        C2DA* pTable = g_pRules->Get2DArrays()->m_pItemPropDef;
+        bFailed = pTable->GetINTEntry(nPropertyType, sColumn, &nName) == 0;
+    }
+    if (bFailed)
+        return;
+
+    if (bPropertiesOnly)
+    {
+        switch (nName)
+        {
+        case 659:
+        case 678:
+        case 680:
+        case 705:
+        case 48014:
+            nName = -1;
+            break;
+        case 662:
+            nName = 129935;
+            break;
+        case 672:
+            nName = 129931;
+            break;
+        case 673:
+            nName = 129933;
+            break;
+        case 675:
+            nName = 686;
+            break;
+        case 700:
+            nName = 129930;
+            break;
+        }
+    }
+    if (nName != -1)
+    {
+        sProperty = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
+    }
+
+    CExoString sSubTypeResRef;
+    CExoString sCostTableResRef;
+    int nTable;
+
+    bool bSuccess;
+    {
+        CExoString sColumn("SubTypeResRef");
+        C2DA* pTable = g_pRules->Get2DArrays()->m_pItemPropDef;
+        bSuccess = pTable->GetCExoStringEntry(
+            nPropertyType, sColumn, &sSubTypeResRef) == 1;
+    }
+    if (bSuccess)
+    {
+        C2DA* pSubtypeTable = new C2DA(sSubTypeResRef, 0);
+        if (pSubtypeTable->Load2DArray() == 0)
+            return;
+        pSubtypeTable->GetINTEntry(nSubtype, "Name", &nName);
+        if (bPropertiesOnly)
+        {
+            switch (nName)
+            {
+            case 0:
+                nName = -1;
+                break;
+            case 727:
+                nName = -1;
+                break;
+            case 728:
+                nName = -1;
+                break;
+            case 729:
+            case 796:
+                nName = -1;
+                sProperty = "";
+                return;
+            case 730:
+            case 797:
+                nName = -1;
+                sProperty = "";
+                return;
+            case 731:
+            case 798:
+                nName = 38552;
+                break;
+            }
+        }
+        sSubtype = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
+        delete pSubtypeTable;
+    }
+
+    if (nCostValue != CSWItemProperty::COST_VALUE_NONE)
+    {
+        {
+            CExoString sColumn("CostTableResRef");
+            C2DA* pTable = g_pRules->Get2DArrays()->m_pItemPropDef;
+            bSuccess = pTable->GetINTEntry(nPropertyType, sColumn, &nTable) == 1;
+        }
+        if (bSuccess)
+        {
+            C2DA* pCostTable = g_pRules->Get2DArrays()->GetIPRPCostTable(nTable);
+            pCostTable->GetINTEntry(nCostValue, "Name", &nName);
+            if (nName > 0)
+            {
+                sCost = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
+            }
+        }
+    }
+
+    if (nParam1Value != CSWItemProperty::PARAM1_VALUE_NONE)
+    {
+        {
+            CExoString sColumn("Param1ResRef");
+            C2DA* pTable = g_pRules->Get2DArrays()->m_pItemPropDef;
+            bSuccess = pTable->GetINTEntry(nPropertyType, sColumn, &nTable) == 1;
+        }
+        if (bSuccess)
+        {
+            {
+                CExoString sColumn("Name");
+                g_pRules->Get2DArrays()->GetIPRPParamTable(nTable)->GetINTEntry(
+                    nParam1Value, sColumn, &nName);
+            }
+            sParam1 = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
+        }
+        else
+        {
+            {
+                CExoString sColumn("SubTypeResRef");
+                C2DA* pTable = g_pRules->Get2DArrays()->m_pItemPropDef;
+                bSuccess = pTable->GetCExoStringEntry(
+                    nPropertyType, sColumn, &sSubTypeResRef) == 1;
+            }
+            if (!bSuccess)
+                return;
+            C2DA* pSubtypeTable = new C2DA(sSubTypeResRef, 0);
+            if (pSubtypeTable->Load2DArray() == 0)
+            {
+                delete pSubtypeTable;
+                return;
+            }
+            {
+                if (pSubtypeTable->GetINTEntry(nSubtype, "Param1ResRef", &nTable) == 1)
+                {
+                    g_pRules->Get2DArrays()->GetIPRPParamTable(nTable)->GetINTEntry(
+                        nParam1Value, "Name", &nName);
+                    sParam1 = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
+                }
+            }
+            delete pSubtypeTable;
+        }
+    }
+}
+// PC 0x0055DC70
+void CSWSItem::GetPropertyDamageRange(unsigned short nCostValue,
+                                     int& nMinDamage, int& nMaxDamage)
+{
+    int nNumDice = 0;
+    int nDie = 0;
+    bool bSuccess;
+    CTwoDimArrays* pTables;
+    C2DA* pTable;
+
+    {
+        CExoString sColumn("NumDice");
+        pTables = g_pRules->m_p2DArrays;
+        pTable = pTables->m_pIPRPDamage;
+        bSuccess = pTable->GetINTEntry(nCostValue, sColumn, &nNumDice) == 1;
+    }
+    if (bSuccess)
+    {
+        if (nNumDice == 0)
+        {
+            nMinDamage = 1;
+            nMaxDamage = nCostValue;
+        }
+        else
+        {
+            {
+                CExoString sColumn("Die");
+                pTables = g_pRules->m_p2DArrays;
+                pTable = pTables->m_pIPRPDamage;
+                pTable->GetINTEntry(nCostValue, sColumn, &nDie);
+            }
+            nMinDamage = nNumDice;
+            nMaxDamage = nNumDice * nDie;
+        }
+    }
+    else
+    {
+        nMinDamage = nCostValue;
+        nMaxDamage = nCostValue;
+    }
+}
+void CSWSItem::GetPropertyChanceDurationDC(unsigned short nCostValue,  // PC 0x0055DDC0
+                                         unsigned char nParam1Value,
+                                         int& nEffectChance,
+                                         int& nDurationRounds, int& nDC)
+{
+    int nValue;
+    CTwoDimArrays* pTables;
+    C2DA* pTable;
+
+    {
+        CExoString sColumn("EffectChance");
+        pTables = g_pRules->m_p2DArrays;
+        EXOXBOXASSERT(pTables->m_pOnHitDuration);
+        pTable = pTables->m_pOnHitDuration;
+        pTable->GetINTEntry(nParam1Value, sColumn, &nValue);
+    }
+    nEffectChance = nValue;
+
+    {
+        CExoString sColumn("DurationRounds");
+        pTables = g_pRules->m_p2DArrays;
+        EXOXBOXASSERT(pTables->m_pOnHitDuration);
+        pTable = pTables->m_pOnHitDuration;
+        pTable->GetINTEntry(nParam1Value, sColumn, &nValue);
+    }
+    nDurationRounds = nValue;
+
+    {
+        CExoString sColumn("Value");
+        pTables = g_pRules->m_p2DArrays;
+        pTables->GetIPRPCostTable(CTwoDimArrays::IPRP_COST_TABLE_DC)->GetINTEntry(
+            nCostValue, sColumn, &nValue);
+    }
+    nDC = nValue;
+}
+
+// PC 0x0055DF00
+void CSWSItem::PowerItem(int bPower, int bAnimate, int bSilent)
+{
+    CSWCItem* pClientItem = GetClientItem();
+    if (pClientItem != NULL)
+    {
+        pClientItem->PowerItem(bPower, FALSE, TRUE, FALSE);
+    }
+}
+// PC 0x0055DF40
+int CSWSItem::GetExistsHigherValuedProperty(unsigned short nPropertyType,
+                                            unsigned short nSubtype,
+                                            unsigned short nCostValue)
+{
+    int nPassiveProperties;
+    int nProperty;
+    CSWItemProperty* pItemProperty;
+
+    nPassiveProperties = m_nPassiveProperties;
+    for (nProperty = 0; nProperty < nPassiveProperties; nProperty++)
+    {
+        pItemProperty = GetPassiveProperty(nProperty);
+        if (pItemProperty != NULL &&
+            (pItemProperty->m_nUpgradeType == 0xFF ||
+             ((1 << pItemProperty->m_nUpgradeType) & m_nUpgrades) != 0) &&
+            pItemProperty->m_nPropertyType == nPropertyType &&
+            pItemProperty->m_nSubtype == nSubtype &&
+            pItemProperty->m_nCostValue > nCostValue)
+        {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+// PC 0x0055DFC0
+int CSWSItem::IsLightsaber()
+{
+    int nBaseItem;
+    int nResult;
+
+    nBaseItem = m_nBaseItem;
+    nResult = 0;
+    if (nBaseItem == BASE_ITEM_LIGHTSABER ||
+        nBaseItem == BASE_ITEM_DOUBLE_BLADED_LIGHTSABER ||
+        nBaseItem == BASE_ITEM_SHORT_LIGHTSABER)
+    {
+        nResult = 1;
+    }
+
+    return nResult;
+}
+// PC 0x0055DFE0
+CResRef CSWSItem::GetIcon()
+{
+    CSWBaseItem* pBaseItem = GetBaseItem();
+
+    if (pBaseItem == NULL)
+    {
+        return CResRef("");
+    }
+
+    if (pBaseItem->m_bUnknown18 != 0)
+    {
+        return pBaseItem->GetIconResRef((unsigned char)m_nTextureVar, 'm');
+    }
+
+    return pBaseItem->GetIconResRef((unsigned char)m_nModelVariation, 'm');
+}
+// PC 0x0055E040
+void CSWSItem::AddUpgrade(CSWSItem* pUpgrade, unsigned long nSlot)
+{
+    if (pUpgrade != NULL)
+    {
+        int nUpgradeProperties = pUpgrade->m_nPassiveProperties;
+        int nOldProperties = m_nPassiveProperties;
+        int nNewProperties = nOldProperties + nUpgradeProperties;
+        CSWItemProperty* pOldProperties = new CSWItemProperty[nNewProperties];
+        memcpy(pOldProperties, m_pPassiveProperties,
+               nOldProperties * sizeof(CSWItemProperty));
+        SetNumPassiveProperties(nNewProperties);
+        memcpy(m_pPassiveProperties, pOldProperties,
+               nOldProperties * sizeof(CSWItemProperty));
+        delete[] pOldProperties;
+        memcpy(&m_pPassiveProperties[nNewProperties - nUpgradeProperties],
+               pUpgrade->m_pPassiveProperties,
+               nUpgradeProperties * sizeof(CSWItemProperty));
+        for (int nProperty = nOldProperties; nProperty < nNewProperties;
+             nProperty++)
+        {
+            GetPassiveProperty(nProperty)->m_n12 = (unsigned short)(nSlot + 1);
+        }
+    }
+}
+// PC 0x0055E140
+void CSWSItem::RemoveUpgrade(CSWSItem* pUpgrade, unsigned long nSlot)
+{
+    int nUpgradeProperties = pUpgrade->m_nPassiveProperties;
+    int nOldProperties = m_nPassiveProperties;
+    int nNewProperties = nOldProperties - nUpgradeProperties;
+    CSWItemProperty* pNewProperties = new CSWItemProperty[nNewProperties];
+    int nNextProperty = 0;
+    for (int nProperty = 0; nProperty < nOldProperties; nProperty++)
+    {
+        int bUpgrade = 0;
+        CSWItemProperty* pProperty = &m_pPassiveProperties[nProperty];
+        for (int nUpgrade = 0; nUpgrade < nUpgradeProperties; nUpgrade++)
+        {
+            if (pProperty->m_n12 == nSlot + 1)
+            {
+                bUpgrade = 1;
+            }
+        }
+        if (bUpgrade == 0)
+        {
+            memcpy(&pNewProperties[nNextProperty], pProperty, sizeof(CSWItemProperty));
+            nNextProperty++;
+        }
+    }
+    SetNumPassiveProperties(nNewProperties);
+    if (m_pPassiveProperties != NULL)
+    {
+        memcpy(m_pPassiveProperties, pNewProperties,
+               nNewProperties * sizeof(CSWItemProperty));
+    }
+    delete[] pNewProperties;
+}
+// PC 0x0055E270
+CExoString CSWSItem::GetPropertiesOnlyDescription()
+{
+    CExoString sDescription;
+    int nLines = 0;
+    for (int nProperty = 0; nProperty < m_nPassiveProperties && nLines < 5;
+         nProperty++)
+    {
+        CSWItemProperty* pProperty = GetPassiveProperty(nProperty);
+        if (pProperty != NULL)
+        {
+            CExoString sProperty;
+            CExoString sSubtype;
+            CExoString sCost;
+            CExoString sParam1;
+            CExoString sParam1Value;
+            unsigned short nCostValue = pProperty->m_nCostValue;
+            unsigned short nSubtype = pProperty->m_nSubtype;
+            unsigned short nPropertyType = pProperty->m_nPropertyType;
+            GetPropertyStrings(nPropertyType, nSubtype, nCostValue,
+                               CSWItemProperty::PARAM1_VALUE_NONE, sProperty,
+                               sSubtype, sCost, sParam1, 1);
+            if (sProperty.m_sString != NULL && sProperty.m_sString[0] != 0)
+            {
+                sDescription = sDescription + sProperty;
+            }
+            if (sCost.m_sString != NULL)
+            {
+                if (sCost.m_sString[0] != 0 && sProperty.m_sString != NULL &&
+                    sProperty.m_sString[0] != 0)
+                {
+                    if (sProperty[strlen(sProperty.m_sString) - 1] == '+')
+                    {
+                        sDescription = sDescription + sCost;
+                    }
+                    else
+                    {
+                        sDescription = sDescription + ": " + sCost;
+                    }
+                }
+                if (sCost.m_sString != NULL && sCost.m_sString[0] != 0 &&
+                    (sProperty.m_sString == NULL || sProperty.m_sString[0] == 0))
+                {
+                    sDescription = sDescription + sCost;
+                }
+            }
+            if (sProperty.m_sString != NULL && sProperty.m_sString[0] != 0 &&
+                sCost.m_sString != NULL && sCost.m_sString[0] != 0 &&
+                sSubtype.m_sString != NULL && sSubtype.m_sString[0] != 0)
+            {
+                sDescription = sDescription + ", " + sSubtype;
+            }
+            if (sProperty.m_sString != NULL && sProperty.m_sString[0] != 0 &&
+                (sCost.m_sString == NULL || sCost.m_sString[0] == 0) &&
+                sSubtype.m_sString != NULL && sSubtype.m_sString[0] != 0)
+            {
+                sDescription = sDescription + ": " + sSubtype;
+            }
+            if ((sProperty.m_sString == NULL || sProperty.m_sString[0] == 0) &&
+                sCost.m_sString != NULL && sCost.m_sString[0] != 0 &&
+                sSubtype.m_sString != NULL && sSubtype.m_sString[0] != 0)
+            {
+                sDescription = sDescription + " " + sSubtype;
+            }
+            if ((sProperty.m_sString == NULL || sProperty.m_sString[0] == 0) &&
+                (sCost.m_sString == NULL || sCost.m_sString[0] == 0) &&
+                sSubtype.m_sString != NULL && sSubtype.m_sString[0] != 0)
+            {
+                sDescription = sDescription + sSubtype;
+            }
+            if ((sProperty.m_sString != NULL && sProperty.m_sString[0] != 0) ||
+                (sCost.m_sString != NULL && sCost.m_sString[0] != 0) ||
+                (sSubtype.m_sString != NULL && sSubtype.m_sString[0] != 0))
+            {
+                sDescription = sDescription + "\n";
+                nLines++;
+            }
+        }
+    }
+    return sDescription;
 }
 // PC 0x0055E950
 int CSWSItem::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
@@ -591,215 +1780,6 @@ int CItemRepository::SetParentId(unsigned long oidParent)
     }
 
     return nItems;
-}
-// PC 0x0055B890
-void CSWSItem::SetPossessor(unsigned long oidPossessor, int bRunScripts,
-                          int bDisplayFeedback, unsigned long oidOldPossessor)
-{
-    unsigned long oidNewCreature = CGameObjectArray::INVALIDOBJID;
-    unsigned long oidOldCreature = CGameObjectArray::INVALIDOBJID;
-    unsigned long oidNewPlaceable = CGameObjectArray::INVALIDOBJID;
-    unsigned long oidOldPlaceable = CGameObjectArray::INVALIDOBJID;
-    unsigned long oidModule = g_pAppManager->GetServerExoApp()->GetModule()->GetId();
-
-    if (m_oidPossessor == oidPossessor)
-    {
-        CScriptEvent* pEvent = new CScriptEvent;
-        pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_ACQUIRE_ITEM;
-        pEvent->SetObjectID(0, GetId());
-        pEvent->SetObjectID(1, oidPossessor);
-        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-            0, 0, GetId(), oidModule, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
-        return;
-    }
-
-    int bDifferentOldPossessor = 0;
-    if (oidOldPossessor != CGameObjectArray::INVALIDOBJID)
-    {
-        if (m_oidPossessor != oidOldPossessor)
-            bDifferentOldPossessor = 1;
-        m_oidPossessor = oidOldPossessor;
-    }
-
-    if (m_oidPossessor != CGameObjectArray::INVALIDOBJID)
-    {
-        CGameObject* pObject;
-        if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
-                m_oidPossessor, &pObject) == CGameObjectArray::SUCCESS && pObject != NULL)
-        {
-            if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
-                oidOldCreature = m_oidPossessor;
-            else if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_ITEM)
-            {
-                CSWSItem* pItem = pObject->AsSWSItem();
-                unsigned long oidContainerPossessor = pItem->m_oidPossessor;
-                if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
-                        oidContainerPossessor, &pObject) == CGameObjectArray::SUCCESS &&
-                    pObject != NULL && pObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
-                    oidOldCreature = pItem->m_oidPossessor;
-            }
-            else if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
-                oidOldPlaceable = m_oidPossessor;
-        }
-    }
-    if (oidPossessor != CGameObjectArray::INVALIDOBJID)
-    {
-        CGameObject* pObject;
-        if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
-                oidPossessor, &pObject) == CGameObjectArray::SUCCESS && pObject != NULL)
-        {
-            if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
-                oidNewCreature = oidPossessor;
-            else if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_ITEM)
-            {
-                CSWSItem* pItem = pObject->AsSWSItem();
-                unsigned long oidContainerPossessor = pItem->m_oidPossessor;
-                if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
-                        oidContainerPossessor, &pObject) == CGameObjectArray::SUCCESS &&
-                    pObject != NULL && pObject->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
-                    oidNewCreature = pItem->m_oidPossessor;
-            }
-            else if (pObject->m_nObjectType == CGameObject::OBJECT_TYPE_PLACEABLE)
-                oidNewPlaceable = oidPossessor;
-        }
-    }
-
-    if (!bDifferentOldPossessor && oidOldCreature != oidNewCreature)
-    {
-        if (oidOldCreature != CGameObjectArray::INVALIDOBJID)
-        {
-            if (bRunScripts == 1)
-            {
-                CScriptEvent* pEvent = new CScriptEvent;
-                pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_LOSE_ITEM;
-                pEvent->SetObjectID(0, GetId());
-                g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                    0, 0, GetId(), oidModule, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
-            }
-            CSWSCreature* pCreature =
-                g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidOldCreature);
-            if (pCreature != NULL && bDisplayFeedback == 1)
-            {
-                CSWCCMessageData* pData = new CSWCCMessageData;
-                pData->SetObjectID(0, GetId());
-                pData->SetInteger(0, 1);
-                pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_ITEM_LOST, pData);
-            }
-        }
-        if (oidNewCreature != CGameObjectArray::INVALIDOBJID)
-        {
-            CGameObject* pNewObject;
-            if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
-                    oidNewCreature, &pNewObject) == CGameObjectArray::SUCCESS &&
-                pNewObject != NULL && pNewObject->AsSWSCreature()->m_pStats->GetIsPC())
-            {
-                SetDropable(1);
-                m_bPickpocketable = 1;
-            }
-            if (bDisplayFeedback == 1)
-            {
-                CSWSCreature* pCreature =
-                    g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidNewCreature);
-                if (pCreature != NULL)
-                {
-                    CSWCCMessageData* pData = new CSWCCMessageData;
-                    pData->SetObjectID(0, GetId());
-                    pData->SetInteger(0, 1);
-                    pCreature->SendFeedbackMessage(CSWSCreature::FEEDBACK_ITEM_RECEIVED, pData);
-                }
-            }
-        }
-    }
-    if (oidNewCreature != CGameObjectArray::INVALIDOBJID && bRunScripts == 1)
-    {
-        CScriptEvent* pEvent = new CScriptEvent;
-        pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_ACQUIRE_ITEM;
-        pEvent->SetObjectID(0, GetId());
-        pEvent->SetObjectID(1, oidNewCreature);
-        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-            0, 0, GetId(), oidModule, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
-    }
-    if (oidOldPlaceable != CGameObjectArray::INVALIDOBJID)
-    {
-        CSWSPlaceable* pPlaceable =
-            g_pAppManager->GetServerExoApp()->GetPlaceableByGameObjectID(oidOldPlaceable);
-        if (pPlaceable != NULL && pPlaceable->m_bDieWhenEmpty == 0)
-        {
-            unsigned long oidDisturber = CGameObjectArray::INVALIDOBJID;
-            if (oidNewCreature != CGameObjectArray::INVALIDOBJID)
-                oidDisturber = oidNewCreature;
-            else if (oidNewPlaceable != CGameObjectArray::INVALIDOBJID)
-                oidDisturber = oidNewPlaceable;
-            if (oidDisturber != CGameObjectArray::INVALIDOBJID && bRunScripts == 1)
-            {
-                CScriptEvent* pEvent = new CScriptEvent;
-                pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_INVENTORY_DISTURBED;
-                pEvent->SetInteger(0, 1);
-                pEvent->SetObjectID(0, GetId());
-                g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                    0, 0, oidDisturber, oidOldPlaceable, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
-            }
-        }
-    }
-    if (oidNewPlaceable != CGameObjectArray::INVALIDOBJID)
-    {
-        CSWSPlaceable* pPlaceable =
-            g_pAppManager->GetServerExoApp()->GetPlaceableByGameObjectID(oidNewPlaceable);
-        if (pPlaceable != NULL && pPlaceable->m_bDieWhenEmpty == 0)
-        {
-            unsigned long oidDisturber = CGameObjectArray::INVALIDOBJID;
-            if (oidOldCreature != CGameObjectArray::INVALIDOBJID)
-                oidDisturber = oidOldCreature;
-            else if (oidOldPlaceable != CGameObjectArray::INVALIDOBJID)
-                oidDisturber = oidOldPlaceable;
-            if (oidDisturber != CGameObjectArray::INVALIDOBJID && bRunScripts == 1)
-            {
-                CScriptEvent* pEvent = new CScriptEvent;
-                pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_INVENTORY_DISTURBED;
-                pEvent->SetInteger(0, 0);
-                pEvent->SetObjectID(0, GetId());
-                g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                    0, 0, oidDisturber, oidNewPlaceable, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
-            }
-        }
-    }
-    m_oidPossessor = oidPossessor;
-}
-// PC 0x0055BF20
-void CSWSItem::RemoveFromArea()
-{
-    if (GetArea() != NULL)
-    {
-        GetArea()->RemoveObjectFromArea(m_nId);
-    }
-
-    SetArea(NULL);
-    SetPosition(Vector(), 1, 1, 0);
-}
-
-void CSWSItem::SetNumActiveProperties(int nNumProperties)
-{
-    m_nActiveProperties = nNumProperties;
-    if (m_pActiveProperties != NULL)
-        delete[] m_pActiveProperties;
-    if (nNumProperties != 0)
-        m_pActiveProperties = new CSWItemProperty[m_nActiveProperties];
-    else
-        m_pActiveProperties = NULL;
-}
-// PC 0x0055BF80
-int CSWSItem::ActiveProperty(unsigned short nPropertyType)
-{
-    switch ((unsigned short)nPropertyType)
-    {
-    case 10:
-    case 37:
-    case 46:
-    case 53:
-        return 1;
-    }
-
-    return 0;
 }
 // PC 0x0055F4A0
 void CSWSItem::OpenInventory(unsigned long oidOpener)
@@ -1477,784 +2457,6 @@ NextDamageProperty:
         if (bHeadingAdded) sString = sString + "\n\n";
     }
     }
-}
-// PC 0x00567B10
-CItemRepository::CItemRepository(unsigned long oidOwner, int bFlag)
-    : m_lstItems(0)
-{
-    m_oidOwner = oidOwner;
-    m_nNewItems = 0;
-    m_bUnknown08 = bFlag;
-}
-// PC 0x00567B40
-void CItemRepository::InsertItem(CSWSItem* pItem, int nIndex)
-{
-    if (m_bUnknown08)
-    {
-        return;
-    }
-
-    if (nIndex < 0 || nIndex >= m_lstItems.num)
-    {
-        m_lstItems.Add(pItem->m_nId);
-    }
-    else
-    {
-        m_lstItems.Insert(pItem->m_nId, nIndex);
-    }
-}
-// PC 0x00567BB0
-int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
-                             int bUpdatePossessor, int bNewItem)
-{
-    CGameObject* pOwner;
-    CSWSItem* pContainer;
-    unsigned long oidPossessor;
-    CSWSCreature* pCreature;
-    CSWSItem* pItem;
-    CSWSPlayer* pPlayer;
-    int bFoundPosition;
-    int nPosition;
-    int nLanguage;
-    int nItem;
-
-    pOwner = g_pAppManager->GetServerExoApp()->GetGameObject(m_oidOwner);
-    if (pOwner != NULL)
-    {
-        if (pOwner->AsSWSCreature() != NULL)
-        {
-            if ((*ppItem)->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_CREDITS)
-            {
-                int nGold = (*ppItem)->m_nStackSize;
-                pOwner->AsSWSCreature()->AddGold(nGold, 1);
-                delete *ppItem;
-                *ppItem = NULL;
-                return 1;
-            }
-            else if ((*ppItem)->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_CHEMICALS)
-            {
-                int nChemicals = (*ppItem)->m_nStackSize;
-                pOwner->AsSWSCreature()->AddChemical(nChemicals, 1);
-                delete *ppItem;
-                *ppItem = NULL;
-                return 1;
-            }
-            else if ((*ppItem)->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_COMPONENTS)
-            {
-                int nComponents = (*ppItem)->m_nStackSize;
-                pOwner->AsSWSCreature()->AddComponent(nComponents, 1);
-                delete *ppItem;
-                *ppItem = NULL;
-                return 1;
-            }
-            else if ((*ppItem)->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_PAZAAK_CARD)
-            {
-                pOwner->AsSWSCreature()->AddPazaakCard(*ppItem);
-                delete *ppItem;
-                *ppItem = NULL;
-                return 1;
-            }
-        }
-        else if (pOwner->AsSWSItem() != NULL)
-        {
-            pContainer = pOwner->AsSWSItem();
-            if (g_pRules->GetBaseItemArray()->GetBaseItem(pContainer->GetBaseItemType())
-                    ->m_bIsContainer == 1)
-            {
-                oidPossessor = pContainer->m_oidPossessor;
-                if (oidPossessor != OBJECT_INVALID)
-                {
-                    pCreature = g_pAppManager->GetServerExoApp()
-                                    ->GetCreatureByGameObjectID(oidPossessor);
-                    if (pCreature != NULL)
-                    {
-                        if ((*ppItem)->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_CREDITS)
-                        {
-                            pCreature->AddGold((*ppItem)->m_nStackSize, 1);
-                            delete *ppItem;
-                            *ppItem = NULL;
-                            return 1;
-                        }
-                        else if ((*ppItem)->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_PAZAAK_CARD)
-                        {
-                            pCreature->AddPazaakCard(*ppItem);
-                            delete *ppItem;
-                            *ppItem = NULL;
-                            return 1;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    nPosition = 0;
-    bFoundPosition = 0;
-    nLanguage = g_pAppManager->GetClientExoApp()->GetClientLanguage();
-    CExoString sName;
-    CExoString sItemName;
-    if (m_bUnknown08)
-    {
-        (*ppItem)->m_sLocalizedName.GetString(nLanguage, &sName, 0);
-    }
-
-    if (bMergeItem == 1)
-    {
-        for (nItem = 0; nItem < m_lstItems.num; nItem++)
-        {
-            unsigned long oidItem = m_lstItems[nItem];
-            pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
-            if (pItem != NULL)
-            {
-                if (m_bUnknown08 && !bFoundPosition)
-                {
-                    pItem->m_sLocalizedName.GetString(nLanguage, &sItemName, 0);
-                    if ((unsigned long)(*ppItem)->m_nBaseItem <
-                            (unsigned long)pItem->m_nBaseItem ||
-                        ((*ppItem)->m_nBaseItem == pItem->m_nBaseItem &&
-                         sName < sItemName))
-                    {
-                        nPosition = nItem;
-                        bFoundPosition = 1;
-                    }
-                }
-
-#ifdef _XBOX
-
-                if (pItem->GetBaseItemType() == (*ppItem)->GetBaseItemType() &&
-                    pItem->GetModelVariation() == (*ppItem)->GetModelVariation() &&
-                    (pItem->m_nId != (*ppItem)->m_nId || (ExoXboxRestart(), 1)) &&
-                    pItem->MergeItem(*ppItem) == 1)
-#else
-                if (pItem->GetBaseItemType() == (*ppItem)->GetBaseItemType() &&
-                    pItem->GetModelVariation() == (*ppItem)->GetModelVariation() &&
-                    pItem->MergeItem(*ppItem) == 1)
-#endif
-                {
-                    if (pOwner != NULL)
-                    {
-                        pPlayer = NULL;
-                        if (pOwner->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
-                        {
-                            pPlayer = g_pAppManager->GetServerExoApp()
-                                          ->GetClientObjectByObjectId(m_oidOwner);
-                        }
-                        else if (pOwner->m_nObjectType == CGameObject::OBJECT_TYPE_ITEM)
-                        {
-                            pContainer = pOwner->AsSWSItem();
-                            pPlayer = g_pAppManager->GetServerExoApp()
-                                          ->GetClientObjectByObjectId(pContainer->GetPossessor());
-                        }
-                        if (pPlayer != NULL)
-                        {
-                            g_pAppManager->GetServerExoApp()->GetSWSMessage()
-                                ->SendServerPlayerItemUpdate_DestroyItem(
-                                    pPlayer, (*ppItem)->GetId());
-                        }
-                    }
-
-                    delete *ppItem;
-                    *ppItem = pItem;
-                    oidPossessor = pItem->m_oidPossessor;
-                    pItem->SetPossessor(oidPossessor, bUpdatePossessor,
-                                        bUpdatePossessor, OBJECT_INVALID);
-                    if (bNewItem)
-                    {
-                        m_nNewItems++;
-                    }
-                    return 1;
-                }
-            }
-        }
-    }
-    else if (m_bUnknown08)
-    {
-        nItem = 0;
-        while (nItem < m_lstItems.num)
-        {
-            unsigned long oidItem = m_lstItems[nItem];
-            pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
-            if (pItem != NULL && m_bUnknown08)
-            {
-                pItem->m_sLocalizedName.GetString(nLanguage, &sItemName, 0);
-                if (sName < sItemName)
-                {
-                    nPosition = nItem;
-                    bFoundPosition = 1;
-                    break;
-                }
-            }
-            nItem++;
-        }
-    }
-
-    CExoArrayList<CSWSItem*> lstAddedItems;
-    lstAddedItems.Add(*ppItem);
-    if (m_bUnknown08)
-    {
-        pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByPlayerId(0, 1);
-        if (pPlayer != NULL)
-        {
-            oidPossessor = pPlayer->m_oidPCObject;
-            (*ppItem)->SetPossessor(oidPossessor, bUpdatePossessor,
-                                    bUpdatePossessor, OBJECT_INVALID);
-        }
-        if (bFoundPosition)
-        {
-            m_lstItems.Insert((*ppItem)->GetId(), nPosition);
-        }
-        else
-        {
-            m_lstItems.Add((*ppItem)->GetId());
-        }
-    }
-    else
-    {
-        m_lstItems.Insert((*ppItem)->GetId(), 0);
-    }
-
-    if (bNewItem)
-    {
-        (*ppItem)->m_bNewItem = 1;
-    }
-    if ((*ppItem)->m_bNewItem)
-    {
-        m_nNewItems++;
-    }
-    return 1;
-}
-// PC 0x005680F0
-void CSWSItem::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
-{
-    if (m_bInventoryOpen)
-    {
-        if (bUpdatePlayer)
-        {
-            CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidCloser);
-            if (pPlayer != NULL)
-            {
-                CSWSCreature* pCreature = pPlayer->GetGameObject()->AsSWSCreature();
-                while (m_pRepository->m_lstItems.num > 0u)
-                {
-                    unsigned int nItemCount = m_pRepository->m_lstItems.num;
-                    CSWSItem* pItem = m_pRepository->ItemListGetItem(nItemCount - 1);
-                    m_pRepository->RemoveItem(pItem);
-                    pCreature->GetItemRepository(1)->AddItem(&pItem, 1, 0, 1);
-                }
-            }
-        }
-
-        CScriptEvent* pEvent = new CScriptEvent;
-        pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_CLOSE;
-        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-            0, 0, oidCloser, GetId(), CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
-        m_bInventoryOpen = 0;
-    }
-}
-// PC 0x00568240
-int CSWSItem::CopyItem(CSWSItem* pItem)
-{
-    if (pItem == NULL)
-    {
-        return 0;
-    }
-    if (pItem->m_pRepository != NULL &&
-        (unsigned int)pItem->m_pRepository->GetNumItems() > 0)
-    {
-        return 0;
-    }
-
-    m_sDescIdentified = pItem->m_sDescIdentified;
-    m_sDescription = pItem->m_sDescription;
-    m_sLocalizedName = pItem->m_sLocalizedName;
-    m_sTag = pItem->m_sTag;
-    m_oidPossessor = pItem->GetPossessor();
-    if (pItem->m_pRepository != NULL)
-    {
-        m_pRepository = new CItemRepository(GetId(), 0);
-    }
-    int nProperty;
-    m_nModelVariation = pItem->m_nModelVariation;
-    m_nActiveProperties = pItem->m_nActiveProperties;
-    if (m_nActiveProperties > 0)
-    {
-        m_pActiveProperties = new CSWItemProperty[m_nActiveProperties];
-        for (nProperty = 0; nProperty < m_nActiveProperties; nProperty++)
-        {
-            m_pActiveProperties[nProperty] = pItem->m_pActiveProperties[nProperty];
-        }
-    }
-    m_nPassiveProperties = pItem->m_nPassiveProperties;
-    if (m_nPassiveProperties > 0)
-    {
-        m_pPassiveProperties = new CSWItemProperty[m_nPassiveProperties];
-        for (nProperty = 0; nProperty < m_nPassiveProperties; nProperty++)
-        {
-            m_pPassiveProperties[nProperty] = pItem->m_pPassiveProperties[nProperty];
-        }
-    }
-    m_nAddCost = pItem->m_nAddCost;
-    m_nCharges = pItem->m_nCharges;
-    m_nMaxCharges = pItem->m_nMaxCharges;
-    m_nBaseAC = pItem->m_nBaseAC;
-    m_bInfinite = pItem->m_bInfinite;
-    m_nStackSize = pItem->m_nStackSize;
-    m_nWeight = pItem->m_nWeight;
-    m_bIdentified = pItem->m_bIdentified;
-    m_nUpgrades = pItem->m_nUpgrades;
-    m_nUpgradeLevel = pItem->m_nUpgradeLevel;
-    memcpy(m_anUpgradeSlot, pItem->m_anUpgradeSlot, sizeof(m_anUpgradeSlot));
-    m_nBodyVariation = pItem->m_nBodyVariation;
-    m_nTextureVar = pItem->m_nTextureVar;
-    m_bNonEquippable = pItem->m_bNonEquippable;
-    m_nBaseItem = pItem->GetBaseItemType();
-    for (int i = 0; i < 6; i++)
-    {
-        m_aUnknown04[i] = pItem->m_aUnknown04[i];
-    }
-    g_pAppManager->GetServerExoApp()->GetModule()->AddObjectToLookupTable(
-        m_sTag, GetId());
-    return 1;
-}
-// PC 0x00568520
-void CSWSItem::CloseItemForAllPlayers()
-{
-    CSWBaseItem* pBaseItem;
-    CExoLinkedList<CSWSClient>* pPlayerList;
-    CExoLinkedListNode* pPosition;
-    CSWSPlayer* pPlayer;
-    CSWSObject* pPlayerObject;
-    int nBaseItem;
-
-    nBaseItem = m_nBaseItem;
-    pBaseItem = g_pRules->m_pBaseItems->GetBaseItem(nBaseItem);
-    if (pBaseItem != NULL && pBaseItem->m_bIsContainer != 0)
-    {
-        pPlayerList = g_pAppManager->m_pServerExoApp->GetPlayerList();
-        for (pPosition = pPlayerList->GetHeadPos(); pPosition != NULL;
-             pPlayerList->GetNext(pPosition))
-        {
-            pPlayer =
-                (CSWSPlayer*)pPlayerList->GetAtPos(pPosition);
-            if (pPlayer != NULL)
-            {
-                pPlayerObject = pPlayer->GetGameObject();
-                if (pPlayerObject != NULL &&
-                    pPlayer->m_pContainerGUI->m_oidContainer == m_nId)
-                {
-                    CloseInventory(pPlayerObject->m_nId, 1);
-                }
-            }
-        }
-    }
-}
-// PC 0x005685B0
-int CSWSItem::AcquireItem(CSWSItem** ppItem, unsigned long oidPossessor,
-                          int bDisplayFeedback)
-{
-    CGameObjectArray* pObjectArray =
-        g_pAppManager->m_pServerExoApp->GetObjectArray();
-    CSWSItem* pContainer = NULL;
-    CItemRepository* pRepository;
-    CGameObject* pPossessor;
-    int bResult;
-
-    if ((*ppItem)->m_oidPossessor != oidPossessor)
-    {
-        pContainer = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(
-            (*ppItem)->m_oidPossessor);
-        if (pContainer == NULL || pContainer->m_oidPossessor != oidPossessor)
-        {
-            return 0;
-        }
-        oidPossessor = (*ppItem)->m_oidPossessor;
-    }
-
-    pRepository = m_pRepository;
-    pPossessor = g_pAppManager->m_pServerExoApp->GetGameObject(oidPossessor);
-    if (pPossessor != NULL)
-    {
-        if (pPossessor->m_nObjectType == SW_OBJECT_TYPE_CREATURE)
-        {
-            pPossessor->AsSWSCreature()->RemoveItem(*ppItem, 1,
-                                                    bDisplayFeedback, NULL);
-        }
-        else if (pPossessor->m_nObjectType == SW_OBJECT_TYPE_PLACEABLE)
-        {
-            pPossessor->AsSWSPlaceable()->RemoveItem(*ppItem);
-        }
-        else if (pPossessor->m_nObjectType == SW_OBJECT_TYPE_ITEM &&
-                 pPossessor->AsSWSItem()->m_pRepository != NULL)
-        {
-            CSWSItem* pItem = pPossessor->AsSWSItem();
-            pItem->m_pRepository->RemoveItem(*ppItem);
-        }
-    }
-    else if (pContainer != NULL &&
-             g_pRules->m_pBaseItems->GetBaseItem((*ppItem)->GetBaseItemType())
-                 ->m_bIsContainer &&
-             g_pRules->m_pBaseItems->GetBaseItem(pContainer->GetBaseItemType())
-                 ->m_bIsContainer)
-    {
-        return 0;
-    }
-
-    bResult = pRepository->AddItem(ppItem, 1, 0, 1);
-    if (bResult == 1)
-    {
-        if (pPossessor == NULL && *ppItem != NULL)
-        {
-            (*ppItem)->RemoveFromArea();
-        }
-        if (*ppItem != NULL)
-        {
-            (*ppItem)->SetPossessor(m_nId, 1, bDisplayFeedback, OBJECT_INVALID);
-        }
-    }
-    return bResult;
-}
-// PC 0x00568730
-void CSWSItem::DecrementUses(int nPropertyIndex, unsigned long oidUser)
-{
-
-    if (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nDebugFlags != 0)
-    {
-        return;
-    }
-
-    CSWItemProperty* pProperty = GetActiveProperty(nPropertyIndex);
-    int bChargeBased = 0;
-    int bDestroy = 0;
-    int bRecharges = 0;
-    int nCharges;
-    int nProperty;
-    unsigned long nCalendarDay;
-    unsigned long nTimeOfDay;
-
-    switch (pProperty->m_nCostValue)
-    {
-    case CSWItemProperty::ACTIVATE_ITEM_SINGLE_USE:
-        if (m_nStackSize > 1)
-        {
-            m_nStackSize--;
-        }
-        else
-        {
-            pProperty->m_bUseable = 0;
-            bDestroy = 1;
-        }
-        break;
-    case CSWItemProperty::ACTIVATE_ITEM_5_CHARGES:
-        bChargeBased = 1;
-        nCharges = 5;
-        break;
-    case CSWItemProperty::ACTIVATE_ITEM_4_CHARGES:
-        bChargeBased = 1;
-        nCharges = 4;
-        break;
-    case CSWItemProperty::ACTIVATE_ITEM_3_CHARGES:
-        bChargeBased = 1;
-        nCharges = 3;
-        break;
-    case CSWItemProperty::ACTIVATE_ITEM_2_CHARGES:
-        bChargeBased = 1;
-        nCharges = 2;
-        break;
-    case CSWItemProperty::ACTIVATE_ITEM_1_CHARGE:
-        bChargeBased = 1;
-        nCharges = 1;
-        break;
-    case CSWItemProperty::ACTIVATE_ITEM_1_USE_PER_DAY:
-    case CSWItemProperty::ACTIVATE_ITEM_2_USES_PER_DAY:
-    case CSWItemProperty::ACTIVATE_ITEM_3_USES_PER_DAY:
-    case CSWItemProperty::ACTIVATE_ITEM_4_USES_PER_DAY:
-    case CSWItemProperty::ACTIVATE_ITEM_5_USES_PER_DAY:
-        bRecharges = 1;
-        if (pProperty->m_nUsesPerDay > 0)
-        {
-            pProperty->m_nUsesPerDay--;
-        }
-        if (pProperty->m_nUsesPerDay < 1)
-        {
-            pProperty->m_bUseable = 0;
-        }
-        break;
-    case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_1_MINUTE:
-    case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_2_MINUTES:
-    case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_3_MINUTES:
-    case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_4_MINUTES:
-    case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_5_MINUTES:
-        bRecharges = 1;
-        g_pAppManager->GetServerExoApp()->GetWorldTimer()->GetWorldTime(
-            &nCalendarDay, &nTimeOfDay);
-        pProperty->m_nLastUseDay = nCalendarDay;
-        pProperty->m_nLastUseTime = nTimeOfDay;
-        pProperty->m_bUseable = 0;
-        break;
-    }
-
-    if (bChargeBased)
-    {
-        if (m_nCharges >= nCharges)
-        {
-            m_nCharges -= nCharges;
-        }
-        for (nProperty = 0; nProperty < m_nActiveProperties; nProperty++)
-        {
-            pProperty = GetActiveProperty(nProperty);
-            if (pProperty != NULL &&
-                pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM)
-            {
-                int nCostValue = pProperty->m_nCostValue;
-                if ((nCostValue == CSWItemProperty::ACTIVATE_ITEM_5_CHARGES &&
-                     m_nCharges < 5) ||
-                    (nCostValue == CSWItemProperty::ACTIVATE_ITEM_4_CHARGES &&
-                     m_nCharges < 4) ||
-                    (nCostValue == CSWItemProperty::ACTIVATE_ITEM_3_CHARGES &&
-                     m_nCharges < 3) ||
-                    (nCostValue == CSWItemProperty::ACTIVATE_ITEM_2_CHARGES &&
-                     m_nCharges < 2) ||
-                    (nCostValue == CSWItemProperty::ACTIVATE_ITEM_1_CHARGE &&
-                     m_nCharges < 1))
-                {
-                    pProperty->m_bUseable = 0;
-                }
-            }
-        }
-    }
-
-    if ((unsigned char)pProperty->m_bUseable == 0)
-    {
-        if (GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_STIMULANT ||
-            GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_REPAIR_KIT ||
-            GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_SQUAD_MEDPAC)
-        {
-            bDestroy = 1;
-        }
-        else if (bChargeBased)
-        {
-            int nProperties = m_nActiveProperties;
-            for (nProperty = 0; nProperty < m_nActiveProperties; nProperty++)
-            {
-                CSWItemProperty* pChargeProperty = GetActiveProperty(nProperty);
-                if (pChargeProperty != NULL &&
-                    pChargeProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM)
-                {
-                    int nCostValue = pChargeProperty->m_nCostValue;
-                    if ((nCostValue == CSWItemProperty::ACTIVATE_ITEM_5_CHARGES ||
-                         nCostValue == CSWItemProperty::ACTIVATE_ITEM_4_CHARGES ||
-                         nCostValue == CSWItemProperty::ACTIVATE_ITEM_3_CHARGES ||
-                         nCostValue == CSWItemProperty::ACTIVATE_ITEM_2_CHARGES ||
-                         nCostValue == CSWItemProperty::ACTIVATE_ITEM_1_CHARGE) &&
-                        (unsigned char)pChargeProperty->m_bUseable != 0)
-                    {
-                        break;
-                    }
-                }
-            }
-            if (nProperty == nProperties)
-            {
-                bDestroy = 1;
-            }
-        }
-    }
-
-    if (bDestroy && !bRecharges)
-    {
-        CSWSPlayer* pPlayer =
-            g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidUser);
-        if (pPlayer != NULL)
-        {
-            g_pAppManager->GetServerExoApp()->GetSWSMessage()
-                ->SendServerPlayerItemUpdate_DestroyItem(pPlayer, GetId());
-        }
-        m_bDeleting = 1;
-        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-            0, 0, oidUser, GetId(), CServerAIMaster::EVENT_DESTROY_OBJECT, NULL);
-    }
-    else
-    {
-        UpdateUsedActiveProperties();
-    }
-}
-// PC 0x00568A90
-void CSWSItem::AddProperty(unsigned short nPropertyType, unsigned short nSubtype,
-                          unsigned short nCostValue, unsigned char nParam1Value,
-                          CExoArrayList<CExoString>& aStrings)
-{
-    CExoString sProperty;
-    CExoString sSubTypeResRef;
-    int nCostTableResRef = 0;
-    int nParam1ResRef = -1;
-    int bHasSubtype;
-    int bHasParam1;
-    {
-        int nName = -1;
-
-        bool bFailed;
-        {
-            CExoString sColumn("Name");
-            C2DA* pTable = g_pRules->Get2DArrays()->m_pItemPropDef;
-            bFailed = pTable->GetINTEntry(nPropertyType, sColumn, &nName) == 0;
-        }
-        if (bFailed)
-            return;
-
-        {
-            CExoString sColumn("SubTypeResRef");
-            C2DA* pTable = g_pRules->Get2DArrays()->m_pItemPropDef;
-            bHasSubtype = pTable->GetCExoStringEntry(
-                nPropertyType, sColumn, &sSubTypeResRef);
-        }
-        {
-            CExoString sColumn("CostTableResRef");
-            C2DA* pTable = g_pRules->Get2DArrays()->m_pItemPropDef;
-            pTable->GetINTEntry(nPropertyType, sColumn, &nCostTableResRef);
-        }
-        {
-            CExoString sColumn("Param1ResRef");
-            C2DA* pTable = g_pRules->Get2DArrays()->m_pItemPropDef;
-            bHasParam1 = pTable->GetINTEntry(nPropertyType, sColumn, &nParam1ResRef);
-        }
-
-        sProperty = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
-    }
-    if (bHasSubtype || bHasParam1 || nCostTableResRef)
-    {
-        sProperty = sProperty + ":";
-        if (bHasSubtype)
-        {
-            C2DA* pSubtypeTable = new C2DA(sSubTypeResRef, 0);
-            if (pSubtypeTable->Load2DArray() == 0)
-                return;
-
-            int nTableRef;
-            int nSubtypeName = -1;
-            pSubtypeTable->GetINTEntry(nSubtype, "Name", &nSubtypeName);
-            bool bHasCost;
-            {
-                CExoString sColumn("CostTableResRef");
-                bHasCost = pSubtypeTable->GetINTEntry(nSubtype, sColumn, &nTableRef)
-                    && nTableRef != 0;
-            }
-            if (bHasCost)
-                nCostTableResRef = nTableRef;
-            if (pSubtypeTable->GetINTEntry(nSubtype, "Param1ResRef", &nTableRef))
-            {
-                bHasParam1 = 1;
-                nParam1ResRef = nTableRef;
-            }
-            delete pSubtypeTable;
-
-            if (nPropertyType == CSWItemProperty::ITEM_PROPERTY_DAMAGE_BONUS &&
-                (nSubtype == CSWItemProperty::DAMAGE_SUBTYPE_BLUDGEONING ||
-                 nSubtype == CSWItemProperty::DAMAGE_SUBTYPE_PIERCING ||
-                 nSubtype == CSWItemProperty::DAMAGE_SUBTYPE_SLASHING))
-            {
-                sProperty = sProperty + " " +
-                    g_pAppManager->GetClientExoApp()->GetGUIString(
-                        GUI_STRREF_DAMAGE_PHYSICAL);
-            }
-            else
-            {
-                sProperty = sProperty + " " +
-                    g_pAppManager->GetClientExoApp()->GetGUIString(nSubtypeName);
-            }
-
-            if (bHasParam1 || nCostTableResRef)
-                sProperty = sProperty + ",";
-        }
-
-        if (nCostTableResRef)
-        {
-            C2DA* pCostTable = g_pRules->Get2DArrays()->GetIPRPCostTable(nCostTableResRef);
-            int nCostName = -1;
-            pCostTable->GetINTEntry(nCostValue, "Name", &nCostName);
-            sProperty = sProperty + " " +
-                g_pAppManager->GetClientExoApp()->GetGUIString(nCostName);
-            if (bHasParam1)
-                sProperty = sProperty + ",";
-        }
-        if (bHasParam1)
-        {
-            C2DA* pParamTable = g_pRules->Get2DArrays()->GetIPRPParamTable(nParam1ResRef);
-            int nParamName = -1;
-            pParamTable->GetINTEntry(nParam1Value, "Name", &nParamName);
-            sProperty = sProperty + " " +
-                g_pAppManager->GetClientExoApp()->GetGUIString(nParamName);
-        }
-    }
-    aStrings.Add(sProperty);
-}
-// PC 0x00569240
-void CSWSItem::AddAttackModifierProperties(CExoString& sString)
-{
-    int nAttackModifier = 0;
-    CExoString sAttackModifier;
-    if (GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ATTACK_BONUS, 0) ||
-        GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ATTACK_PENALTY, 0) ||
-        GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_DECREASED_ATTACK_MODIFIER, 0) ||
-        GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ENHANCEMENT_BONUS, 0))
-    {
-        for (int nProperty = 0; nProperty < m_nPassiveProperties; nProperty++)
-        {
-            CSWItemProperty* pProperty = GetPassiveProperty(nProperty);
-            if (pProperty != NULL &&
-                (pProperty->m_nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
-                 ((1 << pProperty->m_nUpgradeType) & m_nUpgrades) != 0))
-            {
-                if (pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ENHANCEMENT_BONUS ||
-                    pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ATTACK_BONUS)
-                    nAttackModifier += pProperty->m_nCostValue;
-                if (pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ATTACK_PENALTY ||
-                    pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_DECREASED_ATTACK_MODIFIER)
-                    nAttackModifier -= pProperty->m_nCostValue;
-            }
-        }
-    }
-    CExoString sSuffix = g_pSWTlkTable->GetSimpleString(TLK_STRREF_ATTACK_MODIFIER_SUFFIX);
-    if (nAttackModifier < 0)
-    {
-        if (GetBaseItemType() == 45)
-        {
-            sAttackModifier.Format("%s: %d%s\n", g_pAppManager->GetClientExoApp()->GetGUIString(
-                GUI_STRREF_ITEM_ATTACK_MODIFIER).CStr(), nAttackModifier, sSuffix);
-        }
-        else
-        {
-            sAttackModifier.Format("%s: %d\n", g_pAppManager->GetClientExoApp()->GetGUIString(
-                GUI_STRREF_ITEM_ATTACK_MODIFIER).CStr(), nAttackModifier);
-        }
-        sString = sString + sAttackModifier;
-    }
-    else if (nAttackModifier > 0)
-    {
-        if (GetBaseItemType() == 45)
-        {
-            sAttackModifier.Format("%s: +%d%s\n", g_pAppManager->GetClientExoApp()->GetGUIString(
-                GUI_STRREF_ITEM_ATTACK_MODIFIER).CStr(), nAttackModifier, sSuffix);
-        }
-        else
-        {
-            sAttackModifier.Format("%s: +%d\n", g_pAppManager->GetClientExoApp()->GetGUIString(
-                GUI_STRREF_ITEM_ATTACK_MODIFIER).CStr(), nAttackModifier);
-        }
-        sString = sString + sAttackModifier;
-    }
-    if (GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ENHANCEMENT_BONUS_VS_ALIGNMENT_GROUP, 0) ||
-        GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ENHANCEMENT_BONUS_VS_RACIAL_GROUP, 0) ||
-        GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ATTACK_BONUS_VS_ALIGNMENT_GROUP, 0) ||
-        GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ATTACK_BONUS_VS_RACIAL_GROUP, 0))
-    {
-        if (nAttackModifier == 0)
-            sString = sString + g_pAppManager->GetClientExoApp()->GetGUIString(
-                GUI_STRREF_ITEM_ATTACK_MODIFIER) + ": ";
-        AddAttackBonusStrings(CSWItemProperty::ITEM_PROPERTY_ENHANCEMENT_BONUS_VS_ALIGNMENT_GROUP, sString);
-        AddAttackBonusStrings(CSWItemProperty::ITEM_PROPERTY_ENHANCEMENT_BONUS_VS_RACIAL_GROUP, sString);
-        AddAttackBonusStrings(CSWItemProperty::ITEM_PROPERTY_ATTACK_BONUS_VS_ALIGNMENT_GROUP, sString);
-        AddAttackBonusStrings(CSWItemProperty::ITEM_PROPERTY_ATTACK_BONUS_VS_RACIAL_GROUP, sString);
-    }
-    sString = sString + "\n";
 }
 
 inline unsigned short CSWItemProperty::GetPropertyType()
@@ -3229,985 +3431,783 @@ void CSWSItem::UpdateUsedActiveProperties()
                 nChangedMask, m_aActivePropertyUsesLeft);
     }
 }
-// PC 0x0055C040
-CSWItemProperty* CSWSItem::GetActiveProperty(int nIndex)
+// PC 0x00567B10
+CItemRepository::CItemRepository(unsigned long oidOwner, int bFlag)
+    : m_lstItems(0)
 {
-    if (nIndex < 0 || nIndex >= m_nActiveProperties)
+    m_oidOwner = oidOwner;
+    m_nNewItems = 0;
+    m_bUnknown08 = bFlag;
+}
+// PC 0x00567B40
+void CItemRepository::InsertItem(CSWSItem* pItem, int nIndex)
+{
+    if (m_bUnknown08)
     {
-        return NULL;
+        return;
     }
 
-    return &m_pActiveProperties[nIndex];
-}
-// PC 0x0055C070
-CSWItemProperty* CSWSItem::GetPassiveProperty(int nIndex)
-{
-    if (nIndex < 0 || nIndex >= m_nPassiveProperties)
+    if (nIndex < 0 || nIndex >= m_lstItems.num)
     {
-        return NULL;
+        m_lstItems.Add(pItem->m_nId);
     }
-
-    return &m_pPassiveProperties[nIndex];
-}
-// PC 0x0055C0A0
-int CSWSItem::GetPropertyByType(CSWItemProperty** ppProperty,
-                                unsigned short nPropertyType,
-                                unsigned short nSubtype)
-{
-    int nActiveProperties;
-    int nProperty;
-    CSWItemProperty* pItemProperty;
-    int nPassiveProperties;
-
-    nActiveProperties = m_nActiveProperties;
-    for (nProperty = 0; nProperty < nActiveProperties; nProperty++)
+    else
     {
-        pItemProperty = GetActiveProperty(nProperty);
-        if ((pItemProperty->m_nUpgradeType == 0xFF ||
-             ((1 << pItemProperty->m_nUpgradeType) & m_nUpgrades) != 0) &&
-            GetActiveProperty(nProperty)->m_nPropertyType == nPropertyType)
+        m_lstItems.Insert(pItem->m_nId, nIndex);
+    }
+}
+// PC 0x00567BB0
+int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
+                             int bUpdatePossessor, int bNewItem)
+{
+    CGameObject* pOwner;
+    CSWSItem* pContainer;
+    unsigned long oidPossessor;
+    CSWSCreature* pCreature;
+    CSWSItem* pItem;
+    CSWSPlayer* pPlayer;
+    int bFoundPosition;
+    int nPosition;
+    int nLanguage;
+    int nItem;
+
+    pOwner = g_pAppManager->GetServerExoApp()->GetGameObject(m_oidOwner);
+    if (pOwner != NULL)
+    {
+        if (pOwner->AsSWSCreature() != NULL)
         {
-            if (nSubtype != 0)
+            if ((*ppItem)->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_CREDITS)
             {
-                if (GetActiveProperty(nProperty)->m_nSubtype == nSubtype)
-                {
-                    *ppProperty = GetActiveProperty(nProperty);
-                    return 1;
-                }
+                int nGold = (*ppItem)->m_nStackSize;
+                pOwner->AsSWSCreature()->AddGold(nGold, 1);
+                delete *ppItem;
+                *ppItem = NULL;
+                return 1;
             }
-            else
+            else if ((*ppItem)->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_CHEMICALS)
             {
-                *ppProperty = GetActiveProperty(nProperty);
+                int nChemicals = (*ppItem)->m_nStackSize;
+                pOwner->AsSWSCreature()->AddChemical(nChemicals, 1);
+                delete *ppItem;
+                *ppItem = NULL;
+                return 1;
+            }
+            else if ((*ppItem)->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_COMPONENTS)
+            {
+                int nComponents = (*ppItem)->m_nStackSize;
+                pOwner->AsSWSCreature()->AddComponent(nComponents, 1);
+                delete *ppItem;
+                *ppItem = NULL;
+                return 1;
+            }
+            else if ((*ppItem)->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_PAZAAK_CARD)
+            {
+                pOwner->AsSWSCreature()->AddPazaakCard(*ppItem);
+                delete *ppItem;
+                *ppItem = NULL;
                 return 1;
             }
         }
-        nActiveProperties = m_nActiveProperties;
-    }
-
-    nPassiveProperties = m_nPassiveProperties;
-    for (nProperty = 0; nProperty < nPassiveProperties; nProperty++)
-    {
-        pItemProperty = GetPassiveProperty(nProperty);
-        if ((pItemProperty->m_nUpgradeType == 0xFF ||
-             ((1 << pItemProperty->m_nUpgradeType) & m_nUpgrades) != 0) &&
-            GetPassiveProperty(nProperty)->m_nPropertyType == nPropertyType)
+        else if (pOwner->AsSWSItem() != NULL)
         {
-            if (nSubtype != 0)
+            pContainer = pOwner->AsSWSItem();
+            if (g_pRules->GetBaseItemArray()->GetBaseItem(pContainer->GetBaseItemType())
+                    ->m_bIsContainer == 1)
             {
-                if (GetPassiveProperty(nProperty)->m_nSubtype == nSubtype)
+                oidPossessor = pContainer->m_oidPossessor;
+                if (oidPossessor != OBJECT_INVALID)
                 {
-                    *ppProperty = GetPassiveProperty(nProperty);
-                    return 1;
+                    pCreature = g_pAppManager->GetServerExoApp()
+                                    ->GetCreatureByGameObjectID(oidPossessor);
+                    if (pCreature != NULL)
+                    {
+                        if ((*ppItem)->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_CREDITS)
+                        {
+                            pCreature->AddGold((*ppItem)->m_nStackSize, 1);
+                            delete *ppItem;
+                            *ppItem = NULL;
+                            return 1;
+                        }
+                        else if ((*ppItem)->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_PAZAAK_CARD)
+                        {
+                            pCreature->AddPazaakCard(*ppItem);
+                            delete *ppItem;
+                            *ppItem = NULL;
+                            return 1;
+                        }
+                    }
                 }
             }
-            else
+        }
+    }
+
+    nPosition = 0;
+    bFoundPosition = 0;
+    nLanguage = g_pAppManager->GetClientExoApp()->GetClientLanguage();
+    CExoString sName;
+    CExoString sItemName;
+    if (m_bUnknown08)
+    {
+        (*ppItem)->m_sLocalizedName.GetString(nLanguage, &sName, 0);
+    }
+
+    if (bMergeItem == 1)
+    {
+        for (nItem = 0; nItem < m_lstItems.num; nItem++)
+        {
+            unsigned long oidItem = m_lstItems[nItem];
+            pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
+            if (pItem != NULL)
             {
-                *ppProperty = GetPassiveProperty(nProperty);
-                return 1;
-            }
-        }
-        nPassiveProperties = m_nPassiveProperties;
-    }
-
-    return 0;
-}
-// PC 0x0055C290
-void CSWSItem::ApplyItemProperties(CSWSCreature* pCreature,
-                                   unsigned long nSlot, int bLoading)
-{
-    CServerAIMaster* pServerAIMaster;
-    int nPassiveProperties;
-    int nProperty;
-    CSWItemProperty* pItemProperty;
-    unsigned char nUpgradeType;
-
-    pServerAIMaster = g_pAppManager->GetServerExoApp()->GetServerAIMaster();
-    if (pServerAIMaster != NULL)
-    {
-        nPassiveProperties = m_nPassiveProperties;
-        for (nProperty = 0; nProperty < nPassiveProperties; nProperty++)
-        {
-            pItemProperty = GetPassiveProperty(nProperty);
-            nUpgradeType = pItemProperty->m_nUpgradeType;
-            if (nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
-                ((1 << nUpgradeType) & m_nUpgrades) != 0)
-            {
-                pServerAIMaster->OnItemPropertyApplied(
-                    this, pItemProperty, pCreature, nSlot, bLoading);
-            }
-            nPassiveProperties = m_nPassiveProperties;
-        }
-    }
-}
-// PC 0x0055C310
-void CSWSItem::RemoveItemProperties(CSWSCreature* pCreature,
-                                    unsigned long nSlot)
-{
-    CServerAIMaster* pServerAIMaster;
-    int nPassiveProperties;
-    int nProperty;
-    CSWItemProperty* pItemProperty;
-    unsigned char nUpgradeType;
-
-    pServerAIMaster = g_pAppManager->m_pServerExoApp->GetServerAIMaster();
-    if (pServerAIMaster != NULL)
-    {
-        nPassiveProperties = m_nPassiveProperties;
-        for (nProperty = 0; nProperty < nPassiveProperties; nProperty++)
-        {
-            pItemProperty = GetPassiveProperty(nProperty);
-            nUpgradeType = pItemProperty->m_nUpgradeType;
-            if (nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
-                ((1 << nUpgradeType) & m_nUpgrades) != 0)
-            {
-                pServerAIMaster->OnItemPropertyRemoved(
-                    this, pItemProperty, pCreature, nSlot);
-            }
-            nPassiveProperties = m_nPassiveProperties;
-        }
-    }
-    pCreature->RemoveEffectByCreator(m_nId);
-}
-// PC 0x0055C3A0
-int CSWSItem::ComputeArmorClass()
-{
-    if (GetBaseItem()->m_bUnknown18 != 1)
-    {
-        return 0;
-    }
-
-    return GetBaseItem()->m_nBaseAC;
-}
-// PC 0x0055C3D0
-int CSWSItem::CompareItem(CSWSItem* pItem)
-{
-    int nActiveProperty;
-    int nPassiveProperty;
-    int nSecondPassiveProperty;
-    CSWItemProperty* pThisProperty;
-    CSWItemProperty* pOtherProperty;
-
-    if (m_nUpgrades != pItem->m_nUpgrades ||
-        m_nActiveProperties != pItem->m_nActiveProperties ||
-        m_nPassiveProperties != pItem->m_nPassiveProperties ||
-        m_bPlotObject != pItem->m_bPlotObject ||
-        m_nCharges != pItem->m_nCharges || m_nBaseItem != pItem->m_nBaseItem ||
-        m_bStolen != pItem->m_bStolen ||
-        m_nModelVariation != pItem->m_nModelVariation ||
-        m_nBodyVariation != pItem->m_nBodyVariation ||
-        m_nTextureVar != pItem->m_nTextureVar || m_sTag != pItem->m_sTag ||
-        m_sLocalizedName != pItem->m_sLocalizedName)
-    {
-        return 0;
-    }
-
-    for (nActiveProperty = 0; nActiveProperty < m_nActiveProperties;
-         nActiveProperty++)
-    {
-        pThisProperty = GetActiveProperty(nActiveProperty);
-        pOtherProperty = pItem->GetActiveProperty(nActiveProperty);
-        if (pThisProperty->m_nPropertyType != pOtherProperty->m_nPropertyType ||
-            pThisProperty->m_nSubtype != pOtherProperty->m_nSubtype ||
-            pThisProperty->m_nCostTable != pOtherProperty->m_nCostTable ||
-            pThisProperty->m_nCostValue != pOtherProperty->m_nCostValue ||
-            pThisProperty->m_nParam1 != pOtherProperty->m_nParam1 ||
-            pThisProperty->m_nParam1Value != pOtherProperty->m_nParam1Value ||
-            pThisProperty->m_nUsesPerDay != pOtherProperty->m_nUsesPerDay ||
-            pThisProperty->m_nUpgradeType != pOtherProperty->m_nUpgradeType)
-        {
-            return 0;
-        }
-    }
-
-    for (nPassiveProperty = 0; nPassiveProperty < m_nPassiveProperties;
-         nPassiveProperty++)
-    {
-        pThisProperty = GetPassiveProperty(nPassiveProperty);
-        pOtherProperty = pItem->GetPassiveProperty(nPassiveProperty);
-        if (pThisProperty->m_nPropertyType != pOtherProperty->m_nPropertyType ||
-            pThisProperty->m_nSubtype != pOtherProperty->m_nSubtype ||
-            pThisProperty->m_nCostTable != pOtherProperty->m_nCostTable ||
-            pThisProperty->m_nCostValue != pOtherProperty->m_nCostValue ||
-            pThisProperty->m_nParam1 != pOtherProperty->m_nParam1 ||
-            pThisProperty->m_nParam1Value != pOtherProperty->m_nParam1Value ||
-            pThisProperty->m_nUsesPerDay != pOtherProperty->m_nUsesPerDay ||
-            pThisProperty->m_nUpgradeType != pOtherProperty->m_nUpgradeType)
-        {
-            return 0;
-        }
-    }
-
-    for (nSecondPassiveProperty = 0;
-         nSecondPassiveProperty < m_nPassiveProperties;
-         nSecondPassiveProperty++)
-    {
-        pThisProperty = GetPassiveProperty(nSecondPassiveProperty);
-        pOtherProperty = pItem->GetPassiveProperty(nSecondPassiveProperty);
-        if (pThisProperty->m_nPropertyType != pOtherProperty->m_nPropertyType ||
-            pThisProperty->m_nSubtype != pOtherProperty->m_nSubtype ||
-            pThisProperty->m_nCostTable != pOtherProperty->m_nCostTable ||
-            pThisProperty->m_nCostValue != pOtherProperty->m_nCostValue ||
-            pThisProperty->m_nParam1 != pOtherProperty->m_nParam1 ||
-            pThisProperty->m_nParam1Value != pOtherProperty->m_nParam1Value ||
-            pThisProperty->m_nUsesPerDay != pOtherProperty->m_nUsesPerDay ||
-            pThisProperty->m_nUpgradeType != pOtherProperty->m_nUpgradeType)
-        {
-            return 0;
-        }
-    }
-
-    return 1;
-}
-// PC 0x0055C670
-int CSWSItem::MergeItem(CSWSItem* pItem)
-{
-    if (CompareItem(pItem))
-    {
-        CSWBaseItem* pBaseItem =
-            g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType());
-        if (m_nStackSize + pItem->m_nStackSize > pBaseItem->GetMaxStackSize())
-        {
-            int nOldStackSize = m_nStackSize;
-            m_nStackSize = pBaseItem->GetMaxStackSize();
-            pItem->m_nStackSize += nOldStackSize - pBaseItem->GetMaxStackSize();
-            return 0;
-        }
-
-        m_nStackSize += pItem->m_nStackSize;
-        return 1;
-    }
-
-    return 0;
-}
-// PC 0x0055C6E0
-int CSWSItem::GetCost()
-{
-    if (m_bPlotObject == 1)
-    {
-        return 0;
-    }
+                if (m_bUnknown08 && !bFoundPosition)
+                {
+                    pItem->m_sLocalizedName.GetString(nLanguage, &sItemName, 0);
+                    if ((unsigned long)(*ppItem)->m_nBaseItem <
+                            (unsigned long)pItem->m_nBaseItem ||
+                        ((*ppItem)->m_nBaseItem == pItem->m_nBaseItem &&
+                         sName < sItemName))
+                    {
+                        nPosition = nItem;
+                        bFoundPosition = 1;
+                    }
+                }
 
 #ifdef _XBOX
-    if ((unsigned int)(m_nAddCost * GetBaseItem()->m_fCostMultiplier) > 1) return (unsigned int)(m_nAddCost * GetBaseItem()->m_fCostMultiplier);
+
+                if (pItem->GetBaseItemType() == (*ppItem)->GetBaseItemType() &&
+                    pItem->GetModelVariation() == (*ppItem)->GetModelVariation() &&
+                    (pItem->m_nId != (*ppItem)->m_nId || (ExoXboxRestart(), 1)) &&
+                    pItem->MergeItem(*ppItem) == 1)
 #else
-    if ((unsigned int)(GetBaseItem()->m_fCostMultiplier * (double)m_nAddCost) > 1) { return (int)(GetBaseItem()->m_fCostMultiplier * (double)m_nAddCost); }
+                if (pItem->GetBaseItemType() == (*ppItem)->GetBaseItemType() &&
+                    pItem->GetModelVariation() == (*ppItem)->GetModelVariation() &&
+                    pItem->MergeItem(*ppItem) == 1)
 #endif
-
-    return 1;
-}
-// PC 0x0055C730
-unsigned long CSWSItem::GetDamageFlags()
-{
-    unsigned long nDamageFlags;
-    int nBaseItem;
-    CSWBaseItem* pBaseItem;
-
-    nBaseItem = m_nBaseItem;
-    pBaseItem = g_pRules->m_pBaseItems->GetBaseItem(nBaseItem);
-    if (pBaseItem == NULL)
-    {
-        return DAMAGE_TYPE_BLUDGEONING;
-    }
-
-    nDamageFlags = pBaseItem->m_nDamageFlags;
-    if (nDamageFlags == 0)
-    {
-        return DAMAGE_TYPE_BLUDGEONING;
-    }
-
-    return nDamageFlags;
-}
-// PC 0x0055C760
-unsigned char CSWSItem::GetMinEquipLevel()
-{
-    CTwoDimArrays* pTables = g_pRules->m_p2DArrays;
-    EXOXBOXASSERT(pTables->m_pItemValues);
-    C2DA* pItemValues = pTables->m_pItemValues;
-    int nLevel;
-    int nMaxSingleItemValue;
-
-    for (nLevel = 0; nLevel < pItemValues->m_nNumRows; nLevel++)
-    {
-        pItemValues->GetINTEntry(nLevel, "MAXSINGLEITEMVALUE",
-                                &nMaxSingleItemValue);
-        if ((unsigned long)GetCost() <= (unsigned long)nMaxSingleItemValue)
-        {
-            break;
-        }
-    }
-
-    unsigned char nRequiredLevel = nLevel;
-    nRequiredLevel++;
-    return nRequiredLevel;
-}
-// PC 0x0055C850
-void CSWSItem::SetIdentified(int bIdentified)
-{
-    m_bIdentified = bIdentified;
-}
-// PC 0x0055C870
-CSWCItem* CSWSItem::GetClientItem()
-{
-    if (GetClientObject() != NULL)
-    {
-        return GetClientObject()->AsSWCItem();
-    }
-
-    return NULL;
-}
-// PC 0x0055C8A0
-unsigned char CSWSItem::GetUpgradableType(C2DA* pTable)
-{
-    unsigned char nType = UPGRADABLE_TYPE_NONE;
-    if (m_nUpgradeLevel > 0)
-    {
-        unsigned char nItemType = GetBaseItem()->m_nItemType;
-        if (nItemType == 0 || nItemType == 1 || nItemType == 2)
-        {
-            nType = UPGRADABLE_TYPE_MELEE;
-        }
-        else if (nItemType == 39 || nItemType == 40 || nItemType == 41)
-        {
-            nType = UPGRADABLE_TYPE_LIGHTSABER;
-        }
-        else if (nItemType == 3 || nItemType == 4 || nItemType == 5)
-        {
-            nType = UPGRADABLE_TYPE_BLASTER;
-        }
-        else if (nItemType >= 31 && nItemType <= 38)
-        {
-            nType = UPGRADABLE_TYPE_ARMOR;
-        }
-    }
-    return nType;
-}
-// PC 0x0055C910
-void CSWSItem::AddCNPCRequirements(CExoString& sString)
-{
-    CSWPartyTable* pPartyTable = g_pAppManager->GetServerExoApp()->GetPartyTable();
-    if (pPartyTable != NULL && pPartyTable->GetInfluence(1) != -1)
-    {
-        int nBaseItem = m_nBaseItem;
-        if (nBaseItem == 35 || nBaseItem == 36 || nBaseItem == 37 ||
-            nBaseItem == 97 || nBaseItem == 98 || nBaseItem == 99 ||
-            nBaseItem == 102)
-        {
-            sString = sString + g_pAppManager->GetClientExoApp()->GetGUIString(
-                GUI_STRREF_CNPC_REQUIRED) + ":\n";
-            sString = sString + g_pAppManager->GetClientExoApp()->GetGUIString(
-                GUI_STRREF_CNPC_REQUIREMENT) + "\n";
-            sString = sString + "\n";
-        }
-    }
-}
-// PC 0x0055CB30
-void CSWSItem::AddRangeProperties(CExoString& sString)
-{
-    CExoString sRange;
-    int bRanged = GetBaseItem()->m_nRangedWeapon > 0;
-    if (bRanged > 0)
-    {
-        int nRange = (int)GetBaseItem()->m_fMaxAttackRange;
-        sRange.Format("%s: %dm\n", g_pAppManager->GetClientExoApp()->GetGUIString(
-            GUI_STRREF_ITEM_RANGE).CStr(), nRange);
-        sString = sString + sRange + "\n";
-    }
-}
-// PC 0x0055CC70
-void CSWSItem::AddWeaponSizeProperties(CExoString& sString)
-{
-    char nWeaponSize = GetBaseItem()->m_nWeaponSize;
-    if (nWeaponSize == 2)
-    {
-        CExoString sNewLine("\n\n");
-        CClientExoApp* pClientExoApp;
-        pClientExoApp = g_pAppManager->m_pClientExoApp;
-        sString = sString + pClientExoApp->GetGUIString(0xA4A1) + sNewLine;
-    }
-}
-// PC 0x0055CD50
-void CSWSItem::GetDamageTypeString(unsigned long nDamageFlags,
-                                   CExoString& sString)
-{
-    CClientExoApp* pClientExoApp;
-    int nDamageTypes;
-
-    nDamageTypes = 0;
-    if ((nDamageFlags & 7) != 0)
-    {
-        pClientExoApp = g_pAppManager->m_pClientExoApp;
-        sString = pClientExoApp->GetGUIString(0x9698);
-        nDamageTypes = 1;
-    }
-
-    if ((nDamageFlags & 8) != 0)
-    {
-        if (nDamageTypes > 0)
-        {
-            sString = sString + ", ";
-        }
-        pClientExoApp = g_pAppManager->m_pClientExoApp;
-        sString = sString + pClientExoApp->GetGUIString(0x9699);
-        nDamageTypes++;
-    }
-
-    if ((nDamageFlags & 0x10) != 0)
-    {
-        if (nDamageTypes > 0)
-        {
-            sString = sString + ", ";
-        }
-        pClientExoApp = g_pAppManager->m_pClientExoApp;
-        sString = sString + pClientExoApp->GetGUIString(0x969A);
-        nDamageTypes++;
-    }
-
-    if ((nDamageFlags & 0x20) != 0)
-    {
-        if (nDamageTypes > 0)
-        {
-            sString = sString + ", ";
-        }
-        pClientExoApp = g_pAppManager->m_pClientExoApp;
-        sString = sString + pClientExoApp->GetGUIString(0x969B);
-        nDamageTypes++;
-    }
-
-    if ((nDamageFlags & 0x40) != 0)
-    {
-        if (nDamageTypes > 0)
-        {
-            sString = sString + ", ";
-        }
-        pClientExoApp = g_pAppManager->m_pClientExoApp;
-        sString = sString + pClientExoApp->GetGUIString(0x969C);
-        nDamageTypes++;
-    }
-
-    if ((nDamageFlags & 0x80) != 0)
-    {
-        if (nDamageTypes > 0)
-        {
-            sString = sString + ", ";
-        }
-        pClientExoApp = g_pAppManager->m_pClientExoApp;
-        sString = sString + pClientExoApp->GetGUIString(0x969D);
-        nDamageTypes++;
-    }
-
-    if ((nDamageFlags & 0x100) != 0)
-    {
-        if (nDamageTypes > 0)
-        {
-            sString = sString + ", ";
-        }
-        pClientExoApp = g_pAppManager->m_pClientExoApp;
-        sString = sString + pClientExoApp->GetGUIString(0x969E);
-        nDamageTypes++;
-    }
-
-    if ((nDamageFlags & 0x200) != 0)
-    {
-        if (nDamageTypes > 0)
-        {
-            sString = sString + ", ";
-        }
-        pClientExoApp = g_pAppManager->m_pClientExoApp;
-        sString = sString + pClientExoApp->GetGUIString(0x969F);
-        nDamageTypes++;
-    }
-
-    if ((nDamageFlags & 0x400) != 0)
-    {
-        if (nDamageTypes > 0)
-        {
-            sString = sString + ", ";
-        }
-        pClientExoApp = g_pAppManager->m_pClientExoApp;
-        sString = sString + pClientExoApp->GetGUIString(0x96A0);
-        nDamageTypes++;
-    }
-
-    if ((nDamageFlags & 0x800) != 0)
-    {
-        if (nDamageTypes > 0)
-        {
-            sString = sString + ", ";
-        }
-        pClientExoApp = g_pAppManager->m_pClientExoApp;
-        sString = sString + pClientExoApp->GetGUIString(0x96A1);
-        nDamageTypes++;
-    }
-
-    if ((nDamageFlags & 0x1000) != 0)
-    {
-        if (nDamageTypes > 0)
-        {
-            sString = sString + ", ";
-        }
-        pClientExoApp = g_pAppManager->m_pClientExoApp;
-        sString = sString + pClientExoApp->GetGUIString(0x96A2);
-        nDamageTypes++;
-    }
-
-    if ((nDamageFlags & 0x2000) != 0)
-    {
-        if (nDamageTypes > 0)
-        {
-            sString = sString + ", ";
-        }
-        pClientExoApp = g_pAppManager->m_pClientExoApp;
-        sString = sString + pClientExoApp->GetGUIString(0xA3AF);
-    }
-}
-// PC 0x0055D580
-void CSWSItem::GetPropertyStrings(unsigned short nPropertyType,
-                                 unsigned short nSubtype,
-                                 unsigned short nCostValue,
-                                 unsigned char nParam1Value,
-                                 CExoString& sProperty, CExoString& sSubtype,
-                                 CExoString& sCost, CExoString& sParam1,
-                                 int bPropertiesOnly)
-{
-    int nName = -1;
-    bool bFailed;
-    {
-        CExoString sColumn("Name");
-        C2DA* pTable = g_pRules->Get2DArrays()->m_pItemPropDef;
-        bFailed = pTable->GetINTEntry(nPropertyType, sColumn, &nName) == 0;
-    }
-    if (bFailed)
-        return;
-
-    if (bPropertiesOnly)
-    {
-        switch (nName)
-        {
-        case 659:
-        case 678:
-        case 680:
-        case 705:
-        case 48014:
-            nName = -1;
-            break;
-        case 662:
-            nName = 129935;
-            break;
-        case 672:
-            nName = 129931;
-            break;
-        case 673:
-            nName = 129933;
-            break;
-        case 675:
-            nName = 686;
-            break;
-        case 700:
-            nName = 129930;
-            break;
-        }
-    }
-    if (nName != -1)
-    {
-        sProperty = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
-    }
-
-    CExoString sSubTypeResRef;
-    CExoString sCostTableResRef;
-    int nTable;
-
-    bool bSuccess;
-    {
-        CExoString sColumn("SubTypeResRef");
-        C2DA* pTable = g_pRules->Get2DArrays()->m_pItemPropDef;
-        bSuccess = pTable->GetCExoStringEntry(
-            nPropertyType, sColumn, &sSubTypeResRef) == 1;
-    }
-    if (bSuccess)
-    {
-        C2DA* pSubtypeTable = new C2DA(sSubTypeResRef, 0);
-        if (pSubtypeTable->Load2DArray() == 0)
-            return;
-        pSubtypeTable->GetINTEntry(nSubtype, "Name", &nName);
-        if (bPropertiesOnly)
-        {
-            switch (nName)
-            {
-            case 0:
-                nName = -1;
-                break;
-            case 727:
-                nName = -1;
-                break;
-            case 728:
-                nName = -1;
-                break;
-            case 729:
-            case 796:
-                nName = -1;
-                sProperty = "";
-                return;
-            case 730:
-            case 797:
-                nName = -1;
-                sProperty = "";
-                return;
-            case 731:
-            case 798:
-                nName = 38552;
-                break;
-            }
-        }
-        sSubtype = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
-        delete pSubtypeTable;
-    }
-
-    if (nCostValue != CSWItemProperty::COST_VALUE_NONE)
-    {
-        {
-            CExoString sColumn("CostTableResRef");
-            C2DA* pTable = g_pRules->Get2DArrays()->m_pItemPropDef;
-            bSuccess = pTable->GetINTEntry(nPropertyType, sColumn, &nTable) == 1;
-        }
-        if (bSuccess)
-        {
-            C2DA* pCostTable = g_pRules->Get2DArrays()->GetIPRPCostTable(nTable);
-            pCostTable->GetINTEntry(nCostValue, "Name", &nName);
-            if (nName > 0)
-            {
-                sCost = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
-            }
-        }
-    }
-
-    if (nParam1Value != CSWItemProperty::PARAM1_VALUE_NONE)
-    {
-        {
-            CExoString sColumn("Param1ResRef");
-            C2DA* pTable = g_pRules->Get2DArrays()->m_pItemPropDef;
-            bSuccess = pTable->GetINTEntry(nPropertyType, sColumn, &nTable) == 1;
-        }
-        if (bSuccess)
-        {
-            {
-                CExoString sColumn("Name");
-                g_pRules->Get2DArrays()->GetIPRPParamTable(nTable)->GetINTEntry(
-                    nParam1Value, sColumn, &nName);
-            }
-            sParam1 = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
-        }
-        else
-        {
-            {
-                CExoString sColumn("SubTypeResRef");
-                C2DA* pTable = g_pRules->Get2DArrays()->m_pItemPropDef;
-                bSuccess = pTable->GetCExoStringEntry(
-                    nPropertyType, sColumn, &sSubTypeResRef) == 1;
-            }
-            if (!bSuccess)
-                return;
-            C2DA* pSubtypeTable = new C2DA(sSubTypeResRef, 0);
-            if (pSubtypeTable->Load2DArray() == 0)
-            {
-                delete pSubtypeTable;
-                return;
-            }
-            {
-                if (pSubtypeTable->GetINTEntry(nSubtype, "Param1ResRef", &nTable) == 1)
                 {
-                    g_pRules->Get2DArrays()->GetIPRPParamTable(nTable)->GetINTEntry(
-                        nParam1Value, "Name", &nName);
-                    sParam1 = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
+                    if (pOwner != NULL)
+                    {
+                        pPlayer = NULL;
+                        if (pOwner->m_nObjectType == CGameObject::OBJECT_TYPE_CREATURE)
+                        {
+                            pPlayer = g_pAppManager->GetServerExoApp()
+                                          ->GetClientObjectByObjectId(m_oidOwner);
+                        }
+                        else if (pOwner->m_nObjectType == CGameObject::OBJECT_TYPE_ITEM)
+                        {
+                            pContainer = pOwner->AsSWSItem();
+                            pPlayer = g_pAppManager->GetServerExoApp()
+                                          ->GetClientObjectByObjectId(pContainer->GetPossessor());
+                        }
+                        if (pPlayer != NULL)
+                        {
+                            g_pAppManager->GetServerExoApp()->GetSWSMessage()
+                                ->SendServerPlayerItemUpdate_DestroyItem(
+                                    pPlayer, (*ppItem)->GetId());
+                        }
+                    }
+
+                    delete *ppItem;
+                    *ppItem = pItem;
+                    oidPossessor = pItem->m_oidPossessor;
+                    pItem->SetPossessor(oidPossessor, bUpdatePossessor,
+                                        bUpdatePossessor, OBJECT_INVALID);
+                    if (bNewItem)
+                    {
+                        m_nNewItems++;
+                    }
+                    return 1;
                 }
             }
-            delete pSubtypeTable;
         }
     }
-}
-// PC 0x0055DC70
-void CSWSItem::GetPropertyDamageRange(unsigned short nCostValue,
-                                     int& nMinDamage, int& nMaxDamage)
-{
-    int nNumDice = 0;
-    int nDie = 0;
-    bool bSuccess;
-    CTwoDimArrays* pTables;
-    C2DA* pTable;
-
+    else if (m_bUnknown08)
     {
-        CExoString sColumn("NumDice");
-        pTables = g_pRules->m_p2DArrays;
-        pTable = pTables->m_pIPRPDamage;
-        bSuccess = pTable->GetINTEntry(nCostValue, sColumn, &nNumDice) == 1;
-    }
-    if (bSuccess)
-    {
-        if (nNumDice == 0)
+        nItem = 0;
+        while (nItem < m_lstItems.num)
         {
-            nMinDamage = 1;
-            nMaxDamage = nCostValue;
+            unsigned long oidItem = m_lstItems[nItem];
+            pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
+            if (pItem != NULL && m_bUnknown08)
+            {
+                pItem->m_sLocalizedName.GetString(nLanguage, &sItemName, 0);
+                if (sName < sItemName)
+                {
+                    nPosition = nItem;
+                    bFoundPosition = 1;
+                    break;
+                }
+            }
+            nItem++;
+        }
+    }
+
+    CExoArrayList<CSWSItem*> lstAddedItems;
+    lstAddedItems.Add(*ppItem);
+    if (m_bUnknown08)
+    {
+        pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByPlayerId(0, 1);
+        if (pPlayer != NULL)
+        {
+            oidPossessor = pPlayer->m_oidPCObject;
+            (*ppItem)->SetPossessor(oidPossessor, bUpdatePossessor,
+                                    bUpdatePossessor, OBJECT_INVALID);
+        }
+        if (bFoundPosition)
+        {
+            m_lstItems.Insert((*ppItem)->GetId(), nPosition);
         }
         else
         {
-            {
-                CExoString sColumn("Die");
-                pTables = g_pRules->m_p2DArrays;
-                pTable = pTables->m_pIPRPDamage;
-                pTable->GetINTEntry(nCostValue, sColumn, &nDie);
-            }
-            nMinDamage = nNumDice;
-            nMaxDamage = nNumDice * nDie;
+            m_lstItems.Add((*ppItem)->GetId());
         }
     }
     else
     {
-        nMinDamage = nCostValue;
-        nMaxDamage = nCostValue;
+        m_lstItems.Insert((*ppItem)->GetId(), 0);
     }
+
+    if (bNewItem)
+    {
+        (*ppItem)->m_bNewItem = 1;
+    }
+    if ((*ppItem)->m_bNewItem)
+    {
+        m_nNewItems++;
+    }
+    return 1;
 }
-void CSWSItem::GetPropertyChanceDurationDC(unsigned short nCostValue,  // PC 0x0055DDC0
-                                         unsigned char nParam1Value,
-                                         int& nEffectChance,
-                                         int& nDurationRounds, int& nDC)
+// PC 0x005680F0
+void CSWSItem::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
 {
-    int nValue;
-    CTwoDimArrays* pTables;
-    C2DA* pTable;
-
+    if (m_bInventoryOpen)
     {
-        CExoString sColumn("EffectChance");
-        pTables = g_pRules->m_p2DArrays;
-        EXOXBOXASSERT(pTables->m_pOnHitDuration);
-        pTable = pTables->m_pOnHitDuration;
-        pTable->GetINTEntry(nParam1Value, sColumn, &nValue);
-    }
-    nEffectChance = nValue;
-
-    {
-        CExoString sColumn("DurationRounds");
-        pTables = g_pRules->m_p2DArrays;
-        EXOXBOXASSERT(pTables->m_pOnHitDuration);
-        pTable = pTables->m_pOnHitDuration;
-        pTable->GetINTEntry(nParam1Value, sColumn, &nValue);
-    }
-    nDurationRounds = nValue;
-
-    {
-        CExoString sColumn("Value");
-        pTables = g_pRules->m_p2DArrays;
-        pTables->GetIPRPCostTable(CTwoDimArrays::IPRP_COST_TABLE_DC)->GetINTEntry(
-            nCostValue, sColumn, &nValue);
-    }
-    nDC = nValue;
-}
-// PC 0x0055DF40
-int CSWSItem::GetExistsHigherValuedProperty(unsigned short nPropertyType,
-                                            unsigned short nSubtype,
-                                            unsigned short nCostValue)
-{
-    int nPassiveProperties;
-    int nProperty;
-    CSWItemProperty* pItemProperty;
-
-    nPassiveProperties = m_nPassiveProperties;
-    for (nProperty = 0; nProperty < nPassiveProperties; nProperty++)
-    {
-        pItemProperty = GetPassiveProperty(nProperty);
-        if (pItemProperty != NULL &&
-            (pItemProperty->m_nUpgradeType == 0xFF ||
-             ((1 << pItemProperty->m_nUpgradeType) & m_nUpgrades) != 0) &&
-            pItemProperty->m_nPropertyType == nPropertyType &&
-            pItemProperty->m_nSubtype == nSubtype &&
-            pItemProperty->m_nCostValue > nCostValue)
+        if (bUpdatePlayer)
         {
-            return 1;
+            CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidCloser);
+            if (pPlayer != NULL)
+            {
+                CSWSCreature* pCreature = pPlayer->GetGameObject()->AsSWSCreature();
+                while (m_pRepository->m_lstItems.num > 0u)
+                {
+                    unsigned int nItemCount = m_pRepository->m_lstItems.num;
+                    CSWSItem* pItem = m_pRepository->ItemListGetItem(nItemCount - 1);
+                    m_pRepository->RemoveItem(pItem);
+                    pCreature->GetItemRepository(1)->AddItem(&pItem, 1, 0, 1);
+                }
+            }
+        }
+
+        CScriptEvent* pEvent = new CScriptEvent;
+        pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_CLOSE;
+        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+            0, 0, oidCloser, GetId(), CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+        m_bInventoryOpen = 0;
+    }
+}
+// PC 0x00568240
+int CSWSItem::CopyItem(CSWSItem* pItem)
+{
+    if (pItem == NULL)
+    {
+        return 0;
+    }
+    if (pItem->m_pRepository != NULL &&
+        (unsigned int)pItem->m_pRepository->GetNumItems() > 0)
+    {
+        return 0;
+    }
+
+    m_sDescIdentified = pItem->m_sDescIdentified;
+    m_sDescription = pItem->m_sDescription;
+    m_sLocalizedName = pItem->m_sLocalizedName;
+    m_sTag = pItem->m_sTag;
+    m_oidPossessor = pItem->GetPossessor();
+    if (pItem->m_pRepository != NULL)
+    {
+        m_pRepository = new CItemRepository(GetId(), 0);
+    }
+    int nProperty;
+    m_nModelVariation = pItem->m_nModelVariation;
+    m_nActiveProperties = pItem->m_nActiveProperties;
+    if (m_nActiveProperties > 0)
+    {
+        m_pActiveProperties = new CSWItemProperty[m_nActiveProperties];
+        for (nProperty = 0; nProperty < m_nActiveProperties; nProperty++)
+        {
+            m_pActiveProperties[nProperty] = pItem->m_pActiveProperties[nProperty];
         }
     }
-
-    return 0;
-}
-
-// PC 0x0055DF00
-void CSWSItem::PowerItem(int bPower, int bAnimate, int bSilent)
-{
-    CSWCItem* pClientItem = GetClientItem();
-    if (pClientItem != NULL)
+    m_nPassiveProperties = pItem->m_nPassiveProperties;
+    if (m_nPassiveProperties > 0)
     {
-        pClientItem->PowerItem(bPower, FALSE, TRUE, FALSE);
+        m_pPassiveProperties = new CSWItemProperty[m_nPassiveProperties];
+        for (nProperty = 0; nProperty < m_nPassiveProperties; nProperty++)
+        {
+            m_pPassiveProperties[nProperty] = pItem->m_pPassiveProperties[nProperty];
+        }
     }
+    m_nAddCost = pItem->m_nAddCost;
+    m_nCharges = pItem->m_nCharges;
+    m_nMaxCharges = pItem->m_nMaxCharges;
+    m_nBaseAC = pItem->m_nBaseAC;
+    m_bInfinite = pItem->m_bInfinite;
+    m_nStackSize = pItem->m_nStackSize;
+    m_nWeight = pItem->m_nWeight;
+    m_bIdentified = pItem->m_bIdentified;
+    m_nUpgrades = pItem->m_nUpgrades;
+    m_nUpgradeLevel = pItem->m_nUpgradeLevel;
+    memcpy(m_anUpgradeSlot, pItem->m_anUpgradeSlot, sizeof(m_anUpgradeSlot));
+    m_nBodyVariation = pItem->m_nBodyVariation;
+    m_nTextureVar = pItem->m_nTextureVar;
+    m_bNonEquippable = pItem->m_bNonEquippable;
+    m_nBaseItem = pItem->GetBaseItemType();
+    for (int i = 0; i < 6; i++)
+    {
+        m_aUnknown04[i] = pItem->m_aUnknown04[i];
+    }
+    g_pAppManager->GetServerExoApp()->GetModule()->AddObjectToLookupTable(
+        m_sTag, GetId());
+    return 1;
 }
-// PC 0x0055DFC0
-int CSWSItem::IsLightsaber()
+// PC 0x00568520
+void CSWSItem::CloseItemForAllPlayers()
 {
+    CSWBaseItem* pBaseItem;
+    CExoLinkedList<CSWSClient>* pPlayerList;
+    CExoLinkedListNode* pPosition;
+    CSWSPlayer* pPlayer;
+    CSWSObject* pPlayerObject;
     int nBaseItem;
-    int nResult;
 
     nBaseItem = m_nBaseItem;
-    nResult = 0;
-    if (nBaseItem == BASE_ITEM_LIGHTSABER ||
-        nBaseItem == BASE_ITEM_DOUBLE_BLADED_LIGHTSABER ||
-        nBaseItem == BASE_ITEM_SHORT_LIGHTSABER)
+    pBaseItem = g_pRules->m_pBaseItems->GetBaseItem(nBaseItem);
+    if (pBaseItem != NULL && pBaseItem->m_bIsContainer != 0)
     {
-        nResult = 1;
-    }
-
-    return nResult;
-}
-// PC 0x0055DFE0
-CResRef CSWSItem::GetIcon()
-{
-    CSWBaseItem* pBaseItem = GetBaseItem();
-
-    if (pBaseItem == NULL)
-    {
-        return CResRef("");
-    }
-
-    if (pBaseItem->m_bUnknown18 != 0)
-    {
-        return pBaseItem->GetIconResRef((unsigned char)m_nTextureVar, 'm');
-    }
-
-    return pBaseItem->GetIconResRef((unsigned char)m_nModelVariation, 'm');
-}
-// PC 0x0055E040
-void CSWSItem::AddUpgrade(CSWSItem* pUpgrade, unsigned long nSlot)
-{
-    if (pUpgrade != NULL)
-    {
-        int nUpgradeProperties = pUpgrade->m_nPassiveProperties;
-        int nOldProperties = m_nPassiveProperties;
-        int nNewProperties = nOldProperties + nUpgradeProperties;
-        CSWItemProperty* pOldProperties = new CSWItemProperty[nNewProperties];
-        memcpy(pOldProperties, m_pPassiveProperties,
-               nOldProperties * sizeof(CSWItemProperty));
-        SetNumPassiveProperties(nNewProperties);
-        memcpy(m_pPassiveProperties, pOldProperties,
-               nOldProperties * sizeof(CSWItemProperty));
-        delete[] pOldProperties;
-        memcpy(&m_pPassiveProperties[nNewProperties - nUpgradeProperties],
-               pUpgrade->m_pPassiveProperties,
-               nUpgradeProperties * sizeof(CSWItemProperty));
-        for (int nProperty = nOldProperties; nProperty < nNewProperties;
-             nProperty++)
+        pPlayerList = g_pAppManager->m_pServerExoApp->GetPlayerList();
+        for (pPosition = pPlayerList->GetHeadPos(); pPosition != NULL;
+             pPlayerList->GetNext(pPosition))
         {
-            GetPassiveProperty(nProperty)->m_n12 = (unsigned short)(nSlot + 1);
-        }
-    }
-}
-// PC 0x0055E140
-void CSWSItem::RemoveUpgrade(CSWSItem* pUpgrade, unsigned long nSlot)
-{
-    int nUpgradeProperties = pUpgrade->m_nPassiveProperties;
-    int nOldProperties = m_nPassiveProperties;
-    int nNewProperties = nOldProperties - nUpgradeProperties;
-    CSWItemProperty* pNewProperties = new CSWItemProperty[nNewProperties];
-    int nNextProperty = 0;
-    for (int nProperty = 0; nProperty < nOldProperties; nProperty++)
-    {
-        int bUpgrade = 0;
-        CSWItemProperty* pProperty = &m_pPassiveProperties[nProperty];
-        for (int nUpgrade = 0; nUpgrade < nUpgradeProperties; nUpgrade++)
-        {
-            if (pProperty->m_n12 == nSlot + 1)
+            pPlayer =
+                (CSWSPlayer*)pPlayerList->GetAtPos(pPosition);
+            if (pPlayer != NULL)
             {
-                bUpgrade = 1;
-            }
-        }
-        if (bUpgrade == 0)
-        {
-            memcpy(&pNewProperties[nNextProperty], pProperty, sizeof(CSWItemProperty));
-            nNextProperty++;
-        }
-    }
-    SetNumPassiveProperties(nNewProperties);
-    if (m_pPassiveProperties != NULL)
-    {
-        memcpy(m_pPassiveProperties, pNewProperties,
-               nNewProperties * sizeof(CSWItemProperty));
-    }
-    delete[] pNewProperties;
-}
-// PC 0x0055E270
-CExoString CSWSItem::GetPropertiesOnlyDescription()
-{
-    CExoString sDescription;
-    int nLines = 0;
-    for (int nProperty = 0; nProperty < m_nPassiveProperties && nLines < 5;
-         nProperty++)
-    {
-        CSWItemProperty* pProperty = GetPassiveProperty(nProperty);
-        if (pProperty != NULL)
-        {
-            CExoString sProperty;
-            CExoString sSubtype;
-            CExoString sCost;
-            CExoString sParam1;
-            CExoString sParam1Value;
-            unsigned short nCostValue = pProperty->m_nCostValue;
-            unsigned short nSubtype = pProperty->m_nSubtype;
-            unsigned short nPropertyType = pProperty->m_nPropertyType;
-            GetPropertyStrings(nPropertyType, nSubtype, nCostValue,
-                               CSWItemProperty::PARAM1_VALUE_NONE, sProperty,
-                               sSubtype, sCost, sParam1, 1);
-            if (sProperty.m_sString != NULL && sProperty.m_sString[0] != 0)
-            {
-                sDescription = sDescription + sProperty;
-            }
-            if (sCost.m_sString != NULL)
-            {
-                if (sCost.m_sString[0] != 0 && sProperty.m_sString != NULL &&
-                    sProperty.m_sString[0] != 0)
+                pPlayerObject = pPlayer->GetGameObject();
+                if (pPlayerObject != NULL &&
+                    pPlayer->m_pContainerGUI->m_oidContainer == m_nId)
                 {
-                    if (sProperty[strlen(sProperty.m_sString) - 1] == '+')
-                    {
-                        sDescription = sDescription + sCost;
-                    }
-                    else
-                    {
-                        sDescription = sDescription + ": " + sCost;
-                    }
-                }
-                if (sCost.m_sString != NULL && sCost.m_sString[0] != 0 &&
-                    (sProperty.m_sString == NULL || sProperty.m_sString[0] == 0))
-                {
-                    sDescription = sDescription + sCost;
+                    CloseInventory(pPlayerObject->m_nId, 1);
                 }
             }
-            if (sProperty.m_sString != NULL && sProperty.m_sString[0] != 0 &&
-                sCost.m_sString != NULL && sCost.m_sString[0] != 0 &&
-                sSubtype.m_sString != NULL && sSubtype.m_sString[0] != 0)
+        }
+    }
+}
+// PC 0x005685B0
+int CSWSItem::AcquireItem(CSWSItem** ppItem, unsigned long oidPossessor,
+                          int bDisplayFeedback)
+{
+    CGameObjectArray* pObjectArray =
+        g_pAppManager->m_pServerExoApp->GetObjectArray();
+    CSWSItem* pContainer = NULL;
+    CItemRepository* pRepository;
+    CGameObject* pPossessor;
+    int bResult;
+
+    if ((*ppItem)->m_oidPossessor != oidPossessor)
+    {
+        pContainer = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(
+            (*ppItem)->m_oidPossessor);
+        if (pContainer == NULL || pContainer->m_oidPossessor != oidPossessor)
+        {
+            return 0;
+        }
+        oidPossessor = (*ppItem)->m_oidPossessor;
+    }
+
+    pRepository = m_pRepository;
+    pPossessor = g_pAppManager->m_pServerExoApp->GetGameObject(oidPossessor);
+    if (pPossessor != NULL)
+    {
+        if (pPossessor->m_nObjectType == SW_OBJECT_TYPE_CREATURE)
+        {
+            pPossessor->AsSWSCreature()->RemoveItem(*ppItem, 1,
+                                                    bDisplayFeedback, NULL);
+        }
+        else if (pPossessor->m_nObjectType == SW_OBJECT_TYPE_PLACEABLE)
+        {
+            pPossessor->AsSWSPlaceable()->RemoveItem(*ppItem);
+        }
+        else if (pPossessor->m_nObjectType == SW_OBJECT_TYPE_ITEM &&
+                 pPossessor->AsSWSItem()->m_pRepository != NULL)
+        {
+            CSWSItem* pItem = pPossessor->AsSWSItem();
+            pItem->m_pRepository->RemoveItem(*ppItem);
+        }
+    }
+    else if (pContainer != NULL &&
+             g_pRules->m_pBaseItems->GetBaseItem((*ppItem)->GetBaseItemType())
+                 ->m_bIsContainer &&
+             g_pRules->m_pBaseItems->GetBaseItem(pContainer->GetBaseItemType())
+                 ->m_bIsContainer)
+    {
+        return 0;
+    }
+
+    bResult = pRepository->AddItem(ppItem, 1, 0, 1);
+    if (bResult == 1)
+    {
+        if (pPossessor == NULL && *ppItem != NULL)
+        {
+            (*ppItem)->RemoveFromArea();
+        }
+        if (*ppItem != NULL)
+        {
+            (*ppItem)->SetPossessor(m_nId, 1, bDisplayFeedback, OBJECT_INVALID);
+        }
+    }
+    return bResult;
+}
+// PC 0x00568730
+void CSWSItem::DecrementUses(int nPropertyIndex, unsigned long oidUser)
+{
+
+    if (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nDebugFlags != 0)
+    {
+        return;
+    }
+
+    CSWItemProperty* pProperty = GetActiveProperty(nPropertyIndex);
+    int bChargeBased = 0;
+    int bDestroy = 0;
+    int bRecharges = 0;
+    int nCharges;
+    int nProperty;
+    unsigned long nCalendarDay;
+    unsigned long nTimeOfDay;
+
+    switch (pProperty->m_nCostValue)
+    {
+    case CSWItemProperty::ACTIVATE_ITEM_SINGLE_USE:
+        if (m_nStackSize > 1)
+        {
+            m_nStackSize--;
+        }
+        else
+        {
+            pProperty->m_bUseable = 0;
+            bDestroy = 1;
+        }
+        break;
+    case CSWItemProperty::ACTIVATE_ITEM_5_CHARGES:
+        bChargeBased = 1;
+        nCharges = 5;
+        break;
+    case CSWItemProperty::ACTIVATE_ITEM_4_CHARGES:
+        bChargeBased = 1;
+        nCharges = 4;
+        break;
+    case CSWItemProperty::ACTIVATE_ITEM_3_CHARGES:
+        bChargeBased = 1;
+        nCharges = 3;
+        break;
+    case CSWItemProperty::ACTIVATE_ITEM_2_CHARGES:
+        bChargeBased = 1;
+        nCharges = 2;
+        break;
+    case CSWItemProperty::ACTIVATE_ITEM_1_CHARGE:
+        bChargeBased = 1;
+        nCharges = 1;
+        break;
+    case CSWItemProperty::ACTIVATE_ITEM_1_USE_PER_DAY:
+    case CSWItemProperty::ACTIVATE_ITEM_2_USES_PER_DAY:
+    case CSWItemProperty::ACTIVATE_ITEM_3_USES_PER_DAY:
+    case CSWItemProperty::ACTIVATE_ITEM_4_USES_PER_DAY:
+    case CSWItemProperty::ACTIVATE_ITEM_5_USES_PER_DAY:
+        bRecharges = 1;
+        if (pProperty->m_nUsesPerDay > 0)
+        {
+            pProperty->m_nUsesPerDay--;
+        }
+        if (pProperty->m_nUsesPerDay < 1)
+        {
+            pProperty->m_bUseable = 0;
+        }
+        break;
+    case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_1_MINUTE:
+    case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_2_MINUTES:
+    case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_3_MINUTES:
+    case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_4_MINUTES:
+    case CSWItemProperty::ACTIVATE_ITEM_RECHARGE_5_MINUTES:
+        bRecharges = 1;
+        g_pAppManager->GetServerExoApp()->GetWorldTimer()->GetWorldTime(
+            &nCalendarDay, &nTimeOfDay);
+        pProperty->m_nLastUseDay = nCalendarDay;
+        pProperty->m_nLastUseTime = nTimeOfDay;
+        pProperty->m_bUseable = 0;
+        break;
+    }
+
+    if (bChargeBased)
+    {
+        if (m_nCharges >= nCharges)
+        {
+            m_nCharges -= nCharges;
+        }
+        for (nProperty = 0; nProperty < m_nActiveProperties; nProperty++)
+        {
+            pProperty = GetActiveProperty(nProperty);
+            if (pProperty != NULL &&
+                pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM)
             {
-                sDescription = sDescription + ", " + sSubtype;
-            }
-            if (sProperty.m_sString != NULL && sProperty.m_sString[0] != 0 &&
-                (sCost.m_sString == NULL || sCost.m_sString[0] == 0) &&
-                sSubtype.m_sString != NULL && sSubtype.m_sString[0] != 0)
-            {
-                sDescription = sDescription + ": " + sSubtype;
-            }
-            if ((sProperty.m_sString == NULL || sProperty.m_sString[0] == 0) &&
-                sCost.m_sString != NULL && sCost.m_sString[0] != 0 &&
-                sSubtype.m_sString != NULL && sSubtype.m_sString[0] != 0)
-            {
-                sDescription = sDescription + " " + sSubtype;
-            }
-            if ((sProperty.m_sString == NULL || sProperty.m_sString[0] == 0) &&
-                (sCost.m_sString == NULL || sCost.m_sString[0] == 0) &&
-                sSubtype.m_sString != NULL && sSubtype.m_sString[0] != 0)
-            {
-                sDescription = sDescription + sSubtype;
-            }
-            if ((sProperty.m_sString != NULL && sProperty.m_sString[0] != 0) ||
-                (sCost.m_sString != NULL && sCost.m_sString[0] != 0) ||
-                (sSubtype.m_sString != NULL && sSubtype.m_sString[0] != 0))
-            {
-                sDescription = sDescription + "\n";
-                nLines++;
+                int nCostValue = pProperty->m_nCostValue;
+                if ((nCostValue == CSWItemProperty::ACTIVATE_ITEM_5_CHARGES &&
+                     m_nCharges < 5) ||
+                    (nCostValue == CSWItemProperty::ACTIVATE_ITEM_4_CHARGES &&
+                     m_nCharges < 4) ||
+                    (nCostValue == CSWItemProperty::ACTIVATE_ITEM_3_CHARGES &&
+                     m_nCharges < 3) ||
+                    (nCostValue == CSWItemProperty::ACTIVATE_ITEM_2_CHARGES &&
+                     m_nCharges < 2) ||
+                    (nCostValue == CSWItemProperty::ACTIVATE_ITEM_1_CHARGE &&
+                     m_nCharges < 1))
+                {
+                    pProperty->m_bUseable = 0;
+                }
             }
         }
     }
-    return sDescription;
+
+    if ((unsigned char)pProperty->m_bUseable == 0)
+    {
+        if (GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_STIMULANT ||
+            GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_REPAIR_KIT ||
+            GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_SQUAD_MEDPAC)
+        {
+            bDestroy = 1;
+        }
+        else if (bChargeBased)
+        {
+            int nProperties = m_nActiveProperties;
+            for (nProperty = 0; nProperty < m_nActiveProperties; nProperty++)
+            {
+                CSWItemProperty* pChargeProperty = GetActiveProperty(nProperty);
+                if (pChargeProperty != NULL &&
+                    pChargeProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM)
+                {
+                    int nCostValue = pChargeProperty->m_nCostValue;
+                    if ((nCostValue == CSWItemProperty::ACTIVATE_ITEM_5_CHARGES ||
+                         nCostValue == CSWItemProperty::ACTIVATE_ITEM_4_CHARGES ||
+                         nCostValue == CSWItemProperty::ACTIVATE_ITEM_3_CHARGES ||
+                         nCostValue == CSWItemProperty::ACTIVATE_ITEM_2_CHARGES ||
+                         nCostValue == CSWItemProperty::ACTIVATE_ITEM_1_CHARGE) &&
+                        (unsigned char)pChargeProperty->m_bUseable != 0)
+                    {
+                        break;
+                    }
+                }
+            }
+            if (nProperty == nProperties)
+            {
+                bDestroy = 1;
+            }
+        }
+    }
+
+    if (bDestroy && !bRecharges)
+    {
+        CSWSPlayer* pPlayer =
+            g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidUser);
+        if (pPlayer != NULL)
+        {
+            g_pAppManager->GetServerExoApp()->GetSWSMessage()
+                ->SendServerPlayerItemUpdate_DestroyItem(pPlayer, GetId());
+        }
+        m_bDeleting = 1;
+        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+            0, 0, oidUser, GetId(), CServerAIMaster::EVENT_DESTROY_OBJECT, NULL);
+    }
+    else
+    {
+        UpdateUsedActiveProperties();
+    }
+}
+// PC 0x00568A90
+void CSWSItem::AddProperty(unsigned short nPropertyType, unsigned short nSubtype,
+                          unsigned short nCostValue, unsigned char nParam1Value,
+                          CExoArrayList<CExoString>& aStrings)
+{
+    CExoString sProperty;
+    CExoString sSubTypeResRef;
+    int nCostTableResRef = 0;
+    int nParam1ResRef = -1;
+    int bHasSubtype;
+    int bHasParam1;
+    {
+        int nName = -1;
+
+        bool bFailed;
+        {
+            CExoString sColumn("Name");
+            C2DA* pTable = g_pRules->Get2DArrays()->m_pItemPropDef;
+            bFailed = pTable->GetINTEntry(nPropertyType, sColumn, &nName) == 0;
+        }
+        if (bFailed)
+            return;
+
+        {
+            CExoString sColumn("SubTypeResRef");
+            C2DA* pTable = g_pRules->Get2DArrays()->m_pItemPropDef;
+            bHasSubtype = pTable->GetCExoStringEntry(
+                nPropertyType, sColumn, &sSubTypeResRef);
+        }
+        {
+            CExoString sColumn("CostTableResRef");
+            C2DA* pTable = g_pRules->Get2DArrays()->m_pItemPropDef;
+            pTable->GetINTEntry(nPropertyType, sColumn, &nCostTableResRef);
+        }
+        {
+            CExoString sColumn("Param1ResRef");
+            C2DA* pTable = g_pRules->Get2DArrays()->m_pItemPropDef;
+            bHasParam1 = pTable->GetINTEntry(nPropertyType, sColumn, &nParam1ResRef);
+        }
+
+        sProperty = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
+    }
+    if (bHasSubtype || bHasParam1 || nCostTableResRef)
+    {
+        sProperty = sProperty + ":";
+        if (bHasSubtype)
+        {
+            C2DA* pSubtypeTable = new C2DA(sSubTypeResRef, 0);
+            if (pSubtypeTable->Load2DArray() == 0)
+                return;
+
+            int nTableRef;
+            int nSubtypeName = -1;
+            pSubtypeTable->GetINTEntry(nSubtype, "Name", &nSubtypeName);
+            bool bHasCost;
+            {
+                CExoString sColumn("CostTableResRef");
+                bHasCost = pSubtypeTable->GetINTEntry(nSubtype, sColumn, &nTableRef)
+                    && nTableRef != 0;
+            }
+            if (bHasCost)
+                nCostTableResRef = nTableRef;
+            if (pSubtypeTable->GetINTEntry(nSubtype, "Param1ResRef", &nTableRef))
+            {
+                bHasParam1 = 1;
+                nParam1ResRef = nTableRef;
+            }
+            delete pSubtypeTable;
+
+            if (nPropertyType == CSWItemProperty::ITEM_PROPERTY_DAMAGE_BONUS &&
+                (nSubtype == CSWItemProperty::DAMAGE_SUBTYPE_BLUDGEONING ||
+                 nSubtype == CSWItemProperty::DAMAGE_SUBTYPE_PIERCING ||
+                 nSubtype == CSWItemProperty::DAMAGE_SUBTYPE_SLASHING))
+            {
+                sProperty = sProperty + " " +
+                    g_pAppManager->GetClientExoApp()->GetGUIString(
+                        GUI_STRREF_DAMAGE_PHYSICAL);
+            }
+            else
+            {
+                sProperty = sProperty + " " +
+                    g_pAppManager->GetClientExoApp()->GetGUIString(nSubtypeName);
+            }
+
+            if (bHasParam1 || nCostTableResRef)
+                sProperty = sProperty + ",";
+        }
+
+        if (nCostTableResRef)
+        {
+            C2DA* pCostTable = g_pRules->Get2DArrays()->GetIPRPCostTable(nCostTableResRef);
+            int nCostName = -1;
+            pCostTable->GetINTEntry(nCostValue, "Name", &nCostName);
+            sProperty = sProperty + " " +
+                g_pAppManager->GetClientExoApp()->GetGUIString(nCostName);
+            if (bHasParam1)
+                sProperty = sProperty + ",";
+        }
+        if (bHasParam1)
+        {
+            C2DA* pParamTable = g_pRules->Get2DArrays()->GetIPRPParamTable(nParam1ResRef);
+            int nParamName = -1;
+            pParamTable->GetINTEntry(nParam1Value, "Name", &nParamName);
+            sProperty = sProperty + " " +
+                g_pAppManager->GetClientExoApp()->GetGUIString(nParamName);
+        }
+    }
+    aStrings.Add(sProperty);
+}
+// PC 0x00569240
+void CSWSItem::AddAttackModifierProperties(CExoString& sString)
+{
+    int nAttackModifier = 0;
+    CExoString sAttackModifier;
+    if (GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ATTACK_BONUS, 0) ||
+        GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ATTACK_PENALTY, 0) ||
+        GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_DECREASED_ATTACK_MODIFIER, 0) ||
+        GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ENHANCEMENT_BONUS, 0))
+    {
+        for (int nProperty = 0; nProperty < m_nPassiveProperties; nProperty++)
+        {
+            CSWItemProperty* pProperty = GetPassiveProperty(nProperty);
+            if (pProperty != NULL &&
+                (pProperty->m_nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
+                 ((1 << pProperty->m_nUpgradeType) & m_nUpgrades) != 0))
+            {
+                if (pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ENHANCEMENT_BONUS ||
+                    pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ATTACK_BONUS)
+                    nAttackModifier += pProperty->m_nCostValue;
+                if (pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_ATTACK_PENALTY ||
+                    pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_DECREASED_ATTACK_MODIFIER)
+                    nAttackModifier -= pProperty->m_nCostValue;
+            }
+        }
+    }
+    CExoString sSuffix = g_pSWTlkTable->GetSimpleString(TLK_STRREF_ATTACK_MODIFIER_SUFFIX);
+    if (nAttackModifier < 0)
+    {
+        if (GetBaseItemType() == 45)
+        {
+            sAttackModifier.Format("%s: %d%s\n", g_pAppManager->GetClientExoApp()->GetGUIString(
+                GUI_STRREF_ITEM_ATTACK_MODIFIER).CStr(), nAttackModifier, sSuffix);
+        }
+        else
+        {
+            sAttackModifier.Format("%s: %d\n", g_pAppManager->GetClientExoApp()->GetGUIString(
+                GUI_STRREF_ITEM_ATTACK_MODIFIER).CStr(), nAttackModifier);
+        }
+        sString = sString + sAttackModifier;
+    }
+    else if (nAttackModifier > 0)
+    {
+        if (GetBaseItemType() == 45)
+        {
+            sAttackModifier.Format("%s: +%d%s\n", g_pAppManager->GetClientExoApp()->GetGUIString(
+                GUI_STRREF_ITEM_ATTACK_MODIFIER).CStr(), nAttackModifier, sSuffix);
+        }
+        else
+        {
+            sAttackModifier.Format("%s: +%d\n", g_pAppManager->GetClientExoApp()->GetGUIString(
+                GUI_STRREF_ITEM_ATTACK_MODIFIER).CStr(), nAttackModifier);
+        }
+        sString = sString + sAttackModifier;
+    }
+    if (GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ENHANCEMENT_BONUS_VS_ALIGNMENT_GROUP, 0) ||
+        GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ENHANCEMENT_BONUS_VS_RACIAL_GROUP, 0) ||
+        GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ATTACK_BONUS_VS_ALIGNMENT_GROUP, 0) ||
+        GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ATTACK_BONUS_VS_RACIAL_GROUP, 0))
+    {
+        if (nAttackModifier == 0)
+            sString = sString + g_pAppManager->GetClientExoApp()->GetGUIString(
+                GUI_STRREF_ITEM_ATTACK_MODIFIER) + ": ";
+        AddAttackBonusStrings(CSWItemProperty::ITEM_PROPERTY_ENHANCEMENT_BONUS_VS_ALIGNMENT_GROUP, sString);
+        AddAttackBonusStrings(CSWItemProperty::ITEM_PROPERTY_ENHANCEMENT_BONUS_VS_RACIAL_GROUP, sString);
+        AddAttackBonusStrings(CSWItemProperty::ITEM_PROPERTY_ATTACK_BONUS_VS_ALIGNMENT_GROUP, sString);
+        AddAttackBonusStrings(CSWItemProperty::ITEM_PROPERTY_ATTACK_BONUS_VS_RACIAL_GROUP, sString);
+    }
+    sString = sString + "\n";
 }
 // PC 0x00569620
 CSWSItem::~CSWSItem()
@@ -4318,183 +4318,6 @@ void CSWSItem::EventHandler(unsigned long nEventId, unsigned long oidCaller,
             delete this;
         }
     }
-}
-// PC 0x0056A6F0
-void CSWSItem::LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct)
-{
-    int bSuccess;
-    m_nBaseItem = pRes->ReadFieldINT(pStruct, "BaseItem", bSuccess, GetBaseItemType());
-    InitRepository(GetId());
-    SetTag(pRes->ReadFieldCExoString(pStruct, "Tag", bSuccess, m_sTag));
-    SetIdentified(pRes->ReadFieldBYTE(pStruct, "Identified", bSuccess, 1));
-    m_sDescription = pRes->ReadFieldCExoLocString(pStruct, "Description", bSuccess, m_sDescIdentified);
-    m_sDescIdentified = pRes->ReadFieldCExoLocString(pStruct, "DescIdentified", bSuccess, m_sDescription);
-    m_sLocalizedName = pRes->ReadFieldCExoLocString(pStruct, "LocalizedName", bSuccess, m_sLocalizedName);
-    m_nStackSize = pRes->ReadFieldWORD(pStruct, "StackSize", bSuccess, GetStackSize());
-    SetStolen(pRes->ReadFieldBYTE(pStruct, "Stolen", bSuccess, m_bStolen));
-    m_nUpgrades = pRes->ReadFieldDWORD(pStruct, "Upgrades", bSuccess, GetUpgrades());
-    m_nUpgradeLevel = pRes->ReadFieldBYTE(pStruct, "UpgradeLevel", bSuccess, GetUpgrades());
-    m_anUpgradeSlot[0] = pRes->ReadFieldINT(pStruct, "UpgradeSlot0", bSuccess, -1);
-    m_anUpgradeSlot[1] = pRes->ReadFieldINT(pStruct, "UpgradeSlot1", bSuccess, -1);
-    m_anUpgradeSlot[2] = pRes->ReadFieldINT(pStruct, "UpgradeSlot2", bSuccess, -1);
-    m_anUpgradeSlot[3] = pRes->ReadFieldINT(pStruct, "UpgradeSlot3", bSuccess, -1);
-    m_anUpgradeSlot[4] = pRes->ReadFieldINT(pStruct, "UpgradeSlot4", bSuccess, -1);
-    m_anUpgradeSlot[5] = pRes->ReadFieldINT(pStruct, "UpgradeSlot5", bSuccess, -1);
-    SetDropable(pRes->ReadFieldBYTE(pStruct, "Dropable", bSuccess, 0));
-    SetPickpocketable(pRes->ReadFieldBYTE(pStruct, "Pickpocketable", bSuccess, 0));
-    SetNonEquippable(pRes->ReadFieldBYTE(pStruct, "NonEquippable", bSuccess, m_bNonEquippable));
-    unsigned char nModelVariation = m_nModelVariation;
-    nModelVariation = pRes->ReadFieldBYTE(pStruct, "ModelVariation", bSuccess, nModelVariation);
-    if (!bSuccess)
-    {
-        nModelVariation = pRes->ReadFieldBYTE(pStruct, "ModelPart1", bSuccess, nModelVariation);
-        if (nModelVariation == 0)
-            nModelVariation = 1;
-    }
-    m_nModelVariation = nModelVariation;
-    switch (g_pRules->GetBaseItemArray()->GetBaseItem(GetBaseItemType())->m_bUnknown18)
-    {
-    case BASEITEM_MODEL_TYPE_BODY_VARIATION:
-        m_nBodyVariation = g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType())->m_nBodyVar;
-        m_nTextureVar = pRes->ReadFieldBYTE(pStruct, "TextureVar", bSuccess, 1);
-        break;
-    }
-    int nCharges = pRes->ReadFieldBYTE(pStruct, "Charges", bSuccess, DEFAULT_CHARGES);
-    m_nCharges = nCharges;
-    m_nMaxCharges = pRes->ReadFieldBYTE(pStruct, "MaxCharges", bSuccess, nCharges);
-    SetNewItem(pRes->ReadFieldBYTE(pStruct, "NewItem", bSuccess, m_bNewItem));
-    int bDeleting = pRes->ReadFieldBYTE(pStruct, "DELETING", bSuccess, m_bDeleting);
-    m_bDeleting = bDeleting;
-    m_nAddCost = pRes->ReadFieldDWORD(pStruct, "AddCost", bSuccess, m_nAddCost);
-    if (g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType())->m_bIsContainer)
-        ReadContainerItemsFromGff(pRes, pStruct);
-    m_bPlotObject = pRes->ReadFieldBYTE(pStruct, "Plot", bSuccess, GetPlotObject());
-
-    CResList lstProperties;
-    CResStruct propertyStruct;
-    if (pRes->GetList(&lstProperties, pStruct, "PropertiesList") == 1 &&
-        pRes->GetListCount(&lstProperties) > 0)
-    {
-        int nNumProperties = pRes->GetListCount(&lstProperties);
-        int nProperty;
-        int nActiveProperties;
-        for (nProperty = 0, nActiveProperties = 0; nProperty < nNumProperties; nProperty++)
-        {
-            pRes->GetListElement(&propertyStruct, &lstProperties, nProperty);
-            if (pRes->GetFieldCount(&propertyStruct) != 0)
-            {
-                unsigned short nPropertyType = pRes->ReadFieldWORD(&propertyStruct, "PropertyName", bSuccess, 0);
-                if (bSuccess && ActiveProperty(nPropertyType))
-                    nActiveProperties++;
-            }
-        }
-        SetNumActiveProperties(nActiveProperties);
-
-        int nActiveProperty = 0;
-        for (nProperty = 0; nProperty < nNumProperties; nProperty++)
-        {
-            pRes->GetListElement(&propertyStruct, &lstProperties, nProperty);
-            if (pRes->GetFieldCount(&propertyStruct) != 0)
-            {
-                unsigned short nPropertyType = pRes->ReadFieldWORD(&propertyStruct, "PropertyName", bSuccess, 0);
-                switch (nPropertyType)
-                {
-                case CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM:
-                case CSWItemProperty::ITEM_PROPERTY_SECURITY_SPIKE:
-                case CSWItemProperty::ITEM_PROPERTY_TRAP:
-                case CSWItemProperty::ITEM_PROPERTY_COMPUTER_SPIKE:
-                    if (bSuccess)
-                        GetActiveProperty(nActiveProperty)->m_nPropertyType = nPropertyType;
-                    unsigned short nSubtype = pRes->ReadFieldWORD(&propertyStruct, "Subtype", bSuccess, 0);
-                    if (bSuccess)
-                        GetActiveProperty(nActiveProperty)->m_nSubtype = nSubtype;
-                    unsigned char nCostTable = pRes->ReadFieldBYTE(&propertyStruct, "CostTable", bSuccess, 0);
-                    if (bSuccess)
-                        GetActiveProperty(nActiveProperty)->m_nCostTable = nCostTable;
-                    unsigned short nCostValue = pRes->ReadFieldWORD(&propertyStruct, "CostValue", bSuccess, 0);
-                    if (bSuccess)
-                        GetActiveProperty(nActiveProperty)->m_nCostValue = nCostValue;
-                    unsigned char nParam1 = pRes->ReadFieldBYTE(&propertyStruct, "Param1", bSuccess, 0);
-                    if (bSuccess)
-                        GetActiveProperty(nActiveProperty)->m_nParam1 = nParam1;
-                    unsigned char nParam1Value = pRes->ReadFieldBYTE(&propertyStruct, "Param1Value", bSuccess, 0);
-                    if (bSuccess)
-                        GetActiveProperty(nActiveProperty)->m_nParam1Value = nParam1Value;
-                    unsigned char nChanceAppear = pRes->ReadFieldBYTE(&propertyStruct, "ChanceAppear", bSuccess, 0);
-                    if (bSuccess)
-                        GetActiveProperty(nActiveProperty)->m_nChanceAppear = nChanceAppear;
-                    unsigned char bUseable = pRes->ReadFieldBYTE(&propertyStruct, "Useable", bSuccess, 1);
-                    GetActiveProperty(nActiveProperty)->m_bUseable = bUseable;
-                    unsigned char nUsesPerDay = pRes->ReadFieldBYTE(&propertyStruct, "UsesPerDay", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
-                    GetActiveProperty(nActiveProperty)->m_nUsesPerDay = nUsesPerDay;
-                    unsigned char nUpgradeType = pRes->ReadFieldBYTE(&propertyStruct, "UpgradeType", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
-                    GetActiveProperty(nActiveProperty)->m_nUpgradeType = nUpgradeType;
-                    unsigned short nPropUpgrade = pRes->ReadFieldWORD(&propertyStruct, "PropUpgrade", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
-                    GetActiveProperty(nActiveProperty)->m_n12 = nPropUpgrade;
-                    nActiveProperty++;
-                    break;
-                }
-            }
-        }
-        SetNumPassiveProperties(nNumProperties - m_nActiveProperties);
-
-        int nPassiveProperty = 0;
-        for (nProperty = 0; nProperty < nNumProperties; nProperty++)
-        {
-            pRes->GetListElement(&propertyStruct, &lstProperties, nProperty);
-            if (pRes->GetFieldCount(&propertyStruct) != 0)
-            {
-                unsigned short nPropertyType = pRes->ReadFieldWORD(&propertyStruct, "PropertyName", bSuccess, 0);
-                switch (nPropertyType)
-                {
-                case CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM:
-                case CSWItemProperty::ITEM_PROPERTY_SECURITY_SPIKE:
-                case CSWItemProperty::ITEM_PROPERTY_TRAP:
-                case CSWItemProperty::ITEM_PROPERTY_COMPUTER_SPIKE:
-                    break;
-                default:
-                    if (bSuccess)
-                        GetPassiveProperty(nPassiveProperty)->m_nPropertyType = nPropertyType;
-                    unsigned short nSubtype = pRes->ReadFieldWORD(&propertyStruct, "Subtype", bSuccess, 0);
-                    if (bSuccess)
-                        GetPassiveProperty(nPassiveProperty)->m_nSubtype = nSubtype;
-                    unsigned char nCostTable = pRes->ReadFieldBYTE(&propertyStruct, "CostTable", bSuccess, 0);
-                    if (bSuccess)
-                        GetPassiveProperty(nPassiveProperty)->m_nCostTable = nCostTable;
-                    unsigned short nCostValue = pRes->ReadFieldWORD(&propertyStruct, "CostValue", bSuccess, 0);
-                    if (bSuccess)
-                        GetPassiveProperty(nPassiveProperty)->m_nCostValue = nCostValue;
-                    unsigned char nParam1 = pRes->ReadFieldBYTE(&propertyStruct, "Param1", bSuccess, 0);
-                    if (bSuccess)
-                        GetPassiveProperty(nPassiveProperty)->m_nParam1 = nParam1;
-                    unsigned char nParam1Value = pRes->ReadFieldBYTE(&propertyStruct, "Param1Value", bSuccess, 0);
-                    if (bSuccess)
-                        GetPassiveProperty(nPassiveProperty)->m_nParam1Value = nParam1Value;
-                    unsigned char nChanceAppear = pRes->ReadFieldBYTE(&propertyStruct, "ChanceAppear", bSuccess, 0);
-                    if (bSuccess)
-                        GetPassiveProperty(nPassiveProperty)->m_nChanceAppear = nChanceAppear;
-                    unsigned char bUseable = pRes->ReadFieldBYTE(&propertyStruct, "Useable", bSuccess, 0);
-                    GetPassiveProperty(nPassiveProperty)->m_bUseable = bUseable;
-                    unsigned char nUsesPerDay = pRes->ReadFieldBYTE(&propertyStruct, "UsesPerDay", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
-                    GetPassiveProperty(nPassiveProperty)->m_nUsesPerDay = nUsesPerDay;
-                    unsigned char nUpgradeType = pRes->ReadFieldBYTE(&propertyStruct, "UpgradeType", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
-                    GetPassiveProperty(nPassiveProperty)->m_nUpgradeType = nUpgradeType;
-                    unsigned short nPropUpgrade = pRes->ReadFieldWORD(&propertyStruct, "PropUpgrade", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
-                    GetPassiveProperty(nPassiveProperty)->m_n12 = nPropUpgrade;
-                    nPassiveProperty++;
-                    break;
-                }
-            }
-        }
-    }
-    RestoreUsedActiveProperties(1);
-    UpdateUsedActiveProperties();
-    if (m_nActiveProperties == 0 && m_nPassiveProperties == 0)
-        m_bIdentified = 1;
-    m_nBaseAC = ComputeArmorClass();
-    g_pAppManager->GetServerExoApp()->GetModule()->AddObjectToLookupTable(m_sTag, GetId());
-    float fWeight = (float)(GetBaseItem()->m_nTenthLBS * 1.0f);
-    m_nWeight = (int)fWeight;
 }
 // PC 0x00569A00
 void CSWSItem::InitRepository(unsigned long oidOwner)
@@ -4704,6 +4527,183 @@ CExoString CSWSItem::GetKeyedPropertyString(unsigned char nUpgradeIndex)
     CExoString sString;
     GetSortedPropertyStrings(aStrings, sString);
     return sString;
+}
+// PC 0x0056A6F0
+void CSWSItem::LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct)
+{
+    int bSuccess;
+    m_nBaseItem = pRes->ReadFieldINT(pStruct, "BaseItem", bSuccess, GetBaseItemType());
+    InitRepository(GetId());
+    SetTag(pRes->ReadFieldCExoString(pStruct, "Tag", bSuccess, m_sTag));
+    SetIdentified(pRes->ReadFieldBYTE(pStruct, "Identified", bSuccess, 1));
+    m_sDescription = pRes->ReadFieldCExoLocString(pStruct, "Description", bSuccess, m_sDescIdentified);
+    m_sDescIdentified = pRes->ReadFieldCExoLocString(pStruct, "DescIdentified", bSuccess, m_sDescription);
+    m_sLocalizedName = pRes->ReadFieldCExoLocString(pStruct, "LocalizedName", bSuccess, m_sLocalizedName);
+    m_nStackSize = pRes->ReadFieldWORD(pStruct, "StackSize", bSuccess, GetStackSize());
+    SetStolen(pRes->ReadFieldBYTE(pStruct, "Stolen", bSuccess, m_bStolen));
+    m_nUpgrades = pRes->ReadFieldDWORD(pStruct, "Upgrades", bSuccess, GetUpgrades());
+    m_nUpgradeLevel = pRes->ReadFieldBYTE(pStruct, "UpgradeLevel", bSuccess, GetUpgrades());
+    m_anUpgradeSlot[0] = pRes->ReadFieldINT(pStruct, "UpgradeSlot0", bSuccess, -1);
+    m_anUpgradeSlot[1] = pRes->ReadFieldINT(pStruct, "UpgradeSlot1", bSuccess, -1);
+    m_anUpgradeSlot[2] = pRes->ReadFieldINT(pStruct, "UpgradeSlot2", bSuccess, -1);
+    m_anUpgradeSlot[3] = pRes->ReadFieldINT(pStruct, "UpgradeSlot3", bSuccess, -1);
+    m_anUpgradeSlot[4] = pRes->ReadFieldINT(pStruct, "UpgradeSlot4", bSuccess, -1);
+    m_anUpgradeSlot[5] = pRes->ReadFieldINT(pStruct, "UpgradeSlot5", bSuccess, -1);
+    SetDropable(pRes->ReadFieldBYTE(pStruct, "Dropable", bSuccess, 0));
+    SetPickpocketable(pRes->ReadFieldBYTE(pStruct, "Pickpocketable", bSuccess, 0));
+    SetNonEquippable(pRes->ReadFieldBYTE(pStruct, "NonEquippable", bSuccess, m_bNonEquippable));
+    unsigned char nModelVariation = m_nModelVariation;
+    nModelVariation = pRes->ReadFieldBYTE(pStruct, "ModelVariation", bSuccess, nModelVariation);
+    if (!bSuccess)
+    {
+        nModelVariation = pRes->ReadFieldBYTE(pStruct, "ModelPart1", bSuccess, nModelVariation);
+        if (nModelVariation == 0)
+            nModelVariation = 1;
+    }
+    m_nModelVariation = nModelVariation;
+    switch (g_pRules->GetBaseItemArray()->GetBaseItem(GetBaseItemType())->m_bUnknown18)
+    {
+    case BASEITEM_MODEL_TYPE_BODY_VARIATION:
+        m_nBodyVariation = g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType())->m_nBodyVar;
+        m_nTextureVar = pRes->ReadFieldBYTE(pStruct, "TextureVar", bSuccess, 1);
+        break;
+    }
+    int nCharges = pRes->ReadFieldBYTE(pStruct, "Charges", bSuccess, DEFAULT_CHARGES);
+    m_nCharges = nCharges;
+    m_nMaxCharges = pRes->ReadFieldBYTE(pStruct, "MaxCharges", bSuccess, nCharges);
+    SetNewItem(pRes->ReadFieldBYTE(pStruct, "NewItem", bSuccess, m_bNewItem));
+    int bDeleting = pRes->ReadFieldBYTE(pStruct, "DELETING", bSuccess, m_bDeleting);
+    m_bDeleting = bDeleting;
+    m_nAddCost = pRes->ReadFieldDWORD(pStruct, "AddCost", bSuccess, m_nAddCost);
+    if (g_pRules->m_pBaseItems->GetBaseItem(GetBaseItemType())->m_bIsContainer)
+        ReadContainerItemsFromGff(pRes, pStruct);
+    m_bPlotObject = pRes->ReadFieldBYTE(pStruct, "Plot", bSuccess, GetPlotObject());
+
+    CResList lstProperties;
+    CResStruct propertyStruct;
+    if (pRes->GetList(&lstProperties, pStruct, "PropertiesList") == 1 &&
+        pRes->GetListCount(&lstProperties) > 0)
+    {
+        int nNumProperties = pRes->GetListCount(&lstProperties);
+        int nProperty;
+        int nActiveProperties;
+        for (nProperty = 0, nActiveProperties = 0; nProperty < nNumProperties; nProperty++)
+        {
+            pRes->GetListElement(&propertyStruct, &lstProperties, nProperty);
+            if (pRes->GetFieldCount(&propertyStruct) != 0)
+            {
+                unsigned short nPropertyType = pRes->ReadFieldWORD(&propertyStruct, "PropertyName", bSuccess, 0);
+                if (bSuccess && ActiveProperty(nPropertyType))
+                    nActiveProperties++;
+            }
+        }
+        SetNumActiveProperties(nActiveProperties);
+
+        int nActiveProperty = 0;
+        for (nProperty = 0; nProperty < nNumProperties; nProperty++)
+        {
+            pRes->GetListElement(&propertyStruct, &lstProperties, nProperty);
+            if (pRes->GetFieldCount(&propertyStruct) != 0)
+            {
+                unsigned short nPropertyType = pRes->ReadFieldWORD(&propertyStruct, "PropertyName", bSuccess, 0);
+                switch (nPropertyType)
+                {
+                case CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM:
+                case CSWItemProperty::ITEM_PROPERTY_SECURITY_SPIKE:
+                case CSWItemProperty::ITEM_PROPERTY_TRAP:
+                case CSWItemProperty::ITEM_PROPERTY_COMPUTER_SPIKE:
+                    if (bSuccess)
+                        GetActiveProperty(nActiveProperty)->m_nPropertyType = nPropertyType;
+                    unsigned short nSubtype = pRes->ReadFieldWORD(&propertyStruct, "Subtype", bSuccess, 0);
+                    if (bSuccess)
+                        GetActiveProperty(nActiveProperty)->m_nSubtype = nSubtype;
+                    unsigned char nCostTable = pRes->ReadFieldBYTE(&propertyStruct, "CostTable", bSuccess, 0);
+                    if (bSuccess)
+                        GetActiveProperty(nActiveProperty)->m_nCostTable = nCostTable;
+                    unsigned short nCostValue = pRes->ReadFieldWORD(&propertyStruct, "CostValue", bSuccess, 0);
+                    if (bSuccess)
+                        GetActiveProperty(nActiveProperty)->m_nCostValue = nCostValue;
+                    unsigned char nParam1 = pRes->ReadFieldBYTE(&propertyStruct, "Param1", bSuccess, 0);
+                    if (bSuccess)
+                        GetActiveProperty(nActiveProperty)->m_nParam1 = nParam1;
+                    unsigned char nParam1Value = pRes->ReadFieldBYTE(&propertyStruct, "Param1Value", bSuccess, 0);
+                    if (bSuccess)
+                        GetActiveProperty(nActiveProperty)->m_nParam1Value = nParam1Value;
+                    unsigned char nChanceAppear = pRes->ReadFieldBYTE(&propertyStruct, "ChanceAppear", bSuccess, 0);
+                    if (bSuccess)
+                        GetActiveProperty(nActiveProperty)->m_nChanceAppear = nChanceAppear;
+                    unsigned char bUseable = pRes->ReadFieldBYTE(&propertyStruct, "Useable", bSuccess, 1);
+                    GetActiveProperty(nActiveProperty)->m_bUseable = bUseable;
+                    unsigned char nUsesPerDay = pRes->ReadFieldBYTE(&propertyStruct, "UsesPerDay", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
+                    GetActiveProperty(nActiveProperty)->m_nUsesPerDay = nUsesPerDay;
+                    unsigned char nUpgradeType = pRes->ReadFieldBYTE(&propertyStruct, "UpgradeType", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
+                    GetActiveProperty(nActiveProperty)->m_nUpgradeType = nUpgradeType;
+                    unsigned short nPropUpgrade = pRes->ReadFieldWORD(&propertyStruct, "PropUpgrade", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
+                    GetActiveProperty(nActiveProperty)->m_n12 = nPropUpgrade;
+                    nActiveProperty++;
+                    break;
+                }
+            }
+        }
+        SetNumPassiveProperties(nNumProperties - m_nActiveProperties);
+
+        int nPassiveProperty = 0;
+        for (nProperty = 0; nProperty < nNumProperties; nProperty++)
+        {
+            pRes->GetListElement(&propertyStruct, &lstProperties, nProperty);
+            if (pRes->GetFieldCount(&propertyStruct) != 0)
+            {
+                unsigned short nPropertyType = pRes->ReadFieldWORD(&propertyStruct, "PropertyName", bSuccess, 0);
+                switch (nPropertyType)
+                {
+                case CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM:
+                case CSWItemProperty::ITEM_PROPERTY_SECURITY_SPIKE:
+                case CSWItemProperty::ITEM_PROPERTY_TRAP:
+                case CSWItemProperty::ITEM_PROPERTY_COMPUTER_SPIKE:
+                    break;
+                default:
+                    if (bSuccess)
+                        GetPassiveProperty(nPassiveProperty)->m_nPropertyType = nPropertyType;
+                    unsigned short nSubtype = pRes->ReadFieldWORD(&propertyStruct, "Subtype", bSuccess, 0);
+                    if (bSuccess)
+                        GetPassiveProperty(nPassiveProperty)->m_nSubtype = nSubtype;
+                    unsigned char nCostTable = pRes->ReadFieldBYTE(&propertyStruct, "CostTable", bSuccess, 0);
+                    if (bSuccess)
+                        GetPassiveProperty(nPassiveProperty)->m_nCostTable = nCostTable;
+                    unsigned short nCostValue = pRes->ReadFieldWORD(&propertyStruct, "CostValue", bSuccess, 0);
+                    if (bSuccess)
+                        GetPassiveProperty(nPassiveProperty)->m_nCostValue = nCostValue;
+                    unsigned char nParam1 = pRes->ReadFieldBYTE(&propertyStruct, "Param1", bSuccess, 0);
+                    if (bSuccess)
+                        GetPassiveProperty(nPassiveProperty)->m_nParam1 = nParam1;
+                    unsigned char nParam1Value = pRes->ReadFieldBYTE(&propertyStruct, "Param1Value", bSuccess, 0);
+                    if (bSuccess)
+                        GetPassiveProperty(nPassiveProperty)->m_nParam1Value = nParam1Value;
+                    unsigned char nChanceAppear = pRes->ReadFieldBYTE(&propertyStruct, "ChanceAppear", bSuccess, 0);
+                    if (bSuccess)
+                        GetPassiveProperty(nPassiveProperty)->m_nChanceAppear = nChanceAppear;
+                    unsigned char bUseable = pRes->ReadFieldBYTE(&propertyStruct, "Useable", bSuccess, 0);
+                    GetPassiveProperty(nPassiveProperty)->m_bUseable = bUseable;
+                    unsigned char nUsesPerDay = pRes->ReadFieldBYTE(&propertyStruct, "UsesPerDay", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
+                    GetPassiveProperty(nPassiveProperty)->m_nUsesPerDay = nUsesPerDay;
+                    unsigned char nUpgradeType = pRes->ReadFieldBYTE(&propertyStruct, "UpgradeType", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
+                    GetPassiveProperty(nPassiveProperty)->m_nUpgradeType = nUpgradeType;
+                    unsigned short nPropUpgrade = pRes->ReadFieldWORD(&propertyStruct, "PropUpgrade", bSuccess, CSWItemProperty::UPGRADE_TYPE_NONE);
+                    GetPassiveProperty(nPassiveProperty)->m_n12 = nPropUpgrade;
+                    nPassiveProperty++;
+                    break;
+                }
+            }
+        }
+    }
+    RestoreUsedActiveProperties(1);
+    UpdateUsedActiveProperties();
+    if (m_nActiveProperties == 0 && m_nPassiveProperties == 0)
+        m_bIdentified = 1;
+    m_nBaseAC = ComputeArmorClass();
+    g_pAppManager->GetServerExoApp()->GetModule()->AddObjectToLookupTable(m_sTag, GetId());
+    float fWeight = (float)(GetBaseItem()->m_nTenthLBS * 1.0f);
+    m_nWeight = (int)fWeight;
 }
 // PC 0x0056B400
 int CSWSItem::LoadFromTemplate(const CResRef& cResRef)

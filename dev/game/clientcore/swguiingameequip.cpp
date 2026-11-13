@@ -1899,10 +1899,6 @@ void CSWGuiInGameEquip::CloseDescription()
 
     m_lbItems.SetEnabled(0);
 }
-inline unsigned char GetWeaponWield(CSWBaseItem* pBaseItem)
-{
-    return pBaseItem->m_nWeaponWield;
-}
 // PC 0x00716A80
 void CSWGuiInGameEquip::OnEnterSlot(CSWGuiControl* pControl)
 {
@@ -2031,8 +2027,8 @@ void CSWGuiInGameEquip::OnEnterSlot(CSWGuiControl* pControl)
                             (pRight != pClientItem || pItem->GetBaseItem()->GetWeaponSize() !=
                                                        CSWBaseItem::WEAPON_SIZE_TWO_HANDED))
                         {
-                            int nWield = GetWeaponWield(pRight->GetBaseItem());
-                            int nLeftW = GetWeaponWield(pLeft->GetBaseItem());
+                            int nWield = pRight->GetBaseItem()->GetWeaponWield();
+                            int nLeftW = pLeft->GetBaseItem()->GetWeaponWield();
                             if (nWield != nLeftW ||
                                 (nWield != CSWBaseItem::WEAPON_WIELD_ONE_HANDED_2 &&
                                  nWield != CSWBaseItem::WEAPON_WIELD_ONE_HANDED_4))
@@ -2062,8 +2058,8 @@ void CSWGuiInGameEquip::OnEnterSlot(CSWGuiControl* pControl)
                             (pRight != pClientItem || pItem->GetBaseItem()->GetWeaponSize() !=
                                                        CSWBaseItem::WEAPON_SIZE_TWO_HANDED))
                         {
-                            int nWield = GetWeaponWield(pRight->GetBaseItem());
-                            int nLeftW = GetWeaponWield(pLeft->GetBaseItem());
+                            int nWield = pRight->GetBaseItem()->GetWeaponWield();
+                            int nLeftW = pLeft->GetBaseItem()->GetWeaponWield();
                             if (nWield != nLeftW ||
                                 (nWield != CSWBaseItem::WEAPON_WIELD_ONE_HANDED_2 &&
                                  nWield != CSWBaseItem::WEAPON_WIELD_ONE_HANDED_4))
