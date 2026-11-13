@@ -1,5 +1,5 @@
-#include "nwvmachinecommands.h"
 #include "exotlktable.h"
+#include "nwvmachinecommands.h"
 
 #include <stdlib.h>
 #include <math.h>
