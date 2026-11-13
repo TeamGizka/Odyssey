@@ -1,3 +1,4 @@
+#include "appmanager.h"
 #include "swguiingame.h"
 #include "exotlktable.h"
 
@@ -8,7 +9,6 @@ static inline void SwguiingameTrace1();
 #define SWGUIINGAME_TRACE() SwguiingameTrace1()
 
 #include "swgui.h"
-#include "appmanager.h"
 #include "clientexoapp.h"
 #include "serverexoapp.h"
 #include "partytables.h"

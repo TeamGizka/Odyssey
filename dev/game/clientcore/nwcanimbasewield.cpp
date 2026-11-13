@@ -1,9 +1,9 @@
+#include "nwcitem.h"
 #include "appmanager.h"
 #include "nwcanimbasewield.h"
 #include "exobase.h"
 #include "gameobjectarray.h"
 #include "nwitem.h"
-#include "nwcitem.h"
 #include "clientexoapp.h"
 
 static inline void NwcanimbasewieldTrace1();

@@ -3,10 +3,10 @@
 #include "appmanager.h"
 #include "clientexoapp.h"
 #include "serverexoapp.h"
+#include "nwsitem.h"
 #include "swguiupgrade.h"
 
 #include "nwitem.h"
-#include "nwsitem.h"
 #include "nwsobject.h"
 #include "nwsplayer.h"
 #include "guiingame.h"
