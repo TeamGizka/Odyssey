@@ -5658,8 +5658,9 @@ void CGuiInGame::ShowUpgradeScreen(unsigned long oidItem, unsigned long oidChara
         {
             if (m_pUpgradeScreen == 0)
             {
+                CSWSItem* pItem;
                 if (oidItem == OBJECT_INVALID ||
-                    g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidItem) != 0)
+                    (pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidItem)) != NULL)
                 {
                     g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_PAUSE_ALL_BUT_MUSIC);
                     if (m_bPaused == 0)
@@ -5668,16 +5669,16 @@ void CGuiInGame::ShowUpgradeScreen(unsigned long oidItem, unsigned long oidChara
                             SendPlayerToServerInput_TogglePauseRequest();
                     }
                     m_pUpgradeScreen = new CSWGuiUpgradeSelection(m_pGuiManager, oidCharacter);
-                    m_pUpgradeScreen->m_oidItem = oidItem;
-                    m_pUpgradeScreen->m_oidCharacter = oidCharacter;
+                    m_pUpgradeScreen->SetItem(oidItem);
+                    m_pUpgradeScreen->SetCharacter(oidCharacter);
                     if (bDisableItemCreation)
-                        m_pUpgradeScreen->m_bDisableItemCreation = 1;
+                        m_pUpgradeScreen->SetDisableItemCreation(TRUE);
                     else
-                        m_pUpgradeScreen->m_bDisableItemCreation = 0;
+                        m_pUpgradeScreen->SetDisableItemCreation(FALSE);
                     if (bDisableUpgrade)
-                        m_pUpgradeScreen->m_bDisableUpgrade = 1;
+                        m_pUpgradeScreen->SetDisableUpgrade(TRUE);
                     else
-                        m_pUpgradeScreen->m_bDisableUpgrade = 0;
+                        m_pUpgradeScreen->SetDisableUpgrade(FALSE);
                     if (!sOverride2DA.IsEmpty())
                         m_pUpgradeScreen->SetOverride2DA(sOverride2DA);
                     else

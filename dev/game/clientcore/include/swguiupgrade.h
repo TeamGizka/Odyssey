@@ -324,6 +324,10 @@ public:
     int m_bDisableItemCreation;
     int m_bDisableUpgrade;
     CExoString m_sOverride2DA;
+    void SetItem(unsigned long oidItem) { m_oidItem = oidItem; }
+    void SetCharacter(unsigned long oidCharacter) { m_oidCharacter = oidCharacter; }
+    void SetDisableItemCreation(int bDisableItemCreation) { m_bDisableItemCreation = bDisableItemCreation; }
+    void SetDisableUpgrade(int bDisableUpgrade) { m_bDisableUpgrade = bDisableUpgrade; }
     // PC 0x0067CB20
     void SetOverride2DA(CExoString sOverride2DA)
     {
