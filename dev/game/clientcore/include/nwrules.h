@@ -271,6 +271,11 @@ public:
         return m_nNumFeatEntries;
     }
 
+    unsigned short GetNumFeatRows()
+    {
+        return m_nNumFeats;
+    }
+
     unsigned char GetNumRaces()
     {
         return m_nNumRaces;

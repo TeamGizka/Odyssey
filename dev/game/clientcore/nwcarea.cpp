@@ -1554,6 +1554,8 @@ void CSWCArea::Update(float fTimeDelta)
     {
         Vector vPosition;
         Vector vDirection;
+        Vector vRight;
+        Vector vForward;
         Vector vPlayerPosition = pPlayer->m_vPosition;
         unsigned char bDisableWeather = FALSE;
         CSWSArea* pServerArea = GetServerArea();
@@ -1583,27 +1585,27 @@ void CSWCArea::Update(float fTimeDelta)
         }
 
         vPosition = pCamera->GetPosition();
-        vPosition.m_fZ = vPlayerPosition.m_fZ + 15.0f;
+        vPosition.m_fZ = vPlayerPosition.m_fZ + 8.0f;
         vDirection = pCamera->GetOrientation().zdir();
         vDirection.m_fZ = 0.0f;
         vDirection = normalize(vDirection);
-        Vector vRight = cross(vDirection, Vector(0.0f, 0.0f, 1.0f));
-        Vector vForward = vDirection;
+        vRight = cross(vDirection, Vector(0.0f, 0.0f, 1.0f));
+        vForward = vDirection;
         vRight.m_fZ = 0.0f;
         vForward.m_fZ = 0.0f;
 
         static float offset_pattern[6][3] =
         {
             { 0.0f, g_fWeatherRadius, 0.0f },
-            { -sin(PI / 3.0f) * g_fWeatherRadius,
-              cos(PI / 3.0f) * g_fWeatherRadius, 5.0f },
-            { -sin(PI / 3.0f) * g_fWeatherRadius,
-              -cos(PI / 3.0f) * g_fWeatherRadius, 5.0f },
+            { -(float)sin(PI / 3.0f) * g_fWeatherRadius,
+              (float)cos(PI / 3.0f) * g_fWeatherRadius, 5.0f },
+            { -(float)sin(PI / 3.0f) * g_fWeatherRadius,
+              -(float)cos(PI / 3.0f) * g_fWeatherRadius, 5.0f },
             { 0.0f, -g_fWeatherRadius, 0.0f },
-            { sin(PI / 3.0f) * g_fWeatherRadius,
-              -cos(PI / 3.0f) * g_fWeatherRadius, 5.0f },
-            { sin(PI / 3.0f) * g_fWeatherRadius,
-              cos(PI / 3.0f) * g_fWeatherRadius, 5.0f }
+            { (float)sin(PI / 3.0f) * g_fWeatherRadius,
+              -(float)cos(PI / 3.0f) * g_fWeatherRadius, 5.0f },
+            { (float)sin(PI / 3.0f) * g_fWeatherRadius,
+              (float)cos(PI / 3.0f) * g_fWeatherRadius, 5.0f }
         };
 
         for (short i = 0; i < 6; i++)
