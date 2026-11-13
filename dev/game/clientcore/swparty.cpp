@@ -761,9 +761,9 @@ int CSWParty::IsPartyInCombat()
     CSWSCreature* pMember;
     int nIndex;
 
-    pLeader = g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
-        g_pAppManager->m_pServerExoApp->ClientToServerObjectId(
-            g_pAppManager->m_pClientExoApp->GetPlayerCreatureId()));
+    unsigned long oidPlayer = g_pAppManager->m_pClientExoApp->GetPlayerCreatureId();
+    unsigned long oidServer = g_pAppManager->m_pServerExoApp->ClientToServerObjectId(oidPlayer);
+    pLeader = g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(oidServer);
     if (pLeader == NULL)
     {
         return 0;
