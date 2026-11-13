@@ -679,6 +679,7 @@ void NewController::GetQuaternionFromIndexLocation(int nKey, MdlNode* pNode,
     }
     else if (nColumns == VALUE_TYPE_COMPRESSED_QUATERNION)
     {
+        float fScale = 1.0f;
         unsigned int nPacked = *(unsigned int*)&(*pData)
             [(unsigned short)m_nColumnIndex + (nKey - 1 < 0 ? 0 : nKey - 1)];
         float fX = (float)(int)(nPacked & QUATERNION_COMPONENT_MASK) *
@@ -700,9 +701,10 @@ void NewController::GetQuaternionFromIndexLocation(int nKey, MdlNode* pNode,
         {
             qValue.m_fW = 0.0f;
             float fLength = sqrt(fLengthSquared);
-            qValue.m_fX = fX / fLength;
-            qValue.m_fY = fY / fLength;
-            qValue.m_fZ = fZ / fLength;
+            fScale /= fLength;
+            qValue.m_fX = fX * fScale;
+            qValue.m_fY = fY * fScale;
+            qValue.m_fZ = fZ * fScale;
         }
     }
 }
