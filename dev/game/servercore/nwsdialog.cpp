@@ -115,109 +115,6 @@ void CSWSDialog::ClearDialogOwnerInObject(unsigned long oidObject)
         }
     }
 }
-// PC 0x005EA490
-void CSWSDialog::Cleanup()
-{
-    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
-    CGameObject* pOwner = pServer->GetGameObject(m_oidDialogOwner);
-    if (pOwner != NULL)
-    {
-        if (pOwner->AsSWSObject() != NULL)
-        {
-            int nAILevel = m_nOwnerAILevel;
-            pOwner->AsSWSObject()->m_nAILevel = nAILevel;
-            pOwner->AsSWSObject()->StopSoundPlayingInDialog();
-        }
-        int nSavedAILevel = pOwner->AsSWSObject()->m_c7C;
-        if (nSavedAILevel != -1)
-        {
-            pOwner->AsSWSObject()->m_nAILevel = nSavedAILevel;
-            pOwner->AsSWSObject()->m_c7C = 0xFF;
-        }
-    }
-
-    ClearDialogOwnerInObject(m_oidDialogOwner);
-    if (m_lstPlayers.IsEmpty())
-    {
-        ClearDialogOwnerInObject(m_oidCurrentPlayer);
-    }
-    while (!m_lstPlayers.IsEmpty())
-    {
-        CSWSDialogPlayer* pPlayer = m_lstPlayers.RemoveHead();
-        g_pAppManager->m_pClientExoApp->GetInGameGui()->CloseDialog();
-        ClearDialogOwnerInObject(pPlayer->m_oidPlayer);
-        delete pPlayer;
-    }
-
-    if (m_pSpeakers != NULL)
-    {
-        for (unsigned long nSpeaker = 0; nSpeaker < m_nSpeakers; ++nSpeaker)
-        {
-            ClearDialogOwnerInObject(m_pSpeakers[nSpeaker].m_oidSpeaker);
-        }
-        delete [] m_pSpeakers;
-        m_pSpeakers = NULL;
-        m_nSpeakers = 0;
-    }
-
-    if (m_pEntries != NULL)
-    {
-        for (unsigned long nEntry = 0; nEntry < (unsigned long)m_nEntries; ++nEntry)
-        {
-            if (m_pEntries[nEntry].m_pReplies != NULL)
-            {
-                delete [] m_pEntries[nEntry].m_pReplies;
-                m_pEntries[nEntry].m_pReplies = NULL;
-            }
-            if (m_pEntries[nEntry].m_pAnimations != NULL)
-            {
-                delete [] m_pEntries[nEntry].m_pAnimations;
-                m_pEntries[nEntry].m_pAnimations = NULL;
-                m_pEntries[nEntry].m_nAnimationCount = 0;
-            }
-        }
-        delete [] m_pEntries;
-        m_pEntries = NULL;
-        m_nEntries = 0;
-    }
-
-    if (m_pReplies != NULL)
-    {
-        for (unsigned long nReply = 0; nReply < (unsigned long)m_nReplies; ++nReply)
-        {
-            if (m_pReplies[nReply].m_pEntries != NULL)
-            {
-                delete [] m_pReplies[nReply].m_pEntries;
-                m_pReplies[nReply].m_pEntries = NULL;
-            }
-            if (m_pReplies[nReply].m_pAnimations != NULL)
-            {
-                delete [] m_pReplies[nReply].m_pAnimations;
-                m_pReplies[nReply].m_pAnimations = NULL;
-                m_pReplies[nReply].m_nAnimationCount = 0;
-            }
-        }
-        delete [] m_pReplies;
-        m_pReplies = NULL;
-        m_nReplies = 0;
-    }
-
-    if (m_pStartingEntries != NULL)
-    {
-        delete [] m_pStartingEntries;
-        m_pStartingEntries = NULL;
-        m_nStartingEntries = 0;
-    }
-    m_bEndOfDialog = 0;
-    m_nCurrentEntry = 0;
-    m_bRepliesSent = 0;
-    m_nSelectedReply = DIALOG_INDEX_INVALID;
-    m_oidDialogOwner = OBJECT_INVALID;
-    m_oidCurrentPlayer = OBJECT_INVALID;
-    m_nCurrentPlayerGender = CTlkTable::GENDER_MALE;
-    m_bMultiPCDialogViewOnly = 0;
-    m_n90 = 0;
-}
 // PC 0x005E59A0
 CSWSDialogStuntModel::CSWSDialogStuntModel()
 {
@@ -1423,6 +1320,109 @@ CSWSDialog::CSWSDialog()
     m_nLastEntryDay = 0;
     m_nLastEntryTime = 0;
     m_nOwnerAILevel = 2;
+}
+// PC 0x005EA490
+void CSWSDialog::Cleanup()
+{
+    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
+    CGameObject* pOwner = pServer->GetGameObject(m_oidDialogOwner);
+    if (pOwner != NULL)
+    {
+        if (pOwner->AsSWSObject() != NULL)
+        {
+            int nAILevel = m_nOwnerAILevel;
+            pOwner->AsSWSObject()->m_nAILevel = nAILevel;
+            pOwner->AsSWSObject()->StopSoundPlayingInDialog();
+        }
+        int nSavedAILevel = pOwner->AsSWSObject()->m_c7C;
+        if (nSavedAILevel != -1)
+        {
+            pOwner->AsSWSObject()->m_nAILevel = nSavedAILevel;
+            pOwner->AsSWSObject()->m_c7C = 0xFF;
+        }
+    }
+
+    ClearDialogOwnerInObject(m_oidDialogOwner);
+    if (m_lstPlayers.IsEmpty())
+    {
+        ClearDialogOwnerInObject(m_oidCurrentPlayer);
+    }
+    while (!m_lstPlayers.IsEmpty())
+    {
+        CSWSDialogPlayer* pPlayer = m_lstPlayers.RemoveHead();
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->CloseDialog();
+        ClearDialogOwnerInObject(pPlayer->m_oidPlayer);
+        delete pPlayer;
+    }
+
+    if (m_pSpeakers != NULL)
+    {
+        for (unsigned long nSpeaker = 0; nSpeaker < m_nSpeakers; ++nSpeaker)
+        {
+            ClearDialogOwnerInObject(m_pSpeakers[nSpeaker].m_oidSpeaker);
+        }
+        delete [] m_pSpeakers;
+        m_pSpeakers = NULL;
+        m_nSpeakers = 0;
+    }
+
+    if (m_pEntries != NULL)
+    {
+        for (unsigned long nEntry = 0; nEntry < (unsigned long)m_nEntries; ++nEntry)
+        {
+            if (m_pEntries[nEntry].m_pReplies != NULL)
+            {
+                delete [] m_pEntries[nEntry].m_pReplies;
+                m_pEntries[nEntry].m_pReplies = NULL;
+            }
+            if (m_pEntries[nEntry].m_pAnimations != NULL)
+            {
+                delete [] m_pEntries[nEntry].m_pAnimations;
+                m_pEntries[nEntry].m_pAnimations = NULL;
+                m_pEntries[nEntry].m_nAnimationCount = 0;
+            }
+        }
+        delete [] m_pEntries;
+        m_pEntries = NULL;
+        m_nEntries = 0;
+    }
+
+    if (m_pReplies != NULL)
+    {
+        for (unsigned long nReply = 0; nReply < (unsigned long)m_nReplies; ++nReply)
+        {
+            if (m_pReplies[nReply].m_pEntries != NULL)
+            {
+                delete [] m_pReplies[nReply].m_pEntries;
+                m_pReplies[nReply].m_pEntries = NULL;
+            }
+            if (m_pReplies[nReply].m_pAnimations != NULL)
+            {
+                delete [] m_pReplies[nReply].m_pAnimations;
+                m_pReplies[nReply].m_pAnimations = NULL;
+                m_pReplies[nReply].m_nAnimationCount = 0;
+            }
+        }
+        delete [] m_pReplies;
+        m_pReplies = NULL;
+        m_nReplies = 0;
+    }
+
+    if (m_pStartingEntries != NULL)
+    {
+        delete [] m_pStartingEntries;
+        m_pStartingEntries = NULL;
+        m_nStartingEntries = 0;
+    }
+    m_bEndOfDialog = 0;
+    m_nCurrentEntry = 0;
+    m_bRepliesSent = 0;
+    m_nSelectedReply = DIALOG_INDEX_INVALID;
+    m_oidDialogOwner = OBJECT_INVALID;
+    m_oidCurrentPlayer = OBJECT_INVALID;
+    m_nCurrentPlayerGender = CTlkTable::GENDER_MALE;
+    m_bMultiPCDialogViewOnly = 0;
+    m_n90 = 0;
 }
 // PC 0x005EA850
 int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
