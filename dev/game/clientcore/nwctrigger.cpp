@@ -545,7 +545,7 @@ void CSWCTrigger::GetMineForcePowers(CSWCCreature* pCreature, int nSpell,
         int nRoomForceRating = 0;
         if (pArea != NULL)
             nRoomForceRating = pArea->GetRoomForceRating(pServerCreature->m_vPosition);
-        int nAlignment = pCreature->m_pStats->m_nGoodEvilAlignment;
+        int nAlignment = pCreature->GetStats()->m_nGoodEvilAlignment;
         int nAction = lstActions.num;
         int nForceBodyLevel = 0;
         for (int i = 0; i < pServerCreature->m_lstEffects.num; i++)
@@ -557,8 +557,9 @@ void CSWCTrigger::GetMineForcePowers(CSWCCreature* pCreature, int nSpell,
                 break;
             }
         }
-        int nCharismaModifier = pServerCreature->m_pStats->m_nCharismaModifier;
         int nForm = pServerCreature->m_n1110;
+        CSWSCreatureStats* pServerStats = pServerCreature->m_pStats;
+        int nCharismaModifier = pServerStats->m_nCharismaModifier;
         int nHitPoints = pServerCreature->GetCurrentHitPoints(0);
         unsigned long nForcePoints = (short)(pServerCreature->m_pStats->m_nCurrentForcePoints +
             pServerCreature->m_pStats->m_nTemporaryForcePoints);
