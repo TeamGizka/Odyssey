@@ -2691,6 +2691,9 @@ void Gob::DisableInViewVolume()
 {
     m_bInViewVolume = 0;
 }
+static inline void GobDebugLine(const Vector&, const Vector&)
+{
+}
 // PC 0x00450C80 GOG 0x00450DC0
 CAurObject* Gob::HitCheckPart(CAurPart* pPart, Vector vStart, Vector vEnd,
                             Vector* pHit, CHitInfo* pInfo)
@@ -2713,6 +2716,7 @@ CAurObject* Gob::HitCheckPart(CAurPart* pPart, Vector vStart, Vector vEnd,
 
     int nHit = 0;
     vStart = -m_qOrientation * (vStart - m_vPosition);
+    GobDebugLine(vEnd, -vStart);
     vEnd = -m_qOrientation * (vEnd - m_vPosition);
     if (!SphereIntersect(vStart, vEnd, m_vMinimumBoundingSphere,
                          m_fMinimumBoundingSphereRadius))
@@ -2722,6 +2726,7 @@ CAurObject* Gob::HitCheckPart(CAurPart* pPart, Vector vStart, Vector vEnd,
         nHit = 1;
         vEnd = m_vPosition + m_qOrientation * vEnd;
         pInfo->m_vOutputPosition = vEnd;
+        GobDebugLine(vEnd, Vector(0.0f, 0.0f, 1.0f));
         pInfo->m_vOutputNormal = m_qOrientation * pInfo->m_vOutputNormal;
         if (pHit)
             *pHit = vEnd;
@@ -2763,6 +2768,7 @@ CAurObject* Gob::HitCheck(Vector vStart, Vector vEnd, Vector* pHit,
         vEnd = m_vPosition + m_qOrientation * vEnd;
         pInfo->m_vOutputPosition = vEnd;
         pInfo->m_vOutputNormal = m_qOrientation * pInfo->m_vOutputNormal;
+        GobDebugLine(vEnd - vStart, Vector(0.0f, 0.0f, 1.0f));
         if (pHit)
             *pHit = vEnd;
     }

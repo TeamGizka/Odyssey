@@ -239,6 +239,9 @@ Camera::~Camera()
     DeleteFuncWithPrefix(g_sObjectFuncName);
 #endif
 }
+static inline void CameraDebugLine(const Vector&, const Vector&, int)
+{
+}
 // PC 0x00471780 GOG 0x00471910
 void Camera::RenderScene()
 {
@@ -338,14 +341,16 @@ void Camera::RenderScene()
         {
             m_lstViewVolume[i].m_vNormal =
                 m_qOrientation * m_lstViewVolume[i].m_vNormal;
+            Vector& vNormal = m_lstViewVolume[i].m_vNormal;
             m_lstViewVolume[i].m_fDistance =
                 (m_lstViewVolume[i].m_fDistance) -
-                (m_lstViewVolume[i].m_vNormal.m_fZ * m_vPosition.m_fZ) -
-                (m_lstViewVolume[i].m_vNormal.m_fY * m_vPosition.m_fY) -
-                (m_lstViewVolume[i].m_vNormal.m_fX * m_vPosition.m_fX);
+                (vNormal.m_fZ * m_vPosition.m_fZ) -
+                (vNormal.m_fY * m_vPosition.m_fY) -
+                (vNormal.m_fX * m_vPosition.m_fX);
         }
         frustumn = m_lstViewVolume[frustumpick].m_vNormal;
         frustumd = m_lstViewVolume[frustumpick].m_fDistance;
+        CameraDebugLine(m_vPosition, m_vPosition - frustumn * frustumd, 0);
         m_bViewVolumeSet = 1;
         CurrentCamera = this;
         GLRender_SetMatrixMode(TRANSFORM_MODELVIEW);
