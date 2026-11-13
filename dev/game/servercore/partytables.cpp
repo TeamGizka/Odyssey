@@ -648,13 +648,13 @@ void CSWPartyTable::PositionParty()
     if (m_bSkipPartyPositioning == 0)
     {
         Vector vPosition;
+        CSWSCreature* pNPCCreature;
         pParty->ResetAllFollowData(pPlayer->m_vPosition, Yaw(vFacing), 0);
         int nMember = 0;
         if (m_nNumMembers > 0)
         {
             CSWPartyFollowDataArray* pPaths = &pParty->m_cFollowPaths;
-            Vector vAxis;
-            vAxis = Vector(0.0f, 0.0f, 1.0f);
+            Vector vAxis(0.0f, 0.0f, 1.0f);
             CSWPartyMemberData* pMember = &pParty->m_aPartyMemberData[1];
             int* pNPC = m_anMembers;
             do
@@ -673,31 +673,31 @@ void CSWPartyTable::PositionParty()
                 unsigned long oidNPC = GetNPCObject(*pNPC, 0, 1);
                 g_pAppManager->m_pServerExoApp->ComputeSafeLocation(
                     vPosition, 10.0f, oidNPC, 0, &vPosition);
-                CSWSCreature* pNPCCreature =
+                pNPCCreature =
                     pServerExoApp->GetCreatureByGameObjectID(oidNPC);
                 pNPCCreature->SetPosition(vPosition, 1, 1, 0);
                 EXOXBOXASSERT(nMember + 1 >= 0 && nMember + 1 < 3);
                 pMember->m_vLastPosition = vPosition;
                 pNPCCreature->SetOrientation(vFacing);
                 nMember++;
-                pMember++;
                 pNPC++;
+                pMember++;
             } while (nMember < m_nNumMembers);
         }
-        for (int nPuppet = 0; nPuppet < m_nNumPuppets; nPuppet++)
+        for (nMember = 0; nMember < m_nNumPuppets; nMember++)
         {
-            CSWSCreature* pOwner = GetPUPOwner(m_anPuppets[nPuppet]);
-            if (pOwner != NULL)
+            pPlayer = GetPUPOwner(m_anPuppets[nMember]);
+            if (pPlayer != NULL)
             {
-                CSWSCreature* pPuppet = pServerExoApp->GetCreatureByGameObjectID(
-                    m_aoidPuppet[m_anPuppets[nPuppet]]);
-                if (pPuppet != NULL)
+                pNPCCreature = pServerExoApp->GetCreatureByGameObjectID(
+                    m_aoidPuppet[m_anPuppets[nMember]]);
+                if (pNPCCreature != NULL)
                 {
                     pServerExoApp->ComputeSafeLocation(
-                        pOwner->m_vPosition, 10.0f,
-                        m_aoidPuppet[m_anPuppets[nPuppet]], 0, &vPosition);
-                    pPuppet->SetPosition(vPosition, 1, 1, 0);
-                    pPuppet->SetOrientation(pOwner->m_vOrientation);
+                        pPlayer->m_vPosition, 10.0f,
+                        m_aoidPuppet[m_anPuppets[nMember]], 0, &vPosition);
+                    pNPCCreature->SetPosition(vPosition, 1, 1, 0);
+                    pNPCCreature->SetOrientation(pPlayer->m_vOrientation);
                 }
             }
         }
@@ -925,19 +925,21 @@ int CSWPartyTable::LoadTableInfo()
         int nLastPanelDefault = g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nLastGuiPanel;
         g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nLastGuiPanel =
             pGFF->ReadFieldINT(&stTop, "PT_LAST_GUI_PNL", bSuccess, nLastPanelDefault);
-        m_nForfeitViolation = pGFF->ReadFieldINT(&stTop, "FORFEITVIOL", bSuccess, 0);
-        m_nForfeitConditions = pGFF->ReadFieldINT(&stTop, "FORFEITCONDS", bSuccess, 0);
+        m_nForfeitViolation = pGFF->ReadFieldINT(&stEntry, "FORFEITVIOL", bSuccess, 0);
+        m_nForfeitConditions = pGFF->ReadFieldINT(&stEntry, "FORFEITCONDS", bSuccess, 0);
 
         CExoString sMessage;
+        unsigned long nType;
+        unsigned char nColor;
         pGFF->GetList(&lstItems, &stTop, "PT_FB_MSG_LIST");
         for (int nFeedback = 0; nFeedback < (int)pGFF->GetListCount(&lstItems);
              nFeedback++)
         {
             pGFF->GetListElement(&stEntry, &lstItems, nFeedback);
             sMessage = pGFF->ReadFieldCExoString(&stEntry, "PT_FB_MSG_MSG", bSuccess, "");
-            unsigned long nType = pGFF->ReadFieldDWORD(
+            nType = pGFF->ReadFieldDWORD(
                 &stEntry, "PT_FB_MSG_TYPE", bSuccess, 0x10000000);
-            unsigned char nColor =
+            nColor =
                 pGFF->ReadFieldBYTE(&stEntry, "PT_FB_MSG_COLOR", bSuccess, 0);
             g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToMsgBuffer(
                 sMessage, nType, nColor);
@@ -961,9 +963,9 @@ int CSWPartyTable::LoadTableInfo()
         {
             pGFF->GetListElement(&stEntry, &lstItems, nCombat);
             sMessage = pGFF->ReadFieldCExoString(&stEntry, "PT_COM_MSG_MSG", bSuccess, "");
-            unsigned long nType = pGFF->ReadFieldDWORD(
+            nType = pGFF->ReadFieldDWORD(
                 &stEntry, "PT_COM_MSG_TYPE", bSuccess, 0x10000000);
-            unsigned char nColor =
+            nColor =
                 pGFF->ReadFieldBYTE(&stEntry, "PT_COM_MSG_COOR", bSuccess, 0);
             g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(
                 sMessage, nType, nColor);
@@ -979,11 +981,11 @@ int CSWPartyTable::LoadTableInfo()
                 pGFF->ReadFieldFLOAT(&stEntry, "PT_COST_MULT_VALUE", bSuccess,
                                      1.0f);
         }
-        m_bDisableMap = pGFF->ReadFieldINT(&stTop, "PT_DISABLEMAP", bSuccess, 0);
-        m_bDisableRegen = pGFF->ReadFieldINT(&stTop, "PT_DISABLEREGEN", bSuccess, 0);
+        m_bDisableMap = pGFF->ReadFieldINT(&stEntry, "PT_DISABLEMAP", bSuccess, 0);
+        m_bDisableRegen = pGFF->ReadFieldINT(&stEntry, "PT_DISABLEREGEN", bSuccess, 0);
 
         CStatusSummary cSummary;
-        cSummary.LoadFromGFF(pGFF, stTop);
+        cSummary.LoadFromGFF(pGFF, stEntry);
         g_pAppManager->GetClientExoApp()->GetInGameGui()->SetStatusSummary(cSummary);
 
         LoadJournal(pGFF, &stTop);
@@ -2381,8 +2383,8 @@ void CSWPartyTable::SaveTableInfo(const CExoString& sAlias)
         int nLastGuiPanel =
             g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nLastGuiPanel;
         pGFF->WriteFieldINT(&stTop, nLastGuiPanel, "PT_LAST_GUI_PNL");
-        pGFF->WriteFieldINT(&stTop, m_nForfeitViolation, "FORFEITVIOL");
-        pGFF->WriteFieldINT(&stTop, m_nForfeitConditions, "FORFEITCONDS");
+        pGFF->WriteFieldINT(&stEntry, m_nForfeitViolation, "FORFEITVIOL");
+        pGFF->WriteFieldINT(&stEntry, m_nForfeitConditions, "FORFEITCONDS");
 
         pGFF->AddList(&lstItems, &stTop, "PT_FB_MSG_LIST");
         SFeedbackMessage* pMessages =
@@ -2439,12 +2441,12 @@ void CSWPartyTable::SaveTableInfo(const CExoString& sAlias)
                 g_pRules->m_pBaseItems->GetBaseItem(nBaseItem)->m_fCostMultiplier;
             pGFF->WriteFieldFLOAT(&stEntry, fCostMultiplier, "PT_COST_MULT_VALUE");
         }
-        pGFF->WriteFieldINT(&stTop, m_bDisableMap, "PT_DISABLEMAP");
-        pGFF->WriteFieldINT(&stTop, m_bDisableRegen, "PT_DISABLEREGEN");
+        pGFF->WriteFieldINT(&stEntry, m_bDisableMap, "PT_DISABLEMAP");
+        pGFF->WriteFieldINT(&stEntry, m_bDisableRegen, "PT_DISABLEREGEN");
 
         CStatusSummary cSummary;
         g_pAppManager->GetClientExoApp()->GetInGameGui()->GetStatusSummary(cSummary);
-        cSummary.SaveToGFF(pGFF, stTop);
+        cSummary.SaveToGFF(pGFF, stEntry);
 
         SaveJournal(pGFF, &stTop);
         pGFF->WriteGFFFile(sFile, 0);

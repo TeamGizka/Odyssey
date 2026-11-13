@@ -1157,6 +1157,10 @@ void CSWSMessage::AddAreaOfEffectObjectToMessage(CSWSAreaOfEffectObject* pObject
     WriteINT(pObject->m_nAreaEffectId, 32);
     WriteOBJECTIDServer(pObject->m_oidTarget);
 }
+template <class T> inline int ListNum(const CExoArrayList<T>& lst)
+{
+    return lst.num;
+}
 // PC 0x00597DA0
 void CSWSMessage::WriteGameObjUpdate_PlayerUpdate(CSWSPlayer* pPlayer,
     CSWSPlayerLastUpdateObject* pPlayerLastUpdate,
@@ -1232,13 +1236,13 @@ void CSWSMessage::WriteGameObjUpdate_PlayerUpdate(CSWSPlayer* pPlayer,
         {
             for (int nClass = 0; nClass < CSWSCreatureStats::MAX_CLASSES; nClass++)
             {
-                int nSpellsRemoved = pPlayerLastUpdate->m_aSpellsRemoved[nClass].num;
+                int nSpellsRemoved = ListNum(pPlayerLastUpdate->m_aSpellsRemoved[nClass]);
                 WriteWORD(nSpellsRemoved, 16);
-                for (unsigned char i = 0; i < pPlayerLastUpdate->m_aSpellsRemoved[nClass].num; i++)
+                for (unsigned char i = 0; i < ListNum(pPlayerLastUpdate->m_aSpellsRemoved[nClass]); i++)
                     WriteDWORD(pPlayerLastUpdate->m_aSpellsRemoved[nClass][i], 32);
-                int nSpellsAdded = pPlayerLastUpdate->m_aSpellsAdded[nClass].num;
+                int nSpellsAdded = ListNum(pPlayerLastUpdate->m_aSpellsAdded[nClass]);
                 WriteWORD(nSpellsAdded, 16);
-                for (unsigned char i = 0; i < pPlayerLastUpdate->m_aSpellsAdded[nClass].num; i++)
+                for (unsigned char i = 0; i < ListNum(pPlayerLastUpdate->m_aSpellsAdded[nClass]); i++)
                     WriteDWORD(pPlayerLastUpdate->m_aSpellsAdded[nClass][i], 32);
             }
         }
@@ -1306,14 +1310,14 @@ void CSWSMessage::WriteGameObjUpdate_PlayerUpdate(CSWSPlayer* pPlayer,
                 nFeat = pCreature->GetStats()->GetFeat(i);
                 int bFound = 0;
                 int j = 0;
-                if (pPlayerLastUpdate->m_lstFeats.num > 0)
+                if (ListNum(pPlayerLastUpdate->m_lstFeats) > 0)
                 {
                     do
                     {
                         if (pPlayerLastUpdate->m_lstFeats[j] == nFeat)
                             bFound = 1;
                         j++;
-                    } while (j < pPlayerLastUpdate->m_lstFeats.num);
+                    } while (j < ListNum(pPlayerLastUpdate->m_lstFeats));
                 }
                 if (!bFound)
                 {
@@ -1321,7 +1325,7 @@ void CSWSMessage::WriteGameObjUpdate_PlayerUpdate(CSWSPlayer* pPlayer,
                     lstFeats.Add(nFeat);
                 }
             }
-            for (i = 0; i < pPlayerLastUpdate->m_lstFeats.num; i++)
+            for (i = 0; i < ListNum(pPlayerLastUpdate->m_lstFeats); i++)
             {
                 nFeat = pPlayerLastUpdate->m_lstFeats[i];
                 int bFound = 0;
@@ -1334,19 +1338,19 @@ void CSWSMessage::WriteGameObjUpdate_PlayerUpdate(CSWSPlayer* pPlayer,
                     lstFeats.Add(nFeat);
                 }
             }
-            for (i = 0; (unsigned short)i < (unsigned short)pCreature->GetStats()->m_lstBonusFeats.num; i++)
+            for (i = 0; (unsigned short)i < (unsigned short)ListNum(pCreature->GetStats()->m_lstBonusFeats); i++)
             {
                 nFeat = pCreature->GetStats()->GetBonusFeat(i);
                 int bFound = 0;
                 int j = 0;
-                if (pPlayerLastUpdate->m_lstBonusFeats.num > 0)
+                if (ListNum(pPlayerLastUpdate->m_lstBonusFeats) > 0)
                 {
                     do
                     {
                         if (pPlayerLastUpdate->m_lstBonusFeats[j] == nFeat)
                             bFound = 1;
                         j++;
-                    } while (j < pPlayerLastUpdate->m_lstBonusFeats.num);
+                    } while (j < ListNum(pPlayerLastUpdate->m_lstBonusFeats));
                 }
                 if (!bFound)
                 {
@@ -1354,11 +1358,11 @@ void CSWSMessage::WriteGameObjUpdate_PlayerUpdate(CSWSPlayer* pPlayer,
                     lstFeats.Add(nFeat);
                 }
             }
-            for (i = 0; i < pPlayerLastUpdate->m_lstBonusFeats.num; i++)
+            for (i = 0; i < ListNum(pPlayerLastUpdate->m_lstBonusFeats); i++)
             {
                 nFeat = pPlayerLastUpdate->m_lstBonusFeats[i];
                 int bFound = 0;
-                for (unsigned short j = 0; j < (unsigned short)pCreature->GetStats()->m_lstBonusFeats.num; j++)
+                for (unsigned short j = 0; j < (unsigned short)ListNum(pCreature->GetStats()->m_lstBonusFeats); j++)
                     if (pCreature->GetStats()->GetBonusFeat(j) == nFeat)
                         bFound = 1;
                 if (!bFound)
@@ -1367,16 +1371,16 @@ void CSWSMessage::WriteGameObjUpdate_PlayerUpdate(CSWSPlayer* pPlayer,
                     lstFeats.Add(nFeat);
                 }
             }
-            WriteWORD(lstChanges.num, 16);
-            for (i = 0; i < lstChanges.num; i++)
+            WriteWORD(ListNum(lstChanges), 16);
+            for (i = 0; i < ListNum(lstChanges); i++)
             {
                 WriteCHAR(lstChanges[i], 8);
                 WriteWORD(lstFeats[i], 16);
             }
             CExoArrayList<CFeatUseListEntry*>* pFeatUses = &pCreature->GetStats()->m_lstFeatUses;
-            int nFeatUses = pFeatUses->num;
+            int nFeatUses = ListNum(*pFeatUses);
             WriteWORD(nFeatUses, 16);
-            for (i = 0; i < pFeatUses->num; i++)
+            for (i = 0; i < ListNum(*pFeatUses); i++)
             {
                 WriteWORD((*pFeatUses)[i]->m_nFeat, 16);
                 WriteBYTE(pCreature->GetStats()->GetFeatRemainingUses((*pFeatUses)[i]->m_nFeat), 8);
@@ -1444,8 +1448,8 @@ void CSWSMessage::WriteGameObjUpdate_PlayerUpdate(CSWSPlayer* pPlayer,
                     }
                 }
             }
-            WriteBYTE(lstChanges.num, 8);
-            for (i = 0; i < lstChanges.num; i++)
+            WriteBYTE(ListNum(lstChanges), 8);
+            for (i = 0; i < ListNum(lstChanges); i++)
             {
                 int nAction = lstActions[i];
                 WriteCHAR(lstChanges[i], 8);
@@ -1508,11 +1512,11 @@ void CSWSMessage::WriteGameObjUpdate_PlayerUpdate(CSWSPlayer* pPlayer,
             int i;
             int j;
             CSWVisibilityNode* pNode;
-            for (i = 0; i < pPlayerLastUpdate->m_lstVisibility.num; i++)
+            for (i = 0; i < ListNum(pPlayerLastUpdate->m_lstVisibility); i++)
             {
                 bFound = 0;
                 pNode = pPlayerLastUpdate->m_lstVisibility[i];
-                for (j = 0; j < pCreature->m_lstVisibilityList.num; j++)
+                for (j = 0; j < ListNum(pCreature->m_lstVisibilityList); j++)
                 {
                     unsigned long oidCurrent = pCreature->m_lstVisibilityList[j]->m_oidObject;
                     if (pNode->m_oidObject == oidCurrent)
@@ -1524,17 +1528,17 @@ void CSWSMessage::WriteGameObjUpdate_PlayerUpdate(CSWSPlayer* pPlayer,
                 if (!bFound)
                     lstDeletes.Add(pNode);
             }
-            WriteDWORD(lstDeletes.num, 32);
-            for (i = 0; i < lstDeletes.num; i++)
+            WriteDWORD(ListNum(lstDeletes), 32);
+            for (i = 0; i < ListNum(lstDeletes); i++)
             {
                 unsigned long oidDelete = lstDeletes[i]->m_oidObject;
                 WriteOBJECTIDServer(oidDelete);
             }
-            for (i = 0; i < pCreature->m_lstVisibilityList.num; i++)
+            for (i = 0; i < ListNum(pCreature->m_lstVisibilityList); i++)
             {
                 bFound = 0;
                 pNode = pCreature->m_lstVisibilityList[i];
-                for (j = 0; j < pPlayerLastUpdate->m_lstVisibility.num; j++)
+                for (j = 0; j < ListNum(pPlayerLastUpdate->m_lstVisibility); j++)
                 {
                     unsigned long oidLast = pPlayerLastUpdate->m_lstVisibility[j]->m_oidObject;
                     if (pNode->m_oidObject == oidLast &&
@@ -1549,8 +1553,8 @@ void CSWSMessage::WriteGameObjUpdate_PlayerUpdate(CSWSPlayer* pPlayer,
                 if (!bFound)
                     lstUpdates.Add(pNode);
             }
-            WriteDWORD(lstUpdates.num, 32);
-            for (i = 0; i < lstUpdates.num; i++)
+            WriteDWORD(ListNum(lstUpdates), 32);
+            for (i = 0; i < ListNum(lstUpdates); i++)
             {
                 pNode = lstUpdates[i];
                 unsigned long oidUpdate = pNode->m_oidObject;
@@ -1715,7 +1719,7 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
             pLastUpdateObject->m_nAnimation != pCreature->m_nAnimation)
             nUpdateMask |= OBJECT_UPDATE_ANIMATION;
 
-        if ((pCreature->m_nAnimation == 10009 || pCreature->m_nAnimation == 10109) &&
+        if ((pCreature->GetAnimation() == 10009 || pCreature->GetAnimation() == 10109) &&
             pCreature->m_oidAttackTarget != OBJECT_INVALID &&
             pCreature->m_oidAttackTarget != pLastUpdateObject->m_oidAttackTarget)
             nUpdateMask |= OBJECT_UPDATE_ORIENTATION | OBJECT_UPDATE_ANIMATION;
@@ -1739,10 +1743,10 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
             pCreature->m_pStats->m_nSubraceIndex != pLastUpdateObject->m_nSubraceIndex ||
             pCreature->m_pStats->m_nGender != pLastUpdateObject->m_nGender ||
             pCreature->m_pStats->m_nGoodEvilAlignment != pLastUpdateObject->m_nGoodEvilAlignment ||
-            pCreature->m_pStats->m_n18C != pLastUpdateObject->m_n11A ||
+            pCreature->GetStats()->m_n18C != pLastUpdateObject->m_n11A ||
             pCreature->m_nF4 != pLastUpdateObject->m_nObjectF4 ||
-            pCreature->m_n1110 != pLastUpdateObject->m_n11C ||
-            pCreature->m_sTag != pLastUpdateObject->m_s120)
+            pCreature->GetForm() != pLastUpdateObject->m_n11C ||
+            pCreature->GetTag() != pLastUpdateObject->m_s120)
         {
             nUpdateMask |= OBJECT_UPDATE_CHARACTER_DETAILS;
         }
@@ -1766,7 +1770,7 @@ unsigned long CSWSMessage::ComputeUpdateRequired(CSWSPlayer* pPlayer,
                 }
             }
             if (pCreature->m_bUpdateMovingOrientation == 1 &&
-                pCreature->m_vOrientation * pLastUpdateObject->m_vOrientation < OBJECT_UPDATE_ORIENTATION_COSINE)
+                pLastUpdateObject->m_vOrientation * pCreature->m_vOrientation < OBJECT_UPDATE_ORIENTATION_COSINE)
                 nUpdateMask |= OBJECT_UPDATE_LOCATION | OBJECT_UPDATE_ORIENTATION;
         }
         else

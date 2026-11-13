@@ -19860,44 +19860,36 @@ int CSWVirtualMachineCommands::ExecuteCommandGetRandomDestination(int nCommand, 
         vDirection = normalize(vDirection);
         pArea->m_pPathfindInformation = pCreature->m_pPathfindInformation;
         int nTries = 20;
-        if (pArea->TestDirectLine(vStart, vDestination, pCreature->m_pPathfindInformation->GetStepScale(),
-                                  pCreature->m_pPathfindInformation->GetHalfStep(), 0, NULL) != 1)
+        while (pArea->TestDirectLine(vStart, vDestination, pCreature->m_pPathfindInformation->GetStepScale(),
+                                     pCreature->m_pPathfindInformation->GetHalfStep(), 0, NULL) != 1)
         {
-            while (1)
+            fDistance *= 0.75;
+            if (fDistance < 2.5f)
             {
-                fDistance *= 0.75;
-                if (fDistance < 2.5f)
+                int nChoice = rand() % 3;
+                if (nChoice == 0)
                 {
-                    int nChoice = rand() % 3;
-                    if (nChoice == 0)
-                    {
-                        vDirection = -vDirection;
-                    }
-                    else if (nChoice == 1)
-                    {
-                        vDirection = Vector(vDirection.m_fZ * 0.0f - vDirection.m_fY,
-                                            vDirection.m_fX - vDirection.m_fZ * 0.0f,
-                                            vDirection.m_fY * 0.0f - vDirection.m_fX * 0.0f);
-                    }
-                    else if (nChoice == 2)
-                    {
-                        vDirection = -Vector(vDirection.m_fZ * 0.0f - vDirection.m_fY,
-                                             vDirection.m_fX - vDirection.m_fZ * 0.0f,
-                                             vDirection.m_fY * 0.0f - vDirection.m_fX * 0.0f);
-                    }
-                    fDistance = fMaxDistance;
+                    vDirection = -vDirection;
                 }
-                vDestination = vStart + vDirection * fDistance;
-                if (fDistance < 1.0f || nTries-- < 0)
+                else if (nChoice == 1)
                 {
-                    vDestination = vStart;
-                    break;
+                    vDirection = Vector(vDirection.m_fZ * 0.0f - vDirection.m_fY,
+                                        vDirection.m_fX - vDirection.m_fZ * 0.0f,
+                                        vDirection.m_fY * 0.0f - vDirection.m_fX * 0.0f);
                 }
-                if (pArea->TestDirectLine(vStart, vDestination, pCreature->m_pPathfindInformation->GetStepScale(),
-                                          pCreature->m_pPathfindInformation->GetHalfStep(), 0, NULL) == 1)
+                else if (nChoice == 2)
                 {
-                    break;
+                    vDirection = -Vector(vDirection.m_fZ * 0.0f - vDirection.m_fY,
+                                         vDirection.m_fX - vDirection.m_fZ * 0.0f,
+                                         vDirection.m_fY * 0.0f - vDirection.m_fX * 0.0f);
                 }
+                fDistance = fMaxDistance;
+            }
+            vDestination = vStart + vDirection * fDistance;
+            if (fDistance < 1.0f || nTries-- < 0)
+            {
+                vDestination = vStart;
+                break;
             }
         }
         return g_pVirtualMachine->StackPushVector(vDestination) != 0 ? 0 : -2000;

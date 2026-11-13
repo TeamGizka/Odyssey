@@ -1063,7 +1063,7 @@ void CSWSCreatureStats::UpdateCombatInformation()
                 pEffect->GetInteger(CSWSEffectListHandler::ATTACK_INTEGER_WEAPON) == CSWSEffectListHandler::ATTACK_BONUS_MISC)
             {
                 CCombatInformationNode* pNode = new CCombatInformationNode;
-                if (pEffect->GetEffectType() == CSWSEffectListHandler::EFFECT_ATTACK_INCREASE)
+                if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_ATTACK_INCREASE)
                     pNode->m_nModifier = pEffect->GetInteger(CSWSEffectListHandler::ATTACK_INTEGER_BONUS);
                 else
                     pNode->m_nModifier = -pEffect->GetInteger(CSWSEffectListHandler::ATTACK_INTEGER_BONUS);
@@ -1098,7 +1098,7 @@ void CSWSCreatureStats::UpdateCombatInformation()
                 pEffect->GetInteger(CSWSEffectListHandler::DAMAGE_INTEGER_WEAPON) == CSWSEffectListHandler::DAMAGE_BONUS_UNARMED)
             {
                 CCombatInformationNode* pNode = new CCombatInformationNode;
-                if (pEffect->GetEffectType() == CSWSEffectListHandler::EFFECT_DAMAGE_INCREASE)
+                if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_DAMAGE_INCREASE)
                     pNode->m_nModifier = pEffect->GetInteger(CSWSEffectListHandler::DAMAGE_INTEGER_BONUS);
                 else
                     pNode->m_nModifier = -pEffect->GetInteger(CSWSEffectListHandler::DAMAGE_INTEGER_BONUS);
@@ -7785,8 +7785,11 @@ unsigned char CSWSCreatureStats::GetLevel(int bExcludeNegativeLevels)
     }
 
     CSWSCreature* pCreature = m_pCreature;
-    if (pCreature != NULL && !pCreature->GetStats()->GetIsPC() && !pCreature->m_bInParty &&
-        pCreature->m_c250 != 0)
+    if (pCreature == NULL)
+        return nLevel;
+    if (pCreature->GetStats()->GetIsPC())
+        return nLevel;
+    if (!pCreature->m_bInParty && pCreature->m_c250 != 0)
     {
         int nAutoBalance = pCreature->m_c250;
         if (nAutoBalance != 0)

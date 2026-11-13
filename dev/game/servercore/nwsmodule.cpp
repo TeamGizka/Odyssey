@@ -1432,7 +1432,8 @@ int CSWSModule::SavePlayers(CResGFF* pRes, CResStruct* pStruct,
     int nPlayer;
 
     pRes->AddList(&cPlayerList, pStruct, "Mod_PlayerList");
-    for (int i = 0; i < lstPlayers.num; i++)
+    int nNumPlayers = lstPlayers.num;
+    for (int i = 0; i < nNumPlayers; i++)
     {
         if (pObjectArray->GetGameObject(lstPlayers[i], &pObject) ==
             CGameObjectArray::SUCCESS)
@@ -1440,7 +1441,7 @@ int CSWSModule::SavePlayers(CResGFF* pRes, CResStruct* pStruct,
             CSWSCreature* pCreature = pObject->AsSWSCreature();
             EXOXBOXASSERT(pCreature);
             CSWSPlayer* pPlayer = pServer->GetClientObjectByObjectId(
-                pCreature->m_nId);
+                pCreature->GetId());
             if (pPlayer == NULL)
             {
                 pPlayer = pServer->GetClientObjectByObjectId(
@@ -1473,19 +1474,19 @@ int CSWSModule::SavePlayers(CResGFF* pRes, CResStruct* pStruct,
                 pCreature->DumpToLog();
             }
         }
+        nNumPlayers = lstPlayers.num;
     }
 
     CResGFF* pModule;
     pModule = (CResGFF*)g_pExoResMan->GetResObject("Module", RESTYPE_IFO);
     CExoString sPlayerName;
     CResStruct cModuleStruct;
-    if (pModule != NULL)
-    {
-        pModule->Demand();
-        pModule->GetTopLevelStruct(&cModuleStruct);
-        pModule->Release();
-        g_pExoResMan->ReleaseResObject(pModule);
-    }
+    if (pModule == NULL)
+        return 0;
+    pModule->Demand();
+    pModule->GetTopLevelStruct(&cModuleStruct);
+    pModule->Release();
+    g_pExoResMan->ReleaseResObject(pModule);
     return 0;
 }
 // PC 0x00506EF0

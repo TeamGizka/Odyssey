@@ -18,7 +18,7 @@ float DegToRad(float fDegrees)
 #define SEGMENT_SMALL_NUM 0.00000001
 #define SEGMENT_SMALL_NUM_F 0.00000001f
 #define SEGMENT_DOT(a, b) ((a).m_fX * (b).m_fX + (a).m_fY * (b).m_fY + (a).m_fZ * (b).m_fZ)
-#define SEGMENT_ABS(x) ((x) < 0 ? -(x) : (x))
+inline float SegmentAbs(float x) { return x < 0 ? -x : x; }
 #define SEGMENT_MAX(a, b) ((a) > (b) ? (a) : (b))
 // PC 0x004D6970
 double Round(float fValue, float fRoundTo)
@@ -411,9 +411,8 @@ float ClosestDistanceBetweenSegments(const Vector& vFirstStart, const Vector& vF
     tc = fabs(tN) < SEGMENT_SMALL_NUM_F ? 0.0f : tN / tD;
 
     Vector dP = w + (sc * u) - (tc * v);
-    return SEGMENT_MAX(SEGMENT_ABS(dP.m_fY), SEGMENT_ABS(dP.m_fZ)) <= SEGMENT_ABS(dP.m_fX)
-               ? SEGMENT_ABS(dP.m_fX)
-               : SEGMENT_MAX(SEGMENT_ABS(dP.m_fY), SEGMENT_ABS(dP.m_fZ));
+    return SEGMENT_MAX(SegmentAbs(dP.m_fX),
+                       SEGMENT_MAX(SegmentAbs(dP.m_fY), SegmentAbs(dP.m_fZ)));
 }
 // PC 0x004D7A90
 void MakeMatrix4x4(float* pMatrix, const Vector& vTranslation,

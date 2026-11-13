@@ -2322,7 +2322,7 @@ int CSWSObject::AIActionDoorSaber(CSWSObjectActionNode* pNode)
                 }
 
                 CSWSDoor* pDoor = pTarget->AsSWSDoor();
-                if (pDoor != NULL && pDoor->m_bTrapFlag && AsSWSCreature() != NULL &&
+                if (pDoor != NULL && pDoor->GetTrapped() && AsSWSCreature() != NULL &&
                     pDoor->GetReputation(GetId(), 0) < MIN_FRIENDLY_REPUTATION)
                 {
                     int nFaction = pDoor->m_nFactionId;
@@ -2354,7 +2354,7 @@ int CSWSObject::AIActionDoorSaber(CSWSObjectActionNode* pNode)
                     if (AsSWSCreature() != NULL)
                     {
                         pTarget->AsSWSDoor()->m_bLocked = 0;
-                        pTarget->AsSWSDoor()->OpenDoor(m_nId);
+                        pTarget->AsSWSDoor()->OpenDoor(GetId());
                         g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                             0, 0, GetId(), oidTarget, CServerAIMaster::EVENT_UNLOCK_OBJECT, NULL);
                         if (AsSWSCreature() != NULL && rand() % 100 < 20)

@@ -2264,6 +2264,14 @@ int CSWSCreature::AddCutsceneMoveActions(unsigned long nArg1,
     }
     return 1;
 }
+static inline unsigned __int64 GetEffectId(CGameEffect* pEffect)
+{
+    return pEffect->m_nID;
+}
+static inline unsigned short GetRace(CSWSCreatureStats* pStats)
+{
+    return pStats->m_nRace;
+}
 // PC 0x0051BF60
 void CSWSCreature::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
                             int bLoadingGame, int bUpdateSubAreas)
@@ -2293,7 +2301,7 @@ void CSWSCreature::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
         CExoString sModuleName = g_pAppManager->GetServerExoApp()->GetModuleName();
         if (sModuleName.CompareNoCase("261tel"))
         {
-            if (GetStats()->m_nRace != CSWRace::CRACE_DROID)
+            if (GetRace(GetStats()) != CSWRace::CRACE_DROID)
             {
                 int bFound = FALSE;
                 for (int nEffect = 0; nEffect < m_lstEffects.num; nEffect++)
@@ -2318,7 +2326,7 @@ void CSWSCreature::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
                 }
             }
         }
-        else if (GetStats()->m_nRace != CSWRace::CRACE_DROID)
+        else if (GetRace(GetStats()) != CSWRace::CRACE_DROID)
         {
             for (int nEffect = 0; nEffect < m_lstEffects.num; nEffect++)
             {
@@ -2326,7 +2334,7 @@ void CSWSCreature::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
                 if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_VISUALEFFECT &&
                     pEffect->GetInteger(0) == 7003)
                 {
-                    RemoveEffectById(pEffect->m_nID);
+                    RemoveEffectById(GetEffectId(pEffect));
                     break;
                 }
             }
@@ -2436,6 +2444,10 @@ void CSWSCreature::RemoveFromArea(int bLoading)
     SetArea(NULL);
     SetPosition(Vector(0.0f, 0.0f, 0.0f), TRUE, TRUE, FALSE);
 }
+static inline int GetMode(CSWCCreature* pCreature)
+{
+    return pCreature->m_nMode;
+}
 // PC 0x0051C380
 void CSWSCreature::UpdateMineCheck()
 {
@@ -2478,8 +2490,8 @@ void CSWSCreature::UpdateMineCheck()
                 else
                     nRoll = (unsigned short)g_pRules->RollDice(1, CREATURE_MINE_DETECT_DIE);
                 CSWCCreature* pClientCreature = GetClientCreature();
-                if (m_pStats->m_bIsPC == 1 && pClientCreature != NULL &&
-                    pClientCreature->m_nMode == CSWCCreature::MODE_SWDRIVE)
+                if (GetStats()->GetIsPC() == 1 && pClientCreature != NULL &&
+                    GetMode(pClientCreature) == CSWCCreature::MODE_SWDRIVE)
                 {
                     if (pClientCreature->m_bDriveRunning)
                         nRoll -= 5;
@@ -5027,9 +5039,9 @@ float CSWSCreature::GetWalkRate()
         return 0.0f;
     }
 
-    unsigned long oidClient = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(m_nId);
-    CSWCCreature* pCreature = g_pAppManager->m_pClientExoApp->GetCreatureByGameObjectID(oidClient);
-    CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
+    unsigned long oidClient = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetId());
+    CSWCCreature* pCreature = g_pAppManager->GetClientExoApp()->GetCreatureByGameObjectID(oidClient);
+    CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
     if ((m_nActivity & ACTIVITY_STEALTH) != 0 && !m_pStats->HasFeat(CSWFeat::FEAT_STEALTH_RUN) && pCreature != NULL)
     {
         return pCreature->m_pAppearance->m_fDriveAnimWalk * 1000.0f;
@@ -6369,7 +6381,7 @@ int CSWSCreature::DoSpotDetection(CSWSCreature* pCreature, int bInvisible)
     nCheck += m_nSpotCheckRoll;
     CSWCCreature* pClientCreature = GetClientCreature();
     if (GetStats()->GetIsPC() && pClientCreature != NULL &&
-        pClientCreature->m_nMode == CSWCCreature::MODE_SWDRIVE)
+        GetMode(pClientCreature) == CSWCCreature::MODE_SWDRIVE)
     {
         if (pClientCreature->m_bDriveRunning)
         {
@@ -6491,6 +6503,10 @@ void CSWSCreature::BroadcastVoiceChat(unsigned char nVoiceChat)
         }
     }
 }
+static inline int GetRoundStarted(CSWSCombatRound* pCombatRound)
+{
+    return pCombatRound->m_bRoundStarted;
+}
 // PC 0x00513E90
 void CSWSCreature::SetCombatState(int bCombatState, unsigned char bFeedback,
                                   int nArg3)
@@ -6531,8 +6547,8 @@ void CSWSCreature::SetCombatState(int bCombatState, unsigned char bFeedback,
         m_nLastForcePowerUsed = -1;
         m_nLastSpecialAttack = 0;
         m_nLastCombatFeatUsed = 0;
-        m_pcCombatRound->ClearAllAttacks();
-        m_pcCombatRound->RemoveAllActions();
+        GetCombatRound()->ClearAllAttacks();
+        GetCombatRound()->RemoveAllActions();
         m_oidAttemptedAttackTarget = OBJECT_INVALID;
         m_oidAttackTarget = OBJECT_INVALID;
         m_oidAttemptedSpellTarget = OBJECT_INVALID;
@@ -6540,7 +6556,7 @@ void CSWSCreature::SetCombatState(int bCombatState, unsigned char bFeedback,
         GetCombatRound()->m_oidUnknown9CC = OBJECT_INVALID;
 
         CSWSCombatRound* pCombatRound = m_pcCombatRound;
-        if (pCombatRound->m_bRoundStarted)
+        if (GetRoundStarted(pCombatRound))
         {
             CExoString sWarning;
             CExoString sTargetTag;
@@ -7226,8 +7242,8 @@ int CSWSCreature::DoListenDetection(CSWSCreature* pCreature, int bInvisible)
     unsigned char nListenRoll = m_nListenCheckRoll;
     nCheck += pArea->m_nModListenCheck + nListenRoll;
     CSWCCreature* pClientCreature = GetClientCreature();
-    if (GetStats()->m_bIsPC && pClientCreature != NULL &&
-        pClientCreature->m_nMode == CSWCCreature::MODE_SWDRIVE)
+    if (GetStats()->GetIsPC() && pClientCreature != NULL &&
+        GetMode(pClientCreature) == CSWCCreature::MODE_SWDRIVE)
     {
         if (pClientCreature->m_bDriveRunning)
             nCheck -= 5;
@@ -7330,7 +7346,7 @@ void CSWSCreature::BroadcastCombatStateToParty(unsigned long oidTarget)
     {
         unsigned long* pMembers;
         GetFaction()->GetMemberList(&pMembers);
-        for (int nMember = 0; nMember < GetFaction()->m_lstMembers.num; nMember++)
+        for (int nMember = 0; nMember < GetFaction()->GetMemberCount(); nMember++)
         {
             CGameObject* pGameObject = g_pAppManager->GetServerExoApp()
                 ->GetGameObject(pMembers[nMember]);
@@ -8847,7 +8863,7 @@ int CSWSCreature::GetTotalEffectBonus(unsigned char nEffectType, CSWSObject* pOb
 {
     nCapped = 0;
     CExoArrayList<CGameEffect*>& lstEffects = m_lstEffects;
-    int nAttack = m_pcCombatRound->m_nCurrentAttack;
+    int nAttack = GetCombatRound()->m_nCurrentAttack;
     CSWSCombatAttackData* pAttack = GetCombatRound()->GetAttack(nAttack);
     int nWeaponType = pAttack->m_nWeaponAttackType;
     if (nWeaponType == CSWSCombatRound::WEAPON_ATTACK_AUTOMATIC || nB != 0)
@@ -9293,15 +9309,15 @@ case EFFECT_BONUS_DAMAGE:
             }
         }
     }
-    nTotalBonus += nEffectDamageBonus;
+    int nBonusTotal = nEffectDamageBonus + nTotalBonus;
     int nPenaltyTotal = nEffectDamagePenalty + nTotalPenalty;
     if (pnDamageBonus != NULL)
         *pnDamageBonus = nEffectDamageBonus - nEffectDamagePenalty;
-    if (nTotalBonus > EFFECT_BONUS_LIMIT)
-        nTotalBonus = EFFECT_BONUS_LIMIT;
+    if (nBonusTotal > EFFECT_BONUS_LIMIT)
+        nBonusTotal = EFFECT_BONUS_LIMIT;
     if (nPenaltyTotal > EFFECT_BONUS_LIMIT)
         nPenaltyTotal = EFFECT_BONUS_LIMIT;
-    return nTotalBonus - nPenaltyTotal;
+    return nBonusTotal - nPenaltyTotal;
 }
 
 case EFFECT_BONUS_SAVING_THROW:
@@ -9321,14 +9337,17 @@ case EFFECT_BONUS_SAVING_THROW:
             int nVersus = pEffect->GetInteger(2);
             nEffectRace = pEffect->GetInteger(3);
             int nEffectAlignment = pEffect->GetInteger(5);
-            if ((nSave != 0 && nSave != nSavingThrow) ||
-                (nVersus != 0 && nVersus != nC) ||
-                (nEffectRace != g_pRules->GetNumRaces() && nEffectRace != nRace) ||
-                (nEffectAlignment != 0 && nEffectAlignment != nAlignment))
+            if (nSave != 0 && nSave != nSavingThrow)
+                continue;
+            if (nVersus != 0 && nVersus != nC)
+                continue;
+            if (nEffectRace != g_pRules->GetNumRaces() && nEffectRace != nRace)
+                continue;
+            if (nEffectAlignment != 0 && nEffectAlignment != nAlignment)
                 continue;
             if (pEffect->GetEffectType() == CSWSEffectListHandler::EFFECT_SAVING_THROW_INCREASE)
             {
-                pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(pEffect->GetCreator());
+                pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(pEffect->GetCreator());
                 if (pItem != NULL)
                 {
                     for (nStack = 0; nStack < EFFECT_STACK_COUNT; ++nStack)
@@ -10467,15 +10486,14 @@ void CSWSCreature::ClearHostileActionsVersus(CSWSCreature* pCreature)
 // PC 0x00518170
 int CSWSCreature::GetIsCreatureBumpable(CSWSCreature* pCreature)
 {
-    if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nGlobalDialogState != 0)
+    if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_nGlobalDialogState != 0)
         return 0;
 
     CSWCCreature* pCharacter = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
     if (pCharacter == NULL)
         return 0;
 
-    unsigned long oidCharacter = pCharacter->m_nId;
-    if (g_pAppManager->m_pClientExoApp->ServerToClientObjectId(m_nId) == oidCharacter &&
+    if (g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetId()) == pCharacter->GetId() &&
         (pCreature->m_bInParty || pCreature->m_n11FC))
         return 1;
 
@@ -10483,7 +10501,7 @@ int CSWSCreature::GetIsCreatureBumpable(CSWSCreature* pCreature)
         return 0;
 
     int bBumpable = 0;
-    if (GetReputation(pCreature->m_nId, 0) >= NWSCREATURE_BUMP_MIN_REPUTATION &&
+    if (GetReputation(pCreature->GetId(), 0) >= NWSCREATURE_BUMP_MIN_REPUTATION &&
         !pCreature->m_bInParty)
     {
         CExoLinkedList<CSWSObjectActionNode>* pActions = &pCreature->m_lstActions;
@@ -11813,7 +11831,7 @@ void CSWSCreature::DoPerceptionUpdateOnCreature(CSWSCreature* pCreature)
     {
         if (bSeen || bHeard)
         {
-            int nReputation = GetReputation(pCreature->GetId(), 0);
+            int nReputation = GetReputation(pCreature->m_nId, 0);
             if (nReputation <= 10 && pCreature->GetStealthMode() != 1)
             {
                 Vector vDelta = vPosition - vTarget;
@@ -11841,7 +11859,7 @@ void CSWSCreature::DoPerceptionUpdateOnCreature(CSWSCreature* pCreature)
                 pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_PERCEPTION;
                 pEvent->SetInteger(0, CScriptEvent::PERCEPTION_EVENT_LOST_SIGHT);
                 pEvent->SetObjectID(0, oidTarget);
-                pAIMaster->AddEventDeltaTime(0, 0, oidTarget, GetId(), CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
+                pAIMaster->AddEventDeltaTime(0, 0, oidTarget, m_nId, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
             }
             pVisible->m_bSeen = bSeen & 1;
             pVisible->m_bHeard = bHeard & 1;

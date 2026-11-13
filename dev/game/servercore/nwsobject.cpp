@@ -1359,7 +1359,8 @@ int CSWSObject::DoDamageResistance(CSWSCreature* pAttacker, int nDamage,
     int bVulnerable = 0;
     int nDamageType = 0;
     int nBestEffect;
-    if (m_lstEffects.num > 0)
+    int nEffects = m_lstEffects.num;
+    if (nEffects > 0)
     {
         for (int i = 0; i < CSWSCombatAttackData::DAMAGE_COUNT; i++)
         {
@@ -1369,13 +1370,16 @@ int CSWSObject::DoDamageResistance(CSWSCreature* pAttacker, int nDamage,
                 int nEffectIndex = 0;
                 int j;
                 if (AsSWSCreature() != NULL)
-                    j = AsSWSCreature()->m_pStats->m_nDamageResistanceEffectIndex;
+                {
+                    unsigned short nIndex = AsSWSCreature()->GetStats()->m_nDamageResistanceEffectIndex;
+                    j = nIndex;
+                }
                 else
                     j = 0;
                 for (; j < m_lstEffects.num; j++)
                 {
                     CGameEffect* pEffect = m_lstEffects.element[j];
-                    if (m_lstEffects[j]->m_nType > CSWSEffectListHandler::EFFECT_DAMAGE_RESISTANCE)
+                    if (m_lstEffects[j]->GetEffectType() > CSWSEffectListHandler::EFFECT_DAMAGE_RESISTANCE)
                         break;
                     if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_DAMAGE_RESISTANCE)
                     {
@@ -1510,64 +1514,65 @@ int CSWSObject::DoDamageResistance(CSWSCreature* pAttacker, int nDamage,
             }
         }
     }
-    if (AsSWSCreature() == NULL)
-        return nDamage - nResistance > 0 ? nDamage - nResistance : 0;
-    CSWSCreature* pCreature = AsSWSCreature();
-    if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_DAMAGE_REDUCTION_3) ||
-        pCreature->m_pStats->HasFeat(CSWFeat::FEAT_DAMAGE_REDUCTION_3B))
+    if (AsSWSCreature() != NULL)
     {
-        nDamage += (int)(nDamage * -0.15f);
-    }
-    else if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_DAMAGE_REDUCTION_2) ||
-             pCreature->m_pStats->HasFeat(CSWFeat::FEAT_DAMAGE_REDUCTION_2B))
-    {
-        nDamage += (int)(nDamage * -0.1f);
-    }
-    else if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_DAMAGE_REDUCTION_1) ||
-             pCreature->m_pStats->HasFeat(CSWFeat::FEAT_DAMAGE_REDUCTION_1B))
-    {
-        nDamage += (int)(nDamage * -0.05f);
-    }
-    if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_IMPROVED_TOUGHNESS))
-    {
-        int nToughness = (int)(nDamage * 0.1f);
-        if (nToughness < 2)
-            nToughness = 2;
-        nDamage -= nToughness;
-        if (bRemainingDamage)
+        CSWSCreature* pCreature = AsSWSCreature();
+        if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_DAMAGE_REDUCTION_3) ||
+            pCreature->m_pStats->HasFeat(CSWFeat::FEAT_DAMAGE_REDUCTION_3B))
+        {
+            nDamage += (int)(nDamage * -0.15f);
+        }
+        else if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_DAMAGE_REDUCTION_2) ||
+                 pCreature->m_pStats->HasFeat(CSWFeat::FEAT_DAMAGE_REDUCTION_2B))
+        {
+            nDamage += (int)(nDamage * -0.1f);
+        }
+        else if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_DAMAGE_REDUCTION_1) ||
+                 pCreature->m_pStats->HasFeat(CSWFeat::FEAT_DAMAGE_REDUCTION_1B))
+        {
+            nDamage += (int)(nDamage * -0.05f);
+        }
+        if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_IMPROVED_TOUGHNESS))
+        {
+            int nToughness = (int)(nDamage * 0.1f);
+            if (nToughness < 2)
+                nToughness = 2;
+            nDamage -= nToughness;
+            if (bRemainingDamage)
+            {
+                CSWSCombatAttackData* pAttack = pAttacker->m_pcCombatRound->GetAttack(pAttacker->m_pcCombatRound->m_nCurrentAttack);
+                pAttack->m_DamageBreakdown.m_nUnknown9 = nDamage;
+                pAttack->m_DamageBreakdown.m_nUnknown6 = nToughness;
+                pAttack->m_DamageBreakdown.m_nUnknown8 = nDamageType;
+            }
+        }
+        int nEndurance = 0;
+        if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_WOOKIE_ENDURANCE_3))
+        {
+            nEndurance = 8;
+            if (nDamage - 8 > 0)
+                nEndurance = 10 * (nDamage - 8) / 100 + 8;
+            nDamage -= nEndurance;
+        }
+        else if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_WOOKIE_ENDURANCE_2))
+        {
+            nEndurance = 5;
+            if (nDamage - 5 > 0)
+                nEndurance = 5 * (nDamage - 5) / 100 + 5;
+            nDamage -= nEndurance;
+        }
+        else if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_WOOKIE_ENDURANCE))
+        {
+            nEndurance = 2;
+            nDamage -= nEndurance;
+        }
+        if (nEndurance > 0 && bRemainingDamage)
         {
             CSWSCombatAttackData* pAttack = pAttacker->m_pcCombatRound->GetAttack(pAttacker->m_pcCombatRound->m_nCurrentAttack);
-            pAttack->m_DamageBreakdown.m_nUnknown9 = nDamage;
-            pAttack->m_DamageBreakdown.m_nUnknown6 = nToughness;
+            pAttack->m_DamageBreakdown.m_nUnknownA = nDamage;
+            pAttack->m_DamageBreakdown.m_nUnknown7 = nEndurance;
             pAttack->m_DamageBreakdown.m_nUnknown8 = nDamageType;
         }
-    }
-    int nEndurance = 0;
-    if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_WOOKIE_ENDURANCE_3))
-    {
-        nEndurance = 8;
-        if (nDamage - 8 > 0)
-            nEndurance = 10 * (nDamage - 8) / 100 + 8;
-        nDamage -= nEndurance;
-    }
-    else if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_WOOKIE_ENDURANCE_2))
-    {
-        nEndurance = 5;
-        if (nDamage - 5 > 0)
-            nEndurance = 5 * (nDamage - 5) / 100 + 5;
-        nDamage -= nEndurance;
-    }
-    else if (pCreature->m_pStats->HasFeat(CSWFeat::FEAT_WOOKIE_ENDURANCE))
-    {
-        nEndurance = 2;
-        nDamage -= nEndurance;
-    }
-    if (nEndurance > 0 && bRemainingDamage)
-    {
-        CSWSCombatAttackData* pAttack = pAttacker->m_pcCombatRound->GetAttack(pAttacker->m_pcCombatRound->m_nCurrentAttack);
-        pAttack->m_DamageBreakdown.m_nUnknownA = nDamage;
-        pAttack->m_DamageBreakdown.m_nUnknown7 = nEndurance;
-        pAttack->m_DamageBreakdown.m_nUnknown8 = nDamageType;
     }
     return nDamage - nResistance > 0 ? nDamage - nResistance : 0;
 }

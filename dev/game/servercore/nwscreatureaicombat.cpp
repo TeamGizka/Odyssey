@@ -768,10 +768,20 @@ void CSWSCreature::ResolveOnHitVisuals(CSWSObject* pTarget)
 enum
 {
     FEAT_LOW_HEALTH_SAVE_BONUS = 199,
-    SAVING_THROW_ALIGNMENT_LIGHT = 60,
-    SAVING_THROW_ALIGNMENT_DARK = 40,
     SAVING_THROW_MAX_EFFECT_BONUS = 60
 };
+inline unsigned char GetSimpleAlignmentGoodEvil(CSWSCreatureStats* pStats)
+{
+    if (pStats->GetGoodEvilAlignment() <= 40)
+    {
+        return CSWSCreatureStats::ALIGNMENT_EVIL;
+    }
+    if (pStats->GetGoodEvilAlignment() >= 60)
+    {
+        return CSWSCreatureStats::ALIGNMENT_GOOD;
+    }
+    return CSWSCreatureStats::ALIGNMENT_NEUTRAL;
+}
 // PC 0x006084F0
 unsigned char CSWSCreature::SavingThrowRoll(unsigned char nSaveType, unsigned short nDC,
                                             unsigned char nSaveVersusType,
@@ -827,12 +837,11 @@ unsigned char CSWSCreature::SavingThrowRoll(unsigned char nSaveType, unsigned sh
     int nRoomForceRating = 0;
     if (pArea != NULL)
         nRoomForceRating = pArea->GetRoomForceRating(m_vPosition);
-    if (m_pStats->m_nGoodEvilAlignment > SAVING_THROW_ALIGNMENT_DARK &&
-        m_pStats->m_nGoodEvilAlignment >= SAVING_THROW_ALIGNMENT_LIGHT)
+    if (GetSimpleAlignmentGoodEvil(m_pStats) == CSWSCreatureStats::ALIGNMENT_GOOD)
     {
         nEffectBonus += nRoomForceRating;
     }
-    else if (m_pStats->m_nGoodEvilAlignment <= SAVING_THROW_ALIGNMENT_DARK)
+    else if (GetSimpleAlignmentGoodEvil(m_pStats) == CSWSCreatureStats::ALIGNMENT_EVIL)
     {
         nEffectBonus -= nRoomForceRating;
     }
@@ -1737,7 +1746,7 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                                            CSWSObject* pTarget, int nImpactTime,
                                            int* pbStateApplied)
 {
-    int nIndex = 0;
+    int nIndex;
     *pbStateApplied = 0;
     if (pTarget != NULL && nAttack == 0)
     {
@@ -1750,11 +1759,11 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
             pAttack->m_nWeaponAttackType == CSWSCombatRound::WEAPON_ATTACK_EXTRA_UNARMED)
         {
             int nUnarmedLevel = 0;
-            if (m_pStats->HasFeat(FEAT_UNARMED_DAMAGE_3))
+            if (GetStats()->HasFeat(FEAT_UNARMED_DAMAGE_3))
                 nUnarmedLevel = 3;
-            else if (m_pStats->HasFeat(FEAT_UNARMED_DAMAGE_2))
+            else if (GetStats()->HasFeat(FEAT_UNARMED_DAMAGE_2))
                 nUnarmedLevel = 2;
-            else if (m_pStats->HasFeat(FEAT_UNARMED_DAMAGE_1))
+            else if (GetStats()->HasFeat(FEAT_UNARMED_DAMAGE_1))
                 nUnarmedLevel = 1;
             if (nUnarmedLevel != 0 &&
                 IsAttackResultHit(pAttack->m_nAttackResult) &&
@@ -1767,7 +1776,7 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                                      CGameEffect::DURATION_TYPE_INSTANTANEOUS;
                 pDamage->SetCreator(GetId());
                 pDamage->SetNumIntegers(CSWSEffectListHandler::APPLIED_DAMAGE_INTEGER_COUNT);
-                for (; nIndex < CSWSEffectListHandler::APPLIED_DAMAGE_TYPE_COUNT; nIndex++)
+                for (nIndex = 0; nIndex < CSWSEffectListHandler::APPLIED_DAMAGE_TYPE_COUNT; nIndex++)
                 {
                     pDamage->SetInteger(nIndex, -1);
                 }
@@ -1793,8 +1802,8 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                     (pSlowEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
                     DURATION_TYPE_TEMPORARY;
                 CSWSCreature* pCreature = pTarget->AsSWSCreature();
-                int nDC = m_pStats->GetLevel(0) + UNARMED_SAVE_BASE_DC;
-                if (pCreature->m_pStats->GetEffectLinkImmunity(pSlowEffect) == 0)
+                int nDC = GetStats()->GetLevel(0) + UNARMED_SAVE_BASE_DC;
+                if (pCreature->GetStats()->GetEffectLinkImmunity(pSlowEffect) == 0)
                 {
                     int nRoll = rand() % 100;
                     int bSlow = FALSE;
@@ -1848,7 +1857,7 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                         (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
                         CGameEffect::DURATION_TYPE_TEMPORARY;
                     pEffect->m_fDuration = 3.0f;
-                    pEffect->SetCreator(GetId());
+                    pEffect->SetCreator(m_nId);
                     pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_TYPE,
                                         CSWSEffectListHandler::AC_DODGE);
                     pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_BONUS,
@@ -1871,7 +1880,7 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                         pStunEffect->SetCreator(GetId());
                         CSWSCreature* pCreature = pTarget->AsSWSCreature();
                         int nDC = m_pStats->GetLevel(0) + m_pStats->GetSTRMod();
-                        if (pCreature->m_pStats->GetEffectLinkImmunity(pStunEffect) == 0)
+                        if (pCreature->GetStats()->GetEffectLinkImmunity(pStunEffect) == 0)
                         {
                             if (pCreature->SavingThrowRoll(SAVING_THROW_FORT, nDC, 0,
                                                           m_nId, 1, 0, 1) == 0)
@@ -1944,7 +1953,7 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                         pPushEffect->SetCreator(GetId());
                         CSWSCreature* pCreature = pTarget->AsSWSCreature();
                         int nDC = m_pStats->GetLevel(0) + m_pStats->GetSTRMod() * 2;
-                        if (pCreature->m_pStats->GetEffectLinkImmunity(pPushEffect) == 0 &&
+                        if (pCreature->GetStats()->GetEffectLinkImmunity(pPushEffect) == 0 &&
                             pCreature->SavingThrowRoll(SAVING_THROW_FORT, nDC, 0,
                                                       GetId(), 1, 0, 1) == 0)
                         {
@@ -1971,7 +1980,7 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                             (pVisualEffect->m_nSubType & ~CGameEffect::SUBTYPE_MASK) |
                             SUBTYPE_MAGICAL;
                         pVisualEffect->SetInteger(0, VISUAL_EFFECT_SHIELD_BREAKER);
-                        pVisualEffect->SetCreator(GetId());
+                        pVisualEffect->SetCreator(m_nId);
                         pAttack->m_lstEffects.Add(pVisualEffect);
                         CGameEffect* pShieldEffect = new CGameEffect(1);
                         pShieldEffect->m_nType = CSWSEffectListHandler::EFFECT_DESTROYSHIELDS;
@@ -2657,9 +2666,9 @@ int CSWSCreature::AIActionPhysicalAttacks(CSWSObjectActionNode* pAction)
         return ACTION_FAILED;
     }
 
+    int bTargetDetected = 0;
     CGameObject* pObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidTarget);
     CSWSObject* pTarget = NULL;
-    int bTargetDetected = 0;
     if (pObject != NULL && pObject->AsSWSObject() != NULL)
     {
         pTarget = pObject->AsSWSObject();
@@ -2821,8 +2830,8 @@ int CSWSCreature::AIActionPhysicalAttacks(CSWSObjectActionNode* pAction)
                 !(bForceJump = ResolveMoveToForceJump(pTarget, nFeat)))
             {
                 int nAIState = m_pStats->m_nAIState;
-                unsigned long oidPartyLeader = OBJECT_INVALID;
                 CSWCCreature* pPartyLeader = g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0);
+                unsigned long oidPartyLeader = OBJECT_INVALID;
                 if (pPartyLeader != NULL)
                     oidPartyLeader = pPartyLeader->GetServerCreature()->GetId();
                 if (pObject->AsSWSDoor() != NULL)
@@ -2968,13 +2977,25 @@ AttackFailed:
         if (!m_pcCombatRound->m_bRoundStarted)
             return ACTION_IN_PROGRESS;
         if ((nActionType == CSWSCombatRoundAction::ACTION_SPECIAL_ATTACK || bForceJump) &&
-            m_nGuardStanceFeat == 0 &&
-            (m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND) != NULL ||
-             (nActionType == CSWSCombatRoundAction::ACTION_SPECIAL_ATTACK && nFeat == CSWFeat::FEAT_SHIELD_BREAKER) ||
-             (m_pStats->HasFeat(CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS) &&
-              nActionType == CSWSCombatRoundAction::ACTION_SPECIAL_ATTACK && !bForceJump)))
-            m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack)->m_nAttackType =
-                (unsigned short)nFeat;
+            m_nGuardStanceFeat == 0)
+        {
+            if (m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND) != NULL)
+            {
+                m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack)->m_nAttackType =
+                    (unsigned short)nFeat;
+            }
+            else if (nActionType == CSWSCombatRoundAction::ACTION_SPECIAL_ATTACK && nFeat == CSWFeat::FEAT_SHIELD_BREAKER)
+            {
+                m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack)->m_nAttackType =
+                    (unsigned short)nFeat;
+            }
+            else if (m_pStats->HasFeat(CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS) &&
+                     nActionType == CSWSCombatRoundAction::ACTION_SPECIAL_ATTACK && !bForceJump)
+            {
+                m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack)->m_nAttackType =
+                    (unsigned short)nFeat;
+            }
+        }
         SetAnimation(nAnimation);
         SetAttemptedAttackTarget(oidTarget);
         m_pcCombatRound->SetRoundPaused(1, GetId());
@@ -3017,6 +3038,7 @@ AttackFailed:
         {
             ResolveAttack(oidTarget, nAttacks, nAnimationTime, bUseAttackResult,
                           nAttackResult, nAttackRollResult, nDamage);
+            return ACTION_COMPLETE;
         }
         return ACTION_COMPLETE;
     }
@@ -3267,8 +3289,15 @@ void CSWSCreature::CreateNewAttackActions(int bFindNewTarget,
                 if (pObject->AsSWSCreature() != NULL)
                 {
                     CSWSCreature* pTarget = pObject->AsSWSCreature();
-                    if (!pTarget->GetDead() && !pTarget->GetDeadTemp() &&
-                        !GetDead() && !GetDeadTemp())
+                    if (pTarget->GetDead() || pTarget->GetDeadTemp())
+                    {
+                        bValidTarget = 0;
+                    }
+                    else if (GetDead() || GetDeadTemp())
+                    {
+                        bValidTarget = 0;
+                    }
+                    else
                     {
                         if (GetReputation(oidTarget, 0) >
                             CSWSObject::MAX_HOSTILE_REPUTATION)
@@ -3290,10 +3319,6 @@ void CSWSCreature::CreateNewAttackActions(int bFindNewTarget,
                             }
                         }
                     }
-                    else
-                    {
-                        bValidTarget = 0;
-                    }
                 }
             }
             else
@@ -3304,13 +3329,9 @@ void CSWSCreature::CreateNewAttackActions(int bFindNewTarget,
         }
     }
 
-    if (oidTarget == OBJECT_INVALID &&
-        m_pcCombatRound->m_pScheduledActions->GetHeadPos() == NULL)
-    {
-        bValidTarget = 1;
-        bFindTarget = 1;
-    }
-    else if (bFindNewTarget)
+    if ((oidTarget == OBJECT_INVALID &&
+         m_pcCombatRound->m_pScheduledActions->GetHeadPos() == NULL) ||
+        bFindNewTarget)
     {
         bValidTarget = 1;
         bFindTarget = 1;
