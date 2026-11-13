@@ -731,6 +731,9 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70
             nPrevious += MdlNodeLightsaber::NUM_BACK_SEGMENTS;
         Quaternion qCurrent;
         Quaternion qPrevious;
+        Quaternion qOlder;
+        Quaternion qNewer;
+        Quaternion qNext;
         Vector vPrevious;
         int nSegment;
         Vector vCurrent = m_avSegmentPosition[nCurrent];
@@ -818,9 +821,6 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70
             nPrevious = m_nNextSegment - 2;
             if (nPrevious < 0)
                 nPrevious += MdlNodeLightsaber::NUM_BACK_SEGMENTS;
-            Quaternion qOlder;
-            Quaternion qNewer;
-            Quaternion qNext;
             Vector vNewer;
             vNewer = m_avSegmentPosition[nCurrent];
             qNewer = m_aqSegmentOrientation[nCurrent];
