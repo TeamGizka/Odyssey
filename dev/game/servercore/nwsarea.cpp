@@ -3273,20 +3273,26 @@ void CSWSArea::SetPlayerRestrictMode(int nRestrictMode)
 // PC 0x004E1C50 GOG 0x004E1D70
 void DirtyTextureController::Init()
 {
+    int nSize = 0;
+    int nARGB;
+    int nFormula;
+    int nFunc;
     if (g_pAppManager->m_pServerExoApp != NULL &&
         g_pAppManager->m_pServerExoApp->GetModule() != NULL)
     {
-        int nSize = g_pAppManager->m_pServerExoApp->GetModule()->GetArea()->GetDirtySize(m_nDirtyIndex);
-        int nARGB = g_pAppManager->m_pServerExoApp->GetModule()->GetArea()->GetDirtyARGB(m_nDirtyIndex);
-        int nFormula = g_pAppManager->m_pServerExoApp->GetModule()->GetArea()->GetDirtyFormula(m_nDirtyIndex);
-        int nFunc = g_pAppManager->m_pServerExoApp->GetModule()->GetArea()->GetDirtyFunc(m_nDirtyIndex);
-        if (nSize != 0)
-        {
-            Init(nARGB, nSize, nFormula, nFunc);
-            return;
-        }
+        nSize = g_pAppManager->m_pServerExoApp->GetModule()->GetArea()->GetDirtySize(m_nDirtyIndex);
+        nARGB = g_pAppManager->m_pServerExoApp->GetModule()->GetArea()->GetDirtyARGB(m_nDirtyIndex);
+        nFormula = g_pAppManager->m_pServerExoApp->GetModule()->GetArea()->GetDirtyFormula(m_nDirtyIndex);
+        nFunc = g_pAppManager->m_pServerExoApp->GetModule()->GetArea()->GetDirtyFunc(m_nDirtyIndex);
     }
-    Init(0, 16, 0, 0);
+    if (nSize != 0)
+    {
+        Init(nARGB, nSize, nFormula, nFunc);
+    }
+    else
+    {
+        Init(0, 16, 0, 0);
+    }
 }
 // PC 0x004E3840 GOG 0x004E3960
 void CSWSArea::ClearObjects()

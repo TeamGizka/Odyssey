@@ -108,19 +108,21 @@ int CSWSArea::GetRoomIndex(const Vector& vPosition, int bAllMaterials)
 
     for (int nRoom = 0; nRoom < m_nRoomCount; nRoom++)
     {
-        int bHit;
         if (bAllMaterials != 0)
         {
-            bHit = m_pRooms[nRoom].CheckAABBAll(vTop, vBottom, hitInfo);
+            if (m_pRooms[nRoom].CheckAABBAll(vTop, vBottom, hitInfo))
+            {
+                nResult = nRoom;
+                break;
+            }
         }
         else
         {
-            bHit = m_pRooms[nRoom].CheckAABBWalkable(vTop, vBottom, hitInfo);
-        }
-        if (bHit)
-        {
-            nResult = nRoom;
-            break;
+            if (m_pRooms[nRoom].CheckAABBWalkable(vTop, vBottom, hitInfo))
+            {
+                nResult = nRoom;
+                break;
+            }
         }
     }
     return nResult;
