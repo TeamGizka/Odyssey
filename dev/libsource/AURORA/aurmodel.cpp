@@ -2582,6 +2582,9 @@ void PartEmitter::SetWeather(bool bWeather)
 {
     m_bWeather = bWeather;
 }
+static inline void GobDebugLine(const Vector&, const Vector&)
+{
+}
 // PC 0x00450140 GOG 0x00450280
 void Part::GetWorld(Vector& vPosition, Quaternion& qOrientation)
 {
@@ -2589,7 +2592,9 @@ void Part::GetWorld(Vector& vPosition, Quaternion& qOrientation)
     vPosition = Vector(0.0f, 0.0f, 0.0f);
     qOrientation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
 
-    Gob* pGob = m_pAurObject;
+    const Vector& vCurrent = vPosition;
+    Gob* pObject = m_pAurObject;
+    Gob* pGob = pObject;
     if (pGob == 0)
     {
         vPosition = m_vPosition;
@@ -2600,19 +2605,22 @@ void Part::GetWorld(Vector& vPosition, Quaternion& qOrientation)
     do
     {
         vPosition *= pPart->m_fScale;
-        vPosition = pPart->m_qOrientation * vPosition;
+        vPosition = pPart->m_qOrientation * vCurrent;
         vPosition = pPart->m_vPosition + vPosition;
         qOrientation = pPart->m_qOrientation * qOrientation;
-        pPart = pPart->m_pParent;
+        Part* pParent = pPart->m_pParent;
+        pPart = pParent;
     } while (pPart != 0);
 
     if (pGob->m_fScale != 1.0f)
     {
         vPosition *= pGob->m_fScale;
     }
-    vPosition = pGob->m_qOrientation * vPosition;
+    vPosition = pGob->m_qOrientation * vCurrent;
     vPosition = pGob->m_vPosition + vPosition;
-    qOrientation = pGob->m_qOrientation * qOrientation;
+    const Quaternion& qGob = pGob->m_qOrientation;
+    qOrientation = qGob * qOrientation;
+    GobDebugLine(vPosition - Vector(0.0f, 0.0f, 1.0f), vPosition - Vector(0.0f, 0.0f, 1.0f));
 }
 // PC 0x004506B0 GOG 0x004507F0
 void Part::GetLocal(Vector& vPosition, Quaternion& qOrientation)
@@ -2690,9 +2698,6 @@ void Gob::EnableInViewVolume()
 void Gob::DisableInViewVolume()
 {
     m_bInViewVolume = 0;
-}
-static inline void GobDebugLine(const Vector&, const Vector&)
-{
 }
 // PC 0x00450C80 GOG 0x00450DC0
 CAurObject* Gob::HitCheckPart(CAurPart* pPart, Vector vStart, Vector vEnd,
