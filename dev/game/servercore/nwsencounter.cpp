@@ -1357,8 +1357,8 @@ void CSWSEncounter::AIUpdate()
 {
     SpawnCreatureFromSpawnList();
 
-    unsigned __int64 nTimer =
-        g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
+    CExoTimers* pTimers = g_pExoBase->m_pExoTimers;
+    unsigned __int64 nTimer = pTimers->GetHighResolutionTimer();
     unsigned long nNowDay, nNowTime;
     unsigned long nDiffDay, nDiffTime;
     unsigned long nHeartbeatDay, nHeartbeatTime;
@@ -1382,7 +1382,8 @@ void CSWSEncounter::AIUpdate()
     m_nLastUpdateTime = nNowTime;
     m_nElapsedTime = nDiffTime;
 
-    if (m_nSpawnOption == SPAWN_OPTION_CONTINUOUS && m_bReset == 1 &&
+    int nSpawnOption = m_nSpawnOption;
+    if (nSpawnOption == SPAWN_OPTION_CONTINUOUS && m_bReset == 1 &&
         m_nLastSpawnDay != 0 && m_nLastSpawnTime != 0)
     {
         unsigned long nResetDay, nResetTime;
