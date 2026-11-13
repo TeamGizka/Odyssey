@@ -1672,7 +1672,8 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
         int i;
         CExoArrayList<CExoInputEvent> aEvents =
             g_pExoInput->GetEvents(nEvents, m_nInputClass);
-        if (m_pGuiInGame->m_bShowPauseGui == CGuiInGame::GUISTATE_MAIN_INTERFACE ||
+        int nPauseGui = m_pGuiInGame->m_bShowPauseGui;
+        if (nPauseGui == CGuiInGame::GUISTATE_MAIN_INTERFACE ||
             m_nInputClass == INPUT_CLASS_GUI || m_nInputClass == INPUT_CLASS_DIALOG)
         {
             int bDirection = 0;
@@ -1874,7 +1875,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
                                     pHitObject = NULL;
                                 else if (!pPlaceable->m_bUseable || pServerPlaceable->m_bStatic)
                                 {
-                                    unsigned char nAppearance = pPlaceable->m_nAppearance;
+                                    int nAppearance = pPlaceable->m_nAppearance;
                                     int bIgnore = 0;
                                     g_pRules->Get2DArrays()->m_pPlaceables->GetINTEntry(
                                         nAppearance,
@@ -2149,8 +2150,8 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
                 if (pCamera != NULL)
                 {
                     C2DA* pCameraStyle = g_pRules->Get2DArrays()->m_pCameraStyle;
-                    pCameraStyle->GetFLOATEntry(0, CExoString("FL_LOOKUP"), &CameraLookUp);
-                    pCameraStyle->GetFLOATEntry(0, CExoString("FL_LOOKDOWN"), &CameraLookDown);
+                    pCameraStyle->GetFLOATEntry(0, "FL_LOOKUP", &CameraLookUp);
+                    pCameraStyle->GetFLOATEntry(0, "FL_LOOKDOWN", &CameraLookDown);
                     pCamera->m_fDefaultTiltSpeed = pCamera->m_fTiltSpeed;
                     pCamera->m_fTiltSpeed = FREE_LOOK_TILT_SPEED;
                 }
@@ -2159,9 +2160,9 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
             {
                 float fTiltUp, fTiltDown, fTiltSpeed;
                 C2DA* pCameraStyle = g_pRules->Get2DArrays()->m_pCameraStyle;
-                pCameraStyle->GetFLOATEntry(0, CExoString("TILTUP"), &fTiltUp);
-                pCameraStyle->GetFLOATEntry(0, CExoString("TILTDOWN"), &fTiltDown);
-                pCameraStyle->GetFLOATEntry(0, CExoString("TILTSPEED"), &fTiltSpeed);
+                pCameraStyle->GetFLOATEntry(0, "TILTUP", &fTiltUp);
+                pCameraStyle->GetFLOATEntry(0, "TILTDOWN", &fTiltDown);
+                pCameraStyle->GetFLOATEntry(0, "TILTSPEED", &fTiltSpeed);
                 CSWCameraOnAStick* pCamera = (CSWCameraOnAStick*)
                     g_pAppManager->GetClientExoApp()->GetModule()->
                         GetCamera()->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK);
@@ -2349,7 +2350,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
         }
     }
     else if (m_pModule != NULL && m_pModule->m_pInfo != NULL &&
-             m_pModule->m_pInfo->m_pMiniGame != NULL)
+             m_pModule->m_pInfo->m_pMiniGame != NULL && !bPeragusDialog)
     {
         CSWMiniGame* pMiniGame = m_pModule->m_pInfo->m_pMiniGame;
         switch (pMiniGame->m_nAttachType)

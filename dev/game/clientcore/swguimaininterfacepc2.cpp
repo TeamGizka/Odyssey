@@ -4645,7 +4645,8 @@ void CSWGuiMainInterface::Draw(float fElapsed)
             CSWCCreature* pCharacter = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(nMember);
             CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(
                 g_pAppManager->m_pServerExoApp->ClientToServerObjectId(m_oidUseItemPending));
-            if (pCharacter->GetServerCreature()->CanUseItem(pItem, 0, 1))
+            CSWSCreature* pServerCharacter = pCharacter->GetServerCreature();
+            if (pServerCharacter->CanUseItem(pItem, 0, 1))
             {
                 sText = g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_USE_ITEM_ON);
                 sText = sText + " " + pCharacter->GetName();
