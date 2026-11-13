@@ -300,6 +300,11 @@ int CCombatInformationNode::operator!=(CCombatInformationNode& cNode)
 // PC 0x005D6360
 void CSWRules::LoadClassInfo()
 {
+    int nStrRef;
+    int nDie;
+    int nSkillPointBase;
+    int nValue;
+
     C2DA* p2DA = new C2DA("CLASSES", 0);
     p2DA->Load2DArray();
 
@@ -310,10 +315,6 @@ void CSWRules::LoadClassInfo()
     for (int i = 0; i < m_nNumClasses; i++)
     {
         CExoString sValue;
-        int nStrRef;
-        int nDie;
-        int nSkillPointBase;
-        int nValue;
         int bFound;
 
         p2DA->GetINTEntry(i, "Name", &nStrRef);

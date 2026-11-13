@@ -2487,9 +2487,9 @@ void CSWCCreatureStats::GetMenuInfo(
                 {
                     bAvailable = 0;
                 }
-                if ((nSpellId == CSWSpell::FORCE_POWER_BEAST_TRICK ||
-                     nSpellId == CSWSpell::FORCE_POWER_BEAST_CONFUSION) &&
-                    !bBeastTarget)
+                else if ((nSpellId == CSWSpell::FORCE_POWER_BEAST_TRICK ||
+                          nSpellId == CSWSpell::FORCE_POWER_BEAST_CONFUSION) &&
+                         !bBeastTarget)
                 {
                     bAvailable = 0;
                 }
