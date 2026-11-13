@@ -1798,6 +1798,8 @@ static inline void SwmgtrackfollowerTrace1()
 {
 }
 
+static inline void SwmgtrackfollowerDebugLine(const Vector&, const Vector&, int) {}
+// PC 0x006C4D80 GOG 0x006C4BB0
 int CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>& lstEnemyIds,
                                      int bRunScripts)
 {
@@ -1808,10 +1810,11 @@ int CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>& lstEnemyIds,
         int nEnemies = lstEnemyIds.num;
         int nDamage = 0;
         Gob* pModel = m_lstModels.element[0].m_pModel;
-        CSWMiniGameObjectArray* pObjects = g_pAppManager->GetClientExoApp()->GetMGOArray();
+        CSWMiniGameObjectArray* pObjects = g_pAppManager->m_pClientExoApp->GetMGOArray();
         Vector vPosition = pModel->GetPosition();
         Vector vPrevious = pModel->GetPreviousPosition();
         Vector vPlane = m_pMiniGame->BumpPlane(pModel->GetOrientation());
+        SwmgtrackfollowerDebugLine(vPosition, vPosition + Vector(0.0f, 0.0f, 1.0f), 0);
         Vector vPush;
         Vector vEnemyPosition;
         Vector vEnemyPrevious;
@@ -1840,9 +1843,11 @@ int CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>& lstEnemyIds,
                         {
                             if (bRunScripts)
                             {
-                                m_nLastFollowerHit = pEnemy->m_nObjectId;
+                                unsigned long nEnemyId = pEnemy->m_nObjectId;
+                                m_nLastFollowerHit = nEnemyId;
                                 OnHitFollower(0);
-                                pEnemy->m_nLastFollowerHit = m_nObjectId;
+                                unsigned long nObjectId = m_nObjectId;
+                                pEnemy->m_nLastFollowerHit = nObjectId;
                                 pEnemy->OnHitFollower(0);
                             }
                         }
@@ -1853,7 +1858,8 @@ int CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>& lstEnemyIds,
                                      + vEnemyPosition - vPosition;
                             if (bRunScripts)
                             {
-                                if (!pEnemy->GetIsInvulnerable())
+                                int bIsInvulnerable = pEnemy->GetIsInvulnerable();
+                                if (!bIsInvulnerable)
                                 {
                                     pEnemy->Hit();
                                     pEnemy->AdjustHitPoints(-m_nBumpDamage);
@@ -1865,9 +1871,11 @@ int CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>& lstEnemyIds,
                                     nBumpDamage = nDamage;
                                 }
                                 nDamage = nBumpDamage;
-                                m_nLastFollowerHit = pEnemy->m_nObjectId;
+                                unsigned long nEnemyId = pEnemy->m_nObjectId;
+                                m_nLastFollowerHit = nEnemyId;
                                 OnHitFollower(0);
-                                pEnemy->m_nLastFollowerHit = m_nObjectId;
+                                unsigned long nObjectId = m_nObjectId;
+                                pEnemy->m_nLastFollowerHit = nObjectId;
                                 pEnemy->OnHitFollower(0);
                             }
                             nHits++;

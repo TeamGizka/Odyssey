@@ -2888,7 +2888,7 @@ void CSWGuiCreateItem::OnControlEntered(CSWGuiControl* pControl)
                 int nValue = (int)(GetItemBuyValue(pItem) * fRepairFactor);
                 if (nValue <= 0)
                     nValue = 1;
-                m_lblCostValue.m_cText.m_cParams.SetText(nValue);
+                m_lblCostValue.m_cText.m_cParams.SetText(CExoString(nValue));
             }
 
             if (m_lbxStoreItems.m_bEnabled && pRepository != 0)
@@ -2918,7 +2918,7 @@ void CSWGuiCreateItem::OnControlEntered(CSWGuiControl* pControl)
                 else
                 {
                     m_lblStockValue.m_cText.m_cParams.SetText(
-                        CExoString(pItem->m_nStackSize));
+                        CExoString(pItem->GetStackSize()));
                 }
             }
 
@@ -2928,7 +2928,7 @@ void CSWGuiCreateItem::OnControlEntered(CSWGuiControl* pControl)
             if (nTag != -1 || nToken != -2)
             {
                 CSWCCreature* pPlayerCharacter =
-                    g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter();
+                    g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
                 g_pSWTlkTable->ParseStr(sDescription, (CGameObject*)pPlayerCharacter, 0, 1);
             }
 
@@ -3234,11 +3234,7 @@ void CSWGuiCreateMedicalItem::OnControlEntered(CSWGuiControl* pControl)
                 CExoString sSkillName =
                     g_pRules->m_pSkills[(unsigned short)nBaseSkill].GetNameText();
                 CExoString sRank(nRank);
-                {
-                    CExoString sClose(")");
-                    CExoString sOpen(" (");
-                    sText = sSkillName + sOpen + sRank + sClose;
-                }
+                sText = sSkillName + " (" + sRank + ")";
                 m_lblRelatedSkill.m_cText.m_cParams.SetText(sText);
                 if (static_cast<CSWGuiStoreItemEntry*>(pControl)->m_n3B4)
                     m_lblRelatedSkill.m_cText.m_cParams.SetColor(
@@ -3281,7 +3277,7 @@ void CSWGuiCreateMedicalItem::OnControlEntered(CSWGuiControl* pControl)
                 else
                 {
                     m_lblStockValue.m_cText.m_cParams.SetText(
-                        CExoString(pItem->m_nStackSize));
+                        CExoString(pItem->GetStackSize()));
                 }
             }
 
@@ -3298,16 +3294,9 @@ void CSWGuiCreateMedicalItem::OnControlEntered(CSWGuiControl* pControl)
                 CExoString sRequired = g_pTlkTable->GetSimpleString(STRREF_SKILL_REQUIRED_TO_CREATE);
                 CExoString sSkillText;
                 CExoString sSkill(nSkill);
-                {
-                    CExoString sClose(")");
-                    CExoString sOpen(" (");
-                    sSkillText =
-                        g_pRules->m_pSkills[(unsigned short)nBaseSkill].GetNameText() +
-                        sOpen + sSkill + sClose;
-                }
-                CExoString sNewLine1("\n");
-                CExoString sNewLine2("\n");
-                sDescription = sRequired + sNewLine2 + sSkillText + sNewLine1 + sDescription;
+                sSkillText = g_pRules->m_pSkills[(unsigned short)nBaseSkill].GetNameText() +
+                             " (" + sSkill + ")";
+                sDescription = sRequired + "\n" + sSkillText + "\n" + sDescription;
             }
             SetDescription(sDescription);
         }
