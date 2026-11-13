@@ -162,9 +162,9 @@ void CSWGuiLevelUpCharGen::AbilitiesChanged()
 
     if (pCreature != 0)
     {
-        pCreature->GetStats()->SetFortSavingThrow();
-        pCreature->GetStats()->SetWillSavingThrow();
-        pCreature->GetStats()->SetReflexSavingThrow();
+        pCreature->m_pStats->SetFortSavingThrow();
+        pCreature->m_pStats->SetWillSavingThrow();
+        pCreature->m_pStats->SetReflexSavingThrow();
 
         {
             CExoString sText(pCreature->GetStats()->m_aAbilities[5]);
@@ -191,26 +191,26 @@ void CSWGuiLevelUpCharGen::AbilitiesChanged()
             m_lblDexterityAbility.m_cText.m_cParams.SetText(sText);
         }
 
-        unsigned char nLastClass = pCreature->GetStats()->GetNumClasses() - 1;
-        unsigned char nClass = pCreature->GetStats()->GetClass(nLastClass);
+        unsigned char nLastClass = pCreature->m_pStats->GetNumClasses() - 1;
+        unsigned char nClass = pCreature->m_pStats->GetClass(nLastClass);
 
         CSWCLevelUpStats* pStats = pCreature->GetStats();
         unsigned char nStat = pStats->m_nConstitution;
         CSWSCreatureStats* pServerStats = pCreature->GetServerCreature()->m_pStats;
-        char nMod = pServerStats->m_nConstitutionModifier;
-        int nConDiff = pStats->CalcStatModifier(nStat) - nMod;
+        char nConMod = pServerStats->m_nConstitutionModifier;
+        int nConDiff = pStats->CalcStatModifier(nStat) - nConMod;
 
         pStats = pCreature->GetStats();
         nStat = pStats->m_nWisdom;
         pServerStats = pCreature->GetServerCreature()->m_pStats;
-        nMod = pServerStats->m_nWisdomModifier;
-        int nWisDiff = pStats->CalcStatModifier(nStat) - nMod;
+        char nWisMod = pServerStats->m_nWisdomModifier;
+        int nWisDiff = pStats->CalcStatModifier(nStat) - nWisMod;
 
         pStats = pCreature->GetStats();
         nStat = pStats->m_nCharisma;
         pServerStats = pCreature->GetServerCreature()->m_pStats;
-        nMod = pServerStats->m_nCharismaModifier;
-        int nChaDiff = pStats->CalcStatModifier(nStat) - nMod;
+        char nChaMod = pServerStats->m_nCharismaModifier;
+        int nChaDiff = pStats->CalcStatModifier(nStat) - nChaMod;
 
         char nHitDie = g_pRules->m_pClasses[nClass].m_nHitDie;
         pStats = pCreature->GetStats();
@@ -261,7 +261,7 @@ void CSWGuiLevelUpCharGen::AbilitiesChanged()
         }
 
         {
-            CExoString sText(pCreature->GetStats()->GetArmorClass(0));
+            CExoString sText(pCreature->m_pStats->GetArmorClass(0));
             m_lblDefense.m_cText.m_cParams.SetText(sText);
         }
         {
@@ -273,7 +273,7 @@ void CSWGuiLevelUpCharGen::AbilitiesChanged()
             m_lblNewReflex.m_cText.m_cParams.SetText(sText);
         }
         {
-            CExoString sText(pCreature->GetStats()->GetMaxHitPoints());
+            CExoString sText(pCreature->m_pStats->GetMaxHitPoints());
             m_lblVitality.m_cText.m_cParams.SetText(sText);
         }
         {
