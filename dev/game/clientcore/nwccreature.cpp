@@ -2791,6 +2791,7 @@ void CSWCCreature::EquipToInventorySlot(unsigned long nSlot, CSWCItem* pItem, in
     unsigned long oidOldItem = GetEquippedItemID(nSlot);
     CSWCItem* pOldItem = g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(oidOldItem);
     int bUnloadOldItem = 1;
+    int bOldItemStillEquipped = 0;
     if (GetEquippedItemID(INVENTORY_SLOT_LEFTHAND) == oidOldItem ||
         GetEquippedItemID(INVENTORY_SLOT_RIGHTHAND) == oidOldItem)
     {
@@ -2798,7 +2799,6 @@ void CSWCCreature::EquipToInventorySlot(unsigned long nSlot, CSWCItem* pItem, in
             bUnloadOldItem = 0;
     }
 
-    int bOldItemStillEquipped = 0;
     if (nSlot == INVENTORY_SLOT_RIGHTHAND)
     {
         if (GetEquippedItemID(INVENTORY_SLOT_LEFTHAND) == oidOldItem ||
