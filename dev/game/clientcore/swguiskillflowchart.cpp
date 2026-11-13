@@ -844,10 +844,13 @@ void CSWGuiSkillFlowChart::CreateFeatChart(CSWCCreatureStats* pStats,
         {
             bSelectable = 1;
         }
-        unsigned char nCompanionLevel = 0;
         if (pStats->GetTag().CompareNoCase("handmaiden"))
         {
-            nCompanionLevel = pFeat->m_bHandmaiden;
+            if (pFeat->m_bHandmaiden > 0)
+            {
+                bCompanionFeat = 1;
+                bSelectable = 1;
+            }
         }
         else if (pStats->GetTag().CompareNoCase("baodur"))
         {
@@ -855,7 +858,11 @@ void CSWGuiSkillFlowChart::CreateFeatChart(CSWCCreatureStats* pStats,
             {
                 continue;
             }
-            nCompanionLevel = pFeat->m_bBaoDur;
+            if (pFeat->m_bBaoDur > 0)
+            {
+                bCompanionFeat = 1;
+                bSelectable = 1;
+            }
         }
         else if (pStats->GetTag().CompareNoCase("kreia"))
         {
@@ -863,28 +870,44 @@ void CSWGuiSkillFlowChart::CreateFeatChart(CSWCCreatureStats* pStats,
             {
                 continue;
             }
+            if (!bSelectable)
+            {
+                continue;
+            }
         }
         else if (pStats->GetTag().CompareNoCase("hanharr"))
         {
-            nCompanionLevel = pFeat->m_bHanharr;
+            if (pFeat->m_bHanharr > 0)
+            {
+                bCompanionFeat = 1;
+                bSelectable = 1;
+            }
         }
         else if (pStats->GetTag().CompareNoCase("hk47"))
         {
-            nCompanionLevel = pFeat->m_bHK47;
+            if (pFeat->m_bHK47 > 0)
+            {
+                bCompanionFeat = 1;
+                bSelectable = 1;
+            }
         }
         else if (pStats->GetTag().CompareNoCase("g0t0"))
         {
-            nCompanionLevel = pFeat->m_bG0T0;
+            if (pFeat->m_bG0T0 > 0)
+            {
+                bCompanionFeat = 1;
+                bSelectable = 1;
+            }
         }
         else if (pStats->GetTag().CompareNoCase("atton"))
         {
-            nCompanionLevel = pFeat->m_bAtton;
+            if (pFeat->m_bAtton > 0)
+            {
+                bCompanionFeat = 1;
+                bSelectable = 1;
+            }
         }
-        if (nCompanionLevel > 0)
-        {
-            bCompanionFeat = 1;
-        }
-        else if (!bSelectable)
+        if (!bSelectable)
         {
             continue;
         }
