@@ -288,39 +288,6 @@ void CSWGuiOptionsMouse::OnEnterRevMouseButtons(CSWGuiControl* pControl)
 {
     SetDescription(48722);
 }
-// PC 0x0074F3A0
-void CSWGuiOptionsSoundAdvanced::SetDescription(unsigned long nStrRef)
-{
-    m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
-    CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
-    m_lbDescription.ClearItems();
-    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
-    if (sText.GetLength() > 0)
-    {
-        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
-    }
-    else
-    {
-        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
-    }
-    m_lblDescription.SetExtent(cExtent);
-    CSWGuiControl* pControl = &m_lblDescription;
-    m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
-    m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
-}
-// PC 0x0074F4B0
-void CSWGuiOptionsSoundAdvanced::EnableEAXControls(int bEnable)
-{
-    m_btnEAX.SetEnabled(bEnable);
-    Vector* pColor = &CGuiInGame::COLOR_NEW_TEXT;
-    if (bEnable == 0)
-    {
-        pColor = &CGuiInGame::DISABLED_TEXT;
-    }
-    m_btnEAX.m_cText.m_cParams.SetColor(*pColor);
-    m_btnEAXRight.SetEnabled(bEnable);
-    m_btnEAXLeft.SetEnabled(bEnable);
-}
 // PC 0x0074F510
 void CSWGuiOptionsSoundAdvanced::OnEnterOption(CSWGuiControl* pControl)
 {
@@ -1838,6 +1805,39 @@ void CSWGuiOptionsSoundAdvanced::SetEAXText()
     {
         pRight->m_bEnabled = 0;
     }
+}
+// PC 0x0074F3A0
+void CSWGuiOptionsSoundAdvanced::SetDescription(unsigned long nStrRef)
+{
+    m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
+    CExoString sText(m_lblDescription.m_cText.m_cParams.m_sText);
+    m_lbDescription.ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sText.GetLength() > 0)
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    m_lblDescription.SetExtent(cExtent);
+    CSWGuiControl* pControl = &m_lblDescription;
+    m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
+    m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
+}
+// PC 0x0074F4B0
+void CSWGuiOptionsSoundAdvanced::EnableEAXControls(int bEnable)
+{
+    m_btnEAX.SetEnabled(bEnable);
+    Vector* pColor = &CGuiInGame::COLOR_NEW_TEXT;
+    if (bEnable == 0)
+    {
+        pColor = &CGuiInGame::DISABLED_TEXT;
+    }
+    m_btnEAX.m_cText.m_cParams.SetColor(*pColor);
+    m_btnEAXRight.SetEnabled(bEnable);
+    m_btnEAXLeft.SetEnabled(bEnable);
 }
 // PC 0x0074F780
 void CSWGuiOptionsMouse::OnRevMouseButtons(CSWGuiControl* pControl)

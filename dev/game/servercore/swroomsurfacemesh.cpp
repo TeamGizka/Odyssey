@@ -65,6 +65,21 @@ template <> CExoArrayList<CSWRoomSurfaceMeshAABBNode>::~CExoArrayList()
 static inline void RoomSurfaceMeshTrace1()
 {
 }
+// PC 0x005769D0
+float CSWRoomSurfaceMesh::ComputeHeight(Vector vPosition, int bWalkable)
+{
+    int nFace = FindTriangle(vPosition, bWalkable, Vector(1.0f, 1.0f, 0.0f));
+
+    if (nFace == -1)
+    {
+        return -9.0f;
+    }
+
+    Vector vPoint(vPosition.m_fX, vPosition.m_fY, -9.0f);
+
+    return PlaneHeightAtPoint(m_pFaceNormals[nFace], m_pFaceDistances[nFace],
+                              vPoint);
+}
 // PC 0x00574C80
 void CSWRoomSurfaceMesh::SetOrientation(const Quaternion& qOrientation)
 {
@@ -684,21 +699,6 @@ void CSWRoomSurfaceMesh::TransformToWorld(const Vector& vPosition)
             TransformAABBToWorld(m_nAABBRootNode, vPosition);
         }
     }
-}
-// PC 0x005769D0
-float CSWRoomSurfaceMesh::ComputeHeight(Vector vPosition, int bWalkable)
-{
-    int nFace = FindTriangle(vPosition, bWalkable, Vector(1.0f, 1.0f, 0.0f));
-
-    if (nFace == -1)
-    {
-        return -9.0f;
-    }
-
-    Vector vPoint(vPosition.m_fX, vPosition.m_fY, -9.0f);
-
-    return PlaneHeightAtPoint(m_pFaceNormals[nFace], m_pFaceDistances[nFace],
-                              vPoint);
 }
 // PC 0x00576A70
 CSWRoomSurfaceMesh::~CSWRoomSurfaceMesh()

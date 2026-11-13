@@ -202,38 +202,6 @@ char CSWCCreatureStats::GetSkillRank(unsigned short nSkill)
     }
     return m_pSkillRanksTotal[nSkill];
 }
-// PC 0x006FD870
-int CSWCCreatureStats::GetCanUseSkill(unsigned short nSkill)
-{
-    if (nSkill >= g_pRules->m_nNumSkills)
-    {
-        return 0;
-    }
-
-    CSWSkill* pSkill = &g_pRules->m_pSkills[nSkill];
-    if (nSkill == CSWSkill::SKILL_STEALTH &&
-        (HasSpell(0, CSWSpell::FORCE_POWER_FORCE_CAMOUFLAGE) ||
-         HasSpell(0, CSWSpell::FORCE_POWER_IMPROVED_FORCE_CAMOUFLAGE) ||
-         HasSpell(0, CSWSpell::FORCE_POWER_MASTER_FORCE_CAMOUFLAGE) ||
-         HasFeat(CSWFeat::FEAT_PERSONAL_CLOAKING_SHIELD)))
-    {
-        return 1;
-    }
-
-    if (pSkill->m_bUntrained)
-    {
-        for (unsigned char i = 0; i < m_nClassCount; i++)
-        {
-            if (g_pRules->m_pClasses[GetClass(i)].IsSkillUseable(nSkill))
-            {
-                return 1;
-            }
-        }
-        return 0;
-    }
-
-    return GetSkillRankBase(nSkill) > 0;
-}
 // PC 0x006FB7A0
 void CSWCLevelUpStats::SetINTBase(unsigned char nValue)
 {
@@ -1053,6 +1021,38 @@ inline unsigned long CSWCCreatureStats_ClassInfo::GetKnownSpell(unsigned char nL
         return 0xFFFFFFFF;
     }
     return m_lstKnownSpells[nLevel][nIndex];
+}
+// PC 0x006FD870
+int CSWCCreatureStats::GetCanUseSkill(unsigned short nSkill)
+{
+    if (nSkill >= g_pRules->m_nNumSkills)
+    {
+        return 0;
+    }
+
+    CSWSkill* pSkill = &g_pRules->m_pSkills[nSkill];
+    if (nSkill == CSWSkill::SKILL_STEALTH &&
+        (HasSpell(0, CSWSpell::FORCE_POWER_FORCE_CAMOUFLAGE) ||
+         HasSpell(0, CSWSpell::FORCE_POWER_IMPROVED_FORCE_CAMOUFLAGE) ||
+         HasSpell(0, CSWSpell::FORCE_POWER_MASTER_FORCE_CAMOUFLAGE) ||
+         HasFeat(CSWFeat::FEAT_PERSONAL_CLOAKING_SHIELD)))
+    {
+        return 1;
+    }
+
+    if (pSkill->m_bUntrained)
+    {
+        for (unsigned char i = 0; i < m_nClassCount; i++)
+        {
+            if (g_pRules->m_pClasses[GetClass(i)].IsSkillUseable(nSkill))
+            {
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+    return GetSkillRankBase(nSkill) > 0;
 }
 // PC 0x006FD970
 CSWCCreatureStats_ClassInfo::~CSWCCreatureStats_ClassInfo()

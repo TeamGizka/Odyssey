@@ -252,68 +252,6 @@ void CSWGuiInGameCredits::HandleInputEvent(int nEvent, int nState)
         }
     }
 }
-// PC 0x006E8C10
-void CSWGuiInGameCredits::SetNextText()
-{
-    int bLastText = 0;
-    if (m_nCurrentText >= m_nTextCount - 1)
-    {
-        m_bFading = 0;
-
-        m_lblCredit.m_cText.m_cParams.SetAlignment(10);
-        m_lblCredit.m_cText.m_cParams.m_fAlpha = 1.0f;
-        bLastText = 1;
-    }
-
-    SetText(m_pText[m_nCurrentText], bLastText);
-    if (m_bFading == 0)
-    {
-
-        CSWGuiExtent cExtent = m_lblCredit.m_cExtent;
-        m_fScrollInterval = creditsscrollduration / cExtent.m_nHeight;
-    }
-    ++m_nCurrentText;
-}
-// PC 0x006E8960
-void CSWGuiInGameCredits::SetText(unsigned long nStrRef, int bLastText)
-{
-    SwguiingamecreditsTrace1();
-    CSWGuiExtent cExtent;
-#ifndef _XBOX
-    if (m_bFading)
-#endif
-    {
-        m_lblCredit.m_cText.m_cParams.SetStrRef(nStrRef);
-    }
-#ifndef _XBOX
-    else
-    {
-        STR_RES strRes; CExoString sText; CExoString sPadding;
-        g_pTlkTable->Fetch(nStrRef, strRes, CTlkTable::GENDER_MALE);
-        int nPaddingLines = (int)((float)m_lblCredit.m_cExtent.m_nHeight /
-            ((float)m_lblCredit.m_cText.GetFontHeight() * m_cExtent.m_nHeight / 480.0f)) + 1;
-        sPadding = "";
-        for (int i = 0; i < nPaddingLines; ++i)
-        {
-            sPadding = sPadding + "\n";
-        }
-        sText = sPadding + strRes.m_sString + sPadding;
-        m_lblCredit.m_cText.m_cParams.SetText(sText);
-    }
-#endif
-    m_lbxCredits.ClearItems();
-    if (bLastText)
-    {
-        cExtent = m_lblCredit.m_cExtent;
-        cExtent.m_nHeight = m_lblCredit.m_cText.GetIdealHeight();
-        m_lblCredit.SetExtent(cExtent);
-    }
-    CSWGuiControl* pControl = &m_lblCredit;
-    m_lbxCredits.AddControls(&pControl, 1, 0, 0, 0);
-    m_lbxCredits.SetSelectedControl(&m_lblCredit, 0);
-    cExtent = m_lbxCredits.m_cExtent;
-    m_lbxCredits.m_fScrollStep = (float)cExtent.m_nHeight;
-}
 
 #ifdef _XBOX
 void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)
@@ -360,6 +298,68 @@ void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // PC 0x006E8740
     }
 }
 #endif
+// PC 0x006E8960
+void CSWGuiInGameCredits::SetText(unsigned long nStrRef, int bLastText)
+{
+    SwguiingamecreditsTrace1();
+    CSWGuiExtent cExtent;
+#ifndef _XBOX
+    if (m_bFading)
+#endif
+    {
+        m_lblCredit.m_cText.m_cParams.SetStrRef(nStrRef);
+    }
+#ifndef _XBOX
+    else
+    {
+        STR_RES strRes; CExoString sText; CExoString sPadding;
+        g_pTlkTable->Fetch(nStrRef, strRes, CTlkTable::GENDER_MALE);
+        int nPaddingLines = (int)((float)m_lblCredit.m_cExtent.m_nHeight /
+            ((float)m_lblCredit.m_cText.GetFontHeight() * m_cExtent.m_nHeight / 480.0f)) + 1;
+        sPadding = "";
+        for (int i = 0; i < nPaddingLines; ++i)
+        {
+            sPadding = sPadding + "\n";
+        }
+        sText = sPadding + strRes.m_sString + sPadding;
+        m_lblCredit.m_cText.m_cParams.SetText(sText);
+    }
+#endif
+    m_lbxCredits.ClearItems();
+    if (bLastText)
+    {
+        cExtent = m_lblCredit.m_cExtent;
+        cExtent.m_nHeight = m_lblCredit.m_cText.GetIdealHeight();
+        m_lblCredit.SetExtent(cExtent);
+    }
+    CSWGuiControl* pControl = &m_lblCredit;
+    m_lbxCredits.AddControls(&pControl, 1, 0, 0, 0);
+    m_lbxCredits.SetSelectedControl(&m_lblCredit, 0);
+    cExtent = m_lbxCredits.m_cExtent;
+    m_lbxCredits.m_fScrollStep = (float)cExtent.m_nHeight;
+}
+// PC 0x006E8C10
+void CSWGuiInGameCredits::SetNextText()
+{
+    int bLastText = 0;
+    if (m_nCurrentText >= m_nTextCount - 1)
+    {
+        m_bFading = 0;
+
+        m_lblCredit.m_cText.m_cParams.SetAlignment(10);
+        m_lblCredit.m_cText.m_cParams.m_fAlpha = 1.0f;
+        bLastText = 1;
+    }
+
+    SetText(m_pText[m_nCurrentText], bLastText);
+    if (m_bFading == 0)
+    {
+
+        CSWGuiExtent cExtent = m_lblCredit.m_cExtent;
+        m_fScrollInterval = creditsscrollduration / cExtent.m_nHeight;
+    }
+    ++m_nCurrentText;
+}
 
 #ifdef _XBOX
 void CSWGuiInGameCredits::UpdateFading(float fElapsed)

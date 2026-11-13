@@ -13,40 +13,6 @@ static inline void SetPortraitImage(CSWGuiLabel* pLabel,
     pLabel->m_cBorder.m_cParams.SetFillImage(cPortrait, 0);
 }
 #endif
-// PC 0x007683E0
-int CSWGuiAbilitiesCharGen::DetermineCostToDecreaseScore(int nScore)
-{
-    if (m_bLevelUp != 0)
-    {
-        return -1;
-    }
-    if (nScore <= 14 && nScore > 8)
-    {
-        return -1;
-    }
-    if (nScore >= 15 && nScore <= 16)
-    {
-        return -2;
-    }
-    if (nScore < 17)
-    {
-        return 0;
-    }
-    return -3;
-}
-// PC 0x00768430
-int CSWGuiAbilitiesCharGen::DetermineCostToIncreaseScore(int nScore)
-{
-    if (m_bLevelUp != 0)
-    {
-        return 1;
-    }
-    if (nScore > 15)
-    {
-        return 3;
-    }
-    return (nScore > 13) + 1;
-}
 // PC 0x00768ED0
 CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
                                                CSWCCreature* pCreature,
@@ -348,11 +314,6 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     SetPortraitImage(&m_lblPortrait, m_pCreature->GetPortrait(0));
 #endif
 }
-// PC 0x007686D0
-CSWGuiAbilitiesCharGen::~CSWGuiAbilitiesCharGen()
-{
-    m_lbDescription.ClearItems();
-}
 // PC 0x00768320
 void CSWGuiAbilitiesCharGen::OnPanelAdded()
 {
@@ -393,6 +354,40 @@ void CSWGuiAbilitiesCharGen::OnExitPointsButton(CSWGuiControl* pControl)
     pLabelParams->m_bHilightText = 0;
     pButtonParams = &m_btnPoints[pControl->m_nIndex].m_cText.m_cParams;
     pButtonParams->m_bHilightText = 0;
+}
+// PC 0x007683E0
+int CSWGuiAbilitiesCharGen::DetermineCostToDecreaseScore(int nScore)
+{
+    if (m_bLevelUp != 0)
+    {
+        return -1;
+    }
+    if (nScore <= 14 && nScore > 8)
+    {
+        return -1;
+    }
+    if (nScore >= 15 && nScore <= 16)
+    {
+        return -2;
+    }
+    if (nScore < 17)
+    {
+        return 0;
+    }
+    return -3;
+}
+// PC 0x00768430
+int CSWGuiAbilitiesCharGen::DetermineCostToIncreaseScore(int nScore)
+{
+    if (m_bLevelUp != 0)
+    {
+        return 1;
+    }
+    if (nScore > 15)
+    {
+        return 3;
+    }
+    return (nScore > 13) + 1;
 }
 // PC 0x0076A350
 void CSWGuiAbilitiesCharGen::OnMinusButton()
@@ -720,6 +715,11 @@ void CSWGuiAbilitiesCharGen::SetDescription(unsigned long nStrRef)
 #ifdef _XBOX
     m_lblRanalog.SetEnabledFlag(m_lbDescription.IsOversized());
 #endif
+}
+// PC 0x007686D0
+CSWGuiAbilitiesCharGen::~CSWGuiAbilitiesCharGen()
+{
+    m_lbDescription.ClearItems();
 }
 // PC 0x00768B40
 void CSWGuiAbilitiesCharGen::OnRecommendButton()

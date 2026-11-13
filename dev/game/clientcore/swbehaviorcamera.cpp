@@ -989,98 +989,6 @@ CSWCameraOnAStick::CSWCameraOnAStick(CCameraSettings& settings)
     m_bMouseCameraRotateToggle = g_bMouseCameraRotateToggle;
 #endif
 }
-// PC 0x00691D30
-Vector CSWCameraOnAStick::Control_HitCheckCamera(Vector vPosition)
-{
-    SwbehaviorcameraTrace5();
-    Vector vSafe = vPosition;
-    Vector vHitRight;
-    Vector vHitLeft;
-    Vector vHitUp;
-    Vector vHitDown;
-    CHitInfo hitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
-    int nChecks = 1;
-    hitInfo.m_bResult0 = 1;
-    int bContinue = 1;
-    hitInfo.m_lstHits.Add(m_pTarget);
-    while (bContinue && nChecks-- > 0)
-    {
-        hitInfo.ClearOutput();
-        Vector vStart = GetTargetHeadPosition();
-        Vector vShrunk;
-        if (g_pAppManager->GetServerExoApp()->ShrinkLineByCreatures(
-                vStart, vPosition, vShrunk))
-        {
-            vPosition = vShrunk;
-            vSafe = vShrunk;
-        }
-        Vector vDelta = vPosition - vStart;
-        Vector vDirection = normalize(cross(zaxis, vStart - vPosition));
-        Vector vOffset = CameraPersonalSpace * vDirection;
-
-        Vector vProbeRight = vPosition + vOffset;
-        hitInfo.ClearOutput();
-        hitInfo.m_bResult2 = 1;
-        CAurScene* pSceneRight = static_cast<Gob*>(m_pObject)->GetScene();
-        int bHitRight = pSceneRight->HitCheck(
-            vStart, vProbeRight, &vHitRight, &hitInfo) != 0;
-
-        Vector vProbeLeft = vPosition - vOffset;
-        hitInfo.ClearOutput();
-        hitInfo.m_bResult2 = 1;
-        CAurScene* pSceneLeft = static_cast<Gob*>(m_pObject)->GetScene();
-        int bHitLeft = pSceneLeft->HitCheck(
-            vStart, vProbeLeft, &vHitLeft, &hitInfo) != 0;
-
-        Vector vUp(0.0f, 0.0f, 1.0f);
-        Vector vVertical = vUp * CameraPersonalSpace;
-        Vector vProbeUp = vPosition + vVertical;
-        hitInfo.ClearOutput();
-        hitInfo.m_bResult2 = 1;
-        CAurScene* pSceneUp = static_cast<Gob*>(m_pObject)->GetScene();
-        int bHitUp = pSceneUp->HitCheck(
-            vStart, vProbeUp, &vHitUp, &hitInfo) != 0;
-
-        Vector vProbeDown = vPosition - vVertical;
-        hitInfo.ClearOutput();
-        hitInfo.m_bResult2 = 1;
-        CAurScene* pSceneDown = static_cast<Gob*>(m_pObject)->GetScene();
-        int bHitDown = pSceneDown->HitCheck(
-            vStart, vProbeDown, &vHitDown, &hitInfo) != 0;
-
-        bContinue = bHitRight || bHitLeft || bHitUp || bHitDown;
-        if (bContinue)
-        {
-            float fTargetDistance = magnitude(vDelta);
-            float fDistance = 0.0f;
-            if (bHitRight)
-            {
-                fDistance = max(fDistance, magnitude(vHitRight - vProbeRight));
-            }
-            if (bHitLeft)
-            {
-                fDistance = max(fDistance, magnitude(vHitLeft - vProbeLeft));
-            }
-            if (bHitUp)
-            {
-                fDistance = max(fDistance, magnitude(vHitUp - vProbeUp));
-            }
-            if (bHitDown)
-            {
-                fDistance = max(fDistance, magnitude(vHitDown - vProbeDown));
-            }
-            Vector vCorrection = fDistance * normalize(vDelta);
-            vSafe -= vCorrection;
-            Gob* pTarget = static_cast<Gob*>(m_pTarget.m_pObject);
-            vCorrection =
-                normalize(pTarget->GetOrientation().zdir()) *
-                ((fDistance / fTargetDistance) *
-                 (CameraPersonalSpace + CAMERA_COLLISION_LIFT_CLEARANCE));
-            vSafe += vCorrection;
-        }
-    }
-    return vSafe;
-}
 // PC 0x00692770
 void CSWCameraOnAStick::SaveCameraSettings(CCameraSettings& settings)
 {
@@ -1336,6 +1244,98 @@ static inline void SwbehaviorcameraTrace2()
 
 static inline void SwbehaviorcameraTrace1()
 {
+}
+// PC 0x00691D30
+Vector CSWCameraOnAStick::Control_HitCheckCamera(Vector vPosition)
+{
+    SwbehaviorcameraTrace5();
+    Vector vSafe = vPosition;
+    Vector vHitRight;
+    Vector vHitLeft;
+    Vector vHitUp;
+    Vector vHitDown;
+    CHitInfo hitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
+    int nChecks = 1;
+    hitInfo.m_bResult0 = 1;
+    int bContinue = 1;
+    hitInfo.m_lstHits.Add(m_pTarget);
+    while (bContinue && nChecks-- > 0)
+    {
+        hitInfo.ClearOutput();
+        Vector vStart = GetTargetHeadPosition();
+        Vector vShrunk;
+        if (g_pAppManager->GetServerExoApp()->ShrinkLineByCreatures(
+                vStart, vPosition, vShrunk))
+        {
+            vPosition = vShrunk;
+            vSafe = vShrunk;
+        }
+        Vector vDelta = vPosition - vStart;
+        Vector vDirection = normalize(cross(zaxis, vStart - vPosition));
+        Vector vOffset = CameraPersonalSpace * vDirection;
+
+        Vector vProbeRight = vPosition + vOffset;
+        hitInfo.ClearOutput();
+        hitInfo.m_bResult2 = 1;
+        CAurScene* pSceneRight = static_cast<Gob*>(m_pObject)->GetScene();
+        int bHitRight = pSceneRight->HitCheck(
+            vStart, vProbeRight, &vHitRight, &hitInfo) != 0;
+
+        Vector vProbeLeft = vPosition - vOffset;
+        hitInfo.ClearOutput();
+        hitInfo.m_bResult2 = 1;
+        CAurScene* pSceneLeft = static_cast<Gob*>(m_pObject)->GetScene();
+        int bHitLeft = pSceneLeft->HitCheck(
+            vStart, vProbeLeft, &vHitLeft, &hitInfo) != 0;
+
+        Vector vUp(0.0f, 0.0f, 1.0f);
+        Vector vVertical = vUp * CameraPersonalSpace;
+        Vector vProbeUp = vPosition + vVertical;
+        hitInfo.ClearOutput();
+        hitInfo.m_bResult2 = 1;
+        CAurScene* pSceneUp = static_cast<Gob*>(m_pObject)->GetScene();
+        int bHitUp = pSceneUp->HitCheck(
+            vStart, vProbeUp, &vHitUp, &hitInfo) != 0;
+
+        Vector vProbeDown = vPosition - vVertical;
+        hitInfo.ClearOutput();
+        hitInfo.m_bResult2 = 1;
+        CAurScene* pSceneDown = static_cast<Gob*>(m_pObject)->GetScene();
+        int bHitDown = pSceneDown->HitCheck(
+            vStart, vProbeDown, &vHitDown, &hitInfo) != 0;
+
+        bContinue = bHitRight || bHitLeft || bHitUp || bHitDown;
+        if (bContinue)
+        {
+            float fTargetDistance = magnitude(vDelta);
+            float fDistance = 0.0f;
+            if (bHitRight)
+            {
+                fDistance = max(fDistance, magnitude(vHitRight - vProbeRight));
+            }
+            if (bHitLeft)
+            {
+                fDistance = max(fDistance, magnitude(vHitLeft - vProbeLeft));
+            }
+            if (bHitUp)
+            {
+                fDistance = max(fDistance, magnitude(vHitUp - vProbeUp));
+            }
+            if (bHitDown)
+            {
+                fDistance = max(fDistance, magnitude(vHitDown - vProbeDown));
+            }
+            Vector vCorrection = fDistance * normalize(vDelta);
+            vSafe -= vCorrection;
+            Gob* pTarget = static_cast<Gob*>(m_pTarget.m_pObject);
+            vCorrection =
+                normalize(pTarget->GetOrientation().zdir()) *
+                ((fDistance / fTargetDistance) *
+                 (CameraPersonalSpace + CAMERA_COLLISION_LIFT_CLEARANCE));
+            vSafe += vCorrection;
+        }
+    }
+    return vSafe;
 }
 
 #ifdef _XBOX

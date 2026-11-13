@@ -31,102 +31,6 @@ void CSWGuiLevelUpCharGen::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
-// PC 0x00758490
-CSWGuiLevelUpCharGen::CSWGuiLevelUpCharGen(CSWGuiManager* pManager,
-                                         unsigned long nCreature,
-                                         CSWCCreature* pCreature)
-    : CSWGuiPanel(pManager)
-{
-    CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
-    CSWCCreature* pOriginal = pApp->GetCreatureByGameObjectID(nCreature);
-    m_pManager = pApp->GetSWGuiManager();
-    m_pCreature = new CSWCCreature;
-    m_nCreatureId = nCreature;
-    CopyCreatureStats(pOriginal, m_pCreature);
-    LevelUpCreature();
-    DetermineClass();
-#ifdef _XBOX
-    StartLoadFromLayout("MAINCG");
-#else
-    StartLoadFromLayout("MAINCG_p");
-#endif
-    InitControl(m_lblTitle, "MAIN_TITLE_LBL", 1);
-    InitControl(m_lblName, "LBL_NAME", 1);
-    InitControl(m_lblClass, "LBL_CLASS", 1);
-    InitControl(m_lblLevelValue, "LBL_LEVEL_VAL", 1);
-    InitControl(m_lblStrength, "STR_LBL", 1);
-    InitControl(m_lblDexterity, "DEX_LBL", 1);
-    InitControl(m_lblConstitution, "CON_LBL", 1);
-    InitControl(m_lblIntelligence, "INT_LBL", 1);
-    InitControl(m_lblWisdom, "WIS_LBL", 1);
-    InitControl(m_lblCharisma, "CHA_LBL", 1);
-    InitControl(m_lblStrengthAbility, "STR_AB_LBL", 1);
-    InitControl(m_lblDexterityAbility, "DEX_AB_LBL", 1);
-    InitControl(m_lblConstitutionAbility, "CON_AB_LBL", 1);
-    InitControl(m_lblIntelligenceAbility, "INT_AB_LBL", 1);
-    InitControl(m_lblWisdomAbility, "WIS_AB_LBL", 1);
-    InitControl(m_lblCharismaAbility, "CHA_AB_LBL", 1);
-    InitControl(m_lblVitality, "LBL_VIT", 1);
-    InitControl(m_lblDefense, "LBL_DEF", 1);
-    InitControl(m_lblNewWill, "NEW_WILL_LBL", 1);
-    InitControl(m_lblNewReflex, "NEW_REFL_LBL", 1);
-    InitControl(m_lblNewFortitude, "NEW_FORT_LBL", 1);
-    InitControl(m_lblBevelLeft, "LBL_BEVEL_L", 1);
-    InitControl(m_lblBevelMiddle, "LBL_BEVEL_M", 1);
-    InitControl(m_lblBevelRight, "LBL_BEVEL_R", 1);
-    InitControl(m_lblFortitude, "LBL_FORTITUDE", 1);
-    InitControl(m_lblReflex, "LBL_REFLEX", 1);
-    InitControl(m_lblWill, "LBL_WILL", 1);
-#ifdef _XBOX
-    InitControl(m_lblA, "LBL_A", 1);
-    InitControl(m_lblB, "LBL_B", 1);
-    InitControl(m_lblBack, "LBL_BACK", 1);
-    InitControl(m_lblAccept, "LBL_ACCEPT", 1);
-#endif
-    InitControl(m_viewModel, "MODEL_LBL", 1);
-    InitControl(m_lblPortrait, "PORTRAIT_LBL", 1);
-#ifndef _XBOX
-    InitControl(m_lblStatsBack, "LBL_STATSBACK", 1);
-    InitControl(m_lblStatsBorder, "LBL_STATSBORDER", 1);
-    InitControl(m_lblPortBorder, "LBL_PORTBORDER", 1);
-    InitControl(m_lblVitName, "LBL_VIT_NAME", 1);
-    InitControl(m_lblDefName, "LBL_DEF_NAME", 1);
-    InitControl(m_lblBar, "LBL_BAR1", 1);
-#endif
-    StopLoadFromLayout();
-    m_lblTitle.m_cText.m_cParams.SetStrRef(1071);
-    m_pLevelUpPanel = new CSWGuiLevelUpPanel(m_pManager, m_nCreatureId);
-    m_pLevelUpPanel->m_pParent = this;
-    SetNameString(m_pCreature->GetName());
-    AbilitiesChanged();
-    {
-        CResRef* pPortrait = &pOriginal->GetPortrait(1);
-        m_lblPortrait.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
-    }
-    CAurScene* pScene = m_viewModel.m_cScene.m_pScene;
-    CAurCamera* pCamera = m_viewModel.m_cScene.m_pCamera;
-    if (g_bDo3DGUIs != 0)
-    {
-        pScene->SpawnRoom("gui3D_room", Vector(), Quaternion(0, 0, 0, 1));
-        m_viewModel.m_cScene.AddModel("charrec_light", -1);
-        pCreature->Setup3DScene(m_viewModel, pOriginal, 0, 1);
-        pCreature->AttachToScene(pScene);
-        pCreature->SetPosition(Vector());
-        CAurBehaviorAttachTranslate* pNode = (CAurBehaviorAttachTranslate*)pCamera->GetBehavior(CAurBehavior::TYPE_ATTACH_TRANSLATE);
-        if (pNode != 0)
-        {
-            pNode->m_nWorldSpace = 1;
-            pNode->m_vTranslation = Vector(0.0f, 0.0f, pCreature->GetHeadHeightOffset());
-        }
-    }
-    m_nInputClass = g_pAppManager->m_pClientExoApp->GetInputClass();
-}
-// PC 0x00757AF0
-CSWGuiLevelUpCharGen::~CSWGuiLevelUpCharGen()
-{
-    delete m_pCreature;
-    m_pCreature = 0;
-}
 // PC 0x00756EE0
 void CSWGuiLevelUpCharGen::DetermineClass()
 {
@@ -420,6 +324,45 @@ void CSWGuiLevelUpCharGen::BeginPlayGame()
     }
     g_pAppManager->m_pClientExoApp->SetInputClass(m_nInputClass, 1);
 }
+// PC 0x00757AF0
+CSWGuiLevelUpCharGen::~CSWGuiLevelUpCharGen()
+{
+    delete m_pCreature;
+    m_pCreature = 0;
+}
+// PC 0x00757DC0
+void CSWGuiLevelUpCharGen::HandleInputEvent(int nEvent, int nState)
+{
+    SWGUILEVELUPCHARGEN_TRACE();
+    if (nState != 0 && (nEvent == 40 || nEvent == 46))
+    {
+        m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+        HandleCancelButton();
+    }
+    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
+}
+
+static inline void SwguilevelupchargenTrace3()
+{
+    SwguilevelupchargenTrace2();
+}
+
+static inline void SwguilevelupchargenTrace2()
+{
+    SwguilevelupchargenTrace1();
+}
+
+static inline void SwguilevelupchargenTrace1()
+{
+}
+
+#ifdef _XBOX
+void CSWGuiLevelUpCharGen::SetBackPromptEnabled(int bEnabled)
+{
+    m_lblBack.m_bEnabled = bEnabled;
+    m_lblB.m_bEnabled = bEnabled;
+}
+#endif
 // PC 0x00757E30
 int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
                                            CSWCCreature* pTo)
@@ -598,36 +541,93 @@ void CSWGuiLevelUpCharGen::HandleCancelButton()
     RemoveSubPanels();
     m_pInGameCharacter->AttachModel();
 }
-// PC 0x00757DC0
-void CSWGuiLevelUpCharGen::HandleInputEvent(int nEvent, int nState)
+// PC 0x00758490
+CSWGuiLevelUpCharGen::CSWGuiLevelUpCharGen(CSWGuiManager* pManager,
+                                         unsigned long nCreature,
+                                         CSWCCreature* pCreature)
+    : CSWGuiPanel(pManager)
 {
-    SWGUILEVELUPCHARGEN_TRACE();
-    if (nState != 0 && (nEvent == 40 || nEvent == 46))
-    {
-        m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-        HandleCancelButton();
-    }
-    return CSWGuiPanel::HandleInputEvent(nEvent, nState);
-}
-
-static inline void SwguilevelupchargenTrace3()
-{
-    SwguilevelupchargenTrace2();
-}
-
-static inline void SwguilevelupchargenTrace2()
-{
-    SwguilevelupchargenTrace1();
-}
-
-static inline void SwguilevelupchargenTrace1()
-{
-}
-
+    CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
+    CSWCCreature* pOriginal = pApp->GetCreatureByGameObjectID(nCreature);
+    m_pManager = pApp->GetSWGuiManager();
+    m_pCreature = new CSWCCreature;
+    m_nCreatureId = nCreature;
+    CopyCreatureStats(pOriginal, m_pCreature);
+    LevelUpCreature();
+    DetermineClass();
 #ifdef _XBOX
-void CSWGuiLevelUpCharGen::SetBackPromptEnabled(int bEnabled)
-{
-    m_lblBack.m_bEnabled = bEnabled;
-    m_lblB.m_bEnabled = bEnabled;
-}
+    StartLoadFromLayout("MAINCG");
+#else
+    StartLoadFromLayout("MAINCG_p");
 #endif
+    InitControl(m_lblTitle, "MAIN_TITLE_LBL", 1);
+    InitControl(m_lblName, "LBL_NAME", 1);
+    InitControl(m_lblClass, "LBL_CLASS", 1);
+    InitControl(m_lblLevelValue, "LBL_LEVEL_VAL", 1);
+    InitControl(m_lblStrength, "STR_LBL", 1);
+    InitControl(m_lblDexterity, "DEX_LBL", 1);
+    InitControl(m_lblConstitution, "CON_LBL", 1);
+    InitControl(m_lblIntelligence, "INT_LBL", 1);
+    InitControl(m_lblWisdom, "WIS_LBL", 1);
+    InitControl(m_lblCharisma, "CHA_LBL", 1);
+    InitControl(m_lblStrengthAbility, "STR_AB_LBL", 1);
+    InitControl(m_lblDexterityAbility, "DEX_AB_LBL", 1);
+    InitControl(m_lblConstitutionAbility, "CON_AB_LBL", 1);
+    InitControl(m_lblIntelligenceAbility, "INT_AB_LBL", 1);
+    InitControl(m_lblWisdomAbility, "WIS_AB_LBL", 1);
+    InitControl(m_lblCharismaAbility, "CHA_AB_LBL", 1);
+    InitControl(m_lblVitality, "LBL_VIT", 1);
+    InitControl(m_lblDefense, "LBL_DEF", 1);
+    InitControl(m_lblNewWill, "NEW_WILL_LBL", 1);
+    InitControl(m_lblNewReflex, "NEW_REFL_LBL", 1);
+    InitControl(m_lblNewFortitude, "NEW_FORT_LBL", 1);
+    InitControl(m_lblBevelLeft, "LBL_BEVEL_L", 1);
+    InitControl(m_lblBevelMiddle, "LBL_BEVEL_M", 1);
+    InitControl(m_lblBevelRight, "LBL_BEVEL_R", 1);
+    InitControl(m_lblFortitude, "LBL_FORTITUDE", 1);
+    InitControl(m_lblReflex, "LBL_REFLEX", 1);
+    InitControl(m_lblWill, "LBL_WILL", 1);
+#ifdef _XBOX
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblBack, "LBL_BACK", 1);
+    InitControl(m_lblAccept, "LBL_ACCEPT", 1);
+#endif
+    InitControl(m_viewModel, "MODEL_LBL", 1);
+    InitControl(m_lblPortrait, "PORTRAIT_LBL", 1);
+#ifndef _XBOX
+    InitControl(m_lblStatsBack, "LBL_STATSBACK", 1);
+    InitControl(m_lblStatsBorder, "LBL_STATSBORDER", 1);
+    InitControl(m_lblPortBorder, "LBL_PORTBORDER", 1);
+    InitControl(m_lblVitName, "LBL_VIT_NAME", 1);
+    InitControl(m_lblDefName, "LBL_DEF_NAME", 1);
+    InitControl(m_lblBar, "LBL_BAR1", 1);
+#endif
+    StopLoadFromLayout();
+    m_lblTitle.m_cText.m_cParams.SetStrRef(1071);
+    m_pLevelUpPanel = new CSWGuiLevelUpPanel(m_pManager, m_nCreatureId);
+    m_pLevelUpPanel->m_pParent = this;
+    SetNameString(m_pCreature->GetName());
+    AbilitiesChanged();
+    {
+        CResRef* pPortrait = &pOriginal->GetPortrait(1);
+        m_lblPortrait.m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
+    }
+    CAurScene* pScene = m_viewModel.m_cScene.m_pScene;
+    CAurCamera* pCamera = m_viewModel.m_cScene.m_pCamera;
+    if (g_bDo3DGUIs != 0)
+    {
+        pScene->SpawnRoom("gui3D_room", Vector(), Quaternion(0, 0, 0, 1));
+        m_viewModel.m_cScene.AddModel("charrec_light", -1);
+        pCreature->Setup3DScene(m_viewModel, pOriginal, 0, 1);
+        pCreature->AttachToScene(pScene);
+        pCreature->SetPosition(Vector());
+        CAurBehaviorAttachTranslate* pNode = (CAurBehaviorAttachTranslate*)pCamera->GetBehavior(CAurBehavior::TYPE_ATTACH_TRANSLATE);
+        if (pNode != 0)
+        {
+            pNode->m_nWorldSpace = 1;
+            pNode->m_vTranslation = Vector(0.0f, 0.0f, pCreature->GetHeadHeightOffset());
+        }
+    }
+    m_nInputClass = g_pAppManager->m_pClientExoApp->GetInputClass();
+}

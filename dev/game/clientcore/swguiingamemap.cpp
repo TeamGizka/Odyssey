@@ -42,6 +42,105 @@ static inline void SwguiingamemapTrace2()
 static inline void SwguiingamemapTrace1()
 {
 }
+// PC 0x006EF780
+void CSWGuiInGameGalaxyMap::HandleInputEvent(int nEvent, int nState)
+{
+    CSWGuiPanel::HandleInputEvent(nEvent, nState);
+    if (nState != 0)
+    {
+        switch (nEvent)
+        {
+        case GUIEVENT_ACTIVATE:
+        case GUIEVENT_ACCEPT:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+#ifndef _XBOX
+            {
+                CSWPartyTable* pPartyTable =
+                    g_pAppManager->m_pServerExoApp->GetPartyTable();
+                if (pPartyTable->m_nSelectedPlanet == m_n28D4)
+                {
+                    CSWGuiMessageBox* pMessageBox =
+                        g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+                    pMessageBox->SetAllowCancel(0);
+                    pMessageBox->SetCallback(NULL, NULL, NULL);
+                    pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
+                                                  CGuiInGame::COLOR_NEW_HIGHLIGHT);
+                    pMessageBox->SetMessage(STRREF_ALREADY_AT_LOCATION);
+                    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(
+                        pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+                }
+                else if (pPartyTable->GetPlanetSelectable(pPartyTable->m_nSelectedPlanet))
+                {
+                    if (g_pVirtualMachine != 0)
+                    {
+                        g_pAppManager->m_pClientExoApp->GetInGameGui()
+                            ->m_bTransitionScriptRunning = 1;
+                        CExoString sScript("k_sup_galaxymap");
+                        g_pVirtualMachine->RunScript(&sScript, OBJECT_INVALID, 0);
+                        g_pAppManager->m_pClientExoApp->GetInGameGui()
+                            ->m_bTransitionScriptRunning = 0;
+                    }
+                    g_pAppManager->m_pClientExoApp->GetInGameGui()->HideGalaxyMapGui();
+                }
+                else
+                {
+                    if (pPartyTable->m_nSelectedPlanet != -1)
+                    {
+                        int nReason = -1;
+                        if (g_pRules->Get2DArrays()->GetJournal()->GetINTEntry(
+                                pPartyTable->GetSelectedPlanet(), "LockedOutReason", &nReason))
+                        {
+                            CSWGuiMessageBox* pMessageBox =
+                                g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
+                            pMessageBox->SetAllowCancel(0);
+                            pMessageBox->SetCallback(NULL, NULL, NULL);
+                            pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
+                                                          CGuiInGame::COLOR_NEW_HIGHLIGHT);
+                            pMessageBox->SetMessage(nReason);
+                            g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(
+                                pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+                        }
+                    }
+                }
+            }
+#else
+            if (g_pVirtualMachine != 0)
+            {
+                g_pAppManager->m_pClientExoApp->GetInGameGui()
+                    ->m_bTransitionScriptRunning = 1;
+                CExoString sScript("k_sup_galaxymap");
+                g_pVirtualMachine->RunScript(&sScript, OBJECT_INVALID, 0);
+                g_pAppManager->m_pClientExoApp->GetInGameGui()
+                    ->m_bTransitionScriptRunning = 0;
+            }
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->HideGalaxyMapGui();
+#endif
+            break;
+        case GUIEVENT_CANCEL:
+        case GUIEVENT_CANCEL_ALTERNATE:
+#ifndef _XBOX
+        case GUIEVENT_EXIT:
+#endif
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->HideGalaxyMapGui();
+            break;
+        case GUIEVENT_LEFT:
+        case GUIEVENT_UP:
+        case GUIEVENT_UP_ALTERNATE:
+        case GUIEVENT_LEFT_ALTERNATE:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
+            PrevPlanet();
+            break;
+        case GUIEVENT_RIGHT:
+        case GUIEVENT_DOWN:
+        case GUIEVENT_DOWN_ALTERNATE:
+        case GUIEVENT_RIGHT_ALTERNATE:
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
+            NextPlanet();
+            break;
+        }
+    }
+}
 // PC 0x006EC250
 void CSWGuiInGameMap::Draw(float fElapsed)
 {
@@ -177,6 +276,17 @@ void CSWGuiInGameGalaxyMap::OnPanelRemoved()
 #ifndef _XBOX
     CSWGuiPanel::OnPanelRemoved();
 #endif
+}
+// PC 0x006EC6B0
+void CSWGuiInGameGalaxyMap::Draw(float fElapsed)
+{
+    int nSelected =
+        g_pAppManager->m_pServerExoApp->GetPartyTable()->m_nSelectedPlanet;
+    if (nSelected != -1)
+    {
+        m_aPlanetButtons[nSelected].SetActive(1);
+    }
+    return CSWGuiPanel::Draw(fElapsed);
 }
 // PC 0x006ED0B0
 void CSWGuiInGameMap::OnPanelAdded()
@@ -1202,105 +1312,6 @@ void CSWGuiInGameGalaxyMap::NextPlanet()
     m_aPlanetButtons[pPartyTable->m_nSelectedPlanet].SetActive(1);
     DisplayPlanet(pPartyTable->m_nSelectedPlanet, 1);
 }
-// PC 0x006EF780
-void CSWGuiInGameGalaxyMap::HandleInputEvent(int nEvent, int nState)
-{
-    CSWGuiPanel::HandleInputEvent(nEvent, nState);
-    if (nState != 0)
-    {
-        switch (nEvent)
-        {
-        case GUIEVENT_ACTIVATE:
-        case GUIEVENT_ACCEPT:
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-#ifndef _XBOX
-            {
-                CSWPartyTable* pPartyTable =
-                    g_pAppManager->m_pServerExoApp->GetPartyTable();
-                if (pPartyTable->m_nSelectedPlanet == m_n28D4)
-                {
-                    CSWGuiMessageBox* pMessageBox =
-                        g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
-                    pMessageBox->SetAllowCancel(0);
-                    pMessageBox->SetCallback(NULL, NULL, NULL);
-                    pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
-                                                  CGuiInGame::COLOR_NEW_HIGHLIGHT);
-                    pMessageBox->SetMessage(STRREF_ALREADY_AT_LOCATION);
-                    g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(
-                        pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
-                }
-                else if (pPartyTable->GetPlanetSelectable(pPartyTable->m_nSelectedPlanet))
-                {
-                    if (g_pVirtualMachine != 0)
-                    {
-                        g_pAppManager->m_pClientExoApp->GetInGameGui()
-                            ->m_bTransitionScriptRunning = 1;
-                        CExoString sScript("k_sup_galaxymap");
-                        g_pVirtualMachine->RunScript(&sScript, OBJECT_INVALID, 0);
-                        g_pAppManager->m_pClientExoApp->GetInGameGui()
-                            ->m_bTransitionScriptRunning = 0;
-                    }
-                    g_pAppManager->m_pClientExoApp->GetInGameGui()->HideGalaxyMapGui();
-                }
-                else
-                {
-                    if (pPartyTable->m_nSelectedPlanet != -1)
-                    {
-                        int nReason = -1;
-                        if (g_pRules->Get2DArrays()->GetJournal()->GetINTEntry(
-                                pPartyTable->GetSelectedPlanet(), "LockedOutReason", &nReason))
-                        {
-                            CSWGuiMessageBox* pMessageBox =
-                                g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
-                            pMessageBox->SetAllowCancel(0);
-                            pMessageBox->SetCallback(NULL, NULL, NULL);
-                            pMessageBox->SetMessageColors(CGuiInGame::COLOR_UPGRADE_BORDER,
-                                                          CGuiInGame::COLOR_NEW_HIGHLIGHT);
-                            pMessageBox->SetMessage(nReason);
-                            g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(
-                                pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
-                        }
-                    }
-                }
-            }
-#else
-            if (g_pVirtualMachine != 0)
-            {
-                g_pAppManager->m_pClientExoApp->GetInGameGui()
-                    ->m_bTransitionScriptRunning = 1;
-                CExoString sScript("k_sup_galaxymap");
-                g_pVirtualMachine->RunScript(&sScript, OBJECT_INVALID, 0);
-                g_pAppManager->m_pClientExoApp->GetInGameGui()
-                    ->m_bTransitionScriptRunning = 0;
-            }
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->HideGalaxyMapGui();
-#endif
-            break;
-        case GUIEVENT_CANCEL:
-        case GUIEVENT_CANCEL_ALTERNATE:
-#ifndef _XBOX
-        case GUIEVENT_EXIT:
-#endif
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->HideGalaxyMapGui();
-            break;
-        case GUIEVENT_LEFT:
-        case GUIEVENT_UP:
-        case GUIEVENT_UP_ALTERNATE:
-        case GUIEVENT_LEFT_ALTERNATE:
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
-            PrevPlanet();
-            break;
-        case GUIEVENT_RIGHT:
-        case GUIEVENT_DOWN:
-        case GUIEVENT_DOWN_ALTERNATE:
-        case GUIEVENT_RIGHT_ALTERNATE:
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_SELECTION);
-            NextPlanet();
-            break;
-        }
-    }
-}
 // PC 0x006EF160
 void CSWGuiInGameGalaxyMap::PrevPlanet()
 {
@@ -1472,15 +1483,4 @@ void CSWGuiInGameGalaxyMap::OnPlanetClicked(CSWGuiControl* pControl)  // PC 0x00
     }
 }
 #endif
-// PC 0x006EC6B0
-void CSWGuiInGameGalaxyMap::Draw(float fElapsed)
-{
-    int nSelected =
-        g_pAppManager->m_pServerExoApp->GetPartyTable()->m_nSelectedPlanet;
-    if (nSelected != -1)
-    {
-        m_aPlanetButtons[nSelected].SetActive(1);
-    }
-    return CSWGuiPanel::Draw(fElapsed);
-}
 

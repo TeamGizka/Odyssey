@@ -1158,6 +1158,30 @@ inline void CAurGUIImageInternal::SetTexture(char* sTexture)
 {
     m_pMaterial->InitializeTextures(sTexture, 0, 0, 0);
 }
+// PC 0x0046EA50
+int CAurGUIImageInternal::GetImageHeight()
+{
+    return AsTexture(m_pMaterial->m_pTexture0)->GetHeight();
+}
+// PC 0x0046EA60
+int CAurGUIImageInternal::GetImageWidth()
+{
+    return AsTexture(m_pMaterial->m_pTexture0)->GetWidth();
+}
+// PC 0x0046EA70
+void CAurGUIImageInternal::Draw()
+{
+    Draw(0, 0, AsTexture(m_pMaterial->m_pTexture0)->GetWidth(),
+         AsTexture(m_pMaterial->m_pTexture0)->GetHeight(), 0, 0.0f,
+         Vector(-1.0f, -1.0f, -1.0f), 1.0f);
+}
+// PC 0x0046EAD0
+void CAurGUIImageInternal::Draw(float fAlpha)
+{
+    Draw(0, 0, AsTexture(m_pMaterial->m_pTexture0)->GetWidth(),
+         AsTexture(m_pMaterial->m_pTexture0)->GetHeight(), 0, 0.0f,
+         Vector(-1.0f, -1.0f, -1.0f), fAlpha);
+}
 // PC 0x0046EB30
 CAurGUIImageInternal::CAurGUIImageInternal(char* sTexture)
 {
@@ -1466,30 +1490,6 @@ void CAurGUIImageInternal::Draw(float fX, float fY, float fWidth,
     GLRender_EndImmediatePrimitive();
     GLRender_PopCurrentMatrix();
     GLRender_Enable(ENABLE_LIGHTING);
-}
-// PC 0x0046EA50
-int CAurGUIImageInternal::GetImageHeight()
-{
-    return AsTexture(m_pMaterial->m_pTexture0)->GetHeight();
-}
-// PC 0x0046EA60
-int CAurGUIImageInternal::GetImageWidth()
-{
-    return AsTexture(m_pMaterial->m_pTexture0)->GetWidth();
-}
-// PC 0x0046EA70
-void CAurGUIImageInternal::Draw()
-{
-    Draw(0, 0, AsTexture(m_pMaterial->m_pTexture0)->GetWidth(),
-         AsTexture(m_pMaterial->m_pTexture0)->GetHeight(), 0, 0.0f,
-         Vector(-1.0f, -1.0f, -1.0f), 1.0f);
-}
-// PC 0x0046EAD0
-void CAurGUIImageInternal::Draw(float fAlpha)
-{
-    Draw(0, 0, AsTexture(m_pMaterial->m_pTexture0)->GetWidth(),
-         AsTexture(m_pMaterial->m_pTexture0)->GetHeight(), 0, 0.0f,
-         Vector(-1.0f, -1.0f, -1.0f), fAlpha);
 }
 // PC 0x00470BA0
 #ifdef _XBOX

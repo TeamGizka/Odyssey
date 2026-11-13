@@ -40,6 +40,44 @@ inline CSWSTrigger* CSWCTrigger::GetServerTrigger()
     }
     return 0;
 }
+// PC 0x006DB7A0
+void CSWCTrigger::UnloadModel()
+{
+    if (m_pAnimBase != NULL)
+    {
+        m_pAnimBase->UnloadModel();
+        delete m_pAnimBase;
+        m_pAnimBase = NULL;
+    }
+}
+// PC 0x0069CF50
+void CSWCTrigger::UnloadModel(unsigned char nModel)
+{
+    if (m_pAnimBase != NULL)
+    {
+        m_pAnimBase->UnloadModel(nModel);
+    }
+}
+// PC 0x006EA680
+CSWCTrigger::CSWCTrigger()
+    : CSWCObject(CGameObject::OBJECT_TYPE_TRIGGER)
+{
+    unsigned long nDay;
+    unsigned long nTime;
+    CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
+    pApp->GetWorldTimer()->GetWorldTime(&nDay, &nTime);
+    m_nLastUpdateDay = nDay;
+    m_nLastUpdateTime = nTime;
+    m_nNumVertices = 0;
+    m_pvVertices = NULL;
+    m_bTrap = 0;
+    m_bAreaTransition = 0;
+    m_bDisplayed = 0;
+    m_fHighlightFade = 0.0f;
+    m_nInitialValue = 0;
+    m_pPartTrigger = NULL;
+    m_cTriggerType = -1;
+}
 
 // PC 0x006EA790
 int CSWCTrigger::LoadModel(const CResRef& cModel, unsigned char nModel,
@@ -67,73 +105,6 @@ int CSWCTrigger::LoadModel(const CResRef& cModel, unsigned char nModel,
     }
 
     return 1;
-}
-// PC 0x006DB7A0
-void CSWCTrigger::UnloadModel()
-{
-    if (m_pAnimBase != NULL)
-    {
-        m_pAnimBase->UnloadModel();
-        delete m_pAnimBase;
-        m_pAnimBase = NULL;
-    }
-}
-// PC 0x0069CF50
-void CSWCTrigger::UnloadModel(unsigned char nModel)
-{
-    if (m_pAnimBase != NULL)
-    {
-        m_pAnimBase->UnloadModel(nModel);
-    }
-}
-// PC 0x006EAEF0
-void CSWCTrigger::AddFireAndForgetAnimation(unsigned short nAnimation,
-                                            void* pData, unsigned short nFlags)
-{
-    unsigned long nLength = (unsigned long)GetAnimationLength(nAnimation);
-    InsertFireForgetAnimation(nAnimation, nLength, 1.0f, pData, 0);
-}
-// PC 0x006EA680
-CSWCTrigger::CSWCTrigger()
-    : CSWCObject(CGameObject::OBJECT_TYPE_TRIGGER)
-{
-    unsigned long nDay;
-    unsigned long nTime;
-    CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
-    pApp->GetWorldTimer()->GetWorldTime(&nDay, &nTime);
-    m_nLastUpdateDay = nDay;
-    m_nLastUpdateTime = nTime;
-    m_nNumVertices = 0;
-    m_pvVertices = NULL;
-    m_bTrap = 0;
-    m_bAreaTransition = 0;
-    m_bDisplayed = 0;
-    m_fHighlightFade = 0.0f;
-    m_nInitialValue = 0;
-    m_pPartTrigger = NULL;
-    m_cTriggerType = -1;
-}
-// PC 0x006EB250
-CSWCTrigger::~CSWCTrigger()
-{
-    if (m_pAnimBase != NULL)
-    {
-        m_pAnimBase->UnloadModel();
-        delete m_pAnimBase;
-        m_pAnimBase = NULL;
-    }
-
-    if (m_pvVertices != NULL)
-    {
-        delete [] m_pvVertices;
-        m_pvVertices = NULL;
-    }
-
-    if (m_pPartTrigger != NULL)
-    {
-        AurPartTriggerReleaseMemory(m_pPartTrigger);
-        m_pPartTrigger = NULL;
-    }
 }
 // PC 0x006EA870
 void CSWCTrigger::UpdateTriggerColor(int nMode)
@@ -359,6 +330,13 @@ void CSWCTrigger::ActionMenuRecoverMine(unsigned long nAction,
 {
     pCreature->PerformSkill(1, 0x65, GetId());
 }
+// PC 0x006EAEF0
+void CSWCTrigger::AddFireAndForgetAnimation(unsigned short nAnimation,
+                                            void* pData, unsigned short nFlags)
+{
+    unsigned long nLength = (unsigned long)GetAnimationLength(nAnimation);
+    InsertFireForgetAnimation(nAnimation, nLength, 1.0f, pData, 0);
+}
 // PC 0x006EAF20
 void CSWCTrigger::AnimationUpdate()
 {
@@ -464,6 +442,28 @@ unsigned char CSWCTrigger::GetReticlePoint(Vector& vPoint)
 
 done:
     return nResult;
+}
+// PC 0x006EB250
+CSWCTrigger::~CSWCTrigger()
+{
+    if (m_pAnimBase != NULL)
+    {
+        m_pAnimBase->UnloadModel();
+        delete m_pAnimBase;
+        m_pAnimBase = NULL;
+    }
+
+    if (m_pvVertices != NULL)
+    {
+        delete [] m_pvVertices;
+        m_pvVertices = NULL;
+    }
+
+    if (m_pPartTrigger != NULL)
+    {
+        AurPartTriggerReleaseMemory(m_pPartTrigger);
+        m_pPartTrigger = NULL;
+    }
 }
 // PC 0x006EB330
 void CSWCTrigger::AddToRenderList(int nMode)

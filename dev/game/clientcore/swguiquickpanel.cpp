@@ -110,19 +110,6 @@ void CSWGuiQuickPanel::SetState(int nState)
     }
     SetActiveControl(&m_btnStep[m_nState], 0);
 }
-// PC 0x00761180
-void CSWGuiQuickPanel::OnSelectPlayButton(CSWGuiControl* pControl)
-{
-#ifndef _XBOX
-    if (m_nState >= 2)
-#endif
-    {
-        if (pControl->m_bSelected != 0)
-        {
-            m_pMainCharGen->BeginPlayGame();
-        }
-    }
-}
 // PC 0x00760F30
 void CSWGuiQuickPanel::OnSelectNameButton(CSWGuiControl* pControl)
 {
@@ -201,32 +188,18 @@ CExoString CSWGuiCustomPanel::GetCurrentName()
 {
     return ((CSWGuiMainCharGen*)m_pParentPanel)->m_sName;
 }
-// PC 0x00761270
-void CSWGuiQuickPanel::DoQuickStats()
+// PC 0x00761180
+void CSWGuiQuickPanel::OnSelectPlayButton(CSWGuiControl* pControl)
 {
-    unsigned char nIndex = m_pCreature->GetStats()->GetNumClasses() - 1;
-    int nClass = m_pCreature->GetStats()->GetClass(nIndex);
-    CSWClass* pClass = &g_pRules->m_pClasses[nClass];
-    m_pCreature->GetStats()->SetSTRBase(pClass->GetStrength());
-    m_pCreature->GetStats()->SetDEXBase(pClass->GetDexterity(), 1);
-    m_pCreature->GetStats()->SetCONBase(pClass->GetConstitution());
-    m_pCreature->GetStats()->SetWISBase(pClass->GetWisdom());
-    m_pCreature->GetStats()->SetINTBase(pClass->GetIntelligence());
-    m_pCreature->GetStats()->SetCHABase(pClass->GetCharisma());
-    CExoArrayList<unsigned short> lstFeats;
-    m_pCreature->GetStats()->AddGrantedFeats(0, true);
 #ifndef _XBOX
-    m_pCreature->GetStats()->AddGrantedPowers(0);
+    if (m_nState >= 2)
 #endif
-    m_pCreature->GetStats()->AddDefaultPackageFeats(nClass, &lstFeats, 1, 1);
-    for (int i = 0; i < lstFeats.num; i++)
     {
-        m_pCreature->GetStats()->m_lstFeats.AddUnique(lstFeats[i]);
+        if (pControl->m_bSelected != 0)
+        {
+            m_pMainCharGen->BeginPlayGame();
+        }
     }
-    m_pCreature->GetStats()->m_nSkillPoints = 0;
-    m_pCreature->GetStats()->AddSkillPointsPerLevel();
-    m_pCreature->GetStats()->AddDefaultPackageSkills(nClass, 1);
-    m_pCreature->GetStats()->UpdateAbilityModifiedSkillRanks();
 }
 // PC 0x007611A0
 void CSWGuiQuickPanel::ConfirmCancel(CSWGuiControl* pControl)
@@ -237,15 +210,6 @@ void CSWGuiQuickPanel::ConfirmCancel(CSWGuiControl* pControl)
     {
         CancelPanel();
     }
-}
-// PC 0x00761950
-void CSWGuiQuickPanel::OnPanelAdded()
-{
-    DoQuickStats();
-    m_pMainCharGen->AbilitiesChanged();
-#ifndef _XBOX
-    CSWGuiPanel::OnPanelAdded();
-#endif
 }
 // PC 0x007611E0
 void CSWGuiQuickPanel::HandleInputEvent(int nEvent, int bPressed)
@@ -282,6 +246,33 @@ void CSWGuiQuickPanel::HandleInputEvent(int nEvent, int bPressed)
 CExoString CSWGuiQuickPanel::GetCurrentName()
 {
     return m_pMainCharGen->m_sName;
+}
+// PC 0x00761270
+void CSWGuiQuickPanel::DoQuickStats()
+{
+    unsigned char nIndex = m_pCreature->GetStats()->GetNumClasses() - 1;
+    int nClass = m_pCreature->GetStats()->GetClass(nIndex);
+    CSWClass* pClass = &g_pRules->m_pClasses[nClass];
+    m_pCreature->GetStats()->SetSTRBase(pClass->GetStrength());
+    m_pCreature->GetStats()->SetDEXBase(pClass->GetDexterity(), 1);
+    m_pCreature->GetStats()->SetCONBase(pClass->GetConstitution());
+    m_pCreature->GetStats()->SetWISBase(pClass->GetWisdom());
+    m_pCreature->GetStats()->SetINTBase(pClass->GetIntelligence());
+    m_pCreature->GetStats()->SetCHABase(pClass->GetCharisma());
+    CExoArrayList<unsigned short> lstFeats;
+    m_pCreature->GetStats()->AddGrantedFeats(0, true);
+#ifndef _XBOX
+    m_pCreature->GetStats()->AddGrantedPowers(0);
+#endif
+    m_pCreature->GetStats()->AddDefaultPackageFeats(nClass, &lstFeats, 1, 1);
+    for (int i = 0; i < lstFeats.num; i++)
+    {
+        m_pCreature->GetStats()->m_lstFeats.AddUnique(lstFeats[i]);
+    }
+    m_pCreature->GetStats()->m_nSkillPoints = 0;
+    m_pCreature->GetStats()->AddSkillPointsPerLevel();
+    m_pCreature->GetStats()->AddDefaultPackageSkills(nClass, 1);
+    m_pCreature->GetStats()->UpdateAbilityModifiedSkillRanks();
 }
 // PC 0x007614D0
 void CSWGuiQuickPanel::OnCancelPressed(CSWGuiControl* pControl)
@@ -360,5 +351,14 @@ CSWGuiQuickPanel::CSWGuiQuickPanel(CSWGuiManager* pManager,
 #ifdef _XBOX
     m_bCenterHorizontal = 1;
     m_bCenterVertical = 1;
+#endif
+}
+// PC 0x00761950
+void CSWGuiQuickPanel::OnPanelAdded()
+{
+    DoQuickStats();
+    m_pMainCharGen->AbilitiesChanged();
+#ifndef _XBOX
+    CSWGuiPanel::OnPanelAdded();
 #endif
 }

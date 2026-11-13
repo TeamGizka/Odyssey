@@ -5357,6 +5357,103 @@ int CSWSCreature::CheckItemAlignmentRestrictions(CSWSItem* pItem)
     }
     return 0;
 }
+// PC 0x00549450
+int CSWSCreature::CheckItemRaceRestrictions(CSWSItem* pItem, int bEnforceRace)
+{
+    int bCheckDroidOrHuman = 1;
+    if (pItem->GetPropertyByTypeExists(
+            CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM, 0))
+    {
+        CSWItemProperty* pProperty = NULL;
+        pItem->GetPropertyByType(&pProperty,
+                                 CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM,
+                                 0x81);
+        if (pProperty != NULL)
+        {
+            bCheckDroidOrHuman = 0;
+        }
+    }
+
+    unsigned char nDroidOrHuman = pItem->GetBaseItem()->m_nDroidOrHuman;
+    if (nDroidOrHuman != 0 && bCheckDroidOrHuman)
+    {
+        switch (nDroidOrHuman)
+        {
+        case 1:
+            if (m_pStats->m_nRace != CSWRace::CRACE_HUMAN)
+            {
+                return bEnforceRace == 0;
+            }
+            break;
+        case 2:
+            if (m_pStats->m_nRace != CSWRace::CRACE_DROID)
+            {
+                return bEnforceRace == 0;
+            }
+            break;
+        default:
+            return 0;
+        }
+    }
+
+    unsigned char nSubrace = m_pStats->m_nSubraceIndex;
+    if (pItem->GetBaseItem()->m_nDenySubrace & (1 << nSubrace))
+    {
+        return 0;
+    }
+
+    if (!pItem->GetPropertyByTypeExists(
+            CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_RACIAL_TYPE, 0) &&
+        !pItem->GetPropertyByTypeExists(
+            CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_SUBRACE, 0))
+    {
+        return 1;
+    }
+
+    for (int i = 0; i < pItem->m_nPassiveProperties; i++)
+    {
+        CSWItemProperty* pProperty = pItem->GetPassiveProperty(i);
+        if (pProperty->m_nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
+            (pItem->m_nUpgrades & (1 << pProperty->m_nUpgradeType)))
+        {
+            if (pItem->GetPassiveProperty(i)->m_nPropertyType ==
+                CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_RACIAL_TYPE)
+            {
+                unsigned short nRaceRestriction =
+                    pItem->GetPassiveProperty(i)->m_nSubtype;
+                EXOLOG("Checking for property %d, subtype %d\n",
+                       CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_RACIAL_TYPE, nRaceRestriction);
+                unsigned short nRace = m_pStats->m_nRace;
+                if (nRace == pItem->GetPassiveProperty(i)->m_nSubtype)
+                {
+                    return 1;
+                }
+            }
+        }
+        pProperty = pItem->GetPassiveProperty(i);
+        if (pProperty->m_nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
+            (pItem->m_nUpgrades & (1 << pProperty->m_nUpgradeType)))
+        {
+            if (pItem->GetPassiveProperty(i)->m_nPropertyType ==
+                CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_SUBRACE)
+            {
+                unsigned short nSubraceRestriction =
+                    pItem->GetPassiveProperty(i)->m_nSubtype;
+                EXOLOG("Checking for property %d, subtype %d\n",
+                       CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_SUBRACE, nSubraceRestriction);
+                if (m_pStats->m_nRace != CSWRace::CRACE_DROID)
+                {
+                    unsigned char nSubrace = m_pStats->m_nSubraceIndex;
+                    if (nSubrace == pItem->GetPassiveProperty(i)->m_nSubtype)
+                    {
+                        return 1;
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
 // PC 0x00549630
 int CSWSCreature::CheckItemFeatRestrictions(CSWSItem* pItem)
 {
@@ -5804,103 +5901,6 @@ int CSWSCreature::CanUseItem(CSWSItem* pItem, int bUnknown,
         }
     }
     return bCanUse;
-}
-// PC 0x00549450
-int CSWSCreature::CheckItemRaceRestrictions(CSWSItem* pItem, int bEnforceRace)
-{
-    int bCheckDroidOrHuman = 1;
-    if (pItem->GetPropertyByTypeExists(
-            CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM, 0))
-    {
-        CSWItemProperty* pProperty = NULL;
-        pItem->GetPropertyByType(&pProperty,
-                                 CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM,
-                                 0x81);
-        if (pProperty != NULL)
-        {
-            bCheckDroidOrHuman = 0;
-        }
-    }
-
-    unsigned char nDroidOrHuman = pItem->GetBaseItem()->m_nDroidOrHuman;
-    if (nDroidOrHuman != 0 && bCheckDroidOrHuman)
-    {
-        switch (nDroidOrHuman)
-        {
-        case 1:
-            if (m_pStats->m_nRace != CSWRace::CRACE_HUMAN)
-            {
-                return bEnforceRace == 0;
-            }
-            break;
-        case 2:
-            if (m_pStats->m_nRace != CSWRace::CRACE_DROID)
-            {
-                return bEnforceRace == 0;
-            }
-            break;
-        default:
-            return 0;
-        }
-    }
-
-    unsigned char nSubrace = m_pStats->m_nSubraceIndex;
-    if (pItem->GetBaseItem()->m_nDenySubrace & (1 << nSubrace))
-    {
-        return 0;
-    }
-
-    if (!pItem->GetPropertyByTypeExists(
-            CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_RACIAL_TYPE, 0) &&
-        !pItem->GetPropertyByTypeExists(
-            CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_SUBRACE, 0))
-    {
-        return 1;
-    }
-
-    for (int i = 0; i < pItem->m_nPassiveProperties; i++)
-    {
-        CSWItemProperty* pProperty = pItem->GetPassiveProperty(i);
-        if (pProperty->m_nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
-            (pItem->m_nUpgrades & (1 << pProperty->m_nUpgradeType)))
-        {
-            if (pItem->GetPassiveProperty(i)->m_nPropertyType ==
-                CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_RACIAL_TYPE)
-            {
-                unsigned short nRaceRestriction =
-                    pItem->GetPassiveProperty(i)->m_nSubtype;
-                EXOLOG("Checking for property %d, subtype %d\n",
-                       CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_RACIAL_TYPE, nRaceRestriction);
-                unsigned short nRace = m_pStats->m_nRace;
-                if (nRace == pItem->GetPassiveProperty(i)->m_nSubtype)
-                {
-                    return 1;
-                }
-            }
-        }
-        pProperty = pItem->GetPassiveProperty(i);
-        if (pProperty->m_nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
-            (pItem->m_nUpgrades & (1 << pProperty->m_nUpgradeType)))
-        {
-            if (pItem->GetPassiveProperty(i)->m_nPropertyType ==
-                CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_SUBRACE)
-            {
-                unsigned short nSubraceRestriction =
-                    pItem->GetPassiveProperty(i)->m_nSubtype;
-                EXOLOG("Checking for property %d, subtype %d\n",
-                       CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_SUBRACE, nSubraceRestriction);
-                if (m_pStats->m_nRace != CSWRace::CRACE_DROID)
-                {
-                    unsigned char nSubrace = m_pStats->m_nSubraceIndex;
-                    if (nSubrace == pItem->GetPassiveProperty(i)->m_nSubtype)
-                    {
-                        return 1;
-                    }
-                }
-            }
-        }
-    }
-    return 0;
 }
 // PC 0x0054D940
 int CSWSCreature::GetIsInInvitationsOffered(unsigned long oidCreature)

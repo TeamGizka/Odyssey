@@ -180,6 +180,70 @@ int CSWCCreature::ResetAnimationState()
         SetAnimation(CREATURE_ANIMATION_COMBAT_READY, 0, 0);
     return 1;
 }
+// PC 0x00668780
+void CSWCCreature::GetSelfForcePowers(
+    CExoArrayList<CSWGuiInterfaceAction>& lstActions)
+{
+    if (GetStats()->HasFeat(CSWFeat::FEAT_IMPLANT_SWITCHING))
+    {
+        GetSwappableImplants(lstActions);
+    }
+    if (GetStats()->HasFeat(CSWFeat::FEAT_WOOKIEE_RAGE_I) ||
+        GetStats()->HasFeat(CSWFeat::FEAT_WOOKIEE_RAGE_II) ||
+        GetStats()->HasFeat(CSWFeat::FEAT_WOOKIEE_RAGE_III))
+    {
+        GetWookieeRage(lstActions);
+    }
+    unsigned long nItemMask = 0;
+    unsigned long nForcePoints = 0;
+    CSWSCreature* pServerCreature = GetServerCreature();
+    if (pServerCreature != NULL)
+    {
+        nItemMask = pServerCreature->GetForceItemMask();
+        if (pServerCreature->m_bBodyFuel)
+            nForcePoints = pServerCreature->GetCurrentHitPoints(0);
+        else
+            nForcePoints = (short)(pServerCreature->m_pStats->m_nCurrentForcePoints +
+                pServerCreature->m_pStats->m_nTemporaryForcePoints);
+    }
+
+    int nFirstAction = lstActions.num;
+    CSWSArea* pArea = GetServerCreature()->GetArea();
+    int nRoomForceRating = 0;
+    if (pArea != NULL)
+        nRoomForceRating = pArea->GetRoomForceRating(GetServerCreature()->m_vPosition);
+    int nHitPoints = 0;
+    int nForm = 0;
+    int nForceBodyLevel = -1;
+    char nCharismaModifier = 0;
+    if (pServerCreature != NULL)
+    {
+        for (int i = 0; i < pServerCreature->m_lstEffects.num; i++)
+        {
+            CGameEffect* pEffect = pServerCreature->m_lstEffects[i];
+            if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
+            {
+                nForceBodyLevel = pEffect->GetInteger(0);
+                break;
+            }
+        }
+        nHitPoints = pServerCreature->GetCurrentHitPoints(0);
+        nForm = pServerCreature->m_n1110;
+        nCharismaModifier = pServerCreature->m_pStats->m_nCharismaModifier;
+    }
+    GetStats()->GetMenuInfo(lstActions, CSWSpell::SUBRADIAL_TYPE_SELF_FORCE_POWER,
+        nForcePoints, 0, nItemMask, SWCCREATURE_SELF_FORCE_POWER_DISTANCE_SQUARED,
+        nRoomForceRating, nForceBodyLevel, nHitPoints, 0, nForm, 0, nCharismaModifier);
+    for (int j = nFirstAction; j < lstActions.num; ++j)
+    {
+        lstActions.element[j].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ForceMenuAction;
+#ifdef _XBOX
+        lstActions.element[j].m_oidTarget = (unsigned long)this;
+#else
+        lstActions.element[j].m_oidTarget = m_nId;
+#endif
+    }
+}
 // PC 0x00664880
 inline CResRef CSWCCreature::GetPortrait(int bAlternate)
 {
@@ -2727,50 +2791,6 @@ int CSWCCreature::ResolveAttackIndex(unsigned short nAnimation, int nMode,
     m_nPreviousAttackIndex = nAttackIndex;
     return nAttackIndex;
 }
-// PC 0x006611A0
-unsigned short CSWCCreature::ResolveReactionAnimation(unsigned short nAnimation,
-                                                      unsigned short nReaction,
-                                                      int nWieldClass)
-{
-    if (nWieldClass == CSWCAnimBase::WIELD_CLASS_UNARMED &&
-        GetServerCreature()->GetStats()->HasFeat(CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS))
-    {
-        nWieldClass = CSWCAnimBase::WIELD_CLASS_UNARMED_207;
-    }
-    CExoString sAnimation(nAnimation);
-    CExoString sColumn(nWieldClass);
-    int nResolvedAnimation = 0;
-    int bResolveAnimation = 1;
-
-    switch (nReaction)
-    {
-    case CREATURE_ANIMATION_COMBAT_READY:
-        bResolveAnimation = 0;
-        break;
-    case CREATURE_ANIMATION_PARRY:
-        sColumn = CExoString("Parry") + sColumn;
-        break;
-    case CREATURE_ANIMATION_DODGE:
-        sColumn = CExoString("Dodge") + sColumn;
-        break;
-    case CREATURE_ANIMATION_DAMAGE:
-        sColumn = CExoString("Damage") + sColumn;
-        break;
-    }
-
-    if (bResolveAnimation)
-    {
-        CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
-        C2DA* pCombatAnimations = p2DArrays->m_pCombatAnimations;
-        pCombatAnimations->GetINTEntry(sAnimation, sColumn,
-                                       &nResolvedAnimation);
-    }
-    else
-    {
-        nResolvedAnimation = CREATURE_ANIMATION_COMBAT_READY;
-    }
-    return (unsigned short)nResolvedAnimation;
-}
 // PC 0x006606F0
 void CSWCCreature::EquipToInventorySlot(unsigned long nSlot, CSWCItem* pItem, int bSuppressDraw)
 {
@@ -3297,6 +3317,50 @@ int CSWCCreature::UpdateRangedAttackData(int nAttackType, int nWieldClass)
         }
     }
     return nAnimation;
+}
+// PC 0x006611A0
+unsigned short CSWCCreature::ResolveReactionAnimation(unsigned short nAnimation,
+                                                      unsigned short nReaction,
+                                                      int nWieldClass)
+{
+    if (nWieldClass == CSWCAnimBase::WIELD_CLASS_UNARMED &&
+        GetServerCreature()->GetStats()->HasFeat(CSWFeat::FEAT_COMPLEX_UNARMED_ANIMS))
+    {
+        nWieldClass = CSWCAnimBase::WIELD_CLASS_UNARMED_207;
+    }
+    CExoString sAnimation(nAnimation);
+    CExoString sColumn(nWieldClass);
+    int nResolvedAnimation = 0;
+    int bResolveAnimation = 1;
+
+    switch (nReaction)
+    {
+    case CREATURE_ANIMATION_COMBAT_READY:
+        bResolveAnimation = 0;
+        break;
+    case CREATURE_ANIMATION_PARRY:
+        sColumn = CExoString("Parry") + sColumn;
+        break;
+    case CREATURE_ANIMATION_DODGE:
+        sColumn = CExoString("Dodge") + sColumn;
+        break;
+    case CREATURE_ANIMATION_DAMAGE:
+        sColumn = CExoString("Damage") + sColumn;
+        break;
+    }
+
+    if (bResolveAnimation)
+    {
+        CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+        C2DA* pCombatAnimations = p2DArrays->m_pCombatAnimations;
+        pCombatAnimations->GetINTEntry(sAnimation, sColumn,
+                                       &nResolvedAnimation);
+    }
+    else
+    {
+        nResolvedAnimation = CREATURE_ANIMATION_COMBAT_READY;
+    }
+    return (unsigned short)nResolvedAnimation;
 }
 // PC 0x006595A0
 int CSWCCreature::IsCreature()
@@ -4304,6 +4368,16 @@ int CSWCCreature::CanSee(CSWCObject* pObject)
         }
     } while (nHit == CHitInfo::HIT_GOB);
     return nHit != CHitInfo::HIT_STATIC;
+}
+// PC 0x006658D0
+void CSWCCreature::ForceMenuHostileAction(unsigned long nAction,
+                                         CSWCCreature* pTarget)
+{
+    if (pTarget != NULL)
+    {
+        pTarget->SetCombatMode(1);
+    }
+    ForceMenuAction(nAction, pTarget);
 }
 // PC 0x006659F0
 void CSWCCreature::ActionMenuUseAttackFeat(unsigned long nFeat,
@@ -6296,80 +6370,6 @@ int CSWCCreature::CheckFeat(int nFeat1, int nFeat2, int nFeat3)
     }
     return nFeat;
 }
-// PC 0x006658D0
-void CSWCCreature::ForceMenuHostileAction(unsigned long nAction,
-                                         CSWCCreature* pTarget)
-{
-    if (pTarget != NULL)
-    {
-        pTarget->SetCombatMode(1);
-    }
-    ForceMenuAction(nAction, pTarget);
-}
-// PC 0x00668780
-void CSWCCreature::GetSelfForcePowers(
-    CExoArrayList<CSWGuiInterfaceAction>& lstActions)
-{
-    if (GetStats()->HasFeat(CSWFeat::FEAT_IMPLANT_SWITCHING))
-    {
-        GetSwappableImplants(lstActions);
-    }
-    if (GetStats()->HasFeat(CSWFeat::FEAT_WOOKIEE_RAGE_I) ||
-        GetStats()->HasFeat(CSWFeat::FEAT_WOOKIEE_RAGE_II) ||
-        GetStats()->HasFeat(CSWFeat::FEAT_WOOKIEE_RAGE_III))
-    {
-        GetWookieeRage(lstActions);
-    }
-    unsigned long nItemMask = 0;
-    unsigned long nForcePoints = 0;
-    CSWSCreature* pServerCreature = GetServerCreature();
-    if (pServerCreature != NULL)
-    {
-        nItemMask = pServerCreature->GetForceItemMask();
-        if (pServerCreature->m_bBodyFuel)
-            nForcePoints = pServerCreature->GetCurrentHitPoints(0);
-        else
-            nForcePoints = (short)(pServerCreature->m_pStats->m_nCurrentForcePoints +
-                pServerCreature->m_pStats->m_nTemporaryForcePoints);
-    }
-
-    int nFirstAction = lstActions.num;
-    CSWSArea* pArea = GetServerCreature()->GetArea();
-    int nRoomForceRating = 0;
-    if (pArea != NULL)
-        nRoomForceRating = pArea->GetRoomForceRating(GetServerCreature()->m_vPosition);
-    int nHitPoints = 0;
-    int nForm = 0;
-    int nForceBodyLevel = -1;
-    char nCharismaModifier = 0;
-    if (pServerCreature != NULL)
-    {
-        for (int i = 0; i < pServerCreature->m_lstEffects.num; i++)
-        {
-            CGameEffect* pEffect = pServerCreature->m_lstEffects[i];
-            if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
-            {
-                nForceBodyLevel = pEffect->GetInteger(0);
-                break;
-            }
-        }
-        nHitPoints = pServerCreature->GetCurrentHitPoints(0);
-        nForm = pServerCreature->m_n1110;
-        nCharismaModifier = pServerCreature->m_pStats->m_nCharismaModifier;
-    }
-    GetStats()->GetMenuInfo(lstActions, CSWSpell::SUBRADIAL_TYPE_SELF_FORCE_POWER,
-        nForcePoints, 0, nItemMask, SWCCREATURE_SELF_FORCE_POWER_DISTANCE_SQUARED,
-        nRoomForceRating, nForceBodyLevel, nHitPoints, 0, nForm, 0, nCharismaModifier);
-    for (int j = nFirstAction; j < lstActions.num; ++j)
-    {
-        lstActions.element[j].m_pfnAction = (PFNMENUACTION)&CSWCCreature::ForceMenuAction;
-#ifdef _XBOX
-        lstActions.element[j].m_oidTarget = (unsigned long)this;
-#else
-        lstActions.element[j].m_oidTarget = m_nId;
-#endif
-    }
-}
 
 #ifdef _XBOX
 #include "exoinput.h"
@@ -6654,6 +6654,102 @@ int CSWCCreature::IsLeaderUsableItem(CSWSItem* pItem, int nSlot,  // PC 0x006639
     return 0;
 }
 #endif
+// PC 0x00663C20
+int CSWCCreature::IsHostileUsableItem(CSWSItem* pItem)
+{
+    if (pItem != NULL && !m_pArea->GetServerArea()->GetPlayerRestrictMode())
+    {
+        if (pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_HOSTILE_USABLE)
+        {
+            return 1;
+        }
+        if (pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_HOSTILE_USABLE_49)
+        {
+            int bUsable = 0;
+            CSWSCreature* pServerCreature =
+                GetServerObject() != NULL ? GetServerObject()->AsSWSCreature() : NULL;
+            CSWSItem* pSlotItem = pServerCreature->m_pInventory->GetItemInSlot(
+                INVENTORY_SLOT_NECK);
+            if (pSlotItem != NULL &&
+                pSlotItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_GRENADE_MODIFIER_48)
+            {
+                bUsable = 1;
+            }
+            else
+            {
+                pSlotItem = GetServerCreature()->GetInventory()->GetItemInSlot(
+                    INVENTORY_SLOT_RIGHTRING);
+                if (pSlotItem != NULL &&
+                    pSlotItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_GRENADE_MODIFIER_48)
+                {
+                    bUsable = 1;
+                }
+            }
+            return bUsable;
+        }
+    }
+    return 0;
+}
+// PC 0x00663D00
+void CSWCCreature::PartyMenuUseItemSelect(unsigned long oidItem, CSWCCreature* pTarget)
+{
+    int nTargetMember =
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_nUseItemTargetMember;
+    oidItem &= ~OBJECT_LISTTYPE_MASK;
+    unsigned long oidServerItem =
+        g_pAppManager->m_pServerExoApp->ClientToServerObjectId(oidItem);
+    if (g_pAppManager->GetClientExoApp()->GetSWParty()->m_nCharacters == 1 ||
+        g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidServerItem)->GetBaseItem()->m_nItemType ==
+            CSWBaseItem::ITEM_TYPE_SQUAD_MEDPAC)
+    {
+        CSWCCreature* pMember;
+        if (nTargetMember != -1)
+            pMember = g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nTargetMember);
+        else
+            pMember = g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0);
+        CSWSCreature* pServerCreature = pMember->GetServerCreature();
+        CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidServerItem);
+        if (pServerCreature->CanUseItem(pItem, 0))
+        {
+            unsigned long oidCreature = m_nId;
+            CSWCMessage* pMessage = g_pAppManager->GetClientExoApp()->GetSWCMessage();
+            if (pMessage != NULL)
+            {
+                pMessage->SendPlayerToServerInput_UseItem(oidItem, 0, 0, oidCreature, m_vPosition);
+            }
+        }
+        return;
+    }
+    if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_bSelectingUseItemTarget)
+    {
+        if (nTargetMember == -1)
+        {
+            return;
+        }
+        unsigned long oidTarget =
+            g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nTargetMember)->m_nId;
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_bSelectingUseItemTarget = 0;
+        CSWSCreature* pServerCreature =
+            g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nTargetMember)->GetServerCreature();
+        CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidServerItem);
+        if (pServerCreature->CanUseItem(pItem, 0))
+        {
+            PerformUseItem(oidItem, 0, oidTarget,
+                g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nTargetMember)->m_vPosition);
+        }
+    }
+    else if (g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidServerItem)->GetBaseItem()->m_nItemType ==
+             CSWBaseItem::ITEM_TYPE_EQUIPPED_ACTIVATION_20)
+    {
+        PerformUseItem(oidItem, 0, m_nId, m_vPosition);
+    }
+    else
+    {
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_oidUseItemPending = oidItem;
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_bSelectingUseItemTarget = 1;
+    }
+    g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_nUseItemTargetMember = -1;
+}
 void CSWCCreature::PerformUseHostileItem(unsigned long nItem,  // PC 0x00663F70
                                         CSWCCreature* pTarget)
 {
@@ -6909,102 +7005,6 @@ CSWSCreature* CSWCCreature::GetServerCreature()
         return pCreature;
     }
     return NULL;
-}
-// PC 0x00663C20
-int CSWCCreature::IsHostileUsableItem(CSWSItem* pItem)
-{
-    if (pItem != NULL && !m_pArea->GetServerArea()->GetPlayerRestrictMode())
-    {
-        if (pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_HOSTILE_USABLE)
-        {
-            return 1;
-        }
-        if (pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_HOSTILE_USABLE_49)
-        {
-            int bUsable = 0;
-            CSWSCreature* pServerCreature =
-                GetServerObject() != NULL ? GetServerObject()->AsSWSCreature() : NULL;
-            CSWSItem* pSlotItem = pServerCreature->m_pInventory->GetItemInSlot(
-                INVENTORY_SLOT_NECK);
-            if (pSlotItem != NULL &&
-                pSlotItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_GRENADE_MODIFIER_48)
-            {
-                bUsable = 1;
-            }
-            else
-            {
-                pSlotItem = GetServerCreature()->GetInventory()->GetItemInSlot(
-                    INVENTORY_SLOT_RIGHTRING);
-                if (pSlotItem != NULL &&
-                    pSlotItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_GRENADE_MODIFIER_48)
-                {
-                    bUsable = 1;
-                }
-            }
-            return bUsable;
-        }
-    }
-    return 0;
-}
-// PC 0x00663D00
-void CSWCCreature::PartyMenuUseItemSelect(unsigned long oidItem, CSWCCreature* pTarget)
-{
-    int nTargetMember =
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_nUseItemTargetMember;
-    oidItem &= ~OBJECT_LISTTYPE_MASK;
-    unsigned long oidServerItem =
-        g_pAppManager->m_pServerExoApp->ClientToServerObjectId(oidItem);
-    if (g_pAppManager->GetClientExoApp()->GetSWParty()->m_nCharacters == 1 ||
-        g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidServerItem)->GetBaseItem()->m_nItemType ==
-            CSWBaseItem::ITEM_TYPE_SQUAD_MEDPAC)
-    {
-        CSWCCreature* pMember;
-        if (nTargetMember != -1)
-            pMember = g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nTargetMember);
-        else
-            pMember = g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0);
-        CSWSCreature* pServerCreature = pMember->GetServerCreature();
-        CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidServerItem);
-        if (pServerCreature->CanUseItem(pItem, 0))
-        {
-            unsigned long oidCreature = m_nId;
-            CSWCMessage* pMessage = g_pAppManager->GetClientExoApp()->GetSWCMessage();
-            if (pMessage != NULL)
-            {
-                pMessage->SendPlayerToServerInput_UseItem(oidItem, 0, 0, oidCreature, m_vPosition);
-            }
-        }
-        return;
-    }
-    if (g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_bSelectingUseItemTarget)
-    {
-        if (nTargetMember == -1)
-        {
-            return;
-        }
-        unsigned long oidTarget =
-            g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nTargetMember)->m_nId;
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_bSelectingUseItemTarget = 0;
-        CSWSCreature* pServerCreature =
-            g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nTargetMember)->GetServerCreature();
-        CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidServerItem);
-        if (pServerCreature->CanUseItem(pItem, 0))
-        {
-            PerformUseItem(oidItem, 0, oidTarget,
-                g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nTargetMember)->m_vPosition);
-        }
-    }
-    else if (g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidServerItem)->GetBaseItem()->m_nItemType ==
-             CSWBaseItem::ITEM_TYPE_EQUIPPED_ACTIVATION_20)
-    {
-        PerformUseItem(oidItem, 0, m_nId, m_vPosition);
-    }
-    else
-    {
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_oidUseItemPending = oidItem;
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_bSelectingUseItemTarget = 1;
-    }
-    g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_nUseItemTargetMember = -1;
 }
 // PC 0x00664080
 void CSWCCreature::ActionMenuForm(unsigned long nAction, CSWCCreature* pInstigator)

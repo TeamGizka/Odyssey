@@ -4703,73 +4703,6 @@ void CServerExoAppInternal::ReprocessExclusionListActions(unsigned char nPauseTy
         pList->GetNext(pNode);
     }
 }
-// PC 0x004F0F20
-void CServerExoAppInternal::SetPauseState(unsigned char nPauseType, int bPause)
-{
-    CSWSMessage* pMessage = m_pSWSMessage;
-    CWorldTimer* pTimer;
-
-    if (GetPauseState(nPauseType) != bPause)
-    {
-        if (bPause == 1)
-        {
-            m_PauseState.m_nPauseState |= nPauseType;
-            m_pWorldTimer->PauseWorldTimer();
-            if (GetActivePauseState() == PAUSE_STATE_COMBAT)
-            {
-                m_pTimestopTimer->PauseWorldTimer();
-            }
-            pMessage->SendServerToPlayerModule_SetPauseState(nPauseType, 1);
-        }
-        else
-        {
-            m_PauseState.m_nPauseState &= ~nPauseType;
-            if (nPauseType == PAUSE_TYPE_COMBAT_MASK)
-            {
-                m_pPauseTimer->PauseWorldTimer();
-                ReprocessExclusionListActions(PAUSE_TYPE_COMBAT_MASK);
-                m_pPauseTimer->ResetTimer(m_pTimestopTimer);
-                m_pPauseTimer->SetSnapshotTime();
-                m_pTimestopTimer->SetSnapshotTime();
-                pTimer = m_pPauseTimer;
-                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
-                pTimer = m_pTimestopTimer;
-                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
-
-                if (GetActivePauseState() != PAUSE_STATE_PAUSED)
-                {
-                    m_pWorldTimer->SetSnapshotTime();
-                    pTimer = m_pWorldTimer;
-                    pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
-                    m_pWorldTimer->UnpauseWorldTimer();
-                }
-                m_pTimestopTimer->UnpauseWorldTimer();
-                m_pPauseTimer->UnpauseWorldTimer();
-            }
-            else if (nPauseType == PAUSE_TYPE_PAUSED_MASK)
-            {
-                m_pTimestopTimer->PauseWorldTimer();
-                m_pPauseTimer->PauseWorldTimer();
-                ReprocessExclusionListActions(PAUSE_TYPE_PAUSED_MASK);
-                m_pTimestopTimer->ResetTimer(m_pWorldTimer);
-                m_pPauseTimer->ResetTimer(m_pWorldTimer);
-                m_pWorldTimer->SetSnapshotTime();
-                m_pTimestopTimer->SetSnapshotTime();
-                m_pPauseTimer->SetSnapshotTime();
-                pTimer = m_pPauseTimer;
-                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
-                pTimer = m_pTimestopTimer;
-                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
-                pTimer = m_pWorldTimer;
-                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
-                m_pWorldTimer->UnpauseWorldTimer();
-                m_pTimestopTimer->UnpauseWorldTimer();
-                m_pPauseTimer->UnpauseWorldTimer();
-            }
-            pMessage->SendServerToPlayerModule_SetPauseState(nPauseType, bPause);
-        }
-    }
-}
 // PC 0x004F2590
 #ifdef _XBOX
 int CServerExoAppInternal::LoadModule(CExoString sModule, CSWSPlayer* pPlayer)
@@ -5034,6 +4967,73 @@ void CServerExoAppInternal::DealWithLoadGameError(unsigned long nValue)
 void CServerExoAppInternal::TogglePauseState(unsigned char nPauseType)
 {
     SetPauseState(nPauseType, !GetPauseState(nPauseType));
+}
+// PC 0x004F0F20
+void CServerExoAppInternal::SetPauseState(unsigned char nPauseType, int bPause)
+{
+    CSWSMessage* pMessage = m_pSWSMessage;
+    CWorldTimer* pTimer;
+
+    if (GetPauseState(nPauseType) != bPause)
+    {
+        if (bPause == 1)
+        {
+            m_PauseState.m_nPauseState |= nPauseType;
+            m_pWorldTimer->PauseWorldTimer();
+            if (GetActivePauseState() == PAUSE_STATE_COMBAT)
+            {
+                m_pTimestopTimer->PauseWorldTimer();
+            }
+            pMessage->SendServerToPlayerModule_SetPauseState(nPauseType, 1);
+        }
+        else
+        {
+            m_PauseState.m_nPauseState &= ~nPauseType;
+            if (nPauseType == PAUSE_TYPE_COMBAT_MASK)
+            {
+                m_pPauseTimer->PauseWorldTimer();
+                ReprocessExclusionListActions(PAUSE_TYPE_COMBAT_MASK);
+                m_pPauseTimer->ResetTimer(m_pTimestopTimer);
+                m_pPauseTimer->SetSnapshotTime();
+                m_pTimestopTimer->SetSnapshotTime();
+                pTimer = m_pPauseTimer;
+                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
+                pTimer = m_pTimestopTimer;
+                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
+
+                if (GetActivePauseState() != PAUSE_STATE_PAUSED)
+                {
+                    m_pWorldTimer->SetSnapshotTime();
+                    pTimer = m_pWorldTimer;
+                    pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
+                    m_pWorldTimer->UnpauseWorldTimer();
+                }
+                m_pTimestopTimer->UnpauseWorldTimer();
+                m_pPauseTimer->UnpauseWorldTimer();
+            }
+            else if (nPauseType == PAUSE_TYPE_PAUSED_MASK)
+            {
+                m_pTimestopTimer->PauseWorldTimer();
+                m_pPauseTimer->PauseWorldTimer();
+                ReprocessExclusionListActions(PAUSE_TYPE_PAUSED_MASK);
+                m_pTimestopTimer->ResetTimer(m_pWorldTimer);
+                m_pPauseTimer->ResetTimer(m_pWorldTimer);
+                m_pWorldTimer->SetSnapshotTime();
+                m_pTimestopTimer->SetSnapshotTime();
+                m_pPauseTimer->SetSnapshotTime();
+                pTimer = m_pPauseTimer;
+                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
+                pTimer = m_pTimestopTimer;
+                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
+                pTimer = m_pWorldTimer;
+                pTimer->m_nPreviousSnapshotTime = pTimer->GetSnapshotTime();
+                m_pWorldTimer->UnpauseWorldTimer();
+                m_pTimestopTimer->UnpauseWorldTimer();
+                m_pPauseTimer->UnpauseWorldTimer();
+            }
+            pMessage->SendServerToPlayerModule_SetPauseState(nPauseType, bPause);
+        }
+    }
 }
 // PC 0x004F3640
 int CServerExoAppInternal::LoadGame(unsigned long nSlot,

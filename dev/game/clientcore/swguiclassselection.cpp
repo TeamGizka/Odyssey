@@ -40,256 +40,6 @@ CSWGuiClassType CSWGuiClassSelection::CHAR_TYPES[6] = {
     {CSWClass::CCLASS_JEDICONSULAR, CCAppearanceInfo::GENDER_FEMALE, SOUNDSET_PLAYER_FEMALE, 0,
      STRREF_JEDI_CONSULAR_DESCRIPTION}
 };
-// PC 0x0074A8B0
-CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
-                                         const CExoString& sModule)
-    : CSWGuiPanel(pManager)
-{
-    CExoString sControl;
-    Vector vOrigin;
-    Quaternion qOrientation(0.0f, 0.0f, 0.0f, 1.0f);
-
-    g_pAppManager->GetClientExoApp()->SetLoadScreenByModuleName("classsel");
-    g_pAppManager->GetClientExoApp()->SetLoadMusic(
-        g_pAppManager->GetClientExoApp()->GetLoadMusicByModuleName("classsel"));
-    g_pAppManager->GetClientExoApp()->SetLoadScreenHint(0);
-    g_pAppManager->GetClientExoApp()->ShowLoadScreen(1, 1, 0);
-    UpdateScreen(0.033333335f, 0, 0);
-    {
-#ifdef _XBOX
-        if (g_pExoResMan->Exists("CHARGEN", RESTYPE_RIM, (unsigned long*)NULL))
-#else
-        CResRef cCharGen("CHARGEN");
-        if (g_pExoResMan->Exists(cCharGen, RESTYPE_RIM, (unsigned long*)NULL))
-#endif
-        {
-#ifdef _XBOX
-            CExoString sImage("RIMSXBOX:CHARGEN");
-#else
-            CExoString sImage("RIMS:CHARGEN");
-#endif
-            g_pExoResMan->AddResourceImageFile(sImage);
-        }
-    }
-    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(6, 1);
-    UpdateScreen(0.033333335f, 0, 0);
-#ifdef _XBOX
-    {
-        if (g_pExoResMan->Exists("CHARGENDX", RESTYPE_RIM, (unsigned long*)NULL))
-        {
-            CExoString sImage("RIMSXBOX:CHARGENDX");
-            g_pExoResMan->AddResourceImageFile(sImage);
-        }
-    }
-#endif
-    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(12, 1);
-    UpdateScreen(0.033333335f, 0, 0);
-    StartLoadFromLayout("ClassSel_p");
-
-    C2DA* pPortraits = new C2DA("PORTRAITS", 0);
-#ifdef _XBOX
-    EXOXBOXASSERT(pPortraits->Load2DArray());
-#else
-    pPortraits->Load2DArray();
-#endif
-    int nRows = pPortraits->GetNumRows();
-    CExoArrayList<unsigned long> aFemalePortraits;
-    CExoArrayList<unsigned long> aMalePortraits;
-    int nForPC;
-    int nSex;
-    for (int nRow = 0; nRow < nRows; nRow++)
-    {
-        pPortraits->GetINTEntry(nRow, "ForPC", &nForPC);
-        if (nForPC != 0)
-        {
-            pPortraits->GetINTEntry(nRow, "Sex", &nSex);
-            if (nSex == CCAppearanceInfo::GENDER_MALE)
-            {
-                aMalePortraits.Add(nRow);
-            }
-            else if (nSex == CCAppearanceInfo::GENDER_FEMALE)
-            {
-                aFemalePortraits.Add(nRow);
-            }
-        }
-    }
-
-    int nProgress = 3;
-    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(18, 1);
-    UpdateScreen(0.033333335f, 0, 0);
-    for (int i = 0; i < 6; i++)
-    {
-        CSWGuiClassSelChar* pCharacter = &m_aCharacters[i];
-#ifdef _XBOX
-        sControl.Format("3D_MODEL%d", i + 1);
-        CSWGui3DSceneView* pView = &pCharacter->m_viewModel;
-        InitControl(*pView, sControl, 1);
-        sControl.Format("BTN_SEL%d", i + 1);
-        CSWGuiButton* pButton = &pCharacter->m_btnSelect;
-        InitControl(*pButton, sControl, 1);
-#else
-        sControl.Format("BTN_SEL%d", i + 1);
-        CSWGuiButton* pButton = &pCharacter->m_btnSelect;
-        InitControl(*pButton, sControl, 1);
-        sControl.Format("3D_MODEL%d", i + 1);
-        CSWGui3DSceneView* pView = &pCharacter->m_viewModel;
-        InitControl(*pView, sControl, 1);
-#endif
-        pButton->m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
-        pButton->AddEvent(
-            GUIEVENT_MOUSE_ENTER, this,
-            (CSWGuiHandler)&CSWGuiClassSelection::OnEnterButton);
-        pButton->AddEvent(
-            GUIEVENT_ACTIVATE, this,
-            (CSWGuiHandler)&CSWGuiClassSelection::OnSelectButton);
-        pButton->AddEvent(
-            GUIEVENT_ACCEPT, this,
-            (CSWGuiHandler)&CSWGuiClassSelection::OnSelectButton);
-
-        CAurScene* pScene = pView->m_cScene.m_pScene;
-        CAurCamera* pCamera = pView->m_cScene.m_pCamera;
-        if (g_bDo3DGUIs != 0)
-        {
-            pScene->SpawnRoom("gui3D_room", vOrigin, qOrientation);
-            CAurObject* pLight;
-            pLight = pView->m_cScene.AddModel("cgbody_light", -1);
-            if (pLight != NULL)
-            {
-                pCamera->AttachToObject(pLight, "camerahook", Gob::ATTACH_NORMAL);
-                pCamera->SetViewAngle(22.726f);
-            }
-        }
-        float fProgress = (float)++nProgress / LOAD_STEPS;
-        g_pAppManager->GetClientExoApp()->SetLoadBarProgress(
-            (int)(fProgress * 100.0f), 1);
-        UpdateScreen(0.033333335f, 0, 0);
-
-        CSWCCreature* pCreature = new CSWCCreature;
-        pCreature->GetStats()->SetGender(CHAR_TYPES[i].m_nGender);
-        pCreature->GetStats()->CSWCCreatureStats::SetClass(0, CHAR_TYPES[i].m_nClass);
-        pCreature->SetSoundSet(CHAR_TYPES[i].m_nSoundSet);
-        CCAppearanceInfo cAppearance = *pCreature->GetAppearance();
-        cAppearance.m_nGender = pCreature->GetStats()->m_nGender;
-        int nPortrait;
-        if (cAppearance.m_nGender == CCAppearanceInfo::GENDER_MALE)
-        {
-            int nIndex = rand() % aMalePortraits.num;
-            nPortrait = aMalePortraits[nIndex];
-            aMalePortraits.DelIndex(nIndex);
-        }
-        else if (cAppearance.m_nGender == CCAppearanceInfo::GENDER_FEMALE)
-        {
-            int nIndex = rand() % aFemalePortraits.num;
-            nPortrait = aFemalePortraits[nIndex];
-            aFemalePortraits.DelIndex(nIndex);
-        }
-        int nAppearance;
-        switch (CHAR_TYPES[i].m_nClass)
-        {
-        case CLASS_TYPE_JEDICONSULAR:
-        {
-            CExoString sColumn("Appearance_S");
-            pPortraits->GetINTEntry(nPortrait, sColumn, &nAppearance);
-        }
-        cAppearance.m_nTextureVar = 3;
-        break;
-        case CLASS_TYPE_JEDISENTINEL:
-        {
-            CExoString sColumn("AppearanceNumber");
-            pPortraits->GetINTEntry(nPortrait, sColumn, &nAppearance);
-        }
-        cAppearance.m_nTextureVar = 2;
-        break;
-        case CLASS_TYPE_JEDIGUARDIAN:
-        {
-            CExoString sColumn("Appearance_L");
-            pPortraits->GetINTEntry(nPortrait, sColumn, &nAppearance);
-        }
-        cAppearance.m_nTextureVar = 1;
-        break;
-        default:
-        {
-            CExoString sColumn("AppearanceNumber");
-            pPortraits->GetINTEntry(nPortrait, sColumn, &nAppearance);
-        }
-        break;
-        }
-        pCreature->SetPortraitId(nPortrait);
-        pCreature->GetStats()->m_nAppearance = nAppearance;
-        cAppearance.m_nAppearance = nAppearance;
-        cAppearance.m_bUseBodyVariation = 1;
-        cAppearance.m_nBodyVariation = 2;
-        if (g_bDo3DGUIs != 0)
-        {
-            pCreature->SetAppearance(&cAppearance,
-                CSWCCreature::APPEARANCE_PART_BODY | CSWCCreature::APPEARANCE_PART_HEAD, 1);
-            pCreature->AttachToScene(pScene);
-            pCreature->SetPosition(vOrigin);
-            pCreature->CGPauseCycle(0.0f, 1);
-        }
-        pCharacter->m_pCreature = pCreature;
-        pCharacter->m_fTransitionTime = CLASSSELECTION_TRANSITION_IDLE;
-        fProgress = (float)++nProgress / LOAD_STEPS;
-        g_pAppManager->GetClientExoApp()->SetLoadBarProgress(
-            (int)(fProgress * 100.0f), 1);
-        UpdateScreen(0.033333335f, 0, 0);
-    }
-
-#ifdef _XBOX
-    InitControl(m_lblA, "LBL_A", 1);
-    InitControl(m_lblB, "LBL_B", 1);
-    InitControl(m_lblAccept, "LBL_ACCEPT", 1);
-    InitControl(m_lblBack, "LBL_BACK", 1);
-#endif
-    InitControl(m_lblInstruction, "LBL_INSTRUCTION", 1);
-    InitControl(m_lblCharGen, "LBL_CHAR_GEN", 1);
-    InitControl(m_lblDescription, "LBL_DESC", 1);
-    InitControl(m_lblClass, "LBL_CLASS", 1);
-#ifndef _XBOX
-    InitControl(m_btnBack, "BTN_BACK", 1);
-#endif
-    StopLoadFromLayout();
-#ifndef _XBOX
-    m_btnBack.SetFocusable(0);
-    m_btnBack.AddEvent(GUIEVENT_ACTIVATE, this,
-                      (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
-#endif
-    SetActiveControl(&m_aCharacters[0].m_btnSelect, 0);
-    m_sModule = sModule;
-#ifdef _XBOX
-    float fProgress = (float)(nProgress + 1) / LOAD_STEPS;
-    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(
-        (int)(fProgress * 100.0f), 1);
-#else
-    float fProgress = (float)++nProgress / LOAD_STEPS;
-    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(
-        (int)(fProgress * 100.0f), 1);
-#endif
-    UpdateScreen(0.033333335f, 0, 0);
-    delete pPortraits;
-}
-// PC 0x0074A650
-CSWGuiClassSelection::~CSWGuiClassSelection()
-{
-    for (int i = 0; i < 6; i++)
-    {
-        if (m_aCharacters[i].m_pCreature != NULL)
-        {
-            delete m_aCharacters[i].m_pCreature;
-        }
-        m_aCharacters[i].m_pCreature = NULL;
-    }
-
-#ifdef _XBOX
-    if (g_pExoResMan->Exists("CHARGEN", RESTYPE_RIM, (unsigned long*)NULL))
-#else
-    CResRef cCharGen("CHARGEN");
-    if (g_pExoResMan->Exists(cCharGen, RESTYPE_RIM, (unsigned long*)NULL))
-#endif
-    {
-        g_pExoResMan->m_bCharGenImageLoaded = 1;
-    }
-}
 // PC 0x007499E0
 void CSWGuiClassSelection::OnPanelAdded()
 {
@@ -619,7 +369,257 @@ void CSWGuiClassSelection::Draw(float fElapsed)
     }
     CSWGuiPanel::Draw(fElapsed);
 }
+// PC 0x0074A650
+CSWGuiClassSelection::~CSWGuiClassSelection()
+{
+    for (int i = 0; i < 6; i++)
+    {
+        if (m_aCharacters[i].m_pCreature != NULL)
+        {
+            delete m_aCharacters[i].m_pCreature;
+        }
+        m_aCharacters[i].m_pCreature = NULL;
+    }
+
+#ifdef _XBOX
+    if (g_pExoResMan->Exists("CHARGEN", RESTYPE_RIM, (unsigned long*)NULL))
+#else
+    CResRef cCharGen("CHARGEN");
+    if (g_pExoResMan->Exists(cCharGen, RESTYPE_RIM, (unsigned long*)NULL))
+#endif
+    {
+        g_pExoResMan->m_bCharGenImageLoaded = 1;
+    }
+}
 // PC 0x0074A840
 CSWGuiClassSelChar::CSWGuiClassSelChar()
 {
+}
+// PC 0x0074A8B0
+CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
+                                         const CExoString& sModule)
+    : CSWGuiPanel(pManager)
+{
+    CExoString sControl;
+    Vector vOrigin;
+    Quaternion qOrientation(0.0f, 0.0f, 0.0f, 1.0f);
+
+    g_pAppManager->GetClientExoApp()->SetLoadScreenByModuleName("classsel");
+    g_pAppManager->GetClientExoApp()->SetLoadMusic(
+        g_pAppManager->GetClientExoApp()->GetLoadMusicByModuleName("classsel"));
+    g_pAppManager->GetClientExoApp()->SetLoadScreenHint(0);
+    g_pAppManager->GetClientExoApp()->ShowLoadScreen(1, 1, 0);
+    UpdateScreen(0.033333335f, 0, 0);
+    {
+#ifdef _XBOX
+        if (g_pExoResMan->Exists("CHARGEN", RESTYPE_RIM, (unsigned long*)NULL))
+#else
+        CResRef cCharGen("CHARGEN");
+        if (g_pExoResMan->Exists(cCharGen, RESTYPE_RIM, (unsigned long*)NULL))
+#endif
+        {
+#ifdef _XBOX
+            CExoString sImage("RIMSXBOX:CHARGEN");
+#else
+            CExoString sImage("RIMS:CHARGEN");
+#endif
+            g_pExoResMan->AddResourceImageFile(sImage);
+        }
+    }
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(6, 1);
+    UpdateScreen(0.033333335f, 0, 0);
+#ifdef _XBOX
+    {
+        if (g_pExoResMan->Exists("CHARGENDX", RESTYPE_RIM, (unsigned long*)NULL))
+        {
+            CExoString sImage("RIMSXBOX:CHARGENDX");
+            g_pExoResMan->AddResourceImageFile(sImage);
+        }
+    }
+#endif
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(12, 1);
+    UpdateScreen(0.033333335f, 0, 0);
+    StartLoadFromLayout("ClassSel_p");
+
+    C2DA* pPortraits = new C2DA("PORTRAITS", 0);
+#ifdef _XBOX
+    EXOXBOXASSERT(pPortraits->Load2DArray());
+#else
+    pPortraits->Load2DArray();
+#endif
+    int nRows = pPortraits->GetNumRows();
+    CExoArrayList<unsigned long> aFemalePortraits;
+    CExoArrayList<unsigned long> aMalePortraits;
+    int nForPC;
+    int nSex;
+    for (int nRow = 0; nRow < nRows; nRow++)
+    {
+        pPortraits->GetINTEntry(nRow, "ForPC", &nForPC);
+        if (nForPC != 0)
+        {
+            pPortraits->GetINTEntry(nRow, "Sex", &nSex);
+            if (nSex == CCAppearanceInfo::GENDER_MALE)
+            {
+                aMalePortraits.Add(nRow);
+            }
+            else if (nSex == CCAppearanceInfo::GENDER_FEMALE)
+            {
+                aFemalePortraits.Add(nRow);
+            }
+        }
+    }
+
+    int nProgress = 3;
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(18, 1);
+    UpdateScreen(0.033333335f, 0, 0);
+    for (int i = 0; i < 6; i++)
+    {
+        CSWGuiClassSelChar* pCharacter = &m_aCharacters[i];
+#ifdef _XBOX
+        sControl.Format("3D_MODEL%d", i + 1);
+        CSWGui3DSceneView* pView = &pCharacter->m_viewModel;
+        InitControl(*pView, sControl, 1);
+        sControl.Format("BTN_SEL%d", i + 1);
+        CSWGuiButton* pButton = &pCharacter->m_btnSelect;
+        InitControl(*pButton, sControl, 1);
+#else
+        sControl.Format("BTN_SEL%d", i + 1);
+        CSWGuiButton* pButton = &pCharacter->m_btnSelect;
+        InitControl(*pButton, sControl, 1);
+        sControl.Format("3D_MODEL%d", i + 1);
+        CSWGui3DSceneView* pView = &pCharacter->m_viewModel;
+        InitControl(*pView, sControl, 1);
+#endif
+        pButton->m_cHilite.m_cParams.SetPulsingAlpha(1, 1, 0);
+        pButton->AddEvent(
+            GUIEVENT_MOUSE_ENTER, this,
+            (CSWGuiHandler)&CSWGuiClassSelection::OnEnterButton);
+        pButton->AddEvent(
+            GUIEVENT_ACTIVATE, this,
+            (CSWGuiHandler)&CSWGuiClassSelection::OnSelectButton);
+        pButton->AddEvent(
+            GUIEVENT_ACCEPT, this,
+            (CSWGuiHandler)&CSWGuiClassSelection::OnSelectButton);
+
+        CAurScene* pScene = pView->m_cScene.m_pScene;
+        CAurCamera* pCamera = pView->m_cScene.m_pCamera;
+        if (g_bDo3DGUIs != 0)
+        {
+            pScene->SpawnRoom("gui3D_room", vOrigin, qOrientation);
+            CAurObject* pLight;
+            pLight = pView->m_cScene.AddModel("cgbody_light", -1);
+            if (pLight != NULL)
+            {
+                pCamera->AttachToObject(pLight, "camerahook", Gob::ATTACH_NORMAL);
+                pCamera->SetViewAngle(22.726f);
+            }
+        }
+        float fProgress = (float)++nProgress / LOAD_STEPS;
+        g_pAppManager->GetClientExoApp()->SetLoadBarProgress(
+            (int)(fProgress * 100.0f), 1);
+        UpdateScreen(0.033333335f, 0, 0);
+
+        CSWCCreature* pCreature = new CSWCCreature;
+        pCreature->GetStats()->SetGender(CHAR_TYPES[i].m_nGender);
+        pCreature->GetStats()->CSWCCreatureStats::SetClass(0, CHAR_TYPES[i].m_nClass);
+        pCreature->SetSoundSet(CHAR_TYPES[i].m_nSoundSet);
+        CCAppearanceInfo cAppearance = *pCreature->GetAppearance();
+        cAppearance.m_nGender = pCreature->GetStats()->m_nGender;
+        int nPortrait;
+        if (cAppearance.m_nGender == CCAppearanceInfo::GENDER_MALE)
+        {
+            int nIndex = rand() % aMalePortraits.num;
+            nPortrait = aMalePortraits[nIndex];
+            aMalePortraits.DelIndex(nIndex);
+        }
+        else if (cAppearance.m_nGender == CCAppearanceInfo::GENDER_FEMALE)
+        {
+            int nIndex = rand() % aFemalePortraits.num;
+            nPortrait = aFemalePortraits[nIndex];
+            aFemalePortraits.DelIndex(nIndex);
+        }
+        int nAppearance;
+        switch (CHAR_TYPES[i].m_nClass)
+        {
+        case CLASS_TYPE_JEDICONSULAR:
+        {
+            CExoString sColumn("Appearance_S");
+            pPortraits->GetINTEntry(nPortrait, sColumn, &nAppearance);
+        }
+        cAppearance.m_nTextureVar = 3;
+        break;
+        case CLASS_TYPE_JEDISENTINEL:
+        {
+            CExoString sColumn("AppearanceNumber");
+            pPortraits->GetINTEntry(nPortrait, sColumn, &nAppearance);
+        }
+        cAppearance.m_nTextureVar = 2;
+        break;
+        case CLASS_TYPE_JEDIGUARDIAN:
+        {
+            CExoString sColumn("Appearance_L");
+            pPortraits->GetINTEntry(nPortrait, sColumn, &nAppearance);
+        }
+        cAppearance.m_nTextureVar = 1;
+        break;
+        default:
+        {
+            CExoString sColumn("AppearanceNumber");
+            pPortraits->GetINTEntry(nPortrait, sColumn, &nAppearance);
+        }
+        break;
+        }
+        pCreature->SetPortraitId(nPortrait);
+        pCreature->GetStats()->m_nAppearance = nAppearance;
+        cAppearance.m_nAppearance = nAppearance;
+        cAppearance.m_bUseBodyVariation = 1;
+        cAppearance.m_nBodyVariation = 2;
+        if (g_bDo3DGUIs != 0)
+        {
+            pCreature->SetAppearance(&cAppearance,
+                CSWCCreature::APPEARANCE_PART_BODY | CSWCCreature::APPEARANCE_PART_HEAD, 1);
+            pCreature->AttachToScene(pScene);
+            pCreature->SetPosition(vOrigin);
+            pCreature->CGPauseCycle(0.0f, 1);
+        }
+        pCharacter->m_pCreature = pCreature;
+        pCharacter->m_fTransitionTime = CLASSSELECTION_TRANSITION_IDLE;
+        fProgress = (float)++nProgress / LOAD_STEPS;
+        g_pAppManager->GetClientExoApp()->SetLoadBarProgress(
+            (int)(fProgress * 100.0f), 1);
+        UpdateScreen(0.033333335f, 0, 0);
+    }
+
+#ifdef _XBOX
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblB, "LBL_B", 1);
+    InitControl(m_lblAccept, "LBL_ACCEPT", 1);
+    InitControl(m_lblBack, "LBL_BACK", 1);
+#endif
+    InitControl(m_lblInstruction, "LBL_INSTRUCTION", 1);
+    InitControl(m_lblCharGen, "LBL_CHAR_GEN", 1);
+    InitControl(m_lblDescription, "LBL_DESC", 1);
+    InitControl(m_lblClass, "LBL_CLASS", 1);
+#ifndef _XBOX
+    InitControl(m_btnBack, "BTN_BACK", 1);
+#endif
+    StopLoadFromLayout();
+#ifndef _XBOX
+    m_btnBack.SetFocusable(0);
+    m_btnBack.AddEvent(GUIEVENT_ACTIVATE, this,
+                      (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
+#endif
+    SetActiveControl(&m_aCharacters[0].m_btnSelect, 0);
+    m_sModule = sModule;
+#ifdef _XBOX
+    float fProgress = (float)(nProgress + 1) / LOAD_STEPS;
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(
+        (int)(fProgress * 100.0f), 1);
+#else
+    float fProgress = (float)++nProgress / LOAD_STEPS;
+    g_pAppManager->GetClientExoApp()->SetLoadBarProgress(
+        (int)(fProgress * 100.0f), 1);
+#endif
+    UpdateScreen(0.033333335f, 0, 0);
+    delete pPortraits;
 }

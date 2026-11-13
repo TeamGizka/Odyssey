@@ -68,12 +68,6 @@ int CExoFile::ReadAsyncComplete()
 {
     return m_pInternal->ReadAsyncComplete();
 }
-// PC 0x00632370
-unsigned long CExoFile::Write(const void* data, unsigned long size,
-                              unsigned long count)
-{
-    return m_pInternal->Write(data, size, count);
-}
 // PC 0x006322D0
 unsigned long CExoFile::Write(const char* text)
 {
@@ -106,6 +100,12 @@ int CExoFile::FileOpened()
 int CExoFile::Flush()
 {
     return m_pInternal->Flush();
+}
+// PC 0x00632370
+unsigned long CExoFile::Write(const void* data, unsigned long size,
+                              unsigned long count)
+{
+    return m_pInternal->Write(data, size, count);
 }
 // PC 0x006323A0
 unsigned long CExoFile::Write(const CExoString& text)

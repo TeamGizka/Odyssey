@@ -16,11 +16,6 @@ enum SWGuiCustomPanelState
     CUSTOM_PANEL_STATE_NAME,
     CUSTOM_PANEL_STATE_PLAY
 };
-// PC 0x00760240
-void CSWGuiCustomPanel::SetParentPanel(CSWGuiPanel* pPanel)
-{
-    m_pParentPanel = pPanel;
-}
 // PC 0x0075FF90
 void CSWGuiMainCharGen::NameChanged()
 {
@@ -119,6 +114,11 @@ void CSWGuiCustomPanel::SetState(int nState)
 #endif
     SetActiveControl(&m_aSteps[m_nState], 0);
 }
+// PC 0x00760240
+void CSWGuiCustomPanel::SetParentPanel(CSWGuiPanel* pPanel)
+{
+    m_pParentPanel = pPanel;
+}
 // PC 0x00760250
 void CSWGuiCustomPanel::OnSelectPortraitButton(CSWGuiControl* pControl)
 {
@@ -144,17 +144,6 @@ void CSWGuiCustomPanel::OnSelectPortraitButton(CSWGuiControl* pControl)
                     ->PlayAnimation("pause2", 1.0f, 0, 0);
             }
             m_pManager->AddPanel(pPortrait, CSWGuiManager::PANEL_MODE_MODAL, 1);
-        }
-    }
-}
-// PC 0x007606C0
-void CSWGuiCustomPanel::OnSelectPlayButton(CSWGuiControl* pControl)
-{
-    if (m_nState >= 5)
-    {
-        if (pControl->m_bSelected != 0)
-        {
-            ((CSWGuiMainCharGen*)m_pParentPanel)->BeginPlayGame();
         }
     }
 }
@@ -309,6 +298,17 @@ void CSWGuiCustomPanel::CancelPanel()
     }
     SetState(0);
 #endif
+}
+// PC 0x007606C0
+void CSWGuiCustomPanel::OnSelectPlayButton(CSWGuiControl* pControl)
+{
+    if (m_nState >= 5)
+    {
+        if (pControl->m_bSelected != 0)
+        {
+            ((CSWGuiMainCharGen*)m_pParentPanel)->BeginPlayGame();
+        }
+    }
 }
 // PC 0x007606E0
 void CSWGuiCustomPanel::ConfirmCancel(CSWGuiControl* pControl)

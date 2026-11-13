@@ -23,6 +23,52 @@ void CSWGuiLoadScreen::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 }
 #endif
+
+#ifndef _XBOX
+void CSWGuiLoadScreen::Draw(float fElapsed)  // PC 0x006D0430
+{
+    SwguiloadscreenTrace1();
+    AurGUIStartLayer();
+    if (AurGUISetupViewport(0, 0, m_pManager->m_nWidth, m_pManager->m_nHeight,
+                            CGuiInGame::COLOR_BLACK, false, 1.0f) != 0)
+    {
+        m_lblBackground.Draw(fElapsed);
+        AurGUICloseViewport();
+    }
+    AurGUIStopLayer();
+    return CSWGuiPanel::Draw(fElapsed);
+}
+#endif
+
+static inline void SwguiloadscreenTrace1()
+{
+}
+// PC 0x006D02B0
+void CSWGuiLoadScreen::SetHint(unsigned long nStrRef)
+{
+    SwguiloadscreenTrace1();
+    CExoString sHint;
+    if (nStrRef != 0)
+    {
+        m_nHintStrRef = nStrRef;
+        sHint = g_pTlkTable->GetSimpleString(nStrRef);
+        g_pTlkTable->ParseStr(sHint);
+    }
+    else
+    {
+        m_nHintStrRef = 0;
+    }
+    m_lblHint.m_cText.m_cParams.SetText(sHint);
+}
+// PC 0x006D0370
+void CSWGuiLoadScreen::AddHintToMessageBuffer()
+{
+    SwguiloadscreenTrace1();
+    CExoString sSpeaker("");
+    CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
+    ((CGuiInGame*)pClient->GetInGameGui())
+        ->AppendToDialogBuffer(m_lblHint.m_cText.m_cParams.m_sText, sSpeaker);
+}
 // PC 0x006D03F0
 void CSWGuiLoadScreen::SetImage(const CResRef& cImage)
 {
@@ -95,50 +141,4 @@ CSWGuiLoadScreen::CSWGuiLoadScreen(CSWGuiManager* pManager)
         m_lblLogo.m_cBorder.m_cParams.SetFillImage(cNoLogo, 0);
     }
 #endif
-}
-// PC 0x006D02B0
-void CSWGuiLoadScreen::SetHint(unsigned long nStrRef)
-{
-    SwguiloadscreenTrace1();
-    CExoString sHint;
-    if (nStrRef != 0)
-    {
-        m_nHintStrRef = nStrRef;
-        sHint = g_pTlkTable->GetSimpleString(nStrRef);
-        g_pTlkTable->ParseStr(sHint);
-    }
-    else
-    {
-        m_nHintStrRef = 0;
-    }
-    m_lblHint.m_cText.m_cParams.SetText(sHint);
-}
-// PC 0x006D0370
-void CSWGuiLoadScreen::AddHintToMessageBuffer()
-{
-    SwguiloadscreenTrace1();
-    CExoString sSpeaker("");
-    CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
-    ((CGuiInGame*)pClient->GetInGameGui())
-        ->AppendToDialogBuffer(m_lblHint.m_cText.m_cParams.m_sText, sSpeaker);
-}
-
-#ifndef _XBOX
-void CSWGuiLoadScreen::Draw(float fElapsed)  // PC 0x006D0430
-{
-    SwguiloadscreenTrace1();
-    AurGUIStartLayer();
-    if (AurGUISetupViewport(0, 0, m_pManager->m_nWidth, m_pManager->m_nHeight,
-                            CGuiInGame::COLOR_BLACK, false, 1.0f) != 0)
-    {
-        m_lblBackground.Draw(fElapsed);
-        AurGUICloseViewport();
-    }
-    AurGUIStopLayer();
-    return CSWGuiPanel::Draw(fElapsed);
-}
-#endif
-
-static inline void SwguiloadscreenTrace1()
-{
 }

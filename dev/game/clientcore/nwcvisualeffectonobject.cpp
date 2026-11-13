@@ -30,6 +30,59 @@
 #include "twodimarrays.h"
 
 short CSWCVisualEffectOnObject::m_nMotionBlurVFXCount;
+// PC 0x00700810
+CSWCVisualEffectOnObject::CSWCVisualEffectOnObject()
+{
+    int i;
+
+    m_sBeamTargetNode = "";
+    m_oidTargetObject = OBJECT_INVALID;
+    m_oidCreator = OBJECT_INVALID;
+    m_oidTarget = OBJECT_INVALID;
+    for (i = 0; i < 3; i++)
+    {
+        m_apAttachedModels[i] = 0;
+        m_apVisualEffectModels[i] = 0;
+        m_anAttachedModelAnimationTime[i] = 0;
+        m_anAttachedModelAnimationState[i] = 0;
+        m_anVisualEffectModelAnimationTime[i] = 0;
+        m_anVisualEffectModelAnimationState[i] = 0;
+    }
+    m_anVisualEffect[0] = 0;
+    m_anVisualEffect[1] = 0;
+    m_anVisualEffect[2] = 0;
+    m_bVisualEffectShown = 0;
+    m_nVisualEffect = 0;
+    m_bSelfIlluminationPulseDone = 0;
+    m_bAlphaDone = 0;
+    m_bFOVDone = 0;
+    m_bCessationDone = 0;
+    m_anAttachedModelFadeTime[0] = 0;
+    m_anAttachedModelFadeTime[1] = 0;
+    m_anAttachedModelFadeTime[2] = 0;
+    m_nHardCodedEffectTime = 0;
+    m_nVisualEffectState = 0;
+    m_nAlphaState = ALPHA_FADING_OUT;
+    m_pEffectModel = 0;
+    m_bVisualEffectStopped = 0;
+    m_bVisualEffectDone = 0;
+    m_vSelfIlluminationPulseStart = Vector(0.0f, 0.0f, 0.0f);
+    m_vSelfIlluminationPulseEnd = Vector(0.0f, 0.0f, 0.0f);
+    m_vSelfIlluminationPulseCurrent = Vector(0.0f, 0.0f, 0.0f);
+    m_fAlpha = 1.0f;
+    m_fAlphaTarget = 0.0f;
+    m_bLightSourceDynamic = 0;
+    m_nEffectType = 0;
+    m_HardCodedEffectClass = 0;
+    m_bLightSourceShadows = 0;
+    m_bLightSourceApplied = 0;
+    m_fSavedFOV = 0.0f;
+    m_fSavedCameraDistance = 0.0f;
+    m_pSoundSource = 0;
+    m_bRumblePerformed = 0;
+    m_bHardCodedEffectApplied = 0;
+    m_nF8 = 0;
+}
 // PC 0x00700A20
 int CSWCVisualEffectOnObject::IsDone()
 {
@@ -223,6 +276,58 @@ void CSWCVisualEffectOnObject::UnloadHardCodedVisualEffect()
         m_pEffectModel = 0;
     }
 }
+// PC 0x00702DE0
+void CSWCVisualEffectOnObject::UnloadVisualEffect()
+{
+    int i;
+
+    UnloadHardCodedVisualEffect();
+    for (i = 0; i < 3; i++)
+    {
+        if (m_apAttachedModels[i] != 0)
+        {
+            delete m_apAttachedModels[i];
+            m_apAttachedModels[i] = 0;
+        }
+        if (m_apVisualEffectModels[i] != 0)
+        {
+            delete m_apVisualEffectModels[i];
+            m_apVisualEffectModels[i] = 0;
+        }
+    }
+}
+
+CSWCObject* CSWCVisualEffectOnObject::GetTargetCSWCObject()
+{
+    CSWCObject* pObject =
+        g_pAppManager->GetClientExoApp()->GetGameObject(m_oidTargetObject);
+    if (pObject == 0)
+    {
+        return 0;
+    }
+    return pObject->AsSWCObject();
+}
+
+CSWCObject* CSWCVisualEffectOnObject::GetSourceCSWCObject()
+{
+    CSWCObject* pObject =
+        g_pAppManager->GetClientExoApp()->GetGameObject(m_oidCreator);
+    if (pObject == 0)
+    {
+        return 0;
+    }
+    return pObject->AsSWCObject();
+}
+
+void CSWCVisualEffectOnObject::DoVFXRumble()
+{
+    CSWCObject* pObject = GetTargetCSWCObject();
+    if (pObject != 0)
+    {
+        g_pAppManager->GetClientExoApp()->LookUpAndPerformRumbleWithCutOff(
+            m_nVisualEffect, 1, pObject->m_vPosition);
+    }
+}
 // PC 0x00700EF0
 char CSWCVisualEffectOnObject::GetHardCodedEffectClass()
 {
@@ -293,111 +398,6 @@ char CSWCVisualEffectOnObject::GetHardCodedEffectClass(
         return 16;
     }
     return 0;
-}
-// PC 0x00700810
-CSWCVisualEffectOnObject::CSWCVisualEffectOnObject()
-{
-    int i;
-
-    m_sBeamTargetNode = "";
-    m_oidTargetObject = OBJECT_INVALID;
-    m_oidCreator = OBJECT_INVALID;
-    m_oidTarget = OBJECT_INVALID;
-    for (i = 0; i < 3; i++)
-    {
-        m_apAttachedModels[i] = 0;
-        m_apVisualEffectModels[i] = 0;
-        m_anAttachedModelAnimationTime[i] = 0;
-        m_anAttachedModelAnimationState[i] = 0;
-        m_anVisualEffectModelAnimationTime[i] = 0;
-        m_anVisualEffectModelAnimationState[i] = 0;
-    }
-    m_anVisualEffect[0] = 0;
-    m_anVisualEffect[1] = 0;
-    m_anVisualEffect[2] = 0;
-    m_bVisualEffectShown = 0;
-    m_nVisualEffect = 0;
-    m_bSelfIlluminationPulseDone = 0;
-    m_bAlphaDone = 0;
-    m_bFOVDone = 0;
-    m_bCessationDone = 0;
-    m_anAttachedModelFadeTime[0] = 0;
-    m_anAttachedModelFadeTime[1] = 0;
-    m_anAttachedModelFadeTime[2] = 0;
-    m_nHardCodedEffectTime = 0;
-    m_nVisualEffectState = 0;
-    m_nAlphaState = ALPHA_FADING_OUT;
-    m_pEffectModel = 0;
-    m_bVisualEffectStopped = 0;
-    m_bVisualEffectDone = 0;
-    m_vSelfIlluminationPulseStart = Vector(0.0f, 0.0f, 0.0f);
-    m_vSelfIlluminationPulseEnd = Vector(0.0f, 0.0f, 0.0f);
-    m_vSelfIlluminationPulseCurrent = Vector(0.0f, 0.0f, 0.0f);
-    m_fAlpha = 1.0f;
-    m_fAlphaTarget = 0.0f;
-    m_bLightSourceDynamic = 0;
-    m_nEffectType = 0;
-    m_HardCodedEffectClass = 0;
-    m_bLightSourceShadows = 0;
-    m_bLightSourceApplied = 0;
-    m_fSavedFOV = 0.0f;
-    m_fSavedCameraDistance = 0.0f;
-    m_pSoundSource = 0;
-    m_bRumblePerformed = 0;
-    m_bHardCodedEffectApplied = 0;
-    m_nF8 = 0;
-}
-// PC 0x00702DE0
-void CSWCVisualEffectOnObject::UnloadVisualEffect()
-{
-    int i;
-
-    UnloadHardCodedVisualEffect();
-    for (i = 0; i < 3; i++)
-    {
-        if (m_apAttachedModels[i] != 0)
-        {
-            delete m_apAttachedModels[i];
-            m_apAttachedModels[i] = 0;
-        }
-        if (m_apVisualEffectModels[i] != 0)
-        {
-            delete m_apVisualEffectModels[i];
-            m_apVisualEffectModels[i] = 0;
-        }
-    }
-}
-
-CSWCObject* CSWCVisualEffectOnObject::GetTargetCSWCObject()
-{
-    CSWCObject* pObject =
-        g_pAppManager->GetClientExoApp()->GetGameObject(m_oidTargetObject);
-    if (pObject == 0)
-    {
-        return 0;
-    }
-    return pObject->AsSWCObject();
-}
-
-CSWCObject* CSWCVisualEffectOnObject::GetSourceCSWCObject()
-{
-    CSWCObject* pObject =
-        g_pAppManager->GetClientExoApp()->GetGameObject(m_oidCreator);
-    if (pObject == 0)
-    {
-        return 0;
-    }
-    return pObject->AsSWCObject();
-}
-
-void CSWCVisualEffectOnObject::DoVFXRumble()
-{
-    CSWCObject* pObject = GetTargetCSWCObject();
-    if (pObject != 0)
-    {
-        g_pAppManager->GetClientExoApp()->LookUpAndPerformRumbleWithCutOff(
-            m_nVisualEffect, 1, pObject->m_vPosition);
-    }
 }
 // PC 0x00700FB0
 void CSWCVisualEffectOnObject::DetachVisualEffect()
@@ -779,15 +779,6 @@ void CSWCVisualEffectOnObject::AttachVFXModelToTargetModel(
         static_cast<Gob*>(pEffectModel)->AttachToObject(
             pTargetModel, (char*)sNode.CStr(), Gob::ATTACH_NORMAL);
     }
-}
-// PC 0x007058E0
-CSWCVisualEffectOnObject::~CSWCVisualEffectOnObject()
-{
-    if (m_pSoundSource != 0)
-    {
-        delete m_pSoundSource;
-    }
-    UnloadVisualEffect();
 }
 // PC 0x00701B50
 int CSWCVisualEffectOnObject::LoadVisualEffect(
@@ -1773,62 +1764,6 @@ void CSWCVisualEffectOnObject::ApplyDeleteModel(unsigned short nVisualEffect)
         }
     }
 }
-// PC 0x00705950
-void CSWCVisualEffectOnObject::ApplyChunk(unsigned short nVisualEffect)
-{
-#ifdef _XBOX
-    Vector vPosition;
-#endif
-    if (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nGoreLevel >=
-        CClientOptions::GORE_LEVEL_FULL)
-    {
-        CSWCObject* pObject = GetTargetCSWCObject();
-        if (pObject->m_pArea != 0)
-        {
-            CSWCCreature* pCreature = pObject->AsSWCCreature();
-            if (pCreature != 0)
-            {
-#ifdef _XBOX
-                vPosition = pObject->m_vPosition;
-#endif
-                if (pCreature->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1) != 0)
-                {
-                    Quaternion qOrientation;
-                    Vector vImpact;
-                    pCreature->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1)
-                        ->GetPartLocalPosition("impact", &vImpact, &qOrientation);
-#ifdef _XBOX
-                    vPosition += vImpact;
-#endif
-                }
-                CExoString sBloodColor;
-                {
-                    CExoString sColumn("bloodcolr");
-                    unsigned short nAppearance = pCreature->GetAppearance()->m_nAppearance;
-                    g_pRules->Get2DArrays()->m_pAppearance->GetCExoStringEntry(
-                        nAppearance,
-                        sColumn, &sBloodColor);
-                }
-                int nSizeCategory;
-                unsigned short nAppearance = pCreature->GetAppearance()->m_nAppearance;
-                C2DA* pAppearanceTable = g_pRules->Get2DArrays()->m_pAppearance;
-                pAppearanceTable->GetINTEntry(
-                    nAppearance,
-                    CTwoDimArrays::COL2DA_APPEARANCETABLE_SIZECATEGORY,
-                    &nSizeCategory);
-                if (nSizeCategory == CREATURE_SIZE_INVALID)
-                {
-                    return;
-                }
-                if (FALSE)
-                {
-                    CExoString sChunkModel;
-                    sChunkModel = sBloodColor;
-                }
-            }
-        }
-    }
-}
 // PC 0x00704540
 void CSWCVisualEffectOnObject::ApplyMirv(unsigned short nVisualEffect)
 {
@@ -2054,26 +1989,6 @@ void CSWCVisualEffectOnObject::RemoveEnvironmentMap(
         pGameObject->RestoreTexture();
     }
 }
-// PC 0x00704D10
-void CSWCVisualEffectOnObject::RemoveSelfIllumination(
-    unsigned short nVisualEffect)
-{
-    CSWCObject* pObject = GetTargetCSWCObject();
-    if (pObject != 0)
-    {
-        pObject->UnHilite(CSWCObject::HILITE_CHANNEL_VISUAL_EFFECT);
-    }
-}
-// PC 0x00704D10
-void CSWCVisualEffectOnObject::RemoveSelfIlluminationPulse(
-    unsigned short nVisualEffect)
-{
-    CSWCObject* pObject = GetTargetCSWCObject();
-    if (pObject != 0)
-    {
-        pObject->UnHilite(CSWCObject::HILITE_CHANNEL_VISUAL_EFFECT);
-    }
-}
 // PC 0x00704BA0
 void CSWCVisualEffectOnObject::RemoveLightSource(unsigned short nVisualEffect)
 {
@@ -2133,6 +2048,26 @@ void CSWCVisualEffectOnObject::RemoveAlpha(unsigned short nVisualEffect)
             pObject->SetAlpha(1.0f, CSWCObject::MODEL_SLOT_DEFAULT);
             break;
         }
+    }
+}
+// PC 0x00704D10
+void CSWCVisualEffectOnObject::RemoveSelfIllumination(
+    unsigned short nVisualEffect)
+{
+    CSWCObject* pObject = GetTargetCSWCObject();
+    if (pObject != 0)
+    {
+        pObject->UnHilite(CSWCObject::HILITE_CHANNEL_VISUAL_EFFECT);
+    }
+}
+// PC 0x00704D10
+void CSWCVisualEffectOnObject::RemoveSelfIlluminationPulse(
+    unsigned short nVisualEffect)
+{
+    CSWCObject* pObject = GetTargetCSWCObject();
+    if (pObject != 0)
+    {
+        pObject->UnHilite(CSWCObject::HILITE_CHANNEL_VISUAL_EFFECT);
     }
 }
 // PC 0x00704D50
@@ -2511,50 +2446,69 @@ void CSWCVisualEffectOnObject::ReAttachVisualEffect()
         ApplyDistortion(nVisualEffect);
     }
 }
-// PC 0x00705F40
-void CSWCVisualEffectOnObject::ApplyHardCodedVisualEffect(
-    unsigned short nVisualEffect)
+// PC 0x007058E0
+CSWCVisualEffectOnObject::~CSWCVisualEffectOnObject()
 {
-    if (m_bVisualEffectShown && !m_bHardCodedEffectApplied)
+    if (m_pSoundSource != 0)
     {
-        if (nVisualEffect < VFX_ENVIRONMENT_MAP_END)
-            ApplyEnvironmentMap(nVisualEffect);
-        else if (nVisualEffect < VFX_SELFILLUMINATION_END)
-            ApplySelfIllumination(nVisualEffect);
-        else if (nVisualEffect < VFX_LIGHT_SOURCE_END)
-            ApplyLightSource(nVisualEffect);
-        else if (nVisualEffect < VFX_ALPHA_END)
-            ApplyAlpha(nVisualEffect);
-        else if (nVisualEffect < VFX_SELFILLUMINATION_PULSE_END)
-            ApplySelfIlluminationPulse(nVisualEffect);
-        else if (nVisualEffect < VFX_BEAM_END)
-            ApplyBeam(nVisualEffect);
-        else if (nVisualEffect < VFX_DELETE_MODEL_END)
-            ApplyDeleteModel(nVisualEffect);
-        else if (nVisualEffect < VFX_CHUNK_END)
-            ApplyChunk(nVisualEffect);
-        else if (nVisualEffect < VFX_MIRV_END)
-            ApplyMirv(nVisualEffect);
-        else if (nVisualEffect < VFX_TEXTURE_REPLACE_END)
-            ApplyTextureReplace(nVisualEffect);
-        else if (nVisualEffect < VFX_CHEAT_END)
-            ApplyCheat(nVisualEffect);
-        else if (nVisualEffect < VFX_SPELL_VISUAL_END)
-            ApplySpellVisual(nVisualEffect);
-        else if (nVisualEffect < VFX_LIGHTSABER_THROW_END)
-            ApplyLightsaberThrow(nVisualEffect);
-        else if (nVisualEffect < VFX_BUMPED_OUT_SHELL_END)
-            ApplyBumpedOutShell(nVisualEffect);
-        else if (nVisualEffect < VFX_FOV_END)
-            ApplyFOV(nVisualEffect);
-        else if (nVisualEffect < VFX_MOTION_BLUR_END)
-            ApplyMotionBlur(nVisualEffect);
-        else if (nVisualEffect < VFX_MODEL_ATTACHMENT_END)
-            ApplyModelAttachment(nVisualEffect);
-        else if (nVisualEffect < VFX_DISTORTION_END)
-            ApplyDistortion(nVisualEffect);
-
-        m_bHardCodedEffectApplied = 1;
+        delete m_pSoundSource;
+    }
+    UnloadVisualEffect();
+}
+// PC 0x00705950
+void CSWCVisualEffectOnObject::ApplyChunk(unsigned short nVisualEffect)
+{
+#ifdef _XBOX
+    Vector vPosition;
+#endif
+    if (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nGoreLevel >=
+        CClientOptions::GORE_LEVEL_FULL)
+    {
+        CSWCObject* pObject = GetTargetCSWCObject();
+        if (pObject->m_pArea != 0)
+        {
+            CSWCCreature* pCreature = pObject->AsSWCCreature();
+            if (pCreature != 0)
+            {
+#ifdef _XBOX
+                vPosition = pObject->m_vPosition;
+#endif
+                if (pCreature->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1) != 0)
+                {
+                    Quaternion qOrientation;
+                    Vector vImpact;
+                    pCreature->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1)
+                        ->GetPartLocalPosition("impact", &vImpact, &qOrientation);
+#ifdef _XBOX
+                    vPosition += vImpact;
+#endif
+                }
+                CExoString sBloodColor;
+                {
+                    CExoString sColumn("bloodcolr");
+                    unsigned short nAppearance = pCreature->GetAppearance()->m_nAppearance;
+                    g_pRules->Get2DArrays()->m_pAppearance->GetCExoStringEntry(
+                        nAppearance,
+                        sColumn, &sBloodColor);
+                }
+                int nSizeCategory;
+                unsigned short nAppearance = pCreature->GetAppearance()->m_nAppearance;
+                C2DA* pAppearanceTable = g_pRules->Get2DArrays()->m_pAppearance;
+                pAppearanceTable->GetINTEntry(
+                    nAppearance,
+                    CTwoDimArrays::COL2DA_APPEARANCETABLE_SIZECATEGORY,
+                    &nSizeCategory);
+                if (nSizeCategory == CREATURE_SIZE_INVALID)
+                {
+                    return;
+                }
+                if (FALSE)
+                {
+                    CExoString sChunkModel;
+                    sChunkModel = sBloodColor;
+                }
+            }
+        }
     }
 }
 #ifndef _XBOX
@@ -2697,6 +2651,144 @@ int CSWCVisualEffectOnObject::LoadHardCodedVisualEffect(
         return LoadModelAttachment(nVisualEffect);
     }
     return 1;
+}
+// PC 0x00705DF0
+void CSWCVisualEffectOnObject::HideVisualEffect()
+{
+    int i;
+    unsigned short nVisualEffect;
+
+    if (m_bVisualEffectShown != 0)
+    {
+        for (i = 0; i < 3; i++)
+        {
+            if (m_apAttachedModels[i] != 0)
+            {
+                static_cast<Gob*>(m_apAttachedModels[i])
+                    ->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
+                static_cast<Gob*>(m_apAttachedModels[i])->AttachToScene(0);
+            }
+        }
+        if (m_pEffectModel != 0)
+        {
+            static_cast<Gob*>(m_pEffectModel)->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
+            static_cast<Gob*>(m_pEffectModel)->AttachToScene(0);
+        }
+        if (m_nVisualEffectState == VISUAL_EFFECT_IMPACT)
+        {
+            nVisualEffect = m_anVisualEffect[0];
+            if (nVisualEffect != 0xFFFF)
+            {
+                RemoveHardCodedVisualEffect(nVisualEffect);
+            }
+        }
+        else if (m_nVisualEffectState == VISUAL_EFFECT_DURATION)
+        {
+            nVisualEffect = m_anVisualEffect[1];
+            if (nVisualEffect != 0xFFFF)
+            {
+                RemoveHardCodedVisualEffect(nVisualEffect);
+            }
+        }
+        else if (m_nVisualEffectState == VISUAL_EFFECT_CESSATION)
+        {
+            nVisualEffect = m_anVisualEffect[2];
+            if (nVisualEffect != 0xFFFF)
+            {
+                RemoveHardCodedVisualEffect(nVisualEffect);
+            }
+        }
+        m_bVisualEffectShown = 0;
+        m_bLightSourceApplied = 0;
+    }
+}
+// PC 0x00705EB0
+void CSWCVisualEffectOnObject::KillVisualEffect()
+{
+    unsigned short nVisualEffect;
+
+    if (m_nVisualEffectState == VISUAL_EFFECT_IMPACT)
+    {
+        nVisualEffect = m_anVisualEffect[0];
+        if (nVisualEffect != 0xFFFF)
+        {
+            RemoveHardCodedVisualEffect(nVisualEffect);
+        }
+    }
+    else if (m_nVisualEffectState == VISUAL_EFFECT_DURATION)
+    {
+        nVisualEffect = m_anVisualEffect[1];
+        if (nVisualEffect != 0xFFFF)
+        {
+            RemoveHardCodedVisualEffect(nVisualEffect);
+        }
+    }
+    else if (m_nVisualEffectState == VISUAL_EFFECT_CESSATION)
+    {
+        nVisualEffect = m_anVisualEffect[2];
+        if (nVisualEffect != 0xFFFF)
+        {
+            RemoveHardCodedVisualEffect(nVisualEffect);
+        }
+    }
+    UnloadVisualEffect();
+    m_nVisualEffectState = 0;
+    m_HardCodedEffectClass = 0;
+    if (m_pSoundSource != 0)
+    {
+        m_pSoundSource->Stop();
+        if (m_pSoundSource != 0)
+        {
+            delete m_pSoundSource;
+        }
+        m_pSoundSource = 0;
+    }
+}
+// PC 0x00705F40
+void CSWCVisualEffectOnObject::ApplyHardCodedVisualEffect(
+    unsigned short nVisualEffect)
+{
+    if (m_bVisualEffectShown && !m_bHardCodedEffectApplied)
+    {
+        if (nVisualEffect < VFX_ENVIRONMENT_MAP_END)
+            ApplyEnvironmentMap(nVisualEffect);
+        else if (nVisualEffect < VFX_SELFILLUMINATION_END)
+            ApplySelfIllumination(nVisualEffect);
+        else if (nVisualEffect < VFX_LIGHT_SOURCE_END)
+            ApplyLightSource(nVisualEffect);
+        else if (nVisualEffect < VFX_ALPHA_END)
+            ApplyAlpha(nVisualEffect);
+        else if (nVisualEffect < VFX_SELFILLUMINATION_PULSE_END)
+            ApplySelfIlluminationPulse(nVisualEffect);
+        else if (nVisualEffect < VFX_BEAM_END)
+            ApplyBeam(nVisualEffect);
+        else if (nVisualEffect < VFX_DELETE_MODEL_END)
+            ApplyDeleteModel(nVisualEffect);
+        else if (nVisualEffect < VFX_CHUNK_END)
+            ApplyChunk(nVisualEffect);
+        else if (nVisualEffect < VFX_MIRV_END)
+            ApplyMirv(nVisualEffect);
+        else if (nVisualEffect < VFX_TEXTURE_REPLACE_END)
+            ApplyTextureReplace(nVisualEffect);
+        else if (nVisualEffect < VFX_CHEAT_END)
+            ApplyCheat(nVisualEffect);
+        else if (nVisualEffect < VFX_SPELL_VISUAL_END)
+            ApplySpellVisual(nVisualEffect);
+        else if (nVisualEffect < VFX_LIGHTSABER_THROW_END)
+            ApplyLightsaberThrow(nVisualEffect);
+        else if (nVisualEffect < VFX_BUMPED_OUT_SHELL_END)
+            ApplyBumpedOutShell(nVisualEffect);
+        else if (nVisualEffect < VFX_FOV_END)
+            ApplyFOV(nVisualEffect);
+        else if (nVisualEffect < VFX_MOTION_BLUR_END)
+            ApplyMotionBlur(nVisualEffect);
+        else if (nVisualEffect < VFX_MODEL_ATTACHMENT_END)
+            ApplyModelAttachment(nVisualEffect);
+        else if (nVisualEffect < VFX_DISTORTION_END)
+            ApplyDistortion(nVisualEffect);
+
+        m_bHardCodedEffectApplied = 1;
+    }
 }
 // PC 0x00706160
 void CSWCVisualEffectOnObject::UpdateMotionBlur(unsigned long nTimeElapsed)
@@ -2884,56 +2976,6 @@ int CSWCVisualEffectOnObject::ShowVisualEffect(int bForce)
         }
     }
     return 1;
-}
-// PC 0x00705DF0
-void CSWCVisualEffectOnObject::HideVisualEffect()
-{
-    int i;
-    unsigned short nVisualEffect;
-
-    if (m_bVisualEffectShown != 0)
-    {
-        for (i = 0; i < 3; i++)
-        {
-            if (m_apAttachedModels[i] != 0)
-            {
-                static_cast<Gob*>(m_apAttachedModels[i])
-                    ->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
-                static_cast<Gob*>(m_apAttachedModels[i])->AttachToScene(0);
-            }
-        }
-        if (m_pEffectModel != 0)
-        {
-            static_cast<Gob*>(m_pEffectModel)->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
-            static_cast<Gob*>(m_pEffectModel)->AttachToScene(0);
-        }
-        if (m_nVisualEffectState == VISUAL_EFFECT_IMPACT)
-        {
-            nVisualEffect = m_anVisualEffect[0];
-            if (nVisualEffect != 0xFFFF)
-            {
-                RemoveHardCodedVisualEffect(nVisualEffect);
-            }
-        }
-        else if (m_nVisualEffectState == VISUAL_EFFECT_DURATION)
-        {
-            nVisualEffect = m_anVisualEffect[1];
-            if (nVisualEffect != 0xFFFF)
-            {
-                RemoveHardCodedVisualEffect(nVisualEffect);
-            }
-        }
-        else if (m_nVisualEffectState == VISUAL_EFFECT_CESSATION)
-        {
-            nVisualEffect = m_anVisualEffect[2];
-            if (nVisualEffect != 0xFFFF)
-            {
-                RemoveHardCodedVisualEffect(nVisualEffect);
-            }
-        }
-        m_bVisualEffectShown = 0;
-        m_bLightSourceApplied = 0;
-    }
 }
 // PC 0x00706740
 void CSWCVisualEffectOnObject::StartVisualEffect()
@@ -3205,48 +3247,6 @@ void CSWCVisualEffectOnObject::StopVisualEffect(int bDone)
     if (!m_bLightSourceApplied)
     {
         DetachVisualEffect();
-    }
-}
-// PC 0x00705EB0
-void CSWCVisualEffectOnObject::KillVisualEffect()
-{
-    unsigned short nVisualEffect;
-
-    if (m_nVisualEffectState == VISUAL_EFFECT_IMPACT)
-    {
-        nVisualEffect = m_anVisualEffect[0];
-        if (nVisualEffect != 0xFFFF)
-        {
-            RemoveHardCodedVisualEffect(nVisualEffect);
-        }
-    }
-    else if (m_nVisualEffectState == VISUAL_EFFECT_DURATION)
-    {
-        nVisualEffect = m_anVisualEffect[1];
-        if (nVisualEffect != 0xFFFF)
-        {
-            RemoveHardCodedVisualEffect(nVisualEffect);
-        }
-    }
-    else if (m_nVisualEffectState == VISUAL_EFFECT_CESSATION)
-    {
-        nVisualEffect = m_anVisualEffect[2];
-        if (nVisualEffect != 0xFFFF)
-        {
-            RemoveHardCodedVisualEffect(nVisualEffect);
-        }
-    }
-    UnloadVisualEffect();
-    m_nVisualEffectState = 0;
-    m_HardCodedEffectClass = 0;
-    if (m_pSoundSource != 0)
-    {
-        m_pSoundSource->Stop();
-        if (m_pSoundSource != 0)
-        {
-            delete m_pSoundSource;
-        }
-        m_pSoundSource = 0;
     }
 }
 // PC 0x007070E0

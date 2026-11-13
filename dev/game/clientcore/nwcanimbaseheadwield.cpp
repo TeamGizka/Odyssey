@@ -389,43 +389,20 @@ void CSWCAnimBaseHeadWield::DisableDistortion()
     CSWCAnimBaseHead::DisableDistortion();
     return CSWCAnimBaseWield::DisableDistortion();
 }
-// PC 0x006F3AC0
-void CSWCAnimBaseHeadWield::HideHeadItem()
+// PC 0x006F4290
+void CSWCAnimBaseHeadWield::SetHeadItem(unsigned long nItem)
 {
     NWCANIMBASEHEADWIELD_TRACE();
-    CExoString sName;
-    CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
-    CSWCItem* pItem = pApp->GetItemByGameObjectID(m_nHeadItem);
-    if (pItem != NULL)
-    {
-        Gob* pModel = pItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
-        if (pModel != NULL)
-        {
-            pModel->AttachToObject(NULL, NULL, Gob::ATTACH_NORMAL);
-            pModel->AttachToScene(NULL);
-        }
-    }
-    m_bHeadItemHidden = 1;
+    CSWCAnimBaseHead::SetHeadItem(nItem);
 }
-// PC 0x006F3B70
-void CSWCAnimBaseHeadWield::ShowHeadItem()
+
+CSWCAnimBaseHeadWield::~CSWCAnimBaseHeadWield()
 {
-    NWCANIMBASEHEADWIELD_TRACE();
-    if (m_bHeadItemHidden != 0)
-    {
-        CClientExoApp* pApp = g_pAppManager->GetClientExoApp();
-        CSWCItem* pItem = pApp->GetItemByGameObjectID(m_nHeadItem);
-        if (pItem != NULL)
-        {
-            Gob* pModel = pItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
-            if (pModel != NULL)
-            {
-                pModel->AttachToObject(m_pHeadModel, "GoggleHook", Gob::ATTACH_NORMAL);
-            }
-        }
-        RefreshHilite();
-        m_bHeadItemHidden = 0;
-    }
+    UnloadModel();
+}
+
+static inline void NwcanimbaseheadwieldTrace1()
+{
 }
 // PC 0x006F4130
 int CSWCAnimBaseHeadWield::GetBoundingRect(CSWGuiExtent& extent)
@@ -449,18 +426,41 @@ int CSWCAnimBaseHeadWield::GetBoundingRect(CSWGuiExtent& extent)
     }
     return CSWCAnimBase::GetBoundingRect(extent);
 }
-// PC 0x006F4290
-void CSWCAnimBaseHeadWield::SetHeadItem(unsigned long nItem)
+// PC 0x006F3B70
+void CSWCAnimBaseHeadWield::ShowHeadItem()
 {
     NWCANIMBASEHEADWIELD_TRACE();
-    CSWCAnimBaseHead::SetHeadItem(nItem);
+    if (m_bHeadItemHidden != 0)
+    {
+        CClientExoApp* pApp = g_pAppManager->GetClientExoApp();
+        CSWCItem* pItem = pApp->GetItemByGameObjectID(m_nHeadItem);
+        if (pItem != NULL)
+        {
+            Gob* pModel = pItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
+            if (pModel != NULL)
+            {
+                pModel->AttachToObject(m_pHeadModel, "GoggleHook", Gob::ATTACH_NORMAL);
+            }
+        }
+        RefreshHilite();
+        m_bHeadItemHidden = 0;
+    }
 }
-
-CSWCAnimBaseHeadWield::~CSWCAnimBaseHeadWield()
+// PC 0x006F3AC0
+void CSWCAnimBaseHeadWield::HideHeadItem()
 {
-    UnloadModel();
-}
-
-static inline void NwcanimbaseheadwieldTrace1()
-{
+    NWCANIMBASEHEADWIELD_TRACE();
+    CExoString sName;
+    CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
+    CSWCItem* pItem = pApp->GetItemByGameObjectID(m_nHeadItem);
+    if (pItem != NULL)
+    {
+        Gob* pModel = pItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
+        if (pModel != NULL)
+        {
+            pModel->AttachToObject(NULL, NULL, Gob::ATTACH_NORMAL);
+            pModel->AttachToScene(NULL);
+        }
+    }
+    m_bHeadItemHidden = 1;
 }

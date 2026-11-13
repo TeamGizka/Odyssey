@@ -22,58 +22,6 @@ static inline void SetPortraitImage(CSWGuiLabel* pLabel,
 {
     pLabel->m_cBorder.m_cParams.SetFillImage(cPortrait, 0);
 }
-// PC 0x0075B2F0
-void CSWGuiMainCharGen::SetVisiblePanel(int nPanel)
-{
-    if (nPanel != m_nVisiblePanel)
-    {
-        m_pManager->PopModalPanel();
-        switch (m_nVisiblePanel)
-        {
-        case 1:
-            m_pManager->RemovePanel(m_pQuickOrCustom);
-            break;
-        case 2:
-            m_pManager->RemovePanel(m_pQuick);
-            break;
-        case 3:
-            m_pManager->RemovePanel(m_pCustom);
-            break;
-        default:
-            m_nVisiblePanel = 4;
-            break;
-        }
-        if (m_nVisiblePanel != 4)
-        {
-            switch (nPanel)
-            {
-            case 1:
-                m_pManager->AddPanel(m_pQuickOrCustom, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
-                break;
-            case 2:
-                m_pManager->AddPanel(m_pQuick, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
-                break;
-            case 3:
-                m_pManager->AddPanel(m_pCustom, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
-                break;
-            default:
-                m_nVisiblePanel = 4;
-                break;
-            }
-            if (m_nVisiblePanel != 4)
-            {
-                m_nVisiblePanel = nPanel;
-            }
-        }
-    }
-}
-#ifndef _XBOX
-void CSWGuiMainCharGen::OnPanelAdded()  // PC 0x0075BEC0
-{
-    m_pManager->AddPanel(m_pQuickOrCustom, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
-    CSWGuiPanel::OnPanelAdded();
-}
-#endif
 void CSWGuiMainCharGen::RemoveSubPanels()  // PC 0x0075B210
 {
     m_pManager->PopModalPanel();
@@ -121,6 +69,51 @@ void CSWGuiMainCharGen::RemoveSubPanels()  // PC 0x0075B210
     m_pManager->PopModalPanel();
     m_bDeferredRemoval = 0;
     m_nExitState = EXITSTATE_DELETE;
+}
+// PC 0x0075B2F0
+void CSWGuiMainCharGen::SetVisiblePanel(int nPanel)
+{
+    if (nPanel != m_nVisiblePanel)
+    {
+        m_pManager->PopModalPanel();
+        switch (m_nVisiblePanel)
+        {
+        case 1:
+            m_pManager->RemovePanel(m_pQuickOrCustom);
+            break;
+        case 2:
+            m_pManager->RemovePanel(m_pQuick);
+            break;
+        case 3:
+            m_pManager->RemovePanel(m_pCustom);
+            break;
+        default:
+            m_nVisiblePanel = 4;
+            break;
+        }
+        if (m_nVisiblePanel != 4)
+        {
+            switch (nPanel)
+            {
+            case 1:
+                m_pManager->AddPanel(m_pQuickOrCustom, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+                break;
+            case 2:
+                m_pManager->AddPanel(m_pQuick, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+                break;
+            case 3:
+                m_pManager->AddPanel(m_pCustom, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+                break;
+            default:
+                m_nVisiblePanel = 4;
+                break;
+            }
+            if (m_nVisiblePanel != 4)
+            {
+                m_nVisiblePanel = nPanel;
+            }
+        }
+    }
 }
 // PC 0x0075B3A0
 void CSWGuiMainCharGen::DetermineClass()
@@ -315,6 +308,13 @@ void CSWGuiMainCharGen::Draw(float fTimeStep)
     }
     return CSWGuiPanel::Draw(fTimeStep);
 }
+#ifndef _XBOX
+void CSWGuiMainCharGen::OnPanelAdded()  // PC 0x0075BEC0
+{
+    m_pManager->AddPanel(m_pQuickOrCustom, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+    CSWGuiPanel::OnPanelAdded();
+}
+#endif
 // PC 0x0075BEE0
 CSWGuiMainCharGen::CSWGuiMainCharGen(CSWGuiManager* pManager,
                                      CSWCCreature* pCreature,

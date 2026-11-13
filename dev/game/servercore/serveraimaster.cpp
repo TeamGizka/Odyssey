@@ -167,17 +167,6 @@ static inline void ServeraimasterTrace2()
 static inline void ServeraimasterTrace1()
 {
 }
-// PC 0x004DD400
-BOOL CServerAIBodyBagInfo::LoadBodyBag(CResGFF* pRes, CResStruct* pStruct)
-{
-    int bSuccess;
-
-    m_nBodyBagId = pRes->ReadFieldDWORD(pStruct, "BodyBagId", bSuccess, 0);
-    m_vPosition.m_fX = pRes->ReadFieldFLOAT(pStruct, "PositionX", bSuccess, 0.0f);
-    m_vPosition.m_fY = pRes->ReadFieldFLOAT(pStruct, "PositionY", bSuccess, 0.0f);
-    m_vPosition.m_fZ = pRes->ReadFieldFLOAT(pStruct, "PositionZ", bSuccess, 0.0f);
-    return TRUE;
-}
 
 // PC 0x004DC9A0
 void LogEventAddGetObject(unsigned long oidObject, CExoString& sName,
@@ -921,6 +910,17 @@ BOOL CServerAIBodyBagInfo::SaveBodyBag(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fX, "PositionX");
     pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fY, "PositionY");
     pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fZ, "PositionZ");
+    return TRUE;
+}
+// PC 0x004DD400
+BOOL CServerAIBodyBagInfo::LoadBodyBag(CResGFF* pRes, CResStruct* pStruct)
+{
+    int bSuccess;
+
+    m_nBodyBagId = pRes->ReadFieldDWORD(pStruct, "BodyBagId", bSuccess, 0);
+    m_vPosition.m_fX = pRes->ReadFieldFLOAT(pStruct, "PositionX", bSuccess, 0.0f);
+    m_vPosition.m_fY = pRes->ReadFieldFLOAT(pStruct, "PositionY", bSuccess, 0.0f);
+    m_vPosition.m_fZ = pRes->ReadFieldFLOAT(pStruct, "PositionZ", bSuccess, 0.0f);
     return TRUE;
 }
 // PC 0x004DE0B0

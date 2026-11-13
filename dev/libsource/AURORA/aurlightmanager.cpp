@@ -153,13 +153,6 @@ Vector LightManager::GetEmitterLighting(Vector vPosition,
         vLighting.m_fZ = 1.0f;
     return vLighting;
 }
-// PC 0x004CF530
-inline void LightManager::Reset()
-
-{
-    AURLIGHTMANAGER_TRACE();
-    m_lstRenderLights.m_nCount = 0;
-}
 // PC 0x004CF590
 void LightManager::UpdateLights()
 {
@@ -256,6 +249,114 @@ void LightManager::EnableLights()
         }
 
         m_bDynamicOnly = 0;
+    }
+}
+// PC 0x004CF870
+void LightManager::SetUpVertexProgramLightShaderConstants(int nLights,
+                                                         int bWorldSpace)
+{
+    if (CurrentCamera != NULL)
+    {
+        Matrix mCamera = CurrentCamera->m_qOrientation.getmatrix();
+        Vector vCamera = CurrentCamera->m_vPosition;
+        AurSetVertexProgramParameter4f(LIGHT_PROGRAM_CAMERA_X,
+            mCamera.m_vFirst.m_fX, mCamera.m_vSecond.m_fX,
+            mCamera.m_vThird.m_fX, vCamera.m_fX);
+        AurSetVertexProgramParameter4f(LIGHT_PROGRAM_CAMERA_Y,
+            mCamera.m_vFirst.m_fY, mCamera.m_vSecond.m_fY,
+            mCamera.m_vThird.m_fY, vCamera.m_fY);
+        AurSetVertexProgramParameter4f(LIGHT_PROGRAM_CAMERA_Z,
+            mCamera.m_vFirst.m_fZ, mCamera.m_vSecond.m_fZ,
+            mCamera.m_vThird.m_fZ, vCamera.m_fZ);
+        GLRender_SetVertexProgramParameter4f(LIGHT_PROGRAM_ZERO_ONE, 0.0f, 0.0f, 0.0f, 1.0f);
+        GLRender_SetVertexProgramParameter4f(LIGHT_PROGRAM_COLOR_SCALE, 1.0f, 1.0f, 1.0f, 0.0f);
+        AurSetVertexProgramParameter4f(LIGHT_PROGRAM_CAMERA_POSITION,
+            CurrentCamera->m_vPosition.m_fX,
+            CurrentCamera->m_vPosition.m_fY,
+            CurrentCamera->m_vPosition.m_fZ, 1.0f);
+
+        int nParameter = LIGHT_PROGRAM_FIRST_LIGHT;
+        if (CAurInternal::m_nHeadLightEnabled)
+        {
+            nLights--;
+            AurSetVertexProgramParameter4f(nParameter--,
+                CurrentCamera->m_vPosition.m_fX,
+                CurrentCamera->m_vPosition.m_fY,
+                CurrentCamera->m_vPosition.m_fZ, 0.0f);
+            AurSetVertexProgramParameter4f(nParameter--,
+                headlightambient.m_fX, headlightambient.m_fY,
+                headlightambient.m_fZ, 1.0f);
+            AurSetVertexProgramParameter4f(nParameter--,
+                headlightdiffuse.m_fX, headlightdiffuse.m_fY,
+                headlightdiffuse.m_fZ, 1.0f);
+            AurSetVertexProgramParameter4f(nParameter--,
+                0.0f, 0.0f, 0.0f, 1.0f);
+            AurSetVertexProgramParameter4f(nParameter--,
+                1.0f, 1.0f, 1.0f, 1.0f);
+        }
+
+        List<PartLight*>* pLights;
+        if (bWorldSpace)
+            pLights = &m_lstFadingDynamicLights;
+        else
+            pLights = &m_lstEnabledLights;
+        int nUsed = 0;
+        for (int i = 0; i < pLights->m_nCount; i++)
+        {
+            if (nUsed >= (m_lstExcludedShaderLights.m_nCount > 0
+                          ? nLights - 1 : nLights))
+                break;
+            PartLight* pLight = (*pLights)[i];
+            if (m_bBumpMapLightsDisabled && m_lstBumpMapLights.Contains(pLight))
+                continue;
+            if (m_lstExcludedShaderLights.Contains(pLight))
+                continue;
+            nUsed++;
+            Vector vAmbient;
+            Vector vDiffuse;
+            float fMultiplier = bWorldSpace ? 1.0f : pLight->m_fMultiplier;
+            if (pLight->m_bAmbientOnly)
+                vAmbient = pLight->m_vColor * fMultiplier;
+            else
+                vDiffuse = pLight->m_vColor * fMultiplier;
+
+            AurSetVertexProgramParameter4f(nParameter--,
+                pLight->m_vWorldPosition.m_fX,
+                pLight->m_vWorldPosition.m_fY,
+                pLight->m_vWorldPosition.m_fZ, 0.0f);
+            AurSetVertexProgramParameter4f(nParameter--,
+                vAmbient.m_fX, vAmbient.m_fY, vAmbient.m_fZ, 1.0f);
+            AurSetVertexProgramParameter4f(nParameter--,
+                vDiffuse.m_fX, vDiffuse.m_fY, vDiffuse.m_fZ, 1.0f);
+            GLRender_SetVertexProgramParameter4f(nParameter, 0.0f, 0.0f, 0.0f, 1.0f);
+            nParameter--;
+#ifdef _XBOX
+            float fRadius = lstLights[i]->m_fRadius;
+            GLRender_SetVertexProgramParameter4f(nParameter, 1.0f, 0.0f,
+                AUR_LIGHT_ATTENUATION_SCALE / (fRadius * fRadius + fRadius * fRadius), 1.0f);
+#else
+            float fRadius = pLight->m_fRadius;
+            float fAttenuation = AUR_LIGHT_ATTENUATION_SCALE /
+                (fRadius * fRadius + fRadius * fRadius);
+            GLRender_SetVertexProgramParameter4f(nParameter, 1.0f, 0.0f, fAttenuation, 1.0f);
+#endif
+
+            nParameter--;
+        }
+
+        for (int j = nUsed; j < nLights; j++)
+        {
+            GLRender_SetVertexProgramParameter4f(nParameter, 0.0f, 0.0f, 0.0f, 0.0f);
+            nParameter--;
+            GLRender_SetVertexProgramParameter4f(nParameter, 0.0f, 0.0f, 0.0f, 1.0f);
+            nParameter--;
+            GLRender_SetVertexProgramParameter4f(nParameter, 0.0f, 0.0f, 0.0f, 1.0f);
+            nParameter--;
+            GLRender_SetVertexProgramParameter4f(nParameter, 0.0f, 0.0f, 0.0f, 1.0f);
+            nParameter--;
+            GLRender_SetVertexProgramParameter4f(nParameter, 1.0f, 1.0f, 1.0f, 1.0f);
+            nParameter--;
+        }
     }
 }
 // PC 0x004CFD80
@@ -1103,114 +1204,6 @@ int LightManager::EnableThisLight(PartLight* pLight)
     GLRender_EnableLight(lstLights.IndexOf(pLight) + 1);
     return 1;
 }
-// PC 0x004CF870
-void LightManager::SetUpVertexProgramLightShaderConstants(int nLights,
-                                                         int bWorldSpace)
-{
-    if (CurrentCamera != NULL)
-    {
-        Matrix mCamera = CurrentCamera->m_qOrientation.getmatrix();
-        Vector vCamera = CurrentCamera->m_vPosition;
-        AurSetVertexProgramParameter4f(LIGHT_PROGRAM_CAMERA_X,
-            mCamera.m_vFirst.m_fX, mCamera.m_vSecond.m_fX,
-            mCamera.m_vThird.m_fX, vCamera.m_fX);
-        AurSetVertexProgramParameter4f(LIGHT_PROGRAM_CAMERA_Y,
-            mCamera.m_vFirst.m_fY, mCamera.m_vSecond.m_fY,
-            mCamera.m_vThird.m_fY, vCamera.m_fY);
-        AurSetVertexProgramParameter4f(LIGHT_PROGRAM_CAMERA_Z,
-            mCamera.m_vFirst.m_fZ, mCamera.m_vSecond.m_fZ,
-            mCamera.m_vThird.m_fZ, vCamera.m_fZ);
-        GLRender_SetVertexProgramParameter4f(LIGHT_PROGRAM_ZERO_ONE, 0.0f, 0.0f, 0.0f, 1.0f);
-        GLRender_SetVertexProgramParameter4f(LIGHT_PROGRAM_COLOR_SCALE, 1.0f, 1.0f, 1.0f, 0.0f);
-        AurSetVertexProgramParameter4f(LIGHT_PROGRAM_CAMERA_POSITION,
-            CurrentCamera->m_vPosition.m_fX,
-            CurrentCamera->m_vPosition.m_fY,
-            CurrentCamera->m_vPosition.m_fZ, 1.0f);
-
-        int nParameter = LIGHT_PROGRAM_FIRST_LIGHT;
-        if (CAurInternal::m_nHeadLightEnabled)
-        {
-            nLights--;
-            AurSetVertexProgramParameter4f(nParameter--,
-                CurrentCamera->m_vPosition.m_fX,
-                CurrentCamera->m_vPosition.m_fY,
-                CurrentCamera->m_vPosition.m_fZ, 0.0f);
-            AurSetVertexProgramParameter4f(nParameter--,
-                headlightambient.m_fX, headlightambient.m_fY,
-                headlightambient.m_fZ, 1.0f);
-            AurSetVertexProgramParameter4f(nParameter--,
-                headlightdiffuse.m_fX, headlightdiffuse.m_fY,
-                headlightdiffuse.m_fZ, 1.0f);
-            AurSetVertexProgramParameter4f(nParameter--,
-                0.0f, 0.0f, 0.0f, 1.0f);
-            AurSetVertexProgramParameter4f(nParameter--,
-                1.0f, 1.0f, 1.0f, 1.0f);
-        }
-
-        List<PartLight*>* pLights;
-        if (bWorldSpace)
-            pLights = &m_lstFadingDynamicLights;
-        else
-            pLights = &m_lstEnabledLights;
-        int nUsed = 0;
-        for (int i = 0; i < pLights->m_nCount; i++)
-        {
-            if (nUsed >= (m_lstExcludedShaderLights.m_nCount > 0
-                          ? nLights - 1 : nLights))
-                break;
-            PartLight* pLight = (*pLights)[i];
-            if (m_bBumpMapLightsDisabled && m_lstBumpMapLights.Contains(pLight))
-                continue;
-            if (m_lstExcludedShaderLights.Contains(pLight))
-                continue;
-            nUsed++;
-            Vector vAmbient;
-            Vector vDiffuse;
-            float fMultiplier = bWorldSpace ? 1.0f : pLight->m_fMultiplier;
-            if (pLight->m_bAmbientOnly)
-                vAmbient = pLight->m_vColor * fMultiplier;
-            else
-                vDiffuse = pLight->m_vColor * fMultiplier;
-
-            AurSetVertexProgramParameter4f(nParameter--,
-                pLight->m_vWorldPosition.m_fX,
-                pLight->m_vWorldPosition.m_fY,
-                pLight->m_vWorldPosition.m_fZ, 0.0f);
-            AurSetVertexProgramParameter4f(nParameter--,
-                vAmbient.m_fX, vAmbient.m_fY, vAmbient.m_fZ, 1.0f);
-            AurSetVertexProgramParameter4f(nParameter--,
-                vDiffuse.m_fX, vDiffuse.m_fY, vDiffuse.m_fZ, 1.0f);
-            GLRender_SetVertexProgramParameter4f(nParameter, 0.0f, 0.0f, 0.0f, 1.0f);
-            nParameter--;
-#ifdef _XBOX
-            float fRadius = lstLights[i]->m_fRadius;
-            GLRender_SetVertexProgramParameter4f(nParameter, 1.0f, 0.0f,
-                AUR_LIGHT_ATTENUATION_SCALE / (fRadius * fRadius + fRadius * fRadius), 1.0f);
-#else
-            float fRadius = pLight->m_fRadius;
-            float fAttenuation = AUR_LIGHT_ATTENUATION_SCALE /
-                (fRadius * fRadius + fRadius * fRadius);
-            GLRender_SetVertexProgramParameter4f(nParameter, 1.0f, 0.0f, fAttenuation, 1.0f);
-#endif
-
-            nParameter--;
-        }
-
-        for (int j = nUsed; j < nLights; j++)
-        {
-            GLRender_SetVertexProgramParameter4f(nParameter, 0.0f, 0.0f, 0.0f, 0.0f);
-            nParameter--;
-            GLRender_SetVertexProgramParameter4f(nParameter, 0.0f, 0.0f, 0.0f, 1.0f);
-            nParameter--;
-            GLRender_SetVertexProgramParameter4f(nParameter, 0.0f, 0.0f, 0.0f, 1.0f);
-            nParameter--;
-            GLRender_SetVertexProgramParameter4f(nParameter, 0.0f, 0.0f, 0.0f, 1.0f);
-            nParameter--;
-            GLRender_SetVertexProgramParameter4f(nParameter, 1.0f, 1.0f, 1.0f, 1.0f);
-            nParameter--;
-        }
-    }
-}
 // PC 0x004D1D70
 void LightManager::DisableBumpMapLights()
 {
@@ -1275,9 +1268,6 @@ void LightManager::EnablePhongLights(int nMaxLights, int bSkipBumpMapLights)
         }
     }
 }
-
-Vector headlightdiffuse(0.8f, 0.8f, 0.8f);
-Vector headlightambient(0.2f, 0.2f, 0.2f);
 
 static inline void AurlightmanagerTrace1()
 {
@@ -1401,3 +1391,13 @@ char* setmaxlights(char* sArguments)
     return "Success";
 }
 #endif
+// PC 0x004CF530
+inline void LightManager::Reset()
+
+{
+    AURLIGHTMANAGER_TRACE();
+    m_lstRenderLights.m_nCount = 0;
+}
+
+Vector headlightdiffuse(0.8f, 0.8f, 0.8f);
+Vector headlightambient(0.2f, 0.2f, 0.2f);

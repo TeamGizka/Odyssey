@@ -1305,116 +1305,6 @@ CSWMiniPlayer::~CSWMiniPlayer()
         delete m_pCameraHook;
     }
 }
-
-int CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>& lstEnemyIds,
-                                     int bRunScripts)
-{
-    int nModels = m_lstModels.num;
-    int nHits = 0;
-    if (nModels != 0)
-    {
-        int nEnemies = lstEnemyIds.num;
-        int nDamage = 0;
-        Gob* pModel = m_lstModels.element[0].m_pModel;
-        CSWMiniGameObjectArray* pObjects = g_pAppManager->GetClientExoApp()->GetMGOArray();
-        Vector vPosition = pModel->GetPosition();
-        Vector vPrevious = pModel->GetPreviousPosition();
-        Vector vPlane = m_pMiniGame->BumpPlane(pModel->GetOrientation());
-        Vector vPush;
-        Vector vEnemyPosition;
-        Vector vEnemyPrevious;
-        CHitInfo cHitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
-
-        for (int i = nEnemies - 1; i >= 0; i--)
-        {
-            CSWMiniEnemy* pEnemy = static_cast<CSWMiniEnemy*>(
-                pObjects->GetMiniGameObject(lstEnemyIds.element[i], SWMG_OBJECT_ENEMY));
-            if (pEnemy != 0)
-            {
-                if (pEnemy->m_bTrigger || m_pMiniGame->m_bDoBumping)
-                {
-                    if (pEnemy->m_lstModels.num <= 0 ||
-                        pEnemy->m_lstModels.element[0].m_pModel == 0)
-                    {
-                        break;
-                    }
-                    vEnemyPosition = pEnemy->GetModel(0)->GetPosition();
-                    vEnemyPrevious = pEnemy->GetModel(0)->GetPreviousPosition();
-                    float fRadius = pEnemy->m_fSphereRadius + m_fSphereRadius;
-                    if (ClosestDistanceBetweenSegments(vPrevious, vPosition, vEnemyPrevious,
-                                                       vEnemyPosition) < fRadius)
-                    {
-                        if (pEnemy->m_bTrigger)
-                        {
-                            if (bRunScripts)
-                            {
-                                m_nLastFollowerHit = pEnemy->m_nObjectId;
-                                OnHitFollower(0);
-                                pEnemy->m_nLastFollowerHit = m_nObjectId;
-                                pEnemy->OnHitFollower(0);
-                            }
-                        }
-                        else
-                        {
-                            vPush += normalize(vPosition - vEnemyPosition)
-                                     * (fRadius + 1.1f)
-                                     + vEnemyPosition - vPosition;
-                            if (bRunScripts)
-                            {
-                                if (!pEnemy->GetIsInvulnerable())
-                                {
-                                    pEnemy->Hit();
-                                    pEnemy->AdjustHitPoints(-m_nBumpDamage);
-                                    pEnemy->m_fInvincibilityRemaining = pEnemy->m_fInvincePeriod;
-                                }
-                                int nBumpDamage = pEnemy->m_nBumpDamage;
-                                if (nDamage > nBumpDamage)
-                                {
-                                    nBumpDamage = nDamage;
-                                }
-                                nDamage = nBumpDamage;
-                                m_nLastFollowerHit = pEnemy->m_nObjectId;
-                                OnHitFollower(0);
-                                pEnemy->m_nLastFollowerHit = m_nObjectId;
-                                pEnemy->OnHitFollower(0);
-                            }
-                            nHits++;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                lstEnemyIds.DelIndex(i);
-            }
-        }
-
-        if (nHits)
-        {
-            vPush /= (float)nHits;
-            vPush = vPush + m_vOffset;
-            KeepInTunnel(vPush);
-            Vector vNewPosition = vPush + vPosition - m_vOffset;
-            m_vOffset = vPush;
-            for (int j = 0; j < nModels - 1; j++)
-            {
-                m_lstModels.element[j].m_pModel->SetPosition(vNewPosition);
-            }
-            if (m_fInvincibilityRemaining <= 0.0f)
-            {
-                m_fInvincibilityRemaining = m_fInvincePeriod * 2.0f;
-                if (bRunScripts)
-                {
-                    Hit();
-                    m_nDamage = -nDamage;
-                    OnDamage(0);
-                    m_bSpeedOverride = 1;
-                }
-            }
-        }
-    }
-    return nHits;
-}
 // PC 0x006C3ED0
 int CSWMiniPlayer::LoadGun(CResGFF* pGFF, CResStruct* pStruct)
 {
@@ -1724,49 +1614,6 @@ void OnAnimKeyEvent(CAurObject* pObject, char* sEvent, void* pUserData)
         }
     }
 }
-// PC 0x006C4630
-int CSWTrackFollower::Load(CResGFF* pGFF, CResStruct* pStruct)
-{
-    SwmgtrackfollowerTrace4();
-    int bSuccess;
-    CResList listGunBanks;
-    CResStruct structChild;
-
-    SetHitPoints(pGFF->ReadFieldDWORD(pStruct, "Hit_Points", bSuccess, 0));
-    SetMaxHitPoints(pGFF->ReadFieldDWORD(pStruct, "Max_HPs", bSuccess, 0));
-    SetSphereRadius(pGFF->ReadFieldFLOAT(pStruct, "Sphere_Radius", bSuccess, -1.0f));
-    SetLooping(pGFF->ReadFieldINT(pStruct, "Num_Loops", bSuccess, LOOP_UNSPECIFIED));
-    m_nBumpDamage = pGFF->ReadFieldINT(pStruct, "Bump_Damage", bSuccess, 0);
-    SetInvincibility(pGFF->ReadFieldFLOAT(pStruct, "Invince_Period", bSuccess, 0.0f));
-
-    bSuccess = pGFF->GetList(&listGunBanks, pStruct, "Gun_Banks");
-    if (bSuccess)
-    {
-        int nGunBanks = pGFF->GetListCount(&listGunBanks);
-        for (int i = 0; i < nGunBanks; i++)
-        {
-            bSuccess = pGFF->GetListElement(&structChild, &listGunBanks, i);
-            if (bSuccess)
-            {
-                LoadGun(pGFF, &structChild);
-            }
-        }
-        if (nGunBanks)
-        {
-            AttachGuns();
-        }
-    }
-    if (pGFF->GetStructFromStruct(&structChild, pStruct, "Scripts"))
-    {
-        LoadScripts(pGFF, pStruct, structChild);
-    }
-    if (pGFF->GetStructFromStruct(&structChild, pStruct, "Sounds"))
-    {
-        LoadSounds(pGFF, pStruct, structChild);
-    }
-    OnCreate();
-    return 1;
-}
 // PC 0x006C4800
 void CSWTrackFollower::Go()
 {
@@ -1874,6 +1721,49 @@ int CSWMiniEnemy::Load(CResGFF* pGFF, CResStruct* pStruct)
     m_bTrigger = pGFF->ReadFieldBYTE(pStruct, "Trigger", bSuccess, 0);
     return 1;
 }
+// PC 0x006C4630
+int CSWTrackFollower::Load(CResGFF* pGFF, CResStruct* pStruct)
+{
+    SwmgtrackfollowerTrace4();
+    int bSuccess;
+    CResList listGunBanks;
+    CResStruct structChild;
+
+    SetHitPoints(pGFF->ReadFieldDWORD(pStruct, "Hit_Points", bSuccess, 0));
+    SetMaxHitPoints(pGFF->ReadFieldDWORD(pStruct, "Max_HPs", bSuccess, 0));
+    SetSphereRadius(pGFF->ReadFieldFLOAT(pStruct, "Sphere_Radius", bSuccess, -1.0f));
+    SetLooping(pGFF->ReadFieldINT(pStruct, "Num_Loops", bSuccess, LOOP_UNSPECIFIED));
+    m_nBumpDamage = pGFF->ReadFieldINT(pStruct, "Bump_Damage", bSuccess, 0);
+    SetInvincibility(pGFF->ReadFieldFLOAT(pStruct, "Invince_Period", bSuccess, 0.0f));
+
+    bSuccess = pGFF->GetList(&listGunBanks, pStruct, "Gun_Banks");
+    if (bSuccess)
+    {
+        int nGunBanks = pGFF->GetListCount(&listGunBanks);
+        for (int i = 0; i < nGunBanks; i++)
+        {
+            bSuccess = pGFF->GetListElement(&structChild, &listGunBanks, i);
+            if (bSuccess)
+            {
+                LoadGun(pGFF, &structChild);
+            }
+        }
+        if (nGunBanks)
+        {
+            AttachGuns();
+        }
+    }
+    if (pGFF->GetStructFromStruct(&structChild, pStruct, "Scripts"))
+    {
+        LoadScripts(pGFF, pStruct, structChild);
+    }
+    if (pGFF->GetStructFromStruct(&structChild, pStruct, "Sounds"))
+    {
+        LoadSounds(pGFF, pStruct, structChild);
+    }
+    OnCreate();
+    return 1;
+}
 // PC 0x006C4C70
 CSWMGObstacle::CSWMGObstacle(CSWMiniGame* pMiniGame, CAurObject* pModel)
     : CSWMiniGameObject(3)
@@ -1906,4 +1796,114 @@ static inline void SwmgtrackfollowerTrace2()
 
 static inline void SwmgtrackfollowerTrace1()
 {
+}
+
+int CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>& lstEnemyIds,
+                                     int bRunScripts)
+{
+    int nModels = m_lstModels.num;
+    int nHits = 0;
+    if (nModels != 0)
+    {
+        int nEnemies = lstEnemyIds.num;
+        int nDamage = 0;
+        Gob* pModel = m_lstModels.element[0].m_pModel;
+        CSWMiniGameObjectArray* pObjects = g_pAppManager->GetClientExoApp()->GetMGOArray();
+        Vector vPosition = pModel->GetPosition();
+        Vector vPrevious = pModel->GetPreviousPosition();
+        Vector vPlane = m_pMiniGame->BumpPlane(pModel->GetOrientation());
+        Vector vPush;
+        Vector vEnemyPosition;
+        Vector vEnemyPrevious;
+        CHitInfo cHitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
+
+        for (int i = nEnemies - 1; i >= 0; i--)
+        {
+            CSWMiniEnemy* pEnemy = static_cast<CSWMiniEnemy*>(
+                pObjects->GetMiniGameObject(lstEnemyIds.element[i], SWMG_OBJECT_ENEMY));
+            if (pEnemy != 0)
+            {
+                if (pEnemy->m_bTrigger || m_pMiniGame->m_bDoBumping)
+                {
+                    if (pEnemy->m_lstModels.num <= 0 ||
+                        pEnemy->m_lstModels.element[0].m_pModel == 0)
+                    {
+                        break;
+                    }
+                    vEnemyPosition = pEnemy->GetModel(0)->GetPosition();
+                    vEnemyPrevious = pEnemy->GetModel(0)->GetPreviousPosition();
+                    float fRadius = pEnemy->m_fSphereRadius + m_fSphereRadius;
+                    if (ClosestDistanceBetweenSegments(vPrevious, vPosition, vEnemyPrevious,
+                                                       vEnemyPosition) < fRadius)
+                    {
+                        if (pEnemy->m_bTrigger)
+                        {
+                            if (bRunScripts)
+                            {
+                                m_nLastFollowerHit = pEnemy->m_nObjectId;
+                                OnHitFollower(0);
+                                pEnemy->m_nLastFollowerHit = m_nObjectId;
+                                pEnemy->OnHitFollower(0);
+                            }
+                        }
+                        else
+                        {
+                            vPush += normalize(vPosition - vEnemyPosition)
+                                     * (fRadius + 1.1f)
+                                     + vEnemyPosition - vPosition;
+                            if (bRunScripts)
+                            {
+                                if (!pEnemy->GetIsInvulnerable())
+                                {
+                                    pEnemy->Hit();
+                                    pEnemy->AdjustHitPoints(-m_nBumpDamage);
+                                    pEnemy->m_fInvincibilityRemaining = pEnemy->m_fInvincePeriod;
+                                }
+                                int nBumpDamage = pEnemy->m_nBumpDamage;
+                                if (nDamage > nBumpDamage)
+                                {
+                                    nBumpDamage = nDamage;
+                                }
+                                nDamage = nBumpDamage;
+                                m_nLastFollowerHit = pEnemy->m_nObjectId;
+                                OnHitFollower(0);
+                                pEnemy->m_nLastFollowerHit = m_nObjectId;
+                                pEnemy->OnHitFollower(0);
+                            }
+                            nHits++;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                lstEnemyIds.DelIndex(i);
+            }
+        }
+
+        if (nHits)
+        {
+            vPush /= (float)nHits;
+            vPush = vPush + m_vOffset;
+            KeepInTunnel(vPush);
+            Vector vNewPosition = vPush + vPosition - m_vOffset;
+            m_vOffset = vPush;
+            for (int j = 0; j < nModels - 1; j++)
+            {
+                m_lstModels.element[j].m_pModel->SetPosition(vNewPosition);
+            }
+            if (m_fInvincibilityRemaining <= 0.0f)
+            {
+                m_fInvincibilityRemaining = m_fInvincePeriod * 2.0f;
+                if (bRunScripts)
+                {
+                    Hit();
+                    m_nDamage = -nDamage;
+                    OnDamage(0);
+                    m_bSpeedOverride = 1;
+                }
+            }
+        }
+    }
+    return nHits;
 }

@@ -60,96 +60,6 @@ CSWCVisualEffect::CSWCVisualEffect(int bAddToGameObjectArray)
     m_bShadows = 0;
     m_nEffect = INVALID_EFFECT;
 }
-// PC 0x006E9E50
-void CSWCVisualEffect::AIUpdate()
-{
-    unsigned long nDay;
-    unsigned long nTime;
-    unsigned long nSubDay;
-    unsigned long nSubTime;
-    CClientExoApp* pExoApp;
-
-    if (m_bFinished != 0)
-    {
-        return;
-    }
-    pExoApp = g_pAppManager->m_pClientExoApp;
-    pExoApp->GetWorldTimer()->GetWorldTime(&nDay, &nTime);
-    pExoApp = g_pAppManager->m_pClientExoApp;
-    pExoApp->GetWorldTimer()->SubtractWorldTimes(
-        nDay, nTime, m_nLastUpdateDay, m_nLastUpdateTime, &nSubDay, &nSubTime);
-    m_nTimeDelta = nSubTime;
-    m_nLastUpdateDay = nDay;
-    m_nLastUpdateTime = nTime;
-    if (m_pSoundSource != NULL)
-    {
-        m_pSoundSource->SetPosition(m_vPosition, 1.5f);
-    }
-    if (m_nAnimationDelay > 0)
-    {
-        if (m_nAnimationDelay > m_nTimeDelta)
-        {
-            m_nAnimationDelay -= m_nTimeDelta;
-        }
-        else
-        {
-            m_nAnimationDelay = 0;
-            if (m_nAnimation == 1)
-            {
-                if (m_bOneShot != 0)
-                {
-                    m_nDuration = m_bNoExpirationDelay != 0 ? 0 : 3000;
-                    m_bDurationActive = 1;
-                }
-                else
-                {
-                    SetAnimation(2);
-                }
-            }
-            else if (m_nAnimation == 3)
-            {
-                m_nDuration = 3000;
-                m_bDurationActive = 1;
-            }
-        }
-    }
-    if (m_bDurationActive != 0)
-    {
-        if (m_nDuration <= m_nTimeDelta)
-        {
-            if (m_bDeleteWhenFinished != 0)
-            {
-                delete this;
-                return;
-            }
-            if (m_bAttachWhenFinished != 0)
-            {
-                AttachToScene(NULL);
-            }
-            m_bFinished = 1;
-            m_bDurationActive = 0;
-        }
-        else
-        {
-            m_nDuration -= m_nTimeDelta;
-        }
-    }
-}
-// PC 0x006E9DB0
-CSWCVisualEffect::~CSWCVisualEffect()
-{
-    g_pAppManager->m_pClientExoApp->GetGameObjectArray()->Delete(m_nId);
-    if (m_pSoundSource != NULL)
-    {
-        delete m_pSoundSource;
-    }
-    if (m_pAnimBase != NULL)
-    {
-        m_pAnimBase->UnloadModel();
-        delete m_pAnimBase;
-        m_pAnimBase = NULL;
-    }
-}
 // PC 0x006E94C0
 int CSWCVisualEffect::LoadEffect(unsigned long nEffect)
 {
@@ -496,6 +406,102 @@ void CSWCVisualEffect::SetAnimation(unsigned short nAnimation)
         }
     }
 }
+// PC 0x006E9D90
+void CSWCVisualEffect::DoVFXRumble()
+{
+    g_pAppManager->m_pClientExoApp->LookUpAndPerformRumbleWithCutOff(
+        m_nEffect, CClientExoApp::RUMBLE_TABLE_VISUALEFFECTS, m_vPosition);
+}
+// PC 0x006E9DB0
+CSWCVisualEffect::~CSWCVisualEffect()
+{
+    g_pAppManager->m_pClientExoApp->GetGameObjectArray()->Delete(m_nId);
+    if (m_pSoundSource != NULL)
+    {
+        delete m_pSoundSource;
+    }
+    if (m_pAnimBase != NULL)
+    {
+        m_pAnimBase->UnloadModel();
+        delete m_pAnimBase;
+        m_pAnimBase = NULL;
+    }
+}
+// PC 0x006E9E50
+void CSWCVisualEffect::AIUpdate()
+{
+    unsigned long nDay;
+    unsigned long nTime;
+    unsigned long nSubDay;
+    unsigned long nSubTime;
+    CClientExoApp* pExoApp;
+
+    if (m_bFinished != 0)
+    {
+        return;
+    }
+    pExoApp = g_pAppManager->m_pClientExoApp;
+    pExoApp->GetWorldTimer()->GetWorldTime(&nDay, &nTime);
+    pExoApp = g_pAppManager->m_pClientExoApp;
+    pExoApp->GetWorldTimer()->SubtractWorldTimes(
+        nDay, nTime, m_nLastUpdateDay, m_nLastUpdateTime, &nSubDay, &nSubTime);
+    m_nTimeDelta = nSubTime;
+    m_nLastUpdateDay = nDay;
+    m_nLastUpdateTime = nTime;
+    if (m_pSoundSource != NULL)
+    {
+        m_pSoundSource->SetPosition(m_vPosition, 1.5f);
+    }
+    if (m_nAnimationDelay > 0)
+    {
+        if (m_nAnimationDelay > m_nTimeDelta)
+        {
+            m_nAnimationDelay -= m_nTimeDelta;
+        }
+        else
+        {
+            m_nAnimationDelay = 0;
+            if (m_nAnimation == 1)
+            {
+                if (m_bOneShot != 0)
+                {
+                    m_nDuration = m_bNoExpirationDelay != 0 ? 0 : 3000;
+                    m_bDurationActive = 1;
+                }
+                else
+                {
+                    SetAnimation(2);
+                }
+            }
+            else if (m_nAnimation == 3)
+            {
+                m_nDuration = 3000;
+                m_bDurationActive = 1;
+            }
+        }
+    }
+    if (m_bDurationActive != 0)
+    {
+        if (m_nDuration <= m_nTimeDelta)
+        {
+            if (m_bDeleteWhenFinished != 0)
+            {
+                delete this;
+                return;
+            }
+            if (m_bAttachWhenFinished != 0)
+            {
+                AttachToScene(NULL);
+            }
+            m_bFinished = 1;
+            m_bDurationActive = 0;
+        }
+        else
+        {
+            m_nDuration -= m_nTimeDelta;
+        }
+    }
+}
 // PC 0x006E9FD0
 void CSWCVisualEffect::UnloadCachedVFX()
 {
@@ -506,12 +512,6 @@ void CSWCVisualEffect::UnloadCachedVFX()
         pCachedObject = (CAurObject*)m_lstCachedVFX.m_pInternal->RemoveHead();
         delete pCachedObject;
     }
-}
-// PC 0x006E9D90
-void CSWCVisualEffect::DoVFXRumble()
-{
-    g_pAppManager->m_pClientExoApp->LookUpAndPerformRumbleWithCutOff(
-        m_nEffect, CClientExoApp::RUMBLE_TABLE_VISUALEFFECTS, m_vPosition);
 }
 // PC 0x006EA020
 void CSWCVisualEffect::SetPosition(const Vector& vPosition)

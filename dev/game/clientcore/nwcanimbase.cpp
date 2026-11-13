@@ -36,6 +36,54 @@ Gob* CSWCAnimBase::GetModel(unsigned char nSlot)
     }
     return m_pModel;
 }
+// PC 0x006F75B0
+int CSWCAnimBase::LoadModel(const CResRef& sResRef, unsigned char nType)
+{
+    Quaternion qOrientation;
+    Vector vPosition;
+    char szModel[20];
+
+    if (nType != MODEL_SLOT_MAIN)
+    {
+        return 0;
+    }
+
+    sResRef.CopyToString(szModel);
+    m_pModel = static_cast<Gob*>(NewCAurObject(szModel, "body", 0, 0));
+    if (m_pModel == 0)
+    {
+        return 0;
+    }
+
+    if (m_pModel->GetPartLocalPosition("handconjure", &vPosition,
+                                       &qOrientation) != 0 &&
+        (qOrientation.m_fX != 0.0f || qOrientation.m_fY != 0.0f ||
+         qOrientation.m_fZ != 0.0f || qOrientation.m_fW != 1.0f))
+    {
+        CExoString sError;
+        sError.Format("CSWCAnimBase::LoadModel(): The handconjure dummy has "
+                      "an orientation....It shouldn't!!  The %s model needs "
+                      "to be fixed or else the spell visuals will not be "
+                      "correct.", szModel);
+    }
+
+    if (m_pModel->GetPartLocalPosition("headconjure", &vPosition,
+                                       &qOrientation) != 0 &&
+        (qOrientation.m_fX != 0.0f || qOrientation.m_fY != 0.0f ||
+         qOrientation.m_fZ != 0.0f || qOrientation.m_fW != 1.0f))
+    {
+        CExoString sError;
+        sError.Format("CSWCAnimBase::LoadModel(): The headconjure dummy has "
+                      "an orientation....It shouldn't!!  The %s model needs "
+                      "to be fixed or else the spell visuals will not be "
+                      "correct.", szModel);
+    }
+
+    m_resLoadedModel = sResRef;
+    m_bPaletteReplaced = 0;
+    ShowShadowBlob(0);
+    return 1;
+}
 // PC 0x006F77E0
 int CSWCAnimBase::ReplaceTexture(const CResRef& sOld, const CResRef& sNew,
                                  int bRemember)
@@ -170,6 +218,73 @@ int CSWCAnimBase::RestoreTexture(unsigned char nModel)
     m_pModel->RestoreTexture();
     return 1;
 }
+// PC 0x006F7BA0
+int CSWCAnimBase::SetOverlayAnimation(CAurObject* pObject,
+                                      unsigned short nAnimation, int bLoop)
+{
+    CExoString sName;
+    unsigned short nFlags;
+    float fSpeed;
+
+    if (pObject == 0)
+    {
+        return 0;
+    }
+    if (bLoop == 0)
+    {
+        switch (nAnimation)
+        {
+        case 10029:
+        case 10030:
+        case 10034:
+        case 10038:
+        case 10039:
+        case 10040:
+        case 10041:
+        case 10042:
+        case 10070:
+        case 10071:
+        case 10136:
+        case 10145:
+        case 10154:
+        case 10155:
+            nFlags = 1024;
+            break;
+        default:
+            nFlags = 128;
+            break;
+        }
+    }
+    else
+    {
+        nFlags = 8;
+    }
+    fSpeed = 1.0f;
+    sName = GetAnimationName(nAnimation);
+    switch (nAnimation)
+    {
+    case 10030:
+    case 10038:
+    case 10039:
+    case 10040:
+    case 10041:
+    case 10042:
+    case 10154:
+    case 10155:
+        break;
+    case 373:
+        fSpeed = -1.0f;
+    default:
+        nFlags |= 1;
+        break;
+    }
+    if (sName == "pause1")
+    {
+        return 0;
+    }
+    return static_cast<Gob*>(pObject)->PlayAnimation((char*)sName.CStr(),
+                                                     fSpeed, nFlags, 0.0f);
+}
 // PC 0x006F7DA0
 float CSWCAnimBase::GetAnimationTime(unsigned short nAnimation)
 {
@@ -203,6 +318,76 @@ float CSWCAnimBase::GetAnimationLength(unsigned short nAnimation)
         }
     }
     return 0.0f;
+}
+// PC 0x006F7F40
+CExoString CSWCAnimBase::GetAnimationName(unsigned short nAnimation)
+{
+    unsigned short nClientAnimation = ServerToClientAnimation(nAnimation);
+    CExoString sName;
+    CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
+    C2DA* pAnimations = p2DArrays->m_pAnimations;
+
+    if (pAnimations->GetCExoStringEntry(
+            nClientAnimation, CTwoDimArrays::COL2DA_ANIMATIONS_NAME, &sName) == 0)
+    {
+        sName = "";
+    }
+    if (sName.GetLength() > 0)
+    {
+        return sName;
+    }
+
+    int nIndex = -1;
+    CExoString sSuffix;
+    if (nAnimation >= CUTSCENE_ANIMATION_FIRST &&
+        nAnimation <= CUTSCENE_ANIMATION_LAST)
+    {
+        nIndex = nAnimation - CUTSCENE_ANIMATION_FIRST;
+    }
+    else if (nAnimation >= CUTSCENE_ANIMATION_W_FIRST &&
+             nAnimation <= CUTSCENE_ANIMATION_W_LAST)
+    {
+        sSuffix = "w";
+        nIndex = nAnimation - CUTSCENE_ANIMATION_W_FIRST;
+    }
+    else if (nAnimation >= CUTSCENE_ANIMATION_L_FIRST &&
+             nAnimation <= CUTSCENE_ANIMATION_L_LAST)
+    {
+        sSuffix = "l";
+        nIndex = nAnimation - CUTSCENE_ANIMATION_L_FIRST;
+    }
+    else if (nAnimation >= CUTSCENE_ANIMATION_WL_FIRST &&
+             nAnimation <= CUTSCENE_ANIMATION_WL_LAST)
+    {
+        sSuffix = "wl";
+        nIndex = nAnimation - CUTSCENE_ANIMATION_WL_FIRST;
+    }
+
+    nIndex++;
+    if (nIndex != 0)
+    {
+        char szNumber[4];
+        sprintf(szNumber, "%03d", nIndex);
+        CExoString sNumber(szNumber);
+        sName = CExoString("cut") + sNumber + sSuffix;
+    }
+
+    if (sName.IsEmpty() && nAnimation != CREATURE_ANIMATION_NO_IDLE_FALLBACK)
+    {
+        nClientAnimation = ServerToClientAnimation(CREATURE_ANIMATION_COMBAT_IDLE);
+        p2DArrays = g_pRules->m_p2DArrays;
+        pAnimations = p2DArrays->m_pAnimations;
+        if (pAnimations->GetCExoStringEntry(
+                nClientAnimation, CTwoDimArrays::COL2DA_ANIMATIONS_NAME, &sName) == 0)
+        {
+            sName = "";
+        }
+        if (sName.GetLength() > 0)
+        {
+            return sName;
+        }
+    }
+    return sName;
 }
 // PC 0x006F8210
 int CSWCAnimBase::GetOverlayAnimationPlaying(unsigned short nAnimation)
@@ -287,6 +472,67 @@ int CSWCAnimBase::SetAnimationVisemes(float* pfWeights, float* pfTimes,
         return 1;
     }
     return 0;
+}
+// PC 0x006F8490
+int CSWCAnimBase::SetAnimationInternal(CAurObject* pObject,
+                                       unsigned short nAnimation, float fSpeed,
+                                       int nFlags, float fBlend)
+{
+    int bResult = 0;
+    CExoString sName = GetAnimationName(nAnimation);
+
+    if (pObject != 0)
+    {
+        if (fSpeed == 0.0f)
+        {
+            fSpeed = 1.0f;
+        }
+        switch (nAnimation)
+        {
+        case 10029:
+        case 10030:
+        case 10034:
+        case 10038:
+        case 10039:
+        case 10040:
+        case 10041:
+        case 10042:
+        case 10070:
+        case 10071:
+        case 10129:
+        case 10130:
+        case 10136:
+        case 10154:
+        case 10155:
+        case 10302:
+        case 10417:
+            SetOverlayAnimation(pObject, nAnimation, 1);
+            bResult = 1;
+            break;
+        case 10003:
+        case 10081:
+        case 10083:
+        case 10212:
+        case 10238:
+        case 10256:
+        case 10258:
+        case 10271:
+            if (fSpeed >= 0.0f)
+            {
+                fSpeed = -fSpeed;
+            }
+            static_cast<Gob*>(pObject)->PlayAnimation(sName.CStr(), fSpeed,
+                                                      nFlags, fBlend);
+            bResult = 1;
+            break;
+        default:
+            static_cast<Gob*>(pObject)->PlayAnimation(sName.CStr(), fSpeed,
+                                                      nFlags, fBlend);
+            bResult = 1;
+            break;
+        }
+    }
+    return bResult;
 }
 // PC 0x006F86C0
 int CSWCAnimBase::SetAnimationOnSubObjectInternal(CAurObject* pObject,
@@ -379,6 +625,29 @@ void CSWCAnimBase::UnloadModel(unsigned char nModel)
         CSWCAnimBase::UnloadModel();
     }
 }
+// PC 0x006F88D0
+int CSWCAnimBase::SetAlpha(float fAlpha, unsigned char nModel)
+{
+    if (m_pModel == 0 || nModel != 0xFF)
+    {
+        return 0;
+    }
+    m_fAlpha = fAlpha;
+    int i;
+    for (i = 0; i < 5; i++)
+    {
+        if (m_abHiliteActive[i] != 0)
+        {
+            m_pModel->SetColorShifting(m_avHilite[i], fAlpha, 1);
+            break;
+        }
+    }
+    if (i == 5)
+    {
+        m_pModel->SetColorShifting(Vector(1.0f, 1.0f, 1.0f), fAlpha, 1);
+    }
+    return 1;
+}
 // PC 0x006F89B0
 int CSWCAnimBase::SetEnvMap(int nType, int bRemember, const CResRef& sMap)
 {
@@ -449,6 +718,42 @@ int CSWCAnimBase::RestoreEnvMap()
         m_pModel->SetEnvironmentMap("");
     }
     return 1;
+}
+// PC 0x006F8B10
+void CSWCAnimBase::RefreshHilite()
+{
+    if (m_pModel != 0)
+    {
+        int i;
+        for (i = 0; i < 5; i++)
+        {
+            if (m_abHiliteActive[i] != 0)
+            {
+                m_pModel->SetIllumination(m_avHilite[i], 1);
+                m_pModel->SetColorShifting(m_avHilite[i], m_fAlpha, 1);
+                if (m_abHilitePulse[i] != 0 &&
+                    g_pAppManager->m_pClientExoApp->GetModule() != 0 &&
+                    g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo != 0)
+                {
+
+                    g_pAppManager->m_pClientExoApp->GetModule();
+                    m_pModel->GetScene();
+                }
+                break;
+            }
+        }
+        if (i == 5)
+        {
+            m_pModel->SetIllumination(Vector(0.0f, 0.0f, 0.0f), 1);
+            m_pModel->SetColorShifting(Vector(1.0f, 1.0f, 1.0f), m_fAlpha, 1);
+            if (g_pAppManager->m_pClientExoApp->GetModule() != 0 &&
+                g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo != 0)
+            {
+
+                g_pAppManager->m_pClientExoApp->GetModule();
+            }
+        }
+    }
 }
 // PC 0x006F8CD0
 int CSWCAnimBase::AnimationExists(unsigned short nAnimation)
@@ -571,465 +876,57 @@ void CSWCAnimBase::SetLean(float fLean)
 {
     m_fLean = min(1.0f, max(-1.0f, fLean)) * g_fMaxLean;
 }
-// PC 0x006F9C60
-int CSWCAnimBase::EnableBumpedOutShell(const CResRef& sShell, float fScale)
+// PC 0x006F96B0
+unsigned char CSWCAnimBase::GetCenterPoint(Vector& vCenter)
 {
-    char sName[20];
+    CAurCamera* pCamera = g_pAppManager->m_pClientExoApp->GetModuleCamera();
+    unsigned char nResult = CENTER_POINT_UNAVAILABLE;
+    if (pCamera != 0 && m_pModel != 0)
+    {
+        Vector vMinimum;
+        Vector vMaximum;
+        Vector vPosition = m_pModel->GetPosition();
+        Quaternion qOrientation = m_pModel->GetOrientation();
+        Vector vCameraPosition = pCamera->GetPosition();
+        Vector vView = -pCamera->GetOrientation().zdir();
+        m_pModel->GetBoundingBox(vMinimum, vMaximum);
 
-    if (m_pModel == 0)
-    {
-        return 0;
-    }
-    sShell.CopyToString(sName);
-    strlwr(sName);
-    m_pModel->EnableRenderBumpedOut(sName, fScale);
-    return 1;
-}
-// PC 0x006F9CC0
-int CSWCAnimBase::DisableBumpedOutShell()
-{
-    if (m_pModel == 0)
-    {
-        return 0;
-    }
-    m_pModel->DisableRenderBumpedOut();
-    return 1;
-}
-// PC 0x006F9CE0
-int CSWCAnimBase::SetMotionBlur(int bBlur)
-{
-    if (m_pModel == 0)
-    {
-        return 0;
-    }
-    m_pModel->SetMotionBlurred(bBlur != 0);
-    return 1;
-}
-// PC 0x006F9D10
-int CSWCAnimBase::SetMaxMotionBlurLength(float fLength)
-{
-    return m_pModel != 0;
-}
-// PC 0x006FAF90
-void CSWCAnimBase::EnableDistortion()
-{
-    if (m_pModel != 0)
-    {
-        m_pModel->EnableDistortion();
-    }
-}
-// PC 0x006FAFB0
-void CSWCAnimBase::DisableDistortion()
-{
-    if (m_pModel != 0)
-    {
-        m_pModel->DisableDistortion();
-    }
-}
-// PC 0x006FAFD0
-void CSWCAnimBase::SetGroundTilt(const Vector& vGroundNormal,
-                                const Vector& vFacing)
-{
-    if (m_pModel != 0)
-    {
-        float fPitch = NWCANIMBASE_GROUND_NORMAL_UP_PITCH - Pitch(vGroundNormal);
-        Vector vAxis = cross(zaxis, vGroundNormal);
-        Quaternion qTilt(vAxis, fPitch * DEG_TO_RAD);
-        Quaternion qBlended = slerp(qTilt, m_qGroundTilt, NWCANIMBASE_GROUND_TILT_BLEND);
-        m_qGroundTilt = qTilt;
-        Quaternion qOrientation = qBlended * YawPitchRoll(Yaw(vFacing), 0.0f, 0.0f);
-        m_pModel->SetOrientation(qOrientation);
-    }
-}
+        const int nCorners = 8;
+        Vector avCorners[nCorners];
+        Vector vWorldMinimum(FLT_MAX, FLT_MAX, FLT_MAX);
+        Vector vWorldMaximum(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+        avCorners[0] = vMinimum;
+        avCorners[1] = vMaximum;
+        avCorners[2] = Vector(vMinimum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
+        avCorners[3] = Vector(vMinimum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
+        avCorners[4] = Vector(vMaximum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
+        avCorners[5] = Vector(vMinimum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
+        avCorners[6] = Vector(vMaximum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
+        avCorners[7] = Vector(vMaximum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
 
-static Vector* AllocateVectorArray(int nCount)
-{
-    return new Vector[nCount];
-}
-// PC 0x006FB1A0
-CSWCAnimBase::CSWCAnimBase()
-{
-    m_pModel = 0;
-    m_nAnimationType = ANIMATION_TYPE_BASE;
-    m_nWieldClass = CSWCAnimBase::WIELD_CLASS_NONE;
-    m_nAnimSet = 0;
-    m_nOffHandType = 0;
-    m_nD0 = 0;
-    m_nD4 = 0;
-    m_nD8 = 0;
-    m_resLoadedModel = "";
-    m_bPaletteReplaced = 0;
-    m_nPaletteCount = 0;
-    m_nPaletteOffset = 0;
-    memset(m_anPalette, 0, sizeof(m_anPalette));
-    for (int i = 0; i < 5; ++i)
-    {
-        m_abHiliteActive[i] = 0;
-        m_abHilitePulse[i] = 0;
-    }
-    m_resEnvMap = "";
-    m_bEnvMap = 0;
-    m_fAlpha = 1.0f;
-    m_nSpecialWalkAnimation = 0;
-    m_bRunLooksAwful = 0;
-    m_bUseable = 1;
-    m_pShadowBlob = 0;
-    m_bShadowBlobShown = 0;
-    m_fLean = 0.0f;
-    m_nPoweredAnimations = 0;
-    m_qGroundTilt = Quaternion(zaxis, 0.0f);
-}
-// PC 0x006FB3F0
-int CSWCAnimBase::SetOverlayAnimation(unsigned short nAnimation, int bLoop)
-{
-    if (m_pModel == 0)
-    {
-        return 0;
-    }
-    return SetOverlayAnimation(m_pModel, nAnimation, bLoop);
-}
-// PC 0x006FB410
-int CSWCAnimBase::Hilite(const Vector& vColor, unsigned char nModel, int bPulse)
-{
-    if (m_pModel == 0)
-    {
-        return 0;
-    }
-    if (nModel >= 5)
-    {
-        return 0;
-    }
-    m_avHilite[nModel] = vColor;
-    m_abHiliteActive[nModel] = 1;
-    m_abHilitePulse[nModel] = bPulse;
-    RefreshHilite();
-    return 1;
-}
-// PC 0x006FB470
-int CSWCAnimBase::UnHilite(unsigned char nModel)
-{
-    if (m_pModel == 0)
-    {
-        return 0;
-    }
-    if (nModel >= 5)
-    {
-        return 0;
-    }
-    m_abHiliteActive[nModel] = 0;
-    RefreshHilite();
-    return 1;
-}
-// PC 0x006FB340
-CSWCAnimBase::~CSWCAnimBase()
-{
-    RemoveShadowBlob();
-    UnloadModel();
-}
-// PC 0x006F75B0
-int CSWCAnimBase::LoadModel(const CResRef& sResRef, unsigned char nType)
-{
-    Quaternion qOrientation;
-    Vector vPosition;
-    char szModel[20];
-
-    if (nType != MODEL_SLOT_MAIN)
-    {
-        return 0;
-    }
-
-    sResRef.CopyToString(szModel);
-    m_pModel = static_cast<Gob*>(NewCAurObject(szModel, "body", 0, 0));
-    if (m_pModel == 0)
-    {
-        return 0;
-    }
-
-    if (m_pModel->GetPartLocalPosition("handconjure", &vPosition,
-                                       &qOrientation) != 0 &&
-        (qOrientation.m_fX != 0.0f || qOrientation.m_fY != 0.0f ||
-         qOrientation.m_fZ != 0.0f || qOrientation.m_fW != 1.0f))
-    {
-        CExoString sError;
-        sError.Format("CSWCAnimBase::LoadModel(): The handconjure dummy has "
-                      "an orientation....It shouldn't!!  The %s model needs "
-                      "to be fixed or else the spell visuals will not be "
-                      "correct.", szModel);
-    }
-
-    if (m_pModel->GetPartLocalPosition("headconjure", &vPosition,
-                                       &qOrientation) != 0 &&
-        (qOrientation.m_fX != 0.0f || qOrientation.m_fY != 0.0f ||
-         qOrientation.m_fZ != 0.0f || qOrientation.m_fW != 1.0f))
-    {
-        CExoString sError;
-        sError.Format("CSWCAnimBase::LoadModel(): The headconjure dummy has "
-                      "an orientation....It shouldn't!!  The %s model needs "
-                      "to be fixed or else the spell visuals will not be "
-                      "correct.", szModel);
-    }
-
-    m_resLoadedModel = sResRef;
-    m_bPaletteReplaced = 0;
-    ShowShadowBlob(0);
-    return 1;
-}
-// PC 0x006F7BA0
-int CSWCAnimBase::SetOverlayAnimation(CAurObject* pObject,
-                                      unsigned short nAnimation, int bLoop)
-{
-    CExoString sName;
-    unsigned short nFlags;
-    float fSpeed;
-
-    if (pObject == 0)
-    {
-        return 0;
-    }
-    if (bLoop == 0)
-    {
-        switch (nAnimation)
+        for (int i = 0; i < nCorners; ++i)
         {
-        case 10029:
-        case 10030:
-        case 10034:
-        case 10038:
-        case 10039:
-        case 10040:
-        case 10041:
-        case 10042:
-        case 10070:
-        case 10071:
-        case 10136:
-        case 10145:
-        case 10154:
-        case 10155:
-            nFlags = 1024;
-            break;
-        default:
-            nFlags = 128;
-            break;
+            avCorners[i] = qOrientation * avCorners[i] + vPosition;
+            vWorldMinimum.m_fX = min(vWorldMinimum.m_fX, avCorners[i].m_fX);
+            vWorldMinimum.m_fY = min(vWorldMinimum.m_fY, avCorners[i].m_fY);
+            vWorldMinimum.m_fZ = min(vWorldMinimum.m_fZ, avCorners[i].m_fZ);
+            vWorldMaximum.m_fX = max(vWorldMaximum.m_fX, avCorners[i].m_fX);
+            vWorldMaximum.m_fY = max(vWorldMaximum.m_fY, avCorners[i].m_fY);
+            vWorldMaximum.m_fZ = max(vWorldMaximum.m_fZ, avCorners[i].m_fZ);
         }
-    }
-    else
-    {
-        nFlags = 8;
-    }
-    fSpeed = 1.0f;
-    sName = GetAnimationName(nAnimation);
-    switch (nAnimation)
-    {
-    case 10030:
-    case 10038:
-    case 10039:
-    case 10040:
-    case 10041:
-    case 10042:
-    case 10154:
-    case 10155:
-        break;
-    case 373:
-        fSpeed = -1.0f;
-    default:
-        nFlags |= 1;
-        break;
-    }
-    if (sName == "pause1")
-    {
-        return 0;
-    }
-    return static_cast<Gob*>(pObject)->PlayAnimation((char*)sName.CStr(),
-                                                     fSpeed, nFlags, 0.0f);
-}
-// PC 0x006F7F40
-CExoString CSWCAnimBase::GetAnimationName(unsigned short nAnimation)
-{
-    unsigned short nClientAnimation = ServerToClientAnimation(nAnimation);
-    CExoString sName;
-    CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
-    C2DA* pAnimations = p2DArrays->m_pAnimations;
 
-    if (pAnimations->GetCExoStringEntry(
-            nClientAnimation, CTwoDimArrays::COL2DA_ANIMATIONS_NAME, &sName) == 0)
-    {
-        sName = "";
-    }
-    if (sName.GetLength() > 0)
-    {
-        return sName;
-    }
+        Vector vPoint = (vWorldMaximum - vWorldMinimum) / 2.0f + vWorldMinimum;
+        if (vView * vPoint > vView * vCameraPosition)
+            nResult = CENTER_POINT_IN_FRONT;
+        else
+            nResult = CENTER_POINT_BEHIND;
 
-    int nIndex = -1;
-    CExoString sSuffix;
-    if (nAnimation >= CUTSCENE_ANIMATION_FIRST &&
-        nAnimation <= CUTSCENE_ANIMATION_LAST)
-    {
-        nIndex = nAnimation - CUTSCENE_ANIMATION_FIRST;
+        vPoint = pCamera->MapToScreen(vPoint, true);
+        CSWGuiManager* pGuiManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
+        vCenter.m_fX = vPoint.m_fX * pGuiManager->m_nWidth;
+        vCenter.m_fY = vPoint.m_fY * pGuiManager->m_nHeight;
     }
-    else if (nAnimation >= CUTSCENE_ANIMATION_W_FIRST &&
-             nAnimation <= CUTSCENE_ANIMATION_W_LAST)
-    {
-        sSuffix = "w";
-        nIndex = nAnimation - CUTSCENE_ANIMATION_W_FIRST;
-    }
-    else if (nAnimation >= CUTSCENE_ANIMATION_L_FIRST &&
-             nAnimation <= CUTSCENE_ANIMATION_L_LAST)
-    {
-        sSuffix = "l";
-        nIndex = nAnimation - CUTSCENE_ANIMATION_L_FIRST;
-    }
-    else if (nAnimation >= CUTSCENE_ANIMATION_WL_FIRST &&
-             nAnimation <= CUTSCENE_ANIMATION_WL_LAST)
-    {
-        sSuffix = "wl";
-        nIndex = nAnimation - CUTSCENE_ANIMATION_WL_FIRST;
-    }
-
-    nIndex++;
-    if (nIndex != 0)
-    {
-        char szNumber[4];
-        sprintf(szNumber, "%03d", nIndex);
-        CExoString sNumber(szNumber);
-        sName = CExoString("cut") + sNumber + sSuffix;
-    }
-
-    if (sName.IsEmpty() && nAnimation != CREATURE_ANIMATION_NO_IDLE_FALLBACK)
-    {
-        nClientAnimation = ServerToClientAnimation(CREATURE_ANIMATION_COMBAT_IDLE);
-        p2DArrays = g_pRules->m_p2DArrays;
-        pAnimations = p2DArrays->m_pAnimations;
-        if (pAnimations->GetCExoStringEntry(
-                nClientAnimation, CTwoDimArrays::COL2DA_ANIMATIONS_NAME, &sName) == 0)
-        {
-            sName = "";
-        }
-        if (sName.GetLength() > 0)
-        {
-            return sName;
-        }
-    }
-    return sName;
-}
-// PC 0x006F8490
-int CSWCAnimBase::SetAnimationInternal(CAurObject* pObject,
-                                       unsigned short nAnimation, float fSpeed,
-                                       int nFlags, float fBlend)
-{
-    int bResult = 0;
-    CExoString sName = GetAnimationName(nAnimation);
-
-    if (pObject != 0)
-    {
-        if (fSpeed == 0.0f)
-        {
-            fSpeed = 1.0f;
-        }
-        switch (nAnimation)
-        {
-        case 10029:
-        case 10030:
-        case 10034:
-        case 10038:
-        case 10039:
-        case 10040:
-        case 10041:
-        case 10042:
-        case 10070:
-        case 10071:
-        case 10129:
-        case 10130:
-        case 10136:
-        case 10154:
-        case 10155:
-        case 10302:
-        case 10417:
-            SetOverlayAnimation(pObject, nAnimation, 1);
-            bResult = 1;
-            break;
-        case 10003:
-        case 10081:
-        case 10083:
-        case 10212:
-        case 10238:
-        case 10256:
-        case 10258:
-        case 10271:
-            if (fSpeed >= 0.0f)
-            {
-                fSpeed = -fSpeed;
-            }
-            static_cast<Gob*>(pObject)->PlayAnimation(sName.CStr(), fSpeed,
-                                                      nFlags, fBlend);
-            bResult = 1;
-            break;
-        default:
-            static_cast<Gob*>(pObject)->PlayAnimation(sName.CStr(), fSpeed,
-                                                      nFlags, fBlend);
-            bResult = 1;
-            break;
-        }
-    }
-    return bResult;
-}
-// PC 0x006F88D0
-int CSWCAnimBase::SetAlpha(float fAlpha, unsigned char nModel)
-{
-    if (m_pModel == 0 || nModel != 0xFF)
-    {
-        return 0;
-    }
-    m_fAlpha = fAlpha;
-    int i;
-    for (i = 0; i < 5; i++)
-    {
-        if (m_abHiliteActive[i] != 0)
-        {
-            m_pModel->SetColorShifting(m_avHilite[i], fAlpha, 1);
-            break;
-        }
-    }
-    if (i == 5)
-    {
-        m_pModel->SetColorShifting(Vector(1.0f, 1.0f, 1.0f), fAlpha, 1);
-    }
-    return 1;
-}
-// PC 0x006F8B10
-void CSWCAnimBase::RefreshHilite()
-{
-    if (m_pModel != 0)
-    {
-        int i;
-        for (i = 0; i < 5; i++)
-        {
-            if (m_abHiliteActive[i] != 0)
-            {
-                m_pModel->SetIllumination(m_avHilite[i], 1);
-                m_pModel->SetColorShifting(m_avHilite[i], m_fAlpha, 1);
-                if (m_abHilitePulse[i] != 0 &&
-                    g_pAppManager->m_pClientExoApp->GetModule() != 0 &&
-                    g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo != 0)
-                {
-
-                    g_pAppManager->m_pClientExoApp->GetModule();
-                    m_pModel->GetScene();
-                }
-                break;
-            }
-        }
-        if (i == 5)
-        {
-            m_pModel->SetIllumination(Vector(0.0f, 0.0f, 0.0f), 1);
-            m_pModel->SetColorShifting(Vector(1.0f, 1.0f, 1.0f), m_fAlpha, 1);
-            if (g_pAppManager->m_pClientExoApp->GetModule() != 0 &&
-                g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo != 0)
-            {
-
-                g_pAppManager->m_pClientExoApp->GetModule();
-            }
-        }
-    }
+    return nResult;
 }
 // PC 0x006F9150
 int CSWCAnimBase::GetBoundingRect(CAurObject* pObject, CSWGuiExtent& extent)
@@ -1085,62 +982,49 @@ int CSWCAnimBase::GetBoundingRect(CAurObject* pObject, CSWGuiExtent& extent)
     }
     return 0;
 }
-// PC 0x006F96B0
-unsigned char CSWCAnimBase::GetCenterPoint(Vector& vCenter)
-{
-    CAurCamera* pCamera = g_pAppManager->m_pClientExoApp->GetModuleCamera();
-    unsigned char nResult = CENTER_POINT_UNAVAILABLE;
-    if (pCamera != 0 && m_pModel != 0)
-    {
-        Vector vMinimum;
-        Vector vMaximum;
-        Vector vPosition = m_pModel->GetPosition();
-        Quaternion qOrientation = m_pModel->GetOrientation();
-        Vector vCameraPosition = pCamera->GetPosition();
-        Vector vView = -pCamera->GetOrientation().zdir();
-        m_pModel->GetBoundingBox(vMinimum, vMaximum);
-
-        const int nCorners = 8;
-        Vector avCorners[nCorners];
-        Vector vWorldMinimum(FLT_MAX, FLT_MAX, FLT_MAX);
-        Vector vWorldMaximum(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-        avCorners[0] = vMinimum;
-        avCorners[1] = vMaximum;
-        avCorners[2] = Vector(vMinimum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
-        avCorners[3] = Vector(vMinimum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
-        avCorners[4] = Vector(vMaximum.m_fX, vMinimum.m_fY, vMinimum.m_fZ);
-        avCorners[5] = Vector(vMinimum.m_fX, vMaximum.m_fY, vMaximum.m_fZ);
-        avCorners[6] = Vector(vMaximum.m_fX, vMinimum.m_fY, vMaximum.m_fZ);
-        avCorners[7] = Vector(vMaximum.m_fX, vMaximum.m_fY, vMinimum.m_fZ);
-
-        for (int i = 0; i < nCorners; ++i)
-        {
-            avCorners[i] = qOrientation * avCorners[i] + vPosition;
-            vWorldMinimum.m_fX = min(vWorldMinimum.m_fX, avCorners[i].m_fX);
-            vWorldMinimum.m_fY = min(vWorldMinimum.m_fY, avCorners[i].m_fY);
-            vWorldMinimum.m_fZ = min(vWorldMinimum.m_fZ, avCorners[i].m_fZ);
-            vWorldMaximum.m_fX = max(vWorldMaximum.m_fX, avCorners[i].m_fX);
-            vWorldMaximum.m_fY = max(vWorldMaximum.m_fY, avCorners[i].m_fY);
-            vWorldMaximum.m_fZ = max(vWorldMaximum.m_fZ, avCorners[i].m_fZ);
-        }
-
-        Vector vPoint = (vWorldMaximum - vWorldMinimum) / 2.0f + vWorldMinimum;
-        if (vView * vPoint > vView * vCameraPosition)
-            nResult = CENTER_POINT_IN_FRONT;
-        else
-            nResult = CENTER_POINT_BEHIND;
-
-        vPoint = pCamera->MapToScreen(vPoint, true);
-        CSWGuiManager* pGuiManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
-        vCenter.m_fX = vPoint.m_fX * pGuiManager->m_nWidth;
-        vCenter.m_fY = vPoint.m_fY * pGuiManager->m_nHeight;
-    }
-    return nResult;
-}
 // PC 0x006F9C40
 int CSWCAnimBase::GetBoundingRect(CSWGuiExtent& extent)
 {
     return GetBoundingRect(m_pModel, extent);
+}
+// PC 0x006F9C60
+int CSWCAnimBase::EnableBumpedOutShell(const CResRef& sShell, float fScale)
+{
+    char sName[20];
+
+    if (m_pModel == 0)
+    {
+        return 0;
+    }
+    sShell.CopyToString(sName);
+    strlwr(sName);
+    m_pModel->EnableRenderBumpedOut(sName, fScale);
+    return 1;
+}
+// PC 0x006F9CC0
+int CSWCAnimBase::DisableBumpedOutShell()
+{
+    if (m_pModel == 0)
+    {
+        return 0;
+    }
+    m_pModel->DisableRenderBumpedOut();
+    return 1;
+}
+// PC 0x006F9CE0
+int CSWCAnimBase::SetMotionBlur(int bBlur)
+{
+    if (m_pModel == 0)
+    {
+        return 0;
+    }
+    m_pModel->SetMotionBlurred(bBlur != 0);
+    return 1;
+}
+// PC 0x006F9D10
+int CSWCAnimBase::SetMaxMotionBlurLength(float fLength)
+{
+    return m_pModel != 0;
 }
 // PC 0x006F9D20
 unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
@@ -2017,4 +1901,120 @@ unsigned short CSWCAnimBase::ServerToClientAnimation(unsigned short nAnimation)
         }
     }
     return nClientAnimation;
+}
+// PC 0x006FAF90
+void CSWCAnimBase::EnableDistortion()
+{
+    if (m_pModel != 0)
+    {
+        m_pModel->EnableDistortion();
+    }
+}
+// PC 0x006FAFB0
+void CSWCAnimBase::DisableDistortion()
+{
+    if (m_pModel != 0)
+    {
+        m_pModel->DisableDistortion();
+    }
+}
+// PC 0x006FAFD0
+void CSWCAnimBase::SetGroundTilt(const Vector& vGroundNormal,
+                                const Vector& vFacing)
+{
+    if (m_pModel != 0)
+    {
+        float fPitch = NWCANIMBASE_GROUND_NORMAL_UP_PITCH - Pitch(vGroundNormal);
+        Vector vAxis = cross(zaxis, vGroundNormal);
+        Quaternion qTilt(vAxis, fPitch * DEG_TO_RAD);
+        Quaternion qBlended = slerp(qTilt, m_qGroundTilt, NWCANIMBASE_GROUND_TILT_BLEND);
+        m_qGroundTilt = qTilt;
+        Quaternion qOrientation = qBlended * YawPitchRoll(Yaw(vFacing), 0.0f, 0.0f);
+        m_pModel->SetOrientation(qOrientation);
+    }
+}
+
+static Vector* AllocateVectorArray(int nCount)
+{
+    return new Vector[nCount];
+}
+// PC 0x006FB1A0
+CSWCAnimBase::CSWCAnimBase()
+{
+    m_pModel = 0;
+    m_nAnimationType = ANIMATION_TYPE_BASE;
+    m_nWieldClass = CSWCAnimBase::WIELD_CLASS_NONE;
+    m_nAnimSet = 0;
+    m_nOffHandType = 0;
+    m_nD0 = 0;
+    m_nD4 = 0;
+    m_nD8 = 0;
+    m_resLoadedModel = "";
+    m_bPaletteReplaced = 0;
+    m_nPaletteCount = 0;
+    m_nPaletteOffset = 0;
+    memset(m_anPalette, 0, sizeof(m_anPalette));
+    for (int i = 0; i < 5; ++i)
+    {
+        m_abHiliteActive[i] = 0;
+        m_abHilitePulse[i] = 0;
+    }
+    m_resEnvMap = "";
+    m_bEnvMap = 0;
+    m_fAlpha = 1.0f;
+    m_nSpecialWalkAnimation = 0;
+    m_bRunLooksAwful = 0;
+    m_bUseable = 1;
+    m_pShadowBlob = 0;
+    m_bShadowBlobShown = 0;
+    m_fLean = 0.0f;
+    m_nPoweredAnimations = 0;
+    m_qGroundTilt = Quaternion(zaxis, 0.0f);
+}
+// PC 0x006FB340
+CSWCAnimBase::~CSWCAnimBase()
+{
+    RemoveShadowBlob();
+    UnloadModel();
+}
+// PC 0x006FB3F0
+int CSWCAnimBase::SetOverlayAnimation(unsigned short nAnimation, int bLoop)
+{
+    if (m_pModel == 0)
+    {
+        return 0;
+    }
+    return SetOverlayAnimation(m_pModel, nAnimation, bLoop);
+}
+// PC 0x006FB410
+int CSWCAnimBase::Hilite(const Vector& vColor, unsigned char nModel, int bPulse)
+{
+    if (m_pModel == 0)
+    {
+        return 0;
+    }
+    if (nModel >= 5)
+    {
+        return 0;
+    }
+    m_avHilite[nModel] = vColor;
+    m_abHiliteActive[nModel] = 1;
+    m_abHilitePulse[nModel] = bPulse;
+    RefreshHilite();
+    return 1;
+}
+// PC 0x006FB470
+int CSWCAnimBase::UnHilite(unsigned char nModel)
+{
+    if (m_pModel == 0)
+    {
+        return 0;
+    }
+    if (nModel >= 5)
+    {
+        return 0;
+    }
+    m_abHiliteActive[nModel] = 0;
+    RefreshHilite();
+    return 1;
 }

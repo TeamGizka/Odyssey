@@ -9,6 +9,39 @@
 #include "swmain.h"
 
 static inline void SwguiSubCreateItemTrace1();
+// PC 0x00713170
+void CSWGuiCreateItemSubMenu::Back(CSWGuiControl* pControl)
+{
+    SwguiSubCreateItemTrace1();
+    if (pControl->m_bSelected != 0)
+    {
+        ((CGuiInGame*)g_pAppManager->m_pClientExoApp->GetInGameGui())
+            ->HideSubItemCreateMenu();
+        ((CGuiInGame*)g_pAppManager->m_pClientExoApp->GetInGameGui())
+            ->ShowItemCreateMenu();
+    }
+}
+// PC 0x007131B0
+void CSWGuiCreateItemSubMenu::CreateItem(CSWGuiControl* pControl)
+{
+    SwguiSubCreateItemTrace1();
+    CClientExoApp* pApp;
+    CGuiInGame* pGui;
+    if (pControl->m_bSelected != 0)
+    {
+        CResRef cItem;
+#ifdef _XBOX
+        cItem = (char*)m_lstBlueprintNames[m_nSelection - 1]->CStr();
+#else
+        int nIndex = pControl->m_nID - 1;
+        cItem = (char*)m_lstBlueprintNames[nIndex]->CStr();
+#endif
+        pApp = g_pAppManager->m_pClientExoApp;
+        pApp->CreatureAcquireItem(pApp->GetPlayerCreatureId(), cItem);
+        pGui = (CGuiInGame*)g_pAppManager->m_pClientExoApp->GetInGameGui();
+        pGui->HideSubItemCreateMenu();
+    }
+}
 // PC 0x00713230
 void CSWGuiCreateItemSubMenu::HandleInputEvent(int nEvent, int nState)
 {
@@ -86,39 +119,6 @@ CSWGuiButton* CSWGuiCreateItemSubMenu::CreateOption(const CExoString& sText,
     pButton->AddEvent(GUIEVENT_ACTIVATE, this, pHandler);
     pButton->AddEvent(45, this, pHandler);
     return pButton;
-}
-// PC 0x00713170
-void CSWGuiCreateItemSubMenu::Back(CSWGuiControl* pControl)
-{
-    SwguiSubCreateItemTrace1();
-    if (pControl->m_bSelected != 0)
-    {
-        ((CGuiInGame*)g_pAppManager->m_pClientExoApp->GetInGameGui())
-            ->HideSubItemCreateMenu();
-        ((CGuiInGame*)g_pAppManager->m_pClientExoApp->GetInGameGui())
-            ->ShowItemCreateMenu();
-    }
-}
-// PC 0x007131B0
-void CSWGuiCreateItemSubMenu::CreateItem(CSWGuiControl* pControl)
-{
-    SwguiSubCreateItemTrace1();
-    CClientExoApp* pApp;
-    CGuiInGame* pGui;
-    if (pControl->m_bSelected != 0)
-    {
-        CResRef cItem;
-#ifdef _XBOX
-        cItem = (char*)m_lstBlueprintNames[m_nSelection - 1]->CStr();
-#else
-        int nIndex = pControl->m_nID - 1;
-        cItem = (char*)m_lstBlueprintNames[nIndex]->CStr();
-#endif
-        pApp = g_pAppManager->m_pClientExoApp;
-        pApp->CreatureAcquireItem(pApp->GetPlayerCreatureId(), cItem);
-        pGui = (CGuiInGame*)g_pAppManager->m_pClientExoApp->GetInGameGui();
-        pGui->HideSubItemCreateMenu();
-    }
 }
 // PC 0x00713400
 CSWGuiCreateItemSubMenu::CSWGuiCreateItemSubMenu(CSWGuiManager* pManager)

@@ -7,6 +7,25 @@
 #include "clientexoapp.h"
 
 static inline void NwcanimbasewieldTrace1();
+// PC 0x006F5100
+void CSWCAnimBaseWield::DisableDistortion()
+{
+    Gob* pLeftModel = GetItemAurObject(m_nLeftItemId, CSWCObject::MODEL_SLOT_DEFAULT);
+    if (pLeftModel != 0)
+    {
+        pLeftModel->DisableDistortion();
+    }
+    Gob* pRightModel = GetItemAurObject(m_nRightItemId, CSWCObject::MODEL_SLOT_DEFAULT);
+    if (pRightModel != 0)
+    {
+        pRightModel->DisableDistortion();
+    }
+    CSWCAnimBase::DisableDistortion();
+}
+
+static inline void NwcanimbasewieldTrace1()
+{
+}
 #define NWCANIMBASEWIELD_TRACE() NwcanimbasewieldTrace1()
 // PC 0x006F45C0
 CSWCAnimBaseWield::CSWCAnimBaseWield()
@@ -63,6 +82,87 @@ int CSWCAnimBaseWield::SetAnimationOnSubObjectInternal(
         return 0;
     }
     return SetAnimationInternal(pObject, nAnimation, fSpeed, nFlags, fBlend);
+}
+// PC 0x006F4B10
+void CSWCAnimBaseWield::HideWieldedItems(const CResRef& sRight,
+                                         const CResRef& sLeft)
+{
+    NWCANIMBASEWIELD_TRACE();
+    CExoString sModel;
+
+    CSWCItem* pRightItem =
+        g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_nRightItemId);
+    if (pRightItem != 0)
+    {
+        Gob* pModel = pRightItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
+        if (pModel != 0)
+        {
+            pModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
+            pModel->AttachToScene(0);
+            if (m_pTorchSound != 0)
+            {
+                m_pTorchSound->Stop();
+            }
+        }
+    }
+
+    CSWCItem* pLeftItem =
+        g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_nLeftItemId);
+    if (pLeftItem != 0)
+    {
+        Gob* pModel = pLeftItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
+        if (pModel != 0)
+        {
+            pModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
+            pModel->AttachToScene(0);
+        }
+    }
+
+    if (m_resHiddenRight != sRight)
+    {
+        if (m_pHiddenRightModel != 0)
+        {
+            m_pHiddenRightModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
+            m_pHiddenRightModel->AttachToScene(0);
+            delete m_pHiddenRightModel;
+            m_pHiddenRightModel = 0;
+        }
+        if (*const_cast<CResRef&>(sRight).GetResRef() != 0)
+        {
+            sRight.CopyToString(sModel);
+            m_pHiddenRightModel = static_cast<Gob*>(
+                NewCAurObject((char*)sModel.CStr(), "dummyright", 0, 0));
+            if (m_pHiddenRightModel != 0)
+            {
+                m_pHiddenRightModel->AttachToObject(m_pModel, "rhand", Gob::ATTACH_NORMAL);
+            }
+        }
+        m_resHiddenRight = sRight;
+    }
+
+    if (m_resHiddenLeft != sLeft)
+    {
+        if (m_pHiddenLeftModel != 0)
+        {
+            m_pHiddenLeftModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
+            m_pHiddenLeftModel->AttachToScene(0);
+            delete m_pHiddenLeftModel;
+            m_pHiddenLeftModel = 0;
+        }
+        if (*const_cast<CResRef&>(sLeft).GetResRef() != 0)
+        {
+            sLeft.CopyToString(sModel);
+            m_pHiddenLeftModel = static_cast<Gob*>(
+                NewCAurObject((char*)sModel.CStr(), "dummyleft", 0, 0));
+            if (m_pHiddenLeftModel != 0)
+            {
+                m_pHiddenLeftModel->AttachToObject(m_pModel, "lhand", Gob::ATTACH_NORMAL);
+            }
+        }
+        m_resHiddenLeft = sLeft;
+    }
+
+    m_bItemsHidden = 1;
 }
 // PC 0x006F4800
 int CSWCAnimBaseWield::SetAnimationInternal(CAurObject* pObject,
@@ -458,87 +558,6 @@ int CSWCAnimBaseWield::ItemIsValid(unsigned long nItemId)
     return g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(nItemId) !=
            0;
 }
-// PC 0x006F4B10
-void CSWCAnimBaseWield::HideWieldedItems(const CResRef& sRight,
-                                         const CResRef& sLeft)
-{
-    NWCANIMBASEWIELD_TRACE();
-    CExoString sModel;
-
-    CSWCItem* pRightItem =
-        g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_nRightItemId);
-    if (pRightItem != 0)
-    {
-        Gob* pModel = pRightItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
-        if (pModel != 0)
-        {
-            pModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
-            pModel->AttachToScene(0);
-            if (m_pTorchSound != 0)
-            {
-                m_pTorchSound->Stop();
-            }
-        }
-    }
-
-    CSWCItem* pLeftItem =
-        g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_nLeftItemId);
-    if (pLeftItem != 0)
-    {
-        Gob* pModel = pLeftItem->GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
-        if (pModel != 0)
-        {
-            pModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
-            pModel->AttachToScene(0);
-        }
-    }
-
-    if (m_resHiddenRight != sRight)
-    {
-        if (m_pHiddenRightModel != 0)
-        {
-            m_pHiddenRightModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
-            m_pHiddenRightModel->AttachToScene(0);
-            delete m_pHiddenRightModel;
-            m_pHiddenRightModel = 0;
-        }
-        if (*const_cast<CResRef&>(sRight).GetResRef() != 0)
-        {
-            sRight.CopyToString(sModel);
-            m_pHiddenRightModel = static_cast<Gob*>(
-                NewCAurObject((char*)sModel.CStr(), "dummyright", 0, 0));
-            if (m_pHiddenRightModel != 0)
-            {
-                m_pHiddenRightModel->AttachToObject(m_pModel, "rhand", Gob::ATTACH_NORMAL);
-            }
-        }
-        m_resHiddenRight = sRight;
-    }
-
-    if (m_resHiddenLeft != sLeft)
-    {
-        if (m_pHiddenLeftModel != 0)
-        {
-            m_pHiddenLeftModel->AttachToObject(0, 0, Gob::ATTACH_NORMAL);
-            m_pHiddenLeftModel->AttachToScene(0);
-            delete m_pHiddenLeftModel;
-            m_pHiddenLeftModel = 0;
-        }
-        if (*const_cast<CResRef&>(sLeft).GetResRef() != 0)
-        {
-            sLeft.CopyToString(sModel);
-            m_pHiddenLeftModel = static_cast<Gob*>(
-                NewCAurObject((char*)sModel.CStr(), "dummyleft", 0, 0));
-            if (m_pHiddenLeftModel != 0)
-            {
-                m_pHiddenLeftModel->AttachToObject(m_pModel, "lhand", Gob::ATTACH_NORMAL);
-            }
-        }
-        m_resHiddenLeft = sLeft;
-    }
-
-    m_bItemsHidden = 1;
-}
 // PC 0x006F5070
 void CSWCAnimBaseWield::EnableDistortion()
 {
@@ -553,23 +572,4 @@ void CSWCAnimBaseWield::EnableDistortion()
         pRightModel->EnableDistortion();
     }
     CSWCAnimBase::EnableDistortion();
-}
-// PC 0x006F5100
-void CSWCAnimBaseWield::DisableDistortion()
-{
-    Gob* pLeftModel = GetItemAurObject(m_nLeftItemId, CSWCObject::MODEL_SLOT_DEFAULT);
-    if (pLeftModel != 0)
-    {
-        pLeftModel->DisableDistortion();
-    }
-    Gob* pRightModel = GetItemAurObject(m_nRightItemId, CSWCObject::MODEL_SLOT_DEFAULT);
-    if (pRightModel != 0)
-    {
-        pRightModel->DisableDistortion();
-    }
-    CSWCAnimBase::DisableDistortion();
-}
-
-static inline void NwcanimbasewieldTrace1()
-{
 }

@@ -54,6 +54,118 @@ CSWCPlaceable::CSWCPlaceable()
     m_pLight = NULL;
     m_nUnknown140 = 0;
 }
+// PC 0x006D96E0
+void CSWCPlaceable::AnimationUpdate()
+{
+    unsigned short nAnimation;
+    float fSpeed;
+    unsigned long nLength;
+    void* pData;
+
+    if (AnimationFireAndForget(m_nCurrentAnimation) == 1)
+    {
+        m_nAnimationTimer -= m_nTimeDelta;
+        if (m_nAnimationTimer < 0)
+        {
+            SetAnimation(GetLoopingAnimation(), 0, 0);
+        }
+    }
+    if (AnimationLooping(m_nCurrentAnimation) == 1)
+    {
+        if (GetTopFireForgetAnimation(&nAnimation, &fSpeed, &nLength,
+                                      &pData) == 1)
+        {
+            m_nCurrentAnimation = nAnimation;
+            if (m_bOutOfPlace)
+            {
+                m_bOutOfPlace = 0;
+                Vector vPosition = m_vPosition;
+                Vector vOrientation = m_vOrientation;
+                m_pAnimBase->SetPosition(vPosition);
+                m_pAnimBase->SetOrientation(vOrientation);
+                m_pAnimBase->SetAlwaysRender(0);
+                m_pAnimBase->SetInCutscene(0);
+                AbortFireForgetAnimation(0);
+            }
+            if (AnimationPlayOutOfPlace(nAnimation))
+            {
+                m_bOutOfPlace = 1;
+                Vector vPosition;
+                Quaternion qOrientation;
+                m_pAnimBase->SetPosition(vPosition);
+                m_pAnimBase->SetOrientation(qOrientation);
+                m_pAnimBase->SetAlwaysRender(1);
+                m_pAnimBase->SetInCutscene(1);
+                m_bPlayedOutOfPlace = 1;
+            }
+            m_pAnimBase->SetAnimation(nAnimation, fSpeed, 1, 0.0f);
+            m_nAnimationTimer = nLength;
+            RemoveTopFireForgetAnimation();
+
+            if (nAnimation == PLACEABLE_ANIMATION_CLIENT_OPEN ||
+                nAnimation == PLACEABLE_ANIMATION_CLIENT_CLOSED ||
+                nAnimation == PLACEABLE_ANIMATION_CLIENT_DESTROYED ||
+                nAnimation == PLACEABLE_ANIMATION_CLIENT_ACTIVATE ||
+                nAnimation == PLACEABLE_ANIMATION_CLIENT_USED)
+            {
+                CExoString sSound;
+                int nSoundAppType;
+                int bSound;
+                {
+                    int nAppearance = m_nAppearance;
+                    CExoString sColumn("SoundAppType");
+                    CTwoDimArrays* pArrays = g_pRules->m_p2DArrays;
+                    C2DA* pPlaceables = pArrays->m_pPlaceables;
+                    bSound = pPlaceables->GetINTEntry(nAppearance, sColumn,
+                                                      &nSoundAppType);
+                }
+                if (!bSound)
+                {
+                    return;
+                }
+                if (nAnimation == PLACEABLE_ANIMATION_CLIENT_OPEN)
+                {
+                    return;
+                }
+                else if (nAnimation == PLACEABLE_ANIMATION_CLIENT_CLOSED)
+                {
+                    CExoString sColumn("Closed");
+                    CTwoDimArrays* pArrays = g_pRules->m_p2DArrays;
+                    C2DA* pSounds = pArrays->m_pPlaceableSounds;
+                    bSound = pSounds->GetCExoStringEntry(nSoundAppType, sColumn,
+                                                         &sSound);
+                }
+                else if (nAnimation == PLACEABLE_ANIMATION_CLIENT_DESTROYED)
+                {
+                    CExoString sColumn("Destroyed");
+                    CTwoDimArrays* pArrays = g_pRules->m_p2DArrays;
+                    C2DA* pSounds = pArrays->m_pPlaceableSounds;
+                    bSound = pSounds->GetCExoStringEntry(nSoundAppType, sColumn,
+                                                         &sSound);
+                }
+                else if (nAnimation == PLACEABLE_ANIMATION_CLIENT_ACTIVATE ||
+                         nAnimation == PLACEABLE_ANIMATION_CLIENT_USED)
+                {
+                    CExoString sColumn("Used");
+                    CTwoDimArrays* pArrays = g_pRules->m_p2DArrays;
+                    C2DA* pSounds = pArrays->m_pPlaceableSounds;
+                    bSound = pSounds->GetCExoStringEntry(nSoundAppType, sColumn,
+                                                         &sSound);
+                }
+                else
+                {
+                    return;
+                }
+                if (bSound)
+                {
+                    CResRef cSound(sSound);
+                    g_pExoSound->Play3DOneShotSound(cSound, m_vPosition, 0.0f,
+                        CExoSound::PRIORITY_GROUP_PLACEABLE, 0, 0, 0.0f, 0.0f);
+                }
+            }
+        }
+    }
+}
 // PC 0x006D9A20
 int CSWCPlaceable::LoadModel(const CResRef& cModel, unsigned char nModel,
                              unsigned char nFlags)
@@ -552,118 +664,6 @@ void CSWCPlaceable::AIUpdate()
 
     m_nLastUpdateDay = nDay;
     m_nLastUpdateTime = nTime;
-}
-// PC 0x006D96E0
-void CSWCPlaceable::AnimationUpdate()
-{
-    unsigned short nAnimation;
-    float fSpeed;
-    unsigned long nLength;
-    void* pData;
-
-    if (AnimationFireAndForget(m_nCurrentAnimation) == 1)
-    {
-        m_nAnimationTimer -= m_nTimeDelta;
-        if (m_nAnimationTimer < 0)
-        {
-            SetAnimation(GetLoopingAnimation(), 0, 0);
-        }
-    }
-    if (AnimationLooping(m_nCurrentAnimation) == 1)
-    {
-        if (GetTopFireForgetAnimation(&nAnimation, &fSpeed, &nLength,
-                                      &pData) == 1)
-        {
-            m_nCurrentAnimation = nAnimation;
-            if (m_bOutOfPlace)
-            {
-                m_bOutOfPlace = 0;
-                Vector vPosition = m_vPosition;
-                Vector vOrientation = m_vOrientation;
-                m_pAnimBase->SetPosition(vPosition);
-                m_pAnimBase->SetOrientation(vOrientation);
-                m_pAnimBase->SetAlwaysRender(0);
-                m_pAnimBase->SetInCutscene(0);
-                AbortFireForgetAnimation(0);
-            }
-            if (AnimationPlayOutOfPlace(nAnimation))
-            {
-                m_bOutOfPlace = 1;
-                Vector vPosition;
-                Quaternion qOrientation;
-                m_pAnimBase->SetPosition(vPosition);
-                m_pAnimBase->SetOrientation(qOrientation);
-                m_pAnimBase->SetAlwaysRender(1);
-                m_pAnimBase->SetInCutscene(1);
-                m_bPlayedOutOfPlace = 1;
-            }
-            m_pAnimBase->SetAnimation(nAnimation, fSpeed, 1, 0.0f);
-            m_nAnimationTimer = nLength;
-            RemoveTopFireForgetAnimation();
-
-            if (nAnimation == PLACEABLE_ANIMATION_CLIENT_OPEN ||
-                nAnimation == PLACEABLE_ANIMATION_CLIENT_CLOSED ||
-                nAnimation == PLACEABLE_ANIMATION_CLIENT_DESTROYED ||
-                nAnimation == PLACEABLE_ANIMATION_CLIENT_ACTIVATE ||
-                nAnimation == PLACEABLE_ANIMATION_CLIENT_USED)
-            {
-                CExoString sSound;
-                int nSoundAppType;
-                int bSound;
-                {
-                    int nAppearance = m_nAppearance;
-                    CExoString sColumn("SoundAppType");
-                    CTwoDimArrays* pArrays = g_pRules->m_p2DArrays;
-                    C2DA* pPlaceables = pArrays->m_pPlaceables;
-                    bSound = pPlaceables->GetINTEntry(nAppearance, sColumn,
-                                                      &nSoundAppType);
-                }
-                if (!bSound)
-                {
-                    return;
-                }
-                if (nAnimation == PLACEABLE_ANIMATION_CLIENT_OPEN)
-                {
-                    return;
-                }
-                else if (nAnimation == PLACEABLE_ANIMATION_CLIENT_CLOSED)
-                {
-                    CExoString sColumn("Closed");
-                    CTwoDimArrays* pArrays = g_pRules->m_p2DArrays;
-                    C2DA* pSounds = pArrays->m_pPlaceableSounds;
-                    bSound = pSounds->GetCExoStringEntry(nSoundAppType, sColumn,
-                                                         &sSound);
-                }
-                else if (nAnimation == PLACEABLE_ANIMATION_CLIENT_DESTROYED)
-                {
-                    CExoString sColumn("Destroyed");
-                    CTwoDimArrays* pArrays = g_pRules->m_p2DArrays;
-                    C2DA* pSounds = pArrays->m_pPlaceableSounds;
-                    bSound = pSounds->GetCExoStringEntry(nSoundAppType, sColumn,
-                                                         &sSound);
-                }
-                else if (nAnimation == PLACEABLE_ANIMATION_CLIENT_ACTIVATE ||
-                         nAnimation == PLACEABLE_ANIMATION_CLIENT_USED)
-                {
-                    CExoString sColumn("Used");
-                    CTwoDimArrays* pArrays = g_pRules->m_p2DArrays;
-                    C2DA* pSounds = pArrays->m_pPlaceableSounds;
-                    bSound = pSounds->GetCExoStringEntry(nSoundAppType, sColumn,
-                                                         &sSound);
-                }
-                else
-                {
-                    return;
-                }
-                if (bSound)
-                {
-                    CResRef cSound(sSound);
-                    g_pExoSound->Play3DOneShotSound(cSound, m_vPosition, 0.0f,
-                        CExoSound::PRIORITY_GROUP_PLACEABLE, 0, 0, 0.0f, 0.0f);
-                }
-            }
-        }
-    }
 }
 // PC 0x006DAAB0
 int CSWCPlaceable::SetAnimation(unsigned short nAnimation, int nA, int nB)
