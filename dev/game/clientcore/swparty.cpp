@@ -805,6 +805,10 @@ CSWPartyFollowDataArray::CSWPartyFollowDataArray()
 
     Reset(vPosition, 0.0f);
 }
+#define SWPARTY_DEBUG_LINE_HEIGHT_STEP 0.01f
+static inline void SwpartyDebugLine(const Vector&, const Vector&, int)
+{
+}
 // PC 0x0068B530
 void CSWPartyFollowDataArray::SmoothFollowPath()
 {
@@ -994,6 +998,12 @@ void CSWPartyFollowDataArray::SmoothFollowPath()
         }
         ++nCount;
     }
+
+    SwpartyDebugLine(
+        m_aPathData[nStartIndex].m_vPosition + Vector(0.0f, 0.0f, OFF * SWPARTY_DEBUG_LINE_HEIGHT_STEP),
+        m_aPathData[nEndIndex].m_vPosition + Vector(0.0f, 0.0f, OFF * SWPARTY_DEBUG_LINE_HEIGHT_STEP), OFF);
+    SwpartyDebugLine(aSmoothPath[0] + Vector(0.0f, 0.0f, OFF * SWPARTY_DEBUG_LINE_HEIGHT_STEP),
+                     aSmoothPath[nCount - 1] + Vector(0.0f, 0.0f, OFF * SWPARTY_DEBUG_LINE_HEIGHT_STEP), OFF);
 
     int nPoint = 0;
     Vector vLast = GetPathData(nStartIndex)->m_vPosition;
@@ -1305,6 +1315,8 @@ void CSWPartyFollowDataArray::ProcessPoint(const Vector& vPosition, float fFacin
 
     Vector vDelta = vPosition - GetPathData(nLastIndex)->m_vPosition;
     float fDistanceSquared = vDelta * vDelta;
+    SwpartyDebugLine(vPosition + Vector(0.0f, 0.0f, SWPARTY_DEBUG_LINE_HEIGHT_STEP),
+                     vPosition - vDelta + Vector(0.0f, 0.0f, SWPARTY_DEBUG_LINE_HEIGHT_STEP), 0);
 
     unsigned long oidLeader = m_pParty->m_aPartyMemberData[0].m_oidCreature;
     unsigned long oidServerLeader =
@@ -1385,9 +1397,12 @@ void CSWPartyFollowDataArray::ProcessPoint(const Vector& vPosition, float fFacin
                 Vector vOffset = pParty->m_aPartyMemberData[nMember].m_vFormationOffset;
                 Vector vPreviousOffset =
                     Quaternion(Vector(0.0f, 0.0f, 1.0f), DegToRad(fPreviousFacing)) * vOffset;
+                Vector vPreviousMemberPosition = vPreviousPosition + vPreviousOffset;
                 Vector vCurrentOffset =
                     Quaternion(Vector(0.0f, 0.0f, 1.0f), DegToRad(fCurrentFacing)) * vOffset;
                 Vector vMemberPosition = vPreviousPosition + vCurrentOffset;
+                SwpartyDebugLine(vPreviousMemberPosition + Vector(0.0f, 0.0f, SWPARTY_DEBUG_LINE_HEIGHT_STEP),
+                                 vMemberPosition + Vector(0.0f, 0.0f, SWPARTY_DEBUG_LINE_HEIGHT_STEP), nMember);
                 if (nMember == 1)
                 {
                     pPreviousPoint->m_vFirstMemberPosition = vMemberPosition;
