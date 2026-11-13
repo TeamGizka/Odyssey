@@ -2109,7 +2109,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
                 (g_pAppManager->GetClientExoApp()->GetWorldTimer()->GetSnapshotTime() /
                  WORLD_TIMER_SNAPSHOT_TICKS_PER_MILLISECOND),
                 CPlayBackEventNode::PLAYER_POSITION, vPosition.m_fX, vPosition.m_fY, vPosition.m_fZ);
-            g_pAppManager->GetClientExoApp()->GetCaptureEventFile()->Write(sCapture);
+            g_pAppManager->m_pClientExoApp->GetCaptureEventFile()->Write(sCapture);
         }
     }
 
@@ -2244,7 +2244,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
                                     pCharacter->SetLockOrientationToObject(OBJECT_INVALID, 0);
                                     pCharacter->SetEngagedState(0);
                                     CSWCameraOnAStick* pCamera = (CSWCameraOnAStick*)
-                                        g_pAppManager->GetClientExoApp()->GetModule()->
+                                        g_pAppManager->m_pClientExoApp->GetModule()->
                                             GetCamera()->GetBehavior(AUR_BEHAVIOR_CAMERA_ONASTICK);
                                     if (pCamera != NULL)
                                         pCamera->ClearCombatCamera();

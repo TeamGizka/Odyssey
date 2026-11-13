@@ -2496,7 +2496,7 @@ void CSWCCreatureStats::GetMenuInfo(
                 char nActive;
                 if (nSpellId == CSWSpell::FORCE_POWER_CONFUSION)
                 {
-                    g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->GetValueNumber(
+                    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(
                         "000_Human_Conf_Active", nActive);
                     if (nActive > 0)
                     {
@@ -2505,7 +2505,7 @@ void CSWCCreatureStats::GetMenuInfo(
                 }
                 else if (nSpellId == CSWSpell::FORCE_POWER_BEAST_CONFUSION)
                 {
-                    g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->GetValueNumber(
+                    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(
                         "000_Beast_Conf_Active", nActive);
                     if (nActive > 0)
                     {
@@ -2514,7 +2514,7 @@ void CSWCCreatureStats::GetMenuInfo(
                 }
                 else if (nSpellId == CSWSpell::FORCE_POWER_DROID_CONFUSION)
                 {
-                    g_pAppManager->m_pServerExoApp->GetGlobalVariableTable()->GetValueNumber(
+                    g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(
                         "000_Droid_Conf_Active", nActive);
                     if (nActive > 0)
                     {

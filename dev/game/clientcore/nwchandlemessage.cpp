@@ -2120,7 +2120,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         g_pTlkTable->SetCustomToken(7, CExoString(nTotal));
         g_pTlkTable->SetCustomToken(8, "");
         sMessage = g_pSWTlkTable->Fetch(1405, NULL, 0, 0);
-        g_pAppManager->GetClientExoApp()->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->AppendToCombatBuffer(sMessage, 0x80, 0);
         return 1;
     }
     case CC_MESSAGE_INITIATIVE:
