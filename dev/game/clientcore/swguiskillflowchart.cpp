@@ -440,20 +440,6 @@ void CSWGuiSkillFlowChart::SetSkillStatus(unsigned long nSkill,
         }
     }
 }
-// PC 0x0073BCB0 GOG 0x0073BA10
-void CSWGuiSkillInfoBox::SetSkillList(const CExoArrayList<unsigned long>& lSkills,
-                                      unsigned char nState)
-{
-    CExoArrayList<CSWGuiControl*> lControls;
-    EXOXBOXASSERT(lSkills.num <= MAX_SKILL_ENTRIES);
-    for (int i = 0; i < lSkills.num; i++)
-    {
-        m_aSkillEntries[i].SetSkill(lSkills.element[i], nState);
-        lControls.Add(&m_aSkillEntries[i]);
-    }
-    m_lbSkills.AddControls(lControls, 0, 1, 0);
-    SetActiveControl(&m_lbSkills, 0);
-}
 // PC 0x0073C120 GOG 0x0073BE80
 void CSWGuiSkillFlowChart::CreatePowerChart(CSWSCreatureStats* pStats,
                                           int bAllPowers)
@@ -1028,6 +1014,21 @@ void CSWGuiSkillInfoBox::SetCallback(CSWGuiObject* pObject, CSWGuiHandler pfnCal
 {
     m_pCallback = pfnCallback;
     m_pCallbackObject = pObject;
+}
+
+// PC 0x0073BCB0 GOG 0x0073BA10
+void CSWGuiSkillInfoBox::SetSkillList(const CExoArrayList<unsigned long>& lSkills,
+                                      unsigned char nState)
+{
+    CExoArrayList<CSWGuiControl*> lControls;
+    EXOXBOXASSERT(lSkills.num <= MAX_SKILL_ENTRIES);
+    for (int i = 0; i < lSkills.num; i++)
+    {
+        m_aSkillEntries[i].SetSkill(lSkills.element[i], nState);
+        lControls.Add(&m_aSkillEntries[i]);
+    }
+    m_lbSkills.AddControls(lControls, 0, 1, 0);
+    SetActiveControl(&m_lbSkills, 0);
 }
 // PC 0x0073B1A0 GOG 0x0073AA80
 void CSWGuiSkillInfoBox::OnPanelRemoved()

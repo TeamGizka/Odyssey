@@ -58,6 +58,19 @@ const unsigned long CServerAIMaster::EVENT_ABILITY_EFFECT_APPLIED = 23;
 const unsigned long CServerAIMaster::EVENT_SUMMON_CREATURE = 24;
 const unsigned long CServerAIMaster::EVENT_ACQUIRE_ITEM = 25;
 const unsigned long CServerAIMaster::EVENT_AREA_TRANSITION = 26;
+
+// PC 0x004DDFE0 GOG 0x004DE100
+CServerAIMaster::CServerAIMaster()
+{
+    m_pEffectHandler = new CSWSEffectListHandler;
+    m_pEffectHandler->InitializeEffects();
+    m_pItemPropertyHandler = new CSWSItemPropertyHandler;
+    m_pItemPropertyHandler->InitializeItemProperties();
+    m_pUnused80 = NULL;
+    m_pUnused84 = NULL;
+    m_pUnused88 = NULL;
+    m_pUnused8C = NULL;
+}
 const unsigned long CServerAIMaster::EVENT_CONTROLLER_RUMBLE = 27;
 // PC 0x00650770 GOG 0x00650620
 void CServerAIMaster::SetExoAppInternal(CServerExoAppInternal* pExoAppInternal)
@@ -890,18 +903,6 @@ BOOL CServerAIEventNode::LoadNode(CResGFF* pRes, CResStruct* pStruct)
     }
 
     return TRUE;
-}
-// PC 0x004DDFE0 GOG 0x004DE100
-CServerAIMaster::CServerAIMaster()
-{
-    m_pEffectHandler = new CSWSEffectListHandler;
-    m_pEffectHandler->InitializeEffects();
-    m_pItemPropertyHandler = new CSWSItemPropertyHandler;
-    m_pItemPropertyHandler->InitializeItemProperties();
-    m_pUnused80 = NULL;
-    m_pUnused84 = NULL;
-    m_pUnused88 = NULL;
-    m_pUnused8C = NULL;
 }
 // PC 0x004DD3A0 GOG 0x004DCA80
 BOOL CServerAIBodyBagInfo::SaveBodyBag(CResGFF* pRes, CResStruct* pStruct)

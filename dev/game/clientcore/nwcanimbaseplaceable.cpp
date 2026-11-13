@@ -167,7 +167,6 @@ CExoString CSWCAnimBasePlaceable::GetAnimationName(unsigned short nAnimation)
 // PC 0x007560F0 GOG 0x00755F20
 unsigned short CSWCAnimBasePlaceable::ServerToClientAnimation(unsigned short nAnimation)
 {
-    NWCANIMBASEPLACEABLE_TRACE();
     switch (nAnimation)
     {
     case PLACEABLE_ANIMATION_BASE:
