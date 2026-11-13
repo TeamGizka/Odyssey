@@ -1729,17 +1729,12 @@ void CSWGuiOptionsSoundAdvanced::OnEAXRight(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00750860
+// PC 0x00750860 GOG 0x0074F6E0
 void CSWGuiOptionsSoundAdvanced::OnForceSoftware(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
     {
         m_bForceSoftware = (m_bForceSoftware == 0);
-        if (m_bForceSoftware == 0)
-        {
-            m_nEAXMode = 0;
-            SetEAXText();
-        }
         EnableEAXControls(m_bForceSoftware == 0);
         m_bChanged = 1;
     }
@@ -1761,7 +1756,7 @@ void CSWGuiOptionsSoundAdvanced::SetUpOptions()
     }
     m_bChanged = 0;
 }
-// PC 0x0074F2C0
+// PC 0x0074F2C0 GOG 0x0074D780
 void CSWGuiOptionsSoundAdvanced::SetEAXText()
 {
     CExoString sText;
@@ -1801,7 +1796,7 @@ void CSWGuiOptionsSoundAdvanced::SetEAXText()
     {
         pLeft->m_bEnabled = 0;
     }
-    if (m_nEAXMode == nBest)
+    else if (m_nEAXMode == nBest)
     {
         pRight->m_bEnabled = 0;
     }

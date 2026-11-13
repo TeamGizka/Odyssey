@@ -7310,7 +7310,7 @@ unsigned char CSWCCreature::GetMenuPoint(Vector& vPoint)
     vPoint.m_fY *= g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nHeight;
     return nResult;
 }
-// PC 0x0065C4A0
+// PC 0x0065C4A0 GOG 0x0065C320
 void CSWCCreature::Setup3DScene(CSWGui3DSceneView& cView,
                                CSWCCreature* pCreature,
                                CSWSCreature* pServerCreature, int bAnimate)
@@ -7362,17 +7362,6 @@ void CSWCCreature::Setup3DScene(CSWGui3DSceneView& cView,
         if (fLength != Gob::ANIMATION_LENGTH_NOT_FOUND)
             pModel->PlayAnimation(sAlignmentAnimation.CStr(), 1.0f,
                                   Gob::ANIMATION_FLAG_OUT_OF_PLACE, 0.0f);
-        else if (sAnimation.CompareNoCase("pause1"))
-        {
-            if (nAlignment < CSWCCreatureStats::GOOD_EVIL_NEUTRAL_MIN)
-                sAlignmentAnimation = "evil";
-            else if (nAlignment >= CSWCCreatureStats::GOOD_EVIL_LIGHT_SIDE_MIN)
-                sAlignmentAnimation = "good";
-            else
-                sAlignmentAnimation = "neutral";
-            pModel->PlayAnimation(sAlignmentAnimation.CStr(), 1.0f,
-                                  Gob::ANIMATION_FLAG_OUT_OF_PLACE, 0.0f);
-        }
         else
             pModel->PlayAnimation(sAnimation.CStr(), 1.0f,
                                   Gob::ANIMATION_FLAG_OUT_OF_PLACE, 0.0f);

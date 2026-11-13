@@ -186,7 +186,7 @@ CSWGuiControl* CSWGuiInGameMap::HitCheckMouse(int nX, int nY)  // PC 0x006EC310
     return pControl;
 }
 #endif
-// PC 0x006EC390
+// PC 0x006EC390 GOG 0x006EC010
 void CSWGuiInGameMap::SetMapNote(const CExoString& sNote)
 {
     CExoString sText;
@@ -197,7 +197,7 @@ void CSWGuiInGameMap::SetMapNote(const CExoString& sNote)
     }
     else
     {
-        sText = g_pTlkTable->GetSimpleString(STRREF_MAP_NOTE) + ": " + sNote;
+        sText = sNote;
         m_lblTitle.m_cText.m_cParams.SetText(sText);
     }
 }

@@ -677,7 +677,7 @@ template <> void CExoArrayList<SWMGExplodeBullet*>::Add(SWMGExplodeBullet* value
     }
     element[num++] = value;
 }
-// PC 0x006C6960
+// PC 0x006C6960 GOG 0x006C6670
 CSWMiniGame::CSWMiniGame(CSWCArea* pArea)
 {
     m_pArea = pArea;
@@ -709,7 +709,6 @@ CSWMiniGame::CSWMiniGame(CSWCArea* pArea)
         m_pFC->GetINTEntry(nLevel, "level", &nValue);
         m_anSwoopUpgrades[i] = nValue;
     }
-    m_fJumpSpeed = 0.0f;
 }
 // PC 0x006C6C40
 CSWMiniEnemy* CSWMiniGame::AddEnemy(CExoArrayList<CResRef>& lstModels,

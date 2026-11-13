@@ -780,7 +780,7 @@ void CSWGuiPartySelection::HandleInputEvent(int nEvent, int bPressed)
     }
     CSWGuiPanel::HandleInputEvent(nEvent, bPressed);
 }
-// PC 0x0071F820
+// PC 0x0071F820 GOG 0x0071FE20
 #ifdef _XBOX
 void CSWGuiPartySelection::OnPanelAdded()
 {
@@ -962,7 +962,7 @@ void CSWGuiPartySelection::OnPanelAdded()
             if (pCreature != 0)
             {
                 pPartyTable->SaveMember(nNPC, 0);
-                cPortrait = pCreature->GetPortraitBasedOnAlignment();
+                cPortrait = pCreature->GetPortrait();
                 m_aPartyMembers[nNPC].m_bSpawned = 1;
             }
             else

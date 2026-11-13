@@ -408,7 +408,7 @@ void CExoSoundSourceInternal::ShutDownSource(bool bForce)
     }
 }
 #else
-void CExoSoundSourceInternal::ShutDownSource(bool bForce)  // PC 0x00627150
+void CExoSoundSourceInternal::ShutDownSource(bool bForce)  // PC 0x00627150 GOG 0x006270F0
 {
     EXOSOUNDSOURCE_TRACE();
     if (m_nListType == 1)
@@ -428,20 +428,14 @@ void CExoSoundSourceInternal::ShutDownSource(bool bForce)  // PC 0x00627150
     {
         if (m_p3DVoice != 0 && m_p3DVoice->m_hSample != 0)
         {
-            if (this == m_p3DVoice->m_pSource)
-            {
-                AIL_end_3D_sample(m_p3DVoice->m_hSample);
-                m_p3DVoice->m_pSource = 0;
-            }
+            AIL_end_3D_sample(m_p3DVoice->m_hSample);
+            m_p3DVoice->m_pSource = 0;
             m_p3DVoice = 0;
         }
         else if (m_p2DVoice != 0 && m_p2DVoice->m_hSample != 0)
         {
-            if (this == m_p2DVoice->m_pSource)
-            {
-                AIL_end_sample(m_p2DVoice->m_hSample);
-                m_p2DVoice->m_pSource = 0;
-            }
+            AIL_end_sample(m_p2DVoice->m_hSample);
+            m_p2DVoice->m_pSource = 0;
             m_p2DVoice = 0;
         }
     }
