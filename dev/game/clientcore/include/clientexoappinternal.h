@@ -321,6 +321,22 @@ public:
         SPauseFlagBits m_Bits;
     };
 
+    struct SUnknown11C
+    {
+        int m_nUnknown11C;
+        int m_nUnknown120;
+        int m_nUnknown124;
+        int m_nUnknown128;
+
+        void Clear()
+        {
+            m_nUnknown11C = 0;
+            m_nUnknown120 = 0;
+            m_nUnknown124 = 0;
+            m_nUnknown128 = 0;
+        }
+    };
+
     struct SAutoPauseFlagBits
     {
         unsigned long m_bAutoPaused : 1;
@@ -849,10 +865,7 @@ public:
     float m_fXboxUnmapped128;
     float m_fXboxUnmapped12C;
 #else
-    int m_nUnknown11C;
-    int m_nUnknown120;
-    int m_nUnknown124;
-    int m_nUnknown128;
+    SUnknown11C m_Unknown11C;
 #endif
     CExoMoviePlayer* m_pMoviePlayer;
     unsigned char m_aUnmapped130[0xC];

@@ -3615,10 +3615,7 @@ CClientExoAppInternal::CClientExoAppInternal()
     m_fXboxUnmapped128 = 0.0f;
     m_fXboxUnmapped12C = 0.0f;
 #else
-    m_nUnknown11C = 0;
-    m_nUnknown120 = 0;
-    m_nUnknown124 = 0;
-    m_nUnknown128 = 0;
+    m_Unknown11C.Clear();
 #endif
     m_nCameraScrollX = 0;
     m_nCameraScrollY = 0;
