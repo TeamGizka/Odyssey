@@ -616,6 +616,39 @@ int CSWCollisionMesh::SaveBinaryMesh(const CExoString& sFileName)
     fclose(pFile);
     return 1;
 }
+static inline float Dot1(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
+{
+    return vFirst * vSecond;
+}
+static inline float Dot2(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
+{
+    return Dot1(vFirst, vSecond, vExtra0);
+}
+static inline float Dot3(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
+{
+    return Dot2(vFirst, vSecond, vExtra0);
+}
+static inline float Dot4(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
+{
+    return Dot3(vFirst, vSecond, vExtra0);
+}
+static inline float Dot5(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
+{
+    return Dot4(vFirst, vSecond, vExtra0);
+}
+static inline float Dot6(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
+{
+    return Dot5(vFirst, vSecond, vExtra0);
+}
+static inline float Dot7(const Vector& vFirst, const Vector& vSecond, const Vector& vExtra0)
+{
+    return Dot6(vFirst, vSecond, vExtra0);
+}
+static inline void MeshDebugLine(const Vector& vA, const Vector& vB, int)
+{
+    Vector vFrom = vA + Vector(0.0f, 0.0f, 0.01f);
+    Vector vTo = vB + Vector(0.0f, 0.0f, 0.01f);
+}
 // PC 0x00558390
 int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
     const Vector& vEnd, float fMinHeight, float fMaxHeight,
@@ -624,7 +657,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
     Vector vLocalStart = WorldToLocal(vStart);
     Vector vLocalEnd = WorldToLocal(vEnd);
     if (bDumpData)
-        EXOLOG("CSWCollisionMesh::NoNonWalkPolys: %s %s %s %s %s %s %s %s %s\n", "face", "material", "outside0", "outside1", "outside2", "edge0", "edge1", "edge2", "hit");
+        EXOLOG("CSWCollisionMesh::NoNonWalkPolys: %s %s %s %s %s %s %s %s\n", "face", "material", "outside0", "outside1", "outside2", "edge0", "edge1", "edge2");
     float fBottom;
     float fTop;
     Vector vMin, vMax;
@@ -646,6 +679,8 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
     vMove.m_fX = vLocalEnd.m_fX - vLocalStart.m_fX;
     vMove.m_fY = vLocalEnd.m_fY - vLocalStart.m_fY;
     vMove.m_fZ = 0.0f;
+    if (bDumpData)
+        EXOLOG("  start z %f\n", vLocalStart.m_fZ);
     float fLength = magnitude(vMove);
     Vector vDirection = vMove / fLength;
     vDirection = normalize(vMove);
@@ -777,8 +812,6 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
                 AurRemoveDrawableSquare(REC_NUM);
             REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, 0xFFF0F0F0, "swcollisionmesh.cpp", 951);
         }
-        if (bDumpData)
-            EXOLOG("  start z %f\n", vLocalStart.m_fZ);
         {
             static int REC_NUM = -1;
             Vector avSquare[4] =
@@ -839,6 +872,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
     if (bDumpData)
         EXOLOG("  end z %f\n", vLocalEnd.m_fZ);
     Vector avTriangle[3];
+    Vector vUnused;
     int bVertexHit = 0;
     int bHit = 0;
     Vector vClosestHit;
@@ -870,6 +904,16 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             !(avTriangle[0].m_fY >= vMin.m_fY || avTriangle[1].m_fY >= vMin.m_fY || avTriangle[2].m_fY >= vMin.m_fY))
             continue;
 
+        MeshDebugLine(avTriangle[0], avTriangle[1], 0);
+        MeshDebugLine(avTriangle[0], avTriangle[1], 1);
+        MeshDebugLine(avTriangle[0], avTriangle[1], 2);
+        MeshDebugLine(avTriangle[0], avTriangle[1], 3);
+        MeshDebugLine(avTriangle[0], avTriangle[1], 4);
+        MeshDebugLine(avTriangle[0], avTriangle[1], 5);
+        MeshDebugLine(avTriangle[0], avTriangle[1], 6);
+        MeshDebugLine(avTriangle[0], avTriangle[1], 7);
+        MeshDebugLine(avTriangle[0], avTriangle[1], 8);
+        MeshDebugLine(avTriangle[0], avTriangle[1], 9);
         int abOutside[3];
         int abTestEdge[3] = { 1, 1, 1 };
         for (i = 0; i < 3; ++i)
@@ -879,10 +923,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             if (!(vDelta * vDirection <= fLength &&
                   vDelta * vDirection >= 0.0f))
             {
-                Vector vEndDelta;
-                vEndDelta.m_fX = vFirst.m_fX - vLocalEnd.m_fX;
-                vEndDelta.m_fY = vFirst.m_fY - vLocalEnd.m_fY;
-                vEndDelta.m_fZ = vFirst.m_fZ - vLocalEnd.m_fZ;
+                Vector vEndDelta = vFirst - vLocalEnd;
                 if (vEndDelta * vEndDelta <= fRadius * fRadius)
                 {
                     abOutside[i] = 0;
@@ -1022,10 +1063,10 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
                         if (fDistance >= 0.0f && fDistance < fClosest)
                         {
                             fClosest = fDistance;
-                            vClosestHit = vIntersection1;
-                            nHitFace = nFace;
                             bHit = 1;
                             bVertexHit = 0;
+                            vClosestHit = vIntersection1;
+                            nHitFace = nFace;
                             nHitEdge = i % 3;
                         }
                     }
@@ -1038,6 +1079,8 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
         Vector vPerpendicular;
         Vector vEdge = avTriangle[1] - avTriangle[0];
         vPerpendicular = cross(zaxis, avTriangle[0] - vLocalStart);
+        if (bDumpData)
+            EXOLOG("  hit: %f %f %f\n", vClosestHit.m_fX, vClosestHit.m_fY, vClosestHit.m_fZ);
         if (!(vEdge * vPerpendicular >= 0.0f))
             continue;
         vEdge = avTriangle[2] - avTriangle[1];
@@ -1064,8 +1107,6 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
         GetFaceVertex(nIndex, k, avTriangle[k]);
         ++k;
     }
-    if (bDumpData)
-        EXOLOG("  hit: face %d, edge %d, vertex %d, reach end %f %f %f\n", nHitFace, nHitEdge, bVertexHit, vReachEnd.m_fX, vReachEnd.m_fY, vReachEnd.m_fZ);
     vFirst = avTriangle[nHitEdge];
     vSecond = avTriangle[(nHitEdge + 1) % 3];
     Vector vThird = avTriangle[(nHitEdge + 2) % 3];
@@ -1125,6 +1166,8 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, 0xFF00FF00, "swcollisionmesh.cpp", 1390);
         }
     }
+    if (bDumpData)
+        EXOLOG("  hit: face %d, edge %d, vertex %d, reach end %f %f %f\n", nHitFace, nHitEdge, bVertexHit, vReachEnd.m_fX, vReachEnd.m_fY, vReachEnd.m_fZ);
     if ((vFirst.m_fX == vSecond.m_fX && vFirst.m_fY == vSecond.m_fY &&
          vFirst.m_fZ != vSecond.m_fZ) || bVertexHit)
     {
@@ -1134,7 +1177,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
                                    normalize(cross(zaxis, vThird - vFirst)));
         Vector vCorrection = vDirection * (fDistance - fRadius);
         Vector vFaceNormal = m_pFaceNormals[nHitFace];
-        if ((zaxis * vFaceNormal) <= 0.0f && vNormal * vFaceNormal < 0.0f)
+        if (Dot7(zaxis, vFaceNormal, zaxis) <= 0.0f && Dot7(vNormal, vFaceNormal, vNormal) < 0.0f)
             vNormal = -vNormal;
         pHitInfo->SetHitInfo(CWalkHitInfo::FAILURE_BLOCKED, LocalToWorld(vLocalStart + vCorrection),
             NormalLocalToWorld(vNormal), LocalToWorld(vClosestHit), LocalToWorld(vClosestHit),
@@ -1157,10 +1200,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
     }
     else
     {
-        Vector vRayStart;
-        vRayStart.m_fX = vLocalStart.m_fX;
-        vRayStart.m_fY = vLocalStart.m_fY;
-        vRayStart.m_fZ = 0.0f;
+        Vector vRayStart(vLocalStart.m_fX, vLocalStart.m_fY, 0.0f);
         Vector vRayEnd(vLocalEnd.m_fX, vLocalEnd.m_fY, 0.0f);
         Vector vEdgeDirection = normalize(Vector(vFirst.m_fX, vFirst.m_fY, 0.0f) -
             Vector(vSecond.m_fX, vSecond.m_fY, 0.0f));
@@ -1168,7 +1208,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
         float fShear = (((vEdgeDirection * vLocalEnd)) - (vEdgeDirection * vLocalStart)) /
             ((vNormal * vLocalEnd) - (vNormal * vLocalStart)) * fRadius;
         float fRadiusSquared = fRadius * fRadius;
-        float fAdjustment = sqrtf(fShear * fShear + fRadiusSquared) + 0.03f;
+        float fAdjustment = sqrtf((fShear * fShear) + fRadiusSquared) + 0.03f;
         Vector vEdgeStart(vFirst.m_fX, vFirst.m_fY, 0.0f);
         Vector vEdgeEnd(vSecond.m_fX, vSecond.m_fY, 0.0f);
         Vector vCross = cross(vRayEnd - vRayStart, vEdgeEnd - vEdgeStart);
@@ -1193,7 +1233,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             }
             return 0;
         }
-        DistanceBetweenLines(vRayStart, Vector(vRayEnd.m_fX - vRayStart.m_fX, vRayEnd.m_fY - vRayStart.m_fY, vRayEnd.m_fZ - vRayStart.m_fZ),
+        DistanceBetweenLines(vRayStart, vRayEnd - vRayStart,
             vEdgeStart, vEdgeEnd - vEdgeStart, &vClosestHit, NULL);
         if (rendercollisionboxes == 1)
         {
