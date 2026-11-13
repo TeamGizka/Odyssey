@@ -697,7 +697,8 @@ void CAurTriangleBin::CreateArrays()
                 vWeight.m_fX = (rand() % 10000) * 0.0001f;
                 vWeight.m_fY = (rand() % 10000) * 0.0001f;
                 vWeight.m_fZ = (rand() % 10000) * 0.0001f;
-                vWeight = vWeight / (vWeight.m_fX + vWeight.m_fY + vWeight.m_fZ);
+                Vector& vNormalized = vWeight;
+                vNormalized = vWeight / (vWeight.m_fX + vWeight.m_fY + vWeight.m_fZ);
                 if (m_nFlags & MULTI_TEXTURE)
                 {
                     int nVertexPool = pNode->m_pModel->AsModel()->m_nVertexPool;
@@ -730,25 +731,24 @@ void CAurTriangleBin::CreateArrays()
                     int nColorPool = pTriMesh->m_nColorPool;
                     unsigned long* pColors = (unsigned long*)GLRender::LockPool(
                         nColorPool, 0, 0, RequestPoolManager::POOL_LOCK_READ_ONLY);
-                    float fWeightA = vWeight.m_fX;
-                    float fWeightB = vWeight.m_fY;
-                    float fWeightC = vWeight.m_fZ;
-                    float fRed = (pColors[pFace->m_anVertexIndices[0]] & 0xff) * fWeightA +
-                                 (pColors[pFace->m_anVertexIndices[1]] & 0xff) * fWeightB +
-                                 (pColors[pFace->m_anVertexIndices[2]] & 0xff) * fWeightC;
-                    float fGreen = ((pColors[pFace->m_anVertexIndices[0]] & 0xff00) >> 8) * vWeight.m_fX +
-                                   ((pColors[pFace->m_anVertexIndices[1]] & 0xff00) >> 8) * vWeight.m_fY +
-                                   ((pColors[pFace->m_anVertexIndices[2]] & 0xff00) >> 8) * vWeight.m_fZ;
-                    float fBlue = ((pColors[pFace->m_anVertexIndices[0]] & 0xff0000) >> 16) * vWeight.m_fX +
-                                  ((pColors[pFace->m_anVertexIndices[1]] & 0xff0000) >> 16) * vWeight.m_fY +
-                                  ((pColors[pFace->m_anVertexIndices[2]] & 0xff0000) >> 16) * vWeight.m_fZ;
-                    float fAlpha = ((pColors[pFace->m_anVertexIndices[0]] & 0xff000000) >> 24) * vWeight.m_fX +
-                                   ((pColors[pFace->m_anVertexIndices[1]] & 0xff000000) >> 24) * vWeight.m_fY +
-                                   ((pColors[pFace->m_anVertexIndices[2]] & 0xff000000) >> 24) * vWeight.m_fZ;
-                    nRed = (unsigned char)max(0.0f, min(255.0f, fRed));
-                    nGreen = (unsigned char)max(0.0f, min(255.0f, fGreen));
-                    nBlue = (unsigned char)max(0.0f, min(255.0f, fBlue));
-                    nAlpha = (unsigned char)max(0.0f, min(255.0f, fAlpha));
+                    float fRed = (pColors[pFace->m_anVertexIndices[0]] & 0xff) * vNormalized.m_fX +
+                                 (pColors[pFace->m_anVertexIndices[1]] & 0xff) * vNormalized.m_fY +
+                                 (pColors[pFace->m_anVertexIndices[2]] & 0xff) * vNormalized.m_fZ;
+                    float fGreen = ((pColors[pFace->m_anVertexIndices[0]] & 0xff00) >> 8) * vNormalized.m_fX +
+                                   ((pColors[pFace->m_anVertexIndices[1]] & 0xff00) >> 8) * vNormalized.m_fY +
+                                   ((pColors[pFace->m_anVertexIndices[2]] & 0xff00) >> 8) * vNormalized.m_fZ;
+                    float fBlue = ((pColors[pFace->m_anVertexIndices[0]] & 0xff0000) >> 16) * vNormalized.m_fX +
+                                  ((pColors[pFace->m_anVertexIndices[1]] & 0xff0000) >> 16) * vNormalized.m_fY +
+                                  ((pColors[pFace->m_anVertexIndices[2]] & 0xff0000) >> 16) * vNormalized.m_fZ;
+                    float fAlpha = ((pColors[pFace->m_anVertexIndices[0]] & 0xff000000) >> 24) * vNormalized.m_fX +
+                                   ((pColors[pFace->m_anVertexIndices[1]] & 0xff000000) >> 24) * vNormalized.m_fY +
+                                   ((pColors[pFace->m_anVertexIndices[2]] & 0xff000000) >> 24) * vNormalized.m_fZ;
+                    float fMinimum = 0.0f;
+                    float fMaximum = 255.0f;
+                    nRed = (unsigned char)max(fMinimum, min(fMaximum, fRed));
+                    nGreen = (unsigned char)max(fMinimum, min(fMaximum, fGreen));
+                    nBlue = (unsigned char)max(fMinimum, min(fMaximum, fBlue));
+                    nAlpha = (unsigned char)max(fMinimum, min(fMaximum, fAlpha));
                     nColorPool = pTriMesh->m_nColorPool;
                     GLRender::UnlockPool(nColorPool);
                 }
