@@ -466,6 +466,17 @@ inline void SetDepthMask(unsigned char bWrite)
     glDepthMask(bWrite);
 }
 
+void AurTexImage2D(int nLevel, int nComponents, int nWidth, int nHeight, int nFormat,
+                   int nType, void* pImage, bool bSubImage)
+{
+    if (!bSubImage)
+        glTexImage2D(GL_TEXTURE_2D, nLevel, nComponents, nWidth, nHeight, 0,
+                     nFormat, nType, pImage);
+    else
+        glTexSubImage2D(GL_TEXTURE_2D, nLevel, 0, 0, nWidth, nHeight,
+                        nFormat, nType, pImage);
+}
+
 int GLRender::GetAvailableTextureMemory()
 {
     unsigned char data[256 * 256 * 4];
