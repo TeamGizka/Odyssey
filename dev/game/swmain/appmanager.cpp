@@ -84,6 +84,12 @@ void CAppManager::DoSaveGameScreenShot(const CExoString& sName)  // PC 0x0040108
 {
     AurSaveGameSnapshot((char*)sName.CStr(), 256, true);
 }
+
+void BuildStatusMessage(CExoLocString& lsMessage, const CExoString& sText)
+{
+    lsMessage.ClearLocString();
+    lsMessage.AddString(0, sText, 0);
+}
 #endif
 void CAppManager::AllocLargeTempBuffer()  // PC 0x004010A0 GOG 0x004010A0
 {
