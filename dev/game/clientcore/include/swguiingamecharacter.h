@@ -24,7 +24,7 @@ public:
     {
         SetRepeat(0.2f, 0.5f);
     }
-    // PC 0x006D51E0
+    // PC 0x006D51E0 GOG 0x006D5150
     SWGUI_PCVIRTUAL void HandleLMouseDown()
     {
         m_bIncrease = 1;
@@ -32,14 +32,14 @@ public:
         HandleInputEvent(90710, 1);
         m_fTimeToRepeat = m_fRepeatRate;
     }
-    SWGUI_PCVIRTUAL void HandleRMouseDown()  // PC 0x006D5210
+    SWGUI_PCVIRTUAL void HandleRMouseDown()  // PC 0x006D5210 GOG 0x006D5180
     {
         m_bIncrease = 0;
         CSWGuiControl::HandleRMouseDown();
         HandleInputEvent(90711, 1);
         m_fTimeToRepeat = m_fRepeatRate;
     }
-    virtual void Draw(float fElapsed)  // PC 0x006D5240
+    virtual void Draw(float fElapsed)  // PC 0x006D5240 GOG 0x006D51B0
     {
         CSWGuiButton::Draw(fElapsed);
 #ifndef _XBOX
@@ -94,7 +94,7 @@ public:
 class CSWGuiSliderReadOnly : public CSWGuiSlider
 {
 public:
-    // PC 0x004015A0
+    // PC 0x004015A0 GOG 0x004015A0
     SWGUI_PCVIRTUAL void HandleLMouseDown()
     {
     }

@@ -113,7 +113,7 @@ public:
     int m_bConversationMultiPlayer;
     int m_nDifficultyLevel;
     SServerOption m_aOptions[50];
-    ~CServerInfo()  // PC 0x004E9E50
+    ~CServerInfo()  // PC 0x004E9E50 GOG 0x004E9A80
     {
     }
     int FindOptionIndex(CExoString const&, CExoString const&);

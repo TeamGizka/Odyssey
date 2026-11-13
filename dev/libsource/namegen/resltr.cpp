@@ -1,6 +1,6 @@
 #include <string.h>
 #include "exoresman.h"
-// PC 0x00785A50
+// PC 0x00785A50 GOG 0x00785820
 CResLTR::CResLTR()
 {
     m_pLTRData = 0;
@@ -17,11 +17,11 @@ CResLTR::CResLTR()
     m_pnLetterTable2 = 0;
     m_pnLetterTable3 = 0;
 }
-// PC 0x00785A90
+// PC 0x00785A90 GOG 0x00785860
 CResLTR::~CResLTR()
 {
 }
-// PC 0x00785AA0
+// PC 0x00785AA0 GOG 0x00785870
 int CResLTR::OnResourceFreed()
 {
     unsigned char i;
@@ -123,7 +123,7 @@ int CResLTR::OnResourceFreed()
     m_nDataSize = 0;
     return 1;
 }
-// PC 0x00785CB0
+// PC 0x00785CB0 GOG 0x00785A80
 int CResLTR::OnResourceServiced()
 {
     LTRHeader* pHeader = (LTRHeader*)m_pResource;

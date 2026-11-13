@@ -10,13 +10,13 @@
 #include "nwsplayer.h"
 #include "swguiabilitieschargen.h"
 #include "nwsparty.h"
-// PC 0x00601E60
+// PC 0x00601E60 GOG 0x00601E40
 int CSWSFaction::GetMemberList(unsigned long** ppMembers)
 {
     *ppMembers = m_lstMembers.element;
     return m_lstMembers.num;
 }
-// PC 0x00601E70
+// PC 0x00601E70 GOG 0x00601E50
 int CSWSFaction::InviteMember(unsigned long oidCreature,
                               unsigned long oidInvitedBy)
 {
@@ -37,7 +37,7 @@ int CSWSFaction::InviteMember(unsigned long oidCreature,
     }
     return 0;
 }
-// PC 0x00601EE0
+// PC 0x00601EE0 GOG 0x00601EC0
 int CSWSFaction::GetCreatureInParty(unsigned long oidCreature)
 {
     unsigned long* pElement = m_lstMembers.element;
@@ -52,7 +52,7 @@ int CSWSFaction::GetCreatureInParty(unsigned long oidCreature)
     }
     return 0;
 }
-// PC 0x00601F10
+// PC 0x00601F10 GOG 0x00601EF0
 void CSWSFaction::Initialise()
 {
     {
@@ -63,11 +63,11 @@ void CSWSFaction::Initialise()
     m_nLastFactionMember = 0;
     m_bGlobal = 1;
 }
-// PC 0x00601F80
+// PC 0x00601F80 GOG 0x00601F60
 CSWSFaction::~CSWSFaction()
 {
 }
-// PC 0x00601FE0
+// PC 0x00601FE0 GOG 0x00601FC0
 void CSWSFaction::SendChatMessage(unsigned long nVolume,
                                   const CExoString& sMessage)
 {
@@ -87,7 +87,7 @@ void CSWSFaction::SendChatMessage(unsigned long nVolume,
         }
     }
 }
-// PC 0x00602040
+// PC 0x00602040 GOG 0x00602020
 int CSWSFaction::SendFactionUpdateList()
 {
     CServerExoApp* pExoApp = g_pAppManager->m_pServerExoApp;
@@ -108,7 +108,7 @@ int CSWSFaction::SendFactionUpdateList()
     }
     return nResult;
 }
-// PC 0x006020A0
+// PC 0x006020A0 GOG 0x00602080
 void CSWSFaction::SendFactionUpdateAdd(unsigned long oidCreature)
 {
     CServerExoApp* pExoApp = g_pAppManager->m_pServerExoApp;
@@ -128,7 +128,7 @@ void CSWSFaction::SendFactionUpdateAdd(unsigned long oidCreature)
         }
     }
 }
-// PC 0x00602100
+// PC 0x00602100 GOG 0x006020E0
 void CSWSFaction::SendFactionUpdateRemove(unsigned long oidCreature)
 {
     CServerExoApp* pExoApp = g_pAppManager->m_pServerExoApp;
@@ -147,7 +147,7 @@ void CSWSFaction::SendFactionUpdateRemove(unsigned long oidCreature)
         }
     }
 }
-// PC 0x00602160
+// PC 0x00602160 GOG 0x00602140
 unsigned long CSWSFaction::GetWeakestMember(unsigned long oidSource,
                                             int bMustBeVisible)
 {
@@ -194,7 +194,7 @@ unsigned long CSWSFaction::GetWeakestMember(unsigned long oidSource,
     }
     return oidWeakest;
 }
-// PC 0x006022A0
+// PC 0x006022A0 GOG 0x00602280
 unsigned long CSWSFaction::GetStrongestMember(unsigned long oidSource,
                                               int bMustBeVisible)
 {
@@ -241,7 +241,7 @@ unsigned long CSWSFaction::GetStrongestMember(unsigned long oidSource,
     }
     return oidStrongest;
 }
-// PC 0x006023E0
+// PC 0x006023E0 GOG 0x006023C0
 unsigned long CSWSFaction::GetMostDamagedMember(unsigned long oidSource,
                                                  int bMustBeVisible)
 {
@@ -290,7 +290,7 @@ unsigned long CSWSFaction::GetMostDamagedMember(unsigned long oidSource,
     }
     return oidMostDamaged;
 }
-// PC 0x00602570
+// PC 0x00602570 GOG 0x00602550
 unsigned long CSWSFaction::GetLeastDamagedMember(unsigned long oidSource,
                                                  int bMustBeVisible)
 {
@@ -338,7 +338,7 @@ unsigned long CSWSFaction::GetLeastDamagedMember(unsigned long oidSource,
     }
     return oidLeastDamaged;
 }
-// PC 0x006026F0
+// PC 0x006026F0 GOG 0x006026D0
 int CSWSFaction::GetGold()
 {
     for (int i = 0; i < m_lstMembers.num; ++i)
@@ -348,7 +348,7 @@ int CSWSFaction::GetGold()
     }
     return 0;
 }
-// PC 0x00602730
+// PC 0x00602730 GOG 0x00602710
 int CSWSFaction::GetAverageReputation(unsigned long oidCreature)
 {
     int nTotalReputation = 0;
@@ -378,7 +378,7 @@ int CSWSFaction::GetAverageReputation(unsigned long oidCreature)
     }
     return nTotalReputation;
 }
-// PC 0x006027A0
+// PC 0x006027A0 GOG 0x00602780
 int CSWSFaction::GetAverageGoodEvilAlignment()
 {
     int nTotalAlignment = 0;
@@ -413,7 +413,7 @@ int CSWSFaction::GetAverageGoodEvilAlignment()
     }
     return CSWSCreatureStats::ALIGNMENT_NEUTRAL;
 }
-// PC 0x00602860
+// PC 0x00602860 GOG 0x00602840
 int CSWSFaction::GetAverageLevel()
 {
     int nTotalLevel = 0;
@@ -435,7 +435,7 @@ int CSWSFaction::GetAverageLevel()
     }
     return 0;
 }
-// PC 0x006028C0
+// PC 0x006028C0 GOG 0x006028A0
 int CSWSFaction::GetAverageXP()
 {
     int nTotalXP = 0;
@@ -456,7 +456,7 @@ int CSWSFaction::GetAverageXP()
     }
     return 0;
 }
-// PC 0x00602910
+// PC 0x00602910 GOG 0x006028F0
 int CSWSFaction::GetMostFrequentClass()
 {
     int i;
@@ -510,7 +510,7 @@ int CSWSFaction::GetMostFrequentClass()
     }
     return nBestClass;
 }
-// PC 0x00602A60
+// PC 0x00602A60 GOG 0x00602A40
 unsigned long CSWSFaction::GetWorstAC(unsigned long oidSource,
                                       int bMustBeVisible)
 {
@@ -558,7 +558,7 @@ unsigned long CSWSFaction::GetWorstAC(unsigned long oidSource,
     }
     return oidWeakest;
 }
-// PC 0x00602BA0
+// PC 0x00602BA0 GOG 0x00602B80
 unsigned long CSWSFaction::GetBestAC(unsigned long oidSource,
                                      int bMustBeVisible)
 {
@@ -606,7 +606,7 @@ unsigned long CSWSFaction::GetBestAC(unsigned long oidSource,
     }
     return oidBest;
 }
-// PC 0x00602E70
+// PC 0x00602E70 GOG 0x00602E50
 CSWSFaction::CSWSFaction(unsigned long oidCreature)
 {
     CSWSCreature* pCreature =
@@ -639,7 +639,7 @@ CSWSFaction::CSWSFaction(unsigned long oidCreature)
     }
     Initialise();
 }
-// PC 0x00602F80
+// PC 0x00602F80 GOG 0x00602F60
 CSWSFaction::CSWSFaction()
 {
     CFactionManager* pFactionManager = GetFactionManager();
@@ -673,7 +673,7 @@ CFactionManager* CSWSFaction::GetFactionManager()
     }
     return NULL;
 }
-// PC 0x00603040
+// PC 0x00603040 GOG 0x00603020
 void CSWSFaction::RemoveMember(unsigned long oidCreature)
 {
     CServerExoApp* pExoApp = g_pAppManager->m_pServerExoApp;
@@ -711,7 +711,7 @@ void CSWSFaction::RemoveMember(unsigned long oidCreature)
         SendFactionUpdateRemove(oidCreature);
     }
 }
-// PC 0x00603150
+// PC 0x00603150 GOG 0x00603130
 int CSWSFaction::TransferLeadership(unsigned long oidCreature,
                                     unsigned long oidLeader)
 {
@@ -723,7 +723,7 @@ int CSWSFaction::TransferLeadership(unsigned long oidCreature,
     }
     return 0;
 }
-// PC 0x00602CE0
+// PC 0x00602CE0 GOG 0x00602CC0
 unsigned long CSWSFaction::GetLeader()
 {
     CServerExoApp* pExoApp;
@@ -768,7 +768,7 @@ unsigned long CSWSFaction::GetLeader()
     }
     return oidLeader;
 }
-// PC 0x00602DB0
+// PC 0x00602DB0 GOG 0x00602D90
 int CSWSFaction::GetSingletonParty()
 {
     int i;
@@ -794,7 +794,7 @@ int CSWSFaction::GetSingletonParty()
     return 1;
 }
 #ifndef _XBOX
-unsigned long CSWSFaction::GetFactionMember(int nMember, int nFaction)  // PC 0x00602E00
+unsigned long CSWSFaction::GetFactionMember(int nMember, int nFaction)  // PC 0x00602E00 GOG 0x00602DE0
 {
     int i;
     CServerExoApp* pExoApp;
@@ -817,7 +817,7 @@ unsigned long CSWSFaction::GetFactionMember(int nMember, int nFaction)  // PC 0x
     return OBJECT_INVALID;
 }
 #endif
-void CSWSFaction::AddMember(unsigned long oidCreature, int bSilent)  // PC 0x00603190
+void CSWSFaction::AddMember(unsigned long oidCreature, int bSilent)  // PC 0x00603190 GOG 0x00603170
 {
     CSWSCreature* pCreature;
     CSWSFaction* pOldFaction;
@@ -864,7 +864,7 @@ void CSWSFaction::AddMember(unsigned long oidCreature, int bSilent)  // PC 0x006
         }
     }
 }
-// PC 0x00603240
+// PC 0x00603240 GOG 0x00603220
 int CSWSFaction::AttemptRemove(unsigned long oidCreature,
                                unsigned long oidLeader)
 {

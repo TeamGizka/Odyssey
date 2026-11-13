@@ -77,7 +77,7 @@ public:
     int GetNumDoneEntries();
     int GetNumActiveEntries();
     int GetDoneSortBy();
-    int GetActiveSortBy()  // PC 0x00786860
+    int GetActiveSortBy()  // PC 0x00786860 GOG 0x00786630
     {
         return m_lstActive.m_nSortBy;
     }

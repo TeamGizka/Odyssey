@@ -71,7 +71,7 @@ public:
     Vector m_vLeaderPosition;
     unsigned long m_oidCombatTarget;
     unsigned long m_nCombatMessage;
-    // PC 0x0050B7D0
+    // PC 0x0050B7D0 GOG 0x0050B830
     void Reset()
     {
         m_nCharacterIndex = -1;

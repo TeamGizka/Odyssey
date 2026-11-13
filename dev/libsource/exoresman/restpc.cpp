@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x00786740
+// PC 0x00786740 GOG 0x00786510
 CResTPC::CResTPC()
 {
     m_bCompressed = 0;
@@ -12,11 +12,11 @@ CResTPC::CResTPC()
     m_pEnd = 0;
     m_bAllocSuffix = 1;
 }
-// PC 0x00786780
+// PC 0x00786780 GOG 0x00786550
 CResTPC::~CResTPC()
 {
 }
-// PC 0x00786790
+// PC 0x00786790 GOG 0x00786560
 int CResTPC::GetTPCAttrib(int* pnWidth, int* pnHeight, char* pnFormat,
                            int* pnCompressedSize, int* pnUncompressedSize,
                            int* pnRemainingSize, float* pfUnknown,
@@ -59,17 +59,17 @@ int CResTPC::GetTPCAttrib(int* pnWidth, int* pnHeight, char* pnFormat,
         }
     }
 }
-// PC 0x00786830
+// PC 0x00786830 GOG 0x00786600
 unsigned char* CResTPC::GetTPCDataPtr()
 {
     return m_pData;
 }
-// PC 0x00786840
+// PC 0x00786840 GOG 0x00786610
 unsigned char* CResTPC::GetTPCTXIPtr()
 {
     return m_pEnd;
 }
-// PC 0x00786850
+// PC 0x00786850 GOG 0x00786620
 int CResTPC::GetTPCSize()
 {
     if (m_bCompressed != 0)
@@ -81,12 +81,12 @@ int CResTPC::GetTPCSize()
         return m_nUncompressedSize;
     }
 }
-// PC 0x00786860
+// PC 0x00786860 GOG 0x00786630
 int CResTPC::GetTPCTXISize()
 {
     return m_nRemainingSize;
 }
-// PC 0x00786870
+// PC 0x00786870 GOG 0x00786640
 int CResTPC::OnResourceFreed()
 {
     m_bCompressed = 0;
@@ -99,7 +99,7 @@ int CResTPC::OnResourceFreed()
     m_pEnd = 0;
     return 1;
 }
-// PC 0x00786890
+// PC 0x00786890 GOG 0x00786660
 int CResTPC::OnResourceServiced()
 {
     TPCHeader* pTPC;

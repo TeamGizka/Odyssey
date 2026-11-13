@@ -14,7 +14,7 @@ class CSWBehaviorCameraCombat : public CAurBehavior
 public:
     CSWBehaviorCameraCombat(CAurObject* pObject);
     virtual int Control(float fTimeStep);
-    virtual int GetType()  // PC 0x0073F9B0
+    virtual int GetType()  // PC 0x0073F9B0 GOG 0x0073F830
     {
         return 4208;
     }

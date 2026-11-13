@@ -22,19 +22,19 @@ List<char*> g_listHistory;
 funcholderbase::~funcholderbase()
 {
 }
-// PC 0x0045FF80
+// PC 0x0045FF80 GOG 0x00460090
 template <> void funcholder<void (*)()>::Engage(char* sArguments)
 {
     m_pFunction();
     returnvalue[0] = 0;
 }
-// PC 0x0045FF90
+// PC 0x0045FF90 GOG 0x004600A0
 template <> void funcholder<void (*)(char*)>::Engage(char* sArguments)
 {
     m_pFunction(sArguments);
     returnvalue[0] = 0;
 }
-// PC 0x0045FFB0
+// PC 0x0045FFB0 GOG 0x004600C0
 template <> void funcholder<void (*)(int)>::Engage(char* sArguments)
 {
     int nValue;
@@ -43,7 +43,7 @@ template <> void funcholder<void (*)(int)>::Engage(char* sArguments)
     m_pFunction(nValue);
     returnvalue[0] = 0;
 }
-// PC 0x0045FFE0
+// PC 0x0045FFE0 GOG 0x004600F0
 void ConsoleFuncs_Add(ConsoleFunc* pFunc)
 {
     ConsoleFunc* pTemp;
@@ -60,7 +60,7 @@ void ConsoleFuncs_Add(ConsoleFunc* pFunc)
 
     ConsoleFuncs[ConsoleFuncs_num++] = pFunc;
 }
-// PC 0x00460070
+// PC 0x00460070 GOG 0x00460180
 void ConsoleFuncs_Remove(const char* sName)
 {
     int nCount = ConsoleFuncs_num;
@@ -81,7 +81,7 @@ void ConsoleFuncs_Remove(const char* sName)
 
     ConsoleFuncs_num--;
 }
-// PC 0x004600F0
+// PC 0x004600F0 GOG 0x00460200
 funcholderbase* FindConCallBack(char* sName)
 {
     static int i = -1;
@@ -102,7 +102,7 @@ funcholderbase* FindConCallBack(char* sName)
 
     return 0;
 }
-// PC 0x004601D0
+// PC 0x004601D0 GOG 0x004602E0
 char* FuncPreInterp(char* sLine)
 {
     char sName[128];
@@ -132,7 +132,7 @@ char* FuncPreInterp(char* sLine)
 
     return returnvalue;
 }
-// PC 0x00460250
+// PC 0x00460250 GOG 0x00460360
 ConsoleFunc::~ConsoleFunc()
 {
     ConsoleFuncs_Remove(m_sName);
@@ -162,7 +162,7 @@ OpenResource::~OpenResource()
     }
 }
 #endif
-// PC 0x00460270
+// PC 0x00460270 GOG 0x00460380
 char* AurResGetDataBytes(unsigned long nBytes, void* pResource)
 {
     OpenResource* pOpenResource = (OpenResource*)pResource;
@@ -179,7 +179,7 @@ char* AurResGetDataBytes(unsigned long nBytes, void* pResource)
     fread(pData, 1, nBytes, pOpenResource->m_pFile);
     return pData;
 }
-// PC 0x004602B0
+// PC 0x004602B0 GOG 0x004603C0
 void AurResFreeDataBytes(void* pResource, unsigned char* pData)
 {
     OpenResource* pOpenResource = (OpenResource*)pResource;
@@ -189,7 +189,7 @@ void AurResFreeDataBytes(void* pResource, unsigned char* pData)
         delete[] pData;
     }
 }
-// PC 0x004602D0
+// PC 0x004602D0 GOG 0x004603E0
 OpenResource* GetResource(void* pResource)
 {
     int i;
@@ -223,7 +223,7 @@ void AurResRemove(void* pResource)
     }
 }
 #else
-int AurResRemove(void* pResource)  // PC 0x00460320
+int AurResRemove(void* pResource)  // PC 0x00460320 GOG 0x00460430
 {
     int nIndex = 0;
 
@@ -250,7 +250,7 @@ int AurResRemove(void* pResource)  // PC 0x00460320
     return nIndex;
 }
 #endif
-// PC 0x00460380
+// PC 0x00460380 GOG 0x00460490
 static char* getnextline_file(void* pResource)
 {
     OpenResource* pOpenResource = GetResource(pResource);
@@ -265,7 +265,7 @@ static char* getnextline_file(void* pResource)
 
     return fgets(pOpenResource->m_pBuffer, 4000, pOpenResource->m_pFile);
 }
-// PC 0x004603D0
+// PC 0x004603D0 GOG 0x004604E0
 static char* getnextline_res(void* pResource)
 {
     OpenResource* pOpenResource = GetResource(pResource);
@@ -302,7 +302,7 @@ static char* getnextline_res(void* pResource)
     pOpenResource->m_pBuffer[i] = 0;
     return pOpenResource->m_pBuffer;
 }
-// PC 0x00460440
+// PC 0x00460440 GOG 0x00460550
 char* GetDataFromFile(int nBytes)
 {
     OpenResource* pOpenResource = Resources.m_pList[Resources.m_nCount - 1];
@@ -316,7 +316,7 @@ char* GetDataFromFile(int nBytes)
     fread(pOpenResource->m_pBuffer, 1, nBytes, pOpenResource->m_pFile);
     return pOpenResource->m_pBuffer;
 }
-// PC 0x00460490
+// PC 0x00460490 GOG 0x004605A0
 static char* GetDataFromResource(int nBytes)
 {
     OpenResource* pOpenResource =
@@ -348,7 +348,7 @@ static char* GetDataFromResource(int nBytes)
     pOpenResource->m_pBuffer[i] = 0;
     return pOpenResource->m_pBuffer;
 }
-// PC 0x00460500
+// PC 0x00460500 GOG 0x00460610
 char* AurResGetNextLine()
 {
     if (Resources.m_nCount == 0)
@@ -363,7 +363,7 @@ char* AurResGetNextLine()
 
     return getnextline_res(0);
 }
-// PC 0x00460530
+// PC 0x00460530 GOG 0x00460640
 void* AurResGetData(int nBytes)
 {
     if (Resources.m_nCount == 0)
@@ -378,7 +378,7 @@ void* AurResGetData(int nBytes)
 
     return GetDataFromResource(nBytes);
 }
-// PC 0x004605A0
+// PC 0x004605A0 GOG 0x004606B0
 char* CommandCompletion(char* sLine, List<char*>& lstCompletions)
 {
     char* sPartial;
@@ -471,7 +471,7 @@ char* AurResGetNextLine(void* pResource)
     return getnextline_res(pResource);
 #endif
 }
-// PC 0x00460750
+// PC 0x00460750 GOG 0x00460860
 char* FuncInterp(char* sLine)
 {
     char sName[128];
@@ -614,28 +614,28 @@ char* FuncInterp(char* sLine)
     pHolder->Engage(sArguments);
     return returnvalue;
 }
-// PC 0x00460AC0
+// PC 0x00460AC0 GOG 0x00460BD0
 ConsoleFunc::ConsoleFunc(const char* sName, void (*pFunction)())
 {
     strcpy(m_sName, sName);
     m_pHolder = new funcholder<void (*)()>(pFunction);
     ConsoleFuncs_Add(this);
 }
-// PC 0x00460B20
+// PC 0x00460B20 GOG 0x00460C30
 ConsoleFunc::ConsoleFunc(const char* sName, void (*pFunction)(char*))
 {
     strcpy(m_sName, sName);
     m_pHolder = new funcholder<void (*)(char*)>(pFunction);
     ConsoleFuncs_Add(this);
 }
-// PC 0x00460B80
+// PC 0x00460B80 GOG 0x00460C90
 ConsoleFunc::ConsoleFunc(const char* sName, void (*pFunction)(int))
 {
     strcpy(m_sName, sName);
     m_pHolder = new funcholder<void (*)(int)>(pFunction);
     ConsoleFuncs_Add(this);
 }
-// PC 0x00460BE0
+// PC 0x00460BE0 GOG 0x00460CF0
 static OpenResource* GetOpenResource(char* sName, char* sExtension, int* pnSize)
 {
     int nSize;
@@ -748,7 +748,7 @@ void* AurResGet(char* sName, char* sExtension, int* pnSize, bool bRaw)
     return pOpenResource;
 }
 #else
-void* AurResGet(char* sName, char* sExtension, int* pnSize, bool bRaw)  // PC 0x00460CA0
+void* AurResGet(char* sName, char* sExtension, int* pnSize, bool bRaw)  // PC 0x00460CA0 GOG 0x00460DB0
 {
     char sPath[260];
 
@@ -807,7 +807,7 @@ void* AurResGet(char* sName, char* sExtension, int* pnSize, bool bRaw)  // PC 0x
     return pOpenResource;
 }
 #endif
-// PC 0x00460DD0
+// PC 0x00460DD0 GOG 0x00460EE0
 void* AurResGet(FILE* pFile)
 {
     OpenResource* pOpenResource = new OpenResource(500000);
@@ -818,7 +818,7 @@ void* AurResGet(FILE* pFile)
     Resources.Add(pOpenResource);
     return pOpenResource;
 }
-// PC 0x00460E50
+// PC 0x00460E50 GOG 0x00460F60
 void AurResFree(void* pResource, int nSize)
 {
     OpenResource* pOpenResource = (OpenResource*)pResource;
@@ -896,7 +896,7 @@ char* converttobinary(char* sArguments)
     return "Finished";
 }
 #endif
-// PC 0x00460EE0
+// PC 0x00460EE0 GOG 0x00460FF0
 char* dofile(char* sFileName)
 {
     static char returnbuf[256];

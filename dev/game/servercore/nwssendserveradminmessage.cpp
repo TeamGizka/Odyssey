@@ -111,7 +111,7 @@ static char* CMessageServerAdmin_Control_Ban = "Ban";
 static char* CMessageServerAdmin_Control_ChangeSAPassword = "SAPass";
 static char* CMessageServerAdmin_Control_ChangeGMPassword = "GMPass";
 static char* CMessageServerAdmin_Control_Say = "Say";
-// PC 0x005DA2F0
+// PC 0x005DA2F0 GOG 0x005DA360
 int CSWSMessage::SendServerToServerAdminMessage(
     unsigned long nPlayerId, const CExoString& sMessage)
 {
@@ -130,7 +130,7 @@ int CSWSMessage::SendServerToServerAdminMessage(
     delete[] pMessage;
     return nResult;
 }
-// PC 0x005DA3A0
+// PC 0x005DA3A0 GOG 0x005DA410
 void CSWSMessage::SendServerToServerAdminServerStatus(unsigned long nPlayerId)
 {
     CExoString sMessage;
@@ -165,7 +165,7 @@ void CSWSMessage::SendServerToServerAdminServerStatus(unsigned long nPlayerId)
         }
     }
 }
-// PC 0x005DA500
+// PC 0x005DA500 GOG 0x005DA570
 void CSWSMessage::SendServerToServerAdminPlayerList(unsigned long nPlayerId)
 {
     CExoString sMessage;
@@ -175,7 +175,7 @@ void CSWSMessage::SendServerToServerAdminPlayerList(unsigned long nPlayerId)
     sMessage = sMessage + pServerExoApp->GetPlayerListString();
     SendServerToServerAdminMessage(nPlayerId, sMessage);
 }
-// PC 0x005DA5D0
+// PC 0x005DA5D0 GOG 0x005DA640
 void CSWSMessage::SendServerToServerAdminModuleList(unsigned long nPlayerId)
 {
     CExoString sFileName;

@@ -15,7 +15,7 @@ static inline C2DA* SwguimovieGetMovies2DA(CTwoDimArrays* pArrays)
     return pArrays->m_pMovies2DA;
 }
 #endif
-// PC 0x0074B400
+// PC 0x0074B400 GOG 0x0074B250
 void CSWGuiTitleMovies::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -48,7 +48,7 @@ void CSWGuiTitleMovies::HandleInputEvent(int nEvent, int nState)
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 #ifndef _XBOX
-void CSWGuiTitleMovies::OnMoviePicked(CSWGuiControl* pControl)  // PC 0x0074B4A0
+void CSWGuiTitleMovies::OnMoviePicked(CSWGuiControl* pControl)  // PC 0x0074B4A0 GOG 0x0074B2F0
 {
     if (pControl->m_bSelected != 0)
     {
@@ -69,7 +69,7 @@ void CSWGuiTitleMovies::OnMoviePicked(CSWGuiControl* pControl)  // PC 0x0074B4A0
     }
 }
 #endif
-CSWGuiTitleMovies::CSWGuiTitleMovies(CSWGuiManager* pManager)  // PC 0x0074BE70
+CSWGuiTitleMovies::CSWGuiTitleMovies(CSWGuiManager* pManager)  // PC 0x0074BE70 GOG 0x0074BCC0
     : CSWGuiPanel(pManager)
 {
 #ifdef _XBOX
@@ -122,7 +122,7 @@ CSWGuiTitleMovies::CSWGuiTitleMovies(CSWGuiManager* pManager)  // PC 0x0074BE70
     PopulateMovies();
     SetActiveControl(&m_lbxMovies, 0);
 }
-// PC 0x0074B570
+// PC 0x0074B570 GOG 0x0074B3C0
 CSWGuiTitleMovies::~CSWGuiTitleMovies()
 {
     for (int nMovie = 0; nMovie < m_lbxMovies.m_lItems.num; ++nMovie)
@@ -130,7 +130,7 @@ CSWGuiTitleMovies::~CSWGuiTitleMovies()
         delete (CExoString*)m_lbxMovies.GetControl(nMovie)->AsButton()->m_nIndex;
     }
 }
-// PC 0x0074B720
+// PC 0x0074B720 GOG 0x0074B570
 void CSWGuiTitleMovies::PopulateMovies()
 {
     CExoString sMovie;

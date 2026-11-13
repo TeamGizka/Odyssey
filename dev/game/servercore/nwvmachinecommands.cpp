@@ -73,21 +73,21 @@ int bDisableScriptLogging = 1;
 int bDisableScriptLogging = 0;
 #endif
 int bShipBuild = 0;
-int CSWVirtualMachineCommands::ExecuteCommandExploreAreaForPlayer(int, int)  // PC 0x0040A2D0
+int CSWVirtualMachineCommands::ExecuteCommandExploreAreaForPlayer(int, int)  // PC 0x0040A2D0 GOG 0x0040A2A0
 {
     return 0;
 }
-// PC 0x0040A2D0
+// PC 0x0040A2D0 GOG 0x0040A2A0
 int CSWVirtualMachineCommands::ExecuteCommandGetLastAssociateCommand(int, int)
 {
     return 0;
 }
-// PC 0x0040A2D0
+// PC 0x0040A2D0 GOG 0x0040A2A0
 int CSWVirtualMachineCommands::ExecuteCommandSetAssociateListenPatterns(int, int)
 {
     return 0;
 }
-// PC 0x006049D0
+// PC 0x006049D0 GOG 0x006049B0
 void CSWVirtualMachineCommands::ReportError(CExoString&, int)
 {
 }
@@ -99,14 +99,14 @@ inline int CSWSCreature::GetCasterLevelOverrideEnabled() { return m_bCasterLevel
 static inline void NwvmachinecommandsTrace1()
 {
 }
-// PC 0x005AD8C0
+// PC 0x005AD8C0 GOG 0x005AD930
 inline void CServerAIMaster::AppendToScriptsRun(const CExoString& sScript)
 {
     CExoString sComma(",");
 
     m_sLastEvent = m_sLastEvent + sScript + sComma;
 }
-// PC 0x005AD970
+// PC 0x005AD970 GOG 0x005AD9E0
 CSWVirtualMachineCommands::~CSWVirtualMachineCommands()
 {
     if (m_pCommands != NULL)
@@ -115,7 +115,7 @@ CSWVirtualMachineCommands::~CSWVirtualMachineCommands()
         m_pCommands = NULL;
     }
 }
-// PC 0x005AD9D0
+// PC 0x005AD9D0 GOG 0x005ADA40
 int CSWVirtualMachineCommands::ExecuteCommand(int nCommand, int nArgs)
 {
     int (CSWVirtualMachineCommands::*pCommand)(int, int);
@@ -133,7 +133,7 @@ int CSWVirtualMachineCommands::ExecuteCommand(int nCommand, int nArgs)
         return -2002;
     }
 }
-// PC 0x005ADA00
+// PC 0x005ADA00 GOG 0x005ADA70
 void CSWVirtualMachineCommands::RunScriptCallback(CExoString& sScript)
 {
     CServerAIMaster* pServerAIMaster;
@@ -144,7 +144,7 @@ void CSWVirtualMachineCommands::RunScriptCallback(CExoString& sScript)
         pServerAIMaster->AppendToScriptsRun(sScript);
     }
 }
-// PC 0x005ADA40
+// PC 0x005ADA40 GOG 0x005ADAB0
 void* CSWVirtualMachineCommands::CopyGameDefinedStructure(int nType,
                                                      void* pStructure)
 {
@@ -175,7 +175,7 @@ void* CSWVirtualMachineCommands::CopyGameDefinedStructure(int nType,
     }
     return NULL;
 }
-// PC 0x005ADBD0
+// PC 0x005ADBD0 GOG 0x005ADC40
 int CSWVirtualMachineCommands::SaveGameDefinedStructure(int nType, void* pStructure,
                                                    CResGFF* pRes,
                                                    CResStruct* pParent)
@@ -201,7 +201,7 @@ int CSWVirtualMachineCommands::SaveGameDefinedStructure(int nType, void* pStruct
     }
     return 0;
 }
-// PC 0x005ADC60
+// PC 0x005ADC60 GOG 0x005ADCD0
 int CSWVirtualMachineCommands::LoadGameDefinedStructure(int nType,
                                                    void** ppStructure,
                                                    CResGFF* pRes,
@@ -236,7 +236,7 @@ int CSWVirtualMachineCommands::LoadGameDefinedStructure(int nType,
     }
     return 0;
 }
-// PC 0x005ADE10
+// PC 0x005ADE10 GOG 0x005ADE80
 int CSWVirtualMachineCommands::GetEqualGameDefinedStructure(int nType, void* pFirst,
                                                        void* pSecond)
 {
@@ -267,7 +267,7 @@ int CSWVirtualMachineCommands::GetEqualGameDefinedStructure(int nType, void* pFi
     }
     return 0;
 }
-// PC 0x005ADE80
+// PC 0x005ADE80 GOG 0x005ADEF0
 void* CSWVirtualMachineCommands::CreateGameDefinedStructure(int nType)
 {
     if (nType == 0)
@@ -288,7 +288,7 @@ void* CSWVirtualMachineCommands::CreateGameDefinedStructure(int nType)
     }
     return NULL;
 }
-// PC 0x005ADFA0
+// PC 0x005ADFA0 GOG 0x005AE010
 int CSWVirtualMachineCommands::ExecuteCommandActionBarkString(int nCommand,
                                                             int nArgs)
 {
@@ -313,7 +313,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionBarkString(int nCommand,
     }
     return 0;
 }
-// PC 0x005AE040
+// PC 0x005AE040 GOG 0x005AE0B0
 int CSWVirtualMachineCommands::ExecuteCommandActionDoCommand(int nCommand,
                                                              int nArgs)
 {
@@ -335,7 +335,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionDoCommand(int nCommand,
     }
     return 0;
 }
-// PC 0x005AE0B0
+// PC 0x005AE0B0 GOG 0x005AE120
 int CSWVirtualMachineCommands::ExecuteCommandActionEquipMostDamagingMelee(
     int nCommand, int nArgs)
 {
@@ -359,7 +359,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionEquipMostDamagingMelee(
     }
     return 0;
 }
-// PC 0x005AE120
+// PC 0x005AE120 GOG 0x005AE190
 int CSWVirtualMachineCommands::ExecuteCommandActionEquipMostDamagingRanged(
     int nCommand, int nArgs)
 {
@@ -379,7 +379,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionEquipMostDamagingRanged(
     }
     return 0;
 }
-// PC 0x005AE180
+// PC 0x005AE180 GOG 0x005AE1F0
 int CSWVirtualMachineCommands::ExecuteCommandActionEquipMostEffectiveArmor(
     int nCommand, int nArgs)
 {
@@ -394,7 +394,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionEquipMostEffectiveArmor(
     }
     return 0;
 }
-// PC 0x005AE1B0
+// PC 0x005AE1B0 GOG 0x005AE220
 int CSWVirtualMachineCommands::ExecuteCommandActionExchangeItem(int nCommand,
                                                                 int nArgs)
 {
@@ -430,7 +430,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionExchangeItem(int nCommand,
     }
     return 0;
 }
-// PC 0x005AE260
+// PC 0x005AE260 GOG 0x005AE2D0
 int CSWVirtualMachineCommands::ExecuteCommandActionFollowObject(
     int nCommand, int nArgs)
 {
@@ -507,7 +507,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionFollowObject(
     }
     return 0;
 }
-// PC 0x005AE4E0
+// PC 0x005AE4E0 GOG 0x005AE550
 int CSWVirtualMachineCommands::ExecuteCommandActionFollowLeader(
     int nCommand, int nArgs)
 {
@@ -524,7 +524,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionFollowLeader(
     }
     return 0;
 }
-// PC 0x005AE560
+// PC 0x005AE560 GOG 0x005AE5D0
 int CSWVirtualMachineCommands::ExecuteCommandActionInteractObject(int nCommand,
                                                                   int nArgs)
 {
@@ -553,7 +553,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionInteractObject(int nCommand,
     }
     return 0;
 }
-// PC 0x005AE5D0
+// PC 0x005AE5D0 GOG 0x005AE640
 int CSWVirtualMachineCommands::ExecuteCommandActionJumpToObject(
     int nCommand, int nArgs)
 {
@@ -595,7 +595,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionJumpToObject(
     }
     return 0;
 }
-// PC 0x005AE6B0
+// PC 0x005AE6B0 GOG 0x005AE720
 int CSWVirtualMachineCommands::ExecuteCommandActionJumpToPoint(
     int nCommand, int nArgs)
 {
@@ -679,7 +679,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionJumpToPoint(
     }
     return 0;
 }
-// PC 0x005AE8E0
+// PC 0x005AE8E0 GOG 0x005AE950
 int CSWVirtualMachineCommands::ExecuteCommandActionLockActions(int nCommand,
                                                                int nArgs)
 {
@@ -708,7 +708,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionLockActions(int nCommand,
     }
     return 0;
 }
-// PC 0x005AE980
+// PC 0x005AE980 GOG 0x005AE9F0
 int CSWVirtualMachineCommands::ExecuteCommandActionMoveAwayFromLocation(
     int nCommand, int nArgs)
 {
@@ -797,7 +797,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionMoveAwayFromLocation(
     delete pLocation;
     return 0;
 }
-// PC 0x005AEC20
+// PC 0x005AEC20 GOG 0x005AEC90
 int CSWVirtualMachineCommands::ExecuteCommandActionPauseConversation(
     int nCommand, int nArgs)
 {
@@ -841,7 +841,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionPauseConversation(
     }
     return 0;
 }
-// PC 0x005AED20
+// PC 0x005AED20 GOG 0x005AED90
 int CSWVirtualMachineCommands::ExecuteCommandActionRandomWalk(
     int nCommand, int nArgs)
 {
@@ -872,7 +872,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionRandomWalk(
     }
     return 0;
 }
-// PC 0x005AEE00
+// PC 0x005AEE00 GOG 0x005AEE70
 int CSWVirtualMachineCommands::ExecuteCommandActionResumeConversation(
     int nCommand, int nArgs)
 {
@@ -895,7 +895,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionResumeConversation(
     }
     return 0;
 }
-// PC 0x005AEE90
+// PC 0x005AEE90 GOG 0x005AEF00
 int CSWVirtualMachineCommands::ExecuteCommandActionStartConversation(
     int nCommand, int nArgs)
 {
@@ -1078,7 +1078,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionStartConversation(
     }
     return 0;
 }
-// PC 0x005AF400
+// PC 0x005AF400 GOG 0x005AF470
 int CSWVirtualMachineCommands::ExecuteCommandSetCreatureAILevel(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -1123,7 +1123,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetCreatureAILevel(int nCommand, in
     }
     return 0;
 }
-// PC 0x005AF4D0
+// PC 0x005AF4D0 GOG 0x005AF540
 int CSWVirtualMachineCommands::ExecuteCommandChangeObjectAppearance(int nCommand, int nArgs)
 {
     unsigned long oidObject;
@@ -1144,7 +1144,7 @@ int CSWVirtualMachineCommands::ExecuteCommandChangeObjectAppearance(int nCommand
     }
     return 0;
 }
-// PC 0x005AF540
+// PC 0x005AF540 GOG 0x005AF5B0
 int CSWVirtualMachineCommands::ExecuteCommandResetCreatureAILevel(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -1165,7 +1165,7 @@ int CSWVirtualMachineCommands::ExecuteCommandResetCreatureAILevel(int nCommand, 
     }
     return 0;
 }
-// PC 0x005AF5B0
+// PC 0x005AF5B0 GOG 0x005AF620
 int CSWVirtualMachineCommands::ExecuteCommandCreatureFlourishWeapon(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -1234,7 +1234,7 @@ int CSWVirtualMachineCommands::ExecuteCommandCreatureFlourishWeapon(int nCommand
     }
     return 0;
 }
-// PC 0x005AF790
+// PC 0x005AF790 GOG 0x005AF800
 int CSWVirtualMachineCommands::ExecuteCommandActionUseFeat(int nCommand,
                                                           int nArgs)
 {
@@ -1263,7 +1263,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionUseFeat(int nCommand,
     }
     return 0;
 }
-// PC 0x005AF850
+// PC 0x005AF850 GOG 0x005AF8C0
 int CSWVirtualMachineCommands::ExecuteCommandActionUseSkill(int nCommand,
                                                            int nArgs)
 {
@@ -1307,7 +1307,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionUseSkill(int nCommand,
     }
     return 0;
 }
-// PC 0x005AF990
+// PC 0x005AF990 GOG 0x005AFA00
 int CSWVirtualMachineCommands::ExecuteCommandActionUseTalent(int nCommand,
                                                             int nArgs)
 {
@@ -1363,7 +1363,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionUseTalent(int nCommand,
     delete pTalent;
     return 0;
 }
-// PC 0x005AFAE0
+// PC 0x005AFAE0 GOG 0x005AFB50
 int CSWVirtualMachineCommands::ExecuteCommandAddAvailableNPCByObject(
     int nCommand, int nArgs)
 {
@@ -1390,7 +1390,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddAvailableNPCByObject(
         return g_pVirtualMachine->StackPushInteger(nResult2) != 0 ? 0 : -2000;
     }
 }
-// PC 0x005AFB70
+// PC 0x005AFB70 GOG 0x005AFBE0
 int CSWVirtualMachineCommands::ExecuteCommandAddAvailableNPCByTemplate(
     int nCommand, int nArgs)
 {
@@ -1415,7 +1415,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddAvailableNPCByTemplate(
     }
     return 0;
 }
-// PC 0x005AFC60
+// PC 0x005AFC60 GOG 0x005AFCD0
 int CSWVirtualMachineCommands::ExecuteCommandAddMultiClass(int nCommand,
                                                            int nArgs)
 {
@@ -1461,7 +1461,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddMultiClass(int nCommand,
     }
     return 0;
 }
-// PC 0x005AFD80
+// PC 0x005AFD80 GOG 0x005AFDF0
 int CSWVirtualMachineCommands::ExecuteCommandAddPartyMember(int nCommand,
                                                             int nArgs)
 {
@@ -1505,7 +1505,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddPartyMember(int nCommand,
         return g_pVirtualMachine->StackPushInteger(nResult2) != 0 ? 0 : -2000;
     }
 }
-// PC 0x005AFE50
+// PC 0x005AFE50 GOG 0x005AFEC0
 int CSWVirtualMachineCommands::ExecuteCommandAddToParty(int nCommand, int nArgs)
 {
     unsigned long oidPC;
@@ -1539,7 +1539,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddToParty(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005AFEF0
+// PC 0x005AFEF0 GOG 0x005AFF60
 int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int nArgs)
 {
 
@@ -1710,7 +1710,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustAlignment(int nCommand, int n
     }
     return 0;
 }
-// PC 0x005B0230
+// PC 0x005B0230 GOG 0x005B02A0
 int CSWVirtualMachineCommands::ExecuteCommandAdjustReputation(int nCommand,
                                                               int nArgs)
 {
@@ -1754,7 +1754,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustReputation(int nCommand,
     }
     return 0;
 }
-// PC 0x005B0300
+// PC 0x005B0300 GOG 0x005B0370
 int CSWVirtualMachineCommands::ExecuteCommandAmbientSound(int nCommand,
                                                           int nArgs)
 {
@@ -1800,7 +1800,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAmbientSound(int nCommand,
     }
     return 0;
 }
-// PC 0x005B04C0
+// PC 0x005B04C0 GOG 0x005B0530
 int CSWVirtualMachineCommands::ExecuteCommandApplyEffectAtPoint(int nCommand,
                                                               int nArgs)
 {
@@ -1878,7 +1878,7 @@ StackPopFailure:
     }
     return ERROR_STACK_POP;
 }
-// PC 0x005B0600
+// PC 0x005B0600 GOG 0x005B0670
 int CSWVirtualMachineCommands::ExecuteCommandApplyEffectOnObject(int, int)
 {
     CGameObjectArray* pObjects = g_pAppManager->GetServerExoApp()->GetObjectArray();
@@ -1946,7 +1946,7 @@ int CSWVirtualMachineCommands::ExecuteCommandApplyEffectOnObject(int, int)
     }
     return 0;
 }
-// PC 0x005B07B0
+// PC 0x005B07B0 GOG 0x005B0820
 int CSWVirtualMachineCommands::ExecuteCommandAssignCommand(int nCommand,
                                                            int nArgs)
 {
@@ -1984,7 +1984,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAssignCommand(int nCommand,
     }
     return 0;
 }
-// PC 0x005B0880
+// PC 0x005B0880 GOG 0x005B08F0
 int CSWVirtualMachineCommands::ExecuteCommandAttack(int nCommand, int nArgs)
 {
     int nResult;
@@ -2014,7 +2014,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAttack(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005B0920
+// PC 0x005B0920 GOG 0x005B0990
 int CSWVirtualMachineCommands::ExecuteCommandCutsceneAttack(int nCommand,
                                                             int nArgs)
 {
@@ -2055,7 +2055,7 @@ int CSWVirtualMachineCommands::ExecuteCommandCutsceneAttack(int nCommand,
     }
     return 0;
 }
-// PC 0x005B09E0
+// PC 0x005B09E0 GOG 0x005B0A50
 int CSWVirtualMachineCommands::ExecuteCommandCutsceneMove(int nCommand,
                                                           int nArgs)
 {
@@ -2085,7 +2085,7 @@ int CSWVirtualMachineCommands::ExecuteCommandCutsceneMove(int nCommand,
     }
     return 0;
 }
-// PC 0x005B0A80
+// PC 0x005B0A80 GOG 0x005B0AF0
 int CSWVirtualMachineCommands::ExecuteCommandBeginConversation(int nCommand,
                                                                int nArgs)
 {
@@ -2257,7 +2257,7 @@ int CSWVirtualMachineCommands::ExecuteCommandBeginConversation(int nCommand,
         return ERROR_STACK_PUSH;
     return 0;
 }
-// PC 0x005B0EE0
+// PC 0x005B0EE0 GOG 0x005B0F50
 int CSWVirtualMachineCommands::ExecuteCommandCastSpell(int nCommand, int nArgs)
 {
 
@@ -2409,7 +2409,7 @@ int CSWVirtualMachineCommands::ExecuteCommandCastSpell(int nCommand, int nArgs)
             oidTarget, 0, (unsigned char)nProjectilePath);
     return 0;
 }
-// PC 0x005B1380
+// PC 0x005B1380 GOG 0x005B13F0
 int CSWVirtualMachineCommands::ExecuteCommandChangeFaction(int nCommand, int nArgs)
 {
 
@@ -2505,7 +2505,7 @@ int CSWVirtualMachineCommands::ExecuteCommandChangeFaction(int nCommand, int nAr
     }
     return 0;
 }
-// PC 0x005B1570
+// PC 0x005B1570 GOG 0x005B15E0
 int CSWVirtualMachineCommands::ExecuteCommandClearAllActions(int nCommand,
                                                              int nArgs)
 {
@@ -2528,7 +2528,7 @@ int CSWVirtualMachineCommands::ExecuteCommandClearAllActions(int nCommand,
     }
     return 0;
 }
-// PC 0x005B15C0
+// PC 0x005B15C0 GOG 0x005B1630
 int CSWVirtualMachineCommands::ExecuteCommandCloseDoor(int nCommand, int nArgs)
 {
     unsigned long oidDoor;
@@ -2552,7 +2552,7 @@ int CSWVirtualMachineCommands::ExecuteCommandCloseDoor(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005B1640
+// PC 0x005B1640 GOG 0x005B16B0
 int CSWVirtualMachineCommands::ExecuteCommandCreateObject(int nCommand, int nArgs)
 {
 
@@ -2698,7 +2698,7 @@ int CSWVirtualMachineCommands::ExecuteCommandCreateObject(int nCommand, int nArg
     }
     return 0;
 }
-// PC 0x005B1C50
+// PC 0x005B1C50 GOG 0x005B1CC0
 int CSWVirtualMachineCommands::ExecuteCommandDelayCommand(int nCommand,
                                                           int nArgs)
 {
@@ -2736,7 +2736,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDelayCommand(int nCommand,
     }
     return 0;
 }
-// PC 0x005B1D40
+// PC 0x005B1D40 GOG 0x005B1DB0
 int CSWVirtualMachineCommands::ExecuteCommandDestroyObject(int nCommand, int nArgs)
 {
     unsigned long oidDestroy;
@@ -2819,7 +2819,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDestroyObject(int nCommand, int nAr
     }
     return 0;
 }
-// PC 0x005B1FF0
+// PC 0x005B1FF0 GOG 0x005B2060
 int CSWVirtualMachineCommands::ExecuteCommandDisplayFeedBackText(int nCommand,
                                                                int nArgs)
 {
@@ -2862,7 +2862,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDisplayFeedBackText(int nCommand,
     }
     return 0;
 }
-// PC 0x005B2170
+// PC 0x005B2170 GOG 0x005B21E0
 int CSWVirtualMachineCommands::ExecuteCommandDistanceConversions(int nCommand,
                                                                  int nArgs)
 {
@@ -2886,7 +2886,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDistanceConversions(int nCommand,
 
     return g_pVirtualMachine->StackPushFloat(fResult) != 0 ? 0 : -2000;
 }
-// PC 0x005B21E0
+// PC 0x005B21E0 GOG 0x005B2250
 int CSWVirtualMachineCommands::ExecuteCommandDoDoorAction(int nCommand, int nArgs)
 {
 
@@ -2965,7 +2965,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDoDoorAction(int nCommand, int nArg
     }
     return 0;
 }
-// PC 0x005B24E0
+// PC 0x005B24E0 GOG 0x005B2550
 int CSWVirtualMachineCommands::ExecuteCommandDoSinglePlayerAutoSave(
     int nCommand, int nArgs)
 {
@@ -2975,7 +2975,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDoSinglePlayerAutoSave(
     pServerExoApp->SetAutoSavePending(1);
     return 0;
 }
-// PC 0x005B2500
+// PC 0x005B2500 GOG 0x005B2570
 int CSWVirtualMachineCommands::ExecuteCommandEffectAbilityDecrease(int nCommand,
                                                                    int nArgs)
 {
@@ -3019,7 +3019,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectAbilityDecrease(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B2670
+// PC 0x005B2670 GOG 0x005B26E0
 int CSWVirtualMachineCommands::ExecuteCommandEffectAbilityIncrease(int nCommand,
                                                                    int nArgs)
 {
@@ -3064,7 +3064,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectAbilityIncrease(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B27E0
+// PC 0x005B27E0 GOG 0x005B2850
 int CSWVirtualMachineCommands::ExecuteCommandEffectACDecrease(int nCommand,
                                                               int nArgs)
 {
@@ -3116,7 +3116,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectACDecrease(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B29A0
+// PC 0x005B29A0 GOG 0x005B2A10
 int CSWVirtualMachineCommands::ExecuteCommandEffectACIncrease(int nCommand,
                                                               int nArgs)
 {
@@ -3168,7 +3168,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectACIncrease(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B2B60
+// PC 0x005B2B60 GOG 0x005B2BD0
 int CSWVirtualMachineCommands::ExecuteCommandEffectAreaEffect(int nCommand,
                                                              int nArgs)
 {
@@ -3217,7 +3217,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectAreaEffect(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B2DE0
+// PC 0x005B2DE0 GOG 0x005B2E50
 int CSWVirtualMachineCommands::ExecuteCommandEffectAttackDecrease(int nCommand,
                                                                   int nArgs)
 {
@@ -3263,7 +3263,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectAttackDecrease(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B2F60
+// PC 0x005B2F60 GOG 0x005B2FD0
 int CSWVirtualMachineCommands::ExecuteCommandEffectAttackIncrease(int nCommand,
                                                                   int nArgs)
 {
@@ -3309,7 +3309,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectAttackIncrease(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B30E0
+// PC 0x005B30E0 GOG 0x005B3150
 int CSWVirtualMachineCommands::ExecuteCommandEffectBeam(int nCommand, int nArgs)
 {
 
@@ -3359,7 +3359,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectBeam(int nCommand, int nArgs)
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B3270
+// PC 0x005B3270 GOG 0x005B32E0
 int CSWVirtualMachineCommands::ExecuteCommandEffectBlind(int nCommand, int nArgs)
 {
     CGameEffect* pGameEffect;
@@ -3382,7 +3382,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectBlind(int nCommand, int nArgs
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B3370
+// PC 0x005B3370 GOG 0x005B33E0
 int CSWVirtualMachineCommands::ExecuteCommandEffectCrush(int nCommand, int nArgs)
 {
     CGameEffect* pGameEffect;
@@ -3397,7 +3397,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectCrush(int nCommand, int nArgs
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B3420
+// PC 0x005B3420 GOG 0x005B3490
 int CSWVirtualMachineCommands::ExecuteCommandEffectComplex(int nCommand, int nArgs)
 {
 
@@ -3581,7 +3581,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectComplex(int nCommand, int nAr
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B3A50
+// PC 0x005B3A50 GOG 0x005B3AC0
 int CSWVirtualMachineCommands::ExecuteCommandEffectConcealment(int nCommand,
                                                                int nArgs)
 {
@@ -3614,7 +3614,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectConcealment(int nCommand,
     delete pGameEffect2;
     return 0;
 }
-// PC 0x005B3B90
+// PC 0x005B3B90 GOG 0x005B3C00
 int CSWVirtualMachineCommands::ExecuteCommandEffectDamage(int nCommand, int nArgs)
 {
 
@@ -3694,7 +3694,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectDamage(int nCommand, int nArg
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B3E00
+// PC 0x005B3E00 GOG 0x005B3E70
 int CSWVirtualMachineCommands::ExecuteCommandEffectDamageDecrease(int nCommand,
                                                                   int nArgs)
 {
@@ -3744,7 +3744,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectDamageDecrease(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B3FA0
+// PC 0x005B3FA0 GOG 0x005B4010
 int CSWVirtualMachineCommands::ExecuteCommandEffectDamageImmunityDecrease(
     int nCommand, int nArgs)
 {
@@ -3791,7 +3791,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectDamageImmunityDecrease(
     delete pEffect;
     return 0;
 }
-// PC 0x005B4100
+// PC 0x005B4100 GOG 0x005B4170
 int CSWVirtualMachineCommands::ExecuteCommandEffectDamageImmunityIncrease(
     int nCommand, int nArgs)
 {
@@ -3838,7 +3838,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectDamageImmunityIncrease(
     delete pEffect;
     return 0;
 }
-// PC 0x005B4260
+// PC 0x005B4260 GOG 0x005B42D0
 int CSWVirtualMachineCommands::ExecuteCommandEffectDamageIncrease(int nCommand,
                                                                   int nArgs)
 {
@@ -3888,7 +3888,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectDamageIncrease(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B4400
+// PC 0x005B4400 GOG 0x005B4470
 int CSWVirtualMachineCommands::ExecuteCommandEffectDamageReduction(int nCommand,
                                                                    int nArgs)
 {
@@ -3941,7 +3941,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectDamageReduction(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B45B0
+// PC 0x005B45B0 GOG 0x005B4620
 int CSWVirtualMachineCommands::ExecuteCommandEffectDamageResistance(
     int nCommand, int nArgs)
 {
@@ -3992,7 +3992,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectDamageResistance(
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B4740
+// PC 0x005B4740 GOG 0x005B47B0
 int CSWVirtualMachineCommands::ExecuteCommandEffectForceShield(int nCommand,
                                                                int nArgs)
 {
@@ -4015,7 +4015,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectForceShield(int nCommand,
     delete pGameEffect2;
     return 0;
 }
-// PC 0x005B4840
+// PC 0x005B4840 GOG 0x005B48B0
 int CSWVirtualMachineCommands::ExecuteCommandEffectDamageShield(int nCommand,
                                                                 int nArgs)
 {
@@ -4065,7 +4065,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectDamageShield(int nCommand,
     delete pGameEffect2;
     return 0;
 }
-// PC 0x005B49D0
+// PC 0x005B49D0 GOG 0x005B4A40
 int CSWVirtualMachineCommands::ExecuteCommandEffectFactionModifier(int nCommand, int nArgs)
 {
     int nFaction;
@@ -4092,7 +4092,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectFactionModifier(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B4AF0
+// PC 0x005B4AF0 GOG 0x005B4B60
 int CSWVirtualMachineCommands::ExecuteCommandEffectForceBody(int nCommand, int nArgs)
 {
     int nBonus;
@@ -4119,7 +4119,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectForceBody(int nCommand, int n
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B4C10
+// PC 0x005B4C10 GOG 0x005B4C80
 int CSWVirtualMachineCommands::ExecuteCommandEffectForceSight(int nCommand, int nArgs)
 {
     CGameEffect* pGameEffect;
@@ -4140,7 +4140,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectForceSight(int nCommand, int 
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B4D00
+// PC 0x005B4D00 GOG 0x005B4D70
 int CSWVirtualMachineCommands::ExecuteCommandEffectFPRegenModifier(int nCommand, int nArgs)
 {
     int nPercent;
@@ -4167,7 +4167,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectFPRegenModifier(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B4E20
+// PC 0x005B4E20 GOG 0x005B4E90
 int CSWVirtualMachineCommands::ExecuteCommandEffectVPRegenModifier(int nCommand, int nArgs)
 {
     int nPercent;
@@ -4194,7 +4194,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectVPRegenModifier(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B4F40
+// PC 0x005B4F40 GOG 0x005B4FB0
 int CSWVirtualMachineCommands::ExecuteCommandEffectFury(int nCommand, int nArgs)
 {
     CGameEffect* pGameEffect;
@@ -4215,7 +4215,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectFury(int nCommand, int nArgs)
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B5030
+// PC 0x005B5030 GOG 0x005B50A0
 int CSWVirtualMachineCommands::ExecuteCommandEffectForceDrain(int nCommand,
                                                               int nArgs)
 {
@@ -4257,7 +4257,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectForceDrain(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B5180
+// PC 0x005B5180 GOG 0x005B51F0
 int CSWVirtualMachineCommands::ExecuteCommandEffectHeal(int nCommand, int nArgs)
 {
     CGameEffect* pGameEffect;
@@ -4300,7 +4300,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectHeal(int nCommand, int nArgs)
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B52E0
+// PC 0x005B52E0 GOG 0x005B5350
 int CSWVirtualMachineCommands::ExecuteCommandEffectHitPointChangeWhenDying(
     int nCommand, int nArgs)
 {
@@ -4333,7 +4333,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectHitPointChangeWhenDying(
     delete pEffect;
     return 0;
 }
-// PC 0x005B5410
+// PC 0x005B5410 GOG 0x005B5480
 int CSWVirtualMachineCommands::ExecuteCommandEffectImmunity(int nCommand,
                                                             int nArgs)
 {
@@ -4361,7 +4361,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectImmunity(int nCommand,
     delete pEffect;
     return 0;
 }
-// PC 0x005B5550
+// PC 0x005B5550 GOG 0x005B55C0
 int CSWVirtualMachineCommands::ExecuteCommandEffectInvisibility(int nCommand,
                                                                 int nArgs)
 {
@@ -4395,7 +4395,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectInvisibility(int nCommand,
     delete pGameEffect2;
     return 0;
 }
-// PC 0x005B5690
+// PC 0x005B5690 GOG 0x005B5700
 int CSWVirtualMachineCommands::ExecuteCommandEffectLinkEffects(int nCommand,
                                                                int nArgs)
 {
@@ -4428,7 +4428,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectLinkEffects(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B57A0
+// PC 0x005B57A0 GOG 0x005B5810
 int CSWVirtualMachineCommands::ExecuteCommandEffectMissChance(int nCommand,
                                                               int nArgs)
 {
@@ -4461,7 +4461,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectMissChance(int nCommand,
     delete pEffect;
     return 0;
 }
-// PC 0x005B58D0
+// PC 0x005B58D0 GOG 0x005B5940
 int CSWVirtualMachineCommands::ExecuteCommandEffectModifyAttacks(int nCommand,
                                                                  int nArgs)
 {
@@ -4493,7 +4493,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectModifyAttacks(int nCommand,
     delete pGameEffect2;
     return 0;
 }
-// PC 0x005B59F0
+// PC 0x005B59F0 GOG 0x005B5A60
 int CSWVirtualMachineCommands::ExecuteCommandEffectMovementSpeedDecrease(
     int nCommand, int nArgs)
 {
@@ -4531,7 +4531,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectMovementSpeedDecrease(
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B5B30
+// PC 0x005B5B30 GOG 0x005B5BA0
 int CSWVirtualMachineCommands::ExecuteCommandEffectMovementSpeedIncrease(
     int nCommand, int nArgs)
 {
@@ -4569,7 +4569,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectMovementSpeedIncrease(
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B5C70
+// PC 0x005B5C70 GOG 0x005B5CE0
 int CSWVirtualMachineCommands::ExecuteCommandEffectPoison(int nCommand,
                                                           int nArgs)
 {
@@ -4594,7 +4594,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectPoison(int nCommand,
     delete pGameEffect2;
     return 0;
 }
-// PC 0x005B5D70
+// PC 0x005B5D70 GOG 0x005B5DE0
 int CSWVirtualMachineCommands::ExecuteCommandEffectResurrection(int nCommand,
                                                                 int nArgs)
 {
@@ -4628,7 +4628,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectResurrection(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B5EA0
+// PC 0x005B5EA0 GOG 0x005B5F10
 int CSWVirtualMachineCommands::ExecuteCommandEffectSavingThrowDecrease(
     int nCommand, int nArgs)
 {
@@ -4683,7 +4683,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectSavingThrowDecrease(
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B6050
+// PC 0x005B6050 GOG 0x005B60C0
 int CSWVirtualMachineCommands::ExecuteCommandEffectSavingThrowIncrease(
     int nCommand, int nArgs)
 {
@@ -4738,7 +4738,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectSavingThrowIncrease(
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B6200
+// PC 0x005B6200 GOG 0x005B6270
 int CSWVirtualMachineCommands::ExecuteCommandEffectSeeInvisible(int nCommand,
                                                                 int nArgs)
 {
@@ -4757,7 +4757,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectSeeInvisible(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B62D0
+// PC 0x005B62D0 GOG 0x005B6340
 int CSWVirtualMachineCommands::ExecuteCommandEffectSkillDecrease(int nCommand,
                                                                  int nArgs)
 {
@@ -4806,7 +4806,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectSkillDecrease(int nCommand,
                    : -2000;
     }
 }
-// PC 0x005B6440
+// PC 0x005B6440 GOG 0x005B64B0
 int CSWVirtualMachineCommands::ExecuteCommandEffectSkillIncrease(int nCommand,
                                                                  int nArgs)
 {
@@ -4855,7 +4855,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectSkillIncrease(int nCommand,
                    : -2000;
     }
 }
-// PC 0x005B65B0
+// PC 0x005B65B0 GOG 0x005B6620
 int CSWVirtualMachineCommands::ExecuteCommandEffectSpellImmunity(int nCommand,
                                                                  int nArgs)
 {
@@ -4887,7 +4887,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectSpellImmunity(int nCommand,
     delete pEffect;
     return 0;
 }
-// PC 0x005B66E0
+// PC 0x005B66E0 GOG 0x005B6750
 int CSWVirtualMachineCommands::ExecuteCommandEffectSpellLevelAbsorption(
     int nCommand, int nArgs)
 {
@@ -4940,7 +4940,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectSpellLevelAbsorption(
     delete pGameEffect2;
     return 0;
 }
-// PC 0x005B6860
+// PC 0x005B6860 GOG 0x005B68D0
 int CSWVirtualMachineCommands::ExecuteCommandEffectForceResistanceDecrease(
     int nCommand, int nArgs)
 {
@@ -4966,7 +4966,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectForceResistanceDecrease(
     delete pGameEffect2;
     return 0;
 }
-// PC 0x005B6970
+// PC 0x005B6970 GOG 0x005B69E0
 int CSWVirtualMachineCommands::ExecuteCommandEffectForceResistanceIncrease(
     int nCommand, int nArgs)
 {
@@ -4992,7 +4992,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectForceResistanceIncrease(
     delete pGameEffect2;
     return 0;
 }
-// PC 0x005B6A80
+// PC 0x005B6A80 GOG 0x005B6AF0
 int CSWVirtualMachineCommands::ExecuteCommandEffectTemporaryFP(int nCommand,
                                                                int nArgs)
 {
@@ -5033,7 +5033,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectTemporaryFP(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B6BD0
+// PC 0x005B6BD0 GOG 0x005B6C40
 int CSWVirtualMachineCommands::ExecuteCommandEffectTemporaryHP(int nCommand,
                                                                int nArgs)
 {
@@ -5075,7 +5075,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectTemporaryHP(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B6D20
+// PC 0x005B6D20 GOG 0x005B6D90
 int CSWVirtualMachineCommands::ExecuteCommandEffectTrueSeeing(int nCommand,
                                                               int nArgs)
 {
@@ -5094,7 +5094,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectTrueSeeing(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B6DF0
+// PC 0x005B6DF0 GOG 0x005B6E60
 int CSWVirtualMachineCommands::ExecuteCommandEffectVisualEffect(int nCommand,
                                                                 int nArgs)
 {
@@ -5144,7 +5144,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectVisualEffect(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B6F80
+// PC 0x005B6F80 GOG 0x005B6FF0
 int CSWVirtualMachineCommands::ExecuteCommandEffectDroidStun(int nCommand,
                                                              int nArgs)
 {
@@ -5160,7 +5160,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectDroidStun(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B7030
+// PC 0x005B7030 GOG 0x005B70A0
 int CSWVirtualMachineCommands::ExecuteCommandEffectForceJump(int, int nArgs)
 {
     unsigned long oidTarget = OBJECT_INVALID;
@@ -5181,7 +5181,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectForceJump(int, int nArgs)
     delete pEffect;
     return 0;
 }
-// PC 0x005B7160
+// PC 0x005B7160 GOG 0x005B71D0
 int CSWVirtualMachineCommands::ExecuteCommandEffectForcePushed(int nCommand,
                                                                int nArgs)
 {
@@ -5197,7 +5197,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectForcePushed(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B7220
+// PC 0x005B7220 GOG 0x005B7290
 int CSWVirtualMachineCommands::ExecuteCommandEffectForcePushTargeted(
     int nCommand, int nArgs)
 {
@@ -5232,7 +5232,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectForcePushTargeted(
     delete pEffect;
     return 0;
 }
-// PC 0x005B7390
+// PC 0x005B7390 GOG 0x005B7400
 int CSWVirtualMachineCommands::ExecuteCommandEffectWhirlwind(int nCommand,
                                                              int nArgs)
 {
@@ -5248,7 +5248,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectWhirlwind(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B7440
+// PC 0x005B7440 GOG 0x005B74B0
 int CSWVirtualMachineCommands::ExecuteCommandEffectBlasterDeflectionIncrease(
     int nCommand, int nArgs)
 {
@@ -5270,7 +5270,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectBlasterDeflectionIncrease(
     delete pGameEffect2;
     return 0;
 }
-// PC 0x005B7520
+// PC 0x005B7520 GOG 0x005B7590
 int CSWVirtualMachineCommands::ExecuteCommandEffectBlasterDeflectionDecrease(
     int nCommand, int nArgs)
 {
@@ -5292,7 +5292,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectBlasterDeflectionDecrease(
     delete pGameEffect2;
     return 0;
 }
-// PC 0x005B7600
+// PC 0x005B7600 GOG 0x005B7670
 int CSWVirtualMachineCommands::ExecuteCommandEffectHorrified(int nCommand,
                                                              int nArgs)
 {
@@ -5308,7 +5308,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectHorrified(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B76B0
+// PC 0x005B76B0 GOG 0x005B7720
 int CSWVirtualMachineCommands::ExecuteCommandEffectDamageForcePoints(
     int nCommand, int nArgs)
 {
@@ -5329,7 +5329,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectDamageForcePoints(
     delete pGameEffect2;
     return 0;
 }
-// PC 0x005B7790
+// PC 0x005B7790 GOG 0x005B7800
 int CSWVirtualMachineCommands::ExecuteCommandEffectHealForcePoints(int nCommand,
                                                                    int nArgs)
 {
@@ -5350,7 +5350,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectHealForcePoints(int nCommand,
     delete pGameEffect2;
     return 0;
 }
-// PC 0x005B7870
+// PC 0x005B7870 GOG 0x005B78E0
 int CSWVirtualMachineCommands::ExecuteCommandEffectTemporaryForcePoints(
     int nCommand, int nArgs)
 {
@@ -5371,7 +5371,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectTemporaryForcePoints(
     delete pGameEffect2;
     return 0;
 }
-// PC 0x005B7950
+// PC 0x005B7950 GOG 0x005B79C0
 int CSWVirtualMachineCommands::ExecuteCommandEffectChoke(int nCommand,
                                                          int nArgs)
 {
@@ -5387,7 +5387,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectChoke(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B7A00
+// PC 0x005B7A00 GOG 0x005B7A70
 int CSWVirtualMachineCommands::ExecuteCommandEffectBodyFuel(int nCommand,
                                                             int nArgs)
 {
@@ -5402,7 +5402,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectBodyFuel(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B7AB0
+// PC 0x005B7AB0 GOG 0x005B7B20
 int CSWVirtualMachineCommands::ExecuteCommandEffectPsychicStatic(int nCommand,
                                                                  int nArgs)
 {
@@ -5417,7 +5417,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectPsychicStatic(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B7B60
+// PC 0x005B7B60 GOG 0x005B7BD0
 int CSWVirtualMachineCommands::ExecuteCommandEffectLightsaberThrow(int nCommand,
                                                                    int nArgs)
 {
@@ -5468,7 +5468,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectLightsaberThrow(int nCommand,
     delete pGameEffect;
     return 0;
 }
-// PC 0x005B7CE0
+// PC 0x005B7CE0 GOG 0x005B7D50
 int CSWVirtualMachineCommands::ExecuteCommandEndGame(int nCommand, int nArgs)
 {
     int bEndGame = 1;
@@ -5481,7 +5481,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEndGame(int nCommand, int nArgs)
         1, bEndGame != 0 ? 60.0f : 0.0f, bEndGame);
     return 0;
 }
-// PC 0x005B7D50
+// PC 0x005B7D50 GOG 0x005B7DC0
 int CSWVirtualMachineCommands::ExecuteCommandEquipItem(int nCommand, int nArgs)
 {
     unsigned long oidItem;
@@ -5541,7 +5541,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEquipItem(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005B7E80
+// PC 0x005B7E80 GOG 0x005B7EF0
 int CSWVirtualMachineCommands::ExecuteCommandEventActivateItem(int nCommand,
                                                                int nArgs)
 {
@@ -5587,7 +5587,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEventActivateItem(int nCommand,
     }
     return 0;
 }
-// PC 0x005B8050
+// PC 0x005B8050 GOG 0x005B80C0
 int CSWVirtualMachineCommands::ExecuteCommandEventConversation(int nCommand,
                                                                int nArgs)
 {
@@ -5600,7 +5600,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEventConversation(int nCommand,
     delete pEvent;
     return 0;
 }
-// PC 0x005B80F0
+// PC 0x005B80F0 GOG 0x005B8160
 int CSWVirtualMachineCommands::ExecuteCommandEventSpellCastAt(int nCommand,
                                                               int nArgs)
 {
@@ -5639,7 +5639,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEventSpellCastAt(int nCommand,
     delete pEvent;
     return 0;
 }
-// PC 0x005B8240
+// PC 0x005B8240 GOG 0x005B82B0
 int CSWVirtualMachineCommands::ExecuteCommandEventUserDefined(int nCommand,
                                                               int nArgs)
 {
@@ -5661,7 +5661,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEventUserDefined(int nCommand,
     delete pEvent;
     return 0;
 }
-// PC 0x005B8340
+// PC 0x005B8340 GOG 0x005B83B0
 int CSWVirtualMachineCommands::ExecuteCommandExecuteScript(int nCommand,
                                                            int nArgs)
 {
@@ -5695,7 +5695,7 @@ int CSWVirtualMachineCommands::ExecuteCommandExecuteScript(int nCommand,
     }
     return 0;
 }
-// PC 0x005B8440
+// PC 0x005B8440 GOG 0x005B84B0
 int CSWVirtualMachineCommands::ExecuteCommandExportAllCharacters(int nCommand,
                                                                  int nArgs)
 {
@@ -5705,7 +5705,7 @@ int CSWVirtualMachineCommands::ExecuteCommandExportAllCharacters(int nCommand,
     pServerExoApp->SetExportAllCharactersPending(1);
     return 0;
 }
-// PC 0x005B8460
+// PC 0x005B8460 GOG 0x005B84D0
 int CSWVirtualMachineCommands::ExecuteCommandFindSubString(int nCommand,
                                                            int nArgs)
 {
@@ -5728,7 +5728,7 @@ int CSWVirtualMachineCommands::ExecuteCommandFindSubString(int nCommand,
     }
     return 0;
 }
-// PC 0x005B8580
+// PC 0x005B8580 GOG 0x005B85F0
 int CSWVirtualMachineCommands::ExecuteCommandFloatingText(int nCommand, int nArgs)
 {
 
@@ -5800,7 +5800,7 @@ int CSWVirtualMachineCommands::ExecuteCommandFloatingText(int nCommand, int nArg
     }
     return 0;
 }
-// PC 0x005B8780
+// PC 0x005B8780 GOG 0x005B87F0
 int CSWVirtualMachineCommands::ExecuteCommandFloatToInt(int nCommand, int nArgs)
 {
     float fValue;
@@ -5817,7 +5817,7 @@ int CSWVirtualMachineCommands::ExecuteCommandFloatToInt(int nCommand, int nArgs)
 #endif
     return 0;
 }
-// PC 0x005B87D0
+// PC 0x005B87D0 GOG 0x005B8840
 int CSWVirtualMachineCommands::ExecuteCommandFloatToString(int nCommand, int nArgs)
 {
     int nDecimals;
@@ -5863,7 +5863,7 @@ int CSWVirtualMachineCommands::ExecuteCommandFloatToString(int nCommand, int nAr
         return 0;
     }
 }
-// PC 0x005B8980
+// PC 0x005B8980 GOG 0x005B89F0
 int CSWVirtualMachineCommands::ExecuteCommandForceHeartbeat(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -5884,7 +5884,7 @@ int CSWVirtualMachineCommands::ExecuteCommandForceHeartbeat(int nCommand, int nA
     }
     return 0;
 }
-// PC 0x005B8A10
+// PC 0x005B8A10 GOG 0x005B8A80
 int CSWVirtualMachineCommands::ExecuteCommandGetAbilityScore(
     int nCommand, int nArgs)
 {
@@ -5926,7 +5926,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAbilityScore(
         return 0;
     return ERROR_STACK_PUSH;
 }
-// PC 0x005B8B70
+// PC 0x005B8B70 GOG 0x005B8BE0
 int CSWVirtualMachineCommands::ExecuteCommandGetAbilityModifier(
     int nCommand, int nArgs)
 {
@@ -5978,7 +5978,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAbilityModifier(
             ? 0 : ERROR_STACK_PUSH;
     }
 }
-// PC 0x005B8C70
+// PC 0x005B8C70 GOG 0x005B8CE0
 int CSWVirtualMachineCommands::ExecuteCommandGetAC(int nCommand, int nArgs)
 {
     int nArmorClass = -1;
@@ -6020,7 +6020,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAC(int nCommand, int nArgs)
         return g_pVirtualMachine->StackPushInteger(nArmorClass) != 0 ? 0 : ERROR_STACK_PUSH;
     }
 }
-// PC 0x005B8D50
+// PC 0x005B8D50 GOG 0x005B8DC0
 int CSWVirtualMachineCommands::ExecuteCommandGetAlignment(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -6052,7 +6052,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAlignment(int nCommand, int nArg
     }
     return g_pVirtualMachine->StackPushInteger(nAlignment) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005B8E00
+// PC 0x005B8E00 GOG 0x005B8E70
 int CSWVirtualMachineCommands::ExecuteCommandGetAOEObjectCreator(int nCommand,
                                                                  int nArgs)
 {
@@ -6078,7 +6078,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAOEObjectCreator(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidCreator) != 0 ? 0 : -2000;
 }
-// PC 0x005B8E90
+// PC 0x005B8E90 GOG 0x005B8F00
 int CSWVirtualMachineCommands::ExecuteCommandGetAppearanceType(int nCommand,
                                                                int nArgs)
 {
@@ -6100,7 +6100,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAppearanceType(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nAppearance) != 0 ? 0 : -2000;
 }
-// PC 0x005B8F00
+// PC 0x005B8F00 GOG 0x005B8F70
 int CSWVirtualMachineCommands::ExecuteCommandGetArea(int nCommand, int nArgs)
 {
 
@@ -6137,7 +6137,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetArea(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005B9010
+// PC 0x005B9010 GOG 0x005B9080
 int CSWVirtualMachineCommands::ExecuteCommandGetAreaUnescapable(int nCommand,
                                                                 int nArgs)
 {
@@ -6154,7 +6154,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAreaUnescapable(int nCommand,
     nResult = pArea->m_bUnescapable;
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005B9060
+// PC 0x005B9060 GOG 0x005B90D0
 int CSWVirtualMachineCommands::ExecuteCommandGetAttackTarget(int nCommand,
                                                              int nArgs)
 {
@@ -6176,7 +6176,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAttackTarget(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidResult) != 0 ? 0 : -2000;
 }
-// PC 0x005B90C0
+// PC 0x005B90C0 GOG 0x005B9130
 int CSWVirtualMachineCommands::ExecuteCommandGetAttemptedAttackTarget(
     int nCommand, int nArgs)
 {
@@ -6193,7 +6193,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAttemptedAttackTarget(
     }
     return g_pVirtualMachine->StackPushObject(oidResult) != 0 ? 0 : -2000;
 }
-// PC 0x005B9110
+// PC 0x005B9110 GOG 0x005B9180
 int CSWVirtualMachineCommands::ExecuteCommandGetAttemptedSpellTarget(
     int nCommand, int nArgs)
 {
@@ -6210,7 +6210,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAttemptedSpellTarget(
     }
     return g_pVirtualMachine->StackPushObject(oidResult) != 0 ? 0 : -2000;
 }
-// PC 0x005B9160
+// PC 0x005B9160 GOG 0x005B91D0
 int CSWVirtualMachineCommands::ExecuteCommandGetAttemptedMovementTarget(
     int nCommand, int nArgs)
 {
@@ -6227,7 +6227,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAttemptedMovementTarget(
     }
     return g_pVirtualMachine->StackPushObject(oidResult) != 0 ? 0 : -2000;
 }
-// PC 0x005B91B0
+// PC 0x005B91B0 GOG 0x005B9220
 int CSWVirtualMachineCommands::ExecuteCommandGetSpellTarget(int nCommand,
                                                             int nArgs)
 {
@@ -6249,7 +6249,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSpellTarget(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidResult) != 0 ? 0 : -2000;
 }
-// PC 0x005B9210
+// PC 0x005B9210 GOG 0x005B9280
 int CSWVirtualMachineCommands::ExecuteCommandGetBaseItemType(int nCommand,
                                                              int nArgs)
 {
@@ -6271,7 +6271,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetBaseItemType(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005B9270
+// PC 0x005B9270 GOG 0x005B92E0
 int CSWVirtualMachineCommands::ExecuteCommandGetBattleTrack(int nCommand,
                                                             int nArgs)
 {
@@ -6293,7 +6293,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetBattleTrack(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nTrack) != 0 ? 0 : -2000;
 }
-// PC 0x005B92E0
+// PC 0x005B92E0 GOG 0x005B9350
 int CSWVirtualMachineCommands::ExecuteCommandGetBlockingDoor(int nCommand,
                                                              int nArgs)
 {
@@ -6310,7 +6310,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetBlockingDoor(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidResult) != 0 ? 0 : -2000;
 }
-// PC 0x005B9330
+// PC 0x005B9330 GOG 0x005B93A0
 int CSWVirtualMachineCommands::ExecuteCommandGetCasterLevel(int nCommand,
                                                             int nArgs)
 {
@@ -6401,7 +6401,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCasterLevel(int nCommand,
     return g_pVirtualMachine->StackPushInteger(nCasterLevel) != 0
                ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005B94C0
+// PC 0x005B94C0 GOG 0x005B9530
 int CSWVirtualMachineCommands::ExecuteCommandGetChallengeRating(int nCommand,
                                                                 int nArgs)
 {
@@ -6428,7 +6428,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetChallengeRating(int nCommand,
     }
     return g_pVirtualMachine->StackPushFloat(fChallengeRating) != 0 ? 0 : -2000;
 }
-// PC 0x005B9540
+// PC 0x005B9540 GOG 0x005B95B0
 int CSWVirtualMachineCommands::ExecuteCommandGetClassInformation(int nCommand,
                                                                 int nArgs)
 {
@@ -6490,7 +6490,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetClassInformation(int nCommand,
     }
     return ERROR_STACK_PUSH;
 }
-// PC 0x005B9690
+// PC 0x005B9690 GOG 0x005B9700
 int CSWVirtualMachineCommands::ExecuteCommandGetCommandable(int nCommand,
                                                             int nArgs)
 {
@@ -6513,7 +6513,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCommandable(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005B9720
+// PC 0x005B9720 GOG 0x005B9790
 int CSWVirtualMachineCommands::ExecuteCommandGetCreatureHasTalent(int nCommand,
                                                                int nArgs)
 {
@@ -6549,7 +6549,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCreatureHasTalent(int nCommand,
     delete pTalent;
     return 0;
 }
-// PC 0x005B97E0
+// PC 0x005B97E0 GOG 0x005B9850
 int CSWVirtualMachineCommands::ExecuteCommandGetCreatureSize(int nCommand,
                                                              int nArgs)
 {
@@ -6571,7 +6571,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCreatureSize(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005B9840
+// PC 0x005B9840 GOG 0x005B98B0
 int CSWVirtualMachineCommands::ExecuteCommandGetCreatureTalent(int nCommand,
                                                                int nArgs)
 {
@@ -6669,7 +6669,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCreatureTalent(int nCommand,
     }
     return 0;
 }
-// PC 0x005B9AB0
+// PC 0x005B9AB0 GOG 0x005B9B20
 int CSWVirtualMachineCommands::ExecuteCommandGetDamageDealtByType(int nCommand,
                                                                   int nArgs)
 {
@@ -6703,7 +6703,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetDamageDealtByType(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005B9B60
+// PC 0x005B9B60 GOG 0x005B9BD0
 int CSWVirtualMachineCommands::ExecuteCommandGetDayTrack(int nCommand,
                                                          int nArgs)
 {
@@ -6725,7 +6725,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetDayTrack(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nTrack) != 0 ? 0 : -2000;
 }
-// PC 0x005B9BD0
+// PC 0x005B9BD0 GOG 0x005B9C40
 int CSWVirtualMachineCommands::ExecuteCommandGetDistanceBetween(int nCommand, int nArgs)
 {
 
@@ -6755,7 +6755,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetDistanceBetween(int nCommand, in
         return ERROR_STACK_POP;
     }
 }
-// PC 0x005B9CD0
+// PC 0x005B9CD0 GOG 0x005B9D40
 int CSWVirtualMachineCommands::ExecuteCommandGetDistanceBetween2D(int nCommand, int nArgs)
 {
 
@@ -6788,7 +6788,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetDistanceBetween2D(int nCommand, 
         return ERROR_STACK_POP;
     }
 }
-// PC 0x005B9DF0
+// PC 0x005B9DF0 GOG 0x005B9E60
 int CSWVirtualMachineCommands::ExecuteCommandGetDistanceBetweenLocations(int nCommand, int nArgs)
 {
 
@@ -6841,7 +6841,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetDistanceBetweenLocations(int nCo
         }
     }
 }
-// PC 0x005B9F20
+// PC 0x005B9F20 GOG 0x005B9F90
 int CSWVirtualMachineCommands::ExecuteCommandGetDistanceBetweenLocations2D(int nCommand, int nArgs)
 {
 
@@ -6898,7 +6898,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetDistanceBetweenLocations2D(int n
         }
     }
 }
-// PC 0x005BA080
+// PC 0x005BA080 GOG 0x005BA0F0
 int CSWVirtualMachineCommands::ExecuteCommandGetDistanceToObject(int nCommand, int nArgs)
 {
 
@@ -6935,7 +6935,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetDistanceToObject(int nCommand, i
     }
     return g_pVirtualMachine->StackPushFloat(fDistance) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BA1C0
+// PC 0x005BA1C0 GOG 0x005BA230
 int CSWVirtualMachineCommands::ExecuteCommandGetDistanceToObject2D(int nCommand, int nArgs)
 {
 
@@ -6975,7 +6975,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetDistanceToObject2D(int nCommand,
     }
     return g_pVirtualMachine->StackPushFloat(fDistance) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BA300
+// PC 0x005BA300 GOG 0x005BA370
 int CSWVirtualMachineCommands::ExecuteCommandGetEffectCreator(int nCommand,
                                                               int nArgs)
 {
@@ -6997,7 +6997,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetEffectCreator(int nCommand,
     delete pEffect;
     return 0;
 }
-// PC 0x005BA380
+// PC 0x005BA380 GOG 0x005BA3F0
 int CSWVirtualMachineCommands::ExecuteCommandGetEffectDurationType(int nCommand,
                                                                    int nArgs)
 {
@@ -7015,7 +7015,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetEffectDurationType(int nCommand,
     delete pEffect;
     return 0;
 }
-// PC 0x005BA3F0
+// PC 0x005BA3F0 GOG 0x005BA460
 int CSWVirtualMachineCommands::ExecuteCommandGetEffectSpellId(int nCommand,
                                                               int nArgs)
 {
@@ -7034,7 +7034,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetEffectSpellId(int nCommand,
     delete pEffect;
     return 0;
 }
-// PC 0x005BA460
+// PC 0x005BA460 GOG 0x005BA4D0
 int CSWVirtualMachineCommands::ExecuteCommandGetEffectSubType(int nCommand,
                                                               int nArgs)
 {
@@ -7052,7 +7052,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetEffectSubType(int nCommand,
     delete pEffect;
     return 0;
 }
-// PC 0x005BA4D0
+// PC 0x005BA4D0 GOG 0x005BA540
 int CSWVirtualMachineCommands::ExecuteCommandGetEffectType(int nCommand,
                                                            int nArgs)
 {
@@ -7070,7 +7070,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetEffectType(int nCommand,
     delete pEffect;
     return 0;
 }
-// PC 0x005BA540
+// PC 0x005BA540 GOG 0x005BA5B0
 int CSWVirtualMachineCommands::ExecuteCommandGetEmotions(int nCommand, int nArgs)
 {
     unsigned long oidSource = OBJECT_INVALID;
@@ -7133,7 +7133,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetEmotions(int nCommand, int nArgs
         return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : ERROR_STACK_PUSH;
     }
 }
-// PC 0x005BA690
+// PC 0x005BA690 GOG 0x005BA700
 int CSWVirtualMachineCommands::ExecuteCommandGetEncounterData(int nCommand,
                                                               int nArgs)
 {
@@ -7174,7 +7174,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetEncounterData(int nCommand,
                ? 0
                : ERROR_STACK_PUSH;
 }
-// PC 0x005BA740
+// PC 0x005BA740 GOG 0x005BA7B0
 int CSWVirtualMachineCommands::ExecuteCommandGetEnteringObject(int nCommand,
                                                               int nArgs)
 {
@@ -7244,7 +7244,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetEnteringObject(int nCommand,
     return g_pVirtualMachine->StackPushObject(oidEntering) != 0 ?
         0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BA840
+// PC 0x005BA840 GOG 0x005BA8B0
 int CSWVirtualMachineCommands::ExecuteCommandGetFacing(int nCommand, int nArgs)
 {
 
@@ -7275,7 +7275,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFacing(int nCommand, int nArgs)
     }
     return g_pVirtualMachine->StackPushFloat(fFacing) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BA950
+// PC 0x005BA950 GOG 0x005BA9C0
 int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageGoodEvilAlignment(
     int nCommand, int nArgs)
 {
@@ -7330,7 +7330,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageGoodEvilAlignment(
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BA9F0
+// PC 0x005BA9F0 GOG 0x005BAA60
 int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageLevel(
     int nCommand, int nArgs)
 {
@@ -7385,7 +7385,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageLevel(
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BAA90
+// PC 0x005BAA90 GOG 0x005BAB00
 int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageReputation(
     int nCommand, int nArgs)
 {
@@ -7449,7 +7449,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageReputation(
     }
     return 0;
 }
-// PC 0x005BAB40
+// PC 0x005BAB40 GOG 0x005BABB0
 int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageXP(int nCommand,
                                                                  int nArgs)
 {
@@ -7504,7 +7504,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionAverageXP(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BABE0
+// PC 0x005BABE0 GOG 0x005BAC50
 int CSWVirtualMachineCommands::ExecuteCommandGetFactionBestAC(int nCommand,
                                                               int nArgs)
 {
@@ -7568,7 +7568,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionBestAC(int nCommand,
     }
     return 0;
 }
-// PC 0x005BACB0
+// PC 0x005BACB0 GOG 0x005BAD20
 int CSWVirtualMachineCommands::ExecuteCommandGetFactionEqual(int nCommand,
                                                              int nArgs)
 {
@@ -7606,7 +7606,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionEqual(int nCommand,
     }
     return 0;
 }
-// PC 0x005BAD60
+// PC 0x005BAD60 GOG 0x005BADD0
 int CSWVirtualMachineCommands::ExecuteCommandGetFactionGold(int nCommand,
                                                             int nArgs)
 {
@@ -7661,7 +7661,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionGold(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BAE00
+// PC 0x005BAE00 GOG 0x005BAE70
 int CSWVirtualMachineCommands::ExecuteCommandGetFactionLeastDamagedMember(
     int nCommand, int nArgs)
 {
@@ -7725,7 +7725,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionLeastDamagedMember(
     }
     return 0;
 }
-// PC 0x005BAED0
+// PC 0x005BAED0 GOG 0x005BAF40
 int CSWVirtualMachineCommands::ExecuteCommandGetFactionLeader(int nCommand,
                                                               int nArgs)
 {
@@ -7752,7 +7752,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionLeader(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BAF50
+// PC 0x005BAF50 GOG 0x005BAFC0
 int CSWVirtualMachineCommands::ExecuteCommandGetFactionMember(int nCommand,
                                                             int nArgs)
 {
@@ -7805,7 +7805,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionMember(int nCommand,
         return g_pVirtualMachine->StackPushObject(oidResult) != 0 ? 0 : ERROR_STACK_PUSH;
     }
 }
-// PC 0x005BB060
+// PC 0x005BB060 GOG 0x005BB0D0
 int CSWVirtualMachineCommands::ExecuteCommandGetFactionMostDamagedMember(
     int nCommand, int nArgs)
 {
@@ -7870,7 +7870,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionMostDamagedMember(
     }
     return 0;
 }
-// PC 0x005BB130
+// PC 0x005BB130 GOG 0x005BB1A0
 int CSWVirtualMachineCommands::ExecuteCommandGetFactionMostFrequentClass(
     int nCommand, int nArgs)
 {
@@ -7925,7 +7925,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionMostFrequentClass(
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BB1D0
+// PC 0x005BB1D0 GOG 0x005BB240
 int CSWVirtualMachineCommands::ExecuteCommandGetFactionStrongestMember(
     int nCommand, int nArgs)
 {
@@ -7990,7 +7990,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionStrongestMember(
     }
     return 0;
 }
-// PC 0x005BB2A0
+// PC 0x005BB2A0 GOG 0x005BB310
 int CSWVirtualMachineCommands::ExecuteCommandGetFactionWeakestMember(
     int nCommand, int nArgs)
 {
@@ -8055,7 +8055,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionWeakestMember(
     }
     return 0;
 }
-// PC 0x005BB370
+// PC 0x005BB370 GOG 0x005BB3E0
 int CSWVirtualMachineCommands::ExecuteCommandGetFactionWorstAC(int nCommand,
                                                                int nArgs)
 {
@@ -8119,7 +8119,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFactionWorstAC(int nCommand,
     }
     return 0;
 }
-// PC 0x005BB440
+// PC 0x005BB440 GOG 0x005BB4B0
 int CSWVirtualMachineCommands::ExecuteCommandGetFortitudeSavingThrow(int nCommand,
                                                                   int nArgs)
 {
@@ -8170,7 +8170,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFortitudeSavingThrow(int nComman
                ? 0
                : ERROR_STACK_PUSH;
 }
-// PC 0x005BB500
+// PC 0x005BB500 GOG 0x005BB570
 int CSWVirtualMachineCommands::ExecuteCommandGetGalaxyMapSelectedPlanet(
     int nCommand, int nArgs)
 {
@@ -8183,7 +8183,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetGalaxyMapSelectedPlanet(
     nResult = pSWPartyTable->m_nSelectedPlanet;
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BB530
+// PC 0x005BB530 GOG 0x005BB5A0
 int CSWVirtualMachineCommands::ExecuteCommandGetGlobalLocation(int nCommand,
                                                                int nArgs)
 {
@@ -8205,7 +8205,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetGlobalLocation(int nCommand,
     }
     return 0;
 }
-// PC 0x005BB620
+// PC 0x005BB620 GOG 0x005BB690
 int CSWVirtualMachineCommands::ExecuteCommandGetGlobalNumber(int nCommand,
                                                              int nArgs)
 {
@@ -8245,7 +8245,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetGlobalNumber(int nCommand,
     }
     return 0;
 }
-// PC 0x005BB730
+// PC 0x005BB730 GOG 0x005BB7A0
 int CSWVirtualMachineCommands::ExecuteCommandGetGlobalString(int nCommand,
                                                              int nArgs)
 {
@@ -8267,7 +8267,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetGlobalString(int nCommand,
     }
     return 0;
 }
-// PC 0x005BB820
+// PC 0x005BB820 GOG 0x005BB890
 int CSWVirtualMachineCommands::ExecuteCommandGetGoingToBeAttackedBy(
     int nCommand, int nArgs)
 {
@@ -8289,7 +8289,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetGoingToBeAttackedBy(
     }
     return g_pVirtualMachine->StackPushObject(oidAttacker) != 0 ? 0 : -2001;
 }
-// PC 0x005BB890
+// PC 0x005BB890 GOG 0x005BB900
 int CSWVirtualMachineCommands::ExecuteCommandGetGold(int nCommand, int nArgs)
 {
     unsigned long oidTarget;
@@ -8335,7 +8335,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetGold(int nCommand, int nArgs)
 
     return g_pVirtualMachine->StackPushInteger(nGold) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BB940
+// PC 0x005BB940 GOG 0x005BB9B0
 int CSWVirtualMachineCommands::ExecuteCommandGetGoldPieceValue(int nCommand,
                                                                int nArgs)
 {
@@ -8361,7 +8361,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetGoldPieceValue(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BB9D0
+// PC 0x005BB9D0 GOG 0x005BBA40
 int CSWVirtualMachineCommands::ExecuteCommandGetChemical(int nCommand, int nArgs)
 {
     unsigned long oidObject;
@@ -8392,7 +8392,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetChemical(int nCommand, int nArgs
     }
     return g_pVirtualMachine->StackPushInteger(nChemicals) != 0 ? 0 : -2000;
 }
-// PC 0x005BBA80
+// PC 0x005BBA80 GOG 0x005BBAF0
 int CSWVirtualMachineCommands::ExecuteCommandGetChemicalPieceValue(int nCommand, int nArgs)
 {
     unsigned long oidItem;
@@ -8411,7 +8411,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetChemicalPieceValue(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nValue) != 0 ? 0 : -2000;
 }
-// PC 0x005BBB20
+// PC 0x005BBB20 GOG 0x005BBB90
 int CSWVirtualMachineCommands::ExecuteCommandGetHasFeat(int nCommand, int nArgs)
 {
     int nResult = 0;
@@ -8451,7 +8451,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetHasFeat(int nCommand, int nArgs)
                    ? 0 : ERROR_STACK_PUSH;
     }
 }
-// PC 0x005BBBF0
+// PC 0x005BBBF0 GOG 0x005BBC60
 int CSWVirtualMachineCommands::ExecuteCommandGetHasFeatEffect(int nCommand,
                                                               int nArgs)
 {
@@ -8484,7 +8484,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetHasFeatEffect(int nCommand,
         return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
     }
 }
-// PC 0x005BBC90
+// PC 0x005BBC90 GOG 0x005BBD00
 int CSWVirtualMachineCommands::ExecuteCommandGetHasInventory(int nCommand, int nArgs)
 {
     unsigned long oidObject;
@@ -8518,7 +8518,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetHasInventory(int nCommand, int n
     return g_pVirtualMachine->StackPushInteger(bHasInventory) != 0
                ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BBD40
+// PC 0x005BBD40 GOG 0x005BBDB0
 int CSWVirtualMachineCommands::ExecuteCommandGetHasSkill(int nCommand, int nArgs)
 {
     int nResult = 0;
@@ -8555,7 +8555,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetHasSkill(int nCommand, int nArgs
             ? 0 : ERROR_STACK_PUSH;
     }
 }
-// PC 0x005BBE00
+// PC 0x005BBE00 GOG 0x005BBE70
 int CSWVirtualMachineCommands::ExecuteCommandGetHasSpell(int nCommand, int nArgs)
 {
     int nResult = 0;
@@ -8591,7 +8591,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetHasSpell(int nCommand, int nArgs
                    ? 0 : ERROR_STACK_PUSH;
     }
 }
-// PC 0x005BBEA0
+// PC 0x005BBEA0 GOG 0x005BBF10
 int CSWVirtualMachineCommands::ExecuteCommandGetHasSpellEffect(int nCommand,
                                                                int nArgs)
 {
@@ -8624,7 +8624,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetHasSpellEffect(int nCommand,
         return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
     }
 }
-// PC 0x005BBF40
+// PC 0x005BBF40 GOG 0x005BBFB0
 int CSWVirtualMachineCommands::ExecuteCommandGetHitDice(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -8652,7 +8652,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetHitDice(int nCommand, int nArgs)
     }
     return g_pVirtualMachine->StackPushInteger(nHitDice) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BBFE0
+// PC 0x005BBFE0 GOG 0x005BC050
 int CSWVirtualMachineCommands::ExecuteCommandGetHitpoints(int nCommand,
                                                           int nArgs)
 {
@@ -8696,7 +8696,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetHitpoints(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nHitPoints) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BC0C0
+// PC 0x005BC0C0 GOG 0x005BC130
 int CSWVirtualMachineCommands::ExecuteCommandGetCurrentForcePoints(int nCommand,
                                                                    int nArgs)
 {
@@ -8719,7 +8719,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCurrentForcePoints(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BC130
+// PC 0x005BC130 GOG 0x005BC1A0
 int CSWVirtualMachineCommands::ExecuteCommandGetMaxForcePoints(int nCommand,
                                                                int nArgs)
 {
@@ -8742,7 +8742,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetMaxForcePoints(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BC190
+// PC 0x005BC190 GOG 0x005BC200
 int CSWVirtualMachineCommands::ExecuteCommandGetIdentified(int nCommand,
                                                            int nArgs)
 {
@@ -8764,7 +8764,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIdentified(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BC1F0
+// PC 0x005BC1F0 GOG 0x005BC260
 int CSWVirtualMachineCommands::ExecuteCommandGetInventoryDisturbItem(
     int nCommand, int nArgs)
 {
@@ -8786,7 +8786,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetInventoryDisturbItem(
     }
     return g_pVirtualMachine->StackPushObject(oidItem) != 0 ? 0 : -2000;
 }
-// PC 0x005BC240
+// PC 0x005BC240 GOG 0x005BC2B0
 int CSWVirtualMachineCommands::ExecuteCommandGetInventoryDisturbType(
     int nCommand, int nArgs)
 {
@@ -8808,7 +8808,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetInventoryDisturbType(
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BC290
+// PC 0x005BC290 GOG 0x005BC300
 int CSWVirtualMachineCommands::ExecuteCommandGetIsDawn(int nCommand, int nArgs)
 {
     int nResult;
@@ -8827,7 +8827,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsDawn(int nCommand, int nArgs)
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BC2D0
+// PC 0x005BC2D0 GOG 0x005BC340
 int CSWVirtualMachineCommands::ExecuteCommandGetIsDay(int nCommand, int nArgs)
 {
     int nResult;
@@ -8846,7 +8846,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsDay(int nCommand, int nArgs)
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BC310
+// PC 0x005BC310 GOG 0x005BC380
 int CSWVirtualMachineCommands::ExecuteCommandGetIsDoorActionPossible(int nCommand, int nArgs)
 {
     CServerExoApp* pServerExoApp = g_pAppManager->GetServerExoApp();
@@ -8945,7 +8945,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsDoorActionPossible(int nComman
         return g_pVirtualMachine->StackPushInteger(bResult) != 0 ? 0 : ERROR_STACK_PUSH;
     }
 }
-// PC 0x005BC5E0
+// PC 0x005BC5E0 GOG 0x005BC650
 int CSWVirtualMachineCommands::ExecuteCommandGetIsDusk(int nCommand, int nArgs)
 {
     int nResult;
@@ -8964,7 +8964,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsDusk(int nCommand, int nArgs)
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BC620
+// PC 0x005BC620 GOG 0x005BC690
 int CSWVirtualMachineCommands::ExecuteCommandGetIsEncounterCreature(
     int nCommand, int nArgs)
 {
@@ -8987,7 +8987,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsEncounterCreature(
                ? 0
                : -2000;
 }
-// PC 0x005BC690
+// PC 0x005BC690 GOG 0x005BC700
 int CSWVirtualMachineCommands::ExecuteCommandGetIsImmune(int nCommand, int nArgs)
 {
 
@@ -9033,7 +9033,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsImmune(int nCommand, int nArgs
     }
     return 0;
 }
-// PC 0x005BC790
+// PC 0x005BC790 GOG 0x005BC800
 int CSWVirtualMachineCommands::ExecuteCommandGetIsInCombat(int nCommand,
                                                            int nArgs)
 {
@@ -9072,7 +9072,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsInCombat(int nCommand,
         return g_pVirtualMachine->StackPushInteger(bInCombat) != 0 ? 0 : -2000;
     }
 }
-// PC 0x005BC830
+// PC 0x005BC830 GOG 0x005BC8A0
 int CSWVirtualMachineCommands::ExecuteCommandGetIsNight(int nCommand, int nArgs)
 {
     int nResult;
@@ -9091,7 +9091,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsNight(int nCommand, int nArgs)
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BC870
+// PC 0x005BC870 GOG 0x005BC8E0
 int CSWVirtualMachineCommands::ExecuteCommandGetIsOpen(int nCommand, int nArgs)
 {
     unsigned long oidObject = OBJECT_INVALID;
@@ -9118,7 +9118,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsOpen(int nCommand, int nArgs)
     }
     return g_pVirtualMachine->StackPushInteger(bIsOpen) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BC920
+// PC 0x005BC920 GOG 0x005BC990
 int CSWVirtualMachineCommands::ExecuteCommandGetIsRacialTypePlayable(int nCommand,
                                                                    int nArgs)
 {
@@ -9153,7 +9153,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsRacialTypePlayable(int nComman
     return g_pVirtualMachine->StackPushInteger(bPlayable) != 0
                ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BC9F0
+// PC 0x005BC9F0 GOG 0x005BCA60
 int CSWVirtualMachineCommands::ExecuteCommandGetIsTalentValid(int nCommand,
                                                               int nArgs)
 {
@@ -9173,7 +9173,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsTalentValid(int nCommand,
     pTalent = NULL;
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BCA60
+// PC 0x005BCA60 GOG 0x005BCAD0
 int CSWVirtualMachineCommands::ExecuteCommandGetIsMined(int nCommand, int nArgs)
 {
     unsigned long oidObject;
@@ -9205,7 +9205,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsMined(int nCommand, int nArgs)
     }
     return g_pVirtualMachine->StackPushInteger(bIsMined) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BCB00
+// PC 0x005BCB00 GOG 0x005BCB70
 int CSWVirtualMachineCommands::ExecuteCommandGetIsWeaponEffective(int nCommand,
                                                                   int nArgs)
 {
@@ -9236,7 +9236,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsWeaponEffective(int nCommand,
         return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
     }
 }
-// PC 0x005BCB90
+// PC 0x005BCB90 GOG 0x005BCC00
 int CSWVirtualMachineCommands::ExecuteCommandGetItemACValue(int nCommand,
                                                           int nArgs)
 {
@@ -9273,7 +9273,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetItemACValue(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nArmorClass) != 0 ? 0 : -2000;
 }
-// PC 0x005BCC30
+// PC 0x005BCC30 GOG 0x005BCCA0
 int CSWVirtualMachineCommands::ExecuteCommandGetItemHasItemProperty(int nCommand,
                                                                   int nArgs)
 {
@@ -9323,7 +9323,7 @@ Exit:
         return 0;
     return ERROR_STACK_PUSH;
 }
-// PC 0x005BCD20
+// PC 0x005BCD20 GOG 0x005BCD90
 int CSWVirtualMachineCommands::ExecuteCommandGetItemInSlot(int nCommand,
                                                           int nArgs)
 {
@@ -9368,7 +9368,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetItemInSlot(int nCommand,
         return 0;
     return ERROR_STACK_PUSH;
 }
-// PC 0x005BCDF0
+// PC 0x005BCDF0 GOG 0x005BCE60
 int CSWVirtualMachineCommands::ExecuteCommandGetItemPossessedBy(int nCommand,
                                                               int nArgs)
 {
@@ -9435,7 +9435,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetItemPossessedBy(int nCommand,
     }
     return 0;
 }
-// PC 0x005BD020
+// PC 0x005BD020 GOG 0x005BD090
 int CSWVirtualMachineCommands::ExecuteCommandGetItemPossessor(int nCommand,
                                                             int nArgs)
 {
@@ -9465,7 +9465,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetItemPossessor(int nCommand,
     return g_pVirtualMachine->StackPushObject(oidPossessor) != 0
                ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BD0E0
+// PC 0x005BD0E0 GOG 0x005BD150
 int CSWVirtualMachineCommands::ExecuteCommandGetJournalQuestExperience(
     int nCommand, int nArgs)
 {
@@ -9505,7 +9505,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetJournalQuestExperience(
     }
     return 0;
 }
-// PC 0x005BD2E0
+// PC 0x005BD2E0 GOG 0x005BD350
 int CSWVirtualMachineCommands::ExecuteCommandGetLastAttacker(int nCommand,
                                                              int nArgs)
 {
@@ -9527,7 +9527,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastAttacker(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidAttacker) != 0 ? 0 : -2000;
 }
-// PC 0x005BD360
+// PC 0x005BD360 GOG 0x005BD3D0
 int CSWVirtualMachineCommands::ExecuteCommandGetLastHostileTarget(int nCommand,
                                                                   int nArgs)
 {
@@ -9550,7 +9550,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastHostileTarget(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BD3D0
+// PC 0x005BD3D0 GOG 0x005BD440
 int CSWVirtualMachineCommands::ExecuteCommandGetLastAttackAction(int nCommand,
                                                                  int nArgs)
 {
@@ -9573,7 +9573,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastAttackAction(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BD440
+// PC 0x005BD440 GOG 0x005BD4B0
 int CSWVirtualMachineCommands::ExecuteCommandGetLastAttackMode(int nCommand,
                                                                int nArgs)
 {
@@ -9621,7 +9621,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastAttackMode(int nCommand,
     return g_pVirtualMachine->StackPushInteger(nAttackMode) != 0
         ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BD530
+// PC 0x005BD530 GOG 0x005BD5A0
 int CSWVirtualMachineCommands::ExecuteCommandGetLastAttackResult(int nCommand,
                                                                  int nArgs)
 {
@@ -9644,7 +9644,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastAttackResult(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BD5A0
+// PC 0x005BD5A0 GOG 0x005BD610
 int CSWVirtualMachineCommands::ExecuteCommandGetWasForcePowerSuccessful(
     int nCommand, int nArgs)
 {
@@ -9667,7 +9667,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetWasForcePowerSuccessful(
     }
     return g_pVirtualMachine->StackPushInteger(bResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BD610
+// PC 0x005BD610 GOG 0x005BD680
 int CSWVirtualMachineCommands::ExecuteCommandGetLastAttackType(int nCommand,
                                                              int nArgs)
 {
@@ -9706,7 +9706,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastAttackType(int nCommand,
     return g_pVirtualMachine->StackPushInteger(nAttackType) != 0
         ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BD6C0
+// PC 0x005BD6C0 GOG 0x005BD730
 int CSWVirtualMachineCommands::ExecuteCommandGetLastClosedBy(int nCommand,
                                                              int nArgs)
 {
@@ -9730,7 +9730,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastClosedBy(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidCloser) != 0 ? 0 : -2000;
 }
-// PC 0x005BD730
+// PC 0x005BD730 GOG 0x005BD7A0
 int CSWVirtualMachineCommands::ExecuteCommandGetLastCombatFeatUsed(int nCommand,
                                                                    int nArgs)
 {
@@ -9753,7 +9753,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastCombatFeatUsed(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nFeat) != 0 ? 0 : -2000;
 }
-// PC 0x005BD7A0
+// PC 0x005BD7A0 GOG 0x005BD810
 int CSWVirtualMachineCommands::ExecuteCommandGetLastDamager(int nCommand,
                                                             int nArgs)
 {
@@ -9775,7 +9775,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastDamager(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidDamager) != 0 ? 0 : -2000;
 }
-// PC 0x005BD800
+// PC 0x005BD800 GOG 0x005BD870
 int CSWVirtualMachineCommands::ExecuteCommandGetLastDisarmed(int nCommand,
                                                              int nArgs)
 {
@@ -9809,7 +9809,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastDisarmed(int nCommand,
     return g_pVirtualMachine->StackPushObject(oidDisarmer) != 0
                ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BD8A0
+// PC 0x005BD8A0 GOG 0x005BD910
 int CSWVirtualMachineCommands::ExecuteCommandGetLastDisturbed(int nCommand,
                                                               int nArgs)
 {
@@ -9839,7 +9839,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastDisturbed(int nCommand,
     return g_pVirtualMachine->StackPushObject(oidDisturber) != 0
                ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BD920
+// PC 0x005BD920 GOG 0x005BD990
 int CSWVirtualMachineCommands::ExecuteCommandGetLastForcePowerUsed(int nCommand,
                                                                    int nArgs)
 {
@@ -9862,7 +9862,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastForcePowerUsed(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nPower) != 0 ? 0 : -2000;
 }
-// PC 0x005BD990
+// PC 0x005BD990 GOG 0x005BDA00
 int CSWVirtualMachineCommands::ExecuteCommandGetLastHostileActor(int nCommand,
                                                                  int nArgs)
 {
@@ -9933,7 +9933,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastHostileActor(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidResult) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BDAC0
+// PC 0x005BDAC0 GOG 0x005BDB30
 int CSWVirtualMachineCommands::ExecuteCommandGetLastKiller(int nCommand,
                                                            int nArgs)
 {
@@ -9955,7 +9955,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastKiller(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BDB20
+// PC 0x005BDB20 GOG 0x005BDB90
 int CSWVirtualMachineCommands::ExecuteCommandGetLastLocked(int nCommand,
                                                            int nArgs)
 {
@@ -9984,7 +9984,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastLocked(int nCommand,
     return g_pVirtualMachine->StackPushObject(oidLocker) != 0
                ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BDBA0
+// PC 0x005BDBA0 GOG 0x005BDC10
 int CSWVirtualMachineCommands::ExecuteCommandGetLastOpenedBy(int nCommand,
                                                              int nArgs)
 {
@@ -10008,7 +10008,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastOpenedBy(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidOpener) != 0 ? 0 : -2000;
 }
-// PC 0x005BDC10
+// PC 0x005BDC10 GOG 0x005BDC80
 int CSWVirtualMachineCommands::ExecuteCommandGetLastPazaakResult(int nCommand,
                                                                  int nArgs)
 {
@@ -10018,7 +10018,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastPazaakResult(int nCommand,
     g_pAppManager->m_pClientExoApp->GetPazaakResults(&nResult, &nUnused);
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BDC60
+// PC 0x005BDC60 GOG 0x005BDCD0
 int CSWVirtualMachineCommands::ExecuteCommandGetLastPerceived(int nCommand,
                                                                int nArgs)
 {
@@ -10038,7 +10038,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastPerceived(int nCommand,
     return g_pVirtualMachine->StackPushObject(oidLastPerceived) != 0 ? 0
                                                                      : -2000;
 }
-// PC 0x005BDCD0
+// PC 0x005BDCD0 GOG 0x005BDD40
 int CSWVirtualMachineCommands::ExecuteCommandGetLastPerception(int nCommand,
                                                               int nArgs)
 {
@@ -10093,7 +10093,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastPerception(int nCommand,
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0
                                                            : ERROR_STACK_PUSH;
 }
-// PC 0x005BDE40
+// PC 0x005BDE40 GOG 0x005BDEB0
 int CSWVirtualMachineCommands::ExecuteCommandGetLastSpeaker(int nCommand,
                                                              int nArgs)
 {
@@ -10113,7 +10113,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastSpeaker(int nCommand,
     return g_pVirtualMachine->StackPushObject(oidLastSpeaker) != 0 ? 0
                                                                     : -2000;
 }
-// PC 0x005BDEB0
+// PC 0x005BDEB0 GOG 0x005BDF20
 int CSWVirtualMachineCommands::ExecuteCommandGetLastMineDetected(int nCommand,
                                                                  int nArgs)
 {
@@ -10135,7 +10135,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastMineDetected(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidMine) != 0 ? 0 : -2000;
 }
-// PC 0x005BDF10
+// PC 0x005BDF10 GOG 0x005BDF80
 int CSWVirtualMachineCommands::ExecuteCommandGetLastUnlocked(int nCommand,
                                                              int nArgs)
 {
@@ -10164,7 +10164,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastUnlocked(int nCommand,
     return g_pVirtualMachine->StackPushObject(oidUnlocker) != 0
                ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BDF90
+// PC 0x005BDF90 GOG 0x005BE000
 int CSWVirtualMachineCommands::ExecuteCommandGetLastUsedBy(int nCommand,
                                                            int nArgs)
 {
@@ -10185,7 +10185,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastUsedBy(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidUser) != 0 ? 0 : -2000;
 }
-// PC 0x005BE000
+// PC 0x005BE000 GOG 0x005BE070
 int CSWVirtualMachineCommands::ExecuteCommandGetLastWeaponUsed(int nCommand,
                                                                int nArgs)
 {
@@ -10207,7 +10207,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastWeaponUsed(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidWeapon) != 0 ? 0 : -2000;
 }
-// PC 0x005BE060
+// PC 0x005BE060 GOG 0x005BE0D0
 int CSWVirtualMachineCommands::ExecuteCommandGetLeavingObject(int nCommand,
                                                              int nArgs)
 {
@@ -10265,7 +10265,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLeavingObject(int nCommand,
     return g_pVirtualMachine->StackPushObject(oidLeaving) != 0 ?
         0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BE150
+// PC 0x005BE150 GOG 0x005BE1C0
 int CSWVirtualMachineCommands::ExecuteCommandGetLoadFromSaveGame(int nCommand,
                                                                  int nArgs)
 {
@@ -10276,7 +10276,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLoadFromSaveGame(int nCommand,
     nResult = pServerExoApp->GetLoadFromSaveGame();
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BE180
+// PC 0x005BE180 GOG 0x005BE1F0
 int CSWVirtualMachineCommands::ExecuteCommandGetLocalValue(int nCommand,
                                                           int nArgs)
 {
@@ -10329,7 +10329,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLocalValue(int nCommand,
                    ? 0 : ERROR_STACK_PUSH;
     }
 }
-// PC 0x005BE260
+// PC 0x005BE260 GOG 0x005BE2D0
 int CSWVirtualMachineCommands::ExecuteCommandGetLocation(int nCommand, int nArgs)
 {
     unsigned long oidTarget;
@@ -10356,7 +10356,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLocation(int nCommand, int nArgs
     }
     return 0;
 }
-// PC 0x005BE380
+// PC 0x005BE380 GOG 0x005BE3F0
 int CSWVirtualMachineCommands::ExecuteCommandGetLocked(int nCommand, int nArgs)
 {
     int bLocked = 0;
@@ -10383,7 +10383,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLocked(int nCommand, int nArgs)
     return g_pVirtualMachine->StackPushInteger(bLocked) != 0
                ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BE430
+// PC 0x005BE430 GOG 0x005BE4A0
 int CSWVirtualMachineCommands::ExecuteCommandGetLockInfo(int nCommand, int nArgs)
 {
 
@@ -10469,7 +10469,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLockInfo(int nCommand, int nArgs
     }
     return 0;
 }
-// PC 0x005BE6E0
+// PC 0x005BE6E0 GOG 0x005BE750
 int CSWVirtualMachineCommands::ExecuteCommandGetMatchedStringsCount(
     int nCommand, int nArgs)
 {
@@ -10488,7 +10488,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetMatchedStringsCount(
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BE740
+// PC 0x005BE740 GOG 0x005BE7B0
 int CSWVirtualMachineCommands::ExecuteCommandGetMatchedStringsNum(int nCommand,
                                                                    int nArgs)
 {
@@ -10507,7 +10507,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetMatchedStringsNum(int nCommand,
     return g_pVirtualMachine->StackPushInteger(nMatchedStringsNum) != 0 ? 0 :
                                                                         -2000;
 }
-// PC 0x005BE7A0
+// PC 0x005BE7A0 GOG 0x005BE810
 int CSWVirtualMachineCommands::ExecuteCommandGetMetaMagicFeat(int nCommand,
                                                               int nArgs)
 {
@@ -10529,7 +10529,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetMetaMagicFeat(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BE800
+// PC 0x005BE800 GOG 0x005BE870
 int CSWVirtualMachineCommands::ExecuteCommandGetModule(int nCommand, int nArgs)
 {
     unsigned long oidResult;
@@ -10551,7 +10551,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetModule(int nCommand, int nArgs)
     }
     return g_pVirtualMachine->StackPushObject(oidResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BE840
+// PC 0x005BE840 GOG 0x005BE8B0
 int CSWVirtualMachineCommands::ExecuteCommandGetModuleItemStuff(int nCommand,
                                                                 int nArgs)
 {
@@ -10580,7 +10580,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetModuleItemStuff(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BE8D0
+// PC 0x005BE8D0 GOG 0x005BE940
 int CSWVirtualMachineCommands::ExecuteCommandGetModuleName(int nCommand, int nArgs)
 {
 
@@ -10609,7 +10609,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetModuleName(int nCommand, int nAr
     }
     return 0;
 }
-// PC 0x005BEA00
+// PC 0x005BEA00 GOG 0x005BEA70
 int CSWVirtualMachineCommands::ExecuteCommandGetMovementRate(int nCommand,
                                                              int nArgs)
 {
@@ -10636,7 +10636,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetMovementRate(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nRate) != 0 ? 0 : -2000;
 }
-// PC 0x005BEA70
+// PC 0x005BEA70 GOG 0x005BEAE0
 int CSWVirtualMachineCommands::ExecuteCommandGetName(int nCommand, int nArgs)
 {
 
@@ -10667,7 +10667,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetName(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005BEBA0
+// PC 0x005BEBA0 GOG 0x005BEC10
 int CSWVirtualMachineCommands::ExecuteCommandGetNightTrack(int nCommand,
                                                            int nArgs)
 {
@@ -10689,7 +10689,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetNightTrack(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nTrack) != 0 ? 0 : -2000;
 }
-// PC 0x005BEC10
+// PC 0x005BEC10 GOG 0x005BEC80
 int CSWVirtualMachineCommands::ExecuteCommandGetNumStackedItems(int nCommand,
                                                                 int nArgs)
 {
@@ -10714,7 +10714,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetNumStackedItems(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BEC70
+// PC 0x005BEC70 GOG 0x005BECE0
 int CSWVirtualMachineCommands::ExecuteCommandGetObjectByTag(int nCommand,
                                                           int nArgs)
 {
@@ -10738,7 +10738,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetObjectByTag(int nCommand,
     }
     return 0;
 }
-// PC 0x005BED80
+// PC 0x005BED80 GOG 0x005BEDF0
 int CSWVirtualMachineCommands::ExecuteCommandGetObjectInArea(int nCommand,
                                                            int nArgs)
 {
@@ -10848,7 +10848,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetObjectInArea(int nCommand,
     }
     return 0;
 }
-// PC 0x005BF000
+// PC 0x005BF000 GOG 0x005BF070
 int CSWVirtualMachineCommands::ExecuteCommandGetObjectType(int nCommand,
                                                            int nArgs)
 {
@@ -10911,7 +10911,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetObjectType(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BF110
+// PC 0x005BF110 GOG 0x005BF180
 int CSWVirtualMachineCommands::ExecuteCommandGetObjectValid(int nCommand,
                                                             int nArgs)
 {
@@ -10933,7 +10933,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetObjectValid(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BF170
+// PC 0x005BF170 GOG 0x005BF1E0
 int CSWVirtualMachineCommands::ExecuteCommandGetObjectVisibility(int nCommand,
                                                                  int nArgs)
 {
@@ -10979,7 +10979,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetObjectVisibility(int nCommand,
         return 0;
     return ERROR_STACK_PUSH;
 }
-// PC 0x005BF260
+// PC 0x005BF260 GOG 0x005BF2D0
 int CSWVirtualMachineCommands::ExecuteCommandGetOwnerDemolitionsSkill(int nCommand, int nArgs)
 {
     unsigned long oidObject;
@@ -11011,7 +11011,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetOwnerDemolitionsSkill(int nComma
     }
     return g_pVirtualMachine->StackPushInteger(nSkill) != 0 ? 0 : -2000;
 }
-// PC 0x005BF320
+// PC 0x005BF320 GOG 0x005BF390
 int CSWVirtualMachineCommands::ExecuteCommandGetLastForfeitViolation(int nCommand, int nArgs)
 {
     CSWPartyTable* pPartyTable = g_pAppManager->GetServerExoApp()->GetPartyTable();
@@ -11022,7 +11022,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastForfeitViolation(int nComman
     int nViolation = pPartyTable->m_nForfeitViolation;
     return g_pVirtualMachine->StackPushInteger(nViolation) != 0 ? 0 : -2000;
 }
-// PC 0x005BF360
+// PC 0x005BF360 GOG 0x005BF3D0
 int CSWVirtualMachineCommands::ExecuteCommandAdjustCreatureAttributes(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -11079,7 +11079,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustCreatureAttributes(int nComma
     }
     return 0;
 }
-// PC 0x005BF4D0
+// PC 0x005BF4D0 GOG 0x005BF540
 int CSWVirtualMachineCommands::ExecuteCommandAdjustCreatureSkills(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -11110,7 +11110,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAdjustCreatureSkills(int nCommand, 
     }
     return 0;
 }
-// PC 0x005BF590
+// PC 0x005BF590 GOG 0x005BF600
 int CSWVirtualMachineCommands::ExecuteCommandModifyBaseSavingThrow(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -11150,7 +11150,7 @@ int CSWVirtualMachineCommands::ExecuteCommandModifyBaseSavingThrow(int nCommand,
     }
     return 0;
 }
-// PC 0x005BF660
+// PC 0x005BF660 GOG 0x005BF6D0
 int CSWVirtualMachineCommands::ExecuteCommandGetObjectPersonalSpace(int nCommand, int nArgs)
 {
     unsigned long oidObject;
@@ -11168,7 +11168,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetObjectPersonalSpace(int nCommand
     }
     return g_pVirtualMachine->StackPushFloat(fPersonalSpace) != 0 ? 0 : -2000;
 }
-// PC 0x005BF6F0
+// PC 0x005BF6F0 GOG 0x005BF760
 int CSWVirtualMachineCommands::ExecuteCommandInfluence(int nCommand, int nArgs)
 {
     int nNPC;
@@ -11278,7 +11278,7 @@ int CSWVirtualMachineCommands::ExecuteCommandInfluence(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005BF8F0
+// PC 0x005BF8F0 GOG 0x005BF960
 int CSWVirtualMachineCommands::ExecuteCommandGetPartyMemberByIndex(int nCommand,
                                                                    int nArgs)
 {
@@ -11301,7 +11301,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetPartyMemberByIndex(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BF970
+// PC 0x005BF970 GOG 0x005BF9E0
 int CSWVirtualMachineCommands::ExecuteCommandGetPartyMemberCount(int nCommand,
                                                                  int nArgs)
 {
@@ -11310,7 +11310,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetPartyMemberCount(int nCommand,
     nPartyMembers = g_pAppManager->m_pClientExoApp->GetSWParty()->m_nCharacters;
     return g_pVirtualMachine->StackPushInteger(nPartyMembers) != 0 ? 0 : -2000;
 }
-// PC 0x005BF9A0
+// PC 0x005BF9A0 GOG 0x005BFA10
 int CSWVirtualMachineCommands::ExecuteCommandGetPC(int nCommand, int nArgs)
 {
     unsigned long oidPlayer;
@@ -11328,7 +11328,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetPC(int nCommand, int nArgs)
     }
     return g_pVirtualMachine->StackPushObject(oidPlayer) != 0 ? 0 : -2000;
 }
-// PC 0x005BFA20
+// PC 0x005BFA20 GOG 0x005BFA90
 int CSWVirtualMachineCommands::ExecuteCommandGetPCLevellingUp(int nCommand,
                                                               int nArgs)
 {
@@ -11343,7 +11343,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetPCLevellingUp(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidPlayer) != 0 ? 0 : -2000;
 }
-// PC 0x005BFA60
+// PC 0x005BFA60 GOG 0x005BFAD0
 int CSWVirtualMachineCommands::ExecuteCommandGetPlaceableIllumination(
     int nCommand, int nArgs)
 {
@@ -11366,7 +11366,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetPlaceableIllumination(
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005BFAC0
+// PC 0x005BFAC0 GOG 0x005BFB30
 int CSWVirtualMachineCommands::ExecuteCommandGetPlotFlag(int nCommand,
                                                          int nArgs)
 {
@@ -11390,7 +11390,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetPlotFlag(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(bPlot) != 0 ? 0 : -2000;
 }
-// PC 0x005BFB40
+// PC 0x005BFB40 GOG 0x005BFBB0
 int CSWVirtualMachineCommands::ExecuteCommandGetPosition(int nCommand, int nArgs)
 {
     unsigned long oidTarget;
@@ -11412,7 +11412,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetPosition(int nCommand, int nArgs
     }
     return g_pVirtualMachine->StackPushVector(vPosition) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BFC00
+// PC 0x005BFC00 GOG 0x005BFC70
 int CSWVirtualMachineCommands::ExecuteCommandGetRacialType(int nCommand,
                                                           int nArgs)
 {
@@ -11442,7 +11442,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetRacialType(int nCommand,
     return g_pVirtualMachine->StackPushInteger(nRace) != 0
                ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005BFC90
+// PC 0x005BFC90 GOG 0x005BFD00
 int CSWVirtualMachineCommands::ExecuteCommandGetReflexAdjustedDamage(
     int nCommand, int nArgs)
 {
@@ -11526,7 +11526,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetReflexAdjustedDamage(
     }
     return 0;
 }
-// PC 0x005BFE90
+// PC 0x005BFE90 GOG 0x005BFF00
 int CSWVirtualMachineCommands::ExecuteCommandGetReflexSavingThrow(int nCommand,
                                                                   int nArgs)
 {
@@ -11577,7 +11577,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetReflexSavingThrow(int nCommand,
                ? 0
                : ERROR_STACK_PUSH;
 }
-// PC 0x005BFF50
+// PC 0x005BFF50 GOG 0x005BFFC0
 int CSWVirtualMachineCommands::ExecuteCommandGetReputation(int nCommand,
                                                            int nArgs)
 {
@@ -11609,7 +11609,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetReputation(int nCommand,
         return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
     }
 }
-// PC 0x005BFFF0
+// PC 0x005BFFF0 GOG 0x005C0060
 int CSWVirtualMachineCommands::ExecuteCommandGetRestrictMode(int nCommand,
                                                              int nArgs)
 {
@@ -11641,14 +11641,14 @@ int CSWVirtualMachineCommands::ExecuteCommandGetRestrictMode(int nCommand,
     return g_pVirtualMachine->StackPushInteger(nRestrict) != 0
                ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005C00A0
+// PC 0x005C00A0 GOG 0x005C0110
 int CSWVirtualMachineCommands::ExecuteCommandGetRunScriptVar(int nCommand,
                                                              int nArgs)
 {
     return g_pVirtualMachine->StackPushInteger(g_nRunScriptVar) != 0 ? 0
                                                                      : -2000;
 }
-// PC 0x005C00D0
+// PC 0x005C00D0 GOG 0x005C0140
 int CSWVirtualMachineCommands::ExecuteCommandGetSkillRank(int nCommand, int nArgs)
 {
     int nSkill;
@@ -11686,7 +11686,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSkillRank(int nCommand, int nArg
         return 0;
     return ERROR_STACK_PUSH;
 }
-// PC 0x005C01A0
+// PC 0x005C01A0 GOG 0x005C0210
 int CSWVirtualMachineCommands::ExecuteCommandGetSpellCast(int nCommand,
                                                           int nArgs)
 {
@@ -11768,7 +11768,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSpellCast(int nCommand,
     }
     return 0;
 }
-// PC 0x005C02E0
+// PC 0x005C02E0 GOG 0x005C0350
 int CSWVirtualMachineCommands::ExecuteCommandGetSpellCasterItem(int nCommand,
                                                                 int nArgs)
 {
@@ -11785,7 +11785,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSpellCasterItem(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C0340
+// PC 0x005C0340 GOG 0x005C03B0
 int CSWVirtualMachineCommands::ExecuteCommandGetSpellForcePointCost(int nCommand, int nArgs)
 {
     int nCost = 0;
@@ -11803,7 +11803,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSpellForcePointCost(int nCommand
     }
     return g_pVirtualMachine->StackPushInteger(nCost) != 0 ? 0 : -2000;
 }
-// PC 0x005C03C0
+// PC 0x005C03C0 GOG 0x005C0430
 int CSWVirtualMachineCommands::ExecuteCommandGrantAbility(int nCommand, int nArgs)
 {
     int nAbility;
@@ -11832,7 +11832,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGrantAbility(int nCommand, int nArg
     }
     return 0;
 }
-// PC 0x005C0460
+// PC 0x005C0460 GOG 0x005C04D0
 int CSWVirtualMachineCommands::ExecuteCommandGetSpellFormMask(int nCommand, int nArgs)
 {
     int nSpell;
@@ -11849,7 +11849,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSpellFormMask(int nCommand, int 
     }
     return g_pVirtualMachine->StackPushInteger(nMask) != 0 ? 0 : -2000;
 }
-// PC 0x005C04D0
+// PC 0x005C04D0 GOG 0x005C0540
 int CSWVirtualMachineCommands::ExecuteCommandGetSpellBaseForcePointCost(int nCommand, int nArgs)
 {
     int nSpell;
@@ -11866,7 +11866,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSpellBaseForcePointCost(int nCom
     }
     return g_pVirtualMachine->StackPushInteger(nCost) != 0 ? 0 : -2000;
 }
-// PC 0x005C0540
+// PC 0x005C0540 GOG 0x005C05B0
 int CSWVirtualMachineCommands::ExecuteCommandGetSpellId(int nCommand,
                                                        int nArgs)
 {
@@ -11884,7 +11884,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSpellId(int nCommand,
     return g_pVirtualMachine->StackPushInteger(nSpellId) != 0
                ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005C05B0
+// PC 0x005C05B0 GOG 0x005C0620
 int CSWVirtualMachineCommands::ExecuteCommandGetSpellSaveDC(int nCommand,
                                                            int nArgs)
 {
@@ -11927,7 +11927,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSpellSaveDC(int nCommand,
     return g_pVirtualMachine->StackPushInteger(nSaveDC) != 0
                ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005C0690
+// PC 0x005C0690 GOG 0x005C0700
 int CSWVirtualMachineCommands::ExecuteCommandGetSpellTargetLoc(
     int nCommand, int nArgs)
 {
@@ -11959,7 +11959,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSpellTargetLoc(
     }
     return 0;
 }
-// PC 0x005C07A0
+// PC 0x005C07A0 GOG 0x005C0810
 int CSWVirtualMachineCommands::ExecuteCommandGetSpellTargetObject(
     int nCommand, int nArgs)
 {
@@ -11985,7 +11985,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSpellTargetObject(
     return g_pVirtualMachine->StackPushObject(oidTarget) != 0
                ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005C0830
+// PC 0x005C0830 GOG 0x005C08A0
 int CSWVirtualMachineCommands::ExecuteCommandGetStat(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -12006,7 +12006,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetStat(int nCommand, int nArgs)
     }
     return g_pVirtualMachine->StackPushInteger(nStat) != 0 ? 0 : -2000;
 }
-// PC 0x005C08A0
+// PC 0x005C08A0 GOG 0x005C0910
 int CSWVirtualMachineCommands::ExecuteCommandGetStrByStrRef(int nCommand,
                                                         int nArgs)
 {
@@ -12025,7 +12025,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetStrByStrRef(int nCommand,
     }
     return 0;
 }
-// PC 0x005C09B0
+// PC 0x005C09B0 GOG 0x005C0A20
 int CSWVirtualMachineCommands::ExecuteCommandGetStringLeft(int nCommand,
                                                          int nArgs)
 {
@@ -12049,7 +12049,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetStringLeft(int nCommand,
     }
     return 0;
 }
-// PC 0x005C0AF0
+// PC 0x005C0AF0 GOG 0x005C0B60
 int CSWVirtualMachineCommands::ExecuteCommandGetStringLength(int nCommand,
                                                              int nArgs)
 {
@@ -12067,7 +12067,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetStringLength(int nCommand,
     }
     return 0;
 }
-// PC 0x005C0BC0
+// PC 0x005C0BC0 GOG 0x005C0C30
 int CSWVirtualMachineCommands::ExecuteCommandGetStringLowerCase(int nCommand,
                                                                 int nArgs)
 {
@@ -12086,7 +12086,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetStringLowerCase(int nCommand,
     }
     return 0;
 }
-// PC 0x005C0CE0
+// PC 0x005C0CE0 GOG 0x005C0D50
 int CSWVirtualMachineCommands::ExecuteCommandGetStringRight(int nCommand,
                                                           int nArgs)
 {
@@ -12110,7 +12110,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetStringRight(int nCommand,
     }
     return 0;
 }
-// PC 0x005C0E20
+// PC 0x005C0E20 GOG 0x005C0E90
 int CSWVirtualMachineCommands::ExecuteCommandGetStringUpperCase(int nCommand,
                                                                 int nArgs)
 {
@@ -12129,7 +12129,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetStringUpperCase(int nCommand,
     }
     return 0;
 }
-// PC 0x005C0F40
+// PC 0x005C0F40 GOG 0x005C0FB0
 int CSWVirtualMachineCommands::ExecuteCommandGetStrRefSoundDuration(int nCommand,
                                                                  int nArgs)
 {
@@ -12152,7 +12152,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetStrRefSoundDuration(int nCommand
     }
     return 0;
 }
-// PC 0x005C1040
+// PC 0x005C1040 GOG 0x005C10B0
 int CSWVirtualMachineCommands::ExecuteCommandGetSubString(int nCommand,
                                                          int nArgs)
 {
@@ -12181,7 +12181,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSubString(int nCommand,
     }
     return 0;
 }
-// PC 0x005C11A0
+// PC 0x005C11A0 GOG 0x005C1210
 int CSWVirtualMachineCommands::ExecuteCommandGetTag(int nCommand, int nArgs)
 {
 
@@ -12218,7 +12218,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetTag(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005C12C0
+// PC 0x005C12C0 GOG 0x005C1330
 int CSWVirtualMachineCommands::ExecuteCommandGetTimeHour(int nCommand,
                                                          int nArgs)
 {
@@ -12231,7 +12231,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetTimeHour(int nCommand,
     nResult = pWorldTimer->GetWorldTimeHour();
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C1300
+// PC 0x005C1300 GOG 0x005C1370
 int CSWVirtualMachineCommands::ExecuteCommandGetTimeMillisecond(int nCommand,
                                                                 int nArgs)
 {
@@ -12244,7 +12244,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetTimeMillisecond(int nCommand,
     oidResult = pWorldTimer->GetWorldTimeMillisecond();
     return g_pVirtualMachine->StackPushInteger(oidResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C1340
+// PC 0x005C1340 GOG 0x005C13B0
 int CSWVirtualMachineCommands::ExecuteCommandGetTimeMinute(int nCommand,
                                                            int nArgs)
 {
@@ -12257,7 +12257,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetTimeMinute(int nCommand,
     nResult = pWorldTimer->GetWorldTimeMinute();
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C1380
+// PC 0x005C1380 GOG 0x005C13F0
 int CSWVirtualMachineCommands::ExecuteCommandGetTimeSecond(int nCommand,
                                                            int nArgs)
 {
@@ -12270,7 +12270,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetTimeSecond(int nCommand,
     oidResult = pWorldTimer->GetWorldTimeSecond();
     return g_pVirtualMachine->StackPushInteger(oidResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C13C0
+// PC 0x005C13C0 GOG 0x005C1430
 int CSWVirtualMachineCommands::ExecuteCommandGetTotalDamageDealt(int nCommand,
                                                                int nArgs)
 {
@@ -12299,7 +12299,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetTotalDamageDealt(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C1450
+// PC 0x005C1450 GOG 0x005C14C0
 int CSWVirtualMachineCommands::ExecuteCommandGetUserActionsPending(int nCommand,
                                                                    int nArgs)
 {
@@ -12320,7 +12320,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetUserActionsPending(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C14C0
+// PC 0x005C14C0 GOG 0x005C1530
 int CSWVirtualMachineCommands::ExecuteCommandGetUserDefinedEventNumber(
     int nCommand, int nArgs)
 {
@@ -12352,7 +12352,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetUserDefinedEventNumber(
     }
     return g_pVirtualMachine->StackPushInteger(nEventNumber) != 0 ? 0 : -2000;
 }
-// PC 0x005C1550
+// PC 0x005C1550 GOG 0x005C15C0
 int CSWVirtualMachineCommands::ExecuteCommandGetWaypointByTag(int nCommand,
                                                               int nArgs)
 {
@@ -12384,7 +12384,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetWaypointByTag(int nCommand,
     }
     return 0;
 }
-// PC 0x005C1660
+// PC 0x005C1660 GOG 0x005C16D0
 int CSWVirtualMachineCommands::ExecuteCommandGetWaypointByTrigger(int nCommand,
                                                                  int nArgs)
 {
@@ -12427,7 +12427,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetWaypointByTrigger(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidWaypoint) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005C1760
+// PC 0x005C1760 GOG 0x005C17D0
 int CSWVirtualMachineCommands::ExecuteCommandGetWeaponRanged(int nCommand,
                                                              int nArgs)
 {
@@ -12452,7 +12452,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetWeaponRanged(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(bRanged) != 0 ? 0 : -2000;
 }
-// PC 0x005C17E0
+// PC 0x005C17E0 GOG 0x005C1850
 int CSWVirtualMachineCommands::ExecuteCommandGetWillSavingThrow(int nCommand,
                                                                   int nArgs)
 {
@@ -12503,7 +12503,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetWillSavingThrow(int nCommand,
                ? 0
                : ERROR_STACK_PUSH;
 }
-// PC 0x005C18A0
+// PC 0x005C18A0 GOG 0x005C1910
 int CSWVirtualMachineCommands::ExecuteCommandGetXP(int nCommand, int nArgs)
 {
     int nResult;
@@ -12531,7 +12531,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetXP(int nCommand, int nArgs)
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C1930
+// PC 0x005C1930 GOG 0x005C19A0
 int CSWVirtualMachineCommands::ExecuteCommandGiveGoldToCreature(int nCommand,
                                                                 int nArgs)
 {
@@ -12574,7 +12574,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGiveGoldToCreature(int nCommand,
     }
     return 0;
 }
-// PC 0x005C19F0
+// PC 0x005C19F0 GOG 0x005C1A60
 int CSWVirtualMachineCommands::ExecuteCommandGiveXPToCreature(int nCommand,
                                                               int nArgs)
 {
@@ -12622,7 +12622,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGiveXPToCreature(int nCommand,
     }
     return 0;
 }
-// PC 0x005C1AD0
+// PC 0x005C1AD0 GOG 0x005C1B40
 int CSWVirtualMachineCommands::ExecuteCommandGiveItem(int nCommand, int nArgs)
 {
 
@@ -12667,7 +12667,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGiveItem(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005C1C00
+// PC 0x005C1C00 GOG 0x005C1C70
 int CSWVirtualMachineCommands::ExecuteCommandInsertString(int nCommand, int nArgs)
 {
 
@@ -12700,7 +12700,7 @@ int CSWVirtualMachineCommands::ExecuteCommandInsertString(int nCommand, int nArg
         }
     }
 }
-// PC 0x005C1D40
+// PC 0x005C1D40 GOG 0x005C1DB0
 int CSWVirtualMachineCommands::ExecuteCommandIntToFloat(int nCommand, int nArgs)
 {
     int nValue;
@@ -12714,7 +12714,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIntToFloat(int nCommand, int nArgs)
     fValue = (float)nValue;
     return g_pVirtualMachine->StackPushFloat(fValue) != 0 ? 0 : -2000;
 }
-// PC 0x005C1D90
+// PC 0x005C1D90 GOG 0x005C1E00
 int CSWVirtualMachineCommands::ExecuteCommandIntToHexString(int nCommand, int nArgs)
 {
     int nInteger;
@@ -12737,7 +12737,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIntToHexString(int nCommand, int nA
         }
     }
 }
-// PC 0x005C1E60
+// PC 0x005C1E60 GOG 0x005C1ED0
 int CSWVirtualMachineCommands::ExecuteCommandIntToString(int nCommand, int nArgs)
 {
     int nInteger;
@@ -12760,7 +12760,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIntToString(int nCommand, int nArgs
         }
     }
 }
-// PC 0x005C1F50
+// PC 0x005C1F50 GOG 0x005C1FC0
 int CSWVirtualMachineCommands::ExecuteCommandIsAIState(int nCommand,
                                                         int nArgs)
 {
@@ -12792,7 +12792,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIsAIState(int nCommand,
     return g_pVirtualMachine->StackPushInteger(bValue) != 0
                ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005C2000
+// PC 0x005C2000 GOG 0x005C2070
 int CSWVirtualMachineCommands::ExecuteCommandIsAvailableNPC(int nCommand,
                                                            int nArgs)
 {
@@ -12824,7 +12824,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIsAvailableNPC(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005C20A0
+// PC 0x005C20A0 GOG 0x005C2110
 int CSWVirtualMachineCommands::ExecuteCommandIsEffectValid(int nCommand, int nArgs)
 {
     CGameEffect* pEffect = NULL;
@@ -12864,7 +12864,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIsEffectValid(int nCommand, int nAr
     }
     return 0;
 }
-// PC 0x005C2160
+// PC 0x005C2160 GOG 0x005C21D0
 int CSWVirtualMachineCommands::ExecuteCommandGetIsInConversation(
     int nCommand, int nArgs)
 {
@@ -12897,7 +12897,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsInConversation(
     return g_pVirtualMachine->StackPushInteger(bInConversation) != 0
                ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005C2210
+// PC 0x005C2210 GOG 0x005C2280
 int CSWVirtualMachineCommands::ExecuteCommandGetIsConversationActive(
     int nCommand, int nArgs)
 {
@@ -12910,7 +12910,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsConversationActive(
     nResult = pGuiInGame->m_nGlobalDialogState;
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C2240
+// PC 0x005C2240 GOG 0x005C22B0
 int CSWVirtualMachineCommands::ExecuteCommandGetCreatureMovmentType(
     int nCommand, int nArgs)
 {
@@ -12932,7 +12932,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCreatureMovmentType(
     }
     return g_pVirtualMachine->StackPushInteger(nRate) != 0 ? 0 : -2000;
 }
-// PC 0x005C22B0
+// PC 0x005C22B0 GOG 0x005C2320
 int CSWVirtualMachineCommands::ExecuteCommandGetLastConversation(int nCommand,
                                                                  int nArgs)
 {
@@ -12947,7 +12947,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastConversation(int nCommand,
     nResult = -1;
     return nResult2 != 0 ? -2000 : 0;
 }
-// PC 0x005C2320
+// PC 0x005C2320 GOG 0x005C2390
 int CSWVirtualMachineCommands::ExecuteCommandIsListening(int nCommand,
                                                          int nArgs)
 {
@@ -12970,7 +12970,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIsListening(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(bListening) != 0 ? 0 : -2000;
 }
-// PC 0x005C23A0
+// PC 0x005C23A0 GOG 0x005C2410
 int CSWVirtualMachineCommands::ExecuteCommandIsNPCPartyMember(int nCommand,
                                                               int nArgs)
 {
@@ -12990,7 +12990,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIsNPCPartyMember(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult2) != 0 ? 0 : -2000;
 }
-// PC 0x005C2420
+// PC 0x005C2420 GOG 0x005C2490
 int CSWVirtualMachineCommands::ExecuteCommandIsObjectPartyMember(int nCommand,
                                                                  int nArgs)
 {
@@ -13012,7 +13012,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIsObjectPartyMember(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C2480
+// PC 0x005C2480 GOG 0x005C24F0
 int CSWVirtualMachineCommands::ExecuteCommandIsPC(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -13030,7 +13030,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIsPC(int nCommand, int nArgs)
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C24F0
+// PC 0x005C24F0 GOG 0x005C2560
 int CSWVirtualMachineCommands::ExecuteCommandIsStealthed(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -13047,7 +13047,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIsStealthed(int nCommand, int nArgs
     }
     return g_pVirtualMachine->StackPushInteger(bStealthed) != 0 ? 0 : -2000;
 }
-// PC 0x005C2560
+// PC 0x005C2560 GOG 0x005C25D0
 int CSWVirtualMachineCommands::ExecuteCommandIsMeditating(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -13067,7 +13067,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIsMeditating(int nCommand, int nArg
     }
     return g_pVirtualMachine->StackPushInteger(bMeditating) != 0 ? 0 : -2000;
 }
-// PC 0x005C25D0
+// PC 0x005C25D0 GOG 0x005C2640
 int CSWVirtualMachineCommands::ExecuteCommandIsInTotalDefense(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -13087,7 +13087,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIsInTotalDefense(int nCommand, int 
     }
     return g_pVirtualMachine->StackPushInteger(bTotalDefense) != 0 ? 0 : -2000;
 }
-// PC 0x005C2640
+// PC 0x005C2640 GOG 0x005C26B0
 int CSWVirtualMachineCommands::ExecuteCommandIsFormActive(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -13113,7 +13113,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIsFormActive(int nCommand, int nArg
         return g_pVirtualMachine->StackPushInteger(bActive) != 0 ? 0 : -2000;
     }
 }
-// PC 0x005C26E0
+// PC 0x005C26E0 GOG 0x005C2750
 int CSWVirtualMachineCommands::ExecuteCommandItemActivated(int nCommand,
                                                          int nArgs)
 {
@@ -13168,7 +13168,7 @@ int CSWVirtualMachineCommands::ExecuteCommandItemActivated(int nCommand,
     }
     return 0;
 }
-// PC 0x005C2870
+// PC 0x005C2870 GOG 0x005C28E0
 int CSWVirtualMachineCommands::ExecuteCommandLocation(int nCommand, int nArgs)
 {
 
@@ -13203,7 +13203,7 @@ int CSWVirtualMachineCommands::ExecuteCommandLocation(int nCommand, int nArgs)
         return ERROR_STACK_POP;
     }
 }
-// PC 0x005C29F0
+// PC 0x005C29F0 GOG 0x005C2A60
 int CSWVirtualMachineCommands::ExecuteCommandLocationAccess(int nCommand,
                                                           int nArgs)
 {
@@ -13237,7 +13237,7 @@ int CSWVirtualMachineCommands::ExecuteCommandLocationAccess(int nCommand,
         return 0;
     return ERROR_STACK_PUSH;
 }
-// PC 0x005C2AB0
+// PC 0x005C2AB0 GOG 0x005C2B20
 int CSWVirtualMachineCommands::ExecuteCommandMath(int nCommand, int nArgs)
 {
 
@@ -13311,7 +13311,7 @@ int CSWVirtualMachineCommands::ExecuteCommandMath(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005C2CF0
+// PC 0x005C2CF0 GOG 0x005C2D60
 int CSWVirtualMachineCommands::ExecuteCommandModuleAccess(int nCommand, int nArgs)
 {
     CScriptLocation lLocation;
@@ -13355,7 +13355,7 @@ int CSWVirtualMachineCommands::ExecuteCommandModuleAccess(int nCommand, int nArg
     }
     return 0;
 }
-// PC 0x005C2E80
+// PC 0x005C2E80 GOG 0x005C2EF0
 int CSWVirtualMachineCommands::ExecuteCommandMoveAwayFromObject(int nCommand,
                                                                 int nArgs)
 {
@@ -13413,7 +13413,7 @@ int CSWVirtualMachineCommands::ExecuteCommandMoveAwayFromObject(int nCommand,
     }
     return 0;
 }
-// PC 0x005C2FF0
+// PC 0x005C2FF0 GOG 0x005C3060
 int CSWVirtualMachineCommands::ExecuteCommandMoveToObject(int nCommand,
                                                          int nArgs)
 {
@@ -13513,7 +13513,7 @@ int CSWVirtualMachineCommands::ExecuteCommandMoveToObject(int nCommand,
     }
     return 0;
 }
-// PC 0x005C32F0
+// PC 0x005C32F0 GOG 0x005C3360
 int CSWVirtualMachineCommands::ExecuteCommandMoveToPoint(int nCommand,
                                                         int nArgs)
 {
@@ -13580,7 +13580,7 @@ int CSWVirtualMachineCommands::ExecuteCommandMoveToPoint(int nCommand,
     delete pLocation;
     return 0;
 }
-// PC 0x005C3490
+// PC 0x005C3490 GOG 0x005C3500
 int CSWVirtualMachineCommands::ExecuteCommandMusicBackground(int nCommand,
                                                              int nArgs)
 {
@@ -13639,7 +13639,7 @@ int CSWVirtualMachineCommands::ExecuteCommandMusicBackground(int nCommand,
         return 0;
     }
 }
-// PC 0x005C35E0
+// PC 0x005C35E0 GOG 0x005C3650
 int CSWVirtualMachineCommands::ExecuteCommandMusicBattle(int nCommand,
                                                          int nArgs)
 {
@@ -13681,7 +13681,7 @@ int CSWVirtualMachineCommands::ExecuteCommandMusicBattle(int nCommand,
     }
     return 0;
 }
-// PC 0x005C3690
+// PC 0x005C3690 GOG 0x005C3700
 int CSWVirtualMachineCommands::ExecuteCommandModifyGlobal(int nCommand, int nArgs)
 {
     CExoString sIdentifier;
@@ -13723,7 +13723,7 @@ int CSWVirtualMachineCommands::ExecuteCommandModifyGlobal(int nCommand, int nArg
     }
     return 0;
 }
-// PC 0x005C37F0
+// PC 0x005C37F0 GOG 0x005C3860
 int CSWVirtualMachineCommands::ExecuteCommandObjectToString(int nCommand, int nArgs)
 {
 
@@ -13747,7 +13747,7 @@ int CSWVirtualMachineCommands::ExecuteCommandObjectToString(int nCommand, int nA
         }
     }
 }
-// PC 0x005C38E0
+// PC 0x005C38E0 GOG 0x005C3950
 int CSWVirtualMachineCommands::ExecuteCommandOpenDoor(int nCommand, int nArgs)
 {
     unsigned long oidDoor;
@@ -13772,7 +13772,7 @@ int CSWVirtualMachineCommands::ExecuteCommandOpenDoor(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005C3980
+// PC 0x005C3980 GOG 0x005C39F0
 int CSWVirtualMachineCommands::ExecuteCommandOpenStore(int nCommand, int nArgs)
 {
     unsigned long oidStore;
@@ -13842,7 +13842,7 @@ int CSWVirtualMachineCommands::ExecuteCommandOpenStore(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005C3B70
+// PC 0x005C3B70 GOG 0x005C3BE0
 int CSWVirtualMachineCommands::ExecuteCommandPickUpItem(int nCommand, int nArgs)
 {
     unsigned long oidItem;
@@ -13862,7 +13862,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPickUpItem(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005C3BD0
+// PC 0x005C3BD0 GOG 0x005C3C40
 int CSWVirtualMachineCommands::ExecuteCommandPlayAnimation(int nCommand, int nArgs)
 {
 
@@ -14241,7 +14241,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayAnimation(int nCommand, int nAr
     }
     return 0;
 }
-// PC 0x005C4560
+// PC 0x005C4560 GOG 0x005C45D0
 int CSWVirtualMachineCommands::ExecuteCommandPlayRoomAnimation(int nCommand,
                                                             int nArgs)
 {
@@ -14273,7 +14273,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayRoomAnimation(int nCommand,
     }
     return 0;
 }
-// PC 0x005C4660
+// PC 0x005C4660 GOG 0x005C46D0
 int CSWVirtualMachineCommands::ExecuteCommandPlayMovie(int nCommand, int nArgs)
 {
 
@@ -14306,7 +14306,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayMovie(int nCommand, int nArgs)
     g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
     return 0;
 }
-// PC 0x005C4790
+// PC 0x005C4790 GOG 0x005C4800
 int CSWVirtualMachineCommands::ExecuteCommandPlayPazaak(int nCommand, int nArgs)
 {
 
@@ -14350,7 +14350,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayPazaak(int nCommand, int nArgs)
         oidOpponent);
     return 0;
 }
-// PC 0x005C48E0
+// PC 0x005C48E0 GOG 0x005C4950
 int CSWVirtualMachineCommands::ExecuteCommandPlayRumblePattern(int nCommand,
                                                                int nArgs)
 {
@@ -14366,7 +14366,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayRumblePattern(int nCommand,
     nResult = pClientExoApp->PlayRumblePattern(nPattern);
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C4930
+// PC 0x005C4930 GOG 0x005C49A0
 int CSWVirtualMachineCommands::ExecuteCommandPlaySound(int nCommand, int nArgs)
 {
     CExoString sSoundName;
@@ -14394,7 +14394,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPlaySound(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005C4A40
+// PC 0x005C4A40 GOG 0x005C4AB0
 int CSWVirtualMachineCommands::ExecuteCommandPlayVisualAreaEffect(int nCommand,
                                                                  int nArgs)
 {
@@ -14429,7 +14429,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayVisualAreaEffect(int nCommand,
     }
     return 0;
 }
-// PC 0x005C4AE0
+// PC 0x005C4AE0 GOG 0x005C4B50
 int CSWVirtualMachineCommands::ExecuteCommandPopUpGUIPanel(int nCommand, int nArgs)
 {
 
@@ -14470,7 +14470,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPopUpGUIPanel(int nCommand, int nAr
     }
     return 0;
 }
-// PC 0x005C4C90
+// PC 0x005C4C90 GOG 0x005C4D00
 int CSWVirtualMachineCommands::ExecuteCommandPrintFloat(int nCommand, int nArgs)
 {
     int nDecimals;
@@ -14541,7 +14541,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPrintFloat(int nCommand, int nArgs)
         EXOLOG(sFormat.CStr(), fFloat);
     return 0;
 }
-// PC 0x005C4E00
+// PC 0x005C4E00 GOG 0x005C4E70
 int CSWVirtualMachineCommands::ExecuteCommandPrintInteger(int nCommand,
                                                           int nArgs)
 {
@@ -14561,7 +14561,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPrintInteger(int nCommand,
     }
     return 0;
 }
-// PC 0x005C4E50
+// PC 0x005C4E50 GOG 0x005C4EC0
 int CSWVirtualMachineCommands::ExecuteCommandPrintLogEntry(int nCommand,
                                                          int nArgs)
 {
@@ -14579,7 +14579,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPrintLogEntry(int nCommand,
         EXOLOG("%s [%s]\n", sLogEntry.CStr(), sTimestamp.CStr());
     return 0;
 }
-// PC 0x005C4F30
+// PC 0x005C4F30 GOG 0x005C4FA0
 int CSWVirtualMachineCommands::ExecuteCommandPrintObject(int nCommand,
                                                          int nArgs)
 {
@@ -14599,7 +14599,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPrintObject(int nCommand,
     }
     return 0;
 }
-// PC 0x005C4F80
+// PC 0x005C4F80 GOG 0x005C4FF0
 int CSWVirtualMachineCommands::ExecuteCommandPrintString(int nCommand, int nArgs)
 {
     CExoString sString;
@@ -14641,7 +14641,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPrintString(int nCommand, int nArgs
     }
     return 0;
 }
-// PC 0x005C50D0
+// PC 0x005C50D0 GOG 0x005C5140
 int CSWVirtualMachineCommands::ExecuteCommandPrintVector(int nCommand,
                                                          int nArgs)
 {
@@ -14661,7 +14661,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPrintVector(int nCommand,
     }
     return 0;
 }
-// PC 0x005C5130
+// PC 0x005C5130 GOG 0x005C51A0
 int CSWVirtualMachineCommands::ExecuteCommandPlayOverlayAnimation(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -14695,7 +14695,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayOverlayAnimation(int nCommand, 
     }
     return 0;
 }
-// PC 0x005C51E0
+// PC 0x005C51E0 GOG 0x005C5250
 int CSWVirtualMachineCommands::ExecuteCommandPutDownItem(int nCommand,
                                                          int nArgs)
 {
@@ -14715,7 +14715,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPutDownItem(int nCommand,
     }
     return 0;
 }
-// PC 0x005C5240
+// PC 0x005C5240 GOG 0x005C52B0
 int CSWVirtualMachineCommands::ExecuteCommandRandom(int nCommand, int nArgs)
 {
     int nRandom = 0;
@@ -14737,7 +14737,7 @@ int CSWVirtualMachineCommands::ExecuteCommandRandom(int nCommand, int nArgs)
 
     return g_pVirtualMachine->StackPushInteger(nRandom) != 0 ? 0 : -2000;
 }
-// PC 0x005C52A0
+// PC 0x005C52A0 GOG 0x005C5310
 int CSWVirtualMachineCommands::ExecuteCommandRandomName(int nCommand, int nArgs)
 {
 
@@ -14754,7 +14754,7 @@ int CSWVirtualMachineCommands::ExecuteCommandRandomName(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005C53B0
+// PC 0x005C53B0 GOG 0x005C5420
 int CSWVirtualMachineCommands::ExecuteCommandRemoveAvailableNPC(int nCommand,
                                                                 int nArgs)
 {
@@ -14770,7 +14770,7 @@ int CSWVirtualMachineCommands::ExecuteCommandRemoveAvailableNPC(int nCommand,
     nResult2 = pServerExoApp->GetPartyTable()->RemoveNPC(nNPC);
     return g_pVirtualMachine->StackPushInteger(nResult2) != 0 ? 0 : -2000;
 }
-// PC 0x005C5410
+// PC 0x005C5410 GOG 0x005C5480
 int CSWVirtualMachineCommands::ExecuteCommandRemoveFromParty(int nCommand,
                                                              int nArgs)
 {
@@ -14795,7 +14795,7 @@ int CSWVirtualMachineCommands::ExecuteCommandRemoveFromParty(int nCommand,
     }
     return 0;
 }
-// PC 0x005C5470
+// PC 0x005C5470 GOG 0x005C54E0
 int CSWVirtualMachineCommands::ExecuteCommandRemoveHeartbeat(int nCommand, int nArgs)
 {
     unsigned long oidPlaceable;
@@ -14816,7 +14816,7 @@ int CSWVirtualMachineCommands::ExecuteCommandRemoveHeartbeat(int nCommand, int n
     }
     return 0;
 }
-// PC 0x005C5530
+// PC 0x005C5530 GOG 0x005C55A0
 int CSWVirtualMachineCommands::ExecuteCommandRemovePartyMember(int nCommand,
                                                                int nArgs)
 {
@@ -14854,7 +14854,7 @@ int CSWVirtualMachineCommands::ExecuteCommandRemovePartyMember(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C55F0
+// PC 0x005C55F0 GOG 0x005C5660
 int CSWVirtualMachineCommands::ExecuteCommandResistSpell(int nCommand,
                                                        int nArgs)
 {
@@ -15045,7 +15045,7 @@ int CSWVirtualMachineCommands::ExecuteCommandResistSpell(int nCommand,
     }
     return 0;
 }
-// PC 0x005C59E0
+// PC 0x005C59E0 GOG 0x005C5A50
 int CSWVirtualMachineCommands::ExecuteCommandRollDice(int nCommand, int nArgs)
 {
 
@@ -15080,7 +15080,7 @@ int CSWVirtualMachineCommands::ExecuteCommandRollDice(int nCommand, int nArgs)
     int nResult = (unsigned short)g_pRules->RollDice(nNumDice, nDie);
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005C5AD0
+// PC 0x005C5AD0 GOG 0x005C5B40
 int CSWVirtualMachineCommands::ExecuteCommandSaveNPCState(int nCommand,
                                                           int nArgs)
 {
@@ -15095,7 +15095,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSaveNPCState(int nCommand,
     pServerExoApp->GetPartyTable()->SaveMember(nNPC, 0);
     return 0;
 }
-// PC 0x005C5B10
+// PC 0x005C5B10 GOG 0x005C5B80
 int CSWVirtualMachineCommands::ExecuteCommandSavingThrow(int nCommand, int nArgs)
 {
     unsigned long oidTarget = OBJECT_INVALID;
@@ -15154,7 +15154,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSavingThrow(int nCommand, int nArgs
     }
     return 0;
 }
-// PC 0x005C5C30
+// PC 0x005C5C30 GOG 0x005C5CA0
 int CSWVirtualMachineCommands::ExecuteCommandSendMessageToPC(int nCommand,
                                                              int nArgs)
 {
@@ -15188,7 +15188,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSendMessageToPC(int nCommand,
     }
     return 0;
 }
-// PC 0x005C5D40
+// PC 0x005C5D40 GOG 0x005C5DB0
 int CSWVirtualMachineCommands::ExecuteCommandSetAreaTransitionBMP(int nCommand,
                                                                   int nArgs)
 {
@@ -15217,7 +15217,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetAreaTransitionBMP(int nCommand,
     nResult = -1;
     return 0;
 }
-// PC 0x005C5E10
+// PC 0x005C5E10 GOG 0x005C5E80
 int CSWVirtualMachineCommands::ExecuteCommandSetAreaUnescapable(int nCommand,
                                                                 int nArgs)
 {
@@ -15242,7 +15242,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetAreaUnescapable(int nCommand,
     }
     return 0;
 }
-// PC 0x005C5E60
+// PC 0x005C5E60 GOG 0x005C5ED0
 int CSWVirtualMachineCommands::ExecuteCommandSetCameraLocation(int nCommand,
                                                                int nArgs)
 {
@@ -15284,7 +15284,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetCameraLocation(int nCommand,
     }
     return 0;
 }
-// PC 0x005C5F70
+// PC 0x005C5F70 GOG 0x005C5FE0
 int CSWVirtualMachineCommands::ExecuteCommandSetCameraMode(int nCommand,
                                                            int nArgs)
 {
@@ -15315,7 +15315,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetCameraMode(int nCommand,
     }
     return 0;
 }
-// PC 0x005C5FF0
+// PC 0x005C5FF0 GOG 0x005C6060
 int CSWVirtualMachineCommands::ExecuteCommandSetCommandable(int nCommand,
                                                             int nArgs)
 {
@@ -15344,7 +15344,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetCommandable(int nCommand,
     }
     return 0;
 }
-// PC 0x005C6090
+// PC 0x005C6090 GOG 0x005C6100
 int CSWVirtualMachineCommands::ExecuteCommandSetCurrentForm(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -15370,7 +15370,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetCurrentForm(int nCommand, int nA
     }
     return 0;
 }
-// PC 0x005C6130
+// PC 0x005C6130 GOG 0x005C61A0
 int CSWVirtualMachineCommands::ExecuteCommandSetEncounterData(int nCommand,
                                                               int nArgs)
 {
@@ -15417,7 +15417,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetEncounterData(int nCommand,
     }
     return 0;
 }
-// PC 0x005C6200
+// PC 0x005C6200 GOG 0x005C6270
 int CSWVirtualMachineCommands::ExecuteCommandSetFacing(int nCommand, int nArgs)
 {
 
@@ -15480,7 +15480,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetFacing(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005C6420
+// PC 0x005C6420 GOG 0x005C6490
 int CSWVirtualMachineCommands::ExecuteCommandSetGlobalLocation(int nCommand,
                                                                int nArgs)
 {
@@ -15507,7 +15507,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetGlobalLocation(int nCommand,
     }
     return 0;
 }
-// PC 0x005C6530
+// PC 0x005C6530 GOG 0x005C65A0
 int CSWVirtualMachineCommands::ExecuteCommandSetGlobalNumber(int nCommand,
                                                              int nArgs)
 {
@@ -15547,7 +15547,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetGlobalNumber(int nCommand,
     }
     return 0;
 }
-// PC 0x005C6630
+// PC 0x005C6630 GOG 0x005C66A0
 int CSWVirtualMachineCommands::ExecuteCommandSetGlobalString(int nCommand,
                                                              int nArgs)
 {
@@ -15568,7 +15568,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetGlobalString(int nCommand,
                                                             sValue);
     return 0;
 }
-// PC 0x005C6720
+// PC 0x005C6720 GOG 0x005C6790
 int CSWVirtualMachineCommands::ExecuteCommandSetIdentified(int nCommand,
                                                            int nArgs)
 {
@@ -15593,7 +15593,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetIdentified(int nCommand,
     }
     return 0;
 }
-// PC 0x005C6790
+// PC 0x005C6790 GOG 0x005C6800
 int CSWVirtualMachineCommands::ExecuteCommandSetIsDestroyable(int nCommand,
                                                               int nArgs)
 {
@@ -15650,7 +15650,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetIsDestroyable(int nCommand,
     }
     return 0;
 }
-// PC 0x005C68E0
+// PC 0x005C68E0 GOG 0x005C6950
 int CSWVirtualMachineCommands::ExecuteCommandSetLightsaberPowered(int nCommand,
                                                                   int nArgs)
 {
@@ -15688,7 +15688,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetLightsaberPowered(int nCommand,
     }
     return 0;
 }
-// PC 0x005C6980
+// PC 0x005C6980 GOG 0x005C69F0
 int CSWVirtualMachineCommands::ExecuteCommandSetListening(int nCommand,
                                                           int nArgs)
 {
@@ -15712,7 +15712,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetListening(int nCommand,
     }
     return 0;
 }
-// PC 0x005C6A00
+// PC 0x005C6A00 GOG 0x005C6A70
 int CSWVirtualMachineCommands::ExecuteCommandSetListenString(int nCommand,
                                                              int nArgs)
 {
@@ -15738,7 +15738,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetListenString(int nCommand,
     }
     return 0;
 }
-// PC 0x005C6B00
+// PC 0x005C6B00 GOG 0x005C6B70
 int CSWVirtualMachineCommands::ExecuteCommandSetLocalValue(int nCommand,
                                                           int nArgs)
 {
@@ -15805,7 +15805,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetLocalValue(int nCommand,
     }
     return 0;
 }
-// PC 0x005C6C10
+// PC 0x005C6C10 GOG 0x005C6C80
 int CSWVirtualMachineCommands::ExecuteCommandSetLocked(int nCommand, int nArgs)
 {
     int bLocked = 0;
@@ -15835,7 +15835,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetLocked(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005C6CD0
+// PC 0x005C6CD0 GOG 0x005C6D40
 int CSWVirtualMachineCommands::ExecuteCommandSetNPCSelectability(int nCommand,
                                                                  int nArgs)
 {
@@ -15855,7 +15855,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetNPCSelectability(int nCommand,
     pServerExoApp->GetPartyTable()->SetNPCSelectability(nNPC, nSelectability);
     return 0;
 }
-// PC 0x005C6D30
+// PC 0x005C6D30 GOG 0x005C6DA0
 int CSWVirtualMachineCommands::ExecuteCommandSetPlaceableIllumination(
     int nCommand, int nArgs)
 {
@@ -15881,7 +15881,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetPlaceableIllumination(
     }
     return 0;
 }
-// PC 0x005C6DA0
+// PC 0x005C6DA0 GOG 0x005C6E10
 int CSWVirtualMachineCommands::ExecuteCommandSetPlotFlag(int nCommand,
                                                          int nArgs)
 {
@@ -15908,7 +15908,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetPlotFlag(int nCommand,
     }
     return 0;
 }
-// PC 0x005C6E20
+// PC 0x005C6E20 GOG 0x005C6E90
 int CSWVirtualMachineCommands::ExecuteCommandSetRestrictMode(int nCommand,
                                                              int nArgs)
 {
@@ -15932,7 +15932,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetRestrictMode(int nCommand,
     }
     return 0;
 }
-// PC 0x005C6E90
+// PC 0x005C6E90 GOG 0x005C6F00
 int CSWVirtualMachineCommands::ExecuteCommandSetReturnStrref(int nCommand,
                                                              int nArgs)
 {
@@ -15962,7 +15962,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetReturnStrref(int nCommand,
                                                     nResult);
     return 0;
 }
-// PC 0x005C6F20
+// PC 0x005C6F20 GOG 0x005C6F90
 int CSWVirtualMachineCommands::ExecuteCommandSetSpeedBlurEffect(int nCommand,
                                                                 int nArgs)
 {
@@ -15991,7 +15991,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetSpeedBlurEffect(int nCommand,
     }
     return 0;
 }
-// PC 0x005C6F90
+// PC 0x005C6F90 GOG 0x005C7000
 int CSWVirtualMachineCommands::ExecuteCommandSetSubType(int nCommand, int nArgs)
 {
     CGameEffect* pEffect;
@@ -16027,7 +16027,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetSubType(int nCommand, int nArgs)
     delete (void*)pEffect;
     return 0;
 }
-// PC 0x005C7040
+// PC 0x005C7040 GOG 0x005C70B0
 int CSWVirtualMachineCommands::ExecuteCommandSetTime(int nCommand, int nArgs)
 {
     int nHour;
@@ -16065,7 +16065,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetTime(int nCommand, int nArgs)
         ->UpdateTime(oidResult, oidResult2, 0);
     return 0;
 }
-// PC 0x005C7110
+// PC 0x005C7110 GOG 0x005C7180
 int CSWVirtualMachineCommands::ExecuteCommandSetForcePowerUnsuccessful(
     int nCommand, int nArgs)
 {
@@ -16089,7 +16089,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetForcePowerUnsuccessful(
     }
     return 0;
 }
-// PC 0x005C7180
+// PC 0x005C7180 GOG 0x005C71F0
 int CSWVirtualMachineCommands::ExecuteCommandSetXP(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -16123,13 +16123,13 @@ int CSWVirtualMachineCommands::ExecuteCommandSetXP(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005C7210
+// PC 0x005C7210 GOG 0x005C7280
 int CSWVirtualMachineCommands::ExecuteCommandShipBuild(int nCommand, int nArgs)
 {
     bShipBuild = 1;
     return g_pVirtualMachine->StackPushInteger(1) != 0 ? 0 : -2000;
 }
-// PC 0x005C7240
+// PC 0x005C7240 GOG 0x005C72B0
 int CSWVirtualMachineCommands::ExecuteCommandShowLevelUpGUI(int nCommand,
                                                             int nArgs)
 {
@@ -16138,7 +16138,7 @@ int CSWVirtualMachineCommands::ExecuteCommandShowLevelUpGUI(int nCommand,
     nResult = g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowLevelUpGUI(1);
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C7280
+// PC 0x005C7280 GOG 0x005C72F0
 int CSWVirtualMachineCommands::ExecuteCommandShowPartySelection(int nCommand,
                                                                 int nArgs)
 {
@@ -16176,7 +16176,7 @@ int CSWVirtualMachineCommands::ExecuteCommandShowPartySelection(int nCommand,
                                                                        nForceNPC2, nUnknown);
     return 0;
 }
-// PC 0x005C73B0
+// PC 0x005C73B0 GOG 0x005C7420
 int CSWVirtualMachineCommands::ExecuteCommandShowUpgradeScreen(int nCommand,
                                                                int nArgs)
 {
@@ -16220,7 +16220,7 @@ int CSWVirtualMachineCommands::ExecuteCommandShowUpgradeScreen(int nCommand,
         sOverride2DA);
     return 0;
 }
-// PC 0x005C74F0
+// PC 0x005C74F0 GOG 0x005C7560
 int CSWVirtualMachineCommands::ExecuteCommandSignalEvent(int nCommand, int nArgs)
 {
     unsigned long oidObject;
@@ -16255,7 +16255,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSignalEvent(int nCommand, int nArgs
     }
     return 0;
 }
-// PC 0x005C75C0
+// PC 0x005C75C0 GOG 0x005C7630
 int CSWVirtualMachineCommands::ExecuteCommandSoundObjectGetFixedVariance(
     int nCommand, int nArgs)
 {
@@ -16276,7 +16276,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSoundObjectGetFixedVariance(
     }
     return g_pVirtualMachine->StackPushFloat(fFixedVariance) != 0 ? 0 : -2000;
 }
-// PC 0x005C7630
+// PC 0x005C7630 GOG 0x005C76A0
 int CSWVirtualMachineCommands::ExecuteCommandSoundObjectGetPitchVariation(
     int nCommand, int nArgs)
 {
@@ -16297,7 +16297,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSoundObjectGetPitchVariation(
     }
     return g_pVirtualMachine->StackPushFloat(fPitchVariation) != 0 ? 0 : -2000;
 }
-// PC 0x005C76A0
+// PC 0x005C76A0 GOG 0x005C7710
 int CSWVirtualMachineCommands::ExecuteCommandSoundObjectGetVolume(int nCommand,
                                                                   int nArgs)
 {
@@ -16322,7 +16322,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSoundObjectGetVolume(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C7700
+// PC 0x005C7700 GOG 0x005C7770
 int CSWVirtualMachineCommands::ExecuteCommandSoundObjectPlay(int nCommand,
                                                              int nArgs)
 {
@@ -16342,7 +16342,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSoundObjectPlay(int nCommand,
     }
     return 0;
 }
-// PC 0x005C7750
+// PC 0x005C7750 GOG 0x005C77C0
 int CSWVirtualMachineCommands::ExecuteCommandSoundObjectSetFixedVariance(
     int nCommand, int nArgs)
 {
@@ -16367,7 +16367,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSoundObjectSetFixedVariance(
     }
     return 0;
 }
-// PC 0x005C77C0
+// PC 0x005C77C0 GOG 0x005C7830
 int CSWVirtualMachineCommands::ExecuteCommandSoundObjectSetPitchVariation(
     int nCommand, int nArgs)
 {
@@ -16392,7 +16392,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSoundObjectSetPitchVariation(
     }
     return 0;
 }
-// PC 0x005C7830
+// PC 0x005C7830 GOG 0x005C78A0
 int CSWVirtualMachineCommands::ExecuteCommandSoundObjectSetPosition(int nCommand,
                                                                     int nArgs)
 {
@@ -16417,7 +16417,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSoundObjectSetPosition(int nCommand
     }
     return 0;
 }
-// PC 0x005C78C0
+// PC 0x005C78C0 GOG 0x005C7930
 int CSWVirtualMachineCommands::ExecuteCommandSoundObjectSetVolume(int nCommand,
                                                                   int nArgs)
 {
@@ -16442,7 +16442,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSoundObjectSetVolume(int nCommand,
     }
     return 0;
 }
-// PC 0x005C7930
+// PC 0x005C7930 GOG 0x005C79A0
 int CSWVirtualMachineCommands::ExecuteCommandSoundObjectStop(int nCommand,
                                                              int nArgs)
 {
@@ -16462,7 +16462,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSoundObjectStop(int nCommand,
     }
     return 0;
 }
-// PC 0x005C7980
+// PC 0x005C7980 GOG 0x005C79F0
 int CSWVirtualMachineCommands::ExecuteCommandSoundObjectFadeAndStop(
     int nCommand, int nArgs)
 {
@@ -16489,7 +16489,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSoundObjectFadeAndStop(
     }
     return 0;
 }
-// PC 0x005C79F0
+// PC 0x005C79F0 GOG 0x005C7A60
 int CSWVirtualMachineCommands::ExecuteCommandSpawnAvailableNPC(int nCommand,
                                                               int nArgs)
 {
@@ -16514,7 +16514,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSpawnAvailableNPC(int nCommand,
     delete pLocation;
     return 0;
 }
-// PC 0x005C7A90
+// PC 0x005C7A90 GOG 0x005C7B00
 int CSWVirtualMachineCommands::ExecuteCommandSpeakOneLinerConversation(
     int nCommand, int nArgs)
 {
@@ -16542,7 +16542,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSpeakOneLinerConversation(
     }
     return 0;
 }
-// PC 0x005C7BB0
+// PC 0x005C7BB0 GOG 0x005C7C20
 int CSWVirtualMachineCommands::ExecuteCommandSpeakString(int nCommand, int nArgs)
 {
     CExoString sString;
@@ -16606,7 +16606,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSpeakString(int nCommand, int nArgs
     }
     return 0;
 }
-// PC 0x005C7D90
+// PC 0x005C7D90 GOG 0x005C7E00
 int CSWVirtualMachineCommands::ExecuteCommandSpeakStrRef(int nCommand, int nArgs)
 {
     int nStrRef;
@@ -16657,7 +16657,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSpeakStrRef(int nCommand, int nArgs
     }
     return 0;
 }
-// PC 0x005C7EB0
+// PC 0x005C7EB0 GOG 0x005C7F20
 int CSWVirtualMachineCommands::ExecuteCommandStartNewModule(int nCommand,
                                                           int nArgs)
 {
@@ -16720,7 +16720,7 @@ int CSWVirtualMachineCommands::ExecuteCommandStartNewModule(int nCommand,
     }
     return 0;
 }
-// PC 0x005C81E0
+// PC 0x005C81E0 GOG 0x005C8250
 int CSWVirtualMachineCommands::ExecuteCommandStopRumblePattern(int nCommand,
                                                                int nArgs)
 {
@@ -16736,7 +16736,7 @@ int CSWVirtualMachineCommands::ExecuteCommandStopRumblePattern(int nCommand,
     nResult = pClientExoApp->StopRumblePattern(nPattern);
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C8230
+// PC 0x005C8230 GOG 0x005C82A0
 int CSWVirtualMachineCommands::ExecuteCommandStringConversions(int nCommand,
                                                                int nArgs)
 {
@@ -16765,7 +16765,7 @@ int CSWVirtualMachineCommands::ExecuteCommandStringConversions(int nCommand,
 
     return 0;
 }
-// PC 0x005C8350
+// PC 0x005C8350 GOG 0x005C83C0
 int CSWVirtualMachineCommands::ExecuteCommandSurrenderToEnemies(
     int nCommand, int nArgs)
 {
@@ -16800,7 +16800,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSurrenderToEnemies(
     }
     return 0;
 }
-// PC 0x005C8430
+// PC 0x005C8430 GOG 0x005C84A0
 int CSWVirtualMachineCommands::ExecuteCommandSwitchPlayerCreature(int nCommand,
                                                                   int nArgs)
 {
@@ -16816,7 +16816,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSwitchPlayerCreature(int nCommand,
     nResult2 = pServerExoApp->GetPartyTable()->SwitchPlayerCharacter(nNPC);
     return g_pVirtualMachine->StackPushInteger(nResult2) != 0 ? 0 : -2000;
 }
-// PC 0x005C8490
+// PC 0x005C8490 GOG 0x005C8500
 int CSWVirtualMachineCommands::ExecuteCommandSetForfeitConditions(int nCommand, int nArgs)
 {
     int nConditions = 0;
@@ -16832,7 +16832,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetForfeitConditions(int nCommand, 
     }
     return 0;
 }
-// PC 0x005C84E0
+// PC 0x005C84E0 GOG 0x005C8550
 int CSWVirtualMachineCommands::ExecuteCommandTakeGoldFromCreature(int nCommand,
                                                                int nArgs)
 {
@@ -16936,7 +16936,7 @@ int CSWVirtualMachineCommands::ExecuteCommandTakeGoldFromCreature(int nCommand,
     }
     return 0;
 }
-// PC 0x005C87E0
+// PC 0x005C87E0 GOG 0x005C8850
 int CSWVirtualMachineCommands::ExecuteCommandTalent(int nCommand, int nArgs)
 {
     CScriptTalent* pTalent = new CScriptTalent;
@@ -16968,7 +16968,7 @@ int CSWVirtualMachineCommands::ExecuteCommandTalent(int nCommand, int nArgs)
     delete pTalent;
     return 0;
 }
-// PC 0x005C8900
+// PC 0x005C8900 GOG 0x005C8970
 int CSWVirtualMachineCommands::ExecuteCommandTalentAccess(int nCommand,
                                                         int nArgs)
 {
@@ -17020,7 +17020,7 @@ int CSWVirtualMachineCommands::ExecuteCommandTalentAccess(int nCommand,
         return 0;
     return ERROR_STACK_PUSH;
 }
-// PC 0x005C89E0
+// PC 0x005C89E0 GOG 0x005C8A50
 int CSWVirtualMachineCommands::ExecuteCommandTimeConversions(int nCommand,
                                                              int nArgs)
 {
@@ -17048,7 +17048,7 @@ int CSWVirtualMachineCommands::ExecuteCommandTimeConversions(int nCommand,
 
     return g_pVirtualMachine->StackPushFloat(fSeconds) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005C8A80
+// PC 0x005C8A80 GOG 0x005C8AF0
 int CSWVirtualMachineCommands::ExecuteCommandTestString(int nCommand, int nArgs)
 {
 
@@ -17069,7 +17069,7 @@ int CSWVirtualMachineCommands::ExecuteCommandTestString(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005C8BE0
+// PC 0x005C8BE0 GOG 0x005C8C50
 int CSWVirtualMachineCommands::ExecuteCommandUnequipItem(int nCommand,
                                                          int nArgs)
 {
@@ -17113,7 +17113,7 @@ int CSWVirtualMachineCommands::ExecuteCommandUnequipItem(int nCommand,
     }
     return 0;
 }
-// PC 0x005C8CC0
+// PC 0x005C8CC0 GOG 0x005C8D30
 int CSWVirtualMachineCommands::ExecuteCommandVector(int nCommand, int nArgs)
 {
     Vector vResult;
@@ -17126,7 +17126,7 @@ int CSWVirtualMachineCommands::ExecuteCommandVector(int nCommand, int nArgs)
     }
     return g_pVirtualMachine->StackPushVector(vResult) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005C8D60
+// PC 0x005C8D60 GOG 0x005C8DD0
 int CSWVirtualMachineCommands::ExecuteCommandVectorConversions(int nCommand,
                                                               int nArgs)
 {
@@ -17170,7 +17170,7 @@ int CSWVirtualMachineCommands::ExecuteCommandVectorConversions(int nCommand,
     }
     return 0;
 }
-// PC 0x005C8EC0
+// PC 0x005C8EC0 GOG 0x005C8F30
 int CSWVirtualMachineCommands::ExecuteCommandVectorMagnitude(int nCommand,
                                                              int nArgs)
 {
@@ -17184,7 +17184,7 @@ int CSWVirtualMachineCommands::ExecuteCommandVectorMagnitude(int nCommand,
     fMagnitude = magnitude(vVector);
     return g_pVirtualMachine->StackPushFloat(fMagnitude) != 0 ? 0 : -2000;
 }
-// PC 0x005C8F30
+// PC 0x005C8F30 GOG 0x005C8FA0
 int CSWVirtualMachineCommands::ExecuteCommandVectorNormalize(int nCommand,
                                                             int nArgs)
 {
@@ -17201,7 +17201,7 @@ int CSWVirtualMachineCommands::ExecuteCommandVectorNormalize(int nCommand,
     }
     return g_pVirtualMachine->StackPushVector(vResult) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005C9010
+// PC 0x005C9010 GOG 0x005C9080
 int CSWVirtualMachineCommands::ExecuteCommandVersusEffect(int nCommand, int nArgs)
 {
 
@@ -17446,7 +17446,7 @@ int CSWVirtualMachineCommands::ExecuteCommandVersusEffect(int nCommand, int nArg
     delete pGameEffect;
     return 0;
 }
-// PC 0x005C93A0
+// PC 0x005C93A0 GOG 0x005C9410
 int CSWVirtualMachineCommands::ExecuteCommandWait(int nCommand, int nArgs)
 {
     float fSeconds;
@@ -17475,7 +17475,7 @@ int CSWVirtualMachineCommands::ExecuteCommandWait(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005C9470
+// PC 0x005C9470 GOG 0x005C94E0
 int CSWVirtualMachineCommands::ExecuteCommandGetIsLinkImmune(int nCommand,
                                                           int nArgs)
 {
@@ -17509,7 +17509,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsLinkImmune(int nCommand,
     delete pEffect;
     return 0;
 }
-// PC 0x005C9540
+// PC 0x005C9540 GOG 0x005C95B0
 int CSWVirtualMachineCommands::ExecuteCommandGetPartyAIStyle(int nCommand,
                                                              int nArgs)
 {
@@ -17522,7 +17522,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetPartyAIStyle(int nCommand,
     nResult = pSWPartyTable->m_nAIState;
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C9570
+// PC 0x005C9570 GOG 0x005C95E0
 int CSWVirtualMachineCommands::ExecuteCommandGetNPCAIStyle(int nCommand,
                                                            int nArgs)
 {
@@ -17545,7 +17545,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetNPCAIStyle(int nCommand,
     return g_pVirtualMachine->StackPushInteger(nAIStyle) != 0
                ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005C9610
+// PC 0x005C9610 GOG 0x005C9680
 int CSWVirtualMachineCommands::ExecuteCommandSetPartyLeader(int nCommand,
                                                           int nArgs)
 {
@@ -17608,7 +17608,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetPartyLeader(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005C97F0
+// PC 0x005C97F0 GOG 0x005C9860
 int CSWVirtualMachineCommands::ExecuteCommandSetPartyAIStyle(int nCommand,
                                                              int nArgs)
 {
@@ -17625,7 +17625,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetPartyAIStyle(int nCommand,
     pPartyTable->m_nAIState = nStyle;
     return 0;
 }
-// PC 0x005C9840
+// PC 0x005C9840 GOG 0x005C98B0
 int CSWVirtualMachineCommands::ExecuteCommandSetNPCAIStyle(int nCommand,
                                                          int nArgs)
 {
@@ -17651,7 +17651,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetNPCAIStyle(int nCommand,
     }
     return 0;
 }
-// PC 0x005C98E0
+// PC 0x005C98E0 GOG 0x005C9950
 int CSWVirtualMachineCommands::ExecuteCommandClearAllEffects(int nCommand,
                                                              int nArgs)
 {
@@ -17670,7 +17670,7 @@ int CSWVirtualMachineCommands::ExecuteCommandClearAllEffects(int nCommand,
     }
     return 0;
 }
-// PC 0x005C9920
+// PC 0x005C9920 GOG 0x005C9990
 int CSWVirtualMachineCommands::ExecuteCommandGetStandardFaction(int nCommand,
                                                               int nArgs)
 {
@@ -17702,7 +17702,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetStandardFaction(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nFaction) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005C99C0
+// PC 0x005C99C0 GOG 0x005C9A30
 int CSWVirtualMachineCommands::ExecuteCommandGivePlotXP(int nCommand, int nArgs)
 {
     CExoString sPlotName("");
@@ -17720,7 +17720,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGivePlotXP(int nCommand, int nArgs)
     pServerExoApp->GetPartyTable()->GivePlotXP(sPlotName, nPercentage);
     return 0;
 }
-// PC 0x005C9AB0
+// PC 0x005C9AB0 GOG 0x005C9B20
 int CSWVirtualMachineCommands::ExecuteCommandGetMinOneHP(int nCommand,
                                                          int nArgs)
 {
@@ -17741,7 +17741,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetMinOneHP(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C9B30
+// PC 0x005C9B30 GOG 0x005C9BA0
 int CSWVirtualMachineCommands::ExecuteCommandSetMinOneHP(int nCommand,
                                                          int nArgs)
 {
@@ -17768,7 +17768,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetMinOneHP(int nCommand,
     }
     return 0;
 }
-// PC 0x005C9BB0
+// PC 0x005C9BB0 GOG 0x005C9C20
 int CSWVirtualMachineCommands::ExecuteCommandSetFadeIn(int nCommand, int nArgs)
 {
 
@@ -17805,7 +17805,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetFadeIn(int nCommand, int nArgs)
         ->StartGlobalFade(1, fDelay, fLength, vColor);
     return 0;
 }
-// PC 0x005C9C80
+// PC 0x005C9C80 GOG 0x005C9CF0
 int CSWVirtualMachineCommands::ExecuteCommandSetFadeOut(int nCommand, int nArgs)
 {
 
@@ -17841,7 +17841,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetFadeOut(int nCommand, int nArgs)
         ->StartGlobalFade(0, fDelay, fLength, vColor);
     return 0;
 }
-// PC 0x005C9D40
+// PC 0x005C9D40 GOG 0x005C9DB0
 int CSWVirtualMachineCommands::ExecuteCommandGetAttacker(int nCommand, int nArgs)
 {
     unsigned long oidCreature = m_oidObject;
@@ -17874,7 +17874,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAttacker(int nCommand, int nArgs
     }
     return g_pVirtualMachine->StackPushObject(oidAttacker) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005C9DE0
+// PC 0x005C9DE0 GOG 0x005C9E50
 int CSWVirtualMachineCommands::ExecuteCommandSetFormation(int nCommand,
                                                           int nArgs)
 {
@@ -17912,7 +17912,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetFormation(int nCommand,
     }
     return 0;
 }
-// PC 0x005C9E80
+// PC 0x005C9E80 GOG 0x005C9EF0
 int CSWVirtualMachineCommands::ExecuteCommandGetIsDebilitated(int nCommand,
                                                               int nArgs)
 {
@@ -17936,7 +17936,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsDebilitated(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005C9EF0
+// PC 0x005C9EF0 GOG 0x005C9F60
 int CSWVirtualMachineCommands::ExecuteCommandChangeByFaction(int nCommand,
                                                             int nArgs)
 {
@@ -18008,7 +18008,7 @@ int CSWVirtualMachineCommands::ExecuteCommandChangeByFaction(int nCommand,
     }
     return 0;
 }
-// PC 0x005CA080
+// PC 0x005CA080 GOG 0x005CA0F0
 int CSWVirtualMachineCommands::ExecuteCommandGetSubScreenID(int nCommand,
                                                             int nArgs)
 {
@@ -18025,7 +18025,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSubScreenID(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005CA0C0
+// PC 0x005CA0C0 GOG 0x005CA130
 int CSWVirtualMachineCommands::ExecuteCommandCancelCombat(int nCommand,
                                                           int nArgs)
 {
@@ -18056,7 +18056,7 @@ int CSWVirtualMachineCommands::ExecuteCommandCancelCombat(int nCommand,
     }
     return 0;
 }
-// PC 0x005CA140
+// PC 0x005CA140 GOG 0x005CA1B0
 int CSWVirtualMachineCommands::ExecuteCommandPauseGame(int nCommand, int nArgs)
 {
     int nPause;
@@ -18070,7 +18070,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPauseGame(int nCommand, int nArgs)
     pClientExoApp->SetPausedByCombat(nPause, 0, 0);
     return 0;
 }
-// PC 0x005CA180
+// PC 0x005CA180 GOG 0x005CA1F0
 int CSWVirtualMachineCommands::ExecuteCommandGetItemStackSize(int nCommand,
                                                               int nArgs)
 {
@@ -18092,7 +18092,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetItemStackSize(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005CA1E0
+// PC 0x005CA1E0 GOG 0x005CA250
 int CSWVirtualMachineCommands::ExecuteCommandShowGalaxyMapGui(int nCommand,
                                                               int nArgs)
 {
@@ -18107,7 +18107,7 @@ int CSWVirtualMachineCommands::ExecuteCommandShowGalaxyMapGui(int nCommand,
     pClientExoApp->GetInGameGui()->ShowGalaxyMapGui(nPlanet);
     return 0;
 }
-// PC 0x005CA220
+// PC 0x005CA220 GOG 0x005CA290
 int CSWVirtualMachineCommands::ExecuteCommandSetGalaxyMapPlanetAvailable(
     int nCommand, int nArgs)
 {
@@ -18127,7 +18127,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetGalaxyMapPlanetAvailable(
     pServerExoApp->GetPartyTable()->SetPlanetAvailable(nPlanet, nAvailable);
     return 0;
 }
-// PC 0x005CA280
+// PC 0x005CA280 GOG 0x005CA2F0
 int CSWVirtualMachineCommands::ExecuteCommandGetGalaxyMapPlanetAvailable(
     int nCommand, int nArgs)
 {
@@ -18145,7 +18145,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetGalaxyMapPlanetAvailable(
     nResult = pServerExoApp->GetPartyTable()->GetPlanetAvailable(oidResult);
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005CA2E0
+// PC 0x005CA2E0 GOG 0x005CA350
 int CSWVirtualMachineCommands::ExecuteCommandSetGalaxyMapPlanetSelectable(
     int nCommand, int nArgs)
 {
@@ -18165,7 +18165,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetGalaxyMapPlanetSelectable(
     pServerExoApp->GetPartyTable()->SetPlanetSelectable(nPlanet, nSelectable);
     return 0;
 }
-// PC 0x005CA340
+// PC 0x005CA340 GOG 0x005CA3B0
 int CSWVirtualMachineCommands::ExecuteCommandGetGalaxyMapPlanetSelectable(
     int nCommand, int nArgs)
 {
@@ -18183,7 +18183,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetGalaxyMapPlanetSelectable(
     nResult = pServerExoApp->GetPartyTable()->GetPlanetSelectable(oidResult);
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005CA3A0
+// PC 0x005CA3A0 GOG 0x005CA410
 int CSWVirtualMachineCommands::ExecuteCommandGetGameDifficulty(int nCommand,
                                                                 int nArgs)
 {
@@ -18191,7 +18191,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetGameDifficulty(int nCommand,
                g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nDifficulty) != 0
                ? 0 : -2000;
 }
-// PC 0x005CA3D0
+// PC 0x005CA3D0 GOG 0x005CA440
 int CSWVirtualMachineCommands::ExecuteCommandSetItemNonEquippable(int nCommand,
                                                                   int nArgs)
 {
@@ -18216,7 +18216,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetItemNonEquippable(int nCommand,
     }
     return 0;
 }
-// PC 0x005CA440
+// PC 0x005CA440 GOG 0x005CA4B0
 int CSWVirtualMachineCommands::ExecuteCommandGetButtonMashCheck(int nCommand,
                                                                 int nArgs)
 {
@@ -18227,7 +18227,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetButtonMashCheck(int nCommand,
     nResult = pServerExoApp->GetButtonMashCheck();
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005CA470
+// PC 0x005CA470 GOG 0x005CA4E0
 int CSWVirtualMachineCommands::ExecuteCommandSetButtonMashCheck(int nCommand,
                                                                 int nArgs)
 {
@@ -18243,7 +18243,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetButtonMashCheck(int nCommand,
     pServerExoApp->SetButtonMashCheck(nResult);
     return 0;
 }
-// PC 0x005CA4B0
+// PC 0x005CA4B0 GOG 0x005CA520
 int CSWVirtualMachineCommands::ExecuteCommandSetDialogPlaceableCamera(
     int nCommand, int nArgs)
 {
@@ -18267,7 +18267,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetDialogPlaceableCamera(
     pClientExoApp->GetInGameGui()->SetShotFromScript(nResult2, -1);
     return 0;
 }
-// PC 0x005CA520
+// PC 0x005CA520 GOG 0x005CA590
 int CSWVirtualMachineCommands::ExecuteCommandGetSoloMode(int nCommand,
                                                          int nArgs)
 {
@@ -18280,7 +18280,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSoloMode(int nCommand,
     nResult = pSWPartyTable->m_bSoloMode;
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005CA550
+// PC 0x005CA550 GOG 0x005CA5C0
 int CSWVirtualMachineCommands::ExecuteCommandGetMaxStealthXP(int nCommand,
                                                              int nArgs)
 {
@@ -18304,7 +18304,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetMaxStealthXP(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005CA5A0
+// PC 0x005CA5A0 GOG 0x005CA610
 int CSWVirtualMachineCommands::ExecuteCommandSetMaxStealthXP(int nCommand,
                                                              int nArgs)
 {
@@ -18331,7 +18331,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetMaxStealthXP(int nCommand,
     }
     return 0;
 }
-// PC 0x005CA600
+// PC 0x005CA600 GOG 0x005CA670
 int CSWVirtualMachineCommands::ExecuteCommandGetCurrentStealthXP(int nCommand,
                                                                  int nArgs)
 {
@@ -18355,7 +18355,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCurrentStealthXP(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005CA650
+// PC 0x005CA650 GOG 0x005CA6C0
 int CSWVirtualMachineCommands::ExecuteCommandSetCurrentStealthXP(int nCommand,
                                                                  int nArgs)
 {
@@ -18382,7 +18382,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetCurrentStealthXP(int nCommand,
     }
     return 0;
 }
-// PC 0x005CA6B0
+// PC 0x005CA6B0 GOG 0x005CA720
 int CSWVirtualMachineCommands::ExecuteCommandAwardStealthXP(int nCommand,
                                                             int nArgs)
 {
@@ -18407,7 +18407,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAwardStealthXP(int nCommand,
     }
     return 0;
 }
-// PC 0x005CA710
+// PC 0x005CA710 GOG 0x005CA780
 int CSWVirtualMachineCommands::ExecuteCommandGetStealthXPEnabled(int nCommand,
                                                                  int nArgs)
 {
@@ -18431,7 +18431,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetStealthXPEnabled(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005CA760
+// PC 0x005CA760 GOG 0x005CA7D0
 int CSWVirtualMachineCommands::ExecuteCommandSetStealthXPEnabled(int nCommand,
                                                                  int nArgs)
 {
@@ -18458,7 +18458,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetStealthXPEnabled(int nCommand,
     }
     return 0;
 }
-// PC 0x005CA7C0
+// PC 0x005CA7C0 GOG 0x005CA830
 int CSWVirtualMachineCommands::ExecuteCommandGetSubRace(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -18482,7 +18482,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSubRace(int nCommand, int nArgs)
     }
     return g_pVirtualMachine->StackPushInteger(nSubRace) != 0 ? 0 : -2000;
 }
-// PC 0x005CA830
+// PC 0x005CA830 GOG 0x005CA8A0
 int CSWVirtualMachineCommands::ExecuteCommandGetBlockingCreature(int nCommand,
                                                                  int nArgs)
 {
@@ -18504,7 +18504,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetBlockingCreature(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidResult) != 0 ? 0 : -2000;
 }
-// PC 0x005CA8A0
+// PC 0x005CA8A0 GOG 0x005CA910
 int CSWVirtualMachineCommands::ExecuteCommandGetFoundEnemyCreature(int nCommand,
                                                                    int nArgs)
 {
@@ -18526,7 +18526,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFoundEnemyCreature(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidResult) != 0 ? 0 : -2000;
 }
-// PC 0x005CA910
+// PC 0x005CA910 GOG 0x005CA980
 int CSWVirtualMachineCommands::ExecuteCommandGetStealthXPDecrement(int nCommand,
                                                                    int nArgs)
 {
@@ -18550,7 +18550,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetStealthXPDecrement(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005CA960
+// PC 0x005CA960 GOG 0x005CA9D0
 int CSWVirtualMachineCommands::ExecuteCommandSetStealthXPDecrement(int nCommand,
                                                                    int nArgs)
 {
@@ -18577,7 +18577,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetStealthXPDecrement(int nCommand,
     }
     return 0;
 }
-// PC 0x005CA9C0
+// PC 0x005CA9C0 GOG 0x005CAA30
 int CSWVirtualMachineCommands::ExecuteCommandDuplicateHeadAppearance(int nCommand,
                                                                      int nArgs)
 {
@@ -18622,7 +18622,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDuplicateHeadAppearance(int nComman
     }
     return 0;
 }
-// PC 0x005CAB10
+// PC 0x005CAB10 GOG 0x005CAB80
 int CSWVirtualMachineCommands::ExecuteCommandSetLockOrientationInDialog(
     int nCommand, int nArgs)
 {
@@ -18649,7 +18649,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetLockOrientationInDialog(
     }
     return 0;
 }
-// PC 0x005CAB90
+// PC 0x005CAB90 GOG 0x005CAC00
 int CSWVirtualMachineCommands::ExecuteCommandSetLockHeadFollowInDialog(
     int nCommand, int nArgs)
 {
@@ -18676,7 +18676,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetLockHeadFollowInDialog(
     }
     return 0;
 }
-// PC 0x005CAC10
+// PC 0x005CAC10 GOG 0x005CAC80
 int CSWVirtualMachineCommands::ExecuteCommandEnableRendering(int nCommand, int nArgs)
 {
     unsigned long oidObject;
@@ -18828,7 +18828,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEnableRendering(int nCommand, int n
     }
     return 0;
 }
-// PC 0x005CAF90
+// PC 0x005CAF90 GOG 0x005CB000
 int CSWVirtualMachineCommands::ExecuteCommandEnableVideoEffect(int nCommand,
                                                                int nArgs)
 {
@@ -18843,7 +18843,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEnableVideoEffect(int nCommand,
     g_pAppManager->m_pClientExoApp->EnableVideoEffect(nEffect);
     return 0;
 }
-// PC 0x005CAFE0
+// PC 0x005CAFE0 GOG 0x005CB050
 int CSWVirtualMachineCommands::ExecuteCommandDisableVideoEffect(int nCommand,
                                                                 int nArgs)
 {
@@ -18851,7 +18851,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDisableVideoEffect(int nCommand,
     g_pAppManager->m_pClientExoApp->DisableVideoEffect();
     return 0;
 }
-// PC 0x005CB010
+// PC 0x005CB010 GOG 0x005CB080
 int CSWVirtualMachineCommands::ExecuteCommandRevealMap(int nCommand, int nArgs)
 {
     Vector vPoint;
@@ -18881,7 +18881,7 @@ int CSWVirtualMachineCommands::ExecuteCommandRevealMap(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005CB0C0
+// PC 0x005CB0C0 GOG 0x005CB130
 int CSWVirtualMachineCommands::ExecuteCommandSetTutorialWindowsEnabled(
     int nCommand, int nArgs)
 {
@@ -18898,7 +18898,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetTutorialWindowsEnabled(
     pOptions->m_bTutorialPopups = nValue;
     return 0;
 }
-// PC 0x005CB110
+// PC 0x005CB110 GOG 0x005CB180
 int CSWVirtualMachineCommands::ExecuteCommandShowTutorialWindow(int nCommand,
                                                                 int nArgs)
 {
@@ -18914,7 +18914,7 @@ int CSWVirtualMachineCommands::ExecuteCommandShowTutorialWindow(int nCommand,
     return 0;
 }
 #ifndef _XBOX
-int CSWVirtualMachineCommands::ExecuteCommandIsCreditSequenceInProgress(  // PC 0x005CB160
+int CSWVirtualMachineCommands::ExecuteCommandIsCreditSequenceInProgress(  // PC 0x005CB160 GOG 0x005CB1D0
     int nCommand, int nArgs)
 {
     int bInProgress;
@@ -18922,7 +18922,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIsCreditSequenceInProgress(  // PC 
     bInProgress = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_bCreditSequenceInProgress;
     return g_pVirtualMachine->StackPushInteger(bInProgress) != 0 ? 0 : -2000;
 }
-// PC 0x005CB190
+// PC 0x005CB190 GOG 0x005CB200
 int CSWVirtualMachineCommands::ExecuteCommandStartCreditSequence(
     int nCommand, int nArgs)
 {
@@ -19010,7 +19010,7 @@ ConsoleFunc ConVbDisableScriptLogging("bDisableScriptLogging", &bDisableScriptLo
 ConsoleFunc ConFrunscript("runscript", runscript);
 ConsoleFunc ConVbShipBuild("bShipBuild", &bShipBuild);
 #endif
-int CSWVirtualMachineCommands::ExecuteCommandGetDifficultyMultiplier(  // PC 0x005CB2A0
+int CSWVirtualMachineCommands::ExecuteCommandGetDifficultyMultiplier(  // PC 0x005CB2A0 GOG 0x005CB310
     int nCommand, int nArgs)
 {
     float fMultiplier = 1.0f;
@@ -19027,7 +19027,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetDifficultyMultiplier(  // PC 0x0
     return g_pVirtualMachine->StackPushFloat(fMultiplier) != 0
                ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005CB350
+// PC 0x005CB350 GOG 0x005CB3C0
 int CSWVirtualMachineCommands::ExecuteCommandSetEffectIcon(int nCommand, int nArgs)
 {
     void* pEffectStructure;
@@ -19074,7 +19074,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetEffectIcon(int nCommand, int nAr
     delete pEffect;
     return 0;
 }
-// PC 0x005CB510
+// PC 0x005CB510 GOG 0x005CB580
 int CSWVirtualMachineCommands::ExecuteCommandFaceObjectAwayFromObject(
     int nCommand, int nArgs)
 {
@@ -19118,7 +19118,7 @@ int CSWVirtualMachineCommands::ExecuteCommandFaceObjectAwayFromObject(
     }
     return 0;
 }
-// PC 0x005CB660
+// PC 0x005CB660 GOG 0x005CB6D0
 int CSWVirtualMachineCommands::ExecuteCommandSetAreaFogColor(int nCommand,
                                                              int nArgs)
 {
@@ -19157,7 +19157,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetAreaFogColor(int nCommand,
     }
     return 0;
 }
-// PC 0x005CB720
+// PC 0x005CB720 GOG 0x005CB790
 int CSWVirtualMachineCommands::ExecuteCommandChangeItemCost(int nCommand,
                                                           int nArgs)
 {
@@ -19185,7 +19185,7 @@ int CSWVirtualMachineCommands::ExecuteCommandChangeItemCost(int nCommand,
     }
     return 0;
 }
-// PC 0x005CB860
+// PC 0x005CB860 GOG 0x005CB8D0
 int CSWVirtualMachineCommands::ExecuteCommandGetIsLiveContentAvailable(
     int nCommand, int nArgs)
 {
@@ -19216,7 +19216,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsLiveContentAvailable(
         }
     }
 }
-// PC 0x005CB980
+// PC 0x005CB980 GOG 0x005CB9F0
 int CSWVirtualMachineCommands::ExecuteCommandResetDialogState(int nCommand,
                                                               int nArgs)
 {
@@ -19224,7 +19224,7 @@ int CSWVirtualMachineCommands::ExecuteCommandResetDialogState(int nCommand,
     g_pAppManager->m_pClientExoApp->GetInGameGui()->SetGlobalDialogState(0);
     return 0;
 }
-// PC 0x005CB9A0
+// PC 0x005CB9A0 GOG 0x005CBA10
 int CSWVirtualMachineCommands::ExecuteCommandSetGoodEvilValue(int nCommand,
                                                               int nArgs)
 {
@@ -19249,7 +19249,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetGoodEvilValue(int nCommand,
     }
     return 0;
 }
-// PC 0x005CBA10
+// PC 0x005CBA10 GOG 0x005CBA80
 int CSWVirtualMachineCommands::ExecuteCommandGetIsPoisoned(int nCommand,
                                                        int nArgs)
 {
@@ -19275,7 +19275,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsPoisoned(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005CBAA0
+// PC 0x005CBAA0 GOG 0x005CBB10
 int CSWVirtualMachineCommands::ExecuteCommandSetSoloMode(int nCommand,
                                                          int nArgs)
 {
@@ -19290,7 +19290,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetSoloMode(int nCommand,
     pServerExoApp->GetPartyTable()->SetSoloMode(nActivate, 1);
     return 0;
 }
-// PC 0x005CBAE0
+// PC 0x005CBAE0 GOG 0x005CBB50
 int CSWVirtualMachineCommands::ExecuteCommandCancelPostDialogCharacterSwitch(
     int nCommand, int nArgs)
 {
@@ -19298,7 +19298,7 @@ int CSWVirtualMachineCommands::ExecuteCommandCancelPostDialogCharacterSwitch(
         ->m_oidPostDialogCharacterSwitch = OBJECT_INVALID;
     return 0;
 }
-// PC 0x005CBB00
+// PC 0x005CBB00 GOG 0x005CBB70
 int CSWVirtualMachineCommands::ExecuteCommandSetMaxHitPoints(int nCommand,
                                                              int nArgs)
 {
@@ -19329,7 +19329,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetMaxHitPoints(int nCommand,
     }
     return 0;
 }
-// PC 0x005CBB80
+// PC 0x005CBB80 GOG 0x005CBBF0
 int CSWVirtualMachineCommands::ExecuteCommandNoClicksFor(int nCommand,
                                                          int nArgs)
 {
@@ -19350,7 +19350,7 @@ int CSWVirtualMachineCommands::ExecuteCommandNoClicksFor(int nCommand,
     }
     return 0;
 }
-// PC 0x005CBBF0
+// PC 0x005CBBF0 GOG 0x005CBC60
 int CSWVirtualMachineCommands::ExecuteCommandHoldWorldFadeInForDialog(
     int nCommand, int nArgs)
 {
@@ -19358,7 +19358,7 @@ int CSWVirtualMachineCommands::ExecuteCommandHoldWorldFadeInForDialog(
         ->m_bHoldWorldFadeInForDialog = 1;
     return 0;
 }
-// PC 0x005CBC10
+// PC 0x005CBC10 GOG 0x005CBC80
 int CSWVirtualMachineCommands::ExecuteCommandSuppressStatusSummaryEntry(
     int nCommand, int nArgs)
 {
@@ -19373,7 +19373,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSuppressStatusSummaryEntry(
     pClientExoApp->GetInGameGui()->SuppressStatusSummary(nNumEntries);
     return 0;
 }
-// PC 0x005CBC50
+// PC 0x005CBC50 GOG 0x005CBCC0
 int CSWVirtualMachineCommands::ExecuteCommandGetCheatCode(int nCommand,
                                                            int nArgs)
 {
@@ -19389,7 +19389,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCheatCode(int nCommand,
     return g_pVirtualMachine->StackPushInteger(0) != 0 ? 0 : -2000;
 #endif
 }
-// PC 0x005CBC90
+// PC 0x005CBC90 GOG 0x005CBD00
 int CSWVirtualMachineCommands::ExecuteCommandSetMusicVolume(int nCommand,
                                                              int nArgs)
 {
@@ -19403,7 +19403,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetMusicVolume(int nCommand,
     g_pExoSound->SetMusicVolume(fVolume, 1);
     return 0;
 }
-// PC 0x005CBD00
+// PC 0x005CBD00 GOG 0x005CBD70
 int CSWVirtualMachineCommands::ExecuteCommandCreateItemOnFloor(int nCommand,
                                                               int nArgs)
 {
@@ -19472,7 +19472,7 @@ int CSWVirtualMachineCommands::ExecuteCommandCreateItemOnFloor(int nCommand,
     }
     return 0;
 }
-// PC 0x005CBF20
+// PC 0x005CBF20 GOG 0x005CBF90
 int CSWVirtualMachineCommands::ExecuteCommandSetAvailableNPCID(int nCommand,
                                                                int nArgs)
 {
@@ -19492,7 +19492,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetAvailableNPCID(int nCommand,
     pServerExoApp->GetPartyTable()->SetNPCObject(nNPC, oidOidNPC);
     return 0;
 }
-// PC 0x005CBF80
+// PC 0x005CBF80 GOG 0x005CBFF0
 int CSWVirtualMachineCommands::ExecuteCommandGetScriptParameter(int nCommand, int nArgs)
 {
     int nIndex;
@@ -19512,7 +19512,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetScriptParameter(int nCommand, in
     }
     return g_pVirtualMachine->StackPushInteger(nValue) != 0 ? 0 : -2000;
 }
-// PC 0x005CBFE0
+// PC 0x005CBFE0 GOG 0x005CC050
 int CSWVirtualMachineCommands::ExecuteCommandGetScriptStringParameter(int nCommand, int nArgs)
 {
     CExoString sParameter(g_pVirtualMachine->m_sScriptStringParameter[0]);
@@ -19522,13 +19522,13 @@ int CSWVirtualMachineCommands::ExecuteCommandGetScriptStringParameter(int nComma
     }
     return 0;
 }
-// PC 0x005CC070
+// PC 0x005CC070 GOG 0x005CC0E0
 int CSWVirtualMachineCommands::ExecuteCommandSetFadeUntilScript(int nCommand, int nArgs)
 {
     g_pAppManager->GetClientExoApp()->GetInGameGui()->m_n1024 = 1;
     return 0;
 }
-// PC 0x005CC090
+// PC 0x005CC090 GOG 0x005CC100
 int CSWVirtualMachineCommands::ExecuteCommandShowChemicalUpgradeScreen(int nCommand, int nArgs)
 {
     unsigned long oidCharacter = OBJECT_INVALID;
@@ -19540,13 +19540,13 @@ int CSWVirtualMachineCommands::ExecuteCommandShowChemicalUpgradeScreen(int nComm
     g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowChemicalUpgradeScreen(oidCharacter);
     return 0;
 }
-// PC 0x005CC0E0
+// PC 0x005CC0E0 GOG 0x005CC150
 int CSWVirtualMachineCommands::ExecuteCommandShowSwoopUpgradeScreen(int nCommand, int nArgs)
 {
     g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowSwoopUpgradeScreen(OBJECT_INVALID);
     return 0;
 }
-// PC 0x005CC100
+// PC 0x005CC100 GOG 0x005CC170
 int CSWVirtualMachineCommands::ExecuteCommandSetFakeCombatState(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -19578,7 +19578,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetFakeCombatState(int nCommand, in
     }
     return 0;
 }
-// PC 0x005CC1B0
+// PC 0x005CC1B0 GOG 0x005CC220
 int CSWVirtualMachineCommands::ExecuteCommandSetOrientOnClick(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -19599,7 +19599,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetOrientOnClick(int nCommand, int 
     }
     return 0;
 }
-// PC 0x005CC220
+// PC 0x005CC220 GOG 0x005CC290
 int CSWVirtualMachineCommands::ExecuteCommandGetRacialSubType(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -19624,7 +19624,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetRacialSubType(int nCommand, int 
     }
     return g_pVirtualMachine->StackPushInteger(nSubType) != 0 ? 0 : -2000;
 }
-// PC 0x005CC2B0
+// PC 0x005CC2B0 GOG 0x005CC320
 int CSWVirtualMachineCommands::ExecuteCommandSetBonusForcePoints(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -19660,7 +19660,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetBonusForcePoints(int nCommand, i
     }
     return 0;
 }
-// PC 0x005CC360
+// PC 0x005CC360 GOG 0x005CC3D0
 int CSWVirtualMachineCommands::ExecuteCommandAddBonusForcePoints(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -19696,7 +19696,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddBonusForcePoints(int nCommand, i
     }
     return 0;
 }
-// PC 0x005CC420
+// PC 0x005CC420 GOG 0x005CC490
 int CSWVirtualMachineCommands::ExecuteCommandGetBonusForcePoints(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -19714,7 +19714,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetBonusForcePoints(int nCommand, i
     }
     return g_pVirtualMachine->StackPushInteger(nBonus) != 0 ? 0 : -2000;
 }
-// PC 0x005CC490
+// PC 0x005CC490 GOG 0x005CC500
 int CSWVirtualMachineCommands::ExecuteCommandIsMoviePlaying(int nCommand,
                                                             int nArgs)
 {
@@ -19725,7 +19725,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIsMoviePlaying(int nCommand,
     nResult = pClientExoApp->IsMoviePlaying();
     return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : -2000;
 }
-// PC 0x005CC4C0
+// PC 0x005CC4C0 GOG 0x005CC530
 int CSWVirtualMachineCommands::ExecuteCommandQueueMovie(int nCommand, int nArgs)
 {
     int nResult;
@@ -19749,7 +19749,7 @@ int CSWVirtualMachineCommands::ExecuteCommandQueueMovie(int nCommand, int nArgs)
     nResult = -1;
     return 0;
 }
-// PC 0x005CC580
+// PC 0x005CC580 GOG 0x005CC5F0
 int CSWVirtualMachineCommands::ExecuteCommandPlayMovieQueue(int nCommand,
                                                             int nArgs)
 {
@@ -19766,7 +19766,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPlayMovieQueue(int nCommand,
 #endif
     return 0;
 }
-// PC 0x005CC5C0
+// PC 0x005CC5C0 GOG 0x005CC630
 int CSWVirtualMachineCommands::ExecuteCommandYavinHackCloseDoor(int nCommand,
                                                                 int nArgs)
 {
@@ -19786,7 +19786,7 @@ int CSWVirtualMachineCommands::ExecuteCommandYavinHackCloseDoor(int nCommand,
     }
     return 0;
 }
-// PC 0x005CC610
+// PC 0x005CC610 GOG 0x005CC680
 int CSWVirtualMachineCommands::ExecuteCommandSetHealTarget(int nCommand, int nArgs)
 {
     unsigned long oidHealer;
@@ -19807,7 +19807,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetHealTarget(int nCommand, int nAr
     }
     return 0;
 }
-// PC 0x005CC670
+// PC 0x005CC670 GOG 0x005CC6E0
 int CSWVirtualMachineCommands::ExecuteCommandGetHealTarget(int nCommand, int nArgs)
 {
     unsigned long oidHealer;
@@ -19824,7 +19824,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetHealTarget(int nCommand, int nAr
     }
     return g_pVirtualMachine->StackPushObject(oidTarget) != 0 ? 0 : -2000;
 }
-// PC 0x005CC6D0
+// PC 0x005CC6D0 GOG 0x005CC740
 int CSWVirtualMachineCommands::ExecuteCommandGetRandomDestination(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -19894,7 +19894,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetRandomDestination(int nCommand, 
         return g_pVirtualMachine->StackPushVector(vDestination) != 0 ? 0 : -2000;
     }
 }
-// PC 0x005CCB10
+// PC 0x005CCB10 GOG 0x005CCB80
 int CSWVirtualMachineCommands::ExecuteCommandSetKeepStealthInDialog(int nCommand, int nArgs)
 {
     int bKeepStealth = 0;
@@ -19906,7 +19906,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetKeepStealthInDialog(int nCommand
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SetKeepStealthInDialog(bKeepStealth);
     return 0;
 }
-// PC 0x005CCB60
+// PC 0x005CCB60 GOG 0x005CCBD0
 int CSWVirtualMachineCommands::ExecuteCommandHasLineOfSight(int nCommand, int nArgs)
 {
     Vector vSource(0.0f, 0.0f, 0.0f);
@@ -19975,7 +19975,7 @@ int CSWVirtualMachineCommands::ExecuteCommandHasLineOfSight(int nCommand, int nA
                    : -2000;
     }
 }
-// PC 0x005CCD20
+// PC 0x005CCD20 GOG 0x005CCD90
 int CSWVirtualMachineCommands::ExecuteCommandShowDemoScreen(int nCommand, int nArgs)
 {
     CExoString sImage;
@@ -20007,7 +20007,7 @@ int CSWVirtualMachineCommands::ExecuteCommandShowDemoScreen(int nCommand, int nA
     g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowDemoScreen(sImage, nMinShowTime, nStrRef, nLeft, nTop);
     return 0;
 }
-// PC 0x005CCE40
+// PC 0x005CCE40 GOG 0x005CCEB0
 int CSWVirtualMachineCommands::ExecuteCommandIsRunning(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -20028,7 +20028,7 @@ int CSWVirtualMachineCommands::ExecuteCommandIsRunning(int nCommand, int nArgs)
     }
     return g_pVirtualMachine->StackPushInteger(bRunning) != 0 ? 0 : -2000;
 }
-// PC 0x005CCEB0
+// PC 0x005CCEB0 GOG 0x005CCF20
 int CSWVirtualMachineCommands::ExecuteCommandAddAvailablePUPByTemplate(int nCommand, int nArgs)
 {
     CExoString sTemplate;
@@ -20049,7 +20049,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddAvailablePUPByTemplate(int nComm
     }
     return 0;
 }
-// PC 0x005CCFA0
+// PC 0x005CCFA0 GOG 0x005CD010
 int CSWVirtualMachineCommands::ExecuteCommandAddAvailablePUPByObject(int nCommand, int nArgs)
 {
     int nPUP;
@@ -20072,7 +20072,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddAvailablePUPByObject(int nComman
                    : -2000;
     }
 }
-// PC 0x005CD030
+// PC 0x005CD030 GOG 0x005CD0A0
 int CSWVirtualMachineCommands::ExecuteCommandAssignPUP(int nCommand, int nArgs)
 {
     int nPUP;
@@ -20094,7 +20094,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAssignPUP(int nCommand, int nArgs)
                    : -2000;
     }
 }
-// PC 0x005CD0B0
+// PC 0x005CD0B0 GOG 0x005CD120
 int CSWVirtualMachineCommands::ExecuteCommandSpawnAvailablePUP(int nCommand, int nArgs)
 {
     int nPUP;
@@ -20116,7 +20116,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSpawnAvailablePUP(int nCommand, int
     delete pLocation;
     return 0;
 }
-// PC 0x005CD150
+// PC 0x005CD150 GOG 0x005CD1C0
 int CSWVirtualMachineCommands::ExecuteCommandAddPartyPuppet(int nCommand, int nArgs)
 {
     int nPUP;
@@ -20152,7 +20152,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddPartyPuppet(int nCommand, int nA
         return g_pVirtualMachine->StackPushInteger(bResult) != 0 ? 0 : -2000;
     }
 }
-// PC 0x005CD220
+// PC 0x005CD220 GOG 0x005CD290
 int CSWVirtualMachineCommands::ExecuteCommandGetPUPOwner(int nCommand, int nArgs)
 {
     unsigned long oidPuppet;
@@ -20170,7 +20170,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetPUPOwner(int nCommand, int nArgs
     }
     return g_pVirtualMachine->StackPushObject(oidOwner) != 0 ? 0 : -2000;
 }
-// PC 0x005CD2A0
+// PC 0x005CD2A0 GOG 0x005CD310
 int CSWVirtualMachineCommands::ExecuteCommandGetIsPuppet(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -20187,7 +20187,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsPuppet(int nCommand, int nArgs
     }
     return g_pVirtualMachine->StackPushInteger(bPuppet) != 0 ? 0 : -2000;
 }
-// PC 0x005CD300
+// PC 0x005CD300 GOG 0x005CD370
 int CSWVirtualMachineCommands::ExecuteCommandActionFollowOwner(int nCommand, int nArgs)
 {
     CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(m_oidObject);
@@ -20205,7 +20205,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionFollowOwner(int nCommand, int
     }
     return 0;
 }
-// PC 0x005CD3B0
+// PC 0x005CD3B0 GOG 0x005CD420
 int CSWVirtualMachineCommands::ExecuteCommandGetIsPartyLeader(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -20225,7 +20225,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsPartyLeader(int nCommand, int 
     }
     return g_pVirtualMachine->StackPushInteger(bLeader) != 0 ? 0 : -2000;
 }
-// PC 0x005CD430
+// PC 0x005CD430 GOG 0x005CD4A0
 int CSWVirtualMachineCommands::ExecuteCommandGetPCSpeaker(int nCommand,
                                                           int nArgs)
 {
@@ -20237,7 +20237,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetPCSpeaker(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidPCSpeaker) != 0 ? 0 : -2000;
 }
-// PC 0x005CD490
+// PC 0x005CD490 GOG 0x005CD500
 int CSWVirtualMachineCommands::ExecuteCommandRemoveNPCFromPartyToBase(int nCommand, int nArgs)
 {
     int nNPC;
@@ -20266,12 +20266,12 @@ int CSWVirtualMachineCommands::ExecuteCommandRemoveNPCFromPartyToBase(int nComma
     }
     return g_pVirtualMachine->StackPushInteger(pPartyTable->KillNPCObject(nNPC, 1)) != 0 ? 0 : -2000;
 }
-// PC 0x005CD560
+// PC 0x005CD560 GOG 0x005CD5D0
 int CSWVirtualMachineCommands::ExecuteCommandGetIsXBox(int nCommand, int nArgs)
 {
     return g_pVirtualMachine->StackPushInteger(0) != 0 ? 0 : -2000;
 }
-// PC 0x005CD580
+// PC 0x005CD580 GOG 0x005CD5F0
 int CSWVirtualMachineCommands::ExecuteCommandActionSwitchWeapons(int nCommand, int nArgs)
 {
     CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(m_oidObject);
@@ -20283,14 +20283,14 @@ int CSWVirtualMachineCommands::ExecuteCommandActionSwitchWeapons(int nCommand, i
     }
     return 0;
 }
-// PC 0x005CD5E0
+// PC 0x005CD5E0 GOG 0x005CD650
 int CSWVirtualMachineCommands::ExecuteCommandUnlockAllMusic(int nCommand, int nArgs)
 {
     CExoIni cIni;
     cIni.WriteIniEntry(CExoString(2047), ".\\swkotor2.ini", "Game Options", "UnlockedPlanetSongs");
     return 0;
 }
-// PC 0x005CD6D0
+// PC 0x005CD6D0 GOG 0x005CD740
 int CSWVirtualMachineCommands::ExecuteCommandDisableMap(int nCommand, int nArgs)
 {
     int bDisable = 0;
@@ -20302,7 +20302,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDisableMap(int nCommand, int nArgs)
     g_pAppManager->GetServerExoApp()->GetPartyTable()->SetDisableMap(bDisable);
     return 0;
 }
-// PC 0x005CD720
+// PC 0x005CD720 GOG 0x005CD790
 int CSWVirtualMachineCommands::ExecuteCommandDetonateMine(int nCommand, int nArgs)
 {
     unsigned long oidMine = OBJECT_INVALID;
@@ -20319,7 +20319,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDetonateMine(int nCommand, int nArg
     }
     return 0;
 }
-// PC 0x005CD7B0
+// PC 0x005CD7B0 GOG 0x005CD820
 int CSWVirtualMachineCommands::ExecuteCommandDisableHealthRegen(int nCommand, int nArgs)
 {
     int bDisable = 0;
@@ -20331,7 +20331,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDisableHealthRegen(int nCommand, in
     g_pAppManager->GetServerExoApp()->GetPartyTable()->SetDisableRegen(bDisable);
     return 0;
 }
-// PC 0x005CD800
+// PC 0x005CD800 GOG 0x005CD870
 int CSWVirtualMachineCommands::ExecuteCommandSetDisableTransit(int nCommand, int nArgs)
 {
     int bDisable = 0;
@@ -20351,7 +20351,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetDisableTransit(int nCommand, int
     }
     return 0;
 }
-// PC 0x005CD860
+// PC 0x005CD860 GOG 0x005CD8D0
 int CSWVirtualMachineCommands::ExecuteCommandSetInputClass(int nCommand, int nArgs)
 {
     int nClass = 0;
@@ -20366,7 +20366,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetInputClass(int nCommand, int nAr
     }
     return 0;
 }
-// PC 0x005CD8B0
+// PC 0x005CD8B0 GOG 0x005CD920
 int CSWVirtualMachineCommands::ExecuteCommandForceAlwaysUpdate(int nCommand, int nArgs)
 {
     unsigned long oidObject;
@@ -20388,7 +20388,7 @@ int CSWVirtualMachineCommands::ExecuteCommandForceAlwaysUpdate(int nCommand, int
     }
     return 0;
 }
-// PC 0x005CD920
+// PC 0x005CD920 GOG 0x005CD990
 int CSWVirtualMachineCommands::ExecuteCommandEnableRain(int nCommand, int nArgs)
 {
     int bEnable = 0;
@@ -20408,7 +20408,7 @@ int CSWVirtualMachineCommands::ExecuteCommandEnableRain(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005CD9A0
+// PC 0x005CD9A0 GOG 0x005CDA10
 int CSWVirtualMachineCommands::ExecuteCommandDisplayMessageBox(int nCommand, int nArgs)
 {
     int nStrRef = -1;
@@ -20436,7 +20436,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDisplayMessageBox(int nCommand, int
     return 0;
 }
 #define DATAPAD_READ_BOOLEAN 94
-// PC 0x005CDAE0
+// PC 0x005CDAE0 GOG 0x005CDB50
 int CSWVirtualMachineCommands::ExecuteCommandDisplayDatapad(int nCommand, int nArgs)
 {
     unsigned long oidItem;
@@ -20467,7 +20467,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDisplayDatapad(int nCommand, int nA
     }
     return 0;
 }
-// PC 0x005CDC40
+// PC 0x005CDC40 GOG 0x005CDCB0
 int CSWVirtualMachineCommands::ExecuteCommandSaveNPCByObject(int nCommand, int nArgs)
 {
     int nNPC = -1;
@@ -20484,7 +20484,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSaveNPCByObject(int nCommand, int n
     g_pAppManager->GetServerExoApp()->GetPartyTable()->SaveMemberByObject(nNPC, oidNPC);
     return 0;
 }
-// PC 0x005CDCB0
+// PC 0x005CDCB0 GOG 0x005CDD20
 int CSWVirtualMachineCommands::ExecuteCommandSavePUPByObject(int nCommand, int nArgs)
 {
     int nPUP = -1;
@@ -20501,7 +20501,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSavePUPByObject(int nCommand, int n
     g_pAppManager->GetServerExoApp()->GetPartyTable()->SavePuppetByObject(nPUP, oidPUP);
     return 0;
 }
-// PC 0x005CDD20
+// PC 0x005CDD20 GOG 0x005CDD90
 int CSWVirtualMachineCommands::ExecuteCommandGetIsPlayerMadeCharacter(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -20518,7 +20518,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsPlayerMadeCharacter(int nComma
     }
     return g_pVirtualMachine->StackPushInteger(bPlayerMade) != 0 ? 0 : -2000;
 }
-// PC 0x005CDDA0
+// PC 0x005CDDA0 GOG 0x005CDE10
 int CSWVirtualMachineCommands::ExecuteCommandRebuildPartyTable(int nCommand, int nArgs)
 {
     CSWPartyTable* pPartyTable = g_pAppManager->GetServerExoApp()->GetPartyTable();
@@ -20597,7 +20597,7 @@ int CSWVirtualMachineCommands::ExecuteCommandRebuildPartyTable(int nCommand, int
     }
     return 0;
 }
-// PC 0x005CE240
+// PC 0x005CE240 GOG 0x005CE2B0
 void CSWVirtualMachineCommands::DestroyGameDefinedStructure(int nType,
                                                           void* pStructure)
 {
@@ -20618,7 +20618,7 @@ void CSWVirtualMachineCommands::DestroyGameDefinedStructure(int nType,
         delete (CScriptTalent*)pStructure;
     }
 }
-// PC 0x005CE2D0
+// PC 0x005CE2D0 GOG 0x005CE340
 int CSWVirtualMachineCommands::ExecuteCommandAddJournalQuestEntry(
     int nCommand, int nArgs)
 {
@@ -20688,7 +20688,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddJournalQuestEntry(
     }
     return 0;
 }
-// PC 0x005CE540
+// PC 0x005CE540 GOG 0x005CE5B0
 int CSWVirtualMachineCommands::ExecuteCommandAddJournalWorldEntry(
     int nCommand, int nArgs)
 {
@@ -20740,7 +20740,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddJournalWorldEntry(
     }
     return 0;
 }
-// PC 0x005CE6F0
+// PC 0x005CE6F0 GOG 0x005CE760
 int CSWVirtualMachineCommands::ExecuteCommandAddJournalWorldEntryStrref(
     int nCommand, int nArgs)
 {
@@ -20787,7 +20787,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddJournalWorldEntryStrref(
     }
     return 0;
 }
-// PC 0x005CE800
+// PC 0x005CE800 GOG 0x005CE870
 int CSWVirtualMachineCommands::ExecuteCommandBarkString(int nCommand, int nArgs)
 {
     NWVMACHINECOMMANDS_TRACE();
@@ -20847,7 +20847,7 @@ int CSWVirtualMachineCommands::ExecuteCommandBarkString(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005CE9F0
+// PC 0x005CE9F0 GOG 0x005CEA60
 int CSWVirtualMachineCommands::ExecuteCommandDeleteJournalWorldAllEntries(
     int nCommand, int nArgs)
 {
@@ -20876,7 +20876,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDeleteJournalWorldAllEntries(
     }
     return 0;
 }
-// PC 0x005CEA90
+// PC 0x005CEA90 GOG 0x005CEB00
 int CSWVirtualMachineCommands::ExecuteCommandDeleteJournalWorldEntry(
     int nCommand, int nArgs)
 {
@@ -20910,7 +20910,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDeleteJournalWorldEntry(
     }
     return 0;
 }
-// PC 0x005CEB50
+// PC 0x005CEB50 GOG 0x005CEBC0
 int CSWVirtualMachineCommands::ExecuteCommandDeleteJournalWorldEntryStrref(
     int nCommand, int nArgs)
 {
@@ -20945,7 +20945,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDeleteJournalWorldEntryStrref(
     }
     return 0;
 }
-// PC 0x005CEC10
+// PC 0x005CEC10 GOG 0x005CEC80
 int CSWVirtualMachineCommands::ExecuteCommandDoTouchAttack(int nCommand, int nArgs)
 {
 
@@ -21057,7 +21057,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDoTouchAttack(int nCommand, int nAr
         return g_pVirtualMachine->StackPushInteger(nResult) != 0 ? 0 : ERROR_STACK_PUSH;
     }
 }
-// PC 0x005CEFB0
+// PC 0x005CEFB0 GOG 0x005CF020
 int CSWVirtualMachineCommands::ExecuteCommandGetCurrentAction(int nCommand,
                                                             int nArgs)
 {
@@ -21099,7 +21099,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCurrentAction(int nCommand,
     }
     return g_pVirtualMachine->StackPushInteger(nAction) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005CF0B0
+// PC 0x005CF0B0 GOG 0x005CF120
 int CSWVirtualMachineCommands::ExecuteCommandGetEffect(int nCommand, int nArgs)
 {
 
@@ -21178,7 +21178,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetEffect(int nCommand, int nArgs)
     }
     return 0;
 }
-// PC 0x005CF290
+// PC 0x005CF290 GOG 0x005CF300
 int CSWVirtualMachineCommands::ExecuteCommandGetInPersistentObject(int nCommand,
                                                                   int nArgs)
 {
@@ -21453,7 +21453,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetInPersistentObject(int nCommand,
         return ERROR_STACK_PUSH;
     return 0;
 }
-// PC 0x005CFA80
+// PC 0x005CFA80 GOG 0x005CFAF0
 int CSWVirtualMachineCommands::ExecuteCommandGetItemInInventory(int nCommand,
                                                                int nArgs)
 {
@@ -21605,7 +21605,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetItemInInventory(int nCommand,
     }
     return g_pVirtualMachine->StackPushObject(oidItem) != 0 ? 0 : ERROR_STACK_PUSH;
 }
-// PC 0x005CFE60
+// PC 0x005CFE60 GOG 0x005CFED0
 int CSWVirtualMachineCommands::ExecuteCommandGetJournalEntry(
     int nCommand, int nArgs)
 {
@@ -21644,7 +21644,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetJournalEntry(
     }
     return 0;
 }
-// PC 0x005CFFC0
+// PC 0x005CFFC0 GOG 0x005D0030
 int CSWVirtualMachineCommands::ExecuteCommandGetNearestMine(int nCommand, int nArgs)
 {
     CExoArrayList<unsigned long>* pTrapList = NULL;
@@ -21734,7 +21734,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetNearestMine(int nCommand, int nA
 StackError:
     return ERROR_STACK_POP;
 }
-// PC 0x005D0190
+// PC 0x005D0190 GOG 0x005D0200
 int CSWVirtualMachineCommands::ExecuteCommandGetObjectInShape(int nCommand,
                                                            int nArgs)
 {
@@ -21954,7 +21954,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetObjectInShape(int nCommand,
     return g_pVirtualMachine->StackPushObject(CGameObjectArray::INVALIDOBJID) != 0 ?
            0 : ERROR_STACK_PUSH;
 }
-// PC 0x005D0D80
+// PC 0x005D0D80 GOG 0x005D0DF0
 int CSWVirtualMachineCommands::ExecuteCommandRemoveEffect(int nCommand,
                                                           int nArgs)
 {
@@ -22002,7 +22002,7 @@ int CSWVirtualMachineCommands::ExecuteCommandRemoveEffect(int nCommand,
     delete pEffect;
     return 0;
 }
-// PC 0x005D0EA0
+// PC 0x005D0EA0 GOG 0x005D0F10
 int CSWVirtualMachineCommands::ExecuteCommandRemoveEffectByID(int nCommand, int nArgs)
 {
     unsigned long oidObject;
@@ -22039,7 +22039,7 @@ int CSWVirtualMachineCommands::ExecuteCommandRemoveEffectByID(int nCommand, int 
     }
     return 0;
 }
-// PC 0x005D0F90
+// PC 0x005D0F90 GOG 0x005D1000
 int CSWVirtualMachineCommands::ExecuteCommandRemoveEffectByExactMatch(int nCommand, int nArgs)
 {
     unsigned long oidObject;
@@ -22080,7 +22080,7 @@ int CSWVirtualMachineCommands::ExecuteCommandRemoveEffectByExactMatch(int nComma
     delete pEffect;
     return 0;
 }
-// PC 0x005D10F0
+// PC 0x005D10F0 GOG 0x005D1160
 int CSWVirtualMachineCommands::ExecuteCommandRemoveJournalQuestEntry(
     int nCommand, int nArgs)
 {
@@ -22113,7 +22113,7 @@ int CSWVirtualMachineCommands::ExecuteCommandRemoveJournalQuestEntry(
     }
     return 0;
 }
-// PC 0x005D1220
+// PC 0x005D1220 GOG 0x005D1290
 int CSWVirtualMachineCommands::ExecuteCommandSetCustomToken(int nCommand, int nArgs)
 {
 
@@ -22150,7 +22150,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetCustomToken(int nCommand, int nA
     }
     return 0;
 }
-// PC 0x005D1370
+// PC 0x005D1370 GOG 0x005D13E0
 int CSWVirtualMachineCommands::ExecuteCommandSetJournalQuestEntryPicture(
     int nCommand, int nArgs)
 {
@@ -22234,7 +22234,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetJournalQuestEntryPicture(
     }
     return 0;
 }
-// PC 0x005D15F0
+// PC 0x005D15F0 GOG 0x005D1660
 int CSWVirtualMachineCommands::ExecuteCommandSetMapPinEnabled(int nCommand,
                                                             int nArgs)
 {
@@ -22276,7 +22276,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetMapPinEnabled(int nCommand,
     }
     return 0;
 }
-// PC 0x005D16E0
+// PC 0x005D16E0 GOG 0x005D1750
 int CSWVirtualMachineCommands::ExecuteCommandGetCombatActionPending(int nCommand, int nArgs)
 {
     unsigned long oidCreature;
@@ -22301,7 +22301,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCombatActionPending(int nCommand
     }
     return g_pVirtualMachine->StackPushInteger(bPending) != 0 ? 0 : -2000;
 }
-// PC 0x005D1840
+// PC 0x005D1840 GOG 0x005D18B0
 int CSWVirtualMachineCommands::ExecuteCommandGetNearestObject(int nCommand,
                                                             int nArgs)
 {
@@ -22630,7 +22630,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetNearestObject(int nCommand,
         delete pLocation;
     return 0;
 }
-// PC 0x005D23C0
+// PC 0x005D23C0 GOG 0x005D2430
 int CSWVirtualMachineCommands::ExecuteCommandGetMineInfo(int nCommand, int nArgs)
 {
 
@@ -22873,7 +22873,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetMineInfo(int nCommand, int nArgs
     }
     return 0;
 }
-// PC 0x005D2B20
+// PC 0x005D2B20 GOG 0x005D2B90
 int CSWVirtualMachineCommands::ExecuteCommandSpawnMine(int nCommand, int nArgs)
 {
     int nMineType;
@@ -22950,7 +22950,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSpawnMine(int nCommand, int nArgs)
     delete pLocation;
     return 0;
 }
-// PC 0x005D2F50
+// PC 0x005D2F50 GOG 0x005D2FC0
 int CSWVirtualMachineCommands::ExecuteCommandCreateItemOnObject(int nCommand,
                                                              int nArgs)
 {
@@ -23053,7 +23053,7 @@ int CSWVirtualMachineCommands::ExecuteCommandCreateItemOnObject(int nCommand,
     }
     return 0;
 }
-// PC 0x005D32A0
+// PC 0x005D32A0 GOG 0x005D3310
 int CSWVirtualMachineCommands::ExecuteCommandGetMatchedString(int nCommand,
                                                              int nArgs)
 {
@@ -23084,7 +23084,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetMatchedString(int nCommand,
     }
     return 0;
 }
-// PC 0x005D33D0
+// PC 0x005D33D0 GOG 0x005D3440
 int CSWVirtualMachineCommands::ExecuteCommandSetItemStackSize(int nCommand,
                                                               int nArgs)
 {
@@ -23144,7 +23144,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetItemStackSize(int nCommand,
     }
     return 0;
 }
-// PC 0x005D3580
+// PC 0x005D3580 GOG 0x005D35F0
 void CSWVirtualMachineCommands::InitializeCommands()
 {
     m_pCommands = new CommandFunction[COMMAND_COUNT];

@@ -10,7 +10,7 @@
 #include "swguioptions.h"
 #include "guiingame.h"
 
-// PC 0x0074C200
+// PC 0x0074C200 GOG 0x0074C050
 void CSWGuiTitleMusic::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0 &&
@@ -28,7 +28,7 @@ void CSWGuiTitleMusic::HandleInputEvent(int nEvent, int nState)
     }
     CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0074C2A0
+// PC 0x0074C2A0 GOG 0x0074C0E0
 void CSWGuiTitleMusic::OnLoopPicked(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected)
@@ -49,7 +49,7 @@ void CSWGuiTitleMusic::OnLoopPicked(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x0074C330
+// PC 0x0074C330 GOG 0x0074C170
 void CSWGuiTitleMusic::StopMusic()
 {
     m_bPlaying = 0;
@@ -64,7 +64,7 @@ void CSWGuiTitleMusic::StopMusic()
     } while (nTime - nStartTime < 500);
     m_lblTrackName.m_cText.m_cParams.SetText("");
 }
-// PC 0x0074C400
+// PC 0x0074C400 GOG 0x0074C240
 void CSWGuiTitleMusic::OnSongPicked(CSWGuiControl* pControl)
 {
     if (m_pSelectedSong != NULL)
@@ -80,7 +80,7 @@ void CSWGuiTitleMusic::OnSongPicked(CSWGuiControl* pControl)
     sTrack.Format("%d/%d", nTrack, m_nNumSongs);
     m_lblTrackNum.m_cText.m_cParams.SetText(sTrack);
 }
-// PC 0x0074C510
+// PC 0x0074C510 GOG 0x0074C350
 void CSWGuiTitleMusic::OnMoveVolumeSlider(CSWGuiControl* pControl)
 {
     int nMax = pControl->AsSlider()->m_nMaxValue;
@@ -88,13 +88,13 @@ void CSWGuiTitleMusic::OnMoveVolumeSlider(CSWGuiControl* pControl)
     g_pExoSound->SetMusicVolume((float)nValue / nMax, 0);
     g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nMusicVolume = nValue;
 }
-// PC 0x0074C570
+// PC 0x0074C570 GOG 0x0074C3B0
 void CSWGuiTitleMusic::OnExitSlider(CSWGuiControl* pControl)
 {
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
     pParams->m_bPulsing = 1;
 }
-// PC 0x0074C680
+// PC 0x0074C680 GOG 0x0074C4C0
 void CSWGuiTitleMusic::OnPlayPicked(CSWGuiControl* pControl)
 {
     if (m_lMusic.num >= 1 && m_pSelectedSong != NULL)
@@ -115,7 +115,7 @@ void CSWGuiTitleMusic::OnPlayPicked(CSWGuiControl* pControl)
         m_bPlaying = 1;
     }
 }
-// PC 0x0074C730
+// PC 0x0074C730 GOG 0x0074C570
 void CSWGuiTitleMusic::OnStopPicked(CSWGuiControl* pControl)
 {
     if (m_lMusic.num >= 1 && pControl->m_bSelected &&
@@ -124,7 +124,7 @@ void CSWGuiTitleMusic::OnStopPicked(CSWGuiControl* pControl)
         StopMusic();
     }
 }
-// PC 0x0074C770
+// PC 0x0074C770 GOG 0x0074C5B0
 void CSWGuiTitleMusic::OnNextPicked(CSWGuiControl* pControl)
 {
     CSWGuiListBox* pList = &m_lbMusic;
@@ -156,7 +156,7 @@ void CSWGuiTitleMusic::OnNextPicked(CSWGuiControl* pControl)
         m_pSelectedSong->m_cText.m_cParams.m_sText);
     m_bPlaying = 1;
 }
-// PC 0x0074C850
+// PC 0x0074C850 GOG 0x0074C690
 void CSWGuiTitleMusic::Draw(float fElapsed)
 {
     if (m_bPlaying && !m_bLooping && m_pStreamingSound->IsDone())
@@ -166,7 +166,7 @@ void CSWGuiTitleMusic::Draw(float fElapsed)
     m_sldVolume.SetCurValue(m_sldVolume.m_nCurValue);
     CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x0074C970
+// PC 0x0074C970 GOG 0x0074C7B0
 void CSWGuiTitleMusic::PopulateSongList()
 {
     C2DA* pMusic = g_pRules->Get2DArrays()->m_pMusic;
@@ -210,7 +210,7 @@ void CSWGuiTitleMusic::PopulateSongList()
     }
     m_lbMusic.AddControls(aControls, 1, 0, 0);
 }
-// PC 0x0074CD00
+// PC 0x0074CD00 GOG 0x0074CB40
 CSWGuiTitleMusic::CSWGuiTitleMusic(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -298,7 +298,7 @@ CSWGuiTitleMusic::CSWGuiTitleMusic(CSWGuiManager* pManager)
     m_lblTrackName.m_cText.m_cParams.SetText("");
     m_pStreamingSound = new CExoStreamingSoundSource();
 }
-// PC 0x0074D4B0
+// PC 0x0074D4B0 GOG 0x0074D2F0
 CSWGuiTitleMusic::~CSWGuiTitleMusic()
 {
     if (m_pStreamingSound->IsPlaying())

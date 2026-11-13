@@ -33,7 +33,7 @@ void CSWGuiQuickPanel::CancelPanel()
     SetState(0);
 #endif
 }
-// PC 0x00760D20
+// PC 0x00760D20 GOG 0x00760B70
 void CSWGuiQuickPanel::SetState(int nState)
 {
     m_nState = nState;
@@ -110,7 +110,7 @@ void CSWGuiQuickPanel::SetState(int nState)
     }
     SetActiveControl(&m_btnStep[m_nState], 0);
 }
-// PC 0x00760F30
+// PC 0x00760F30 GOG 0x00760DA0
 void CSWGuiQuickPanel::OnSelectNameButton(CSWGuiControl* pControl)
 {
     CSWGuiNameChargen* pPanel;
@@ -131,7 +131,7 @@ void CSWGuiQuickPanel::OnSelectNameButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00760FC0
+// PC 0x00760FC0 GOG 0x00760E30
 void CSWGuiQuickPanel::OnSelectPortraitButton(CSWGuiControl* pControl)
 {
 #ifndef _XBOX
@@ -159,7 +159,7 @@ void CSWGuiQuickPanel::OnSelectPortraitButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x007610C0
+// PC 0x007610C0 GOG 0x00760F30
 void CSWGuiQuickPanel::CancelledByChild()
 {
     if (m_nState == 0)
@@ -171,24 +171,24 @@ void CSWGuiQuickPanel::CancelledByChild()
     CSWGuiTextParams* pParams = &pButton->m_cText.m_cParams;
     pParams->m_bHilightText = 1;
 }
-// PC 0x00761110
+// PC 0x00761110 GOG 0x00760F80
 void CSWGuiQuickPanel::PortraitCreationCompleted()
 {
     m_pMainCharGen->PortraitChanged();
     SetState(1);
 }
-// PC 0x00761130
+// PC 0x00761130 GOG 0x00760FA0
 void CSWGuiQuickPanel::NameCreationCompleted()
 {
     m_pMainCharGen->NameChanged();
     SetState(2);
 }
-// PC 0x00761150
+// PC 0x00761150 GOG 0x007604C0
 CExoString CSWGuiCustomPanel::GetCurrentName()
 {
     return ((CSWGuiMainCharGen*)m_pParentPanel)->m_sName;
 }
-// PC 0x00761180
+// PC 0x00761180 GOG 0x00760D80
 void CSWGuiQuickPanel::OnSelectPlayButton(CSWGuiControl* pControl)
 {
 #ifndef _XBOX
@@ -201,7 +201,7 @@ void CSWGuiQuickPanel::OnSelectPlayButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x007611A0
+// PC 0x007611A0 GOG 0x00761220
 void CSWGuiQuickPanel::ConfirmCancel(CSWGuiControl* pControl)
 {
     CGuiInGame* pInGameGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
@@ -211,7 +211,7 @@ void CSWGuiQuickPanel::ConfirmCancel(CSWGuiControl* pControl)
         CancelPanel();
     }
 }
-// PC 0x007611E0
+// PC 0x007611E0 GOG 0x00761280
 void CSWGuiQuickPanel::HandleInputEvent(int nEvent, int bPressed)
 {
     if (bPressed != 0)
@@ -247,7 +247,7 @@ CExoString CSWGuiQuickPanel::GetCurrentName()
 {
     return m_pMainCharGen->m_sName;
 }
-// PC 0x00761270
+// PC 0x00761270 GOG 0x00760FC0
 void CSWGuiQuickPanel::DoQuickStats()
 {
     unsigned char nIndex = m_pCreature->GetStats()->GetNumClasses() - 1;
@@ -274,7 +274,7 @@ void CSWGuiQuickPanel::DoQuickStats()
     m_pCreature->GetStats()->AddDefaultPackageSkills(nClass, 1);
     m_pCreature->GetStats()->UpdateAbilityModifiedSkillRanks();
 }
-// PC 0x007614D0
+// PC 0x007614D0 GOG 0x00761310
 void CSWGuiQuickPanel::OnCancelPressed(CSWGuiControl* pControl)
 {
     if (m_nState != 0)
@@ -292,7 +292,7 @@ void CSWGuiQuickPanel::OnCancelPressed(CSWGuiControl* pControl)
         CancelPanel();
     }
 }
-// PC 0x00761550
+// PC 0x00761550 GOG 0x00761390
 CSWGuiQuickPanel::CSWGuiQuickPanel(CSWGuiManager* pManager,
                                    CSWCCreature* pCreature)
     : CSWGuiPanel(pManager)
@@ -353,7 +353,7 @@ CSWGuiQuickPanel::CSWGuiQuickPanel(CSWGuiManager* pManager,
     m_bCenterVertical = 1;
 #endif
 }
-// PC 0x00761950
+// PC 0x00761950 GOG 0x00761260
 void CSWGuiQuickPanel::OnPanelAdded()
 {
     DoQuickStats();

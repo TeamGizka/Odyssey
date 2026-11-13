@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x00786240
+// PC 0x00786240 GOG 0x00786010
 CResTGA::CResTGA()
 {
     m_bDataOwned = 0;
@@ -13,11 +13,11 @@ CResTGA::CResTGA()
     m_pHeader = 0;
     m_bAllocSuffix = 1;
 }
-// PC 0x00786280
+// PC 0x00786280 GOG 0x00786050
 CResTGA::~CResTGA()
 {
 }
-// PC 0x00786290
+// PC 0x00786290 GOG 0x00786060
 int CResTGA::GetTGAAttrib(unsigned long* pnWidth, unsigned long* pnHeight, unsigned char* pnDepth)
 {
     if (m_pHeader == 0)
@@ -30,7 +30,7 @@ int CResTGA::GetTGAAttrib(unsigned long* pnWidth, unsigned long* pnHeight, unsig
     *pnDepth = m_pHeader->nBitsPerPixel;
     return 1;
 }
-// PC 0x007862D0
+// PC 0x007862D0 GOG 0x007860A0
 int CResTGA::OnResourceFreed()
 {
     if (m_bDataOwned && m_pTGAData)
@@ -49,7 +49,7 @@ int CResTGA::OnResourceFreed()
     m_pHeader = 0;
     return 1;
 }
-// PC 0x00786310
+// PC 0x00786310 GOG 0x007860E0
 int CResTGA::ReadColorMappedRLETGA()
 {
     unsigned char* pSource = m_pTGAData;
@@ -86,7 +86,7 @@ int CResTGA::ReadColorMappedRLETGA()
     m_bDataOwned = 1;
     return 1;
 }
-// PC 0x00786550
+// PC 0x00786550 GOG 0x00786320
 int CResTGA::OnResourceServiced()
 {
     if (m_pResource == 0)
@@ -175,7 +175,7 @@ int CResTGA::OnResourceServiced()
     m_bServiced = 1;
     return 1;
 }
-// PC 0x007863A0
+// PC 0x007863A0 GOG 0x00786170
 int CResTGA::ReadUnmappedRLETGA()
 {
     unsigned char* pSource = m_pTGAData;
@@ -273,12 +273,12 @@ int CResTGA::ReadUnmappedRLETGA()
     m_bDataOwned = 1;
     return 1;
 }
-// PC 0x00786840
+// PC 0x00786840 GOG 0x00786610
 unsigned char* CResTGA::GetTGADataPtr()
 {
     return m_pTGAData;
 }
-// PC 0x00786860
+// PC 0x00786860 GOG 0x00786630
 unsigned long CResTGA::GetTGASize()
 {
     return m_nDataSize;

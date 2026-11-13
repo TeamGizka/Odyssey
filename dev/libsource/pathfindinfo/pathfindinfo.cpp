@@ -31,7 +31,7 @@ const int CPathfindInformation::SMOOTHING_STEP_4 = 4;
 
 Vector cross(const Vector& vLeft, const Vector& vRight);
 Vector normalize(const Vector& vVector);
-// PC 0x0061BC10
+// PC 0x0061BC10 GOG 0x0061BBF0
 void CPathfindInformation::ResetInterTileSearchData()
 {
     if (m_pTileOpen != 0)
@@ -58,7 +58,7 @@ void CPathfindInformation::ResetInterTileSearchData()
     m_pTileCost = 0;
     ResetIntraTileSearchData();
 }
-// PC 0x0061BCD0
+// PC 0x0061BCD0 GOG 0x0061BCB0
 int CAvoidCreature::FindEntryAndExit(CPathfindInformation* pInfo)
 {
     int nIntersections = 0;
@@ -159,7 +159,7 @@ int CAvoidCreature::FindEntryAndExit(CPathfindInformation* pInfo)
     }
     return bFound;
 }
-// PC 0x0061C200
+// PC 0x0061C200 GOG 0x0061C1E0
 Vector* CAvoidCreature::FindPath(int& nPoints)
 {
     int nEntrySide = m_nEntrySide;
@@ -178,7 +178,7 @@ Vector* CAvoidCreature::FindPath(int& nPoints)
     }
     return FindPath_Right(nPoints);
 }
-// PC 0x0061C2E0
+// PC 0x0061C2E0 GOG 0x0061C2C0
 int CAvoidCreature::IsPathClear(unsigned long oidCreature, Vector* pPoints,
                                 int nPoints, unsigned long& oidBlocker)
 {
@@ -196,11 +196,11 @@ int CAvoidCreature::IsPathClear(unsigned long oidCreature, Vector* pPoints,
     }
     return 1;
 }
-// PC 0x006049D0
+// PC 0x006049D0 GOG 0x006049B0
 void CPathfindInformation::HandlePathfindError(int nError, char* szMessage)
 {
 }
-// PC 0x0061A130
+// PC 0x0061A130 GOG 0x0061A110
 void CPathfindInformation::DeleteFirstTileFValueAlternatives()
 {
     if (m_ppFirstTileFValueAlternatives != 0)
@@ -250,7 +250,7 @@ void CPathfindInformation::ResetIntraTileSearchData()
     }
     m_pField_F4 = 0;
 }
-// PC 0x0061A1D0
+// PC 0x0061A1D0 GOG 0x0061A1B0
 void CPathfindInformation::FlipStartEndPoints()
 {
     float fTemp = m_fStartX;
@@ -267,7 +267,7 @@ void CPathfindInformation::FlipStartEndPoints()
     m_nStartArea = m_nEndArea;
     m_nEndArea = nArea;
 }
-// PC 0x0061A210
+// PC 0x0061A210 GOG 0x0061A1F0
 void CPathfindInformation::FlipTempEndPoints()
 {
     float fTemp = m_fStartX;
@@ -287,7 +287,7 @@ void CPathfindInformation::FlipTempEndPoints()
     m_nStartArea = m_nTempArea;
     m_nTempArea = nArea;
 }
-// PC 0x0061A250
+// PC 0x0061A250 GOG 0x0061A230
 void CPathfindInformation::ComputeStepTolerance()
 {
     if (m_fStepScale != 0.0f)
@@ -299,7 +299,7 @@ void CPathfindInformation::ComputeStepTolerance()
         m_nStepTolerance = (int)m_fStartDistance;
     }
 }
-// PC 0x0061B540
+// PC 0x0061B540 GOG 0x0061B520
 int CAvoidCreature::InsertPathSegmentBetween(int nFirstSegment,
                                              int nLastSegment,
                                              Vector* pNewPoints, int nNewPoints,
@@ -345,7 +345,7 @@ int CAvoidCreature::InsertPathSegmentBetween(int nFirstSegment,
     pInfo->m_nWayPointCount = nTotal;
     return 1;
 }
-// PC 0x0061A280
+// PC 0x0061A280 GOG 0x0061A260
 void CPathfindInformation::Shutdown()
 {
     if (m_pWayPoints != 0)
@@ -436,7 +436,7 @@ void CPathfindInformation::Shutdown()
     }
     m_pfSmoothFinalPoints = 0;
 }
-// PC 0x0061A440
+// PC 0x0061A440 GOG 0x0061A420
 void CPathfindInformation::ResetGridSearchData()
 {
     Vector vGridStart;
@@ -460,7 +460,7 @@ void CPathfindInformation::ResetGridSearchData()
     m_nGridDFSBestDistance = 700;
     m_fPathPointDFSBestDistance = 100000.0f;
 }
-// PC 0x0061A500
+// PC 0x0061A500 GOG 0x0061A4E0
 void CPathfindInformation::ResetWayPointData()
 {
     Vector vOrigin;
@@ -489,7 +489,7 @@ void CPathfindInformation::ResetWayPointData()
     vDirection.m_fZ = 0.0f;
     m_vWayPointDirection = vDirection;
 }
-// PC 0x0061A5D0
+// PC 0x0061A5D0 GOG 0x0061A5B0
 void CPathfindInformation::ResetPathPointSearchData()
 {
     Vector vStart;
@@ -512,7 +512,7 @@ void CPathfindInformation::ResetPathPointSearchData()
     m_fPathPointDFSBestScore = 700.0f;
     m_fPathPointDFSBestDistance = 3.402823466e+38f;
 }
-// PC 0x0061A690
+// PC 0x0061A690 GOG 0x0061A670
 void CAvoidCreature::ComputeHexPoints(const Vector& vCenter,
                                      const Vector& vDirection, float fRadius)
 {
@@ -561,7 +561,7 @@ void CAvoidCreature::ComputeHexPoints(const Vector& vCenter,
         vPoint, 1);
     m_vHexPoints[5] = vPoint;
 }
-// PC 0x0061B0B0
+// PC 0x0061B0B0 GOG 0x0061B090
 Vector* CAvoidCreature::FindPath_Left(int& nPoints)
 {
     Vector aPoints[10];
@@ -590,7 +590,7 @@ Vector* CAvoidCreature::FindPath_Left(int& nPoints)
     memcpy(pPath, aPoints, sizeof(Vector) * nPoints);
     return pPath;
 }
-// PC 0x0061B200
+// PC 0x0061B200 GOG 0x0061B1E0
 Vector* CAvoidCreature::FindPath_Right(int& nPoints)
 {
     Vector aPoints[10];
@@ -612,7 +612,7 @@ Vector* CAvoidCreature::FindPath_Right(int& nPoints)
     memcpy(pPath, aPoints, sizeof(Vector) * nPoints);
     return pPath;
 }
-// PC 0x0061B330
+// PC 0x0061B330 GOG 0x0061B310
 int CAvoidCreature::SideClearOfObstructions(unsigned long oidCreature,
                                             const Vector& vFrom,
                                             const Vector& vTo,
@@ -658,7 +658,7 @@ int CAvoidCreature::SideClearOfObstructions(unsigned long oidCreature,
         return 0;
     }
 }
-// PC 0x0061B660
+// PC 0x0061B660 GOG 0x0061B640
 int CAvoidCreature::GetClosestPointTo(Vector& vPoint)
 {
     float fBest = FLT_MAX;
@@ -674,7 +674,7 @@ int CAvoidCreature::GetClosestPointTo(Vector& vPoint)
     }
     return nBest;
 }
-// PC 0x0061B7F0
+// PC 0x0061B7F0 GOG 0x0061B7D0
 int CAvoidCreature::IsPointInHex(const Vector& vPoint)
 {
     for (int i = 0; i < 6; i++)
@@ -691,12 +691,12 @@ int CAvoidCreature::IsPointInHex(const Vector& vPoint)
     }
     return 1;
 }
-// PC 0x0061B900
+// PC 0x0061B900 GOG 0x0061B8E0
 CPathfindInformation::~CPathfindInformation()
 {
     Shutdown();
 }
-// PC 0x0061C3B0
+// PC 0x0061C3B0 GOG 0x0061C390
 int CAvoidCreature::PlotPathAroundCreature(CSWSCreature* pCreature,
                                            CSWSCreature* pAvoidCreature)
 {
@@ -869,7 +869,7 @@ int CAvoidCreature::PlotPathAroundCreature(CSWSCreature* pCreature,
     }
     return bResult;
 }
-// PC 0x0061C850
+// PC 0x0061C850 GOG 0x0061C830
 CPathfindInformation::CPathfindInformation()
 {
     m_pGridDFSBestPath = 0;
@@ -877,7 +877,7 @@ CPathfindInformation::CPathfindInformation()
     Initialize();
     return;
 }
-// PC 0x0061C970
+// PC 0x0061C970 GOG 0x0061C950
 void CPathfindInformation::ResetInterAreaPathSearchData()
 {
     if (m_pAreaPath != 0)
@@ -898,7 +898,7 @@ void CPathfindInformation::ResetInterAreaPathSearchData()
     ResetInterTileSearchData();
     ResetPathPointSearchData();
 }
-// PC 0x0061C9E0
+// PC 0x0061C9E0 GOG 0x0061C9C0
 void CPathfindInformation::ResetInterAreaSearchData()
 {
     if (m_pAreaList != 0)
@@ -914,7 +914,7 @@ void CPathfindInformation::ResetInterAreaSearchData()
     m_nField_88 = 1;
     ResetInterAreaPathSearchData();
 }
-// PC 0x0061CA30
+// PC 0x0061CA30 GOG 0x0061CA10
 void CPathfindInformation::ResetAtEndOfPath()
 {
     m_nField_194 = 0;
@@ -935,7 +935,7 @@ void CPathfindInformation::ResetAtEndOfPath()
     m_nEndArea = 0;
     ResetInterAreaSearchData();
 }
-// PC 0x0061B910
+// PC 0x0061B910 GOG 0x0061B8F0
 void CPathfindInformation::Initialize()
 {
     m_fStepScale = 0.6f;

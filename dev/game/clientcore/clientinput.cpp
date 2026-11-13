@@ -74,17 +74,17 @@ CAurObject* g_pDialogIconModel = NULL;
 
 int HandleWMKeyDownMessage(HWND hWnd, unsigned int nKey, long nKeyData);
 int HandleWMCharMessage(unsigned short nChar);
-// PC 0x0066FC70
+// PC 0x0066FC70 GOG 0x0066FA10
 void CClientExoAppInternal::DisableInput()
 {
     m_bInputDisabled = 1;
 }
-// PC 0x0066FC80
+// PC 0x0066FC80 GOG 0x0066FA20
 void CClientExoAppInternal::EnableInput()
 {
     m_bInputDisabled = 0;
 }
-// PC 0x0066FC90
+// PC 0x0066FC90 GOG 0x0066FA30
 int CClientExoAppInternal::PerformXMouseMoveAction(int nX)
 {
     if (m_nMouseX == nX)
@@ -97,7 +97,7 @@ int CClientExoAppInternal::PerformXMouseMoveAction(int nX)
         m_nMouseX >= g_nScreenWidth - 1 ? g_nScreenWidth - 1 : m_nMouseX;
     return 1;
 }
-// PC 0x0066FCE0
+// PC 0x0066FCE0 GOG 0x0066FA80
 int CClientExoAppInternal::PerformYMouseMoveAction(int nY)
 {
     int nNewY = g_nScreenHeight - nY - 1;
@@ -113,7 +113,7 @@ int CClientExoAppInternal::PerformYMouseMoveAction(int nY)
 }
 
 #ifndef _XBOX
-void CClientExoAppInternal::PerformLButtonDownAction(int nArg)  // PC 0x0066FD30
+void CClientExoAppInternal::PerformLButtonDownAction(int nArg)  // PC 0x0066FD30 GOG 0x0066FAD0
 {
     int bToggle;
     CClientOptions* pOptions;
@@ -150,7 +150,7 @@ void CClientExoAppInternal::PerformLButtonDownAction(int nArg)  // PC 0x0066FD30
     }
 }
 #endif
-// PC 0x0066FDF0
+// PC 0x0066FDF0 GOG 0x0066FB90
 void CClientExoAppInternal::PerformRButtonDownAction()
 {
     g_bMouseCameraRotateToggle = 1;
@@ -158,7 +158,7 @@ void CClientExoAppInternal::PerformRButtonDownAction()
     g_pGuiMan->HandleRMouseDown();
 #endif
 }
-// PC 0x0066FE10
+// PC 0x0066FE10 GOG 0x0066FBB0
 int CClientExoAppInternal::PerformRButtonUpAction()
 {
     CSWGuiManager* pGuiManager = g_pGuiMan;
@@ -169,7 +169,7 @@ int CClientExoAppInternal::PerformRButtonUpAction()
     return 0;
 #endif
 }
-// PC 0x0066FE30
+// PC 0x0066FE30 GOG 0x0066FBD0
 void CClientExoAppInternal::SetMouseCursor(int nCursor, int nArg2, int nArg3)
 {
     if (g_pExoInput != NULL)
@@ -185,7 +185,7 @@ void CClientExoAppInternal::SetMouseCursor(int nCursor, int nArg2, int nArg3)
 #endif
     }
 }
-// PC 0x0066FE70
+// PC 0x0066FE70 GOG 0x0066FC10
 void CClientExoAppInternal::HideMouse(int nFlags)
 {
     m_nMouseHidden |= nFlags;
@@ -203,7 +203,7 @@ void CClientExoAppInternal::HideMouse(int nFlags)
         }
     }
 }
-// PC 0x0066FEB0
+// PC 0x0066FEB0 GOG 0x0066FC50
 void CClientExoAppInternal::ShowMouse(int nFlags)
 {
     m_nMouseHidden = ~nFlags & m_nMouseHidden;
@@ -240,12 +240,12 @@ int NearestObjectCompare(void* pObjectId, CNearestStruct cNearest)
 {
     return pObjectId == (void*)cNearest.m_oidObject;
 }
-// PC 0x0066FF40
+// PC 0x0066FF40 GOG 0x0066FCE0
 int TestNearestStruct(void* pObjectId, CNearestStruct cNearest)
 {
     return (unsigned long)pObjectId == cNearest.m_oidObject;
 }
-// PC 0x0066FF50
+// PC 0x0066FF50 GOG 0x0066FCF0
 int CClientExoAppInternal::ActionIconToMouseCursor(int nAction, int nArg2)
 {
     int nCursor;
@@ -284,7 +284,7 @@ int CClientExoAppInternal::ActionIconToMouseCursor(int nAction, int nArg2)
     }
     return nCursor;
 }
-// PC 0x00670050
+// PC 0x00670050 GOG 0x0066FDF0
 void CClientExoAppInternal::ReadPlayBackInputEvents()
 {
     CLIENTINPUT_TRACE();
@@ -469,7 +469,7 @@ void CClientExoAppInternal::ReadPlayBackInputEvents()
 }
 
 #ifndef _XBOX
-// PC 0x00670590
+// PC 0x00670590 GOG 0x00670330
 void CClientExoAppInternal::SetInputClass(int nClass, int bHideInterface)
 
 {
@@ -565,7 +565,7 @@ void CClientExoAppInternal::SetInputClass(int nClass, int bHideInterface)
     }
 }
 #endif
-int CClientExoAppInternal::DismissInGameGUI()  // PC 0x00670810
+int CClientExoAppInternal::DismissInGameGUI()  // PC 0x00670810 GOG 0x006705B0
 {
 #ifdef _XBOX
     if (m_pGuiInGame->HideSWInGameGui() != 0)
@@ -580,7 +580,7 @@ int CClientExoAppInternal::DismissInGameGUI()  // PC 0x00670810
 }
 
 #ifndef _XBOX
-void CClientExoAppInternal::PerformLButtonUpAction()  // PC 0x00670A20
+void CClientExoAppInternal::PerformLButtonUpAction()  // PC 0x00670A20 GOG 0x006707C0
 {
     int bToggle;
     CSWGuiControl* pControl;
@@ -635,7 +635,7 @@ inline CSWGuiMainInterface* CGuiInGame::GetMainInterface()
     return m_pMainInterface;
 }
 
-void CClientExoAppInternal::HandleMouseClickInWorld()  // PC 0x00670840
+void CClientExoAppInternal::HandleMouseClickInWorld()  // PC 0x00670840 GOG 0x006705E0
 {
     CLIENTINPUT_TRACE();
     if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nGlobalDialogState == 0 &&
@@ -686,7 +686,7 @@ CResRef CClientExoAppInternal::ActionIconToCursorResref(int nAction, int nArg2)
 }
 
 #ifndef _XBOX
-void CClientExoAppInternal::GetDefaultActions()  // PC 0x00670B10
+void CClientExoAppInternal::GetDefaultActions()  // PC 0x00670B10 GOG 0x006708B0
 {
     int nAction = 0;
     CSWCCreature* pPlayer =
@@ -910,7 +910,7 @@ void CClientExoAppInternal::GetDefaultActions()  // PC 0x00670B10
 }
 #endif
 #ifndef _XBOX
-int CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // PC 0x006717B0
+int CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // PC 0x006717B0 GOG 0x00671550
 {
     int nResult = 0;
     switch (nEvent)
@@ -1488,7 +1488,7 @@ int CClientExoAppInternal::HandleInputEvent(int nEvent, int nValue)  // PC 0x006
 }
 #endif
 #ifndef _XBOX
-void CClientExoAppInternal::HandleMouseOver(unsigned long oidObject,  // PC 0x00672810
+void CClientExoAppInternal::HandleMouseOver(unsigned long oidObject,  // PC 0x00672810 GOG 0x006725B0
                                           const Vector& vPosition,
                                           int bForceUpdate)
 {
@@ -1555,7 +1555,7 @@ void CClientExoAppInternal::HandleMouseOver(unsigned long oidObject,  // PC 0x00
     }
 }
 #endif
-// PC 0x00672A00
+// PC 0x00672A00 GOG 0x006727A0
 void CClientExoAppInternal::PlayBackInputEvents()
 {
     if (m_lstPlayBackEvents.GetHeadPos() != NULL)
@@ -1637,7 +1637,7 @@ inline CClientOptions* CClientExoAppInternal::GetClientOptions()
 }
 
 #ifndef _XBOX
-void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80
+void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 0x00672A20
 {
     int bInputHandled = 0;
     int nEvents;

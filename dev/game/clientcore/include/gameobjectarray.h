@@ -71,137 +71,137 @@ public:
     virtual ~CGameObject()
     {
     }
-    // PC 0x005EE1C0
+    // PC 0x005EE1C0 GOG 0x005EE1A0
     virtual void SetId(unsigned long nId)
     {
     }
-    // PC 0x006049D0
+    // PC 0x006049D0 GOG 0x006049B0
     virtual void ResetUpdateTimes(unsigned long nDay, unsigned long nTime)
     {
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWCObject* AsSWCObject()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWSObject* AsSWSObject()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWCDoor* AsSWCDoor()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWSDoor* AsSWSDoor()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWCModule* AsSWCModule()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWSModule* AsSWSModule()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWCArea* AsSWCArea()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWSArea* AsSWSArea()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWCCreature* AsSWCCreature()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWSCreature* AsSWSCreature()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWCItem* AsSWCItem()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWSItem* AsSWSItem()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWCTrigger* AsSWCTrigger()
     {
         return NULL;
     }
 
 
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWSTrigger* AsSWSTrigger()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWCProjectile* AsSWCProjectile()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWSPlaceable* AsSWSPlaceable()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWCPlaceable* AsSWCPlaceable()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWSAreaOfEffectObject* AsSWSAreaOfEffectObject()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWCAreaOfEffectObject* AsSWCAreaOfEffectObject()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWSWaypoint* AsSWSWaypoint()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWSEncounter* AsSWSEncounter()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWCStore* AsSWCStore()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWSStore* AsSWSStore()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWSSoundObject* AsSWSSoundObject()
     {
         return NULL;
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWCSoundObject* AsSWCSoundObject()
     {
         return NULL;

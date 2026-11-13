@@ -196,12 +196,12 @@ public:
     ~CSWSpell();
 
     unsigned char GetSpellLevel(unsigned char nClass);
-    int GetPriority(int nIndex)  // PC 0x006FB4D0
+    int GetPriority(int nIndex)  // PC 0x006FB4D0 GOG 0x006FB0C0
     {
         return GetSubRadialSpell(nIndex) -
                10 * ((unsigned int)GetSubRadialSpell(nIndex) / 10);
     }
-    int GetSlot(int nIndex)  // PC 0x006FB510
+    int GetSlot(int nIndex)  // PC 0x006FB510 GOG 0x006FB100
     {
         return (GetSubRadialSpell(nIndex) -
                 (int)(1000 * ((unsigned int)GetSubRadialSpell(nIndex) / 1000))) /

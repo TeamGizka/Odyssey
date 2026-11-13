@@ -328,7 +328,7 @@ public:
     void SetCharacter(unsigned long oidCharacter) { m_oidCharacter = oidCharacter; }
     void SetDisableItemCreation(int bDisableItemCreation) { m_bDisableItemCreation = bDisableItemCreation; }
     void SetDisableUpgrade(int bDisableUpgrade) { m_bDisableUpgrade = bDisableUpgrade; }
-    // PC 0x0067CB20
+    // PC 0x0067CB20 GOG 0x0067C8F0
     void SetOverride2DA(CExoString sOverride2DA)
     {
         m_sOverride2DA = sOverride2DA;
@@ -558,10 +558,10 @@ public:
     CSWGuiBorder m_CSWGuiBorder_2C0;
     CSWGuiText m_CSWGuiText_334;
     virtual void Initialize(CSWGuiText&, CSWGuiBorder&, CSWGuiBorder&, int, int);
-    virtual void Initialize(const CSWGuiExtent&, CSWGuiButton*)  // PC 0x006049D0
+    virtual void Initialize(const CSWGuiExtent&, CSWGuiButton*)  // PC 0x006049D0 GOG 0x006049B0
     {
     }
-    virtual void Initialize(const CSWGuiExtent&, const CSWGuiTextParams&,  // PC 0x00693D50
+    virtual void Initialize(const CSWGuiExtent&, const CSWGuiTextParams&,  // PC 0x00693D50 GOG 0x00693AC0
                             const CSWGuiBorderParams&, const CSWGuiBorderParams&)
     {
     }

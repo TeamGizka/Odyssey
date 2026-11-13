@@ -58,7 +58,7 @@ public:
     virtual float GetYaw() = 0;
     virtual float GetPitch() = 0;
     virtual float GetDist() = 0;
-    virtual CAurCamera* AsAurCamera()  // PC 0x00698BD0
+    virtual CAurCamera* AsAurCamera()  // PC 0x00698BD0 GOG 0x00698980
     {
         return this;
     }
@@ -91,21 +91,21 @@ public:
     virtual void Render(bool bRenderLast);
     virtual int PlayAnimation(const char* sName, float fSpeed, int nFlags,
                               float fBlend);
-    // PC 0x00471660
+    // PC 0x00471660 GOG 0x004717C0
     virtual CAurCamera* AsCAurCamera()
     {
         return this;
     }
-    virtual Camera* AsCamera()  // PC 0x00471660
+    virtual Camera* AsCamera()  // PC 0x00471660 GOG 0x004717C0
     {
         return this;
     }
-    virtual CAurObject* AsCAurObject()  // PC 0x00471670
+    virtual CAurObject* AsCAurObject()  // PC 0x00471670 GOG 0x004717D0
     {
         return this;
     }
     virtual void GetMinimumBoundingBox(Vector& vMinimum, Vector& vMaximum);
-    virtual void GetMinimumBoundingSphere(Vector& vPosition, float& fRadius)  // PC 0x006049D0
+    virtual void GetMinimumBoundingSphere(Vector& vPosition, float& fRadius)  // PC 0x006049D0 GOG 0x006049B0
     {
     }
     virtual int AttachToScene(CAurScene* pScene);
@@ -114,11 +114,11 @@ public:
     virtual void SetBehavior(CAurBehavior* pBehavior);
     virtual Vector SetPosition(Vector vPosition);
     virtual Quaternion SetOrientation(Quaternion qOrientation);
-    virtual Vector GetPosition()  // PC 0x00471680
+    virtual Vector GetPosition()  // PC 0x00471680 GOG 0x004717E0
     {
         return m_vPosition;
     }
-    virtual Quaternion GetOrientation()  // PC 0x004716B0
+    virtual Quaternion GetOrientation()  // PC 0x004716B0 GOG 0x00471810
     {
         return m_qOrientation;
     }
@@ -127,18 +127,18 @@ public:
     virtual void Animate(float fTimeStep);
 
     Vector MouseDir(int nX, int nY);
-    int GetViewPortHeight()  // PC 0x004716E0
+    int GetViewPortHeight()  // PC 0x004716E0 GOG 0x00471870
     {
         return m_nViewPortHeight;
     }
     void SetClipDist(float fNear, float fFar);
-    void GetClipDist(float& fNear, float& fFar)  // PC 0x004716F0
+    void GetClipDist(float& fNear, float& fFar)  // PC 0x004716F0 GOG 0x00471880
     {
         fNear = m_fNearClip;
         fFar = m_fFarClip;
     }
     void SetViewAngle(float fViewAngle);
-    float GetViewAngle()  // PC 0x00471710
+    float GetViewAngle()  // PC 0x00471710 GOG 0x004718A0
     {
         return m_fViewAngle;
     }
@@ -151,12 +151,12 @@ public:
     float GetYaw();
     float GetPitch();
     float GetDist();
-    virtual void SetFadePlanes(Plane& planeNear, Plane& planeFar)  // PC 0x00471720
+    virtual void SetFadePlanes(Plane& planeNear, Plane& planeFar)  // PC 0x00471720 GOG 0x004718B0
     {
         m_planeFadeNear = planeNear;
         m_planeFadeFar = planeFar;
     }
-    int ViewVolumeSet()  // PC 0x00471770
+    int ViewVolumeSet()  // PC 0x00471770 GOG 0x00471900
     {
         return m_bViewVolumeSet;
     }

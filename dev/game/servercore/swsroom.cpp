@@ -8,12 +8,12 @@ inline void CSWSRoom::DestroyWalkMesh()
         m_pWalkMesh = NULL;
     }
 }
-// PC 0x0055B030
+// PC 0x0055B030 GOG 0x0055B150
 CSWSRoom::CSWSRoom()
 {
     m_pWalkMesh = new CSWRoomSurfaceMesh;
 }
-// PC 0x0055B0A0
+// PC 0x0055B0A0 GOG 0x0055B2C0
 int CSWSRoom::LoadWalkMesh(int nType)
 {
     if (m_bNoWalkMesh)
@@ -23,7 +23,7 @@ int CSWSRoom::LoadWalkMesh(int nType)
     m_pWalkMesh->m_cResRef = m_cResRef;
     return m_pWalkMesh->LoadMesh(nType);
 }
-// PC 0x0055B0E0
+// PC 0x0055B0E0 GOG 0x0055B300
 int CSWSRoom::CheckAABBWalkable(const Vector& vMin, const Vector& vMax,
                                 CSWRoomSurfaceMeshHitInfo& hitInfo)
 {
@@ -37,7 +37,7 @@ int CSWSRoom::CheckAABBWalkable(const Vector& vMin, const Vector& vMax,
     }
     return bResult;
 }
-// PC 0x0055B1A0
+// PC 0x0055B1A0 GOG 0x0055B3C0
 int CSWSRoom::CheckAABBAll(Vector vMin, Vector vMax,
                            CSWRoomSurfaceMeshHitInfo& hitInfo)
 {
@@ -48,7 +48,7 @@ int CSWSRoom::CheckAABBAll(Vector vMin, Vector vMax,
     }
     return bResult;
 }
-// PC 0x0055B200
+// PC 0x0055B200 GOG 0x0055B420
 int CSWSRoom::ClippedLineSegmentWalkable(const Vector& vStart,
                                          const Vector& vEnd,
                                          Vector& vClippedStart,
@@ -58,7 +58,7 @@ int CSWSRoom::ClippedLineSegmentWalkable(const Vector& vStart,
     return m_pWalkMesh->ClippedLineSegmentWalkable(
         vStart, vEnd, vClippedStart, vClippedEnd, fStartT, fEndT, nFace);
 }
-// PC 0x0055B210
+// PC 0x0055B210 GOG 0x0055B430
 int CSWSRoom::NoNonWalkPolysOnRoom(const Vector& vStart, const Vector& vEnd,
                                    const float& fA, const float& fB,
                                    const float& fC, CWalkHitInfo* pHitInfo)
@@ -66,7 +66,7 @@ int CSWSRoom::NoNonWalkPolysOnRoom(const Vector& vStart, const Vector& vEnd,
     CSWCollisionMesh* pMesh = m_pWalkMesh;
     return pMesh->NoNonWalkPolys(vStart, vEnd, fA, fB, fC, pHitInfo);
 }
-// PC 0x0055B240
+// PC 0x0055B240 GOG 0x0055B460
 void CSWSRoom::TransformToWorld()
 {
     if (!m_bNoWalkMesh)
@@ -74,12 +74,12 @@ void CSWSRoom::TransformToWorld()
         m_pWalkMesh->TransformToWorld(m_vPosition);
     }
 }
-// PC 0x0055B260
+// PC 0x0055B260 GOG 0x0055B1C0
 int CSWSRoom::GetAdjacentRoom(int nEdge)
 {
     return m_pWalkMesh->GetAdjacentRoom(nEdge);
 }
-// PC 0x0055B270
+// PC 0x0055B270 GOG 0x0055B480
 int CSWSRoom::WeldRoom(CSWSRoom& other, float fTolerance)
 {
     if (m_bNoWalkMesh || other.m_bNoWalkMesh)
@@ -90,7 +90,7 @@ int CSWSRoom::WeldRoom(CSWSRoom& other, float fTolerance)
     return m_pWalkMesh->WeldEdgeVertices(other.m_pWalkMesh, fTolerance,
                                          &m_vPosition, &vOtherPosition);
 }
-// PC 0x0055B2D0
+// PC 0x0055B2D0 GOG 0x0055B4E0
 void CSWSRoom::ComputeMeshNormals()
 {
     if (!m_bNoWalkMesh)
@@ -98,7 +98,7 @@ void CSWSRoom::ComputeMeshNormals()
         m_pWalkMesh->ComputeMeshNormals();
     }
 }
-// PC 0x0055B2E0
+// PC 0x0055B2E0 GOG 0x0055B4F0
 int CSWSRoom::SetRoomAdjacency(CSWSRoom& other, int nEdge, int nOtherEdge)
 {
     if (m_bNoWalkMesh || other.m_bNoWalkMesh)
@@ -109,7 +109,7 @@ int CSWSRoom::SetRoomAdjacency(CSWSRoom& other, int nEdge, int nOtherEdge)
     return m_pWalkMesh->SetRoomAdjacency(other.m_pWalkMesh, nEdge, nOtherEdge,
                                          m_vPosition, vOtherPosition);
 }
-// PC 0x0055B340
+// PC 0x0055B340 GOG 0x0055B550
 int CSWSRoom::ClearLineOfSight(Vector vStart, Vector vEnd, Vector* pvHit,
                                unsigned long* pnFace)
 {
@@ -126,7 +126,7 @@ int CSWSRoom::ClearLineOfSight(Vector vStart, Vector vEnd, Vector* pvHit,
     }
     return bHit == 0;
 }
-// PC 0x0055B3E0
+// PC 0x0055B3E0 GOG 0x0055B1D0
 float CSWSRoom::ComputeHeight(Vector vPosition, int nFace)
 {
     float fHeight = 0.0f;
@@ -136,7 +136,7 @@ float CSWSRoom::ComputeHeight(Vector vPosition, int nFace)
     }
     return fHeight;
 }
-// PC 0x0055B420
+// PC 0x0055B420 GOG 0x0055B210
 float CSWSRoom::ComputeHeight(int nFace, Vector vPosition)
 {
     float fHeight = 0.0f;
@@ -146,7 +146,7 @@ float CSWSRoom::ComputeHeight(int nFace, Vector vPosition)
     }
     return fHeight;
 }
-// PC 0x0055B460
+// PC 0x0055B460 GOG 0x0055B5F0
 Vector CSWSRoom::GetNormalOfPoint(int nFace)
 {
     if (nFace >= 0)
@@ -160,7 +160,7 @@ Vector CSWSRoom::GetNormalOfPoint(int nFace)
     }
     return Vector(0.0f, 0.0f, 1.0f);
 }
-// PC 0x0055B4B0
+// PC 0x0055B4B0 GOG 0x0055B250
 CSWSRoom::~CSWSRoom()
 {
     if (m_pWalkMesh != NULL)

@@ -39,7 +39,7 @@ static inline void Swguimaininterfacepc2Trace1();
 static inline CClientExoApp* ClientExoAppLate3(CAppManager* p);
 static inline CClientExoApp* ClientExoAppLate2(CAppManager* p);
 static inline CClientExoApp* ClientExoAppLate1(CAppManager* p);
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 void CSWGuiMainInterface::QueueActiveAction()
 {
 }
@@ -87,7 +87,7 @@ void CSWGuiMainInterfaceAction::Draw(float fElapsed)
     }
 }
 #else
-void CSWGuiMainInterfaceAction::Draw(float fElapsed)  // PC 0x006DD020
+void CSWGuiMainInterfaceAction::Draw(float fElapsed)  // PC 0x006DD020 GOG 0x006DD690
 {
     if (m_CSWGuiButton_0.m_bEnabled != 0)
     {
@@ -128,7 +128,7 @@ CSWGuiMainInterfaceAction::~CSWGuiMainInterfaceAction()
 {
 }
 #else
-CSWGuiMainInterfaceAction::~CSWGuiMainInterfaceAction()  // PC 0x006DF7D0
+CSWGuiMainInterfaceAction::~CSWGuiMainInterfaceAction()  // PC 0x006DF7D0 GOG 0x006E18F0
 {
     Swguimaininterfacepc2Trace1();
 }
@@ -276,7 +276,7 @@ CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)
     m_nCombatMessage = 42475;
 }
 #else
-CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // PC 0x006E5170
+CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // PC 0x006E5170 GOG 0x006E4E30
     : CSWGuiPanel(pManager)
 {
     CExoString sControl;
@@ -502,7 +502,7 @@ CSWGuiMainInterfaceAction::CSWGuiMainInterfaceAction()
     m_fSlideTimer = 0.0f;
 }
 #else
-CSWGuiMainInterfaceAction::CSWGuiMainInterfaceAction()  // PC 0x006DF630
+CSWGuiMainInterfaceAction::CSWGuiMainInterfaceAction()  // PC 0x006DF630 GOG 0x006E1750
 {
     m_nFadeSteps = 0;
     m_bTarget = 0;
@@ -510,7 +510,7 @@ CSWGuiMainInterfaceAction::CSWGuiMainInterfaceAction()  // PC 0x006DF630
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::OnCharacterRightClicked(CSWGuiControl* pControl)  // PC 0x005EE1C0
+void CSWGuiMainInterface::OnCharacterRightClicked(CSWGuiControl* pControl)  // PC 0x005EE1C0 GOG 0x005EE1A0
 {
 }
 #endif
@@ -634,7 +634,7 @@ void CSWGuiCharBar::Draw(float fElapsed)
     }
 }
 #endif
-// PC 0x004DD4D0
+// PC 0x004DD4D0 GOG 0x00431EC0
 template <> void CExoArrayList<CSWGuiFloatyText*>::DelIndex(int nIndex)
 {
     num--;
@@ -643,19 +643,19 @@ template <> void CExoArrayList<CSWGuiFloatyText*>::DelIndex(int nIndex)
         element[nIndex] = element[nIndex + 1];
     }
 }
-// PC 0x00679E80
+// PC 0x00679E80 GOG 0x00679C50
 CSWGuiMainInterfaceChar::~CSWGuiMainInterfaceChar()
 {
     Swguimaininterfacepc2Trace1();
 }
-// PC 0x006DCFD0
+// PC 0x006DCFD0 GOG 0x006DD3E0
 void CSWGuiButtonToggle::SetToggled(int bToggled)
 {
     m_bToggled = bToggled;
 }
 
 #ifndef _XBOX
-inline int CSWGuiMainInterfaceAction::GetActive()  // PC 0x006DCFF0
+inline int CSWGuiMainInterfaceAction::GetActive()  // PC 0x006DCFF0 GOG 0x006DD660
 {
     return m_CSWGuiButton_1C4.m_bActive != 0 ||
            m_CSWGuiButton_388.m_bActive != 0 ||
@@ -664,7 +664,7 @@ inline int CSWGuiMainInterfaceAction::GetActive()  // PC 0x006DCFF0
 #endif
 
 #ifndef _XBOX
-CSWGuiControl* CSWGuiMainInterfaceAction::HitCheckMouse(int nX, int nY)  // PC 0x006DD090
+CSWGuiControl* CSWGuiMainInterfaceAction::HitCheckMouse(int nX, int nY)  // PC 0x006DD090 GOG 0x006DCC90
 {
     CSWGuiControl* pControl = NULL;
     if (m_CSWGuiButton_388.HitCheckMouse(nX, nY) != 0)
@@ -739,7 +739,7 @@ void CSWGuiMainInterfaceAction::Update(float fElapsed)
     }
 }
 #else
-void CSWGuiMainInterfaceAction::Update(float fElapsed)  // PC 0x006DD110
+void CSWGuiMainInterfaceAction::Update(float fElapsed)  // PC 0x006DD110 GOG 0x006DD700
 {
     if (m_nFadeSteps != 0)
     {
@@ -803,7 +803,7 @@ void CSWGuiMainInterfaceAction::SetIcon(const CResRef& cIcon, int bEnabled,
         bEnabled != 0 ? 1.0f : 0.25f;
 }
 #else
-void CSWGuiMainInterfaceAction::SetIcon(const CResRef& cIcon,  // PC 0x006DD190
+void CSWGuiMainInterfaceAction::SetIcon(const CResRef& cIcon,  // PC 0x006DD190 GOG 0x006DD780
                                         const CExoString& sToolTip,
                                         int bEnabled, unsigned char nFadeSteps)
 {
@@ -822,7 +822,7 @@ void CSWGuiMainInterfaceAction::SetIcon(const CResRef& cIcon,  // PC 0x006DD190
 #endif
 
 #ifndef _XBOX
-void CSWGuiTargetActionMenu::SetFriend(int bFriend, int bPoisoned)  // PC 0x006DD210
+void CSWGuiTargetActionMenu::SetFriend(int bFriend, int bPoisoned)  // PC 0x006DD210 GOG 0x006DD800
 {
     CExoString sScroll;
 
@@ -865,7 +865,7 @@ void CSWGuiTargetActionMenu::SetFriend(int bFriend, int bPoisoned)  // PC 0x006D
 #endif
 
 #ifndef _XBOX
-inline void CSWGuiTargetActionMenu::Update(float fElapsed)  // PC 0x006DD320
+inline void CSWGuiTargetActionMenu::Update(float fElapsed)  // PC 0x006DD320 GOG 0x006DCD10
 {
     if (m_fFeedbackTimer != -1.0f)
     {
@@ -883,7 +883,7 @@ inline void CSWGuiTargetActionMenu::Update(float fElapsed)  // PC 0x006DD320
 #endif
 
 #ifndef _XBOX
-void CSWGuiTargetActionMenu::Draw(float fElapsed)  // PC 0x006DD380
+void CSWGuiTargetActionMenu::Draw(float fElapsed)  // PC 0x006DD380 GOG 0x006DE020
 {
     if (m_bVisible != 0)
     {
@@ -908,7 +908,7 @@ void CSWGuiTargetActionMenu::Draw(float fElapsed)  // PC 0x006DD380
 #endif
 
 #ifndef _XBOX
-char CSWGuiTargetActionMenu::IsTargetActionMenuControl(CSWGuiControl* pControl)  // PC 0x006DD440
+char CSWGuiTargetActionMenu::IsTargetActionMenuControl(CSWGuiControl* pControl)  // PC 0x006DD440 GOG 0x006DCD70
 {
     if (pControl == &m_cNameLabel || pControl == &m_cHealthBar ||
         pControl == &m_cNameBackground || pControl == &m_cHealthBackground)
@@ -931,7 +931,7 @@ char CSWGuiTargetActionMenu::IsTargetActionMenuControl(CSWGuiControl* pControl) 
 #endif
 
 #ifndef _XBOX
-void CSWGuiCharButton::UpdateToolTipText()  // PC 0x006DD4C0
+void CSWGuiCharButton::UpdateToolTipText()  // PC 0x006DD4C0 GOG 0x006DCDF0
 {
     if (m_pCharacter != NULL)
     {
@@ -964,7 +964,7 @@ void CSWGuiCharButton::UpdateToolTipText()  // PC 0x006DD4C0
     }
 }
 #endif
-// PC 0x006DD720
+// PC 0x006DD720 GOG 0x006DE940
 void CSWGuiMainInterfaceChar::Show(int bShow, unsigned char nState,
                                    unsigned char nBuffCount,
                                    unsigned char nDebuffCount)
@@ -985,7 +985,7 @@ void CSWGuiMainInterfaceChar::Show(int bShow, unsigned char nState,
     m_cCharButton.SetEnabledFlag(bShow & 1);
 #endif
 }
-// PC 0x006DD830
+// PC 0x006DD830 GOG 0x006DD050
 void CSWGuiMainInterfaceChar::Adjust(float fElapsed)
 {
     CSWGuiExtent cExtent;
@@ -1023,7 +1023,7 @@ void CSWGuiMainInterfaceChar::Adjust(float fElapsed)
     m_cCharButton.SetExtent(cExtent);
 #endif
 }
-// PC 0x006DD9B0
+// PC 0x006DD9B0 GOG 0x006DD1D0
 void CSWGuiMainInterfaceChar::DrawStack(float fElapsed, int bLarge, int bBuff)
 {
     CSWGuiExtent cViewport = m_aLabels[LABEL_CHAR].m_cExtent;
@@ -1092,7 +1092,7 @@ void CSWGuiMainInterfaceChar::DrawStack(float fElapsed, int bLarge, int bBuff)
     }
     AurGUIStopLayer();
 }
-// PC 0x006DDBC0
+// PC 0x006DDBC0 GOG 0x006DEAA0
 void CSWGuiMainInterfaceStatus::Initialize(CSWGuiMainInterface* pInterface,
                                            unsigned char nStatusEffect)
 {
@@ -1147,7 +1147,7 @@ void CSWGuiMainInterfaceStatus::Initialize(CSWGuiMainInterface* pInterface,
     m_cLabel.m_bEnabled = 0;
     m_cLabel.m_cBorder.m_cParams.SetPulsingAlpha(1, 0, 1);
 }
-// PC 0x006DDCC0
+// PC 0x006DDCC0 GOG 0x006DEBA0
 void CSWGuiMainInterfaceStatus::Update(float fElapsed)
 {
 #ifdef _XBOX
@@ -1198,7 +1198,7 @@ void CSWGuiMainInterfaceStatus::Update(float fElapsed)
 }
 
 #ifndef _XBOX
-void CSWGuiMainInterface::SetActionDescription(const CExoString& sDescription)  // PC 0x006DDD40
+void CSWGuiMainInterface::SetActionDescription(const CExoString& sDescription)  // PC 0x006DDD40 GOG 0x006DD400
 {
     m_cActionText.m_cText.m_cParams.SetText(sDescription);
 
@@ -1210,7 +1210,7 @@ void CSWGuiMainInterface::SetActionDescription(const CExoString& sDescription)  
     m_cActionTextBack.SetExtent(cExtent);
 }
 #endif
-// PC 0x006DDDD0
+// PC 0x006DDDD0 GOG 0x006DD490
 int CSWGuiMainInterface::SetTarget(unsigned long nTargetId, int nUnknown)
 {
     if (m_nTargetId != nTargetId)
@@ -1220,7 +1220,7 @@ int CSWGuiMainInterface::SetTarget(unsigned long nTargetId, int nUnknown)
     }
     return nTargetId;
 }
-// PC 0x006DDDF0
+// PC 0x006DDDF0 GOG 0x006DF090
 void CSWGuiMainInterface::GetActionIcon(
     CSWSCombatRound* pCombatRound, CSWSObjectActionNode* pAction,
     CSWSCombatRoundAction* pCombatAction, int& nActionId,
@@ -1394,7 +1394,7 @@ void CSWGuiMainInterface::GetActionIcon(
         break;
     }
 }
-// PC 0x006DE410
+// PC 0x006DE410 GOG 0x006DD4B0
 void CSWGuiMainInterface::ShowActionIcon(int& nIcon, const CResRef& cIcon,
                                          const CResRef& cDefaultIcon,
                                          int bEnabled, int bForce)
@@ -1425,7 +1425,7 @@ void CSWGuiMainInterface::ShowActionIcon(int& nIcon, const CResRef& cIcon,
         pIcon->m_bEnabled = 1;
     }
 }
-// PC 0x006DE4C0
+// PC 0x006DE4C0 GOG 0x006DF8F0
 void CSWGuiMainInterface::SetCombatMessage(unsigned long nMessage)
 {
     if (m_fCombatMessageTime != -1.0f)
@@ -1486,7 +1486,7 @@ void CSWGuiMainInterface::SetCombatMessage(unsigned long nMessage)
     m_lblCmbtmodemsg.m_cText.m_cParams.SetText(sMessage);
     m_lblCmbtmodemsg.m_cText.m_cParams.m_fAlpha = 1.0f;
 }
-// PC 0x006DE690
+// PC 0x006DE690 GOG 0x006E01D0
 void CSWGuiMainInterface::InitializeMap()
 {
     int bMapEnabled = 0;
@@ -1534,12 +1534,12 @@ void CSWGuiMainInterface::InitializeMap()
     }
 }
 #ifndef _XBOX
-int CSWGuiMainInterface::StartRotation()  // PC 0x006DE880
+int CSWGuiMainInterface::StartRotation()  // PC 0x006DE880 GOG 0x006E03C0
 {
     return (int)g_pAppManager->m_pClientExoApp->GetSWParty();
 }
 #endif
-void CSWGuiMainInterface::ShowFlashingStatus(unsigned char nEffect)  // PC 0x006DE890
+void CSWGuiMainInterface::ShowFlashingStatus(unsigned char nEffect)  // PC 0x006DE890 GOG 0x006E03D0
 {
     switch (nEffect)
     {
@@ -1562,7 +1562,7 @@ void CSWGuiMainInterface::ShowFlashingStatus(unsigned char nEffect)  // PC 0x006
 
     m_aEffects[nEffect].Show(1);
 }
-// PC 0x006DE910
+// PC 0x006DE910 GOG 0x006E04D0
 void CSWGuiMainInterface::OnCombatYButton()
 {
     CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
@@ -1580,7 +1580,7 @@ void CSWGuiMainInterface::OnCombatYButton()
 }
 
 #ifndef _XBOX
-void CSWGuiMainInterface::UpdateAndDrawFogOfWar(CSWGuiExtent const& cExtent)  // PC 0x006DE950
+void CSWGuiMainInterface::UpdateAndDrawFogOfWar(CSWGuiExtent const& cExtent)  // PC 0x006DE950 GOG 0x006E0510
 {
     CSWSAreaMap* pMap = g_pAppManager->GetServerExoApp()->GetModule()->GetAreaMap();
     if (pMap != NULL && pMap->m_nExploredSize > 0)
@@ -1647,7 +1647,7 @@ void CSWGuiMainInterface::UpdateAndDrawFogOfWar(CSWGuiExtent const& cExtent)  //
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::OnMenuButtonPressed(CSWGuiControl* pControl)  // PC 0x006DEC10
+void CSWGuiMainInterface::OnMenuButtonPressed(CSWGuiControl* pControl)  // PC 0x006DEC10 GOG 0x006E07D0
 {
     if (pControl->m_bSelected != 0)
     {
@@ -1702,7 +1702,7 @@ void CSWGuiMainInterface::OnMenuButtonPressed(CSWGuiControl* pControl)  // PC 0x
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::OnDefaultActionFocus(CSWGuiControl* pControl)  // PC 0x006DECE0
+void CSWGuiMainInterface::OnDefaultActionFocus(CSWGuiControl* pControl)  // PC 0x006DECE0 GOG 0x006DD560
 {
     if (pControl->m_bSelected != 0)
     {
@@ -1715,7 +1715,7 @@ void CSWGuiMainInterface::OnDefaultActionFocus(CSWGuiControl* pControl)  // PC 0
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::OnTargetActionFocus(CSWGuiControl* pControl)  // PC 0x006DED00
+void CSWGuiMainInterface::OnTargetActionFocus(CSWGuiControl* pControl)  // PC 0x006DED00 GOG 0x006E08A0
 {
     if (pControl->m_bSelected != 0)
     {
@@ -1725,7 +1725,7 @@ void CSWGuiMainInterface::OnTargetActionFocus(CSWGuiControl* pControl)  // PC 0x
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::OnPauseButtonPressed(CSWGuiControl* pControl)  // PC 0x006DED20
+void CSWGuiMainInterface::OnPauseButtonPressed(CSWGuiControl* pControl)  // PC 0x006DED20 GOG 0x006E09C0
 {
     if (pControl->m_bSelected != 0)
     {
@@ -1745,7 +1745,7 @@ void CSWGuiMainInterface::OnPauseButtonPressed(CSWGuiControl* pControl)  // PC 0
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::OnSoloButtonPressed(CSWGuiControl* pControl)  // PC 0x006DEDA0
+void CSWGuiMainInterface::OnSoloButtonPressed(CSWGuiControl* pControl)  // PC 0x006DEDA0 GOG 0x006E0A40
 {
     if (pControl->m_bSelected != 0)
     {
@@ -1755,7 +1755,7 @@ void CSWGuiMainInterface::OnSoloButtonPressed(CSWGuiControl* pControl)  // PC 0x
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::OnStealthButtonPressed(CSWGuiControl* pControl)  // PC 0x006DEDD0
+void CSWGuiMainInterface::OnStealthButtonPressed(CSWGuiControl* pControl)  // PC 0x006DEDD0 GOG 0x006E0A70
 {
     if (pControl->m_bSelected != 0)
     {
@@ -1772,7 +1772,7 @@ void CSWGuiMainInterface::OnStealthButtonPressed(CSWGuiControl* pControl)  // PC
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::ClearOneAction()  // PC 0x006DEE60
+void CSWGuiMainInterface::ClearOneAction()  // PC 0x006DEE60 GOG 0x006E0C80
 {
     if (m_btnClearone.m_bEnabled != 0)
     {
@@ -1785,7 +1785,7 @@ void CSWGuiMainInterface::ClearOneAction()  // PC 0x006DEE60
 }
 #endif
 #ifndef _XBOX
-void CSWGuiMainInterface::ClearAllActions()  // PC 0x006DEEA0
+void CSWGuiMainInterface::ClearAllActions()  // PC 0x006DEEA0 GOG 0x006E0CC0
 {
     CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
     CSWCCreature* pPlayer = pParty->GetPlayerCharacter();
@@ -1802,7 +1802,7 @@ void CSWGuiMainInterface::ClearAllActions()  // PC 0x006DEEA0
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::UpdateStickyTarget()  // PC 0x006DEEF0
+void CSWGuiMainInterface::UpdateStickyTarget()  // PC 0x006DEEF0 GOG 0x006E0EB0
 {
     int bRotate = g_bMouseCameraRotateToggle;
     CSWCObject* pObject = g_pAppManager->GetClientExoApp()->GetGameObject(m_oidStickyTarget);
@@ -1894,7 +1894,7 @@ void CSWGuiMainInterface::UpdateStickyTarget()  // PC 0x006DEEF0
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::DisplayToolTipMessage()  // PC 0x006DF2F0
+void CSWGuiMainInterface::DisplayToolTipMessage()  // PC 0x006DF2F0 GOG 0x006DD580
 {
     m_lblCmbtmodemsg.SetEnabledFlag(0);
     m_cToolTip.SetEnabledFlag(1);
@@ -1904,7 +1904,7 @@ void CSWGuiMainInterface::DisplayToolTipMessage()  // PC 0x006DF2F0
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::RemoveToolTipMessage()  // PC 0x006DF320
+void CSWGuiMainInterface::RemoveToolTipMessage()  // PC 0x006DF320 GOG 0x006DD5B0
 {
     m_cToolTip.SetEnabledFlag(0);
     if (m_cActionDescriptionState.m_bEnabled != 0)
@@ -1917,7 +1917,7 @@ void CSWGuiMainInterface::RemoveToolTipMessage()  // PC 0x006DF320
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::SetupPauseGuiExtent(CSWGuiExtent* pExtent)  // PC 0x006DF370
+void CSWGuiMainInterface::SetupPauseGuiExtent(CSWGuiExtent* pExtent)  // PC 0x006DF370 GOG 0x006E12B0
 {
     pExtent->m_nTop = 11;
     CClientOptions* pOptions =
@@ -1942,7 +1942,7 @@ void CSWGuiMainInterface::SetupPauseGuiExtent(CSWGuiExtent* pExtent)  // PC 0x00
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::ResetFont()  // PC 0x006DF3D0
+void CSWGuiMainInterface::ResetFont()  // PC 0x006DF3D0 GOG 0x006DD600
 {
     CSWGuiPanel::ResetFont();
 #ifndef _XBOX
@@ -1956,7 +1956,7 @@ void CSWGuiMainInterface::ResetFont()  // PC 0x006DF3D0
 #endif
 }
 #endif
-// PC 0x006DF410
+// PC 0x006DF410 GOG 0x006E1310
 void CSWGuiFloatyText::CreateEntry(unsigned long oidObject,
                                    const CExoString& sText,
                                    const Vector& vColor, float fDuration)
@@ -2014,7 +2014,7 @@ void CSWGuiFloatyText::CreateEntry(unsigned long oidObject,
         }
     }
 }
-// PC 0x006DF5F0
+// PC 0x006DF5F0 GOG 0x006E1700
 void CSWGuiMainInterface::OnSwapWeaponsPressed(CSWGuiControl* pControl)
 {
     CSWCCreature* pCreature = g_pAppManager->m_pClientExoApp->GetPlayerCreature();
@@ -2023,7 +2023,7 @@ void CSWGuiMainInterface::OnSwapWeaponsPressed(CSWGuiControl* pControl)
         pCreature->ActionMenuSwitchWeapons(0, NULL);
     }
 }
-// PC 0x006DF610
+// PC 0x006DF610 GOG 0x006DD640
 void CSWGuiMainInterface::ResetPartyMemberItemUse()
 {
     m_nUseItemTargetMember = -1;
@@ -2059,7 +2059,7 @@ void CSWGuiMainInterfaceAction::Show(int bActive, int bEmpty, int bArrow)
     }
 }
 #else
-void CSWGuiMainInterfaceAction::Show(int bEmpty, int bEnabled)  // PC 0x006DF6B0
+void CSWGuiMainInterfaceAction::Show(int bEmpty, int bEnabled)  // PC 0x006DF6B0 GOG 0x006E17D0
 {
     Swguimaininterfacepc2Trace1();
     float fBorderAlpha;
@@ -2097,7 +2097,7 @@ void CSWGuiMainInterfaceAction::Show(int bEmpty, int bEnabled)  // PC 0x006DF6B0
 #endif
 
 #ifndef _XBOX
-void CSWGuiTargetActionMenu::SetNameLabel(const CExoString& sName)  // PC 0x006DF840
+void CSWGuiTargetActionMenu::SetNameLabel(const CExoString& sName)  // PC 0x006DF840 GOG 0x006DD910
 {
     CExoString sText = sName;
     int nTokenStart = sText.Find('<', 0);
@@ -2143,7 +2143,7 @@ void CSWGuiTargetActionMenu::SetNameLabel(const CExoString& sName)  // PC 0x006D
 #endif
 
 #ifndef _XBOX
-void CSWGuiTargetActionMenu::UpdateNameLabel(CSWCObject* pTarget)  // PC 0x006DFAB0
+void CSWGuiTargetActionMenu::UpdateNameLabel(CSWCObject* pTarget)  // PC 0x006DFAB0 GOG 0x006DDB80
 {
     CExoString sName;
     if (pTarget != NULL)
@@ -2239,7 +2239,7 @@ void CSWGuiTargetActionMenu::UpdateNameLabel(CSWCObject* pTarget)  // PC 0x006DF
 #endif
 
 #ifndef _XBOX
-CSWGuiControl* CSWGuiTargetActionMenu::HitCheckMouse(int nX, int nY)  // PC 0x006DFF50
+CSWGuiControl* CSWGuiTargetActionMenu::HitCheckMouse(int nX, int nY)  // PC 0x006DFF50 GOG 0x006DE0E0
 {
     CSWGuiControl* pHit = NULL;
 
@@ -2285,7 +2285,7 @@ CSWGuiControl* CSWGuiTargetActionMenu::HitCheckMouse(int nX, int nY)  // PC 0x00
 #endif
 
 #ifndef _XBOX
-void CSWGuiTargetActionMenu::PositionMenu(CSWCCreature* pCreature,  // PC 0x006E0050
+void CSWGuiTargetActionMenu::PositionMenu(CSWCCreature* pCreature,  // PC 0x006E0050 GOG 0x006DE1E0
                                         CSWCObject* pTarget)
 {
     if (pTarget != NULL)
@@ -2409,7 +2409,7 @@ void CSWGuiTargetActionMenu::PositionMenu(CSWCCreature* pCreature,  // PC 0x006E
 }
 #endif
 #ifndef _XBOX
-void CSWGuiTargetActionMenu::SelectNextAction(int nMenu)  // PC 0x006E0570
+void CSWGuiTargetActionMenu::SelectNextAction(int nMenu)  // PC 0x006E0570 GOG 0x006DE700
 {
     if (nMenu >= 0 && nMenu < 3 && m_aActionLists[nMenu].num != 0)
     {
@@ -2454,7 +2454,7 @@ void CSWGuiTargetActionMenu::SelectNextAction(int nMenu)  // PC 0x006E0570
 #endif
 
 #ifndef _XBOX
-void CSWGuiTargetActionMenu::SelectPrevAction(int nMenu)  // PC 0x006E0640
+void CSWGuiTargetActionMenu::SelectPrevAction(int nMenu)  // PC 0x006E0640 GOG 0x006DE7D0
 {
     if (nMenu >= 0 && nMenu < 3 && m_aActionLists[nMenu].num != 0)
     {
@@ -2499,7 +2499,7 @@ void CSWGuiTargetActionMenu::SelectPrevAction(int nMenu)  // PC 0x006E0640
 #endif
 
 #ifndef _XBOX
-void CSWGuiTargetActionMenu::DoTargetAction(int nMenu, int bUnknown)  // PC 0x006E0710
+void CSWGuiTargetActionMenu::DoTargetAction(int nMenu, int bUnknown)  // PC 0x006E0710 GOG 0x006E1B60
 {
     if (m_pMainInterface != NULL)
     {
@@ -2608,7 +2608,7 @@ void CSWGuiTargetActionMenu::DoTargetAction(int nMenu, int bUnknown)  // PC 0x00
 #endif
 
 #ifndef _XBOX
-int CSWGuiCharButton::DisplayToolTip()  // PC 0x006E09C0
+int CSWGuiCharButton::DisplayToolTip()  // PC 0x006E09C0 GOG 0x006DE8A0
 {
     if (m_bEnabled == 0)
     {
@@ -2627,7 +2627,7 @@ int CSWGuiCharButton::DisplayToolTip()  // PC 0x006E09C0
 #endif
 
 #ifndef _XBOX
-void CSWGuiCharButton::Draw(float fElapsed)  // PC 0x006E0A00
+void CSWGuiCharButton::Draw(float fElapsed)  // PC 0x006E0A00 GOG 0x006DE8E0
 {
 #ifndef _XBOX
     if (m_bToolTipShown != 0 && m_pCharacter != NULL &&
@@ -2652,13 +2652,13 @@ void CSWGuiMainInterfaceChar::DrawEffects(float fElapsed, int bLarge)
             DrawStack(fElapsed, bLarge, 0);
     }
 }
-// PC 0x006E0AB0
+// PC 0x006E0AB0 GOG 0x006DEC20
 CSWGuiMainInterfaceStatus::CSWGuiMainInterfaceStatus()
 {
 }
 
 #ifndef _XBOX
-CSWGuiControl* CSWGuiMainInterface::HitCheckMouse(int nX, int nY)  // PC 0x006E0AC0
+CSWGuiControl* CSWGuiMainInterface::HitCheckMouse(int nX, int nY)  // PC 0x006E0AC0 GOG 0x006DEC30
 {
     CSWGuiControl* pControl = m_cTargetActionMenu.HitCheckMouse(nX, nY);
 
@@ -2669,7 +2669,7 @@ CSWGuiControl* CSWGuiMainInterface::HitCheckMouse(int nX, int nY)  // PC 0x006E0
     return pControl;
 }
 #endif
-// PC 0x006E0AF0
+// PC 0x006E0AF0 GOG 0x006DEC60
 void CSWGuiMainInterface::Update(float fElapsed)
 {
     for (int nText = m_lFloatyText.num - 1; nText >= 0; --nText)
@@ -2778,7 +2778,7 @@ void CSWGuiMainInterface::UpdateActionDescription(CSWGuiControl* pControl)
     m_cActionText.m_cText.m_cParams.m_fAlpha = fAlpha;
 }
 #else
-void CSWGuiMainInterface::UpdateActionDescription()  // PC 0x006E0D90
+void CSWGuiMainInterface::UpdateActionDescription()  // PC 0x006E0D90 GOG 0x006DEF00
 {
     CExoString sDescription;
     float fAlpha = 1.0f;
@@ -2836,7 +2836,7 @@ void CSWGuiMainInterface::UpdateActionDescription()  // PC 0x006E0D90
     m_cActionText.m_cText.m_cParams.m_fAlpha = fAlpha;
 }
 #endif
-// PC 0x006E0F20
+// PC 0x006E0F20 GOG 0x006E25E0
 void CSWGuiMainInterface::UpdateActionQueue()
 {
     CSWSCreature* pCreature = g_pAppManager->GetClientExoApp()->GetSWParty()->
@@ -2911,7 +2911,7 @@ void CSWGuiMainInterface::UpdateActionQueue()
     while (nIcon < ACTION_QUEUE_ICON_COUNT)
         m_aActionIcons[nIcon++].SetEnabledFlag(0);
 }
-// PC 0x006E1220
+// PC 0x006E1220 GOG 0x006DF6B0
 void CSWGuiMainInterface::ShowActionQueue(int bShow)
 {
     if (bShow == m_cActionDescriptionState.m_bEnabled)
@@ -2978,7 +2978,7 @@ void CSWGuiMainInterface::ShowActionQueue(int bShow)
         }
     }
 }
-// PC 0x006E1460
+// PC 0x006E1460 GOG 0x006DFA30
 void CSWGuiMainInterface::UpdatePortraits()
 {
 #ifdef _XBOX
@@ -3173,7 +3173,7 @@ void CSWGuiMainInterface::UpdatePortraits()
 }
 
 #ifndef _XBOX
-void CSWGuiMainInterface::UpdateIndicator(float fElapsed)  // PC 0x006E1B70
+void CSWGuiMainInterface::UpdateIndicator(float fElapsed)  // PC 0x006E1B70 GOG 0x006E28E0
 {
     CSWCObject* pObject = g_pAppManager->GetClientExoApp()->GetGameObject(m_nTargetId);
     int bTarget = 0;
@@ -3359,7 +3359,7 @@ void CSWGuiMainInterface::UpdateIndicator(float fElapsed)  // PC 0x006E1B70
     UpdateStickyTarget();
 }
 #endif
-// PC 0x006E2370
+// PC 0x006E2370 GOG 0x006E30E0
 void CSWGuiMainInterface::DrawMap(float fElapsed)
 {
     CClientOptions* pOptions = g_pAppManager->GetClientExoApp()->GetClientOptions();
@@ -3428,7 +3428,7 @@ void CSWGuiMainInterface::DrawMap(float fElapsed)
     m_btnMinimap.SetEnabledFlag(0);
 #endif
 }
-// PC 0x006E2610
+// PC 0x006E2610 GOG 0x006E0470
 void CSWGuiMainInterface::RemoveFloatyText(CSWGuiFloatyText* pFloatyText)
 {
     if (pFloatyText != NULL)
@@ -3444,7 +3444,7 @@ void CSWGuiMainInterface::RemoveFloatyText(CSWGuiFloatyText* pFloatyText)
 }
 
 #ifndef _XBOX
-void CSWGuiMainInterface::DoTargetAction(int nAction, int bUnknown)  // PC 0x006E2670
+void CSWGuiMainInterface::DoTargetAction(int nAction, int bUnknown)  // PC 0x006E2670 GOG 0x006E3370
 {
     if (nAction >= 0 && nAction < 3)
     {
@@ -3458,7 +3458,7 @@ void CSWGuiMainInterface::DoTargetAction(int nAction, int bUnknown)  // PC 0x006
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::DoPersonalAction(int nMenu, int bUnknown)  // PC 0x006E26B0
+void CSWGuiMainInterface::DoPersonalAction(int nMenu, int bUnknown)  // PC 0x006E26B0 GOG 0x006E33B0
 {
     if (nMenu >= 0 && nMenu < 7)
     {
@@ -3565,7 +3565,7 @@ void CSWGuiMainInterface::DoPersonalAction(int nMenu, int bUnknown)  // PC 0x006
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::OnTargetUpArrowPressed(CSWGuiControl* pControl)  // PC 0x006E28D0
+void CSWGuiMainInterface::OnTargetUpArrowPressed(CSWGuiControl* pControl)  // PC 0x006E28D0 GOG 0x006E08C0
 {
     if (pControl->m_bSelected != 0)
     {
@@ -3584,7 +3584,7 @@ void CSWGuiMainInterface::OnTargetUpArrowPressed(CSWGuiControl* pControl)  // PC
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::OnTargetDownArrowPressed(CSWGuiControl* pControl)  // PC 0x006E2950
+void CSWGuiMainInterface::OnTargetDownArrowPressed(CSWGuiControl* pControl)  // PC 0x006E2950 GOG 0x006E0940
 {
     if (pControl->m_bSelected != 0)
     {
@@ -3603,7 +3603,7 @@ void CSWGuiMainInterface::OnTargetDownArrowPressed(CSWGuiControl* pControl)  // 
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::OnCharacterClicked(CSWGuiControl* pControl)  // PC 0x006E29D0
+void CSWGuiMainInterface::OnCharacterClicked(CSWGuiControl* pControl)  // PC 0x006E29D0 GOG 0x006E0AC0
 {
     if (pControl->m_bSelected != 0)
     {
@@ -3674,7 +3674,7 @@ void CSWGuiMainInterface::OnCharacterClicked(CSWGuiControl* pControl)  // PC 0x0
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::OnClearOneButtonPressed(CSWGuiControl* pControl)  // PC 0x006E2B50
+void CSWGuiMainInterface::OnClearOneButtonPressed(CSWGuiControl* pControl)  // PC 0x006E2B50 GOG 0x006E3760
 {
     if (pControl->m_bSelected != 0)
     {
@@ -3684,14 +3684,14 @@ void CSWGuiMainInterface::OnClearOneButtonPressed(CSWGuiControl* pControl)  // P
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::OnClearAllButtonPressed(CSWGuiControl* pControl)  // PC 0x006E2BA0
+void CSWGuiMainInterface::OnClearAllButtonPressed(CSWGuiControl* pControl)  // PC 0x006E2BA0 GOG 0x006E37B0
 {
     if (pControl->m_bSelected != 0)
     {
         ClearAllActions();
     }
 }
-// PC 0x006DE600
+// PC 0x006DE600 GOG 0x006E0140
 void CSWGuiMainInterface::UpdateGameMenu()
 {
     if (g_pAppManager->GetServerExoApp()->GetPartyTable()->GetPartyItems()->m_nNewItems > 0)
@@ -3717,7 +3717,7 @@ void CSWGuiMainInterface::UpdateGameMenu()
         m_btnJou.m_cBorder.m_cParams.SetPulsingAlpha(0, 0, 0);
     }
 }
-// PC 0x006DEE20
+// PC 0x006DEE20 GOG 0x006E0C40
 void CSWGuiMainInterface::OnCharacterEntered(CSWGuiControl* pControl)
 {
     if (m_bSelectingUseItemTarget && pControl != NULL)
@@ -3725,7 +3725,7 @@ void CSWGuiMainInterface::OnCharacterEntered(CSWGuiControl* pControl)
         m_nUseItemTargetMember = pControl->m_nIndex - 1;
     }
 }
-// PC 0x006DEE40
+// PC 0x006DEE40 GOG 0x006E0C60
 void CSWGuiMainInterface::OnCharacterExited(CSWGuiControl* pControl)
 {
     if (m_bSelectingUseItemTarget)
@@ -3733,7 +3733,7 @@ void CSWGuiMainInterface::OnCharacterExited(CSWGuiControl* pControl)
         m_nUseItemTargetMember = -1;
     }
 }
-// PC 0x006E2F70
+// PC 0x006E2F70 GOG 0x006E1720
 void CSWGuiMainInterface::OnCancelPartyItemSelect(CSWGuiControl* pControl)
 {
     if (pControl != NULL && pControl->m_bSelected != 0)
@@ -3742,7 +3742,7 @@ void CSWGuiMainInterface::OnCancelPartyItemSelect(CSWGuiControl* pControl)
         m_bSelectingUseItemTarget = 0;
     }
 }
-// PC 0x006E39E0
+// PC 0x006E39E0 GOG 0x006E35D0
 void CSWGuiMainInterface::OnPersonalActionExit(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0 && m_bPersonalActionScrolled)
@@ -3768,7 +3768,7 @@ void CSWGuiMainInterface::OnPersonalActionExit(CSWGuiControl* pControl)
         m_bPersonalActionScrolled = 0;
     }
 }
-// PC 0x006E37E0
+// PC 0x006E37E0 GOG 0x006E2450
 void CSWGuiMainInterface::RevertActionBarStates()
 {
     int nImplantAction = -1;
@@ -3846,7 +3846,7 @@ void CSWGuiMainInterface::RevertActionBarStates()
 }
 #endif
 #ifndef _XBOX
-void CSWGuiMainInterface::SelectNextPersonalAction(int nMenu)  // PC 0x006E2BC0
+void CSWGuiMainInterface::SelectNextPersonalAction(int nMenu)  // PC 0x006E2BC0 GOG 0x006E0D10
 {
     if (nMenu >= 0 && nMenu < 6 &&
         m_aPersonalActionLists[nMenu].num != 0)
@@ -3936,7 +3936,7 @@ void CSWGuiMainInterface::SelectPrevPersonalAction(int nMenu)
     }
 }
 #endif
-// PC 0x006E2D60
+// PC 0x006E2D60 GOG 0x006E14F0
 void CSWGuiFloatyText::Update(float fDeltaTime)
 {
     m_fTimeLeft -= fDeltaTime;
@@ -3986,13 +3986,13 @@ void CSWGuiFloatyText::Update(float fDeltaTime)
 
     m_cText.m_cParams.m_fAlpha = m_fTimeLeft / m_fDuration;
 }
-// PC 0x00679DC0
+// PC 0x00679DC0 GOG 0x00679B90
 CSWGuiMainInterfaceChar::CSWGuiMainInterfaceChar()
 {
 }
 
 #ifndef _XBOX
-void CSWGuiTargetActionMenu::PopulateMenus(CSWCCreature* pCreature,  // PC 0x006E2FA0
+void CSWGuiTargetActionMenu::PopulateMenus(CSWCCreature* pCreature,  // PC 0x006E2FA0 GOG 0x006E1960
                                          int bDisabled, CSWCObject* pTarget)
 {
     m_nTargetType = pCreature->GetTargetInterfaceTargetType(pTarget);
@@ -4046,7 +4046,7 @@ void CSWGuiTargetActionMenu::PopulateMenus(CSWCCreature* pCreature,  // PC 0x006
     PositionMenu(pCreature, pTarget);
 }
 #endif
-// PC 0x006E31A0
+// PC 0x006E31A0 GOG 0x006E1E10
 void CSWGuiMainInterfaceChar::Initialize(CSWGuiMainInterface* pMainInterface,
                                         int nCharacter)
 {
@@ -4276,7 +4276,7 @@ void CSWGuiMainInterface::PopulateMenus(int bUnknown)
     }
 }
 #else
-void CSWGuiMainInterface::PopulateMenus(int bUnknown)  // PC 0x006E3530
+void CSWGuiMainInterface::PopulateMenus(int bUnknown)  // PC 0x006E3530 GOG 0x006E21A0
 {
     CSWCCreature* pCreature =
         g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
@@ -4360,7 +4360,7 @@ void CSWGuiMainInterface::PopulateMenus(int bUnknown)  // PC 0x006E3530
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::OnDefaultActionLeft(CSWGuiControl* pControl)  // PC 0x006E3980
+void CSWGuiMainInterface::OnDefaultActionLeft(CSWGuiControl* pControl)  // PC 0x006E3980 GOG 0x006E4670
 {
     Swguimaininterfacepc2Trace3();
     if (pControl->m_bSelected != 0)
@@ -4378,7 +4378,7 @@ void CSWGuiMainInterface::OnDefaultActionLeft(CSWGuiControl* pControl)  // PC 0x
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::OnActionUpArrowPressed(CSWGuiControl* pControl)  // PC 0x006E3A70
+void CSWGuiMainInterface::OnActionUpArrowPressed(CSWGuiControl* pControl)  // PC 0x006E3A70 GOG 0x006E3660
 {
     if (pControl->m_bSelected != 0)
     {
@@ -4398,7 +4398,7 @@ void CSWGuiMainInterface::OnActionUpArrowPressed(CSWGuiControl* pControl)  // PC
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainInterface::OnActionDownArrowPressed(CSWGuiControl* pControl)  // PC 0x006E3AF0
+void CSWGuiMainInterface::OnActionDownArrowPressed(CSWGuiControl* pControl)  // PC 0x006E3AF0 GOG 0x006E36E0
 {
     if (pControl->m_bSelected != 0)
     {
@@ -4446,7 +4446,7 @@ void CSWGuiMainInterfaceAction::Initialize(CSWGuiMainInterface* pMainInterface,
         (PFNGUIEVENT)&CSWGuiMainInterface::UpdateActionDescription);
 }
 #else
-void CSWGuiMainInterfaceAction::Initialize(CSWGuiMainInterface* pMainInterface,  // PC 0x006E3B70
+void CSWGuiMainInterfaceAction::Initialize(CSWGuiMainInterface* pMainInterface,  // PC 0x006E3B70 GOG 0x006E46D0
                                           int nAction, int bTarget)
 {
 
@@ -4572,12 +4572,12 @@ void CSWGuiMainInterfaceAction::Initialize(CSWGuiMainInterface* pMainInterface, 
 #endif
 
 #ifndef _XBOX
-CSWGuiTargetActionMenu::~CSWGuiTargetActionMenu()  // PC 0x006E41C0
+CSWGuiTargetActionMenu::~CSWGuiTargetActionMenu()  // PC 0x006E41C0 GOG 0x006E37D0
 {
 }
 #endif
 #ifndef _XBOX
-CSWGuiMainInterface::~CSWGuiMainInterface()  // PC 0x006E4270
+CSWGuiMainInterface::~CSWGuiMainInterface()  // PC 0x006E4270 GOG 0x006E3880
 {
 #ifndef _XBOX
     if (m_pBlackDot != NULL)
@@ -4588,7 +4588,7 @@ CSWGuiMainInterface::~CSWGuiMainInterface()  // PC 0x006E4270
 }
 #endif
 CSWGuiMainInterface* CSWGuiFloatyText::m_pMainInterface;
-// PC 0x006E45C0
+// PC 0x006E45C0 GOG 0x006E3BD0
 void CSWGuiMainInterface::Draw(float fElapsed)
 {
     if (!m_bNeedsDraw)
@@ -4762,7 +4762,7 @@ void CSWGuiMainInterface::Draw(float fElapsed)
 }
 
 #ifndef _XBOX
-void CSWGuiTargetActionMenu::Initialize(CSWGuiMainInterface* pMainInterface)  // PC 0x006E4010
+void CSWGuiTargetActionMenu::Initialize(CSWGuiMainInterface* pMainInterface)  // PC 0x006E4010 GOG 0x006E4C80
 {
     m_pMainInterface = pMainInterface;
 
@@ -4786,7 +4786,7 @@ void CSWGuiTargetActionMenu::Initialize(CSWGuiMainInterface* pMainInterface)  //
     SetNameLabel("");
 }
 #endif
-// PC 0x006E4EB0
+// PC 0x006E4EB0 GOG 0x006E44C0
 void CSWGuiMainInterface::AddFloatyText(unsigned long oidObject,
                                         const CExoString& sText,
                                         const Vector& vColor, float fDuration)
@@ -4817,7 +4817,7 @@ void CSWGuiMainInterface::AddFloatyText(unsigned long oidObject,
 }
 
 #ifndef _XBOX
-CSWGuiTargetActionMenu::CSWGuiTargetActionMenu()  // PC 0x006E5060
+CSWGuiTargetActionMenu::CSWGuiTargetActionMenu()  // PC 0x006E5060 GOG 0x006E4B70
 {
     for (int nTargetType = 0; nTargetType < 4; nTargetType++)
     {

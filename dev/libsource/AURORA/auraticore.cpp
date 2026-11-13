@@ -1072,17 +1072,17 @@ void GLRender::InitializeATIFragmentShaders()
     glEndFragmentShaderATI();
     glDisable(GL_FRAGMENT_SHADER_ATI);
 }
-// PC 0x0049B3A0
+// PC 0x0049B3A0 GOG 0x0049B460
 void GLRender::SetFragmentShaderConstant0(Vector& vColor, float fAlpha)
 {
     glSetFragmentShaderConstantATI(GL_CON_0_ATI, Homogenize(vColor, fAlpha));
 }
-// PC 0x0049B3C0
+// PC 0x0049B3C0 GOG 0x0049B480
 void GLRender::SetFragmentShaderConstant1(Vector& vColor, float fAlpha)
 {
     glSetFragmentShaderConstantATI(GL_CON_1_ATI, Homogenize(vColor, fAlpha));
 }
-// PC 0x0049B3E0
+// PC 0x0049B3E0 GOG 0x0049B4A0
 void AurGetVertexProgramARBError(char* sError)
 {
     GLint anParameters[10];

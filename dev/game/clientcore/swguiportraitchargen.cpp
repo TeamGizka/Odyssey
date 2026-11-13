@@ -13,17 +13,17 @@
 #include "nwscript.h"
 
 #ifndef _XBOX
-void CSWGuiPortraitCharGen::OnLeftArrowPressed(CSWGuiControl* pControl)  // PC 0x006D2FC0
+void CSWGuiPortraitCharGen::OnLeftArrowPressed(CSWGuiControl* pControl)  // PC 0x006D2FC0 GOG 0x006D2D50
 {
     HandleInputEvent(GUIEVENT_LEFT, 1);
 }
-// PC 0x006D2FD0
+// PC 0x006D2FD0 GOG 0x006D2D60
 void CSWGuiPortraitCharGen::OnRightArrowPressed(CSWGuiControl* pControl)
 {
     HandleInputEvent(GUIEVENT_RIGHT, 1);
 }
 #endif
-// PC 0x0076AAC0
+// PC 0x0076AAC0 GOG 0x0076A8E0
 void CSWGuiPortraitCharGen::OnPanelAdded()
 {
     int nRandom = rand();
@@ -32,14 +32,14 @@ void CSWGuiPortraitCharGen::OnPanelAdded()
     UpdatePortraitButton();
 #endif
 }
-// PC 0x0076AAF0
+// PC 0x0076AAF0 GOG 0x0076A910
 void CSWGuiPortraitCharGen::SetParentPanel(CSWGuiPanel* pParent,
                                            int nParentType)
 {
     m_pParent = pParent;
     m_nParentType = nParentType;
 }
-// PC 0x0076AB10
+// PC 0x0076AB10 GOG 0x0076A930
 void CSWGuiPortraitCharGen::OnSelectDisplayButton()
 {
 #ifdef _XBOX
@@ -64,7 +64,7 @@ void CSWGuiPortraitCharGen::OnSelectDisplayButton()
         ((CSWGuiCustomPanel*)m_pParent)->PortraitCreationCompleted();
     }
 }
-// PC 0x0076ABC0
+// PC 0x0076ABC0 GOG 0x0076A9E0
 void CSWGuiPortraitCharGen::UpdatePortraitButton()
 {
     int* pnPortrait = &m_lstPortraits[m_nPortraitIndex];
@@ -105,7 +105,7 @@ void CSWGuiPortraitCharGen::UpdatePortraitButton()
         }
     }
 }
-// PC 0x0076AD50
+// PC 0x0076AD50 GOG 0x0076AB70
 void CSWGuiPortraitCharGen::Draw(float fTimeStep)
 {
     int nCount = m_lstTimedControls.num;
@@ -170,7 +170,7 @@ void CSWGuiPortraitCharGen::Draw(float fTimeStep)
     }
     return CSWGuiPanel::Draw(fTimeStep);
 }
-// PC 0x0076B030
+// PC 0x0076B030 GOG 0x0076AE50
 void CSWGuiPortraitCharGen::HandleCancelButton()
 {
     if (m_pParent != 0)
@@ -204,7 +204,7 @@ void CSWGuiPortraitCharGen::HandleLeftButton()
     ShowTimedControl(&m_lblhArrL);
 #endif
 }
-// PC 0x0076B0B0
+// PC 0x0076B0B0 GOG 0x0076AED0
 void CSWGuiPortraitCharGen::HandleRightButton()
 {
     int nCount = m_lstPortraits.num;
@@ -219,7 +219,7 @@ void CSWGuiPortraitCharGen::HandleRightButton()
     ShowTimedControl(&m_lblhArrR);
 #endif
 }
-// PC 0x0076B0E0
+// PC 0x0076B0E0 GOG 0x0076AF00
 void CSWGuiPortraitCharGen::HandleInputEvent(int nEvent, int bPressed)
 {
     if (bPressed != 0)
@@ -252,7 +252,7 @@ void CSWGuiPortraitCharGen::HandleInputEvent(int nEvent, int bPressed)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, bPressed);
 }
-// PC 0x0076B1E0
+// PC 0x0076B1E0 GOG 0x0076B000
 void CSWGuiPortraitCharGen::GetPortraitsList(int nGender)
 {
     C2DA* p2DA = new C2DA("PORTRAITS", 0);
@@ -309,7 +309,7 @@ void CSWGuiPortraitCharGen::GetPortraitsList(int nGender)
     }
     delete p2DA;
 }
-// PC 0x0076B520
+// PC 0x0076B520 GOG 0x0076B340
 CSWGuiPortraitCharGen::CSWGuiPortraitCharGen(CSWGuiManager* pManager,
                                              CSWCCreature* pCreature)
     : CSWGuiPanel(pManager)

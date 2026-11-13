@@ -13,7 +13,7 @@ static inline void SetPortraitImage(CSWGuiLabel* pLabel,
     pLabel->m_cBorder.m_cParams.SetFillImage(cPortrait, 0);
 }
 #endif
-// PC 0x00768ED0
+// PC 0x00768ED0 GOG 0x00768D10
 CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
                                                CSWCCreature* pCreature,
                                                int bLevelUp)
@@ -314,7 +314,7 @@ CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
     SetPortraitImage(&m_lblPortrait, m_pCreature->GetPortrait(0));
 #endif
 }
-// PC 0x00768320
+// PC 0x00768320 GOG 0x007683A0
 void CSWGuiAbilitiesCharGen::OnPanelAdded()
 {
 #ifndef _XBOX
@@ -323,7 +323,7 @@ void CSWGuiAbilitiesCharGen::OnPanelAdded()
     g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0x10, OBJECT_INVALID,
                                                        OBJECT_INVALID, 0);
 }
-// PC 0x00768350
+// PC 0x00768350 GOG 0x007683D0
 void CSWGuiAbilitiesCharGen::HandleCancelButton()
 {
     if (m_pParentPanel != NULL)
@@ -344,7 +344,7 @@ void CSWGuiAbilitiesCharGen::HandleCancelButton()
         }
     }
 }
-// PC 0x007683B0
+// PC 0x007683B0 GOG 0x00768430
 void CSWGuiAbilitiesCharGen::OnExitPointsButton(CSWGuiControl* pControl)
 {
     CSWGuiTextParams* pLabelParams;
@@ -355,7 +355,7 @@ void CSWGuiAbilitiesCharGen::OnExitPointsButton(CSWGuiControl* pControl)
     pButtonParams = &m_btnPoints[pControl->m_nIndex].m_cText.m_cParams;
     pButtonParams->m_bHilightText = 0;
 }
-// PC 0x007683E0
+// PC 0x007683E0 GOG 0x00768140
 int CSWGuiAbilitiesCharGen::DetermineCostToDecreaseScore(int nScore)
 {
     if (m_bLevelUp != 0)
@@ -376,7 +376,7 @@ int CSWGuiAbilitiesCharGen::DetermineCostToDecreaseScore(int nScore)
     }
     return -3;
 }
-// PC 0x00768430
+// PC 0x00768430 GOG 0x00768190
 int CSWGuiAbilitiesCharGen::DetermineCostToIncreaseScore(int nScore)
 {
     if (m_bLevelUp != 0)
@@ -389,7 +389,7 @@ int CSWGuiAbilitiesCharGen::DetermineCostToIncreaseScore(int nScore)
     }
     return (nScore > 13) + 1;
 }
-// PC 0x0076A350
+// PC 0x0076A350 GOG 0x0076A170
 void CSWGuiAbilitiesCharGen::OnMinusButton()
 {
     int nScore = m_aScore[m_nSelected];
@@ -454,7 +454,7 @@ void CSWGuiAbilitiesCharGen::OnMinusButton()
     m_btnPlus[m_nSelected].SetEnabledFlag(1);
 #endif
 }
-// PC 0x0076A650
+// PC 0x0076A650 GOG 0x0076A470
 void CSWGuiAbilitiesCharGen::OnPlusButton()
 {
     int nRemaining = m_nPointsRemaining;
@@ -527,7 +527,7 @@ void CSWGuiAbilitiesCharGen::OnPlusButton()
         }
     }
 }
-// PC 0x0076A960
+// PC 0x0076A960 GOG 0x0076A780
 void CSWGuiAbilitiesCharGen::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -575,7 +575,7 @@ void CSWGuiAbilitiesCharGen::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x007688A0
+// PC 0x007688A0 GOG 0x007686E0
 void CSWGuiAbilitiesCharGen::OnEnterPointsButton(CSWGuiControl* pControl)
 {
     int i;
@@ -634,7 +634,7 @@ void CSWGuiAbilitiesCharGen::OnEnterPointsButton(CSWGuiControl* pControl)
         &m_btnPoints[m_nSelected].m_cText.m_cParams;
     pButtonParams->m_bHilightText = 1;
 }
-// PC 0x00768AE0
+// PC 0x00768AE0 GOG 0x00768920
 void CSWGuiAbilitiesCharGen::OnAcceptButton()
 {
     if (m_nPointsRemaining > 0)
@@ -655,7 +655,7 @@ void CSWGuiAbilitiesCharGen::OnAcceptButton()
         CompletePanel();
     }
 }
-// PC 0x00768470
+// PC 0x00768470 GOG 0x00768460
 void CSWGuiAbilitiesCharGen::CompletePanel()
 {
     if (m_bLevelUp != 0)
@@ -691,7 +691,7 @@ void CSWGuiAbilitiesCharGen::CompletePanel()
     }
 }
 
-// PC 0x007685A0
+// PC 0x007685A0 GOG 0x00768590
 void CSWGuiAbilitiesCharGen::SetDescription(unsigned long nStrRef)
 {
     STR_RES strRes;
@@ -716,12 +716,12 @@ void CSWGuiAbilitiesCharGen::SetDescription(unsigned long nStrRef)
     m_lblRanalog.SetEnabledFlag(m_lbDescription.IsOversized());
 #endif
 }
-// PC 0x007686D0
+// PC 0x007686D0 GOG 0x007681D0
 CSWGuiAbilitiesCharGen::~CSWGuiAbilitiesCharGen()
 {
     m_lbDescription.ClearItems();
 }
-// PC 0x00768B40
+// PC 0x00768B40 GOG 0x00768980
 void CSWGuiAbilitiesCharGen::OnRecommendButton()
 {
     CSWClass* pClass;

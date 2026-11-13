@@ -2,7 +2,7 @@
 #ifndef _XBOX
 #include "mss.h"
 #endif
-// PC 0x0062B4B0
+// PC 0x0062B4B0 GOG 0x0062B380
 CResWave::CResWave()
 {
     m_bServiced = 0;
@@ -13,7 +13,7 @@ CResWave::CResWave()
     m_nUnknown38 = 0;
 #endif
 }
-// PC 0x0062B4E0
+// PC 0x0062B4E0 GOG 0x0062B3B0
 CResWave::~CResWave()
 {
 }
@@ -40,7 +40,7 @@ void* CResWave::GetData()
     return m_pResource;
 }
 #else
-int CResWave::OnResourceFreed()  // PC 0x0062B4F0
+int CResWave::OnResourceFreed()  // PC 0x0062B4F0 GOG 0x0062B3C0
 {
     if (m_bDataOwned != 0)
     {
@@ -55,7 +55,7 @@ int CResWave::OnResourceFreed()  // PC 0x0062B4F0
     m_nUnknown38 = 0;
     return 1;
 }
-// PC 0x0062B530
+// PC 0x0062B530 GOG 0x0062B400
 int CResWave::OnResourceServiced()
 {
     AILSOUNDINFO SoundInfo;
@@ -174,7 +174,7 @@ int CResWave::OnResourceServiced()
     m_bServiced = 1;
     return 1;
 }
-// PC 0x0062B660
+// PC 0x0062B660 GOG 0x0062B530
 void* CResWave::GetData()
 {
     if (m_bDataOwned == 0 && m_bLegacyHeader == 1)

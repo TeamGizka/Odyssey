@@ -66,7 +66,7 @@ short CAurGUIDraw::cm_nCurrentViewport;
 short CAurGUIDraw::cm_nViewportStack[10][5];
 
 float CAurGUIImage::cm_fGUIBuffer[2048];
-// PC 0x0046F4A0
+// PC 0x0046F4A0 GOG 0x0046F5E0
 void CAurGUIStringInternal::WrapStrings(int nWidth)
 {
     if (m_nPositionX != 0 || m_nWidth != 0)
@@ -215,7 +215,7 @@ void AurGUIDumpWrappedLines(CAurGUIStringInternal* pString)
 float GetViewportAlpha();
 
 void AurGUIColor(unsigned int nColor);
-// PC 0x0046FA60
+// PC 0x0046FA60 GOG 0x0046FBA0
 void CAurGUIStringInternal::Draw(float fAlpha)
 {
     int nStringLength = strlen(m_sString);
@@ -434,7 +434,7 @@ void CAurGUIStringInternal::Draw(float fAlpha)
 }
 float GetViewportAlpha();
 void AurGUIColor(unsigned int nColor);
-// PC 0x004709B0
+// PC 0x004709B0 GOG 0x00470AF0
 int CAurGUIStringInternal::GetIdealPixelHeight(int nWidth)
 {
     int nHeight;
@@ -482,7 +482,7 @@ int CAurGUIStringInternal::GetIdealPixelHeight(int nWidth)
 
     return nHeight;
 }
-// PC 0x0046F320
+// PC 0x0046F320 GOG 0x0046F460
 void CAurGUIImage::FlushBuffer(float fAlpha)
 {
     if (cm_nGUIBufferSizeUsed > 0)
@@ -515,7 +515,7 @@ void CAurGUIImage::FlushBuffer(float fAlpha)
     }
     cm_nGUIBufferSizeUsed = 0;
 }
-// PC 0x0046F410
+// PC 0x0046F410 GOG 0x0046F550
 CAurGUIImageInternal* NewCAurGUIImage(char* sTexture)
 {
     if (sTexture == 0)
@@ -527,7 +527,7 @@ CAurGUIImageInternal* NewCAurGUIImage(char* sTexture)
         return new CAurGUIImageInternal(sTexture);
     }
 }
-// PC 0x0046E0A0
+// PC 0x0046E0A0 GOG 0x0046E200
 float GetViewportAlpha()
 {
     float fAlpha = 1.0f;
@@ -535,7 +535,7 @@ float GetViewportAlpha()
         fAlpha *= CAurGUIDraw::cm_fViewportAlpha[i];
     return fAlpha;
 }
-// PC 0x0046E0C0
+// PC 0x0046E0C0 GOG 0x0046E220
 void CAurGUIStringInternal::SetStringSize(short nSize)
 {
     if (nSize > (short)strlen(m_sString))
@@ -550,7 +550,7 @@ void CAurGUIStringInternal::SetStringSize(short nSize)
         m_sString[nSize] = 0;
     }
 }
-// PC 0x0046E120
+// PC 0x0046E120 GOG 0x0046E280
 void CAurGUIStringInternal::SetString(char* sString)
 {
     int nLength = strlen(sString);
@@ -563,7 +563,7 @@ void CAurGUIStringInternal::SetString(char* sString)
 
     strcpy(m_sString, sString);
 }
-// PC 0x0046E190
+// PC 0x0046E190 GOG 0x0046E2F0
 void CAurGUIStringInternal::GetPositionBoundingRect(float& fX, float& fY)
 {
     fX = (float)m_nPositionX /
@@ -573,7 +573,7 @@ void CAurGUIStringInternal::GetPositionBoundingRect(float& fX, float& fY)
          CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport]
                                        [VIEWPORT_HEIGHT];
 }
-// PC 0x0046E1E0
+// PC 0x0046E1E0 GOG 0x0046E340
 void CAurGUIStringInternal::SetPositionBoundingRect(float fX, float fY)
 {
     m_nPositionX =
@@ -585,7 +585,7 @@ void CAurGUIStringInternal::SetPositionBoundingRect(float fX, float fY)
                                             [VIEWPORT_HEIGHT] *
               fY);
 }
-// PC 0x0046E240
+// PC 0x0046E240 GOG 0x0046E3A0
 void CAurGUIStringInternal::GetSizeBoundingRect(float& fWidth, float& fHeight)
 {
     fWidth = (float)m_nWidth /
@@ -595,7 +595,7 @@ void CAurGUIStringInternal::GetSizeBoundingRect(float& fWidth, float& fHeight)
               CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport]
                                             [VIEWPORT_HEIGHT];
 }
-// PC 0x0046E290
+// PC 0x0046E290 GOG 0x0046E3F0
 void CAurGUIStringInternal::SetSizeBoundingRect(float fWidth, float fHeight)
 {
     m_nWidth =
@@ -621,10 +621,10 @@ inline CAurGUIString::~CAurGUIString()
 {
 }
 #else
-inline CAurGUIImage::~CAurGUIImage()  // PC 0x0046E2F0
+inline CAurGUIImage::~CAurGUIImage()  // PC 0x0046E2F0 GOG 0x0046E450
 {
 }
-// PC 0x0046E2F0
+// PC 0x0046E2F0 GOG 0x0046E450
 inline CAurGUIString::~CAurGUIString()
 {
 }
@@ -646,23 +646,23 @@ void AurGUIViewport(int nX, int nY, int nWidth, int nHeight)
     GLRender::LoadMatrixIdentity();
 }
 #else
-inline void GLRender::Scale(float fX, float fY, float fZ)  // PC 0x0046E300
+inline void GLRender::Scale(float fX, float fY, float fZ)  // PC 0x0046E300 GOG 0x0046E460
 {
     glScalef(fX, fY, fZ);
 }
-// PC 0x0046E320
+// PC 0x0046E320 GOG 0x004716A0
 void AurGUIViewport(int nX, int nY, int nWidth, int nHeight)
 {
     glViewport(nX, nY, nWidth, nHeight);
 }
-// PC 0x0046E340
+// PC 0x0046E340 GOG 0x0046E480
 void AurGUIColor(unsigned int nColor)
 {
     unsigned int nGUIColor = nColor;
     glColor4ubv((GLubyte*)&nGUIColor);
 }
 #endif
-// PC 0x0046E360
+// PC 0x0046E360 GOG 0x0046E4A0
 void AurGUIStartLayer()
 {
     GLint aViewport[4];
@@ -686,7 +686,7 @@ void AurGUIStartLayer()
     GLRender_Enable(ENABLE_BLEND);
     GLRender_SetBlendFunc(Aurora::BLEND_SRC_ALPHA, Aurora::BLEND_ONE_MINUS_SRC_ALPHA);
 }
-// PC 0x0046E460
+// PC 0x0046E460 GOG 0x0046E5A0
 void AurGUIStopLayer()
 {
     CAurGUIDraw::cm_nCurrentViewport = -1;
@@ -696,7 +696,7 @@ void AurGUIStopLayer()
     GLRender_Enable(ENABLE_LIGHTING);
     GLRender_Enable(ENABLE_DEPTH_TEST);
 }
-// PC 0x0046E4A0
+// PC 0x0046E4A0 GOG 0x0046E5E0
 int AurGUISetupViewport(int nX, int nY, int nWidth, int nHeight,
                         const Vector& vColor, bool bScissor, float fAlpha)
 {
@@ -785,7 +785,7 @@ int AurGUISetupViewport(int nX, int nY, int nWidth, int nHeight,
 
     return 1;
 }
-// PC 0x0046E730
+// PC 0x0046E730 GOG 0x0046E870
 void AurGUICloseViewport()
 {
     if (noguirender == 0)
@@ -823,12 +823,12 @@ void AurGUICloseViewport()
         }
     }
 }
-// PC 0x0046E7C0
+// PC 0x0046E7C0 GOG 0x0046E900
 int CAurGUIStringInternal::GetFontPixelHeight()
 {
     return (int)(AsTexture(m_pFont)->GetFontInfo()->m_fHeight * 100.0f + 0.5f);
 }
-// PC 0x0046E7E0
+// PC 0x0046E7E0 GOG 0x0046E920
 void CAurGUIStringInternal::DrawBoundingRect(Vector vColor, float fAlpha)
 {
     if (noguirender == 0)
@@ -882,12 +882,12 @@ void CAurGUIStringInternal::DrawBoundingRect(Vector vColor, float fAlpha)
         GLRender_Enable(ENABLE_TEXTURE_2D);
     }
 }
-// PC 0x0046E940
+// PC 0x0046E940 GOG 0x0046EA80
 CAurGUIImageInternal::CAurGUIImageInternal()
 {
     m_pMaterial = new Material;
 }
-// PC 0x00470410
+// PC 0x00470410 GOG 0x00470550
 CAurGUIImageInternal::~CAurGUIImageInternal()
 {
     AurguiTrace2();
@@ -900,7 +900,7 @@ CAurGUIImageInternal::~CAurGUIImageInternal()
 
     delete m_pMaterial;
 }
-// PC 0x004704A0
+// PC 0x004704A0 GOG 0x004705E0
 void CAurGUIImageInternal::DrawBuffered(float fX, float fY, float fWidth,
                                         float fHeight, unsigned char nFlags,
                                         float fRotation, const Vector& vColor,
@@ -1130,7 +1130,7 @@ void CAurGUIImageInternal::DrawBuffered(float fX, float fY, float fWidth,
         cm_nGUIBufferSizeUsed = cm_nGUIBufferSizeUsed + 24;
     }
 }
-// PC 0x0046E9B0
+// PC 0x0046E9B0 GOG 0x0046EAF0
 void CAurGUIImageInternal::DrawBuffered(int nX, int nY, int nWidth, int nHeight,
                                         unsigned char nFlags, float fRotation,
                                         const Vector& vColor, float fAlpha)
@@ -1153,42 +1153,42 @@ void CAurGUIImageInternal::DrawBuffered(int nX, int nY, int nWidth, int nHeight,
             nFlags, fRotation, vColor, fAlpha);
     }
 }
-// PC 0x0046EA30
+// PC 0x0046EA30 GOG 0x0046EB70
 inline void CAurGUIImageInternal::SetTexture(char* sTexture)
 {
     m_pMaterial->InitializeTextures(sTexture, 0, 0, 0);
 }
-// PC 0x0046EA50
+// PC 0x0046EA50 GOG 0x0046EB90
 int CAurGUIImageInternal::GetImageHeight()
 {
     return AsTexture(m_pMaterial->m_pTexture0)->GetHeight();
 }
-// PC 0x0046EA60
+// PC 0x0046EA60 GOG 0x0046EBA0
 int CAurGUIImageInternal::GetImageWidth()
 {
     return AsTexture(m_pMaterial->m_pTexture0)->GetWidth();
 }
-// PC 0x0046EA70
+// PC 0x0046EA70 GOG 0x0046EBB0
 void CAurGUIImageInternal::Draw()
 {
     Draw(0, 0, AsTexture(m_pMaterial->m_pTexture0)->GetWidth(),
          AsTexture(m_pMaterial->m_pTexture0)->GetHeight(), 0, 0.0f,
          Vector(-1.0f, -1.0f, -1.0f), 1.0f);
 }
-// PC 0x0046EAD0
+// PC 0x0046EAD0 GOG 0x0046EC10
 void CAurGUIImageInternal::Draw(float fAlpha)
 {
     Draw(0, 0, AsTexture(m_pMaterial->m_pTexture0)->GetWidth(),
          AsTexture(m_pMaterial->m_pTexture0)->GetHeight(), 0, 0.0f,
          Vector(-1.0f, -1.0f, -1.0f), fAlpha);
 }
-// PC 0x0046EB30
+// PC 0x0046EB30 GOG 0x0046EC70
 CAurGUIImageInternal::CAurGUIImageInternal(char* sTexture)
 {
     m_pMaterial = new Material;
     SetTexture(sTexture);
 }
-// PC 0x0046EBB0
+// PC 0x0046EBB0 GOG 0x0046ECF0
 void CAurGUIImageInternal::Draw(int nX, int nY, int nWidth, int nHeight,
                                 unsigned char nFlags, float fRotation,
                                 const Vector& vColor, float fAlpha)
@@ -1242,7 +1242,7 @@ static inline int TextureCellHeight(CAurTexture* pTexture)
     return nHeight / pTexture->GetNumY();
 }
 #endif
-// PC 0x0046EC40
+// PC 0x0046EC40 GOG 0x0046ED80
 void CAurGUIImageInternal::Draw(float fX, float fY, float fWidth,
                                 float fHeight, unsigned char nFlags,
                                 float fRotation, const Vector& vColor,
@@ -1491,7 +1491,7 @@ void CAurGUIImageInternal::Draw(float fX, float fY, float fWidth,
     GLRender_PopCurrentMatrix();
     GLRender_Enable(ENABLE_LIGHTING);
 }
-// PC 0x00470BA0
+// PC 0x00470BA0 GOG 0x00470CE0
 #ifdef _XBOX
 CAurGUIStringInternal::CAurGUIStringInternal(char* sString, char* sFont,
                                              Vector vColor)
@@ -1523,31 +1523,31 @@ CAurGUIStringInternal::CAurGUIStringInternal(char* sString, char* sFont,
     m_fScale = fScale;
 #endif
 }
-// PC 0x00470E10
+// PC 0x00470E10 GOG 0x00470F50
 inline void CAurGUIStringInternal::GetPositionBoundingRect(int& nX, int& nY)
 {
     nX = m_nPositionX;
     nY = m_nPositionY;
 }
-// PC 0x00470E30
+// PC 0x00470E30 GOG 0x00470F70
 inline void CAurGUIStringInternal::SetPositionBoundingRect(int nX, int nY)
 {
     m_nPositionX = nX;
     m_nPositionY = nY;
 }
-// PC 0x00470E50
+// PC 0x00470E50 GOG 0x00470F90
 inline void CAurGUIStringInternal::GetSizeBoundingRect(int& nWidth, int& nHeight)
 {
     nWidth = m_nWidth;
     nHeight = m_nHeight;
 }
-// PC 0x00470E70
+// PC 0x00470E70 GOG 0x00470FB0
 inline void CAurGUIStringInternal::SetSizeBoundingRect(int nWidth, int nHeight)
 {
     m_nWidth = nWidth;
     m_nHeight = nHeight;
 }
-// PC 0x00470DF0
+// PC 0x00470DF0 GOG 0x00470F30
 inline char* CAurGUIStringInternal::GetFontTexture()
 {
     CAurTexture* pFont = AsTexture(m_pFont);
@@ -1561,7 +1561,7 @@ inline char* CAurGUIStringInternal::GetFontTexture()
         return 0;
     }
 }
-// PC 0x00470E90
+// PC 0x00470E90 GOG 0x00470FD0
 CAurGUIStringInternal::~CAurGUIStringInternal()
 {
     CAurTexture* pFont = AsTexture(m_pFont);
@@ -1598,7 +1598,7 @@ CAurGUIStringInternal::~CAurGUIStringInternal()
     m_nWidth = 0;
     m_nHeight = 0;
 }
-// PC 0x00470F90
+// PC 0x00470F90 GOG 0x004710D0
 void CAurGUIStringInternal::SetFontTexture(char* sFont)
 {
     CAurTexture* pOld = AsTexture(m_pFont);
@@ -1628,7 +1628,7 @@ CAurGUIStringInternal* NewCAurGUIString(char* sString, char* sFont,
     return new CAurGUIStringInternal(sString, sFont, vColor);
 }
 #else
-CAurGUIStringInternal* NewCAurGUIString(char* sString, char* sFont,  // PC 0x00471010
+CAurGUIStringInternal* NewCAurGUIString(char* sString, char* sFont,  // PC 0x00471010 GOG 0x00471150
                                         const Vector& vColor, float fScale)
 {
     return new CAurGUIStringInternal(sString, sFont, vColor, fScale);

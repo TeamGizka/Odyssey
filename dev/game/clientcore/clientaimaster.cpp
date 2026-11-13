@@ -9,7 +9,7 @@ static unsigned __int64 g_starttime;
 static unsigned __int64 g_endtime;
 float g_AIModuleTime2 = 0;
 float g_AIObjectTime = 0;
-// PC 0x00650780
+// PC 0x00650780 GOG 0x00650630
 int CClientAIList::AddObject(CSWCObject* pObject)
 {
     CExoLinkedListNode* pPos = m_lstObjects.GetHeadPos();
@@ -32,7 +32,7 @@ int CClientAIList::AddObject(CSWCObject* pObject)
     }
     return 1;
 }
-// PC 0x006507F0
+// PC 0x006507F0 GOG 0x006506A0
 int CClientAIList::RemoveObject(CSWCObject* pObject)
 {
     CExoLinkedListNode* pPos = pObject->m_pAIListPos;
@@ -60,7 +60,7 @@ int CClientAIList::RemoveObject(CSWCObject* pObject)
     pObject->m_pAIListPos = NULL;
     return 0;
 }
-// PC 0x00650850
+// PC 0x00650850 GOG 0x00650700
 CSWCObject* CClientAIList::GetNextObject()
 {
     if (m_lstObjects.GetHeadPos() == NULL)
@@ -80,7 +80,7 @@ CSWCObject* CClientAIList::GetNextObject()
     CSWCObject* pObject = pGameObject != NULL ? pGameObject->AsSWCObject() : NULL;
     return pObject;
 }
-// PC 0x006508C0
+// PC 0x006508C0 GOG 0x00650770
 int CClientAIMaster::UpdateState()
 {
     CSWCObject* pObject = m_aiList.GetNextObject();
@@ -113,17 +113,17 @@ int CClientAIMaster::UpdateState()
         (float)(int)(g_endtime - g_starttime) * 0.001f;
     return g_endtime - g_starttime;
 }
-// PC 0x00650A30
+// PC 0x00650A30 GOG 0x006508E0
 int CClientAIMaster::AddObject(CSWCObject* pObject)
 {
     return m_aiList.AddObject(pObject);
 }
-// PC 0x00650A40
+// PC 0x00650A40 GOG 0x006508F0
 int CClientAIMaster::RemoveObject(CSWCObject* pObject)
 {
     return m_aiList.RemoveObject(pObject);
 }
-// PC 0x00650A50
+// PC 0x00650A50 GOG 0x00650900
 CClientAIList::~CClientAIList()
 {
     while (!m_lstObjects.IsEmpty())
@@ -135,15 +135,15 @@ CClientAIList::~CClientAIList()
         RemoveObject(pGameObject->AsSWCObject());
     }
 }
-// PC 0x00650B50
+// PC 0x00650B50 GOG 0x00650A00
 CClientAIMaster::CClientAIMaster()
 {
 }
-// PC 0x00650B70
+// PC 0x00650B70 GOG 0x00650A20
 CClientAIMaster::~CClientAIMaster()
 {
 }
-// PC 0x00650770
+// PC 0x00650770 GOG 0x00650620
 void CClientAIMaster::SetExoAppInternal(CClientExoAppInternal* pInternal)
 {
     m_pExoAppInternal = pInternal;

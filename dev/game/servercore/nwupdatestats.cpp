@@ -1,12 +1,12 @@
 #include "exobase.h"
 #include "nwupdatestats.h"
 #include <string.h>
-// PC 0x00617160
+// PC 0x00617160 GOG 0x00617140
 void CSWCreatureStatsUpdate::SetCombatInformation(CCombatInformation* pInfo)
 {
     *m_pCombatInformation = *pInfo;
 }
-// PC 0x006171D0
+// PC 0x006171D0 GOG 0x006171B0
 CSWCreatureStatsUpdate::CSWCreatureStatsUpdate()
 {
     m_nExperience = -20;
@@ -44,7 +44,7 @@ CSWCreatureStatsUpdate::CSWCreatureStatsUpdate()
         memset(m_pSkillRanks, 0xEC, g_pRules->m_nNumSkills);
     }
 }
-// PC 0x00617300
+// PC 0x00617300 GOG 0x006172E0
 CSWCreatureStatsUpdate::~CSWCreatureStatsUpdate()
 {
     unsigned char* pBuffer = m_pSkillRanks;
@@ -61,7 +61,7 @@ CSWCreatureStatsUpdate::~CSWCreatureStatsUpdate()
     }
     ClearEffectIcons();
 }
-// PC 0x00617170
+// PC 0x00617170 GOG 0x00617150
 void CSWCreatureStatsUpdate::ClearEffectIcons()
 {
     for (int i = m_lstEffectIcons.num - 1; i >= 0; i--)

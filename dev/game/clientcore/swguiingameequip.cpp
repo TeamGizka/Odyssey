@@ -955,7 +955,7 @@ void CSWGuiInGameItemEntry::RefreshItem()
     SetItem(m_oidItem, m_bEquipped, m_bUnavailable);
 }
 #endif
-// PC 0x007184A0
+// PC 0x007184A0 GOG 0x00718190
 CSWGuiInGameItemEntry::CSWGuiInGameItemEntry()
 {
     SwguiingameequipTrace2();
@@ -967,7 +967,7 @@ CSWGuiInGameItemEntry::CSWGuiInGameItemEntry()
 }
 
 #ifndef _XBOX
-int CSWGuiInGameEquip::GetSlotItemIdIndex(int nSlot)  // PC 0x00713C80
+int CSWGuiInGameEquip::GetSlotItemIdIndex(int nSlot)  // PC 0x00713C80 GOG 0x00713970
 {
     switch (nSlot)
     {
@@ -986,13 +986,13 @@ int CSWGuiInGameEquip::GetSlotItemIdIndex(int nSlot)  // PC 0x00713C80
     }
 }
 
-// PC 0x00713D60
+// PC 0x00713D60 GOG 0x00713A50
 void CSWGuiInGameEquip::ShutdownCleanup()
 {
     m_pDescribedCopy = 0;
     m_pComparedCopy = 0;
 }
-// PC 0x00713D70
+// PC 0x00713D70 GOG 0x00713A60
 void CSWGuiInGameEquip::UpdateSlotLocks()
 {
     if (m_pCreature != NULL)
@@ -1036,7 +1036,7 @@ void CSWGuiInGameEquip::UpdateSlotLocks()
         }
     }
 }
-// PC 0x00713F10
+// PC 0x00713F10 GOG 0x00713C00
 int CSWGuiInGameEquip::IsSlotLocked(int nSlot)
 {
     switch (nSlot)
@@ -1055,7 +1055,7 @@ int CSWGuiInGameEquip::IsSlotLocked(int nSlot)
     default: return 0;
     }
 }
-// PC 0x00714560
+// PC 0x00714560 GOG 0x00714250
 CSWSItem* CSWGuiInGameEquip::CopyItem(unsigned long oidItem)
 {
     CSWSItem* pCopy = 0;
@@ -1074,7 +1074,7 @@ CSWSItem* CSWGuiInGameEquip::CopyItem(unsigned long oidItem)
     }
     return pCopy;
 }
-// PC 0x00714620
+// PC 0x00714620 GOG 0x00714310
 int CSWGuiInGameEquip::ItemExists(unsigned long oidItem)
 {
     CServerExoApp* pServer = GetServerExoApp();
@@ -1091,7 +1091,7 @@ int CSWGuiInGameEquip::ItemExists(unsigned long oidItem)
     return 0;
 }
 #endif
-// PC 0x00714000
+// PC 0x00714000 GOG 0x00713CF0
 CExoString CSWGuiInGameEquip::GetIcon(int nSlot)
 {
     CExoString sIcon;
@@ -1101,7 +1101,7 @@ CExoString CSWGuiInGameEquip::GetIcon(int nSlot)
     return sIcon;
 }
 #ifndef _XBOX
-void CSWGuiInGameEquip::SetDescription(const CExoString& sDescription)  // PC 0x007140B0
+void CSWGuiInGameEquip::SetDescription(const CExoString& sDescription)  // PC 0x007140B0 GOG 0x00713DA0
 {
     CExoString sText(sDescription);
     int nTokenStart = sText.Find('<', 0);
@@ -1132,7 +1132,7 @@ void CSWGuiInGameEquip::SetDescription(const CExoString& sDescription)  // PC 0x
     m_lbDesc.AddControls(&pControl, 1, 0, 0, 0);
     m_lbDesc.SetSelectedControl(&m_cDescriptionText, 0);
 }
-// PC 0x00714220
+// PC 0x00714220 GOG 0x00713F10
 int CSWGuiInGameEquip::EquipItem(unsigned long oidItem, int nSlot,
                                  int bClearActions)
 {
@@ -1188,7 +1188,7 @@ int CSWGuiInGameEquip::EquipItem(unsigned long oidItem, int nSlot,
 
     return 0;
 }
-// PC 0x00716320
+// PC 0x00716320 GOG 0x00716010
 int CSWGuiInGameEquip::EquipItem(CSWSItem* pItem, int bFlag1, int bFlag2)
 {
     CSWCCreature* pPlayer = g_pAppManager->m_pClientExoApp->GetPlayerCreature();
@@ -1209,7 +1209,7 @@ int CSWGuiInGameEquip::EquipItem(CSWSItem* pItem, int bFlag1, int bFlag2)
 
     return 0;
 }
-// PC 0x00714380
+// PC 0x00714380 GOG 0x00714070
 void CSWGuiInGameEquip::UnequipItem(unsigned long oidItem, int bClearActions)
 {
     CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(
@@ -1245,7 +1245,7 @@ void CSWGuiInGameEquip::UnequipItem(unsigned long oidItem, int bClearActions)
         }
     }
 }
-// PC 0x00714470
+// PC 0x00714470 GOG 0x00714160
 void CSWGuiInGameEquip::ShowCantEquipMessage(int bShow, unsigned long nStrRef)
 {
     if (bShow != 0)
@@ -1260,7 +1260,7 @@ void CSWGuiInGameEquip::ShowCantEquipMessage(int bShow, unsigned long nStrRef)
     m_btnEquip.m_cBorder.m_cParams.m_vColor =
         bShow ? CGuiInGame::DISABLED_TEXT : CGuiInGame::COLOR_NEW_GREEN;
 }
-// PC 0x00719980
+// PC 0x00719980 GOG 0x00719670
 void CSWGuiInGameEquip::OnPanelRemoved()
 {
     int i;
@@ -1289,7 +1289,7 @@ void CSWGuiInGameEquip::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 #endif
 }
-// PC 0x00716820
+// PC 0x00716820 GOG 0x00716510
 void CSWGuiInGameEquip::OnSelectSlot(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected)
@@ -1373,7 +1373,7 @@ void CSWGuiInGameEquip::OnSelectSlot(CSWGuiControl* pControl)
         m_lbItems.SetEnabled(1);
     }
 }
-// PC 0x00715F80
+// PC 0x00715F80 GOG 0x00715C70
 void CSWGuiInGameEquip::ShowDescription(int bShow)
 {
     ShowCantEquipMessage(0, -1);
@@ -1474,7 +1474,7 @@ void CSWGuiInGameEquip::UpdatePortraits(int bShow)
     g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowGameMenuChangeButtons(1);
 }
 
-// PC 0x007162B0
+// PC 0x007162B0 GOG 0x00715FA0
 void CSWGuiInGameEquip::OnItemExited(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected)
@@ -1490,7 +1490,7 @@ void CSWGuiInGameEquip::OnItemExited(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00717D30
+// PC 0x00717D30 GOG 0x00717A20
 void CSWGuiInGameEquip::OnItemSelected(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected)
@@ -1729,7 +1729,7 @@ void CSWGuiInGameEquip::OnItemSelected(CSWGuiControl* pControl)
 #endif
     }
 }
-// PC 0x00719A40
+// PC 0x00719A40 GOG 0x00719730
 void CSWGuiInGameEquip::OnOKPressed(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0 && m_bDescriptionShown)
@@ -1749,7 +1749,7 @@ void CSWGuiInGameEquip::OnOKPressed(CSWGuiControl* pControl)
         CloseDescription();
     }
 }
-// PC 0x00718450
+// PC 0x00718450 GOG 0x00718140
 void CSWGuiInGameEquip::CloseDescription()
 {
     ShowDescription(0);
@@ -1759,7 +1759,7 @@ void CSWGuiInGameEquip::CloseDescription()
 
     m_lbItems.SetEnabled(0);
 }
-// PC 0x00716A80
+// PC 0x00716A80 GOG 0x00716770
 void CSWGuiInGameEquip::OnEnterSlot(CSWGuiControl* pControl)
 {
 
@@ -1964,7 +1964,7 @@ void CSWGuiInGameEquip::OnEnterSlot(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00719F10
+// PC 0x00719F10 GOG 0x00719C00
 CSWGuiInGameItemEntry* CSWGuiInGameEquip::AddItemEntryToList(int nItem)
 {
     CSWGuiInGameItemEntry* pItemEntry;
@@ -1993,7 +1993,7 @@ CSWGuiInGameItemEntry* CSWGuiInGameEquip::AddItemEntryToList(int nItem)
     return pItemEntry;
 }
 #endif
-// PC 0x00714360
+// PC 0x00714670 GOG 0x00714360
 void CSWGuiInGameItemEntry::SetExtent(const CSWGuiExtent& cExtent)
 {
     if (cExtent.m_nWidth > SWGUI_ITEM_ICON_SIZE)
@@ -2029,7 +2029,7 @@ void CSWGuiInGameItemEntry::SetExtent(const CSWGuiExtent& cExtent)
             m_cBorder.GetInnerExtent(), m_cHilite.GetInnerExtent()));
     }
 }
-// PC 0x007186F0
+// PC 0x007186F0 GOG 0x007183E0
 void CSWGuiContainer::SetContainer(unsigned long oidContainer, int nType)
 {
     m_oidContainer = oidContainer;
@@ -2106,7 +2106,7 @@ void CSWGuiContainer::SetContainer(unsigned long oidContainer, int nType)
 #ifdef _XBOX
 
 #define STRREF_XBOX_GIVE_ITEM_LABEL 47885
-void CSWGuiContainer::SetupGiveMode()  // PC 0x00718A50
+void CSWGuiContainer::SetupGiveMode()  // PC 0x00718A50 GOG 0x00718740
 #else
 void CSWGuiContainer::SetupGiveMode(int bRestoreSelection)
 #endif
@@ -2179,7 +2179,7 @@ void CSWGuiContainer::SetupGiveMode(int bRestoreSelection)
 }
 
 #ifndef _XBOX
-void CSWGuiContainer::Update(float fElapsed)  // PC 0x00718DB0
+void CSWGuiContainer::Update(float fElapsed)  // PC 0x00718DB0 GOG 0x00718AA0
 {
     int nResult = m_nGiveModeFlags;
 
@@ -2196,7 +2196,7 @@ void CSWGuiContainer::Update(float fElapsed)  // PC 0x00718DB0
     }
 }
 #endif
-void CSWGuiInGameItemEntry::Draw(float fElapsed)  // PC 0x00714810
+void CSWGuiInGameItemEntry::Draw(float fElapsed)  // PC 0x00714810 GOG 0x00714500
 {
     if (m_bActive)
     {
@@ -2212,7 +2212,7 @@ void CSWGuiInGameItemEntry::Draw(float fElapsed)  // PC 0x00714810
     m_cText.Draw(fElapsed);
     m_cCountText.Draw(fElapsed);
 }
-// PC 0x00714810
+// PC 0x00714810 GOG 0x00714500
 void CSWGuiStoreItemEntry::Draw(float fElapsed)
 {
     if (m_bActive)
@@ -2229,7 +2229,7 @@ void CSWGuiStoreItemEntry::Draw(float fElapsed)
     m_cText.Draw(fElapsed);
     m_cCountText.Draw(fElapsed);
 }
-// PC 0x00714570
+// PC 0x00714880 GOG 0x00714570
 void CSWGuiInGameItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
                                        CSWGuiBorder& cHilite, int nWidth,
                                        int bPulsing)
@@ -2274,7 +2274,7 @@ void CSWGuiInGameItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
     }
     m_bPulsing = bPulsing;
 }
-// PC 0x00714AB0
+// PC 0x00714AB0 GOG 0x007147A0
 void CSWGuiInGameItemEntry::SetItem(unsigned long oidItem, int bEquipped,
                                    int bUnavailable)
 {
@@ -2377,7 +2377,7 @@ void CSWGuiInGameItemEntry::SetItem(unsigned long oidItem, int bEquipped,
     pParams->m_nFillMode = CSWGuiBorderParams::FILL_MODE_BACKGROUND;
     pParams->SetFillImage(cIcon, 0);
 }
-// PC 0x007151E0
+// PC 0x007151E0 GOG 0x00714ED0
 int CSWGuiInGameItemEntry::GetNumItems()
 {
     int nItems = 1;
@@ -2390,12 +2390,12 @@ int CSWGuiInGameItemEntry::GetNumItems()
 
     return nItems;
 }
-// PC 0x00715230
+// PC 0x00715230 GOG 0x00714F20
 void CSWGuiInGameItemEntry::UpdateItem()
 {
     SetItem(m_oidItem, m_bEquipped, m_bUnavailable);
 }
-// PC 0x00715260
+// PC 0x00715260 GOG 0x00714F50
 void CSWGuiInGameItemEntry::SetCanUse(unsigned char nCanUse)
 {
     switch (nCanUse)
@@ -2420,7 +2420,7 @@ void CSWGuiInGameItemEntry::SetCanUse(unsigned char nCanUse)
     m_cIconHilite.m_cParams.SetPulsingAlpha(m_bPulsing, 0, 1);
     m_nCanUse = nCanUse;
 }
-// PC 0x007153D0
+// PC 0x007153D0 GOG 0x007150C0
 void CSWGuiContainer::GiveItem(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2455,7 +2455,7 @@ void CSWGuiContainer::GiveItem(CSWGuiControl* pControl)
 #endif
     }
 }
-// PC 0x00715440
+// PC 0x00715440 GOG 0x00715130
 void CSWGuiContainer::OnPanelAdded()
 {
 #ifndef _XBOX
@@ -2471,7 +2471,7 @@ void CSWGuiContainer::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
-// PC 0x007154C0
+// PC 0x007154C0 GOG 0x007151B0
 void CSWGuiContainer::OnPanelRemoved()
 {
 #ifndef _XBOX
@@ -2481,7 +2481,7 @@ void CSWGuiContainer::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 #endif
 }
-// PC 0x007151D0
+// PC 0x007154E0 GOG 0x007151D0
 void CSWGuiStoreItemEntry::SetExtent(const CSWGuiExtent& cExtent)
 {
     if (cExtent.m_nWidth > SWGUI_ITEM_ICON_SIZE)
@@ -2515,7 +2515,7 @@ void CSWGuiStoreItemEntry::SetExtent(const CSWGuiExtent& cExtent)
             m_cBorder.GetInnerExtent(), m_cHilite.GetInnerExtent()));
     }
 }
-// PC 0x00715350
+// PC 0x00715660 GOG 0x00715350
 void CSWGuiStoreItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
                                     CSWGuiBorder& cHilite, int nWidth)
 {
@@ -2555,7 +2555,7 @@ void CSWGuiStoreItemEntry::Initialize(CSWGuiText& cText, CSWGuiBorder& cBorder,
         SetExtent(cExtent);
     }
 }
-// PC 0x00715870
+// PC 0x00715870 GOG 0x00715560
 void CSWGuiStoreItemEntry::SetColors(Vector vBorderColor, Vector vTextColor,
                                      Vector vHiliteColor, Vector vUnused)
 {
@@ -2567,7 +2567,7 @@ void CSWGuiStoreItemEntry::SetColors(Vector vBorderColor, Vector vTextColor,
     m_cHilite.m_cParams.m_vColor = vHiliteColor;
     m_cIconHilite.m_cParams.m_vColor = vHiliteColor;
 }
-void CSWGuiStoreItemEntry::SetItem(unsigned long oidItem, int bUpdate, int nCharacter)  // PC 0x00715900
+void CSWGuiStoreItemEntry::SetItem(unsigned long oidItem, int bUpdate, int nCharacter)  // PC 0x00715900 GOG 0x007155F0
 {
     CResRef cIcon;
     CExoString sName;
@@ -2643,7 +2643,7 @@ void CSWGuiStoreItemEntry::SetItem(unsigned long oidItem, int bUpdate, int nChar
     pParams->SetFillImage(cIcon, 0);
 }
 #ifndef _XBOX
-void CSWGuiInGameEquip::SetCharacter(CSWCCreature* pCreature)  // PC 0x00715DA0
+void CSWGuiInGameEquip::SetCharacter(CSWCCreature* pCreature)  // PC 0x00715DA0 GOG 0x00715A90
 {
     if (pCreature != m_pCreature)
     {
@@ -2660,7 +2660,7 @@ void CSWGuiInGameEquip::SetCharacter(CSWCCreature* pCreature)  // PC 0x00715DA0
     }
 }
 #endif
-// PC 0x00715E50
+// PC 0x00715E50 GOG 0x00715B40
 void CSWGuiInGameEquip::OnPrevNPCClicked(CSWGuiControl* pControl)
 {
     if (pControl != NULL && !pControl->m_bSelected)
@@ -2716,7 +2716,7 @@ void CSWGuiInGameEquip::OnPrevNPCClicked(CSWGuiControl* pControl)
         g_pAppManager->GetClientExoApp()->GetInGameGui()->SetTopMenuOverrideCharacter(m_nCharacter);
     }
 }
-// PC 0x007163B0
+// PC 0x007163B0 GOG 0x007160A0
 CSWGuiContainer::CSWGuiContainer(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -2767,7 +2767,7 @@ CSWGuiContainer::CSWGuiContainer(CSWGuiManager* pManager)
 #endif
     CenterPanel();
 }
-// PC 0x00716780
+// PC 0x00716780 GOG 0x00716470
 CSWGuiStoreItemEntry::CSWGuiStoreItemEntry()
 {
     m_oidItem = OBJECT_INVALID;
@@ -2775,7 +2775,7 @@ CSWGuiStoreItemEntry::CSWGuiStoreItemEntry()
     m_n3B4 = 0;
 }
 #ifndef _XBOX
-CSWGuiInGameEquip::CSWGuiInGameEquip(CSWGuiManager* pManager)  // PC 0x0071A1B0
+CSWGuiInGameEquip::CSWGuiInGameEquip(CSWGuiManager* pManager)  // PC 0x0071A1B0 GOG 0x00719EA0
     : CSWGuiPanel(pManager)
 {
     m_pCreature = NULL;
@@ -2876,7 +2876,7 @@ CSWGuiInGameEquip::CSWGuiInGameEquip(CSWGuiManager* pManager)  // PC 0x0071A1B0
                          (CSWGuiHandler)&CSWGuiInGameEquip::OnNextNPCClicked);
     m_btnNextNpc.SetFocusable(0);
 }
-// PC 0x00718E80
+// PC 0x00718E80 GOG 0x00718B70
 CSWGuiInGameEquip::~CSWGuiInGameEquip()
 {
     m_lbDesc.ClearItems();
@@ -2901,7 +2901,7 @@ CSWGuiInGameEquip::~CSWGuiInGameEquip()
         m_pComparedCopy = 0;
     }
 }
-// PC 0x007197B0
+// PC 0x007197B0 GOG 0x007194A0
 void CSWGuiInGameEquip::Draw(float fElapsed)
 {
     if (!m_n50E8)
@@ -2923,7 +2923,7 @@ void CSWGuiInGameEquip::Draw(float fElapsed)
     }
     CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x00719850
+// PC 0x00719850 GOG 0x00719540
 void CSWGuiInGameEquip::OnPanelAdded()
 {
     CExoString sModuleName = GetServerExoApp()->GetModuleName();
@@ -2951,7 +2951,7 @@ void CSWGuiInGameEquip::OnPanelAdded()
 }
 #endif
 #ifndef _XBOX
-void CSWGuiInGameEquip::UpdateInventory()  // PC 0x00717070
+void CSWGuiInGameEquip::UpdateInventory()  // PC 0x00717070 GOG 0x00716D60
 {
 
     CSWSItem* pItem = NULL;
@@ -3236,7 +3236,7 @@ void CSWGuiInGameEquip::UpdateInventory()  // PC 0x00717070
             m_nPendingSlot = 0;
     }
 }
-// PC 0x00719AA0
+// PC 0x00719AA0 GOG 0x00719790
 void CSWGuiInGameEquip::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -3404,7 +3404,7 @@ void CSWGuiInGameEquip::HandleInputEvent(int nEvent, int nState)
 }
 
 #endif
-// PC 0x00719540
+// PC 0x00719540 GOG 0x00719230
 void CSWGuiInGameEquip::OnNextNPCClicked(CSWGuiControl* pControl)
 {
     if (pControl != NULL && !pControl->m_bSelected)
@@ -3560,7 +3560,7 @@ void CSWGuiInGameEquip::OnOKPressed(CSWGuiControl* pControl)
     }
 }
 #endif
-void CSWGuiContainer::HandleInputEvent(int nEvent, int nState)  // PC 0x0071A050
+void CSWGuiContainer::HandleInputEvent(int nEvent, int nState)  // PC 0x0071A050 GOG 0x00719D40
 {
     if (nState != 0)
     {

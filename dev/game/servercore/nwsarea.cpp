@@ -67,7 +67,7 @@ const float CSWSArea::MAX_OBJECT_CHATSHOUTSILENT_DISTANCE = 1000.0f;
 
 int g_nBSPWidth = 40;
 int g_nBSPHeight = 40;
-// PC 0x004E2040
+// PC 0x004E2040 GOG 0x004E2160
 int CSWSArea::GetFirstObjectIndiceByX(int* pnIndex, float fX)
 {
     CGameObjectArray* pObjectArray =
@@ -112,7 +112,7 @@ int CSWSArea::GetFirstObjectIndiceByX(int* pnIndex, float fX)
     *pnIndex = nMid;
     return 1;
 }
-// PC 0x004E2100
+// PC 0x004E2100 GOG 0x004E2220
 int CSWSArea::UpdatePositionInObjectsArray(CGameObject* pObject)
 {
     int nIndex = m_lstObjectIds.IndexOf(pObject->GetId());
@@ -164,7 +164,7 @@ int CSWSArea::UpdatePositionInObjectsArray(CGameObject* pObject)
     }
     return 1;
 }
-// PC 0x004E22D0
+// PC 0x004E22D0 GOG 0x004E23F0
 int CSWSArea::GetFirstObjectInArea(unsigned long& oidObject)
 {
     int nObjectCount;
@@ -178,7 +178,7 @@ int CSWSArea::GetFirstObjectInArea(unsigned long& oidObject)
     oidObject = m_lstObjectIds[0];
     return 1;
 }
-// PC 0x004E2300
+// PC 0x004E2300 GOG 0x004E2420
 int CSWSArea::GetNextObjectInArea(unsigned long& oidObject)
 {
     int nObjectCount;
@@ -194,7 +194,7 @@ int CSWSArea::GetNextObjectInArea(unsigned long& oidObject)
     }
     return 0;
 }
-// PC 0x004E3D00
+// PC 0x004E3D00 GOG 0x004E3DD0
 int CSWSArea::AIUpdate()
 {
     unsigned long nCurrentDay;
@@ -298,7 +298,7 @@ int CSWSArea::AIUpdate()
     }
     return 0;
 }
-// PC 0x004E3EF0
+// PC 0x004E3EF0 GOG 0x004E3FC0
 void CSWSArea::IncrementPlayersInArea()
 {
     if (m_nPlayersInArea == 0)
@@ -307,7 +307,7 @@ void CSWSArea::IncrementPlayersInArea()
     }
     ++m_nPlayersInArea;
 }
-// PC 0x004E2340
+// PC 0x004E2340 GOG 0x004E2460
 void CSWSArea::IncreaseAILevelPriority()
 {
     CGameObjectArray* pObjectArray =
@@ -361,7 +361,7 @@ void CSWSArea::IncreaseAILevelPriority()
         }
     }
 }
-float __stdcall GetObstructionFactor(Vector vStart, Vector vEnd)  // PC 0x004E8290
+float __stdcall GetObstructionFactor(Vector vStart, Vector vEnd)  // PC 0x004E8290 GOG 0x004E8360
 {
     unsigned long nStartTime = (unsigned long)
         (g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
@@ -412,7 +412,7 @@ float __stdcall GetObstructionFactor(Vector vStart, Vector vEnd)  // PC 0x004E82
     }
     return fObstruction;
 }
-// PC 0x004E8520
+// PC 0x004E8520 GOG 0x004E85F0
 CSWSArea::CSWSArea(const CResRef& cResRef, int nAreaId, unsigned long oidArea)
     : CGameObject(CGameObject::OBJECT_TYPE_AREA, oidArea)
 {
@@ -480,7 +480,7 @@ CSWSArea::CSWSArea(const CResRef& cResRef, int nAreaId, unsigned long oidArea)
     m_nCurrentTransitionPendingId = 0;
     m_pClientArea = NULL;
 }
-// PC 0x004E8920
+// PC 0x004E8920 GOG 0x004E89F0
 CSWSArea::~CSWSArea()
 {
     UnloadArea();
@@ -545,7 +545,7 @@ CSWSArea::~CSWSArea()
     g_pAppManager->GetServerExoApp()->GetModule()->ClearAreaCache();
     g_pAppManager->GetServerExoApp()->ClearAreaCache();
 }
-// PC 0x004E8CB0
+// PC 0x004E8CB0 GOG 0x004E8D80
 void CSWSArea::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                            void* pEventData, unsigned long nCalendarDay,
                            unsigned long nTimeOfDay)
@@ -682,7 +682,7 @@ void CSWSArea::EventHandler(unsigned long nEventId, unsigned long oidCaller,
         delete pEvent;
     }
 }
-// PC 0x004E9230
+// PC 0x004E9230 GOG 0x004E9300
 int CSWSArea::RemoveObjectFromArea(unsigned long oidObject)
 {
     if (m_lstObjectIds.Contains(oidObject))
@@ -718,7 +718,7 @@ int CSWSArea::RemoveObjectFromArea(unsigned long oidObject)
     }
     return 1;
 }
-// PC 0x004E3F10
+// PC 0x004E3F10 GOG 0x004E3FE0
 void CSWSArea::DecrementPlayersInArea()
 {
     if (--m_nPlayersInArea == 0)
@@ -726,7 +726,7 @@ void CSWSArea::DecrementPlayersInArea()
         DecreaseAILevelPriority();
     }
 }
-// PC 0x004E2460
+// PC 0x004E2460 GOG 0x004E2580
 void CSWSArea::DecreaseAILevelPriority()
 {
     CGameObjectArray* pObjectArray =
@@ -748,7 +748,7 @@ void CSWSArea::DecreaseAILevelPriority()
         }
     }
 }
-// PC 0x004E3F20
+// PC 0x004E3F20 GOG 0x004E3FF0
 int CSWSArea::LoadAreaHeader(CResStruct* pStruct)
 {
     int bFieldRead;
@@ -989,7 +989,7 @@ int CSWSArea::LoadAreaHeader(CResStruct* pStruct)
     m_nCurrentTransitionPendingId = m_pRes->ReadFieldBYTE(pStruct, "TransPendCurrID", bFieldRead, m_nCurrentTransitionPendingId);
     return 1;
 }
-// PC 0x004E24F0
+// PC 0x004E24F0 GOG 0x004E2610
 int CSWSArea::LoadRoomInfo(CResStruct* pStruct)
 {
     m_nWidth = g_nBSPWidth;
@@ -1009,7 +1009,7 @@ int CSWSArea::LoadRoomInfo(CResStruct* pStruct)
 
     return bSuccess;
 }
-// PC 0x004DF890
+// PC 0x004DF890 GOG 0x004DF9B0
 CSWSRoom* CSWSArea::LoadRooms(CLYT* pLayout)
 {
     int nRoomCount = pLayout->GetRoomCount();
@@ -1053,7 +1053,7 @@ CSWSRoom* CSWSArea::LoadRooms(CLYT* pLayout)
 
     return pRooms;
 }
-// PC 0x004DFA90
+// PC 0x004DFA90 GOG 0x004DFBB0
 int CSWSArea::LoadCreatures(CResGFF* pRes, CResStruct* pStruct,
                             int bLoadingGame, int bUseTemplates)
 {
@@ -1124,7 +1124,7 @@ int CSWSArea::LoadCreatures(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x004DFE00
+// PC 0x004DFE00 GOG 0x004DFF20
 int CSWSArea::LoadItems(CResGFF* pRes, CResStruct* pStruct,
                         int bLoadingGame, int bUseTemplates)
 {
@@ -1186,7 +1186,7 @@ int CSWSArea::LoadItems(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x004E0080
+// PC 0x004E0080 GOG 0x004E01A0
 int CSWSArea::LoadEncounters(CResGFF* pRes, CResStruct* pStruct,
                              int bLoadingGame, int bUseTemplates)
 {
@@ -1268,7 +1268,7 @@ int CSWSArea::LoadEncounters(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x004E0380
+// PC 0x004E0380 GOG 0x004E04A0
 int CSWSArea::LoadWaypoints(CResGFF* pRes, CResStruct* pStruct,
                             int bLoadingGame, int bUseTemplates)
 {
@@ -1318,7 +1318,7 @@ int CSWSArea::LoadWaypoints(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x004E0580
+// PC 0x004E0580 GOG 0x004E06A0
 int CSWSArea::LoadSounds(CResGFF* pRes, CResStruct* pStruct,
                          int bLoadingGame, int bUseTemplates)
 {
@@ -1371,7 +1371,7 @@ int CSWSArea::LoadSounds(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x004E07C0
+// PC 0x004E07C0 GOG 0x004E08E0
 int CSWSArea::LoadStores(CResGFF* pRes, CResStruct* pStruct, int bLoadingGame,
                          int bUseTemplates)
 {
@@ -1447,7 +1447,7 @@ int CSWSArea::LoadStores(CResGFF* pRes, CResStruct* pStruct, int bLoadingGame,
     }
     return 1;
 }
-// PC 0x004E0B10
+// PC 0x004E0B10 GOG 0x004E0C30
 int CSWSArea::LoadAreaEffects(CResGFF* pRes, CResStruct* pStruct,
                               int bLoadingGame, int bUseTemplates)
 {
@@ -1514,7 +1514,7 @@ int CSWSArea::LoadAreaEffects(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x004E0DC0
+// PC 0x004E0DC0 GOG 0x004E0EE0
 int CSWSArea::LoadMaps(CResGFF* pRes, CResStruct* pStruct)
 {
     CResStruct cStruct;
@@ -1549,7 +1549,7 @@ int CSWSArea::LoadMaps(CResGFF* pRes, CResStruct* pStruct)
         bSuccess = 0;
     return bSuccess;
 }
-// PC 0x004E0ED0
+// PC 0x004E0ED0 GOG 0x004E0FF0
 int CSWSArea::LoadPlaceableCameras(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList cList;
@@ -1583,7 +1583,7 @@ int CSWSArea::LoadPlaceableCameras(CResGFF* pRes, CResStruct* pStruct)
     }
     return 1;
 }
-// PC 0x004E10B0
+// PC 0x004E10B0 GOG 0x004E11D0
 int CSWSArea::SaveProperties(CResGFF* pRes, CResStruct* pStruct)
 {
     pRes->AddStructToStruct((CResStruct*)&pStruct, pStruct, "AreaProperties",
@@ -1611,7 +1611,7 @@ int CSWSArea::SaveProperties(CResGFF* pRes, CResStruct* pStruct)
     return pRes->WriteFieldDWORD((CResStruct*)&pStruct, m_nSunFogColor,
                                  "SunFogColor");
 }
-// PC 0x004E1200
+// PC 0x004E1200 GOG 0x004E1320
 void CSWSArea::SaveMaps(CResGFF* pRes, CResStruct* pStruct)
 {
     CSWSModule* pModule = g_pAppManager->m_pServerExoApp->GetModule();
@@ -1638,7 +1638,7 @@ void CSWSArea::SaveMaps(CResGFF* pRes, CResStruct* pStruct)
         pRes->WriteFieldVOID(&cStruct, pData, nDataSize, "AreaMapData");
     }
 }
-// PC 0x004E55E0
+// PC 0x004E55E0 GOG 0x004E56B0
 int CSWSArea::LoadDoors(CResGFF* pRes, CResStruct* pStruct, int bLoadingGame,
                         int bUseTemplates)
 {
@@ -1695,7 +1695,7 @@ int CSWSArea::LoadDoors(CResGFF* pRes, CResStruct* pStruct, int bLoadingGame,
     }
     return 1;
 }
-// PC 0x004E9370
+// PC 0x004E9370 GOG 0x004E9440
 int CSWSArea::LoadGIT(int bLoadingGame)
 {
     CResStruct cTopLevelStruct;
@@ -1747,7 +1747,7 @@ int CSWSArea::LoadGIT(int bLoadingGame)
     delete pRes;
     return 1;
 }
-// PC 0x004E5850
+// PC 0x004E5850 GOG 0x004E5920
 int CSWSArea::LoadTriggers(CResGFF* pRes, CResStruct* pStruct,
                           int bLoadingGame, int bUseTemplates)
 {
@@ -1828,7 +1828,7 @@ int CSWSArea::LoadTriggers(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x004E5CB0
+// PC 0x004E5CB0 GOG 0x004E5D80
 int CSWSArea::LoadPlaceables(CResGFF* pRes, CResStruct* pStruct,
                              int bLoadingGame, int bUseTemplates)
 {
@@ -1895,7 +1895,7 @@ int CSWSArea::LoadPlaceables(CResGFF* pRes, CResStruct* pStruct,
     }
     return 1;
 }
-// PC 0x004E5FF0
+// PC 0x004E5FF0 GOG 0x004E60C0
 int CSWSArea::PackAreaIntoMessage(int nPlayerId, int nAreaId, int nFlags,
                                  CSWSPlayer* pPlayer)
 {
@@ -2166,7 +2166,7 @@ int CSWSArea::PackAreaIntoMessage(int nPlayerId, int nAreaId, int nFlags,
     }
     return 1;
 }
-// PC 0x004E6F70
+// PC 0x004E6F70 GOG 0x004E7040
 void CSWSArea::SaveGIT(CERFFile* pERFFile, const CExoString& sName,
                        CExoArrayList<unsigned long>& lstPlayers)
 {
@@ -2259,7 +2259,7 @@ void CSWSArea::SaveGIT(CERFFile* pERFFile, const CExoString& sName,
     delete pRes;
     delete pStruct;
 }
-// PC 0x004E12D0
+// PC 0x004E12D0 GOG 0x004E13F0
 void CSWSArea::SavePlaceableCameras(CResGFF* pRes, CResStruct* pStruct)
 {
     CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
@@ -2284,7 +2284,7 @@ void CSWSArea::SavePlaceableCameras(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 }
-// PC 0x004E7650
+// PC 0x004E7650 GOG 0x004E7720
 void CSWSArea::UnloadArea()
 {
     delete[] m_p34;
@@ -2321,7 +2321,7 @@ void CSWSArea::UnloadArea()
     delete[] m_pRooms;
     m_pRooms = NULL;
 }
-// PC 0x004E13F0
+// PC 0x004E13F0 GOG 0x004E1510
 int CSWSArea::GetSurfaceMaterial(Vector vPosition)
 {
     CSWSRoom* pRoom = GetRoom(vPosition, NULL);
@@ -2334,7 +2334,7 @@ int CSWSArea::GetSurfaceMaterial(Vector vPosition)
     }
     return 0;
 }
-// PC 0x004E1430
+// PC 0x004E1430 GOG 0x004E1550
 int CSWSArea::PositionWalkable(Vector vPosition)
 {
     CSWSRoom* pRoom = GetRoom(vPosition, NULL);
@@ -2396,7 +2396,7 @@ int CSWSArea::TestPathPoint(float fPersonalSpace, int bVerbose)
     return bFailed;
 }
 #endif
-int CSWSArea::GetDoorCrossed(const Vector& vStart, const Vector& vEnd)  // PC 0x004E1500
+int CSWSArea::GetDoorCrossed(const Vector& vStart, const Vector& vEnd)  // PC 0x004E1500 GOG 0x004E1620
 {
     Vector vRaisedStart = vStart;
     Vector vRaisedEnd = vEnd;
@@ -2429,7 +2429,7 @@ int CSWSArea::GetDoorCrossed(const Vector& vStart, const Vector& vEnd)  // PC 0x
     }
     return OBJECT_INVALID;
 }
-// PC 0x004E25B0
+// PC 0x004E25B0 GOG 0x004E26D0
 int CSWSArea::LoadProperties(CResGFF* pRes, CResStruct* pStruct)
 {
     CResStruct cProperties;
@@ -2474,7 +2474,7 @@ int CSWSArea::LoadProperties(CResGFF* pRes, CResStruct* pStruct)
     }
     return 0;
 }
-// PC 0x004E27A0
+// PC 0x004E27A0 GOG 0x004E28C0
 void CSWSArea::SaveCreatures(CResGFF* pRes, CResStruct* pStruct,
                              CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2508,7 +2508,7 @@ void CSWSArea::SaveCreatures(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x004E2880
+// PC 0x004E2880 GOG 0x004E29A0
 void CSWSArea::SaveItems(CResGFF* pRes, CResStruct* pStruct,
                          CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2536,7 +2536,7 @@ void CSWSArea::SaveItems(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x004E2940
+// PC 0x004E2940 GOG 0x004E2A60
 void CSWSArea::SaveDoors(CResGFF* pRes, CResStruct* pStruct,
                          CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2564,7 +2564,7 @@ void CSWSArea::SaveDoors(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x004E2A00
+// PC 0x004E2A00 GOG 0x004E2B20
 void CSWSArea::SaveTriggers(CResGFF* pRes, CResStruct* pStruct,
                             CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2592,7 +2592,7 @@ void CSWSArea::SaveTriggers(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x004E2AC0
+// PC 0x004E2AC0 GOG 0x004E2BE0
 void CSWSArea::SaveEncounters(CResGFF* pRes, CResStruct* pStruct,
                               CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2621,7 +2621,7 @@ void CSWSArea::SaveEncounters(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x004E2B80
+// PC 0x004E2B80 GOG 0x004E2CA0
 void CSWSArea::SaveWaypoints(CResGFF* pRes, CResStruct* pStruct,
                              CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2650,7 +2650,7 @@ void CSWSArea::SaveWaypoints(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x004E2C40
+// PC 0x004E2C40 GOG 0x004E2D60
 void CSWSArea::SaveSounds(CResGFF* pRes, CResStruct* pStruct,
                           CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2678,7 +2678,7 @@ void CSWSArea::SaveSounds(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x004E2D00
+// PC 0x004E2D00 GOG 0x004E2E20
 void CSWSArea::SavePlaceables(CResGFF* pRes, CResStruct* pStruct,
                               CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2711,7 +2711,7 @@ void CSWSArea::SavePlaceables(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x004E2DD0
+// PC 0x004E2DD0 GOG 0x004E2EF0
 void CSWSArea::SaveStores(CResGFF* pRes, CResStruct* pStruct,
                           CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2739,7 +2739,7 @@ void CSWSArea::SaveStores(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x004E2E90
+// PC 0x004E2E90 GOG 0x004E2FB0
 void CSWSArea::SaveAreaEffects(CResGFF* pRes, CResStruct* pStruct,
                                CExoArrayList<unsigned long>& lstObjectIds)
 {
@@ -2768,7 +2768,7 @@ void CSWSArea::SaveAreaEffects(CResGFF* pRes, CResStruct* pStruct,
         }
     }
 }
-// PC 0x004E2F50
+// PC 0x004E2F50 GOG 0x004E3070
 void CSWSArea::PlayVisualEffect(unsigned short nEffect, const Vector& vPosition)
 {
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
@@ -2817,7 +2817,7 @@ void CSWSArea::PlayVisualEffect(unsigned short nEffect, const Vector& vPosition)
         }
     }
 }
-// PC 0x004E3140
+// PC 0x004E3140 GOG 0x004E3260
 int CSWSArea::GetIsIDInExcludeList(unsigned long oidObject,
                                    CExoArrayList<CGameObject*>* pExcludeList)
 {
@@ -2833,7 +2833,7 @@ int CSWSArea::GetIsIDInExcludeList(unsigned long oidObject,
     }
     return 0;
 }
-// PC 0x004E3180
+// PC 0x004E3180 GOG 0x004E32A0
 void CSWSArea::SetCurrentWeather(unsigned char nWeather, int bEnabled)
 {
     if (nWeather == WEATHER_AUTOMATIC)
@@ -2915,7 +2915,7 @@ void CSWSArea::SetCurrentWeather(unsigned char nWeather, int bEnabled)
         m_nActiveWeather = WEATHER_CLEAR;
     }
 }
-// PC 0x004E32B0
+// PC 0x004E32B0 GOG 0x004E33D0
 void CSWSArea::BudgeCreatures(const Vector& vCentre, const Vector& vMin,
                              const Vector& vMax, unsigned long oidObject,
                              int bUseActionPoint)
@@ -2977,7 +2977,7 @@ void CSWSArea::BudgeCreatures(const Vector& vCentre, const Vector& vMin,
         }
     }
 }
-// PC 0x004E3530
+// PC 0x004E3530 GOG 0x004E3650
 int CSWSArea::LoadPathPoints(CResStruct* pStruct)
 {
     NwsareaTrace1();
@@ -3047,7 +3047,7 @@ int CSWSArea::LoadPathPoints(CResStruct* pStruct)
     }
     return bSuccess;
 }
-// PC 0x004E3800
+// PC 0x004E3800 GOG 0x004E3920
 int CSWSArea::NoNonWalkPolys(const Vector& vStart, const Vector& vEnd,
                              float fDistance, float fWidth, float fHeight,
                              unsigned long oidObject,
@@ -3057,7 +3057,7 @@ int CSWSArea::NoNonWalkPolys(const Vector& vStart, const Vector& vEnd,
                                   oidObject, (unsigned long&)bCheckDoors, 0, 0, 0, pWalkHitInfo,
                                   bCheckDoors);
 }
-// PC 0x004E1680
+// PC 0x004E1680 GOG 0x004E17A0
 int CSWSArea::NoNonWalkPolysDetailed(
     const Vector& vStart, const Vector& vEnd, float fMinHeight, float fMaxHeight,
     float fRadius, unsigned long oidObject, unsigned long& oidHitObject,
@@ -3136,7 +3136,7 @@ int CSWSArea::NoNonWalkPolysDetailed(
     }
     return bClear;
 }
-// PC 0x004E1930
+// PC 0x004E1930 GOG 0x004E1A50
 void CSWSArea::InitializeRoomAudioParams(int nRoomCount)
 {
     if (m_psRoomAudio != NULL)
@@ -3179,7 +3179,7 @@ void CSWSArea::InitializeRoomAudioParams(int nRoomCount)
         m_pnRoomAudioIndex = new unsigned char[nRoomCount];
     }
 }
-// PC 0x004E1A90
+// PC 0x004E1A90 GOG 0x004E1BB0
 CSWCArea* CSWSArea::GetClientArea()
 {
     if (m_pClientArea == NULL)
@@ -3196,18 +3196,18 @@ CSWCArea* CSWSArea::GetClientArea()
     }
     return m_pClientArea;
 }
-// PC 0x004E1AE0
+// PC 0x004E1AE0 GOG 0x004E1C00
 int CSWSArea::AttachmentFromClientArea(CSWCArea* pArea)
 {
     m_pClientArea = pArea;
     return (int)pArea;
 }
-// PC 0x004E1AF0
+// PC 0x004E1AF0 GOG 0x004E1C10
 void CSWSArea::DetachFromClientArea()
 {
     m_pClientArea = 0;
 }
-// PC 0x004E1B00
+// PC 0x004E1B00 GOG 0x004E1C20
 int CSWSArea::SetMaxStealthXP(unsigned long nExperience)
 {
     if (m_nStealthXPCurrent > nExperience)
@@ -3215,7 +3215,7 @@ int CSWSArea::SetMaxStealthXP(unsigned long nExperience)
     m_nStealthXPMax = nExperience;
     return nExperience;
 }
-// PC 0x004E1B20
+// PC 0x004E1B20 GOG 0x004E1C40
 int CSWSArea::SetCurrentStealthXP(unsigned long nExperience)
 {
     unsigned long nMaximum = m_nStealthXPMax;
@@ -3224,7 +3224,7 @@ int CSWSArea::SetCurrentStealthXP(unsigned long nExperience)
     m_nStealthXPCurrent = nExperience;
     return nMaximum;
 }
-// PC 0x004E1B40
+// PC 0x004E1B40 GOG 0x004E1C60
 unsigned char CSWSArea::GetNextTransitionPendingID()
 {
     if (++m_nNextTransitionPendingId == 0)
@@ -3238,14 +3238,14 @@ unsigned char CSWSArea::GetNextTransitionPendingID()
 
 #define RGB(r, g, b) ((DWORD)(((BYTE)(r) | ((WORD)((BYTE)(g)) << 8)) | (((DWORD)(BYTE)(b)) << 16)))
 #endif
-// PC 0x004E1B60
+// PC 0x004E1B60 GOG 0x004E1C80
 void CSWSArea::SetFogColor(const Vector& vColor)
 {
     m_nSunFogColor = RGB((unsigned char)(vColor.m_fX * 255.0f),
                          (unsigned char)(vColor.m_fY * 255.0f),
                          (unsigned char)(vColor.m_fZ * 255.0f));
 }
-// PC 0x004E1BB0
+// PC 0x004E1BB0 GOG 0x004E1CD0
 void CSWSArea::SetTransitionPending(int bPending, unsigned char nId)
 {
     m_bTransitionPending = bPending;
@@ -3261,7 +3261,7 @@ void CSWSArea::SetTransitionPending(int bPending, unsigned char nId)
         return;
     }
 }
-// PC 0x004E1C10
+// PC 0x004E1C10 GOG 0x004E1D30
 void CSWSArea::SetPlayerRestrictMode(int nRestrictMode)
 {
     if (nRestrictMode != 0 && m_nPlayerRestrictMode != nRestrictMode)
@@ -3270,7 +3270,7 @@ void CSWSArea::SetPlayerRestrictMode(int nRestrictMode)
     }
     m_nPlayerRestrictMode = nRestrictMode;
 }
-// PC 0x004E1C50
+// PC 0x004E1C50 GOG 0x004E1D70
 void DirtyTextureController::Init()
 {
     if (g_pAppManager->m_pServerExoApp != NULL &&
@@ -3288,7 +3288,7 @@ void DirtyTextureController::Init()
     }
     Init(0, 16, 0, 0);
 }
-// PC 0x004E3840
+// PC 0x004E3840 GOG 0x004E3960
 void CSWSArea::ClearObjects()
 {
     CGameObjectArray* pObjectArray =
@@ -3305,7 +3305,7 @@ void CSWSArea::ClearObjects()
     }
     m_lstObjectIds.num = 0;
 }
-// PC 0x004E38A0
+// PC 0x004E38A0 GOG 0x004E39C0
 void CSWSArea::AwardStealthXP(unsigned long oidObject)
 {
     NWSAREA_TRACE();
@@ -3330,7 +3330,7 @@ void CSWSArea::AwardStealthXP(unsigned long oidObject)
         m_bStealthXPEnabled = 0;
     }
 }
-// PC 0x004E3950
+// PC 0x004E3950 GOG 0x004E3A70
 int CSWSArea::EnforceNoPCHeadCloning(int nHead)
 {
     int nObjects;
@@ -3364,7 +3364,7 @@ int CSWSArea::EnforceNoPCHeadCloning(int nHead)
     }
     return nObjects;
 }
-// PC 0x004E3A90
+// PC 0x004E3A90 GOG 0x004E3BB0
 unsigned char CSWSArea::GetNumMinesSetByPlayerParty()
 {
     unsigned char nMines = 0;
@@ -3383,12 +3383,12 @@ unsigned char CSWSArea::GetNumMinesSetByPlayerParty()
     }
     return nMines;
 }
-// PC 0x004E3B00
+// PC 0x004E3B00 GOG 0x004E3C20
 int CSWSArea::GetPlayerCanSetMines()
 {
     return (unsigned char)GetNumMinesSetByPlayerParty() < 15;
 }
-// PC 0x004E7750
+// PC 0x004E7750 GOG 0x004E7820
 int CSWSArea::HandleTransparentDoors(
     const Vector& vStart, const Vector& vEnd, float fDistance, float fWidth,
     float fHeight, unsigned long oidObject, unsigned long& oidHitObject,
@@ -3430,7 +3430,7 @@ int CSWSArea::HandleTransparentDoors(
     }
     return 0;
 }
-// PC 0x004E78A0
+// PC 0x004E78A0 GOG 0x004E7970
 int CSWSArea::ClearLineOfSight(
     const Vector& vStart, const Vector& vEnd, Vector* pvHit,
     unsigned long* poidHit, unsigned long oidObject, unsigned long oidTarget,
@@ -3499,7 +3499,7 @@ inline void CSWSObject::AddEffectTarget(unsigned long oidTarget)
 {
     m_lstEffectTargets.AddUnique(oidTarget);
 }
-// PC 0x004E7C20
+// PC 0x004E7C20 GOG 0x004E7CF0
 void CSWSArea::ApplyEffect(CGameEffect* pEffect, const Vector& vPosition,
                           const Vector& vOrientation)
 {
@@ -3562,7 +3562,7 @@ void CSWSArea::ApplyEffect(CGameEffect* pEffect, const Vector& vPosition,
     }
     delete pEffect;
 }
-// PC 0x004E7F80
+// PC 0x004E7F80 GOG 0x004E8050
 int CSWSArea::NoNonWalkPolysInDoors(
     const Vector& vStart, const Vector& vEnd, float fMinHeight, float fMaxHeight,
     float fRadius, unsigned long oidObject, unsigned long& oidHitObject,
@@ -3641,7 +3641,7 @@ int CSWSArea::NoNonWalkPolysInDoors(
     }
     return 1;
 }
-// PC 0x004E95C0
+// PC 0x004E95C0 GOG 0x004E9690
 int CSWSArea::AddObjectToArea(unsigned long oidObject, int bLoadingGame)
 {
     NwsareaSync4();
@@ -3694,7 +3694,7 @@ int CSWSArea::AddObjectToArea(unsigned long oidObject, int bLoadingGame)
     }
     return 1;
 }
-// PC 0x004E9780
+// PC 0x004E9780 GOG 0x004E9850
 int CSWSArea::LoadArea(int bLoadingGame)
 {
     NwsareaSync4();

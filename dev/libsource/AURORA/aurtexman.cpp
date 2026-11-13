@@ -124,7 +124,7 @@ List<CAurTextureBasic*> CAurTextureBasic::m_DynamicTextureList;
 List<CAurTextureBasic*> RefreshTextures;
 
 extern List<int> TextureIndices;
-// PC 0x00420000
+// PC 0x00420000 GOG 0x00420010
 void AurTextureSetDynamicMemoryRatio(float fRatio)
 {
     g_fDynamicMemoryRatio = fRatio;
@@ -139,7 +139,7 @@ void SwapTextures(CAurTextureBasic*& pFirst, CAurTextureBasic*& pSecond)
     pSecond = pTemp;
 }
 #endif
-// PC 0x00420010
+// PC 0x00420010 GOG 0x00420020
 void InsertionSortTexture(CAurTextureBasic** ppTextures, int nCount)
 {
     for (int i = 1; i < nCount; i++)
@@ -176,7 +176,7 @@ void InsertionSortTexture(CAurTextureBasic** ppTextures, int nCount)
 #endif
     }
 }
-// PC 0x00420070
+// PC 0x00420070 GOG 0x00420080
 unsigned char* AurGetImageWrapper(char* sFileName, int* pWidth, int* pHeight, int* pBPP,
                        int* pCompressedSize, int* pReserved6, int* pReserved7,
                        Aurora::AuroraTextureFormats* pFormat, float* pAlpha,
@@ -275,7 +275,7 @@ unsigned char* AurGetImageWrapper(char* sFileName, int* pWidth, int* pHeight, in
     }
     return result;
 }
-// PC 0x00420220
+// PC 0x00420220 GOG 0x00420230
 void AurClearPalette()
 {
     operator delete(paletteimage);
@@ -287,7 +287,7 @@ TextureController* AurTextureGetController(CAurTexture* pTexture)
 {
     return pTexture->GetReferencedTexture()->AsCAurTextureBasic()->m_pController;
 }
-// PC 0x00420240
+// PC 0x00420240 GOG 0x00420250
 bool CAurTexture::IsCubeMap()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -297,7 +297,7 @@ bool CAurTexture::IsCubeMap()
     }
     return false;
 }
-// PC 0x004207B0
+// PC 0x004207B0 GOG 0x004207C0
 unsigned char CAurTexture::IsFullyLoaded()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -310,7 +310,7 @@ unsigned char CAurTexture::IsFullyLoaded()
         return 0;
     }
 }
-// PC 0x00420260
+// PC 0x00420260 GOG 0x00420270
 unsigned char CAurTexture::IsProcessed()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -323,7 +323,7 @@ unsigned char CAurTexture::IsProcessed()
         return 0;
     }
 }
-// PC 0x00420280
+// PC 0x00420280 GOG 0x00420290
 unsigned char CAurTexture::IsTxiLoaded()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -336,7 +336,7 @@ unsigned char CAurTexture::IsTxiLoaded()
         return 0;
     }
 }
-// PC 0x004202C0
+// PC 0x004202C0 GOG 0x004202D0
 void CAurTexture::SetTxiLoaded(bool bLoaded)
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -345,7 +345,7 @@ void CAurTexture::SetTxiLoaded(bool bLoaded)
         pTexture->m_bTxiLoaded = bLoaded;
     }
 }
-// PC 0x004202E0
+// PC 0x004202E0 GOG 0x004202F0
 char* CAurTexture::GetTxiData()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -358,7 +358,7 @@ char* CAurTexture::GetTxiData()
         return NULL;
     }
 }
-// PC 0x00420300
+// PC 0x00420300 GOG 0x00420310
 void CAurTexture::SetTxiData(char* pData, int nSize)
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -374,7 +374,7 @@ void CAurTexture::SetTxiData(char* pData, int nSize)
         pTexture->m_nTxiSize = nSize;
     }
 }
-// PC 0x00420370
+// PC 0x00420370 GOG 0x00420380
 int CAurTexture::GetTxiSize()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -400,7 +400,7 @@ bool CAurTexture::IsEnvironmentMapped()
         return 0;
     }
 }
-// PC 0x004203B0
+// PC 0x004203B0 GOG 0x004203C0
 Vector CAurTexture::GetSpecularColor()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -411,7 +411,7 @@ Vector CAurTexture::GetSpecularColor()
     }
     return vColor;
 }
-// PC 0x00420420
+// PC 0x00420420 GOG 0x00420430
 float CAurTexture::GetBumpIntensity()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -424,7 +424,7 @@ float CAurTexture::GetBumpIntensity()
         return 0.0f;
     }
 }
-// PC 0x00420440
+// PC 0x00420440 GOG 0x00420450
 float CAurTexture::GetSpecularBumpIntensity()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -437,7 +437,7 @@ float CAurTexture::GetSpecularBumpIntensity()
     }
     return fIntensity;
 }
-// PC 0x00420480
+// PC 0x00420480 GOG 0x00420490
 float CAurTexture::GetDiffuseBumpIntensity()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -450,7 +450,7 @@ float CAurTexture::GetDiffuseBumpIntensity()
     }
     return fIntensity;
 }
-// PC 0x004204C0
+// PC 0x004204C0 GOG 0x004204D0
 bool CAurTexture::IsDiffuseBumpMap()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -460,7 +460,7 @@ bool CAurTexture::IsDiffuseBumpMap()
     }
     return 0;
 }
-// PC 0x00420500
+// PC 0x00420500 GOG 0x00420510
 bool CAurTexture::IsSpecularBumpMap()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -470,7 +470,7 @@ bool CAurTexture::IsSpecularBumpMap()
     }
     return 0;
 }
-// PC 0x00420540
+// PC 0x00420540 GOG 0x00420550
 bool CAurTexture::IsBumpMap()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -482,7 +482,7 @@ bool CAurTexture::IsBumpMap()
     }
     return 0;
 }
-// PC 0x004205A0
+// PC 0x004205A0 GOG 0x004205B0
 bool CAurTexture::IsNormalMap()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -492,7 +492,7 @@ bool CAurTexture::IsNormalMap()
     }
     return 0;
 }
-// PC 0x00420390
+// PC 0x00420390 GOG 0x004203A0
 unsigned char CAurTexture::IsUsingGlobalAlpha()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -505,7 +505,7 @@ unsigned char CAurTexture::IsUsingGlobalAlpha()
         return 0;
     }
 }
-// PC 0x004205F0
+// PC 0x004205F0 GOG 0x00420600
 CAurFontInfo* CAurTexture::GetFontInfo()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -518,7 +518,7 @@ CAurFontInfo* CAurTexture::GetFontInfo()
         return NULL;
     }
 }
-// PC 0x00420610
+// PC 0x00420610 GOG 0x00420620
 unsigned char* CAurTexture::GetImage()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -531,7 +531,7 @@ unsigned char* CAurTexture::GetImage()
         return NULL;
     }
 }
-// PC 0x00420630
+// PC 0x00420630 GOG 0x00420640
 char* CAurTexture::GetName()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -544,7 +544,7 @@ char* CAurTexture::GetName()
         return NULL;
     }
 }
-// PC 0x00420770
+// PC 0x00420770 GOG 0x00420780
 int CAurTexture::GetFileRange()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -557,7 +557,7 @@ int CAurTexture::GetFileRange()
         return 0;
     }
 }
-// PC 0x00420670
+// PC 0x00420670 GOG 0x00420680
 int CAurTexture::GetWidth()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -570,7 +570,7 @@ int CAurTexture::GetWidth()
         return 0;
     }
 }
-// PC 0x00420690
+// PC 0x00420690 GOG 0x004206A0
 int CAurTexture::GetHeight()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -583,7 +583,7 @@ int CAurTexture::GetHeight()
         return 0;
     }
 }
-// PC 0x004206B0
+// PC 0x004206B0 GOG 0x004206C0
 int CAurTexture::GetDepth()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -596,7 +596,7 @@ int CAurTexture::GetDepth()
         return 0;
     }
 }
-// PC 0x004206D0
+// PC 0x004206D0 GOG 0x004206E0
 void CAurTexture::SetHeight(int nHeight)
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -605,7 +605,7 @@ void CAurTexture::SetHeight(int nHeight)
         pTexture->m_nHeight = nHeight;
     }
 }
-// PC 0x004206F0
+// PC 0x004206F0 GOG 0x00420700
 void CAurTexture::SetDepth(int nDepth)
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -614,7 +614,7 @@ void CAurTexture::SetDepth(int nDepth)
         pTexture->m_nDepth = nDepth;
     }
 }
-// PC 0x00420710
+// PC 0x00420710 GOG 0x00420720
 void CAurTexture::SetWidth(int nWidth)
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -623,7 +623,7 @@ void CAurTexture::SetWidth(int nWidth)
         pTexture->m_nWidth = nWidth;
     }
 }
-// PC 0x00420730
+// PC 0x00420730 GOG 0x00420740
 int CAurTexture::GetBPP()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -636,7 +636,7 @@ int CAurTexture::GetBPP()
         return 0;
     }
 }
-// PC 0x00420750
+// PC 0x00420750 GOG 0x00420760
 int CAurTexture::GetNumMipMaps()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -649,7 +649,7 @@ int CAurTexture::GetNumMipMaps()
         return 0;
     }
 }
-// PC 0x00420790
+// PC 0x00420790 GOG 0x004207A0
 int CAurTexture::GetNumX()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -662,7 +662,7 @@ int CAurTexture::GetNumX()
         return 0;
     }
 }
-// PC 0x00420810
+// PC 0x00420810 GOG 0x00420820
 int CAurTexture::GetNumY()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -688,7 +688,7 @@ unsigned char CAurTexture::GetMipMap()
         return 0;
     }
 }
-// PC 0x004207D0
+// PC 0x004207D0 GOG 0x004207E0
 unsigned char CAurTexture::GetFilter()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -701,7 +701,7 @@ unsigned char CAurTexture::GetFilter()
         return 0;
     }
 }
-// PC 0x004207F0
+// PC 0x004207F0 GOG 0x00420800
 unsigned char CAurTexture::GetMapTexelsToPixels()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -714,7 +714,7 @@ unsigned char CAurTexture::GetMapTexelsToPixels()
         return 0;
     }
 }
-// PC 0x00420650
+// PC 0x00420650 GOG 0x00420660
 int CAurTexture::GetClamp()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -727,7 +727,7 @@ int CAurTexture::GetClamp()
         return 0;
     }
 }
-// PC 0x00420830
+// PC 0x00420830 GOG 0x00420840
 float CAurTexture::GetBumpMapScaling()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -740,7 +740,7 @@ float CAurTexture::GetBumpMapScaling()
         return 0.0f;
     }
 }
-// PC 0x00420850
+// PC 0x00420850 GOG 0x00420860
 float CAurTexture::GetEnvMapAlpha()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -753,7 +753,7 @@ float CAurTexture::GetEnvMapAlpha()
         return 1.0f;
     }
 }
-// PC 0x00420870
+// PC 0x00420870 GOG 0x00420880
 int CAurTexture::GetCompressedSize()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -766,7 +766,7 @@ int CAurTexture::GetCompressedSize()
         return 0;
     }
 }
-// PC 0x00420890
+// PC 0x00420890 GOG 0x004208A0
 int CAurTexture::GetCompressionFormat()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -779,7 +779,7 @@ int CAurTexture::GetCompressionFormat()
         return 7;
     }
 }
-// PC 0x004208C0
+// PC 0x004208C0 GOG 0x004208D0
 int CAurTexture::GetTextureFormat()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -809,7 +809,7 @@ int CAurTexture::GetTextureFormat()
     }
     return Aurora::TEXTURE_FORMAT_DXT1;
 }
-// PC 0x00420990
+// PC 0x00420990 GOG 0x004209A0
 #ifdef _XBOX
 bool TextureController::IsLinear()
 #else
@@ -818,7 +818,7 @@ char TextureController::IsLinear()
 {
     return 0;
 }
-// PC 0x00420920
+// PC 0x00420920 GOG 0x00420930
 void CAurTexture::SetTextureFormat(Aurora::AuroraTextureFormats nFormat)
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -827,7 +827,7 @@ void CAurTexture::SetTextureFormat(Aurora::AuroraTextureFormats nFormat)
         pTexture->m_nTextureFormat = nFormat;
     }
 }
-// PC 0x00420BE0
+// PC 0x00420BE0 GOG 0x00420BF0
 inline LifeTextureController::~LifeTextureController()
 {
     delete[] m_pState;
@@ -837,7 +837,7 @@ inline LifeTextureController::LifeTextureController(CAurTexture* pTexture)
     : TextureController(pTexture)
 {
 }
-// PC 0x00420950
+// PC 0x00420950 GOG 0x00420960
 void CAurTexture::FreeImage()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -846,7 +846,7 @@ void CAurTexture::FreeImage()
         pTexture->FreeImage();
     }
 }
-// PC 0x00420B60
+// PC 0x00420B60 GOG 0x00420B70
 inline PerlinTextureController::~PerlinTextureController()
 {
     delete[] m_pPerlinImage;
@@ -857,7 +857,7 @@ inline PerlinTextureController::PerlinTextureController(CAurTexture* pTexture)
     : TextureController(pTexture)
 {
 }
-// PC 0x00420970
+// PC 0x00420970 GOG 0x00420980
 void CAurTexture::IncrementTIDIndex(int nIndex)
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -866,7 +866,7 @@ void CAurTexture::IncrementTIDIndex(int nIndex)
         pTexture->m_nTIDIndex = pTexture->m_pTextureIDs[nIndex];
     }
 }
-// PC 0x004209C0
+// PC 0x004209C0 GOG 0x004209D0
 inline RandomTextureController::~RandomTextureController()
 {
     delete[] m_pRandomImage;
@@ -879,7 +879,7 @@ inline RandomTextureController::RandomTextureController(CAurTexture* pTexture)
     m_pRandomImage = NULL;
     m_pChannelImage = NULL;
 }
-// PC 0x00420A40
+// PC 0x00420A40 GOG 0x00420A50
 inline RingDistortTextureController::~RingDistortTextureController()
 {
     delete[] m_pRingImage;
@@ -906,7 +906,7 @@ inline HeatDistortTextureController::HeatDistortTextureController(CAurTexture* p
     m_fAngle = 0.0f;
 }
 #endif
-// PC 0x00420C60
+// PC 0x00420C60 GOG 0x00420C70
 inline DirtyTextureController::~DirtyTextureController()
 {
     delete[] m_pDirtyImage;
@@ -920,7 +920,7 @@ inline DirtyTextureController::DirtyTextureController(CAurTexture* pTexture, int
     m_nDirtyIndex = nDirtyIndex;
     m_nBlendMode = 0;
 }
-// PC 0x00420AA0
+// PC 0x00420AA0 GOG 0x00420AB0
 short AurTextureCalculateHashID(char* sName, short nNumTXI, int* pTXI)
 {
     int nHash = 0;
@@ -1009,7 +1009,7 @@ void CAurTextureBasic::FreeImage()
     }
 }
 #else
-void CAurTextureBasic::FreeImage()  // PC 0x00420CC0
+void CAurTextureBasic::FreeImage()  // PC 0x00420CC0 GOG 0x00420CD0
 {
     if (m_pImage != NULL)
     {
@@ -1193,7 +1193,7 @@ unsigned char* CAurTextureBasic::LoadImageA()
     return m_pImage;
 }
 #else
-unsigned char* CAurTextureBasic::LoadImageA()  // PC 0x00420DF0
+unsigned char* CAurTextureBasic::LoadImageA()  // PC 0x00420DF0 GOG 0x00420E00
 {
     FreeImage();
     if (m_sFileName[0] == 0)
@@ -1278,7 +1278,7 @@ unsigned char* CAurTextureBasic::LoadImageA()  // PC 0x00420DF0
     return m_pImage;
 }
 #endif
-// PC 0x00421100
+// PC 0x00421100 GOG 0x00421110
 unsigned char* CAurTextureBasic::LoadImagePLT()
 {
     FreeImage();
@@ -1367,7 +1367,7 @@ void CAurTextureBasic::ConstructImage()
     m_bFullyLoaded = 1;
 }
 #else
-void CAurTextureBasic::ConstructImage()  // PC 0x00421180
+void CAurTextureBasic::ConstructImage()  // PC 0x00421180 GOG 0x00421190
 {
     ImageGammaCorrect(m_nWidth, m_nHeight, m_nBPP, m_pImage, m_fGamma);
     if (m_pScheme != NULL)
@@ -1435,7 +1435,7 @@ void CAurTextureBasic::ConstructImage()  // PC 0x00421180
     m_bFullyLoaded = 1;
 }
 #endif
-// PC 0x00421330
+// PC 0x00421330 GOG 0x00421340
 unsigned char* ImageQuarterRotated(unsigned char* pImage, int nWidth,
                                    int nHeight, int nBPP, int nRotation)
 {
@@ -1465,7 +1465,7 @@ unsigned char* ImageQuarterRotated(unsigned char* pImage, int nWidth,
     }
     return pDest;
 }
-// PC 0x00421460
+// PC 0x00421460 GOG 0x00421470
 void CAurTextureBasic::SetScheme(int* pScheme, int nCount)
 {
     if (m_pScheme == NULL)
@@ -1478,7 +1478,7 @@ void CAurTextureBasic::SetScheme(int* pScheme, int nCount)
     }
     m_nSchemeSize = nCount;
 }
-// PC 0x004215E0
+// PC 0x004215E0 GOG 0x004215F0
 TextureController* CAurTexture::GetController()
 {
     if (AsCAurTextureBasic())
@@ -1489,26 +1489,26 @@ TextureController* CAurTexture::GetController()
 #include "aurrendergl.h"
 #include "aurscenemanager.h"
 #include "aurparse.h"
-// PC 0x004065A0
+// PC 0x004065A0 GOG 0x00406570
 int AurTextureSetDim(int nWidth, int nHeight)
 {
     return 0;
 }
-// PC 0x00421600
+// PC 0x00421600 GOG 0x00421610
 int AurTextureGetMaxTexID()
 {
     return maxtexid;
 }
-// PC 0x00421640
+// PC 0x00421640 GOG 0x00421650
 void GLRender::SetCurrentTID(unsigned int nTID)
 {
     cm_nGLCurrentTID[cm_uiCurrentStage] = nTID;
 }
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 void AurTextureClearAll()
 {
 }
-// PC 0x00421660
+// PC 0x00421660 GOG 0x00421670
 Normal* convertHeightFieldToNormalMap(unsigned char* pHeightField,
                                              int nWidth, int nHeight,
                                              int nRowWidth, int nRowCount,
@@ -1540,7 +1540,7 @@ Normal* convertHeightFieldToNormalMap(unsigned char* pHeightField,
     }
     return pNormalMap;
 }
-// PC 0x004217D0
+// PC 0x004217D0 GOG 0x004217E0
 Normal* downSampleNormalMap(Normal* pNormalMap, int nWidth, int nHeight,
                            int nDestWidth, int nDestHeight)
 {
@@ -1754,7 +1754,7 @@ inline void GLRender::BindTexture(Aurora::AuroraEnableEnums nTarget, unsigned lo
 }
 
 #else
-inline int GLRender::BindTexture(Aurora::AuroraEnableEnums nTarget,  // PC 0x00421C40
+inline int GLRender::BindTexture(Aurora::AuroraEnableEnums nTarget,  // PC 0x00421C40 GOG 0x00421C50
                                  unsigned long nTexture)
 {
     glBindTexture(enableTranslationTable[nTarget], nTexture);
@@ -1764,34 +1764,34 @@ inline int GLRender::BindTexture(Aurora::AuroraEnableEnums nTarget,  // PC 0x004
     return GLRender::cm_uiCurrentStage;
 }
 #endif
-// PC 0x00421BE0
+// PC 0x00421BE0 GOG 0x00421BF0
 void AurTextureSuspendUpdates()
 {
     g_bIsSuspended = true;
 }
-// PC 0x00421BF0
+// PC 0x00421BF0 GOG 0x00421C00
 void AurTextureResumeUpdates()
 {
     g_bIsSuspended = false;
 }
-// PC 0x00421C00
+// PC 0x00421C00 GOG 0x00421C10
 void AurTextureSetModeStatic()
 {
     g_bModeIsDynamic = false;
 }
-// PC 0x00421C10
+// PC 0x00421C10 GOG 0x00421C20
 void AurTextureSetModeDynamic()
 {
     g_bModeIsDynamic = true;
 }
-// PC 0x00421C20
+// PC 0x00421C20 GOG 0x00421C30
 bool AurTextureEnvMapDisabled()
 {
     return CAurTextureBasic::m_bLowEndEnvMapEnabled;
 }
 
 #ifndef _XBOX
-template <> inline SafePointer<CAurTexture>::SafePointer()  // PC 0x00421C30
+template <> inline SafePointer<CAurTexture>::SafePointer()  // PC 0x00421C30 GOG 0x00421C40
     : m_pObject(0)
 {
 }
@@ -1827,7 +1827,7 @@ inline void GetViewport(GLint* pViewport)
 #endif
 
 #ifndef _XBOX
-template <> inline void List<Vector>::allocate(int nAllocated)  // PC 0x005752B0
+template <> inline void List<Vector>::allocate(int nAllocated)  // PC 0x005752B0 GOG 0x00422AC0
 {
     Vector* pOldList = m_pList;
     m_nAllocated = nAllocated;
@@ -1837,7 +1837,7 @@ template <> inline void List<Vector>::allocate(int nAllocated)  // PC 0x005752B0
     if (pOldList != 0)
         delete[] pOldList;
 }
-// PC 0x00422AA0
+// PC 0x00422AA0 GOG 0x00422B50
 template <> inline void List<Vector>::SetSize(int nSize)
 {
     if (nSize == 0)
@@ -1855,7 +1855,7 @@ template <> inline void List<Vector>::SetSize(int nSize)
     }
     m_nCount = nSize;
 }
-// PC 0x00422AE0
+// PC 0x00422AE0 GOG 0x00422B90
 template <> inline void List<Vector>::Add(Vector item)
 {
     if (m_nCount == m_nAllocated)
@@ -1867,7 +1867,7 @@ template <> inline void List<Vector>::Add(Vector item)
 #endif
 
 #include "aurcamera.h"
-// PC 0x00421C90
+// PC 0x00421C90 GOG 0x00421CB0
 void AurTextureBindTID(unsigned int nTextureID, bool bCubeMap, bool b3D)
 {
     bool bBound = false;
@@ -1913,7 +1913,7 @@ void AurTextureBindTID(unsigned int nTextureID, bool bCubeMap, bool b3D)
     }
 
 }
-// PC 0x00421D60
+// PC 0x00421D60 GOG 0x00421D80
 CAurTexture* CAurTexture::GetReferencedTexture()
 {
     if (m_pReferenced.m_pObject != NULL)
@@ -1922,7 +1922,7 @@ CAurTexture* CAurTexture::GetReferencedTexture()
     }
     return this;
 }
-// PC 0x00421D70
+// PC 0x00421D70 GOG 0x00421D90
 unsigned char CAurTexture::IsInvalid()
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -1932,12 +1932,12 @@ unsigned char CAurTexture::IsInvalid()
     }
     return this != CAurTextureBasic::m_pNullTexture.m_pObject;
 }
-// PC 0x00421DA0
+// PC 0x00421DA0 GOG 0x00421DC0
 unsigned char CAurTexture::IsNull()
 {
     return GetReferencedTexture() == CAurTextureBasic::m_pNullTexture.m_pObject;
 }
-// PC 0x00421E50
+// PC 0x00421E50 GOG 0x00421E70
 inline CAurFontInfo::~CAurFontInfo()
 {
 }
@@ -2109,7 +2109,7 @@ const char* replacetexture(char* sCommand)
     return returnvalue;
 #endif
 }
-// PC 0x00423B00
+// PC 0x00423B00 GOG 0x00423C10
 void CAurTextureBasic::ParseField(char* sField)
 {
     char sProcedureType[64];
@@ -2302,7 +2302,7 @@ void CAurTextureBasic::ParseField(char* sField)
         m_nLevel = m_nBaseLevel;
     }
 }
-// PC 0x00422B30
+// PC 0x00422B30 GOG 0x00422BE0
 int CAurTexture::glImage(bool bMipMaps, unsigned char* pImage)
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -2322,7 +2322,7 @@ int CAurTexture::glImage(bool bMipMaps, unsigned char* pImage)
     }
     return nResult;
 }
-// PC 0x00422B80
+// PC 0x00422B80 GOG 0x00422C30
 void CAurTexture::SetIsEnvironmentMapped(bool bMapped)
 {
     CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
@@ -2335,7 +2335,7 @@ void CAurTexture::SetIsEnvironmentMapped(bool bMapped)
         }
     }
 }
-// PC 0x00422BB0
+// PC 0x00422BB0 GOG 0x00422C60
 void CAurTexture::Bind()
 {
     if (bindzero)
@@ -2398,7 +2398,7 @@ void CAurTexture::Bind()
         AurTextureBindTID(0, false, false);
     }
 }
-// PC 0x00422CC0
+// PC 0x00422CC0 GOG 0x00422D70
 void CAurTextureBasic::AddToOrderedLists()
 {
     int i = 0;
@@ -2466,7 +2466,7 @@ void CAurTextureBasic::AddToOrderedLists()
     }
 #endif
 }
-// PC 0x00422DB0
+// PC 0x00422DB0 GOG 0x00422E60
 void CAurTextureBasic::RemoveFromOrderedLists()
 {
     if (m_OrderedTextureList.Contains(this))
@@ -2482,7 +2482,7 @@ void CAurTextureBasic::RemoveFromOrderedLists()
         m_StaticTextureList.Remove(this);
     }
 }
-// PC 0x00422E00
+// PC 0x00422E00 GOG 0x00422EB0
 void CAurTextureBasic::BuildAndStoreTexture()
 {
     if (m_bSpecial != 0)
@@ -2528,7 +2528,7 @@ void CAurTextureBasic::BuildAndStoreTexture()
         FreeImage();
     }
 }
-// PC 0x00422EB0
+// PC 0x00422EB0 GOG 0x00422F60
 void AurTextureSetLayered(CAurTexture* pTexture, char* sExtra, int* pTXI,
                           int nNumTXI)
 {
@@ -2729,7 +2729,7 @@ const char* listalltextures(char* sCommand)
 
 static TEXTUREMEMORYSTATS g_staticTMS;
 static TEXTUREMEMORYSTATS g_dynamicTMS;
-// PC 0x00423930
+// PC 0x00423930 GOG 0x004239E0
 CAurFontInfo::CAurFontInfo() : m_lstUpperLeft(0), m_lstLowerRight(0)
 {
     m_nNumChars = 0;
@@ -2739,7 +2739,7 @@ CAurFontInfo::CAurFontInfo() : m_lstUpperLeft(0), m_lstLowerRight(0)
     m_fSpacingR = 0.0f;
     m_fLineSpacing = 0.0f;
 }
-// PC 0x00423980
+// PC 0x00423980 GOG 0x00423A30
 void CAurFontInfo::ParseField(char* sField)
 {
     if (stricmp("numchars", firstword(sField)) == 0)
@@ -2775,7 +2775,7 @@ void CAurFontInfo::ParseField(char* sField)
         Parse(sField + 16, m_lstLowerRight);
     }
 }
-// PC 0x00423AD0
+// PC 0x00423AD0 GOG 0x00423B80
 void AurTextureRefreshAll()
 {
     if (initialized)
@@ -2787,7 +2787,7 @@ void AurTextureRefreshAll()
 }
 
 unsigned int AurTextureGetTID(CAurTexture* pTexture);
-// PC 0x00422F50
+// PC 0x00422F50 GOG 0x00423000
 void AurTextureBuildAndStoreAll()
 {
     int nCount = RefreshTextures.m_nCount;
@@ -2824,7 +2824,7 @@ void AurTextureBuildAndStoreAll()
         }
     }
 }
-// PC 0x004230E0
+// PC 0x004230E0 GOG 0x00423190
 List<int>* AurTextureGetOrdering()
 {
     TextureIndices.m_nCount = 0;
@@ -2872,7 +2872,7 @@ int AurTextureGetAvailableTextureMemory()
     return nMemory;
 }
 #endif
-// PC 0x00423230
+// PC 0x00423230 GOG 0x004232E0
 void AurTextureMemCheck(List<CAurTextureBasic*>& lstTextures, int nBudget,
                         TEXTUREMEMORYSTATS* pStats, float fRatio)
 {
@@ -2964,7 +2964,7 @@ void AurTextureMemCheck(List<CAurTextureBasic*>& lstTextures, int nBudget,
 #undef fRatio
 #endif
 }
-// PC 0x004234C0
+// PC 0x004234C0 GOG 0x00423570
 int AurTextureResetAll()
 {
     RefreshTextures = CAurTextureBasic::m_OrderedTextureList;
@@ -2975,7 +2975,7 @@ int AurTextureResetAll()
     }
     return RefreshTextures.m_nCount;
 }
-#ifdef _XBOX  // PC 0x00423500
+#ifdef _XBOX  // PC 0x00423500 GOG 0x004235B0
 int AurTextureSetMem(int nMem)
 #else
 bool AurTextureSetMem(int nMem)
@@ -3004,7 +3004,7 @@ bool AurTextureSetMem(int nMem)
     AurTextureBuildAndStoreAll();
     return usedtexturememory <= maxtexmem;
 }
-// PC 0x00423650
+// PC 0x00423650 GOG 0x00423700
 int AurTextureMakeCurrent()
 {
     if (!g_bIsSuspended)
@@ -3067,7 +3067,7 @@ int AurTextureMakeCurrent()
         maxdeltat = DeltaT;
     return ++texcurrentframe;
 }
-// PC 0x00421DB0
+// PC 0x00421DB0 GOG 0x00421DD0
 void CAurTextureBasic::Reset()
 {
     FreeImage();
@@ -3114,7 +3114,7 @@ void CAurTextureBasic::Reset()
 }
 
 List<int> TextureIndices;
-// PC 0x00421EB0
+// PC 0x00421EB0 GOG 0x00421ED0
 void CAurTextureBasic::GetMemoryUsage(TEXTUREMEMORYSTATS* pStats)
 {
     if (m_bMemoryDirty == 0)
@@ -3206,7 +3206,7 @@ unsigned int AurTextureReadScreen(int nWidth, int nHeight, unsigned char* pBuffe
     return nTextureID;
 }
 #endif
-// PC 0x00422110
+// PC 0x00422110 GOG 0x00422130
 int CAurTextureBasic::glImage(bool bMipMaps)
 {
 #ifndef _XBOX
@@ -3284,7 +3284,7 @@ int CAurTextureBasic::glImage(bool bMipMaps)
     }
     return m_nTIDIndex;
 }
-// PC 0x00422280
+// PC 0x00422280 GOG 0x004222A0
 char* AurTextureFind(char* sName, char* sExtra, int* pTXI, int nNumTXI)
 {
     if (sExtra == NULL)
@@ -3342,7 +3342,7 @@ char* AurTextureFind(char* sName, char* sExtra, int* pTXI, int nNumTXI)
         return NULL;
     }
 }
-// PC 0x004223B0
+// PC 0x004223B0 GOG 0x004223D0
 unsigned int AurTextureGetTID(CAurTexture* pTexture)
 {
 #ifdef _XBOX
@@ -3387,7 +3387,7 @@ void CAurTextureBasic::AsNormalizeVectorCubeMap()
     GLRender::SetActiveTexture(0);
 }
 #else
-void CAurTextureBasic::AsNormalizeVectorCubeMap()  // PC 0x004223E0
+void CAurTextureBasic::AsNormalizeVectorCubeMap()  // PC 0x004223E0 GOG 0x00422400
 {
     unsigned int* pTextureIDs = m_pTextureIDs;
     m_nLevel = 0;
@@ -3432,7 +3432,7 @@ extern int loadimagetime;
 extern int maxdecodetime;
 extern int maxgltime;
 extern float maxdeltat;
-// PC 0x00422530
+// PC 0x00422530 GOG 0x00422550
 void AurTextureRelease(CAurTexture* pTexture)
 {
     if (pTexture != NULL && pTexture->m_lstSafePointers.m_nCount == 0)
@@ -3451,7 +3451,7 @@ void AurTextureRelease(CAurTexture* pTexture)
         }
     }
 }
-// PC 0x00422570
+// PC 0x00422570 GOG 0x00422590
 void AurTextureCalculateNewTexMem(List<CAurTextureBasic*>& lstTextures,
                                   TEXTUREMEMORYSTATS* pStats)
 {
@@ -3480,7 +3480,7 @@ void AurTextureCalculateNewTexMem(List<CAurTextureBasic*>& lstTextures,
         }
     }
 }
-// PC 0x00422610
+// PC 0x00422610 GOG 0x00422630
 void AurTextureForceControllerUpdate()
 {
     for (int i = 0; i < CAurTextureBasic::m_OrderedTextureList.m_nCount; i++)
@@ -3494,7 +3494,7 @@ void AurTextureForceControllerUpdate()
         }
     }
 }
-// PC 0x00422660
+// PC 0x00422660 GOG 0x00422680
 int BuildTextureNormalMap(unsigned char* pHeightField, float fScale,
                           int& nWidth, int& nHeight, int nLevel, int nBPP,
                           bool bMipMaps)
@@ -3613,7 +3613,7 @@ void AurSaveGameSnapshot(char* sFileName, int nSize, bool bSquare)
     pTexture->Release();
 }
 #else
-void AurSaveGameSnapshot(char* sFileName, int nSize, bool bSquare)  // PC 0x004226E0
+void AurSaveGameSnapshot(char* sFileName, int nSize, bool bSquare)  // PC 0x004226E0 GOG 0x00422700
 {
     static int k;
     char sBuffer[64];
@@ -3686,7 +3686,7 @@ void AurSaveGameSnapshot(char* sFileName, int nSize, bool bSquare)  // PC 0x0042
     delete[] pPixels;
 }
 #endif
-// PC 0x00422960
+// PC 0x00422960 GOG 0x00422980
 void AurSnapshot(char* sFileName)
 {
     static int k;
@@ -3739,7 +3739,7 @@ void AurSnapshot(char* sFileName)
         delete[] pPixels;
     }
 }
-// PC 0x00424390
+// PC 0x00424390 GOG 0x004244A0
 void CAurTextureBasic::Init(char* sName)
 {
     int nResourceSize = 0;
@@ -3820,7 +3820,7 @@ void CAurTextureBasic::Init(char* sName)
         m_bCubeMap = 0;
     }
 }
-// PC 0x00424580
+// PC 0x00424580 GOG 0x00424690
 int AurTextureSetAttributes(CAurTexture* pTexture, char* sField)
 {
     if (pTexture == NULL)
@@ -3833,7 +3833,7 @@ int AurTextureSetAttributes(CAurTexture* pTexture, char* sField)
     RefreshTextures.AddUnique(pBasic);
     return 1;
 }
-// PC 0x004245C0
+// PC 0x004245C0 GOG 0x004246D0
 int AurTextureMessage(CAurTexture* pTexture, char* sField)
 {
     if (pTexture == NULL)
@@ -3850,7 +3850,7 @@ int AurTextureMessage(CAurTexture* pTexture, char* sField)
     RefreshTextures.AddUnique(pBasic);
     return 1;
 }
-// PC 0x00424970
+// PC 0x00424970 GOG 0x00424A80
 CAurTexture* AurTextureGetNULL()
 {
     if (CAurTextureBasic::m_pNullTexture.m_pObject == NULL)
@@ -3860,13 +3860,13 @@ CAurTexture* AurTextureGetNULL()
     }
     return (CAurTexture*)CAurTextureBasic::m_pNullTexture.m_pObject;
 }
-// PC 0x004246D0
+// PC 0x004246D0 GOG 0x004247E0
 CAurTexture::CAurTexture()
 {
     m_pReferenced = NULL;
     m_bEnvironmentMapped = 0;
 }
-// PC 0x00424A00
+// PC 0x00424A00 GOG 0x00424B10
 CAurTextureBasic::CAurTextureBasic(char* sName, char* sExtra)
 {
     m_sFileName[0] = '\0';
@@ -3947,14 +3947,14 @@ CAurTextureBasic::CAurTextureBasic(char* sName, char* sExtra)
     m_nMemorySize = -1;
     m_bMemoryDirty = 1;
 }
-// PC 0x00424730
+// PC 0x00424730 GOG 0x00424840
 CAurTexture::~CAurTexture()
 {
     CAurTexture* pTarget = m_pReferenced;
     m_pReferenced = NULL;
     AurTextureRelease(pTarget);
 }
-// PC 0x004247E0
+// PC 0x004247E0 GOG 0x004248F0
 CAurTextureBasic::~CAurTextureBasic()
 {
     if (m_pFontInfo != NULL)
@@ -3997,7 +3997,7 @@ CAurTextureBasic::~CAurTextureBasic()
         RefreshTextures.Remove(this);
     }
 }
-// PC 0x00424C90
+// PC 0x00424C90 GOG 0x00424DA0
 CAurTextureBasic* AurTextureGetNormalizationCubeMap()
 {
     if (!AurCubeMapAvailable())
@@ -4014,7 +4014,7 @@ CAurTextureBasic* AurTextureGetNormalizationCubeMap()
     pTexture->AsNormalizeVectorCubeMap();
     return pTexture;
 }
-// PC 0x00424D40
+// PC 0x00424D40 GOG 0x00424E50
 CAurTexture* AurTextureGet(char* sName, CAurTexture* pReference, char* sExtra,
                            int* pTXI, int nNumTXI)
 {
@@ -4057,7 +4057,7 @@ CAurTexture* AurTextureGet(char* sName, CAurTexture* pReference, char* sExtra,
     }
     return pResult;
 }
-// PC 0x00424EA0
+// PC 0x00424EA0 GOG 0x00424FB0
 int AurTextureReplaceSingleReference(CAurTexture* pTexture, char* sName,
                                       char* sExtra, char* sNewName, int* pTXI,
                                       int nNumTXI)
@@ -4156,7 +4156,7 @@ int AurTextureReplaceSingleReference(CAurTexture* pTexture, char* sName,
     }
     return 1;
 }
-// PC 0x00425090
+// PC 0x00425090 GOG 0x004251A0
 int AurTextureReplaceTileReferences(CAurScene* pScene, const Vector& vPos,
                                     char* sOldName, char* sNewName)
 {
@@ -4214,7 +4214,7 @@ int AurTextureReplaceTileReferences(CAurScene* pScene, const Vector& vPos,
     }
     return 0;
 }
-// PC 0x00425320
+// PC 0x00425320 GOG 0x00425430
 CAurTexture* AurTextureGetReference(char* sName, char* sExtra)
 {
     CAurTexture* pTexture = AurTextureGet(sName, NULL, sExtra, NULL, 0);

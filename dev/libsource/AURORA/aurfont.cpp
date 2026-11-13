@@ -68,7 +68,7 @@ void AurPrintString(char* szString, int nColumn, int nRow)
 {
 }
 #else
-// PC 0x00461070
+// PC 0x00461070 GOG 0x00461180
 inline void GLRender::SetUpTextFormat()
 {
     int nChar;
@@ -111,7 +111,7 @@ inline void GLRender::PrintStringAtScreenPos(char* szString, float fX, float fY)
     glMatrixMode(GL_MODELVIEW);
     glPopAttrib();
 }
-// PC 0x004610F0
+// PC 0x004610F0 GOG 0x00461200
 void AurInitFont()
 {
     g_bUseTexturedFont = false;
@@ -119,7 +119,7 @@ void AurInitFont()
     initialized = 1;
 }
 #endif
-// PC 0x00461110
+// PC 0x00461110 GOG 0x00461220
 void AurFreeFont()
 {
     if (initialized != 0)
@@ -194,7 +194,7 @@ int SetConsoleFont(char* szFontName)
     return g_nFontNum;
 }
 #endif
-void PostedString::Post()  // PC 0x00461150
+void PostedString::Post()  // PC 0x00461150 GOG 0x00461260
 {
     float fElapsedRatio;
     float fRed;
@@ -229,7 +229,7 @@ void PostedString::Post()  // PC 0x00461150
         }
     }
 }
-// PC 0x00461240
+// PC 0x00461240 GOG 0x00461350
 void AurStringsFree()
 {
     int i;
@@ -248,7 +248,7 @@ void AurStringsFree()
         }
     }
 }
-// PC 0x004612B0
+// PC 0x004612B0 GOG 0x004613C0
 char* untrace(char* szPrefix)
 {
     static char buf[256];
@@ -365,12 +365,12 @@ PostedString::PostedString(char* szString, int nColumn, int nRow,
     m_fEndBlue = g_cDefCol2.m_fBlue;
     m_fEndAlpha = g_cDefCol2.m_fAlpha;
 }
-// PC 0x004614F0
+// PC 0x004614F0 GOG 0x00461600
 void AurPostString(char* szString, int nColumn, int nRow, float fDuration)
 {
     new PostedString(szString, nColumn, nRow, fDuration);
 }
-// PC 0x00461550
+// PC 0x00461550 GOG 0x00461660
 void AurPrintf(const char* szFormat, ...)
 {
     char szBuffer[512];
@@ -397,7 +397,7 @@ void AurPrintf(const char* szFormat, ...)
         va_end(vaArgs);
     }
 }
-// PC 0x00461680
+// PC 0x00461680 GOG 0x00461790
 void PostTraceStrings()
 {
     char szBuffer[512];
@@ -431,7 +431,7 @@ void PostTraceStrings()
 #endif
     g_bKeepHistory = bKeepHistory;
 }
-// PC 0x00461700
+// PC 0x00461700 GOG 0x00461810
 void AurRenderStrings()
 {
     int i;

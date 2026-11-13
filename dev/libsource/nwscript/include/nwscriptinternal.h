@@ -448,7 +448,7 @@ public:
         m_nVarLevel = 0;
         m_nVarRunTimeLocation = 0;
     }
-    // PC 0x0061CD80
+    // PC 0x0061CD80 GOG 0x0061CD60
     ~CScriptCompilerVarStackEntry()
     {
     }
@@ -467,7 +467,7 @@ public:
         m_pchType = 0;
         m_nLocation = 0;
     }
-    // PC 0x0061CDE0
+    // PC 0x0061CDE0 GOG 0x0061CDB0
     ~CScriptCompilerStructureFieldEntry()
     {
     }
@@ -528,7 +528,7 @@ public:
     int m_nCharacterOnLine;
     int m_nTokenStatus;
     int m_nTokenCharacters;
-    // PC 0x0061CFC0
+    // PC 0x0061CFC0 GOG 0x0061CF90
     ~CScriptCompilerIncludeFileStackEntry()
     {
     }

@@ -39,7 +39,7 @@ static inline void NwsplaceableTrace1();
 static inline CServerExoApp* GetServerExoApp();
 
 int RenderPlaceableBBox = 0;
-// PC 0x0058A400
+// PC 0x0058A400 GOG 0x0058A480
 CSWSPlaceable::CSWSPlaceable(unsigned long oidSelf)
     : CSWSObject(CGameObject::OBJECT_TYPE_PLACEABLE, oidSelf, 0)
 {
@@ -92,7 +92,7 @@ CSWSPlaceable::CSWSPlaceable(unsigned long oidSelf)
     m_bInventoryOpening = 0;
     m_pTrapTrigger = NULL;
 }
-// PC 0x0058A6B0
+// PC 0x0058A6B0 GOG 0x0058A730
 int CSWSPlaceable::LoadFromTemplate(const CResRef& cResRef, int bLoadState)
 {
     CResStruct stTop;
@@ -115,14 +115,14 @@ int CSWSPlaceable::LoadFromTemplate(const CResRef& cResRef, int bLoadState)
         return 1;
     }
 }
-// PC 0x0057F480
+// PC 0x0057F480 GOG 0x0057F500
 int CSWSPlaceable::GetDead()
 {
     if (m_bPlotObject != 0)
         return 0;
     return CSWSObject::GetDead();
 }
-// PC 0x00587DD0
+// PC 0x00587DD0 GOG 0x00587E50
 CSWSPlaceable::~CSWSPlaceable()
 {
     if (m_pcItemRepository != NULL)
@@ -153,7 +153,7 @@ CSWSPlaceable::~CSWSPlaceable()
             pCreature->m_oidParentCorpse = OBJECT_INVALID;
     }
 }
-// PC 0x00587F90
+// PC 0x00587F90 GOG 0x00588010
 int CSWSPlaceable::LoadPlaceable(CResGFF* pRes, CResStruct* pStruct, int bLoadState)
 {
     CExoString sScript;
@@ -341,7 +341,7 @@ int CSWSPlaceable::LoadPlaceable(CResGFF* pRes, CResStruct* pStruct, int bLoadSt
     PostProcess();
     return 1;
 }
-// PC 0x00588EE0
+// PC 0x00588EE0 GOG 0x00588F60
 int CSWSPlaceable::LoadBodyBag(int nAppearance)
 {
     CExoLocString lsName;
@@ -471,7 +471,7 @@ int CSWSPlaceable::LoadBodyBag(int nAppearance)
     PostProcess();
     return 1;
 }
-// PC 0x00586EA0
+// PC 0x00586EA0 GOG 0x00586F20
 void CSWSPlaceable::PostProcess()
 {
     if (m_nHardness > 0)
@@ -488,7 +488,7 @@ void CSWSPlaceable::PostProcess()
         m_n1EC = 0;
     }
 }
-// PC 0x005894A0
+// PC 0x005894A0 GOG 0x00589520
 int CSWSPlaceable::SavePlaceable(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList lstItems;
@@ -633,7 +633,7 @@ int CSWSPlaceable::SavePlaceable(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldBYTE(pStruct, m_c251, "PCLevelAtSpawn");
     return 1;
 }
-// PC 0x00589C60
+// PC 0x00589C60 GOG 0x00589CE0
 void CSWSPlaceable::AddToArea(CSWSArea* pArea, const Vector& vPosition,
                             int bLoadingGame)
 {
@@ -693,7 +693,7 @@ void CSWSPlaceable::AddToArea(CSWSArea* pArea, const Vector& vPosition,
         GetArea()->AddObjectToArea(m_nId, 1);
     }
 }
-// PC 0x00586F80
+// PC 0x00586F80 GOG 0x00587000
 void CSWSPlaceable::RemoveFromArea()
 {
     if (GetArea() != NULL)
@@ -711,7 +711,7 @@ void CSWSPlaceable::RemoveFromArea()
     Vector vPosition;
     SetPosition(vPosition, 1, 1, 0);
 }
-// PC 0x00587000
+// PC 0x00587000 GOG 0x00587080
 void CSWSPlaceable::AIUpdate()
 {
     unsigned long nCalendarDay;
@@ -752,7 +752,7 @@ void CSWSPlaceable::AIUpdate()
     UpdateEffectList(nCalendarDay, nTimeOfDay);
     RunActions(nCalendarDay, nTimeOfDay, nTimer);
 }
-// PC 0x005871B0
+// PC 0x005871B0 GOG 0x00587230
 int CSWSPlaceable::RemoveItem(CSWSItem* pItem)
 {
     CItemRepository* pRepository = m_pcItemRepository;
@@ -765,7 +765,7 @@ int CSWSPlaceable::RemoveItem(CSWSItem* pItem)
 
     return 0;
 }
-// PC 0x00587200
+// PC 0x00587200 GOG 0x00587280
 int CSWSPlaceable::AcquireItem(CSWSItem** ppItem, unsigned long oidPossessor,
                                int bDisplayFeedback)
 {
@@ -824,7 +824,7 @@ int CSWSPlaceable::AcquireItem(CSWSItem** ppItem, unsigned long oidPossessor,
     }
     return 0;
 }
-// PC 0x005873C0
+// PC 0x005873C0 GOG 0x00587440
 unsigned char CSWSPlaceable::GetDetectDC()
 {
     unsigned char nDC = m_nTrapDetectDC;
@@ -845,7 +845,7 @@ unsigned char CSWSPlaceable::GetDetectDC()
     }
     return nDC;
 }
-// PC 0x00587410
+// PC 0x00587410 GOG 0x00587490
 unsigned char CSWSPlaceable::GetDisarmDC()
 {
     unsigned char nDC = m_nDisarmDC;
@@ -866,7 +866,7 @@ unsigned char CSWSPlaceable::GetDisarmDC()
     }
     return nDC;
 }
-// PC 0x00587460
+// PC 0x00587460 GOG 0x005874E0
 unsigned char CSWSPlaceable::GetOpenLockDC()
 {
     unsigned char nDC = 0;
@@ -929,7 +929,7 @@ unsigned char CSWSPlaceable::GetOpenLockDC()
     }
     return nDC;
 }
-// PC 0x00587550
+// PC 0x00587550 GOG 0x005875D0
 Vector CSWSPlaceable::GetNearestActionPoint(const Vector& vPosition)
 {
     Vector vActionPoint;
@@ -947,7 +947,7 @@ Vector CSWSPlaceable::GetNearestActionPoint(const Vector& vPosition)
         vActionPoint = m_vPosition;
     return vActionPoint;
 }
-// PC 0x005876E0
+// PC 0x005876E0 GOG 0x00587760
 int CSWSPlaceable::AddCastSpellActions(unsigned long nSpellId, int nMultiClass,
                                        const Vector& vTarget,
                                        unsigned long oidTarget, int bFake,
@@ -982,7 +982,7 @@ int CSWSPlaceable::AddCastSpellActions(unsigned long nSpellId, int nMultiClass,
               &nPathType, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     return 1;
 }
-// PC 0x005877F0
+// PC 0x005877F0 GOG 0x00587870
 int CSWSPlaceable::AIActionCastSpell(CSWSObjectActionNode* pNode)
 {
     Vector vTarget;
@@ -1028,7 +1028,7 @@ int CSWSPlaceable::AIActionCastSpell(CSWSObjectActionNode* pNode)
     return ACTION_COMPLETE;
 }
 #ifndef _XBOX
-void CSWSPlaceable::SetLightIsOn(int bLightIsOn)  // PC 0x005879B0
+void CSWSPlaceable::SetLightIsOn(int bLightIsOn)  // PC 0x005879B0 GOG 0x00587A30
 {
     if (m_bLightIsOn != bLightIsOn)
     {
@@ -1049,7 +1049,7 @@ void CSWSPlaceable::SetLightIsOn(int bLightIsOn)  // PC 0x005879B0
     }
 }
 #endif
-int CSWSPlaceable::GetLightIsOn()  // PC 0x00587A60
+int CSWSPlaceable::GetLightIsOn()  // PC 0x00587A60 GOG 0x00587AE0
 {
     int nLightColor;
     bool bFailed;
@@ -1065,7 +1065,7 @@ int CSWSPlaceable::GetLightIsOn()  // PC 0x00587A60
 
     return m_bLightIsOn;
 }
-// PC 0x00587B00
+// PC 0x00587B00 GOG 0x00587B80
 int CSWSPlaceable::GetBodyBagAppearance()
 {
     int nAppearance;
@@ -1102,7 +1102,7 @@ int CSWSPlaceable::GetBodyBagAppearance()
 
     return (unsigned char)nAppearance;
 }
-// PC 0x00587C70
+// PC 0x00587C70 GOG 0x00587CF0
 int CSWSPlaceable::NoNonWalkPolys(const Vector& vStart, const Vector& vEnd,
                                   const float& fDistance, const float& fWidth,
                                   const float& fHeight,
@@ -1113,7 +1113,7 @@ int CSWSPlaceable::NoNonWalkPolys(const Vector& vStart, const Vector& vEnd,
     return m_cSurfaceMesh.NoNonWalkPolys(vStart, vEnd, fDistance, fWidth,
                                          fHeight, pWalkHitInfo);
 }
-// PC 0x00587CE0
+// PC 0x00587CE0 GOG 0x00587D60
 void CSWSPlaceable::SetOrientation(const Quaternion& qOrientation)
 {
     m_qOrientation = qOrientation;
@@ -1127,14 +1127,14 @@ void CSWSPlaceable::SetOrientation(const Quaternion& qOrientation)
     vOrientation = normalize(vOrientation);
     CSWSObject::SetOrientation(vOrientation);
 }
-// PC 0x00587D80
+// PC 0x00587D80 GOG 0x00587E00
 void CSWSPlaceable::OnEndDialog(CSWSObject* pObject)
 {
     g_pVirtualMachine->RunScript(&m_sScripts[SCRIPT_ONENDDIALOGUE], m_nId,
                                  1);
     m_n43C = 0;
 }
-// PC 0x00587DB0
+// PC 0x00587DB0 GOG 0x00587E30
 CSWCPlaceable* CSWSPlaceable::GetClientPlaceable()
 {
     if (GetClientObject() != NULL)
@@ -1142,7 +1142,7 @@ CSWCPlaceable* CSWSPlaceable::GetClientPlaceable()
 
     return NULL;
 }
-// PC 0x00589F00
+// PC 0x00589F00 GOG 0x00589F80
 void CSWSPlaceable::OpenInventory(unsigned long oidOpener, int bAnimate)
 {
     if (m_bOpen == 0 && m_bHasInventory != 0)
@@ -1181,7 +1181,7 @@ void CSWSPlaceable::OpenInventory(unsigned long oidOpener, int bAnimate)
     }
 }
 #define DATAPAD_READ_BOOLEAN 94
-// PC 0x0058A060
+// PC 0x0058A060 GOG 0x0058A0E0
 void CSWSPlaceable::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
 {
     if (m_bOpen)
@@ -1246,7 +1246,7 @@ void CSWSPlaceable::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
         }
     }
 }
-// PC 0x0058A330
+// PC 0x0058A330 GOG 0x0058A3B0
 int CSWSPlaceable::GetItemCount(int bDropableOnly)
 {
     NwsplaceableTrace1();
@@ -1268,7 +1268,7 @@ int CSWSPlaceable::GetItemCount(int bDropableOnly)
 
     return nCount;
 }
-// PC 0x0058A390
+// PC 0x0058A390 GOG 0x0058A410
 void CSWSPlaceable::ClosePlaceableForAllPlayers()
 {
     CExoLinkedList<CSWSClient>* pPlayerList;
@@ -1292,7 +1292,7 @@ void CSWSPlaceable::ClosePlaceableForAllPlayers()
         }
     }
 }
-// PC 0x0058A7E0
+// PC 0x0058A7E0 GOG 0x0058A860
 void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                                  void* pEventData, unsigned long nCalendarDay,
                                  unsigned long nTimeOfDay)
@@ -1720,7 +1720,7 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
     }
     return;
 }
-// PC 0x0058B510
+// PC 0x0058B510 GOG 0x0058B590
 int CSWSPlaceable::AcquireItemsFromObject(unsigned long oidSource,
                                         int bDropableOnly)
 {
@@ -1787,7 +1787,7 @@ int CSWSPlaceable::AcquireItemsFromObject(unsigned long oidSource,
     }
     return nCount;
 }
-// PC 0x0057F6F0
+// PC 0x0057F6F0 GOG 0x0057F770
 void CSWSPlaceable::DoDamage(int nDamage)
 {
     if (m_bPlotObject == 0)

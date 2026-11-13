@@ -17,7 +17,7 @@
 #include "nwscreaturestats.h"
 
 #define LOCAL_CHARACTER_RESREF "TEMP_CHAR"
-// PC 0x0059FBE0
+// PC 0x0059FBE0 GOG 0x0059FC50
 CSWSPlayer::~CSWSPlayer()
 {
     delete m_pPartyObjectsLastUpdate;
@@ -46,7 +46,7 @@ CSWSPlayer::~CSWSPlayer()
     delete m_pLastUpdateObject;
     m_pLastUpdateObject = NULL;
 }
-// PC 0x0059D660
+// PC 0x0059D660 GOG 0x0059D6D0
 void CSWSPlayerCharSheetGUI::SetCreatureDisplayed(unsigned long oidCreature)
 {
     if (m_oidCreature != oidCreature)
@@ -59,13 +59,13 @@ void CSWSPlayerCharSheetGUI::SetCreatureDisplayed(unsigned long oidCreature)
     }
     m_oidCreature = oidCreature;
 }
-// PC 0x0059D6E0
+// PC 0x0059D6E0 GOG 0x0059D750
 CSWSPlayerInventoryGUI::CSWSPlayerInventoryGUI()
 {
     m_bOpen = 0;
     m_pLastUpdateObject = new CSWSPlayerLUOInventory;
 }
-// PC 0x0059D750
+// PC 0x0059D750 GOG 0x0059D7C0
 void CSWSPlayerInventoryGUI::SetOpen(int bOpen)
 {
     if (bOpen == 0)
@@ -78,12 +78,12 @@ void CSWSPlayerInventoryGUI::SetOpen(int bOpen)
     }
     m_bOpen = bOpen;
 }
-// PC 0x0059D780
+// PC 0x0059D780 GOG 0x0059D7F0
 int CSWSPlayer::GetIsAllowedToSave()
 {
     return m_bIsAllowedToSave != 0;
 }
-// PC 0x0059D790
+// PC 0x0059D790 GOG 0x0059D800
 void CSWSPlayer::SetAreaTransitionBMP(int nState, const CExoString& sBMP)
 {
     if (nState == 1)
@@ -92,7 +92,7 @@ void CSWSPlayer::SetAreaTransitionBMP(int nState, const CExoString& sBMP)
     }
     m_nAreaTransitionState = nState;
 }
-// PC 0x0059D7C0
+// PC 0x0059D7C0 GOG 0x0059D830
 int CSWSPlayer::GetCharacterInfoFromIFO(unsigned char& nClassCount,
                                         int* pnClasses,
                                         unsigned char* pnClassLevels,
@@ -140,7 +140,7 @@ int CSWSPlayer::GetCharacterInfoFromIFO(unsigned char& nClassCount,
     g_pExoResMan->ReleaseResObject(pRes);
     return 1;
 }
-// PC 0x0059D920
+// PC 0x0059D920 GOG 0x0059D990
 int CSWSPlayer::LoadCreatureData(CResRef cResRef, CSWSCreature* pCreature)
 {
     CResGFF* pRes = new CResGFF(RESTYPE_BIC, "BIC ", cResRef);
@@ -189,7 +189,7 @@ int CSWSPlayer::LoadCreatureData(CResRef cResRef, CSWSCreature* pCreature)
     delete pRes;
     return 0;
 }
-// PC 0x0059DB40
+// PC 0x0059DB40 GOG 0x0059DBB0
 CSWSObject* CSWSPlayer::GetGameObject()
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -202,7 +202,7 @@ CSWSObject* CSWSPlayer::GetGameObject()
     }
     return (CSWSObject*)pGameObject;
 }
-// PC 0x0059DB70
+// PC 0x0059DB70 GOG 0x0059DBE0
 CExoString CSWSPlayer::GetPlayerName()
 {
     CNetLayerPlayerInfo* pPlayerInfo =
@@ -215,7 +215,7 @@ CExoString CSWSPlayer::GetPlayerName()
     }
     return CExoString("");
 }
-// PC 0x0059DBC0
+// PC 0x0059DBC0 GOG 0x0059DC30
 CSWSPlayerLastUpdateObject* CSWSPlayer::CreateNewPlayerLastUpdateObject()
 {
     CSWSPlayerLastUpdateObject* pLastUpdateObject = m_pLastUpdateObject;
@@ -229,7 +229,7 @@ CSWSPlayerLastUpdateObject* CSWSPlayer::CreateNewPlayerLastUpdateObject()
     m_pLastUpdateObject->ClearKnownSpellUsesLeft();
     return m_pLastUpdateObject;
 }
-// PC 0x0059DC50
+// PC 0x0059DC50 GOG 0x0059DCC0
 int CSWSPlayer::PermittedToDisplayCharacterSheet(unsigned long oidCreature)
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -252,7 +252,7 @@ int CSWSPlayer::PermittedToDisplayCharacterSheet(unsigned long oidCreature)
     }
     return pPlayerCreature->m_nId == pCreature->m_nId;
 }
-// PC 0x0059DD20
+// PC 0x0059DD20 GOG 0x0059DD90
 int CSWSPlayerCharSheetGUI::ComputeCharacterSheetUpdateRequired(CSWSPlayer* pPlayer)
 {
     int nUpdate = 0;
@@ -439,7 +439,7 @@ int CSWSPlayerCharSheetGUI::ComputeCharacterSheetUpdateRequired(CSWSPlayer* pPla
     }
     return nUpdate;
 }
-// PC 0x0059E2E0
+// PC 0x0059E2E0 GOG 0x0059E350
 CLastUpdateObject* CSWSPlayer::GetLastUpdateObject(unsigned long oidObject)
 {
     CExoLinkedListNode* pNode = m_pActiveObjectsLastUpdate->GetHeadPos();
@@ -456,7 +456,7 @@ CLastUpdateObject* CSWSPlayer::GetLastUpdateObject(unsigned long oidObject)
     }
     return NULL;
 }
-// PC 0x0059E330
+// PC 0x0059E330 GOG 0x0059E3A0
 int CSWSPlayer::PackCreatureIntoMessage()
 {
     int bSuccess = 1;
@@ -527,7 +527,7 @@ int CSWSPlayer::PackCreatureIntoMessage()
     delete pGFF;
     return bSuccess;
 }
-// PC 0x0059E700
+// PC 0x0059E700 GOG 0x0059E770
 void CSWSPlayer::SetGameObject(CSWSObject* pObject)
 {
     unsigned long oidOldObject = m_oidNWSObject;
@@ -586,7 +586,7 @@ static inline void SetGlobalNumber(const CExoString& sIdentifier, int nValue)
 {
     g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->SetValueNumber(sIdentifier, nValue);
 }
-// PC 0x0059E830
+// PC 0x0059E830 GOG 0x0059E8A0
 int CSWSPlayer::LoadLocalCharacter()
 {
     CSWSObject* pCreature =
@@ -617,7 +617,7 @@ int CSWSPlayer::LoadLocalCharacter()
     }
     return nResult;
 }
-// PC 0x0059E9F0
+// PC 0x0059E9F0 GOG 0x0059EA60
 int CSWSPlayer::LoadCharacterFromIFO(unsigned long nPlayerIndex,
                                       int bLoadModuleCharacter,
                                       int bPostProcess)
@@ -753,7 +753,7 @@ int CSWSPlayer::LoadCharacterFromIFO(unsigned long nPlayerIndex,
     }
     return 1;
 }
-// PC 0x0059EF40
+// PC 0x0059EF40 GOG 0x0059EFB0
 int CSWSPlayer::LoadServerCharacter(CResRef cResRef)
 {
     CSWSObject* pCreature =
@@ -776,7 +776,7 @@ int CSWSPlayer::LoadServerCharacter(CResRef cResRef)
     }
     return 0;
 }
-// PC 0x0059F080
+// PC 0x0059F080 GOG 0x0059F0F0
 int CSWSPlayer::SaveServerCharacter()
 {
     CExoString sResRef;
@@ -899,7 +899,7 @@ int CSWSPlayer::SaveServerCharacter()
     delete pGFF;
     return 1;
 }
-// PC 0x0059F810
+// PC 0x0059F810 GOG 0x0059F880
 CSWSPlayer::CSWSPlayer(unsigned long nPlayerId)
     : CSWSClient(nPlayerId)
 {
@@ -941,7 +941,7 @@ void CSWSPlayer::ClearPlayerLastUpdateObject()
         m_pLastUpdateObject->ClearFeats();
     }
 }
-// PC 0x0059F9E0
+// PC 0x0059F9E0 GOG 0x0059FA50
 void CSWSPlayer::ClearPlayerOnDestroyGame()
 {
     CSWSPlayerInventoryGUI* pInventoryGUI = m_pInventoryGUI;

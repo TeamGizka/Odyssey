@@ -2,20 +2,20 @@
 #include "exobase.h"
 #include <stdio.h>
 #include <string.h>
-// PC 0x00635F30
+// PC 0x00635F30 GOG 0x00635E30
 CExoIniInternal::CExoIniInternal()
 {
     m_sFile = "";
 }
-// PC 0x00635F90
+// PC 0x00635F90 GOG 0x00635E90
 CFileSection::~CFileSection()
 {
 }
-// PC 0x00635FF0
+// PC 0x00635FF0 GOG 0x00635EF0
 CFileSection::CFileSection()
 {
 }
-// PC 0x00636040
+// PC 0x00636040 GOG 0x00635F40
 void CExoIniInternal::Destroy()
 {
     while (m_lstSections.GetHeadPos())
@@ -35,7 +35,7 @@ void CExoIniInternal::Destroy()
 
     m_sFile = "";
 }
-// PC 0x006360B0
+// PC 0x006360B0 GOG 0x00635FB0
 int CExoIniInternal::ReadIniEntry(CExoString& sValue, const CExoString& sFile,
                                   const CExoString& sSection,
                                   const CExoString& sEntry)
@@ -156,7 +156,7 @@ int CExoIniInternal::ReadIniEntry(CExoString& sValue, const CExoString& sFile,
 
     return 0;
 }
-// PC 0x006364F0
+// PC 0x006364F0 GOG 0x006363F0
 int CExoIniInternal::WriteIniEntry(const CExoString& sValue,
                                    const CExoString& sFile,
                                    const CExoString& sSection,
@@ -368,7 +368,7 @@ int CExoIniInternal::WriteIniEntry(const CExoString& sValue,
 
     return 1;
 }
-// PC 0x00636EF0
+// PC 0x00636EF0 GOG 0x00636DF0
 CExoIniInternal::~CExoIniInternal()
 {
     Destroy();

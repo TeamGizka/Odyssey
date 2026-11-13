@@ -69,7 +69,7 @@ public:
         return -1;
     }
 #endif
-    // PC 0x00448F20
+    // PC 0x00448F20 GOG 0x00449070
     T& operator[](int nIndex)
     {
         return m_pList[nIndex];
@@ -78,7 +78,7 @@ public:
 #ifdef _XBOX
     int Contains(T item);
 #else
-    int Contains(T item)  // PC 0x004DD480
+    int Contains(T item)  // PC 0x004DD480 GOG 0x004DCB60
     {
         int nFound = 0;
         for (int i = 0; i < m_nCount; i++)
@@ -154,7 +154,7 @@ template <class T> List<T>::~List()
         delete[] m_pList;
     }
 }
-// PC 0x004673E0
+// PC 0x004673E0 GOG 0x004AB840
 template <class T> void List<T>::Remove(T item)
 {
     int i;

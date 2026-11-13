@@ -8,7 +8,7 @@ class CSWSClient
 public:
     CSWSClient(unsigned long nPlayerId);
     virtual ~CSWSClient();
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual CSWSPlayer* AsSWSPlayer()
     {
         return 0;

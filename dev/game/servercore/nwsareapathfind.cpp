@@ -37,12 +37,12 @@ int bInitnRenderDEFLines = 1;
 int nRenderDEFLines[CSWSArea::PATH_POINT_DFS_RENDER_LINES];
 int nRenderDFSCount = 0;
 
-// PC 0x00651540
+// PC 0x00651540 GOG 0x006513F0
 int CSWSArea::PlotSoundPath(CPathfindInformation* pPathfindInformation)
 {
     return 1;
 }
-// PC 0x004FC180
+// PC 0x004FC180 GOG 0x004F4260
 CSWSRoom* CSWSArea::GetRoom(const Vector& vPosition, int* pnFace,
                             int* pnRoomIndex)
 {
@@ -89,7 +89,7 @@ CSWSRoom* CSWSArea::GetRoom(const Vector& vPosition, int* pnFace,
     }
     return pRoom;
 }
-// PC 0x004FC2B0
+// PC 0x004FC2B0 GOG 0x004F4390
 CSWSRoom* CSWSArea::GetRoom(int nRoomIndex)
 {
     if (nRoomIndex < 0 || nRoomIndex >= m_nRoomCount)
@@ -98,7 +98,7 @@ CSWSRoom* CSWSArea::GetRoom(int nRoomIndex)
     }
     return &m_pRooms[nRoomIndex];
 }
-// PC 0x004FC2E0
+// PC 0x004FC2E0 GOG 0x004F43C0
 int CSWSArea::GetRoomIndex(const Vector& vPosition, int bAllMaterials)
 {
     int nResult = -1;
@@ -125,7 +125,7 @@ int CSWSArea::GetRoomIndex(const Vector& vPosition, int bAllMaterials)
     }
     return nResult;
 }
-// PC 0x004FC3E0
+// PC 0x004FC3E0 GOG 0x004F44C0
 int CSWSArea::GetRoomForceRating(const Vector& vPosition)
 {
     if (m_pnRoomForceRating == NULL)
@@ -135,7 +135,7 @@ int CSWSArea::GetRoomForceRating(const Vector& vPosition)
     int nRoom = GetRoomIndex(vPosition, 0);
     return m_pnRoomForceRating[m_pnRoomAudioIndex[nRoom]];
 }
-// PC 0x004FC420
+// PC 0x004FC420 GOG 0x004F4500
 unsigned char CSWSArea::GetRoomDisableWeather(const Vector& vPosition)
 {
     if (m_pbRoomDisableWeather == NULL)
@@ -145,7 +145,7 @@ unsigned char CSWSArea::GetRoomDisableWeather(const Vector& vPosition)
     int nRoom = GetRoomIndex(vPosition, 0);
     return m_pbRoomDisableWeather[m_pnRoomAudioIndex[nRoom]];
 }
-// PC 0x004FC460
+// PC 0x004FC460 GOG 0x004F4540
 float CSWSArea::ComputePathDistance(int nPoints, float* pfPoints)
 {
     float fDistance = 0.0f;
@@ -160,7 +160,7 @@ float CSWSArea::ComputePathDistance(int nPoints, float* pfPoints)
     return fDistance;
 }
 #ifndef _XBOX
-int CSWSArea::CountVisibleToPlayers(const Vector& vPosition, int nMaxCount)  // PC 0x004FC4B0
+int CSWSArea::CountVisibleToPlayers(const Vector& vPosition, int nMaxCount)  // PC 0x004FC4B0 GOG 0x004F4590
 {
     unsigned long oidObject;
     int nCount = 0;
@@ -208,7 +208,7 @@ int CSWSArea::CountVisibleToPlayers(const Vector& vPosition, int nMaxCount)  // 
     return nCount;
 }
 #endif
-int CSWSArea::EvaluateOverlappingTargets(CPathfindInformation* pPathfind,  // PC 0x004FC640
+int CSWSArea::EvaluateOverlappingTargets(CPathfindInformation* pPathfind,  // PC 0x004FC640 GOG 0x004F4720
                                         const Vector& vPosition,
                                         unsigned long oidTarget,
                                         const Vector& vTargetPosition,
@@ -263,7 +263,7 @@ int CSWSArea::EvaluateOverlappingTargets(CPathfindInformation* pPathfind,  // PC
     }
     return 0;
 }
-// PC 0x004FC850
+// PC 0x004FC850 GOG 0x004F4930
 void CSWSArea::GridDFSTransTableInitialize()
 {
     if (m_pGridTransTable == NULL)
@@ -279,7 +279,7 @@ void CSWSArea::GridDFSTransTableInitialize()
         m_pGridTransTable[i].m_nTieBreak = 0;
     }
 }
-// PC 0x004FC8C0
+// PC 0x004FC8C0 GOG 0x004F49A0
 int CSWSArea::GridDFSTransTableGet(int nX, int nY, int* pnScore,
                                    int* pnTieBreak)
 {
@@ -306,7 +306,7 @@ int CSWSArea::GridDFSTransTableGet(int nX, int nY, int* pnScore,
     *pnTieBreak = 0;
     return 0;
 }
-// PC 0x004FC980
+// PC 0x004FC980 GOG 0x004F4A60
 void CSWSArea::GridDFSTransTablePut(int nX, int nY, int nScore, int nTieBreak)
 {
     int nSlot = (17 * nX + 23 * nY + 6000) % 256;
@@ -326,7 +326,7 @@ void CSWSArea::GridDFSTransTablePut(int nX, int nY, int nScore, int nTieBreak)
     m_pGridTransTable[nSlot].m_nScore = nScore;
     m_pGridTransTable[nSlot].m_nTieBreak = nTieBreak;
 }
-// PC 0x004FCA20
+// PC 0x004FCA20 GOG 0x004F4B00
 int CSWSArea::NoNoneWalkPolysInStaticObject(
     unsigned long oidObject, const Vector& vStart, const Vector& vEnd,
     float fDistance, float fWidth, float fHeight, unsigned long oidSource,
@@ -354,7 +354,7 @@ int CSWSArea::NoNoneWalkPolysInStaticObject(
     }
     return 0;
 }
-// PC 0x004FCAB0
+// PC 0x004FCAB0 GOG 0x004F4B90
 void CSWSArea::PathPointDFSTransTableInitialize()
 {
     if (m_pPathPointTransTable == NULL ||
@@ -372,7 +372,7 @@ void CSWSArea::PathPointDFSTransTableInitialize()
         m_pPathPointTransTable[i].m_fTieBreak = 0.0f;
     }
 }
-// PC 0x004FCB30
+// PC 0x004FCB30 GOG 0x004F4C10
 int CSWSArea::PathPointDFSTransTableGet(float fX, float fY, float* pfScore,
                                         float* pfTieBreak)
 {
@@ -399,7 +399,7 @@ int CSWSArea::PathPointDFSTransTableGet(float fX, float fY, float* pfScore,
     *pfTieBreak = 0.0f;
     return 0;
 }
-// PC 0x004FCC20
+// PC 0x004FCC20 GOG 0x004F4D00
 void CSWSArea::PathPointDFSTransTablePut(float fX, float fY, float fScore,
                                          float fTieBreak)
 {
@@ -421,7 +421,7 @@ void CSWSArea::PathPointDFSTransTablePut(float fX, float fY, float fScore,
     m_pPathPointTransTable[nSlot].m_fScore = fScore;
     m_pPathPointTransTable[nSlot].m_fTieBreak = fTieBreak;
 }
-// PC 0x004FCCF0
+// PC 0x004FCCF0 GOG 0x004F4DD0
 int CSWSArea::SetHitInfoForCreature(const Vector& vCenter, float fRadius,
                                    const Vector& vStart, const Vector& vEnd,
                                    CWalkHitInfo* pWalkHitInfo)
@@ -468,7 +468,7 @@ int CSWSArea::SetHitInfoForCreature(const Vector& vCenter, float fRadius,
     }
     return nHits;
 }
-// PC 0x004FCF90
+// PC 0x004FCF90 GOG 0x004F5070
 float CSWSArea::ComputeHeight(const Vector& vPosition, int bUseFace,
                               CSWSRoom** ppRoom, int* pnRoomIndex)
 {
@@ -494,7 +494,7 @@ float CSWSArea::ComputeHeight(const Vector& vPosition, int bUseFace,
     }
     return fHeight;
 }
-// PC 0x004FD020
+// PC 0x004FD020 GOG 0x004F5100
 int CSWSArea::CountAreaTransitionTriggers(unsigned long* poidTriggers,
                                         int nCount,
                                         unsigned long* poidExcluded)
@@ -588,7 +588,7 @@ int CSWSArea::CountAreaTransitionTriggers(unsigned long* poidTriggers,
     }
     return nTransitions;
 }
-// PC 0x004FD730
+// PC 0x004FD730 GOG 0x004F5810
 int CSWSArea::TestDirectLine(const Vector& vStart, const Vector& vEnd,
                              const float& fRadius, float fHeight, int nFlags,
                              CWalkHitInfo* pWalkHitInfo)
@@ -697,7 +697,7 @@ int CSWSArea::TestDirectLine(const Vector& vStart, const Vector& vEnd,
     }
     return nResult;
 }
-// PC 0x004FDAD0
+// PC 0x004FDAD0 GOG 0x004F5BB0
 int CSWSArea::GridDFSGenerateSuccessors(int nCost, int nRemainingCost,
                                        int nX, int nY, int nZ,
                                        CSWSAreaGridSuccessors** ppSuccessors)
@@ -843,7 +843,7 @@ int CSWSArea::GridDFSGenerateSuccessors(int nCost, int nRemainingCost,
     }
     return nSuccessors;
 }
-// PC 0x004FE360
+// PC 0x004FE360 GOG 0x004F6440
 int CSWSArea::ClosestPathPoint(const Vector& vPosition, unsigned long& nPathPoint)
 {
     if (m_pPathPoints != NULL && m_pPathfindInformation != NULL)
@@ -940,7 +940,7 @@ int CSWSArea::ClosestPathPoint(const Vector& vPosition, unsigned long& nPathPoin
         return 1;
     }
 }
-// PC 0x004FE6F0
+// PC 0x004FE6F0 GOG 0x004F67D0
 int CSWSArea::PathPointDFSGenerateSuccessors(
     float fDistance, int nDepth, unsigned long nPathPoint,
     CSWSPathPointSuccessors** ppSuccessors)
@@ -1044,7 +1044,7 @@ int CSWSArea::PathPointDFSGenerateSuccessors(
     }
     return nSuccessors;
 }
-// PC 0x004FEBD0
+// PC 0x004FEBD0 GOG 0x004F6CB0
 Vector CSWSArea::ComputeAwayVector(const Vector& vPosition, const Vector& vAway,
                                   float fDistance, CPathfindInformation* pPathfind)
 {
@@ -1129,7 +1129,7 @@ Vector CSWSArea::ComputeAwayVector(const Vector& vPosition, const Vector& vAway,
 #include "nwsspellimpact.h"
 
 #include "nwsencounter.h"
-// PC 0x004FEFF0
+// PC 0x004FEFF0 GOG 0x004F70D0
 int CSWSArea::ComputeBestCorner(float fX1, float fY1, float fX2, float fY2,
                                float fX3, float fY3, float fRadius, float fWidth,
                                float* pfX1, float* pfY1, float* pfX2, float* pfY2)
@@ -1179,7 +1179,7 @@ int CSWSArea::ComputeBestCorner(float fX1, float fY1, float fX2, float fY2,
     }
     return bFound;
 }
-// PC 0x004FF230
+// PC 0x004FF230 GOG 0x004F7310
 int CSWSArea::TestSafeLocationPoint(const Vector& vPosition,
                                    CPathfindInformation* pPathfind)
 {
@@ -1253,7 +1253,7 @@ int CSWSArea::TestSafeLocationPoint(const Vector& vPosition,
     }
     return 0;
 }
-// PC 0x004FF4B0
+// PC 0x004FF4B0 GOG 0x004F7590
 int CSWSArea::ComputeSafeLocation(const Vector& vPosition, float fRadius,
                                   CPathfindInformation* pPathfind,
                                   int bCheckLine, Vector* pSafePosition)
@@ -1490,7 +1490,7 @@ int CSWSArea::ComputeSafeLocation(const Vector& vPosition, float fRadius,
     }
     return 0;
 }
-// PC 0x004FFE80
+// PC 0x004FFE80 GOG 0x004F7F60
 int CSWSArea::ComputeNonVisibleLocation(const Vector& vPosition,
                                        CPathfindInformation* pPathfind,
                                        int nFlags, Vector* pvLocation,
@@ -1584,7 +1584,7 @@ int CSWSArea::ComputeNonVisibleLocation(const Vector& vPosition,
     }
     return 0;
 }
-// PC 0x00500320
+// PC 0x00500320 GOG 0x004F8400
 int CSWSArea::IntersectingLineSegment(const Vector& vStart, const Vector& vEnd,
                                       CExoArrayList<unsigned long>* pObjects)
 {
@@ -1629,7 +1629,7 @@ int CSWSArea::IntersectingLineSegment(const Vector& vStart, const Vector& vEnd,
     }
     return bIntersecting;
 }
-// PC 0x005004D0
+// PC 0x005004D0 GOG 0x004F85B0
 int CSWSArea::InSubAreas(const Vector& vPosition,
                         CExoArrayList<unsigned long>* pObjects)
 {
@@ -1689,7 +1689,7 @@ int CSWSArea::InSubAreas(const Vector& vPosition,
     }
     return bInSubArea;
 }
-// PC 0x005006B0
+// PC 0x005006B0 GOG 0x004F8790
 int CSWSArea::ShrinkLineByCreatures(const Vector& vStart, const Vector& vEnd,
                                   Vector& vResult)
 {
@@ -1816,7 +1816,7 @@ int CSWSArea::ShrinkLineByCreatures(const Vector& vStart, const Vector& vEnd,
     } while (bRepeat == 1);
     return bShrunk;
 }
-// PC 0x00500E80
+// PC 0x00500E80 GOG 0x004F8F60
 int CSWSArea::SmoothCornerOptimize(int nPoints, float* pfPoints,
                                     int* pnResultCount, float** ppfResult)
 {
@@ -1926,7 +1926,7 @@ int CSWSArea::SmoothCornerOptimize(int nPoints, float* pfPoints,
     (*ppfResult)[*pnResultCount + 1] = pfPoints[nPoint + 1];
     *pnResultCount += 2;
 }
-// PC 0x005011E0
+// PC 0x005011E0 GOG 0x004F92C0
 void CSWSArea::SmoothSelectNodes(int nPoints, float* pfPoints,
                                  int* pnResultCount, float** ppfResult,
                                  int bSubdivide, int bSelect)
@@ -2045,7 +2045,7 @@ void CSWSArea::SmoothSelectNodes(int nPoints, float* pfPoints,
         delete[] pfPending;
     }
 }
-// PC 0x00501540
+// PC 0x00501540 GOG 0x004F9620
 int CSWSArea::SmoothSelectNodesRestartable(int nPoints, float* pfPoints,
                                  int* pnResultCount, float** ppfResult,
                                  int bSubdivide, int bSelect, float fTolerance)
@@ -2185,7 +2185,7 @@ int CSWSArea::SmoothSelectNodesRestartable(int nPoints, float* pfPoints,
     m_pPathfindInformation->m_nSmoothCurrentNode = 0;
     return 0;
 }
-// PC 0x00501990
+// PC 0x00501990 GOG 0x004F9A70
 int CSWSArea::GridDFSearch(int nDepth, int nCost, int nRemainingCost,
                           int nX, int nY, int nZ)
 {
@@ -2242,7 +2242,7 @@ int CSWSArea::GridDFSearch(int nDepth, int nCost, int nRemainingCost,
         return bFound;
     }
 }
-// PC 0x00501B90
+// PC 0x00501B90 GOG 0x004F9C70
 int CSWSArea::PathPointDFSearch(int nDepth, float fCost, float fRemaining,
                                unsigned long nPoint, unsigned long nGoal)
 {
@@ -2332,7 +2332,7 @@ int CSWSArea::PathPointDFSearch(int nDepth, float fCost, float fRemaining,
     delete pSuccessors;
     return bFound;
 }
-// PC 0x00502020
+// PC 0x00502020 GOG 0x004FA100
 int CSWSArea::ComputeSafeLocationInDirection(const Vector& vPosition,
                                             const Vector& vDirection,
                                             float fDistance,
@@ -2408,7 +2408,7 @@ int CSWSArea::ComputeSafeLocationInDirection(const Vector& vPosition,
     }
     return ComputeSafeLocation(vPosition, fDistance, pPathfind, nFlags, pvLocation);
 }
-// PC 0x00502460
+// PC 0x00502460 GOG 0x004FA540
 int CSWSArea::SmoothSelectionRestartable(int nPoints, float* pfPoints,
                                          int* pnResultCount, float** ppfResult)
 {
@@ -2451,7 +2451,7 @@ int CSWSArea::SmoothSelectionRestartable(int nPoints, float* pfPoints,
     m_pPathfindInformation->SetSmoothSecondPoints(NULL);
     return 0;
 }
-// PC 0x00502670
+// PC 0x00502670 GOG 0x004FA750
 void CSWSArea::SmoothSelection(int nPoints, float* pfPoints,
                                int* pnResultCount, float** ppfResult)
 {
@@ -2475,7 +2475,7 @@ void CSWSArea::SmoothSelection(int nPoints, float* pfPoints,
     delete[] pfFirst;
     delete[] pfSecond;
 }
-// PC 0x005026F0
+// PC 0x005026F0 GOG 0x004FA7D0
 int CSWSArea::SmoothPointsOnPath()
 {
     if (m_pPathfindInformation->m_pWayPoints != NULL)
@@ -2526,7 +2526,7 @@ int CSWSArea::SmoothPointsOnPath()
     delete[] pfSmoothed;
     return 1;
 }
-// PC 0x00502820
+// PC 0x00502820 GOG 0x004FA900
 int CSWSArea::SmoothPointsOnPathRestartable()
 {
     int nPoints;
@@ -2603,7 +2603,7 @@ int CSWSArea::SmoothPointsOnPathRestartable()
         return 0;
     }
 }
-// PC 0x00502A80
+// PC 0x00502A80 GOG 0x004FAB60
 int CSWSArea::PlotGridPath(CPathfindInformation* pPathfind,
                          unsigned __int64 nTimeLimit)
 {
@@ -2767,7 +2767,7 @@ int CSWSArea::PlotGridPath(CPathfindInformation* pPathfind,
         SmoothPointsOnPath();
     return nResult;
 }
-// PC 0x00503280
+// PC 0x00503280 GOG 0x004FB360
 int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
                                unsigned __int64 nTimeLimit)
 {
@@ -3104,7 +3104,7 @@ int CSWSArea::PlotPathPointPath(CPathfindInformation* pPathfind,
     }
     return nResult;
 }
-// PC 0x004FD1B0
+// PC 0x004FD1B0 GOG 0x004F5290
 int CSWSArea::NoCreaturesOnLine(const Vector& vStart, const Vector& vEnd,
                                CPathfindInformation* pPathfind, int nFlags,
                                int bBumpCreatures, unsigned long* poidOverlap,

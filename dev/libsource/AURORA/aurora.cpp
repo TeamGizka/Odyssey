@@ -28,12 +28,12 @@ int g_Letterbox_bottom = 0;
 bool g_bLetterBoxMode = 0;
 char disablepostprocessing = 0;
 bool g_bDisableVertexBufferObjects = false;
-// PC 0x00462E30
+// PC 0x00462E30 GOG 0x00462F40
 CAurInternalGL* NewCAurora()
 {
     return CAurInternal::NewCAuroraInstance();
 }
-// PC 0x00462E40
+// PC 0x00462E40 GOG 0x00462F50
 void DestroyCAurora()
 {
     CAurInternal::DestroyCAuroraInstance();
@@ -55,7 +55,7 @@ void sleep(unsigned long nMilliseconds)
         ;
 }
 #endif
-// PC 0x00462E50
+// PC 0x00462E50 GOG 0x00462F60
 int AurMakeCurrent()
 {
 #ifdef _XBOX
@@ -82,52 +82,52 @@ int AurMakeCurrent()
 inline CAurPathInfo::~CAurPathInfo()
 {
 }
-// PC 0x00462EC0
+// PC 0x00462EC0 GOG 0x00462FD0
 CAurPathInfo::CAurPathInfo()
 {
     m_pfCoordinates = NULL;
     m_nCoordinates = 0;
 }
-// PC 0x00462EF0
+// PC 0x00462EF0 GOG 0x00463000
 void AurEnableShadows()
 {
     enableshadows = 1;
 }
-// PC 0x00462EE0
+// PC 0x00462EE0 GOG 0x00462FF0
 void AurDisableGrass()
 {
     enablegrass = 1;
 }
-// PC 0x00463190
+// PC 0x00463190 GOG 0x004632A0
 void AurEnableGrass()
 {
     enablegrass = 0;
 }
-// PC 0x00462F10
+// PC 0x00462F10 GOG 0x00463020
 int AurEnableSoftShadows()
 {
     enablesoftshadows = 1;
     enableshadows = 1;
     return 1;
 }
-// PC 0x00462F20
+// PC 0x00462F20 GOG 0x00463030
 void AurDisableSoftShadows()
 {
     enablesoftshadows = 0;
 }
-// PC 0x00462F30
+// PC 0x00462F30 GOG 0x00463040
 void AurEnableFrameBufferEffects()
 {
     doframebuffer = 1;
 }
-// PC 0x00462F40
+// PC 0x00462F40 GOG 0x00463050
 void AurDisableFrameBufferEffects()
 {
     doframebuffer = 0;
 }
 
 #ifndef _XBOX
-// PC 0x00462F50
+// PC 0x00462F50 GOG 0x00463060
 void AurSetVSyncState(bool bEnabled)
 {
     if (AuroraUseARBShaders())
@@ -145,7 +145,7 @@ const char* AurGetVersionString()
 }
 
 #ifndef _XBOX
-void AurGetGLError()  // PC 0x00462F80
+void AurGetGLError()  // PC 0x00462F80 GOG 0x00463090
 {
     int nError = glGetError();
     if (nError != 0)
@@ -154,7 +154,7 @@ void AurGetGLError()  // PC 0x00462F80
     }
 }
 #endif
-// PC 0x00462FA0
+// PC 0x00462FA0 GOG 0x004630B0
 void AurSetPauseOverlayColor(float fRed, float fGreen, float fBlue,
                              float fAlpha)
 {
@@ -184,7 +184,7 @@ char* testsetpausecolor(char* sArguments)
 #endif
     return "SUCCESS";
 }
-// PC 0x00463000
+// PC 0x00463000 GOG 0x00463110
 void AurEnableForceSight()
 {
     g_ForceSight = true;
@@ -192,29 +192,29 @@ void AurEnableForceSight()
         !AurATIFrameBufferModificationsAvailable())
         g_ForceSight = false;
 }
-// PC 0x00463020
+// PC 0x00463020 GOG 0x00463130
 void AurDisableForceSight()
 {
     g_ForceSight = false;
 }
-// PC 0x00463030
+// PC 0x00463030 GOG 0x00463140
 void AurDisableVertexBufferObjects()
 {
     g_bDisableVertexBufferObjects = true;
 }
-// PC 0x00463040
+// PC 0x00463040 GOG 0x00463150
 void AurDisableVertexBufferObjectsWriteOnly()
 {
     g_bVertexBufferObjectsWriteOnly = false;
 }
-// PC 0x00463050
+// PC 0x00463050 GOG 0x00463160
 void AurEnableVertexBufferObjectsWriteOnly()
 {
     g_bVertexBufferObjectsWriteOnly = true;
 }
 
 #ifndef _XBOX
-void AurATIUnlockSoftShadowsForHotFix()  // PC 0x00463060
+void AurATIUnlockSoftShadowsForHotFix()  // PC 0x00463060 GOG 0x00463170
 {
     g_nUnlockATISoftShadowsForHotFix = 1;
     enablesoftshadows = 0;
@@ -243,7 +243,7 @@ void AurReportError(int nLine, const char* sFile, const char* sMessage)
     }
 }
 #endif
-// PC 0x00463080
+// PC 0x00463080 GOG 0x00463190
 int (AurAddDrawableSquare)(float* pVertices, unsigned long nColor,
                            const char* sFile, int nLine)
 {
@@ -282,7 +282,7 @@ int (AurAddDrawableSquare)(float* pVertices, unsigned long nColor,
     GLRender::AddSquareToRender(nPool);
     return nPool;
 }
-// PC 0x00463160
+// PC 0x00463160 GOG 0x00463270
 void AurRemoveDrawableSquare(unsigned long nSquare)
 {
     if (nSquare != (unsigned int)-1)
@@ -323,12 +323,12 @@ char* removesquaretorender(char* sArguments)
     return _itoa(nSquare, returnvalue, 10);
 #endif
 }
-// PC 0x00463180
+// PC 0x00463180 GOG 0x00463290
 void AurInitExtensions()
 {
     GLRender::InitExtensions();
 }
-// PC 0x00462F00
+// PC 0x00462F00 GOG 0x00463010
 int AurDisableShadows()
 {
     enableshadows = 0;
@@ -337,22 +337,22 @@ int AurDisableShadows()
 }
 
 #ifndef _XBOX
-int AurQueryMaximumAnisotropy()  // PC 0x004631A0
+int AurQueryMaximumAnisotropy()  // PC 0x004631A0 GOG 0x004632B0
 {
     return (int)largest_supported_anisotropy;
 }
 #endif
-// PC 0x004631B0
+// PC 0x004631B0 GOG 0x004632C0
 bool AurIsSpeedBlurEnabled()
 {
     return GLRender::m_bSpeedBlurEnabled;
 }
-// PC 0x004631C0
+// PC 0x004631C0 GOG 0x004632D0
 void AurEnableSpeedBlur()
 {
     GLRender::m_bSpeedBlurEnabled = true;
 }
-// PC 0x004631D0
+// PC 0x004631D0 GOG 0x004632E0
 void AurDisableSpeedBlur()
 {
     GLRender::m_bSpeedBlurEnabled = false;
@@ -369,42 +369,42 @@ char* endblur(char* sArguments)
     AurDisableSpeedBlur();
     return "blah";
 }
-// PC 0x004631E0
+// PC 0x004631E0 GOG 0x004632F0
 void AurEnableSaturation()
 {
     GLRender::m_bSaturationEnabled = true;
 }
-// PC 0x004631F0
+// PC 0x004631F0 GOG 0x00463300
 void AurDisableSaturation()
 {
     GLRender::m_bSaturationEnabled = false;
 }
-// PC 0x00463200
+// PC 0x00463200 GOG 0x00463310
 void AurEnableScanNoise()
 {
     GLRender::m_bScanNoiseEnabled = true;
 }
-// PC 0x00463210
+// PC 0x00463210 GOG 0x00463320
 void AurDisableScanNoise()
 {
     GLRender::m_bScanNoiseEnabled = false;
 }
-// PC 0x00463220
+// PC 0x00463220 GOG 0x00463330
 void AurEnableClairvoyance(bool bLetterbox)
 {
     GLRender::EnableDreamDistortion(bLetterbox);
 }
-// PC 0x00463230
+// PC 0x00463230 GOG 0x00463340
 void AurDisableClairvoyance()
 {
     GLRender::DisableDreamDistortion();
 }
-// PC 0x00463240
+// PC 0x00463240 GOG 0x00463350
 void AurEnableForceFury(short nLevel)
 {
     GLRender::EnableFury(nLevel);
 }
-// PC 0x00463250
+// PC 0x00463250 GOG 0x00463360
 void AurSetSaturationParams(Vector vColor, float fSaturation)
 {
 #ifdef _XBOX
@@ -417,14 +417,14 @@ void AurSetSaturationParams(Vector vColor, float fSaturation)
 #endif
     GLRender::m_fSaturation = fSaturation;
 }
-// PC 0x00463280
+// PC 0x00463280 GOG 0x00463390
 void AurSetSpeedBlurRatio(float fRatio)
 {
     GLRender::m_fAccumulationRatio = fRatio;
 }
 
 #ifndef _XBOX
-int AurQueryAntiAliasingMode(int nMode)  // PC 0x00463290
+int AurQueryAntiAliasingMode(int nMode)  // PC 0x00463290 GOG 0x004633A0
 {
     if (nMode >= 0)
     {
@@ -478,17 +478,17 @@ int AurQueryAntiAliasingMode(int nMode)  // PC 0x00463290
     }
     return 0;
 }
-// PC 0x00463410
+// PC 0x00463410 GOG 0x00463520
 void AurSetClearColor(float fRed, float fGreen, float fBlue, float fAlpha)
 {
     glClearColor(fRed, fGreen, fBlue, fAlpha);
 }
-// PC 0x00463430
+// PC 0x00463430 GOG 0x00463540
 void AurGetClearColor(float* pColor)
 {
     glGetFloatv(GL_COLOR_CLEAR_VALUE, pColor);
 }
-// PC 0x00463450
+// PC 0x00463450 GOG 0x00463560
 int SetAnisotropicFilter(int nLevel)
 {
     if (AurAnisotropicFilterAvailable() != 0 &&
@@ -520,7 +520,7 @@ char* setanisotropy(char* sArguments)
     g_nCurrentAnisotropy = nLevel;
     return "SUCCESS";
 }
-// PC 0x00463480
+// PC 0x00463480 GOG 0x00463590
 extern "C" int AurSetAntiAliasingMode(int nMode)
 {
     int nResult = AurQueryAntiAliasingMode(nMode);

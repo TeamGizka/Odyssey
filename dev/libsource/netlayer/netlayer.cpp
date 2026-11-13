@@ -20,7 +20,7 @@ const unsigned char CNetLayer::CONNECTTYPE_SERVERADMIN = 64;
 const unsigned long CNetLayer::INSTANCE_CLIENT = 0;
 const unsigned long CNetLayer::INSTANCE_SERVER = 1;
 const unsigned long CNetLayer::CONNECTION_PENDING = 2;
-// PC 0x006208D0
+// PC 0x006208D0 GOG 0x006208A0
 int CNetLayer::SendMessageToPlayer(unsigned long nPlayerId,
                                    unsigned char* pData, unsigned long nSize,
                                    unsigned long nFlags)
@@ -68,7 +68,7 @@ int CNetLayer::SendMessageToPlayer(unsigned long nPlayerId,
     m_pPeer->m_nWritePos = nNewWritePos;
     return 1;
 }
-// PC 0x00620BD0
+// PC 0x00620BD0 GOG 0x00620BA0
 int CNetLayer::StartServerMode(const CExoString& sServerName,
                                unsigned long nPort)
 {
@@ -83,7 +83,7 @@ int CNetLayer::StartServerMode(const CExoString& sServerName,
     m_sServerString3 = "";
     return 1;
 }
-// PC 0x00620C40
+// PC 0x00620C40 GOG 0x00620C10
 int CNetLayer::EndServerMode()
 {
     if (m_bServerMode == 0)
@@ -93,7 +93,7 @@ int CNetLayer::EndServerMode()
     m_bServerMode = 0;
     return 1;
 }
-// PC 0x00620C60
+// PC 0x00620C60 GOG 0x00620C30
 int CNetLayer::StartConnectToSession(unsigned long nPlayerId,
                                      const CExoString& sSessionName,
                                      const CExoString& sPlayerName,
@@ -127,7 +127,7 @@ int CNetLayer::StartConnectToSession(unsigned long nPlayerId,
     delete[] pMessage;
     return 1;
 }
-// PC 0x006212A0
+// PC 0x006212A0 GOG 0x00621270
 int CNetLayer::UpdateStatusLoop(unsigned long nMessage)
 {
     if (nMessage == 0x400000 && m_bConnecting == 1 && m_bConnected == 1 &&
@@ -137,7 +137,7 @@ int CNetLayer::UpdateStatusLoop(unsigned long nMessage)
     }
     return 1;
 }
-// PC 0x00620D90
+// PC 0x00620D90 GOG 0x00620D60
 int CNetLayer::UpdateStatus()
 {
     if (m_bConnecting == 0)
@@ -150,12 +150,12 @@ int CNetLayer::UpdateStatus()
     m_nReserved = 0;
     return 1;
 }
-// PC 0x00620DC0
+// PC 0x00620DC0 GOG 0x00620D90
 CNetLayerPlayerInfo* CNetLayer::GetPlayerInfo(unsigned long nPlayerId)
 {
     return &m_cPlayerInfo;
 }
-// PC 0x00620DD0
+// PC 0x00620DD0 GOG 0x00620DA0
 int CNetLayer::HandleBNCSMessage(unsigned long nPlayerId, unsigned char* pData,
                                  unsigned long nSize)
 {
@@ -227,11 +227,11 @@ int CNetLayer::HandleBNCSMessage(unsigned long nPlayerId, unsigned char* pData,
     delete[] pReply;
     return 1;
 }
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 void CNetLayer::SetUpPlayBackConnection()
 {
 }
-// PC 0x006212E0
+// PC 0x006212E0 GOG 0x006212B0
 int CNetLayer::NonWindowMessages(unsigned long nPlayerId, unsigned char* pData,
                                  unsigned long nSize)
 {
@@ -254,7 +254,7 @@ int CNetLayer::NonWindowMessages(unsigned long nPlayerId, unsigned char* pData,
         return 0;
     }
 }
-// PC 0x00621040
+// PC 0x00621040 GOG 0x00621010
 int CNetLayer::HandleBNCRMessage(unsigned long nPlayerId, unsigned char* pData,
                                  unsigned long nSize)
 {
@@ -274,7 +274,7 @@ int CNetLayer::HandleBNCRMessage(unsigned long nPlayerId, unsigned char* pData,
     }
     return 1;
 }
-// PC 0x00621090
+// PC 0x00621090 GOG 0x00621060
 CNetLayerPlayerInfo::CNetLayerPlayerInfo()
 {
     m_nPlayerId = 0;
@@ -283,7 +283,7 @@ CNetLayerPlayerInfo::CNetLayerPlayerInfo()
     m_bGameMaster = 0;
     m_bAuthorized = 0;
 }
-// PC 0x00621370
+// PC 0x00621370 GOG 0x00621340
 CNetLayer::~CNetLayer()
 {
     if (m_bInitialized == 1)
@@ -291,13 +291,13 @@ CNetLayer::~CNetLayer()
         ShutDown();
     }
 }
-// PC 0x006210F0
+// PC 0x006210F0 GOG 0x006210C0
 CNetLayer::CNetLayer()
 {
     m_pPeer = 0;
     m_bInitialized = 0;
 }
-// PC 0x006211A0
+// PC 0x006211A0 GOG 0x00621170
 int CNetLayer::Initialize(CBaseExoApp* pExoApp)
 {
     if (g_pcTmpNetLayer == 0)
@@ -331,7 +331,7 @@ int CNetLayer::Initialize(CBaseExoApp* pExoApp)
     m_nReserved = 0;
     return 1;
 }
-// PC 0x00621250
+// PC 0x00621250 GOG 0x00621220
 int CNetLayer::ShutDown()
 {
     if (m_bInitialized == 0)
@@ -353,7 +353,7 @@ int CNetLayer::ShutDown()
     m_bInitialized = 0;
     return 1;
 }
-// PC 0x00621420
+// PC 0x00621420 GOG 0x006213F0
 void CNetLayer::ProcessReceivedFrames(int bProcess)
 {
     int nFramePos;

@@ -21,7 +21,7 @@ Model* BinaryFindModel(char*);
 
 CExoLinkedList<CAuroraModel> CAuroraInterface::m_lstRequestedModel;
 CExoString CAuroraInterface::m_pCurrentTexturePack[4];
-// PC 0x0077FEB0
+// PC 0x0077FEB0 GOG 0x0077FC80
 unsigned char* CAuroraInterface::GetLayeredRaster(char* szName, int* pnWidth,
                                        int* pnHeight, int* pnReserved)
 {
@@ -45,7 +45,7 @@ unsigned char* CAuroraInterface::GetLayeredRaster(char* szName, int* pnWidth,
     *pnReserved = nReserved;
     return pTexture->GetTextureDataPtr();
 }
-// PC 0x0077FF60
+// PC 0x0077FF60 GOG 0x0077FD30
 unsigned char* CAuroraInterface::GetRaster(char* szName, int* pnWidth, int* pnHeight,
                                 int* pnFormat)
 {
@@ -70,7 +70,7 @@ unsigned char* CAuroraInterface::GetRaster(char* szName, int* pnWidth, int* pnHe
     *pnFormat = nBpp >> 3;
     return pTexture->GetTextureDataPtr();
 }
-// PC 0x00780020
+// PC 0x00780020 GOG 0x0077FDF0
 void CAuroraInterface::ReleaseLayeredRaster(void* pRaster, int nWidth,
                                             int nHeight)
 {
@@ -80,7 +80,7 @@ void CAuroraInterface::ReleaseLayeredRaster(void* pRaster, int nWidth,
     ReleaseLayeredTextureInternal(
         ((SPLTLayeredTrailer*)(pPixels + nHeight * nWidth + 2))->pOwner);
 }
-// PC 0x00780040
+// PC 0x00780040 GOG 0x0077FE10
 void CAuroraInterface::ReleaseRaster(void* pRaster, int nWidth, int nHeight,
                                     int nBytesPerPixel, int nSize,
                                     int nReservedSize, int nTXISize,
@@ -149,7 +149,7 @@ void CAuroraInterface::ReleaseRaster(void* pRaster, int nWidth, int nHeight,
         }
     }
 }
-// PC 0x007800F0
+// PC 0x007800F0 GOG 0x0077FEC0
 void* CAuroraInterface::GetResource(char* szName, char* szExtension, int* pnSize)
 {
     char* szActualExtension;
@@ -240,7 +240,7 @@ void* CAuroraInterface::GetResource(char* szName, char* szExtension, int* pnSize
     }
     return 0;
 }
-// PC 0x007803A0
+// PC 0x007803A0 GOG 0x00780170
 void CAuroraInterface::ReleaseResource(void* pResource, int nSize)
 {
     unsigned char* pData;
@@ -285,7 +285,7 @@ void CAuroraInterface::ReleaseResource(void* pResource, int nSize)
         }
     }
 }
-// PC 0x00780430
+// PC 0x00780430 GOG 0x00780200
 int CAuroraInterface::ReadRasterHeader(char* szName, int* pnWidth,
                                        int* pnHeight, int* pnFormat)
 {
@@ -296,7 +296,7 @@ int CAuroraInterface::ReadRasterHeader(char* szName, int* pnWidth,
     CAuroraTexture texture(szName, 0);
     return texture.ReadTextureHeader(pnWidth, pnHeight, pnFormat);
 }
-// PC 0x007804E0
+// PC 0x007804E0 GOG 0x007802B0
 int CAuroraInterface::ReadProcessedRasterHeader(char* szName, int* pnWidth,
                                                 int* pnHeight, char* pnFormat,
                                                 int* pnSize, int* pnTXISize,
@@ -310,7 +310,7 @@ int CAuroraInterface::ReadProcessedRasterHeader(char* szName, int* pnWidth,
     return texture.ReadProcessedTextureHeader(
         pnWidth, pnHeight, pnFormat, pnSize, pnTXISize, pfAlpha, pnMips);
 }
-// PC 0x007805A0
+// PC 0x007805A0 GOG 0x00780370
 int CAuroraInterface::ReadCompressedRasterHeader(char* szName, int* pnWidth,
                                                  int* pnHeight, int* pnFormat,
                                                  int* pnSize, float* pfAlpha)
@@ -323,7 +323,7 @@ int CAuroraInterface::ReadCompressedRasterHeader(char* szName, int* pnWidth,
     return texture.ReadTextureHeader(pnWidth, pnHeight, pnFormat, pnSize,
                                      pfAlpha);
 }
-// PC 0x00780650
+// PC 0x00780650 GOG 0x00780420
 int CAuroraInterface::Get16BitRasterHeader(char* szName, int* pnWidth,
                                            int* pnHeight, float* pfAlpha,
                                            int* pnFormat)
@@ -335,7 +335,7 @@ int CAuroraInterface::Get16BitRasterHeader(char* szName, int* pnWidth,
     CAurora16BitTexture texture(szName, 0);
     return texture.ReadTextureHeader(pnWidth, pnHeight, pfAlpha, pnFormat);
 }
-// PC 0x00780700
+// PC 0x00780700 GOG 0x007804D0
 int CAuroraInterface::LoadTexturePack(unsigned char nPack,
                                       const CExoString& sName)
 {
@@ -354,7 +354,7 @@ int CAuroraInterface::LoadTexturePack(unsigned char nPack,
     m_pCurrentTexturePack[nPack] = sName;
     return 1;
 }
-// PC 0x00780760
+// PC 0x00780760 GOG 0x00780530
 int CAuroraInterface::UnloadTexturePack(unsigned char nPack)
 {
     CExoString sName;
@@ -374,7 +374,7 @@ int CAuroraInterface::UnloadTexturePack(unsigned char nPack)
     }
     return 1;
 }
-// PC 0x00780850
+// PC 0x00780850 GOG 0x00780620
 CExoString CAuroraInterface::GetCurrentTexturePack(unsigned char nPack)
 {
     if (nPack >= 4)
@@ -385,7 +385,7 @@ CExoString CAuroraInterface::GetCurrentTexturePack(unsigned char nPack)
 }
 
 #ifndef _XBOX
-int CAuroraInterface::GetNearestVideoMode(unsigned long nWidth,  // PC 0x00780890
+int CAuroraInterface::GetNearestVideoMode(unsigned long nWidth,  // PC 0x00780890 GOG 0x00780660
                                           unsigned long nHeight,
                                           unsigned char nBitsPerPixel,
                                           unsigned long nRefreshRate)
@@ -460,7 +460,7 @@ int CAuroraInterface::GetNearestVideoMode(unsigned long nWidth,  // PC 0x0078089
 #endif
 
 #ifndef _XBOX
-int CAuroraInterface::GetExactVideoMode(unsigned long nWidth,  // PC 0x00780A30
+int CAuroraInterface::GetExactVideoMode(unsigned long nWidth,  // PC 0x00780A30 GOG 0x00780800
                                         unsigned long nHeight,
                                         unsigned char nBitsPerPixel,
                                         unsigned long nRefreshRate)
@@ -502,7 +502,7 @@ int CAuroraInterface::GetExactVideoMode(unsigned long nWidth,
     return 1;
 }
 #endif
-// PC 0x00780B70
+// PC 0x00780B70 GOG 0x00780940
 CAuroraInterface::~CAuroraInterface()
 {
     AURORAINTERFACE_TRACE();
@@ -610,7 +610,7 @@ int CAuroraInterface::GetHighestPriorityTextureFormat(
     }
     return 0;
 }
-// PC 0x00780BB0
+// PC 0x00780BB0 GOG 0x00780980
 unsigned char* CAuroraInterface::GetCompressedRaster(char* szName, int* pnWidth,
                                           int* pnHeight, int* pnBpp,
                                           int* pnSize, float* pfAlpha)
@@ -645,7 +645,7 @@ unsigned char* CAuroraInterface::GetCompressedRaster(char* szName, int* pnWidth,
     *pfAlpha = fAlpha;
     return pTexture->GetCompressedTextureDataPtr();
 }
-// PC 0x00780D40
+// PC 0x00780D40 GOG 0x00780B10
 unsigned char* CAuroraInterface::GetProcessedRaster(char* szName, int* pnWidth,
                                          int* pnHeight, char* pnBpp,
                                          int* pnSize, int* pnTXISize,
@@ -671,7 +671,7 @@ unsigned char* CAuroraInterface::GetProcessedRaster(char* szName, int* pnWidth,
                                         pnTXISize, pnMips, pfAlpha, pnFormat);
     return pTexture->GetProcessedTextureDataPtr();
 }
-// PC 0x007811F0
+// PC 0x007811F0 GOG 0x00780FC0
 CAuroraInterface::CAuroraInterface()
 {
     AurGetResource = GetResource;
@@ -690,7 +690,7 @@ CAuroraInterface::CAuroraInterface()
     AurTextureSetDim(0, 0);
     AurTextureSetMem(g_nMaxTexMem);
 }
-// PC 0x00780EE0
+// PC 0x00780EE0 GOG 0x00780CB0
 unsigned char* CAuroraInterface::Get16BitRaster(char* szName, int* pnWidth, int* pnHeight,
                                      float* pfAlpha, int* pnFormat)
 {
@@ -722,7 +722,7 @@ unsigned char* CAuroraInterface::Get16BitRaster(char* szName, int* pnWidth, int*
     *pnFormat = nTextureFormat;
     return pTexture->GetTextureDataPtr();
 }
-// PC 0x00781030
+// PC 0x00781030 GOG 0x00780E00
 int CAuroraInterface::SetTexturePack(unsigned char nPack,
                                      const CExoString& sName)
 {
@@ -744,7 +744,7 @@ int CAuroraInterface::SetTexturePack(unsigned char nPack,
     }
     return LoadTexturePack(nPack, sName);
 }
-// PC 0x00781100
+// PC 0x00781100 GOG 0x00780ED0
 void CAuroraInterface::RequestModel(char* szName)
 {
     AURORAINTERFACE_TRACE();
@@ -782,7 +782,7 @@ inline bool IsResident(char* szName)
                : (unsigned char)false;
 }
 }
-// PC 0x007811B0
+// PC 0x007811B0 GOG 0x00780F80
 int CAuroraInterface::IsResident(char* szName)
 {
     AURORAINTERFACE_TRACE();

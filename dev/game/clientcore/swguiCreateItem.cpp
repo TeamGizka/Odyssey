@@ -10,7 +10,7 @@
 #include "swmain.h"
 
 static inline void SwguiCreateItemTrace1();
-// PC 0x0073E8C0
+// PC 0x0073E8C0 GOG 0x0073E620
 void CSWGuiCreateItemMenu::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -61,7 +61,7 @@ void CSWGuiCreateItemMenu::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0073EA30
+// PC 0x0073EA30 GOG 0x0073E710
 CSWGuiButton* CSWGuiCreateItemMenu::CreateOption(const CExoString& sText,
                                                  CSWGuiHandler pHandler,
                                                  CSWGuiButton* pPrototype)
@@ -76,7 +76,7 @@ CSWGuiButton* CSWGuiCreateItemMenu::CreateOption(const CExoString& sText,
     pButton->AddEvent(GUIEVENT_ACCEPT, this, pHandler);
     return pButton;
 }
-// PC 0x0073E9B0
+// PC 0x0073E9B0 GOG 0x0073E7D0
 void CSWGuiCreateItemMenu::Back(CSWGuiControl* pControl)
 {
     SwguiCreateItemTrace1();
@@ -86,7 +86,7 @@ void CSWGuiCreateItemMenu::Back(CSWGuiControl* pControl)
         g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowDebugMenu();
     }
 }
-// PC 0x0073E9F0
+// PC 0x0073E9F0 GOG 0x0073E810
 void CSWGuiCreateItemMenu::ItemSubTypeMenu(CSWGuiControl* pControl)
 {
     SwguiCreateItemTrace1();
@@ -100,7 +100,7 @@ void CSWGuiCreateItemMenu::ItemSubTypeMenu(CSWGuiControl* pControl)
             nSubType);
     }
 }
-// PC 0x0073EAF0
+// PC 0x0073EAF0 GOG 0x0073E850
 CSWGuiCreateItemMenu::CSWGuiCreateItemMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager), m_nSelectedSubType(0)
 {

@@ -33,7 +33,7 @@
 
 extern __int64 g_nCurrentSessionStartFILETIME;
 
-// PC 0x005792E0
+// PC 0x005792E0 GOG 0x00579360
 int CStatusSummary::LoadFromGFF(CResGFF* pGFF, CResStruct& cStruct)
 {
     int bSuccess;
@@ -87,7 +87,7 @@ inline void PartyTableReleaseStorage(CItemRepository* pItems, CSWSJournal* pJour
     delete pItems;
     delete pJournal;
 }
-// PC 0x0057C840
+// PC 0x0057C840 GOG 0x0057C8C0
 int CSWPartyTable::SpawnNPC(int nNPC, int bUsePosition, const Vector& vPosition,
                             const Vector& vOrientation, int bResurrect)
 {
@@ -164,7 +164,7 @@ int CSWPartyTable::SpawnNPC(int nNPC, int bUsePosition, const Vector& vPosition,
     }
     return oidNPC;
 }
-// PC 0x0057CB00
+// PC 0x0057CB00 GOG 0x0057CB80
 int CSWPartyTable::SpawnPUP(int nPUP, int bUsePosition, const Vector& vPosition,
                             const Vector& vOrientation, int bResurrect)
 {
@@ -202,7 +202,7 @@ int CSWPartyTable::SpawnPUP(int nPUP, int bUsePosition, const Vector& vPosition,
     }
     return oidPUP;
 }
-// PC 0x0057CC50
+// PC 0x0057CC50 GOG 0x0057CCD0
 void CSWPartyTable::DistributeExperience(int nExperience, int bFeedback)
 {
     if (nExperience > 0)
@@ -287,7 +287,7 @@ void CSWPartyTable::DistributeExperience(int nExperience, int bFeedback)
         }
     }
 }
-// PC 0x0057CE60
+// PC 0x0057CE60 GOG 0x0057CEE0
 void CSWPartyTable::SetSoloMode(int bSoloMode, int bUnstealth)
 {
     if (bSoloMode == 0 && bUnstealth != 0)
@@ -296,7 +296,7 @@ void CSWPartyTable::SetSoloMode(int bSoloMode, int bUnstealth)
     }
     m_bSoloMode = bSoloMode;
 }
-// PC 0x0057CE90
+// PC 0x0057CE90 GOG 0x0057CF10
 CSWSCreature* CSWPartyTable::GetPUPOwner(int nPUP)
 {
     if (nPUP < 0 || nPUP >= 3)
@@ -327,7 +327,7 @@ CSWSCreature* CSWPartyTable::GetPUPOwner(int nPUP)
     }
     return NULL;
 }
-// PC 0x0057CF10
+// PC 0x0057CF10 GOG 0x0057CF90
 void CSWPartyTable::UpdateMembers(int bClearActions)
 {
     for (int i = 0; i < 12; i++)
@@ -339,7 +339,7 @@ void CSWPartyTable::UpdateMembers(int bClearActions)
         SavePuppet(j, bClearActions);
     }
 }
-// PC 0x0057CF50
+// PC 0x0057CF50 GOG 0x0057CFD0
 int CSWPartyTable::RemovePuppet(int nPUP)
 {
     if (nPUP < 0 || nPUP >= 3 || m_abPuppetAvailable[nPUP] == 0)
@@ -376,7 +376,7 @@ int CSWPartyTable::RemovePuppet(int nPUP)
     return 0;
 }
 #ifndef _XBOX
-int CSWPartyTable::RemoveMember(int nNPC)  // PC 0x0057EB80
+int CSWPartyTable::RemoveMember(int nNPC)  // PC 0x0057EB80 GOG 0x0057EC00
 {
     if (m_nNumMembers <= 0 || nNPC < 0 || nNPC >= 12 ||
         m_abNPCAvailable[nNPC] == 0)
@@ -417,7 +417,7 @@ int CSWPartyTable::RemoveMember(int nNPC)  // PC 0x0057EB80
     return 0;
 }
 #endif
-int CSWPartyTable::AddMember(int nNPC, unsigned long oidMember)  // PC 0x0057D020
+int CSWPartyTable::AddMember(int nNPC, unsigned long oidMember)  // PC 0x0057D020 GOG 0x0057D0A0
 {
     if (m_nNumMembers != 2 && nNPC >= 0 && nNPC < 12 &&
         m_abNPCAvailable[nNPC] != 0 &&
@@ -481,7 +481,7 @@ int CSWPartyTable::AddMember(int nNPC, unsigned long oidMember)  // PC 0x0057D02
     }
     return 0;
 }
-// PC 0x0057D180
+// PC 0x0057D180 GOG 0x0057D200
 void CSWPartyTable::CreateParty()
 {
     if (m_bInventoryDirty == 0)
@@ -636,7 +636,7 @@ void CSWPartyTable::CreateParty()
         m_bInventoryDirty = 1;
     }
 }
-// PC 0x0057D800
+// PC 0x0057D800 GOG 0x0057D880
 void CSWPartyTable::PositionParty()
 {
     CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
@@ -706,7 +706,7 @@ void CSWPartyTable::PositionParty()
     }
     m_bSkipPartyPositioning = 0;
 }
-// PC 0x0057DBE0
+// PC 0x0057DBE0 GOG 0x0057DC60
 int CSWPartyTable::AssignPUP(int nPUP, int nNPC)
 {
     if (nPUP < 0 || nPUP >= 3)
@@ -732,7 +732,7 @@ int CSWPartyTable::AssignPUP(int nPUP, int nNPC)
     pCreature->m_n11F8 = nPUP;
     return 1;
 }
-// PC 0x0057DC50
+// PC 0x0057DC50 GOG 0x0057DCD0
 int CSWPartyTable::LoadTableInfo()
 {
     CResGFF* pGFF = new CResGFF(0, "PT  ", "PARTYTABLE");
@@ -1003,7 +1003,7 @@ int CSWPartyTable::LoadTableInfo()
     }
     return 0;
 }
-// PC 0x0057E990
+// PC 0x0057E990 GOG 0x0057EA10
 void CSWPartyTable::Save(const CExoString& sAlias, int bSaveMembers)
 {
     if (bSaveMembers != 0)
@@ -1013,7 +1013,7 @@ void CSWPartyTable::Save(const CExoString& sAlias, int bSaveMembers)
     }
     SaveTableInfo(sAlias);
 }
-// PC 0x005795E0
+// PC 0x005795E0 GOG 0x00579660
 void CSWPartyTable::ClearTable()
 {
 #ifndef _XBOX
@@ -1109,7 +1109,7 @@ void CSWPartyTable::ClearTable()
     m_bDisableMap = 0;
     m_bDisableRegen = 0;
 }
-// PC 0x00579780
+// PC 0x00579780 GOG 0x00579800
 CItemRepository* CSWPartyTable::GetPartyItems()
 {
     if (m_pPartyItems == NULL)
@@ -1119,7 +1119,7 @@ CItemRepository* CSWPartyTable::GetPartyItems()
     }
     return m_pPartyItems;
 }
-// PC 0x00579800
+// PC 0x00579800 GOG 0x00579880
 CSWSJournal* CSWPartyTable::GetPartyJournal()
 {
     if (m_pPartyJournal == NULL)
@@ -1128,7 +1128,7 @@ CSWSJournal* CSWPartyTable::GetPartyJournal()
     }
     return m_pPartyJournal;
 }
-// PC 0x00579870
+// PC 0x00579870 GOG 0x005798F0
 void CSWPartyTable::LoadJournal(CResGFF* pRes, CResStruct* pStruct)
 {
     int bSuccess;
@@ -1166,7 +1166,7 @@ void CSWPartyTable::LoadJournal(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 }
-// PC 0x00579A40
+// PC 0x00579A40 GOG 0x00579AC0
 void CSWPartyTable::ClearInventory()
 {
     if (m_pPartyItems != NULL)
@@ -1175,21 +1175,21 @@ void CSWPartyTable::ClearInventory()
     }
     m_bInventoryDirty = 0;
 }
-// PC 0x00579AF0
+// PC 0x00579AF0 GOG 0x00579B70
 CExoString CSWPartyTable::GetFilename(int nNPC)
 {
     CExoString sFilename;
     sFilename.Format("AVAILNPC%d", nNPC);
     return sFilename;
 }
-// PC 0x00579AF0
+// PC 0x00579AF0 GOG 0x00579B70
 CExoString CSWPartyTable::GetPupFilename(int nPUP)
 {
     CExoString sFilename;
     sFilename.Format("AVAILPUP%d", nPUP);
     return sFilename;
 }
-// PC 0x00579B80
+// PC 0x00579B80 GOG 0x00579C00
 int CSWPartyTable::GetIsNPCAvailable(int nNPC)
 {
     if (nNPC >= 0 && nNPC < 12)
@@ -1198,7 +1198,7 @@ int CSWPartyTable::GetIsNPCAvailable(int nNPC)
     }
     return 0;
 }
-// PC 0x00579BA0
+// PC 0x00579BA0 GOG 0x00579C20
 int CSWPartyTable::GetIsPUPAvailable(int nPUP)
 {
     if (nPUP >= 0 && nPUP < 3)
@@ -1207,7 +1207,7 @@ int CSWPartyTable::GetIsPUPAvailable(int nPUP)
     }
     return 0;
 }
-// PC 0x00579BC0
+// PC 0x00579BC0 GOG 0x00579C40
 int CSWPartyTable::GetInfluence(int nNPC)
 {
     if (nNPC >= 0 && nNPC < 12)
@@ -1216,7 +1216,7 @@ int CSWPartyTable::GetInfluence(int nNPC)
     }
     return 0;
 }
-// PC 0x00579BE0
+// PC 0x00579BE0 GOG 0x00579C60
 int CSWPartyTable::SetInfluence(int nNPC, int nInfluence)
 {
     if (nNPC >= 0 && nNPC < 12)
@@ -1240,7 +1240,7 @@ unsigned char CSWPartyTable::GetNumNPCAvailable()
     }
     return nNum;
 }
-// PC 0x00579C00
+// PC 0x00579C00 GOG 0x00579C80
 int CSWPartyTable::SetNPCObject(int nNPC, unsigned long oidNPC)
 {
     if (nNPC >= 0 && nNPC < 12 && m_abNPCAvailable[nNPC] != 0)
@@ -1249,7 +1249,7 @@ int CSWPartyTable::SetNPCObject(int nNPC, unsigned long oidNPC)
     }
     return nNPC;
 }
-// PC 0x00579C20
+// PC 0x00579C20 GOG 0x00579CA0
 int CSWPartyTable::SetPUPObject(int nPUP, unsigned long oidPUP)
 {
     if (nPUP >= 0 && nPUP < 3 && m_abPuppetAvailable[nPUP] != 0)
@@ -1258,7 +1258,7 @@ int CSWPartyTable::SetPUPObject(int nPUP, unsigned long oidPUP)
     }
     return nPUP;
 }
-// PC 0x00579C50
+// PC 0x00579C50 GOG 0x00579CD0
 int CSWPartyTable::GetIsMember(int nNPC)
 {
     for (int i = 0; i < m_nNumMembers; i++)
@@ -1270,7 +1270,7 @@ int CSWPartyTable::GetIsMember(int nNPC)
     }
     return 0;
 }
-// PC 0x00579C80
+// PC 0x00579C80 GOG 0x00579D00
 int CSWPartyTable::GetIsPuppet(int nPUP)
 {
     for (int i = 0; i < m_nNumPuppets; i++)
@@ -1282,7 +1282,7 @@ int CSWPartyTable::GetIsPuppet(int nPUP)
     }
     return 0;
 }
-// PC 0x00579CB0
+// PC 0x00579CB0 GOG 0x00579D30
 int CSWPartyTable::GetIsMember(unsigned long oidObject)
 {
     for (int nNPC = 0; nNPC < 12; nNPC++)
@@ -1301,7 +1301,7 @@ int CSWPartyTable::GetIsMember(unsigned long oidObject)
     }
     return 0;
 }
-// PC 0x00579D00
+// PC 0x00579D00 GOG 0x00579D80
 int CSWPartyTable::GetIsAvailable(unsigned long oidObject)
 {
     for (int i = 0; i < 12; i++)
@@ -1313,7 +1313,7 @@ int CSWPartyTable::GetIsAvailable(unsigned long oidObject)
     }
     return 0;
 }
-// PC 0x00579D30
+// PC 0x00579D30 GOG 0x00579DB0
 unsigned char CSWPartyTable::GetNPCSelectability(int nNPC)
 {
     if (nNPC >= 0 && nNPC < 12 && m_abNPCAvailable[nNPC] != 0)
@@ -1322,7 +1322,7 @@ unsigned char CSWPartyTable::GetNPCSelectability(int nNPC)
     }
     return 0xFF;
 }
-// PC 0x00579D60
+// PC 0x00579D60 GOG 0x00579DE0
 int CSWPartyTable::SetNPCSelectability(int nNPC, unsigned char nSelectability)
 {
     if (nNPC >= 0 && nNPC < 12 && m_abNPCAvailable[nNPC] != 0)
@@ -1332,7 +1332,7 @@ int CSWPartyTable::SetNPCSelectability(int nNPC, unsigned char nSelectability)
     return nNPC;
 }
 #ifndef _XBOX
-int CSWPartyTable::KillNPCObject(int nNPC, int bFade)  // PC 0x00579D80
+int CSWPartyTable::KillNPCObject(int nNPC, int bFade)  // PC 0x00579D80 GOG 0x00579E00
 {
     if (nNPC < 0 || nNPC >= 12)
     {
@@ -1367,7 +1367,7 @@ int CSWPartyTable::KillNPCObject(int nNPC, int bFade)  // PC 0x00579D80
     return 1;
 }
 #endif
-// PC 0x00579E10
+// PC 0x00579E10 GOG 0x00579E90
 int CSWPartyTable::KillPUPObject(int nPUP, int bFade)
 {
     if (nPUP < 0 || nPUP >= 3)
@@ -1402,7 +1402,7 @@ int CSWPartyTable::KillPUPObject(int nPUP, int bFade)
     delete pCreature;
     return 1;
 }
-int CSWPartyTable::GetNPCID(unsigned long oidObject)  // PC 0x00579EB0
+int CSWPartyTable::GetNPCID(unsigned long oidObject)  // PC 0x00579EB0 GOG 0x00579F30
 {
     if (oidObject == OBJECT_INVALID)
     {
@@ -1418,7 +1418,7 @@ int CSWPartyTable::GetNPCID(unsigned long oidObject)  // PC 0x00579EB0
     }
     return -1;
 }
-// PC 0x00579EE0
+// PC 0x00579EE0 GOG 0x00579F60
 int CSWPartyTable::GetPUPID(unsigned long oidObject)
 {
     if (oidObject == OBJECT_INVALID)
@@ -1435,7 +1435,7 @@ int CSWPartyTable::GetPUPID(unsigned long oidObject)
     }
     return -1;
 }
-// PC 0x00579F20
+// PC 0x00579F20 GOG 0x00579FA0
 int CSWPartyTable::AddGameInProgress()
 {
     if (m_nGameInProgress == 0)
@@ -1445,7 +1445,7 @@ int CSWPartyTable::AddGameInProgress()
     }
     return ++m_nGameInProgress;
 }
-// PC 0x00579FA0
+// PC 0x00579FA0 GOG 0x0057A020
 void CSWPartyTable::RemoveGameInProgress()
 {
     if (--m_nGameInProgress == 0)
@@ -1454,7 +1454,7 @@ void CSWPartyTable::RemoveGameInProgress()
         g_pExoResMan->RemoveResourceDirectory(sAlias);
     }
 }
-// PC 0x0057A010
+// PC 0x0057A010 GOG 0x0057A090
 int CSWPartyTable::ClearMembers()
 {
     for (int i = 0; i < 12; i++)
@@ -1463,7 +1463,7 @@ int CSWPartyTable::ClearMembers()
     }
     return OBJECT_INVALID;
 }
-// PC 0x0057A030
+// PC 0x0057A030 GOG 0x0057A0B0
 void CSWPartyTable::ClearPuppets()
 {
     for (int i = 0; i < 3; i++)
@@ -1471,7 +1471,7 @@ void CSWPartyTable::ClearPuppets()
         m_aoidPuppet[i] = OBJECT_INVALID;
     }
 }
-// PC 0x0057A050
+// PC 0x0057A050 GOG 0x0057A0D0
 int CSWPartyTable::ClearPuppet(int nPUP)
 {
     if (nPUP >= 0 && nPUP < 3)
@@ -1480,7 +1480,7 @@ int CSWPartyTable::ClearPuppet(int nPUP)
     }
     return nPUP;
 }
-// PC 0x0057A070
+// PC 0x0057A070 GOG 0x0057A0F0
 int CSWPartyTable::ClearMember(int nNPC)
 {
     if (nNPC >= 0 && nNPC < 12)
@@ -1489,7 +1489,7 @@ int CSWPartyTable::ClearMember(int nNPC)
     }
     return nNPC;
 }
-// PC 0x0057A090
+// PC 0x0057A090 GOG 0x0057A110
 int CSWPartyTable::GetIsLeader(unsigned long oidObject)
 {
     if (oidObject == OBJECT_INVALID)
@@ -1506,7 +1506,7 @@ int CSWPartyTable::GetIsLeader(unsigned long oidObject)
     }
     return 0;
 }
-// PC 0x0057A0D0
+// PC 0x0057A0D0 GOG 0x0057A150
 void CSWPartyTable::SetLeader(unsigned long oidObject)
 {
     m_nLeader = -1;
@@ -1522,13 +1522,13 @@ void CSWPartyTable::SetLeader(unsigned long oidObject)
         }
     }
 }
-// PC 0x0057A110
+// PC 0x0057A110 GOG 0x0057A190
 void CSWPartyTable::SetPartyFollowState(int nFollowState)
 {
     m_nFollowState = 0;
     g_pAppManager->m_pClientExoApp->GetSWParty()->FollowStateChanged();
 }
-// PC 0x0057A140
+// PC 0x0057A140 GOG 0x0057A1C0
 int CSWPartyTable::SetReturnStrref(int nReturnFlag, unsigned long nStrref,
                                    unsigned long nTitleStrref)
 {
@@ -1537,7 +1537,7 @@ int CSWPartyTable::SetReturnStrref(int nReturnFlag, unsigned long nStrref,
     m_nReturnTitleStrref = nTitleStrref;
     return nTitleStrref;
 }
-// PC 0x0057A170
+// PC 0x0057A170 GOG 0x0057A1F0
 int CSWPartyTable::SetPlanetSelectable(unsigned long nPlanet, int bSelectable)
 {
     if (nPlanet < 16)
@@ -1546,7 +1546,7 @@ int CSWPartyTable::SetPlanetSelectable(unsigned long nPlanet, int bSelectable)
     }
     return nPlanet;
 }
-// PC 0x0057A190
+// PC 0x0057A190 GOG 0x0057A210
 int CSWPartyTable::GetPlanetSelectable(unsigned long nPlanet)
 {
     if (nPlanet < 16)
@@ -1555,7 +1555,7 @@ int CSWPartyTable::GetPlanetSelectable(unsigned long nPlanet)
     }
     return 0;
 }
-// PC 0x0057A1B0
+// PC 0x0057A1B0 GOG 0x0057A230
 int CSWPartyTable::SetPlanetAvailable(unsigned long nPlanet, int bAvailable)
 {
     if (nPlanet < 16)
@@ -1564,7 +1564,7 @@ int CSWPartyTable::SetPlanetAvailable(unsigned long nPlanet, int bAvailable)
     }
     return nPlanet;
 }
-// PC 0x0057A1D0
+// PC 0x0057A1D0 GOG 0x0057A250
 int CSWPartyTable::GetPlanetAvailable(unsigned long nPlanet)
 {
     if (nPlanet < 16)
@@ -1573,7 +1573,7 @@ int CSWPartyTable::GetPlanetAvailable(unsigned long nPlanet)
     }
     return 0;
 }
-// PC 0x0057A1F0
+// PC 0x0057A1F0 GOG 0x0057A270
 int CSWPartyTable::SetSelectedPlanet(int nPlanet)
 {
     if (nPlanet >= 0 && nPlanet < 16 && m_abPlanetAvailable[nPlanet] != 0)
@@ -1582,7 +1582,7 @@ int CSWPartyTable::SetSelectedPlanet(int nPlanet)
     }
     return nPlanet;
 }
-// PC 0x0057A220
+// PC 0x0057A220 GOG 0x0057A2A0
 void CSWPartyTable::AutoLevelUpNPCs()
 {
     int i = 0;
@@ -1601,7 +1601,7 @@ void CSWPartyTable::AutoLevelUpNPCs()
         } while (i < m_nNumMembers);
     }
 }
-// PC 0x0057A280
+// PC 0x0057A280 GOG 0x0057A300
 int CSWPartyTable::GetTotalPlayedSeconds()
 {
     FILETIME ftNow;
@@ -1615,7 +1615,7 @@ int CSWPartyTable::GetTotalPlayedSeconds()
     }
     return m_nPlayedSeconds + (nElapsed + 5000000) / 10000000ui64;
 }
-// PC 0x0057A2F0
+// PC 0x0057A2F0 GOG 0x0057A370
 void CSWPartyTable::UnstealthParty(int nFlag)
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -1649,7 +1649,7 @@ void CSWPartyTable::UnstealthParty(int nFlag)
         } while (nMember < m_nNumMembers);
     }
 }
-// PC 0x0057A380
+// PC 0x0057A380 GOG 0x0057A400
 int CSWPartyTable::ResetCurrentSessionStartTime()
 {
     FILETIME ftNow;
@@ -1658,12 +1658,12 @@ int CSWPartyTable::ResetCurrentSessionStartTime()
         ftNow.dwLowDateTime | ((__int64)ftNow.dwHighDateTime << 32);
     return ftNow.dwLowDateTime;
 }
-// PC 0x004EA0C0
+// PC 0x004EA0C0 GOG 0x004EAE20
 CExoString CSWPartyTable::GetPCName()
 {
     return m_sPCName;
 }
-// PC 0x0057A3B0
+// PC 0x0057A3B0 GOG 0x0057A430
 CExoString CSWPartyTable::GetPCFirstName()
 {
     CExoString sName = m_sPCName;
@@ -1677,7 +1677,7 @@ CExoString CSWPartyTable::GetPCFirstName()
     }
     return sName;
 }
-// PC 0x0057A480
+// PC 0x0057A480 GOG 0x0057A500
 CExoString CSWPartyTable::GetPCLastName()
 {
     CExoString sName = m_sPCName;
@@ -1695,7 +1695,7 @@ CExoString CSWPartyTable::GetPCLastName()
     }
     return sName;
 }
-// PC 0x0057A580
+// PC 0x0057A580 GOG 0x0057A600
 unsigned long CSWPartyTable::GetNextPC()
 {
     if (m_n254 < 2)
@@ -1710,7 +1710,7 @@ unsigned long CSWPartyTable::GetNextPC()
     }
     return OBJECT_INVALID;
 }
-// PC 0x0057A5B0
+// PC 0x0057A5B0 GOG 0x0057A630
 CSWPartyTable::CSWPartyTable()
 {
     m_pPartyItems = NULL;
@@ -1737,7 +1737,7 @@ CSWPartyTable::CSWPartyTable()
 #endif
     ClearTable();
 }
-// PC 0x0057A610
+// PC 0x0057A610 GOG 0x0057A690
 CSWPartyTable::~CSWPartyTable()
 {
     if (m_pPartyItems != NULL)
@@ -1752,7 +1752,7 @@ CSWPartyTable::~CSWPartyTable()
         m_pPartyJournal = NULL;
     }
 }
-// PC 0x0057A6B0
+// PC 0x0057A6B0 GOG 0x0057A730
 void CSWPartyTable::SaveJournal(CResGFF* pRes, CResStruct* pStruct)
 {
     CSWSJournal* pJournal = GetPartyJournal();
@@ -1781,7 +1781,7 @@ void CSWPartyTable::SaveJournal(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 }
-// PC 0x0057A7A0
+// PC 0x0057A7A0 GOG 0x0057A820
 void CSWPartyTable::SaveMember(int nNPC, int bClearActions)
 {
     if (nNPC >= 0 && nNPC < 12)
@@ -1812,7 +1812,7 @@ void CSWPartyTable::SaveMember(int nNPC, int bClearActions)
         }
     }
 }
-// PC 0x0057A950
+// PC 0x0057A950 GOG 0x0057A9D0
 void CSWPartyTable::SaveMemberByObject(int nNPC, unsigned long oidMember)
 {
     if (nNPC >= 0 && nNPC < 12)
@@ -1840,7 +1840,7 @@ void CSWPartyTable::SaveMemberByObject(int nNPC, unsigned long oidMember)
         }
     }
 }
-// PC 0x0057AB00
+// PC 0x0057AB00 GOG 0x0057AB80
 void CSWPartyTable::SavePuppet(int nPUP, int bClearActions)
 {
     if (nPUP >= 0 && nPUP < 3)
@@ -1871,7 +1871,7 @@ void CSWPartyTable::SavePuppet(int nPUP, int bClearActions)
         }
     }
 }
-// PC 0x0057ACB0
+// PC 0x0057ACB0 GOG 0x0057AD30
 void CSWPartyTable::SavePuppetByObject(int nPUP, unsigned long oidPuppet)
 {
     if (nPUP >= 0 && nPUP < 3)
@@ -1899,7 +1899,7 @@ void CSWPartyTable::SavePuppetByObject(int nPUP, unsigned long oidPuppet)
         }
     }
 }
-// PC 0x0057AE60
+// PC 0x0057AE60 GOG 0x0057AEE0
 void CSWPartyTable::UpdateInventory(int bClearItems)
 {
     if (m_pPartyItems != NULL)
@@ -1931,7 +1931,7 @@ void CSWPartyTable::UpdateInventory(int bClearItems)
         delete pGFF;
     }
 }
-// PC 0x0057B010
+// PC 0x0057B010 GOG 0x0057B090
 void CSWPartyTable::TransferInventory(CSWSCreature* pCreature)
 {
     CSWSItem* pItem;
@@ -1963,7 +1963,7 @@ void CSWPartyTable::TransferInventory(CSWSCreature* pCreature)
         pItems->ClearItems();
     }
 }
-// PC 0x0057B160
+// PC 0x0057B160 GOG 0x0057B1E0
 int CSWPartyTable::AddPuppet(int nPUP, unsigned long oidPuppet)
 {
     if (m_nNumPuppets != 2 && nPUP >= 0 && nPUP < 3 &&
@@ -2010,7 +2010,7 @@ int CSWPartyTable::AddPuppet(int nPUP, unsigned long oidPuppet)
     return 0;
 }
 #ifndef _XBOX
-int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x0057B260
+int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x0057B260 GOG 0x0057B2E0
 {
     if (nNPC < 0 || nNPC >= MAX_NPCS)
     {
@@ -2085,7 +2085,7 @@ int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)  // PC 0x0057B260
     return bResult;
 }
 #endif
-// PC 0x0057B560
+// PC 0x0057B560 GOG 0x0057B5E0
 int CSWPartyTable::AddPUP(int nPUP, CSWSCreature* pCreature)
 {
     if (nPUP < 0 || nPUP >= 3)
@@ -2116,7 +2116,7 @@ int CSWPartyTable::AddPUP(int nPUP, CSWSCreature* pCreature)
     delete pGFF;
     return bResult;
 }
-int CSWPartyTable::AddNPC(int nNPC, const CExoString& sTemplate)  // PC 0x0057B760
+int CSWPartyTable::AddNPC(int nNPC, const CExoString& sTemplate)  // PC 0x0057B760 GOG 0x0057B7E0
 {
     if (nNPC < 0 || nNPC >= 12 || m_abNPCAvailable[nNPC] != 0)
     {
@@ -2135,7 +2135,7 @@ int CSWPartyTable::AddNPC(int nNPC, const CExoString& sTemplate)  // PC 0x0057B7
     delete (CSWSObject*)pCreature;
     return nResult;
 }
-// PC 0x0057B840
+// PC 0x0057B840 GOG 0x0057B8C0
 int CSWPartyTable::AddPUP(int nPUP, const CExoString& sTemplate)
 {
     if (nPUP < 0 || nPUP >= 3 || m_abPuppetAvailable[nPUP] != 0)
@@ -2155,7 +2155,7 @@ int CSWPartyTable::AddPUP(int nPUP, const CExoString& sTemplate)
     delete (CSWSObject*)pCreature;
     return nResult;
 }
-// PC 0x0057B920
+// PC 0x0057B920 GOG 0x0057B9A0
 int CSWPartyTable::RemoveNPC(int nNPC)
 {
     if (nNPC < 0)
@@ -2176,7 +2176,7 @@ int CSWPartyTable::RemoveNPC(int nNPC)
     m_abNPCAvailable[nNPC] = 0;
     return 1;
 }
-// PC 0x0057B950
+// PC 0x0057B950 GOG 0x0057B9D0
 unsigned long CSWPartyTable::GetNPCObject(int nNPC, int bLoad, int bResurrect)
 {
     if (nNPC >= 0 && nNPC < 12 && m_abNPCAvailable[nNPC] != 0)
@@ -2216,7 +2216,7 @@ unsigned long CSWPartyTable::GetNPCObject(int nNPC, int bLoad, int bResurrect)
     }
     return OBJECT_INVALID;
 }
-// PC 0x0057BB30
+// PC 0x0057BB30 GOG 0x0057BBB0
 unsigned long CSWPartyTable::GetPUPObject(int nPUP, int bLoad, int bResurrect)
 {
     if (nPUP >= 0 && nPUP < 3 && m_abPuppetAvailable[nPUP] != 0)
@@ -2253,7 +2253,7 @@ unsigned long CSWPartyTable::GetPUPObject(int nPUP, int bLoad, int bResurrect)
     }
     return OBJECT_INVALID;
 }
-// PC 0x0057BCF0
+// PC 0x0057BCF0 GOG 0x0057BD70
 void CSWPartyTable::SaveTableInfo(const CExoString& sAlias)
 {
     CExoString sFile;
@@ -2461,7 +2461,7 @@ void CSWPartyTable::SaveTableInfo(const CExoString& sAlias)
         delete pGFF;
     }
 }
-// PC 0x0057E9C0
+// PC 0x0057E9C0 GOG 0x0057EA40
 void CSWPartyTable::GivePlotXP(const CExoString& sPlotID, int nPercent)
 {
     int nXP = 0;
@@ -2483,7 +2483,7 @@ void CSWPartyTable::GivePlotXP(const CExoString& sPlotID, int nPercent)
         }
     }
 }
-// PC 0x0057EAA0
+// PC 0x0057EAA0 GOG 0x0057EB20
 void CSWPartyTable::GivePlotXP(unsigned long nPlotIndex, int nPercent)
 {
     int nXP = 0;
@@ -2507,7 +2507,7 @@ void CSWPartyTable::GivePlotXP(unsigned long nPlotIndex, int nPercent)
 }
 
 inline unsigned long CSWSPlayer::GetPCObject() { return m_oidPCObject; }
-// PC 0x0057EC70
+// PC 0x0057EC70 GOG 0x0057ECF0
 int CSWPartyTable::SwitchPlayerCharacter(int nNPC)
 {
     CExoString sPath;

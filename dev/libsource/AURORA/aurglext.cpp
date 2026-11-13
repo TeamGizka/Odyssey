@@ -291,7 +291,7 @@ int g_nGLExtUnused3 = 0;
 
 int AurATIFrameBufferModificationsAvailable();
 int AurATIFragmentShaderAvailable();
-// PC 0x00475310
+// PC 0x00475310 GOG 0x004754A0
 int AurATIFragmentShaderAvailable()
 {
     unsigned int nBits = ATI_FRAGMENT_SHADER_BIT;
@@ -308,12 +308,12 @@ int AurATIFragmentShaderAvailable()
 
     return returnval & useatifragmentshaders;
 }
-// PC 0x00475330
+// PC 0x00475330 GOG 0x004754C0
 GLboolean AuroraUseARBShaders()
 {
     return (EXT_SWAP_CONTROL_BIT & existingextensions) == EXT_SWAP_CONTROL_BIT;
 }
-// PC 0x00475350
+// PC 0x00475350 GOG 0x004754E0
 GLboolean AurBumpMapCardValidate()
 {
     static int returnval = -1;
@@ -325,7 +325,7 @@ GLboolean AurBumpMapCardValidate()
 
     return returnval == 1;
 }
-// PC 0x00475390
+// PC 0x00475390 GOG 0x00475520
 GLboolean AurNonRadeon8500Validate()
 {
     static int returnval = -1;
@@ -344,7 +344,7 @@ GLboolean AurNonRadeon8500Validate()
 
     return returnval == 1;
 }
-// PC 0x004753F0
+// PC 0x004753F0 GOG 0x00475580
 GLboolean AurATIValidate()
 {
     static int returnval = -1;
@@ -356,7 +356,7 @@ GLboolean AurATIValidate()
 
     return returnval == 1;
 }
-// PC 0x00475430
+// PC 0x00475430 GOG 0x004755C0
 int AurBumpyShinyAvailable()
 {
     static int returnval = -1;
@@ -384,7 +384,7 @@ int AurBumpyShinyAvailable()
 
     return returnval;
 }
-// PC 0x004754C0
+// PC 0x004754C0 GOG 0x00475650
 int AurMultiTextureAvailable()
 {
     static int returnval = -1;
@@ -399,7 +399,7 @@ int AurMultiTextureAvailable()
 
     return nAvailable;
 }
-// PC 0x004754F0
+// PC 0x004754F0 GOG 0x00475680
 int AurVertexProgramsNVAvailable()
 {
     static int returnval = -1;
@@ -425,7 +425,7 @@ int AurVertexProgramsARBAvailable()
 
     return returnval;
 }
-// PC 0x00475520
+// PC 0x00475520 GOG 0x004756B0
 int AurVertexProgramsAvailable()
 {
     int nAvailable = AurVertexProgramsARBAvailable();
@@ -434,7 +434,7 @@ int AurVertexProgramsAvailable()
 
     return (nUse & nAvailable) != 0 && nUse != 0;
 }
-// PC 0x00475560
+// PC 0x00475560 GOG 0x004756F0
 int AurSoftShadowsAvailable()
 {
     static int returnval = -1;
@@ -456,7 +456,7 @@ int AurSoftShadowsAvailable()
 
     return returnval;
 }
-// PC 0x00475590
+// PC 0x00475590 GOG 0x00475720
 int AurATISoftShadowsAvailable()
 {
     static int returnval = -1;
@@ -482,7 +482,7 @@ int AurATISoftShadowsAvailable()
 
     return returnval;
 }
-// PC 0x004755D0
+// PC 0x004755D0 GOG 0x00475760
 int AurFrameBufferModificationsAvailable()
 {
     static int returnval = -1;
@@ -505,7 +505,7 @@ int AurFrameBufferModificationsAvailable()
 
     return returnval;
 }
-// PC 0x00475610
+// PC 0x00475610 GOG 0x004757A0
 int AurATIFrameBufferModificationsAvailable()
 {
     static int returnval = -1;
@@ -526,7 +526,7 @@ int AurATIFrameBufferModificationsAvailable()
 
     return returnval;
 }
-// PC 0x00475660
+// PC 0x00475660 GOG 0x004757F0
 int AurCubeMapAvailable()
 {
     static int returnval = -1;
@@ -540,7 +540,7 @@ int AurCubeMapAvailable()
 
     return returnval;
 }
-// PC 0x00475690
+// PC 0x00475690 GOG 0x00475820
 int AurAnisotropicFilterAvailable()
 {
     static int returnval = -1;
@@ -553,7 +553,7 @@ int AurAnisotropicFilterAvailable()
 
     return returnval;
 }
-// PC 0x004756C0
+// PC 0x004756C0 GOG 0x00475850
 int AurSGIMipmapAvailable()
 {
     static int returnval = -1;
@@ -574,7 +574,7 @@ int AurSGIMipmapAvailable()
 
     return returnval;
 }
-// PC 0x00475700
+// PC 0x00475700 GOG 0x00475890
 int AurTextureCompressionAvailable()
 {
     static int returnval = -1;
@@ -589,7 +589,7 @@ int AurTextureCompressionAvailable()
 
     return returnval;
 }
-// PC 0x00475730
+// PC 0x00475730 GOG 0x004758C0
 bool CheckExtension(char* sExtension, unsigned char const* sExtensions)
 {
     unsigned char const* pExtension = sExtensions;
@@ -611,7 +611,7 @@ bool CheckExtension(char* sExtension, unsigned char const* sExtensions)
 
     return false;
 }
-// PC 0x004757A0
+// PC 0x004757A0 GOG 0x00475930
 int AurTwoSidedStencilAvailable()
 {
     static int returnval = -1;
@@ -623,7 +623,7 @@ int AurTwoSidedStencilAvailable()
 
     return returnval;
 }
-// PC 0x004757D0
+// PC 0x004757D0 GOG 0x00475960
 bool AurCheckSoftShadowsAvailable()
 {
     bool bResult = true;
@@ -638,7 +638,7 @@ bool AurCheckSoftShadowsAvailable()
 
     return bResult;
 }
-// PC 0x00475860
+// PC 0x00475860 GOG 0x004759F0
 bool AurCheckFrameBufferModificationsAvailable()
 {
     if (AurFrameBufferModificationsAvailable() ||
@@ -649,7 +649,7 @@ bool AurCheckFrameBufferModificationsAvailable()
 
     return false;
 }
-// PC 0x004758C0
+// PC 0x004758C0 GOG 0x00475A50
 int AurBumpMapAvailable()
 {
     unsigned int nBits = EXT_BGRA_BIT | ARB_MULTITEXTURE_BIT |
@@ -676,7 +676,7 @@ int AurBumpMapAvailable()
 
     return returnval;
 }
-// PC 0x00475940
+// PC 0x00475940 GOG 0x00475AD0
 bool AurNV1xLevelShadersAvailable()
 {
     if (renderlevel < 1)
@@ -691,7 +691,7 @@ bool AurNV1xLevelShadersAvailable()
 
     return AurBumpMapAvailable() ? true : false;
 }
-// PC 0x00475980
+// PC 0x00475980 GOG 0x00475B10
 bool AurNV2xLevelShadersAvailable()
 {
     if (renderlevel < 2)
@@ -701,7 +701,7 @@ bool AurNV2xLevelShadersAvailable()
 
     return AurBumpyShinyAvailable() ? true : false;
 }
-// PC 0x004759A0
+// PC 0x004759A0 GOG 0x00475B30
 int AurOnePassEnvMapAvailable()
 {
     static int returnval = -1;
@@ -728,7 +728,7 @@ int AurOnePassEnvMapAvailable()
 
     return returnval;
 }
-// PC 0x00475A40
+// PC 0x00475A40 GOG 0x00475BD0
 int AurVertexBufferObjectARBAvailable()
 {
     static int returnval = -1;
@@ -756,7 +756,7 @@ int AurVertexBufferObjectARBAvailable()
 
     return returnval;
 }
-// PC 0x00475AB0
+// PC 0x00475AB0 GOG 0x00475C40
 int AurGetAvailableStencilBits()
 {
     static int stencilbits = -1;
@@ -768,7 +768,7 @@ int AurGetAvailableStencilBits()
 
     return stencilbits;
 }
-// PC 0x00475AD0
+// PC 0x00475AD0 GOG 0x00475C60
 int AurGetStencilClearValue()
 {
     static int stencilclear = -1;

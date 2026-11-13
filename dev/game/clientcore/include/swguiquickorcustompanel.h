@@ -30,12 +30,12 @@ public:
     void SetDescription(unsigned long nStrRef);
     void OnSelectQuickCharacterButton(CSWGuiControl* pControl);
     void OnSelectCustomCharacterButton(CSWGuiControl* pControl);
-    void OnEnterQuickCharacterButton(  // PC 0x00761C50
+    void OnEnterQuickCharacterButton(  // PC 0x00761C50 GOG 0x007619A0
         CSWGuiControl* pControl)
     {
         SetDescription(0xF1);
     }
-    void OnEnterCustomCharacterButton(  // PC 0x00761C60
+    void OnEnterCustomCharacterButton(  // PC 0x00761C60 GOG 0x007619B0
         CSWGuiControl* pControl)
     {
         SetDescription(0xF2);

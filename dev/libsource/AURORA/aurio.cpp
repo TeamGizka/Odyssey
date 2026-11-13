@@ -749,14 +749,14 @@ void Input::InputBinary::ResetLightsaberLite(MdlNodeLightsaber* pNode,
 IODispatcher::IODispatcher() : m_lDispatchEntries(0)
 {
 }
-// PC 0x004CD870
+// PC 0x004CD870 GOG 0x004CDA00
 IODispatcher* IODispatcher::GetRef()
 {
     static IODispatcher ioDispatch;
 
     return &ioDispatch;
 }
-// PC 0x004CE990
+// PC 0x004CE990 GOG 0x004CEAD0
 MaxTree* IODispatcher::ReadSync(char* sFileName)
 {
     Input input;
@@ -764,7 +764,7 @@ MaxTree* IODispatcher::ReadSync(char* sFileName)
     input.m_pResource = 0;
     return input.Read(sFileName);
 }
-// PC 0x004CE9B0
+// PC 0x004CE9B0 GOG 0x004CEAF0
 MaxTree* IODispatcher::ReadSync(FILE* pModelFile, FILE* pVertexFile)
 {
     Input input;

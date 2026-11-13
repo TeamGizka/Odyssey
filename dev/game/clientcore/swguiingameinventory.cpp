@@ -27,7 +27,7 @@ const int CSWGuiInGameInventory::m_nFilterName[6] =
     41822, 42165, 41818, 41821, 41819, 41820
 };
 #ifndef _XBOX
-// PC 0x00738C20
+// PC 0x00738C20 GOG 0x00738980
 void CSWGuiInGameInventory::OnControlExited(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -43,7 +43,7 @@ void CSWGuiInGameInventory::OnControlExited(CSWGuiControl* pControl)
         }
     }
 }
-void CSWGuiInGameInventory::OnControlSelected(CSWGuiControl* pControl)  // PC 0x00738C80
+void CSWGuiInGameInventory::OnControlSelected(CSWGuiControl* pControl)  // PC 0x00738C80 GOG 0x007389E0
 {
     if (pControl->m_bSelected != 0)
     {
@@ -84,7 +84,7 @@ void CSWGuiInGameInventory::OnControlSelected(CSWGuiControl* pControl)  // PC 0x
     }
 }
 #endif
-// PC 0x00738D90
+// PC 0x00738D90 GOG 0x00738AF0
 void CSWGuiInGameInventory::CantEquip(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -97,7 +97,7 @@ void CSWGuiInGameInventory::CantEquip(CSWGuiControl* pControl)
         m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
 }
-// PC 0x00738DF0
+// PC 0x00738DF0 GOG 0x00738B50
 void CSWGuiInGameInventory::NotUseable(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -124,7 +124,7 @@ void CSWGuiInGameInventory::NotUseableOnHawk(CSWGuiControl* pControl)
     }
 }
 #endif
-// PC 0x00738E50
+// PC 0x00738E50 GOG 0x00738BB0
 void CSWGuiInGameInventory::FullHealth(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -138,7 +138,7 @@ void CSWGuiInGameInventory::FullHealth(CSWGuiControl* pControl)
     }
 }
 #ifndef _XBOX
-// PC 0x00738EB0
+// PC 0x00738EB0 GOG 0x00738C10
 void CSWGuiInGameInventory::SquadFullHealth(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -159,7 +159,7 @@ static inline void SwguiingameinventorySync2();
 static inline void SwguiingameinventorySync1();
 
 
-// PC 0x00738F10
+// PC 0x00738F10 GOG 0x00738C70
 void CSWGuiInGameInventory::SetNextFilter(CSWGuiControl* pControl)
 {
     int nFilter = pControl->m_nIndex;
@@ -175,7 +175,7 @@ void CSWGuiInGameInventory::SetNextFilter(CSWGuiControl* pControl)
     pButton->m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
     m_bUpdateItems = 1;
 }
-// PC 0x00738FD0
+// PC 0x00738FD0 GOG 0x00738D30
 int CSWGuiInGameInventory::CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature,
                                        int nSlot)
 {
@@ -312,7 +312,7 @@ int CSWGuiInGameInventory::CheckFilter(CSWSItem* pItem, CSWSCreature* pCreature,
 
 
 
-// PC 0x00739440
+// PC 0x00739440 GOG 0x007391A0
 CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -454,7 +454,7 @@ CSWGuiInGameInventory::CSWGuiInGameInventory(CSWGuiManager* pManager)
     m_btnUseItem.AddEvent(CSWGuiControl::EVENT_SELECT, this,
                           (CSWGuiHandler)&CSWGuiPanel::OnAButtonPressed);
 }
-// PC 0x00739E30
+// PC 0x00739E30 GOG 0x00739B90
 void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -497,7 +497,7 @@ void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
         m_lbxDescription.SetSelectedControl(&m_lblUnknown64, 0);
     }
 }
-// PC 0x00739280
+// PC 0x00739280 GOG 0x00738FE0
 void CSWGuiInGameInventory::HandleInputEvent(int nEvent, int nState)
 {
     SwguiingameinventoryTrace2();
@@ -539,7 +539,7 @@ void CSWGuiInGameInventory::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0073A040
+// PC 0x0073A040 GOG 0x00739DA0
 CSWGuiInGameInventory::~CSWGuiInGameInventory()
 {
     SwguiingameinventoryTrace2();
@@ -555,7 +555,7 @@ CSWGuiInGameInventory::~CSWGuiInGameInventory()
     }
     m_aItemEntries.num = 0;
 }
-// PC 0x0073A310
+// PC 0x0073A310 GOG 0x0073A070
 void CSWGuiInGameInventory::OnPanelRemoved()
 {
     SwguiingameinventoryTrace2();
@@ -580,7 +580,7 @@ void CSWGuiInGameInventory::OnPanelRemoved()
         ->GetPartyItems()
         ->ClearNewItems(&m_aNewItems);
 }
-// PC 0x0073A3B0
+// PC 0x0073A3B0 GOG 0x0073A110
 void CSWGuiInGameInventory::CreateItemEntry(
     CSWCCreature* pCreature, int& nItem,
     CExoArrayList<CSWGuiControl*>& lControls, CSWSItem* pItem, int bSquadItem,
@@ -696,7 +696,7 @@ void CSWGuiInGameInventory::CreateItemEntry(
     lControls.Add(pItemEntry);
     ++nItem;
 }
-// PC 0x0073A700
+// PC 0x0073A700 GOG 0x0073A460
 void CSWGuiInGameInventory::PopulateItemListBox()
 {
     CSWCCreature* pCreature =
@@ -779,7 +779,7 @@ void CSWGuiInGameInventory::PopulateItemListBox()
     }
     m_bUpdateItems = 0;
 }
-// PC 0x0073AA70
+// PC 0x0073AA70 GOG 0x0073A7D0
 void CSWGuiInGameInventory::Draw(float fElapsed)
 {
     SwguiingameinventorySync3();
@@ -818,7 +818,7 @@ void CSWGuiInGameInventory::Draw(float fElapsed)
     }
     return CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x0073ABB0
+// PC 0x0073ABB0 GOG 0x0073A910
 void CSWGuiInGameInventory::OnPanelAdded()
 {
     SwguiingameinventorySync3();

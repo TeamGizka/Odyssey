@@ -56,7 +56,7 @@ static const float DANGLY_MIN_TIME_STEP = 0.0125f;
 static const float DANGLY_PERIOD_SCALE = 1.5f;
 static const float DANGLY_TIGHTNESS_SCALE = 0.5f;
 static const float DANGLY_WIND_SCALE = 20.0f;
-// PC 0x004B5D30
+// PC 0x004B5D30 GOG 0x004B5E40
 CallBack* Gob::RegisterCallBack(void (*pfnCallBack)(CAurObject*, char*, void*),
                                 char* sEvent, void* pData, float fDelay,
                                 bool bRepeat)
@@ -66,7 +66,7 @@ CallBack* Gob::RegisterCallBack(void (*pfnCallBack)(CAurObject*, char*, void*),
     m_lCallBacks.Add(pCallBack);
     return pCallBack;
 }
-// PC 0x004B5DB0
+// PC 0x004B5DB0 GOG 0x004B5EC0
 void NewController::ReportKey(Part* pPart, MdlNode* pNode, int nKey,
                               float fDelta)
 {
@@ -142,17 +142,17 @@ void NewController::ReportKey(Part* pPart, MdlNode* pNode, int nKey,
         pObject->DoEvent("ReportKey", &report);
     }
 }
-// PC 0x004B1EE0
+// PC 0x004B1EE0 GOG 0x004B1FF0
 unsigned char LookAtAnimation::IsActive()
 {
     return m_pOutOfOrderRun->m_bDone == 0;
 }
-// PC 0x004B1EF0
+// PC 0x004B1EF0 GOG 0x004B2000
 void LookAtAnimation::Deactivate()
 {
     m_bDeactivated = 1;
 }
-// PC 0x004B1F00
+// PC 0x004B1F00 GOG 0x004B2010
 void Gob::EndLookAtAnimate()
 {
     if (m_pLookAtAnimation != 0)
@@ -160,12 +160,12 @@ void Gob::EndLookAtAnimate()
         m_pLookAtAnimation->Deactivate();
     }
 }
-// PC 0x004B1F10
+// PC 0x004B1F10 GOG 0x004B2020
 int AnimationParseField(void* pAnimation, char* sField)
 {
     return ((Animation*)pAnimation)->InternalParseField(sField);
 }
-// PC 0x004B1F20
+// PC 0x004B1F20 GOG 0x004B2030
 AnimRun::AnimRun(Animation* pAnimation)
 {
     m_pAnimation = pAnimation;
@@ -178,7 +178,7 @@ AnimRun::AnimRun(Animation* pAnimation)
     m_bDone = 0;
     m_fScale = 1.0f;
 }
-// PC 0x004B1F50
+// PC 0x004B1F50 GOG 0x004B2060
 OOAnimRun::OOAnimRun(Animation* pAnimation, float* pKeyTimes, float* pValues,
                      int nCount, float fBlendTime)
     : AnimRun(pAnimation)
@@ -196,7 +196,7 @@ OOAnimRun::OOAnimRun(Animation* pAnimation, float* pKeyTimes, float* pValues,
     m_nNumValues = nCount;
     m_fBlendTime = fBlendTime;
 }
-// PC 0x004B20E0
+// PC 0x004B20E0 GOG 0x004B21F0
 CallBack::CallBack(void (*pfnCallBack)(CAurObject*, char*, void*), char* sEvent,
                    void* pData, float fDelay, bool bRepeat)
 {
@@ -210,13 +210,13 @@ CallBack::CallBack(void (*pfnCallBack)(CAurObject*, char*, void*), char* sEvent,
     m_fDelay = fDelay;
     m_bRepeat = bRepeat;
 }
-// PC 0x004B2130
+// PC 0x004B2130 GOG 0x004B2240
 inline Quaternion Interpolate(const Quaternion& qFirst,
                               const Quaternion& qSecond, float fPosition)
 {
     return slerp(qFirst, qSecond, fPosition);
 }
-// PC 0x004B2170
+// PC 0x004B2170 GOG 0x004B2280
 void PartLightsaber::Animate(float fTimeStep)
 {
     if (!(fTimeStep > lightsaberdelta))
@@ -283,7 +283,7 @@ OOAnimRun::~OOAnimRun()
     m_pStartValues = 0;
 }
 #endif
-// PC 0x004B2400
+// PC 0x004B2400 GOG 0x004B2510
 bool Gob::IsCharacter()
 {
     if (m_pModel != 0)
@@ -294,7 +294,7 @@ bool Gob::IsCharacter()
 
     return false;
 }
-// PC 0x004B2420
+// PC 0x004B2420 GOG 0x004B2530
 inline bool Gob::IsRenderEarly()
 {
     if (m_pModel != 0)
@@ -305,7 +305,7 @@ inline bool Gob::IsRenderEarly()
 
     return false;
 }
-// PC 0x004B2440
+// PC 0x004B2440 GOG 0x004B2550
 CustomAnimation::~CustomAnimation()
 {
     if (m_pTree != 0)
@@ -313,7 +313,7 @@ CustomAnimation::~CustomAnimation()
         delete m_pTree;
     }
 }
-// PC 0x004B2460
+// PC 0x004B2460 GOG 0x004B2570
 void LookAtAnimation::Control()
 {
     if (m_pTarget == 0)
@@ -382,7 +382,7 @@ void LookAtAnimation::Control()
         ((Animation*)m_pTree)->m_fLength = 0.0f;
     }
 }
-// PC 0x004B2B20
+// PC 0x004B2B20 GOG 0x004B2C30
 int Gob::StopOutOfOrderAnimation(char* sName)
 {
     int nCount = m_lOutOfOrderAnimations.m_nCount;
@@ -405,7 +405,7 @@ int Gob::StopOutOfOrderAnimation(char* sName)
 
     return nIndex;
 }
-// PC 0x004B2B70
+// PC 0x004B2B70 GOG 0x004B2C80
 Animation* FindAnimation(Model* pModel, char* sName)
 {
     if (sName == NULL)
@@ -440,7 +440,7 @@ Animation* FindAnimation(Model* pModel, char* sName)
     }
     return NULL;
 }
-// PC 0x004B2F10
+// PC 0x004B2F10 GOG 0x004B3020
 void Gob::DeregisterCallback(CallBack* pCallBack)
 {
     for (int nIndex = 0; nIndex < m_lCallBacks.m_nCount; ++nIndex)
@@ -453,7 +453,7 @@ void Gob::DeregisterCallback(CallBack* pCallBack)
         }
     }
 }
-// PC 0x004B2F80
+// PC 0x004B2F80 GOG 0x004B3090
 void AnimateEvents(Gob* pGob, Animation* pAnimation, float fPreviousTime,
                    float fTime, int nFlags)
 {
@@ -502,7 +502,7 @@ void AnimateEvents(Gob* pGob, Animation* pAnimation, float fPreviousTime,
         }
     }
 }
-// PC 0x004B3440
+// PC 0x004B3440 GOG 0x004B3550
 void NewController::GetKeyIndexAndAlpha(float fTime, MdlNode* pNode, int& nKey,
                                         float& fAlpha)
 {
@@ -524,7 +524,7 @@ void NewController::GetKeyIndexAndAlpha(float fTime, MdlNode* pNode, int& nKey,
         fAlpha = (fTime - pfKey[-1]) / (pfKey[0] - pfKey[-1]);
     }
 }
-// PC 0x004B34C0
+// PC 0x004B34C0 GOG 0x004B35D0
 int NewController::GetFloatValue(float fTime, MdlNode* pNode, float& value)
 {
     if ((m_nValueFormat & VALUE_TYPE_MASK) != VALUE_TYPE_FLOAT)
@@ -574,7 +574,7 @@ int NewController::GetFloatValue(float fTime, MdlNode* pNode, float& value)
     }
     return 1;
 }
-// PC 0x004B35F0
+// PC 0x004B35F0 GOG 0x004B3700
 int NewController::GetVectorValue(float fTime, MdlNode* pNode, Vector& value)
 {
     if ((m_nValueFormat & VALUE_TYPE_MASK) != VALUE_TYPE_VECTOR)
@@ -663,7 +663,7 @@ int NewController::GetVectorValue(float fTime, MdlNode* pNode, Vector& value)
     }
     return 1;
 }
-// PC 0x004B3920
+// PC 0x004B3920 GOG 0x004B3A30
 void NewController::GetQuaternionFromIndexLocation(int nKey, MdlNode* pNode,
                                                    Quaternion& qValue)
 {
@@ -707,7 +707,7 @@ void NewController::GetQuaternionFromIndexLocation(int nKey, MdlNode* pNode,
         }
     }
 }
-// PC 0x004B3A80
+// PC 0x004B3A80 GOG 0x004B3B90
 int NewController::GetQuaternionValue(float fTime, MdlNode* pNode,
                                       Quaternion& value)
 {
@@ -742,7 +742,7 @@ int NewController::GetQuaternionValue(float fTime, MdlNode* pNode,
     value = qValue;
     return 1;
 }
-// PC 0x004B3C00
+// PC 0x004B3C00 GOG 0x004B3D10
 void NewController::Control(Part* pPart, MdlNode* pNode, float fTime,
                             float fPreviousTime, float fBlend)
 {
@@ -826,7 +826,7 @@ void NewController::Control(Part* pPart, MdlNode* pNode, float fTime,
         }
     }
 }
-// PC 0x004B3F60
+// PC 0x004B3F60 GOG 0x004B4070
 void ProceduralAnimateHierarchy(Part* pPart)
 {
     int i;
@@ -891,7 +891,7 @@ void ProceduralAnimateHierarchy(Part* pPart)
     for (i = 0; i < pPart->m_lstChildren.m_nCount; ++i)
         ProceduralAnimateHierarchy(pPart->m_lstChildren[i]);
 }
-// PC 0x004B46B0
+// PC 0x004B46B0 GOG 0x004B47C0
 void AnimateHierarchy(Part* pPart, MdlNode* pNode, float fTime,
                       float fPreviousTime, float fBlend, bool bAnimate)
 {
@@ -950,7 +950,7 @@ void AnimateHierarchy(Part* pPart, MdlNode* pNode, float fTime,
     }
     depth--;
 }
-// PC 0x004B4B90
+// PC 0x004B4B90 GOG 0x004B4CA0
 void Part::Animate(float fTimeStep)
 {
     for (int nChild = 0; nChild < m_lstChildren.m_nCount; ++nChild)
@@ -958,7 +958,7 @@ void Part::Animate(float fTimeStep)
         m_lstChildren[nChild]->Animate(fTimeStep);
     }
 }
-// PC 0x004B4BC0
+// PC 0x004B4BC0 GOG 0x004B4CD0
 void PartDanglyMesh::Animate(float fTimeStep)
 {
     if (renderdangly == 0 || currentscene == 0)
@@ -1067,7 +1067,7 @@ void PartDanglyMesh::Animate(float fTimeStep)
     m_qLastOrientation = qWorldOrientation;
     Part::Animate(fTimeStep);
 }
-// PC 0x004B5B30
+// PC 0x004B5B30 GOG 0x004B5C40
 void Gob::AddAnimationFlag(int nFlag)
 {
     int nIndex = m_lOutOfOrderAnimations.m_nCount - 1;
@@ -1076,7 +1076,7 @@ void Gob::AddAnimationFlag(int nFlag)
         m_lOutOfOrderAnimations[nIndex]->m_nFlags |= nFlag;
     }
 }
-// PC 0x004B5B60
+// PC 0x004B5B60 GOG 0x004B5C70
 void Gob::RemoveAnimationFlag(int nFlag)
 {
     int nIndex = m_lOutOfOrderAnimations.m_nCount - 1;
@@ -1089,7 +1089,7 @@ void Gob::RemoveAnimationFlag(int nFlag)
         }
     }
 }
-// PC 0x004B5B90
+// PC 0x004B5B90 GOG 0x004B5CA0
 AnimRun* CurrentAnimation(Gob* pGob)
 {
     int nCount = pGob->m_lOutOfOrderAnimations.m_nCount;
@@ -1108,7 +1108,7 @@ AnimRun* CurrentAnimation(Gob* pGob)
 
     return 0;
 }
-// PC 0x004B5BD0
+// PC 0x004B5BD0 GOG 0x004B5CE0
 float FindAnimScale(Model* pModel, Animation* pAnimation)
 {
     float fScale = 1.0f;
@@ -1143,7 +1143,7 @@ float FindAnimScale(Model* pModel, Animation* pAnimation)
 
     return fScale;
 }
-// PC 0x004B5C10
+// PC 0x004B5C10 GOG 0x004B5D20
 OOAnimRun* Gob::GetAnimation(char* sName, float* pfTime, float* pfLength)
 {
     OOAnimRun* pRun = 0;
@@ -1182,7 +1182,7 @@ OOAnimRun* Gob::GetAnimation(char* sName, float* pfTime, float* pfLength)
     }
     return pRun;
 }
-// PC 0x004B5FE0
+// PC 0x004B5FE0 GOG 0x004B60F0
 Animation::~Animation()
 {
     if (m_nType != 0)
@@ -1194,7 +1194,7 @@ Animation::~Animation()
         }
     }
 }
-// PC 0x004B6070
+// PC 0x004B6070 GOG 0x004B6180
 void Gob::PlayOutOfOrderAnimation(char* sName, float* pfWeights,
                                  float* pfTimes, int nCount, float fLength)
 {
@@ -1213,7 +1213,7 @@ void Gob::PlayOutOfOrderAnimation(char* sName, float* pfWeights,
     pRun->m_nFlags = 0x209;
     m_lOutOfOrderAnimations.Insert(pRun, 0);
 }
-// PC 0x004B6130
+// PC 0x004B6130 GOG 0x004B6240
 Animation::Animation(char* sName)
     : MaxTree(sName), m_lEvents(0)
 {
@@ -1224,7 +1224,7 @@ Animation::Animation(char* sName)
     m_fTransitionTime = 0.25f;
     m_pfnParseField = AnimationParseField;
 }
-// PC 0x004B61A0
+// PC 0x004B61A0 GOG 0x004B62B0
 void NewController::ReportKeys(Part* pPart, MdlNode* pNode,
                                float fStartTime, float fEndTime)
 {
@@ -1310,7 +1310,7 @@ void NewController::ReportKeys(Part* pPart, MdlNode* pNode,
         pPart->m_pAurObject->DoEvent("ReportKey", &report);
     }
 }
-// PC 0x004B6420
+// PC 0x004B6420 GOG 0x004B6530
 void MdlNode::InternalControl(Part* pPart, float fTime,
                              float fPreviousTime, float fBlend)
 {
@@ -1331,14 +1331,14 @@ void MdlNode::InternalControl(Part* pPart, float fTime,
         }
     }
 }
-// PC 0x004B64B0
+// PC 0x004B64B0 GOG 0x004B65C0
 void MdlNodeLight::InternalControl(Part* pPart, float fTime,
                                    float fPreviousTime, float fBlend)
 {
     PartLight* pLight = pPart->AsPartLight();
     MdlNode::InternalControl(pPart, fTime, fPreviousTime, fBlend);
 }
-// PC 0x004B64E0
+// PC 0x004B64E0 GOG 0x004B65F0
 void MdlNodeEmitter::InternalControl(Part* pPart, float fTime,
                                      float fPreviousTime, float fBlend)
 {
@@ -1346,28 +1346,28 @@ void MdlNodeEmitter::InternalControl(Part* pPart, float fTime,
     MdlNode::InternalControl(pPart, fTime, fPreviousTime, fBlend);
     pEmitter->CalculateRadius();
 }
-// PC 0x004B6520
+// PC 0x004B6520 GOG 0x004B6630
 void MdlNodeCamera::InternalControl(Part* pPart, float fTime,
                                     float fPreviousTime, float fBlend)
 {
     PartCamera* pCamera = pPart->AsPartCamera();
     MdlNode::InternalControl(pPart, fTime, fPreviousTime, fBlend);
 }
-// PC 0x004B6550
+// PC 0x004B6550 GOG 0x004B6660
 void MdlNodeReference::InternalControl(Part* pPart, float fTime,
                                        float fPreviousTime, float fBlend)
 {
     PartReference* pReference = pPart->AsPartReference();
     MdlNode::InternalControl(pPart, fTime, fPreviousTime, fBlend);
 }
-// PC 0x004B6580
+// PC 0x004B6580 GOG 0x004B6690
 void MdlNodeTriMesh::InternalControl(Part* pPart, float fTime,
                                      float fPreviousTime, float fBlend)
 {
     PartTriMesh* pTriMesh = pPart->AsPartTriMesh();
     MdlNode::InternalControl(pPart, fTime, fPreviousTime, fBlend);
 }
-// PC 0x004B65B0
+// PC 0x004B65B0 GOG 0x004B66C0
 void MdlNodeAnimMesh::InternalControl(Part* pPart, float fTime,
                                       float fPreviousTime, float fBlend)
 {
@@ -1480,7 +1480,7 @@ void MdlNodeAnimMesh::InternalControl(Part* pPart, float fTime,
     }
     MdlNodeTriMesh::InternalControl(pPart, fTime, fPreviousTime, fBlend);
 }
-// PC 0x004B6B20
+// PC 0x004B6B20 GOG 0x004B6C30
 int Gob::PlayAnimation(char* sName, float fSpeed, int nFlags, float fTime)
 {
     AuranimTrace3();
@@ -1627,7 +1627,7 @@ int Gob::PlayAnimation(char* sName, float fSpeed, int nFlags, float fTime)
     return 1;
 }
 float FindAnimScale(Model* pModel, Animation* pAnimation);
-// PC 0x004B7FA0
+// PC 0x004B7FA0 GOG 0x004B80B0
 LookAtAnimation::LookAtAnimation(CAurObject* pTarget, Part* pPart, Gob* pGob,
                                  Part* pHeadPart, float fHorizontalLimit,
                                  float fVerticalLimit, float fDuration,
@@ -1649,7 +1649,7 @@ LookAtAnimation::LookAtAnimation(CAurObject* pTarget, Part* pPart, Gob* pGob,
     m_bRestoringOrientation = 0;
     BuildAnimation();
 }
-// PC 0x004B6FE0
+// PC 0x004B6FE0 GOG 0x004B70F0
 LookAtAnimation::~LookAtAnimation()
 {
     int nIndex = m_pGob->m_lOutOfOrderAnimations.m_nCount;
@@ -1661,7 +1661,7 @@ LookAtAnimation::~LookAtAnimation()
         }
     }
 }
-// PC 0x004B7090
+// PC 0x004B7090 GOG 0x004B71A0
 void LookAtAnimation::BuildAnimation()
 {
     AuranimTrace4();
@@ -1708,7 +1708,7 @@ void LookAtAnimation::BuildAnimation()
     ((Animation*)m_pTree)->m_fTransitionTime = m_fDuration;
 }
 #ifndef _XBOX
-// PC 0x004B74B0
+// PC 0x004B74B0 GOG 0x004B75C0
 void Gob::DoEvent(char* sEvent, void* pData)
 {
     int nIndex = m_lCallBacks.m_nCount - 1;
@@ -1729,7 +1729,7 @@ void Gob::DoEvent(char* sEvent, void* pData)
     }
 }
 #endif
-void Gob::Animate(float fTimeStep)  // PC 0x004B75D0
+void Gob::Animate(float fTimeStep)  // PC 0x004B75D0 GOG 0x004B76E0
 {
     ProcessGob();
     if (!enablegobanimations)
@@ -2012,7 +2012,7 @@ void Gob::Animate(float fTimeStep)  // PC 0x004B75D0
             GetMinimumSphere();
     }
 }
-// PC 0x004B8110
+// PC 0x004B8110 GOG 0x004B8220
 void Gob::BeginLookAtAnimate(CAurObject* pTarget, char* sTargetPart,
                              char* sHeadPart, float fHorizontalLimit,
                              float fVerticalLimit, float fDuration,

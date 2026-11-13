@@ -47,7 +47,7 @@ inline CSWGuiPartySelectionButton::CSWGuiPartySelectionButton()
 {
     m_bPartySelected = 0;
 }
-// PC 0x0071DEB0
+// PC 0x0071DEB0 GOG 0x0071DBF0
 void CSWGuiPartySelectionButton::SetSelected(int bSelected)
 {
     m_bPartySelected = bSelected;
@@ -77,7 +77,7 @@ void CSWGuiPartySelection::OnDoneEnter(CSWGuiControl* pControl)
     m_aLabels[2].m_cText.m_cParams.SetStrRef(1073);
 }
 #endif
-// PC 0x0071EE10
+// PC 0x0071EE10 GOG 0x0071EB70
 void CSWGuiPartySelection::OnToggled(CSWGuiControl* pControl)
 {
     int bEnabled = pControl->m_bSelected;
@@ -176,7 +176,7 @@ void CSWGuiPartySelection::OnToggled(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x0071EF70
+// PC 0x0071EF70 GOG 0x0071ECD0
 void CSWGuiPartySelection::OnDone(CSWGuiControl* pControl)
 {
     if (pControl != 0)
@@ -235,7 +235,7 @@ void CSWGuiPartySelection::OnDone(CSWGuiControl* pControl)
         AcceptParty(1);
     }
 }
-// PC 0x0071F1C0
+// PC 0x0071F1C0 GOG 0x0071EF20
 #ifdef _XBOX
 void CSWGuiPartySelection::OnEnter(CSWGuiControl* pControl)
 {
@@ -409,7 +409,7 @@ void CSWGuiPartySelection::OnEnter(CSWGuiControl* pControl)
     }
 }
 #endif
-// PC 0x0071DF70
+// PC 0x0071DF70 GOG 0x0071DD20
 void CSWGuiPartySelection::OnPanelRemoved()
 {
     CSWPartyTable* pPartyTable =
@@ -433,7 +433,7 @@ void CSWGuiPartySelection::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 }
 #ifndef _XBOX
-// PC 0x0071E000
+// PC 0x0071E000 GOG 0x0071DDB0
 void CSWGuiPartySelection::OnExit(CSWGuiControl* pControl)
 {
     CSWGuiPartySelectionData* pData =
@@ -445,7 +445,7 @@ void CSWGuiPartySelection::OnExit(CSWGuiControl* pControl)
     }
 }
 #endif
-// PC 0x0071E020
+// PC 0x0071E020 GOG 0x0071DDD0
 void CSWGuiPartySelection::UpdateCount()
 {
     CExoString sCount;
@@ -453,7 +453,7 @@ void CSWGuiPartySelection::UpdateCount()
     sCount = sCount + " " + g_pTlkTable->GetSimpleString(STRREF_AVAILABLE_SLOTS);
     m_lblCount.m_cText.m_cParams.SetText(sCount);
 }
-// PC 0x0071E140
+// PC 0x0071E140 GOG 0x0071DBA0
 void CSWGuiPartySelection::SetForcedNPC(int nFirstNPC, int nSecondNPC)
 {
     if (nFirstNPC >= 0 && nFirstNPC < 12)
@@ -467,7 +467,7 @@ void CSWGuiPartySelection::SetForcedNPC(int nFirstNPC, int nSecondNPC)
         m_aPartyMembers[nSecondNPC].m_bForced = 1;
     }
 }
-// PC 0x0071E190
+// PC 0x0071E190 GOG 0x0071DEF0
 void CSWGuiPartySelection::AcceptParty(int bCancelled)
 {
 
@@ -615,7 +615,7 @@ void CSWGuiPartySelection::AcceptParty(int bCancelled)
         SetModal(0);
     }
 }
-// PC 0x0071E9C0
+// PC 0x0071E9C0 GOG 0x0071E720
 void CSWGuiPartySelection::ConfirmPartySelection(CSWGuiControl*)
 {
     CGuiInGame* pInGame = g_pAppManager->m_pClientExoApp->GetInGameGui();
@@ -629,7 +629,7 @@ void CSWGuiPartySelection::ConfirmPartySelection(CSWGuiControl*)
 }
 
 #ifndef _XBOX
-// PC 0x0071EA40
+// PC 0x0071EA40 GOG 0x0071E7A0
 void CSWGuiPartySelection::SetAddRemoveLabel(int bAdd)
 {
     CSWGuiTextParams* pButtonLabel;
@@ -656,7 +656,7 @@ void CSWGuiPartySelection::SetAddRemoveLabel(int bAdd)
         m_btnAccept.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_TEXT;
     }
 }
-// PC 0x0071EB00
+// PC 0x0071EB00 GOG 0x0071E860
 void CSWGuiPartySelection::UpdateVisibleCharacters()
 {
     CSWPartyTable* pPartyTable = g_pAppManager->m_pServerExoApp->GetPartyTable();
@@ -743,11 +743,11 @@ void CSWGuiPartySelection::UpdateVisibleCharacters()
     }
 }
 #endif
-// PC 0x0071F6C0
+// PC 0x0071F6C0 GOG 0x0071EB00
 inline CSWGuiPartySelectionData::~CSWGuiPartySelectionData()
 {
 }
-// PC 0x0071F730
+// PC 0x0071F730 GOG 0x0071FD30
 void CSWGuiPartySelection::HandleInputEvent(int nEvent, int bPressed)
 {
     if (bPressed != 0)
@@ -1038,7 +1038,7 @@ void CSWGuiPartySelection::OnPanelAdded()
     g_pAppManager->m_pClientExoApp->GetInGameGui()->EnableCharacterChangeButtons(0);
 }
 #endif
-// PC 0x0071FDE0
+// PC 0x0071FDE0 GOG 0x0071F420
 CSWGuiPartySelection::CSWGuiPartySelection(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {

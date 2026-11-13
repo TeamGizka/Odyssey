@@ -10,7 +10,7 @@ static inline void ExoresfileTrace1();
 #define EXORESFILE_TRACE() ExoresfileTrace1()
 
 unsigned long CExoKeyTable::m_nCRC32[256];
-// PC 0x0040E420
+// PC 0x0040E420 GOG 0x0040DEE0
 int CExoResFile::CloseAsyncFile()
 {
     if (m_bAsyncFileOpened)
@@ -26,7 +26,7 @@ int CExoResFile::CloseAsyncFile()
 
     return 1;
 }
-// PC 0x0040F5F0
+// PC 0x0040F5F0 GOG 0x0040F5A0
 CExoStringList* CExoKeyTable::GetKeysOfType(unsigned short nType)
 {
     if (nType == 0xFFFF)
@@ -62,7 +62,7 @@ CExoStringList* CExoKeyTable::GetKeysOfType(unsigned short nType)
 
     return pList;
 }
-// PC 0x0040D8F0
+// PC 0x0040D8F0 GOG 0x0040D8B0
 CExoKeyTable::CExoKeyTable()
 {
     m_nUnknown00 = 0;
@@ -94,7 +94,7 @@ CExoKeyTable::CExoKeyTable()
         m_nCRC32[i] = nValue;
     }
 }
-// PC 0x0040FB20
+// PC 0x0040FB20 GOG 0x0040FAD0
 CExoKeyTable::~CExoKeyTable()
 {
     if (m_pPackedFiles != NULL)
@@ -125,7 +125,7 @@ CExoKeyTable::~CExoKeyTable()
     m_nPackedFileCount = 0;
     m_pPackedFiles = NULL;
 }
-// PC 0x0040DAD0
+// PC 0x0040DAD0 GOG 0x0040DA80
 int CExoKeyTable::GetEntryCount(int bCountAll)
 {
     int nCount = 0;
@@ -146,7 +146,7 @@ int CExoKeyTable::GetEntryCount(int bCountAll)
 
     return nCount;
 }
-// PC 0x0040DB30
+// PC 0x0040DB30 GOG 0x0040DAE0
 int CExoKeyTable::LocateBifFile(const CExoString& sFileName)
 {
     CExoFile* pFile = new CExoFile(sFileName, RESTYPE_BIF, "rb");
@@ -165,7 +165,7 @@ int CExoKeyTable::LocateBifFile(const CExoString& sFileName)
     delete pFile;
     return 1;
 }
-// PC 0x0040DC10
+// PC 0x0040DC10 GOG 0x0040DBC0
 void CExoKeyTable::DestroyTable()
 {
     CExoKeyTable* pKeyTable = NULL;
@@ -229,7 +229,7 @@ void CExoKeyTable::DestroyTable()
         }
     }
 }
-// PC 0x0040DDC0
+// PC 0x0040DDC0 GOG 0x0040DD70
 unsigned long CExoKeyTable::GetTableIndex(unsigned long& nIndex,
                                           const CResRef& resRef,
                                           unsigned short nType)
@@ -251,7 +251,7 @@ unsigned long CExoKeyTable::GetTableIndex(unsigned long& nIndex,
 
     return 0;
 }
-// PC 0x0040DE30
+// PC 0x0040DE30 GOG 0x0040DDE0
 unsigned long CExoKeyTable::Hash(const CResRef& resRef, unsigned short nType)
 {
     unsigned long nHash = 0;
@@ -265,21 +265,21 @@ unsigned long CExoKeyTable::Hash(const CResRef& resRef, unsigned short nType)
 
     return nHash % m_nTableSize;
 }
-// PC 0x0040DE90
+// PC 0x0040DE90 GOG 0x0040DE40
 CExoPackedFile::~CExoPackedFile()
 {
 }
-// PC 0x0040DEA0
+// PC 0x0040DEA0 GOG 0x0040DE50
 CExoFile* CExoPackedFile::GetFile()
 {
     return m_pFile;
 }
-// PC 0x00406600
+// PC 0x00406600 GOG 0x004065D0
 CExoFile* CExoPackedFile::GetAsyncFile()
 {
     return m_pAsyncFile;
 }
-// PC 0x0040F030
+// PC 0x0040F030 GOG 0x0040DE60
 void CExoResFile::AddRefCount()
 {
     if (m_nRefCount <= 0)
@@ -290,7 +290,7 @@ void CExoResFile::AddRefCount()
 
     m_nRefCount++;
 }
-// PC 0x0040F030
+// PC 0x0040F030 GOG 0x0040DE60
 void CExoEncapsulatedFile::AddRefCount()
 {
     if (m_nRefCount <= 0)
@@ -301,7 +301,7 @@ void CExoEncapsulatedFile::AddRefCount()
 
     m_nRefCount++;
 }
-// PC 0x0040F030
+// PC 0x0040F030 GOG 0x0040DE60
 void CExoResourceImageFile::AddRefCount()
 {
     if (m_nRefCount <= 0)
@@ -312,7 +312,7 @@ void CExoResourceImageFile::AddRefCount()
 
     m_nRefCount++;
 }
-// PC 0x0040E3C0
+// PC 0x0040E3C0 GOG 0x0040DE80
 void CExoResFile::AddAsyncRefCount()
 {
     if (m_nAsyncRefCount <= 0)
@@ -323,7 +323,7 @@ void CExoResFile::AddAsyncRefCount()
 
     m_nAsyncRefCount++;
 }
-// PC 0x0040E3C0
+// PC 0x0040E3C0 GOG 0x0040DE80
 void CExoEncapsulatedFile::AddAsyncRefCount()
 {
     if (m_nAsyncRefCount <= 0)
@@ -334,7 +334,7 @@ void CExoEncapsulatedFile::AddAsyncRefCount()
 
     m_nAsyncRefCount++;
 }
-// PC 0x0040DEB0
+// PC 0x0040DEB0 GOG 0x0040DEA0
 int CExoResFile::CloseFile()
 {
     if (m_bFileOpened)
@@ -352,7 +352,7 @@ int CExoResFile::CloseFile()
 
     return 1;
 }
-// PC 0x0040DEF0
+// PC 0x0040DEF0 GOG 0x0040DF20
 int CExoResFile::UnloadHeader()
 {
     if (m_bHeaderLoaded)
@@ -375,7 +375,7 @@ int CExoResFile::UnloadHeader()
 
     return 1;
 }
-// PC 0x0040E4B0
+// PC 0x0040E4B0 GOG 0x0040DF70
 void CExoResFile::DeleteRefCount()
 {
     int nRefCount = m_nRefCount;
@@ -391,7 +391,7 @@ void CExoResFile::DeleteRefCount()
         m_nRefCount = nRefCount;
     }
 }
-// PC 0x0040E4B0
+// PC 0x0040E4B0 GOG 0x0040DF70
 void CExoEncapsulatedFile::DeleteRefCount()
 {
     int nRefCount = m_nRefCount;
@@ -407,7 +407,7 @@ void CExoEncapsulatedFile::DeleteRefCount()
         m_nRefCount = nRefCount;
     }
 }
-// PC 0x0040E4D0
+// PC 0x0040E4D0 GOG 0x0040DF90
 void CExoResFile::DeleteAsyncRefCount()
 {
     int nRefCount = m_nAsyncRefCount;
@@ -423,7 +423,7 @@ void CExoResFile::DeleteAsyncRefCount()
         m_nAsyncRefCount = nRefCount;
     }
 }
-// PC 0x0040E4D0
+// PC 0x0040E4D0 GOG 0x0040DF90
 void CExoEncapsulatedFile::DeleteAsyncRefCount()
 {
     int nRefCount = m_nAsyncRefCount;
@@ -439,12 +439,12 @@ void CExoEncapsulatedFile::DeleteAsyncRefCount()
         m_nAsyncRefCount = nRefCount;
     }
 }
-// PC 0x0040DF40
+// PC 0x0040DF40 GOG 0x0040DFB0
 unsigned long CExoResFile::GetResourceSize(unsigned long nId)
 {
     return m_pResourceTable[nId & 0x3FFF].nSize;
 }
-// PC 0x0040DF60
+// PC 0x0040DF60 GOG 0x0040DFD0
 int CExoResFile::Initialize()
 {
 #ifndef _XBOX
@@ -462,7 +462,7 @@ int CExoResFile::Initialize()
     m_pResourceTable = NULL;
     return 1;
 }
-// PC 0x0040DFA0
+// PC 0x0040DFA0 GOG 0x0040E010
 int CExoResFile::OpenFile()
 {
     if (m_bFileOpened)
@@ -489,7 +489,7 @@ int CExoResFile::OpenFile()
     m_bFileOpened = 1;
     return 1;
 }
-// PC 0x0040E0B0
+// PC 0x0040E0B0 GOG 0x0040E120
 int CExoResFile::OpenAsyncFile()
 {
     if (m_bAsyncFileOpened)
@@ -515,7 +515,7 @@ int CExoResFile::OpenAsyncFile()
 
     return 1;
 }
-// PC 0x0040E1C0
+// PC 0x0040E1C0 GOG 0x0040E230
 int CExoResFile::LoadHeader(unsigned char nType)
 {
     if (m_bHeaderLoaded == 0)
@@ -583,7 +583,7 @@ int CExoResFile::LoadHeader(unsigned char nType)
 
     return 1;
 }
-// PC 0x0040E2D0
+// PC 0x0040E2D0 GOG 0x0040E340
 unsigned long CExoResFile::ReadResource(unsigned long nId, void* pBuffer,
                                         unsigned long nSize,
                                         unsigned long nOffset)
@@ -613,7 +613,7 @@ unsigned long CExoResFile::ReadResource(unsigned long nId, void* pBuffer,
 
     return 0;
 }
-// PC 0x0040E350
+// PC 0x0040E350 GOG 0x0040E3C0
 void CExoResFile::ReadResourceAsync(unsigned long nId, void* pBuffer,
                                     unsigned long nSize, unsigned long nOffset)
 {
@@ -638,7 +638,7 @@ void CExoResFile::ReadResourceAsync(unsigned long nId, void* pBuffer,
         }
     }
 }
-// PC 0x0040E3E0
+// PC 0x0040E3E0 GOG 0x0040E430
 int CExoEncapsulatedFile::CloseFile()
 {
     if (m_bFileOpened)
@@ -654,7 +654,7 @@ int CExoEncapsulatedFile::CloseFile()
 
     return 1;
 }
-// PC 0x0040E420
+// PC 0x0040E420 GOG 0x0040DEE0
 int CExoEncapsulatedFile::CloseAsyncFile()
 {
     if (m_bAsyncFileOpened)
@@ -670,7 +670,7 @@ int CExoEncapsulatedFile::CloseAsyncFile()
 
     return 1;
 }
-// PC 0x0040E460
+// PC 0x0040E460 GOG 0x0040E470
 int CExoEncapsulatedFile::UnloadHeader()
 {
     if (m_bHeaderLoaded)
@@ -694,12 +694,12 @@ int CExoEncapsulatedFile::UnloadHeader()
 
     return 1;
 }
-// PC 0x0040E4F0
+// PC 0x0040E4F0 GOG 0x0040E4C0
 unsigned long CExoEncapsulatedFile::GetResourceSize(unsigned long nId)
 {
     return m_pResourceList[nId & 0x3FFF].nSize;
 }
-// PC 0x0040E510
+// PC 0x0040E510 GOG 0x0040E4E0
 int CExoEncapsulatedFile::Initialize()
 {
 
@@ -717,7 +717,7 @@ int CExoEncapsulatedFile::Initialize()
 
     return 1;
 }
-// PC 0x0040E540
+// PC 0x0040E540 GOG 0x0040E510
 int CExoEncapsulatedFile::OpenFile()
 {
     if (m_bFileOpened)
@@ -765,7 +765,7 @@ int CExoEncapsulatedFile::OpenFile()
     m_bFileOpened = 0;
     return 0;
 }
-// PC 0x0040E820
+// PC 0x0040E820 GOG 0x0040E7F0
 int CExoEncapsulatedFile::OpenAsyncFile()
 {
     if (m_bAsyncFileOpened)
@@ -813,7 +813,7 @@ int CExoEncapsulatedFile::OpenAsyncFile()
     m_bAsyncFileOpened = 0;
     return 0;
 }
-// PC 0x0040EB00
+// PC 0x0040EB00 GOG 0x0040EAD0
 int CExoEncapsulatedFile::LoadHeader(unsigned char nType)
 {
     CExoString sString;
@@ -973,7 +973,7 @@ int CExoEncapsulatedFile::LoadHeader(unsigned char nType)
 
     return 1;
 }
-// PC 0x0040EF50
+// PC 0x0040EF50 GOG 0x0040EF20
 unsigned long CExoEncapsulatedFile::ReadResource(unsigned long nId,
                                                  void* pBuffer,
                                                  unsigned long nSize,
@@ -1000,7 +1000,7 @@ unsigned long CExoEncapsulatedFile::ReadResource(unsigned long nId,
 
     return 0;
 }
-// PC 0x0040EFC0
+// PC 0x0040EFC0 GOG 0x0040EF90
 void CExoEncapsulatedFile::ReadResourceAsync(unsigned long nId, void* pBuffer,
                                              unsigned long nSize,
                                              unsigned long nOffset)
@@ -1030,7 +1030,7 @@ void CExoEncapsulatedFile::ReadResourceAsync(unsigned long nId, void* pBuffer,
 #ifdef _XBOX
 extern int g_nContiguousResourceMemory;
 #endif
-// PC 0x0040F050
+// PC 0x0040F050 GOG 0x0040F000
 int CExoResourceImageFile::CloseFile()
 {
     if (m_bFileOpened)
@@ -1058,7 +1058,7 @@ int CExoResourceImageFile::CloseFile()
 
     return 1;
 }
-// PC 0x0040F080
+// PC 0x0040F080 GOG 0x0040F030
 void CExoResourceImageFile::DeleteRefCount()
 {
     int nRefCount = m_nRefCount;
@@ -1073,7 +1073,7 @@ void CExoResourceImageFile::DeleteRefCount()
         m_nRefCount = nRefCount;
     }
 }
-// PC 0x0040F0A0
+// PC 0x0040F0A0 GOG 0x0040F050
 int CExoResourceImageFile::Initialize()
 {
     m_pFile = NULL;
@@ -1085,7 +1085,7 @@ int CExoResourceImageFile::Initialize()
 
     return 1;
 }
-// PC 0x0040F0C0
+// PC 0x0040F0C0 GOG 0x0040F070
 int CExoResourceImageFile::OpenFile()
 {
     if (m_bFileOpened)
@@ -1158,14 +1158,14 @@ int CExoResourceImageFile::OpenFile()
 
     return 1;
 }
-// PC 0x0040F2B0
+// PC 0x0040F2B0 GOG 0x0040F260
 void CExoResourceImageFile::ReadResourceAsync(unsigned long nId, void* pBuffer,
                                               unsigned long nSize,
                                               unsigned long nOffset)
 {
     ReadResource(nId, pBuffer, nSize, nOffset);
 }
-// PC 0x0040F2C0
+// PC 0x0040F2C0 GOG 0x0040F270
 CKeyTableEntry* CExoKeyTable::AddKey(const CResRef& resRef,
                                      unsigned short nType, unsigned long nResId,
                                      int, CExoString sDirectory)
@@ -1246,7 +1246,7 @@ static CKeyTableEntry* AllocateKeyTableEntries(unsigned long nCount)
 {
     return new CKeyTableEntry[nCount];
 }
-// PC 0x0040DA00
+// PC 0x0040DA00 GOG 0x0040D9B0
 CKeyTableEntry* CExoKeyTable::AllocateTable(unsigned long nSize)
 {
     CKeyTableEntry* pTable = new CKeyTableEntry[nSize];
@@ -1266,7 +1266,7 @@ CKeyTableEntry* CExoKeyTable::AllocateTable(unsigned long nSize)
 
     return pTable;
 }
-// PC 0x0040F520
+// PC 0x0040F520 GOG 0x0040F4D0
 CKeyTableEntry* CExoKeyTable::FindKey(const CResRef& resRef,
                                       unsigned short nType)
 {
@@ -1313,26 +1313,26 @@ CKeyTableEntry* CExoKeyTable::FindKey(const CResRef& resRef,
 
     return pEntry;
 }
-// PC 0x0040F750
+// PC 0x0040F750 GOG 0x0040F700
 CExoResFile::CExoResFile()
 {
     ExoresfileTrace2();
     m_nRefCount = 0;
     Initialize();
 }
-// PC 0x0040F7D0
+// PC 0x0040F7D0 GOG 0x0040F780
 CExoResFile::~CExoResFile()
 {
     ExoresfileTrace2();
     CloseFile();
 }
-// PC 0x0040F860
+// PC 0x0040F860 GOG 0x0040F810
 CExoEncapsulatedFile::CExoEncapsulatedFile()
 {
     ExoresfileTrace2();
     Initialize();
 }
-// PC 0x0040F8E0
+// PC 0x0040F8E0 GOG 0x0040F890
 CExoEncapsulatedFile::~CExoEncapsulatedFile()
 {
     ExoresfileTrace2();
@@ -1349,13 +1349,13 @@ CExoResourceImageFile::CExoResourceImageFile()
     m_bFileOpened = 0;
     m_pImageFile = NULL;
 }
-// PC 0x0040F970
+// PC 0x0040F970 GOG 0x0040F920
 CExoResourceImageFile::~CExoResourceImageFile()
 {
     ExoresfileTrace2();
     CExoResourceImageFile::CloseFile();
 }
-// PC 0x0040F9F0
+// PC 0x0040F9F0 GOG 0x0040F9A0
 unsigned long CExoResourceImageFile::GetResourceSize(unsigned long nId)
 {
     ExoresfileTrace2();
@@ -1363,7 +1363,7 @@ unsigned long CExoResourceImageFile::GetResourceSize(unsigned long nId)
 
     return sEntry.m_nSize;
 }
-// PC 0x0040FA30
+// PC 0x0040FA30 GOG 0x0040F9E0
 void* CExoResourceImageFile::GetResource(unsigned long nId)
 {
     ExoresfileTrace2();
@@ -1371,7 +1371,7 @@ void* CExoResourceImageFile::GetResource(unsigned long nId)
 
     return m_pImageFile + sEntry.m_nOffset;
 }
-// PC 0x0040FA70
+// PC 0x0040FA70 GOG 0x0040FA20
 unsigned long CExoResourceImageFile::ReadResource(unsigned long nId,
                                                   void* pBuffer,
                                                   unsigned long nSize,
@@ -1406,7 +1406,7 @@ unsigned long CExoResourceImageFile::ReadResource(unsigned long nId,
 
     return 0;
 }
-// PC 0x00410D70
+// PC 0x00410D70 GOG 0x00410D20
 int CExoKeyTable::AddDirectoryContents(int bFlag)
 {
     CExoString sFile;
@@ -1498,7 +1498,7 @@ int CExoKeyTable::AddDirectoryContents(int bFlag)
 
     return 1;
 }
-// PC 0x0040FC00
+// PC 0x0040FC00 GOG 0x0040FBB0
 int CExoKeyTable::AddEncapsulatedContents(int bFlag)
 {
     CExoString sString1;
@@ -1705,7 +1705,7 @@ int CExoKeyTable::AddEncapsulatedContents(int bFlag)
 
     return 1;
 }
-// PC 0x004101F0
+// PC 0x004101F0 GOG 0x004101A0
 int CExoKeyTable::AddResourceImageContents(int bFlag)
 {
     ExoresfileTrace2();
@@ -1775,7 +1775,7 @@ int CExoKeyTable::AddResourceImageContents(int bFlag)
 
     return 1;
 }
-// PC 0x004103D0
+// PC 0x004103D0 GOG 0x00410380
 int CExoKeyTable::AddKeyTableContents(int bFlag)
 {
     CExoString sDrive;
@@ -1967,7 +1967,7 @@ int CExoKeyTable::AddKeyTableContents(int bFlag)
 
     return 1;
 }
-// PC 0x00411340
+// PC 0x00411340 GOG 0x004112F0
 int CExoKeyTable::BuildNewTable(unsigned long nTableType,
                                 const CExoString& sName, unsigned long nId,
                                 int bFlag)
@@ -2041,7 +2041,7 @@ int CExoKeyTable::BuildNewTable(unsigned long nTableType,
 
     return 0;
 }
-// PC 0x00411410
+// PC 0x00411410 GOG 0x004113C0
 void CExoKeyTable::RebuildTable()
 {
     unsigned long nIndex = 0;
@@ -2165,30 +2165,30 @@ void CExoKeyTable::RebuildTable()
         m_bDestroying = 0;
     }
 }
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 void CExoResourceImageFile::AddAsyncRefCount()
 {
 }
-// PC 0x0065D0F0
+// PC 0x0065D0F0 GOG 0x0065CF00
 int CExoResourceImageFile::CloseAsyncFile()
 {
     return 1;
 }
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 void CExoResourceImageFile::DeleteAsyncRefCount()
 {
 }
-// PC 0x0065D0F0
+// PC 0x0065D0F0 GOG 0x0065CF00
 int CExoResourceImageFile::OpenAsyncFile()
 {
     return 1;
 }
-// PC 0x006955A0
+// PC 0x006955A0 GOG 0x00695350
 int CExoResourceImageFile::LoadHeader(unsigned char)
 {
     return 0;
 }
-// PC 0x0065D0F0
+// PC 0x0065D0F0 GOG 0x0065CF00
 int CExoResourceImageFile::UnloadHeader()
 {
     return 1;

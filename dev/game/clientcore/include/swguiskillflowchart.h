@@ -14,11 +14,11 @@ class CSWGuiInGameSkillEntry : public CSWGuiLabelHilight
 public:
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
-    virtual void Initialize(const CSWGuiExtent& cExtent,  // PC 0x006049D0
+    virtual void Initialize(const CSWGuiExtent& cExtent,  // PC 0x006049D0 GOG 0x006049B0
                                            CSWGuiLabelHilight* pProto)
     {
     }
-    virtual void Initialize(const CSWGuiExtent& cExtent,  // PC 0x00693D50
+    virtual void Initialize(const CSWGuiExtent& cExtent,  // PC 0x00693D50 GOG 0x00693AC0
                             const CSWGuiTextParams& cText,
                             const CSWGuiBorderParams& cBorder,
                             const CSWGuiBorderParams& cHilite)
@@ -76,11 +76,11 @@ public:
     unsigned char m_aUnmapped121[3];
     unsigned long m_bSelected : 1;
     unsigned long m_nUnmapped124 : 31;
-    // PC 0x0073ABF0
+    // PC 0x0073ABF0 GOG 0x0073A950
     CSWGuiFlowSkillStruct()
     {
     }
-    ~CSWGuiFlowSkillStruct()  // PC 0x0073AC40
+    ~CSWGuiFlowSkillStruct()  // PC 0x0073AC40 GOG 0x0073A9A0
     {
     }
 };
@@ -104,7 +104,7 @@ public:
     CSWGuiSkillFlow();
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void Draw(float fElapsed);
-    SWGUI_PCVIRTUAL CSWGuiSkillFlow* AsSkillFlow()  // PC 0x00698BD0
+    SWGUI_PCVIRTUAL CSWGuiSkillFlow* AsSkillFlow()  // PC 0x00698BD0 GOG 0x00698980
     {
         return this;
     }

@@ -8,7 +8,7 @@
 static const unsigned char ANIM_MODEL_HEAD = 254;
 
 static inline void NwcanimbaseheadTrace1();
-// PC 0x006F6380
+// PC 0x006F6380 GOG 0x006F5E60
 CSWCAnimBaseHead::CSWCAnimBaseHead()
 {
     m_pHeadModel = NULL;
@@ -23,12 +23,12 @@ CSWCAnimBaseHead::CSWCAnimBaseHead()
     m_nHeadItem = OBJECT_INVALID;
     NwcanimbaseheadTrace1();
 }
-// PC 0x006F5820
+// PC 0x006F5820 GOG 0x006F5410
 CSWCAnimBaseHead::~CSWCAnimBaseHead()
 {
     UnloadModel();
 }
-// PC 0x006F5850
+// PC 0x006F5850 GOG 0x006F5440
 Gob* CSWCAnimBaseHead::GetModel(unsigned char nModel)
 {
     switch (nModel)
@@ -40,7 +40,7 @@ Gob* CSWCAnimBaseHead::GetModel(unsigned char nModel)
     }
     return NULL;
 }
-// PC 0x006F5890
+// PC 0x006F5890 GOG 0x006F5480
 int CSWCAnimBaseHead::LoadModel(const CResRef& cModel, unsigned char nModel)
 {
     char szModel[20];
@@ -74,7 +74,7 @@ int CSWCAnimBaseHead::LoadModel(const CResRef& cModel, unsigned char nModel)
     }
     return 0;
 }
-// PC 0x006F59B0
+// PC 0x006F59B0 GOG 0x006F55A0
 int CSWCAnimBaseHead::ReplaceTexture(const CResRef& cOld, const CResRef& cNew,
                                      int bSave)
 {
@@ -96,7 +96,7 @@ int CSWCAnimBaseHead::ReplaceTexture(const CResRef& cOld, const CResRef& cNew,
     }
     return CSWCAnimBaseTW::ReplaceTexture(cOld, cNew, bSave);
 }
-// PC 0x006F5A40
+// PC 0x006F5A40 GOG 0x006F5630
 int CSWCAnimBaseHead::ReplaceTexture(unsigned char nModel, const CResRef& cOld,
                                      const CResRef& cNew, int bSave)
 {
@@ -123,7 +123,7 @@ int CSWCAnimBaseHead::ReplaceTexture(unsigned char nModel, const CResRef& cOld,
     }
     return CSWCAnimBaseTW::ReplaceTexture(nModel, cOld, cNew, bSave);
 }
-// PC 0x006F5B00
+// PC 0x006F5B00 GOG 0x006F56F0
 int CSWCAnimBaseHead::ReplaceTexture(unsigned char nModel, const CResRef& cOld,
                                      const CResRef& cNew, unsigned long nCount,
                                      unsigned short* pParts, int bSave,
@@ -156,7 +156,7 @@ int CSWCAnimBaseHead::ReplaceTexture(unsigned char nModel, const CResRef& cOld,
     return CSWCAnimBaseTW::ReplaceTexture(nModel, cOld, cNew, nCount, pParts,
                                           bSave, nStart);
 }
-// PC 0x006F5C00
+// PC 0x006F5C00 GOG 0x006F57F0
 int CSWCAnimBaseHead::ReplaceTexture(const CResRef& cOld, const CResRef& cNew,
                                      unsigned long nCount,
                                      unsigned short* pParts, int bSave,
@@ -184,7 +184,7 @@ int CSWCAnimBaseHead::ReplaceTexture(const CResRef& cOld, const CResRef& cNew,
     return CSWCAnimBaseTW::ReplaceTexture(cOld, cNew, nCount, pParts, bSave,
                                           nStart);
 }
-// PC 0x006F5CE0
+// PC 0x006F5CE0 GOG 0x006F58D0
 int CSWCAnimBaseHead::RestoreTexture()
 {
     if (m_pHeadModel != NULL)
@@ -202,7 +202,7 @@ int CSWCAnimBaseHead::RestoreTexture()
     }
     return CSWCAnimBaseTW::RestoreTexture();
 }
-// PC 0x006F5D60
+// PC 0x006F5D60 GOG 0x006F5950
 int CSWCAnimBaseHead::RestoreTexture(unsigned char nModel)
 {
     if (nModel == ANIM_MODEL_HEAD)
@@ -223,7 +223,7 @@ int CSWCAnimBaseHead::RestoreTexture(unsigned char nModel)
     }
     return CSWCAnimBaseTW::RestoreTexture(nModel);
 }
-// PC 0x006F5E00
+// PC 0x006F5E00 GOG 0x006F59F0
 void CSWCAnimBaseHead::UnloadModel()
 {
     if (m_pHeadModel != NULL)
@@ -234,7 +234,7 @@ void CSWCAnimBaseHead::UnloadModel()
     }
     CSWCAnimBaseTW::UnloadModel();
 }
-// PC 0x006F5E40
+// PC 0x006F5E40 GOG 0x006F5A30
 void CSWCAnimBaseHead::UnloadModel(unsigned char nModel)
 {
     if (m_pHeadModel != NULL && nModel == ANIM_MODEL_HEAD)
@@ -248,7 +248,7 @@ void CSWCAnimBaseHead::UnloadModel(unsigned char nModel)
         CSWCAnimBaseTW::UnloadModel(nModel);
     }
 }
-// PC 0x006F5E90
+// PC 0x006F5E90 GOG 0x006F5A80
 int CSWCAnimBaseHead::SetEnvMap(int nType, int nFlags, const CResRef& cEnvMap)
 {
     char sEnvMap[20];
@@ -272,7 +272,7 @@ int CSWCAnimBaseHead::SetEnvMap(int nType, int nFlags, const CResRef& cEnvMap)
     }
     return CSWCAnimBaseTW::SetEnvMap(nType, nFlags, cEnvMap);
 }
-// PC 0x006F5F10
+// PC 0x006F5F10 GOG 0x006F5B00
 int CSWCAnimBaseHead::SetEnvMap(unsigned char nModel, int nType, int nFlags,
                                 const CResRef& cEnvMap)
 {
@@ -301,7 +301,7 @@ int CSWCAnimBaseHead::SetEnvMap(unsigned char nModel, int nType, int nFlags,
     }
     return CSWCAnimBaseTW::SetEnvMap(nModel, nType, nFlags, cEnvMap);
 }
-// PC 0x006F5FB0
+// PC 0x006F5FB0 GOG 0x006F5BA0
 int CSWCAnimBaseHead::RestoreEnvMap()
 {
     if (m_pHeadModel == NULL)
@@ -320,7 +320,7 @@ int CSWCAnimBaseHead::RestoreEnvMap()
     }
     return CSWCAnimBaseTW::RestoreEnvMap();
 }
-// PC 0x006F6000
+// PC 0x006F6000 GOG 0x006F5BF0
 void CSWCAnimBaseHead::TurnOnShadows()
 {
     if (m_pHeadModel != NULL)
@@ -329,7 +329,7 @@ void CSWCAnimBaseHead::TurnOnShadows()
     }
     CSWCAnimBase::TurnOnShadows();
 }
-// PC 0x006F6030
+// PC 0x006F6030 GOG 0x006F5C20
 void CSWCAnimBaseHead::TurnOffShadows()
 {
     if (m_pHeadModel != NULL)
@@ -338,7 +338,7 @@ void CSWCAnimBaseHead::TurnOffShadows()
     }
     CSWCAnimBase::TurnOffShadows();
 }
-// PC 0x006F6060
+// PC 0x006F6060 GOG 0x006F5C50
 int CSWCAnimBaseHead::EnableBumpedOutShell(const CResRef& cTexture,
                                            float fHeight)
 {
@@ -353,7 +353,7 @@ int CSWCAnimBaseHead::EnableBumpedOutShell(const CResRef& cTexture,
     m_pHeadModel->EnableRenderBumpedOut(sTexture, fHeight);
     return CSWCAnimBase::EnableBumpedOutShell(cTexture, fHeight);
 }
-// PC 0x006F60D0
+// PC 0x006F60D0 GOG 0x006F5CC0
 int CSWCAnimBaseHead::DisableBumpedOutShell()
 {
     if (m_pHeadModel == NULL)
@@ -363,7 +363,7 @@ int CSWCAnimBaseHead::DisableBumpedOutShell()
     m_pHeadModel->DisableRenderBumpedOut();
     return CSWCAnimBase::DisableBumpedOutShell();
 }
-// PC 0x006F6100
+// PC 0x006F6100 GOG 0x006F5CF0
 int CSWCAnimBaseHead::SetMotionBlur(int bBlur)
 {
     if (m_pHeadModel == NULL)
@@ -373,7 +373,7 @@ int CSWCAnimBaseHead::SetMotionBlur(int bBlur)
     m_pHeadModel->SetMotionBlurred(bBlur != 0);
     return CSWCAnimBase::SetMotionBlur(bBlur);
 }
-// PC 0x006F6140
+// PC 0x006F6140 GOG 0x006F5F50
 void CSWCAnimBaseHead::EnableDistortion()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -392,7 +392,7 @@ void CSWCAnimBaseHead::EnableDistortion()
     }
     CSWCAnimBase::EnableDistortion();
 }
-// PC 0x006F61B0
+// PC 0x006F61B0 GOG 0x006F5FC0
 void CSWCAnimBaseHead::DisableDistortion()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;

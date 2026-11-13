@@ -13,7 +13,7 @@
 static inline void NwssoundobjectTrace2();
 static inline void NwssoundobjectTrace1();
 #define NWSSOUNDOBJECT_TRACE() NwssoundobjectTrace1()
-// PC 0x00570470
+// PC 0x00570470 GOG 0x005705A0
 CSWSSoundObject::CSWSSoundObject(unsigned long oidObject)
     : CSWSObject(CGameObject::OBJECT_TYPE_SOUND, oidObject, 0), m_lstSounds(0)
 {
@@ -38,11 +38,11 @@ CSWSSoundObject::CSWSSoundObject(unsigned long oidObject)
     m_fRandomRangeX = 0.0f;
     m_fRandomRangeY = 0.0f;
 }
-// PC 0x0056FBA0
+// PC 0x0056FBA0 GOG 0x0056FCD0
 CSWSSoundObject::~CSWSSoundObject()
 {
 }
-// PC 0x0056FC10
+// PC 0x0056FC10 GOG 0x0056FD40
 void CSWSSoundObject::Save(CResGFF* pRes, CResStruct* pStruct)
 {
     NWSSOUNDOBJECT_TRACE();
@@ -91,7 +91,7 @@ void CSWSSoundObject::Save(CResGFF* pRes, CResStruct* pStruct)
         pRes->WriteFieldCResRef(&stSound, m_lstSounds.element[nSound], "Sound");
     }
 }
-// PC 0x0056FE90
+// PC 0x0056FE90 GOG 0x0056FFC0
 void CSWSSoundObject::AddToArea(CSWSArea* pArea, int bLoadingGame)
 {
     RemoveFromArea();
@@ -103,7 +103,7 @@ void CSWSSoundObject::AddToArea(CSWSArea* pArea, int bLoadingGame)
             m_sTag, m_nId);
     }
 }
-// PC 0x0056FF00
+// PC 0x0056FF00 GOG 0x00570030
 void CSWSSoundObject::PackIntoMessage(CSWSMessage* pMessage)
 {
     NWSSOUNDOBJECT_TRACE();
@@ -151,18 +151,18 @@ void CSWSSoundObject::PackIntoMessage(CSWSMessage* pMessage)
         pMessage->WriteCResRef(m_lstSounds.element[nSound], 16);
     }
 }
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 void CSWSSoundObject::AIUpdate()
 {
 }
-// PC 0x0056FB90
+// PC 0x0056FB90 GOG 0x0056FCC0
 void CSWSSoundObject::EventHandler(unsigned long nEventId,
                                    unsigned long oidCaller, void* pEventData,
                                    unsigned long nCalendarDay,
                                    unsigned long nTimeOfDay)
 {
 }
-// PC 0x00570110
+// PC 0x00570110 GOG 0x00570240
 void CSWSSoundObject::Play()
 {
     CSWSMessage* pMessage;
@@ -197,7 +197,7 @@ void CSWSSoundObject::Play()
         }
     }
 }
-// PC 0x005701B0
+// PC 0x005701B0 GOG 0x005702E0
 void CSWSSoundObject::Stop()
 {
     CSWSMessage* pMessage;
@@ -232,7 +232,7 @@ void CSWSSoundObject::Stop()
         }
     }
 }
-// PC 0x00570250
+// PC 0x00570250 GOG 0x00570380
 void CSWSSoundObject::FadeAndStop(unsigned long nFadeTime)
 {
     CSWCSoundObject* pSoundObject;
@@ -244,7 +244,7 @@ void CSWSSoundObject::FadeAndStop(unsigned long nFadeTime)
         pSoundObject->FadeAndStop(nFadeTime);
     }
 }
-// PC 0x00570290
+// PC 0x00570290 GOG 0x005703C0
 void CSWSSoundObject::ChangePitchVariation(float fVariation)
 {
     CSWCSoundObject* pSoundObject;
@@ -259,7 +259,7 @@ void CSWSSoundObject::ChangePitchVariation(float fVariation)
         }
     }
 }
-// PC 0x005702E0
+// PC 0x005702E0 GOG 0x00570410
 void CSWSSoundObject::ChangeFixedVariance(float fVariance)
 {
     CSWCSoundObject* pSoundObject;
@@ -274,7 +274,7 @@ void CSWSSoundObject::ChangeFixedVariance(float fVariance)
         }
     }
 }
-// PC 0x00570330
+// PC 0x00570330 GOG 0x00570460
 void CSWSSoundObject::ChangeVolume(int nVolume)
 {
     CSWCSoundObject* pSoundObject;
@@ -296,7 +296,7 @@ void CSWSSoundObject::ChangeVolume(int nVolume)
         }
     }
 }
-// PC 0x00570390
+// PC 0x00570390 GOG 0x005704C0
 void CSWSSoundObject::ChangePosition(Vector vPosition)
 {
     CSWSMessage* pMessage;
@@ -336,7 +336,7 @@ void CSWSSoundObject::ChangePosition(Vector vPosition)
         }
     }
 }
-// PC 0x00570580
+// PC 0x00570580 GOG 0x005706B0
 int CSWSSoundObject::Load(CResGFF* pRes, CResStruct* pStruct)
 {
     int bSuccess;
@@ -447,7 +447,7 @@ int CSWSSoundObject::Load(CResGFF* pRes, CResStruct* pStruct)
     }
     return bSuccess;
 }
-// PC 0x00570A20
+// PC 0x00570A20 GOG 0x00570B50
 int CSWSSoundObject::LoadFromTemplate(const CResRef& resTemplate)
 {
     CResGFF* pTemplate;

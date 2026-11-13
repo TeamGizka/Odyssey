@@ -62,7 +62,7 @@ public:
         return -1;
     }
 #endif
-    // PC 0x00448F20
+    // PC 0x00448F20 GOG 0x00449070
     T& operator[](int nIndex)
     {
         return m_pList[nIndex];
@@ -146,7 +146,7 @@ template <class T> List<T>::~List()
         delete[] m_pList;
     }
 }
-// PC 0x004673E0
+// PC 0x004673E0 GOG 0x004AB840
 template <class T> void List<T>::Remove(T item)
 {
     int i;

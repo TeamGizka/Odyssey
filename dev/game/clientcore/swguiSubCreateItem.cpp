@@ -9,7 +9,7 @@
 #include "swmain.h"
 
 static inline void SwguiSubCreateItemTrace1();
-// PC 0x00713170
+// PC 0x00713170 GOG 0x00713030
 void CSWGuiCreateItemSubMenu::Back(CSWGuiControl* pControl)
 {
     SwguiSubCreateItemTrace1();
@@ -21,7 +21,7 @@ void CSWGuiCreateItemSubMenu::Back(CSWGuiControl* pControl)
             ->ShowItemCreateMenu();
     }
 }
-// PC 0x007131B0
+// PC 0x007131B0 GOG 0x00713070
 void CSWGuiCreateItemSubMenu::CreateItem(CSWGuiControl* pControl)
 {
     SwguiSubCreateItemTrace1();
@@ -42,7 +42,7 @@ void CSWGuiCreateItemSubMenu::CreateItem(CSWGuiControl* pControl)
         pGui->HideSubItemCreateMenu();
     }
 }
-// PC 0x00713230
+// PC 0x00713230 GOG 0x00712E60
 void CSWGuiCreateItemSubMenu::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -105,7 +105,7 @@ void CSWGuiCreateItemSubMenu::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x00713340
+// PC 0x00713340 GOG 0x00712F70
 CSWGuiButton* CSWGuiCreateItemSubMenu::CreateOption(const CExoString& sText,
                                                     CSWGuiHandler pHandler,
                                                     CSWGuiButton* pPrototype)
@@ -120,7 +120,7 @@ CSWGuiButton* CSWGuiCreateItemSubMenu::CreateOption(const CExoString& sText,
     pButton->AddEvent(45, this, pHandler);
     return pButton;
 }
-// PC 0x00713400
+// PC 0x00713400 GOG 0x007130F0
 CSWGuiCreateItemSubMenu::CSWGuiCreateItemSubMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -133,7 +133,7 @@ CSWGuiCreateItemSubMenu::CSWGuiCreateItemSubMenu(CSWGuiManager* pManager)
     m_lblBuild.m_cText.m_cParams.SetText(sBuild);
     CenterPanel();
 }
-// PC 0x00713650
+// PC 0x00713650 GOG 0x00713340
 void CSWGuiCreateItemSubMenu::LoadItems(int nBaseItem)
 {
     CSWGuiControl* pPrototype = m_lstOptions.m_pProtoItem;
@@ -245,7 +245,7 @@ void CSWGuiCreateItemSubMenu::LoadItems(int nBaseItem)
     m_nSelection = 0;
     SetActiveControl(pListBox, 0);
 }
-// PC 0x00713C20
+// PC 0x00713C20 GOG 0x00713910
 void CSWGuiCreateItemSubMenu::ClearItems()
 {
     m_lstOptions.ClearItems();

@@ -32,11 +32,11 @@ int g_nPartyUnused = 0;
 
 int FollowMode = -1;
 int g_bEnablePartySmoothing = 1;
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 CSWParty::~CSWParty()
 {
 }
-// PC 0x00689E30
+// PC 0x00689E30 GOG 0x00689BA0
 void CSWPartyMemberData::SetCombatMessage(unsigned long nMessage)
 {
     m_nCombatMessage = nMessage;
@@ -47,7 +47,7 @@ void CSWPartyMemberData::SetCombatMessage(unsigned long nMessage)
             m_nCombatMessage);
     }
 }
-// PC 0x00689E70
+// PC 0x00689E70 GOG 0x00689BE0
 int CSWParty::IsPartyMember(unsigned long oidCreature)
 {
     int nIndex;
@@ -62,7 +62,7 @@ int CSWParty::IsPartyMember(unsigned long oidCreature)
 
     return 0;
 }
-// PC 0x00689EA0
+// PC 0x00689EA0 GOG 0x00689C10
 CSWCCreature* CSWParty::RemoveCharacter(int nIndex)
 {
     if (g_pAppManager == NULL)
@@ -85,7 +85,7 @@ CSWCCreature* CSWParty::RemoveCharacter(int nIndex)
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMainInterface->ResetPartyMemberItemUse();
     return pCreature;
 }
-// PC 0x00689F30
+// PC 0x00689F30 GOG 0x00689CA0
 CSWCCreature* CSWParty::GetCharacter(int nIndex)
 {
     unsigned long oidCreature;
@@ -101,7 +101,7 @@ CSWCCreature* CSWParty::GetCharacter(int nIndex)
 
     return NULL;
 }
-// PC 0x00689F60
+// PC 0x00689F60 GOG 0x00689CD0
 void CSWParty::InvertFormation()
 {
     Vector vOffset;
@@ -114,7 +114,7 @@ void CSWParty::InvertFormation()
     m_aPartyMemberData[2].m_vFormationOffset = vOffset;
     m_bFormationInverted = !m_bFormationInverted;
 }
-// PC 0x00689FD0
+// PC 0x00689FD0 GOG 0x00689D40
 void CSWParty::SetFormation(int nFormation)
 {
     int bChanged = FALSE;
@@ -163,7 +163,7 @@ void CSWParty::SetFormation(int nFormation)
         }
     }
 }
-// PC 0x0068A130
+// PC 0x0068A130 GOG 0x00689EA0
 Vector CSWParty::GetWorldFormationPosition(const Vector& vPosition,
                                           const Vector& vFacing, int nMember)
 {
@@ -182,7 +182,7 @@ Vector CSWParty::GetWorldFormationPosition(const Vector& vPosition,
 
     return vWorldPosition;
 }
-// PC 0x0068A340
+// PC 0x0068A340 GOG 0x0068A0B0
 int CSWParty::GetIndex(unsigned long oidCreature)
 {
     int nIndex;
@@ -200,7 +200,7 @@ int CSWParty::GetIndex(unsigned long oidCreature)
 
     return -1;
 }
-// PC 0x0068A370
+// PC 0x0068A370 GOG 0x0068A0E0
 int CSWParty::RemoveCharacter(unsigned long oidCreature)
 {
     int nIndex;
@@ -213,7 +213,7 @@ int CSWParty::RemoveCharacter(unsigned long oidCreature)
 
     return 0;
 }
-// PC 0x0068A3C0
+// PC 0x0068A3C0 GOG 0x0068A130
 void CSWParty::ClearParty()
 {
     CSWPartyMemberData* pPartyMember;
@@ -233,7 +233,7 @@ void CSWParty::ClearParty()
 
     m_nCharacters = 0;
 }
-// PC 0x0068A3F0
+// PC 0x0068A3F0 GOG 0x0068A160
 float CSWParty::GetFollowRange()
 {
     float fRange;
@@ -271,7 +271,7 @@ float CSWParty::GetFollowRange()
 
     return fRange;
 }
-// PC 0x0068A4E0
+// PC 0x0068A4E0 GOG 0x0068A250
 int CSWParty::PartyHasRace(unsigned short nRace)
 {
     for (int nIndex = 0; nIndex < m_nCharacters; ++nIndex)
@@ -281,7 +281,7 @@ int CSWParty::PartyHasRace(unsigned short nRace)
     }
     return 0;
 }
-// PC 0x0068A550
+// PC 0x0068A550 GOG 0x0068A2C0
 int CSWPartyFollowDataArray::Reset(const Vector& vPosition, float fFacing)
 {
     int nIndex;
@@ -295,7 +295,7 @@ int CSWPartyFollowDataArray::Reset(const Vector& vPosition, float fFacing)
     m_nCurrentPathData = 0;
     return 0;
 }
-// PC 0x0068A6B0
+// PC 0x0068A6B0 GOG 0x0068A420
 CSWPartyFollowData* CSWPartyFollowDataArray::GetPathData(int nIndex)
 {
     if (nIndex < 0 || nIndex >= 100)
@@ -307,7 +307,7 @@ CSWPartyFollowData* CSWPartyFollowDataArray::GetPathData(int nIndex)
 
     return &m_aPathData[nIndex];
 }
-// PC 0x0068A730
+// PC 0x0068A730 GOG 0x0068A4A0
 int CSWPartyFollowDataArray::FindClosestPartyMemeber_Current()
 {
     int nFirstPathIndex = -1;
@@ -337,7 +337,7 @@ int CSWPartyFollowDataArray::FindClosestPartyMemeber_Current()
 
     return (nFirstPathIndex <= nSecondPathIndex) + 1;
 }
-// PC 0x0068A790
+// PC 0x0068A790 GOG 0x0068A500
 int CSWPartyFollowDataArray::FindFurthestPartyMemeber_Current()
 {
     int nFirstPathIndex = -1;
@@ -367,7 +367,7 @@ int CSWPartyFollowDataArray::FindFurthestPartyMemeber_Current()
 
     return (nFirstPathIndex >= nSecondPathIndex) + 1;
 }
-// PC 0x0068A7F0
+// PC 0x0068A7F0 GOG 0x0068A560
 float CSWPartyFollowDataArray::PointOnLineDistanceFromLeader(int nMember,
                                                              int bSquared)
 {
@@ -390,7 +390,7 @@ float CSWPartyFollowDataArray::PointOnLineDistanceFromLeader(int nMember,
 
     return (float)sqrt(fDistanceSquared);
 }
-// PC 0x0068A870
+// PC 0x0068A870 GOG 0x0068A5E0
 float CSWPartyFollowDataArray::AdvancePointOnPath(float fDistance, int nPathIndex,
                                                 const Vector& vStart, int nStartIndex,
                                                 const Vector& vEnd, int nEndIndex,
@@ -442,7 +442,7 @@ float CSWPartyFollowDataArray::AdvancePointOnPath(float fDistance, int nPathInde
     nPositionIndex = nCurrentIndex;
     return fDistanceLeft;
 }
-// PC 0x0068AEC0
+// PC 0x0068AEC0 GOG 0x0068AC30
 void CSWParty::SetLeader(int nIndex)
 {
     unsigned long oidOldLeader = m_aPartyMemberData[0].m_oidCreature;
@@ -626,7 +626,7 @@ void CSWParty::SetLeader(int nIndex)
         }
     }
 }
-// PC 0x0068B400
+// PC 0x0068B400 GOG 0x0068B170
 void CSWParty::RecaulateFollowPoint()
 {
     Vector vPosition;
@@ -646,7 +646,7 @@ void CSWParty::RecaulateFollowPoint()
         m_aPartyMemberData[2].m_nFormationPathIndex = nPositionIndex;
     }
 }
-// PC 0x0068AAE0
+// PC 0x0068AAE0 GOG 0x0068A850
 int CSWPartyFollowDataArray::GetPointBackFromStart(float fDistance,
                                                  Vector& vPosition,
                                                  int& nPositionIndex,
@@ -717,7 +717,7 @@ int CSWPartyFollowDataArray::GetPointBackFromStart(float fDistance,
     vPosition = Vector(0.0f, 0.0f, 0.0f);
     return 0;
 }
-// PC 0x0068AD40
+// PC 0x0068AD40 GOG 0x0068AAB0
 int CSWParty::IsPartyTogether()
 {
     CSWSCreature* pLeader;
@@ -754,7 +754,7 @@ int CSWParty::IsPartyTogether()
 
     return 1;
 }
-// PC 0x0068ADE0
+// PC 0x0068ADE0 GOG 0x0068AB50
 int CSWParty::IsPartyInCombat()
 {
     CSWSCreature* pLeader;
@@ -793,12 +793,12 @@ int CSWParty::IsPartyInCombat()
 
     return 0;
 }
-// PC 0x0068AEA0
+// PC 0x0068AEA0 GOG 0x0068AC10
 CSWCCreature* CSWParty::GetPlayerCharacter()
 {
     return GetCharacter(0);
 }
-// PC 0x0068B4D0
+// PC 0x0068B4D0 GOG 0x0068B240
 CSWPartyFollowDataArray::CSWPartyFollowDataArray()
 {
     Vector vPosition;
@@ -809,7 +809,7 @@ CSWPartyFollowDataArray::CSWPartyFollowDataArray()
 static inline void SwpartyDebugLine(const Vector&, const Vector&, int)
 {
 }
-// PC 0x0068B530
+// PC 0x0068B530 GOG 0x0068B2A0
 void CSWPartyFollowDataArray::SmoothFollowPath()
 {
     static int OFF = 0;
@@ -1038,7 +1038,7 @@ void CSWPartyFollowDataArray::SmoothFollowPath()
 
     m_pParty->RecaulateFollowPoint();
 }
-// PC 0x0068BDB0
+// PC 0x0068BDB0 GOG 0x0068BB20
 CSWParty::CSWParty()
 {
     m_fFormationRange[0] = 1.5f;
@@ -1075,7 +1075,7 @@ CSWParty::CSWParty()
     m_cFollowPaths.m_pParty = this;
     m_aPartyMemberData[2].m_fFollowDistance = 3.0f;
 }
-// PC 0x0068C100
+// PC 0x0068C100 GOG 0x0068BE70
 int CSWParty::AddCharacter(unsigned long oidCreature)
 {
     int nAddedIndex = -1;
@@ -1202,7 +1202,7 @@ int CSWParty::AddCharacter(unsigned long oidCreature)
     m_bPartyChanged = 1;
     return nAddedIndex;
 }
-// PC 0x0068C480
+// PC 0x0068C480 GOG 0x0068C1F0
 int CSWParty::TestAndResetPath()
 {
     int nPathIndex = m_cFollowPaths.m_nCurrentPathData - 1;
@@ -1266,7 +1266,7 @@ int CSWParty::TestAndResetPath()
     }
     return 0;
 }
-// PC 0x0068C700
+// PC 0x0068C700 GOG 0x0068C470
 void CSWParty::FollowStateChanged()
 {
     int nIndex;
@@ -1299,7 +1299,7 @@ void CSWParty::FollowStateChanged()
         }
     }
 }
-// PC 0x0068C760
+// PC 0x0068C760 GOG 0x0068C4D0
 void CSWPartyFollowDataArray::ProcessPoint(const Vector& vPosition, float fFacing,
                                            float fTime)
 {
@@ -1458,7 +1458,7 @@ void CSWPartyFollowDataArray::ProcessPoint(const Vector& vPosition, float fFacin
         }
     }
 }
-// PC 0x0068CE70
+// PC 0x0068CE70 GOG 0x0068CBE0
 void CSWParty::Update(float fTime)
 {
     Vector vLeaderFollowPosition = m_vLeaderFollowPosition;
@@ -1636,7 +1636,7 @@ static inline int ComputeSafeLocation(CServerExoApp* pServerExoApp, CSWSCreature
     unsigned long oidArea = pCreature->m_oidArea;
     return pServerExoApp->GetAreaByGameObjectID(oidArea)->ComputeSafeLocation(vPosition, 2.0f, pPathfind, 1, pvSafePosition);
 }
-// PC 0x0068D610
+// PC 0x0068D610 GOG 0x0068D380
 void CSWParty::Reset(const Vector& vPosition, float fFacing, int bFlag)
 {
     m_cFollowPaths.Reset(vPosition, fFacing);
@@ -1673,7 +1673,7 @@ void CSWParty::Reset(const Vector& vPosition, float fFacing, int bFlag)
         m_cFollowPaths.ProcessPoint(vPosition, fFacing, 0.5f);
     }
 }
-// PC 0x0068D990
+// PC 0x0068D990 GOG 0x0068D700
 void CSWParty::ResetAllFollowData(const Vector& vPosition, float fFacing, int bFlag)
 {
     Reset(vPosition, fFacing, bFlag);

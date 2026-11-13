@@ -9,16 +9,16 @@
 float parttriggeralpha;
 
 MdlNodeTrigger global_nodetrigger("trigger");
-// PC 0x005EE1C0
+// PC 0x005EE1C0 GOG 0x005EE1A0
 void MdlNodeTrigger::InternalParseField(char* sField)
 {
 }
-// PC 0x006955A0
+// PC 0x006955A0 GOG 0x00695350
 Part* MdlNodeTrigger::InternalCreateInstance(Gob* pGob)
 {
     return 0;
 }
-// PC 0x004CA9A0
+// PC 0x004CA9A0 GOG 0x004CAAB0
 MdlNodeTrigger::MdlNodeTrigger(char* sName)
     : MdlNode(sName)
 {
@@ -29,7 +29,7 @@ void AurPartTriggerSetColor(PartTrigger* pTrigger, float* pfColor)
 {
     memcpy(&pTrigger->m_fColorRed, pfColor, 4 * sizeof(float));
 }
-// PC 0x004CA9C0
+// PC 0x004CA9C0 GOG 0x004CAAD0
 #ifdef _XBOX
 void AurPartTriggerDelete(CAurScene* pScene, PartTrigger* pTrigger)
 #else
@@ -53,12 +53,12 @@ void AurPartTriggerDelete(CAurScene* pScene, PartTrigger* pTrigger,
     }
 #endif
 }
-// PC 0x006C56E0
+// PC 0x006C56E0 GOG 0x006C53F0
 void AurPartTriggerReleaseMemory(PartTrigger* pTrigger)
 {
     delete pTrigger;
 }
-// PC 0x004CAA00
+// PC 0x004CAA00 GOG 0x004CAB10
 int PartTrigger::HitCheckGeom(const Vector& vStart, Vector& vEnd,
                               Vector* pHit, CHitInfo* pHitInfo, float fRadius)
 {
@@ -90,7 +90,7 @@ int PartTrigger::HitCheckGeom(const Vector& vStart, Vector& vEnd,
 
     return 0;
 }
-// PC 0x004CAD20
+// PC 0x004CAD20 GOG 0x004CAE30
 PartTrigger::PartTrigger(MdlNode* pNode)
     : Part(pNode), m_lstVertices(0), m_lstHighlightTop(0),
       m_lstHighlightBottom(0), m_lstHighlightSide(0),
@@ -106,7 +106,7 @@ PartTrigger::PartTrigger(MdlNode* pNode)
     m_fHighlightBlend = 1.0f;
     m_bAdditiveBlend = false;
 }
-// PC 0x004CAAD0
+// PC 0x004CAAD0 GOG 0x004CABE0
 PartTrigger::~PartTrigger()
 {
     Scene::RemoveFromSceneManager(this);
@@ -133,7 +133,7 @@ void AurPartTriggerSetHighlightParams(PartTrigger* pTrigger,
     pTrigger->m_bAdditiveBlend = bAdditive;
 }
 #else
-PartTrigger* AurPartTriggerSetHighlightParams(PartTrigger* pTrigger,  // PC 0x004CABA0
+PartTrigger* AurPartTriggerSetHighlightParams(PartTrigger* pTrigger,  // PC 0x004CABA0 GOG 0x004CACB0
                                               const Vector& vColor,
                                               float fAlpha, bool bColor,
                                               float fBlend, bool bAdditive)
@@ -148,14 +148,14 @@ PartTrigger* AurPartTriggerSetHighlightParams(PartTrigger* pTrigger,  // PC 0x00
     return pTrigger;
 }
 #endif
-// PC 0x004CABF0
+// PC 0x004CABF0 GOG 0x004CAD00
 void PartTrigger::DrawVolume()
 {
     GLRender::DrawFromVerts(Aurora::PRIMITIVE_TRIANGLE_STRIP, m_lstHighlightTop);
     GLRender::DrawFromVerts(Aurora::PRIMITIVE_POLYGON, m_lstHighlightBottom);
     GLRender::DrawFromVerts(Aurora::PRIMITIVE_POLYGON, m_lstHighlightSide);
 }
-// PC 0x004CAC30
+// PC 0x004CAC30 GOG 0x004CAD40
 void PartTrigger::Draw(bool bRenderLast)
 {
     float afColor[4];
@@ -187,7 +187,7 @@ void PartTrigger::Draw(bool bRenderLast)
     GLRender::DrawFromVerts(Aurora::PRIMITIVE_TRIANGLES, m_lstTriangles);
     GLRender_PopAttrib();
 }
-// PC 0x004CAE00
+// PC 0x004CAE00 GOG 0x004CAF10
 void PartTrigger::SetHighlighted(bool bHighlighted, float fOffset, bool bReverse)
 {
     m_bHighlighted = bHighlighted;
@@ -223,7 +223,7 @@ void PartTrigger::SetHighlighted(bool bHighlighted, float fOffset, bool bReverse
         m_vMaximum = VectorMax(m_lstHighlightTop);
     }
 }
-// PC 0x004CB100
+// PC 0x004CB100 GOG 0x004CB210
 void PartTrigger::Decompose(List<int> lstIndices)
 {
     while (lstIndices.m_nCount > 2)
@@ -320,13 +320,13 @@ void PartTrigger::Decompose(List<int> lstIndices)
         }
     }
 }
-// PC 0x004CB800
+// PC 0x004CB800 GOG 0x004CB910
 void AurPartTriggerSetHighlight(PartTrigger* pTrigger, bool bHighlighted,
                                float fOffset, bool bReverse)
 {
     pTrigger->SetHighlighted(bHighlighted, fOffset, bReverse);
 }
-// PC 0x004CB820
+// PC 0x004CB820 GOG 0x004CB930
 PartTrigger* AurPartTriggerCreate(CAurScene* pScene, Vector* pVertices,
                                   int nVertices, int bHitCheck, float* pfColor,
                                   void* pHitData)

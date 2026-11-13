@@ -212,7 +212,7 @@ int CAurFont::TextOutA(char* sText, int nLength)
 #endif
 
 CStringColor g_cSavedCol(1.0f, 1.0f, 1.0f, 1.0f);
-// PC 0x004CE9E0
+// PC 0x004CE9E0 GOG 0x004CEB20
 CAurFont::~CAurFont()
 {
     CAurTexture* pTexture = m_pTexture.m_pObject;
@@ -230,7 +230,7 @@ CAurFont::~CAurFont()
         s_LoadedFontList.DelIndex(m_nLoadedFontIndex);
     }
 }
-// PC 0x004CEAF0
+// PC 0x004CEAF0 GOG 0x004CEC30
 void AurDeleteAllFonts()
 {
     int i;

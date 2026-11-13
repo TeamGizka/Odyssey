@@ -17,7 +17,7 @@ int CERFRes::Read(CExoFile& file)
     file.Read(&m_nSize, 4, 1);
     return 1;
 }
-// PC 0x0062B200
+// PC 0x0062B200 GOG 0x0062B0D0
 void CERFFile::ImportFiles(const CExoString& sDirectory, void* pUnused,
                           int (*pfnProgress)(int, int, int, int), int nArg1,
                           int nArg2)
@@ -115,7 +115,7 @@ int CERFFile::ReadHeaderVariance(const CExoString& sFileName, void* pSignature)
     return 1;
 }
 #else
-int CERFFile::ReadHeaderVariance(const CExoString& sFileName)  // PC 0x0062A3E0
+int CERFFile::ReadHeaderVariance(const CExoString& sFileName)  // PC 0x0062A3E0 GOG 0x0062A2B0
 {
     CExoFile file(sFileName, 2057, "rb");
 
@@ -148,7 +148,7 @@ int CERFFile::ReadHeaderVariance(const CExoString& sFileName)  // PC 0x0062A3E0
     return 1;
 }
 #endif
-// PC 0x0062A5C0
+// PC 0x0062A5C0 GOG 0x0062A490
 int CERFFile::WriteStringTable()
 {
     CExoFile* pFile = m_pFile;
@@ -185,7 +185,7 @@ int CERFFile::WriteStringTable()
 
     return 0;
 }
-// PC 0x0062B320
+// PC 0x0062B320 GOG 0x0062B1F0
 int CERFFile::Reset()
 {
     NwerffileTrace3();
@@ -223,7 +223,7 @@ int CERFFile::Reset()
 
     return 1;
 }
-// PC 0x0062B400
+// PC 0x0062B400 GOG 0x0062B2D0
 CERFFile::~CERFFile()
 {
     Reset();
@@ -236,7 +236,7 @@ int CERFString::Write(CExoFile& file)
     file.Write(m_pText, m_nLength, 1);
     return 1;
 }
-// PC 0x0062AFA0
+// PC 0x0062AFA0 GOG 0x0062AE70
 void CERFFile::ExportFilesFromERF(const CExoString& sFileName,
                                  const CExoString& sDirectory, void* pUnused,
                                  int (*pfnProgress)(int, int, int, int),
@@ -276,7 +276,7 @@ void CERFFile::ExportFilesFromERF(const CExoString& sFileName,
         return;
     }
 }
-// PC 0x0062A730
+// PC 0x0062A730 GOG 0x0062A600
 inline CERFKey::~CERFKey()
 {
     NwerffileTrace1();
@@ -284,7 +284,7 @@ inline CERFKey::~CERFKey()
     m_nResType = -1;
     memset(m_sResRef, 0, 16);
 }
-// PC 0x0062A750
+// PC 0x0062A750 GOG 0x0062A620
 inline CERFRes::~CERFRes()
 {
     NwerffileTrace1();
@@ -298,7 +298,7 @@ inline CERFRes::~CERFRes()
     m_nOffset = 0;
     m_nSize = 0;
 }
-// PC 0x0062A7F0
+// PC 0x0062A7F0 GOG 0x0062A6C0
 CERFFile::CERFFile()
 {
     memset(this, 0, 160);
@@ -306,7 +306,7 @@ CERFFile::CERFFile()
     m_nNumEntries = 0;
     m_nCurEntry = 0;
 }
-// PC 0x0062A880
+// PC 0x0062A880 GOG 0x0062A750
 int CERFFile::SetNumEntries(unsigned long nEntries)
 {
     NwerffileTrace2();
@@ -343,7 +343,7 @@ int CERFFile::SetNumEntries(unsigned long nEntries)
 
     return 0;
 }
-// PC 0x0062A9F0
+// PC 0x0062A9F0 GOG 0x0062A8C0
 int CERFFile::WriteResource(const CExoString& sFileName, void* pUnused)
 {
     NwerffileTrace2();
@@ -409,13 +409,13 @@ int CERFFile::WriteResource(const CExoString& sFileName, void* pUnused)
 
     return 0;
 }
-// PC 0x00629E70
+// PC 0x00629E70 GOG 0x00629D40
 void CERFFile::SetVersion(char* sVersion)
 {
     memcpy(m_sFileType, sVersion, 4);
     memcpy(m_sVersion, sVersion + 4, 4);
 }
-// PC 0x00629E90
+// PC 0x00629E90 GOG 0x00629D60
 #ifdef _XBOX
 
 int CERFFile::Read(const CExoString& sFileName, void* pSignature)
@@ -458,13 +458,13 @@ int CERFFile::Read(const CExoString& sFileName)
 
     return 1;
 }
-// PC 0x0062A000
+// PC 0x0062A000 GOG 0x00629ED0
 int CERFFile::Create(CExoString& sFileName)
 {
     m_pFile = new CExoFile(sFileName, RESTYPE_SAV, "wb");
     return m_pFile->FileOpened() != 0;
 }
-// PC 0x0062A0C0
+// PC 0x0062A0C0 GOG 0x00629F90
 int CERFFile::WriteHeader()
 {
     if (m_pFile != NULL)
@@ -486,7 +486,7 @@ int CERFFile::WriteHeader()
 
     return 0;
 }
-// PC 0x0062A120
+// PC 0x0062A120 GOG 0x00629FF0
 int CERFFile::Finish()
 {
     m_pFile->Flush();
@@ -504,13 +504,13 @@ int CERFKey::Read(CExoFile& file)
     file.Read(&m_nUnused, 2, 1);
     return 1;
 }
-// PC 0x0062A160
+// PC 0x0062A160 GOG 0x0062A030
 void CERFKey::SetName(CExoString& sName)
 {
     memset(m_sResRef, 0, 16);
     memcpy(m_sResRef, sName.CStr(), sName.GetLength());
 }
-// PC 0x0062A1B0
+// PC 0x0062A1B0 GOG 0x0062A080
 int CERFKey::Write(CExoFile& file)
 {
     EXOXBOXASSERT(file.FileOpened());
@@ -520,7 +520,7 @@ int CERFKey::Write(CExoFile& file)
     file.Write(&m_nUnused, 2, 1);
     return 1;
 }
-// PC 0x0062A780
+// PC 0x0062A780 GOG 0x0062A650
 int CERFRes::CopyToFile(CExoFile* pIn, CExoFile* pOut, void* pBuffer)
 {
     pIn->Seek(m_nOffset, 0);
@@ -558,7 +558,7 @@ int CERFRes::CopyToFile(CExoFile* pIn, CExoFile* pOut, void* pBuffer)
 
     return 1;
 }
-// PC 0x0062AD60
+// PC 0x0062AD60 GOG 0x0062AC30
 int CERFFile::WriteResource(char* sResRef, unsigned short nResType, CRes* pRes,
                             int bIsGFF, void* pUnused)
 {
@@ -619,7 +619,7 @@ int CERFFile::WriteResource(char* sResRef, unsigned short nResType, CRes* pRes,
     m_nCurEntry++;
     return 1;
 }
-// PC 0x0062A200
+// PC 0x0062A200 GOG 0x0062A0D0
 int CERFRes::Write(CExoFile& file, unsigned long nTableOffset)
 {
     m_nOffset = file.GetOffset();
@@ -630,7 +630,7 @@ int CERFRes::Write(CExoFile& file, unsigned long nTableOffset)
     file.SeekEnd();
     return 1;
 }
-// PC 0x0062A260
+// PC 0x0062A260 GOG 0x0062A130
 int CERFString::SetText(CExoString& sText)
 {
     if (m_pText != NULL)
@@ -652,7 +652,7 @@ int CERFString::SetText(CExoString& sText)
     m_pText[m_nLength] = 0;
     return nLength;
 }
-// PC 0x0062A2D0
+// PC 0x0062A2D0 GOG 0x0062A1A0
 int CERFString::Read(CExoFile& file)
 {
     CExoString sText;

@@ -47,7 +47,7 @@ template <class T> void Parse(char* sText, List<T>& lstValues);
 Model* BinarySearchModel(char* sName, int nFirst, int nLast);
 void BinaryInsertModel(Model* pModel, int nFirst, int nLast);
 extern float cullvalueforkeys;
-// PC 0x00479BA0
+// PC 0x00479BA0 GOG 0x00479D20
 template <> inline void List<AurKey<char[32]> >::allocate(int nAllocated)
 {
     AurKey<char[32]>* pOldList = m_pList;
@@ -58,7 +58,7 @@ template <> inline void List<AurKey<char[32]> >::allocate(int nAllocated)
     if (pOldList != 0)
         delete[] pOldList;
 }
-// PC 0x00479C20
+// PC 0x00479C20 GOG 0x00479DA0
 void Parse(char* sText, Quaternion& qOrientation)
 {
     float fAngle;
@@ -75,7 +75,7 @@ void Parse(char* sText, Quaternion& qOrientation)
         qOrientation = Quaternion(vAxis, fAngle);
     }
 }
-// PC 0x00479D20
+// PC 0x00479D20 GOG 0x00479EA0
 void Parse(char* sText, AurGenericKey& key)
 {
     key.m_nValues = sscanf(sText, "%f %f %f %f %f %f %f %f %f %f",
@@ -96,7 +96,7 @@ void Parse(char* sText, AurGenericKey& key)
         key.m_afValues[3] = q.m_fW;
     }
 }
-// PC 0x004796F0
+// PC 0x004796F0 GOG 0x00479880
 char* skipspace(char* sText)
 {
     if (sText == 0)
@@ -111,7 +111,7 @@ char* skipspace(char* sText)
 
     return sText;
 }
-// PC 0x00479710
+// PC 0x00479710 GOG 0x004798A0
 char* firstword(char* sLine)
 {
 
@@ -131,13 +131,13 @@ char* firstword(char* sLine)
 
     return buf;
 }
-// PC 0x00479750
+// PC 0x00479750 GOG 0x004798E0
 int Parse(char* sText, Vector& vVector)
 {
     return sscanf(sText, "%f %f %f", &vVector.m_fX, &vVector.m_fY,
                   &vVector.m_fZ);
 }
-// PC 0x00479770
+// PC 0x00479770 GOG 0x00479900
 void Parse(char* sText, char* sValue)
 {
     if (sscanf(sText, "%s", sValue) == 0)
@@ -145,12 +145,12 @@ void Parse(char* sText, char* sValue)
         strcpy(sValue, (char*)0);
     }
 }
-// PC 0x004797A0
+// PC 0x004797A0 GOG 0x00479930
 int Parse(char* sText, float& fValue)
 {
     return sscanf(sText, "%f", &fValue);
 }
-// PC 0x004797C0
+// PC 0x004797C0 GOG 0x00479950
 int Parse(char* sText, int& nValue)
 {
     char sValue[64];
@@ -174,7 +174,7 @@ int Parse(char* sText, int& nValue)
 
     return nResult;
 }
-// PC 0x00479830
+// PC 0x00479830 GOG 0x004799C0
 void Parse(char* sText, short& nValue)
 {
     int nInteger;
@@ -182,7 +182,7 @@ void Parse(char* sText, short& nValue)
     sscanf(sText, "%d", &nInteger);
     nValue = (short)nInteger;
 }
-// PC 0x00479860
+// PC 0x00479860 GOG 0x004799F0
 int Parse(char* sText, bool& bValue)
 {
     char sValue[8];
@@ -210,7 +210,7 @@ int Parse(char* sText, bool& bValue)
 
     return nResult;
 }
-// PC 0x004798F0
+// PC 0x004798F0 GOG 0x00479A80
 int Parse(char* sText, MaxFace_PostProcess& face)
 {
     if (face.m_pFaces != 0)
@@ -234,7 +234,7 @@ int Parse(char* sText, MaxFace_PostProcess& face)
                   &face.m_pFaceIndices[0], &face.m_pFaceIndices[1],
                   &face.m_pFaceIndices[2], &face.m_nFaceIndices);
 }
-// PC 0x00479980
+// PC 0x00479980 GOG 0x00479B10
 int Parse(char* sText, SkinVertexWeight& weight)
 {
     int nWeights;
@@ -338,7 +338,7 @@ const char* setanimationscale(char* sCommand)
     currentmodel->m_fAnimationScale = fScale;
     return "done";
 }
-// PC 0x00479A30
+// PC 0x00479A30 GOG 0x00479BC0
 int Parse(char* sText, unsigned int* pValues)
 {
     int nCount;
@@ -361,7 +361,7 @@ int Parse(char* sText, unsigned int* pValues)
 
     return nCount;
 }
-// PC 0x00479AE0
+// PC 0x00479AE0 GOG 0x00479C60
 template <class T> void Parse(char* sText, AurKey<T>& key)
 {
     int nChars;
@@ -373,7 +373,7 @@ template <class T> void Parse(char* sText, AurKey<T>& key)
 int compressquaternions = 1;
 float cullvalueforkeys = 0.0001f;
 int cullunnecessary = 1;
-// PC 0x00479E10
+// PC 0x00479E10 GOG 0x00479F90
 void Parse(char* sText, AABB*& pAABB)
 {
     sText = skipspace(sText);
@@ -429,7 +429,7 @@ void Parse(char* sText, AABB*& pAABB)
             pAABB->m_nSplitMask = nSplitMask;
     }
 }
-// PC 0x0047A170
+// PC 0x0047A170 GOG 0x0047A2F0
 void CullUnnecessaryKeys(List<AurGenericKey>& keys)
 {
     for (int i = keys.m_nCount - 2; i > 1; i--)
@@ -447,7 +447,7 @@ void CullUnnecessaryKeys(List<AurGenericKey>& keys)
         }
     }
 }
-// PC 0x0047A280
+// PC 0x0047A280 GOG 0x0047A400
 Model* BinarySearchModel(char* sName, int nFirst, int nLast)
 {
     int nMiddle;
@@ -478,7 +478,7 @@ int countnewcontrollers = 0;
 
 int uselastsupermodelname = 0;
 char* lastsupermodelname = 0;
-// PC 0x0047AA70
+// PC 0x0047AA70 GOG 0x0047ABF0
 template <> void Parse<char*>(char* sText, List<char*>& lstValues)
 {
     int nCount = 0;
@@ -512,7 +512,7 @@ template <> void Parse<char*>(char* sText, List<char*>& lstValues)
 #endif
     }
 }
-// PC 0x0047AC30
+// PC 0x0047AC30 GOG 0x0047ADB0
 template <> void Parse<unsigned int*>(char* sText, List<unsigned int*>& lstValues)
 {
     int nCount;
@@ -531,7 +531,7 @@ template <> void Parse<unsigned int*>(char* sText, List<unsigned int*>& lstValue
         Parse(sLine, lstValues[i]);
     }
 }
-// PC 0x0047A2E0
+// PC 0x0047A2E0 GOG 0x0047A460
 Model* BinaryFindModel(char* sName)
 {
     int nLast;
@@ -540,7 +540,7 @@ Model* BinaryFindModel(char* sName)
     return BinarySearchModel(sName, 0, nLast);
 }
 #ifndef _XBOX
-// PC 0x0047A300
+// PC 0x0047A300 GOG 0x0047A480
 Model* FindModel(char* sName)
 {
     Model* pModel;
@@ -580,7 +580,7 @@ Model* FindModel(char* sName)
     return 0;
 }
 #endif
-Model* LoadModel(FILE* pModelFile, FILE* pVertexFile)  // PC 0x0047A3F0
+Model* LoadModel(FILE* pModelFile, FILE* pVertexFile)  // PC 0x0047A3F0 GOG 0x0047A570
 {
     if (pModelFile == 0)
         return 0;
@@ -608,7 +608,7 @@ Model* LoadModel(FILE* pModelFile, FILE* pVertexFile)  // PC 0x0047A3F0
     }
     return pModel;
 }
-// PC 0x0047ACE0
+// PC 0x0047ACE0 GOG 0x0047AE60
 MdlNode* FindMdlNode(MdlNode* pNode, char* sName)
 {
     int nChildren;
@@ -648,7 +648,7 @@ MdlNode* FindMdlNode(MaxTree* pTree, char* sName)
     return FindMdlNode(pTree->m_pRootNode, sName);
 }
 #endif
-// PC 0x0047AD40
+// PC 0x0047AD40 GOG 0x0047AEC0
 void CompressQuaternionKey(List<AurGenericKey>& keys)
 {
     List<AurGenericKey> compressed;
@@ -682,7 +682,7 @@ void CompressQuaternionKey(List<AurGenericKey>& keys)
     }
     keys = compressed;
 }
-// PC 0x0047B040
+// PC 0x0047B040 GOG 0x0047B1C0
 void AddGenericControllerSingle(char* sName, char* sText,
                                 List<NewController>& controllers,
                                 List<float>& values, void* pOffset, void* pType)
@@ -739,7 +739,7 @@ void AddGenericControllerSingle(char* sName, char* sText,
     controllers.Add(controller);
     countnewcontrollers++;
 }
-// PC 0x0047B290
+// PC 0x0047B290 GOG 0x0047B410
 void AddGenericController(char* sName, char* sText,
                           List<NewController>& controllers,
                           List<float>& values, void* pOffset, void* pType)
@@ -789,7 +789,7 @@ void AddGenericController(char* sName, char* sText,
     countnewcontrollers += keys.m_nCount;
     controllers.Add(controller);
 }
-// PC 0x0047B520
+// PC 0x0047B520 GOG 0x0047B6A0
 void AddBezierController(char* sName, char* sText,
                          List<NewController>& controllers,
                          List<float>& values, void* pOffset, void* pType)
@@ -817,7 +817,7 @@ void AddBezierController(char* sName, char* sText,
     countnewcontrollers += keys.m_nCount;
     controllers.Add(controller);
 }
-void MdlNode::InternalParseField(char* sField)  // PC 0x0047B760
+void MdlNode::InternalParseField(char* sField)  // PC 0x0047B760 GOG 0x0047B8E0
 {
     if (disablepostprocessing == 0)
     {
@@ -901,7 +901,7 @@ void MdlNode::InternalParseField(char* sField)  // PC 0x0047B760
         }
     }
 }
-// PC 0x0047BAB0
+// PC 0x0047BAB0 GOG 0x0047BC30
 void MdlNodeEmitter::InternalParseField(char* sField)
 {
     if (disablepostprocessing == 0)
@@ -1654,12 +1654,12 @@ void MdlNodeEmitter::InternalParseField(char* sField)
     }
     MdlNode::InternalParseField(sField);
 }
-// PC 0x0047E260
+// PC 0x0047E260 GOG 0x0047E3E0
 void MdlNodeCamera::InternalParseField(char* sField)
 {
     MdlNode::InternalParseField(sField);
 }
-// PC 0x0047E270
+// PC 0x0047E270 GOG 0x0047E3F0
 void MdlNodeReference::InternalParseField(char* sField)
 {
     if (disablepostprocessing == 0)
@@ -1676,7 +1676,7 @@ void MdlNodeReference::InternalParseField(char* sField)
 
     return MdlNode::InternalParseField(sField);
 }
-// PC 0x0047E2E0
+// PC 0x0047E2E0 GOG 0x0047E460
 MdlNode* ParseNode(char* sField, MaxTree* pTree)
 {
     char sType[64];
@@ -1804,7 +1804,7 @@ MdlNode* ParseNode(char* sField, MaxTree* pTree)
         pNode->PostProcessDispatch();
     return pNode;
 }
-// PC 0x0047EA70
+// PC 0x0047EA70 GOG 0x0047EBF0
 int MaxTree::InternalParseField(char* sField)
 {
     int nResult;
@@ -1817,7 +1817,7 @@ int MaxTree::InternalParseField(char* sField)
 
     return nResult;
 }
-// PC 0x0047EAA0
+// PC 0x0047EAA0 GOG 0x0047EC20
 int Model::InternalParseField(char* sField)
 {
     if (stricmp("radius", firstword(sField)) == 0)
@@ -1847,7 +1847,7 @@ int Model::InternalParseField(char* sField)
 }
 
 #endif
-// PC 0x0047F350
+// PC 0x0047F350 GOG 0x0047F4D0
 void MdlNodeLight::InternalParseField(char* sField)
 {
     if (disablepostprocessing == 0)
@@ -1992,7 +1992,7 @@ void MdlNodeLight::InternalParseField(char* sField)
 
     return MdlNode::InternalParseField(sField);
 }
-// PC 0x0047F900
+// PC 0x0047F900 GOG 0x0047FA80
 void MdlNodeTriMesh::InternalParseField(char* sField)
 {
     if (stricmp("texture0", firstword(sField)) == 0)
@@ -2184,12 +2184,12 @@ void MdlNodeTriMesh::InternalParseField(char* sField)
     }
     return MdlNode::InternalParseField(sField);
 }
-// PC 0x00480430
+// PC 0x00480430 GOG 0x004805B0
 void MdlNodeLightsaber::InternalParseField(char* sField)
 {
     return MdlNodeTriMesh::InternalParseField(sField);
 }
-// PC 0x00480440
+// PC 0x00480440 GOG 0x004805C0
 void MdlNodeDanglyMesh::InternalParseField(char* sField)
 {
     if (disablepostprocessing == 0)
@@ -2226,7 +2226,7 @@ void MdlNodeDanglyMesh::InternalParseField(char* sField)
 
     return MdlNodeTriMesh::InternalParseField(sField);
 }
-// PC 0x00480520
+// PC 0x00480520 GOG 0x004806A0
 void MdlNodeAnimMesh::InternalParseField(char* sField)
 {
     if (disablepostprocessing == 0)
@@ -2251,7 +2251,7 @@ void MdlNodeAnimMesh::InternalParseField(char* sField)
 
     return MdlNodeTriMesh::InternalParseField(sField);
 }
-// PC 0x004805D0
+// PC 0x004805D0 GOG 0x00480750
 void MdlNodeSkin::InternalParseField(char* sField)
 {
     if (disablepostprocessing == 0)
@@ -2276,7 +2276,7 @@ void MdlNodeSkin::InternalParseField(char* sField)
 
     return MdlNodeTriMesh::InternalParseField(sField);
 }
-// PC 0x004806A0
+// PC 0x004806A0 GOG 0x00480820
 void MdlNodeAABB::InternalParseField(char* sField)
 {
     if (disablepostprocessing == 0)
@@ -2289,7 +2289,7 @@ void MdlNodeAABB::InternalParseField(char* sField)
 
     return MdlNodeTriMesh::InternalParseField(sField);
 }
-// PC 0x004806F0
+// PC 0x004806F0 GOG 0x00480870
 int Animation::InternalParseField(char* sField)
 {
     char sName[128];
@@ -2324,12 +2324,12 @@ int Animation::InternalParseField(char* sField)
     }
     return MaxTree::InternalParseField(sField);
 }
-// PC 0x004808D0
+// PC 0x004808D0 GOG 0x00480A50
 void InsertModel(Model* pModel)
 {
     return BinaryInsertModel(pModel, 0, Models.m_nCount - 1);
 }
-// PC 0x00480870
+// PC 0x00480870 GOG 0x004809F0
 void BinaryInsertModel(Model* pModel, int nFirst, int nLast)
 {
     AURMODELPARSE_TRACE();
@@ -2366,7 +2366,7 @@ static inline void AurModelParseTrace1()
 }
 
 #ifndef _XBOX
-template <> void List<AurKey<char[32]> >::Insert(AurKey<char[32]> item, int nIndex)  // PC 0x0047EB70
+template <> void List<AurKey<char[32]> >::Insert(AurKey<char[32]> item, int nIndex)  // PC 0x0047EB70 GOG 0x0047ECF0
 {
     int nLast = m_nCount;
     if (m_nCount == m_nAllocated)

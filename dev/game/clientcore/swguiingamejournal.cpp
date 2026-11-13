@@ -23,27 +23,27 @@ unsigned long CSWGuiInGameJournal::s_pnSortLabels[4] =
 {
     32173, 32174, 32175, 32176
 };
-// PC 0x0069B540
+// PC 0x0069B540 GOG 0x0069B2F0
 void CGuiInGame::SetJournalDone(int bDone)
 {
     m_bJournalDone = bDone;
 }
-// PC 0x00406600
+// PC 0x00406600 GOG 0x004065D0
 inline int CSWCJournal::GetDoneSortBy()
 {
     return m_lstDone.m_nSortBy;
 }
-// PC 0x0069B560
+// PC 0x0069B560 GOG 0x0069B310
 inline void CSWCJournal::ClearActiveHasChanged()
 {
     m_lstActive.m_bHasChanged = 0;
 }
-// PC 0x0069B570
+// PC 0x0069B570 GOG 0x0069B320
 inline void CSWCJournal::ClearDoneHasChanged()
 {
     m_lstDone.m_bHasChanged = 0;
 }
-// PC 0x0069B580
+// PC 0x0069B580 GOG 0x0069B330
 inline void CSWGuiJournalItemEntry::SetEncouraged(int bEncouraged)
 {
     if (m_bEncouraged != bEncouraged)
@@ -62,7 +62,7 @@ inline void CSWGuiJournalItemEntry::SetEncouraged(int bEncouraged)
         }
     }
 }
-// PC 0x0069B930
+// PC 0x0069B930 GOG 0x0069B6E0
 CSWGuiInGameJournal::CSWGuiInGameJournal(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -200,7 +200,7 @@ CSWGuiInGameJournal::CSWGuiInGameJournal(CSWGuiManager* pManager)
 #endif
     m_lblDescription.m_cText.m_cParams.SetText("");
 }
-// PC 0x0069B7C0
+// PC 0x0069B7C0 GOG 0x0069B570
 CSWGuiInGameJournal::~CSWGuiInGameJournal()
 {
     m_lblItemDescription.ClearItems();
@@ -215,7 +215,7 @@ CSWGuiInGameJournal::~CSWGuiInGameJournal()
     }
 #endif
 }
-// PC 0x0069B650
+// PC 0x0069B650 GOG 0x0069B400
 CSWJournalEntry* CSWGuiInGameJournal::GetQuestEntryAt(int nIndex)
 {
     SWGUIINGAMEJOURNAL_TRACE();
@@ -235,12 +235,12 @@ CSWJournalEntry* CSWGuiInGameJournal::GetQuestEntryAt(int nIndex)
     return pJournal->GetActiveEntryAt(nIndex);
 }
 #ifndef _XBOX
-// PC 0x0069B640
+// PC 0x0069B640 GOG 0x0069B3F0
 void CSWGuiInGameJournal::OnControlExited(CSWGuiControl* pControl)
 {
     ((CSWGuiJournalItemEntry*)pControl)->SetEncouraged(0);
 }
-// PC 0x0069B6C0
+// PC 0x0069B6C0 GOG 0x0069B470
 void CSWGuiInGameJournal::UpdateFilterLabelHighlights()
 {
     m_btnFilterTime.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_TEXT);
@@ -259,7 +259,7 @@ void CSWGuiInGameJournal::UpdateFilterLabelHighlights()
         break;
     }
 }
-// PC 0x0069B740
+// PC 0x0069B740 GOG 0x0069B4F0
 void CSWGuiInGameJournal::OnFilterPressed(CSWGuiControl* pControl)
 {
     g_nJournalSortType = pControl->m_nIndex;
@@ -278,7 +278,7 @@ void CSWGuiInGameJournal::OnFilterPressed(CSWGuiControl* pControl)
 }
 #endif
 
-// PC 0x0069C070
+// PC 0x0069C070 GOG 0x0069BE20
 void CSWGuiInGameJournal::OnControlEntered(CSWGuiControl* pControl)
 {
     if (pControl != 0)
@@ -336,7 +336,7 @@ void CSWGuiInGameJournal::OnControlEntered(CSWGuiControl* pControl)
     m_lblRAnalog.SetEnabledFlag(m_lblItemDescription.IsOversized());
 #endif
 }
-// PC 0x0069C320
+// PC 0x0069C320 GOG 0x0069C0D0
 void CSWGuiInGameJournal::PopulateItemListBox()
 {
     CSWCJournal* pJournal = g_pAppManager->m_pClientExoApp->GetQuestJournal();
@@ -409,7 +409,7 @@ void CSWGuiInGameJournal::PopulateItemListBox()
     }
     (pJournal->*pfnClearHasChanged)();
 }
-// PC 0x0069C670
+// PC 0x0069C670 GOG 0x0069C420
 void CSWGuiInGameJournal::MarkNewQuestsObserved()
 {
     for (int i = 0; i < m_aNewQuests.num; i++)
@@ -422,7 +422,7 @@ void CSWGuiInGameJournal::MarkNewQuestsObserved()
     }
     m_aNewQuests.SetSize(0);
 }
-// PC 0x0069C6D0
+// PC 0x0069C6D0 GOG 0x0069C480
 void CSWGuiInGameJournal::Draw(float fElapsed)
 {
     CSWCJournal* pJournal = g_pAppManager->m_pClientExoApp->GetQuestJournal();
@@ -435,7 +435,7 @@ void CSWGuiInGameJournal::Draw(float fElapsed)
     }
     return CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x0069C740
+// PC 0x0069C740 GOG 0x0069C4F0
 #ifdef _XBOX
 void CSWGuiInGameJournal::HandleInputEvent(int nEvent, int nState)
 {
@@ -636,7 +636,7 @@ void CSWGuiInGameJournal::HandleInputEvent(int nEvent, int nState)
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 #endif
-// PC 0x0069C9E0
+// PC 0x0069C9E0 GOG 0x0069C790
 #ifdef _XBOX
 void CSWGuiInGameJournal::OnPanelAdded()
 {
@@ -706,7 +706,7 @@ void CSWGuiInGameJournal::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 }
 #endif
-// PC 0x0069CA60
+// PC 0x0069CA60 GOG 0x0069C810
 void CSWGuiInGameJournal::OnPanelRemoved()
 {
 #ifndef _XBOX

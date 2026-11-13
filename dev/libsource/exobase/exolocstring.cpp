@@ -7,13 +7,13 @@ static inline void ExolocstringTrace1();
 #define EXOLOCSTRING_TRACE() ExolocstringTrace1()
 
 const float CExoLocString::TIME_PER_CHARACTER_SPOKEN = 0.11f;
-// PC 0x006316D0
+// PC 0x006316D0 GOG 0x006315C0
 CExoLocString::CExoLocString()
 {
     m_pExoLocStringInternal = new CExoLocStringInternal();
     m_dwStringRef = -1;
 }
-// PC 0x00631730
+// PC 0x00631730 GOG 0x00631620
 CExoLocString& CExoLocString::operator=(const CExoLocString& lsString)
 {
     if (this != &lsString)
@@ -23,12 +23,12 @@ CExoLocString& CExoLocString::operator=(const CExoLocString& lsString)
     }
     return *this;
 }
-// PC 0x00631760
+// PC 0x00631760 GOG 0x00631650
 void CExoLocString::ClearLocString()
 {
     m_pExoLocStringInternal->ClearLocString();
 }
-// PC 0x00631770
+// PC 0x00631770 GOG 0x00631660
 int CExoLocString::GetString(unsigned long nIndex, int* pnID,
                              CExoString* psString,
                              unsigned char* pnGender) const
@@ -38,17 +38,17 @@ int CExoLocString::GetString(unsigned long nIndex, int* pnID,
     *pnID /= 2;
     return bFound;
 }
-// PC 0x006317B0
+// PC 0x006317B0 GOG 0x006316A0
 int CExoLocString::GetStringCount() const
 {
     return m_pExoLocStringInternal->m_nCount;
 }
-// PC 0x006317C0
+// PC 0x006317C0 GOG 0x006316B0
 int CExoLocString::GetStringLength(unsigned long nIndex) const
 {
     return m_pExoLocStringInternal->GetStringLength(nIndex);
 }
-// PC 0x006317D0
+// PC 0x006317D0 GOG 0x006316C0
 int CExoLocString::Compare(const CExoLocString& lsString) const
 {
     EXOLOCSTRING_TRACE();
@@ -76,7 +76,7 @@ int CExoLocString::Compare(const CExoLocString& lsString) const
     return m_pExoLocStringInternal->Compare(lsString) != 0 &&
            m_dwStringRef == lsString.m_dwStringRef;
 }
-// PC 0x00631840
+// PC 0x00631840 GOG 0x00631730
 CExoLocString::CExoLocString(const CExoLocString& lsString)
 {
     EXOLOCSTRING_TRACE();
@@ -87,7 +87,7 @@ CExoLocString::CExoLocString(const CExoLocString& lsString)
         m_dwStringRef = lsString.m_dwStringRef;
     }
 }
-// PC 0x006318C0
+// PC 0x006318C0 GOG 0x006317B0
 CExoLocString::~CExoLocString()
 {
     if (m_pExoLocStringInternal != 0)
@@ -95,17 +95,17 @@ CExoLocString::~CExoLocString()
         delete m_pExoLocStringInternal;
     }
 }
-// PC 0x006318E0
+// PC 0x006318E0 GOG 0x006317D0
 int CExoLocString::operator==(const CExoLocString& lsString) const
 {
     return Compare(lsString);
 }
-// PC 0x006318F0
+// PC 0x006318F0 GOG 0x006317E0
 int CExoLocString::operator!=(const CExoLocString& lsString) const
 {
     return Compare(lsString) == 0;
 }
-// PC 0x00631910
+// PC 0x00631910 GOG 0x00631800
 int CExoLocString::GetString(int nID, CExoString* psString,
                              unsigned char nGender) const
 {
@@ -130,7 +130,7 @@ int CExoLocString::GetString(int nID, CExoString* psString,
     }
     return bFound;
 }
-// PC 0x006319F0
+// PC 0x006319F0 GOG 0x006318E0
 int CExoLocString::GetString(int nID, CExoString* psString,
                              unsigned char nGender)
 {
@@ -160,7 +160,7 @@ int CExoLocString::GetString(int nID, CExoString* psString,
     }
     return bFound;
 }
-// PC 0x00631B00
+// PC 0x00631B00 GOG 0x006319F0
 int CExoLocString::GetStringLoc(int nID, CExoString* psString,
                                 unsigned char nGender) const
 {
@@ -172,7 +172,7 @@ int CExoLocString::GetStringInternal(int nStringID, CExoString* psString) const
 {
     return m_pExoLocStringInternal->GetString(nStringID, psString);
 }
-// PC 0x00631B30
+// PC 0x00631B30 GOG 0x00631A20
 float CExoLocString::GetSpokenTimeEstimate(int nID, unsigned char nGender) const
 {
     CExoString sString;
@@ -209,7 +209,7 @@ void CExoLocString::RemoveString(int nID, unsigned char nGender)
     int nStringID = nGender + 2 * nID;
     m_pExoLocStringInternal->RemoveString(nStringID);
 }
-// PC 0x00631D50
+// PC 0x00631D50 GOG 0x00631C40
 int CExoLocString::AddString(int nID, const CExoString& sString,
                              unsigned char nGender)
 {

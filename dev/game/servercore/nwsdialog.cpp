@@ -32,22 +32,22 @@
 #include "twodimarray.h"
 
 static inline void NwsdialogTrace1();
-// PC 0x005E6980
+// PC 0x005E6980 GOG 0x005E69B0
 inline CSWSDialogNode::CSWSDialogNode()
 {
 }
-// PC 0x005E69F0
+// PC 0x005E69F0 GOG 0x005E6A20
 inline CSWSDialogNode::~CSWSDialogNode()
 {
 }
-// PC 0x005E6A50
+// PC 0x005E6A50 GOG 0x005E6A80
 inline CSWSDialogReply::CSWSDialogReply()
 {
     m_nEntries = 0;
     m_pEntries = NULL;
     m_nReplyIndex = -1;
 }
-// PC 0x005E56D0
+// PC 0x005E56D0 GOG 0x005E5700
 inline CSWSDialogBase::CSWSDialogBase()
     : m_nWaitFlags(0),
       m_nDelay(0),
@@ -62,30 +62,30 @@ inline CSWSDialogBase::CSWSDialogBase()
       m_nFacialAnim(0)
 {
 }
-// PC 0x005E57C0
+// PC 0x005E57C0 GOG 0x005E57F0
 CSWSDialogActiveEntry::CSWSDialogActiveEntry()
     : m_nIndex(0)
 {
 }
-// PC 0x005E5820
+// PC 0x005E5820 GOG 0x005E5850
 CSWSDialogActiveEntry::~CSWSDialogActiveEntry()
 {
 }
-// PC 0x005E6960
+// PC 0x005E6960 GOG 0x005E6990
 inline CSWSDialogLinkEntry::CSWSDialogLinkEntry()
     : m_bDisplayInactive(0)
 {
 }
-// PC 0x005E5870
+// PC 0x005E5870 GOG 0x005E58A0
 inline CSWSDialogBase::~CSWSDialogBase()
 {
 }
-// PC 0x005E5900
+// PC 0x005E5900 GOG 0x005E5930
 inline CSWSDialogSpeaker::CSWSDialogSpeaker()
     : m_oidSpeaker(OBJECT_INVALID)
 {
 }
-// PC 0x005E5920
+// PC 0x005E5920 GOG 0x005E5950
 void CSWSDialog::ClearDialogOwnerInObject(unsigned long oidObject)
 {
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
@@ -106,11 +106,11 @@ void CSWSDialog::ClearDialogOwnerInObject(unsigned long oidObject)
         }
     }
 }
-// PC 0x005E59A0
+// PC 0x005E59A0 GOG 0x005E59D0
 CSWSDialogStuntModel::CSWSDialogStuntModel()
 {
 }
-// PC 0x005E59F0
+// PC 0x005E59F0 GOG 0x005E5A20
 void CSWSDialog::LoadDialogCamera(CSWSDialogCamera& camera, CResGFF* pGFF,
                                   CResStruct& resStruct, int& bSuccess)
 {
@@ -144,7 +144,7 @@ void CSWSDialog::LoadDialogCamera(CSWSDialogCamera& camera, CResGFF* pGFF,
         camera.m_nCameraId = -1;
     }
 }
-// PC 0x005E5B60
+// PC 0x005E5B60 GOG 0x005E5B90
 void CSWSDialog::LoadDialogLinkedNode(CSWSDialogActiveEntry& link, CResGFF* pGFF,
                                       CResStruct& resStruct, int& bSuccess,
                                       unsigned long nReplies)
@@ -176,7 +176,7 @@ void CSWSDialog::LoadDialogLinkedNode(CSWSDialogActiveEntry& link, CResGFF* pGFF
         bSuccess = 0;
     }
 }
-// PC 0x005E5DE0
+// PC 0x005E5DE0 GOG 0x005E5E10
 int CSWSDialog::CheckScript(CSWSObject* pObject, const CResRef& cScript)
 {
     if (cScript == "")
@@ -207,7 +207,7 @@ int CSWSDialog::CheckScript(CSWSObject* pObject, const CResRef& cScript)
     }
     return bResult;
 }
-// PC 0x005E5EC0
+// PC 0x005E5EC0 GOG 0x005E5EF0
 void CSWSDialog::RunScript(CSWSObject* pObject, const CResRef& cScript)
 {
     if (cScript == "")
@@ -221,7 +221,7 @@ void CSWSDialog::RunScript(CSWSObject* pObject, const CResRef& cScript)
     oidSelf = pObject->m_nId;
     g_pVirtualMachine->RunScript(&sScript, oidSelf, 1);
 }
-// PC 0x005E5F50
+// PC 0x005E5F50 GOG 0x005E5F80
 int CSWSDialog::GetStartEntryOneLiner(CSWSObject* pOwner,
                                       CExoLocString& lsText,
                                       CResRef& cSound, CResRef& cScript)
@@ -316,7 +316,7 @@ int CSWSDialog::GetStartEntryOneLiner(CSWSObject* pOwner,
     }
     return 0;
 }
-// PC 0x005E61A0
+// PC 0x005E61A0 GOG 0x005E61D0
 void CSWSDialog::AddJournalEntry(const CExoString& sPlotID,
                                 unsigned long nState, unsigned long nPlayerId)
 {
@@ -386,7 +386,7 @@ void CSWSDialog::AddJournalEntry(const CExoString& sPlotID,
         }
     }
 }
-// PC 0x005E63F0
+// PC 0x005E63F0 GOG 0x005E6420
 inline CSWSDialogBase& CSWSDialogBase::operator=(const CSWSDialogBase& dialogBase)
 {
     m_sSpeaker = dialogBase.m_sSpeaker;
@@ -429,7 +429,7 @@ inline CSWSDialogBase& CSWSDialogBase::operator=(const CSWSDialogBase& dialogBas
     m_nFacialAnim = dialogBase.m_nFacialAnim;
     return *this;
 }
-// PC 0x005E65A0
+// PC 0x005E65A0 GOG 0x005E65D0
 void CSWSDialog::InitializePsuedoRandomCameraAngles(CResGFF* pResGFF)
 {
     CResRef cResRef;
@@ -451,7 +451,7 @@ void CSWSDialog::InitializePsuedoRandomCameraAngles(CResGFF* pResGFF)
     m_nPseudoRandomCameraStep = nHash % 5 + 1;
     m_bPseudoRandomCameraDirection = nHash & 1;
 }
-// PC 0x005E66A0
+// PC 0x005E66A0 GOG 0x005E66D0
 void CSWSDialog::InitializePseudoRandomAlienVOVariation(CResGFF* pResGFF)
 {
     CResRef cResRef;
@@ -473,7 +473,7 @@ void CSWSDialog::InitializePseudoRandomAlienVOVariation(CResGFF* pResGFF)
     m_nPseudoRandomAlienVOStep = nHash % 5 + 1;
     m_bPseudoRandomAlienVODirection = nHash & 1;
 }
-// PC 0x005E67A0
+// PC 0x005E67A0 GOG 0x005E67D0
 CExoString CSWSDialog::GetExoStringFromLocString(CExoLocString& locString,
                                                  unsigned char nGender)
 {
@@ -485,7 +485,7 @@ CExoString CSWSDialog::GetExoStringFromLocString(CExoLocString& locString,
                         &sString, nGender);
     return sString;
 }
-// PC 0x005E6840
+// PC 0x005E6840 GOG 0x005E6870
 void CSWSDialog::GiveDialogPlotXP(int nPlotIndex, float fPercent)
 {
     if (nPlotIndex != CSWSDialogBase::PLOT_INDEX_INVALID && fPercent > 0.0f &&
@@ -496,7 +496,7 @@ void CSWSDialog::GiveDialogPlotXP(int nPlotIndex, float fPercent)
             nPlotIndex, (int)ceil(fPercent * 100.0f));
     }
 }
-// PC 0x005E68B0
+// PC 0x005E68B0 GOG 0x005E68E0
 int CSWSDialog::SetDialogOwner(CSWSObject* pOwner)
 {
     int nResult = (int)pOwner;
@@ -515,7 +515,7 @@ int CSWSDialog::SetDialogOwner(CSWSObject* pOwner)
     }
     return nResult;
 }
-// PC 0x005E6A90
+// PC 0x005E6A90 GOG 0x005E6AC0
 void CSWSDialog::LoadDialogBase(CSWSDialogBase& dialogBase, CResGFF* pGFF,
                                 CResStruct& resStruct, unsigned long& nDelay,
                                 int& bSuccess)
@@ -703,7 +703,7 @@ void CSWSDialog::LoadDialogBase(CSWSDialogBase& dialogBase, CResGFF* pGFF,
             pGFF->ReadFieldWORD(&animationStruct, "Animation", bSuccess, 0);
     }
 }
-// PC 0x005E73D0
+// PC 0x005E73D0 GOG 0x005E7400
 int CSWSDialog::RemovePlayer(unsigned long oidPlayer)
 {
     CExoLinkedListNode* pPosition = m_lstPlayers.GetHeadPos();
@@ -742,7 +742,7 @@ int CSWSDialog::RemovePlayer(unsigned long oidPlayer)
     }
     return m_lstPlayers.GetHeadPos() != NULL;
 }
-// PC 0x005E74B0
+// PC 0x005E74B0 GOG 0x005E74E0
 CSWSObject* CSWSDialog::GetSpeaker(CSWSObject* pOwner, const CExoString& sSpeaker)
 {
     unsigned long oidSpeaker;
@@ -827,7 +827,7 @@ CSWSObject* CSWSDialog::GetSpeaker(CSWSObject* pOwner, const CExoString& sSpeake
     }
     return pSpeaker;
 }
-// PC 0x005E77E0
+// PC 0x005E77E0 GOG 0x005E7810
 float CSWSDialog::SetDialogDelay(CSWSObject* pObject, CExoLocString& lsText,
                                  unsigned long nDelay, int bSound,
                                  unsigned long nFlag)
@@ -858,7 +858,7 @@ float CSWSDialog::SetDialogDelay(CSWSObject* pObject, CExoLocString& lsText,
     pObject->SetDialogDelay(fDelay);
     return fDelay;
 }
-// PC 0x005E7930
+// PC 0x005E7930 GOG 0x005E7960
 int CSWSDialog::SendDialogModels(CSWSObject* pOwner, unsigned long oidPlayer)
 {
     CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
@@ -900,7 +900,7 @@ int CSWSDialog::SendDialogModels(CSWSObject* pOwner, unsigned long oidPlayer)
     delete[] pModels;
     return 1;
 }
-// PC 0x004F60A0
+// PC 0x004F60A0 GOG 0x00505890
 inline unsigned long CSWSDialog::GetCurrentPlayerId()
 {
     if (m_lstPlayers.GetHeadPos() != NULL)
@@ -909,7 +909,7 @@ inline unsigned long CSWSDialog::GetCurrentPlayerId()
     }
     return OBJECT_INVALID;
 }
-// PC 0x005E7AF0
+// PC 0x005E7AF0 GOG 0x005E7B20
 unsigned long CSWSDialog::GetDialogModel(int nStunt, int& bNonDependant)
 {
     bNonDependant = 0;
@@ -944,14 +944,14 @@ unsigned long CSWSDialog::GetDialogModel(int nStunt, int& bNonDependant)
     }
     return OBJECT_INVALID;
 }
-// PC 0x005E7C10
+// PC 0x005E7C10 GOG 0x005E7C40
 inline CSWSDialogNode& CSWSDialogNode::operator=(const CSWSDialogNode& dialogNode)
 {
     CSWSDialogBase::operator=(dialogNode);
     CSWSDialogCamera::operator=(dialogNode);
     return *this;
 }
-// PC 0x005E7C80
+// PC 0x005E7C80 GOG 0x005E7CB0
 int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject* pOwner,
                             unsigned long nReply, int bEscape,
                             unsigned long nEntry, int bSkip)
@@ -1196,7 +1196,7 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject* pOwner,
     m_n60 = 1;
     return 0;
 }
-// PC 0x005E83F0
+// PC 0x005E83F0 GOG 0x005E8420
 void CSWSDialog::ClearAllPlayerHostileActions()
 {
     unsigned long oidPlayer =
@@ -1233,7 +1233,7 @@ void CSWSDialog::ClearAllPlayerHostileActions()
         }
     }
 }
-// PC 0x005E8930
+// PC 0x005E8930 GOG 0x005E8960
 CSWSDialog::CSWSDialog()
 {
     m_oidDialogOwner = OBJECT_INVALID;
@@ -1317,7 +1317,7 @@ CSWSDialog::CSWSDialog()
     m_nLastEntryTime = 0;
     m_nOwnerAILevel = 2;
 }
-// PC 0x005EA490
+// PC 0x005EA490 GOG 0x005EA4C0
 void CSWSDialog::Cleanup()
 {
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
@@ -1420,7 +1420,7 @@ void CSWSDialog::Cleanup()
     m_bMultiPCDialogViewOnly = 0;
     m_n90 = 0;
 }
-// PC 0x005EA850
+// PC 0x005EA850 GOG 0x005EA880
 int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
 {
     int bSuccess = 1;
@@ -1579,7 +1579,7 @@ int CSWSDialog::LoadDialog(CResGFF* pGFF, int bLoadReplies)
     }
     return bSuccess;
 }
-// PC 0x005EB2C0
+// PC 0x005EB2C0 GOG 0x005EB2F0
 int CSWSDialog::GetStartEntry(CSWSObject* pOwner)
 {
     unsigned long nStart;
@@ -1741,7 +1741,7 @@ int CSWSDialog::GetStartEntry(CSWSObject* pOwner)
     }
     return DIALOG_INDEX_INVALID;
 }
-// PC 0x005E8BA0
+// PC 0x005E8BA0 GOG 0x005E8BD0
 void CSWSDialog::BarkOneLine(int nEntry)
 {
     CExoString sText;
@@ -1832,7 +1832,7 @@ void CSWSDialog::BarkOneLine(int nEntry)
         }
     }
 }
-// PC 0x005E84F0
+// PC 0x005E84F0 GOG 0x005E8520
 void CSWSDialog::RunEndConversationScript(CSWSObject* pObject, int bAborted)
 {
     CGameObjectArray* pObjectArray;
@@ -1904,7 +1904,7 @@ void CSWSDialog::RunEndConversationScript(CSWSObject* pObject, int bAborted)
 
     RunScript(pObject, m_cEndConversationAbortedScript);
 }
-// PC 0x005E8650
+// PC 0x005E8650 GOG 0x005E8680
 void CSWSDialog::UnequipItemsForDialog(unsigned long oidObject)
 {
     if (oidObject == OBJECT_INVALID)
@@ -1942,7 +1942,7 @@ void CSWSDialog::UnequipItemsForDialog(unsigned long oidObject)
         pCreature->HideEquippedItems(CResRef(), CResRef());
     }
 }
-// PC 0x005E8730
+// PC 0x005E8730 GOG 0x005E8760
 void CSWSDialog::ReEquipItemsForDialog()
 {
     unsigned long* pObjectId;
@@ -1975,7 +1975,7 @@ void CSWSDialog::ReEquipItemsForDialog()
         m_lstUnequippedItems.GetNext(pPosition);
     }
 }
-// PC 0x005E8F50
+// PC 0x005E8F50 GOG 0x005E8F80
 int CSWSDialog::SendDialogEntryNode(
     unsigned long nPlayerId, unsigned long oidTarget, unsigned long oidSpeaker,
     unsigned long oidListener, unsigned long oidCamera, unsigned char nGender,
@@ -2246,7 +2246,7 @@ int CSWSDialog::SendDialogEntryNode(
     if (pDependant != NULL) delete[] pDependant;
     return 1;
 }
-// PC 0x005EB8E0
+// PC 0x005EB8E0 GOG 0x005EB910
 int CSWSDialog::SendDialogReplies(CSWSObject* pOwner, unsigned long nPlayerId)
 {
 
@@ -2480,7 +2480,7 @@ int CSWSDialog::SendDialogReplies(CSWSObject* pOwner, unsigned long nPlayerId)
     }
     return bResult;
 }
-// PC 0x005E98F0
+// PC 0x005E98F0 GOG 0x005E9920
 int CSWSDialog::SendDialogReplyNode(unsigned long nPlayerId, unsigned long oidPlayer,
     unsigned char nGender, CSWSDialogReply* pReplies, unsigned long nActive,
     unsigned long nInactive, unsigned long nEntry, int bEndOfDialog)
@@ -2717,7 +2717,7 @@ int CSWSDialog::SendDialogReplyNode(unsigned long nPlayerId, unsigned long oidPl
         delete[] pnAnimations;
     return 1;
 }
-// PC 0x005E87C0
+// PC 0x005E87C0 GOG 0x005E87F0
 void CSWSDialog::UnequipHItemForDialog(unsigned long oidObject)
 {
     if (oidObject == OBJECT_INVALID)
@@ -2755,7 +2755,7 @@ void CSWSDialog::UnequipHItemForDialog(unsigned long oidObject)
         pCreature->HideEquippedHeadItem();
     }
 }
-// PC 0x005E8880
+// PC 0x005E8880 GOG 0x005E88B0
 void CSWSDialog::ReEquipHItemForDialog()
 {
     unsigned long* pObjectId;
@@ -2788,7 +2788,7 @@ void CSWSDialog::ReEquipHItemForDialog()
         m_lstUnequippedHeadItems.GetNext(pPosition);
     }
 }
-// PC 0x005E8910
+// PC 0x005E8910 GOG 0x005E8940
 CSWSDialogEntry::CSWSDialogEntry()
 {
     m_nReplies = 0;
@@ -3039,7 +3039,7 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
     m_nCurrentEntry = nEntry;
     return pOwner->SendDialogReplies();
 }
-// PC 0x005ECD70
+// PC 0x005ECD70 GOG 0x005ECD50
 inline CSWSDialog::~CSWSDialog()
 {
     if (m_n178 != NULL)
@@ -3059,7 +3059,7 @@ inline CSWSDialog::~CSWSDialog()
     Cleanup();
 }
 
-// PC 0x0074C290
+// PC 0x0074C290 GOG 0x0067C940
 CSWSDialogAnimation::CSWSDialogAnimation()
 {
 }

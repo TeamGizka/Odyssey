@@ -128,14 +128,14 @@ public:
 
     virtual void SetExtent(const CSWGuiExtent& cExtent);
     virtual void SetActiveControl(CSWGuiControl* pControl, int bPlaySound);
-    // PC 0x00698BD0
+    // PC 0x00698BD0 GOG 0x00698980
     virtual CSWGuiPanel* AsSWGuiPanel()
     {
         return this;
     }
 
     virtual void Draw(float fElapsed);
-    // PC 0x005EE1C0
+    // PC 0x005EE1C0 GOG 0x005EE1A0
     virtual void Update(float fElapsed)
     {
     }
@@ -148,23 +148,23 @@ public:
     }
     virtual void OnPanelAdded();
     virtual void OnPanelRemoved();
-    SWGUI_PCVIRTUAL void OnAButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B890
+    SWGUI_PCVIRTUAL void OnAButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B890 GOG 0x0040B850
     {
         return HandleInputEvent(GUIEVENT_ACTIVATE, 1);
     }
-    SWGUI_PCVIRTUAL void OnBButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B8A0
+    SWGUI_PCVIRTUAL void OnBButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B8A0 GOG 0x0040B860
     {
         return HandleInputEvent(GUIEVENT_CANCEL, 1);
     }
-    SWGUI_PCVIRTUAL void OnXButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B8B0
+    SWGUI_PCVIRTUAL void OnXButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B8B0 GOG 0x0040B870
     {
         return HandleInputEvent(41, 1);
     }
-    SWGUI_PCVIRTUAL void OnYButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B8C0
+    SWGUI_PCVIRTUAL void OnYButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B8C0 GOG 0x0040B880
     {
         return HandleInputEvent(42, 1);
     }
-    SWGUI_PCVIRTUAL void OnBlackButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B8D0
+    SWGUI_PCVIRTUAL void OnBlackButtonPressed(CSWGuiControl* pControl)  // PC 0x0040B8D0 GOG 0x0040B890
     {
         return HandleInputEvent(43, 1);
     }
@@ -177,7 +177,7 @@ public:
     {
         return m_pManager;
     }
-    void SetAlpha(float fAlpha)  // PC 0x00404B70
+    void SetAlpha(float fAlpha)  // PC 0x00404B70 GOG 0x00404B70
     {
         m_fAlpha = max(min(fAlpha, 1.0f), 0.0f);
     }
@@ -190,7 +190,7 @@ public:
 #endif
     void AddControl(CSWGuiControl* pControl);
     CSWGuiControl* GetControl(int nIndex);
-    void SetModal(int bModal)  // PC 0x00639690
+    void SetModal(int bModal)  // PC 0x00639690 GOG 0x00639590
     {
         m_bDeferredRemoval = bModal;
         if (m_nExitState != EXITSTATE_DELETE)
@@ -567,7 +567,7 @@ public:
 
     enum { STRREF_ATTACK = 375 };
     enum { ACTION_ATTACK = 1003 };
-    // PC 0x0050B780
+    // PC 0x0050B780 GOG 0x0050B7E0
     CSWGuiInterfaceAction()
     {
         Clear();

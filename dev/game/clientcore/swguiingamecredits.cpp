@@ -68,7 +68,7 @@ CSWGuiInGameCredits::CSWGuiInGameCredits(CSWGuiManager* pManager)
     }
 }
 #else
-CSWGuiInGameCredits::CSWGuiInGameCredits(CSWGuiManager* pManager,  // PC 0x006E8DF0
+CSWGuiInGameCredits::CSWGuiInGameCredits(CSWGuiManager* pManager,  // PC 0x006E8DF0 GOG 0x006E8AB0
                                        const CExoString& sMusic)
     : CSWGuiPanel(pManager)
 {
@@ -173,7 +173,7 @@ CSWGuiInGameCredits::~CSWGuiInGameCredits()
     g_pAppManager->GetClientExoApp()->SetInputActive(0, 0);
 }
 #else
-CSWGuiInGameCredits::~CSWGuiInGameCredits()  // PC 0x006E87E0
+CSWGuiInGameCredits::~CSWGuiInGameCredits()  // PC 0x006E87E0 GOG 0x006E82C0
 {
     delete m_pMusic;
     if (m_pText != NULL) { delete[] m_pText; }
@@ -207,7 +207,7 @@ CSWGuiInGameCredits::~CSWGuiInGameCredits()  // PC 0x006E87E0
     g_pAppManager->GetClientExoApp()->ShowMouse(128);
 }
 #endif
-// PC 0x006E8600
+// PC 0x006E8600 GOG 0x006E8440
 void CSWGuiInGameCredits::OnPanelAdded()
 {
     SwguiingamecreditsTrace1();
@@ -234,7 +234,7 @@ void CSWGuiInGameCredits::OnPanelAdded()
     }
 #endif
 }
-// PC 0x006E86F0
+// PC 0x006E86F0 GOG 0x006E8530
 void CSWGuiInGameCredits::HandleInputEvent(int nEvent, int nState)
 {
     SwguiingamecreditsTrace1();
@@ -271,7 +271,7 @@ void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)
     }
 }
 #else
-void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // PC 0x006E8740
+void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // PC 0x006E8740 GOG 0x006E8810
 {
     SwguiingamecreditsTrace1();
     if (m_lbxCredits.m_cScrollBar.m_nCurValue ==
@@ -298,7 +298,7 @@ void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // PC 0x006E8740
     }
 }
 #endif
-// PC 0x006E8960
+// PC 0x006E8960 GOG 0x006E8580
 void CSWGuiInGameCredits::SetText(unsigned long nStrRef, int bLastText)
 {
     SwguiingamecreditsTrace1();
@@ -338,7 +338,7 @@ void CSWGuiInGameCredits::SetText(unsigned long nStrRef, int bLastText)
     cExtent = m_lbxCredits.m_cExtent;
     m_lbxCredits.m_fScrollStep = (float)cExtent.m_nHeight;
 }
-// PC 0x006E8C10
+// PC 0x006E8C10 GOG 0x006E88D0
 void CSWGuiInGameCredits::SetNextText()
 {
     int bLastText = 0;
@@ -409,7 +409,7 @@ void CSWGuiInGameCredits::UpdateFading(float fElapsed)
     }
 }
 #else
-void CSWGuiInGameCredits::UpdateFading(float fElapsed)  // PC 0x006E8CB0
+void CSWGuiInGameCredits::UpdateFading(float fElapsed)  // PC 0x006E8CB0 GOG 0x006E8970
 {
 
     const float fFadeInDuration = 3.0f;
@@ -467,7 +467,7 @@ void CSWGuiInGameCredits::Draw(float fElapsed)
     return CSWGuiPanel::Draw(fElapsed);
 }
 #else
-void CSWGuiInGameCredits::Draw(float fElapsed)  // PC 0x006E8DA0
+void CSWGuiInGameCredits::Draw(float fElapsed)  // PC 0x006E8DA0 GOG 0x006E8A60
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
 

@@ -45,7 +45,7 @@ enum UpgradeItemType
     UPGRADE_ITEM_ARMOR_2 = 9
 };
 
-// PC 0x0055B6F0
+// PC 0x0055B6F0 GOG 0x0055B810
 CSWSItem::CSWSItem(unsigned long oidItem)
     : CSWSObject(CGameObject::OBJECT_TYPE_ITEM, oidItem, 0)
 {
@@ -89,7 +89,7 @@ CSWSItem::CSWSItem(unsigned long oidItem)
     m_n2EC = 0;
     memset(m_anUpgradeSlot, 0, sizeof(m_anUpgradeSlot));
 }
-// PC 0x0055B890
+// PC 0x0055B890 GOG 0x0055B9B0
 void CSWSItem::SetPossessor(unsigned long oidPossessor, int bRunScripts,
                           int bDisplayFeedback, unsigned long oidOldPossessor)
 {
@@ -262,7 +262,7 @@ void CSWSItem::SetPossessor(unsigned long oidPossessor, int bRunScripts,
     }
     m_oidPossessor = oidPossessor;
 }
-// PC 0x0055BF20
+// PC 0x0055BF20 GOG 0x0055C040
 void CSWSItem::RemoveFromArea()
 {
     if (GetArea() != NULL)
@@ -284,7 +284,7 @@ void CSWSItem::SetNumActiveProperties(int nNumProperties)
     else
         m_pActiveProperties = NULL;
 }
-// PC 0x0055BF80
+// PC 0x0055BF80 GOG 0x0055C0A0
 int CSWSItem::ActiveProperty(unsigned short nPropertyType)
 {
     switch ((unsigned short)nPropertyType)
@@ -298,7 +298,7 @@ int CSWSItem::ActiveProperty(unsigned short nPropertyType)
 
     return 0;
 }
-// PC 0x0055BFE0
+// PC 0x0055BFE0 GOG 0x0055C100
 void CSWSItem::SetNumPassiveProperties(int nNumProperties)
 {
     m_nPassiveProperties = nNumProperties;
@@ -309,7 +309,7 @@ void CSWSItem::SetNumPassiveProperties(int nNumProperties)
     else
         m_pPassiveProperties = NULL;
 }
-// PC 0x0055C040
+// PC 0x0055C040 GOG 0x0055C160
 CSWItemProperty* CSWSItem::GetActiveProperty(int nIndex)
 {
     if (nIndex < 0 || nIndex >= m_nActiveProperties)
@@ -319,7 +319,7 @@ CSWItemProperty* CSWSItem::GetActiveProperty(int nIndex)
 
     return &m_pActiveProperties[nIndex];
 }
-// PC 0x0055C070
+// PC 0x0055C070 GOG 0x0055C190
 CSWItemProperty* CSWSItem::GetPassiveProperty(int nIndex)
 {
     if (nIndex < 0 || nIndex >= m_nPassiveProperties)
@@ -329,7 +329,7 @@ CSWItemProperty* CSWSItem::GetPassiveProperty(int nIndex)
 
     return &m_pPassiveProperties[nIndex];
 }
-// PC 0x0055C0A0
+// PC 0x0055C0A0 GOG 0x0055C1C0
 int CSWSItem::GetPropertyByType(CSWItemProperty** ppProperty,
                                 unsigned short nPropertyType,
                                 unsigned short nSubtype)
@@ -391,7 +391,7 @@ int CSWSItem::GetPropertyByType(CSWItemProperty** ppProperty,
 
     return 0;
 }
-// PC 0x0055C290
+// PC 0x0055C290 GOG 0x0055C3B0
 void CSWSItem::ApplyItemProperties(CSWSCreature* pCreature,
                                    unsigned long nSlot, int bLoading)
 {
@@ -419,7 +419,7 @@ void CSWSItem::ApplyItemProperties(CSWSCreature* pCreature,
         }
     }
 }
-// PC 0x0055C310
+// PC 0x0055C310 GOG 0x0055C430
 void CSWSItem::RemoveItemProperties(CSWSCreature* pCreature,
                                     unsigned long nSlot)
 {
@@ -448,7 +448,7 @@ void CSWSItem::RemoveItemProperties(CSWSCreature* pCreature,
     }
     pCreature->RemoveEffectByCreator(m_nId);
 }
-// PC 0x0055C3A0
+// PC 0x0055C3A0 GOG 0x0055C4C0
 int CSWSItem::ComputeArmorClass()
 {
     if (GetBaseItem()->m_bUnknown18 != 1)
@@ -458,7 +458,7 @@ int CSWSItem::ComputeArmorClass()
 
     return GetBaseItem()->m_nBaseAC;
 }
-// PC 0x0055C3D0
+// PC 0x0055C3D0 GOG 0x0055C4F0
 int CSWSItem::CompareItem(CSWSItem* pItem)
 {
     int nActiveProperty;
@@ -538,7 +538,7 @@ int CSWSItem::CompareItem(CSWSItem* pItem)
 
     return 1;
 }
-// PC 0x0055C670
+// PC 0x0055C670 GOG 0x0055C790
 int CSWSItem::MergeItem(CSWSItem* pItem)
 {
     if (CompareItem(pItem))
@@ -559,7 +559,7 @@ int CSWSItem::MergeItem(CSWSItem* pItem)
 
     return 0;
 }
-// PC 0x0055C6E0
+// PC 0x0055C6E0 GOG 0x0055C800
 int CSWSItem::GetCost()
 {
     if (m_bPlotObject == 1)
@@ -575,7 +575,7 @@ int CSWSItem::GetCost()
 
     return 1;
 }
-// PC 0x0055C730
+// PC 0x0055C730 GOG 0x0055C850
 unsigned long CSWSItem::GetDamageFlags()
 {
     unsigned long nDamageFlags;
@@ -597,7 +597,7 @@ unsigned long CSWSItem::GetDamageFlags()
 
     return nDamageFlags;
 }
-// PC 0x0055C760
+// PC 0x0055C760 GOG 0x0055C880
 unsigned char CSWSItem::GetMinEquipLevel()
 {
     CTwoDimArrays* pTables = g_pRules->m_p2DArrays;
@@ -620,12 +620,12 @@ unsigned char CSWSItem::GetMinEquipLevel()
     nRequiredLevel++;
     return nRequiredLevel;
 }
-// PC 0x0055C850
+// PC 0x0055C850 GOG 0x0055C970
 void CSWSItem::SetIdentified(int bIdentified)
 {
     m_bIdentified = bIdentified;
 }
-// PC 0x0055C870
+// PC 0x0055C870 GOG 0x0055C990
 CSWCItem* CSWSItem::GetClientItem()
 {
     if (GetClientObject() != NULL)
@@ -635,7 +635,7 @@ CSWCItem* CSWSItem::GetClientItem()
 
     return NULL;
 }
-// PC 0x0055C8A0
+// PC 0x0055C8A0 GOG 0x0055C9C0
 unsigned char CSWSItem::GetUpgradableType(C2DA* pTable)
 {
     unsigned char nType = UPGRADABLE_TYPE_NONE;
@@ -661,7 +661,7 @@ unsigned char CSWSItem::GetUpgradableType(C2DA* pTable)
     }
     return nType;
 }
-// PC 0x0055C910
+// PC 0x0055C910 GOG 0x0055CA30
 void CSWSItem::AddCNPCRequirements(CExoString& sString)
 {
     CSWPartyTable* pPartyTable = g_pAppManager->GetServerExoApp()->GetPartyTable();
@@ -680,7 +680,7 @@ void CSWSItem::AddCNPCRequirements(CExoString& sString)
         }
     }
 }
-// PC 0x0055CB30
+// PC 0x0055CB30 GOG 0x0055CC50
 void CSWSItem::AddRangeProperties(CExoString& sString)
 {
     CExoString sRange;
@@ -693,7 +693,7 @@ void CSWSItem::AddRangeProperties(CExoString& sString)
         sString = sString + sRange + "\n";
     }
 }
-// PC 0x0055CC70
+// PC 0x0055CC70 GOG 0x0055CD90
 void CSWSItem::AddWeaponSizeProperties(CExoString& sString)
 {
     char nWeaponSize = GetBaseItem()->m_nWeaponSize;
@@ -705,7 +705,7 @@ void CSWSItem::AddWeaponSizeProperties(CExoString& sString)
         sString = sString + pClientExoApp->GetGUIString(0xA4A1) + sNewLine;
     }
 }
-// PC 0x0055CD50
+// PC 0x0055CD50 GOG 0x0055CE70
 void CSWSItem::GetDamageTypeString(unsigned long nDamageFlags,
                                    CExoString& sString)
 {
@@ -840,7 +840,7 @@ void CSWSItem::GetDamageTypeString(unsigned long nDamageFlags,
         sString = sString + pClientExoApp->GetGUIString(0xA3AF);
     }
 }
-// PC 0x0055D580
+// PC 0x0055D580 GOG 0x0055D6A0
 void CSWSItem::GetPropertyStrings(unsigned short nPropertyType,
                                  unsigned short nSubtype,
                                  unsigned short nCostValue,
@@ -1004,7 +1004,7 @@ void CSWSItem::GetPropertyStrings(unsigned short nPropertyType,
         }
     }
 }
-// PC 0x0055DC70
+// PC 0x0055DC70 GOG 0x0055DD90
 void CSWSItem::GetPropertyDamageRange(unsigned short nCostValue,
                                      int& nMinDamage, int& nMaxDamage)
 {
@@ -1045,7 +1045,7 @@ void CSWSItem::GetPropertyDamageRange(unsigned short nCostValue,
         nMaxDamage = nCostValue;
     }
 }
-void CSWSItem::GetPropertyChanceDurationDC(unsigned short nCostValue,  // PC 0x0055DDC0
+void CSWSItem::GetPropertyChanceDurationDC(unsigned short nCostValue,  // PC 0x0055DDC0 GOG 0x0055DEE0
                                          unsigned char nParam1Value,
                                          int& nEffectChance,
                                          int& nDurationRounds, int& nDC)
@@ -1081,7 +1081,7 @@ void CSWSItem::GetPropertyChanceDurationDC(unsigned short nCostValue,  // PC 0x0
     nDC = nValue;
 }
 
-// PC 0x0055DF00
+// PC 0x0055DF00 GOG 0x0055E020
 void CSWSItem::PowerItem(int bPower, int bAnimate, int bSilent)
 {
     CSWCItem* pClientItem = GetClientItem();
@@ -1090,7 +1090,7 @@ void CSWSItem::PowerItem(int bPower, int bAnimate, int bSilent)
         pClientItem->PowerItem(bPower, FALSE, TRUE, FALSE);
     }
 }
-// PC 0x0055DF40
+// PC 0x0055DF40 GOG 0x0055E060
 int CSWSItem::GetExistsHigherValuedProperty(unsigned short nPropertyType,
                                             unsigned short nSubtype,
                                             unsigned short nCostValue)
@@ -1116,7 +1116,7 @@ int CSWSItem::GetExistsHigherValuedProperty(unsigned short nPropertyType,
 
     return 0;
 }
-// PC 0x0055DFC0
+// PC 0x0055DFC0 GOG 0x0055E0E0
 int CSWSItem::IsLightsaber()
 {
     int nBaseItem;
@@ -1133,7 +1133,7 @@ int CSWSItem::IsLightsaber()
 
     return nResult;
 }
-// PC 0x0055DFE0
+// PC 0x0055DFE0 GOG 0x0055E100
 CResRef CSWSItem::GetIcon()
 {
     CSWBaseItem* pBaseItem = GetBaseItem();
@@ -1150,7 +1150,7 @@ CResRef CSWSItem::GetIcon()
 
     return pBaseItem->GetIconResRef((unsigned char)m_nModelVariation, 'm');
 }
-// PC 0x0055E040
+// PC 0x0055E040 GOG 0x0055E160
 void CSWSItem::AddUpgrade(CSWSItem* pUpgrade, unsigned long nSlot)
 {
     if (pUpgrade != NULL)
@@ -1175,7 +1175,7 @@ void CSWSItem::AddUpgrade(CSWSItem* pUpgrade, unsigned long nSlot)
         }
     }
 }
-// PC 0x0055E140
+// PC 0x0055E140 GOG 0x0055E260
 void CSWSItem::RemoveUpgrade(CSWSItem* pUpgrade, unsigned long nSlot)
 {
     int nUpgradeProperties = pUpgrade->m_nPassiveProperties;
@@ -1208,7 +1208,7 @@ void CSWSItem::RemoveUpgrade(CSWSItem* pUpgrade, unsigned long nSlot)
     }
     delete[] pNewProperties;
 }
-// PC 0x0055E270
+// PC 0x0055E270 GOG 0x0055E390
 CExoString CSWSItem::GetPropertiesOnlyDescription()
 {
     CExoString sDescription;
@@ -1289,7 +1289,7 @@ CExoString CSWSItem::GetPropertiesOnlyDescription()
     }
     return sDescription;
 }
-// PC 0x0055E950
+// PC 0x0055E950 GOG 0x0055EAC0
 int CSWSItem::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
                         int bLoadingGame)
 {
@@ -1307,7 +1307,7 @@ int CSWSItem::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
 
     return result;
 }
-// PC 0x0055E9C0
+// PC 0x0055E9C0 GOG 0x0055EB30
 int CSWSItem::SaveItemProperties(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList list;
@@ -1377,7 +1377,7 @@ int CSWSItem::SaveItemProperties(CResGFF* pRes, CResStruct* pStruct)
 
     return 1;
 }
-// PC 0x0055ECC0
+// PC 0x0055ECC0 GOG 0x0055EE30
 unsigned short CSWSItem::GetUsedActivePropertyUsesLeft(unsigned char nPropertyIndex)
 {
     unsigned short nUsesLeft = 0;
@@ -1435,7 +1435,7 @@ unsigned short CSWSItem::GetUsedActivePropertyUsesLeft(unsigned char nPropertyIn
     }
     return nUsesLeft;
 }
-// PC 0x0055EE50
+// PC 0x0055EE50 GOG 0x0055EFC0
 int CSWSItem::RestoreUsedActiveProperties(int bRestoreAll)
 {
     int nActiveProperties;
@@ -1474,7 +1474,7 @@ int CSWSItem::RestoreUsedActiveProperties(int bRestoreAll)
 
     return nActiveProperties;
 }
-// PC 0x0055EEF0
+// PC 0x0055EEF0 GOG 0x0055F060
 int CSWSItem::GetPropertyByTypeExists(unsigned short nPropertyType,
                                       unsigned short nSubtype)
 {
@@ -1515,11 +1515,11 @@ int CSWSItem::GetPropertyByTypeExists(unsigned short nPropertyType,
 
     return 0;
 }
-// PC 0x0055F040
+// PC 0x0055F040 GOG 0x0055F1B0
 CItemRepository::~CItemRepository()
 {
 }
-// PC 0x0055F060
+// PC 0x0055F060 GOG 0x0055F1D0
 int CItemRepository::FindItemWithBaseItemType(unsigned char nItemType, int nIndex)
 {
     int nItem;
@@ -1563,7 +1563,7 @@ int CItemRepository::FindItemWithBaseItemType(unsigned char nItemType, int nInde
 
     return OBJECT_INVALID;
 }
-// PC 0x0055F130
+// PC 0x0055F130 GOG 0x0055F2A0
 int CItemRepository::FindItemWithTag(const CExoString& sTag)
 {
     int nItem;
@@ -1597,7 +1597,7 @@ int CItemRepository::FindItemWithTag(const CExoString& sTag)
 
     return OBJECT_INVALID;
 }
-// PC 0x0055F1A0
+// PC 0x0055F1A0 GOG 0x0055F310
 int CItemRepository::GetItemInRepository(CSWSItem* pItem, int bFlag)
 {
     CServerExoApp* pServerExoApp;
@@ -1633,7 +1633,7 @@ int CItemRepository::GetItemInRepository(CSWSItem* pItem, int bFlag)
 
     return 0;
 }
-// PC 0x0055F230
+// PC 0x0055F230 GOG 0x0055F3A0
 int CItemRepository::RemoveItem(CSWSItem* pItem)
 {
     if (pItem != NULL)
@@ -1656,7 +1656,7 @@ int CItemRepository::RemoveItem(CSWSItem* pItem)
 
     return 0;
 }
-// PC 0x0055F2B0
+// PC 0x0055F2B0 GOG 0x0055F420
 void CItemRepository::ClearNewItems(CExoArrayList<unsigned long>* pNewItems)
 {
     CServerExoApp* pServerExoApp;
@@ -1674,7 +1674,7 @@ void CItemRepository::ClearNewItems(CExoArrayList<unsigned long>* pNewItems)
         }
     }
 }
-// PC 0x0055F310
+// PC 0x0055F310 GOG 0x0055F480
 int CItemRepository::GetMatchingItemCount(CSWSItem* pItem)
 {
     int nIndex = 0;
@@ -1706,7 +1706,7 @@ int CItemRepository::GetMatchingItemCount(CSWSItem* pItem)
     }
     return nCount;
 }
-// PC 0x0055F3B0
+// PC 0x0055F3B0 GOG 0x0055F520
 CSWSItem* CItemRepository::ItemListGetItem(int nIndex)
 {
     CServerExoApp* pServerExoApp;
@@ -1721,7 +1721,7 @@ CSWSItem* CItemRepository::ItemListGetItem(int nIndex)
     pItem = pServerExoApp->GetItemByGameObjectID(m_lstItems[nIndex]);
     return pItem;
 }
-// PC 0x0055F3E0
+// PC 0x0055F3E0 GOG 0x0055F550
 unsigned long CItemRepository::ItemListGetItemObjectID(int nIndex)
 {
     if (nIndex < 0 || nIndex >= m_lstItems.num)
@@ -1731,7 +1731,7 @@ unsigned long CItemRepository::ItemListGetItemObjectID(int nIndex)
 
     return m_lstItems[nIndex];
 }
-// PC 0x0055F400
+// PC 0x0055F400 GOG 0x0055F570
 int CItemRepository::CalculateContentsWeight()
 {
     int nItems = m_lstItems.num;
@@ -1750,7 +1750,7 @@ int CItemRepository::CalculateContentsWeight()
 
     return nWeight;
 }
-// PC 0x0055F450
+// PC 0x0055F450 GOG 0x0055F5C0
 int CItemRepository::SetParentId(unsigned long oidParent)
 {
     int nItems;
@@ -1774,7 +1774,7 @@ int CItemRepository::SetParentId(unsigned long oidParent)
 
     return nItems;
 }
-// PC 0x0055F4A0
+// PC 0x0055F4A0 GOG 0x0055F610
 void CSWSItem::OpenInventory(unsigned long oidOpener)
 {
     NwsitemTrace1();
@@ -1803,7 +1803,7 @@ void CSWSItem::OpenInventory(unsigned long oidOpener)
         m_bInventoryOpen = 1;
     }
 }
-// PC 0x0055F5A0
+// PC 0x0055F5A0 GOG 0x0055F710
 int CSWSItem::GetWeight()
 {
     CItemRepository* pRepository = m_pRepository;
@@ -1824,7 +1824,7 @@ int CSWSItem::GetWeight()
 
     return nWeight;
 }
-// PC 0x0055F5D0
+// PC 0x0055F5D0 GOG 0x0055F740
 void CSWSItem::GetSortedPropertyStrings(CExoArrayList<CExoString>& aStrings,
                                         CExoString& sString)
 {
@@ -1857,7 +1857,7 @@ inline int CSWBaseItem::GetRequiredFeatCount()
 {
     return m_nRequiredFeatCount;
 }
-// PC 0x0055F790
+// PC 0x0055F790 GOG 0x0055F900
 void CSWSItem::AddFeatRequirements(CExoString& sString)
 {
     int bHeadingAdded = 0;
@@ -1965,7 +1965,7 @@ void CSWSItem::AddFeatRequirements(CExoString& sString)
 }
 
 inline int CSWSItem::GetPassiveProperties() { return m_nPassiveProperties; }
-// PC 0x005600F0
+// PC 0x005600F0 GOG 0x00560260
 void CSWSItem::AddGenderRequirements(CExoString& sString)
 {
     CExoString sGender;
@@ -2008,7 +2008,7 @@ void CSWSItem::AddGenderRequirements(CExoString& sString)
         }
     }
 }
-// PC 0x00560460
+// PC 0x00560460 GOG 0x005605D0
 void CSWSItem::AddSubraceRequirements(CExoString& sString)
 {
     CExoString sSubrace;
@@ -2051,7 +2051,7 @@ void CSWSItem::AddSubraceRequirements(CExoString& sString)
         }
     }
 }
-// PC 0x005607D0
+// PC 0x005607D0 GOG 0x00560940
 void CSWSItem::AddPCRequirements(CExoString& sString)
 {
     CExoString sPC;
@@ -2106,7 +2106,7 @@ void CSWSItem::AddPCRequirements(CExoString& sString)
         }
     }
 }
-// PC 0x00560B80
+// PC 0x00560B80 GOG 0x00560CF0
 void CSWSItem::AddAttributeRequirements(CExoString& sString)
 {
     CExoString sValue;
@@ -2175,7 +2175,7 @@ void CSWSItem::AddAttributeRequirements(CExoString& sString)
         }
     }
 }
-// PC 0x00561330
+// PC 0x00561330 GOG 0x005614A0
 void CSWSItem::AddDamageProperties(CExoString& sString)
 {
     CExoString sDamage;
@@ -2460,7 +2460,7 @@ inline unsigned short CSWItemProperty::GetSubtype()
 {
     return m_nSubtype;
 }
-// PC 0x00562C80
+// PC 0x00562C80 GOG 0x00562DF0
 void CSWSItem::AddAttackBonusStrings(int nPropertyType, CExoString& sString)
 {
     int nAttackBonus = 0;
@@ -2523,7 +2523,7 @@ inline unsigned char CSWBaseItem::GetCritHitMult()
 {
     return m_nCritHitMult;
 }
-// PC 0x00563110
+// PC 0x00563110 GOG 0x00563280
 void CSWSItem::AddCriticalThreatProperties(CExoString& sString)
 {
     CExoString sRange;
@@ -2565,7 +2565,7 @@ void CSWSItem::AddCriticalThreatProperties(CExoString& sString)
         sRange.Format("%d-20,x%d\n", 21 - nThreat, nMultiplier);
     sString = sString + sRange + "\n";
 }
-// PC 0x005633A0
+// PC 0x005633A0 GOG 0x00563510
 void CSWSItem::AddOnHitProperties(CExoString& sString)
 {
     if (GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ON_HIT_PROPERTIES, 0))
@@ -2686,7 +2686,7 @@ void CSWSItem::AddOnHitProperties(CExoString& sString)
         }
     }
 }
-// PC 0x005643E0
+// PC 0x005643E0 GOG 0x00564550
 void CSWSItem::AddDefenceProperties(CExoString& sString)
 {
     CExoString sBonus;
@@ -2815,7 +2815,7 @@ void CSWSItem::AddDefenceProperties(CExoString& sString)
         }
     }
 }
-// PC 0x00564FC0
+// PC 0x00564FC0 GOG 0x00565130
 void CSWSItem::AddMiscellaneousProperties(CExoString& sString)
 {
     CExoString sProperty;
@@ -3206,7 +3206,7 @@ void CSWSItem::AddMiscellaneousProperties(CExoString& sString)
         }
     }
 }
-// PC 0x00567340
+// PC 0x00567340 GOG 0x00567470
 void CSWSItem::AIUpdate()
 {
     if (GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM, 0))
@@ -3258,7 +3258,7 @@ void CSWSItem::AIUpdate()
         }
     }
 }
-// PC 0x005674B0
+// PC 0x005674B0 GOG 0x005675E0
 int CSWSItem::SaveItem(CResGFF* pRes, CResStruct* pStruct)
 {
     pRes->WriteFieldINT(pStruct, GetBaseItemType(), "BaseItem");
@@ -3326,7 +3326,7 @@ int CSWSItem::SaveItem(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldBYTE(pStruct, m_bDeleting, "DELETING");
     return 1;
 }
-// PC 0x00567820
+// PC 0x00567820 GOG 0x00567950
 int CSWSItem::SaveContainerItems(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList list;
@@ -3341,7 +3341,7 @@ int CSWSItem::SaveContainerItems(CResGFF* pRes, CResStruct* pStruct)
 
     return 1;
 }
-// PC 0x005678C0
+// PC 0x005678C0 GOG 0x005679F0
 void CSWSItem::UpdateUsedActiveProperties()
 {
     unsigned char aUsesLeft[MAX_TRACKED_ACTIVE_PROPERTIES];
@@ -3423,7 +3423,7 @@ void CSWSItem::UpdateUsedActiveProperties()
                 nChangedMask, m_aActivePropertyUsesLeft);
     }
 }
-// PC 0x00567B10
+// PC 0x00567B10 GOG 0x00567C40
 CItemRepository::CItemRepository(unsigned long oidOwner, int bFlag)
     : m_lstItems(0)
 {
@@ -3431,7 +3431,7 @@ CItemRepository::CItemRepository(unsigned long oidOwner, int bFlag)
     m_nNewItems = 0;
     m_bUnknown08 = bFlag;
 }
-// PC 0x00567B40
+// PC 0x00567B40 GOG 0x00567C70
 void CItemRepository::InsertItem(CSWSItem* pItem, int nIndex)
 {
     if (m_bUnknown08)
@@ -3449,7 +3449,7 @@ void CItemRepository::InsertItem(CSWSItem* pItem, int nIndex)
     }
 }
 inline char CSWSItem::GetModelVariation() { return m_nModelVariation; }
-// PC 0x00567BB0
+// PC 0x00567BB0 GOG 0x00567CE0
 int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
                              int bUpdatePossessor, int bNewItem)
 {
@@ -3669,7 +3669,7 @@ int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
     }
     return 1;
 }
-// PC 0x005680F0
+// PC 0x005680F0 GOG 0x00568220
 void CSWSItem::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
 {
     if (m_bInventoryOpen)
@@ -3697,7 +3697,7 @@ void CSWSItem::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
         m_bInventoryOpen = 0;
     }
 }
-// PC 0x00568240
+// PC 0x00568240 GOG 0x00568370
 int CSWSItem::CopyItem(CSWSItem* pItem)
 {
     if (pItem == NULL)
@@ -3762,7 +3762,7 @@ int CSWSItem::CopyItem(CSWSItem* pItem)
         m_sTag, GetId());
     return 1;
 }
-// PC 0x00568520
+// PC 0x00568520 GOG 0x00568650
 void CSWSItem::CloseItemForAllPlayers()
 {
     CSWBaseItem* pBaseItem;
@@ -3794,7 +3794,7 @@ void CSWSItem::CloseItemForAllPlayers()
         }
     }
 }
-// PC 0x005685B0
+// PC 0x005685B0 GOG 0x005686E0
 int CSWSItem::AcquireItem(CSWSItem** ppItem, unsigned long oidPossessor,
                           int bDisplayFeedback)
 {
@@ -3859,7 +3859,7 @@ int CSWSItem::AcquireItem(CSWSItem** ppItem, unsigned long oidPossessor,
     }
     return bResult;
 }
-// PC 0x00568730
+// PC 0x00568730 GOG 0x00568860
 void CSWSItem::DecrementUses(int nPropertyIndex, unsigned long oidUser)
 {
 
@@ -4023,7 +4023,7 @@ void CSWSItem::DecrementUses(int nPropertyIndex, unsigned long oidUser)
         UpdateUsedActiveProperties();
     }
 }
-// PC 0x00568A90
+// PC 0x00568A90 GOG 0x00568BC0
 void CSWSItem::AddProperty(unsigned short nPropertyType, unsigned short nSubtype,
                           unsigned short nCostValue, unsigned char nParam1Value,
                           CExoArrayList<CExoString>& aStrings)
@@ -4132,7 +4132,7 @@ void CSWSItem::AddProperty(unsigned short nPropertyType, unsigned short nSubtype
     }
     aStrings.Add(sProperty);
 }
-// PC 0x00569240
+// PC 0x00569240 GOG 0x00569370
 void CSWSItem::AddAttackModifierProperties(CExoString& sString)
 {
     int nAttackModifier = 0;
@@ -4202,7 +4202,7 @@ void CSWSItem::AddAttackModifierProperties(CExoString& sString)
     }
     sString = sString + "\n";
 }
-// PC 0x00569620
+// PC 0x00569620 GOG 0x00569750
 CSWSItem::~CSWSItem()
 {
     unsigned long oidClient =
@@ -4241,7 +4241,7 @@ CSWSItem::~CSWSItem()
         RemoveFromArea();
     g_pAppManager->GetServerExoApp()->GetServerAIMaster()->RemoveObject(this);
 }
-// PC 0x005697C0
+// PC 0x005697C0 GOG 0x005698F0
 void CSWSItem::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                            void* pEventData, unsigned long nCalendarDay,
                            unsigned long nTimeOfDay)
@@ -4312,7 +4312,7 @@ void CSWSItem::EventHandler(unsigned long nEventId, unsigned long oidCaller,
         }
     }
 }
-// PC 0x00569A00
+// PC 0x00569A00 GOG 0x00569B30
 void CSWSItem::InitRepository(unsigned long oidOwner)
 {
     if (m_pRepository != NULL)
@@ -4326,7 +4326,7 @@ void CSWSItem::InitRepository(unsigned long oidOwner)
         m_pRepository = new CItemRepository(oidOwner, 0);
     }
 }
-// PC 0x00569AA0
+// PC 0x00569AA0 GOG 0x00569BD0
 void CSWSItem::ReadContainerItemsFromGff(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList list;
@@ -4375,7 +4375,7 @@ void CSWSItem::ReadContainerItemsFromGff(CResGFF* pRes, CResStruct* pStruct)
         }
     }
 }
-// PC 0x00569C30
+// PC 0x00569C30 GOG 0x00569D60
 CSWSItem* CSWSItem::SplitItem(int nCount)
 {
     CSWSItem* pNewItem;
@@ -4395,14 +4395,14 @@ CSWSItem* CSWSItem::SplitItem(int nCount)
 
     return pNewItem;
 }
-// PC 0x00569CE0
+// PC 0x00569CE0 GOG 0x00569E10
 int CItemRepository::ClearItems()
 {
     m_lstItems.RemoveAll(0);
     m_nNewItems = 0;
     return 0;
 }
-// PC 0x00569CF0
+// PC 0x00569CF0 GOG 0x00569E20
 CExoString CSWSItem::GetPropertyDescription()
 {
     CExoArrayList<CExoString> aStrings;
@@ -4444,7 +4444,7 @@ CExoString CSWSItem::GetPropertyDescription()
     sDescription = sString + sDescription;
     return sDescription;
 }
-// PC 0x00569F30
+// PC 0x00569F30 GOG 0x0056A060
 CExoString CSWSItem::GetKeyedPropertyString(unsigned char nUpgradeIndex)
 {
     CExoArrayList<CExoString> aStrings;
@@ -4526,7 +4526,7 @@ inline void CSWSItem::SetPickpocketable(int bPickpocketable) { m_bPickpocketable
 inline void CSWSItem::SetNonEquippable(int bNonEquippable) { m_bNonEquippable = bNonEquippable; }
 inline void CSWSItem::SetNewItem(int bNewItem) { m_bNewItem = bNewItem; }
 inline int CSWSItem::GetUpgrades() { return m_nUpgrades; }
-// PC 0x0056A6F0
+// PC 0x0056A6F0 GOG 0x0056A820
 void CSWSItem::LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct)
 {
     int bSuccess;
@@ -4703,7 +4703,7 @@ void CSWSItem::LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct)
     float fWeight = (float)(GetBaseItem()->m_nTenthLBS * 1.0f);
     m_nWeight = (int)fWeight;
 }
-// PC 0x0056B400
+// PC 0x0056B400 GOG 0x0056B530
 int CSWSItem::LoadFromTemplate(const CResRef& cResRef)
 {
     CResGFF* pGFF;
@@ -4721,7 +4721,7 @@ int CSWSItem::LoadFromTemplate(const CResRef& cResRef)
     delete pGFF;
     return 1;
 }
-// PC 0x0056B4C0
+// PC 0x0056B4C0 GOG 0x0056B5F0
 int CSWSItem::LoadItem(CResGFF* pRes, CResStruct* pStruct)
 {
     int bSuccess = 0;

@@ -38,7 +38,7 @@ public:
 
     CSWCModule();
     virtual ~CSWCModule();
-    virtual CSWCModule* AsSWCModule()  // PC 0x00698BD0
+    virtual CSWCModule* AsSWCModule()  // PC 0x00698BD0 GOG 0x00698980
     {
         return this;
     }

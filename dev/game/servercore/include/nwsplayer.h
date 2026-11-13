@@ -114,7 +114,7 @@ public:
 
     int PackCreatureIntoMessage();
     virtual ~CSWSPlayer();
-    virtual CSWSPlayer* AsSWSPlayer()  // PC 0x00698BD0
+    virtual CSWSPlayer* AsSWSPlayer()  // PC 0x00698BD0 GOG 0x00698980
     {
         return this;
     }
@@ -222,7 +222,7 @@ public:
     char m_a05[3];
     CSWCreatureStatsUpdate* m_pStatsUpdate;
     int m_nUpdateRequired;
-    CSWSPlayerCharSheetGUI()  // PC 0x0059D5F0
+    CSWSPlayerCharSheetGUI()  // PC 0x0059D5F0 GOG 0x0059D660
     {
         m_oidCreature = OBJECT_INVALID;
         m_pStatsUpdate = new CSWCreatureStatsUpdate;

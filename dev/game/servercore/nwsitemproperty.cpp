@@ -10,7 +10,7 @@
 #include "nwscript.h"
 #include "nwscreaturestats.h"
 #include "nwrules.h"
-// PC 0x00539330
+// PC 0x00539330 GOG 0x0053B090
 CSWSItemPropertyHandler::~CSWSItemPropertyHandler()
 {
     if (m_pApplyItemProperty != NULL)
@@ -25,7 +25,7 @@ CSWSItemPropertyHandler::~CSWSItemPropertyHandler()
         m_pRemoveItemProperty = NULL;
     }
 }
-// PC 0x005393A0
+// PC 0x005393A0 GOG 0x0053B100
 int CSWSItemPropertyHandler::OnItemPropertyApplied(CSWSItem* pItem,
                                                    CSWItemProperty* pProperty,
                                                    CSWSCreature* pCreature,
@@ -42,7 +42,7 @@ int CSWSItemPropertyHandler::OnItemPropertyApplied(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x005393E0
+// PC 0x005393E0 GOG 0x0053B140
 int CSWSItemPropertyHandler::OnItemPropertyRemoved(CSWSItem* pItem,
                                                    CSWItemProperty* pProperty,
                                                    CSWSCreature* pCreature,
@@ -58,7 +58,7 @@ int CSWSItemPropertyHandler::OnItemPropertyRemoved(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x00539420
+// PC 0x00539420 GOG 0x0053B180
 int CSWSItemPropertyHandler::ApplyEnhancementBonus(CSWSItem* pItem,
                                                     CSWItemProperty* pProperty,
                                                     CSWSCreature* pCreature,
@@ -265,7 +265,7 @@ int CSWSItemPropertyHandler::ApplyEnhancementBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x00539860
+// PC 0x00539860 GOG 0x0053B5C0
 int CSWSItemPropertyHandler::ApplyEnhancementPenalty(CSWSItem* pItem,
                                                     CSWItemProperty* pProperty,
                                                     CSWSCreature* pCreature,
@@ -406,7 +406,7 @@ int CSWSItemPropertyHandler::ApplyEnhancementPenalty(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053C5A0
+// PC 0x0053C5A0 GOG 0x0053E300
 int CSWSItemPropertyHandler::ApplyDamageBonus(CSWSItem* pItem,
                                               CSWItemProperty* pProperty,
                                               CSWSCreature* pCreature,
@@ -512,7 +512,7 @@ int CSWSItemPropertyHandler::ApplyDamageBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x00539C00
+// PC 0x00539C00 GOG 0x0053B960
 int CSWSItemPropertyHandler::ApplyAttackBonus(CSWSItem* pItem,
                                               CSWItemProperty* pProperty,
                                               CSWSCreature* pCreature,
@@ -619,7 +619,7 @@ int CSWSItemPropertyHandler::ApplyAttackBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x00539E40
+// PC 0x00539E40 GOG 0x0053BBA0
 int CSWSItemPropertyHandler::ApplyAttackPenalty(CSWSItem* pItem,
                                                 CSWItemProperty* pProperty,
                                                 CSWSCreature* pCreature,
@@ -694,7 +694,7 @@ int CSWSItemPropertyHandler::ApplyAttackPenalty(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053A060
+// PC 0x0053A060 GOG 0x0053BDC0
 int CSWSItemPropertyHandler::ApplyLight(CSWSItem* pItem,
                                         CSWItemProperty* pProperty,
                                         CSWSCreature* pCreature,
@@ -716,7 +716,7 @@ int CSWSItemPropertyHandler::ApplyLight(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053A120
+// PC 0x0053A120 GOG 0x0053BE80
 int CSWSItemPropertyHandler::ApplyAbilityBonus(CSWSItem* pItem,
                                                CSWItemProperty* pProperty,
                                                CSWSCreature* pCreature,
@@ -771,7 +771,7 @@ int CSWSItemPropertyHandler::ApplyAbilityBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053A2A0
+// PC 0x0053A2A0 GOG 0x0053C000
 int CSWSItemPropertyHandler::ApplyACBonus(CSWSItem* pItem,
                                           CSWItemProperty* pProperty,
                                           CSWSCreature* pCreature,
@@ -829,7 +829,7 @@ int CSWSItemPropertyHandler::ApplyACBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053A460
+// PC 0x0053A460 GOG 0x0053C1C0
 int CSWSItemPropertyHandler::ApplyImprovedForceResistance(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex, int bLoading)
@@ -860,7 +860,7 @@ int CSWSItemPropertyHandler::ApplyImprovedForceResistance(
 
     return 0;
 }
-// PC 0x0053A580
+// PC 0x0053A580 GOG 0x0053C2E0
 int CSWSItemPropertyHandler::ApplyChangedSavingThrow(CSWSItem* pItem,
                                                      int nSaveValue,
                                                      CSWItemProperty* pProperty,
@@ -902,7 +902,7 @@ int CSWSItemPropertyHandler::ApplyChangedSavingThrow(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053A690
+// PC 0x0053A690 GOG 0x0053C3F0
 int CSWSItemPropertyHandler::ApplySpecialWalk(CSWSItem* pItem,
                                               CSWItemProperty* pProperty,
                                               CSWSCreature* pCreature,
@@ -939,7 +939,7 @@ int CSWSItemPropertyHandler::ApplySpecialWalk(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053A7E0
+// PC 0x0053A7E0 GOG 0x0053C540
 int CSWSItemPropertyHandler::ApplyTrueSeeing(CSWSItem* pItem,
                                              CSWItemProperty* pProperty,
                                              CSWSCreature* pCreature,
@@ -955,7 +955,7 @@ int CSWSItemPropertyHandler::ApplyTrueSeeing(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053A880
+// PC 0x0053A880 GOG 0x0053C5E0
 int CSWSItemPropertyHandler::ApplyFreedomOfMovement(CSWSItem* pItem,
                                                     CSWItemProperty* pProperty,
                                                     CSWSCreature* pCreature,
@@ -1025,7 +1025,7 @@ int CSWSItemPropertyHandler::ApplyFreedomOfMovement(CSWSItem* pItem,
     }
     return 0;
 }
-// PC 0x0053AB00
+// PC 0x0053AB00 GOG 0x0053C860
 int CSWSItemPropertyHandler::ApplyBonusFeat(CSWSItem* pItem,
                                             CSWItemProperty* pProperty,
                                             CSWSCreature* pCreature,
@@ -1049,7 +1049,7 @@ int CSWSItemPropertyHandler::ApplyBonusFeat(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053ABD0
+// PC 0x0053ABD0 GOG 0x0053C930
 int CSWSItemPropertyHandler::ApplyDamageImmunity(CSWSItem* pItem,
                                                  CSWItemProperty* pProperty,
                                                  CSWSCreature* pCreature,
@@ -1092,7 +1092,7 @@ int CSWSItemPropertyHandler::ApplyDamageImmunity(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053AD10
+// PC 0x0053AD10 GOG 0x0053CA70
 int CSWSItemPropertyHandler::ApplyDamagePenalty(CSWSItem* pItem,
                                                 CSWItemProperty* pProperty,
                                                 CSWSCreature* pCreature,
@@ -1171,7 +1171,7 @@ int CSWSItemPropertyHandler::ApplyDamagePenalty(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053AF50
+// PC 0x0053AF50 GOG 0x0053CCB0
 int CSWSItemPropertyHandler::ApplyDamageReduction(CSWSItem* pItem,
                                                   CSWItemProperty* pProperty,
                                                   CSWSCreature* pCreature,
@@ -1199,7 +1199,7 @@ int CSWSItemPropertyHandler::ApplyDamageReduction(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053B070
+// PC 0x0053B070 GOG 0x0053CDD0
 int CSWSItemPropertyHandler::ApplyDamageResistance(CSWSItem* pItem,
                                                    CSWItemProperty* pProperty,
                                                    CSWSCreature* pCreature,
@@ -1227,7 +1227,7 @@ int CSWSItemPropertyHandler::ApplyDamageResistance(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053B190
+// PC 0x0053B190 GOG 0x0053CEF0
 int CSWSItemPropertyHandler::ApplyDamageVulnerability(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex, int bLoading)
@@ -1258,7 +1258,7 @@ int CSWSItemPropertyHandler::ApplyDamageVulnerability(
 
     return 0;
 }
-// PC 0x0053B2B0
+// PC 0x0053B2B0 GOG 0x0053D010
 int CSWSItemPropertyHandler::ApplyDecreaseAbilityScore(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex, int bLoading)
@@ -1312,7 +1312,7 @@ int CSWSItemPropertyHandler::ApplyDecreaseAbilityScore(
 
     return 0;
 }
-// PC 0x0053B430
+// PC 0x0053B430 GOG 0x0053D190
 int CSWSItemPropertyHandler::ApplyDecreaseAC(CSWSItem* pItem,
                                              CSWItemProperty* pProperty,
                                              CSWSCreature* pCreature,
@@ -1347,7 +1347,7 @@ int CSWSItemPropertyHandler::ApplyDecreaseAC(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053B580
+// PC 0x0053B580 GOG 0x0053D2E0
 int CSWSItemPropertyHandler::ApplyDecreaseSkillModifier(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex, int bLoading)
@@ -1380,7 +1380,7 @@ int CSWSItemPropertyHandler::ApplyDecreaseSkillModifier(
 
     return 0;
 }
-// PC 0x0053B6C0
+// PC 0x0053B6C0 GOG 0x0053D420
 int CSWSItemPropertyHandler::ApplyImmunity(CSWSItem* pItem,
                                            CSWItemProperty* pProperty,
                                            CSWSCreature* pCreature,
@@ -1459,7 +1459,7 @@ int CSWSItemPropertyHandler::ApplyImmunity(CSWSItem* pItem,
     }
     return 0;
 }
-// PC 0x0053B8D0
+// PC 0x0053B8D0 GOG 0x0053D630
 int CSWSItemPropertyHandler::ApplySkillBonus(CSWSItem* pItem,
                                              CSWItemProperty* pProperty,
                                              CSWSCreature* pCreature,
@@ -1484,7 +1484,7 @@ int CSWSItemPropertyHandler::ApplySkillBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053B9C0
+// PC 0x0053B9C0 GOG 0x0053D720
 int CSWSItemPropertyHandler::ApplyRegeneration(CSWSItem* pItem,
                                                CSWItemProperty* pProperty,
                                                CSWSCreature* pCreature,
@@ -1513,7 +1513,7 @@ int CSWSItemPropertyHandler::ApplyRegeneration(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053BAB0
+// PC 0x0053BAB0 GOG 0x0053D810
 int CSWSItemPropertyHandler::ApplyBlasterBoltDeflectionIncrease(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex, int bLoading)
@@ -1537,7 +1537,7 @@ int CSWSItemPropertyHandler::ApplyBlasterBoltDeflectionIncrease(
 
     return 0;
 }
-// PC 0x0053BB80
+// PC 0x0053BB80 GOG 0x0053D8E0
 int CSWSItemPropertyHandler::ApplyBlasterBoltDeflectionDecrease(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex, int bLoading)
@@ -1561,7 +1561,7 @@ int CSWSItemPropertyHandler::ApplyBlasterBoltDeflectionDecrease(
 
     return 0;
 }
-// PC 0x0053BC50
+// PC 0x0053BC50 GOG 0x0053D9B0
 int CSWSItemPropertyHandler::ApplyDisguise(CSWSItem* pItem,
                                            CSWItemProperty* pProperty,
                                            CSWSCreature* pCreature,
@@ -1580,21 +1580,21 @@ int CSWSItemPropertyHandler::ApplyDisguise(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053BD10
+// PC 0x0053BD10 GOG 0x0053DA70
 int CSWSItemPropertyHandler::ApplyDampenSound(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading)
 {
     pCreature->SetSilentMove(1);
 
     return 0;
 }
-// PC 0x0053BD20
+// PC 0x0053BD20 GOG 0x0053DA80
 int CSWSItemPropertyHandler::RemoveDampenSound(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex)
 {
     pCreature->SetSilentMove(0);
 
     return 0;
 }
-// PC 0x0053BD30
+// PC 0x0053BD30 GOG 0x0053DA90
 int CSWSItemPropertyHandler::ApplyDoorCutting(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading)
 {
     if (pItem != NULL)
@@ -1604,7 +1604,7 @@ int CSWSItemPropertyHandler::ApplyDoorCutting(CSWSItem* pItem, CSWItemProperty* 
 
     return 0;
 }
-// PC 0x0053BD50
+// PC 0x0053BD50 GOG 0x0053DAB0
 int CSWSItemPropertyHandler::ApplyDoorSabering(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading)
 {
     if (pItem != NULL)
@@ -1614,7 +1614,7 @@ int CSWSItemPropertyHandler::ApplyDoorSabering(CSWSItem* pItem, CSWItemProperty*
 
     return 0;
 }
-// PC 0x0053BD70
+// PC 0x0053BD70 GOG 0x0053DAD0
 int CSWSItemPropertyHandler::ApplySniperBonus(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading)
 {
     if (pItem != NULL)
@@ -1624,7 +1624,7 @@ int CSWSItemPropertyHandler::ApplySniperBonus(CSWSItem* pItem, CSWItemProperty* 
 
     return 0;
 }
-// PC 0x0053BD90
+// PC 0x0053BD90 GOG 0x0053DAF0
 int CSWSItemPropertyHandler::ApplyRapidShotBonus(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading)
 {
     if (pItem != NULL)
@@ -1634,7 +1634,7 @@ int CSWSItemPropertyHandler::ApplyRapidShotBonus(CSWSItem* pItem, CSWItemPropert
 
     return 0;
 }
-// PC 0x0053BDB0
+// PC 0x0053BDB0 GOG 0x0053DB10
 int CSWSItemPropertyHandler::ApplyMaxDexBonus(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex, int bLoading)
 {
     if (pItem != NULL)
@@ -1644,7 +1644,7 @@ int CSWSItemPropertyHandler::ApplyMaxDexBonus(CSWSItem* pItem, CSWItemProperty* 
 
     return 0;
 }
-// PC 0x0053BDD0
+// PC 0x0053BDD0 GOG 0x0053DB30
 int CSWSItemPropertyHandler::RemoveMaxDexBonus(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature, unsigned long nIndex)
 {
     if (pItem != NULL)
@@ -1654,7 +1654,7 @@ int CSWSItemPropertyHandler::RemoveMaxDexBonus(CSWSItem* pItem, CSWItemProperty*
 
     return 0;
 }
-// PC 0x0053BDF0
+// PC 0x0053BDF0 GOG 0x0053DB50
 int CSWSItemPropertyHandler::RemoveEnhancementBonus(CSWSItem* pItem,
                                                        CSWItemProperty* pProperty,
                                                        CSWSCreature* pCreature,
@@ -1930,7 +1930,7 @@ int CSWSItemPropertyHandler::RemoveEnhancementBonus(CSWSItem* pItem,
     }
     return 0;
 }
-// PC 0x0053C250
+// PC 0x0053C250 GOG 0x0053DFB0
 int CSWSItemPropertyHandler::RemoveEnhancementPenalty(CSWSItem* pItem,
                                                        CSWItemProperty* pProperty,
                                                        CSWSCreature* pCreature,
@@ -2104,7 +2104,7 @@ int CSWSItemPropertyHandler::RemoveEnhancementPenalty(CSWSItem* pItem,
     }
     return 0;
 }
-// PC 0x0053C810
+// PC 0x0053C810 GOG 0x0053E570
 int CSWSItemPropertyHandler::RemoveDamageBonus(CSWSItem* pItem,
                                                CSWItemProperty* pProperty,
                                                CSWSCreature* pCreature,
@@ -2264,7 +2264,7 @@ int CSWSItemPropertyHandler::RemoveDamageBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053CA70
+// PC 0x0053CA70 GOG 0x0053E7D0
 int CSWSItemPropertyHandler::RemoveAttackBonus(CSWSItem* pItem,
                                                CSWItemProperty* pProperty,
                                                CSWSCreature* pCreature,
@@ -2413,7 +2413,7 @@ int CSWSItemPropertyHandler::RemoveAttackBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053CCE0
+// PC 0x0053CCE0 GOG 0x0053EA40
 int CSWSItemPropertyHandler::RemoveAttackPenalty(CSWSItem* pItem,
                                                 CSWItemProperty* pProperty,
                                                 CSWSCreature* pCreature,
@@ -2518,7 +2518,7 @@ int CSWSItemPropertyHandler::RemoveAttackPenalty(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053CED0
+// PC 0x0053CED0 GOG 0x0053EC30
 int CSWSItemPropertyHandler::RemoveAbilityBonus(CSWSItem* pItem,
                                                 CSWItemProperty* pProperty,
                                                 CSWSCreature* pCreature,
@@ -2606,7 +2606,7 @@ int CSWSItemPropertyHandler::RemoveAbilityBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053D090
+// PC 0x0053D090 GOG 0x0053EDF0
 int CSWSItemPropertyHandler::RemoveACBonus(CSWSItem* pItem,
                                            CSWItemProperty* pProperty,
                                            CSWSCreature* pCreature,
@@ -2682,7 +2682,7 @@ int CSWSItemPropertyHandler::RemoveACBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053D230
+// PC 0x0053D230 GOG 0x0053EF90
 int CSWSItemPropertyHandler::RemoveImprovedForceResistance(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex)
@@ -2722,7 +2722,7 @@ int CSWSItemPropertyHandler::RemoveImprovedForceResistance(
 
     return 0;
 }
-// PC 0x0053D350
+// PC 0x0053D350 GOG 0x0053F0B0
 int CSWSItemPropertyHandler::ApplyImprovedSavingThrow(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex, int bLoading)
@@ -2742,7 +2742,7 @@ int CSWSItemPropertyHandler::ApplyImprovedSavingThrow(
     }
     return 0;
 }
-// PC 0x0053D400
+// PC 0x0053D400 GOG 0x0053F160
 int CSWSItemPropertyHandler::ApplyReducedSavingThrow(CSWSItem* pItem,
                                                      CSWItemProperty* pProperty,
                                                      CSWSCreature* pCreature,
@@ -2766,7 +2766,7 @@ int CSWSItemPropertyHandler::ApplyReducedSavingThrow(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053D4B0
+// PC 0x0053D4B0 GOG 0x0053F210
 int CSWSItemPropertyHandler::RemoveChangedSavingThrow(
     int nSaveValue, CSWSItem* pItem, CSWItemProperty* pProperty,
     CSWSCreature* pCreature)
@@ -2833,7 +2833,7 @@ int CSWSItemPropertyHandler::RemoveChangedSavingThrow(
 
     return 0;
 }
-// PC 0x0053D5D0
+// PC 0x0053D5D0 GOG 0x0053F330
 int CSWSItemPropertyHandler::RemoveSpecialWalk(CSWSItem* pItem,
                                                CSWItemProperty* pProperty,
                                                CSWSCreature* pCreature,
@@ -2872,7 +2872,7 @@ int CSWSItemPropertyHandler::RemoveSpecialWalk(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053D6C0
+// PC 0x0053D6C0 GOG 0x0053F420
 int CSWSItemPropertyHandler::RemoveTrueSeeing(CSWSItem* pItem,
                                               CSWItemProperty* pProperty,
                                               CSWSCreature* pCreature,
@@ -2896,7 +2896,7 @@ int CSWSItemPropertyHandler::RemoveTrueSeeing(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053D740
+// PC 0x0053D740 GOG 0x0053F4A0
 int CSWSItemPropertyHandler::RemoveFreedomOfMovement(CSWSItem* pItem,
                                                      CSWItemProperty* pProperty,
                                                      CSWSCreature* pCreature,
@@ -2931,7 +2931,7 @@ int CSWSItemPropertyHandler::RemoveFreedomOfMovement(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053D820
+// PC 0x0053D820 GOG 0x0053F580
 int CSWSItemPropertyHandler::RemoveBonusFeat(CSWSItem* pItem,
                                              CSWItemProperty* pProperty,
                                              CSWSCreature* pCreature,
@@ -2970,7 +2970,7 @@ int CSWSItemPropertyHandler::RemoveBonusFeat(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053D8C0
+// PC 0x0053D8C0 GOG 0x0053F620
 int CSWSItemPropertyHandler::RemoveDamageImmunity(CSWSItem* pItem,
                                                   CSWItemProperty* pProperty,
                                                   CSWSCreature* pCreature,
@@ -3079,7 +3079,7 @@ int CSWSItemPropertyHandler::RemoveDamageImmunity(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053DAB0
+// PC 0x0053DAB0 GOG 0x0053F810
 int CSWSItemPropertyHandler::RemoveDamagePenalty(CSWSItem* pItem,
                                                 CSWItemProperty* pProperty,
                                                 CSWSCreature* pCreature,
@@ -3195,7 +3195,7 @@ int CSWSItemPropertyHandler::RemoveDamagePenalty(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053DCD0
+// PC 0x0053DCD0 GOG 0x0053FA30
 int CSWSItemPropertyHandler::RemoveDamageReduction(CSWSItem* pItem,
                                                    CSWItemProperty* pProperty,
                                                    CSWSCreature* pCreature,
@@ -3241,7 +3241,7 @@ int CSWSItemPropertyHandler::RemoveDamageReduction(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053DE10
+// PC 0x0053DE10 GOG 0x0053FB70
 int CSWSItemPropertyHandler::RemoveDamageResistance(CSWSItem* pItem,
                                                     CSWItemProperty* pProperty,
                                                     CSWSCreature* pCreature,
@@ -3284,7 +3284,7 @@ int CSWSItemPropertyHandler::RemoveDamageResistance(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053DF50
+// PC 0x0053DF50 GOG 0x0053FCB0
 int CSWSItemPropertyHandler::RemoveDamageVulnerability(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex)
@@ -3325,7 +3325,7 @@ int CSWSItemPropertyHandler::RemoveDamageVulnerability(
 
     return 0;
 }
-// PC 0x0053E080
+// PC 0x0053E080 GOG 0x0053FDE0
 int CSWSItemPropertyHandler::RemoveDecreaseAbilityScore(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex)
@@ -3413,7 +3413,7 @@ int CSWSItemPropertyHandler::RemoveDecreaseAbilityScore(
 
     return 0;
 }
-// PC 0x0053E250
+// PC 0x0053E250 GOG 0x0053FFB0
 int CSWSItemPropertyHandler::RemoveDecreaseAC(CSWSItem* pItem,
                                               CSWItemProperty* pProperty,
                                               CSWSCreature* pCreature,
@@ -3465,7 +3465,7 @@ int CSWSItemPropertyHandler::RemoveDecreaseAC(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053E3B0
+// PC 0x0053E3B0 GOG 0x00540110
 int CSWSItemPropertyHandler::RemoveDecreaseSkillModifier(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex)
@@ -3516,7 +3516,7 @@ int CSWSItemPropertyHandler::RemoveDecreaseSkillModifier(
 
     return 0;
 }
-// PC 0x0053E510
+// PC 0x0053E510 GOG 0x00540270
 int CSWSItemPropertyHandler::RemoveImmunity(CSWSItem* pItem,
                                             CSWItemProperty* pProperty,
                                             CSWSCreature* pCreature,
@@ -3599,7 +3599,7 @@ int CSWSItemPropertyHandler::RemoveImmunity(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053E6A0
+// PC 0x0053E6A0 GOG 0x00540400
 int CSWSItemPropertyHandler::RemoveSkillBonus(CSWSItem* pItem,
                                               CSWItemProperty* pProperty,
                                               CSWSCreature* pCreature,
@@ -3637,7 +3637,7 @@ int CSWSItemPropertyHandler::RemoveSkillBonus(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053E770
+// PC 0x0053E770 GOG 0x005404D0
 int CSWSItemPropertyHandler::RemoveRegeneration(CSWSItem* pItem,
                                                 CSWItemProperty* pProperty,
                                                 CSWSCreature* pCreature,
@@ -3668,7 +3668,7 @@ int CSWSItemPropertyHandler::RemoveRegeneration(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053E800
+// PC 0x0053E800 GOG 0x00540560
 int CSWSItemPropertyHandler::RemoveBlasterBoltDeflectionIncrease(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex)
@@ -3699,7 +3699,7 @@ int CSWSItemPropertyHandler::RemoveBlasterBoltDeflectionIncrease(
 
     return 0;
 }
-// PC 0x0053E890
+// PC 0x0053E890 GOG 0x005405F0
 int CSWSItemPropertyHandler::RemoveBlasterBoltDeflectionDecrease(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex)
@@ -3730,7 +3730,7 @@ int CSWSItemPropertyHandler::RemoveBlasterBoltDeflectionDecrease(
 
     return 0;
 }
-// PC 0x0053E920
+// PC 0x0053E920 GOG 0x00540680
 int CSWSItemPropertyHandler::RemoveDisguise(CSWSItem* pItem,
                                             CSWItemProperty* pProperty,
                                             CSWSCreature* pCreature,
@@ -3761,7 +3761,7 @@ int CSWSItemPropertyHandler::RemoveDisguise(CSWSItem* pItem,
 
     return 0;
 }
-// PC 0x0053E9B0
+// PC 0x0053E9B0 GOG 0x00540710
 int CSWSItemPropertyHandler::RemoveImprovedSavingThrow(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex)
@@ -3783,14 +3783,14 @@ int CSWSItemPropertyHandler::RemoveImprovedSavingThrow(
 
     return 0;
 }
-// PC 0x00401590
+// PC 0x00401590 GOG 0x00401590
 int CSWSItemPropertyHandler::RemoveLight(
     CSWSItem* pItem, CSWItemProperty* pProperty,
     CSWSCreature* pCreature, unsigned long nIndex)
 {
     return 0;
 }
-// PC 0x0053EA60
+// PC 0x0053EA60 GOG 0x005407C0
 int CSWSItemPropertyHandler::RemoveReducedSavingThrow(
     CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
     unsigned long nIndex)
@@ -3812,7 +3812,7 @@ int CSWSItemPropertyHandler::RemoveReducedSavingThrow(
 
     return 0;
 }
-// PC 0x0053EB10
+// PC 0x0053EB10 GOG 0x00540870
 void CSWSItemPropertyHandler::InitializeItemProperties()
 {
     int i;

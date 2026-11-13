@@ -102,19 +102,19 @@ public:
     int GetSurfaceMaterialWalkCheckOnly(Vector vPosition);
     void SetOrientation(const Quaternion& qOrientation);
     virtual void TransformToWorld(const Vector& vPosition);
-    virtual int GetWalkCheckMaterialMask()  // PC 0x00576C10
+    virtual int GetWalkCheckMaterialMask()  // PC 0x00576C10 GOG 0x00576C90
     {
         return m_nWalkCheckMaterialMask;
     }
-    virtual int GetLOSMaterialMask()  // PC 0x00576C20
+    virtual int GetLOSMaterialMask()  // PC 0x00576C20 GOG 0x00576CA0
     {
         return m_nLOSMaterialMask;
     }
-    virtual int GetWalkableMaterialMask()  // PC 0x00576C30
+    virtual int GetWalkableMaterialMask()  // PC 0x00576C30 GOG 0x00576CB0
     {
         return m_nWalkableMaterialMask;
     }
-    virtual int GetAllMaterialsMask()  // PC 0x00576C40
+    virtual int GetAllMaterialsMask()  // PC 0x00576C40 GOG 0x00576CC0
     {
         return m_nAllMaterialsMask;
     }
@@ -175,7 +175,7 @@ public:
     int m_nLeftChild;
     int m_nRightChild;
     CSWRoomSurfaceMeshAABBNode();
-    ~CSWRoomSurfaceMeshAABBNode()  // PC 0x004015A0
+    ~CSWRoomSurfaceMeshAABBNode()  // PC 0x004015A0 GOG 0x004015A0
     {
     }
 

@@ -3,7 +3,7 @@
 #include "nwcanimbase.h"
 #include "nwcobject.h"
 #include <string.h>
-// PC 0x006EFCB0
+// PC 0x006EFCB0 GOG 0x006EF8A0
 CSWCSpellCastVisual::CSWCSpellCastVisual()
 {
     m_pHeadConjureVisual = 0;
@@ -19,7 +19,7 @@ CSWCSpellCastVisual::CSWCSpellCastVisual()
     m_bHandConjureFaded = 0;
     m_bGroundConjureFaded = 0;
 }
-// PC 0x006EFCE0
+// PC 0x006EFCE0 GOG 0x006EF8D0
 void CSWCSpellCastVisual::UnloadConjureVisual()
 {
     if (m_pHeadConjureVisual != 0)
@@ -41,7 +41,7 @@ void CSWCSpellCastVisual::UnloadConjureVisual()
         m_pGroundConjureVisual = 0;
     }
 }
-// PC 0x006EFD60
+// PC 0x006EFD60 GOG 0x006EF950
 void CSWCSpellCastVisual::UnloadCastVisual()
 {
     if (m_pHeadCastVisual != 0)
@@ -63,7 +63,7 @@ void CSWCSpellCastVisual::UnloadCastVisual()
         m_pGroundCastVisual = 0;
     }
 }
-// PC 0x006EFDE0
+// PC 0x006EFDE0 GOG 0x006EF9D0
 void CSWCSpellCastVisual::UpdateTimer(unsigned long nTime)
 {
     if (m_bHeadConjureFaded)
@@ -126,7 +126,7 @@ void CSWCSpellCastVisual::UpdateTimer(unsigned long nTime)
         }
     }
 }
-// PC 0x006EFEC0
+// PC 0x006EFEC0 GOG 0x006EFAB0
 void FadeAnimDoneEvent(CAurObject* pObject, char*, void* pData)
 {
     CSWCSpellCastVisual* pVisual = static_cast<CSWCSpellCastVisual*>(pData);
@@ -146,13 +146,13 @@ void FadeAnimDoneEvent(CAurObject* pObject, char*, void* pData)
         }
     }
 }
-// PC 0x006EFEF0
+// PC 0x006EFEF0 GOG 0x006EFAE0
 CSWCSpellCastVisual::~CSWCSpellCastVisual()
 {
     UnloadConjureVisual();
     UnloadCastVisual();
 }
-// PC 0x006EFF00
+// PC 0x006EFF00 GOG 0x006EFAF0
 int CSWCSpellCastVisual::LoadConjureVisual(
     CResRef cHeadVisual, CResRef cHandVisual, CResRef cGroundVisual,
     CResRef cSound, CResRef cVocalization, CSWCCreature* pCreature)
@@ -231,7 +231,7 @@ int CSWCSpellCastVisual::LoadConjureVisual(
     }
     return 1;
 }
-// PC 0x006F0250
+// PC 0x006F0250 GOG 0x006EFE40
 int CSWCSpellCastVisual::LoadCastVisual(CResRef cHeadVisual,
                                         CResRef cHandVisual,
                                         CResRef cGroundVisual,

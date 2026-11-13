@@ -13,7 +13,7 @@ public:
         OPERATION_SAVE_GAME = 2,
         OPERATION_LOAD_GAME = 3
     };
-    // PC 0x004E9ED0
+    // PC 0x004E9ED0 GOG 0x004E9B00
     void StartStallEvent(unsigned long nEvent)
     {
         m_bOperationActive = 1;

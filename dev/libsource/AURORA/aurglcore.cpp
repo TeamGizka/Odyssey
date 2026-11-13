@@ -365,7 +365,7 @@ enum
 inline ImposterManager::ImposterManager() : m_pImposters(NULL), m_nImposters(2)
 {
 }
-// PC 0x00421C40
+// PC 0x00421C40 GOG 0x00421C50
 inline int GLRender::BindTexture(Aurora::AuroraEnableEnums nTarget,
                                  unsigned long nTexture)
 {
@@ -375,15 +375,15 @@ inline int GLRender::BindTexture(Aurora::AuroraEnableEnums nTarget,
     GLRender::cm_nGLCurrentTID[GLRender::cm_uiCurrentStage] = nTexture;
     return GLRender::cm_uiCurrentStage;
 }
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 void AurInitVertexArrayRange(int nBytes)
 {
 }
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 void RequestPoolManagerSys::BackUpPoolManager()
 {
 }
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 void RequestPoolManagerSys::RestorePoolManager()
 {
 }
@@ -780,7 +780,7 @@ void GLRender::SetUpSoftShadowsARB()
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
-// PC 0x00448F80
+// PC 0x00448F80 GOG 0x00431EB0
 template <> inline List<unsigned long>::~List()
 {
     if (m_pList != 0)
@@ -836,7 +836,7 @@ void SpitLetters(char* szString)
     glCallLists(strlen(szString), GL_UNSIGNED_BYTE, szString);
     AurPopAttrib();
 }
-// PC 0x00447510
+// PC 0x00447510 GOG 0x00447660
 void InitializeSystemPoolManager()
 {
     if (manRef == 0)
@@ -844,7 +844,7 @@ void InitializeSystemPoolManager()
         manRef = new RequestPoolManagerSys;
     }
 }
-// PC 0x00447580
+// PC 0x00447580 GOG 0x004476D0
 void InitializeVertexBufferObjectPoolManager()
 {
     if (manRef == 0)
@@ -852,7 +852,7 @@ void InitializeVertexBufferObjectPoolManager()
         manRef = new RequestPoolManagerVBO;
     }
 }
-// PC 0x00425350
+// PC 0x00425350 GOG 0x00425460
 void RequestPoolManagerSys::ResizePool(unsigned int nPool, unsigned int nSize)
 {
     totalvertexpool += nSize - m_pPoolSize[nPool];
@@ -865,12 +865,12 @@ void RequestPoolManagerSys::ResizePool(unsigned int nPool, unsigned int nSize)
     m_pPoolSize[nPool] = nSize;
     m_ppPools[nPool] = pNewPool;
 }
-// PC 0x00425400
+// PC 0x00425400 GOG 0x00425510
 int RequestPoolManagerSys::GetPoolSize(unsigned int nPool)
 {
     return m_pPoolSize[nPool];
 }
-// PC 0x00425410
+// PC 0x00425410 GOG 0x00425520
 int RequestPoolManagerSys::GetPool(unsigned int nPool)
 {
     if (nPool == (unsigned int)-1)
@@ -880,7 +880,7 @@ int RequestPoolManagerSys::GetPool(unsigned int nPool)
 
     return (int)m_ppPools[nPool];
 }
-// PC 0x00425410
+// PC 0x00425410 GOG 0x00425520
 int RequestPoolManagerSys::GetIndexPool(unsigned int nPool)
 {
     if (nPool == (unsigned int)-1)
@@ -890,7 +890,7 @@ int RequestPoolManagerSys::GetIndexPool(unsigned int nPool)
 
     return (int)m_ppPools[nPool];
 }
-// PC 0x00434BB0
+// PC 0x00434BB0 GOG 0x00434D00
 void RequestPoolManagerVBO::BackUpPoolManager()
 {
     int nSize;
@@ -917,7 +917,7 @@ void RequestPoolManagerVBO::BackUpPoolManager()
         }
     }
 }
-// PC 0x00434D60
+// PC 0x00434D60 GOG 0x00434EB0
 void RequestPoolManagerVBO::RestorePoolManager()
 {
     for (int nPool = 0; nPool < m_lstPoolBackup.m_nCount; nPool++)
@@ -939,11 +939,11 @@ void RequestPoolManagerVBO::RestorePoolManager()
     m_lstPoolBackup.SetSize(0);
     m_lstPoolBackupSize.SetSize(0);
 }
-// PC 0x006049D0
+// PC 0x006049D0 GOG 0x006049B0
 void RequestPoolManagerSys::RefreshPool(int nPool, int nUsage)
 {
 }
-// PC 0x00425500
+// PC 0x00425500 GOG 0x00425610
 Vector Quaternion::axis() const
 {
     Vector vAxis(m_fX, m_fY, m_fZ);
@@ -955,12 +955,12 @@ Vector Quaternion::axis() const
     float fScale = (float)(1.0 / sin(dAngle * 0.5));
     return Vector(vAxis.m_fX * fScale, vAxis.m_fY * fScale, vAxis.m_fZ * fScale);
 }
-// PC 0x00425590
+// PC 0x00425590 GOG 0x004256A0
 void DisableTextureShaders()
 {
     glDisable(GL_TEXTURE_SHADER_NV);
 }
-// PC 0x004255A0
+// PC 0x004255A0 GOG 0x004256B0
 inline void GLRender::DisableCombiners(CAurTexture* pTexture)
 {
     glDisable(GL_REGISTER_COMBINERS_NV);
@@ -990,17 +990,17 @@ const char* GLStats(char* sBuffer)
     sprintf(sBuffer, "faces[%d]", countfaces);
     return sBuffer;
 }
-// PC 0x00425650
+// PC 0x00425650 GOG 0x00425760
 inline void GLRender::SetCombinerConstant0(Vector& vColor, float fAlpha)
 {
     glCombinerParameterfvNV(0x852A, Homogenize(vColor, fAlpha));
 }
-// PC 0x00425670
+// PC 0x00425670 GOG 0x00425780
 inline void GLRender::SetCombinerConstant1(Vector& vColor, float fAlpha)
 {
     glCombinerParameterfvNV(0x852B, Homogenize(vColor, fAlpha));
 }
-// PC 0x00425690
+// PC 0x00425690 GOG 0x004257A0
 void SetShaderConstant(unsigned int nConstant, float* pValues, int nCount)
 {
     if ((existingextensions & ATI_FRAGMENT_SHADER_BIT) == ATI_FRAGMENT_SHADER_BIT)
@@ -6235,7 +6235,7 @@ void GLRender::EnableCombiners(int nShader, CAurTexture* pTexture0,
     }
     glEnable(GL_REGISTER_COMBINERS_NV);
 }
-// PC 0x00425730
+// PC 0x00425730 GOG 0x00425840
 void GLRender::RenderObjectsVTCQuadUP(RenderVertexVTC* pVertices, int nVertices)
 {
     if (AurVertexBufferObjectARBAvailable())
@@ -6263,7 +6263,7 @@ void GLRender::RenderObjectsVTCQuadUP(RenderVertexVTC* pVertices, int nVertices)
         glEnd();
     }
 }
-// PC 0x00425820
+// PC 0x00425820 GOG 0x00425930
 void GLRender::RenderObjectsVTQuadUP(RenderVertexVT* pVertices, int nVertices)
 {
     if (AurVertexBufferObjectARBAvailable())
@@ -6288,7 +6288,7 @@ void GLRender::RenderObjectsVTQuadUP(RenderVertexVT* pVertices, int nVertices)
         glEnd();
     }
 }
-// PC 0x004258E0
+// PC 0x004258E0 GOG 0x004259F0
 void GLRender::RenderObjectsVCUP(Aurora::AuroraPrimitiveTypes nPrimitive,
                                 RenderVertexVC* pVertices, int nVertices)
 {
@@ -6314,7 +6314,7 @@ void GLRender::RenderObjectsVCUP(Aurora::AuroraPrimitiveTypes nPrimitive,
         glEnd();
     }
 }
-// PC 0x004259B0
+// PC 0x004259B0 GOG 0x00425AC0
 void GLRender::MakeLookUpTexture(float fGamma)
 {
     if (!glIsTexture(lookup))
@@ -6345,25 +6345,25 @@ void GLRender::MakeLookUpTexture(float fGamma)
         delete[] pPixels;
     }
 }
-// PC 0x00425B10
+// PC 0x00425B10 GOG 0x00425C20
 unsigned long GLRender::RequestPool(Aurora::AuroraBufferRequestType nType,
                            unsigned long nSize, unsigned long nUsage,
                            unsigned long nPoolFlags, unsigned long* pnPool)
 {
     return *pnPool = manRef->RequestPoolGeneric(nType, nSize, nUsage);
 }
-// PC 0x00425B40
+// PC 0x00425B40 GOG 0x00425C50
 void* GLRender::LockPool(unsigned long nPool, unsigned long nOffset,
                          unsigned long nSize, unsigned long nCount)
 {
     return manRef->LockPool(nPool, nCount);
 }
-// PC 0x00425B60
+// PC 0x00425B60 GOG 0x00425C70
 void GLRender::UnlockPool(unsigned long nPool)
 {
     manRef->UnlockPool(nPool);
 }
-// PC 0x00425B80
+// PC 0x00425B80 GOG 0x00425C90
 void GLRender::DeletePool(unsigned long nPool)
 {
     if (nPool != (unsigned int)-1)
@@ -6371,12 +6371,12 @@ void GLRender::DeletePool(unsigned long nPool)
         manRef->DeletePool(nPool);
     }
 }
-// PC 0x00425BA0
+// PC 0x00425BA0 GOG 0x00425CB0
 void GLRender::ResizePool(unsigned long nPool, unsigned long nSize)
 {
     manRef->ResizePool(nPool, nSize);
 }
-// PC 0x00425BC0
+// PC 0x00425BC0 GOG 0x00425CD0
 void GLRender::CreateCubeTexture(CAurTexture* pTexture, bool bMipMaps,
                                  int nIndex)
 {
@@ -6468,7 +6468,7 @@ void GLRender::CreateCubeTexture(CAurTexture* pTexture, bool bMipMaps,
                         pTexture->GetFilter() ? GL_LINEAR : GL_NEAREST);
     }
 }
-// PC 0x00425E60
+// PC 0x00425E60 GOG 0x00425F70
 void GLRender::CreateProcessedCubeTexture(CAurTexture* pTexture, bool bSubImage,
                                           int nIndex)
 {
@@ -6566,7 +6566,7 @@ void GLRender::CreateProcessedCubeTexture(CAurTexture* pTexture, bool bSubImage,
         glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER,
                          pTexture->GetFilter() ? GL_LINEAR : GL_NEAREST);
 }
-// PC 0x004261B0
+// PC 0x004261B0 GOG 0x004262C0
 void AurBuild2DMipMaps(int nSrcWidth, int nSrcHeight, int nBPP,
                        unsigned char* pImage, bool bSubImage)
 {
@@ -6663,7 +6663,7 @@ void AurBuild2DMipMaps(int nSrcWidth, int nSrcHeight, int nBPP,
     }
     delete pMipImage;
 }
-// PC 0x00426570
+// PC 0x00426570 GOG 0x00426680
 void GLRender::CreateTexture(CAurTexture* pTexture, bool bSubImage, int nIndex)
 {
     int nHeight = pTexture->GetHeight();
@@ -6797,7 +6797,7 @@ void GLRender::CreateTexture(CAurTexture* pTexture, bool bSubImage, int nIndex)
     if (pSubImage != pImage)
         delete pSubImage;
 }
-// PC 0x004269B0
+// PC 0x004269B0 GOG 0x00426AC0
 int GetCompressedContactSheetOffset(int nIndex, int nWidth, int nBytesPerPixel)
 {
     int nMipWidth = nWidth;
@@ -6812,7 +6812,7 @@ int GetCompressedContactSheetOffset(int nIndex, int nWidth, int nBytesPerPixel)
 
     return nIndex * nSize;
 }
-// PC 0x00426A10
+// PC 0x00426A10 GOG 0x00426B20
 void GLRender::CreateProcessedTexture(CAurTexture* pTexture, bool bSubImage,
                                       int nIndex)
 {
@@ -6955,7 +6955,7 @@ void GLRender::CreateProcessedTexture(CAurTexture* pTexture, bool bSubImage,
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, nMinFilter);
     }
 }
-// PC 0x00426E90
+// PC 0x00426E90 GOG 0x00426FA0
 void GLRender::SetLightmapTexCoordToStage0(unsigned long nStride, int nFlags,
                                          unsigned long nPool, int nVertexCount,
                                          MdlNodeTriMesh* pMesh,
@@ -6985,7 +6985,7 @@ void GLRender::SetLightmapTexCoordToStage0(unsigned long nStride, int nFlags,
         ActivateTextureStage(0);
     }
 }
-// PC 0x00426FE0
+// PC 0x00426FE0 GOG 0x004270F0
 void GLRender::SetDecalTexCoordToStage0(unsigned long nStride, int nFlags,
                                       unsigned long nPool, int nVertexCount,
                                       MdlNodeTriMesh* pMesh,
@@ -7015,7 +7015,7 @@ void GLRender::SetDecalTexCoordToStage0(unsigned long nStride, int nFlags,
         ActivateTextureStage(0);
     }
 }
-// PC 0x00427130
+// PC 0x00427130 GOG 0x00427240
 void GLRender::SetInterleavedBuffer(unsigned long nStride, int nFlags,
                                    unsigned long nPool, int nVertexCount,
                                    MdlNodeTriMesh* pMesh, unsigned long nOffset)
@@ -7144,7 +7144,7 @@ void GLRender::SetInterleavedBuffer(unsigned long nStride, int nFlags,
         }
     }
 }
-// PC 0x00427510
+// PC 0x00427510 GOG 0x00427620
 void GLRender::SetVertexBuffer(unsigned long nStride, unsigned long nOffset,
                                unsigned long nPool, int nUsage)
 {
@@ -7161,7 +7161,7 @@ void GLRender::SetVertexBuffer(unsigned long nStride, unsigned long nOffset,
                         (const GLvoid*)(nOffset + nBuffer));
     }
 }
-// PC 0x00427580
+// PC 0x00427580 GOG 0x00427690
 void GLRender::SetColorBuffer(unsigned long nStride, unsigned long nOffset,
                               unsigned long nPool, int nUsage)
 {
@@ -7178,7 +7178,7 @@ void GLRender::SetColorBuffer(unsigned long nStride, unsigned long nOffset,
                        (const GLvoid*)(nOffset + nBuffer));
     }
 }
-// PC 0x004275F0
+// PC 0x004275F0 GOG 0x00427700
 void GLRender::SetNormalBuffer(unsigned int nStride, unsigned int nOffset,
                                unsigned int nPool, int nUsage)
 {
@@ -7194,7 +7194,7 @@ void GLRender::SetNormalBuffer(unsigned int nStride, unsigned int nOffset,
         glNormalPointer(GL_FLOAT, nStride, (const GLvoid*)(nOffset + nBuffer));
     }
 }
-// PC 0x00427650
+// PC 0x00427650 GOG 0x00427760
 void GLRender::SetTexCoordBuffer(unsigned long nStride, unsigned long nOffset,
                                  unsigned long nPool, int nUsage)
 {
@@ -7211,7 +7211,7 @@ void GLRender::SetTexCoordBuffer(unsigned long nStride, unsigned long nOffset,
                           (const GLvoid*)(nOffset + nBuffer));
     }
 }
-// PC 0x004276C0
+// PC 0x004276C0 GOG 0x004277D0
 void GLRender::DrawElements(Aurora::AuroraPrimitiveTypes nPrimitive,
                             unsigned long nCount, unsigned long nOffset,
                             unsigned long nPool)
@@ -7221,7 +7221,7 @@ void GLRender::DrawElements(Aurora::AuroraPrimitiveTypes nPrimitive,
                    GL_UNSIGNED_SHORT,
                    (const GLvoid*)(nIndexPool + 2 * nOffset));
 }
-// PC 0x00427700
+// PC 0x00427700 GOG 0x00427810
 void ImposterManager::AllocateImposter(unsigned long nRecord, int nVertices,
                                       float* pVertices)
 {
@@ -7262,7 +7262,7 @@ void ImposterManager::AllocateImposter(unsigned long nRecord, int nVertices,
     pRecord->m_pBuffer = pBuffer;
     wglMakeCurrent(hOldDC, hOldContext);
 }
-// PC 0x00427840
+// PC 0x00427840 GOG 0x00427950
 int GLRender::InitRenderSystem()
 {
     GLRender::m_hGLRC = wglGetCurrentContext();
@@ -7271,7 +7271,7 @@ int GLRender::InitRenderSystem()
     GLRender::cm_uiCurrentStage = 0;
     return 0;
 }
-// PC 0x00427870
+// PC 0x00427870 GOG 0x00427980
 void GLRender::Shutdown(int bReleaseRenderer)
 {
     if (manRef)
@@ -7475,7 +7475,7 @@ void GLRender::Shutdown(int bReleaseRenderer)
         manRef = 0;
     }
 }
-// PC 0x00427E20
+// PC 0x00427E20 GOG 0x00427F30
 int GLRender::GetFogArraysInfoRef()
 {
     int nPool = manRef->RequestPoolGeneric(0, 8, 2);
@@ -7486,7 +7486,7 @@ int GLRender::GetFogArraysInfoRef()
     pPoolManager->UnlockPool(nPool);
     return nPool;
 }
-// PC 0x00427E60
+// PC 0x00427E60 GOG 0x00427F70
 void GLRender::SetViewTransform(Vector& vPosition, Quaternion& qOrientation)
 {
     glMatrixMode(GL_MODELVIEW);
@@ -7507,7 +7507,7 @@ void GLRender::SetViewTransform(Vector& vPosition, Quaternion& qOrientation)
     }
     Translate(-vPosition.m_fX, -vPosition.m_fY, -vPosition.m_fZ);
 }
-// PC 0x00427F50
+// PC 0x00427F50 GOG 0x00428060
 static void CalculateCubeMapNormal(int nFace, int nSize, int nX, int nY,
                                    float* pNormal)
 {
@@ -7529,7 +7529,7 @@ static void CalculateCubeMapNormal(int nFace, int nSize, int nX, int nY,
     pNormal[1] *= fScale;
     pNormal[2] *= fScale;
 }
-// PC 0x00428070
+// PC 0x00428070 GOG 0x00428180
 void GLRender::MakeNormalizationCubeMap(int nSize)
 {
 
@@ -7557,7 +7557,7 @@ void GLRender::MakeNormalizationCubeMap(int nSize)
     }
     delete[] pPixels;
 }
-// PC 0x004281D0
+// PC 0x004281D0 GOG 0x004282E0
 void GLRender::RenderSquares(unsigned int nPool)
 {
     int nVBOAvailable = AurVertexBufferObjectARBAvailable();
@@ -7583,7 +7583,7 @@ void GLRender::RenderSquares(unsigned int nPool)
         glEnd();
     }
 }
-// PC 0x00428270
+// PC 0x00428270 GOG 0x00428380
 void GLRender::ConvertHeightFieldAndLoadNormalMapTexture(
     unsigned char* pHeightField, int nWidth, int nHeight, int nRowWidth,
     int nRowCount, float fScale, int bUpdate, bool bNormalMap)
@@ -7636,7 +7636,7 @@ void GLRender::ConvertHeightFieldAndLoadNormalMapTexture(
     }
     delete[] pNormalMap;
 }
-// PC 0x00428400
+// PC 0x00428400 GOG 0x00428510
 void GLRender::DrawLightmappedGrass(void* pVertices, int nVertexStride,
                                     void* pIndices, int nStride, int nFirst,
                                     int nQuads)
@@ -7664,7 +7664,7 @@ void GLRender::DrawLightmappedGrass(void* pVertices, int nVertexStride,
         glDrawArrays(GL_QUADS, nFirst, nQuads * 4);
     }
 }
-// PC 0x00428590
+// PC 0x00428590 GOG 0x004286A0
 void GLRender::InitAttenuationTexture()
 {
     unsigned char pixels[64 * 64 * 4];
@@ -7698,13 +7698,13 @@ void GLRender::InitAttenuationTexture()
                  GL_UNSIGNED_BYTE, pixels);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, cm_nAnisotropy);
 }
-// PC 0x00428720
+// PC 0x00428720 GOG 0x00428830
 int GLRender::SetCurrentStageTID(unsigned long nStage, unsigned int nTID)
 {
     GLRender::cm_nGLCurrentTID[nStage] = nTID;
     return nTID;
 }
-// PC 0x00428730
+// PC 0x00428730 GOG 0x00428840
 PBUFFERARB* GLRender::CreatePBuffer(int nWidth, int nHeight)
 {
     HDC hDC = m_hDC;
@@ -7729,17 +7729,17 @@ PBUFFERARB* GLRender::CreatePBuffer(int nWidth, int nHeight)
     return wglCreatePBufferARB(hDC, nPixelFormat, nWidth, nHeight,
                                nPbufferAttributes);
 }
-// PC 0x00428820
+// PC 0x00428820 GOG 0x00428930
 void GLRender::SetDirtyTexture(int nIndex, CAurTexture* pTexture)
 {
     m_pDirtyTexture[nIndex] = pTexture;
 }
-// PC 0x00428830
+// PC 0x00428830 GOG 0x00428940
 void GLRender::SetFilmNoiseTexture(CAurTexture* pTexture)
 {
     GLRender::cm_pFilmNoiseTexture = pTexture;
 }
-// PC 0x00428840
+// PC 0x00428840 GOG 0x00428950
 void GLRender::RenderShadowArray(int nVertices, int nEdges, int nPool)
 {
     static unsigned short* indexToken = new unsigned short[AUR_SHADOW_INDEX_COUNT];
@@ -7811,7 +7811,7 @@ void GLRender::RenderShadowArray(int nVertices, int nEdges, int nPool)
     }
     countfaces += nEdges * 8;
 }
-// PC 0x00428B20
+// PC 0x00428B20 GOG 0x00428C30
 char* AllocateShadowMemory(int nSize)
 {
     static char* data = new char[nSize];
@@ -7831,7 +7831,7 @@ char* AllocateShadowMemory(int nSize)
 
     return data;
 }
-// PC 0x00428BD0
+// PC 0x00428BD0 GOG 0x00428CE0
 int GLRender::BuildShadowArray(const Vector& vLight, const float& fRadius,
                                const Plane& plane, const Vector& vNearCap,
                                const Vector& vFarCap, int nVertices,
@@ -7873,7 +7873,7 @@ int GLRender::BuildShadowArray(const Vector& vLight, const float& fRadius,
     *(Vector*)pCap = vFarCap;
     return nUsed;
 }
-// PC 0x00428EA0
+// PC 0x00428EA0 GOG 0x00428FB0
 void GLRender::InitializeImageSpaceSoftShadows()
 {
     if (AurSoftShadowsAvailable() && cm_bSetUpImageSpaceShadows && enablesoftshadows)
@@ -7997,7 +7997,7 @@ void GLRender::InitializeImageSpaceSoftShadows()
         glDisable(GL_FRAGMENT_SHADER_ATI);
     }
 }
-// PC 0x004295C0
+// PC 0x004295C0 GOG 0x004296D0
 unsigned int log2integer(unsigned int x)
 {
     x |= (x >> 1);
@@ -8007,7 +8007,7 @@ unsigned int log2integer(unsigned int x)
     x |= (x >> 16);
     return ones32popcount(x >> 1);
 }
-// PC 0x00429630
+// PC 0x00429630 GOG 0x00429740
 void FindSmallestPowerOf2WidthHeight(unsigned int nWidth, unsigned int nHeight,
                                     unsigned long& nWidthPow2,
                                     unsigned long& nHeightPow2)
@@ -8015,7 +8015,7 @@ void FindSmallestPowerOf2WidthHeight(unsigned int nWidth, unsigned int nHeight,
     nWidthPow2 = 1 << (log2integer(nWidth) + 1);
     nHeightPow2 = 1 << (log2integer(nHeight) + 1);
 }
-// PC 0x00429670
+// PC 0x00429670 GOG 0x00429780
 void GLRender::InitializeFrameBufferModificationFragmentShadersATI()
 {
     glEnable(GL_FRAGMENT_SHADER_ATI);
@@ -8127,7 +8127,7 @@ void GLRender::InitializeFrameBufferModificationFragmentShadersATI()
     glEndFragmentShaderATI();
     glDisable(GL_FRAGMENT_SHADER_ATI);
 }
-// PC 0x00429FF0
+// PC 0x00429FF0 GOG 0x0042A100
 void GLRender::InitializeFrameBufferModifications()
 {
     if (doframebuffer && cm_bSetUpFrameBuffer)
@@ -8650,7 +8650,7 @@ void GLRender::InitializeFrameBufferModifications()
         }
     }
 }
-// PC 0x0042B750
+// PC 0x0042B750 GOG 0x0042B860
 void GLRender::FrameBufferModificationPixelShadersATI(unsigned long nMode,
     unsigned long nTexture0, unsigned long nTexture1,
     unsigned long nTexture2, unsigned long nTexture3)
@@ -8811,7 +8811,7 @@ void GLRender::FrameBufferModificationPixelShadersATI(unsigned long nMode,
     }
     }
 }
-// PC 0x0042BDD0
+// PC 0x0042BDD0 GOG 0x0042BEE0
 void GLRender::FrameBufferModificationPixelShaders(unsigned long nMode,
     unsigned long nTexture0, unsigned long nTexture1,
     unsigned long nTexture2, unsigned long nTexture3)
@@ -9217,7 +9217,7 @@ void GLRender::FrameBufferModificationPixelShaders(unsigned long nMode,
     }
     }
 }
-// PC 0x0042DA50
+// PC 0x0042DA50 GOG 0x0042DB60
 void GLRender::MipmapFilterATI(HDC hDC, HGLRC hContext, float fWidth,
                               float fHeight, PBUFFERARB* pBuffer,
                               unsigned long nTexture, float fSourceSize)
@@ -9261,7 +9261,7 @@ void GLRender::MipmapFilterATI(HDC hDC, HGLRC hContext, float fWidth,
     wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
     glFlush();
 }
-// PC 0x0042DCB0
+// PC 0x0042DCB0 GOG 0x0042DDC0
 void GLRender::MipmapFilter(HDC hDC, HGLRC hContext, float fWidth,
                             float fHeight, PBUFFERARB* pBuffer,
                             unsigned long nTexture, float fSourceSize)
@@ -9304,7 +9304,7 @@ void GLRender::MipmapFilter(HDC hDC, HGLRC hContext, float fWidth,
     wglReleaseTexImageARB(pBuffer, WGL_FRONT_LEFT_ARB);
     glFlush();
 }
-// PC 0x0042DEF0
+// PC 0x0042DEF0 GOG 0x0042E000
 void GLRender::BloomFilterATI(HDC hDC, HGLRC hContext, float fWidth,
                            float fHeight, PBUFFERARB* pBuffer,
                            unsigned long nTexture, float fSourceSize,
@@ -9456,7 +9456,7 @@ void GLRender::BloomFilterATI(HDC hDC, HGLRC hContext, float fWidth,
     glActiveTextureARB(GL_TEXTURE0_ARB);
     glFlush();
 }
-// PC 0x0042E680
+// PC 0x0042E680 GOG 0x0042E790
 void GLRender::BloomFilter(HDC hDC, HGLRC hContext, float fWidth,
                            float fHeight, PBUFFERARB* pBuffer,
                            unsigned long nTexture, float fSourceSize,
@@ -9600,7 +9600,7 @@ void GLRender::BloomFilter(HDC hDC, HGLRC hContext, float fWidth,
     glActiveTextureARB(GL_TEXTURE0_ARB);
     glFlush();
 }
-// PC 0x0042EDE0
+// PC 0x0042EDE0 GOG 0x0042EEF0
 void GLRender::RenderOverlayConvolutionATI(unsigned long nTexture)
 {
     if (!renderregular)
@@ -9699,7 +9699,7 @@ void GLRender::RenderOverlayConvolutionATI(unsigned long nTexture)
     wglReleaseTexImageARB(cm_hConvolutionPBuffer[displaylayer], WGL_FRONT_LEFT_ARB);
     FrameBufferModificationPixelShadersATI(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
 }
-// PC 0x0042F360
+// PC 0x0042F360 GOG 0x0042F470
 void GLRender::RenderOverlayConvolution(unsigned long nTexture)
 {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
@@ -9785,7 +9785,7 @@ void GLRender::RenderOverlayConvolution(unsigned long nTexture)
     wglReleaseTexImageARB(cm_hConvolutionPBuffer[displaylayer], WGL_FRONT_LEFT_ARB);
     FrameBufferModificationPixelShaders(FRAMEBUFFER_SHADER_DISABLE, 0, 0, 0, 0);
 }
-// PC 0x0042F840
+// PC 0x0042F840 GOG 0x0042F950
 void GLRender::SetUpSoftShadowsATI()
 {
     glEnable(GL_TEXTURE_2D);
@@ -9797,7 +9797,7 @@ void GLRender::SetUpSoftShadowsATI()
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
-// PC 0x0042F8C0
+// PC 0x0042F8C0 GOG 0x0042F9D0
 void GLRender::SetUpSoftShadows()
 {
     if (AurATISoftShadowsAvailable())
@@ -9814,7 +9814,7 @@ void GLRender::SetUpSoftShadows()
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
-// PC 0x0042F950
+// PC 0x0042F950 GOG 0x0042FA60
 void GLRender::FinishSoftShadowsATI()
 {
     glDisable(enableTranslationTable[ENABLE_DEPTH_TEST]);
@@ -9965,7 +9965,7 @@ void GLRender::FinishSoftShadowsATI()
     glStencilMask(STENCIL_WRITE_MASK);
     glDisable(GL_FRAGMENT_SHADER_ATI);
 }
-// PC 0x004300A0
+// PC 0x004300A0 GOG 0x004301B0
 void GLRender::FinishSoftShadows()
 {
     if (AurATISoftShadowsAvailable())
@@ -10098,7 +10098,7 @@ void GLRender::FinishSoftShadows()
     SetDepthMask(GL_TRUE);
     glStencilMask(STENCIL_WRITE_MASK);
 }
-// PC 0x00430740
+// PC 0x00430740 GOG 0x00430850
 int GLRender::InitializeAntiAliasing()
 {
 
@@ -10185,18 +10185,18 @@ int GLRender::InitializeAntiAliasing()
     ReleaseDC(hWindow, hDC);
     return DestroyWindow(hWindow);
 }
-// PC 0x00430940
+// PC 0x00430940 GOG 0x00430A50
 void GLRender::EnableDreamDistortion(bool bLetterbox)
 {
     m_bDreamDistortEnabled = true;
     m_bDreamDistortLetterbox = bLetterbox;
 }
-// PC 0x00430960
+// PC 0x00430960 GOG 0x00430A70
 void GLRender::DisableDreamDistortion()
 {
     m_bDreamDistortEnabled = false;
 }
-// PC 0x00430970
+// PC 0x00430970 GOG 0x00430A80
 void GLRender::EnableFury(short nLevel)
 {
     if (nLevel > 3)
@@ -10240,7 +10240,7 @@ void GLRender::EnableFury(short nLevel)
         m_FuryLevel = 0;
     }
 }
-// PC 0x00430A60
+// PC 0x00430A60 GOG 0x00430B70
 void GLRender::RenderDreamDistortion(unsigned long nTexture)
 {
     glDisable(GL_DEPTH_TEST);
@@ -10318,7 +10318,7 @@ void GLRender::RenderDreamDistortion(unsigned long nTexture)
     glDisable(GL_TEXTURE_2D);
     glActiveTextureARB(GL_TEXTURE0_ARB);
 }
-// PC 0x00430EB0
+// PC 0x00430EB0 GOG 0x00430FC0
 void GLRender::RenderDreamDistortionATI(unsigned long nTexture)
 {
     glMatrixMode(GL_PROJECTION);
@@ -10417,7 +10417,7 @@ void GLRender::RenderDreamDistortionATI(unsigned long nTexture)
     glDisable(GL_FRAGMENT_SHADER_ATI);
     glFlush();
 }
-// PC 0x00431400
+// PC 0x00431400 GOG 0x00431510
 void GLRender::RenderFury(unsigned long nTexture)
 {
     glDisable(GL_DEPTH_TEST);
@@ -10495,7 +10495,7 @@ void GLRender::RenderFury(unsigned long nTexture)
     glDisable(GL_TEXTURE_2D);
     glActiveTextureARB(GL_TEXTURE0_ARB);
 }
-// PC 0x00431850
+// PC 0x00431850 GOG 0x00431960
 void GLRender::RenderFuryATI(unsigned long nTexture)
 {
     glMatrixMode(GL_PROJECTION);
@@ -10594,11 +10594,11 @@ void GLRender::RenderFuryATI(unsigned long nTexture)
     glDisable(GL_FRAGMENT_SHADER_ATI);
     glFlush();
 }
-// PC 0x00431DA0
+// PC 0x00431DA0 GOG 0x00431EF0
 inline RequestPoolManager::~RequestPoolManager()
 {
 }
-// PC 0x00434E20
+// PC 0x00434E20 GOG 0x00434F70
 RequestPoolManagerVBO::RequestPoolManagerVBO()
 {
     m_nPoolCount = 100;
@@ -10611,7 +10611,7 @@ RequestPoolManagerVBO::RequestPoolManagerVBO()
         m_lstPoolTypes.Add(GL_ARRAY_BUFFER_ARB);
     }
 }
-// PC 0x004350B0
+// PC 0x004350B0 GOG 0x00435200
 RequestPoolManagerVBO::~RequestPoolManagerVBO()
 {
     for (unsigned int nPool = 0; nPool < m_nPoolCount; nPool++)
@@ -10632,7 +10632,7 @@ RequestPoolManagerVBO::~RequestPoolManagerVBO()
     m_lstPoolBackupSize.SetSize(0);
     m_lstPoolTypes.SetSize(0);
 }
-// PC 0x00435200
+// PC 0x00435200 GOG 0x00435350
 int RequestPoolManagerVBO::RequestPoolGeneric(int nType, int nSize, int nUsage)
 {
     if (nSize == 0)
@@ -10698,7 +10698,7 @@ int RequestPoolManagerVBO::RequestPoolGeneric(int nType, int nSize, int nUsage)
     m_nPoolCount *= 2;
     return nResult;
 }
-// PC 0x00435560
+// PC 0x00435560 GOG 0x004356B0
 void RequestPoolManagerVBO::DeletePool(unsigned int nPool)
 {
     if (nPool == INVALID_POOL)
@@ -10712,7 +10712,7 @@ void RequestPoolManagerVBO::DeletePool(unsigned int nPool)
     glDeleteBuffersARB(1, &nBuffer);
     m_lstPools[nPool] = 0;
 }
-// PC 0x004355D0
+// PC 0x004355D0 GOG 0x00435720
 RequestPoolManagerSys::RequestPoolManagerSys()
 {
     m_nPoolCount = 100;
@@ -10726,7 +10726,7 @@ RequestPoolManagerSys::RequestPoolManagerSys()
         m_lstPoolLocks.Add(0);
     }
 }
-// PC 0x00435780
+// PC 0x00435780 GOG 0x004358D0
 int RequestPoolManagerSys::RequestPoolGeneric(int nType, int nSize, int nUsage)
 {
     totalvertexpool += nSize;
@@ -10773,7 +10773,7 @@ int RequestPoolManagerSys::RequestPoolGeneric(int nType, int nSize, int nUsage)
     m_nPoolCount *= 2;
     return nResult;
 }
-// PC 0x00435980
+// PC 0x00435980 GOG 0x00435AD0
 void RequestPoolManagerSys::DeletePool(unsigned int nPool)
 {
     if (nPool == INVALID_POOL)
@@ -10793,7 +10793,7 @@ void RequestPoolManagerSys::DeletePool(unsigned int nPool)
     m_ppPools[nPool] = 0;
     m_pPoolSize[nPool] = 0;
 }
-// PC 0x00446BA0
+// PC 0x00446BA0 GOG 0x00446CF0
 void GLRender::AddSquareToRender(unsigned long nPool)
 {
     if (nPool != (unsigned long)-1)
@@ -10801,7 +10801,7 @@ void GLRender::AddSquareToRender(unsigned long nPool)
         cm_listSquaresToRender.Add(nPool);
     }
 }
-// PC 0x00446BF0
+// PC 0x00446BF0 GOG 0x00446D40
 void GLRender::RemoveSquareToRender(unsigned long nPool)
 {
     if (nPool != (unsigned long)-1)
@@ -10812,7 +10812,7 @@ void GLRender::RemoveSquareToRender(unsigned long nPool)
         }
     }
 }
-// PC 0x00447610
+// PC 0x00447610 GOG 0x00447760
 void GLRender::InitExtensions()
 {
     wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)
@@ -11341,7 +11341,7 @@ void GLRender::InitExtensions()
         InitializeSystemPoolManager();
     manRef->RestorePoolManager();
 }
-// PC 0x004486C0
+// PC 0x004486C0 GOG 0x00448810
 void GLRender::FrameBufferModifications(unsigned long nFlags)
 {
     static bool c_bPreviousFrameWasSpeed = false;
@@ -11500,7 +11500,7 @@ void GLRender::FrameBufferModifications(unsigned long nFlags)
         }
     }
 }
-// PC 0x00446C30
+// PC 0x00446C30 GOG 0x00446D80
 void GLRender::FrameBufferModificationsATI(unsigned long nFlags)
 {
     static bool c_bPreviousFrameWasSpeed = false;
@@ -11644,7 +11644,7 @@ void GLRender::FrameBufferModificationsATI(unsigned long nFlags)
     glMatrixMode(GL_MODELVIEW);
     cm_bFirstFrameBufferFrame = false;
 }
-// PC 0x004471F0
+// PC 0x004471F0 GOG 0x00447340
 void GLRender::FrameBufferModificationsATI2(unsigned long nFlags)
 {
     if (visualizepass4 && m_bSaturationEnabled &&
@@ -11682,7 +11682,7 @@ void GLRender::FrameBufferModificationsATI2(unsigned long nFlags)
         glPopMatrix();
     }
 }
-// PC 0x00447370
+// PC 0x00447370 GOG 0x004474C0
 void GLRender::FrameBufferModifications2(unsigned long nFlags)
 {
     if (doframebuffer && cm_bPBuffersAllocated && cm_bSetUpFrameBuffer)
@@ -11732,7 +11732,7 @@ void GLRender::FrameBufferModifications2(unsigned long nFlags)
         }
     }
 }
-// PC 0x00431DF0
+// PC 0x00431DF0 GOG 0x00431F40
 void* RequestPoolManagerVBO::LockPool(int nPool, int nUsage)
 {
     if (nPool == INVALID_POOL)
@@ -11754,7 +11754,7 @@ void* RequestPoolManagerVBO::LockPool(int nPool, int nUsage)
                           g_bVertexBufferObjectsWriteOnly ? GL_WRITE_ONLY_ARB :
                                                           GL_READ_WRITE_ARB);
 }
-// PC 0x00431E90
+// PC 0x00431E90 GOG 0x00431FE0
 void RequestPoolManagerVBO::UnlockPool(unsigned int nPool)
 {
     if (nPool != (unsigned int)-1 && m_lstPoolLocks.m_pList[nPool] != 0)
@@ -11764,7 +11764,7 @@ void RequestPoolManagerVBO::UnlockPool(unsigned int nPool)
         glUnmapBufferARB(m_lstPoolTypes.m_pList[nPool]);
     }
 }
-// PC 0x00431EE0
+// PC 0x00431EE0 GOG 0x00432030
 int RequestPoolManagerVBO::GetPool(unsigned int nPool)
 {
     if (nPool == (unsigned int)-1)
@@ -11774,7 +11774,7 @@ int RequestPoolManagerVBO::GetPool(unsigned int nPool)
 
     return m_lstPools.m_pList[nPool];
 }
-// PC 0x00431F00
+// PC 0x00431F00 GOG 0x00432050
 int RequestPoolManagerVBO::GetIndexPool(unsigned int nPool)
 {
     if (nPool != (unsigned int)-1)
@@ -11784,7 +11784,7 @@ int RequestPoolManagerVBO::GetIndexPool(unsigned int nPool)
 
     return 0;
 }
-// PC 0x00431F20
+// PC 0x00431F20 GOG 0x00432070
 int RequestPoolManagerVBO::GetPoolSize(unsigned int nPool)
 {
     int nIndex = nPool;
@@ -11798,7 +11798,7 @@ int RequestPoolManagerVBO::GetPoolSize(unsigned int nPool)
     glGetBufferParameterivARB(m_lstPoolTypes.m_pList[nIndex], GL_BUFFER_SIZE_ARB, &nSize);
     return nSize;
 }
-// PC 0x00431F70
+// PC 0x00431F70 GOG 0x004320C0
 void RequestPoolManagerVBO::ResizePool(unsigned int nPool, unsigned int nSize)
 {
     if (nPool == INVALID_POOL)
@@ -11824,7 +11824,7 @@ void RequestPoolManagerVBO::ResizePool(unsigned int nPool, unsigned int nSize)
     glBufferSubDataARB(m_lstPoolTypes.m_pList[nPool], 0, nOldSize, pBackup);
     delete[] pBackup;
 }
-// PC 0x00432090
+// PC 0x00432090 GOG 0x004321E0
 RequestPoolManagerSys::~RequestPoolManagerSys()
 {
     for (unsigned int nPool = 0; nPool < m_nPoolCount; nPool++)
@@ -11834,7 +11834,7 @@ RequestPoolManagerSys::~RequestPoolManagerSys()
     delete[] m_ppPools;
     delete[] m_pPoolSize;
 }
-// PC 0x00432100
+// PC 0x00432100 GOG 0x00432250
 void* RequestPoolManagerSys::LockPool(int nPool, int nUsage)
 {
     if (nPool == -1)
@@ -11852,7 +11852,7 @@ void* RequestPoolManagerSys::LockPool(int nPool, int nUsage)
     *pLock = 1;
     return m_ppPools[nPool];
 }
-// PC 0x00432130
+// PC 0x00432130 GOG 0x00432280
 void RequestPoolManagerSys::UnlockPool(unsigned int nPool)
 {
     if (nPool != (unsigned int)-1)
@@ -11864,7 +11864,7 @@ void RequestPoolManagerSys::UnlockPool(unsigned int nPool)
         }
     }
 }
-// PC 0x00432150
+// PC 0x00432150 GOG 0x004322A0
 void GLRender::DrawTriangles(List<MaxFace>& lFaces, RenderVertexV* pVertices,
                               RenderVertexC* pColors)
 {
@@ -11888,7 +11888,7 @@ void GLRender::DrawTriangles(List<MaxFace>& lFaces, RenderVertexV* pVertices,
 
     glEnd();
 }
-// PC 0x004322B0
+// PC 0x004322B0 GOG 0x00432400
 void GLRender::DrawSphereBound(float fRadius, Vector& vCenter,
                                const Vector& vColor, float fScale,
                                bool bBillboard)
@@ -11935,7 +11935,7 @@ void GLRender::DrawSphereBound(float fRadius, Vector& vCenter,
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING);
 }
-// PC 0x00432410
+// PC 0x00432410 GOG 0x00432560
 void GLRender::RenderObjectsVTCQuad(unsigned long nPool, int nVertices)
 {
     if (AurVertexBufferObjectARBAvailable())
@@ -11966,7 +11966,7 @@ void GLRender::RenderObjectsVTCQuad(unsigned long nPool, int nVertices)
         glEnd();
     }
 }
-// PC 0x00432510
+// PC 0x00432510 GOG 0x00432660
 int ImposterManager::AllocateImposterRecord(int nVertices, float* pVertices)
 {
     int nRecord;
@@ -11988,12 +11988,12 @@ int ImposterManager::AllocateImposterRecord(int nVertices, float* pVertices)
     m_nImposters *= 2;
     return m_nImposters >> 1;
 }
-// PC 0x004325E0
+// PC 0x004325E0 GOG 0x00432730
 int GLRender::SetUpImposters(int nType, float* pfValues)
 {
     return manRefImposter.AllocateImposterRecord(nType, pfValues);
 }
-// PC 0x00432600
+// PC 0x00432600 GOG 0x00432750
 void GLRender::RenderDrawableSquares()
 {
     glDisable(GL_LIGHTING);
@@ -12008,7 +12008,7 @@ void GLRender::RenderDrawableSquares()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
 }
-// PC 0x00432660
+// PC 0x00432660 GOG 0x004327B0
 void GLRender::RenderOverlayFilmNoiseATI(unsigned long nTexture, bool bScanLines)
 {
     glMatrixMode(GL_PROJECTION);
@@ -12071,7 +12071,7 @@ void GLRender::RenderOverlayFilmNoiseATI(unsigned long nTexture, bool bScanLines
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
 }
-// PC 0x004329B0
+// PC 0x004329B0 GOG 0x00432B00
 void GLRender::RenderOverlayFilmNoise(unsigned long nTexture, bool bScanLines)
 {
     glBlendFunc(GL_ONE, GL_ZERO);
@@ -12120,7 +12120,7 @@ void GLRender::RenderOverlayFilmNoise(unsigned long nTexture, bool bScanLines)
     glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
     glFlush();
 }
-// PC 0x00432C50
+// PC 0x00432C50 GOG 0x00432DA0
 void GLRender::RenderForceDistortionATI(unsigned long nTexture)
 {
     glMatrixMode(GL_PROJECTION);
@@ -12202,7 +12202,7 @@ void GLRender::RenderForceDistortionATI(unsigned long nTexture)
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
 }
-// PC 0x004330C0
+// PC 0x004330C0 GOG 0x00433210
 void GLRender::RenderForceDistortion(unsigned long nTexture)
 {
     glEnable(GL_VERTEX_PROGRAM_ARB);
@@ -12277,7 +12277,7 @@ void GLRender::RenderForceDistortion(unsigned long nTexture)
     }
     glFlush();
 }
-// PC 0x00433470
+// PC 0x00433470 GOG 0x004335C0
 void GLRender::RenderFrameToTextureATI(unsigned long nTexture)
 {
     HDC hOldDC = m_hDC;
@@ -12317,7 +12317,7 @@ void GLRender::RenderFrameToTextureATI(unsigned long nTexture)
     wglMakeContextCurrentARB(hOldDC, hOldDC, hOldContext);
     glDrawBuffer(GL_BACK);
 }
-// PC 0x00433690
+// PC 0x00433690 GOG 0x004337E0
 void GLRender::RenderFrameToTexture(unsigned long nTexture)
 {
     wglMakeCurrent(cm_hAccumulationHDC, cm_hAccumulationHGLRC);
@@ -12350,7 +12350,7 @@ void GLRender::RenderFrameToTexture(unsigned long nTexture)
     glFlush();
     wglMakeCurrent(m_hDC, m_hGLRC);
 }
-// PC 0x00433860
+// PC 0x00433860 GOG 0x004339B0
 void GLRender::RenderAccumulationBlurATI(unsigned long nTexture)
 {
     glMatrixMode(GL_PROJECTION);
@@ -12421,7 +12421,7 @@ void GLRender::RenderAccumulationBlurATI(unsigned long nTexture)
     glDisable(GL_FRAGMENT_SHADER_ATI);
     glFlush();
 }
-// PC 0x00433C90
+// PC 0x00433C90 GOG 0x00433DE0
 void GLRender::RenderAccumulationBlur(unsigned long nTexture)
 {
     glDisable(GL_DEPTH_TEST);
@@ -12476,7 +12476,7 @@ void GLRender::RenderAccumulationBlur(unsigned long nTexture)
     glDisable(GL_TEXTURE_RECTANGLE_NV);
     glActiveTextureARB(GL_TEXTURE0_ARB);
 }
-// PC 0x00433FE0
+// PC 0x00433FE0 GOG 0x00434130
 void GLRender::RenderOverlayOverbrighten(unsigned long nTexture)
 {
     glBlendFunc(GL_ONE, GL_ZERO);
@@ -12500,7 +12500,7 @@ void GLRender::RenderOverlayOverbrighten(unsigned long nTexture)
     glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
     glDisable(GL_TEXTURE_RECTANGLE_NV);
 }
-// PC 0x00434130
+// PC 0x00434130 GOG 0x00434280
 void GLRender::RenderOverlayOverbrightenATI(unsigned long nTexture)
 {
     glBlendFunc(GL_ONE, GL_ZERO);
@@ -12526,7 +12526,7 @@ void GLRender::RenderOverlayOverbrightenATI(unsigned long nTexture)
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_TEXTURE_2D);
 }
-// PC 0x004342C0
+// PC 0x004342C0 GOG 0x00434410
 void GLRender::RenderSaturationAdjustmentATI(unsigned long nTexture)
 {
     glMatrixMode(GL_PROJECTION);
@@ -12601,7 +12601,7 @@ void GLRender::RenderSaturationAdjustmentATI(unsigned long nTexture)
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
 }
-// PC 0x00434780
+// PC 0x00434780 GOG 0x004348D0
 void GLRender::RenderSaturationAdjustment(unsigned long nTexture)
 {
     glBlendFunc(GL_ONE, GL_ZERO);
@@ -12662,7 +12662,7 @@ void GLRender::RenderSaturationAdjustment(unsigned long nTexture)
     glBindTexture(GL_TEXTURE_RECTANGLE_NV, 0);
     glDisable(GL_TEXTURE_RECTANGLE_NV);
 }
-// PC 0x006049D0
+// PC 0x006049D0 GOG 0x006049B0
 void RequestPoolManagerVBO::RefreshPool(int nPool, int nUsage)
 {
 }

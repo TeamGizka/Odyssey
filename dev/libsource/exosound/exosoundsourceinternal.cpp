@@ -13,7 +13,7 @@ static inline void ExosoundsourceinternalTrace1();
 static inline void ExoSoundSourceTrace();
 #define EXOSOUNDSOURCE_TRACE() ExoSoundSourceTrace()
 
-// PC 0x00626D80
+// PC 0x00626D80 GOG 0x00626D20
 int CExoSoundSourceInternal::Demand()
 {
     if (m_pRes == 0)
@@ -44,7 +44,7 @@ int CExoSoundSourceInternal::ReleaseDemand()
     return 0;
 }
 #else
-int CExoSoundSourceInternal::ReleaseDemand()  // PC 0x00626DC0
+int CExoSoundSourceInternal::ReleaseDemand()  // PC 0x00626DC0 GOG 0x00626D60
 {
     if (m_bDemanded != 0)
     {
@@ -69,7 +69,7 @@ void CExoSoundSourceInternal::DoObstructionWork()
     }
 }
 #else
-void CExoSoundSourceInternal::DoObstructionWork()  // PC 0x00626DE0
+void CExoSoundSourceInternal::DoObstructionWork()  // PC 0x00626DE0 GOG 0x00626D80
 {
     if (m_p3DVoice != 0)
     {
@@ -112,7 +112,7 @@ CExoSoundSourceInternal::CExoSoundSourceInternal(CExoSoundInternal* pSound)
     m_fObstruction = 0.0f;
 }
 #else
-CExoSoundSourceInternal::CExoSoundSourceInternal(CExoSoundInternal* pSound)  // PC 0x00626E80
+CExoSoundSourceInternal::CExoSoundSourceInternal(CExoSoundInternal* pSound)  // PC 0x00626E80 GOG 0x00626E20
 {
     m_pListNode = 0;
     m_b3D = 0;
@@ -160,12 +160,12 @@ CExoSoundSourceInternal::~CExoSoundSourceInternal()
     ReleaseDemand();
 }
 #else
-CExoSoundSourceInternal::~CExoSoundSourceInternal()  // PC 0x00627440
+CExoSoundSourceInternal::~CExoSoundSourceInternal()  // PC 0x00627440 GOG 0x006273E0
 {
     ShutDownSource(true);
 }
 #endif
-// PC 0x00626FE0
+// PC 0x00626FE0 GOG 0x00626F80
 int CExoSoundSourceInternal::GetWithinRangeOfListener()
 {
     if (m_b3D == 0)
@@ -207,7 +207,7 @@ int CExoSoundSourceInternal::IsPlaying()
     return 0;
 }
 #else
-int CExoSoundSourceInternal::IsPlaying()  // PC 0x00627070
+int CExoSoundSourceInternal::IsPlaying()  // PC 0x00627070 GOG 0x00627010
 {
     EXOSOUNDSOURCE_TRACE();
     if (m_pSound->m_bInitialized != 0)
@@ -224,7 +224,7 @@ int CExoSoundSourceInternal::IsPlaying()  // PC 0x00627070
     return 0;
 }
 #endif
-// PC 0x006270C0
+// PC 0x006270C0 GOG 0x00627060
 void CExoSoundSourceInternal::SetLooping(int bLooping)
 {
     EXOSOUNDSOURCE_TRACE();
@@ -255,7 +255,7 @@ void CExoSoundSourceInternal::Pause()
     }
 }
 #else
-void CExoSoundSourceInternal::Pause()  // PC 0x006270E0
+void CExoSoundSourceInternal::Pause()  // PC 0x006270E0 GOG 0x00627080
 {
     if (m_pSound->m_bInitialized != 0)
     {
@@ -315,7 +315,7 @@ void CExoSoundSourceInternal::Resume()
     }
 }
 #else
-void CExoSoundSourceInternal::Resume()  // PC 0x006277E0
+void CExoSoundSourceInternal::Resume()  // PC 0x006277E0 GOG 0x00627780
 {
     EXOSOUNDSOURCE_TRACE();
     if (m_pSound->m_bInitialized != 0 && IsPaused())
@@ -448,7 +448,7 @@ void CExoSoundSourceInternal::ShutDownSource(bool bForce)  // PC 0x00627150 GOG 
     m_pListNode = 0;
 }
 #endif
-// PC 0x006271F0
+// PC 0x006271F0 GOG 0x00627190
 void CExoSoundSourceInternal::Stop()
 {
     ShutDownSource();
@@ -467,7 +467,7 @@ void CExoSoundSourceInternal::SetPosition(const Vector& vPosition)
     }
 }
 #else
-void CExoSoundSourceInternal::SetPosition(const Vector& vPosition)  // PC 0x00627200
+void CExoSoundSourceInternal::SetPosition(const Vector& vPosition)  // PC 0x00627200 GOG 0x006271A0
 {
     m_vPosition = vPosition;
     if (m_b3D != 0)
@@ -480,7 +480,7 @@ void CExoSoundSourceInternal::SetPosition(const Vector& vPosition)  // PC 0x0062
     }
 }
 #endif
-// PC 0x00627260
+// PC 0x00627260 GOG 0x00627200
 void CExoSoundSourceInternal::Set3D(int b3D)
 {
     EXOSOUNDSOURCE_TRACE();
@@ -526,7 +526,7 @@ int CExoSoundSourceInternal::IsPaused()
 }
 
 #else
-// PC 0x00627280
+// PC 0x00627280 GOG 0x00627220
 int CExoSoundSourceInternal::IsPaused()
 {
     unsigned long nPosition;
@@ -562,7 +562,7 @@ int CExoSoundSourceInternal::IsPaused()
     return 0;
 }
 #endif
-void CExoSoundSourceInternal::SetOneShotDelay(unsigned long nDelay)  // PC 0x00627300
+void CExoSoundSourceInternal::SetOneShotDelay(unsigned long nDelay)  // PC 0x00627300 GOG 0x006272A0
 {
     EXOSOUNDSOURCE_TRACE();
     if (m_pSound->m_bInitialized != 0)
@@ -574,7 +574,7 @@ void CExoSoundSourceInternal::SetOneShotDelay(unsigned long nDelay)  // PC 0x006
 }
 
 #ifndef _XBOX
-void CExoSoundSourceInternal::StoreRestartSoundPosition()  // PC 0x00627340
+void CExoSoundSourceInternal::StoreRestartSoundPosition()  // PC 0x00627340 GOG 0x006272E0
 {
     EXOSOUNDSOURCE_TRACE();
     if (m_pSound->m_bInitialized != 0)
@@ -810,7 +810,7 @@ unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)
     return nDuration;
 }
 #else
-unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)  // PC 0x006274A0
+unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)  // PC 0x006274A0 GOG 0x00627440
 {
     CExoString sName;
     AILSOUNDINFO info;
@@ -1049,7 +1049,7 @@ void CExoSoundSourceInternal::SetVolume(unsigned char nVolume, int nSliderMode,
     }
 }
 #else
-void CExoSoundSourceInternal::SetVolume(unsigned char nVolume, int nSliderMode,  // PC 0x00627840
+void CExoSoundSourceInternal::SetVolume(unsigned char nVolume, int nSliderMode,  // PC 0x00627840 GOG 0x006277E0
                                         float fScale)
 {
     EXOSOUNDSOURCEINTERNAL_TRACE();
@@ -1132,7 +1132,7 @@ int CExoSoundSourceInternal::SetFixedVariance(float fVariance)
     return 0;
 }
 #else
-int CExoSoundSourceInternal::SetFixedVariance(float fVariance)  // PC 0x006279C0
+int CExoSoundSourceInternal::SetFixedVariance(float fVariance)  // PC 0x006279C0 GOG 0x00627960
 {
     if (fVariance <= 2.0f && fVariance >= 0.5f)
     {
@@ -1192,7 +1192,7 @@ void CExoSoundSourceInternal::SetPriorityGroup(unsigned char nPriorityGroup)
     }
 }
 #else
-void CExoSoundSourceInternal::SetPriorityGroup(unsigned char nPriorityGroup)  // PC 0x00627B60
+void CExoSoundSourceInternal::SetPriorityGroup(unsigned char nPriorityGroup)  // PC 0x00627B60 GOG 0x00627B00
 {
     CExoSoundInternal* pSound = m_pSound;
     if (pSound->m_bInitialized != 0)
@@ -1242,7 +1242,7 @@ void CExoSoundSourceInternal::SetPitchVariance(float fVariance)
     }
 }
 #else
-void CExoSoundSourceInternal::SetPitchVariance(float fVariance)  // PC 0x00627A80
+void CExoSoundSourceInternal::SetPitchVariance(float fVariance)  // PC 0x00627A80 GOG 0x00627A20
 {
     float fPitchVariance = min(1.0f, max(0.0f, fVariance));
 
@@ -1270,7 +1270,7 @@ void CExoSoundSourceInternal::SetPitchVariance(float fVariance)  // PC 0x00627A8
     }
 }
 #endif
-// PC 0x00627390
+// PC 0x00627390 GOG 0x00627330
 void CExoSoundSourceInternal::CalculatePitchVarianceFrequency()
 {
     EXOSOUNDSOURCE_TRACE();
@@ -1302,7 +1302,7 @@ void CExoSoundSourceInternal::CalculateFixedVarianceFrequency()
     m_nFixedRate = (unsigned long)((float)m_nSampleRate * m_fFixedVariance);
 }
 #else
-void CExoSoundSourceInternal::CalculateFixedVarianceFrequency()  // PC 0x00627410
+void CExoSoundSourceInternal::CalculateFixedVarianceFrequency()  // PC 0x00627410 GOG 0x006273B0
 {
     EXOSOUNDSOURCE_TRACE();
     double dVariance = m_fFixedVariance;

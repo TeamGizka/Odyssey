@@ -118,7 +118,7 @@ public:
 
     Scene(char* sName);
     virtual ~Scene();
-    virtual int SetFog(int bFog)  // PC 0x0046DC80
+    virtual int SetFog(int bFog)  // PC 0x0046DC80 GOG 0x0046DDE0
     {
         m_bFog = bFog;
         return bFog;
@@ -143,26 +143,26 @@ public:
     virtual void DeleteTile(const Vector& vPosition);
     virtual int HitCheck(Vector vStart, Vector vEnd, Vector* pHit,
                          CHitInfo* pHitInfo);
-    virtual void GetFogRange(float& fNear, float& fFar)  // PC 0x0046DC90
+    virtual void GetFogRange(float& fNear, float& fFar)  // PC 0x0046DC90 GOG 0x0046DDF0
     {
         fNear = m_fFogNear;
         fFar = m_fFogFar;
     }
-    virtual void SetFogRange(float fNear, float fFar)  // PC 0x0046DCB0
+    virtual void SetFogRange(float fNear, float fFar)  // PC 0x0046DCB0 GOG 0x0046DE10
     {
         m_fFogNear = fNear;
         m_fFogFar = fFar;
     }
-    virtual void SetSceneFocus(Vector vFocus)  // PC 0x0046DCD0
+    virtual void SetSceneFocus(Vector vFocus)  // PC 0x0046DCD0 GOG 0x0046DE30
     {
         m_vSceneFocus = vFocus;
     }
     virtual unsigned char SetGeomFadeProperties(int nProperties);
-    virtual char IsGeomFadeEnabled()  // PC 0x0046DCF0
+    virtual char IsGeomFadeEnabled()  // PC 0x0046DCF0 GOG 0x0046DE50
     {
         return geomFadeEnabled == 1;
     }
-    virtual int GetObjectCount()  // PC 0x0046DD00
+    virtual int GetObjectCount()  // PC 0x0046DD00 GOG 0x0046DE60
     {
         return m_lstObjects.m_nCount;
     }
@@ -193,7 +193,7 @@ public:
     virtual void RenderGobAfter(CAurObject* pObject, CAurObject* pAfter);
     virtual void RenderGobBefore(CAurObject* pObject, CAurObject* pBefore);
     virtual char IsAnimating();
-    virtual void AddObject(CAurObject* pObject)  // PC 0x0046DD10
+    virtual void AddObject(CAurObject* pObject)  // PC 0x0046DD10 GOG 0x0046DE70
     {
         ChildAdd((Gob*)pObject);
     }
@@ -342,7 +342,7 @@ public:
     };
 
     CHitInfo(int nType, int nFlags, int nMask);
-    // PC 0x0046B430
+    // PC 0x0046B430 GOG 0x0046B590
     ~CHitInfo()
     {
         AurSceneTrace(this);

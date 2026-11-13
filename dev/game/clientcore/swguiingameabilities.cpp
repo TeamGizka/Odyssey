@@ -74,7 +74,7 @@ CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)
     m_pCreature = NULL;
 }
 #else
-CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)  // PC 0x00737ED0
+CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)  // PC 0x00737ED0 GOG 0x00737C30
     : CSWGuiPanel(pManager)
 {
     CExoString sName;
@@ -175,14 +175,14 @@ static inline void SwguiingameabilitiesTrace2()
 static inline void SwguiingameabilitiesTrace1()
 {
 }
-// PC 0x00736580
+// PC 0x00736580 GOG 0x007362A0
 void CSWGuiInGameAbilities::OnPanelRemoved()
 {
     m_lbAbility.ClearItems();
     m_cPowerChart.ClearChart();
     m_cFeatChart.ClearChart();
 }
-// PC 0x007365B0
+// PC 0x007365B0 GOG 0x007362D0
 void CSWGuiInGameAbilities::CreatePowerList()
 {
     if (m_pCreature != NULL)
@@ -194,7 +194,7 @@ void CSWGuiInGameAbilities::CreatePowerList()
     }
 }
 
-// PC 0x007365F0
+// PC 0x007365F0 GOG 0x00736310
 void CSWGuiInGameAbilities::UpdateDescriptionListBox(int bShow)
 {
 #ifdef _XBOX
@@ -226,7 +226,7 @@ void CSWGuiInGameAbilities::UpdateDescriptionListBox(int bShow)
     m_lblRAnalog.SetEnabledFlag(m_lbDescription.IsOversized());
 #endif
 }
-// PC 0x007366A0
+// PC 0x007366A0 GOG 0x007363C0
 void CSWGuiInGameAbilities::SetDescription(unsigned long nStrRef)
 {
     STR_RES strDescription;
@@ -244,7 +244,7 @@ int CSWGuiInGameAbilities::DisplayPowers()
 }
 
 #ifndef _XBOX
-void CSWGuiInGameAbilities::SetButtonColor(CSWGuiControl* pControl)  // PC 0x00736730
+void CSWGuiInGameAbilities::SetButtonColor(CSWGuiControl* pControl)  // PC 0x00736730 GOG 0x00736450
 {
     switch (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode)
     {
@@ -260,7 +260,7 @@ void CSWGuiInGameAbilities::SetButtonColor(CSWGuiControl* pControl)  // PC 0x007
     }
 }
 #endif
-// PC 0x00736790
+// PC 0x00736790 GOG 0x007364B0
 void CSWGuiInGameSkillEntry::SetExtent(const CSWGuiExtent& cExtent)
 {
     if (cExtent.m_nWidth > 42)
@@ -289,7 +289,7 @@ void CSWGuiInGameSkillEntry::SetExtent(const CSWGuiExtent& cExtent)
             CSWGuiLabelHilight::m_cHilite.GetInnerExtent()));
     }
 }
-// PC 0x007368C0
+// PC 0x007368C0 GOG 0x007365E0
 void CSWGuiInGameSkillEntry::Draw(float fElapsed)
 {
     if (m_bActive)
@@ -305,7 +305,7 @@ void CSWGuiInGameSkillEntry::Draw(float fElapsed)
     m_cSelection.Draw(fElapsed);
     m_cText.Draw(fElapsed);
 }
-// PC 0x00736920
+// PC 0x00736920 GOG 0x00736680
 void CSWGuiInGameSkillEntry::Initialize(CSWGuiText& cText,
                                         CSWGuiBorder& cBorder,
                                         CSWGuiBorder& cHilite, int nWidth)
@@ -347,7 +347,7 @@ void CSWGuiInGameSkillEntry::Initialize(CSWGuiText& cText,
         SetExtent(cExtent);
     }
 }
-// PC 0x00736AF0
+// PC 0x00736AF0 GOG 0x00736850
 void CSWGuiInGameSkillEntry::SetSkill(unsigned long nSkill,
                                       unsigned char nState)
 {
@@ -393,7 +393,7 @@ void CSWGuiInGameSkillEntry::SetSkill(unsigned long nSkill,
     pParams->SetFillImage(cIcon, 0);
     m_cText.m_cParams.SetStrRef(nStrRef);
 }
-// PC 0x00736BE0
+// PC 0x00736BE0 GOG 0x00736940
 inline int CSWGuiSkillFlowChart::GetSelected()
 {
     if (m_cFlows.num > 0)
@@ -404,7 +404,7 @@ inline int CSWGuiSkillFlowChart::GetSelected()
     }
     return -1;
 }
-// PC 0x00736C80
+// PC 0x00736C80 GOG 0x007369E0
 CSWGuiInGameAbilities::~CSWGuiInGameAbilities()
 {
     m_lbDescription.ClearItems();
@@ -413,7 +413,7 @@ CSWGuiInGameAbilities::~CSWGuiInGameAbilities()
 #endif
     m_lbAbility.ClearItems();
 }
-// PC 0x00736E90
+// PC 0x00736E90 GOG 0x00736BF0
 void CSWGuiInGameAbilities::OnEnterSkill(CSWGuiControl* pControl)
 {
     m_nSelectedSkill = pControl->GetID();
@@ -448,7 +448,7 @@ void CSWGuiInGameAbilities::OnEnterSkill(CSWGuiControl* pControl)
     m_lblName.m_cText.m_cParams.SetStrRef(nNameStrRef);
     SetDescription(pSkill->GetDescriptionText());
 }
-// PC 0x00737110
+// PC 0x00737110 GOG 0x00736E70
 void CSWGuiInGameAbilities::OnEnterFeat(unsigned short nFeat)
 {
     SWGUIINGAMEABILITIES_TRACE();
@@ -457,7 +457,7 @@ void CSWGuiInGameAbilities::OnEnterFeat(unsigned short nFeat)
     SetDescription(pFeat->GetDescriptionText());
     m_lblName.m_cText.m_cParams.SetStrRef(pFeat->m_nNameStrRef);
 }
-// PC 0x00737300
+// PC 0x00737300 GOG 0x00737060
 void CSWGuiInGameAbilities::OnEnterPower(unsigned long nPower)
 {
     CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nPower);
@@ -546,7 +546,7 @@ void CSWGuiInGameAbilities::OnEnterPower(unsigned long nPower)
 }
 
 #ifndef _XBOX
-void CSWGuiInGameAbilities::OnAbilitySelectionChanged(CSWGuiControl* pControl)  // PC 0x007377A0
+void CSWGuiInGameAbilities::OnAbilitySelectionChanged(CSWGuiControl* pControl)  // PC 0x007377A0 GOG 0x00737500
 {
     CSWGuiSkillFlow* pFlow =
         static_cast<CSWGuiSkillFlow*>(m_lbAbility.GetSelectedControl());
@@ -588,7 +588,7 @@ void CSWGuiInGameAbilities::OnAbilitySelectionChanged(CSWGuiControl* pControl)  
     }
 }
 #endif
-// PC 0x00737850
+// PC 0x00737850 GOG 0x007375B0
 void CSWGuiInGameAbilities::UpdateView()
 {
     CExoArrayList<CSWGuiControl*> lstControls;
@@ -743,7 +743,7 @@ void CSWGuiInGameAbilities::UpdateView()
     SetActiveControl(NULL, 0);
     SetActiveControl(&m_lbAbility, 0);
 }
-// PC 0x00737D30
+// PC 0x00737D30 GOG 0x00737A90
 void CSWGuiInGameAbilities::CreateSkillList()
 {
     int nNumSkills = g_pRules->m_nNumSkills;
@@ -792,13 +792,13 @@ void CSWGuiInGameAbilities::OnPowersButtonPressed(CSWGuiControl* pControl)
 #endif
 
 #ifndef _XBOX
-void CSWGuiInGameAbilities::OnSkillsButtonPressed(CSWGuiControl* pControl)  // PC 0x00737EA0
+void CSWGuiInGameAbilities::OnSkillsButtonPressed(CSWGuiControl* pControl)  // PC 0x00737EA0 GOG 0x00737C00
 {
     g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nAbilityMode = 0;
     UpdateView();
 }
 #endif
-// PC 0x00738780
+// PC 0x00738780 GOG 0x007384E0
 void CSWGuiInGameAbilities::SetCharacter(CSWCCreature* pCreature)
 {
     m_pCreature = pCreature;
@@ -845,7 +845,7 @@ void CSWGuiInGameAbilities::OnPanelAdded()
     m_lblBlack.SetEnabledFlag(g_pAppManager->m_pClientExoApp->GetSWParty()->GetNumCharacters() > 1);
 }
 #else
-void CSWGuiInGameAbilities::OnPanelAdded()  // PC 0x00738870
+void CSWGuiInGameAbilities::OnPanelAdded()  // PC 0x00738870 GOG 0x007385D0
 {
     SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0));
     m_btnExit.HandleMouseOver(0);
@@ -853,7 +853,7 @@ void CSWGuiInGameAbilities::OnPanelAdded()  // PC 0x00738870
 }
 #endif
 #ifndef _XBOX
-// PC 0x007388B0
+// PC 0x007388B0 GOG 0x00738610
 void CSWGuiInGameAbilities::UpdateCharacter()
 {
     SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0));
@@ -936,7 +936,7 @@ void CSWGuiInGameAbilities::HandleInputEvent(int nEvent, int nState)
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 #else
-void CSWGuiInGameAbilities::HandleInputEvent(int nEvent, int nState)  // PC 0x007388E0
+void CSWGuiInGameAbilities::HandleInputEvent(int nEvent, int nState)  // PC 0x007388E0 GOG 0x00738640
 {
     if (nState != 0)
     {

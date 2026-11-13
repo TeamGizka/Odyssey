@@ -59,7 +59,7 @@ const unsigned long CServerAIMaster::EVENT_SUMMON_CREATURE = 24;
 const unsigned long CServerAIMaster::EVENT_ACQUIRE_ITEM = 25;
 const unsigned long CServerAIMaster::EVENT_AREA_TRANSITION = 26;
 const unsigned long CServerAIMaster::EVENT_CONTROLLER_RUMBLE = 27;
-// PC 0x00650770
+// PC 0x00650770 GOG 0x00650620
 void CServerAIMaster::SetExoAppInternal(CServerExoAppInternal* pExoAppInternal)
 {
     m_pExoAppInternal = pExoAppInternal;
@@ -168,7 +168,7 @@ static inline void ServeraimasterTrace1()
 {
 }
 
-// PC 0x004DC9A0
+// PC 0x004DC9A0 GOG 0x004DCD90
 void LogEventAddGetObject(unsigned long oidObject, CExoString& sName,
                           CExoString& sType)
 {
@@ -276,7 +276,7 @@ void LogEventAddGetObject(unsigned long oidObject, CExoString& sName,
 }
 
 
-// PC 0x004DCBC0
+// PC 0x004DCBC0 GOG 0x004DCFB0
 static void LogEventAdd(unsigned long oidCaller, unsigned long oidObject,
                         unsigned long nEventId, void* pEventData)
 {
@@ -512,18 +512,18 @@ static void LogEventAdd(unsigned long oidCaller, unsigned long oidObject,
                     sScriptEventName.CStr());
     sMessage.CStr();
 }
-// PC 0x004DD340
+// PC 0x004DD340 GOG 0x004DCA10
 int CServerAIMaster::OnEffectApplied(CSWSObject* pObject, CGameEffect* pEffect,
                                      int bLoadingModule)
 {
     return m_pEffectHandler->OnEffectApplied(pObject, pEffect, bLoadingModule);
 }
-// PC 0x004DD350
+// PC 0x004DD350 GOG 0x004DCA20
 int CServerAIMaster::OnEffectRemoved(CSWSObject* pObject, CGameEffect* pEffect)
 {
     return m_pEffectHandler->OnEffectRemoved(pObject, pEffect);
 }
-// PC 0x004DD360
+// PC 0x004DD360 GOG 0x004DCA30
 int CServerAIMaster::OnItemPropertyApplied(CSWSItem* pItem,
                                            CSWItemProperty* pProperty,
                                            CSWSCreature* pCreature,
@@ -532,7 +532,7 @@ int CServerAIMaster::OnItemPropertyApplied(CSWSItem* pItem,
     return m_pItemPropertyHandler->OnItemPropertyApplied(
         pItem, pProperty, pCreature, nIndex, bLoading);
 }
-// PC 0x004DD370
+// PC 0x004DD370 GOG 0x004DCA40
 int CServerAIMaster::OnItemPropertyRemoved(CSWSItem* pItem,
                                            CSWItemProperty* pProperty,
                                            CSWSCreature* pCreature,
@@ -541,7 +541,7 @@ int CServerAIMaster::OnItemPropertyRemoved(CSWSItem* pItem,
     return m_pItemPropertyHandler->OnItemPropertyRemoved(pItem, pProperty,
                                                          pCreature, nIndex);
 }
-// PC 0x004DD570
+// PC 0x004DD570 GOG 0x004DCCB0
 BOOL CServerAIList::RemoveObject(unsigned long oidObject)
 {
     if (Contains(oidObject) != 0)
@@ -556,7 +556,7 @@ BOOL CServerAIList::RemoveObject(unsigned long oidObject)
 
     return TRUE;
 }
-// PC 0x004DD5D0
+// PC 0x004DD5D0 GOG 0x004DCD50
 BOOL CServerAIMaster::RemoveObject(CSWSObject* pObject)
 {
     int nAILevel = pObject->m_nAILevel;
@@ -578,7 +578,7 @@ BOOL CServerAIMaster::RemoveObject(CSWSObject* pObject)
 
 void LogEventAddGetObject(unsigned long oidObject, CExoString& sName,
                           CExoString& sType);
-// PC 0x004DD610
+// PC 0x004DD610 GOG 0x004DD730
 BOOL CServerAIMaster::AddEventAbsoluteTime(unsigned long nCalendarDay,
                                   unsigned long nTimeOfDay,
                                   unsigned long oidCaller,
@@ -626,7 +626,7 @@ BOOL CServerAIMaster::AddEventAbsoluteTime(unsigned long nCalendarDay,
 
     return TRUE;
 }
-// PC 0x004DD700
+// PC 0x004DD700 GOG 0x004DD820
 BOOL CServerAIEventNode::SaveNode(CResGFF* pRes, CResStruct* pStruct)
 {
     CResStruct sEventData;
@@ -743,7 +743,7 @@ BOOL CServerAIEventNode::SaveNode(CResGFF* pRes, CResStruct* pStruct)
     }
     return TRUE;
 }
-// PC 0x004DDAF0
+// PC 0x004DDAF0 GOG 0x004DDC10
 BOOL CServerAIEventNode::LoadNode(CResGFF* pRes, CResStruct* pStruct)
 {
     CResStruct sEventData;
@@ -891,7 +891,7 @@ BOOL CServerAIEventNode::LoadNode(CResGFF* pRes, CResStruct* pStruct)
 
     return TRUE;
 }
-// PC 0x004DDFE0
+// PC 0x004DDFE0 GOG 0x004DE100
 CServerAIMaster::CServerAIMaster()
 {
     m_pEffectHandler = new CSWSEffectListHandler;
@@ -903,7 +903,7 @@ CServerAIMaster::CServerAIMaster()
     m_pUnused88 = NULL;
     m_pUnused8C = NULL;
 }
-// PC 0x004DD3A0
+// PC 0x004DD3A0 GOG 0x004DCA80
 BOOL CServerAIBodyBagInfo::SaveBodyBag(CResGFF* pRes, CResStruct* pStruct)
 {
     pRes->WriteFieldDWORD(pStruct, m_nBodyBagId, "BodyBagId");
@@ -912,7 +912,7 @@ BOOL CServerAIBodyBagInfo::SaveBodyBag(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldFLOAT(pStruct, m_vPosition.m_fZ, "PositionZ");
     return TRUE;
 }
-// PC 0x004DD400
+// PC 0x004DD400 GOG 0x004DCAE0
 BOOL CServerAIBodyBagInfo::LoadBodyBag(CResGFF* pRes, CResStruct* pStruct)
 {
     int bSuccess;
@@ -923,7 +923,7 @@ BOOL CServerAIBodyBagInfo::LoadBodyBag(CResGFF* pRes, CResStruct* pStruct)
     m_vPosition.m_fZ = pRes->ReadFieldFLOAT(pStruct, "PositionZ", bSuccess, 0.0f);
     return TRUE;
 }
-// PC 0x004DE0B0
+// PC 0x004DE0B0 GOG 0x004DE1D0
 BOOL CServerAIMaster::AddObject(CSWSObject* pObject, int nAILevel)
 {
     ServeraimasterTrace2();
@@ -941,7 +941,7 @@ BOOL CServerAIMaster::AddObject(CSWSObject* pObject, int nAILevel)
     pObject->m_nAILevel = nAILevel;
     return TRUE;
 }
-// PC 0x004DE100
+// PC 0x004DE100 GOG 0x004DE220
 BOOL CServerAIMaster::SetAILevel(CSWSObject* pObject, int nAILevel)
 {
     if (pObject->m_nAILevel == nAILevel)
@@ -956,7 +956,7 @@ BOOL CServerAIMaster::SetAILevel(CSWSObject* pObject, int nAILevel)
 
     return FALSE;
 }
-// PC 0x004DE130
+// PC 0x004DE130 GOG 0x004DE250
 BOOL CServerAIMaster::AddEventDeltaTime(
     unsigned long nDayDelta, unsigned long nTimeDelta, unsigned long oidCaller,
     unsigned long oidObject, unsigned long nEventId, void* pEventData)
@@ -980,7 +980,7 @@ BOOL CServerAIMaster::AddEventDeltaTime(
     delete pEventData;
     return FALSE;
 }
-// PC 0x004DE1D0
+// PC 0x004DE1D0 GOG 0x004DE2F0
 BOOL CServerAIMaster::SaveEventQueue(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList lstEvents;
@@ -1004,7 +1004,7 @@ BOOL CServerAIMaster::SaveEventQueue(CResGFF* pRes, CResStruct* pStruct)
 
     return TRUE;
 }
-// PC 0x004DE260
+// PC 0x004DE260 GOG 0x004DE380
 BOOL CServerAIMaster::LoadEventQueue(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList lstEvents;
@@ -1035,7 +1035,7 @@ BOOL CServerAIMaster::LoadEventQueue(CResGFF* pRes, CResStruct* pStruct)
 
     return TRUE;
 }
-// PC 0x004DE310
+// PC 0x004DE310 GOG 0x004DE430
 void CServerAIMaster::LoadReputationAdjustments()
 {
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
@@ -1129,7 +1129,7 @@ void CServerAIMaster::LoadReputationAdjustments()
     }
 }
 #ifndef _XBOX
-void CServerAIMaster::DeleteEventData(unsigned long nEventId, void* pEventData)  // PC 0x004DEF60
+void CServerAIMaster::DeleteEventData(unsigned long nEventId, void* pEventData)  // PC 0x004DEF60 GOG 0x004DF080
 {
     if (pEventData != NULL)
     {
@@ -1209,7 +1209,7 @@ void CServerAIMaster::DeleteEventData(unsigned long nEventId, void* pEventData)
     }
 }
 #endif
-// PC 0x004DF020
+// PC 0x004DF020 GOG 0x004DF140
 void CServerAIMaster::UpdateState()
 {
     unsigned long nCurrentTime;
@@ -1436,7 +1436,7 @@ void CServerAIMaster::UpdateState()
         }
     }
 }
-// PC 0x004DF670
+// PC 0x004DF670 GOG 0x004DF790
 void CServerAIMaster::ClearEventQueue()
 {
     while (!m_lstEvents.IsEmpty())
@@ -1448,7 +1448,7 @@ void CServerAIMaster::ClearEventQueue()
         delete pNode;
     }
 }
-// PC 0x004DF6B0
+// PC 0x004DF6B0 GOG 0x004DF7D0
 CServerAIMaster::~CServerAIMaster()
 {
     ClearEventQueue();
@@ -1491,7 +1491,7 @@ CServerAIMaster::~CServerAIMaster()
 }
 
 
-// PC 0x006009E0
+// PC 0x006009E0 GOG 0x006009C0
 void CServerAIMaster::AdjustTargetAndWitnessReputations(
     unsigned long oidTarget, unsigned long oidActor, int nAction)
 {

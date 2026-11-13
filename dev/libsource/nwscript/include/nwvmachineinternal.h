@@ -115,7 +115,7 @@ class CVirtualMachineScript
 {
 public:
     CVirtualMachineScript();
-    ~CVirtualMachineScript()  // PC 0x006201A0
+    ~CVirtualMachineScript()  // PC 0x006201A0 GOG 0x00620170
     {
         CVirtualMachineStack* pStack;
         char* pCode;

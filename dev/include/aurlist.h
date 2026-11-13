@@ -146,7 +146,7 @@ template <class T> List<T>::~List()
         delete[] m_pList;
     }
 }
-// PC 0x004673E0
+// PC 0x004673E0 GOG 0x004AB840
 template <class T> void List<T>::Remove(T item)
 {
     int i;
@@ -188,7 +188,7 @@ template <class T> void List<T>::SetSize(int nSize)
     }
     m_nCount = nSize;
 }
-// PC 0x00567300
+// PC 0x00567300 GOG 0x00482570
 template <class T> void List<T>::Add(T item)
 {
     if (m_nCount == m_nAllocated)

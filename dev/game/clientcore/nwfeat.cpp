@@ -1,6 +1,6 @@
 #include "nwfeat.h"
 #include "exotlktable.h"
-// PC 0x00619DF0
+// PC 0x00619DF0 GOG 0x00619DD0
 CSWFeat::CSWFeat()
 {
     m_nNameStrRef = -1;
@@ -34,18 +34,18 @@ CSWFeat::CSWFeat()
     m_bAtton = 0;
     m_bKreia = 0;
 }
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 CSWFeat::~CSWFeat()
 {
 }
-// PC 0x00619E70
+// PC 0x00619E70 GOG 0x00619E50
 CExoString CSWFeat::GetNameText()
 {
     STR_RES strRes;
     g_pTlkTable->Fetch(m_nNameStrRef, strRes, CTlkTable::GENDER_MALE);
     return strRes.m_sString;
 }
-// PC 0x00619F10
+// PC 0x00619F10 GOG 0x00619EF0
 CExoString CSWFeat::GetDescriptionText()
 {
     STR_RES strRes;

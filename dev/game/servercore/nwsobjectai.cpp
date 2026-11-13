@@ -47,17 +47,17 @@ static inline CServerExoApp* GetServerExoApp();
 int RenderAi = 0;
 
 int OverrideReputation = CSWSObject::REPUTATION_NO_OVERRIDE;
-// PC 0x005DACE0
+// PC 0x005DACE0 GOG 0x005DAD50
 void CSWSCreature::SetPreDialogPosition(Vector vPosition)
 {
     m_v1208 = vPosition;
 }
-// PC 0x005DAD00
+// PC 0x005DAD00 GOG 0x005DAD70
 void CSWSCreature::SetPreDialogOrientation(Vector vOrientation)
 {
     m_v1214 = vOrientation;
 }
-// PC 0x005DAD20
+// PC 0x005DAD20 GOG 0x005DAD90
 unsigned long CSWSObject::GetAcceptableAction(unsigned long nActionType)
 {
     int nResult;
@@ -109,7 +109,7 @@ unsigned long CSWSObject::GetAcceptableAction(unsigned long nActionType)
 
     return nResult;
 }
-// PC 0x005DADA0
+// PC 0x005DADA0 GOG 0x005DAE10
 unsigned short CSWSObject::GetAQActionIDByID(unsigned short nActionType,
                                   int bSpecialAction)
 {
@@ -262,7 +262,7 @@ unsigned short CSWSObject::GetIDByAQActionID(unsigned short nAQActionID)
 static inline void NwsobjectaiDebugLine(const Vector&, const Vector&, int)
 {
 }
-// PC 0x005DAFA0
+// PC 0x005DAFA0 GOG 0x005DB010
 int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
 {
     if (GetDead() == 1 || GetIsPCDying() == 1)
@@ -574,7 +574,7 @@ int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
         0, 0, GetId(), oidTarget, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
     return ACTION_COMPLETE;
 }
-// PC 0x005DC030
+// PC 0x005DC030 GOG 0x005DC0A0
 int CSWSObject::AIActionPauseDialog(CSWSObjectActionNode* pNode)
 {
     CSWSCreature* pCreature;
@@ -600,7 +600,7 @@ int CSWSObject::AIActionPauseDialog(CSWSObjectActionNode* pNode)
     }
     return ACTION_COMPLETE;
 }
-// PC 0x005DC0D0
+// PC 0x005DC0D0 GOG 0x005DC140
 int CSWSObject::AIActionResumeDialog(CSWSObjectActionNode* pNode)
 {
     int nDeadTemp = 0;
@@ -626,7 +626,7 @@ int CSWSObject::AIActionResumeDialog(CSWSObjectActionNode* pNode)
         return ACTION_COMPLETE;
     }
 }
-// PC 0x005DC190
+// PC 0x005DC190 GOG 0x005DC200
 int CSWSObject::AIActionSpeakStrRef(CSWSObjectActionNode* pNode)
 {
     if (AsSWSCreature() != NULL)
@@ -642,7 +642,7 @@ int CSWSObject::AIActionSpeakStrRef(CSWSObjectActionNode* pNode)
         nStrRef, m_nId, nPlayer);
     return ACTION_COMPLETE;
 }
-// PC 0x005DC1F0
+// PC 0x005DC1F0 GOG 0x005DC260
 int CSWSObject::AIActionSpeak(CSWSObjectActionNode* pNode)
 {
     CExoString sMessage;
@@ -663,7 +663,7 @@ int CSWSObject::AIActionSpeak(CSWSObjectActionNode* pNode)
     }
     return ACTION_COMPLETE;
 }
-// PC 0x005DC2F0
+// PC 0x005DC2F0 GOG 0x005DC360
 int CSWSObject::AIActionDoCommand(CSWSObjectActionNode* pNode)
 {
     int nDeadTemp = 0;
@@ -682,7 +682,7 @@ int CSWSObject::AIActionDoCommand(CSWSObjectActionNode* pNode)
     pNode->m_apParam[0] = NULL;
     return ACTION_COMPLETE;
 }
-// PC 0x005DC380
+// PC 0x005DC380 GOG 0x005DC3F0
 int CSWSObject::AIActionWait(CSWSObjectActionNode* pNode)
 {
     int nDeadTemp = 0;
@@ -715,7 +715,7 @@ int CSWSObject::AIActionWait(CSWSObjectActionNode* pNode)
     }
     return ACTION_COMPLETE;
 }
-// PC 0x005E08F0
+// PC 0x005E08F0 GOG 0x005E0920
 int CSWSObject::AIActionGiveItem(CSWSObjectActionNode* pNode)
 {
     CSWSItem* pItem = NULL;
@@ -830,7 +830,7 @@ int CSWSObject::AIActionGiveItem(CSWSObjectActionNode* pNode)
     }
     return ACTION_COMPLETE;
 }
-// PC 0x005DC480
+// PC 0x005DC480 GOG 0x005DC4F0
 int CSWSObject::AIActionTakeItem(CSWSObjectActionNode* pNode)
 {
     if (pNode->m_nNumParams < 1)
@@ -877,7 +877,7 @@ int CSWSObject::AIActionTakeItem(CSWSObjectActionNode* pNode)
     }
     return ACTION_COMPLETE;
 }
-// PC 0x005DC590
+// PC 0x005DC590 GOG 0x005DC600
 int CSWSObject::AIActionCloseDoor(CSWSObjectActionNode* pNode)
 {
     float fDelay;
@@ -938,7 +938,7 @@ int CSWSObject::AIActionCloseDoor(CSWSObjectActionNode* pNode)
     }
     return ACTION_FAILED;
 }
-// PC 0x005DC870
+// PC 0x005DC870 GOG 0x005DC8E0
 int CSWSObject::AIActionLockObject(CSWSObjectActionNode* pNode)
 {
     int bSuccess = 0;
@@ -1206,7 +1206,7 @@ int CSWSObject::AIActionLockObject(CSWSObjectActionNode* pNode)
     }
     return ACTION_FAILED;
 }
-// PC 0x005DD170
+// PC 0x005DD170 GOG 0x005DD1E0
 int CSWSObject::AIActionSwitchWeapons(CSWSObjectActionNode* pNode)
 {
     CSWSCreature* pCreature = AsSWSCreature();
@@ -1273,7 +1273,7 @@ int CSWSObject::AIActionSwitchWeapons(CSWSObjectActionNode* pNode)
     }
     return ACTION_COMPLETE;
 }
-// PC 0x005DD350
+// PC 0x005DD350 GOG 0x005DD3C0
 int CSWSObject::AIActionSetCommandable(CSWSObjectActionNode* pNode)
 {
     int nDeadTemp = 0;
@@ -1293,7 +1293,7 @@ int CSWSObject::AIActionSetCommandable(CSWSObjectActionNode* pNode)
     m_bCommandable = bCommandable;
     return ACTION_COMPLETE;
 }
-// PC 0x005DD3C0
+// PC 0x005DD3C0 GOG 0x005DD430
 int CSWSObject::AddUseObjectAction(unsigned long oidObject)
 {
     if (m_bCommandable == 0)
@@ -1306,7 +1306,7 @@ int CSWSObject::AddUseObjectAction(unsigned long oidObject)
     return 1;
 }
 #ifndef _XBOX
-int CSWSObject::AddGiveItemActions(unsigned long oidItem, unsigned long oidTarget,  // PC 0x005DD420
+int CSWSObject::AddGiveItemActions(unsigned long oidItem, unsigned long oidTarget,  // PC 0x005DD420 GOG 0x005DD490
                                   int nQuantity, int bAddToQueue)
 {
     CGameObject* pGameObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidTarget);
@@ -1351,7 +1351,7 @@ int CSWSObject::AddGiveItemActions(unsigned long oidItem, unsigned long oidTarge
     return 0;
 }
 #endif
-int CSWSObject::AddTakeItemActions(unsigned long oidItem, unsigned long oidTarget,  // PC 0x005DD530
+int CSWSObject::AddTakeItemActions(unsigned long oidItem, unsigned long oidTarget,  // PC 0x005DD530 GOG 0x005DD5A0
                                   int bAddToQueue)
 {
     int bRun = 0;
@@ -1393,7 +1393,7 @@ int CSWSObject::AddTakeItemActions(unsigned long oidItem, unsigned long oidTarge
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     return 1;
 }
-// PC 0x005DD6C0
+// PC 0x005DD6C0 GOG 0x005DD730
 int CSWSObject::AddDoCommandAction(void* pScriptSituation)
 {
     if (m_bCommandable == 0)
@@ -1407,7 +1407,7 @@ int CSWSObject::AddDoCommandAction(void* pScriptSituation)
     return 1;
 }
 #ifndef _XBOX
-int CSWSObject::GetReputation(unsigned long oidObject, int bUnknown)  // PC 0x005DD730
+int CSWSObject::GetReputation(unsigned long oidObject, int bUnknown)  // PC 0x005DD730 GOG 0x005DD7A0
 {
     if (OverrideReputation != REPUTATION_NO_OVERRIDE)
     {
@@ -1491,7 +1491,7 @@ int CSWSObject::GetReputation(unsigned long oidObject, int bUnknown)  // PC 0x00
     return REPUTATION_DEFAULT;
 }
 #endif
-unsigned char CSWSObject::GetAIStateReputation(unsigned long oidObject)  // PC 0x005DD940
+unsigned char CSWSObject::GetAIStateReputation(unsigned long oidObject)  // PC 0x005DD940 GOG 0x005DD9B0
 {
     CServerExoApp* pServer;
     int nReputation;
@@ -1518,7 +1518,7 @@ unsigned char CSWSObject::GetAIStateReputation(unsigned long oidObject)  // PC 0
     }
     return 0;
 }
-// PC 0x005DD9B0
+// PC 0x005DD9B0 GOG 0x005DDA20
 int CSWSObject::AIActionBarkString(CSWSObjectActionNode* pNode)
 {
     unsigned long nStrRef = (unsigned long)pNode->m_apParam[0];
@@ -1537,7 +1537,7 @@ int CSWSObject::AIActionBarkString(CSWSObjectActionNode* pNode)
     pClientExoApp->BarkString(oidClientObject, sBarkString, resSound, 0);
     return ACTION_COMPLETE;
 }
-// PC 0x005DDAB0
+// PC 0x005DDAB0 GOG 0x005DDB20
 int CSWSObject::AIActionPlaySound(CSWSObjectActionNode* pNode)
 {
     CExoLinkedListNode* pPosition;
@@ -1581,7 +1581,7 @@ int CSWSObject::AIActionPlaySound(CSWSObjectActionNode* pNode)
 
 #include "nwsdoor.h"
 #include "nwsscriptevent.h"
-// PC 0x005DDC30
+// PC 0x005DDC30 GOG 0x005DDCA0
 int CSWSObject::AIActionPlayAnimation(CSWSObjectActionNode* pNode)
 {
     int nDeadTemp = 0;
@@ -1739,7 +1739,7 @@ int CSWSObject::AIActionPlayAnimation(CSWSObjectActionNode* pNode)
     return ACTION_COMPLETE;
 }
 #ifndef _XBOX
-int CSWSObject::AIActionOpenDoor(CSWSObjectActionNode* pNode)  // PC 0x005DE080
+int CSWSObject::AIActionOpenDoor(CSWSObjectActionNode* pNode)  // PC 0x005DE080 GOG 0x005DE0F0
 {
     int nDeadTemp = 0;
     if (AsSWSCreature() != NULL)
@@ -2395,7 +2395,7 @@ int CSWSObject::AIActionDoorSaber(CSWSObjectActionNode* pNode)
     }
     return ACTION_FAILED;
 }
-// PC 0x005DFD00
+// PC 0x005DFD00 GOG 0x005DFD30
 int CSWSObject::AIActionUseObject(CSWSObjectActionNode* pNode)
 {
     int nDeadTemp = 0;
@@ -2686,7 +2686,7 @@ inline int CSWSObject::TerminateAISliceAfterAction(unsigned long nAction)
     }
     return 0;
 }
-// PC 0x005E0D90
+// PC 0x005E0D90 GOG 0x005E0DC0
 void CSWSObject::RunActions(unsigned long nDay, unsigned long nTime,
                             unsigned __int64 nTimer)
 {

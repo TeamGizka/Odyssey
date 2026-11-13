@@ -1,7 +1,7 @@
 #include "exobase.h"
 #include <windows.h>
 #include <string.h>
-// PC 0x00637E70
+// PC 0x00637E70 GOG 0x00637D60
 CExoRandInternal::~CExoRandInternal()
 {
     if (m_pBuffer != NULL)
@@ -10,7 +10,7 @@ CExoRandInternal::~CExoRandInternal()
         m_pBuffer = NULL;
     }
 }
-// PC 0x00637E90
+// PC 0x00637E90 GOG 0x00637D80
 unsigned long CExoRandInternal::Rand()
 {
 
@@ -32,7 +32,7 @@ unsigned long CExoRandInternal::Rand()
         ((nState3 & m_anMask[3]) << m_anFeedbackShift[3]);
     return m_anState[0] ^ m_anState[1] ^ m_anState[2] ^ m_anState[3];
 }
-// PC 0x00637F30
+// PC 0x00637F30 GOG 0x00637E20
 void CExoRandInternal::ReSeed(unsigned long nSeed0, unsigned long nSeed1,
                               unsigned long nSeed2, unsigned long nSeed3)
 {
@@ -58,7 +58,7 @@ void CExoRandInternal::ReSeed(unsigned long nSeed0, unsigned long nSeed1,
 
     Rand();
 }
-// PC 0x00638010
+// PC 0x00638010 GOG 0x00637F00
 void CExoRandInternal::Add(unsigned char* pData, int nLength)
 {
     if (m_nBufferLength + nLength < 128)
@@ -74,7 +74,7 @@ void CExoRandInternal::Add(unsigned char* pData, int nLength)
         m_nBufferLength = m_nBufferLength + nLength - 128;
     }
 }
-// PC 0x00638090
+// PC 0x00638090 GOG 0x00637F80
 CExoString CExoRandInternal::GetString(unsigned short nLength)
 {
     unsigned short nBlocks = 128 / nLength;
@@ -149,7 +149,7 @@ CExoString CExoRandInternal::GetString(unsigned short nLength)
     delete pString;
     return sString;
 }
-// PC 0x00638270
+// PC 0x00638270 GOG 0x00638160
 void CExoRandInternal::GenSeed()
 {
     unsigned char aStackData[128];
@@ -166,7 +166,7 @@ void CExoRandInternal::GenSeed()
     Add((unsigned char*)&sSystemInfo, sizeof(sSystemInfo));
 #endif
 }
-// PC 0x006382D0
+// PC 0x006382D0 GOG 0x006381C0
 CExoRandInternal::CExoRandInternal()
 {
     CExoString sSeed;

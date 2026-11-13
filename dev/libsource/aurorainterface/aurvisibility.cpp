@@ -1,5 +1,5 @@
 #include "aurora.h"
-// PC 0x007838F0
+// PC 0x007838F0 GOG 0x007833D0
 int CAuroraVisibility::GetVisibilityDataSize()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -8,7 +8,7 @@ int CAuroraVisibility::GetVisibilityDataSize()
     }
     return 0;
 }
-// PC 0x00783FE0
+// PC 0x00783FE0 GOG 0x00783400
 unsigned char* CAuroraVisibility::GetVisibilityDataPtr()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -17,7 +17,7 @@ unsigned char* CAuroraVisibility::GetVisibilityDataPtr()
     }
     return 0;
 }
-// PC 0x00782890
+// PC 0x00782890 GOG 0x00782690
 int CAuroraVisibility::Load()
 {
     unsigned char* pVISData;
@@ -33,7 +33,7 @@ int CAuroraVisibility::Load()
     pTrailer->nType = RESTYPE_VIS;
     return 1;
 }
-// PC 0x00783630
+// PC 0x00783630 GOG 0x00783460
 void CAuroraVisibility::Unload()
 {
     if (m_pRes != NULL && m_pRes->GetDemands() >= 1)
@@ -41,7 +41,7 @@ void CAuroraVisibility::Unload()
         m_pRes->Release();
     }
 }
-// PC 0x00783320
+// PC 0x00783320 GOG 0x007826C0
 unsigned char* CAuroraVisibility::GetPtrToResHelperInfo()
 {
     unsigned char* nVISDataPtr;
@@ -53,13 +53,13 @@ unsigned char* CAuroraVisibility::GetPtrToResHelperInfo()
     nVISDataPtr = GetVisibilityDataPtr();
     return nVISDataPtr - sizeof(SVISDataTrailer);
 }
-// PC 0x00782AA0
+// PC 0x00782AA0 GOG 0x007828E0
 CAuroraVisibility::CAuroraVisibility(CResRef cResRef, int bRequest)
     : CResHelper<CResVIS, RESTYPE_VIS>()
 {
     SetResRef(cResRef, bRequest);
 }
-// PC 0x00782B30
+// PC 0x00782B30 GOG 0x00782970
 CAuroraVisibility::~CAuroraVisibility()
 {
 }

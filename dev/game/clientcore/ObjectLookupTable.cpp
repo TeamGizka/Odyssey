@@ -1,13 +1,13 @@
 #include <string.h>
 #include "exobase.h"
 #include "appmanager.h"
-// PC 0x004DBD60
+// PC 0x004DBD60 GOG 0x004DBEA0
 CObjectTableManager::CObjectTableManager()
 {
     m_nTables = 0;
     memset(m_apTables, 0, sizeof(m_apTables));
 }
-// PC 0x004DBD80
+// PC 0x004DBD80 GOG 0x004DBEC0
 void CObjectTableManager::ClearAll()
 {
     for (unsigned long i = 0; i < m_nTables; i++)
@@ -26,12 +26,12 @@ void CObjectTableManager::ClearAll()
         }
     }
 }
-// PC 0x004DBDD0
+// PC 0x004DBDD0 GOG 0x004DBF10
 CObjectTableManager::~CObjectTableManager()
 {
     ClearAll();
 }
-// PC 0x004DBDE0
+// PC 0x004DBDE0 GOG 0x004DBF20
 BOOL CObjectTableManager::RemovePlayer(unsigned long nPlayerId)
 {
     if (nPlayerId == 0xFFFFFFFF)

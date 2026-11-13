@@ -205,12 +205,12 @@ public:
     virtual ~CSWSArea();
     virtual int GetIsIDInExcludeList(unsigned long oidObject,
                                      CExoArrayList<CGameObject*>* pExcludeList);
-    virtual CSWSArea* NWAreaAsSWSArea() { return this; }  // PC 0x00698BD0
+    virtual CSWSArea* NWAreaAsSWSArea() { return this; }  // PC 0x00698BD0 GOG 0x00698980
     virtual int HandleTransparentDoors(
         const Vector& vStart, const Vector& vEnd, float fDistance, float fWidth,
         float fHeight, unsigned long oidObject, unsigned long& oidHitObject, int bFlag,
         CExoArrayList<CGameObject*>* pExcludeList, int bCheckObjects);
-    virtual CSWSArea* AsSWSArea() { return this; }  // PC 0x004E88F0
+    virtual CSWSArea* AsSWSArea() { return this; }  // PC 0x004E88F0 GOG 0x004E89C0
 
     float ComputePathDistance(int nPoints, float* pfPoints);
     int CountVisibleToPlayers(const Vector& vPosition, int nMaxCount);

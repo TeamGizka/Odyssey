@@ -12,12 +12,12 @@
 #include "exoresman.h"
 
 const int CSWSAmbientSound::BATTLE_DELAY = 5000;
-// PC 0x005741D0
+// PC 0x005741D0 GOG 0x00574300
 CSWSAmbientSound::CSWSAmbientSound(unsigned long oidArea)
 {
     m_oidArea = oidArea;
 }
-// PC 0x00574220
+// PC 0x00574220 GOG 0x00574350
 int CSWSAmbientSound::Load(CResGFF* pRes, CResStruct* pStruct)
 {
     int bSuccess;
@@ -54,7 +54,7 @@ void CSWSAmbientSound::CacheSound(int nTrack, int bMusic)
         g_pExoResMan->CacheResource(sFileName, RESTYPE_WAV);
     }
 }
-// PC 0x00574310
+// PC 0x00574310 GOG 0x00574440
 int CSWSAmbientSound::Save(CResGFF* pRes, CResStruct* pStruct)
 {
     pRes->WriteFieldINT(pStruct, m_nMusicDelay, "MusicDelay");
@@ -67,7 +67,7 @@ int CSWSAmbientSound::Save(CResGFF* pRes, CResStruct* pStruct)
     return pRes->WriteFieldINT(pStruct, m_nAmbientNightVolume,
                                "AmbientSndNitVol");
 }
-// PC 0x005743B0
+// PC 0x005743B0 GOG 0x005744E0
 void CSWSAmbientSound::PackIntoMessage(CSWSMessage* pMessage)
 {
     pMessage->WriteBOOL(m_bMusicEnabled);
@@ -82,7 +82,7 @@ void CSWSAmbientSound::PackIntoMessage(CSWSMessage* pMessage)
     pMessage->WriteBYTE(m_nAmbientDayVolume, 8);
     pMessage->WriteBYTE(m_nAmbientNightVolume, 8);
 }
-// PC 0x00574450
+// PC 0x00574450 GOG 0x00574580
 int CSWSAmbientSound::GetPlayersInArea(CExoArrayList<unsigned long>* pPlayerList)
 {
     CExoLinkedList<CSWSClient>* pPlayers;
@@ -112,7 +112,7 @@ int CSWSAmbientSound::GetPlayersInArea(CExoArrayList<unsigned long>* pPlayerList
     }
     return pPlayerList->num;
 }
-// PC 0x00574530
+// PC 0x00574530 GOG 0x00574660
 void CSWSAmbientSound::PlayMusic(int bPlay)
 {
     int i;
@@ -128,7 +128,7 @@ void CSWSAmbientSound::PlayMusic(int bPlay)
             lstPlayers[i], bPlay);
     }
 }
-// PC 0x005745D0
+// PC 0x005745D0 GOG 0x00574700
 void CSWSAmbientSound::SetMusicDelay(int nDelay)
 {
     int i;
@@ -146,7 +146,7 @@ void CSWSAmbientSound::SetMusicDelay(int nDelay)
         }
     }
 }
-// PC 0x00574670
+// PC 0x00574670 GOG 0x005747A0
 void CSWSAmbientSound::SetMusicDayTrack(int nTrack,
                                         int bStreamingMusicForMovie)
 {
@@ -162,7 +162,7 @@ void CSWSAmbientSound::SetMusicDayTrack(int nTrack,
             lstPlayers[i], 1, nTrack, bStreamingMusicForMovie);
     }
 }
-// PC 0x00574720
+// PC 0x00574720 GOG 0x00574850
 void CSWSAmbientSound::SetMusicNightTrack(int nTrack,
                                           int bStreamingMusicForMovie)
 {
@@ -182,7 +182,7 @@ void CSWSAmbientSound::SetMusicNightTrack(int nTrack,
         }
     }
 }
-// PC 0x005747E0
+// PC 0x005747E0 GOG 0x00574910
 void CSWSAmbientSound::PlayBattleMusic(int bPlay)
 {
     int i;
@@ -200,7 +200,7 @@ void CSWSAmbientSound::PlayBattleMusic(int bPlay)
         }
     }
 }
-// PC 0x00574880
+// PC 0x00574880 GOG 0x005749B0
 void CSWSAmbientSound::SetBattleMusicTrack(int nTrack)
 {
     int i;
@@ -218,7 +218,7 @@ void CSWSAmbientSound::SetBattleMusicTrack(int nTrack)
         }
     }
 }
-// PC 0x00574920
+// PC 0x00574920 GOG 0x00574A50
 void CSWSAmbientSound::PlayAmbientSound(int bPlay)
 {
     int i;
@@ -233,7 +233,7 @@ void CSWSAmbientSound::PlayAmbientSound(int bPlay)
                                                          bPlay);
     }
 }
-// PC 0x005749C0
+// PC 0x005749C0 GOG 0x00574AF0
 void CSWSAmbientSound::SetAmbientDayTrack(int nTrack)
 {
     int i;
@@ -251,7 +251,7 @@ void CSWSAmbientSound::SetAmbientDayTrack(int nTrack)
         }
     }
 }
-// PC 0x00574A70
+// PC 0x00574A70 GOG 0x00574BA0
 void CSWSAmbientSound::SetAmbientNightTrack(int nTrack)
 {
     int i;
@@ -270,7 +270,7 @@ void CSWSAmbientSound::SetAmbientNightTrack(int nTrack)
         }
     }
 }
-// PC 0x00574B20
+// PC 0x00574B20 GOG 0x00574C50
 void CSWSAmbientSound::SetAmbientDayVolume(int nVolume)
 {
     int i;
@@ -288,7 +288,7 @@ void CSWSAmbientSound::SetAmbientDayVolume(int nVolume)
         }
     }
 }
-// PC 0x00574BD0
+// PC 0x00574BD0 GOG 0x00574D00
 void CSWSAmbientSound::SetAmbientNightVolume(int nVolume)
 {
     int i;

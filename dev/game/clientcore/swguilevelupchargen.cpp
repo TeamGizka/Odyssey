@@ -19,7 +19,7 @@ static inline void SwguilevelupchargenTrace3();
 static inline void SwguilevelupchargenTrace2();
 static inline void SwguilevelupchargenTrace1();
 #define SWGUILEVELUPCHARGEN_TRACE() SwguilevelupchargenTrace3()
-// PC 0x00756EA0
+// PC 0x00756EA0 GOG 0x00756CB0
 void CSWGuiLevelUpCharGen::OnPanelAdded()
 {
 #ifdef _XBOX
@@ -31,7 +31,7 @@ void CSWGuiLevelUpCharGen::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
-// PC 0x00756EE0
+// PC 0x00756EE0 GOG 0x00756FA0
 void CSWGuiLevelUpCharGen::DetermineClass()
 {
     CSWCLevelUpStats* pStats = m_pCreature->m_pStats;
@@ -39,7 +39,7 @@ void CSWGuiLevelUpCharGen::DetermineClass()
     m_sClass = m_sClass.Right(m_sClass.GetLength() - 1 - m_sClass.Find(10, 0));
     m_sClass = m_sClass.Left(m_sClass.Find(40, 0));
 }
-// PC 0x00756FE0
+// PC 0x00756FE0 GOG 0x007570A0
 void CSWGuiLevelUpCharGen::SetNameString(const CExoString& sName)
 {
     m_sName = sName;
@@ -58,7 +58,7 @@ void CSWGuiLevelUpCharGen::SetNameString(const CExoString& sName)
     m_lblClass.m_cText.m_cParams.SetText(m_sClass);
     m_lblLevelValue.m_cText.m_cParams.SetText(sLevel);
 }
-// PC 0x007570E0
+// PC 0x007570E0 GOG 0x007571A0
 void CSWGuiLevelUpCharGen::AbilitiesChanged()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -186,7 +186,7 @@ void CSWGuiLevelUpCharGen::AbilitiesChanged()
         }
     }
 }
-// PC 0x00757620
+// PC 0x00757620 GOG 0x007576E0
 void CSWGuiLevelUpCharGen::NewAbilityScores(int nStr, int nCha, int nInt,
                                             int nWis, int nCon, int nDex,
                                             int nPoints)
@@ -205,7 +205,7 @@ void CSWGuiLevelUpCharGen::NewAbilityScores(int nStr, int nCha, int nInt,
         pCreature->m_pStats->m_nCreationStage = nPoints;
     }
 }
-// PC 0x007576C0
+// PC 0x007576C0 GOG 0x00757780
 void CSWGuiLevelUpCharGen::ClearAbilities()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -238,7 +238,7 @@ void CSWGuiLevelUpCharGen::ClearAbilities()
             m_pCreature->m_pStats->m_nForcePointBonus;
     }
 }
-// PC 0x00757850
+// PC 0x00757850 GOG 0x00757910
 void CSWGuiLevelUpCharGen::ClearSkills()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -255,7 +255,7 @@ void CSWGuiLevelUpCharGen::ClearSkills()
         }
     }
 }
-// PC 0x00757900
+// PC 0x00757900 GOG 0x007579C0
 void CSWGuiLevelUpCharGen::ClearPowers()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -290,7 +290,7 @@ void CSWGuiLevelUpCharGen::ClearPowers()
 #endif
     }
 }
-// PC 0x007579C0
+// PC 0x007579C0 GOG 0x00757A80
 void CSWGuiLevelUpCharGen::BeginPlayGame()
 {
     GetManager()->PopModalPanel();
@@ -324,13 +324,13 @@ void CSWGuiLevelUpCharGen::BeginPlayGame()
     }
     g_pAppManager->m_pClientExoApp->SetInputClass(m_nInputClass, 1);
 }
-// PC 0x00757AF0
+// PC 0x00757AF0 GOG 0x00756CF0
 CSWGuiLevelUpCharGen::~CSWGuiLevelUpCharGen()
 {
     delete m_pCreature;
     m_pCreature = 0;
 }
-// PC 0x00757DC0
+// PC 0x00757DC0 GOG 0x00758F30
 void CSWGuiLevelUpCharGen::HandleInputEvent(int nEvent, int nState)
 {
     SWGUILEVELUPCHARGEN_TRACE();
@@ -363,7 +363,7 @@ void CSWGuiLevelUpCharGen::SetBackPromptEnabled(int bEnabled)
     m_lblB.m_bEnabled = bEnabled;
 }
 #endif
-// PC 0x00757E30
+// PC 0x00757E30 GOG 0x00757BD0
 int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
                                            CSWCCreature* pTo)
 {
@@ -466,7 +466,7 @@ int CSWGuiLevelUpCharGen::CopyCreatureStats(CSWCCreature* pFrom,
     pNewStats->m_nDefenseBase = pOldStats->GetArmorClass(0);
     return 1;
 }
-// PC 0x00758350
+// PC 0x00758350 GOG 0x007580F0
 void CSWGuiLevelUpCharGen::ClearFeats()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -484,7 +484,7 @@ void CSWGuiLevelUpCharGen::ClearFeats()
         }
     }
 }
-// PC 0x007583C0
+// PC 0x007583C0 GOG 0x00758160
 void CSWGuiLevelUpCharGen::CancelLevelUp()
 {
     if (m_nInputClass != 0)
@@ -541,7 +541,7 @@ void CSWGuiLevelUpCharGen::HandleCancelButton()
     RemoveSubPanels();
     m_pInGameCharacter->AttachModel();
 }
-// PC 0x00758490
+// PC 0x00758490 GOG 0x00758230
 CSWGuiLevelUpCharGen::CSWGuiLevelUpCharGen(CSWGuiManager* pManager,
                                          unsigned long nCreature,
                                          CSWCCreature* pCreature)

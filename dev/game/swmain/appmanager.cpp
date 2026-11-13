@@ -50,7 +50,7 @@ void FreeAppObjectTables(CAppManager* pManager)
     delete pManager->m_pLargeTempBuffer;
     pManager->m_pLargeTempBuffer = NULL;
 }
-// PC 0x00401000
+// PC 0x00401000 GOG 0x00401000
 CSWReentrantServerStats::~CSWReentrantServerStats()
 {
 }
@@ -63,7 +63,7 @@ void CAppManager::FreeLargeTempBuffer()
         m_pLargeTempBuffer = NULL;
     }
 }
-// PC 0x00401060
+// PC 0x00401060 GOG 0x00401060
 CObjectTableManager* CAppManager::GetObjectTableManager(unsigned long nTable)
 {
     if (nTable == 0)
@@ -80,12 +80,12 @@ CObjectTableManager* CAppManager::GetObjectTableManager(unsigned long nTable)
     return NULL;
 }
 #ifndef _XBOX
-void CAppManager::DoSaveGameScreenShot(const CExoString& sName)  // PC 0x00401080
+void CAppManager::DoSaveGameScreenShot(const CExoString& sName)  // PC 0x00401080 GOG 0x00401080
 {
     AurSaveGameSnapshot((char*)sName.CStr(), 256, true);
 }
 #endif
-void CAppManager::AllocLargeTempBuffer()  // PC 0x004010A0
+void CAppManager::AllocLargeTempBuffer()  // PC 0x004010A0 GOG 0x004010A0
 {
     if (m_pLargeTempBuffer == NULL)
     {
@@ -101,7 +101,7 @@ void FreeFileNames(CExoString* pNames)
 static unsigned long s_nFilesWritten = 0;
 static unsigned long s_nBytesWritten = 0;
 
-// PC 0x004010C0
+// PC 0x004010C0 GOG 0x004010C0
 CSWReentrantServerStats::CSWReentrantServerStats()
 {
     m_bOperationActive = 0;
@@ -128,7 +128,7 @@ static Vector* AllocateVectorArray(int nCount)
 {
     return new Vector[nCount];
 }
-// PC 0x00401160
+// PC 0x00401160 GOG 0x00401160
 CAppManager::CAppManager()
 {
     m_pClientExoApp = NULL;
@@ -141,7 +141,7 @@ CAppManager::CAppManager()
     m_pLargeTempBuffer = NULL;
     AllocLargeTempBuffer();
 }
-// PC 0x00401280
+// PC 0x00401280 GOG 0x00401280
 void CAppManager::DestroyServer()
 {
     if (m_pServerExoApp)
@@ -154,7 +154,7 @@ void CAppManager::DestroyServer()
 
     SetWindowTitle();
 }
-// PC 0x004012C0
+// PC 0x004012C0 GOG 0x004012C0
 CAppManager::~CAppManager()
 {
     if (m_pClientExoApp)
@@ -203,7 +203,7 @@ CAppManager::~CAppManager()
         m_pLargeTempBuffer = NULL;
     }
 }
-// PC 0x00401380
+// PC 0x00401380 GOG 0x00401380
 void CAppManager::CreateServer(int nServices)
 {
     if (m_pServerExoApp)

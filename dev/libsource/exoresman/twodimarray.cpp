@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
-// PC 0x0041D140
+// PC 0x0041D140 GOG 0x0041D130
 int C2DA::GetColumnIndex(const CExoString& sColumnLabel)
 {
     int i;
@@ -32,7 +32,7 @@ int C2DA::GetColumnIndex(const CExoString& sColumnLabel)
 
     return -1;
 }
-// PC 0x0041DDE0
+// PC 0x0041DDE0 GOG 0x0041DDD0
 int C2DA::GetCExoStringEntry(int nRow, int nColumn, CExoString* psEntry)
 {
     if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 ||
@@ -58,7 +58,7 @@ int C2DA::GetCExoStringEntry(int nRow, int nColumn, CExoString* psEntry)
     *psEntry = m_ppEntries[nRow][nColumn];
     return psEntry->GetLength() > 0;
 }
-// PC 0x0041D1F0
+// PC 0x0041D1F0 GOG 0x0041D1E0
 int C2DA::GetCExoStringEntry(int nRow, const CExoString& sColumn,
                              CExoString* psEntry)
 {
@@ -86,7 +86,7 @@ int C2DA::GetCExoStringEntry(int nRow, const CExoString& sColumn,
     *psEntry = m_ppEntries[nRow][nColumn];
     return psEntry->GetLength() > 0;
 }
-// PC 0x0041D2D0
+// PC 0x0041D2D0 GOG 0x0041D2C0
 int C2DA::GetFLOATEntry(int nRow, int nColumn, float* pfEntry)
 {
     if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 ||
@@ -114,7 +114,7 @@ int C2DA::GetFLOATEntry(int nRow, int nColumn, float* pfEntry)
     *pfEntry = m_ppEntries[nRow][nColumn].AsFLOAT();
     return 1;
 }
-// PC 0x0041D3D0
+// PC 0x0041D3D0 GOG 0x0041D3C0
 int C2DA::GetFLOATEntry(int nRow, const CExoString& sColumn, float* pfEntry)
 {
     int nColumn = GetColumnIndex(sColumn);
@@ -143,7 +143,7 @@ int C2DA::GetFLOATEntry(int nRow, const CExoString& sColumn, float* pfEntry)
     *pfEntry = m_ppEntries[nRow][nColumn].AsFLOAT();
     return 1;
 }
-// PC 0x0041D4D0
+// PC 0x0041D4D0 GOG 0x0041D4C0
 int C2DA::GetINTEntry(int nRow, int nColumn, int* pnEntry)
 {
     if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 ||
@@ -180,7 +180,7 @@ int C2DA::GetINTEntry(int nRow, int nColumn, int* pnEntry)
     *pnEntry = m_ppEntries[nRow][nColumn].AsINT();
     return 1;
 }
-// PC 0x0041D640
+// PC 0x0041D640 GOG 0x0041D630
 int C2DA::GetINTEntry(int nRow, const CExoString& sColumn, int* pnEntry)
 {
     int nColumn = GetColumnIndex(sColumn);
@@ -218,7 +218,7 @@ int C2DA::GetINTEntry(int nRow, const CExoString& sColumn, int* pnEntry)
     *pnEntry = m_ppEntries[nRow][nColumn].AsINT();
     return 1;
 }
-// PC 0x0041D7B0
+// PC 0x0041D7B0 GOG 0x0041D7A0
 unsigned long C2DA::GetNextLineLength(char* pData, unsigned long nSize)
 {
     unsigned long nLength;
@@ -235,7 +235,7 @@ unsigned long C2DA::GetNextLineLength(char* pData, unsigned long nSize)
 
     return nLength;
 }
-// PC 0x0041D7E0
+// PC 0x0041D7E0 GOG 0x0041D7D0
 int C2DA::GetNextToken(char** ppData, unsigned long* pnSize, char* szToken,
                        unsigned long* pnSkipped)
 {
@@ -305,7 +305,7 @@ int C2DA::GetNextToken(char** ppData, unsigned long* pnSize, char* szToken,
 
     return nCount > 0;
 }
-// PC 0x0041DCC0
+// PC 0x0041DCC0 GOG 0x0041DCB0
 C2DA::C2DA(CResRef cResRef, int bRequest)
 {
     m_ppEntries = NULL;
@@ -323,12 +323,12 @@ C2DA::C2DA(CResRef cResRef, int bRequest)
     m_pLabelData = NULL;
     SetResRef(cResRef, bRequest);
 }
-// PC 0x0041DD80
+// PC 0x0041DD80 GOG 0x0041DD70
 C2DA::~C2DA()
 {
     Unload2DArray();
 }
-// PC 0x0041DEC0
+// PC 0x0041DEC0 GOG 0x0041DEB0
 int C2DA::GetCExoStringEntry(const CExoString& sRow, const CExoString& sColumn,
                              CExoString* psEntry)
 {
@@ -357,7 +357,7 @@ int C2DA::GetCExoStringEntry(const CExoString& sRow, const CExoString& sColumn,
     *psEntry = m_ppEntries[nRow][nColumn];
     return psEntry->GetLength() > 0;
 }
-// PC 0x0041DFA0
+// PC 0x0041DFA0 GOG 0x0041DF90
 int C2DA::GetCExoStringEntry(const CExoString& sRow, int nColumn,
                              CExoString* psEntry)
 {
@@ -385,7 +385,7 @@ int C2DA::GetCExoStringEntry(const CExoString& sRow, int nColumn,
     *psEntry = m_ppEntries[nRow][nColumn];
     return psEntry->GetLength() > 0;
 }
-// PC 0x0041E080
+// PC 0x0041E080 GOG 0x0041E070
 int C2DA::GetFLOATEntry(const CExoString& sRow, const CExoString& sColumn,
                         float* pfEntry)
 {
@@ -416,7 +416,7 @@ int C2DA::GetFLOATEntry(const CExoString& sRow, const CExoString& sColumn,
     *pfEntry = m_ppEntries[nRow][nColumn].AsFLOAT();
     return 1;
 }
-// PC 0x0041E1A0
+// PC 0x0041E1A0 GOG 0x0041E190
 int C2DA::GetFLOATEntry(const CExoString& sRow, int nColumn, float* pfEntry)
 {
     int nRow = GetRowIndex(sRow);
@@ -441,7 +441,7 @@ int C2DA::GetFLOATEntry(const CExoString& sRow, int nColumn, float* pfEntry)
 
     return 1;
 }
-// PC 0x0041E270
+// PC 0x0041E270 GOG 0x0041E260
 int C2DA::GetINTEntry(const CExoString& sRow, const CExoString& sColumn,
                       int* pnEntry)
 {
@@ -481,7 +481,7 @@ int C2DA::GetINTEntry(const CExoString& sRow, const CExoString& sColumn,
     *pnEntry = m_ppEntries[nRow][nColumn].AsINT();
     return 1;
 }
-// PC 0x0041E400
+// PC 0x0041E400 GOG 0x0041E3F0
 int C2DA::GetINTEntry(const CExoString& sRow, int nColumn, int* pnEntry)
 {
     int nRow = GetRowIndex(sRow);
@@ -519,7 +519,7 @@ int C2DA::GetINTEntry(const CExoString& sRow, int nColumn, int* pnEntry)
     *pnEntry = m_ppEntries[nRow][nColumn].AsINT();
     return 1;
 }
-// PC 0x0041E570
+// PC 0x0041E570 GOG 0x0041E560
 int C2DA::Load2DArray()
 {
     unsigned long nSize;
@@ -767,7 +767,7 @@ int C2DA::Load2DArray()
     m_bLoaded = 1;
     return 1;
 }
-// PC 0x0041D8B0
+// PC 0x0041D8B0 GOG 0x0041D8A0
 int C2DA::GetRowIndex(const CExoString& sRowLabel)
 {
     int i;
@@ -796,7 +796,7 @@ int C2DA::GetRowIndex(const CExoString& sRowLabel)
 
     return -1;
 }
-// PC 0x0041D940
+// PC 0x0041D940 GOG 0x0041D930
 int C2DA::SkipNewLines(char** ppData, unsigned long* pnSize)
 {
     unsigned long nSize = *pnSize;
@@ -856,7 +856,7 @@ static unsigned long GetLineLength(char* pData, unsigned long nSize)
 
     return nLength;
 }
-// PC 0x0041D9E0
+// PC 0x0041D9E0 GOG 0x0041D9D0
 void C2DA::Unload2DArray()
 {
     int i;

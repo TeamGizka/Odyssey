@@ -34,7 +34,7 @@ void AurReleaseFrameTexture();
 #endif
 
 static inline void ServerExoAppTrace(CServerExoApp* = 0);
-// PC 0x004E9EF0
+// PC 0x004E9EF0 GOG 0x004EAC50
 inline int CStatusSummary::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
 {
     ServerExoAppTrace();
@@ -63,7 +63,7 @@ inline int CStatusSummary::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
 
 #include "serverexoapp.h"
 #include "swguisaveload.h"
-// PC 0x004EC420
+// PC 0x004EC420 GOG 0x004EAF10
 inline int KOTOR_AUTOSAVE_PARAMS::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
 {
     CResStruct stStatusSummary;
@@ -295,7 +295,7 @@ int UpdateLoadScreen(int nCurrent, int nTotal, int nBase, int nRange);
 static inline CServerExoApp* GetServerExoApp();
 static inline CClientExoApp* GetClientExoApp();
 static inline CSWReentrantServerStats* GetReentrantServerStats();
-// PC 0x00405980
+// PC 0x00405980 GOG 0x00405980
 template <> inline CExoArrayList<CExoString>::CExoArrayList(int nSize)
 {
     num = 0;
@@ -310,7 +310,7 @@ template <> inline CExoArrayList<CExoString>::CExoArrayList(int nSize)
 inline CVirtualMachineCmdImplementer::CVirtualMachineCmdImplementer()
 {
 }
-// PC 0x004EA1C0
+// PC 0x004EA1C0 GOG 0x004E9B20
 CSWSModule* CServerExoAppInternal::GetModule()
 {
     unsigned long oidModule;
@@ -344,13 +344,13 @@ CSWSModule* CServerExoAppInternal::GetModule()
     }
     return m_pLastModuleFound;
 }
-// PC 0x004EA230
+// PC 0x004EA230 GOG 0x004E9B90
 void CServerExoAppInternal::ClearLastModuleFound()
 {
     m_oidLastModuleFound = OBJECT_INVALID;
     m_pLastModuleFound = NULL;
 }
-// PC 0x004EA250
+// PC 0x004EA250 GOG 0x004E9BB0
 CExoString CServerExoAppInternal::GetModuleName()
 {
     if (GetModule() != NULL)
@@ -361,7 +361,7 @@ CExoString CServerExoAppInternal::GetModuleName()
     }
     return CExoString();
 }
-// PC 0x004EA300
+// PC 0x004EA300 GOG 0x004EB6B0
 int CServerExoAppInternal::SendCharacterQuery(CSWSPlayer* pPlayer)
 {
     unsigned char nClassCount;
@@ -377,7 +377,7 @@ int CServerExoAppInternal::SendCharacterQuery(CSWSPlayer* pPlayer)
         pPlayer, nClassCount, nClasses, nClassLevels, nExperience);
     return 1;
 }
-// PC 0x004EA360
+// PC 0x004EA360 GOG 0x004E9C60
 int CServerExoAppInternal::HandleMessage(unsigned long nPlayerId,
                                          unsigned char* pMessage,
                                          unsigned long nSize, int bGuaranteed)
@@ -400,7 +400,7 @@ int CServerExoAppInternal::HandleMessage(unsigned long nPlayerId,
     }
     return 0;
 }
-// PC 0x004EA3E0
+// PC 0x004EA3E0 GOG 0x004E9CE0
 int CServerExoAppInternal::Initialize()
 {
     CResRef cResRef("globalcat");
@@ -408,7 +408,7 @@ int CServerExoAppInternal::Initialize()
     m_globalVariableTable.ReadCatalogue(cResRef);
     return 1;
 }
-// PC 0x004EA410
+// PC 0x004EA410 GOG 0x004E9D10
 int CServerExoAppInternal::CopyModuleToCurrentGame(
     const CExoString& sSource, const CExoString& sDestination,
     unsigned short nFlags)
@@ -428,7 +428,7 @@ int CServerExoAppInternal::CopyModuleToCurrentGame(
     }
     return 1;
 }
-// PC 0x004EA470
+// PC 0x004EA470 GOG 0x004EB710
 int UpdateLoadScreen(int nCurrent, int nTotal, int nBase, int nRange)
 {
 #ifdef _XBOX
@@ -443,7 +443,7 @@ int UpdateLoadScreen(int nCurrent, int nTotal, int nBase, int nRange)
     UpdateScreen(0.033333335f, 0, 0);
     return 0;
 }
-void CServerExoAppInternal::InitiateModuleForPlayer(void* pData)  // PC 0x004EA4B0
+void CServerExoAppInternal::InitiateModuleForPlayer(void* pData)  // PC 0x004EA4B0 GOG 0x004EC2B0
 {
     CSWSPlayer* pPlayer = (CSWSPlayer*)pData;
     CSWSCreature* pCreature;
@@ -516,7 +516,7 @@ void CServerExoAppInternal::InitiateModuleForPlayer(void* pData)  // PC 0x004EA4
         bPlayerIsNewToModule);
     pMessage->SendServerToPlayerSetCustomTokenList(pPlayer->m_nPlayerId);
 }
-// PC 0x004EA730
+// PC 0x004EA730 GOG 0x004EC530
 void CServerExoAppInternal::MovePlayerToArea(void* pData)
 {
     Vector vSafePosition;
@@ -582,7 +582,7 @@ void CServerExoAppInternal::OnLostFocus()
 void CServerExoAppInternal::OnVideoChange()
 {
 }
-// PC 0x004EC590
+// PC 0x004EC590 GOG 0x004EB080
 CSWSPlayer* CServerExoAppInternal::GetClientObjectByObjectId(
     unsigned long oidObject)
 {
@@ -606,7 +606,7 @@ CSWSPlayer* CServerExoAppInternal::GetClientObjectByObjectId(
     }
     return NULL;
 }
-// PC 0x004EC620
+// PC 0x004EC620 GOG 0x004EB110
 CSWSPlayer* CServerExoAppInternal::GetClientObjectByPlayerId(
     unsigned long nPlayerId, unsigned char nGroup)
 {
@@ -639,7 +639,7 @@ CSWSPlayer* CServerExoAppInternal::GetClientObjectByPlayerId(
     return NULL;
 }
 #ifndef _XBOX
-int CServerExoAppInternal::SaveGame(unsigned long nSlot,  // PC 0x004EC6E0
+int CServerExoAppInternal::SaveGame(unsigned long nSlot,  // PC 0x004EC6E0 GOG 0x004EE1B0
                                     const CExoString& sName,
                                     CSWSPlayer* pPlayer, int bAutoSave)
 {
@@ -711,7 +711,7 @@ int CServerExoAppInternal::SaveGame(unsigned long nSlot,  // PC 0x004EC6E0
     m_bAutoSaveTimerExpired = 0;
     return 1;
 }
-// PC 0x004ECF10
+// PC 0x004ECF10 GOG 0x004EE570
 int CServerExoAppInternal::LoadCharacterFinish(CSWSPlayer* pPlayer, int bSuccess)
 {
     CSWSModule* pModule = g_pAppManager->m_pServerExoApp->GetModule();
@@ -794,7 +794,7 @@ int CServerExoAppInternal::LoadCharacterFinish(CSWSPlayer* pPlayer, int bSuccess
     return 1;
 }
 #endif
-// PC 0x004ECAA0
+// PC 0x004ECAA0 GOG 0x004EB1D0
 int CServerExoAppInternal::StorePlayerCharacters()
 {
     CExoLinkedList<CSWSClient>* pPlayerList = m_pPlayerList;
@@ -910,7 +910,7 @@ int CServerExoAppInternal::ValidateCreateServerCharacter(CSWSPlayer* pPlayer, vo
     g_pExoResMan->CreateDirectory2(sVaultDirectory);
     return pPlayer->SaveServerCharacter();
 }
-// PC 0x004ECD70
+// PC 0x004ECD70 GOG 0x004EB4A0
 int CServerExoAppInternal::StoreCurrentModule()
 {
     CSWSModule* pModule;
@@ -943,7 +943,7 @@ int CServerExoAppInternal::StoreCurrentModule()
     }
     return 1;
 }
-int CServerExoAppInternal::LoadPrimaryPlayer(CSWSPlayer* pPlayer)  // PC 0x004ED220
+int CServerExoAppInternal::LoadPrimaryPlayer(CSWSPlayer* pPlayer)  // PC 0x004ED220 GOG 0x004EE880
 {
     CSWSModule* pModule;
     int nPrimaryPlayerIndex;
@@ -958,7 +958,7 @@ int CServerExoAppInternal::LoadPrimaryPlayer(CSWSPlayer* pPlayer)  // PC 0x004ED
     LoadCharacterFinish(pPlayer, 1);
     return 1;
 }
-// PC 0x004ED260
+// PC 0x004ED260 GOG 0x004EB640
 int CServerExoAppInternal::ExportAllPlayers()
 {
     CExoLinkedListNode* pNode;
@@ -986,7 +986,7 @@ int CServerExoAppInternal::ExportAllPlayers()
     return 1;
 }
 #ifndef _XBOX
-void CServerExoAppInternal::StallEventSaveGame()  // PC 0x004ED2D0
+void CServerExoAppInternal::StallEventSaveGame()  // PC 0x004ED2D0 GOG 0x004EB750
 {
 
     CExoString sModuleName;
@@ -1179,7 +1179,7 @@ void CServerExoAppInternal::StallEventSaveGame()  // PC 0x004ED2D0
     }
 }
 #endif
-// PC 0x004EDE30
+// PC 0x004EDE30 GOG 0x004EEBB0
 int CServerExoAppInternal::RunModule()
 {
     CExoString sModule;
@@ -1220,7 +1220,7 @@ int CServerExoAppInternal::RunModule()
     }
     return 0;
 }
-// PC 0x004F2220
+// PC 0x004F2220 GOG 0x004F1D60
 int CServerExoAppInternal::UnloadModule()
 {
     CGameObjectArray* pObjectArray = m_pObjectArray;
@@ -1297,7 +1297,7 @@ int CServerExoAppInternal::UnloadModule()
     g_pExoResMan->NukeDirectory("CURRENTGAME:", 1, 1);
     return 1;
 }
-// PC 0x004EDFA0
+// PC 0x004EDFA0 GOG 0x004EED20
 void CServerExoAppInternal::StartServices(int nServices)
 {
     CExoString sTimestamp;
@@ -1386,7 +1386,7 @@ void CServerExoAppInternal::StartServices(int nServices)
     m_nAutoSaveElapsedTime = 0;
     m_bAutoSaveTimerExpired = 0;
 }
-// PC 0x004EA900
+// PC 0x004EA900 GOG 0x004EC6E0
 void CServerExoAppInternal::UpdateClientGameObjectsForPlayer(
     CSWSPlayer* pPlayer, int bFlag, unsigned __int64 nTime)
 {
@@ -1432,13 +1432,13 @@ void CServerExoAppInternal::UpdateClientGameObjectsForPlayer(
         }
     }
 }
-// PC 0x004EAA70
+// PC 0x004EAA70 GOG 0x004EC850
 int CServerExoAppInternal::ContinueMessageProcessing()
 {
     return GetReentrantServerStats()->m_bOperationActive == 1;
 }
 
-// PC 0x004EAA90
+// PC 0x004EAA90 GOG 0x004E9D90
 CSWSItem* CServerExoAppInternal::GetItemByGameObjectID(unsigned long oidObject)
 {
     CGameObject* pObject = NULL;
@@ -1452,7 +1452,7 @@ CSWSItem* CServerExoAppInternal::GetItemByGameObjectID(unsigned long oidObject)
     }
     return NULL;
 }
-// PC 0x004EAAE0
+// PC 0x004EAAE0 GOG 0x004E9DE0
 CSWSCreature* CServerExoAppInternal::GetCreatureByGameObjectID(
     unsigned long oidObject)
 {
@@ -1467,7 +1467,7 @@ CSWSCreature* CServerExoAppInternal::GetCreatureByGameObjectID(
     }
     return NULL;
 }
-// PC 0x004EAB30
+// PC 0x004EAB30 GOG 0x004E9E30
 CSWSArea* CServerExoAppInternal::GetAreaByGameObjectID(unsigned long oidArea)
 {
     unsigned long oidCachedArea = oidArea;
@@ -1491,13 +1491,13 @@ CSWSArea* CServerExoAppInternal::GetAreaByGameObjectID(unsigned long oidArea)
     }
     return m_pAreaCache;
 }
-// PC 0x004EABB0
+// PC 0x004EABB0 GOG 0x004E9EB0
 void CServerExoAppInternal::ClearAreaCache()
 {
     m_pAreaCache = NULL;
     m_oidAreaCache = OBJECT_INVALID;
 }
-// PC 0x004EABD0
+// PC 0x004EABD0 GOG 0x004E9ED0
 CSWSTrigger* CServerExoAppInternal::GetTriggerByGameObjectID(
     unsigned long oidObject)
 {
@@ -1512,7 +1512,7 @@ CSWSTrigger* CServerExoAppInternal::GetTriggerByGameObjectID(
     }
     return NULL;
 }
-// PC 0x004EAC20
+// PC 0x004EAC20 GOG 0x004E9F20
 CSWSPlaceable* CServerExoAppInternal::GetPlaceableByGameObjectID(
     unsigned long oidObject)
 {
@@ -1527,7 +1527,7 @@ CSWSPlaceable* CServerExoAppInternal::GetPlaceableByGameObjectID(
     }
     return NULL;
 }
-// PC 0x004EAC70
+// PC 0x004EAC70 GOG 0x004E9F70
 CSWSDoor* CServerExoAppInternal::GetDoorByGameObjectID(unsigned long oidObject)
 {
     CGameObject* pObject = NULL;
@@ -1541,7 +1541,7 @@ CSWSDoor* CServerExoAppInternal::GetDoorByGameObjectID(unsigned long oidObject)
     }
     return NULL;
 }
-// PC 0x004EACC0
+// PC 0x004EACC0 GOG 0x004E9FC0
 CSWSAreaOfEffectObject* CServerExoAppInternal::GetAreaOfEffectByGameObjectID(
     unsigned long oidObject)
 {
@@ -1556,7 +1556,7 @@ CSWSAreaOfEffectObject* CServerExoAppInternal::GetAreaOfEffectByGameObjectID(
     }
     return NULL;
 }
-// PC 0x004EAD10
+// PC 0x004EAD10 GOG 0x004EA010
 CSWSWaypoint* CServerExoAppInternal::GetWaypointByGameObjectID(
     unsigned long oidObject)
 {
@@ -1571,7 +1571,7 @@ CSWSWaypoint* CServerExoAppInternal::GetWaypointByGameObjectID(
     }
     return NULL;
 }
-// PC 0x004EAD60
+// PC 0x004EAD60 GOG 0x004EA060
 CSWSEncounter* CServerExoAppInternal::GetEncounterByGameObjectID(
     unsigned long oidObject)
 {
@@ -1586,7 +1586,7 @@ CSWSEncounter* CServerExoAppInternal::GetEncounterByGameObjectID(
     }
     return NULL;
 }
-// PC 0x004EADB0
+// PC 0x004EADB0 GOG 0x004EA0B0
 CSWSSoundObject* CServerExoAppInternal::GetSoundObjectByGameObjectID(
     unsigned long oidObject)
 {
@@ -1601,7 +1601,7 @@ CSWSSoundObject* CServerExoAppInternal::GetSoundObjectByGameObjectID(
     }
     return NULL;
 }
-// PC 0x004EAE00
+// PC 0x004EAE00 GOG 0x004EA100
 CSWSStore* CServerExoAppInternal::GetStoreByGameObjectID(
     unsigned long oidObject)
 {
@@ -1616,7 +1616,7 @@ CSWSStore* CServerExoAppInternal::GetStoreByGameObjectID(
     }
     return NULL;
 }
-// PC 0x004EAE50
+// PC 0x004EAE50 GOG 0x004EA150
 void CServerExoAppInternal::GetServerInfoFromIniFile()
 {
 #ifdef _XBOX
@@ -1740,7 +1740,7 @@ void CServerExoAppInternal::GetServerInfoFromIniFile()
     m_pServerInfo->m_bItemLevelRestrictions = 1;
 #endif
 }
-// PC 0x004EAF90
+// PC 0x004EAF90 GOG 0x004EA290
 void CServerExoAppInternal::DumpServerOptionsToLog()
 {
     CExoString sTimestamp;
@@ -1748,7 +1748,7 @@ void CServerExoAppInternal::DumpServerOptionsToLog()
     g_pExoBase->m_pExoDebug->GetCurrentTimestamp(sTimestamp);
     sTimestamp.CStr();
 }
-// PC 0x004EB000
+// PC 0x004EB000 GOG 0x004EC8E0
 int CServerExoAppInternal::GetFactionOfObject(unsigned long oidObject,
                                              int* pnFaction)
 {
@@ -1784,7 +1784,7 @@ int CServerExoAppInternal::GetFactionOfObject(unsigned long oidObject,
     }
     return 0;
 }
-// PC 0x004EB0F0
+// PC 0x004EB0F0 GOG 0x004EA300
 void CServerExoAppInternal::UpDatePlayerPosition(
     unsigned long oidObject, const Vector& vPosition,
     const Vector& vOrientation)
@@ -1805,7 +1805,7 @@ void CServerExoAppInternal::UpDatePlayerPosition(
         }
     }
 }
-// PC 0x004EB160
+// PC 0x004EB160 GOG 0x004EA370
 int CServerExoAppInternal::IsInjured(unsigned long oidObject)
 {
     CSWSCreature* pCreature = GetCreatureByGameObjectID(oidObject);
@@ -1816,12 +1816,12 @@ int CServerExoAppInternal::IsInjured(unsigned long oidObject)
     }
     return 0;
 }
-// PC 0x004EB1C0
+// PC 0x004EB1C0 GOG 0x004EA3D0
 int CServerExoAppInternal::GetPauseState(unsigned char nPauseType)
 {
     return (unsigned char)(m_PauseState.m_nPauseState & nPauseType) > 0;
 }
-// PC 0x004EB1E0
+// PC 0x004EB1E0 GOG 0x004EA3F0
 unsigned char CServerExoAppInternal::GetActivePauseState()
 {
     if (GetPauseState(PAUSE_TYPE_COMBAT_MASK))
@@ -1834,7 +1834,7 @@ unsigned char CServerExoAppInternal::GetActivePauseState()
     }
     return 0;
 }
-// PC 0x004EB200
+// PC 0x004EB200 GOG 0x004EA410
 CExoLinkedList<unsigned long>* CServerExoAppInternal::GetActiveExclusionList()
 {
     if (GetActivePauseState() == PAUSE_STATE_COMBAT)
@@ -1847,14 +1847,14 @@ CExoLinkedList<unsigned long>* CServerExoAppInternal::GetActiveExclusionList()
     }
     return NULL;
 }
-// PC 0x004EB230
+// PC 0x004EB230 GOG 0x004EA440
 int CServerExoAppInternal::GetDifficultyOption(int nOption)
 {
     int nDifficulty = m_pServerInfo->m_nDifficultyLevel;
 
     return g_pRules->GetDifficultyOption(nOption, nDifficulty);
 }
-// PC 0x004EB250
+// PC 0x004EB250 GOG 0x004EA460
 int CServerExoAppInternal::UpdateMainLoopTimeBudget(unsigned __int64 nTime)
 {
     if (m_nLastMainLoopTime == 0)
@@ -1875,7 +1875,7 @@ int CServerExoAppInternal::UpdateMainLoopTimeBudget(unsigned __int64 nTime)
     m_nLastMainLoopTime = nTime;
     return 0;
 }
-// PC 0x004EB320
+// PC 0x004EB320 GOG 0x004EA530
 int CServerExoAppInternal::UpdateAutoSaveTimer()
 {
     int nCurrentTime;
@@ -1903,7 +1903,7 @@ int CServerExoAppInternal::UpdateAutoSaveTimer()
     }
     return 0;
 }
-// PC 0x004EB3B0
+// PC 0x004EB3B0 GOG 0x004EA5C0
 unsigned long CServerExoAppInternal::ClientToServerObjectId(
     unsigned long oidClient)
 {
@@ -1913,7 +1913,7 @@ unsigned long CServerExoAppInternal::ClientToServerObjectId(
     }
     return OBJECT_INVALID;
 }
-// PC 0x004EB3D0
+// PC 0x004EB3D0 GOG 0x004ED490
 int CServerExoAppInternal::GetPlayerCreatureId()
 {
     CSWSPlayer* pPlayer;
@@ -1925,7 +1925,7 @@ int CServerExoAppInternal::GetPlayerCreatureId()
     }
     return OBJECT_INVALID;
 }
-// PC 0x004EB410
+// PC 0x004EB410 GOG 0x004EA5E0
 void CServerExoAppInternal::SkipPastDialog(unsigned long oidObject)
 {
     CGameObject* pObject = GetGameObject(oidObject);
@@ -1935,7 +1935,7 @@ void CServerExoAppInternal::SkipPastDialog(unsigned long oidObject)
         pObject->AsSWSObject()->m_nDialogReplyState = 1;
     }
 }
-// PC 0x004EB460
+// PC 0x004EB460 GOG 0x004ED550
 int CServerExoAppInternal::CreatureAcquireItem(unsigned long oidObject,
                                                const CResRef& cResRef)
 {
@@ -1956,7 +1956,7 @@ int CServerExoAppInternal::CreatureAcquireItem(unsigned long oidObject,
         ->AcquireItem(&pItem, OBJECT_INVALID, OBJECT_INVALID, 1);
 }
 #ifndef _XBOX
-int CServerExoAppInternal::TestSafeLocation(  // PC 0x004EB560
+int CServerExoAppInternal::TestSafeLocation(  // PC 0x004EB560 GOG 0x004ED650
     unsigned long oidObject, const Vector& vPosition)
 {
     CGameObjectArray* pObjectArray = m_pObjectArray;
@@ -1986,7 +1986,7 @@ int CServerExoAppInternal::TestSafeLocation(  // PC 0x004EB560
     return GetAreaByGameObjectID(oidArea)
         ->TestSafeLocationPoint(vPosition, pPathfind);
 }
-// PC 0x004EB5E0
+// PC 0x004EB5E0 GOG 0x004ED6D0
 int CServerExoAppInternal::ComputeSafeLocation(
     const Vector& vPosition, float fRadius, unsigned long oidObject,
     int nFlags, Vector* pvSafe)
@@ -2011,7 +2011,7 @@ int CServerExoAppInternal::ComputeSafeLocation(
         vPosition, fRadius, pPathfind, nFlags, pvSafe);
 }
 #endif
-void CServerExoAppInternal::UpdateMapData()  // PC 0x004EB670
+void CServerExoAppInternal::UpdateMapData()  // PC 0x004EB670 GOG 0x004ED760
 {
     CSWParty* pParty;
     CSWSModule* pModule;
@@ -2042,7 +2042,7 @@ void CServerExoAppInternal::UpdateMapData()  // PC 0x004EB670
     }
 }
 #ifndef _XBOX
-Vector CServerExoAppInternal::GetNormalOfPoint(const Vector& vPosition)  // PC 0x004EB740
+Vector CServerExoAppInternal::GetNormalOfPoint(const Vector& vPosition)  // PC 0x004EB740 GOG 0x004ED8D0
 {
     CSWSModule* pModule;
     CSWSRoom* pRoom;
@@ -2057,7 +2057,7 @@ Vector CServerExoAppInternal::GetNormalOfPoint(const Vector& vPosition)  // PC 0
     return Vector(0.0f, 0.0f, 1.0f);
 }
 #endif
-// PC 0x004EB7B0
+// PC 0x004EB7B0 GOG 0x004EA630
 int CServerExoAppInternal::IncludeModuleInSave(const CExoString& sModule)
 {
     C2DA* p2DA = new C2DA("modulesave", 0);
@@ -2080,7 +2080,7 @@ int CServerExoAppInternal::IncludeModuleInSave(const CExoString& sModule)
     delete p2DA;
     return nIncludeInSave != 0;
 }
-int CServerExoAppInternal::AutoSaveOnEnteringModule(const CExoString& sModule,  // PC 0x004EB8D0
+int CServerExoAppInternal::AutoSaveOnEnteringModule(const CExoString& sModule,  // PC 0x004EB8D0 GOG 0x004ED940
                                                    C2DA* p2DA)
 {
     CExoString sAutoSaveOnEnter;
@@ -2115,7 +2115,7 @@ int CServerExoAppInternal::AutoSaveOnEnteringModule(const CExoString& sModule,  
     }
     return bAutoSave;
 }
-// PC 0x004EBA20
+// PC 0x004EBA20 GOG 0x004EA750
 int CServerExoAppInternal::ShrinkLineByCreatures(const Vector& vStart,
                                                  const Vector& vEnd,
                                                  Vector& vResult)
@@ -2134,7 +2134,7 @@ unsigned __int64 CServerExoAppInternal::GetSystemTimeAsDWORD64()
 }
 
 #ifndef _XBOX
-// PC 0x004F1110
+// PC 0x004F1110 GOG 0x004F0C50
 void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, C2DA* p2DA)
 
 {
@@ -2345,7 +2345,7 @@ void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, C2DA* p2DA)
     UpdateScreen(1.0f / 30.0f, 0, 0);
 }
 #endif
-void CServerExoAppInternal::SetMoveToWorldTime(  // PC 0x004EBB30
+void CServerExoAppInternal::SetMoveToWorldTime(  // PC 0x004EBB30 GOG 0x004EA860
     unsigned long nCalendarDay, unsigned char nHour, unsigned char nMinute,
     unsigned char nSecond, unsigned short nMillisecond, unsigned short nYear,
     unsigned short nMonth)
@@ -2358,7 +2358,7 @@ void CServerExoAppInternal::SetMoveToWorldTime(  // PC 0x004EBB30
     m_nMoveToWorldYear = nYear;
     m_nMoveToWorldMonth = nMonth;
 }
-// PC 0x004EBB80
+// PC 0x004EBB80 GOG 0x004EA8B0
 void CServerExoAppInternal::GetMoveToWorldTime(
     unsigned long& nCalendarDay, unsigned char& nHour, unsigned char& nMinute,
     unsigned char& nSecond, unsigned short& nMillisecond, unsigned short& nYear,
@@ -2372,7 +2372,7 @@ void CServerExoAppInternal::GetMoveToWorldTime(
     nYear = m_nMoveToWorldYear;
     nMonth = m_nMoveToWorldMonth;
 }
-// PC 0x004EBBE0
+// PC 0x004EBBE0 GOG 0x004EA910
 void CServerExoAppInternal::DoModuleEnterSaveCleanup(const CExoString& sModule,
                                                      C2DA* p2DA)
 {
@@ -2403,7 +2403,7 @@ void CServerExoAppInternal::DoModuleEnterSaveCleanup(const CExoString& sModule,
         }
     }
 }
-// PC 0x004EBD80
+// PC 0x004EBD80 GOG 0x004EDA90
 int CServerExoAppInternal::GetModulePreviouslyVisited(const CExoString& sModule)
 {
     if (sModule.GetLength() < 1)
@@ -2497,7 +2497,7 @@ int CServerExoAppInternal::GetModulePreviouslyVisited(const CExoString& sModule)
     }
     return bPreviouslyVisited;
 }
-// PC 0x004EC1E0
+// PC 0x004EC1E0 GOG 0x004EAAB0
 int CServerExoAppInternal::HasEnoughDiskSpaceForSaveGame()
 {
     unsigned __int64 nFreeBytes = 0;
@@ -2507,12 +2507,12 @@ int CServerExoAppInternal::HasEnoughDiskSpaceForSaveGame()
 
     return nFreeUnits > 1600;
 }
-// PC 0x004065A0
+// PC 0x004065A0 GOG 0x00406570
 int CServerExoAppInternal::GetModuleLanguage()
 {
     return 0;
 }
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 void CServerExoAppInternal::Uninitialize()
 {
 }
@@ -3565,7 +3565,7 @@ int CServerExoAppInternal::DebugValidatePath_Segment(
     return bValid;
 }
 #endif
-// PC 0x004EE510
+// PC 0x004EE510 GOG 0x004EF290
 void CServerExoAppInternal::UpdateClientGameObjects(int bFlag)
 {
     unsigned __int64 nTime;
@@ -3581,7 +3581,7 @@ void CServerExoAppInternal::UpdateClientGameObjects(int bFlag)
         m_pPlayerList->GetNext(pNode);
     }
 }
-// PC 0x004EE580
+// PC 0x004EE580 GOG 0x004EC870
 int CServerExoAppInternal::GetPlayerLanguage(unsigned long nPlayerId)
 {
     CExoLinkedListNode* pNode;
@@ -3599,7 +3599,7 @@ int CServerExoAppInternal::GetPlayerLanguage(unsigned long nPlayerId)
     }
     return 0;
 }
-// PC 0x004EE5F0
+// PC 0x004EE5F0 GOG 0x004EC9D0
 CExoString CServerExoAppInternal::GetPlayerListString()
 {
     CExoString sList;
@@ -3648,7 +3648,7 @@ CExoString CServerExoAppInternal::GetPlayerListString()
     sList = sList + "Total: " + (nPlayerCount + nAdminCount);
     return sList;
 }
-// PC 0x004EEB60
+// PC 0x004EEB60 GOG 0x004ECF40
 void CServerExoAppInternal::AddToExclusionList(unsigned long oidObject,
                                               unsigned char nType)
 {
@@ -3686,7 +3686,7 @@ void CServerExoAppInternal::AddToExclusionList(unsigned long oidObject,
         m_pPauseExclusionList->AddTail((unsigned long*)oidObject);
     }
 }
-// PC 0x004EEC30
+// PC 0x004EEC30 GOG 0x004ED010
 void CServerExoAppInternal::RemoveFromExclusionList(unsigned long oidObject,
                                                    unsigned char nType)
 {
@@ -3724,7 +3724,7 @@ void CServerExoAppInternal::RemoveFromExclusionList(unsigned long oidObject,
         }
     }
 }
-// PC 0x004EED10
+// PC 0x004EED10 GOG 0x004ED0F0
 int CServerExoAppInternal::IsOnActiveExclusionList(unsigned long oidObject)
 {
     CExoLinkedList<unsigned long>* pList = GetActiveExclusionList();
@@ -3745,7 +3745,7 @@ int CServerExoAppInternal::IsOnActiveExclusionList(unsigned long oidObject)
     }
     return 0;
 }
-// PC 0x004EED90
+// PC 0x004EED90 GOG 0x004ED170
 int CServerExoAppInternal::ResolvePlayerByFirstName(const CExoString& sFirstName)
 {
     CExoString sPlayerName;
@@ -3781,7 +3781,7 @@ int CServerExoAppInternal::ResolvePlayerByFirstName(const CExoString& sFirstName
     }
     return CGameObjectArray::INVALIDOBJID;
 }
-// PC 0x004EEEE0
+// PC 0x004EEEE0 GOG 0x004ED2C0
 int CServerExoAppInternal::UpdateShutdownTimer(unsigned __int64 nTime)
 {
     if (m_nShutdownTimeout == 0)
@@ -3813,7 +3813,7 @@ int CServerExoAppInternal::UpdateShutdownTimer(unsigned __int64 nTime)
     m_nShutdownStartTime = nTime;
     return 0;
 }
-// PC 0x004EF080
+// PC 0x004EF080 GOG 0x004ED460
 int CServerExoAppInternal::GetFirstPCObject()
 {
     CSWSPlayer* pPlayer;
@@ -3844,7 +3844,7 @@ int CServerExoAppInternal::GetNextPCObject()
     }
     return CGameObjectArray::INVALIDOBJID;
 }
-// PC 0x004EF0B0
+// PC 0x004EF0B0 GOG 0x004ED4D0
 int CServerExoAppInternal::IsActionsPending(unsigned long oidObject)
 {
     unsigned long oidNormalized;
@@ -3866,7 +3866,7 @@ int CServerExoAppInternal::IsActionsPending(unsigned long oidObject)
     }
     return 0;
 }
-// PC 0x004EF130
+// PC 0x004EF130 GOG 0x004EF6E0
 void CServerExoAppInternal::TempDeathUpdate()
 {
     SERVEREXOAPPINTERNAL_HOOK();
@@ -4001,7 +4001,7 @@ void CServerExoAppInternal::TempDeathUpdate()
         }
     }
 }
-// PC 0x0040FAD0
+// PC 0x0040FAD0 GOG 0x0040FA80
 template <> inline CExoArrayList<CExoString>::CExoArrayList(const CExoArrayList<CExoString>& list)
 {
     num = 0;
@@ -4014,7 +4014,7 @@ template <> inline CExoArrayList<CExoString>::CExoArrayList(const CExoArrayList<
 }
 
 #ifndef _XBOX
-template <> inline void CExoArrayList<CExoString>::Add(CExoString value)  // PC 0x00405A30
+template <> inline void CExoArrayList<CExoString>::Add(CExoString value)  // PC 0x00405A30 GOG 0x00405A30
 {
     if (num == array_size)
     {
@@ -4023,7 +4023,7 @@ template <> inline void CExoArrayList<CExoString>::Add(CExoString value)  // PC 
     element[num++] = value;
 }
 #endif
-// PC 0x004EF5C0
+// PC 0x004EF5C0 GOG 0x004ED830
 void CServerExoAppInternal::ForceRunAreaOnExitScripts()
 {
     CExoLinkedListNode* pNode;
@@ -4058,7 +4058,7 @@ void CServerExoAppInternal::ForceRunAreaOnExitScripts()
         m_pPlayerList->GetNext(pNode);
     }
 }
-// PC 0x004EF6A0
+// PC 0x004EF6A0 GOG 0x004EDEF0
 CServerExoAppInternal::CServerExoAppInternal()
 {
     unsigned long nOption;
@@ -4119,7 +4119,7 @@ void CServerExoAppInternal::SendStartStallEvent(unsigned long nEvent)
     CSWSMessage* pMessage = GetServerExoApp()->GetSWSMessage();
     pMessage->SendServerToPlayerLoadBar_StartStallEvent(nEvent);
 }
-// PC 0x004EF960
+// PC 0x004EF960 GOG 0x004EFDB0
 int CServerExoAppInternal::LoadCharacterStart(
     unsigned char nType, CSWSPlayer* pPlayer, CResRef cResRef,
     void* pData, unsigned long nSize)
@@ -4219,7 +4219,7 @@ int CServerExoAppInternal::LoadCharacterStart(
     }
     return 1;
 }
-// PC 0x004EFDF0
+// PC 0x004EFDF0 GOG 0x004EE8C0
 inline void CServerExoAppInternal::SetEstimatedSaveSize(
     const CExoString& sModuleName, unsigned short nModuleType)
 {
@@ -4290,7 +4290,7 @@ inline void CServerExoAppInternal::SendExitingStartNewModuleMessage(
     pMessage->SendServerToPlayerModule_EndStartNewModule(bSuccess);
     m_bDoingStartNewModule = 0;
 }
-// PC 0x004F00E0
+// PC 0x004F00E0 GOG 0x004EF300
 void CServerExoAppInternal::Shutdown(int bExit, int bSave)
 {
     SERVEREXOAPPINTERNAL_HOOK();
@@ -4372,7 +4372,7 @@ void CServerExoAppInternal::Shutdown(int bExit, int bSave)
         m_nShutdownTimeout = SHUTDOWN_IMMEDIATE_TIMEOUT;
     }
 }
-// PC 0x004F0360
+// PC 0x004F0360 GOG 0x004EF580
 CWorldTimer* CServerExoAppInternal::GetActiveTimer(unsigned long oidObject)
 {
     if (oidObject != OBJECT_INVALID && GetActivePauseState() > 0)
@@ -4398,12 +4398,12 @@ CWorldTimer* CServerExoAppInternal::GetActiveTimer(unsigned long oidObject)
     }
     return m_pWorldTimer;
 }
-// PC 0x004F03D0
+// PC 0x004F03D0 GOG 0x004EF5F0
 void CServerExoAppInternal::AddCharListRequest(unsigned long nPlayerId)
 {
     m_lstCharListRequests.AddUnique(nPlayerId);
 }
-// PC 0x004F03E0
+// PC 0x004F03E0 GOG 0x004EF600
 void CServerExoAppInternal::UpdateSubareasOnMoveTo(unsigned long oidObject,
                                                    const Vector& vFrom,
                                                    const Vector& vTo)
@@ -4441,7 +4441,7 @@ void CServerExoAppInternal::UpdateSubareasOnMoveTo(unsigned long oidObject,
         }
     }
 }
-// PC 0x004F04C0
+// PC 0x004F04C0 GOG 0x004EFB70
 CServerExoAppInternal::~CServerExoAppInternal()
 {
     if (m_pPlayerList != NULL)
@@ -4472,7 +4472,7 @@ CServerExoAppInternal::~CServerExoAppInternal()
     g_pAppManager->GetObjectTableManager(CAppManager::OBJECT_TABLE_SERVER)
         ->ClearAll();
 }
-// PC 0x004F0700
+// PC 0x004F0700 GOG 0x004F0240
 void CServerExoAppInternal::PlayerListChange(unsigned long nPlayerId,
                                            int bAdded, int bGuaranteed)
 {
@@ -4571,7 +4571,7 @@ void CServerExoAppInternal::PlayerListChange(unsigned long nPlayerId,
         }
     }
 }
-// PC 0x004F0A70
+// PC 0x004F0A70 GOG 0x004F05B0
 void CServerExoAppInternal::StopServices()
 {
     CExoString sTimestamp;
@@ -4672,7 +4672,7 @@ void CServerExoAppInternal::StopServices()
         m_pFactionManager = NULL;
     }
 }
-// PC 0x004F0E30
+// PC 0x004F0E30 GOG 0x004F0970
 void CServerExoAppInternal::ReprocessExclusionListActions(unsigned char nPauseType)
 {
     CExoLinkedList<unsigned long>* pList;
@@ -4703,7 +4703,7 @@ void CServerExoAppInternal::ReprocessExclusionListActions(unsigned char nPauseTy
         pList->GetNext(pNode);
     }
 }
-// PC 0x004F2590
+// PC 0x004F2590 GOG 0x004F20D0
 #ifdef _XBOX
 int CServerExoAppInternal::LoadModule(CExoString sModule, CSWSPlayer* pPlayer)
 #else
@@ -4944,7 +4944,7 @@ int CServerExoAppInternal::LoadModule(const CExoString& sModule,
 LoadModuleFailed:
     return 0;
 }
-// PC 0x004F35B0
+// PC 0x004F35B0 GOG 0x004F30F0
 void CServerExoAppInternal::DealWithLoadGameError(unsigned long nValue)
 {
     CSWReentrantServerStats* pStats = g_pAppManager->m_pReentrantServerStats;
@@ -4963,12 +4963,12 @@ void CServerExoAppInternal::DealWithLoadGameError(unsigned long nValue)
     g_pAppManager->m_pServerExoApp->GetSWSMessage()
         ->SendServerToPlayerLoadBar_EndStallEvent(CSWSMessage::LOADBAR_STALL_EVENT_LOAD_MODULE, nValue);
 }
-// PC 0x004F3610
+// PC 0x004F3610 GOG 0x004F3150
 void CServerExoAppInternal::TogglePauseState(unsigned char nPauseType)
 {
     SetPauseState(nPauseType, !GetPauseState(nPauseType));
 }
-// PC 0x004F0F20
+// PC 0x004F0F20 GOG 0x004F0A60
 void CServerExoAppInternal::SetPauseState(unsigned char nPauseType, int bPause)
 {
     CSWSMessage* pMessage = m_pSWSMessage;
@@ -5035,7 +5035,7 @@ void CServerExoAppInternal::SetPauseState(unsigned char nPauseType, int bPause)
         }
     }
 }
-// PC 0x004F3640
+// PC 0x004F3640 GOG 0x004F3180
 int CServerExoAppInternal::LoadGame(unsigned long nSlot,
                                     const CExoString& sName,
                                     const CExoString& sModule,
@@ -5091,7 +5091,7 @@ int CServerExoAppInternal::SendEnteringStartNewModuleMessage()
     GetServerExoApp()->GetSWSMessage()->SendServerToPlayerModule_StartStartNewModule();
     return 1;
 }
-// PC 0x004F3820
+// PC 0x004F3820 GOG 0x004F3360
 int CServerExoAppInternal::ExecuteLoadModule(const CExoString& sModule)
 {
     if (GetModule() != NULL && !GetModule()->GetModuleName().IsEmpty())
@@ -5118,7 +5118,7 @@ int CServerExoAppInternal::ExecuteLoadModule(const CExoString& sModule)
 
     return LoadModule(sModule, NULL);
 }
-// PC 0x004F3920
+// PC 0x004F3920 GOG 0x004F3460
 int CServerExoAppInternal::StartNewModule(const CExoString& sModule)
 {
     int bLoadingModule = m_bLoadingModule;
@@ -5182,7 +5182,7 @@ int CServerExoAppInternal::StartNewModule(const CExoString& sModule)
     }
     return ExecuteLoadModule(sModule);
 }
-// PC 0x004F3BB0
+// PC 0x004F3BB0 GOG 0x004F36F0
 int CServerExoAppInternal::MainLoop()
 {
 

@@ -23,12 +23,12 @@ unsigned short CAurInternal::m_nHeadLightEnabled = 0xffff;
 
 short CAurInternal::m_nColorDepth = 0;
 short CAurInternal::m_nDepthBits = 0;
-// PC 0x00462E20
+// PC 0x00462E20 GOG 0x00462F30
 CAurInternalGL* CAurInternal::NewCAuroraInstance()
 {
     return CAurInternalGL::NewCAuroraInstance();
 }
-// PC 0x00461730
+// PC 0x00461730 GOG 0x00461840
 int CAurInternal::FullScreen()
 {
     return m_bFullScreen;
@@ -43,7 +43,7 @@ bool CAurInternal::GetValidMode(unsigned long* pnWidth, unsigned long* pnHeight,
     return true;
 }
 #else
-bool CAurInternal::GetValidMode(unsigned long* pnWidth, unsigned long* pnHeight,  // PC 0x00461740
+bool CAurInternal::GetValidMode(unsigned long* pnWidth, unsigned long* pnHeight,  // PC 0x00461740 GOG 0x00461850
                                unsigned char* pnBitsPerPixel,
                                unsigned long* pnRefreshRate, bool bSetMode)
 {
@@ -107,7 +107,7 @@ bool CAurInternal::GetValidMode(unsigned long* pnWidth, unsigned long* pnHeight,
            selectedMode.dmDisplayFrequency == *pnRefreshRate;
 }
 #endif
-// PC 0x00461950
+// PC 0x00461950 GOG 0x00461A60
 void CAurInternal::RestoreDesktopDisplayMode()
 {
     ResetGammaRamp(1.0f, 1);
@@ -119,7 +119,7 @@ void CAurInternal::RestoreDesktopDisplayMode()
     ChangeDisplaySettingsA(NULL, 0);
 #endif
 }
-// PC 0x00461980
+// PC 0x00461980 GOG 0x00461A90
 void CAurInternal::RestoreAuroraDisplayMode()
 {
     ResetGammaRamp(m_fGamma, 1);
@@ -134,7 +134,7 @@ void CAurInternal::RestoreAuroraDisplayMode()
     }
 #endif
 }
-// PC 0x004619C0
+// PC 0x004619C0 GOG 0x00461AD0
 void CAurInternal::DestroyCAuroraInstance()
 {
     if (AuroraInstance != NULL && --AuroraCount == 0)
@@ -155,11 +155,11 @@ void CAurInternalGL::MakeCurrentGLContext(HDC hDeviceContext, HGLRC hRenderConte
 {
 }
 #else
-int CAurInternalGL::GetGLContext()  // PC 0x004619F0
+int CAurInternalGL::GetGLContext()  // PC 0x004619F0 GOG 0x00461B00
 {
     return m_nGLContext;
 }
-// PC 0x00461A00
+// PC 0x00461A00 GOG 0x00461B10
 void CAurInternalGL::MakeCurrentGLContext(HDC hDeviceContext, HGLRC hRenderContext)
 {
     wglMakeCurrent(hDeviceContext, hRenderContext);
@@ -194,7 +194,7 @@ int CAurInternal::ResetGammaRamp(float fGamma, int bSaveGamma)
     return 1;
 }
 #else
-int CAurInternal::ResetGammaRamp(float fGamma, int bSaveGamma)  // PC 0x00461A10
+int CAurInternal::ResetGammaRamp(float fGamma, int bSaveGamma)  // PC 0x00461A10 GOG 0x00461B20
 {
     unsigned short* pRamp;
     int nChannel;
@@ -246,7 +246,7 @@ CAurInternal::CAurInternal()
 #endif
     m_nColorDepth = 0;
 }
-// PC 0x00461AF0
+// PC 0x00461AF0 GOG 0x00461C00
 void AurEnableHeadLight()
 {
     if (CAurInternal::m_nHeadLightEnabled != 1)
@@ -255,7 +255,7 @@ void AurEnableHeadLight()
     }
     CAurInternal::m_nHeadLightEnabled = 1;
 }
-// PC 0x00461B10
+// PC 0x00461B10 GOG 0x00461C20
 void AurDisableHeadLight()
 {
     if (CAurInternal::m_nHeadLightEnabled != 0)
@@ -264,7 +264,7 @@ void AurDisableHeadLight()
     }
     CAurInternal::m_nHeadLightEnabled = 0;
 }
-// PC 0x00461B30
+// PC 0x00461B30 GOG 0x00461C40
 CAurInternal::~CAurInternal()
 {
 }
@@ -383,7 +383,7 @@ int CAurInternalGL::InitEditor(HWND hApplicationWindow, HWND hRenderWindow,
 #endif
 
 #ifndef _XBOX
-int CAurInternalGL::Initialize(HWND hApplicationWindow, HWND hRenderWindow,  // PC 0x00461B40
+int CAurInternalGL::Initialize(HWND hApplicationWindow, HWND hRenderWindow,  // PC 0x00461B40 GOG 0x00461C50
                                unsigned long nWidth, unsigned long nHeight,
                                unsigned char nBitsPerPixel,
                                unsigned long nRefreshRate, int nUnknown0,
@@ -635,7 +635,7 @@ int CAurInternalGL::Initialize(HWND hApplicationWindow, HWND hRenderWindow,  // 
 #endif
 
 #ifndef _XBOX
-int CAurInternalGL::InitEditor(HWND hApplicationWindow, HWND hRenderWindow,  // PC 0x00462450
+int CAurInternalGL::InitEditor(HWND hApplicationWindow, HWND hRenderWindow,  // PC 0x00462450 GOG 0x00462560
                                unsigned long nWidth, unsigned long nHeight,
                                unsigned char nBitsPerPixel,
                                unsigned long nRefreshRate, int bFullScreen)
@@ -826,7 +826,7 @@ void CAurInternalGL::Reshape(int nWidth, int nHeight)
 
 }
 #else
-void CAurInternalGL::Reshape(int nWidth, int nHeight)  // PC 0x00462AA0
+void CAurInternalGL::Reshape(int nWidth, int nHeight)  // PC 0x00462AA0 GOG 0x00462BB0
 {
     GLsizei nViewportHeight;
     GLsizei nViewportWidth;
@@ -851,7 +851,7 @@ void CAurInternalGL::Reshape(int nWidth, int nHeight)  // PC 0x00462AA0
     }
 }
 #endif
-#ifdef _XBOX  // PC 0x00462AF0
+#ifdef _XBOX  // PC 0x00462AF0 GOG 0x00462C00
 void CAurInternalGL::ShutDown(int bReleaseRenderer)
 #else
 int CAurInternalGL::ShutDown(int bReleaseRenderer, int bDestroyWindow)
@@ -960,7 +960,7 @@ int CAurInternalGL::ShutDown(int bReleaseRenderer, int bDestroyWindow)
     return nResult;
 #endif
 }
-// PC 0x00462D90
+// PC 0x00462D90 GOG 0x00462EA0
 CAurInternalGL* CAurInternalGL::NewCAuroraInstance()
 {
     if (AuroraInstance == NULL)
@@ -977,7 +977,7 @@ CAurInternalGL::CAurInternalGL()
     m_nGLContext = 0;
 #endif
 }
-// PC 0x00462D20
+// PC 0x00462D20 GOG 0x00462E30
 CAurInternalGL::~CAurInternalGL()
 {
     untrace(NULL); AurStringsFree(); AurFreeFont(); AurDeleteAllFonts();

@@ -4,22 +4,22 @@
 #include <stdio.h>
 
 #include "math3d.h"
-// PC 0x005ED200
+// PC 0x005ED200 GOG 0x005ED1E0
 int CLYT::GetRoomCount()
 {
     return m_nRoomCount;
 }
-// PC 0x00622290
+// PC 0x00622290 GOG 0x00622260
 int CLYT::GetTrackCount()
 {
     return m_nTrackCount;
 }
-// PC 0x007846A0
+// PC 0x007846A0 GOG 0x00784450
 int CLYT::GetObstacleCount()
 {
     return m_nObstacleCount;
 }
-// PC 0x0077FA00
+// PC 0x0077FA00 GOG 0x00628FE0
 int CLYT::UnloadLayout()
 {
     int nResult = m_bLayoutLoaded;
@@ -30,37 +30,37 @@ int CLYT::UnloadLayout()
     }
     return nResult;
 }
-// PC 0x00629130
+// PC 0x00629130 GOG 0x00629000
 CResRef CLYT::GetRoomName(int nRoom)
 {
     return m_pRoomNames[nRoom];
 }
-// PC 0x00629160
+// PC 0x00629160 GOG 0x00629030
 Vector CLYT::GetRoomPosition(int nRoom)
 {
     return m_pRoomPositions[nRoom];
 }
-// PC 0x00629190
+// PC 0x00629190 GOG 0x00629060
 CResRef CLYT::GetTrackName(int nTrack)
 {
     return m_pTrackNames[nTrack];
 }
-// PC 0x006291C0
+// PC 0x006291C0 GOG 0x00629090
 Vector CLYT::GetTrackPosition(int nTrack)
 {
     return m_pTrackPositions[nTrack];
 }
-// PC 0x006291F0
+// PC 0x006291F0 GOG 0x006290C0
 CResRef CLYT::GetObstacleName(int nObstacle)
 {
     return m_pObstacleNames[nObstacle];
 }
-// PC 0x00629220
+// PC 0x00629220 GOG 0x006290F0
 Vector CLYT::GetObstaclePosition(int nObstacle)
 {
     return m_pObstaclePositions[nObstacle];
 }
-// PC 0x00629430
+// PC 0x00629430 GOG 0x00629300
 CLYT::CLYT()
 {
     m_nRoomCount = 0;
@@ -79,7 +79,7 @@ CLYT::CLYT()
     m_pDoorHookOrientations = 0;
     m_pDoorHookIds = 0;
 }
-// PC 0x006294A0
+// PC 0x006294A0 GOG 0x00629370
 CLYT::~CLYT()
 {
     UnloadLayout();
@@ -106,14 +106,14 @@ CLYT::~CLYT()
     delete[] m_pDoorHookIds;
     m_pDoorHookIds = 0;
 }
-// PC 0x00629E00
+// PC 0x00629E00 GOG 0x00629CD0
 int CLYT::LoadLayout(const CResRef& cResRef)
 {
     CExoString sLayout;
     cResRef.CopyToString(sLayout);
     return LoadLayout(sLayout);
 }
-// PC 0x006295C0
+// PC 0x006295C0 GOG 0x00629490
 int CLYT::LoadLayout(const CExoString& sLayout)
 {
     char* pBuffer;

@@ -3,7 +3,7 @@
 #include "nwcanimbase.h"
 #include "swminigame.h"
 #include "exobase.h"
-// PC 0x00748CC0
+// PC 0x00748CC0 GOG 0x00748B60
 CSWMGBehaviorFire::CSWMGBehaviorFire(CAurObject* pObject,
                                      CAurObject* pParent,
                                      CAurPart* pPart)
@@ -12,7 +12,7 @@ CSWMGBehaviorFire::CSWMGBehaviorFire(CAurObject* pObject,
       m_fTimeToFire(0.0f)
 {
 }
-// PC 0x00748D40
+// PC 0x00748D40 GOG 0x00748BE0
 int CSWMGBehaviorFire::Control(float fTimeStep)
 {
     int nResult = CAurBehaviorAttach::Control(fTimeStep);
@@ -31,7 +31,7 @@ int CSWMGBehaviorFire::Control(float fTimeStep)
     }
     return 1;
 }
-// PC 0x00748D90
+// PC 0x00748D90 GOG 0x00748C30
 int CSWMGBehaviorFire::Fire()
 {
     if (m_fTimeToFire == 0.0)
@@ -49,7 +49,7 @@ int CSWMGBehaviorFire::Fire()
     }
     return 0;
 }
-// PC 0x00748E30
+// PC 0x00748E30 GOG 0x00748CD0
 void CSWMGBehaviorFire::SetRateOfFire(float fRateOfFire)
 {
     if (m_fTimeToFire < m_fRateOfFire && m_fTimeToFire != 0.0f)
@@ -58,7 +58,7 @@ void CSWMGBehaviorFire::SetRateOfFire(float fRateOfFire)
     }
     m_fRateOfFire = fRateOfFire;
 }
-// PC 0x00748E70
+// PC 0x00748E70 GOG 0x00748D10
 void CSWMGBehaviorTrackAndFire::SetRateOfFire(float fRateOfFire)
 {
     if (m_fTimeToFire < m_fRateOfFire && m_fTimeToFire != 0.0f)
@@ -67,7 +67,7 @@ void CSWMGBehaviorTrackAndFire::SetRateOfFire(float fRateOfFire)
     }
     m_fRateOfFire = fRateOfFire;
 }
-// PC 0x00748EB0
+// PC 0x00748EB0 GOG 0x00748D50
 CSWMGBehaviorBullet::CSWMGBehaviorBullet(CAurObject* pObject,
                                         CSWTrackFollower* pFollower,
                                         const CSWMGBullet& bullet)
@@ -76,7 +76,7 @@ CSWMGBehaviorBullet::CSWMGBehaviorBullet(CAurObject* pObject,
     m_bullet = bullet;
     m_pFollower = pFollower;
 }
-// PC 0x00748F60
+// PC 0x00748F60 GOG 0x00748E00
 int CSWMGBehaviorBullet::Control(float fTimeStep)
 {
     if (CAurBehavior::Control(fTimeStep) == 0)
@@ -95,7 +95,7 @@ int CSWMGBehaviorBullet::Control(float fTimeStep)
                           (fTimeStep * m_bullet.m_fSpeed));
     return 1;
 }
-// PC 0x00749080
+// PC 0x00749080 GOG 0x00748EF0
 int CSWMGBehaviorTrack::Control(float fTimeStep)
 {
     m_bTargetting = false;
@@ -151,7 +151,7 @@ int CSWMGBehaviorTrack::Control(float fTimeStep)
     }
     return 1;
 }
-// PC 0x007496D0
+// PC 0x007496D0 GOG 0x00749540
 int CSWMGBehaviorTrackAndFire::Control(float fTimeStep)
 {
     int nResult = CSWMGBehaviorTrack::Control(fTimeStep);
@@ -184,7 +184,7 @@ int CSWMGBehaviorTrackAndFire::Control(float fTimeStep)
     }
     return 1;
 }
-// PC 0x00749800
+// PC 0x00749800 GOG 0x00749650
 CSWMGBehaviorTrack::CSWMGBehaviorTrack(CAurObject* pObject,
                                      CAurObject* pParent,
                                      CAurPart* pPart,
@@ -195,7 +195,7 @@ CSWMGBehaviorTrack::CSWMGBehaviorTrack(CAurObject* pObject,
     m_pModel = pModel;
     AddDependency(pModel);
 }
-// PC 0x007498A0
+// PC 0x007498A0 GOG 0x00749710
 CSWMGBehaviorTrackAndFire::CSWMGBehaviorTrackAndFire(CAurObject* pObject,
                                                       CAurObject* pParent,
                                                       CAurPart* pPart,

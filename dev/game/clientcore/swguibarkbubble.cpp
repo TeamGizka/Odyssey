@@ -23,7 +23,7 @@
 
 static inline void SwguibarkbubbleTrace1();
 #define SWGUIBARKBUBBLE_TRACE() SwguibarkbubbleTrace1()
-// PC 0x00712BA0
+// PC 0x00712BA0 GOG 0x00712460
 CSWGuiBarkBubble::CSWGuiBarkBubble(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -47,7 +47,7 @@ CSWGuiBarkBubble::CSWGuiBarkBubble(CSWGuiManager* pManager)
     m_nBarkX = -1;
     m_nBarkY = -1;
 }
-// PC 0x00712CC0
+// PC 0x00712CC0 GOG 0x00712580
 CSWGuiBarkBubble::~CSWGuiBarkBubble()
 {
     if (m_pSoundSource != NULL)
@@ -139,7 +139,7 @@ void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
         m_bSoundStarted = m_pSoundSource->Play(cSound, 4, 1, 0, 0);
 #endif
 }
-// PC 0x00712710
+// PC 0x00712710 GOG 0x007129B0
 void CSWGuiBarkBubble::Pause()
 {
     SWGUIBARKBUBBLE_TRACE();
@@ -152,7 +152,7 @@ void CSWGuiBarkBubble::Pause()
         SetModal(0);
     }
 }
-// PC 0x00712770
+// PC 0x00712770 GOG 0x00712A10
 void CSWGuiBarkBubble::Resume()
 {
     SWGUIBARKBUBBLE_TRACE();
@@ -169,7 +169,7 @@ void CSWGuiBarkBubble::Resume()
 #endif
     }
 }
-// PC 0x007127C0
+// PC 0x007127C0 GOG 0x00712A60
 void CSWGuiBarkBubble::StopBark(int bStopSound)
 {
     SWGUIBARKBUBBLE_TRACE();
@@ -185,7 +185,7 @@ void CSWGuiBarkBubble::StopBark(int bStopSound)
     m_fTimeLeft = 0.0f;
     SetModal(0);
 }
-// PC 0x00712840
+// PC 0x00712840 GOG 0x00712AE0
 void CSWGuiBarkBubble::Draw(float fElapsed)
 {
     SWGUIBARKBUBBLE_TRACE();
@@ -286,7 +286,7 @@ void CSWGuiBarkBubble::Draw(float fElapsed)
             g_pAppManager->m_pClientExoApp->GetInGameGui()->GetInterfaceOffset();
     }
 }
-// PC 0x00712B10
+// PC 0x00712B10 GOG 0x00712DB0
 void CSWGuiBarkBubble::OnPanelAdded()
 {
     SWGUIBARKBUBBLE_TRACE();
@@ -297,7 +297,7 @@ void CSWGuiBarkBubble::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 #endif
 }
-// PC 0x00712B50
+// PC 0x00712B50 GOG 0x00712DF0
 void CSWGuiBarkBubble::SetExtent(const CSWGuiExtent& cExtent)
 {
     SWGUIBARKBUBBLE_TRACE();

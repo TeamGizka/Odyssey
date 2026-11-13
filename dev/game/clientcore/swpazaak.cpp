@@ -14,7 +14,7 @@ int CPazaakCard::s_pnPazaakCardValues[33] =
     1, 1, 0, 0, 1,
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 };
-// PC 0x00754900
+// PC 0x00754900 GOG 0x00754710
 int CPazaakPlayer::GetTotal()
 {
     int nTotal = 0;
@@ -29,7 +29,7 @@ int CPazaakPlayer::GetTotal()
     }
     return nTotal;
 }
-// PC 0x00754930
+// PC 0x00754930 GOG 0x00754740
 void CPazaakPlayer::ChooseSidedeck(CPazaakCard* pCards)
 {
     int nCount = 10;
@@ -45,7 +45,7 @@ void CPazaakPlayer::ChooseSidedeck(CPazaakCard* pCards)
         nCount--;
     }
 }
-// PC 0x007549C0
+// PC 0x007549C0 GOG 0x007547D0
 void CPazaakPlayer::AddGameCard(CPazaakCard cCard)
 {
     int nSlot;
@@ -74,7 +74,7 @@ void CPazaakPlayer::AddGameCard(CPazaakCard cCard)
         m_bStanding = 1;
     }
 }
-// PC 0x00754B00
+// PC 0x00754B00 GOG 0x00754910
 void CSWPazaak::ClearGameBoard()
 {
     for (int i = 0; i < 9; i++)
@@ -93,7 +93,7 @@ void CSWPazaak::ClearGameBoard()
     m_cPlayer.m_bStanding = 0;
     m_cOpponent.m_bStanding = 0;
 }
-// PC 0x00754C40
+// PC 0x00754C40 GOG 0x00754A50
 void CSWPazaak::ShuffleDeck()
 {
     CPazaakCard aCards[40];
@@ -118,7 +118,7 @@ void CSWPazaak::ShuffleDeck()
     }
     m_nDeckIndex = 39;
 }
-// PC 0x00754D30
+// PC 0x00754D30 GOG 0x00754B40
 CPazaakCard CSWPazaak::DrawCard()
 {
     if (m_nDeckIndex < 0)
@@ -127,12 +127,12 @@ CPazaakCard CSWPazaak::DrawCard()
     }
     return m_aDeck[m_nDeckIndex--];
 }
-// PC 0x00754D80
+// PC 0x00754D80 GOG 0x00754B90
 int CSWPazaak::CanUsePlayerSidedeckCard(int nIndex)
 {
     return m_cPlayer.m_aSideDeck[nIndex].m_nType >= 0;
 }
-// PC 0x00754DA0
+// PC 0x00754DA0 GOG 0x00754BB0
 int CSWPazaak::FindPotentialFlipTotal(CPazaakPlayer& cPlayer, int nCard)
 {
     int nValue1 = 0;
@@ -167,7 +167,7 @@ int CSWPazaak::FindPotentialFlipTotal(CPazaakPlayer& cPlayer, int nCard)
     }
     return nTotal;
 }
-// PC 0x00754F10
+// PC 0x00754F10 GOG 0x00754D20
 int CSWPazaak::FindPotentialDoubleTotal(CPazaakPlayer& cPlayer, int nCard)
 {
     CPazaakCard cLastCard;
@@ -182,7 +182,7 @@ int CSWPazaak::FindPotentialDoubleTotal(CPazaakPlayer& cPlayer, int nCard)
     }
     return cPlayer.GetTotal() + cLastCard.GetCardValue();
 }
-// PC 0x00755080
+// PC 0x00755080 GOG 0x00754E90
 int CSWPazaak::FindPotentialChangeTotal(CPazaakPlayer& cPlayer, int nCard,
                                         int& bFlipped, int bLowest)
 {
@@ -220,7 +220,7 @@ int CSWPazaak::FindPotentialChangeTotal(CPazaakPlayer& cPlayer, int nCard,
     }
     return nNew;
 }
-// PC 0x00755150
+// PC 0x00755150 GOG 0x00754F60
 void CSWPazaak::LoadInitialSideDeck(int nSideDeck, CPazaakCard* pCards)
 {
     C2DA c2DA("PazaakDecks", 0);
@@ -276,7 +276,7 @@ void CSWPazaak::LoadInitialSideDeck(int nSideDeck, CPazaakCard* pCards)
     while (nCard < 10);
     c2DA.Unload2DArray();
 }
-// PC 0x00755320
+// PC 0x00755320 GOG 0x00755130
 int CPazaakPlayer::HasTiebreaker()
 {
     for (int i = 0; i < 9; i++)
@@ -288,7 +288,7 @@ int CPazaakPlayer::HasTiebreaker()
     }
     return 0;
 }
-// PC 0x00755340
+// PC 0x00755340 GOG 0x00755150
 void CPazaakPlayer::FlipPositiveNegative(int nValue1, int nValue2)
 {
     for (int i = 0; i < 9; i++)
@@ -311,7 +311,7 @@ void CPazaakPlayer::FlipPositiveNegative(int nValue1, int nValue2)
         }
     }
 }
-// PC 0x007553B0
+// PC 0x007553B0 GOG 0x007551C0
 int CPazaakPlayer::GetNumCardsPlayed()
 {
     int nCards = 0;
@@ -326,7 +326,7 @@ int CPazaakPlayer::GetNumCardsPlayed()
     }
     return nCards;
 }
-// PC 0x007553D0
+// PC 0x007553D0 GOG 0x007551E0
 CPazaakPlayer::CPazaakPlayer()
 {
     m_bStanding = 0;
@@ -348,7 +348,7 @@ CPazaakPlayer::CPazaakPlayer()
         m_aBoard[j] = cEmpty;
     }
 }
-// PC 0x007554D0
+// PC 0x007554D0 GOG 0x007552E0
 CSWPazaak::CSWPazaak()
 {
     m_nWager = 0;
@@ -356,7 +356,7 @@ CSWPazaak::CSWPazaak()
     m_nDeckIndex = -1;
     m_nAIState = AISTATE_DRAW;
 }
-// PC 0x00755520
+// PC 0x00755520 GOG 0x00755330
 int CSWPazaak::UsePlayerSidedeckCard(int nIndex)
 {
     if (m_cPlayer.m_aSideDeck[nIndex].m_nType < 0)
@@ -379,7 +379,7 @@ int CSWPazaak::UsePlayerSidedeckCard(int nIndex)
     m_cPlayer.m_aSideDeck[nIndex] = cEmpty;
     return 1;
 }
-// PC 0x00755590
+// PC 0x00755590 GOG 0x007553A0
 int CSWPazaak::DetermineWinner()
 {
     int nPlayerTotal = m_cPlayer.GetTotal();
@@ -435,7 +435,7 @@ int CSWPazaak::DetermineWinner()
     }
     return 0;
 }
-// PC 0x00755710
+// PC 0x00755710 GOG 0x00755520
 int CSWPazaak::FindPotentialSidecardTotal(CPazaakPlayer& cPlayer, int* pnCard,
                                           int bLowest)
 {
@@ -519,7 +519,7 @@ int CSWPazaak::FindPotentialSidecardTotal(CPazaakPlayer& cPlayer, int* pnCard,
     }
     return nBest;
 }
-// PC 0x007558E0
+// PC 0x007558E0 GOG 0x007556F0
 CSWPazaak::EAIState CSWPazaak::PlayAITurn(CPazaakPlayer& cSelf,
                                           CPazaakPlayer& cOpponent,
                                           EAIState eState)

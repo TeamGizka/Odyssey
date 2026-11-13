@@ -201,11 +201,11 @@ class CSWGuiDrawable
 public:
 
     virtual ~CSWGuiDrawable();
-    virtual void SetExtent(const CSWGuiExtent& cExtent)  // PC 0x0040A2B0
+    virtual void SetExtent(const CSWGuiExtent& cExtent)  // PC 0x0040A2B0 GOG 0x0040A280
     {
         m_cExtent = cExtent;
     }
-    virtual int GetIdealHeight()  // PC 0x004065B0
+    virtual int GetIdealHeight()  // PC 0x004065B0 GOG 0x00406580
     {
         return m_cExtent.m_nHeight;
     }
@@ -311,7 +311,7 @@ public:
     CSWGuiScene();
     virtual ~CSWGuiScene();
     virtual void Draw(float fElapsed);
-    virtual void Load(CResGFF* pGFF, CResStruct& cStruct,  // PC 0x006009E0
+    virtual void Load(CResGFF* pGFF, CResStruct& cStruct,  // PC 0x006009E0 GOG 0x006009C0
                            const CExoString& sName)
     {
     }

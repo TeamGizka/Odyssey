@@ -3,7 +3,7 @@
 #include "nwclass.h"
 #include <string.h>
 #include "nwrules.h"
-// PC 0x00617400
+// PC 0x00617400 GOG 0x006173E0
 unsigned char CSWLevelStats::GetSkillRankChange(unsigned short nSkill)
 {
     if (nSkill >= g_pRules->m_nNumSkills)
@@ -12,7 +12,7 @@ unsigned char CSWLevelStats::GetSkillRankChange(unsigned short nSkill)
     }
     return m_pSkillRankChanges[nSkill];
 }
-// PC 0x00617430
+// PC 0x00617430 GOG 0x00617410
 void CSWLevelStats::SetSkillRankChange(unsigned short nSkill, char nChange)
 {
     if (nSkill < g_pRules->m_nNumSkills)
@@ -20,7 +20,7 @@ void CSWLevelStats::SetSkillRankChange(unsigned short nSkill, char nChange)
         m_pSkillRankChanges[nSkill] = nChange;
     }
 }
-// PC 0x00617460
+// PC 0x00617460 GOG 0x00617440
 void CSWLevelStats::AddFeat(unsigned short nFeat)
 {
     if (m_lstFeats.Contains(nFeat) == 0)
@@ -28,7 +28,7 @@ void CSWLevelStats::AddFeat(unsigned short nFeat)
         m_lstFeats.Add(nFeat);
     }
 }
-// PC 0x006174C0
+// PC 0x006174C0 GOG 0x006174A0
 CSWLevelStats::CSWLevelStats()
 {
     m_pSkillRankChanges = new char[g_pRules->m_nNumSkills];
@@ -39,7 +39,7 @@ CSWLevelStats::CSWLevelStats()
     m_nSkillPoints = 0;
     m_nAbilityIncrease = 6;
 }
-// PC 0x00617580
+// PC 0x00617580 GOG 0x00617560
 CSWLevelStats::~CSWLevelStats()
 {
     if (m_pSkillRankChanges != NULL)

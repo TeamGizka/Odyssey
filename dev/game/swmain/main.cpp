@@ -322,7 +322,7 @@ const char* ClearLogCounters(char* sBuffer)
 {
     return "NOT ENABLED";
 }
-// PC 0x00401430
+// PC 0x00401430 GOG 0x00401430
 const char* DumpLogCounters(char* sBuffer)
 {
     return "NOT ENABLED";
@@ -397,7 +397,7 @@ void SaveCreature(char* sName)
 }
 
 #ifndef _XBOX
-void SetWindowTitle()  // PC 0x00401440
+void SetWindowTitle()  // PC 0x00401440 GOG 0x00401440
 {
     CExoString sTitle = g_sCopyrightInfo + " " + g_sGameName;
     CExoString sGameName = g_sGameName;
@@ -406,7 +406,7 @@ void SetWindowTitle()  // PC 0x00401440
 #endif
 
 #ifndef _XBOX
-void messagepump()  // PC 0x00401510
+void messagepump()  // PC 0x00401510 GOG 0x00401510
 {
     MSG msg;
 
@@ -424,14 +424,14 @@ void messagepump()  // PC 0x00401510
     }
 }
 #endif
-// PC 0x00401590
+// PC 0x00401590 GOG 0x00401590
 LRESULT CALLBACK CinematicBackdropWndProc(HWND hWnd, UINT nMsg, WPARAM wParam,
                                           LPARAM lParam)
 {
     return 0;
 }
 #ifndef _XBOX
-void HandleLoadError(unsigned long nError)  // PC 0x004015A0
+void HandleLoadError(unsigned long nError)  // PC 0x004015A0 GOG 0x004015A0
 {
 }
 #endif
@@ -445,7 +445,7 @@ void ReportFatalError(const char* szError)
 }
 
 #ifndef _XBOX
-int StoreMouseTrailsState()  // PC 0x004015B0
+int StoreMouseTrailsState()  // PC 0x004015B0 GOG 0x004015B0
 {
     int nMouseTrails = 0;
     int bResult =
@@ -465,7 +465,7 @@ int StoreMouseTrailsState()  // PC 0x004015B0
 #endif
 
 #ifndef _XBOX
-UINT RestoreMouseTrailsState()  // PC 0x004015F0
+UINT RestoreMouseTrailsState()  // PC 0x004015F0 GOG 0x004015F0
 {
     UINT nMouseTrails = g_nMouseTrails;
 
@@ -479,7 +479,7 @@ UINT RestoreMouseTrailsState()  // PC 0x004015F0
 #endif
 
 #ifndef _XBOX
-int StoreScreenSaverState()  // PC 0x00401610
+int StoreScreenSaverState()  // PC 0x00401610 GOG 0x00401610
 {
     int bScreenSaverActive = 0;
     int bResult = SystemParametersInfoA(SPI_GETSCREENSAVEACTIVE, 0,
@@ -499,7 +499,7 @@ int StoreScreenSaverState()  // PC 0x00401610
 #endif
 
 #ifndef _XBOX
-UINT RestoreScreenSaverState()  // PC 0x00401650
+UINT RestoreScreenSaverState()  // PC 0x00401650 GOG 0x00401650
 {
     UINT bScreenSaverEnabled = g_nScreenSaverEnabled;
 
@@ -511,12 +511,12 @@ UINT RestoreScreenSaverState()  // PC 0x00401650
     return bScreenSaverEnabled;
 }
 #endif
-// PC 0x00401670
+// PC 0x00401670 GOG 0x00401670
 void SetBlendMode(int nSource, int nDestination)
 {
     GLRender_SetBlendFunc(nSource, nDestination);
 }
-// PC 0x004016B0
+// PC 0x004016B0 GOG 0x004016B0
 void SetClearColor(char* sColor)
 {
     GLclampf fRed = 0.0f;
@@ -527,7 +527,7 @@ void SetClearColor(char* sColor)
     sscanf(sColor, "%f %f %f %f", &fRed, &fGreen, &fBlue, &fAlpha);
     GLRender_SetClearColor(fRed, fGreen, fBlue, fAlpha);
 }
-// PC 0x00401720
+// PC 0x00401720 GOG 0x00401720
 void ProcessCommandLine(int argc, char** argv)
 {
 
@@ -569,7 +569,7 @@ void ProcessCommandLine(int argc, char** argv)
 }
 
 #ifndef _XBOX
-void DoConsoleHist(unsigned short nKey)  // PC 0x00401890
+void DoConsoleHist(unsigned short nKey)  // PC 0x00401890 GOG 0x00401890
 {
     if (nKey == VK_LEFT)
     {
@@ -672,7 +672,7 @@ void SetProcessorAffinity(unsigned int nProcessor)
 #endif
 
 #ifndef _XBOX
-DWORD WINAPI StartAddress(LPVOID pArg)  // PC 0x00401A50
+DWORD WINAPI StartAddress(LPVOID pArg)  // PC 0x00401A50 GOG 0x00401A50
 {
     static int bClassRegistered;
 
@@ -734,7 +734,7 @@ DWORD WINAPI StartAddress(LPVOID pArg)  // PC 0x00401A50
     return 0;
 }
 #endif
-// PC 0x00401BD0
+// PC 0x00401BD0 GOG 0x00401BD0
 void SetupOpenGL()
 {
     GLRender_SetClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -827,7 +827,7 @@ void UpdateScreen(float fElapsed, int bRunWorld, int bSkipRender)
     }
 }
 #else
-void UpdateScreen(float fElapsed, int bRunWorld, int bSkipRender)  // PC 0x00401C30
+void UpdateScreen(float fElapsed, int bRunWorld, int bSkipRender)  // PC 0x00401C30 GOG 0x00401C30
 {
     AurMakeCurrent();
 
@@ -894,7 +894,7 @@ void UpdateScreen(float fElapsed, int bRunWorld, int bSkipRender)  // PC 0x00401
 #endif
 
 #ifndef _XBOX
-void DeactivateRenderWindow(int bMovie)  // PC 0x00401DB0
+void DeactivateRenderWindow(int bMovie)  // PC 0x00401DB0 GOG 0x00401DB0
 {
     if (g_pExoSound != NULL)
         g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_LOSTFOCUS, bMovie);
@@ -911,7 +911,7 @@ void DeactivateRenderWindow(int bMovie)  // PC 0x00401DB0
         g_bRenderWindowActive = 0;
     }
 }
-// PC 0x00401E30
+// PC 0x00401E30 GOG 0x00401E30
 int ActivateRenderWindow()
 {
     if (g_bRenderWindowActive != 0)
@@ -930,7 +930,7 @@ int ActivateRenderWindow()
     return g_pAurora->ResetGammaRamp(
         pClientExoApp->GetClientOptions()->GetGammaSetting(), 0);
 }
-// PC 0x00401EC0
+// PC 0x00401EC0 GOG 0x00401EC0
 void NotifyModeChangeActivate(int bActive, int bMinimized)
 {
     g_pAppManager->m_pClientExoApp->SetInputActive(1, 0);
@@ -954,7 +954,7 @@ void NotifyModeChangeActivate(int bActive, int bMinimized)
 #ifdef _XBOX
 #define VK_ESCAPE 0x1B
 #endif
-// PC 0x00401F30
+// PC 0x00401F30 GOG 0x00401F30
 void DoConsole(char cChar)
 {
     static int nOffset;
@@ -1043,7 +1043,7 @@ void DoConsole(char cChar)
     }
 }
 #ifndef _XBOX
-int HandleWMCharMessage(unsigned short nChar)  // PC 0x00402270
+int HandleWMCharMessage(unsigned short nChar)  // PC 0x00402270 GOG 0x00402270
 {
     unsigned short nCheatChar;
 
@@ -1125,7 +1125,7 @@ int HandleWMCharMessage(unsigned short nChar)  // PC 0x00402270
 }
 #endif
 #ifndef _XBOX
-int HandleWMKeyDownMessage(HWND hWnd, unsigned int nKey, long nKeyData)  // PC 0x00402530
+int HandleWMKeyDownMessage(HWND hWnd, unsigned int nKey, long nKeyData)  // PC 0x00402530 GOG 0x00402530
 {
     if (g_pAppManager->m_pClientExoApp->GetCaptureEventPlayBack() != 0)
         return 0;
@@ -1197,7 +1197,7 @@ int HandleWMKeyDownMessage(HWND hWnd, unsigned int nKey, long nKeyData)  // PC 0
 #endif
 
 #ifndef _XBOX
-LRESULT CALLBACK WinMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,  // PC 0x00402840
+LRESULT CALLBACK WinMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,  // PC 0x00402840 GOG 0x00402840
                                    LPARAM lParam)
 {
     switch (nMsg)
@@ -1731,7 +1731,7 @@ LRESULT CALLBACK WinMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,  // PC 0
 void InitOpenGLWindow(HINSTANCE hInstance, int nCmdShow);
 
 #ifndef _XBOX
-HWND InitGameApp(HINSTANCE hInstance, int nCmdShow)  // PC 0x00403F70
+HWND InitGameApp(HINSTANCE hInstance, int nCmdShow)  // PC 0x00403F70 GOG 0x00403F70
 {
 
     static char szClassName[] = "KotOR2";
@@ -1786,7 +1786,7 @@ HWND InitGameApp(HINSTANCE hInstance, int nCmdShow)  // PC 0x00403F70
 #endif
 
 #ifndef _XBOX
-void InitOpenGLWindow(HINSTANCE hInstance, int nCmdShow)  // PC 0x00403730
+void InitOpenGLWindow(HINSTANCE hInstance, int nCmdShow)  // PC 0x00403730 GOG 0x00403730
 {
     char szClassName[16];
     WNDCLASSA wc;
@@ -1818,7 +1818,7 @@ void InitOpenGLWindow(HINSTANCE hInstance, int nCmdShow)  // PC 0x00403730
 #endif
 
 #ifndef _XBOX
-void ReInitAurora(unsigned long nWidth, unsigned long nHeight,  // PC 0x00403840
+void ReInitAurora(unsigned long nWidth, unsigned long nHeight,  // PC 0x00403840 GOG 0x00403840
                   unsigned char nBitsPerPixel, int nFlags, int bRestartMovies)
 {
     unsigned char nMouseMode = 0xFF;
@@ -1978,7 +1978,7 @@ void ReInitAurora(unsigned long nWidth, unsigned long nHeight,  // PC 0x00403840
 #endif
 
 #ifndef _XBOX
-void ChangeResolutionForMovie()  // PC 0x00403D40
+void ChangeResolutionForMovie()  // PC 0x00403D40 GOG 0x00403D40
 {
     g_nMovieResolutionDepth++;
     g_nLastResolutionWidth = g_nScreenWidth;
@@ -2014,7 +2014,7 @@ void ChangeResolutionForMovie()  // PC 0x00403D40
 #endif
 
 #ifndef _XBOX
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,  // PC 0x00404250
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,  // PC 0x00404250 GOG 0x00404250
                    LPSTR lpCmdLine, int nCmdShow)
 {
     SECURITY_ATTRIBUTES cMutexAttr;
@@ -2268,7 +2268,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,  // PC 0x004042
 #endif
 
 #ifndef _XBOX
-void RestoreResolutionFromMovie()  // PC 0x00403E30
+void RestoreResolutionFromMovie()  // PC 0x00403E30 GOG 0x00403E30
 {
     unsigned long nFlags;
     CClientExoAppInternal* pInternal =

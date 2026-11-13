@@ -68,25 +68,25 @@ static inline CClientExoApp* ClientExoAppLate1(CAppManager* p);
 
 int enablemodelrequest = 1;
 int g_bLogConversations = 0;
-// PC 0x0069FDB0
+// PC 0x0069FDB0 GOG 0x0069FB90
 void CSWCProjectile::SetDesiredPosition(const Vector& vPosition)
 {
     m_vDesiredPosition = vPosition;
 }
-// PC 0x0069FDD0
+// PC 0x0069FDD0 GOG 0x0069FBB0
 void CSWCProjectile::SetSourcePosition(const Vector& vPosition)
 {
     m_vSourcePosition = vPosition;
 }
-// PC 0x0069FE60
+// PC 0x0069FE60 GOG 0x0069FC40
 CSWCMessage::CSWCMessage()
 {
 }
-// PC 0x0069FE80
+// PC 0x0069FE80 GOG 0x0069FC60
 CSWCMessage::~CSWCMessage()
 {
 }
-// PC 0x006A98F0
+// PC 0x006A98F0 GOG 0x006A96D0
 int CSWCMessage::HandleServerToPlayerChat(unsigned char nMinor)
 {
     NwchandlemessageTrace1();
@@ -371,7 +371,7 @@ int CSWCMessage::HandleServerToPlayerChat(unsigned char nMinor)
     }
     return 1;
 }
-// PC 0x006AAA60
+// PC 0x006AAA60 GOG 0x006AA840
 int CSWCMessage::HandleServerToPlayerCreatureUpdate_Appearance()
 {
 
@@ -914,7 +914,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Appearance()
     }
     return 1;
 }
-// PC 0x006AB8A0
+// PC 0x006AB8A0 GOG 0x006AB680
 int CSWCMessage::HandleServerToPlayerSound(unsigned char nMinor)
 {
     switch (nMinor)
@@ -928,7 +928,7 @@ int CSWCMessage::HandleServerToPlayerSound(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x006AB8D0
+// PC 0x006AB8D0 GOG 0x006AB6B0
 int CSWCMessage::HandleServerToPlayerUpdate_Add()
 {
     unsigned char nObjectType = ReadBYTE(8);
@@ -963,7 +963,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_Add()
     }
     return 0;
 }
-// PC 0x006AB960
+// PC 0x006AB960 GOG 0x006AB740
 int CSWCMessage::HandleServerToPlayerUpdate_Appearance()
 {
     unsigned char nObjectType = ReadBYTE(8);
@@ -975,7 +975,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_Appearance()
     }
     return HandleServerToPlayerCreatureUpdate_Appearance();
 }
-// PC 0x006AB990
+// PC 0x006AB990 GOG 0x006AB770
 int CSWCMessage::HandleServerToPlayerUpdate_Delete()
 {
     unsigned char nObjectType = ReadBYTE(8);
@@ -1010,7 +1010,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_Delete()
     }
     return 0;
 }
-// PC 0x006ABA20
+// PC 0x006ABA20 GOG 0x006AB800
 int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
 {
     CExoString sMessage;
@@ -3415,7 +3415,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x006B90B0
+// PC 0x006B90B0 GOG 0x006B8E90
 int CSWCMessage::HandleServerToPlayerSafeProjectile(unsigned char nMinor)
 {
     int bSuccess;
@@ -3431,7 +3431,7 @@ int CSWCMessage::HandleServerToPlayerSafeProjectile(unsigned char nMinor)
     }
     return bSuccess;
 }
-// PC 0x006B90D0
+// PC 0x006B90D0 GOG 0x006B8EB0
 int CSWCMessage::HandleServerToPlayerGuiInfoPopupMessage(unsigned char nMinor)
 {
     NwchandlemessageTrace1();
@@ -3450,7 +3450,7 @@ int CSWCMessage::HandleServerToPlayerGuiInfoPopupMessage(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x006B9110
+// PC 0x006B9110 GOG 0x006B8EF0
 int CSWCMessage::HandleServerToPlayerCheatMessage(unsigned char nMinor)
 {
     switch (nMinor)
@@ -3464,7 +3464,7 @@ int CSWCMessage::HandleServerToPlayerCheatMessage(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x006B9190
+// PC 0x006B9190 GOG 0x006B8F70
 int CSWCMessage::HandleServerToPlayerJournalMessage_AddQuest()
 {
     NwchandlemessageTrace1();
@@ -3499,7 +3499,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_AddQuest()
     }
     return 1;
 }
-// PC 0x0069FE90
+// PC 0x0069FE90 GOG 0x0069FC70
 CSWCItem* CSWCMessage::CreateItem(unsigned long nBaseItem,
                                   unsigned char nVariation, char cPrefix)
 {
@@ -3553,7 +3553,7 @@ CSWCItem* CSWCMessage::CreateItem(unsigned long nBaseItem,
     pItem->m_cModelResRef = cResRef;
     return pItem;
 }
-// PC 0x006A0230
+// PC 0x006A0230 GOG 0x006A0010
 int CSWCMessage::HandleServerToPlayerCamera(unsigned char nMinor)
 {
     unsigned char nFlags;
@@ -3636,7 +3636,7 @@ int CSWCMessage::HandleServerToPlayerCamera(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x006A0400
+// PC 0x006A0400 GOG 0x006A01E0
 int CSWCMessage::HandleServerToPlayerArea(unsigned char nMinor)
 {
     if (MessageReadOverflow(1))
@@ -3765,7 +3765,7 @@ int CSWCMessage::HandleServerToPlayerArea(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x006A08A0
+// PC 0x006A08A0 GOG 0x006A0680
 int CSWCMessage::HandleServerToPlayerSetCustomToken(unsigned char nMinor)
 {
     CExoString sToken;
@@ -3803,7 +3803,7 @@ int CSWCMessage::HandleServerToPlayerSetCustomToken(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x006A0A10
+// PC 0x006A0A10 GOG 0x006A07F0
 int CSWCMessage::HandleServerToPlayerCreatureUpdate_Add()
 {
 
@@ -3890,7 +3890,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Add()
     pCreature->m_bFadeLocked = 0;
     return 1;
 }
-// PC 0x006A0D30
+// PC 0x006A0D30 GOG 0x006A0B10
 int CSWCMessage::HandleServerToPlayerCreatureUpdate_VisEffect()
 {
 
@@ -4050,7 +4050,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_VisEffect()
     }
     return 1;
 }
-// PC 0x006A1460
+// PC 0x006A1460 GOG 0x006A1240
 int CSWCMessage::HandleServerToPlayerCreatureUpdate_ControlObject(
     unsigned long oidObject)
 {
@@ -4124,7 +4124,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_ControlObject(
     }
     return 1;
 }
-// PC 0x006A1600
+// PC 0x006A1600 GOG 0x006A13E0
 int CSWCMessage::HandleServerToPlayerCreatureUpdate_Delete()
 {
 
@@ -4195,7 +4195,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Delete()
     }
     return 1;
 }
-// PC 0x006B9390
+// PC 0x006B9390 GOG 0x006B9170
 int CSWCMessage::HandleServerToPlayerExportReply()
 {
 
@@ -4248,7 +4248,7 @@ ExportDone:
     }
     return 1;
 }
-// PC 0x006B96B0
+// PC 0x006B96B0 GOG 0x006B9490
 int CSWCMessage::HandleServerToPlayerGuiQuickbar(unsigned char nMinor)
 {
     unsigned char nButton;
@@ -4263,7 +4263,7 @@ int CSWCMessage::HandleServerToPlayerGuiQuickbar(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x006B9700
+// PC 0x006B9700 GOG 0x006B94E0
 int CSWCMessage::HandleServerToPlayerMapPin(unsigned char nMinor)
 {
     switch (nMinor)
@@ -4275,7 +4275,7 @@ int CSWCMessage::HandleServerToPlayerMapPin(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x006B9730
+// PC 0x006B9730 GOG 0x006B9510
 int CSWCMessage::HandleServerToPlayerDebugInfo_Creature(unsigned long oidObject)
 {
     CExoString asEquippedItems[CSWInventory::TOTAL_SLOT_COUNT];
@@ -4572,7 +4572,7 @@ int CSWCMessage::HandleServerToPlayerDebugInfo_Creature(unsigned long oidObject)
         delete[] psRepositoryItems;
     return 1;
 }
-// PC 0x006BB4E0
+// PC 0x006BB4E0 GOG 0x006BB2C0
 int CSWCMessage::HandleServerToPlayerAmbient(unsigned char nMinor)
 {
     int bSuccess;
@@ -4609,7 +4609,7 @@ int CSWCMessage::HandleServerToPlayerAmbient(unsigned char nMinor)
     }
     return bSuccess;
 }
-// PC 0x006BB560
+// PC 0x006BB560 GOG 0x006BB340
 int CSWCMessage::HandleServerToPlayerGuiTimingEvent(unsigned char nMinor)
 {
     if (MessageReadOverflow(1))
@@ -4624,7 +4624,7 @@ int CSWCMessage::HandleServerToPlayerGuiTimingEvent(unsigned char nMinor)
     }
     return !MessageReadOverflow(1) && MessageReadUnderflow(1) == 0;
 }
-// PC 0x006BB5B0
+// PC 0x006BB5B0 GOG 0x006BB390
 int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
     unsigned long oidObject, unsigned long nUpdateMask)
 {
@@ -5665,7 +5665,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
     }
     return 1;
 }
-// PC 0x006BE010
+// PC 0x006BE010 GOG 0x006BDDF0
 int CSWCMessage::HandleServerToPlayerUpdate_CharacterSheet()
 {
     unsigned long oidCreature = ReadOBJECTIDClient();
@@ -5888,7 +5888,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_CharacterSheet()
     }
     return 1;
 }
-// PC 0x006A1800
+// PC 0x006A1800 GOG 0x006A15E0
 void CSWCMessage::SetGuiSkillRank(CSWCCreature* pCreature,
                                 unsigned short nSkillFlags,
                                 unsigned short nSkillMask,
@@ -5910,7 +5910,7 @@ void CSWCMessage::SetGuiSkillRank(CSWCCreature* pCreature,
         }
     }
 }
-// PC 0x006A18A0
+// PC 0x006A18A0 GOG 0x006A1680
 int CSWCMessage::HandleServerToPlayerDoorUpdate_Add()
 {
 
@@ -6036,7 +6036,7 @@ int CSWCMessage::HandleServerToPlayerDoorUpdate_Add()
     }
     return 1;
 }
-// PC 0x006A1DE0
+// PC 0x006A1DE0 GOG 0x006A1BC0
 int CSWCMessage::HandleServerToPlayerDoorUpdate_Delete()
 {
     unsigned long oidDoor = ReadOBJECTIDClient();
@@ -6064,7 +6064,7 @@ int CSWCMessage::HandleServerToPlayerDoorUpdate_Delete()
     }
     return 1;
 }
-// PC 0x006A1E60
+// PC 0x006A1E60 GOG 0x006A1C40
 int CSWCMessage::HandleServerToPlayerDoorUpdate_Update(
     unsigned long oidObject, unsigned long nUpdateMask)
 {
@@ -6106,7 +6106,7 @@ int CSWCMessage::HandleServerToPlayerDoorUpdate_Update(
     }
     return 1;
 }
-// PC 0x006A1F40
+// PC 0x006A1F40 GOG 0x006A1D20
 int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Add()
 {
 
@@ -6269,7 +6269,7 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Add()
     }
     return 1;
 }
-// PC 0x006A2560
+// PC 0x006A2560 GOG 0x006A2340
 int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Delete()
 {
     unsigned long oidPlaceable = ReadOBJECTIDClient();
@@ -6306,7 +6306,7 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Delete()
     }
     return 1;
 }
-// PC 0x006A2620
+// PC 0x006A2620 GOG 0x006A2400
 int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Update(
     unsigned long oidObject, unsigned long nUpdateMask)
 {
@@ -6348,7 +6348,7 @@ int CSWCMessage::HandleServerToPlayerPlaceableUpdate_Update(
     }
     return 1;
 }
-// PC 0x006A2700
+// PC 0x006A2700 GOG 0x006A24E0
 int CSWCMessage::HandleServerToPlayerUpdateVisualEffects(CSWCObject* pObject)
 {
     unsigned short nCount = ReadWORD(16);
@@ -6400,7 +6400,7 @@ int CSWCMessage::HandleServerToPlayerUpdateVisualEffects(CSWCObject* pObject)
     }
     return 1;
 }
-// PC 0x006A2830
+// PC 0x006A2830 GOG 0x006A2610
 int CSWCMessage::HandleServerToPlayerUpdate_WorkRemaining()
 {
     unsigned char nStep = ReadBYTE(8);
@@ -6442,7 +6442,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_WorkRemaining()
     }
     return 1;
 }
-// PC 0x006A29E0
+// PC 0x006A29E0 GOG 0x006A27C0
 int CSWCMessage::HandleServerToPlayerGuiInventory(unsigned char nMinor)
 {
     int bSuccess = 1;
@@ -6461,7 +6461,7 @@ inline CSWGuiStore* GetStorePanel(CGuiInGame* pInGameGui)
 {
     return pInGameGui->m_pStorePanel;
 }
-// PC 0x006A2A20
+// PC 0x006A2A20 GOG 0x006A2800
 int CSWCMessage::HandleServerToPlayerInventory(unsigned char nMinor)
 {
 
@@ -6688,7 +6688,7 @@ int CSWCMessage::HandleServerToPlayerInventory(unsigned char nMinor)
         return 0;
     }
 }
-// PC 0x006A2F90
+// PC 0x006A2F90 GOG 0x006A2D70
 int CSWCMessage::HandleServerToPlayerActiveItemProperties(unsigned long oidItem)
 {
 
@@ -6789,7 +6789,7 @@ int CSWCMessage::HandleServerToPlayerActiveItemProperties(unsigned long oidItem)
     }
     return 1;
 }
-// PC 0x006A32F0
+// PC 0x006A32F0 GOG 0x006A30D0
 int CSWCMessage::HandleServerToPlayerItemAppearance(
     unsigned long* pnBaseItem, unsigned char* pnModelVariation,
     unsigned char* pnBodyVariation, unsigned char* pnTextureVariation)
@@ -6808,7 +6808,7 @@ int CSWCMessage::HandleServerToPlayerItemAppearance(
     }
     return 1;
 }
-// PC 0x006A3370
+// PC 0x006A3370 GOG 0x006A3150
 int CSWCMessage::HandleServerToPlayerItemUpdate_Add(int nMode, CSWCItem** ppItem)
 {
 
@@ -6925,7 +6925,7 @@ int CSWCMessage::HandleServerToPlayerItemUpdate_Add(int nMode, CSWCItem** ppItem
     HandleServerToPlayerActiveItemProperties(oidItem);
     return 1;
 }
-// PC 0x006A3680
+// PC 0x006A3680 GOG 0x006A3460
 int CSWCMessage::HandleServerToPlayerItemUpdate_Delete()
 {
     unsigned long oidItem = ReadOBJECTIDClient();
@@ -6975,7 +6975,7 @@ int CSWCMessage::HandleServerToPlayerItemUpdate_Delete()
     }
     return 1;
 }
-// PC 0x006A3750
+// PC 0x006A3750 GOG 0x006A3530
 int CSWCMessage::HandleServerToPlayerItemUpdate_Update(
     unsigned long oidObject, unsigned long nUpdateMask)
 {
@@ -6995,7 +6995,7 @@ int CSWCMessage::HandleServerToPlayerItemUpdate_Update(
     pItem->SetArea(pArea);
     return 1;
 }
-// PC 0x006A37C0
+// PC 0x006A37C0 GOG 0x006A35A0
 int CSWCMessage::HandleServerToPlayerLogin(unsigned char nMinor)
 {
     CExoString sPlayerName;
@@ -7041,7 +7041,7 @@ int CSWCMessage::HandleServerToPlayerLogin(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x006A3990
+// PC 0x006A3990 GOG 0x006A3770
 int CSWCMessage::HandleServerToPlayerLoadBar(unsigned char nMinor)
 {
 
@@ -7121,7 +7121,7 @@ int CSWCMessage::HandleServerToPlayerLoadBar(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x006A3C10
+// PC 0x006A3C10 GOG 0x006A39F0
 int CSWCMessage::HandleServerToPlayerSoundObject_Play()
 {
     unsigned long oidObject = ReadOBJECTIDClient();
@@ -7140,7 +7140,7 @@ int CSWCMessage::HandleServerToPlayerSoundObject_Play()
     }
     return 0;
 }
-// PC 0x006A3C60
+// PC 0x006A3C60 GOG 0x006A3A40
 int CSWCMessage::HandleServerToPlayerSoundObject_Stop()
 {
     unsigned long oidObject = ReadOBJECTIDClient();
@@ -7159,7 +7159,7 @@ int CSWCMessage::HandleServerToPlayerSoundObject_Stop()
     }
     return 0;
 }
-// PC 0x006A3CB0
+// PC 0x006A3CB0 GOG 0x006A3A90
 int CSWCMessage::HandleServerToPlayerSoundObject_ChangePosition()
 {
     Vector vPosition;
@@ -7182,7 +7182,7 @@ int CSWCMessage::HandleServerToPlayerSoundObject_ChangePosition()
     }
     return 0;
 }
-// PC 0x006A3D60
+// PC 0x006A3D60 GOG 0x006A3B40
 int CSWCMessage::HandleServerToPlayerParty(unsigned char nMinor)
 {
     if (MessageReadOverflow(1))
@@ -7221,7 +7221,7 @@ int CSWCMessage::HandleServerToPlayerParty(unsigned char nMinor)
     }
     return 1;
 }
-// PC 0x006A3E40
+// PC 0x006A3E40 GOG 0x006A3C20
 int CSWCMessage::HandleServerToPlayerServerStatus(unsigned char nMinor)
 {
     CExoString sCommand;
@@ -7265,7 +7265,7 @@ int CSWCMessage::HandleServerToPlayerServerStatus(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x006A4000
+// PC 0x006A4000 GOG 0x006A3DE0
 int CSWCMessage::HandleServerToPlayerTriggerUpdate_Update(
     unsigned long oidObject, unsigned long nUpdateMask)
 {
@@ -7296,7 +7296,7 @@ int CSWCMessage::HandleServerToPlayerTriggerUpdate_Update(
     }
     return 1;
 }
-// PC 0x006A4090
+// PC 0x006A4090 GOG 0x006A3E70
 int CSWCMessage::HandleServerToPlayerTriggerUpdate_Add()
 {
 
@@ -7406,7 +7406,7 @@ int CSWCMessage::HandleServerToPlayerTriggerUpdate_Add()
     pTrigger->m_sTag = sTag;
     return 1;
 }
-// PC 0x006A4540
+// PC 0x006A4540 GOG 0x006A4320
 int CSWCMessage::HandleServerToPlayerTriggerUpdate_Delete()
 {
 
@@ -7467,7 +7467,7 @@ int CSWCMessage::HandleServerToPlayerTriggerUpdate_Delete()
     }
     return 1;
 }
-// PC 0x006A4700
+// PC 0x006A4700 GOG 0x006A44E0
 int CSWCMessage::HandleServerToPlayerUpdate_GuiQuickbarItemUseCount()
 {
     unsigned char nCount = ReadBYTE(8);
@@ -7510,7 +7510,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiQuickbarItemUseCount()
     return 1;
 }
 #ifndef _XBOX
-int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()  // PC 0x006A47F0
+int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()  // PC 0x006A47F0 GOG 0x006A45D0
 {
     unsigned char nMode = ReadCHAR(8);
     if (MessageReadOverflow(1))
@@ -7561,7 +7561,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()  // PC 0x006A47F0
     return 0;
 }
 #endif
-int CSWCMessage::HandleServerToPlayerUpdate_GuiRepository(int bBank)  // PC 0x006A4910
+int CSWCMessage::HandleServerToPlayerUpdate_GuiRepository(int bBank)  // PC 0x006A4910 GOG 0x006A46F0
 {
     unsigned char nMode = ReadCHAR(8);
     unsigned long oidItem;
@@ -7612,7 +7612,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiRepository(int bBank)  // PC 0x00
     }
     return 0;
 }
-// PC 0x006A4A10
+// PC 0x006A4A10 GOG 0x006A47F0
 int CSWCMessage::HandleServerToPlayerUpdate_GuiContainer()
 {
     unsigned char nMode = ReadCHAR(8);
@@ -7694,7 +7694,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiContainer()
     }
     return 0;
 }
-// PC 0x006A4BD0
+// PC 0x006A4BD0 GOG 0x006A49B0
 int CSWCMessage::GetSingleCustomTokenStringPart(int nToken,
                                                 unsigned long nStrRef,
                                                 CExoString& sResult)
@@ -7714,7 +7714,7 @@ int CSWCMessage::GetSingleCustomTokenStringPart(int nToken,
     }
     return bSuccess;
 }
-// PC 0x006A4CD0
+// PC 0x006A4CD0 GOG 0x006A4AB0
 int CSWCMessage::HandleServerToPlayerSafeProjectileProjectile()
 {
 
@@ -7935,7 +7935,7 @@ int CSWCMessage::HandleServerToPlayerSafeProjectileProjectile()
     }
     return bResult;
 }
-// PC 0x006A56B0
+// PC 0x006A56B0 GOG 0x006A5490
 int CSWCMessage::HandleServerToPlayerSafeProjectileSpell()
 {
 
@@ -8166,7 +8166,7 @@ int CSWCMessage::HandleServerToPlayerSafeProjectileSpell()
     }
     return 1;
 }
-// PC 0x006A6040
+// PC 0x006A6040 GOG 0x006A5E20
 int CSWCMessage::HandleServerToPlayerCombatRound(unsigned char nMinor)
 {
     CExoString sText;
@@ -8181,7 +8181,7 @@ int CSWCMessage::HandleServerToPlayerCombatRound(unsigned char nMinor)
     }
     return 1;
 }
-// PC 0x006A60E0
+// PC 0x006A60E0 GOG 0x006A5EC0
 int CSWCMessage::HandleServerToPlayerActiveItemPropertyUpdate(
     unsigned char nMinor)
 {
@@ -8234,7 +8234,7 @@ int CSWCMessage::HandleServerToPlayerActiveItemPropertyUpdate(
     }
     return 1;
 }
-// PC 0x006A6200
+// PC 0x006A6200 GOG 0x006A5FE0
 int CSWCMessage::HandleServerToPlayerAreaOfEffectUpdate_Add()
 {
     unsigned long oidObject = ReadOBJECTIDClient();
@@ -8274,7 +8274,7 @@ int CSWCMessage::HandleServerToPlayerAreaOfEffectUpdate_Add()
     pAIMaster->AddObject(pAreaOfEffect);
     return 1;
 }
-// PC 0x006A6330
+// PC 0x006A6330 GOG 0x006A6110
 int CSWCMessage::HandleServerToPlayerAreaOfEffectUpdate_Delete()
 {
     unsigned long oidObject = ReadOBJECTIDClient();
@@ -8293,7 +8293,7 @@ int CSWCMessage::HandleServerToPlayerAreaOfEffectUpdate_Delete()
     }
     return 1;
 }
-// PC 0x006A6370
+// PC 0x006A6370 GOG 0x006A6150
 int CSWCMessage::HandleServerToPlayerAreaOfEffectUpdate_Update(
     unsigned long oidObject, unsigned long nUpdateMask)
 {
@@ -8301,7 +8301,7 @@ int CSWCMessage::HandleServerToPlayerAreaOfEffectUpdate_Update(
 
     return pClientExoApp->GetAreaOfEffectByGameObjectID(oidObject) != NULL;
 }
-// PC 0x006A6390
+// PC 0x006A6390 GOG 0x006A6170
 int CSWCMessage::HandleServerToPlayerGuiContainerObjectMessage(
     unsigned char nMinor)
 {
@@ -8319,7 +8319,7 @@ int CSWCMessage::HandleServerToPlayerGuiContainerObjectMessage(
     }
     return 0;
 }
-// PC 0x006A6400
+// PC 0x006A6400 GOG 0x006A61E0
 int CSWCMessage::HandleServerToPlayerGenericObjectUpdate_Update(
     unsigned long oidObject, unsigned long nUpdateMask)
 {
@@ -8416,7 +8416,7 @@ int CSWCMessage::HandleServerToPlayerGenericObjectUpdate_Update(
     }
     return 1;
 }
-// PC 0x006A6670
+// PC 0x006A6670 GOG 0x006A6450
 int CSWCMessage::HandleServerToPlayerCreatureUpdate_StripEquippedItems()
 {
     unsigned long oidObject = ReadOBJECTIDClient();
@@ -8435,7 +8435,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_StripEquippedItems()
     pCreature->StripEquippedItems();
     return 1;
 }
-// PC 0x006A66B0
+// PC 0x006A66B0 GOG 0x006A6490
 int CSWCMessage::HandleServerToPlayerItemUpdate_DestroyItem()
 {
     unsigned long oidItem = ReadOBJECTIDClient();
@@ -8461,7 +8461,7 @@ int CSWCMessage::HandleServerToPlayerItemUpdate_DestroyItem()
     delete pItem;
     return 1;
 }
-// PC 0x006A6720
+// PC 0x006A6720 GOG 0x006A6500
 int CSWCMessage::HandleServerToPlayerVoiceChatMessage(unsigned char nMinor)
 {
     unsigned long oidCreature;
@@ -8487,7 +8487,7 @@ int CSWCMessage::HandleServerToPlayerVoiceChatMessage(unsigned char nMinor)
     }
     return 1;
 }
-// PC 0x006A6790
+// PC 0x006A6790 GOG 0x006A6570
 int CSWCMessage::HandleServerToPlayerCheat_DoNasty()
 {
 
@@ -8534,7 +8534,7 @@ int CSWCMessage::HandleServerToPlayerCheat_DoNasty()
     }
     return 1;
 }
-// PC 0x006A6AE0
+// PC 0x006A6AE0 GOG 0x006A68C0
 int CSWCMessage::HandleServerToPlayerJournalMessage_RemoveQuest()
 {
     CExoString sTag;
@@ -8552,7 +8552,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_RemoveQuest()
     }
     return 1;
 }
-// PC 0x006A6BC0
+// PC 0x006A6BC0 GOG 0x006A69A0
 int CSWCMessage::HandleServerToPlayerJournalMessage_SetQuestPicture()
 {
     CSWCJournal* pJournal = g_pAppManager->m_pClientExoApp->GetQuestJournal();
@@ -8572,7 +8572,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_SetQuestPicture()
     }
     return 1;
 }
-// PC 0x006A6CB0
+// PC 0x006A6CB0 GOG 0x006A6A90
 int CSWCMessage::HandleServerToPlayerJournalMessage_AddWorld()
 {
     CExoString sName;
@@ -8599,7 +8599,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_AddWorld()
     }
     return 1;
 }
-// PC 0x006A6E20
+// PC 0x006A6E20 GOG 0x006A6C00
 int CSWCMessage::HandleServerToPlayerJournalMessage_AddWorldStrref()
 {
     CSWCWorldJournal* pJournal =
@@ -8620,7 +8620,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_AddWorldStrref()
     pJournal->AddEntryStrRef(nStrRef, nTime, nDay, nType);
     return MessageReadUnderflow(1) == 0;
 }
-// PC 0x006A6EA0
+// PC 0x006A6EA0 GOG 0x006A6C80
 int CSWCMessage::HandleServerToPlayerJournalMessage_DeleteWorld()
 {
     CSWCWorldJournal* pJournal =
@@ -8635,7 +8635,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_DeleteWorld()
     pJournal->DeleteEntry(nId);
     return MessageReadUnderflow(1) == 0;
 }
-// PC 0x006A6EF0
+// PC 0x006A6EF0 GOG 0x006A6CD0
 int CSWCMessage::HandleServerToPlayerJournalMessage_DeleteWorldStrref()
 {
     CSWCWorldJournal* pJournal =
@@ -8650,7 +8650,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_DeleteWorldStrref()
     pJournal->DeleteEntryStrRef(nStrRef);
     return MessageReadUnderflow(1) == 0;
 }
-// PC 0x006BE840
+// PC 0x006BE840 GOG 0x006BE620
 int CSWCMessage::HandleServerToPlayerModule(unsigned char nMinor)
 {
 
@@ -8693,7 +8693,7 @@ int CSWCMessage::HandleServerToPlayerModule(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x006BE990
+// PC 0x006BE990 GOG 0x006BE770
 int CSWCMessage::HandleServerToPlayerPlayerList(unsigned char nMinor)
 {
     CExoLinkedListNode* pNode;
@@ -8810,7 +8810,7 @@ int CSWCMessage::HandleServerToPlayerPlayerList(unsigned char nMinor)
         return 0;
     return 1;
 }
-// PC 0x006BEF00
+// PC 0x006BEF00 GOG 0x006BECE0
 int CSWCMessage::HandleServerToPlayerUpdate_PlayerInfo()
 {
 
@@ -9557,7 +9557,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_PlayerInfo()
     }
     return 1;
 }
-// PC 0x006C0570
+// PC 0x006C0570 GOG 0x006C0350
 int CSWCMessage::HandleServerToPlayerUpdate_GuiElements()
 {
     unsigned char nType = ReadBYTE(8);
@@ -9584,7 +9584,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiElements()
     }
     return 0;
 }
-// PC 0x006C0620
+// PC 0x006C0620 GOG 0x006C0400
 int CSWCMessage::HandleServerToPlayerUpdate_Update()
 {
     NwchandlemessageTrace2();
@@ -9630,7 +9630,7 @@ int CSWCMessage::HandleServerToPlayerUpdate_Update()
     }
     return 0;
 }
-// PC 0x006C06F0
+// PC 0x006C06F0 GOG 0x006C04D0
 int CSWCMessage::HandleServerToPlayerJournalMessage(unsigned char nMinor)
 {
     NWCHANDLEMESSAGE_TRACE();
@@ -9659,7 +9659,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x006A6F40
+// PC 0x006A6F40 GOG 0x006A6D20
 int CSWCMessage::HandleServerToPlayerJournalMessage_DeleteWorldAll()
 {
     CSWCWorldJournal* pJournal =
@@ -9673,7 +9673,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_DeleteWorldAll()
     pJournal->DeleteAllEntries();
     return MessageReadUnderflow(1) == 0;
 }
-// PC 0x006A6F90
+// PC 0x006A6F90 GOG 0x006A6D70
 int CSWCMessage::HandleServerToPlayerJournalMessage_FullQuestUpdate()
 {
 
@@ -9762,7 +9762,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_FullQuestUpdate()
     }
     return 1;
 }
-// PC 0x006A72F0
+// PC 0x006A72F0 GOG 0x006A70D0
 int CSWCMessage::HandleServerToPlayerJournalMessage_Updated()
 {
     CSWCWorldJournal* pJournal =
@@ -9787,7 +9787,7 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_Updated()
     }
     return 1;
 }
-// PC 0x006A73F0
+// PC 0x006A73F0 GOG 0x006A71D0
 int CSWCMessage::HandleServerToPlayerLevelUpMessage(unsigned char nMinor)
 {
     CGuiInGame* pInGameGui;
@@ -9808,13 +9808,13 @@ int CSWCMessage::HandleServerToPlayerLevelUpMessage(unsigned char nMinor)
     }
     return !MessageReadOverflow(1) && MessageReadUnderflow(1) == 0;
 }
-// PC 0x006A7450
+// PC 0x006A7450 GOG 0x006A7230
 int CSWCMessage::HandleServerToPlayerModule_StartStartNewModule()
 {
     g_pAppManager->m_pClientExoApp->SetInStartNewModule(1);
     return 1;
 }
-// PC 0x006A7470
+// PC 0x006A7470 GOG 0x006A7250
 int CSWCMessage::HandleServerToPlayerModule_EndStartNewModule()
 {
     int bSuccess = ReadBOOL();
@@ -9830,7 +9830,7 @@ int CSWCMessage::HandleServerToPlayerModule_EndStartNewModule()
     }
     return 0;
 }
-// PC 0x006A74C0
+// PC 0x006A74C0 GOG 0x006A72A0
 int CSWCMessage::HandleServerToPlayerModuleUpdate_Time()
 {
     unsigned char nFlags = ReadBYTE(8);
@@ -9909,7 +9909,7 @@ int CSWCMessage::HandleServerToPlayerModuleUpdate_Time()
     }
     return 1;
 }
-// PC 0x006A7600
+// PC 0x006A7600 GOG 0x006A73E0
 int CSWCMessage::HandleServerToPlayerSaveGameStatus()
 {
 
@@ -9923,14 +9923,14 @@ int CSWCMessage::HandleServerToPlayerSaveGameStatus()
     }
     return 0;
 }
-// PC 0x006A76E0
+// PC 0x006A76E0 GOG 0x006A74C0
 int CSWCMessage::HandleServerToPlayerEndGame()
 {
     CExoString sMessage = ReadCExoString(32);
 
     return 1;
 }
-// PC 0x006A7710
+// PC 0x006A7710 GOG 0x006A74F0
 int CSWCMessage::HandleServerToPlayerGuiQuickbar_SetButton(unsigned char nButton,
                                                          int bClear)
 {
@@ -10013,7 +10013,7 @@ int CSWCMessage::HandleServerToPlayerGuiQuickbar_SetButton(unsigned char nButton
     }
     return 1;
 }
-// PC 0x006A7910
+// PC 0x006A7910 GOG 0x006A76F0
 int CSWCMessage::HandleServerToPlayerMapPinEnabled()
 {
     unsigned long oidPin;
@@ -10035,7 +10035,7 @@ int CSWCMessage::HandleServerToPlayerMapPinEnabled()
     }
     return MessageReadUnderflow(1) == 0;
 }
-// PC 0x006A7970
+// PC 0x006A7970 GOG 0x006A7750
 int CSWCMessage::HandleServerToPlayerMapPinReferenceNumber()
 {
 
@@ -10064,7 +10064,7 @@ int CSWCMessage::HandleServerToPlayerMapPinReferenceNumber()
     pArea->AddMapPin(pMapPin);
     return 1;
 }
-// PC 0x006A7B30
+// PC 0x006A7B30 GOG 0x006A7910
 int CSWCMessage::HandleServerToPlayerDebugInfo_Item(unsigned long oidItem)
 {
 
@@ -10167,7 +10167,7 @@ int CSWCMessage::HandleServerToPlayerDebugInfo_Item(unsigned long oidItem)
         delete[] pnPassiveProperties;
     return 1;
 }
-// PC 0x006A8460
+// PC 0x006A8460 GOG 0x006A8240
 int CSWCMessage::HandleServerToPlayerDebugInfo_Placeable(unsigned long oidObject)
 {
     CResRef cTemplate;
@@ -10256,7 +10256,7 @@ int CSWCMessage::HandleServerToPlayerDebugInfo_Placeable(unsigned long oidObject
                            CGuiInGame::MESSAGE_MASK_DEBUG_INFO, 0);
     return 1;
 }
-// PC 0x006A8E40
+// PC 0x006A8E40 GOG 0x006A8C20
 int CSWCMessage::HandleServerToPlayerPopUpGUIPanel(unsigned char nMinor)
 {
     switch (nMinor)
@@ -10288,7 +10288,7 @@ int CSWCMessage::HandleServerToPlayerPopUpGUIPanel(unsigned char nMinor)
     }
     return 1;
 }
-// PC 0x006A8F90
+// PC 0x006A8F90 GOG 0x006A8D70
 int CSWCMessage::HandleServerToPlayerAmbientMusicPlay()
 {
     int bPlay;
@@ -10306,7 +10306,7 @@ int CSWCMessage::HandleServerToPlayerAmbientMusicPlay()
         ->m_pInfo->m_pAmbientSound->PlayMusic(bPlay);
     return 1;
 }
-// PC 0x006A8FF0
+// PC 0x006A8FF0 GOG 0x006A8DD0
 int CSWCMessage::HandleServerToPlayerAmbientMusicSetDelay()
 {
     int nDelay;
@@ -10324,7 +10324,7 @@ int CSWCMessage::HandleServerToPlayerAmbientMusicSetDelay()
         ->m_pInfo->m_pAmbientSound->SetMusicDelay(nDelay);
     return 1;
 }
-// PC 0x006A9060
+// PC 0x006A9060 GOG 0x006A8E40
 int CSWCMessage::HandleServerToPlayerAmbientMusicChangeTrack()
 {
     int bDay;
@@ -10357,7 +10357,7 @@ int CSWCMessage::HandleServerToPlayerAmbientMusicChangeTrack()
     }
     return 1;
 }
-// PC 0x006A90F0
+// PC 0x006A90F0 GOG 0x006A8ED0
 int CSWCMessage::HandleServerToPlayerAmbientBattleMusicPlay()
 {
     int bPlay;
@@ -10375,7 +10375,7 @@ int CSWCMessage::HandleServerToPlayerAmbientBattleMusicPlay()
         ->m_pInfo->m_pAmbientSound->PlayBattleMusic(bPlay);
     return 1;
 }
-// PC 0x006A9150
+// PC 0x006A9150 GOG 0x006A8F30
 int CSWCMessage::HandleServerToPlayerAmbientBattleMusicChange()
 {
     int nTrack;
@@ -10393,7 +10393,7 @@ int CSWCMessage::HandleServerToPlayerAmbientBattleMusicChange()
         ->m_pInfo->m_pAmbientSound->SetBattleMusicTrack(nTrack);
     return 1;
 }
-// PC 0x006A91C0
+// PC 0x006A91C0 GOG 0x006A8FA0
 int CSWCMessage::HandleServerToPlayerAmbientSoundLoopPlay()
 {
     int bPlay;
@@ -10411,7 +10411,7 @@ int CSWCMessage::HandleServerToPlayerAmbientSoundLoopPlay()
         ->m_pInfo->m_pAmbientSound->PlayAmbientSound(bPlay);
     return 1;
 }
-// PC 0x006A9220
+// PC 0x006A9220 GOG 0x006A9000
 int CSWCMessage::HandleServerToPlayerAmbientSoundLoopChange()
 {
     int bDay;
@@ -10441,7 +10441,7 @@ int CSWCMessage::HandleServerToPlayerAmbientSoundLoopChange()
     }
     return 1;
 }
-// PC 0x006A92A0
+// PC 0x006A92A0 GOG 0x006A9080
 int CSWCMessage::HandleServerToPlayerAmbientSoundVolume()
 {
 
@@ -10470,7 +10470,7 @@ int CSWCMessage::HandleServerToPlayerAmbientSoundVolume()
     }
     return 1;
 }
-// PC 0x006A9320
+// PC 0x006A9320 GOG 0x006A9100
 int CSWCMessage::HandleServerToPlayerCharacterDownload(unsigned char nMinor)
 {
 
@@ -10530,7 +10530,7 @@ int CSWCMessage::HandleServerToPlayerCheat_DebugMode()
     g_pAppManager->GetClientExoApp()->SetDebugMode(bDebugMode);
     return 1;
 }
-// PC 0x006A9530
+// PC 0x006A9530 GOG 0x006A9310
 int CSWCMessage::HandleServerToPlayerSaveLoad(unsigned char nMinor)
 {
     int bSuccess = 1;
@@ -10555,7 +10555,7 @@ int CSWCMessage::HandleServerToPlayerSaveLoad(unsigned char nMinor)
     }
     return bSuccess;
 }
-// PC 0x006A95A0
+// PC 0x006A95A0 GOG 0x006A9380
 int CSWCMessage::HandlePlayerToServerShutDownServer(unsigned char nMinor)
 {
 
@@ -10573,7 +10573,7 @@ int CSWCMessage::HandlePlayerToServerShutDownServer(unsigned char nMinor)
     }
     return 1;
 }
-// PC 0x006A9660
+// PC 0x006A9660 GOG 0x006A9440
 int CSWCMessage::HandleServerToPlayerGuiTimingEvent_Info()
 {
     if (ReadBOOL())
@@ -10596,7 +10596,7 @@ int CSWCMessage::HandleServerToPlayerGuiTimingEvent_Info()
     }
     return 1;
 }
-// PC 0x006A96D0
+// PC 0x006A96D0 GOG 0x006A94B0
 int CSWCMessage::HandleServerToPlayerGUICharacterSheet(unsigned char nMinor)
 {
     if (MessageReadOverflow(1))
@@ -10616,7 +10616,7 @@ int CSWCMessage::HandleServerToPlayerGUICharacterSheet(unsigned char nMinor)
     }
     return !MessageReadOverflow(1) && MessageReadUnderflow(1) == 0;
 }
-// PC 0x006A9740
+// PC 0x006A9740 GOG 0x006A9520
 int CSWCMessage::HandleServerToPlayerItemScript_Add()
 {
     unsigned long oidItem = ReadOBJECTIDClient();
@@ -10677,7 +10677,7 @@ int CSWCMessage::HandleServerToPlayerItemScript_Add()
 }
 
 #include "guiingame.h"
-// PC 0x006C0790
+// PC 0x006C0790 GOG 0x006C0570
 int CSWCMessage::HandleServerToPlayerDebugInfo(unsigned char nMinor)
 {
     unsigned long oidObject = ReadOBJECTIDClient();
@@ -10708,7 +10708,7 @@ int CSWCMessage::HandleServerToPlayerDebugInfo(unsigned char nMinor)
     }
     return 0;
 }
-// PC 0x006C0820
+// PC 0x006C0820 GOG 0x006C0600
 int CSWCMessage::HandleServerToPlayerGameObjectUpdate(unsigned char nMinor)
 {
     if (MessageReadOverflow(1))
@@ -10779,7 +10779,7 @@ int CSWCMessage::HandleServerToPlayerGameObjectUpdate(unsigned char nMinor)
 #include "twodimarray.h"
 
 #include "twodimarrays.h"
-// PC 0x006C09C0
+// PC 0x006C09C0 GOG 0x006C07A0
 int CSWCMessage::HandleServerToPlayerMessage(unsigned char* pMessage,
                                             unsigned long nSize)
 {

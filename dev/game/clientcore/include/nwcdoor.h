@@ -39,12 +39,12 @@ public:
 
     CSWCDoor();
     virtual ~CSWCDoor();
-    // PC 0x00698BD0
+    // PC 0x00698BD0 GOG 0x00698980
     virtual CSWCDoor* AsSWCDoor()
     {
         return this;
     }
-    // PC 0x006D96B0
+    // PC 0x006D96B0 GOG 0x006DB220
     virtual CExoString GetName()
     {
         return m_sDescription;
@@ -54,7 +54,7 @@ public:
                           unsigned char nFlags);
     virtual void UnloadModel();
     virtual void UnloadModel(unsigned char nModel);
-    // PC 0x0066FC40
+    // PC 0x0066FC40 GOG 0x0066F9E0
     int GetIsOpen()
     {
         return ((CSWCObject*)this)->GetCurrentAnimation() == DOOR_ANIMATION_OPEN1 ||
@@ -74,7 +74,7 @@ public:
     void AnimationUpdate();
     void UpdateAreaTransitionDisplay();
     void HilightDoor(int bHilight);
-    // PC 0x007343D0
+    // PC 0x007343D0 GOG 0x007340E0
     CExoString GetTransitionDestination()
     {
         return m_sTransitionDestination;

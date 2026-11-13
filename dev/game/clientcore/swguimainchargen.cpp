@@ -22,7 +22,7 @@ static inline void SetPortraitImage(CSWGuiLabel* pLabel,
 {
     pLabel->m_cBorder.m_cParams.SetFillImage(cPortrait, 0);
 }
-void CSWGuiMainCharGen::RemoveSubPanels()  // PC 0x0075B210
+void CSWGuiMainCharGen::RemoveSubPanels()  // PC 0x0075B210 GOG 0x0075B100
 {
     m_pManager->PopModalPanel();
 #ifndef _XBOX
@@ -70,7 +70,7 @@ void CSWGuiMainCharGen::RemoveSubPanels()  // PC 0x0075B210
     m_bDeferredRemoval = 0;
     m_nExitState = EXITSTATE_DELETE;
 }
-// PC 0x0075B2F0
+// PC 0x0075B2F0 GOG 0x0075B030
 void CSWGuiMainCharGen::SetVisiblePanel(int nPanel)
 {
     if (nPanel != m_nVisiblePanel)
@@ -115,7 +115,7 @@ void CSWGuiMainCharGen::SetVisiblePanel(int nPanel)
         }
     }
 }
-// PC 0x0075B3A0
+// PC 0x0075B3A0 GOG 0x0075B1E0
 void CSWGuiMainCharGen::DetermineClass()
 {
     CSWCLevelUpStats* pStats = m_pCreature->m_pStats;
@@ -125,14 +125,14 @@ void CSWGuiMainCharGen::DetermineClass()
 }
 
 #ifndef _XBOX
-void CSWGuiMainCharGen::SetNameString(const CExoString& sName)  // PC 0x0075B440
+void CSWGuiMainCharGen::SetNameString(const CExoString& sName)  // PC 0x0075B440 GOG 0x0075B280
 {
     m_sName = sName;
     m_lblName.m_cText.m_cParams.SetText(m_sName);
     m_lblClass.m_cText.m_cParams.SetText(m_sClass);
 }
 #endif
-// PC 0x0075B480
+// PC 0x0075B480 GOG 0x0075B2C0
 void CSWGuiMainCharGen::PortraitChanged()
 {
     SetPortraitImage(&m_lblPortrait, m_pCreature->GetPortrait(0));
@@ -165,7 +165,7 @@ inline unsigned char& CSWCLevelUpStats::MainCharGenAbility(int nAbility)
 {
     return m_aAbilities[nAbility];
 }
-// PC 0x0075B6C0
+// PC 0x0075B6C0 GOG 0x0075B500
 void CSWGuiMainCharGen::AbilitiesChanged()
 {
     CSWClass* pClass;
@@ -246,7 +246,7 @@ void CSWGuiMainCharGen::AbilitiesChanged()
         m_lblNewWill.m_cText.m_cParams.SetText(sText);
     }
 }
-// PC 0x0075BAA0
+// PC 0x0075BAA0 GOG 0x0075B8E0
 void CSWGuiMainCharGen::ClearAbilities()
 {
     m_lblCharismaAbility.m_cText.m_cParams.SetText("");
@@ -273,19 +273,19 @@ void CSWGuiMainCharGen::ClearAbilities()
     m_pCreature->m_pStats->ClearPackage();
 }
 #ifndef _XBOX
-// PC 0x0075BDB0
+// PC 0x0075BDB0 GOG 0x0075BBF0
 void CSWGuiMainCharGen::ClearFeats()
 {
     m_pCreature->m_pStats->ClearFeats();
 }
 #endif
-// PC 0x0075BDC0
+// PC 0x0075BDC0 GOG 0x0075BC00
 void CSWGuiMainCharGen::BeginPlayGame()
 {
     RemoveSubPanels();
     m_pClassSelection->BeginPlayGame();
 }
-// PC 0x0075BDE0
+// PC 0x0075BDE0 GOG 0x0075BC20
 void CSWGuiMainCharGen::Draw(float fTimeStep)
 {
     if (m_pCreature != 0 && g_bDo3DGUIs != 0 && (m_bNeedsDraw) != 0)
@@ -309,13 +309,13 @@ void CSWGuiMainCharGen::Draw(float fTimeStep)
     return CSWGuiPanel::Draw(fTimeStep);
 }
 #ifndef _XBOX
-void CSWGuiMainCharGen::OnPanelAdded()  // PC 0x0075BEC0
+void CSWGuiMainCharGen::OnPanelAdded()  // PC 0x0075BEC0 GOG 0x0075B0E0
 {
     m_pManager->AddPanel(m_pQuickOrCustom, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     CSWGuiPanel::OnPanelAdded();
 }
 #endif
-// PC 0x0075BEE0
+// PC 0x0075BEE0 GOG 0x0075BD00
 CSWGuiMainCharGen::CSWGuiMainCharGen(CSWGuiManager* pManager,
                                      CSWCCreature* pCreature,
                                      CSWGuiClassSelection* pClassSelection)

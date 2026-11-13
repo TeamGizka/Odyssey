@@ -2,28 +2,28 @@
 #include "resgff.h"
 #include "nwsscriptevent.h"
 #include "gameobjectarray.h"
-// PC 0x0053F1C0
+// PC 0x0053F1C0 GOG 0x0052BA70
 int CScriptEvent::GetInteger(int nIndex)
 {
     if (nIndex < m_lstIntegers.num)
         return m_lstIntegers[nIndex];
     return 0;
 }
-// PC 0x0053F1E0
+// PC 0x0053F1E0 GOG 0x0052BAB0
 unsigned long CScriptEvent::GetObjectID(int nIndex)
 {
     if (nIndex < m_lstObjectIDs.num)
         return m_lstObjectIDs[nIndex];
     return OBJECT_INVALID;
 }
-// PC 0x0053F200
+// PC 0x0053F200 GOG 0x0052CAA0
 CExoString CScriptEvent::GetString(int nIndex)
 {
     if (nIndex < m_lstStrings.num)
         return m_lstStrings[nIndex];
     return "";
 }
-// PC 0x00540180
+// PC 0x00540180 GOG 0x0052BA90
 float CScriptEvent::GetFloat(int nIndex)
 {
     if (nIndex < m_lstFloats.num)
@@ -35,7 +35,7 @@ float CScriptEvent::GetFloat(int nIndex)
         return 0.0;
     }
 }
-// PC 0x00540590
+// PC 0x00540590 GOG 0x0052C220
 void CScriptEvent::SetString(int nIndex, const CExoString& sValue)
 {
     if (nIndex >= m_lstStrings.num)
@@ -45,7 +45,7 @@ void CScriptEvent::SetString(int nIndex, const CExoString& sValue)
 
     m_lstStrings[nIndex] = sValue;
 }
-// PC 0x00540090
+// PC 0x00540090 GOG 0x0052C9B0
 int CScriptEvent::operator==(const CScriptEvent& sev) const
 {
     int i;
@@ -104,7 +104,7 @@ int CScriptEvent::operator==(const CScriptEvent& sev) const
 
     return TRUE;
 }
-// PC 0x005401A0
+// PC 0x005401A0 GOG 0x0052CAE0
 int CScriptEvent::SaveEvent(CResGFF* pRes, CResStruct* pStruct)
 {
     CResStruct* pTopStruct;
@@ -157,12 +157,12 @@ int CScriptEvent::SaveEvent(CResGFF* pRes, CResStruct* pStruct)
 
     return TRUE;
 }
-// PC 0x00540340
+// PC 0x00540340 GOG 0x0052CC80
 CScriptEvent::CScriptEvent() :
     m_lstIntegers(0), m_lstFloats(0), m_lstStrings(0), m_lstObjectIDs(0)
 {
 }
-// PC 0x00540390
+// PC 0x00540390 GOG 0x0052CCD0
 CScriptEvent::~CScriptEvent()
 {
     m_lstIntegers.SetSize(0);
@@ -170,7 +170,7 @@ CScriptEvent::~CScriptEvent()
     m_lstObjectIDs.SetSize(0);
     m_lstStrings.SetSize(0);
 }
-// PC 0x005404B0
+// PC 0x005404B0 GOG 0x0052C0E0
 void CScriptEvent::SetInteger(int nIndex, int nValue)
 {
     if (nIndex >= m_lstIntegers.num)
@@ -180,7 +180,7 @@ void CScriptEvent::SetInteger(int nIndex, int nValue)
 
     m_lstIntegers[nIndex] = nValue;
 }
-// PC 0x0053F8D0
+// PC 0x0053F8D0 GOG 0x0052C150
 void CScriptEvent::SetFloat(int nIndex, float fValue)
 {
     if (nIndex >= m_lstFloats.num)
@@ -190,7 +190,7 @@ void CScriptEvent::SetFloat(int nIndex, float fValue)
 
     m_lstFloats[nIndex] = fValue;
 }
-// PC 0x00540520
+// PC 0x00540520 GOG 0x0052C1B0
 void CScriptEvent::SetObjectID(int nIndex, unsigned long oidObject)
 {
     if (nIndex >= m_lstObjectIDs.num)
@@ -200,7 +200,7 @@ void CScriptEvent::SetObjectID(int nIndex, unsigned long oidObject)
 
     m_lstObjectIDs[nIndex] = oidObject;
 }
-// PC 0x005405C0
+// PC 0x005405C0 GOG 0x0052CDF0
 void CScriptEvent::CopyScriptEvent(CScriptEvent* pEvent)
 {
     int i;
@@ -234,7 +234,7 @@ void CScriptEvent::CopyScriptEvent(CScriptEvent* pEvent)
         }
     }
 }
-// PC 0x00540780
+// PC 0x00540780 GOG 0x0052CFB0
 int CScriptEvent::LoadEvent(CResGFF* pRes, CResStruct* pStruct)
 {
     CResList cList;

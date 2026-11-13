@@ -1,15 +1,15 @@
 #include "exobase.h"
-// PC 0x00635E10
+// PC 0x00635E10 GOG 0x00635D00
 CExoRand::CExoRand()
 {
     m_pInternal = new CExoRandInternal();
 }
-// PC 0x00635E80
+// PC 0x00635E80 GOG 0x00635D70
 unsigned long CExoRand::Rand()
 {
     return m_pInternal->Rand();
 }
-// PC 0x00635E90
+// PC 0x00635E90 GOG 0x00635D80
 CExoRand::~CExoRand()
 {
     if (m_pInternal != 0)

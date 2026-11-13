@@ -8,7 +8,7 @@
 #include "swguiingameautopause.h"
 #include "swguioptions.h"
 #include "swguicustompanel.h"
-// PC 0x00735B90
+// PC 0x00735B90 GOG 0x00735330
 void CSWGuiInGameOptions::OnPanelRemoved()
 {
     SetActiveControl(0, 0);
@@ -40,7 +40,7 @@ void CSWGuiInGameOptions::OnSaveGame(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x00735730
+// PC 0x00735730 GOG 0x00735470
 void CSWGuiInGameOptions::OnGameplay(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -50,7 +50,7 @@ void CSWGuiInGameOptions::OnGameplay(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x007357B0
+// PC 0x007357B0 GOG 0x007354F0
 void CSWGuiInGameOptions::OnFeedback(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -60,7 +60,7 @@ void CSWGuiInGameOptions::OnFeedback(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x00735830
+// PC 0x00735830 GOG 0x00735570
 void CSWGuiInGameOptions::OnAutopause(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -82,7 +82,7 @@ void CSWGuiInGameOptions::OnGraphics(CSWGuiControl* pControl)
     }
 }
 #endif
-// PC 0x00735930
+// PC 0x00735930 GOG 0x00735670
 void CSWGuiInGameOptions::OnSound(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -92,7 +92,7 @@ void CSWGuiInGameOptions::OnSound(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x007359B0
+// PC 0x007359B0 GOG 0x007356F0
 void CSWGuiInGameOptions::ReallyQuit(CSWGuiControl* pControl)
 {
     CGuiInGame* pInGameGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
@@ -101,7 +101,7 @@ void CSWGuiInGameOptions::ReallyQuit(CSWGuiControl* pControl)
         g_pAppManager->m_pClientExoApp->SetEndGamePending(1, 0.0f, 1);
     }
 }
-// PC 0x007359E0
+// PC 0x007359E0 GOG 0x00735720
 void CSWGuiInGameOptions::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -137,7 +137,7 @@ void CSWGuiInGameOptions::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x00735C20
+// PC 0x00735C20 GOG 0x00735860
 void CSWGuiInGameOptions::SetDescription(unsigned long nStrRef)
 {
     CSWGuiTextParams* pParams = &m_lblDescription.m_cText.m_cParams;
@@ -164,7 +164,7 @@ void CSWGuiInGameOptions::SetDescription(unsigned long nStrRef)
                           pListBox->m_bHideScrollIcon == 0;
     m_lblScrollIcon.m_bEnabled = bShowScrollIcon;
 }
-// PC 0x00735B20
+// PC 0x00735B20 GOG 0x007359C0
 void CSWGuiInGameOptions::OnPanelAdded()
 {
 #ifndef _XBOX
@@ -196,7 +196,7 @@ void CSWGuiInGameOptions::OnPanelAdded()
         SetActiveControl(&m_aOptions[0], 0);
     }
 }
-// PC 0x00735BB0
+// PC 0x00735BB0 GOG 0x00735A30
 void CSWGuiInGameOptions::OnQuit(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -211,7 +211,7 @@ void CSWGuiInGameOptions::OnQuit(CSWGuiControl* pControl)
         m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
 }
-// PC 0x00735D80
+// PC 0x00735D80 GOG 0x00735AA0
 void CSWGuiInGameOptions::OnEnterSlot(CSWGuiControl* pControl)
 {
     int nSlot = -1;
@@ -286,7 +286,7 @@ void CSWGuiInGameOptions::OnEnterSlot(CSWGuiControl* pControl)
     }
 #endif
 }
-// PC 0x00735E50
+// PC 0x00735E50 GOG 0x00735B70
 CSWGuiInGameOptions::CSWGuiInGameOptions(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {

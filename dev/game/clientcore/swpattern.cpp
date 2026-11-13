@@ -1,11 +1,11 @@
 #include "swpattern.h"
-// PC 0x006E91E0
+// PC 0x006E91E0 GOG 0x006E8EA0
 CSWRumbleMotorData::~CSWRumbleMotorData()
 {
     delete m_pfMagnitudes;
     delete m_pfTimes;
 }
-// PC 0x006E9200
+// PC 0x006E9200 GOG 0x006E8EC0
 float CSWRumbleMotorData::GetMagnitude(float fTime, int bLoop)
 {
     if (!m_pfTimes || !m_pfMagnitudes)
@@ -57,7 +57,7 @@ float CSWRumbleMotorData::GetMagnitude(float fTime, int bLoop)
                 m_pfMagnitudes[m_nCurrentSamplePoint]) +
            m_pfMagnitudes[m_nCurrentSamplePoint];
 }
-// PC 0x006E9320
+// PC 0x006E9320 GOG 0x006E8FE0
 int CSWRumblePattern::GetMagnitudes(float fTime, float& fLeftMagnitude,
                                     float& fRightMagnitude)
 {

@@ -39,12 +39,12 @@ const float WATER_DAMPING = 0.025f;
 const float WATER_DIRECTION_OFFSET = 0.0f;
 const float WATER_WAVE_HEIGHT_MARGIN = 40.0f;
 const float WATER_SPEED = 1.0f;
-// PC 0x004794F0
+// PC 0x004794F0 GOG 0x00479680
 void WaveTextureController::ParseField(char* sField)
 {
     TextureController::ParseField(sField);
 }
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 void CycleTIDTextureController::Init()
 {
 }
@@ -108,7 +108,7 @@ void HeatDistortTextureController::Control()
 }
 
 #endif
-// PC 0x00478C50
+// PC 0x00478C50 GOG 0x00478DE0
 TextureController::TextureController(CAurTexture* pTexture)
     : m_lstChannelScale(), m_lstChannelTranslate(0)
 {
@@ -120,7 +120,7 @@ TextureController::TextureController(CAurTexture* pTexture)
     m_fDistortAmplitude = 5.0f;
     m_fDistortSpeed = 1.0f;
 }
-// PC 0x00476AB0
+// PC 0x00476AB0 GOG 0x00476C40
 TextureController::~TextureController()
 {
     if (m_pImage != NULL)
@@ -128,7 +128,7 @@ TextureController::~TextureController()
         delete[] m_pImage;
     }
 }
-// PC 0x00476B30
+// PC 0x00476B30 GOG 0x00476CC0
 unsigned char* TextureController::Distort(unsigned char* pHeight)
 {
     int nBPP = m_pTexture->GetBPP();
@@ -188,7 +188,7 @@ const float ARTURO_UPDATE_TIME = 0.03f;
 const float ARTURO_DAMPING = 0.0f;
 
 unsigned char TextureController::newimage[262144];
-// PC 0x00475B20
+// PC 0x00475B20 GOG 0x00475CB0
 void TextureController::SetImage()
 {
     int nSize =
@@ -197,7 +197,7 @@ void TextureController::SetImage()
     m_pImage = new unsigned char[nSize];
     memcpy(m_pImage, m_pTexture->GetImage(), nSize);
 }
-// PC 0x00475B80
+// PC 0x00475B80 GOG 0x00475D10
 void PerlinTextureController::Init()
 {
     int nSize;
@@ -214,7 +214,7 @@ void PerlinTextureController::Init()
     BuildPerlinImage(m_pPerlinImage, m_pTexture->GetWidth());
     BuildPerlinImage(m_pWorkImage, m_pTexture->GetWidth());
 }
-// PC 0x00475C00
+// PC 0x00475C00 GOG 0x00475D90
 void PerlinTextureController::BuildPerlinImage(unsigned char* pImage, int nSize)
 {
     int nImageSize = 4;
@@ -251,7 +251,7 @@ void PerlinTextureController::BuildPerlinImage(unsigned char* pImage, int nSize)
     }
     delete[] ppImages;
 }
-// PC 0x00475CF0
+// PC 0x00475CF0 GOG 0x00475E80
 void WaterTextureController::Init()
 {
     int nWidth = m_nWaterWidth;
@@ -285,7 +285,7 @@ void WaterTextureController::Init()
     m_fForceAngle = 0.0f;
     m_fWaveAngle = 0.0f;
 }
-// PC 0x00475DB0
+// PC 0x00475DB0 GOG 0x00475F40
 void WaveTextureController::Init()
 {
     int nWidth = m_pTexture->GetWidth();
@@ -321,7 +321,7 @@ void WaveTextureController::Init()
         }
     }
 }
-// PC 0x00475ED0
+// PC 0x00475ED0 GOG 0x00476060
 void LifeTextureController::Init()
 {
     unsigned char aPixel[4] = {0, 0, 0, 255};
@@ -350,7 +350,7 @@ void LifeTextureController::Init()
         }
     }
 }
-// PC 0x00476000
+// PC 0x00476000 GOG 0x00476190
 void LifeTextureController::Control()
 {
 
@@ -445,7 +445,7 @@ void LifeTextureController::Control()
         delete[] pOldState;
     }
 }
-// PC 0x004782E0
+// PC 0x004782E0 GOG 0x00478470
 void ArturoTextureController::Init()
 {
     int nImageWidth = m_pTexture->GetWidth();
@@ -482,7 +482,7 @@ void ArturoTextureController::Init()
     BuildArturoImage();
     BuildArturoImage();
 }
-// PC 0x00476310
+// PC 0x00476310 GOG 0x004764A0
 void ArturoTextureController::BuildArturoImage()
 {
     int nWidth = m_nArturoWidth;
@@ -525,7 +525,7 @@ void ArturoTextureController::BuildArturoImage()
     memcpy(m_pfArturoPrevious, m_pfArturoCurrent, nPixels * sizeof(float));
     memcpy(m_pfArturoCurrent, m_pfArturoNext, nPixels * sizeof(float));
 }
-// PC 0x00476520
+// PC 0x00476520 GOG 0x004766B0
 void CycleTIDTextureController::Control()
 {
     if (m_nLastUpdate != texcurrentframe)
@@ -541,7 +541,7 @@ void CycleTIDTextureController::Control()
         }
     }
 }
-// PC 0x004765A0
+// PC 0x004765A0 GOG 0x00476730
 void RandomTextureController::Init()
 {
     int nWidth = m_pTexture->GetWidth();
@@ -556,7 +556,7 @@ void RandomTextureController::Init()
     m_pRandomImage = new unsigned char[nWidth * nHeight];
     m_pChannelImage = new unsigned char[nWidth * nHeight * nBPP];
 }
-// PC 0x00476600
+// PC 0x00476600 GOG 0x00476860
 void DirtyTextureController::MakePerlinTexture(unsigned char* pImage, int nRange)
 {
     int nWidth = m_pTexture->GetWidth();
@@ -596,7 +596,7 @@ void DirtyTextureController::MakePerlinTexture(unsigned char* pImage, int nRange
     }
     delete[] ppImages;
 }
-// PC 0x00476720
+// PC 0x00476720 GOG 0x00476790
 float FloatInterpolate(float* pfValues, float fX, float fY, int nWidth,
                        int nHeight)
 {
@@ -615,7 +615,7 @@ float FloatInterpolate(float* pfValues, float fX, float fY, int nWidth,
                ((1.0f - fColumnWeight) * pfValues[nNextRow * nWidth + nColumn] +
                 fColumnWeight * pfValues[nNextRow * nWidth + nNextColumn]);
 }
-// PC 0x004767F0
+// PC 0x004767F0 GOG 0x00476980
 void DirtyTextureController::Control()
 {
     if (m_nLastUpdate != texcurrentframe && m_pDirtyImage != NULL)
@@ -623,7 +623,7 @@ void DirtyTextureController::Control()
         m_nLastUpdate = texcurrentframe;
     }
 }
-// PC 0x00476810
+// PC 0x00476810 GOG 0x004769A0
 void RingDistortTextureController::Init()
 {
     int nWidth = m_pTexture->GetWidth();
@@ -633,7 +633,7 @@ void RingDistortTextureController::Init()
     m_fAngle = 0.0f;
     m_pRingImage = new unsigned char[nWidth * nHeight * nBPP];
 }
-// PC 0x00476850
+// PC 0x00476850 GOG 0x004769E0
 void RingDistortTextureController::Control()
 {
     if (m_nLastUpdate != texcurrentframe && m_pRingImage != NULL)
@@ -712,7 +712,7 @@ void RingDistortTextureController::Control()
         }
     }
 }
-// PC 0x00476E20
+// PC 0x00476E20 GOG 0x00476FB0
 unsigned char* TextureController::Height2Channel(unsigned char* pHeight,
                                                 unsigned char* pImage)
 {
@@ -793,7 +793,7 @@ unsigned char* TextureController::Height2Channel(unsigned char* pHeight,
     }
     return pResult;
 }
-// PC 0x00477360
+// PC 0x00477360 GOG 0x004774F0
 void PerlinTextureController::Control()
 {
     if (m_nLastUpdate != texcurrentframe)
@@ -844,7 +844,7 @@ void PerlinTextureController::Control()
         }
     }
 }
-// PC 0x004775E0
+// PC 0x004775E0 GOG 0x00477770
 void WaterTextureController::Control()
 {
     if (m_nLastUpdate == texcurrentframe)
@@ -1022,7 +1022,7 @@ void WaterTextureController::Control()
         ++m_nUnknown64;
     }
 }
-// PC 0x00477DF0
+// PC 0x00477DF0 GOG 0x00477F80
 void WaveTextureController::Control()
 {
     if (m_nLastUpdate == texcurrentframe)
@@ -1122,7 +1122,7 @@ void WaveTextureController::Control()
         delete[] pResult;
     }
 }
-// PC 0x00478410
+// PC 0x00478410 GOG 0x004785A0
 void ArturoTextureController::Control()
 {
 
@@ -1208,7 +1208,7 @@ void ArturoTextureController::Control()
         }
     }
 }
-// PC 0x004786F0
+// PC 0x004786F0 GOG 0x00478880
 void RandomTextureController::Control()
 {
     int nWidth;
@@ -1246,7 +1246,7 @@ void RandomTextureController::Control()
         }
     }
 }
-// PC 0x004787B0
+// PC 0x004787B0 GOG 0x00478940
 void DirtyTextureController::Init(int nARGB, int nSize, int nFormula, int nFunc)
 {
     int nBPP = m_pTexture->GetBPP();
@@ -1335,7 +1335,7 @@ void DirtyTextureController::Init(int nARGB, int nSize, int nFormula, int nFunc)
     delete[] pNoiseZ;
     m_pTexture->glImage(false, m_pDirtyImage);
 }
-// PC 0x00478CE0
+// PC 0x00478CE0 GOG 0x00478E70
 void TextureController::ParseField(char* sField)
 {
 
@@ -1524,7 +1524,7 @@ void TextureController::ParseField(char* sField)
         }
     }
 }
-// PC 0x00479290
+// PC 0x00479290 GOG 0x00479420
 WaterTextureController::WaterTextureController(CAurTexture* pTexture)
     : TextureController(pTexture), m_fForceCycleSpeed(RAD_TO_DEG),
       m_fAngleCycleSpeed(RAD_TO_DEG / 20.0f)
@@ -1537,7 +1537,7 @@ WaterTextureController::WaterTextureController(CAurTexture* pTexture)
     m_pDistortImage = 0;
     m_nWaveType = 2;
 }
-// PC 0x00479380
+// PC 0x00479380 GOG 0x00479510
 void WaterTextureController::ParseField(char* sField)
 {
     const char* sKeyword;
@@ -1564,14 +1564,14 @@ void WaterTextureController::ParseField(char* sField)
         Parse(sField + 11, m_nWaterHeight);
     }
 }
-// PC 0x00479440
+// PC 0x00479440 GOG 0x004795D0
 WaveTextureController::WaveTextureController(CAurTexture* pTexture)
     : TextureController(pTexture)
 {
     m_pfWaveImage = 0;
     m_pfOffsetImage = 0;
 }
-// PC 0x00479500
+// PC 0x00479500 GOG 0x00479690
 ArturoTextureController::ArturoTextureController(CAurTexture* pTexture)
     : TextureController(pTexture)
 {
@@ -1583,7 +1583,7 @@ ArturoTextureController::ArturoTextureController(CAurTexture* pTexture)
     m_pfArturoPrevious = 0;
     m_nLastUpdate = -1;
 }
-// PC 0x004795E0
+// PC 0x004795E0 GOG 0x00479770
 void ArturoTextureController::ParseField(char* sField)
 {
     const char* sKeyword;
@@ -1600,7 +1600,7 @@ void ArturoTextureController::ParseField(char* sField)
         Parse(sField + 12, m_nArturoHeight);
     }
 }
-// PC 0x00479650
+// PC 0x00479650 GOG 0x004797E0
 CycleTIDTextureController::CycleTIDTextureController(CAurTexture* pTexture)
     : TextureController(pTexture)
 {
@@ -1614,7 +1614,7 @@ CycleTIDTextureController::CycleTIDTextureController(CAurTexture* pTexture)
     m_fCycleRate = 1.0f;
 #endif
 }
-// PC 0x004796B0
+// PC 0x004796B0 GOG 0x00479840
 void CycleTIDTextureController::ParseField(char* sField)
 {
     const char* sKeyword = firstword(sField);

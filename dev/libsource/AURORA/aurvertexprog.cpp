@@ -52,14 +52,14 @@ unsigned long* cPhongFlatVPDeclaration = 0;
 unsigned long* cShadowTriMeshVariantVPDeclaration = 0;
 unsigned long* cSkinShadowVPDeclaration = 0;
 #endif
-// PC 0x004CEB30
+// PC 0x004CEB30 GOG 0x004CEC70
 void AurVertexProgramMakeCurrent()
 {
     currentframe++;
 }
 
 #ifndef _XBOX
-void GLRender::DrawElementsInShadow(unsigned int nProgram,  // PC 0x004CEB40
+void GLRender::DrawElementsInShadow(unsigned int nProgram,  // PC 0x004CEB40 GOG 0x004CEC80
                                     unsigned long nLength,
                                     const char* sProgram,
                                     unsigned long* pnProgram)
@@ -75,7 +75,7 @@ void GLRender::DrawElementsInShadow(unsigned int nProgram,  // PC 0x004CEB40
     }
 }
 #endif
-// PC 0x004CEB80
+// PC 0x004CEB80 GOG 0x004CECC0
 void TrackMatrices()
 {
 #ifdef _XBOX
@@ -105,7 +105,7 @@ void TrackMatrices()
 }
 
 #ifndef _XBOX
-int VertexProgramManager::ResetVertexPrograms()  // PC 0x004CEBF0
+int VertexProgramManager::ResetVertexPrograms()  // PC 0x004CEBF0 GOG 0x004CED30
 {
     int i;
 
@@ -120,7 +120,7 @@ int VertexProgramManager::ResetVertexPrograms()  // PC 0x004CEBF0
     return cm_listExistentVertexPrograms.m_nCount;
 }
 #endif
-// PC 0x004CEC50
+// PC 0x004CEC50 GOG 0x004CED90
 void VertexProgram::Enable(Part* pPart, bool bEnableLights)
 {
     static char* sLastProgram;
@@ -253,13 +253,13 @@ void VertexProgram::Enable(Part* pPart, bool bEnableLights)
 }
 
 #ifndef _XBOX
-// PC 0x004CEF00
+// PC 0x004CEF00 GOG 0x004CF040
 void VertexProgramManager::AddVertexProgram(VertexProgram* pProgram)
 {
     cm_listExistentVertexPrograms.Add(pProgram);
 }
 #endif
-// PC 0x004CEF60
+// PC 0x004CEF60 GOG 0x004CF0A0
 VertexProgram::VertexProgram(char* sProgram, unsigned long* pnProgram)
 {
     m_sProgram = sProgram;
@@ -276,7 +276,7 @@ VertexProgram::VertexProgram(char* sProgram, unsigned long* pnProgram)
 }
 
 #ifndef _XBOX
-VertexProgram::~VertexProgram()  // PC 0x004CEFB0
+VertexProgram::~VertexProgram()  // PC 0x004CEFB0 GOG 0x004CF0F0
 {
     unsigned char bExists;
     unsigned int nProgram = m_nGLProgram;

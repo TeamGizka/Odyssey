@@ -29,7 +29,7 @@
 #include "../../libsource/AURORA/aurpointer.h"
 
 #include <math.h>
-// PC 0x006DB510
+// PC 0x006DB510 GOG 0x006DB100
 CSWCDoor::CSWCDoor()
     : CSWCObject(CGameObject::OBJECT_TYPE_DOOR)
 {
@@ -55,7 +55,7 @@ CSWCDoor::CSWCDoor()
     m_nDoorData = 0;
     m_bStatic = 0;
 }
-// PC 0x006DB7A0
+// PC 0x006DB7A0 GOG 0x0069CD00
 void CSWCDoor::UnloadModel()
 {
     if (m_pAnimBase != 0)
@@ -65,11 +65,11 @@ void CSWCDoor::UnloadModel()
         m_pAnimBase = 0;
     }
 }
-// PC 0x005EE1C0
+// PC 0x005EE1C0 GOG 0x005EE1A0
 void CSWCDoor::HilightDoor(int)
 {
 }
-// PC 0x0069CF50
+// PC 0x0069CF50 GOG 0x0069CD30
 void CSWCDoor::UnloadModel(unsigned char nModel)
 {
     if (m_pAnimBase != NULL)
@@ -77,7 +77,7 @@ void CSWCDoor::UnloadModel(unsigned char nModel)
         m_pAnimBase->UnloadModel(nModel);
     }
 }
-// PC 0x006DB630
+// PC 0x006DB630 GOG 0x006DB250
 void CSWCDoor::SetIsAreaTransition(int bAreaTransition)
 {
     if (bAreaTransition == 0)
@@ -90,7 +90,7 @@ void CSWCDoor::SetIsAreaTransition(int bAreaTransition)
     }
     m_bAreaTransition = bAreaTransition;
 }
-// PC 0x006DB670
+// PC 0x006DB670 GOG 0x006DB290
 int CSWCDoor::SetAnimationWithoutTrigger(unsigned short nAnimation)
 {
     m_nCurrentAnimation = nAnimation;
@@ -100,7 +100,7 @@ int CSWCDoor::SetAnimationWithoutTrigger(unsigned short nAnimation)
     }
     return m_pAnimBase->SetAnimation(nAnimation, 0.0f, 0, 0);
 }
-// PC 0x006DB6B0
+// PC 0x006DB6B0 GOG 0x006DB2D0
 void CSWCDoor::SetState(unsigned char nState)
 {
     Gob* pModel = GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
@@ -121,7 +121,7 @@ void CSWCDoor::SetState(unsigned char nState)
     }
 }
 #ifndef _XBOX
-// PC 0x006DB700
+// PC 0x006DB700 GOG 0x006DB320
 void CSWCDoor::DoorSaber(unsigned long oidDoor, CSWCCreature* pCreature)
 {
     if (pCreature != 0)
@@ -132,7 +132,7 @@ void CSWCDoor::DoorSaber(unsigned long oidDoor, CSWCCreature* pCreature)
     pMessage->SendPlayerToServerInput_DoorSaber(m_nId);
 }
 #endif
-// PC 0x006DB730
+// PC 0x006DB730 GOG 0x006DB350
 void CSWCDoor::ToggleDoorState(unsigned long oidDoor, CSWCCreature* pCreature)
 {
     if (pCreature != 0)
@@ -151,7 +151,7 @@ void CSWCDoor::ToggleDoorState(unsigned long oidDoor, CSWCCreature* pCreature)
         pMessage->SendPlayerToServerInput_ChangeDoorState(m_nId, DOOR_ANIMATION_CLOSED);
     }
 }
-// PC 0x006DB7D0
+// PC 0x006DB7D0 GOG 0x006DB3C0
 void CSWCDoor::AddFireAndForgetAnimation(unsigned short nAnimation,
                                          void* pData, unsigned short nFlags)
 {
@@ -167,7 +167,7 @@ void CSWCDoor::AddFireAndForgetAnimation(unsigned short nAnimation,
     }
     InsertFireForgetAnimation(nAnimation, nLength, m_fAnimationSpeed, pData, 0);
 }
-// PC 0x006DB820
+// PC 0x006DB820 GOG 0x006DB410
 void CSWCDoor::MenuActionSecurity(unsigned long oidDoor,
                                   CSWCCreature* pCreature)
 {
@@ -179,7 +179,7 @@ void CSWCDoor::MenuActionSecurity(unsigned long oidDoor,
     pMessage->SendPlayerToServerInput_UnlockObject(m_nId, OBJECT_INVALID);
     g_pAppManager->m_pClientExoApp->DelayNextEnemyAutoPause();
 }
-// PC 0x006DB860
+// PC 0x006DB860 GOG 0x006DB520
 void CSWCDoor::MenuActionBash(unsigned long oidDoor, CSWCCreature* pCreature)
 {
     if (pCreature != 0)
@@ -197,7 +197,7 @@ void CSWCDoor::MenuActionBash(unsigned long oidDoor, CSWCCreature* pCreature)
         }
     }
 }
-// PC 0x006DB8B0
+// PC 0x006DB8B0 GOG 0x006DB570
 CSWSDoor* CSWCDoor::GetServerDoor()
 {
     CSWSObject* pServerObject;
@@ -208,7 +208,7 @@ CSWSDoor* CSWCDoor::GetServerDoor()
     }
     return 0;
 }
-// PC 0x006DB8D0
+// PC 0x006DB8D0 GOG 0x006DB590
 void MoveNextDoorState(CAurObject* pObject, char* sEvent, void* pData)
 {
     if (stricmp(sEvent, "door") == 0 ||
@@ -227,12 +227,12 @@ void MoveNextDoorState(CAurObject* pObject, char* sEvent, void* pData)
         }
     }
 }
-// PC 0x006DB960
+// PC 0x006DB960 GOG 0x006DB620
 CSWCDoor::~CSWCDoor()
 {
     UnloadModel();
 }
-// PC 0x006DBA00
+// PC 0x006DBA00 GOG 0x006DB6C0
 void CSWCDoor::AnimationUpdate()
 {
     unsigned short nAnimation;
@@ -332,7 +332,7 @@ void CSWCDoor::AnimationUpdate()
         }
     }
 }
-// PC 0x006DBCB0
+// PC 0x006DBCB0 GOG 0x006DB970
 int CSWCDoor::LoadModel(const CResRef& cModel, unsigned char nModel,
                         unsigned char nFlags)
 {
@@ -385,7 +385,7 @@ void CSWCDoor::MenuActionSetDoorMine(unsigned long oidItem, CSWCCreature* pCreat
         pCreature->PerformUseItem(oidItem, 0, GetId(), m_vPosition);
     }
 }
-// PC 0x006DBDD0
+// PC 0x006DBDD0 GOG 0x006DBA90
 void CSWCDoor::GetUseItems(CSWCCreature* pCreature,
                            CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
@@ -403,7 +403,7 @@ void CSWCDoor::GetUseItems(CSWCCreature* pCreature,
         }
     }
 }
-// PC 0x006DBE90
+// PC 0x006DBE90 GOG 0x006DBB50
 void CSWCDoor::GetDoorInterfaceMines(CSWCCreature* pCreature,
                                      CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
@@ -477,7 +477,7 @@ void CSWCDoor::GetDoorInterfaceMines(CSWCCreature* pCreature,
         }
     }
 }
-void CSWCDoor::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 0x006DC1B0
+void CSWCDoor::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 0x006DC1B0 GOG 0x006DBE70
                               CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
     CSWSDoor* pServerDoor = GetServerDoor();
@@ -572,7 +572,7 @@ void CSWCDoor::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 0x006
     }
 }
 #endif
-void CSWCDoor::UpdateAreaTransitionDisplay()  // PC 0x006DC590
+void CSWCDoor::UpdateAreaTransitionDisplay()  // PC 0x006DC590 GOG 0x006DC250
 {
     CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
     CSWCCreature* pPlayer =
@@ -717,7 +717,7 @@ void CSWCDoor::UpdateAreaTransitionDisplay()  // PC 0x006DC590
         }
     }
 }
-// PC 0x006DCEB0
+// PC 0x006DCEB0 GOG 0x006DCB70
 void CSWCDoor::AIUpdate()
 {
     unsigned long nDay;

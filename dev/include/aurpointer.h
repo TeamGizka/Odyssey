@@ -6,7 +6,7 @@
 template <class T> class SafePointer
 {
 public:
-    SafePointer()  // PC 0x00421C30
+    SafePointer()  // PC 0x00421C30 GOG 0x00421C40
         : m_pObject(0)
     {
     }

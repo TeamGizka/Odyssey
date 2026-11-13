@@ -25,7 +25,7 @@ int g_bEnableLiveContentIgnore = 0;
 
 int g_bProcessModuleMemUsage = 0;
 char* g_szProcessModuleMemName = 0;
-// PC 0x00656580
+// PC 0x00656580 GOG 0x00656430
 int GetCheatsTurnedOn()
 {
     int nCheats = 0;
@@ -57,7 +57,7 @@ int GetCheatsTurnedOn()
     }
     return nCheats == 1;
 }
-// PC 0x006566F0
+// PC 0x006566F0 GOG 0x006565A0
 void heal()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -66,7 +66,7 @@ void heal()
             ->SendPlayerToServerCheat_Resurrect();
     }
 }
-// PC 0x00656710
+// PC 0x00656710 GOG 0x006565C0
 void CheatSetSkill(int nSkill, char* szValue)
 {
     int nValue = 0;
@@ -94,47 +94,47 @@ void CheatSetSkill(int nSkill, char* szValue)
         }
     }
 }
-// PC 0x006567A0
+// PC 0x006567A0 GOG 0x00656650
 void setcomputeruse(char* szValue)
 {
     CheatSetSkill(0, szValue);
 }
-// PC 0x006567B0
+// PC 0x006567B0 GOG 0x00656660
 void setdemolitions(char* szValue)
 {
     CheatSetSkill(1, szValue);
 }
-// PC 0x006567C0
+// PC 0x006567C0 GOG 0x00656670
 void setstealth(char* szValue)
 {
     CheatSetSkill(2, szValue);
 }
-// PC 0x006567D0
+// PC 0x006567D0 GOG 0x00656680
 void setawareness(char* szValue)
 {
     CheatSetSkill(3, szValue);
 }
-// PC 0x006567E0
+// PC 0x006567E0 GOG 0x00656690
 void setpersuade(char* szValue)
 {
     CheatSetSkill(4, szValue);
 }
-// PC 0x006567F0
+// PC 0x006567F0 GOG 0x006566A0
 void setrepair(char* szValue)
 {
     CheatSetSkill(5, szValue);
 }
-// PC 0x00656800
+// PC 0x00656800 GOG 0x006566B0
 void setsecurity(char* szValue)
 {
     CheatSetSkill(6, szValue);
 }
-// PC 0x00656810
+// PC 0x00656810 GOG 0x006566C0
 void settreatinjury(char* szValue)
 {
     CheatSetSkill(7, szValue);
 }
-// PC 0x00656820
+// PC 0x00656820 GOG 0x006566D0
 void CheatSetAbility(int nAbility, char* szValue)
 {
     int nValue = 0;
@@ -186,12 +186,12 @@ void CheatSetAbility(int nAbility, char* szValue)
         }
     }
 }
-// PC 0x00656920
+// PC 0x00656920 GOG 0x006567D0
 void setstrength(char* szValue)
 {
     CheatSetAbility(0, szValue);
 }
-// PC 0x00656930
+// PC 0x00656930 GOG 0x006567E0
 void setdexterity(char* szValue)
 {
     int nValue = 0;
@@ -223,7 +223,7 @@ void setdexterity(char* szValue)
         }
     }
 }
-// PC 0x006569C0
+// PC 0x006569C0 GOG 0x00656870
 void setconstitution(char* szValue)
 {
     int nValue = 0;
@@ -255,7 +255,7 @@ void setconstitution(char* szValue)
         }
     }
 }
-// PC 0x00656A60
+// PC 0x00656A60 GOG 0x00656910
 void setintelligence(char* szValue)
 {
     int nValue = 0;
@@ -287,7 +287,7 @@ void setintelligence(char* szValue)
         }
     }
 }
-// PC 0x00656AF0
+// PC 0x00656AF0 GOG 0x006569A0
 void setwisdom(char* szValue)
 {
     int nValue = 0;
@@ -319,7 +319,7 @@ void setwisdom(char* szValue)
         }
     }
 }
-// PC 0x00656B80
+// PC 0x00656B80 GOG 0x00656A30
 void setcharisma(char* szValue)
 {
     int nValue = 0;
@@ -351,7 +351,7 @@ void setcharisma(char* szValue)
         }
     }
 }
-// PC 0x00656C10
+// PC 0x00656C10 GOG 0x00656AC0
 void addexp(char* szValue)
 {
     int nExperience = 0;
@@ -370,7 +370,7 @@ void addexp(char* szValue)
         }
     }
 }
-// PC 0x00656C70
+// PC 0x00656C70 GOG 0x00656B20
 void turbo()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -382,7 +382,7 @@ void turbo()
             nFlags == 0;
     }
 }
-// PC 0x00656CB0
+// PC 0x00656CB0 GOG 0x00656B60
 void invulnerability()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -391,7 +391,7 @@ void invulnerability()
             ->SendPlayerToServerCheat_Invulnerability();
     }
 }
-// PC 0x00656CD0
+// PC 0x00656CD0 GOG 0x00656B80
 void restartminigame()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -404,7 +404,7 @@ void restartminigame()
         }
     }
 }
-// PC 0x00656D10
+// PC 0x00656D10 GOG 0x00656BC0
 void bright()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -427,7 +427,7 @@ void bright()
         }
     }
 }
-// PC 0x00656D50
+// PC 0x00656D50 GOG 0x00656C00
 void addlightside(int nAmount)
 {
     if (GetCheatsTurnedOn() != 0)
@@ -445,7 +445,7 @@ void addlightside(int nAmount)
         }
     }
 }
-// PC 0x00656DC0
+// PC 0x00656DC0 GOG 0x00656C70
 void adddarkside(int nAmount)
 {
     if (GetCheatsTurnedOn() != 0)
@@ -463,7 +463,7 @@ void adddarkside(int nAmount)
         }
     }
 }
-// PC 0x00656E40
+// PC 0x00656E40 GOG 0x00656CF0
 void revealmap()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -471,7 +471,7 @@ void revealmap()
         g_bShowFogOfWar = g_bShowFogOfWar == 0;
     }
 }
-// PC 0x00656E60
+// PC 0x00656E60 GOG 0x00656D10
 void givecredits(char* szValue)
 {
     int nCredits = 0;
@@ -496,7 +496,7 @@ void givecredits(char* szValue)
         }
     }
 }
-// PC 0x00656EE0
+// PC 0x00656EE0 GOG 0x00656D90
 void giveitem(char* szValue)
 {
     if (GetCheatsTurnedOn() != 0)
@@ -519,7 +519,7 @@ void giveitem(char* szValue)
         pClient->CreatureAcquireItem(pClient->GetPlayerCreatureId(), cResRef);
     }
 }
-// PC 0x00656F60
+// PC 0x00656F60 GOG 0x00656E10
 void givemed(char* szValue)
 {
     int nCount = 0;
@@ -541,7 +541,7 @@ void givemed(char* szValue)
         }
     }
 }
-// PC 0x00656FF0
+// PC 0x00656FF0 GOG 0x00656EA0
 void giverepair(char* szValue)
 {
     int nCount = 0;
@@ -563,7 +563,7 @@ void giverepair(char* szValue)
         }
     }
 }
-// PC 0x00657080
+// PC 0x00657080 GOG 0x00656F30
 void givecomspikes(char* szValue)
 {
     int nCount = 0;
@@ -585,7 +585,7 @@ void givecomspikes(char* szValue)
         }
     }
 }
-// PC 0x00657110
+// PC 0x00657110 GOG 0x00656FC0
 void givesecspikes(char* szValue)
 {
     int nCount = 0;
@@ -607,7 +607,7 @@ void givesecspikes(char* szValue)
         }
     }
 }
-// PC 0x006571A0
+// PC 0x006571A0 GOG 0x00657050
 void givesitharmour()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -618,7 +618,7 @@ void givesitharmour()
         pClient->CreatureAcquireItem(pClient->GetPlayerCreatureId(), cResRef);
     }
 }
-// PC 0x006571E0
+// PC 0x006571E0 GOG 0x00657090
 void warp(char* szValue)
 {
     if (GetCheatsTurnedOn() != 0)
@@ -644,7 +644,7 @@ void warp(char* szValue)
         g_pAppManager->m_pServerExoApp->SetMoveToModulePending(1);
     }
 }
-// PC 0x006572B0
+// PC 0x006572B0 GOG 0x00657160
 void infiniteuses()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -656,7 +656,7 @@ void infiniteuses()
             nFlags == 0;
     }
 }
-// PC 0x006572F0
+// PC 0x006572F0 GOG 0x006571A0
 void whereami()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -681,7 +681,7 @@ void whereami()
         }
     }
 }
-// PC 0x00657420
+// PC 0x00657420 GOG 0x006572D0
 void addlevel()
 {
     if (GetCheatsTurnedOn() != 0)
@@ -721,7 +721,7 @@ void addlevel()
 }
 
 #ifndef _XBOX
-void dancedancemalak()  // PC 0x00657510
+void dancedancemalak()  // PC 0x00657510 GOG 0x006573C0
 {
     if (GetCheatsTurnedOn() != 0)
     {
@@ -729,7 +729,7 @@ void dancedancemalak()  // PC 0x00657510
     }
 }
 #endif
-// PC 0x00657540
+// PC 0x00657540 GOG 0x006573F0
 int lockcamera(char* szValue)
 {
     static int bLockcamera = 1;

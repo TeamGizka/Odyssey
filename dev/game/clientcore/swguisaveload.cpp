@@ -22,7 +22,7 @@ static inline void SwguisaveloadTrace2();
 static inline void SwguisaveloadTrace1();
 #define SWGUISAVELOAD_TRACE() SwguisaveloadTrace1()
 #ifndef _XBOX
-// PC 0x0070C480
+// PC 0x0070C480 GOG 0x0070C1D0
 int CSWGuiSaveLoad::LaunchMostRecentSave()
 {
     CSWGuiSaveLoadEntry* pEntry = (CSWGuiSaveLoadEntry*)m_lbSaveGames.GetControl(0);
@@ -67,7 +67,7 @@ void CSWGuiSaveLoad::ExitPanel()
     }
 }
 #ifndef _XBOX
-// PC 0x0070BC90
+// PC 0x0070BC90 GOG 0x0070B9D0
 void CSWGuiSaveLoad::HandleFilterPress(CSWGuiControl* pControl)
 {
     if (pControl == 0 || pControl->m_bSelected)
@@ -1284,7 +1284,7 @@ void KOTOR_LAUNCH_DATA::LoadFromGFF(CResGFF* pRes, CResStruct& stStruct)
     m_nStoryHint = pRes->ReadFieldBYTE(&stStruct, "STORYHINT", bSuccess, nDefault);
 }
 #endif
-// PC 0x00707510
+// PC 0x00707510 GOG 0x00707100
 void CSWGuiSaveLoad::WriteGame(const CExoString& sSaveName)
 {
     CSWGuiSaveLoadEntry* pEntry =
@@ -1330,7 +1330,7 @@ void CSWGuiSaveLoad::WriteGame(const CExoString& sSaveName)
     m_nExitState = EXITSTATE_DELETE;
     GetManager()->PopModalPanel();
 }
-// PC 0x0070C570
+// PC 0x0070C570 GOG 0x0070C2C0
 void CSWGuiSaveLoad::VerifyLoadGame(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected)
@@ -1364,7 +1364,7 @@ void CSWGuiSaveLoad::VerifyLoadGame(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00708920
+// PC 0x00708920 GOG 0x00708660
 inline void KOTOR_AUTOSAVE_PARAMS::LoadFromGFF(CResGFF* pGFF, CResStruct& cStruct)
 {
     int bSuccess;
@@ -1410,7 +1410,7 @@ inline void KOTOR_AUTOSAVE_PARAMS::LoadFromGFF(CResGFF* pGFF, CResStruct& cStruc
         m_cStatusSummary.LoadFromGFF(pGFF, cStatusSummary);
     }
 }
-// PC 0x0070CD30
+// PC 0x0070CD30 GOG 0x0070CA80
 CSWGuiSaveLoad::CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode,
                              int bExitToMainMenu, int bEndGameMode)
     : CSWGuiPanel(pManager)
@@ -1526,7 +1526,7 @@ CSWGuiSaveLoad::CSWGuiSaveLoad(CSWGuiManager* pManager, int bSaveMode,
     g_pExoResMan->AddResourceDirectory("TEMP:");
     SetActiveControl(&m_lbSaveGames, 0);
 }
-// PC 0x00708300
+// PC 0x00708300 GOG 0x00707EF0
 void CSWGuiSaveGameEditBox::HandleKeyPress(int nKey)
 {
     static char szTmp[2];
@@ -1568,7 +1568,7 @@ void CSWGuiSaveGameEditBox::HandleKeyPress(int nKey)
         break;
     }
 }
-// PC 0x00708420
+// PC 0x00708420 GOG 0x00708010
 void CSWGuiSaveNamePanel::OnPanelAdded()
 {
     CSWGuiExtent cExtent;
@@ -1581,7 +1581,7 @@ void CSWGuiSaveNamePanel::OnPanelAdded()
     g_pGuiMan->MoveMouseToPosition(cExtent.m_nLeft, cExtent.m_nTop);
 #endif
 }
-// PC 0x00708470
+// PC 0x00708470 GOG 0x00708060
 void CSWGuiSaveNamePanel::OnPanelRemoved()
 {
     CSWGuiPanel::OnPanelRemoved();
@@ -1589,7 +1589,7 @@ void CSWGuiSaveNamePanel::OnPanelRemoved()
     g_pGuiMan->RestoreOldMousePosition();
 #endif
 }
-// PC 0x00708500
+// PC 0x00708500 GOG 0x007080F0
 void CSWGuiSaveNamePanel::HandleCancelButton(CSWGuiControl* pControl)
 {
     m_bDeferredRemoval = 0;
@@ -1674,7 +1674,7 @@ void CSWGuiSaveLoad::HandleInputEvent(int nEvent, int nState)
     }
     CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0070A8C0
+// PC 0x0070A8C0 GOG 0x0070A600
 CSWGuiSaveLoad::~CSWGuiSaveLoad()
 {
 #ifndef _XBOX
@@ -1694,12 +1694,12 @@ CSWGuiSaveLoad::~CSWGuiSaveLoad()
 #endif
 }
 #ifndef _XBOX
-// PC 0x007088D0
+// PC 0x007088D0 GOG 0x00708610
 void CSWGuiSaveLoad::SetEndGameMode()
 {
     m_bEndGameMode = 1;
 }
-void CSWGuiSaveLoad::LoadPCAutoSave(const CExoString& sModuleName)  // PC 0x00708C50
+void CSWGuiSaveLoad::LoadPCAutoSave(const CExoString& sModuleName)  // PC 0x00708C50 GOG 0x00708990
 {
 
     CExoString sSavePath;
@@ -1791,7 +1791,7 @@ void CSWGuiSaveLoad::LoadPCAutoSave(const CExoString& sModuleName)  // PC 0x0070
     g_pAppManager->GetServerExoApp()->ExecuteLoadModule(sModuleName);
 }
 #endif
-// PC 0x0070B0D0
+// PC 0x0070B0D0 GOG 0x0070AE10
 void CSWGuiSaveLoad::DeleteGame(CSWGuiControl* pControl)
 {
     int bSelected;
@@ -1810,7 +1810,7 @@ void CSWGuiSaveLoad::DeleteGame(CSWGuiControl* pControl)
     }
 }
 #ifndef _XBOX
-void CSWGuiSaveLoad::RemoveGame(CSWGuiControl* pControl)  // PC 0x00709490
+void CSWGuiSaveLoad::RemoveGame(CSWGuiControl* pControl)  // PC 0x00709490 GOG 0x007091D0
 {
     CSWGuiMessageBox* pMessageBox;
     CSWGuiControl* pSelected;
@@ -1838,7 +1838,7 @@ void CSWGuiSaveLoad::RemoveGame(CSWGuiControl* pControl)  // PC 0x00709490
         }
     }
 }
-// PC 0x00709560
+// PC 0x00709560 GOG 0x007092A0
 void CSWGuiSaveLoad::ShowGame(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected && pControl->AsButton() != NULL)
@@ -1979,7 +1979,7 @@ void CSWGuiSaveLoad::ShowGame(CSWGuiControl* pControl)
 #endif
     }
 }
-// PC 0x007076A0
+// PC 0x007076A0 GOG 0x00707290
 void CSWGuiSaveLoadEntry::LoadData(const CExoString& sSaveDirectory)
 {
 
@@ -2084,7 +2084,7 @@ void CSWGuiSaveLoadEntry::LoadData(const CExoString& sSaveDirectory)
     m_bDataLoaded = 1;
 }
 #endif
-// PC 0x0070B130
+// PC 0x0070B130 GOG 0x0070AE70
 CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry()
 {
     SwguisaveloadTrace2();
@@ -2114,7 +2114,7 @@ CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry()
     m_nTimeStamp = 0;
 #endif
 }
-// PC 0x00708260
+// PC 0x00708260 GOG 0x00707E50
 CExoString CSWGuiSaveLoadEntry::GetGameDirectory()
 {
     CExoString sDirectory;
@@ -2122,7 +2122,7 @@ CExoString CSWGuiSaveLoadEntry::GetGameDirectory()
     sDirectory.Format("SAVES:%06d - %s", m_nSaveGame, m_sGameName);
     return sDirectory;
 }
-void CSWGuiSaveLoadEntry::SetXboxTitle(const CExoString& sTitle)  // PC 0x0070A070
+void CSWGuiSaveLoadEntry::SetXboxTitle(const CExoString& sTitle)  // PC 0x0070A070 GOG 0x00709DB0
 {
 
     m_sXboxTitle = sTitle;
@@ -2167,7 +2167,7 @@ void CSWGuiSaveLoadEntry::SetXboxTitle(const CExoString& sTitle)  // PC 0x0070A0
     m_cText.m_cParams.SetText(m_sXboxTitle);
 }
 #ifndef _XBOX
-void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)  // PC 0x0070BDB0
+void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)  // PC 0x0070BDB0 GOG 0x0070BB00
 {
     if (m_bExitToMainMenu ||
         g_pAppManager->GetClientExoApp()->GetInGameGui()->GetMessageBox()->m_bAccepted ||
@@ -2308,7 +2308,7 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)  // PC 0x0070BDB0
     }
 }
 #endif
-void CSWGuiSaveLoad::PromptForSaveName(CSWGuiControl* pControl)  // PC 0x0070AFB0
+void CSWGuiSaveLoad::PromptForSaveName(CSWGuiControl* pControl)  // PC 0x0070AFB0 GOG 0x0070ACF0
 {
     SwguisaveloadTrace2();
     CExoString sSaveName;
@@ -2337,7 +2337,7 @@ void CSWGuiSaveLoad::PromptForSaveName(CSWGuiControl* pControl)  // PC 0x0070AFB
         g_pGuiMan->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
 }
-void CSWGuiSaveNamePanel::HandleOkButton(CSWGuiControl* pControl)  // PC 0x00708480
+void CSWGuiSaveNamePanel::HandleOkButton(CSWGuiControl* pControl)  // PC 0x00708480 GOG 0x00708070
 {
     {
         CExoString sSaveName(m_edtSaveName.m_cText.m_sText);
@@ -2350,7 +2350,7 @@ void CSWGuiSaveNamePanel::HandleOkButton(CSWGuiControl* pControl)  // PC 0x00708
     m_pManager->PopModalPanel();
 }
 #ifndef _XBOX
-// PC 0x00709BC0
+// PC 0x00709BC0 GOG 0x00709900
 CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry(CSWGuiSaveLoadEntry* pEntry)
 {
     CSWGuiExtent cExtent;
@@ -2400,7 +2400,7 @@ CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry(CSWGuiSaveLoadEntry* pEntry)
         AddEvent(GUIEVENT_RECOMMEND, pObject, pHandler);
 }
 #endif
-int CSWGuiSaveLoad::UnpackGame(unsigned long nSaveGame,  // PC 0x0070B380
+int CSWGuiSaveLoad::UnpackGame(unsigned long nSaveGame,  // PC 0x0070B380 GOG 0x0070B0C0
                                const CExoString& sSaveName,
                                CSWGuiControl* pControl)
 {
@@ -2446,7 +2446,7 @@ int CSWGuiSaveLoad::UnpackGame(unsigned long nSaveGame,  // PC 0x0070B380
     }
 }
 #ifndef _XBOX
-void CSWGuiSaveLoad::HandleSaveButton(CSWGuiControl* pControl)  // PC 0x0070B710
+void CSWGuiSaveLoad::HandleSaveButton(CSWGuiControl* pControl)  // PC 0x0070B710 GOG 0x0070B450
 {
     int bSelected = pControl->m_bSelected;
     int nOptionsSpace = 0;
@@ -2535,7 +2535,7 @@ void CSWGuiSaveLoad::HandleSaveButton(CSWGuiControl* pControl)  // PC 0x0070B710
 }
 #endif
 #ifndef _XBOX
-int CSWGuiSaveLoad::CopyGameToFutureGame(unsigned long nSaveGame,  // PC 0x0070A2E0
+int CSWGuiSaveLoad::CopyGameToFutureGame(unsigned long nSaveGame,  // PC 0x0070A2E0 GOG 0x0070A020
                                        const CExoString& sSaveName)
 {
 
@@ -2568,7 +2568,7 @@ int CSWGuiSaveLoad::CopyGameToFutureGame(unsigned long nSaveGame,  // PC 0x0070A
     return 1;
 }
 #endif
-int LoadScreenUpdate(int nStep, int nSteps, int nStart, int nRange)  // PC 0x007074D0
+int LoadScreenUpdate(int nStep, int nSteps, int nStart, int nRange)  // PC 0x007074D0 GOG 0x007070C0
 {
 #ifdef _XBOX
     g_pAppManager->m_pClientExoApp->SetLoadBarProgress(
@@ -2580,7 +2580,7 @@ int LoadScreenUpdate(int nStep, int nSteps, int nStart, int nRange)  // PC 0x007
     UpdateScreen(0.033333335f, 0, 0);
     return 0;
 }
-// PC 0x0070A5A0
+// PC 0x0070A5A0 GOG 0x0070A2E0
 CSWGuiSaveNamePanel::CSWGuiSaveNamePanel(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -2605,7 +2605,7 @@ CSWGuiSaveNamePanel::CSWGuiSaveNamePanel(CSWGuiManager* pManager)
     m_edtSaveName.m_cText.m_nMaxLength = 16;
 }
 #ifndef _XBOX
-// PC 0x0070A7E0
+// PC 0x0070A7E0 GOG 0x0070A520
 void CSWGuiSaveLoad::SortGamesByTimeStamp(CExoArrayList<CSWGuiControl*>& lControls)
 {
     for (int i = 0; i < lControls.num - 1; i++)
@@ -2626,7 +2626,7 @@ void CSWGuiSaveLoad::SortGamesByTimeStamp(CExoArrayList<CSWGuiControl*>& lContro
         lControls[nNewest] = pControl;
     }
 }
-// PC 0x0070ABD0
+// PC 0x0070ABD0 GOG 0x0070A910
 void CSWGuiSaveLoad::PopulateGameLB()
 {
     CExoArrayList<CSWGuiControl*> lControls;
@@ -2688,7 +2688,7 @@ void CSWGuiSaveLoad::PopulateGameLB()
         m_lblScreenshot.m_cText.m_cParams.SetStrRef(STRREF_NO_SAVES);
     }
 }
-void CSWGuiSaveLoad::PopulateGameList()  // PC 0x0070C600
+void CSWGuiSaveLoad::PopulateGameList()  // PC 0x0070C600 GOG 0x0070C350
 {
     CExoArrayList<CExoString> lDirectories;
     CExoArrayList<CSWGuiControl*> lControls;

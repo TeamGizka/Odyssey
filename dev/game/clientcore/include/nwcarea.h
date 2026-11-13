@@ -56,7 +56,7 @@ public:
 
     CSWCArea();
     virtual ~CSWCArea();
-    // PC 0x006524E0
+    // PC 0x006524E0 GOG 0x00652390
     virtual CSWCArea* AsSWCArea()
     {
         return this;
@@ -195,7 +195,7 @@ public:
 #ifndef _XBOX
     CExoLinkedList<CSWBehaviorAttachSound> m_lstRoomSounds;
     List<CAurObject*> m_lstToBeDeletedEmitters;
-    // PC 0x007058A0
+    // PC 0x007058A0 GOG 0x007017C0
     void AddToBeDeletedEmitter(CAurObject* pEmitter)
     {
         if (pEmitter != NULL)

@@ -18,7 +18,7 @@
 #include "exobase.h"
 #include <math.h>
 #include "nwrules.h"
-// PC 0x0073F790
+// PC 0x0073F790 GOG 0x0073F610
 CSWBehaviorCameraCombat::CSWBehaviorCameraCombat(CAurObject* pObject)
     : CAurBehavior(pObject)
 {
@@ -82,7 +82,7 @@ CSWBehaviorCameraCombat::CSWBehaviorCameraCombat(CAurObject* pObject)
 }
 
 #ifndef _XBOX
-Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(  // PC 0x0073F9C0
+Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(  // PC 0x0073F9C0 GOG 0x0073F840
     CSWCCreature* pCreature, CSWCObject* pTarget, float fTimeStep,
     float& fYaw)
 {
@@ -127,7 +127,7 @@ Vector CSWBehaviorCameraCombat::CalculateDesiredLocation(  // PC 0x0073F9C0
                    pCreature->m_vPosition.m_fZ + m_fHeight;
     return vResult;
 }
-// PC 0x0073FC40
+// PC 0x0073FC40 GOG 0x0073FAC0
 float CSWBehaviorCameraCombat::GetNextYaw(const Vector& vDirection, float fYaw,
                                           float fTimeStep, float& fTurn)
 {
@@ -145,7 +145,7 @@ float CSWBehaviorCameraCombat::GetNextYaw(const Vector& vDirection, float fYaw,
     return fYaw;
 }
 #endif
-// PC 0x0073FCB0
+// PC 0x0073FCB0 GOG 0x0073FB30
 Vector CSWBehaviorCameraCombat::GetNextPosition(const Vector& vTarget,
                                                 float fTimeStep, float fSpeed)
 {
@@ -163,7 +163,7 @@ Vector CSWBehaviorCameraCombat::GetNextPosition(const Vector& vTarget,
     }
     return vResult;
 }
-// PC 0x0073FDC0
+// PC 0x0073FDC0 GOG 0x0073FC40
 int CSWBehaviorCameraCombat::SetTurn(float fTurn)
 {
     int bToggle = g_bMouseCameraRotateToggle;
@@ -187,7 +187,7 @@ int CSWBehaviorCameraCombat::SetTurn(float fTurn)
 CSWMGBehaviorBullet::~CSWMGBehaviorBullet()
 {
 }
-// PC 0x0073FE10
+// PC 0x0073FE10 GOG 0x0073FCB0
 Vector CSWBehaviorCameraCombat::DetermineSafePosition(CSWCCreature* pCreature,
                                                       const Vector& vDesired,
                                                       const Vector& vCurrent)
@@ -259,7 +259,7 @@ Vector CSWBehaviorCameraCombat::DetermineSafePosition(CSWCCreature* pCreature,
 
     return vSafe;
 }
-// PC 0x00740540
+// PC 0x00740540 GOG 0x007403E0
 int CSWBehaviorCameraCombat::Control(float fTimeStep)
 {
     int nResult = CAurBehavior::Control(fTimeStep);
@@ -353,7 +353,7 @@ int CSWBehaviorCameraCombat::Control(float fTimeStep)
     }
     return 1;
 }
-// PC 0x00740840
+// PC 0x00740840 GOG 0x007406E0
 void CSWBehaviorCameraCombat::PutAtDesiredLocation()
 {
     CSWParty* pSWParty = g_pAppManager->m_pClientExoApp->GetSWParty();

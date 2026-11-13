@@ -22,7 +22,7 @@ const unsigned char CSWClass::CCLASS_JEDIWATCHMAN = 13;
 const unsigned char CSWClass::CCLASS_SITHMARAUDER = 14;
 const unsigned char CSWClass::CCLASS_SITHLORD = 15;
 const unsigned char CSWClass::CCLASS_SITHASSASSIN = 16;
-// PC 0x0060CD40
+// PC 0x0060CD40 GOG 0x0060CD20
 CSWClass::CSWClass()
 {
     m_nNameStrRef = -1;
@@ -62,7 +62,7 @@ CSWClass::CSWClass()
     m_nAlignRestrict = 0;
     m_nAlignRestrictType = 0;
 }
-// PC 0x0060CE30
+// PC 0x0060CE30 GOG 0x0060CE10
 CSWClass::~CSWClass()
 {
     if (m_ppSpellsKnown != 0)
@@ -99,7 +99,7 @@ CSWClass::~CSWClass()
         m_pSpells = 0;
     }
 }
-// PC 0x0060CF30
+// PC 0x0060CF30 GOG 0x0060CF10
 unsigned char CSWClass::GetAttackBonus(unsigned char nLevel)
 {
     if (nLevel >= 1 && nLevel <= 60)
@@ -108,7 +108,7 @@ unsigned char CSWClass::GetAttackBonus(unsigned char nLevel)
     }
     return 0;
 }
-// PC 0x0060CF50
+// PC 0x0060CF50 GOG 0x0060CF30
 unsigned char CSWClass::GetFortSaveBonus(unsigned char nLevel)
 {
     if (nLevel >= 1 && nLevel <= 60)
@@ -117,7 +117,7 @@ unsigned char CSWClass::GetFortSaveBonus(unsigned char nLevel)
     }
     return 0;
 }
-// PC 0x0060CF70
+// PC 0x0060CF70 GOG 0x0060CF50
 unsigned char CSWClass::GetRefSaveBonus(unsigned char nLevel)
 {
     if (nLevel >= 1 && nLevel <= 60)
@@ -126,7 +126,7 @@ unsigned char CSWClass::GetRefSaveBonus(unsigned char nLevel)
     }
     return 0;
 }
-// PC 0x0060CF90
+// PC 0x0060CF90 GOG 0x0060CF70
 unsigned char CSWClass::GetWillSaveBonus(unsigned char nLevel)
 {
     if (nLevel >= 1 && nLevel <= 60)
@@ -135,7 +135,7 @@ unsigned char CSWClass::GetWillSaveBonus(unsigned char nLevel)
     }
     return 0;
 }
-// PC 0x0060CFB0
+// PC 0x0060CFB0 GOG 0x0060CF90
 unsigned char CSWClass::GetSpellGain(unsigned char nLevel,
                                      unsigned char nSpellLevel)
 {
@@ -146,7 +146,7 @@ unsigned char CSWClass::GetSpellGain(unsigned char nLevel,
     }
     return -1;
 }
-// PC 0x0060CFE0
+// PC 0x0060CFE0 GOG 0x0060CFC0
 unsigned char CSWClass::GetSpellsKnownPerLevel(unsigned char nLevel,
                                                unsigned char nSpellLevel,
                                                unsigned char nClass,
@@ -160,7 +160,7 @@ unsigned char CSWClass::GetSpellsKnownPerLevel(unsigned char nLevel,
     }
     return 0;
 }
-// PC 0x0060D020
+// PC 0x0060D020 GOG 0x0060D000
 void CSWClass::LoadAttackBonusTable(const CExoString& sTable)
 {
     int nValue;
@@ -183,7 +183,7 @@ void CSWClass::LoadAttackBonusTable(const CExoString& sTable)
 
     delete p2DA;
 }
-// PC 0x0060D1F0
+// PC 0x0060D1F0 GOG 0x0060D1D0
 void CSWClass::LoadFeatGain(const CExoString& sTable)
 {
     int nValue;
@@ -210,7 +210,7 @@ void CSWClass::LoadFeatGain(const CExoString& sTable)
 
     delete p2DA;
 }
-// PC 0x0060D370
+// PC 0x0060D370 GOG 0x0060D350
 void CSWClass::LoadFeatsTable(const CExoString& sTable, CSWRules* pRules)
 {
     int nValue;
@@ -278,7 +278,7 @@ void CSWClass::LoadFeatsTable(const CExoString& sTable, CSWRules* pRules)
 
     delete p2DA;
 }
-// PC 0x0060D780
+// PC 0x0060D780 GOG 0x0060D760
 void CSWClass::LoadSavingThrowTable(const CExoString& sTable)
 {
     int nValue;
@@ -304,7 +304,7 @@ void CSWClass::LoadSavingThrowTable(const CExoString& sTable)
 
     delete p2DA;
 }
-// PC 0x0060D9C0
+// PC 0x0060D9C0 GOG 0x0060D9A0
 void CSWClass::LoadSkillsTable(const CExoString& sTable)
 {
     C2DA* p2DA = new C2DA("skills", 0);
@@ -344,7 +344,7 @@ void CSWClass::LoadSkillsTable(const CExoString& sTable)
 
     delete p2DA;
 }
-// PC 0x0060DC00
+// PC 0x0060DC00 GOG 0x0060DBE0
 void CSWClass::LoadSpellGainTable(const CExoString& sTable)
 {
     int nValue;
@@ -394,7 +394,7 @@ void CSWClass::LoadSpellGainTable(const CExoString& sTable)
         delete pNumLevels;
     }
 }
-// PC 0x0060DF00
+// PC 0x0060DF00 GOG 0x0060DEE0
 void CSWClass::LoadSpellKnownTable(const CExoString& sTable)
 {
     int nValue;
@@ -448,7 +448,7 @@ void CSWClass::LoadSpellKnownTable(const CExoString& sTable)
 
     delete p2DA;
 }
-// PC 0x0060E1A0
+// PC 0x0060E1A0 GOG 0x0060E180
 void CSWClass::LoadArmorClassTable(const CExoString& sTable)
 {
     int nValue;
@@ -483,7 +483,7 @@ void CSWClass::LoadArmorClassTable(const CExoString& sTable)
 
     delete p2DA;
 }
-// PC 0x0060E330
+// PC 0x0060E330 GOG 0x0060E310
 int CSWClass::IsSkillClassSkill(unsigned short nSkill)
 {
     if (nSkill >= g_pRules->m_nNumSkills)
@@ -499,7 +499,7 @@ int CSWClass::IsSkillClassSkill(unsigned short nSkill)
     }
     return 0;
 }
-// PC 0x0060E390
+// PC 0x0060E390 GOG 0x0060E370
 int CSWClass::IsSkillUseable(unsigned short nSkill)
 {
     if (nSkill >= g_pRules->m_nNumSkills)
@@ -523,21 +523,21 @@ int CSWClass::IsSkillUseable(unsigned short nSkill)
     }
     return 0;
 }
-// PC 0x0060E400
+// PC 0x0060E400 GOG 0x0060E3E0
 CExoString CSWClass::GetNameText()
 {
     STR_RES strRes;
     g_pTlkTable->Fetch(m_nNameStrRef, strRes, CTlkTable::GENDER_MALE);
     return strRes.m_sString;
 }
-// PC 0x0060E4A0
+// PC 0x0060E4A0 GOG 0x0060E480
 CExoString CSWClass::GetNameLowerText()
 {
     STR_RES strRes;
     g_pTlkTable->Fetch(m_nNameLowerStrRef, strRes, CTlkTable::GENDER_MALE);
     return strRes.m_sString;
 }
-// PC 0x0060E540
+// PC 0x0060E540 GOG 0x0060E520
 unsigned char CSWClass::GetLevelFeatGranted(unsigned short nFeat)
 {
     for (unsigned short i = 0; i < m_nNumFeats; i++)
@@ -550,7 +550,7 @@ unsigned char CSWClass::GetLevelFeatGranted(unsigned short nFeat)
     }
     return -1;
 }
-// PC 0x0060E5A0
+// PC 0x0060E5A0 GOG 0x0060E580
 int CSWClass::IsBonusFeat(unsigned short nFeat)
 {
     for (unsigned short i = 0; i < m_nNumFeats; i++)
@@ -562,7 +562,7 @@ int CSWClass::IsBonusFeat(unsigned short nFeat)
     }
     return 0;
 }
-// PC 0x0060E5F0
+// PC 0x0060E5F0 GOG 0x0060E5D0
 int CSWClass::IsNormalFeat(unsigned short nFeat)
 {
     for (unsigned short i = 0; i < m_nNumFeats; i++)
@@ -574,7 +574,7 @@ int CSWClass::IsNormalFeat(unsigned short nFeat)
     }
     return 0;
 }
-// PC 0x0060E640
+// PC 0x0060E640 GOG 0x0060E620
 int CSWClass::IsGrantedFeat(unsigned short nFeat, unsigned char& nLevel)
 {
     nLevel = -1;
@@ -592,7 +592,7 @@ int CSWClass::IsGrantedFeat(unsigned short nFeat, unsigned char& nLevel)
     }
     return 0;
 }
-// PC 0x0060E6A0
+// PC 0x0060E6A0 GOG 0x0060E680
 int CSWClass::IsPCGrantedFeat(unsigned short nFeat)
 {
     for (unsigned short i = 0; i < m_nNumFeats; i++)
@@ -604,7 +604,7 @@ int CSWClass::IsPCGrantedFeat(unsigned short nFeat)
     }
     return 0;
 }
-// PC 0x0060E700
+// PC 0x0060E700 GOG 0x0060E6E0
 int CSWClass::IsFeatUseable(unsigned short nFeat)
 {
     if (g_pRules->GetFeat(nFeat) == 0)
@@ -620,7 +620,7 @@ int CSWClass::IsFeatUseable(unsigned short nFeat)
     }
     return 0;
 }
-// PC 0x0060E760
+// PC 0x0060E760 GOG 0x0060E740
 int CSWClass::GetRecommendedFeat(int nIndex)
 {
     int nCount = -1;
@@ -640,7 +640,7 @@ int CSWClass::GetRecommendedFeat(int nIndex)
     }
     return nFeat;
 }
-// PC 0x0060E7D0
+// PC 0x0060E7D0 GOG 0x0060E7B0
 int CSWClass::GetRecommendedSkill(int nIndex)
 {
     int nCount = -1;
@@ -660,7 +660,7 @@ int CSWClass::GetRecommendedSkill(int nIndex)
     }
     return nSkill;
 }
-// PC 0x0060E840
+// PC 0x0060E840 GOG 0x0060E820
 int CSWClass::IsJedi(int nClass)
 {
     return nClass == CCLASS_JEDIGUARDIAN || nClass == CCLASS_JEDICONSULAR
@@ -669,7 +669,7 @@ int CSWClass::IsJedi(int nClass)
         || nClass == CCLASS_JEDIWATCHMAN || nClass == CCLASS_JEDIWEAPONMASTER
         || nClass == CCLASS_JEDIMASTER;
 }
-// PC 0x0060E880
+// PC 0x0060E880 GOG 0x0060E860
 void CSWClass::LoadSpellsTable()
 {
     C2DA* p2DA = new C2DA("spells", 0);
@@ -704,7 +704,7 @@ void CSWClass::LoadSpellsTable()
 
     delete p2DA;
 }
-// PC 0x0060EA90
+// PC 0x0060EA90 GOG 0x0060EA70
 int CSWClass::GetRecommendedSpell(int nSide, int nIndex)
 {
     int nSpell = -1;
@@ -740,7 +740,7 @@ int CSWClass::GetRecommendedSpell(int nSide, int nIndex)
     }
     return nSpell;
 }
-// PC 0x0060EB30
+// PC 0x0060EB30 GOG 0x0060EB10
 char CSWClass::GetArmorBonus(int nLevel)
 {
     if (nLevel >= 1 && nLevel <= MAX_LEVEL)

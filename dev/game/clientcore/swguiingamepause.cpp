@@ -14,7 +14,7 @@ void CSWGuiInGamePause::Draw(float fElapsed)
     return CSWGuiPanel::Draw(fElapsed);
 }
 #endif
-void CSWGuiInGamePause::SetPauseReason(unsigned char nReason)  // PC 0x007206F0
+void CSWGuiInGamePause::SetPauseReason(unsigned char nReason)  // PC 0x007206F0 GOG 0x00720400
 {
     int bShowPress = 1;
     unsigned long nStrRef;
@@ -118,7 +118,7 @@ void CSWGuiInGamePause::SetPauseReason(unsigned char nReason)  // PC 0x007206F0
 #endif
 }
 #ifndef _XBOX
-void CSWGuiInGamePause::OnPanelAdded()  // PC 0x00720970
+void CSWGuiInGamePause::OnPanelAdded()  // PC 0x00720970 GOG 0x00720680
 {
     CSWMiniGame* pMiniGame = g_pAppManager->GetClientExoApp()->GetMiniGame();
     if (pMiniGame != 0)
@@ -153,7 +153,7 @@ void CSWGuiInGamePause::OnPanelAdded()  // PC 0x00720970
     CSWGuiPanel::OnPanelAdded();
 }
 #endif
-void CSWGuiInGamePause::OnUnpauseButtonPressed(CSWGuiControl* pControl)  // PC 0x00720AE0
+void CSWGuiInGamePause::OnUnpauseButtonPressed(CSWGuiControl* pControl)  // PC 0x00720AE0 GOG 0x007207F0
 {
     if (pControl->m_bSelected != 0)
     {
@@ -168,7 +168,7 @@ void CSWGuiInGamePause::OnUnpauseButtonPressed(CSWGuiControl* pControl)  // PC 0
     }
 }
 #ifndef _XBOX
-// PC 0x00720B40
+// PC 0x00720B40 GOG 0x00720850
 void CSWGuiInGamePause::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0 && nEvent == GUIEVENT_ACTIVATE)
@@ -192,7 +192,7 @@ void CSWGuiInGamePause::HandleInputEvent(int nEvent, int nState)
     CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 #endif
-// PC 0x00720C20
+// PC 0x00720C20 GOG 0x00720930
 CSWGuiInGamePause::CSWGuiInGamePause(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {

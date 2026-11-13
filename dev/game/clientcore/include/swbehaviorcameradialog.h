@@ -59,7 +59,7 @@ public:
     virtual ~CSWBehaviorCameraDialog() throw();
     virtual int Control(float fTimeStep);
     virtual void Message(char* sMessage);
-    virtual int GetType()  // PC 0x00710060
+    virtual int GetType()  // PC 0x00710060 GOG 0x0070FDB0
     {
         return AUR_BEHAVIOR_CAMERA_DIALOG;
     }

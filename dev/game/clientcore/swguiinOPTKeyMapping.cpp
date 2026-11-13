@@ -37,7 +37,7 @@ void CSWGuiKeyMapButton::SetEditing(int bEditing)
     }
     m_btnKey.m_cBorder.m_cParams.SetPulsingAlpha(bEditing, bEditing, bEditing);
 }
-// PC 0x005EE1C0
+// PC 0x005EE1C0 GOG 0x005EE1A0
 void CSWGuiKeyMapButton::onControlExit(CSWGuiControl* pControl)
 {
 }
@@ -51,13 +51,13 @@ void CSWGuiKeyMapButton::SetEvents()
     AddEvent(CSWGuiControl::EVENT_EXIT, this,
              (CSWGuiHandler)&CSWGuiKeyMapButton::onControlExit);
 }
-// PC 0x0075DEE0
+// PC 0x0075DEE0 GOG 0x0075DE90
 void CSWGuiInGameOptKeyMappings::SetCaptureKeyboardKeys(int bCapture)
 {
     m_bCapturing = bCapture;
     g_pExoInput->SetCaptureKeyboardKeys(bCapture);
 }
-// PC 0x0075F920
+// PC 0x0075F920 GOG 0x0075F530
 void CSWGuiInGameOptKeyMappings::FillListWithEvents()
 {
     CSWGuiButton* pProto;
@@ -90,7 +90,7 @@ void CSWGuiInGameOptKeyMappings::FillListWithEvents()
         }
     }
 }
-// PC 0x0075FA70
+// PC 0x0075FA70 GOG 0x0075FD20
 void CSWGuiInGameOptKeyMappings::Update(float fElapsed)
 {
     (void)fElapsed;
@@ -124,7 +124,7 @@ void CSWGuiInGameOptKeyMappings::Update(float fElapsed)
         }
     }
 }
-// PC 0x0075F860
+// PC 0x0075F860 GOG 0x0075F7D0
 int CSWGuiKeyMapButton::UpdateEvent(unsigned long nKey)
 {
     unsigned long nFilterFlags = m_nFilterFlags;
@@ -139,7 +139,7 @@ int CSWGuiKeyMapButton::UpdateEvent(unsigned long nKey)
     }
     return nResult;
 }
-// PC 0x0075FB00
+// PC 0x0075FB00 GOG 0x0075F890
 CSWGuiInGameOptKeyMappings::CSWGuiInGameOptKeyMappings(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager),
       m_bCapturing(0)
@@ -191,7 +191,7 @@ CSWGuiInGameOptKeyMappings::CSWGuiInGameOptKeyMappings(CSWGuiManager* pManager)
 
     SetActiveControl(&m_lstEvents, 0);
 }
-// PC 0x0075DF00
+// PC 0x0075DF00 GOG 0x0075E010
 void CSWGuiInGameOptKeyMappings::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0 && (nEvent == 40 || nEvent == 46))
@@ -206,7 +206,7 @@ void CSWGuiInGameOptKeyMappings::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0075DF70
+// PC 0x0075DF70 GOG 0x0075E080
 void CSWGuiInGameOptKeyMappings::FixFilterColors(CSWGuiControl* pControl)
 {
     switch (m_nFilter)
@@ -239,7 +239,7 @@ void CSWGuiInGameOptKeyMappings::FixFilterColors(CSWGuiControl* pControl)
         break;
     }
 }
-// PC 0x0075ECE0
+// PC 0x0075ECE0 GOG 0x0075EDE0
 int CSWGuiInGameOptKeyMappings::IsKeyUsedAlready(unsigned long nKey,
                                                  int nAction, int nType,
                                                  unsigned long nFilterFlags)
@@ -262,7 +262,7 @@ int CSWGuiInGameOptKeyMappings::IsKeyUsedAlready(unsigned long nKey,
     }
     return 0;
 }
-// PC 0x0075EDD0
+// PC 0x0075EDD0 GOG 0x0075EED0
 int CSWGuiInGameOptKeyMappings::OnDefaultClick(CSWGuiControl* pControl)
 {
     int nResult;
@@ -281,7 +281,7 @@ int CSWGuiInGameOptKeyMappings::OnDefaultClick(CSWGuiControl* pControl)
     }
     return nResult;
 }
-// PC 0x0075EE10
+// PC 0x0075EE10 GOG 0x0075EF10
 void CSWGuiInGameOptKeyMappings::OnAcceptClick(CSWGuiControl* pControl)
 {
     for (int i = 0; i < m_aOptions.num; i++)
@@ -299,7 +299,7 @@ void CSWGuiInGameOptKeyMappings::OnAcceptClick(CSWGuiControl* pControl)
     m_bDeferredRemoval = 0;
     m_nExitState = EXITSTATE_DELETE;
 }
-// PC 0x0075EE90
+// PC 0x0075EE90 GOG 0x0075F080
 void CSWGuiInGameOptKeyMappings::SetCaptureEvent(CSWGuiKeyMapButton* pButton)
 {
     if (pButton != m_pCaptureButton)
@@ -320,13 +320,13 @@ void CSWGuiInGameOptKeyMappings::SetCaptureEvent(CSWGuiKeyMapButton* pButton)
         SetCaptureKeyboardKeys(1);
     }
 }
-// PC 0x0075F010
+// PC 0x0075F010 GOG 0x0075F1C0
 void CSWGuiKeyMapButton::onControlEntered(CSWGuiControl* pControl)
 {
     (void)pControl;
     m_pParent->SetCaptureEvent(0);
 }
-// PC 0x0075F030
+// PC 0x0075F030 GOG 0x0075F1E0
 void CSWGuiKeyMapButton::onEventClicked(CSWGuiControl* pControl)
 {
     if (m_bUnchangable == 0 && pControl->m_bSelected != 0)
@@ -334,7 +334,7 @@ void CSWGuiKeyMapButton::onEventClicked(CSWGuiControl* pControl)
         m_pParent->SetCaptureEvent(this);
     }
 }
-// PC 0x0075F3A0
+// PC 0x0075F3A0 GOG 0x0075EBD0
 void CSWGuiInGameOptKeyMappings::FillListBox(int nFilter)
 {
     CExoArrayList<CSWGuiControl*> aControls;
@@ -370,7 +370,7 @@ void CSWGuiInGameOptKeyMappings::FillListBox(int nFilter)
     pListBox->AddControls(aControls, 0, 1, 0);
     pListBox->m_bLooping = 0;
 }
-// PC 0x0075F5B0
+// PC 0x0075F5B0 GOG 0x0075F680
 int CSWGuiInGameOptKeyMappings::UpdateEvent(int nAction, int nType,
                                             unsigned long nKey,
                                             unsigned long nFilterFlags)
@@ -397,28 +397,28 @@ int CSWGuiInGameOptKeyMappings::UpdateEvent(int nAction, int nType,
     }
     return CSWGuiKeyMapButton::KEY_INVALID;
 }
-// PC 0x0075F700
+// PC 0x0075F700 GOG 0x0075EF90
 void CSWGuiInGameOptKeyMappings::OnFilterMove(CSWGuiControl* pControl)
 {
     m_nFilter = 0;
     FixFilterColors(0);
     FillListBox(m_nFilter);
 }
-// PC 0x0075F750
+// PC 0x0075F750 GOG 0x0075EFE0
 void CSWGuiInGameOptKeyMappings::OnFilterGame(CSWGuiControl* pControl)
 {
     m_nFilter = 1;
     FixFilterColors(0);
     FillListBox(m_nFilter);
 }
-// PC 0x0075F7A0
+// PC 0x0075F7A0 GOG 0x0075F030
 void CSWGuiInGameOptKeyMappings::OnFilterMini(CSWGuiControl* pControl)
 {
     m_nFilter = 2;
     FixFilterColors(0);
     FillListBox(m_nFilter);
 }
-// PC 0x0075EF60
+// PC 0x0075EF60 GOG 0x0075E130
 CSWGuiKeyMapButton::CSWGuiKeyMapButton(CSWGuiInGameOptKeyMappings* pParent)
 {
     m_pParent = pParent;
@@ -436,7 +436,7 @@ CSWGuiKeyMapButton::CSWGuiKeyMapButton(CSWGuiInGameOptKeyMappings* pParent)
 #endif
     AddChildControl(m_btnKey.AsButton());
 }
-// PC 0x0075E020
+// PC 0x0075E020 GOG 0x0075E1E0
 void CSWGuiKeyMapButton::UpdateColor()
 {
     if (m_bChanged)
@@ -450,7 +450,7 @@ void CSWGuiKeyMapButton::UpdateColor()
         m_btnKey.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
     }
 }
-// PC 0x0075F080
+// PC 0x0075F080 GOG 0x0075F210
 CSWGuiKeyMapButton* CSWGuiInGameOptKeyMappings::CreateOption(
     int nAction, CSWGuiButton* pParent, int nType)
 {
@@ -511,7 +511,7 @@ CSWGuiKeyMapButton* CSWGuiInGameOptKeyMappings::CreateOption(
     }
     return pOption;
 }
-// PC 0x0075E0B0
+// PC 0x0075E0B0 GOG 0x0075E270
 inline void CSWGuiKeyMapButton::SetUnchangable()
 {
     m_bUnchangable = 1;
@@ -519,7 +519,7 @@ inline void CSWGuiKeyMapButton::SetUnchangable()
     m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
     m_cHilite.m_cParams.m_vColor = CGuiInGame::DISABLED_ICON_COLOR;
 }
-// PC 0x0075E110
+// PC 0x0075E110 GOG 0x0075DD00
 CExoString CSWGuiKeyMapButton::GetActionId(int nAction, int nType)
 {
     CExoString sAction;
@@ -539,7 +539,7 @@ CExoString CSWGuiKeyMapButton::GetActionId(int nAction, int nType)
     }
     return sAction;
 }
-// PC 0x0075E240
+// PC 0x0075E240 GOG 0x0075E2D0
 void CSWGuiKeyMapButton::SetDescription(const CExoString& sDescription)
 {
     int nActionStrRef;
@@ -674,7 +674,7 @@ void CSWGuiKeyMapButton::SetDescription(const CExoString& sDescription)
     }
     m_btnKey.m_cText.m_cParams.SetText(sText);
 }
-// PC 0x0075E730
+// PC 0x0075E730 GOG 0x0075E7C0
 void CSWGuiKeyMapButton::ResetToDefault()
 {
     int nDefaultKey;
@@ -699,7 +699,7 @@ void CSWGuiKeyMapButton::ResetToDefault()
         m_btnKey.m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_GREEN;
     }
 }
-// PC 0x0075E8D0
+// PC 0x0075E8D0 GOG 0x0075E960
 void CSWGuiKeyMapButton::PostChangeToEvent()
 {
     CExoInputEventDesc* pEvent = g_pExoInput->GetEvent(m_nAction, CExoInput::EVENTCLASS_ANY);
@@ -723,7 +723,7 @@ void CSWGuiKeyMapButton::PostChangeToEvent()
     cIni.WriteIniEntry(sKey, ".\\swkotor2.ini", "Keymapping",
                        GetActionId(m_nAction, m_nType));
 }
-// PC 0x0075EA20
+// PC 0x0075EA20 GOG 0x0075EAB0
 void CSWGuiKeyMapButton::SetExtent(const CSWGuiExtent& cExtent)
 {
     CSWGuiExtent cLabelExtent = cExtent;
@@ -739,13 +739,13 @@ void CSWGuiKeyMapButton::SetExtent(const CSWGuiExtent& cExtent)
     cKeyExtent.m_nWidth = 195;
     m_btnKey.SetExtent(cKeyExtent);
 }
-// PC 0x0075EB20
+// PC 0x0075EB20 GOG 0x0075DE30
 void CSWGuiKeyMapButton::Draw(float fElapsed)
 {
     CSWGuiButton::Draw(fElapsed);
     m_btnKey.Draw(fElapsed);
 }
-// PC 0x0075EB50
+// PC 0x0075EB50 GOG 0x0075DE60
 CSWGuiControl* CSWGuiKeyMapButton::HitCheckMouse(int nX, int nY)
 {
     CSWGuiControl* nResult = CSWGuiButton::HitCheckMouse(nX, nY);
@@ -755,7 +755,7 @@ CSWGuiControl* CSWGuiKeyMapButton::HitCheckMouse(int nX, int nY)
     }
     return nResult;
 }
-// PC 0x0075EB80
+// PC 0x0075EB80 GOG 0x0075DEB0
 CSWGuiInGameOptKeyMappings::~CSWGuiInGameOptKeyMappings()
 {
     m_lstEvents.ClearItems();

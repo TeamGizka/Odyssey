@@ -8,11 +8,11 @@
 #include "nwsobject.h"
 #include "nwsvartable.h"
 #include "swmain.h"
-// PC 0x005AA6D0
+// PC 0x005AA6D0 GOG 0x005AA740
 CSWGlobalVariableTable::~CSWGlobalVariableTable()
 {
 }
-// PC 0x005AA740
+// PC 0x005AA740 GOG 0x005AA7B0
 int CSWGlobalVariableTable::Hash(const CExoString& sIdentifier)
 {
     const CExoString* pIdentifier;
@@ -31,7 +31,7 @@ int CSWGlobalVariableTable::Hash(const CExoString& sIdentifier)
 
     return nHash % 2365;
 }
-// PC 0x005AA7B0
+// PC 0x005AA7B0 GOG 0x005AA820
 int CSWGlobalVariableTable::AddIdentifier(const CExoString& sIdentifier,
                                           unsigned long nType,
                                           unsigned long nIndex)
@@ -90,7 +90,7 @@ int CSWGlobalVariableTable::AddIdentifier(const CExoString& sIdentifier,
 
     return nIdentifier;
 }
-// PC 0x005AA860
+// PC 0x005AA860 GOG 0x005AA8D0
 int CSWGlobalVariableTable::AddIdentifierBoolean(const CExoString& sIdentifier)
 {
     int nIndex = m_nBooleanCount;
@@ -102,7 +102,7 @@ int CSWGlobalVariableTable::AddIdentifierBoolean(const CExoString& sIdentifier)
     }
     return nIdentifier;
 }
-// PC 0x005AA890
+// PC 0x005AA890 GOG 0x005AA900
 int CSWGlobalVariableTable::AddIdentifierNumber(const CExoString& sIdentifier)
 {
     int nIndex = m_nNumberCount;
@@ -114,7 +114,7 @@ int CSWGlobalVariableTable::AddIdentifierNumber(const CExoString& sIdentifier)
     }
     return nIdentifier;
 }
-// PC 0x005AA8C0
+// PC 0x005AA8C0 GOG 0x005AA930
 int CSWGlobalVariableTable::AddIdentifierLocation(const CExoString& sIdentifier)
 {
     int nCount = m_nLocationCount;
@@ -128,7 +128,7 @@ int CSWGlobalVariableTable::AddIdentifierLocation(const CExoString& sIdentifier)
 
     return nResult;
 }
-// PC 0x005AA8F0
+// PC 0x005AA8F0 GOG 0x005AA960
 int CSWGlobalVariableTable::AddIdentifierString(const CExoString& sIdentifier)
 {
     int nCount = m_nStringCount;
@@ -142,7 +142,7 @@ int CSWGlobalVariableTable::AddIdentifierString(const CExoString& sIdentifier)
 
     return nResult;
 }
-// PC 0x005AA920
+// PC 0x005AA920 GOG 0x005AA990
 int CSWGlobalVariableTable::FindIdentifierIndex(const CExoString& sIdentifier)
 {
     int nIdentifier = Hash(sIdentifier);
@@ -176,7 +176,7 @@ int CSWGlobalVariableTable::FindIdentifierIndex(const CExoString& sIdentifier)
 
     return nIdentifier;
 }
-// PC 0x005AA9B0
+// PC 0x005AA9B0 GOG 0x005AAA20
 void CSWGlobalVariableTable::SetBit(unsigned char* pValues, int nIndex,
                                     int bValue)
 {
@@ -193,7 +193,7 @@ void CSWGlobalVariableTable::SetBit(unsigned char* pValues, int nIndex,
         pValues[nByte] &= ~cMask;
     }
 }
-// PC 0x005AAA00
+// PC 0x005AAA00 GOG 0x005AAA70
 void CSWGlobalVariableTable::GetValueBoolean(const CExoString& sIdentifier,
                                              int& bValue)
 {
@@ -224,7 +224,7 @@ void CSWGlobalVariableTable::GetValueBoolean(const CExoString& sIdentifier,
         }
     }
 }
-// PC 0x005AAB30
+// PC 0x005AAB30 GOG 0x005AABA0
 void CSWGlobalVariableTable::GetValueNumber(const CExoString& sIdentifier,
                                             char& cValue)
 {
@@ -250,7 +250,7 @@ void CSWGlobalVariableTable::GetValueNumber(const CExoString& sIdentifier,
         }
     }
 }
-// PC 0x005AAC40
+// PC 0x005AAC40 GOG 0x005AACB0
 void CSWGlobalVariableTable::GetValueLocation(const CExoString& sIdentifier,
                                               CScriptLocation& lValue)
 {
@@ -276,7 +276,7 @@ void CSWGlobalVariableTable::GetValueLocation(const CExoString& sIdentifier,
         }
     }
 }
-// PC 0x005AAD50
+// PC 0x005AAD50 GOG 0x005AADC0
 void CSWGlobalVariableTable::GetValueString(const CExoString& sIdentifier,
                                             CExoString& sValue)
 {
@@ -301,7 +301,7 @@ void CSWGlobalVariableTable::GetValueString(const CExoString& sIdentifier,
         }
     }
 }
-// PC 0x005AAE60
+// PC 0x005AAE60 GOG 0x005AAED0
 void CSWGlobalVariableTable::SetValueBoolean(const CExoString& sIdentifier,
                                              int bValue)
 {
@@ -327,7 +327,7 @@ void CSWGlobalVariableTable::SetValueBoolean(const CExoString& sIdentifier,
         }
     }
 }
-// PC 0x005AAF70
+// PC 0x005AAF70 GOG 0x005AAFE0
 void CSWGlobalVariableTable::SetValueNumber(const CExoString& sIdentifier,
                                             char cValue)
 {
@@ -352,7 +352,7 @@ void CSWGlobalVariableTable::SetValueNumber(const CExoString& sIdentifier,
         }
     }
 }
-// PC 0x005AB080
+// PC 0x005AB080 GOG 0x005AB0F0
 void CSWGlobalVariableTable::SetValueLocation(const CExoString& sIdentifier,
                                               const CScriptLocation& lValue)
 {
@@ -378,7 +378,7 @@ void CSWGlobalVariableTable::SetValueLocation(const CExoString& sIdentifier,
         }
     }
 }
-// PC 0x005AB190
+// PC 0x005AB190 GOG 0x005AB200
 void CSWGlobalVariableTable::SetValueString(const CExoString& sIdentifier,
                                             const CExoString& sValue)
 {
@@ -403,7 +403,7 @@ void CSWGlobalVariableTable::SetValueString(const CExoString& sIdentifier,
         }
     }
 }
-// PC 0x005AB2A0
+// PC 0x005AB2A0 GOG 0x005AB310
 void CSWGlobalVariableTable::WriteTable(const CExoString& sFileName,
                                        int bWriteCatalogue)
 {
@@ -516,7 +516,7 @@ void CSWGlobalVariableTable::WriteTable(const CExoString& sFileName,
         g_pExoResMan->CreateSignatureFile(sFileName, 0, 0, 0);
     }
 }
-// PC 0x005AB7E0
+// PC 0x005AB7E0 GOG 0x005AB850
 void CSWGlobalVariableTable::ReadTableWithoutCatalogue(CResGFF* pRes,
                                                       CResStruct& sStruct)
 {
@@ -600,7 +600,7 @@ void CSWGlobalVariableTable::ClearValues()
     memset(m_aLocations, 0, sizeof(m_aLocations));
     memset(m_asStrings, 0, sizeof(m_asStrings));
 }
-// PC 0x005ABB70
+// PC 0x005ABB70 GOG 0x005ABBE0
 void CSWGlobalVariableTable::ReadTableWithCatalogue(CResGFF* pRes,
                                                    CResStruct& sStruct)
 {
@@ -743,7 +743,7 @@ void CSWGlobalVariableTable::ReadTableWithCatalogue(CResGFF* pRes,
         }
     }
 }
-// PC 0x005AC4D0
+// PC 0x005AC4D0 GOG 0x005AC540
 int CSWGlobalVariableTable::ReadTable(const CExoString& sFileName)
 {
     CResStruct sTop;
@@ -773,21 +773,21 @@ int CSWGlobalVariableTable::ReadTable(const CExoString& sFileName)
     delete pRes;
     return 1;
 }
-// PC 0x005AC600
+// PC 0x005AC600 GOG 0x005AC670
 void CSWGlobalVariableTable::Save(const CExoString& sDirectory)
 {
     CExoString sFileName = sDirectory + "\\" + "GLOBALVARS";
 
     WriteTable(sFileName, 1);
 }
-// PC 0x005AC6D0
+// PC 0x005AC6D0 GOG 0x005AC740
 int CSWGlobalVariableTable::Load()
 {
     CExoString sFileName("GLOBALVARS");
 
     return ReadTable(sFileName);
 }
-// PC 0x005AC740
+// PC 0x005AC740 GOG 0x005AC7B0
 void CSWGlobalVariableTable::ReadCatalogue(const CResRef& cResRef)
 {
     C2DA cCatalogue(cResRef, 1);
@@ -869,7 +869,7 @@ void CSWGlobalVariableTable::ClearIdentifiers()
     m_nMaximumCollisionSteps = 0;
     ClearValues();
 }
-// PC 0x005ACA70
+// PC 0x005ACA70 GOG 0x005ACAE0
 CSWGlobalVariableTable::CSWGlobalVariableTable()
 {
     unsigned int nCRC;

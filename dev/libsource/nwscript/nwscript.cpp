@@ -6,13 +6,13 @@ CScriptCompiler::CScriptCompiler()
 {
     m_pScriptCompilerInternal = new CScriptCompilerInternal;
 }
-// PC 0x0061CAB0
+// PC 0x0061CAB0 GOG 0x0061CA90
 CVirtualMachine::CVirtualMachine()
 {
     m_pVirtualMachineInternal = new CVirtualMachineInternal;
 }
 
-// PC 0x0061CB30
+// PC 0x0061CB30 GOG 0x0061CB10
 CVirtualMachine::~CVirtualMachine()
 {
     if (m_pVirtualMachineInternal != NULL)
@@ -20,7 +20,7 @@ CVirtualMachine::~CVirtualMachine()
         delete m_pVirtualMachineInternal;
     }
 }
-// PC 0x0061CB90
+// PC 0x0061CB90 GOG 0x0061CB70
 void CVirtualMachine::SetScriptParams(int nParam1, int nParam2, int nParam3,
                                       int nParam4, int nParam5,
                                       CExoString sParam)
@@ -32,107 +32,107 @@ void CVirtualMachine::SetScriptParams(int nParam1, int nParam2, int nParam3,
     m_nScriptParameters[4] = nParam5;
     m_sScriptStringParameter[0] = sParam;
 }
-// PC 0x0061CC00
+// PC 0x0061CC00 GOG 0x0061CBE0
 int CVirtualMachine::RunScript(CExoString* psScript, unsigned long nObjectId, int nInstructionLimit)
 {
     return m_pVirtualMachineInternal->RunScript(psScript, nObjectId, nInstructionLimit);
 }
-// PC 0x0061CC10
+// PC 0x0061CC10 GOG 0x0061CBF0
 int CVirtualMachine::RunScriptSituation(void* pScript, unsigned long nObjectId, int bOneInstruction)
 {
     return m_pVirtualMachineInternal->RunScriptSituation((CVirtualMachineScript*)pScript, nObjectId, bOneInstruction);
 }
-// PC 0x0061CC20
+// PC 0x0061CC20 GOG 0x0061CC00
 int CVirtualMachine::GetRunScriptReturnValue(int* pnType, void** ppValue)
 {
     return m_pVirtualMachineInternal->GetRunScriptReturnValue(pnType, ppValue);
 }
-// PC 0x0061CC30
+// PC 0x0061CC30 GOG 0x0061CC10
 void CVirtualMachine::SetCommandImplementer(CVirtualMachineCmdImplementer* pImplementer)
 {
     m_pVirtualMachineInternal->SetCommandImplementer(pImplementer);
 }
-// PC 0x0061CC40
+// PC 0x0061CC40 GOG 0x0061CC20
 int CVirtualMachine::StackPopInteger(int* pnValue)
 {
     return m_pVirtualMachineInternal->StackPopInteger(pnValue);
 }
-// PC 0x0061CC50
+// PC 0x0061CC50 GOG 0x0061CC30
 int CVirtualMachine::StackPushInteger(int nValue)
 {
     return m_pVirtualMachineInternal->StackPushInteger(nValue);
 }
-// PC 0x0061CC60
+// PC 0x0061CC60 GOG 0x0061CC40
 int CVirtualMachine::StackPopFloat(float* pfValue)
 {
     return m_pVirtualMachineInternal->StackPopFloat(pfValue);
 }
-// PC 0x0061CC70
+// PC 0x0061CC70 GOG 0x0061CC50
 int CVirtualMachine::StackPushFloat(float fValue)
 {
     return m_pVirtualMachineInternal->StackPushFloat(fValue);
 }
-// PC 0x0061CC80
+// PC 0x0061CC80 GOG 0x0061CC60
 int CVirtualMachine::StackPopVector(Vector* pvValue)
 {
     return m_pVirtualMachineInternal->StackPopVector(pvValue);
 }
-// PC 0x0061CC90
+// PC 0x0061CC90 GOG 0x0061CC70
 int CVirtualMachine::StackPushVector(Vector vValue)
 {
     return m_pVirtualMachineInternal->StackPushVector(vValue);
 }
-// PC 0x0061CCC0
+// PC 0x0061CCC0 GOG 0x0061CCA0
 int CVirtualMachine::StackPopString(CExoString* psValue)
 {
     return m_pVirtualMachineInternal->StackPopString(psValue);
 }
-// PC 0x0061CCD0
+// PC 0x0061CCD0 GOG 0x0061CCB0
 int CVirtualMachine::StackPushString(const CExoString& sValue)
 {
     return m_pVirtualMachineInternal->StackPushString(sValue);
 }
-// PC 0x0061CCE0
+// PC 0x0061CCE0 GOG 0x0061CCC0
 int CVirtualMachine::StackPopEngineStructure(int nType, void** ppValue)
 {
     return m_pVirtualMachineInternal->StackPopEngineStructure(nType, ppValue);
 }
-// PC 0x0061CCF0
+// PC 0x0061CCF0 GOG 0x0061CCD0
 int CVirtualMachine::StackPushEngineStructure(int nType, void* pValue)
 {
     return m_pVirtualMachineInternal->StackPushEngineStructure(nType, pValue);
 }
-// PC 0x0061CD00
+// PC 0x0061CD00 GOG 0x0061CCE0
 int CVirtualMachine::StackPopObject(unsigned long* pnValue)
 {
     return m_pVirtualMachineInternal->StackPopObject(pnValue);
 }
-// PC 0x0061CD10
+// PC 0x0061CD10 GOG 0x0061CCF0
 int CVirtualMachine::StackPushObject(unsigned long nValue)
 {
     return m_pVirtualMachineInternal->StackPushObject(nValue);
 }
-// PC 0x0061CD20
+// PC 0x0061CD20 GOG 0x0061CD00
 int CVirtualMachine::StackPopCommand(void** ppCommand)
 {
     return m_pVirtualMachineInternal->StackPopCommand((CVirtualMachineScript**)ppCommand);
 }
-// PC 0x0061CD30
+// PC 0x0061CD30 GOG 0x0061CD10
 int CVirtualMachine::SaveScriptSituation(void* pScript, CResGFF* pGFF, CResStruct* pStruct)
 {
     return m_pVirtualMachineInternal->SaveScriptSituation((CVirtualMachineScript*)pScript, pGFF, pStruct);
 }
-// PC 0x0061CD40
+// PC 0x0061CD40 GOG 0x0061CD20
 int CVirtualMachine::LoadScriptSituation(void** ppScript, CResGFF* pGFF, CResStruct* pStruct)
 {
     return m_pVirtualMachineInternal->LoadScriptSituation((CVirtualMachineScript**)ppScript, pGFF, pStruct);
 }
-// PC 0x0061CD50
+// PC 0x0061CD50 GOG 0x0061CD30
 void CVirtualMachine::DeleteScriptSituation(void* pScript)
 {
     m_pVirtualMachineInternal->DeleteScriptSituation((CVirtualMachineScript*)pScript);
 }
-// PC 0x0061CD60
+// PC 0x0061CD60 GOG 0x0061CD40
 CScriptCompiler::~CScriptCompiler()
 {
     if (m_pScriptCompilerInternal != NULL)

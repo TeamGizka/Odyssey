@@ -8,16 +8,16 @@
 #include "clientexoapp.h"
 #include "clientoptions.h"
 #include "nwrules.h"
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 CSWPortrait::~CSWPortrait()
 {
 }
-// PC 0x006CE670
+// PC 0x006CE670 GOG 0x006CE370
 CSWPortrait::CSWPortrait()
 {
     CResRef::operator=("");
 }
-// PC 0x006CE6A0
+// PC 0x006CE6A0 GOG 0x006CE3A0
 CResRef CSWPortrait::GetPortrait(unsigned char nSize)
 {
     CResRef cPortrait = *this;
@@ -47,7 +47,7 @@ CResRef CSWPortrait::GetPortrait(unsigned char nSize)
     }
     return cPortrait;
 }
-// PC 0x006CE880
+// PC 0x006CE880 GOG 0x006CE580
 int CSWPortrait::SetPortraitId(unsigned short nPortraitId)
 {
     CExoString sResRef;

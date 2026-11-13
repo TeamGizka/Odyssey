@@ -36,7 +36,7 @@ static inline void SwguimainmenuTrace1();
 #ifndef _XBOX
 static int s_nPreCacheStep = 0;
 
-void CSWGuiMainMenu::Draw(float fElapsed)  // PC 0x006D0C10
+void CSWGuiMainMenu::Draw(float fElapsed)  // PC 0x006D0C10 GOG 0x006D05A0
 {
     CSWGuiPanel::Draw(fElapsed);
     int nDrawCount = m_nDrawCount;
@@ -69,7 +69,7 @@ void CSWGuiMainMenu::Draw(float fElapsed)  // PC 0x006D0C10
 #endif
 
 #ifndef _XBOX
-void CSWGuiMainMenu::LoadFromLayout(CSWGuiManager* pManager)  // PC 0x006D08A0
+void CSWGuiMainMenu::LoadFromLayout(CSWGuiManager* pManager)  // PC 0x006D08A0 GOG 0x006D0790
 {
     SWGUIMAINMENU_HOLD();
     CExoString sLayout;
@@ -101,7 +101,7 @@ void CSWGuiMainMenu::LoadFromLayout(CSWGuiManager* pManager)  // PC 0x006D08A0
     StopLoadFromLayout();
 }
 #endif
-// PC 0x006D0D70
+// PC 0x006D0D70 GOG 0x006D0B00
 void CSWGuiMainMenu::OnNewGamePicked(CSWGuiControl* pControl)
 {
     SWGUIMAINMENU_HOLD();
@@ -173,7 +173,7 @@ void CSWGuiMainMenu::OnNewGamePicked(CSWGuiControl* pControl)
     }
 #endif
 }
-// PC 0x006D0FF0
+// PC 0x006D0FF0 GOG 0x006D0D80
 void CSWGuiMainMenu::OnLoadSaveGame(CSWGuiControl* pControl)
 {
     SWGUIMAINMENU_HOLD();
@@ -209,7 +209,7 @@ void CSWGuiMainMenu::OnLoadSaveGame(CSWGuiControl* pControl)
     }
 #endif
 }
-// PC 0x006D1110
+// PC 0x006D1110 GOG 0x006D0EA0
 void CSWGuiMainMenu::OnMoviesPicked(CSWGuiControl* pControl)
 {
     SWGUIMAINMENU_HOLD();
@@ -251,7 +251,7 @@ void CSWGuiMainMenu::OnMoviesPicked(CSWGuiControl* pControl)
     }
 #endif
 }
-// PC 0x006D11C0
+// PC 0x006D11C0 GOG 0x006D0F50
 void CSWGuiMainMenu::OnMusicPicked(CSWGuiControl* pControl)
 {
     SWGUIMAINMENU_HOLD();
@@ -264,7 +264,7 @@ void CSWGuiMainMenu::OnMusicPicked(CSWGuiControl* pControl)
         m_pManager->AddPanel(pMusic, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x006D1250
+// PC 0x006D1250 GOG 0x006D0FE0
 void CSWGuiMainMenu::OnOptionsPicked(CSWGuiControl* pControl)
 {
     SWGUIMAINMENU_HOLD();
@@ -306,7 +306,7 @@ void CSWGuiMainMenu::OnOptionsPicked(CSWGuiControl* pControl)
     }
 #endif
 }
-// PC 0x006D12F0
+// PC 0x006D12F0 GOG 0x006D1080
 void CSWGuiMainMenu::HandleInputEvent(int nEvent, int nState)
 {
     SWGUIMAINMENU_HOLD();
@@ -347,7 +347,7 @@ void CSWGuiMainMenu::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x006D13D0
+// PC 0x006D13D0 GOG 0x006D1160
 void CSWGuiMainMenu::OnEnterButton(CSWGuiControl* pControl)
 {
     SWGUIMAINMENU_HOLD();
@@ -382,12 +382,12 @@ void CSWGuiMainMenu::LaunchDashboard(CSWGuiControl* pControl)
     }
 }
 #else
-void CSWGuiMainMenu::LaunchDashboard(CSWGuiControl* pControl)  // PC 0x006D13F0
+void CSWGuiMainMenu::LaunchDashboard(CSWGuiControl* pControl)  // PC 0x006D13F0 GOG 0x006D1180
 {
     SWGUIMAINMENU_HOLD();
     g_pAppManager->m_pClientExoApp->ExitProgram();
 }
-// PC 0x006D1400
+// PC 0x006D1400 GOG 0x006D1190
 void CSWGuiMainMenu::OnQuitButtonPressed(CSWGuiControl* pControl)
 {
     SWGUIMAINMENU_HOLD();
@@ -404,7 +404,7 @@ void CSWGuiMainMenu::OnQuitButtonPressed(CSWGuiControl* pControl)
     }
 }
 #endif
-// PC 0x006D1740
+// PC 0x006D1740 GOG 0x006D11F0
 CSWGuiMainMenu::~CSWGuiMainMenu()
 {
 #ifndef _XBOX
@@ -454,7 +454,7 @@ inline void CSWGuiMainMenu::OnPanelAdded()
     }
 }
 #else
-inline void CSWGuiMainMenu::OnPanelAdded()  // PC 0x006D14C0
+inline void CSWGuiMainMenu::OnPanelAdded()  // PC 0x006D14C0 GOG 0x006D13F0
 {
     unsigned __int64 nFreeBytes;
     g_pExoResMan->GetFreeDiskSpace("SAVES:", &nFreeBytes);
@@ -494,7 +494,7 @@ inline void CSWGuiMainMenu::OnPanelAdded()  // PC 0x006D14C0
     }
 }
 #endif
-// PC 0x006D1A00
+// PC 0x006D1A00 GOG 0x006D1700
 void CSWGuiMainMenu::OnModulePicked(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -549,7 +549,7 @@ void CSWGuiMainMenu::OnModulePicked(CSWGuiControl* pControl)
             ->SetGlobalUnpauseableState(1);
     }
 }
-// PC 0x006D1960
+// PC 0x006D1960 GOG 0x006D1660
 void CSWGuiMainMenu::DeleteModuleList()
 {
     SWGUIMAINMENU_TRACE();
@@ -560,7 +560,7 @@ void CSWGuiMainMenu::DeleteModuleList()
     m_lstModules.SetSize(0);
     m_lstModules.num = 0;
 }
-// PC 0x006D1D50
+// PC 0x006D1D50 GOG 0x006D1A50
 void CSWGuiMainMenu::PopulateModules()
 {
     CExoString sModule;
@@ -658,7 +658,7 @@ void CSWGuiMainMenu::PopulateModules()
 
     m_lbModules.AddControls(lstControls, 1, 0, 0);
 }
-// PC 0x006D2500
+// PC 0x006D2500 GOG 0x006D2200
 void CSWGuiMainMenu::OnLoadGamePicked()
 {
 #ifndef _XBOX
@@ -703,12 +703,12 @@ void CSWGuiMainMenu::OnLoadGamePicked()
     }
 #endif
 }
-// PC 0x006D2640
+// PC 0x006D2640 GOG 0x006D2340
 void CSWGuiMainMenu::OnWarpButtonPressed(CSWGuiControl* pControl)
 {
     OnLoadGamePicked();
 }
-// PC 0x006D2650
+// PC 0x006D2650 GOG 0x006D2350
 CSWGuiMainMenu::CSWGuiMainMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {

@@ -34,7 +34,7 @@ void MovieSetUpProjection()
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 }
-// PC 0x00404BD0
+// PC 0x00404BD0 GOG 0x00404BD0
 void AurOrtho(double dLeft, double dRight, double dBottom, double dTop,
               double dNear, double dFar)
 {
@@ -47,7 +47,7 @@ void MovieSetUpAlphaTest()
 }
 
 static CExoMoviePlayerInternal* g_pMoviePlayer;
-// PC 0x00404F70
+// PC 0x00404F70 GOG 0x00404F70
 LRESULT CALLBACK MovieMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,
                                     LPARAM lParam)
 {
@@ -119,7 +119,7 @@ LRESULT CALLBACK MovieMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,
     }
     return DefWindowProcA(hWnd, nMsg, wParam, lParam);
 }
-// PC 0x004051E0
+// PC 0x004051E0 GOG 0x004051E0
 int CExoMoviePlayerInternal::StartMovie(const CExoString& sMovie)
 {
     static int bClassRegistered;
@@ -272,7 +272,7 @@ int CExoMoviePlayerInternal::StartMovie(const CExoString& sMovie)
     ShowWindow(m_hMovieWnd, SW_SHOWNA);
     return 1;
 }
-// PC 0x00405E30
+// PC 0x00405E30 GOG 0x00405E00
 CExoMoviePlayerInternal::CExoMoviePlayerInternal()
     : m_lstMovies(0),
       m_lstSkippable(0)
@@ -298,7 +298,7 @@ CExoMoviePlayerInternal::CExoMoviePlayerInternal()
     m_hMovieWnd = NULL;
     m_bPaused = 0;
 }
-// PC 0x00405B10
+// PC 0x00405B10 GOG 0x00405AE0
 CExoMoviePlayerInternal::~CExoMoviePlayerInternal()
 {
     DWORD dwExitCode;
@@ -320,7 +320,7 @@ CExoMoviePlayerInternal::~CExoMoviePlayerInternal()
 
     ShutDown();
 }
-// PC 0x00404C20
+// PC 0x00404C20 GOG 0x00404C20
 int CExoMoviePlayerInternal::ShutDown()
 {
     int nResult;
@@ -351,14 +351,14 @@ int CExoMoviePlayerInternal::ShutDown()
     m_bShuttingDown = 0;
     return nResult;
 }
-// PC 0x00404C90
+// PC 0x00404C90 GOG 0x00404C90
 void CExoMoviePlayerInternal::OnDeactivation(int bToggleFullScreen)
 {
     m_nUnknown1C = 1;
     if (m_nUnknown20 == 0 || bToggleFullScreen == 1)
         m_nUnknown20 = bToggleFullScreen;
 }
-// PC 0x00404CB0
+// PC 0x00404CB0 GOG 0x00404CB0
 int CExoMoviePlayerInternal::CancelMovie(int nA, int nB)
 {
     if (nB == 0)
@@ -382,7 +382,7 @@ int CExoMoviePlayerInternal::CancelMovie(int nA, int nB)
     m_nCancelResult = nA;
     return nA;
 }
-// PC 0x004056E0
+// PC 0x004056E0 GOG 0x004056E0
 int CExoMoviePlayerInternal::RunMovieLoop(int nWait)
 {
     MSG msg;
@@ -441,18 +441,18 @@ void MovieNextFrame()
         BinkNextFrame(g_pMoviePlayer->m_hBink);
     }
 }
-// PC 0x00404CF0
+// PC 0x00404CF0 GOG 0x00404CF0
 int CExoMoviePlayerInternal::IsMoviePlaying()
 {
     return m_bMoviePlaying;
 }
-// PC 0x00404D00
+// PC 0x00404D00 GOG 0x00404D00
 void CExoMoviePlayerInternal::FinishMovie()
 {
     ShutDown();
     m_bMoviePlaying = 0;
 }
-// PC 0x00405840
+// PC 0x00405840 GOG 0x00405840
 void CExoMoviePlayerInternal::ShowFadePanel()
 {
     m_critSect.EnterCriticalSection();
@@ -466,7 +466,7 @@ void CExoMoviePlayerInternal::ShowFadePanel()
     UpdateScreen(1.0f / 30.0f, 0, 1);
     m_critSect.LeaveCriticalSection();
 }
-// PC 0x00405940
+// PC 0x00405940 GOG 0x00405940
 void CExoMoviePlayerInternal::HideFadePanel()
 {
     m_critSect.EnterCriticalSection();
@@ -477,7 +477,7 @@ void CExoMoviePlayerInternal::HideFadePanel()
     }
     m_critSect.LeaveCriticalSection();
 }
-// PC 0x00404D20
+// PC 0x00404D20 GOG 0x00404D20
 void CExoMoviePlayerInternal::OnWindowPosChanging(WINDOWPOS* pWindowPos)
 {
     if (m_hBinkBuffer != NULL)
@@ -489,7 +489,7 @@ void CExoMoviePlayerInternal::OnWindowPosChanging(WINDOWPOS* pWindowPos)
         pWindowPos->y = nY;
     }
 }
-// PC 0x00404D60
+// PC 0x00404D60 GOG 0x00404D60
 void CExoMoviePlayerInternal::OnWindowPosChanged(WINDOWPOS*)
 {
     if (m_hBinkBuffer != NULL)
@@ -509,7 +509,7 @@ void CExoMoviePlayerInternal::OnWindowPosChanged(WINDOWPOS*)
         ShowWindow(m_hMovieWnd, SW_SHOWNA);
     }
 }
-// PC 0x00404E20
+// PC 0x00404E20 GOG 0x00404E20
 void CExoMoviePlayerInternal::PauseMovie()
 {
     if (m_hBink != NULL && m_bPaused == 0)
@@ -518,7 +518,7 @@ void CExoMoviePlayerInternal::PauseMovie()
         BinkPause(m_hBink, 1);
     }
 }
-// PC 0x00404E40
+// PC 0x00404E40 GOG 0x00404E40
 void CExoMoviePlayerInternal::ResumeMovie()
 {
     if (m_hBink != NULL && m_bPaused == 1)
@@ -527,12 +527,12 @@ void CExoMoviePlayerInternal::ResumeMovie()
         BinkPause(m_hBink, 0);
     }
 }
-// PC 0x00404E60
+// PC 0x00404E60 GOG 0x00404E60
 int CExoMoviePlayerInternal::GetNumberOfMoviesToPlay()
 {
     return m_lstMovies.num;
 }
-// PC 0x00404E70
+// PC 0x00404E70 GOG 0x00404E70
 int CExoMoviePlayerInternal::RestartMoviesAsync()
 {
     SetThreadPriority(m_hWorkerThread, THREAD_PRIORITY_NORMAL);
@@ -550,7 +550,7 @@ double MovieGetFrameRate()
     return (double)(S32)g_pMoviePlayer->m_hBink->FrameRate /
            (double)(S32)g_pMoviePlayer->m_hBink->FrameRateDiv;
 }
-// PC 0x00405BF0
+// PC 0x00405BF0 GOG 0x00405BC0
 DWORD WINAPI CExoMoviePlayerInternal::PlayMoviesAsync(LPVOID pParam)
 {
     CExoMoviePlayerInternal* self;
@@ -633,7 +633,7 @@ DWORD WINAPI CExoMoviePlayerInternal::PlayMoviesAsync(LPVOID pParam)
     }
     ExitThread(0);
 }
-// PC 0x00405F10
+// PC 0x00405F10 GOG 0x00405EE0
 int CExoMoviePlayerInternal::PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies,
                                         int nMode,
                                         const CExoArrayList<int>* pSkippable)

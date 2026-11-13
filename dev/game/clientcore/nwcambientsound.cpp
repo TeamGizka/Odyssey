@@ -28,15 +28,15 @@ const CExoString CSWCAmbientSound::THUNDER1("as_wt_thundercl1");
 const CExoString CSWCAmbientSound::THUNDER2("as_wt_thundercl2");
 const CExoString CSWCAmbientSound::THUNDER_ROLLING1("as_wt_thunderds1");
 const CExoString CSWCAmbientSound::THUNDER_ROLLING2("as_wt_thunderds2");
-// PC 0x006E6780
+// PC 0x006E6780 GOG 0x006E6440
 inline CSWCAmbientSoundTrack::CSWCAmbientSoundTrack()
 {
 }
-// PC 0x006E67E0
+// PC 0x006E67E0 GOG 0x006E64A0
 inline CSWCAmbientSoundTrack::~CSWCAmbientSoundTrack()
 {
 }
-// PC 0x006E6850
+// PC 0x006E6850 GOG 0x006E6510
 void CSWCAmbientSound::StartSounds()
 {
     m_bSoundsStarted = 1;
@@ -61,7 +61,7 @@ void CSWCAmbientSound::StartSounds()
         PlayAmbientSound(m_bAmbientPlaying);
     }
 }
-// PC 0x006E68C0
+// PC 0x006E68C0 GOG 0x006E6580
 void CSWCAmbientSound::SetMusicDelay(int nDelay)
 {
     if (nDelay > 0)
@@ -78,7 +78,7 @@ void CSWCAmbientSound::SetMusicVolume(unsigned char nVolume)
     }
     m_pMusicSource->SetVolume(nVolume);
 }
-// PC 0x006E68E0
+// PC 0x006E68E0 GOG 0x006E65A0
 void CSWCAmbientSound::SetAmbientDayVolume(int nVolume)
 {
     CExoString sPlayingFile;
@@ -95,7 +95,7 @@ void CSWCAmbientSound::SetAmbientDayVolume(int nVolume)
         m_nAmbientDayVolume = nVolume;
     }
 }
-// PC 0x006E6990
+// PC 0x006E6990 GOG 0x006E6650
 void CSWCAmbientSound::SetAmbientNightVolume(int nVolume)
 {
     CExoString sPlayingFile;
@@ -112,7 +112,7 @@ void CSWCAmbientSound::SetAmbientNightVolume(int nVolume)
         m_nAmbientNightVolume = nVolume;
     }
 }
-// PC 0x006E6A40
+// PC 0x006E6A40 GOG 0x006E6700
 void CSWCAmbientSound::Thunder(int bRolling)
 {
     if (!m_bAmbientPlaying)
@@ -146,7 +146,7 @@ void CSWCAmbientSound::Thunder(int bRolling)
             cSound, CExoSound::PRIORITY_GROUP_POWERED_ITEM, 0, 0, 0.0f, 0.0f);
     }
 }
-// PC 0x006E6B10
+// PC 0x006E6B10 GOG 0x006E67D0
 void CSWCAmbientSound::UpdateTimeOfDay()
 {
     CExoString sMusicFile;
@@ -199,7 +199,7 @@ void CSWCAmbientSound::UpdateTimeOfDay()
         break;
     }
 }
-// PC 0x006E7690
+// PC 0x006E7690 GOG 0x006E7350
 void CSWCAmbientSound::PlayMusic(int bPlay)
 {
     if (m_bSoundsStarted != 0)
@@ -277,7 +277,7 @@ void CSWCAmbientSound::PlayMusic(int bPlay)
         }
     }
 }
-// PC 0x006E7980
+// PC 0x006E7980 GOG 0x006E7640
 void CSWCAmbientSound::SetMusicDayTrack(int nTrack,
                                         int bStreamingMusicForMovie)
 {
@@ -295,7 +295,7 @@ void CSWCAmbientSound::SetMusicDayTrack(int nTrack,
     PlayMusic(1);
     m_nTimeRemaining = 1;
 }
-// PC 0x006E7A50
+// PC 0x006E7A50 GOG 0x006E7710
 void CSWCAmbientSound::SetMusicNightTrack(int nTrack,
                                         int bStreamingMusicForMovie)
 {
@@ -313,7 +313,7 @@ void CSWCAmbientSound::SetMusicNightTrack(int nTrack,
     PlayMusic(1);
     m_nTimeRemaining = 1;
 }
-// PC 0x006E7B20
+// PC 0x006E7B20 GOG 0x006E77E0
 void CSWCAmbientSound::PlayBattleMusic(int bPlay)
 {
     CResRef cResRef;
@@ -367,7 +367,7 @@ void CSWCAmbientSound::PlayBattleMusic(int bPlay)
         }
     }
 }
-// PC 0x006E7E60
+// PC 0x006E7E60 GOG 0x006E7B20
 void CSWCAmbientSound::SetBattleMusicTrack(int nTrack)
 {
     CExoString sPlayingFile;
@@ -387,7 +387,7 @@ void CSWCAmbientSound::SetBattleMusicTrack(int nTrack)
         PlayBattleMusic(1);
     }
 }
-// PC 0x006E7F30
+// PC 0x006E7F30 GOG 0x006E7BF0
 void CSWCAmbientSound::PlayAmbientSound(int bPlay)
 {
     if (m_bSoundsStarted)
@@ -443,7 +443,7 @@ void CSWCAmbientSound::PlayAmbientSound(int bPlay)
         }
     }
 }
-// PC 0x006E8220
+// PC 0x006E8220 GOG 0x006E7EE0
 void CSWCAmbientSound::SetAmbientDayTrack(int nTrack)
 {
     CExoString sPlayingFile;
@@ -458,7 +458,7 @@ void CSWCAmbientSound::SetAmbientDayTrack(int nTrack)
     m_nAmbientDayTrack = nTrack;
     PlayAmbientSound(1);
 }
-// PC 0x006E82E0
+// PC 0x006E82E0 GOG 0x006E7FA0
 void CSWCAmbientSound::SetAmbientNightTrack(int nTrack)
 {
     CExoString sPlayingFile;
@@ -473,7 +473,7 @@ void CSWCAmbientSound::SetAmbientNightTrack(int nTrack)
     m_nAmbientNightTrack = nTrack;
     PlayAmbientSound(1);
 }
-// PC 0x006E83A0
+// PC 0x006E83A0 GOG 0x006E8060
 void CSWCAmbientSound::LoadFromMessage(CSWCMessage* pMessage)
 {
     m_bMusicEnabled = pMessage->ReadBOOL();
@@ -495,7 +495,7 @@ void CSWCAmbientSound::LoadFromMessage(CSWCMessage* pMessage)
     ReadInfo(0, m_nAmbientDayTrack, &m_AmbientDay);
     ReadInfo(0, m_nAmbientNightTrack, &m_AmbientNight);
 }
-// PC 0x006E6CE0
+// PC 0x006E6CE0 GOG 0x006E69A0
 void CSWCAmbientSound::ReadInfo(int bMusic, int nRow,
                               CSWCAmbientSoundTrack* pTrack)
 {
@@ -565,7 +565,7 @@ static void DeleteStreamingSource(CExoStreamingSoundSource* pSource)
 {
     delete pSource;
 }
-// PC 0x006E6FB0
+// PC 0x006E6FB0 GOG 0x006E6C70
 void CSWCAmbientSound::PlayStinger(CSWCAmbientSoundTrack* pTrack)
 {
     CResRef cStinger;
@@ -612,7 +612,7 @@ void CSWCAmbientSound::PlayStinger(CSWCAmbientSoundTrack* pTrack)
         }
     }
 }
-// PC 0x006E7130
+// PC 0x006E7130 GOG 0x006E6DF0
 void CSWCAmbientSound::ResetLastUpdate()
 {
     CClientExoApp* pClientExoApp;
@@ -621,7 +621,7 @@ void CSWCAmbientSound::ResetLastUpdate()
     pClientExoApp->GetPauseTimer()->GetWorldTime(
         &m_nLastUpdateLow, &m_nLastUpdateHigh);
 }
-// PC 0x006E84A0
+// PC 0x006E84A0 GOG 0x006E8160
 void CSWCAmbientSound::Update()
 {
     unsigned long nTimeDiff;
@@ -702,7 +702,7 @@ void CSWCAmbientSound::Update()
         PlayAmbientSound(1);
     }
 }
-// PC 0x006E7160
+// PC 0x006E7160 GOG 0x006E6E20
 int CSWCAmbientSound::GetTimeDiff()
 {
     CClientExoApp* pClientExoApp;
@@ -719,7 +719,7 @@ int CSWCAmbientSound::GetTimeDiff()
         &nDifferenceDay, &nDifferenceTime);
     return nDifferenceTime;
 }
-// PC 0x006E71D0
+// PC 0x006E71D0 GOG 0x006E6E90
 void CSWCAmbientSound::PlayTruncated(int bPlay, CSWCAmbientSoundPriority nPriority)
 {
     switch (nPriority)
@@ -809,7 +809,7 @@ void CSWCAmbientSound::PlayTruncated(int bPlay, CSWCAmbientSoundPriority nPriori
         }
     }
 }
-// PC 0x006E73E0
+// PC 0x006E73E0 GOG 0x006E70A0
 CSWCAmbientSound::CSWCAmbientSound(CSWCArea* pArea)
 {
     m_nTimeRemaining = 0;
@@ -830,7 +830,7 @@ CSWCAmbientSound::CSWCAmbientSound(CSWCArea* pArea)
     m_bAmbientFallback = 0;
     m_bBattleMusic = 0;
 }
-// PC 0x006E7570
+// PC 0x006E7570 GOG 0x006E7230
 CSWCAmbientSound::~CSWCAmbientSound()
 {
     if (m_pMusicSource != NULL)
@@ -844,7 +844,7 @@ CSWCAmbientSound::~CSWCAmbientSound()
         m_pAmbientSource = NULL;
     }
 }
-// PC 0x006E7650
+// PC 0x006E7650 GOG 0x006E7310
 void CSWCAmbientSound::StopSounds(int bMusicOnly)
 {
     PlayMusic(0);

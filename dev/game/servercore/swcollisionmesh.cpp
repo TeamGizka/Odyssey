@@ -171,7 +171,7 @@ ConsoleFunc ConFConvertDoor("ConvertDoor", ConvertDoor);
 ConsoleFunc ConFConvertPlaceable("ConvertPlaceable", ConvertPlaceable);
 ConsoleFunc ConFConvertRooms("ConvertRooms", ConvertRooms);
 #endif
-// PC 0x00556FF0
+// PC 0x00556FF0 GOG 0x00557110
 CSWCollisionMesh::~CSWCollisionMesh()
 {
     if (m_bBinary != 0)
@@ -205,7 +205,7 @@ CSWCollisionMesh::~CSWCollisionMesh()
         m_pFaceDistances = NULL;
     }
 }
-// PC 0x005570B0
+// PC 0x005570B0 GOG 0x00557AD0
 void CSWCollisionMesh::ComputeMeshNormals()
 {
     if (m_bBinary == 0)
@@ -221,7 +221,7 @@ void CSWCollisionMesh::ComputeMeshNormals()
         }
     }
 }
-// PC 0x005571B0
+// PC 0x005571B0 GOG 0x005571B0
 int CSWCollisionMesh::LoadMesh(int nType)
 {
     int nResult = 1;
@@ -285,7 +285,7 @@ int CSWCollisionMesh::LoadMesh(int nType)
     }
     return nResult;
 }
-// PC 0x005573D0
+// PC 0x005573D0 GOG 0x00557FE0
 int CSWCollisionMesh::LoadMeshBinary(CResBWM* pMesh)
 {
     m_bBinary = 1;
@@ -330,13 +330,13 @@ static int WalkTestMaterial = 1;
 static int rendercollisionboxes = 0;
 
 int bDumpData = 0;
-// PC 0x00557560
+// PC 0x00557560 GOG 0x005573D0
 int CSWCollisionMesh::LoadMeshText(unsigned char* pData, unsigned long nSize)
 {
     m_bBinary = 0;
     return 1;
 }
-// PC 0x005575B0
+// PC 0x005575B0 GOG 0x005573E0
 int CSWCollisionMesh::LoadMeshString(unsigned char** ppData,
                                      unsigned long* pnSize,
                                      unsigned char* pBuffer,
@@ -360,7 +360,7 @@ int CSWCollisionMesh::LoadMeshString(unsigned char** ppData,
     pBuffer[nIndex] = 0;
     return 1;
 }
-// PC 0x00557610
+// PC 0x00557610 GOG 0x0055AD80
 void CSWCollisionMesh::TransformToWorld(const Vector& vPosition)
 {
     if (m_bBinary == 0)
@@ -373,7 +373,7 @@ void CSWCollisionMesh::TransformToWorld(const Vector& vPosition)
         }
     }
 }
-// PC 0x005576B0
+// PC 0x005576B0 GOG 0x00557440
 void CSWCollisionMesh::SetTriangleCount(int nCount)
 {
     m_nFaceCount = nCount;
@@ -385,13 +385,13 @@ void CSWCollisionMesh::SetTriangleCount(int nCount)
         m_pFaceNormals = new Vector[nCount];
     }
 }
-// PC 0x00557750
+// PC 0x00557750 GOG 0x005574E0
 void CSWCollisionMesh::SetVertexCount(int nCount)
 {
     m_nVertexCount = nCount;
     m_pVertices = new Vector[nCount];
 }
-// PC 0x005577B0
+// PC 0x005577B0 GOG 0x00557540
 Vector CSWCollisionMesh::WorldToLocal(const Vector& vPosition)
 {
     if (m_nType != 0)
@@ -400,7 +400,7 @@ Vector CSWCollisionMesh::WorldToLocal(const Vector& vPosition)
     }
     return -m_qOrientation * (vPosition - m_vWorldPosition) - m_vPosition;
 }
-// PC 0x00557980
+// PC 0x00557980 GOG 0x00557710
 Vector CSWCollisionMesh::LocalToWorld(const Vector& vPosition)
 {
     if (m_nType != 0)
@@ -418,7 +418,7 @@ Vector CSWCollisionMesh::NormalLocalToWorld(const Vector& vLocal)
     }
     return m_qOrientation * vLocal;
 }
-// PC 0x00557C90
+// PC 0x00557C90 GOG 0x00557A40
 CSWCollisionMesh::CSWCollisionMesh(unsigned short nTextResType,
                                    unsigned short nBinaryResType)
 {
@@ -436,7 +436,7 @@ CSWCollisionMesh::CSWCollisionMesh(unsigned short nTextResType,
     m_pFaceNormals = NULL;
     m_pFaceDistances = NULL;
 }
-// PC 0x00557D20
+// PC 0x00557D20 GOG 0x00557BD0
 int CSWCollisionMesh::GetMeshBoundingBox(Vector& vMin, Vector& vMax)
 {
     if (m_pVertices == NULL)
@@ -484,7 +484,7 @@ int CSWCollisionMesh::GetMeshBoundingBox(Vector& vMin, Vector& vMax)
     }
     return bFirst;
 }
-// PC 0x00557E50
+// PC 0x00557E50 GOG 0x00557D00
 int CSWCollisionMesh::GetMeshOutline(Vector& vFirst, Vector& vSecond,
                                      Vector& vThird, Vector& vFourth)
 {
@@ -548,7 +548,7 @@ int CSWCollisionMesh::GetMeshOutline(Vector& vFirst, Vector& vSecond,
     vFourth = LocalToWorld(vFourth);
     return bFirst;
 }
-// PC 0x005580A0
+// PC 0x005580A0 GOG 0x00557F50
 void CSWCollisionMesh::GetVertex(int nVertex, float* pfX, float* pfY,
                                  float* pfZ)
 {
@@ -560,7 +560,7 @@ void CSWCollisionMesh::GetVertex(int nVertex, float* pfX, float* pfY,
         *pfZ = vVertex.m_fZ;
     }
 }
-// PC 0x005580F0
+// PC 0x005580F0 GOG 0x00557FA0
 void CSWCollisionMesh::GetVertex(int nVertex, Vector* pvVertex)
 {
     if (m_pVertices != NULL && nVertex < m_nVertexCount)
@@ -568,7 +568,7 @@ void CSWCollisionMesh::GetVertex(int nVertex, Vector* pvVertex)
         *pvVertex = LocalToWorld(m_pVertices[nVertex]);
     }
 }
-// PC 0x00558130
+// PC 0x00558130 GOG 0x0055AEF0
 int CSWCollisionMesh::SaveBinaryMesh(const CExoString& sFileName)
 {
     if (m_bBinary != 0)
@@ -649,7 +649,7 @@ static inline void MeshDebugLine(const Vector& vA, const Vector& vB, int)
     Vector vFrom = vA + Vector(0.0f, 0.0f, 0.01f);
     Vector vTo = vB + Vector(0.0f, 0.0f, 0.01f);
 }
-// PC 0x00558390
+// PC 0x00558390 GOG 0x005581B0
 int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
     const Vector& vEnd, float fMinHeight, float fMaxHeight,
     float fRadius, CWalkHitInfo* pHitInfo)
@@ -1282,7 +1282,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
         return 0;
     }
 }
-// PC 0x0055AF60
+// PC 0x0055AF60 GOG 0x0055AE20
 int CSWCollisionMesh::RenderMesh(int nFlag, unsigned long nColor,
                                  unsigned long nMask)
 {

@@ -12,7 +12,7 @@
 #include "swparty.h"
 
 static inline void SwguiingameareatransitionTrace1();
-// PC 0x007343D0
+// PC 0x007346C0 GOG 0x007343D0
 CSWGuiInGameAreaTransition::CSWGuiInGameAreaTransition(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -60,7 +60,7 @@ CSWGuiInGameAreaTransition::CSWGuiInGameAreaTransition(CSWGuiManager* pManager)
 
     m_nDefaultTop = m_cExtent.m_nTop;
 }
-// PC 0x00734400
+// PC 0x00734400 GOG 0x00734110
 void CSWGuiInGameAreaTransition::SetTransitionObject(unsigned long oidObject,
                                                      const Vector& vPosition)
 {
@@ -100,7 +100,7 @@ void CSWGuiInGameAreaTransition::SetTransitionObject(unsigned long oidObject,
     }
     m_vTransitionPosition = vPosition;
 }
-// PC 0x007345A0
+// PC 0x007345A0 GOG 0x007342B0
 void CSWGuiInGameAreaTransition::Draw(float fElapsed)
 {
     SwguiingameareatransitionTrace1();

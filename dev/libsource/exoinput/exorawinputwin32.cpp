@@ -8,14 +8,14 @@ static int nCurrentJoystick = 0;
 
 int g_nRawJoystickUnused1;
 int g_nRawJoystickUnused2;
-// PC 0x00600DB0
+// PC 0x00600DB0 GOG 0x00600DC0
 CExoDeviceBuffer::CExoDeviceBuffer()
 {
     m_nEvents = 0;
     m_nCapacity = 0;
     m_pEvents = NULL;
 }
-// PC 0x0062F2C0
+// PC 0x0062F2C0 GOG 0x0062F1B0
 CExoDeviceBuffer::~CExoDeviceBuffer()
 {
     if (m_pEvents != NULL)
@@ -24,12 +24,12 @@ CExoDeviceBuffer::~CExoDeviceBuffer()
         m_pEvents = NULL;
     }
 }
-// PC 0x004065A0
+// PC 0x004065A0 GOG 0x00406570
 int CExoRawInputInternal::GetMainDeviceLost()
 {
     return 0;
 }
-// PC 0x0062F2E0
+// PC 0x0062F2E0 GOG 0x0062F1D0
 void CExoRawInputInternal::ClearKeyboardBuffer()
 {
     if (m_bKeyboardMode == 0 && m_pKeyboard != NULL && m_bActive != 0)
@@ -52,7 +52,7 @@ void CExoRawInputInternal::ClearKeyboardBuffer()
         } while (nResult == DIERR_INPUTLOST);
     }
 }
-// PC 0x0062F350
+// PC 0x0062F350 GOG 0x0062F240
 void CExoRawInputInternal::ClearMouseBuffer()
 {
     if (m_pMouse != NULL && m_bActive != 0)
@@ -82,7 +82,7 @@ void CExoRawInputInternal::ClearJoystickBuffer(int nJoystick)
     m_pJoystickStates[nJoystick].m_nTime =
         (unsigned long)(g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
 }
-// PC 0x0062F3B0
+// PC 0x0062F3B0 GOG 0x0062F2A0
 int CExoRawInputInternal::GetJoystickBuffer(int nJoystick,
                                             CExoDeviceBuffer& buffer)
 {
@@ -308,7 +308,7 @@ int CExoRawInputInternal::GetJoystickBuffer(int nJoystick,
     }
     return 1;
 }
-// PC 0x0062FC00
+// PC 0x0062FC00 GOG 0x0062FAF0
 int CExoRawInputInternal::GetLastState(unsigned long nDevice,
                                        unsigned long nControl)
 {
@@ -356,7 +356,7 @@ int CExoRawInputInternal::GetLastState(unsigned long nDevice,
     }
     return nResult;
 }
-// PC 0x0062FCC0
+// PC 0x0062FCC0 GOG 0x0062FBB0
 int CExoRawInputInternal::IsDigital(unsigned long nDevice,
                                     unsigned long nControl)
 {
@@ -376,7 +376,7 @@ int CExoRawInputInternal::IsDigital(unsigned long nDevice,
            ((nControl >= 0x30 && nControl <= 0x4F) ||
             (nControl >= 0x384 && nControl <= 0x393) || nControl == 32);
 }
-// PC 0x0062FD30
+// PC 0x0062FD30 GOG 0x0062FC20
 float CExoRawInputInternal::GetMaxUseable(unsigned long nDevice,
                                           unsigned long nControl)
 {
@@ -401,7 +401,7 @@ float CExoRawInputInternal::GetMaxUseable(unsigned long nDevice,
         }
     }
 }
-// PC 0x0062FD70
+// PC 0x0062FD70 GOG 0x0062FC60
 float CExoRawInputInternal::GetMinUseable(unsigned long nDevice,
                                           unsigned long nControl)
 {
@@ -426,7 +426,7 @@ float CExoRawInputInternal::GetMinUseable(unsigned long nDevice,
         }
     }
 }
-// PC 0x0062FDB0
+// PC 0x0062FDB0 GOG 0x0062FCA0
 int CExoRawInputInternal::GetKeyboardBuffer(CExoDeviceBuffer& buffer)
 {
     if (m_pKeyboard == NULL)
@@ -505,7 +505,7 @@ int CExoRawInputInternal::GetKeyboardBuffer(CExoDeviceBuffer& buffer)
     }
     return 1;
 }
-// PC 0x0062FEB0
+// PC 0x0062FEB0 GOG 0x0062FDA0
 void CExoRawInputInternal::KeyboardModeOn()
 {
     m_bKeyboardMode = 1;
@@ -514,7 +514,7 @@ void CExoRawInputInternal::KeyboardModeOn()
         m_pKeyboard->Unacquire();
     }
 }
-// PC 0x0062FED0
+// PC 0x0062FED0 GOG 0x0062FDC0
 void CExoRawInputInternal::KeyboardModeOff()
 {
     m_bKeyboardMode = 0;
@@ -523,7 +523,7 @@ void CExoRawInputInternal::KeyboardModeOff()
         m_pKeyboard->Acquire();
     }
 }
-// PC 0x0062FEF0
+// PC 0x0062FEF0 GOG 0x0062FDE0
 void CExoRawInputInternal::SetActive(int bActive)
 {
     if (bActive != m_bActive)
@@ -583,7 +583,7 @@ void CExoRawInputInternal::SetActive(int bActive)
         }
     }
 }
-// PC 0x0062FFE0
+// PC 0x0062FFE0 GOG 0x0062FED0
 CExoString CExoRawInputInternal::GetDisplayCharacterDirectInputValue(
     unsigned long nKey)
 {
@@ -612,7 +612,7 @@ void CExoRawInputInternal::ShutDownDirectInputMouse()
         m_pMouse = NULL;
     }
 }
-// PC 0x00630090
+// PC 0x00630090 GOG 0x0062FF80
 int CExoRawInputInternal::ShutDownDirectInput()
 {
     int nResult = (int)m_pDirectInput;
@@ -653,7 +653,7 @@ int CExoRawInputInternal::ShutDownDirectInput()
     }
     return nResult;
 }
-// PC 0x00630150
+// PC 0x00630150 GOG 0x00630040
 CExoRawInputInternal::CExoRawInputInternal(HINSTANCE hInstance, HWND hWnd)
 {
     DIPROPDWORD dipBuffer;
@@ -697,12 +697,12 @@ CExoRawInputInternal::CExoRawInputInternal(HINSTANCE hInstance, HWND hWnd)
     m_bInitialized = 1;
     nCurrentJoystick = 0;
 }
-// PC 0x00630260
+// PC 0x00630260 GOG 0x00630150
 CExoRawInputInternal::~CExoRawInputInternal()
 {
     ShutDownDirectInput();
 }
-// PC 0x00630270
+// PC 0x00630270 GOG 0x00630160
 int CExoRawInputInternal::InitializeDirectInputMouse()
 {
     DIPROPDWORD dipBuffer;
@@ -738,7 +738,7 @@ int CExoRawInputInternal::InitializeDirectInputMouse()
     }
     return 1;
 }
-// PC 0x00630320
+// PC 0x00630320 GOG 0x00630210
 int CExoRawInputInternal::GetMouseState(CExoMouseState& state)
 {
     if (m_pMouse == NULL)
@@ -776,7 +776,7 @@ int CExoRawInputInternal::GetMouseState(CExoMouseState& state)
     }
     return 1;
 }
-// PC 0x006955A0
+// PC 0x006955A0 GOG 0x00695350
 int CExoRawInputInternal::GetControlThreshold(unsigned long nControl)
 {
     return 0;

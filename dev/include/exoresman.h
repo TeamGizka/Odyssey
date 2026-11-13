@@ -191,20 +191,20 @@ public:
 
 
 
-    // PC 0x00406590
+    // PC 0x00406590 GOG 0x00406560
     virtual int GetFixedResourceSize()
     {
         return -1;
     }
-    virtual int GetFixedResourceDataOffset()  // PC 0x004065A0
+    virtual int GetFixedResourceDataOffset()  // PC 0x004065A0 GOG 0x00406570
     {
         return 0;
     }
-    virtual int OnResourceFreed()  // PC 0x0065D0F0
+    virtual int OnResourceFreed()  // PC 0x0065D0F0 GOG 0x0065CF00
     {
         return 1;
     }
-    virtual int OnResourceServiced()  // PC 0x0065D0F0
+    virtual int OnResourceServiced()  // PC 0x0065D0F0 GOG 0x0065CF00
     {
         return 1;
     }

@@ -85,7 +85,7 @@ public:
 #endif
     virtual void Draw(float fElapsed); virtual void HandleInputEvent(int nEvent, int nState);
 #ifndef _XBOX
-    SWGUI_PCVIRTUAL int GetIsSelectable()  // PC 0x006D4780
+    SWGUI_PCVIRTUAL int GetIsSelectable()  // PC 0x006D4780 GOG 0x006D4550
     {
 #ifndef _XBOX
         return m_bSelectable & m_bHilightOnOver;
@@ -135,7 +135,7 @@ public:
 #else
     void SetActivated(int bActivated);
 #endif
-    // PC 0x006D2FF0
+    // PC 0x006D2FF0 GOG 0x006D2BE0
     void StartFlash(const Vector& vColor)
     {
         m_fFlashTimer = 0.8f;
@@ -370,7 +370,7 @@ public:
     void HandleButtonLess(CSWGuiControl* pControl);
     void HandleButtonMore(CSWGuiControl* pControl);
     void HandleButtonWager(CSWGuiControl* pControl);
-    void HandleButtonQuit(CSWGuiControl* pControl)  // PC 0x0040B8A0
+    void HandleButtonQuit(CSWGuiControl* pControl)  // PC 0x0040B8A0 GOG 0x0040B860
     {
         HandleInputEvent(GUIEVENT_CANCEL, 1);
     }

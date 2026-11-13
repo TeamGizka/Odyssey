@@ -20,10 +20,10 @@ public:
     virtual int Wield(unsigned long nItemId, const CExoString& sAttach, unsigned char nHand, float fScale);
     virtual void HideWieldedItems(const CResRef& sRight, const CResRef& sLeft);
     virtual void ShowWieldedItems();
-    virtual void HideHeadItem()  // PC 0x004015A0
+    virtual void HideHeadItem()  // PC 0x004015A0 GOG 0x004015A0
     {
     }
-    virtual void ShowHeadItem()  // PC 0x004015A0
+    virtual void ShowHeadItem()  // PC 0x004015A0 GOG 0x004015A0
     {
     }
     virtual void SetWieldLimited(int bLimited);

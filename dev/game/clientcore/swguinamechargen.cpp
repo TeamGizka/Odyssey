@@ -8,13 +8,13 @@
 #include "nwccreature.h"
 #include "nwccreaturestats.h"
 #include "nwrace.h"
-// PC 0x0076BF00
+// PC 0x0076BF00 GOG 0x0076BCD0
 void CSWGuiNameChargen::SetParentPanel(CSWGuiPanel* pParent, int nParentType)
 {
     m_pParent = pParent;
     m_nParentType = nParentType;
 }
-// PC 0x0076BEB0
+// PC 0x0076BEB0 GOG 0x0076BCF0
 void CSWGuiNameChargen::HandleCancelButton()
 {
     if (m_pParent != 0)
@@ -163,7 +163,7 @@ CSWGuiNameChargen::CSWGuiNameChargen(CSWGuiManager* pManager, CSWCCreature* pCre
     SetInternational(0);
 }
 #else
-CSWGuiNameChargen::CSWGuiNameChargen(CSWGuiManager* pManager, CSWCCreature* pCreature)  // PC 0x0076C1A0
+CSWGuiNameChargen::CSWGuiNameChargen(CSWGuiManager* pManager, CSWCCreature* pCreature)  // PC 0x0076C1A0 GOG 0x0076BFC0
     : CSWGuiPanel(pManager)
 {
     CExoString sName;
@@ -188,7 +188,7 @@ CSWGuiNameChargen::CSWGuiNameChargen(CSWGuiManager* pManager, CSWCCreature* pCre
     m_editName.m_cText.m_nMaxLength = MAX_NAME_LENGTH;
     m_editName.AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiNameChargen::HandleDoneButton);
 }
-// PC 0x0076C490
+// PC 0x0076C490 GOG 0x0076C2B0
 void CSWGuiNameChargen::OnPanelAdded()
 {
     CExoString sName;
@@ -213,7 +213,7 @@ void CSWGuiNameChargen::OnPanelAdded()
     }
 }
 #endif
-// PC 0x0076C580
+// PC 0x0076C580 GOG 0x0076C3A0
 void CSWGuiNameChargen::HandleInputEvent(int nEvent, int bPressed)
 {
     if (bPressed != 0)
@@ -245,7 +245,7 @@ void CSWGuiNameChargen::HandleInputEvent(int nEvent, int bPressed)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, bPressed);
 }
-// PC 0x0076BF20
+// PC 0x0076BF20 GOG 0x0076BD40
 void CSWGuiNameChargen::HandleRandomName()
 {
 #ifdef _XBOX
@@ -364,7 +364,7 @@ void CSWGuiNameChargen::HandleDoneButton(CSWGuiControl* pControl)
     }
 }
 #else
-void CSWGuiNameChargen::HandleDoneButton(CSWGuiControl* pControl)  // PC 0x0076C000
+void CSWGuiNameChargen::HandleDoneButton(CSWGuiControl* pControl)  // PC 0x0076C000 GOG 0x0076BE20
 {
     CExoString sName;
     sName = m_editName.m_cText.m_sText;

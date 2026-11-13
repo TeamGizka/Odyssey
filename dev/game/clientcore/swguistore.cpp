@@ -30,7 +30,7 @@ static inline void SwguistoreTrace2()
 static inline void SwguistoreTrace1()
 {
 }
-// PC 0x00720E90
+// PC 0x00720E90 GOG 0x00720BA0
 void CSWGuiStore::PopulateStore()
 {
     CServerExoApp* pServer;
@@ -46,7 +46,7 @@ void CSWGuiStore::PopulateStore()
         m_lblCreditsValue.m_cText.m_cParams.SetText(CExoString(nGold));
     }
 }
-// PC 0x00721670
+// PC 0x00721670 GOG 0x00721380
 void CSWGuiStore::OnControlInvAButton(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -181,7 +181,7 @@ void CSWGuiStore::OnControlInvAButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00721B80
+// PC 0x00721B80 GOG 0x00721890
 void CSWGuiStore::OnControlEntered(CSWGuiControl* pControl)
 {
     CItemRepository* pStoreRepository = NULL;
@@ -276,7 +276,7 @@ void CSWGuiStore::OnControlEntered(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00721F10
+// PC 0x00721F10 GOG 0x00721C20
 void CSWGuiStore::BuyItem(CSWSItem* pItem)
 {
     SWGUISTORE_TRACE();
@@ -299,7 +299,7 @@ void CSWGuiStore::BuyItem(CSWSItem* pItem)
         m_lblCreditsValue.m_cText.m_cParams.SetText(CExoString(m_nGold));
     }
 }
-// PC 0x00720F10
+// PC 0x00720F10 GOG 0x00720C20
 int CSWGuiStore::GetItemBuyValue(CSWSItem* pItem)
 {
     CSWSStore* pStore;
@@ -313,7 +313,7 @@ int CSWGuiStore::GetItemBuyValue(CSWSItem* pItem)
     nMarkup = pStore->m_nMarkUp + pStore->m_nBonusMarkUp;
     return nMarkup * pItem->GetCost() / 100u;
 }
-// PC 0x00720F70
+// PC 0x00720F70 GOG 0x00720C80
 int CSWGuiStore::GetItemSellValue(CSWSItem* pItem)
 {
     CSWSStore* pStore;
@@ -327,7 +327,7 @@ int CSWGuiStore::GetItemSellValue(CSWSItem* pItem)
     nMarkup = pStore->m_nMarkDown + pStore->m_nBonusMarkDown;
     return nMarkup * pItem->GetCost() / 100u;
 }
-// PC 0x00720FD0
+// PC 0x00720FD0 GOG 0x00720CE0
 int CSWGuiStore::CheckFilter(CSWSItem* pItem)
 {
     if (pItem == NULL)
@@ -366,7 +366,7 @@ int CSWGuiStore::CheckFilter(CSWSItem* pItem)
     }
     return bResult;
 }
-// PC 0x00722030
+// PC 0x00722030 GOG 0x00721D40
 void CSWGuiStore::BuyItemCallback(CSWGuiControl* pControl)
 {
     CGuiInGame* pInGame = g_pAppManager->m_pClientExoApp->GetInGameGui();
@@ -382,7 +382,7 @@ void CSWGuiStore::BuyItemCallback(CSWGuiControl* pControl)
             BuyItem(pItem);
     }
 }
-// PC 0x00722090
+// PC 0x00722090 GOG 0x00721DA0
 void CSWGuiStore::OnControlStoreAButton(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -453,7 +453,7 @@ void CSWGuiStore::OnControlStoreAButton(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x007210E0
+// PC 0x007210E0 GOG 0x00720DF0
 void CSWGuiStore::SellItem(CSWSItem* pItem)
 {
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
@@ -498,7 +498,7 @@ void CSWGuiStore::SellItem(CSWSItem* pItem)
         }
     }
 }
-// PC 0x00721250
+// PC 0x00721250 GOG 0x00720F60
 void CSWGuiStore::SellItemCallback(CSWGuiControl* pControl)
 {
     CGuiInGame* pInGame = g_pAppManager->m_pClientExoApp->GetInGameGui();
@@ -531,7 +531,7 @@ void CSWGuiStore::SellItemCallback(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00721300
+// PC 0x00721300 GOG 0x00721010
 void CSWGuiStore::SetDescription(CExoString const& sDescription)
 {
     CSWGuiListBox* pListBox;
@@ -560,7 +560,7 @@ void CSWGuiStore::SetDescription(CExoString const& sDescription)
             pListBox->m_cItemExtent.m_nHeight &&
         pListBox->m_lItems.num > 0 && !pListBox->m_bHideScrollIcon;
 }
-// PC 0x00722C40
+// PC 0x00722C40 GOG 0x00722950
 void CSWGuiStore::ShowSellGUI()
 {
     CSWGuiListBox* pActiveList;
@@ -585,7 +585,7 @@ void CSWGuiStore::ShowSellGUI()
     SetActiveControl(pActiveList, 0);
     PopulateInventoryItemListBox();
 }
-// PC 0x00722CF0
+// PC 0x00722CF0 GOG 0x00722A00
 void CSWGuiStore::UpdateFilters()
 {
     for (int i = 0; i < STORE_FILTER_COUNT; i++)
@@ -596,7 +596,7 @@ void CSWGuiStore::UpdateFilters()
     PopulateInventoryItemListBox();
     PopulateStoreItemListBox();
 }
-// PC 0x00722D50
+// PC 0x00722D50 GOG 0x00722A60
 void CSWGuiStore::Draw(float fElapsed)
 {
     if (m_bInventoryDirty)
@@ -606,7 +606,7 @@ void CSWGuiStore::Draw(float fElapsed)
     }
     CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x00722EA0
+// PC 0x00722EA0 GOG 0x00722BB0
 CSWGuiStore::CSWGuiStore(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -679,7 +679,7 @@ CSWGuiStore::CSWGuiStore(CSWGuiManager* pManager)
     m_nFilter = 0;
     m_bInventoryDirty = 0;
 }
-// PC 0x007228E0
+// PC 0x007228E0 GOG 0x007225F0
 void CSWGuiStore::PopulateInventoryItemListBox()
 {
     CSWSCreature* pCreature =
@@ -784,7 +784,7 @@ void CSWGuiStore::PopulateInventoryItemListBox()
     }
     m_nUnknown2274 = 0;
 }
-// PC 0x00723780
+// PC 0x00723780 GOG 0x00723490
 void CSWGuiStore::OnPanelAdded()
 {
     InitializeStoreType();
@@ -795,7 +795,7 @@ void CSWGuiStore::OnPanelAdded()
     ShowBuyGUI();
     m_bInventoryDirty = 0;
 }
-// PC 0x007237C0
+// PC 0x007237C0 GOG 0x007234D0
 void CSWGuiStore::HandleInputEvent(int nEvent, int nState)
 {
     CSWGuiPanel::HandleInputEvent(nEvent, nState);
@@ -827,12 +827,12 @@ void CSWGuiStore::HandleInputEvent(int nEvent, int nState)
         }
     }
 }
-// PC 0x007224B0
+// PC 0x007224B0 GOG 0x007221C0
 CSWGuiStore::~CSWGuiStore()
 {
     DeleteItemEntries();
 }
-// PC 0x00722700
+// PC 0x00722700 GOG 0x00722410
 void CSWGuiStore::OnPanelRemoved()
 {
     DeleteItemEntries();
@@ -840,7 +840,7 @@ void CSWGuiStore::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 #endif
 }
-// PC 0x00722370
+// PC 0x00722370 GOG 0x00722080
 void CSWGuiStore::DeleteItemEntries()
 {
     SwguistoreTrace2();
@@ -861,7 +861,7 @@ void CSWGuiStore::DeleteItemEntries()
     }
     lInventoryEntries.num = 0;
 }
-// PC 0x00721410
+// PC 0x00721410 GOG 0x00721120
 void CSWGuiStore::PopulateStoreItemListBox()
 {
     CItemRepository* pRepository =
@@ -925,7 +925,7 @@ void CSWGuiStore::PopulateStoreItemListBox()
     }
     m_nUnknown2274 = 0;
 }
-// PC 0x00722710
+// PC 0x00722710 GOG 0x00722420
 int CSWGuiStore::CreateItemEntry(int& nEntries,
                                  CExoArrayList<CSWGuiControl*>& lControls,
                                  unsigned long oidItem, int bInventory,
@@ -981,7 +981,7 @@ int CSWGuiStore::CreateItemEntry(int& nEntries,
     nEntries++;
     return 0;
 }
-// PC 0x00722400
+// PC 0x00722400 GOG 0x00722110
 void CSWGuiStore::ShowBuyGUI()
 {
     CSWGuiListBox* pActiveList;
@@ -1030,7 +1030,7 @@ void CSWGuiStore::OnControlXButton()
     }
 }
 #else
-void CSWGuiStore::OnControlXButton(CSWGuiControl* pControl)  // PC 0x00722D80
+void CSWGuiStore::OnControlXButton(CSWGuiControl* pControl)  // PC 0x00722D80 GOG 0x00722A90
 {
     CServerExoApp* pServer;
     CSWSStore* pStore;
@@ -1049,7 +1049,7 @@ void CSWGuiStore::OnControlXButton(CSWGuiControl* pControl)  // PC 0x00722D80
     }
 }
 #endif
-// PC 0x00722DD0
+// PC 0x00722DD0 GOG 0x00722AE0
 void CSWGuiStore::InitializeStoreType()
 {
     CServerExoApp* pServer;
@@ -1088,7 +1088,7 @@ void CSWGuiStore::InitializeStoreType()
         }
     }
 }
-// PC 0x00722E80
+// PC 0x00722E80 GOG 0x00722B90
 void CSWGuiStore::OnFilterPressed(CSWGuiControl* pControl)
 {
     m_nFilter = (unsigned char)pControl->m_nIndex;

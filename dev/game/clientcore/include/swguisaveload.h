@@ -217,7 +217,7 @@ public:
 #endif
 
     CExoString GetGameDirectory();
-    // PC 0x00708210
+    // PC 0x00708210 GOG 0x00707E00
     CResRef GetPortrait(int nIndex)
     {
         if (nIndex >= 0 && nIndex < 3)
@@ -254,7 +254,7 @@ public:
     void HandleCancelButton(CSWGuiControl*);
     void HandleOkButton(CSWGuiControl*);
     CSWGuiSaveNamePanel(CSWGuiManager*);
-    virtual void HandleInputEvent(int nEvent, int nState)  // PC 0x0070A780
+    virtual void HandleInputEvent(int nEvent, int nState)  // PC 0x0070A780 GOG 0x0070A4C0
     {
         switch (nEvent)
         {
@@ -292,11 +292,11 @@ public:
     int m_nTimePauseDay;
     int m_nTimePauseTime;
     CStatusSummary m_cStatusSummary;
-    KOTOR_AUTOSAVE_PARAMS()  // PC 0x004EC380
+    KOTOR_AUTOSAVE_PARAMS()  // PC 0x004EC380 GOG 0x004EAE70
     {
         Reset();
     }
-    int Reset()  // PC 0x004EA110
+    int Reset()  // PC 0x004EA110 GOG 0x004E99A0
     {
         m_sStartWaypoint = "";
         m_sLoadMusic = "";

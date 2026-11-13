@@ -130,40 +130,40 @@ public:
     virtual void DisableRenderBumpedOut() = 0;
     virtual void SetMaxBlurLength(float fLength) = 0;
     virtual float GetMaxBlurLength() = 0;
-    virtual void SetForcePoints(short nForcePoints)  // PC 0x005EE1C0
+    virtual void SetForcePoints(short nForcePoints)  // PC 0x005EE1C0 GOG 0x005EE1A0
     {
     }
-    virtual short GetForcePoints()  // PC 0x0045CCE0
+    virtual short GetForcePoints()  // PC 0x0045CCE0 GOG 0x0045CE20
     {
         return 0;
     }
-    virtual void SetAlignmentValue(short nAlignmentValue)  // PC 0x005EE1C0
+    virtual void SetAlignmentValue(short nAlignmentValue)  // PC 0x005EE1C0 GOG 0x005EE1A0
     {
     }
-    virtual short GetAlignmentValue()  // PC 0x0045CCE0
+    virtual short GetAlignmentValue()  // PC 0x0045CCE0 GOG 0x0045CE20
     {
         return 0;
     }
     virtual void SetForceGlowColor(float fRed, float fGreen, float fBlue,
-                                   float fAlpha)  // PC 0x00693D50
+                                   float fAlpha)  // PC 0x00693D50 GOG 0x00693AC0
     {
     }
     virtual void GetForceGlowColor(float& fRed, float& fGreen, float& fBlue,
-                                   float& fAlpha)  // PC 0x0045CCF0
+                                   float& fAlpha)  // PC 0x0045CCF0 GOG 0x0045CE30
     {
         fRed = fGreen = fBlue = fAlpha = 0.0f;
     }
-    virtual void EnableForceGlow(bool bEnable)  // PC 0x005EE1C0
+    virtual void EnableForceGlow(bool bEnable)  // PC 0x005EE1C0 GOG 0x005EE1A0
     {
     }
-    virtual bool IsForceGlowEnabled()  // PC 0x00420990
+    virtual bool IsForceGlowEnabled()  // PC 0x00420990 GOG 0x004209A0
     {
         return false;
     }
-    virtual void SetNonForceBlending(bool bNonForceBlending)  // PC 0x005EE1C0
+    virtual void SetNonForceBlending(bool bNonForceBlending)  // PC 0x005EE1C0 GOG 0x005EE1A0
     {
     }
-    virtual bool IsNonForceBlending()  // PC 0x00420990
+    virtual bool IsNonForceBlending()  // PC 0x00420990 GOG 0x004209A0
     {
         return false;
     }

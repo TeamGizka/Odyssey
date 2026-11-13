@@ -164,7 +164,7 @@ public:
                              int bIncludeEffects);
 
     enum { WEAPON_SPECIALIZATION_DAMAGE_BONUS = 2 };
-    // PC 0x005ED200
+    // PC 0x005ED200 GOG 0x005ED1E0
     CSWSCreature* GetCreature() { return m_pCreature; }
     void SetCurrentForcePoints(int nForcePoints) { m_nCurrentForcePoints = nForcePoints; }
     short GetCurrentForcePoints()
@@ -278,7 +278,7 @@ public:
     void CalcLevelUpNumberFeats(unsigned char nClass,
                                unsigned char& nNormalFeats,
                                unsigned char& nBonusFeats);
-    // PC 0x0050B730
+    // PC 0x0050B730 GOG 0x0050B790
     unsigned char GetSimpleAlignmentGoodEvil()
     {
         if (m_nGoodEvilAlignment <= 40)

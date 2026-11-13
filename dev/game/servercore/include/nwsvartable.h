@@ -47,7 +47,7 @@ enum
 class CSWSScriptVar
 {
 public:
-    CSWSScriptVar()  // PC 0x0074C290
+    CSWSScriptVar()  // PC 0x0074C290 GOG 0x0067C940
     {
     }
 

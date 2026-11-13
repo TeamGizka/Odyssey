@@ -1165,7 +1165,7 @@ public:
     static void RenderDrawableSquares();
 
     static void RenderBox(Vector& vMinimum, Vector& vMaximum);
-    static void ActivateTextureStage(unsigned long nStage)  // PC 0x00425700
+    static void ActivateTextureStage(unsigned long nStage)  // PC 0x00425700 GOG 0x00425810
     {
         if (AurMultiTextureAvailable())
         {
@@ -1265,12 +1265,12 @@ inline void GLRender::Clear(unsigned long nFlags)
             ((nFlags & 2) ? GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT : 0) |
             ((nFlags & 4) ? GL_STENCIL_BUFFER_BIT : 0));
 }
-// PC 0x0046E320
+// PC 0x0046E320 GOG 0x004716A0
 inline void GLRender::SetViewPort(int nX, int nY, int nWidth, int nHeight)
 {
     glViewport(nX, nY, nWidth, nHeight);
 }
-// PC 0x00421610
+// PC 0x00421610 GOG 0x00421620
 inline void GLRender::SetActiveTexture(unsigned long nStage)
 {
     cm_uiCurrentStage = nStage;
@@ -1377,7 +1377,7 @@ inline void GLRender::SetTextureCoordGenerationState(
 #endif
 
 #ifndef _XBOX
-inline void AurSetVertexProgramParameter4f(unsigned int nIndex,  // PC 0x00463BF0
+inline void AurSetVertexProgramParameter4f(unsigned int nIndex,  // PC 0x00463BF0 GOG 0x00463D00
                                           float x, float y, float z, float w)
 {
     if (usearbvertexprograms != 0)

@@ -7,10 +7,10 @@ class CExoFile;
 
 struct STR_RES
 {
-    STR_RES()  // PC 0x004145E0
+    STR_RES()  // PC 0x004145E0 GOG 0x00414590
     {
     }
-    // PC 0x0061CDD0
+    // PC 0x0061CDD0 GOG 0x00635DB0
     ~STR_RES()
     {
     }
@@ -111,7 +111,7 @@ public:
     void ParseStr(CExoString& sText);
     int GetLanguageVersion();
     int ExoIsDBCSLeadByte(unsigned char c);
-    // PC 0x006049D0
+    // PC 0x006049D0 GOG 0x006049B0
     virtual void GetTokenValue(const CTlkTableToken&, CExoString&)
     {
     }

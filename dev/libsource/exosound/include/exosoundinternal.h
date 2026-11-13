@@ -45,14 +45,14 @@ public:
 
     CExoSoundPriorityGroup();
 
-    // PC 0x004015A0
+    // PC 0x004015A0 GOG 0x004015A0
     ~CExoSoundPriorityGroup() {}
 
 
 
-    // PC 0x006222F0
+    // PC 0x006222F0 GOG 0x006222C0
     unsigned char GetMaxPlaying() { return m_nMaxPlaying; }
-    // PC 0x00622300
+    // PC 0x00622300 GOG 0x006222D0
     unsigned char GetPlaying() { return m_nPlaying; }
     void SetVolumeDistances(float fMin, float fMax)
     {
@@ -507,7 +507,7 @@ public:
     unsigned long GetOneShotDelay();
     unsigned long GetDelayStart();
     unsigned char GetVolume();
-    // PC 0x007846A0
+    // PC 0x007846A0 GOG 0x00784450
     int GetRetryPlay() { return m_bRetryPlay; }
 
 
@@ -865,7 +865,7 @@ public:
     void SetPosition(Vector vPosition);
     CResRef& GetResRef();
     int GetResourceType();
-    unsigned long GetFadeDuration() { return m_nFadeDuration; }  // PC 0x007846A0
+    unsigned long GetFadeDuration() { return m_nFadeDuration; }  // PC 0x007846A0 GOG 0x00784450
     unsigned long GetFadeStartTime();
     unsigned char GetVolume();
     CExoStreamingSoundSourceInternal(CExoSoundInternal* pSoundInternal,

@@ -269,7 +269,7 @@ const int CExoInput::JOYSTICK_BUTTON13 = 106;
 const int CExoInput::JOYSTICK_BUTTON14 = 107;
 const int CExoInput::JOYSTICK_BUTTON15 = 108;
 #endif
-// PC 0x0062B6F0
+// PC 0x0062B6F0 GOG 0x0062B5F0
 CExoInput::CExoInput()
 {
 #ifdef _XBOX
@@ -278,24 +278,24 @@ CExoInput::CExoInput()
     m_pExoInputInternal = new CExoInputInternal(g_hInst, g_hRenderWnd);
 #endif
 }
-// PC 0x0062B760
+// PC 0x0062B760 GOG 0x0062B660
 int CExoInput::CreateNewEvent(unsigned long nArg1, int nArg2, int nArg3,
                               unsigned long nArg4, unsigned long nArg5)
 {
     return m_pExoInputInternal->CreateNewEvent(nArg1, nArg2, nArg3, nArg4,
                                                nArg5);
 }
-// PC 0x0062B770
+// PC 0x0062B770 GOG 0x0062B670
 void CExoInput::AddEvent(unsigned long nArg1, unsigned long nArg2)
 {
     m_pExoInputInternal->AddEvent(nArg1, nArg2);
 }
-// PC 0x0062B780
+// PC 0x0062B780 GOG 0x0062B680
 int CExoInput::ScaleEvent(unsigned long nArg1, float fArg2, float fArg3)
 {
     return m_pExoInputInternal->ScaleEvent(nArg1, fArg2, fArg3);
 }
-// PC 0x0062B790
+// PC 0x0062B790 GOG 0x0062B690
 int CExoInput::SetEventRepeatable(unsigned long nArg1, unsigned long nArg2,
                                   unsigned long nArg3)
 {
@@ -308,65 +308,65 @@ void CExoInput::SetEventNonRepeatable(unsigned long nEvent)
     m_pExoInputInternal->SetEventNonRepeatable(nEvent);
 }
 #endif
-// PC 0x0062B7A0
+// PC 0x0062B7A0 GOG 0x0062B6A0
 void CExoInput::ClearEventRepeat(unsigned long nArg1)
 {
     m_pExoInputInternal->ClearEventRepeat(nArg1);
 }
-// PC 0x0062B7B0
+// PC 0x0062B7B0 GOG 0x0062B6B0
 void CExoInput::CoolDownEvent(unsigned long nArg1, unsigned long nArg2)
 {
     m_pExoInputInternal->CoolDownEvent(nArg1, nArg2);
 }
-// PC 0x0062B7C0
+// PC 0x0062B7C0 GOG 0x0062B6C0
 CExoInputEventDesc* CExoInput::GetEvent(unsigned long nEvent, int nEventClass)
 {
     return m_pExoInputInternal->GetEvent(nEvent, nEventClass);
 }
-// PC 0x0062B7D0
+// PC 0x0062B7D0 GOG 0x0062B6D0
 float CExoInput::PollInput(unsigned long nEvent, int nEventClass)
 {
     return m_pExoInputInternal->PollInput(nEvent, nEventClass);
 }
-// PC 0x0062B7E0
+// PC 0x0062B7E0 GOG 0x0062B6E0
 void CExoInput::ClearEvents()
 {
     m_pExoInputInternal->ClearEvents();
 }
-// PC 0x0062B7F0
+// PC 0x0062B7F0 GOG 0x0062B6F0
 void CExoInput::WriteEventToFile(unsigned long nTimeStamp, int nEvent,
                                  CExoFile* pFile)
 {
     m_pExoInputInternal->WriteEventToFile(nTimeStamp, nEvent, pFile);
 }
-// PC 0x0062B800
+// PC 0x0062B800 GOG 0x0062B700
 void CExoInput::Configure()
 {
     m_pExoInputInternal->Configure();
 }
-// PC 0x0062B810
+// PC 0x0062B810 GOG 0x0062B710
 int CExoInput::GetActive()
 {
     return m_pExoInputInternal->GetActive();
 }
-// PC 0x0062B820
+// PC 0x0062B820 GOG 0x0062B720
 void CExoInput::KeyboardModeOn()
 {
     m_pExoInputInternal->KeyboardModeOn();
 }
-// PC 0x0062B830
+// PC 0x0062B830 GOG 0x0062B730
 void CExoInput::KeyboardModeOff()
 {
     m_pExoInputInternal->KeyboardModeOff();
 }
-// PC 0x00638950
+// PC 0x00638950 GOG 0x00638840
 int CExoInput::GetKeyboardMode()
 {
     return m_pExoInputInternal->m_bKeyboardMode;
 }
 
 #ifndef _XBOX
-void CExoInput::UpdateJoysticks()  // PC 0x0062B870
+void CExoInput::UpdateJoysticks()  // PC 0x0062B870 GOG 0x00638C70
 {
     m_pExoInputInternal->UpdateJoysticks();
 }
@@ -380,12 +380,12 @@ CExoInput::~CExoInput()
         m_pExoInputInternal = NULL;
     }
 }
-// PC 0x0062B840
+// PC 0x0062B840 GOG 0x0062B740
 void CExoInput::SetActive(int bActive)
 {
     m_pExoInputInternal->SetActive(bActive);
 }
-// PC 0x0062B850
+// PC 0x0062B850 GOG 0x0062B750
 int CExoInput::SetRumble(int nArg1, float fArg2, float fArg3,
                          unsigned long nArg4)
 {
@@ -413,12 +413,12 @@ int CExoInput::SetPortBinding(unsigned long nBinding)
     return m_pExoInputInternal->SetPortBinding(nBinding);
 }
 #endif
-// PC 0x0062B870
+// PC 0x0062B870 GOG 0x00638C70
 void CExoInput::EndAttemptedBind()
 {
     m_pExoInputInternal->EndAttemptedBind();
 }
-// PC 0x0062B860
+// PC 0x0062B860 GOG 0x0062B760
 int CExoInput::GetMainDeviceLost()
 {
     return m_pExoInputInternal->GetMainDeviceLost();
@@ -430,12 +430,12 @@ void CExoInput::UpdateJoysticks()
     m_pExoInputInternal->UpdateJoysticks();
 }
 #endif
-// PC 0x0062B880
+// PC 0x0062B880 GOG 0x0062B770
 void CExoInput::PauseRumble()
 {
     m_pExoInputInternal->PauseRumble();
 }
-// PC 0x0062B890
+// PC 0x0062B890 GOG 0x0062B780
 void CExoInput::UnpauseRumble()
 {
     m_pExoInputInternal->UnpauseRumble();
@@ -454,53 +454,53 @@ int CExoInput::GetDebugOption()
 #endif
 
 #ifndef _XBOX
-void CExoInput::BufferEvent(void* pArg1)  // PC 0x0062B8A0
+void CExoInput::BufferEvent(void* pArg1)  // PC 0x0062B8A0 GOG 0x0062B790
 {
     m_pExoInputInternal->BufferEvent(pArg1);
 }
-// PC 0x0062B8B0
+// PC 0x0062B8B0 GOG 0x0062B7A0
 int CExoInput::SetMouseMode(unsigned char cArg1)
 {
     return m_pExoInputInternal->SetMouseMode(cArg1);
 }
-// PC 0x0062B8C0
+// PC 0x0062B8C0 GOG 0x0062B7B0
 void CExoInput::RefreshMouseCursor(int nArg1)
 {
     m_pExoInputInternal->RefreshMouseCursor(nArg1);
 }
-// PC 0x0062B8D0
+// PC 0x0062B8D0 GOG 0x0062B7C0
 int CExoInput::SetMouseCursor(int nArg1, int nArg2, int nArg3)
 {
     return m_pExoInputInternal->SetMouseCursor(nArg1, nArg2, nArg3);
 }
-// PC 0x0062B8E0
+// PC 0x0062B8E0 GOG 0x0062B7D0
 void CExoInput::SetMousePos(int nX, int nY, bool bKeepWarpState)
 {
     m_pExoInputInternal->SetMousePos(nX, nY, bKeepWarpState);
 }
-// PC 0x0062B8F0
+// PC 0x0062B8F0 GOG 0x0062B7E0
 void CExoInput::HideMouse()
 {
     m_pExoInputInternal->HideMouse();
 }
-// PC 0x0062B900
+// PC 0x0062B900 GOG 0x0062B7F0
 void CExoInput::ShowMouse()
 {
     m_pExoInputInternal->ShowMouse();
 }
 #endif
-// PC 0x0062B910
+// PC 0x0062B910 GOG 0x0062B800
 void CExoInput::ClearAllInputEventDescriptions()
 {
     m_pExoInputInternal->ClearAllInputEventDescriptions();
 }
 
 #ifndef _XBOX
-void CExoInput::GetMouseDelta(float* fArg1, float* fArg2)  // PC 0x0062B920
+void CExoInput::GetMouseDelta(float* fArg1, float* fArg2)  // PC 0x0062B920 GOG 0x0062B810
 {
     m_pExoInputInternal->GetMouseDelta(fArg1, fArg2);
 }
-// PC 0x0062B930
+// PC 0x0062B930 GOG 0x0062B820
 void CExoInput::UpdateMouseDelta(float fArg1)
 {
     m_pExoInputInternal->UpdateMouseDelta(fArg1);
@@ -520,31 +520,31 @@ int CExoInput::IsModalKeyDown_Alt()
 {
     return m_pExoInputInternal->IsModalKeyDown_Alt();
 }
-// PC 0x0062B940
+// PC 0x0062B940 GOG 0x0062B830
 int CExoInput::GetLastCapturedKeyboardKey()
 {
     return m_pExoInputInternal->GetLastCapturedKeyboardKey();
 }
-// PC 0x0062B950
+// PC 0x0062B950 GOG 0x0062B840
 CExoString CExoInput::GetDisplayCharacterForKey(int nKey)
 {
     return m_pExoInputInternal->GetDisplayCharacterForKey(nKey);
 }
 #endif
-// PC 0x0062B9C0
+// PC 0x0062B9C0 GOG 0x0062B8B0
 CExoArrayList<CExoInputEvent> CExoInput::GetEvents(int& nEvents, int nEventClass)
 {
     return m_pExoInputInternal->GetEvents(nEvents, nEventClass);
 }
 
 #ifndef _XBOX
-unsigned char CExoInput::GetMouseMode()  // PC 0x0062B9F0
+unsigned char CExoInput::GetMouseMode()  // PC 0x0062B9F0 GOG 0x0062B8E0
 {
     EXOINPUT_TRACE();
     return m_pExoInputInternal->m_nMouseMode;
 }
 #endif
-// PC 0x0062BA00
+// PC 0x0062BA00 GOG 0x0062B8F0
 int CExoInput::EventExists(unsigned long nEvent)
 {
     EXOINPUT_TRACE();
@@ -558,12 +558,12 @@ int CExoInput::EventExists(unsigned long nEvent)
 }
 
 #ifndef _XBOX
-void CExoInput::SetCaptureKeyboardKeys(int bCapture)  // PC 0x0062BA30
+void CExoInput::SetCaptureKeyboardKeys(int bCapture)  // PC 0x0062BA30 GOG 0x0062B920
 {
     EXOINPUT_TRACE();
     m_pExoInputInternal->m_bCaptureKeyboardKeys = bCapture;
 }
-// PC 0x0062BA40
+// PC 0x0062BA40 GOG 0x0062B930
 int CExoInput::GetLastSetMouseDownState()
 {
     EXOINPUT_TRACE();

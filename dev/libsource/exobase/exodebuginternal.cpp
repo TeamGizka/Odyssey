@@ -12,7 +12,7 @@
 
 bool g_bDisplayServicedResources = false;
 bool g_bExtendedResourceTracking = false;
-// PC 0x00637A30
+// PC 0x00637A30 GOG 0x00637930
 CExoDebugInternal::CExoDebugInternal()
 {
     m_pScriptLogFile = 0;
@@ -69,7 +69,7 @@ void CExoDebugInternal::InitializeWarningFile()
         fclose(pFile);
     }
 }
-// PC 0x00637B80
+// PC 0x00637B80 GOG 0x00637A70
 void CExoDebugInternal::Warning(int line, char* file, const char* message)
 {
     CExoString sWarning;
@@ -165,7 +165,7 @@ void CExoDebugInternal::Warning(int line, char* file, const char* message)
         fclose(pFile);
     }
 }
-// PC 0x00637A50
+// PC 0x00637A50 GOG 0x00637950
 void CExoDebugInternal::GetCurrentTimestamp(CExoString& timestamp)
 {
     struct _timeb tb;
@@ -175,7 +175,7 @@ void CExoDebugInternal::GetCurrentTimestamp(CExoString& timestamp)
     sprintf(szTimestamp, "%.19s", ctime(&tb.time));
     timestamp.Format(szTimestamp);
 }
-// PC 0x00637A90
+// PC 0x00637A90 GOG 0x00637990
 void CExoDebugInternal::WriteToScriptLogFile(const CExoString& text)
 {
     if (m_bLogFilesOpen)
@@ -183,7 +183,7 @@ void CExoDebugInternal::WriteToScriptLogFile(const CExoString& text)
         m_pScriptLogFile->Write(text);
     }
 }
-// PC 0x00637AA0
+// PC 0x00637AA0 GOG 0x006379A0
 void CExoDebugInternal::FlushScriptLogFile()
 {
     if (m_bLogFilesOpen)
@@ -191,7 +191,7 @@ void CExoDebugInternal::FlushScriptLogFile()
         m_pScriptLogFile->Flush();
     }
 }
-// PC 0x005EE1C0
+// PC 0x005EE1C0 GOG 0x005EE1A0
 void CExoDebugInternal::OpenLogFiles(const CExoString& path)
 {
 }
@@ -233,7 +233,7 @@ void CExoDebugInternal::CloseLogFiles()
         m_bLogFilesOpen = 0;
     }
 }
-// PC 0x00637E60
+// PC 0x00637E60 GOG 0x00637D50
 CExoDebugInternal::~CExoDebugInternal()
 {
     CloseLogFiles();

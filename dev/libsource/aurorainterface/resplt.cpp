@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x00784380
+// PC 0x00784380 GOG 0x00784150
 CResPLT::CResPLT()
 {
     m_bDecoded = 0;
@@ -11,11 +11,11 @@ CResPLT::CResPLT()
     m_pPLTHeader = 0;
     m_bAllocSuffix = 1;
 }
-// PC 0x007843B0
+// PC 0x007843B0 GOG 0x00784180
 CResPLT::~CResPLT()
 {
 }
-// PC 0x007843C0
+// PC 0x007843C0 GOG 0x00784190
 int CResPLT::GetPLTAttrib(unsigned long* pnA, unsigned long* pnB, unsigned long* pnC)
 {
     if (m_pPLTHeader == 0)
@@ -27,7 +27,7 @@ int CResPLT::GetPLTAttrib(unsigned long* pnA, unsigned long* pnB, unsigned long*
     *pnC = m_pPLTHeader[2];
     return 1;
 }
-// PC 0x00784400
+// PC 0x00784400 GOG 0x007841D0
 int CResPLT::OnResourceFreed()
 {
     if (m_bDecoded != 0 && m_pPLTData != 0)
@@ -43,7 +43,7 @@ int CResPLT::OnResourceFreed()
     m_pPLTHeader = 0;
     return 1;
 }
-// PC 0x007844F0
+// PC 0x007844F0 GOG 0x007842C0
 int CResPLT::OnResourceServiced()
 {
     unsigned long* pHeader = (unsigned long*)m_pResource;
@@ -92,7 +92,7 @@ int CResPLT::OnResourceServiced()
     }
     return 1;
 }
-// PC 0x00784440
+// PC 0x00784440 GOG 0x00784210
 int CResPLT::ReadRLEPLT()
 {
     unsigned char* pSource = m_pPLTData;
@@ -127,7 +127,7 @@ int CResPLT::ReadRLEPLT()
     m_bDecoded = 1;
     return 1;
 }
-// PC 0x00786830
+// PC 0x00786830 GOG 0x00786600
 unsigned char* CResPLT::GetPLTDataPtr()
 {
     return m_pPLTData;

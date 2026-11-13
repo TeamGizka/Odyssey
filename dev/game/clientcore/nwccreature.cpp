@@ -157,11 +157,11 @@ int RenderTriangles = 0;
 int g_nHackAlignment = -1;
 static CExoString g_sHeadTurnBone = "";
 
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 CSWCCombatAttackData::~CSWCCombatAttackData()
 {
 }
-// PC 0x0069CF50
+// PC 0x0069CF50 GOG 0x0069CD30
 void CSWCCreature::UnloadModel(unsigned char nModel)
 {
     if (m_pAnimBase != NULL)
@@ -169,7 +169,7 @@ void CSWCCreature::UnloadModel(unsigned char nModel)
         m_pAnimBase->UnloadModel(nModel);
     }
 }
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 void CSWCCreature::UpdateMonkVisuals()
 {
 }
@@ -180,7 +180,7 @@ int CSWCCreature::ResetAnimationState()
         SetAnimation(CREATURE_ANIMATION_COMBAT_READY, 0, 0);
     return 1;
 }
-// PC 0x00668780
+// PC 0x00668780 GOG 0x00668520
 void CSWCCreature::GetSelfForcePowers(
     CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
@@ -244,7 +244,7 @@ void CSWCCreature::GetSelfForcePowers(
 #endif
     }
 }
-// PC 0x00664880
+// PC 0x00664880 GOG 0x00664620
 inline CResRef CSWCCreature::GetPortrait(int bAlternate)
 {
     if (m_pStats != NULL)
@@ -253,7 +253,7 @@ inline CResRef CSWCCreature::GetPortrait(int bAlternate)
     }
     return CResRef("");
 }
-// PC 0x006648C0
+// PC 0x006648C0 GOG 0x00664660
 inline CResRef CSWCCreature::GetPortrait(unsigned char nSize)
 {
     if (m_pStats != NULL)
@@ -262,19 +262,19 @@ inline CResRef CSWCCreature::GetPortrait(unsigned char nSize)
     }
     return CResRef("");
 }
-// PC 0x00664900
+// PC 0x00664900 GOG 0x006646A0
 inline unsigned short CSWCCreature::GetPortraitId()
 {
     if (m_pStats != NULL)
         return m_pStats->m_nPortraitId;
     return PORTRAIT_INVALID;
 }
-// PC 0x00664920
+// PC 0x00664920 GOG 0x006646C0
 inline CExoString CSWCCreature::GetName()
 {
     return m_pStats->m_sFirstName;
 }
-// PC 0x00664950
+// PC 0x00664950 GOG 0x006646F0
 inline int CSWCCreature::IsHostile()
 {
     return this->m_nHostile == HOSTILE_STATE_HOSTILE;
@@ -285,17 +285,17 @@ void CSWCCreature::DoFootstepRumble(int nFootstepType)
     g_pAppManager->GetClientExoApp()->LookUpAndPerformRumbleWithCutOff(
         nFootstepType, 0, m_vPosition);
 }
-// PC 0x00657620
+// PC 0x00657620 GOG 0x006574D0
 void CSWCCreature::SetMoveOrientation(const Vector& vOrientation)
 {
     m_vMoveOrientation = normalize(vOrientation);
 }
-// PC 0x00657660
+// PC 0x00657660 GOG 0x00657510
 void CSWCCreature::SetDesiredOrientation(const Vector& vOrientation)
 {
     m_vDesiredOrientation = normalize(vOrientation);
 }
-// PC 0x006576E0
+// PC 0x006576E0 GOG 0x00657590
 void HitGroundEvent(CAurObject* pObject, char* sEvent, void* pData)
 {
     CExoString sSound;
@@ -346,7 +346,7 @@ void HitGroundEvent(CAurObject* pObject, char* sEvent, void* pData)
             (char*)sSound.CStr(), pCreature->m_vPosition, 0.0f, 0, 0, 0, 0.0f, 0.0f);
     }
 }
-// PC 0x00657910
+// PC 0x00657910 GOG 0x006577C0
 CSWCCombatAttackData::CSWCCombatAttackData()
 {
     m_oidCreature = OBJECT_INVALID;
@@ -370,7 +370,7 @@ CSWCCombatAttackData::CSWCCombatAttackData()
     m_nImpactY = 0;
     m_pNextAttack = NULL;
 }
-// PC 0x00657990
+// PC 0x00657990 GOG 0x00657840
 void CSWCCombatAttackData::Copy(CSWCCombatAttackData* pAttackData)
 {
     m_bHit = pAttackData->m_bHit;
@@ -394,7 +394,7 @@ void CSWCCombatAttackData::Copy(CSWCCombatAttackData* pAttackData)
     m_nImpactY = pAttackData->m_nImpactY;
     m_pNextAttack = pAttackData->m_pNextAttack;
 }
-// PC 0x00657A30
+// PC 0x00657A30 GOG 0x006578E0
 CSWCCreaturePartyStatus::CSWCCreaturePartyStatus()
 {
     m_nUnknown04 = 1;
@@ -403,7 +403,7 @@ CSWCCreaturePartyStatus::CSWCCreaturePartyStatus()
     m_nUnknown14 = OBJECT_INVALID;
     m_sUnknown18 = "";
 }
-// PC 0x0065D2B0
+// PC 0x0065D2B0 GOG 0x0065D0C0
 void SwingShortEvent(CAurObject* pObject, char* sEvent, void* pData)
 {
     CExoString sSound("SwingShort");
@@ -422,7 +422,7 @@ void SwingShortEvent(CAurObject* pObject, char* sEvent, void* pData)
         }
     }
 }
-// PC 0x0065D330
+// PC 0x0065D330 GOG 0x0065D140
 void SwingLongEvent(CAurObject* pObject, char* sEvent, void* pData)
 {
     CExoString sSound("SwingLong");
@@ -441,7 +441,7 @@ void SwingLongEvent(CAurObject* pObject, char* sEvent, void* pData)
         }
     }
 }
-// PC 0x0065D3B0
+// PC 0x0065D3B0 GOG 0x0065D1C0
 void SwingTwirlEvent(CAurObject* pObject, char* sEvent, void* pData)
 {
     CExoString sSound("SwingTwirl");
@@ -460,7 +460,7 @@ void SwingTwirlEvent(CAurObject* pObject, char* sEvent, void* pData)
         }
     }
 }
-// PC 0x0065D430
+// PC 0x0065D430 GOG 0x0065D240
 void HitClashEvent(CAurObject* pObject, char* sEvent, void* pData)
 {
     CExoString sSound("Clash");
@@ -479,7 +479,7 @@ void HitClashEvent(CAurObject* pObject, char* sEvent, void* pData)
         }
     }
 }
-// PC 0x0065D4B0
+// PC 0x0065D4B0 GOG 0x0065D2C0
 void HitContactEvent(CAurObject* pObject, char* sEvent, void* pData)
 {
     CSWCCombatAttackData* pAttackData =
@@ -497,7 +497,7 @@ void HitContactEvent(CAurObject* pObject, char* sEvent, void* pData)
         }
     }
 }
-// PC 0x0065D4E0
+// PC 0x0065D4E0 GOG 0x0065D2F0
 void HitParryEvent(CAurObject* pObject, char* sEvent, void* pData)
 {
     CExoString sSound("Parry");
@@ -516,7 +516,7 @@ void HitParryEvent(CAurObject* pObject, char* sEvent, void* pData)
         }
     }
 }
-// PC 0x0065D560
+// PC 0x0065D560 GOG 0x0065D370
 void SwitchWeaponEvent(CAurObject* pObject, char* sEvent, void* pData)
 {
     CSWCCreature* pCreature = static_cast<CSWCCreature*>(pData);
@@ -657,7 +657,7 @@ static void DeleteStreamingSource(CExoStreamingSoundSource* pSource)
 {
     delete pSource;
 }
-// PC 0x0065DA90
+// PC 0x0065DA90 GOG 0x0065D8A0
 void CSWCCreature::PlaySoundSetSound(unsigned short nSound, int b3D)
 {
     STR_RES strRes;
@@ -707,17 +707,17 @@ void CSWCCreature::PlaySoundSetSound(unsigned short nSound, int b3D)
         }
     }
 }
-// PC 0x00664280
+// PC 0x00664280 GOG 0x00664030
 void Blur(CAurObject* pObject, char* sEvent, void* pData)
 {
     static_cast<CSWCCreature*>(pData)->BlurWeapon(1);
 }
-// PC 0x00664290
+// PC 0x00664290 GOG 0x00664040
 void Unblur(CAurObject* pObject, char* sEvent, void* pData)
 {
     static_cast<CSWCCreature*>(pData)->BlurWeapon(0);
 }
-// PC 0x0065DCE0
+// PC 0x0065DCE0 GOG 0x0065DAF0
 void CSWCCreature::BlurWeapon(int bBlur)
 {
     if (m_bBlurWeapon != bBlur)
@@ -737,7 +737,7 @@ void CSWCCreature::BlurWeapon(int bBlur)
         }
     }
 }
-// PC 0x0065DD40
+// PC 0x0065DD40 GOG 0x0065DB50
 int CSWCCreature::ComputeWeaponOverlays(int bCheckAnimations, int bUnused)
 {
     CSWCAnimBase* pAnimationBase = GetAnimationBase();
@@ -791,7 +791,7 @@ int CSWCCreature::ComputeWeaponOverlays(int bCheckAnimations, int bUnused)
     }
     return 1;
 }
-// PC 0x0065DE90
+// PC 0x0065DE90 GOG 0x0065DCA0
 void CSWCCreature::RotateCreatureToOrientation(const Vector& vOrientation)
 {
     if (GetServerCreature() != NULL &&
@@ -915,7 +915,7 @@ void CSWCCreature::RotateCreatureToOrientation(const Vector& vOrientation)
         SetOrientation(vNew);
     }
 }
-// PC 0x0065E620
+// PC 0x0065E620 GOG 0x0065E430
 void CSWCCreature::ClientServerSyncHandler_Orientation(const Vector& vOrientation)
 {
     m_vDesiredOrientation = normalize(vOrientation);
@@ -929,7 +929,7 @@ void CSWCCreature::ClientServerSyncHandler_Orientation(const Vector& vOrientatio
         RotateCreatureToOrientation(m_vMoveOrientation);
     }
 }
-// PC 0x0065E6B0
+// PC 0x0065E6B0 GOG 0x0065E4C0
 void CSWCCreature::ClientServerSyncHandler_Position(const Vector& vPosition,
                                                    int nAnimation, float fBlend)
 {
@@ -1035,7 +1035,7 @@ void CSWCCreature::ClientServerSyncHandler_Position(const Vector& vPosition,
             RotateCreatureToOrientation(m_vMoveOrientation);
     }
 }
-// PC 0x0065EB40
+// PC 0x0065EB40 GOG 0x0065E950
 void CSWCCreature::SaveCharGenCreature()
 {
     NwccreatureTrace1();
@@ -1314,7 +1314,7 @@ void CSWCCreature::SaveCharGenCreature()
     pGFF->WriteGFFFile(sPath.CStr(), RESTYPE_BIC);
     delete pGFF;
 }
-// PC 0x0065FDE0
+// PC 0x0065FDE0 GOG 0x0065FBF0
 int CSWCCreature::SetAppearance(CCAppearanceInfo* pAppearance,
                               unsigned char nParts, int bUpdateVisualEffects,
                               int bKeepAlignment)
@@ -1369,7 +1369,7 @@ int CSWCCreature::SetAppearance(CCAppearanceInfo* pAppearance,
     m_pAppearance->ForceAnimate();
     return 1;
 }
-// PC 0x00660000
+// PC 0x00660000 GOG 0x0065FE10
 void CSWCCreature::UpdateWeaponClass()
 {
     NwccreatureTrace1();
@@ -1464,7 +1464,7 @@ void CSWCCreature::UpdateWeaponClass()
             GetAnimationBase()->m_nD4 = 0;
     }
 }
-// PC 0x00660250
+// PC 0x00660250 GOG 0x00660060
 void CSWCCreature::UpdateVisibleWeapons(unsigned long nSlot, CSWCItem* pItem, int bInstant,
                                         int bSuppressDraw)
 {
@@ -1504,7 +1504,7 @@ void CSWCCreature::UpdateVisibleWeapons(unsigned long nSlot, CSWCItem* pItem, in
     }
     SwitchWeaponEvent(NULL, NULL, this);
 }
-// PC 0x00660340
+// PC 0x00660340 GOG 0x00660150
 void CSWCCreature::SetStealthState(int nState, int bSuppressAnimation)
 {
     int bStateChanged = 0;
@@ -1599,7 +1599,7 @@ void CSWCCreature::SetStealthState(int nState, int bSuppressAnimation)
     }
 }
 
-// PC 0x006605C0
+// PC 0x006605C0 GOG 0x006603D0
 void CSWCCreature::UpdateRelativePerception(unsigned long oidObject)
 {
     int i;
@@ -1644,7 +1644,7 @@ void CSWCCreature::UpdateRelativePerception(unsigned long oidObject)
         }
     }
 }
-// PC 0x006642A0
+// PC 0x006642A0 GOG 0x00664050
 CSWCCreature::CSWCCreature()
     : CSWCObject(CGameObject::OBJECT_TYPE_CREATURE)
 {
@@ -1787,7 +1787,7 @@ CSWCCreature::CSWCCreature()
     m_n464 = -1;
     m_n468 = 0;
 }
-// PC 0x00664960
+// PC 0x00664960 GOG 0x00664700
 CSWCCreature::~CSWCCreature()
 {
     delete m_pRollingFootstepSound;
@@ -1852,7 +1852,7 @@ CSWCCreature::~CSWCCreature()
     ClearVisibilityList();
     g_pAppManager->GetClientExoApp()->ClearCachedCreatures(this);
 }
-// PC 0x00657AA0
+// PC 0x00657AA0 GOG 0x00657950
 void CSWCCreature::SetSoundSet(unsigned short nSoundSet)
 {
     if (nSoundSet != m_nSoundSet)
@@ -1878,7 +1878,7 @@ void CSWCCreature::SetSoundSet(unsigned short nSoundSet)
         }
     }
 }
-// PC 0x00657B80
+// PC 0x00657B80 GOG 0x00657A30
 int CSWCCreature::GetSoundSetStrres(unsigned short nSound, STR_RES& strRes)
 {
     if (m_nSoundSet == 0xFFFF)
@@ -1897,13 +1897,13 @@ int CSWCCreature::GetSoundSetStrres(unsigned short nSound, STR_RES& strRes)
     m_pSoundSet->m_pRes->Release();
     return 1;
 }
-// PC 0x00657BE0
+// PC 0x00657BE0 GOG 0x00657A90
 void CSWCCreature::ResetUpdateTimes(unsigned long nDay, unsigned long nTime)
 {
     m_nLastUpdateDay = nDay;
     m_nLastUpdateTime = nTime;
 }
-// PC 0x00657C00
+// PC 0x00657C00 GOG 0x00657AB0
 void CSWCCreature::ResetCameraToFollow()
 {
     if (g_pAppManager->m_pClientExoApp->GetSWParty()->GetIndex(m_nId) == 0)
@@ -1922,7 +1922,7 @@ void CSWCCreature::ResetCameraToFollow()
             pCamera->ClearLookAtTarget();
     }
 }
-// PC 0x00657C90
+// PC 0x00657C90 GOG 0x00657B40
 void CSWCCreature::SetPosition(const Vector& vPosition)
 {
     m_vPosition = vPosition;
@@ -1942,7 +1942,7 @@ void CSWCCreature::SetPosition(const Vector& vPosition)
     }
     UpdateWalkMesh();
 }
-// PC 0x00657CF0
+// PC 0x00657CF0 GOG 0x00657BA0
 void CSWCCreature::SetDesiredOrientationForLock()
 {
     CGameObjectArray* pObjectArray =
@@ -2001,7 +2001,7 @@ void CSWCCreature::LoadMonkVisuals()
         }
     }
 }
-// PC 0x00657DB0
+// PC 0x00657DB0 GOG 0x00657C60
 void CSWCCreature::UnloadMonkVisuals()
 {
     if (m_pMonkVisual != NULL)
@@ -2079,7 +2079,7 @@ void CSWCCreature::StopSpecialAttacks(unsigned char nType)
         break;
     }
 }
-// PC 0x00657E00
+// PC 0x00657E00 GOG 0x00657CB0
 void CSWCCreature::HandleConjuringCreature()
 {
     int bConjuring = 0;
@@ -2164,7 +2164,7 @@ void CSWCCreature::HandleConjuringCreature()
     m_pSpellCastVisual->UpdateTimer(m_nTimeDelta);
     m_bConjuringCreature = bConjuring;
 }
-// PC 0x006580D0
+// PC 0x006580D0 GOG 0x00657F80
 void CSWCCreature::MoveCreatureToPosition(const Vector& vPosition)
 {
     if (m_nTimeDelta >= m_nDesiredPositionTimer)
@@ -2193,12 +2193,12 @@ void CSWCCreature::MoveCreatureToPosition(const Vector& vPosition)
         (float)(m_nDesiredPositionTimer + m_nTimeDelta);
     SetPosition(vPosition + (m_vPosition - vPosition) * fFraction);
 }
-// PC 0x006581F0
+// PC 0x006581F0 GOG 0x006580A0
 void CSWCCreature::ResetDesiredPositionTimer()
 {
     this->m_nDesiredPositionTimer = 512;
 }
-// PC 0x00658200
+// PC 0x00658200 GOG 0x006580B0
 void CSWCCreature::ComputeZValue(CSWCArea* pArea, Vector* pPosition,
                                  float fUnused, Vector* pUnused)
 {
@@ -2209,7 +2209,7 @@ void CSWCCreature::ComputeZValue(CSWCArea* pArea, Vector* pPosition,
             pArea->m_cAreaResRef, *pPosition, 1);
     }
 }
-// PC 0x00658240
+// PC 0x00658240 GOG 0x006580F0
 float CSWCCreature::ComputeSpeedFactor(float fSpeed)
 {
     Vector* pWayPoint = m_pCurrentWayPoint;
@@ -2256,7 +2256,7 @@ float CSWCCreature::ComputeSpeedFactor(float fSpeed)
         return SWCCREATURE_MIN_SPEED_FACTOR;
     return fFactor;
 }
-// PC 0x006583E0
+// PC 0x006583E0 GOG 0x00658290
 void CSWCCreature::ClientServerSyncHandler_Animation(int nAnimation,
                                                      float fSpeed)
 {
@@ -2278,12 +2278,12 @@ void CSWCCreature::ClientServerSyncHandler_Animation(int nAnimation,
         }
     }
 }
-// PC 0x00658470
+// PC 0x00658470 GOG 0x00658320
 Vector* CSWCCreature::GetCurrentWayPoint()
 {
     return this->m_pCurrentWayPoint;
 }
-// PC 0x00658480
+// PC 0x00658480 GOG 0x00658330
 Vector* CSWCCreature::GetEndWayPoint()
 {
     unsigned short nWayPointCount = m_nWayPointCount;
@@ -2297,7 +2297,7 @@ Vector* CSWCCreature::GetEndWayPoint()
         return m_pWayPoints + nWayPointCount - 1;
     }
 }
-// PC 0x006584A0
+// PC 0x006584A0 GOG 0x00658350
 Vector* CSWCCreature::GetStartWayPoint()
 {
     if ((this->m_nWayPointCount == 0))
@@ -2309,7 +2309,7 @@ Vector* CSWCCreature::GetStartWayPoint()
         return this->m_pWayPoints;
     }
 }
-// PC 0x006584C0
+// PC 0x006584C0 GOG 0x00658370
 int CSWCCreature::RequestModel(const CResRef& cModel, const CResRef& cTexture,
                               unsigned char nAnimType)
 {
@@ -2363,7 +2363,7 @@ int CSWCCreature::RequestModel(const CResRef& cModel, const CResRef& cTexture,
     }
     return 1;
 }
-// PC 0x00658780
+// PC 0x00658780 GOG 0x00658630
 int CSWCCreature::MoveToNextWayPoint()
 {
     unsigned short nWayPointCount = m_nWayPointCount;
@@ -2383,7 +2383,7 @@ int CSWCCreature::MoveToNextWayPoint()
     m_pCurrentWayPoint = pCurrentWayPoint + 1;
     return 1;
 }
-// PC 0x006587C0
+// PC 0x006587C0 GOG 0x00658670
 int CSWCCreature::GetWayPoints(unsigned short* pnWayPointCount, Vector** ppWayPoints,
                                unsigned short* pnCurrentWayPoint)
 {
@@ -2404,7 +2404,7 @@ int CSWCCreature::GetWayPoints(unsigned short* pnWayPointCount, Vector** ppWayPo
     *pnCurrentWayPoint = 0;
     return nWayPoint;
 }
-// PC 0x00658820
+// PC 0x00658820 GOG 0x006586D0
 CExoString CSWCCreature::GetSaveCreatureFilename(const CExoString& sFirstName,
                                                const CExoString& sLastName)
 {
@@ -2432,7 +2432,7 @@ CExoString CSWCCreature::GetSaveCreatureFilename(const CExoString& sFirstName,
     }
     return sFilename;
 }
-// PC 0x00658AB0
+// PC 0x00658AB0 GOG 0x00658960
 void CSWCCreature::SetWayPoints(unsigned short nWayPointCount, Vector* pWayPoints)
 {
     if (m_nWayPointCount == nWayPointCount)
@@ -2462,13 +2462,13 @@ void CSWCCreature::SetWayPoints(unsigned short nWayPointCount, Vector* pWayPoint
         memcpy(m_pWayPoints, pWayPoints, nWayPointCount * sizeof(Vector));
     }
 }
-// PC 0x00658BE0
+// PC 0x00658BE0 GOG 0x00658A90
 void CSWCCreature::SetCreatureType(unsigned char nType)
 {
     m_nCreatureType = nType;
     m_pAnimBase->m_nAnimSet = nType;
 }
-// PC 0x00658C00
+// PC 0x00658C00 GOG 0x00658AB0
 void CSWCCreature::UnloadModel()
 {
     HidePopUpBubble();
@@ -2480,7 +2480,7 @@ void CSWCCreature::UnloadModel()
         m_pAnimBase = NULL;
     }
 }
-// PC 0x00658C30
+// PC 0x00658C30 GOG 0x00658AE0
 int CSWCCreature::RequestAppearance(CCAppearanceInfo* pAppearance,
                                     unsigned char nParts)
 {
@@ -2495,7 +2495,7 @@ int CSWCCreature::RequestAppearance(CCAppearanceInfo* pAppearance,
     memcpy(m_aUnmapped31C, pAppearance, sizeof(CCAppearanceInfo));
     return 1;
 }
-// PC 0x00658CA0
+// PC 0x00658CA0 GOG 0x00658B50
 void CSWCCreature::UpdateRelativePerception(CSWVisibilityNode* pNode)
 {
     int bInvisible = 0;
@@ -2534,7 +2534,7 @@ void CSWCCreature::UpdateRelativePerception(CSWVisibilityNode* pNode)
         }
     }
 }
-// PC 0x00658DA0
+// PC 0x00658DA0 GOG 0x00658C50
 unsigned long CSWCCreature::GetEquippedItemID(unsigned long nSlot)
 {
     switch (nSlot)
@@ -2577,7 +2577,7 @@ unsigned long CSWCCreature::GetEquippedItemID(unsigned long nSlot)
         return CGameObjectArray::INVALIDOBJID;
     }
 }
-// PC 0x00658F50
+// PC 0x00658F50 GOG 0x00658E00
 void CSWCCreature::SetEquippedItemID(unsigned long nSlot, unsigned long oidItem)
 {
     switch (nSlot)
@@ -2635,7 +2635,7 @@ void CSWCCreature::SetEquippedItemID(unsigned long nSlot, unsigned long oidItem)
         break;
     }
 }
-// PC 0x00659140
+// PC 0x00659140 GOG 0x00658FF0
 void CSWCCreature::SetLastInstant(unsigned long nSlot, int nLastInstant)
 {
     switch (nSlot)
@@ -2693,7 +2693,7 @@ void CSWCCreature::SetLastInstant(unsigned long nSlot, int nLastInstant)
         break;
     }
 }
-// PC 0x00659330
+// PC 0x00659330 GOG 0x006591E0
 int CSWCCreature::GetLastInstant(unsigned long nSlot)
 {
     switch (nSlot)
@@ -2732,7 +2732,7 @@ int CSWCCreature::GetLastInstant(unsigned long nSlot)
         return 0;
     }
 }
-// PC 0x00659480
+// PC 0x00659480 GOG 0x00659330
 void CSWCCreature::SetItemUnEquippedByMe(unsigned long oidItem)
 {
     if (oidItem != CGameObjectArray::INVALIDOBJID)
@@ -2748,7 +2748,7 @@ void CSWCCreature::SetItemUnEquippedByMe(unsigned long oidItem)
         }
     }
 }
-// PC 0x006594D0
+// PC 0x006594D0 GOG 0x00659380
 unsigned long CSWCCreature::GetAttackingWeapon(int nAttackType)
 {
     switch (nAttackType)
@@ -2768,7 +2768,7 @@ unsigned long CSWCCreature::GetAttackingWeapon(int nAttackType)
         return OBJECT_INVALID;
     }
 }
-// PC 0x00659540
+// PC 0x00659540 GOG 0x006593F0
 int CSWCCreature::ResolveAttackIndex(unsigned short nAnimation, int nMode,
                                      int nPreviousIndex)
 {
@@ -2791,7 +2791,7 @@ int CSWCCreature::ResolveAttackIndex(unsigned short nAnimation, int nMode,
     m_nPreviousAttackIndex = nAttackIndex;
     return nAttackIndex;
 }
-// PC 0x006606F0
+// PC 0x006606F0 GOG 0x00660500
 void CSWCCreature::EquipToInventorySlot(unsigned long nSlot, CSWCItem* pItem, int bSuppressDraw)
 {
     Gob* pModel;
@@ -2924,7 +2924,7 @@ void CSWCCreature::EquipToInventorySlot(unsigned long nSlot, CSWCItem* pItem, in
     if (pItem != NULL)
         pItem->SetArea(NULL);
 }
-// PC 0x00664BC0
+// PC 0x00664BC0 GOG 0x00664960
 int CSWCCreature::UpdateAttackData(unsigned short* pAnimation,
                                   CSWCCombatAttackData* pAttackData)
 {
@@ -2979,7 +2979,7 @@ int CSWCCreature::UpdateAttackData(unsigned short* pAnimation,
     pAttackData->m_nDamageAmount = nReaction;
     return 1;
 }
-// PC 0x00660A50
+// PC 0x00660A50 GOG 0x00660860
 int CSWCCreature::UpdateMeleeAttackData(unsigned short nAnimation,
 int nAttackType, int bInCombat,
 int nWieldClass)
@@ -3205,7 +3205,7 @@ int nWieldClass)
     }
     return nAttackAnimation;
 }
-// PC 0x00660FC0
+// PC 0x00660FC0 GOG 0x00660DD0
 int CSWCCreature::UpdateRangedAttackData(int nAttackType, int nWieldClass)
 {
     int nAnimation = RANGED_ANIMATION_NONE;
@@ -3318,7 +3318,7 @@ int CSWCCreature::UpdateRangedAttackData(int nAttackType, int nWieldClass)
     }
     return nAnimation;
 }
-// PC 0x006611A0
+// PC 0x006611A0 GOG 0x00660FB0
 unsigned short CSWCCreature::ResolveReactionAnimation(unsigned short nAnimation,
                                                       unsigned short nReaction,
                                                       int nWieldClass)
@@ -3362,7 +3362,7 @@ unsigned short CSWCCreature::ResolveReactionAnimation(unsigned short nAnimation,
     }
     return (unsigned short)nResolvedAnimation;
 }
-// PC 0x006595A0
+// PC 0x006595A0 GOG 0x00659450
 int CSWCCreature::IsCreature()
 {
     int bCreature = 0;
@@ -3384,7 +3384,7 @@ int CSWCCreature::IsCreature()
     }
     return bCreature;
 }
-// PC 0x00659660
+// PC 0x00659660 GOG 0x00659510
 int CSWCCreature::InCreatureCombat(CSWCObject* pTarget)
 {
     int bInCombat = 0;
@@ -3397,7 +3397,7 @@ int CSWCCreature::InCreatureCombat(CSWCObject* pTarget)
     }
     return bInCombat;
 }
-// PC 0x006613C0
+// PC 0x006613C0 GOG 0x006611D0
 void CSWCCreature::ResolveSpecialAttackVisuals(int nAttackType, int nWieldClass,
                                              int bRanged)
 {
@@ -3493,7 +3493,7 @@ void CSWCCreature::ResolveSpecialAttackVisuals(int nAttackType, int nWieldClass,
         }
     }
 }
-// PC 0x006596B0
+// PC 0x006596B0 GOG 0x00659560
 int CSWCCreature::SelectSpecialAttackAnimation(int nAttackType,
                                                int nType2Animation,
                                                int nType3Animation,
@@ -3517,7 +3517,7 @@ int CSWCCreature::SelectSpecialAttackAnimation(int nAttackType,
     }
     return nAnimation;
 }
-// PC 0x006596E0
+// PC 0x006596E0 GOG 0x00659590
 void CSWCCreature::SetNewLoopingCreatureSound(const CExoString& sSound)
 {
     m_pLoopingSound = new CExoSoundSource(sSound);
@@ -3533,7 +3533,7 @@ void CSWCCreature::SetNewLoopingCreatureSound(const CExoString& sSound)
 
     m_pLoopingSound->SetLooping(1);
 }
-// PC 0x00659790
+// PC 0x00659790 GOG 0x00659640
 void CSWCCreature::DeleteLoopingCreatureSound()
 {
     m_pLoopingSound->Stop();
@@ -3543,14 +3543,14 @@ void CSWCCreature::DeleteLoopingCreatureSound()
     }
     m_pLoopingSound = NULL;
 }
-// PC 0x006597C0
+// PC 0x006597C0 GOG 0x00659670
 int CSWCCreature::GetArmourClass()
 {
     if (m_pAppearance != NULL)
         return m_pAppearance->GetArmourClass();
     return 0;
 }
-// PC 0x006597E0
+// PC 0x006597E0 GOG 0x00659690
 void CSWCCreature::SetPortrait(const CResRef& cPortrait)
 {
     if (GetPortrait(0) != cPortrait)
@@ -3559,7 +3559,7 @@ void CSWCCreature::SetPortrait(const CResRef& cPortrait)
         SetPopUpBubblePortrait(GetPortrait(1));
     }
 }
-// PC 0x00659840
+// PC 0x00659840 GOG 0x006596F0
 void CSWCCreature::SetPortraitId(unsigned short nPortraitId)
 {
     if (m_pStats != NULL)
@@ -3568,7 +3568,7 @@ void CSWCCreature::SetPortraitId(unsigned short nPortraitId)
         SetPopUpBubblePortrait(GetPortrait(1));
     }
 }
-// PC 0x00659880
+// PC 0x00659880 GOG 0x00659730
 void CSWCCreature::SetName(const CExoString& sFirstName,
                           const CExoString& sLastName)
 {
@@ -3579,7 +3579,7 @@ void CSWCCreature::SetName(const CExoString& sFirstName,
     SetPopUpBubbleDefaultText(sBubbleText);
     SetPopUpBubbleDefaultCreatureID(GetObjectId());
 }
-// PC 0x00659990
+// PC 0x00659990 GOG 0x00659840
 int CSWCCreature::SpawnHitVisuals(unsigned char nMode,
                                  CSWCCombatAttackData* pAttackData,
                                  const Vector& vDirection,
@@ -3653,7 +3653,7 @@ int CSWCCreature::SpawnHitVisuals(unsigned char nMode,
         return 0;
     }
 }
-// PC 0x00659FB0
+// PC 0x00659FB0 GOG 0x00659E60
 int CSWCCreature::PlaySwingSound(const CExoString& sSound,
                                CSWCCombatAttackData* pAttackData,
                                int nSoundCount)
@@ -3694,7 +3694,7 @@ int CSWCCreature::PlaySwingSound(const CExoString& sSound,
         sResRef, m_vPosition, 1.5f, CExoSound::PRIORITY_GROUP_WEAPON_SWING,
         0, 0, 0.0f, fPitchOffset);
 }
-// PC 0x0065A180
+// PC 0x0065A180 GOG 0x0065A030
 int CSWCCreature::ShowLightSaberContactVisual(CSWCCombatAttackData* pAttackData)
 {
     Vector vPosition;
@@ -3708,7 +3708,7 @@ int CSWCCreature::ShowLightSaberContactVisual(CSWCCombatAttackData* pAttackData)
                                             vPosition);
     return TRUE;
 }
-// PC 0x0065A230
+// PC 0x0065A230 GOG 0x0065A0E0
 void CSWCCreature::DoFootstepAudio(unsigned char nFootstep)
 {
     if (nFootstep == 0)
@@ -3734,7 +3734,7 @@ void CSWCCreature::DoFootstepAudio(unsigned char nFootstep)
         }
     }
 }
-// PC 0x0065A370
+// PC 0x0065A370 GOG 0x0065A220
 void CSWCCreature::StripEquippedItems()
 {
     for (unsigned char nSlot = 0; nSlot < CSWInventory::TOTAL_SLOT_COUNT; ++nSlot)
@@ -3750,7 +3750,7 @@ void CSWCCreature::StripEquippedItems()
             CSWCAnimBase::WIELD_HAND_RIGHT, 1.0f);
     }
 }
-// PC 0x0065A480
+// PC 0x0065A480 GOG 0x0065A330
 void GetPersonalRadius(CAurObject* pObject, char* sProperty, void* pData)
 {
     float fRadius = 0.0f;
@@ -3765,7 +3765,7 @@ void GetPersonalRadius(CAurObject* pObject, char* sProperty, void* pData)
         *static_cast<float*>(pData) = fRadius;
     }
 }
-// PC 0x0065A4D0
+// PC 0x0065A4D0 GOG 0x0065A380
 void GetCreatureRadius(CAurObject* pObject, char* sProperty, void* pData)
 {
     float fRadius = 0.0f;
@@ -3780,14 +3780,14 @@ void GetCreatureRadius(CAurObject* pObject, char* sProperty, void* pData)
     }
 
 }
-// PC 0x0065A520
+// PC 0x0065A520 GOG 0x0065A3D0
 void GetPath(CAurObject* pObject, char* sProperty, void* pData)
 {
     Vector* pPath = static_cast<Vector*>(pData);
     pPath->m_fY = 0.0f;
     pPath->m_fZ = 0.0f;
 }
-// PC 0x0065A530
+// PC 0x0065A530 GOG 0x0065A3E0
 CSWCAnimBase* CSWCCreature::SetSpecialWalkAnimation(unsigned char a1)
 {
     CSWCAnimBase* result;
@@ -3795,7 +3795,7 @@ CSWCAnimBase* CSWCCreature::SetSpecialWalkAnimation(unsigned char a1)
     result->m_nSpecialWalkAnimation = a1;
     return result;
 }
-// PC 0x0065A550
+// PC 0x0065A550 GOG 0x0065A400
 CSWCAnimBase* CSWCCreature::SetRunLooksAwful(int a1)
 {
     CSWCAnimBase* result;
@@ -3803,7 +3803,7 @@ CSWCAnimBase* CSWCCreature::SetRunLooksAwful(int a1)
     result->m_bRunLooksAwful = a1;
     return result;
 }
-// PC 0x0065A570
+// PC 0x0065A570 GOG 0x0065A420
 void CSWCCreature::HideEquippedHeadItem()
 {
     if (m_pAnimBase != NULL)
@@ -3812,7 +3812,7 @@ void CSWCCreature::HideEquippedHeadItem()
         m_bEquippedHeadItemHidden = 1;
     }
 }
-// PC 0x0065A590
+// PC 0x0065A590 GOG 0x0065A440
 void CSWCCreature::ShowEquippedHeadItem()
 {
     if (m_pAnimBase != NULL)
@@ -3821,7 +3821,7 @@ void CSWCCreature::ShowEquippedHeadItem()
         m_bEquippedHeadItemHidden = 0;
     }
 }
-// PC 0x0065A5B0
+// PC 0x0065A5B0 GOG 0x0065A460
 float CSWCCreature::GetHeadTurnHorizontal()
 {
     float fHeadArc;
@@ -3835,7 +3835,7 @@ float CSWCCreature::GetHeadTurnHorizontal()
     }
     return fHeadArc;
 }
-// PC 0x006616B0
+// PC 0x006616B0 GOG 0x006614C0
 void CSWCCreature::ClearVisibilityList()
 {
     for (int i = m_lstVisibilityList.num - 1; i >= 0; i--)
@@ -3849,7 +3849,7 @@ void CSWCCreature::ClearVisibilityList()
         }
     }
 }
-// PC 0x00661710
+// PC 0x00661710 GOG 0x00661520
 void CSWCCreature::HideEquippedItems(const CResRef& cResRef,
                                      const CResRef& cResRef2)
 {
@@ -3860,7 +3860,7 @@ void CSWCCreature::HideEquippedItems(const CResRef& cResRef,
         m_bEquippedItemsHidden = 1;
     }
 }
-// PC 0x00661750
+// PC 0x00661750 GOG 0x00661560
 void CSWCCreature::ShowEquippedItems()
 {
     if (m_pAnimBase != NULL)
@@ -3882,7 +3882,7 @@ void CSWCCreature::ShowEquippedItems()
         }
     }
 }
-// PC 0x00665ED0
+// PC 0x00665ED0 GOG 0x00665C70
 void CSWCCreature::SetCombatState(int nState)
 {
     NwccreatureTrace3();
@@ -3929,7 +3929,7 @@ void CSWCCreature::SetCombatState(int nState)
     else
         m_bCombatReady = 0;
 }
-// PC 0x00666020
+// PC 0x00666020 GOG 0x00665DC0
 void CSWCCreature::AddFireForgetAnimation(unsigned short nAnimation, void* pData)
 {
     float fAnimationLength;
@@ -4105,7 +4105,7 @@ void CSWCCreature::AddFireForgetAnimation(unsigned short nAnimation, void* pData
         }
     }
 }
-// PC 0x00664D00
+// PC 0x00664D00 GOG 0x00664AA0
 int CSWCCreature::PlayHitSound(CSWCCombatAttackData* pAttackData, int bQueued)
 {
     if (pAttackData != NULL)
@@ -4279,7 +4279,7 @@ int CSWCCreature::PlayHitSound(CSWCCombatAttackData* pAttackData, int bQueued)
     }
     return 0;
 }
-// PC 0x00665250
+// PC 0x00665250 GOG 0x00664FF0
 Gob* CSWCCreature::GetModel(unsigned char nModel, int bForceAppearanceUpdate)
 {
     CSWCAnimBase* pAnimBase = m_pAnimBase;
@@ -4296,12 +4296,12 @@ Gob* CSWCCreature::GetModel(unsigned char nModel, int bForceAppearanceUpdate)
 
     return (Gob*)m_pAnimBase->GetModel(nModel);
 }
-// PC 0x006652B0
+// PC 0x006652B0 GOG 0x00665050
 void CSWCCreature::CreateNewSpellLikeAbilityList()
 {
     m_pSpellLikeAbilities = new CExoArrayList<CSWCStats_SpellLikeAbility>(0);
 }
-// PC 0x00665300
+// PC 0x00665300 GOG 0x006650A0
 void CSWCCreature::DeleteSpellLikeAbilityList()
 {
     if (m_pSpellLikeAbilities != NULL)
@@ -4312,7 +4312,7 @@ void CSWCCreature::DeleteSpellLikeAbilityList()
     }
 }
 int SceneHitCheck(CAurScene* pScene, Vector vStart, Vector vEnd, Vector* pHit, CHitInfo* pHitInfo);
-// PC 0x00665360
+// PC 0x00665360 GOG 0x00665100
 int CSWCCreature::CanSee(CSWCObject* pObject)
 {
     if (pObject == NULL)
@@ -4367,7 +4367,7 @@ int CSWCCreature::CanSee(CSWCObject* pObject)
     } while (nHit == CHitInfo::HIT_GOB);
     return nHit != CHitInfo::HIT_STATIC;
 }
-// PC 0x006658D0
+// PC 0x006658D0 GOG 0x00665670
 void CSWCCreature::ForceMenuHostileAction(unsigned long nAction,
                                          CSWCCreature* pTarget)
 {
@@ -4377,7 +4377,7 @@ void CSWCCreature::ForceMenuHostileAction(unsigned long nAction,
     }
     ForceMenuAction(nAction, pTarget);
 }
-// PC 0x006659F0
+// PC 0x006659F0 GOG 0x00665790
 void CSWCCreature::ActionMenuUseAttackFeat(unsigned long nFeat,
                                            CSWCCreature* pTarget)
 {
@@ -4392,7 +4392,7 @@ void CSWCCreature::ActionMenuUseAttackFeat(unsigned long nFeat,
         }
     }
 }
-// PC 0x00666680
+// PC 0x00666680 GOG 0x00666420
 void CSWCCreature::EnableFeatForMenu(
     int nFeat, CExoArrayList<CSWGuiInterfaceAction>& lstActions,
     PFNMENUACTION pfnAction, CSWCCreature* pTarget)
@@ -4422,7 +4422,7 @@ void CSWCCreature::EnableFeatForMenu(
         lstActions[nAction].m_resIcon = pFeat->m_cIcon;
     }
 }
-// PC 0x00666870
+// PC 0x00666870 GOG 0x00666610
 void CSWCCreature::GetEquipmentForcePowers(
     CExoArrayList<CSWGuiInterfaceAction>& lstActions,
     unsigned long nType, int nExclusion, unsigned long nItemMask)
@@ -4526,7 +4526,7 @@ void CSWCCreature::GetEquipmentForcePowers(
         lstActions[nAction].m_bEnabled = bEnabled;
     }
 }
-// PC 0x00666E40
+// PC 0x00666E40 GOG 0x00666BE0
 void CSWCCreature::GetSwappableImplants(CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
     CExoString sCurrentImplant("CANDEROUS_CUR_IMPLANT");
@@ -4573,7 +4573,7 @@ void CSWCCreature::GetSwappableImplants(CExoArrayList<CSWGuiInterfaceAction>& ls
     lstActions[nEntry].m_resIcon = "ii_implant3_004";
     lstActions[nEntry].m_n38 = 1;
 }
-// PC 0x00667220
+// PC 0x00667220 GOG 0x00666FC0
 void CSWCCreature::GetWookieeRage(CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
     int nEntry = lstActions.num;
@@ -4610,7 +4610,7 @@ void CSWCCreature::GetWookieeRage(CExoArrayList<CSWGuiInterfaceAction>& lstActio
         lstActions[nEntry].m_bEnabled = 1;
     }
 }
-// PC 0x00667380
+// PC 0x00667380 GOG 0x00667120
 void CSWCCreature::GetDroidConfusion(CExoArrayList<CSWGuiInterfaceAction>& lstActions,
                                      CSWCObject* pTarget)
 {
@@ -4649,7 +4649,7 @@ void CSWCCreature::GetDroidConfusion(CExoArrayList<CSWGuiInterfaceAction>& lstAc
         lstActions[nEntry].m_bEnabled = 1;
     }
 }
-// PC 0x00667500
+// PC 0x00667500 GOG 0x006672A0
 void CSWCCreature::GetHostileForcePowers(
     CSWCObject* pTarget, CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
@@ -4734,7 +4734,7 @@ void CSWCCreature::GetHostileForcePowers(
         }
     }
 }
-// PC 0x00665900
+// PC 0x00665900 GOG 0x006656A0
 void CSWCCreature::GetStances(CExoArrayList<CSWGuiInterfaceAction>& lstActions, int nMenu)
 {
     int nFirstAction = lstActions.num;
@@ -4749,7 +4749,7 @@ void CSWCCreature::GetStances(CExoArrayList<CSWGuiInterfaceAction>& lstActions, 
         lstActions.element[i].m_n38 = 1;
     }
 }
-// PC 0x00667810
+// PC 0x00667810 GOG 0x006675B0
 void CSWCCreature::GetBehaviors(CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
     C2DA* pAIScripts = g_pRules->Get2DArrays()->m_pAIScripts;
@@ -4809,7 +4809,7 @@ void CSWCCreature::GetBehaviors(CExoArrayList<CSWGuiInterfaceAction>& lstActions
     }
 }
 #ifndef _XBOX
-void CSWCCreature::CreateUsableItemEntry(  // PC 0x00667B60
+void CSWCCreature::CreateUsableItemEntry(  // PC 0x00667B60 GOG 0x00667900
     CExoArrayList<CSWGuiInterfaceAction>& lstActions, CSWSItem* pItem,
     int bEquipped, unsigned char nActionMask)
 {
@@ -4874,7 +4874,7 @@ void CSWCCreature::CreateUsableItemEntry(  // PC 0x00667B60
     }
 }
 #endif
-// PC 0x00667E30
+// PC 0x00667E30 GOG 0x00667BD0
 void CSWCCreature::CreateHostileItemEntry(
     CExoArrayList<CSWGuiInterfaceAction>& lstActions, CSWSItem* pItem,
     CSWCCreature* pTarget)
@@ -4903,7 +4903,7 @@ void CSWCCreature::CreateHostileItemEntry(
 #endif
     }
 }
-// PC 0x00667F40
+// PC 0x00667F40 GOG 0x00667CE0
 void CSWCCreature::CreateHostileItemEntry(
     CExoArrayList<CSWGuiInterfaceAction>& lstActions, CSWSItem* pItem,
     CSWCPlaceable* pTarget)
@@ -4930,7 +4930,7 @@ void CSWCCreature::CreateHostileItemEntry(
         lstActions[nEntry].m_nStackSize = nStackSize;
     }
 }
-// PC 0x00665A60
+// PC 0x00665A60 GOG 0x00665800
 void CSWCCreature::PartyMenuUseHostileItem(unsigned long oidItem,
                                            CSWCCreature* pTarget)
 {
@@ -4948,7 +4948,7 @@ void CSWCCreature::PartyMenuUseHostileItem(unsigned long oidItem,
     }
     PerformUseHostileItem(oidItem, pTarget);
 }
-// PC 0x00665AE0
+// PC 0x00665AE0 GOG 0x00665880
 void HitEvent(CAurObject* pObject, char* sEvent, void* pData)
 {
     CSWCCombatAttackData* pAttackData = (CSWCCombatAttackData*)pData;
@@ -5054,7 +5054,7 @@ void HitEvent(CAurObject* pObject, char* sEvent, void* pData)
         }
     }
 }
-// PC 0x006617C0
+// PC 0x006617C0 GOG 0x006615D0
 int CSWCCreature::LookAt(unsigned long oidTarget, float fTime)
 {
     CExoString sTargetPart;
@@ -5123,7 +5123,7 @@ int CSWCCreature::LookAt(unsigned long oidTarget, float fTime)
             sTargetPart.CStr(), sHeadBone.CStr(), fHorizontal, fVertical, 0.25f, fTime);
     return 1;
 }
-// PC 0x0065A600
+// PC 0x0065A600 GOG 0x0065A4B0
 float CSWCCreature::GetHeadTurnVertical()
 {
     float fHeadArc;
@@ -5137,7 +5137,7 @@ float CSWCCreature::GetHeadTurnVertical()
     }
     return fHeadArc;
 }
-// PC 0x0065A650
+// PC 0x0065A650 GOG 0x0065A500
 int CSWCCreature::ApplyShadowBlob()
 {
     CExoString sShadowModel;
@@ -5182,12 +5182,12 @@ int CSWCCreature::ApplyShadowBlob()
     }
     return bResult;
 }
-// PC 0x0065A7E0
+// PC 0x0065A7E0 GOG 0x0065A690
 void CSWCCreature::RemoveShadowBlob()
 {
     CSWCObject::RemoveShadowBlob();
 }
-// PC 0x0065A7F0
+// PC 0x0065A7F0 GOG 0x0065A6A0
 void CSWCCreature::TurnOnShadows()
 {
     CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
@@ -5216,7 +5216,7 @@ void CSWCCreature::TurnOnShadows()
 
     CSWCObject::TurnOnShadows();
 }
-// PC 0x0065A880
+// PC 0x0065A880 GOG 0x0065A730
 void CSWCCreature::TurnOffShadows()
 {
     CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
@@ -5245,7 +5245,7 @@ void CSWCCreature::TurnOffShadows()
 
     CSWCObject::TurnOffShadows();
 }
-// PC 0x0065A910
+// PC 0x0065A910 GOG 0x0065A7C0
 void CSWCCreature::UpdateShadowBlob()
 {
     unsigned char nShadowMode = g_pAppManager->m_pClientExoApp
@@ -5283,7 +5283,7 @@ void CSWCCreature::UpdateShadowBlob()
             RotationArc(Vector(0.0f, 0.0f, 1.0f), m_vGroundNormal));
     }
 }
-// PC 0x0065AA20
+// PC 0x0065AA20 GOG 0x0065A8D0
 void CSWCCreature::ReAttachCamera()
 {
     CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
@@ -5299,11 +5299,11 @@ void CSWCCreature::ReAttachCamera()
         m_bCameraFollowSnap = 0;
     }
 }
-// PC 0x005EE1C0
+// PC 0x005EE1C0 GOG 0x005EE1A0
 void CSWCCreature::SetPopUpBubbleDecayTime(float fDecayTime)
 {
 }
-// PC 0x0065AAC0
+// PC 0x0065AAC0 GOG 0x0065A970
 int CSWCCreature::Hilite(const Vector& vColor, unsigned char nModel,
                          float fSpeed, int bPulse)
 {
@@ -5313,7 +5313,7 @@ int CSWCCreature::Hilite(const Vector& vColor, unsigned char nModel,
     }
     return 0;
 }
-// PC 0x0065AAF0
+// PC 0x0065AAF0 GOG 0x0065A9A0
 int CSWCCreature::UnHilite(unsigned char nMode)
 {
     CSWCAnimBase* pAnimationBase = m_pAnimBase;
@@ -5330,7 +5330,7 @@ int CSWCCreature::UnHilite(unsigned char nMode)
 
 int SceneHitCheck(CAurScene* pScene, Vector vStart, Vector vEnd,
                   Vector* pHit, CHitInfo* pHitInfo);
-// PC 0x0065AB10
+// PC 0x0065AB10 GOG 0x0065A9C0
 int CSWCCreature::StopAmbientPauseAnim()
 {
     m_nAmbientPauseTimer = 0;
@@ -5339,7 +5339,7 @@ int CSWCCreature::StopAmbientPauseAnim()
 }
 
 inline CSWCArea* CSWCObject::GetArea() { return m_pArea; }
-// PC 0x0065AB20
+// PC 0x0065AB20 GOG 0x0065A9D0
 void CSWCCreature::EvaluateNewWayPoints(int nWayPointCount, Vector* pWayPoints,
                                        int nPathType, const Vector& vPosition)
 {
@@ -5458,12 +5458,12 @@ void CSWCCreature::EvaluateNewWayPoints(int nWayPointCount, Vector* pWayPoints,
             delete [] pNewWayPoints;
     }
 }
-// PC 0x0065B0D0
+// PC 0x0065B0D0 GOG 0x0065AF80
 void CSWCCreature::SetThrownLightsaber(unsigned long a1)
 {
     this->m_oidThrownLightsaber = a1;
 }
-// PC 0x00661B10
+// PC 0x00661B10 GOG 0x00661920
 void CSWCCreature::ForceAppearanceUpdate()
 {
     CSWCModule* pModule;
@@ -5480,7 +5480,7 @@ void CSWCCreature::ForceAppearanceUpdate()
             AttachToScene(pArea->m_pScene);
     }
 }
-// PC 0x00661B80
+// PC 0x00661B80 GOG 0x00661990
 int CSWCCreature::GetCreatureLight(int bRequireEnabled)
 {
     CExoLinkedListNode* pPosition = m_lstVisualEffects.GetHeadPos();
@@ -5501,13 +5501,13 @@ int CSWCCreature::GetCreatureLight(int bRequireEnabled)
     }
     return 0;
 }
-// PC 0x00661C00
+// PC 0x00661C00 GOG 0x00661A10
 void CSWCCreature::SetArea(CSWCArea* pArea)
 {
     CSWCObject::SetArea(pArea);
     UpdateAreaId();
 }
-// PC 0x0065B0E0
+// PC 0x0065B0E0 GOG 0x0065AF90
 void CSWCCreature::UpdateAreaId()
 {
     if (m_pArea != NULL)
@@ -5519,7 +5519,7 @@ void CSWCCreature::UpdateAreaId()
         m_oidArea = CGameObjectArray::INVALIDOBJID;
     }
 }
-// PC 0x0065B110
+// PC 0x0065B110 GOG 0x0065AFC0
 void CSWCCreature::UpdatePopUpBubble()
 {
     CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
@@ -5535,7 +5535,7 @@ void CSWCCreature::UpdatePopUpBubble()
         }
     }
 }
-// PC 0x0065B150
+// PC 0x0065B150 GOG 0x0065B000
 void CSWCCreature::PerformSkill(unsigned char nSkill, unsigned char nUseType,
                                 unsigned long oidTarget)
 {
@@ -5552,7 +5552,7 @@ void CSWCCreature::PerformSkill(unsigned char nSkill, unsigned char nUseType,
         }
     }
 }
-// PC 0x0065B1B0
+// PC 0x0065B1B0 GOG 0x0065B060
 void CSWCCreature::PerformUseItem(unsigned long oidItem, int nPropertyIndex,
                                   unsigned long oidTarget,
                                   const Vector& vTarget)
@@ -5566,7 +5566,7 @@ void CSWCCreature::PerformUseItem(unsigned long oidItem, int nPropertyIndex,
                                                   oidTarget, vTarget);
     }
 }
-// PC 0x0065B1F0
+// PC 0x0065B1F0 GOG 0x0065B0A0
 void CSWCCreature::PerformGiveItem(unsigned long oidItem,
                                    unsigned long oidTarget, int nStack)
 {
@@ -5578,7 +5578,7 @@ void CSWCCreature::PerformGiveItem(unsigned long oidItem,
                                                    nStack);
     }
 }
-// PC 0x0065B230
+// PC 0x0065B230 GOG 0x0065B0E0
 void CSWCCreature::PerformAttack(unsigned long oidTarget)
 {
     CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
@@ -5588,7 +5588,7 @@ void CSWCCreature::PerformAttack(unsigned long oidTarget)
         pMessage->SendPlayerToServerInput_Attack(oidTarget, 0);
     }
 }
-// PC 0x0065B260
+// PC 0x0065B260 GOG 0x0065B110
 void CSWCCreature::PerformCastSpell(unsigned long nSpell,
                                     unsigned long oidTarget,
                                     const Vector& vTarget,
@@ -5614,7 +5614,7 @@ void CSWCCreature::PerformCastSpell(unsigned long nSpell,
 #include "swbehaviorcamera.h"
 
 #include "nwitem.h"
-// PC 0x0065B2A0
+// PC 0x0065B2A0 GOG 0x0065B150
 int CSWCCreature::SetInParty(int bInParty)
 {
     if (m_bInParty != bInParty)
@@ -5636,27 +5636,27 @@ int CSWCCreature::SetInParty(int bInParty)
     }
     return 1;
 }
-// PC 0x0065B330
+// PC 0x0065B330 GOG 0x0065B1E0
 CAurObject* CSWCCreature::GetCameraFollowPart()
 {
     return m_pAppearance->GetCameraFollowPart();
 }
-// PC 0x0065B340
+// PC 0x0065B340 GOG 0x0065B1F0
 int CSWCCreature::GetFollowingBody()
 {
     return m_pAppearance->GetFollowingBody();
 }
-// PC 0x0065B350
+// PC 0x0065B350 GOG 0x0065B200
 float CSWCCreature::GetHeadHeightOffset()
 {
     return m_pAppearance->GetHeadHeightOffset();
 }
-// PC 0x0065B360
+// PC 0x0065B360 GOG 0x0065B210
 float CSWCCreature::GetCameraOffset()
 {
     return m_pAppearance->GetCameraOffset();
 }
-// PC 0x0065B370
+// PC 0x0065B370 GOG 0x0065B220
 int CSWCCreature::GetPauseReadyAnimation()
 {
     CServerExoApp* pServer;
@@ -5681,7 +5681,7 @@ int CSWCCreature::GetPauseReadyAnimation()
 
     return CREATURE_ANIMATION_COMBAT_IDLE;
 }
-// PC 0x0065B3E0
+// PC 0x0065B3E0 GOG 0x0065B290
 void CSWCCreature::SwitchMode(int nMode)
 {
     switch (nMode)
@@ -5697,7 +5697,7 @@ void CSWCCreature::SwitchMode(int nMode)
         break;
     }
 }
-// PC 0x0065B420
+// PC 0x0065B420 GOG 0x0065B2D0
 void CSWCCreature::SetSWAnimationSpeed(float fSpeed, float fTargetSpeed)
 {
     EXOXBOXASSERT(_finite(fTargetSpeed));
@@ -5705,7 +5705,7 @@ void CSWCCreature::SetSWAnimationSpeed(float fSpeed, float fTargetSpeed)
     m_fSWTargetAnimationSpeed = fTargetSpeed;
     m_fSWAnimationSpeed = fSpeed;
 }
-// PC 0x0065B440
+// PC 0x0065B440 GOG 0x0065B2F0
 int CSWCCreature::IsDriveAnimationBlocked()
 {
     int nEngagedState = m_nEngagedState;
@@ -5737,13 +5737,13 @@ void Swing(const CExoString& sSound, CSWCCombatAttackData* pAttackData,
         }
     }
 }
-// PC 0x0065B490
+// PC 0x0065B490 GOG 0x0065B340
 int CSWCCreature::SetEngagedState(int a1)
 {
     this->m_nEngagedState = a1;
     return a1;
 }
-// PC 0x0065B4A0
+// PC 0x0065B4A0 GOG 0x0065B350
 void CSWCCreature::SetQuededAnimationCallback()
 {
     if (m_pQueuedAnimationCallback == NULL)
@@ -5753,7 +5753,7 @@ void CSWCCreature::SetQuededAnimationCallback()
             QueuedCallbackFunction, "*", AsSWCObject(), 9999.0f, false);
     }
 }
-// PC 0x0065B4F0
+// PC 0x0065B4F0 GOG 0x0065B3A0
 int CSWCCreature::ClearQuededAnimationCallback()
 {
     Gob* pModel = GetModel(CSWCObject::MODEL_SLOT_DEFAULT, 1);
@@ -5766,7 +5766,7 @@ int CSWCCreature::ClearQuededAnimationCallback()
     m_pQueuedAnimationCallback = NULL;
     return 1;
 }
-// PC 0x0065B530
+// PC 0x0065B530 GOG 0x0065B3E0
 int SceneHitCheck(CAurScene* pScene, Vector vStart, Vector vEnd,
                   Vector* pHit, CHitInfo* pHitInfo)
 {
@@ -5804,7 +5804,7 @@ int SceneHitCheck(CAurScene* pScene, Vector vStart, Vector vEnd,
         return nSceneHit;
     return bHit;
 }
-// PC 0x00665660
+// PC 0x00665660 GOG 0x00665400
 void CSWCCreature::ForceMenuAction(unsigned long nAction,
                                   CSWCCreature* pTarget)
 {
@@ -5881,7 +5881,7 @@ void CSWCCreature::ForceMenuAction(unsigned long nAction,
         }
     }
 }
-// PC 0x0065B680
+// PC 0x0065B680 GOG 0x0065B530
 void CSWCCreature::PartyMenuStealth(unsigned long oidTarget,
                                     CSWCCreature* pTarget)
 {
@@ -5895,21 +5895,21 @@ void CSWCCreature::PartyMenuStealth(unsigned long oidTarget,
         g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowSoloModeQuery(1);
     }
 }
-// PC 0x0065B6E0
+// PC 0x0065B6E0 GOG 0x0065B590
 int CSWCCreature::BarkString(unsigned long nStrRef, const CExoString& sText,
                              const CResRef& cSound, int bFlag)
 {
     LipSync(cSound);
     return BarkBubble(nStrRef, sText, cSound, bFlag);
 }
-// PC 0x00661C40
+// PC 0x00661C40 GOG 0x00661A50
 int CSWCCreature::IsInjured()
 {
     return GetServerCreature()->IsInjured();
 }
 
 inline CSWRoomSurfaceMesh* CSWSRoom::GetWalkMesh() { return m_pWalkMesh; }
-// PC 0x00661C70
+// PC 0x00661C70 GOG 0x00661A80
 int CSWCCreature::SetPrecalculatedPosition(const Vector& vPosition)
 {
     if (RenderClosestPathPoint)
@@ -6121,7 +6121,7 @@ int CSWCCreature::SetPrecalculatedPosition(const Vector& vPosition)
     }
     return 1;
 }
-// PC 0x00662AC0
+// PC 0x00662AC0 GOG 0x006628D0
 void CSWCCreature::DriveAnimationUpdate()
 {
     if (AnimationDialog(m_nCurrentAnimation))
@@ -6263,7 +6263,7 @@ void CSWCCreature::DriveAnimationUpdate()
         }
     }
 }
-// PC 0x00663070
+// PC 0x00663070 GOG 0x00662E80
 void CSWCCreature::FollowAnimationUpdate()
 {
     if (GetServerCreature() != NULL &&
@@ -6346,7 +6346,7 @@ void CSWCCreature::FollowAnimationUpdate()
         RotateCreatureToOrientation(pFollowData->m_vFacing);
     }
 }
-// PC 0x00663360
+// PC 0x00663360 GOG 0x00663170
 int CSWCCreature::CheckFeat(int nFeat1, int nFeat2, int nFeat3)
 {
     int nFeat = -1;
@@ -6379,7 +6379,7 @@ int CSWCCreature::CheckFeat(int nFeat1, int nFeat2, int nFeat3)
 #ifdef _XBOX
 #include "exoinput.h"
 #endif
-// PC 0x00663420
+// PC 0x00663420 GOG 0x00663230
 void CSWCCreature::ActionSwapImplant(int nAction)
 {
     CExoString sCurrentImplant("CANDEROUS_CUR_IMPLANT");
@@ -6426,27 +6426,27 @@ void CSWCCreature::ActionSwapImplant(int nAction)
         pMainInterface->m_fFormMessageTime = SWCCREATURE_FORM_MESSAGE_DURATION;
     }
 }
-// PC 0x006635D0
+// PC 0x006635D0 GOG 0x006633E0
 void CSWCCreature::ActionMenuSwapImplantRegen(unsigned long nAction, CSWCCreature* pInstigator)
 {
     ActionSwapImplant(ACTION_SWAP_IMPLANT_REGEN);
 }
-// PC 0x006635E0
+// PC 0x006635E0 GOG 0x006633F0
 void CSWCCreature::ActionMenuSwapImplantStr(unsigned long nAction, CSWCCreature* pInstigator)
 {
     ActionSwapImplant(ACTION_SWAP_IMPLANT_STR);
 }
-// PC 0x006635F0
+// PC 0x006635F0 GOG 0x00663400
 void CSWCCreature::ActionMenuSwapImplantAgi(unsigned long nAction, CSWCCreature* pInstigator)
 {
     ActionSwapImplant(ACTION_SWAP_IMPLANT_AGI);
 }
-// PC 0x00663600
+// PC 0x00663600 GOG 0x00663410
 void CSWCCreature::ActionMenuSwapImplantEnd(unsigned long nAction, CSWCCreature* pInstigator)
 {
     ActionSwapImplant(ACTION_SWAP_IMPLANT_END);
 }
-// PC 0x00663610
+// PC 0x00663610 GOG 0x00663420
 int CSWCCreature::LipSync(const CResRef& cLip)
 {
     static bool bLipDelayLoaded = false;
@@ -6524,12 +6524,12 @@ int CSWCCreature::LipSync(const CResRef& cLip)
 
 #include "nwcdoor.h"
 #include "nwctrigger.h"
-// PC 0x0065B710
+// PC 0x0065B710 GOG 0x0065B5C0
 int CSWCCreature::StopLipSync()
 {
     return m_pAnimBase->SetAnimationVisemes(NULL, NULL, 0, 0.0f);
 }
-// PC 0x0065B730
+// PC 0x0065B730 GOG 0x00693EF0
 int CSWCCreature::BarkBubble(unsigned long nStrRef, const CExoString& sText,
                              const CResRef& cSound, int nFlags)
 {
@@ -6539,7 +6539,7 @@ int CSWCCreature::BarkBubble(unsigned long nStrRef, const CExoString& sText,
     return 1;
 }
 #ifndef _XBOX
-int CSWCCreature::IsLeaderUsableItem(CSWSItem* pItem, int nSlot,  // PC 0x00663950
+int CSWCCreature::IsLeaderUsableItem(CSWSItem* pItem, int nSlot,  // PC 0x00663950 GOG 0x00663760
                                     unsigned char nMask)
 {
     if (pItem != NULL)
@@ -6659,7 +6659,7 @@ int CSWCCreature::IsLeaderUsableItem(CSWSItem* pItem, int nSlot,  // PC 0x006639
     return 0;
 }
 #endif
-// PC 0x00663C20
+// PC 0x00663C20 GOG 0x00663A30
 int CSWCCreature::IsHostileUsableItem(CSWSItem* pItem)
 {
     if (pItem != NULL && !m_pArea->GetServerArea()->GetPlayerRestrictMode())
@@ -6695,7 +6695,7 @@ int CSWCCreature::IsHostileUsableItem(CSWSItem* pItem)
     }
     return 0;
 }
-// PC 0x00663D00
+// PC 0x00663D00 GOG 0x00663B10
 void CSWCCreature::PartyMenuUseItemSelect(unsigned long oidItem, CSWCCreature* pTarget)
 {
     int nTargetMember =
@@ -6755,7 +6755,7 @@ void CSWCCreature::PartyMenuUseItemSelect(unsigned long oidItem, CSWCCreature* p
     }
     g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pMainInterface->m_nUseItemTargetMember = -1;
 }
-void CSWCCreature::PerformUseHostileItem(unsigned long nItem,  // PC 0x00663F70
+void CSWCCreature::PerformUseHostileItem(unsigned long nItem,  // PC 0x00663F70 GOG 0x00663D80
                                         CSWCCreature* pTarget)
 {
     if (pTarget != NULL)
@@ -6764,7 +6764,7 @@ void CSWCCreature::PerformUseHostileItem(unsigned long nItem,  // PC 0x00663F70
     }
     PartyMenuUseItem(nItem, pTarget);
 }
-// PC 0x0065B760
+// PC 0x0065B760 GOG 0x0065B5E0
 void CSWCCreature::PartyMenuUseItem(unsigned long oidItem,
                                     CSWCCreature* pTarget)
 {
@@ -6792,7 +6792,7 @@ void CSWCCreature::PartyMenuUseItem(unsigned long oidItem,
         }
     }
 }
-// PC 0x0065B7E0
+// PC 0x0065B7E0 GOG 0x0065B660
 void CSWCCreature::ActionInitiateDialog(unsigned long nAction,
                                        CSWCCreature* pInstigator)
 {
@@ -6817,7 +6817,7 @@ void CSWCCreature::ActionInitiateDialog(unsigned long nAction,
         SendPlayerToServerInput_Dialog(GetObjectId());
     g_pAppManager->GetClientExoApp()->GetInGameGui()->SetGlobalDialogState(1);
 }
-// PC 0x0065B940
+// PC 0x0065B940 GOG 0x0065B7C0
 void CSWCCreature::SetAlignmentGoodEvil(short nAlignment)
 {
     if (m_pStats != NULL)
@@ -6838,7 +6838,7 @@ void CSWCCreature::SetAlignmentGoodEvil(short nAlignment)
     if (m_pAppearance != NULL)
         m_pAppearance->SetAppearanceAlignment(nAlignment);
 }
-// PC 0x0065B980
+// PC 0x0065B980 GOG 0x0065B800
 void CSWCCreature::SetBaseCNPCAlignment(short nAlignment)
 {
     if (m_pStats != NULL)
@@ -6859,7 +6859,7 @@ void CSWCCreature::SetBaseCNPCAlignment(short nAlignment)
         m_pStats->m_nBaseCNPCAlignment = nValue;
     }
 }
-// PC 0x0065B9C0
+// PC 0x0065B9C0 GOG 0x0065B840
 void CSWCCreature::CGPauseCycle(float fTimeStep, int bInitialize)
 {
     if (m_pAnimBase != NULL)
@@ -6944,7 +6944,7 @@ void CSWCCreature::CGPauseCycle(float fTimeStep, int bInitialize)
         }
     }
 }
-// PC 0x00663FA0
+// PC 0x00663FA0 GOG 0x00663DB0
 void CSWCCreature::ActionMenuAttack(unsigned long nAction,
                                     CSWCCreature* pInstigator)
 {
@@ -6980,7 +6980,7 @@ void CSWCCreature::ActionMenuAttack(unsigned long nAction,
     g_pAppManager->GetClientExoApp()->GetSWCMessage()->
         SendPlayerToServerInput_Attack(GetObjectId(), 0);
 }
-// PC 0x00664170
+// PC 0x00664170 GOG 0x00663F80
 int CSWCCreature::GetForceShield()
 {
     CSWSCreature* pCreature = GetServerCreature();
@@ -7001,7 +7001,7 @@ int CSWCCreature::GetForceShield()
     }
     return nResult;
 }
-// PC 0x0065BD20
+// PC 0x0065BD20 GOG 0x0065BBA0
 CSWSCreature* CSWCCreature::GetServerCreature()
 {
     if (GetServerObject() != NULL)
@@ -7011,7 +7011,7 @@ CSWSCreature* CSWCCreature::GetServerCreature()
     }
     return NULL;
 }
-// PC 0x00664080
+// PC 0x00664080 GOG 0x00663E90
 void CSWCCreature::ActionMenuForm(unsigned long nAction, CSWCCreature* pInstigator)
 {
     CSWSCreature* pServerCreature = GetServerCreature();
@@ -7065,7 +7065,7 @@ void CSWCCreature::ActionMenuForm(unsigned long nAction, CSWCCreature* pInstigat
     pMainInterface->m_nFormMessage = nStrRef;
     pMainInterface->m_fFormMessageTime = SWCCREATURE_FORM_MESSAGE_DURATION;
 }
-// PC 0x0065BD40
+// PC 0x0065BD40 GOG 0x0065BBC0
 void CSWCCreature::AttachToScene(CAurScene* pScene)
 {
     if (m_bInParty != 0 &&
@@ -7078,7 +7078,7 @@ void CSWCCreature::AttachToScene(CAurScene* pScene)
         CSWCObject::AttachToScene(pScene);
     }
 }
-// PC 0x0065BD80
+// PC 0x0065BD80 GOG 0x0065BC00
 void CSWCCreature::ActionMenuSelectBehavior(unsigned long nAction, CSWCCreature* pInstigator)
 {
     CSWSCreature* pServerCreature = pInstigator->GetServerObject() != NULL
@@ -7131,7 +7131,7 @@ void CSWCCreature::ActionMenuSelectBehavior(unsigned long nAction, CSWCCreature*
         }
     }
 }
-// PC 0x0065BEC0
+// PC 0x0065BEC0 GOG 0x0065BD40
 void CSWCCreature::ActionMenuSwitchWeapons(unsigned long nAction,
                                            CSWCCreature* pInstigator)
 {
@@ -7154,7 +7154,7 @@ void CSWCCreature::ActionMenuSwitchWeapons(unsigned long nAction,
     pMessage->SendPlayerToServerInput_SwitchWeapons(m_nId, bSecondSet);
     m_n464 = SWITCH_WEAPONS_DELAY;
 }
-// PC 0x0065BF40
+// PC 0x0065BF40 GOG 0x0065BDC0
 void CSWCCreature::SetOverrideLightsaberState(int bOverride, int bPowered,
                                                int bShowTransition)
 {
@@ -7173,7 +7173,7 @@ void CSWCCreature::SetOverrideLightsaberState(int bOverride, int bPowered,
             pItem->PowerItem(bPowered, 1, bShowTransition, 0);
     }
 }
-// PC 0x0065BFB0
+// PC 0x0065BFB0 GOG 0x0065BE30
 char CSWCCreature::GetTargetInterfaceTargetType(CSWCObject* pTarget)
 {
     int nTargetType = TARGET_INTERFACE_INVALID;
@@ -7207,7 +7207,7 @@ char CSWCCreature::GetTargetInterfaceTargetType(CSWCObject* pTarget)
         nTargetType = TARGET_INTERFACE_INVALID;
     return nTargetType;
 }
-// PC 0x0065C070
+// PC 0x0065C070 GOG 0x0065BEF0
 int CSWCCreature::GetInterfaceTargetType(CSWCObject* pTarget)
 {
     int nTargetType = INTERFACE_TARGET_NONE;
@@ -7241,7 +7241,7 @@ int CSWCCreature::GetInterfaceTargetType(CSWCObject* pTarget)
         nTargetType = INTERFACE_TARGET_NONE;
     return nTargetType;
 }
-// PC 0x0065C130
+// PC 0x0065C130 GOG 0x0065BFB0
 unsigned char CSWCCreature::GetReticlePoint(Vector& vPoint)
 {
     unsigned char nResult = RETICLE_POINT_UNAVAILABLE;
@@ -7285,7 +7285,7 @@ unsigned char CSWCCreature::GetReticlePoint(Vector& vPoint)
     }
     return nResult;
 }
-// PC 0x0065C2E0
+// PC 0x0065C2E0 GOG 0x0065C160
 unsigned char CSWCCreature::GetMenuPoint(Vector& vPoint)
 {
     CAurCamera* pCamera = g_pAppManager->GetClientExoApp()->GetModuleCamera();
@@ -7393,7 +7393,7 @@ void CSWCCreature::Setup3DScene(CSWGui3DSceneView& cView,
         }
     }
 }
-// PC 0x0065C8B0
+// PC 0x0065C8B0 GOG 0x0065C6C0
 int CSWCCreature::GetFreeLookVideoEffect()
 {
     int nVideoEffect = -1;
@@ -7412,7 +7412,7 @@ int CSWCCreature::GetFreeLookVideoEffect()
     }
     return nVideoEffect;
 }
-// PC 0x0065C970
+// PC 0x0065C970 GOG 0x0065C780
 void CSWCCreature::UnRegisterCallbacks()
 {
     Gob* pModel = static_cast<Gob*>(m_pAnimBase->GetModel(CSWCObject::MODEL_SLOT_DEFAULT));
@@ -7427,14 +7427,14 @@ void CSWCCreature::UnRegisterCallbacks()
         }
     }
 }
-// PC 0x0065C9B0
+// PC 0x0065C9B0 GOG 0x0065C7C0
 float CSWCCreature::GetDriveAcceleration()
 {
     if (m_bRunning && !m_pStats->HasFeat(CSWFeat::FEAT_STEALTH_RUN))
         return SWCCREATURE_RUNNING_DRIVE_ACCELERATION;
     return m_pAppearance->m_fDriveAcceleration;
 }
-// PC 0x0065C9F0
+// PC 0x0065C9F0 GOG 0x0065C800
 int CSWCCreature::LoadRollingFootstepSound()
 {
     CExoString sSound;
@@ -7507,7 +7507,7 @@ int CSWCCreature::LoadRollingFootstepSound()
     m_bRollingFootstepRunning = 0;
     return m_pRollingFootstepSound != NULL;
 }
-// PC 0x0065CC00
+// PC 0x0065CC00 GOG 0x0065CA10
 void CSWCCreature::PlayRollingFootstepSound(int bRunning)
 {
     if (m_pRollingFootstepSound)
@@ -7529,7 +7529,7 @@ void CSWCCreature::PlayRollingFootstepSound(int bRunning)
         }
     }
 }
-// PC 0x0065CC80
+// PC 0x0065CC80 GOG 0x0065CA90
 void CSWCCreature::UpdateRollingFootstepSound()
 {
     if (m_pRollingFootstepSound != NULL)
@@ -7559,7 +7559,7 @@ void CSWCCreature::UpdateRollingFootstepSound()
         }
     }
 }
-// PC 0x0065CD90
+// PC 0x0065CD90 GOG 0x0065CBA0
 void CSWCCreature::SetLockOrientationToObject(unsigned long oidTarget, int bUnknown)
 {
     if (g_pAppManager->m_pServerExoApp != NULL)
@@ -7584,7 +7584,7 @@ void CSWCCreature::SetLockOrientationToObject(unsigned long oidTarget, int bUnkn
         m_oidLockTarget = oidTarget;
     }
 }
-// PC 0x0065CDF0
+// PC 0x0065CDF0 GOG 0x0065CC00
 float CSWCCreature::GetLightSaberThrowRate()
 {
     if (GetServerCreature() != NULL)
@@ -7593,7 +7593,7 @@ float CSWCCreature::GetLightSaberThrowRate()
     }
     return 37.0f;
 }
-// PC 0x006641E0
+// PC 0x006641E0 GOG 0x00663FF0
 void CSWCCreature::PerformCombatFeat(unsigned short nFeat, CSWCCreature* pTarget)
 {
     CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
@@ -7607,7 +7607,7 @@ void CSWCCreature::PerformCombatFeat(unsigned short nFeat, CSWCCreature* pTarget
         pTarget->SetCombatMode(1);
     }
 }
-// PC 0x0065CE50
+// PC 0x0065CE50 GOG 0x0065CC60
 void CSWCCreature::SetCombatMode(int nMode)
 {
     m_bCombatMode = nMode;
@@ -7617,7 +7617,7 @@ void CSWCCreature::SetCombatMode(int nMode)
         g_pAppManager->m_pClientExoApp->SetCombatMode(m_bCombatMode);
     }
 }
-// PC 0x0065CEB0
+// PC 0x0065CEB0 GOG 0x0065CCC0
 void CSWCCreature::PlayDrawAnimation(unsigned short nValue)
 {
     if (g_pAppManager->m_pClientExoApp->GetPausedByCombat() != 0)
@@ -7636,12 +7636,12 @@ void CSWCCreature::PlayDrawAnimation(unsigned short nValue)
         m_nDrawAnimation = -1;
     }
 }
-// PC 0x0065D0F0
+// PC 0x0065D0F0 GOG 0x0065CF00
 int CSWCCreature::CanSwapWeapons()
 {
     return 1;
 }
-// PC 0x0065CF40
+// PC 0x0065CF40 GOG 0x0065CD50
 int CSWCCreature::IsStealthCapable()
 {
     if (GetServerCreature() != NULL &&
@@ -7674,7 +7674,7 @@ int CSWCCreature::IsStealthCapable()
     return 0;
 }
 #ifndef _XBOX
-void CSWCCreature::GetUsableItems(  // PC 0x00668080
+void CSWCCreature::GetUsableItems(  // PC 0x00668080 GOG 0x00667E20
     CExoArrayList<CSWGuiInterfaceAction>& lstActions, unsigned char nActionMask)
 {
     CSWSCreature* pServerCreature = GetServerCreature();
@@ -7716,7 +7716,7 @@ void CSWCCreature::GetUsableItems(  // PC 0x00668080
     }
 }
 #endif
-void CSWCCreature::GetHostileItems(  // PC 0x006681A0
+void CSWCCreature::GetHostileItems(  // PC 0x006681A0 GOG 0x00667F40
     CExoArrayList<CSWGuiInterfaceAction>& lstActions, CSWCCreature* pTarget)
 {
     CItemRepository* pRepository = GetServerCreature()->GetItemRepository(1);
@@ -7727,7 +7727,7 @@ void CSWCCreature::GetHostileItems(  // PC 0x006681A0
         CreateHostileItemEntry(lstActions, pItem, pTarget);
     }
 }
-// PC 0x00668210
+// PC 0x00668210 GOG 0x00667FB0
 void CSWCCreature::GetHostileItems(
     CExoArrayList<CSWGuiInterfaceAction>& lstActions, CSWCPlaceable* pTarget)
 {
@@ -7739,7 +7739,7 @@ void CSWCCreature::GetHostileItems(
         CreateHostileItemEntry(lstActions, pItem, pTarget);
     }
 }
-// PC 0x0065D100
+// PC 0x0065D100 GOG 0x0065CF10
 int CSWCCreature::GetMatchingEquippedItemCount(CSWSItem* pItem)
 {
     int nCount = 0;
@@ -7769,7 +7769,7 @@ int CSWCCreature::GetMatchingEquippedItemCount(CSWSItem* pItem)
     }
     return nCount;
 }
-// PC 0x00668280
+// PC 0x00668280 GOG 0x00668020
 void CSWCCreature::GetCombatFeatsSkills(
     CExoArrayList<CSWGuiInterfaceAction>& lstActions, CSWCCreature* pTarget)
 {
@@ -7839,7 +7839,7 @@ void CSWCCreature::GetFriendlyInterfaceActions(
     lstActions[nAction].m_resIcon = "i_dialog";
 }
 #endif
-void CSWCCreature::GetHostileInterfaceActions(  // PC 0x00668470
+void CSWCCreature::GetHostileInterfaceActions(  // PC 0x00668470 GOG 0x00668210
     CSWCObject* pTarget, int nType,
     CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
@@ -7862,7 +7862,7 @@ void CSWCCreature::GetHostileInterfaceActions(  // PC 0x00668470
     }
 }
 #ifndef _XBOX
-void CSWCCreature::GetTargetActions(CSWCObject* pTarget, int nMenu,  // PC 0x00668580
+void CSWCCreature::GetTargetActions(CSWCObject* pTarget, int nMenu,  // PC 0x00668580 GOG 0x00668320
                                     CExoArrayList<CSWGuiInterfaceAction>& lActions)
 {
     switch (GetInterfaceTargetType(pTarget))
@@ -7923,7 +7923,7 @@ void CSWCCreature::GetTargetActions(CSWCObject* pTarget, int nMenu,  // PC 0x006
         break;
     }
 }
-// PC 0x006689D0
+// PC 0x006689D0 GOG 0x00668770
 void CSWCCreature::GetPersonalActions(
     int nMenu, CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
@@ -7950,7 +7950,7 @@ void CSWCCreature::GetPersonalActions(
     }
 }
 #endif
-// PC 0x00668A50
+// PC 0x00668A50 GOG 0x006687F0
 void CSWCCreature::DoFootstepVisual(unsigned char nFootstep,
                                    int bUpdateGroundHeight)
 {
@@ -8044,7 +8044,7 @@ void CSWCCreature::DoFootstepVisual(unsigned char nFootstep,
         }
     }
 }
-// PC 0x00668F20
+// PC 0x00668F20 GOG 0x00668CC0
 void CSWCCreature::PlayFootstep()
 {
     CExoString sMaterial;
@@ -8141,7 +8141,7 @@ void CSWCCreature::PlayFootstep()
         }
     }
 }
-// PC 0x00669300
+// PC 0x00669300 GOG 0x006690A0
 void CSWCCreature::AnimateFireAndForget()
 {
     if (AnimationFireAndForget(m_nCurrentAnimation) == 1)
@@ -8240,12 +8240,12 @@ void CSWCCreature::AnimateFireAndForget()
         }
     }
 }
-// PC 0x00669600
+// PC 0x00669600 GOG 0x006693A0
 void FootstepEvent(CAurObject* pObject, char* sEvent, void* pData)
 {
     static_cast<CSWCCreature*>(pData)->PlayFootstep();
 }
-// PC 0x00669610
+// PC 0x00669610 GOG 0x006693B0
 void CSWCCreature::AnimationUpdate()
 {
     if (AnimationStationary(m_nCurrentAnimation) ||
@@ -8302,7 +8302,7 @@ void CSWCCreature::AnimationUpdate()
         }
     }
 }
-// PC 0x006697D0
+// PC 0x006697D0 GOG 0x00669570
 void CSWCCreature::RegisterCallbacks()
 {
     Gob* pModel = static_cast<Gob*>(m_pAnimBase->GetModel(CSWCObject::MODEL_SLOT_DEFAULT));
@@ -8342,7 +8342,7 @@ void CSWCCreature::RegisterCallbacks()
             ::GetPath, "GetPath", this, AUR_CALLBACK_LONG_DELAY, false);
     }
 }
-// PC 0x006699F0
+// PC 0x006699F0 GOG 0x00669790
 void CSWCCreature::AIUpdate()
 {
     unsigned long nTimer = g_pExoBase->m_pExoTimers->GetLowResolutionTimer();
@@ -8568,7 +8568,7 @@ void CSWCCreature::AIUpdate()
         m_pAnimBase->UpdateSound(GetId() == g_pAppManager->GetClientExoApp()->GetPlayerCreatureId());
     UpdateRollingFootstepSound();
 }
-// PC 0x0066A100
+// PC 0x0066A100 GOG 0x00669EA0
 int CSWCCreature::LoadModel(const CResRef& cModel, unsigned char nModel,
                           unsigned char nAnimType)
 {

@@ -35,13 +35,13 @@ const unsigned char CGameObjectArray::INVALIDLIST = 3;
 const unsigned char CGameObjectArray::NULL_GAMEOBJECT = 4;
 const unsigned char CGameObjectArray::INTERNALOBJECT = 0;
 const unsigned char CGameObjectArray::EXTERNALOBJECT = 1;
-// PC 0x004E98D0
+// PC 0x004E98D0 GOG 0x00503700
 CGameObject::CGameObject(unsigned char nObjectType, unsigned long oidSelf)
 {
     m_nId = oidSelf;
     m_nObjectType = nObjectType;
 }
-// PC 0x004E98F0
+// PC 0x004E98F0 GOG 0x00503720
 CGameObjectArray::CGameObjectArray(int bExternal)
 {
     m_bExternal = bExternal;
@@ -69,7 +69,7 @@ CGameObjectArray::CGameObjectArray(int bExternal)
         m_nPrevObjectId[i] = MAXCHAROBJID;
     }
 }
-// PC 0x004E9980
+// PC 0x004E9980 GOG 0x005037B0
 CGameObjectArray::~CGameObjectArray()
 {
     int nSize = m_bExternal ? 0x2000 : 0x1000;
@@ -96,7 +96,7 @@ CGameObjectArray::~CGameObjectArray()
     delete m_pArray;
     m_pArray = NULL;
 }
-// PC 0x004E9A00
+// PC 0x004E9A00 GOG 0x00503830
 unsigned char CGameObjectArray::AddObjectAtPos(unsigned long oidObject,
                                                CGameObject* pObject)
 {
@@ -203,7 +203,7 @@ unsigned char CGameObjectArray::AddObjectAtPos(unsigned long oidObject,
 
     return NULL_GAMEOBJECT;
 }
-// PC 0x004E9B60
+// PC 0x004E9B60 GOG 0x00503990
 unsigned char CGameObjectArray::AddExternalObject(unsigned long& oidObject,
                                                   CGameObject* pObject,
                                                   int bAscending)
@@ -286,7 +286,7 @@ unsigned char CGameObjectArray::AddExternalObject(unsigned long& oidObject,
     oidObject |= LISTTYPE_MASK;
     return SUCCESS;
 }
-// PC 0x004E9C50
+// PC 0x004E9C50 GOG 0x00503A80
 unsigned char CGameObjectArray::AddInternalObject(unsigned long& oidObject,
                                                   CGameObject* pObject,
                                                   int bDescending)
@@ -351,7 +351,7 @@ unsigned char CGameObjectArray::AddInternalObject(unsigned long& oidObject,
     }
     return SUCCESS;
 }
-// PC 0x004E9D10
+// PC 0x004E9D10 GOG 0x00503B40
 unsigned char CGameObjectArray::Delete(unsigned long oidObject,
                                        CGameObject** ppObject)
 {
@@ -392,7 +392,7 @@ unsigned char CGameObjectArray::Delete(unsigned long oidObject,
     delete pNode;
     return SUCCESS;
 }
-// PC 0x004E9DA0
+// PC 0x004E9DA0 GOG 0x00503BD0
 unsigned char CGameObjectArray::GetGameObject(unsigned long oidObject,
                                               CGameObject** ppObject)
 {
@@ -414,7 +414,7 @@ unsigned char CGameObjectArray::GetGameObject(unsigned long oidObject,
     *ppObject = pNode->m_pObject;
     return SUCCESS;
 }
-// PC 0x004E9E00
+// PC 0x004E9E00 GOG 0x00503C30
 unsigned char CGameObjectArray::Delete(unsigned long oidObject)
 {
     CGameObject* pObject;

@@ -4,7 +4,7 @@
 #else
 #include "platform.h"
 #endif
-// PC 0x00637900
+// PC 0x00637900 GOG 0x00637800
 CExoTimersInternal::CExoTimersInternal()
 {
     LARGE_INTEGER nFrequency;
@@ -27,16 +27,16 @@ CExoTimersInternal::CExoTimersInternal()
         }
     }
 }
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 CExoTimersInternal::~CExoTimersInternal()
 {
 }
-// PC 0x006379A0
+// PC 0x006379A0 GOG 0x006378A0
 unsigned long CExoTimersInternal::GetLowResolutionTimer()
 {
     return GetTickCount();
 }
-// PC 0x006379B0
+// PC 0x006379B0 GOG 0x006378B0
 unsigned __int64 CExoTimersInternal::GetHighResolutionTimer()
 {
     if (m_bHighResolution == 1)

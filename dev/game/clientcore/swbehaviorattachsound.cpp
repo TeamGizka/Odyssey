@@ -1,5 +1,5 @@
 #include "nwcanimbase.h"
-// PC 0x006EA4A0
+// PC 0x006EA4A0 GOG 0x006EA160
 CSWBehaviorAttachSound::CSWBehaviorAttachSound(CAurObject* pObject,
                                                CAurObject* pParent,
                                                CAurPart* pPart,
@@ -13,7 +13,7 @@ CSWBehaviorAttachSound::CSWBehaviorAttachSound(CAurObject* pObject,
     m_pSoundSource->SetPriorityGroup(25);
     m_pSoundSource->SetDistance(20.0f, 150.0f);
 }
-// PC 0x006EA570
+// PC 0x006EA570 GOG 0x006EA230
 int CSWBehaviorAttachSound::Control(float fTimeStep)
 {
     int nResult = CAurBehaviorAttach::Control(fTimeStep);
@@ -21,7 +21,7 @@ int CSWBehaviorAttachSound::Control(float fTimeStep)
     m_pSoundSource->SetPosition(vPosition);
     return nResult;
 }
-// PC 0x006EA5B0
+// PC 0x006EA5B0 GOG 0x006EA270
 int CSWBehaviorAttachSound::PlaySoundA()
 {
     int nResult = m_pSoundSource->IsPlaying();
@@ -31,7 +31,7 @@ int CSWBehaviorAttachSound::PlaySoundA()
     }
     return nResult;
 }
-// PC 0x006EA5E0
+// PC 0x006EA5E0 GOG 0x006EA2A0
 CSWBehaviorAttachSound::~CSWBehaviorAttachSound()
 {
     if (m_pSoundSource != 0)

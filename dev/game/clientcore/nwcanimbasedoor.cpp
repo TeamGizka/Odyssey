@@ -8,17 +8,17 @@
 
 static inline void NwcanimbasedoorTrace1();
 #define NWCANIMBASEDOOR_TRACE() NwcanimbasedoorTrace1()
-// PC 0x007563C0
+// PC 0x007563C0 GOG 0x007561D0
 CSWCAnimBaseDoor::CSWCAnimBaseDoor()
 {
     m_nAnimationType = 5;
 }
-// PC 0x007563E0
+// PC 0x007563E0 GOG 0x007561F0
 CSWCAnimBaseDoor::~CSWCAnimBaseDoor()
 {
     UnloadModel();
 }
-// PC 0x00756430
+// PC 0x00756430 GOG 0x00756240
 int CSWCAnimBaseDoor::LoadModel(const CResRef& sResRef, unsigned char nType)
 {
     Gob* pModel;
@@ -43,7 +43,7 @@ int CSWCAnimBaseDoor::LoadModel(const CResRef& sResRef, unsigned char nType)
     m_bPaletteReplaced = 0;
     return 1;
 }
-// PC 0x007565E0
+// PC 0x007565E0 GOG 0x007562E0
 int CSWCAnimBaseDoor::SetAnimationInternal(CAurObject* pObject,
                                            unsigned short nAnimation,
                                            float fSpeed, int nFlags,
@@ -88,7 +88,7 @@ int CSWCAnimBaseDoor::SetAnimationInternal(CAurObject* pObject,
     }
     return 0;
 }
-// PC 0x007564D0
+// PC 0x007564D0 GOG 0x007564F0
 CExoString CSWCAnimBaseDoor::GetAnimationName(unsigned short nAnimation)
 {
     NWCANIMBASEDOOR_TRACE();
@@ -115,7 +115,7 @@ CExoString CSWCAnimBaseDoor::GetAnimationName(unsigned short nAnimation)
 
     return sName;
 }
-// PC 0x007567D0
+// PC 0x007567D0 GOG 0x00756600
 unsigned short CSWCAnimBaseDoor::ServerToClientAnimation(
     unsigned short nAnimation)
 {

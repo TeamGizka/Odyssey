@@ -118,7 +118,7 @@ CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)
     CSWGuiPanel* pPanel = this; pPanel->SetActiveControl(&m_btnOptions[0], 0);
 }
 #else
-CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)  // PC 0x00754360
+CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)  // PC 0x00754360 GOG 0x00754170
     : CSWGuiPanel(pManager)
 {
 #ifdef _XBOX
@@ -225,7 +225,7 @@ CSWGuiOptionsMain::CSWGuiOptionsMain(CSWGuiManager* pManager)  // PC 0x00754360
 #endif
 }
 #endif
-// PC 0x00759190
+// PC 0x00759190 GOG 0x00758FB0
 void CSWGuiOptionsMouse::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -283,12 +283,12 @@ void CSWGuiOptionsSound::OnMoveGammaSlider(CSWGuiControl* pControl)
         g_pAppManager->GetClientExoApp()->GetClientOptions()->GetGammaSetting(), 0);
 }
 #endif
-// PC 0x00750940
+// PC 0x00750940 GOG 0x0074F8F0
 void CSWGuiOptionsMouse::OnEnterRevMouseButtons(CSWGuiControl* pControl)
 {
     SetDescription(48722);
 }
-// PC 0x0074F510
+// PC 0x0074F510 GOG 0x0074D9D0
 void CSWGuiOptionsSoundAdvanced::OnEnterOption(CSWGuiControl* pControl)
 {
     if (pControl == &m_cbForceSoftware)
@@ -302,13 +302,13 @@ void CSWGuiOptionsSoundAdvanced::OnEnterOption(CSWGuiControl* pControl)
         SetDescription(48719);
     }
 }
-// PC 0x0074F560
+// PC 0x0074F560 GOG 0x0074DA20
 void CSWGuiOptionsSoundAdvanced::OnDiscardChanges(CSWGuiControl* pControl)
 {
     m_bDiscard = 1;
     OnBButtonPressed(pControl);
 }
-// PC 0x0074F570
+// PC 0x0074F570 GOG 0x0074DA30
 void CSWGuiOptionsCheckbox::SetExtent(const CSWGuiExtent& cExtent)
 {
     CSWGuiExtent cBox;
@@ -327,7 +327,7 @@ void CSWGuiOptionsCheckbox::SetExtent(const CSWGuiExtent& cExtent)
     m_cText.SetExtent(cText);
     m_cExtent = cExtent;
 }
-// PC 0x0074F650
+// PC 0x0074F650 GOG 0x0074DB10
 void CSWGuiOptionsCheckbox::Draw(float fElapsed)
 {
     CSWGuiTextParams* pParams;
@@ -351,7 +351,7 @@ void CSWGuiOptionsCheckbox::Draw(float fElapsed)
     }
     CSWGuiButtonToggle::Draw(fElapsed);
 }
-// PC 0x0074F6D0
+// PC 0x0074F6D0 GOG 0x0074DB90
 void CSWGuiOptionsCheckbox::Load(CResGFF* pGFF, CResStruct& cStruct)
 {
     CSWGuiButtonToggle::Load(pGFF, cStruct);
@@ -360,7 +360,7 @@ void CSWGuiOptionsCheckbox::Load(CResGFF* pGFF, CResStruct& cStruct)
     m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
     m_cToggleHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
 }
-// PC 0x0074F970
+// PC 0x0074F970 GOG 0x0074DC30
 void CSWGuiOptionsMouse::OnEnterSlider(CSWGuiControl* pControl)
 {
     if (pControl == &m_sldMouseSen)
@@ -370,7 +370,7 @@ void CSWGuiOptionsMouse::OnEnterSlider(CSWGuiControl* pControl)
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
     pParams->m_bPulsing = 1;
 }
-// PC 0x0074D6F0
+// PC 0x0074D6F0 GOG 0x0074DC90
 void CSWGuiOptionsMain::OnGameplayOpt(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -380,7 +380,7 @@ void CSWGuiOptionsMain::OnGameplayOpt(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x0074D770
+// PC 0x0074D770 GOG 0x0074DD10
 void CSWGuiOptionsMain::OnAutopauseOpt(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -390,7 +390,7 @@ void CSWGuiOptionsMain::OnAutopauseOpt(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x0074D7F0
+// PC 0x0074D7F0 GOG 0x0074DD90
 void CSWGuiOptionsMain::SetDescription(unsigned long nStrRef)
 {
 #ifdef _XBOX
@@ -436,7 +436,7 @@ void CSWGuiOptionsMain::SetDescription(unsigned long nStrRef)
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
 #endif
 }
-// PC 0x0074D900
+// PC 0x0074D900 GOG 0x0074DEA0
 void CSWGuiOptionsFeedback::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -473,7 +473,7 @@ void CSWGuiOptionsFeedback::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0074DA20
+// PC 0x0074DA20 GOG 0x0074DFC0
 void CSWGuiOptionsFeedback::OnHide(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -485,7 +485,7 @@ void CSWGuiOptionsFeedback::OnHide(CSWGuiControl* pControl)
         pOptions->m_bHideUnequippable = bHide;
     }
 }
-// PC 0x0074DA70
+// PC 0x0074DA70 GOG 0x0074E010
 void CSWGuiOptionsFeedback::OnTutorial(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -497,7 +497,7 @@ void CSWGuiOptionsFeedback::OnTutorial(CSWGuiControl* pControl)
         pOptions->m_bTutorialPopups = bTutorial;
     }
 }
-// PC 0x0074DAC0
+// PC 0x0074DAC0 GOG 0x0074E060
 void CSWGuiOptionsFeedback::OnSubtitles(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -510,7 +510,7 @@ void CSWGuiOptionsFeedback::OnSubtitles(CSWGuiControl* pControl)
         pOptions->m_bSubtitles = bSubtitles;
     }
 }
-// PC 0x0074DB10
+// PC 0x0074DB10 GOG 0x0074E0B0
 void CSWGuiOptionsFeedback::OnMiniMap(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -524,7 +524,7 @@ void CSWGuiOptionsFeedback::OnMiniMap(CSWGuiControl* pControl)
         g_pAppManager->m_pClientExoApp->GetInGameGui()->InitializeMap();
     }
 }
-// PC 0x0074DB70
+// PC 0x0074DB70 GOG 0x0074E110
 void CSWGuiOptionsFeedback::OnFloaty(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -544,7 +544,7 @@ void CSWGuiOptionsFeedback::OnFloaty(CSWGuiControl* pControl)
 #endif
     }
 }
-// PC 0x0074DBC0
+// PC 0x0074DBC0 GOG 0x0074E160
 void CSWGuiOptionsFeedback::OnSummary(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -556,7 +556,7 @@ void CSWGuiOptionsFeedback::OnSummary(CSWGuiControl* pControl)
         pOptions->m_bStatusSummary = bSummary;
     }
 }
-// PC 0x0074DC10
+// PC 0x0074DC10 GOG 0x0074E1B0
 void CSWGuiOptionsFeedback::OnHideInGameGUI(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -569,7 +569,7 @@ void CSWGuiOptionsFeedback::OnHideInGameGUI(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x0074DC50
+// PC 0x0074DC50 GOG 0x0074E1F0
 void CSWGuiOptionsFeedback::SetUpOptions()
 {
     CClientOptions* pOptions =
@@ -637,7 +637,7 @@ void CSWGuiOptionsFeedback::SetUpOptions()
 #endif
     }
 }
-// PC 0x0074DE00
+// PC 0x0074DE00 GOG 0x0074E3A0
 void CSWGuiOptionsFeedback::SetDescription(unsigned long nStrRef)
 {
 #ifdef _XBOX
@@ -683,7 +683,7 @@ void CSWGuiOptionsFeedback::SetDescription(unsigned long nStrRef)
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
 #endif
 }
-// PC 0x0074DF10
+// PC 0x0074DF10 GOG 0x0074E4B0
 void CSWGuiOptionsFeedback::OnEnableToolTips(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -698,7 +698,7 @@ void CSWGuiOptionsFeedback::OnEnableToolTips(CSWGuiControl* pControl)
 }
 
 #ifndef _XBOX
-void CSWGuiOptionsGraphics::HandleInputEvent(int nEvent, int nState)  // PC 0x0074DF50
+void CSWGuiOptionsGraphics::HandleInputEvent(int nEvent, int nState)  // PC 0x0074DF50 GOG 0x0074E4F0
 {
     if (nState != 0)
     {
@@ -751,7 +751,7 @@ void CSWGuiOptionsGraphics::HandleInputEvent(int nEvent, int nState)  // PC 0x00
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0074E1B0
+// PC 0x0074E1B0 GOG 0x0074E750
 void CSWGuiOptionsGraphics::OnMoveGammaSlider(CSWGuiControl* pControl)
 {
     int nMax = pControl->AsSlider()->m_nMaxValue;
@@ -762,12 +762,12 @@ void CSWGuiOptionsGraphics::OnMoveGammaSlider(CSWGuiControl* pControl)
     g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nBrightness = nValue;
 }
 #endif
-// PC 0x0074F770
+// PC 0x0074F770 GOG 0x00758FA0
 void CSWGuiOptionsMouse::OnPanelAdded()
 {
     CSWGuiPanel::OnPanelAdded();
 }
-// PC 0x0074F9B0
+// PC 0x0074F9B0 GOG 0x0074DC70
 void CSWGuiOptionsSound::OnExitSlider(CSWGuiControl* pControl)
 {
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
@@ -775,7 +775,7 @@ void CSWGuiOptionsSound::OnExitSlider(CSWGuiControl* pControl)
 }
 
 #ifndef _XBOX
-void CSWGuiOptionsGraphics::OnShadows(CSWGuiControl* pControl)  // PC 0x0074E220
+void CSWGuiOptionsGraphics::OnShadows(CSWGuiControl* pControl)  // PC 0x0074E220 GOG 0x0074E7C0
 {
     if (pControl->m_bSelected != 0)
     {
@@ -791,7 +791,7 @@ void CSWGuiOptionsGraphics::OnShadows(CSWGuiControl* pControl)  // PC 0x0074E220
         }
     }
 }
-// PC 0x0074E270
+// PC 0x0074E270 GOG 0x0074E810
 void CSWGuiOptionsGraphics::OnGrass(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -803,7 +803,7 @@ void CSWGuiOptionsGraphics::OnGrass(CSWGuiControl* pControl)
         pClient->GetClientOptions()->SetGrass(bGrass == 0);
     }
 }
-// PC 0x0074E2B0
+// PC 0x0074E2B0 GOG 0x0074E850
 void CSWGuiOptionsGraphics::SetDescription(unsigned long nStrRef)
 {
     m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
@@ -823,7 +823,7 @@ void CSWGuiOptionsGraphics::SetDescription(unsigned long nStrRef)
     m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
 }
-// PC 0x0074E3C0
+// PC 0x0074E3C0 GOG 0x0074E960
 void CSWGuiOptionsGraphics::SetUpOptions()
 {
     CClientOptions* pOptions =
@@ -845,7 +845,7 @@ void CSWGuiOptionsGraphics::SetUpOptions()
         pToggle->m_bToggled = nGrass;
     }
 }
-// PC 0x0074E470
+// PC 0x0074E470 GOG 0x0074EA10
 void CSWGuiOptionsGraphicsAdvanced::SetNewOptions()
 {
     CClientOptions* pOptions =
@@ -864,7 +864,7 @@ void CSWGuiOptionsGraphicsAdvanced::SetNewOptions()
         }
     }
 }
-// PC 0x0074E500
+// PC 0x0074E500 GOG 0x0074EAA0
 void CSWGuiOptionsGraphicsAdvanced::SetTexQualText()
 {
     int nStrRef;
@@ -901,7 +901,7 @@ void CSWGuiOptionsGraphicsAdvanced::SetTexQualText()
         delete p2DA;
     }
 }
-// PC 0x0074E650
+// PC 0x0074E650 GOG 0x0074EBF0
 void CSWGuiOptionsGraphicsAdvanced::SetAntiAliasText()
 {
     switch (m_nAntiAlias)
@@ -955,7 +955,7 @@ void CSWGuiOptionsGraphicsAdvanced::SetAntiAliasText()
 }
 
 #ifndef _XBOX
-CSWGuiOptionsResolution::CSWGuiOptionsResolution(CSWGuiManager* pManager)  // PC 0x007517D0
+CSWGuiOptionsResolution::CSWGuiOptionsResolution(CSWGuiManager* pManager)  // PC 0x007517D0 GOG 0x007501D0
     : CSWGuiPanel(pManager)
 {
     StartLoadFromLayout("optresolution_p");
@@ -1063,7 +1063,7 @@ CSWGuiOptionsResolution::CSWGuiOptionsResolution(CSWGuiManager* pManager)  // PC
     m_nUnknown80C = 0;
 }
 #endif
-// PC 0x0074E770
+// PC 0x0074E770 GOG 0x0074ECF0
 void CSWGuiOptionsGraphicsAdvanced::SetAnisotropyText()
 {
     switch (m_nAnisotropy)
@@ -1097,7 +1097,7 @@ void CSWGuiOptionsGraphicsAdvanced::SetAnisotropyText()
     }
     m_bChanged = 1;
 }
-// PC 0x0074E890
+// PC 0x0074E890 GOG 0x0074EDF0
 void CSWGuiOptionsGraphicsAdvanced::SetDescription(unsigned long nStrRef)
 {
     m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
@@ -1117,7 +1117,7 @@ void CSWGuiOptionsGraphicsAdvanced::SetDescription(unsigned long nStrRef)
     m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
 }
-// PC 0x0074E990
+// PC 0x0074E990 GOG 0x0074EEF0
 void CSWGuiOptionsGraphicsAdvanced::SetUpOptions()
 {
     CClientOptions* pOptions =
@@ -1177,7 +1177,7 @@ void CSWGuiOptionsGraphicsAdvanced::SetUpOptions()
         SetTexQualText();
     }
 }
-// PC 0x00750200
+// PC 0x00750200 GOG 0x007507B0
 void CSWGuiOptionsResolution::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -1234,7 +1234,7 @@ void CSWGuiOptionsResolution::HandleInputEvent(int nEvent, int nState)
 }
 
 #ifndef _XBOX
-void CSWGuiOptionsResolution::OnResolutionChosen(CSWGuiControl* pControl)  // PC 0x0074EBB0
+void CSWGuiOptionsResolution::OnResolutionChosen(CSWGuiControl* pControl)  // PC 0x0074EBB0 GOG 0x0074F100
 {
     if (pControl == 0 || pControl->m_bSelected != 0)
     {
@@ -1266,8 +1266,8 @@ void CSWGuiOptionsResolution::OnResolutionChosen(CSWGuiControl* pControl)  // PC
     }
 }
 #endif
-#endif  // PC 0x0074EFE0
-// PC 0x00752430
+#endif  // PC 0x0074EFE0 GOG 0x0074F440
+// PC 0x00752430 GOG 0x007529A0
 CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -1381,7 +1381,7 @@ CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
     SetUpOptions();
 #endif
 }
-// PC 0x0074E890
+// PC 0x0074E890 GOG 0x0074EDF0
 void CSWGuiOptionsMouse::SetDescription(unsigned long nStrRef)
 {
     m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
@@ -1401,7 +1401,7 @@ void CSWGuiOptionsMouse::SetDescription(unsigned long nStrRef)
     m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
 }
-// PC 0x0074EEF0
+// PC 0x0074EEF0 GOG 0x0074D580
 void CSWGuiOptionsSound::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -1464,7 +1464,7 @@ void CSWGuiOptionsSound::OnMoveVolumeSlider(CSWGuiControl* pControl)
             nValue;
     }
 }
-// PC 0x00750470
+// PC 0x00750470 GOG 0x0074F530
 void CSWGuiOptionsSound::OnEnterSlider(CSWGuiControl* pControl)
 {
 #ifdef _XBOX
@@ -1502,7 +1502,7 @@ void CSWGuiOptionsSound::OnEnterSlider(CSWGuiControl* pControl)
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
     pParams->m_bPulsing = 1;
 }
-// PC 0x0074F0D0
+// PC 0x0074F0D0 GOG 0x0074D670
 void CSWGuiOptionsSound::SetDescription(unsigned long nStrRef)
 {
 #ifdef _XBOX
@@ -1548,7 +1548,7 @@ void CSWGuiOptionsSound::SetDescription(unsigned long nStrRef)
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
 #endif
 }
-// PC 0x007504A0
+// PC 0x007504A0 GOG 0x00750A20
 void CSWGuiOptionsSound::OnDefault(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -1595,7 +1595,7 @@ void CSWGuiOptionsSound::OnDefault(CSWGuiControl* pControl)
 #endif
     }
 }
-// PC 0x0074F1E0
+// PC 0x0074F1E0 GOG 0x0074F560
 void CSWGuiOptionsSound::SetUpOptions()
 {
     CClientOptions* pOptions =
@@ -1612,7 +1612,7 @@ void CSWGuiOptionsSound::SetUpOptions()
         OnMoveVolumeSlider(&m_sldMovie);
     }
 }
-// PC 0x007504D0
+// PC 0x007504D0 GOG 0x00750A50
 void CSWGuiOptionsSoundAdvanced::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -1676,7 +1676,7 @@ void CSWGuiOptionsSoundAdvanced::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0074F270
+// PC 0x0074F270 GOG 0x0074F5F0
 void CSWGuiOptionsSoundAdvanced::SetNewOptions()
 {
     if (g_pAppManager->m_pClientExoApp->GetClientOptions() != 0)
@@ -1688,7 +1688,7 @@ void CSWGuiOptionsSoundAdvanced::SetNewOptions()
             nFlags;
     }
 }
-// PC 0x007507C0
+// PC 0x007507C0 GOG 0x0074F640
 void CSWGuiOptionsSoundAdvanced::OnEAXLeft(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -1702,7 +1702,7 @@ void CSWGuiOptionsSoundAdvanced::OnEAXLeft(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00750800
+// PC 0x00750800 GOG 0x0074F680
 void CSWGuiOptionsSoundAdvanced::OnEAXRight(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -1739,7 +1739,7 @@ void CSWGuiOptionsSoundAdvanced::OnForceSoftware(CSWGuiControl* pControl)
         m_bChanged = 1;
     }
 }
-// PC 0x007508C0
+// PC 0x007508C0 GOG 0x0074F720
 void CSWGuiOptionsSoundAdvanced::SetUpOptions()
 {
     CClientOptions* pOptions =
@@ -1801,7 +1801,7 @@ void CSWGuiOptionsSoundAdvanced::SetEAXText()
         pRight->m_bEnabled = 0;
     }
 }
-// PC 0x0074F3A0
+// PC 0x0074F3A0 GOG 0x0074D860
 void CSWGuiOptionsSoundAdvanced::SetDescription(unsigned long nStrRef)
 {
     m_lblDescription.m_cText.m_cParams.SetStrRef(nStrRef);
@@ -1821,7 +1821,7 @@ void CSWGuiOptionsSoundAdvanced::SetDescription(unsigned long nStrRef)
     m_lbDescription.AddControls(&pControl, 1, 0, 0, 0);
     m_lbDescription.SetSelectedControl(&m_lblDescription, 0);
 }
-// PC 0x0074F4B0
+// PC 0x0074F4B0 GOG 0x0074D970
 void CSWGuiOptionsSoundAdvanced::EnableEAXControls(int bEnable)
 {
     m_btnEAX.SetEnabled(bEnable);
@@ -1834,7 +1834,7 @@ void CSWGuiOptionsSoundAdvanced::EnableEAXControls(int bEnable)
     m_btnEAXRight.SetEnabled(bEnable);
     m_btnEAXLeft.SetEnabled(bEnable);
 }
-// PC 0x0074F780
+// PC 0x0074F780 GOG 0x0074F7A0
 void CSWGuiOptionsMouse::OnRevMouseButtons(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -1856,7 +1856,7 @@ void CSWGuiOptionsMouse::OnRevMouseButtons(CSWGuiControl* pControl)
         cIni.WriteIniEntry(sValue, sFile, sSection, sKey);
     }
 }
-// PC 0x00750950
+// PC 0x00750950 GOG 0x00750D80
 void CSWGuiOptionsMouse::OnDefault(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -1867,7 +1867,7 @@ void CSWGuiOptionsMouse::OnDefault(CSWGuiControl* pControl)
         SetUpOptions();
     }
 }
-// PC 0x00752800
+// PC 0x00752800 GOG 0x00751100
 void CSWGuiOptionsSound::OnAdvanced(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -1878,7 +1878,7 @@ void CSWGuiOptionsSound::OnAdvanced(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x0074F8D0
+// PC 0x0074F8D0 GOG 0x0074F900
 void CSWGuiOptionsMouse::SetUpOptions()
 {
     CClientOptions* pOptions =
@@ -1892,7 +1892,7 @@ void CSWGuiOptionsMouse::SetUpOptions()
         pToggle->m_bToggled = bReverse;
     }
 }
-// PC 0x0074F940
+// PC 0x0074F940 GOG 0x0074F970
 void CSWGuiOptionsMouse::OnMoveMouseSenSlider(CSWGuiControl* pControl)
 {
     pControl->AsSlider();
@@ -1900,7 +1900,7 @@ void CSWGuiOptionsMouse::OnMoveMouseSenSlider(CSWGuiControl* pControl)
     g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nMouseSensitivity =
         nValue;
 }
-// PC 0x0074F9D0
+// PC 0x0074F9D0 GOG 0x0074F9A0
 void CSWGuiOptionsMain::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -1937,7 +1937,7 @@ void CSWGuiOptionsMain::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0074FAE0
+// PC 0x0074FAE0 GOG 0x0074FAB0
 void CSWGuiOptionsMain::OnEnterSlot(CSWGuiControl* pControl)
 {
 #ifdef _XBOX
@@ -1981,13 +1981,13 @@ void CSWGuiOptionsMain::OnEnterSlot(CSWGuiControl* pControl)
 }
 
 #ifndef _XBOX
-CSWGuiOptionsFeedback::~CSWGuiOptionsFeedback()  // PC 0x0074FAF0
+CSWGuiOptionsFeedback::~CSWGuiOptionsFeedback()  // PC 0x0074FAF0 GOG 0x0074FAC0
 {
 }
 #endif
 
 #ifndef _XBOX
-void CSWGuiOptionsFeedback::PopulateOptionsListbox()  // PC 0x007509A0
+void CSWGuiOptionsFeedback::PopulateOptionsListbox()  // PC 0x007509A0 GOG 0x00750DD0
 {
     CSWGuiControl* pProto = m_lbOptions.m_pProtoItem;
     CExoArrayList<CSWGuiControl*> lstControls;
@@ -2084,7 +2084,7 @@ void CSWGuiOptionsFeedback::PopulateOptionsListbox()  // PC 0x007509A0
 #endif
 
 #ifndef _XBOX
-void CSWGuiOptionsGraphics::OnAdvanced(CSWGuiControl* pControl)  // PC 0x00752780
+void CSWGuiOptionsGraphics::OnAdvanced(CSWGuiControl* pControl)  // PC 0x00752780 GOG 0x00752CF0
 {
     int bSelected = pControl->m_bSelected;
     if (bSelected != 0)
@@ -2121,7 +2121,7 @@ void CSWGuiOptionsGraphics::OnResolution(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
 }
-// PC 0x00750CD0
+// PC 0x00750CD0 GOG 0x007511D0
 CSWGuiOptionsGraphicsAdvanced::CSWGuiOptionsGraphicsAdvanced(
     CSWGuiManager* pManager, CSWGuiOptionsGraphics* pGraphics)
     : CSWGuiPanel(pManager)
@@ -2238,7 +2238,7 @@ CSWGuiOptionsGraphicsAdvanced::CSWGuiOptionsGraphicsAdvanced(
     m_pGraphics = pGraphics;
 }
 #endif
-// PC 0x007528D0
+// PC 0x007528D0 GOG 0x00751D70
 CSWGuiOptionsSoundAdvanced::CSWGuiOptionsSoundAdvanced(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -2297,7 +2297,7 @@ CSWGuiOptionsSoundAdvanced::CSWGuiOptionsSoundAdvanced(CSWGuiManager* pManager)
     SetActiveControl(&m_cbForceSoftware, 0);
     m_bDiscard = 0;
 }
-// PC 0x00751E50
+// PC 0x00751E50 GOG 0x00750D40
 void CSWGuiOptionsSoundAdvanced::OnDefault(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2309,7 +2309,7 @@ void CSWGuiOptionsSoundAdvanced::OnDefault(CSWGuiControl* pControl)
         m_bChanged = 1;
     }
 }
-// PC 0x00751E90
+// PC 0x00751E90 GOG 0x00752400
 CSWGuiOptionsMouse::CSWGuiOptionsMouse(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -2361,7 +2361,7 @@ CSWGuiOptionsMouse::CSWGuiOptionsMouse(CSWGuiManager* pManager)
     SetActiveControl(&m_sldMouseSen, 0);
     SetUpOptions();
 }
-// PC 0x0074FBE0
+// PC 0x0074FBE0 GOG 0x0074FBB0
 void CSWGuiOptionsFeedback::OnDefault(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2372,7 +2372,7 @@ void CSWGuiOptionsFeedback::OnDefault(CSWGuiControl* pControl)
         SetUpOptions();
     }
 }
-// PC 0x0074FC10
+// PC 0x0074FC10 GOG 0x0074FBE0
 void CSWGuiOptionsFeedback::OnEnterSlot(CSWGuiControl* pControl)
 {
 #ifdef _XBOX
@@ -2420,7 +2420,7 @@ void CSWGuiOptionsFeedback::OnEnterSlot(CSWGuiControl* pControl)
     SetDescription(pControl->m_nIndex);
 #endif
 }
-// PC 0x007538F0
+// PC 0x007538F0 GOG 0x00754070
 void CSWGuiOptionsMain::OnSoundOpt(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -2432,14 +2432,14 @@ void CSWGuiOptionsMain::OnSoundOpt(CSWGuiControl* pControl)
 }
 
 #ifndef _XBOX
-int CSWGuiOptionsGraphicsAdvanced::OnFrameBuffer(CSWGuiControl* pControl)  // PC 0x0074E750
+int CSWGuiOptionsGraphicsAdvanced::OnFrameBuffer(CSWGuiControl* pControl)  // PC 0x0074E750 GOG 0x0074D530
 {
     int bFrameBuffer = (m_bFrameBuffer == 0);
     m_bChanged = 1;
     m_bFrameBuffer = bFrameBuffer;
     return bFrameBuffer;
 }
-// PC 0x0074E840
+// PC 0x0074E840 GOG 0x0074EDC0
 void CSWGuiOptionsGraphicsAdvanced::OnSoftShadows(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2449,14 +2449,14 @@ void CSWGuiOptionsGraphicsAdvanced::OnSoftShadows(CSWGuiControl* pControl)
         m_bSoftShadows = (bSoftShadows == 0);
     }
 }
-// PC 0x0074E870
+// PC 0x0074E870 GOG 0x0074D550
 int CSWGuiOptionsGraphicsAdvanced::OnVSync(CSWGuiControl* pControl)
 {
     int bVSync = (m_bVSync == 0);
     m_bVSync = bVSync;
     return bVSync;
 }
-// PC 0x0074EBA0
+// PC 0x0074EBA0 GOG 0x0074D570
 void CSWGuiOptionsGraphicsAdvanced::OnDiscardChanges(CSWGuiControl* pControl)
 {
     m_bDiscard = 1;
@@ -2465,11 +2465,11 @@ void CSWGuiOptionsGraphicsAdvanced::OnDiscardChanges(CSWGuiControl* pControl)
 #endif
 
 #ifndef _XBOX
-void CSWGuiOptionsGraphics::OnEnterSlot(CSWGuiControl* pControl)  // PC 0x0074FC20
+void CSWGuiOptionsGraphics::OnEnterSlot(CSWGuiControl* pControl)  // PC 0x0074FC20 GOG 0x0074FBF0
 {
     SetDescription(pControl->m_nIndex);
 }
-// PC 0x0074FC30
+// PC 0x0074FC30 GOG 0x0074FC00
 void CSWGuiOptionsGraphics::OnEnterSlider(CSWGuiControl* pControl)
 {
     if (pControl == &m_sldGamma)
@@ -2479,7 +2479,7 @@ void CSWGuiOptionsGraphics::OnEnterSlider(CSWGuiControl* pControl)
     CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
     pParams->m_bPulsing = 1;
 }
-// PC 0x0074FC70
+// PC 0x0074FC70 GOG 0x0074FC40
 void CSWGuiOptionsGraphics::OnDefault(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2490,7 +2490,7 @@ void CSWGuiOptionsGraphics::OnDefault(CSWGuiControl* pControl)
         SetUpOptions();
     }
 }
-// PC 0x0074FCA0
+// PC 0x0074FCA0 GOG 0x0074FC70
 void CSWGuiOptionsGraphicsAdvanced::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -2556,12 +2556,12 @@ void CSWGuiOptionsGraphicsAdvanced::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0074FF50
+// PC 0x0074FF50 GOG 0x0074FF20
 void CSWGuiOptionsGraphicsAdvanced::OnEnterSlot(CSWGuiControl* pControl)
 {
     SetDescription(pControl->m_nIndex);
 }
-// PC 0x0074FF60
+// PC 0x0074FF60 GOG 0x0074FF30
 void CSWGuiOptionsGraphicsAdvanced::OnDefault(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2572,7 +2572,7 @@ void CSWGuiOptionsGraphicsAdvanced::OnDefault(CSWGuiControl* pControl)
         SetUpOptions();
     }
 }
-// PC 0x0074FF90
+// PC 0x0074FF90 GOG 0x0074FF60
 void CSWGuiOptionsGraphicsAdvanced::OnTexQualLeft(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2585,7 +2585,7 @@ void CSWGuiOptionsGraphicsAdvanced::OnTexQualLeft(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x0074FFD0
+// PC 0x0074FFD0 GOG 0x0074FFA0
 void CSWGuiOptionsGraphicsAdvanced::OnTexQualRight(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2598,7 +2598,7 @@ void CSWGuiOptionsGraphicsAdvanced::OnTexQualRight(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00750010
+// PC 0x00750010 GOG 0x0074FFE0
 void CSWGuiOptionsGraphicsAdvanced::OnAntiAliasLeft(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2639,7 +2639,7 @@ void CSWGuiOptionsGraphicsAdvanced::OnAntiAliasLeft(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x007500D0
+// PC 0x007500D0 GOG 0x007500A0
 void CSWGuiOptionsGraphicsAdvanced::OnAntiAliasRight(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2689,7 +2689,7 @@ void CSWGuiOptionsGraphicsAdvanced::OnAntiAliasRight(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x00750170
+// PC 0x00750170 GOG 0x00750140
 void CSWGuiOptionsGraphicsAdvanced::OnAnisotropyLeft(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2707,7 +2707,7 @@ void CSWGuiOptionsGraphicsAdvanced::OnAnisotropyLeft(CSWGuiControl* pControl)
         }
     }
 }
-// PC 0x007501C0
+// PC 0x007501C0 GOG 0x00750190
 void CSWGuiOptionsGraphicsAdvanced::OnAnisotropyRight(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -2722,7 +2722,7 @@ void CSWGuiOptionsGraphicsAdvanced::OnAnisotropyRight(CSWGuiControl* pControl)
     }
 }
 #endif
-// PC 0x00752F60
+// PC 0x00752F60 GOG 0x00752DF0
 void CSWGuiOptionsMain::OnFeedbackOpt(CSWGuiControl* pControl)
 {
     int bSelected = pControl->m_bSelected;
@@ -2734,7 +2734,7 @@ void CSWGuiOptionsMain::OnFeedbackOpt(CSWGuiControl* pControl)
 }
 
 #ifndef _XBOX
-CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager, int bInGame)  // PC 0x00752FE0
+CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager, int bInGame)  // PC 0x00752FE0 GOG 0x00752E70
     : CSWGuiPanel(pManager)
 {
     StartLoadFromLayout("optgraphics_p");
@@ -2824,7 +2824,7 @@ CSWGuiOptionsGraphics::CSWGuiOptionsGraphics(CSWGuiManager* pManager, int bInGam
     }
 }
 #endif
-// PC 0x00753970
+// PC 0x00753970 GOG 0x00753700
 CSWGuiOptionsSound::CSWGuiOptionsSound(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -3052,7 +3052,7 @@ CSWGuiOptionsSound::CSWGuiOptionsSound(CSWGuiManager* pManager)
 }
 
 #ifndef _XBOX
-void CSWGuiOptionsMain::OnGraphicsOpt(CSWGuiControl* pControl)  // PC 0x007542E0
+void CSWGuiOptionsMain::OnGraphicsOpt(CSWGuiControl* pControl)  // PC 0x007542E0 GOG 0x007540F0
 {
     int bSelected = pControl->m_bSelected;
     if (bSelected != 0)

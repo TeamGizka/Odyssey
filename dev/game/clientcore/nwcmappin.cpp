@@ -1,7 +1,7 @@
 #include "nwcmappin.h"
 #include "nwsobject.h"
 #include "nwcanimbase.h"
-// PC 0x006EBFA0
+// PC 0x006EBFA0 GOG 0x006EBC60
 CSWCMapPin::CSWCMapPin()
     : CSWCObject(CGameObject::OBJECT_TYPE_WAYPOINT)
 {
@@ -9,7 +9,7 @@ CSWCMapPin::CSWCMapPin()
     m_bEnabled = 0;
     m_nType = 0;
 }
-// PC 0x006EC010
+// PC 0x006EC010 GOG 0x006EBCD0
 CSWCMapPin::~CSWCMapPin()
 {
 }

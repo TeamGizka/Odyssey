@@ -1,5 +1,5 @@
 #include "exoresman.h"
-// PC 0x007846D0
+// PC 0x007846D0 GOG 0x007844A0
 CResDDS::CResDDS()
 {
     m_bServiced = 0;
@@ -8,16 +8,16 @@ CResDDS::CResDDS()
     m_pHeader = 0;
     m_bAllocPrefix = 1;
 }
-// PC 0x00784700
+// PC 0x00784700 GOG 0x007844D0
 CResDDS::~CResDDS()
 {
 }
-// PC 0x00404CF0
+// PC 0x00404CF0 GOG 0x00404CF0
 unsigned char* CResDDS::GetDDSDataPtr()
 {
     return m_pData;
 }
-// PC 0x00784760
+// PC 0x00784760 GOG 0x00784610
 int CResDDS::OnResourceFreed()
 {
     m_bServiced = 0;
@@ -26,7 +26,7 @@ int CResDDS::OnResourceFreed()
     m_pHeader = 0;
     return 1;
 }
-// PC 0x00784710
+// PC 0x00784710 GOG 0x007844E0
 int CResDDS::GetDDSAttrib(unsigned long* pnWidth, unsigned long* pnHeight, unsigned char* pnBpp, unsigned long* pnSize, float* pfAlpha)
 {
     if (m_pHeader == 0)
@@ -40,7 +40,7 @@ int CResDDS::GetDDSAttrib(unsigned long* pnWidth, unsigned long* pnHeight, unsig
     *pfAlpha = ((float*)m_pHeader)[4];
     return 1;
 }
-// PC 0x00784780
+// PC 0x00784780 GOG 0x00784530
 int CResDDS::OnResourceServiced()
 {
     unsigned char* pResource = (unsigned char*)m_pResource;

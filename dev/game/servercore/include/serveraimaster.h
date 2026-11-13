@@ -54,7 +54,7 @@ public:
 class CServerAIList : public CExoArrayList<unsigned long>
 {
 public:
-    CServerAIList()  // PC 0x004DDFD0
+    CServerAIList()  // PC 0x004DDFD0 GOG 0x004DE0F0
     {
         m_nCurrent = 0;
     }

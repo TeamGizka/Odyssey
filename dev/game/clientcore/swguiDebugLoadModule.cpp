@@ -10,7 +10,7 @@
 static inline void SwguiDebugLoadModuleTrace2();
 static inline void SwguiDebugLoadModuleTrace1();
 #define SWGUIDEBUGLOADMODULE_TRACE() SwguiDebugLoadModuleTrace2()
-// PC 0x0073DF70
+// PC 0x0073DF70 GOG 0x0073DB20
 CSWGuiControl* CSWGuiLoadModuleDebugMenu::CreateOption(
     const CExoString& sText, PFNGUIEVENT pHandler, CSWGuiButton* pPrototype)
 {
@@ -55,7 +55,7 @@ CSWGuiControl* CSWGuiLoadModuleDebugMenu::CreateOption(
     return pButton;
 #endif
 }
-// PC 0x0073DDC0
+// PC 0x0073DDC0 GOG 0x0073DBE0
 void CSWGuiLoadModuleDebugMenu::Back()
 {
     SwguiDebugLoadModuleTrace1();
@@ -64,7 +64,7 @@ void CSWGuiLoadModuleDebugMenu::Back()
     g_pAppManager->m_pClientExoApp->GetInGameGui()
         ->ShowDebugMenu();
 }
-// PC 0x0073DDF0
+// PC 0x0073DDF0 GOG 0x0073DC10
 void CSWGuiLoadModuleDebugMenu::OnModulePicked(CSWGuiControl* pControl)
 {
     SwguiDebugLoadModuleTrace1();
@@ -79,7 +79,7 @@ void CSWGuiLoadModuleDebugMenu::OnModulePicked(CSWGuiControl* pControl)
         g_pAppManager->m_pServerExoApp->SetMoveToModulePending(1);
     }
 }
-// PC 0x0073E030
+// PC 0x0073E030 GOG 0x0073DCB0
 CSWGuiLoadModuleDebugMenu::CSWGuiLoadModuleDebugMenu(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
@@ -175,7 +175,7 @@ CSWGuiLoadModuleDebugMenu::CSWGuiLoadModuleDebugMenu(CSWGuiManager* pManager)
     SetActiveControl(pList, 0);
     CenterPanel();
 }
-// PC 0x0073DE90
+// PC 0x0073DE90 GOG 0x0073E540
 void CSWGuiLoadModuleDebugMenu::HandleInputEvent(int nEvent, int nState)
 {
     SWGUIDEBUGLOADMODULE_TRACE();

@@ -11,7 +11,7 @@
 DWORD WINAPI AsyncReadThreadProc(LPVOID lpParameter);
 
 static CExoFileThread g_AsyncFileThread;
-// PC 0x00636F60
+// PC 0x00636F60 GOG 0x00636E60
 CExoFileThread::~CExoFileThread()
 {
     m_bStop = 1;
@@ -22,17 +22,17 @@ CExoFileThread::~CExoFileThread()
         CloseHandle(m_hThread);
     }
 }
-// PC 0x00636FA0
+// PC 0x00636FA0 GOG 0x00636EA0
 CExoAliasListInternal::CExoAliasListInternal()
 {
     m_pAliasList = NULL;
     m_sDefault = "";
 }
-// PC 0x00636FF0
+// PC 0x00636FF0 GOG 0x00636EF0
 inline CExoAliasListInternal::CExoAlias::CExoAlias()
 {
 }
-// PC 0x00637040
+// PC 0x00637040 GOG 0x00636F40
 const CExoString& CExoAliasListInternal::GetAliasPath(const CExoString& sAlias,
                                                       int nLength) const
 {
@@ -66,7 +66,7 @@ const CExoString& CExoAliasListInternal::GetAliasPath(const CExoString& sAlias,
     }
     return m_sDefault;
 }
-// PC 0x006370B0
+// PC 0x006370B0 GOG 0x00636FB0
 CExoString CExoAliasListInternal::ResolveFileName(const CExoString& sName,
                                                   unsigned short nResType) const
 {
@@ -108,7 +108,7 @@ CExoString CExoAliasListInternal::ResolveFileName(const CExoString& sName,
         return sResult;
     }
 }
-// PC 0x00637250
+// PC 0x00637250 GOG 0x00637150
 CExoFileInternal::CExoFileInternal(const CExoString& path,
                                    unsigned short resourceType,
                                    const CExoString& mode)
@@ -121,7 +121,7 @@ CExoFileInternal::CExoFileInternal(const CExoString& path,
     m_pFile = fopen(sFileName.CStr(), mode.CStr());
     m_sFileName = sFileName;
 }
-// PC 0x00637320
+// PC 0x00637320 GOG 0x00637220
 CExoFileInternal::~CExoFileInternal()
 {
     if (m_pFile)
@@ -130,7 +130,7 @@ CExoFileInternal::~CExoFileInternal()
         m_pFile = NULL;
     }
 }
-// PC 0x00637350
+// PC 0x00637350 GOG 0x00637250
 unsigned long CExoFileInternal::GetOffset()
 {
     if (m_pFile != NULL)
@@ -139,7 +139,7 @@ unsigned long CExoFileInternal::GetOffset()
     }
     return 0;
 }
-// PC 0x00637370
+// PC 0x00637370 GOG 0x00637270
 unsigned long CExoFileInternal::GetSize()
 {
     if (m_pFile != NULL)
@@ -156,7 +156,7 @@ unsigned long CExoFileInternal::GetSize()
     }
     return (unsigned long)-1;
 }
-// PC 0x006373D0
+// PC 0x006373D0 GOG 0x006372D0
 unsigned long CExoFileInternal::Read(CExoString* text, unsigned long count)
 {
     if (m_pFile != NULL)
@@ -185,7 +185,7 @@ unsigned long CExoFileInternal::Read(CExoString* text, unsigned long count)
     }
     return 0;
 }
-// PC 0x00637470
+// PC 0x00637470 GOG 0x00637370
 unsigned long CExoFileInternal::Read(void* data, unsigned long size,
                                      unsigned long count)
 {
@@ -211,19 +211,19 @@ unsigned long CExoFileInternal::Read(void* data, unsigned long size,
     }
     return 0;
 }
-// PC 0x006374F0
+// PC 0x006374F0 GOG 0x006373F0
 void CExoFileInternal::ReadAsync(void* data, unsigned long size,
                                  unsigned long count)
 {
     g_AsyncFileThread.Read(data, size, count, m_pFile);
 }
-// PC 0x00637550
+// PC 0x00637550 GOG 0x00637450
 int CExoFileInternal::ReadAsyncComplete()
 {
     return g_AsyncFileThread.m_bComplete;
 }
 
-// PC 0x00637560
+// PC 0x00637560 GOG 0x00637460
 unsigned long CExoFileInternal::Write(const char* text)
 {
     if (m_pFile != NULL)
@@ -232,7 +232,7 @@ unsigned long CExoFileInternal::Write(const char* text)
     }
     return 0;
 }
-// PC 0x006375A0
+// PC 0x006375A0 GOG 0x006374A0
 DWORD WINAPI AsyncReadThreadProc(LPVOID lpParameter)
 {
     while (!g_AsyncFileThread.m_bStop)
@@ -244,7 +244,7 @@ DWORD WINAPI AsyncReadThreadProc(LPVOID lpParameter)
     }
     ExitThread(1);
 }
-// PC 0x00637660
+// PC 0x00637660 GOG 0x00637560
 CExoFileThread::CExoFileThread()
 {
     m_bComplete = 0;
@@ -259,7 +259,7 @@ CExoFileThread::CExoFileThread()
                              CREATE_SUSPENDED, &m_nThreadId);
     SetThreadPriority(m_hThread, THREAD_PRIORITY_LOWEST);
 }
-// PC 0x006376C0
+// PC 0x006376C0 GOG 0x006375C0
 void CExoAliasListInternal::Add(const CExoString& sAlias,
                                 const CExoString& sPath)
 {
@@ -351,7 +351,7 @@ void CExoAliasListInternal::ChangePath(const CExoString& sAlias,
     }
 }
 #endif
-// PC 0x00637880
+// PC 0x00637880 GOG 0x00637780
 CExoAliasListInternal::~CExoAliasListInternal()
 {
     CExoAlias* pAlias = m_pAliasList;

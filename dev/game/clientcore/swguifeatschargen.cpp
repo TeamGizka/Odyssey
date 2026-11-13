@@ -12,7 +12,7 @@ static inline void SwguifeatschargenTrace1();
 
 static inline void SWGuiFeatsCharGenTrace();
 #define SWGUIFEATSCHARGEN_TRACE() SWGuiFeatsCharGenTrace()
-// PC 0x00765200
+// PC 0x00765200 GOG 0x00765020
 CSWGuiFeatsCharGen::CSWGuiFeatsCharGen(CSWGuiManager* pManager,
                                      CSWCCreature* pCreature,
                                      int bLevelUp, int bBonusFeatSelection)
@@ -100,13 +100,13 @@ CSWGuiFeatsCharGen::CSWGuiFeatsCharGen(CSWGuiManager* pManager,
 #endif
     SetActiveControl(&m_lbFeats, 0);
 }
-// PC 0x00764000
+// PC 0x00764000 GOG 0x00763CF0
 CSWGuiFeatsCharGen::~CSWGuiFeatsCharGen()
 {
     m_lbDesc.ClearItems();
     m_lbFeats.ClearItems();
 }
-// PC 0x00764200
+// PC 0x00764200 GOG 0x00764230
 void CSWGuiFeatsCharGen::OnPanelAdded()
 {
 #ifndef _XBOX
@@ -129,7 +129,7 @@ void CSWGuiFeatsCharGen::OnPanelAdded()
         }
     }
 }
-// PC 0x00763EA0
+// PC 0x00763EA0 GOG 0x00763EF0
 void CSWGuiFeatsCharGen::ShowGranted(CSWGuiControl* pControl)
 {
     SWGUIFEATSCHARGEN_TRACE();
@@ -140,7 +140,7 @@ void CSWGuiFeatsCharGen::ShowGranted(CSWGuiControl* pControl)
     CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
     m_pManager->AddPanel(pGui->m_pSkillInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
-// PC 0x00763EF0
+// PC 0x00763EF0 GOG 0x00763F40
 void CSWGuiFeatsCharGen::HandleCancelButton()
 {
     SWGUIFEATSCHARGEN_TRACE();
@@ -169,7 +169,7 @@ void CSWGuiFeatsCharGen::HandleCancelButton()
 }
 
 #ifndef _XBOX
-void CSWGuiFeatsCharGen::Draw(float fElapsed)  // PC 0x00763F60
+void CSWGuiFeatsCharGen::Draw(float fElapsed)  // PC 0x00763F60 GOG 0x00763FB0
 {
     SWGUIFEATSCHARGEN_TRACE();
     if (m_nFeatState >= 2)
@@ -200,7 +200,7 @@ void CSWGuiFeatsCharGen::Draw(float fElapsed)  // PC 0x00763F60
     return CSWGuiPanel::Draw(fElapsed);
 }
 #endif
-// PC 0x00764470
+// PC 0x00764470 GOG 0x00764290
 void CSWGuiFeatsCharGen::OnEnterFeat(unsigned short nFeat)
 {
 #ifdef _XBOX
@@ -290,7 +290,7 @@ void CSWGuiFeatsCharGen::OnEnterFeat(unsigned short nFeat)
     m_lblName.m_cText.m_cParams.SetStrRef(pFeat->m_nNameStrRef);
     SetDescription(pFeat->m_nDescriptionStrRef);
 }
-// PC 0x007645C0
+// PC 0x007645C0 GOG 0x007643E0
 void CSWGuiFeatsCharGen::BuildButtons()
 {
     int i;
@@ -333,7 +333,7 @@ void CSWGuiFeatsCharGen::BuildButtons()
     CExoString sRemaining(m_nFeatsRemaining);
     m_lblStdRemainingSelections.m_cText.m_cParams.SetText(sRemaining);
 }
-// PC 0x00764760
+// PC 0x00764760 GOG 0x00764580
 void CSWGuiFeatsCharGen::BuildAvailableList()
 {
     CExoString sFeat;
@@ -355,7 +355,7 @@ void CSWGuiFeatsCharGen::BuildAvailableList()
 }
 
 #ifndef _XBOX
-void CSWGuiFeatsCharGen::OnFeatSelectionChanged(CSWGuiControl* pControl)  // PC 0x007648F0
+void CSWGuiFeatsCharGen::OnFeatSelectionChanged(CSWGuiControl* pControl)  // PC 0x007648F0 GOG 0x00764710
 {
     CSWGuiSkillFlow* pFlow =
         static_cast<CSWGuiSkillFlow*>(m_lbFeats.GetSelectedControl());
@@ -375,7 +375,7 @@ void CSWGuiFeatsCharGen::OnFeatSelectionChanged(CSWGuiControl* pControl)  // PC 
 #endif
 }
 #endif
-// PC 0x00764930
+// PC 0x00764930 GOG 0x00764750
 void CSWGuiFeatsCharGen::InitiateFeats()
 {
     CSWCLevelUpStats* pStats = m_pCreature->m_pStats;
@@ -456,7 +456,7 @@ void CSWGuiFeatsCharGen::InitiateFeats()
         BuildButtons();
     }
 }
-// PC 0x00764C80
+// PC 0x00764C80 GOG 0x00764AA0
 void CSWGuiFeatsCharGen::AddChosenFeat(unsigned short nFeat)
 {
     int nIndex = m_lAvailable.IndexOf(nFeat);
@@ -492,7 +492,7 @@ void CSWGuiFeatsCharGen::AddChosenFeat(unsigned short nFeat)
     }
     BuildAvailableList();
 }
-// PC 0x00764E30
+// PC 0x00764E30 GOG 0x00764C50
 void CSWGuiFeatsCharGen::RemoveChosenFeat(unsigned short nFeat)
 {
     int nIndex = m_lChosen.IndexOf(nFeat);
@@ -521,7 +521,7 @@ void CSWGuiFeatsCharGen::RemoveChosenFeat(unsigned short nFeat)
         BuildAvailableList();
     }
 }
-// PC 0x00764F20
+// PC 0x00764F20 GOG 0x00764D40
 void CSWGuiFeatsCharGen::OnRecommendButton()
 {
     CExoArrayList<unsigned short> lRecommended;
@@ -552,7 +552,7 @@ void CSWGuiFeatsCharGen::OnRecommendButton()
     m_pManager->AddPanel(pInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     BuildButtons();
 }
-// PC 0x007650C0
+// PC 0x007650C0 GOG 0x00764EE0
 void CSWGuiFeatsCharGen::OnFeatPicked(unsigned short nFeat)
 {
     unsigned char nState;
@@ -594,7 +594,7 @@ void CSWGuiFeatsCharGen::OnFeatPicked(unsigned short nFeat)
     pMessageBox->SetMessage(nStrRef);
     m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
-// PC 0x00736BE0
+// PC 0x00736BE0 GOG 0x00736940
 inline int CSWGuiSkillFlowChart::GetSelected()
 {
     if (m_cFlows.num > 0)
@@ -607,7 +607,7 @@ inline int CSWGuiSkillFlowChart::GetSelected()
 }
 
 #ifndef _XBOX
-void CSWGuiFeatsCharGen::OnDoubleClick(CSWGuiControl* pControl)  // PC 0x00765190
+void CSWGuiFeatsCharGen::OnDoubleClick(CSWGuiControl* pControl)  // PC 0x00765190 GOG 0x00764FB0
 {
     int nSelected = m_cChart.GetSelected();
     CSWGuiSkillFlow* pFlow =
@@ -621,7 +621,7 @@ void CSWGuiFeatsCharGen::OnDoubleClick(CSWGuiControl* pControl)  // PC 0x0076519
     }
 }
 #endif
-// PC 0x007659D0
+// PC 0x007659D0 GOG 0x007657F0
 void CSWGuiFeatsCharGen::OnAcceptButton()
 {
     if (m_nFeatsRemaining > 0 && m_lAvailable.num > 0)
@@ -674,7 +674,7 @@ void CSWGuiFeatsCharGen::OnAcceptButton()
             ->FeatCreationCompleted();
     }
 }
-// PC 0x00765B90
+// PC 0x00765B90 GOG 0x007659B0
 void CSWGuiFeatsCharGen::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -719,7 +719,7 @@ void CSWGuiFeatsCharGen::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x00764260
+// PC 0x00764260 GOG 0x00764020
 void CSWGuiFeatsCharGen::DetermineFeat(unsigned short nFeat,
                                       unsigned char& nState)
 {
@@ -745,7 +745,7 @@ void CSWGuiFeatsCharGen::DetermineFeat(unsigned short nFeat,
     }
 }
 
-// PC 0x00764320
+// PC 0x00764320 GOG 0x007640E0
 void CSWGuiFeatsCharGen::SetDescription(unsigned long nStrRef)
 {
     SwguifeatschargenTrace1();

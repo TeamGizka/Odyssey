@@ -40,7 +40,7 @@ CSWGuiClassType CSWGuiClassSelection::CHAR_TYPES[6] = {
     {CSWClass::CCLASS_JEDICONSULAR, CCAppearanceInfo::GENDER_FEMALE, SOUNDSET_PLAYER_FEMALE, 0,
      STRREF_JEDI_CONSULAR_DESCRIPTION}
 };
-// PC 0x007499E0
+// PC 0x007499E0 GOG 0x00749A50
 void CSWGuiClassSelection::OnPanelAdded()
 {
     {
@@ -53,7 +53,7 @@ void CSWGuiClassSelection::OnPanelAdded()
     g_pAppManager->m_pClientExoApp->HideLoadScreen(1, 0, 1);
     CSWGuiPanel::OnPanelAdded();
 }
-// PC 0x00749A90
+// PC 0x00749A90 GOG 0x00749B00
 void CSWGuiClassSelection::HandleCancelButton()
 {
     m_bDeferredRemoval = 0;
@@ -63,7 +63,7 @@ void CSWGuiClassSelection::HandleCancelButton()
     g_pAppManager->m_pClientExoApp->DisplayMainMenu(0);
     g_pAppManager->DestroyServer();
 }
-// PC 0x00749AE0
+// PC 0x00749AE0 GOG 0x00749B50
 void CSWGuiClassSelection::OnSelectButton(CSWGuiControl* pControl)
 {
     int nSelected = pControl->m_bSelected;
@@ -99,7 +99,7 @@ void CSWGuiClassSelection::OnSelectButton(CSWGuiControl* pControl)
 
 #include "nwclass.h"
 #include "nwscript.h"
-// PC 0x00749BA0
+// PC 0x00749BA0 GOG 0x00749C10
 void CSWGuiClassSelection::OnEnterButton(CSWGuiControl* pControl)
 {
     int nSelected = pControl->m_bSelected;
@@ -149,7 +149,7 @@ void CSWGuiClassSelection::OnEnterButton(CSWGuiControl* pControl)
         m_lblClass.m_cText.m_cParams.SetText(sClass);
     }
 }
-// PC 0x00749E60
+// PC 0x00749E60 GOG 0x00749ED0
 void CSWGuiClassSelection::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -171,7 +171,7 @@ void CSWGuiClassSelection::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x00749F00
+// PC 0x00749F00 GOG 0x00749F70
 void CSWGuiClassSelection::BeginPlayGame()
 {
     g_pAppManager->m_pClientExoApp->BusyWaitMenuMusic();
@@ -226,7 +226,7 @@ void CSWGuiClassSelection::BeginPlayGame()
     pClientExoApp->SetLoadScreenHint(
         pClientExoApp->GetNextLoadScreenHintSTRREF(m_sModule, 0));
 }
-// PC 0x0074A220
+// PC 0x0074A220 GOG 0x0074A290
 void CSWGuiClassSelection::Draw(float fElapsed)
 {
     float fScale = 1.0f;
@@ -369,7 +369,7 @@ void CSWGuiClassSelection::Draw(float fElapsed)
     }
     CSWGuiPanel::Draw(fElapsed);
 }
-// PC 0x0074A650
+// PC 0x0074A650 GOG 0x00749880
 CSWGuiClassSelection::~CSWGuiClassSelection()
 {
     for (int i = 0; i < 6; i++)
@@ -391,11 +391,11 @@ CSWGuiClassSelection::~CSWGuiClassSelection()
         g_pExoResMan->m_bCharGenImageLoaded = 1;
     }
 }
-// PC 0x0074A840
+// PC 0x0074A840 GOG 0x0074A690
 CSWGuiClassSelChar::CSWGuiClassSelChar()
 {
 }
-// PC 0x0074A8B0
+// PC 0x0074A8B0 GOG 0x0074A700
 CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
                                          const CExoString& sModule)
     : CSWGuiPanel(pManager)

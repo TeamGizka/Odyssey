@@ -32,7 +32,7 @@ CScriptCompilerIdListEntry::CScriptCompilerIdListEntry()
     m_nBinaryDestinationStart = -1;
     m_nBinaryDestinationFinish = -1;
 }
-// PC 0x0061CEB0
+// PC 0x0061CEB0 GOG 0x0061CE80
 CScriptCompilerIdListEntry::~CScriptCompilerIdListEntry()
 {
     if (m_pchParameters != NULL)
@@ -438,7 +438,7 @@ int CSourceScript::LoadScript(const CExoString& sFileName, char** ppScript,
     *pnScriptLength = m_pRes->GetNSSSize();
     return 0;
 }
-// PC 0x0061D010
+// PC 0x0061D010 GOG 0x0061CFE0
 void CScriptCompilerInternal::ShutDown()
 {
     if (m_pSRStack != NULL)
@@ -474,7 +474,7 @@ void CScriptCompilerInternal::ShutDown()
         m_pbEngineDefinedStructureValid = NULL;
     }
 }
-// PC 0x0061D120
+// PC 0x0061D120 GOG 0x0061D0F0
 CScriptCompilerInternal::~CScriptCompilerInternal()
 {
     ShutDown();

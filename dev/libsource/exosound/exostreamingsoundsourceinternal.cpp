@@ -11,16 +11,16 @@
 #include "mss.h"
 
 static inline void ExostreamingsoundsourceinternalTrace1();
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 void CExoStreamingSoundSourceInternal::DoObstructionWork()
 {
 }
-// PC 0x004065A0
+// PC 0x004065A0 GOG 0x00406570
 int CExoStreamingSoundSourceInternal::GetPlayFailed()
 {
     return 0;
 }
-// PC 0x00627BC0
+// PC 0x00627BC0 GOG 0x00627B60
 int CExoStreamingSoundSourceInternal::SetReverbEnabled(int bEnabled)
 {
     int nResult;
@@ -33,12 +33,12 @@ int CExoStreamingSoundSourceInternal::SetReverbEnabled(int bEnabled)
     }
     return nResult;
 }
-// PC 0x00627BE0
+// PC 0x00627BE0 GOG 0x00627B80
 inline Vector CExoSoundInternal::GetListenerOrientation()
 {
     return m_vListenerOrientation;
 }
-// PC 0x00627C10
+// PC 0x00627C10 GOG 0x00627BB0
 CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(
     CExoSoundInternal* pSoundInternal, int bReservedStream)
 {
@@ -79,7 +79,7 @@ CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(
     m_fOcclusion = 0.0f;
     m_bStreamingMusicForMovie = 0;
 }
-// PC 0x00627D20
+// PC 0x00627D20 GOG 0x00627CC0
 CExoStreamingSoundSourceInternal::~CExoStreamingSoundSourceInternal()
 {
     ExostreamingsoundsourceinternalTrace1();
@@ -115,7 +115,7 @@ CExoStreamingSoundSourceInternal::~CExoStreamingSoundSourceInternal()
         fclose(m_pFile);
     }
 }
-// PC 0x00627DD0
+// PC 0x00627DD0 GOG 0x00627D70
 void CExoStreamingSoundSourceInternal::InitializeSource()
 {
     ExostreamingsoundsourceinternalTrace1();
@@ -309,7 +309,7 @@ int CExoStreamingSoundSourceInternal::IsPlaying()
     }
     return 0;
 }
-// PC 0x00628550
+// PC 0x00628550 GOG 0x006283A0
 int CExoStreamingSoundSourceInternal::IsDone()
 {
     ExostreamingsoundsourceinternalTrace1();
@@ -319,7 +319,7 @@ int CExoStreamingSoundSourceInternal::IsDone()
     }
     return 0;
 }
-// PC 0x00628580
+// PC 0x00628580 GOG 0x006283D0
 void CExoStreamingSoundSourceInternal::SetLooping(int bLooping)
 {
     int nLoopCount;
@@ -343,7 +343,7 @@ int CExoStreamingSoundSourceInternal::IsScalable()
 {
     return m_nPriorityGroup == 4 || m_nPriorityGroup == 21;
 }
-// PC 0x006285B0
+// PC 0x006285B0 GOG 0x00628420
 void CExoStreamingSoundSourceInternal::Stop(int bCloseStream)
 {
     ExostreamingsoundsourceinternalTrace1();
@@ -376,7 +376,7 @@ void CExoStreamingSoundSourceInternal::Stop(int bCloseStream)
         }
     }
 }
-// PC 0x00628620
+// PC 0x00628620 GOG 0x00628490
 void CExoStreamingSoundSourceInternal::Pause()
 {
     CExoSoundInternal* pSound;
@@ -401,7 +401,7 @@ void CExoStreamingSoundSourceInternal::Pause()
         }
     }
 }
-// PC 0x006286D0
+// PC 0x006286D0 GOG 0x00628550
 void CExoStreamingSoundSourceInternal::FadeAndStop(unsigned long nDuration)
 {
     if (IsPlaying())
@@ -410,7 +410,7 @@ void CExoStreamingSoundSourceInternal::FadeAndStop(unsigned long nDuration)
         m_nFadeDuration = nDuration;
     }
 }
-// PC 0x00628700
+// PC 0x00628700 GOG 0x006285A0
 int CExoStreamingSoundSourceInternal::GetWithinRangeOfListener()
 {
     if (m_b3D == 0)
@@ -422,7 +422,7 @@ int CExoStreamingSoundSourceInternal::GetWithinRangeOfListener()
     Vector vListenerPosition = *pListenerPosition;
     return magnitude(vListenerPosition - vPosition) <= m_fMaxDistance;
 }
-// PC 0x00628790
+// PC 0x00628790 GOG 0x00628630
 void CExoStreamingSoundSourceInternal::Update3DStream()
 {
     float fDistance;
@@ -495,7 +495,7 @@ void CExoStreamingSoundSourceInternal::Update3DStream()
         m_bReverbChanged = 0;
     }
 }
-// PC 0x00628B60
+// PC 0x00628B60 GOG 0x00628A00
 void CExoStreamingSoundSourceInternal::SetVolume(unsigned char nVolume,
                                                 int bUnknown, float fScale)
 {
@@ -538,7 +538,7 @@ void CExoStreamingSoundSourceInternal::SetVolume(unsigned char nVolume,
         Update3DStream();
     }
 }
-// PC 0x00628C60
+// PC 0x00628C60 GOG 0x00628B00
 int CExoStreamingSoundSourceInternal::Play(const CResRef& resRef,
                                            unsigned short nResourceType,
                                            int bVoice, int bMusic, int bUnused)
@@ -665,7 +665,7 @@ int CExoStreamingSoundSourceInternal::Play(const CResRef& resRef,
     }
     return 0;
 }
-// PC 0x00629060
+// PC 0x00629060 GOG 0x00628F00
 void CExoStreamingSoundSourceInternal::SetPriorityGroup(unsigned char nGroup)
 {
     float fMaxDistance;
@@ -693,7 +693,7 @@ void CExoStreamingSoundSourceInternal::SetPriorityGroup(unsigned char nGroup)
     m_fMinDistance = fMaxDistance;
     m_fMaxDistance = fMinDistance;
 }
-// PC 0x006290C0
+// PC 0x006290C0 GOG 0x00628F60
 void CExoStreamingSoundSourceInternal::Resume()
 {
     int bPlaying;

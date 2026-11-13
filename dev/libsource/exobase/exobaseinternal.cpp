@@ -5,7 +5,7 @@
 #include "swmain.h"
 
 #ifndef _XBOX
-void GetGameVersionInfo()  // PC 0x00632460
+void GetGameVersionInfo()  // PC 0x00632460 GOG 0x00632350
 {
     char szFileName[256];
     DWORD dwHandle = 0;
@@ -66,7 +66,7 @@ void GetGameVersionInfo()  // PC 0x00632460
     }
 }
 #endif
-// PC 0x00632620
+// PC 0x00632620 GOG 0x00632510
 void CExoBaseInternal::CreateResourceExtensionTable()
 {
     m_nResourceTypeCount = 87;
@@ -249,7 +249,7 @@ void CExoBaseInternal::CreateResourceExtensionTable()
     m_pResourceExtensions[86] = "";
 }
 #ifndef _XBOX
-void CExoBaseInternal::AddAlias(const CExoString& sFile,  // PC 0x00633040
+void CExoBaseInternal::AddAlias(const CExoString& sFile,  // PC 0x00633040 GOG 0x00632F30
                                 const CExoString& sAlias,
                                 const CExoString& sDefault,
                                 const CExoString& sUnused)
@@ -264,7 +264,7 @@ void CExoBaseInternal::AddAlias(const CExoString& sFile,  // PC 0x00633040
     g_pExoBase->m_pExoAliasList->Add(sAlias, sPath);
 }
 #endif
-int CExoBaseInternal::GetDirectorySize(const CExoString& sDir)  // PC 0x00633100
+int CExoBaseInternal::GetDirectorySize(const CExoString& sDir)  // PC 0x00633100 GOG 0x00632FF0
 {
     CExoString sPath;
     CExoString sFile;
@@ -309,7 +309,7 @@ int CExoBaseInternal::GetDirectorySize(const CExoString& sDir)  // PC 0x00633100
         return 0;
     }
 }
-// PC 0x006332F0
+// PC 0x006332F0 GOG 0x006331E0
 const CExoString& CExoBaseInternal::GetResourceExtension(
     unsigned short resourceType)
 {
@@ -320,7 +320,7 @@ const CExoString& CExoBaseInternal::GetResourceExtension(
     }
     return m_pResourceExtensions[86];
 }
-// PC 0x00633330
+// PC 0x00633330 GOG 0x00633220
 unsigned short CExoBaseInternal::GetResTypeFromExtension(
     const CExoString& extension)
 {
@@ -332,7 +332,7 @@ unsigned short CExoBaseInternal::GetResTypeFromExtension(
     return m_pResourceTypes[86];
 }
 #ifndef _XBOX
-void CExoBaseInternal::LoadAliases(const CExoString& sFile)  // PC 0x00633380
+void CExoBaseInternal::LoadAliases(const CExoString& sFile)  // PC 0x00633380 GOG 0x00633270
 {
     CExoString sAliasFile;
 
@@ -639,7 +639,7 @@ void CExoBaseInternal::SpawnExternalApplication(const CExoString& sApplication,
     }
 }
 #endif
-// PC 0x00634510
+// PC 0x00634510 GOG 0x00634400
 int CExoBaseInternal::WcsToMbs(char* sDest, const wchar_t* sSource,
                                unsigned long nLength)
 {
@@ -663,12 +663,12 @@ int CExoBaseInternal::WcsToMbs(char* sDest, const wchar_t* sSource,
 
     return 1;
 }
-// PC 0x00634590
+// PC 0x00634590 GOG 0x00634480
 CExoBaseInternal::CExoBaseInternal()
 {
     CreateResourceExtensionTable();
 }
-// PC 0x006345A0
+// PC 0x006345A0 GOG 0x00634490
 CExoBaseInternal::~CExoBaseInternal()
 {
     if (m_pResourceTypes)
@@ -677,7 +677,7 @@ CExoBaseInternal::~CExoBaseInternal()
 }
 
 static inline int GetListCount(const CExoArrayList<CExoString>* pList);
-// PC 0x006346E0
+// PC 0x006346E0 GOG 0x006345D0
 int CExoBaseInternal::GetDirectoryList(CExoArrayList<CExoString>* pList,
                                        const CExoString& sDir,
                                        unsigned short nResType,

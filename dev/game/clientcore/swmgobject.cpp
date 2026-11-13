@@ -9,7 +9,7 @@
 #include "swminigame.h"
 
 #include <string.h>
-// PC 0x006C1080
+// PC 0x006C1080 GOG 0x006C0E60
 CSWMiniGameObjectArray::CSWMiniGameObjectArray()
 {
     for (int i = 0; i < 255; i++)
@@ -18,7 +18,7 @@ CSWMiniGameObjectArray::CSWMiniGameObjectArray()
     }
     m_nCurrentObject = 0;
 }
-// PC 0x006C10A0
+// PC 0x006C10A0 GOG 0x006C0E80
 void* CSWMiniGameObjectArray::GetMiniGameObject(unsigned long nObjectId,
                                                  unsigned char nType)
 {
@@ -59,7 +59,7 @@ void* CSWMiniGameObjectArray::GetMiniGameObject(unsigned long nObjectId,
 
     return 0;
 }
-// PC 0x006C1120
+// PC 0x006C1120 GOG 0x006C0F00
 CSWMiniGameObject* CSWMiniGameObjectArray::GetMiniGameObjectByName(const CExoString& sName)
 {
     int nObject;
@@ -74,7 +74,7 @@ CSWMiniGameObject* CSWMiniGameObjectArray::GetMiniGameObjectByName(const CExoStr
     }
     return 0;
 }
-// PC 0x006C11E0
+// PC 0x006C11E0 GOG 0x006C0FC0
 inline unsigned long CSWMiniGameObjectArray::FindNextEmptyIndex()
 {
     unsigned long nStart = m_nCurrentObject;
@@ -88,7 +88,7 @@ inline unsigned long CSWMiniGameObjectArray::FindNextEmptyIndex()
     }
     return m_nCurrentObject;
 }
-// PC 0x006C1220
+// PC 0x006C1220 GOG 0x006C1000
 void CSWMiniGameObject::Update(float fTime)
 {
     CResRef resScript = GetScriptName(4);
@@ -101,7 +101,7 @@ void CSWMiniGameObject::Update(float fTime)
         g_pVirtualMachine->RunScript(&sScript, nObjectId, 1);
     }
 }
-// PC 0x006C12B0
+// PC 0x006C12B0 GOG 0x006C1090
 void* CSWMiniGameObject::GetLastBulletHitShooter()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -115,7 +115,7 @@ void* CSWMiniGameObject::GetLastBulletHitShooter()
     }
     return pResult;
 }
-// PC 0x006C12E0
+// PC 0x006C12E0 GOG 0x006C10C0
 void* CSWMiniGameObject::GetLastFollowerHit()
 {
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -128,7 +128,7 @@ void* CSWMiniGameObject::GetLastFollowerHit()
     }
     return pResult;
 }
-// PC 0x006C1310
+// PC 0x006C1310 GOG 0x006C10F0
 void CSWMiniGameObject::OnHitBullet(int bScript)
 {
     if (bScript == 0)
@@ -163,7 +163,7 @@ void CSWMiniGameObject::OnHitBullet(int bScript)
                                         nGroup, 0, 0, 0.0f, 0.0f);
     }
 }
-// PC 0x006C1450
+// PC 0x006C1450 GOG 0x006C1230
 void CSWMiniGameObject::OnHitFollower(int bScript)
 {
     if (bScript == 0)
@@ -178,7 +178,7 @@ void CSWMiniGameObject::OnHitFollower(int bScript)
         }
     }
 }
-// PC 0x006C14F0
+// PC 0x006C14F0 GOG 0x006C12D0
 void CSWMiniGameObject::OnCreate()
 {
     CResRef resScript;
@@ -195,7 +195,7 @@ void CSWMiniGameObject::OnCreate()
         }
     }
 }
-// PC 0x006C15A0
+// PC 0x006C15A0 GOG 0x006C1380
 void CSWMiniGameObject::LoadScripts(CResGFF* pGFF, CResStruct* pStruct,
                                     CResStruct& structScripts)
 {
@@ -227,7 +227,7 @@ void CSWMiniGameObject::LoadScripts(CResGFF* pGFF, CResStruct* pStruct,
                                                 bSuccess, resDefault));
     }
 }
-// PC 0x006C16C0
+// PC 0x006C16C0 GOG 0x006C14A0
 CSWMiniGameObject::CSWMiniGameObject(unsigned long nType)
 {
     CSWMiniGameObjectArray* pArray =
@@ -240,7 +240,7 @@ CSWMiniGameObject::CSWMiniGameObject(unsigned long nType)
     m_nLastBulletHitShooter = 255;
     m_nLastFollowerHit = 255;
 }
-// PC 0x006C1790
+// PC 0x006C1790 GOG 0x006C1570
 CSWMiniGameObject::~CSWMiniGameObject()
 {
     g_pAppManager->m_pClientExoApp->GetMGOArray()->m_apObjects[m_nObjectId] = 0;

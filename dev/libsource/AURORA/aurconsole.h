@@ -45,11 +45,11 @@ class funcholderbase
 {
 public:
     virtual ~funcholderbase();
-    // PC 0x005EE1C0
+    // PC 0x005EE1C0 GOG 0x005EE1A0
     virtual void Engage(char* sArguments)
     {
     }
-    // PC 0x005EE1C0
+    // PC 0x005EE1C0 GOG 0x005EE1A0
     virtual void PreEngage(char* sArguments)
     {
     }
@@ -68,7 +68,7 @@ public:
 #endif
 
     virtual void Engage(char* sArguments);
-    // PC 0x00460560
+    // PC 0x00460560 GOG 0x00460670
     virtual void PreEngage(char* sArguments)
     {
         returnvalue[0] = 0;

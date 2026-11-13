@@ -19,7 +19,7 @@
 #include "serverexoapp.h"
 #include "partytables.h"
 #include "nwsvartable.h"
-// PC 0x0069F0D0
+// PC 0x0069F0D0 GOG 0x0069EEB0
 unsigned char CSWTlkTable::GetObjectGender()
 {
     if (m_pObject != 0 && m_pObject->AsSWCObject() != 0 &&
@@ -35,7 +35,7 @@ unsigned char CSWTlkTable::GetObjectGender()
     }
     return CTlkTable::GENDER_MALE;
 }
-// PC 0x0069F130
+// PC 0x0069F130 GOG 0x0069EF10
 void CSWTlkTable::GetTokenValue(const CTlkTableToken& token, CExoString& sValue)
 {
     STR_RES strRes;

@@ -35,7 +35,7 @@ public:
     int m_nPlotIndex;
     int m_nPlanetID;
     int m_nXP;
-    // PC 0x00600790
+    // PC 0x00600790 GOG 0x00600770
     SJournalEntry()
         : m_nDate(-1),
           m_nTime(-1),
@@ -50,7 +50,7 @@ public:
         m_nPlotIndex = 0;
         m_nXP = 0;
     }
-    SJournalEntry* operator=(const SJournalEntry& entry)  // PC 0x00600820
+    SJournalEntry* operator=(const SJournalEntry& entry)  // PC 0x00600820 GOG 0x00600800
     {
         m_lsName = entry.m_lsName;
         m_lsText = entry.m_lsText;
@@ -68,10 +68,10 @@ public:
         m_nXP = entry.m_nXP;
         return this;
     }
-    ~SJournalEntry()  // PC 0x006008B0
+    ~SJournalEntry()  // PC 0x006008B0 GOG 0x00600890
     {
     }
-    // PC 0x00600910
+    // PC 0x00600910 GOG 0x006008F0
     SJournalEntry(const SJournalEntry& entry)
         : m_lsName(entry.m_lsName),
           m_lsText(entry.m_lsText),

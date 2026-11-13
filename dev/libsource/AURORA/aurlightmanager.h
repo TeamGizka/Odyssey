@@ -55,19 +55,19 @@ public:
 #ifdef _XBOX
     virtual void DebugPrintLightInfo(int nMaxLights, Vector vPosition);
 #else
-    virtual void DebugPrintLightInfo(int nMaxLights, Vector vPosition) {}  // PC 0x00693D50
+    virtual void DebugPrintLightInfo(int nMaxLights, Vector vPosition) {}  // PC 0x00693D50 GOG 0x00693AC0
 #endif
 
     virtual void DisableBumpMapLights();
     virtual void EnableBumpMapLights();
 
     virtual void CollectLightsForGivenRoom(CAurRoom* pRoom);
-    virtual void SetupLightsForThisGob(const Vector& vPosition, float fRadius)  // PC 0x004CF540
+    virtual void SetupLightsForThisGob(const Vector& vPosition, float fRadius)  // PC 0x004CF540 GOG 0x004CF680
     {
         SetupLightsForThisPositionAndRadius(vPosition, fRadius, m_lstNearbyLights);
         m_bDynamicOnly = 0;
     }
-    virtual void SetupLightsForThisRoom(const Vector& vPosition,  // PC 0x004CF570
+    virtual void SetupLightsForThisRoom(const Vector& vPosition,  // PC 0x004CF570 GOG 0x004CF6B0
                                               float fRadius)
     {
         SetupLightsForThisPositionAndRadius(vPosition, fRadius, m_lstNearbyLights);
@@ -76,12 +76,12 @@ public:
         const Vector& vPosition, float fRadius, List<PartLight*>& lstLights);
     virtual void SetupLightsForThisPositionAndRadius(const Vector& vPosition,
                                                      float fRadius);
-    // PC 0x006049D0
+    // PC 0x006049D0 GOG 0x006049B0
     virtual void CombineLights(const List<PartLight*>& lstLights, List<PartLight*>& lstCombined) {}
     virtual void PrioritizeIllumination(bool bDynamicOnly);
     virtual void PrioritizeShadow();
     virtual void PrioritizeBump();
-    virtual void GroupLights() {}  // PC 0x004015A0
+    virtual void GroupLights() {}  // PC 0x004015A0 GOG 0x004015A0
     virtual void ControlLightsFade(List<PartLight*>& lstFadeIn,
                                   List<PartLight*>& lstFadeOut,
                                   List<PartLight*>& lstLights,
@@ -166,7 +166,7 @@ public:
 int lightcmp(const void* pFirst, const void* pSecond);
 void SetLightGL(int nLight, const Vector& vPosition, const Vector& vColor,
                 const float& fRadius, const int& bAmbientOnly);
-// PC 0x00448F30
+// PC 0x00448F30 GOG 0x00449080
 inline char* MdlNode::TranslateNodeName()
 {
     if (m_pModel->AsModel())

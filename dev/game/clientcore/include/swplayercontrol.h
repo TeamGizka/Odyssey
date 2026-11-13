@@ -38,7 +38,7 @@ class CAurCamera;
 class CSWMGPhysicsState
 {
 public:
-    CSWMGPhysicsState(const Vector& vValue = Vector(),  // PC 0x00617660
+    CSWMGPhysicsState(const Vector& vValue = Vector(),  // PC 0x00617660 GOG 0x00617710
                       const Vector& vRate = Vector())
     {
         m_vValue = vValue;
@@ -63,58 +63,58 @@ public:
     static const int SWDRIVE_DOWN;
     CSWPlayerControl();
     CSWPlayerControl(unsigned long oidPlayer, CAurCamera* pCamera);
-    // PC 0x005EE1C0
+    // PC 0x005EE1C0 GOG 0x005EE1A0
     virtual void UpDown(float fValue)
     {
     }
-    // PC 0x006CEEE0
+    // PC 0x006CEEE0 GOG 0x006CEBE0
     virtual float GetUpDown()
     {
         return 0.0f;
     }
-    // PC 0x005EE1C0
+    // PC 0x005EE1C0 GOG 0x005EE1A0
     virtual void LeftRight(float fValue)
     {
     }
-    // PC 0x006CEEE0
+    // PC 0x006CEEE0 GOG 0x006CEBE0
     virtual float GetLeftRight()
     {
         return 0.0f;
     }
 
 #ifndef _XBOX
-    virtual void SetPlayerWalking(int bWalking)  // PC 0x005EE1C0
+    virtual void SetPlayerWalking(int bWalking)  // PC 0x005EE1C0 GOG 0x005EE1A0
     {
     }
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual int GetPlayerWalking()
     {
         return 0;
     }
 #endif
-    // PC 0x004015A0
+    // PC 0x004015A0 GOG 0x004015A0
     virtual void RunKey()
     {
     }
-    // PC 0x006CEEE0
+    // PC 0x006CEEE0 GOG 0x006CEBE0
     virtual float GetCurSpeed()
     {
         return 0.0f;
     }
-    // PC 0x005EE1C0
+    // PC 0x005EE1C0 GOG 0x005EE1A0
     virtual void MouseLeftRight(float fValue)
     {
     }
-    // PC 0x005EE1C0
+    // PC 0x005EE1C0 GOG 0x005EE1A0
     virtual void MouseUpDown(float fValue)
     {
     }
-    // PC 0x006955A0
+    // PC 0x006955A0 GOG 0x00695350
     virtual int Control(float fTimeStep)
     {
         return 0;
     }
-    // PC 0x004015A0
+    // PC 0x004015A0 GOG 0x004015A0
     virtual void ResetDriveAcceleration()
     {
     }
@@ -140,34 +140,34 @@ class CSWPlayerControlCamRelative : public CSWPlayerControl
 public:
     CSWPlayerControlCamRelative();
     CSWPlayerControlCamRelative(unsigned long oidPlayer, CAurCamera* pCamera);
-    // PC 0x006CEEF0
+    // PC 0x006CEEF0 GOG 0x006CEBF0
     virtual void UpDown(float fValue)
     {
         m_fUpDown = fValue;
     }
-    virtual float GetUpDown()  // PC 0x006CEF00
+    virtual float GetUpDown()  // PC 0x006CEF00 GOG 0x006CEC00
     {
         return m_fUpDown;
     }
-    virtual void LeftRight(float fValue)  // PC 0x006CEF10
+    virtual void LeftRight(float fValue)  // PC 0x006CEF10 GOG 0x006CEC10
     {
         m_fLeftRight = fValue;
     }
-    virtual float GetLeftRight()  // PC 0x006CEF20
+    virtual float GetLeftRight()  // PC 0x006CEF20 GOG 0x006CEC20
     {
         return m_fLeftRight;
     }
 #ifndef _XBOX
-    virtual void SetPlayerWalking(int bWalking)  // PC 0x006CEF30
+    virtual void SetPlayerWalking(int bWalking)  // PC 0x006CEF30 GOG 0x006CEC30
     {
         m_bPlayerWalking = bWalking;
     }
-    virtual int GetPlayerWalking()  // PC 0x00406600
+    virtual int GetPlayerWalking()  // PC 0x00406600 GOG 0x004065D0
     {
         return m_bPlayerWalking;
     }
 #endif
-    virtual float GetCurSpeed()  // PC 0x006CEF40
+    virtual float GetCurSpeed()  // PC 0x006CEF40 GOG 0x006CEC40
     {
         float fForward = (float)fabs(m_stateB.m_vValue.m_fX);
         float fSideways = (float)fabs(m_stateB.m_vValue.m_fY);

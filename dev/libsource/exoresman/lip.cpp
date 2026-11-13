@@ -1,17 +1,17 @@
 #include "exoresman.h"
 
 #include <string.h>
-// PC 0x0077FA20
+// PC 0x0077FA20 GOG 0x0077F820
 float CLIP::GetAnimLength()
 {
     return m_AnimLength;
 }
-// PC 0x005ED200
+// PC 0x005ED200 GOG 0x005ED1E0
 int CLIP::GetNumVisemes()
 {
     return m_nEntryCount;
 }
-// PC 0x0077FA30
+// PC 0x0077FA30 GOG 0x0077F830
 int CLIP::GetVisemeIndex(unsigned long nIndex)
 {
     if (nIndex < m_nEntryCount)
@@ -24,7 +24,7 @@ int CLIP::GetVisemeIndex(unsigned long nIndex)
 
     return 0;
 }
-// PC 0x0077FA60
+// PC 0x0077FA60 GOG 0x0077F860
 float CLIP::GetTimeIndex(unsigned long nIndex)
 {
     float fTime;
@@ -37,14 +37,14 @@ float CLIP::GetTimeIndex(unsigned long nIndex)
 
     return 0.0f;
 }
-// PC 0x0077FC70
+// PC 0x0077FC70 GOG 0x0077FA70
 CLIP::CLIP()
 {
     m_nEntryCount = 0;
     m_AnimLength = 0.0;
     m_pLipData = 0;
 }
-// PC 0x0077FCC0
+// PC 0x0077FCC0 GOG 0x0077FAC0
 CLIP::~CLIP()
 {
     if (m_bLipLoaded != 0)
@@ -55,7 +55,7 @@ CLIP::~CLIP()
 
     m_pLipData = 0;
 }
-// PC 0x0077FD30
+// PC 0x0077FD30 GOG 0x0077FB30
 int CLIP::LoadLip(CExoString sLip)
 {
     CResRef resRef(sLip);
@@ -80,7 +80,7 @@ int CLIP::LoadLip(CExoString sLip)
     m_bLipLoaded = 1;
     return 1;
 }
-// PC 0x0077FA00
+// PC 0x0077FA00 GOG 0x00628FE0
 int CLIP::UnloadLip()
 {
     int nResult = m_bLipLoaded;

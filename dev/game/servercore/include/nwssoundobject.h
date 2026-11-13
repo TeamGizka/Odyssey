@@ -14,7 +14,7 @@ public:
     virtual ~CSWSSoundObject();
 
     virtual void AIUpdate();
-    // PC 0x00698BD0
+    // PC 0x00698BD0 GOG 0x00698980
     virtual CSWSSoundObject* AsSWSSoundObject() { return this; }
 
     virtual void EventHandler(unsigned long nEventId, unsigned long oidCaller,

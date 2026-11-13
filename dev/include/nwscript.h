@@ -355,7 +355,7 @@ public:
     };
 
     CVirtualMachineCmdImplementer();
-    virtual ~CVirtualMachineCmdImplementer() {};  // PC 0x004DF820
+    virtual ~CVirtualMachineCmdImplementer() {};  // PC 0x004DF820 GOG 0x004DF940
     virtual void InitializeCommands() = 0;
     virtual int ExecuteCommand(int nCommand, int nArgs) = 0;
     virtual void RunScriptCallback(CExoString& sScript) = 0;

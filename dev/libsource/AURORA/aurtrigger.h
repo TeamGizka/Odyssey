@@ -62,7 +62,7 @@ public:
     virtual ~PartTrigger();
     virtual int HitCheckGeom(const Vector& vStart, Vector& vEnd, Vector* pHit,
                              CHitInfo* pHitInfo, float fRadius);
-    virtual PartTrigger* AsPartTrigger() { return this; }  // PC 0x00698BD0
+    virtual PartTrigger* AsPartTrigger() { return this; }  // PC 0x00698BD0 GOG 0x00698980
     virtual void Draw(bool bRenderLast);
     virtual void DrawVolume();
 

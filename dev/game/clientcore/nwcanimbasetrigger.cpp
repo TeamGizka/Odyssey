@@ -9,17 +9,17 @@
 
 static inline void NwcanimbasetriggerTrace1();
 #define NWCANIMBASETRIGGER_TRACE() NwcanimbasetriggerTrace1()
-// PC 0x00756C70
+// PC 0x00756C70 GOG 0x00756A80
 CSWCAnimBaseTrigger::CSWCAnimBaseTrigger()
 {
     m_nAnimationType = 9;
 }
-// PC 0x00756C90
+// PC 0x00756C90 GOG 0x00756AA0
 CSWCAnimBaseTrigger::~CSWCAnimBaseTrigger()
 {
     CSWCAnimBase::UnloadModel();
 }
-// PC 0x00756CE0
+// PC 0x00756CE0 GOG 0x00756AF0
 int CSWCAnimBaseTrigger::LoadModel(const CResRef& sResRef, unsigned char nType)
 {
     Gob* pModel;
@@ -37,7 +37,7 @@ int CSWCAnimBaseTrigger::LoadModel(const CResRef& sResRef, unsigned char nType)
     m_bPaletteReplaced = 0;
     return 1;
 }
-// PC 0x00756D50
+// PC 0x00756D50 GOG 0x00756B80
 CExoString CSWCAnimBaseTrigger::GetAnimationName(unsigned short nAnimation)
 {
     NWCANIMBASETRIGGER_TRACE();
@@ -54,7 +54,7 @@ CExoString CSWCAnimBaseTrigger::GetAnimationName(unsigned short nAnimation)
     }
     return sName;
 }
-// PC 0x00756E10
+// PC 0x00756E10 GOG 0x00756C40
 unsigned short CSWCAnimBaseTrigger::ServerToClientAnimation(
     unsigned short nAnimation)
 {

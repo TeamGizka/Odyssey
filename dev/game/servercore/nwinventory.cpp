@@ -4,7 +4,7 @@
 #include "nwrules.h"
 #include "gameobjectarray.h"
 #include "nwsitem.h"
-// PC 0x005ECEC0
+// PC 0x005ECEC0 GOG 0x005ECEA0
 CSWInventory::CSWInventory()
 {
     for (int i = 0; i < TOTAL_SLOT_COUNT; ++i)
@@ -16,7 +16,7 @@ CSWInventory::CSWInventory()
 CSWInventory::~CSWInventory()
 {
 }
-// PC 0x005ECEE0
+// PC 0x005ECEE0 GOG 0x005ECEC0
 unsigned long CSWInventory::FindSlot(unsigned long nBaseItem)
 {
     unsigned long nSlots = g_pRules->m_pBaseItems->GetBaseItem(nBaseItem)->m_nEquipableSlots;
@@ -86,7 +86,7 @@ unsigned long CSWInventory::FindSlot(unsigned long nBaseItem)
     }
     return nSlots & INVENTORY_SLOT_LEFTHAND2;
 }
-// PC 0x005ECFD0
+// PC 0x005ECFD0 GOG 0x005ECFB0
 int CSWInventory::GetItemInInventory(CSWSItem* pItem)
 {
     unsigned long oidItem = OBJECT_INVALID;
@@ -106,7 +106,7 @@ int CSWInventory::GetItemInInventory(CSWSItem* pItem)
 
     return 0;
 }
-// PC 0x005ED000
+// PC 0x005ED000 GOG 0x005ECFE0
 unsigned long CSWInventory::GetSlotFromItem(CSWSItem* pItem)
 {
     unsigned long oidItem = OBJECT_INVALID;
@@ -126,7 +126,7 @@ unsigned long CSWInventory::GetSlotFromItem(CSWSItem* pItem)
 
     return 0;
 }
-// PC 0x005ED1D0
+// PC 0x005ED1D0 GOG 0x005ED1B0
 CSWSItem* CSWInventory::GetItemInSlot(unsigned long nSlot)
 {
     unsigned long* pSlot = GetSlotPointer(nSlot);
@@ -139,7 +139,7 @@ CSWSItem* CSWInventory::GetItemInSlot(unsigned long nSlot)
 
     return NULL;
 }
-// PC 0x005ED040
+// PC 0x005ED040 GOG 0x005ED020
 unsigned long* CSWInventory::GetSlotPointer(unsigned long nSlot)
 {
     switch (nSlot)
@@ -167,7 +167,7 @@ unsigned long* CSWInventory::GetSlotPointer(unsigned long nSlot)
     default: return NULL;
     }
 }
-// PC 0x005ED150
+// PC 0x005ED150 GOG 0x005ED130
 int CSWInventory::RemoveItem(CSWSItem* pItem)
 {
     unsigned long oidItem = OBJECT_INVALID;
@@ -188,7 +188,7 @@ int CSWInventory::RemoveItem(CSWSItem* pItem)
 
     return 0;
 }
-// PC 0x005ED190
+// PC 0x005ED190 GOG 0x005ED170
 void CSWInventory::PutItemInSlot(unsigned long nSlot, CSWSItem* pItem)
 {
     unsigned long* pSlot = GetSlotPointer(nSlot);

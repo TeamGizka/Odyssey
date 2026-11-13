@@ -2,7 +2,7 @@
 #include "resgff.h"
 #include "nwsforcedaction.h"
 #include "gameobjectarray.h"
-// PC 0x00540B30
+// PC 0x00540B30 GOG 0x00540C50
 CSWSForcedAction::CSWSForcedAction()
 {
     m_nActionId = 0;
@@ -10,11 +10,11 @@ CSWSForcedAction::CSWSForcedAction()
     m_oidTargetArea = OBJECT_INVALID;
     m_oidTargetObject = OBJECT_INVALID;
 }
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 CSWSForcedAction::~CSWSForcedAction()
 {
 }
-// PC 0x00540B50
+// PC 0x00540B50 GOG 0x00540C70
 BOOL CSWSForcedAction::SaveForcedAction(CResGFF* pRes, CResStruct* pStruct)
 {
     pRes->WriteFieldDWORD(pStruct, m_nActionId, "ActionId");

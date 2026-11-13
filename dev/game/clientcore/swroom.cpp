@@ -1,23 +1,23 @@
 #include "swroom.h"
-// PC 0x0055B520
+// PC 0x0055B520 GOG 0x0055B650
 CSWRoom::CSWRoom()
 {
     m_nEnvAudio = 0;
     SetNoWalkMesh(0);
     m_fEnvAudioVolume = 1.0f;
 }
-// PC 0x0055B560
+// PC 0x0055B560 GOG 0x0055B640
 CSWRoom::~CSWRoom()
 {
 }
-// PC 0x0055B570
+// PC 0x0055B570 GOG 0x0055B6B0
 void CSWRoom::SetRoomInfo(const CResRef& cResRef, const Vector& vPosition)
 {
     SetNoWalkMesh(cResRef == "****");
     m_cResRef = cResRef;
     m_vPosition = vPosition;
 }
-// PC 0x0055B5C0
+// PC 0x0055B5C0 GOG 0x0055B700
 void CSWRoom::SetRoomEnvAudioProps(int nCount, CExoString* pasEnvAudio,
                                   int* panEnvAudio, float* pafEnvAudioVolume)
 {

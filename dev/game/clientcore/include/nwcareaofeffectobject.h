@@ -28,14 +28,14 @@ public:
 
     CSWCAreaOfEffectObject();
     virtual ~CSWCAreaOfEffectObject();
-    // PC 0x00698BD0
+    // PC 0x00698BD0 GOG 0x00698980
     virtual CSWCAreaOfEffectObject* AsSWCAreaOfEffectObject()
     {
         return this;
     }
 
     virtual void AIUpdate();
-    virtual int LoadModel(const CResRef& cModel, unsigned char nModel,  // PC 0x0069E520
+    virtual int LoadModel(const CResRef& cModel, unsigned char nModel,  // PC 0x0069E520 GOG 0x0069E300
                           unsigned char nFlags)
     {
         return 0;

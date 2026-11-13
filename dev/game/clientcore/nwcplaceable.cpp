@@ -23,7 +23,7 @@
 #include "nwspell.h"
 #include "nwscreature.h"
 #include "nwitem.h"
-// PC 0x006D9560
+// PC 0x006D9560 GOG 0x006D9250
 CSWCPlaceable::CSWCPlaceable()
     : CSWCObject(CGameObject::OBJECT_TYPE_PLACEABLE)
 {
@@ -54,7 +54,7 @@ CSWCPlaceable::CSWCPlaceable()
     m_pLight = NULL;
     m_nUnknown140 = 0;
 }
-// PC 0x006D96E0
+// PC 0x006D96E0 GOG 0x006D93A0
 void CSWCPlaceable::AnimationUpdate()
 {
     unsigned short nAnimation;
@@ -166,7 +166,7 @@ void CSWCPlaceable::AnimationUpdate()
         }
     }
 }
-// PC 0x006D9A20
+// PC 0x006D9A20 GOG 0x006D96E0
 int CSWCPlaceable::LoadModel(const CResRef& cModel, unsigned char nModel,
                              unsigned char nFlags)
 {
@@ -210,7 +210,7 @@ int CSWCPlaceable::LoadModel(const CResRef& cModel, unsigned char nModel,
 
     return 1;
 }
-// PC 0x006DB7A0
+// PC 0x006DB7A0 GOG 0x0069CD00
 void CSWCPlaceable::UnloadModel()
 {
     if (m_pAnimBase != NULL)
@@ -220,11 +220,11 @@ void CSWCPlaceable::UnloadModel()
         m_pAnimBase = NULL;
     }
 }
-// PC 0x005EE1C0
+// PC 0x005EE1C0 GOG 0x005EE1A0
 void CSWCPlaceable::HilightPlaceable(int)
 {
 }
-// PC 0x006D9C20
+// PC 0x006D9C20 GOG 0x006D98E0
 void CSWCPlaceable::AddFireAndForgetAnimation(unsigned short nAnimation,
                                              void* pData, unsigned short nFlags)
 {
@@ -233,7 +233,7 @@ void CSWCPlaceable::AddFireAndForgetAnimation(unsigned short nAnimation,
         (unsigned long)(GetAnimationLength(nAnimation) / fSpeed);
     InsertFireForgetAnimation(nAnimation, nLength, fSpeed, pData, 0);
 }
-// PC 0x006D9C60
+// PC 0x006D9C60 GOG 0x006D9920
 void CSWCPlaceable::UsePlaceable(unsigned long oidUser, CSWCCreature* pCreature)
 {
     CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
@@ -244,7 +244,7 @@ void CSWCPlaceable::UsePlaceable(unsigned long oidUser, CSWCCreature* pCreature)
         pMessage->SendPlayerToServerInput_UseObject(m_nId);
     }
 }
-// PC 0x006D9CA0
+// PC 0x006D9CA0 GOG 0x006D9960
 void CSWCPlaceable::BashPlaceable(unsigned long oidUser,
                                   CSWCCreature* pCreature)
 {
@@ -261,7 +261,7 @@ void CSWCPlaceable::BashPlaceable(unsigned long oidUser,
         }
     }
 }
-// PC 0x006D9CE0
+// PC 0x006D9CE0 GOG 0x006D99A0
 int CSWCPlaceable::LoadLight()
 {
 
@@ -380,7 +380,7 @@ int CSWCPlaceable::LoadLight()
     }
     return TRUE;
 }
-// PC 0x006DA1E0
+// PC 0x006DA1E0 GOG 0x006D9EA0
 void CSWCPlaceable::UnloadLight()
 {
     if (g_pAppManager->GetClientExoApp()->GetModule() != NULL)
@@ -399,7 +399,7 @@ void CSWCPlaceable::UnloadLight()
         m_pLight = NULL;
     }
 }
-// PC 0x006DA260
+// PC 0x006DA260 GOG 0x006D9F20
 int CSWCPlaceable::ApplyShadowBlob()
 {
     CExoString sShadowModel;
@@ -449,7 +449,7 @@ int CSWCPlaceable::ApplyShadowBlob()
     }
     return bResult;
 }
-// PC 0x0069CF50
+// PC 0x0069CF50 GOG 0x0069CD30
 void CSWCPlaceable::UnloadModel(unsigned char nModel)
 {
     if (m_pAnimBase != NULL)
@@ -457,7 +457,7 @@ void CSWCPlaceable::UnloadModel(unsigned char nModel)
         m_pAnimBase->UnloadModel(nModel);
     }
 }
-// PC 0x006DA3D0
+// PC 0x006DA3D0 GOG 0x006DA090
 void CSWCPlaceable::ActionMenuSecurity(unsigned long oidUser,
                                        CSWCCreature* pCreature)
 {
@@ -468,12 +468,12 @@ void CSWCPlaceable::ActionMenuSecurity(unsigned long oidUser,
     }
 }
 #ifndef _XBOX
-// PC 0x006DA400
+// PC 0x006DA400 GOG 0x006DA0C0
 void CSWCPlaceable::MenuActionUseItem(unsigned long oidItem, CSWCCreature* pCreature)
 {
     pCreature->PerformUseItem(oidItem & ~OBJECT_LISTTYPE_MASK, 0, m_nId, m_vPosition);
 }
-// PC 0x006DA430
+// PC 0x006DA430 GOG 0x006DB450
 void CSWCPlaceable::MenuActionSetPlaceableMine(unsigned long oidItem, CSWCCreature* pCreature)
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -498,7 +498,7 @@ void CSWCPlaceable::MenuActionSetPlaceableMine(unsigned long oidItem, CSWCCreatu
     }
 }
 #endif
-// PC 0x006DA500
+// PC 0x006DA500 GOG 0x006DA0F0
 CSWSPlaceable* CSWCPlaceable::GetServerPlaceable()
 {
     if (GetServerObject() != NULL)
@@ -507,7 +507,7 @@ CSWSPlaceable* CSWCPlaceable::GetServerPlaceable()
     }
     return NULL;
 }
-// PC 0x006DA520
+// PC 0x006DA520 GOG 0x006DA110
 void CSWCPlaceable::SetAppearance(int nAppearance)
 {
     m_nAppearance = nAppearance;
@@ -534,7 +534,7 @@ void CSWCPlaceable::SetAppearance(int nAppearance)
         pPlaceables->GetINTEntry(nAppearance, sColumn, &bNonCull);
     }
 }
-// PC 0x006DA620
+// PC 0x006DA620 GOG 0x006DA210
 float CSWCPlaceable::GetCanSeeHeight()
 {
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
@@ -556,7 +556,7 @@ float CSWCPlaceable::GetCanSeeHeight()
     }
     return fHeight;
 }
-// PC 0x006DA6F0
+// PC 0x006DA6F0 GOG 0x006DA2E0
 unsigned char CSWCPlaceable::GetReticlePoint(Vector& vPoint)
 {
     CSWSPlaceable* pPlaceable = GetServerPlaceable();
@@ -597,7 +597,7 @@ unsigned char CSWCPlaceable::GetReticlePoint(Vector& vPoint)
 
     return CSWCObject::GetReticlePoint(vPoint);
 }
-// PC 0x006DA8B0
+// PC 0x006DA8B0 GOG 0x006DA4A0
 inline int CSWCPlaceable::IsHostile()
 {
     if (GetServerPlaceable() != NULL)
@@ -606,13 +606,13 @@ inline int CSWCPlaceable::IsHostile()
     }
     return 0;
 }
-// PC 0x006DA900
+// PC 0x006DA900 GOG 0x006DA4F0
 CSWCPlaceable::~CSWCPlaceable()
 {
     UnloadLight();
     UnloadModel();
 }
-// PC 0x006DA9A0
+// PC 0x006DA9A0 GOG 0x006DA590
 void CSWCPlaceable::AIUpdate()
 {
     unsigned long nDay;
@@ -665,7 +665,7 @@ void CSWCPlaceable::AIUpdate()
     m_nLastUpdateDay = nDay;
     m_nLastUpdateTime = nTime;
 }
-// PC 0x006DAAB0
+// PC 0x006DAAB0 GOG 0x006DA6A0
 int CSWCPlaceable::SetAnimation(unsigned short nAnimation, int nA, int nB)
 {
     if (GetServerObject() != NULL)
@@ -689,7 +689,7 @@ static inline int GetActionCount(const CExoArrayList<CSWGuiInterfaceAction>& lst
 {
     return lstActions.num;
 }
-// PC 0x006DAB40
+// PC 0x006DAB40 GOG 0x006DA730
 void CSWCPlaceable::GetUseItems(CSWCCreature* pCreature,
                                 CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
@@ -743,7 +743,7 @@ void CSWCPlaceable::GetUseItems(CSWCCreature* pCreature,
         }
     }
 }
-// PC 0x006DADA0
+// PC 0x006DADA0 GOG 0x006DA990
 void CSWCPlaceable::GetPlaceableInterfaceMines(CSWCCreature* pCreature,
                                                CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
@@ -817,7 +817,7 @@ void CSWCPlaceable::GetPlaceableInterfaceMines(CSWCCreature* pCreature,
         }
     }
 }
-void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 0x006DB0C0
+void CSWCPlaceable::GetTargetActions(CSWCCreature* pCreature, int nMenu,  // PC 0x006DB0C0 GOG 0x006DACB0
                                     CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
     CSWSPlaceable* pPlaceable = GetServerPlaceable();

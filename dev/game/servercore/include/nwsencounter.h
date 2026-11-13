@@ -25,7 +25,7 @@ class CSWSArea;
 class CEncounterListEntry
 {
 public:
-    CEncounterListEntry()  // PC 0x0056B680
+    CEncounterListEntry()  // PC 0x0056B680 GOG 0x0056B7B0
     {
         m_cResRef = "";
         m_fChallengeRating = 0.0f;
@@ -35,7 +35,7 @@ public:
         m_bSelected = 0;
         m_nGuaranteedCount = 0;
     }
-    ~CEncounterListEntry() {}  // PC 0x004015A0
+    ~CEncounterListEntry() {}  // PC 0x004015A0 GOG 0x004015A0
     CEncounterListEntry& operator=(const CEncounterListEntry& other);
 
     CResRef m_cResRef;
@@ -91,7 +91,7 @@ public:
 
     CSWSEncounter(unsigned long oidEncounter);
     virtual ~CSWSEncounter();
-    virtual CSWSEncounter* AsSWSEncounter() { return this; }  // PC 0x00698BD0
+    virtual CSWSEncounter* AsSWSEncounter() { return this; }  // PC 0x00698BD0 GOG 0x00698980
     virtual void AIUpdate();
 
     int LineSegmentIntersectActivateArea(const Vector& vStart,

@@ -6,7 +6,7 @@
 #include "clientexoapp.h"
 #include "swguiingame.h"
 #include "nwccreature.h"
-// PC 0x0075D590
+// PC 0x0075D590 GOG 0x0075D3B0
 void CSWGuiLevelUpPanel::OnSelectAcceptButton(CSWGuiControl* pControl)
 {
     if (pControl->m_bSelected != 0)
@@ -14,7 +14,7 @@ void CSWGuiLevelUpPanel::OnSelectAcceptButton(CSWGuiControl* pControl)
         PlayGame();
     }
 }
-// PC 0x0075CE20
+// PC 0x0075CE20 GOG 0x0075CEC0
 void CSWGuiLevelUpPanel::OnSelectPowersButton(CSWGuiControl* pControl)
 {
     CSWGuiPowersLevelUp* pPanel;
@@ -28,7 +28,7 @@ void CSWGuiLevelUpPanel::OnSelectPowersButton(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x0075CEA0
+// PC 0x0075CEA0 GOG 0x0075CF40
 void CSWGuiLevelUpPanel::OnSelectFeatsButton(CSWGuiControl* pControl)
 {
     CSWGuiFeatsCharGen* pPanel;
@@ -47,7 +47,7 @@ void CSWGuiLevelUpPanel::OnSelectFeatsButton(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x0075CF50
+// PC 0x0075CF50 GOG 0x0075CFF0
 void CSWGuiLevelUpPanel::OnSelectSkillsButton(CSWGuiControl* pControl)
 {
     CSWGuiSkillsCharGen* pPanel;
@@ -60,7 +60,7 @@ void CSWGuiLevelUpPanel::OnSelectSkillsButton(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x0075CFD0
+// PC 0x0075CFD0 GOG 0x0075D070
 void CSWGuiLevelUpPanel::OnSelectAbilitiesButton(CSWGuiControl* pControl)
 {
     CSWGuiAbilitiesCharGen* pPanel;
@@ -73,46 +73,46 @@ void CSWGuiLevelUpPanel::OnSelectAbilitiesButton(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-// PC 0x0075D050
+// PC 0x0075D050 GOG 0x0075CC40
 void CSWGuiLevelUpPanel::NewAbilityScores(int nStr, int nDex, int nCon,
                                           int nInt, int nWis, int nCha,
                                           int nPoints)
 {
     m_pParent->NewAbilityScores(nStr, nDex, nCon, nInt, nWis, nCha, nPoints);
 }
-// PC 0x0075D350
+// PC 0x0075D350 GOG 0x0075D0F0
 void CSWGuiLevelUpPanel::CancelledByChild()
 {
     --m_nState;
     ChangeState(0);
     m_pParent->SetVisible(1);
 }
-// PC 0x0075D380
+// PC 0x0075D380 GOG 0x0075D120
 void CSWGuiLevelUpPanel::AbilitySelectionCompleted()
 {
     m_pParent->SetVisible(1);
     m_pParent->AbilitiesChanged();
     ChangeState(0);
 }
-// PC 0x0075D3A0
+// PC 0x0075D3A0 GOG 0x0075D140
 void CSWGuiLevelUpPanel::FeatSelectionCompleted()
 {
     m_pParent->SetVisible(1);
     ChangeState(0);
 }
-// PC 0x0075D3A0
+// PC 0x0075D3A0 GOG 0x0075D140
 void CSWGuiLevelUpPanel::SkillSelectionCompleted()
 {
     m_pParent->SetVisible(1);
     ChangeState(0);
 }
-// PC 0x0075D3A0
+// PC 0x0075D3A0 GOG 0x0075D140
 void CSWGuiLevelUpPanel::PowersSelectionCompleted()
 {
     m_pParent->SetVisible(1);
     ChangeState(0);
 }
-// PC 0x0075D3C0
+// PC 0x0075D3C0 GOG 0x0075D160
 void CSWGuiLevelUpPanel::PlayGame()
 {
     if (m_anStateUsed[STATE_FEATS] == 0)
@@ -133,7 +133,7 @@ void CSWGuiLevelUpPanel::PlayGame()
 }
 
 #ifndef _XBOX
-void CSWGuiLevelUpPanel::OnCancelPressed(CSWGuiControl* pControl)  // PC 0x0075D430
+void CSWGuiLevelUpPanel::OnCancelPressed(CSWGuiControl* pControl)  // PC 0x0075D430 GOG 0x0075D1D0
 {
     if (m_bCanCancel != 0)
     {
@@ -145,7 +145,7 @@ void CSWGuiLevelUpPanel::OnCancelPressed(CSWGuiControl* pControl)  // PC 0x0075D
         ChangeState(1);
     }
 }
-// PC 0x0075D480
+// PC 0x0075D480 GOG 0x0075D2A0
 void CSWGuiLevelUpPanel::ShowGrantedPowers(CSWGuiControl* pControl)
 {
     CExoArrayList<unsigned long> lPowers;
@@ -159,7 +159,7 @@ void CSWGuiLevelUpPanel::ShowGrantedPowers(CSWGuiControl* pControl)
         m_pManager->AddPanel(pInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
 }
-// PC 0x0075D060
+// PC 0x0075D060 GOG 0x0075D220
 void CSWGuiLevelUpPanel::SetCanCancel(int bCanCancel)
 {
     m_bCanCancel = bCanCancel;
@@ -174,7 +174,7 @@ void CSWGuiLevelUpPanel::SetCanCancel(int bCanCancel)
     m_btnCancel.SetShown(m_bCanCancel);
 }
 #endif
-// PC 0x0075D530
+// PC 0x0075D530 GOG 0x0075D350
 void CSWGuiLevelUpPanel::HandleInputEvent(int nEvent, int nState)
 {
     if (nState != 0)
@@ -193,7 +193,7 @@ void CSWGuiLevelUpPanel::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0075D0E0
+// PC 0x0075D0E0 GOG 0x0075CC50
 void CSWGuiLevelUpPanel::ChangeState(int bBack)
 {
     int nStep;
@@ -351,7 +351,7 @@ void CSWGuiLevelUpPanel::ChangeState(int bBack)
     m_btnBack.m_cText.m_cParams.SetColor(*pColor);
 #endif
 }
-// PC 0x0075D5B0
+// PC 0x0075D5B0 GOG 0x0075D3D0
 CSWGuiLevelUpPanel::CSWGuiLevelUpPanel(CSWGuiManager* pManager,
                                        unsigned long nCreature)
     : CSWGuiPanel(pManager)
@@ -506,7 +506,7 @@ CSWGuiLevelUpPanel::CSWGuiLevelUpPanel(CSWGuiManager* pManager,
                          (PFNGUIEVENT)&CSWGuiLevelUpPanel::OnCancelPressed);
 #endif
 }
-// PC 0x0075DD30
+// PC 0x0075DD30 GOG 0x0075DB50
 void CSWGuiLevelUpPanel::OnPanelAdded()
 {
     m_nState = -1;

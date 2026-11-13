@@ -113,7 +113,7 @@ enum CreatureDriveFlags
 class CSWActionNode
 {
 public:
-    CSWActionNode()  // PC 0x0050B6D0
+    CSWActionNode()  // PC 0x0050B6D0 GOG 0x0050B730
     {
         m_nActionId = 0xFFFF;
         m_nGroupActionId = 0xFFFF;
@@ -122,7 +122,7 @@ public:
         m_oidTarget = OBJECT_INVALID;
         m_nParameter = -1;
     }
-    // PC 0x004015A0
+    // PC 0x004015A0 GOG 0x004015A0
     ~CSWActionNode()
     {
     }

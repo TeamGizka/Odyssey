@@ -99,7 +99,7 @@ char* setvideomode(char* szArgs)
 #endif
 
 int equal(const Vector& vA, const Vector& vB);
-// PC 0x006CCAE0
+// PC 0x006CCAE0 GOG 0x006CC7E0
 int CSWCMessage::SendPlayerToServerMessage(unsigned char nMajor,
                                            unsigned char nMinor,
                                            unsigned char* pData,
@@ -137,12 +137,12 @@ int CSWCMessage::SendPlayerToServerMessage(unsigned char nMajor,
     }
     return nResult;
 }
-// PC 0x006CCB60
+// PC 0x006CCB60 GOG 0x006CC860
 int CSWCMessage::SendPlayerToServerModule_ModuleLoaded()
 {
     return SendPlayerToServerMessage(3, 2, NULL, 0);
 }
-// PC 0x006CCBB0
+// PC 0x006CCBB0 GOG 0x006CC8B0
 #ifdef _XBOX
 int CSWCMessage::SendPlayerToServerModule_SaveGame(unsigned long nSlot,
                                                    const CExoString& sName)
@@ -167,7 +167,7 @@ int CSWCMessage::SendPlayerToServerModule_SaveGame(unsigned long nSlot,
     }
     return SendPlayerToServerMessage(3, 4, pBuffer, nSize);
 }
-// PC 0x006CCC30
+// PC 0x006CCC30 GOG 0x006CC930
 int CSWCMessage::SendPlayerToServerModule_LoadGame(unsigned long nSlot,
                                                    const CExoString& sName,
                                                    const CExoString& sPath)
@@ -185,12 +185,12 @@ int CSWCMessage::SendPlayerToServerModule_LoadGame(unsigned long nSlot,
     }
     return SendPlayerToServerMessage(3, 5, pBuffer, nSize);
 }
-// PC 0x006CCCB0
+// PC 0x006CCCB0 GOG 0x006CC9B0
 int CSWCMessage::SendPlayerToServerStatus_RequestStatus()
 {
     return SendPlayerToServerMessage(1, 0, NULL, 0);
 }
-// PC 0x006CCD00
+// PC 0x006CCD00 GOG 0x006CCA00
 int CSWCMessage::SendPlayerToServerGuiContainer_Close(
     unsigned long oidContainer, int bTakeAll)
 {
@@ -206,7 +206,7 @@ int CSWCMessage::SendPlayerToServerGuiContainer_Close(
     }
     return SendPlayerToServerMessage(0x19, 2, pBuffer, nSize);
 }
-// PC 0x006CCD70
+// PC 0x006CCD70 GOG 0x006CCA70
 int CSWCMessage::SendPlayerToServerInput_CastSpell(
     unsigned long nSpell, unsigned char nMultiClass, unsigned char nDomainLevel,
     unsigned char nMetaMagic, int bCheat, const Vector& vTarget,
@@ -253,7 +253,7 @@ int CSWCMessage::SendPlayerToServerInput_CastSpell(
     }
     return SendPlayerToServerMessage(6, 0x12, pBuffer, nSize);
 }
-// PC 0x006CCED0
+// PC 0x006CCED0 GOG 0x006CCBD0
 int CSWCMessage::SendPlayerToServerInput_TogglePauseRequest()
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -264,7 +264,7 @@ int CSWCMessage::SendPlayerToServerInput_TogglePauseRequest()
     }
     return 1;
 }
-// PC 0x006CCEF0
+// PC 0x006CCEF0 GOG 0x006CCBF0
 int CSWCMessage::SendPlayerToServerJournalMessage_QuestScreenOpen()
 {
     unsigned char* pMessage = new unsigned char[3];
@@ -281,7 +281,7 @@ int CSWCMessage::SendPlayerToServerJournalMessage_QuestScreenOpen()
     delete[] pMessage;
     return nResult;
 }
-// PC 0x006CCF40
+// PC 0x006CCF40 GOG 0x006CCC40
 int CSWCMessage::SendPlayerToServerInput_GiveItem(unsigned long oidItem,
                                                   unsigned long oidTarget,
                                                   unsigned long oidOwner,
@@ -301,13 +301,13 @@ int CSWCMessage::SendPlayerToServerInput_GiveItem(unsigned long oidItem,
     }
     return SendPlayerToServerMessage(6, 0x24, pBuffer, nSize);
 }
-// PC 0x006CCFC0
+// PC 0x006CCFC0 GOG 0x006CCCC0
 int CSWCMessage::SendPlayerToServerArea_AreaLoaded()
 {
     return SendPlayerToServerMessage(4, 3, NULL, 0);
 }
 #ifndef _XBOX
-int CSWCMessage::SendPlayerToServerCheat_Resurrect()  // PC 0x006CD010
+int CSWCMessage::SendPlayerToServerCheat_Resurrect()  // PC 0x006CD010 GOG 0x006CCD10
 {
     CResRef cSound("HEAL_PLAYER");
 
@@ -315,11 +315,11 @@ int CSWCMessage::SendPlayerToServerCheat_Resurrect()  // PC 0x006CD010
     return SendPlayerToServerMessage(15, 2, NULL, 0);
 }
 #endif
-int CSWCMessage::SendPlayerToServerCheat_Invulnerability()  // PC 0x006CD0A0
+int CSWCMessage::SendPlayerToServerCheat_Invulnerability()  // PC 0x006CD0A0 GOG 0x006CCDA0
 {
     return SendPlayerToServerMessage(15, 4, NULL, 0);
 }
-// PC 0x006CD0F0
+// PC 0x006CD0F0 GOG 0x006CCDF0
 int CSWCMessage::SendPlayerToServerGuiInventory_Status(int nStatus)
 {
     unsigned char* pBuffer;
@@ -333,7 +333,7 @@ int CSWCMessage::SendPlayerToServerGuiInventory_Status(int nStatus)
     }
     return SendPlayerToServerMessage(13, 1, pBuffer, nSize);
 }
-// PC 0x006CD160
+// PC 0x006CD160 GOG 0x006CCE60
 int CSWCMessage::SendPlayerToServerInput_Attack(unsigned long oidTarget,
                                                 unsigned short nAction)
 {
@@ -349,7 +349,7 @@ int CSWCMessage::SendPlayerToServerInput_Attack(unsigned long oidTarget,
     }
     return SendPlayerToServerMessage(6, 2, pBuffer, nSize);
 }
-// PC 0x006CD1E0
+// PC 0x006CD1E0 GOG 0x006CCEE0
 int CSWCMessage::SendPlayerToServerInput_UseSkill(unsigned char nSkill,
                                                   unsigned char nUseType,
                                                   unsigned long oidTarget,
@@ -371,7 +371,7 @@ int CSWCMessage::SendPlayerToServerInput_UseSkill(unsigned char nSkill,
     }
     return SendPlayerToServerMessage(6, 7, pBuffer, nSize);
 }
-// PC 0x006CD2A0
+// PC 0x006CD2A0 GOG 0x006CCFA0
 int CSWCMessage::SendPlayerToServerInput_UseItem(unsigned long oidItem,
                                                  unsigned char nPropertyIndex,
                                                  unsigned char nSubIndex,
@@ -420,7 +420,7 @@ int CSWCMessage::SendPlayerToServerInput_UseItem(unsigned long oidItem,
     }
     return SendPlayerToServerMessage(6, 9, pBuffer, nSize);
 }
-// PC 0x006CD3E0
+// PC 0x006CD3E0 GOG 0x006CD0E0
 int CSWCMessage::SendPlayerToServerInput_SwitchWeapons(unsigned long oidCreature,
                                                        int nWeaponSet)
 {
@@ -436,7 +436,7 @@ int CSWCMessage::SendPlayerToServerInput_SwitchWeapons(unsigned long oidCreature
     }
     return SendPlayerToServerMessage(6, 38, pBuffer, nSize);
 }
-// PC 0x006CD450
+// PC 0x006CD450 GOG 0x006CD150
 int CSWCMessage::SendPlayerToServerInput_UseObject(unsigned long oidObject)
 {
     unsigned char* pBuffer;
@@ -484,7 +484,7 @@ int CSWCMessage::SendPlayerToServerParty_Action(unsigned long oidTarget,
     }
     return 0;
 }
-// PC 0x006CD4B0
+// PC 0x006CD4B0 GOG 0x006CD1B0
 int CSWCMessage::SendPlayerToServerInput_ChangeDoorState(unsigned long oidDoor,
                                                          unsigned short nState)
 {
@@ -500,7 +500,7 @@ int CSWCMessage::SendPlayerToServerInput_ChangeDoorState(unsigned long oidDoor,
     }
     return SendPlayerToServerMessage(6, 3, pBuffer, nSize);
 }
-// PC 0x006CD520
+// PC 0x006CD520 GOG 0x006CD220
 int CSWCMessage::SendPlayerToServerInput_UnlockObject(unsigned long oidObject,
                                                       unsigned long oidKey)
 {
@@ -516,7 +516,7 @@ int CSWCMessage::SendPlayerToServerInput_UnlockObject(unsigned long oidObject,
     }
     return SendPlayerToServerMessage(6, 12, pBuffer, nSize);
 }
-// PC 0x006CD590
+// PC 0x006CD590 GOG 0x006CD290
 int CSWCMessage::SendPlayerToServerInput_DoorSaber(unsigned long oidDoor)
 {
     unsigned char* pBuffer;
@@ -530,7 +530,7 @@ int CSWCMessage::SendPlayerToServerInput_DoorSaber(unsigned long oidDoor)
     }
     return SendPlayerToServerMessage(6, 37, pBuffer, nSize);
 }
-// PC 0x006CD5F0
+// PC 0x006CD5F0 GOG 0x006CD2F0
 int CSWCMessage::SendPlayerToServerInput_AbortDriveControl()
 {
     unsigned char* pMessage = new unsigned char[3];
@@ -547,7 +547,7 @@ int CSWCMessage::SendPlayerToServerInput_AbortDriveControl()
     delete[] pMessage;
     return nResult;
 }
-// PC 0x006CD640
+// PC 0x006CD640 GOG 0x006CD340
 int CSWCMessage::SendPlayerToServerInput_Dialog(unsigned long oidObject)
 {
     unsigned char* pBuffer;
@@ -567,7 +567,7 @@ int CSWCMessage::SendPlayerToServerInput_Dialog(unsigned long oidObject)
     }
     return 1;
 }
-// PC 0x006CD6D0
+// PC 0x006CD6D0 GOG 0x006CD3D0
 int CSWCMessage::SendPlayerToServerInventory_Equip(unsigned long oidItem,
                                                    unsigned long nSlot)
 {
@@ -585,7 +585,7 @@ int CSWCMessage::SendPlayerToServerInventory_Equip(unsigned long oidItem,
 }
 extern int g_bDemoMode;
 
-// PC 0x006CD740
+// PC 0x006CD740 GOG 0x006CD440
 int CSWCMessage::SendPlayerToServerLogin_LoginLocalCharacter(
     unsigned char* pData, unsigned long nSize, int bNewCharacter)
 {
@@ -608,12 +608,12 @@ int CSWCMessage::SendPlayerToServerLogin_LoginLocalCharacter(
     }
     return SendPlayerToServerMessage(2, 0x13, pBuffer, nSize);
 }
-// PC 0x006CD7D0
+// PC 0x006CD7D0 GOG 0x006CD4D0
 int CSWCMessage::SendPlayerToServerLogin_LoginIFOCharacter()
 {
     return SendPlayerToServerMessage(2, 15, NULL, 0);
 }
-// PC 0x006CD820
+// PC 0x006CD820 GOG 0x006CD520
 int CSWCMessage::SendPlayerToServerLogin_LoginLocalCharacter(
     const CResRef& cResRef, int bNewCharacter)
 {
@@ -654,7 +654,7 @@ static inline unsigned char LevelUpAbilityScore(CSWCLevelUpStats* pStats, int nA
 {
     return pStats->m_aAbilities[nAbility];
 }
-// PC 0x006CDA30
+// PC 0x006CDA30 GOG 0x006CD730
 int CSWCMessage::SendPlayerToServer_LevelUp(CSWCLevelUpStats* pOldStats,
                                             CSWCLevelUpStats* pNewStats)
 {

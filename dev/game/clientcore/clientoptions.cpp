@@ -27,11 +27,11 @@ float KeyboardCameraRotationDecel = -1.0f;
 void AurDisableGrass();
 void AurEnableGrass();
 void AurSetVSyncState(bool bEnabled);
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 CClientOptions::~CClientOptions()
 {
 }
-// PC 0x0066A6C0
+// PC 0x0066A6C0 GOG 0x0066A460
 void CClientOptions::SetCameraMode(unsigned char nMode)
 {
     m_nCameraMode = nMode;
@@ -44,7 +44,7 @@ void CClientOptions::SetCameraMode(unsigned char nMode)
         g_ForceSight = false;
     }
 }
-// PC 0x0066A6E0
+// PC 0x0066A6E0 GOG 0x0066A480
 void CClientOptions::SetFullScreenEnabled(int bEnabled)
 {
     if (bEnabled != m_bFullScreen)
@@ -53,7 +53,7 @@ void CClientOptions::SetFullScreenEnabled(int bEnabled)
         m_bFullScreen = bEnabled;
     }
 }
-// PC 0x0066A710
+// PC 0x0066A710 GOG 0x0066A4B0
 void CClientOptions::SetAutoLevelUpNPCs(int bEnabled)
 {
     m_bAutoLevelUpNPCs = bEnabled;
@@ -66,7 +66,7 @@ void CClientOptions::SetAutoLevelUpNPCs(int bEnabled)
         }
     }
 }
-// PC 0x0066A750
+// PC 0x0066A750 GOG 0x0066A4F0
 int CClientOptions::SaveOptions()
 {
     CExoIni cIni;
@@ -291,7 +291,7 @@ int CClientOptions::SaveOptions()
                        "Enable Tooltips");
     return 1;
 }
-// PC 0x0066CF00
+// PC 0x0066CF00 GOG 0x0066CCA0
 void CClientOptions::ApplySoundOptions()
 {
     if (g_pExoSound != 0)
@@ -303,7 +303,7 @@ void CClientOptions::ApplySoundOptions()
 }
 
 #ifndef _XBOX
-void CClientOptions::SetMovieShown(const CExoString& sMovie, int bShown)  // PC 0x0066CF70
+void CClientOptions::SetMovieShown(const CExoString& sMovie, int bShown)  // PC 0x0066CF70 GOG 0x0066CD10
 {
     if (g_pRules == NULL || g_pRules->m_p2DArrays == NULL)
     {
@@ -352,7 +352,7 @@ void CClientOptions::SetMovieShown(const CExoString& sMovie, int bShown)  // PC 
     g_pAppManager->m_pClientExoApp->SaveOptions();
 }
 #endif
-// PC 0x0066D130
+// PC 0x0066D130 GOG 0x0066CED0
 int CClientOptions::GetMovieShown(const CResRef& sMovie)
 {
     CExoString sName;
@@ -378,7 +378,7 @@ int CClientOptions::GetMovieShown(const CResRef& sMovie)
     unsigned char nBit = nRow - 8 * nByte;
     return (unsigned char)m_aMoviesShown[nByte] & (1 << nBit);
 }
-// PC 0x0066D240
+// PC 0x0066D240 GOG 0x0066CFE0
 void CClientOptions::SetDefaultGameplayOptions()
 {
     m_bAutoLevelUpNPCs = 0;
@@ -395,7 +395,7 @@ void CClientOptions::SetDefaultGameplayOptions()
     m_nBodyVariation = 0;
     m_nTextureVariation = 0;
 }
-// PC 0x0066D270
+// PC 0x0066D270 GOG 0x0066D010
 void CClientOptions::SetDefaultAutopauseOptions()
 {
     m_bAutopauseEndOfCombatRound = 0;
@@ -405,7 +405,7 @@ void CClientOptions::SetDefaultAutopauseOptions()
     m_bAutopauseActionMenu = 0;
     m_bAutopauseNewTargetSelected = 1;
 }
-// PC 0x0066D290
+// PC 0x0066D290 GOG 0x0066D030
 void CClientOptions::SetDefaultAdvancedGraphicsOptions()
 {
     m_nFrameBuffer = 1;
@@ -416,7 +416,7 @@ void CClientOptions::SetDefaultAdvancedGraphicsOptions()
     m_nAntiAlias = 0;
     m_nSoftShadows = 1;
 }
-// PC 0x0066D2B0
+// PC 0x0066D2B0 GOG 0x0066D050
 void CClientOptions::SetDefaultSoundOptions()
 {
     m_nMusicVolume = 85;
@@ -424,7 +424,7 @@ void CClientOptions::SetDefaultSoundOptions()
     m_nSoundEffectsVolume = 85;
     m_nMovieVolume = 85;
 }
-// PC 0x0066D2C0
+// PC 0x0066D2C0 GOG 0x0066D060
 int CClientOptions::SetDefaultAdvancedSoundOptions()
 {
     int nEAXMode;
@@ -446,7 +446,7 @@ int CClientOptions::SetDefaultAdvancedSoundOptions()
     m_nEAXFlags = 0;
     return nEAXMode;
 }
-// PC 0x0066D300
+// PC 0x0066D300 GOG 0x0066D0A0
 float CClientOptions::GetGammaSetting()
 {
     int nBrightness = m_nBrightness + GAMMA_BRIGHTNESS_OFFSET;
@@ -456,13 +456,13 @@ float CClientOptions::GetGammaSetting()
     }
     return m_fGammaMax - (m_fGammaMax - m_fGammaMin) * (nBrightness * 0.01f);
 }
-// PC 0x0066D330
+// PC 0x0066D330 GOG 0x0066D0D0
 float CClientOptions::GetMouseSenSetting()
 {
     float fPercent = m_nMouseSensitivity * 0.01f;
     return fPercent * 45.0f + 10.0f;
 }
-// PC 0x0066D360
+// PC 0x0066D360 GOG 0x0066D100
 float CClientOptions::GetCameraKeyboardDPS()
 {
     if (KeyboardCameraRotationSpeed != -1.0f)
@@ -471,7 +471,7 @@ float CClientOptions::GetCameraKeyboardDPS()
     }
     return m_fKeyboardCameraDPS;
 }
-// PC 0x0066D390
+// PC 0x0066D390 GOG 0x0066D130
 float CClientOptions::GetCameraKeyboardAcceleration()
 {
     if (KeyboardCameraRotationAccl != -1.0f)
@@ -480,7 +480,7 @@ float CClientOptions::GetCameraKeyboardAcceleration()
     }
     return m_fKeyboardCameraAcceleration;
 }
-// PC 0x0066D3C0
+// PC 0x0066D3C0 GOG 0x0066D160
 float CClientOptions::GetCameraKeyboardDeceleration()
 {
     if (KeyboardCameraRotationDecel != -1.0f)
@@ -489,7 +489,7 @@ float CClientOptions::GetCameraKeyboardDeceleration()
     }
     return m_fKeyboardCameraDeceleration;
 }
-// PC 0x0066D3F0
+// PC 0x0066D3F0 GOG 0x0066D190
 void CClientOptions::SetEnableHardwareMouseCursor(int bEnabled)
 {
     if (g_pAppManager != 0)
@@ -509,7 +509,7 @@ void CClientOptions::SetEnableHardwareMouseCursor(int bEnabled)
         }
     }
 }
-// PC 0x0066D430
+// PC 0x0066D430 GOG 0x0066D1D0
 void CClientOptions::SetShadows(unsigned long nShadows)
 {
     m_nShadows = nShadows;
@@ -520,7 +520,7 @@ void CClientOptions::SetShadows(unsigned long nShadows)
     }
     AurDisableShadows();
 }
-// PC 0x0066D450
+// PC 0x0066D450 GOG 0x0066D1F0
 void CClientOptions::SetSoftShadows(unsigned long nSoftShadows)
 {
     m_nSoftShadows = nSoftShadows;
@@ -531,7 +531,7 @@ void CClientOptions::SetSoftShadows(unsigned long nSoftShadows)
     }
     AurDisableSoftShadows();
 }
-// PC 0x0066D470
+// PC 0x0066D470 GOG 0x0066D210
 void CClientOptions::SetGrass(unsigned long nGrass)
 {
     m_nGrass = nGrass;
@@ -546,13 +546,13 @@ void CClientOptions::SetGrass(unsigned long nGrass)
 }
 
 #ifndef _XBOX
-void CClientOptions::SetAntiAlias(unsigned char nAntiAlias)  // PC 0x0066D490
+void CClientOptions::SetAntiAlias(unsigned char nAntiAlias)  // PC 0x0066D490 GOG 0x0066D230
 {
     m_nAntiAlias = nAntiAlias;
     AurSetAntiAliasingMode(nAntiAlias);
 }
 #endif
-// PC 0x0066D4B0
+// PC 0x0066D4B0 GOG 0x0066D250
 int CClientOptions::SetTexQual(unsigned char nTexQual)
 {
     m_nTexQual = nTexQual;
@@ -560,7 +560,7 @@ int CClientOptions::SetTexQual(unsigned char nTexQual)
 }
 
 #ifndef _XBOX
-void CClientOptions::SetFrameBuffer(unsigned long nFrameBuffer)  // PC 0x0066D4D0
+void CClientOptions::SetFrameBuffer(unsigned long nFrameBuffer)  // PC 0x0066D4D0 GOG 0x0066D270
 {
     CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
     m_nFrameBuffer = nFrameBuffer;
@@ -607,13 +607,13 @@ void CClientOptions::SetFrameBuffer(unsigned long nFrameBuffer)  // PC 0x0066D4D
         }
     }
 }
-// PC 0x0066D640
+// PC 0x0066D640 GOG 0x0066D3E0
 void CClientOptions::SetAnisotropy(unsigned long nAnisotropy)
 {
     m_nAnisotropy = nAnisotropy;
     SetAnisotropicFilter(nAnisotropy);
 }
-// PC 0x0066D660
+// PC 0x0066D660 GOG 0x0066D400
 void CClientOptions::SetVSync(unsigned long nVSync)
 {
     m_nVSync = nVSync;
@@ -639,7 +639,7 @@ void CClientOptions::SetUseSmallFonts(int bSmallFonts)
 #endif
     }
 }
-// PC 0x0066D690
+// PC 0x0066D690 GOG 0x0066D430
 void CClientOptions::SetDefaultFeedbackOptions()
 {
     m_bHideUnequippable = 0;
@@ -655,7 +655,7 @@ void CClientOptions::SetDefaultFeedbackOptions()
     m_bEnableTooltips = 1;
     SetUseSmallFonts(m_bUseSmallFonts);
 }
-// PC 0x0066D6E0
+// PC 0x0066D6E0 GOG 0x0066D480
 int CClientOptions::SetDefaultGraphicsOptions()
 {
     m_nBrightness = 57;
@@ -666,13 +666,13 @@ int CClientOptions::SetDefaultGraphicsOptions()
     m_nTexturePack = 1;
     return 1;
 }
-// PC 0x0066D710
+// PC 0x0066D710 GOG 0x0066D4B0
 void CClientOptions::SetDefaultMouseOptions()
 {
     m_bReverseMouseButtons = 0;
     m_nMouseSensitivity = 44;
 }
-// PC 0x0066D720
+// PC 0x0066D720 GOG 0x0066D4C0
 void CClientOptions::SetDefaultKeyboardCamera()
 {
     if (KeyboardCameraRotationSpeed != -1.0f)
@@ -691,7 +691,7 @@ void CClientOptions::SetDefaultKeyboardCamera()
     }
     m_fKeyboardCameraDeceleration = 2000.0f;
 }
-// PC 0x0066D7A0
+// PC 0x0066D7A0 GOG 0x0066D540
 void CClientOptions::SetDefaultOptions()
 {
     SetDefaultGameplayOptions();
@@ -709,7 +709,7 @@ void CClientOptions::SetDefaultOptions()
     m_nDebugFlags = 0;
 }
 #ifndef _XBOX
-CClientOptions::CClientOptions()  // PC 0x0066D8A0
+CClientOptions::CClientOptions()  // PC 0x0066D8A0 GOG 0x0066D640
 {
     m_nCameraMode = CClientOptions::CAMERA_MODE_ON_A_STICK;
     m_nCameraStyle = 1;
@@ -747,7 +747,7 @@ CClientOptions::CClientOptions()  // PC 0x0066D8A0
     SetDefaultOptions();
 }
 #endif
-int CClientOptions::LoadOptions(int bSetAntiAliasing)  // PC 0x0066D930
+int CClientOptions::LoadOptions(int bSetAntiAliasing)  // PC 0x0066D930 GOG 0x0066D6D0
 {
     SetDefaultOptions();
     CExoIni cIni;

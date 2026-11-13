@@ -50,7 +50,7 @@ float camerafollowspeedfactor = 1.0f;
 int enablecameracollision = 1;
 float fShakePeriod = 30.0f;
 float fShakeMag = 20.0f;
-// PC 0x0069AD60
+// PC 0x0069AD60 GOG 0x0069AB10
 CSWCModule::CSWCModule()
     : CGameObject(CGameObject::OBJECT_TYPE_MODULE, OBJECT_INVALID)
 {
@@ -102,7 +102,7 @@ CSWCModule::CSWCModule()
     m_pAnimatedCamera = NULL;
     m_nLastCameraMode = CAMERA_UNINITIALIZED;
 }
-// PC 0x006963F0
+// PC 0x006963F0 GOG 0x006961A0
 inline int CSWCObject::IsModelLoaded()
 {
     if (m_pAnimBase != NULL &&
@@ -112,7 +112,7 @@ inline int CSWCObject::IsModelLoaded()
     }
     return 0;
 }
-// PC 0x00696410
+// PC 0x00696410 GOG 0x006961C0
 inline Vector CSWCameraOnAStick::GetPosition()
 {
     if (m_pCamera != NULL)
@@ -121,7 +121,7 @@ inline Vector CSWCameraOnAStick::GetPosition()
     }
     return Vector();
 }
-// PC 0x00696440
+// PC 0x00696440 GOG 0x006961F0
 void CSWCameraOnAStick::SetPosition(Vector vPosition)
 {
     if (m_pCamera != NULL)
@@ -129,11 +129,11 @@ void CSWCameraOnAStick::SetPosition(Vector vPosition)
         m_pCamera->SetPosition(vPosition);
     }
 }
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 void CSWCModule::UnloadModule()
 {
 }
-// PC 0x00696470
+// PC 0x00696470 GOG 0x00696220
 int CSWCModule::LoadModule()
 {
     CSWCMessage* pMessage = g_pAppManager->GetClientExoApp()->GetSWCMessage();
@@ -199,7 +199,7 @@ int CSWCModule::LoadModule()
     }
     return 0;
 }
-// PC 0x006967E0
+// PC 0x006967E0 GOG 0x00696590
 void CSWCModule::SetCameraFollow(unsigned long oidTarget, int bSnap)
 {
     CSWCCreature* pCreature;
@@ -310,7 +310,7 @@ void CSWCModule::SetCameraFollow(unsigned long oidTarget, int bSnap)
         }
     }
 }
-// PC 0x00696AD0
+// PC 0x00696AD0 GOG 0x00696880
 void CSWCModule::TiltCamera(float fTilt)
 {
     CAurBehavior* pResult;
@@ -371,7 +371,7 @@ void CSWCModule::TiltCamera(float fTilt)
 }
 
 #ifndef _XBOX
-void CSWCModule::AcclTiltCamera(float fTilt)  // PC 0x00696BC0
+void CSWCModule::AcclTiltCamera(float fTilt)  // PC 0x00696BC0 GOG 0x00696970
 {
     int nCameraType;
     CAurBehavior* pBehavior;
@@ -401,7 +401,7 @@ void CSWCModule::AcclTiltCamera(float fTilt)  // PC 0x00696BC0
 }
 
 #endif
-// PC 0x00696C30
+// PC 0x00696C30 GOG 0x006969E0
 void CSWCModule::TurnCamera(float fTurn, float fTimeStep)
 {
     if (g_pAppManager->m_pClientExoApp->GetCombatMode() != 0)
@@ -508,7 +508,7 @@ void CSWCModule::TurnCamera(float fTurn, float fTimeStep)
         }
     }
 }
-// PC 0x00696EB0
+// PC 0x00696EB0 GOG 0x00696C60
 void CSWCModule::AcclTurnCamera(float fTurn, float fTimeStep)
 {
     CSWBehaviorCameraCombat* pCombat;
@@ -587,7 +587,7 @@ void CSWCModule::AcclTurnCamera(float fTurn, float fTimeStep)
         }
     }
 }
-// PC 0x00696FF0
+// PC 0x00696FF0 GOG 0x00696DA0
 void CSWCModule::ZoomCamera(float fZoom)
 {
     CAurBehavior* pBehavior;
@@ -613,7 +613,7 @@ void CSWCModule::ZoomCamera(float fZoom)
         m_nReserved80 |= bChanged;
     }
 }
-// PC 0x00697060
+// PC 0x00697060 GOG 0x00696E10
 void CSWCModule::ScrollCamera(Vector vScroll)
 {
     Vector vPosition;
@@ -626,7 +626,7 @@ void CSWCModule::ScrollCamera(Vector vScroll)
         m_nReserved80 = 1;
     }
 }
-// PC 0x00697110
+// PC 0x00697110 GOG 0x00696EC0
 int CSWCModule::GetNextCameraPosition(float fTimeStep, Vector* pPosition)
 {
     Quaternion qTarget;
@@ -673,7 +673,7 @@ int CSWCModule::GetNextCameraPosition(float fTimeStep, Vector* pPosition)
     *pPosition = vPosition + vOffset;
     return 1;
 }
-// PC 0x00697460
+// PC 0x00697460 GOG 0x00697210
 void CSWCModule::SetTimeOfDayState(unsigned char nState, unsigned long nTime)
 {
     CSWCArea* pArea;
@@ -715,7 +715,7 @@ void CSWCModule::SetTimeOfDayState(unsigned char nState, unsigned long nTime)
     m_fTimeOfDay = nTime * 0.001f;
     m_fTimeOfDayHours = nHours * 60.0f;
 }
-// PC 0x00697520
+// PC 0x00697520 GOG 0x006972D0
 void CSWCModule::UpdateCameraModeChaseCam()
 {
     CAurBehavior* pBehavior;
@@ -849,7 +849,7 @@ void CSWCModule::UpdateCameraModeChaseCam()
         }
     }
 }
-// PC 0x006978A0
+// PC 0x006978A0 GOG 0x00697650
 void CSWCModule::UpdateCameraModeBG()
 {
     CAurBehavior* pBehavior;
@@ -884,7 +884,7 @@ void CSWCModule::UpdateCameraModeBG()
         }
     }
 }
-// PC 0x006979B0
+// PC 0x006979B0 GOG 0x00697760
 void CSWCModule::UpdateCameraModeEQ(float fTimeStep)
 {
     CAurScene* pScene = NULL;
@@ -1018,7 +1018,7 @@ void CSWCModule::UpdateCameraModeEQ(float fTimeStep)
         }
     }
 }
-// PC 0x00697D90
+// PC 0x00697D90 GOG 0x00697B40
 void CSWCModule::LoadAnimatedCamera(const CResRef& cAnimatedCamera)
 {
     if (m_pAnimatedCamera == NULL)
@@ -1034,7 +1034,7 @@ void CSWCModule::LoadAnimatedCamera(const CResRef& cAnimatedCamera)
         }
     }
 }
-// PC 0x00697E30
+// PC 0x00697E30 GOG 0x00697BE0
 float CSWCModule::SetAnimatedCamera(unsigned short nAnimation,
                                     float fFieldOfView, unsigned long oidTarget)
 {
@@ -1110,7 +1110,7 @@ float CSWCModule::SetAnimatedCamera(unsigned short nAnimation,
     }
     return 0.0f;
 }
-// PC 0x006980D0
+// PC 0x006980D0 GOG 0x00697E80
 int CSWCModule::IsCameraAnimated()
 {
     if (m_pAnimatedCamera != NULL)
@@ -1120,7 +1120,7 @@ int CSWCModule::IsCameraAnimated()
     }
     return 0;
 }
-// PC 0x00698110
+// PC 0x00698110 GOG 0x00697EC0
 void CSWCModule::SetDialogCamera(int nDialogType)
 {
     unsigned char nCameraMode;
@@ -1143,7 +1143,7 @@ void CSWCModule::SetDialogCamera(int nDialogType)
     g_pAppManager->m_pClientExoApp->GetClientOptions()->SetCameraMode(CClientOptions::CAMERA_MODE_DIALOG);
     m_pModuleCamera->SetBehavior(pDialog);
 }
-// PC 0x006981E0
+// PC 0x006981E0 GOG 0x00697F90
 int CSWCModule::SetFreeLookCamera(unsigned long oidTarget)
 {
     CSWCObject* pObject;
@@ -1185,7 +1185,7 @@ int CSWCModule::SetFreeLookCamera(unsigned long oidTarget)
     m_nCameraType = 5;
     return 1;
 }
-// PC 0x00698360
+// PC 0x00698360 GOG 0x00698110
 int CSWCModule::SetCombatCamera()
 {
     unsigned char nCameraMode;
@@ -1208,7 +1208,7 @@ int CSWCModule::SetCombatCamera()
     m_pModuleCamera->SetBehavior(pCombat);
     return 1;
 }
-// PC 0x00698430
+// PC 0x00698430 GOG 0x006981E0
 int CSWCModule::SetNavigateCamera()
 {
     unsigned char nCameraMode;
@@ -1235,7 +1235,7 @@ int CSWCModule::SetNavigateCamera()
     m_pModuleCamera->SetBehavior(pNavigate);
     return 1;
 }
-// PC 0x00698510
+// PC 0x00698510 GOG 0x006982C0
 int CSWCModule::ShakeCamera(unsigned long nDelay, unsigned long nDuration)
 {
     int nResult;
@@ -1252,7 +1252,7 @@ int CSWCModule::ShakeCamera(unsigned long nDelay, unsigned long nDuration)
     }
     return nResult;
 }
-// PC 0x00698550
+// PC 0x00698550 GOG 0x00698300
 int CSWCModule::BumpCamera(unsigned long nDelay)
 {
     int nResult;
@@ -1267,7 +1267,7 @@ int CSWCModule::BumpCamera(unsigned long nDelay)
     }
     return nResult;
 }
-// PC 0x00698580
+// PC 0x00698580 GOG 0x00698330
 void CSWCModule::UpdateCameraBumpAndShake(float fTimeDelta)
 {
     CSWCameraOnAStick* pOnAStick;
@@ -1369,7 +1369,7 @@ void CSWCModule::UpdateCameraBumpAndShake(float fTimeDelta)
         }
     }
 }
-// PC 0x006987A0
+// PC 0x006987A0 GOG 0x00698550
 CSWMiniGame* CSWCModule::GetMiniGame()
 {
     CSWCArea* pArea;
@@ -1381,7 +1381,7 @@ CSWMiniGame* CSWCModule::GetMiniGame()
     }
     return 0;
 }
-// PC 0x006987C0
+// PC 0x006987C0 GOG 0x00698570
 void CSWCModule::UpdateCameraFollow(float fTimeDelta)
 {
     int nCameraMode =
@@ -1492,7 +1492,7 @@ void CSWCModule::UpdateCameraFollow(float fTimeDelta)
     m_nLastCameraMode =
         g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nCameraMode;
 }
-// PC 0x00698AF0
+// PC 0x00698AF0 GOG 0x006988A0
 CSWCModule::~CSWCModule()
 {
     m_sModuleTitle = "";
@@ -1513,7 +1513,7 @@ CSWCModule::~CSWCModule()
         m_pAnimatedCamera = NULL;
     }
 }
-// PC 0x00698BE0
+// PC 0x00698BE0 GOG 0x00698990
 int CSWCModule::RestoreCamera()
 {
     if (g_pAppManager->GetClientExoApp()->GetCombatMode())
@@ -1642,7 +1642,7 @@ int CSWCModule::RestoreCamera()
     EXOXBOXASSERT(0);
     return 0;
 }
-// PC 0x00699100
+// PC 0x00699100 GOG 0x00698EB0
 float CSWCModule::UpdateNormalCameraCollision(float fTimeDelta, float fZoom)
 {
     CAurBehavior* pBehavior = m_pModuleCamera->GetBehavior(-1);
@@ -1871,7 +1871,7 @@ float CSWCModule::UpdateNormalCameraCollision(float fTimeDelta, float fZoom)
     }
     return fZoom;
 }
-// PC 0x0069AF90
+// PC 0x0069AF90 GOG 0x0069AD40
 float CSWCModule::UpdateCameraCollision(float fTimeDelta, float fUnknown)
 {
     if (m_bCameraCollisionChanged != 0)
@@ -1884,7 +1884,7 @@ float CSWCModule::UpdateCameraCollision(float fTimeDelta, float fUnknown)
     }
     return UpdateNormalCameraCollision(fTimeDelta, fUnknown);
 }
-// PC 0x0069A1D0
+// PC 0x0069A1D0 GOG 0x00699F80
 float CSWCModule::UpdatePushCameraCollision(float fTimeDelta, float fZoom)
 {
     CAurBehavior* pBehavior = m_pModuleCamera->GetBehavior(-1);
@@ -2048,7 +2048,7 @@ float CSWCModule::UpdatePushCameraCollision(float fTimeDelta, float fZoom)
     }
     return fZoom;
 }
-// PC 0x0069AFF0
+// PC 0x0069AFF0 GOG 0x0069ADA0
 int CSWCModule::FindClearView(float fTimeDelta, float* pfYaw, float* pfPitch)
 {
     NwcmoduleTrace5();
@@ -2153,7 +2153,7 @@ int CSWCModule::FindClearView(float fTimeDelta, float* pfYaw, float* pfPitch)
     }
     return 0;
 }
-// PC 0x0069B470
+// PC 0x0069B470 GOG 0x0069B220
 void CSWCModule::Update(float fTimeDelta)
 {
     float fYaw;

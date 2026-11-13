@@ -205,12 +205,12 @@ public:
 
     CSWSItem(unsigned long oidItem);
     virtual ~CSWSItem();
-    virtual CSWSItem* AsSWSItem() { return this; }  // PC 0x0069CC00
+    virtual CSWSItem* AsSWSItem() { return this; }  // PC 0x0069CC00 GOG 0x0069C9B0
     virtual void AIUpdate();
     virtual void EventHandler(unsigned long nEventId, unsigned long oidCaller,
                               void* pEventData, unsigned long nCalendarDay,
                               unsigned long nTimeOfDay);
-    virtual CExoLocString* GetFirstName()  // PC 0x0056E8E0
+    virtual CExoLocString* GetFirstName()  // PC 0x0056E8E0 GOG 0x0056EA10
     {
         return &m_sLocalizedName;
     }
@@ -340,7 +340,7 @@ public:
     unsigned long m_bNewItem : 1;
     unsigned long m_bDeleting : 1;
     unsigned long m_nUnknown289Rest : 23;
-    // PC 0x0050B670
+    // PC 0x0050B670 GOG 0x0050B6D0
     void SetDropable(int bDropable)
     {
         m_bDropable = bDropable;
@@ -350,7 +350,7 @@ public:
     void SetNonEquippable(int bNonEquippable);
     void SetNewItem(int bNewItem);
     int GetUpgrades();
-    // PC 0x0050B6A0
+    // PC 0x0050B6A0 GOG 0x0050B700
     int GetIsUpgradeActive(unsigned char nUpgradeType)
     {
         return nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||

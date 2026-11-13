@@ -5,23 +5,23 @@
 #include <stdarg.h>
 #endif
 
-// PC 0x006356C0
+// PC 0x006356C0 GOG 0x006355B0
 void* EXOMALLOC(unsigned long nSize, const char* szFile, int nLine)
 {
     return malloc(nSize);
 }
-// PC 0x006356D0
+// PC 0x006356D0 GOG 0x006355C0
 void EXOFREE(void* pMemory, const char* szFile, int nLine)
 {
     free(pMemory);
 }
-// PC 0x006356E0
+// PC 0x006356E0 GOG 0x006355D0
 CExoDebug::CExoDebug()
 {
     m_pInternal = new CExoDebugInternal;
     m_bEnabled = 0;
 }
-// PC 0x00635750
+// PC 0x00635750 GOG 0x00635640
 void CExoDebug::FlushScriptLogFile()
 {
     if (m_pInternal)
@@ -29,7 +29,7 @@ void CExoDebug::FlushScriptLogFile()
         m_pInternal->FlushScriptLogFile();
     }
 }
-// PC 0x00635760
+// PC 0x00635760 GOG 0x00635650
 void CExoDebug::OpenLogFiles(const CExoString& path)
 {
     if (m_pInternal)
@@ -37,7 +37,7 @@ void CExoDebug::OpenLogFiles(const CExoString& path)
         m_pInternal->OpenLogFiles(path);
     }
 }
-// PC 0x00635770
+// PC 0x00635770 GOG 0x00635660
 void CExoDebug::Warning(int line, char* file, const char* message)
 {
     if (m_pInternal)
@@ -69,7 +69,7 @@ void CExoDebug::Assert(int line, char* file, const char* message)
     printf("%s", sAssert.CStr());
     abort();
 }
-// PC 0x00635780
+// PC 0x00635780 GOG 0x00635670
 void CExoDebug::GetCurrentTimestamp(CExoString& timestamp)
 {
     if (m_pInternal)
@@ -77,7 +77,7 @@ void CExoDebug::GetCurrentTimestamp(CExoString& timestamp)
         m_pInternal->GetCurrentTimestamp(timestamp);
     }
 }
-// PC 0x00635790
+// PC 0x00635790 GOG 0x00635680
 void CExoDebug::WriteToScriptLogFile(const CExoString& text)
 {
     if (m_pInternal)
@@ -85,7 +85,7 @@ void CExoDebug::WriteToScriptLogFile(const CExoString& text)
         m_pInternal->WriteToScriptLogFile(text);
     }
 }
-// PC 0x006357A0
+// PC 0x006357A0 GOG 0x00635690
 CExoDebug::~CExoDebug()
 {
     if (m_pInternal != NULL)

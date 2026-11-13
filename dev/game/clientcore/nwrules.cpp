@@ -17,7 +17,7 @@ static const int RULES_MAX_LEVEL = 50;
 
 #define RULES_RANGES_TABLE "Ranges"
 #define RULES_EXPERIENCE_TABLE "EXPTABLE"
-// PC 0x005D6300
+// PC 0x005D6300 GOG 0x005D6370
 CCombatInformationNode::CCombatInformationNode()
 {
     m_nModifier = 0;
@@ -26,7 +26,7 @@ CCombatInformationNode::CCombatInformationNode()
     m_nVersusGoodEvil = 0;
     m_nVersusRace = g_pRules->m_nNumRaces;
 }
-// PC 0x005D7E20
+// PC 0x005D7E20 GOG 0x005D7E90
 CCombatInformation::~CCombatInformation()
 {
     m_nNumAttacks = 0;
@@ -65,7 +65,7 @@ CCombatInformation::~CCombatInformation()
         }
     }
 }
-// PC 0x005D7F50
+// PC 0x005D7F50 GOG 0x005D7FC0
 int CCombatInformation::SaveData(CResGFF* pGFF, CResStruct* pStruct)
 {
     CResGFF* pCombatGFF = pGFF;
@@ -156,7 +156,7 @@ int CCombatInformation::SaveData(CResGFF* pGFF, CResStruct* pStruct)
 
     return 1;
 }
-// PC 0x005D82F0
+// PC 0x005D82F0 GOG 0x005D8360
 int CCombatInformation::operator!=(CCombatInformation& cInfo)
 {
     if (m_nNumAttacks != cInfo.m_nNumAttacks ||
@@ -204,7 +204,7 @@ int CCombatInformation::operator!=(CCombatInformation& cInfo)
 
     return 0;
 }
-// PC 0x005D9F00
+// PC 0x005D9F00 GOG 0x005D9F70
 CSWRules::CSWRules()
 {
     m_pSpellArray = 0;
@@ -288,7 +288,7 @@ CSWRules::CSWRules()
     LoadRaceInfo();
     LoadDifficultyInfo();
 }
-// PC 0x005D6320
+// PC 0x005D6320 GOG 0x005D6390
 int CCombatInformationNode::operator!=(CCombatInformationNode& cNode)
 {
     return m_nModifier != cNode.m_nModifier ||
@@ -297,7 +297,7 @@ int CCombatInformationNode::operator!=(CCombatInformationNode& cNode)
            m_nVersusGoodEvil != cNode.m_nVersusGoodEvil ||
            m_nVersusRace != cNode.m_nVersusRace;
 }
-// PC 0x005D6360
+// PC 0x005D6360 GOG 0x005D63D0
 void CSWRules::LoadClassInfo()
 {
     int nStrRef;
@@ -449,7 +449,7 @@ void CSWRules::LoadClassInfo()
 
     delete p2DA;
 }
-// PC 0x005D6EE0
+// PC 0x005D6EE0 GOG 0x005D6F50
 void CSWRules::LoadRaceInfo()
 {
     C2DA* p2DA = new C2DA("RacialTypes", 0);
@@ -521,7 +521,7 @@ void CSWRules::LoadRaceInfo()
 
     delete p2DA;
 }
-// PC 0x005D8460
+// PC 0x005D8460 GOG 0x005D84D0
 CSWRules::~CSWRules()
 {
     if (m_p2DArrays != 0)
@@ -581,7 +581,7 @@ CSWRules::~CSWRules()
         m_pMasterFeatIcons = 0;
     }
 }
-// PC 0x005D75B0
+// PC 0x005D75B0 GOG 0x005D7620
 void CSWRules::LoadSkillInfo()
 {
     C2DA* p2DA = new C2DA("Skills", 0);
@@ -648,7 +648,7 @@ void CSWRules::LoadSkillInfo()
 
     delete p2DA;
 }
-// PC 0x005D7B80
+// PC 0x005D7B80 GOG 0x005D7BF0
 unsigned short CSWRules::RollDice(unsigned char nDice, unsigned char nDie)
 {
     int nRolls = nDice;
@@ -665,7 +665,7 @@ unsigned short CSWRules::RollDice(unsigned char nDice, unsigned char nDie)
 
     return nResult;
 }
-// PC 0x005D7BB0
+// PC 0x005D7BB0 GOG 0x005D7C20
 unsigned char CSWRules::GetMetaMagicLevelCost(unsigned char nMetaMagic)
 {
     switch (nMetaMagic)
@@ -684,7 +684,7 @@ unsigned char CSWRules::GetMetaMagicLevelCost(unsigned char nMetaMagic)
         return 0;
     }
 }
-// PC 0x005D7C20
+// PC 0x005D7C20 GOG 0x005D7C90
 CSWFeat* CSWRules::GetFeat(unsigned short nFeat)
 {
     if (nFeat < m_nNumFeats)
@@ -696,17 +696,17 @@ CSWFeat* CSWRules::GetFeat(unsigned short nFeat)
     }
     return 0;
 }
-// PC 0x004F4460
+// PC 0x004F4460 GOG 0x00503C50
 CSWSpell* CSWRules::GetSpell(int nSpell)
 {
     return m_pSpellArray->GetSpell(nSpell);
 }
-// PC 0x005D7C50
+// PC 0x005D7C50 GOG 0x005D7CC0
 int CSWRules::GetDifficultyOption(int nOption, int nDifficulty)
 {
     return m_aDifficultyOptions[nDifficulty * 6 + nOption];
 }
-// PC 0x005D7C70
+// PC 0x005D7C70 GOG 0x005D7CE0
 void CSWRules::LoadDifficultyInfo()
 {
     C2DA* p2DA = new C2DA("DiffSettings", 0);
@@ -727,7 +727,7 @@ void CSWRules::LoadDifficultyInfo()
     } while (nDifficulty <= 5);
     delete p2DA;
 }
-// PC 0x005D8600
+// PC 0x005D8600 GOG 0x005D8670
 void CSWRules::LoadFeatInfo()
 {
     C2DA* p2DA = new C2DA("Feat", 0);
@@ -911,7 +911,7 @@ void CSWRules::LoadFeatInfo()
 
     delete p2DA;
 }
-// PC 0x005D7D30
+// PC 0x005D7D30 GOG 0x005D7DA0
 int CSWRules::GetWeightedDamageAmount(int nMinimum, int nMaximum, int nCritical,
                                       int nMultiplier, int nChance)
 {
@@ -950,7 +950,7 @@ int CSWRules::GetWeightedDamageAmount(int nMinimum, int nMaximum, int nCritical,
     }
     return nMinimum + nMaximum * (rand() % (nChance - 100)) / 100;
 }
-// PC 0x005D9530
+// PC 0x005D9530 GOG 0x005D95A0
 CCombatInformation::CCombatInformation()
 {
     m_nNumAttacks = 0;
@@ -975,7 +975,7 @@ CCombatInformation::CCombatInformation()
     m_nDamageDice = 0;
     m_nDamageDie = 0;
 }
-// PC 0x005D9600
+// PC 0x005D9600 GOG 0x005D9670
 int CCombatInformation::LoadData(CResGFF* pGFF, CResStruct* pStruct)
 {
     CResStruct cCombatStruct;
@@ -1075,7 +1075,7 @@ int CCombatInformation::LoadData(CResGFF* pGFF, CResStruct* pStruct)
 
     return 1;
 }
-// PC 0x005D9CB0
+// PC 0x005D9CB0 GOG 0x005D9D20
 CCombatInformation& CCombatInformation::operator=(CCombatInformation& cInfo)
 {
     if (this == &cInfo)

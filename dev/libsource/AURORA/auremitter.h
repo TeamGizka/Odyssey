@@ -101,11 +101,11 @@ public:
     virtual char* Name();
     virtual void GetLocal(Vector& vPosition, Quaternion& qOrientation);
     virtual void GetWorld(Vector& vPosition, Quaternion& qOrientation);
-    virtual List<Part*>* GetChildren()  // PC 0x00453060
+    virtual List<Part*>* GetChildren()  // PC 0x00453060 GOG 0x004531A0
     {
         return &m_lstChildren;
     }
-    virtual Part* GetParent()  // PC 0x00786830
+    virtual Part* GetParent()  // PC 0x00786830 GOG 0x00786600
     {
         return m_pParent;
     }
@@ -116,20 +116,20 @@ public:
                              Vector* pHit, CHitInfo* pHitInfo, float fRadius);
 
     enum HitGeomResult { HIT_GEOM_EXCLUDED = -1 };
-    virtual PartLight* AsPartLight() { return 0; }  // PC 0x004065A0
-    virtual PartCamera* AsPartCamera() { return 0; }  // PC 0x004065A0
-    virtual PartTriMesh* AsPartTriMesh() { return 0; }  // PC 0x004065A0
-    virtual PartAnimMesh* AsPartAnimMesh() { return 0; }  // PC 0x004065A0
-    virtual PartEmitter* AsPartEmitter() { return 0; }  // PC 0x004065A0
-    virtual PartReference* AsPartReference() { return 0; }  // PC 0x004065A0
-    virtual PartProjection* AsPartProjection() { return 0; }  // PC 0x004065A0
-    virtual PartShadow* AsPartShadow() { return 0; }  // PC 0x004065A0
-    virtual PartBeam* AsPartBeam() { return 0; }  // PC 0x004065A0
-    virtual PartAABB* AsPartAABB() { return 0; }  // PC 0x004065A0
-    virtual PartDanglyMesh* AsPartDanglyMesh() { return 0; }  // PC 0x004065A0
-    virtual PartSkin* AsPartSkin() { return 0; }  // PC 0x004065A0
-    virtual PartTrigger* AsPartTrigger() { return 0; }  // PC 0x004065A0
-    virtual Part* AsPartDummy() { return this; }  // PC 0x00698BD0
+    virtual PartLight* AsPartLight() { return 0; }  // PC 0x004065A0 GOG 0x00406570
+    virtual PartCamera* AsPartCamera() { return 0; }  // PC 0x004065A0 GOG 0x00406570
+    virtual PartTriMesh* AsPartTriMesh() { return 0; }  // PC 0x004065A0 GOG 0x00406570
+    virtual PartAnimMesh* AsPartAnimMesh() { return 0; }  // PC 0x004065A0 GOG 0x00406570
+    virtual PartEmitter* AsPartEmitter() { return 0; }  // PC 0x004065A0 GOG 0x00406570
+    virtual PartReference* AsPartReference() { return 0; }  // PC 0x004065A0 GOG 0x00406570
+    virtual PartProjection* AsPartProjection() { return 0; }  // PC 0x004065A0 GOG 0x00406570
+    virtual PartShadow* AsPartShadow() { return 0; }  // PC 0x004065A0 GOG 0x00406570
+    virtual PartBeam* AsPartBeam() { return 0; }  // PC 0x004065A0 GOG 0x00406570
+    virtual PartAABB* AsPartAABB() { return 0; }  // PC 0x004065A0 GOG 0x00406570
+    virtual PartDanglyMesh* AsPartDanglyMesh() { return 0; }  // PC 0x004065A0 GOG 0x00406570
+    virtual PartSkin* AsPartSkin() { return 0; }  // PC 0x004065A0 GOG 0x00406570
+    virtual PartTrigger* AsPartTrigger() { return 0; }  // PC 0x004065A0 GOG 0x00406570
+    virtual Part* AsPartDummy() { return this; }  // PC 0x00698BD0 GOG 0x00698980
     virtual void Project(const Vector& vPoint, float fDistance,
                          const Plane& cPlane, class CAurShadowData* pShadowData);
     virtual void Mat();
@@ -168,8 +168,8 @@ class PartCamera : public Part
 {
 public:
     PartCamera(MdlNode* pNode) : Part(pNode) {}
-    virtual PartCamera* AsPartCamera() { return this; }  // PC 0x00698BD0
-    virtual PartCamera* AsPartDummy() { return 0; }  // PC 0x004065A0
+    virtual PartCamera* AsPartCamera() { return this; }  // PC 0x00698BD0 GOG 0x00698980
+    virtual PartCamera* AsPartDummy() { return 0; }  // PC 0x004065A0 GOG 0x00406570
 };
 
 class PartProjection : public Part
@@ -403,7 +403,7 @@ class Particle
 public:
     Particle(PartEmitter* pEmitter, float fTime);
     virtual ~Particle();
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual ChunkyParticle* AsChunkyParticle() { return 0; }
     virtual void initialize(float fTime, float fScale);
     void randomPosition(int nWidth, int nHeight);
@@ -433,7 +433,7 @@ class ChunkyParticle : public Particle
 public:
     ChunkyParticle(PartEmitter* pEmitter, float fTime);
     virtual ~ChunkyParticle();
-    virtual ChunkyParticle* AsChunkyParticle() { return this; }  // PC 0x00698BD0
+    virtual ChunkyParticle* AsChunkyParticle() { return this; }  // PC 0x00698BD0 GOG 0x00698980
     virtual void initialize(float fTime, float fScale);
 
     Gob* m_pGob;
@@ -449,9 +449,9 @@ public:
     virtual void Initialize();
 
     virtual void Update(float fTimeStep) = 0;
-    // PC 0x004065A0
+    // PC 0x004065A0 GOG 0x00406570
     virtual LightningEmitter* AsLightningEmitter() { return 0; }
-    virtual PartEmitter* AsPartEmitter() { return this; }  // PC 0x00698BD0
+    virtual PartEmitter* AsPartEmitter() { return this; }  // PC 0x00698BD0 GOG 0x00698980
     void AnimateParticles(float fTimeStep);
     void RenderFunc();
     void chkRandom(Particle* pParticle);
@@ -640,7 +640,7 @@ public:
     int m_nBranches;
     char m_bBranch;
     char gap_28D[3];
-    virtual LightningEmitter* AsLightningEmitter() { return this; }  // PC 0x00698BD0
+    virtual LightningEmitter* AsLightningEmitter() { return this; }  // PC 0x00698BD0 GOG 0x00698980
     virtual void UpdateControlPoints();
 
     virtual void UpdateBranches();

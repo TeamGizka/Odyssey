@@ -9,13 +9,13 @@
 
 static inline void SwguiloadscreenTrace1();
 #ifndef _XBOX
-// PC 0x006D0250
+// PC 0x006D0250 GOG 0x006D02F0
 void CSWGuiLoadScreen::OnPanelAdded()
 {
     m_lblLogo.m_cBorder.m_cParams.SetFillImage(m_res5A0, 0);
     CSWGuiPanel::OnPanelAdded();
 }
-// PC 0x006D0270
+// PC 0x006D0270 GOG 0x006D0310
 void CSWGuiLoadScreen::OnPanelRemoved()
 {
     CResRef cNoLogo("");
@@ -25,7 +25,7 @@ void CSWGuiLoadScreen::OnPanelRemoved()
 #endif
 
 #ifndef _XBOX
-void CSWGuiLoadScreen::Draw(float fElapsed)  // PC 0x006D0430
+void CSWGuiLoadScreen::Draw(float fElapsed)  // PC 0x006D0430 GOG 0x006D0490
 {
     SwguiloadscreenTrace1();
     AurGUIStartLayer();
@@ -43,7 +43,7 @@ void CSWGuiLoadScreen::Draw(float fElapsed)  // PC 0x006D0430
 static inline void SwguiloadscreenTrace1()
 {
 }
-// PC 0x006D02B0
+// PC 0x006D02B0 GOG 0x006D0350
 void CSWGuiLoadScreen::SetHint(unsigned long nStrRef)
 {
     SwguiloadscreenTrace1();
@@ -60,7 +60,7 @@ void CSWGuiLoadScreen::SetHint(unsigned long nStrRef)
     }
     m_lblHint.m_cText.m_cParams.SetText(sHint);
 }
-// PC 0x006D0370
+// PC 0x006D0370 GOG 0x006D0410
 void CSWGuiLoadScreen::AddHintToMessageBuffer()
 {
     SwguiloadscreenTrace1();
@@ -69,7 +69,7 @@ void CSWGuiLoadScreen::AddHintToMessageBuffer()
     ((CGuiInGame*)pClient->GetInGameGui())
         ->AppendToDialogBuffer(m_lblHint.m_cText.m_cParams.m_sText, sSpeaker);
 }
-// PC 0x006D03F0
+// PC 0x006D03F0 GOG 0x006CFF50
 void CSWGuiLoadScreen::SetImage(const CResRef& cImage)
 {
 #ifdef _XBOX
@@ -83,7 +83,7 @@ void CSWGuiLoadScreen::SetImage(const CResRef& cImage)
         SetBackground(cImage);
     }
 }
-// PC 0x006D0490
+// PC 0x006D0490 GOG 0x006CFF90
 CSWGuiLoadScreen::CSWGuiLoadScreen(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {

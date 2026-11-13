@@ -24,7 +24,7 @@ static inline void roundToInt(int& iResult, float fValue)
 }
 
 
-// PC 0x00425430
+// PC 0x00425430 GOG 0x00425540
 inline float AbsoluteValue(float fValue)
 {
     return fValue < 0.0f ? -fValue : fValue;
@@ -35,20 +35,20 @@ class Matrix;
 class Vector
 {
 public:
-    Vector()  // PC 0x0040A290
+    Vector()  // PC 0x0040A290 GOG 0x0040A260
     {
         m_fX = 0.0f;
         m_fY = 0.0f;
         m_fZ = 0.0f;
     }
-    // PC 0x00404B50
+    // PC 0x00404B50 GOG 0x00404B50
     Vector(float fX, float fY, float fZ)
         : m_fX(fX),
           m_fY(fY),
           m_fZ(fZ)
     {
     }
-    // PC 0x00480900
+    // PC 0x00480900 GOG 0x00480A80
     int IsZero() const
     {
         return m_fX == 0.0f && m_fY == 0.0f && m_fZ == 0.0f;
@@ -117,7 +117,7 @@ public:
     }
 
     Quaternion(Vector vAxis, float fAngle);
-    // PC 0x004634E0
+    // PC 0x004634E0 GOG 0x004635F0
     Vector xdir() const
     {
         return Vector(1.0f - 2.0f * (m_fY * m_fY + m_fZ * m_fZ),
@@ -126,7 +126,7 @@ public:
     }
 
     Vector ydir() const;
-    Vector zdir() const  // PC 0x0044FEE0
+    Vector zdir() const  // PC 0x0044FEE0 GOG 0x00450020
     {
         return Vector(2.0f * (m_fX * m_fZ + m_fY * m_fW),
                       2.0f * (m_fZ * m_fY - m_fW * m_fX),
@@ -321,38 +321,38 @@ int operator!=(const Vector& vFirst, const Vector& vSecond);
 float* Homogenize(const Vector& vector, const float& fW);
 float cosineLUT(float fAngle);
 float sineLUT(float fAngle);
-// PC 0x00463530
+// PC 0x00463530 GOG 0x00463640
 inline Vector Quaternion::ydir() const
 {
     return Vector(2.0f * (m_fX * m_fY - m_fW * m_fZ),
                   1.0f - 2.0f * (m_fX * m_fX + m_fZ * m_fZ),
                   2.0f * (m_fY * m_fZ + m_fX * m_fW));
 }
-// PC 0x00425450
+// PC 0x00425450 GOG 0x00425560
 inline Vector operator+(const Vector& left, const Vector& right)
 {
     return Vector(left.m_fX + right.m_fX, left.m_fY + right.m_fY,
                   left.m_fZ + right.m_fZ);
 }
-// PC 0x00425480
+// PC 0x00425480 GOG 0x00425590
 inline Vector operator-(const Vector& left, const Vector& right)
 {
     return Vector(left.m_fX - right.m_fX, left.m_fY - right.m_fY,
                   left.m_fZ - right.m_fZ);
 }
-// PC 0x004254B0
+// PC 0x004254B0 GOG 0x004255C0
 inline Vector operator*(const Vector& vector, float fScale)
 {
     return Vector(fScale * vector.m_fX, fScale * vector.m_fY,
                   fScale * vector.m_fZ);
 }
-// PC 0x00448D40
+// PC 0x00448D40 GOG 0x00448E90
 inline Vector operator*(float fScale, const Vector& vector)
 {
     return Vector(fScale * vector.m_fX, fScale * vector.m_fY,
                   fScale * vector.m_fZ);
 }
-// PC 0x00448D70
+// PC 0x00448D70 GOG 0x00448EC0
 inline Vector operator/(const Vector& vector, float fScale)
 {
     if (fScale != 0.0f)
@@ -363,13 +363,13 @@ inline Vector operator/(const Vector& vector, float fScale)
     }
     return vector;
 }
-// PC 0x004254E0
+// PC 0x004254E0 GOG 0x004255F0
 inline float operator*(const Vector& left, const Vector& right)
 {
     return left.m_fX * right.m_fX + left.m_fY * right.m_fY +
            left.m_fZ * right.m_fZ;
 }
-// PC 0x00485EA0
+// PC 0x00485EA0 GOG 0x00485F60
 inline Vector cmul(const Vector& left, const Vector& right)
 {
     return Vector(left.m_fX * right.m_fX, left.m_fY * right.m_fY,
@@ -383,13 +383,13 @@ inline Vector Interpolate(const Vector& vFirst, const Vector& vSecond, float fPo
 class Matrix
 {
 public:
-    Matrix()  // PC 0x00448DD0
+    Matrix()  // PC 0x00448DD0 GOG 0x00448F20
     {
         m_vFirst = Vector(1.0f, 0.0f, 0.0f);
         m_vSecond = Vector(0.0f, 1.0f, 0.0f);
         m_vThird = Vector(0.0f, 0.0f, 1.0f);
     }
-    // PC 0x00448E80
+    // PC 0x00448E80 GOG 0x00448FD0
     Matrix(Vector vFirst, Vector vSecond, Vector vThird)
     {
         m_vFirst = vFirst;
@@ -401,7 +401,7 @@ public:
     Vector m_vSecond;
     Vector m_vThird;
 };
-// PC 0x00463580
+// PC 0x00463580 GOG 0x00463690
 inline Matrix Quaternion::getmatrix() const
 {
     return Matrix(xdir(), ydir(), zdir());

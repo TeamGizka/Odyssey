@@ -67,7 +67,7 @@ extern int countpart;
 float darkvaluemultiplier = 0.35f;
 float lightvaluemultiplier = 0.5f;
 float g_fWeatherRadius = 4.5f;
-// PC 0x00650B80
+// PC 0x00650B80 GOG 0x00650A30
 void PlayRoomSoundEvent(CAurObject* pObject, char* sEvent, void* pData)
 {
     if (pData != NULL)
@@ -80,7 +80,7 @@ static CSWCRoom* AllocateRoomArray(int nCount)
 {
     return new CSWCRoom[nCount];
 }
-// PC 0x00650BF0
+// PC 0x00650BF0 GOG 0x00650AA0
 int CSWCArea::GetIsObjectCorpse(unsigned long oidObject)
 {
     for (int i = 0; i < 4; i++)
@@ -92,7 +92,7 @@ int CSWCArea::GetIsObjectCorpse(unsigned long oidObject)
     }
     return FALSE;
 }
-// PC 0x00650C20
+// PC 0x00650C20 GOG 0x00650AD0
 int CSWCArea::GetSurfaceMaterial(Vector vPosition)
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
@@ -110,7 +110,7 @@ int CSWCArea::GetSurfaceMaterial(Vector vPosition)
     }
     return 0;
 }
-// PC 0x00650C70
+// PC 0x00650C70 GOG 0x00650B20
 int CSWCArea::TestDirectLine(unsigned long oidObject, const Vector& vStart,
                              const Vector& vEnd, const float& fDistance,
                              float fWidth, int nFlags,
@@ -124,7 +124,7 @@ int CSWCArea::TestDirectLine(unsigned long oidObject, const Vector& vStart,
     }
     return FALSE;
 }
-// PC 0x00650CC0
+// PC 0x00650CC0 GOG 0x00650B70
 int CSWCArea::ApplyFireAndForgetVisualEffect(unsigned short nEffect,
                                              Vector vPosition)
 {
@@ -146,7 +146,7 @@ int CSWCArea::ApplyFireAndForgetVisualEffect(unsigned short nEffect,
     pEffect->DoVFXRumble();
     return TRUE;
 }
-// PC 0x00650DA0
+// PC 0x00650DA0 GOG 0x00650C50
 void CSWCArea::StartSounds()
 {
     g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
@@ -154,7 +154,7 @@ void CSWCArea::StartSounds()
     m_pAmbientSound->StartSounds();
     g_pAppManager->m_pClientExoApp->StopLoadMusic();
 }
-// PC 0x00650DE0
+// PC 0x00650DE0 GOG 0x00650C90
 int CSWCArea::SetWeather(unsigned char nWeather, float fStrength)
 {
 
@@ -298,7 +298,7 @@ int CSWCArea::SetWeather(unsigned char nWeather, float fStrength)
     }
     return TRUE;
 }
-// PC 0x006510F0
+// PC 0x006510F0 GOG 0x00650FA0
 int CSWCArea::SetFogColor(const Vector& vColor)
 {
     if (m_pScene == NULL)
@@ -312,7 +312,7 @@ int CSWCArea::SetFogColor(const Vector& vColor)
     m_vFogColor = vColor;
     return TRUE;
 }
-// PC 0x006511C0
+// PC 0x006511C0 GOG 0x00651070
 int CSWCArea::SetGlobalLightDiffuse(int nLight, Vector vColor)
 {
     char szCommand[128];
@@ -333,7 +333,7 @@ int CSWCArea::SetGlobalLightDiffuse(int nLight, Vector vColor)
     }
     return TRUE;
 }
-// PC 0x00651250
+// PC 0x00651250 GOG 0x00651100
 int CSWCArea::SetGlobalLightAmbient(int nLight, Vector vColor)
 {
     char szCommand[128];
@@ -347,7 +347,7 @@ int CSWCArea::SetGlobalLightAmbient(int nLight, Vector vColor)
     AurControlPart(szCommand);
     return TRUE;
 }
-// PC 0x006512C0
+// PC 0x006512C0 GOG 0x00651170
 int CSWCArea::SetWind(unsigned char nWind)
 {
     float fMaximumDeviation = 0.0f;
@@ -382,7 +382,7 @@ int CSWCArea::SetWind(unsigned char nWind)
     return TRUE;
 }
 
-// PC 0x006513D0
+// PC 0x006513D0 GOG 0x00651280
 int CSWCArea::ClearLineOfSightOneWay(Vector vStart, Vector vEnd, Vector* pHit)
 {
     return 1;
@@ -418,19 +418,19 @@ void CSWCArea::DisplayAllTriggers(int bDisplay)
         pTrigger->SpecialDisplayTrigger(bDisplay);
     }
 }
-// PC 0x006513E0
+// PC 0x006513E0 GOG 0x00651290
 void CSWCArea::StartWeather(unsigned char nWeather)
 {
     m_nNewWeatherType = nWeather;
     m_nWeatherDuration = WEATHER_FADE_DURATION;
 }
-// PC 0x00651400
+// PC 0x00651400 GOG 0x006512B0
 void CSWCArea::StopWeather(unsigned char nWeather)
 {
     m_nNewWeatherType = WEATHER_CLEAR;
     m_nWeatherDuration = WEATHER_FADE_DURATION;
 }
-// PC 0x00651420
+// PC 0x00651420 GOG 0x006512D0
 void CSWCArea::SetLightningDone()
 {
     shadowalpha = g_fOldShadowAlpha;
@@ -441,7 +441,7 @@ void CSWCArea::SetLightningDone()
         m_pLightningEffect->AttachToScene(NULL);
     }
 }
-// PC 0x00651470
+// PC 0x00651470 GOG 0x00651320
 void CSWCArea::UpdateShadowingLights()
 {
     if (m_pShadowLight != NULL)
@@ -454,7 +454,7 @@ void CSWCArea::UpdateShadowingLights()
         }
     }
 }
-// PC 0x006514A0
+// PC 0x006514A0 GOG 0x00651350
 int CSWCArea::GetIsDark()
 {
     if (m_pScene == NULL)
@@ -492,12 +492,12 @@ int CSWCArea::GetIsDark()
     m_bIsDark = bIsDark;
     return bIsDark;
 }
-// PC 0x00651540
+// PC 0x00651540 GOG 0x006513F0
 int CSWCArea::GetObjectsAtPositionVisible(const Vector& vPosition)
 {
     return 1;
 }
-// PC 0x00651550
+// PC 0x00651550 GOG 0x00651400
 CSWCRoom* CSWCArea::GetRoom(int nRoom)
 {
     CSWCRoom* pRoom = NULL;
@@ -507,7 +507,7 @@ CSWCRoom* CSWCArea::GetRoom(int nRoom)
     }
     return pRoom;
 }
-// PC 0x00651570
+// PC 0x00651570 GOG 0x00651420
 CSWCRoom* CSWCArea::GetRoom(const CExoString& sRoomName)
 {
     CSWCRoom* pRoom = NULL;
@@ -525,7 +525,7 @@ CSWCRoom* CSWCArea::GetRoom(const CExoString& sRoomName)
     }
     return pRoom;
 }
-// PC 0x006518D0
+// PC 0x006518D0 GOG 0x00651780
 int CSWCArea::SetFog(float fNear, float fFar, const Vector& vColor)
 {
     NwcareaTrace1();
@@ -539,7 +539,7 @@ int CSWCArea::SetFog(float fNear, float fFar, const Vector& vColor)
     SetFogColor(vColor);
     return TRUE;
 }
-// PC 0x00651920
+// PC 0x00651920 GOG 0x006517D0
 void CSWCArea::SetAsDay()
 {
     NwcareaTrace1();
@@ -559,7 +559,7 @@ void CSWCArea::SetAsDay()
     SetGlobalLightDiffuse(1, m_vDayDiffuseColor);
     UpdateShadowingLights();
 }
-// PC 0x00651A20
+// PC 0x00651A20 GOG 0x006518D0
 void CSWCArea::SetAsNight()
 {
     if (m_bDayNightCycle == 0 && m_bIsNight == 0)
@@ -578,7 +578,7 @@ void CSWCArea::SetAsNight()
     SetGlobalLightDiffuse(1, m_vNightDiffuseColor);
     UpdateShadowingLights();
 }
-// PC 0x00651B20
+// PC 0x00651B20 GOG 0x006519D0
 CSWCMapPin* CSWCArea::GetMapPin(unsigned long nReference, int nType)
 {
     NwcareaTrace1();
@@ -594,7 +594,7 @@ CSWCMapPin* CSWCArea::GetMapPin(unsigned long nReference, int nType)
     }
     return NULL;
 }
-// PC 0x00651B70
+// PC 0x00651B70 GOG 0x00651A20
 void CSWCArea::UpdateSoundObjectsTimeOfDay()
 {
     NwcareaTrace1();
@@ -611,7 +611,7 @@ void CSWCArea::UpdateSoundObjectsTimeOfDay()
         }
     }
 }
-// PC 0x00651BB0
+// PC 0x00651BB0 GOG 0x00651A60
 void CSWCArea::RemovePlaceableObjectLight(unsigned long oidPlaceable, int bFlag)
 {
     NwcareaTrace1();
@@ -642,7 +642,7 @@ void CSWCArea::RemovePlaceableObjectLight(unsigned long oidPlaceable, int bFlag)
         }
     }
 }
-// PC 0x00651C50
+// PC 0x00651C50 GOG 0x00651B00
 Gob* CSWCArea::GetPlaceableObjectLight(unsigned long oidPlaceable)
 {
     NwcareaTrace1();
@@ -657,7 +657,7 @@ Gob* CSWCArea::GetPlaceableObjectLight(unsigned long oidPlaceable)
     }
     return NULL;
 }
-// PC 0x00651CA0
+// PC 0x00651CA0 GOG 0x00651B50
 void CSWCArea::HiliteAreaObjects(int bHilite)
 {
     NwcareaTrace1();
@@ -740,7 +740,7 @@ void CSWCArea::HiliteAreaObjects(int bHilite)
         }
     }
 }
-// PC 0x00651EB0
+// PC 0x00651EB0 GOG 0x00651D60
 CSWMiniGame* CSWCArea::RestartMiniGame()
 {
     if (m_pMiniGame != NULL)
@@ -771,7 +771,7 @@ CSWMiniGame* CSWCArea::RestartMiniGame()
     }
     return m_pMiniGame;
 }
-// PC 0x00652000
+// PC 0x00652000 GOG 0x00651EB0
 CSWCRoom* CSWCArea::GetRoom(const Vector& vPosition)
 {
     CSWCRoom* pRoom = NULL;
@@ -782,13 +782,13 @@ CSWCRoom* CSWCArea::GetRoom(const Vector& vPosition)
     }
     return pRoom;
 }
-// PC 0x00651670
+// PC 0x00651670 GOG 0x00651520
 int CSWCArea::GetRoomIndex(const Vector& vPosition, int nFlags)
 {
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
     return pServerExoApp->GetRoomIndex(m_cAreaResRef, vPosition, nFlags);
 }
-// PC 0x006516A0
+// PC 0x006516A0 GOG 0x00651550
 CSWSArea* CSWCArea::GetServerArea()
 {
     if (m_pServerArea == NULL)
@@ -804,17 +804,17 @@ CSWSArea* CSWCArea::GetServerArea()
     }
     return m_pServerArea;
 }
-// PC 0x006516F0
+// PC 0x006516F0 GOG 0x006515A0
 void CSWCArea::AttachmentFromServerArea(CSWSArea* pArea)
 {
     m_pServerArea = pArea;
 }
-// PC 0x00651700
+// PC 0x00651700 GOG 0x006515B0
 void CSWCArea::DetachFromServerArea()
 {
     m_pServerArea = NULL;
 }
-// PC 0x00651710
+// PC 0x00651710 GOG 0x006515C0
 void CSWCArea::AddCorpse(unsigned long oidCorpse)
 {
     m_anCorpseObjectIds[m_nCorpseWriteIndex] = oidCorpse;
@@ -856,7 +856,7 @@ void CSWCArea::AddCorpse(unsigned long oidCorpse)
         }
     }
 }
-// PC 0x00651810
+// PC 0x00651810 GOG 0x006516C0
 int CSWCArea::ParentCorpseExists(unsigned long oidParent)
 {
     for (unsigned char i = 0; i < 4; i++)
@@ -871,7 +871,7 @@ int CSWCArea::ParentCorpseExists(unsigned long oidParent)
     }
     return FALSE;
 }
-// PC 0x00652040
+// PC 0x00652040 GOG 0x00651EF0
 void CSWCArea::ForceBrightSunAndMoon()
 {
     Vector vBlack(0.0f, 0.0f, 0.0f);
@@ -890,7 +890,7 @@ void CSWCArea::ForceBrightSunAndMoon()
         SetAsDay();
     }
 }
-// PC 0x006520F0
+// PC 0x006520F0 GOG 0x00651FA0
 CSWCArea::CSWCArea()
     : CGameObject(CGameObject::OBJECT_TYPE_AREA, OBJECT_INVALID)
 {
@@ -944,13 +944,13 @@ CSWCArea::CSWCArea()
     m_nCorpseWriteIndex = 1;
     m_pServerArea = 0;
 }
-// PC 0x00653610
+// PC 0x00653610 GOG 0x006534C0
 void CSWCArea::ClearTilePathNodes()
 {
     m_lstTilePathNodeIds.SetSize(0);
     m_lstTilePathNodes.SetSize(0);
 }
-// PC 0x00653670
+// PC 0x00653670 GOG 0x00653520
 int CSWCArea::LoadArea(CAurCamera* pCamera, CGuiAreaLoadscreen* pLoadScreen,
                        int bLoad)
 {
@@ -1381,7 +1381,7 @@ LoadFailed:
     m_pScene = NULL;
     return FALSE;
 }
-// PC 0x00655500
+// PC 0x00655500 GOG 0x006553B0
 void CSWCArea::UnloadArea()
 {
     if (g_pAppManager->m_pClientExoApp->GetInGameGui() != NULL)
@@ -1525,7 +1525,7 @@ void CSWCArea::UnloadArea()
     m_nCorpseReadIndex = 0;
     m_nCorpseWriteIndex = 1;
 }
-// PC 0x006558E0
+// PC 0x006558E0 GOG 0x00655790
 void CSWCArea::Update(float fTimeDelta)
 {
     unsigned long nCalendarDay;
@@ -1799,7 +1799,7 @@ void CSWCArea::Update(float fTimeDelta)
 }
 
 
-// PC 0x00652500
+// PC 0x00652500 GOG 0x006523B0
 void CSWCArea::UpdateDayNightCycle(float fTimeStep)
 {
     Vector vAmbient;
@@ -1940,7 +1940,7 @@ void CSWCArea::UpdateDayNightCycle(float fTimeStep)
     UpdateSoundObjectsTimeOfDay();
     m_pAmbientSound->UpdateTimeOfDay();
 }
-// PC 0x00652CC0
+// PC 0x00652CC0 GOG 0x00652B70
 void CSWCArea::SetAsDusk()
 {
     if (m_bDayNightCycle == 0)
@@ -1965,7 +1965,7 @@ void CSWCArea::SetAsDusk()
         UpdateShadowingLights();
     }
 }
-// PC 0x00652D60
+// PC 0x00652D60 GOG 0x00652C10
 void CSWCArea::SetAsDawn()
 {
     if (m_bDayNightCycle == 0)
@@ -1990,12 +1990,12 @@ void CSWCArea::SetAsDawn()
         UpdateShadowingLights();
     }
 }
-// PC 0x00652E00
+// PC 0x00652E00 GOG 0x00652CB0
 void CSWCArea::AddMapPin(CSWCMapPin* pMapPin)
 {
     m_lstMapPins.Add(pMapPin);
 }
-// PC 0x00652E40
+// PC 0x00652E40 GOG 0x00652CF0
 void CSWCArea::ClearAllMapPins()
 {
     int nCount = m_lstMapPins.num;
@@ -2009,7 +2009,7 @@ void CSWCArea::ClearAllMapPins()
     }
     m_lstMapPins.SetSize(0);
 }
-// PC 0x00652EA0
+// PC 0x00652EA0 GOG 0x00652D50
 int CSWCArea::AddPlaceableObjectLight(unsigned long oidPlaceable,
                                       int nAppearance,
                                       Vector vPosition)
@@ -2125,7 +2125,7 @@ int CSWCArea::AddPlaceableObjectLight(unsigned long oidPlaceable,
     }
     return TRUE;
 }
-// PC 0x00653330
+// PC 0x00653330 GOG 0x006531E0
 int CSWCArea::AddPlaceableObjectStatic(unsigned long oidPlaceable,
                                       int nAppearance,
                                       Vector vPosition, Vector vOrientation)
@@ -2204,7 +2204,7 @@ void CSWCArea::EmptyCAurObjectToHitCheckIgnoreList()
         m_lstHitCheckIgnoreObjects.RemoveHead();
     }
 }
-// PC 0x00656310
+// PC 0x00656310 GOG 0x006561C0
 CSWCArea::~CSWCArea()
 {
 #ifndef _XBOX

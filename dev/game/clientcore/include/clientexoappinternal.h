@@ -155,7 +155,7 @@ class CResRef;
 
 struct CPlayBackEventNode
 {
-    CPlayBackEventNode()  // PC 0x0066FC10
+    CPlayBackEventNode()  // PC 0x0066FC10 GOG 0x0066F9B0
     {
         nTime = 0;
         cType = 0;
@@ -1086,7 +1086,7 @@ public:
 class CSWCPlayer
 {
 public:
-    virtual CSWCDungeonMaster* AsSWCDungeonMaster() { return 0; }  // PC 0x004065A0
+    virtual CSWCDungeonMaster* AsSWCDungeonMaster() { return 0; }  // PC 0x004065A0 GOG 0x00406570
     unsigned long m_nPlayerId;
     int m_nUnknown8;
     CExoString m_sPlayerName;
@@ -1102,7 +1102,7 @@ public:
     void SetPrimaryPCPortrait(CResRef cPortrait);
     void SetPrimaryPCPortraitId(unsigned short nPortraitId);
     unsigned long GetPlayerId() { return m_nPlayerId; }
-    CSWCPlayer(unsigned long nPlayerId)  // PC 0x0069FDF0
+    CSWCPlayer(unsigned long nPlayerId)  // PC 0x0069FDF0 GOG 0x0069FBD0
         : m_sPlayerName(),
           m_cPrimaryPCPortrait(),
           m_sPrimaryPCName()

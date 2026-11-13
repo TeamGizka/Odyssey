@@ -9,7 +9,7 @@ int tex1on = 0;
 
 bool AurNV1xLevelShadersAvailable();
 int AurATIFragmentShaderAvailable();
-// PC 0x00485D70
+// PC 0x00485D70 GOG 0x00485E30
 int AurIsAAliasingAvailable()
 {
     static int returnval = -1;
@@ -26,7 +26,7 @@ int AurIsAAliasingAvailable()
 #endif
 
 #ifndef _XBOX
-int AurPixelShadersAvailable()  // PC 0x00485DA0
+int AurPixelShadersAvailable()  // PC 0x00485DA0 GOG 0x00485E60
 {
     static int returnval = -1;
 

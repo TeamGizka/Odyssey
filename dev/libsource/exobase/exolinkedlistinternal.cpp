@@ -6,14 +6,14 @@ inline CExoLinkedListNode::CExoLinkedListNode()
     m_pNext = 0;
     m_pPrev = 0;
 }
-// PC 0x00635350
+// PC 0x00635350 GOG 0x00635240
 CExoLinkedListInternal::CExoLinkedListInternal()
 {
     m_pTail = 0;
     m_pHead = 0;
     m_nCount = 0;
 }
-// PC 0x00635360
+// PC 0x00635360 GOG 0x00635250
 CExoLinkedListInternal::~CExoLinkedListInternal()
 {
     CExoLinkedListNode* pNode = m_pHead;
@@ -49,7 +49,7 @@ CExoLinkedListNode* CExoLinkedListInternal::AddAfter(
     m_nCount++;
     return pNode;
 }
-// PC 0x00635380
+// PC 0x00635380 GOG 0x00635270
 CExoLinkedListNode* CExoLinkedListInternal::AddBefore(
     void* pData, CExoLinkedListNode* pPosition)
 {
@@ -78,7 +78,7 @@ CExoLinkedListNode* CExoLinkedListInternal::AddBefore(
     m_nCount++;
     return pNode;
 }
-// PC 0x00635410
+// PC 0x00635410 GOG 0x00635300
 void* CExoLinkedListInternal::GetAtPos(CExoLinkedListNode* pPosition) const
 {
     if (!pPosition)
@@ -94,7 +94,7 @@ void* CExoLinkedListInternal::GetAtPos(CExoLinkedListNode* pPosition) const
     }
     return pPosition->m_pData;
 }
-// PC 0x00635440
+// PC 0x00635440 GOG 0x00635330
 void* CExoLinkedListInternal::GetNext(CExoLinkedListNode*& pPosition) const
 {
     if (!pPosition)
@@ -117,7 +117,7 @@ void* CExoLinkedListInternal::GetNext(CExoLinkedListNode*& pPosition) const
     pPosition = pNext;
     return pNext->m_pData;
 }
-// PC 0x00635480
+// PC 0x00635480 GOG 0x00635370
 void* CExoLinkedListInternal::GetPrev(CExoLinkedListNode*& pPosition) const
 {
     if (!pPosition)
@@ -140,7 +140,7 @@ void* CExoLinkedListInternal::GetPrev(CExoLinkedListNode*& pPosition) const
     pPosition = pPrev;
     return pPrev->m_pData;
 }
-// PC 0x006354C0
+// PC 0x006354C0 GOG 0x006353B0
 void* CExoLinkedListInternal::Remove(CExoLinkedListNode* pPosition)
 {
     if (!pPosition)
@@ -169,7 +169,7 @@ void* CExoLinkedListInternal::Remove(CExoLinkedListNode* pPosition)
     m_nCount--;
     return pData;
 }
-// PC 0x00635530
+// PC 0x00635530 GOG 0x00635420
 void* CExoLinkedListInternal::RemoveHead()
 {
     CExoLinkedListNode* pNode = m_pHead;
@@ -194,7 +194,7 @@ void* CExoLinkedListInternal::RemoveHead()
     m_nCount--;
     return pData;
 }
-// PC 0x00635590
+// PC 0x00635590 GOG 0x00635480
 void* CExoLinkedListInternal::RemoveTail()
 {
     CExoLinkedListNode* pNode = m_pTail;
@@ -219,7 +219,7 @@ void* CExoLinkedListInternal::RemoveTail()
     m_nCount--;
     return pData;
 }
-// PC 0x006355F0
+// PC 0x006355F0 GOG 0x006354E0
 int CExoLinkedListInternal::Contains(void* pData) const
 {
     CExoLinkedListNode* pNode = m_pHead;
@@ -231,7 +231,7 @@ int CExoLinkedListInternal::Contains(void* pData) const
     }
     return 0;
 }
-// PC 0x00635620
+// PC 0x00635620 GOG 0x00635510
 CExoLinkedListNode* CExoLinkedListInternal::AddHead(void* pData)
 {
     CExoLinkedListNode* pNode = new CExoLinkedListNode();
@@ -246,7 +246,7 @@ CExoLinkedListNode* CExoLinkedListInternal::AddHead(void* pData)
     m_nCount++;
     return pNode;
 }
-// PC 0x00635670
+// PC 0x00635670 GOG 0x00635560
 CExoLinkedListNode* CExoLinkedListInternal::AddTail(void* pData)
 {
     CExoLinkedListNode* pNode = new CExoLinkedListNode();

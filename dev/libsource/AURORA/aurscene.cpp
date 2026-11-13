@@ -160,17 +160,17 @@ void SetShadowStencilBuffer()
     GLRender_SetStencilMask(GLRender::STENCIL_WRITE_MASK);
     GLRender::Clear(4);
 }
-// PC 0x0056FB90
+// PC 0x0056FB90 GOG 0x0056FCC0
 void Scene::InitBSP(int, int, int, bool, float)
 {
 }
 
 extern char g_bEnableInterleavedAnimations;
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 void Scene::FinishSceneGeometry()
 {
 }
-// PC 0x004015A0
+// PC 0x004015A0 GOG 0x004015A0
 void Scene::PostProcessLS()
 {
 }
@@ -203,17 +203,17 @@ static void ClearStencilBuffer()
     GLRender_Clear(4);
 }
 #endif
-// PC 0x004634B0
+// PC 0x004634B0 GOG 0x004635C0
 void Scene::EnableAnimations()
 {
     m_bAnimating = 1;
 }
-// PC 0x004634C0
+// PC 0x004634C0 GOG 0x004635D0
 void Scene::DisableAnimations()
 {
     m_bAnimating = 0;
 }
-// PC 0x004634D0
+// PC 0x004634D0 GOG 0x004635E0
 char Scene::IsAnimating()
 {
     return m_bAnimating;
@@ -232,7 +232,7 @@ char Scene::IsAnimating()
 #include <math.h>
 #include "aurtexman.h"
 #include "aurprimitive.h"
-// PC 0x004636B0
+// PC 0x004636B0 GOG 0x004637C0
 int EmitterOrderCmp(const void* pFirst, const void* pSecond)
 {
     PartEmitter* pEmitter1 = *(PartEmitter**)pFirst;
@@ -270,19 +270,19 @@ int EmitterOrderCmp(const void* pFirst, const void* pSecond)
         return pEmitter1 > pEmitter2 ? -1 : 1;
     return fDistance1 > fDistance2 ? -1 : 1;
 }
-// PC 0x00463880
+// PC 0x00463880 GOG 0x00463990
 void AurEnableInterleavedAnimations()
 {
     g_bEnableInterleavedAnimations = 1;
 }
 
 #include "aurlightmanager.h"
-// PC 0x00463890
+// PC 0x00463890 GOG 0x004639A0
 void AurDisableInterleavedAnimations()
 {
     g_bEnableInterleavedAnimations = 0;
 }
-// PC 0x004638A0
+// PC 0x004638A0 GOG 0x004639B0
 bool Gob::IsDistortionEnabled()
 {
     if (m_pModel)
@@ -294,7 +294,7 @@ int SceneGetNearestLights(Scene* pScene, Vector vPosition, float fRadius)
 {
     return pScene->m_pLightManager->GetNearestLights(pScene, vPosition, fRadius, 0);
 }
-// PC 0x004638D0
+// PC 0x004638D0 GOG 0x004639E0
 Vector Scene::GetWindVector(Vector vPosition, float fScale)
 {
     return m_pWindManager->GetGlobalWind(vPosition, fScale);
@@ -302,25 +302,25 @@ Vector Scene::GetWindVector(Vector vPosition, float fScale)
 
 char* firstword(char* sMessage);
 int Parse(char* sText, int& nValue);
-// PC 0x00463910
+// PC 0x00463910 GOG 0x00463A20
 int Gob::AttachToScene(CAurScene* pScene)
 {
     SetScene((Scene*)pScene);
     return 1;
 }
-// PC 0x00463930
+// PC 0x00463930 GOG 0x00463A40
 int Scene::EnableVisibilityGraph()
 {
     CAurRoom* pCurrentRoom = m_pCurrentRoom;
     m_bIgnoreVisibilityGraph = 0;
     return pCurrentRoom != 0;
 }
-// PC 0x00463950
+// PC 0x00463950 GOG 0x00463A60
 void Scene::DisableVisibilityGraph()
 {
     m_bIgnoreVisibilityGraph = 1;
 }
-// PC 0x00463960
+// PC 0x00463960 GOG 0x00463A70
 int Scene::GetIgnoreVisibilityGraph()
 {
     return m_bIgnoreVisibilityGraph;
@@ -328,7 +328,7 @@ int Scene::GetIgnoreVisibilityGraph()
 
 int AurTextureReplaceTileReferences(CAurScene* pScene, const Vector& vPosition,
                                     char* sOldTexture, char* sNewTexture);
-// PC 0x00466110
+// PC 0x00466110 GOG 0x00466220
 MdlNode* findnode(MdlNode* pNode, char* sName)
 {
     if (strcmp(pNode->TranslateNodeName(), sName) == 0)
@@ -343,7 +343,7 @@ MdlNode* findnode(MdlNode* pNode, char* sName)
     }
     return pFound;
 }
-// PC 0x00466610
+// PC 0x00466610 GOG 0x00466720
 void SetPartTextureRotate(Part* pPart, int nRotation)
 {
     PartTriMesh* pTriMesh = pPart->AsPartTriMesh();
@@ -355,7 +355,7 @@ void SetPartTextureRotate(Part* pPart, int nRotation)
     for (int i = 0; i < pPart->m_lstChildren.m_nCount; i++)
         SetPartTextureRotate(pPart->m_lstChildren[i], nRotation);
 }
-// PC 0x00469EA0
+// PC 0x00469EA0 GOG 0x0046A000
 void Scene::ChildAdd(Gob* pGob)
 {
     if (pGob->m_pModel != 0)
@@ -371,7 +371,7 @@ void Scene::ChildAdd(Gob* pGob)
         m_lstAnimatedObjects.Add(pGob);
     }
 }
-// PC 0x00467430
+// PC 0x00467430 GOG 0x004674F0
 void Scene::ListSpecialPartsR(Part* pPart)
 {
     if (pPart)
@@ -403,7 +403,7 @@ extern int rendertransparentcharacters;
 extern int showlightpriorityinfo;
 extern int dogobrender;
 extern int countvisibilityculls;
-// PC 0x004677E0
+// PC 0x004677E0 GOG 0x004678A0
 void Scene::UnlistSpecialParts(Part* pPart)
 {
     if (pPart != 0)
@@ -428,7 +428,7 @@ void Scene::UnlistSpecialParts(Part* pPart)
         }
     }
 }
-// PC 0x00467B90
+// PC 0x00467B90 GOG 0x00467C50
 void Scene::ChildRemove(Gob* pGob)
 {
     if (pGob->m_pModel != 0)
@@ -443,7 +443,7 @@ void Scene::ChildRemove(Gob* pGob)
         m_lstAnimatedObjects.Remove(pGob);
     }
 }
-// PC 0x00467BF0
+// PC 0x00467BF0 GOG 0x00467CB0
 void Scene::DoGobShadows()
 {
     List<PartLight*> lstShadowLights;
@@ -484,7 +484,7 @@ void Scene::DoGobShadows()
         }
     }
 }
-// PC 0x00467E60
+// PC 0x00467E60 GOG 0x00467F20
 void Scene::DoDynamicMeshProjections()
 {
     List<PartLight*> lstShadowLights;
@@ -527,21 +527,21 @@ inline void SetFogMode(int nFogMode)
 {
     GLRender_SetFogMode(nFogMode);
 }
-// PC 0x00468240
+// PC 0x00468240 GOG 0x00468300
 void Scene::RenderGobFirst(CAurObject* pObject)
 {
     Gob* pGob = (Gob*)pObject;
     m_lstObjects.Remove(pGob);
     m_lstObjects.Insert(pGob, 0);
 }
-// PC 0x00468260
+// PC 0x00468260 GOG 0x00468320
 void Scene::RenderGobLast(CAurObject* pObject)
 {
     Gob* pGob = (Gob*)pObject;
     m_lstObjects.Remove(pGob);
     m_lstObjects.Add(pGob);
 }
-// PC 0x004682B0
+// PC 0x004682B0 GOG 0x00468370
 void Scene::RenderGobAfter(CAurObject* pObject, CAurObject* pAfter)
 {
     List<Gob*>& lstObjects = m_lstObjects;
@@ -551,7 +551,7 @@ void Scene::RenderGobAfter(CAurObject* pObject, CAurObject* pAfter)
     lstObjects.Remove(pGob);
     return lstObjects.Insert(pGob, nPosition + 1);
 }
-// PC 0x00468300
+// PC 0x00468300 GOG 0x004683C0
 void Scene::RenderGobBefore(CAurObject* pObject, CAurObject* pBefore)
 {
     List<Gob*>& lstObjects = m_lstObjects;
@@ -564,7 +564,7 @@ void Scene::RenderGobBefore(CAurObject* pObject, CAurObject* pBefore)
 
 int AurGetStencilClearValue();
 
-// PC 0x00468350
+// PC 0x00468350 GOG 0x00468410
 void CollapsePartTree(Gob* pGob, Part* pPart, List<Part*>& lstParts,
                       Vector vPosition, Quaternion qOrientation,
                       Scene* pScene, CAurRoom* pRoom)
@@ -651,7 +651,7 @@ inline void SetColor4fv(const float* pColor)
 }
 
 #ifndef _XBOX
-void SetMaterialParameter(int nFace, int nMaterial, GLfloat* pfParams)  // PC 0x00463D30
+void SetMaterialParameter(int nFace, int nMaterial, GLfloat* pfParams)  // PC 0x00463D30 GOG 0x00463E40
 {
     GLRender_SetMaterialv(nFace, nMaterial, pfParams);
 }
@@ -661,13 +661,13 @@ int Scene::GetNumRooms()
 {
     return m_lstRooms.m_nCount;
 }
-// PC 0x00463970
+// PC 0x00463970 GOG 0x00463A80
 int Scene::SetCurrentRoom(CAurRoom* pRoom)
 {
     m_pCurrentRoom = pRoom;
     return (int)pRoom;
 }
-// PC 0x00463980
+// PC 0x00463980 GOG 0x00463A90
 int Scene::SpawnRooms(char* sName)
 {
     void* pLayout = AurResGet(sName, ".lyt", 0, true);
@@ -729,7 +729,7 @@ int Scene::SpawnRooms(char* sName)
     LoadVisibility(sName);
     return m_lstRooms.m_nCount;
 }
-// PC 0x00463B70
+// PC 0x00463B70 GOG 0x00463C80
 CallBack* ProcessStaticObject(Gob* pGob, Scene* pScene, TileData* pTile,
                         const Vector& vPosition, const Quaternion& qOrientation)
 {
@@ -742,7 +742,7 @@ CallBack* ProcessStaticObject(Gob* pGob, Scene* pScene, TileData* pTile,
         AnimateStaticLight,
         "AnimateStaticLight", 0, 9999.0f, 0);
 }
-// PC 0x00463C50
+// PC 0x00463C50 GOG 0x00463D60
 void Scene::SetTileLights(const Vector& vPosition, const Vector& vMainLight,
                           const Vector& vSourceLight)
 {
@@ -770,7 +770,7 @@ void Scene::SetTileLights(const Vector& vPosition, const Vector& vMainLight,
         pTile->m_pSourceLight->m_nPriority = 5;
     }
 }
-// PC 0x00463D60
+// PC 0x00463D60 GOG 0x00463E70
 void Scene::SetTileFlames(const Vector& vPosition, CAurObject* pFlame1,
                          CAurObject* pFlame2)
 {
@@ -788,19 +788,19 @@ void Scene::SetTileFlames(const Vector& vPosition, CAurObject* pFlame1,
     }
 
 }
-// PC 0x00463DC0
+// PC 0x00463DC0 GOG 0x00463ED0
 int Scene::ReplaceTileTexture(const Vector& vPosition, char* sOldTexture,
                               char* sNewTexture)
 {
     return AurTextureReplaceTileReferences(
         this, vPosition, sOldTexture, sNewTexture);
 }
-// PC 0x00463DE0
+// PC 0x00463DE0 GOG 0x00463EF0
 void Scene::DeleteTile(const Vector& vPosition)
 {
     SceneBSPRemoveTiledata(this, vPosition);
 }
-// PC 0x00463E00
+// PC 0x00463E00 GOG 0x00463F10
 void CAurScene::ComputeStaticLighting()
 {
     if (this != 0)
@@ -808,19 +808,19 @@ void CAurScene::ComputeStaticLighting()
         ((Scene*)this)->PostProcessLS();
     }
 }
-// PC 0x00463E10
+// PC 0x00463E10 GOG 0x00463F20
 void CAurScene::SetAmbient(Vector vAmbient)
 {
     ((Scene*)this)->m_vAmbient = vAmbient;
 }
 #ifndef _XBOX
-void Scene::SetObjectScale(CAurObject* pObject, float fScale)  // PC 0x00463E30
+void Scene::SetObjectScale(CAurObject* pObject, float fScale)  // PC 0x00463E30 GOG 0x00463F40
 {
     ((Gob*)pObject)->SetObjectScale(fScale, 1);
 }
 #endif
 extern List<Scene*> Scenes;
-// PC 0x00463E50
+// PC 0x00463E50 GOG 0x00463F60
 unsigned char Scene::SetGeomFadeProperties(int nProperties)
 {
     if (nProperties != ENABLE_FADE && nProperties != DISABLE_FADE &&
@@ -832,12 +832,12 @@ unsigned char Scene::SetGeomFadeProperties(int nProperties)
     geomFadeEnabled = nProperties;
     return 1;
 }
-// PC 0x00463E80
+// PC 0x00463E80 GOG 0x00463F90
 float Scene::GetObjectScale(CAurObject* pObject)
 {
     return ((Gob*)pObject)->m_fScale;
 }
-// PC 0x00463E90
+// PC 0x00463E90 GOG 0x00463FA0
 void Scene::SetFogColor(const Vector& vColor)
 {
     m_vFogColor = vColor;
@@ -847,7 +847,7 @@ void Scene::SetFogColor(const Vector& vColor)
 }
 
 extern int numgobs;
-// PC 0x00463EF0
+// PC 0x00463EF0 GOG 0x00464000
 int Scene::SetBlindLights(CAurObject* pObject)
 {
     LightManager::m_pOnlyGob = pObject;
@@ -857,7 +857,7 @@ int Scene::SetBlindLights(CAurObject* pObject)
 extern float grassalphatest;
 extern float alphatest;
 char AurGrassMaterialInUse(int nMaterial);
-// PC 0x00468C70
+// PC 0x00468C70 GOG 0x00468D30
 void ExpandReferenceParts(Part* pPart)
 {
     PartReference* pReference = pPart->AsPartReference();
@@ -876,7 +876,7 @@ void ExpandReferenceParts(Part* pPart)
         ExpandReferenceParts(pPart->m_lstChildren[i]);
     }
 }
-// PC 0x004690A0
+// PC 0x004690A0 GOG 0x00469160
 CAurRoom::CAurRoom(char* sName)
     : BSPNode(Vector(), 0.0f),
       m_lstVisibleRooms(0),
@@ -886,13 +886,13 @@ CAurRoom::CAurRoom(char* sName)
     m_pRoomObject = 0;
     m_bB8 = 0;
 }
-// PC 0x0046C210
+// PC 0x0046C210 GOG 0x0046C370
 CHitInfo::CHitInfo(int nType, int nFlags, int nMask)
     : m_pOutputObject()
 {
     Reset(nType, nFlags, nMask);
 }
-// PC 0x0046B3F0
+// PC 0x0046B3F0 GOG 0x0046B550
 void CHitInfo::Reset(int nType, int nFlags, int nMask)
 {
     m_nType = nType;
@@ -919,7 +919,7 @@ inline void SetDepthFunc(int nFunc)
 {
     GLRender_SetDepthFunc(nFunc);
 }
-// PC 0x00469F50
+// PC 0x00469F50 GOG 0x0046A0B0
 void Scene::DoMeshBuckets()
 {
     int i;
@@ -996,7 +996,7 @@ void Transform(const Vector& vPosition, const Quaternion& qOrientation,
                int nForce);
 
 extern int forcefogtest;
-// PC 0x0046A280
+// PC 0x0046A280 GOG 0x0046A3E0
 void Scene::DoCapBucket()
 {
     List<int> lstOrdering(*AurTextureGetOrdering());
@@ -1032,7 +1032,7 @@ void Scene::DoCapBucket()
 }
 
 #define DEBUG_FADEBUCKETS 0
-// PC 0x0046A3A0
+// PC 0x0046A3A0 GOG 0x0046A500
 void Scene::DoFadeBuckets()
 {
     int i;
@@ -1169,7 +1169,7 @@ void Scene::DoFadeBuckets()
     GLRender_DisableColorMaterial();
     GLRender_Disable(ENABLE_BLEND);
 }
-// PC 0x0046AA90
+// PC 0x0046AA90 GOG 0x0046ABF0
 void Scene::DoStaticMeshShadows()
 {
     PartLight* pShadowLight = m_pLightManager->m_pShadowLight;
@@ -1187,7 +1187,7 @@ void Scene::DoStaticMeshShadows()
         staticshadowbucket.m_pList[i]->Draw(false);
     }
 }
-// PC 0x0046AB40
+// PC 0x0046AB40 GOG 0x0046ACA0
 void Scene::DoHighlightTriggers(bool bHighlight)
 {
     List<PartTrigger*> lstTriggers;
@@ -1284,7 +1284,7 @@ void Scene::DoHighlightTriggers(bool bHighlight)
         GLRender_Enable(ENABLE_LIGHTING);
     }
 }
-// PC 0x0046B1D0
+// PC 0x0046B1D0 GOG 0x0046B330
 int Scene::LoadVisibility(char* sName)
 {
     int i;
@@ -1336,7 +1336,7 @@ int Scene::LoadVisibility(char* sName)
     AurResFree(pVisibility, 0);
     return 1;
 }
-// PC 0x00469140
+// PC 0x00469140 GOG 0x00469200
 void Scene::SetVisibility(CAurRoom* pRoom, CAurRoom* pVisibleRoom,
                           int bVisible)
 {
@@ -1357,7 +1357,7 @@ void Scene::SetVisibility(CAurRoom* pRoom, CAurRoom* pVisibleRoom,
         }
     }
 }
-// PC 0x00469220
+// PC 0x00469220 GOG 0x004692E0
 Gob* SpawnPartsForTile(char* sName, const Vector& vPosition,
                        const Quaternion& qOrientation, int nRotation,
                        int bMeshesOnly, List<Part*>& lstParts)
@@ -1401,7 +1401,7 @@ void ComputePartBBox(PartTriMesh* pTriMesh);
 #ifdef _XBOX
 Vector Round(const Vector& vValue, float fRoundTo);
 #endif
-// PC 0x00469380
+// PC 0x00469380 GOG 0x00469440
 void ProcessStaticParts(List<Part*>& lstParts, Scene* pScene,
                         TileData* pTile, char* sName, int bMeshesOnly)
 {
@@ -1447,7 +1447,7 @@ void ProcessStaticParts(List<Part*>& lstParts, Scene* pScene,
         }
     }
 }
-// PC 0x004669C0
+// PC 0x004669C0 GOG 0x00466AD0
 bool ProcessTilePart(TileData* pTile, Part* pPart, char* sName)
 {
     char sPartName[64];
@@ -1481,7 +1481,7 @@ bool ProcessTilePart(TileData* pTile, Part* pPart, char* sName)
     }
     return false;
 }
-// PC 0x00466B70
+// PC 0x00466B70 GOG 0x00466C80
 CAurRoom::~CAurRoom()
 {
     delete m_pRoomObject;
@@ -1491,7 +1491,7 @@ CAurRoom::~CAurRoom()
         delete m_lstAnimatedObjects[i];
     }
 }
-// PC 0x00466C20
+// PC 0x00466C20 GOG 0x00466D30
 CAurRoom* Scene::FindRoom(char* sName)
 {
     int i;
@@ -1506,7 +1506,7 @@ CAurRoom* Scene::FindRoom(char* sName)
 
     return 0;
 }
-// PC 0x00466C80
+// PC 0x00466C80 GOG 0x00466D90
 int Scene::SaveVisibility(char* sPath, char* sName)
 {
     char sFileName[256];
@@ -1537,7 +1537,7 @@ int Scene::SaveVisibility(char* sPath, char* sName)
     fclose(pFile);
     return 1;
 }
-// PC 0x00466D70
+// PC 0x00466D70 GOG 0x00466E80
 CAurRoom* Scene::GetRoom(int nRoom)
 {
     if (nRoom >= 0 && nRoom < m_lstRooms.m_nCount)
@@ -1547,7 +1547,7 @@ CAurRoom* Scene::GetRoom(int nRoom)
 
     return 0;
 }
-// PC 0x00466DF0
+// PC 0x00466DF0 GOG 0x00466F00
 int Scene::SetCurrentRoom(int nRoom)
 {
     int nResult = nRoom;
@@ -1564,7 +1564,7 @@ int Scene::SetCurrentRoom(int nRoom)
 
     return nResult;
 }
-// PC 0x00466E20
+// PC 0x00466E20 GOG 0x00466F30
 void Scene::AddFacesToBins(PartAABB* pAABB, const Vector& vMinimum,
                            List<List<CAurTriangleBin*> >& lstBins)
 {
@@ -1641,7 +1641,7 @@ void Scene::AddFacesToBins(PartAABB* pAABB, const Vector& vMinimum,
 }
 
 Scene* FindScene(char* sName);
-// PC 0x00467310
+// PC 0x00467310 GOG 0x00467420
 char AurSetGlobalWind(Vector vWind)
 {
     Scene* pScene = FindScene("mainscene");
@@ -1659,7 +1659,7 @@ char AurSetGlobalWind(Vector vWind)
 
     return 0;
 }
-// PC 0x00469480
+// PC 0x00469480 GOG 0x00469540
 CAurObject* Scene::SpawnTile(char* sName, const Vector& vPosition,
                             int nRotation, int bMeshesOnly)
 {
@@ -1724,7 +1724,7 @@ CAurObject* Scene::SpawnTile(char* sName, const Vector& vPosition,
     }
     return pGob;
 }
-// PC 0x00467380
+// PC 0x00467380 GOG 0x00467490
 bool AurSetGlobalWindVariation(float fMaximumDeviation, float fVariation)
 {
     Scene* pScene = FindScene("mainscene");
@@ -1744,7 +1744,7 @@ bool AurSetGlobalWindVariation(float fMaximumDeviation, float fVariation)
 
     return false;
 }
-// PC 0x00463F00
+// PC 0x00463F00 GOG 0x00464010
 Scene* FindScene(char* sName)
 {
     for (int i = 0; i < Scenes.m_nCount; i++)
@@ -1757,7 +1757,7 @@ Scene* FindScene(char* sName)
 
     return 0;
 }
-// PC 0x00463F50
+// PC 0x00463F50 GOG 0x00464060
 int Scene::GetObjectA(char* sName)
 {
     for (int i = 0; i < m_lstObjects.m_nCount; i++)
@@ -1770,7 +1770,7 @@ int Scene::GetObjectA(char* sName)
 
     return 0;
 }
-// PC 0x00463FA0
+// PC 0x00463FA0 GOG 0x004640B0
 CAurObject* Scene::HitCheckGob(Vector vStart, Vector vEnd, Vector* pHit,
                               CHitInfo* pHitInfo)
 {
@@ -1820,7 +1820,7 @@ CAurObject* Scene::HitCheckGob(Vector vStart, Vector vEnd, Vector* pHit,
         *pHit = vEnd;
     return pHitObject;
 }
-// PC 0x004640F0
+// PC 0x004640F0 GOG 0x00464200
 void ProjectDynamicShadow(Gob* pGob, PartLight* pLight)
 {
     if (!systemmemoryshadows)
@@ -1850,7 +1850,7 @@ void ProjectDynamicShadow(Gob* pGob, PartLight* pLight)
         pGob->PartVolumeProject(pGob->m_pRootPart, vPosition, fRadius, Plane());
     }
 }
-// PC 0x004642F0
+// PC 0x004642F0 GOG 0x00464400
 void Scene::DoBinBucket()
 {
     if (enablegrass == 0)
@@ -1901,7 +1901,7 @@ void Scene::DoBinBucket()
         GLRender_Disable(ENABLE_ALPHA_TEST);
     }
 }
-// PC 0x00464460
+// PC 0x00464460 GOG 0x00464570
 int __cdecl GobOrderCmp(const void* pGob1, const void* pGob2)
 {
     Gob* pGobA = *(Gob**)pGob1;
@@ -1968,7 +1968,7 @@ int __cdecl GobOrderCmp(const void* pGob1, const void* pGob2)
         return 1;
     return -1;
 }
-// PC 0x004645B0
+// PC 0x004645B0 GOG 0x004646C0
 void Scene::DoDistortionBuckets()
 {
     GLRender_Enable(ENABLE_STENCIL_TEST);
@@ -1986,7 +1986,7 @@ void Scene::DoDistortionBuckets()
     GLRender_SetStencilMask(GLRender::STENCIL_WRITE_MASK);
     GLRender_Disable(ENABLE_STENCIL_TEST);
 }
-// PC 0x00464650
+// PC 0x00464650 GOG 0x00464760
 void Scene::DoLightSaberBucket()
 {
     GLRender_Enable(ENABLE_BLEND);
@@ -2009,7 +2009,7 @@ void Scene::DoLightSaberBucket()
         pGob->Render(false);
     }
 }
-// PC 0x004646E0
+// PC 0x004646E0 GOG 0x004647F0
 void Scene::DoBlurBuckets()
 {
     numgobs = blurbucket.m_nCount;
@@ -2027,7 +2027,7 @@ void Scene::DoBlurBuckets()
         blurbucket.m_pList[i]->RenderBlur();
     }
 }
-// PC 0x00464770
+// PC 0x00464770 GOG 0x00464880
 void Scene::DoGobShadowsForThisLight(PartLight& light)
 {
     float fRadius = light.m_fRadius;
@@ -2090,7 +2090,7 @@ void Scene::DoGobShadowsForThisLight(PartLight& light)
             ProjectDynamicShadow(pGob, &light);
     }
 }
-// PC 0x004649B0
+// PC 0x004649B0 GOG 0x00464AC0
 void Scene::RenderStencilShadowsForThisLight(PartLight& light, float fAlpha,
                                             int nStencilBits)
 {
@@ -2165,7 +2165,7 @@ void Scene::RenderStencilShadowsForThisLight(PartLight& light, float fAlpha,
 #endif
     GLRender_Enable(ENABLE_DEPTH_TEST);
 }
-// PC 0x00464BF0
+// PC 0x00464BF0 GOG 0x00464D00
 void Scene::DoStaticMeshBeams()
 {
     if (enablebeams != 0)
@@ -2177,7 +2177,7 @@ void Scene::DoStaticMeshBeams()
         }
     }
 }
-// PC 0x00464C30
+// PC 0x00464C30 GOG 0x00464D40
 void Scene::DoEmitterBucket()
 {
     GLRender_ClearStencilValue(0);
@@ -2209,7 +2209,7 @@ void Scene::DoEmitterBucket()
         PartEmitter::StopEmitterLayer();
     }
 }
-// PC 0x00464D40
+// PC 0x00464D40 GOG 0x00464E50
 void Scene::DoTriggerBucket()
 {
     if (enablerender != 0)
@@ -2232,7 +2232,7 @@ void Scene::DoTriggerBucket()
         GLRender_Enable(ENABLE_LIGHTING);
     }
 }
-// PC 0x00464DD0
+// PC 0x00464DD0 GOG 0x00464EE0
 void Scene::RenderDynamicGeometry()
 {
     if (enableshadows)
@@ -2247,7 +2247,7 @@ void Scene::RenderDynamicGeometry()
     AurVertexProgramMakeCurrent();
     DoGobBuckets();
 }
-// PC 0x00464E30
+// PC 0x00464E30 GOG 0x00464F40
 void Scene::RenderMotionBlur()
 {
     GLRender_EnableClientState(CLIENT_STATE_TEXTURE_COORD);
@@ -2262,7 +2262,7 @@ void Scene::RenderMotionBlur()
     DoBlurBuckets();
     GLRender_SetDepthMask(1);
 }
-// PC 0x00464EB0
+// PC 0x00464EB0 GOG 0x00464FC0
 void Scene::RenderStaticGeometry()
 {
     AurVertexProgramMakeCurrent();
@@ -2277,7 +2277,7 @@ void Scene::RenderStaticGeometry()
     DoMeshBuckets();
     DoBinBucket();
 }
-// PC 0x00464F70
+// PC 0x00464F70 GOG 0x00465080
 int Scene::RenderOnlyGobs()
 {
     int i;
@@ -2298,7 +2298,7 @@ int Scene::RenderOnlyGobs()
 
     return nResult;
 }
-// PC 0x00464FF0
+// PC 0x00464FF0 GOG 0x00465100
 void Scene::DoFog()
 {
     if (!forcefogtest)
@@ -2357,7 +2357,7 @@ void Scene::DoFog()
         GLRender_SetFogModef(FOG_DENSITY, AUR_FOG_TEST_DENSITY);
     }
 }
-// PC 0x004651C0
+// PC 0x004651C0 GOG 0x004652D0
 void RenderPersonalSpace(Scene* pScene)
 {
     if (!renderpersonalspace)
@@ -2391,7 +2391,7 @@ void RenderPersonalSpace(Scene* pScene)
 }
 
 #define DEBUG_RENDERPATHS 0
-// PC 0x00465310
+// PC 0x00465310 GOG 0x00465420
 void RenderPaths(Scene* pScene)
 {
     if (renderpaths)
@@ -2463,7 +2463,7 @@ void RenderPaths(Scene* pScene)
         GLRender_Enable(ENABLE_DEPTH_TEST);
     }
 }
-// PC 0x00465420
+// PC 0x00465420 GOG 0x00465530
 void Scene::UpdateEmitters()
 {
     currentscene = this;
@@ -2621,7 +2621,7 @@ void Scene::Render()
         m_nAnimationFrame++;
 }
 #else
-void Scene::Render()  // PC 0x00465500
+void Scene::Render()  // PC 0x00465500 GOG 0x00465610
 {
 #ifndef _XBOX
     AurATIValidate();
@@ -2680,7 +2680,7 @@ void Scene::Render()  // PC 0x00465500
         m_nAnimationFrame++;
 }
 #endif
-// PC 0x004656F0
+// PC 0x004656F0 GOG 0x00465800
 void Scene::RenderSinglePass()
 
 {
@@ -2924,7 +2924,7 @@ void Scene::RenderShadows(int nReserved1, int nReserved2,
     GLRender_Disable(ENABLE_STENCIL_TEST);
 }
 #else
-// PC 0x00465AF0
+// PC 0x00465AF0 GOG 0x00465C00
 void Scene::RenderShadows(int nReserved1, int nReserved2,
                           int bRenderGobs, int bClearStencil)
 {
@@ -2984,7 +2984,7 @@ void Scene::RenderShadows(int nReserved1, int nReserved2,
     }
 }
 #endif
-// PC 0x00465D20
+// PC 0x00465D20 GOG 0x00465E30
 void Scene::Animate(float fTimeStep)
 {
     currentscene = this;
@@ -3029,7 +3029,7 @@ void Scene::Animate(float fTimeStep)
 }
 
 #ifndef _XBOX
-void GLRender::DrawFromVerts(int nMode, List<Vector>& lstVertices)  // PC 0x00466DA0
+void GLRender::DrawFromVerts(int nMode, List<Vector>& lstVertices)  // PC 0x00466DA0 GOG 0x00466EB0
 {
     glBegin(primTypeTranslationTable[nMode]);
     for (int i = 0; i < lstVertices.m_nCount; i++)
@@ -3039,7 +3039,7 @@ void GLRender::DrawFromVerts(int nMode, List<Vector>& lstVertices)  // PC 0x0046
     glEnd();
 }
 #endif
-// PC 0x00465DE0
+// PC 0x00465DE0 GOG 0x00465EF0
 void ComputePartBBox(PartTriMesh* pTriMesh)
 {
     MdlNodeTriMesh* pNode = pTriMesh->m_pVertexPrimitive->m_pNode;
@@ -3071,7 +3071,7 @@ void ComputePartBBox(PartTriMesh* pTriMesh)
     pTriMesh->m_vMinimum = vMin;
     pTriMesh->m_vMaximum = vMax;
 }
-// PC 0x00469B70
+// PC 0x00469B70 GOG 0x00469C30
 void Scene::SetSingleTileFlame(CAurObject* pObject, Gob** ppGob, Part* pPart)
 {
     AURSCENE_TRACE();
@@ -3109,7 +3109,7 @@ void Scene::SetSingleTileFlame(CAurObject* pObject, Gob** ppGob, Part* pPart)
         *ppGob = pGob;
     }
 }
-// PC 0x00469CB0
+// PC 0x00469CB0 GOG 0x00469D70
 void Scene::RemoveFromSceneManager(Part* pPart)
 {
     PartEmitter* pEmitter = pPart->AsPartEmitter();
@@ -3141,7 +3141,7 @@ void Scene::RemoveFromSceneManager(Gob* pGob)
         g_listHologramBucket.Remove(pGob);
     }
 }
-// PC 0x0046B460
+// PC 0x0046B460 GOG 0x0046B5C0
 int Scene::HitCheck(Vector vStart, Vector vEnd, Vector* pHit, CHitInfo* pHitInfo)
 {
     if (!pHitInfo)
@@ -3199,7 +3199,7 @@ int Scene::HitCheck(Vector vStart, Vector vEnd, Vector* pHit, CHitInfo* pHitInfo
     pHitInfo->m_pOutputObject = pHitObject;
     return pHitInfo->m_nOutputFlags;
 }
-// PC 0x0046B710
+// PC 0x0046B710 GOG 0x0046B870
 void InitGrassBins(Vector vMin, Vector vMax,
                    List<List<CAurTriangleBin*> >& lstBins)
 {
@@ -3221,7 +3221,7 @@ void InitGrassBins(Vector vMin, Vector vMax,
         }
     }
 }
-// PC 0x0046B840
+// PC 0x0046B840 GOG 0x0046B9A0
 Gob* Scene::SpawnRoom(char* sName, const Vector& vPosition,
                       const Quaternion& qOrientation)
 {
@@ -3346,7 +3346,7 @@ Gob* Scene::SpawnRoom(char* sName, const Vector& vPosition,
     }
     return pGob;
 }
-// PC 0x0046D820
+// PC 0x0046D820 GOG 0x0046D980
 Scene::Scene(char* sName)
     : m_SceneRoot("c_FocusGob")
 {
@@ -3418,7 +3418,7 @@ Scene::Scene(char* sName)
     if (AurATIFragmentShaderAvailable())
         VertexProgramManager::ResetVertexPrograms();
 }
-// PC 0x0046DD20
+// PC 0x0046DD20 GOG 0x0046DE80
 Scene::~Scene()
 {
     while (m_lstObjects.m_nCount > 0)
@@ -3493,7 +3493,7 @@ Scene::~Scene()
     for (int i = 0; i < AUR_MESH_BUCKET_COUNT; i++)
         meshbuckets[i].m_nCount = 0;
 }
-// PC 0x0046B360
+// PC 0x0046B360 GOG 0x0046B4C0
 void CHitInfo::ClearOutput()
 {
     Vector vZero;
@@ -3525,7 +3525,7 @@ extern int enablevisibilitytest;
 extern float visibilitycutoffratio;
 extern float visibilitycheckdelay;
 extern int countvisibilityculls;
-// PC 0x0046C2B0
+// PC 0x0046C2B0 GOG 0x0046C410
 inline CAurScene::~CAurScene()
 {
 }
@@ -3535,7 +3535,7 @@ inline CAurScene::CAurScene()
 }
 
 #ifndef _XBOX
-bool Gob::VisibilityCheck()  // PC 0x0046C2E0
+bool Gob::VisibilityCheck()  // PC 0x0046C2E0 GOG 0x0046C440
 {
     if (!enablevisibilitytest)
         return true;
@@ -3571,7 +3571,7 @@ bool Gob::VisibilityCheck()  // PC 0x0046C2E0
     return true;
 }
 #endif
-// PC 0x0046C630
+// PC 0x0046C630 GOG 0x0046C790
 void Scene::DoGobBuckets()
 {
     countvisibilityculls = 0;
@@ -3674,7 +3674,7 @@ void Scene::DoGobBuckets()
         }
     }
 }
-// PC 0x0046CA00
+// PC 0x0046CA00 GOG 0x0046CB60
 void Scene::DoHologramGobBuckets()
 {
     if (g_listHologramBucket.m_nCount == 0)
@@ -3756,7 +3756,7 @@ void Scene::DoHologramGobBuckets()
 }
 
 extern unsigned int ATI_FRAGMENT_SHADER_BIT;
-// PC 0x0046CCF0
+// PC 0x0046CCF0 GOG 0x0046CE50
 void Scene::RenderLensFlares()
 {
 #ifndef _XBOX
@@ -3928,7 +3928,7 @@ void Scene::RenderLensFlares()
         GLRender_PopCurrentMatrix();
     }
 }
-// PC 0x0046E020
+// PC 0x0046E020 GOG 0x0046E180
 CAurScene* NewCAurScene(char* sName)
 {
     return (CAurScene*)new Scene(sName);
