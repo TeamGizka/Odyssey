@@ -3951,10 +3951,16 @@ int CSWSCreatureStats::GetCreatureHasTalent(int nTalentType, int nTalent)
                     bHasTalent = 1;
                 }
             }
-            else if (GetIsInSpellLikeAbilityList(nTalent) ||
-                     (HasSpell(0, nTalent, 1) &&
-                      GetSpellUsesLeft(nTalent, nClass, 0, 0)) ||
-                     GetHasPowerFromItem(nTalent))
+            else if (GetIsInSpellLikeAbilityList(nTalent))
+            {
+                bHasTalent = 1;
+            }
+            else if (HasSpell(0, nTalent, 1) &&
+                     GetSpellUsesLeft(nTalent, nClass, 0, 0))
+            {
+                bHasTalent = 1;
+            }
+            else if (GetHasPowerFromItem(nTalent))
             {
                 bHasTalent = 1;
             }
@@ -4481,16 +4487,7 @@ int CSWSCreatureStats::GetCreatureTalentRandomFeat(
             {
                 if (CheckInclusionMatch(CScriptTalent::TALENT_TYPE_FEAT, nFeat, nExclusion) &&
                     nExcludedFeat != nFeat &&
-                    nFeat != INVALID_TALENT &&
-                    !(((m_pCreature->m_nAIStateFlags &
-                        (CSWSCreature::AI_STATE_CAN_MOVE |
-                         CSWSCreature::AI_STATE_CAN_USE_HANDS)) !=
-                           (CSWSCreature::AI_STATE_CAN_MOVE |
-                            CSWSCreature::AI_STATE_CAN_USE_HANDS) &&
-                       m_pCreature->GetDead() != 0) ||
-                      m_pCreature->GetIsPCDying() != 0 ||
-                      m_pCreature->GetDeadTemp() != 0) &&
-                    HasFeat(nFeat) && GetFeatRemainingUses(nFeat))
+                    GetCreatureHasTalent(CScriptTalent::TALENT_TYPE_FEAT, nFeat))
                 {
                     if (nSelection == TALENT_SELECTION_RANDOM)
                     {

@@ -4149,7 +4149,8 @@ void CSWSCreature::HandleAlignmentInfluence()
             else if (nLevel >= 1)
                 nLevelBonus = 1;
         }
-        fMultiplier = nLevelBonus * 0.2f + 1.0f;
+        static const float fMultiplierPerBonus = 0.2f;
+        fMultiplier = nLevelBonus * fMultiplierPerBonus + 1.0f;
         break;
     }
 
@@ -5771,7 +5772,7 @@ short CSWSCreature::GetArmorClass()
         int nAutoBalance = m_c250;
         if (nAutoBalance != 0)
         {
-            C2DA* pAutoBalance = g_pRules->m_p2DArrays->m_pAutoBalance;
+            C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
             float fArmorMult;
             pAutoBalance->GetFLOATEntry(nAutoBalance, "ArmorMult", &fArmorMult);
             unsigned char nLevel = m_c251;
@@ -5807,7 +5808,8 @@ short CSWSCreature::GetMaxHitPoints(int bIncludeFeats)
     if (GetStats()->m_bIsPC == 1 &&
         g_pAppManager->GetServerExoApp()->GetPartyTable()->m_nControlledNPC == -1)
     {
-        int nLevels = GetStats()->GetLevel(0);
+        short nMaxHitPoints = 0;
+        unsigned char nLevels = GetStats()->GetLevel(0);
         for (int nLevel = 0; nLevel < nLevels; ++nLevel)
         {
             CSWLevelStats* pLevelStats = GetStats()->GetLevelStats(nLevel);
@@ -5821,9 +5823,8 @@ short CSWSCreature::GetMaxHitPoints(int bIncludeFeats)
                 else if (GetStats()->HasFeat(CSWFeat::FEAT_TOUGHNESS))
                     ++nHitPoints;
             }
-            nBonus += nHitPoints;
+            nMaxHitPoints += nHitPoints;
         }
-        short nMaxHitPoints = nBonus;
         if (GetStats()->HasFeat(CSWFeat::FEAT_WAR_VETERAN))
             nMaxHitPoints += 25;
         return nMaxHitPoints;
@@ -11466,18 +11467,22 @@ int CSWSCreature::RunUnequip(unsigned long oidItem, unsigned long oidTarget,
                             int bUnknown3)
 {
     CSWSPlayer* pPlayer;
-    if (g_pAppManager->m_pClientExoApp->GetInGameGui() != NULL &&
-        g_pAppManager->m_pClientExoApp->GetInGameGui()
-                ->GetTopMenuOverrideCharacter() != -1)
+    if (g_pAppManager->m_pClientExoApp->GetInGameGui() != NULL)
     {
-        pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(
-            g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
-                g_pAppManager->GetServerExoApp()->GetPlayerCreatureId())->GetId());
+        if (g_pAppManager->m_pClientExoApp->GetInGameGui()->GetTopMenuOverrideCharacter() != -1)
+        {
+            pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(
+                g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(
+                    g_pAppManager->GetServerExoApp()->GetPlayerCreatureId())->GetId());
+        }
+        else
+        {
+            pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(GetId());
+        }
     }
     else
     {
-        pPlayer = g_pAppManager->GetServerExoApp()
-            ->GetClientObjectByObjectId(GetId());
+        pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(GetId());
     }
     CSWSMessage* pMessage = g_pAppManager->GetServerExoApp()->GetSWSMessage();
     if (ppItem != NULL)
@@ -11508,6 +11513,7 @@ int CSWSCreature::RunUnequip(unsigned long oidItem, unsigned long oidTarget,
         unsigned char nCanUnequip;
         CSWSItem* pRightItem = m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
         CSWSItem* pLeftItem = m_pInventory->GetItemInSlot(INVENTORY_SLOT_LEFTHAND);
+        int bWeapon2 = FALSE;
         if ((pRightItem == NULL || pRightItem->GetId() != pItem->GetId()) &&
             (pLeftItem == NULL || pLeftItem->GetId() != pItem->GetId()))
         {
@@ -11516,17 +11522,13 @@ int CSWSCreature::RunUnequip(unsigned long oidItem, unsigned long oidTarget,
             if ((pRightItem != NULL && pRightItem->GetId() == pItem->GetId()) ||
                 (pLeftItem != NULL && pLeftItem->GetId() == pItem->GetId()))
             {
-                nCanUnequip = CanUnEquipWeapon2(pItem);
-            }
-            else
-            {
-                nCanUnequip = CanUnEquipWeapon(pItem);
+                bWeapon2 = TRUE;
             }
         }
-        else
-        {
+        if (!bWeapon2)
             nCanUnequip = CanUnEquipWeapon(pItem);
-        }
+        else
+            nCanUnequip = CanUnEquipWeapon2(pItem);
         if (nCanUnequip == 1)
         {
             SetLastInstantEquip(GetInventory()->GetSlotFromItem(pItem), bInstant);

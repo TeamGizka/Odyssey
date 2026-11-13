@@ -1367,11 +1367,9 @@ int CSWSModule::SaveModuleIFOStart(CResGFF* pRes, CResStruct* pStruct)
             CTlkTable::CUSTOMTOKEN_RESERVED_END)
         {
             pRes->AddListElement(&cElement, &cList, GFF_STRUCT_TOKEN);
-            unsigned long nToken = g_pTlkTable->m_pCustomTokens[i].m_nToken;
-            pRes->WriteFieldDWORD(&cElement, nToken,
+            pRes->WriteFieldDWORD(&cElement, g_pTlkTable->m_pCustomTokens[i].m_nToken,
                                  "Mod_TokensNumber");
-            CTlkTable* pTlkTable = g_pTlkTable;
-            pRes->WriteFieldCExoString(&cElement, pTlkTable->m_pCustomTokens[i].m_sValue,
+            pRes->WriteFieldCExoString(&cElement, g_pTlkTable->m_pCustomTokens[i].m_sValue,
                                       "Mod_TokensValue");
         }
     }
@@ -1442,7 +1440,7 @@ int CSWSModule::SavePlayers(CResGFF* pRes, CResStruct* pStruct,
             CSWSCreature* pCreature = pObject->AsSWSCreature();
             EXOXBOXASSERT(pCreature);
             CSWSPlayer* pPlayer = pServer->GetClientObjectByObjectId(
-                pCreature->GetId());
+                pCreature->m_nId);
             if (pPlayer == NULL)
             {
                 pPlayer = pServer->GetClientObjectByObjectId(

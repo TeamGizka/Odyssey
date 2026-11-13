@@ -468,7 +468,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             };
             if (REC_NUM != -1)
                 AurRemoveDrawableSquare(REC_NUM);
-            REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, 0xFFF00FFF);
+            REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, 0xFFF00FFF, "swcollisionmesh.cpp", 934);
         }
         Vector vLevel0 = avCorridor[0];
         vLevel0.m_fZ = fBottom;
@@ -489,7 +489,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             };
             if (REC_NUM != -1)
                 AurRemoveDrawableSquare(REC_NUM);
-            REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, 0xFFF0FFF0);
+            REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, 0xFFF0FFF0, "swcollisionmesh.cpp", 940);
         }
         {
             static int REC_NUM = -1;
@@ -502,7 +502,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             };
             if (REC_NUM != -1)
                 AurRemoveDrawableSquare(REC_NUM);
-            REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, 0xFFF0FFF0);
+            REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, 0xFFF0FFF0, "swcollisionmesh.cpp", 941);
         }
         {
             static int REC_NUM = -1;
@@ -515,7 +515,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             };
             if (REC_NUM != -1)
                 AurRemoveDrawableSquare(REC_NUM);
-            REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, 0xFFF0FFF0);
+            REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, 0xFFF0FFF0, "swcollisionmesh.cpp", 942);
         }
         {
             static int REC_NUM = -1;
@@ -528,7 +528,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             };
             if (REC_NUM != -1)
                 AurRemoveDrawableSquare(REC_NUM);
-            REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, 0xFFF0FFF0);
+            REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, 0xFFF0FFF0, "swcollisionmesh.cpp", 943);
         }
         vLevel0.m_fZ = fTop;
         vLevel1.m_fZ = fTop;
@@ -545,7 +545,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             };
             if (REC_NUM != -1)
                 AurRemoveDrawableSquare(REC_NUM);
-            REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, 0xFFF0F0F0);
+            REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, 0xFFF0F0F0, "swcollisionmesh.cpp", 950);
         }
         {
             static int REC_NUM = -1;
@@ -558,7 +558,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             };
             if (REC_NUM != -1)
                 AurRemoveDrawableSquare(REC_NUM);
-            REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, 0xFFF0F0F0);
+            REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, 0xFFF0F0F0, "swcollisionmesh.cpp", 951);
         }
         if (bDumpData)
             EXOLOG("  start z %f\n", vLocalStart.m_fZ);
@@ -573,7 +573,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             };
             if (REC_NUM != -1)
                 AurRemoveDrawableSquare(REC_NUM);
-            REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, 0xFFF0F0F0);
+            REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, 0xFFF0F0F0, "swcollisionmesh.cpp", 952);
         }
         {
             static int REC_NUM = -1;
@@ -586,7 +586,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             };
             if (REC_NUM != -1)
                 AurRemoveDrawableSquare(REC_NUM);
-            REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, 0xFFF0F0F0);
+            REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, 0xFFF0F0F0, "swcollisionmesh.cpp", 953);
         }
         {
             static int REC_NUM = -1;
@@ -599,7 +599,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             };
             if (REC_NUM != -1)
                 AurRemoveDrawableSquare(REC_NUM);
-            REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, AUR_DRAWABLE_COLOR_WHITE);
+            REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, AUR_DRAWABLE_COLOR_WHITE, "swcollisionmesh.cpp", 956);
         }
         {
             static int REC_NUM = -1;
@@ -616,7 +616,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             };
             if (REC_NUM != -1)
                 AurRemoveDrawableSquare(REC_NUM);
-            REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, AUR_DRAWABLE_COLOR_WHITE);
+            REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, AUR_DRAWABLE_COLOR_WHITE, "swcollisionmesh.cpp", 962);
         }
     }
     if (bDumpData)
@@ -757,7 +757,8 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
                                 };
                                 if (REC_NUM != -1)
                                     AurRemoveDrawableSquare(REC_NUM);
-                                REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, AUR_DRAWABLE_COLOR_WHITE);
+                                REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, AUR_DRAWABLE_COLOR_WHITE,
+                                    "swcollisionmesh.cpp", 1202);
                             }
                             bHit = 1;
                             bVertexHit = 0;
@@ -864,7 +865,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             };
             if (REC_NUM != -1)
                 AurRemoveDrawableSquare(REC_NUM);
-            REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, AUR_DRAWABLE_COLOR_WHITE);
+            REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, AUR_DRAWABLE_COLOR_WHITE, "swcollisionmesh.cpp", 1380);
         }
         {
             static int REC_NUM = -1;
@@ -877,7 +878,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             };
             if (REC_NUM != -1)
                 AurRemoveDrawableSquare(REC_NUM);
-            REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, 0xFFFF0F0F);
+            REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, 0xFFFF0F0F, "swcollisionmesh.cpp", 1383);
         }
         {
             static int REC_NUM = -1;
@@ -890,7 +891,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             };
             if (REC_NUM != -1)
                 AurRemoveDrawableSquare(REC_NUM);
-            REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, 0xFF00FF00);
+            REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, 0xFF00FF00, "swcollisionmesh.cpp", 1386);
         }
         {
             static int REC_NUM = -1;
@@ -904,7 +905,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             };
             if (REC_NUM != -1)
                 AurRemoveDrawableSquare(REC_NUM);
-            REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, 0xFF00FF00);
+            REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, 0xFF00FF00, "swcollisionmesh.cpp", 1390);
         }
     }
     if ((vFirst.m_fX == vSecond.m_fX && vFirst.m_fY == vSecond.m_fY &&
@@ -933,7 +934,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             };
             if (REC_NUM != -1)
                 AurRemoveDrawableSquare(REC_NUM);
-            REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, 0xFFF00FFF);
+            REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, 0xFFF00FFF, "swcollisionmesh.cpp", 1444);
         }
         return 0;
     }
@@ -971,7 +972,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
                 };
                 if (REC_NUM != -1)
                     AurRemoveDrawableSquare(REC_NUM);
-                REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, 0xFFF00FFF);
+                REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, 0xFFF00FFF, "swcollisionmesh.cpp", 1514);
             }
             return 0;
         }
@@ -990,7 +991,7 @@ int CSWCollisionMesh::NoNonWalkPolys(const Vector& vStart,
             };
             if (REC_NUM != -1)
                 AurRemoveDrawableSquare(REC_NUM);
-            REC_NUM = AurAddDrawableSquare(&avSquare[0].m_fX, 0xFF55FF55);
+            REC_NUM = (AurAddDrawableSquare)(&avSquare[0].m_fX, 0xFF55FF55, "swcollisionmesh.cpp", 1533);
         }
         Vector vAdjusted = vClosestHit + normalize(vLocalStart - vLocalEnd) * fAdjustment;
         vAdjusted.m_fZ = vLocalStart.m_fZ;

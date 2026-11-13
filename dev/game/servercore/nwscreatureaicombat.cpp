@@ -1685,12 +1685,18 @@ void CSWSCreature::ResolveRangedSpecialAttack(CSWSObject* pTarget,
                         pStunEffect->SetCreator(GetId());
                         int nDC = m_pStats->GetLevel(0) + m_pStats->GetINTMod();
                         CSWSCreature* pCreature = pTarget->AsSWSCreature();
-                        if (pCreature->m_pStats->GetEffectLinkImmunity(pStunEffect) == 0 &&
-                            pCreature->SavingThrowRoll(SAVING_THROW_FORT, nDC, 0,
-                                                      GetId(), 1, 0, 1) == 0)
+                        if (pCreature->m_pStats->GetEffectLinkImmunity(pStunEffect) == 0)
                         {
-                            pAttack->m_lstEffects.Add(pStunEffect);
-                            pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_STUN;
+                            if (pCreature->SavingThrowRoll(SAVING_THROW_FORT, nDC, 0,
+                                                          GetId(), 1, 0, 1) == 0)
+                            {
+                                pAttack->m_lstEffects.Add(pStunEffect);
+                                pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_STUN;
+                            }
+                            else
+                            {
+                                delete pStunEffect;
+                            }
                         }
                         else
                         {
@@ -1865,13 +1871,19 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                         pStunEffect->SetCreator(GetId());
                         CSWSCreature* pCreature = pTarget->AsSWSCreature();
                         int nDC = m_pStats->GetLevel(0) + m_pStats->GetSTRMod();
-                        if (pCreature->m_pStats->GetEffectLinkImmunity(pStunEffect) == 0 &&
-                            pCreature->SavingThrowRoll(SAVING_THROW_FORT, nDC, 0,
-                                                      m_nId, 1, 0, 1) == 0)
+                        if (pCreature->m_pStats->GetEffectLinkImmunity(pStunEffect) == 0)
                         {
-                            pAttack->m_lstEffects.Add(pStunEffect);
-                            pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_STUN;
-                            *pbStateApplied = 1;
+                            if (pCreature->SavingThrowRoll(SAVING_THROW_FORT, nDC, 0,
+                                                          m_nId, 1, 0, 1) == 0)
+                            {
+                                pAttack->m_lstEffects.Add(pStunEffect);
+                                pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_STUN;
+                                *pbStateApplied = 1;
+                            }
+                            else
+                            {
+                                delete pStunEffect;
+                            }
                         }
                         else
                         {

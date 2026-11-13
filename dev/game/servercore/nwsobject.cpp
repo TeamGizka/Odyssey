@@ -1369,7 +1369,7 @@ int CSWSObject::DoDamageResistance(CSWSCreature* pAttacker, int nDamage,
                 int nEffectIndex = 0;
                 int j;
                 if (AsSWSCreature() != NULL)
-                    j = AsSWSCreature()->GetStats()->m_nDamageResistanceEffectIndex;
+                    j = AsSWSCreature()->m_pStats->m_nDamageResistanceEffectIndex;
                 else
                     j = 0;
                 for (; j < m_lstEffects.num; j++)

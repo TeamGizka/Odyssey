@@ -2282,11 +2282,11 @@ int CSWSArea::PathPointDFSearch(int nDepth, float fCost, float fRemaining,
     {
         if (fCost > fOldCost || fOldRemaining >= fRemaining)
             return 0;
-        if (nDepth > PATH_POINT_DFS_MAX_REVISIT_DEPTH)
-        {
-            m_bPathPointDFSAborted = 1;
-            return 0;
-        }
+    }
+    if (nDepth > PATH_POINT_DFS_MAX_REVISIT_DEPTH)
+    {
+        m_bPathPointDFSAborted = 1;
+        return 0;
     }
     if (++m_nPathPointDFSExpansions >= PATH_POINT_DFS_MAX_EXPANSIONS)
         m_bPathPointDFSAborted = 1;
@@ -2317,7 +2317,8 @@ int CSWSArea::PathPointDFSearch(int nDepth, float fCost, float fRemaining,
             vSquare[3].m_fZ = g_pAppManager->GetServerExoApp()->ComputeHeight(
                 g_pAppManager->GetServerExoApp()->GetModule()->GetArea()->GetResRef(),
                 vSquare[3], 1);
-            nRenderDEFLines[nRenderDFSCount] = AurAddDrawableSquare((float*)vSquare, AUR_DRAWABLE_COLOR_WHITE);
+            nRenderDEFLines[nRenderDFSCount] = (AurAddDrawableSquare)((float*)vSquare, AUR_DRAWABLE_COLOR_WHITE,
+                "nwsareapathfind.cpp", 7703);
             ++nRenderDFSCount;
         }
         bFound = PathPointDFSearch(nNextDepth, fCost + fStepCost,
