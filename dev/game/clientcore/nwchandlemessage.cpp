@@ -6457,11 +6457,16 @@ int CSWCMessage::HandleServerToPlayerGuiInventory(unsigned char nMinor)
     }
     return bSuccess;
 }
+inline CSWGuiStore* GetStorePanel(CGuiInGame* pInGameGui)
+{
+    return pInGameGui->m_pStorePanel;
+}
 // PC 0x006A2A20
 int CSWCMessage::HandleServerToPlayerInventory(unsigned char nMinor)
 {
 
     CGameObject* pObject = NULL;
+    int bInstant;
     unsigned long oidItem = ReadOBJECTIDClient();
     if (MessageReadOverflow(1))
     {
@@ -6514,7 +6519,6 @@ int CSWCMessage::HandleServerToPlayerInventory(unsigned char nMinor)
     case INVENTORY_EQUIP_CANCEL:
         {
             unsigned long nSlot = ReadDWORD(32);
-            int bInstant;
             if (nMinor == INVENTORY_EQUIP)
             {
                 bInstant = ReadBOOL();
@@ -6596,7 +6600,6 @@ int CSWCMessage::HandleServerToPlayerInventory(unsigned char nMinor)
     case INVENTORY_UNEQUIP:
     case INVENTORY_UNEQUIP_CANCEL:
         {
-            int bInstant;
             int bSuppressDraw;
             if (nMinor == INVENTORY_UNEQUIP)
             {
@@ -6648,7 +6651,7 @@ int CSWCMessage::HandleServerToPlayerInventory(unsigned char nMinor)
                         {
                             if (pItem->m_nEquipSlot != INVENTORY_SLOT_HEAD ||
                                 (g_pGuiMan != NULL &&
-                                 g_pGuiMan->PanelExists(g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pStorePanel)))
+                                 g_pGuiMan->PanelExists(GetStorePanel(g_pAppManager->m_pClientExoApp->GetInGameGui()))))
                             {
                                 pCreature->SetLastInstant(pItem->m_nEquipSlot, bInstant);
                                 pCreature->EquipToInventorySlot(pItem->m_nEquipSlot, NULL, bSuppressDraw);
