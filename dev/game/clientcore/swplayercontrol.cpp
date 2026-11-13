@@ -228,7 +228,8 @@ int CSWPlayerControlCamRelative::Control(float fTimeStep)
             !pServerPlayer->GetDeadTemp())
         {
 #ifndef _XBOX
-            if (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nCameraMode ==
+            CClientOptions* pOptions = g_pAppManager->GetClientExoApp()->GetClientOptions();
+            if (pOptions->m_nCameraMode ==
                 CClientOptions::CAMERA_MODE_WORLD_CLICK_DISABLED)
             {
                 float fTurn = m_integrator.Update(
@@ -351,9 +352,8 @@ int CSWPlayerControlCamRelative::Control(float fTimeStep)
                     vDisplacement.m_fY * vDisplacement.m_fY +
                     vDisplacement.m_fZ * vDisplacement.m_fZ > fMinimumDisplacement)
                 {
-                    Vector vOrientation(pPlayer->m_vOrientation.m_fX,
-                                        pPlayer->m_vOrientation.m_fY, 0.0f);
-                    pPlayer->SetOrientation(normalize(vOrientation));
+                    pPlayer->SetOrientation(normalize(Vector(pPlayer->m_vOrientation.m_fX,
+                                        pPlayer->m_vOrientation.m_fY, 0.0f)));
                     vDisplacement = pPlayer->m_vOrientation * magnitude(vDisplacement);
                     Vector vPosition = pPlayer->m_vPosition + vDisplacement;
                     float fDistance = magnitude(pPlayer->m_vPosition - vPosition);
@@ -367,7 +367,7 @@ int CSWPlayerControlCamRelative::Control(float fTimeStep)
                     else
                         fAnimationSpeed = 0.0f;
                 }
-                else if (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nCameraMode ==
+                else if (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nCameraMode ==
                          CClientOptions::CAMERA_MODE_COMBAT_FACING)
                 {
                     unsigned long oidTarget = g_pAppManager->GetServerExoApp()->
