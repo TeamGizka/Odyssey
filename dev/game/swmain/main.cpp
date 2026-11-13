@@ -1350,23 +1350,6 @@ LRESULT CALLBACK WinMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,  // PC 0
         g_pAppManager->GetClientExoApp()->QueryExitProgram();
         return 0;
 
-    case WM_WINDOWPOSCHANGED:
-        if (g_pAppManager->GetClientExoApp()->IsMoviePlaying() == 1)
-        {
-            WINDOWPOS* pPos = (WINDOWPOS*)lParam;
-            WINDOWPOS* pCopy = new WINDOWPOS;
-
-            pCopy->hwnd = g_hMovieWnd;
-            pCopy->hwndInsertAfter = 0;
-            pCopy->cx = pPos->cx;
-            pCopy->cy = pPos->cy;
-            pCopy->x = pPos->x;
-            pCopy->y = pPos->y;
-            pCopy->flags = 0;
-            PostMessageA(g_hMovieWnd, WM_MOVIE_WINDOWPOS_CHANGED, wParam, (LPARAM)pCopy);
-        }
-        break;
-
     case WM_MOVIE_RESTORE_RESOLUTION:
         RestoreResolutionFromMovie();
         return 0;
@@ -1486,14 +1469,14 @@ LRESULT CALLBACK WinMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,  // PC 0
         {
             MSG cEvent;
 
+            cEvent.message = nMsg;
+            cEvent.wParam = wParam;
             cEvent.lParam =
                 (unsigned short)lParam |
                 ((unsigned short)(g_nScreenHeight -
                                   (unsigned short)((unsigned long)lParam >> 16) -
                                   1)
                  << 16);
-            cEvent.message = nMsg;
-            cEvent.wParam = wParam;
             g_pExoInput->BufferEvent(&cEvent);
         }
         break;
@@ -1667,14 +1650,14 @@ LRESULT CALLBACK WinMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,  // PC 0
         {
             MSG cEvent;
 
+            cEvent.message = WM_MBUTTONDOWN;
+            cEvent.wParam = wParam;
             cEvent.lParam =
                 (unsigned short)lParam |
                 ((unsigned short)(g_nScreenHeight -
                                   (unsigned short)((unsigned long)lParam >> 16) -
                                   1)
                  << 16);
-            cEvent.message = WM_MBUTTONDOWN;
-            cEvent.wParam = wParam;
             g_pExoInput->BufferEvent(&cEvent);
             SetCapture(hWnd);
         }
@@ -1686,9 +1669,9 @@ LRESULT CALLBACK WinMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,  // PC 0
             POINT ptScreen;
             MSG cEvent;
 
-            ptScreen.x = (unsigned short)lParam;
             cEvent.message = nMsg;
             cEvent.wParam = wParam;
+            ptScreen.x = (unsigned short)lParam;
             ptScreen.y = (unsigned long)lParam >> 16;
             ScreenToClient(hWnd, &ptScreen);
             cEvent.lParam =
@@ -1722,6 +1705,23 @@ LRESULT CALLBACK WinMessageHandler(HWND hWnd, UINT nMsg, WPARAM wParam,  // PC 0
 
             pClientExoApp->GetImeUI()->HandleImeNotify(hWnd, wParam, lParam);
             return 0;
+        }
+        break;
+
+    case WM_WINDOWPOSCHANGED:
+        if (g_pAppManager->GetClientExoApp()->IsMoviePlaying() == 1)
+        {
+            WINDOWPOS* pPos = (WINDOWPOS*)lParam;
+            WINDOWPOS* pCopy = new WINDOWPOS;
+
+            pCopy->hwnd = g_hMovieWnd;
+            pCopy->hwndInsertAfter = 0;
+            pCopy->cx = pPos->cx;
+            pCopy->cy = pPos->cy;
+            pCopy->x = pPos->x;
+            pCopy->y = pPos->y;
+            pCopy->flags = 0;
+            PostMessageA(g_hMovieWnd, WM_MOVIE_WINDOWPOS_CHANGED, wParam, (LPARAM)pCopy);
         }
         break;
     }

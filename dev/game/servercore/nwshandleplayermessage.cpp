@@ -3222,7 +3222,7 @@ int CSWSMessage::HandlePlayerToServerLevelUpMessage(CSWSPlayer* pPlayer,
         {
             delete pLevelStats;
         }
-        nResult = SendServerToPlayerLevelUp_Confirmation(pPlayer->m_nPlayerId,
+        nResult = SendServerToPlayerLevelUp_Confirmation(pPlayer->GetPlayerId(),
                                                          bValid);
         if (pCreature->m_pStats->CanLevelUp() != 0)
         {
@@ -3233,7 +3233,7 @@ int CSWSMessage::HandlePlayerToServerLevelUpMessage(CSWSPlayer* pPlayer,
             for (int nNPC = 0; nNPC < CSWPartyTable::MAX_NPCS; nNPC++)
             {
                 unsigned long oidNPC = g_pAppManager->GetServerExoApp()
-                    ->GetPartyTable()->GetPUPObject(nNPC, 0, 1);
+                    ->GetPartyTable()->GetNPCObject(nNPC, 0, 1);
                 if (oidNPC != OBJECT_INVALID)
                 {
                     CSWSCreature* pNPC = g_pAppManager->GetServerExoApp()
