@@ -45,6 +45,8 @@ void CExoDebugInternal::Assert(int line, char* file, const char* message)
         fprintf(pFile, sAssert.CStr());
         fclose(pFile);
     }
+
+    abort();
 }
 
 void CExoDebugInternal::InitializeWarningFile()

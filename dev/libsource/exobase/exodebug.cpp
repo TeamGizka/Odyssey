@@ -67,7 +67,6 @@ void CExoDebug::Assert(int line, char* file, const char* message)
     }
 
     printf("%s", sAssert.CStr());
-    abort();
 }
 // PC 0x00635780 GOG 0x00635670
 void CExoDebug::GetCurrentTimestamp(CExoString& timestamp)
