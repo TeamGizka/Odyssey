@@ -1102,7 +1102,6 @@ void CSWGuiUpgradeItemSelect::OnControlEntered(CSWGuiControl* pControl)
 void CSWGuiUpgradeItemSelect::SetDescription(const CExoString& sDescription)
 {
     CSWGuiListBox* pListBox;
-    int nHeight;
     CSWGuiControl* pControl;
 
     m_lblDescription.m_cText.m_cParams.SetText(sDescription);
@@ -1111,13 +1110,12 @@ void CSWGuiUpgradeItemSelect::SetDescription(const CExoString& sDescription)
     CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
     if (sDescription.GetLength() > 0)
     {
-        nHeight = m_lblDescription.m_cText.GetIdealHeight();
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
     }
     else
     {
-        nHeight = m_lblDescription.m_cText.GetFontHeight();
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
     }
-    cExtent.m_nHeight = nHeight;
     m_lblDescription.SetExtent(cExtent);
     pControl = &m_lblDescription;
     pListBox->AddControls(&pControl, 1, 0, 0, 0);
@@ -2335,7 +2333,6 @@ void CSWGuiUpgrade::HandleInputEvent(int nEvent, int nState)
 void CSWGuiUpgrade::SetDescription(const CExoString& sDescription)
 {
     CSWGuiListBox* pListBox;
-    int nHeight;
     CSWGuiControl* pControl;
 
     m_CSWGuiLabel_1F60.m_cText.m_cParams.SetText(sDescription);
@@ -2347,13 +2344,12 @@ void CSWGuiUpgrade::SetDescription(const CExoString& sDescription)
     CSWGuiExtent cExtent = m_CSWGuiLabel_1F60.m_cExtent;
     if (sDescription.GetLength() > 0)
     {
-        nHeight = m_CSWGuiLabel_1F60.m_cText.GetIdealHeight();
+        cExtent.m_nHeight = m_CSWGuiLabel_1F60.m_cText.GetIdealHeight();
     }
     else
     {
-        nHeight = m_CSWGuiLabel_1F60.m_cText.GetFontHeight();
+        cExtent.m_nHeight = m_CSWGuiLabel_1F60.m_cText.GetFontHeight();
     }
-    cExtent.m_nHeight = nHeight;
     m_CSWGuiLabel_1F60.SetExtent(cExtent);
     pControl = &m_CSWGuiLabel_1F60;
     pListBox->AddControls(&pControl, 1, 0, 0, 0);
