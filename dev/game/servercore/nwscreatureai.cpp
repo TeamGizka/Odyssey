@@ -4192,18 +4192,19 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_Moving_To_Offset(
     float& fDistance, int bRun)
 {
     CWalkHitInfo hitInfo;
-    float fMoveDistance = fDistance * NWSCREATURE_FOLLOW_PATH_SPEED_FACTOR;
+    float fMoveDistance = fDistance;
+    fMoveDistance *= NWSCREATURE_FOLLOW_PATH_SPEED_FACTOR;
     int nPathIndex = pMember->m_nFollowPathIndex;
     float fFacing = pPaths->GetPathData(nPathIndex)->m_fFacing;
     Vector vAxis;
-    vAxis.m_fZ = 1.0f;
+    vAxis = Vector(0.0f, 0.0f, 1.0f);
     Vector vFollowPosition = pMember->m_vFollowPosition +
         Quaternion(vAxis, DegToRad(fFacing)) *
         pMember->m_vFormationOffset;
     Vector vDelta = vFollowPosition - pMember->m_vLastPosition;
     Vector vDirection = normalize(vDelta);
-    int nFollowState = pMember->m_nCharacterIndex;
     Vector vPosition;
+    int nFollowState = pMember->m_nCharacterIndex;
     int nResult;
     float fDistanceSquared = vDelta * vDelta;
     if (fDistanceSquared <= fMoveDistance * fMoveDistance)
@@ -4274,15 +4275,17 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_WaitingForPath(
         {
             pMember->m_vFollowPosition = vFollowPosition;
             pMember->m_nFollowPathIndex = nPathIndex;
-            pMember->m_vFormationPosition = vFollowPosition;
-            pMember->m_nFormationPathIndex = nPathIndex;
+            pMember->m_vFormationPosition = pMember->m_vFollowPosition;
+            pMember->m_nFormationPathIndex = pMember->m_nFollowPathIndex;
 
-            Vector vLeaderPosition;
-            vLeaderPosition = g_pAppManager->GetClientExoApp()->
+            Vector vLeaderPosition = g_pAppManager->GetClientExoApp()->
                 GetSWParty()->GetCharacter(0)->m_vPosition;
             Vector vLeaderDelta = vLeaderPosition - m_vPosition;
+            NwscreatureaiDebugLine(pMember->m_vLastPosition + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT),
+                vFollowPosition + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), 0);
+            float fLeaderDistance2 = vLeaderDelta * vLeaderDelta;
             if (pMember->m_bWaitingForLeader &&
-                vLeaderDelta * vLeaderDelta <
+                fLeaderDistance2 <
                     NWSCREATURE_FOLLOW_PATH_WAIT_DISTANCE_SQUARED)
             {
                 return CSWSObject::ACTION_COMPLETE;
@@ -4296,8 +4299,8 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_WaitingForPath(
                 Quaternion(Vector(0.0f, 0.0f, 1.0f), DegToRad(fFacing)) *
                     pMember->m_vFormationOffset;
             {
-                float fRadius = m_pPathfindInformation->m_fStepScale -
-                    NWSCREATURE_FOLLOW_LINE_RADIUS_MARGIN;
+                float fRadius = m_pPathfindInformation->m_fStepScale;
+                fRadius -= NWSCREATURE_FOLLOW_LINE_RADIUS_MARGIN;
                 float fWidth = m_pPathfindInformation->m_fHalfStep;
                 if (CSWSObject::GetArea()->TestDirectLine(pMember->m_vLastPosition,
                         vFormationPosition, fRadius, fWidth, 0, &hitInfo) ==
@@ -4308,8 +4311,8 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_WaitingForPath(
                 }
             }
             {
-                float fPathRadius = m_pPathfindInformation->m_fStepScale -
-                    NWSCREATURE_FOLLOW_LINE_RADIUS_MARGIN;
+                float fPathRadius = m_pPathfindInformation->m_fStepScale;
+                fPathRadius -= NWSCREATURE_FOLLOW_LINE_RADIUS_MARGIN;
                 float fPathWidth = m_pPathfindInformation->m_fHalfStep;
                 if (CSWSObject::GetArea()->TestDirectLine(pMember->m_vLastPosition,
                         pMember->m_vFollowPosition, fPathRadius, fPathWidth,
