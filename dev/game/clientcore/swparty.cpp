@@ -1614,6 +1614,12 @@ void CSWParty::Update(float fTime)
         m_fRetreatTimer = 0.0f;
     }
 }
+static inline int ComputeSafeLocation(CServerExoApp* pServerExoApp, CSWSCreature* pCreature, const Vector& vPosition, Vector* pvSafePosition)
+{
+    CPathfindInformation* pPathfind = pCreature->m_pPathfindInformation;
+    unsigned long oidArea = pCreature->m_oidArea;
+    return pServerExoApp->GetAreaByGameObjectID(oidArea)->ComputeSafeLocation(vPosition, 2.0f, pPathfind, 1, pvSafePosition);
+}
 // PC 0x0068D610
 void CSWParty::Reset(const Vector& vPosition, float fFacing, int bFlag)
 {
@@ -1632,12 +1638,7 @@ void CSWParty::Reset(const Vector& vPosition, float fFacing, int bFlag)
             pServerExoApp->ClientToServerObjectId(oidCreature));
         if (pCreature != NULL)
         {
-            CPathfindInformation* pPathfind = pCreature->m_pPathfindInformation;
-            unsigned long oidArea = pCreature->m_oidArea;
-            if (pServerExoApp->GetAreaByGameObjectID(oidArea)
-                    ->ComputeSafeLocation(vOffset + vPosition, 2.0f,
-                                          pPathfind, 1,
-                                          &vSafePosition))
+            if (ComputeSafeLocation(pServerExoApp, pCreature, vOffset + vPosition, &vSafePosition))
             {
                 m_aPartyMemberData[1].m_vFormationPosition = vSafePosition;
                 m_aPartyMemberData[1].m_nFormationPathIndex = 0;
@@ -1645,12 +1646,7 @@ void CSWParty::Reset(const Vector& vPosition, float fFacing, int bFlag)
             }
 
             vOffset += vOffset;
-            pPathfind = pCreature->m_pPathfindInformation;
-            oidArea = pCreature->m_oidArea;
-            if (pServerExoApp->GetAreaByGameObjectID(oidArea)
-                    ->ComputeSafeLocation(vOffset + vPosition, 2.0f,
-                                          pPathfind, 1,
-                                          &vSafePosition))
+            if (ComputeSafeLocation(pServerExoApp, pCreature, vOffset + vPosition, &vSafePosition))
             {
                 m_aPartyMemberData[2].m_vFormationPosition = vSafePosition;
                 m_aPartyMemberData[2].m_nFormationPathIndex = 0;
