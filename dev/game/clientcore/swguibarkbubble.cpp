@@ -24,134 +24,6 @@
 
 static inline void SwguibarkbubbleTrace1();
 #define SWGUIBARKBUBBLE_TRACE() SwguibarkbubbleTrace1()
-// PC 0x00712BA0 GOG 0x00712460
-CSWGuiBarkBubble::CSWGuiBarkBubble(CSWGuiManager* pManager)
-    : CSWGuiPanel(pManager)
-{
-#ifdef _XBOX
-    StartLoadFromLayout("barkbubble");
-#else
-    {
-        CResRef cLayout("barkbubble_p");
-        StartLoadFromLayout(cLayout);
-    }
-#endif
-    InitControl(m_lblBarkText, "LBL_BARKTEXT", 1);
-    StopLoadFromLayout();
-
-    m_cInitialExtent = m_cExtent;
-    m_fTimeLeft = 0.0f;
-    m_pSoundSource = NULL;
-    m_bSoundStarted = 0;
-    m_bForceVisible = 0;
-    m_nStartTime = 0;
-    m_nBarkX = -1;
-    m_nBarkY = -1;
-}
-// PC 0x00712CC0 GOG 0x00712580
-CSWGuiBarkBubble::~CSWGuiBarkBubble()
-{
-    if (m_pSoundSource != NULL)
-    {
-        m_pSoundSource->Stop();
-        delete m_pSoundSource;
-        m_pSoundSource = NULL;
-    }
-}
-// PC 0x00712D50 GOG 0x00712610
-void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
-                               const CExoString& sBarkText,
-                               const CResRef& cSound, int bForceVisible)
-{
-    SWGUIBARKBUBBLE_TRACE();
-    SetExtent(m_cInitialExtent);
-    unsigned long oidPlayer = g_pAppManager->GetServerExoApp()->GetPlayerCreatureId();
-    CSWSPlayer* pPlayer =
-        g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidPlayer);
-    unsigned long oidPC = pPlayer->m_oidPCObject;
-    unsigned long oidClientPC =
-        g_pAppManager->GetClientExoApp()->ServerToClientObjectId(oidPC);
-    CSWCObject* pPlayerObject =
-        g_pAppManager->GetClientExoApp()->GetGameObject(oidClientPC);
-    CExoString sText(sBarkText);
-
-    g_pSWTlkTable->ParseStr(sText, (CGameObject*)pPlayerObject, 0, 0);
-    m_lblBarkText.m_cText.m_cParams.SetText(sText.CStr());
-
-    int nBorderDim = m_lblBarkText.m_cBorder.m_cParams.GetBorderDim();
-    int nHeight = m_lblBarkText.m_cText.GetIdealHeight() + nBorderDim * 2 + 10;
-    CSWGuiExtent cExtent = m_cExtent;
-    cExtent.m_nHeight = nHeight;
-    if (m_nBarkX != -1)
-        cExtent.m_nLeft = m_nBarkX;
-    if (m_nBarkY != -1)
-        cExtent.m_nTop = m_nBarkY;
-    float fScaleX = 1.0f;
-    float fScaleY = 1.0f;
-    if (g_pAppManager->GetClientExoApp()->GetSWGuiManager() != NULL)
-    {
-        fScaleX = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
-        fScaleY = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
-    }
-    cExtent.m_nLeft = (int)(cExtent.m_nLeft * fScaleX);
-    cExtent.m_nTop = (int)(cExtent.m_nTop * fScaleY);
-    SetExtent(cExtent);
-
-    m_bDeferredRemoval = 0;
-    m_nExitState = 0;
-    m_oidSpeaker = oidSpeaker;
-    m_bForceVisible = bForceVisible;
-    m_fTimeLeft = sText.GetLength() * 0.11f + 1.0f;
-
-    if (m_pSoundSource != NULL)
-    {
-        m_pSoundSource->Stop();
-        delete m_pSoundSource;
-        m_pSoundSource = NULL;
-    }
-    m_pSoundSource = new CExoStreamingSoundSource(1);
-    if (oidSpeaker != OBJECT_INVALID)
-    {
-        Vector vPosition = g_pAppManager->m_pClientExoApp
-                               ->GetGameObject(oidSpeaker)
-                               ->AsSWCObject()
-                               ->m_vPosition;
-        CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
-        if (pModule != NULL && pModule->GetArea() != NULL)
-        {
-            CSWSArea* pServerArea = pModule->GetArea()->GetServerArea();
-            if (pServerArea != NULL)
-            {
-                float fHeight = g_pAppManager->GetServerExoApp()->ComputeHeight(
-                    pServerArea->GetResRef(), vPosition, 0);
-                if (vPosition.m_fZ - fHeight < BARK_MIN_SOUND_HEIGHT)
-                    vPosition.m_fZ = fHeight + BARK_MIN_SOUND_HEIGHT;
-            }
-        }
-        m_pSoundSource->Set3D(1);
-        m_pSoundSource->SetReverbEnabled(0);
-        m_pSoundSource->SetPosition(vPosition);
-    }
-    m_pSoundSource->SetPriorityGroup(26);
-    m_pSoundSource->SetVolume(CExoSound::CMAX_VOLUME);
-#ifdef _XBOX
-    m_bSoundStarted = m_pSoundSource->Play(cSound, 11, 1, 0, 0);
-
-    int nDebugOption = g_pExoInput->GetDebugOption();
-    if (nDebugOption == 3)
-    {
-        m_pSoundSource->SetFixedVariance(1.5f);
-    }
-    else if (nDebugOption == 1)
-    {
-        m_pSoundSource->SetFixedVariance(0.75f);
-    }
-#else
-    m_bSoundStarted = m_pSoundSource->Play(cSound, 8, 1, 0, 0);
-    if (m_bSoundStarted == 0)
-        m_bSoundStarted = m_pSoundSource->Play(cSound, 4, 1, 0, 0);
-#endif
-}
 // PC 0x00712710 GOG 0x007129B0
 void CSWGuiBarkBubble::Pause()
 {
@@ -322,6 +194,137 @@ void CSWGuiBarkBubble::SetExtent(const CSWGuiExtent& cExtent)
     cTextExtent.m_nHeight = cExtent.m_nHeight - 10;
     m_lblBarkText.SetExtent(cTextExtent);
     CSWGuiPanel::SetExtent(cExtent);
+}
+
+// PC 0x00712BA0 GOG 0x00712460
+CSWGuiBarkBubble::CSWGuiBarkBubble(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+#ifdef _XBOX
+    StartLoadFromLayout("barkbubble");
+#else
+    {
+        CResRef cLayout("barkbubble_p");
+        StartLoadFromLayout(cLayout);
+    }
+#endif
+    InitControl(m_lblBarkText, "LBL_BARKTEXT", 1);
+    StopLoadFromLayout();
+
+    m_cInitialExtent = m_cExtent;
+    m_fTimeLeft = 0.0f;
+    m_pSoundSource = NULL;
+    m_bSoundStarted = 0;
+    m_bForceVisible = 0;
+    m_nStartTime = 0;
+    m_nBarkX = -1;
+    m_nBarkY = -1;
+}
+
+// PC 0x00712CC0 GOG 0x00712580
+CSWGuiBarkBubble::~CSWGuiBarkBubble()
+{
+    if (m_pSoundSource != NULL)
+    {
+        m_pSoundSource->Stop();
+        delete m_pSoundSource;
+        m_pSoundSource = NULL;
+    }
+}
+
+// PC 0x00712D50 GOG 0x00712610
+void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
+                               const CExoString& sBarkText,
+                               const CResRef& cSound, int bForceVisible)
+{
+    SWGUIBARKBUBBLE_TRACE();
+    SetExtent(m_cInitialExtent);
+    unsigned long oidPlayer = g_pAppManager->GetServerExoApp()->GetPlayerCreatureId();
+    CSWSPlayer* pPlayer =
+        g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidPlayer);
+    unsigned long oidPC = pPlayer->m_oidPCObject;
+    unsigned long oidClientPC =
+        g_pAppManager->GetClientExoApp()->ServerToClientObjectId(oidPC);
+    CSWCObject* pPlayerObject =
+        g_pAppManager->GetClientExoApp()->GetGameObject(oidClientPC);
+    CExoString sText(sBarkText);
+
+    g_pSWTlkTable->ParseStr(sText, (CGameObject*)pPlayerObject, 0, 0);
+    m_lblBarkText.m_cText.m_cParams.SetText(sText.CStr());
+
+    int nBorderDim = m_lblBarkText.m_cBorder.m_cParams.GetBorderDim();
+    int nHeight = m_lblBarkText.m_cText.GetIdealHeight() + nBorderDim * 2 + 10;
+    CSWGuiExtent cExtent = m_cExtent;
+    cExtent.m_nHeight = nHeight;
+    if (m_nBarkX != -1)
+        cExtent.m_nLeft = m_nBarkX;
+    if (m_nBarkY != -1)
+        cExtent.m_nTop = m_nBarkY;
+    float fScaleX = 1.0f;
+    float fScaleY = 1.0f;
+    if (g_pAppManager->GetClientExoApp()->GetSWGuiManager() != NULL)
+    {
+        fScaleX = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
+        fScaleY = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
+    }
+    cExtent.m_nLeft = (int)(cExtent.m_nLeft * fScaleX);
+    cExtent.m_nTop = (int)(cExtent.m_nTop * fScaleY);
+    SetExtent(cExtent);
+
+    m_bDeferredRemoval = 0;
+    m_nExitState = 0;
+    m_oidSpeaker = oidSpeaker;
+    m_bForceVisible = bForceVisible;
+    m_fTimeLeft = sText.GetLength() * 0.11f + 1.0f;
+
+    if (m_pSoundSource != NULL)
+    {
+        m_pSoundSource->Stop();
+        delete m_pSoundSource;
+        m_pSoundSource = NULL;
+    }
+    m_pSoundSource = new CExoStreamingSoundSource(1);
+    if (oidSpeaker != OBJECT_INVALID)
+    {
+        Vector vPosition = g_pAppManager->m_pClientExoApp
+                               ->GetGameObject(oidSpeaker)
+                               ->AsSWCObject()
+                               ->m_vPosition;
+        CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
+        if (pModule != NULL && pModule->GetArea() != NULL)
+        {
+            CSWSArea* pServerArea = pModule->GetArea()->GetServerArea();
+            if (pServerArea != NULL)
+            {
+                float fHeight = g_pAppManager->GetServerExoApp()->ComputeHeight(
+                    pServerArea->GetResRef(), vPosition, 0);
+                if (vPosition.m_fZ - fHeight < BARK_MIN_SOUND_HEIGHT)
+                    vPosition.m_fZ = fHeight + BARK_MIN_SOUND_HEIGHT;
+            }
+        }
+        m_pSoundSource->Set3D(1);
+        m_pSoundSource->SetReverbEnabled(0);
+        m_pSoundSource->SetPosition(vPosition);
+    }
+    m_pSoundSource->SetPriorityGroup(26);
+    m_pSoundSource->SetVolume(CExoSound::CMAX_VOLUME);
+#ifdef _XBOX
+    m_bSoundStarted = m_pSoundSource->Play(cSound, 11, 1, 0, 0);
+
+    int nDebugOption = g_pExoInput->GetDebugOption();
+    if (nDebugOption == 3)
+    {
+        m_pSoundSource->SetFixedVariance(1.5f);
+    }
+    else if (nDebugOption == 1)
+    {
+        m_pSoundSource->SetFixedVariance(0.75f);
+    }
+#else
+    m_bSoundStarted = m_pSoundSource->Play(cSound, 8, 1, 0, 0);
+    if (m_bSoundStarted == 0)
+        m_bSoundStarted = m_pSoundSource->Play(cSound, 4, 1, 0, 0);
+#endif
 }
 
 static inline void SwguibarkbubbleTrace1()

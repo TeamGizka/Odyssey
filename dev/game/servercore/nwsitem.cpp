@@ -1478,6 +1478,7 @@ int CSWSItem::RestoreUsedActiveProperties(int bRestoreAll)
 int CSWSItem::GetPropertyByTypeExists(unsigned short nPropertyType,
                                       unsigned short nSubtype)
 {
+    NWSITEM_TRACE();
     int nActiveProperties;
     int nProperty;
     CSWItemProperty* pItemProperty;
@@ -1753,6 +1754,7 @@ int CItemRepository::CalculateContentsWeight()
 // PC 0x0055F450 GOG 0x0055F5C0
 int CItemRepository::SetParentId(unsigned long oidParent)
 {
+    NWSITEM_TRACE();
     int nItems;
     int i;
     CServerExoApp* pServerExoApp;
@@ -3261,6 +3263,7 @@ void CSWSItem::AIUpdate()
 // PC 0x005674B0 GOG 0x005675E0
 int CSWSItem::SaveItem(CResGFF* pRes, CResStruct* pStruct)
 {
+    NWSITEM_TRACE();
     pRes->WriteFieldINT(pStruct, GetBaseItemType(), "BaseItem");
     pRes->WriteFieldCExoString(pStruct, m_sTag, "Tag");
     pRes->WriteFieldBYTE(pStruct, 1, "Identified");
@@ -3344,6 +3347,7 @@ int CSWSItem::SaveContainerItems(CResGFF* pRes, CResStruct* pStruct)
 // PC 0x005678C0 GOG 0x005679F0
 void CSWSItem::UpdateUsedActiveProperties()
 {
+    NWSITEM_TRACE();
     unsigned char aUsesLeft[MAX_TRACKED_ACTIVE_PROPERTIES];
     int nProperty;
     unsigned char nUsableMask = 0;

@@ -1055,41 +1055,6 @@ int CSWGuiInGameEquip::IsSlotLocked(int nSlot)
     default: return 0;
     }
 }
-// PC 0x00714560 GOG 0x00714250
-CSWSItem* CSWGuiInGameEquip::CopyItem(unsigned long oidItem)
-{
-    CSWSItem* pCopy = 0;
-    CGameObject* pObject = 0;
-    CServerExoApp* pServer = GetServerExoApp();
-    unsigned long oidServer =
-        pServer->ClientToServerObjectId(oidItem);
-
-    pServer = GetServerExoApp();
-    if (pServer->GetObjectArray()->GetGameObject(
-            oidServer, &pObject) == CGameObjectArray::SUCCESS &&
-        pObject->AsSWSItem() != 0)
-    {
-        pCopy = new CSWSItem(OBJECT_INVALID);
-        pCopy->CopyItem(pObject->AsSWSItem());
-    }
-    return pCopy;
-}
-// PC 0x00714620 GOG 0x00714310
-int CSWGuiInGameEquip::ItemExists(unsigned long oidItem)
-{
-    CServerExoApp* pServer = GetServerExoApp();
-    unsigned long oidServer = pServer->ClientToServerObjectId(oidItem);
-    CGameObject* pObject;
-
-    pServer = GetServerExoApp();
-    if (pServer->GetObjectArray()->GetGameObject(oidServer, &pObject) ==
-        CGameObjectArray::SUCCESS)
-    {
-        return pObject->AsSWSItem() != 0;
-    }
-
-    return 0;
-}
 #endif
 // PC 0x00714000 GOG 0x00713CF0
 CExoString CSWGuiInGameEquip::GetIcon(int nSlot)
@@ -1260,6 +1225,26 @@ void CSWGuiInGameEquip::ShowCantEquipMessage(int bShow, unsigned long nStrRef)
     m_btnEquip.m_cBorder.m_cParams.m_vColor =
         bShow ? CGuiInGame::DISABLED_TEXT : CGuiInGame::COLOR_NEW_GREEN;
 }
+
+// PC 0x00714560 GOG 0x00714250
+CSWSItem* CSWGuiInGameEquip::CopyItem(unsigned long oidItem)
+{
+    CSWSItem* pCopy = 0;
+    CGameObject* pObject = 0;
+    CServerExoApp* pServer = GetServerExoApp();
+    unsigned long oidServer =
+        pServer->ClientToServerObjectId(oidItem);
+
+    pServer = GetServerExoApp();
+    if (pServer->GetObjectArray()->GetGameObject(
+            oidServer, &pObject) == CGameObjectArray::SUCCESS &&
+        pObject->AsSWSItem() != 0)
+    {
+        pCopy = new CSWSItem(OBJECT_INVALID);
+        pCopy->CopyItem(pObject->AsSWSItem());
+    }
+    return pCopy;
+}
 // PC 0x00719980 GOG 0x00719670
 void CSWGuiInGameEquip::OnPanelRemoved()
 {
@@ -1288,90 +1273,6 @@ void CSWGuiInGameEquip::OnPanelRemoved()
 #ifndef _XBOX
     CSWGuiPanel::OnPanelRemoved();
 #endif
-}
-// PC 0x00716820 GOG 0x00716510
-void CSWGuiInGameEquip::OnSelectSlot(CSWGuiControl* pControl)
-{
-    if (pControl->m_bSelected)
-    {
-        if (m_pCreature->m_pArea->GetServerArea()->GetPlayerRestrictMode())
-        {
-            CSWGuiMessageBox* pMessage = g_pAppManager->GetClientExoApp()
-                ->GetInGameGui()->m_pMessageBox;
-            pMessage->SetAllowCancel(0);
-            pMessage->SetCallback(0, 0, 0);
-            pMessage->SetMessage(STRREF_ENVIRO_SUIT_RESTRICTION);
-            m_pManager->AddPanel(pMessage, SWGUI_PANEL_FLAG_PUSH_MODAL, 1);
-            return;
-        }
-        if (IsSlotLocked(m_nSelectedSlot))
-        {
-            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
-            CSWGuiMessageBox* pMessage = g_pAppManager->GetClientExoApp()
-                ->GetInGameGui()->m_pMessageBox;
-            pMessage->SetAllowCancel(0);
-            pMessage->SetCallback(0, 0, 0);
-            pMessage->SetMessage(STRREF_SLOT_LOCKED);
-            m_pManager->AddPanel(pMessage, SWGUI_PANEL_FLAG_PUSH_MODAL, 1);
-            return;
-        }
-        if (m_nSelectedSlot == INVENTORY_SLOT_ARMOUR &&
-            m_pCreature->GetServerCreature()->GetCombatState() == 1 &&
-            m_pCreature->GetServerCreature()->GetItemUseState() == 1)
-        {
-            CSWGuiMessageBox* pMessage = g_pAppManager->GetClientExoApp()
-                ->GetInGameGui()->m_pMessageBox;
-            pMessage->SetAllowCancel(0);
-            pMessage->SetCallback(0, 0, 0);
-            int nStrRef = STRREF_ARMOUR_COMBAT_RESTRICTION;
-            pMessage->SetMessage(nStrRef);
-            CSWGuiManager* pManager = m_pManager;
-            if (nStrRef == 0 && pManager == NULL)
-                return;
-            pManager->AddPanel(pMessage, SWGUI_PANEL_FLAG_PUSH_MODAL, 1);
-            return;
-        }
-        if (m_nSelectedSlot == INVENTORY_SLOT_LEFTHAND &&
-            m_aoidEquippedItems[RIGHTHAND_ITEM_INDEX] != OBJECT_INVALID)
-        {
-            CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
-            CSWSItem* pItem = pServer->GetItemByGameObjectID(
-                pServer->ClientToServerObjectId(
-                    m_aoidEquippedItems[RIGHTHAND_ITEM_INDEX]));
-            if (pItem && pItem->GetBaseItem()->m_nWeaponSize ==
-                             CSWBaseItem::WEAPON_SIZE_TWO_HANDED)
-            {
-                CSWGuiMessageBox* pMessage = g_pAppManager->GetClientExoApp()
-                    ->GetInGameGui()->m_pMessageBox;
-                pMessage->SetAllowCancel(0);
-                pMessage->SetCallback(0, 0, 0);
-                pMessage->SetMessage(STRREF_TWO_HANDED_RESTRICTION);
-                m_pManager->AddPanel(pMessage, SWGUI_PANEL_FLAG_PUSH_MODAL, 1);
-                return;
-            }
-        }
-        if (m_lbItems.m_lItems.num == 1)
-        {
-            CSWGuiMessageBox* pMessage = g_pAppManager->GetClientExoApp()
-                ->GetInGameGui()->m_pMessageBox;
-            pMessage->SetAllowCancel(0);
-            pMessage->SetCallback(0, 0, 0);
-            pMessage->SetMessage(STRREF_NO_EQUIPPABLE_ITEMS);
-            m_pManager->AddPanel(pMessage, SWGUI_PANEL_FLAG_PUSH_MODAL, 1);
-            return;
-        }
-        m_pDescribedControl = pControl;
-        ShowDescription(1);
-        SetActiveControl(&m_lbItems, 0);
-        if (m_aoidEquippedItems[(int)pControl->GetUserData()] != OBJECT_INVALID)
-        {
-            m_lbItems.SetSelectedControl(1, 0);
-        }
-        m_bDescriptionShown = 1;
-        g_pAppManager->GetClientExoApp()->ShowTutorialWindow(
-            11, OBJECT_INVALID, OBJECT_INVALID, 0);
-        m_lbItems.SetEnabled(1);
-    }
 }
 // PC 0x00715F80 GOG 0x00715C70
 void CSWGuiInGameEquip::ShowDescription(int bShow)
@@ -1991,6 +1892,23 @@ CSWGuiInGameItemEntry* CSWGuiInGameEquip::AddItemEntryToList(int nItem)
     pItemEntry = m_lItemEntries[nItem];
     pItemEntry->m_cBorder.m_cParams.m_fHilightAlpha = 0.0f;
     return pItemEntry;
+}
+
+// PC 0x00714620 GOG 0x00714310
+int CSWGuiInGameEquip::ItemExists(unsigned long oidItem)
+{
+    CServerExoApp* pServer = GetServerExoApp();
+    unsigned long oidServer = pServer->ClientToServerObjectId(oidItem);
+    CGameObject* pObject;
+
+    pServer = GetServerExoApp();
+    if (pServer->GetObjectArray()->GetGameObject(oidServer, &pObject) ==
+        CGameObjectArray::SUCCESS)
+    {
+        return pObject->AsSWSItem() != 0;
+    }
+
+    return 0;
 }
 #endif
 // PC 0x00714670 GOG 0x00714360
@@ -2774,6 +2692,93 @@ CSWGuiStoreItemEntry::CSWGuiStoreItemEntry()
     m_n3B0 = -1;
     m_n3B4 = 0;
 }
+
+#ifndef _XBOX
+// PC 0x00716820 GOG 0x00716510
+void CSWGuiInGameEquip::OnSelectSlot(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected)
+    {
+        if (m_pCreature->m_pArea->GetServerArea()->GetPlayerRestrictMode())
+        {
+            CSWGuiMessageBox* pMessage = g_pAppManager->GetClientExoApp()
+                ->GetInGameGui()->m_pMessageBox;
+            pMessage->SetAllowCancel(0);
+            pMessage->SetCallback(0, 0, 0);
+            pMessage->SetMessage(STRREF_ENVIRO_SUIT_RESTRICTION);
+            m_pManager->AddPanel(pMessage, SWGUI_PANEL_FLAG_PUSH_MODAL, 1);
+            return;
+        }
+        if (IsSlotLocked(m_nSelectedSlot))
+        {
+            m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
+            CSWGuiMessageBox* pMessage = g_pAppManager->GetClientExoApp()
+                ->GetInGameGui()->m_pMessageBox;
+            pMessage->SetAllowCancel(0);
+            pMessage->SetCallback(0, 0, 0);
+            pMessage->SetMessage(STRREF_SLOT_LOCKED);
+            m_pManager->AddPanel(pMessage, SWGUI_PANEL_FLAG_PUSH_MODAL, 1);
+            return;
+        }
+        if (m_nSelectedSlot == INVENTORY_SLOT_ARMOUR &&
+            m_pCreature->GetServerCreature()->GetCombatState() == 1 &&
+            m_pCreature->GetServerCreature()->GetItemUseState() == 1)
+        {
+            CSWGuiMessageBox* pMessage = g_pAppManager->GetClientExoApp()
+                ->GetInGameGui()->m_pMessageBox;
+            pMessage->SetAllowCancel(0);
+            pMessage->SetCallback(0, 0, 0);
+            int nStrRef = STRREF_ARMOUR_COMBAT_RESTRICTION;
+            pMessage->SetMessage(nStrRef);
+            CSWGuiManager* pManager = m_pManager;
+            if (nStrRef == 0 && pManager == NULL)
+                return;
+            pManager->AddPanel(pMessage, SWGUI_PANEL_FLAG_PUSH_MODAL, 1);
+            return;
+        }
+        if (m_nSelectedSlot == INVENTORY_SLOT_LEFTHAND &&
+            m_aoidEquippedItems[RIGHTHAND_ITEM_INDEX] != OBJECT_INVALID)
+        {
+            CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
+            CSWSItem* pItem = pServer->GetItemByGameObjectID(
+                pServer->ClientToServerObjectId(
+                    m_aoidEquippedItems[RIGHTHAND_ITEM_INDEX]));
+            if (pItem && pItem->GetBaseItem()->m_nWeaponSize ==
+                             CSWBaseItem::WEAPON_SIZE_TWO_HANDED)
+            {
+                CSWGuiMessageBox* pMessage = g_pAppManager->GetClientExoApp()
+                    ->GetInGameGui()->m_pMessageBox;
+                pMessage->SetAllowCancel(0);
+                pMessage->SetCallback(0, 0, 0);
+                pMessage->SetMessage(STRREF_TWO_HANDED_RESTRICTION);
+                m_pManager->AddPanel(pMessage, SWGUI_PANEL_FLAG_PUSH_MODAL, 1);
+                return;
+            }
+        }
+        if (m_lbItems.m_lItems.num == 1)
+        {
+            CSWGuiMessageBox* pMessage = g_pAppManager->GetClientExoApp()
+                ->GetInGameGui()->m_pMessageBox;
+            pMessage->SetAllowCancel(0);
+            pMessage->SetCallback(0, 0, 0);
+            pMessage->SetMessage(STRREF_NO_EQUIPPABLE_ITEMS);
+            m_pManager->AddPanel(pMessage, SWGUI_PANEL_FLAG_PUSH_MODAL, 1);
+            return;
+        }
+        m_pDescribedControl = pControl;
+        ShowDescription(1);
+        SetActiveControl(&m_lbItems, 0);
+        if (m_aoidEquippedItems[(int)pControl->GetUserData()] != OBJECT_INVALID)
+        {
+            m_lbItems.SetSelectedControl(1, 0);
+        }
+        m_bDescriptionShown = 1;
+        g_pAppManager->GetClientExoApp()->ShowTutorialWindow(
+            11, OBJECT_INVALID, OBJECT_INVALID, 0);
+        m_lbItems.SetEnabled(1);
+    }
+}
+#endif
 #ifndef _XBOX
 CSWGuiInGameEquip::CSWGuiInGameEquip(CSWGuiManager* pManager)  // PC 0x0071A1B0 GOG 0x00719EA0
     : CSWGuiPanel(pManager)

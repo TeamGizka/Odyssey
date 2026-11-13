@@ -6107,26 +6107,6 @@ void CClientExoAppInternal::RunDeathSequence()
 }
 
 #ifndef _XBOX
-void CClientExoAppInternal::UpdateDeathSequence()  // PC 0x0063E320 GOG 0x0063E190
-{
-    unsigned long nTime = (unsigned long)(
-        g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
-    unsigned long nElapsed = nTime - m_nDeathSequenceLastTime;
-    m_nDeathSequenceLastTime = nTime;
-
-    if (m_nGameOver)
-    {
-        m_fDeathSequenceElapsed += nElapsed * 0.001f;
-        if (m_bGameOverPending)
-        {
-            m_bGameOverPending = 0;
-            m_fDeathSequenceScale =
-                (float)(-log(m_fDeathSequenceElapsed /
-                             CLIENT_DEATH_SEQUENCE_DURATION) /
-                        (1.0 - CLIENT_DEATH_SEQUENCE_MIN_SPEED));
-        }
-    }
-}
 #endif
 // PC 0x00642E10 GOG 0x00642CC0
 int CClientExoAppInternal::StopRumblePattern(int nPattern)
@@ -7005,6 +6985,29 @@ int CClientExoAppInternal::SetGameOver(int bGameOver)
 
     return bGameOver;
 }
+
+#ifndef _XBOX
+void CClientExoAppInternal::UpdateDeathSequence()  // PC 0x0063E320 GOG 0x0063E190
+{
+    unsigned long nTime = (unsigned long)(
+        g_pExoBase->m_pExoTimers->GetHighResolutionTimer() / 1000);
+    unsigned long nElapsed = nTime - m_nDeathSequenceLastTime;
+    m_nDeathSequenceLastTime = nTime;
+
+    if (m_nGameOver)
+    {
+        m_fDeathSequenceElapsed += nElapsed * 0.001f;
+        if (m_bGameOverPending)
+        {
+            m_bGameOverPending = 0;
+            m_fDeathSequenceScale =
+                (float)(-log(m_fDeathSequenceElapsed /
+                             CLIENT_DEATH_SEQUENCE_DURATION) /
+                        (1.0 - CLIENT_DEATH_SEQUENCE_MIN_SPEED));
+        }
+    }
+}
+#endif
 // PC 0x0063E3C0 GOG 0x0063E230
 void CClientExoAppInternal::HurryDeathSequence()
 {

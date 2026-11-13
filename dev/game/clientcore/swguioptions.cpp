@@ -288,88 +288,6 @@ void CSWGuiOptionsMouse::OnEnterRevMouseButtons(CSWGuiControl* pControl)
 {
     SetDescription(48722);
 }
-// PC 0x0074F510 GOG 0x0074D9D0
-void CSWGuiOptionsSoundAdvanced::OnEnterOption(CSWGuiControl* pControl)
-{
-    if (pControl == &m_cbForceSoftware)
-    {
-        SetDescription(48718);
-        return;
-    }
-    if (pControl == &m_btnEAX || pControl == &m_btnEAXRight ||
-        pControl == &m_btnEAXLeft)
-    {
-        SetDescription(48719);
-    }
-}
-// PC 0x0074F560 GOG 0x0074DA20
-void CSWGuiOptionsSoundAdvanced::OnDiscardChanges(CSWGuiControl* pControl)
-{
-    m_bDiscard = 1;
-    OnBButtonPressed(pControl);
-}
-// PC 0x0074F570 GOG 0x0074DA30
-void CSWGuiOptionsCheckbox::SetExtent(const CSWGuiExtent& cExtent)
-{
-    CSWGuiExtent cBox;
-    cBox.m_nLeft = cExtent.m_nLeft;
-    cBox.m_nTop = cExtent.m_nTop;
-    cBox.m_nWidth = 25;
-    cBox.m_nHeight = 25;
-    cBox.m_nTop += (cExtent.m_nHeight - cBox.m_nHeight) / 2 + 2;
-    m_cBorder.SetExtent(cBox);
-    m_cHilite.SetExtent(cBox);
-    m_cToggleHilite.SetExtent(cBox);
-    m_cToggleBorder.SetExtent(cBox);
-    CSWGuiExtent cText = cExtent;
-    cText.m_nLeft += 30;
-    cText.m_nWidth -= 30;
-    m_cText.SetExtent(cText);
-    m_cExtent = cExtent;
-}
-// PC 0x0074F650 GOG 0x0074DB10
-void CSWGuiOptionsCheckbox::Draw(float fElapsed)
-{
-    CSWGuiTextParams* pParams;
-    if (m_bActive)
-    {
-        pParams = &m_cText.m_cParams;
-        pParams->SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
-        pParams->m_bHilightText = 1;
-    }
-#ifndef _XBOX
-    else if (!m_bHilightOnOver)
-    {
-        m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
-    }
-#endif
-    else
-    {
-        pParams = &m_cText.m_cParams;
-        pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
-        pParams->m_bHilightText = 0;
-    }
-    CSWGuiButtonToggle::Draw(fElapsed);
-}
-// PC 0x0074F6D0 GOG 0x0074DB90
-void CSWGuiOptionsCheckbox::Load(CResGFF* pGFF, CResStruct& cStruct)
-{
-    CSWGuiButtonToggle::Load(pGFF, cStruct);
-    m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_TEXT;
-    m_cToggleBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_TEXT;
-    m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
-    m_cToggleHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
-}
-// PC 0x0074F970 GOG 0x0074DC30
-void CSWGuiOptionsMouse::OnEnterSlider(CSWGuiControl* pControl)
-{
-    if (pControl == &m_sldMouseSen)
-    {
-        SetDescription(48721);
-    }
-    CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
-    pParams->m_bPulsing = 1;
-}
 // PC 0x0074D6F0 GOG 0x0074DC90
 void CSWGuiOptionsMain::OnGameplayOpt(CSWGuiControl* pControl)
 {
@@ -762,17 +680,6 @@ void CSWGuiOptionsGraphics::OnMoveGammaSlider(CSWGuiControl* pControl)
     g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nBrightness = nValue;
 }
 #endif
-// PC 0x0074F770 GOG 0x00758FA0
-void CSWGuiOptionsMouse::OnPanelAdded()
-{
-    CSWGuiPanel::OnPanelAdded();
-}
-// PC 0x0074F9B0 GOG 0x0074DC70
-void CSWGuiOptionsSound::OnExitSlider(CSWGuiControl* pControl)
-{
-    CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
-    pParams->m_bPulsing = 0;
-}
 
 #ifndef _XBOX
 void CSWGuiOptionsGraphics::OnShadows(CSWGuiControl* pControl)  // PC 0x0074E220 GOG 0x0074E7C0
@@ -955,113 +862,6 @@ void CSWGuiOptionsGraphicsAdvanced::SetAntiAliasText()
 }
 
 #ifndef _XBOX
-CSWGuiOptionsResolution::CSWGuiOptionsResolution(CSWGuiManager* pManager)  // PC 0x007517D0 GOG 0x007501D0
-    : CSWGuiPanel(pManager)
-{
-    StartLoadFromLayout("optresolution_p");
-    InitControl(m_lblResolution, "LBL_RESOLUTION", 1);
-    InitControl(m_lbResolutions, "LB_RESOLUTIONS", 1);
-    InitControl(m_btnAccept, "BTN_OK", 1);
-    InitControl(m_btnBack, "BTN_CANCEL", 1);
-    StopLoadFromLayout();
-    CSWGuiButton* pOk = &m_btnAccept;
-    pOk->AddEvent(
-        GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiOptionsResolution::OnResolutionChosen);
-    pOk->m_bFocusable = 0;
-    CSWGuiButton* pCancel = &m_btnBack;
-    pCancel->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
-    pCancel->m_bFocusable = 0;
-    CSWGuiListBox* pList = &m_lbResolutions;
-    pList->SetSelectOnLeftClick(1);
-    SetActiveControl(pList, 0);
-    CSWGuiButton* pSelected = 0;
-    unsigned long nMode = 0;
-    CExoArrayList<CSWGuiControl*> lstControls;
-    CExoString sText;
-    DEVMODE cDevMode;
-    memset(&cDevMode, 0, sizeof(cDevMode));
-    cDevMode.dmSize = 156;
-    CSWGuiControl* pProtoItem = m_lbResolutions.m_pProtoItem;
-    if (pProtoItem != 0)
-    {
-        CSWGuiButton* pProto = pProtoItem->AsButton();
-        if (EnumDisplaySettings(0, 0, &cDevMode))
-        {
-            do
-            {
-                if (cDevMode.dmDisplayFrequency ==
-                        CAuroraInterface::VIDEO_REFRESH_DEFAULT ||
-                    cDevMode.dmDisplayFrequency ==
-                        CAuroraInterface::VIDEO_REFRESH_DEFAULT_ALTERNATE)
-                {
-                    if (cDevMode.dmBitsPerPel ==
-                            CClientExoAppInternal::VIDEO_BITS_PER_PIXEL &&
-                        IS_VALID_RESOLUTION(cDevMode.dmPelsWidth,
-                                            cDevMode.dmPelsHeight))
-                    {
-                        CSWGuiButton* pButton = new CSWGuiButton;
-                        pButton->Initialize(pProto->m_cExtent, pProto);
-                        sText.Format("%d x %d", cDevMode.dmPelsWidth,
-                                     cDevMode.dmPelsHeight);
-                        pButton->m_cText.m_cParams.SetText(sText);
-                        pButton->m_nIndex = nMode;
-                        pButton->AddEvent(
-                            GUIEVENT_ACTIVATE, this,
-                            (CSWGuiHandler)&CSWGuiOptionsResolution::
-                                OnResolutionChosen);
-                        lstControls.Add(pButton);
-                        if (cDevMode.dmPelsWidth == g_nScreenWidth &&
-                            cDevMode.dmPelsHeight == g_nScreenHeight)
-                        {
-                            pSelected = pButton;
-                        }
-                    }
-                }
-                else
-                {
-                    if (cDevMode.dmBitsPerPel ==
-                            CClientExoAppInternal::VIDEO_BITS_PER_PIXEL &&
-                        cDevMode.dmDisplayFrequency >=
-                            CClientExoAppInternal::VIDEO_REFRESH_RATE &&
-                        IS_VALID_RESOLUTION(cDevMode.dmPelsWidth,
-                                            cDevMode.dmPelsHeight) &&
-                        (float)cDevMode.dmDisplayFrequency <=
-                            (float)CClientExoAppInternal::VIDEO_MAX_STANDARD_REFRESH_RATE)
-                    {
-                        CSWGuiButton* pButton = new CSWGuiButton;
-                        pButton->Initialize(pProto->m_cExtent, pProto);
-                        sText.Format("%d x %d @ %d Hz", cDevMode.dmPelsWidth,
-                                     cDevMode.dmPelsHeight,
-                                     cDevMode.dmDisplayFrequency);
-                        pButton->m_cText.m_cParams.SetText(sText);
-                        pButton->m_nIndex = nMode;
-                        pButton->AddEvent(
-                            GUIEVENT_ACTIVATE, this,
-                            (CSWGuiHandler)&CSWGuiOptionsResolution::
-                                OnResolutionChosen);
-                        lstControls.Add(pButton);
-                        if (cDevMode.dmDisplayFrequency ==
-                            g_nDesiredFullScreenRefreshRate)
-                        {
-                            if (cDevMode.dmPelsWidth == g_nScreenWidth &&
-                                cDevMode.dmPelsHeight == g_nScreenHeight)
-                            {
-                                pSelected = pButton;
-                            }
-                        }
-                    }
-                }
-                nMode++;
-            } while (EnumDisplaySettings(0, nMode, &cDevMode));
-        }
-        m_lbResolutions.AddControls(lstControls, 0, 1, 0);
-        if (pSelected != 0)
-        {
-            m_lbResolutions.SetSelectedControl(pSelected, 0);
-        }
-    }
-    m_nUnknown80C = 0;
-}
 #endif
 // PC 0x0074E770 GOG 0x0074ECF0
 void CSWGuiOptionsGraphicsAdvanced::SetAnisotropyText()
@@ -1839,6 +1639,89 @@ void CSWGuiOptionsSoundAdvanced::EnableEAXControls(int bEnable)
     m_btnEAXRight.SetEnabled(bEnable);
     m_btnEAXLeft.SetEnabled(bEnable);
 }
+
+// PC 0x0074F510 GOG 0x0074D9D0
+void CSWGuiOptionsSoundAdvanced::OnEnterOption(CSWGuiControl* pControl)
+{
+    if (pControl == &m_cbForceSoftware)
+    {
+        SetDescription(48718);
+        return;
+    }
+    if (pControl == &m_btnEAX || pControl == &m_btnEAXRight ||
+        pControl == &m_btnEAXLeft)
+    {
+        SetDescription(48719);
+    }
+}
+
+// PC 0x0074F560 GOG 0x0074DA20
+void CSWGuiOptionsSoundAdvanced::OnDiscardChanges(CSWGuiControl* pControl)
+{
+    m_bDiscard = 1;
+    OnBButtonPressed(pControl);
+}
+
+// PC 0x0074F570 GOG 0x0074DA30
+void CSWGuiOptionsCheckbox::SetExtent(const CSWGuiExtent& cExtent)
+{
+    CSWGuiExtent cBox;
+    cBox.m_nLeft = cExtent.m_nLeft;
+    cBox.m_nTop = cExtent.m_nTop;
+    cBox.m_nWidth = 25;
+    cBox.m_nHeight = 25;
+    cBox.m_nTop += (cExtent.m_nHeight - cBox.m_nHeight) / 2 + 2;
+    m_cBorder.SetExtent(cBox);
+    m_cHilite.SetExtent(cBox);
+    m_cToggleHilite.SetExtent(cBox);
+    m_cToggleBorder.SetExtent(cBox);
+    CSWGuiExtent cText = cExtent;
+    cText.m_nLeft += 30;
+    cText.m_nWidth -= 30;
+    m_cText.SetExtent(cText);
+    m_cExtent = cExtent;
+}
+
+// PC 0x0074F650 GOG 0x0074DB10
+void CSWGuiOptionsCheckbox::Draw(float fElapsed)
+{
+    CSWGuiTextParams* pParams;
+    if (m_bActive)
+    {
+        pParams = &m_cText.m_cParams;
+        pParams->SetColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
+        pParams->m_bHilightText = 1;
+    }
+#ifndef _XBOX
+    else if (!m_bHilightOnOver)
+    {
+        m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
+    }
+#endif
+    else
+    {
+        pParams = &m_cText.m_cParams;
+        pParams->SetColor(CGuiInGame::COLOR_NEW_TEXT);
+        pParams->m_bHilightText = 0;
+    }
+    CSWGuiButtonToggle::Draw(fElapsed);
+}
+
+// PC 0x0074F6D0 GOG 0x0074DB90
+void CSWGuiOptionsCheckbox::Load(CResGFF* pGFF, CResStruct& cStruct)
+{
+    CSWGuiButtonToggle::Load(pGFF, cStruct);
+    m_cBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_TEXT;
+    m_cToggleBorder.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_TEXT;
+    m_cHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+    m_cToggleHilite.m_cParams.m_vColor = CGuiInGame::COLOR_NEW_HIGHLIGHT;
+}
+
+// PC 0x0074F770 GOG 0x00758FA0
+void CSWGuiOptionsMouse::OnPanelAdded()
+{
+    CSWGuiPanel::OnPanelAdded();
+}
 // PC 0x0074F780 GOG 0x0074F7A0
 void CSWGuiOptionsMouse::OnRevMouseButtons(CSWGuiControl* pControl)
 {
@@ -1872,17 +1755,6 @@ void CSWGuiOptionsMouse::OnDefault(CSWGuiControl* pControl)
         SetUpOptions();
     }
 }
-// PC 0x00752800 GOG 0x00751100
-void CSWGuiOptionsSound::OnAdvanced(CSWGuiControl* pControl)
-{
-    int bSelected = pControl->m_bSelected;
-    if (bSelected != 0)
-    {
-        CSWGuiOptionsSoundAdvanced* pPanel =
-            new CSWGuiOptionsSoundAdvanced(GetManager());
-        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
-    }
-}
 // PC 0x0074F8D0 GOG 0x0074F900
 void CSWGuiOptionsMouse::SetUpOptions()
 {
@@ -1904,6 +1776,24 @@ void CSWGuiOptionsMouse::OnMoveMouseSenSlider(CSWGuiControl* pControl)
     int nValue = pControl->AsSlider()->m_nCurValue;
     g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nMouseSensitivity =
         nValue;
+}
+
+// PC 0x0074F970 GOG 0x0074DC30
+void CSWGuiOptionsMouse::OnEnterSlider(CSWGuiControl* pControl)
+{
+    if (pControl == &m_sldMouseSen)
+    {
+        SetDescription(48721);
+    }
+    CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
+    pParams->m_bPulsing = 1;
+}
+
+// PC 0x0074F9B0 GOG 0x0074DC70
+void CSWGuiOptionsSound::OnExitSlider(CSWGuiControl* pControl)
+{
+    CSWGuiImageParams* pParams = &pControl->AsSlider()->m_cImage.m_cParams;
+    pParams->m_bPulsing = 0;
 }
 // PC 0x0074F9D0 GOG 0x0074F9A0
 void CSWGuiOptionsMain::HandleInputEvent(int nEvent, int nState)
@@ -2302,6 +2192,116 @@ CSWGuiOptionsSoundAdvanced::CSWGuiOptionsSoundAdvanced(CSWGuiManager* pManager)
     SetActiveControl(&m_cbForceSoftware, 0);
     m_bDiscard = 0;
 }
+
+#ifndef _XBOX
+CSWGuiOptionsResolution::CSWGuiOptionsResolution(CSWGuiManager* pManager)  // PC 0x007517D0 GOG 0x007501D0
+    : CSWGuiPanel(pManager)
+{
+    StartLoadFromLayout("optresolution_p");
+    InitControl(m_lblResolution, "LBL_RESOLUTION", 1);
+    InitControl(m_lbResolutions, "LB_RESOLUTIONS", 1);
+    InitControl(m_btnAccept, "BTN_OK", 1);
+    InitControl(m_btnBack, "BTN_CANCEL", 1);
+    StopLoadFromLayout();
+    CSWGuiButton* pOk = &m_btnAccept;
+    pOk->AddEvent(
+        GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiOptionsResolution::OnResolutionChosen);
+    pOk->m_bFocusable = 0;
+    CSWGuiButton* pCancel = &m_btnBack;
+    pCancel->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiPanel::OnBButtonPressed);
+    pCancel->m_bFocusable = 0;
+    CSWGuiListBox* pList = &m_lbResolutions;
+    pList->SetSelectOnLeftClick(1);
+    SetActiveControl(pList, 0);
+    CSWGuiButton* pSelected = 0;
+    unsigned long nMode = 0;
+    CExoArrayList<CSWGuiControl*> lstControls;
+    CExoString sText;
+    DEVMODE cDevMode;
+    memset(&cDevMode, 0, sizeof(cDevMode));
+    cDevMode.dmSize = 156;
+    CSWGuiControl* pProtoItem = m_lbResolutions.m_pProtoItem;
+    if (pProtoItem != 0)
+    {
+        CSWGuiButton* pProto = pProtoItem->AsButton();
+        if (EnumDisplaySettings(0, 0, &cDevMode))
+        {
+            do
+            {
+                if (cDevMode.dmDisplayFrequency ==
+                        CAuroraInterface::VIDEO_REFRESH_DEFAULT ||
+                    cDevMode.dmDisplayFrequency ==
+                        CAuroraInterface::VIDEO_REFRESH_DEFAULT_ALTERNATE)
+                {
+                    if (cDevMode.dmBitsPerPel ==
+                            CClientExoAppInternal::VIDEO_BITS_PER_PIXEL &&
+                        IS_VALID_RESOLUTION(cDevMode.dmPelsWidth,
+                                            cDevMode.dmPelsHeight))
+                    {
+                        CSWGuiButton* pButton = new CSWGuiButton;
+                        pButton->Initialize(pProto->m_cExtent, pProto);
+                        sText.Format("%d x %d", cDevMode.dmPelsWidth,
+                                     cDevMode.dmPelsHeight);
+                        pButton->m_cText.m_cParams.SetText(sText);
+                        pButton->m_nIndex = nMode;
+                        pButton->AddEvent(
+                            GUIEVENT_ACTIVATE, this,
+                            (CSWGuiHandler)&CSWGuiOptionsResolution::
+                                OnResolutionChosen);
+                        lstControls.Add(pButton);
+                        if (cDevMode.dmPelsWidth == g_nScreenWidth &&
+                            cDevMode.dmPelsHeight == g_nScreenHeight)
+                        {
+                            pSelected = pButton;
+                        }
+                    }
+                }
+                else
+                {
+                    if (cDevMode.dmBitsPerPel ==
+                            CClientExoAppInternal::VIDEO_BITS_PER_PIXEL &&
+                        cDevMode.dmDisplayFrequency >=
+                            CClientExoAppInternal::VIDEO_REFRESH_RATE &&
+                        IS_VALID_RESOLUTION(cDevMode.dmPelsWidth,
+                                            cDevMode.dmPelsHeight) &&
+                        (float)cDevMode.dmDisplayFrequency <=
+                            (float)CClientExoAppInternal::VIDEO_MAX_STANDARD_REFRESH_RATE)
+                    {
+                        CSWGuiButton* pButton = new CSWGuiButton;
+                        pButton->Initialize(pProto->m_cExtent, pProto);
+                        sText.Format("%d x %d @ %d Hz", cDevMode.dmPelsWidth,
+                                     cDevMode.dmPelsHeight,
+                                     cDevMode.dmDisplayFrequency);
+                        pButton->m_cText.m_cParams.SetText(sText);
+                        pButton->m_nIndex = nMode;
+                        pButton->AddEvent(
+                            GUIEVENT_ACTIVATE, this,
+                            (CSWGuiHandler)&CSWGuiOptionsResolution::
+                                OnResolutionChosen);
+                        lstControls.Add(pButton);
+                        if (cDevMode.dmDisplayFrequency ==
+                            g_nDesiredFullScreenRefreshRate)
+                        {
+                            if (cDevMode.dmPelsWidth == g_nScreenWidth &&
+                                cDevMode.dmPelsHeight == g_nScreenHeight)
+                            {
+                                pSelected = pButton;
+                            }
+                        }
+                    }
+                }
+                nMode++;
+            } while (EnumDisplaySettings(0, nMode, &cDevMode));
+        }
+        m_lbResolutions.AddControls(lstControls, 0, 1, 0);
+        if (pSelected != 0)
+        {
+            m_lbResolutions.SetSelectedControl(pSelected, 0);
+        }
+    }
+    m_nUnknown80C = 0;
+}
+#endif
 // PC 0x00751E50 GOG 0x00750D40
 void CSWGuiOptionsSoundAdvanced::OnDefault(CSWGuiControl* pControl)
 {
@@ -3054,6 +3054,18 @@ CSWGuiOptionsSound::CSWGuiOptionsSound(CSWGuiManager* pManager)
     pDefault->AddEvent(GUIEVENT_ACTIVATE, this, (CSWGuiHandler)&CSWGuiOptionsSound::OnDefault);
     SetActiveControl(&m_sldMusic, 0);
 #endif
+}
+
+// PC 0x00752800 GOG 0x00751100
+void CSWGuiOptionsSound::OnAdvanced(CSWGuiControl* pControl)
+{
+    int bSelected = pControl->m_bSelected;
+    if (bSelected != 0)
+    {
+        CSWGuiOptionsSoundAdvanced* pPanel =
+            new CSWGuiOptionsSoundAdvanced(GetManager());
+        m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
+    }
 }
 
 #ifndef _XBOX

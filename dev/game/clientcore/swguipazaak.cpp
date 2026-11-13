@@ -46,23 +46,6 @@ inline void CSWGuiPazaakGame::CancelHandAction()
     m_nHandAction = 0;
     SetHandEnabled(0);
 }
-// PC 0x006D7740 GOG 0x006D7370
-void CSWGuiPazaakGame::HandleHandcardAction(CSWGuiControl* pControl)
-{
-    if (pControl == NULL || pControl->m_bSelected != 0)
-    {
-        int nAction = m_nHandAction;
-        if (nAction == 1)
-        {
-            HandlePlayHandCard(pControl->m_nID);
-        }
-        else if (nAction == 2)
-        {
-            HandleFlipHandCard();
-        }
-        m_nHandAction = 0;
-    }
-}
 #endif
 
 inline CSWPazaak* CSWGuiPazaakGame::GetPazaak() { return m_pPazaak; }
@@ -2493,6 +2476,26 @@ void CSWGuiPazaakGame::Draw(float fElapsed)
     }
     return CSWGuiPanel::Draw(fElapsed);
 }
+
+#ifndef _XBOX
+// PC 0x006D7740 GOG 0x006D7370
+void CSWGuiPazaakGame::HandleHandcardAction(CSWGuiControl* pControl)
+{
+    if (pControl == NULL || pControl->m_bSelected != 0)
+    {
+        int nAction = m_nHandAction;
+        if (nAction == 1)
+        {
+            HandlePlayHandCard(pControl->m_nID);
+        }
+        else if (nAction == 2)
+        {
+            HandleFlipHandCard();
+        }
+        m_nHandAction = 0;
+    }
+}
+#endif
 
 #ifdef _XBOX
 

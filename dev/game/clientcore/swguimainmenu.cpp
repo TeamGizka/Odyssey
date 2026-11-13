@@ -35,6 +35,39 @@ static inline void SwguimainmenuTrace1();
 
 #ifndef _XBOX
 static int s_nPreCacheStep = 0;
+#endif
+
+#ifndef _XBOX
+void CSWGuiMainMenu::LoadFromLayout(CSWGuiManager* pManager)  // PC 0x006D08A0 GOG 0x006D0790
+{
+    CExoString sLayout;
+    sLayout = "mainmenu8x6_p";
+    if (sLayout.GetLength() > 0)
+    {
+        CResRef cLayout(sLayout);
+        StartLoadFromLayout(cLayout);
+        m_bPositioned = 1;
+    }
+    else
+    {
+        CResRef cLayout("mainmenu_p");
+        StartLoadFromLayout(cLayout);
+        m_bPositioned = 0;
+    }
+    InitControl(m_lbModules, "LB_MODULES", 1);
+    InitControl(m_btnExit, "BTN_EXIT", 1);
+    InitControl(m_btnWarp, "BTN_WARP", 1);
+    InitControl(m_view3D, "LBL_3DVIEW", 1);
+    InitControl(m_btnNewGame, "BTN_NEWGAME", 1);
+    InitControl(m_btnLoadGame, "BTN_LOADGAME", 1);
+    InitControl(m_btnMovies, "BTN_MOVIES", 1);
+    InitControl(m_btnMusic, "BTN_MUSIC", 1);
+    InitControl(m_btnOptions, "BTN_OPTIONS", 1);
+    InitControl(m_lblNewContent, "LBL_NEWCONTENT", 1);
+    InitControl(m_alblBackdrop[0], "LBL_GAMELOGO", 1);
+    InitControl(m_alblBackdrop[1], "LBL_MENUBG", 1);
+    StopLoadFromLayout();
+}
 
 void CSWGuiMainMenu::Draw(float fElapsed)  // PC 0x006D0C10 GOG 0x006D05A0
 {
@@ -65,40 +98,6 @@ void CSWGuiMainMenu::Draw(float fElapsed)  // PC 0x006D0C10 GOG 0x006D05A0
         return;
     }
     m_nDrawCount = ++nDrawCount;
-}
-#endif
-
-#ifndef _XBOX
-void CSWGuiMainMenu::LoadFromLayout(CSWGuiManager* pManager)  // PC 0x006D08A0 GOG 0x006D0790
-{
-    SWGUIMAINMENU_HOLD();
-    CExoString sLayout;
-    sLayout = "mainmenu8x6_p";
-    if (sLayout.GetLength() > 0)
-    {
-        CResRef cLayout(sLayout);
-        StartLoadFromLayout(cLayout);
-        m_bPositioned = 1;
-    }
-    else
-    {
-        CResRef cLayout("mainmenu_p");
-        StartLoadFromLayout(cLayout);
-        m_bPositioned = 0;
-    }
-    InitControl(m_lbModules, "LB_MODULES", 1);
-    InitControl(m_btnExit, "BTN_EXIT", 1);
-    InitControl(m_btnWarp, "BTN_WARP", 1);
-    InitControl(m_view3D, "LBL_3DVIEW", 1);
-    InitControl(m_btnNewGame, "BTN_NEWGAME", 1);
-    InitControl(m_btnLoadGame, "BTN_LOADGAME", 1);
-    InitControl(m_btnMovies, "BTN_MOVIES", 1);
-    InitControl(m_btnMusic, "BTN_MUSIC", 1);
-    InitControl(m_btnOptions, "BTN_OPTIONS", 1);
-    InitControl(m_lblNewContent, "LBL_NEWCONTENT", 1);
-    InitControl(m_alblBackdrop[0], "LBL_GAMELOGO", 1);
-    InitControl(m_alblBackdrop[1], "LBL_MENUBG", 1);
-    StopLoadFromLayout();
 }
 #endif
 // PC 0x006D0D70 GOG 0x006D0B00

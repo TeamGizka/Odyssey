@@ -666,10 +666,6 @@ inline void SetColor4fv(const float* pColor)
 }
 
 #ifndef _XBOX
-void SetMaterialParameter(int nFace, int nMaterial, GLfloat* pfParams)  // PC 0x00463D30 GOG 0x00463E40
-{
-    GLRender_SetMaterialv(nFace, nMaterial, pfParams);
-}
 #endif
 
 int Scene::GetNumRooms()
@@ -785,6 +781,13 @@ void Scene::SetTileLights(const Vector& vPosition, const Vector& vMainLight,
         pTile->m_pSourceLight->m_nPriority = 5;
     }
 }
+
+#ifndef _XBOX
+void SetMaterialParameter(int nFace, int nMaterial, GLfloat* pfParams)  // PC 0x00463D30 GOG 0x00463E40
+{
+    GLRender_SetMaterialv(nFace, nMaterial, pfParams);
+}
+#endif
 // PC 0x00463D60 GOG 0x00463E70
 void Scene::SetTileFlames(const Vector& vPosition, CAurObject* pFlame1,
                          CAurObject* pFlame2)

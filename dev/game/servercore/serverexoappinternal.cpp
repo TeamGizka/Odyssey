@@ -711,88 +711,6 @@ int CServerExoAppInternal::SaveGame(unsigned long nSlot,  // PC 0x004EC6E0 GOG 0
     m_bAutoSaveTimerExpired = 0;
     return 1;
 }
-// PC 0x004ECF10 GOG 0x004EE570
-int CServerExoAppInternal::LoadCharacterFinish(CSWSPlayer* pPlayer, int bSuccess)
-{
-    CSWSModule* pModule = g_pAppManager->m_pServerExoApp->GetModule();
-    CScriptEvent* pEnterEvent = new CScriptEvent;
-    CScriptEvent* pDeathEvent = NULL;
-    int nHead;
-
-    char nAreaLoadState = pPlayer->m_nAreaLoadState;
-    if (nAreaLoadState != 1)
-    {
-        pPlayer->m_nAreaLoadState = CSWSPlayer::AREA_LOAD_PENDING;
-        m_pSWSMessage->SendServerToPlayerLogin_Confirm(pPlayer->GetPlayerId());
-        m_pSWSMessage->SendServerToPlayerModule_Info(pPlayer->GetPlayerId());
-    }
-    if (bSuccess != 0 && pPlayer->m_nModulePlayerIndex != -1)
-    {
-        CSWSObject* pObject = pPlayer->GetGameObject();
-        if (pObject != NULL)
-            delete pObject;
-        pPlayer->LoadCharacterFromIFO(pPlayer->m_nModulePlayerIndex, 1, 1);
-    }
-
-    pEnterEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_CLIENT_ENTER;
-    if (pPlayer->GetGameObject() != NULL)
-    {
-        if (pPlayer->GetGameObject()->AsSWSCreature()->GetDead() == 1 ||
-            pPlayer->GetGameObject()->AsSWSCreature()->GetDeadTemp() == 1)
-        {
-            pDeathEvent = new CScriptEvent;
-            pDeathEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_DEATH;
-        }
-        pEnterEvent->SetObjectID(0, pPlayer->GetGameObject()->GetId());
-
-        CSWSMessage* pMessage =
-            g_pAppManager->m_pServerExoApp->GetSWSMessage();
-        CExoLinkedList<CSWSClient>* pPlayers =
-            g_pAppManager->m_pServerExoApp->GetPlayerList();
-        CSWSCreature* pCreature =
-            pPlayer->GetGameObject()->AsSWSCreature();
-        CExoLinkedListNode* pNode = pPlayers->GetHeadPos();
-        while (pNode != NULL)
-        {
-            CSWSPlayer* pOtherPlayer = (CSWSPlayer*)pPlayers->GetAtPos(pNode);
-            if (pOtherPlayer != NULL &&
-                pOtherPlayer->m_nPlayModuleCharacterListState != 0 &&
-                pMessage != NULL)
-                pMessage->SendServerToPlayerPlayModuleCharacterListResponse(
-                    pOtherPlayer->GetPlayerId(), pCreature->GetId(), 1);
-            pPlayers->GetNext(pNode);
-        }
-    }
-    else
-    {
-        pEnterEvent->SetObjectID(0, OBJECT_INVALID);
-    }
-
-    if (pModule != NULL)
-    {
-        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-            0, 0, pPlayer->GetPlayerId(), pModule->GetId(),
-            CServerAIMaster::EVENT_SIGNAL_EVENT, pEnterEvent);
-        if (pDeathEvent != NULL)
-            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                0, 0, pPlayer->GetGameObject()->GetId(), pModule->GetId(),
-                CServerAIMaster::EVENT_SIGNAL_EVENT, pDeathEvent);
-
-        unsigned long oidPC = pPlayer->m_oidPCObject;
-        CSWSCreature* pCreature =
-            g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(oidPC);
-        if (pCreature != NULL)
-        {
-            if (&pCreature->m_cAppearanceInfo != NULL)
-            {
-                g_pRules->Get2DArrays()->GetAppearance()->GetINTEntry(
-                    pCreature->m_cAppearanceInfo.m_nAppearance, "NORMALHEAD", &nHead);
-                pModule->GetArea()->EnforceNoPCHeadCloning(nHead);
-            }
-        }
-    }
-    return 1;
-}
 #endif
 // PC 0x004ECAA0 GOG 0x004EB1D0
 int CServerExoAppInternal::StorePlayerCharacters()
@@ -943,6 +861,91 @@ int CServerExoAppInternal::StoreCurrentModule()
     }
     return 1;
 }
+
+#ifndef _XBOX
+// PC 0x004ECF10 GOG 0x004EE570
+int CServerExoAppInternal::LoadCharacterFinish(CSWSPlayer* pPlayer, int bSuccess)
+{
+    CSWSModule* pModule = g_pAppManager->m_pServerExoApp->GetModule();
+    CScriptEvent* pEnterEvent = new CScriptEvent;
+    CScriptEvent* pDeathEvent = NULL;
+    int nHead;
+
+    char nAreaLoadState = pPlayer->m_nAreaLoadState;
+    if (nAreaLoadState != 1)
+    {
+        pPlayer->m_nAreaLoadState = CSWSPlayer::AREA_LOAD_PENDING;
+        m_pSWSMessage->SendServerToPlayerLogin_Confirm(pPlayer->GetPlayerId());
+        m_pSWSMessage->SendServerToPlayerModule_Info(pPlayer->GetPlayerId());
+    }
+    if (bSuccess != 0 && pPlayer->m_nModulePlayerIndex != -1)
+    {
+        CSWSObject* pObject = pPlayer->GetGameObject();
+        if (pObject != NULL)
+            delete pObject;
+        pPlayer->LoadCharacterFromIFO(pPlayer->m_nModulePlayerIndex, 1, 1);
+    }
+
+    pEnterEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_CLIENT_ENTER;
+    if (pPlayer->GetGameObject() != NULL)
+    {
+        if (pPlayer->GetGameObject()->AsSWSCreature()->GetDead() == 1 ||
+            pPlayer->GetGameObject()->AsSWSCreature()->GetDeadTemp() == 1)
+        {
+            pDeathEvent = new CScriptEvent;
+            pDeathEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_DEATH;
+        }
+        pEnterEvent->SetObjectID(0, pPlayer->GetGameObject()->GetId());
+
+        CSWSMessage* pMessage =
+            g_pAppManager->m_pServerExoApp->GetSWSMessage();
+        CExoLinkedList<CSWSClient>* pPlayers =
+            g_pAppManager->m_pServerExoApp->GetPlayerList();
+        CSWSCreature* pCreature =
+            pPlayer->GetGameObject()->AsSWSCreature();
+        CExoLinkedListNode* pNode = pPlayers->GetHeadPos();
+        while (pNode != NULL)
+        {
+            CSWSPlayer* pOtherPlayer = (CSWSPlayer*)pPlayers->GetAtPos(pNode);
+            if (pOtherPlayer != NULL &&
+                pOtherPlayer->m_nPlayModuleCharacterListState != 0 &&
+                pMessage != NULL)
+                pMessage->SendServerToPlayerPlayModuleCharacterListResponse(
+                    pOtherPlayer->GetPlayerId(), pCreature->GetId(), 1);
+            pPlayers->GetNext(pNode);
+        }
+    }
+    else
+    {
+        pEnterEvent->SetObjectID(0, OBJECT_INVALID);
+    }
+
+    if (pModule != NULL)
+    {
+        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+            0, 0, pPlayer->GetPlayerId(), pModule->GetId(),
+            CServerAIMaster::EVENT_SIGNAL_EVENT, pEnterEvent);
+        if (pDeathEvent != NULL)
+            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                0, 0, pPlayer->GetGameObject()->GetId(), pModule->GetId(),
+                CServerAIMaster::EVENT_SIGNAL_EVENT, pDeathEvent);
+
+        unsigned long oidPC = pPlayer->m_oidPCObject;
+        CSWSCreature* pCreature =
+            g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(oidPC);
+        if (pCreature != NULL)
+        {
+            if (&pCreature->m_cAppearanceInfo != NULL)
+            {
+                g_pRules->Get2DArrays()->GetAppearance()->GetINTEntry(
+                    pCreature->m_cAppearanceInfo.m_nAppearance, "NORMALHEAD", &nHead);
+                pModule->GetArea()->EnforceNoPCHeadCloning(nHead);
+            }
+        }
+    }
+    return 1;
+}
+#endif
 int CServerExoAppInternal::LoadPrimaryPlayer(CSWSPlayer* pPlayer)  // PC 0x004ED220 GOG 0x004EE880
 {
     CSWSModule* pModule;

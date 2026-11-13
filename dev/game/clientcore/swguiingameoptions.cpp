@@ -8,14 +8,6 @@
 #include "swguiingameautopause.h"
 #include "swguioptions.h"
 #include "swguicustompanel.h"
-// PC 0x00735B90 GOG 0x00735330
-void CSWGuiInGameOptions::OnPanelRemoved()
-{
-    SetActiveControl(0, 0);
-#ifndef _XBOX
-    CSWGuiPanel::OnPanelRemoved();
-#endif
-}
 
 void CSWGuiInGameOptions::OnLoadGame(CSWGuiControl* pControl)
 {
@@ -137,33 +129,6 @@ void CSWGuiInGameOptions::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x00735C20 GOG 0x00735860
-void CSWGuiInGameOptions::SetDescription(unsigned long nStrRef)
-{
-    CSWGuiTextParams* pParams = &m_lblDescription.m_cText.m_cParams;
-    pParams->SetStrRef(nStrRef);
-    CExoString sText(pParams->m_sText);
-    CSWGuiListBox* pListBox = &m_lbDescription;
-    pListBox->ClearItems();
-    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
-    if (sText.GetLength() > 0)
-    {
-        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
-    }
-    else
-    {
-        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
-    }
-    m_lblDescription.SetExtent(cExtent);
-    CSWGuiControl* pControl = &m_lblDescription;
-    pListBox->AddControls(&pControl, 1, 0, 0, 0);
-    pListBox->SetSelectedControl(&m_lblDescription, 0);
-    int bShowScrollIcon = pListBox->m_nContentHeight + pListBox->m_nPadding >
-                              pListBox->m_cItemExtent.m_nHeight &&
-                          pListBox->m_lItems.num > 0 &&
-                          pListBox->m_bHideScrollIcon == 0;
-    m_lblScrollIcon.m_bEnabled = bShowScrollIcon;
-}
 // PC 0x00735B20 GOG 0x007359C0
 void CSWGuiInGameOptions::OnPanelAdded()
 {
@@ -196,6 +161,15 @@ void CSWGuiInGameOptions::OnPanelAdded()
         SetActiveControl(&m_aOptions[0], 0);
     }
 }
+
+// PC 0x00735B90 GOG 0x00735330
+void CSWGuiInGameOptions::OnPanelRemoved()
+{
+    SetActiveControl(0, 0);
+#ifndef _XBOX
+    CSWGuiPanel::OnPanelRemoved();
+#endif
+}
 // PC 0x00735BB0 GOG 0x00735A30
 void CSWGuiInGameOptions::OnQuit(CSWGuiControl* pControl)
 {
@@ -210,6 +184,34 @@ void CSWGuiInGameOptions::OnQuit(CSWGuiControl* pControl)
         pMessageBox->SetMessage(42348);
         m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
     }
+}
+
+// PC 0x00735C20 GOG 0x00735860
+void CSWGuiInGameOptions::SetDescription(unsigned long nStrRef)
+{
+    CSWGuiTextParams* pParams = &m_lblDescription.m_cText.m_cParams;
+    pParams->SetStrRef(nStrRef);
+    CExoString sText(pParams->m_sText);
+    CSWGuiListBox* pListBox = &m_lbDescription;
+    pListBox->ClearItems();
+    CSWGuiExtent cExtent = m_lblDescription.m_cExtent;
+    if (sText.GetLength() > 0)
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetIdealHeight();
+    }
+    else
+    {
+        cExtent.m_nHeight = m_lblDescription.m_cText.GetFontHeight();
+    }
+    m_lblDescription.SetExtent(cExtent);
+    CSWGuiControl* pControl = &m_lblDescription;
+    pListBox->AddControls(&pControl, 1, 0, 0, 0);
+    pListBox->SetSelectedControl(&m_lblDescription, 0);
+    int bShowScrollIcon = pListBox->m_nContentHeight + pListBox->m_nPadding >
+                              pListBox->m_cItemExtent.m_nHeight &&
+                          pListBox->m_lItems.num > 0 &&
+                          pListBox->m_bHideScrollIcon == 0;
+    m_lblScrollIcon.m_bEnabled = bShowScrollIcon;
 }
 // PC 0x00735D80 GOG 0x00735AA0
 void CSWGuiInGameOptions::OnEnterSlot(CSWGuiControl* pControl)

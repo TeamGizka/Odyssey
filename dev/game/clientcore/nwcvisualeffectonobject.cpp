@@ -276,26 +276,6 @@ void CSWCVisualEffectOnObject::UnloadHardCodedVisualEffect()
         m_pEffectModel = 0;
     }
 }
-// PC 0x00702DE0 GOG 0x00700BA0
-void CSWCVisualEffectOnObject::UnloadVisualEffect()
-{
-    int i;
-
-    UnloadHardCodedVisualEffect();
-    for (i = 0; i < 3; i++)
-    {
-        if (m_apAttachedModels[i] != 0)
-        {
-            delete m_apAttachedModels[i];
-            m_apAttachedModels[i] = 0;
-        }
-        if (m_apVisualEffectModels[i] != 0)
-        {
-            delete m_apVisualEffectModels[i];
-            m_apVisualEffectModels[i] = 0;
-        }
-    }
-}
 
 CSWCObject* CSWCVisualEffectOnObject::GetTargetCSWCObject()
 {
@@ -1206,6 +1186,27 @@ int CSWCVisualEffectOnObject::LoadVisualEffect(
     m_bVisualEffectStopped = 1;
     m_bRumblePerformed = 0;
     return 1;
+}
+
+// PC 0x00702DE0 GOG 0x00700BA0
+void CSWCVisualEffectOnObject::UnloadVisualEffect()
+{
+    int i;
+
+    UnloadHardCodedVisualEffect();
+    for (i = 0; i < 3; i++)
+    {
+        if (m_apAttachedModels[i] != 0)
+        {
+            delete m_apAttachedModels[i];
+            m_apAttachedModels[i] = 0;
+        }
+        if (m_apVisualEffectModels[i] != 0)
+        {
+            delete m_apVisualEffectModels[i];
+            m_apVisualEffectModels[i] = 0;
+        }
+    }
 }
 // PC 0x00702E60 GOG 0x00702B00
 void CSWCVisualEffectOnObject::ApplyCheat(unsigned short nVisualEffect)

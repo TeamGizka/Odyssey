@@ -7,21 +7,6 @@
 #include "clientexoapp.h"
 
 static inline void NwcanimbasewieldTrace1();
-// PC 0x006F5100 GOG 0x006F4D40
-void CSWCAnimBaseWield::DisableDistortion()
-{
-    Gob* pLeftModel = GetItemAurObject(m_nLeftItemId, CSWCObject::MODEL_SLOT_DEFAULT);
-    if (pLeftModel != 0)
-    {
-        pLeftModel->DisableDistortion();
-    }
-    Gob* pRightModel = GetItemAurObject(m_nRightItemId, CSWCObject::MODEL_SLOT_DEFAULT);
-    if (pRightModel != 0)
-    {
-        pRightModel->DisableDistortion();
-    }
-    CSWCAnimBase::DisableDistortion();
-}
 
 static inline void NwcanimbasewieldTrace1()
 {
@@ -71,6 +56,70 @@ CSWCAnimBaseWield::~CSWCAnimBaseWield()
 void CSWCAnimBaseWield::SetWieldLimited(int bLimited)
 {
     m_bWieldLimited = bLimited;
+}
+
+// PC 0x006F4800 GOG 0x006F44A0
+int CSWCAnimBaseWield::SetAnimationInternal(CAurObject* pObject,
+                                            unsigned short nAnimation,
+                                            float fSpeed, int nFlags,
+                                            float fBlend)
+{
+    NWCANIMBASEWIELD_TRACE();
+    if (fSpeed == 0.0f)
+    {
+        fSpeed = 1.0f;
+    }
+
+    CSWCItem* pRightItem =
+        g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_nRightItemId);
+    CSWCItem* pLeftItem =
+        g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_nLeftItemId);
+    if (pRightItem != 0 || pLeftItem != 0)
+    {
+        CExoString sAnimation = GetAnimationName(nAnimation);
+        if (pRightItem != 0)
+        {
+            CSWBaseItem* pBaseItem = pRightItem->GetBaseItem();
+            if (pBaseItem->m_nItemType != CSWBaseItem::ITEM_TYPE_TORCH)
+            {
+                Gob* pModel1 = pRightItem->GetModel(MODEL_SLOT_MAIN, 1);
+                if (pModel1 != 0)
+                {
+                    pModel1->PlayAnimation(sAnimation.CStr(), fSpeed, nFlags, fBlend);
+                }
+                Gob* pModel2 = pRightItem->GetModel(MODEL_SLOT_HEAD, 1);
+                if (pModel2 != 0)
+                {
+                    pModel2->PlayAnimation(sAnimation.CStr(), fSpeed, nFlags, fBlend);
+                }
+                Gob* pModel3 = pRightItem->GetModel(MODEL_TAIL, 1);
+                if (pModel3 != 0)
+                {
+                    pModel3->PlayAnimation(sAnimation.CStr(), fSpeed, nFlags, fBlend);
+                }
+            }
+        }
+        if (pLeftItem != 0)
+        {
+            Gob* pModel1 = pLeftItem->GetModel(MODEL_SLOT_MAIN, 1);
+            if (pModel1 != 0)
+            {
+                pModel1->PlayAnimation(sAnimation.CStr(), fSpeed, nFlags, fBlend);
+            }
+            Gob* pModel2 = pLeftItem->GetModel(MODEL_SLOT_HEAD, 1);
+            if (pModel2 != 0)
+            {
+                pModel2->PlayAnimation(sAnimation.CStr(), fSpeed, nFlags, fBlend);
+            }
+            Gob* pModel3 = pLeftItem->GetModel(MODEL_TAIL, 1);
+            if (pModel3 != 0)
+            {
+                pModel3->PlayAnimation(sAnimation.CStr(), fSpeed, nFlags, fBlend);
+            }
+        }
+    }
+    return CSWCAnimBaseTW::SetAnimationInternal(pObject, nAnimation, fSpeed,
+                                                nFlags, fBlend);
 }
 // PC 0x006F4A70 GOG 0x006F43B0
 int CSWCAnimBaseWield::SetAnimationOnSubObjectInternal(
@@ -163,69 +212,6 @@ void CSWCAnimBaseWield::HideWieldedItems(const CResRef& sRight,
     }
 
     m_bItemsHidden = 1;
-}
-// PC 0x006F4800 GOG 0x006F44A0
-int CSWCAnimBaseWield::SetAnimationInternal(CAurObject* pObject,
-                                            unsigned short nAnimation,
-                                            float fSpeed, int nFlags,
-                                            float fBlend)
-{
-    NWCANIMBASEWIELD_TRACE();
-    if (fSpeed == 0.0f)
-    {
-        fSpeed = 1.0f;
-    }
-
-    CSWCItem* pRightItem =
-        g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_nRightItemId);
-    CSWCItem* pLeftItem =
-        g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_nLeftItemId);
-    if (pRightItem != 0 || pLeftItem != 0)
-    {
-        CExoString sAnimation = GetAnimationName(nAnimation);
-        if (pRightItem != 0)
-        {
-            CSWBaseItem* pBaseItem = pRightItem->GetBaseItem();
-            if (pBaseItem->m_nItemType != CSWBaseItem::ITEM_TYPE_TORCH)
-            {
-                Gob* pModel1 = pRightItem->GetModel(MODEL_SLOT_MAIN, 1);
-                if (pModel1 != 0)
-                {
-                    pModel1->PlayAnimation(sAnimation.CStr(), fSpeed, nFlags, fBlend);
-                }
-                Gob* pModel2 = pRightItem->GetModel(MODEL_SLOT_HEAD, 1);
-                if (pModel2 != 0)
-                {
-                    pModel2->PlayAnimation(sAnimation.CStr(), fSpeed, nFlags, fBlend);
-                }
-                Gob* pModel3 = pRightItem->GetModel(MODEL_TAIL, 1);
-                if (pModel3 != 0)
-                {
-                    pModel3->PlayAnimation(sAnimation.CStr(), fSpeed, nFlags, fBlend);
-                }
-            }
-        }
-        if (pLeftItem != 0)
-        {
-            Gob* pModel1 = pLeftItem->GetModel(MODEL_SLOT_MAIN, 1);
-            if (pModel1 != 0)
-            {
-                pModel1->PlayAnimation(sAnimation.CStr(), fSpeed, nFlags, fBlend);
-            }
-            Gob* pModel2 = pLeftItem->GetModel(MODEL_SLOT_HEAD, 1);
-            if (pModel2 != 0)
-            {
-                pModel2->PlayAnimation(sAnimation.CStr(), fSpeed, nFlags, fBlend);
-            }
-            Gob* pModel3 = pLeftItem->GetModel(MODEL_TAIL, 1);
-            if (pModel3 != 0)
-            {
-                pModel3->PlayAnimation(sAnimation.CStr(), fSpeed, nFlags, fBlend);
-            }
-        }
-    }
-    return CSWCAnimBaseTW::SetAnimationInternal(pObject, nAnimation, fSpeed,
-                                                nFlags, fBlend);
 }
 // PC 0x006F4D50 GOG 0x006F49B0
 void CSWCAnimBaseWield::ShowWieldedItems()
@@ -572,4 +558,20 @@ void CSWCAnimBaseWield::EnableDistortion()
         pRightModel->EnableDistortion();
     }
     CSWCAnimBase::EnableDistortion();
+}
+
+// PC 0x006F5100 GOG 0x006F4D40
+void CSWCAnimBaseWield::DisableDistortion()
+{
+    Gob* pLeftModel = GetItemAurObject(m_nLeftItemId, CSWCObject::MODEL_SLOT_DEFAULT);
+    if (pLeftModel != 0)
+    {
+        pLeftModel->DisableDistortion();
+    }
+    Gob* pRightModel = GetItemAurObject(m_nRightItemId, CSWCObject::MODEL_SLOT_DEFAULT);
+    if (pRightModel != 0)
+    {
+        pRightModel->DisableDistortion();
+    }
+    CSWCAnimBase::DisableDistortion();
 }

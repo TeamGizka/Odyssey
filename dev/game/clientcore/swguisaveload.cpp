@@ -1712,6 +1712,71 @@ CSWGuiSaveLoad::~CSWGuiSaveLoad()
     }
 #endif
 }
+
+#ifndef _XBOX
+// PC 0x0070ABD0 GOG 0x0070A910
+void CSWGuiSaveLoad::PopulateGameLB()
+{
+    CExoArrayList<CSWGuiControl*> lControls;
+    m_lblTimePlayed.m_cText.m_cParams.SetText("");
+    m_lbSaveGames.ClearItems();
+    if (m_lFilterNames.num > 0)
+    {
+        m_lblPCName.m_cText.m_cParams.SetText(m_lFilterNames[m_nCurrentFilter]);
+    }
+    else
+    {
+        m_lblPCName.m_cText.m_cParams.SetText("");
+    }
+    m_lblPlanetName.m_cText.m_cParams.SetText("");
+    m_lblAreaName.m_cText.m_cParams.SetText("");
+    for (int nPortrait = 0; nPortrait < 3; ++nPortrait)
+    {
+        CResRef* pPortrait = &CResRef();
+        m_aPartyMemberLabels[nPortrait].m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
+    }
+    m_lblScreenshot.m_cText.m_cParams.SetStrRef(STRREF_NEW_SLOT);
+    CResRef* pScreenshot = &CResRef();
+    m_lblScreenshot.m_cBorder.m_cParams.SetFillImage(*pScreenshot, 0);
+    for (int i = 0; i < m_lEntries.num; i++)
+    {
+        CSWGuiSaveLoadEntry* pEntry = new CSWGuiSaveLoadEntry(m_lEntries[i]);
+        int bShow = 1;
+        if (m_lFilterNames.num > 0)
+        {
+            bShow = pEntry->GetPCName() == m_lFilterNames[m_nCurrentFilter];
+            if (!bShow)
+            {
+                if (pEntry->GetPCName().IsEmpty())
+                {
+                    bShow = 1;
+                }
+            }
+        }
+        if (bShow)
+        {
+            if (pEntry->m_bNewSlot)
+            {
+                lControls.Insert(pEntry, 0);
+            }
+            else
+            {
+                lControls.Add(pEntry);
+            }
+        }
+    }
+    if (lControls.num > 0)
+    {
+        m_lbSaveGames.AddControls(lControls, 1, 0, 0);
+        m_lbSaveGames.SetSelectedControl(m_lbSaveGames.GetControl(0), 0);
+        SetActiveControl(&m_lbSaveGames, 0);
+    }
+    else if (!m_bSaveMode)
+    {
+        m_lblScreenshot.m_cText.m_cParams.SetStrRef(STRREF_NO_SAVES);
+    }
+}
+#endif
 #ifndef _XBOX
 // PC 0x007088D0 GOG 0x00708610
 void CSWGuiSaveLoad::SetEndGameMode()
@@ -2643,68 +2708,6 @@ void CSWGuiSaveLoad::SortGamesByTimeStamp(CExoArrayList<CSWGuiControl*>& lContro
         }
         lControls[i] = lControls[nNewest];
         lControls[nNewest] = pControl;
-    }
-}
-// PC 0x0070ABD0 GOG 0x0070A910
-void CSWGuiSaveLoad::PopulateGameLB()
-{
-    CExoArrayList<CSWGuiControl*> lControls;
-    m_lblTimePlayed.m_cText.m_cParams.SetText("");
-    m_lbSaveGames.ClearItems();
-    if (m_lFilterNames.num > 0)
-    {
-        m_lblPCName.m_cText.m_cParams.SetText(m_lFilterNames[m_nCurrentFilter]);
-    }
-    else
-    {
-        m_lblPCName.m_cText.m_cParams.SetText("");
-    }
-    m_lblPlanetName.m_cText.m_cParams.SetText("");
-    m_lblAreaName.m_cText.m_cParams.SetText("");
-    for (int nPortrait = 0; nPortrait < 3; ++nPortrait)
-    {
-        CResRef* pPortrait = &CResRef();
-        m_aPartyMemberLabels[nPortrait].m_cBorder.m_cParams.SetFillImage(*pPortrait, 0);
-    }
-    m_lblScreenshot.m_cText.m_cParams.SetStrRef(STRREF_NEW_SLOT);
-    CResRef* pScreenshot = &CResRef();
-    m_lblScreenshot.m_cBorder.m_cParams.SetFillImage(*pScreenshot, 0);
-    for (int i = 0; i < m_lEntries.num; i++)
-    {
-        CSWGuiSaveLoadEntry* pEntry = new CSWGuiSaveLoadEntry(m_lEntries[i]);
-        int bShow = 1;
-        if (m_lFilterNames.num > 0)
-        {
-            bShow = pEntry->GetPCName() == m_lFilterNames[m_nCurrentFilter];
-            if (!bShow)
-            {
-                if (pEntry->GetPCName().IsEmpty())
-                {
-                    bShow = 1;
-                }
-            }
-        }
-        if (bShow)
-        {
-            if (pEntry->m_bNewSlot)
-            {
-                lControls.Insert(pEntry, 0);
-            }
-            else
-            {
-                lControls.Add(pEntry);
-            }
-        }
-    }
-    if (lControls.num > 0)
-    {
-        m_lbSaveGames.AddControls(lControls, 1, 0, 0);
-        m_lbSaveGames.SetSelectedControl(m_lbSaveGames.GetControl(0), 0);
-        SetActiveControl(&m_lbSaveGames, 0);
-    }
-    else if (!m_bSaveMode)
-    {
-        m_lblScreenshot.m_cText.m_cParams.SetStrRef(STRREF_NO_SAVES);
     }
 }
 void CSWGuiSaveLoad::PopulateGameList()  // PC 0x0070C600 GOG 0x0070C350

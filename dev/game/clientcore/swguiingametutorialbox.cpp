@@ -287,6 +287,7 @@ int CSWGuiTutorialBox::SetNextMessage()
 CSWGuiTutorialBox::CSWGuiTutorialBox(CSWGuiManager* pManager)
     : CSWGuiMessageBox(pManager)
 {
+    SWGUIINGAMETUTORIALBOX_TRACE();
     m_oidInstigator = OBJECT_INVALID;
     m_oidTarget = OBJECT_INVALID;
     m_nActionParam = 0;

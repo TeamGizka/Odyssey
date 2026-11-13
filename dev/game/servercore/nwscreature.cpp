@@ -4255,6 +4255,58 @@ float CSWSCreature::MaxCleaveRange(unsigned long oidTarget, int nAttackType,
 {
     return MaxAttackRange(oidTarget, nAttackType, bOffHand) + 2.0f;
 }
+
+// PC 0x00526150 GOG 0x005261B0
+int CSWSCreature::LoadFromTemplate(const CResRef& cResRef, int bLoadFromTemplate)
+{
+    CResGFF* pRes = new CResGFF(RESTYPE_UTC, "UTC ", cResRef);
+    if (!pRes->m_bLoaded)
+    {
+        delete pRes;
+        CExoString sError;
+        sError.Format("Creature template '%s' doesn't exist.\n", cResRef.GetResRefStr());
+        pRes = new CResGFF(RESTYPE_UTC, "UTC ", "NW_BADGER");
+        if (!pRes->m_bLoaded)
+        {
+            delete pRes;
+            return 0;
+        }
+    }
+
+    CResStruct stCreature;
+    pRes->GetTopLevelStruct(&stCreature);
+    if (GetStats()->ReadStatsFromGff(pRes, &stCreature, &m_cAppearanceInfo) != 0)
+    {
+        delete pRes;
+        return 0;
+    }
+    ReadScriptsFromGff(pRes, &stCreature);
+    ReadItemsFromGff(pRes, &stCreature, 0, 1, bLoadFromTemplate);
+    GetStats()->ReadSpellsFromGff(pRes, &stCreature);
+    int bSuccess;
+    m_bPMIsDisguised = pRes->ReadFieldBYTE(&stCreature, "PM_IsDisguised", bSuccess, 0);
+    if (m_bPMIsDisguised != 0)
+        m_nPMAppearance = pRes->ReadFieldWORD(&stCreature, "PM_Appearance", bSuccess, 0);
+    int nStealthMode = pRes->ReadFieldBYTE(&stCreature, "StealthMode", bSuccess, 0);
+    SetActivity(ACTIVITY_STEALTH, nStealthMode, 0);
+    LoadObjectState(pRes, &stCreature);
+
+    Vector vPosition;
+    Vector vOrientation;
+    vPosition.m_fX = pRes->ReadFieldFLOAT(&stCreature, "XPosition", bSuccess, 0.0f);
+    vPosition.m_fY = pRes->ReadFieldFLOAT(&stCreature, "YPosition", bSuccess, 0.0f);
+    vPosition.m_fZ = pRes->ReadFieldFLOAT(&stCreature, "ZPosition", bSuccess, 0.0f);
+    vOrientation.m_fX = pRes->ReadFieldFLOAT(&stCreature, "XOrientation", bSuccess, 0.0f);
+    vOrientation.m_fY = pRes->ReadFieldFLOAT(&stCreature, "YOrientation", bSuccess, 0.0f);
+    vOrientation.m_fZ = pRes->ReadFieldFLOAT(&stCreature, "ZOrientation", bSuccess, 0.0f);
+    m_nUnknown22C = pRes->ReadFieldINT(&stCreature, "JoiningXP", bSuccess, 0);
+    SetPosition(vPosition, 1, 1, 0);
+    if (vOrientation.m_fX != 0.0f || vOrientation.m_fY != 0.0f || vOrientation.m_fZ != 0.0f)
+        SetOrientation(vOrientation);
+    PostProcess();
+    delete pRes;
+    return 1;
+}
 // PC 0x005218E0 GOG 0x00521940
 float CSWSCreature::MaxAttackRange(unsigned long oidTarget, int nAttackType,
                                    int bOffHand)
@@ -5036,30 +5088,6 @@ float CSWSCreature::GetRunRate()
     fRunRate = fRunRate * fFactor * 1000.0f;
     return max(1000.0f, fRunRate);
 }
-float CSWSCreature::GetMovementRateFactor(int bIncludeFeats)  // PC 0x0050CAC0 GOG 0x0050CB20
-{
-    float fMovementRateFactor;
-
-    fMovementRateFactor = m_fMovementRateFactor;
-    if (bIncludeFeats)
-    {
-        if (m_pStats->HasFeat(CSWFeat::FEAT_MOBILITY))
-        {
-            fMovementRateFactor += 0.1f;
-        }
-    }
-    if (fMovementRateFactor < 0.125f)
-    {
-        return 0.125f;
-    }
-
-    if (fMovementRateFactor > 1.5f)
-    {
-        return 1.5f;
-    }
-
-    return fMovementRateFactor;
-}
 #ifndef _XBOX
 // PC 0x0050C900 GOG 0x0050C960
 int CSWSCreature::IsWieldingLightsaber()
@@ -5125,6 +5153,33 @@ int CSWSCreature::ConvertGrenadeSpellID(int nSpellID)
     }
     return nNewSpellID;
 }
+
+#endif
+float CSWSCreature::GetMovementRateFactor(int bIncludeFeats)  // PC 0x0050CAC0 GOG 0x0050CB20
+{
+    float fMovementRateFactor;
+
+    fMovementRateFactor = m_fMovementRateFactor;
+    if (bIncludeFeats)
+    {
+        if (m_pStats->HasFeat(CSWFeat::FEAT_MOBILITY))
+        {
+            fMovementRateFactor += 0.1f;
+        }
+    }
+    if (fMovementRateFactor < 0.125f)
+    {
+        return 0.125f;
+    }
+
+    if (fMovementRateFactor > 1.5f)
+    {
+        return 1.5f;
+    }
+
+    return fMovementRateFactor;
+}
+#ifndef _XBOX
 // PC 0x0050CB40 GOG 0x0050CBA0
 void CSWSCreature::SetMovementRateFactor(float fMovementRateFactor)
 {
@@ -11748,57 +11803,6 @@ int CSWSCreature::RunUnequip(unsigned long oidItem, unsigned long oidTarget,
         pMessage->SendServerToPlayerInventory_UnequipCancel(
             pPlayer->m_nPlayerId, oidItem);
     return FALSE;
-}
-// PC 0x00526150 GOG 0x005261B0
-int CSWSCreature::LoadFromTemplate(const CResRef& cResRef, int bLoadFromTemplate)
-{
-    CResGFF* pRes = new CResGFF(RESTYPE_UTC, "UTC ", cResRef);
-    if (!pRes->m_bLoaded)
-    {
-        delete pRes;
-        CExoString sError;
-        sError.Format("Creature template '%s' doesn't exist.\n", cResRef.GetResRefStr());
-        pRes = new CResGFF(RESTYPE_UTC, "UTC ", "NW_BADGER");
-        if (!pRes->m_bLoaded)
-        {
-            delete pRes;
-            return 0;
-        }
-    }
-
-    CResStruct stCreature;
-    pRes->GetTopLevelStruct(&stCreature);
-    if (GetStats()->ReadStatsFromGff(pRes, &stCreature, &m_cAppearanceInfo) != 0)
-    {
-        delete pRes;
-        return 0;
-    }
-    ReadScriptsFromGff(pRes, &stCreature);
-    ReadItemsFromGff(pRes, &stCreature, 0, 1, bLoadFromTemplate);
-    GetStats()->ReadSpellsFromGff(pRes, &stCreature);
-    int bSuccess;
-    m_bPMIsDisguised = pRes->ReadFieldBYTE(&stCreature, "PM_IsDisguised", bSuccess, 0);
-    if (m_bPMIsDisguised != 0)
-        m_nPMAppearance = pRes->ReadFieldWORD(&stCreature, "PM_Appearance", bSuccess, 0);
-    int nStealthMode = pRes->ReadFieldBYTE(&stCreature, "StealthMode", bSuccess, 0);
-    SetActivity(ACTIVITY_STEALTH, nStealthMode, 0);
-    LoadObjectState(pRes, &stCreature);
-
-    Vector vPosition;
-    Vector vOrientation;
-    vPosition.m_fX = pRes->ReadFieldFLOAT(&stCreature, "XPosition", bSuccess, 0.0f);
-    vPosition.m_fY = pRes->ReadFieldFLOAT(&stCreature, "YPosition", bSuccess, 0.0f);
-    vPosition.m_fZ = pRes->ReadFieldFLOAT(&stCreature, "ZPosition", bSuccess, 0.0f);
-    vOrientation.m_fX = pRes->ReadFieldFLOAT(&stCreature, "XOrientation", bSuccess, 0.0f);
-    vOrientation.m_fY = pRes->ReadFieldFLOAT(&stCreature, "YOrientation", bSuccess, 0.0f);
-    vOrientation.m_fZ = pRes->ReadFieldFLOAT(&stCreature, "ZOrientation", bSuccess, 0.0f);
-    m_nUnknown22C = pRes->ReadFieldINT(&stCreature, "JoiningXP", bSuccess, 0);
-    SetPosition(vPosition, 1, 1, 0);
-    if (vOrientation.m_fX != 0.0f || vOrientation.m_fY != 0.0f || vOrientation.m_fZ != 0.0f)
-        SetOrientation(vOrientation);
-    PostProcess();
-    delete pRes;
-    return 1;
 }
 // PC 0x005265E0 GOG 0x00526640
 void CSWSCreature::DoPerceptionUpdateOnCreature(CSWSCreature* pCreature)

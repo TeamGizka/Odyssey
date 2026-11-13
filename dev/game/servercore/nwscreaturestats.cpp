@@ -59,18 +59,6 @@ CSWSStats_SpellLikeAbility::CSWSStats_SpellLikeAbility()
     m_nReady = 1;
     m_nLevel = 0;
 }
-// PC 0x005F0720 GOG 0x005F0700
-void CSWSCreatureStats_ClassInfo::AddKnownSpell(unsigned char nLevel,
-                                               unsigned long nSpell)
-{
-    if (nLevel < 1)
-    {
-        if (m_lstKnownSpells[nLevel].IndexOf(nSpell) == -1)
-        {
-            m_lstKnownSpells[nLevel].Add(nSpell);
-        }
-    }
-}
 
 int CSWSCreatureStats::GetWeaponFocus(CSWSItem* pItem)
 {
@@ -104,6 +92,19 @@ CSWSCreatureStats_ClassInfo::CSWSCreatureStats_ClassInfo()
 CSWSCreatureStats_ClassInfo::~CSWSCreatureStats_ClassInfo()
 {
     m_lstKnownSpells[0].SetSize(0);
+}
+
+// PC 0x005F0720 GOG 0x005F0700
+void CSWSCreatureStats_ClassInfo::AddKnownSpell(unsigned char nLevel,
+                                               unsigned long nSpell)
+{
+    if (nLevel < 1)
+    {
+        if (m_lstKnownSpells[nLevel].IndexOf(nSpell) == -1)
+        {
+            m_lstKnownSpells[nLevel].Add(nSpell);
+        }
+    }
 }
 // PC 0x005F0790 GOG 0x005F0770
 int CSWSCreatureStats::GetMeleeAttackBonus(int bOffHand, int bIncludeBase,
@@ -6793,6 +6794,7 @@ void CSWSCreatureStats::CalcLevelUpNumberFeats(unsigned char nClass,
 void CSWSCreatureStats::SetNormalBonusFlags(unsigned short nFeat,
                                            int& bNormal, int& bBonus)
 {
+    NWSCREATURESTATS_TRACE();
     bNormal = 0;
     bBonus = 0;
 

@@ -196,44 +196,6 @@ void Particle::randomPosition(int nWidth, int nHeight)
 
     m_vPosition = vOffsetX + pEmitter->m_vOrigin + vOffsetY;
 }
-// PC 0x004B8B90 GOG 0x004B8CA0
-void Particle::inheritVelocity(float fTime)
-{
-    Quaternion& qOrientation = m_pEmitter->m_qWorldOrientation;
-    Vector vForward = qOrientation.zdir();
-    Vector vTurn = m_pEmitter->m_vDirection - vForward;
-    Vector vOffset = m_pEmitter->m_vOrigin - m_vPosition;
-    float fScale;
-
-    if (fTime > 0.0f)
-    {
-        fScale = 1.0f / fTime;
-    }
-    else
-    {
-        fScale = 0.01f;
-    }
-
-    float fDistance = sqrt(vOffset * vOffset);
-    Vector vSlide = vTurn * fDistance * fScale;
-    Vector vStep = (m_pEmitter->m_vOrigin - m_pEmitter->m_vLastOrigin) * fScale;
-
-    m_vVelocity = vStep + vSlide;
-    m_fSpeed = sqrt(m_vVelocity.m_fX * m_vVelocity.m_fX +
-                    m_vVelocity.m_fY * m_vVelocity.m_fY +
-                    m_vVelocity.m_fZ * m_vVelocity.m_fZ);
-
-    if (m_fSpeed != 0.0f)
-    {
-        m_vVelocity = Vector(m_vVelocity.m_fX / m_fSpeed,
-                             m_vVelocity.m_fY / m_fSpeed,
-                             m_vVelocity.m_fZ / m_fSpeed);
-    }
-    else
-    {
-        m_vVelocity = Vector(0.0f, 0.0f, 0.0f);
-    }
-}
 
 #ifdef _XBOX
 inline float PartEmitter::GetRadius()
@@ -426,6 +388,45 @@ void Particle::randomDirection(int nWidth, int nHeight)
             }
         }
         m_qOrientation = qNewOrientation;
+    }
+}
+
+// PC 0x004B8B90 GOG 0x004B8CA0
+void Particle::inheritVelocity(float fTime)
+{
+    Quaternion& qOrientation = m_pEmitter->m_qWorldOrientation;
+    Vector vForward = qOrientation.zdir();
+    Vector vTurn = m_pEmitter->m_vDirection - vForward;
+    Vector vOffset = m_pEmitter->m_vOrigin - m_vPosition;
+    float fScale;
+
+    if (fTime > 0.0f)
+    {
+        fScale = 1.0f / fTime;
+    }
+    else
+    {
+        fScale = 0.01f;
+    }
+
+    float fDistance = sqrt(vOffset * vOffset);
+    Vector vSlide = vTurn * fDistance * fScale;
+    Vector vStep = (m_pEmitter->m_vOrigin - m_pEmitter->m_vLastOrigin) * fScale;
+
+    m_vVelocity = vStep + vSlide;
+    m_fSpeed = sqrt(m_vVelocity.m_fX * m_vVelocity.m_fX +
+                    m_vVelocity.m_fY * m_vVelocity.m_fY +
+                    m_vVelocity.m_fZ * m_vVelocity.m_fZ);
+
+    if (m_fSpeed != 0.0f)
+    {
+        m_vVelocity = Vector(m_vVelocity.m_fX / m_fSpeed,
+                             m_vVelocity.m_fY / m_fSpeed,
+                             m_vVelocity.m_fZ / m_fSpeed);
+    }
+    else
+    {
+        m_vVelocity = Vector(0.0f, 0.0f, 0.0f);
     }
 }
 // PC 0x004B8E00 GOG 0x004B8F10

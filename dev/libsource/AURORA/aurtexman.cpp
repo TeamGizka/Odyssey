@@ -827,6 +827,16 @@ void CAurTexture::SetTextureFormat(Aurora::AuroraTextureFormats nFormat)
         pTexture->m_nTextureFormat = nFormat;
     }
 }
+
+// PC 0x00420950 GOG 0x00420960
+void CAurTexture::FreeImage()
+{
+    CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
+    if (pTexture != NULL)
+    {
+        pTexture->FreeImage();
+    }
+}
 // PC 0x00420BE0 GOG 0x00420BF0
 inline LifeTextureController::~LifeTextureController()
 {
@@ -836,15 +846,6 @@ inline LifeTextureController::~LifeTextureController()
 inline LifeTextureController::LifeTextureController(CAurTexture* pTexture)
     : TextureController(pTexture)
 {
-}
-// PC 0x00420950 GOG 0x00420960
-void CAurTexture::FreeImage()
-{
-    CAurTextureBasic* pTexture = GetReferencedTexture()->AsCAurTextureBasic();
-    if (pTexture != NULL)
-    {
-        pTexture->FreeImage();
-    }
 }
 // PC 0x00420B60 GOG 0x00420B70
 inline PerlinTextureController::~PerlinTextureController()

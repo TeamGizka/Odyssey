@@ -33,6 +33,12 @@
 
 extern __int64 g_nCurrentSessionStartFILETIME;
 
+// PC 0x004EA0C0 GOG 0x004EAE20
+CExoString CSWPartyTable::GetPCName()
+{
+    return m_sPCName;
+}
+
 // PC 0x005792E0 GOG 0x00579360
 int CStatusSummary::LoadFromGFF(CResGFF* pGFF, CResStruct& cStruct)
 {
@@ -339,42 +345,6 @@ void CSWPartyTable::UpdateMembers(int bClearActions)
         SavePuppet(j, bClearActions);
     }
 }
-// PC 0x0057CF50 GOG 0x0057CFD0
-int CSWPartyTable::RemovePuppet(int nPUP)
-{
-    if (nPUP < 0 || nPUP >= 3 || m_abPuppetAvailable[nPUP] == 0)
-    {
-        return 0;
-    }
-
-    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
-    unsigned long oidPUP = GetPUPObject(nPUP, 0, 1);
-    CSWSCreature* pCreature = pServerExoApp->GetCreatureByGameObjectID(oidPUP);
-    if (pCreature != NULL)
-    {
-        pCreature->ClearAllEffects(0);
-        pCreature->SetIsPuppet(0);
-        if (pCreature->GetClientCreature() != NULL)
-        {
-            pCreature->SetIsPuppet(0);
-        }
-        SavePuppet(nPUP, 0);
-    }
-
-    for (int i = 0; i < m_nNumPuppets; i++)
-    {
-        if (nPUP == m_anPuppets[i])
-        {
-            for (int j = i + 1; j < m_nNumPuppets; j++)
-            {
-                m_anPuppets[j - 1] = m_anPuppets[j];
-            }
-            m_nNumPuppets--;
-            return 1;
-        }
-    }
-    return 0;
-}
 #ifndef _XBOX
 int CSWPartyTable::RemoveMember(int nNPC)  // PC 0x0057EB80 GOG 0x0057EC00
 {
@@ -416,6 +386,45 @@ int CSWPartyTable::RemoveMember(int nNPC)  // PC 0x0057EB80 GOG 0x0057EC00
     }
     return 0;
 }
+
+#endif
+// PC 0x0057CF50 GOG 0x0057CFD0
+int CSWPartyTable::RemovePuppet(int nPUP)
+{
+    if (nPUP < 0 || nPUP >= 3 || m_abPuppetAvailable[nPUP] == 0)
+    {
+        return 0;
+    }
+
+    CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
+    unsigned long oidPUP = GetPUPObject(nPUP, 0, 1);
+    CSWSCreature* pCreature = pServerExoApp->GetCreatureByGameObjectID(oidPUP);
+    if (pCreature != NULL)
+    {
+        pCreature->ClearAllEffects(0);
+        pCreature->SetIsPuppet(0);
+        if (pCreature->GetClientCreature() != NULL)
+        {
+            pCreature->SetIsPuppet(0);
+        }
+        SavePuppet(nPUP, 0);
+    }
+
+    for (int i = 0; i < m_nNumPuppets; i++)
+    {
+        if (nPUP == m_anPuppets[i])
+        {
+            for (int j = i + 1; j < m_nNumPuppets; j++)
+            {
+                m_anPuppets[j - 1] = m_anPuppets[j];
+            }
+            m_nNumPuppets--;
+            return 1;
+        }
+    }
+    return 0;
+}
+#ifndef _XBOX
 #endif
 int CSWPartyTable::AddMember(int nNPC, unsigned long oidMember)  // PC 0x0057D020 GOG 0x0057D0A0
 {
@@ -1657,11 +1666,6 @@ int CSWPartyTable::ResetCurrentSessionStartTime()
     g_nCurrentSessionStartFILETIME =
         ftNow.dwLowDateTime | ((__int64)ftNow.dwHighDateTime << 32);
     return ftNow.dwLowDateTime;
-}
-// PC 0x004EA0C0 GOG 0x004EAE20
-CExoString CSWPartyTable::GetPCName()
-{
-    return m_sPCName;
 }
 // PC 0x0057A3B0 GOG 0x0057A430
 CExoString CSWPartyTable::GetPCFirstName()

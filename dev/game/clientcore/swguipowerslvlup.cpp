@@ -94,12 +94,55 @@ CSWGuiPowersLevelUp::CSWGuiPowersLevelUp(CSWGuiManager* pManager,
 #endif
     SetActiveControl(&m_lbPowers, 0);
 }
+#ifndef _XBOX
+// PC 0x00761FF0 GOG 0x00762010
+void CSWGuiPowersLevelUp::ShowGranted(CSWGuiControl* pControl)
+{
+    CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
+    m_pManager->AddPanel(pGui->m_pSkillInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
+}
+#endif
+// PC 0x00762020 GOG 0x00762040
+void CSWGuiPowersLevelUp::HandleCancelButton()
+{
+    if (m_pParentPanel != NULL)
+    {
+        m_pManager->PopModalPanel();
+        m_pParentPanel->SetVisible(1);
+        m_bDeferredRemoval = 0;
+        m_nExitState = EXITSTATE_DELETE;
+        m_pParentPanel->CancelledByChild();
+    }
+}
+
+#ifndef _XBOX
+void CSWGuiPowersLevelUp::Draw(float fElapsed)  // PC 0x00762060 GOG 0x00762160
+{
+    switch (m_nPowerState)
+    {
+    case POWER_GRANTED:
+    case POWER_LOCKED:
+        m_btnSelect.m_cText.m_cParams.SetText(m_sDeselectText);
+        m_btnSelect.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_GREEN);
+        m_btnSelect.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_ICON_COLOR;
+        break;
+    case POWER_UNAVAILABLE:
+        m_btnSelect.m_cText.m_cParams.SetText(m_sSelectText);
+        m_btnSelect.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_GREEN);
+        m_btnSelect.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_ICON_COLOR;
+        break;
+    }
+    CSWGuiPanel::Draw(fElapsed);
+}
+
+#endif
 // PC 0x007620D0 GOG 0x00761E10
 CSWGuiPowersLevelUp::~CSWGuiPowersLevelUp()
 {
     m_lbDescription.ClearItems();
     m_lbPowers.ClearItems();
 }
+
 // PC 0x007622D0 GOG 0x007623E0
 void CSWGuiPowersLevelUp::OnPanelAdded()
 {
@@ -127,26 +170,7 @@ void CSWGuiPowersLevelUp::OnPanelAdded()
     }
 #endif
 }
-#ifndef _XBOX
-// PC 0x00761FF0 GOG 0x00762010
-void CSWGuiPowersLevelUp::ShowGranted(CSWGuiControl* pControl)
-{
-    CGuiInGame* pGui = g_pAppManager->m_pClientExoApp->GetInGameGui();
-    m_pManager->AddPanel(pGui->m_pSkillInfoBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
-}
-#endif
-// PC 0x00762020 GOG 0x00762040
-void CSWGuiPowersLevelUp::HandleCancelButton()
-{
-    if (m_pParentPanel != NULL)
-    {
-        m_pManager->PopModalPanel();
-        m_pParentPanel->SetVisible(1);
-        m_bDeferredRemoval = 0;
-        m_nExitState = EXITSTATE_DELETE;
-        m_pParentPanel->CancelledByChild();
-    }
-}
+
 // PC 0x00762350 GOG 0x00762080
 void CSWGuiPowersLevelUp::OnAcceptButton()
 {
@@ -178,26 +202,7 @@ void CSWGuiPowersLevelUp::OnAcceptButton()
         m_pParentPanel->PowersSelectionCompleted();
     }
 }
-
 #ifndef _XBOX
-void CSWGuiPowersLevelUp::Draw(float fElapsed)  // PC 0x00762060 GOG 0x00762160
-{
-    switch (m_nPowerState)
-    {
-    case POWER_GRANTED:
-    case POWER_LOCKED:
-        m_btnSelect.m_cText.m_cParams.SetText(m_sDeselectText);
-        m_btnSelect.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_GREEN);
-        m_btnSelect.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_ICON_COLOR;
-        break;
-    case POWER_UNAVAILABLE:
-        m_btnSelect.m_cText.m_cParams.SetText(m_sSelectText);
-        m_btnSelect.m_cText.m_cParams.SetColor(CGuiInGame::COLOR_NEW_GREEN);
-        m_btnSelect.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_ICON_COLOR;
-        break;
-    }
-    CSWGuiPanel::Draw(fElapsed);
-}
 #endif
 // PC 0x00762640 GOG 0x00762460
 void CSWGuiPowersLevelUp::OnEnterPower(unsigned long nPower)

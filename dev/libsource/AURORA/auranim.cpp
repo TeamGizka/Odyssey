@@ -1628,28 +1628,6 @@ int Gob::PlayAnimation(char* sName, float fSpeed, int nFlags, float fTime)
     return 1;
 }
 float FindAnimScale(Model* pModel, Animation* pAnimation);
-// PC 0x004B7FA0 GOG 0x004B80B0
-LookAtAnimation::LookAtAnimation(CAurObject* pTarget, Part* pPart, Gob* pGob,
-                                 Part* pHeadPart, float fHorizontalLimit,
-                                 float fVerticalLimit, float fDuration,
-                                 float fMaxDelta)
-    : m_pTarget()
-{
-    m_pTarget = pTarget;
-    m_pPart = pPart;
-    m_pGob = pGob;
-    m_pHeadPart = pHeadPart;
-    m_fYawLimit = (fHorizontalLimit < 0.0f ? -fHorizontalLimit : fHorizontalLimit) < LOOKAT_MAX_ANGLE_DEGREES
-        ? (fHorizontalLimit < 0.0f ? -fHorizontalLimit : fHorizontalLimit) : LOOKAT_MAX_ANGLE_DEGREES;
-    m_fPitchLimit = (fVerticalLimit < 0.0f ? -fVerticalLimit : fVerticalLimit) < LOOKAT_MAX_ANGLE_DEGREES
-        ? (fVerticalLimit < 0.0f ? -fVerticalLimit : fVerticalLimit) : LOOKAT_MAX_ANGLE_DEGREES;
-    m_fDuration = fDuration < 0.0f ? -fDuration : fDuration;
-    m_fMaxDistance = fMaxDelta < 0.0f ? -fMaxDelta : fMaxDelta;
-    m_pEndOrientation = 0;
-    m_pStartOrientation = 0;
-    m_bRestoringOrientation = 0;
-    BuildAnimation();
-}
 // PC 0x004B6FE0 GOG 0x004B70F0
 LookAtAnimation::~LookAtAnimation()
 {
@@ -2012,6 +1990,29 @@ void Gob::Animate(float fTimeStep)  // PC 0x004B75D0 GOG 0x004B76E0
         if (rebuildspheres)
             GetMinimumSphere();
     }
+}
+
+// PC 0x004B7FA0 GOG 0x004B80B0
+LookAtAnimation::LookAtAnimation(CAurObject* pTarget, Part* pPart, Gob* pGob,
+                                 Part* pHeadPart, float fHorizontalLimit,
+                                 float fVerticalLimit, float fDuration,
+                                 float fMaxDelta)
+    : m_pTarget()
+{
+    m_pTarget = pTarget;
+    m_pPart = pPart;
+    m_pGob = pGob;
+    m_pHeadPart = pHeadPart;
+    m_fYawLimit = (fHorizontalLimit < 0.0f ? -fHorizontalLimit : fHorizontalLimit) < LOOKAT_MAX_ANGLE_DEGREES
+        ? (fHorizontalLimit < 0.0f ? -fHorizontalLimit : fHorizontalLimit) : LOOKAT_MAX_ANGLE_DEGREES;
+    m_fPitchLimit = (fVerticalLimit < 0.0f ? -fVerticalLimit : fVerticalLimit) < LOOKAT_MAX_ANGLE_DEGREES
+        ? (fVerticalLimit < 0.0f ? -fVerticalLimit : fVerticalLimit) : LOOKAT_MAX_ANGLE_DEGREES;
+    m_fDuration = fDuration < 0.0f ? -fDuration : fDuration;
+    m_fMaxDistance = fMaxDelta < 0.0f ? -fMaxDelta : fMaxDelta;
+    m_pEndOrientation = 0;
+    m_pStartOrientation = 0;
+    m_bRestoringOrientation = 0;
+    BuildAnimation();
 }
 // PC 0x004B8110 GOG 0x004B8220
 void Gob::BeginLookAtAnimate(CAurObject* pTarget, char* sTargetPart,
