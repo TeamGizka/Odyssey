@@ -27,7 +27,7 @@ scripts/      extract_res.py: copies the cursors and icon out of your swkotor2.e
   python scripts/extract_res.py "C:\path\to\swkotor2.exe"
   ```
 
-  This writes `dev/game/swmain/res/` (`icon101.ico`, `cursor1.cur` ... `cursor92.cur`) and checks each file against
+  This writes `dev/game/swmain/res/` (`icon101.ico`, `cursors.res`) and checks each file against
   `scripts/extract_res.sha256`.
 - The Bink 1.6b and Miles 6.6g import libraries, copied to `3rdparty/Bink/1.6b/lib/binkw32.lib` and
   `3rdparty/Miles/6.6g/lib/mss32.lib` (see their README.md and MANIFEST.txt).
@@ -45,8 +45,9 @@ cmake --build --preset vc70
 
 The executable is written to `build/vc70/release/swkotor2.exe`. Targets: `swmain` links
 `dev/game/swmain/swkotor2.exe` in the build directory; `swkotor2_release` (part of the default build) writes
-`release/swkotor2.exe` from it, with the link time stamp and checksum fields of the shipped file
-(`cmake/release/release_header.py`). The `xbox` preset configures the libraries
+`release/swkotor2.exe` from it: the cursors are added with the Win32 resource-update API, which rewrites the
+resource section as the shipped file's (`cmake/release/release_resources.py`), then the link time stamp and checksum
+fields of the shipped file are set (`cmake/release/release_header.py`). The `xbox` preset configures the libraries
 for Xbox (environment variables `XDK_ROOT` and `VS2002_ROOT`); there is no Xbox executable yet.
 
 ## Addresses
