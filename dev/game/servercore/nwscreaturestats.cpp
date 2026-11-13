@@ -712,14 +712,9 @@ short CSWSCreatureStats::GetArmorClassVersus(CSWSCreature* pTarget,
     if (!bTouchAttack)
     {
         GetACNaturalBase();
-        char nNaturalPenalty = m_nACNaturalPenalty;
-        unsigned char nNaturalBase = m_nACNaturalBase;
-        char nNaturalBonus = m_nACNaturalBonus;
-        char nArmorPenalty = m_nACArmorPenalty;
-        nNaturalAC = (char)(nNaturalBase +
-                           (nNaturalBonus - nNaturalPenalty));
-        unsigned char nArmorBase = m_nACArmorBase;
-        nArmorAC = (char)(nArmorBase + (m_nACArmorBonus - nArmorPenalty));
+        nNaturalAC = (char)(m_nACNaturalBase +
+                           (m_nACNaturalBonus - m_nACNaturalPenalty));
+        nArmorAC = (char)(m_nACArmorBase + (m_nACArmorBonus - m_nACArmorPenalty));
         nShieldAC = (char)(m_nACShieldBase +
                           (m_nACShieldBonus - m_nACShieldPenalty));
     }
@@ -745,7 +740,7 @@ short CSWSCreatureStats::GetArmorClassVersus(CSWSCreature* pTarget,
         if (nShieldAC)
         {
             sBonus.Format(" + %d (Shield AC)", nShieldAC);
-            pTarget->GetCombatRound()->GetAttack(nAttack)->m_sAttackDebugText = sDebug + sBonus;
+            pTarget->m_pcCombatRound->GetAttack(nAttack)->m_sAttackDebugText = sDebug + sBonus;
             sDebug = pTarget->GetCombatRound()->GetAttack(nAttack)->m_sAttackDebugText;
         }
     }
@@ -789,7 +784,7 @@ short CSWSCreatureStats::GetArmorClassVersus(CSWSCreature* pTarget,
         if (nDexMod)
         {
             sBonus.Format(" + %d (Dex Mod)", nDexMod);
-            pTarget->GetCombatRound()->GetAttack(nAttack)->m_sAttackDebugText = sDebug + sBonus;
+            pTarget->m_pcCombatRound->GetAttack(nAttack)->m_sAttackDebugText = sDebug + sBonus;
             sDebug = pTarget->GetCombatRound()->GetAttack(nAttack)->m_sAttackDebugText;
         }
         if (nDodgeMod)
@@ -1037,7 +1032,6 @@ short CSWSCreatureStats::GetArmorClassVersus(CSWSCreature* pTarget,
         nAC -= SW_DEBILITATED_AC_PENALTY;
         pAttack->m_Flags.m_nDebilitatedModifier = -SW_DEBILITATED_AC_PENALTY;
     }
-    EXOLOG("CSWSCreatureStats::GetArmorClassVersus: effect natural bonus %p", &nNaturalBonus);
     return nAC;
 }
 // PC 0x005F8F90
@@ -7091,10 +7085,17 @@ char CSWSCreatureStats::GetDEXMod(int bWithEffects)
         CSWSItem* pArmor =
             GetCreature()->GetInventory()->GetItemInSlot(INVENTORY_SLOT_ARMOUR);
 
-        if (pArmor != NULL && pArmor->ComputeArmorClass() > 0)
+        if (pArmor != NULL)
         {
-            nDexBonus = pArmor->GetBaseItem()->m_nDexBonus + pArmor->m_n2EC;
-            bUseArmorLimit = 1;
+            int nArmorClass = pArmor->ComputeArmorClass();
+            if (nArmorClass > 0)
+            {
+                CSWBaseItem* pBaseItem = pArmor->GetBaseItem();
+                unsigned char nArmorDex = pBaseItem->m_nDexBonus;
+                int nArmorBonus = pArmor->m_n2EC;
+                nDexBonus = nArmorDex + nArmorBonus;
+                bUseArmorLimit = 1;
+            }
         }
     }
 

@@ -1868,7 +1868,6 @@ void CSWSItem::AddFeatRequirements(CExoString& sString)
     int nFeat;
     int nName;
     int nColon;
-    int nProperty;
     CSWItemProperty* pProperty;
 
     for (int i = 0; i < GetBaseItem()->GetRequiredFeatCount(); ++i)
@@ -1921,9 +1920,9 @@ void CSWSItem::AddFeatRequirements(CExoString& sString)
 
     if (GetPropertyByTypeExists(CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_FEAT, 0))
     {
-        for (nProperty = 0; nProperty < m_nPassiveProperties; ++nProperty)
+        for (i = 0; i < m_nPassiveProperties; ++i)
         {
-            pProperty = GetPassiveProperty(nProperty);
+            pProperty = GetPassiveProperty(i);
             if ((pProperty->m_nUpgradeType == CSWItemProperty::UPGRADE_TYPE_NONE ||
                  ((CSWSItem::UPGRADE_PROPERTY_MASK << pProperty->m_nUpgradeType) & m_nUpgrades) != 0) &&
                 pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_FEAT)

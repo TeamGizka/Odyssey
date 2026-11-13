@@ -564,8 +564,11 @@ int CSWSCreature::ResolveDefensiveEffects(CSWSObject* pTarget, int bRangedAttack
         unsigned char nResult;
         if (pCreature->m_bHasAssuredDeflection)
         {
-            bCanReflect = pCreature->m_bAssuredDeflection;
             bResult = 1;
+            if (pCreature->m_bAssuredDeflection == 0)
+                bCanReflect = 0;
+            else
+                bCanReflect = 1;
         }
         else
         {
@@ -1539,8 +1542,8 @@ void CSWSCreature::ResolveRangedSpecialAttack(CSWSObject* pTarget,
 {
     if (pTarget != NULL && bUseAttackResult == 0)
     {
-        CSWSCombatAttackData* pAttack =
-            m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack);
+        int nCurrentAttack = m_pcCombatRound->m_nCurrentAttack;
+        CSWSCombatAttackData* pAttack = m_pcCombatRound->GetAttack(nCurrentAttack);
         CSWCCreature* pClientCreature = GetClientCreature();
         if (pClientCreature != NULL)
         {
@@ -1550,11 +1553,11 @@ void CSWSCreature::ResolveRangedSpecialAttack(CSWSObject* pTarget,
                 nWieldClass == CSWCAnimBase::WIELD_CLASS_5)
             {
                 int nAssassinateLevel = 0;
-                if (m_pStats->HasFeat(FEAT_RANGED_ASSASSINATE_3))
+                if (GetStats()->HasFeat(FEAT_RANGED_ASSASSINATE_3))
                     nAssassinateLevel = 3;
-                else if (m_pStats->HasFeat(FEAT_RANGED_ASSASSINATE_2))
+                else if (GetStats()->HasFeat(FEAT_RANGED_ASSASSINATE_2))
                     nAssassinateLevel = 2;
-                else if (m_pStats->HasFeat(FEAT_RANGED_ASSASSINATE_1))
+                else if (GetStats()->HasFeat(FEAT_RANGED_ASSASSINATE_1))
                     nAssassinateLevel = 1;
                 if (nAssassinateLevel != 0 &&
                     IsAttackResultHit(pAttack->m_nAttackResult) &&
@@ -1570,8 +1573,8 @@ void CSWSCreature::ResolveRangedSpecialAttack(CSWSObject* pTarget,
                     pAssassinateEffect->SetInteger(0, nAssassinateLevel);
                     pAssassinateEffect->SetCreator(GetId());
                     CSWSCreature* pCreature = pTarget->AsSWSCreature();
-                    int nDC = m_pStats->GetLevel(0) + RANGED_ASSASSINATE_BASE_DC;
-                    if (pCreature->m_pStats->GetEffectLinkImmunity(pAssassinateEffect) == 0 &&
+                    int nDC = GetStats()->GetLevel(0) + RANGED_ASSASSINATE_BASE_DC;
+                    if (pCreature->GetStats()->GetEffectLinkImmunity(pAssassinateEffect) == 0 &&
                         pCreature->SavingThrowRoll(SAVING_THROW_FORT, nDC, 0,
                                                   GetId(), 1, 0, 1) == 0)
                     {
@@ -1584,7 +1587,6 @@ void CSWSCreature::ResolveRangedSpecialAttack(CSWSObject* pTarget,
                 }
             }
         }
-        int nACPenalty = 0;
         if (pAttack->m_nAttackType != 0)
         {
             if (m_pStats->GetFeatRemainingUses(pAttack->m_nAttackType) <= 0)
@@ -1610,20 +1612,20 @@ void CSWSCreature::ResolveRangedSpecialAttack(CSWSObject* pTarget,
                         pPushEffect->SetCreator(GetId());
                         CSWSCreature* pCreature = pTarget->AsSWSCreature();
                         CSWSCreatureStats* pStats = m_pStats;
-                        int nDexMod = pStats->GetDEXMod(0);
-                        int nDC = pStats->GetLevel(0) + nDexMod * 2;
-                        if (pCreature->m_pStats->GetEffectLinkImmunity(pPushEffect) == 0 &&
+                        int nDC = pStats->GetLevel(0) + pStats->GetDEXMod(0) * 2;
+                        if (pCreature->GetStats()->GetEffectLinkImmunity(pPushEffect) == 0 &&
                             pCreature->SavingThrowRoll(SAVING_THROW_FORT, nDC, 0,
                                                       GetId(), 1, 0, 1) == 0)
                         {
                             pAttack->m_lstEffects.Add(pPushEffect);
                             pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_KNOCKDOWN;
+                            pAttack->m_Extra4.m_nUnknown14 = 1;
                         }
                         else
                         {
                             delete pPushEffect;
+                            pAttack->m_Extra4.m_nUnknown14 = 1;
                         }
-                        pAttack->m_Extra4.m_nUnknown14 = 1;
                     }
                     break;
                 }
@@ -1631,6 +1633,7 @@ void CSWSCreature::ResolveRangedSpecialAttack(CSWSObject* pTarget,
             case CSWFeat::FEAT_RAPID_SHOT:
             case CSWFeat::FEAT_IMPROVED_RAPID_SHOT:
                 {
+                    int nACPenalty = 0;
                     switch (pAttack->m_nAttackType)
                     {
                     case CSWFeat::FEAT_MULTI_SHOT:
@@ -1838,7 +1841,6 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                 }
             }
         }
-        int nACPenalty = 0;
         if (pAttack->m_nAttackType != 0)
         {
             if (GetStats()->GetFeatRemainingUses(pAttack->m_nAttackType) <= 0)
@@ -1857,7 +1859,7 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                         (pEffect->m_nSubType & ~CGameEffect::DURATION_MASK) |
                         CGameEffect::DURATION_TYPE_TEMPORARY;
                     pEffect->m_fDuration = 3.0f;
-                    pEffect->SetCreator(m_nId);
+                    pEffect->SetCreator(GetId());
                     pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_TYPE,
                                         CSWSEffectListHandler::AC_DODGE);
                     pEffect->SetInteger(CSWSEffectListHandler::AC_INTEGER_BONUS,
@@ -1883,7 +1885,7 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                         if (pCreature->GetStats()->GetEffectLinkImmunity(pStunEffect) == 0)
                         {
                             if (pCreature->SavingThrowRoll(SAVING_THROW_FORT, nDC, 0,
-                                                          m_nId, 1, 0, 1) == 0)
+                                                          GetId(), 1, 0, 1) == 0)
                             {
                                 pAttack->m_lstEffects.Add(pStunEffect);
                                 pAttack->m_Extra4.m_nState = CSWSEffectListHandler::STATE_STUN;
@@ -1903,9 +1905,9 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                     break;
                 }
             case CSWFeat::FEAT_FLURRY:
-            case CSWFeat::FEAT_WHIRLWIND_ATTACK:
             case CSWFeat::FEAT_IMPROVED_FLURRY:
                 {
+                    int nACPenalty = 0;
                     switch (pAttack->m_nAttackType)
                     {
                     case CSWFeat::FEAT_FLURRY:
@@ -1980,7 +1982,7 @@ void CSWSCreature::ResolveMeleeSpecialAttack(int nAttack, int nAttacks,
                             (pVisualEffect->m_nSubType & ~CGameEffect::SUBTYPE_MASK) |
                             SUBTYPE_MAGICAL;
                         pVisualEffect->SetInteger(0, VISUAL_EFFECT_SHIELD_BREAKER);
-                        pVisualEffect->SetCreator(m_nId);
+                        pVisualEffect->SetCreator(GetId());
                         pAttack->m_lstEffects.Add(pVisualEffect);
                         CGameEffect* pShieldEffect = new CGameEffect(1);
                         pShieldEffect->m_nType = CSWSEffectListHandler::EFFECT_DESTROYSHIELDS;

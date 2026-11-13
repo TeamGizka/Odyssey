@@ -1028,7 +1028,7 @@ int CSWSDoor::InDoor(Vector vPoint)  // PC 0x0057FD30
             double dStartY = m_avOutline[nVertex].m_fY;
             fDeltaY = m_avOutline[nNext].m_fY - dStartY;
             fDeltaX = m_avOutline[nNext].m_fX - m_avOutline[nVertex].m_fX;
-            double dSlope = fDeltaY / fDeltaX;
+            double dSlope = (double)fDeltaY / fDeltaX;
             fIntersectY = dStartY -
                           dSlope *
                               (m_avOutline[nVertex].m_fX - vPoint.m_fX);

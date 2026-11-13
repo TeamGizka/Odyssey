@@ -779,9 +779,9 @@ int CSWSPlaceable::AcquireItem(CSWSItem** ppItem, unsigned long oidPossessor,
     if (oidItemPossessor != oidPossessor)
     {
         CGameObject* pItemPossessor =
-            g_pAppManager->m_pServerExoApp->GetGameObject(oidItemPossessor);
+            g_pAppManager->GetServerExoApp()->GetGameObject(oidItemPossessor);
         CGameObject* pNewPossessor =
-            g_pAppManager->m_pServerExoApp->GetGameObject(oidPossessor);
+            g_pAppManager->GetServerExoApp()->GetGameObject(oidPossessor);
         if (pItemPossessor == NULL ||
             pItemPossessor->AsSWSCreature() == NULL ||
             !pItemPossessor->AsSWSCreature()->GetInParty() ||
@@ -1180,6 +1180,7 @@ void CSWSPlaceable::OpenInventory(unsigned long oidOpener, int bAnimate)
         }
     }
 }
+#define DATAPAD_READ_BOOLEAN 94
 // PC 0x0058A060
 void CSWSPlaceable::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
 {
@@ -1196,27 +1197,32 @@ void CSWSPlaceable::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
                     unsigned int nItemCount = m_pcItemRepository->m_lstItems.num;
                     CSWSItem* pItem = m_pcItemRepository->ItemListGetItem(nItemCount - 1);
                     m_pcItemRepository->RemoveItem(pItem);
-                    if (pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_DATAPAD)
+                    if (pItem->GetBaseItem()->GetItemType() == CSWBaseItem::ITEM_TYPE_DATAPAD)
                     {
                         if (m_sTag.CompareNoCase("lockertsfinv"))
                         {
-                            pItem->m_lVarTable.SetLocalBoolean(94, 1);
+                            pItem->m_lVarTable.SetLocalBoolean(DATAPAD_READ_BOOLEAN, 1);
                         }
-                        else if (pItem->m_lVarTable.GetLocalBoolean(94) == 0)
+                        else
                         {
-                            pItem->m_lVarTable.SetLocalBoolean(94, 1);
-                            CExoString sText;
-                            pItem->m_sDescIdentified.GetString(0, &sText, 0);
-                            CSWGuiMessageBox* pDatapad =
-                                g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pA4;
-                            pDatapad->SetAllowCancel(0);
-                            pDatapad->m_lblMessage.m_cText.m_cParams.SetAlignment(9);
-                            CResRef cFont("fnt_d16x16");
-                            pDatapad->m_lblMessage.m_cText.m_cParams.SetFont(cFont);
-                            pDatapad->SetMessage(sText);
-                            pDatapad->SetCallback(NULL, NULL, NULL);
-                            g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(pDatapad, 1, 1);
-                            g_pAppManager->GetClientExoApp()->SetPausedByCombat(1, 12, 0);
+                            int bRead = pItem->m_lVarTable.GetLocalBoolean(DATAPAD_READ_BOOLEAN);
+                            if (bRead == 0)
+                            {
+                                pItem->m_lVarTable.SetLocalBoolean(DATAPAD_READ_BOOLEAN, 1);
+                                CExoString sText;
+                                CExoLocString* pDescription = &pItem->m_sDescIdentified;
+                                pDescription->GetString(0, &sText, 0);
+                                CSWGuiMessageBox* pDatapad =
+                                    g_pAppManager->GetClientExoApp()->GetInGameGui()->m_pA4;
+                                pDatapad->SetAllowCancel(0);
+                                pDatapad->m_lblMessage.m_cText.m_cParams.SetAlignment(9);
+                                CResRef cFont("fnt_d16x16");
+                                pDatapad->m_lblMessage.m_cText.m_cParams.SetFont(cFont);
+                                pDatapad->SetMessage(sText);
+                                pDatapad->SetCallback(NULL, NULL, NULL);
+                                g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(pDatapad, 1, 1);
+                                g_pAppManager->GetClientExoApp()->SetPausedByCombat(1, 12, 0);
+                            }
                         }
                     }
                     pCreature->GetItemRepository(1)->AddItem(&pItem, 1, 1, 1);

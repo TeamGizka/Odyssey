@@ -1407,7 +1407,7 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
         unsigned long nSlot = ReadDWORD(32);
         if (MessageReadOverflow(1) || MessageReadUnderflow(1))
             return 0;
-        int nOverrideCharacter = g_pAppManager->m_pClientExoApp->GetInGameGui()
+        int nOverrideCharacter = g_pAppManager->GetClientExoApp()->GetInGameGui()
                                      ->GetTopMenuOverrideCharacter();
         if (nOverrideCharacter == -1)
         {
@@ -1419,7 +1419,7 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
             pCreature = (CSWSCreature*)pServerExoApp->GetGameObject(
                 pServerExoApp->GetPartyTable()->GetNPCObject(nOverrideCharacter, 0, 1));
             if (pCreature == NULL)
-                return 0;
+                break;
         }
         unsigned long nEquipSlot = nSlot;
         if (nSlot == INVENTORY_SLOT_LEFTHAND2)
@@ -1579,7 +1579,7 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
             pCreature->AddPickUpItemActions(oidItem, oidRepository, nPanel);
             return 1;
         }
-        CSWSMessage* pMessage = g_pAppManager->m_pServerExoApp->GetSWSMessage();
+        CSWSMessage* pMessage = g_pAppManager->GetServerExoApp()->GetSWSMessage();
         pMessage->SendServerToPlayerInventory_PickupCancel(
             pPlayer->m_nPlayerId, oidItem);
         return 0;
@@ -1590,7 +1590,7 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
         unsigned long oidRepository = ReadOBJECTIDServer();
         if (MessageReadOverflow(1) || MessageReadUnderflow(1))
             return 0;
-        int nOverrideCharacter = g_pAppManager->m_pClientExoApp->GetInGameGui()
+        int nOverrideCharacter = g_pAppManager->GetClientExoApp()->GetInGameGui()
                                      ->GetTopMenuOverrideCharacter();
         if (nOverrideCharacter == -1)
         {
@@ -1602,7 +1602,7 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
             pCreature = (CSWSCreature*)pServerExoApp->GetGameObject(
                 pServerExoApp->GetPartyTable()->GetNPCObject(nOverrideCharacter, 0, 1));
             if (pCreature == NULL)
-                return 0;
+                break;
         }
         if (pCreature != NULL &&
             g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
@@ -1640,7 +1640,7 @@ int CSWSMessage::HandlePlayerToServerInventoryMessage(CSWSPlayer* pPlayer,
             pCreature->AddDropItemActions(oidItem, vPosition, 0);
             return 1;
         }
-        CSWSMessage* pMessage = g_pAppManager->m_pServerExoApp->GetSWSMessage();
+        CSWSMessage* pMessage = g_pAppManager->GetServerExoApp()->GetSWSMessage();
         pMessage->SendServerToPlayerInventory_DropCancel(
             pPlayer->m_nPlayerId, oidItem);
         return 0;
