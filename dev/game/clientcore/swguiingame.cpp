@@ -2131,9 +2131,9 @@ void CSWGuiInGameMessages::ShowEffects()
     CExoArrayList<CSWGuiControl*> aBad;
     CSWGuiExtent cGoodExtent(0, 0,
         pGood->m_cItemExtent.m_nWidth - 2 * pGood->m_nPadding, 10);
-    CSWGuiLabelHilight* pGoodProto = (CSWGuiLabelHilight*)m_lbEffectsGood.m_pProtoItem;
     CSWGuiExtent cBadExtent(0, 0,
         pBad->m_cItemExtent.m_nWidth - 2 * pBad->m_nPadding, 10);
+    CSWGuiLabelHilight* pGoodProto = (CSWGuiLabelHilight*)m_lbEffectsGood.m_pProtoItem;
     CSWGuiLabelHilight* pBadProto = (CSWGuiLabelHilight*)m_lbEffectsBad.m_pProtoItem;
 
     CExoString sName;

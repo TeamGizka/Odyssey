@@ -1943,11 +1943,11 @@ CSWGuiPazaakGame::CSWGuiPazaakGame(CSWGuiManager* pManager, CSWPazaak* pPazaak,
                         (CSWGuiHandler)&CSWGuiPazaakGame::HandleBlackButton);
     m_btnForfeitGame.AddEvent(GUIEVENT_ACTIVATE, this,
                               (CSWGuiHandler)&CSWGuiPazaakGame::HandleForfeitButton);
-    m_btnContinue.m_bFocusable = 0;
-    m_btnStand.m_bFocusable = 0;
-    m_btnX.m_bFocusable = 0;
-    m_btnBlack.m_bFocusable = 0;
-    m_btnForfeitGame.m_bFocusable = 0;
+    m_btnContinue.SetFocusable(0);
+    m_btnStand.SetFocusable(0);
+    m_btnX.SetFocusable(0);
+    m_btnBlack.SetFocusable(0);
+    m_btnForfeitGame.SetFocusable(0);
 #endif
     CSWSCreature* pCreature =
         g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidOpponent);
