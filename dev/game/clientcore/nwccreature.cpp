@@ -6305,18 +6305,18 @@ void CSWCCreature::ForceMenuHostileAction(unsigned long nAction,
 void CSWCCreature::GetSelfForcePowers(
     CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
-    if (m_pStats->HasFeat(CSWFeat::FEAT_IMPLANT_SWITCHING))
+    if (GetStats()->HasFeat(CSWFeat::FEAT_IMPLANT_SWITCHING))
     {
         GetSwappableImplants(lstActions);
     }
-    if (m_pStats->HasFeat(CSWFeat::FEAT_WOOKIEE_RAGE_I) ||
-        m_pStats->HasFeat(CSWFeat::FEAT_WOOKIEE_RAGE_II) ||
-        m_pStats->HasFeat(CSWFeat::FEAT_WOOKIEE_RAGE_III))
+    if (GetStats()->HasFeat(CSWFeat::FEAT_WOOKIEE_RAGE_I) ||
+        GetStats()->HasFeat(CSWFeat::FEAT_WOOKIEE_RAGE_II) ||
+        GetStats()->HasFeat(CSWFeat::FEAT_WOOKIEE_RAGE_III))
     {
         GetWookieeRage(lstActions);
     }
-    unsigned long nForcePoints = 0;
     unsigned long nItemMask = 0;
+    unsigned long nForcePoints = 0;
     CSWSCreature* pServerCreature = GetServerCreature();
     if (pServerCreature != NULL)
     {
@@ -6349,10 +6349,10 @@ void CSWCCreature::GetSelfForcePowers(
             }
         }
         nHitPoints = pServerCreature->GetCurrentHitPoints(0);
-        nCharismaModifier = pServerCreature->m_pStats->m_nCharismaModifier;
         nForm = pServerCreature->m_n1110;
+        nCharismaModifier = pServerCreature->m_pStats->m_nCharismaModifier;
     }
-    m_pStats->GetMenuInfo(lstActions, CSWSpell::SUBRADIAL_TYPE_SELF_FORCE_POWER,
+    GetStats()->GetMenuInfo(lstActions, CSWSpell::SUBRADIAL_TYPE_SELF_FORCE_POWER,
         nForcePoints, 0, nItemMask, SWCCREATURE_SELF_FORCE_POWER_DISTANCE_SQUARED,
         nRoomForceRating, nForceBodyLevel, nHitPoints, 0, nForm, 0, nCharismaModifier);
     for (int j = nFirstAction; j < lstActions.num; ++j)
