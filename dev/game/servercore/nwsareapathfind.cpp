@@ -634,40 +634,38 @@ int CSWSArea::TestDirectLine(const Vector& vStart, const Vector& vEnd,
                 unsigned long oidObject = m_pPathfindInformation->m_nField_BC;
                 float fObjectMinHeight = fMinHeight - AREA_DIRECT_LINE_OBJECT_HEIGHT_RANGE;
                 float fObjectMaxHeight = fMaxHeight + AREA_DIRECT_LINE_OBJECT_HEIGHT_RANGE;
-                if (NoNonWalkPolysDetailed(vClippedStart, vClippedEnd, fObjectMinHeight, fObjectMaxHeight, fRadius, oidObject, oidHit, 0, NULL, 0, pWalkHitInfo, 0))
+                int bObjectClear = NoNonWalkPolysDetailed(vClippedStart, vClippedEnd, fObjectMinHeight, fObjectMaxHeight, fRadius, oidObject, oidHit, 0, NULL, 0, pWalkHitInfo, 0);
+                if (bObjectClear && m_pPathfindInformation != NULL && (m_pPathfindInformation->m_nField_210 || (fRadius > 0.0f && NoCreaturesOnLine(vClippedStart, vClippedEnd, m_pPathfindInformation, 1, 0, NULL, 1, pWalkHitInfo))))
                 {
-                    if (m_pPathfindInformation != NULL && (m_pPathfindInformation->m_nField_210 || (fRadius > 0.0f && NoCreaturesOnLine(vClippedStart, vClippedEnd, m_pPathfindInformation, 1, 0, NULL, 1, pWalkHitInfo))))
+                    if (vEnd.m_fX - EPSILON <= vClippedEnd.m_fX &&
+                        EPSILON + vEnd.m_fX >= vClippedEnd.m_fX &&
+                        vEnd.m_fY - EPSILON <= vClippedEnd.m_fY &&
+                        EPSILON + vEnd.m_fY >= vClippedEnd.m_fY)
                     {
-                        if (vEnd.m_fX - EPSILON <= vClippedEnd.m_fX &&
-                            EPSILON + vEnd.m_fX >= vClippedEnd.m_fX &&
-                            vEnd.m_fY - EPSILON <= vClippedEnd.m_fY &&
-                            EPSILON + vEnd.m_fY >= vClippedEnd.m_fY)
-                        {
-                            bFinished = 1;
-                        }
-                        else
-                        {
-                            int nRoom = pRoom->GetAdjacentRoom(nEdge);
-                            if (nRoom == -1 || m_pRooms[nRoom].m_bNoWalkMesh)
-                            {
-                                nResult = DIRECT_LINE_NO_ROOM;
-                            }
-                            else
-                            {
-                                equal(vClippedStart, vClippedEnd);
-                                pRoom = &m_pRooms[nRoom];
-                                vFrom = vClippedEnd;
-                            }
-                        }
+                        bFinished = 1;
                     }
                     else
                     {
-                        nResult = DIRECT_LINE_BLOCKED_CREATURE;
+                        int nRoom = pRoom->GetAdjacentRoom(nEdge);
+                        if (nRoom == -1 || m_pRooms[nRoom].m_bNoWalkMesh)
+                        {
+                            nResult = DIRECT_LINE_NO_ROOM;
+                        }
+                        else
+                        {
+                            equal(vClippedStart, vClippedEnd);
+                            pRoom = &m_pRooms[nRoom];
+                            vFrom = vClippedEnd;
+                        }
                     }
+                }
+                else if (!bObjectClear)
+                {
+                    nResult = DIRECT_LINE_BLOCKED_OBJECT;
                 }
                 else
                 {
-                    nResult = DIRECT_LINE_BLOCKED_OBJECT;
+                    nResult = DIRECT_LINE_BLOCKED_CREATURE;
                 }
             }
             else
