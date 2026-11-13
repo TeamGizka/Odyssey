@@ -3010,16 +3010,17 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader()
         CreaturePartyIndex = nMember;
         m_sTag.CStr();
         magnitude(pMember->m_vFormationPosition - pMember->m_vFollowPosition);
+        NwscreatureaiDebugLine(pMember->m_vFollowPosition - m_vPosition, pMember->m_vFormationPosition - m_vPosition, nMember);
+        NwscreatureaiDebugLine(pMember->m_vFormationPosition - m_vPosition, pMember->m_vLastPosition - m_vPosition, nMember);
+        NwscreatureaiDebugLine(pMember->m_vLastPosition - m_vPosition, pMember->m_vFollowPosition - m_vPosition, nMember);
     }
     if (m_nWalkElapsedTime == 0.0f)
         return ACTION_IN_PROGRESS;
     Vector vDifference = pMember->m_vFormationPosition - pMember->m_vFollowPosition;
-    float fDistanceSquared = vDifference.m_fX * vDifference.m_fX + vDifference.m_fY * vDifference.m_fY +
-                             vDifference.m_fZ * vDifference.m_fZ;
+    float fDistanceSquared = vDifference * vDifference;
     Vector vFromLast = pMember->m_vFormationPosition - pMember->m_vLastPosition;
     float fRate;
-    if (!(fDistanceSquared >= 16.0) && !(vFromLast.m_fX * vFromLast.m_fX + vFromLast.m_fY * vFromLast.m_fY +
-          vFromLast.m_fZ * vFromLast.m_fZ >= 100.0f))
+    if (!(fDistanceSquared >= 16.0) && !(vFromLast * vFromLast >= 100.0f))
     {
         if (pClient->GetSWParty()->GetCharacter(0)->GetSWAnimationSpeed() > 0.1f)
         {
@@ -3028,7 +3029,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader()
         else
         {
             Vector vBack = pMember->m_vFollowPosition - pMember->m_vFormationPosition;
-            if (vBack.m_fX * vBack.m_fX + vBack.m_fY * vBack.m_fY + vBack.m_fZ * vBack.m_fZ >= 0.001f)
+            if (vBack * vBack >= 0.001f)
             {
                 float fSpeed = pMember->m_fSpeed;
                 if (fSpeed > GetWalkRate() * 0.9f)
@@ -3155,13 +3156,14 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader()
         if (GetArea()->TestDirectLine(pMember->m_vLastPosition, m_vPosition,
                                       fRadius, fHalfStep, 0, NULL) == 1)
         {
-            vCorrection *= fSpringFactor;
             vCorrection.m_fZ = 0.0f;
+            vCorrection.m_fX *= fSpringFactor;
+            vCorrection.m_fY *= fSpringFactor;
             Vector vPosition = m_vPosition + vCorrection;
             vPosition.m_fZ = GetArea()->ComputeHeight(vPosition, 1, NULL);
             SetPosition(vPosition, 1, 1, 0);
         }
-        else if (GetArea()->TestSafeLocationPoint(pMember->m_vLastPosition, m_pPathfindInformation) == 1)
+        else if (GetArea()->TestSafeLocationPoint(pMember->m_vLastPosition, GetPathfindInformation()) == 1)
             SetPosition(pMember->m_vLastPosition, 1, 1, 0);
         else
             pMember->m_nStepCount++;
@@ -8002,7 +8004,9 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
         Vector vDelta = vDestination - m_vPosition;
         Vector vHit;
         unsigned long oidHit;
-        if (GetArea() != NULL && vDelta * vDelta < fRange * fRange && GetArea()->ClearLineOfSight(m_vPosition, vDestination, &vHit, &oidHit, OBJECT_INVALID, OBJECT_INVALID, 0, 0) == 0)
+        if (GetArea() == NULL ||
+            (vDelta.m_fX * vDelta.m_fX + vDelta.m_fY * vDelta.m_fY + vDelta.m_fZ * vDelta.m_fZ < fRange * fRange &&
+             GetArea()->ClearLineOfSight(m_vPosition, vDestination, &vHit, &oidHit, OBJECT_INVALID, OBJECT_INVALID, 0, 0) == 0))
             fRange = 0.0f;
     }
     else
@@ -8020,8 +8024,8 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
     if (pAction->m_nNumParams >= 10)
     {
         EXOXBOXASSERT(pAction->m_nNumParams >= 11);
-        vOrientation.m_fX = *(float*)&pAction->m_apParam[9];
-        vOrientation.m_fY = *(float*)&pAction->m_apParam[10];
+        memcpy(&vOrientation.m_fX, &pAction->m_apParam[9], sizeof(float));
+        memcpy(&vOrientation.m_fY, &pAction->m_apParam[10], sizeof(float));
     }
     if (pAction->m_nNumParams >= 12)
     {
@@ -8256,8 +8260,8 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
     if (GetArea() != NULL && GetArea()->GetId() == oidArea)
     {
         Vector vDelta = vDestination - m_vPosition;
-        if (vDelta.m_fX * vDelta.m_fX + vDelta.m_fY * vDelta.m_fY +
-            vDelta.m_fZ * vDelta.m_fZ <= NWSCREATURE_MOVE_POINT_TOLERANCE_SQUARED)
+        float fDistance2 = vDelta * vDelta;
+        if (fDistance2 <= NWSCREATURE_MOVE_POINT_TOLERANCE_SQUARED)
         {
             if (GetArea()->TestSafeLocationPoint(vDestination, GetPathfindInformation()))
                 SetPosition(vDestination, 1, 1, 0);
@@ -8303,10 +8307,10 @@ int CSWSCreature::AIActionMoveToPoint(CSWSObjectActionNode* pAction)  // PC 0x00
         m_pPathfindInformation->SetEndZ(m_vPosition.m_fZ);
         m_pPathfindInformation->m_nEndArea = m_oidArea;
         m_pPathfindInformation->m_nField_58 = 1;
-        m_pPathfindInformation->m_nField_88 = 0;
+        GetPathfindInformation()->m_nField_88 = 0;
     }
     int nResult;
-    if (m_pPathfindInformation->m_nField_88 == 0)
+    if (GetPathfindInformation()->m_nField_88 == 0)
     {
         m_pPathfindInformation->m_nField_198 = bOption2;
         m_pPathfindInformation->m_nBumpCount = 0;
