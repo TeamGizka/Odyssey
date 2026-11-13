@@ -4661,12 +4661,12 @@ void CSWCCreature::GetHostileForcePowers(
     {
         if (pTarget->AsSWCCreature() != NULL)
         {
-            if (pTarget->AsSWCCreature()->GetStats()->m_nRace == CSWRace::CRACE_DROID)
+            if (pTarget->AsSWCCreature()->m_pStats->m_nRace == CSWRace::CRACE_DROID)
                 nExclusion = CSWRace::CRACE_DROID_MASK;
-            else if (pTarget->AsSWCCreature()->GetStats()->m_nRace == CSWRace::CRACE_HUMAN)
+            else if (pTarget->AsSWCCreature()->m_pStats->m_nRace == CSWRace::CRACE_HUMAN)
             {
                 nExclusion = CSWRace::CRACE_HUMAN_MASK;
-                if (pTarget->AsSWCCreature()->GetStats()->m_nSubraceIndex == SUBRACE_BEAST)
+                if (pTarget->AsSWCCreature()->m_pStats->m_nSubraceIndex == SUBRACE_BEAST)
                     bBeastTarget = 1;
             }
         }
@@ -4681,8 +4681,8 @@ void CSWCCreature::GetHostileForcePowers(
             nForcePoints = (short)(pServerCreature->m_pStats->m_nCurrentForcePoints +
                 pServerCreature->m_pStats->m_nTemporaryForcePoints);
 
-        if ((m_pStats->HasFeat(CSWFeat::FEAT_DROID_TRICK) ||
-             m_pStats->HasFeat(CSWFeat::FEAT_DROID_CONFUSION)) &&
+        if ((GetStats()->HasFeat(CSWFeat::FEAT_DROID_TRICK) ||
+             GetStats()->HasFeat(CSWFeat::FEAT_DROID_CONFUSION)) &&
             (nExclusion & CSWRace::CRACE_DROID_MASK))
         {
             GetDroidConfusion(lstActions, pTarget);
@@ -4699,21 +4699,28 @@ void CSWCCreature::GetHostileForcePowers(
             int nRoomForceRating = 0;
             if (pArea != NULL)
                 nRoomForceRating = pArea->GetRoomForceRating(GetServerCreature()->m_vPosition);
+            int nHitPoints = 0;
+            int nForm = 0;
             int nForceBodyLevel = -1;
-            for (int j = 0; j < pServerCreature->m_lstEffects.num; j++)
+            char nCharismaModifier = 0;
+            if (pServerCreature != NULL)
             {
-                CGameEffect* pEffect = pServerCreature->m_lstEffects[j];
-                if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
+                for (int j = 0; j < pServerCreature->m_lstEffects.num; j++)
                 {
-                    nForceBodyLevel = pEffect->GetInteger(0);
-                    break;
+                    CGameEffect* pEffect = pServerCreature->m_lstEffects[j];
+                    if (pEffect->m_nType == CSWSEffectListHandler::EFFECT_FORCEBODY)
+                    {
+                        nForceBodyLevel = pEffect->GetInteger(0);
+                        break;
+                    }
                 }
+                nHitPoints = pServerCreature->GetCurrentHitPoints(0);
+                nForm = pServerCreature->m_n1110;
+                nCharismaModifier = pServerCreature->m_pStats->m_nCharismaModifier;
             }
-            int nHitPoints = pServerCreature->GetCurrentHitPoints(0);
-            char nCharismaModifier = pServerCreature->m_pStats->m_nCharismaModifier;
             GetStats()->GetMenuInfo(lstActions, CSWSpell::SUBRADIAL_TYPE_HOSTILE_FORCE_POWER,
                 nForcePoints, nExclusion, nItemMask, vDistance * vDistance,
-                nRoomForceRating, nForceBodyLevel, nHitPoints, 0, pServerCreature->m_n1110,
+                nRoomForceRating, nForceBodyLevel, nHitPoints, 0, nForm,
                 bBeastTarget, nCharismaModifier);
         }
         for (int i = nFirstAction; i < lstActions.num; ++i)

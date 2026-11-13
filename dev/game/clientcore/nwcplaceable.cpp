@@ -685,6 +685,10 @@ int CSWCPlaceable::SetAnimation(unsigned short nAnimation, int nA, int nB)
     return CSWCObject::SetAnimation(nAnimation, nA, nB);
 }
 #ifndef _XBOX
+static inline int GetActionCount(const CExoArrayList<CSWGuiInterfaceAction>& lstActions)
+{
+    return lstActions.num;
+}
 // PC 0x006DAB40
 void CSWCPlaceable::GetUseItems(CSWCCreature* pCreature,
                                 CExoArrayList<CSWGuiInterfaceAction>& lstActions)
@@ -698,7 +702,7 @@ void CSWCPlaceable::GetUseItems(CSWCCreature* pCreature,
         if (pServerCreature != NULL &&
             pCreature->m_pStats->GetCanUseSkill(CSWRules::SKILL_SECURITY))
             pServerCreature->GetSpikeDetails(lstActions, 1);
-        for (int i = nFirstAction; i < lstActions.num; ++i)
+        for (int i = nFirstAction; i < GetActionCount(lstActions); ++i)
         {
             lstActions[i].m_pfnAction =
                 (PFNMENUACTION)&CSWCObject::MenuActionUseSecuritySpike;
@@ -716,20 +720,25 @@ void CSWCPlaceable::GetUseItems(CSWCCreature* pCreature,
         if (pItem != NULL && pItem->m_bPlotObject &&
             pItem->GetPropertyByType(&pProperty, CSWItemProperty::ITEM_PROPERTY_ACTIVATE_ITEM, 0))
         {
-            CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(pProperty->m_nSubtype);
-            if (pSpell != NULL && pSpell->m_nItemTargeting == CSWSpell::ITEM_TARGETING_PLACEABLE)
+            int nSubtype = pProperty->m_nSubtype;
+            CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSubtype);
+            if (pSpell != NULL)
             {
-                lstActions.SetSize(nAction + 1);
-                pItem->m_sLocalizedName.GetString(nLanguage, &sName, 0);
-                lstActions[nAction].m_sName = sName;
-                lstActions[nAction].m_pfnAction =
-                    (PFNMENUACTION)&CSWCPlaceable::MenuActionUseItem;
-                lstActions[nAction].m_oidTarget = GetId();
-                lstActions[nAction].m_nAction = pItem->GetId() | OBJECT_LISTTYPE_MASK;
-                lstActions[nAction].m_resIcon = pItem->GetIcon();
-                lstActions[nAction].m_nStackSize = pItem->m_nStackSize > pItem->m_nCharges ?
-                    pItem->m_nStackSize : pItem->m_nCharges;
-                nAction++;
+                unsigned char nTargeting = pSpell->m_nItemTargeting;
+                if (nTargeting == CSWSpell::ITEM_TARGETING_PLACEABLE)
+                {
+                    lstActions.SetSize(nAction + 1);
+                    pItem->m_sLocalizedName.GetString(nLanguage, &sName, 0);
+                    lstActions[nAction].m_sName = sName;
+                    lstActions[nAction].m_pfnAction =
+                        (PFNMENUACTION)&CSWCPlaceable::MenuActionUseItem;
+                    lstActions[nAction].m_oidTarget = GetId();
+                    lstActions[nAction].m_nAction = pItem->GetId() | OBJECT_LISTTYPE_MASK;
+                    lstActions[nAction].m_resIcon = pItem->GetIcon();
+                    lstActions[nAction].m_nStackSize = pItem->m_nStackSize > pItem->m_nCharges ?
+                        pItem->m_nStackSize : pItem->m_nCharges;
+                    nAction++;
+                }
             }
         }
     }
@@ -738,7 +747,8 @@ void CSWCPlaceable::GetUseItems(CSWCCreature* pCreature,
 void CSWCPlaceable::GetPlaceableInterfaceMines(CSWCCreature* pCreature,
                                                CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
-    if (m_n11C)
+    int nFlag11C = m_n11C;
+    if (nFlag11C)
     {
         return;
     }
@@ -748,8 +758,8 @@ void CSWCPlaceable::GetPlaceableInterfaceMines(CSWCCreature* pCreature,
     {
         return;
     }
-    int nAction = lstActions.num;
     CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+    int nAction = lstActions.num;
     int nLanguage = pClientExoApp->GetClientLanguage();
     CItemRepository* pRepository = pServerCreature->GetItemRepository(1);
     CExoString sName;
@@ -759,8 +769,12 @@ void CSWCPlaceable::GetPlaceableInterfaceMines(CSWCCreature* pCreature,
     for (unsigned long i = 0; i < pRepository->m_lstItems.num; ++i)
     {
         CSWSItem* pItem = pRepository->ItemListGetItem(i);
-        if (pItem->m_bPlotObject ||
-            pItem->GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_MINE)
+        if (pItem->m_bPlotObject)
+        {
+            continue;
+        }
+        CSWBaseItem* pBaseItem = pItem->GetBaseItem();
+        if (pBaseItem->m_nItemType != CSWBaseItem::ITEM_TYPE_MINE)
         {
             continue;
         }

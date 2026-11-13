@@ -886,7 +886,7 @@ void CSWGuiStore::PopulateStoreItemListBox()
             pItem = pRepository->ItemListGetItem(i);
             if (pItem != 0 && pItem->m_bPlotObject == 0)
             {
-                nCurrentItemClass = pItem->GetBaseItem()->GetStorePanelSort();
+                nCurrentItemClass = pItem->GetBaseItem()->m_nStorePanelSort;
                 if (nCurrentItemClass == nItemClass)
                 {
                     if (CheckFilter(pItem))

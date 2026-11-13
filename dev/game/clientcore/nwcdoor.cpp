@@ -407,7 +407,8 @@ void CSWCDoor::GetUseItems(CSWCCreature* pCreature,
 void CSWCDoor::GetDoorInterfaceMines(CSWCCreature* pCreature,
                                      CExoArrayList<CSWGuiInterfaceAction>& lstActions)
 {
-    if (m_n108)
+    int n108 = m_n108;
+    if (n108)
     {
         return;
     }
@@ -417,8 +418,8 @@ void CSWCDoor::GetDoorInterfaceMines(CSWCCreature* pCreature,
     {
         return;
     }
-    int nAction = lstActions.num;
     CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+    int nAction = lstActions.num;
     int nLanguage = pClientExoApp->GetClientLanguage();
     CItemRepository* pRepository = pServerCreature->GetItemRepository(1);
     CExoString sName;
@@ -428,8 +429,12 @@ void CSWCDoor::GetDoorInterfaceMines(CSWCCreature* pCreature,
     for (unsigned long i = 0; i < pRepository->m_lstItems.num; ++i)
     {
         CSWSItem* pItem = pRepository->ItemListGetItem(i);
-        if (pItem->m_bPlotObject ||
-            pItem->GetBaseItem()->m_nItemType != CSWBaseItem::ITEM_TYPE_MINE)
+        if (pItem->m_bPlotObject)
+        {
+            continue;
+        }
+        CSWBaseItem* pBaseItem = pItem->GetBaseItem();
+        if (pBaseItem->m_nItemType != CSWBaseItem::ITEM_TYPE_MINE)
         {
             continue;
         }

@@ -4937,7 +4937,8 @@ CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)  // PC 0x00730C60
 // PC 0x007316A0
 void CSWGuiCreateItem::PopulateStoreItemListBox()
 {
-    CItemRepository* pRepository = m_pStore->m_pItemRepository;
+    CSWSStore* pStore = m_pStore;
+    CItemRepository* pRepository = pStore->m_pItemRepository;
     CExoArrayList<CSWGuiControl*> lControls;
     int nEntryIndex = 0;
 
@@ -4947,7 +4948,7 @@ void CSWGuiCreateItem::PopulateStoreItemListBox()
         if (pItem != 0 && pItem->m_bPlotObject == 0)
         {
             CExoString sTag(pItem->m_sTag.CStr());
-            CreateItemEntry(nEntryIndex, lControls, pItem->m_nId, 0, sTag);
+            CreateItemEntry(nEntryIndex, lControls, pItem->GetId(), 0, sTag);
         }
     }
 
@@ -5001,7 +5002,8 @@ void CSWGuiCreateItem::ShowBuyGUI()
 // PC 0x00731A20
 void CSWGuiCreateMedicalItem::PopulateStoreItemListBox()
 {
-    CItemRepository* pRepository = m_pStore->m_pItemRepository;
+    CSWSStore* pStore = m_pStore;
+    CItemRepository* pRepository = pStore->m_pItemRepository;
     CExoArrayList<CSWGuiControl*> lControls;
     int nEntryIndex = 0;
 
@@ -5011,7 +5013,7 @@ void CSWGuiCreateMedicalItem::PopulateStoreItemListBox()
         if (pItem != 0 && pItem->m_bPlotObject == 0)
         {
             CExoString sTag(pItem->m_sTag.CStr());
-            CreateItemEntry(nEntryIndex, lControls, pItem->m_nId, 0, sTag);
+            CreateItemEntry(nEntryIndex, lControls, pItem->GetId(), 0, sTag);
         }
     }
 
