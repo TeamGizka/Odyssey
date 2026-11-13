@@ -776,10 +776,10 @@ void CSWGuiMapHider::Draw(float fElapsed)
 #ifndef _XBOX
     float fGuiScaleX = 1.0f;
     float fGuiScaleY = 1.0f;
-    if (g_pAppManager->m_pClientExoApp->GetSWGuiManager() != NULL)
+    if (g_pAppManager->GetClientExoApp()->GetSWGuiManager() != NULL)
     {
-        fGuiScaleX = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
-        fGuiScaleY = (float)g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
+        fGuiScaleX = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nWidth / (float)g_nGUIWidth;
+        fGuiScaleY = (float)g_pAppManager->GetClientExoApp()->GetSWGuiManager()->m_nHeight / (float)g_nGUIHeight;
     }
 #endif
     CSWSAreaMap* pAreaMap =
@@ -846,7 +846,7 @@ void CSWGuiMapHider::Draw(float fElapsed)
         {
             unsigned long oidNote = *(unsigned long*)m_lstMapNotes.m_pInternal->GetAtPos(pPos);
             CGameObject* pObject =
-                g_pAppManager->GetServerExoApp()->GetGameObject(oidNote);
+                g_pAppManager->m_pServerExoApp->GetGameObject(oidNote);
             if (pObject != NULL && pObject->AsSWSWaypoint() != NULL)
             {
                 CSWSWaypoint* pWaypoint = pObject->AsSWSWaypoint();
@@ -856,13 +856,13 @@ void CSWGuiMapHider::Draw(float fElapsed)
                         ->IsWorldPointExplored(pWaypoint->m_vPosition))
 #else
                 if ((pWaypoint->m_bMapNoteEnabled || !g_bShowFogOfWar) &&
-                    (g_pAppManager->GetServerExoApp()->GetModule()->GetAreaMap()
+                    (g_pAppManager->m_pServerExoApp->GetModule()->GetAreaMap()
                          ->IsWorldPointExplored(pWaypoint->m_vPosition) ||
                      !g_bShowFogOfWar))
 #endif
                 {
                     int nNoteX, nNoteY = 0;
-                    if (g_pAppManager->GetServerExoApp()->GetModule()->GetAreaMap()
+                    if (g_pAppManager->m_pServerExoApp->GetModule()->GetAreaMap()
                             ->GetMapPixelFromWorldCoord(pWaypoint->m_vPosition,
                                                         nNoteX, nNoteY))
                     {

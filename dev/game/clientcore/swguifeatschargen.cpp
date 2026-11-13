@@ -379,7 +379,7 @@ void CSWGuiFeatsCharGen::OnFeatSelectionChanged(CSWGuiControl* pControl)  // PC 
 void CSWGuiFeatsCharGen::InitiateFeats()
 {
     CSWCLevelUpStats* pStats = m_pCreature->m_pStats;
-    if (!m_bLevelUp && !m_bBonusFeatSelection)
+    if (IsNewCharacter())
     {
         pStats->ClearFeats();
     }
@@ -403,7 +403,7 @@ void CSWGuiFeatsCharGen::InitiateFeats()
 #ifdef _XBOX
         pStats->AddGrantedFeats(&lGranted);
 #else
-        if (!m_bLevelUp)
+        if (IsNewCharacter())
         {
             pStats->AddGrantedFeats(&lGranted, true);
         }

@@ -117,6 +117,7 @@ public:
     void AddChosenFeat(unsigned short nFeat);
 
     int GetNumChosenFeats() { return m_lChosen.num; }
+    int IsNewCharacter() { return !m_bLevelUp && !m_bBonusFeatSelection; }
     void RemoveChosenFeat(unsigned short nFeat);
     void OnRecommendButton();
     void OnFeatPicked(unsigned short nFeat);
