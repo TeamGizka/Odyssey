@@ -855,59 +855,47 @@ void CSWGuiStore::OnPanelRemoved()
 // PC 0x00721410
 void CSWGuiStore::PopulateStoreItemListBox()
 {
-    CItemRepository* pRepository;
-
-    pRepository =
-        g_pAppManager->GetServerExoApp()->GetStoreByGameObjectID(m_nStoreId)
-            ->m_pItemRepository;
+    CItemRepository* pRepository =
+        g_pAppManager->GetServerExoApp()->GetStoreByGameObjectID(m_nStoreId)->m_pItemRepository;
     CExoArrayList<CSWGuiControl*> lControls;
     m_lbxStoreItems.ClearItems();
+    int nEntryIndex = 0;
+    int bCreateItem = 0;
+    unsigned long i;
+    unsigned long nEntries = 0;
+    int nItemClass = 0;
+    int nNextItemClass = 0;
+    while (nEntries < pRepository->GetNumItems())
     {
-        int nEntryIndex;
-        int nItemClass;
-        int bCreateItem;
-        unsigned long nEntries;
-        int nNextItemClass;
-        unsigned long i;
-        nItemClass = 0;
-        nEntryIndex = 0;
-        bCreateItem = 0;
-        nEntries = 0;
-        nNextItemClass = 0;
-
-        while (nEntries < pRepository->GetNumItems())
+        for (i = 0; i < pRepository->GetNumItems(); i++)
         {
-            for (i = 0; i < pRepository->GetNumItems(); i++)
-            {
-                CSWSItem* pItem;
-                int nCurrentItemClass;
+            CSWSItem* pItem;
+            int nCurrentItemClass;
 
-                if (bCreateItem != 0)
-                    break;
-                pItem = pRepository->ItemListGetItem(i);
-                if (pItem != 0 && pItem->m_bPlotObject == 0)
+            if (bCreateItem != 0)
+                break;
+            pItem = pRepository->ItemListGetItem(i);
+            if (pItem != 0 && pItem->m_bPlotObject == 0)
+            {
+                nCurrentItemClass = pItem->GetBaseItem()->GetStorePanelSort();
+                if (nCurrentItemClass == nItemClass)
                 {
-                    nCurrentItemClass = pItem->GetBaseItem()->GetStorePanelSort();
-                    if (nCurrentItemClass == nItemClass)
+                    if (CheckFilter(pItem))
                     {
-                        if (CheckFilter(pItem))
-                        {
-                            bCreateItem = CreateItemEntry(nEntryIndex, lControls,
-                                                          pItem->GetId(), 0, -1);
-                        }
-                        nEntries++;
+                        bCreateItem = CreateItemEntry(nEntryIndex, lControls,
+                                                      pItem->GetId(), 0, -1);
                     }
-                    else if (nCurrentItemClass > nItemClass &&
-                             (nNextItemClass == nItemClass ||
-                              nCurrentItemClass < nNextItemClass))
-                    {
-                        nNextItemClass = nCurrentItemClass;
-                    }
+                    nEntries++;
+                }
+                else if (nCurrentItemClass > nItemClass &&
+                         (nNextItemClass == nItemClass ||
+                          nCurrentItemClass < nNextItemClass))
+                {
+                    nNextItemClass = nCurrentItemClass;
                 }
             }
-            nItemClass = nNextItemClass;
         }
-
+        nItemClass = nNextItemClass;
     }
 
     m_lbxStoreItems.AddControls(lControls, 0, 1, 0);
