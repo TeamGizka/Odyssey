@@ -195,7 +195,7 @@ void CExoDebugInternal::FlushScriptLogFile()
 void CExoDebugInternal::OpenLogFiles(const CExoString& path)
 {
 }
-// PC 0x00637AB0
+// PC 0x00637AB0 GOG 0x006379B0
 void CExoDebugInternal::CloseLogFiles()
 {
     if (m_bLogFilesOpen)
@@ -229,11 +229,6 @@ void CExoDebugInternal::CloseLogFiles()
         {
             delete m_pScriptLogFile;
             m_pScriptLogFile = NULL;
-        }
-        if (m_pAuxiliaryLogFileFive)
-        {
-            delete m_pAuxiliaryLogFileFive;
-            m_pAuxiliaryLogFileFive = NULL;
         }
         m_bLogFilesOpen = 0;
     }

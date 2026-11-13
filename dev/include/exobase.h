@@ -944,7 +944,6 @@ public:
     CExoFile* m_pAuxiliaryLogFileTwo;
     CExoFile* m_pAuxiliaryLogFileThree;
     CExoFile* m_pAuxiliaryLogFileFour;
-    CExoFile* m_pAuxiliaryLogFileFive;
 };
 
 class CExoString;

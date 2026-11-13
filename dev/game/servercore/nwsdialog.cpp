@@ -31,7 +31,6 @@
 #include "twodimarrays.h"
 #include "twodimarray.h"
 
-bool g_bVODebugEnabled;
 static inline void NwsdialogTrace1();
 // PC 0x005E6980
 inline CSWSDialogNode::CSWSDialogNode()
@@ -2795,7 +2794,7 @@ CSWSDialogEntry::CSWSDialogEntry()
     m_nReplies = 0;
     m_pReplies = NULL;
 }
-// PC 0x005EC310
+// PC 0x005EC310 GOG 0x005EC340
 int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
                                 unsigned long nEntry, unsigned long& nResult)
 {
@@ -2903,24 +2902,9 @@ int CSWSDialog::SendDialogEntry(CSWSObject* pOwner, unsigned long nPlayerId,
         m_pEntries[nEntry].m_cSoundResRef += sVariation;
         m_pEntries[nEntry].m_bSoundExists |= CSWSDialogBase::SOUND_EXISTS_VARIATION;
     }
-    if (g_bVODebugEnabled)
-    {
-        EXOLOG("SendDialogEntry: sound mode %d\n", g_pExoSound->GetSoundMode());
-    }
     if (g_pExoSound->GetSoundMode() != CExoSound::CEXOSOUND_MODE_GENERIC)
     {
         g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
-    }
-    if (g_bVODebugEnabled)
-    {
-        EXOLOG("SendDialogEntry: sound mode %d\n", g_pExoSound->GetSoundMode());
-    }
-    if (g_bVODebugEnabled)
-    {
-        char szSound[17];
-        m_pEntries[nEntry].m_cSoundResRef.CopyToString(szSound);
-        EXOLOG("SendDialogEntry: %s mode %d\n", szSound,
-               g_pExoSound->GetSoundMode());
     }
     int bShowText = m_pEntries[nEntry].m_bSoundActive;
     g_pAppManager->GetClientExoApp()->GetInGameGui()->HandleDialogSound(
@@ -3083,4 +3067,3 @@ static inline void NwsdialogTrace1()
 {
 }
 
-char sOut[255] = "                                                  ";
