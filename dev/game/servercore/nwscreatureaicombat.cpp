@@ -2463,8 +2463,8 @@ void CSWSCreature::ResolveMeleeAttack(CSWSObject* pTarget, int nAttacks,
     }
 
     int nTotalDamage = 0;
-    CSWSCombatAttackData* pAttack =
-        m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack);
+    int nCurrentAttack = m_pcCombatRound->m_nCurrentAttack;
+    CSWSCombatAttackData* pAttack = m_pcCombatRound->GetAttack(nCurrentAttack);
     unsigned char nTotalAttacks = m_pcCombatRound->GetTotalAttacks();
     for (nAttack = 0; nAttack < nTotalAttacks; nAttack++)
     {
@@ -2507,8 +2507,8 @@ void CSWSCreature::ResolveMeleeAttack(CSWSObject* pTarget, int nAttacks,
                     pPushEffect->m_fDuration = 0.1f;
                     pPushEffect->SetCreator(GetId());
                     CSWSCreature* pCreature = pTarget->AsSWSCreature();
-                    int nDC = m_pStats->GetLevel(0) + UNARMED_SAVE_BASE_DC;
-                    if (pCreature->m_pStats->GetEffectLinkImmunity(pPushEffect) == 0 &&
+                    int nDC = GetStats()->GetLevel(0) + UNARMED_SAVE_BASE_DC;
+                    if (pCreature->GetStats()->GetEffectLinkImmunity(pPushEffect) == 0 &&
                         pCreature->SavingThrowRoll(SAVING_THROW_FORT, nDC, 0,
                                                   GetId(), 1, 0, 1) == 0 &&
                         rand() % 100 < nChance)
@@ -2533,7 +2533,8 @@ void CSWSCreature::ResolveMeleeAttack(CSWSObject* pTarget, int nAttacks,
             {
                 nTotalDamage += pDamageAttack->GetBaseDamage();
             }
-            ResolvePostMeleeDamage(pTarget->AsSWSCreature());
+            CSWSCreature* pTargetCreature = pTarget->AsSWSCreature();
+            ResolvePostMeleeDamage(pTargetCreature);
         }
         pAttack->ResolveAttackToMeleeSubAttack(nAttack, nImpactTime);
         SetAttackResult(pAttack->m_nAttackResult);

@@ -276,20 +276,24 @@ int CSWSExpression::ParseString(CExoString sPattern)
         }
 
         default:
+        {
             lstText.Add(cChar);
 
             char cNext;
-            if (nPos + 1 >= sPattern.GetLength() ||
-                (cNext = sPattern[nPos + 1]) == '*' || cNext == '|' ||
-                cNext == '(' || cNext == ')')
+            if (nPos + 1 < sPattern.GetLength() &&
+                (cNext = sPattern[nPos + 1]) != '*' && cNext != '|' &&
+                cNext != '(' && cNext != ')')
             {
-                CSWSExpressionNode* pNode = NewNode(EXPRESSION_NODE_LITERAL);
-                CExoString sText(lstText.element, lstText.num);
-                pNode->m_sText = sText;
-                lstText.num = 0;
-                lstLists[nDepth]->AddNode(pNode);
+                break;
             }
+
+            CSWSExpressionNode* pNode = NewNode(EXPRESSION_NODE_LITERAL);
+            CExoString sText(lstText.element, lstText.num);
+            pNode->m_sText = sText;
+            lstText.num = 0;
+            lstLists[nDepth]->AddNode(pNode);
             break;
+        }
         }
         nPos++;
     }

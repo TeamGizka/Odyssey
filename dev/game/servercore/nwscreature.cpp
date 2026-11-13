@@ -4081,6 +4081,7 @@ void CSWSCreature::HandleAlignmentInfluence()
     }
 
     char nPCAlignment = 0;
+    char nInfluence = 0;
     char nCharismaBonus = 0;
     float fMultiplier = 1.0f;
     g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(
@@ -4103,18 +4104,26 @@ void CSWSCreature::HandleAlignmentInfluence()
 
         nCharismaBonus = pPC->GetStats()->m_nCharismaModifier * 3;
         char nLevelBonus = 0;
-        CSWSCreatureStats* pStats;
-        unsigned char nClass = 2;
         if (pPC->GetStats()->HasFeat(CSWFeat::FEAT_DARK_SIDE_CORRUPTION))
         {
-            pStats = pPC->m_pStats;
+            CSWSCreatureStats* pStats = pPC->m_pStats;
             if (pStats->m_nGoodEvilAlignment <= 40)
             {
-                for (nClass = 0; nClass < 2; nClass++)
+                for (unsigned char nClass = 0; nClass < 2; nClass++)
                 {
-                    if (nClass < pStats->m_nClassCount &&
-                        pStats->m_aClassInfo[nClass].m_nClass == CLASS_TYPE_SITHLORD)
+                    if (pStats->GetClass(nClass) == CLASS_TYPE_SITHLORD)
                     {
+                        int nLevel = pStats->GetClassLevel(nClass, 0);
+                        if (nLevel >= 19)
+                            nLevelBonus = 5;
+                        else if (nLevel >= 15)
+                            nLevelBonus = 4;
+                        else if (nLevel >= 11)
+                            nLevelBonus = 3;
+                        else if (nLevel >= 7)
+                            nLevelBonus = 2;
+                        else if (nLevel >= 1)
+                            nLevelBonus = 1;
                         break;
                     }
                 }
@@ -4122,32 +4131,28 @@ void CSWSCreature::HandleAlignmentInfluence()
         }
         else if (pPC->GetStats()->HasFeat(CSWFeat::FEAT_LIGHT_SIDE_ENLIGHTENMENT))
         {
-            pStats = pPC->m_pStats;
+            CSWSCreatureStats* pStats = pPC->m_pStats;
             if (pStats->m_nGoodEvilAlignment >= 60)
             {
-                for (nClass = 0; nClass < 2; nClass++)
+                for (unsigned char nClass = 0; nClass < 2; nClass++)
                 {
-                    if (nClass < pStats->m_nClassCount &&
-                        pStats->m_aClassInfo[nClass].m_nClass == CLASS_TYPE_JEDIMASTER)
+                    if (pStats->GetClass(nClass) == CLASS_TYPE_JEDIMASTER)
                     {
+                        int nLevel = pStats->GetClassLevel(nClass, 0);
+                        if (nLevel >= 19)
+                            nLevelBonus = 5;
+                        else if (nLevel >= 15)
+                            nLevelBonus = 4;
+                        else if (nLevel >= 11)
+                            nLevelBonus = 3;
+                        else if (nLevel >= 7)
+                            nLevelBonus = 2;
+                        else if (nLevel >= 1)
+                            nLevelBonus = 1;
                         break;
                     }
                 }
             }
-        }
-        if (nClass < 2)
-        {
-            int nLevel = pStats->GetClassLevel(nClass, 0);
-            if (nLevel >= 19)
-                nLevelBonus = 5;
-            else if (nLevel >= 15)
-                nLevelBonus = 4;
-            else if (nLevel >= 11)
-                nLevelBonus = 3;
-            else if (nLevel >= 7)
-                nLevelBonus = 2;
-            else if (nLevel >= 1)
-                nLevelBonus = 1;
         }
         static const float fMultiplierPerBonus = 0.2f;
         fMultiplier = nLevelBonus * fMultiplierPerBonus + 1.0f;
@@ -4155,7 +4160,7 @@ void CSWSCreature::HandleAlignmentInfluence()
     }
 
     CSWPartyTable* pPartyTable = g_pAppManager->m_pServerExoApp->GetPartyTable();
-    int nNPC = pPartyTable->GetNPCID(m_nId);
+    int nNPC = pPartyTable->GetNPCID(GetId());
     if (nNPC == -1)
     {
         if (m_sTag.CompareNoCase("atton"))
@@ -4186,7 +4191,7 @@ void CSWSCreature::HandleAlignmentInfluence()
             return;
     }
 
-    char nInfluence = pPartyTable->GetInfluence(nNPC);
+    nInfluence = pPartyTable->GetInfluence(nNPC);
     if (nInfluence == -1)
     {
         int nBaseInfluence;
@@ -5758,13 +5763,13 @@ void CSWSCreature::SetAttemptedAttackTarget(unsigned long oidTarget)
 // PC 0x0050DAF0
 short CSWSCreature::GetArmorClass()
 {
-    short nArmorClass = 0;
+    short nClassBonus = 0;
     for (int nClass = 0; nClass < m_pStats->m_nClassCount; ++nClass)
     {
         unsigned char nClassType = m_pStats->GetClass(nClass);
         CSWClass* pClass = &g_pRules->m_pClasses[nClassType];
         CSWSCreatureStats* pStats = m_pStats;
-        nArmorClass += (short)pClass->GetArmorBonus(pStats->GetClassLevel(nClass, 0));
+        nClassBonus += (short)pClass->GetArmorBonus(pStats->GetClassLevel(nClass, 0));
     }
 
     if (m_bInParty == 0)
@@ -5780,15 +5785,15 @@ short CSWSCreature::GetArmorClass()
             {
                 nLevel = 1;
             }
-            nArmorClass += (short)((char)nLevel * fArmorMult);
+            nClassBonus += (short)((char)nLevel * fArmorMult);
         }
     }
 
     CSWSCreatureStats* pStats = m_pStats;
+    short nArmorClass = SW_BASE_ARMOR_CLASS + nClassBonus;
     nArmorClass += (short)(char)(pStats->m_nACArmorBonus - pStats->m_nACArmorPenalty + pStats->m_nACArmorBase)
                 + (short)(char)(pStats->m_nACShieldBonus - pStats->m_nACShieldPenalty + pStats->m_nACShieldBase)
-                + (short)(char)(pStats->m_nACDeflectionBonus - pStats->m_nACDeflectionPenalty)
-                + SW_BASE_ARMOR_CLASS;
+                + (short)(char)(pStats->m_nACDeflectionBonus - pStats->m_nACDeflectionPenalty);
     int nDodgeBonus = min(SW_MAX_AC_DODGE_BONUS,
                           pStats->m_nACDodgeBonus - pStats->m_nACDodgePenalty);
     nArmorClass += (short)(char)(pStats->GetACNaturalBase() + pStats->m_nACNaturalBonus - pStats->m_nACNaturalPenalty)
@@ -12378,10 +12383,10 @@ int CSWSCreature::UpdateSpecialAttacks()
 CItemRepository* CSWSCreature::GetItemRepository(int bParty)  // PC 0x0050FFD0
 {
     int nOverride =
-        g_pAppManager->m_pClientExoApp->GetInGameGui()->GetTopMenuOverrideCharacter();
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->GetTopMenuOverrideCharacter();
     if ((m_bInParty != 0 && bParty) || nOverride != -1)
     {
-        return g_pAppManager->m_pServerExoApp->GetPartyTable()->GetPartyItems();
+        return g_pAppManager->GetServerExoApp()->GetPartyTable()->GetPartyItems();
     }
 
     return m_pcItemRepository;

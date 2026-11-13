@@ -1935,12 +1935,12 @@ void CSWSItem::AddFeatRequirements(CExoString& sString)
                  ((CSWSItem::UPGRADE_PROPERTY_MASK << pProperty->m_nUpgradeType) & m_nUpgrades) != 0) &&
                 pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_FEAT)
             {
-                nFeat = pProperty->m_nSubtype;
+                nFeat = pProperty->GetSubtype();
                 if (nFeat > 0)
                 {
                     if (!bHeadingAdded)
                     {
-                        sString = sString + g_pAppManager->m_pClientExoApp->GetGUIString(
+                        sString = sString + g_pAppManager->GetClientExoApp()->GetGUIString(
                             CClientExoApp::GUI_STRREF_FEATS_REQUIRED) + ":\n";
                         bHeadingAdded = 1;
                     }
@@ -1951,7 +1951,7 @@ void CSWSItem::AddFeatRequirements(CExoString& sString)
                         EXOXBOXASSERT(pArraysForFeat->m_pFeat);
                         C2DA* pFeatTable = pArraysForFeat->m_pFeat;
 #else
-                        C2DA* pFeatTable = g_pRules->m_p2DArrays->m_pFeat;
+                        C2DA* pFeatTable = g_pRules->Get2DArrays()->m_pFeat;
 #endif
                         pFeatTable->GetINTEntry(nFeat, sColumn, &nName);
                     }
@@ -2080,10 +2080,10 @@ void CSWSItem::AddPCRequirements(CExoString& sString)
                  ((CSWSItem::UPGRADE_PROPERTY_MASK << pProperty->m_nUpgradeType) & m_nUpgrades) != 0) &&
                 pProperty->m_nPropertyType == CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_PC)
             {
-                nPC = pProperty->m_nSubtype;
+                nPC = pProperty->GetSubtype();
                 if (!bHeadingAdded)
                 {
-                    sString = sString + g_pAppManager->m_pClientExoApp->GetGUIString(
+                    sString = sString + g_pAppManager->GetClientExoApp()->GetGUIString(
                         GUI_STRREF_PC_REQUIRED) + ":\n";
                     bHeadingAdded = 1;
                 }
@@ -2100,7 +2100,7 @@ void CSWSItem::AddPCRequirements(CExoString& sString)
                 {
                     {
                         CExoString sColumn("NAME");
-                        C2DA* pPCTable = g_pRules->m_p2DArrays->m_pIPRPPC;
+                        C2DA* pPCTable = g_pRules->Get2DArrays()->m_pIPRPPC;
                         pPCTable->GetINTEntry(nPC, sColumn, &nName);
                     }
                     sPC = g_pAppManager->GetClientExoApp()->GetGUIString(nName);
