@@ -1272,11 +1272,16 @@ void CSWSDoor::AddToArea(CSWSArea* pArea, float fX, float fY, float fZ,
         }
     }
 }
+inline unsigned short SWSDoorGetLoadScreenId(CSWSDoor* pDoor)
+{
+    return pDoor->m_nLoadScreenId;
+}
 // PC 0x005825B0 GOG 0x00582630
 void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                            void* pEventData, unsigned long nCalendarDay,
                            unsigned long nTimeOfDay)
 {
+    CSWSCreature* pCreature;
     if (nEventId == CServerAIMaster::EVENT_FEEDBACK_MESSAGE)
     {
         CSWCCMessageData* pData = (CSWCCMessageData*)pEventData;
@@ -1307,7 +1312,6 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
     {
         CSWSCombatAttackData* pAttack = (CSWSCombatAttackData*)pEventData;
         CSWSItem* pWeapon = NULL;
-        CSWSCreature* pAttacker;
         if (pAttack != NULL)
         {
             CSWCCMessageData* pData = new CSWCCMessageData;
@@ -1315,48 +1319,45 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
             pData->SetObjectID(1, GetId());
             if (g_bEnableCombatDebugging)
                 pData->SetString(0, pAttack->m_sAttackDebugText);
-            pAttacker = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaller);
-            if (pAttacker != NULL)
+            pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaller);
+            if (pCreature != NULL)
             {
-                pAttacker->BroadcastAttackDataToParty(pData, pAttack);
-                pAttacker->RemoveCombatInvisibilityEffects();
+                pCreature->BroadcastAttackDataToParty(pData, pAttack);
+                pCreature->RemoveCombatInvisibilityEffects();
             }
             delete pData;
             m_nAttackType = pAttack->GetAttackType();
             m_nAttackMode = pAttack->GetAttackMode();
             if (pAttack->m_nWeaponAttackType == CSWSCombatRound::WEAPON_ATTACK_RIGHTHAND ||
                 pAttack->m_nWeaponAttackType == CSWSCombatRound::WEAPON_ATTACK_EXTRA_RIGHTHAND)
-                pWeapon = pAttacker->m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
+                pWeapon = pCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTHAND);
             else if (pAttack->m_nWeaponAttackType == CSWSCombatRound::WEAPON_ATTACK_LEFTHAND)
-                pWeapon = pAttacker->m_pInventory->GetItemInSlot(INVENTORY_SLOT_LEFTHAND);
+                pWeapon = pCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_LEFTHAND);
             else if (pAttack->m_nWeaponAttackType == CSWSCombatRound::WEAPON_ATTACK_UNARMED ||
                      pAttack->m_nWeaponAttackType == CSWSCombatRound::WEAPON_ATTACK_EXTRA_UNARMED)
-                pWeapon = pAttacker->m_pInventory->GetItemInSlot(INVENTORY_SLOT_HANDS);
+                pWeapon = pCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_HANDS);
             else if (pAttack->m_nWeaponAttackType == CSWSCombatRound::WEAPON_ATTACK_CREATURE1)
-                pWeapon = pAttacker->m_pInventory->GetItemInSlot(INVENTORY_SLOT_CREATUREWEAPON1);
+                pWeapon = pCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_CREATUREWEAPON1);
             else if (pAttack->m_nWeaponAttackType == CSWSCombatRound::WEAPON_ATTACK_CREATURE2)
-                pWeapon = pAttacker->m_pInventory->GetItemInSlot(INVENTORY_SLOT_CREATUREWEAPON2);
+                pWeapon = pCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_CREATUREWEAPON2);
             else if (pAttack->m_nWeaponAttackType == CSWSCombatRound::WEAPON_ATTACK_CREATURE3)
-                pWeapon = pAttacker->m_pInventory->GetItemInSlot(INVENTORY_SLOT_CREATUREWEAPON3);
+                pWeapon = pCreature->m_pInventory->GetItemInSlot(INVENTORY_SLOT_CREATUREWEAPON3);
         }
-        else
-
-            pAttacker = (CSWSCreature*)oidCaller;
         m_oidLastAttacker = oidCaller;
         SetLastHostileActor(oidCaller, 0);
-        if (pAttacker != NULL)
+        if (pCreature != NULL)
         {
-            pAttacker->BroadcastCombatStateToParty(OBJECT_INVALID);
-            pAttacker->RemoveCombatInvisibilityEffects();
+            pCreature->BroadcastCombatStateToParty(OBJECT_INVALID);
+            pCreature->RemoveCombatInvisibilityEffects();
             if (pWeapon != NULL)
-                pAttacker->m_oidLastWeaponUsed = pWeapon->GetId();
+                pCreature->m_oidLastWeaponUsed = pWeapon->GetId();
             else
-                pAttacker->m_oidLastWeaponUsed = OBJECT_INVALID;
+                pCreature->m_oidLastWeaponUsed = OBJECT_INVALID;
         }
         g_pVirtualMachine->RunScript(&m_asScripts[SCRIPT_ON_MELEE_ATTACKED], m_nId, 1);
-        if (m_bTrapFlag == 1 && pAttacker != NULL)
+        if (m_bTrapFlag == 1 && pCreature != NULL)
         {
-            Vector vDistance = pAttacker->m_vPosition - m_vPosition;
+            Vector vDistance = pCreature->m_vPosition - m_vPosition;
             if (vDistance * vDistance <= 16.0f)
             {
                 CScriptEvent* pEvent = new CScriptEvent;
@@ -1443,10 +1444,10 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                 else if (bBlastAttempt == 0 || bTriggered != 0)
                 {
                     CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaller);
-                    if ((pCreature == NULL || !pCreature->m_pStats->GetEffectImmunity(
+                    if ((pCreature == NULL || !pCreature->GetStats()->GetEffectImmunity(
                              CSWSEffectListHandler::IMMUNITY_TYPE_MINE, NULL)) &&
                         (bForce || (GetReputation(oidCaller, 0) < MIN_FRIENDLY_REPUTATION &&
-                                    m_nFactionId != pCreature->m_pStats->m_nFactionId)) && m_bTrapFlag)
+                                    m_nFactionId != pCreature->GetStats()->m_nFactionId)) && m_bTrapFlag)
                     {
                         if (pCreature != NULL)
                             pCreature->SendFeedbackMessage(FEEDBACK_TRAP_TRIGGERED, NULL);
@@ -1480,7 +1481,7 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                 }
                 else if (m_bTrapFlag)
                 {
-                    CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaller);
+                    pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaller);
                     int nRoll = pCreature->m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, 0) / 2 + TRAP_RECOVER_ROLL_BASE;
                     nRoll += pEvent->GetInteger(3);
                     int bSuccess = 0;
@@ -1491,11 +1492,11 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                         pOpenEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_MINE_TRIGGERED;
                         pOpenEvent->SetInteger(4, 1);
                         g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                            0, 1000, oidCaller, m_nId, CServerAIMaster::EVENT_SIGNAL_EVENT, pOpenEvent);
+                            0, 1000, oidCaller, GetId(), CServerAIMaster::EVENT_SIGNAL_EVENT, pOpenEvent);
                         CScriptEvent* pUnlockEvent = new CScriptEvent;
                         pUnlockEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_UNLOCKED;
                         g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                            0, 0, pCreature->m_nId, m_nId, CServerAIMaster::EVENT_SIGNAL_EVENT, pUnlockEvent);
+                            0, 0, pCreature->GetId(), GetId(), CServerAIMaster::EVENT_SIGNAL_EVENT, pUnlockEvent);
                     }
                     CExoString sResult;
                     if (bSuccess)
@@ -1504,7 +1505,7 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                         sResult = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_BLAST_FAILURE);
                     g_pTlkTable->SetCustomToken(1, sResult);
                     g_pTlkTable->SetCustomToken(2, CExoString(nRoll));
-                    g_pTlkTable->SetCustomToken(3, CExoString("20"));
+                    g_pTlkTable->SetCustomToken(3, "20");
                     g_pTlkTable->SetCustomToken(4, CExoString(
                         pCreature->m_pStats->GetSkillRank(CSWRules::SKILL_DEMOLITIONS, NULL, 0)));
                     g_pTlkTable->SetCustomToken(5, CExoString(pEvent->GetInteger(3)));
@@ -1651,9 +1652,7 @@ void CSWSDoor::EventHandler(unsigned long nEventId, unsigned long oidCaller,
                     CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(pEvent->GetObjectID(0));
                     if (pPlayer != NULL && m_nLoadScreenId != 0)
                     {
-                        CExoString sBMP("");
-                        unsigned short nLoadScreenId = m_nLoadScreenId;
-                        pPlayer->SetAreaTransitionBMP(nLoadScreenId, sBMP);
+                        pPlayer->SetAreaTransitionBMP(SWSDoorGetLoadScreenId(this), "");
                     }
                     g_pVirtualMachine->RunScript(&m_asScripts[SCRIPT_ON_CLICK], m_nId, 1);
                 }

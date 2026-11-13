@@ -1484,9 +1484,9 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
                 {
                     CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCaller);
                     if ((pCreature != NULL &&
-                         pCreature->m_pStats->GetEffectImmunity(CSWSEffectListHandler::IMMUNITY_TYPE_MINE, NULL) != 0) ||
+                         pCreature->GetStats()->GetEffectImmunity(CSWSEffectListHandler::IMMUNITY_TYPE_MINE, NULL) != 0) ||
                         (nTriggerFlag == 0 &&
-                         (GetReputation(oidCaller, 0) >= MIN_FRIENDLY_REPUTATION || m_nFaction == pCreature->m_pStats->m_nFactionId)) ||
+                         (GetReputation(oidCaller, 0) >= MIN_FRIENDLY_REPUTATION || m_nFaction == pCreature->GetStats()->m_nFactionId)) ||
                         m_nTrapFlag == 0)
                     {
                         break;
@@ -1536,7 +1536,7 @@ void CSWSPlaceable::EventHandler(unsigned long nEventId, unsigned long oidCaller
                     CScriptEvent* pUnlockEvent = new CScriptEvent;
                     pUnlockEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_UNLOCKED;
                     g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                        0, 0, pCreature->m_nId, m_nId, CServerAIMaster::EVENT_SIGNAL_EVENT, pUnlockEvent);
+                        0, 0, pCreature->GetId(), GetId(), CServerAIMaster::EVENT_SIGNAL_EVENT, pUnlockEvent);
                 }
                 pCreature->SendFeedbackMessage(FEEDBACK_TRAP_TRIGGERED, NULL);
                 m_oidLastTriggeredBy = oidCaller;
