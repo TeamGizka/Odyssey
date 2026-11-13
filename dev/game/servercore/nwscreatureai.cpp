@@ -1081,8 +1081,9 @@ int CSWSCreature::AIActionCheckMoveToPoint(CSWSObjectActionNode* pAction)
     unsigned long oidTarget = (unsigned long)pAction->m_apParam[4];
     int bRun = (int)pAction->m_apParam[5];
     CGameObject* pObject;
-    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
-            oidArea, &pObject) != CGameObjectArray::SUCCESS)
+    unsigned char nResult = g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
+            oidArea, &pObject);
+    if (nResult != CGameObjectArray::SUCCESS)
         return ACTION_FAILED;
 
     float fRange = m_pPathfindInformation->m_fStepScale;
@@ -1121,8 +1122,9 @@ int CSWSCreature::AIActionCheckMoveToPointRadius(CSWSObjectActionNode* pAction)
     float fRange = *(float*)&pAction->m_apParam[6];
     int bOption = (int)pAction->m_apParam[7];
     CGameObject* pObject;
-    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
-            oidArea, &pObject) != CGameObjectArray::SUCCESS)
+    unsigned char nResult = g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
+            oidArea, &pObject);
+    if (nResult != CGameObjectArray::SUCCESS)
         return ACTION_FAILED;
 
     int bDifferentArea = GetArea() != NULL && oidArea != GetArea()->GetId();
@@ -1874,113 +1876,118 @@ unsigned char CSWSCreature::CanEquipItem(CSWSItem* pItem,
     }
 
     unsigned char nResult;
-    if (!pItem->m_bNonEquippable && CheckProficiencies(pItem, *pnSlot))
+    if (pItem->m_bNonEquippable)
     {
-        if (!CheckItemAlignmentRestrictions(pItem))
+        return 0;
+    }
+    if (!CheckProficiencies(pItem, *pnSlot))
+    {
+        return 0;
+    }
+    if (!CheckItemAlignmentRestrictions(pItem))
+    {
+        if (bCheckRestrictions == 1 && bFeedback == 1)
         {
-            if (bCheckRestrictions == 1 && bFeedback == 1)
-            {
-                SendFeedbackMessage(FEEDBACK_ITEM_ALIGNMENT_RESTRICTION, NULL);
-            }
-            return 0;
+            SendFeedbackMessage(FEEDBACK_ITEM_ALIGNMENT_RESTRICTION, NULL);
         }
-        else if (!CheckItemClassRestrictions(pItem))
+        return 0;
+    }
+    else if (!CheckItemClassRestrictions(pItem))
+    {
+        if (bCheckRestrictions == 1 && bFeedback == 1)
         {
-            if (bCheckRestrictions == 1 && bFeedback == 1)
-            {
-                SendFeedbackMessage(FEEDBACK_ITEM_CLASS_RESTRICTION, NULL);
-            }
-            return 0;
+            SendFeedbackMessage(FEEDBACK_ITEM_CLASS_RESTRICTION, NULL);
         }
-        else if (!CheckItemRaceRestrictions(pItem, 1))
+        return 0;
+    }
+    else if (!CheckItemRaceRestrictions(pItem, 1))
+    {
+        if (bCheckRestrictions == 1 && bFeedback == 1)
         {
-            if (bCheckRestrictions == 1 && bFeedback == 1)
-            {
-                SendFeedbackMessage(FEEDBACK_ITEM_RACE_RESTRICTION, NULL);
-            }
-            return 0;
+            SendFeedbackMessage(FEEDBACK_ITEM_RACE_RESTRICTION, NULL);
         }
-        else if (!CheckItemFeatRestrictions(pItem))
+        return 0;
+    }
+    else if (!CheckItemFeatRestrictions(pItem))
+    {
+        if (bCheckRestrictions == 1 && bFeedback == 1)
         {
-            if (bCheckRestrictions == 1 && bFeedback == 1)
-            {
-                SendFeedbackMessage(FEEDBACK_ITEM_FEAT_RESTRICTION, NULL);
-            }
-            return 0;
+            SendFeedbackMessage(FEEDBACK_ITEM_FEAT_RESTRICTION, NULL);
         }
-        else if (!CheckItemGenderRestrictions(pItem))
+        return 0;
+    }
+    else if (!CheckItemGenderRestrictions(pItem))
+    {
+        if (bCheckRestrictions == 1 && bFeedback == 1)
         {
-            if (bCheckRestrictions == 1 && bFeedback == 1)
-            {
-                SendFeedbackMessage(FEEDBACK_ITEM_GENDER_RESTRICTION, NULL);
-            }
-            return 0;
+            SendFeedbackMessage(FEEDBACK_ITEM_GENDER_RESTRICTION, NULL);
         }
-        else if (!CheckItemPCRestrictions(pItem))
+        return 0;
+    }
+    else if (!CheckItemPCRestrictions(pItem))
+    {
+        if (bCheckRestrictions == 1 && bFeedback == 1)
         {
-            if (bCheckRestrictions == 1 && bFeedback == 1)
-            {
-                SendFeedbackMessage(FEEDBACK_ITEM_PC_RESTRICTION, NULL);
-            }
-            return 0;
+            SendFeedbackMessage(FEEDBACK_ITEM_PC_RESTRICTION, NULL);
         }
-        else if (!CheckItemAttributeRestrictions(pItem))
+        return 0;
+    }
+    else if (!CheckItemAttributeRestrictions(pItem))
+    {
+        if (bCheckRestrictions == 1 && bFeedback == 1)
         {
-            if (bCheckRestrictions == 1 && bFeedback == 1)
-            {
-                SendFeedbackMessage(FEEDBACK_ITEM_ATTRIBUTE_RESTRICTION, NULL);
-            }
-            return 0;
+            SendFeedbackMessage(FEEDBACK_ITEM_ATTRIBUTE_RESTRICTION, NULL);
         }
-        else if (!CheckItemCNPCRestrictions(pItem))
+        return 0;
+    }
+    else if (!CheckItemCNPCRestrictions(pItem))
+    {
+        if (bCheckRestrictions == 1 && bFeedback == 1)
         {
-            if (bCheckRestrictions == 1 && bFeedback == 1)
-            {
-                SendFeedbackMessage(FEEDBACK_ITEM_CNPC_RESTRICTION, NULL);
-            }
-            return 0;
+            SendFeedbackMessage(FEEDBACK_ITEM_CNPC_RESTRICTION, NULL);
         }
-        else
+        return 0;
+    }
+    else
+    {
+        switch (*pnSlot)
         {
-            switch (*pnSlot)
-            {
-            case INVENTORY_SLOT_RIGHTHAND:
-            case INVENTORY_SLOT_LEFTHAND:
-                nResult = CanEquipWeapon(pItem, pnSlot, bCheckRestrictions, bFeedback);
-                break;
-            case INVENTORY_SLOT_RIGHTHAND2:
-            case INVENTORY_SLOT_LEFTHAND2:
-                nResult = CanEquipWeapon2(pItem, pnSlot, bCheckRestrictions, bFeedback);
-                break;
-            default:
-                nResult = CanEquipMiscellaneous(pItem, pnSlot,
-                                               bCheckRestrictions, bFeedback);
-                break;
-            }
-            unsigned long nSlot = *pnSlot;
-            if (nSlot == INVENTORY_SLOT_RIGHTHAND2)
-            {
-                *pnSlot = INVENTORY_SLOT_RIGHTHAND2 | INVENTORY_SLOT_RIGHTHAND;
-            }
-            else if (nSlot == INVENTORY_SLOT_LEFTHAND2)
-            {
-                *pnSlot = INVENTORY_SLOT_LEFTHAND2 | INVENTORY_SLOT_LEFTHAND;
-            }
-            int bCanEquip = FALSE;
-            CSWBaseItem* pBaseItem =
-                g_pRules->GetBaseItemArray()->GetBaseItem(pItem->GetBaseItemType());
-            if (pBaseItem != NULL)
-            {
-                bCanEquip = (pBaseItem->GetEquipableSlots() & *pnSlot) != 0;
-            }
-            *pnSlot = nSlot;
-            if (bCanEquip != FALSE)
-            {
-                return nResult;
-            }
+        case INVENTORY_SLOT_RIGHTHAND:
+        case INVENTORY_SLOT_LEFTHAND:
+            nResult = CanEquipWeapon(pItem, pnSlot, bCheckRestrictions, bFeedback);
+            break;
+        case INVENTORY_SLOT_RIGHTHAND2:
+        case INVENTORY_SLOT_LEFTHAND2:
+            nResult = CanEquipWeapon2(pItem, pnSlot, bCheckRestrictions, bFeedback);
+            break;
+        default:
+            nResult = CanEquipMiscellaneous(pItem, pnSlot,
+                                           bCheckRestrictions, bFeedback);
+            break;
+        }
+        unsigned long nSlot = *pnSlot;
+        if (nSlot == INVENTORY_SLOT_RIGHTHAND2)
+        {
+            *pnSlot = INVENTORY_SLOT_RIGHTHAND2 | INVENTORY_SLOT_RIGHTHAND;
+        }
+        else if (nSlot == INVENTORY_SLOT_LEFTHAND2)
+        {
+            *pnSlot = INVENTORY_SLOT_LEFTHAND2 | INVENTORY_SLOT_LEFTHAND;
+        }
+        int bCanEquip = FALSE;
+        CSWBaseItem* pBaseItem =
+            g_pRules->GetBaseItemArray()->GetBaseItem(pItem->GetBaseItemType());
+        if (pBaseItem != NULL)
+        {
+            bCanEquip = (pBaseItem->GetEquipableSlots() & *pnSlot) != 0;
+        }
+        *pnSlot = nSlot;
+        if (bCanEquip == FALSE)
+        {
+            nResult = 0;
         }
     }
-    return 0;
+    return nResult;
 }
 // PC 0x0054AFD0 GOG 0x0054B0F0
 unsigned char CSWSCreature::CanEquipMiscellaneous(CSWSItem* pItem,
@@ -3654,8 +3661,8 @@ int CSWSCreature::RemoveItem(CSWSItem* pItem, int bUnknown1, int bUnknown2,
     else
     {
         CGameObject* pPossessor =
-            g_pAppManager->m_pServerExoApp->GetGameObject(pItem->m_oidPossessor);
-        CGameObject* pSelf = g_pAppManager->m_pServerExoApp->GetGameObject(m_nId);
+            g_pAppManager->GetServerExoApp()->GetGameObject(pItem->m_oidPossessor);
+        CGameObject* pSelf = g_pAppManager->GetServerExoApp()->GetGameObject(GetId());
         if (pPossessor != NULL && pPossessor->AsSWSCreature() != NULL &&
             pPossessor->AsSWSCreature()->GetInParty() &&
             pSelf != NULL && pSelf->AsSWSCreature() != NULL &&
@@ -3673,7 +3680,7 @@ int CSWSCreature::RemoveItem(CSWSItem* pItem, int bUnknown1, int bUnknown2,
     }
     else
     {
-        pObject = g_pAppManager->m_pServerExoApp->GetGameObject(pItem->m_oidPossessor);
+        pObject = g_pAppManager->m_pServerExoApp->GetGameObject(pItem->GetPossessor());
         if (pObject == NULL || pObject->m_nObjectType != CGameObject::OBJECT_TYPE_ITEM)
         {
             return 0;
@@ -3781,35 +3788,39 @@ int CSWSCreature::AIActionFollowOwner(CSWSObjectActionNode* pNode)
     if (m_n11FC != 0 && !GetDead() && !GetDeadTemp() &&
         (m_nAIStateFlags & AI_STATE_CAN_MOVE) != 0)
     {
+        float fFollowDistance;
         if (GetArea() == NULL)
         {
-            return CSWSObject::ACTION_IN_PROGRESS;
         }
-        float fFollowDistance = *(float*)&pNode->m_apParam[0];
-        CSWPartyTable* pPartyTable = g_pAppManager->m_pServerExoApp->GetPartyTable();
-        if (pPartyTable == NULL)
+        else
         {
+            fFollowDistance = *(float*)&pNode->m_apParam[0];
+            CSWPartyTable* pPartyTable = g_pAppManager->m_pServerExoApp->GetPartyTable();
+            if (pPartyTable == NULL)
+            {
+                return CSWSObject::ACTION_IN_PROGRESS;
+            }
+            CSWSCreature* pOwner = pPartyTable->GetPUPOwner(pPartyTable->GetPUPID(GetId()));
+            if (pOwner == NULL)
+            {
+                return CSWSObject::ACTION_IN_PROGRESS;
+            }
+            Vector vOwner = pOwner->m_vPosition;
+            Vector vPosition = m_vPosition;
+            if (magnitude(Vector(vOwner.m_fX - vPosition.m_fX,
+                    vOwner.m_fY - vPosition.m_fY, 0.0f)) >= fFollowDistance)
+            {
+                Vector vDestination = pOwner->m_vPosition;
+                unsigned long oidOwnerArea = pOwner->GetArea()->GetId();
+                AddMoveToPointAction(ACTION_GROUP_NEW, vDestination, oidOwnerArea,
+                    pOwner->GetId(), 1, fFollowDistance, 0.0f, 0, 0, 0, 0, 0, 0,
+                    Vector(), 0, 0, 0);
+                AddAction(ACTION_FOLLOW_OWNER, ACTION_GROUP_NEW, ACTION_PARAM_FLOAT,
+                    &fFollowDistance, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL,
+                    0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL);
+                return CSWSObject::ACTION_COMPLETE;
+            }
             return CSWSObject::ACTION_IN_PROGRESS;
-        }
-        CSWSCreature* pOwner = pPartyTable->GetPUPOwner(pPartyTable->GetPUPID(GetId()));
-        if (pOwner == NULL)
-        {
-            return CSWSObject::ACTION_IN_PROGRESS;
-        }
-        Vector vOwner = pOwner->m_vPosition;
-        Vector vPosition = m_vPosition;
-        if (magnitude(Vector(vOwner.m_fX - vPosition.m_fX,
-                vOwner.m_fY - vPosition.m_fY, 0.0f)) >= fFollowDistance)
-        {
-            Vector vDestination = pOwner->m_vPosition;
-            unsigned long oidOwnerArea = pOwner->GetArea()->GetId();
-            AddMoveToPointAction(ACTION_GROUP_NEW, vDestination, oidOwnerArea,
-                pOwner->GetId(), 1, fFollowDistance, 0.0f, 0, 0, 0, 0, 0, 0,
-                Vector(), 0, 0, 0);
-            AddAction(ACTION_FOLLOW_OWNER, ACTION_GROUP_NEW, ACTION_PARAM_FLOAT,
-                &fFollowDistance, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL,
-                0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL);
-            return CSWSObject::ACTION_COMPLETE;
         }
         return CSWSObject::ACTION_IN_PROGRESS;
     }
@@ -5519,11 +5530,15 @@ int CSWSCreature::CheckItemPCRestrictions(CSWSItem* pItem)
 {
     CExoString sExpectedTag;
 
-    if (pItem->GetPropertyByTypeExists(
+    if (!pItem->GetPropertyByTypeExists(
             CSWItemProperty::ITEM_PROPERTY_USE_LIMITATION_PC, 0))
     {
-        unsigned char bAllowed = 0;
-        int nRestrictions = 0;
+        return 1;
+    }
+    unsigned char bAllowed = 0;
+    int nRestrictions = 0;
+    if (pItem->m_nPassiveProperties > 0)
+    {
         for (int i = 0; i < pItem->m_nPassiveProperties; i++)
         {
             CSWItemProperty* pProperty = pItem->GetPassiveProperty(i);
@@ -5555,10 +5570,14 @@ int CSWSCreature::CheckItemPCRestrictions(CSWSItem* pItem)
                 }
             }
         }
-        if (nRestrictions > 0 && !bAllowed)
+    }
+    if (nRestrictions > 0)
+    {
+        if (!bAllowed)
         {
             return 0;
         }
+        return 1;
     }
     return 1;
 }
