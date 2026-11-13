@@ -198,9 +198,8 @@ Vector CSWBehaviorCameraCombat::DetermineSafePosition(CSWCCreature* pCreature,
     Vector vSafe = vDesired;
     hitInfo.ClearOutput();
 
-    float fPersonalSpace = CameraPersonalSpace;
     Vector vOffset =
-        fPersonalSpace * normalize(cross(zaxis, vCurrent - vSafe));
+        normalize(cross(zaxis, vCurrent - vSafe)) * CameraPersonalSpace;
     int bHit = 0;
     float fDistance = 0.0f;
 

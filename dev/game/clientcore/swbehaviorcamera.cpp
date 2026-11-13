@@ -508,6 +508,7 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // PC 0x0
     Quaternion qOrientation, float fTimeStep)
 {
     Vector vCameraPos;
+    Vector vSide;
     float fMouseSenSetting;
     CSWCObject* pTarget;
 
@@ -525,9 +526,9 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // PC 0x0
         {
             Vector vDirection = pTarget->m_vPosition -
                 static_cast<Gob*>(m_pTarget.m_pObject)->GetPosition();
-            Vector vSide = cross(zaxis, qResult.ydir());
-            float fDot = vSide * vDirection;
+            vSide = cross(zaxis, qResult.ydir());
             float fYawOffset = CAMERA_LOOK_AT_YAW_OFFSET;
+            float fDot = vSide * vDirection;
             if (fDot < 0.0)
             {
                 fYawOffset = -CAMERA_LOOK_AT_YAW_OFFSET;
