@@ -374,239 +374,242 @@ int CSWSModule::PlotPathInArea(CPathfindInformation* pPathfind,
 
     if (pArea == NULL || pArea->GetId() != pPathfind->m_nEndArea)
     {
-        return CSWSObject::ACTION_FAILED;
-    }
-    ++pPathfind->m_nField_3C;
-    pArea->m_pPathfindInformation = pPathfind;
-    if (pPathfind->m_fStartDistance > NWSMODULE_PATH_GOAL_MARGIN &&
-        pPathfind->m_nField_240 == 0)
-    {
-        Vector vGoal(fEndX, fEndY, 0.0f);
-        Vector vNewGoal = vGoal;
-        Vector vDistance = vGoal - Vector(fStartX, fStartY, 0.0f);
-        float fLengthSquared = vDistance * vDistance;
-        float fGoalDistance = pPathfind->m_fStartDistance;
-
-        float fGoalDistanceSquared = fGoalDistance * fGoalDistance;
-        if (fLengthSquared >= NWSMODULE_PATH_LENGTH_MIN * NWSMODULE_PATH_LENGTH_MIN)
-        {
-            if (fLengthSquared > fGoalDistanceSquared)
-            {
-                vNewGoal = vGoal + (fGoalDistance - NWSMODULE_PATH_GOAL_MARGIN) *
-                    normalize(Vector(fStartX - fEndX, fStartY - fEndY, 0.0f));
-            }
-            else
-            {
-                vNewGoal = vGoal + (float)sqrt(fLengthSquared) *
-                    normalize(Vector(fStartX - fEndX, fStartY - fEndY, 0.0f));
-            }
-        }
-        fEndX = vNewGoal.m_fX;
-        fEndY = vNewGoal.m_fY;
-    }
-    if (pPathfind->m_nField_3C == 1)
-    {
-        nDirectLine = pArea->TestDirectLine(Vector(fStartX, fStartY, 0.0f),
-            Vector(fEndX, fEndY, 0.0f), fDistance, fWidth, 1, NULL);
-        pPathfind->m_nDirectLineResult = nDirectLine;
+        nResult = CSWSObject::ACTION_FAILED;
     }
     else
     {
-        nDirectLine = pPathfind->m_nDirectLineResult;
-    }
-    if (pPathfind->m_nField_198 == 1)
-    {
-        if (nDirectLine != CSWSArea::DIRECT_LINE_CLEAR &&
-            pPathfind->m_nField_84 == 0)
+        ++pPathfind->m_nField_3C;
+        pArea->m_pPathfindInformation = pPathfind;
+        if (pPathfind->m_fStartDistance > NWSMODULE_PATH_GOAL_MARGIN &&
+            pPathfind->m_nField_240 == 0)
         {
-            float fFraction = 0.5f;
-            float fStep = 0.25f;
-            int bFound = 0;
-            float fDeltaX = fEndX - fStartX;
-            float fDeltaY = fEndY - fStartY;
-            float fBestX, fBestY;
-            do
+            Vector vGoal(fEndX, fEndY, 0.0f);
+            Vector vNewGoal = vGoal;
+            Vector vDistance = vGoal - Vector(fStartX, fStartY, 0.0f);
+            float fLengthSquared = vDistance * vDistance;
+            float fGoalDistance = pPathfind->m_fStartDistance;
+
+            float fGoalDistanceSquared = fGoalDistance * fGoalDistance;
+            if (fLengthSquared >= NWSMODULE_PATH_LENGTH_MIN * NWSMODULE_PATH_LENGTH_MIN)
             {
-                float fTestX = fDeltaX * fFraction + fStartX;
-                float fTestY = fDeltaY * fFraction + fStartY;
-                if (pArea->TestDirectLine(Vector(fStartX, fStartY, 0.0f),
-                    Vector(fTestX, fTestY, 0.0f), fDistance, fWidth, 1, NULL) ==
-                    CSWSArea::DIRECT_LINE_CLEAR)
+                if (fLengthSquared > fGoalDistanceSquared)
                 {
-                    fFraction += fStep;
-                    fBestX = fTestX;
-                    fBestY = fTestY;
-                    bFound = 1;
+                    vNewGoal = vGoal + (fGoalDistance - NWSMODULE_PATH_GOAL_MARGIN) *
+                        normalize(Vector(fStartX - fEndX, fStartY - fEndY, 0.0f));
                 }
                 else
                 {
-
-                    if (bFound)
-                        fFraction -= fStep;
-                    else
-                        fFraction -= fStep;
+                    vNewGoal = vGoal + (float)sqrt(fLengthSquared) *
+                        normalize(Vector(fStartX - fEndX, fStartY - fEndY, 0.0f));
                 }
-                fStep *= 0.5f;
-            } while (fStep > NWSMODULE_PARTIAL_PATH_SEARCH_MIN);
-            if (bFound == 1)
-            {
-                fEndX = fBestX;
-                fEndY = fBestY;
-                nDirectLine = CSWSArea::DIRECT_LINE_CLEAR;
             }
-            else
-            {
-                nDirectLine = PATH_PARTIAL_SEARCH_FAILED;
-            }
+            fEndX = vNewGoal.m_fX;
+            fEndY = vNewGoal.m_fY;
         }
-        pPathfind->m_nField_194 = 0;
-        pPathfind->m_nField_198 = 0;
-    }
-    if (nDirectLine == CSWSArea::DIRECT_LINE_CLEAR)
-    {
-        pPathfind->m_nWayPointCount = 4;
-        float* pPoints = new float[4];
-        pPoints[0] = fStartX;
-        pPoints[1] = fStartY;
-        pPoints[2] = fEndX;
-        pPoints[3] = fEndY;
-        pPathfind->m_pWayPoints = pPoints;
-        nResult = CSWSObject::ACTION_COMPLETE;
-    }
-    else
-    {
-        CSWSCreature* pCreature = g_pAppManager->m_pServerExoApp->
-            GetCreatureByGameObjectID(pPathfind->m_oidPathfindCreature);
-        if (pCreature != NULL && pCreature->m_nAILevel == CServerAIMaster::AI_LEVEL_EMPTY_AREA_CREATURE)
+        if (pPathfind->m_nField_3C == 1)
         {
-            nResult = CSWSObject::ACTION_FAILED;
+            nDirectLine = pArea->TestDirectLine(Vector(fStartX, fStartY, 0.0f),
+                Vector(fEndX, fEndY, 0.0f), fDistance, fWidth, 1, NULL);
+            pPathfind->m_nDirectLineResult = nDirectLine;
         }
         else
         {
-
-            int bRenderAi;
-            if (pPathfind->m_nField_194 != 0)
-            {
-                nResult = pArea->PlotGridPath(pPathfind, nFlags);
-                if (RenderAi)
-                    g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
-                        pPathfind->m_oidPathfindCreature);
-                bRenderAi = RenderAi;
-            }
-            else if (nDirectLine == CSWSArea::DIRECT_LINE_BLOCKED_OBJECT ||
-                     nDirectLine == CSWSArea::DIRECT_LINE_BLOCKED_ROOM ||
-                     nDirectLine == CSWSArea::DIRECT_LINE_BLOCKED_CREATURE ||
-                     nDirectLine == CSWSArea::DIRECT_LINE_NO_ROOM)
-            {
-                if ((unsigned long)pArea->m_nPathPointCount > 0)
-                {
-                    if (RenderAi)
-                        g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
-                            pPathfind->m_oidPathfindCreature);
-                    nResult = pArea->PlotPathPointPath(pPathfind, nFlags);
-                }
-                else
-                {
-                    if (RenderAi)
-                        g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
-                            pPathfind->m_oidPathfindCreature);
-                    nResult = pArea->PlotGridPath(pPathfind, nFlags);
-                }
-                bRenderAi = RenderAi;
-            }
-            else
-            {
-                nResult = CSWSObject::ACTION_FAILED;
-                bRenderAi = RenderAi;
-            }
-            if (bRenderAi)
-            {
-
-                unsigned long oidCreature = pPathfind->m_oidPathfindCreature;
-                if (pArea == NULL && oidCreature != 0)
-                    return CSWSObject::ACTION_FAILED;
-                g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
-                    oidCreature);
-            }
-            if (pPathfind->m_nField_3C > PATH_MAX_ATTEMPTS &&
-                nResult == CSWSObject::ACTION_IN_PROGRESS)
-                nResult = CSWSObject::ACTION_FAILED;
+            nDirectLine = pPathfind->m_nDirectLineResult;
         }
-    }
-    if (nResult == CSWSObject::ACTION_FAILED)
-    {
-        if (pPathfind->m_nPathFlags == 0)
+        if (pPathfind->m_nField_198 == 1)
         {
-            fStartX = pPathfind->m_fEndX;
-            fStartY = pPathfind->m_fEndY;
-            Vector vEnd(pPathfind->m_fStartX, pPathfind->m_fStartY, 0.0f);
-            Vector vStart(fStartX, fStartY, 0.0f);
-            pPathfind->m_nField_84 = 0;
-
-            int bFound = 0;
-            Vector vBest;
-            Vector vDelta = vEnd - vStart;
-
-            EXOLOG("PlotPathInArea: partial path search, delta %p", &vDelta);
-            float fFraction = 0.5f;
-            float fStep = 0.25f;
-            if (nDirectLine != CSWSArea::DIRECT_LINE_BLOCKED_ROOM)
+            if (nDirectLine != CSWSArea::DIRECT_LINE_CLEAR &&
+                pPathfind->m_nField_84 == 0)
             {
+                float fFraction = 0.5f;
+                float fStep = 0.25f;
+                int bFound = 0;
+                float fDeltaX = fEndX - fStartX;
+                float fDeltaY = fEndY - fStartY;
+                float fBestX, fBestY;
                 do
                 {
-                    vEnd = vStart + fFraction * vDelta;
-                    if (pArea->TestDirectLine(Vector(fStartX, fStartY, 0.0f), vEnd,
-                        fDistance, fWidth, 0, NULL) == CSWSArea::DIRECT_LINE_CLEAR)
+                    float fTestX = fDeltaX * fFraction + fStartX;
+                    float fTestY = fDeltaY * fFraction + fStartY;
+                    if (pArea->TestDirectLine(Vector(fStartX, fStartY, 0.0f),
+                        Vector(fTestX, fTestY, 0.0f), fDistance, fWidth, 1, NULL) ==
+                        CSWSArea::DIRECT_LINE_CLEAR)
                     {
-                        vBest = vEnd;
                         fFraction += fStep;
+                        fBestX = fTestX;
+                        fBestY = fTestY;
                         bFound = 1;
                     }
                     else
                     {
 
-                        if (pArea > NULL)
+                        if (bFound)
                             fFraction -= fStep;
                         else
                             fFraction -= fStep;
                     }
                     fStep *= 0.5f;
                 } while (fStep > NWSMODULE_PARTIAL_PATH_SEARCH_MIN);
-                if (bFound)
+                if (bFound == 1)
                 {
-                    pPathfind->m_nWayPointCount = 4;
-                    float* pPoints = new float[4];
-                    pPoints[0] = fStartX;
-                    pPoints[1] = fStartY;
-                    pPoints[2] = vBest.m_fX;
-                    pPoints[3] = vBest.m_fY;
-                    pPathfind->m_pWayPoints = pPoints;
-                    nResult = CSWSObject::ACTION_COMPLETE;
+                    fEndX = fBestX;
+                    fEndY = fBestY;
+                    nDirectLine = CSWSArea::DIRECT_LINE_CLEAR;
+                }
+                else
+                {
+                    nDirectLine = PATH_PARTIAL_SEARCH_FAILED;
                 }
             }
+            pPathfind->m_nField_194 = 0;
+            pPathfind->m_nField_198 = 0;
         }
-        pPathfind->m_nField_1E0 = CPathfindInformation::PATH_POINT_STARTPOINTS;
-    }
-    if (nResult == CSWSObject::ACTION_COMPLETE && pPathfind->m_nField_84 == 1)
-    {
-        int nCount = pPathfind->m_nWayPointCount;
-        float* pOldPoints = pPathfind->m_pWayPoints;
-        float* pNewPoints = new float[nCount];
-        for (int i = 0; i < nCount; i += 2)
+        if (nDirectLine == CSWSArea::DIRECT_LINE_CLEAR)
         {
-            int nSource = nCount - i - 2;
-            pNewPoints[i] = pOldPoints[nSource];
-            pNewPoints[i + 1] = pOldPoints[nSource + 1];
+            pPathfind->m_nWayPointCount = 4;
+            float* pPoints = new float[4];
+            pPoints[0] = fStartX;
+            pPoints[1] = fStartY;
+            pPoints[2] = fEndX;
+            pPoints[3] = fEndY;
+            pPathfind->m_pWayPoints = pPoints;
+            nResult = CSWSObject::ACTION_COMPLETE;
         }
-        pPathfind->m_pWayPoints = pNewPoints;
-        if (pOldPoints != NULL)
-            delete[] pOldPoints;
-        pPathfind->m_nField_84 = 0;
-        pPathfind->FlipStartEndPoints();
+        else
+        {
+            CSWSCreature* pCreature = g_pAppManager->m_pServerExoApp->
+                GetCreatureByGameObjectID(pPathfind->m_oidPathfindCreature);
+            if (pCreature != NULL && pCreature->m_nAILevel == CServerAIMaster::AI_LEVEL_EMPTY_AREA_CREATURE)
+            {
+                nResult = CSWSObject::ACTION_FAILED;
+            }
+            else
+            {
+
+                int bRenderAi;
+                if (pPathfind->m_nField_194 != 0)
+                {
+                    nResult = pArea->PlotGridPath(pPathfind, nFlags);
+                    if (RenderAi)
+                        g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
+                            pPathfind->m_oidPathfindCreature);
+                    bRenderAi = RenderAi;
+                }
+                else if (nDirectLine == CSWSArea::DIRECT_LINE_BLOCKED_OBJECT ||
+                         nDirectLine == CSWSArea::DIRECT_LINE_BLOCKED_ROOM ||
+                         nDirectLine == CSWSArea::DIRECT_LINE_BLOCKED_CREATURE ||
+                         nDirectLine == CSWSArea::DIRECT_LINE_NO_ROOM)
+                {
+                    if ((unsigned long)pArea->m_nPathPointCount > 0)
+                    {
+                        if (RenderAi)
+                            g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
+                                pPathfind->m_oidPathfindCreature);
+                        nResult = pArea->PlotPathPointPath(pPathfind, nFlags);
+                    }
+                    else
+                    {
+                        if (RenderAi)
+                            g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
+                                pPathfind->m_oidPathfindCreature);
+                        nResult = pArea->PlotGridPath(pPathfind, nFlags);
+                    }
+                    bRenderAi = RenderAi;
+                }
+                else
+                {
+                    nResult = CSWSObject::ACTION_FAILED;
+                    bRenderAi = RenderAi;
+                }
+                if (bRenderAi)
+                {
+
+                    unsigned long oidCreature = pPathfind->m_oidPathfindCreature;
+                    if (pArea == NULL && oidCreature != 0)
+                        return CSWSObject::ACTION_FAILED;
+                    g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
+                        oidCreature);
+                }
+                if (pPathfind->m_nField_3C > PATH_MAX_ATTEMPTS &&
+                    nResult == CSWSObject::ACTION_IN_PROGRESS)
+                    nResult = CSWSObject::ACTION_FAILED;
+            }
+        }
+        if (nResult == CSWSObject::ACTION_FAILED)
+        {
+            if (pPathfind->m_nPathFlags == 0)
+            {
+                fStartX = pPathfind->m_fEndX;
+                fStartY = pPathfind->m_fEndY;
+                Vector vEnd(pPathfind->m_fStartX, pPathfind->m_fStartY, 0.0f);
+                Vector vStart(fStartX, fStartY, 0.0f);
+                pPathfind->m_nField_84 = 0;
+
+                int bFound = 0;
+                Vector vBest;
+                Vector vDelta = vEnd - vStart;
+
+                EXOLOG("PlotPathInArea: partial path search, delta %p", &vDelta);
+                float fFraction = 0.5f;
+                float fStep = 0.25f;
+                if (nDirectLine != CSWSArea::DIRECT_LINE_BLOCKED_ROOM)
+                {
+                    do
+                    {
+                        vEnd = vStart + fFraction * vDelta;
+                        if (pArea->TestDirectLine(Vector(fStartX, fStartY, 0.0f), vEnd,
+                            fDistance, fWidth, 0, NULL) == CSWSArea::DIRECT_LINE_CLEAR)
+                        {
+                            vBest = vEnd;
+                            fFraction += fStep;
+                            bFound = 1;
+                        }
+                        else
+                        {
+
+                            if (pArea > NULL)
+                                fFraction -= fStep;
+                            else
+                                fFraction -= fStep;
+                        }
+                        fStep *= 0.5f;
+                    } while (fStep > NWSMODULE_PARTIAL_PATH_SEARCH_MIN);
+                    if (bFound)
+                    {
+                        pPathfind->m_nWayPointCount = 4;
+                        float* pPoints = new float[4];
+                        pPoints[0] = fStartX;
+                        pPoints[1] = fStartY;
+                        pPoints[2] = vBest.m_fX;
+                        pPoints[3] = vBest.m_fY;
+                        pPathfind->m_pWayPoints = pPoints;
+                        nResult = CSWSObject::ACTION_COMPLETE;
+                    }
+                }
+            }
+            pPathfind->m_nField_1E0 = CPathfindInformation::PATH_POINT_STARTPOINTS;
+        }
+        if (nResult == CSWSObject::ACTION_COMPLETE && pPathfind->m_nField_84 == 1)
+        {
+            int nCount = pPathfind->m_nWayPointCount;
+            float* pOldPoints = pPathfind->m_pWayPoints;
+            float* pNewPoints = new float[nCount];
+            for (int i = 0; i < nCount; i += 2)
+            {
+                int nSource = nCount - i - 2;
+                pNewPoints[i] = pOldPoints[nSource];
+                pNewPoints[i + 1] = pOldPoints[nSource + 1];
+            }
+            pPathfind->m_pWayPoints = pNewPoints;
+            if (pOldPoints != NULL)
+                delete[] pOldPoints;
+            pPathfind->m_nField_84 = 0;
+            pPathfind->FlipStartEndPoints();
+        }
+        if (nResult == CSWSObject::ACTION_FAILED ||
+            nResult == CSWSObject::ACTION_COMPLETE)
+            pPathfind->m_nField_88 = 1;
     }
-    if (nResult == CSWSObject::ACTION_FAILED ||
-        nResult == CSWSObject::ACTION_COMPLETE)
-        pPathfind->m_nField_88 = 1;
     return nResult;
 }
 // PC 0x005049D0 GOG 0x004FCAB0
