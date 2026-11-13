@@ -196,7 +196,7 @@ void CSWGuiCreateItemSubMenu::LoadItems(int nBaseItem)
                     CExoLocString cName = pGFF->ReadFieldCExoLocString(
                         &cTopLevel, "LocalizedName", bSuccess, CExoLocString());
                     cName.GetString(
-                        g_pAppManager->m_pClientExoApp->GetClientLanguage(),
+                        g_pAppManager->GetClientExoApp()->GetClientLanguage(),
                         &sName, 0);
                     sTemplate = sName + " (" + sTemplate + ")";
                     m_lstOptionNames.Add(new CExoString(sTemplate));

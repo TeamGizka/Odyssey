@@ -257,7 +257,7 @@ void CSWBehaviorCameraDialog::GetCameraParameters(unsigned long nShot,
             vLookAt.m_fZ -= fTargetHeight;
             float fCloseDistance = (fYawOffset + 0.5f);
             vPosition = vLookAt - fCloseDistance * normalize(vDirection);
-            vPosition.m_fZ = (m_fFirstOffset + vPosition.m_fZ) + fTargetHeight;
+            vPosition.m_fZ = (fTargetHeight + m_fFirstOffset) + vPosition.m_fZ;
         }
         else
         {

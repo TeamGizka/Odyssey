@@ -721,7 +721,7 @@ int CSWGuiPazaakGame::RefreshDisplay()
         m_cPlayerBoard[i].SetDimmed(bPlayerStand);
 
         cCard = GetPazaak()->m_cOpponent.m_aBoard[i];
-        if (PazaakCardsDiffer(m_cNpcBoard[i].m_cCard, cCard) || cCard.m_nValue != 0)
+        if (PazaakCardsDiffer(m_cNpcBoard[i].m_cCard, cCard))
         {
             m_cNpcBoard[i].SetCard(cCard);
             bNpcChanged = 1;

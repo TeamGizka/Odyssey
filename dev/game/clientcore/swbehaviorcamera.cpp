@@ -376,8 +376,8 @@ int CSWCameraNavigate::Control(float fTimeStep)
         m_fTurn = 0.0f;
         qOrientation = qOrientation * YawPitchRoll(0.0f, -90.0f, 0.0f);
         m_fLastRoll = m_fRoll =
-            (CAMERA_NAVIGATE_ROLL_HISTORY_WEIGHT - (fTimeStep + fTimeStep)) * m_fLastRoll +
-            (fTimeStep + fTimeStep + CAMERA_NAVIGATE_ROLL_INPUT_WEIGHT) * m_fRoll;
+            (CAMERA_NAVIGATE_ROLL_HISTORY_WEIGHT - 2.0f * fTimeStep) * m_fLastRoll +
+            (2.0f * fTimeStep + CAMERA_NAVIGATE_ROLL_INPUT_WEIGHT) * m_fRoll;
         qOrientation = qOrientation *
             YawPitchRoll(0.0f, 0.0f, m_fRoll - Roll(qOrientation));
         float fTilt = fTimeStep * m_fTilt;
