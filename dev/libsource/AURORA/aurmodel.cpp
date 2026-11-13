@@ -102,6 +102,14 @@ const int MdlNodeTriMesh::DEFAULT_PROPERTIES = 0;
 
 const int TileData::FADE = 1;
 const int TileData::DO_NOT_FADE = 2;
+
+// PC 0x004525E0 GOG 0x00452720
+MaxFace::MaxFace()
+{
+    AURMODEL_TRACE();
+    ++countmaxfaces;
+    m_nSurfaceType = 0;
+}
 const int TileData::FADE_NOT_CHECKED = 4;
 // PC 0x00448F30 GOG 0x00449080
 inline char* MdlNode::TranslateNodeName()
@@ -767,13 +775,6 @@ void Model::InternalDestructor()
     if (m_pRootNode)
         m_pRootNode->DestructorDispatch();
 #endif
-}
-// PC 0x004525E0 GOG 0x00452720
-MaxFace::MaxFace()
-{
-    AURMODEL_TRACE();
-    ++countmaxfaces;
-    m_nSurfaceType = 0;
 }
 // PC 0x00452600 GOG 0x00452740
 MaxTree::~MaxTree()

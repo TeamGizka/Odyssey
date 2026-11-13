@@ -2048,6 +2048,48 @@ float CSWCModule::UpdatePushCameraCollision(float fTimeDelta, float fZoom)
     }
     return fZoom;
 }
+// PC 0x0069B470 GOG 0x0069B220
+void CSWCModule::Update(float fTimeDelta)
+{
+    float fYaw;
+    float fPitch;
+    CAurBehavior* pBehavior;
+    CAurBehaviorCameraFollow* pFollow;
+
+    if (m_pInfo != NULL)
+    {
+        if (m_pModuleCamera != NULL)
+        {
+            if (m_bCameraCollisionChanged != 0)
+            {
+                if (FindClearView(fTimeDelta, &fYaw, &fPitch) != 0)
+                {
+                    pBehavior = m_pModuleCamera->GetBehavior(-1);
+                    if (pBehavior != NULL)
+                    {
+                        pFollow = pBehavior->AsBehaviorCameraFollow();
+                        if (pFollow != NULL)
+                        {
+                            pFollow->m_fYaw = fYaw;
+                            pFollow->m_fPitch = fPitch;
+                        }
+                    }
+                }
+                m_bCameraCollisionChanged = 0;
+            }
+            if (!g_pAppManager->m_pClientExoApp->m_pcExoAppInternal->GetActivePauseState())
+            {
+                m_fTimeOfDay = fTimeDelta + m_fTimeOfDay;
+            }
+            m_pInfo->Update(fTimeDelta);
+            if (g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nBackgroundPanels <= 0)
+            {
+                m_pModuleCamera->RenderScene();
+            }
+        }
+    }
+}
+
 // PC 0x0069AFF0 GOG 0x0069ADA0
 int CSWCModule::FindClearView(float fTimeDelta, float* pfYaw, float* pfPitch)
 {
@@ -2152,47 +2194,6 @@ int CSWCModule::FindClearView(float fTimeDelta, float* pfYaw, float* pfPitch)
         return 1;
     }
     return 0;
-}
-// PC 0x0069B470 GOG 0x0069B220
-void CSWCModule::Update(float fTimeDelta)
-{
-    float fYaw;
-    float fPitch;
-    CAurBehavior* pBehavior;
-    CAurBehaviorCameraFollow* pFollow;
-
-    if (m_pInfo != NULL)
-    {
-        if (m_pModuleCamera != NULL)
-        {
-            if (m_bCameraCollisionChanged != 0)
-            {
-                if (FindClearView(fTimeDelta, &fYaw, &fPitch) != 0)
-                {
-                    pBehavior = m_pModuleCamera->GetBehavior(-1);
-                    if (pBehavior != NULL)
-                    {
-                        pFollow = pBehavior->AsBehaviorCameraFollow();
-                        if (pFollow != NULL)
-                        {
-                            pFollow->m_fYaw = fYaw;
-                            pFollow->m_fPitch = fPitch;
-                        }
-                    }
-                }
-                m_bCameraCollisionChanged = 0;
-            }
-            if (!g_pAppManager->m_pClientExoApp->m_pcExoAppInternal->GetActivePauseState())
-            {
-                m_fTimeOfDay = fTimeDelta + m_fTimeOfDay;
-            }
-            m_pInfo->Update(fTimeDelta);
-            if (g_pAppManager->m_pClientExoApp->GetSWGuiManager()->m_nBackgroundPanels <= 0)
-            {
-                m_pModuleCamera->RenderScene();
-            }
-        }
-    }
 }
 
 static inline void NwcmoduleTrace5()

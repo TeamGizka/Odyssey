@@ -15,44 +15,6 @@ CExoString::CExoString()
     m_sString = NULL;
     m_nBufferLength = 0;
 }
-// PC 0x00630E20 GOG 0x00630D10
-CExoString& CExoString::operator=(const char* szString)
-{
-    if (m_sString != NULL &&
-        (szString == NULL || strlen(szString) + 1 > m_nBufferLength))
-    {
-        m_nBufferLength = 0;
-        delete[] m_sString;
-        m_sString = NULL;
-    }
-
-    int nLength = 0;
-    if (szString != NULL)
-    {
-        nLength = strlen(szString);
-    }
-
-    if (nLength > 0)
-    {
-        if (m_sString == NULL)
-        {
-            m_nBufferLength = strlen(szString) + 1;
-            m_sString = new char[m_nBufferLength];
-        }
-        strcpy(m_sString, szString);
-    }
-    else
-    {
-        if (m_sString != NULL)
-        {
-            delete[] m_sString;
-            m_sString = NULL;
-            m_nBufferLength = 0;
-        }
-    }
-
-    return *this;
-}
 // PC 0x00630390 GOG 0x00630280
 BOOL CExoString::operator==(const CExoString& sString) const
 {
@@ -496,6 +458,45 @@ CExoString& CExoString::operator=(const CExoString& sString)
             m_sString = new char[m_nBufferLength];
         }
         strcpy(m_sString, sString.m_sString);
+    }
+    else
+    {
+        if (m_sString != NULL)
+        {
+            delete[] m_sString;
+            m_sString = NULL;
+            m_nBufferLength = 0;
+        }
+    }
+
+    return *this;
+}
+
+// PC 0x00630E20 GOG 0x00630D10
+CExoString& CExoString::operator=(const char* szString)
+{
+    if (m_sString != NULL &&
+        (szString == NULL || strlen(szString) + 1 > m_nBufferLength))
+    {
+        m_nBufferLength = 0;
+        delete[] m_sString;
+        m_sString = NULL;
+    }
+
+    int nLength = 0;
+    if (szString != NULL)
+    {
+        nLength = strlen(szString);
+    }
+
+    if (nLength > 0)
+    {
+        if (m_sString == NULL)
+        {
+            m_nBufferLength = strlen(szString) + 1;
+            m_sString = new char[m_nBufferLength];
+        }
+        strcpy(m_sString, szString);
     }
     else
     {

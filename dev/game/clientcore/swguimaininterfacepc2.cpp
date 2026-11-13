@@ -491,6 +491,11 @@ CSWGuiMainInterface::CSWGuiMainInterface(CSWGuiManager* pManager)  // PC 0x006E5
 }
 #endif
 
+// PC 0x00679DC0 GOG 0x00679B90
+CSWGuiMainInterfaceChar::CSWGuiMainInterfaceChar()
+{
+}
+
 #ifdef _XBOX
 CSWGuiMainInterfaceAction::CSWGuiMainInterfaceAction()
 {
@@ -3989,10 +3994,6 @@ void CSWGuiFloatyText::Update(float fDeltaTime)
     }
 
     m_cText.m_cParams.m_fAlpha = m_fTimeLeft / m_fDuration;
-}
-// PC 0x00679DC0 GOG 0x00679B90
-CSWGuiMainInterfaceChar::CSWGuiMainInterfaceChar()
-{
 }
 
 #ifndef _XBOX

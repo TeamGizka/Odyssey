@@ -1074,6 +1074,17 @@ void CSWGuiPazaakStart::HandleMoveCard(CSWGuiControl* pControl)  // PC 0x006D6D0
     }
 }
 #endif
+
+CSWGuiTutorial::CSWGuiTutorial(CSWGuiManager* pManager)  // PC 0x006D5310 GOG 0x006D45E0
+    : CSWGuiMessageBox(pManager), m_lHelp(0)
+{
+    m_nHelpIndex = 0;
+#ifndef _XBOX
+    m_pPlacedAbove = NULL;
+#endif
+    m_bEnabled = 1;
+}
+
 // PC 0x006D4870 GOG 0x006D3640
 void CSWGuiTutorial::HandleInputEvent(int nEvent, int nState)
 {
@@ -1430,15 +1441,6 @@ void CSWGuiPazaakGame::HandleInputEvent(int nEvent, int nState)  // PC 0x006D50F
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
 #endif
-CSWGuiTutorial::CSWGuiTutorial(CSWGuiManager* pManager)  // PC 0x006D5310 GOG 0x006D45E0
-    : CSWGuiMessageBox(pManager), m_lHelp(0)
-{
-    m_nHelpIndex = 0;
-#ifndef _XBOX
-    m_pPlacedAbove = NULL;
-#endif
-    m_bEnabled = 1;
-}
 // PC 0x006D5490 GOG 0x006D47A0
 void CSWGuiTutorial::ShowMultipleHelp(const unsigned long* pStrRefs, int nCount)
 {

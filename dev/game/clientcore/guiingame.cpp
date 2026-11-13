@@ -5999,38 +5999,6 @@ int CGuiInGame::IsOnDialogNonDependantList(const CExoString& sName)
     }
     return 0;
 }
-// PC 0x00684F40 GOG 0x00684CE0
-int CGuiInGame::CopyQuickSaveGameToFutureGame(unsigned long nSaveGame,
-                                            const CExoString& sSaveName)
-{
-    CExoString sSavePath;
-    CExoString sDirectory;
-    CExoString sFileName;
-    CExoString sTemp;
-
-    if (nSaveGame != SAVEGAME_UNNUMBERED)
-    {
-        sDirectory.Format("%06d - %s", nSaveGame, sSaveName.CStr());
-    }
-    else
-    {
-        sDirectory = sSaveName;
-    }
-    sSavePath = "SAVES:";
-    sSavePath = sSavePath + sDirectory;
-    g_pExoResMan->CreateDirectory2("FUTUREGAME:");
-    g_pExoResMan->CleanDirectory("FUTUREGAME:", 0, 0);
-    sFileName = sSavePath + "\\" + "SAVEGAME";
-
-    CERFFile* pERF = new CERFFile;
-    pERF->Read(sFileName);
-    pERF->ReadHeaderVariance(sFileName);
-    pERF->ExportFilesFromERF(
-        sFileName, "FUTUREGAME:", (void*)-1, LoadScreenUpdate, 0,
-        g_pAppManager->GetClientExoApp()->GetLoadStep(0));
-    delete pERF;
-    return 1;
-}
 #ifndef _XBOX
 int CGuiInGame::GetCurrentEquipScreenNPC()
 {
@@ -7462,6 +7430,39 @@ int CGuiInGame::HandleDialogReplies(
     }
     CleanUpEntryNode();
     ShowDialogReplies(nReplies, nReplyContext);
+    return 1;
+}
+
+// PC 0x00684F40 GOG 0x00684CE0
+int CGuiInGame::CopyQuickSaveGameToFutureGame(unsigned long nSaveGame,
+                                            const CExoString& sSaveName)
+{
+    CExoString sSavePath;
+    CExoString sDirectory;
+    CExoString sFileName;
+    CExoString sTemp;
+
+    if (nSaveGame != SAVEGAME_UNNUMBERED)
+    {
+        sDirectory.Format("%06d - %s", nSaveGame, sSaveName.CStr());
+    }
+    else
+    {
+        sDirectory = sSaveName;
+    }
+    sSavePath = "SAVES:";
+    sSavePath = sSavePath + sDirectory;
+    g_pExoResMan->CreateDirectory2("FUTUREGAME:");
+    g_pExoResMan->CleanDirectory("FUTUREGAME:", 0, 0);
+    sFileName = sSavePath + "\\" + "SAVEGAME";
+
+    CERFFile* pERF = new CERFFile;
+    pERF->Read(sFileName);
+    pERF->ReadHeaderVariance(sFileName);
+    pERF->ExportFilesFromERF(
+        sFileName, "FUTUREGAME:", (void*)-1, LoadScreenUpdate, 0,
+        g_pAppManager->GetClientExoApp()->GetLoadStep(0));
+    delete pERF;
     return 1;
 }
 

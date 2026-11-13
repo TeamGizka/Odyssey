@@ -854,6 +854,71 @@ CSWGuiDialogCinematic::~CSWGuiDialogCinematic()
         m_pTop = 0;
     }
 }
+
+// PC 0x0070F4D0 GOG 0x0070F220
+CSWGuiDialogComputer::CSWGuiDialogComputer(CSWGuiManager* pManager)
+    : CSWGuiDialog(pManager)
+{
+    CExoString sControl;
+    m_pSound = new CExoSoundSource("computer_lp_04");
+    if (m_pSound)
+    {
+        m_pSound->SetLooping(1);
+        m_pSound->SetVolume(30);
+    }
+
+    StartLoadFromLayout("computer_p");
+    InitControl(m_lbMessage, "LB_MESSAGE", 1);
+    InitControl(m_lbReplies, "LB_REPLIES", 1);
+    CSWGuiListBox& cReplies = m_lbReplies;
+    InitControl(m_aInfo[INFO_COMP_SKILL].m_lblName, "LBL_COMP_SKILL", 1);
+    InitControl(m_aInfo[INFO_COMP_SKILL].m_lblValue, "LBL_COMP_SKILL_VAL", 1);
+    InitControl(m_aInfo[INFO_REP_SKILL].m_lblName, "LBL_REP_SKILL", 1);
+    InitControl(m_aInfo[INFO_REP_SKILL].m_lblValue, "LBL_REP_SKILL_VAL", 1);
+    InitControl(m_aInfo[INFO_COMP_SPIKES].m_lblName, "LBL_COMP_SPIKES", 1);
+    InitControl(m_aInfo[INFO_COMP_SPIKES].m_lblValue, "LBL_COMP_SPIKES_VAL", 1);
+    InitControl(m_aInfo[INFO_REP_UNITS].m_lblName, "LBL_REP_UNITS", 1);
+    InitControl(m_aInfo[INFO_REP_UNITS].m_lblValue, "LBL_REP_UNITS_VAL", 1);
+    InitControl(m_lblBar[0], "LBL_BAR1", 1);
+    InitControl(m_lblBar[1], "LBL_BAR2", 1);
+    InitControl(m_lblBar[2], "LBL_BAR3", 1);
+    InitControl(m_lblBar[3], "LBL_BAR4", 1);
+    InitControl(m_lblBar[4], "LBL_BAR5", 1);
+    InitControl(m_lblBar[5], "LBL_BAR6", 1);
+    InitControl(m_lblBar[6], "LBL_BAR7", 1);
+    InitControl(m_lblBar[7], "LBL_BAR8", 1);
+    InitControl(m_lblBar[8], "LBL_BAR9", 1);
+    InitControl(m_lblBar[9], "LBL_BAR10", 1);
+    StopLoadFromLayout();
+
+    CSWSkill* pSkill = &g_pRules->m_pSkills[CSWRules::SKILL_COMPUTER_USE];
+    m_aInfo[INFO_COMP_SKILL].m_lblName.m_cText.m_cParams.SetStrRef(pSkill->GetNameStrRef());
+    pSkill = &g_pRules->m_pSkills[CSWRules::SKILL_REPAIR];
+    m_aInfo[INFO_REP_SKILL].m_lblName.m_cText.m_cParams.SetStrRef(pSkill->GetNameStrRef());
+
+    {
+        CSWGuiLabel* pProto = (CSWGuiLabel*)m_lbReplies.m_pProtoItem;
+        for (int i = 0; i < MAX_REPLIES; ++i)
+        {
+            int nReplyWidth = cReplies.m_cItemExtent.m_nWidth - 2 * cReplies.m_nPadding;
+            CSWGuiExtent cExtent;
+            cExtent.m_nLeft = 0;
+            cExtent.m_nTop = 0;
+            cExtent.m_nWidth = nReplyWidth;
+            cExtent.m_nHeight = 20;
+            m_lblReply[i].Initialize(cExtent, pProto, 1.0f);
+            m_lblReply[i].AddEvent(CSWGuiControl::EVENT_ENTER, this,
+                                 (CSWGuiHandler)&CSWGuiDialog::SetReplyActive);
+            m_lblReply[i].AddEvent(CSWGuiControl::EVENT_EXIT, this,
+                                 (CSWGuiHandler)&CSWGuiDialog::SetReplyInactive);
+        }
+    }
+    CSWGuiLabel* pProto = (CSWGuiLabel*)m_lbMessage.m_pProtoItem;
+    m_lblMessage.Initialize(pProto->m_cExtent, pProto, 1.0f);
+    m_vReplyColor = pProto->m_cText.m_cParams.m_vColor;
+    m_lblMessage.m_cText.m_cParams.SetColor(m_vReplyColor);
+    m_vReplyHighlightColor = CGuiInGame::COLOR_WHITE;
+}
 // PC 0x0070EDD0 GOG 0x0070E570
 CSWGuiDialogComputer::~CSWGuiDialogComputer()
 {
@@ -985,70 +1050,6 @@ void CSWGuiDialogCinematic::SetReplies(int nCount, CExoString* pReplies,
     {
         m_pManager->AddPanel(m_pTop, 0, 1);
     }
-}
-// PC 0x0070F4D0 GOG 0x0070F220
-CSWGuiDialogComputer::CSWGuiDialogComputer(CSWGuiManager* pManager)
-    : CSWGuiDialog(pManager)
-{
-    CExoString sControl;
-    m_pSound = new CExoSoundSource("computer_lp_04");
-    if (m_pSound)
-    {
-        m_pSound->SetLooping(1);
-        m_pSound->SetVolume(30);
-    }
-
-    StartLoadFromLayout("computer_p");
-    InitControl(m_lbMessage, "LB_MESSAGE", 1);
-    InitControl(m_lbReplies, "LB_REPLIES", 1);
-    CSWGuiListBox& cReplies = m_lbReplies;
-    InitControl(m_aInfo[INFO_COMP_SKILL].m_lblName, "LBL_COMP_SKILL", 1);
-    InitControl(m_aInfo[INFO_COMP_SKILL].m_lblValue, "LBL_COMP_SKILL_VAL", 1);
-    InitControl(m_aInfo[INFO_REP_SKILL].m_lblName, "LBL_REP_SKILL", 1);
-    InitControl(m_aInfo[INFO_REP_SKILL].m_lblValue, "LBL_REP_SKILL_VAL", 1);
-    InitControl(m_aInfo[INFO_COMP_SPIKES].m_lblName, "LBL_COMP_SPIKES", 1);
-    InitControl(m_aInfo[INFO_COMP_SPIKES].m_lblValue, "LBL_COMP_SPIKES_VAL", 1);
-    InitControl(m_aInfo[INFO_REP_UNITS].m_lblName, "LBL_REP_UNITS", 1);
-    InitControl(m_aInfo[INFO_REP_UNITS].m_lblValue, "LBL_REP_UNITS_VAL", 1);
-    InitControl(m_lblBar[0], "LBL_BAR1", 1);
-    InitControl(m_lblBar[1], "LBL_BAR2", 1);
-    InitControl(m_lblBar[2], "LBL_BAR3", 1);
-    InitControl(m_lblBar[3], "LBL_BAR4", 1);
-    InitControl(m_lblBar[4], "LBL_BAR5", 1);
-    InitControl(m_lblBar[5], "LBL_BAR6", 1);
-    InitControl(m_lblBar[6], "LBL_BAR7", 1);
-    InitControl(m_lblBar[7], "LBL_BAR8", 1);
-    InitControl(m_lblBar[8], "LBL_BAR9", 1);
-    InitControl(m_lblBar[9], "LBL_BAR10", 1);
-    StopLoadFromLayout();
-
-    CSWSkill* pSkill = &g_pRules->m_pSkills[CSWRules::SKILL_COMPUTER_USE];
-    m_aInfo[INFO_COMP_SKILL].m_lblName.m_cText.m_cParams.SetStrRef(pSkill->GetNameStrRef());
-    pSkill = &g_pRules->m_pSkills[CSWRules::SKILL_REPAIR];
-    m_aInfo[INFO_REP_SKILL].m_lblName.m_cText.m_cParams.SetStrRef(pSkill->GetNameStrRef());
-
-    {
-        CSWGuiLabel* pProto = (CSWGuiLabel*)m_lbReplies.m_pProtoItem;
-        for (int i = 0; i < MAX_REPLIES; ++i)
-        {
-            int nReplyWidth = cReplies.m_cItemExtent.m_nWidth - 2 * cReplies.m_nPadding;
-            CSWGuiExtent cExtent;
-            cExtent.m_nLeft = 0;
-            cExtent.m_nTop = 0;
-            cExtent.m_nWidth = nReplyWidth;
-            cExtent.m_nHeight = 20;
-            m_lblReply[i].Initialize(cExtent, pProto, 1.0f);
-            m_lblReply[i].AddEvent(CSWGuiControl::EVENT_ENTER, this,
-                                 (CSWGuiHandler)&CSWGuiDialog::SetReplyActive);
-            m_lblReply[i].AddEvent(CSWGuiControl::EVENT_EXIT, this,
-                                 (CSWGuiHandler)&CSWGuiDialog::SetReplyInactive);
-        }
-    }
-    CSWGuiLabel* pProto = (CSWGuiLabel*)m_lbMessage.m_pProtoItem;
-    m_lblMessage.Initialize(pProto->m_cExtent, pProto, 1.0f);
-    m_vReplyColor = pProto->m_cText.m_cParams.m_vColor;
-    m_lblMessage.m_cText.m_cParams.SetColor(m_vReplyColor);
-    m_vReplyHighlightColor = CGuiInGame::COLOR_WHITE;
 }
 // PC 0x0070FBB0 GOG 0x0070F900
 void CSWGuiDialogComputer::SetReplies(int nCount, CExoString* pReplies,

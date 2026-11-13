@@ -1696,6 +1696,19 @@ void CSWGuiSaveNamePanel::OnPanelRemoved()
     g_pGuiMan->RestoreOldMousePosition();
 #endif
 }
+
+void CSWGuiSaveNamePanel::HandleOkButton(CSWGuiControl* pControl)  // PC 0x00708480 GOG 0x00708070
+{
+    {
+        CExoString sSaveName(m_edtSaveName.m_cText.m_sText);
+        CSWGuiSaveLoad* pSaveLoad = m_pSaveLoad;
+
+        pSaveLoad->WriteGame(sSaveName);
+    }
+    m_bDeferredRemoval = 0;
+    m_nExitState = EXITSTATE_DELETE;
+    m_pManager->PopModalPanel();
+}
 // PC 0x00708500 GOG 0x007080F0
 void CSWGuiSaveNamePanel::HandleCancelButton(CSWGuiControl* pControl)
 {
@@ -2424,20 +2437,6 @@ void CSWGuiSaveLoad::LoadGame(CSWGuiControl* pControl)  // PC 0x0070BDB0 GOG 0x0
         }
     }
 }
-#endif
-void CSWGuiSaveNamePanel::HandleOkButton(CSWGuiControl* pControl)  // PC 0x00708480 GOG 0x00708070
-{
-    {
-        CExoString sSaveName(m_edtSaveName.m_cText.m_sText);
-        CSWGuiSaveLoad* pSaveLoad = m_pSaveLoad;
-
-        pSaveLoad->WriteGame(sSaveName);
-    }
-    m_bDeferredRemoval = 0;
-    m_nExitState = EXITSTATE_DELETE;
-    m_pManager->PopModalPanel();
-}
-#ifndef _XBOX
 // PC 0x00709BC0 GOG 0x00709900
 CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry(CSWGuiSaveLoadEntry* pEntry)
 {

@@ -32,6 +32,44 @@ int C2DA::GetColumnIndex(const CExoString& sColumnLabel)
 
     return -1;
 }
+
+// PC 0x0041D4D0 GOG 0x0041D4C0
+int C2DA::GetINTEntry(int nRow, int nColumn, int* pnEntry)
+{
+    if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 ||
+        nColumn >= m_nNumColumns)
+    {
+        *pnEntry = m_sDefault.AsINT();
+        return 0;
+    }
+
+    if (m_bPacked)
+    {
+        int nOffset = m_pEntryOffsets[nColumn + nRow * m_nNumColumns];
+
+        *pnEntry = 0;
+        sscanf(m_pEntryData + nOffset, "%i", pnEntry);
+        return m_pEntryData[nOffset] != 0;
+    }
+
+    if (m_ppEntries[nRow][nColumn] == "")
+    {
+        *pnEntry = 0;
+        return 0;
+    }
+
+    if (m_ppEntries[nRow][nColumn].GetLength() > 2 &&
+        m_ppEntries[nRow][nColumn].CStr()[0] == '0' &&
+        (m_ppEntries[nRow][nColumn].CStr()[1] == 'x' ||
+         m_ppEntries[nRow][nColumn].CStr()[1] == 'X'))
+    {
+        sscanf(m_ppEntries[nRow][nColumn].CStr(), "%x", pnEntry);
+        return 1;
+    }
+
+    *pnEntry = m_ppEntries[nRow][nColumn].AsINT();
+    return 1;
+}
 // PC 0x0041DDE0 GOG 0x0041DDD0
 int C2DA::GetCExoStringEntry(int nRow, int nColumn, CExoString* psEntry)
 {
@@ -141,43 +179,6 @@ int C2DA::GetFLOATEntry(int nRow, const CExoString& sColumn, float* pfEntry)
     }
 
     *pfEntry = m_ppEntries[nRow][nColumn].AsFLOAT();
-    return 1;
-}
-// PC 0x0041D4D0 GOG 0x0041D4C0
-int C2DA::GetINTEntry(int nRow, int nColumn, int* pnEntry)
-{
-    if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 ||
-        nColumn >= m_nNumColumns)
-    {
-        *pnEntry = m_sDefault.AsINT();
-        return 0;
-    }
-
-    if (m_bPacked)
-    {
-        int nOffset = m_pEntryOffsets[nColumn + nRow * m_nNumColumns];
-
-        *pnEntry = 0;
-        sscanf(m_pEntryData + nOffset, "%i", pnEntry);
-        return m_pEntryData[nOffset] != 0;
-    }
-
-    if (m_ppEntries[nRow][nColumn] == "")
-    {
-        *pnEntry = 0;
-        return 0;
-    }
-
-    if (m_ppEntries[nRow][nColumn].GetLength() > 2 &&
-        m_ppEntries[nRow][nColumn].CStr()[0] == '0' &&
-        (m_ppEntries[nRow][nColumn].CStr()[1] == 'x' ||
-         m_ppEntries[nRow][nColumn].CStr()[1] == 'X'))
-    {
-        sscanf(m_ppEntries[nRow][nColumn].CStr(), "%x", pnEntry);
-        return 1;
-    }
-
-    *pnEntry = m_ppEntries[nRow][nColumn].AsINT();
     return 1;
 }
 // PC 0x0041D640 GOG 0x0041D630

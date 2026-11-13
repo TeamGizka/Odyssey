@@ -28,6 +28,36 @@ CExoAliasListInternal::CExoAliasListInternal()
     m_pAliasList = NULL;
     m_sDefault = "";
 }
+
+// PC 0x006373D0 GOG 0x006372D0
+unsigned long CExoFileInternal::Read(CExoString* text, unsigned long count)
+{
+    if (m_pFile != NULL)
+    {
+        char* pBuffer = new char[count + 1];
+        unsigned long nBytesRead = fread(pBuffer, 1, count, m_pFile);
+        if (nBytesRead != count)
+        {
+            if (ferror(m_pFile))
+            {
+                EXOLOG("CExoFile: read error in %s", m_sFileName.CStr());
+                clearerr(m_pFile);
+                return 0;
+            }
+            if (feof(m_pFile))
+            {
+                EXOLOG("CExoFile: unexpected end of %s", m_sFileName.CStr());
+                clearerr(m_pFile);
+                return 0;
+            }
+        }
+        pBuffer[nBytesRead] = 0;
+        *text = pBuffer;
+        operator delete(pBuffer);
+        return nBytesRead;
+    }
+    return 0;
+}
 // PC 0x00636FF0 GOG 0x00636EF0
 inline CExoAliasListInternal::CExoAlias::CExoAlias()
 {
@@ -155,35 +185,6 @@ unsigned long CExoFileInternal::GetSize()
         }
     }
     return (unsigned long)-1;
-}
-// PC 0x006373D0 GOG 0x006372D0
-unsigned long CExoFileInternal::Read(CExoString* text, unsigned long count)
-{
-    if (m_pFile != NULL)
-    {
-        char* pBuffer = new char[count + 1];
-        unsigned long nBytesRead = fread(pBuffer, 1, count, m_pFile);
-        if (nBytesRead != count)
-        {
-            if (ferror(m_pFile))
-            {
-                EXOLOG("CExoFile: read error in %s", m_sFileName.CStr());
-                clearerr(m_pFile);
-                return 0;
-            }
-            if (feof(m_pFile))
-            {
-                EXOLOG("CExoFile: unexpected end of %s", m_sFileName.CStr());
-                clearerr(m_pFile);
-                return 0;
-            }
-        }
-        pBuffer[nBytesRead] = 0;
-        *text = pBuffer;
-        operator delete(pBuffer);
-        return nBytesRead;
-    }
-    return 0;
 }
 // PC 0x00637470 GOG 0x00637370
 unsigned long CExoFileInternal::Read(void* data, unsigned long size,

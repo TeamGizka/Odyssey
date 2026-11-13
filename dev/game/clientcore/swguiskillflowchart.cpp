@@ -283,50 +283,6 @@ void CSWGuiSkillFlowChart::AddFeatSet(unsigned long nFeat1,
     }
     m_cFlows.Add(pFlow);
 }
-// PC 0x0073CD10 GOG 0x0073CA70
-CSWGuiSkillInfoBox::CSWGuiSkillInfoBox(CSWGuiManager* pManager)
-    : CSWGuiPanel(pManager)
-{
-    SwguiskillflowchartTrace3();
-#ifdef _XBOX
-    StartLoadFromLayout("skillinfo");
-#else
-    {
-        CResRef resLayout("skillinfo_p");
-        StartLoadFromLayout(resLayout);
-    }
-#endif
-    InitControl(m_lbSkills, "LB_SKILLS", 1);
-    InitControl(m_lblTitle, "LBL_MESSAGE", 1);
-#ifdef _XBOX
-    InitControl(m_lblA, "LBL_A", 1);
-    InitControl(m_lblOk, "LBL_OK", 1);
-#else
-    InitControl(m_btnExit, "BTN_OK", 1);
-#endif
-    StopLoadFromLayout();
-
-    m_lbSkills.SetScrollOnly(1);
-    m_lbSkills.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
-#ifndef _XBOX
-    m_lbSkills.SetEnabled(0);
-#endif
-    CSWGuiLabelHilight* pProto = m_lbSkills.m_pProtoItem->AsLabelHilight();
-    int nWidth = m_lbSkills.GetItemWidth();
-    for (int i = 0; i < MAX_SKILL_ENTRIES; i++)
-    {
-        m_aSkillEntries[i].Initialize(pProto->m_cText, pProto->m_cBorder,
-                                     pProto->m_cHilite, nWidth);
-    }
-#ifndef _XBOX
-    m_btnExit.SetFocusable(0);
-    m_btnExit.AddEvent(GUIEVENT_ACTIVATE, this,
-                     (CSWGuiHandler)&CSWGuiPanel::OnAButtonPressed);
-#endif
-    CenterPanel();
-    m_pCallbackObject = NULL;
-    m_pCallback = NULL;
-}
 // PC 0x0073AEB0 GOG 0x0073AD70
 void CSWGuiSkillFlow::SetSkillStatus(unsigned char nSkill, unsigned char nStatus)
 {
@@ -938,6 +894,51 @@ int CSWGuiSkillFlowChart::SetTopLeft()
             .m_nSkill;
     }
     return -1;
+}
+
+// PC 0x0073CD10 GOG 0x0073CA70
+CSWGuiSkillInfoBox::CSWGuiSkillInfoBox(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager)
+{
+    SwguiskillflowchartTrace3();
+#ifdef _XBOX
+    StartLoadFromLayout("skillinfo");
+#else
+    {
+        CResRef resLayout("skillinfo_p");
+        StartLoadFromLayout(resLayout);
+    }
+#endif
+    InitControl(m_lbSkills, "LB_SKILLS", 1);
+    InitControl(m_lblTitle, "LBL_MESSAGE", 1);
+#ifdef _XBOX
+    InitControl(m_lblA, "LBL_A", 1);
+    InitControl(m_lblOk, "LBL_OK", 1);
+#else
+    InitControl(m_btnExit, "BTN_OK", 1);
+#endif
+    StopLoadFromLayout();
+
+    m_lbSkills.SetScrollOnly(1);
+    m_lbSkills.m_nSelectSound = CSWGuiManager::GUISOUND_SELECTION;
+#ifndef _XBOX
+    m_lbSkills.SetEnabled(0);
+#endif
+    CSWGuiLabelHilight* pProto = m_lbSkills.m_pProtoItem->AsLabelHilight();
+    int nWidth = m_lbSkills.GetItemWidth();
+    for (int i = 0; i < MAX_SKILL_ENTRIES; i++)
+    {
+        m_aSkillEntries[i].Initialize(pProto->m_cText, pProto->m_cBorder,
+                                     pProto->m_cHilite, nWidth);
+    }
+#ifndef _XBOX
+    m_btnExit.SetFocusable(0);
+    m_btnExit.AddEvent(GUIEVENT_ACTIVATE, this,
+                     (CSWGuiHandler)&CSWGuiPanel::OnAButtonPressed);
+#endif
+    CenterPanel();
+    m_pCallbackObject = NULL;
+    m_pCallback = NULL;
 }
 // PC 0x0073B590 GOG 0x0073B7D0
 int CSWGuiSkillFlowChart::HandleInput(int nEvent)

@@ -1245,35 +1245,6 @@ CSWSItem* CSWGuiInGameEquip::CopyItem(unsigned long oidItem)
     }
     return pCopy;
 }
-// PC 0x00719980 GOG 0x00719670
-void CSWGuiInGameEquip::OnPanelRemoved()
-{
-    int i;
-
-    if (m_n50E8)
-    {
-        g_pAppManager->m_pClientExoApp->GetInGameGui()->SetTopMenuOverrideCharacter(CHARACTER_PLAYER);
-    }
-    if (m_bDescriptionShown)
-    {
-        CloseDescription();
-    }
-    m_lbItems.ClearItems();
-    for (i = 0; i < m_lItemEntries.num; i++)
-    {
-        if (m_lItemEntries[i] != 0)
-        {
-            delete m_lItemEntries[i];
-        }
-        m_lItemEntries[i] = 0;
-    }
-    m_lItemEntries.RemoveAll();
-    m_nPendingSlot = 0;
-    m_oidPendingItem = OBJECT_INVALID;
-#ifndef _XBOX
-    CSWGuiPanel::OnPanelRemoved();
-#endif
-}
 // PC 0x00715F80 GOG 0x00715C70
 void CSWGuiInGameEquip::ShowDescription(int bShow)
 {
@@ -1373,23 +1344,6 @@ void CSWGuiInGameEquip::UpdatePortraits(int bShow)
         return;
     }
     g_pAppManager->GetClientExoApp()->GetInGameGui()->ShowGameMenuChangeButtons(1);
-}
-
-// PC 0x007162B0 GOG 0x00715FA0
-void CSWGuiInGameEquip::OnItemExited(CSWGuiControl* pControl)
-{
-    if (pControl->m_bSelected)
-    {
-        CSWGuiInGameItemEntry* pEntry = (CSWGuiInGameItemEntry*)pControl;
-        CSWSItem* pItem =
-            g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(pEntry->m_oidItem);
-        if (pItem != 0 && pItem->m_bNewItem)
-        {
-            pItem->m_bNewItem = 0;
-            pEntry->m_bUnavailable = 0;
-            pEntry->SetItem(pEntry->m_oidItem, pEntry->m_bEquipped, pEntry->m_bUnavailable);
-        }
-    }
 }
 // PC 0x00717D30 GOG 0x00717A20
 void CSWGuiInGameEquip::OnItemSelected(CSWGuiControl* pControl)
@@ -1648,221 +1602,6 @@ void CSWGuiInGameEquip::OnOKPressed(CSWGuiControl* pControl)
             m_pComparedCopy = 0;
         }
         CloseDescription();
-    }
-}
-// PC 0x00718450 GOG 0x00718140
-void CSWGuiInGameEquip::CloseDescription()
-{
-    ShowDescription(0);
-    m_bDescriptionShown = 0;
-    SetActiveControl(m_pDescribedControl, 0);
-    OnEnterSlot(m_pActiveControl);
-
-    m_lbItems.SetEnabled(0);
-}
-// PC 0x00716A80 GOG 0x00716770
-void CSWGuiInGameEquip::OnEnterSlot(CSWGuiControl* pControl)
-{
-
-    if (m_pCreature != NULL)
-    {
-        int nSlotIndex = pControl->m_nIndex;
-        int bChanged = 0;
-        m_nSelectedSlot = SLOT_INFO[nSlotIndex].nSlot;
-        if (m_nSelectedSlot != -1)
-        {
-            CSWSCreature* pCreature = m_pCreature->GetServerCreature();
-            CItemRepository* pRepository = pCreature->GetItemRepository(1);
-            CExoArrayList<CSWGuiControl*> lItems;
-            CSWGuiInGameItemEntry* pEntry = AddItemEntryToList(0);
-            pEntry->SetItem(OBJECT_INVALID, 0, 0);
-            pEntry->SetCanUse(CSWGuiInGameItemEntry::CAN_USE);
-            pEntry->m_nClickSound = CSWGuiControl::GUISOUND_NONE;
-            lItems.Add(pEntry);
-            int nEntry = 1;
-            if (m_aoidEquippedItems[nSlotIndex] != OBJECT_INVALID)
-            {
-                pEntry = AddItemEntryToList(nEntry);
-                if (pEntry->GetItem() != m_aoidEquippedItems[nSlotIndex] || !pEntry->IsEquipped() ||
-                    pEntry->GetCanUse() != CSWGuiInGameItemEntry::CAN_USE_EQUIPPED)
-                {
-                    bChanged = 1;
-                }
-                pEntry->SetItem(m_aoidEquippedItems[nSlotIndex], 1, 0);
-                pEntry->SetCanUse(CSWGuiInGameItemEntry::CAN_USE_EQUIPPED);
-                pEntry->m_nClickSound = CSWGuiControl::GUISOUND_NONE;
-                lItems.Add(pEntry);
-                ++nEntry;
-            }
-            int bShowItems = 1;
-            if (m_nSelectedSlot == INVENTORY_SLOT_LEFTHAND &&
-                m_aoidEquippedItems[RIGHTHAND_ITEM_INDEX] != OBJECT_INVALID)
-            {
-                CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
-                CSWSItem* pItem = pServer->GetItemByGameObjectID(
-                    pServer->ClientToServerObjectId(m_aoidEquippedItems[RIGHTHAND_ITEM_INDEX]));
-                if (pItem != NULL)
-                {
-                    bShowItems = pItem->GetBaseItem()->GetWeaponSize() !=
-                                 CSWBaseItem::WEAPON_SIZE_TWO_HANDED;
-                }
-            }
-            int nSelectedSlotSaved = m_nSelectedSlot;
-            if (m_nSelectedSlot == INVENTORY_SLOT_LEFTHAND2)
-            {
-                m_nSelectedSlot = INVENTORY_SLOT_LEFTHAND2 | INVENTORY_SLOT_LEFTHAND;
-            }
-            if (m_nSelectedSlot == INVENTORY_SLOT_RIGHTHAND2)
-            {
-                m_nSelectedSlot = INVENTORY_SLOT_RIGHTHAND2 | INVENTORY_SLOT_RIGHTHAND;
-            }
-            if (bShowItems)
-            {
-                for (unsigned long nItem = 0;
-                     nItem < (unsigned long)pRepository->GetNumItems(); ++nItem)
-                {
-                    CSWSItem* pItem = pRepository->ItemListGetItem(nItem);
-                    if (pItem == NULL)
-                        continue;
-                    int nSelectedSlot = m_nSelectedSlot;
-                    if (!(nSelectedSlot & pItem->GetBaseItem()->GetEquipableSlots()))
-                        continue;
-                    unsigned char nDroidOrHuman = pItem->GetBaseItem()->m_nDroidOrHuman;
-                    if (nDroidOrHuman != CSWBaseItem::DROID_OR_HUMAN_ANY)
-                    switch (nDroidOrHuman)
-                    {
-                    case CSWBaseItem::DROID_OR_HUMAN_HUMAN:
-                    {
-                        unsigned short nRace = pCreature->GetStats()->m_nRace;
-                        if (nRace != CSWRace::CRACE_HUMAN)
-                            continue;
-                        break;
-                    }
-                    case CSWBaseItem::DROID_OR_HUMAN_DROID:
-                    {
-                        unsigned short nRace = pCreature->GetStats()->m_nRace;
-                        if (nRace == CSWRace::CRACE_DROID)
-                            break;
-                        continue;
-                    }
-                    }
-                    unsigned char nCanUse = CSWGuiInGameItemEntry::CAN_USE;
-                    unsigned long nSlot = m_nSelectedSlot;
-                    if (!pCreature->CanEquipItem(pItem, &nSlot, 0, 0, 0))
-                    {
-                        nCanUse = CSWGuiInGameItemEntry::CANNOT_USE;
-                    }
-                    int bProficient = 1;
-                    CClientOptions* pOptions =
-                        g_pAppManager->GetClientExoApp()->GetClientOptions();
-                    if (pOptions != NULL && pOptions->m_bHideUnequippable)
-                    {
-                        if (!pCreature->CheckProficiencies(pItem, m_nSelectedSlot))
-                            bProficient = 0;
-                        nSlot = m_nSelectedSlot;
-                        if (!pCreature->CanEquipItem(pItem, &nSlot, 0, 0, 0) ||
-                            !bProficient)
-                            continue;
-                    }
-                    CSWCItem* pClientItem = pItem->GetClientItem();
-                    if (pClientItem == NULL)
-                        continue;
-                    if (m_nSelectedSlot == INVENTORY_SLOT_RIGHTHAND ||
-                        m_nSelectedSlot == INVENTORY_SLOT_LEFTHAND)
-                    {
-                        CSWCItem* pRight;
-                        CSWCItem* pLeft;
-                        if (m_nSelectedSlot == INVENTORY_SLOT_RIGHTHAND)
-                        {
-                            pRight = pClientItem;
-                            pLeft = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
-                                m_pCreature->GetEquippedItemID(INVENTORY_SLOT_LEFTHAND));
-                        }
-                        else
-                        {
-                            pRight = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
-                                m_pCreature->GetEquippedItemID(INVENTORY_SLOT_RIGHTHAND));
-                            pLeft = pClientItem;
-                        }
-                        if (pRight != NULL && pLeft != NULL &&
-                            (pRight != pClientItem || pItem->GetBaseItem()->GetWeaponSize() !=
-                                                       CSWBaseItem::WEAPON_SIZE_TWO_HANDED))
-                        {
-                            int nWield = pRight->GetBaseItem()->GetWeaponWield();
-                            int nLeftW = pLeft->GetBaseItem()->GetWeaponWield();
-                            if (nWield != nLeftW ||
-                                (nWield != CSWBaseItem::WEAPON_WIELD_ONE_HANDED_2 &&
-                                 nWield != CSWBaseItem::WEAPON_WIELD_ONE_HANDED_4))
-                            {
-                                nCanUse = CSWGuiInGameItemEntry::CANNOT_USE_WITH_OTHER_HAND;
-                            }
-                        }
-                    }
-                    if ((m_nSelectedSlot & INVENTORY_SLOT_RIGHTHAND2) ||
-                        (m_nSelectedSlot & INVENTORY_SLOT_LEFTHAND2))
-                    {
-                        CSWCItem* pRight;
-                        CSWCItem* pLeft;
-                        if (m_nSelectedSlot & INVENTORY_SLOT_RIGHTHAND2)
-                        {
-                            pRight = pClientItem;
-                            pLeft = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
-                                m_pCreature->GetEquippedItemID(INVENTORY_SLOT_LEFTHAND2));
-                        }
-                        else
-                        {
-                            pRight = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
-                                m_pCreature->GetEquippedItemID(INVENTORY_SLOT_RIGHTHAND2));
-                            pLeft = pClientItem;
-                        }
-                        if (pRight != NULL && pLeft != NULL &&
-                            (pRight != pClientItem || pItem->GetBaseItem()->GetWeaponSize() !=
-                                                       CSWBaseItem::WEAPON_SIZE_TWO_HANDED))
-                        {
-                            int nWield = pRight->GetBaseItem()->GetWeaponWield();
-                            int nLeftW = pLeft->GetBaseItem()->GetWeaponWield();
-                            if (nWield != nLeftW ||
-                                (nWield != CSWBaseItem::WEAPON_WIELD_ONE_HANDED_2 &&
-                                 nWield != CSWBaseItem::WEAPON_WIELD_ONE_HANDED_4))
-                            {
-                                nCanUse = CSWGuiInGameItemEntry::CANNOT_USE_WITH_OTHER_HAND;
-                            }
-                        }
-                    }
-                    pEntry = AddItemEntryToList(nEntry);
-                    if (pEntry->GetItem() != pClientItem->GetId() || pEntry->IsEquipped() ||
-                        pEntry->GetCanUse() != nCanUse)
-                    {
-                        bChanged = 1;
-                    }
-                    pEntry->SetItem(pClientItem->GetId(), 0, 0);
-                    pEntry->SetCanUse(nCanUse);
-                    pEntry->m_nClickSound = CSWGuiControl::GUISOUND_NONE;
-                    lItems.Add(pEntry);
-                    ++nEntry;
-                }
-            }
-            m_nSelectedSlot = nSelectedSlotSaved;
-            if (bChanged || lItems.num != m_lbItems.m_lItems.num)
-            {
-                m_lbItems.AddControls(lItems, 0, 1, 0);
-                m_lbItems.m_cScrollBar.SetCurValue(0);
-            }
-            unsigned long nStrRef;
-            unsigned short nRace = m_pCreature->GetStats()->m_nRace;
-            if (nRace == CSWRace::CRACE_DROID)
-                nStrRef = SLOT_INFO[nSlotIndex].nDescriptionStrRef;
-            else
-                nStrRef = SLOT_INFO[nSlotIndex].nNameStrRef;
-            m_lblSlotname.m_cText.m_cParams.SetText(
-                g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef));
-        }
-        else
-        {
-            m_lbItems.ClearItems();
-            CExoString sEmpty("");
-            m_lblSlotname.m_cText.m_cParams.SetText(sEmpty);
-        }
     }
 }
 // PC 0x00719F10 GOG 0x00719C00
@@ -2313,6 +2052,25 @@ void CSWGuiInGameItemEntry::UpdateItem()
 {
     SetItem(m_oidItem, m_bEquipped, m_bUnavailable);
 }
+
+#ifndef _XBOX
+// PC 0x007162B0 GOG 0x00715FA0
+void CSWGuiInGameEquip::OnItemExited(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected)
+    {
+        CSWGuiInGameItemEntry* pEntry = (CSWGuiInGameItemEntry*)pControl;
+        CSWSItem* pItem =
+            g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(pEntry->m_oidItem);
+        if (pItem != 0 && pItem->m_bNewItem)
+        {
+            pItem->m_bNewItem = 0;
+            pEntry->m_bUnavailable = 0;
+            pEntry->SetItem(pEntry->m_oidItem, pEntry->m_bEquipped, pEntry->m_bUnavailable);
+        }
+    }
+}
+#endif
 // PC 0x00715260 GOG 0x00714F50
 void CSWGuiInGameItemEntry::SetCanUse(unsigned char nCanUse)
 {
@@ -2881,6 +2639,212 @@ CSWGuiInGameEquip::CSWGuiInGameEquip(CSWGuiManager* pManager)  // PC 0x0071A1B0 
                          (CSWGuiHandler)&CSWGuiInGameEquip::OnNextNPCClicked);
     m_btnNextNpc.SetFocusable(0);
 }
+
+// PC 0x00716A80 GOG 0x00716770
+void CSWGuiInGameEquip::OnEnterSlot(CSWGuiControl* pControl)
+{
+
+    if (m_pCreature != NULL)
+    {
+        int nSlotIndex = pControl->m_nIndex;
+        int bChanged = 0;
+        m_nSelectedSlot = SLOT_INFO[nSlotIndex].nSlot;
+        if (m_nSelectedSlot != -1)
+        {
+            CSWSCreature* pCreature = m_pCreature->GetServerCreature();
+            CItemRepository* pRepository = pCreature->GetItemRepository(1);
+            CExoArrayList<CSWGuiControl*> lItems;
+            CSWGuiInGameItemEntry* pEntry = AddItemEntryToList(0);
+            pEntry->SetItem(OBJECT_INVALID, 0, 0);
+            pEntry->SetCanUse(CSWGuiInGameItemEntry::CAN_USE);
+            pEntry->m_nClickSound = CSWGuiControl::GUISOUND_NONE;
+            lItems.Add(pEntry);
+            int nEntry = 1;
+            if (m_aoidEquippedItems[nSlotIndex] != OBJECT_INVALID)
+            {
+                pEntry = AddItemEntryToList(nEntry);
+                if (pEntry->GetItem() != m_aoidEquippedItems[nSlotIndex] || !pEntry->IsEquipped() ||
+                    pEntry->GetCanUse() != CSWGuiInGameItemEntry::CAN_USE_EQUIPPED)
+                {
+                    bChanged = 1;
+                }
+                pEntry->SetItem(m_aoidEquippedItems[nSlotIndex], 1, 0);
+                pEntry->SetCanUse(CSWGuiInGameItemEntry::CAN_USE_EQUIPPED);
+                pEntry->m_nClickSound = CSWGuiControl::GUISOUND_NONE;
+                lItems.Add(pEntry);
+                ++nEntry;
+            }
+            int bShowItems = 1;
+            if (m_nSelectedSlot == INVENTORY_SLOT_LEFTHAND &&
+                m_aoidEquippedItems[RIGHTHAND_ITEM_INDEX] != OBJECT_INVALID)
+            {
+                CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
+                CSWSItem* pItem = pServer->GetItemByGameObjectID(
+                    pServer->ClientToServerObjectId(m_aoidEquippedItems[RIGHTHAND_ITEM_INDEX]));
+                if (pItem != NULL)
+                {
+                    bShowItems = pItem->GetBaseItem()->GetWeaponSize() !=
+                                 CSWBaseItem::WEAPON_SIZE_TWO_HANDED;
+                }
+            }
+            int nSelectedSlotSaved = m_nSelectedSlot;
+            if (m_nSelectedSlot == INVENTORY_SLOT_LEFTHAND2)
+            {
+                m_nSelectedSlot = INVENTORY_SLOT_LEFTHAND2 | INVENTORY_SLOT_LEFTHAND;
+            }
+            if (m_nSelectedSlot == INVENTORY_SLOT_RIGHTHAND2)
+            {
+                m_nSelectedSlot = INVENTORY_SLOT_RIGHTHAND2 | INVENTORY_SLOT_RIGHTHAND;
+            }
+            if (bShowItems)
+            {
+                for (unsigned long nItem = 0;
+                     nItem < (unsigned long)pRepository->GetNumItems(); ++nItem)
+                {
+                    CSWSItem* pItem = pRepository->ItemListGetItem(nItem);
+                    if (pItem == NULL)
+                        continue;
+                    int nSelectedSlot = m_nSelectedSlot;
+                    if (!(nSelectedSlot & pItem->GetBaseItem()->GetEquipableSlots()))
+                        continue;
+                    unsigned char nDroidOrHuman = pItem->GetBaseItem()->m_nDroidOrHuman;
+                    if (nDroidOrHuman != CSWBaseItem::DROID_OR_HUMAN_ANY)
+                    switch (nDroidOrHuman)
+                    {
+                    case CSWBaseItem::DROID_OR_HUMAN_HUMAN:
+                    {
+                        unsigned short nRace = pCreature->GetStats()->m_nRace;
+                        if (nRace != CSWRace::CRACE_HUMAN)
+                            continue;
+                        break;
+                    }
+                    case CSWBaseItem::DROID_OR_HUMAN_DROID:
+                    {
+                        unsigned short nRace = pCreature->GetStats()->m_nRace;
+                        if (nRace == CSWRace::CRACE_DROID)
+                            break;
+                        continue;
+                    }
+                    }
+                    unsigned char nCanUse = CSWGuiInGameItemEntry::CAN_USE;
+                    unsigned long nSlot = m_nSelectedSlot;
+                    if (!pCreature->CanEquipItem(pItem, &nSlot, 0, 0, 0))
+                    {
+                        nCanUse = CSWGuiInGameItemEntry::CANNOT_USE;
+                    }
+                    int bProficient = 1;
+                    CClientOptions* pOptions =
+                        g_pAppManager->GetClientExoApp()->GetClientOptions();
+                    if (pOptions != NULL && pOptions->m_bHideUnequippable)
+                    {
+                        if (!pCreature->CheckProficiencies(pItem, m_nSelectedSlot))
+                            bProficient = 0;
+                        nSlot = m_nSelectedSlot;
+                        if (!pCreature->CanEquipItem(pItem, &nSlot, 0, 0, 0) ||
+                            !bProficient)
+                            continue;
+                    }
+                    CSWCItem* pClientItem = pItem->GetClientItem();
+                    if (pClientItem == NULL)
+                        continue;
+                    if (m_nSelectedSlot == INVENTORY_SLOT_RIGHTHAND ||
+                        m_nSelectedSlot == INVENTORY_SLOT_LEFTHAND)
+                    {
+                        CSWCItem* pRight;
+                        CSWCItem* pLeft;
+                        if (m_nSelectedSlot == INVENTORY_SLOT_RIGHTHAND)
+                        {
+                            pRight = pClientItem;
+                            pLeft = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+                                m_pCreature->GetEquippedItemID(INVENTORY_SLOT_LEFTHAND));
+                        }
+                        else
+                        {
+                            pRight = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+                                m_pCreature->GetEquippedItemID(INVENTORY_SLOT_RIGHTHAND));
+                            pLeft = pClientItem;
+                        }
+                        if (pRight != NULL && pLeft != NULL &&
+                            (pRight != pClientItem || pItem->GetBaseItem()->GetWeaponSize() !=
+                                                       CSWBaseItem::WEAPON_SIZE_TWO_HANDED))
+                        {
+                            int nWield = pRight->GetBaseItem()->GetWeaponWield();
+                            int nLeftW = pLeft->GetBaseItem()->GetWeaponWield();
+                            if (nWield != nLeftW ||
+                                (nWield != CSWBaseItem::WEAPON_WIELD_ONE_HANDED_2 &&
+                                 nWield != CSWBaseItem::WEAPON_WIELD_ONE_HANDED_4))
+                            {
+                                nCanUse = CSWGuiInGameItemEntry::CANNOT_USE_WITH_OTHER_HAND;
+                            }
+                        }
+                    }
+                    if ((m_nSelectedSlot & INVENTORY_SLOT_RIGHTHAND2) ||
+                        (m_nSelectedSlot & INVENTORY_SLOT_LEFTHAND2))
+                    {
+                        CSWCItem* pRight;
+                        CSWCItem* pLeft;
+                        if (m_nSelectedSlot & INVENTORY_SLOT_RIGHTHAND2)
+                        {
+                            pRight = pClientItem;
+                            pLeft = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+                                m_pCreature->GetEquippedItemID(INVENTORY_SLOT_LEFTHAND2));
+                        }
+                        else
+                        {
+                            pRight = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+                                m_pCreature->GetEquippedItemID(INVENTORY_SLOT_RIGHTHAND2));
+                            pLeft = pClientItem;
+                        }
+                        if (pRight != NULL && pLeft != NULL &&
+                            (pRight != pClientItem || pItem->GetBaseItem()->GetWeaponSize() !=
+                                                       CSWBaseItem::WEAPON_SIZE_TWO_HANDED))
+                        {
+                            int nWield = pRight->GetBaseItem()->GetWeaponWield();
+                            int nLeftW = pLeft->GetBaseItem()->GetWeaponWield();
+                            if (nWield != nLeftW ||
+                                (nWield != CSWBaseItem::WEAPON_WIELD_ONE_HANDED_2 &&
+                                 nWield != CSWBaseItem::WEAPON_WIELD_ONE_HANDED_4))
+                            {
+                                nCanUse = CSWGuiInGameItemEntry::CANNOT_USE_WITH_OTHER_HAND;
+                            }
+                        }
+                    }
+                    pEntry = AddItemEntryToList(nEntry);
+                    if (pEntry->GetItem() != pClientItem->GetId() || pEntry->IsEquipped() ||
+                        pEntry->GetCanUse() != nCanUse)
+                    {
+                        bChanged = 1;
+                    }
+                    pEntry->SetItem(pClientItem->GetId(), 0, 0);
+                    pEntry->SetCanUse(nCanUse);
+                    pEntry->m_nClickSound = CSWGuiControl::GUISOUND_NONE;
+                    lItems.Add(pEntry);
+                    ++nEntry;
+                }
+            }
+            m_nSelectedSlot = nSelectedSlotSaved;
+            if (bChanged || lItems.num != m_lbItems.m_lItems.num)
+            {
+                m_lbItems.AddControls(lItems, 0, 1, 0);
+                m_lbItems.m_cScrollBar.SetCurValue(0);
+            }
+            unsigned long nStrRef;
+            unsigned short nRace = m_pCreature->GetStats()->m_nRace;
+            if (nRace == CSWRace::CRACE_DROID)
+                nStrRef = SLOT_INFO[nSlotIndex].nDescriptionStrRef;
+            else
+                nStrRef = SLOT_INFO[nSlotIndex].nNameStrRef;
+            m_lblSlotname.m_cText.m_cParams.SetText(
+                g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef));
+        }
+        else
+        {
+            m_lbItems.ClearItems();
+            CExoString sEmpty("");
+            m_lblSlotname.m_cText.m_cParams.SetText(sEmpty);
+        }
+    }
+}
 // PC 0x00718E80 GOG 0x00718B70
 CSWGuiInGameEquip::~CSWGuiInGameEquip()
 {
@@ -2906,6 +2870,116 @@ CSWGuiInGameEquip::~CSWGuiInGameEquip()
         m_pComparedCopy = 0;
     }
 }
+
+// PC 0x00718450 GOG 0x00718140
+void CSWGuiInGameEquip::CloseDescription()
+{
+    ShowDescription(0);
+    m_bDescriptionShown = 0;
+    SetActiveControl(m_pDescribedControl, 0);
+    OnEnterSlot(m_pActiveControl);
+
+    m_lbItems.SetEnabled(0);
+}
+#endif
+
+// PC 0x00719540 GOG 0x00719230
+void CSWGuiInGameEquip::OnNextNPCClicked(CSWGuiControl* pControl)
+{
+    if (pControl != NULL && !pControl->m_bSelected)
+    {
+        return;
+    }
+    if (!m_n50E8)
+    {
+        return;
+    }
+    CSWPartyTable* pPartyTable = GetServerExoApp()->GetPartyTable();
+    if (pPartyTable == NULL)
+    {
+        return;
+    }
+    CSWCCreature* pCreature = NULL;
+    CExoString sTag;
+    int bFound = 0;
+    for (int i = 0; i < CSWPartyTable::MAX_NPCS; i++)
+    {
+        if (++m_nCharacter == CSWPartyTable::MAX_NPCS)
+        {
+            m_nCharacter = CHARACTER_PLAYER;
+            bFound = 1;
+            break;
+        }
+        if (pPartyTable->GetIsNPCAvailable(m_nCharacter))
+        {
+            switch (m_nCharacter)
+            {
+            case NPC_ATTON:
+                sTag = "atton";
+                break;
+            case NPC_BAO_DUR:
+                sTag = "baodur";
+                break;
+            case NPC_CANDEROUS:
+                sTag = "mand";
+                break;
+            case NPC_DISCIPLE:
+                sTag = "disciple";
+                break;
+            case NPC_G0T0:
+                sTag = "g0t0";
+                break;
+            case NPC_HANDMAIDEN:
+                sTag = "handmaiden";
+                break;
+            case NPC_HANHARR:
+                sTag = "hanharr";
+                break;
+            case NPC_HK_47:
+                sTag = "hk47";
+                break;
+            case NPC_KREIA:
+                sTag = "kreia";
+                break;
+            case NPC_MIRA:
+                sTag = "mira";
+                break;
+            case NPC_T3_M4:
+                sTag = "t3m4";
+                break;
+            case NPC_VISAS:
+                sTag = "visasmarr";
+                break;
+            }
+            unsigned long oidNPC =
+                GetServerExoApp()->GetModule()->FindObjectByTagOrdinal(sTag.LowerCase(), 0);
+            CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
+            pCreature = pClient->GetCreatureByGameObjectID(pClient->ServerToClientObjectId(oidNPC));
+            if (pCreature != NULL)
+            {
+                GetServerExoApp()->GetPartyTable()->SetNPCObject(m_nCharacter, oidNPC);
+                bFound = 1;
+                break;
+            }
+        }
+    }
+    if (bFound)
+    {
+        if (m_nCharacter == CHARACTER_PLAYER)
+        {
+            SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter());
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->SetTopMenuOverrideCharacter(CHARACTER_PLAYER);
+            OnEnterSlot(m_pActiveControl);
+        }
+        else
+        {
+            SetCharacter(pCreature);
+            g_pAppManager->GetClientExoApp()->GetInGameGui()->SetTopMenuOverrideCharacter(m_nCharacter);
+            OnEnterSlot(m_pActiveControl);
+        }
+    }
+}
+#ifndef _XBOX
 // PC 0x007197B0 GOG 0x007194A0
 void CSWGuiInGameEquip::Draw(float fElapsed)
 {
@@ -2953,6 +3027,36 @@ void CSWGuiInGameEquip::OnPanelAdded()
     UpdatePortraits(1);
     OnEnterSlot(m_pActiveControl);
     CSWGuiPanel::OnPanelAdded();
+}
+
+// PC 0x00719980 GOG 0x00719670
+void CSWGuiInGameEquip::OnPanelRemoved()
+{
+    int i;
+
+    if (m_n50E8)
+    {
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->SetTopMenuOverrideCharacter(CHARACTER_PLAYER);
+    }
+    if (m_bDescriptionShown)
+    {
+        CloseDescription();
+    }
+    m_lbItems.ClearItems();
+    for (i = 0; i < m_lItemEntries.num; i++)
+    {
+        if (m_lItemEntries[i] != 0)
+        {
+            delete m_lItemEntries[i];
+        }
+        m_lItemEntries[i] = 0;
+    }
+    m_lItemEntries.RemoveAll();
+    m_nPendingSlot = 0;
+    m_oidPendingItem = OBJECT_INVALID;
+#ifndef _XBOX
+    CSWGuiPanel::OnPanelRemoved();
+#endif
 }
 #endif
 #ifndef _XBOX
@@ -3409,102 +3513,6 @@ void CSWGuiInGameEquip::HandleInputEvent(int nEvent, int nState)
 }
 
 #endif
-// PC 0x00719540 GOG 0x00719230
-void CSWGuiInGameEquip::OnNextNPCClicked(CSWGuiControl* pControl)
-{
-    if (pControl != NULL && !pControl->m_bSelected)
-    {
-        return;
-    }
-    if (!m_n50E8)
-    {
-        return;
-    }
-    CSWPartyTable* pPartyTable = GetServerExoApp()->GetPartyTable();
-    if (pPartyTable == NULL)
-    {
-        return;
-    }
-    CSWCCreature* pCreature = NULL;
-    CExoString sTag;
-    int bFound = 0;
-    for (int i = 0; i < CSWPartyTable::MAX_NPCS; i++)
-    {
-        if (++m_nCharacter == CSWPartyTable::MAX_NPCS)
-        {
-            m_nCharacter = CHARACTER_PLAYER;
-            bFound = 1;
-            break;
-        }
-        if (pPartyTable->GetIsNPCAvailable(m_nCharacter))
-        {
-            switch (m_nCharacter)
-            {
-            case NPC_ATTON:
-                sTag = "atton";
-                break;
-            case NPC_BAO_DUR:
-                sTag = "baodur";
-                break;
-            case NPC_CANDEROUS:
-                sTag = "mand";
-                break;
-            case NPC_DISCIPLE:
-                sTag = "disciple";
-                break;
-            case NPC_G0T0:
-                sTag = "g0t0";
-                break;
-            case NPC_HANDMAIDEN:
-                sTag = "handmaiden";
-                break;
-            case NPC_HANHARR:
-                sTag = "hanharr";
-                break;
-            case NPC_HK_47:
-                sTag = "hk47";
-                break;
-            case NPC_KREIA:
-                sTag = "kreia";
-                break;
-            case NPC_MIRA:
-                sTag = "mira";
-                break;
-            case NPC_T3_M4:
-                sTag = "t3m4";
-                break;
-            case NPC_VISAS:
-                sTag = "visasmarr";
-                break;
-            }
-            unsigned long oidNPC =
-                GetServerExoApp()->GetModule()->FindObjectByTagOrdinal(sTag.LowerCase(), 0);
-            CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
-            pCreature = pClient->GetCreatureByGameObjectID(pClient->ServerToClientObjectId(oidNPC));
-            if (pCreature != NULL)
-            {
-                GetServerExoApp()->GetPartyTable()->SetNPCObject(m_nCharacter, oidNPC);
-                bFound = 1;
-                break;
-            }
-        }
-    }
-    if (bFound)
-    {
-        if (m_nCharacter == CHARACTER_PLAYER)
-        {
-            SetCharacter(g_pAppManager->m_pClientExoApp->GetSWParty()->GetPlayerCharacter());
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->SetTopMenuOverrideCharacter(CHARACTER_PLAYER);
-            OnEnterSlot(m_pActiveControl);
-        }
-        else
-        {
-            SetCharacter(pCreature);
-            g_pAppManager->GetClientExoApp()->GetInGameGui()->SetTopMenuOverrideCharacter(m_nCharacter);
-            OnEnterSlot(m_pActiveControl);
-        }
-    }
-}
 
 #ifdef _XBOX
 

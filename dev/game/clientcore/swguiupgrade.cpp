@@ -2291,6 +2291,32 @@ void CSWGuiSwoopUpgrade::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 }
 
+// PC 0x0072C000 GOG 0x0072BD10
+void CSWGuiSwoopUpgrade::OnControlEntered(CSWGuiControl* pControl)
+{
+    int nSelected = pControl->m_bSelected;
+    if (nSelected != 0)
+    {
+        CSWUpgradeItemEntry* pEntry = (CSWUpgradeItemEntry*)pControl;
+        if (pEntry->m_oidItem != OBJECT_INVALID)
+        {
+            CSWSItem* pItem = g_pAppManager->GetServerExoApp()
+                ->GetItemByGameObjectID(pEntry->m_oidItem);
+            CExoString sDescription;
+            CExoLocString& sItemDescription = pItem->m_sDescIdentified;
+            sItemDescription.GetString(g_pAppManager->GetClientExoApp()->GetClientLanguage(),
+                                       &sDescription, 0);
+            if (sDescription != "")
+                SetDescription(sDescription);
+            else
+                SetDescription(g_pAppManager->GetClientExoApp()->GetGUIString(
+                    CSWGuiUpgrade::STRREF_NO_DESCRIPTION));
+        }
+        else
+            SetDescription("");
+    }
+}
+
 // PC 0x00728D40 GOG 0x00728A50
 void CSWGuiSwoopUpgrade::SetDescription(const CExoString& sDescription)
 {
@@ -3356,31 +3382,6 @@ void CSWGuiCreateMedicalItem::ShowSellGUI()
     m_lblCost.m_cText.m_cParams.SetStrRef(115432);
     SetActiveControl(pActiveList, 0);
     PopulateInventoryItemListBox();
-}
-// PC 0x0072C000 GOG 0x0072BD10
-void CSWGuiSwoopUpgrade::OnControlEntered(CSWGuiControl* pControl)
-{
-    int nSelected = pControl->m_bSelected;
-    if (nSelected != 0)
-    {
-        CSWUpgradeItemEntry* pEntry = (CSWUpgradeItemEntry*)pControl;
-        if (pEntry->m_oidItem != OBJECT_INVALID)
-        {
-            CSWSItem* pItem = g_pAppManager->GetServerExoApp()
-                ->GetItemByGameObjectID(pEntry->m_oidItem);
-            CExoString sDescription;
-            CExoLocString& sItemDescription = pItem->m_sDescIdentified;
-            sItemDescription.GetString(g_pAppManager->GetClientExoApp()->GetClientLanguage(),
-                                       &sDescription, 0);
-            if (sDescription != "")
-                SetDescription(sDescription);
-            else
-                SetDescription(g_pAppManager->GetClientExoApp()->GetGUIString(
-                    CSWGuiUpgrade::STRREF_NO_DESCRIPTION));
-        }
-        else
-            SetDescription("");
-    }
 }
 
 // PC 0x0072C130 GOG 0x0072BE40
