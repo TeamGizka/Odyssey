@@ -155,6 +155,8 @@ int renderwalktry = 0;
 int RenderClosestPathPoint = 0;
 int RenderTriangles = 0;
 int g_nHackAlignment = -1;
+static bool bLipDelayLoaded = false;
+static float fLipDelay = 0.0f;
 static CExoString g_sHeadTurnBone = "";
 
 // PC 0x004015A0 GOG 0x004015A0
@@ -6449,8 +6451,6 @@ void CSWCCreature::ActionMenuSwapImplantEnd(unsigned long nAction, CSWCCreature*
 // PC 0x00663610 GOG 0x00663420
 int CSWCCreature::LipSync(const CResRef& cLip)
 {
-    static bool bLipDelayLoaded = false;
-    static float fLipDelay = 0.0f;
     if (!bLipDelayLoaded)
     {
         bLipDelayLoaded = true;
