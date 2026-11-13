@@ -96,6 +96,36 @@ int C2DA::GetCExoStringEntry(int nRow, int nColumn, CExoString* psEntry)
     *psEntry = m_ppEntries[nRow][nColumn];
     return psEntry->GetLength() > 0;
 }
+
+// PC 0x0041D3D0 GOG 0x0041D3C0
+int C2DA::GetFLOATEntry(int nRow, const CExoString& sColumn, float* pfEntry)
+{
+    int nColumn = GetColumnIndex(sColumn);
+
+    if (nRow < 0 || nRow >= m_nNumRows || nColumn == -1)
+    {
+        *pfEntry = m_sDefault.AsFLOAT();
+        return 0;
+    }
+
+    if (m_bPacked)
+    {
+        int nOffset = m_pEntryOffsets[nColumn + nRow * m_nNumColumns];
+
+        *pfEntry = 0.0f;
+        sscanf(m_pEntryData + nOffset, "%f", pfEntry);
+        return m_pEntryData[nOffset] != 0;
+    }
+
+    if (m_ppEntries[nRow][nColumn] == "")
+    {
+        *pfEntry = 0.0f;
+        return 0;
+    }
+
+    *pfEntry = m_ppEntries[nRow][nColumn].AsFLOAT();
+    return 1;
+}
 // PC 0x0041D1F0 GOG 0x0041D1E0
 int C2DA::GetCExoStringEntry(int nRow, const CExoString& sColumn,
                              CExoString* psEntry)
@@ -129,35 +159,6 @@ int C2DA::GetFLOATEntry(int nRow, int nColumn, float* pfEntry)
 {
     if (nRow < 0 || nRow >= m_nNumRows || nColumn < 0 ||
         nColumn >= m_nNumColumns)
-    {
-        *pfEntry = m_sDefault.AsFLOAT();
-        return 0;
-    }
-
-    if (m_bPacked)
-    {
-        int nOffset = m_pEntryOffsets[nColumn + nRow * m_nNumColumns];
-
-        *pfEntry = 0.0f;
-        sscanf(m_pEntryData + nOffset, "%f", pfEntry);
-        return m_pEntryData[nOffset] != 0;
-    }
-
-    if (m_ppEntries[nRow][nColumn] == "")
-    {
-        *pfEntry = 0.0f;
-        return 0;
-    }
-
-    *pfEntry = m_ppEntries[nRow][nColumn].AsFLOAT();
-    return 1;
-}
-// PC 0x0041D3D0 GOG 0x0041D3C0
-int C2DA::GetFLOATEntry(int nRow, const CExoString& sColumn, float* pfEntry)
-{
-    int nColumn = GetColumnIndex(sColumn);
-
-    if (nRow < 0 || nRow >= m_nNumRows || nColumn == -1)
     {
         *pfEntry = m_sDefault.AsFLOAT();
         return 0;

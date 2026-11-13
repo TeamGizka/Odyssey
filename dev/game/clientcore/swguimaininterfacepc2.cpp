@@ -1482,6 +1482,35 @@ void CSWGuiMainInterface::SetCombatMessage(unsigned long nMessage)
     m_lblCmbtmodemsg.m_cText.m_cParams.SetText(sMessage);
     m_lblCmbtmodemsg.m_cText.m_cParams.m_fAlpha = 1.0f;
 }
+
+#ifndef _XBOX
+// PC 0x006DE600 GOG 0x006E0140
+void CSWGuiMainInterface::UpdateGameMenu()
+{
+    if (g_pAppManager->GetServerExoApp()->GetPartyTable()->GetPartyItems()->m_nNewItems > 0)
+    {
+        if (!m_btnInv.m_cBorder.m_cParams.m_bPulsing)
+        {
+            m_btnInv.m_cBorder.m_cParams.SetPulsingAlpha(1, 0, 1);
+        }
+    }
+    else
+    {
+        m_btnInv.m_cBorder.m_cParams.SetPulsingAlpha(0, 0, 0);
+    }
+    if (g_pAppManager->GetClientExoApp()->GetQuestJournal()->HasNewEntries())
+    {
+        if (!m_btnJou.m_cBorder.m_cParams.m_bPulsing)
+        {
+            m_btnJou.m_cBorder.m_cParams.SetPulsingAlpha(1, 0, 1);
+        }
+    }
+    else
+    {
+        m_btnJou.m_cBorder.m_cParams.SetPulsingAlpha(0, 0, 0);
+    }
+}
+#endif
 // PC 0x006DE690 GOG 0x006E01D0
 void CSWGuiMainInterface::InitializeMap()
 {
@@ -1763,6 +1792,15 @@ void CSWGuiMainInterface::OnStealthButtonPressed(CSWGuiControl* pControl)  // PC
                 ->GetPlayerCharacter()
                 ->PartyMenuStealth(0, NULL);
         }
+    }
+}
+
+// PC 0x006DEE40 GOG 0x006E0C60
+void CSWGuiMainInterface::OnCharacterExited(CSWGuiControl* pControl)
+{
+    if (m_bSelectingUseItemTarget)
+    {
+        m_nUseItemTargetMember = -1;
     }
 }
 #endif
@@ -3437,6 +3475,36 @@ void CSWGuiMainInterface::DrawMap(float fElapsed)
     m_btnMinimap.SetEnabledFlag(0);
 #endif
 }
+
+// PC 0x006E4EB0 GOG 0x006E44C0
+void CSWGuiMainInterface::AddFloatyText(unsigned long oidObject,
+                                        const CExoString& sText,
+                                        const Vector& vColor, float fDuration)
+{
+    Swguimaininterfacepc2Trace3();
+    CSWGuiFloatyText* pFloatyText = new CSWGuiFloatyText;
+    pFloatyText->CreateEntry(oidObject, sText, vColor, fDuration);
+
+    for (int i = m_lFloatyText.num - 1; i >= 0; i--)
+    {
+        CSWGuiFloatyText* pOldText = m_lFloatyText.element[i];
+        if (pOldText->m_oidObject == oidObject)
+        {
+            if (++pOldText->m_bActive <= SWGUI_FLOATY_TEXT_MAX_LINES)
+            {
+                pOldText->m_cExtent.m_nTop -= pOldText->m_cExtent.m_nHeight;
+                pOldText->SetExtent(pOldText->m_cExtent);
+            }
+            else
+            {
+                delete m_lFloatyText.element[i];
+                m_lFloatyText.DelIndex(i);
+            }
+        }
+    }
+
+    m_lFloatyText.Add(pFloatyText);
+}
 // PC 0x006E2610 GOG 0x006E0470
 void CSWGuiMainInterface::RemoveFloatyText(CSWGuiFloatyText* pFloatyText)
 {
@@ -3700,57 +3768,6 @@ void CSWGuiMainInterface::OnClearAllButtonPressed(CSWGuiControl* pControl)  // P
         ClearAllActions();
     }
 }
-// PC 0x006DE600 GOG 0x006E0140
-void CSWGuiMainInterface::UpdateGameMenu()
-{
-    if (g_pAppManager->GetServerExoApp()->GetPartyTable()->GetPartyItems()->m_nNewItems > 0)
-    {
-        if (!m_btnInv.m_cBorder.m_cParams.m_bPulsing)
-        {
-            m_btnInv.m_cBorder.m_cParams.SetPulsingAlpha(1, 0, 1);
-        }
-    }
-    else
-    {
-        m_btnInv.m_cBorder.m_cParams.SetPulsingAlpha(0, 0, 0);
-    }
-    if (g_pAppManager->GetClientExoApp()->GetQuestJournal()->HasNewEntries())
-    {
-        if (!m_btnJou.m_cBorder.m_cParams.m_bPulsing)
-        {
-            m_btnJou.m_cBorder.m_cParams.SetPulsingAlpha(1, 0, 1);
-        }
-    }
-    else
-    {
-        m_btnJou.m_cBorder.m_cParams.SetPulsingAlpha(0, 0, 0);
-    }
-}
-// PC 0x006DEE20 GOG 0x006E0C40
-void CSWGuiMainInterface::OnCharacterEntered(CSWGuiControl* pControl)
-{
-    if (m_bSelectingUseItemTarget && pControl != NULL)
-    {
-        m_nUseItemTargetMember = pControl->m_nIndex - 1;
-    }
-}
-// PC 0x006DEE40 GOG 0x006E0C60
-void CSWGuiMainInterface::OnCharacterExited(CSWGuiControl* pControl)
-{
-    if (m_bSelectingUseItemTarget)
-    {
-        m_nUseItemTargetMember = -1;
-    }
-}
-// PC 0x006E2F70 GOG 0x006E1720
-void CSWGuiMainInterface::OnCancelPartyItemSelect(CSWGuiControl* pControl)
-{
-    if (pControl != NULL && pControl->m_bSelected != 0)
-    {
-        m_nUseItemTargetMember = -1;
-        m_bSelectingUseItemTarget = 0;
-    }
-}
 // PC 0x006E39E0 GOG 0x006E35D0
 void CSWGuiMainInterface::OnPersonalActionExit(CSWGuiControl* pControl)
 {
@@ -3997,6 +4014,16 @@ void CSWGuiFloatyText::Update(float fDeltaTime)
 }
 
 #ifndef _XBOX
+// PC 0x006E2F70 GOG 0x006E1720
+void CSWGuiMainInterface::OnCancelPartyItemSelect(CSWGuiControl* pControl)
+{
+    if (pControl != NULL && pControl->m_bSelected != 0)
+    {
+        m_nUseItemTargetMember = -1;
+        m_bSelectingUseItemTarget = 0;
+    }
+}
+
 void CSWGuiTargetActionMenu::PopulateMenus(CSWCCreature* pCreature,  // PC 0x006E2FA0 GOG 0x006E1960
                                          int bDisabled, CSWCObject* pTarget)
 {
@@ -4577,6 +4604,17 @@ void CSWGuiMainInterfaceAction::Initialize(CSWGuiMainInterface* pMainInterface, 
 #endif
 
 #ifndef _XBOX
+// PC 0x006DEE20 GOG 0x006E0C40
+void CSWGuiMainInterface::OnCharacterEntered(CSWGuiControl* pControl)
+{
+    if (m_bSelectingUseItemTarget && pControl != NULL)
+    {
+        m_nUseItemTargetMember = pControl->m_nIndex - 1;
+    }
+}
+#endif
+
+#ifndef _XBOX
 CSWGuiTargetActionMenu::~CSWGuiTargetActionMenu()  // PC 0x006E41C0 GOG 0x006E37D0
 {
 }
@@ -4791,35 +4829,6 @@ void CSWGuiTargetActionMenu::Initialize(CSWGuiMainInterface* pMainInterface)  //
     SetNameLabel("");
 }
 #endif
-// PC 0x006E4EB0 GOG 0x006E44C0
-void CSWGuiMainInterface::AddFloatyText(unsigned long oidObject,
-                                        const CExoString& sText,
-                                        const Vector& vColor, float fDuration)
-{
-    Swguimaininterfacepc2Trace3();
-    CSWGuiFloatyText* pFloatyText = new CSWGuiFloatyText;
-    pFloatyText->CreateEntry(oidObject, sText, vColor, fDuration);
-
-    for (int i = m_lFloatyText.num - 1; i >= 0; i--)
-    {
-        CSWGuiFloatyText* pOldText = m_lFloatyText.element[i];
-        if (pOldText->m_oidObject == oidObject)
-        {
-            if (++pOldText->m_bActive <= SWGUI_FLOATY_TEXT_MAX_LINES)
-            {
-                pOldText->m_cExtent.m_nTop -= pOldText->m_cExtent.m_nHeight;
-                pOldText->SetExtent(pOldText->m_cExtent);
-            }
-            else
-            {
-                delete m_lFloatyText.element[i];
-                m_lFloatyText.DelIndex(i);
-            }
-        }
-    }
-
-    m_lFloatyText.Add(pFloatyText);
-}
 
 #ifndef _XBOX
 CSWGuiTargetActionMenu::CSWGuiTargetActionMenu()  // PC 0x006E5060 GOG 0x006E4B70
