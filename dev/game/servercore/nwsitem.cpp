@@ -45,13 +45,6 @@ enum UpgradeItemType
     UPGRADE_ITEM_ARMOR_2 = 9
 };
 
-inline void CSWSItem::SetStolen(int bStolen) { m_bStolen = bStolen; }
-inline void CSWSItem::SetPickpocketable(int bPickpocketable) { m_bPickpocketable = bPickpocketable; }
-inline void CSWSItem::SetNonEquippable(int bNonEquippable) { m_bNonEquippable = bNonEquippable; }
-inline void CSWSItem::SetNewItem(int bNewItem) { m_bNewItem = bNewItem; }
-inline int CSWSItem::GetUpgrades() { return m_nUpgrades; }
-inline char CSWSItem::GetModelVariation() { return m_nModelVariation; }
-
 // PC 0x0055B6F0
 CSWSItem::CSWSItem(unsigned long oidItem)
     : CSWSObject(CGameObject::OBJECT_TYPE_ITEM, oidItem, 0)
@@ -3456,6 +3449,7 @@ void CItemRepository::InsertItem(CSWSItem* pItem, int nIndex)
         m_lstItems.Insert(pItem->m_nId, nIndex);
     }
 }
+inline char CSWSItem::GetModelVariation() { return m_nModelVariation; }
 // PC 0x00567BB0
 int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeItem,
                              int bUpdatePossessor, int bNewItem)
@@ -4528,6 +4522,11 @@ CExoString CSWSItem::GetKeyedPropertyString(unsigned char nUpgradeIndex)
     GetSortedPropertyStrings(aStrings, sString);
     return sString;
 }
+inline void CSWSItem::SetStolen(int bStolen) { m_bStolen = bStolen; }
+inline void CSWSItem::SetPickpocketable(int bPickpocketable) { m_bPickpocketable = bPickpocketable; }
+inline void CSWSItem::SetNonEquippable(int bNonEquippable) { m_bNonEquippable = bNonEquippable; }
+inline void CSWSItem::SetNewItem(int bNewItem) { m_bNewItem = bNewItem; }
+inline int CSWSItem::GetUpgrades() { return m_nUpgrades; }
 // PC 0x0056A6F0
 void CSWSItem::LoadDataFromGff(CResGFF* pRes, CResStruct* pStruct)
 {
