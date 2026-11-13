@@ -7317,7 +7317,8 @@ void CSWCCreature::Setup3DScene(CSWGui3DSceneView& cView,
 
     if (pServerCreature == NULL && g_pAppManager->GetServerExoApp() != NULL)
     {
-        pServerCreature = (pCreature != NULL ? pCreature : this)->GetServerCreature();
+        pServerCreature = pCreature != NULL ?
+            pCreature->GetServerCreature() : GetServerCreature();
     }
     if (pServerCreature != NULL &&
         (pServerCreature->m_sTag == "t3m4" || pServerCreature->m_sTag == "hk47" ||

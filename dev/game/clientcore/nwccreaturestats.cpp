@@ -1470,8 +1470,15 @@ void CSWCLevelUpStats::AddDefaultPackageSkills(int nClass, int bAllSkills)
             if (!bAllSkills)
             {
                 CSWSkill* pSkill = &g_pRules->m_pSkills[(unsigned short)nSkill];
-                int bDroidException = nSkill == CSWSkill::SKILL_STEALTH &&
-                    m_pCreature->GetServerCreature()->GetTag().CompareNoCase("g0t0");
+                int bDroidException = 0;
+                if (nSkill == CSWSkill::SKILL_STEALTH)
+                {
+                    CSWCCreature* pCreature = m_pCreature;
+                    if (pCreature->GetServerCreature()->GetTag().CompareNoCase("g0t0"))
+                    {
+                        bDroidException = 1;
+                    }
+                }
                 if (!pSkill->m_bNPCCanUse)
                 {
                     continue;
