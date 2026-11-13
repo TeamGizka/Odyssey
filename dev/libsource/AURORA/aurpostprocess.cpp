@@ -450,7 +450,8 @@ void MdlNode::ProcessSkinSeams()
         Quaternion qOrientation;
         while (pNode != 0)
         {
-            vTranslation = pNode->m_qOrientation * vTranslation + pNode->m_vPosition;
+            vTranslation = pNode->m_qOrientation * vTranslation;
+            vTranslation = vTranslation + pNode->m_vPosition;
             qOrientation = pNode->m_qOrientation * qOrientation;
             pNode = pNode->m_pParentNode;
         }
@@ -481,6 +482,7 @@ void MdlNode::ProcessSkinSeams()
             vPosition.m_fY = pPosition->position.m_fY;
             vPosition.m_fZ = pPosition->position.m_fZ;
             vPosition = lstOrientations[nNode] * vPosition + lstPositions[nNode];
+            Vector& vVertexPosition = vPosition;
             lstNormals.SetSize(0);
             lstNormalNodes.SetSize(0);
             RenderVertexN* pNormal = (RenderVertexN*)(pBuffer +
@@ -518,7 +520,7 @@ void MdlNode::ProcessSkinSeams()
                         vOtherPosition.m_fY = pOtherPosition->position.m_fY;
                         vOtherPosition.m_fZ = pOtherPosition->position.m_fZ;
                         vOtherPosition = lstOrientations[nOther] * vOtherPosition + lstPositions[nOther];
-                        vDifference = vOtherPosition - vPosition;
+                        vDifference = vOtherPosition - vVertexPosition;
                         if ((vDifference.m_fX < 0.0f ? -vDifference.m_fX : vDifference.m_fX) < MDL_SKIN_SEAM_TOLERANCE &&
                             (vDifference.m_fY < 0.0f ? -vDifference.m_fY : vDifference.m_fY) < MDL_SKIN_SEAM_TOLERANCE &&
                             (vDifference.m_fZ < 0.0f ? -vDifference.m_fZ : vDifference.m_fZ) < MDL_SKIN_SEAM_TOLERANCE)
