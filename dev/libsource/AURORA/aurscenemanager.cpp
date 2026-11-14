@@ -1187,8 +1187,9 @@ static void ProcessParts(BSPNode* pNode, void* pData, List<Plane>& planes)
         Gob* pGob = lstStaticGobs[i];
         if (pGob->IsInViewVolume())
         {
+            const Quaternion& qOrientation = pGob->m_qOrientation;
             pGob->m_fZOrder = magnitude(CurrentCamera->m_vPosition -
-                (pGob->m_vPosition + pGob->m_qOrientation *
+                (pGob->m_vPosition + qOrientation *
                  pGob->m_vMinimumBoundingSphere));
         }
         if (!GobOutside(pGob, planes))
