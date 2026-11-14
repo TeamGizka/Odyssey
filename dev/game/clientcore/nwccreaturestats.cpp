@@ -815,6 +815,7 @@ unsigned char CSWCCreatureStats::GetLevel()
     {
         nLevel += GetClassLevel((unsigned char)i);
     }
+    int nBalancedLevel;
     if (m_pCreature != NULL)
     {
         CSWSCreature* pServerCreature = m_pCreature->GetServerCreature();
@@ -822,7 +823,6 @@ unsigned char CSWCCreatureStats::GetLevel()
             !pServerCreature->m_bInParty && pServerCreature->m_c250 != 0)
         {
             int nAutoBalanceRow = pServerCreature->m_c250;
-            unsigned char nBalancedLevel;
             if (nAutoBalanceRow != 0)
             {
                 C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
@@ -838,21 +838,27 @@ unsigned char CSWCCreatureStats::GetLevel()
                 {
                     nPCLevel = 1;
                 }
-                int nNewLevel = (int)(nPCLevel * fLevelMult) + nLevel - 1;
-                if (nNewLevel < 0)
+                nBalancedLevel = (int)(nPCLevel * fLevelMult) + nLevel - 1;
+                if (nBalancedLevel < 0)
                 {
-                    nNewLevel = 1;
+                    nBalancedLevel = 1;
                 }
-                nBalancedLevel = nNewLevel;
             }
             else
             {
                 nBalancedLevel = nLevel;
             }
-            return nBalancedLevel;
+        }
+        else
+        {
+            nBalancedLevel = nLevel;
         }
     }
-    return nLevel;
+    else
+    {
+        nBalancedLevel = nLevel;
+    }
+    return nBalancedLevel;
 }
 // PC 0x006FC440 GOG 0x006FC030
 CExoString CSWCCreatureStats::GetClassesString(char cSeparator)
