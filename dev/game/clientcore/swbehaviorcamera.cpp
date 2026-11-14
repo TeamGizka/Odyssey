@@ -387,6 +387,7 @@ int CSWCameraNavigate::Control(float fTimeStep)
         static_cast<Gob*>(m_pObject)->SetOrientation(qOrientation);
 
         Vector vMovement(m_fStrafe, -m_fSpeed, 0.0f);
+        EXOLOG("HS camera movement (%f, %f)\n", vMovement.m_fX, vMovement.m_fY);
         m_fStrafe = 0.0f;
         m_fSpeed = 0.0f;
         if (vMovement.m_fX != 0.0f || vMovement.m_fY != 0.0f)
