@@ -141,11 +141,9 @@ void FireGunCallback(CAurObject* pObject, char* sEvent, void* pData)
                     return;
                 }
                 float fSpread = pTrack->m_params.m_fInaccuracy;
-                Quaternion qTarget = static_cast<Gob*>(
-                    static_cast<CAurObject*>(pTrack->m_pModel))->GetOrientation();
+                Quaternion qTarget = ((Gob*)pTrack->m_pModel.m_pObject)->GetOrientation();
                 Vector vTarget = -qTarget *
-                    (qTarget * static_cast<Gob*>(
-                        static_cast<CAurObject*>(pTrack->m_pModel))->GetPosition() + pTrack->m_vTarget);
+                    (qTarget * ((Gob*)pTrack->m_pModel.m_pObject)->GetPosition() + pTrack->m_vTarget);
                 if (fSpread > 0.0f)
                 {
                     Vector vAim = vTarget;
