@@ -1233,12 +1233,13 @@ int CSWMiniGame::HitCheckBullet(CAurObject* pBullet, CAurObject* pTarget,
     if (pTarget->HitCheckPart(pPart, pBullet->GetPreviousPosition(),
                               pBullet->GetPosition(), NULL, &DefaultHitInfo))
     {
-        CSWMGBullet& bullet = pBehavior->m_bullet;
-        pHit->SetBullet(bullet);
+        pHit->SetBullet(pBehavior->m_bullet);
         CSWTrackFollower* pFollower = pBehavior->m_pFollower;
         unsigned long nShooter = pFollower->m_nObjectId;
         pHit->m_nLastBulletHitShooter = nShooter;
-        pHit->m_sLastBulletHitPart = DefaultHitInfo.m_sOutputPartName;
+        CHitInfo* pInfo = &DefaultHitInfo;
+        char* sPart = pInfo->m_sOutputPartName;
+        pHit->m_sLastBulletHitPart = sPart;
         pHit->m_vSoundPosition = DefaultHitInfo.m_vOutputPosition;
         pHit->OnHitBullet(0);
 
