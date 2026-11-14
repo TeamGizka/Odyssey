@@ -1633,7 +1633,7 @@ void RenderNoiseMapped(VertexPrimitiveFlat* pPrimitive, int nTexture, int nCoord
         nBlendMode = pDirty->m_nBlendMode;
     else
         nBlendMode = 0;
-    if ((pGob && pGob->m_pEnvironmentMap.m_pObject) || pMaterial->HasEnvMap())
+    if ((pGob && pGob->m_pEnvironmentMap) || pMaterial->HasEnvMap())
     {
         if (pPart->m_pNode->AsMdlNodeTriMesh()->m_bLightMapped && enablelightmap)
         {
