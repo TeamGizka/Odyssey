@@ -3074,7 +3074,8 @@ void Gob::PartVolumeProject(Part* pPart, Vector vPoint, float fDistance,
         Plane localPlane;
         if (!systemmemoryshadows)
         {
-            vPoint = -pPart->m_qOrientation * (vPoint - pPart->m_vPosition);
+            const Quaternion& qOrientation = pPart->m_qOrientation;
+            vPoint = -qOrientation * (vPoint - pPart->m_vPosition);
             localPlane = Plane(plane.m_vNormal, plane.m_fDistance);
             localPlane.Transform(pPart->m_vPosition, pPart->m_qOrientation);
         }
@@ -3087,7 +3088,7 @@ void Gob::PartVolumeProject(Part* pPart, Vector vPoint, float fDistance,
         ++counttrans;
         if (pPart->m_fScale != 1.0f)
             GLRender::Scale(pPart->m_fScale, pPart->m_fScale, pPart->m_fScale);
-        if (systemmemoryshadows || !vPoint.IsZero())
+        if ((systemmemoryshadows || !vPoint.IsZero()) != FALSE)
         {
             int bBeaming = FALSE;
             PartTriMesh* pTriMesh = pPart->AsPartTriMesh();
