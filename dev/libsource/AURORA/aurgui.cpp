@@ -49,10 +49,7 @@ static void SetVertexData4f(Aurora::AuroraStreamMode nStream,
 }
 #endif
 
-static inline CAurTexture* AsTexture(SafePointer<CAurTexture>& pPointer)
-{
-    return (CAurTexture*)pPointer.m_pObject;
-}
+#include "aurtexptr.h"
 
 int noguirender = 0;
 int CAurGUIImage::cm_nGUIBufferSizeUsed = 0;

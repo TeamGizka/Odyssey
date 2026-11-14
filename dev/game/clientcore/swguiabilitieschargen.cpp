@@ -6,13 +6,7 @@
 #include "swguiabilitieschargen.h"
 #include "swguiingame.h"
 #include "nwccreature.h"
-#ifndef _XBOX
-static inline void SetPortraitImage(CSWGuiLabel* pLabel,
-                                    const CResRef& cPortrait)
-{
-    pLabel->m_cBorder.m_cParams.SetFillImage(cPortrait, 0);
-}
-#endif
+#include "swguiportrait.h"
 // PC 0x00768ED0 GOG 0x00768D10
 CSWGuiAbilitiesCharGen::CSWGuiAbilitiesCharGen(CSWGuiManager* pManager,
                                                CSWCCreature* pCreature,

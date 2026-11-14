@@ -16,12 +16,8 @@
 #include "aurscene.h"
 #include "nwccreaturestats.h"
 #include "nwclass.h"
+#include "swguiportrait.h"
 
-static inline void SetPortraitImage(CSWGuiLabel* pLabel,
-                                    const CResRef& cPortrait)
-{
-    pLabel->m_cBorder.m_cParams.SetFillImage(cPortrait, 0);
-}
 void CSWGuiMainCharGen::RemoveSubPanels()  // PC 0x0075B210 GOG 0x0075B100
 {
     m_pManager->PopModalPanel();

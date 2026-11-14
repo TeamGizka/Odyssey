@@ -6,13 +6,9 @@
 #include "aurmaterial.h"
 #include "aurrendergl.h"
 #include "aurconsole.h"
+#include "aurtexptr.h"
 
 List<Material*> materials;
-
-static inline CAurTexture* AsTexture(SafePointer<CAurTexture>& pPointer)
-{
-    return (CAurTexture*)pPointer.m_pObject;
-}
 
 int usenewalpha = 1;
 float materialalpha = 0.35f;
