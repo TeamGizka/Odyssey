@@ -52,6 +52,7 @@ extern float fBorderScaleExponent;
 #define CAMERA_NAVIGATE_ROLL_INPUT_WEIGHT 0.033f
 
 #define CAMERA_NAVIGATE_HS_ENABLED 1
+#define CAMERA_NAVIGATE_HS_ACTIVE() ((CAMERA_NAVIGATE_HS_ENABLED && g_nHSMode) != 0)
 
 extern int CameraFreeStyleMode;
 

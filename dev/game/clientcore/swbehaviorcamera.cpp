@@ -358,7 +358,7 @@ int CSWCameraNavigate::Control(float fTimeStep)
         return 0;
     }
 
-    if (CAMERA_NAVIGATE_HS_ENABLED && (CAMERA_NAVIGATE_HS_ENABLED && g_nHSMode) != 0)
+    if (CAMERA_NAVIGATE_HS_ENABLED && CAMERA_NAVIGATE_HS_ACTIVE())
     {
         m_fSpeed *= CAMERA_NAVIGATE_HS_SPEED_SCALE;
         m_fStrafe *= CAMERA_NAVIGATE_HS_STRAFE_SCALE;
