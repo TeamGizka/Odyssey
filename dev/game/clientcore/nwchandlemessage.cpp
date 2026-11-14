@@ -5037,8 +5037,8 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
                             bEvaluateWayPoints = 0;
                             Vector vDifference2;
                             vDifference2 = pCreature->m_vPosition - vLast;
-                            if (vDifference2.m_fY * vDifference2.m_fY +
-                                vDifference2.m_fX * vDifference2.m_fX <= 0.00001f)
+                            vDifference2.m_fZ = 0.0f;
+                            if (vDifference2 * vDifference2 <= 0.00001f)
                                 pCreature->SetAnimation(pCreature->GetLoopingAnimation(), 0, 0);
                         }
                     }
