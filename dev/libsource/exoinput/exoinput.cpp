@@ -547,9 +547,8 @@ unsigned char CExoInput::GetMouseMode()  // PC 0x0062B9F0 GOG 0x0062B8E0
 // PC 0x0062BA00 GOG 0x0062B8F0
 int CExoInput::EventExists(unsigned long nEvent)
 {
-    EXOINPUT_TRACE();
     if (m_pExoInputInternal->m_lstEvents.num > (int)nEvent &&
-        m_pExoInputInternal->m_lstEvents.element[nEvent] != NULL)
+        m_pExoInputInternal->m_lstEvents[nEvent] != NULL)
     {
         return TRUE;
     }

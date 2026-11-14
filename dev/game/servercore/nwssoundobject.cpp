@@ -10,8 +10,6 @@
 #include "nwcsoundobject.h"
 #include "nwssoundobject.h"
 
-static inline void NwssoundobjectTrace1();
-#define NWSSOUNDOBJECT_TRACE() NwssoundobjectTrace1()
 // PC 0x00570470 GOG 0x005705A0
 CSWSSoundObject::CSWSSoundObject(unsigned long oidObject)
     : CSWSObject(CGameObject::OBJECT_TYPE_SOUND, oidObject, 0), m_lstSounds(0)
@@ -43,7 +41,6 @@ CSWSSoundObject::~CSWSSoundObject()
 // PC 0x0056FC10 GOG 0x0056FD40
 void CSWSSoundObject::Save(CResGFF* pRes, CResStruct* pStruct)
 {
-    NWSSOUNDOBJECT_TRACE();
     CResList lstSounds;
     CResStruct stSound;
     Vector vPosition = m_vPosition;
@@ -86,7 +83,7 @@ void CSWSSoundObject::Save(CResGFF* pRes, CResStruct* pStruct)
     for (nSound = 0; nSound < m_lstSounds.num; nSound++)
     {
         pRes->AddListElement(&stSound, &lstSounds, 0);
-        pRes->WriteFieldCResRef(&stSound, m_lstSounds.element[nSound], "Sound");
+        pRes->WriteFieldCResRef(&stSound, m_lstSounds[nSound], "Sound");
     }
 }
 // PC 0x0056FE90 GOG 0x0056FFC0
@@ -104,7 +101,6 @@ void CSWSSoundObject::AddToArea(CSWSArea* pArea, int bLoadingGame)
 // PC 0x0056FF00 GOG 0x00570030
 void CSWSSoundObject::PackIntoMessage(CSWSMessage* pMessage)
 {
-    NWSSOUNDOBJECT_TRACE();
     Vector vPosition = m_vPosition;
     float fValue;
     unsigned short nSounds;
@@ -146,7 +142,7 @@ void CSWSSoundObject::PackIntoMessage(CSWSMessage* pMessage)
     pMessage->WriteWORD(nSounds, 16);
     for (nSound = 0; nSound < nSounds; nSound++)
     {
-        pMessage->WriteCResRef(m_lstSounds.element[nSound], 16);
+        pMessage->WriteCResRef(m_lstSounds[nSound], 16);
     }
 }
 // PC 0x004015A0 GOG 0x004015A0
@@ -479,8 +475,4 @@ CSWCSoundObject* CSWSSoundObject::GetClientSoundObject()
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
     unsigned long oidClient = pApp->ServerToClientObjectId(oidSelf);
     return g_pAppManager->m_pClientExoApp->GetSoundObjectByGameObjectID(oidClient);
-}
-
-static inline void NwssoundobjectTrace1()
-{
 }

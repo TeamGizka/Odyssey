@@ -1040,7 +1040,6 @@ void CSWCCreature::ClientServerSyncHandler_Position(const Vector& vPosition,
 // PC 0x0065EB40 GOG 0x0065E950
 void CSWCCreature::SaveCharGenCreature()
 {
-    NwccreatureTrace1();
     CExoLocString locString;
     CResGFF* pGFF = new CResGFF;
     CResStruct topStruct;
@@ -1273,7 +1272,7 @@ void CSWCCreature::SaveCharGenCreature()
     for (unsigned char nItem = 0; nItem < (unsigned char)GetStats()->m_lstInventoryRes.num; ++nItem)
     {
         pGFF->AddListElement(&itemStruct, pItemList, 0);
-        CResRef resItem = GetStats()->m_lstInventoryRes.element[nItem];
+        CResRef resItem = GetStats()->m_lstInventoryRes[nItem];
         pGFF->WriteFieldCResRef(&itemStruct, resItem, "InventoryRes");
     }
     delete pItemList;

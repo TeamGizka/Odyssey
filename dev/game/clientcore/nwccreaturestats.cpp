@@ -791,7 +791,6 @@ inline int CSWCCreatureStats::FeatAcquired(unsigned short nFeat)
 // PC 0x006FC190 GOG 0x006FBD80
 void CSWCCreatureStats::ClearFeats()
 {
-    NwccreaturestatsTrace1();
     while (m_lstFeats.num != 0)
     {
         m_lstFeats.DelIndex(m_lstFeats.num - 1);
@@ -802,7 +801,7 @@ void CSWCCreatureStats::ClearFeats()
     }
     while (m_lstFeatUses.num != 0)
     {
-        delete m_lstFeatUses.element[0];
+        delete m_lstFeatUses[0];
         m_lstFeatUses.DelIndex(0);
     }
 }
@@ -919,12 +918,11 @@ int CSWCCreatureStats::HasClassSkillFeat(unsigned short nSkill)
 // PC 0x006FC730 GOG 0x006FC320
 unsigned short CSWCCreatureStats::GetFeat(unsigned short nIndex)
 {
-    NwccreaturestatsTrace1();
     if (nIndex >= m_lstFeats.num)
     {
         return 0xFFFF;
     }
-    return m_lstFeats.element[nIndex];
+    return m_lstFeats[nIndex];
 }
 // PC 0x006FD6B0 GOG 0x006FD2A0
 void CSWCCreatureStats::SetFeatRemainingUses(unsigned short nFeat,

@@ -1760,7 +1760,6 @@ int CItemRepository::CalculateContentsWeight()
 // PC 0x0055F450 GOG 0x0055F5C0
 int CItemRepository::SetParentId(unsigned long oidParent)
 {
-    NWSITEM_TRACE();
     int nItems;
     int i;
     CServerExoApp* pServerExoApp;
@@ -1771,7 +1770,7 @@ int CItemRepository::SetParentId(unsigned long oidParent)
     for (i = 0; i < nItems; i++)
     {
         pServerExoApp = g_pAppManager->m_pServerExoApp;
-        pItem = pServerExoApp->GetItemByGameObjectID(m_lstItems.element[i]);
+        pItem = pServerExoApp->GetItemByGameObjectID(m_lstItems[i]);
         if (pItem != NULL)
         {
             pItem->SetPossessor(m_oidOwner, 0, 0, OBJECT_INVALID);

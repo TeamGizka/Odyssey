@@ -374,7 +374,6 @@ void CSWMiniGame::Control(float fTimeStep)
 // PC 0x006C60E0 GOG 0x006C5DF0
 void CSWMiniGame::Go()
 {
-    SWMINIGAME_TRACE();
     CSWMiniGameObjectArray* pArray =
         g_pAppManager->GetClientExoApp()->GetMGOArray();
     if (m_pPlayer != NULL)
@@ -387,7 +386,7 @@ void CSWMiniGame::Go()
     for (int i = m_lstEnemyIds.num - 1; i >= 0; --i)
     {
         CSWTrackFollower* pEnemy = (CSWTrackFollower*)pArray->GetMiniGameObject(
-            m_lstEnemyIds.element[i], 2);
+            m_lstEnemyIds[i], 2);
         if (pEnemy != NULL)
         {
             pEnemy->Go();
@@ -414,13 +413,12 @@ void CSWMiniGame::Go()
 // PC 0x006C61A0 GOG 0x006C5EB0
 int CSWMiniGame::GetEnemy(int nIndex)
 {
-    SWMINIGAME_TRACE();
     if (nIndex >= m_lstEnemyIds.num)
     {
         return 0;
     }
     return (int)g_pAppManager->GetClientExoApp()->GetMGOArray()->GetMiniGameObject(
-        m_lstEnemyIds.element[nIndex], 2);
+        m_lstEnemyIds[nIndex], 2);
 }
 // PC 0x006C61E0 GOG 0x006C5EF0
 CSWMiniEnemy* CSWMiniGame::RemoveEnemy(CSWMiniEnemy* pEnemy)
@@ -450,12 +448,11 @@ CSWMGObstacle* CSWMiniGame::RemoveObstacle(CSWMGObstacle* pObstacle)
 // PC 0x006C62B0 GOG 0x006C5FC0
 SWMGTrackInfo* CSWMiniGame::GetProtoTrack(int nIndex)
 {
-    SWMINIGAME_TRACE();
     if (nIndex >= m_lstTracks.num)
     {
         return 0;
     }
-    return m_lstTracks.element[nIndex];
+    return m_lstTracks[nIndex];
 }
 
 SWMGTrackInfo* CSWMiniGame::GetProtoTrack(const CResRef& cResRef)
@@ -474,13 +471,12 @@ SWMGTrackInfo* CSWMiniGame::GetProtoTrack(const CResRef& cResRef)
 // PC 0x006C62D0 GOG 0x006C5FE0
 CSWMGObstacle* CSWMiniGame::GetObstacle(int nIndex)
 {
-    SWMINIGAME_TRACE();
     if (nIndex >= m_lstObstacleIds.num)
     {
         return 0;
     }
     return (CSWMGObstacle*)g_pAppManager->GetClientExoApp()->GetMGOArray()->GetMiniGameObject(
-        m_lstObstacleIds.element[nIndex], SWMG_OBJECT_OBSTACLE);
+        m_lstObstacleIds[nIndex], SWMG_OBJECT_OBSTACLE);
 }
 // PC 0x006C6310 GOG 0x006C6020
 CAurCamera* CSWMiniGame::SetCamera(CAurCamera* pCamera)
