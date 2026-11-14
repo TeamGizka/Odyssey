@@ -1249,7 +1249,8 @@ int CSWMiniGame::HitCheckBullet(CAurObject* pBullet, CAurObject* pTarget,
             {
                 SWMGExplodeBullet* pEffect = new SWMGExplodeBullet;
                 pEffect->m_pObject = pBullet;
-                pEffect->m_qOrientation = pointto(DefaultHitInfo.m_vOutputNormal);
+                const Vector& vNormal = DefaultHitInfo.m_vOutputNormal;
+                pEffect->m_qOrientation = pointto(vNormal);
                 pEffect->m_qOrientation = Quaternion(Vector(1.0f, 0.0f, 0.0f),
                                                      1.5707963267948966f) *
                                           pEffect->m_qOrientation;
