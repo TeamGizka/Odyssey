@@ -3,6 +3,9 @@
 #include <string.h>
 #include "swminigame.h"
 #include "aurscene.h"
+#include "aurdraw.h"
+
+#define RANDOM_COMPONENT() ((float)(rand() - RAND_MAX / 2))
 
 #include "swminigame.h"
 // PC 0x006C8D50 GOG 0x006C8A50
@@ -149,14 +152,13 @@ void FireGunCallback(CAurObject* pObject, char* sEvent, void* pData)
                 if (fSpread > 0.0f)
                 {
                     Vector vAim = vTarget;
-                    Vector vRandom((float)(rand() - RAND_MAX / 2),
-                                   (float)(rand() - RAND_MAX / 2),
-                                   (float)(rand() - RAND_MAX / 2));
+                    Vector vRandom(RANDOM_COMPONENT(), RANDOM_COMPONENT(), RANDOM_COMPONENT());
                     vRandom.Normalize();
                     vRandom *= pTrack->GetSpeed() * fSpread;
                     vTarget = normalize(vAim - vPosition);
                     vTarget = (vAim + vRandom) - vTarget * (vTarget * vRandom);
                 }
+                AurDrawLine(vPosition, vPosition + vTarget, 0);
                 vTarget -= vPosition;
                 qOrientation = pointto(vTarget) *
                     Quaternion(Vector(1.0f, 0.0f, 0.0f), HALF_PI);
