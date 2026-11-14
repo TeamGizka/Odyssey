@@ -639,8 +639,8 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
         GLRender_SetPolygonRenderMode(FACING_FRONT_AND_BACK,
                       lightsaberwireframe ? FILL_LINE : FILL_SOLID);
 
-        Vector* pPositions = pNode->m_pVertexPositions;
         float* pTextureCoords = pNode->m_pTextureCoordinates;
+        Vector* pPositions = pNode->m_pVertexPositions;
         Vector* pNormals = pNode->m_pVertexNormals;
         int i;
         if (renderpieces != 0 && m_nSegments < 2)
@@ -719,8 +719,6 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
             ;
         for (i = 0; i < MdlNodeLightsaber::NUM_SEGMENT_VERTS; ++i)
             ;
-        for (i = 0; i < MdlNodeLightsaber::NUM_SEGMENT_VERTS; ++i)
-            ;
         float fLength = magnitude(avTrail[0]);
         float fTrailLength;
         short nCurrent = m_nNextSegment - 1;
@@ -733,7 +731,6 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
         Quaternion qPrevious;
         Quaternion qOlder;
         Quaternion qNewer;
-        Quaternion qNext;
         Vector vPrevious;
         int nSegment;
         Vector vCurrent = m_avSegmentPosition[nCurrent];
@@ -821,6 +818,7 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
             nPrevious = m_nNextSegment - 2;
             if (nPrevious < 0)
                 nPrevious += MdlNodeLightsaber::NUM_BACK_SEGMENTS;
+            Quaternion qNext;
             Vector vNewer;
             vNewer = m_avSegmentPosition[nCurrent];
             qNewer = m_aqSegmentOrientation[nCurrent];
