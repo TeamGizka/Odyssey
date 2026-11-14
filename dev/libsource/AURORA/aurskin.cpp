@@ -1393,9 +1393,9 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 cSkinBumpyVPDeclaration);
             if (bHologram)
             {
-                static VertexProgram* pHoloSkinBumpyVP = new VertexProgram(
+                static VertexProgram* pHoloNewSkinBumpyVP = new VertexProgram(
                     cHoloSkinVPARB, cSkinBumpyVPDeclaration);
-                pHoloSkinBumpyVP->Enable(pSkin, false);
+                pHoloNewSkinBumpyVP->Enable(pSkin, false);
                 if (g_ForceSight)
                 {
                     GLRender_EnablePixelShaders(MODEL_SHADER_HOLO_DESAT, 0, 0, 0, 0);
@@ -1537,9 +1537,9 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 szSkinBumpyWSVPARB, szNormalmapVPARBDeclaration);
             if (bHologram)
             {
-                static VertexProgram* pHoloSkinNormalVP = new VertexProgram(
+                static VertexProgram* pHoloSkinBumpyWSVP = new VertexProgram(
                     cHoloSkinVPARB, szNormalmapVPARBDeclaration);
-                pHoloSkinNormalVP->Enable(pSkin, false);
+                pHoloSkinBumpyWSVP->Enable(pSkin, false);
                 if (g_ForceSight)
                 {
                     GLRender_EnablePixelShaders(MODEL_SHADER_HOLO_DESAT, 0, 0, 0, 0);
@@ -1653,9 +1653,9 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                 cSkinBumpyVPDeclaration);
             if (bHologram)
             {
-                static VertexProgram* pHoloSkinBumpyOldVP = new VertexProgram(
+                static VertexProgram* pHoloSkinBumpyVP = new VertexProgram(
                     cHoloSkinVPARB, cSkinBumpyVPDeclaration);
-                pHoloSkinBumpyOldVP->Enable(pSkin, false);
+                pHoloSkinBumpyVP->Enable(pSkin, false);
                 if (g_ForceSight)
                 {
                     GLRender_EnablePixelShaders(MODEL_SHADER_HOLO_DESAT, 0, 0, 0, 0);
@@ -1765,14 +1765,14 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
                     pEnvMap = pSkin->m_pMaterial->m_pEnvMap;
                 if (bHologram)
                 {
-                    static VertexProgram* pHoloSkinCubeMapVP = new VertexProgram(
+                    static VertexProgram* pHoloCubeMapVP = new VertexProgram(
                         cHoloSkinVPARB, cSkinCubeMapVPDeclaration);
-                    static VertexProgram* pHoloSkinSphereMapVP = new VertexProgram(
+                    static VertexProgram* pHoloSphereMapVP = new VertexProgram(
                         cHoloSkinVPARB, cSkinSphereMapVPDeclaration);
                     if (pEnvMap->IsCubeMap())
-                        pHoloSkinCubeMapVP->Enable(pSkin, false);
+                        pHoloCubeMapVP->Enable(pSkin, false);
                     else
-                        pHoloSkinSphereMapVP->Enable(pSkin, false);
+                        pHoloSphereMapVP->Enable(pSkin, false);
                     if (g_ForceSight)
                     {
                         GLRender_EnablePixelShaders(MODEL_SHADER_HOLO_DESAT, 0, 0, 0, 0);
