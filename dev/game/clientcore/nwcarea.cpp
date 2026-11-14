@@ -614,7 +614,6 @@ void CSWCArea::UpdateSoundObjectsTimeOfDay()
 // PC 0x00651BB0 GOG 0x00651A60
 void CSWCArea::RemovePlaceableObjectLight(unsigned long oidPlaceable, int bFlag)
 {
-    NwcareaTrace1();
     int nCount = m_lstPlaceableLights.num;
     for (int i = 0; i < nCount; i++)
     {
@@ -630,14 +629,7 @@ void CSWCArea::RemovePlaceableObjectLight(unsigned long oidPlaceable, int bFlag)
                 }
             }
             delete m_lstPlaceableLights[i];
-            int nRemaining = m_lstPlaceableLights.num - 1;
-            int j = i;
-            m_lstPlaceableLights.num = nRemaining;
-            for (; j < m_lstPlaceableLights.num; j++)
-            {
-                m_lstPlaceableLights[j] =
-                    m_lstPlaceableLights[j + 1];
-            }
+            m_lstPlaceableLights.DelIndex(i);
             return;
         }
     }
