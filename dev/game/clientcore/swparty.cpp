@@ -378,7 +378,8 @@ float CSWPartyFollowDataArray::PointOnLineDistanceFromLeader(int nMember,
     vDelta = m_pParty->GetMemberData(nMember)->m_vFollowPosition -
                     pLeader->m_vPosition;
 #else
-    vDelta = m_pParty->m_aPartyMemberData[nMember].m_vFollowPosition -
+    CSWParty* pParty = m_pParty;
+    vDelta = pParty->m_aPartyMemberData[nMember].m_vFollowPosition -
                     pLeader->m_vPosition;
 #endif
     float fDistanceSquared = vDelta.m_fZ * vDelta.m_fZ + vDelta.m_fX * vDelta.m_fX +
@@ -1466,19 +1467,17 @@ void CSWParty::Update(float fTime)
     CServerExoApp* pServerExoApp = g_pAppManager->m_pServerExoApp;
     if (pLeader != NULL && pServerExoApp != NULL && nDialogState == 0)
     {
-        CSWSCreature* pServerLeader = pServerExoApp->GetCreatureByGameObjectID(
-            pServerExoApp->ClientToServerObjectId(pLeader->m_nId));
+        unsigned long oidServerLeader = pServerExoApp->ClientToServerObjectId(pLeader->GetId());
+        CSWSCreature* pServerLeader = pServerExoApp->GetCreatureByGameObjectID(oidServerLeader);
         int bFury = 0;
         int bForceSight = 0;
         for (int nEffect = 0; nEffect < pServerLeader->m_lstEffects.num; ++nEffect)
         {
-            CGameEffect* pEffect = pServerLeader->m_lstEffects.element[nEffect];
-            int nType = pEffect->GetEffectType();
-            if (nType == CSWSEffectListHandler::EFFECT_FURY)
+            if (pServerLeader->m_lstEffects.element[nEffect]->GetEffectType() == CSWSEffectListHandler::EFFECT_FURY)
             {
                 bFury = 1;
             }
-            else if (pEffect->GetEffectType() ==
+            else if (pServerLeader->m_lstEffects.element[nEffect]->GetEffectType() ==
                      CSWSEffectListHandler::EFFECT_FORCESIGHT)
             {
                 bForceSight = 1;
@@ -1499,8 +1498,8 @@ void CSWParty::Update(float fTime)
             }
             else
             {
-                g_pAppManager->m_pClientExoApp->EnableVideoEffect(
-                    pServerLeader->m_pStats->m_n124);
+                int nFuryEffect = pServerLeader->GetStats()->m_n124;
+                g_pAppManager->m_pClientExoApp->EnableVideoEffect(nFuryEffect);
             }
         }
         else if (g_pAppManager->GetClientExoApp()->GetVideoEffectType() == VIDEO_EFFECT_FORCESIGHT ||
