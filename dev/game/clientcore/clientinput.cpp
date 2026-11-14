@@ -287,8 +287,6 @@ int CClientExoAppInternal::ActionIconToMouseCursor(int nAction, int nArg2)
 // PC 0x00670050 GOG 0x0066FDF0
 void CClientExoAppInternal::ReadPlayBackInputEvents()
 {
-    CLIENTINPUT_TRACE();
-
     char szBuffer[PLAYBACK_RECORD_LENGTH];
     int nStartTime;
     int nTime;
@@ -366,7 +364,7 @@ void CClientExoAppInternal::ReadPlayBackInputEvents()
                 pEvent->nInputEvent = nInputEvent;
                 pEvent->nInputValue = nInputValue;
             }
-            m_lstPlayBackEvents.m_pInternal->AddTail(pEvent);
+            m_lstPlayBackEvents.AddTail(pEvent);
         }
         if (cType == CPlayBackEventNode::MESSAGE)
         {
@@ -376,7 +374,7 @@ void CClientExoAppInternal::ReadPlayBackInputEvents()
                 CPlayBackEventNode* pEvent = new CPlayBackEventNode;
                 pEvent->nTime = nTime - nStartTime;
                 pEvent->cType = CPlayBackEventNode::CONNECTION;
-                m_lstPlayBackEvents.m_pInternal->AddTail(pEvent);
+                m_lstPlayBackEvents.AddTail(pEvent);
             }
             nPosition = 0;
             nSpaces = 0;
@@ -416,7 +414,7 @@ void CClientExoAppInternal::ReadPlayBackInputEvents()
             pEvent->bGuaranteed = bGuaranteed;
             pEvent->nPlayerId = nPlayerId;
             pEvent->pMessage = pMessage;
-            m_lstPlayBackEvents.m_pInternal->AddTail(pEvent);
+            m_lstPlayBackEvents.AddTail(pEvent);
         }
         if (cType == CPlayBackEventNode::CAMERA)
         {
@@ -439,7 +437,7 @@ void CClientExoAppInternal::ReadPlayBackInputEvents()
             pEvent->fX = fX;
             pEvent->fY = fY;
             pEvent->fZ = fZ;
-            m_lstPlayBackEvents.m_pInternal->AddTail(pEvent);
+            m_lstPlayBackEvents.AddTail(pEvent);
         }
         if (cType == CPlayBackEventNode::POSITION)
         {
@@ -463,7 +461,7 @@ void CClientExoAppInternal::ReadPlayBackInputEvents()
             pEvent->fY = fY;
             pEvent->fZ = fZ;
             pEvent->oidObject = oidObject;
-            m_lstPlayBackEvents.m_pInternal->AddTail(pEvent);
+            m_lstPlayBackEvents.AddTail(pEvent);
         }
     }
 }

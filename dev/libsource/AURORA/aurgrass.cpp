@@ -40,13 +40,12 @@ void CAurTriangleBin::FinishGeometry()
 // PC 0x004D2F40 GOG 0x004D3080
 char AurGrassMaterialInUse(int nMaterial)
 {
-    AurgrassTrace1();
     if (nMaterial > g_GrassInfo.m_nCount - 1)
     {
         return 0;
     }
 
-    return g_GrassInfo.m_pList[nMaterial].m_bInUse;
+    return g_GrassInfo[nMaterial].m_bInUse;
 }
 // PC 0x004D2F70 GOG 0x004D30B0
 CAurGrassInfo::CAurGrassInfo()
@@ -358,14 +357,7 @@ CAurTriangleListElem::CAurTriangleListElem(List<float> lstVertices,
 // PC 0x004D3B50 GOG 0x004D3C90
 CAurTriangleListElem::~CAurTriangleListElem()
 {
-    AURGRASS_TRACE();
-#ifdef _XBOX
     m_lstVertices.SetSize(0);
-#else
-    if (m_lstVertices.m_pList != 0) {
-        delete[] m_lstVertices.m_pList; m_lstVertices.m_pList = 0; }
-    m_lstVertices.m_nAllocated = 0; m_lstVertices.m_nCount = 0;
-#endif
     m_pFace = 0;
     m_pTriMesh = 0;
     m_nTriangle = 0;
