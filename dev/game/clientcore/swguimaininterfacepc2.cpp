@@ -4678,6 +4678,7 @@ void CSWGuiMainInterface::Draw(float fElapsed)
         {
             sText = g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_USE_ITEM_SELECT_MEMBER);
             sText = sText + "\n" + g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_USE_ITEM_CANCEL);
+            m_btnCancelPartyItemSelect.m_cText.m_cParams.SetText(sText);
         }
         else
         {
@@ -4695,15 +4696,16 @@ void CSWGuiMainInterface::Draw(float fElapsed)
                 sText = g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_USE_ITEM_ON);
                 sText = sText + " " + pCharacter->GetName();
                 sText = sText + "\n" + g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_USE_ITEM_CANCEL);
+                m_btnCancelPartyItemSelect.m_cText.m_cParams.SetText(sText);
             }
             else
             {
                 sText = g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_CANNOT_USE_ITEM_ON);
                 sText = sText + " " + pCharacter->GetName();
                 sText = sText + "\n" + g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_USE_ITEM_CANCEL);
+                m_btnCancelPartyItemSelect.m_cText.m_cParams.SetText(sText);
             }
         }
-        m_btnCancelPartyItemSelect.m_cText.m_cParams.SetText(sText);
         m_btnCancelPartyItemSelect.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
         CSWGuiButton* pCancel = &m_btnCancelPartyItemSelect;
         pCancel->SetEnabled(1);
