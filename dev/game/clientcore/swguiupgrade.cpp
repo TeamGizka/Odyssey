@@ -4375,8 +4375,8 @@ void CSWGuiUpgrade::OnSlotSelected(CSWGuiControl* pControl)
                             (m_apItemEntries[nSlot] == 0 || i != m_anUpgradeProperties[nSlot]))
                         {
                             CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidItem);
-                            int nUpgradeLevel = m_pSelectedItem->m_nUpgradeLevel;
-                            if (pItem->m_nUpgradeLevel <= nUpgradeLevel)
+                            int nUpgradeLevel = pItem->m_nUpgradeLevel;
+                            if (nUpgradeLevel <= m_pSelectedItem->m_nUpgradeLevel)
                                 aControls.Add(CreateItemEntry(oidItem, i, 0));
                             else
                                 aControls.Add(CreateItemEntry(oidItem, i, 1));
@@ -4387,8 +4387,8 @@ void CSWGuiUpgrade::OnSlotSelected(CSWGuiControl* pControl)
             m_lbItems.AddControls(aControls, 1, 0, 0);
             ShowItems(1);
             SetActiveControl(&m_lbItems, 0);
-            m_bItemListShown = 1;
             m_pItemListControl = pControl;
+            m_bItemListShown = 1;
         }
         else
         {
@@ -4418,11 +4418,11 @@ void CSWGuiUpgrade::OnSlotSelected(CSWGuiControl* pControl)
             {
                 unsigned long oidItem = pRepository->FindItemWithTag(m_asUpgradeTemplates[nSlot]);
                 CSWSItem* pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
-                unsigned long nUpgradeLevel = m_pSelectedItem->m_nUpgradeLevel;
-                CSWSCreature* pCreature = 0;
-                unsigned long nEquipSlot = 0;
+                const unsigned long& nUpgradeLevel = m_pSelectedItem->m_nUpgradeLevel;
                 if (pItem == 0 || (unsigned long)pItem->m_nUpgradeLevel >= nUpgradeLevel)
                     return;
+                CSWSCreature* pCreature = 0;
+                unsigned long nEquipSlot = 0;
                 if (m_pItemSelect->GetUpgradeItemEquipped())
                 {
                     nEquipSlot = m_pItemSelect->GetUpgradeItemProperty();
@@ -4433,7 +4433,7 @@ void CSWGuiUpgrade::OnSlotSelected(CSWGuiControl* pControl)
                 if (pCreature != 0 && !pCreature->CanEquipItem(m_pSelectedItem, &nEquipSlot, 0, 0, 0))
                 {
                     CSWGuiMessageBox* pMessageBox = g_pAppManager->GetClientExoApp()
-                        ->GetInGameGui()->m_pMessageBox;
+                        ->GetInGameGui()->GetMessageBox();
                     pMessageBox->SetAllowCancel(1);
                     pMessageBox->SetCallback(this, (CSWGuiHandler)&CSWGuiUpgrade::VerifyUpgrade,
                                              (CSWGuiControl*)pItem);
