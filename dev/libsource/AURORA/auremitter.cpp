@@ -22,11 +22,6 @@ inline void AurEmitterCopyParticles(Particle* pParticle, ChunkyParticle* pChunky
 #include "aurparse.h"
 #include "aurdraw.h"
 
-static inline void AuremitterTrace4();
-static inline void AuremitterTrace3();
-static inline void AuremitterTrace2();
-static inline void AuremitterTrace1();
-
 #pragma inline_recursion(on)
 #pragma inline_depth(10)
 
@@ -3493,7 +3488,6 @@ extern unsigned int ATI_FRAGMENT_SHADER_BIT;
 // PC 0x004C87B0 GOG 0x004C88C0
 void PartEmitter::RenderFunc()
 {
-    AuremitterTrace4();
     if (m_pAurObject != 0)
     {
         if (m_pAurObject->m_pModel != 0 &&
@@ -3810,19 +3804,14 @@ void PartEmitter::RenderFunc()
 
             if (AUREMITTER_DEBUG_CONTROL_POINTS)
             {
-                Vector vSource = pLightning->m_lstReserved21C[0];
-                Vector vTarget = m_pTarget->GetPosition();
+                SafePointer<CAurObject> pTarget = m_pTarget;
+                Vector vTarget = pTarget->GetPosition();
                 glBegin(GL_POINTS);
                 glVertex3f(vTarget.m_fX, vTarget.m_fY, vTarget.m_fZ);
-                glVertex3f(vSource.m_fX, vSource.m_fY, vSource.m_fZ);
                 for (i = 0; i < pLightning->m_lstReserved21C.m_nCount; i++)
                 {
                     Vector vPoint = pLightning->m_lstReserved21C[i];
-                    Vector vTangent = pLightning->m_lstReserved240[i];
-                    Vector vHandle0 = vPoint + vTangent;
-                    glVertex3f(vHandle0.m_fX, vHandle0.m_fY, vHandle0.m_fZ);
-                    Vector vHandle1 = vPoint - vTangent;
-                    glVertex3f(vHandle1.m_fX, vHandle1.m_fY, vHandle1.m_fZ);
+                    glVertex3f(vPoint.m_fX, vPoint.m_fY, vPoint.m_fZ);
                 }
                 glEnd();
             }
@@ -3978,25 +3967,6 @@ unsigned char MdlNodeEmitter::IsInheritingVelocity()
 #else
     return (unsigned char)m_EmitterFlags.m_bInheritingVelocity;
 #endif
-}
-
-static inline void AuremitterTrace4()
-{
-    AuremitterTrace3();
-}
-
-static inline void AuremitterTrace3()
-{
-    AuremitterTrace2();
-}
-
-static inline void AuremitterTrace2()
-{
-    AuremitterTrace1();
-}
-
-static inline void AuremitterTrace1()
-{
 }
 
 #ifdef _XBOX
