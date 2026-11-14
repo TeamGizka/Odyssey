@@ -505,12 +505,11 @@ int CAuroraInterface::GetExactVideoMode(unsigned long nWidth,
 // PC 0x00780B70 GOG 0x00780940
 CAuroraInterface::~CAuroraInterface()
 {
-    AURORAINTERFACE_TRACE();
     CAuroraModel* pModel;
 
-    while (m_lstRequestedModel.m_pInternal->m_pHead != NULL)
+    while (m_lstRequestedModel.GetHeadPos() != NULL)
     {
-        pModel = (CAuroraModel*)m_lstRequestedModel.m_pInternal->RemoveHead();
+        pModel = m_lstRequestedModel.RemoveHead();
         if (pModel != NULL)
         {
             pModel->Unload();
@@ -747,7 +746,6 @@ int CAuroraInterface::SetTexturePack(unsigned char nPack,
 // PC 0x00781100 GOG 0x00780ED0
 void CAuroraInterface::RequestModel(char* szName)
 {
-    AURORAINTERFACE_TRACE();
     int bNew;
     CExoLinkedListNode* pPosition;
     CAuroraModel* pModel;
@@ -763,11 +761,11 @@ void CAuroraInterface::RequestModel(char* szName)
         {
             if (pPosition != NULL)
             {
-                m_lstRequestedModel.m_pInternal->AddBefore(pModel, pPosition);
+                m_lstRequestedModel.AddBefore(pModel, pPosition);
             }
             else
             {
-                m_lstRequestedModel.m_pInternal->AddTail(pModel);
+                m_lstRequestedModel.AddTail(pModel);
             }
         }
     }

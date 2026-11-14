@@ -747,46 +747,11 @@ inline char CSWCCreatureStats::GetBaseINTMod()
 // PC 0x006FC120 GOG 0x006FBD10
 inline int CSWCCreatureStats::FeatAcquired(unsigned short nFeat)
 {
-    NwccreaturestatsTrace1();
-    int nLeft = m_lstFeats.num;
-    int nCount = 0;
-    if (nLeft > 0)
+    if (m_lstFeats.Contains(nFeat) || m_lstBonusFeats.Contains(nFeat))
     {
-        unsigned short* pFeat = m_lstFeats.element;
-        do
-        {
-            if (*pFeat == nFeat)
-            {
-                nCount++;
-            }
-            pFeat++;
-            nLeft--;
-        } while (nLeft != 0);
+        return 1;
     }
-    if (nCount == 0)
-    {
-        nLeft = m_lstBonusFeats.num;
-        int nBonusCount = 0;
-        if (nLeft > 0)
-        {
-            unsigned short* pFeat = m_lstBonusFeats.element;
-            do
-            {
-                if (*pFeat == nFeat)
-                {
-                    nBonusCount++;
-                }
-                pFeat++;
-                nLeft--;
-            } while (nLeft != 0);
-        }
-        if (nBonusCount != 0)
-        {
-            return 1;
-        }
-        return 0;
-    }
-    return 1;
+    return 0;
 }
 // PC 0x006FC190 GOG 0x006FBD80
 void CSWCCreatureStats::ClearFeats()
@@ -2367,21 +2332,12 @@ int CSWCCreatureStats::HasSpell(unsigned char nLevel, unsigned long nSpell)
 // PC 0x006FD540 GOG 0x006FD130
 int CSWCCreatureStats::HasFeat(unsigned short nFeat)
 {
-    NwccreaturestatsTrace1();
-    int nCount = m_lstFeats.num;
-    int nIndex = 0;
-    if (nCount > 0)
+    for (int i = 0; i < m_lstFeats.num; i++)
     {
-        unsigned short* pFeat = m_lstFeats.element;
-        do
+        if (m_lstFeats[i] == nFeat)
         {
-            if (*pFeat == nFeat)
-            {
-                return 1;
-            }
-            nIndex++;
-            pFeat++;
-        } while (nIndex < nCount);
+            return 1;
+        }
     }
     return 0;
 }
