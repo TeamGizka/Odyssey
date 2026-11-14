@@ -2338,10 +2338,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 
         if (m_pModule != NULL && m_pModule->m_pInfo != NULL &&
             m_pModule->m_pInfo->m_pMiniGame != NULL)
         {
-            if (m_pModule->m_pInfo->m_pMiniGame == (CSWMiniGame*)m_pModule->m_pInfo)
-                m_pModule->m_pInfo->m_pMiniGame->Control(fTimeStep);
-            else
-                m_pModule->m_pInfo->m_pMiniGame->Control(fTimeStep);
+            m_pModule->m_pInfo->m_pMiniGame->Control(fTimeStep);
         }
     }
     else if (m_pModule != NULL && m_pModule->m_pInfo != NULL &&
