@@ -196,6 +196,22 @@ int enablegobrender = 1;
 
 static float testpath[12] = {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
                              1.0f, 2.0f, 0.0f, 2.0f, 0.0f, 0.0f};
+extern char szcStandardDirtyVPARB[];
+extern char szcStandardDirtyLMVPARB[];
+extern char szcStandardDirtyEMVPARB[];
+extern char szcStandardDirtyEMLMVPARB[];
+extern char szcStandardDirtyLSVPARB[];
+extern char szcStandardDirtyLSLMVPARB[];
+extern char szcStandardDirtyLSEMVPARB[];
+extern char szszcStandardDirtyLSEMLMVPARB[];
+extern char cStandardDirtyVP[];
+extern char cStandardDirtyLMVP[];
+extern char cStandardDirtyEMVP[];
+extern char cStandardDirtyEMLMVP[];
+extern char cStandardDirtyLSVP[];
+extern char cStandardDirtyLSLMVP[];
+extern char cStandardDirtyLSEMVP[];
+extern char cStandardDirtyLSEMLMVP[];
 extern int rint(float fValue);
 extern int stenciloff;
 extern int enablelighting;
@@ -609,12 +625,6 @@ void PartAABB::Draw(bool bRenderChildren)
     }
 }
 
-#ifdef _XBOX
-static inline void SetVertexData4f(Aurora::AuroraStreamMode nStream, float fX, float fY, float fZ, float fW);
-#else
-static void SetVertexData4f(Aurora::AuroraStreamMode nStream,
-                            float fX, float fY, float fZ, float fW);
-#endif
 void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
 {
     if (lightsaberrender != 0)
@@ -650,12 +660,12 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
             for (i = 0; i < nHalf; ++i)
             {
                 GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pTextureCoords[2 * i], pTextureCoords[2 * i + 1]);
-                SetVertexData4f(Aurora::STREAM_NORMAL, pNormals[i].m_fX, pNormals[i].m_fY, pNormals[i].m_fZ, 1.0f);
-                SetVertexData4f(Aurora::STREAM_POSITION, pPositions[i].m_fX, pPositions[i].m_fY, pPositions[i].m_fZ, 1.0f);
+                GLRender::SetVertexData4f(Aurora::STREAM_NORMAL, pNormals[i].m_fX, pNormals[i].m_fY, pNormals[i].m_fZ, 1.0f);
+                GLRender::SetVertexData4f(Aurora::STREAM_POSITION, pPositions[i].m_fX, pPositions[i].m_fY, pPositions[i].m_fZ, 1.0f);
                 GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pTextureCoords[2 * (i + nHalf)],
                              pTextureCoords[2 * (i + nHalf) + 1]);
-                SetVertexData4f(Aurora::STREAM_NORMAL, pNormals[i + nHalf].m_fX, pNormals[i + nHalf].m_fY, pNormals[i + nHalf].m_fZ, 1.0f);
-                SetVertexData4f(Aurora::STREAM_POSITION, pPositions[i + nHalf].m_fX, pPositions[i + nHalf].m_fY, pPositions[i + nHalf].m_fZ, 1.0f);
+                GLRender::SetVertexData4f(Aurora::STREAM_NORMAL, pNormals[i + nHalf].m_fX, pNormals[i + nHalf].m_fY, pNormals[i + nHalf].m_fZ, 1.0f);
+                GLRender::SetVertexData4f(Aurora::STREAM_POSITION, pPositions[i + nHalf].m_fX, pPositions[i + nHalf].m_fY, pPositions[i + nHalf].m_fZ, 1.0f);
             }
             GLRender_EndImmediatePrimitive();
             GLRender_BeginImmediatePrimitive(Aurora::PRIMITIVE_QUAD_STRIP);
@@ -669,11 +679,11 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
             {
                 GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pTextureCoords[2 * (i + nHalf)],
                              pTextureCoords[2 * (i + nHalf) + 1]);
-                SetVertexData4f(Aurora::STREAM_NORMAL, pNormals[i + nHalf].m_fX, pNormals[i + nHalf].m_fY, pNormals[i + nHalf].m_fZ, 1.0f);
-                SetVertexData4f(Aurora::STREAM_POSITION, pPositions[i + nHalf].m_fX, pPositions[i + nHalf].m_fY, pPositions[i + nHalf].m_fZ, 1.0f);
+                GLRender::SetVertexData4f(Aurora::STREAM_NORMAL, pNormals[i + nHalf].m_fX, pNormals[i + nHalf].m_fY, pNormals[i + nHalf].m_fZ, 1.0f);
+                GLRender::SetVertexData4f(Aurora::STREAM_POSITION, pPositions[i + nHalf].m_fX, pPositions[i + nHalf].m_fY, pPositions[i + nHalf].m_fZ, 1.0f);
                 GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pTextureCoords[2 * i], pTextureCoords[2 * i + 1]);
-                SetVertexData4f(Aurora::STREAM_NORMAL, pNormals[i].m_fX, pNormals[i].m_fY, pNormals[i].m_fZ, 1.0f);
-                SetVertexData4f(Aurora::STREAM_POSITION, pPositions[i].m_fX, pPositions[i].m_fY, pPositions[i].m_fZ, 1.0f);
+                GLRender::SetVertexData4f(Aurora::STREAM_NORMAL, pNormals[i].m_fX, pNormals[i].m_fY, pNormals[i].m_fZ, 1.0f);
+                GLRender::SetVertexData4f(Aurora::STREAM_POSITION, pPositions[i].m_fX, pPositions[i].m_fY, pPositions[i].m_fZ, 1.0f);
             }
             GLRender_EndImmediatePrimitive();
             GLRender_SetPolygonRenderMode(FACING_FRONT_AND_BACK,
@@ -736,14 +746,14 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
                         vVertex = Vector(pPositions[nEnd + i].m_fX, pPositions[nEnd + i].m_fY, pPositions[nEnd + i].m_fZ);
                         vVertex = -qWorldOrientation *
                             (vCurrent + qCurrent * vVertex - vWorldPosition);
-                        SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
+                        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
                         avTrail[i] = vVertex;
                         GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pTextureCoords[2 * (nEnd + i)],
                                      pTextureCoords[2 * (nEnd + i) + 1]);
                         vVertex = Vector(pPositions[nEnd + i].m_fX, pPositions[nEnd + i].m_fY, pPositions[nEnd + i].m_fZ);
                         vVertex = -qWorldOrientation *
                             (vPrevious + qPrevious * vVertex - vWorldPosition);
-                        SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
+                        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
                         avTrail[i] = avTrail[i] - vVertex;
                     }
                     GLRender_EndImmediatePrimitive();
@@ -774,13 +784,13 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
             vVertex = Vector(pPositions[nEnd + i].m_fX, pPositions[nEnd + i].m_fY, pPositions[nEnd + i].m_fZ);
             vVertex = avTrail[i] + -qWorldOrientation *
                 (vCurrent + qCurrent * vVertex - vWorldPosition);
-            SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
+            GLRender::SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
             GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pTextureCoords[2 * (nEnd + i)],
                          pTextureCoords[2 * (nEnd + i) + 1]);
             vVertex = Vector(pPositions[nEnd + i].m_fX, pPositions[nEnd + i].m_fY, pPositions[nEnd + i].m_fZ);
             vVertex = -qWorldOrientation *
                 (vCurrent + qCurrent * vVertex - vWorldPosition);
-            SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
+            GLRender::SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
         }
         GLRender_EndImmediatePrimitive();
 
@@ -846,13 +856,13 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
                         vVertex = Vector(pPositions[i].m_fX, pPositions[i].m_fY, pPositions[i].m_fZ);
                         vVertex = -qWorldOrientation *
                             (vPrevious + qPrevious * vVertex - vWorldPosition);
-                        SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
+                        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
                         avTrail[i] = vVertex;
                         GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pTextureCoords[2 * i], pTextureCoords[2 * i + 1]);
                         vVertex = Vector(pPositions[i].m_fX, pPositions[i].m_fY, pPositions[i].m_fZ);
                         vVertex = -qWorldOrientation *
                             (vCurrent + qCurrent * vVertex - vWorldPosition);
-                        SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
+                        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
                         avTrail[i] = avTrail[i] - vVertex;
                     }
                     GLRender_EndImmediatePrimitive();
@@ -882,13 +892,13 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
                 vVertex = Vector(pPositions[i].m_fX, pPositions[i].m_fY, pPositions[i].m_fZ);
                 vVertex = -qWorldOrientation *
                     (vCurrent + qCurrent * vVertex - vWorldPosition);
-                SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
+                GLRender::SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
                 GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pTextureCoords[2 * (nHalf + i)],
                              pTextureCoords[2 * (nHalf + i) + 1]);
                 vVertex = Vector(pPositions[i].m_fX, pPositions[i].m_fY, pPositions[i].m_fZ);
                 vVertex = avTrail[i] + -qWorldOrientation *
                     (vCurrent + qCurrent * vVertex - vWorldPosition);
-                SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
+                GLRender::SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
             }
             GLRender_EndImmediatePrimitive();
         }
@@ -903,29 +913,6 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
     }
 }
 
-static void SetVertexData4f(Aurora::AuroraStreamMode nStream,
-                            float fX, float fY, float fZ, float fW)
-{
-#ifdef _XBOX
-    GLRender::SetVertexData4f(nStream, fX, fY, fZ, fW);
-#else
-    switch (nStream)
-    {
-    case Aurora::STREAM_POSITION:
-        glVertex4f(fX, fY, fZ, fW);
-        break;
-    case Aurora::STREAM_TEXCOORD:
-        glTexCoord3f(fX, fY, fZ);
-        break;
-    case Aurora::STREAM_COLOR:
-        GLRender_SetColor4f(fX, fY, fZ, fW);
-        break;
-    case Aurora::STREAM_NORMAL:
-        glNormal3f(fX, fY, fZ);
-        break;
-    }
-#endif
-}
 // PC 0x0048E200 GOG 0x0048E2D0
 void PartLight::Mat()
 {

@@ -22,31 +22,9 @@ static inline void AurguiTrace1();
 
 #ifdef _XBOX
 
-#define SetVertexData4f GLRender::SetVertexData4f
-
 inline void AurGUIColor(unsigned int nColor)
 {
     g_pD3DDevice->SetVertexDataColor(D3DVSDE_DIFFUSE, nColor);
-}
-#else
-static void SetVertexData4f(Aurora::AuroraStreamMode nStream,
-                            float fX, float fY, float fZ, float fW)
-{
-    switch (nStream)
-    {
-    case Aurora::STREAM_POSITION:
-        glVertex4f(fX, fY, fZ, fW);
-        break;
-    case Aurora::STREAM_TEXCOORD:
-        glTexCoord3f(fX, fY, fZ);
-        break;
-    case Aurora::STREAM_COLOR:
-        glColor4f(fX, fY, fZ, fW);
-        break;
-    case Aurora::STREAM_NORMAL:
-        glNormal3f(fX, fY, fZ);
-        break;
-    }
 }
 #endif
 
@@ -381,16 +359,16 @@ void CAurGUIStringInternal::Draw(float fAlpha)
                 AurGUIColor(nColor);
             GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pInfo->m_lstUpperLeft[*pChar].m_fX - 0.0001f,
                          pInfo->m_lstUpperLeft[*pChar].m_fY - 0.0001f);
-            SetVertexData4f(Aurora::STREAM_POSITION, fLeft, fTopVertex, 0.0f, 1.0f);
+            GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fLeft, fTopVertex, 0.0f, 1.0f);
             GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pInfo->m_lstUpperLeft[*pChar].m_fX - 0.0001f,
                          pInfo->m_lstLowerRight[*pChar].m_fY - 0.0001f);
-            SetVertexData4f(Aurora::STREAM_POSITION, fLeft, fBottomVertex, 0.0f, 1.0f);
+            GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fLeft, fBottomVertex, 0.0f, 1.0f);
             GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pInfo->m_lstLowerRight[*pChar].m_fX - 0.0001f,
                          pInfo->m_lstLowerRight[*pChar].m_fY - 0.0001f);
-            SetVertexData4f(Aurora::STREAM_POSITION, fRight, fBottomVertex, 0.0f, 1.0f);
+            GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fRight, fBottomVertex, 0.0f, 1.0f);
             GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pInfo->m_lstLowerRight[*pChar].m_fX - 0.0001f,
                          pInfo->m_lstUpperLeft[*pChar].m_fY - 0.0001f);
-            SetVertexData4f(Aurora::STREAM_POSITION, fRight, fTopVertex, 0.0f, 1.0f);
+            GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fRight, fTopVertex, 0.0f, 1.0f);
             fLeft += (pInfo->m_fSpacingR * m_fScale * 100.0f /
                 CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport][VIEWPORT_WIDTH] +
                 pInfo->m_lstLowerRight[*pChar].m_fX - pInfo->m_lstUpperLeft[*pChar].m_fX) * fScaleX;
@@ -408,16 +386,16 @@ void CAurGUIStringInternal::Draw(float fAlpha)
             AurGUIColor(nColor);
             GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pInfo->m_lstUpperLeft['-'].m_fX - 0.0001f,
                          pInfo->m_lstUpperLeft['-'].m_fY - 0.0001f);
-            SetVertexData4f(Aurora::STREAM_POSITION, fLeft, fTopVertex, 0.0f, 1.0f);
+            GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fLeft, fTopVertex, 0.0f, 1.0f);
             GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pInfo->m_lstUpperLeft['-'].m_fX - 0.0001f,
                          pInfo->m_lstLowerRight['-'].m_fY - 0.0001f);
-            SetVertexData4f(Aurora::STREAM_POSITION, fLeft, fBottomVertex, 0.0f, 1.0f);
+            GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fLeft, fBottomVertex, 0.0f, 1.0f);
             GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pInfo->m_lstLowerRight['-'].m_fX - 0.0001f,
                          pInfo->m_lstLowerRight['-'].m_fY - 0.0001f);
-            SetVertexData4f(Aurora::STREAM_POSITION, fRight, fBottomVertex, 0.0f, 1.0f);
+            GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fRight, fBottomVertex, 0.0f, 1.0f);
             GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pInfo->m_lstLowerRight['-'].m_fX - 0.0001f,
                          pInfo->m_lstUpperLeft['-'].m_fY - 0.0001f);
-            SetVertexData4f(Aurora::STREAM_POSITION, fRight, fTopVertex, 0.0f, 1.0f);
+            GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fRight, fTopVertex, 0.0f, 1.0f);
         }
         fTop += (pInfo->m_fLineSpacing * m_fScale * 100.0f /
             CAurGUIDraw::cm_nViewportStack[CAurGUIDraw::cm_nCurrentViewport][VIEWPORT_HEIGHT] +
@@ -764,10 +742,10 @@ int AurGUISetupViewport(int nX, int nY, int nWidth, int nHeight,
         GLRender_Disable(ENABLE_LIGHTING);
         GLRender_BeginImmediatePrimitive(Aurora::PRIMITIVE_QUADS);
         AurGUIColor(nColor);
-        SetVertexData4f(Aurora::STREAM_POSITION, 0.0f, 0.0f, 0.0f, 1.0f);
-        SetVertexData4f(Aurora::STREAM_POSITION, 1.0f, 0.0f, 0.0f, 1.0f);
-        SetVertexData4f(Aurora::STREAM_POSITION, 1.0f, 1.0f, 0.0f, 1.0f);
-        SetVertexData4f(Aurora::STREAM_POSITION, 0.0f, 1.0f, 0.0f, 1.0f);
+        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, 0.0f, 0.0f, 0.0f, 1.0f);
+        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, 1.0f, 0.0f, 0.0f, 1.0f);
+        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, 1.0f, 1.0f, 0.0f, 1.0f);
+        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, 0.0f, 1.0f, 0.0f, 1.0f);
         GLRender_EndImmediatePrimitive();
         GLRender_Enable(ENABLE_TEXTURE_2D);
         GLRender_Enable(ENABLE_LIGHTING);
@@ -867,11 +845,11 @@ void CAurGUIStringInternal::DrawBoundingRect(Vector vColor, float fAlpha)
             glColor4ubv((GLubyte*)&nColor);
 #endif
         }
-        SetVertexData4f(Aurora::STREAM_POSITION, fLeft, fTop, 0.0f, 1.0f);
-        SetVertexData4f(Aurora::STREAM_POSITION, fLeft, fBottom, 0.0f, 1.0f);
-        SetVertexData4f(Aurora::STREAM_POSITION, fRight, fBottom, 0.0f, 1.0f);
-        SetVertexData4f(Aurora::STREAM_POSITION, fRight, fTop, 0.0f, 1.0f);
-        SetVertexData4f(Aurora::STREAM_POSITION, fLeft, fBottom, 0.0f, 1.0f);
+        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fLeft, fTop, 0.0f, 1.0f);
+        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fLeft, fBottom, 0.0f, 1.0f);
+        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fRight, fBottom, 0.0f, 1.0f);
+        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fRight, fTop, 0.0f, 1.0f);
+        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fLeft, fBottom, 0.0f, 1.0f);
         GLRender_EndImmediatePrimitive();
         GLRender_Enable(ENABLE_LIGHTING);
         GLRender_Enable(ENABLE_BLEND);
@@ -1427,13 +1405,13 @@ void CAurGUIImageInternal::Draw(float fX, float fY, float fWidth,
     }
     AurGUIColor(nColor);
     GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, afTexCoords[0][0], afTexCoords[0][1]);
-    SetVertexData4f(Aurora::STREAM_POSITION, fX, 1.0f - fY, 0.0f, 1.0f);
+    GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fX, 1.0f - fY, 0.0f, 1.0f);
     GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, afTexCoords[1][0], afTexCoords[1][1]);
-    SetVertexData4f(Aurora::STREAM_POSITION, fX, 1.0f - (fY + fHeight), 0.0f, 1.0f);
+    GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fX, 1.0f - (fY + fHeight), 0.0f, 1.0f);
     GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, afTexCoords[2][0], afTexCoords[2][1]);
-    SetVertexData4f(Aurora::STREAM_POSITION, fX + fWidth, 1.0f - (fY + fHeight), 0.0f, 1.0f);
+    GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fX + fWidth, 1.0f - (fY + fHeight), 0.0f, 1.0f);
     GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, afTexCoords[3][0], afTexCoords[3][1]);
-    SetVertexData4f(Aurora::STREAM_POSITION, fX + fWidth, 1.0f - fY, 0.0f, 1.0f);
+    GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fX + fWidth, 1.0f - fY, 0.0f, 1.0f);
 #else
     GLRender_Disable(ENABLE_LIGHTING);
     m_pMaterial->SetGUIBlendingMode();
@@ -1453,13 +1431,13 @@ void CAurGUIImageInternal::Draw(float fX, float fY, float fWidth,
         AurGUIColor(((unsigned int)(GetViewportAlpha() * fAlpha * 255.0f) << 24) |
                     0x00ffffff);
         GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, afTexCoords[0][0], afTexCoords[0][1]);
-        SetVertexData4f(Aurora::STREAM_POSITION, fX, 1.0f - fY, 0.0f, 1.0f);
+        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fX, 1.0f - fY, 0.0f, 1.0f);
         GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, afTexCoords[1][0], afTexCoords[1][1]);
-        SetVertexData4f(Aurora::STREAM_POSITION, fX, 1.0f - (fY + fHeight), 0.0f, 1.0f);
+        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fX, 1.0f - (fY + fHeight), 0.0f, 1.0f);
         GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, afTexCoords[2][0], afTexCoords[2][1]);
-        SetVertexData4f(Aurora::STREAM_POSITION, fX + fWidth, 1.0f - (fY + fHeight), 0.0f, 1.0f);
+        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fX + fWidth, 1.0f - (fY + fHeight), 0.0f, 1.0f);
         GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, afTexCoords[3][0], afTexCoords[3][1]);
-        SetVertexData4f(Aurora::STREAM_POSITION, fX + fWidth, 1.0f - fY, 0.0f, 1.0f);
+        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fX + fWidth, 1.0f - fY, 0.0f, 1.0f);
     }
     else
     {
@@ -1474,13 +1452,13 @@ void CAurGUIImageInternal::Draw(float fX, float fY, float fWidth,
         AurGUIColor(nRed | ((nGreen | ((nBlue | (nAlpha << 8)) << 8)) << 8));
 #endif
         GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, afTexCoords[0][0], afTexCoords[0][1]);
-        SetVertexData4f(Aurora::STREAM_POSITION, fX, 1.0f - fY, 0.0f, 1.0f);
+        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fX, 1.0f - fY, 0.0f, 1.0f);
         GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, afTexCoords[1][0], afTexCoords[1][1]);
-        SetVertexData4f(Aurora::STREAM_POSITION, fX, 1.0f - (fY + fHeight), 0.0f, 1.0f);
+        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fX, 1.0f - (fY + fHeight), 0.0f, 1.0f);
         GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, afTexCoords[2][0], afTexCoords[2][1]);
-        SetVertexData4f(Aurora::STREAM_POSITION, fX + fWidth, 1.0f - (fY + fHeight), 0.0f, 1.0f);
+        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fX + fWidth, 1.0f - (fY + fHeight), 0.0f, 1.0f);
         GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, afTexCoords[3][0], afTexCoords[3][1]);
-        SetVertexData4f(Aurora::STREAM_POSITION, fX + fWidth, 1.0f - fY, 0.0f, 1.0f);
+        GLRender::SetVertexData4f(Aurora::STREAM_POSITION, fX + fWidth, 1.0f - fY, 0.0f, 1.0f);
     }
 #endif
     GLRender_EndImmediatePrimitive();

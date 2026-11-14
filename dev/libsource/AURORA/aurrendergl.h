@@ -841,6 +841,26 @@ public:
         }
     }
 
+    static void SetVertexData4f(Aurora::AuroraStreamMode nStream,
+                                float fX, float fY, float fZ, float fW)
+    {
+        switch (nStream)
+        {
+        case Aurora::STREAM_POSITION:
+            glVertex4f(fX, fY, fZ, fW);
+            break;
+        case Aurora::STREAM_NORMAL:
+            glNormal3f(fX, fY, fZ);
+            break;
+        case Aurora::STREAM_TEXCOORD:
+            glTexCoord3f(fX, fY, fZ);
+            break;
+        case Aurora::STREAM_COLOR:
+            glColor4f(fX, fY, fZ, fW);
+            break;
+        }
+    }
+
     enum { MAX_SHADOW_VERTICES = 4096 };
     static unsigned short m_UsedVertices[];
     static float* cm_pUserShadowData;
@@ -1719,14 +1739,6 @@ extern char szSkinBumpyVPARB[];
 extern char szNewSkinBumpyVPARB[];
 extern char szBumpedOutVPARB[];
 extern char szSkinBumpyWSVPARB[];
-extern char szcStandardDirtyVPARB[];
-extern char szcStandardDirtyLMVPARB[];
-extern char szcStandardDirtyEMVPARB[];
-extern char szcStandardDirtyEMLMVPARB[];
-extern char szcStandardDirtyLSVPARB[];
-extern char szcStandardDirtyLSLMVPARB[];
-extern char szcStandardDirtyLSEMVPARB[];
-extern char szszcStandardDirtyLSEMLMVPARB[];
 extern char cHoloSkinVPARB[];
 extern char cHoloVPARB[];
 extern char cBumpyShinyVP[];
@@ -1736,14 +1748,6 @@ extern char cBumpMapSpecularVP[];
 extern char cBumpMapDiffuseVP[];
 extern char cBumpMapVP[];
 extern char cStandardVP[];
-extern char cStandardDirtyVP[];
-extern char cStandardDirtyLMVP[];
-extern char cStandardDirtyEMVP[];
-extern char cStandardDirtyEMLMVP[];
-extern char cStandardDirtyLSVP[];
-extern char cStandardDirtyLSLMVP[];
-extern char cStandardDirtyLSEMVP[];
-extern char cStandardDirtyLSEMLMVP[];
 extern char cFogTestVP[];
 extern char cLightProjectionVP[];
 extern char cFogOutputVP[];
