@@ -1747,7 +1747,7 @@ void PartEmitter::moveParticleP2PBezier(float fTimeStep)
         float fEnd = fTime * fTime * fTime;
         Vector vBezier = fStart * m_vOrigin +
             fControl1 * (m_vOrigin + m_fPointToPointBezier2 * m_vDirection) +
-            fControl2 * (vTarget + m_fPointToPointBezier3 * m_pTarget->GetOrientation().zdir()) +
+            fControl2 * (vTarget + m_fPointToPointBezier3 * m_pTarget.m_pObject->GetOrientation().zdir()) +
             fEnd * vTarget;
         double fBlend = pow(fEnd, m_fCombineTime);
         vNewPosition = fBlend * vBezier + (1.0f - (float)fBlend) * vNewPosition;
