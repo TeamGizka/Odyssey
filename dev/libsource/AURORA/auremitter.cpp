@@ -2858,7 +2858,7 @@ void LightningEmitter::UpdateControlPoints()
                 m_lstReserved24C[nInterpolationPoint] = m_qOrientation.zdir() * m_fTangentLength;
             else
                 m_lstReserved24C[nInterpolationPoint] = normalize(
-                    m_pTarget->GetPosition() - m_vOrigin) * m_fTangentLength;
+                    m_pTarget.m_pObject->GetPosition() - m_vOrigin) * m_fTangentLength;
             if (m_bBranch)
                 m_lstReserved21C[nInterpolationPoint] = m_lstReserved228[nInterpolationPoint];
         }
