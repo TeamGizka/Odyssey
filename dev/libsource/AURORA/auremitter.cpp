@@ -3225,8 +3225,8 @@ void LightningEmitter::Update(float fTimeStep)
                     Vector vLongitudinal = fRange * normalize(vDistance);
                     Vector vJitterDirection = m_vReserved27C;
                     int nAngleRange = (int)m_fLightningZigZag;
-                    Vector vAxis = m_pTarget->GetPosition() - m_vOrigin;
                     int nAngle = 0;
+                    Vector vAxis = m_pTarget->GetPosition() - m_vOrigin;
                     for (int i = 1; i < m_lstActive.m_nCount - 1; i++)
                     {
                         if (nAngleRange != 0)
