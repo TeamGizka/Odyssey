@@ -1993,8 +1993,8 @@ void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
             Vector vPosition;
             pSkin->GetWorld(vPosition, qOrientation);
             Vector vCamera = -qOrientation * (CurrentCamera->m_vPosition - vPosition);
-            Quaternion& qObject = pSkin->m_pAurObject->m_qOrientation;
-            Vector vSide = cross(vDisplacement, qObject.zdir());
+            Vector vSide = cross(vDisplacement,
+                pSkin->m_pAurObject->m_qOrientation.zdir());
             vDisplacement = -qOrientation * vDisplacement;
             vSide = -qOrientation * vSide;
             fBlurLength = fBlurLength / (2.0f * DeltaT);
