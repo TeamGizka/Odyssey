@@ -1639,11 +1639,11 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 sUnknownAttacker = g_pAppManager->GetClientExoApp()->GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sUnknownAttacker);
             }
+            g_pTlkTable->SetCustomToken(2, sObjectName);
         }
         else
         {
-            CAppManager* pAppManager = g_pAppManager;
-            sObjectName = pAppManager->m_pClientExoApp->GetGUIString(649);
+            sObjectName = g_pAppManager->GetClientExoApp()->GetGUIString(649);
             if (g_pAppManager->GetClientExoApp()->GetObjectName(oidAttacker, sAttacker))
                 g_pTlkTable->SetCustomToken(0, sAttacker);
             else
@@ -1651,8 +1651,8 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
                 sUnknownAttacker = g_pAppManager->GetClientExoApp()->GetGUIString(649);
                 g_pTlkTable->SetCustomToken(0, sUnknownAttacker);
             }
+            g_pTlkTable->SetCustomToken(2, sObjectName);
         }
-        g_pTlkTable->SetCustomToken(2, sObjectName);
         g_pTlkTable->SetCustomToken(1, sFeat);
         g_pTlkTable->SetCustomToken(3, sResult);
         g_pTlkTable->SetCustomToken(4, CExoString(nRoll));
