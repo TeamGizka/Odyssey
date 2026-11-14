@@ -79,9 +79,7 @@ int AurMakeCurrent()
     return AurTextureMakeCurrent();
 }
 
-inline CAurPathInfo::~CAurPathInfo()
-{
-}
+#include "aurpathinfoinl.h"
 // PC 0x00462EC0 GOG 0x00462FD0
 CAurPathInfo::CAurPathInfo()
 {

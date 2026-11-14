@@ -1553,10 +1553,7 @@ int CSWSModule::GetPrimaryPlayerIndex()
     }
     return nPrimaryPlayerIndex;
 }
-// PC 0x00507070 GOG 0x004FF100
-inline NWPlayerCharacterList_st::~NWPlayerCharacterList_st()
-{
-}
+#include "nwsmoduleinl.h"
 // PC 0x00508CB0 GOG 0x00500D60
 int CSWSModule::AddObjectToLookupTable(const CExoString& sTag,
                                        unsigned long oidObject)

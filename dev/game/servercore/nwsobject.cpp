@@ -59,15 +59,7 @@ void CSWSDialog::AddPlayer(CSWSDialogPlayer* pPlayer)
     if (pPlayer != NULL)
         m_lstPlayers.AddTail(pPlayer);
 }
-// PC 0x004F60A0 GOG 0x00505890
-inline unsigned long CSWSDialog::GetCurrentPlayerId()
-{
-    if (m_lstPlayers.GetHeadPos() != NULL)
-    {
-        return m_oidCurrentPlayer;
-    }
-    return OBJECT_INVALID;
-}
+#include "nwsdialoginl.h"
 // PC 0x004F60C0 GOG 0x005058B0
 CSWSObjectActionNode::~CSWSObjectActionNode()
 {

@@ -680,17 +680,7 @@ void CSWGuiPowersLevelUp::OnPowerPicked(unsigned long nPower)
     pMessageBox->SetMessage(nMessage);
     m_pManager->AddPanel(pMessageBox, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
 }
-// PC 0x00736BE0 GOG 0x00736940
-inline int CSWGuiSkillFlowChart::GetSelected()
-{
-    if (m_cFlows.num > 0)
-    {
-        return static_cast<CSWGuiSkillFlow*>(m_cFlows.element[m_nSelectedRow])
-            ->m_aSkills[m_nSelectedCol]
-            .m_nSkill;
-    }
-    return -1;
-}
+#include "swguiskillflowchartinl.h"
 
 #ifndef _XBOX
 void CSWGuiPowersLevelUp::OnDoubleClick(CSWGuiControl* pControl)  // PC 0x00763520 GOG 0x00763340

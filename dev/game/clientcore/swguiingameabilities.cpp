@@ -394,17 +394,7 @@ void CSWGuiInGameSkillEntry::SetSkill(unsigned long nSkill,
     pParams->SetFillImage(cIcon, 0);
     m_cText.m_cParams.SetStrRef(nStrRef);
 }
-// PC 0x00736BE0 GOG 0x00736940
-inline int CSWGuiSkillFlowChart::GetSelected()
-{
-    if (m_cFlows.num > 0)
-    {
-        return static_cast<CSWGuiSkillFlow*>(m_cFlows.element[m_nSelectedRow])
-            ->m_aSkills[m_nSelectedCol]
-            .m_nSkill;
-    }
-    return -1;
-}
+#include "swguiskillflowchartinl.h"
 // PC 0x00736C80 GOG 0x007369E0
 CSWGuiInGameAbilities::~CSWGuiInGameAbilities()
 {

@@ -112,18 +112,7 @@ MaxFace::MaxFace()
     m_nSurfaceType = 0;
 }
 const int TileData::FADE_NOT_CHECKED = 4;
-// PC 0x00448F30 GOG 0x00449080
-inline char* MdlNode::TranslateNodeName()
-{
-    if (m_pModel->AsModel())
-    {
-        return m_pModel->AsModel()->m_lNames[m_nIndex];
-    }
-    else
-    {
-        return ((Model*)m_pModel->AsAnimation()->m_pBinaryData)->m_lNames[m_nIndex];
-    }
-}
+#include "mdlnodeinl.h"
 
 int MdlNodeAffectedByWind(MdlNode* pNode)
 {
@@ -1526,10 +1515,7 @@ MdlNodeTriMesh_PostProcess::MdlNodeTriMesh_PostProcess()
 inline CAurPart::~CAurPart()
 {
 }
-// PC 0x0044FFA0 GOG 0x004500E0
-inline CAurPathInfo::~CAurPathInfo()
-{
-}
+#include "aurpathinfoinl.h"
 // PC 0x004599A0 GOG 0x00459B40
 Part::Part(MdlNode* pNode)
     : m_lstChildren(0)

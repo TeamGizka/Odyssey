@@ -7862,10 +7862,7 @@ void CSWSMessage::UpdateLastUpdateObject(
         }
     }
 }
-// PC 0x00507070 GOG 0x004FF100
-inline NWPlayerCharacterList_st::~NWPlayerCharacterList_st()
-{
-}
+#include "nwsmoduleinl.h"
 // PC 0x0059B440 GOG 0x0059B4B0
 int CSWSMessage::SendServerToPlayerCharList(CSWSPlayer* pPlayer)
 {

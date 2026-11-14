@@ -5820,15 +5820,7 @@ void CSWSCreature::UpdateExcitedStateTimer()
         }
     }}
 
-inline void CSWActionNode::Clear()
-{
-    m_nActionId = 0xFFFF;
-    m_nGroupActionId = 0xFFFF;
-    m_nActionType = 0xFFFF;
-    m_vLocation = Vector();
-    m_oidTarget = OBJECT_INVALID;
-    m_nParameter = -1;
-}
+#include "swactionnodeinl.h"
 // PC 0x0050DAA0 GOG 0x0050DB00
 int CSWSCreature::GetRelativeWeaponSize(CSWSItem* pItem)
 {

@@ -10,9 +10,7 @@
 #include "nwmessage.h"
 #include "swguiingame.h"
 
-inline CSWCJournal::~CSWCJournal()
-{
-}
+#include "nwcjournalinl.h"
 
 const unsigned long CSWCJournal::STRREF_CSWCJOURNAL_QUESTENTRYADDED = 32296;
 const unsigned long CSWCJournal::STRREF_CSWCJOURNAL_WORLDENTRYADDED = 0;

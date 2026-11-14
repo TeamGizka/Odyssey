@@ -630,10 +630,7 @@ void CClientExoAppInternal::PerformLButtonUpAction()  // PC 0x00670A20 GOG 0x006
 #endif
 
 #ifndef _XBOX
-inline CSWGuiMainInterface* CGuiInGame::GetMainInterface()
-{
-    return m_pMainInterface;
-}
+#include "guiingameinl.h"
 
 void CClientExoAppInternal::HandleMouseClickInWorld()  // PC 0x00670840 GOG 0x006705E0
 {
@@ -1631,10 +1628,7 @@ void CClientExoAppInternal::PlayBackInputEvents()
     }
 }
 
-inline CClientOptions* CClientExoAppInternal::GetClientOptions()
-{
-    return m_pClientOptions;
-}
+#include "clientexoappinternalinl.h"
 
 #ifndef _XBOX
 void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 0x00672A20

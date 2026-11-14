@@ -3106,11 +3106,7 @@ void Gob::PartVolumeProject(Part* pPart, Vector vPoint, float fDistance,
     }
 }
 
-inline Vector Material::GetBumpMapSpecularColor()
-{
-    CAurTexture* pBumpMap = (CAurTexture*)m_pBumpMap.m_pObject;
-    return pBumpMap->GetSpecularColor();
-}
+#include "aurmaterialinl.h"
 
 void SetBeaming()
 {

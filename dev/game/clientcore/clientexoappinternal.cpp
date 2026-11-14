@@ -3871,10 +3871,7 @@ void CClientExoAppInternal::DisplayStartScreen()
     }
 }
 #endif
-// PC 0x0064EC30 GOG 0x0064EAE0
-inline CSWCJournal::~CSWCJournal()
-{
-}
+#include "nwcjournalinl.h"
 // PC 0x0064ECB0 GOG 0x0064EB60
 void CClientExoAppInternal::StallServerCode()
 {
@@ -8557,15 +8554,9 @@ inline void CSWGuiManager::SetGuiScale(float fScale)
     m_fGuiScale = fScale;
 }
 
-inline CSWGuiMainInterface* CGuiInGame::GetMainInterface()
-{
-    return m_pMainInterface;
-}
+#include "guiingameinl.h"
 
-inline CClientOptions* CClientExoAppInternal::GetClientOptions()
-{
-    return m_pClientOptions;
-}
+#include "clientexoappinternalinl.h"
 #ifndef _XBOX
 int CClientExoAppInternal::MainLoop()  // PC 0x0064EF30 GOG 0x0064EDE0
 {
