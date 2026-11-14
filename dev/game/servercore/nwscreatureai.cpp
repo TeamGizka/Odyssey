@@ -7551,6 +7551,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
                 {
                     CSWSObjectActionNode* pMoveAction = GetAction(ACTION_MOVE_TO_POINT);
                     Vector vDestination;
+                    (void)&vDestination.m_fZ;
                     if (pMoveAction != NULL)
                     {
                         *(void**)&vDestination.m_fX = pMoveAction->m_apParam[0];
