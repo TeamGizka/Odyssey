@@ -392,12 +392,17 @@ int CSWCameraNavigate::Control(float fTimeStep)
         m_fSpeed = 0.0f;
         if (vMovement.m_fX != 0.0f || vMovement.m_fY != 0.0f)
         {
-            vMovement = (qMovement * vMovement) * fTimeStep;
+            vMovement = qMovement * vMovement;
+            vMovement = vMovement * fTimeStep;
             static_cast<Gob*>(m_pObject)->SetPosition(
                 vMovement + static_cast<Gob*>(m_pObject)->GetPosition());
         }
         if (RenderQA && m_pObject)
         {
+            if (m_pObject == NULL && RenderQA)
+            {
+                return 1;
+            }
             SW_CAMERA_QA_REPORT("Camera position (%f, %f, %f)",
                 static_cast<Gob*>(m_pObject)->GetPosition().m_fX,
                 static_cast<Gob*>(m_pObject)->GetPosition().m_fY,
@@ -409,6 +414,7 @@ int CSWCameraNavigate::Control(float fTimeStep)
     float fYaw = Yaw(static_cast<Gob*>(m_pObject)->GetOrientation());
     float fPitch = Pitch(static_cast<Gob*>(m_pObject)->GetOrientation());
     float fDirection = 1.0f;
+    EXOLOG("Camera %f %f %f", AbsoluteValue(fTimeStep * m_fTurn), AbsoluteValue(fTimeStep * m_fTilt), AbsoluteValue(fTimeStep * m_fSpeed));
     float fDot = static_cast<Gob*>(m_pObject)->GetOrientation().zdir() *
         Vector(0.0f, 0.0f, 1.0f);
     if (fDot >= 0.0f)
