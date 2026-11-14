@@ -842,23 +842,23 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
             for (nSegment = 1; nSegment < m_nSegments; ++nSegment)
             {
                 Vector vNext = Interpolate(vOlder, vNewer, 2.0f);
-                vVertex = Vector(pPositions[0].m_fX, pPositions[0].m_fY, pPositions[0].m_fZ);
                 Vector vOlderStart;
+                Vector vOlderBlade;
+                Vector vNewerStart;
+                Vector vNewerBlade;
+                vVertex = Vector(pPositions[0].m_fX, pPositions[0].m_fY, pPositions[0].m_fZ);
                 vOlderStart = -qWorldOrientation *
                     (vOlder + qOlder * vVertex - vWorldPosition);
                 vVertex = Vector(pPositions[3].m_fX, pPositions[3].m_fY, pPositions[3].m_fZ);
                 vVertex = -qWorldOrientation *
                     (vOlder + qOlder * vVertex - vWorldPosition);
-                Vector vOlderBlade;
                 vOlderBlade = vVertex - vOlderStart;
                 vVertex = Vector(pPositions[0].m_fX, pPositions[0].m_fY, pPositions[0].m_fZ);
-                Vector vNewerStart;
                 vNewerStart = -qWorldOrientation *
                     (vNewer + qNewer * vVertex - vWorldPosition);
                 vVertex = Vector(pPositions[3].m_fX, pPositions[3].m_fY, pPositions[3].m_fZ);
                 vVertex = -qWorldOrientation *
                     (vNewer + qNewer * vVertex - vWorldPosition);
-                Vector vNewerBlade;
                 vNewerBlade = vVertex - vNewerStart;
                 qNext = RotationArc(vOlderBlade, vNewerBlade);
                 qNext = qNewer * qNext;
