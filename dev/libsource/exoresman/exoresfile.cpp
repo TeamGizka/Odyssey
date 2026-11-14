@@ -7,6 +7,7 @@
 
 static inline void ExoresfileTrace2();
 static inline void ExoresfileTrace1();
+static inline int GetListCount(const CExoArrayList<CExoString>* pList);
 #define EXORESFILE_TRACE() ExoresfileTrace1()
 
 unsigned long CExoKeyTable::m_nCRC32[256];
@@ -1420,7 +1421,7 @@ int CExoKeyTable::AddDirectoryContents(int bFlag)
     int nSubDirectories = 0;
     int nSubDirectoryFiles = 0;
     int i;
-    int j = 0;
+    int j;
     CResRef resRef;
 
     CExoString sOverride("OVERRIDE");
@@ -1428,7 +1429,7 @@ int CExoKeyTable::AddDirectoryContents(int bFlag)
     {
         g_pExoBase->GetDirectoryList(&lstSubDirectories, m_sResourceName,
                                      RESTYPE_INVALID, 1, 0);
-        nSubDirectories = lstSubDirectories.num;
+        nSubDirectories = GetListCount(&lstSubDirectories);
     }
 
     CExoString sDirectory;
@@ -1441,7 +1442,7 @@ int CExoKeyTable::AddDirectoryContents(int bFlag)
         g_pExoBase->GetDirectoryList(&lstSubFiles, sDirectory, RESTYPE_INVALID,
                                      0, 0);
         lstSubDirectoryFiles.Add(lstSubFiles);
-        nSubDirectoryFiles += lstSubDirectoryFiles[n].num;
+        nSubDirectoryFiles += GetListCount(&lstSubDirectoryFiles[n]);
     }
 
     g_pExoBase->GetDirectoryList(&lstFiles, m_sResourceName, RESTYPE_INVALID, 0, 0);
@@ -1479,7 +1480,7 @@ int CExoKeyTable::AddDirectoryContents(int bFlag)
     {
         sDirectory = lstSubDirectories[n];
 
-        for (; j < lstSubDirectoryFiles[n].num; j++)
+        for (j = 0; j < GetListCount(&lstSubDirectoryFiles[n]); j++)
         {
             sFile = lstSubDirectoryFiles[n][j];
 
@@ -1497,7 +1498,6 @@ int CExoKeyTable::AddDirectoryContents(int bFlag)
                 }
             }
         }
-        j = 0;
     }
 
     return 1;
@@ -2196,6 +2196,11 @@ int CExoResourceImageFile::LoadHeader(unsigned char)
 int CExoResourceImageFile::UnloadHeader()
 {
     return 1;
+}
+
+static inline int GetListCount(const CExoArrayList<CExoString>* pList)
+{
+    return pList->num;
 }
 
 static inline void ExoresfileTrace2()
