@@ -8088,7 +8088,8 @@ int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
 {
     if (!sModule.IsEmpty())
     {
-        unsigned char nArea = sModule[0] - '0';
+        char cArea = sModule[0];
+        unsigned char nArea = cArea - '0';
         if (!sModule.CompareNoCase("950COR") && nArea < STORY_HINT_AREAS)
         {
             CExoIni cIni;
@@ -8161,29 +8162,32 @@ int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
                 if (nArea <= STORY_HINT_AREAS)
                 {
                     int nRows = pStoryHints->GetNumRows() + 1;
-                    CExoString sAreaNumber("AreaNumber");
                     int nTry = 0;
-                    do
+                    CExoString sAreaNumber("AreaNumber");
+                    while (TRUE)
                     {
                         if (!pStoryHints->GetINTEntry(m_anStoryHint[nArea], sAreaNumber, &nHint))
                         {
                             m_anStoryHint[nArea] = 0;
+                            if (++nTry > nRows)
+                                break;
                         }
                         else if (nHint != nArea)
                         {
                             ++m_anStoryHint[nArea];
+                            if (++nTry > nRows)
+                                break;
                         }
                         else
                         {
                             unsigned char bNoHint =
                                 pStoryHints->GetINTEntry(m_anStoryHint[nArea], "StoryHint", &nHint) == 0;
-                            nStrRef = bNoHint ? 0 : nHint;
+                            if (!bNoHint)
+                                nStrRef = nHint;
                             ++m_anStoryHint[nArea];
-                            pStoryHints->Unload2DArray();
-                            delete pStoryHints;
-                            return nStrRef;
+                            break;
                         }
-                    } while (++nTry <= nRows);
+                    }
                     pStoryHints->Unload2DArray();
                     delete pStoryHints;
                     return nStrRef;
