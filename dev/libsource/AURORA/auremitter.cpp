@@ -1733,6 +1733,7 @@ void PartEmitter::moveParticleP2PBezier(float fTimeStep)
         {
             vNewPosition += currentscene->GetWindVector(vPosition, fTimeStep);
         }
+        AurDrawLine(vPosition, vNewPosition);
         float fTime = pParticle->m_fAge / m_fLifeTime;
         if (fTime > 1.0f)
             fTime = 1.0f;
