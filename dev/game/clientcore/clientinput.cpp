@@ -1634,7 +1634,6 @@ void CClientExoAppInternal::PlayBackInputEvents()
 void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 0x00672A20
 {
     int bInputHandled = 0;
-    int nEvents;
     CExoString sInput;
     if (m_bInputDisabled)
         return;
@@ -1650,7 +1649,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 
         return;
     }
 
-    float fMouseTime = ((int)m_pPauseTimer->GetSnapshotTimeDifference() * 0.000001f);
+    float fMouseTime = (int)m_pPauseTimer->GetSnapshotTimeDifference() * 0.000001f;
 #ifndef _XBOX
     g_pExoInput->UpdateMouseDelta(fMouseTime);
 #endif
@@ -1665,6 +1664,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 
     if (g_pExoInput->GetActive() || bPeragusDialog)
     {
         int i;
+        int nEvents;
         CExoArrayList<CExoInputEvent> aEvents =
             g_pExoInput->GetEvents(nEvents, m_nInputClass);
         int nPauseGui = m_pGuiInGame->m_bShowPauseGui;
@@ -1672,7 +1672,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 
             m_nInputClass == INPUT_CLASS_GUI || m_nInputClass == INPUT_CLASS_DIALOG)
         {
             int bDirection = 0;
-            for (int i = 0; i < nEvents; i++)
+            for (i = 0; i < nEvents; i++)
             {
                 int nValue = aEvents[i].m_nValue;
                 if (nValue)
@@ -2338,18 +2338,20 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 
         if (m_pModule != NULL && m_pModule->m_pInfo != NULL &&
             m_pModule->m_pInfo->m_pMiniGame != NULL)
         {
-            m_pModule->m_pInfo->m_pMiniGame->Control(fTimeStep);
+            CSWMiniGame* pMiniGame = m_pModule->m_pInfo->m_pMiniGame;
+            pMiniGame->Control(fTimeStep);
         }
     }
     else if (m_pModule != NULL && m_pModule->m_pInfo != NULL &&
              m_pModule->m_pInfo->m_pMiniGame != NULL && !bPeragusDialog)
     {
         CSWMiniGame* pMiniGame = m_pModule->m_pInfo->m_pMiniGame;
+        float fX, fY;
         switch (pMiniGame->m_nAttachType)
         {
         case CSWMiniGame::ATTACH_PLAYER_MODEL:
             {
-                float fX = g_pExoInput->PollInput(23, INPUT_CLASS_MINIGAME) / g_fMouseSensitivity;
+                fX = g_pExoInput->PollInput(23, INPUT_CLASS_MINIGAME) / g_fMouseSensitivity;
                 fX = min(1.0f, max(-1.0f, fX));
                 if (fX == 0.0)
                     fX = min(1.0f, max(-1.0f,
@@ -2365,29 +2367,27 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 
             }
             break;
         case CSWMiniGame::ATTACH_CAMERA_HOOK:
-            {
-                float fX = min(1.0f, max(-1.0f,
-                    g_pExoInput->PollInput(283, INPUT_CLASS_MINIGAME) + g_pExoInput->PollInput(286, INPUT_CLASS_MINIGAME)));
-                float fY = min(1.0f, max(-1.0f,
-                    g_pExoInput->PollInput(282, INPUT_CLASS_MINIGAME) + g_pExoInput->PollInput(285, INPUT_CLASS_MINIGAME)));
-                Vector vAxis(fX, 0.0f,
-                    g_pAppManager->GetClientExoApp()->GetClientOptions() != NULL &&
-                    g_pAppManager->GetClientExoApp()->GetClientOptions()->m_bReverseMinigameYAxis ? -fY : fY);
-                pMiniGame->UpdateAxis(vAxis, fTimeStep);
-                fX = g_pExoInput->PollInput(23, INPUT_CLASS_MINIGAME) / g_fMouseSensitivity;
-                fY = g_pExoInput->PollInput(24, INPUT_CLASS_MINIGAME) * (-1.0f / g_fMouseSensitivity);
-                fX = min(1.0f, max(-1.0f, fX));
-                fY = min(1.0f, max(-1.0f, fY));
-                if (g_pAppManager->GetClientExoApp()->GetClientOptions() != NULL &&
-                    g_pAppManager->GetClientExoApp()->GetClientOptions()->m_bReverseMinigameYAxis)
-                    fY = -fY;
-                pMiniGame->UpdateMouse(fX, fY, fTimeStep);
+            fX = min(1.0f, max(-1.0f,
+                g_pExoInput->PollInput(283, INPUT_CLASS_MINIGAME) + g_pExoInput->PollInput(286, INPUT_CLASS_MINIGAME)));
+            fY = min(1.0f, max(-1.0f,
+                g_pExoInput->PollInput(282, INPUT_CLASS_MINIGAME) + g_pExoInput->PollInput(285, INPUT_CLASS_MINIGAME)));
+            Vector vAxis(fX, 0.0f,
+                g_pAppManager->GetClientExoApp()->GetClientOptions() != NULL &&
+                g_pAppManager->GetClientExoApp()->GetClientOptions()->m_bReverseMinigameYAxis ? -fY : fY);
+            pMiniGame->UpdateAxis(vAxis, fTimeStep);
+            fX = g_pExoInput->PollInput(23, INPUT_CLASS_MINIGAME) / g_fMouseSensitivity;
+            fY = g_pExoInput->PollInput(24, INPUT_CLASS_MINIGAME) * (-1.0f / g_fMouseSensitivity);
+            fX = min(1.0f, max(-1.0f, fX));
+            fY = min(1.0f, max(-1.0f, fY));
+            if (g_pAppManager->GetClientExoApp()->GetClientOptions() != NULL &&
+                g_pAppManager->GetClientExoApp()->GetClientOptions()->m_bReverseMinigameYAxis)
+                fY = -fY;
+            pMiniGame->UpdateMouse(fX, fY, fTimeStep);
 #ifndef _XBOX
-                if (!GetPausedByCombat() && g_pAppManager->GetClientExoApp()->GetInputClass())
-                    g_pExoInput->SetMousePos(m_pSWGuiManager->m_nWidth / 2,
-                                            m_pSWGuiManager->m_nHeight / 2, true);
+            if (!GetPausedByCombat() && g_pAppManager->GetClientExoApp()->GetInputClass())
+                g_pExoInput->SetMousePos(m_pSWGuiManager->m_nWidth / 2,
+                                        m_pSWGuiManager->m_nHeight / 2, true);
 #endif
-            }
             break;
         }
         pMiniGame->Control(fTimeStep);
