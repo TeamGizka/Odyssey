@@ -1673,9 +1673,9 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
             nTargetingBonus = 1;
         }
     }
+    nAttackBonus += nTargetingBonus;
     pAttack->m_Extra1.m_nUnknown21 = nTargetingFeat;
     pAttack->m_Extra1.m_nUnknown22 += nTargetingBonus;
-    nAttackBonus += nTargetingBonus;
     if (g_bEnableCombatDebugging)
     {
         if (nWeaponFocusBonus != 0 || nLightsaberBonus != 0)
@@ -1699,13 +1699,15 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
     if (pTarget != NULL && pTarget->m_bInParty)
     {
         int bBest = FALSE;
-        if (pTarget->m_pStats->m_bIsPC)
+        if (pTarget->m_pStats->GetIsPC())
         {
-            if (pTarget->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_VI, 0) && pTarget->m_pStats->m_nGoodEvilAlignment <= 40)
+            if (pTarget->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_VI, 0) && pTarget->m_pStats->GetGoodEvilAlignment() <= 40)
             {
+                nCrushSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_VI;
+                nCrushPenalty = -2;
                 bBest = TRUE;
             }
-            else if (pTarget->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_III, 0) && pTarget->m_pStats->m_nGoodEvilAlignment <= 40)
+            else if (pTarget->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_III, 0) && pTarget->m_pStats->GetGoodEvilAlignment() <= 40)
             {
                 nCrushSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_III;
                 nCrushPenalty = -1;
@@ -1725,13 +1727,14 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
                         if (pNPC != NULL)
                         {
                             if (pNPC->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_VI, 0) &&
-                                pNPC->m_pStats->m_nGoodEvilAlignment <= 40)
+                                pNPC->GetStats()->GetGoodEvilAlignment() <= 40)
                             {
-                                bBest = TRUE;
+                                nCrushSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_VI;
+                                nCrushPenalty = -2;
                                 break;
                             }
                             if (pNPC->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_III, 0) &&
-                                pNPC->m_pStats->m_nGoodEvilAlignment <= 40)
+                                pNPC->m_pStats->GetGoodEvilAlignment() <= 40)
                             {
                                 nCrushSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_III;
                                 nCrushPenalty = -1;
@@ -1740,11 +1743,6 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
                     }
                 }
             }
-        }
-        if (bBest)
-        {
-            nCrushSpell = CSWSpell::FORCE_POWER_CRUSH_OPPOSITION_VI;
-            nCrushPenalty = -2;
         }
     }
     nAttackBonus += nCrushPenalty;
@@ -1763,13 +1761,15 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
     if (m_pCreature->m_bInParty)
     {
         int bBest = FALSE;
-        if (this->m_bIsPC)
+        if (this->GetIsPC())
         {
-            if (this->HasSpell(0, CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_VI, 0) && this->m_nGoodEvilAlignment >= 60)
+            if (this->HasSpell(0, CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_VI, 0) && this->GetGoodEvilAlignment() >= 60)
             {
+                nInspireSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_VI;
+                nInspireBonus = 2;
                 bBest = TRUE;
             }
-            else if (this->HasSpell(0, CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_III, 0) && this->m_nGoodEvilAlignment >= 60)
+            else if (this->HasSpell(0, CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_III, 0) && this->GetGoodEvilAlignment() >= 60)
             {
                 nInspireSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_III;
                 nInspireBonus = 1;
@@ -1789,13 +1789,14 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
                         if (pNPC != NULL)
                         {
                             if (pNPC->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_VI, 0) &&
-                                pNPC->m_pStats->m_nGoodEvilAlignment >= 60)
+                                pNPC->GetStats()->GetGoodEvilAlignment() >= 60)
                             {
-                                bBest = TRUE;
+                                nInspireSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_VI;
+                                nInspireBonus = 2;
                                 break;
                             }
                             if (pNPC->m_pStats->HasSpell(0, CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_III, 0) &&
-                                pNPC->m_pStats->m_nGoodEvilAlignment >= 60)
+                                pNPC->m_pStats->GetGoodEvilAlignment() >= 60)
                             {
                                 nInspireSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_III;
                                 nInspireBonus = 1;
@@ -1804,11 +1805,6 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
                     }
                 }
             }
-        }
-        if (bBest)
-        {
-            nInspireSpell = CSWSpell::FORCE_POWER_INSPIRE_FOLLOWERS_VI;
-            nInspireBonus = 2;
         }
     }
     pAttack->m_Extra1.m_nUnknown25 = nInspireSpell;
@@ -1900,8 +1896,8 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
             }
         }
     }
-    pAttack->m_Extra1.m_nUnknown27 += nCharismaBonus;
     nAttackBonus += nCharismaBonus;
+    pAttack->m_Extra1.m_nUnknown27 += nCharismaBonus;
     if (g_bEnableCombatDebugging && nCharismaBonus != 0)
     {
         CExoString sDebug(GetCreature()->GetCombatRound()->GetAttack(nCurrentAttack)->m_sAttackDebugText);
