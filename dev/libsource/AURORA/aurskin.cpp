@@ -48,6 +48,7 @@ void SetupForceSightShader(Gob* pGob, int nForceShader, int nShader,
                            CAurTexture* pTexture0, CAurTexture* pTexture1,
                            CAurTexture* pTexture2, CAurTexture* pTexture3,
                            bool bKeepBlend);
+void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive);
 
 #ifdef _XBOX
 VertexProgram* GetSkinVP(bool)
