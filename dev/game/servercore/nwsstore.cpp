@@ -13,9 +13,7 @@
 #include "gameobjectarray.h"
 #include "nwsstore.h"
 
-static inline void NwsstoreTrace2();
 static inline void NwsstoreTrace1();
-#define NWSSTORE_TRACE() NwsstoreTrace2()
 // PC 0x00570AE0 GOG 0x00570C10
 CSWSStore::CSWSStore(unsigned long oidStore)
     : CSWSObject(CGameObject::OBJECT_TYPE_STORE, oidStore, 0)
@@ -297,7 +295,6 @@ int CSWSStore::LoadStore(CResGFF* pRes, CResStruct* pStruct, int bFromTemplate)
 // PC 0x00571670 GOG 0x005717A0
 int CSWSStore::AcquireItem(CSWSItem* pItem, int bAppend)
 {
-    NWSSTORE_TRACE();
     if (pItem == NULL || pItem->m_bPlotObject != 0)
         return 0;
 
@@ -404,11 +401,6 @@ int CSWSStore::LoadFromTemplate(const CResRef& cResRef, int bFromTemplate)
         delete pRes;
         return 1;
     }
-}
-
-static inline void NwsstoreTrace2()
-{
-    NwsstoreTrace1();
 }
 
 static inline void NwsstoreTrace1()

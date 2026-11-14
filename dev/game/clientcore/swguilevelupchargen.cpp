@@ -15,10 +15,6 @@
 #include "guiingame.h"
 #include "aurscene.h"
 
-static inline void SwguilevelupchargenTrace3();
-static inline void SwguilevelupchargenTrace2();
-static inline void SwguilevelupchargenTrace1();
-#define SWGUILEVELUPCHARGEN_TRACE() SwguilevelupchargenTrace3()
 // PC 0x00756EA0 GOG 0x00756CB0
 void CSWGuiLevelUpCharGen::OnPanelAdded()
 {
@@ -333,27 +329,12 @@ CSWGuiLevelUpCharGen::~CSWGuiLevelUpCharGen()
 // PC 0x00757DC0 GOG 0x00758F30
 void CSWGuiLevelUpCharGen::HandleInputEvent(int nEvent, int nState)
 {
-    SWGUILEVELUPCHARGEN_TRACE();
     if (nState != 0 && (nEvent == 40 || nEvent == 46))
     {
         m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
         HandleCancelButton();
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
-}
-
-static inline void SwguilevelupchargenTrace3()
-{
-    SwguilevelupchargenTrace2();
-}
-
-static inline void SwguilevelupchargenTrace2()
-{
-    SwguilevelupchargenTrace1();
-}
-
-static inline void SwguilevelupchargenTrace1()
-{
 }
 
 #ifdef _XBOX

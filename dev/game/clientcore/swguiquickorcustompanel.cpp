@@ -8,9 +8,6 @@
 #include "guiingame.h"
 #endif
 
-static inline void SwguiquickorcustompanelTrace2();
-static inline void SwguiquickorcustompanelTrace1();
-#define SWGUIQUICKORCUSTOMPANEL_TRACE() SwguiquickorcustompanelTrace2()
 // PC 0x00761970 GOG 0x00761790
 void CSWGuiQuickOrCustomPanel::HandleCancelButton()
 {
@@ -139,7 +136,6 @@ CSWGuiQuickOrCustomPanel::CSWGuiQuickOrCustomPanel(CSWGuiManager* pManager,
 // PC 0x00761A00 GOG 0x00761D40
 void CSWGuiQuickOrCustomPanel::HandleInputEvent(int nEvent, int nState)
 {
-    SWGUIQUICKORCUSTOMPANEL_TRACE();
     if (nState != 0)
     {
         switch (nEvent)
@@ -167,13 +163,4 @@ void CSWGuiQuickOrCustomPanel::HandleInputEvent(int nEvent, int nState)
         }
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
-}
-
-static inline void SwguiquickorcustompanelTrace2()
-{
-    SwguiquickorcustompanelTrace1();
-}
-
-static inline void SwguiquickorcustompanelTrace1()
-{
 }

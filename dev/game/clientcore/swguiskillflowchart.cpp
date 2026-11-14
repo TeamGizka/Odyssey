@@ -9,26 +9,8 @@
 #include "nwrules.h"
 #include "nwfeat.h"
 
-static inline void SwguiskillflowchartTrace3();
-static inline void SwguiskillflowchartTrace2();
-static inline void SwguiskillflowchartTrace1();
-#define SWGUISKILLFLOWCHART_TRACE() SwguiskillflowchartTrace1()
-
 #include "nwspell.h"
 
-static inline void SwguiskillflowchartTrace3()
-{
-    SwguiskillflowchartTrace2();
-}
-
-static inline void SwguiskillflowchartTrace2()
-{
-    SwguiskillflowchartTrace1();
-}
-
-static inline void SwguiskillflowchartTrace1()
-{
-}
 // PC 0x0073B1B0 GOG 0x0073AA90
 CSWGuiSkillFlow::CSWGuiSkillFlow()
 {
@@ -67,7 +49,6 @@ CSWGuiSkillFlow::CSWGuiSkillFlow()
 // PC 0x0073AC90 GOG 0x0073ABC0
 void CSWGuiSkillFlow::SetExtent(const CSWGuiExtent& cExtent)
 {
-    SwguiskillflowchartTrace1();
     CSWGuiExtent cFlowExtent = cExtent;
     float fScale = 1.0f;
     if (g_pAppManager->m_pClientExoApp->GetSWGuiManager() != NULL)
@@ -138,7 +119,6 @@ void CSWGuiSkillFlow::Draw(float fElapsed)
 // PC 0x0073B2E0 GOG 0x0073B260
 void CSWGuiSkillFlow::SetSkillSelected(unsigned char nSkill, int bSelected)
 {
-    SwguiskillflowchartTrace2();
     if (m_aSkills[nSkill].m_bSelected != bSelected)
     {
         m_aSkills[nSkill].m_bSelected = bSelected;
@@ -286,7 +266,6 @@ void CSWGuiSkillFlowChart::AddFeatSet(unsigned long nFeat1,
 // PC 0x0073AEB0 GOG 0x0073AD70
 void CSWGuiSkillFlow::SetSkillStatus(unsigned char nSkill, unsigned char nStatus)
 {
-    SwguiskillflowchartTrace1();
     m_aSkills[nSkill].m_nStatus = nStatus;
     m_aSkills[nSkill].m_cLeftImage.m_cParams.m_fAlpha = 1.0f;
     m_aSkills[nSkill].m_cRightImage.m_cParams.m_fAlpha = 1.0f;
@@ -339,7 +318,6 @@ void CSWGuiSkillFlow::SetSkillStatus(unsigned char nSkill, unsigned char nStatus
 // PC 0x0073B070 GOG 0x0073AF30
 unsigned int CSWGuiSkillFlow::SkillHitCheckMouse(int nX, int nY)
 {
-    SwguiskillflowchartTrace1();
     int nHit;
     int i;
     CSWGuiExtent cExtent;
@@ -444,7 +422,6 @@ void CSWGuiSkillFlowChart::SetSkillStatus(unsigned long nSkill,
 void CSWGuiSkillFlowChart::CreatePowerChart(CSWSCreatureStats* pStats,
                                           int bAllPowers)
 {
-    SwguiskillflowchartTrace2();
     CSWSpell* pSpell;
     CSWSpell* pNextSpell;
     CExoArrayList<unsigned long> aPowers;
@@ -589,7 +566,6 @@ void CSWGuiSkillFlowChart::BuildSortedFeatList(
 // PC 0x0073C580 GOG 0x0073C2E0
 void CSWGuiSkillFlowChart::CreateFeatChart(CSWSCreatureStats* pStats)
 {
-    SwguiskillflowchartTrace2();
     CSWClass* pClass;
     CSWFeat* pFeat;
     CSWFeat* pNextFeat;
@@ -667,7 +643,6 @@ void CSWGuiSkillFlowChart::CreateFeatChart(CSWSCreatureStats* pStats)
 void CSWGuiSkillFlowChart::CreateFeatChart(CSWCCreatureStats* pStats,
                                            int bBonusFeats)
 {
-    SwguiskillflowchartTrace2();
     CSWClass* pClass;
     CSWFeat* pFeat;
     CSWFeat* pNextFeat;
@@ -886,7 +861,6 @@ int CSWGuiSkillFlowChart::SetTopLeft()
 CSWGuiSkillInfoBox::CSWGuiSkillInfoBox(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-    SwguiskillflowchartTrace3();
 #ifdef _XBOX
     StartLoadFromLayout("skillinfo");
 #else
@@ -989,7 +963,6 @@ CSWGuiSkillInfoBox::~CSWGuiSkillInfoBox()
 // PC 0x0073B0F0 GOG 0x0073B130
 void CSWGuiSkillInfoBox::HandleInputEvent(int nEvent, int nState)
 {
-    SWGUISKILLFLOWCHART_TRACE();
     if (nState != 0)
     {
         switch (nEvent)

@@ -17,7 +17,6 @@
 #include "aurrendergl.h"
 #include "aurwindmanager.h"
 
-static inline void AuranimTrace4();
 static inline void AuranimTrace3();
 static inline void AuranimTrace2();
 static inline void AuranimTrace1();
@@ -1643,7 +1642,6 @@ LookAtAnimation::~LookAtAnimation()
 // PC 0x004B7090 GOG 0x004B71A0
 void LookAtAnimation::BuildAnimation()
 {
-    AuranimTrace4();
     m_pTree = new Animation("LookAtAnimation");
     MdlNode* pLooking = new MdlNode("looking");
     pLooking->m_nNodeID = m_pHeadPart->m_nNodeID;
@@ -2053,11 +2051,6 @@ void Gob::BeginLookAtAnimate(CAurObject* pTarget, char* sTargetPart,
     {
         EndLookAtAnimate();
     }
-}
-
-static inline void AuranimTrace4()
-{
-    AuranimTrace3();
 }
 
 static inline void AuranimTrace3()

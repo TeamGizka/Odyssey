@@ -16,7 +16,6 @@ static inline void SwguiingameareatransitionTrace1();
 void CSWGuiInGameAreaTransition::SetTransitionObject(unsigned long oidObject,
                                                      const Vector& vPosition)
 {
-    SwguiingameareatransitionTrace1();
     if (m_oidTransitionObject != oidObject)
     {
         CClientExoApp* pClientApp = g_pAppManager->m_pClientExoApp;

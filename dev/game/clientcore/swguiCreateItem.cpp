@@ -64,7 +64,6 @@ void CSWGuiCreateItemMenu::HandleInputEvent(int nEvent, int nState)
 // PC 0x0073E9B0 GOG 0x0073E7D0
 void CSWGuiCreateItemMenu::Back(CSWGuiControl* pControl)
 {
-    SwguiCreateItemTrace1();
     if (pControl->m_bSelected != 0)
     {
         g_pAppManager->m_pClientExoApp->GetInGameGui()->HideItemCreateMenu();

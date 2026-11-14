@@ -18,18 +18,6 @@
 #include "swguiingameequip.h"
 #include "swparty.h"
 
-static inline void SwguistoreTrace2();
-static inline void SwguistoreTrace1();
-#define SWGUISTORE_TRACE() SwguistoreTrace1()
-
-static inline void SwguistoreTrace2()
-{
-    SwguistoreTrace1();
-}
-
-static inline void SwguistoreTrace1()
-{
-}
 // PC 0x00720E90 GOG 0x00720BA0
 void CSWGuiStore::PopulateStore()
 {
@@ -279,7 +267,6 @@ void CSWGuiStore::OnControlEntered(CSWGuiControl* pControl)
 // PC 0x00721F10 GOG 0x00721C20
 void CSWGuiStore::BuyItem(CSWSItem* pItem)
 {
-    SWGUISTORE_TRACE();
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
     CSWSCreature* pCreature =
         pServer->GetPlayerCreature();
@@ -843,7 +830,6 @@ void CSWGuiStore::OnPanelRemoved()
 // PC 0x00722370 GOG 0x00722080
 void CSWGuiStore::DeleteItemEntries()
 {
-    SwguistoreTrace2();
     CExoArrayList<CSWGuiStoreItemEntry*>& lStoreEntries = m_lStoreEntries;
     CExoArrayList<CSWGuiStoreItemEntry*>& lInventoryEntries = m_lInventoryEntries;
     m_lbxInventoryItems.ClearItems();

@@ -21,7 +21,6 @@ extern int g_Letterbox_bottom;
 
 static inline void SwguidialogTrace2();
 static inline void SwguidialogTrace1();
-#define SWGUIDIALOG_TRACE() SwguidialogTrace1()
 
 #include "nwrules.h"
 
@@ -61,7 +60,6 @@ CSWGuiDialog::CSWGuiDialog(CSWGuiManager* pManager)
 
 void CSWGuiDialog::SetReplyActive(CSWGuiControl* pControl)
 {
-    SWGUIDIALOG_TRACE();
     EXOXBOXASSERT(pControl->AsLabel());
     CSWGuiLabel* pLabel = pControl->AsLabel();
     pLabel->m_cText.m_cParams.SetColor(m_vReplyHighlightColor);
@@ -99,7 +97,6 @@ CSWGuiDialogComputerCamera::CSWGuiDialogComputerCamera(CSWGuiManager* pManager)
 // PC 0x0070D440 GOG 0x0070D430
 void CSWGuiDialog::SetReplyInactive(CSWGuiControl* pControl)
 {
-    SWGUIDIALOG_TRACE();
     EXOXBOXASSERT(pControl->AsLabel());
     CSWGuiLabel* pLabel = pControl->AsLabel();
     pLabel->m_cText.m_cParams.SetColor(m_vReplyColor);
@@ -107,7 +104,6 @@ void CSWGuiDialog::SetReplyInactive(CSWGuiControl* pControl)
 // PC 0x0070D4A0 GOG 0x0070D490
 void CSWGuiDialog::SetDialogMessage(const CExoString& sMessage)
 {
-    SWGUIDIALOG_TRACE();
     m_lbReplies.SetEnabledFlag(0);
     m_lblMessage.SetEnabledFlag(0);
     m_sMessage = sMessage;
@@ -127,7 +123,6 @@ void CSWGuiDialog::SetDialogMessage(const CExoString& sMessage)
 // PC 0x0070D530 GOG 0x0070D520
 void CSWGuiDialog::ShowDialogMessage()
 {
-    SWGUIDIALOG_TRACE();
     m_bDialogWaiting = 0;
     if (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_bSubtitles ||
         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nDialogScrollWait !=
@@ -146,7 +141,6 @@ void CSWGuiDialog::EndDialog()
 // PC 0x0070D5B0 GOG 0x0070D590
 int CSWGuiDialog::SelectReply(int nReply)
 {
-    SWGUIDIALOG_TRACE();
     if (nReply < m_nReplyCount)
     {
         CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
@@ -159,7 +153,6 @@ int CSWGuiDialog::SelectReply(int nReply)
 // PC 0x0070D600 GOG 0x0070D5E0
 void CSWGuiDialog::Reset()
 {
-    SWGUIDIALOG_TRACE();
     m_lbReplies.SetEnabledFlag(0);
     m_lblMessage.SetEnabledFlag(0);
     m_nSelectedReply = -1;
@@ -184,7 +177,6 @@ int CSWGuiDialog::GetReplyIndex(int nReply)
 // PC 0x0070D6F0 GOG 0x0070D6B0
 void CSWGuiDialog::HandleInputEvent(int nEvent, int nState)
 {
-    SWGUIDIALOG_TRACE();
     if (nState)
     {
         switch (nEvent)
@@ -271,14 +263,12 @@ void CSWGuiDialog::HandleInputEvent(int nEvent, int nState)
 // PC 0x0070D850 GOG 0x0070D810
 int CSWGuiDialog::HandleSelectReply(CSWGuiControl* pControl)
 {
-    SWGUIDIALOG_TRACE();
     m_pManager->PlayGuiSound(CSWGuiManager::GUISOUND_CLICK);
     return SelectReply(m_lbReplies.m_nSelectedItem);
 }
 // PC 0x0070D870 GOG 0x0070D830
 void CSWGuiDialogLetterbox::SetExtentSpecial(CSWGuiExtent cExtent)
 {
-    SWGUIDIALOG_TRACE();
     switch (m_nPosition)
     {
     case POSITION_TOP:
@@ -319,7 +309,6 @@ void CSWGuiDialogLetterbox::SetExtentSpecial(CSWGuiExtent cExtent)
 // PC 0x0070D910 GOG 0x0070D8D0
 void CSWGuiDialogLetterbox::SetExtent(const CSWGuiExtent& cExtent)
 {
-    SWGUIDIALOG_TRACE();
     CSWGuiExtent cNewExtent = cExtent;
     switch (m_nPosition)
     {
@@ -335,7 +324,6 @@ void CSWGuiDialogLetterbox::SetExtent(const CSWGuiExtent& cExtent)
 // PC 0x0070D980 GOG 0x0070D940
 void CSWGuiDialogLetterbox::SetTop()
 {
-    SWGUIDIALOG_TRACE();
     if (m_pManager == 0)
     {
         m_pManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
@@ -366,7 +354,6 @@ void CSWGuiDialogLetterbox::SetTop()
 // PC 0x0070DA10 GOG 0x0070D9D0
 void CSWGuiDialogLetterbox::SetBottom()
 {
-    SWGUIDIALOG_TRACE();
     if (m_pManager == 0)
     {
         m_pManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
@@ -399,7 +386,6 @@ void CSWGuiDialogLetterbox::SetBottom()
 void CSWGuiDialogLetterbox::SetFade(int bFadeIn, float fDelay, float fLength,
                                     const Vector& vColor)
 {
-    SWGUIDIALOG_TRACE();
     m_vColor = vColor;
     if (bFadeIn != 0)
     {
@@ -426,7 +412,6 @@ int CSWGuiDialogLetterbox::IsFadeDone()
 // PC 0x0070DB90 GOG 0x0070DF60
 void CSWGuiDialogTop::SetReply(const CExoString& sReply)
 {
-    SWGUIDIALOG_TRACE();
     if (g_pAppManager->m_pClientExoApp->GetInGameGui()
             ->m_pDialogTop->m_bDone)
     {
@@ -463,7 +448,6 @@ void CSWGuiDialogTop::SetReply(const CExoString& sReply)
 // PC 0x0070DCD0 GOG 0x0070E120
 void CSWGuiDialogCinematic::SetExtent(const CSWGuiExtent& cExtent)
 {
-    SWGUIDIALOG_TRACE();
     CSWGuiPanel::SetExtent(cExtent);
     CSWGuiExtent cChildExtent = m_lbReplies.m_cExtent;
     cChildExtent.m_nWidth = m_cExtent.m_nWidth;
@@ -475,7 +459,6 @@ void CSWGuiDialogCinematic::SetExtent(const CSWGuiExtent& cExtent)
 // PC 0x0070DD60 GOG 0x0070E1B0
 void CSWGuiDialogCinematic::ShowDialogMessage()
 {
-    SWGUIDIALOG_TRACE();
     CGuiInGame* pGui;
 
     CSWGuiDialog::ShowDialogMessage();
@@ -511,7 +494,6 @@ int CSWGuiDialogCinematic::SelectReply(int nReply)
 // PC 0x0070DF20 GOG 0x0070E370
 void CSWGuiDialogCinematic::Reset()
 {
-    SWGUIDIALOG_TRACE();
     CSWGuiExtent cExtent;
     cExtent.m_nHeight = 0;
     cExtent.m_nWidth = 0;
@@ -551,7 +533,6 @@ void CSWGuiDialogCinematic::Reset()
 // PC 0x0070E080 GOG 0x0070E630
 void CSWGuiDialogComputer::HandleInputEvent(int nEvent, int nState)
 {
-    SwguidialogTrace1();
     if (nState != 0)
     {
         switch (nEvent)
@@ -644,7 +625,6 @@ CSWGuiManager* CSWGuiDialogLetterbox::SetMiddle()
 // PC 0x0070DAB0 GOG 0x0070DA70
 void CSWGuiDialogLetterbox::ResetFade()
 {
-    SWGUIDIALOG_TRACE();
     if (m_nPosition == POSITION_MIDDLE)
     {
         SetAlpha(0.0f);
@@ -661,7 +641,6 @@ void CSWGuiDialogLetterbox::ResetFade()
 // PC 0x0070E5D0 GOG 0x0070DB10
 void CSWGuiDialogLetterbox::Draw(float fElapsed)
 {
-    SWGUIDIALOG_TRACE();
     if (m_nPosition == POSITION_MIDDLE && m_fFadeTime > 0.0f)
     {
         if (fElapsed < 5.0f)
@@ -933,7 +912,6 @@ CSWGuiDialogComputer::~CSWGuiDialogComputer()
 // PC 0x0070EE90 GOG 0x0070E690
 void CSWGuiDialogComputer::UpdateSkills()
 {
-    SwguidialogTrace1();
     CSWCCreature* pCreature =
         g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0);
     CItemRepository* pRepository =

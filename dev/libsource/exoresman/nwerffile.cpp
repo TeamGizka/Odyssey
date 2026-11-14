@@ -6,7 +6,6 @@
 #include <string.h>
 #include <time.h>
 
-static inline void NwerffileTrace3();
 static inline void NwerffileTrace2();
 static inline void NwerffileTrace1();
 #define NWERFFILE_TRACE() NwerffileTrace1()
@@ -22,7 +21,6 @@ void CERFFile::ImportFiles(const CExoString& sDirectory, void* pUnused,
                           int (*pfnProgress)(int, int, int, int), int nArg1,
                           int nArg2)
 {
-    NwerffileTrace3();
     CExoArrayList<CExoString> lstFiles;
     CExoString sFile;
 
@@ -188,7 +186,6 @@ int CERFFile::WriteStringTable()
 // PC 0x0062B320 GOG 0x0062B1F0
 int CERFFile::Reset()
 {
-    NwerffileTrace3();
     memset(this, 0, 160);
 
     while (!m_lstStrings.IsEmpty())
@@ -663,11 +660,6 @@ int CERFString::Read(CExoFile& file)
     file.Read(sText, m_nLength);
     SetText(sText);
     return 1;
-}
-
-static inline void NwerffileTrace3()
-{
-    NwerffileTrace2();
 }
 
 static inline void NwerffileTrace2()

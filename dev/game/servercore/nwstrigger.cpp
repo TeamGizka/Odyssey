@@ -35,7 +35,6 @@
 #include "nwccreature.h"
 #include "nwfeat.h"
 
-static inline void NwstriggerTrace2();
 static inline void NwstriggerTrace1();
 #define NWSTRIGGER_TRACE() NwstriggerTrace1()
 
@@ -1145,7 +1144,6 @@ int CSWSTrigger::SaveTrigger(CResGFF* pRes, CResStruct* pStruct)
 // PC 0x00586620 GOG 0x005866A0
 void CSWSTrigger::RemoveFromArea()
 {
-    NwstriggerTrace2();
     if (GetArea() != NULL)
     {
         GetArea()->RemoveObjectFromArea(m_nId);
@@ -1282,11 +1280,6 @@ void CSWSTrigger::LoadTriggerGeometry(CResGFF* pRes, CResList& list)
             m_pPolygonPointOrder[i] = i;
         }
     }
-}
-
-static inline void NwstriggerTrace2()
-{
-    NwstriggerTrace1();
 }
 
 static inline void NwstriggerTrace1()

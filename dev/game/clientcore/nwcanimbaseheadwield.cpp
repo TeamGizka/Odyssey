@@ -3,8 +3,6 @@
 #include "clientexoapp.h"
 #include "nwcitem.h"
 
-static inline void NwcanimbaseheadwieldTrace1();
-#define NWCANIMBASEHEADWIELD_TRACE() NwcanimbaseheadwieldTrace1()
 // PC 0x006F36C0 GOG 0x006F32A0
 CSWCAnimBaseHeadWield::CSWCAnimBaseHeadWield()
 {
@@ -392,7 +390,6 @@ void CSWCAnimBaseHeadWield::DisableDistortion()
 // PC 0x006F4290 GOG 0x006F40C0
 void CSWCAnimBaseHeadWield::SetHeadItem(unsigned long nItem)
 {
-    NWCANIMBASEHEADWIELD_TRACE();
     CSWCAnimBaseHead::SetHeadItem(nItem);
 }
 
@@ -401,13 +398,9 @@ CSWCAnimBaseHeadWield::~CSWCAnimBaseHeadWield()
     UnloadModel();
 }
 
-static inline void NwcanimbaseheadwieldTrace1()
-{
-}
 // PC 0x006F4130 GOG 0x006F3FF0
 int CSWCAnimBaseHeadWield::GetBoundingRect(CSWGuiExtent& extent)
 {
-    NWCANIMBASEHEADWIELD_TRACE();
     if (m_pHeadModel != NULL)
     {
         CSWGuiExtent extentHead;
@@ -429,7 +422,6 @@ int CSWCAnimBaseHeadWield::GetBoundingRect(CSWGuiExtent& extent)
 // PC 0x006F3B70 GOG 0x006F3F70
 void CSWCAnimBaseHeadWield::ShowHeadItem()
 {
-    NWCANIMBASEHEADWIELD_TRACE();
     if (m_bHeadItemHidden != 0)
     {
         CClientExoApp* pApp = g_pAppManager->GetClientExoApp();
@@ -449,7 +441,6 @@ void CSWCAnimBaseHeadWield::ShowHeadItem()
 // PC 0x006F3AC0 GOG 0x006F3EC0
 void CSWCAnimBaseHeadWield::HideHeadItem()
 {
-    NWCANIMBASEHEADWIELD_TRACE();
     CExoString sName;
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
     CSWCItem* pItem = pApp->GetItemByGameObjectID(m_nHeadItem);

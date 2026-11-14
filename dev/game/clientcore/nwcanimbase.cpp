@@ -876,6 +876,10 @@ void CSWCAnimBase::SetLean(float fLean)
 {
     m_fLean = min(1.0f, max(-1.0f, fLean)) * g_fMaxLean;
 }
+static Vector* AllocateVectorArray(int nCount)
+{
+    return new Vector[nCount];
+}
 // PC 0x006F96B0 GOG 0x006F97C0
 unsigned char CSWCAnimBase::GetCenterPoint(Vector& vCenter)
 {
@@ -1934,10 +1938,6 @@ void CSWCAnimBase::SetGroundTilt(const Vector& vGroundNormal,
     }
 }
 
-static Vector* AllocateVectorArray(int nCount)
-{
-    return new Vector[nCount];
-}
 // PC 0x006FB1A0 GOG 0x006F8340
 CSWCAnimBase::CSWCAnimBase()
 {

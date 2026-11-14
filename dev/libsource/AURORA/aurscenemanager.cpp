@@ -17,10 +17,8 @@
 #include "aurconsole.h"
 #include "aurdraw.h"
 
-static inline void AurscenemanagerTrace3();
 static inline void AurscenemanagerTrace2();
 static inline void AurscenemanagerTrace1();
-#define AURSCENEMANAGER_TRACE() AurscenemanagerTrace1()
 
 float fadeToZeroTime = 0.25f;
 
@@ -168,7 +166,6 @@ List<PartEmitter*>& nodedata::GetMovingEmitters()
 // PC 0x00551580 GOG 0x005516A0
 template <> inline List<CAurRoom*>& List<CAurRoom*>::operator=(List<CAurRoom*>& other)
 {
-    AURSCENEMANAGER_TRACE();
     m_nCount = 0;
     for (int i = 0; i < other.m_nCount; i++)
     {
@@ -184,11 +181,6 @@ void nodedata::AddMovingLight(PartLight* pLight)
     m_lstMovingLights.Add(pLight);
 }
 #endif
-
-static inline void AurscenemanagerTrace3()
-{
-    AurscenemanagerTrace2();
-}
 
 static inline void AurscenemanagerTrace2()
 {
@@ -1216,7 +1208,6 @@ void LightManager::CollectLightsForGivenRoom(CAurRoom* pRoom)
 // PC 0x00483670 GOG 0x004837D0
 void CollectActiveRooms(Scene* pScene, List<CAurRoom*>& lstRooms)
 {
-    AurscenemanagerTrace2();
     if (pScene->m_pCurrentRoom == 0)
     {
         lstRooms = pScene->m_lstRooms;
@@ -1306,7 +1297,6 @@ void nodedata::AddMovingEmitter(PartEmitter* pEmitter)
 // PC 0x00483A00 GOG 0x00483AC0
 void SceneBSPRemoveTiledata(Scene* pScene, const Vector& vPosition)
 {
-    AurscenemanagerTrace3();
     if (pScene->m_pBSPRoot == 0)
     {
         return;
@@ -1557,7 +1547,6 @@ void DoStaticLightBuckets(Scene* pScene)
 // PC 0x00484BA0 GOG 0x00484C60
 void AnimateStaticLight(CAurObject* pObject, char* sEvent, void* pData)
 {
-    AurscenemanagerTrace3();
     UpdateStaticLighting(((Gob*)pObject)->m_pScene, (PartLight*)pData);
 }
 // PC 0x00484BC0 GOG 0x00484C80

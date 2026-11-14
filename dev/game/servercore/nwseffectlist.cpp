@@ -46,10 +46,6 @@
 
 #define PLACEABLE_AUTO_OPEN_DISTANCE 3.0f
 
-static inline void NwseffectlistTrace2();
-static inline void NwseffectlistTrace1();
-#define NWSEFFECTLIST_TRACE() NwseffectlistTrace2()
-
 static inline CServerExoApp* ServerExoAppLate2(CAppManager* p);
 static inline CServerExoApp* ServerExoAppLate1(CAppManager* p);
 
@@ -7233,7 +7229,6 @@ int CSWSEffectListHandler::OnApplyBonusFeat(CSWSObject* pObject,
 int CSWSEffectListHandler::OnRemoveBonusFeat(CSWSObject* pObject,
                                              CGameEffect* pGameEffect)
 {
-    NWSEFFECTLIST_TRACE();
     unsigned short nFeat;
     CSWSCreature* pCreature;
 
@@ -7952,12 +7947,4 @@ static inline CServerExoApp* ServerExoAppLate1(CAppManager* p)
 {
     return p->m_pServerExoApp;
 }
-
-static inline void NwseffectlistTrace2()
-{
-    NwseffectlistTrace1();
-}
-
-static inline void NwseffectlistTrace1()
-{
-}
+

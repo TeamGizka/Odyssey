@@ -64,8 +64,6 @@
 #include "nwcprojectile.h"
 #include "nwcitem.h"
 
-static inline void NwvmachinecommandsTrace1();
-#define NWVMACHINECOMMANDS_TRACE() NwvmachinecommandsTrace1()
 int g_nRunScriptVar = 0;
 #ifdef _XBOX
 int bDisableScriptLogging = 1;
@@ -96,9 +94,6 @@ inline unsigned char CSWSpell::GetInnateLevel() { return m_nInnateLevel; }
 inline unsigned char CSWSpell::GetUserType() { return m_nUserType; }
 inline int CSWSCreature::GetCasterLevelOverrideEnabled() { return m_bCasterLevelOverride; }
 
-static inline void NwvmachinecommandsTrace1()
-{
-}
 // PC 0x005AD8C0 GOG 0x005AD930
 inline void CServerAIMaster::AppendToScriptsRun(const CExoString& sScript)
 {
@@ -20792,7 +20787,6 @@ int CSWVirtualMachineCommands::ExecuteCommandAddJournalWorldEntryStrref(
 // PC 0x005CE800 GOG 0x005CE870
 int CSWVirtualMachineCommands::ExecuteCommandBarkString(int nCommand, int nArgs)
 {
-    NWVMACHINECOMMANDS_TRACE();
 
     unsigned long oidCreature;
     int nStrRef;
@@ -21459,7 +21453,6 @@ int CSWVirtualMachineCommands::ExecuteCommandGetInPersistentObject(int nCommand,
 int CSWVirtualMachineCommands::ExecuteCommandGetItemInInventory(int nCommand,
                                                                int nArgs)
 {
-    NwvmachinecommandsTrace1();
 
     unsigned short nItemIndex;
     unsigned long oidItem = OBJECT_INVALID;

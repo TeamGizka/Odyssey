@@ -8,11 +8,9 @@
 #include <string.h>
 #include "swmain.h"
 
-static inline void SwguiSubCreateItemTrace1();
 // PC 0x00713170 GOG 0x00713030
 void CSWGuiCreateItemSubMenu::Back(CSWGuiControl* pControl)
 {
-    SwguiSubCreateItemTrace1();
     if (pControl->m_bSelected != 0)
     {
         ((CGuiInGame*)g_pAppManager->m_pClientExoApp->GetInGameGui())
@@ -24,7 +22,6 @@ void CSWGuiCreateItemSubMenu::Back(CSWGuiControl* pControl)
 // PC 0x007131B0 GOG 0x00713070
 void CSWGuiCreateItemSubMenu::CreateItem(CSWGuiControl* pControl)
 {
-    SwguiSubCreateItemTrace1();
     CClientExoApp* pApp;
     CGuiInGame* pGui;
     if (pControl->m_bSelected != 0)
@@ -253,8 +250,4 @@ void CSWGuiCreateItemSubMenu::ClearItems()
     m_lstBlueprintNames.Clear();
     m_lstOptionNames.Clear();
     m_nSelection = -99;
-}
-
-static inline void SwguiSubCreateItemTrace1()
-{
 }

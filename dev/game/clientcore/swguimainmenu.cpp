@@ -103,7 +103,6 @@ void CSWGuiMainMenu::Draw(float fElapsed)  // PC 0x006D0C10 GOG 0x006D05A0
 // PC 0x006D0D70 GOG 0x006D0B00
 void CSWGuiMainMenu::OnNewGamePicked(CSWGuiControl* pControl)
 {
-    SWGUIMAINMENU_HOLD();
 #ifndef _XBOX
     if (m_nExitState != EXITSTATE_DELETE)
     {

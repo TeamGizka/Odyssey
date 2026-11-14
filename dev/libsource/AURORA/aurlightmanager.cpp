@@ -11,7 +11,6 @@
 #include "aurrendergl.h"
 
 static inline void AurlightmanagerTrace1();
-#define AURLIGHTMANAGER_TRACE() AurlightmanagerTrace1()
 
 extern int dynamiclightscount;
 extern int staticlightscount;
@@ -1395,7 +1394,6 @@ char* setmaxlights(char* sArguments)
 inline void LightManager::Reset()
 
 {
-    AURLIGHTMANAGER_TRACE();
     m_lstRenderLights.m_nCount = 0;
 }
 

@@ -1485,7 +1485,6 @@ int CSWSItem::RestoreUsedActiveProperties(int bRestoreAll)
 int CSWSItem::GetPropertyByTypeExists(unsigned short nPropertyType,
                                       unsigned short nSubtype)
 {
-    NWSITEM_TRACE();
     int nActiveProperties;
     int nProperty;
     CSWItemProperty* pItemProperty;
@@ -1497,9 +1496,9 @@ int CSWSItem::GetPropertyByTypeExists(unsigned short nPropertyType,
         pItemProperty = GetActiveProperty(nProperty);
         if ((pItemProperty->m_nUpgradeType == 0xFF ||
              ((1 << pItemProperty->m_nUpgradeType) & m_nUpgrades) != 0) &&
-            GetActiveProperty(nProperty)->m_nPropertyType == nPropertyType &&
+            GetActiveProperty(nProperty)->GetPropertyType() == nPropertyType &&
             (nSubtype == 0 ||
-             GetActiveProperty(nProperty)->m_nSubtype == nSubtype))
+             GetActiveProperty(nProperty)->GetSubtype() == nSubtype))
         {
             return 1;
         }
@@ -1512,9 +1511,9 @@ int CSWSItem::GetPropertyByTypeExists(unsigned short nPropertyType,
         pItemProperty = GetPassiveProperty(nProperty);
         if ((pItemProperty->m_nUpgradeType == 0xFF ||
              ((1 << pItemProperty->m_nUpgradeType) & m_nUpgrades) != 0) &&
-            GetPassiveProperty(nProperty)->m_nPropertyType == nPropertyType &&
+            GetPassiveProperty(nProperty)->GetPropertyType() == nPropertyType &&
             (nSubtype == 0 ||
-             GetPassiveProperty(nProperty)->m_nSubtype == nSubtype))
+             GetPassiveProperty(nProperty)->GetSubtype() == nSubtype))
         {
             return 1;
         }

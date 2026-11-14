@@ -28,12 +28,6 @@
 #include "nwcanimbase.h"
 #include "swmain.h"
 
-static inline void NwcmoduleTrace5();
-static inline void NwcmoduleTrace4();
-static inline void NwcmoduleTrace3();
-static inline void NwcmoduleTrace2();
-static inline void NwcmoduleTrace1();
-
 const int CCameraSettings::CAMERA_ON_STICK = 0;
 const int CCameraSettings::CAMERA_FREE_LOOK = 1;
 
@@ -2093,7 +2087,6 @@ void CSWCModule::Update(float fTimeDelta)
 // PC 0x0069AFF0 GOG 0x0069ADA0
 int CSWCModule::FindClearView(float fTimeDelta, float* pfYaw, float* pfPitch)
 {
-    NwcmoduleTrace5();
     CHitInfo hitInfo(0, CHitInfo::HIT_ALL_NON_TRIGGER, 0);
     Vector vHit;
     Vector vPosition;
@@ -2196,29 +2189,6 @@ int CSWCModule::FindClearView(float fTimeDelta, float* pfYaw, float* pfPitch)
     return 0;
 }
 
-static inline void NwcmoduleTrace5()
-{
-    NwcmoduleTrace4();
-}
-
-static inline void NwcmoduleTrace4()
-{
-    NwcmoduleTrace3();
-}
-
-static inline void NwcmoduleTrace3()
-{
-    NwcmoduleTrace2();
-}
-
-static inline void NwcmoduleTrace2()
-{
-    NwcmoduleTrace1();
-}
-
-static inline void NwcmoduleTrace1()
-{
-}
 #ifdef _XBOX
 
 #include "aurconsole.h"

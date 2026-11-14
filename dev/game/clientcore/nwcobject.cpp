@@ -27,8 +27,6 @@
 #include "worldtimer.h"
 #include "clientaimaster.h"
 
-static inline void NwcobjectTrace1();
-
 int RenderPosition = 0;
 // PC 0x00695320 GOG 0x006950C0
 CSWCObject::CSWCObject(unsigned char nObjectType)
@@ -285,7 +283,6 @@ int CSWCObject::AnimationRunning(unsigned short nAnimation)
 // PC 0x006945B0 GOG 0x00694350
 void CSWCObject::AttachToScene(CAurScene* pScene)
 {
-    NwcobjectTrace1();
     if (m_pAnimBase != NULL)
     {
         m_pAnimBase->AttachToScene(pScene);
@@ -2190,10 +2187,6 @@ float CSWCObject::GetStickyMouseThreshhold()  // PC 0x00694510 GOG 0x006942B0
     return fWidth * fWidth + fHeight * fHeight;
 }
 #endif
-
-static inline void NwcobjectTrace1()
-{
-}
 
 #ifdef _XBOX
 

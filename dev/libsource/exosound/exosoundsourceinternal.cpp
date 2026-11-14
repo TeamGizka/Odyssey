@@ -382,7 +382,6 @@ int CExoSoundSourceInternal::IsPlaying()
 {
     DWORD nStatus = 0;
 
-    EXOSOUNDSOURCE_TRACE();
     if (m_pSound != 0 && m_pSound->m_bInitialized != 0)
     {
         if (m_p3DVoice != 0 && m_p3DVoice->m_pSource != 0)
@@ -478,7 +477,6 @@ void CExoSoundSourceInternal::Pause()  // PC 0x006270E0 GOG 0x00627080
 #ifdef _XBOX
 void CExoSoundSourceInternal::Resume()
 {
-    EXOSOUNDSOURCE_TRACE();
     if (m_pSound->m_bInitialized != 0)
     {
         if (m_p3DVoice != 0 && m_p3DVoice->m_pSource != 0)
@@ -515,7 +513,6 @@ void CExoSoundSourceInternal::Resume()
 #else
 void CExoSoundSourceInternal::Resume()  // PC 0x006277E0 GOG 0x00627780
 {
-    EXOSOUNDSOURCE_TRACE();
     if (m_pSound->m_bInitialized != 0 && IsPaused())
     {
         if (m_p3DVoice != 0 && m_p3DVoice->m_hSample != 0)
@@ -541,7 +538,6 @@ void CExoSoundSourceInternal::ShutDownSource(bool bForce)
 {
     int bReleaseDemand = 1;
 
-    EXOSOUNDSOURCE_TRACE();
     if (m_nListType == 1)
     {
         m_pSound->RemoveFromPlayingList(this);
@@ -1020,7 +1016,6 @@ unsigned int CExoSoundSourceInternal::Play(int bNoInterrupt, int bResume)
 void CExoSoundSourceInternal::SetVolume(unsigned char nVolume, int nSliderMode,
                                         float fScale)
 {
-    EXOSOUNDSOURCEINTERNAL_TRACE();
     if (nVolume > 127)
     {
         nVolume = 127;
@@ -1305,7 +1300,6 @@ void CExoSoundSourceInternal::CalculatePitchVarianceFrequency()
 #ifdef _XBOX
 void CExoSoundSourceInternal::CalculateFixedVarianceFrequency()
 {
-    EXOSOUNDSOURCE_TRACE();
     m_nFixedRate = (unsigned long)((float)m_nSampleRate * m_fFixedVariance);
 }
 #else

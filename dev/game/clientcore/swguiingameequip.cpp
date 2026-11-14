@@ -31,9 +31,6 @@
 #include "nwsmodule.h"
 #include "nwtlktable.h"
 
-static inline void SwguiingameequipTrace2();
-static inline void SwguiingameequipTrace1();
-#define SWGUIINGAMEEQUIP_TRACE() SwguiingameequipTrace1()
 
 const CSWGuiInGameEquip::SlotInfo CSWGuiInGameEquip::SLOT_INFO[NUM_EQUIPMENT_SLOTS] =
 {
@@ -50,15 +47,6 @@ const CSWGuiInGameEquip::SlotInfo CSWGuiInGameEquip::SLOT_INFO[NUM_EQUIPMENT_SLO
     {INVENTORY_SLOT_RIGHTHAND2, "INV_WEAP_R2", "weap_r", 31379, 31379}
 };
 #include "nwccreaturestats.h"
-static inline void SwguiingameequipTrace2()
-{
-    SwguiingameequipTrace1();
-}
-
-static inline void SwguiingameequipTrace1()
-{
-}
-
 #ifdef _XBOX
 #include "exoinput.h"
 
@@ -951,7 +939,6 @@ void CSWGuiInGameItemEntry::RefreshItem()
 // PC 0x007184A0 GOG 0x00718190
 CSWGuiInGameItemEntry::CSWGuiInGameItemEntry()
 {
-    SwguiingameequipTrace2();
     m_bPulsing = 0;
     m_bEquipped = 0;
     m_bUnavailable = 0;

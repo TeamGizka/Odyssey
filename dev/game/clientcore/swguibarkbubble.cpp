@@ -27,7 +27,6 @@ static inline void SwguibarkbubbleTrace1();
 // PC 0x00712710 GOG 0x007129B0
 void CSWGuiBarkBubble::Pause()
 {
-    SWGUIBARKBUBBLE_TRACE();
     if (m_fTimeLeft > 0.0f || m_pSoundSource != NULL)
     {
         if (m_pSoundSource != NULL)
@@ -57,7 +56,6 @@ void CSWGuiBarkBubble::Resume()
 // PC 0x007127C0 GOG 0x00712A60
 void CSWGuiBarkBubble::StopBark(int bStopSound)
 {
-    SWGUIBARKBUBBLE_TRACE();
     if (bStopSound != 0)
     {
         if (m_pSoundSource != NULL)
@@ -237,7 +235,6 @@ void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
                                const CExoString& sBarkText,
                                const CResRef& cSound, int bForceVisible)
 {
-    SWGUIBARKBUBBLE_TRACE();
     SetExtent(m_cInitialExtent);
     unsigned long oidPlayer = g_pAppManager->GetServerExoApp()->GetPlayerCreatureId();
     CSWSPlayer* pPlayer =

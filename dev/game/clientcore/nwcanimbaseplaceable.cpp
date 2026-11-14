@@ -6,8 +6,6 @@
 #include "twodimarrays.h"
 #include "nwcanimbase.h"
 
-static inline void NwcanimbaseplaceableTrace1();
-#define NWCANIMBASEPLACEABLE_TRACE() NwcanimbaseplaceableTrace1()
 // PC 0x00755B60 GOG 0x00755970
 CSWCAnimBasePlaceable::CSWCAnimBasePlaceable()
 {
@@ -105,7 +103,6 @@ int CSWCAnimBasePlaceable::SetAnimation(unsigned short nAnimation, float fSpeed,
 // PC 0x00755C40 GOG 0x00755CC0
 CExoString CSWCAnimBasePlaceable::GetAnimationName(unsigned short nAnimation)
 {
-    NWCANIMBASEPLACEABLE_TRACE();
     unsigned short nClientAnimation = ServerToClientAnimation(nAnimation);
     CExoString sName;
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
@@ -233,8 +230,4 @@ unsigned short CSWCAnimBasePlaceable::ServerToClientAnimation(unsigned short nAn
         sprintf(szError, "CSWCAnimBasePlaceable::ServerToClientAnimation(): Failed to map server anim %i to client anim.", nAnimation);
     }
     return nAnimation;
-}
-
-static inline void NwcanimbaseplaceableTrace1()
-{
 }

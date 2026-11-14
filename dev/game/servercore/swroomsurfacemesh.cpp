@@ -89,7 +89,6 @@ void CSWRoomSurfaceMesh::SetOrientation(const Quaternion& qOrientation)
 // PC 0x00575340 GOG 0x00575D50
 CSWRoomSurfaceMeshHitInfo::CSWRoomSurfaceMeshHitInfo(unsigned long nMask)
 {
-    RoomSurfaceMeshTrace1();
     ClearAll(nMask);
 }
 // PC 0x00574CA0 GOG 0x00575190
@@ -294,7 +293,6 @@ int CSWRoomSurfaceMesh::LoadMeshBinary(CResBWM* pMesh)
 // PC 0x005754B0 GOG 0x00575DA0
 int CSWRoomSurfaceMesh::SaveBinaryMesh(const CExoString& sFileName)
 {
-    SWROOMSURFACEMESH_TRACE();
     int nResult = CSWCollisionMesh::SaveBinaryMesh(sFileName);
 
     if (nResult == 1)

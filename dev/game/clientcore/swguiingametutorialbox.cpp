@@ -40,7 +40,6 @@ int CSWGuiTutorialBox::SetTutorialInstigator(unsigned long oidInstigator,
 // PC 0x00734B20 GOG 0x00734900
 int CSWGuiTutorialBox::TutorialReasonIsValid(unsigned char nReason)
 {
-    SWGUIINGAMETUTORIALBOX_TRACE();
     bool bMissing;
     {
         CExoString sColumn("Message_PC0");

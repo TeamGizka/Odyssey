@@ -19,9 +19,6 @@
 #include "nwcanimbase.h"
 #include "nwccreature.h"
 
-static inline void NwscombatroundTrace1();
-#define NWSCOMBATROUND_TRACE() NwscombatroundTrace1()
-
 int g_bPauseCombatEndOfRound = 0;
 int g_nCombatStretch = 0;
 // PC 0x004015A0 GOG 0x004015A0
@@ -46,9 +43,6 @@ void CSWSCombatRound::InsertSpecialAttack(unsigned short nAttack, int nIndex)
     m_lstSpecialAttackIds.Add(GetNewAttackID());
 }
 
-static inline void NwscombatroundTrace1()
-{
-}
 // PC 0x0052AD20 GOG 0x0052AE00
 CSWSCombatAttackData::CSWSCombatAttackData()
 {
@@ -1074,7 +1068,6 @@ void CSWSCombatAttackData::RemoveTopSubAttack()
 // PC 0x00528690 GOG 0x00528710
 CSWSCombatSubAttack::CSWSCombatSubAttack()
 {
-    NwscombatroundTrace1();
 }
 // PC 0x005287C0 GOG 0x00528840
 void CSWSCombatRound::DecrementRoundLength(int nAmount, int bClamp)

@@ -27,21 +27,9 @@
 #include "guiingame.h"
 #include <float.h>
 
-static inline void SwguiingamemapTrace2();
-static inline void SwguiingamemapTrace1();
-#define SWGUIINGAMEMAP_TRACE() SwguiingamemapTrace2()
-
 int g_bEnableFogOfWar = 1;
 int g_bShowFogOfWar = 1;
 
-static inline void SwguiingamemapTrace2()
-{
-    SwguiingamemapTrace1();
-}
-
-static inline void SwguiingamemapTrace1()
-{
-}
 // PC 0x006EC250 GOG 0x006EBED0
 void CSWGuiInGameMap::Draw(float fElapsed)
 {
@@ -1024,7 +1012,6 @@ void CSWGuiMapHider::Draw(float fElapsed)
 CSWGuiInGameGalaxyMap::CSWGuiInGameGalaxyMap(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-    SWGUIINGAMEMAP_TRACE();
     CExoString sIcon;
     CExoString sModel;
     CExoString sTag;

@@ -6,8 +6,6 @@
 #include "twodimarrays.h"
 #include <stdio.h>
 
-static inline void NwcanimbasedoorTrace1();
-#define NWCANIMBASEDOOR_TRACE() NwcanimbasedoorTrace1()
 // PC 0x007563C0 GOG 0x007561D0
 CSWCAnimBaseDoor::CSWCAnimBaseDoor()
 {
@@ -91,7 +89,6 @@ int CSWCAnimBaseDoor::SetAnimationInternal(CAurObject* pObject,
 // PC 0x007564D0 GOG 0x007564F0
 CExoString CSWCAnimBaseDoor::GetAnimationName(unsigned short nAnimation)
 {
-    NWCANIMBASEDOOR_TRACE();
     unsigned short nClientAnimation = ServerToClientAnimation(nAnimation);
     CExoString sName;
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
@@ -161,8 +158,4 @@ unsigned short CSWCAnimBaseDoor::ServerToClientAnimation(
         break;
     }
     return nClientAnimation;
-}
-
-static inline void NwcanimbasedoorTrace1()
-{
 }

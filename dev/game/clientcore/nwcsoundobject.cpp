@@ -13,10 +13,6 @@
 
 #include <stdlib.h>
 
-static inline void NwcsoundobjectTrace3();
-static inline void NwcsoundobjectTrace2();
-static inline void NwcsoundobjectTrace1();
-
 const int CSWCSoundObject::MAX_VOLUME = 127;
 // PC 0x0069E3C0 GOG 0x0069E1A0
 CSWCSoundObject::CSWCSoundObject()
@@ -455,7 +451,6 @@ void CSWCSoundObject::ShuffleList()
 // PC 0x0069EC90 GOG 0x0069EA70
 CResRef CSWCSoundObject::GetNextSound()
 {
-    NwcsoundobjectTrace3();
     CResRef cResRef;
 
     if (m_bFirstSound != 0)
@@ -634,18 +629,4 @@ void CSWCSoundObject::AIUpdate()
     {
         UpdateIntervalVariation();
     }
-}
-
-static inline void NwcsoundobjectTrace3()
-{
-    NwcsoundobjectTrace2();
-}
-
-static inline void NwcsoundobjectTrace2()
-{
-    NwcsoundobjectTrace1();
-}
-
-static inline void NwcsoundobjectTrace1()
-{
 }

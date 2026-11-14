@@ -12,7 +12,6 @@
 #include "aurrendergl.h"
 #include "swmain.h"
 
-static inline void AurcameraTrace2();
 static inline void AurcameraTrace1();
 #define AURCAMERA_TRACE() AurcameraTrace1()
 
@@ -433,7 +432,6 @@ Vector Camera::MouseDir(int nX, int nY)
 // PC 0x00472C20 GOG 0x00472DB0
 Vector Camera::MapToScreen(Vector vPoint, bool bNormalize)
 {
-    AurcameraTrace1();
 
     GLint aViewport[4];
     for (int i = 0; i < 4; ++i)
@@ -642,11 +640,6 @@ Plane Camera::GetViewVolume(int nIndex)
 CAurCamera* NewCAurCamera(char* sName)
 {
     return new Camera(sName);
-}
-
-static inline void AurcameraTrace2()
-{
-    AurcameraTrace1();
 }
 
 static inline void AurcameraTrace1()

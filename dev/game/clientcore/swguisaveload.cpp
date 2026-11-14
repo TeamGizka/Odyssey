@@ -18,9 +18,6 @@
 #include "worldtimer.h"
 #include "nwmessage.h"
 
-static inline void SwguisaveloadTrace2();
-static inline void SwguisaveloadTrace1();
-#define SWGUISAVELOAD_TRACE() SwguisaveloadTrace1()
 #ifndef _XBOX
 // PC 0x0070C480 GOG 0x0070C1D0
 int CSWGuiSaveLoad::LaunchMostRecentSave()
@@ -85,15 +82,6 @@ void CSWGuiSaveNamePanel::SetTextAndPointer(CSWGuiSaveLoad* pSaveLoad, const CEx
     m_pSaveLoad = pSaveLoad;
     m_edtSaveName.m_cText.SetText(sText);
 }
-static inline void SwguisaveloadTrace2()
-{
-    SwguisaveloadTrace1();
-}
-
-static inline void SwguisaveloadTrace1()
-{
-}
-
 #ifdef _XBOX
 #include "exoinput.h"
 
@@ -1900,7 +1888,6 @@ void CSWGuiSaveLoad::PopulateGameLB()
 
 void CSWGuiSaveLoad::PromptForSaveName(CSWGuiControl* pControl)  // PC 0x0070AFB0 GOG 0x0070ACF0
 {
-    SwguisaveloadTrace2();
     CExoString sSaveName;
 
     if (pControl != NULL)
@@ -2217,7 +2204,6 @@ void CSWGuiSaveLoad::ShowGame(CSWGuiControl* pControl)
 // PC 0x0070B130 GOG 0x0070AE70
 CSWGuiSaveLoadEntry::CSWGuiSaveLoadEntry()
 {
-    SwguisaveloadTrace2();
     m_nGameplayHint = 0;
 #ifndef _XBOX
     memset(m_anStoryHint, 0, sizeof(m_anStoryHint));
@@ -2671,7 +2657,6 @@ int LoadScreenUpdate(int nStep, int nSteps, int nStart, int nRange)  // PC 0x007
 CSWGuiSaveNamePanel::CSWGuiSaveNamePanel(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-    SwguisaveloadTrace1();
     m_pSaveLoad = NULL;
     StartLoadFromLayout("savename_p");
     InitControl(m_btnSave, "BTN_OK", 1);

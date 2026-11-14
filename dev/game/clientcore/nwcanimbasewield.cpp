@@ -6,12 +6,6 @@
 #include "nwitem.h"
 #include "clientexoapp.h"
 
-static inline void NwcanimbasewieldTrace1();
-
-static inline void NwcanimbasewieldTrace1()
-{
-}
-#define NWCANIMBASEWIELD_TRACE() NwcanimbasewieldTrace1()
 // PC 0x006F45C0 GOG 0x006F41B0
 CSWCAnimBaseWield::CSWCAnimBaseWield()
 {
@@ -64,7 +58,6 @@ int CSWCAnimBaseWield::SetAnimationInternal(CAurObject* pObject,
                                             float fSpeed, int nFlags,
                                             float fBlend)
 {
-    NWCANIMBASEWIELD_TRACE();
     if (fSpeed == 0.0f)
     {
         fSpeed = 1.0f;
@@ -136,7 +129,6 @@ int CSWCAnimBaseWield::SetAnimationOnSubObjectInternal(
 void CSWCAnimBaseWield::HideWieldedItems(const CResRef& sRight,
                                          const CResRef& sLeft)
 {
-    NWCANIMBASEWIELD_TRACE();
     CExoString sModel;
 
     CSWCItem* pRightItem =
@@ -524,7 +516,6 @@ void CSWCAnimBaseWield::ReAttachWieldedObjects()
 Gob* CSWCAnimBaseWield::GetItemAurObject(unsigned long nItemId,
                                                 unsigned char nSlot)
 {
-    NWCANIMBASEWIELD_TRACE();
     CSWCItem* pItem =
         g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(nItemId);
     if (pItem == 0)
@@ -536,7 +527,6 @@ Gob* CSWCAnimBaseWield::GetItemAurObject(unsigned long nItemId,
 // PC 0x006F4AE0 GOG 0x006F4740
 int CSWCAnimBaseWield::ItemIsValid(unsigned long nItemId)
 {
-    NWCANIMBASEWIELD_TRACE();
     if (m_bWieldLimited == 0)
     {
         return 1;

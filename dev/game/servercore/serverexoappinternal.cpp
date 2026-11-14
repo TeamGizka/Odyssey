@@ -4131,7 +4131,6 @@ int CServerExoAppInternal::LoadCharacterStart(
     unsigned char nType, CSWSPlayer* pPlayer, CResRef cResRef,
     void* pData, unsigned long nSize)
 {
-    SERVEREXOAPPINTERNAL_HOOK();
     CSWSModule* pModule = g_pAppManager->GetServerExoApp()->GetModule();
     CExoString sPlayerName;
     CExoArrayList<CExoString> lstDirectories;
@@ -4300,7 +4299,6 @@ inline void CServerExoAppInternal::SendExitingStartNewModuleMessage(
 // PC 0x004F00E0 GOG 0x004EF300
 void CServerExoAppInternal::Shutdown(int bExit, int bSave)
 {
-    SERVEREXOAPPINTERNAL_HOOK();
     int nPVP = m_pServerInfo->m_nPVP;
     m_lstPendingPlayers.SetSize(0);
     CExoLinkedListNode* pPosition = m_pPlayerList->GetHeadPos();
@@ -4415,7 +4413,6 @@ void CServerExoAppInternal::UpdateSubareasOnMoveTo(unsigned long oidObject,
                                                    const Vector& vFrom,
                                                    const Vector& vTo)
 {
-    SERVEREXOAPPINTERNAL_HOOK();
     unsigned long oidNormalized;
     CGameObject* pObject;
     CSWSCreature* pCreature;

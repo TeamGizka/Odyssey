@@ -7,9 +7,6 @@
 #include "exotlktable.h"
 #include "swmain.h"
 
-static inline void SwguiDebugLoadModuleTrace2();
-static inline void SwguiDebugLoadModuleTrace1();
-#define SWGUIDEBUGLOADMODULE_TRACE() SwguiDebugLoadModuleTrace2()
 // PC 0x0073DF70 GOG 0x0073DB20
 CSWGuiControl* CSWGuiLoadModuleDebugMenu::CreateOption(
     const CExoString& sText, PFNGUIEVENT pHandler, CSWGuiButton* pPrototype)
@@ -58,7 +55,6 @@ CSWGuiControl* CSWGuiLoadModuleDebugMenu::CreateOption(
 // PC 0x0073DDC0 GOG 0x0073DBE0
 void CSWGuiLoadModuleDebugMenu::Back()
 {
-    SwguiDebugLoadModuleTrace1();
     g_pAppManager->m_pClientExoApp->GetInGameGui()
         ->HideLoadModuleDebugMenu();
     g_pAppManager->m_pClientExoApp->GetInGameGui()
@@ -67,7 +63,6 @@ void CSWGuiLoadModuleDebugMenu::Back()
 // PC 0x0073DDF0 GOG 0x0073DC10
 void CSWGuiLoadModuleDebugMenu::OnModulePicked(CSWGuiControl* pControl)
 {
-    SwguiDebugLoadModuleTrace1();
     if (pControl->m_bSelected)
     {
         g_pAppManager->m_pClientExoApp->GetInGameGui()
@@ -178,7 +173,6 @@ CSWGuiLoadModuleDebugMenu::CSWGuiLoadModuleDebugMenu(CSWGuiManager* pManager)
 // PC 0x0073DE90 GOG 0x0073E540
 void CSWGuiLoadModuleDebugMenu::HandleInputEvent(int nEvent, int nState)
 {
-    SWGUIDEBUGLOADMODULE_TRACE();
     if (nState != 0)
     {
         switch (nEvent)
@@ -229,13 +223,4 @@ void CSWGuiLoadModuleDebugMenu::HandleInputEvent(int nEvent, int nState)
         }
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
-}
-
-static inline void SwguiDebugLoadModuleTrace2()
-{
-    SwguiDebugLoadModuleTrace1();
-}
-
-static inline void SwguiDebugLoadModuleTrace1()
-{
 }

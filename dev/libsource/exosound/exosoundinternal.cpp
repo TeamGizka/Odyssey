@@ -3027,7 +3027,6 @@ void CExoSoundInternal::PlaySourceOn3DVoice(CExoSoundSourceInternal* pSource,
 void CExoSoundInternal::PlaySourceOn2DVoice(CExoSoundSourceInternal* pSource,
                                             C2DVoice* p2DVoice)
 {
-    EXOSOUND_TRACE();
     int bOneShot = pSource->m_bLooping == 0;
 
     pSource->m_p2DVoice = p2DVoice;

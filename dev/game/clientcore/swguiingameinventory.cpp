@@ -500,7 +500,6 @@ void CSWGuiInGameInventory::OnControlEntered(CSWGuiControl* pControl)
 // PC 0x00739280 GOG 0x00738FE0
 void CSWGuiInGameInventory::HandleInputEvent(int nEvent, int nState)
 {
-    SwguiingameinventoryTrace2();
     if (nState != 0)
     {
         switch (nEvent)

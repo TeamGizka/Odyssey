@@ -46,7 +46,6 @@ static inline void SwguiloadscreenTrace1()
 // PC 0x006D02B0 GOG 0x006D0350
 void CSWGuiLoadScreen::SetHint(unsigned long nStrRef)
 {
-    SwguiloadscreenTrace1();
     CExoString sHint;
     if (nStrRef != 0)
     {
@@ -63,7 +62,6 @@ void CSWGuiLoadScreen::SetHint(unsigned long nStrRef)
 // PC 0x006D0370 GOG 0x006D0410
 void CSWGuiLoadScreen::AddHintToMessageBuffer()
 {
-    SwguiloadscreenTrace1();
     CExoString sSpeaker("");
     CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
     ((CGuiInGame*)pClient->GetInGameGui())

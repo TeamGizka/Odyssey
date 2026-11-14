@@ -4,13 +4,9 @@
 #include "guiingame.h"
 #include "swguiingametutorialbox.h"
 
-static inline void SwguiexamineTrace1();
-static inline void SwguiexamineTrace2();
-#define SWGUIEXAMINE_TRACE() SwguiexamineTrace1()
 // PC 0x0073CF30 GOG 0x0073CD00
 void CSWGuiExamine::HandleInputEvent(int nEvent, int nState)
 {
-    SWGUIEXAMINE_TRACE();
     if (nState != 0)
     {
         switch (nEvent)
@@ -39,13 +35,4 @@ CSWGuiExamine::CSWGuiExamine(CSWGuiManager* pManager)
 #endif
     SetAllowCancel(0);
     m_nReturnInputMode = 0;
-}
-
-static inline void SwguiexamineTrace1()
-{
-    SwguiexamineTrace2();
-}
-
-static inline void SwguiexamineTrace2()
-{
 }

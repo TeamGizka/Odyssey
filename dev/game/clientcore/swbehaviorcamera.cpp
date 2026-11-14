@@ -19,12 +19,6 @@
 #include "clientexoapp.h"
 #include "clientoptions.h"
 
-static inline void SwbehaviorcameraTrace5();
-static inline void SwbehaviorcameraTrace4();
-static inline void SwbehaviorcameraTrace3();
-static inline void SwbehaviorcameraTrace2();
-static inline void SwbehaviorcameraTrace1();
-
 #define SW_CAMERA_QA_REPORT
 
 float CameraPersonalSpace = 0.35f;
@@ -1223,33 +1217,9 @@ int CSWCameraOnAStick::Control(float fTimeStep)
 
 #undef SW_CAMERA_QA_REPORT
 
-static inline void SwbehaviorcameraTrace5()
-{
-    SwbehaviorcameraTrace4();
-}
-
-static inline void SwbehaviorcameraTrace4()
-{
-    SwbehaviorcameraTrace3();
-}
-
-static inline void SwbehaviorcameraTrace3()
-{
-    SwbehaviorcameraTrace2();
-}
-
-static inline void SwbehaviorcameraTrace2()
-{
-    SwbehaviorcameraTrace1();
-}
-
-static inline void SwbehaviorcameraTrace1()
-{
-}
 // PC 0x00691D30 GOG 0x00691AA0
 Vector CSWCameraOnAStick::Control_HitCheckCamera(Vector vPosition)
 {
-    SwbehaviorcameraTrace5();
     Vector vSafe = vPosition;
     Vector vHitRight;
     Vector vHitLeft;

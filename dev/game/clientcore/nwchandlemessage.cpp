@@ -9591,7 +9591,6 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiElements()
 // PC 0x006C0620 GOG 0x006C0400
 int CSWCMessage::HandleServerToPlayerUpdate_Update()
 {
-    NwchandlemessageTrace2();
     unsigned char nObjectType = ReadBYTE(8);
     unsigned long oidObject = ReadOBJECTIDClient();
     unsigned long nUpdateMask = ReadDWORD(32);

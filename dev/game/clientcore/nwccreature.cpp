@@ -1374,7 +1374,6 @@ int CSWCCreature::SetAppearance(CCAppearanceInfo* pAppearance,
 // PC 0x00660000 GOG 0x0065FE10
 void CSWCCreature::UpdateWeaponClass()
 {
-    NwccreatureTrace1();
     unsigned char nWieldClass = CSWCAnimBase::WIELD_CLASS_NONE;
     unsigned long oidRightHand = GetEquippedItemID(INVENTORY_SLOT_RIGHTHAND);
     unsigned long oidLeftHand = GetEquippedItemID(INVENTORY_SLOT_LEFTHAND);

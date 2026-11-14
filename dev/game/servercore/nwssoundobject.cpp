@@ -10,14 +10,12 @@
 #include "nwcsoundobject.h"
 #include "nwssoundobject.h"
 
-static inline void NwssoundobjectTrace2();
 static inline void NwssoundobjectTrace1();
 #define NWSSOUNDOBJECT_TRACE() NwssoundobjectTrace1()
 // PC 0x00570470 GOG 0x005705A0
 CSWSSoundObject::CSWSSoundObject(unsigned long oidObject)
     : CSWSObject(CGameObject::OBJECT_TYPE_SOUND, oidObject, 0), m_lstSounds(0)
 {
-    NwssoundobjectTrace2();
     m_bActive = 1;
     m_bPositional = 1;
     m_bLooping = 0;
@@ -481,11 +479,6 @@ CSWCSoundObject* CSWSSoundObject::GetClientSoundObject()
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
     unsigned long oidClient = pApp->ServerToClientObjectId(oidSelf);
     return g_pAppManager->m_pClientExoApp->GetSoundObjectByGameObjectID(oidClient);
-}
-
-static inline void NwssoundobjectTrace2()
-{
-    NwssoundobjectTrace1();
 }
 
 static inline void NwssoundobjectTrace1()

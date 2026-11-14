@@ -177,7 +177,6 @@ CSWGuiInGameCredits::~CSWGuiInGameCredits()
 // PC 0x006E8600 GOG 0x006E8440
 void CSWGuiInGameCredits::OnPanelAdded()
 {
-    SwguiingamecreditsTrace1();
 #ifndef _XBOX
     g_pAppManager->m_pClientExoApp->HideMouse(CLIENT_MOUSE_HIDE_EVIL_ENDING);
 #endif

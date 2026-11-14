@@ -15,12 +15,6 @@
 #include <math.h>
 #include "aurdraw.h"
 
-static inline void AurModelTrace4();
-static inline void AurModelTrace3();
-static inline void AurModelTrace2();
-static inline void AurModelTrace1();
-#define AURMODEL_TRACE() AurModelTrace1()
-
 int PartTriMesh::m_nNextPartID = 1;
 
 int PartProjection::m_nNextProjectionID = 1;
@@ -107,7 +101,6 @@ const int TileData::DO_NOT_FADE = 2;
 // PC 0x004525E0 GOG 0x00452720
 MaxFace::MaxFace()
 {
-    AURMODEL_TRACE();
     ++countmaxfaces;
     m_nSurfaceType = 0;
 }
@@ -394,25 +387,6 @@ const char* spawn(char* sCommand)
     }
     return "success";
 #endif
-}
-
-static inline void AurModelTrace4()
-{
-    AurModelTrace3();
-}
-
-static inline void AurModelTrace3()
-{
-    AurModelTrace2();
-}
-
-static inline void AurModelTrace2()
-{
-    AurModelTrace1();
-}
-
-static inline void AurModelTrace1()
-{
 }
 
 #ifdef _XBOX
@@ -1119,7 +1093,6 @@ static void findallmaterials(Part* pPart, List<Material*>& lMaterials);
 // PC 0x0045C350 GOG 0x0045C490
 Part* MdlNodeLightsaber::InternalCreateInstance(Gob*)
 {
-    AurModelTrace4();
     return new PartLightsaber(this);
 }
 // PC 0x0045C3C0 GOG 0x0045C500
@@ -1723,7 +1696,6 @@ Gob* FindGob(char* sName)
 // PC 0x00453390 GOG 0x004534D0
 void Gob::SetUpImposters(int nImposterType, float* pfImposterValues)
 {
-    AURMODEL_TRACE();
     m_nImposterType = nImposterType;
 #ifdef _XBOX
     m_nImposters = 0;
@@ -3342,7 +3314,6 @@ float Gob::GetMaximumLightRadius()
 // PC 0x0045C230 GOG 0x00423BB0
 template <> inline SafePointer<CAurObject>& SafePointer<CAurObject>::operator=(CAurObject* pObject)
 {
-    AurModelTrace3();
     SetPointer(pObject);
     return *this;
 }

@@ -18,8 +18,6 @@
 
 #include "factionmanager.h"
 
-static inline void NwsencounterTrace1();
-#define NWSENCOUNTER_TRACE() NwsencounterTrace1()
 CEncounterListEntry& CEncounterListEntry::operator=(
     const CEncounterListEntry& other)
 {
@@ -36,7 +34,6 @@ CEncounterListEntry& CEncounterListEntry::operator=(
 void CSWSEncounter::PadOutCreatureCount(CEncounterListEntry* pEntries,
                                         int& nCount)
 {
-    NWSENCOUNTER_TRACE();
     int nRemaining;
     float fCost;
     int nFirst;
@@ -293,9 +290,6 @@ void CSWSEncounter::TallyEnemyRadiusPoints()
     }
 }
 
-static inline void NwsencounterTrace1()
-{
-}
 // PC 0x0056B6C0 GOG 0x0056B7F0
 CEncounterSpawnPoint::CEncounterSpawnPoint()
     : m_fOrientation(0.0f)
@@ -641,7 +635,6 @@ int CSWSEncounter::LoadEncounterGeometry(CResGFF* pRes, CResList& lstGeometry)
 void CSWSEncounter::ReadEncounterScriptsFromGff(CResGFF* pRes,
                                                CResStruct* pStruct)
 {
-    NWSENCOUNTER_TRACE();
     int bSuccess;
 
     {
@@ -683,7 +676,6 @@ void CSWSEncounter::ReadEncounterScriptsFromGff(CResGFF* pRes,
 // PC 0x0056C120 GOG 0x0056C250
 void CSWSEncounter::SetDifficulty(int nDifficulty)
 {
-    NWSENCOUNTER_TRACE();
     float fDifficulty = 0.0f;
 #ifdef _XBOX
     CTwoDimArrays* pArraysForEncounterDifficulty = g_pRules->m_p2DArrays;
@@ -711,7 +703,6 @@ void CSWSEncounter::SetDifficulty(int nDifficulty)
 // PC 0x0056C1D0 GOG 0x0056C300
 void CSWSEncounter::UpdateActivateAreaList(unsigned long oidObject)
 {
-    NWSENCOUNTER_TRACE();
     CSWSArea* pArea = GetArea();
     int nIndex;
     int nAreaIndex;
@@ -783,7 +774,6 @@ void CSWSEncounter::UpdateActivateAreaList(unsigned long oidObject)
 void CSWSEncounter::BuildInitialSpawnList(CEncounterListEntry* pEntries,
                                          int& nCount)
 {
-    NWSENCOUNTER_TRACE();
     int nToSpawn = m_nRecommendedCreatures +
                    rand() % (m_nMaxCreatures - m_nRecommendedCreatures + 1);
     if (nToSpawn > 0)

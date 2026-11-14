@@ -10,7 +10,6 @@
 
 static inline void AurprimitiveTrace2();
 static inline void AurprimitiveTrace1();
-#define AURPRIMITIVE_TRACE() AurprimitiveTrace1()
 
 const unsigned char NodeVertex::NODEVERTEX_ANIM_ID = 1;
 const unsigned char NodeVertex::NODEVERTEX_DANGLY_ID = 2;
@@ -168,7 +167,6 @@ VertexPrimitiveSkinned::~VertexPrimitiveSkinned()
 // PC 0x00495450 GOG 0x00495510
 VertexPrimitiveDangly::~VertexPrimitiveDangly()
 {
-    AurprimitiveTrace2();
     delete[] m_pOffsets;
 }
 // PC 0x004954D0 GOG 0x00495590
@@ -224,7 +222,6 @@ NodeVertexAnim::NodeVertexAnim(Vector* pPosition, Vector* pTexCoord0,
 VertexPrimitiveFlat::VertexPrimitiveFlat(PartTriMesh* pPart)
     : VertexPrimitive(pPart)
 {
-    AurprimitiveTrace2();
 #ifdef _XBOX
     m_pNode = (MdlNodeTriMesh*)m_pPart->m_pNode;
 #else
@@ -404,7 +401,6 @@ unsigned char* VertexPrimitiveFlat::ReconnectArraysVAR(unsigned char* pData)
 // PC 0x00495960 GOG 0x00495A20
 unsigned char* VertexPrimitiveSkinned::ReconnectArraysVAR(unsigned char* pData)
 {
-    AurprimitiveTrace2();
     unsigned char* pNext = VertexPrimitiveFlat::ReconnectArraysVAR(pData);
 #ifdef _XBOX
     int nVertices = m_pNode->m_nVertexCount;

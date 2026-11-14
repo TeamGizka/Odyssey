@@ -40,7 +40,6 @@ int CSWCAnimBaseTrigger::LoadModel(const CResRef& sResRef, unsigned char nType)
 // PC 0x00756D50 GOG 0x00756B80
 CExoString CSWCAnimBaseTrigger::GetAnimationName(unsigned short nAnimation)
 {
-    NWCANIMBASETRIGGER_TRACE();
     unsigned short nClientAnimation = ServerToClientAnimation(nAnimation);
     CExoString sName;
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;

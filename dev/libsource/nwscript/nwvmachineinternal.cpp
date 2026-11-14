@@ -15,7 +15,6 @@ static inline void VirtualMachineTrace();
 // PC 0x0061D890 GOG 0x0061D860
 void CVirtualMachineStack::AssignLocationToLocation(int nSource, int nDestination)
 {
-    VIRTUALMACHINE_TRACE();
     CExoString* pSourceString;
     CExoString* pString;
 

@@ -18,8 +18,6 @@
 #include "twodimarrays.h"
 #include "serveraimaster.h"
 
-static inline void ServeraimasterTrace2();
-static inline void ServeraimasterTrace1();
 
 
 int g_nServerAIUnused = 0;
@@ -172,20 +170,10 @@ BOOL CServerAIMaster::EventPending(unsigned long nCalendarDay,
     return TRUE;
 }
 
-static inline void ServeraimasterTrace2()
-{
-    ServeraimasterTrace1();
-}
-
-static inline void ServeraimasterTrace1()
-{
-}
-
 // PC 0x004DC9A0 GOG 0x004DCD90
 void LogEventAddGetObject(unsigned long oidObject, CExoString& sName,
                           CExoString& sType)
 {
-    ServeraimasterTrace1();
     CSWSObject* pObject = NULL;
     CExoString* pTag;
     CGameObject* pGameObject =
@@ -927,7 +915,6 @@ BOOL CServerAIBodyBagInfo::LoadBodyBag(CResGFF* pRes, CResStruct* pStruct)
 // PC 0x004DE0B0 GOG 0x004DE1D0
 BOOL CServerAIMaster::AddObject(CSWSObject* pObject, int nAILevel)
 {
-    ServeraimasterTrace2();
     if (nAILevel > 4 || nAILevel < 0 || pObject == NULL)
     {
         return FALSE;

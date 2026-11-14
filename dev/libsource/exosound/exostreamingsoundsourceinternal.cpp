@@ -120,7 +120,6 @@ CExoStreamingSoundSourceInternal::~CExoStreamingSoundSourceInternal()
 // PC 0x00627DD0 GOG 0x00627D70
 void CExoStreamingSoundSourceInternal::InitializeSource()
 {
-    ExostreamingsoundsourceinternalTrace1();
     char szHeader[5];
     if (m_hStream == NULL && m_bReservedStream == 0 &&
         g_generalStreamingHandlesAvailable <= 0)
@@ -304,7 +303,6 @@ void CExoStreamingSoundSourceInternal::InitializeSource()
 // PC 0x006283D0 GOG 0x00628370
 int CExoStreamingSoundSourceInternal::IsPlaying()
 {
-    ExostreamingsoundsourceinternalTrace1();
     char szResRef[17];
     if (m_pSoundInternal->m_bInitialized != 0 && m_hStream != NULL)
     {

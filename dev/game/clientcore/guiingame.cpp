@@ -73,19 +73,11 @@
 
 #define DIALOG_CAMERA_GRAN_PULLBACK_OFFSET 0.25f
 
-static inline void GuiingameTrace2();
-static inline void GuiingameTrace1();
-#define GUIINGAME_HOOK() GuiingameTrace2()
 
-static inline CServerExoApp* ServerExoAppLate3(CAppManager* p);
-static inline CServerExoApp* ServerExoAppLate2(CAppManager* p);
-static inline CServerExoApp* ServerExoAppLate1(CAppManager* p);
 
 static inline CClientExoApp* ClientExoAppLate2(CAppManager* p);
 static inline CClientExoApp* ClientExoAppLate1(CAppManager* p);
 
-static inline void GuiInGameTrace();
-#define GUIINGAME_TRACE() GuiInGameTrace()
 
 CSWGuiPanel* g_pDynamicGUI = 0;
 int trapbadstrref = 0;
@@ -180,10 +172,6 @@ const char* ShowGUI(char* sCommand)
 }
 #endif
 
-static inline void GuiInGameTrace()
-{
-}
-
 static inline CClientExoApp* ClientExoAppLate2(CAppManager* p)
 {
     return ClientExoAppLate1(p);
@@ -194,33 +182,9 @@ static inline CClientExoApp* ClientExoAppLate1(CAppManager* p)
     return p->m_pClientExoApp;
 }
 
-static inline CServerExoApp* ServerExoAppLate3(CAppManager* p)
-{
-    return ServerExoAppLate2(p);
-}
-
-static inline CServerExoApp* ServerExoAppLate2(CAppManager* p)
-{
-    return ServerExoAppLate1(p);
-}
-
-static inline CServerExoApp* ServerExoAppLate1(CAppManager* p)
-{
-    return p->m_pServerExoApp;
-}
-
-static inline void GuiingameTrace2()
-{
-    GuiingameTrace1();
-}
-
-static inline void GuiingameTrace1()
-{
-}
 // PC 0x0067CAE0 GOG 0x0067C8B0
 void CSWGuiStatusSummary::AddExperience(int nExperience)
 {
-    GUIINGAME_TRACE();
     if (nExperience != 0)
     {
         m_cStatusSummary.m_nExperience += nExperience;
@@ -230,7 +194,6 @@ void CSWGuiStatusSummary::AddExperience(int nExperience)
 // PC 0x0067CB00 GOG 0x0067C8D0
 void CSWGuiStatusSummary::AddStealthExperience(int nExperience)
 {
-    GUIINGAME_TRACE();
     if (nExperience != 0)
     {
         m_cStatusSummary.m_nStealthExperience += nExperience;
@@ -589,7 +552,6 @@ void CGuiInGame::ClearDialogAnimationData()
 // PC 0x0067CDB0 GOG 0x0067CB90
 int CGuiInGame::InitializeStuntModelData(unsigned long nModels)
 {
-    GUIINGAME_TRACE();
     int nResult = 0;
     if (nModels != 0)
     {
@@ -2232,7 +2194,6 @@ CExoString CGuiInGame::GetCameraAnimationName(unsigned short nAnimation)
 // PC 0x0067F060 GOG 0x0067EE40
 int CGuiInGame::InitializeShotCamera()
 {
-    GUIINGAME_TRACE();
     if (m_bShotCameraInitialized == 0)
     {
         CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
@@ -2273,7 +2234,6 @@ void CGuiInGame::LoadAmbientTrackForDialog(const CResRef& cAmbientTrack)
 void CGuiInGame::SetComputerCameraShot(int nCamera, unsigned long oidTarget,
                                      int nVideoEffect)
 {
-    GUIINGAME_TRACE();
     if (m_nPlaceableCameras != 0)
     {
         if (nVideoEffect != CAMERA_VIDEO_EFFECT_UNCHANGED &&
@@ -2347,7 +2307,6 @@ void CGuiInGame::ResetComputerCameraShot()
 // PC 0x0067F480 GOG 0x0067F260
 void CGuiInGame::EndDialogCamera()
 {
-    GUIINGAME_TRACE();
     CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
     pModule->RestoreCamera();
     m_bAnimatedCameraActive = 0;
@@ -2410,7 +2369,6 @@ int CGuiInGame::GetMessageBufferSize()
 // PC 0x0067F5A0 GOG 0x0067F380
 int CGuiInGame::LoadStuntModelsForDialog()
 {
-    GUIINGAME_TRACE();
     char sModel[17];
     for (unsigned long nModel = 0; nModel < m_nStuntModels; ++nModel)
     {
@@ -2441,7 +2399,6 @@ int CGuiInGame::LoadStuntModelsForDialog()
 // PC 0x0067F670 GOG 0x0067F450
 void CGuiInGame::UnloadStuntModelsForDialog()
 {
-    GUIINGAME_TRACE();
     for (unsigned long nModel = 0; nModel < m_nStuntModels; ++nModel)
     {
         CSWCObject* pObject = g_pAppManager->GetClientExoApp()->GetGameObject(
@@ -2579,7 +2536,6 @@ void CGuiInGame::ShowBarkBubble(unsigned long oidObject,
 // PC 0x0067FAA0 GOG 0x0067F880
 void CGuiInGame::ShowGalaxyMapGui(int nPlanet)
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0 && m_pPartySelection == 0 &&
         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_nGlobalDialogState == 0)
     {
@@ -2606,7 +2562,6 @@ void CGuiInGame::ShowGalaxyMapGui(int nPlanet)
 // PC 0x0067FC30 GOG 0x0067FA10
 void CGuiInGame::HideGalaxyMapGui()
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (g_pAppManager->m_pClientExoApp->GetPausedByCombat() != 0)
@@ -2633,7 +2588,6 @@ void CGuiInGame::HideGalaxyMapGui()
 // PC 0x0067FCE0 GOG 0x0067FAC0
 void CGuiInGame::ShowItemCreateMenu()
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         m_pGuiManager->AddPanel(m_pItemCreateMenu, CSWGuiManager::PANEL_MODE_BACKGROUND, 1);
@@ -2647,7 +2601,6 @@ void CGuiInGame::ShowItemCreateMenu()
 // PC 0x0067FD10 GOG 0x0067FAF0
 void CGuiInGame::HideItemCreateMenu()
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (m_pGuiManager->PanelExists(m_pItemCreateMenu) != 0)
@@ -2676,7 +2629,6 @@ void CGuiInGame::HideItemCreateMenu()
 // PC 0x0067FD80 GOG 0x0067FB60
 void CGuiInGame::ShowSubItemCreateMenu(unsigned long nSubType)
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         m_pSubItemCreateMenu->LoadItems(nSubType);
@@ -2691,7 +2643,6 @@ void CGuiInGame::ShowSubItemCreateMenu(unsigned long nSubType)
 // PC 0x0067FDC0 GOG 0x0067FBA0
 void CGuiInGame::HideSubItemCreateMenu()
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (m_pGuiManager->PanelExists(m_pSubItemCreateMenu) != 0)
@@ -2721,7 +2672,6 @@ void CGuiInGame::HideSubItemCreateMenu()
 
 void CGuiInGame::ShowExamineBox(unsigned long nStrRef, int nReturnInputClass)
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         m_pExamineBox->SetMessage(nStrRef);
@@ -2737,7 +2687,6 @@ void CGuiInGame::ShowExamineBox(unsigned long nStrRef, int nReturnInputClass)
 // PC 0x0067FE40 GOG 0x0067FC20
 void CGuiInGame::HideExamineBox()
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (m_pGuiManager->PanelExists(m_pExamineBox) != 0)
@@ -2764,7 +2713,6 @@ void CGuiInGame::HideExamineBox()
 // PC 0x0067FEB0 GOG 0x0067FC90
 void CGuiInGame::ShowContainerGui(unsigned long oidContainer, int nGuiType)
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         m_pContainer->SetContainer(oidContainer, nGuiType);
@@ -2780,7 +2728,6 @@ void CGuiInGame::ShowContainerGui(unsigned long oidContainer, int nGuiType)
 // PC 0x0067FF10 GOG 0x0067FCF0
 void CGuiInGame::HideContainerGui()
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0 &&
         m_pGuiManager->PanelExists(m_pContainer) != 0)
     {
@@ -2797,7 +2744,6 @@ void CGuiInGame::HideContainerGui()
 // PC 0x0067FF70 GOG 0x0067FD50
 int CGuiInGame::IsAnimationPlayingInDialog()
 {
-    GUIINGAME_TRACE();
     int bPlaying = 0;
     unsigned long i = 0;
     if (i < (unsigned long)m_nDialogAnimations)
@@ -2839,7 +2785,6 @@ int CGuiInGame::IsLoopingDialogStuntAnimation(unsigned short nAnimation)
 // PC 0x00680010 GOG 0x0067FDF0
 int CGuiInGame::IsOverlayDialogAnimation(unsigned short nAnimation)
 {
-    GUIINGAME_TRACE();
     if (nAnimation >= SERVER_ANIMATION_FIRST &&
         nAnimation < g_pRules->m_p2DArrays->m_pDialogAnimations->GetNumRows() +
                          SERVER_ANIMATION_FIRST)
@@ -2866,7 +2811,6 @@ int CGuiInGame::IsOverlayDialogAnimation(unsigned short nAnimation)
 // PC 0x006800C0 GOG 0x0067FEA0
 void CGuiInGame::HideLoadModuleDebugMenu()
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (m_pGuiManager->PanelExists(m_pLoadModuleDebugMenu) != 0)
@@ -2895,7 +2839,6 @@ void CGuiInGame::HideLoadModuleDebugMenu()
 // PC 0x00680130 GOG 0x0067FF10
 void CGuiInGame::HidePowersFeatsSkillsDebugMenu()
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (m_pGuiManager->PanelExists(m_pPowersFeatsSkillsDebugMenu) != 0)
@@ -2924,7 +2867,6 @@ void CGuiInGame::HidePowersFeatsSkillsDebugMenu()
 // PC 0x006801A0 GOG 0x0067FF80
 void CGuiInGame::UnlockDialogParticipantOrientations()
 {
-    GUIINGAME_TRACE();
     CSWCObject* pObject =
         g_pAppManager->m_pClientExoApp->GetGameObject(m_oidDialogObject1);
     if (pObject != 0 && pObject->AsSWCCreature() != 0)
@@ -2957,13 +2899,11 @@ int CGuiInGame::IsCameraDialog()
 // PC 0x00680280 GOG 0x00680060
 int CGuiInGame::IsInDialog(unsigned long oidObject)
 {
-    GUIINGAME_TRACE();
     return m_oidDialogObject1 == oidObject || m_oidDialogObject2 == oidObject;
 }
 // PC 0x006802B0 GOG 0x00680090
 int CGuiInGame::ShowLevelUpGUI(int bAutomatic)
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0 &&
         g_pAppManager->m_pClientExoApp->GetInGameGui()->m_LevelUpMode != 0)
     {
@@ -3001,7 +2941,6 @@ int CGuiInGame::ShowLevelUpGUI(int bAutomatic)
 void CGuiInGame::ShowPartySelection(const CExoString& sExitScript, int bAllowCancel,
                                     int nForceNPC1, int nForceNPC2, int nUnknown)
 {
-    GUIINGAME_TRACE();
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
     if (m_bItemCreateMenuAvailable != 0)
     {
@@ -3074,7 +3013,6 @@ int CGuiInGame::IsGlobalFading()
 #ifndef _XBOX
 int CGuiInGame::IsGlobalFadeObscuring()  // PC 0x00680630 GOG 0x00680410
 {
-    GUIINGAME_TRACE();
     return m_pGlobalFade->m_fAlpha > 0.001f;
 }
 #endif
@@ -3083,7 +3021,6 @@ int CGuiInGame::IsGlobalFadeObscuring()  // PC 0x00680630 GOG 0x00680410
 
 int CGuiInGame::IsGlobalFadeObscuring()
 {
-    GUIINGAME_TRACE();
     return m_pGlobalFade->IsObscuring();
 }
 #endif
@@ -3170,7 +3107,6 @@ void CGuiInGame::PostDialogSoundText(const CExoString& sSound)
 
 int CGuiInGame::HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSound)
 {
-    GUIINGAME_TRACE();
     CExoString sSound;
     cSound.CopyToString(sSound);
     PostDialogSoundText(sSound);
@@ -3240,7 +3176,6 @@ const char* showcredits(char* sCommand)
 
 int CGuiInGame::SetAnimatedCamera(unsigned short nAnimation, float fFieldOfView)
 {
-    GUIINGAME_TRACE();
     if (m_bAnimatedCameraLoaded != 0 &&
         nAnimation >= CUTSCENE_ANIMATION_FIRST &&
         nAnimation <= CUTSCENE_ANIMATION_WL_LAST)
@@ -3298,7 +3233,6 @@ void CGuiInGame::SetPlaceableCamera(int nCamera, int nPlaceableID,
 #ifdef _XBOX
 void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (bPaused != 0)
@@ -3343,7 +3277,6 @@ void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)
 #else
 void CGuiInGame::SetPaused(int bPaused, unsigned char nReason)  // PC 0x00680700 GOG 0x006804E0
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (bPaused != 0)
@@ -3420,7 +3353,6 @@ int CGuiInGame::HandleDialogReplyChosen(unsigned long oidSpeaker,
                                       unsigned char nFlags,
                                       int bSelected)
 {
-    GUIINGAME_TRACE();
     CExoString sReply(sText);
     if (!sText.IsEmpty())
     {
@@ -3436,7 +3368,6 @@ int CGuiInGame::HandleDialogReplyChosen(unsigned long oidSpeaker,
 }
 void CGuiInGame::ShowStoreGui(unsigned long oidStore, unsigned long oidCreature)  // PC 0x00680A00 GOG 0x006807E0
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0 && m_pPartySelection == 0 &&
         m_nGlobalDialogState == 0)
     {
@@ -3463,7 +3394,6 @@ void CGuiInGame::ShowStoreGui(unsigned long oidStore, unsigned long oidCreature)
 // PC 0x00680B90 GOG 0x00680970
 void CGuiInGame::HideStoreGui()
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (g_pAppManager->m_pClientExoApp->GetPausedByCombat() != 0)
@@ -3534,7 +3464,6 @@ int CGuiInGame::SetDialogSelection(int nReply, int nReplyCount, int bSelected)
 // PC 0x00680CC0 GOG 0x00680AA0
 void CGuiInGame::ShowSoloModeQuery(int nQuery)
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable && m_pGuiManager && m_pSoloModeQuery)
     {
         CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
@@ -3581,7 +3510,6 @@ void CGuiInGame::ShowSoloModeQuery(int nQuery)
 // PC 0x00680E40 GOG 0x00680C20
 void CGuiInGame::HideSoloMode()
 {
-    GUIINGAME_TRACE();
     if (m_pGuiManager->PanelExists(m_pSoloModeQuery))
     {
         if (!m_bPaused)
@@ -3600,7 +3528,6 @@ void CGuiInGame::ShowUpgradeScreen(unsigned long oidItem, unsigned long oidChara
                                    int bDisableItemCreation, int bDisableUpgrade,
                                    CExoString sOverride2DA)
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (m_pGuiManager != 0)
@@ -3646,7 +3573,6 @@ void CGuiInGame::ShowUpgradeScreen(unsigned long oidItem, unsigned long oidChara
 // PC 0x00681080 GOG 0x00680E60
 void CGuiInGame::ShowChemicalUpgradeScreen(unsigned long oidCharacter)
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (m_pGuiManager != 0)
@@ -3671,7 +3597,6 @@ void CGuiInGame::ShowChemicalUpgradeScreen(unsigned long oidCharacter)
 // PC 0x00681170 GOG 0x00680F50
 void CGuiInGame::HideUpgradeScreen()
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (m_pGuiManager != 0)
@@ -3700,7 +3625,6 @@ void CGuiInGame::HideUpgradeScreen()
 // PC 0x00681200 GOG 0x00680FE0
 void CGuiInGame::HideChemicalUpgradeScreen()
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (m_pGuiManager != 0)
@@ -3725,7 +3649,6 @@ void CGuiInGame::HideChemicalUpgradeScreen()
 // PC 0x00681290 GOG 0x00681070
 void CGuiInGame::ShowSwoopUpgradeScreen(unsigned long oidItem)
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (m_pGuiManager != 0)
@@ -3754,7 +3677,6 @@ void CGuiInGame::ShowSwoopUpgradeScreen(unsigned long oidItem)
 // PC 0x00681390 GOG 0x00681170
 void CGuiInGame::HideSwoopUpgradeScreen()
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         if (m_pGuiManager != 0)
@@ -3919,7 +3841,6 @@ void CGuiInGame::SetAreaTransition(unsigned long oidArea,  // PC 0x006818C0 GOG 
 // PC 0x006818F0 GOG 0x006816D0
 void CGuiInGame::HideAreaTransition()
 {
-    GUIINGAME_TRACE();
     if (g_pAppManager->m_pClientExoApp->GetModule() != 0)
     {
         CSWCModule* pModule = g_pAppManager->m_pClientExoApp->GetModule();
@@ -3950,7 +3871,6 @@ void CGuiInGame::HideAreaTransition()
 // PC 0x006819C0 GOG 0x006817A0
 int CGuiInGame::GetBarkBubbleVisible(int& nTop)
 {
-    GUIINGAME_TRACE();
     CSWGuiExtent* pExtent;
 
     if (m_pBarkBubble == 0 || m_pGuiManager->PanelExists(m_pBarkBubble) == 0)
@@ -3964,7 +3884,6 @@ int CGuiInGame::GetBarkBubbleVisible(int& nTop)
 // PC 0x00681A00 GOG 0x006817E0
 Vector CGuiInGame::GetAreaTranstionPosition()
 {
-    GUIINGAME_TRACE();
     if (m_pAreaTransition == NULL)
     {
         return Vector();
@@ -3982,7 +3901,6 @@ void CGuiInGame::RePopulateMainInterface()
 // PC 0x00681A60 GOG 0x00681840
 Vector CGuiInGame::GetDialogCameraPosition(int bLookAhead)
 {
-    GUIINGAME_TRACE();
     CSWCCreature* pCreature = g_pAppManager->m_pClientExoApp->GetPlayerCreature();
     Vector vResult;
     if (pCreature != 0)
@@ -4102,7 +4020,6 @@ void CGuiInGame::UpdateStatus(unsigned char nMessage, int nValue)
 // PC 0x00681DB0 GOG 0x00681B90
 int CGuiInGame::GetPendingStatusSummary()
 {
-    GUIINGAME_TRACE();
     return m_pStatusSummary != 0 &&
            (m_pStatusSummary->m_cStatusSummary.m_bDisplaySPending ||
             m_pStatusSummary->m_cStatusSummary.m_bSoundPending);
@@ -4110,7 +4027,6 @@ int CGuiInGame::GetPendingStatusSummary()
 // PC 0x00681DD0 GOG 0x00681BB0
 void CGuiInGame::SetStatusSummary(const CStatusSummary& cSummary)
 {
-    GUIINGAME_TRACE();
     if (m_pStatusSummary != 0)
     {
         m_pStatusSummary->m_cStatusSummary = cSummary;
@@ -4127,7 +4043,6 @@ void CGuiInGame::SetStatusSummary(const CStatusSummary& cSummary)
 // PC 0x00681E30 GOG 0x00681C10
 void CGuiInGame::GetStatusSummary(CStatusSummary& cSummary)
 {
-    GUIINGAME_TRACE();
     if (m_pStatusSummary != 0)
     {
         cSummary = m_pStatusSummary->m_cStatusSummary;
@@ -4136,7 +4051,6 @@ void CGuiInGame::GetStatusSummary(CStatusSummary& cSummary)
 // PC 0x00681E50 GOG 0x00681C30
 void CGuiInGame::SuppressStatusSummary(int nNumEntries)
 {
-    GUIINGAME_TRACE();
     if (m_pStatusSummary != 0 && nNumEntries >= 0)
     {
         m_pStatusSummary->m_cStatusSummary.m_nSuppressed = nNumEntries;
@@ -4153,7 +4067,6 @@ void CGuiInGame::ShowFlashingStatus(unsigned char nStatus)
 // PC 0x00681E90 GOG 0x00681C70
 int CGuiInGame::CanPlayDialogAnimations(unsigned long oidObject)
 {
-    GUIINGAME_TRACE();
     if (oidObject != OBJECT_INVALID)
     {
         CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
@@ -4204,7 +4117,6 @@ int CGuiInGame::ShowTutorialWindow(unsigned char nReason,
                                   unsigned long oidTarget,
                                   unsigned long nActionParam)
 {
-    GUIINGAME_TRACE();
     if (!g_pAppManager->m_pClientExoApp->GetClientOptions()->m_bTutorialPopups
         || nReason >= TUTORIAL_WINDOW_COUNT)
     {
@@ -4232,7 +4144,6 @@ int CGuiInGame::ShowTutorialWindow(unsigned char nReason,
 // PC 0x00682040 GOG 0x00681E20
 void CGuiInGame::EnterControllerPauseState()
 {
-    GUIINGAME_TRACE();
     CSWGuiPanel* pPanel;
     int bPausedByCombat;
 
@@ -4255,7 +4166,6 @@ void CGuiInGame::EnterControllerPauseState()
 // PC 0x006820A0 GOG 0x00681E80
 void CGuiInGame::ResetInterfaceForSize()
 {
-    GUIINGAME_TRACE();
     if (m_pMainInterface != 0)
     {
         delete m_pMainInterface;
@@ -4314,7 +4224,6 @@ void CGuiInGame::UpdateControllerPauseState()
 // PC 0x006822C0 GOG 0x006820A0
 void CGuiInGame::EndControllerPauseState()
 {
-    GUIINGAME_TRACE();
     m_bControllerPauseActive = 0;
     g_pExoInput->ClearEvents();
     if (m_bInputActiveBeforeControllerPause == 1)
@@ -4359,7 +4268,6 @@ int CGuiInGame::IsPauseGUIVisible()
 // PC 0x00682340 GOG 0x00682120
 unsigned char CGuiInGame::GetInterfaceOffset()
 {
-    GUIINGAME_TRACE();
     if (m_pMainInterface != 0)
     {
         return m_pMainInterface->m_nInterfaceOffset;
@@ -4385,7 +4293,6 @@ void CGuiInGame::ShowDialogMessage()
 // PC 0x006823A0 GOG 0x00682180
 int CGuiInGame::GetMiniMapVisible()
 {
-    GUIINGAME_TRACE();
     if (!g_pAppManager->m_pClientExoApp->GetClientOptions()->m_bMiniMap)
     {
         return 0;
@@ -4504,7 +4411,6 @@ void CGuiInGame::SetGlobalUnpauseableState(int bUnpauseable)  // PC 0x006826D0 G
 // PC 0x00682700 GOG 0x006824E0
 void CGuiInGame::MarkNoClickEvent(unsigned long nMilliseconds)
 {
-    GUIINGAME_TRACE();
     CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
     pApp->GetWorldTimer()->GetWorldTime(&m_nNoClickDay, &m_nNoClickTime);
     m_nNoClickDuration = nMilliseconds;
@@ -4512,7 +4418,6 @@ void CGuiInGame::MarkNoClickEvent(unsigned long nMilliseconds)
 // PC 0x00682740 GOG 0x00682520
 int CGuiInGame::GetCanClick()
 {
-    GUIINGAME_TRACE();
     unsigned long nElapsedTime = 0;
     unsigned long nCurrentTime;
     unsigned long nCurrentDay;
@@ -4538,7 +4443,6 @@ void CGuiInGame::SetDialogSound(unsigned long nSoundId, const CResRef& cSound)
 // PC 0x00682800 GOG 0x006825E0
 void CGuiInGame::UpdateDialogLipSync()
 {
-    GUIINGAME_TRACE();
     if (m_nDialogSoundId != OBJECT_INVALID && m_pDialogSound != 0 &&
         m_pDialogSound->IsPlaying() && m_pDialogSound->GetHasStartedStreaming())
     {
@@ -4561,7 +4465,6 @@ void CGuiInGame::SetDeferredFOVCallForAnimatedCutscenes(float fFieldOfView)
 // PC 0x006828C0 GOG 0x006826A0
 int CGuiInGame::GetFadeOverridePanelVisible()
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0 && m_pGuiManager != 0)
     {
         return (m_pGalaxyMap != 0 && m_pGuiManager->PanelExists(m_pGalaxyMap) && m_pGalaxyMap->m_bVisible) ||
@@ -4575,7 +4478,6 @@ int CGuiInGame::GetFadeOverridePanelVisible()
 // PC 0x00682980 GOG 0x00682760
 void CGuiInGame::FadeAndStopDialogAmbientTrack()
 {
-    GUIINGAME_TRACE();
     if (m_pDialogAmbientTrack != 0)
     {
         g_pAppManager->m_pClientExoApp->FadeAndStopStreamingSoundSource(
@@ -4732,7 +4634,6 @@ int CGuiInGame::GetPartyAccessPanelUp(int bAny)
 void CGuiInGame::AppendToMsgBuffer(const CExoString& sMessage,
                                    unsigned long nType, unsigned char nColor)
 {
-    GUIINGAME_TRACE();
     if (sMessage != "")
     {
         if (m_MessageBufferSize >= 64)
@@ -4752,7 +4653,6 @@ void CGuiInGame::AppendToMsgBuffer(const CExoString& sMessage,
 void CGuiInGame::AppendToDialogBuffer(const CExoString& sMessage,
                                       const CExoString& sSpeaker)
 {
-    GUIINGAME_TRACE();
     if (sMessage != "")
     {
         if (m_nDialogBufferSize >= 64)
@@ -4772,7 +4672,6 @@ void CGuiInGame::AppendToDialogBuffer(const CExoString& sMessage,
 void CGuiInGame::ShowDialogEntry(const CExoString& sMessage,
                                  unsigned long oidOwner, unsigned long nFlags)
 {
-    GUIINGAME_TRACE();
     if (m_nReplies <= 1u)
     {
         g_pAppManager->m_pClientExoApp->m_pcExoAppInternal->HideMouse(16);
@@ -4820,7 +4719,6 @@ void CGuiInGame::ShowDialogEntry(const CExoString& sMessage,
 // PC 0x00683100 GOG 0x00682EE0
 int CGuiInGame::StoreLastDialogAnimationData()
 {
-    GUIINGAME_TRACE();
     int i;
 
     ClearLastDialogAnimationData();
@@ -4840,7 +4738,6 @@ int CGuiInGame::StoreLastDialogAnimationData()
 // PC 0x006831D0 GOG 0x00682FB0
 void CGuiInGame::ClearRepliesData()
 {
-    GUIINGAME_TRACE();
     if (m_asReplyText != 0)
     {
         delete[] m_asReplyText;
@@ -4952,7 +4849,6 @@ void CGuiInGame::ClearRepliesData()
 #ifndef _XBOX
 int CGuiInGame::SetAnimatedCamera(unsigned short nAnimation, float fFieldOfView)  // PC 0x006836D0 GOG 0x006834B0
 {
-    GUIINGAME_TRACE();
     if (m_bAnimatedCameraLoaded == 0 ||
         nAnimation < CUTSCENE_ANIMATION_FIRST ||
         nAnimation > CUTSCENE_ANIMATION_WL_LAST)
@@ -5269,7 +5165,6 @@ int CGuiInGame::ShowSWInGameGui()
 int CGuiInGame::ShowSWInGameGui(int nMenu)
 #endif
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         CSWGuiManager* pGuiManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
@@ -5324,7 +5219,6 @@ int CGuiInGame::ShowSWInGameGui(int nMenu)
 #ifdef _XBOX
 int CGuiInGame::HideSWInGameGui()
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         CSWGuiManager* pGuiManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
@@ -5363,7 +5257,6 @@ int CGuiInGame::HideSWInGameGui()
 #else
 int CGuiInGame::HideSWInGameGui(int bHidePause)  // PC 0x00683F10 GOG 0x00683CF0
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         CSWGuiManager* pGuiManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
@@ -5413,7 +5306,6 @@ int CGuiInGame::HideSWInGameGui(int bHidePause)  // PC 0x00683F10 GOG 0x00683CF0
 // PC 0x00684070 GOG 0x00683E50
 void CGuiInGame::NextSWInGameGui()
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         CSWGuiManager* pGuiManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
@@ -5444,7 +5336,6 @@ void CGuiInGame::NextSWInGameGui()
 // PC 0x00684190 GOG 0x00683F70
 void CGuiInGame::PrevSWInGameGui()
 {
-    GUIINGAME_TRACE();
     if (m_bItemCreateMenuAvailable != 0)
     {
         CSWGuiManager* pGuiManager = g_pAppManager->m_pClientExoApp->GetSWGuiManager();
@@ -5475,7 +5366,6 @@ void CGuiInGame::PrevSWInGameGui()
 // PC 0x006842B0 GOG 0x00684090
 void CGuiInGame::SwitchToSWInGameGui(int nMenu)
 {
-    GUIINGAME_TRACE();
     if (nMenu >= 0 && nMenu < IN_GAME_SCREEN_COUNT &&
         nMenu != m_nLastGuiPanel && m_bItemCreateMenuAvailable != 0)
     {
@@ -5504,7 +5394,6 @@ void CGuiInGame::SwitchToSWInGameGui(int nMenu)
 // PC 0x006843E0 GOG 0x006841C0
 int CGuiInGame::IsLoopingDialogAnimation(unsigned short nAnimation)
 {
-    GUIINGAME_TRACE();
     if (nAnimation >= SERVER_ANIMATION_FIRST &&
         nAnimation < g_pRules->m_p2DArrays->m_pDialogAnimations->GetNumRows() +
                          SERVER_ANIMATION_FIRST)
@@ -5553,7 +5442,6 @@ int CGuiInGame::IsLoopingDialogAnimation(unsigned short nAnimation)
 // PC 0x00684510 GOG 0x006842F0
 int CGuiInGame::IsFireForgetDialogAnimation(unsigned short nAnimation)
 {
-    GUIINGAME_TRACE();
     if (nAnimation >= SERVER_ANIMATION_FIRST &&
         nAnimation < g_pRules->m_p2DArrays->m_pDialogAnimations->GetNumRows() +
                          SERVER_ANIMATION_FIRST)
@@ -5610,7 +5498,6 @@ int CGuiInGame::IsFireForgetDialogAnimation(unsigned short nAnimation)
 // PC 0x00684640 GOG 0x00684420
 void CGuiInGame::CleanUpEntryNode()
 {
-    GUIINGAME_TRACE();
     m_vComputerCameraShot = Vector();
     m_bComputerCameraShot = 0;
     m_fComputerCameraMicRange = 0;
@@ -5661,7 +5548,6 @@ void CGuiInGame::CleanUpReplyNode()
 // PC 0x00684790 GOG 0x00684570
 int CGuiInGame::HandleDialogSound(unsigned long oidSpeaker, const CResRef& cSound)
 {
-    GUIINGAME_TRACE();
     CSWCObject* pObject = g_pAppManager->m_pClientExoApp->GetGameObject(
         m_oidDialogObject1);
     if (pObject == 0 || pObject->AsSWCObject() == 0)
@@ -5795,7 +5681,6 @@ unsigned long CGuiInGame::GetAreaTransitionObject()
 // PC 0x00684A90 GOG 0x00684830
 void CGuiInGame::SetGlobalDialogState(int nState)
 {
-    GUIINGAME_TRACE();
     m_nGlobalDialogState = nState;
 #ifndef _XBOX
     g_bLetterBoxMode = nState == 1;
@@ -5818,7 +5703,6 @@ void CGuiInGame::SetGlobalDialogState(int nState)
 // PC 0x00684B50 GOG 0x006848F0
 void CGuiInGame::SetLockObjectOrientationInDialog(unsigned long oidObject, int bLock)
 {
-    GUIINGAME_TRACE();
     if (bLock == 1)
     {
         CSWCObject* pObject = g_pAppManager->m_pClientExoApp->GetGameObject(oidObject);
@@ -5865,7 +5749,6 @@ void CGuiInGame::SetLockObjectOrientationInDialog(unsigned long oidObject, int b
 // PC 0x00684C40 GOG 0x006849E0
 int CGuiInGame::GetCanOrientInDialog(unsigned long oidObject)
 {
-    GUIINGAME_TRACE();
     if (oidObject != OBJECT_INVALID)
     {
         CExoLinkedListNode* pPosition = m_lDialogNoOrientList.m_pInternal->m_pHead;
@@ -5889,7 +5772,6 @@ int CGuiInGame::GetCanOrientInDialog(unsigned long oidObject)
 // PC 0x00684CA0 GOG 0x00684A40
 void CGuiInGame::SetLockHeadFollowInDialog(unsigned long oidObject, int bLock)
 {
-    GUIINGAME_TRACE();
     if (bLock == 1)
     {
         CClientExoApp* pClientApp = g_pAppManager->m_pClientExoApp;
@@ -5941,7 +5823,6 @@ void CGuiInGame::SetLockHeadFollowInDialog(unsigned long oidObject, int bLock)
 // PC 0x00684DB0 GOG 0x00684B50
 int CGuiInGame::GetCanHeadFollowInDialog(unsigned long oidObject)
 {
-    GUIINGAME_TRACE();
     if (oidObject != OBJECT_INVALID)
     {
         CExoLinkedListNode* pPosition = m_lDialogNoHeadFollowList.m_pInternal->m_pHead;
@@ -5965,7 +5846,6 @@ int CGuiInGame::GetCanHeadFollowInDialog(unsigned long oidObject)
 // PC 0x00684E10 GOG 0x00684BB0
 int CGuiInGame::TutorialReasonWillShowWindow(unsigned char nReason)
 {
-    GUIINGAME_TRACE();
     if (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_bTutorialPopups)
     {
         if (GetTutorialWindowHasBeenShown(nReason))
@@ -5983,7 +5863,6 @@ int CGuiInGame::TutorialReasonWillShowWindow(unsigned char nReason)
 // PC 0x00684E90 GOG 0x00684C30
 int CGuiInGame::IsOnDialogNonDependantList(const CExoString& sName)
 {
-    GUIINGAME_TRACE();
     if (!sName.CompareNoCase(""))
     {
         CExoString* pName = (CExoString*)m_lDialogNonDependantList.m_pInternal->GetHead();
@@ -6002,7 +5881,6 @@ int CGuiInGame::IsOnDialogNonDependantList(const CExoString& sName)
 #ifndef _XBOX
 int CGuiInGame::GetCurrentEquipScreenNPC()
 {
-    GUIINGAME_TRACE();
     int nNPC = -1;
 
     if (m_pGuiManager != 0 && m_pGuiManager->PanelExists(m_apScreenPanels[0]) != 0)
@@ -6986,7 +6864,6 @@ int CGuiInGame::HandleDialogEntry(
 // PC 0x006888C0 GOG 0x00688630
 void CGuiInGame::AddToDialogNonDependantList(const CExoString& sName)
 {
-    GUIINGAME_HOOK();
     if (!sName.CompareNoCase("") && !sName.IsEmpty() &&
         !IsOnDialogNonDependantList(sName))
     {
@@ -7206,7 +7083,6 @@ void CGuiInGame::UpdateDialog()
 // PC 0x00689310 GOG 0x00689080
 void CGuiInGame::ShowStatusSummary()
 {
-    GUIINGAME_TRACE();
     if (m_pStatusSummary != 0)
     {
         if (m_pStatusSummary->m_cStatusSummary.m_bDisplaySPending &&
@@ -7252,12 +7128,12 @@ void CGuiInGame::DoQuickLoad()
         if (pEntry->m_nSaveGame == CSWGuiSaveLoadEntry::SAVE_SLOT_QUICK)
         {
             g_pExoSound->SetSoundMode(CExoSound::CEXOSOUND_MODE_GENERIC);
-            ClientExoAppLate2(g_pAppManager)->BusyWaitMuteSound();
-            CClientExoApp* pClient = ClientExoAppLate2(g_pAppManager);
+            g_pAppManager->m_pClientExoApp->BusyWaitMuteSound();
+            CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
 
             if (pEntry->m_bMissingLiveContent && !g_bEnableLiveContentIgnore)
             {
-                CSWGuiMessageBox* pMessageBox = ClientExoAppLate2(g_pAppManager)->GetInGameGui()->m_pMessageBox;
+                CSWGuiMessageBox* pMessageBox = g_pAppManager->m_pClientExoApp->GetInGameGui()->m_pMessageBox;
                 pMessageBox->SetAllowCancel(0);
                 pMessageBox->SetCallback(NULL, NULL, NULL);
                 CExoString sMessage;
@@ -7271,7 +7147,7 @@ void CGuiInGame::DoQuickLoad()
             }
 
             CSWPartyTable::ResetCurrentSessionStartTime();
-            ClientExoAppLate2(g_pAppManager)->GetInGameGui()->SetGlobalUnpauseableState(1);
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->SetGlobalUnpauseableState(1);
             pClient->SetLoadScreenByModuleName(pEntry->m_sLastModule);
             pClient->SetLoadMusic("");
             pClient->ShowLoadScreen(0, 1, 0);
@@ -7300,9 +7176,9 @@ void CGuiInGame::DoQuickLoad()
 #else
             pClient->GetInGameGui()->HideSWInGameGui(1);
 #endif
-            ServerExoAppLate3(g_pAppManager)->SetLoadFromSaveGame(1);
+            g_pAppManager->m_pServerExoApp->SetLoadFromSaveGame(1);
             nSaveGame = pEntry->m_nSaveGame;
-            ClientExoAppLate2(g_pAppManager)->SendLoadGameRequest(
+            g_pAppManager->m_pClientExoApp->SendLoadGameRequest(
                 nSaveGame, pEntry->m_sGameName, pEntry->m_sLastModule);
             delete pEntry;
             return;

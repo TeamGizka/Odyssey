@@ -13,9 +13,6 @@
 #include "nwccreature.h"
 #include "nwtlktable.h"
 
-static inline void SwguiingamejournalTrace1();
-#define SWGUIINGAMEJOURNAL_TRACE() SwguiingamejournalTrace1()
-
 int g_nJournalSortType = 0;
 int g_bOverrideJournalSortType = 0;
 
@@ -218,7 +215,6 @@ CSWGuiInGameJournal::~CSWGuiInGameJournal()
 // PC 0x0069B650 GOG 0x0069B400
 CSWJournalEntry* CSWGuiInGameJournal::GetQuestEntryAt(int nIndex)
 {
-    SWGUIINGAMEJOURNAL_TRACE();
     CSWCJournal* pJournal = g_pAppManager->m_pClientExoApp->GetQuestJournal();
     if (g_pAppManager->m_pClientExoApp->GetInGameGui()->m_bJournalDone)
     {
@@ -717,8 +713,4 @@ void CSWGuiInGameJournal::OnPanelRemoved()
     }
 #endif
     MarkNewQuestsObserved();
-}
-
-static inline void SwguiingamejournalTrace1()
-{
 }

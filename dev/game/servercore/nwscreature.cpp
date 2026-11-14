@@ -11262,7 +11262,6 @@ int CSWSCreature::GetCurrentlyFollowingLeader()
 
 int CSWSCreature::GetTotalACEffectBonus()
 {
-    NwscreatureTrace1();
     CExoArrayList<CGameEffect*>* pEffects = &m_lstEffects;
     if (pEffects == NULL)
     {

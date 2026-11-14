@@ -12,11 +12,6 @@
 #include "nwcplaceable.h"
 #include "nwcdoor.h"
 
-static inline void SwbehaviorcameradialogTrace5();
-static inline void SwbehaviorcameradialogTrace4();
-static inline void SwbehaviorcameradialogTrace3();
-static inline void SwbehaviorcameradialogTrace2();
-static inline void SwbehaviorcameradialogTrace1();
 // PC 0x005EE1C0 GOG 0x005EE1A0
 void CSWBehaviorCameraDialog::Message(char* sMessage)
 {
@@ -111,7 +106,6 @@ void CSWBehaviorCameraDialog::GetCameraParameters(unsigned long nShot,
                                                 Vector& vPosition,
                                                 Quaternion& qOrientation)
 {
-    SwbehaviorcameradialogTrace5();
     Vector vDirection;
     Vector vLookAt;
     float fFraction;
@@ -709,28 +703,4 @@ void CSWBehaviorCameraDialog::SetShot(unsigned long oidFirst,
     m_nCameraState = 0;
     Control(0.0f);
     m_nCameraState = INITIAL_CAMERA_STATE;
-}
-
-static inline void SwbehaviorcameradialogTrace5()
-{
-    SwbehaviorcameradialogTrace4();
-}
-
-static inline void SwbehaviorcameradialogTrace4()
-{
-    SwbehaviorcameradialogTrace3();
-}
-
-static inline void SwbehaviorcameradialogTrace3()
-{
-    SwbehaviorcameradialogTrace2();
-}
-
-static inline void SwbehaviorcameradialogTrace2()
-{
-    SwbehaviorcameradialogTrace1();
-}
-
-static inline void SwbehaviorcameradialogTrace1()
-{
 }

@@ -1,7 +1,5 @@
 #include "swgui.h"
 
-static inline void SwguiTrace2();
-static inline void SwguiTrace1();
 
 int g_bDrawSafeRegion = 0;
 
@@ -108,14 +106,6 @@ static inline const Vector& SafeRegionWhite(Vector& vColor)
     return vColor;
 }
 
-static inline void SwguiTrace2()
-{
-    SwguiTrace1();
-}
-
-static inline void SwguiTrace1()
-{
-}
 // PC 0x0040A0D0 GOG 0x0040A0A0
 int CSWGuiExtent::Load(CResGFF* pGFF, CResStruct& cStruct)
 {
@@ -1235,7 +1225,6 @@ void CSWGuiManager::DisplayToolTip(const CExoString& sText)  // PC 0x0040B690 GO
 // PC 0x0040C480 GOG 0x0040C440
 void CSWGuiManager::HideAllPanels()
 {
-    SwguiTrace2();
     for (int i = 0; i < m_lPanels.num; i++)
     {
         m_lPanels.element[i]->SetVisible(0);
@@ -1808,7 +1797,6 @@ int CSWGuiManager::HandleZMouse(int nDelta)  // PC 0x0040CF20 GOG 0x0040CEE0
 #ifndef _XBOX
 void CSWGuiManager::RemoveToolTip()  // PC 0x0040CA20 GOG 0x0040C9E0
 {
-    SwguiTrace2();
     m_bToolTipShown = 0;
     ResetToolTipTimer();
     if (m_pToolTipControl != NULL)
