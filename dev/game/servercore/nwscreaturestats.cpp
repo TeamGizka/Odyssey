@@ -5877,7 +5877,8 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
             g_pAppManager->GetServerExoApp()->GetPartyTable()->m_nControlledNPC == -1;
         while (nPointsLeft > 0)
         {
-            if (nRecommended > g_pRules->m_nNumSkills)
+            unsigned char nNumSkills = g_pRules->m_nNumSkills;
+            if (nRecommended > nNumSkills)
                 break;
             int nSkill = pClass->GetRecommendedSkill(nRecommended);
             if (nSkill != -1)
@@ -5947,7 +5948,7 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
             }
         }
 
-        for (int nFeat = 0; nFeat < g_pRules->m_nNumFeats; ++nFeat)
+        for (int nFeat = 0; nFeat < g_pRules->GetNumFeatRows(); ++nFeat)
         {
             unsigned char nGrantedLevel;
             if (pClass->IsGrantedFeat(nFeat, nGrantedLevel))
@@ -6045,7 +6046,7 @@ void CSWSCreatureStats::AutoLevelup(int bFeedback)
         CalcLevelUpNumberFeats(nClass, nNormalFeats, nBonusFeats);
         nPointsLeft = nNormalFeats + nBonusFeats;
         nRecommended = 1;
-        int nNumEntries = g_pRules->m_nNumFeats;
+        int nNumEntries = g_pRules->GetNumFeatRows();
         lstFeats.RemoveAll(0);
         while (nPointsLeft > 0)
         {
