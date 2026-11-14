@@ -616,8 +616,9 @@ CSWGuiClassSelection::CSWGuiClassSelection(CSWGuiManager* pManager,
         (int)(fProgress * 100.0f), 1);
 #else
     float fProgress = (float)++nProgress / LOAD_STEPS;
+    float fPercent = fProgress * 100.0f;
     g_pAppManager->GetClientExoApp()->SetLoadBarProgress(
-        (int)(fProgress * 100.0f), 1);
+        (int)fPercent, 1);
 #endif
     UpdateScreen(0.033333335f, 0, 0);
     delete pPortraits;
