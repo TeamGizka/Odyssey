@@ -7666,6 +7666,8 @@ int CSWSCreature::AIActionDrive(CSWSObjectActionNode* pAction)
     {
         m_fClientPathTime = 1.0f;
         pAction->m_apParam[6] = NULL;
+        EXOLOG("AIActionDrive: new path at %f %f %f\n",
+            m_vPosition.m_fX, m_vPosition.m_fY, m_vPosition.m_fZ);
         double fAngle = (nDirection / 10.0) * NWSCREATURE_DRIVE_RADIANS_PER_DEGREE;
         Vector vFacing(cos(fAngle), sin(fAngle), 0.0f);
         float fMovementFactor = 1.0f;
@@ -7696,7 +7698,6 @@ int CSWSCreature::AIActionDrive(CSWSObjectActionNode* pAction)
             vMovement -= vFacing;
             fDistance = GetWalkRate() * 0.0004f;
         }
-        NWSCREATUREAI_DEBUG_MARKER(m_vPosition)
         if (nFlags & DRIVE_TURN_LEFT)
         {
             Quaternion qTurn = YawPitchRoll(30.0f, 0.0f, 0.0f);
@@ -7714,8 +7715,7 @@ int CSWSCreature::AIActionDrive(CSWSObjectActionNode* pAction)
         vMovement.Normalize();
         Vector vSafePosition;
         Vector vDelta = vRequested - m_vPosition;
-        if (vDelta.m_fX * vDelta.m_fX + vDelta.m_fY * vDelta.m_fY +
-                vDelta.m_fZ * vDelta.m_fZ > 0.25f &&
+        if (vDelta * vDelta > 0.25f &&
             pArea->ComputeSafeLocation(
                 vRequested, 0.5f, GetPathfindInformation(), 0, &vSafePosition))
             SetPosition(vSafePosition, 1, 1, 0);
@@ -7838,6 +7838,8 @@ int CSWSCreature::AIActionDrive(CSWSObjectActionNode* pAction)
         }
         if (bFound == TRUE)
         {
+            AurDrawLine(m_vPosition + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT),
+                vDestination + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), 0);
             m_fClientPathTime = fMovementFactor;
             float* pfPath = new float[2];
             pfPath[0] = vDestination.m_fX;
