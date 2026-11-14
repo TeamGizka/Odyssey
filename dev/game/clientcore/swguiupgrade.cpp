@@ -2927,8 +2927,9 @@ void CSWGuiCreateItem::OnControlEntered(CSWGuiControl* pControl)
             int nToken = sDescription.Find('{', 0);
             if (nTag != -1 || nToken != -2)
             {
+                CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
                 CSWCCreature* pPlayerCharacter =
-                    g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
+                    pParty->GetPlayerCharacter();
                 g_pSWTlkTable->ParseStr(sDescription, (CGameObject*)pPlayerCharacter, 0, 1);
             }
 
@@ -2946,9 +2947,7 @@ void CSWGuiCreateItem::OnControlEntered(CSWGuiControl* pControl)
                 CExoString sSkill(nSkill);
                 sSkillText = g_pRules->m_pSkills[(unsigned short)nBaseSkill].GetNameText() +
                              " (" + sSkill + ")";
-                CExoString sNewLine1("\n");
-                CExoString sNewLine2("\n");
-                sDescription = sRequired + sNewLine2 + sSkillText + sNewLine1 + sDescription;
+                sDescription = sRequired + "\n" + sSkillText + "\n" + sDescription;
             }
             SetDescription(sDescription);
         }
