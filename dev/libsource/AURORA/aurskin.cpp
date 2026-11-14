@@ -2039,6 +2039,7 @@ void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
         }
         GLRender_SetFrontFace(CULL_COUNTERCLOCKWISE);
         GLRender_Disable(ENABLE_VERTEX_PROGRAM);
+        EXOLOG("RenderSkinnedVPBlur: blur length %f\n", fBlurLength);
     }
 }
 
