@@ -36,8 +36,6 @@
 
 static inline void NwsplaceableTrace1();
 
-static inline CServerExoApp* GetServerExoApp();
-
 int RenderPlaceableBBox = 0;
 // PC 0x0058A400 GOG 0x0058A480
 CSWSPlaceable::CSWSPlaceable(unsigned long oidSelf)
@@ -1154,19 +1152,19 @@ void CSWSPlaceable::OpenInventory(unsigned long oidOpener, int bAnimate)
         }
 
         CSWSPlayer* pPlayer =
-            GetServerExoApp()->GetClientObjectByObjectId(oidOpener);
+            g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidOpener);
         if (pPlayer != NULL)
         {
             unsigned int nItemCount = m_pcItemRepository->m_lstItems.num;
             int bHasItems = nItemCount > 0;
             unsigned long oidObject = m_nId;
-            GetServerExoApp()->GetSWSMessage()
+            g_pAppManager->GetServerExoApp()->GetSWSMessage()
                 ->SendServerToPlayerGuiContainerObject_Open(
                     pPlayer, oidObject, bHasItems);
 
             CScriptEvent* pEvent = new CScriptEvent;
             pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_OPEN;
-            GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                 0, 0, oidOpener, GetId(), CServerAIMaster::EVENT_SIGNAL_EVENT,
                 pEvent);
 
@@ -1188,7 +1186,7 @@ void CSWSPlaceable::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
     {
         if (bUpdatePlayer)
         {
-            CSWSPlayer* pPlayer = GetServerExoApp()->GetClientObjectByObjectId(oidCloser);
+            CSWSPlayer* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidCloser);
             if (pPlayer != NULL)
             {
                 CSWSCreature* pCreature = pPlayer->GetGameObject()->AsSWSCreature();
@@ -1234,14 +1232,14 @@ void CSWSPlaceable::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
 
         CScriptEvent* pEvent = new CScriptEvent;
         pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_CLOSE;
-        GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
             0, 0, oidCloser, GetId(), CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
         SetAnimation(PLACEABLE_ANIMATION_CLOSED);
         m_bOpen = 0;
         if (m_bHasInventory && m_bDieWhenEmpty && m_pcItemRepository->m_lstItems.num == 0)
         {
             m_bUseable = 0;
-            GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                 0, 0, m_nId, m_nId, CServerAIMaster::EVENT_DESTROY_OBJECT, NULL);
         }
     }
@@ -1794,11 +1792,6 @@ void CSWSPlaceable::DoDamage(int nDamage)
     {
         CSWSObject::DoDamage(nDamage);
     }
-}
-
-static inline CServerExoApp* GetServerExoApp()
-{
-    return g_pAppManager->m_pServerExoApp;
 }
 
 static inline void NwsplaceableTrace1()

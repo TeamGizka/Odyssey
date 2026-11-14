@@ -39,8 +39,6 @@ static inline void NwstriggerTrace2();
 static inline void NwstriggerTrace1();
 #define NWSTRIGGER_TRACE() NwstriggerTrace1()
 
-static inline CServerExoApp* GetServerExoApp();
-
 int RenderQATriggers = 0;
 float CSWSTrigger::m_fTrapRadiusRange = 1.0f;
 // PC 0x005845C0 GOG 0x00584640
@@ -108,7 +106,7 @@ int CSWSTrigger::GetCanFireMineOnObject(unsigned long oidObject, int bForce)
     int bCanFire = 1;
     CSWSCreature* pCreator =
         g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(m_oidCreator);
-    CServerExoApp* pServerApp = GetServerExoApp();
+    CServerExoApp* pServerApp = g_pAppManager->GetServerExoApp();
     CSWSCreature* pCreature = pServerApp->GetCreatureByGameObjectID(oidObject);
     if (pCreature != NULL)
     {
@@ -229,8 +227,8 @@ void CSWSTrigger::SetCreator(unsigned long oidCreator)
 {
     m_oidCreator = oidCreator;
     if (oidCreator != OBJECT_INVALID &&
-        (oidCreator == GetServerExoApp()->GetPlayerCreatureId() ||
-         GetServerExoApp()->GetPartyTable()->GetIsMember(
+        (oidCreator == g_pAppManager->GetServerExoApp()->GetPlayerCreatureId() ||
+         g_pAppManager->GetServerExoApp()->GetPartyTable()->GetIsMember(
              oidCreator) != 0))
     {
         m_bSetByPlayerParty = 1;
@@ -1284,11 +1282,6 @@ void CSWSTrigger::LoadTriggerGeometry(CResGFF* pRes, CResList& list)
             m_pPolygonPointOrder[i] = i;
         }
     }
-}
-
-static inline CServerExoApp* GetServerExoApp()
-{
-    return g_pAppManager->m_pServerExoApp;
 }
 
 static inline void NwstriggerTrace2()

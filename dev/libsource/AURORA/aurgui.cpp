@@ -8,6 +8,7 @@
 #include <ctype.h>
 #include "swmain.h"
 #include "exobase.h"
+#include "aurtexptr.h"
 
 extern bool g_bTexturesRebuilt;
 #define AURGUI_MAX_WRAPPED_LINES 100
@@ -48,8 +49,6 @@ static void SetVertexData4f(Aurora::AuroraStreamMode nStream,
     }
 }
 #endif
-
-#include "aurtexptr.h"
 
 int noguirender = 0;
 int CAurGUIImage::cm_nGUIBufferSizeUsed = 0;

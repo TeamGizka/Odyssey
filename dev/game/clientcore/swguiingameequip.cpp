@@ -35,8 +35,6 @@ static inline void SwguiingameequipTrace2();
 static inline void SwguiingameequipTrace1();
 #define SWGUIINGAMEEQUIP_TRACE() SwguiingameequipTrace1()
 
-static inline CServerExoApp* GetServerExoApp();
-
 const CSWGuiInGameEquip::SlotInfo CSWGuiInGameEquip::SLOT_INFO[NUM_EQUIPMENT_SLOTS] =
 {
     {INVENTORY_SLOT_LEFTHAND, "INV_WEAP_L", "weap_l", 31378, 31378},
@@ -52,11 +50,6 @@ const CSWGuiInGameEquip::SlotInfo CSWGuiInGameEquip::SLOT_INFO[NUM_EQUIPMENT_SLO
     {INVENTORY_SLOT_RIGHTHAND2, "INV_WEAP_R2", "weap_r", 31379, 31379}
 };
 #include "nwccreaturestats.h"
-static inline CServerExoApp* GetServerExoApp()
-{
-    return g_pAppManager->m_pServerExoApp;
-}
-
 static inline void SwguiingameequipTrace2()
 {
     SwguiingameequipTrace1();
@@ -1231,11 +1224,11 @@ CSWSItem* CSWGuiInGameEquip::CopyItem(unsigned long oidItem)
 {
     CSWSItem* pCopy = 0;
     CGameObject* pObject = 0;
-    CServerExoApp* pServer = GetServerExoApp();
+    CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
     unsigned long oidServer =
         pServer->ClientToServerObjectId(oidItem);
 
-    pServer = GetServerExoApp();
+    pServer = g_pAppManager->GetServerExoApp();
     if (pServer->GetObjectArray()->GetGameObject(
             oidServer, &pObject) == CGameObjectArray::SUCCESS &&
         pObject->AsSWSItem() != 0)
@@ -1636,11 +1629,11 @@ CSWGuiInGameItemEntry* CSWGuiInGameEquip::AddItemEntryToList(int nItem)
 // PC 0x00714620 GOG 0x00714310
 int CSWGuiInGameEquip::ItemExists(unsigned long oidItem)
 {
-    CServerExoApp* pServer = GetServerExoApp();
+    CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
     unsigned long oidServer = pServer->ClientToServerObjectId(oidItem);
     CGameObject* pObject;
 
-    pServer = GetServerExoApp();
+    pServer = g_pAppManager->GetServerExoApp();
     if (pServer->GetObjectArray()->GetGameObject(oidServer, &pObject) ==
         CGameObjectArray::SUCCESS)
     {
@@ -2251,7 +2244,7 @@ void CSWGuiStoreItemEntry::SetItem(unsigned long oidItem, int bUpdate, int nChar
 
     CExoString sCost;
     CExoString sPrice;
-    CServerExoApp* pServer = GetServerExoApp();
+    CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
     CSWSItem* pItem = pServer->GetItemByGameObjectID(oidItem);
     m_nCharacter = nCharacter;
     m_oidItem = oidItem;
@@ -2347,7 +2340,7 @@ void CSWGuiInGameEquip::OnPrevNPCClicked(CSWGuiControl* pControl)
     {
         return;
     }
-    CSWPartyTable* pPartyTable = GetServerExoApp()->GetPartyTable();
+    CSWPartyTable* pPartyTable = g_pAppManager->GetServerExoApp()->GetPartyTable();
     if (pPartyTable == NULL)
     {
         return;
@@ -2894,7 +2887,7 @@ void CSWGuiInGameEquip::OnNextNPCClicked(CSWGuiControl* pControl)
     {
         return;
     }
-    CSWPartyTable* pPartyTable = GetServerExoApp()->GetPartyTable();
+    CSWPartyTable* pPartyTable = g_pAppManager->GetServerExoApp()->GetPartyTable();
     if (pPartyTable == NULL)
     {
         return;
@@ -2952,12 +2945,12 @@ void CSWGuiInGameEquip::OnNextNPCClicked(CSWGuiControl* pControl)
                 break;
             }
             unsigned long oidNPC =
-                GetServerExoApp()->GetModule()->FindObjectByTagOrdinal(sTag.LowerCase(), 0);
+                g_pAppManager->GetServerExoApp()->GetModule()->FindObjectByTagOrdinal(sTag.LowerCase(), 0);
             CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
             pCreature = pClient->GetCreatureByGameObjectID(pClient->ServerToClientObjectId(oidNPC));
             if (pCreature != NULL)
             {
-                GetServerExoApp()->GetPartyTable()->SetNPCObject(m_nCharacter, oidNPC);
+                g_pAppManager->GetServerExoApp()->GetPartyTable()->SetNPCObject(m_nCharacter, oidNPC);
                 bFound = 1;
                 break;
             }
@@ -3005,7 +2998,7 @@ void CSWGuiInGameEquip::Draw(float fElapsed)
 // PC 0x00719850 GOG 0x00719540
 void CSWGuiInGameEquip::OnPanelAdded()
 {
-    CExoString sModuleName = GetServerExoApp()->GetModuleName();
+    CExoString sModuleName = g_pAppManager->GetServerExoApp()->GetModuleName();
     int bNotPrologue = sModuleName.CompareNoCase("003EBO");
     m_nCharacter = CHARACTER_PLAYER;
     if (bNotPrologue)

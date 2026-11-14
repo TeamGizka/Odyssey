@@ -43,8 +43,6 @@
 #include "nwskill.h"
 #include "aurdraw.h"
 
-static inline CServerExoApp* GetServerExoApp();
-
 int RenderAi = 0;
 
 int OverrideReputation = CSWSObject::REPUTATION_NO_OVERRIDE;
@@ -1809,7 +1807,7 @@ int CSWSObject::AIActionOpenDoor(CSWSObjectActionNode* pNode)  // PC 0x005DE080 
                             CScriptEvent* pEvent = new CScriptEvent;
                             pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_MINE_TRIGGERED;
                             unsigned long oidSelf = m_nId;
-                            GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                                 0, 0, oidSelf, oidDoor, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
                             return ACTION_FAILED;
                         }
@@ -1968,7 +1966,7 @@ int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
                     {
                         CScriptEvent* pEvent = new CScriptEvent;
                         pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_MINE_TRIGGERED;
-                        GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                             0, 0, GetId(), oidTarget, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
                         AsSWSCreature()->m_bUnlockObjectAnimationPlayed = 0;
                         AsSWSCreature()->m_bUnlockObjectFacingSet = 0;
@@ -1984,7 +1982,7 @@ int CSWSObject::AIActionUnlockObject(CSWSObjectActionNode* pNode)
                 {
                     CScriptEvent* pEvent = new CScriptEvent;
                     pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_MINE_TRIGGERED;
-                    GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                    g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                         0, 0, GetId(), oidTarget, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
                     AsSWSCreature()->m_bUnlockObjectAnimationPlayed = 0;
                     AsSWSCreature()->m_bUnlockObjectFacingSet = 0;
@@ -2473,7 +2471,7 @@ int CSWSObject::AIActionUseObject(CSWSObjectActionNode* pNode)
             {
                 CScriptEvent* pEvent = new CScriptEvent;
                 pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_MINE_TRIGGERED;
-                GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                     0, 0, GetId(), oidObject, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
                 return ACTION_FAILED;
             }
@@ -3148,11 +3146,6 @@ void CSWSObject::RunActions(unsigned long nDay, unsigned long nTime,
     }
 }
 
-static inline CServerExoApp* GetServerExoApp()
-{
-    return g_pAppManager->m_pServerExoApp;
-}
-
 #ifdef _XBOX
 
 int CSWSObject::GetReputation(unsigned long oidObject, int bUnknown)
@@ -3318,7 +3311,7 @@ int CSWSObject::AIActionOpenDoor(CSWSObjectActionNode* pNode)
                             CScriptEvent* pEvent = new CScriptEvent;
                             pEvent->m_nType = CSWSSCRIPTEVENT_EVENTTYPE_ON_MINE_TRIGGERED;
                             unsigned long oidSelf = m_nId;
-                            GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                            g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
                                 0, 0, oidSelf, oidDoor, CServerAIMaster::EVENT_SIGNAL_EVENT, pEvent);
                             return ACTION_FAILED;
                         }
