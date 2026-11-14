@@ -112,7 +112,6 @@ CSWMGTargettingParameters::CSWMGTargettingParameters()
 void FireGunCallback(CAurObject* pObject, char* sEvent, void* pData)
 {
     CSWMGGunBank* pBank = static_cast<CSWMGGunBank*>(pData);
-    Gob* pGun = static_cast<Gob*>(pObject);
     if (strnicmp(sEvent, "fire", 4) == 0)
     {
         Vector vPosition;
@@ -121,7 +120,7 @@ void FireGunCallback(CAurObject* pObject, char* sEvent, void* pData)
         char sHook[20];
         sscanf(sEvent, "fire%d", &nHook);
         sprintf(sHook, "bullethook%d", nHook);
-        if (pGun->GetPartPosition(sHook, &vPosition, &qOrientation))
+        if (static_cast<Gob*>(pObject)->GetPartPosition(sHook, &vPosition, &qOrientation))
         {
             CResRef resBullet = pBank->m_resBank;
             char sModel[20];
@@ -137,7 +136,7 @@ void FireGunCallback(CAurObject* pObject, char* sEvent, void* pData)
             {
                 CSWMGBehaviorTrackAndFire* pTrack =
                     static_cast<CSWMGBehaviorTrackAndFire*>(
-                        pGun->GetBehavior(AUR_BEHAVIOR_TRACKANDFIRE));
+                        static_cast<Gob*>(pObject)->GetBehavior(AUR_BEHAVIOR_TRACKANDFIRE));
                 if (pTrack == 0)
                 {
                     delete pBullet;
@@ -166,13 +165,14 @@ void FireGunCallback(CAurObject* pObject, char* sEvent, void* pData)
             pBullet->PlayAnimation("ready", 1.0f, 0, 0);
             CSWMiniPlayer* pPlayer =
                 g_pAppManager->GetClientExoApp()->GetMiniGame()->m_pPlayer;
-            if (pBank->GetFollower()->m_pTrack == pPlayer->m_pTrack)
+            Gob* pBankTrack = pBank->GetFollower()->m_pTrack;
+            if (pBankTrack == pPlayer->m_pTrack)
             {
                 pBank->SetBulletSpeed(pPlayer->GetTrackSpeed() +
                                       pBank->m_bullet.m_fSpeed);
                 qOrientation = pPlayer->GetModel(0)->GetOrientation();
             }
-            pBullet->AttachToScene(static_cast<Scene*>(pGun->GetScene()));
+            pBullet->AttachToScene(static_cast<Scene*>(static_cast<Gob*>(pObject)->GetScene()));
             pBullet->SetPosition(vPosition);
             pBullet->SetOrientation(qOrientation);
             pBullet->SetBehavior(new CSWMGBehaviorBullet(pBullet, pBank->GetFollower(),
