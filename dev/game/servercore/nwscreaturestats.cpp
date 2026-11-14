@@ -1532,7 +1532,7 @@ int CSWSCreatureStats::GetAttackModifierVersus(CSWSCreature* pTarget)
             {
                 unsigned long oidClient = pMember->m_oidCreature;
                 unsigned long oidMember = g_pAppManager->GetServerExoApp()->ClientToServerObjectId(oidClient);
-                if (oidMember != m_pCreature->GetId())
+                if (oidMember != GetCreature()->GetId())
                 {
                     CSWSCreature* pAlly = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidMember);
                     if (pAlly != NULL && pTarget != NULL &&
