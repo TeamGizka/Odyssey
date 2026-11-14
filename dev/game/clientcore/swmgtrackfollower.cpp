@@ -14,9 +14,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "aurdraw.h"
+#define SWMGTRACKFOLLOWER_DEBUG 0
 
-static inline void SwmgtrackfollowerTrace4();
-static inline void SwmgtrackfollowerTrace3();
 static inline void SwmgtrackfollowerTrace2();
 static inline void SwmgtrackfollowerTrace1();
 
@@ -1615,6 +1614,52 @@ void OnAnimKeyEvent(CAurObject* pObject, char* sEvent, void* pUserData)
         }
     }
 }
+// PC 0x006C4630 GOG 0x006C4460
+int CSWTrackFollower::Load(CResGFF* pGFF, CResStruct* pStruct)
+{
+    if (SWMGTRACKFOLLOWER_DEBUG)
+    {
+        SafePointer<CAurObject> pModel = m_pModel;
+    }
+    int bSuccess;
+    CResList listGunBanks;
+    CResStruct structChild;
+
+    SetHitPoints(pGFF->ReadFieldDWORD(pStruct, "Hit_Points", bSuccess, 0));
+    SetMaxHitPoints(pGFF->ReadFieldDWORD(pStruct, "Max_HPs", bSuccess, 0));
+    SetSphereRadius(pGFF->ReadFieldFLOAT(pStruct, "Sphere_Radius", bSuccess, -1.0f));
+    SetLooping(pGFF->ReadFieldINT(pStruct, "Num_Loops", bSuccess, LOOP_UNSPECIFIED));
+    m_nBumpDamage = pGFF->ReadFieldINT(pStruct, "Bump_Damage", bSuccess, 0);
+    SetInvincibility(pGFF->ReadFieldFLOAT(pStruct, "Invince_Period", bSuccess, 0.0f));
+
+    bSuccess = pGFF->GetList(&listGunBanks, pStruct, "Gun_Banks");
+    if (bSuccess)
+    {
+        int nGunBanks = pGFF->GetListCount(&listGunBanks);
+        for (int i = 0; i < nGunBanks; i++)
+        {
+            bSuccess = pGFF->GetListElement(&structChild, &listGunBanks, i);
+            if (bSuccess)
+            {
+                LoadGun(pGFF, &structChild);
+            }
+        }
+        if (nGunBanks)
+        {
+            AttachGuns();
+        }
+    }
+    if (pGFF->GetStructFromStruct(&structChild, pStruct, "Scripts"))
+    {
+        LoadScripts(pGFF, pStruct, structChild);
+    }
+    if (pGFF->GetStructFromStruct(&structChild, pStruct, "Sounds"))
+    {
+        LoadSounds(pGFF, pStruct, structChild);
+    }
+    OnCreate();
+    return 1;
+}
 // PC 0x006C4800 GOG 0x006C4630
 void CSWTrackFollower::Go()
 {
@@ -1722,49 +1767,6 @@ int CSWMiniEnemy::Load(CResGFF* pGFF, CResStruct* pStruct)
     m_bTrigger = pGFF->ReadFieldBYTE(pStruct, "Trigger", bSuccess, 0);
     return 1;
 }
-// PC 0x006C4630 GOG 0x006C4460
-int CSWTrackFollower::Load(CResGFF* pGFF, CResStruct* pStruct)
-{
-    SwmgtrackfollowerTrace4();
-    int bSuccess;
-    CResList listGunBanks;
-    CResStruct structChild;
-
-    SetHitPoints(pGFF->ReadFieldDWORD(pStruct, "Hit_Points", bSuccess, 0));
-    SetMaxHitPoints(pGFF->ReadFieldDWORD(pStruct, "Max_HPs", bSuccess, 0));
-    SetSphereRadius(pGFF->ReadFieldFLOAT(pStruct, "Sphere_Radius", bSuccess, -1.0f));
-    SetLooping(pGFF->ReadFieldINT(pStruct, "Num_Loops", bSuccess, LOOP_UNSPECIFIED));
-    m_nBumpDamage = pGFF->ReadFieldINT(pStruct, "Bump_Damage", bSuccess, 0);
-    SetInvincibility(pGFF->ReadFieldFLOAT(pStruct, "Invince_Period", bSuccess, 0.0f));
-
-    bSuccess = pGFF->GetList(&listGunBanks, pStruct, "Gun_Banks");
-    if (bSuccess)
-    {
-        int nGunBanks = pGFF->GetListCount(&listGunBanks);
-        for (int i = 0; i < nGunBanks; i++)
-        {
-            bSuccess = pGFF->GetListElement(&structChild, &listGunBanks, i);
-            if (bSuccess)
-            {
-                LoadGun(pGFF, &structChild);
-            }
-        }
-        if (nGunBanks)
-        {
-            AttachGuns();
-        }
-    }
-    if (pGFF->GetStructFromStruct(&structChild, pStruct, "Scripts"))
-    {
-        LoadScripts(pGFF, pStruct, structChild);
-    }
-    if (pGFF->GetStructFromStruct(&structChild, pStruct, "Sounds"))
-    {
-        LoadSounds(pGFF, pStruct, structChild);
-    }
-    OnCreate();
-    return 1;
-}
 // PC 0x006C4C70 GOG 0x006C4AA0
 CSWMGObstacle::CSWMGObstacle(CSWMiniGame* pMiniGame, CAurObject* pModel)
     : CSWMiniGameObject(3)
@@ -1778,16 +1780,6 @@ CSWMGObstacle::~CSWMGObstacle()
     {
         delete m_pModel;
     }
-}
-
-static inline void SwmgtrackfollowerTrace4()
-{
-    SwmgtrackfollowerTrace3();
-}
-
-static inline void SwmgtrackfollowerTrace3()
-{
-    SwmgtrackfollowerTrace2();
 }
 
 static inline void SwmgtrackfollowerTrace2()
