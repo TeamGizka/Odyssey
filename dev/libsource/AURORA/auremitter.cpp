@@ -3564,11 +3564,7 @@ void PartEmitter::RenderFunc()
     if (g_ForceSight)
     {
         GLRender_EnablePixelShaders(MODEL_SHADER_DESAT, 0, 0, 0, 0);
-        float afColor[4];
-        afColor[0] = 0.0f;
-        afColor[1] = 0.0f;
-        afColor[2] = 0.0f;
-        afColor[3] = 1.0f;
+        float afColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
         if ((existingextensions & ATI_FRAGMENT_SHADER_BIT) == ATI_FRAGMENT_SHADER_BIT)
             glSetFragmentShaderConstantATI(GL_CON_1_ATI, afColor);
         else
@@ -3824,8 +3820,10 @@ void PartEmitter::RenderFunc()
                 glVertex3f(vTarget.m_fX, vTarget.m_fY, vTarget.m_fZ);
                 for (i = 0; i < pLightning->m_lstReserved21C.m_nCount; i++)
                 {
-                    Vector vPoint = pLightning->m_lstReserved21C[i];
+                    Vector& vPoint = pLightning->m_lstReserved21C[i];
                     glVertex3f(vPoint.m_fX, vPoint.m_fY, vPoint.m_fZ);
+                    glVertex3f(pLightning->m_lstReserved228[i].m_fX, pLightning->m_lstReserved228[i].m_fY,
+                               pLightning->m_lstReserved228[i].m_fZ);
                 }
                 glEnd();
             }
