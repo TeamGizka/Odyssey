@@ -1,29 +1,5 @@
 #include "nwcanimbase.h"
 #include "math3d.h"
-
-static inline void NwcanimbaseprojectileTrace2();
-static inline void NwcanimbaseprojectileTrace1();
-#define NWCANIMBASEPROJECTILE_TRACE() NwcanimbaseprojectileTrace2()
-// PC 0x0075B130 GOG 0x0075AF70
-int CSWCAnimBaseProjectile::SetOrientation(const Vector& vFacing)
-{
-    NWCANIMBASEPROJECTILE_TRACE();
-    if (m_pModel == 0)
-    {
-        return 0;
-    }
-    if (vFacing.m_fX * vFacing.m_fX + vFacing.m_fY * vFacing.m_fY +
-            vFacing.m_fZ * vFacing.m_fZ <=
-        0.00001f)
-    {
-        return 0;
-    }
-
-    Vector vNormalized = normalize(vFacing);
-    m_pModel->SetOrientation(
-        YawPitchRoll(Yaw(vNormalized), Pitch(vNormalized), 0.0f));
-    return 1;
-}
 // PC 0x0075AF20 GOG 0x0075AD40
 CSWCAnimBaseProjectile::CSWCAnimBaseProjectile()
 {
@@ -83,11 +59,22 @@ int CSWCAnimBaseProjectile::SetAnimation(unsigned short nAnimation,
     }
 }
 
-static inline void NwcanimbaseprojectileTrace2()
+// PC 0x0075B130 GOG 0x0075AF70
+int CSWCAnimBaseProjectile::SetOrientation(const Vector& vFacing)
 {
-    NwcanimbaseprojectileTrace1();
-}
+    if (m_pModel == 0)
+    {
+        return 0;
+    }
+    if (vFacing.m_fX * vFacing.m_fX + vFacing.m_fY * vFacing.m_fY +
+            vFacing.m_fZ * vFacing.m_fZ <=
+        0.00001f)
+    {
+        return 0;
+    }
 
-static inline void NwcanimbaseprojectileTrace1()
-{
+    Vector vNormalized = normalize(vFacing);
+    m_pModel->SetOrientation(
+        YawPitchRoll(Yaw(vNormalized), Pitch(vNormalized), 0.0f));
+    return 1;
 }

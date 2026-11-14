@@ -17,25 +17,37 @@
 #include "nwrules.h"
 #include "swguiingame.h"
 #include "swguiingame.inl"
+// PC 0x00735300 GOG 0x00734860
+CSWGuiTutorialBox::CSWGuiTutorialBox(CSWGuiManager* pManager)
+    : CSWGuiMessageBox(pManager)
+{
+    m_oidInstigator = OBJECT_INVALID;
+    m_oidTarget = OBJECT_INVALID;
+    m_nActionParam = 0;
+    m_bWasPausedByCombat = 0;
+    m_nTutorialReason = 0xFF;
+    m_nMessageIndex = 0;
+#ifdef _XBOX
+    m_lblMessage.m_cText.m_cParams.SetFont("fnt_d16x16");
+#else
+    CResRef cFont("fnt_d16x16");
+    m_lblMessage.m_cText.m_cParams.SetBaseFont(cFont);
+#endif
+    m_nOpenSound = 15;
+}
+// PC 0x007353A0 GOG 0x007350C0
+void CSWGuiTutorialBox::OnPanelAdded()
+{
+    CSWGuiMessageBox::OnPanelAdded();
+    MessageBoxPause(0);
+}
 
-static inline void SwguiingametutorialboxTrace1();
-#define SWGUIINGAMETUTORIALBOX_TRACE() SwguiingametutorialboxTrace1()
 // PC 0x00734A90 GOG 0x007347A0
 void CSWGuiTutorialBox::SetMessage(unsigned long nStrRef)
 {
     CExoString sMessage = g_pTlkTable->GetSimpleString(nStrRef);
     g_pTlkTable->ParseStr(sMessage);
     CSWGuiMessageBox::SetMessage(sMessage);
-}
-// PC 0x00734BE0 GOG 0x00734830
-int CSWGuiTutorialBox::SetTutorialInstigator(unsigned long oidInstigator,
-                                             unsigned long oidTarget,
-                                             unsigned long nActionParam)
-{
-    m_oidInstigator = oidInstigator;
-    m_oidTarget = oidTarget;
-    m_nActionParam = nActionParam;
-    return nActionParam;
 }
 // PC 0x00734B20 GOG 0x00734900
 int CSWGuiTutorialBox::TutorialReasonIsValid(unsigned char nReason)
@@ -54,12 +66,21 @@ int CSWGuiTutorialBox::TutorialReasonIsValid(unsigned char nReason)
 // PC 0x00734BB0 GOG 0x00734990
 void CSWGuiTutorialBox::MessageBoxUnpause(CSWGuiControl* pControl)
 {
-    SWGUIINGAMETUTORIALBOX_TRACE();
     if (m_bWasPausedByCombat == 0)
     {
         g_pAppManager->GetClientExoApp()->SetPausedByCombat(0, 2, 0);
     }
     m_bWasPausedByCombat = 0;
+}
+// PC 0x00734BE0 GOG 0x00734830
+int CSWGuiTutorialBox::SetTutorialInstigator(unsigned long oidInstigator,
+                                             unsigned long oidTarget,
+                                             unsigned long nActionParam)
+{
+    m_oidInstigator = oidInstigator;
+    m_oidTarget = oidTarget;
+    m_nActionParam = nActionParam;
+    return nActionParam;
 }
 // PC 0x00734C10 GOG 0x007349C0
 void CSWGuiTutorialBox::PerformCombatFeat(CSWGuiControl* pControl)
@@ -172,7 +193,6 @@ void CSWGuiTutorialBox::PerformAttack(CSWGuiControl* pControl)
 
 void CSWGuiTutorialBox::MessageBoxPause(CSWGuiControl* pControl)
 {
-    SWGUIINGAMETUTORIALBOX_TRACE();
     int bPaused = g_pAppManager->GetClientExoApp()->GetPausedByCombat();
     m_bWasPausedByCombat = bPaused;
     if (bPaused == 0)
@@ -216,96 +236,6 @@ void CSWGuiTutorialBox::PerformReturnToBase(CSWGuiControl* pControl)
     ((CSWGuiInGameMap*)g_pAppManager->m_pClientExoApp->GetInGameGui()
          ->GetGuiInGameScreenPanel(6))
         ->OnXButton(0);
-}
-// PC 0x00735020 GOG 0x00734DD0
-int CSWGuiTutorialBox::SetNextMessage()
-{
-    SWGUIINGAMETUTORIALBOX_TRACE();
-    CExoString sColumn;
-    CExoString sIconResRef;
-    unsigned long nStrRef = 0;
-    sColumn.Format("Message_PC%i", (unsigned char)m_nMessageIndex);
-    ++m_nMessageIndex;
-    CTwoDimArrays* p2DArrays = g_pRules->Get2DArrays();
-    EXOXBOXASSERT(p2DArrays->m_pTutorial);
-    C2DA* pTutorial = p2DArrays->m_pTutorial;
-    if (pTutorial->GetINTEntry(m_nTutorialReason, sColumn, (int*)&nStrRef) != 0)
-    {
-        int bFound;
-        sColumn.Format("Message_PC%i", (unsigned char)m_nMessageIndex);
-        int nStrRef2;
-        p2DArrays = g_pRules->Get2DArrays();
-        EXOXBOXASSERT(p2DArrays->m_pTutorial);
-        pTutorial = p2DArrays->m_pTutorial;
-        if (pTutorial->GetINTEntry(
-                m_nTutorialReason, sColumn, &nStrRef2) != 0)
-        {
-            SetOkButtonMessage(38623);
-        }
-        else
-        {
-            SetOkButtonMessage(1580);
-        }
-        {
-            CExoString sIconColumn("Icon");
-            p2DArrays = g_pRules->Get2DArrays();
-            EXOXBOXASSERT(p2DArrays->m_pTutorial);
-            pTutorial = p2DArrays->m_pTutorial;
-            bFound = pTutorial->GetCExoStringEntry(
-                m_nTutorialReason, sIconColumn, &sIconResRef);
-        }
-#ifndef _XBOX
-        if (bFound != 0 &&
-            !sIconResRef.CompareNoCase("WHITEBUTTON") &&
-            !sIconResRef.CompareNoCase("STARTBUTTON") &&
-            !sIconResRef.CompareNoCase("XBUTTON") &&
-            !sIconResRef.CompareNoCase("YBUTTON") &&
-            !sIconResRef.CompareNoCase("Abutton") &&
-            !sIconResRef.CompareNoCase("Backbutton") &&
-            !sIconResRef.CompareNoCase("Bbutton") &&
-            !sIconResRef.CompareNoCase("Blbutton") &&
-            !sIconResRef.CompareNoCase("Whbutton") &&
-            !sIconResRef.CompareNoCase("Xbutton") &&
-            !sIconResRef.CompareNoCase("Ybutton") &&
-            !sIconResRef.CompareNoCase("uibut_Start") &&
-            !sIconResRef.CompareNoCase("uibut_X") &&
-            !sIconResRef.CompareNoCase("uibut_Y"))
-        {
-            CResRef cIcon(sIconResRef);
-            SetIcon(cIcon);
-        }
-#else
-        if (bFound != 0) SetIcon(sIconResRef);
-#endif
-        SetAllowCancel(0);
-        SetMessage(nStrRef);
-    }
-    return nStrRef;
-}
-// PC 0x00735300 GOG 0x00734860
-CSWGuiTutorialBox::CSWGuiTutorialBox(CSWGuiManager* pManager)
-    : CSWGuiMessageBox(pManager)
-{
-    SWGUIINGAMETUTORIALBOX_TRACE();
-    m_oidInstigator = OBJECT_INVALID;
-    m_oidTarget = OBJECT_INVALID;
-    m_nActionParam = 0;
-    m_bWasPausedByCombat = 0;
-    m_nTutorialReason = 0xFF;
-    m_nMessageIndex = 0;
-#ifdef _XBOX
-    m_lblMessage.m_cText.m_cParams.SetFont("fnt_d16x16");
-#else
-    CResRef cFont("fnt_d16x16");
-    m_lblMessage.m_cText.m_cParams.SetBaseFont(cFont);
-#endif
-    m_nOpenSound = 15;
-}
-// PC 0x007353A0 GOG 0x007350C0
-void CSWGuiTutorialBox::OnPanelAdded()
-{
-    CSWGuiMessageBox::OnPanelAdded();
-    MessageBoxPause(0);
 }
 // PC 0x007353E0 GOG 0x00735100
 void CSWGuiTutorialBox::HandleInputEvent(int nEvent, int nState)
@@ -397,14 +327,68 @@ int CSWGuiTutorialBox::SetTutorialReason(unsigned char nReason)
         return TRUE;
     }
 }
-
-static inline void SwguiingametutorialboxTrace2();
-
-static inline void SwguiingametutorialboxTrace1()
+// PC 0x00735020 GOG 0x00734DD0
+int CSWGuiTutorialBox::SetNextMessage()
 {
-    SwguiingametutorialboxTrace2();
+    CExoString sColumn;
+    CExoString sIconResRef;
+    unsigned long nStrRef = 0;
+    sColumn.Format("Message_PC%i", (unsigned char)m_nMessageIndex);
+    ++m_nMessageIndex;
+    CTwoDimArrays* p2DArrays = g_pRules->Get2DArrays();
+    EXOXBOXASSERT(p2DArrays->m_pTutorial);
+    C2DA* pTutorial = p2DArrays->m_pTutorial;
+    if (pTutorial->GetINTEntry(m_nTutorialReason, sColumn, (int*)&nStrRef) != 0)
+    {
+        int bFound;
+        sColumn.Format("Message_PC%i", (unsigned char)m_nMessageIndex);
+        int nStrRef2;
+        p2DArrays = g_pRules->Get2DArrays();
+        EXOXBOXASSERT(p2DArrays->m_pTutorial);
+        pTutorial = p2DArrays->m_pTutorial;
+        if (pTutorial->GetINTEntry(
+                m_nTutorialReason, sColumn, &nStrRef2) != 0)
+        {
+            SetOkButtonMessage(38623);
+        }
+        else
+        {
+            SetOkButtonMessage(1580);
+        }
+        {
+            CExoString sIconColumn("Icon");
+            p2DArrays = g_pRules->Get2DArrays();
+            EXOXBOXASSERT(p2DArrays->m_pTutorial);
+            pTutorial = p2DArrays->m_pTutorial;
+            bFound = pTutorial->GetCExoStringEntry(
+                m_nTutorialReason, sIconColumn, &sIconResRef);
+        }
+#ifndef _XBOX
+        if (bFound != 0 &&
+            !sIconResRef.CompareNoCase("WHITEBUTTON") &&
+            !sIconResRef.CompareNoCase("STARTBUTTON") &&
+            !sIconResRef.CompareNoCase("XBUTTON") &&
+            !sIconResRef.CompareNoCase("YBUTTON") &&
+            !sIconResRef.CompareNoCase("Abutton") &&
+            !sIconResRef.CompareNoCase("Backbutton") &&
+            !sIconResRef.CompareNoCase("Bbutton") &&
+            !sIconResRef.CompareNoCase("Blbutton") &&
+            !sIconResRef.CompareNoCase("Whbutton") &&
+            !sIconResRef.CompareNoCase("Xbutton") &&
+            !sIconResRef.CompareNoCase("Ybutton") &&
+            !sIconResRef.CompareNoCase("uibut_Start") &&
+            !sIconResRef.CompareNoCase("uibut_X") &&
+            !sIconResRef.CompareNoCase("uibut_Y"))
+        {
+            CResRef cIcon(sIconResRef);
+            SetIcon(cIcon);
+        }
+#else
+        if (bFound != 0) SetIcon(sIconResRef);
+#endif
+        SetAllowCancel(0);
+        SetMessage(nStrRef);
+    }
+    return nStrRef;
 }
 
-static inline void SwguiingametutorialboxTrace2()
-{
-}
