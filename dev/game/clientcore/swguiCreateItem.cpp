@@ -8,8 +8,22 @@
 #include "nwrules.h"
 #include "twodimarray.h"
 #include "swmain.h"
+// PC 0x0073EA30 GOG 0x0073E710
+CSWGuiButton* CSWGuiCreateItemMenu::CreateOption(const CExoString& sText,
+                                                 CSWGuiHandler pHandler,
+                                                 CSWGuiButton* pPrototype)
+{
+    CSWGuiExtent cExtent = pPrototype->m_cExtent;
+    CSWGuiButton* pButton;
 
-static inline void SwguiCreateItemTrace1();
+    pButton = new CSWGuiButton();
+    pButton->Initialize(cExtent, pPrototype);
+    pButton->m_cText.m_cParams.SetText(sText);
+    pButton->AddEvent(GUIEVENT_ACTIVATE, this, pHandler);
+    pButton->AddEvent(GUIEVENT_ACCEPT, this, pHandler);
+    return pButton;
+}
+
 // PC 0x0073E8C0 GOG 0x0073E620
 void CSWGuiCreateItemMenu::HandleInputEvent(int nEvent, int nState)
 {
@@ -73,7 +87,6 @@ void CSWGuiCreateItemMenu::Back(CSWGuiControl* pControl)
 // PC 0x0073E9F0 GOG 0x0073E810
 void CSWGuiCreateItemMenu::ItemSubTypeMenu(CSWGuiControl* pControl)
 {
-    SwguiCreateItemTrace1();
     unsigned long nSubType;
 
     if (pControl->m_bSelected != 0)
@@ -83,21 +96,6 @@ void CSWGuiCreateItemMenu::ItemSubTypeMenu(CSWGuiControl* pControl)
         g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowSubItemCreateMenu(
             nSubType);
     }
-}
-// PC 0x0073EA30 GOG 0x0073E710
-CSWGuiButton* CSWGuiCreateItemMenu::CreateOption(const CExoString& sText,
-                                                 CSWGuiHandler pHandler,
-                                                 CSWGuiButton* pPrototype)
-{
-    CSWGuiExtent cExtent = pPrototype->m_cExtent;
-    CSWGuiButton* pButton;
-
-    pButton = new CSWGuiButton();
-    pButton->Initialize(cExtent, pPrototype);
-    pButton->m_cText.m_cParams.SetText(sText);
-    pButton->AddEvent(GUIEVENT_ACTIVATE, this, pHandler);
-    pButton->AddEvent(GUIEVENT_ACCEPT, this, pHandler);
-    return pButton;
 }
 // PC 0x0073EAF0 GOG 0x0073E850
 CSWGuiCreateItemMenu::CSWGuiCreateItemMenu(CSWGuiManager* pManager)
@@ -160,8 +158,4 @@ CSWGuiCreateItemMenu::CSWGuiCreateItemMenu(CSWGuiManager* pManager)
     pListBox->m_bLooping = 1;
     SetActiveControl(pListBox, 0);
     CenterPanel();
-}
-
-static inline void SwguiCreateItemTrace1()
-{
 }

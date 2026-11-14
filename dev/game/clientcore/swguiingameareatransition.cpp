@@ -11,81 +11,6 @@
 #include "gameobjectarray.h"
 #include "swparty.h"
 
-static inline void SwguiingameareatransitionTrace1();
-// PC 0x00734400 GOG 0x00734110
-void CSWGuiInGameAreaTransition::SetTransitionObject(unsigned long oidObject,
-                                                     const Vector& vPosition)
-{
-    if (m_oidTransitionObject != oidObject)
-    {
-        CClientExoApp* pClientApp = g_pAppManager->m_pClientExoApp;
-        CSWCObject* pObject = pClientApp->GetGameObject(oidObject);
-        if (pObject != NULL)
-        {
-            CSWCObject* pClientObject = pObject->AsSWCObject();
-            if (pClientObject != NULL)
-            {
-                CExoString sName;
-                if (pClientObject->m_nObjectType == 10)
-                {
-                    sName =
-                        pClientObject->AsSWCDoor()->GetTransitionDestination();
-                }
-                else if (pClientObject->m_nObjectType == 7)
-                {
-                    sName = pClientObject->AsSWCTrigger()->m_sTag;
-                }
-                int nDash;
-                {
-                    CExoString sDash("-");
-                    nDash = sName.Find(sDash, 0);
-                }
-                if (nDash != -1)
-                {
-                    sName = sName.Right(sName.GetLength() - nDash - 2);
-                }
-                m_lblDescription.m_cText.m_cParams.SetText(sName);
-            }
-        }
-        m_oidTransitionObject = oidObject;
-    }
-    m_vTransitionPosition = vPosition;
-}
-// PC 0x007345A0 GOG 0x007342B0
-void CSWGuiInGameAreaTransition::Draw(float fElapsed)
-{
-    SwguiingameareatransitionTrace1();
-    int nBarkBubbleTop;
-    CSWGuiExtent extent = m_cExtent;
-    CClientExoApp* pClientApp = g_pAppManager->m_pClientExoApp;
-
-    if (pClientApp->GetInGameGui()->GetBarkBubbleVisible(nBarkBubbleTop) != 0)
-    {
-        extent.m_nTop = nBarkBubbleTop;
-    }
-    else
-    {
-        extent.m_nTop = m_nDefaultTop;
-    }
-    SetExtent(extent);
-
-    CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
-    if (pParty->IsPartyTogether() != 0)
-    {
-        m_lblTextBackground.m_cBorder.m_cParams.m_vColor = m_v454;
-        m_lblIcon.m_cBorder.m_cParams.m_vColor = m_v460;
-        m_lblDescription.m_cText.m_cParams.SetColor(m_v46C);
-    }
-    else
-    {
-        m_lblTextBackground.m_cBorder.m_cParams.m_vColor =
-            CGuiInGame::DISABLED_ICON_COLOR;
-        m_lblIcon.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_ICON_COLOR;
-        m_lblDescription.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
-    }
-    return CSWGuiPanel::Draw(fElapsed);
-}
-
 // PC 0x007346C0 GOG 0x007343D0
 CSWGuiInGameAreaTransition::CSWGuiInGameAreaTransition(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -135,6 +60,75 @@ CSWGuiInGameAreaTransition::CSWGuiInGameAreaTransition(CSWGuiManager* pManager)
     m_nDefaultTop = m_cExtent.m_nTop;
 }
 
-static inline void SwguiingameareatransitionTrace1()
+// PC 0x00734400 GOG 0x00734110
+void CSWGuiInGameAreaTransition::SetTransitionObject(unsigned long oidObject,
+                                                     const Vector& vPosition)
 {
+    if (m_oidTransitionObject != oidObject)
+    {
+        CClientExoApp* pClientApp = g_pAppManager->m_pClientExoApp;
+        CSWCObject* pObject = pClientApp->GetGameObject(oidObject);
+        if (pObject != NULL)
+        {
+            CSWCObject* pClientObject = pObject->AsSWCObject();
+            if (pClientObject != NULL)
+            {
+                CExoString sName;
+                if (pClientObject->m_nObjectType == 10)
+                {
+                    sName =
+                        pClientObject->AsSWCDoor()->GetTransitionDestination();
+                }
+                else if (pClientObject->m_nObjectType == 7)
+                {
+                    sName = pClientObject->AsSWCTrigger()->m_sTag;
+                }
+                int nDash;
+                {
+                    CExoString sDash("-");
+                    nDash = sName.Find(sDash, 0);
+                }
+                if (nDash != -1)
+                {
+                    sName = sName.Right(sName.GetLength() - nDash - 2);
+                }
+                m_lblDescription.m_cText.m_cParams.SetText(sName);
+            }
+        }
+        m_oidTransitionObject = oidObject;
+    }
+    m_vTransitionPosition = vPosition;
+}
+// PC 0x007345A0 GOG 0x007342B0
+void CSWGuiInGameAreaTransition::Draw(float fElapsed)
+{
+    int nBarkBubbleTop;
+    CSWGuiExtent extent = m_cExtent;
+    CClientExoApp* pClientApp = g_pAppManager->m_pClientExoApp;
+
+    if (pClientApp->GetInGameGui()->GetBarkBubbleVisible(nBarkBubbleTop) != 0)
+    {
+        extent.m_nTop = nBarkBubbleTop;
+    }
+    else
+    {
+        extent.m_nTop = m_nDefaultTop;
+    }
+    SetExtent(extent);
+
+    CSWParty* pParty = g_pAppManager->m_pClientExoApp->GetSWParty();
+    if (pParty->IsPartyTogether() != 0)
+    {
+        m_lblTextBackground.m_cBorder.m_cParams.m_vColor = m_v454;
+        m_lblIcon.m_cBorder.m_cParams.m_vColor = m_v460;
+        m_lblDescription.m_cText.m_cParams.SetColor(m_v46C);
+    }
+    else
+    {
+        m_lblTextBackground.m_cBorder.m_cParams.m_vColor =
+            CGuiInGame::DISABLED_ICON_COLOR;
+        m_lblIcon.m_cBorder.m_cParams.m_vColor = CGuiInGame::DISABLED_ICON_COLOR;
+        m_lblDescription.m_cText.m_cParams.SetColor(CGuiInGame::DISABLED_TEXT);
+    }
+    return CSWGuiPanel::Draw(fElapsed);
 }

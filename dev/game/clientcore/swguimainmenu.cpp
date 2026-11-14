@@ -26,12 +26,7 @@
 #include "nwccreaturestats.h"
 #include "nwccreatureappearance.h"
 
-static inline void SwguimainmenuTrace3();
-static inline void SwguimainmenuTrace2();
-static inline void SwguimainmenuTrace1();
-#define SWGUIMAINMENU_TRACE() SwguimainmenuTrace3()
 
-#define SWGUIMAINMENU_HOLD() SwguimainmenuTrace1()
 
 #ifndef _XBOX
 static int s_nPreCacheStep = 0;
@@ -174,7 +169,6 @@ void CSWGuiMainMenu::OnNewGamePicked(CSWGuiControl* pControl)
 // PC 0x006D0FF0 GOG 0x006D0D80
 void CSWGuiMainMenu::OnLoadSaveGame(CSWGuiControl* pControl)
 {
-    SWGUIMAINMENU_HOLD();
 #ifndef _XBOX
     if (m_nExitState != EXITSTATE_DELETE)
     {
@@ -210,7 +204,6 @@ void CSWGuiMainMenu::OnLoadSaveGame(CSWGuiControl* pControl)
 // PC 0x006D1110 GOG 0x006D0EA0
 void CSWGuiMainMenu::OnMoviesPicked(CSWGuiControl* pControl)
 {
-    SWGUIMAINMENU_HOLD();
     CSWGuiTitleMovies* pMovies;
     CSWGuiTitleMovies* pNewMovies;
 #ifndef _XBOX
@@ -252,7 +245,6 @@ void CSWGuiMainMenu::OnMoviesPicked(CSWGuiControl* pControl)
 // PC 0x006D11C0 GOG 0x006D0F50
 void CSWGuiMainMenu::OnMusicPicked(CSWGuiControl* pControl)
 {
-    SWGUIMAINMENU_HOLD();
     int bSelected = pControl->m_bSelected;
     if (bSelected)
     {
@@ -265,7 +257,6 @@ void CSWGuiMainMenu::OnMusicPicked(CSWGuiControl* pControl)
 // PC 0x006D1250 GOG 0x006D0FE0
 void CSWGuiMainMenu::OnOptionsPicked(CSWGuiControl* pControl)
 {
-    SWGUIMAINMENU_HOLD();
     CSWGuiOptionsMain* pOptions;
 #ifdef _XBOX
     CSWGuiOptionsMain* pNewOptions;
@@ -307,7 +298,6 @@ void CSWGuiMainMenu::OnOptionsPicked(CSWGuiControl* pControl)
 // PC 0x006D12F0 GOG 0x006D1080
 void CSWGuiMainMenu::HandleInputEvent(int nEvent, int nState)
 {
-    SWGUIMAINMENU_HOLD();
     if (nState != 0)
     {
         switch (nEvent)
@@ -348,7 +338,6 @@ void CSWGuiMainMenu::HandleInputEvent(int nEvent, int nState)
 // PC 0x006D13D0 GOG 0x006D1160
 void CSWGuiMainMenu::OnEnterButton(CSWGuiControl* pControl)
 {
-    SWGUIMAINMENU_HOLD();
 #ifdef _XBOX
     ((CSWGuiButton*)pControl)
         ->m_cText.m_cParams.SetColor(CGuiInGame::COLOR_YELLOW);
@@ -382,13 +371,11 @@ void CSWGuiMainMenu::LaunchDashboard(CSWGuiControl* pControl)
 #else
 void CSWGuiMainMenu::LaunchDashboard(CSWGuiControl* pControl)  // PC 0x006D13F0 GOG 0x006D1180
 {
-    SWGUIMAINMENU_HOLD();
     g_pAppManager->m_pClientExoApp->ExitProgram();
 }
 // PC 0x006D1400 GOG 0x006D1190
 void CSWGuiMainMenu::OnQuitButtonPressed(CSWGuiControl* pControl)
 {
-    SWGUIMAINMENU_HOLD();
 #ifndef _XBOX
     if (m_bReady)
 #endif
@@ -550,7 +537,6 @@ void CSWGuiMainMenu::OnModulePicked(CSWGuiControl* pControl)
 // PC 0x006D1960 GOG 0x006D1660
 void CSWGuiMainMenu::DeleteModuleList()
 {
-    SWGUIMAINMENU_TRACE();
     while (m_lstModules.num > 0)
     {
         m_lstModules.DelIndex(0);
@@ -897,20 +883,6 @@ CSWGuiMainMenu::CSWGuiMainMenu(CSWGuiManager* pManager)
     m_nDrawCount = 0;
     m_bIdleTimerDisabled = 0;
 #endif
-}
-
-static inline void SwguimainmenuTrace3()
-{
-    SwguimainmenuTrace2();
-}
-
-static inline void SwguimainmenuTrace2()
-{
-    SwguimainmenuTrace1();
-}
-
-static inline void SwguimainmenuTrace1()
-{
 }
 
 #ifdef _XBOX

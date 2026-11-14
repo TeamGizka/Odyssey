@@ -22,178 +22,6 @@
 #define BARK_MIN_SOUND_HEIGHT 0.5f
 #define BARK_MAX_TIME_STEP 1.5f
 
-static inline void SwguibarkbubbleTrace1();
-#define SWGUIBARKBUBBLE_TRACE() SwguibarkbubbleTrace1()
-// PC 0x00712710 GOG 0x007129B0
-void CSWGuiBarkBubble::Pause()
-{
-    if (m_fTimeLeft > 0.0f || m_pSoundSource != NULL)
-    {
-        if (m_pSoundSource != NULL)
-        {
-            m_pSoundSource->Pause();
-        }
-        SetModal(0);
-    }
-}
-// PC 0x00712770 GOG 0x00712A10
-void CSWGuiBarkBubble::Resume()
-{
-    SWGUIBARKBUBBLE_TRACE();
-    if (m_fTimeLeft > 0.0f || m_pSoundSource != NULL)
-    {
-        if (m_pSoundSource != NULL)
-        {
-            m_pSoundSource->Resume();
-        }
-#ifdef _XBOX
-        g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(this, 0, 1);
-#else
-        g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(this, SWGUI_PANEL_MODE_OVERLAY, 1);
-#endif
-    }
-}
-// PC 0x007127C0 GOG 0x00712A60
-void CSWGuiBarkBubble::StopBark(int bStopSound)
-{
-    if (bStopSound != 0)
-    {
-        if (m_pSoundSource != NULL)
-        {
-            m_pSoundSource->Stop();
-            delete m_pSoundSource;
-            m_pSoundSource = NULL;
-        }
-    }
-    m_fTimeLeft = 0.0f;
-    SetModal(0);
-}
-// PC 0x00712840 GOG 0x00712AE0
-void CSWGuiBarkBubble::Draw(float fElapsed)
-{
-    SWGUIBARKBUBBLE_TRACE();
-    CSWGuiExtent cExtent = m_cInitialExtent;
-    cExtent.m_nHeight = m_cExtent.m_nHeight;
-    if (!g_pAppManager->m_pClientExoApp->GetInGameGui()->GetMiniMapVisible())
-    {
-        int nMarginX, nMarginY;
-        m_pManager->GetSafeMargin(nMarginX, nMarginY);
-        cExtent.m_nWidth = m_pManager->m_nWidth - 2 * nMarginX;
-    }
-    if (m_nBarkX != -1)
-        cExtent.m_nLeft = m_nBarkX;
-    if (m_nBarkY != -1)
-        cExtent.m_nTop = m_nBarkY;
-    if (g_pAppManager->m_pClientExoApp->GetCombatMode())
-    {
-        cExtent.m_nTop +=
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->GetInterfaceOffset();
-    }
-    SetExtent(cExtent);
-
-    int bShowBark = 1;
-    if (m_oidSpeaker != OBJECT_INVALID)
-    {
-        CSWCCreature* pCharacter =
-            g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
-        if (pCharacter != NULL)
-        {
-            Vector vPosition = pCharacter->m_vPosition;
-            CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
-            CSWCObject* pSpeaker = pClientExoApp->GetGameObject(m_oidSpeaker);
-            if (pSpeaker == NULL || pSpeaker->AsSWCObject() == NULL)
-            {
-                bShowBark = 0;
-            }
-            else if (!m_bForceVisible)
-            {
-                Vector vDifference = vPosition - pSpeaker->AsSWCObject()->m_vPosition;
-                bShowBark = vDifference * vDifference < BARK_DISTANCE_SQUARED;
-            }
-        }
-    }
-
-#ifdef _XBOX
-    if (m_pSoundSource->IsPlaying())
-#else
-    if (m_pSoundSource != NULL && m_pSoundSource->IsPlaying())
-#endif
-    {
-        if (bShowBark)
-        {
-            CSWGuiPanel::Draw(fElapsed);
-            if (m_pManager->m_fGuiScale < BARK_MAX_TIME_STEP)
-            {
-                m_fTimeLeft -= m_pManager->m_fGuiScale;
-            }
-        }
-        else
-        {
-            SetModal(0);
-        }
-    }
-#ifdef _XBOX
-    else if (m_pSoundSource->GetPlayFailed() || !m_bSoundStarted)
-#else
-    else if (m_pSoundSource != NULL &&
-             (m_pSoundSource->GetPlayFailed() || !m_bSoundStarted))
-#endif
-    {
-        if (m_fTimeLeft > 0.0f && bShowBark)
-        {
-            CSWGuiPanel::Draw(fElapsed);
-            if (m_pManager->m_fGuiScale < BARK_MAX_TIME_STEP)
-            {
-                m_fTimeLeft -= m_pManager->m_fGuiScale;
-            }
-        }
-        else
-        {
-            SetModal(0);
-        }
-    }
-    else
-    {
-        if (m_pSoundSource != NULL)
-        {
-            m_pSoundSource->Stop();
-            delete m_pSoundSource;
-            m_pSoundSource = NULL;
-        }
-        SetModal(0);
-    }
-
-    if (g_pAppManager->m_pClientExoApp->GetCombatMode())
-    {
-        m_cExtent.m_nTop -=
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->GetInterfaceOffset();
-    }
-}
-// PC 0x00712B10 GOG 0x00712DB0
-void CSWGuiBarkBubble::OnPanelAdded()
-{
-    SWGUIBARKBUBBLE_TRACE();
-    m_nStartTime = (__int64)g_pAppManager->m_pClientExoApp->m_pcExoAppInternal
-                       ->m_pPauseTimer->GetSnapshotTime() /
-                   1000;
-#ifndef _XBOX
-    CSWGuiPanel::OnPanelAdded();
-#endif
-}
-// PC 0x00712B50 GOG 0x00712DF0
-void CSWGuiBarkBubble::SetExtent(const CSWGuiExtent& cExtent)
-{
-    SWGUIBARKBUBBLE_TRACE();
-    CSWGuiExtent cTextExtent;
-
-    cTextExtent.m_nLeft = 5;
-    cTextExtent.m_nTop = 5;
-    cTextExtent.m_nWidth = cExtent.m_nWidth - 10;
-    cTextExtent.m_nHeight = cExtent.m_nHeight - 10;
-    m_lblBarkText.SetExtent(cTextExtent);
-    CSWGuiPanel::SetExtent(cExtent);
-}
-
 // PC 0x00712BA0 GOG 0x00712460
 CSWGuiBarkBubble::CSWGuiBarkBubble(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -324,6 +152,168 @@ void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker,
 #endif
 }
 
-static inline void SwguibarkbubbleTrace1()
+// PC 0x00712710 GOG 0x007129B0
+void CSWGuiBarkBubble::Pause()
 {
+    if (m_fTimeLeft > 0.0f || m_pSoundSource != NULL)
+    {
+        if (m_pSoundSource != NULL)
+        {
+            m_pSoundSource->Pause();
+        }
+        SetModal(0);
+    }
+}
+// PC 0x00712770 GOG 0x00712A10
+void CSWGuiBarkBubble::Resume()
+{
+    if (m_fTimeLeft > 0.0f || m_pSoundSource != NULL)
+    {
+        if (m_pSoundSource != NULL)
+        {
+            m_pSoundSource->Resume();
+        }
+#ifdef _XBOX
+        g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(this, 0, 1);
+#else
+        g_pAppManager->GetClientExoApp()->GetSWGuiManager()->AddPanel(this, SWGUI_PANEL_MODE_OVERLAY, 1);
+#endif
+    }
+}
+// PC 0x007127C0 GOG 0x00712A60
+void CSWGuiBarkBubble::StopBark(int bStopSound)
+{
+    if (bStopSound != 0)
+    {
+        if (m_pSoundSource != NULL)
+        {
+            m_pSoundSource->Stop();
+            delete m_pSoundSource;
+            m_pSoundSource = NULL;
+        }
+    }
+    m_fTimeLeft = 0.0f;
+    SetModal(0);
+}
+// PC 0x00712840 GOG 0x00712AE0
+void CSWGuiBarkBubble::Draw(float fElapsed)
+{
+    CSWGuiExtent cExtent = m_cInitialExtent;
+    cExtent.m_nHeight = m_cExtent.m_nHeight;
+    if (!g_pAppManager->m_pClientExoApp->GetInGameGui()->GetMiniMapVisible())
+    {
+        int nMarginX, nMarginY;
+        m_pManager->GetSafeMargin(nMarginX, nMarginY);
+        cExtent.m_nWidth = m_pManager->m_nWidth - 2 * nMarginX;
+    }
+    if (m_nBarkX != -1)
+        cExtent.m_nLeft = m_nBarkX;
+    if (m_nBarkY != -1)
+        cExtent.m_nTop = m_nBarkY;
+    if (g_pAppManager->m_pClientExoApp->GetCombatMode())
+    {
+        cExtent.m_nTop +=
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->GetInterfaceOffset();
+    }
+    SetExtent(cExtent);
+
+    int bShowBark = 1;
+    if (m_oidSpeaker != OBJECT_INVALID)
+    {
+        CSWCCreature* pCharacter =
+            g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(0);
+        if (pCharacter != NULL)
+        {
+            Vector vPosition = pCharacter->m_vPosition;
+            CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
+            CSWCObject* pSpeaker = pClientExoApp->GetGameObject(m_oidSpeaker);
+            if (pSpeaker == NULL || pSpeaker->AsSWCObject() == NULL)
+            {
+                bShowBark = 0;
+            }
+            else if (!m_bForceVisible)
+            {
+                Vector vDifference = vPosition - pSpeaker->AsSWCObject()->m_vPosition;
+                bShowBark = vDifference * vDifference < BARK_DISTANCE_SQUARED;
+            }
+        }
+    }
+
+#ifdef _XBOX
+    if (m_pSoundSource->IsPlaying())
+#else
+    if (m_pSoundSource != NULL && m_pSoundSource->IsPlaying())
+#endif
+    {
+        if (bShowBark)
+        {
+            CSWGuiPanel::Draw(fElapsed);
+            if (m_pManager->m_fGuiScale < BARK_MAX_TIME_STEP)
+            {
+                m_fTimeLeft -= m_pManager->m_fGuiScale;
+            }
+        }
+        else
+        {
+            SetModal(0);
+        }
+    }
+#ifdef _XBOX
+    else if (m_pSoundSource->GetPlayFailed() || !m_bSoundStarted)
+#else
+    else if (m_pSoundSource != NULL &&
+             (m_pSoundSource->GetPlayFailed() || !m_bSoundStarted))
+#endif
+    {
+        if (m_fTimeLeft > 0.0f && bShowBark)
+        {
+            CSWGuiPanel::Draw(fElapsed);
+            if (m_pManager->m_fGuiScale < BARK_MAX_TIME_STEP)
+            {
+                m_fTimeLeft -= m_pManager->m_fGuiScale;
+            }
+        }
+        else
+        {
+            SetModal(0);
+        }
+    }
+    else
+    {
+        if (m_pSoundSource != NULL)
+        {
+            m_pSoundSource->Stop();
+            delete m_pSoundSource;
+            m_pSoundSource = NULL;
+        }
+        SetModal(0);
+    }
+
+    if (g_pAppManager->m_pClientExoApp->GetCombatMode())
+    {
+        m_cExtent.m_nTop -=
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->GetInterfaceOffset();
+    }
+}
+// PC 0x00712B10 GOG 0x00712DB0
+void CSWGuiBarkBubble::OnPanelAdded()
+{
+    m_nStartTime = (__int64)g_pAppManager->m_pClientExoApp->m_pcExoAppInternal
+                       ->m_pPauseTimer->GetSnapshotTime() /
+                   1000;
+#ifndef _XBOX
+    CSWGuiPanel::OnPanelAdded();
+#endif
+}
+// PC 0x00712B50 GOG 0x00712DF0
+void CSWGuiBarkBubble::SetExtent(const CSWGuiExtent& cExtent)
+{
+    CSWGuiExtent cTextExtent;
+
+    cTextExtent.m_nLeft = 5;
+    cTextExtent.m_nTop = 5;
+    cTextExtent.m_nWidth = cExtent.m_nWidth - 10;
+    cTextExtent.m_nHeight = cExtent.m_nHeight - 10;
+    m_lblBarkText.SetExtent(cTextExtent);
+    CSWGuiPanel::SetExtent(cExtent);
 }

@@ -7,8 +7,6 @@
 
 #include <stdio.h>
 
-static inline void NwcanimbasetriggerTrace1();
-#define NWCANIMBASETRIGGER_TRACE() NwcanimbasetriggerTrace1()
 // PC 0x00756C70 GOG 0x00756A80
 CSWCAnimBaseTrigger::CSWCAnimBaseTrigger()
 {
@@ -57,7 +55,6 @@ CExoString CSWCAnimBaseTrigger::GetAnimationName(unsigned short nAnimation)
 unsigned short CSWCAnimBaseTrigger::ServerToClientAnimation(
     unsigned short nAnimation)
 {
-    NWCANIMBASETRIGGER_TRACE();
     char szBuffer[256];
 
     switch (nAnimation)
@@ -77,8 +74,4 @@ unsigned short CSWCAnimBaseTrigger::ServerToClientAnimation(
                 nAnimation);
     }
     return nAnimation;
-}
-
-static inline void NwcanimbasetriggerTrace1()
-{
 }
