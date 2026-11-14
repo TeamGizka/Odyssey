@@ -343,10 +343,11 @@ void CSWGuiInGameJournal::PopulateItemListBox()
     CExoString sText;
     int nLanguage = g_pAppManager->m_pClientExoApp->GetClientLanguage();
     CExoArrayList<CSWGuiControl*> aControls;
-    CSWGuiButton* pProto = (CSWGuiButton*)m_lbxItems.m_pProtoItem;
+    CSWGuiListBox* pItems = &m_lbxItems;
+    CSWGuiButton* pProto = (CSWGuiButton*)pItems->m_pProtoItem;
     CSWGuiExtent extent = pProto->m_cExtent;
     extent.m_nWidth =
-        m_lbxItems.m_cItemExtent.m_nWidth - 2 * m_lbxItems.m_nPadding;
+        pItems->m_cItemExtent.m_nWidth - 2 * pItems->m_nPadding;
 
     int nIndex = 0;
     CSWJournalEntry* pEntry;
@@ -383,18 +384,18 @@ void CSWGuiInGameJournal::PopulateItemListBox()
         nIndex++;
     }
 
-    m_lbxItems.AddControls(aControls, 1, 1, 0);
+    pItems->AddControls(aControls, 1, 1, 0);
     if (m_pUnknownFB8 != 0)
     {
         m_pUnknownFB8->SetActive(0);
     }
     if (aControls.num > 0)
     {
-        m_lbxItems.SetSelectedControl(0, 0);
+        pItems->SetSelectedControl(0, 0);
     }
     else
     {
-        m_lbxItems.SetSelectedControl(-1, 0);
+        pItems->SetSelectedControl(-1, 0);
         m_lblDescription.m_cText.m_cParams.SetText("");
         OnControlEntered(0);
     }
