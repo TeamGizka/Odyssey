@@ -358,11 +358,11 @@ void Particle::randomDirection(int nWidth, int nHeight)
                cos(1.57079632 - static_cast<MdlNodeEmitter*>(m_pEmitter->m_pNode)->m_fDeadSpace))
         {
             float fAngle;
+            Vector vYDir = m_qOrientation.ydir();
+            Vector vDelta = vYDir - vCameraDirection;
+            Vector vAxis = cross(vCameraDirection, m_qOrientation.ydir());
             if (EMITTER_DEADSPACE_DEBUG)
             {
-                Vector vYDir = m_qOrientation.ydir();
-                Vector vDelta = vYDir - vCameraDirection;
-                Vector vAxis = cross(vCameraDirection, m_qOrientation.ydir());
                 qNewOrientation.m_fW = 0.0f;
                 qNewOrientation.m_fZ = 0.0f;
             }
