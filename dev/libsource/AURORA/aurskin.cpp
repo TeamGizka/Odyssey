@@ -916,8 +916,8 @@ void RenderSkinned(VertexPrimitiveSkinned* pPrimitive, bool bBumpedOut)
     tbones.m_nCount = 0;
 
     Part* pRoot = pPart;
-    Vector vTranslation = -pPart->m_qOrientation * -pPart->m_vPosition;
-    Quaternion qRotation = -pPart->m_qOrientation;
+    Vector vTranslation = -pRoot->m_qOrientation * -pRoot->m_vPosition;
+    Quaternion qRotation = -pRoot->m_qOrientation;
     while (pRoot->m_pParent != 0)
     {
         pRoot = pRoot->m_pParent;
