@@ -406,8 +406,7 @@ void CTlkTable::ParseStr(CExoString& sText)
             if (pText[nPos + 1] == '<')
             {
                 ++nPos;
-                int bParsing = m_bParsing;
-                if (!bParsing)
+                if (!m_bParsing)
                 {
                     sParsed = sParsed + CExoString(pText + nStart, nPos - nStart);
                 }
@@ -543,7 +542,7 @@ TokenDone:
         if (nStart < nPos && !m_bParsing)
         {
             pText += nStart;
-            sParsed = sParsed + pText;
+            sParsed = sParsed + CExoString(pText);
         }
         sText = sParsed;
     }
