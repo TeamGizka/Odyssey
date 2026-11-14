@@ -352,8 +352,7 @@ void CSWCameraNavigate::Message(char* sMessage)
 // PC 0x0068E9E0 GOG 0x0068E750
 int CSWCameraNavigate::Control(float fTimeStep)
 {
-    int nResult = CAurBehavior::Control(fTimeStep);
-    if (!nResult)
+    if (!CAurBehavior::Control(fTimeStep))
     {
         return 0;
     }
@@ -390,16 +389,22 @@ int CSWCameraNavigate::Control(float fTimeStep)
         EXOLOG("HS camera movement (%f, %f)\n", vMovement.m_fX, vMovement.m_fY);
         m_fStrafe = 0.0f;
         m_fSpeed = 0.0f;
+        int bQA;
         if (vMovement.m_fX != 0.0f || vMovement.m_fY != 0.0f)
         {
             vMovement = qMovement * vMovement;
             vMovement = vMovement * fTimeStep;
             static_cast<Gob*>(m_pObject)->SetPosition(
                 vMovement + static_cast<Gob*>(m_pObject)->GetPosition());
+            bQA = RenderQA;
         }
-        if (RenderQA && m_pObject)
+        else
         {
-            if (m_pObject == NULL && RenderQA)
+            bQA = RenderQA;
+        }
+        if (bQA && m_pObject)
+        {
+            if (m_pObject == NULL)
             {
                 return 1;
             }
