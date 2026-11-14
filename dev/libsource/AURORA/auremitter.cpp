@@ -3146,10 +3146,6 @@ void LightningEmitter::Update(float fTimeStep)
                 }
                 else if (bRandomEnd)
                 {
-                    if (LIGHTNING_BRANCH_DEBUG)
-                    {
-                        vDistance.m_fX = 0.0f;
-                    }
                     m_lstReserved210[m_lstReserved210.m_nCount - 1] =
                         m_lstReserved228[m_lstReserved210.m_nCount - 1] =
                         m_lstActive[m_lstActive.m_nCount - 1]->m_vPosition;
@@ -3184,10 +3180,6 @@ void LightningEmitter::Update(float fTimeStep)
                     }
                 }
             }
-            if (LIGHTNING_BRANCH_DEBUG)
-            {
-                vDistance.m_fY = 0.0f;
-            }
             vDistance = m_lstActive[0]->m_vPosition - vEnd;
             if (!equal(vDistance, Vector()))
             {
@@ -3199,9 +3191,9 @@ void LightningEmitter::Update(float fTimeStep)
                     vPerpendicular = Vector(-vDirection.m_fY, vDirection.m_fZ, -vDirection.m_fX);
                     RecursiveFractal(nMidpoint, nMidpoint, 1, vPerpendicular,
                                      cross(vDirection, vPerpendicular), fScale);
-                    float fRange = (float)(sqrt(vDistance.m_fZ * vDistance.m_fZ +
+                    float fRange = (float)(sqrt(vDistance.m_fX * vDistance.m_fX +
                                         vDistance.m_fY * vDistance.m_fY +
-                                        vDistance.m_fX * vDistance.m_fX) / m_lstActive.m_nCount * 0.5);
+                                        vDistance.m_fZ * vDistance.m_fZ) / m_lstActive.m_nCount * 0.5);
                     for (j = 1; j < m_lstActive.m_nCount - 1; j++)
                     {
                         if (!(fRange >= 0.01))
@@ -3218,9 +3210,9 @@ void LightningEmitter::Update(float fTimeStep)
                 }
                 else
                 {
-                    float fRange = (sqrt(vDistance.m_fZ * vDistance.m_fZ +
+                    float fRange = (sqrt(vDistance.m_fX * vDistance.m_fX +
                                          vDistance.m_fY * vDistance.m_fY +
-                                         vDistance.m_fX * vDistance.m_fX) / m_lstActive.m_nCount * 0.5) *
+                                         vDistance.m_fZ * vDistance.m_fZ) / m_lstActive.m_nCount * 0.5) *
                         m_fLightningScale * m_fScale;
                     Vector vLongitudinal = fRange * normalize(vDistance);
                     Vector vJitterDirection = m_vReserved27C;
