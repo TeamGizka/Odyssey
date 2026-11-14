@@ -2461,13 +2461,14 @@ void CSWCCreatureStats::GetMenuInfo(
     if (g_pAppManager->m_pServerExoApp->GetModule()->GetArea()->GetPlayerRestrictMode() == 0)
     {
         CExoArrayList<unsigned long> lstKnownSpells;
-        for (int nClass = 0; nClass < m_nClassCount; nClass++)
+        int i;
+        for (i = 0; i < m_nClassCount; i++)
         {
             int nBase = lstKnownSpells.num;
-            lstKnownSpells.SetSize(nBase + m_aClassInfo[nClass].GetNumberKnownSpells(0));
-            for (int nKnown = 0; nKnown < m_aClassInfo[nClass].GetNumberKnownSpells(0); nKnown++)
+            lstKnownSpells.SetSize(nBase + m_aClassInfo[i].GetNumberKnownSpells(0));
+            for (int nKnown = 0; nKnown < m_aClassInfo[i].GetNumberKnownSpells(0); nKnown++)
             {
-                lstKnownSpells[nBase + nKnown] = m_aClassInfo[nClass].m_lstKnownSpells[0][nKnown];
+                lstKnownSpells[nBase + nKnown] = m_aClassInfo[i].m_lstKnownSpells[0][nKnown];
             }
         }
 
@@ -2477,7 +2478,7 @@ void CSWCCreatureStats::GetMenuInfo(
         CExoArrayList<unsigned long> lstSpellIds;
         int nAlignment = m_nGoodEvilAlignment;
 
-        for (int i = 0; i < lstKnownSpells.num; i++)
+        for (i = 0; i < lstKnownSpells.num; i++)
         {
             unsigned long nSpellId = lstKnownSpells[i];
             CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpellId);
@@ -2574,18 +2575,18 @@ void CSWCCreatureStats::GetMenuInfo(
                             {
                                 if (nSlot == 17 && lstSlots[k] == 16)
                                 {
+                                    bInserted = 1;
                                     lstPriorities[k] = nPriority;
                                     lstSpells[k] = pSpell;
                                     lstSpellIds[k] = nSpellId;
-                                    bInserted = 1;
                                     lstSlots[k] = 17;
                                 }
                                 else if (nSlot == 21 && lstSlots[k] == 20)
                                 {
+                                    bInserted = 1;
                                     lstPriorities[k] = nPriority;
                                     lstSpells[k] = pSpell;
                                     lstSpellIds[k] = nSpellId;
-                                    bInserted = 1;
                                     lstSlots[k] = 21;
                                 }
                                 else if (lstSlots[k] == nSlot)
