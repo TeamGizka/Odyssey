@@ -56,7 +56,7 @@ static inline int PazaakCardsDiffer(CPazaakCard cA, CPazaakCard cB)
            cA.m_nValue != cB.m_nValue;
 }
 
-static inline int PazaakCardValue(CPazaakCard cCard)
+static inline int PazaakCardValue(const CPazaakCard& cCard)
 {
     return cCard.m_nValue;
 }
@@ -687,6 +687,8 @@ int CSWGuiPazaakGame::RefreshDisplay()
     {
         return 0;
     }
+    EXOLOG("RefreshDisplay %d %d %d", m_nState, GetPazaak()->m_cPlayer.m_bStanding,
+           GetPazaak()->m_cOpponent.m_bStanding);
     int bPlayerChanged = 0;
     int bNpcChanged = 0;
     int bPlayerStand = GetPazaak()->m_cPlayer.m_bStanding;
@@ -707,7 +709,7 @@ int CSWGuiPazaakGame::RefreshDisplay()
         }
         m_cPlayerBoard[i].SetDimmed(bPlayerStand);
 
-        cCard = m_pPazaak->m_cOpponent.m_aBoard[i];
+        cCard = GetPazaak()->m_cOpponent.m_aBoard[i];
         if (PazaakCardsDiffer(m_cNpcBoard[i].m_cCard, cCard))
         {
             m_cNpcBoard[i].SetCard(cCard);
