@@ -1168,8 +1168,7 @@ static void ProcessParts(BSPNode* pNode, void* pData, List<Plane>& planes)
             pGob->EnableInViewVolume();
             Vector vCenter = pGob->m_vPosition +
                 pGob->m_qOrientation * pGob->m_vMinimumBoundingSphere;
-            float fDistance = magnitude(CurrentCamera->m_vPosition - vCenter);
-            pGob->m_fZOrder = fDistance;
+            pGob->m_fZOrder = magnitude(CurrentCamera->m_vPosition - vCenter);
         }
         else
         {
@@ -1187,9 +1186,10 @@ static void ProcessParts(BSPNode* pNode, void* pData, List<Plane>& planes)
         Gob* pGob = lstStaticGobs[i];
         if (pGob->IsInViewVolume())
         {
-            const Quaternion& qOrientation = pGob->m_qOrientation;
+            AurDrawLine(pGob->m_vPosition, pGob->m_vPosition +
+                pGob->m_qOrientation * pGob->m_vMinimumBoundingSphere, 0);
             pGob->m_fZOrder = magnitude(CurrentCamera->m_vPosition -
-                (pGob->m_vPosition + qOrientation *
+                (pGob->m_vPosition + pGob->m_qOrientation *
                  pGob->m_vMinimumBoundingSphere));
         }
         if (!GobOutside(pGob, planes))
