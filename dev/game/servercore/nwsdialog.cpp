@@ -33,6 +33,7 @@
 
 bool g_bVODebugEnabled;
 static inline C2DA* NwsdialogEmotionTable();
+static inline C2DA* NwsdialogAlienVOTable();
 // PC 0x005E6980 GOG 0x005E69B0
 inline CSWSDialogNode::CSWSDialogNode()
 {
@@ -604,24 +605,25 @@ void CSWSDialog::LoadDialogBase(CSWSDialogBase& dialogBase, CResGFF* pGFF,
             &resStruct, "Emotion", bFieldSuccess, 0);
         dialogBase.m_nFacialAnim = pGFF->ReadFieldINT(
             &resStruct, "FacialAnim", bFieldSuccess, 0);
-        int nAlienRace;
+        int nAlienRace = 0;
         if (dialogBase.m_sSpeaker == "")
         {
-            nAlienRace = dialogBase.m_nAlienRaceNode;
-            if (nAlienRace <= 0)
+            if (dialogBase.m_nAlienRaceNode > 0)
+                nAlienRace = dialogBase.m_nAlienRaceNode;
+            else if (m_nAlienRaceOwner > 0)
                 nAlienRace = m_nAlienRaceOwner;
         }
-        else
+        else if (dialogBase.m_nAlienRaceNode > 0)
             nAlienRace = dialogBase.m_nAlienRaceNode;
-        if (nAlienRace > 0 && (bFieldSuccess = nAlienRace) > 0)
+        if (nAlienRace > 0)
         {
             CExoString sEmotion;
             CExoString sAlienVO;
             int bFound = NwsdialogEmotionTable()->GetCExoStringEntry(
                 dialogBase.m_nEmotion, "LABEL", &sEmotion);
             if (bFound &&
-                g_pRules->Get2DArrays()->m_pAlienVO->GetCExoStringEntry(
-                    bFieldSuccess, sEmotion, &sAlienVO))
+                NwsdialogAlienVOTable()->GetCExoStringEntry(
+                    nAlienRace, sEmotion, &sAlienVO))
             {
                 dialogBase.m_cSoundResRef = sAlienVO;
                 if (dialogBase.m_cSoundResRef.IsValid())
@@ -3076,6 +3078,11 @@ CSWSDialogAnimation::CSWSDialogAnimation()
 static inline C2DA* NwsdialogEmotionTable()
 {
     return g_pRules->Get2DArrays()->m_pEmotion;
+}
+
+static inline C2DA* NwsdialogAlienVOTable()
+{
+    return g_pRules->Get2DArrays()->m_pAlienVO;
 }
 
 char sOut[255] = "                                                  ";
