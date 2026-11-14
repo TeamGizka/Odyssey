@@ -1661,6 +1661,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 
         if (bPeragus && m_nInputClass == INPUT_CLASS_DIALOG)
             bPeragusDialog = 1;
     }
+    EXOLOG("ProcessInput: peragus dialog %p", &bPeragusDialog);
     if (g_pExoInput->GetActive() || bPeragusDialog)
     {
         int i;
@@ -1982,8 +1983,8 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 
 #ifndef _XBOX
                     Vector vMouse((float)nX, (float)nY, 0.0f);
 #endif
-                    CSWCObject* pNearest = NULL;
                     float fNearest = FLT_MAX;
+                    CSWCObject* pNearest = NULL;
                     CSWCCreature* pPlayer = GetPlayerCreature();
                     for (int j = 0; j < m_aNearestObjects.num; j++)
                     {
@@ -2103,7 +2104,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 
                 (g_pAppManager->GetClientExoApp()->GetWorldTimer()->GetSnapshotTime() /
                  WORLD_TIMER_SNAPSHOT_TICKS_PER_MILLISECOND),
                 CPlayBackEventNode::PLAYER_POSITION, vPosition.m_fX, vPosition.m_fY, vPosition.m_fZ);
-            g_pAppManager->m_pClientExoApp->GetCaptureEventFile()->Write(sCapture);
+            g_pAppManager->GetClientExoApp()->GetCaptureEventFile()->Write(sCapture);
         }
     }
 
