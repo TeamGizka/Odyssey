@@ -170,12 +170,12 @@ void CSWBehaviorCameraDialog::GetCameraParameters(unsigned long nShot,
             float fLength = magnitude(vSecond - vFirst);
             fFirstHeight *= fLength;
             fSecondHeight *= fLength;
-            fTargetHeight = (fLength * fTargetHeight) + m_fSecondOffset;
+            float fTargetOffset = (fLength * fTargetHeight) + m_fSecondOffset;
             float fCameraOffset = (fLength * fCameraHeight) + m_fFirstOffset;
             vSecond.m_fZ = (vSecond.m_fZ + fSecondHeadHeight) + fSecondHeight;
             vFirst.m_fZ = (vFirst.m_fZ + fFirstHeadHeight) + fFirstHeight;
             vLookAt = fFraction * (vFirst - vSecond) + vSecond;
-            vLookAt.m_fZ += fTargetHeight;
+            vLookAt.m_fZ += fTargetOffset;
             vDirection = YawPitchRoll(fYaw, 0.0f, 0.0f) * (vFirst - vSecond);
             if (nShot == OVER_SHOULDER_CAMERA_SHOT)
             {
@@ -239,27 +239,7 @@ void CSWBehaviorCameraDialog::GetCameraParameters(unsigned long nShot,
     }
     else
     {
-        if (nShot == CLOSE_UP_CAMERA_SHOT || m_nActiveShot == 1)
-        {
-            fYaw = nSide == 2 ? -30.0f : 30.0f;
-            vSecond.m_fZ = vFirst.m_fZ;
-            vLookAt = vFirst - 0.2f * normalize(vFirst - vSecond);
-            vLookAt.m_fZ = (vLookAt.m_fZ - 0.04f) + GetSecondOffset();
-
-            vDirection = YawPitchRoll(fYaw, 0.0f, 0.0f) * (vFirst - vSecond);
-            vDirection = normalize(vDirection);
-            float fYawOffset = 0.0f;
-            if (m_nActiveShot == 0)
-            {
-                fYawOffset = m_fCameraYaw;
-            }
-            fTargetHeight = 0.2f * fYawOffset;
-            vLookAt.m_fZ -= fTargetHeight;
-            float fCloseDistance = (fYawOffset + 0.5f);
-            vPosition = vLookAt - fCloseDistance * normalize(vDirection);
-            vPosition.m_fZ = (fTargetHeight + m_fFirstOffset) + vPosition.m_fZ;
-        }
-        else
+        if (nShot != CLOSE_UP_CAMERA_SHOT && m_nActiveShot != 1)
         {
             float fLength = magnitude(vSecond - vFirst);
             float fCameraOffset = (fCameraHeight * fLength) + m_fFirstOffset;
@@ -278,6 +258,26 @@ void CSWBehaviorCameraDialog::GetCameraParameters(unsigned long nShot,
                 vPosition = vLookAt - fDistance * vDirection;
             }
             vPosition.m_fZ += fCameraOffset;
+        }
+        else
+        {
+            fYaw = nSide == 2 ? -30.0f : 30.0f;
+            vSecond.m_fZ = vFirst.m_fZ;
+            vLookAt = vFirst - 0.2f * normalize(vFirst - vSecond);
+            vLookAt.m_fZ = (vLookAt.m_fZ - 0.04f) + GetSecondOffset();
+
+            vDirection = YawPitchRoll(fYaw, 0.0f, 0.0f) * (vFirst - vSecond);
+            vDirection = normalize(vDirection);
+            float fYawOffset = 0.0f;
+            if (m_nActiveShot == 0)
+            {
+                fYawOffset = m_fCameraYaw;
+            }
+            float fYawHeight = 0.2f * fYawOffset;
+            vLookAt.m_fZ -= fYawHeight;
+            float fCloseDistance = (fYawOffset + 0.5f);
+            vPosition = vLookAt - fCloseDistance * normalize(vDirection);
+            vPosition.m_fZ = (fYawHeight + m_fFirstOffset) + vPosition.m_fZ;
         }
     }
     qOrientation = YawPitchRoll(Yaw(normalize(vDirection)),
