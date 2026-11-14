@@ -8154,50 +8154,51 @@ int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
     else
     {
         C2DA* pStoryHints = new C2DA("loadstoryhints", 0);
-        if (pStoryHints != NULL)
+        if (pStoryHints == NULL)
+            return 0;
+        if (!pStoryHints->Load2DArray())
         {
-            if (pStoryHints->Load2DArray())
-            {
-                unsigned char nArea = sModule[0] - '0';
-                if (nArea <= STORY_HINT_AREAS)
-                {
-                    int nRows = pStoryHints->GetNumRows() + 1;
-                    int nTry = 0;
-                    CExoString sAreaNumber("AreaNumber");
-                    while (TRUE)
-                    {
-                        if (!pStoryHints->GetINTEntry(m_anStoryHint[nArea], sAreaNumber, &nHint))
-                        {
-                            m_anStoryHint[nArea] = 0;
-                            if (++nTry > nRows)
-                                break;
-                        }
-                        else if (nHint != nArea)
-                        {
-                            ++m_anStoryHint[nArea];
-                            if (++nTry > nRows)
-                                break;
-                        }
-                        else
-                        {
-                            unsigned char bNoHint =
-                                pStoryHints->GetINTEntry(m_anStoryHint[nArea], "StoryHint", &nHint) == 0;
-                            if (!bNoHint)
-                                nStrRef = nHint;
-                            ++m_anStoryHint[nArea];
-                            break;
-                        }
-                    }
-                    pStoryHints->Unload2DArray();
-                    delete pStoryHints;
-                    return nStrRef;
-                }
-                pStoryHints->Unload2DArray();
-            }
             delete pStoryHints;
+            return 0;
         }
+        unsigned char nArea = sModule[0] - '0';
+        if (nArea <= STORY_HINT_AREAS)
+        {
+            int nRows = pStoryHints->GetNumRows() + 1;
+            int nTry = 0;
+            CExoString sAreaNumber("AreaNumber");
+            while (TRUE)
+            {
+                if (!pStoryHints->GetINTEntry(m_anStoryHint[nArea], sAreaNumber, &nHint))
+                {
+                    m_anStoryHint[nArea] = 0;
+                    if (++nTry > nRows)
+                        break;
+                }
+                else if (nHint != nArea)
+                {
+                    ++m_anStoryHint[nArea];
+                    if (++nTry > nRows)
+                        break;
+                }
+                else
+                {
+                    unsigned char bNoHint =
+                        pStoryHints->GetINTEntry(m_anStoryHint[nArea], "StoryHint", &nHint) == 0;
+                    nStrRef = nHint;
+                    ++m_anStoryHint[nArea];
+                    nStrRef &= bNoHint ? 0 : -1;
+                    break;
+                }
+            }
+            pStoryHints->Unload2DArray();
+            delete pStoryHints;
+            return nStrRef;
+        }
+        pStoryHints->Unload2DArray();
+        delete pStoryHints;
+        return 0;
     }
-    return 0;
 }
 // PC 0x00640190 GOG 0x0063FFF0
 void CClientExoAppInternal::SetMouseMode(unsigned char nMode)
