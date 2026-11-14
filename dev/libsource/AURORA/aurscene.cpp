@@ -24,6 +24,7 @@ static inline void AurSceneTrace(CHitInfo* = 0);
 #include <aurlist.h>
 #include <aurpointer.h>
 #include "aurrendergl.h"
+#include "aurdraw.h"
 
 static inline void AurSceneTrace4();
 static inline void AurSceneTrace3();
@@ -1210,6 +1211,7 @@ inline bool TriggerHighlightReverse(PartTrigger* p) { return p->m_bHighlightReve
 // PC 0x0046AB40 GOG 0x0046ACA0
 void Scene::DoHighlightTriggers(bool bHighlight)
 {
+    AurDrawLine(CurrentCamera->m_vPosition, CurrentCamera->m_vPosition);
     List<PartTrigger*> lstTriggers;
     int nStencilBits = AurGetAvailableStencilBits();
     if (nStencilBits == 0)
@@ -1225,6 +1227,8 @@ void Scene::DoHighlightTriggers(bool bHighlight)
         for (int i = 0; i < triggerbucket.m_nCount; ++i)
         {
             PartTrigger* pTrigger = triggerbucket[i];
+            AurDrawLine(pTrigger->m_vMinimum, pTrigger->m_vMaximum);
+            AurDrawLine(pTrigger->m_vMinimum + Vector(0.0f, 0.0f, 1.0f), pTrigger->m_vMaximum + Vector(0.0f, 0.0f, 1.0f), 1);
             bool bHighlighted = pTrigger->m_bHighlighted;
             if (bHighlighted && bHighlight == TriggerHighlightReverse(pTrigger))
                 lstTriggers.Add(pTrigger);
