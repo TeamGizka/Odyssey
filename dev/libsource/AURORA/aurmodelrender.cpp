@@ -4409,7 +4409,7 @@ void PartDanglyMesh::Draw(bool bRenderChildren)
         PartTriMesh::Draw(bRenderChildren);
     }
 }
-
+// PC 0x00493FA0 GOG 0x00494060
 void PartSkin::Project(const Vector& vPosition, float fDistance,
                        const Plane& plane, CAurShadowData* pShadowData)
 {
@@ -4461,7 +4461,8 @@ void PartSkin::Project(const Vector& vPosition, float fDistance,
     GatherBones(pPart, tbones, qbones, vTranslation, qRotation);
     for (int i = 0; i < pNode->m_nBoneMap; i++)
     {
-        int nBone = (int)pNode->m_pfBoneMap[i];
+        float fBone = pNode->m_pfBoneMap[i];
+        int nBone = (int)fBone;
         if (nBone != MdlNodeSkin::UNMAPPED_BONE)
         {
             tbones[i] = tbones[i] + qbones[i] * pNode->m_lstTBoneRefInv[i];
