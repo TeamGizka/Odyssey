@@ -1652,12 +1652,10 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 
     g_pExoInput->UpdateMouseDelta(fMouseTime);
 #endif
     int bPeragusDialog = 0;
-    if (g_pAppManager->GetClientExoApp()->GetModule() != NULL)
-    {
-        int bPeragus = g_pAppManager->GetClientExoApp()->GetModule()->GetModuleTitle().CompareNoCase("107PER");
-        if (bPeragus && m_nInputClass == INPUT_CLASS_DIALOG)
-            bPeragusDialog = 1;
-    }
+    if (g_pAppManager->GetClientExoApp()->GetModule() != NULL &&
+        g_pAppManager->GetClientExoApp()->GetModule()->GetModuleTitle().CompareNoCase("107PER") &&
+        m_nInputClass == INPUT_CLASS_DIALOG)
+        bPeragusDialog = 1;
     EXOLOG("ProcessInput: peragus dialog %p", &bPeragusDialog);
     if (g_pExoInput->GetActive() || bPeragusDialog)
     {
