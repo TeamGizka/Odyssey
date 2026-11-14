@@ -827,16 +827,12 @@ unsigned char CSWCCreatureStats::GetLevel()
             {
                 C2DA* pAutoBalance = g_pRules->Get2DArrays()->m_pAutoBalance;
                 float fLevelMult;
-                {
-                    CExoString sColumn("LevelMult");
-                    pAutoBalance->GetFLOATEntry(nAutoBalanceRow, sColumn, &fLevelMult);
-                }
+                pAutoBalance->GetFLOATEntry(nAutoBalanceRow, "LevelMult", &fLevelMult);
                 char nPCLevel = pServerCreature->m_c251;
                 if (nPCLevel == 0)
                 {
-                    CExoString sVariable("G_PC_LEVEL");
                     g_pAppManager->GetServerExoApp()->GetGlobalVariableTable()->GetValueNumber(
-                        sVariable, nPCLevel);
+                        "G_PC_LEVEL", nPCLevel);
                 }
                 if (nPCLevel < 1)
                 {
