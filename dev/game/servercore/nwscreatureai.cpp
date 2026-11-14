@@ -4049,6 +4049,8 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_Following_Path(
     unsigned long nElapsedTime = m_nWalkElapsedTime;
     pMember->m_nFollowPathElapsedTime += nElapsedTime;
 
+    EXOLOG("Following path: step %f %f\n", GetPathfindInformation()->m_fStepScale,
+        GetPathfindInformation()->m_fHalfStep);
     CWalkHitInfo hitInfo;
     int nLineResult;
     {
@@ -4100,6 +4102,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_Following_Path(
 
     if (nLineResult == CSWSArea::DIRECT_LINE_CLEAR)
     {
+        AurDrawLine(pMember->m_vLastPosition, vPosition, 0);
         pMember->m_vFollowPosition = vPosition;
         pMember->m_nFollowPathIndex = nPositionIndex;
         pMember->m_vLastPosition = vPosition;
@@ -4109,9 +4112,12 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_Following_Path(
         AurDrawLine(vPosition, m_vPosition);
         float fFacing = pPaths->GetPathData(nPositionIndex)->m_fFacing;
         Vector vRotatedOffset;
+        AurDrawLine(vPosition, vPosition + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), 0);
         vRotatedOffset = Quaternion(Vector(0.0f, 0.0f, 1.0f), DegToRad(fFacing)) *
             pMember->m_vFormationOffset;
         Vector vOffsetPosition = vPosition + vRotatedOffset;
+        AurDrawLine(vPosition + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT),
+            m_vPosition + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), 0);
         CWalkHitInfo offsetHitInfo;
         int nOffsetResult;
         {
