@@ -4638,7 +4638,7 @@ void CSWGuiMainInterface::Draw(float fElapsed)
     if (!m_bNeedsDraw)
         return;
 
-    CSWCCreature* pPlayer = ClientExoAppLate3(g_pAppManager)->GetSWParty()->GetPlayerCharacter();
+    CSWCCreature* pPlayer = g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
     if (pPlayer == NULL || pPlayer->GetId() == OBJECT_INVALID)
         return;
 
@@ -4676,33 +4676,33 @@ void CSWGuiMainInterface::Draw(float fElapsed)
         int nMember = m_nUseItemTargetMember;
         if (nMember == -1)
         {
-            sText = g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_USE_ITEM_SELECT_MEMBER);
-            sText = sText + "\n" + g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_USE_ITEM_CANCEL);
+            sText = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_USE_ITEM_SELECT_MEMBER);
+            sText = sText + "\n" + g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_USE_ITEM_CANCEL);
             m_btnCancelPartyItemSelect.m_cText.m_cParams.SetText(sText);
         }
         else
         {
             if (nMember == 2 &&
-                g_pAppManager->m_pClientExoApp->GetSWParty()->m_nCharacters != 3)
+                g_pAppManager->GetClientExoApp()->GetSWParty()->m_nCharacters != 3)
             {
                 nMember = 1;
             }
-            CSWCCreature* pCharacter = g_pAppManager->m_pClientExoApp->GetSWParty()->GetCharacter(nMember);
-            CSWSItem* pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(
-                g_pAppManager->GetServerExoApp()->ClientToServerObjectId(m_oidUseItemPending));
+            CSWCCreature* pCharacter = g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(nMember);
+            CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(
+                g_pAppManager->m_pServerExoApp->ClientToServerObjectId(m_oidUseItemPending));
             CSWSCreature* pServerCharacter = pCharacter->GetServerCreature();
             if (pServerCharacter->CanUseItem(pItem, 0, 1))
             {
                 sText = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_USE_ITEM_ON);
                 sText = sText + " " + pCharacter->GetName();
-                sText = sText + "\n" + g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_USE_ITEM_CANCEL);
+                sText = sText + "\n" + g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_USE_ITEM_CANCEL);
                 m_btnCancelPartyItemSelect.m_cText.m_cParams.SetText(sText);
             }
             else
             {
-                sText = g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_CANNOT_USE_ITEM_ON);
+                sText = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CANNOT_USE_ITEM_ON);
                 sText = sText + " " + pCharacter->GetName();
-                sText = sText + "\n" + g_pAppManager->m_pClientExoApp->GetGUIString(STRREF_USE_ITEM_CANCEL);
+                sText = sText + "\n" + g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_USE_ITEM_CANCEL);
                 m_btnCancelPartyItemSelect.m_cText.m_cParams.SetText(sText);
             }
         }
@@ -4722,7 +4722,7 @@ void CSWGuiMainInterface::Draw(float fElapsed)
         else
         {
             m_btnCancelPartyItemSelect.m_cText.m_cParams.SetText(
-                g_pAppManager->m_pClientExoApp->GetGUIString(m_nFormMessage));
+                g_pAppManager->GetClientExoApp()->GetGUIString(m_nFormMessage));
             m_btnCancelPartyItemSelect.m_cText.m_cParams.SetDefaultColor(CGuiInGame::COLOR_NEW_HIGHLIGHT);
             CSWGuiButton* pCancel = &m_btnCancelPartyItemSelect;
             pCancel->SetEnabled(0);
@@ -4764,7 +4764,7 @@ void CSWGuiMainInterface::Draw(float fElapsed)
     float fIndicatorElapsed = m_pManager->m_fGuiScale;
     UpdateIndicator(fIndicatorElapsed);
 #endif
-    ShowActionQueue(ClientExoAppLate3(g_pAppManager)->GetCombatMode());
+    ShowActionQueue(g_pAppManager->GetClientExoApp()->GetCombatMode());
     for (int nAction = 0; nAction < 7; ++nAction)
         m_aPersonalActions[nAction].Update(fElapsed);
     if (m_cActionDescriptionState.m_bEnabled)
