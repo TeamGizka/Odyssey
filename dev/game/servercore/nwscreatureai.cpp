@@ -7425,7 +7425,6 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
             Vector vDifference = pMember->m_vFollowPosition - pMember->m_vFormationPosition;
             float fSquaredDistance = vDifference * vDifference;
             float fFollowRate;
-#ifdef _XBOX
             if (fSquaredDistance >= 0.001f)
             {
                 fFollowRate = g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0)->GetSWAnimationSpeed();
@@ -7433,16 +7432,6 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
                 else fRate = g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0)->GetSWAnimationSpeed() * 1000.0f;
             }
             if (fSquaredDistance <= 1.0f) fRate = fRate * 0.9f; else if (fSquaredDistance <= 225.0f) fRate = fRate * 1.2f; else fRate = fRate * 1.5f;
-#else
-            if (fSquaredDistance >= 0.001f)
-            {
-                fRate = g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0)->GetSWAnimationSpeed();
-                if (GetRunRate() > fRate * 1000.0f) fFollowRate = GetRunRate(); else fFollowRate = g_pAppManager->GetClientExoApp()->GetSWParty()->GetCharacter(0)->GetSWAnimationSpeed() * 1000.0f;
-            }
-            else fFollowRate = fRate;
-            if (fSquaredDistance <= 1.0f) fRate = fFollowRate * 0.9f; else if (fSquaredDistance <= 225.0f) fRate = fFollowRate * 1.2f; else fRate = fFollowRate * 1.5f;
-
-#endif
         }
     }
     float fSpeedFactor = ComputeSpeedFactor(fRate, m_nWalkElapsedTime);
