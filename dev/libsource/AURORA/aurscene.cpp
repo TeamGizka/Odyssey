@@ -1206,6 +1206,7 @@ void Scene::DoStaticMeshShadows()
         staticshadowbucket.m_pList[i]->Draw(false);
     }
 }
+inline bool TriggerHighlightReverse(PartTrigger* p) { return p->m_bHighlightReverse; }
 // PC 0x0046AB40 GOG 0x0046ACA0
 void Scene::DoHighlightTriggers(bool bHighlight)
 {
@@ -1214,7 +1215,7 @@ void Scene::DoHighlightTriggers(bool bHighlight)
     if (nStencilBits == 0)
         return;
 
-    m_fHighlightTime += DeltaT * TRIGGER_HIGHLIGHT_PHASE_RATE;
+    m_fHighlightTime = m_fHighlightTime + (DeltaT * TRIGGER_HIGHLIGHT_PHASE_RATE);
     if (enablerender)
     {
         GLRender_Disable(ENABLE_BLEND);
@@ -1225,7 +1226,7 @@ void Scene::DoHighlightTriggers(bool bHighlight)
         {
             PartTrigger* pTrigger = triggerbucket[i];
             bool bHighlighted = pTrigger->m_bHighlighted;
-            if (bHighlighted && bHighlight == pTrigger->m_bHighlightReverse)
+            if (bHighlighted && bHighlight == TriggerHighlightReverse(pTrigger))
                 lstTriggers.Add(pTrigger);
         }
 
@@ -1281,7 +1282,8 @@ void Scene::DoHighlightTriggers(bool bHighlight)
             GLRender_SetStencilFunc(CMP_LEQUAL, nStencilReference, 0xFFFFFFFF);
             GLRender_SetStencilOp(STENCIL_KEEP, STENCIL_KEEP, STENCIL_KEEP);
             PartTrigger* pTrigger = lstTriggers[i];
-            if (pTrigger->m_bHighlightColor)
+            bool bHighlightColor = pTrigger->m_bHighlightColor;
+            if (bHighlightColor)
             {
                 float fAlpha = (sinf(pTrigger->m_fHighlightBlend * m_fHighlightTime) + 1.0f) *
                     pTrigger->m_fHighlightAlpha * 0.5f;
