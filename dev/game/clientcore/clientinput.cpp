@@ -1650,7 +1650,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 
         return;
     }
 
-    float fMouseTime = (int)m_pPauseTimer->GetSnapshotTimeDifference() * 0.000001f;
+    float fMouseTime = ((int)m_pPauseTimer->GetSnapshotTimeDifference() * 0.000001f);
 #ifndef _XBOX
     g_pExoInput->UpdateMouseDelta(fMouseTime);
 #endif
