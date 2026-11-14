@@ -745,34 +745,35 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
             while (fFraction < 1.0f)
             {
                 fTime += lightsabersegmentinterval;
-                if (fTime > lightsabersegmentlife)
-                    break;
-                vPrevious = vCurrent;
-                qPrevious = qCurrent;
-                vCurrent = Interpolate(m_avSegmentPosition[nCurrent],
-                                       m_avSegmentPosition[nPrevious], fFraction);
-                qCurrent = slerp(m_aqSegmentOrientation[nCurrent],
-                                 m_aqSegmentOrientation[nPrevious], fFraction);
-                ++lightsabertotalsegments;
-                GLRender_BeginImmediatePrimitive(Aurora::PRIMITIVE_QUAD_STRIP);
-                for (i = 0; i < MdlNodeLightsaber::NUM_SEGMENT_VERTS; ++i)
+                if (!(fTime > lightsabersegmentlife))
                 {
-                    GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pTextureCoords[2 * (nEnd + i)],
-                                 pTextureCoords[2 * (nEnd + i) + 1]);
-                    vVertex = Vector(pPositions[nEnd + i].m_fX, pPositions[nEnd + i].m_fY, pPositions[nEnd + i].m_fZ);
-                    vVertex = -qWorldOrientation *
-                        (vCurrent + qCurrent * vVertex - vWorldPosition);
-                    SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
-                    avTrail[i] = vVertex;
-                    GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pTextureCoords[2 * (nEnd + i)],
-                                 pTextureCoords[2 * (nEnd + i) + 1]);
-                    vVertex = Vector(pPositions[nEnd + i].m_fX, pPositions[nEnd + i].m_fY, pPositions[nEnd + i].m_fZ);
-                    vVertex = -qWorldOrientation *
-                        (vPrevious + qPrevious * vVertex - vWorldPosition);
-                    SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
-                    avTrail[i] = avTrail[i] - vVertex;
+                    vPrevious = vCurrent;
+                    qPrevious = qCurrent;
+                    vCurrent = Interpolate(m_avSegmentPosition[nCurrent],
+                                           m_avSegmentPosition[nPrevious], fFraction);
+                    qCurrent = slerp(m_aqSegmentOrientation[nCurrent],
+                                     m_aqSegmentOrientation[nPrevious], fFraction);
+                    ++lightsabertotalsegments;
+                    GLRender_BeginImmediatePrimitive(Aurora::PRIMITIVE_QUAD_STRIP);
+                    for (i = 0; i < MdlNodeLightsaber::NUM_SEGMENT_VERTS; ++i)
+                    {
+                        GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pTextureCoords[2 * (nEnd + i)],
+                                     pTextureCoords[2 * (nEnd + i) + 1]);
+                        vVertex = Vector(pPositions[nEnd + i].m_fX, pPositions[nEnd + i].m_fY, pPositions[nEnd + i].m_fZ);
+                        vVertex = -qWorldOrientation *
+                            (vCurrent + qCurrent * vVertex - vWorldPosition);
+                        SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
+                        avTrail[i] = vVertex;
+                        GLRender::SetVertexData2f(Aurora::STREAM_TEXCOORD, pTextureCoords[2 * (nEnd + i)],
+                                     pTextureCoords[2 * (nEnd + i) + 1]);
+                        vVertex = Vector(pPositions[nEnd + i].m_fX, pPositions[nEnd + i].m_fY, pPositions[nEnd + i].m_fZ);
+                        vVertex = -qWorldOrientation *
+                            (vPrevious + qPrevious * vVertex - vWorldPosition);
+                        SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
+                        avTrail[i] = avTrail[i] - vVertex;
+                    }
+                    GLRender_EndImmediatePrimitive();
                 }
-                GLRender_EndImmediatePrimitive();
                 fFraction += lightsabersegmentinterval /
                     (m_afSegmentAge[nPrevious] - m_afSegmentAge[nCurrent]);
             }
