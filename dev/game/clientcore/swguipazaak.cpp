@@ -56,6 +56,11 @@ static inline int PazaakCardsDiffer(CPazaakCard cA, CPazaakCard cB)
            cA.m_nValue != cB.m_nValue;
 }
 
+static inline int PazaakCardValue(CPazaakCard cCard)
+{
+    return cCard.m_nValue;
+}
+
 #ifdef _XBOX
 void CSWGuiPazaakGame::OnHandCardEntered(CSWGuiControl* pControl)
 {
@@ -695,7 +700,7 @@ int CSWGuiPazaakGame::RefreshDisplay()
     for (int i = 0; i < 9; i++)
     {
         cCard = GetPazaak()->m_cPlayer.m_aBoard[i];
-        if (PazaakCardsDiffer(m_cPlayerBoard[i].m_cCard, cCard) || cCard.m_nValue != 0)
+        if (PazaakCardsDiffer(m_cPlayerBoard[i].m_cCard, cCard) || PazaakCardValue(cCard) != 0)
         {
             m_cPlayerBoard[i].SetCard(cCard);
             bPlayerChanged = 1;
