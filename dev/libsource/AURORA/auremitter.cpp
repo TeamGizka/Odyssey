@@ -20,6 +20,7 @@ inline void AurEmitterCopyParticles(Particle* pParticle, ChunkyParticle* pChunky
 #include "aurmodel.h"
 #include "aurmaterial.h"
 #include "aurparse.h"
+#include "aurdraw.h"
 
 static inline void AuremitterTrace4();
 static inline void AuremitterTrace3();
@@ -1537,6 +1538,7 @@ void PartEmitter::moveParticleStandard(float fTimeStep)
         {
             vPosition = (m_qOrientation * -m_qWorldOrientation) *
                         (pParticle->m_vPosition - m_vLastOrigin);
+            AurDrawLine(vPosition, vPosition, 1);
             pParticle->m_vDrift = (m_qOrientation * -m_qWorldOrientation) *
                                   pParticle->m_vDrift;
             vPosition += m_vOrigin;
@@ -1837,6 +1839,7 @@ void PartEmitter::moveParticleP2PGrav(float fTimeStep)
     {
         Particle* pParticle = m_lstActive[i];
         Vector vPrevious = pParticle->m_vPosition;
+        Vector vLocal;
         if (bInheriting)
         {
             vPosition = (m_qOrientation * -m_qWorldOrientation) *
@@ -1850,29 +1853,29 @@ void PartEmitter::moveParticleP2PGrav(float fTimeStep)
         if (pNode->IsInheritingLocal() &&
             !pNode->IsInheriting() && m_pAurObject)
         {
-            vPosition = m_pAurObject->m_qOrientation *
-                (-m_qReserved194 * (vPosition - m_vReserved158));
+            vLocal = -m_qReserved194 * (vPosition - m_vReserved158);
+            vPosition = m_pAurObject->m_qOrientation * vLocal;
             Vector vTranslation = m_pAurObject->m_vPosition - m_vReserved158;
             vPosition += vTranslation;
             pParticle->m_vOrigin += vTranslation;
             vPosition += m_vReserved158;
-            pParticle->m_vDrift = m_pAurObject->m_qOrientation *
-                (-m_qReserved194 * pParticle->m_vDrift);
+            vLocal = -m_qReserved194 * pParticle->m_vDrift;
+            pParticle->m_vDrift = m_pAurObject->m_qOrientation * vLocal;
         }
         if (pNode->IsInheritingPart() && m_pAurObject)
         {
-            vPosition = m_pAurObject->m_qOrientation *
-                (-m_qReserved194 * (vPosition - m_vReserved158));
+            vLocal = -m_qReserved194 * (vPosition - m_vReserved158);
+            vPosition = m_pAurObject->m_qOrientation * vLocal;
             Vector vTranslation = m_vOrigin - m_vReserved158;
             vPosition += vTranslation;
             pParticle->m_vOrigin += vTranslation;
             pParticle->m_vOrigin = pParticle->m_vOrigin - m_pAurObject->m_vPosition;
-            pParticle->m_vOrigin = m_pAurObject->m_qOrientation *
-                (-m_qReserved194 * pParticle->m_vOrigin);
+            vLocal = -m_qReserved194 * pParticle->m_vOrigin;
+            pParticle->m_vOrigin = m_pAurObject->m_qOrientation * vLocal;
             pParticle->m_vOrigin = pParticle->m_vOrigin + m_pAurObject->m_vPosition;
             vPosition += m_vReserved158;
-            pParticle->m_vDrift = m_pAurObject->m_qOrientation *
-                (-m_qReserved194 * pParticle->m_vDrift);
+            vLocal = -m_qReserved194 * pParticle->m_vDrift;
+            pParticle->m_vDrift = m_pAurObject->m_qOrientation * vLocal;
         }
         vNext = vPosition + fTimeStep * pParticle->m_vDrift;
         if (pNode->IsAffectedByWind())

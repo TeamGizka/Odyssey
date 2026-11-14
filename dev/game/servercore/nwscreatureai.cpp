@@ -4105,10 +4105,12 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_Following_Path(
         pMember->m_nStepCount = 0;
         fDistance = fRemainingDistance;
 
+        AurDrawLine(vPosition, m_vPosition);
         float fFacing = pPaths->GetPathData(nPositionIndex)->m_fFacing;
-        Vector vOffsetPosition = vPosition +
-            Quaternion(Vector(0.0f, 0.0f, 1.0f), DegToRad(fFacing)) *
-                pMember->m_vFormationOffset;
+        Vector vRotatedOffset;
+        vRotatedOffset = Quaternion(Vector(0.0f, 0.0f, 1.0f), DegToRad(fFacing)) *
+            pMember->m_vFormationOffset;
+        Vector vOffsetPosition = vPosition + vRotatedOffset;
         CWalkHitInfo offsetHitInfo;
         int nOffsetResult;
         {
@@ -4129,11 +4131,12 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_Following_Path(
                 CSWPartyFollowData* pPathPoint = pPaths->GetPathData(nPathIndex);
                 float fPathFacing = pPathPoint->m_fFacing;
                 Vector vNextPosition;
+                Vector vPathOffset;
                 if (nPathIndex == pMember->m_nFormationPathIndex)
                 {
-                    vNextPosition = pMember->m_vFormationPosition +
-                        Quaternion(Vector(0.0f, 0.0f, 1.0f), DegToRad(fPathFacing)) *
-                            pMember->m_vFormationOffset;
+                    vPathOffset = Quaternion(Vector(0.0f, 0.0f, 1.0f), DegToRad(fPathFacing)) *
+                        pMember->m_vFormationOffset;
+                    vNextPosition = pMember->m_vFormationPosition + vPathOffset;
                     vNextPosition = vPreviousPosition +
                         normalize(vNextPosition - vPreviousPosition) *
                             (NWSCREATURE_FOLLOW_OFFSET_LOOKAHEAD - fPathDistance);
@@ -4141,9 +4144,9 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_Following_Path(
                 }
                 else
                 {
-                    vNextPosition =
-                        Quaternion(Vector(0.0f, 0.0f, 1.0f), DegToRad(fPathFacing)) *
-                            pMember->m_vFormationOffset +
+                    vPathOffset = Quaternion(Vector(0.0f, 0.0f, 1.0f), DegToRad(fPathFacing)) *
+                        pMember->m_vFormationOffset;
+                    vNextPosition = vPathOffset +
                         pPaths->GetPathData(nPathIndex)->m_vPosition;
                 }
                 if (equal(vPreviousPosition, vNextPosition))
@@ -7332,9 +7335,10 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
     }
     if (m_nAnimationState == ANIMATION_STATE_HOLD)
     {
+        int nResult = ACTION_IN_PROGRESS;
         m_nLastWalkDay = nDay;
         m_nLastWalkTime = nTime;
-        return ACTION_IN_PROGRESS;
+        return nResult;
     }
     if (m_nAnimationState == ANIMATION_STATE_FORCE_PUSH ||
         m_nAnimationState == ANIMATION_STATE_FORCE_JUMP ||
@@ -7442,7 +7446,8 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk(int bResetTime)
         }
     }
     float fSpeedFactor = ComputeSpeedFactor(fRate, m_nWalkElapsedTime);
-    fRate = (fSpeedFactor + m_fMovementRate) * m_nWalkElapsedTime * fRate * 0.5f;
+    fRate = (fSpeedFactor + m_fMovementRate) * m_nWalkElapsedTime * fRate;
+    fRate *= 0.5f;
     fRate *= 0.000001f;
     if (NPCTurbo)
         fRate *= 15.0;
