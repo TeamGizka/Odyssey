@@ -596,7 +596,8 @@ void CollapsePartTree(Gob* pGob, Part* pPart, List<Part*>& lstParts,
         qOriginalOrientation = pPart->m_qOrientation;
     }
 
-    pPart->m_vPosition = vPosition + qOrientation * pPart->m_vPosition;
+    Vector vRotated = qOrientation * pPart->m_vPosition;
+    pPart->m_vPosition = vPosition + vRotated;
     pPart->m_qOrientation = qOrientation * pPart->m_qOrientation;
     lstParts.Add(pPart);
     for (int i = 0; i < lstParts.m_nCount; i++)
