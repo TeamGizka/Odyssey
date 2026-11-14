@@ -8,10 +8,7 @@
 #include "swguifeatschargen.h"
 #include "nwccreature.h"
 
-static inline void SwguifeatschargenTrace1();
 
-static inline void SWGuiFeatsCharGenTrace();
-#define SWGUIFEATSCHARGEN_TRACE() SWGuiFeatsCharGenTrace()
 // PC 0x00765200 GOG 0x00765020
 CSWGuiFeatsCharGen::CSWGuiFeatsCharGen(CSWGuiManager* pManager,
                                      CSWCCreature* pCreature,
@@ -100,10 +97,39 @@ CSWGuiFeatsCharGen::CSWGuiFeatsCharGen(CSWGuiManager* pManager,
 #endif
     SetActiveControl(&m_lbFeats, 0);
 }
+// PC 0x00764000 GOG 0x00763CF0
+CSWGuiFeatsCharGen::~CSWGuiFeatsCharGen()
+{
+    m_lbDesc.ClearItems();
+    m_lbFeats.ClearItems();
+}
+
+// PC 0x00764200 GOG 0x00764230
+void CSWGuiFeatsCharGen::OnPanelAdded()
+{
+#ifndef _XBOX
+    CSWGuiPanel::OnPanelAdded();
+#endif
+    if (m_bShowGrantedTutorial)
+    {
+        if (g_pAppManager->m_pClientExoApp->ShowTutorialWindow(
+                TUTORIAL_ENTER_FEAT_SCREEN_CHAR_GEN, OBJECT_INVALID,
+                OBJECT_INVALID, 0))
+        {
+            CGuiInGame* pGui =
+                g_pAppManager->m_pClientExoApp->GetInGameGui();
+            pGui->m_pTutorialBox->SetCallback(
+                this, (CSWGuiHandler)&CSWGuiFeatsCharGen::ShowGranted, NULL);
+        }
+        else
+        {
+            ShowGranted(NULL);
+        }
+    }
+}
 // PC 0x00763EA0 GOG 0x00763EF0
 void CSWGuiFeatsCharGen::ShowGranted(CSWGuiControl* pControl)
 {
-    SWGUIFEATSCHARGEN_TRACE();
     if (!m_bLevelUp)
     {
         g_pAppManager->m_pClientExoApp->SetPausedByCombat(0, 2, 0);
@@ -114,7 +140,6 @@ void CSWGuiFeatsCharGen::ShowGranted(CSWGuiControl* pControl)
 // PC 0x00763EF0 GOG 0x00763F40
 void CSWGuiFeatsCharGen::HandleCancelButton()
 {
-    SWGUIFEATSCHARGEN_TRACE();
 #ifndef _XBOX
     if (m_pCreature != 0 && m_pCreature->m_pStats != 0 && !m_bLevelUp)
     {
@@ -142,7 +167,6 @@ void CSWGuiFeatsCharGen::HandleCancelButton()
 #ifndef _XBOX
 void CSWGuiFeatsCharGen::Draw(float fElapsed)  // PC 0x00763F60 GOG 0x00763FB0
 {
-    SWGUIFEATSCHARGEN_TRACE();
     if (m_nFeatState >= 2)
     {
         if (m_nFeatState > 3)
@@ -172,12 +196,6 @@ void CSWGuiFeatsCharGen::Draw(float fElapsed)  // PC 0x00763F60 GOG 0x00763FB0
 }
 
 #endif
-// PC 0x00764000 GOG 0x00763CF0
-CSWGuiFeatsCharGen::~CSWGuiFeatsCharGen()
-{
-    m_lbDesc.ClearItems();
-    m_lbFeats.ClearItems();
-}
 #ifndef _XBOX
 #endif
 // PC 0x00764470 GOG 0x00764290
@@ -689,30 +707,6 @@ void CSWGuiFeatsCharGen::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-
-// PC 0x00764200 GOG 0x00764230
-void CSWGuiFeatsCharGen::OnPanelAdded()
-{
-#ifndef _XBOX
-    CSWGuiPanel::OnPanelAdded();
-#endif
-    if (m_bShowGrantedTutorial)
-    {
-        if (g_pAppManager->m_pClientExoApp->ShowTutorialWindow(
-                TUTORIAL_ENTER_FEAT_SCREEN_CHAR_GEN, OBJECT_INVALID,
-                OBJECT_INVALID, 0))
-        {
-            CGuiInGame* pGui =
-                g_pAppManager->m_pClientExoApp->GetInGameGui();
-            pGui->m_pTutorialBox->SetCallback(
-                this, (CSWGuiHandler)&CSWGuiFeatsCharGen::ShowGranted, NULL);
-        }
-        else
-        {
-            ShowGranted(NULL);
-        }
-    }
-}
 // PC 0x00764260 GOG 0x00764020
 void CSWGuiFeatsCharGen::DetermineFeat(unsigned short nFeat,
                                       unsigned char& nState)
@@ -742,7 +736,6 @@ void CSWGuiFeatsCharGen::DetermineFeat(unsigned short nFeat,
 // PC 0x00764320 GOG 0x007640E0
 void CSWGuiFeatsCharGen::SetDescription(unsigned long nStrRef)
 {
-    SwguifeatschargenTrace1();
     STR_RES strRes;
 
     g_pTlkTable->Fetch(nStrRef, strRes, CTlkTable::GENDER_MALE);
@@ -764,12 +757,4 @@ void CSWGuiFeatsCharGen::SetDescription(unsigned long nStrRef)
 #ifdef _XBOX
     m_lblRanalog.SetEnabledFlag(m_lbDesc.IsOversized());
 #endif
-}
-
-static inline void SWGuiFeatsCharGenTrace()
-{
-}
-
-static inline void SwguifeatschargenTrace1()
-{
 }

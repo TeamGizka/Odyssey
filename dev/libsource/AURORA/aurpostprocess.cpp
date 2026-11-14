@@ -16,9 +16,6 @@
 
 #include <new>
 
-static inline void AurpostprocessTrace2();
-static inline void AurpostprocessTrace1();
-#define AURPOSTPROCESS_TRACE() AurpostprocessTrace1()
 
 int animationfootprint = 0;
 
@@ -33,15 +30,6 @@ void MdlNode::InternalPostProcess()
 }
 // PC 0x004015A0 GOG 0x004015A0
 void MdlNodeAnimMesh::InternalPostProcess()
-{
-}
-
-static inline void AurpostprocessTrace2()
-{
-    AurpostprocessTrace1();
-}
-
-static inline void AurpostprocessTrace1()
 {
 }
 
@@ -125,81 +113,6 @@ void MdlNode::SortChildrenByTransparency()
     }
 }
 #endif
-// PC 0x0044E030 GOG 0x0044E170
-void MdlNodeAnimMesh::InternalGenVertices()
-{
-
-    m_nAnimationDataCount1 = m_lAnimationVectors1.m_nCount /
-                            m_pPostProcess->m_lPositions.m_nCount;
-    m_nAnimationDataCount2 = m_lAnimationVectors2.m_nCount /
-                            m_pPostProcess->m_lTextureCoordinates0.m_nCount;
-
-    int nFace;
-    int nCorner;
-    int nVertex;
-    int nSample;
-    for (nFace = 0; nFace < m_lFaces.m_nCount; nFace++)
-    {
-        for (nCorner = 0; nCorner < 3; nCorner++)
-        {
-            List<Vector> lPositions;
-            List<Vector> lTexCoords;
-            List<Vector> lNormals;
-            int nPosition = m_pPostProcess->m_lFaces[nFace].m_pFaces[nCorner];
-            int nTexCoord = m_pPostProcess->m_lTextureCoordinates0.m_nCount != 0
-                ? m_pPostProcess->m_lFaces[nFace].m_pFaceIndices[nCorner] : 0;
-            int nNormal = m_pPostProcess->m_lFaces[nFace].m_pFaceRemap[nCorner];
-            for (nSample = 0; nSample < m_nAnimationDataCount1; nSample++)
-            {
-                lPositions.Add(m_lAnimationVectors1[nPosition + nSample *
-                    m_pPostProcess->m_lPositions.m_nCount]);
-                lNormals.Add(m_lAnimationVectors3[nNormal + nSample *
-                    m_pPostProcess->m_lNormals.m_nCount]);
-            }
-            for (nSample = 0; nSample < m_nAnimationDataCount2; nSample++)
-            {
-                lTexCoords.Add(m_lAnimationVectors2[nTexCoord + nSample *
-                    m_pPostProcess->m_lTextureCoordinates0.m_nCount]);
-            }
-
-            Vector* pPosition = &m_pPostProcess->m_lPositions[nPosition];
-            Vector* pTexCoord0 = m_pPostProcess->m_lTextureCoordinates0.m_nCount != 0
-                ? &m_pPostProcess->m_lTextureCoordinates0[nTexCoord] : 0;
-            Vector* pTexCoord1 = m_pPostProcess->m_lTextureCoordinates1.m_nCount != 0
-                ? &m_pPostProcess->m_lTextureCoordinates1[m_pPostProcess->m_lFaces[nFace].m_pFaceIndices[nCorner + 3]] : 0;
-            Vector* pTexCoord2 = m_pPostProcess->m_lTextureCoordinates2.m_nCount != 0
-                ? &m_pPostProcess->m_lTextureCoordinates2[m_pPostProcess->m_lFaces[nFace].m_pFaceIndices[nCorner + 6]] : 0;
-            Vector* pTexCoord3 = m_pPostProcess->m_lTextureCoordinates3.m_nCount != 0
-                ? &m_pPostProcess->m_lTextureCoordinates3[m_pPostProcess->m_lFaces[nFace].m_pFaceIndices[nCorner + 9]] : 0;
-            Vector* pNormal = &m_pPostProcess->m_lNormals[nNormal];
-            Vector* pColor = 0;
-            if (m_pPostProcess->m_lColors.m_nCount > 0)
-                pColor = &m_pPostProcess->m_lColors[m_pPostProcess->m_lFaces[nFace].m_pFaces[nCorner]];
-
-            NodeVertexAnim* pVertex = new NodeVertexAnim(pPosition, pTexCoord0,
-                pTexCoord1, pTexCoord2, pTexCoord3, pNormal, pColor,
-                lPositions, lTexCoords, lNormals);
-            bool bFound = false;
-            for (nVertex = 0; nVertex < m_pPostProcess->m_lstVertices.m_nCount; nVertex++)
-            {
-                NodeVertexAnim* pExisting = ((NodeVertex*)m_pPostProcess->m_lstVertices[nVertex])->AsNodeVertexAnim();
-                if (*pExisting == *pVertex)
-                {
-                    delete pVertex;
-                    m_lFaces[nFace].m_anVertexIndices[nCorner] = nVertex;
-                    bFound = true;
-                    break;
-                }
-            }
-            if (!bFound)
-            {
-                m_lFaces[nFace].m_anVertexIndices[nCorner] =
-                    m_pPostProcess->m_lstVertices.m_nCount;
-                m_pPostProcess->m_lstVertices.Add(pVertex);
-            }
-        }
-    }
-}
 #include "mdlnodeinl.h"
 // PC 0x004490F0 GOG 0x00449230
 int UpdateAnimFootprint(MdlNode* pNode, int nMultiplier)
@@ -236,7 +149,6 @@ int UpdateAnimFootprint(MdlNode* pNode, int nMultiplier)
 // PC 0x00449760 GOG 0x004498A0
 void SynchronizeNodes(MdlNode* pDestination, MdlNode* pSource, int& nNodeID)
 {
-    AurpostprocessTrace2();
     pDestination->m_nNodeID = pSource->m_nNodeID;
     for (int i = 0; i < pDestination->m_lChildren.m_nCount; i++)
     {
@@ -374,20 +286,6 @@ void MdlNodeTriMesh::ComputeLocalSurfaceArea(List<MaxFace>& lFaces, float& fArea
     }
     nPool = m_pModel->AsModel()->m_nVertexPool;
     GLRender::UnlockPool(nPool);
-}
-// PC 0x00448EF0 GOG 0x00449040
-void MdlNodeEmitter::InternalPostProcess()
-{
-    Model* pModel = m_pModel->AsModel();
-    if (pModel != 0 && pModel->m_fRadius < 40.0f)
-        pModel->m_fRadius = 40.0f;
-}
-// PC 0x0044A340 GOG 0x0044A480
-inline NodeVertexAnim::~NodeVertexAnim()
-{
-    m_lstPositions.SetSize(0);
-    m_lstNormals.SetSize(0);
-    m_lstTexCoords.SetSize(0);
 }
 // PC 0x0044A480 GOG 0x0044A5C0
 int MdlNode::CreateSkinNodeList(List<MdlNodeTriMesh*>& lstNodes)
@@ -566,6 +464,13 @@ void MdlNode::ProcessSkinSeams()
     }
 }
 void SynchronizeNodes(MdlNode* pDestination, MdlNode* pSource, int& nNodeID);
+// PC 0x00448EF0 GOG 0x00449040
+void MdlNodeEmitter::InternalPostProcess()
+{
+    Model* pModel = m_pModel->AsModel();
+    if (pModel != 0 && pModel->m_fRadius < 40.0f)
+        pModel->m_fRadius = 40.0f;
+}
 // PC 0x0044BA40 GOG 0x0044BB80
 void MdlNodeTriMesh::InternalGenVertices()
 {
@@ -1599,4 +1504,87 @@ void MdlNodeLight::InternalPostProcess()
         i--;
         m_lstTextures[i] = AurTextureGetReference(m_lstTextureNames.m_pList[i], 0);
     }
+}
+
+// PC 0x0044E030 GOG 0x0044E170
+void MdlNodeAnimMesh::InternalGenVertices()
+{
+
+    m_nAnimationDataCount1 = m_lAnimationVectors1.m_nCount /
+                            m_pPostProcess->m_lPositions.m_nCount;
+    m_nAnimationDataCount2 = m_lAnimationVectors2.m_nCount /
+                            m_pPostProcess->m_lTextureCoordinates0.m_nCount;
+
+    int nFace;
+    int nCorner;
+    int nVertex;
+    int nSample;
+    for (nFace = 0; nFace < m_lFaces.m_nCount; nFace++)
+    {
+        for (nCorner = 0; nCorner < 3; nCorner++)
+        {
+            List<Vector> lPositions;
+            List<Vector> lTexCoords;
+            List<Vector> lNormals;
+            int nPosition = m_pPostProcess->m_lFaces[nFace].m_pFaces[nCorner];
+            int nTexCoord = m_pPostProcess->m_lTextureCoordinates0.m_nCount != 0
+                ? m_pPostProcess->m_lFaces[nFace].m_pFaceIndices[nCorner] : 0;
+            int nNormal = m_pPostProcess->m_lFaces[nFace].m_pFaceRemap[nCorner];
+            for (nSample = 0; nSample < m_nAnimationDataCount1; nSample++)
+            {
+                lPositions.Add(m_lAnimationVectors1[nPosition + nSample *
+                    m_pPostProcess->m_lPositions.m_nCount]);
+                lNormals.Add(m_lAnimationVectors3[nNormal + nSample *
+                    m_pPostProcess->m_lNormals.m_nCount]);
+            }
+            for (nSample = 0; nSample < m_nAnimationDataCount2; nSample++)
+            {
+                lTexCoords.Add(m_lAnimationVectors2[nTexCoord + nSample *
+                    m_pPostProcess->m_lTextureCoordinates0.m_nCount]);
+            }
+
+            Vector* pPosition = &m_pPostProcess->m_lPositions[nPosition];
+            Vector* pTexCoord0 = m_pPostProcess->m_lTextureCoordinates0.m_nCount != 0
+                ? &m_pPostProcess->m_lTextureCoordinates0[nTexCoord] : 0;
+            Vector* pTexCoord1 = m_pPostProcess->m_lTextureCoordinates1.m_nCount != 0
+                ? &m_pPostProcess->m_lTextureCoordinates1[m_pPostProcess->m_lFaces[nFace].m_pFaceIndices[nCorner + 3]] : 0;
+            Vector* pTexCoord2 = m_pPostProcess->m_lTextureCoordinates2.m_nCount != 0
+                ? &m_pPostProcess->m_lTextureCoordinates2[m_pPostProcess->m_lFaces[nFace].m_pFaceIndices[nCorner + 6]] : 0;
+            Vector* pTexCoord3 = m_pPostProcess->m_lTextureCoordinates3.m_nCount != 0
+                ? &m_pPostProcess->m_lTextureCoordinates3[m_pPostProcess->m_lFaces[nFace].m_pFaceIndices[nCorner + 9]] : 0;
+            Vector* pNormal = &m_pPostProcess->m_lNormals[nNormal];
+            Vector* pColor = 0;
+            if (m_pPostProcess->m_lColors.m_nCount > 0)
+                pColor = &m_pPostProcess->m_lColors[m_pPostProcess->m_lFaces[nFace].m_pFaces[nCorner]];
+
+            NodeVertexAnim* pVertex = new NodeVertexAnim(pPosition, pTexCoord0,
+                pTexCoord1, pTexCoord2, pTexCoord3, pNormal, pColor,
+                lPositions, lTexCoords, lNormals);
+            bool bFound = false;
+            for (nVertex = 0; nVertex < m_pPostProcess->m_lstVertices.m_nCount; nVertex++)
+            {
+                NodeVertexAnim* pExisting = ((NodeVertex*)m_pPostProcess->m_lstVertices[nVertex])->AsNodeVertexAnim();
+                if (*pExisting == *pVertex)
+                {
+                    delete pVertex;
+                    m_lFaces[nFace].m_anVertexIndices[nCorner] = nVertex;
+                    bFound = true;
+                    break;
+                }
+            }
+            if (!bFound)
+            {
+                m_lFaces[nFace].m_anVertexIndices[nCorner] =
+                    m_pPostProcess->m_lstVertices.m_nCount;
+                m_pPostProcess->m_lstVertices.Add(pVertex);
+            }
+        }
+    }
+}
+// PC 0x0044A340 GOG 0x0044A480
+inline NodeVertexAnim::~NodeVertexAnim()
+{
+    m_lstPositions.SetSize(0);
+    m_lstNormals.SetSize(0);
+    m_lstTexCoords.SetSize(0);
 }
