@@ -1503,22 +1503,22 @@ void CSWParty::Update(float fTime)
                     pServerLeader->m_pStats->m_n124);
             }
         }
-        else if (g_pAppManager->m_pClientExoApp->GetVideoEffectType() == VIDEO_EFFECT_FORCESIGHT ||
-                 g_pAppManager->m_pClientExoApp->GetVideoEffectType() == VIDEO_EFFECT_FURY_1 ||
-                 g_pAppManager->m_pClientExoApp->GetVideoEffectType() == VIDEO_EFFECT_FURY_2 ||
-                 g_pAppManager->m_pClientExoApp->GetVideoEffectType() == VIDEO_EFFECT_FURY_3)
+        else if (g_pAppManager->GetClientExoApp()->GetVideoEffectType() == VIDEO_EFFECT_FORCESIGHT ||
+                 g_pAppManager->GetClientExoApp()->GetVideoEffectType() == VIDEO_EFFECT_FURY_1 ||
+                 g_pAppManager->GetClientExoApp()->GetVideoEffectType() == VIDEO_EFFECT_FURY_2 ||
+                 g_pAppManager->GetClientExoApp()->GetVideoEffectType() == VIDEO_EFFECT_FURY_3)
         {
-            g_pAppManager->m_pClientExoApp->DisableVideoEffect();
+            g_pAppManager->GetClientExoApp()->DisableVideoEffect();
         }
     }
     else if (nDialogState != 0)
     {
-        if (g_pAppManager->m_pClientExoApp->GetVideoEffectType() == VIDEO_EFFECT_FORCESIGHT ||
-            g_pAppManager->m_pClientExoApp->GetVideoEffectType() == VIDEO_EFFECT_FURY_1 ||
-            g_pAppManager->m_pClientExoApp->GetVideoEffectType() == VIDEO_EFFECT_FURY_2 ||
-            g_pAppManager->m_pClientExoApp->GetVideoEffectType() == VIDEO_EFFECT_FURY_3)
+        if (g_pAppManager->GetClientExoApp()->GetVideoEffectType() == VIDEO_EFFECT_FORCESIGHT ||
+            g_pAppManager->GetClientExoApp()->GetVideoEffectType() == VIDEO_EFFECT_FURY_1 ||
+            g_pAppManager->GetClientExoApp()->GetVideoEffectType() == VIDEO_EFFECT_FURY_2 ||
+            g_pAppManager->GetClientExoApp()->GetVideoEffectType() == VIDEO_EFFECT_FURY_3)
         {
-            g_pAppManager->m_pClientExoApp->DisableVideoEffect();
+            g_pAppManager->GetClientExoApp()->DisableVideoEffect();
         }
     }
 
