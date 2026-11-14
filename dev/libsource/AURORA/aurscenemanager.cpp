@@ -17,8 +17,6 @@
 #include "aurconsole.h"
 #include "aurdraw.h"
 
-static inline void AurscenemanagerTrace4();
-static inline void AurscenemanagerTrace3();
 static inline void AurscenemanagerTrace2();
 static inline void AurscenemanagerTrace1();
 
@@ -176,23 +174,6 @@ template <> inline List<CAurRoom*>& List<CAurRoom*>::operator=(List<CAurRoom*>& 
     return *this;
 }
 
-#ifdef _XBOX
-
-void nodedata::AddMovingLight(PartLight* pLight)
-{
-    m_lstMovingLights.Add(pLight);
-}
-#endif
-
-static inline void AurscenemanagerTrace4()
-{
-    AurscenemanagerTrace3();
-}
-
-static inline void AurscenemanagerTrace3()
-{
-    AurscenemanagerTrace2();
-}
 
 static inline void AurscenemanagerTrace2()
 {
@@ -891,6 +872,41 @@ void SceneBSPGetTileTextures(Scene* pScene, const Vector& vPosition,
         }
     }
 }
+// PC 0x00483A00 GOG 0x00483AC0
+void SceneBSPRemoveTiledata(Scene* pScene, const Vector& vPosition)
+{
+    if (pScene->m_pBSPRoot == 0)
+    {
+        return;
+    }
+
+    nodedata* pNodeData = BSPFitSphere(pScene->m_pBSPRoot, vPosition, 0.0f)->m_pData;
+    if (pNodeData->m_pTileData == 0)
+    {
+        return;
+    }
+
+    for (int i = pNodeData->m_pTileData->m_lstParts.m_nCount; i != 0; )
+    {
+        Part* pPart = pNodeData->m_pTileData->m_lstParts.m_pList[--i];
+        SceneBSPRemovePart(pScene, pPart);
+        Model* pModel = pPart->m_pNode->m_pModel->AsModel();
+        if (pModel != 0)
+        {
+            pModel->DelRef(pModel);
+        }
+        delete pPart;
+        pNodeData->m_pTileData->m_lstParts.m_nCount--;
+    }
+
+    if (pNodeData->m_pTileData->m_pStaticObject != 0)
+    {
+        delete pNodeData->m_pTileData->m_pStaticObject;
+        pNodeData->m_pTileData->m_pStaticObject = 0;
+    }
+    delete pNodeData->m_pTileData;
+    pNodeData->m_pTileData = 0;
+}
 // PC 0x00482A70 GOG 0x00482BD0
 void SceneBSPAddGob(Scene* pScene, Gob* pGob)
 {
@@ -1118,230 +1134,6 @@ void DeleteNonGobParts(BSPNode* pNode, void* pData)
 
     delete pNodeData;
 }
-// PC 0x00483080 GOG 0x004831E0
-void UpdateStaticLighting(Scene* pScene, PartLight* pLight)
-{
-    if (pLight->m_nLightType == PartLight::LIGHTTYPE_STATIC)
-    {
-        List<BSPNode*> lstNodes;
-        if (pScene->m_pBSPRoot != 0)
-        {
-            BSPSphereCheck(pScene->m_pBSPRoot, pLight->m_vWorldPosition,
-                           pLight->m_fRadius, lstNodes);
-            for (int i = 0; i < lstNodes.m_nCount; i++)
-            {
-                staticlightbucket.AddUnique(lstNodes.m_pList[i]);
-            }
-        }
-    }
-}
-// PC 0x00483130 GOG 0x00483290
-void CollectBins(BSPNode* pNode, const Vector& vPosition, float fRangeSquared)
-{
-    nodedata* pNodeData = pNode->m_pData;
-    int nBins = pNodeData->m_lstBins.m_nCount;
-
-    for (int i = 0; i < nBins; i++)
-    {
-        CAurTriangleBin* pBin = pNodeData->m_lstBins.m_pList[i];
-        Vector vDelta;
-        vDelta = vPosition - pBin->m_vMaximum;
-        float fDistance = magnitude(vDelta) - pBin->m_fRadius;
-        if (fDistance < 0.0f)
-        {
-            fDistance = 0.0f;
-        }
-#ifdef _XBOX
-        fDistance = fDistance * fDistance;
-        if (fDistance < fRangeSquared)
-        {
-            countactivebins++;
-            g_pActiveBins.Add(pBin);
-            pBin->SetMinDistanceSquared(fDistance);
-        }
-#else
-        float fDistanceSquared = fDistance * fDistance;
-        if (fDistanceSquared < fRangeSquared)
-        {
-            countactivebins++;
-            g_pActiveBins.Add(pBin);
-            pBin->SetMinDistanceSquared(fDistanceSquared);
-        }
-#endif
-    }
-}
-// PC 0x00483250 GOG 0x004833B0
-void LightManager::CollectLightsForGivenRoom(CAurRoom* pRoom)
-{
-    m_lstNearbyLights.m_nCount = 0;
-    m_lstLensFlareLights.m_nCount = 0;
-    List<CAurRoom*> lstRooms;
-    if (pRoom != 0)
-    {
-        lstRooms = pRoom->m_lstVisibleRooms;
-        lstRooms.Add(pRoom);
-    }
-    else
-    {
-        lstRooms = currentscene->m_lstRooms;
-    }
-
-    for (int i = 0; i < lstRooms.m_nCount; i++)
-    {
-        CAurRoom* pCurrentRoom = lstRooms[i];
-        nodedata* pNodeData = pCurrentRoom->m_pData;
-        for (int j = 0; j < pNodeData->m_lstLights.m_nCount; j++)
-        {
-            PartLight* pLight = pNodeData->m_lstLights[j];
-            if (((MdlNodeLight*)pLight->m_pNode)->m_lstFlareColorShifts.m_nCount > 0)
-            {
-                m_lstLensFlareLights.AddUnique(pLight);
-            }
-            if (!pLight->m_vColor.IsZero())
-            {
-                m_lstNearbyLights.Add(pLight);
-            }
-        }
-
-        for (int k = 0; k < pNodeData->m_lstMovingLights.m_nCount; k++)
-        {
-            PartLight* pLight = pNodeData->m_lstMovingLights[k];
-            if (((MdlNodeLight*)pLight->m_pNode)->m_lstFlareColorShifts.m_nCount > 0)
-            {
-                m_lstLensFlareLights.AddUnique(pLight);
-            }
-            if (!pLight->m_vColor.IsZero())
-            {
-                m_lstNearbyLights.AddUnique(pLight);
-            }
-        }
-    }
-}
-// PC 0x00483670 GOG 0x004837D0
-void CollectActiveRooms(Scene* pScene, List<CAurRoom*>& lstRooms)
-{
-    if (pScene->m_pCurrentRoom == 0)
-    {
-        lstRooms = pScene->m_lstRooms;
-        return;
-    }
-
-    lstRooms.m_nCount = 0;
-
-    if (pScene->m_bIgnoreVisibilityGraph == 0 && enablevisibilitygraph != 0)
-    {
-        lstRooms.Add(pScene->m_pCurrentRoom);
-        List<Plane>& lstPlanes = CurrentCamera->m_lstViewVolume;
-        for (int i = 0;
-             i < pScene->m_pCurrentRoom->m_lstVisibleRooms.m_nCount; i++)
-        {
-            CAurRoom* pRoom =
-                pScene->m_pCurrentRoom->m_lstVisibleRooms.m_pList[i];
-            bool bVisible = true;
-            if (!pRoom->m_bB8)
-            {
-                for (int j = 0; j < lstPlanes.m_nCount; j++)
-                {
-                    if (BoxAbovePlane(pRoom->m_vMinimum, pRoom->m_vMaximum,
-                                      lstPlanes.m_pList[j]) > 0.0f)
-                    {
-                        bVisible = false;
-                        break;
-                    }
-                }
-            }
-            if (bVisible)
-                lstRooms.Add(pRoom);
-
-        }
-    }
-    else
-    {
-        lstRooms = pScene->m_lstRooms;
-    }
-}
-// PC 0x004837C0 GOG 0x00483920
-void SceneAddPartToRooms(Scene* pScene, Part* pPart)
-{
-    PartTrigger* pTrigger = pPart->AsPartTrigger();
-    for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
-    {
-        CAurRoom* pRoom = pScene->m_lstRooms.m_pList[i];
-        if (pTrigger != 0)
-        {
-            Vector vCenter = (pTrigger->m_vMinimum + pTrigger->m_vMaximum) / 2.0f;
-            if (vCenter.m_fX >= pRoom->m_vMinimum.m_fX &&
-                vCenter.m_fY >= pRoom->m_vMinimum.m_fY &&
-                vCenter.m_fX <= pRoom->m_vMaximum.m_fX &&
-                vCenter.m_fY <= pRoom->m_vMaximum.m_fY)
-            {
-                pRoom->m_pData->m_lstTriggers.Add(pTrigger);
-            }
-        }
-    }
-}
-// PC 0x00483870 GOG 0x004839D0
-void SceneRemovePartFromRooms(Scene* pScene, Part* pPart)
-{
-    PartTrigger* pTrigger = pPart->AsPartTrigger();
-    for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
-    {
-        nodedata* pNodeData = pScene->m_lstRooms.m_pList[i]->m_pData;
-        if (pTrigger != 0)
-        {
-            if (pNodeData->m_lstTriggers.Contains(pTrigger))
-            {
-                pNodeData->m_lstTriggers.Remove(pTrigger);
-            }
-        }
-    }
-}
-// PC 0x004838E0 GOG 0x00483A40
-void nodedata::AddMovingObject(Gob* pGob)
-{
-    m_lstMovingObjects.Add(pGob);
-}
-// PC 0x00483920 GOG 0x00483A80
-void nodedata::AddMovingEmitter(PartEmitter* pEmitter)
-{
-    m_lstMovingEmitters.Add(pEmitter);
-}
-// PC 0x00483A00 GOG 0x00483AC0
-void SceneBSPRemoveTiledata(Scene* pScene, const Vector& vPosition)
-{
-    AurscenemanagerTrace4();
-    if (pScene->m_pBSPRoot == 0)
-    {
-        return;
-    }
-
-    nodedata* pNodeData = BSPFitSphere(pScene->m_pBSPRoot, vPosition, 0.0f)->m_pData;
-    if (pNodeData->m_pTileData == 0)
-    {
-        return;
-    }
-
-    for (int i = pNodeData->m_pTileData->m_lstParts.m_nCount; i != 0; )
-    {
-        Part* pPart = pNodeData->m_pTileData->m_lstParts.m_pList[--i];
-        SceneBSPRemovePart(pScene, pPart);
-        Model* pModel = pPart->m_pNode->m_pModel->AsModel();
-        if (pModel != 0)
-        {
-            pModel->DelRef(pModel);
-        }
-        delete pPart;
-        pNodeData->m_pTileData->m_lstParts.m_nCount--;
-    }
-
-    if (pNodeData->m_pTileData->m_pStaticObject != 0)
-    {
-        delete pNodeData->m_pTileData->m_pStaticObject;
-        pNodeData->m_pTileData->m_pStaticObject = 0;
-    }
-    delete pNodeData->m_pTileData;
-    pNodeData->m_pTileData = 0;
-}
 
 #ifdef _XBOX
 static void AddVisibleTriMeshes(nodedata* pNodeData, List<Plane>& planes);
@@ -1560,13 +1352,63 @@ void DoStaticLightBuckets(Scene* pScene)
 // PC 0x00484BA0 GOG 0x00484C60
 void AnimateStaticLight(CAurObject* pObject, char* sEvent, void* pData)
 {
-    AurscenemanagerTrace4();
     UpdateStaticLighting(((Gob*)pObject)->m_pScene, (PartLight*)pData);
+}
+// PC 0x00483080 GOG 0x004831E0
+void UpdateStaticLighting(Scene* pScene, PartLight* pLight)
+{
+    if (pLight->m_nLightType == PartLight::LIGHTTYPE_STATIC)
+    {
+        List<BSPNode*> lstNodes;
+        if (pScene->m_pBSPRoot != 0)
+        {
+            BSPSphereCheck(pScene->m_pBSPRoot, pLight->m_vWorldPosition,
+                           pLight->m_fRadius, lstNodes);
+            for (int i = 0; i < lstNodes.m_nCount; i++)
+            {
+                staticlightbucket.AddUnique(lstNodes.m_pList[i]);
+            }
+        }
+    }
+}
+// PC 0x00483130 GOG 0x00483290
+void CollectBins(BSPNode* pNode, const Vector& vPosition, float fRangeSquared)
+{
+    nodedata* pNodeData = pNode->m_pData;
+    int nBins = pNodeData->m_lstBins.m_nCount;
+
+    for (int i = 0; i < nBins; i++)
+    {
+        CAurTriangleBin* pBin = pNodeData->m_lstBins.m_pList[i];
+        Vector vDelta;
+        vDelta = vPosition - pBin->m_vMaximum;
+        float fDistance = magnitude(vDelta) - pBin->m_fRadius;
+        if (fDistance < 0.0f)
+        {
+            fDistance = 0.0f;
+        }
+#ifdef _XBOX
+        fDistance = fDistance * fDistance;
+        if (fDistance < fRangeSquared)
+        {
+            countactivebins++;
+            g_pActiveBins.Add(pBin);
+            pBin->SetMinDistanceSquared(fDistance);
+        }
+#else
+        float fDistanceSquared = fDistance * fDistance;
+        if (fDistanceSquared < fRangeSquared)
+        {
+            countactivebins++;
+            g_pActiveBins.Add(pBin);
+            pBin->SetMinDistanceSquared(fDistanceSquared);
+        }
+#endif
+    }
 }
 // PC 0x00484BC0 GOG 0x00484C80
 void AddLightToRooms(Scene* pScene, PartLight* pLight)
 {
-    AurscenemanagerTrace4();
     int nRooms = 0;
     for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
     {
@@ -1576,11 +1418,7 @@ void AddLightToRooms(Scene* pScene, PartLight* pLight)
             pLight->m_vWorldPosition.m_fX <= pRoom->m_vMaximum.m_fX &&
             pLight->m_vWorldPosition.m_fY <= pRoom->m_vMaximum.m_fY)
         {
-#ifdef _XBOX
             pRoom->m_pData->AddMovingLight(pLight);
-#else
-            pRoom->m_pData->m_lstMovingLights.Add(pLight);
-#endif
             nRooms++;
         }
     }
@@ -1588,18 +1426,13 @@ void AddLightToRooms(Scene* pScene, PartLight* pLight)
     {
         for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
         {
-#ifdef _XBOX
             pScene->m_lstRooms.m_pList[i]->m_pData->AddMovingLight(pLight);
-#else
-            pScene->m_lstRooms.m_pList[i]->m_pData->m_lstMovingLights.Add(pLight);
-#endif
         }
     }
 }
 // PC 0x00484D30 GOG 0x00484DF0
 void AddEmitterToRooms(Scene* pScene, PartEmitter* pEmitter)
 {
-    AurscenemanagerTrace4();
     if (pEmitter->m_pAurObject == 0)
     {
         return;
@@ -1643,7 +1476,6 @@ static const int AUR_ROOM_INDEX_ALL = 999;
 // PC 0x00484E30 GOG 0x00484EF0
 void AddObjectToRooms(Scene* pScene, Gob* pGob)
 {
-    AurscenemanagerTrace4();
     int nRooms = 0;
     Vector vPosition;
     Model* pModel = pGob->m_pModel;
@@ -1678,14 +1510,151 @@ void AddObjectToRooms(Scene* pScene, Gob* pGob)
     {
         for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
         {
-#ifdef _XBOX
             pScene->m_lstRooms.m_pList[i]->m_pData->AddMovingObject(pGob);
-#else
-            pScene->m_lstRooms.m_pList[i]->m_pData->m_lstMovingObjects.Add(pGob);
-#endif
         }
         crap = AUR_ROOM_INDEX_ALL;
     }
+}
+// PC 0x00483250 GOG 0x004833B0
+void LightManager::CollectLightsForGivenRoom(CAurRoom* pRoom)
+{
+    m_lstNearbyLights.m_nCount = 0;
+    m_lstLensFlareLights.m_nCount = 0;
+    List<CAurRoom*> lstRooms;
+    if (pRoom != 0)
+    {
+        lstRooms = pRoom->m_lstVisibleRooms;
+        lstRooms.Add(pRoom);
+    }
+    else
+    {
+        lstRooms = currentscene->m_lstRooms;
+    }
+
+    for (int i = 0; i < lstRooms.m_nCount; i++)
+    {
+        CAurRoom* pCurrentRoom = lstRooms[i];
+        nodedata* pNodeData = pCurrentRoom->m_pData;
+        for (int j = 0; j < pNodeData->m_lstLights.m_nCount; j++)
+        {
+            PartLight* pLight = pNodeData->m_lstLights[j];
+            if (((MdlNodeLight*)pLight->m_pNode)->m_lstFlareColorShifts.m_nCount > 0)
+            {
+                m_lstLensFlareLights.AddUnique(pLight);
+            }
+            if (!pLight->m_vColor.IsZero())
+            {
+                m_lstNearbyLights.Add(pLight);
+            }
+        }
+
+        for (int k = 0; k < pNodeData->m_lstMovingLights.m_nCount; k++)
+        {
+            PartLight* pLight = pNodeData->m_lstMovingLights[k];
+            if (((MdlNodeLight*)pLight->m_pNode)->m_lstFlareColorShifts.m_nCount > 0)
+            {
+                m_lstLensFlareLights.AddUnique(pLight);
+            }
+            if (!pLight->m_vColor.IsZero())
+            {
+                m_lstNearbyLights.AddUnique(pLight);
+            }
+        }
+    }
+}
+// PC 0x00483670 GOG 0x004837D0
+void CollectActiveRooms(Scene* pScene, List<CAurRoom*>& lstRooms)
+{
+    if (pScene->m_pCurrentRoom == 0)
+    {
+        lstRooms = pScene->m_lstRooms;
+        return;
+    }
+
+    lstRooms.m_nCount = 0;
+
+    if (pScene->m_bIgnoreVisibilityGraph == 0 && enablevisibilitygraph != 0)
+    {
+        lstRooms.Add(pScene->m_pCurrentRoom);
+        List<Plane>& lstPlanes = CurrentCamera->m_lstViewVolume;
+        for (int i = 0;
+             i < pScene->m_pCurrentRoom->m_lstVisibleRooms.m_nCount; i++)
+        {
+            CAurRoom* pRoom =
+                pScene->m_pCurrentRoom->m_lstVisibleRooms.m_pList[i];
+            bool bVisible = true;
+            if (!pRoom->m_bB8)
+            {
+                for (int j = 0; j < lstPlanes.m_nCount; j++)
+                {
+                    if (BoxAbovePlane(pRoom->m_vMinimum, pRoom->m_vMaximum,
+                                      lstPlanes.m_pList[j]) > 0.0f)
+                    {
+                        bVisible = false;
+                        break;
+                    }
+                }
+            }
+            if (bVisible)
+                lstRooms.Add(pRoom);
+
+        }
+    }
+    else
+    {
+        lstRooms = pScene->m_lstRooms;
+    }
+}
+// PC 0x004837C0 GOG 0x00483920
+void SceneAddPartToRooms(Scene* pScene, Part* pPart)
+{
+    PartTrigger* pTrigger = pPart->AsPartTrigger();
+    for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
+    {
+        CAurRoom* pRoom = pScene->m_lstRooms.m_pList[i];
+        if (pTrigger != 0)
+        {
+            Vector vCenter = (pTrigger->m_vMinimum + pTrigger->m_vMaximum) / 2.0f;
+            if (vCenter.m_fX >= pRoom->m_vMinimum.m_fX &&
+                vCenter.m_fY >= pRoom->m_vMinimum.m_fY &&
+                vCenter.m_fX <= pRoom->m_vMaximum.m_fX &&
+                vCenter.m_fY <= pRoom->m_vMaximum.m_fY)
+            {
+                pRoom->m_pData->m_lstTriggers.Add(pTrigger);
+            }
+        }
+    }
+}
+// PC 0x00483870 GOG 0x004839D0
+void SceneRemovePartFromRooms(Scene* pScene, Part* pPart)
+{
+    PartTrigger* pTrigger = pPart->AsPartTrigger();
+    for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
+    {
+        nodedata* pNodeData = pScene->m_lstRooms.m_pList[i]->m_pData;
+        if (pTrigger != 0)
+        {
+            if (pNodeData->m_lstTriggers.Contains(pTrigger))
+            {
+                pNodeData->m_lstTriggers.Remove(pTrigger);
+            }
+        }
+    }
+}
+// PC 0x004838E0 GOG 0x00483A40
+void nodedata::AddMovingObject(Gob* pGob)
+{
+    m_lstMovingObjects.Add(pGob);
+}
+// PC 0x00483920 GOG 0x00483A80
+void nodedata::AddMovingEmitter(PartEmitter* pEmitter)
+{
+    m_lstMovingEmitters.Add(pEmitter);
+}
+
+void nodedata::AddMovingLight(PartLight* pLight)
+{
+    m_lstMovingLights.Add(pLight);
 }
 // PC 0x004851C0 GOG 0x00485280
 int SceneBSPAddPart(Scene* pScene, Part* pPart, Model* pModel)

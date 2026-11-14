@@ -58,6 +58,8 @@ public:
     void AddMovingObject(Gob* pGob);
 
     void AddMovingEmitter(PartEmitter* pEmitter);
+
+    void AddMovingLight(PartLight* pLight);
 #ifdef _XBOX
 
     void ClearMovingObjects();
@@ -66,7 +68,6 @@ public:
     List<Gob*>& GetMovingObjects();
     List<PartLight*>& GetMovingLights();
     List<PartEmitter*>& GetMovingEmitters();
-    void AddMovingLight(PartLight* pLight);
 #endif
     ~nodedata();
 
