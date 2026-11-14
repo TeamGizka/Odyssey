@@ -991,8 +991,8 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
         }
 
         pPart = pSkin;
-        Vector vTranslation = -pPart->m_qOrientation * -pPart->m_vPosition;
-        Quaternion qRotation = -pPart->m_qOrientation;
+        Vector vTranslation = -pSkin->m_qOrientation * -pSkin->m_vPosition;
+        Quaternion qRotation = -pSkin->m_qOrientation;
         while (pPart->m_pParent != 0)
         {
             pPart = pPart->m_pParent;
