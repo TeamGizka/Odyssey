@@ -134,15 +134,15 @@ void CSWGuiInGameMessages::ShowEffects()
         return;
     CExoArrayList<CSWGuiControl*> aGood;
     CExoArrayList<CSWGuiControl*> aBad;
+    CSWGuiLabelHilight* pGoodProto = (CSWGuiLabelHilight*)m_lbEffectsGood.m_pProtoItem;
     CSWGuiExtent cGoodExtent(0, 0,
         pGood->m_cItemExtent.m_nWidth - 2 * pGood->m_nPadding, 10);
+    CSWGuiLabelHilight* pBadProto = (CSWGuiLabelHilight*)m_lbEffectsBad.m_pProtoItem;
     CSWGuiExtent cBadExtent(0, 0,
         pBad->m_cItemExtent.m_nWidth - 2 * pBad->m_nPadding, 10);
-    CSWGuiLabelHilight* pGoodProto = (CSWGuiLabelHilight*)m_lbEffectsGood.m_pProtoItem;
-    CSWGuiLabelHilight* pBadProto = (CSWGuiLabelHilight*)m_lbEffectsBad.m_pProtoItem;
 
     CExoString sName;
-    for (int i = 0; i < pServerCreature->GetEffectIcons()->num; i++)
+    for (int i = 0; i < pServerCreature->GetEffectIconCount(); i++)
     {
         CEffectIconObject* pIcon = pServerCreature->GetEffectIcons()->element[i];
 
