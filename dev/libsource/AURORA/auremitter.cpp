@@ -360,10 +360,9 @@ void Particle::randomDirection(int nWidth, int nHeight)
             float fAngle;
             if (EMITTER_DEADSPACE_DEBUG)
             {
-                Vector vDelta = vCameraDirection - vCameraDirection;
                 Vector vYDir = m_qOrientation.ydir();
-                float fDebugFacing = fFacing;
-                float fDebugSpread = fSpread;
+                Vector vDelta = vYDir - vCameraDirection;
+                Vector vAxis = cross(vCameraDirection, m_qOrientation.ydir());
                 qNewOrientation.m_fW = 0.0f;
                 qNewOrientation.m_fZ = 0.0f;
             }
