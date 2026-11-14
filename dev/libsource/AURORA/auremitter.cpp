@@ -3585,8 +3585,8 @@ void PartEmitter::RenderFunc()
                 glColor3f(0.0f, 1.0f, 0.0f);
                 glLineWidth(2.5f);
                 float fBlend = 0.0f;
-                if (pLightning->m_fControlPointDelay != 0.0f)
-                    fBlend = pLightning->m_fReservedF8 / pLightning->m_fControlPointDelay;
+                if ((pLightning->m_fControlPointDelay) != 0.0f)
+                    fBlend = (((pLightning->m_fReservedF8) / pLightning->m_fControlPointDelay));
                 glBegin(GL_LINES);
                 glVertex3f((1.0f - fBlend) * pLightning->m_lstReserved21C[0].m_fX +
                                    fBlend * pLightning->m_lstReserved228[0].m_fX,
@@ -3661,8 +3661,8 @@ void PartEmitter::RenderFunc()
             {
                 List<Vector>& lstPoints = pLightning->m_lstReserved21C;
                 float fBlend = 0.0f;
-                if (pLightning->m_fControlPointDelay != 0.0f)
-                    fBlend = pLightning->m_fReservedF8 / pLightning->m_fControlPointDelay;
+                if ((pLightning->m_fControlPointDelay) != 0.0f)
+                    fBlend = (((pLightning->m_fReservedF8) / pLightning->m_fControlPointDelay));
                 List<Vector>& lstTargetPoints = pLightning->m_lstReserved228;
                 glDisable(GL_LIGHTING);
                 glDisable(GL_TEXTURE_2D);
@@ -3736,8 +3736,8 @@ void PartEmitter::RenderFunc()
             if (auremitterrenderbranchbezier && pLightning->m_nBranches > 0)
             {
                 float fBlend = 0.0f;
-                if (pLightning->m_fControlPointDelay != 0.0f)
-                    fBlend = pLightning->m_fReservedF8 / pLightning->m_fControlPointDelay;
+                if ((pLightning->m_fControlPointDelay) != 0.0f)
+                    fBlend = (((pLightning->m_fReservedF8) / pLightning->m_fControlPointDelay));
                 glDisable(GL_LIGHTING);
                 glDisable(GL_TEXTURE_2D);
                 for (int i = 0; i < pLightning->m_nBranches; i++)
