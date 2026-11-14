@@ -9,26 +9,6 @@
 #endif
 
 DWORD WINAPI AsyncReadThreadProc(LPVOID lpParameter);
-
-
-// PC 0x00637370 GOG 0x00637270
-unsigned long CExoFileInternal::GetSize()
-{
-    if (m_pFile != NULL)
-    {
-        fflush(m_pFile);
-        long lOffset = ftell(m_pFile);
-        if (lOffset >= 0)
-        {
-            fseek(m_pFile, 0, SEEK_END);
-            unsigned long nSize = ftell(m_pFile);
-            fseek(m_pFile, lOffset, SEEK_SET);
-            return nSize;
-        }
-    }
-    return (unsigned long)-1;
-}
-static CExoFileThread g_AsyncFileThread;
 // PC 0x00636F60 GOG 0x00636E60
 CExoFileThread::~CExoFileThread()
 {
@@ -45,36 +25,6 @@ CExoAliasListInternal::CExoAliasListInternal()
 {
     m_pAliasList = NULL;
     m_sDefault = "";
-}
-
-// PC 0x006373D0 GOG 0x006372D0
-unsigned long CExoFileInternal::Read(CExoString* text, unsigned long count)
-{
-    if (m_pFile != NULL)
-    {
-        char* pBuffer = new char[count + 1];
-        unsigned long nBytesRead = fread(pBuffer, 1, count, m_pFile);
-        if (nBytesRead != count)
-        {
-            if (ferror(m_pFile))
-            {
-                EXOLOG("CExoFile: read error in %s", m_sFileName.CStr());
-                clearerr(m_pFile);
-                return 0;
-            }
-            if (feof(m_pFile))
-            {
-                EXOLOG("CExoFile: unexpected end of %s", m_sFileName.CStr());
-                clearerr(m_pFile);
-                return 0;
-            }
-        }
-        pBuffer[nBytesRead] = 0;
-        *text = pBuffer;
-        operator delete(pBuffer);
-        return nBytesRead;
-    }
-    return 0;
 }
 // PC 0x00636FF0 GOG 0x00636EF0
 inline CExoAliasListInternal::CExoAlias::CExoAlias()
@@ -184,6 +134,56 @@ unsigned long CExoFileInternal::GetOffset()
     if (m_pFile != NULL)
     {
         return ftell(m_pFile);
+    }
+    return 0;
+}
+
+
+// PC 0x00637370 GOG 0x00637270
+unsigned long CExoFileInternal::GetSize()
+{
+    if (m_pFile != NULL)
+    {
+        fflush(m_pFile);
+        long lOffset = ftell(m_pFile);
+        if (lOffset >= 0)
+        {
+            fseek(m_pFile, 0, SEEK_END);
+            unsigned long nSize = ftell(m_pFile);
+            fseek(m_pFile, lOffset, SEEK_SET);
+            return nSize;
+        }
+    }
+    return (unsigned long)-1;
+}
+static CExoFileThread g_AsyncFileThread;
+
+// PC 0x006373D0 GOG 0x006372D0
+unsigned long CExoFileInternal::Read(CExoString* text, unsigned long count)
+{
+    if (m_pFile != NULL)
+    {
+        char* pBuffer = new char[count + 1];
+        unsigned long nBytesRead = fread(pBuffer, 1, count, m_pFile);
+        if (nBytesRead != count)
+        {
+            if (ferror(m_pFile))
+            {
+                EXOLOG("CExoFile: read error in %s", m_sFileName.CStr());
+                clearerr(m_pFile);
+                return 0;
+            }
+            if (feof(m_pFile))
+            {
+                EXOLOG("CExoFile: unexpected end of %s", m_sFileName.CStr());
+                clearerr(m_pFile);
+                return 0;
+            }
+        }
+        pBuffer[nBytesRead] = 0;
+        *text = pBuffer;
+        operator delete(pBuffer);
+        return nBytesRead;
     }
     return 0;
 }

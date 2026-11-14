@@ -283,11 +283,6 @@ void CSWGuiOptionsSound::OnMoveGammaSlider(CSWGuiControl* pControl)
         g_pAppManager->GetClientExoApp()->GetClientOptions()->GetGammaSetting(), 0);
 }
 #endif
-// PC 0x00750940 GOG 0x0074F8F0
-void CSWGuiOptionsMouse::OnEnterRevMouseButtons(CSWGuiControl* pControl)
-{
-    SetDescription(48722);
-}
 // PC 0x0074D6F0 GOG 0x0074DC90
 void CSWGuiOptionsMain::OnGameplayOpt(CSWGuiControl* pControl)
 {
@@ -1075,6 +1070,37 @@ void CSWGuiOptionsResolution::OnResolutionChosen(CSWGuiControl* pControl)  // PC
 }
 #endif
 #endif  // PC 0x0074EFE0 GOG 0x0074F440
+
+#ifndef _XBOX
+// PC 0x0074E840 GOG 0x0074EDC0
+void CSWGuiOptionsGraphicsAdvanced::OnSoftShadows(CSWGuiControl* pControl)
+{
+    if (pControl->m_bSelected != 0)
+    {
+        int bSoftShadows = m_bSoftShadows;
+        m_bChanged = 1;
+        m_bSoftShadows = (bSoftShadows == 0);
+    }
+}
+// PC 0x0074E870 GOG 0x0074D550
+int CSWGuiOptionsGraphicsAdvanced::OnVSync(CSWGuiControl* pControl)
+{
+    int bVSync = (m_bVSync == 0);
+    m_bVSync = bVSync;
+    return bVSync;
+}
+// PC 0x0074EBA0 GOG 0x0074D570
+void CSWGuiOptionsGraphicsAdvanced::OnDiscardChanges(CSWGuiControl* pControl)
+{
+    m_bDiscard = 1;
+    OnBButtonPressed(pControl);
+}
+#endif
+// PC 0x00750940 GOG 0x0074F8F0
+void CSWGuiOptionsMouse::OnEnterRevMouseButtons(CSWGuiControl* pControl)
+{
+    SetDescription(48722);
+}
 // PC 0x00752430 GOG 0x007529A0
 CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -2443,32 +2469,6 @@ void CSWGuiOptionsMain::OnSoundOpt(CSWGuiControl* pControl)
         m_pManager->AddPanel(pPanel, CSWGuiManager::PANEL_MODE_MODAL, 1);
     }
 }
-
-#ifndef _XBOX
-// PC 0x0074E840 GOG 0x0074EDC0
-void CSWGuiOptionsGraphicsAdvanced::OnSoftShadows(CSWGuiControl* pControl)
-{
-    if (pControl->m_bSelected != 0)
-    {
-        int bSoftShadows = m_bSoftShadows;
-        m_bChanged = 1;
-        m_bSoftShadows = (bSoftShadows == 0);
-    }
-}
-// PC 0x0074E870 GOG 0x0074D550
-int CSWGuiOptionsGraphicsAdvanced::OnVSync(CSWGuiControl* pControl)
-{
-    int bVSync = (m_bVSync == 0);
-    m_bVSync = bVSync;
-    return bVSync;
-}
-// PC 0x0074EBA0 GOG 0x0074D570
-void CSWGuiOptionsGraphicsAdvanced::OnDiscardChanges(CSWGuiControl* pControl)
-{
-    m_bDiscard = 1;
-    OnBButtonPressed(pControl);
-}
-#endif
 
 #ifndef _XBOX
 void CSWGuiOptionsGraphics::OnEnterSlot(CSWGuiControl* pControl)  // PC 0x0074FC20 GOG 0x0074FBF0

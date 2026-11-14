@@ -61,21 +61,6 @@ void CSWGuiCreateItemMenu::HandleInputEvent(int nEvent, int nState)
     }
     return CSWGuiPanel::HandleInputEvent(nEvent, nState);
 }
-// PC 0x0073EA30 GOG 0x0073E710
-CSWGuiButton* CSWGuiCreateItemMenu::CreateOption(const CExoString& sText,
-                                                 CSWGuiHandler pHandler,
-                                                 CSWGuiButton* pPrototype)
-{
-    CSWGuiExtent cExtent = pPrototype->m_cExtent;
-    CSWGuiButton* pButton;
-
-    pButton = new CSWGuiButton();
-    pButton->Initialize(cExtent, pPrototype);
-    pButton->m_cText.m_cParams.SetText(sText);
-    pButton->AddEvent(GUIEVENT_ACTIVATE, this, pHandler);
-    pButton->AddEvent(GUIEVENT_ACCEPT, this, pHandler);
-    return pButton;
-}
 // PC 0x0073E9B0 GOG 0x0073E7D0
 void CSWGuiCreateItemMenu::Back(CSWGuiControl* pControl)
 {
@@ -99,6 +84,21 @@ void CSWGuiCreateItemMenu::ItemSubTypeMenu(CSWGuiControl* pControl)
         g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowSubItemCreateMenu(
             nSubType);
     }
+}
+// PC 0x0073EA30 GOG 0x0073E710
+CSWGuiButton* CSWGuiCreateItemMenu::CreateOption(const CExoString& sText,
+                                                 CSWGuiHandler pHandler,
+                                                 CSWGuiButton* pPrototype)
+{
+    CSWGuiExtent cExtent = pPrototype->m_cExtent;
+    CSWGuiButton* pButton;
+
+    pButton = new CSWGuiButton();
+    pButton->Initialize(cExtent, pPrototype);
+    pButton->m_cText.m_cParams.SetText(sText);
+    pButton->AddEvent(GUIEVENT_ACTIVATE, this, pHandler);
+    pButton->AddEvent(GUIEVENT_ACCEPT, this, pHandler);
+    return pButton;
 }
 // PC 0x0073EAF0 GOG 0x0073E850
 CSWGuiCreateItemMenu::CSWGuiCreateItemMenu(CSWGuiManager* pManager)

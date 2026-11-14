@@ -217,6 +217,91 @@ static inline void GuiingameTrace2()
 static inline void GuiingameTrace1()
 {
 }
+// PC 0x0067CAE0 GOG 0x0067C8B0
+void CSWGuiStatusSummary::AddExperience(int nExperience)
+{
+    GUIINGAME_TRACE();
+    if (nExperience != 0)
+    {
+        m_cStatusSummary.m_nExperience += nExperience;
+        m_cStatusSummary.m_bDisplaySPending = 1;
+    }
+}
+// PC 0x0067CB00 GOG 0x0067C8D0
+void CSWGuiStatusSummary::AddStealthExperience(int nExperience)
+{
+    GUIINGAME_TRACE();
+    if (nExperience != 0)
+    {
+        m_cStatusSummary.m_nStealthExperience += nExperience;
+        m_cStatusSummary.m_bDisplaySPending = 1;
+    }
+}
+// PC 0x00680850 GOG 0x00680630
+int CGuiInGame::HandleDialogModels(unsigned long oidPlayer,
+                                  unsigned long nModels,
+                                  unsigned long* pObjectIds, CResRef* pModels,
+                                  const CResRef& cCameraModel,
+                                  const CResRef& cAmbientTrack)
+{
+    InitializeStuntModelData(nModels);
+    for (unsigned long nModel = 0; nModel < nModels; ++nModel)
+    {
+        SetStuntModelData(nModel, pObjectIds[nModel], pModels[nModel]);
+    }
+    if (!LoadStuntModelsForDialog())
+        return 0;
+    LoadCameraModelForDialog(cCameraModel);
+    LoadAmbientTrackForDialog(cAmbientTrack);
+    return 1;
+}
+// PC 0x00683410 GOG 0x006831F0
+int CGuiInGame::InitializeRepliesData(unsigned long nReplies)
+{
+    int nResult = 0;
+    ClearRepliesData();
+    m_nReplies = nReplies;
+    m_asReplyText = new CExoString[nReplies];
+    m_pnReplyValue1 = new unsigned long[m_nReplies];
+    m_pnReplyValue2 = new unsigned long[m_nReplies];
+    m_pnReplyValue3 = new unsigned long[m_nReplies];
+    m_pnReplyValue4 = new int[m_nReplies];
+    m_pfReplyValue5 = new float[m_nReplies];
+    m_pfReplyValue6 = new float[m_nReplies];
+    m_pnReplyValue7 = new unsigned long[m_nReplies];
+    m_pnReplyValue8 = new unsigned short[m_nReplies];
+    m_pfReplyValue9 = new float[m_nReplies];
+    m_pnReplyValue10 = new int[m_nReplies];
+    m_pnReplyValue11 = new unsigned char[m_nReplies];
+    m_pvReplyValue12 = new Vector[m_nReplies];
+    m_pfReplyValue13 = new float[m_nReplies];
+    m_pfReplyValue14 = new float[m_nReplies];
+    m_pnReplyAnimations = new int[m_nReplies];
+    m_ppnReplyAnimationIDs = new unsigned long*[m_nReplies];
+    m_ppnReplyAnimationFlags = new unsigned short*[m_nReplies];
+    if (m_asReplyText != 0 &&
+        m_pnReplyValue1 != 0 &&
+        m_pnReplyValue2 != 0 &&
+        m_pnReplyValue3 != 0 &&
+        m_pnReplyValue4 != 0 &&
+        m_pfReplyValue5 != 0 &&
+        m_pfReplyValue6 != 0 &&
+        m_pnReplyValue7 != 0 &&
+        m_pnReplyValue8 != 0 &&
+        m_pfReplyValue9 != 0 &&
+        m_pnReplyValue10 != 0 &&
+        m_pnReplyValue11 != 0 &&
+        m_pvReplyValue12 != 0 &&
+        m_pfReplyValue13 != 0 &&
+        m_pfReplyValue14 != 0 &&
+        m_pnReplyAnimations != 0 &&
+        *m_ppnReplyAnimationIDs != 0 &&
+        *m_ppnReplyAnimationFlags != 0)
+    {
+        nResult = 1;
+    }
+    return nResult;
+}
 // PC 0x00685280 GOG 0x00684FF0
 CGuiInGame::CGuiInGame()
 {
@@ -426,26 +511,6 @@ void CGuiInGame::ClearLastDialogAnimationData()
     {
         delete [] m_pLastDialogAnimationFlags;
         m_pLastDialogAnimationFlags = 0;
-    }
-}
-// PC 0x0067CAE0 GOG 0x0067C8B0
-void CSWGuiStatusSummary::AddExperience(int nExperience)
-{
-    GUIINGAME_TRACE();
-    if (nExperience != 0)
-    {
-        m_cStatusSummary.m_nExperience += nExperience;
-        m_cStatusSummary.m_bDisplaySPending = 1;
-    }
-}
-// PC 0x0067CB00 GOG 0x0067C8D0
-void CSWGuiStatusSummary::AddStealthExperience(int nExperience)
-{
-    GUIINGAME_TRACE();
-    if (nExperience != 0)
-    {
-        m_cStatusSummary.m_nStealthExperience += nExperience;
-        m_cStatusSummary.m_bDisplaySPending = 1;
     }
 }
 // PC 0x0067CC10 GOG 0x0067C9F0
@@ -3346,24 +3411,6 @@ CPlaceableCamera* CGuiInGame::GetPlaceableCamera(int nCamera)
     }
     return &m_aPlaceableCameras[nCamera];
 }
-// PC 0x00680850 GOG 0x00680630
-int CGuiInGame::HandleDialogModels(unsigned long oidPlayer,
-                                  unsigned long nModels,
-                                  unsigned long* pObjectIds, CResRef* pModels,
-                                  const CResRef& cCameraModel,
-                                  const CResRef& cAmbientTrack)
-{
-    InitializeStuntModelData(nModels);
-    for (unsigned long nModel = 0; nModel < nModels; ++nModel)
-    {
-        SetStuntModelData(nModel, pObjectIds[nModel], pModels[nModel]);
-    }
-    if (!LoadStuntModelsForDialog())
-        return 0;
-    LoadCameraModelForDialog(cCameraModel);
-    LoadAmbientTrackForDialog(cAmbientTrack);
-    return 1;
-}
 // PC 0x00680930 GOG 0x00680710
 int CGuiInGame::HandleDialogReplyChosen(unsigned long oidSpeaker,
                                       unsigned long nReply,
@@ -4789,53 +4836,6 @@ int CGuiInGame::StoreLastDialogAnimationData()
         m_pLastDialogAnimationFlags[i] = m_pDialogAnimationFlags[i];
     }
     return i;
-}
-// PC 0x00683410 GOG 0x006831F0
-int CGuiInGame::InitializeRepliesData(unsigned long nReplies)
-{
-    int nResult = 0;
-    ClearRepliesData();
-    m_nReplies = nReplies;
-    m_asReplyText = new CExoString[nReplies];
-    m_pnReplyValue1 = new unsigned long[m_nReplies];
-    m_pnReplyValue2 = new unsigned long[m_nReplies];
-    m_pnReplyValue3 = new unsigned long[m_nReplies];
-    m_pnReplyValue4 = new int[m_nReplies];
-    m_pfReplyValue5 = new float[m_nReplies];
-    m_pfReplyValue6 = new float[m_nReplies];
-    m_pnReplyValue7 = new unsigned long[m_nReplies];
-    m_pnReplyValue8 = new unsigned short[m_nReplies];
-    m_pfReplyValue9 = new float[m_nReplies];
-    m_pnReplyValue10 = new int[m_nReplies];
-    m_pnReplyValue11 = new unsigned char[m_nReplies];
-    m_pvReplyValue12 = new Vector[m_nReplies];
-    m_pfReplyValue13 = new float[m_nReplies];
-    m_pfReplyValue14 = new float[m_nReplies];
-    m_pnReplyAnimations = new int[m_nReplies];
-    m_ppnReplyAnimationIDs = new unsigned long*[m_nReplies];
-    m_ppnReplyAnimationFlags = new unsigned short*[m_nReplies];
-    if (m_asReplyText != 0 &&
-        m_pnReplyValue1 != 0 &&
-        m_pnReplyValue2 != 0 &&
-        m_pnReplyValue3 != 0 &&
-        m_pnReplyValue4 != 0 &&
-        m_pfReplyValue5 != 0 &&
-        m_pfReplyValue6 != 0 &&
-        m_pnReplyValue7 != 0 &&
-        m_pnReplyValue8 != 0 &&
-        m_pfReplyValue9 != 0 &&
-        m_pnReplyValue10 != 0 &&
-        m_pnReplyValue11 != 0 &&
-        m_pvReplyValue12 != 0 &&
-        m_pfReplyValue13 != 0 &&
-        m_pfReplyValue14 != 0 &&
-        m_pnReplyAnimations != 0 &&
-        *m_ppnReplyAnimationIDs != 0 &&
-        *m_ppnReplyAnimationFlags != 0)
-    {
-        nResult = 1;
-    }
-    return nResult;
 }
 // PC 0x006831D0 GOG 0x00682FB0
 void CGuiInGame::ClearRepliesData()

@@ -63,23 +63,6 @@ inline unsigned long CExoSoundSourceInternal::GetOneShotDelay()
 {
     return m_nOneShotDelay;
 }
-// PC 0x006222A0 GOG 0x00622270
-inline unsigned long CExoSoundSourceInternal::GetDelayStart()
-{
-    return m_nDelayStart;
-}
-// PC 0x006222C0 GOG 0x00622290
-inline unsigned char CExoSoundSourceInternal::GetVolume()
-{
-    return m_nVolume;
-}
-
-#ifndef _XBOX
-inline unsigned long CExoStreamingSoundSourceInternal::GetFadeStartTime()  // PC 0x00424960 GOG 0x00424A70
-{
-    return m_nFadeStartTime;
-}
-#endif
 
 #ifndef _XBOX
 void CExoSoundInternal::SetListenerOrientation(const Vector& vOrientation,  // PC 0x00622160 GOG 0x00622130
@@ -121,6 +104,23 @@ void CExoSoundInternal::SetListenerPosition(const Vector& vPosition)  // PC 0x00
             }
         }
     }
+}
+#endif
+// PC 0x006222A0 GOG 0x00622270
+inline unsigned long CExoSoundSourceInternal::GetDelayStart()
+{
+    return m_nDelayStart;
+}
+// PC 0x006222C0 GOG 0x00622290
+inline unsigned char CExoSoundSourceInternal::GetVolume()
+{
+    return m_nVolume;
+}
+
+#ifndef _XBOX
+inline unsigned long CExoStreamingSoundSourceInternal::GetFadeStartTime()  // PC 0x00424960 GOG 0x00424A70
+{
+    return m_nFadeStartTime;
 }
 #endif
 // PC 0x006222D0 GOG 0x006222A0

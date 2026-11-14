@@ -142,6 +142,38 @@ void CSWGuiPanel::HandleInputEvent(int nEvent, int nState)
         m_pActiveControl->HandleInputEvent(nEvent, nState);
     }
 }
+// PC 0x0040A180 GOG 0x0040A150
+CExoString CSWGuiPanel::GetFullScreenBG()
+{
+    CExoString sBackground = "800x600";
+
+    if (g_nScreenWidth == 1024)
+    {
+        if (g_nScreenHeight == 768)
+        {
+            sBackground = "1024x768";
+        }
+    }
+    else if (g_nScreenWidth == 1280)
+    {
+        if (g_nScreenHeight == 960 || g_nScreenHeight == 1024)
+        {
+            sBackground = "1280x960";
+        }
+    }
+    else if (g_nScreenWidth == 1600)
+    {
+        if (g_nScreenHeight == 1200)
+        {
+            sBackground = "1600x1200";
+        }
+    }
+
+#ifndef _XBOX
+    sBackground = sBackground + CSWGuiManager::FULLSCREEN_BGS[m_nBackground];
+#endif
+    return sBackground;
+}
 // PC 0x0040BE30 GOG 0x0040BDF0
 CSWGuiManager::CSWGuiManager()
     : m_lPanels(0),
@@ -657,38 +689,6 @@ void CSWGuiPanel::ConnectControlMoves()
             }
         }
     }
-}
-// PC 0x0040A180 GOG 0x0040A150
-CExoString CSWGuiPanel::GetFullScreenBG()
-{
-    CExoString sBackground = "800x600";
-
-    if (g_nScreenWidth == 1024)
-    {
-        if (g_nScreenHeight == 768)
-        {
-            sBackground = "1024x768";
-        }
-    }
-    else if (g_nScreenWidth == 1280)
-    {
-        if (g_nScreenHeight == 960 || g_nScreenHeight == 1024)
-        {
-            sBackground = "1280x960";
-        }
-    }
-    else if (g_nScreenWidth == 1600)
-    {
-        if (g_nScreenHeight == 1200)
-        {
-            sBackground = "1600x1200";
-        }
-    }
-
-#ifndef _XBOX
-    sBackground = sBackground + CSWGuiManager::FULLSCREEN_BGS[m_nBackground];
-#endif
-    return sBackground;
 }
 // PC 0x0040AC00 GOG 0x0040ABD0
 void CSWGuiPanel::ResetFont()
