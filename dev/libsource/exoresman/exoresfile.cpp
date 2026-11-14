@@ -8,7 +8,6 @@
 static inline void ExoresfileTrace2();
 static inline void ExoresfileTrace1();
 static inline int GetListCount(const CExoArrayList<CExoString>* pList);
-#define EXORESFILE_TRACE() ExoresfileTrace1()
 
 unsigned long CExoKeyTable::m_nCRC32[256];
 // PC 0x0040E420 GOG 0x0040DEE0
@@ -1346,7 +1345,6 @@ CExoEncapsulatedFile::~CExoEncapsulatedFile()
 
 CExoResourceImageFile::CExoResourceImageFile()
 {
-    ExoresfileTrace2();
     m_pFile = NULL;
     m_nResourceType = 0;
     m_nFileSize = 0;

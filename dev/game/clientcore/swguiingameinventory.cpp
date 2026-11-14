@@ -151,9 +151,6 @@ void CSWGuiInGameInventory::SquadFullHealth(CSWGuiControl* pControl)
 
 #include "nwccreature.h"
 
-static inline void SwguiingameinventorySync3();
-static inline void SwguiingameinventorySync2();
-static inline void SwguiingameinventorySync1();
 
 
 // PC 0x00738F10 GOG 0x00738C70
@@ -769,7 +766,6 @@ void CSWGuiInGameInventory::PopulateItemListBox()
 // PC 0x0073AA70 GOG 0x0073A7D0
 void CSWGuiInGameInventory::Draw(float fElapsed)
 {
-    SwguiingameinventorySync3();
     if (m_bUpdateItems)
     {
         PopulateItemListBox();
@@ -808,7 +804,6 @@ void CSWGuiInGameInventory::Draw(float fElapsed)
 // PC 0x0073ABB0 GOG 0x0073A910
 void CSWGuiInGameInventory::OnPanelAdded()
 {
-    SwguiingameinventorySync3();
     PopulateItemListBox();
     m_btnExit.HandleMouseOver(0);
 #ifndef _XBOX
@@ -818,19 +813,6 @@ void CSWGuiInGameInventory::OnPanelAdded()
                                                        OBJECT_INVALID, 0);
 }
 
-static inline void SwguiingameinventorySync3()
-{
-    SwguiingameinventorySync2();
-}
-
-static inline void SwguiingameinventorySync2()
-{
-    SwguiingameinventorySync1();
-}
-
-static inline void SwguiingameinventorySync1()
-{
-}
 #endif
 
 #ifdef _XBOX

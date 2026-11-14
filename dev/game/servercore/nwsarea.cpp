@@ -3654,7 +3654,6 @@ int CSWSArea::NoNonWalkPolysInDoors(
 // PC 0x004E95C0 GOG 0x004E9690
 int CSWSArea::AddObjectToArea(unsigned long oidObject, int bLoadingGame)
 {
-    NwsareaSync4();
     CGameObjectArray* pObjectArray =
         g_pAppManager->m_pServerExoApp->GetObjectArray();
     CGameObject* pGameObject;

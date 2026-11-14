@@ -75,8 +75,6 @@
 
 
 
-static inline CClientExoApp* ClientExoAppLate2(CAppManager* p);
-static inline CClientExoApp* ClientExoAppLate1(CAppManager* p);
 
 
 CSWGuiPanel* g_pDynamicGUI = 0;
@@ -172,15 +170,7 @@ const char* ShowGUI(char* sCommand)
 }
 #endif
 
-static inline CClientExoApp* ClientExoAppLate2(CAppManager* p)
-{
-    return ClientExoAppLate1(p);
-}
 
-static inline CClientExoApp* ClientExoAppLate1(CAppManager* p)
-{
-    return p->m_pClientExoApp;
-}
 
 // PC 0x0067CAE0 GOG 0x0067C8B0
 void CSWGuiStatusSummary::AddExperience(int nExperience)
@@ -5928,13 +5918,13 @@ int CGuiInGame::Initialize()
     {
         if (m_pGuiManager == 0)
         {
-            m_pGuiManager = ClientExoAppLate2(g_pAppManager)->GetSWGuiManager();
+            m_pGuiManager = g_pAppManager->GetClientExoApp()->GetSWGuiManager();
         }
         m_pItemCreateMenu = new CSWGuiCreateItemMenu(m_pGuiManager);
         m_pLoadModuleDebugMenu = new CSWGuiLoadModuleDebugMenu(m_pGuiManager);
         m_pPowersFeatsSkillsDebugMenu = new CSWGuiPowersFeatsSkillsDebugMenu(m_pGuiManager);
 
-        CClientExoApp* pClient = ClientExoAppLate2(g_pAppManager);
+        CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
         pClient->SetLoadBarProgress((int)(pClient->GetLoadStep(1) +
             (pClient->GetLoadStep(0) + pClient->GetLoadStep(3) * 0.2f)), 1);
         UpdateScreen(1.0f / 30.0f, 0, 0);
@@ -5961,7 +5951,7 @@ int CGuiInGame::Initialize()
         if (m_pControllerLossBox == 0)
             m_pControllerLossBox = new CSWGuiControllerLossBox(m_pGuiManager);
 
-        pClient = ClientExoAppLate2(g_pAppManager);
+        pClient = g_pAppManager->GetClientExoApp();
         pClient->SetLoadBarProgress((int)(pClient->GetLoadStep(1) +
             (pClient->GetLoadStep(0) + pClient->GetLoadStep(3) * 0.4f)), 1);
         UpdateScreen(1.0f / 30.0f, 0, 0);
@@ -5989,7 +5979,7 @@ int CGuiInGame::Initialize()
             m_apScreenPanels[SCREEN_INVENTORY] = new CSWGuiInGameInventory(m_pGuiManager);
         }
 
-        pClient = ClientExoAppLate2(g_pAppManager);
+        pClient = g_pAppManager->GetClientExoApp();
         pClient->SetLoadBarProgress((int)(pClient->GetLoadStep(0) +
             (pClient->GetLoadStep(1) + pClient->GetLoadStep(3) * 0.6f)), 1);
         UpdateScreen(1.0f / 30.0f, 0, 0);
@@ -6005,7 +5995,7 @@ int CGuiInGame::Initialize()
         }
         m_pMainInterface = new CSWGuiMainInterface(m_pGuiManager);
 
-        pClient = ClientExoAppLate2(g_pAppManager);
+        pClient = g_pAppManager->GetClientExoApp();
         pClient->SetLoadBarProgress((int)(pClient->GetLoadStep(1) +
             (pClient->GetLoadStep(0) + pClient->GetLoadStep(3) * 0.8f)), 1);
         UpdateScreen(1.0f / 30.0f, 0, 0);
@@ -6020,10 +6010,10 @@ int CGuiInGame::Initialize()
             m_pGalaxyMap = new CSWGuiInGameGalaxyMap(m_pGuiManager);
         }
 
-        ClientExoAppLate2(g_pAppManager)->SetLoadBarProgress((int)(
-            (float)ClientExoAppLate2(g_pAppManager)->GetLoadStep(3) +
-            (float)ClientExoAppLate2(g_pAppManager)->GetLoadStep(1) +
-            (float)ClientExoAppLate2(g_pAppManager)->GetLoadStep(0)), 1);
+        g_pAppManager->GetClientExoApp()->SetLoadBarProgress((int)(
+            (float)g_pAppManager->GetClientExoApp()->GetLoadStep(3) +
+            (float)g_pAppManager->GetClientExoApp()->GetLoadStep(1) +
+            (float)g_pAppManager->GetClientExoApp()->GetLoadStep(0)), 1);
         UpdateScreen(1.0f / 30.0f, 0, 0);
         m_pDialog = m_pCameraDialog;
         m_bItemCreateMenuAvailable = 1;
