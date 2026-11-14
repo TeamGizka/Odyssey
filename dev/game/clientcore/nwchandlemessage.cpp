@@ -4632,6 +4632,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
     Vector vPosition;
     Vector vOrientation;
     unsigned short nAnimation = 0;
+    unsigned short nWayPointCount = 0;
     int bCustomSpeed = 0;
     unsigned long oidPlayer;
     float fSpeed = 1.0f;
@@ -4652,7 +4653,6 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
     unsigned long nSpellFlags;
     unsigned long oidSpellTarget;
     unsigned char nSpellTargetType;
-    unsigned short nWayPointCount;
 
     CSWCCreature* pCreature =
         g_pAppManager->GetClientExoApp()->GetCreatureByGameObjectID(oidObject);
