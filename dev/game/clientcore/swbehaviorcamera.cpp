@@ -515,9 +515,10 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // PC 0x0
     this->m_fOrientationInterpAmount = 0.0f;
     this->m_bPreserveLastYaw = 1;
     vCameraPos = static_cast<Gob*>(m_pTarget.m_pObject)->GetPosition();
-    fMouseSenSetting = g_pAppManager->m_pClientExoApp->GetClientOptions()->GetMouseSenSetting();
+    fMouseSenSetting = g_pAppManager->GetClientExoApp()->GetClientOptions()->GetMouseSenSetting();
     Quaternion qResult = qOrientation;
-    if (this->m_fTurn == 0.0f && this->m_fTurnAcceleration == 0.0f)
+    float fCurTurn = this->m_fTurn;
+    if (fCurTurn == 0.0f && this->m_fTurnAcceleration == 0.0f)
     {
       if (this->m_oidLookAt != OBJECT_INVALID)
       {
@@ -549,7 +550,7 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // PC 0x0
         m_oidLookAt = OBJECT_INVALID;
     }
 
-    g_pAppManager->m_pClientExoApp->GetSWGuiManager();
+    g_pAppManager->GetClientExoApp()->GetSWGuiManager();
     int bToggle = g_bMouseCameraRotateToggle;
     if (g_pAppManager->m_pClientExoApp->GetClientOptions()->m_bMouseLook)
     {
@@ -592,18 +593,18 @@ Quaternion CSWCameraOnAStick::Control_UpdateCameraDesiredOrientation(  // PC 0x0
     }
 
     float fTurn = pow(1.0f, fBorderScaleExponent) * m_fTurn;
-    if (0.0f == m_fTurn && bToggle == 0)
+    if (0.0f != m_fTurn || bToggle != 0)
+    {
+        Vector vTurn(0.0f, fTurn / fMouseSenSetting, 0.0f);
+        m_integrator.Update(vTurn, fTimeStep, 1, 0, 0, 0);
+        m_fTurnAcceleration = 0.0f;
+    }
+    else
     {
         Vector vTurn(0.0f, m_fTurnAcceleration, 0.0f);
         fTurn = m_integrator.Update(vTurn, fTimeStep, 1, 0, 0, 0).m_vRate.m_fY;
         bTurnPositive = fTurn > 0.0f;
         bTurnNegative = fTurn < 0.0f;
-    }
-    else
-    {
-        Vector vTurn(0.0f, fTurn / fMouseSenSetting, 0.0f);
-        m_integrator.Update(vTurn, fTimeStep, 1, 0, 0, 0);
-        m_fTurnAcceleration = 0.0f;
     }
     if (bTurnNegative)
     {
