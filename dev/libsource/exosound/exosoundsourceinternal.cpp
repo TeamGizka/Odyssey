@@ -6,12 +6,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-static inline void ExosoundsourceinternalTrace2();
-static inline void ExosoundsourceinternalTrace1();
-#define EXOSOUNDSOURCEINTERNAL_TRACE() ExosoundsourceinternalTrace2()
-
-static inline void ExoSoundSourceTrace();
-#define EXOSOUNDSOURCE_TRACE() ExoSoundSourceTrace()
+#define EXOSOUNDSOURCE_DEBUG 0
 
 // PC 0x00626D80 GOG 0x00626D20
 int CExoSoundSourceInternal::Demand()
@@ -406,7 +401,10 @@ int CExoSoundSourceInternal::IsPlaying()
 #else
 int CExoSoundSourceInternal::IsPlaying()  // PC 0x00627070 GOG 0x00627010
 {
-    EXOSOUNDSOURCE_TRACE();
+    if (EXOSOUNDSOURCE_DEBUG)
+    {
+        int bInRange = GetWithinRangeOfListener();
+    }
     if (m_pSound->m_bInitialized != 0)
     {
         if (m_p3DVoice != 0 && m_p3DVoice->m_hSample != 0)
@@ -424,7 +422,10 @@ int CExoSoundSourceInternal::IsPlaying()  // PC 0x00627070 GOG 0x00627010
 // PC 0x006270C0 GOG 0x00627060
 void CExoSoundSourceInternal::SetLooping(int bLooping)
 {
-    EXOSOUNDSOURCE_TRACE();
+    if (EXOSOUNDSOURCE_DEBUG)
+    {
+        int bPlaying = IsPlaying();
+    }
     if (m_nListType == LIST_NONE)
     {
         m_bLooping = bLooping;
@@ -604,7 +605,10 @@ void CExoSoundSourceInternal::ShutDownSource(bool bForce)
 #else
 void CExoSoundSourceInternal::ShutDownSource(bool bForce)  // PC 0x00627150 GOG 0x006270F0
 {
-    EXOSOUNDSOURCE_TRACE();
+    if (EXOSOUNDSOURCE_DEBUG)
+    {
+        int bPlaying = IsPlaying();
+    }
     if (m_nListType == 1)
     {
         m_pSound->RemoveFromPlayingList(this);
@@ -683,7 +687,10 @@ void CExoSoundSourceInternal::SetPosition(const Vector& vPosition)  // PC 0x0062
 // PC 0x00627260 GOG 0x00627200
 void CExoSoundSourceInternal::Set3D(int b3D)
 {
-    EXOSOUNDSOURCE_TRACE();
+    if (EXOSOUNDSOURCE_DEBUG)
+    {
+        int bPlaying = IsPlaying();
+    }
     if (m_nListType != 1 && m_p3DVoice == 0 && m_p2DVoice == 0)
     {
         m_b3D = b3D;
@@ -764,7 +771,10 @@ int CExoSoundSourceInternal::IsPaused()
 #endif
 void CExoSoundSourceInternal::SetOneShotDelay(unsigned long nDelay)  // PC 0x00627300 GOG 0x006272A0
 {
-    EXOSOUNDSOURCE_TRACE();
+    if (EXOSOUNDSOURCE_DEBUG)
+    {
+        int bPlaying = IsPlaying();
+    }
     if (m_pSound->m_bInitialized != 0)
     {
         m_nOneShotDelay = nDelay;
@@ -776,7 +786,10 @@ void CExoSoundSourceInternal::SetOneShotDelay(unsigned long nDelay)  // PC 0x006
 #ifndef _XBOX
 void CExoSoundSourceInternal::StoreRestartSoundPosition()  // PC 0x00627340 GOG 0x006272E0
 {
-    EXOSOUNDSOURCE_TRACE();
+    if (EXOSOUNDSOURCE_DEBUG)
+    {
+        int bPlaying = IsPlaying();
+    }
     if (m_pSound->m_bInitialized != 0)
     {
         if (m_b3D != 0)
@@ -1054,7 +1067,10 @@ void CExoSoundSourceInternal::SetVolume(unsigned char nVolume, int nSliderMode,
 void CExoSoundSourceInternal::SetVolume(unsigned char nVolume, int nSliderMode,  // PC 0x00627840 GOG 0x006277E0
                                         float fScale)
 {
-    EXOSOUNDSOURCEINTERNAL_TRACE();
+    if (EXOSOUNDSOURCE_DEBUG)
+    {
+        CalculatePitchVarianceFrequency();
+    }
     int nMode = nSliderMode;
     int nSliderType = m_pSound->GetSliderType(this);
     if (nSliderMode == 0)
@@ -1275,7 +1291,10 @@ void CExoSoundSourceInternal::SetPitchVariance(float fVariance)  // PC 0x00627A8
 // PC 0x00627390 GOG 0x00627330
 void CExoSoundSourceInternal::CalculatePitchVarianceFrequency()
 {
-    EXOSOUNDSOURCE_TRACE();
+    if (EXOSOUNDSOURCE_DEBUG)
+    {
+        int bPlaying = IsPlaying();
+    }
     if (rand() % 2 != 0)
     {
         float fVariance = m_fPitchVariance;
@@ -1305,21 +1324,11 @@ void CExoSoundSourceInternal::CalculateFixedVarianceFrequency()
 #else
 void CExoSoundSourceInternal::CalculateFixedVarianceFrequency()  // PC 0x00627410 GOG 0x006273B0
 {
-    EXOSOUNDSOURCE_TRACE();
+    if (EXOSOUNDSOURCE_DEBUG)
+    {
+        int bPlaying = IsPlaying();
+    }
     double dVariance = m_fFixedVariance;
     m_nFixedRate = (unsigned long)(dVariance * (float)m_nSampleRate);
 }
 #endif
-
-static inline void ExoSoundSourceTrace()
-{
-}
-
-static inline void ExosoundsourceinternalTrace2()
-{
-    ExosoundsourceinternalTrace1();
-}
-
-static inline void ExosoundsourceinternalTrace1()
-{
-}

@@ -10,9 +10,10 @@ void AurTextureRelease(CAurTexture* pTexture);
 #include "aurgrass.h"
 #include "aurora.h"
 
+#define AURGRASS_DEBUG 0
+
 static inline void AurgrassTrace2();
 static inline void AurgrassTrace1();
-#define AURGRASS_TRACE() AurgrassTrace2()
 
 float CAurTriangleBin::m_fNearRadiusSquared = 225.0f;
 float CAurTriangleBin::m_fFarRadiusSquared = 900.0f;
@@ -127,7 +128,6 @@ int newstuff = 0;
 void CAurTriangleBin::RenderGrassPolys(int nGrassInfo, const Vector& vPosition,
                                       WindManager* pWindManager)
 {
-    AurgrassTrace2();
 #ifndef _XBOX
     if (!AurNV1xLevelShadersAvailable() && !AurMultiTextureAvailable())
         return;
@@ -335,6 +335,8 @@ void CAurTriangleBin::RenderGrassPolys(int nGrassInfo, const Vector& vPosition,
     }
     countfaces += m_nTriangles;
 #endif
+    if (AURGRASS_DEBUG)
+        m_lstTextureIndices.Add(nGrassInfo);
 }
 // PC 0x004D3AA0 GOG 0x004D3BE0
 CAurTriangleListElem::CAurTriangleListElem()

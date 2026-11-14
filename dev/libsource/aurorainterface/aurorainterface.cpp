@@ -9,9 +9,12 @@
 #include <string.h>
 
 #define VIDEO_MAX_REFRESH_RATE 85.0f
+#define AURORAINTERFACE_DEBUG 0
 
-static inline void AuroraInterfaceTrace();
-#define AURORAINTERFACE_TRACE() AuroraInterfaceTrace()
+namespace RenderInterface
+{
+inline bool IsResident(char* szName);
+}
 
 extern int AurTextureSetDim(int, int);
 
@@ -614,7 +617,10 @@ unsigned char* CAuroraInterface::GetCompressedRaster(char* szName, int* pnWidth,
                                           int* pnHeight, int* pnBpp,
                                           int* pnSize, float* pfAlpha)
 {
-    AURORAINTERFACE_TRACE();
+    if (AURORAINTERFACE_DEBUG)
+    {
+        bool bResident = RenderInterface::IsResident(szName);
+    }
     CAuroraCompressedTexture* pTexture;
     unsigned char nBitsPerPixel;
     int nWidth;
@@ -651,7 +657,10 @@ unsigned char* CAuroraInterface::GetProcessedRaster(char* szName, int* pnWidth,
                                          int* pnMips, float* pfAlpha,
                                          char* pnFormat)
 {
-    AURORAINTERFACE_TRACE();
+    if (AURORAINTERFACE_DEBUG)
+    {
+        bool bResident = RenderInterface::IsResident(szName);
+    }
     CAuroraProcessedTexture* pTexture;
     if (GetHighestPriorityTextureFormat(szName, 1, 1, 1, 1) !=
         RESTYPE_TPC)
@@ -693,7 +702,10 @@ CAuroraInterface::CAuroraInterface()
 unsigned char* CAuroraInterface::Get16BitRaster(char* szName, int* pnWidth, int* pnHeight,
                                      float* pfAlpha, int* pnFormat)
 {
-    AURORAINTERFACE_TRACE();
+    if (AURORAINTERFACE_DEBUG)
+    {
+        bool bResident = RenderInterface::IsResident(szName);
+    }
     CAurora16BitTexture* pTexture;
     int nWidth;
     int nHeight;
@@ -725,7 +737,10 @@ unsigned char* CAuroraInterface::Get16BitRaster(char* szName, int* pnWidth, int*
 int CAuroraInterface::SetTexturePack(unsigned char nPack,
                                      const CExoString& sName)
 {
-    AURORAINTERFACE_TRACE();
+    if (AURORAINTERFACE_DEBUG)
+    {
+        bool bResident = RenderInterface::IsResident(sName.CStr());
+    }
     int bSameTexturePack;
 
     if (nPack >= 4)
@@ -771,6 +786,12 @@ void CAuroraInterface::RequestModel(char* szName)
     }
 }
 
+// PC 0x007811B0 GOG 0x00780F80
+int CAuroraInterface::IsResident(char* szName)
+{
+    return RenderInterface::IsResident(szName);
+}
+
 namespace RenderInterface
 {
 inline bool IsResident(char* szName)
@@ -779,14 +800,4 @@ inline bool IsResident(char* szName)
                ? (unsigned char)(BinaryFindModel(szName) != NULL)
                : (unsigned char)false;
 }
-}
-// PC 0x007811B0 GOG 0x00780F80
-int CAuroraInterface::IsResident(char* szName)
-{
-    AURORAINTERFACE_TRACE();
-    return RenderInterface::IsResident(szName);
-}
-
-static inline void AuroraInterfaceTrace()
-{
 }

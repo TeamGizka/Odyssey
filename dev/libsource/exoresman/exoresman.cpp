@@ -10,12 +10,13 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#define EXORESMAN_DEBUG 0
+
 char CResRef::RETURN_BUFFERS[4][17];
 
 int g_nResRefUnused = 0;
 int CResRef::s_nCurBufferIndex = 0;
 
-static inline void ExoresmanTrace1();
 // PC 0x00405F70 GOG 0x00405F40
 CResRef::CResRef()
 {
@@ -3262,7 +3263,10 @@ CExoString CExoResMan::CacheResource(const CExoString& sFileName,
 
 int CResRef::operator!=(const CExoString& sString) const
 {
-    ExoresmanTrace1();
+    if (EXORESMAN_DEBUG)
+    {
+        CResRef cResRef(sString);
+    }
     sString.IsEmpty();
 
     const char* pString = sString.CStr();
@@ -3287,10 +3291,6 @@ CExoString CExoResMan::CacheResource(const CExoString& sFileName,  // PC 0x00406
 int CRes::Request()
 {
     return g_pExoResMan->Request(this);
-}
-
-static inline void ExoresmanTrace1()
-{
 }
 
 #ifdef _XBOX
@@ -3537,4 +3537,3 @@ void CExoResMan::AsyncLoad()
     pCriticalSection->LeaveCriticalSection();
 }
 #endif
-

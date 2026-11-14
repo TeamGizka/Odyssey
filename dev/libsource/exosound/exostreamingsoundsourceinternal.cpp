@@ -12,7 +12,6 @@
 
 extern bool g_bVODebugEnabled;
 
-static inline void ExostreamingsoundsourceinternalTrace1();
 // PC 0x004015A0 GOG 0x004015A0
 void CExoStreamingSoundSourceInternal::DoObstructionWork()
 {
@@ -84,7 +83,7 @@ CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(
 // PC 0x00627D20 GOG 0x00627CC0
 CExoStreamingSoundSourceInternal::~CExoStreamingSoundSourceInternal()
 {
-    ExostreamingsoundsourceinternalTrace1();
+    EXOLOG("VO stream destroyed");
     int bPlaying;
     CExoSoundInternal* pSound;
 
@@ -340,7 +339,7 @@ int CExoStreamingSoundSourceInternal::IsPlaying()
 // PC 0x00628550 GOG 0x006283A0
 int CExoStreamingSoundSourceInternal::IsDone()
 {
-    ExostreamingsoundsourceinternalTrace1();
+    EXOLOG("VO stream done check");
     if (m_pSoundInternal->m_bInitialized != 0 && m_hStream != NULL)
     {
         return AIL_stream_status(m_hStream) - SMP_DONE == 0;
@@ -374,7 +373,7 @@ int CExoStreamingSoundSourceInternal::IsScalable()
 // PC 0x006285B0 GOG 0x00628420
 void CExoStreamingSoundSourceInternal::Stop(int bCloseStream)
 {
-    ExostreamingsoundsourceinternalTrace1();
+    EXOLOG("VO stream stop, close %d", bCloseStream);
     CExoSoundInternal* pSound;
 
     if (m_hStream != NULL)
@@ -747,8 +746,4 @@ void CExoStreamingSoundSourceInternal::Resume()
             m_nPausePosition = 0;
         }
     }
-}
-
-static inline void ExostreamingsoundsourceinternalTrace1()
-{
 }

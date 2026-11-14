@@ -12,8 +12,7 @@
 #include "aurrendergl.h"
 #include "swmain.h"
 
-static inline void AurcameraTrace1();
-#define AURCAMERA_TRACE() AurcameraTrace1()
+#define AURCAMERA_DEBUG 0
 
 Camera* CurrentCamera = 0;
 
@@ -194,7 +193,10 @@ inline CAurCamera::~CAurCamera()
 inline void GLRender::SetViewPort(double fFieldOfView, double fAspect,
                            double fNearClip, double fFarClip)
 {
-    AURCAMERA_TRACE();
+    if (AURCAMERA_DEBUG)
+    {
+        GLRender::SetViewPort(0, 0, 0, 0);
+    }
     GLRender_SetPerspectiveTransform(fFieldOfView, fAspect, fNearClip, fFarClip);
 }
 // PC 0x00473530 GOG 0x004736C0
@@ -407,7 +409,10 @@ int Camera::HitCheck(int nX, int nY, Vector* pHit, CHitInfo* pInfo)
 // PC 0x004729E0 GOG 0x00472B70
 Vector Camera::MouseDir(int nX, int nY)
 {
-    AurcameraTrace1();
+    if (AURCAMERA_DEBUG)
+    {
+        Camera::HitCheck(nX, nY, NULL, NULL);
+    }
     GLint aViewport[4];
     for (int i = 0; i < 4; ++i)
     {
@@ -466,7 +471,10 @@ Vector Camera::MapToScreen(Vector vPoint, bool bNormalize)
 // PC 0x00472F20 GOG 0x004730B0
 void Camera::Animate(float fTimeStep)
 {
-    AurcameraTrace1();
+    if (AURCAMERA_DEBUG)
+    {
+        Vector vDirection = Camera::MouseDir(0, 0);
+    }
     if (m_pViewAngleAnimation != 0)
     {
         m_pViewAngleAnimation->m_fElapsed =
@@ -640,10 +648,6 @@ Plane Camera::GetViewVolume(int nIndex)
 CAurCamera* NewCAurCamera(char* sName)
 {
     return new Camera(sName);
-}
-
-static inline void AurcameraTrace1()
-{
 }
 
 #ifdef _XBOX

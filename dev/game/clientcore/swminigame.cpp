@@ -26,9 +26,9 @@
 #include "nwsscriptevent.h"
 #include "serveraimaster.h"
 
-int SceneHitCheck(CAurScene* pScene, Vector vStart, Vector vEnd, Vector* pHit, CHitInfo* pHitInfo);
+#define SWMINIGAME_DEBUG 0
 
-static inline void SwminigameTrace1();
+int SceneHitCheck(CAurScene* pScene, Vector vStart, Vector vEnd, Vector* pHit, CHitInfo* pHitInfo);
 
 inline void SwminigameContainerAllocates(CExoArrayList<unsigned long>* pIds,
                                          CExoArrayList<SWMGTrackInfo*>* pTracks,
@@ -45,7 +45,6 @@ inline void SwminigameContainerAllocates(CExoArrayList<unsigned long>* pIds,
     pPointers->allocate(1);
 }
 
-#define SWMINIGAME_TRACE() SwminigameTrace1()
 // PC 0x006C55D0 GOG 0x006C52E0
 inline void CSWMiniGame::AxisVelocity(const Vector& vAxis, float fScale)
 {
@@ -481,7 +480,10 @@ CSWMGObstacle* CSWMiniGame::GetObstacle(int nIndex)
 // PC 0x006C6310 GOG 0x006C6020
 CAurCamera* CSWMiniGame::SetCamera(CAurCamera* pCamera)
 {
-    SWMINIGAME_TRACE();
+    if (SWMINIGAME_DEBUG)
+    {
+        CSWMGObstacle* pObstacle = GetObstacle(0);
+    }
     m_pCam = pCamera;
     if (m_pCam != NULL && m_pPlayer != NULL && m_pPlayer->m_pTrack != NULL)
     {
@@ -627,7 +629,10 @@ CSWMiniPlayer* CSWMiniGame::SetPlayer(CExoArrayList<CResRef>& lstModels,
 // PC 0x006C6860 GOG 0x006C6570
 int CSWMiniGame::SetMouseAxisX(int nAxis)
 {
-    SWMINIGAME_TRACE();
+    if (SWMINIGAME_DEBUG)
+    {
+        SetCamera(m_pCam);
+    }
     if (nAxis >= 0 && nAxis <= 3)
     {
         m_nMouseAxisX = nAxis;
@@ -637,7 +642,10 @@ int CSWMiniGame::SetMouseAxisX(int nAxis)
 // PC 0x006C6880 GOG 0x006C6590
 int CSWMiniGame::SetMouseAxisY(int nAxis)
 {
-    SWMINIGAME_TRACE();
+    if (SWMINIGAME_DEBUG)
+    {
+        SetCamera(m_pCam);
+    }
     if (nAxis >= 0 && nAxis <= 3)
     {
         m_nMouseAxisY = nAxis;
@@ -1369,10 +1377,6 @@ int CSWMiniGame::ClearObstacles()
     }
     m_lstObstacleIds.SetSize(0);
     return nOldCount;
-}
-
-static inline void SwminigameTrace1()
-{
 }
 
 #ifdef _XBOX

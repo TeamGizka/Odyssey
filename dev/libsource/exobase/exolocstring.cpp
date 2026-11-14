@@ -3,8 +3,7 @@
 #include "exotlktable.h"
 #include "clientexoappinternal.h"
 
-static inline void ExolocstringTrace1();
-#define EXOLOCSTRING_TRACE() ExolocstringTrace1()
+#define EXOLOCSTRING_DEBUG 0
 
 const float CExoLocString::TIME_PER_CHARACTER_SPOKEN = 0.11f;
 // PC 0x006316D0 GOG 0x006315C0
@@ -51,7 +50,10 @@ int CExoLocString::GetStringLength(unsigned long nIndex) const
 // PC 0x006317D0 GOG 0x006316C0
 int CExoLocString::Compare(const CExoLocString& lsString) const
 {
-    EXOLOCSTRING_TRACE();
+    if (EXOLOCSTRING_DEBUG)
+    {
+        GetStringInternal(0, NULL);
+    }
     if (m_pExoLocStringInternal->m_bFetched &&
         lsString.m_pExoLocStringInternal->m_bFetched)
     {
@@ -79,12 +81,15 @@ int CExoLocString::Compare(const CExoLocString& lsString) const
 // PC 0x00631840 GOG 0x00631730
 CExoLocString::CExoLocString(const CExoLocString& lsString)
 {
-    EXOLOCSTRING_TRACE();
     m_pExoLocStringInternal = new CExoLocStringInternal();
     if (this != &lsString)
     {
         m_pExoLocStringInternal->Assign(lsString.m_pExoLocStringInternal);
         m_dwStringRef = lsString.m_dwStringRef;
+    }
+    if (EXOLOCSTRING_DEBUG)
+    {
+        Compare(lsString);
     }
 }
 // PC 0x006318C0 GOG 0x006317B0
@@ -224,8 +229,4 @@ int CExoLocString::AddString(int nID, const CExoString& sString,
         return 1;
     }
     return m_pExoLocStringInternal->AddString(nStringID, sString);
-}
-
-static inline void ExolocstringTrace1()
-{
 }

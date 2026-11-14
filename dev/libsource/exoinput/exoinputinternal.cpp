@@ -3,11 +3,6 @@
 #include <limits.h>
 #include "swmain.h"
 
-static inline void ExoinputinternalTrace3();
-static inline void ExoinputinternalTrace2();
-static inline void ExoinputinternalTrace1();
-#define EXOINPUTINTERNAL_TRACE() ExoinputinternalTrace3()
-
 float fMaxMickies = 100.0f;
 
 int g_nDebugBreakMinSeverity = INT_MAX;
@@ -15,6 +10,8 @@ int g_nDebugBreakMinSeverity = INT_MAX;
 const unsigned long KEYBOARD_KEY_DOWN = 0x80;
 
 #include "exoinputinternal.h"
+
+#define EXOINPUTINTERNAL_DEBUG 0
 
 #ifndef _XBOX
 void CExoInputInternal::EndAttemptedBind()  // PC 0x004015A0 GOG 0x004015A0
@@ -1777,7 +1774,11 @@ CExoArrayList<CExoInputEvent> CExoInputInternal::GetEvents(int& nEvents, int nEv
 // PC 0x0062F240 GOG 0x0062F130
 void CExoInputInternal::ClearAllInputEventDescriptions()
 {
-    EXOINPUTINTERNAL_TRACE();
+    if (EXOINPUTINTERNAL_DEBUG)
+    {
+        int nEvents = 0;
+        CExoArrayList<CExoInputEvent> lstEvents = GetEvents(nEvents, 0);
+    }
     for (int nClass = 0; nClass < 6; nClass++)
     {
         for (int nDevice = 0; nDevice < m_nDevices; nDevice++)
@@ -1793,20 +1794,6 @@ void CExoInputInternal::ClearAllInputEventDescriptions()
         }
     }
     m_lstEvents.num = 0;
-}
-
-static inline void ExoinputinternalTrace3()
-{
-    ExoinputinternalTrace2();
-}
-
-static inline void ExoinputinternalTrace2()
-{
-    ExoinputinternalTrace1();
-}
-
-static inline void ExoinputinternalTrace1()
-{
 }
 
 #ifdef _XBOX

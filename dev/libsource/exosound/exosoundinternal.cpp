@@ -9,10 +9,9 @@
 #include "twodimarray.h"
 
 
-static inline void ExoSoundTrace();
-#define EXOSOUND_TRACE() ExoSoundTrace()
 
 #define EXOSOUND_RESERVED_STREAMING_HANDLES 8
+#define EXOSOUND_DEBUG 0
 
 int g_bDisableSound;
 int g_bSoundPaused;
@@ -949,7 +948,10 @@ void CExoSoundInternal::PlaySourceOn3DVoice(CExoSoundSourceInternal* pSource,  /
 void CExoSoundInternal::PlaySourceOn2DVoice(CExoSoundSourceInternal* pSource,  // PC 0x00623160 GOG 0x006230E0
                                             C2DVoice* p2DVoice)
 {
-    EXOSOUND_TRACE();
+    if (EXOSOUND_DEBUG)
+    {
+        int bPlaying = m_lstPlaying.Contains(pSource);
+    }
     int nLoopCount = pSource->m_bLooping == 0;
 
     pSource->m_p2DVoice = p2DVoice;
@@ -2660,10 +2662,6 @@ int CExoSoundInternal::Initialize(unsigned char n2DVoices,  // PC 0x00626790 GOG
     return 0;
 }
 #endif
-
-static inline void ExoSoundTrace()
-{
-}
 
 
 

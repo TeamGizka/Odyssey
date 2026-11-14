@@ -2,8 +2,7 @@
 #include "exoinputinternal.h"
 #include "swmain.h"
 
-static inline void ExoinputTrace1();
-#define EXOINPUT_TRACE() ExoinputTrace1()
+#define EXOINPUT_DEBUG 0
 
 #ifndef _XBOX
 const int CExoInput::INPUTDEVICE_NONE = -1;
@@ -540,7 +539,11 @@ CExoArrayList<CExoInputEvent> CExoInput::GetEvents(int& nEvents, int nEventClass
 #ifndef _XBOX
 unsigned char CExoInput::GetMouseMode()  // PC 0x0062B9F0 GOG 0x0062B8E0
 {
-    EXOINPUT_TRACE();
+    if (EXOINPUT_DEBUG)
+    {
+        int nEvents = 0;
+        CExoArrayList<CExoInputEvent> lstEvents = GetEvents(nEvents, 0);
+    }
     return m_pExoInputInternal->m_nMouseMode;
 }
 #endif
@@ -559,17 +562,19 @@ int CExoInput::EventExists(unsigned long nEvent)
 #ifndef _XBOX
 void CExoInput::SetCaptureKeyboardKeys(int bCapture)  // PC 0x0062BA30 GOG 0x0062B920
 {
-    EXOINPUT_TRACE();
+    if (EXOINPUT_DEBUG)
+    {
+        unsigned char nMouseMode = GetMouseMode();
+    }
     m_pExoInputInternal->m_bCaptureKeyboardKeys = bCapture;
 }
 // PC 0x0062BA40 GOG 0x0062B930
 int CExoInput::GetLastSetMouseDownState()
 {
-    EXOINPUT_TRACE();
+    if (EXOINPUT_DEBUG)
+    {
+        unsigned char nMouseMode = GetMouseMode();
+    }
     return m_pExoInputInternal->m_nLastSetMouseDownState;
 }
 #endif
-
-static inline void ExoinputTrace1()
-{
-}

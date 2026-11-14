@@ -10,7 +10,7 @@
 #include "aurlightmanager.h"
 #include "aurrendergl.h"
 
-static inline void AurlightmanagerTrace1();
+#define AURLIGHTMANAGER_DEBUG 0
 
 extern int dynamiclightscount;
 extern int staticlightscount;
@@ -218,7 +218,10 @@ void LightManager::PrioritizeLights(const Vector& vPosition, bool bDynamicOnly)
 // PC 0x004CF770 GOG 0x004CF8B0
 void LightManager::EnableHeadLight()
 {
-    AurlightmanagerTrace1();
+    if (AURLIGHTMANAGER_DEBUG)
+    {
+        LightManager::DebugPrintLightInfo(MAX_ENABLED_LIGHTS, CurrentCamera->m_vPosition);
+    }
     GLRender_SetLightProperties(0, LIGHT_AMBIENT, Homogenize(headlightambient, 1.0f));
     GLRender_SetLightProperties(0, LIGHT_DIFFUSE, Homogenize(headlightdiffuse, 1.0f));
     GLRender_SetLightProperties(0, LIGHT_POSITION, Homogenize(CurrentCamera->m_vPosition, 1.0f));
@@ -227,7 +230,10 @@ void LightManager::EnableHeadLight()
 // PC 0x004CF810 GOG 0x004CF950
 void LightManager::EnableLights()
 {
-    AurlightmanagerTrace1();
+    if (AURLIGHTMANAGER_DEBUG)
+    {
+        LightManager::DebugPrintLightInfo(MAX_ENABLED_LIGHTS, CurrentCamera->m_vPosition);
+    }
     if (enablegetnearestlights == 0)
     {
         if (m_lstEnabledLights.m_nCount > 0)
@@ -1266,10 +1272,6 @@ void LightManager::EnablePhongLights(int nMaxLights, int bSkipBumpMapLights)
             break;
         }
     }
-}
-
-static inline void AurlightmanagerTrace1()
-{
 }
 
 #ifdef _XBOX

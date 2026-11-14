@@ -26,11 +26,12 @@ static inline void AurSceneTrace(CHitInfo* = 0);
 #include "aurrendergl.h"
 #include "aurdraw.h"
 
+#define AURSCENE_DEBUG 0
+
 static inline void AurSceneTrace4();
 static inline void AurSceneTrace3();
 static inline void AurSceneTrace2();
 static inline void AurSceneTrace1();
-#define AURSCENE_TRACE() AurSceneTrace2()
 
 const int Scene::FADING_OFF = 1;
 const int Scene::FADING_ON = 2;
@@ -3099,7 +3100,6 @@ void ComputePartBBox(PartTriMesh* pTriMesh)
 // PC 0x00469B70 GOG 0x00469C30
 void Scene::SetSingleTileFlame(CAurObject* pObject, Gob** ppGob, Part* pPart)
 {
-    AURSCENE_TRACE();
     List<PartLight*> lstLights;
     Gob* pGob = (Gob*)pObject;
     if (*ppGob == pGob)
@@ -3132,6 +3132,10 @@ void Scene::SetSingleTileFlame(CAurObject* pObject, Gob** ppGob, Part* pPart)
             UpdateStaticLighting(this, lstLights.m_pList[i]);
         }
         *ppGob = pGob;
+    }
+    if (AURSCENE_DEBUG)
+    {
+        ListSpecialPartsR(pPart);
     }
 }
 // PC 0x00469CB0 GOG 0x00469D70
