@@ -7696,6 +7696,7 @@ int CSWSCreature::AIActionDrive(CSWSObjectActionNode* pAction)
             vMovement -= vFacing;
             fDistance = GetWalkRate() * 0.0004f;
         }
+        NWSCREATUREAI_DEBUG_MARKER(m_vPosition)
         if (nFlags & DRIVE_TURN_LEFT)
         {
             Quaternion qTurn = YawPitchRoll(30.0f, 0.0f, 0.0f);
