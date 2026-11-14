@@ -3,9 +3,6 @@
 #include <string.h>
 #include "swminigame.h"
 #include "aurscene.h"
-#include "aurdraw.h"
-
-#define RANDOM_COMPONENT() ((float)(rand() - RAND_MAX / 2))
 
 #include "swminigame.h"
 // PC 0x006C8D50 GOG 0x006C8A50
@@ -112,6 +109,7 @@ CSWMGTargettingParameters::CSWMGTargettingParameters()
 void FireGunCallback(CAurObject* pObject, char* sEvent, void* pData)
 {
     CSWMGGunBank* pBank = static_cast<CSWMGGunBank*>(pData);
+    Gob* pGun = static_cast<Gob*>(pObject);
     if (strnicmp(sEvent, "fire", 4) == 0)
     {
         Vector vPosition;
@@ -120,7 +118,7 @@ void FireGunCallback(CAurObject* pObject, char* sEvent, void* pData)
         char sHook[20];
         sscanf(sEvent, "fire%d", &nHook);
         sprintf(sHook, "bullethook%d", nHook);
-        if (static_cast<Gob*>(pObject)->GetPartPosition(sHook, &vPosition, &qOrientation))
+        if (pGun->GetPartPosition(sHook, &vPosition, &qOrientation))
         {
             CResRef resBullet = pBank->m_resBank;
             char sModel[20];
@@ -136,7 +134,7 @@ void FireGunCallback(CAurObject* pObject, char* sEvent, void* pData)
             {
                 CSWMGBehaviorTrackAndFire* pTrack =
                     static_cast<CSWMGBehaviorTrackAndFire*>(
-                        static_cast<Gob*>(pObject)->GetBehavior(AUR_BEHAVIOR_TRACKANDFIRE));
+                        pGun->GetBehavior(AUR_BEHAVIOR_TRACKANDFIRE));
                 if (pTrack == 0)
                 {
                     delete pBullet;
@@ -151,13 +149,14 @@ void FireGunCallback(CAurObject* pObject, char* sEvent, void* pData)
                 if (fSpread > 0.0f)
                 {
                     Vector vAim = vTarget;
-                    Vector vRandom(RANDOM_COMPONENT(), RANDOM_COMPONENT(), RANDOM_COMPONENT());
+                    Vector vRandom((float)(rand() - RAND_MAX / 2),
+                                   (float)(rand() - RAND_MAX / 2),
+                                   (float)(rand() - RAND_MAX / 2));
                     vRandom.Normalize();
                     vRandom *= pTrack->GetSpeed() * fSpread;
                     vTarget = normalize(vAim - vPosition);
-                    vTarget = (vAim + vRandom) - vTarget * (vTarget * vRandom);
+                    vTarget = (vAim + vRandom) - vTarget * float(vTarget * vRandom);
                 }
-                AurDrawLine(vPosition, vPosition + vTarget, 0);
                 vTarget -= vPosition;
                 qOrientation = pointto(vTarget) *
                     Quaternion(Vector(1.0f, 0.0f, 0.0f), HALF_PI);
@@ -172,7 +171,7 @@ void FireGunCallback(CAurObject* pObject, char* sEvent, void* pData)
                                       pBank->m_bullet.m_fSpeed);
                 qOrientation = pPlayer->GetModel(0)->GetOrientation();
             }
-            pBullet->AttachToScene(static_cast<Scene*>(static_cast<Gob*>(pObject)->GetScene()));
+            pBullet->AttachToScene(static_cast<Scene*>(pGun->GetScene()));
             pBullet->SetPosition(vPosition);
             pBullet->SetOrientation(qOrientation);
             pBullet->SetBehavior(new CSWMGBehaviorBullet(pBullet, pBank->GetFollower(),
