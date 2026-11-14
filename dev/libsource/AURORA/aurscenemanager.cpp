@@ -15,6 +15,7 @@
 #include <math.h>
 #include <string.h>
 #include "aurconsole.h"
+#include "aurdraw.h"
 
 static inline void AurscenemanagerTrace3();
 static inline void AurscenemanagerTrace2();
@@ -416,6 +417,7 @@ void LightPartTriMesh(PartTriMesh* pPart, List<PartLight*> lstLights, Scene* pSc
     }
 
     pPart->GetWorld(vPosition, qOrientation);
+    AurDrawLine(vPosition, vPosition, 0);
     unsigned long nColorPool = pPart->m_nColorPool;
     unsigned long* pColors = (unsigned long*)GLRender::LockPool(
         nColorPool, 0, 0, RequestPoolManager::POOL_LOCK_WRITE);
