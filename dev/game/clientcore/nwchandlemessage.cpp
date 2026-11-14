@@ -5005,71 +5005,74 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
             pCreature->m_nUnknown214 = bCustomSpeed || pCreature->m_nUnknown214;
             pCreature->m_fUnknown1FC = fSpeed;
         }
-        Vector vGroundNormal;
-        if (!pCreature->AnimationStationary(nAnimation) && nWayPointCount > 0)
         {
-            if (bAnimation)
+            Vector vGroundNormal;
+            if (!pCreature->AnimationStationary(nAnimation) && nWayPointCount > 0)
             {
-                const unsigned short nReceivedWayPointCount = nWayPointCount;
-                Vector* pWayPoints = new Vector[nReceivedWayPointCount];
-                if (pWayPoints == NULL)
-                    return 0;
-                for (int i = 0; i < nReceivedWayPointCount; ++i)
+                if (bAnimation)
                 {
-                    pWayPoints[i].m_fX = ReadFLOAT(1.0f, 32);
-                    pWayPoints[i].m_fY = ReadFLOAT(1.0f, 32);
-                    pWayPoints[i].m_fZ = ReadFLOAT(1.0f, 32);
-                    if (MessageReadOverflow(1))
+                    const unsigned short nReceivedWayPointCount = nWayPointCount;
+                    Vector* pWayPoints = new Vector[nReceivedWayPointCount];
+                    if (pWayPoints == NULL)
                         return 0;
-                }
-                int bEvaluateWayPoints = 1;
-                Vector* pEnd = pCreature->GetEndWayPoint();
-                if (pEnd != NULL)
-                {
-                    Vector vLast = pWayPoints[nReceivedWayPointCount - 1];
-                    Vector vDifference = *pEnd - vLast;
-                    if (vDifference.m_fY * vDifference.m_fY +
-                        vDifference.m_fX * vDifference.m_fX <= 0.00001f)
+                    for (int i = 0; i < nReceivedWayPointCount; ++i)
                     {
-                        bEvaluateWayPoints = 0;
-                        Vector vDifference2;
-                        vDifference2 = pCreature->m_vPosition - vLast;
-                        if (vDifference2.m_fY * vDifference2.m_fY +
-                            vDifference2.m_fX * vDifference2.m_fX <= 0.00001f)
-                            pCreature->SetAnimation(pCreature->GetLoopingAnimation(), 0, 0);
+                        pWayPoints[i].m_fX = ReadFLOAT(1.0f, 32);
+                        pWayPoints[i].m_fY = ReadFLOAT(1.0f, 32);
+                        pWayPoints[i].m_fZ = ReadFLOAT(1.0f, 32);
+                        if (MessageReadOverflow(1))
+                            return 0;
                     }
+                    int bEvaluateWayPoints = 1;
+                    Vector* pEnd = pCreature->GetEndWayPoint();
+                    if (pEnd != NULL)
+                    {
+                        Vector vLast = pWayPoints[nReceivedWayPointCount - 1];
+                        Vector vDifference;
+                        vDifference = *pEnd - vLast;
+                        if (vDifference.m_fY * vDifference.m_fY +
+                            vDifference.m_fX * vDifference.m_fX <= 0.00001f)
+                        {
+                            bEvaluateWayPoints = 0;
+                            Vector vDifference2;
+                            vDifference2 = pCreature->m_vPosition - vLast;
+                            if (vDifference2.m_fY * vDifference2.m_fY +
+                                vDifference2.m_fX * vDifference2.m_fX <= 0.00001f)
+                                pCreature->SetAnimation(pCreature->GetLoopingAnimation(), 0, 0);
+                        }
+                    }
+                    if (bEvaluateWayPoints)
+                        pCreature->EvaluateNewWayPoints(nReceivedWayPointCount, pWayPoints,
+                                                        nWayPointSequence, vPosition);
+                    delete[] pWayPoints;
                 }
-                if (bEvaluateWayPoints)
-                    pCreature->EvaluateNewWayPoints(nReceivedWayPointCount, pWayPoints,
-                                                    nWayPointSequence, vPosition);
-                delete[] pWayPoints;
+                if (bOrientation && oidLockTarget == CGameObjectArray::INVALIDOBJID)
+                    pCreature->SetLockOrientationToObject(oidLockTarget, 0);
             }
-            if (bOrientation && oidLockTarget == CGameObjectArray::INVALIDOBJID)
-                pCreature->SetLockOrientationToObject(oidLockTarget, 0);
-        }
-        else if (!pCreature->m_nUnknown214 || !nWayPointSequence ||
-                 pCreature->m_nUnknown1EF == nWayPointSequence)
-        {
-            if (pCreature->m_pArea != NULL)
-                pCreature->ComputeZValue(pCreature->m_pArea, &vPosition,
-                                         vPosition.m_fZ, &vGroundNormal);
-            if (bPosition)
+            else if (!pCreature->m_nUnknown214 || !nWayPointSequence ||
+                     pCreature->m_nUnknown1EF == nWayPointSequence)
             {
-                Vector vDifference = pCreature->m_vDesiredPosition - vPosition;
-                if (vDifference * vDifference > 0.00001f)
+                if (pCreature->m_pArea != NULL)
+                    pCreature->ComputeZValue(pCreature->m_pArea, &vPosition,
+                                             vPosition.m_fZ, &vGroundNormal);
+                if (bPosition)
                 {
-                    pCreature->m_vDesiredPosition = vPosition;
-                    pCreature->ResetDesiredPositionTimer();
-                    pCreature->SetGroundNormal(vGroundNormal);
-                }
-                vDifference = pCreature->m_vPosition - vPosition;
-                if (pCreature->m_vPosition * pCreature->m_vPosition <= 0.00001f ||
-                    vDifference * vDifference >= 36.0f)
-                {
-                    pCreature->SetPosition(vPosition);
-                    pCreature->SetGroundNormal(vGroundNormal);
-                    if (bOrientation)
-                        pCreature->SetOrientation(vOrientation);
+                    Vector vDifference = pCreature->m_vDesiredPosition - vPosition;
+                    if (vDifference * vDifference > 0.00001f)
+                    {
+                        pCreature->m_vDesiredPosition = vPosition;
+                        pCreature->ResetDesiredPositionTimer();
+                        pCreature->SetGroundNormal(vGroundNormal);
+                    }
+                    vDifference = pCreature->m_vPosition - vPosition;
+                    if (pCreature->m_vPosition * pCreature->m_vPosition <= 0.00001f ||
+                        vDifference * vDifference >= 36.0f)
+                    {
+                        pCreature->SetPosition(vPosition);
+                        pCreature->SetGroundNormal(vGroundNormal);
+                        if (bOrientation)
+                            pCreature->SetOrientation(vOrientation);
+                    }
                 }
             }
         }
@@ -5578,7 +5581,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
                 {
                     float fScale = 1.0f - (nAlignment - 50) * 0.1f;
                     fBlue = 0.9f;
-                    fRed = fGreen = fScale + (1.0f - fScale) * 0.65f;
+                    fGreen = fRed = fScale + (1.0f - fScale) * 0.65f;
                     fAlpha = fScale * 0.5f;
                 }
                 else
