@@ -3582,20 +3582,7 @@ void PartEmitter::RenderFunc()
                 glLineWidth(2.5f);
                 float fBlend = 0.0f;
                 if (pLightning->m_fControlPointDelay != 0.0f)
-                    fBlend = (pLightning->m_fReservedF8 / pLightning->m_fControlPointDelay);
-                m_fFramesPerSecond = m_fFramesPerSecond;
-                m_fBirthRate = m_fBirthRate;
-                if (AUREMITTER_DEBUG_CONTROL_POINTS)
-                {
-                    glBegin(GL_POINTS);
-                    for (i = 0; i < pLightning->m_lstReserved21C.m_nCount; i++)
-                    {
-                        glVertex3f((1.0f - fBlend) * pLightning->m_lstReserved21C[i].m_fX + fBlend * pLightning->m_lstReserved228[i].m_fX,
-                                   (1.0f - fBlend) * pLightning->m_lstReserved21C[i].m_fY + fBlend * pLightning->m_lstReserved228[i].m_fY,
-                                   (1.0f - fBlend) * pLightning->m_lstReserved21C[i].m_fZ + fBlend * pLightning->m_lstReserved228[i].m_fZ);
-                    }
-                    glEnd();
-                }
+                    fBlend = pLightning->m_fReservedF8 / pLightning->m_fControlPointDelay;
                 glBegin(GL_LINES);
                 glVertex3f((1.0f - fBlend) * pLightning->m_lstReserved21C[0].m_fX +
                                    fBlend * pLightning->m_lstReserved228[0].m_fX,
@@ -3603,7 +3590,7 @@ void PartEmitter::RenderFunc()
                                    fBlend * pLightning->m_lstReserved228[0].m_fY,
                            (1.0f - fBlend) * pLightning->m_lstReserved21C[0].m_fZ +
                                    fBlend * pLightning->m_lstReserved228[0].m_fZ);
-                glVertex3f(((1.0f - fBlend)) * pLightning->m_lstReserved21C[0].m_fX +
+                glVertex3f((1.0f - fBlend) * pLightning->m_lstReserved21C[0].m_fX +
                             fBlend * pLightning->m_lstReserved228[0].m_fX +
                             (1.0f - fBlend) * pLightning->m_lstReserved240[0].m_fX +
                             fBlend * pLightning->m_lstReserved24C[0].m_fX,
@@ -3823,7 +3810,11 @@ void PartEmitter::RenderFunc()
 
             if (AUREMITTER_DEBUG_CONTROL_POINTS)
             {
+                Vector vSource = pLightning->m_lstReserved21C[0];
+                Vector vTarget = m_pTarget->GetPosition();
                 glBegin(GL_POINTS);
+                glVertex3f(vTarget.m_fX, vTarget.m_fY, vTarget.m_fZ);
+                glVertex3f(vSource.m_fX, vSource.m_fY, vSource.m_fZ);
                 for (i = 0; i < pLightning->m_lstReserved21C.m_nCount; i++)
                 {
                     Vector vPoint = pLightning->m_lstReserved21C[i];
