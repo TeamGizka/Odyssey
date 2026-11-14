@@ -3906,6 +3906,8 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_Offset(
     Vector vOffset = pMember->m_vFormationOffset;
     Vector vPathPosition = pPaths->GetPathData(nPathIndex)->m_vPosition;
     Vector vPreviousPosition = pPaths->GetPathData(nPreviousIndex)->m_vPosition;
+    AurDrawLine(vPathPosition + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT),
+        vPreviousPosition + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), 0);
     Vector vInterpolated = vFollowPosition;
     Vector vOffsetPosition = vPathPosition +
         Quaternion(Vector(0.0f, 0.0f, 1.0f), DegToRad(fFacing)) * vOffset;
@@ -3920,6 +3922,7 @@ int CSWSCreature::WalkUpdateLocation_QuickWalk_FollowLeader_Offset(
     vPosition = vInterpolated;
     if (GetArea() != NULL)
         vPosition.m_fZ = GetArea()->ComputeHeight(vPosition, 1, NULL);
+    AurDrawLine(vPosition, vPosition + Vector(0.0f, 0.0f, NWSCREATUREAI_DEBUG_LINE_HEIGHT), 0);
     float fPathLengthSquared =
         (vPreviousPosition - vPathPosition) * (vPreviousPosition - vPathPosition);
     pMember->m_fOffsetScale =
