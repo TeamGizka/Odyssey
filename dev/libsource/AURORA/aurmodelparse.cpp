@@ -2020,7 +2020,8 @@ void MdlNodeTriMesh::InternalParseField(char* sField)
         List<Vector>& lstTextureCoordinates3 = pPostProcess->m_lTextureCoordinates3;
         List<Vector>& lstColors = pPostProcess->m_lColors;
         List<MaxFace_PostProcess>& lstFaces = pPostProcess->m_lFaces;
-        List<MaxFace>& lstNodeFaces = m_lFaces;
+        float& fUVJitter = m_fUVJitter;
+        float& fUVJitterSpeed = m_fUVJitterSpeed;
 
         if (stricmp("verts", firstword(sField)) == 0)
             Parse<Vector>(sField + 5, lstPositions);
@@ -2035,8 +2036,6 @@ void MdlNodeTriMesh::InternalParseField(char* sField)
         {
             float& fUVDirectionX = m_fUVDirectionX;
             float& fUVDirectionY = m_fUVDirectionY;
-            float& fUVJitter = m_fUVJitter;
-            float& fUVJitterSpeed = m_fUVJitterSpeed;
             if (stricmp("uvdirectionx", firstword(sField)) == 0)
                 Parse(sField + 12, fUVDirectionX);
             if (stricmp("uvdirectiony", firstword(sField)) == 0)
@@ -2103,9 +2102,9 @@ void MdlNodeTriMesh::InternalParseField(char* sField)
         }
         if (lstFaces.m_nCount > 0)
         {
-            lstNodeFaces.SetSize(lstFaces.m_nCount);
+            m_lFaces.SetSize(lstFaces.m_nCount);
             for (i = 0; i < lstFaces.m_nCount; ++i)
-                lstNodeFaces[i].m_nSurfaceType = lstFaces[i].m_nFaceIndices;
+                m_lFaces[i].m_nSurfaceType = lstFaces[i].m_nFaceIndices;
         }
 
         if (stricmp("diffuse", firstword(sField)) == 0)
