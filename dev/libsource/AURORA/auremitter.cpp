@@ -3633,17 +3633,17 @@ void PartEmitter::RenderFunc()
                                 (1.0f - fBlend) * pLightning->m_lstReserved240[i].m_fZ +
                                 fBlend * pLightning->m_lstReserved24C[i].m_fZ);
                 }
-                int nLast = pLightning->m_lstReserved21C.m_nCount - 1;
-                glVertex3f((1.0f - fBlend) * pLightning->m_lstReserved21C[nLast].m_fX +
-                            fBlend * pLightning->m_lstReserved228[nLast].m_fX -
+                unsigned int nLast = pLightning->m_lstReserved21C.m_nCount - 1;
+                glVertex3f(((1.0f - fBlend) * pLightning->m_lstReserved21C[nLast].m_fX +
+                            fBlend * pLightning->m_lstReserved228[nLast].m_fX) -
                             ((1.0f - fBlend) * pLightning->m_lstReserved240[nLast].m_fX +
                              fBlend * pLightning->m_lstReserved24C[nLast].m_fX),
-                           (1.0f - fBlend) * pLightning->m_lstReserved21C[nLast].m_fY +
-                            fBlend * pLightning->m_lstReserved228[nLast].m_fY -
+                           ((1.0f - fBlend) * pLightning->m_lstReserved21C[nLast].m_fY +
+                            fBlend * pLightning->m_lstReserved228[nLast].m_fY) -
                             ((1.0f - fBlend) * pLightning->m_lstReserved240[nLast].m_fY +
                              fBlend * pLightning->m_lstReserved24C[nLast].m_fY),
-                           (1.0f - fBlend) * pLightning->m_lstReserved21C[nLast].m_fZ +
-                            fBlend * pLightning->m_lstReserved228[nLast].m_fZ -
+                           ((1.0f - fBlend) * pLightning->m_lstReserved21C[nLast].m_fZ +
+                            fBlend * pLightning->m_lstReserved228[nLast].m_fZ) -
                             ((1.0f - fBlend) * pLightning->m_lstReserved240[nLast].m_fZ +
                              fBlend * pLightning->m_lstReserved24C[nLast].m_fZ));
                 glVertex3f((1.0f - fBlend) * pLightning->m_lstReserved21C[nLast].m_fX +
