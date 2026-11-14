@@ -1531,18 +1531,18 @@ void PartEmitter::moveParticleStandard(float fTimeStep)
             continue;
 
         Vector vOldPosition = pParticle->m_vPosition;
+        AurDrawLine(pParticle->m_vPosition, pParticle->m_vPosition + vWind);
         if (bInheriting)
         {
             vPosition = (m_qOrientation * -m_qWorldOrientation) *
                         (pParticle->m_vPosition - m_vLastOrigin);
-            AurDrawLine(vPosition, vPosition, 1);
             pParticle->m_vDrift = (m_qOrientation * -m_qWorldOrientation) *
                                   pParticle->m_vDrift;
             vPosition += m_vOrigin;
         }
         else
         {
-            vPosition = Vector(pParticle->m_vPosition);
+            vPosition = pParticle->m_vPosition;
         }
 
         if (pNode->IsInheritingLocal() &&
