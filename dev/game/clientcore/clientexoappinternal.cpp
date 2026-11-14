@@ -8117,10 +8117,12 @@ int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
         bStoryHint = 1;
         break;
     default:
-        bStoryHint = 0;
-        if (g_pAppManager->GetServerExoApp() != NULL &&
-            g_pAppManager->GetServerExoApp()->m_pcExoAppInternal != NULL)
-            bStoryHint = g_pAppManager->GetServerExoApp()->GetModulePreviouslyVisited(sModule);
+        if (g_pAppManager->GetServerExoApp() == NULL ||
+            g_pAppManager->GetServerExoApp()->m_pcExoAppInternal == NULL ||
+            !g_pAppManager->GetServerExoApp()->GetModulePreviouslyVisited(sModule))
+            bStoryHint = 0;
+        else
+            bStoryHint = 1;
         break;
     }
     if (!bStoryHint)
@@ -8180,7 +8182,9 @@ int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
                                 pStoryHints->GetINTEntry(m_anStoryHint[nArea], "StoryHint", &nHint) == 0;
                             nStrRef = bNoHint ? 0 : nHint;
                             ++m_anStoryHint[nArea];
-                            break;
+                            pStoryHints->Unload2DArray();
+                            delete pStoryHints;
+                            return nStrRef;
                         }
                     } while (++nTry <= nRows);
                     pStoryHints->Unload2DArray();
