@@ -1753,7 +1753,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 
             CExoInputEventDesc* pDesc = aEvents[i].m_pDesc;
             int nEvent = pDesc->m_nEvent;
             int nValue = aEvents[i].m_nValue;
-            CGuiInGame* pGuiInGame = g_pAppManager->GetClientExoApp()->GetInGameGui();
+            CGuiInGame* pGuiInGame = g_pAppManager->m_pClientExoApp->GetInGameGui();
             int bGuiEvent = 0;
             int bGameEvent = 0;
             if (nEvent >= 39 && nEvent <= 64)
@@ -1800,7 +1800,7 @@ void CClientExoAppInternal::ProcessInput(float fTimeStep)  // PC 0x00672C80 GOG 
 #endif
         }
 
-        if (GetModule() != NULL && GetModule()->m_pModuleCamera != NULL &&
+        if (GetModule() != NULL && GetModule()->GetCamera() != NULL &&
             !bMouseCameraRotate)
         {
             char nTargetControl = 0;
