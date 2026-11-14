@@ -977,7 +977,7 @@ void PartDanglyMesh::Animate(float fTimeStep)
     static Vector vertex;
     static Vector currentvelocity;
     static Vector faccel;
-    Vector vWorldPosition;
+    Vector vWorldPosition(0.0f, 0.0f, 0.0f);
     Quaternion qWorldOrientation;
     GetWorld(vWorldPosition, qWorldOrientation);
     VertexPrimitiveDangly* pPrimitive = m_pVertexPrimitive->AsVertexPrimitiveDangly();
