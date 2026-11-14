@@ -1660,13 +1660,13 @@ void PartEmitter::moveParticleStandard(float fTimeStep)
             vOffset.m_fX += halfWidth;
             vOffset.m_fY += halfHeight;
             if (vOffset.m_fX >= 0.0f)
-                vOffset.m_fX = (float)fmod(vOffset.m_fX, width) - halfWidth;
+                vOffset.m_fX = fmodf(vOffset.m_fX, width) - halfWidth;
             else
-                vOffset.m_fX = (float)fmod(vOffset.m_fX, width) + halfWidth;
+                vOffset.m_fX = fmodf(vOffset.m_fX, width) + halfWidth;
             if (vOffset.m_fY >= 0.0f)
-                vOffset.m_fY = (float)fmod(vOffset.m_fY, height) - halfHeight;
+                vOffset.m_fY = fmodf(vOffset.m_fY, height) - halfHeight;
             else
-                vOffset.m_fY = (float)fmod(vOffset.m_fY, height) + halfHeight;
+                vOffset.m_fY = fmodf(vOffset.m_fY, height) + halfHeight;
             pParticle->m_vPosition = vCamera + vOffset;
         }
     }
