@@ -394,7 +394,7 @@ int CSWCameraNavigate::Control(float fTimeStep)
 
         Vector vMovement;
         vMovement.m_fX = m_fStrafe;
-        vMovement.m_fY = -m_fSpeed;
+        vMovement.m_fY = (-m_fSpeed);
         vMovement.m_fZ = 0.0f;
         m_fStrafe = 0.0f;
         m_fSpeed = 0.0f;
@@ -431,7 +431,7 @@ int CSWCameraNavigate::Control(float fTimeStep)
         fYaw, fPitch - 90.0f, Roll(static_cast<Gob*>(m_pObject)->GetOrientation()));
     Vector vMovement;
     vMovement.m_fX = m_fStrafe;
-    vMovement.m_fY = fDirection * m_fSpeed;
+    vMovement.m_fY = (fDirection * m_fSpeed);
     vMovement.m_fZ = 0.0f;
     if (vMovement.m_fX != 0.0f || vMovement.m_fY != 0.0f)
     {
