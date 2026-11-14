@@ -367,6 +367,8 @@ void Particle::randomDirection(int nWidth, int nHeight)
             {
                 Vector vDelta = vCameraDirection - vCameraDirection;
                 Vector vYDir = m_qOrientation.ydir();
+                float fDebugFacing = fFacing;
+                float fDebugSpread = fSpread;
                 qNewOrientation.m_fW = 0.0f;
                 qNewOrientation.m_fZ = 0.0f;
             }
