@@ -1677,6 +1677,7 @@ void PartEmitter::moveParticleStandard(float fTimeStep)
         m_qReserved194 = m_qOrientation;
     }
 }
+#define EMITTER_P2P_DEBUG 0
 // PC 0x004BE2E0 GOG 0x004BE3F0
 void PartEmitter::moveParticleP2PBezier(float fTimeStep)
 {
@@ -1742,7 +1743,7 @@ void PartEmitter::moveParticleP2PBezier(float fTimeStep)
         float fEnd = fTime * fTime * fTime;
         Vector vBezier = fStart * m_vOrigin +
             fControl1 * (m_vOrigin + m_fPointToPointBezier2 * m_vDirection) +
-            fControl2 * (vTarget + m_fPointToPointBezier3 * m_pTarget.m_pObject->GetOrientation().zdir()) +
+            fControl2 * (vTarget + m_fPointToPointBezier3 * m_pTarget->GetOrientation().zdir()) +
             fEnd * vTarget;
         double fBlend = pow(fEnd, m_fCombineTime);
         vNewPosition = fBlend * vBezier + (1.0f - (float)fBlend) * vNewPosition;
@@ -1792,6 +1793,15 @@ void PartEmitter::moveParticleP2PBezier(float fTimeStep)
             }
         }
     }
+    if (EMITTER_P2P_DEBUG)
+    {
+        vPosition.m_fX = 0.0f;
+        vPosition.m_fY = 0.0f;
+        vPosition.m_fZ = 0.0f;
+        vTarget.m_fX = 0.0f;
+        vTarget.m_fY = 0.0f;
+        vTarget.m_fZ = 0.0f;
+    }
 }
 // PC 0x004BF280 GOG 0x004BF390
 void PartEmitter::moveParticleP2PGrav(float fTimeStep)
@@ -1837,7 +1847,6 @@ void PartEmitter::moveParticleP2PGrav(float fTimeStep)
     {
         Particle* pParticle = m_lstActive[i];
         Vector vPrevious = pParticle->m_vPosition;
-        Vector vLocal;
         if (bInheriting)
         {
             vPosition = (m_qOrientation * -m_qWorldOrientation) *
@@ -1851,29 +1860,29 @@ void PartEmitter::moveParticleP2PGrav(float fTimeStep)
         if (pNode->IsInheritingLocal() &&
             !pNode->IsInheriting() && m_pAurObject)
         {
-            vLocal = -m_qReserved194 * (vPosition - m_vReserved158);
-            vPosition = m_pAurObject->m_qOrientation * vLocal;
+            vPosition = m_pAurObject->m_qOrientation *
+                (-m_qReserved194 * (vPosition - m_vReserved158));
             Vector vTranslation = m_pAurObject->m_vPosition - m_vReserved158;
             vPosition += vTranslation;
             pParticle->m_vOrigin += vTranslation;
             vPosition += m_vReserved158;
-            vLocal = -m_qReserved194 * pParticle->m_vDrift;
-            pParticle->m_vDrift = m_pAurObject->m_qOrientation * vLocal;
+            pParticle->m_vDrift = m_pAurObject->m_qOrientation *
+                (-m_qReserved194 * pParticle->m_vDrift);
         }
         if (pNode->IsInheritingPart() && m_pAurObject)
         {
-            vLocal = -m_qReserved194 * (vPosition - m_vReserved158);
-            vPosition = m_pAurObject->m_qOrientation * vLocal;
+            vPosition = m_pAurObject->m_qOrientation *
+                (-m_qReserved194 * (vPosition - m_vReserved158));
             Vector vTranslation = m_vOrigin - m_vReserved158;
             vPosition += vTranslation;
             pParticle->m_vOrigin += vTranslation;
             pParticle->m_vOrigin = pParticle->m_vOrigin - m_pAurObject->m_vPosition;
-            vLocal = -m_qReserved194 * pParticle->m_vOrigin;
-            pParticle->m_vOrigin = m_pAurObject->m_qOrientation * vLocal;
+            pParticle->m_vOrigin = m_pAurObject->m_qOrientation *
+                (-m_qReserved194 * pParticle->m_vOrigin);
             pParticle->m_vOrigin = pParticle->m_vOrigin + m_pAurObject->m_vPosition;
             vPosition += m_vReserved158;
-            vLocal = -m_qReserved194 * pParticle->m_vDrift;
-            pParticle->m_vDrift = m_pAurObject->m_qOrientation * vLocal;
+            pParticle->m_vDrift = m_pAurObject->m_qOrientation *
+                (-m_qReserved194 * pParticle->m_vDrift);
         }
         vNext = vPosition + fTimeStep * pParticle->m_vDrift;
         if (pNode->IsAffectedByWind())
@@ -1939,6 +1948,19 @@ void PartEmitter::moveParticleP2PGrav(float fTimeStep)
                     pParticle->m_vPosition += m_fXSizeStart * m_pHitInfo->m_vOutputNormal;
             }
         }
+    }
+    if (EMITTER_P2P_DEBUG)
+    {
+        vPosition.m_fX = 0.0f;
+        vPosition.m_fY = 0.0f;
+        vPosition.m_fZ = 0.0f;
+        vTarget.m_fX = 0.0f;
+        vTarget.m_fY = 0.0f;
+        vTarget.m_fZ = 0.0f;
+        vNext.m_fX = 0.0f;
+        vNext.m_fY = 0.0f;
+        vNext.m_fZ = 0.0f;
+        vDelta.m_fY = 0.0f;
     }
     if (m_pAurObject && pNode->IsInheritingLocal())
     {
