@@ -655,18 +655,11 @@ int CSWSCreature::AIActionItemCastSpell(CSWSObjectActionNode* pAction)
         if (bHumanoid)
         {
             nAnimation = pTargetCreature == this ? CREATURE_ANIMATION_FIREFORGET_INJECT : CREATURE_ANIMATION_SPELLCAST_5;
-            nCastTime = ITEM_CAST_USE_TIME;
-            nRoundTime = ITEM_CAST_ROUND_TIME;
         }
         else
         {
             nAnimation = CREATURE_ANIMATION_COMBAT_READY;
-            nCastTime = ITEM_CAST_USE_TIME;
-            nRoundTime = ITEM_CAST_ROUND_TIME;
         }
-        break;
-    case CSWBaseItem::ITEM_TYPE_SQUAD_MEDPAC:
-        nAnimation = bHumanoid ? CREATURE_ANIMATION_STEALTH_TRANSITION : CREATURE_ANIMATION_COMBAT_READY;
         nCastTime = ITEM_CAST_USE_TIME;
         nRoundTime = ITEM_CAST_ROUND_TIME;
         break;
@@ -676,9 +669,9 @@ int CSWSCreature::AIActionItemCastSpell(CSWSObjectActionNode* pAction)
         {
             CSWSItem* pModifier = m_pInventory->GetItemInSlot(INVENTORY_SLOT_NECK);
             if ((pModifier != NULL &&
-                 pModifier->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_GRENADE_MODIFIER_48) ||
+                 pModifier->GetBaseItem()->GetItemType() == CSWBaseItem::ITEM_TYPE_GRENADE_MODIFIER_48) ||
                 ((pModifier = m_pInventory->GetItemInSlot(INVENTORY_SLOT_RIGHTRING)) != NULL &&
-                 pModifier->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_GRENADE_MODIFIER_48))
+                 pModifier->GetBaseItem()->GetItemType() == CSWBaseItem::ITEM_TYPE_GRENADE_MODIFIER_48))
             {
                 nAnimation = CREATURE_ANIMATION_WRIST_LAUNCH;
                 nCastTime = ITEM_CAST_GRENADE_LAUNCH_TIME;
@@ -686,8 +679,8 @@ int CSWSCreature::AIActionItemCastSpell(CSWSObjectActionNode* pAction)
             else
             {
                 Vector vDelta = vTarget - m_vPosition;
-                if (GrenadeThrowThreshold * GrenadeThrowThreshold >
-                    vDelta.m_fZ * vDelta.m_fZ + vDelta.m_fY * vDelta.m_fY + vDelta.m_fX * vDelta.m_fX)
+                if (vDelta.m_fX * vDelta.m_fX + vDelta.m_fY * vDelta.m_fY +
+                    vDelta.m_fZ * vDelta.m_fZ >= GrenadeThrowThreshold * GrenadeThrowThreshold)
                 {
                     nAnimation = CREATURE_ANIMATION_FIREFORGET_THROW_HIGH;
                     nCastTime = ITEM_CAST_GRENADE_THROW_TIME;
@@ -706,6 +699,11 @@ int CSWSCreature::AIActionItemCastSpell(CSWSObjectActionNode* pAction)
         }
         nRoundTime = ITEM_CAST_ROUND_TIME;
         bForceMaster = TRUE;
+        break;
+    case CSWBaseItem::ITEM_TYPE_SQUAD_MEDPAC:
+        nAnimation = bHumanoid ? CREATURE_ANIMATION_STEALTH_TRANSITION : CREATURE_ANIMATION_COMBAT_READY;
+        nCastTime = ITEM_CAST_USE_TIME;
+        nRoundTime = ITEM_CAST_ROUND_TIME;
         break;
     case CSWBaseItem::ITEM_TYPE_EQUIPPED_ACTIVATION_20:
         nAnimation = bHumanoid ? CREATURE_ANIMATION_STEALTH_TRANSITION : CREATURE_ANIMATION_COMBAT_READY;
@@ -747,7 +745,7 @@ int CSWSCreature::AIActionItemCastSpell(CSWSObjectActionNode* pAction)
         }
         GetCombatRound()->StartCombatRound(oidTarget, bEngaged, bMaster, 0, 0);
         GetCombatRound()->SetSpellCastRound(0, 0);
-        GetCombatRound()->SetRoundPaused(TRUE, GetId());
+        m_pcCombatRound->SetRoundPaused(TRUE, GetId());
         GetCombatRound()->SetPauseTimer(nRoundTime, FALSE);
         GetCombatRound()->DecrementRoundLength(nRoundTime, FALSE);
     }
@@ -776,8 +774,8 @@ int CSWSCreature::AIActionItemCastSpell(CSWSObjectActionNode* pAction)
         m_nLastSpellId = nSpellId;
         m_oidSpellTargetObject = oidTarget;
         m_vSpellTargetPosition = vTarget;
-        m_oidSpellCasterItem = oidItem;
         m_bSafeProjectileBroadcast = FALSE;
+        m_oidSpellCasterItem = oidItem;
         m_bCasterLevelOverride = FALSE;
         CalculateLastSpellProjectileTime(0);
         int nLevel = m_pStats->GetClassLevel(m_pStats->GetNumClasses() - 1, FALSE);
@@ -810,7 +808,7 @@ int CSWSCreature::AIActionItemCastSpell(CSWSObjectActionNode* pAction)
             pTargetCreature->SetAnimation(nAnimation);
         else
             SetAnimation(nAnimation);
-        GetCombatRound()->IncrementNumActionsTaken(1);
+        GetCombatRound()->m_nNumActionsTaken = GetCombatRound()->GetNumActionsTaken() + 1;
         if (pItem->GetBaseItem()->m_nItemType == CSWBaseItem::ITEM_TYPE_HOSTILE_USABLE &&
             nSpellId < CSWSpell::ITEM_ABILITY_GRENADE_LAUNCHED_FRAGMENTATION)
             SpellCastAndImpact(nSpellId, vTarget, OBJECT_INVALID, CASTING_CLASS_INNATE_FF, oidItem, 0, 0, 0, 0);
