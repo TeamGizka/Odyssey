@@ -17,6 +17,8 @@
 #include "aurconsole.h"
 #include "aurdraw.h"
 
+static inline void AurscenemanagerTrace4();
+static inline void AurscenemanagerTrace3();
 static inline void AurscenemanagerTrace2();
 static inline void AurscenemanagerTrace1();
 
@@ -181,6 +183,16 @@ void nodedata::AddMovingLight(PartLight* pLight)
     m_lstMovingLights.Add(pLight);
 }
 #endif
+
+static inline void AurscenemanagerTrace4()
+{
+    AurscenemanagerTrace3();
+}
+
+static inline void AurscenemanagerTrace3()
+{
+    AurscenemanagerTrace2();
+}
 
 static inline void AurscenemanagerTrace2()
 {
@@ -1297,6 +1309,7 @@ void nodedata::AddMovingEmitter(PartEmitter* pEmitter)
 // PC 0x00483A00 GOG 0x00483AC0
 void SceneBSPRemoveTiledata(Scene* pScene, const Vector& vPosition)
 {
+    AurscenemanagerTrace4();
     if (pScene->m_pBSPRoot == 0)
     {
         return;
@@ -1547,11 +1560,13 @@ void DoStaticLightBuckets(Scene* pScene)
 // PC 0x00484BA0 GOG 0x00484C60
 void AnimateStaticLight(CAurObject* pObject, char* sEvent, void* pData)
 {
+    AurscenemanagerTrace4();
     UpdateStaticLighting(((Gob*)pObject)->m_pScene, (PartLight*)pData);
 }
 // PC 0x00484BC0 GOG 0x00484C80
 void AddLightToRooms(Scene* pScene, PartLight* pLight)
 {
+    AurscenemanagerTrace4();
     int nRooms = 0;
     for (int i = 0; i < pScene->m_lstRooms.m_nCount; i++)
     {
@@ -1584,6 +1599,7 @@ void AddLightToRooms(Scene* pScene, PartLight* pLight)
 // PC 0x00484D30 GOG 0x00484DF0
 void AddEmitterToRooms(Scene* pScene, PartEmitter* pEmitter)
 {
+    AurscenemanagerTrace4();
     if (pEmitter->m_pAurObject == 0)
     {
         return;
@@ -1627,6 +1643,7 @@ static const int AUR_ROOM_INDEX_ALL = 999;
 // PC 0x00484E30 GOG 0x00484EF0
 void AddObjectToRooms(Scene* pScene, Gob* pGob)
 {
+    AurscenemanagerTrace4();
     int nRooms = 0;
     Vector vPosition;
     Model* pModel = pGob->m_pModel;
