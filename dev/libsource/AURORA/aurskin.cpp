@@ -995,8 +995,8 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
         while (pPart->m_pParent != 0)
         {
             pPart = pPart->m_pParent;
-            vTranslation = vTranslation + qRotation *
-                (-pPart->m_qOrientation * -pPart->m_vPosition);
+            Vector vParent = qRotation * (-pPart->m_qOrientation * -pPart->m_vPosition);
+            vTranslation = vTranslation + vParent;
             qRotation = qRotation * -pPart->m_qOrientation;
         }
         for (int i = 0; i < pNode->m_nBoneMap; i++)
@@ -1005,8 +1005,8 @@ void RenderSkinnedVP(VertexPrimitiveSkinned* pPrimitive)
             if (nBone == -1)
                 continue;
             {
-                Vector vBone = vTranslation + qRotation * tbones[i] + qRotation *
-                    (qbones[i] * pNode->m_lstTBoneRefInv[i]);
+                Vector vBone = qRotation * (qbones[i] * pNode->m_lstTBoneRefInv[i]);
+                vBone = vTranslation + qRotation * tbones[i] + vBone;
                 Quaternion qBone = qRotation * qbones[i] * pNode->m_lstQBoneRefInv[i];
                 mRotation = qBone.getmatrix();
                 int nRegister = PartSkin::SKIN_VP_BONES + 3 * nBone;
