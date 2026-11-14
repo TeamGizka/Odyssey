@@ -78,7 +78,7 @@ public:
         return *this;
     }
 
-    Vector& operator/=(float fScale)
+    __forceinline Vector& operator/=(float fScale)
     {
         if (fScale != 0.0f)
         {
