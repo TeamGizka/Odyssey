@@ -144,6 +144,7 @@ void FireGunCallback(CAurObject* pObject, char* sEvent, void* pData)
                 Quaternion qTarget = ((Gob*)pTrack->m_pModel.m_pObject)->GetOrientation();
                 Vector vTarget = -qTarget *
                     (qTarget * ((Gob*)pTrack->m_pModel.m_pObject)->GetPosition() + pTrack->m_vTarget);
+                EXOLOG("FireGunCallback: speed %f rate %f\n", pTrack->GetSpeed(), pTrack->GetRateOfFire());
                 if (fSpread > 0.0f)
                 {
                     Vector vAim = vTarget;
