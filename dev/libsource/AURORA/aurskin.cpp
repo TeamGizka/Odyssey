@@ -1935,7 +1935,7 @@ void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
         Vector vDisplacement = pSkin->m_pAurObject->m_vPosition -
             pSkin->m_pAurObject->m_vPreviousPosition;
         float fBlurLength = magnitude(vDisplacement);
-        if (fBlurLength > 0.0f)
+        if (bool(fBlurLength > 0.0f))
         {
             pPrimitive->SetupVertexArraysStandard();
             Matrix mRotation;
@@ -1947,8 +1947,8 @@ void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
             GLRender_Enable(ENABLE_VERTEX_PROGRAM);
 
             Part* pPart = pSkin;
-            Vector vTranslation = -pPart->m_qOrientation * -pPart->m_vPosition;
-            Quaternion qRotation = -pPart->m_qOrientation;
+            Vector vTranslation = -pSkin->m_qOrientation * -pSkin->m_vPosition;
+            Quaternion qRotation = -pSkin->m_qOrientation;
             while (pPart->m_pParent != 0)
             {
                 pPart = pPart->m_pParent;
