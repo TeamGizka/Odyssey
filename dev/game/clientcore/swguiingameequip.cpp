@@ -3059,9 +3059,9 @@ void CSWGuiInGameEquip::UpdateInventory()  // PC 0x00717070 GOG 0x00716D60
     CSWSItem* pItem = NULL;
     CSWCItem* pClientItem = NULL;
     CResRef resIcon;
-    Vector vColor = CGuiInGame::COLOR_NEW_TEXT;
     int bDoubleWeapon = 0;
     int bUnarmed = 0;
+    Vector vColor = CGuiInGame::COLOR_NEW_TEXT;
     unsigned long oidItem;
 
     m_aSlotLabels[LEFTHAND_ITEM_INDEX].m_cBorder.m_cParams.SetFillImage(
@@ -3091,7 +3091,7 @@ void CSWGuiInGameEquip::UpdateInventory()  // PC 0x00717070 GOG 0x00716D60
             m_aoidEquippedItems[nSlot] = oidItem;
             resIcon = pItem->GetIcon();
             int bDouble = 0;
-            if (pItem->GetBaseItem()->m_nWeaponWield == CSWBaseItem::WIELD_DOUBLE_WEAPON)
+            if (pItem->GetBaseItem()->GetWeaponWield() == CSWBaseItem::WIELD_DOUBLE_WEAPON)
                 bDouble = 1;
             CSWGuiLabel* pDamage = NULL;
             CSWGuiLabel* pToHit = NULL;
@@ -3208,8 +3208,8 @@ void CSWGuiInGameEquip::UpdateInventory()  // PC 0x00717070 GOG 0x00716D60
                 pToHit = &m_lblTohitr2;
             case RIGHTHAND_ITEM_INDEX:
             {
-                bChanged = 1;
                 bUnarmed = 1;
+                bChanged = 1;
                 if (pDamage == NULL)
                 {
                     pDamage = &m_lblAtkr;
