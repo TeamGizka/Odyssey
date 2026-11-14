@@ -1355,12 +1355,12 @@ static void ProcessParts(BSPNode* pNode, void* pData, List<Plane>& planes)
     {
         return;
     }
-    if (renderaabb && pNodeData->m_pAABB)
+    if (bool(renderaabb && pNodeData->m_pAABB))
     {
         AddPartToMeshBuckets(pNodeData->m_pAABB);
     }
-    if (!cullfoggeometry && pNodeData->m_pTileData &&
-        pNodeData->m_pTileData->m_bFade)
+    if (bool(bool(!cullfoggeometry && pNodeData->m_pTileData) &&
+        pNodeData->m_pTileData->m_bFade))
     {
         return;
     }
