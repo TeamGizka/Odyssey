@@ -21,6 +21,7 @@ inline void AurPchListPartLightPtr_Allocate() { (void)&List<PartLight*>::allocat
 #include "aurrendergl.h"
 #include "aurscenemanager.h"
 #include "aurtexcontrol.h"
+#include "aurdraw.h"
 
 static inline void AurmodelrenderTrace1();
 #define AURMODELRENDER_TRACE() AurmodelrenderTrace1()
@@ -811,7 +812,10 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
             vVertex = Vector(pPositions[nEnd + i].m_fX, pPositions[nEnd + i].m_fY, pPositions[nEnd + i].m_fZ);
             vVertex = -qWorldOrientation *
                 (vCurrent + qCurrent * vVertex - vWorldPosition);
-            SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
+            float fX = vVertex.m_fX;
+            float fY = vVertex.m_fY;
+            float fZ = vVertex.m_fZ;
+            SetVertexData4f(Aurora::STREAM_POSITION, fX, fY, fZ, 1.0f);
         }
         GLRender_EndImmediatePrimitive();
 
@@ -920,6 +924,7 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
                 vVertex = avTrail[i] + -qWorldOrientation *
                     (vCurrent + qCurrent * vVertex - vWorldPosition);
                 SetVertexData4f(Aurora::STREAM_POSITION, vVertex.m_fX, vVertex.m_fY, vVertex.m_fZ, 1.0f);
+                AurDrawLine(vVertex, vVertex + avTrail[i]);
             }
             GLRender_EndImmediatePrimitive();
         }
