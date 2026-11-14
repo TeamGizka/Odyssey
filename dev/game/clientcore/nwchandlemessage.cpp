@@ -5578,20 +5578,20 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_Update(
             }
             else if (nAlignment > 40)
             {
+                float fScale;
                 if (nAlignment >= 50)
                 {
-                    float fScale = 1.0f - (nAlignment - 50) * 0.1f;
+                    fScale = 1.0f - (nAlignment - 50) * 0.1f;
                     fBlue = 0.9f;
                     fGreen = fRed = fScale + (1.0f - fScale) * 0.65f;
-                    fAlpha = fScale * 0.5f;
                 }
                 else
                 {
-                    float fScale = (nAlignment - 40) * 0.1f;
+                    fScale = (nAlignment - 40) * 0.1f;
                     fRed = 1.0f;
                     fBlue = fGreen = fScale + (1.0f - fScale) * 0.65f;
-                    fAlpha = fScale * 0.5f;
                 }
+                fAlpha = fScale * 0.5f;
             }
             else
             {
