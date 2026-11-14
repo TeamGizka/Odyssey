@@ -1901,6 +1901,7 @@ void PartEmitter::moveParticleP2PGrav(float fTimeStep)
         vDelta = vNext - vPosition;
         if (!equal(vDelta, Vector()))
             pParticle->m_vHeading = normalize(vDelta);
+        AurDrawLine(vPosition, vNext, pParticle->m_vDrift * pParticle->m_vHeading);
         vDelta = segmentproject(vPosition, vNext, vTarget);
         vDelta = vTarget - vDelta;
         if (vDelta * vDelta <= fThresholdSquared)
