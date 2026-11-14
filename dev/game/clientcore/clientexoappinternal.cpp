@@ -8149,7 +8149,6 @@ int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
         }
         pHints->Unload2DArray();
         delete pHints;
-        return nStrRef;
     }
     else
     {
@@ -8185,20 +8184,22 @@ int CClientExoAppInternal::GetNextLoadScreenHintSTRREF(
                 {
                     unsigned char bNoHint =
                         pStoryHints->GetINTEntry(m_anStoryHint[nArea], "StoryHint", &nHint) == 0;
-                    nStrRef = nHint;
+                    nStrRef = bNoHint ? 0 : nHint;
                     ++m_anStoryHint[nArea];
-                    nStrRef &= bNoHint ? 0 : -1;
                     break;
                 }
             }
             pStoryHints->Unload2DArray();
             delete pStoryHints;
-            return nStrRef;
         }
-        pStoryHints->Unload2DArray();
-        delete pStoryHints;
-        return 0;
+        else
+        {
+            pStoryHints->Unload2DArray();
+            delete pStoryHints;
+            return 0;
+        }
     }
+    return nStrRef;
 }
 // PC 0x00640190 GOG 0x0063FFF0
 void CClientExoAppInternal::SetMouseMode(unsigned char nMode)
