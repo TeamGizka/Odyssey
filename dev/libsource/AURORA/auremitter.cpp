@@ -3199,9 +3199,9 @@ void LightningEmitter::Update(float fTimeStep)
                     vPerpendicular = Vector(-vDirection.m_fY, vDirection.m_fZ, -vDirection.m_fX);
                     RecursiveFractal(nMidpoint, nMidpoint, 1, vPerpendicular,
                                      cross(vDirection, vPerpendicular), fScale);
-                    float fRange = sqrt(vDistance.m_fZ * vDistance.m_fZ +
+                    float fRange = (float)(sqrt(vDistance.m_fZ * vDistance.m_fZ +
                                         vDistance.m_fY * vDistance.m_fY +
-                                        vDistance.m_fX * vDistance.m_fX) / m_lstActive.m_nCount * 0.5;
+                                        vDistance.m_fX * vDistance.m_fX) / m_lstActive.m_nCount * 0.5);
                     for (j = 1; j < m_lstActive.m_nCount - 1; j++)
                     {
                         if (!(fRange >= 0.01))
