@@ -831,12 +831,11 @@ void PartEmitter::RenderStandard()  // PC 0x004B9D00 GOG 0x004B9E10
                 if (m_fPercentStart == EMITTER_UNSET_COLOR_KEY_TIME)
                 {
 
-                    fT = fAge;
-                    vColor = Interpolate(m_vColorStart, m_vColorEnd, fT);
-                    fAlpha = (1.0f - fT) * m_fAlphaStart + fT * m_fAlphaEnd;
-                    fXSize = ((1.0f - fT) * m_fXSizeStart + fT * m_fXSizeEnd) * 0.5f;
+                    vColor = Interpolate(m_vColorStart, m_vColorEnd, fAge);
+                    fAlpha = (1.0f - fAge) * m_fAlphaStart + fAge * m_fAlphaEnd;
+                    fXSize = ((1.0f - fAge) * m_fXSizeStart + fAge * m_fXSizeEnd) * 0.5f;
                     if (m_fYSizeStart != 0.0f || m_fYSizeEnd != 0.0f)
-                        fYSize = (fT * m_fYSizeEnd + (1.0f - fT) * m_fYSizeStart) * 0.5f;
+                        fYSize = (fAge * m_fYSizeEnd + (1.0f - fAge) * m_fYSizeStart) * 0.5f;
                     else
                         fYSize = fXSize;
                 }
@@ -929,7 +928,8 @@ void PartEmitter::RenderStandard()  // PC 0x004B9D00 GOG 0x004B9E10
             }
             if (pParticle->m_bReserved6C)
             {
-                qRotation = Quaternion(pParticle->m_vHeading, pParticle->m_fRotation);
+                Vector vHeading = pParticle->m_vHeading;
+                qRotation = Quaternion(vHeading, pParticle->m_fRotation);
                 qRotation = qRotation * pParticle->m_qOrientation;
             }
             else
