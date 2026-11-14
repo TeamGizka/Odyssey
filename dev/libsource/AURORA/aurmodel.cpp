@@ -2583,9 +2583,7 @@ void PartEmitter::SetWeather(bool bWeather)
 {
     m_bWeather = bWeather;
 }
-static inline void GobDebugLine(const Vector&, const Vector&)
-{
-}
+#include "aurdraw.h"
 // PC 0x00450140 GOG 0x00450280
 void Part::GetWorld(Vector& vPosition, Quaternion& qOrientation)
 {
@@ -2621,7 +2619,7 @@ void Part::GetWorld(Vector& vPosition, Quaternion& qOrientation)
     vPosition = pGob->m_vPosition + vPosition;
     const Quaternion& qGob = pGob->m_qOrientation;
     qOrientation = qGob * qOrientation;
-    GobDebugLine(vPosition - Vector(0.0f, 0.0f, 1.0f), vPosition - Vector(0.0f, 0.0f, 1.0f));
+    AurDrawLine(vPosition - Vector(0.0f, 0.0f, 1.0f), vPosition - Vector(0.0f, 0.0f, 1.0f));
 }
 // PC 0x004506B0 GOG 0x004507F0
 void Part::GetLocal(Vector& vPosition, Quaternion& qOrientation)
@@ -2722,7 +2720,7 @@ CAurObject* Gob::HitCheckPart(CAurPart* pPart, Vector vStart, Vector vEnd,
 
     int nHit = 0;
     vStart = -m_qOrientation * (vStart - m_vPosition);
-    GobDebugLine(vEnd, -vStart);
+    AurDrawLine(vEnd, -vStart);
     vEnd = -m_qOrientation * (vEnd - m_vPosition);
     if (!SphereIntersect(vStart, vEnd, m_vMinimumBoundingSphere,
                          m_fMinimumBoundingSphereRadius))
@@ -2732,7 +2730,7 @@ CAurObject* Gob::HitCheckPart(CAurPart* pPart, Vector vStart, Vector vEnd,
         nHit = 1;
         vEnd = m_vPosition + m_qOrientation * vEnd;
         pInfo->m_vOutputPosition = vEnd;
-        GobDebugLine(vEnd, Vector(0.0f, 0.0f, 1.0f));
+        AurDrawLine(vEnd, Vector(0.0f, 0.0f, 1.0f));
         pInfo->m_vOutputNormal = m_qOrientation * pInfo->m_vOutputNormal;
         if (pHit)
             *pHit = vEnd;
@@ -2774,7 +2772,7 @@ CAurObject* Gob::HitCheck(Vector vStart, Vector vEnd, Vector* pHit,
         vEnd = m_vPosition + m_qOrientation * vEnd;
         pInfo->m_vOutputPosition = vEnd;
         pInfo->m_vOutputNormal = m_qOrientation * pInfo->m_vOutputNormal;
-        GobDebugLine(vEnd - vStart, Vector(0.0f, 0.0f, 1.0f));
+        AurDrawLine(vEnd - vStart, Vector(0.0f, 0.0f, 1.0f));
         if (pHit)
             *pHit = vEnd;
     }

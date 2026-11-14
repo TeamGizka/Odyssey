@@ -1798,7 +1798,7 @@ static inline void SwmgtrackfollowerTrace1()
 {
 }
 
-static inline void SwmgtrackfollowerDebugLine(const Vector&, const Vector&, int) {}
+#include "aurdraw.h"
 // PC 0x006C4D80 GOG 0x006C4BB0
 int CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>& lstEnemyIds,
                                      int bRunScripts)
@@ -1814,7 +1814,7 @@ int CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>& lstEnemyIds,
         Vector vPosition = pModel->GetPosition();
         Vector vPrevious = pModel->GetPreviousPosition();
         Vector vPlane = m_pMiniGame->BumpPlane(pModel->GetOrientation());
-        SwmgtrackfollowerDebugLine(vPosition, vPosition + Vector(0.0f, 0.0f, 1.0f), 0);
+        AurDrawLine(vPosition, vPosition + Vector(0.0f, 0.0f, 1.0f), 0);
         Vector vPush;
         Vector vEnemyPosition;
         Vector vEnemyPrevious;

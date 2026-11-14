@@ -259,9 +259,7 @@ unsigned short CSWSObject::GetIDByAQActionID(unsigned short nAQActionID)
 }
 #define NWSOBJECTAI_DEBUG_LINE_LOW 0.01f
 #define NWSOBJECTAI_DEBUG_LINE_HIGH 1.0f
-static inline void NwsobjectaiDebugLine(const Vector&, const Vector&, int)
-{
-}
+#include "aurdraw.h"
 // PC 0x005DAFA0 GOG 0x005DB010
 int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
 {
@@ -454,9 +452,9 @@ int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
                             Vector vDelta = vLeaderPosition - pMember->m_vPosition;
                             if (vDelta * vDelta >= DIALOG_FOLLOWER_RELOCATE_DISTANCE_SQUARED)
                             {
-                                NwsobjectaiDebugLine(vLeaderPosition + Vector(0.0f, 0.0f, NWSOBJECTAI_DEBUG_LINE_LOW),
+                                AurDrawLine(vLeaderPosition + Vector(0.0f, 0.0f, NWSOBJECTAI_DEBUG_LINE_LOW),
                                                      pMember->m_vPosition + Vector(0.0f, 0.0f, NWSOBJECTAI_DEBUG_LINE_LOW), 0);
-                                NwsobjectaiDebugLine(vLeaderPosition + Vector(0.0f, 0.0f, NWSOBJECTAI_DEBUG_LINE_HIGH),
+                                AurDrawLine(vLeaderPosition + Vector(0.0f, 0.0f, NWSOBJECTAI_DEBUG_LINE_HIGH),
                                                      pMember->m_vPosition + Vector(0.0f, 0.0f, NWSOBJECTAI_DEBUG_LINE_HIGH), 1);
                                 CSWParty* pParty = g_pAppManager->GetClientExoApp()->GetSWParty();
                                 Vector vOffset = pParty->m_aPartyMemberData[nMember].m_vFormationOffset;

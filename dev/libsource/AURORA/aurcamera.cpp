@@ -239,9 +239,7 @@ Camera::~Camera()
     DeleteFuncWithPrefix(g_sObjectFuncName);
 #endif
 }
-static inline void CameraDebugLine(const Vector&, const Vector&, int)
-{
-}
+#include "aurdraw.h"
 // PC 0x00471780 GOG 0x00471910
 void Camera::RenderScene()
 {
@@ -350,7 +348,7 @@ void Camera::RenderScene()
         }
         frustumn = m_lstViewVolume[frustumpick].m_vNormal;
         frustumd = m_lstViewVolume[frustumpick].m_fDistance;
-        CameraDebugLine(m_vPosition, m_vPosition - frustumn * frustumd, 0);
+        AurDrawLine(m_vPosition, m_vPosition - frustumn * frustumd, 0);
         m_bViewVolumeSet = 1;
         CurrentCamera = this;
         GLRender_SetMatrixMode(TRANSFORM_MODELVIEW);
