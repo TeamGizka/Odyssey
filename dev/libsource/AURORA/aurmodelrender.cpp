@@ -695,30 +695,6 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
         avTrail[0] = vBlade;
         avTrail[1] = avTrail[2] = avTrail[3] = avTrail[0];
 
-        for (i = 0; i < MdlNodeLightsaber::NUM_SEGMENT_VERTS; ++i)
-            ;
-        for (i = 0; i < MdlNodeLightsaber::NUM_SEGMENT_VERTS; ++i)
-            ;
-        for (i = 0; i < MdlNodeLightsaber::NUM_SEGMENT_VERTS; ++i)
-            ;
-        for (i = 0; i < MdlNodeLightsaber::NUM_SEGMENT_VERTS; ++i)
-            ;
-        for (i = 0; i < MdlNodeLightsaber::NUM_SEGMENT_VERTS; ++i)
-            ;
-        for (i = 0; i < MdlNodeLightsaber::NUM_SEGMENT_VERTS; ++i)
-            ;
-        for (i = 0; i < MdlNodeLightsaber::NUM_SEGMENT_VERTS; ++i)
-            ;
-        for (i = 0; i < MdlNodeLightsaber::NUM_SEGMENT_VERTS; ++i)
-            ;
-        for (i = 0; i < MdlNodeLightsaber::NUM_SEGMENT_VERTS; ++i)
-            ;
-        for (i = 0; i < MdlNodeLightsaber::NUM_SEGMENT_VERTS; ++i)
-            ;
-        for (i = 0; i < MdlNodeLightsaber::NUM_SEGMENT_VERTS; ++i)
-            ;
-        for (i = 0; i < MdlNodeLightsaber::NUM_SEGMENT_VERTS; ++i)
-            ;
         float fLength = magnitude(avTrail[0]);
         float fTrailLength;
         short nCurrent = m_nNextSegment - 1;
@@ -851,8 +827,8 @@ void PartLightsaber::Draw(bool bRenderChildren)  // PC 0x00489E70 GOG 0x00489F40
                 vNewerBlade = vVertex - vNewerStart;
                 qNext = RotationArc(vOlderBlade, vNewerBlade);
                 qNext = qNewer * qNext;
-                float fFraction = (float)(lightsabersegmentinterval /
-                    (m_afSegmentAge[nPrevious] - m_afSegmentAge[nCurrent]));
+                float fFraction = lightsabersegmentinterval /
+                    (m_afSegmentAge[nPrevious] - m_afSegmentAge[nCurrent]);
                 while (fFraction < 1.0f)
                 {
                     fTime += lightsabersegmentinterval;
@@ -937,6 +913,9 @@ static void SetVertexData4f(Aurora::AuroraStreamMode nStream,
     {
     case Aurora::STREAM_POSITION:
         glVertex4f(fX, fY, fZ, fW);
+        break;
+    case Aurora::STREAM_TEXCOORD:
+        glTexCoord3f(fX, fY, fZ);
         break;
     case Aurora::STREAM_COLOR:
         GLRender_SetColor4f(fX, fY, fZ, fW);
