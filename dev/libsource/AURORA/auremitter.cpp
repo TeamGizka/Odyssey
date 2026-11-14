@@ -1000,6 +1000,7 @@ void PartEmitter::RenderStandard()  // PC 0x004B9D00 GOG 0x004B9E10
                     fFrameAlpha = 1.0f;
             }
             Vector vVertical;
+            AurDrawLine(pParticle->m_vPosition, pParticle->m_vPosition, 1);
             if (m_nReserved114 == AlignedToParticleDir)
             {
                 vRight = pParticle->m_qOrientation.xdir();
