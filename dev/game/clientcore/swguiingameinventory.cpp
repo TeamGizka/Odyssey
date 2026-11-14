@@ -19,9 +19,6 @@
 #include "swguiingamecharacter.h"
 #include "swguiingameequip.h"
 
-static inline void SwguiingameinventoryTrace2();
-static inline void SwguiingameinventoryTrace1();
-
 const int CSWGuiInGameInventory::m_nFilterName[6] =
 {
     41822, 42165, 41818, 41821, 41819, 41820
@@ -541,23 +538,7 @@ void CSWGuiInGameInventory::HandleInputEvent(int nEvent, int nState)
 // PC 0x0073A040 GOG 0x00739DA0
 CSWGuiInGameInventory::~CSWGuiInGameInventory()
 {
-    SwguiingameinventoryTrace2();
     m_lbxDescription.ClearItems();
-    m_lbxItems.ClearItems();
-    for (int i = 0; i < m_aItemEntries.num; i++)
-    {
-        if (m_aItemEntries.element[i] != 0)
-        {
-            delete m_aItemEntries.element[i];
-        }
-        m_aItemEntries.element[i] = 0;
-    }
-    m_aItemEntries.num = 0;
-}
-// PC 0x0073A310 GOG 0x0073A070
-void CSWGuiInGameInventory::OnPanelRemoved()
-{
-    SwguiingameinventoryTrace2();
     m_lbxItems.ClearItems();
     for (int i = 0; i < m_aItemEntries.num; i++)
     {
@@ -567,14 +548,21 @@ void CSWGuiInGameInventory::OnPanelRemoved()
         }
         m_aItemEntries[i] = 0;
     }
-    m_aItemEntries.num = 0;
-    if (m_aItemEntries.element != 0)
+    m_aItemEntries.RemoveAll(0);
+}
+// PC 0x0073A310 GOG 0x0073A070
+void CSWGuiInGameInventory::OnPanelRemoved()
+{
+    m_lbxItems.ClearItems();
+    for (int i = 0; i < m_aItemEntries.num; i++)
     {
-        delete m_aItemEntries.element;
-        m_aItemEntries.element = 0;
-        m_aItemEntries.array_size = 0;
+        if (m_aItemEntries[i] != 0)
+        {
+            delete m_aItemEntries[i];
+        }
+        m_aItemEntries[i] = 0;
     }
-    m_aItemEntries.num = 0;
+    m_aItemEntries.RemoveAll();
     g_pAppManager->m_pServerExoApp->GetPartyTable()
         ->GetPartyItems()
         ->ClearNewItems(&m_aNewItems);
@@ -828,15 +816,6 @@ void CSWGuiInGameInventory::OnPanelAdded()
 #endif
     g_pAppManager->m_pClientExoApp->ShowTutorialWindow(20, OBJECT_INVALID,
                                                        OBJECT_INVALID, 0);
-}
-
-static inline void SwguiingameinventoryTrace2()
-{
-    SwguiingameinventoryTrace1();
-}
-
-static inline void SwguiingameinventoryTrace1()
-{
 }
 
 static inline void SwguiingameinventorySync3()
