@@ -356,9 +356,11 @@ CSWGuiPortraitCharGen::CSWGuiPortraitCharGen(CSWGuiManager* pManager,
 #endif
     StopLoadFromLayout();
 
-    m_nOriginalPortrait = m_pCreature->GetStats()->m_nPortraitId;
+    unsigned short nPortrait = m_pCreature->GetStats()->m_nPortraitId;
+    m_nOriginalPortrait = nPortrait;
     m_nPortraitIndex = 0;
-    GetPortraitsList(m_pCreature->GetStats()->m_nGender);
+    unsigned char nGender = m_pCreature->GetStats()->m_nGender;
+    GetPortraitsList(nGender);
 
     CAurScene* pScene = m_viewHead.m_cScene.m_pScene;
     CAurCamera* pCamera = m_viewHead.m_cScene.m_pCamera;
