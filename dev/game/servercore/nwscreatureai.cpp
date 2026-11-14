@@ -41,12 +41,11 @@
 #include <math.h>
 #include "nwspell.h"
 #include "nwrace.h"
+#include "aurdraw.h"
 
 static inline void NwscreatureaiTrace1();
 
 #define NWSCREATUREAI_DEBUG_LINE_HEIGHT 1.0f
-
-#include "aurdraw.h"
 
 #define NWSCREATUREAI_DEBUG_MARKER_SIZE 0.25f
 #define NWSCREATUREAI_DEBUG_MARKER(vPoint) \

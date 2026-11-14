@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "aurdraw.h"
 
 static inline void SwmgtrackfollowerTrace4();
 static inline void SwmgtrackfollowerTrace3();
@@ -1798,7 +1799,6 @@ static inline void SwmgtrackfollowerTrace1()
 {
 }
 
-#include "aurdraw.h"
 // PC 0x006C4D80 GOG 0x006C4BB0
 int CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>& lstEnemyIds,
                                      int bRunScripts)

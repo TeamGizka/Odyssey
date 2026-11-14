@@ -41,6 +41,7 @@
 #include "nwsdoor.h"
 
 #include "nwskill.h"
+#include "aurdraw.h"
 
 static inline CServerExoApp* GetServerExoApp();
 
@@ -259,7 +260,6 @@ unsigned short CSWSObject::GetIDByAQActionID(unsigned short nAQActionID)
 }
 #define NWSOBJECTAI_DEBUG_LINE_LOW 0.01f
 #define NWSOBJECTAI_DEBUG_LINE_HIGH 1.0f
-#include "aurdraw.h"
 // PC 0x005DAFA0 GOG 0x005DB010
 int CSWSObject::AIActionDialogObject(CSWSObjectActionNode* pNode)
 {

@@ -13,6 +13,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include "aurdraw.h"
 
 static inline void AurModelTrace4();
 static inline void AurModelTrace3();
@@ -2583,7 +2584,6 @@ void PartEmitter::SetWeather(bool bWeather)
 {
     m_bWeather = bWeather;
 }
-#include "aurdraw.h"
 // PC 0x00450140 GOG 0x00450280
 void Part::GetWorld(Vector& vPosition, Quaternion& qOrientation)
 {

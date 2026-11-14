@@ -22,6 +22,7 @@
 #include "nwseffect.h"
 #include "nwseffectlist.h"
 #include "aurora.h"
+#include "aurdraw.h"
 
 #define VIDEO_EFFECT_FORCESIGHT 4
 #define VIDEO_EFFECT_FURY_1 7
@@ -806,7 +807,6 @@ CSWPartyFollowDataArray::CSWPartyFollowDataArray()
     Reset(vPosition, 0.0f);
 }
 #define SWPARTY_DEBUG_LINE_HEIGHT_STEP 0.01f
-#include "aurdraw.h"
 // PC 0x0068B530 GOG 0x0068B2A0
 void CSWPartyFollowDataArray::SmoothFollowPath()
 {

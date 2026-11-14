@@ -5,6 +5,7 @@
 #include <math.h>
 #include <string.h>
 #include "aurcamera.h"
+#include "aurdraw.h"
 #ifdef _XBOX
 #include "aurconsole.h"
 #endif
@@ -239,7 +240,6 @@ Camera::~Camera()
     DeleteFuncWithPrefix(g_sObjectFuncName);
 #endif
 }
-#include "aurdraw.h"
 // PC 0x00471780 GOG 0x00471910
 void Camera::RenderScene()
 {
