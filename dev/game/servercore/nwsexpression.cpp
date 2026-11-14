@@ -1,9 +1,8 @@
 #include "exobase.h"
 #include "nwsexpression.h"
 
-static inline void NwsexpressionTrace2();
-static inline void NwsexpressionTrace1();
-#define NWSEXPRESSION_TRACE() NwsexpressionTrace2()
+#define NWSEXPRESSION_DEBUG 0
+
 // PC 0x005E45F0 GOG 0x005E4620
 void CSWSExpressionList::DeleteAlternate(CSWSExpressionNode* pNode)
 {
@@ -28,7 +27,10 @@ void CSWSExpressionList::DeleteAlternate(CSWSExpressionNode* pNode)
 // PC 0x005E4640 GOG 0x005E4670
 int CSWSExpressionList::AddNode(CSWSExpressionNode* pNode)
 {
-    NwsexpressionTrace2();
+    if (NWSEXPRESSION_DEBUG)
+    {
+        DeleteAlternate(pNode->m_pAlternate);
+    }
     CSWSExpressionNode* pLast;
 
     if (m_pHead != NULL || m_pTail != NULL)
@@ -53,7 +55,10 @@ int CSWSExpressionList::AddNode(CSWSExpressionNode* pNode)
 // PC 0x005E4680 GOG 0x005E46B0
 CSWSExpressionNode* CSWSExpression::NewNode(int nType)
 {
-    NwsexpressionTrace2();
+    if (NWSEXPRESSION_DEBUG)
+    {
+        m_pList->AddNode(NULL);
+    }
     CSWSExpressionNode* pNode = new CSWSExpressionNode;
     pNode->m_nType = nType;
     return pNode;
@@ -61,7 +66,10 @@ CSWSExpressionNode* CSWSExpression::NewNode(int nType)
 // PC 0x005E4700 GOG 0x005E4730
 void CSWSExpression::ClearAlternate(CSWSExpressionNode* pNode)
 {
-    NWSEXPRESSION_TRACE();
+    if (NWSEXPRESSION_DEBUG)
+    {
+        m_pList->DeleteAlternate(pNode);
+    }
     for (; pNode != NULL; pNode = pNode->m_pNext)
     {
         if (pNode->m_nType == EXPRESSION_NODE_ALTERNATIVE_END)
@@ -533,13 +541,4 @@ int CSWSExpression::TestString(const CExoString& sString, int bCapture)
     delete lstStack[0];
     ClearGraph();
     return 1;
-}
-
-static inline void NwsexpressionTrace2()
-{
-    NwsexpressionTrace1();
-}
-
-static inline void NwsexpressionTrace1()
-{
 }

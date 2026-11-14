@@ -74,10 +74,6 @@ static Vector* AllocateVectorArray(int nCount)
 #include "resgff.h"
 #include "nwsdoor.h"
 
-static inline void NwccreatureTrace3();
-static inline void NwccreatureTrace2();
-static inline void NwccreatureTrace1();
-
 #define NWC_CREATURE_SIGHT_HEIGHT 1.5f
 #define SWCCREATURE_LIPSYNC_END_TIME_MIN 0.99999f
 #define SWCCREATURE_LIPSYNC_END_TIME_MAX 1.00001f
@@ -86,6 +82,8 @@ static inline void NwccreatureTrace1();
 #include "../../libsource/AURORA/aurpointer.h"
 #include "nwcdoor.h"
 #include "nwscombatround.h"
+
+#define NWCCREATURE_DEBUG 0
 
 const int CSWCCreature::MODE_DEFAULT = 0;
 const int CSWCCreature::MODE_SWDRIVE = 1;
@@ -3885,7 +3883,10 @@ void CSWCCreature::ShowEquippedItems()
 // PC 0x00665ED0 GOG 0x00665C70
 void CSWCCreature::SetCombatState(int nState)
 {
-    NwccreatureTrace3();
+    if (NWCCREATURE_DEBUG)
+    {
+        int bCanSee = CanSee(NULL);
+    }
     int nPreviousState = m_nCombatState;
     m_nCombatState = nState;
     if (nState != 0)
@@ -8716,20 +8717,6 @@ int CSWCCreature::LoadModel(const CResRef& cModel, unsigned char nModel,
         }
     }
     return 1;
-}
-
-static inline void NwccreatureTrace3()
-{
-    NwccreatureTrace2();
-}
-
-static inline void NwccreatureTrace2()
-{
-    NwccreatureTrace1();
-}
-
-static inline void NwccreatureTrace1()
-{
 }
 
 #ifdef _XBOX

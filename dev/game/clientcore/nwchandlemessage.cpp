@@ -57,14 +57,13 @@
 #include "partytables.h"
 #include "nwscreature.h"
 
-static inline void NwchandlemessageTrace3();
-static inline void NwchandlemessageTrace2();
-static inline void NwchandlemessageTrace1();
-#define NWCHANDLEMESSAGE_TRACE() NwchandlemessageTrace3()
+#define NWCHANDLEMESSAGE_DEBUG 0
 
-static inline CClientExoApp* ClientExoAppLate3(CAppManager* p);
-static inline CClientExoApp* ClientExoAppLate2(CAppManager* p);
-static inline CClientExoApp* ClientExoAppLate1(CAppManager* p);
+enum CombatMessageStringRef
+{
+    STRREF_CC_HIT = 1371, STRREF_CC_MISS = 1373, STRREF_CC_CRITICAL_HIT = 1390,
+    STRREF_CC_SUCCESS = 1392, STRREF_CC_FAILURE = 1393
+};
 
 int enablemodelrequest = 1;
 int g_bLogConversations = 0;
@@ -89,7 +88,10 @@ CSWCMessage::~CSWCMessage()
 // PC 0x006A98F0 GOG 0x006A96D0
 int CSWCMessage::HandleServerToPlayerChat(unsigned char nMinor)
 {
-    NwchandlemessageTrace1();
+    if (NWCHANDLEMESSAGE_DEBUG)
+    {
+        HandleServerToPlayerSetCustomToken(nMinor);
+    }
     Vector vPosition;
     CExoString sMessage;
     CExoString sBubbleMessage;
@@ -1472,13 +1474,13 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             sOpposedRoll.Format("%s %s %d = %d", sOpposedRoll.CStr(), sSign.CStr(), nModifier, nOpposedTotal);
         }
         if (nResult == 1)
-            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(1371);
+            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CC_HIT);
         else if (nResult == 2)
-            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(1390);
+            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CC_CRITICAL_HIT);
         else if (nResult == 8)
             sResult = g_pAppManager->GetClientExoApp()->GetGUIString(0);
         else if (nResult == 4)
-            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(1373);
+            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CC_MISS);
         else if (nResult == 3)
             sResult = g_pAppManager->GetClientExoApp()->GetGUIString(1416);
         else if (nResult == 17)
@@ -1609,13 +1611,13 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             }
         }
         if (nResult == 1)
-            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(1371);
+            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CC_HIT);
         else if (nResult == 2)
-            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(1390);
+            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CC_CRITICAL_HIT);
         else if (nResult == 8)
             sResult = g_pAppManager->GetClientExoApp()->GetGUIString(0);
         else if (nResult == 4)
-            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(1373);
+            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CC_MISS);
         else if (nResult == 5)
             sResult = g_pAppManager->GetClientExoApp()->GetGUIString(1413);
         else if (nResult == 6)
@@ -1709,7 +1711,7 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             g_pTlkTable->SetCustomToken(0, sObjectName);
         }
         if (nResult == 0)
-            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(1393);
+            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CC_FAILURE);
         else if (nResult == 1)
         {
             sMessage = g_pSWTlkTable->Fetch(38598, NULL, 0, 0);
@@ -1800,9 +1802,9 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         }
         g_pTlkTable->SetCustomToken(1, sSave);
         if (nRoll + nModifier + nBase >= nDifficulty)
-            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(1392);
+            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CC_SUCCESS);
         else
-            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(1393);
+            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CC_FAILURE);
         g_pTlkTable->SetCustomToken(2, sResult);
         g_pTlkTable->SetCustomToken(3, CExoString(nRoll + nBase + nModifier));
         g_pTlkTable->SetCustomToken(4, CExoString((int)nRoll));
@@ -1947,10 +1949,10 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
             switch (nResult)
             {
             case 1: case 4:
-                sResult = g_pAppManager->GetClientExoApp()->GetGUIString(1392);
+                sResult = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CC_SUCCESS);
                 break;
             case 0: case 2: case 3:
-                sResult = g_pAppManager->GetClientExoApp()->GetGUIString(1393);
+                sResult = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CC_FAILURE);
                 break;
             }
             int nTotal = nModifier + nRoll;
@@ -2066,11 +2068,11 @@ int CSWCMessage::HandleServerToPlayerCCMessage(unsigned char nMinor)
         else
             sTouch = g_pAppManager->GetClientExoApp()->GetGUIString(1411);
         if (nResult == 1)
-            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(1371);
+            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CC_HIT);
         else if (nResult == 2)
-            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(1390);
+            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CC_CRITICAL_HIT);
         else if (nResult == 4)
-            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(1373);
+            sResult = g_pAppManager->GetClientExoApp()->GetGUIString(STRREF_CC_MISS);
         else if (nResult == 17)
         {
             g_pTlkTable->SetCustomToken(0, nConcealment);
@@ -3435,7 +3437,10 @@ int CSWCMessage::HandleServerToPlayerSafeProjectile(unsigned char nMinor)
 // PC 0x006B90D0 GOG 0x006B8EB0
 int CSWCMessage::HandleServerToPlayerGuiInfoPopupMessage(unsigned char nMinor)
 {
-    NwchandlemessageTrace1();
+    if (NWCHANDLEMESSAGE_DEBUG)
+    {
+        HandleServerToPlayerChat(nMinor);
+    }
     switch (nMinor)
     {
     case 2:
@@ -3468,7 +3473,10 @@ int CSWCMessage::HandleServerToPlayerCheatMessage(unsigned char nMinor)
 // PC 0x006B9190 GOG 0x006B8F70
 int CSWCMessage::HandleServerToPlayerJournalMessage_AddQuest()
 {
-    NwchandlemessageTrace1();
+    if (NWCHANDLEMESSAGE_DEBUG)
+    {
+        HandleServerToPlayerGuiInfoPopupMessage(0);
+    }
     CSWCJournal* pJournal = g_pAppManager->m_pClientExoApp->GetQuestJournal();
     SJournalEntry entry;
 
@@ -8657,25 +8665,29 @@ int CSWCMessage::HandleServerToPlayerJournalMessage_DeleteWorldStrref()
 // PC 0x006BE840 GOG 0x006BE620
 int CSWCMessage::HandleServerToPlayerModule(unsigned char nMinor)
 {
+    if (NWCHANDLEMESSAGE_DEBUG)
+    {
+        HandleServerToPlayerUpdate_CharacterSheet();
+    }
 
     if (!MessageReadOverflow(1))
     switch (nMinor)
     {
     case CSWSMessage::MODULE_LOAD:
     {
-        CSWCModule* pModule = ClientExoAppLate3(g_pAppManager)->GetModule();
+        CSWCModule* pModule = g_pAppManager->GetClientExoApp()->GetModule();
         if (!g_bLoggedIn)
         {
             ClearReadMessage();
             return 1;
         }
         if (!pModule)
-            pModule = ClientExoAppLate3(g_pAppManager)->CreateModule();
+            pModule = g_pAppManager->GetClientExoApp()->CreateModule();
         pModule->UnloadModule();
         if (!pModule->LoadModule())
             break;
-        ClientExoAppLate3(g_pAppManager)->InitializeInGameGUI();
-        ClientExoAppLate3(g_pAppManager)->GetInGameGui()->ClearMapDisplays();
+        g_pAppManager->GetClientExoApp()->InitializeInGameGUI();
+        g_pAppManager->GetClientExoApp()->GetInGameGui()->ClearMapDisplays();
         return SendPlayerToServerModule_ModuleLoaded();
     }
     case CSWSMessage::MODULE_UPDATE_TIME:
@@ -8687,7 +8699,7 @@ int CSWCMessage::HandleServerToPlayerModule(unsigned char nMinor)
     case CSWSMessage::MODULE_EXPORT_REPLY:
         return HandleServerToPlayerExportReply();
     case CSWSMessage::MODULE_UNLOAD:
-        ClientExoAppLate3(g_pAppManager)->UnloadModule();
+        g_pAppManager->GetClientExoApp()->UnloadModule();
     case CSWSMessage::MODULE_SUCCESS:
         return 1;
     case CSWSMessage::MODULE_SAVE_STATUS:
@@ -9636,7 +9648,10 @@ int CSWCMessage::HandleServerToPlayerUpdate_Update()
 // PC 0x006C06F0 GOG 0x006C04D0
 int CSWCMessage::HandleServerToPlayerJournalMessage(unsigned char nMinor)
 {
-    NWCHANDLEMESSAGE_TRACE();
+    if (NWCHANDLEMESSAGE_DEBUG)
+    {
+        HandleServerToPlayerUpdate_GuiElements();
+    }
     switch (nMinor)
     {
     case 6:
@@ -10683,6 +10698,10 @@ int CSWCMessage::HandleServerToPlayerItemScript_Add()
 // PC 0x006C0790 GOG 0x006C0570
 int CSWCMessage::HandleServerToPlayerDebugInfo(unsigned char nMinor)
 {
+    if (NWCHANDLEMESSAGE_DEBUG)
+    {
+        HandleServerToPlayerJournalMessage(nMinor);
+    }
     unsigned long oidObject = ReadOBJECTIDClient();
 
     if (MessageReadOverflow(1))
@@ -10691,7 +10710,7 @@ int CSWCMessage::HandleServerToPlayerDebugInfo(unsigned char nMinor)
     }
 
     CSWCObject* pObject =
-        ClientExoAppLate3(g_pAppManager)->GetGameObject(oidObject);
+        g_pAppManager->GetClientExoApp()->GetGameObject(oidObject);
     if (pObject != NULL)
     {
         switch (pObject->m_nObjectType)
@@ -10704,7 +10723,7 @@ int CSWCMessage::HandleServerToPlayerDebugInfo(unsigned char nMinor)
             return HandleServerToPlayerDebugInfo_Placeable(oidObject);
         }
     }
-    else if (ClientExoAppLate3(g_pAppManager)->GetModule()->m_pInfo->m_nId ==
+    else if (g_pAppManager->GetClientExoApp()->GetModule()->m_pInfo->m_nId ==
              oidObject)
     {
         return 1;
@@ -10977,35 +10996,6 @@ int CSWCMessage::HandleServerToPlayerMessage(unsigned char* pMessage,
     return bResult;
 }
 
-static inline CClientExoApp* ClientExoAppLate3(CAppManager* p)
-{
-    return ClientExoAppLate2(p);
-}
-
-static inline CClientExoApp* ClientExoAppLate1(CAppManager* p)
-{
-    return p->m_pClientExoApp;
-}
-
-static inline void NwchandlemessageTrace2()
-{
-    NwchandlemessageTrace1();
-}
-
-static inline void NwchandlemessageTrace1()
-{
-}
-
-static inline CClientExoApp* ClientExoAppLate2(CAppManager* p)
-{
-    return ClientExoAppLate1(p);
-}
-
-static inline void NwchandlemessageTrace3()
-{
-    NwchandlemessageTrace2();
-}
-
 #ifdef _XBOX
 
 int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()
@@ -11051,4 +11041,3 @@ int CSWCMessage::HandleServerToPlayerUpdate_GuiInventory()
     return 0;
 }
 #endif
-

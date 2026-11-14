@@ -44,10 +44,9 @@
 #include "clientoptions.h"
 #include "guiingame.h"
 
-#define PLACEABLE_AUTO_OPEN_DISTANCE 3.0f
+#define NWSEFFECTLIST_DEBUG 0
 
-static inline CServerExoApp* ServerExoAppLate2(CAppManager* p);
-static inline CServerExoApp* ServerExoAppLate1(CAppManager* p);
+#define PLACEABLE_AUTO_OPEN_DISTANCE 3.0f
 
 const int CSWSEffectListHandler::STORE_EFFECT = 0;
 const int CSWSEffectListHandler::DELETE_EFFECT = 1;
@@ -6824,6 +6823,10 @@ int CSWSEffectListHandler::OnApplyInvisibility(CSWSObject* pObject,
 int CSWSEffectListHandler::OnRemoveInvisibility(CSWSObject* pObject,
                                                 CGameEffect* pEffect)
 {
+    if (NWSEFFECTLIST_DEBUG)
+    {
+        OnApplyInvisibility(pObject, pEffect, 0);
+    }
     CSWSCreature* pCreature;
     CGameEffect* pOther;
     CSWSModule* pModule;
@@ -6852,7 +6855,7 @@ int CSWSEffectListHandler::OnRemoveInvisibility(CSWSObject* pObject,
         }
         if (bStillInvisible == FALSE)
         {
-            pModule = ServerExoAppLate2(g_pAppManager)->GetModule();
+            pModule = g_pAppManager->GetServerExoApp()->GetModule();
             oidCreature = pCreature->m_nId;
             if (pModule->m_lstInvisibleCreatures.Contains(oidCreature))
             {
@@ -7937,14 +7940,3 @@ int CSWSEffectListHandler::OnRemovePsychicStatic(CSWSObject* pObject,
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     return 1;
 }
-
-static inline CServerExoApp* ServerExoAppLate2(CAppManager* p)
-{
-    return ServerExoAppLate1(p);
-}
-
-static inline CServerExoApp* ServerExoAppLate1(CAppManager* p)
-{
-    return p->m_pServerExoApp;
-}
-

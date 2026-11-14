@@ -6,9 +6,7 @@
 #include "nwmessage.h"
 #include "gameobjectarray.h"
 
-static inline void NwmessageTrace2();
-static inline void NwmessageTrace1();
-#define NWMESSAGE_TRACE() NwmessageTrace2()
+#define NWMESSAGE_DEBUG 0
 
 const int CSWMessage::DEFAULT_WRITE_BUFFER_SIZE = 128;
 // PC 0x0053F200 GOG 0x0052CAA0
@@ -420,12 +418,15 @@ void CSWCCMessageData::CopyTo(CSWCCMessageData* pData)
 // PC 0x0053FF40 GOG 0x0052C860
 Vector CSWMessage::ReadVector()
 {
-    NWMESSAGE_TRACE();
     Vector vValue;
 
     vValue.m_fX = ReadFLOAT(0.0f, 32);
     vValue.m_fY = ReadFLOAT(0.0f, 32);
     vValue.m_fZ = ReadFLOAT(0.0f, 32);
+    if (NWMESSAGE_DEBUG)
+    {
+        WriteFLOAT(vValue.m_fZ, 0.0f, 32);
+    }
 
     return vValue;
 }
@@ -911,13 +912,4 @@ void CSWMessage::WriteBOOL(int bValue)
     *(int*)(m_pWriteBuffer + m_nWriteIndex) = bValue;
     m_nWriteIndex += 4;
     m_nTotalBytesWritten += 4;
-}
-
-static inline void NwmessageTrace2()
-{
-    NwmessageTrace1();
-}
-
-static inline void NwmessageTrace1()
-{
 }

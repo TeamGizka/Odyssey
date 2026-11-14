@@ -46,7 +46,8 @@ template int CExoArrayList<unsigned long>::Contains(unsigned long) const;
 #include "nwfeat.h"
 #include "nwspell.h"
 
-static inline void NwssendplayermessageTrace1();
+#define NWSSENDPLAYERMESSAGE_DEBUG 0
+
 // PC 0x0058B7E0 GOG 0x0058B860
 void CSWSMessage::AddDoorAppearanceToMessage(CSWSDoor* pDoor)
 {
@@ -2818,7 +2819,10 @@ int CSWSMessage::SendServerToPlayerChat_Whisper(unsigned long nPlayerId,
 int CSWSMessage::TestObjectVisible(CSWSObject* pObject,
     CSWSObject* pPlayerObject)
 {
-    NwssendplayermessageTrace1();
+    if (NWSSENDPLAYERMESSAGE_DEBUG)
+    {
+        CSWVisibilityNode* pNode = pPlayerObject->AsSWSCreature()->m_lstVisibilityList[0];
+    }
     Vector vObjectPosition = pObject->m_vPosition;
     int bVisible = 0;
     Vector vPlayerPosition = pPlayerObject->m_vPosition;
@@ -8378,10 +8382,6 @@ int CSWSMessage::SendServerToPlayerGameObjUpdate(CSWSPlayer* pPlayer,
 int CSWSMessage::SendServerToPlayerGameObjUpdate(CSWSPlayer* pPlayer)
 {
     return SendServerToPlayerGameObjUpdate(pPlayer, OBJECT_INVALID);
-}
-
-static inline void NwssendplayermessageTrace1()
-{
 }
 
 #ifdef _XBOX

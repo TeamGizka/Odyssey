@@ -23,6 +23,8 @@
 #include <math.h>
 #include <string.h>
 
+#define NWCCREATURESTATS_DEBUG 0
+
 static inline void NwccreaturestatsTrace3();
 static inline void NwccreaturestatsTrace2();
 static inline void NwccreaturestatsTrace1();
@@ -705,43 +707,64 @@ int CSWCCreatureStats::GetCombatModeDamageModifier(CSWCCreature* pCreature)
 // PC 0x006FBFC0 GOG 0x006FBBB0
 inline char CSWCCreatureStats::GetSTRMod()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        CalculateUnarmedDamageDice();
+    }
     return (int)floor(m_nStrength * 0.5) - 5;
 }
 // PC 0x006FBFF0 GOG 0x006FBBE0
 inline char CSWCCreatureStats::GetDEXMod()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        CalculateUnarmedDamageDice();
+    }
     return CalcStatModifier(m_nDexterity) + m_nDexterityBonus;
 }
 // PC 0x006FC030 GOG 0x006FBC20
 inline int CSWCCreatureStats::GetCONMod()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        CalculateUnarmedDamageDice();
+    }
     return (int)floor(m_nConstitution * 0.5) - 5;
 }
 // PC 0x006FC060 GOG 0x006FBC50
 inline int CSWCCreatureStats::GetINTMod()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        CalculateUnarmedDamageDice();
+    }
     return (int)floor(m_nIntelligence * 0.5) - 5;
 }
 // PC 0x006FC090 GOG 0x006FBC80
 inline int CSWCCreatureStats::GetWISMod()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        CalculateUnarmedDamageDice();
+    }
     return (int)floor(m_nWisdom * 0.5) - 5;
 }
 // PC 0x006FC0C0 GOG 0x006FBCB0
 inline int CSWCCreatureStats::GetCHAMod()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        CalculateUnarmedDamageDice();
+    }
     return (int)floor(m_nCharisma * 0.5) - 5;
 }
 // PC 0x006FC0F0 GOG 0x006FBCE0
 inline char CSWCCreatureStats::GetBaseINTMod()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        CalculateUnarmedDamageDice();
+    }
     return (int)floor(m_aAbilities[3] * 0.5) - 5;
 }
 // PC 0x006FC120 GOG 0x006FBD10
@@ -773,7 +796,10 @@ void CSWCCreatureStats::ClearFeats()
 // PC 0x006FC2A0 GOG 0x006FBE90
 unsigned char CSWCCreatureStats::GetLevel()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        CalculateUnarmedDamageDice();
+    }
     int nLevel = 0;
     for (int i = 0; i < m_nClassCount; i++)
     {
@@ -827,7 +853,10 @@ unsigned char CSWCCreatureStats::GetLevel()
 // PC 0x006FC440 GOG 0x006FC030
 CExoString CSWCCreatureStats::GetClassesString(char cSeparator)
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        CalculateUnarmedDamageDice();
+    }
     CExoString sClasses;
     char szSeparator[2];
     szSeparator[0] = 0;
@@ -893,7 +922,10 @@ unsigned short CSWCCreatureStats::GetFeat(unsigned short nIndex)
 void CSWCCreatureStats::SetFeatRemainingUses(unsigned short nFeat,
                                              unsigned char nUses)
 {
-    NwccreaturestatsTrace2();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        HasFeat(0);
+    }
     for (int i = 0; i < m_lstFeatUses.num; i++)
     {
         if (m_lstFeatUses.element[i]->m_nFeat == nFeat)
@@ -928,7 +960,10 @@ unsigned long CSWCCreatureStats::GetKnownSpell(unsigned char nClass,
                                                unsigned char nLevel,
                                                unsigned char nIndex)
 {
-    NwccreaturestatsTrace2();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        HasFeat(0);
+    }
     if (nClass >= 2)
     {
         return 0xFFFFFFFF;
@@ -989,7 +1024,10 @@ CSWCCreatureStats_ClassInfo::~CSWCCreatureStats_ClassInfo()
 // PC 0x006FC760 GOG 0x006FC350
 CExoString CSWCCreatureStats::GetAlignmentString(int nAlignment)
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        CalculateUnarmedDamageDice();
+    }
     STR_RES strRes;
 
     unsigned long nStrRef;
@@ -1013,7 +1051,10 @@ CExoString CSWCCreatureStats::GetAlignmentString(int nAlignment)
 unsigned short CSWCCreatureStats::GetNumberKnownSpells(unsigned char nClass,
                                                        unsigned char nLevel)
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        CalculateUnarmedDamageDice();
+    }
     if (nClass >= 2)
     {
         return 0;
@@ -1024,7 +1065,10 @@ unsigned short CSWCCreatureStats::GetNumberKnownSpells(unsigned char nClass,
 unsigned char CSWCCreatureStats::GetSpellsPerDayLeft(unsigned char nClass,
                                                      unsigned char nLevel)
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        CalculateUnarmedDamageDice();
+    }
     if (nClass >= 2)
     {
         return 0;
@@ -1367,7 +1411,10 @@ void CSWCLevelUpStats::DecreaseSkillRank(unsigned short nSkill,
 void CSWCLevelUpStats::CalcNumberFeats(unsigned char& nGeneral,
                                        unsigned char& nBonus)
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        AddSkillPointsPerLevel();
+    }
     CSWClass* pClass = &g_pRules->m_pClasses[GetClassLeveledUpIn()];
     unsigned char nLevel = GetClassLevel(m_nClassCount - 1);
 
@@ -1377,7 +1424,10 @@ void CSWCLevelUpStats::CalcNumberFeats(unsigned char& nGeneral,
 // PC 0x006FD1E0 GOG 0x006FCDD0
 unsigned char CSWCLevelUpStats::ComputeNumberKnownSpellsLeft()
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        AddSkillPointsPerLevel();
+    }
     unsigned char nClass = GetClass(m_nClassCount - 1);
     CSWClass* pClass = &g_pRules->m_pClasses[nClass];
     if (pClass == NULL)
@@ -1407,7 +1457,10 @@ unsigned char CSWCLevelUpStats::ComputeNumberKnownSpellsLeft()
 void CSWCLevelUpStats::SetNormalBonusFlags(unsigned short nFeat, int& bNormal,
                                            int& bBonus)
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        AddSkillPointsPerLevel();
+    }
     bNormal = 0;
     bBonus = 0;
     if (g_pRules->GetFeat(nFeat) != NULL)
@@ -1472,7 +1525,10 @@ void CSWCLevelUpStats::AddDefaultPackageSkills(int nClass, int bAllSkills)
 void CSWCCreatureStats::RemoveKnownSpell(unsigned char nClass,
                                          unsigned long nSpell)
 {
-    NwccreaturestatsTrace3();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        AddKnownSpell(nClass, 0);
+    }
     if (nClass < 2)
     {
         if (g_pRules->m_pSpellArray->GetSpell(nSpell) != NULL)
@@ -2314,7 +2370,10 @@ int CSWCLevelUpStats::FeatAcquired(unsigned short nFeat,
 // PC 0x006FD4C0 GOG 0x006FD0B0
 int CSWCCreatureStats::HasSpell(unsigned char nLevel, unsigned long nSpell)
 {
-    NwccreaturestatsTrace1();
+    if (NWCCREATURESTATS_DEBUG)
+    {
+        FeatAcquired(0);
+    }
     for (unsigned char i = 0; i < m_nClassCount; i++)
     {
         CSWCCreatureStats_ClassInfo* pInfo = &m_aClassInfo[i];

@@ -34,7 +34,7 @@
 #include "nwscombatround.h"
 #include "clientoptions.h"
 
-static inline void NwsplaceableTrace1();
+#define NWSPLACEABLE_DEBUG 0
 
 int RenderPlaceableBBox = 0;
 // PC 0x0058A400 GOG 0x0058A480
@@ -1247,7 +1247,6 @@ void CSWSPlaceable::CloseInventory(unsigned long oidCloser, int bUpdatePlayer)
 // PC 0x0058A330 GOG 0x0058A3B0
 int CSWSPlaceable::GetItemCount(int bDropableOnly)
 {
-    NwsplaceableTrace1();
     if (m_bHasInventory == 0)
         return 0;
 
@@ -1258,6 +1257,10 @@ int CSWSPlaceable::GetItemCount(int bDropableOnly)
         for (unsigned int i = 0; i < pRepository->GetNumItems(); i++)
         {
             CSWSItem* pItem = pRepository->ItemListGetItem(i);
+            if (NWSPLACEABLE_DEBUG)
+            {
+                unsigned long oidItem = pRepository->m_lstItems[i];
+            }
             if (pItem != NULL &&
                 (bDropableOnly == 0 || pItem->m_bDropable != 0))
                 nCount++;
@@ -1792,10 +1795,6 @@ void CSWSPlaceable::DoDamage(int nDamage)
     {
         CSWSObject::DoDamage(nDamage);
     }
-}
-
-static inline void NwsplaceableTrace1()
-{
 }
 
 #ifdef _XBOX

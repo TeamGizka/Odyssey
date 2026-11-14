@@ -42,13 +42,12 @@
 #include <float.h>
 #include "worldtimer.h"
 
+#define NWSAREA_DEBUG 0
+
 static inline void NwsareaSync4();
 static inline void NwsareaSync3();
 static inline void NwsareaSync2();
 static inline void NwsareaSync1();
-
-static inline void NwsareaTrace1();
-#define NWSAREA_TRACE() NwsareaTrace1()
 
 static CResRef* AllocateResRefArray(int nCount)
 {
@@ -2984,7 +2983,10 @@ void CSWSArea::BudgeCreatures(const Vector& vCentre, const Vector& vMin,
 // PC 0x004E3530 GOG 0x004E3650
 int CSWSArea::LoadPathPoints(CResStruct* pStruct)
 {
-    NwsareaTrace1();
+    if (NWSAREA_DEBUG)
+    {
+        IncreaseAILevelPriority();
+    }
     int bSuccess = 1;
     int bFieldRead;
     CResStruct cRoot;
@@ -3318,7 +3320,11 @@ void CSWSArea::ClearObjects()
 // PC 0x004E38A0 GOG 0x004E39C0
 void CSWSArea::AwardStealthXP(unsigned long oidObject)
 {
-    NWSAREA_TRACE();
+    if (NWSAREA_DEBUG)
+    {
+        unsigned long oidObjectInArea;
+        GetFirstObjectInArea(oidObjectInArea);
+    }
     CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
     CSWSCreature* pCreature = pServer->GetCreatureByGameObjectID(oidObject);
 
@@ -3742,10 +3748,6 @@ int CSWSArea::LoadArea(int bLoadingGame)
     m_nGridMaskBytes = (unsigned char)ceil(nWidth * nHeight / 8.0f);
 
     return 1;
-}
-
-static inline void NwsareaTrace1()
-{
 }
 
 static inline void NwsareaSync4()

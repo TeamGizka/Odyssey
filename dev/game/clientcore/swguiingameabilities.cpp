@@ -18,9 +18,7 @@
 #include "nwsarea.h"
 #include "swguiingamecharacter.h"
 
-static inline void SwguiingameabilitiesTrace2();
-static inline void SwguiingameabilitiesTrace1();
-#define SWGUIINGAMEABILITIES_TRACE() SwguiingameabilitiesTrace2()
+#define SWGUIINGAMEABILITIES_DEBUG 0
 
 #ifdef _XBOX
 CSWGuiInGameAbilities::CSWGuiInGameAbilities(CSWGuiManager* pManager)
@@ -161,14 +159,6 @@ void CSWGuiInGameAbilities::CreateFeatList()
     }
 }
 
-static inline void SwguiingameabilitiesTrace2()
-{
-    SwguiingameabilitiesTrace1();
-}
-
-static inline void SwguiingameabilitiesTrace1()
-{
-}
 // PC 0x00736580 GOG 0x007362A0
 void CSWGuiInGameAbilities::OnPanelRemoved()
 {
@@ -223,7 +213,10 @@ void CSWGuiInGameAbilities::UpdateDescriptionListBox(int bShow)
 // PC 0x007366A0 GOG 0x007363C0
 void CSWGuiInGameAbilities::SetDescription(unsigned long nStrRef)
 {
-    SWGUIINGAMEABILITIES_TRACE();
+    if (SWGUIINGAMEABILITIES_DEBUG)
+    {
+        DisplayPowers();
+    }
     STR_RES strDescription;
 
     g_pTlkTable->Fetch(nStrRef, strDescription, CTlkTable::GENDER_MALE);

@@ -37,9 +37,8 @@
 #include "nwccreature.h"
 #include "swmain.h"
 
-static inline void NwsmoduleTrace3();
-static inline void NwsmoduleTrace2();
-static inline void NwsmoduleTrace1();
+#define NWSMODULE_DEBUG 0
+static const int MODULE_SAVE_BASE_RESOURCES = 3;
 
 void UpdateScreen(float fElapsed, int bRunWorld, int bSkipRender);
 // PC 0x00509340 GOG 0x005013F0
@@ -1177,8 +1176,8 @@ void CSWSModule::SaveModuleStart(CExoString& sPath, CExoString& sName)
     m_pERFFile->SetVersion("MOD V1.0");
     m_pERFFile->WriteHeader();
     m_pERFFile->WriteStringTable();
-    m_nResourceCount = 3;
-    m_pERFFile->SetNumEntries(3);
+    m_nResourceCount = MODULE_SAVE_BASE_RESOURCES;
+    m_pERFFile->SetNumEntries(MODULE_SAVE_BASE_RESOURCES);
     m_pModuleGFF = new CResGFF;
 #ifdef _XBOX
     m_pERFStruct = new CResStruct();
@@ -2099,7 +2098,10 @@ void CSWSModule::AddObjectToLimbo(unsigned long oidObject)
 void CSWSModule::PackPlayerCharacterListIntoMessage(CSWSPlayer* pPlayer,
     CExoArrayList<NWPlayerCharacterList_st*>& lstCharacters)
 {
-    NwsmoduleTrace3();
+    if (NWSMODULE_DEBUG)
+    {
+        LoadLimboCreatures(NULL, NULL, 0);
+    }
     int nIndex = 0;
     CResRef cPortrait;
     CExoString sPortrait;
@@ -2759,20 +2761,6 @@ CExoString CSWSModule::GetModuleResourceName()
             sResourceName.Right(sResourceName.GetLength() - nColon - 1);
     }
     return sResourceName;
-}
-
-static inline void NwsmoduleTrace3()
-{
-    NwsmoduleTrace2();
-}
-
-static inline void NwsmoduleTrace2()
-{
-    NwsmoduleTrace1();
-}
-
-static inline void NwsmoduleTrace1()
-{
 }
 
 #ifdef _XBOX

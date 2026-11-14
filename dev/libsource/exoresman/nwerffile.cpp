@@ -6,9 +6,10 @@
 #include <string.h>
 #include <time.h>
 
+#define NWERFFILE_DEBUG 0
+
 static inline void NwerffileTrace2();
 static inline void NwerffileTrace1();
-#define NWERFFILE_TRACE() NwerffileTrace1()
 
 int CERFRes::Read(CExoFile& file)
 {
@@ -343,7 +344,10 @@ int CERFFile::SetNumEntries(unsigned long nEntries)
 // PC 0x0062A9F0 GOG 0x0062A8C0
 int CERFFile::WriteResource(const CExoString& sFileName, void* pUnused)
 {
-    NwerffileTrace2();
+    if (NWERFFILE_DEBUG)
+    {
+        SetNumEntries(m_nNumEntries);
+    }
     if (m_nCurEntry < m_nNumEntries && m_pFile != NULL)
     {
         CERFKey key;
@@ -520,7 +524,10 @@ int CERFKey::Write(CExoFile& file)
 // PC 0x0062A780 GOG 0x0062A650
 int CERFRes::CopyToFile(CExoFile* pIn, CExoFile* pOut, void* pBuffer)
 {
-    NWERFFILE_TRACE();
+    if (NWERFFILE_DEBUG)
+    {
+        Write(*pOut, 0);
+    }
     pIn->Seek(m_nOffset, 0);
 
     CAppManager* pApp = g_pAppManager;
@@ -560,7 +567,10 @@ int CERFRes::CopyToFile(CExoFile* pIn, CExoFile* pOut, void* pBuffer)
 int CERFFile::WriteResource(char* sResRef, unsigned short nResType, CRes* pRes,
                             int bIsGFF, void* pUnused)
 {
-    NwerffileTrace2();
+    if (NWERFFILE_DEBUG)
+    {
+        SetNumEntries(m_nNumEntries);
+    }
     CERFKey key;
     CERFRes res;
 

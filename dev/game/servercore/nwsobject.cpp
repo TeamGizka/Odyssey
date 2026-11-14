@@ -40,9 +40,6 @@
 #include "clientexoappinternal.h"
 #include "nwclass.h"
 
-static inline void NwsobjectTrace2();
-static inline void NwsobjectTrace1();
-
 inline void NwsobjectDestroyScriptVar(CSWSScriptVar* pVar)
 {
     pVar->~CSWSScriptVar();
@@ -60,6 +57,8 @@ void CSWSDialog::AddPlayer(CSWSDialogPlayer* pPlayer)
         m_lstPlayers.AddTail(pPlayer);
 }
 #include "nwsdialoginl.h"
+
+#define NWSOBJECT_DEBUG 0
 // PC 0x004F60C0 GOG 0x005058B0
 CSWSObjectActionNode::~CSWSObjectActionNode()
 {
@@ -628,7 +627,10 @@ void CSWSObject::AddLoopingVisualEffect(unsigned short nVisualEffectId,
 // PC 0x004F91B0 GOG 0x005089A0
 void CSWSObject::RemoveEffectTarget(unsigned long oidTarget)
 {
-    NwsobjectTrace2();
+    if (NWSOBJECT_DEBUG)
+    {
+        AddLoopingVisualEffect(0, oidTarget, 0);
+    }
     CGameObject* pTarget =
         g_pAppManager->m_pServerExoApp->GetGameObject(oidTarget);
 
@@ -4103,15 +4105,6 @@ void CSWSObject::AddAction(
     m_lstActions.AddTail(pNode);
 
     TestActionList();
-}
-
-static inline void NwsobjectTrace2()
-{
-    NwsobjectTrace1();
-}
-
-static inline void NwsobjectTrace1()
-{
 }
 
 int NwsobjectRemoveFromDialog(CSWSObject* pObject, unsigned long oidObject)

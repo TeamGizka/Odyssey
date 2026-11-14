@@ -16,9 +16,6 @@
 #include "aurdraw.h"
 #define SWMGTRACKFOLLOWER_DEBUG 0
 
-static inline void SwmgtrackfollowerTrace2();
-static inline void SwmgtrackfollowerTrace1();
-
 float fInertiaScale = 1.0f;
 
 extern float fInertiaScale;
@@ -682,7 +679,10 @@ CSWTrackFollower::~CSWTrackFollower()
 // PC 0x006C2DC0 GOG 0x006C2BF0
 void CSWTrackFollower::RemoveGunBank(CSWMGGunBank* pGunBank)
 {
-    SwmgtrackfollowerTrace2();
+    if (SWMGTRACKFOLLOWER_DEBUG)
+    {
+        Vector vPosition = GetPosition();
+    }
     if (m_bDying)
     {
         m_lstGunBanks.Remove(pGunBank);
@@ -691,7 +691,10 @@ void CSWTrackFollower::RemoveGunBank(CSWMGGunBank* pGunBank)
 // PC 0x006C2DE0 GOG 0x006C2C10
 void CSWTrackFollower::Update(float fTime)
 {
-    SwmgtrackfollowerTrace2();
+    if (SWMGTRACKFOLLOWER_DEBUG)
+    {
+        Vector vPosition = GetPosition();
+    }
     CSWMiniGameObject::Update(fTime);
     if (m_fInvincibilityRemaining > 0.0f)
     {
@@ -799,7 +802,10 @@ int CSWTrackFollower::ForceSetTrack(CAurObject* pTrack, int bPlayAnimation)
 // PC 0x006C25C0 GOG 0x006C23A0
 void CSWTrackFollower::Stop()
 {
-    SwmgtrackfollowerTrace1();
+    if (SWMGTRACKFOLLOWER_DEBUG)
+    {
+        Gob* pModel = GetModel(0);
+    }
     Gob* pTrack = m_pTrack;
     if (pTrack != 0 && m_bTrackPlaying)
     {
@@ -945,7 +951,10 @@ void CSWTrackFollower::OnDeath(int nReserved)
 // PC 0x006C3140 GOG 0x006C2F70
 int CSWTrackFollower::AttachGuns(CAurObject* pObject)
 {
-    SwmgtrackfollowerTrace2();
+    if (SWMGTRACKFOLLOWER_DEBUG)
+    {
+        Vector vPosition = GetPosition();
+    }
     List<CAurPart*> parts;
 
     static_cast<Gob*>(pObject)->EnumParts(EnumGunAttachPoints, &parts);
@@ -1780,15 +1789,6 @@ CSWMGObstacle::~CSWMGObstacle()
     {
         delete m_pModel;
     }
-}
-
-static inline void SwmgtrackfollowerTrace2()
-{
-    SwmgtrackfollowerTrace1();
-}
-
-static inline void SwmgtrackfollowerTrace1()
-{
 }
 
 // PC 0x006C4D80 GOG 0x006C4BB0

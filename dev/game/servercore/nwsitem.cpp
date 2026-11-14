@@ -28,8 +28,7 @@
 #include "exotlktable.h"
 #include "nwtlktable.h"
 
-static inline void NwsitemTrace1();
-#define NWSITEM_TRACE() NwsitemTrace1()
+#define NWSITEM_DEBUG 0
 
 enum UpgradeItemType
 {
@@ -1784,7 +1783,10 @@ int CItemRepository::SetParentId(unsigned long oidParent)
 // PC 0x0055F4A0 GOG 0x0055F610
 void CSWSItem::OpenInventory(unsigned long oidOpener)
 {
-    NwsitemTrace1();
+    if (NWSITEM_DEBUG)
+    {
+        int nPassive = GetPassiveProperties();
+    }
     if (m_bInventoryOpen != 0)
         return;
 
@@ -3446,7 +3448,10 @@ void CSWSItem::AIUpdate()
 // PC 0x005674B0 GOG 0x005675E0
 int CSWSItem::SaveItem(CResGFF* pRes, CResStruct* pStruct)
 {
-    NWSITEM_TRACE();
+    if (NWSITEM_DEBUG)
+    {
+        int nWeight = GetWeight();
+    }
     pRes->WriteFieldINT(pStruct, GetBaseItemType(), "BaseItem");
     pRes->WriteFieldCExoString(pStruct, m_sTag, "Tag");
     pRes->WriteFieldBYTE(pStruct, 1, "Identified");
@@ -4239,7 +4244,10 @@ void CSWSItem::AddProperty(unsigned short nPropertyType, unsigned short nSubtype
 // PC 0x005678C0 GOG 0x005679F0
 void CSWSItem::UpdateUsedActiveProperties()
 {
-    NWSITEM_TRACE();
+    if (NWSITEM_DEBUG)
+    {
+        int nWeight = GetWeight();
+    }
     unsigned char aUsesLeft[MAX_TRACKED_ACTIVE_PROPERTIES];
     int nProperty;
     unsigned char nUsableMask = 0;
@@ -4765,8 +4773,4 @@ int CSWSItem::LoadItem(CResGFF* pRes, CResStruct* pStruct)
         }
     }
     return bSuccess;
-}
-
-static inline void NwsitemTrace1()
-{
 }

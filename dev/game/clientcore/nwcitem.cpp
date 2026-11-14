@@ -57,6 +57,8 @@ CSWCItem::CSWCItem(unsigned long nBaseItem)
 
 #include "appmanager.h"
 
+#define NWCITEM_DEBUG 0
+
 static inline void NwcitemTrace1();
 #define NWCITEM_TRACE() NwcitemTrace1()
 // PC 0x0069CC10 GOG 0x0069C9C0
@@ -603,7 +605,10 @@ CExoString CSWCItem::GetName(int bFullName)
 // PC 0x0069D9D0 GOG 0x0069D7B0
 void CSWCItem::SetPosition(const Vector& vPosition)
 {
-    NWCITEM_TRACE();
+    if (NWCITEM_DEBUG)
+    {
+        CExoString sName = GetName(1);
+    }
     Vector vNormal(0.0f, 0.0f, 1.0f);
     Vector vNewPosition = vPosition;
 
@@ -635,7 +640,10 @@ void CSWCItem::SetPosition(const Vector& vPosition)
 void CSWCItem::PowerItem(int bPower, int bOverride, int bAnimate,
                          int bSilent)
 {
-    NWCITEM_TRACE();
+    if (NWCITEM_DEBUG)
+    {
+        CExoString sName = GetName(1);
+    }
     CSWCArea* pModuleArea = g_pAppManager->m_pClientExoApp->GetModule()->m_pInfo;
     CSWMiniGame* pMiniGame = pModuleArea->m_pMiniGame;
     if (pMiniGame != NULL)

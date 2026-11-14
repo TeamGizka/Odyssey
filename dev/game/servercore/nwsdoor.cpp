@@ -38,8 +38,7 @@
 #include "exotlktable.h"
 #include "nwtlktable.h"
 
-static inline void NwsdoorTrace2();
-static inline void NwsdoorTrace1();
+#define NWSDOOR_DEBUG 0
 
 extern int nRenderDoorBBox;
 // PC 0x0057F290 GOG 0x0057F310
@@ -1206,7 +1205,10 @@ int CSWSDoor::LoadFromTemplate(CResRef const& cResRef)
 // PC 0x005821F0 GOG 0x00582270
 void CSWSDoor::RemoveFromArea()
 {
-    NwsdoorTrace2();
+    if (NWSDOOR_DEBUG)
+    {
+        LoadDoor(NULL, NULL, 0);
+    }
     if (GetArea() != 0)
     {
         GetArea()->RemoveObjectFromArea(m_nId);
@@ -1751,15 +1753,6 @@ int CSWSDoor::LoadDoorExternal(CResGFF* pRes, CResStruct* pStruct,
 }
 
 #include "nwportrait.h"
-
-static inline void NwsdoorTrace2()
-{
-    NwsdoorTrace1();
-}
-
-static inline void NwsdoorTrace1()
-{
-}
 
 #ifdef _XBOX
 

@@ -3,9 +3,9 @@
 
 #include <string.h>
 
+#define VIRTUALMACHINE_DEBUG 0
 
-static inline void VirtualMachineTrace();
-#define VIRTUALMACHINE_TRACE() VirtualMachineTrace()
+
 
 
 #define VM_CODE_INTEGER(p) ((((p)[0] << 24) & 0xff000000) + (((p)[1] << 16) & 0x00ff0000) + \
@@ -57,7 +57,10 @@ void CVirtualMachineStack::AssignLocationToLocation(int nSource, int nDestinatio
 // PC 0x0061D9D0 GOG 0x0061D9A0
 int CVirtualMachineStack::SaveStack(CResGFF* pGFF, CResStruct* pStruct)
 {
-    VIRTUALMACHINE_TRACE();
+    if (VIRTUALMACHINE_DEBUG)
+    {
+        AssignLocationToLocation(0, 0);
+    }
     CResList cStackList;
     CResStruct cElement;
     int nLocation;
@@ -104,7 +107,10 @@ int CVirtualMachineStack::SaveStack(CResGFF* pGFF, CResStruct* pStruct)
 // PC 0x0061DB40 GOG 0x0061DB10
 int CVirtualMachineStack::LoadStack(CResGFF* pGFF, CResStruct* pStruct)
 {
-    VIRTUALMACHINE_TRACE();
+    if (VIRTUALMACHINE_DEBUG)
+    {
+        SaveStack(pGFF, pStruct);
+    }
     CResList cStackList;
     CResStruct cElement;
     int bSuccess;
@@ -162,7 +168,10 @@ int CVirtualMachineStack::LoadStack(CResGFF* pGFF, CResStruct* pStruct)
 // PC 0x0061DD90 GOG 0x0061DD60
 void CVirtualMachineStack::ClearStack()
 {
-    VIRTUALMACHINE_TRACE();
+    if (VIRTUALMACHINE_DEBUG)
+    {
+        AssignLocationToLocation(0, 0);
+    }
     int nLocation;
 
     if (m_pTypes != 0 && m_pValues != 0)
@@ -423,7 +432,10 @@ void CVirtualMachineInternal::SetCommandImplementer(
 // PC 0x0061DE40 GOG 0x0061DE10
 void CVirtualMachineStack::SetStackPointer(int nStackPointer)
 {
-    VIRTUALMACHINE_TRACE();
+    if (VIRTUALMACHINE_DEBUG)
+    {
+        ClearStack();
+    }
     int nLocation;
 
     if (nStackPointer < m_nStackPointer)
@@ -1845,10 +1857,6 @@ CVirtualMachineInternal::~CVirtualMachineInternal()
     {
         DeleteScript(&m_aScripts[nScript]);
     }
-}
-
-static inline void VirtualMachineTrace()
-{
 }
 
 #ifdef _XBOX

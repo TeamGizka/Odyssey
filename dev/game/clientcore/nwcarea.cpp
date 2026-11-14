@@ -39,10 +39,11 @@
 #include "auremitter.h"
 #include "nwrules.h"
 
+#define NWCAREA_DEBUG 0
+
 const int CSWCArea::MAX_INTERTILE_PATH_DEPTH = 5;
 
 
-static inline void NwcareaTrace1();
 
 float g_fOldShadowAlpha = 0.0f;
 
@@ -528,7 +529,10 @@ CSWCRoom* CSWCArea::GetRoom(const CExoString& sRoomName)
 // PC 0x006518D0 GOG 0x00651780
 int CSWCArea::SetFog(float fNear, float fFar, const Vector& vColor)
 {
-    NwcareaTrace1();
+    if (NWCAREA_DEBUG)
+    {
+        CSWSArea* pServerArea = GetServerArea();
+    }
     if (m_pScene == NULL)
     {
         return FALSE;
@@ -542,7 +546,10 @@ int CSWCArea::SetFog(float fNear, float fFar, const Vector& vColor)
 // PC 0x00651920 GOG 0x006517D0
 void CSWCArea::SetAsDay()
 {
-    NwcareaTrace1();
+    if (NWCAREA_DEBUG)
+    {
+        CSWSArea* pServerArea = GetServerArea();
+    }
     if (m_bDayNightCycle == 0 && m_bIsNight != 0)
     {
         SetAsNight();
@@ -581,7 +588,10 @@ void CSWCArea::SetAsNight()
 // PC 0x00651B20 GOG 0x006519D0
 CSWCMapPin* CSWCArea::GetMapPin(unsigned long nReference, int nType)
 {
-    NwcareaTrace1();
+    if (NWCAREA_DEBUG)
+    {
+        CSWSArea* pServerArea = GetServerArea();
+    }
     int nCount = m_lstMapPins.num;
     for (int i = 0; i < nCount; i++)
     {
@@ -597,7 +607,10 @@ CSWCMapPin* CSWCArea::GetMapPin(unsigned long nReference, int nType)
 // PC 0x00651B70 GOG 0x00651A20
 void CSWCArea::UpdateSoundObjectsTimeOfDay()
 {
-    NwcareaTrace1();
+    if (NWCAREA_DEBUG)
+    {
+        CSWSArea* pServerArea = GetServerArea();
+    }
     int nCount = m_lstSoundObjectIds.num;
     for (int i = 0; i < nCount; i++)
     {
@@ -637,7 +650,10 @@ void CSWCArea::RemovePlaceableObjectLight(unsigned long oidPlaceable, int bFlag)
 // PC 0x00651C50 GOG 0x00651B00
 Gob* CSWCArea::GetPlaceableObjectLight(unsigned long oidPlaceable)
 {
-    NwcareaTrace1();
+    if (NWCAREA_DEBUG)
+    {
+        CSWSArea* pServerArea = GetServerArea();
+    }
     int nCount = m_lstPlaceableLights.num;
     for (int i = 0; i < nCount; i++)
     {
@@ -652,7 +668,10 @@ Gob* CSWCArea::GetPlaceableObjectLight(unsigned long oidPlaceable)
 // PC 0x00651CA0 GOG 0x00651B50
 void CSWCArea::HiliteAreaObjects(int bHilite)
 {
-    NwcareaTrace1();
+    if (NWCAREA_DEBUG)
+    {
+        CSWSArea* pServerArea = GetServerArea();
+    }
     for (int i = 0; i < m_lstObjectIds.num; i++)
     {
         CClientExoApp* pClientExoApp = g_pAppManager->m_pClientExoApp;
@@ -2222,10 +2241,6 @@ CSWCArea::~CSWCArea()
         m_pServerArea->DetachFromClientArea();
         m_pServerArea = 0;
     }
-}
-
-static inline void NwcareaTrace1()
-{
 }
 
 #ifdef _XBOX

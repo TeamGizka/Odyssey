@@ -20,8 +20,8 @@
 
 #include <math.h>
 
-static inline void NwsspellimpactTrace1();
-#define NWSSPELLIMPACT_TRACE() NwsspellimpactTrace1()
+#define NWSSPELLIMPACT_DEBUG 0
+
 // PC 0x005718F0 GOG 0x00571A20
 CSWSAreaOfEffectObject::CSWSAreaOfEffectObject(unsigned long oidObject)
     : CSWSObject(SW_OBJECT_TYPE_AREA_OF_EFFECT, oidObject, 0)
@@ -87,7 +87,10 @@ void CSWSAreaOfEffectObject::SetShape(unsigned char nShape, float fWidth,
 // PC 0x00571C20 GOG 0x00571D50
 void CSWSAreaOfEffectObject::LoadAreaEffect(int nAreaEffectId)
 {
-    NWSSPELLIMPACT_TRACE();
+    if (NWSSPELLIMPACT_DEBUG)
+    {
+        Vector vPosition = GetPosition();
+    }
     m_nAreaEffectId = nAreaEffectId;
     CTwoDimArrays* p2DArrays = g_pRules->m_p2DArrays;
     C2DA* pAreaEffects = p2DArrays->m_pVisualEffectsPersistent;
@@ -130,7 +133,10 @@ void CSWSAreaOfEffectObject::LoadAreaEffect(int nAreaEffectId)
 // PC 0x00571F70 GOG 0x005720A0
 int CSWSAreaOfEffectObject::LoadEffect(CResGFF* pRes, CResStruct* pStruct)
 {
-    NWSSPELLIMPACT_TRACE();
+    if (NWSSPELLIMPACT_DEBUG)
+    {
+        Vector vPosition = GetPosition();
+    }
     int bSuccess;
     unsigned char nShape;
     float fRadius;
@@ -224,7 +230,10 @@ int CSWSAreaOfEffectObject::SaveEffect(CResGFF* pRes, CResStruct* pStruct)
 // PC 0x00572460 GOG 0x00572590
 void CSWSAreaOfEffectObject::SetCreator(unsigned long oidCreator)
 {
-    NWSSPELLIMPACT_TRACE();
+    if (NWSSPELLIMPACT_DEBUG)
+    {
+        Vector vPosition = GetPosition();
+    }
     CSWSCreature* pCreator;
     CSWSpell* pSpell;
 
@@ -825,8 +834,4 @@ void CSWSAreaOfEffectObject::SetDuration(unsigned char nDurationType,
     {
         m_nDuration = (unsigned long)(fDuration * 1000.0f);
     }
-}
-
-static inline void NwsspellimpactTrace1()
-{
 }

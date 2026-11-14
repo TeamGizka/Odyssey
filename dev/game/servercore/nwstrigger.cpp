@@ -35,8 +35,7 @@
 #include "nwccreature.h"
 #include "nwfeat.h"
 
-static inline void NwstriggerTrace1();
-#define NWSTRIGGER_TRACE() NwstriggerTrace1()
+#define NWSTRIGGER_DEBUG 0
 
 int RenderQATriggers = 0;
 float CSWSTrigger::m_fTrapRadiusRange = 1.0f;
@@ -215,7 +214,10 @@ void CSWSTrigger::OnEnterMine(int bForce)
 // PC 0x00584B20 GOG 0x00584BA0
 CSWCTrigger* CSWSTrigger::GetClientTrigger()
 {
-    NWSTRIGGER_TRACE();
+    if (NWSTRIGGER_DEBUG)
+    {
+        int nTargetArea = GetTargetArea();
+    }
     if (GetClientObject() != NULL)
         return GetClientObject()->AsSWCTrigger();
 
@@ -1280,8 +1282,4 @@ void CSWSTrigger::LoadTriggerGeometry(CResGFF* pRes, CResList& list)
             m_pPolygonPointOrder[i] = i;
         }
     }
-}
-
-static inline void NwstriggerTrace1()
-{
 }

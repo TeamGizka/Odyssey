@@ -44,8 +44,6 @@
 #include <stdlib.h>
 #include "nwclass.h"
 
-static inline void NwshandleplayermessageTrace1();
-
 static const int nVolume = 1;
 
 const int CSWSMessage::GUI_PANEL_PLAYER_DEATH = 0;
@@ -154,6 +152,8 @@ int CSWSMessage::HandlePlayerToServerChatMessage(CSWSPlayer* pPlayer,
 }
 
 #include "nwccreature.h"
+
+#define NWSHANDLEPLAYERMESSAGE_DEBUG 0
 // PC 0x005A2080 GOG 0x005A20F0
 int CSWSMessage::HandlePlayerToServerCheatMessage(CSWSPlayer* pPlayer,
                                                   unsigned char nMinor)
@@ -2684,7 +2684,10 @@ int CSWSMessage::HandlePlayerToServerInputMessage(CSWSPlayer* pPlayer,
 int CSWSMessage::HandlePlayerToServerParty(CSWSPlayer* pPlayer,
                                            unsigned char nMinor)
 {
-    NwshandleplayermessageTrace1();
+    if (NWSHANDLEPLAYERMESSAGE_DEBUG)
+    {
+        HandlePlayerToServerInputMessage(pPlayer, nMinor);
+    }
     STR_RES strRes;
     CExoString sMessage;
 
@@ -3532,10 +3535,6 @@ int CSWSMessage::HandlePlayerToServerMessage(unsigned long nPlayerId,
                       sMessageType.CStr(), nMinor);
     }
     return nResult;
-}
-
-static inline void NwshandleplayermessageTrace1()
-{
 }
 
 #ifdef _XBOX

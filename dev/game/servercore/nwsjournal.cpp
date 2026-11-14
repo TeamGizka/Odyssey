@@ -11,7 +11,8 @@
 #include "twodimarray.h"
 #include "twodimarrays.h"
 
-static inline void NwsjournalTrace1();
+#define NWSJOURNAL_DEBUG 0
+
 // PC 0x00600DB0 GOG 0x00600DC0
 CSWSJournal::CSWSJournal()
 {
@@ -27,7 +28,10 @@ void CSWSJournal::SetPicture(const CExoString& sName, int nPicture, int nFlag)
 // PC 0x00600AF0 GOG 0x00600AD0
 void SJournalEntry::Update(SJournalEntry entry, unsigned short nFlags)
 {
-    NwsjournalTrace1();
+    if (NWSJOURNAL_DEBUG)
+    {
+        CSWSPlayerJournalQuestUpdates stUpdate;
+    }
     m_sPlotID = entry.m_sPlotID;
     if ((nFlags & 1) || (nFlags & 0x8000))
         m_lsName = entry.m_lsName;
@@ -583,8 +587,4 @@ void CSWSJournal::Destroy(const CExoString& sName)
             return;
         }
     }
-}
-
-static inline void NwsjournalTrace1()
-{
 }

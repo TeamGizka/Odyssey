@@ -9,6 +9,8 @@
 #include "exobase.h"
 #include "exotlktable.h"
 
+#define SWGUIINGAMECREDITS_DEBUG 0
+
 static inline void SwguiingamecreditsTrace1();
 
 static int g_nOldScreenHeight = 0;
@@ -239,7 +241,10 @@ void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)
 #else
 void CSWGuiInGameCredits::UpdateScrolling(float fElapsed)  // PC 0x006E8740 GOG 0x006E8810
 {
-    SwguiingamecreditsTrace1();
+    if (SWGUIINGAMECREDITS_DEBUG)
+    {
+        CSWGuiInGameCredits::HandleInputEvent(GUIEVENT_CANCEL, 1);
+    }
     if (m_lbxCredits.m_cScrollBar.m_nCurValue ==
         m_lbxCredits.m_cScrollBar.m_nMaxValue)
     {
@@ -301,7 +306,10 @@ CSWGuiInGameCredits::~CSWGuiInGameCredits()  // PC 0x006E87E0 GOG 0x006E82C0
 // PC 0x006E8960 GOG 0x006E8580
 void CSWGuiInGameCredits::SetText(unsigned long nStrRef, int bLastText)
 {
-    SwguiingamecreditsTrace1();
+    if (SWGUIINGAMECREDITS_DEBUG)
+    {
+        UpdateScrolling(0.0f);
+    }
     CSWGuiExtent cExtent;
 #ifndef _XBOX
     if (m_bFading)

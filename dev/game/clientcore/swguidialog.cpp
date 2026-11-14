@@ -19,12 +19,11 @@
 extern int g_Letterbox_top;
 extern int g_Letterbox_bottom;
 
-static inline void SwguidialogTrace2();
-static inline void SwguidialogTrace1();
-
 #include "nwrules.h"
 
 #include "nwskill.h"
+
+#define SWGUIDIALOG_DEBUG 0
 
 static void SwguidialogTrace3(CSWGuiDialog* pDialog)
 {
@@ -39,14 +38,6 @@ void CSWGuiDialogComputer::SetType(unsigned char)
 {
 }
 
-static inline void SwguidialogTrace2()
-{
-    SwguidialogTrace1();
-}
-
-static inline void SwguidialogTrace1()
-{
-}
 // PC 0x0070E2A0 GOG 0x0070E900
 CSWGuiDialog::CSWGuiDialog(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
@@ -1045,7 +1036,10 @@ void CSWGuiDialogComputer::SetReplies(int nCount, CExoString* pReplies,
 // PC 0x0070FBF0 GOG 0x0070F940
 void CSWGuiDialogComputer::SetDialogMessage(const CExoString& sMessage)
 {
-    SwguidialogTrace2();
+    if (SWGUIDIALOG_DEBUG)
+    {
+        CSWGuiDialogComputer::SetReplies(0, NULL, NULL, 0, 0);
+    }
     UpdateSkills();
     CSWGuiDialog::SetDialogMessage(sMessage);
     m_lbMessage.SetEnabledFlag(m_lblMessage.m_bEnabled);

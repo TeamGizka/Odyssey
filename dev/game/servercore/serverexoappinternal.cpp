@@ -120,10 +120,14 @@ inline int KOTOR_AUTOSAVE_PARAMS::SaveToGFF(CResGFF* pRes, CResStruct& stStruct)
 #include "nwerffile.h"
 #include "nwerffile.h"
 
-static inline void ServerExoAppInternalTrace2();
+#define SERVEREXOAPPINTERNAL_DEBUG 0
+
 static inline void ServerExoAppTrace(CServerExoApp*);
-#define SERVEREXOAPPINTERNAL_HOOK() ServerExoAppInternalTrace2()
-#define STRREF_AUTO_SAVE_NAME 1593
+enum SaveGameStringRef
+{
+    STRREF_AUTO_SAVE_NAME = 1593,
+    STRREF_SAVING_GAME_HINT = 41926
+};
 
 inline void ServerExoAppInternalReserve(CExoArrayList<unsigned long>* pIds, int nSize, CExoString* pStrings,
     CExoLinkedList<CSWSClient>* pClients, CExoLinkedList<unsigned long>* pExclusions)
@@ -152,11 +156,6 @@ static inline CSWReentrantServerStats* GetReentrantServerStats()
 static inline unsigned __int64 GetHighResolutionTimer()
 {
     return g_pExoBase->m_pExoTimers->GetHighResolutionTimer();
-}
-
-static inline void ServerExoAppInternalTrace2()
-{
-    ServerExoAppTrace();
 }
 
 static inline void ServerExoAppTrace(CServerExoApp*)
@@ -2765,7 +2764,7 @@ void CServerExoAppInternal::DoPCAutosave(const CExoString& sModule, KOTOR_LAUNCH
 {
     AurReleaseFrameTexture();
     g_pAppManager->GetClientExoApp()->SetLoadScreenByModuleName(sModule);
-    g_pAppManager->GetClientExoApp()->SetLoadScreenHint(41926);
+    g_pAppManager->GetClientExoApp()->SetLoadScreenHint(STRREF_SAVING_GAME_HINT);
     g_pAppManager->GetClientExoApp()->ShowLoadScreen(0, 1, 1);
     g_pAppManager->GetClientExoApp()->SetLoadBarProgress(0, 0);
     CClientExoAppInternal* pClient =
@@ -2994,7 +2993,7 @@ void CServerExoAppInternal::StallEventSaveGame()
     }
 
     g_pAppManager->GetClientExoApp()->SetLoadScreenByModuleName(sModuleName);
-    g_pAppManager->GetClientExoApp()->SetLoadScreenHint(41926);
+    g_pAppManager->GetClientExoApp()->SetLoadScreenHint(STRREF_SAVING_GAME_HINT);
     g_pAppManager->GetClientExoApp()->ShowLoadScreen(0, 1, 1);
     g_pAppManager->GetClientExoApp()->SetLoadBarProgress(0, 0);
     g_pAppManager->GetClientExoApp()->GetSWGuiManager()->Draw(1.0f / 30.0f);
@@ -3876,7 +3875,10 @@ int CServerExoAppInternal::IsActionsPending(unsigned long oidObject)
 // PC 0x004EF130 GOG 0x004EF6E0
 void CServerExoAppInternal::TempDeathUpdate()
 {
-    SERVEREXOAPPINTERNAL_HOOK();
+    if (SERVEREXOAPPINTERNAL_DEBUG)
+    {
+        CSWSPlayer* pPlayer = GetClientObjectByObjectId(OBJECT_INVALID);
+    }
     if (g_pAppManager->GetClientExoApp()->GetGameOver() ||
         g_pAppManager->GetClientExoApp()->GetAreaNotReadyToDisplay())
     {

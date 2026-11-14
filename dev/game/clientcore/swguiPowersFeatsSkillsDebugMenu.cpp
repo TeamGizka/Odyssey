@@ -12,14 +12,16 @@
 #include "swguipowersfeatsskillsdebugmenu.h"
 #include "swmain.h"
 
-static inline void SwguipowersfeatsskillsdebugmenuTrace2();
-static inline void SwguipowersfeatsskillsdebugmenuTrace1();
-#define SWGUIPOWERSFEATSSKILLSDEBUGMENU_TRACE() SwguipowersfeatsskillsdebugmenuTrace1()
+#define SWGUIPOWERSFEATSSKILLSDEBUGMENU_DEBUG 0
+
 // PC 0x0073D000 GOG 0x0073CE20
 void CSWGuiPowersFeatsSkillsDebugMenu::AddPrerequisiteSpells(
     unsigned long nSpell, CSWSCreature* pCreature)
 {
-    SwguipowersfeatsskillsdebugmenuTrace2();
+    if (SWGUIPOWERSFEATSSKILLSDEBUGMENU_DEBUG)
+    {
+        CreateOption(CExoString(), NULL, NULL);
+    }
     const int nNoPrerequisiteSpell = -1;
     CSWSpell* pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
     int nClass = pCreature->m_pStats->m_nClassCount - 1;
@@ -47,7 +49,10 @@ void CSWGuiPowersFeatsSkillsDebugMenu::AddPrerequisiteSpells(
 void CSWGuiPowersFeatsSkillsDebugMenu::AddPrerequisiteFeats(
     unsigned short nFeat, CSWSCreature* pCreature)
 {
-    SwguipowersfeatsskillsdebugmenuTrace2();
+    if (SWGUIPOWERSFEATSSKILLSDEBUGMENU_DEBUG)
+    {
+        AddPrerequisiteSpells(0, pCreature);
+    }
     CSWFeat* pFeat = g_pRules->GetFeat(nFeat);
 
     if (pFeat != NULL && pCreature != NULL)
@@ -74,7 +79,10 @@ void CSWGuiPowersFeatsSkillsDebugMenu::HideMenu()
 // PC 0x0073D130 GOG 0x0073CF50
 void CSWGuiPowersFeatsSkillsDebugMenu::OnSkillPicked(CSWGuiControl* pControl)
 {
-    SwguipowersfeatsskillsdebugmenuTrace2();
+    if (SWGUIPOWERSFEATSSKILLSDEBUGMENU_DEBUG)
+    {
+        AddPrerequisiteFeats(0, NULL);
+    }
     if (pControl->m_bSelected != 0)
     {
         int i;
@@ -136,14 +144,6 @@ CSWGuiControl* CSWGuiPowersFeatsSkillsDebugMenu::CreateOption(
 #endif
 }
 
-static inline void SwguipowersfeatsskillsdebugmenuTrace2()
-{
-    SwguipowersfeatsskillsdebugmenuTrace1();
-}
-
-static inline void SwguipowersfeatsskillsdebugmenuTrace1()
-{
-}
 // PC 0x0073D280 GOG 0x0073D180
 void CSWGuiPowersFeatsSkillsDebugMenu::OnPowerPicked(CSWGuiControl* pControl)
 {
