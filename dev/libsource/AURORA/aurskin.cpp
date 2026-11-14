@@ -1987,6 +1987,7 @@ void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
             static VertexProgram* skinmotionblurvp = new VertexProgram(
                 cSkinMotionBlurVP, cSkinMotionBlurVPDeclaration);
 
+            Gob*& pObject = pSkin->m_pAurObject;
             Quaternion qOrientation;
             Vector vPosition;
             pSkin->GetWorld(vPosition, qOrientation);
@@ -1997,8 +1998,7 @@ void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
             vSide = -qOrientation * vSide;
             fBlurLength = fBlurLength / (2.0f * DeltaT);
             Vector vOrigin;
-            Vector& vObjectPosition = pSkin->m_pAurObject->m_vPosition;
-            vOrigin = -qOrientation * (vObjectPosition - vPosition);
+            vOrigin = -qOrientation * (pObject->m_vPosition - vPosition);
 
             AurSetVertexProgramParameter4f(PartSkin::SKIN_VP_CONSTANTS,
                 0.0f, 2.0f, 3.0f, 1.0f);
@@ -2007,7 +2007,7 @@ void RenderSkinnedVPBlur(VertexPrimitiveSkinned* pPrimitive)
             vDisplacement = normalize(vDisplacement);
             AurSetVertexProgramParameter4f(PartSkin::SKIN_VP_BLUR_DIRECTION,
                 vDisplacement.m_fX, vDisplacement.m_fY, vDisplacement.m_fZ, 1.0f);
-            float fMaxBlurLength = pSkin->m_pAurObject->m_fMaxBlurLength;
+            float fMaxBlurLength = pObject->m_fMaxBlurLength;
             AurSetVertexProgramParameter4f(PartSkin::SKIN_VP_BLUR_LIMITS,
                 fBlurLength, fMaxBlurLength, SKIN_BLUR_NORMAL_OFFSET, SKIN_BLUR_LENGTH_SCALE);
             AurSetVertexProgramParameter4f(PartSkin::SKIN_VP_BLUR_SIDE,
